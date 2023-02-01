@@ -1,185 +1,94 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C21A8499
-	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 12:59:55 +0000 (UTC)
-Received: by mail-wr1-f46.google.com with SMTP id d14so17222782wrr.9
-        for <iommu@lists.linux.dev>; Wed, 01 Feb 2023 04:59:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+QwuD9TuGNSCLvPM2blxffUhnZ2RtJhExgcIPoLd+QM=;
-        b=UOhwrweWo/dydtFfuzgOipklc5rQNm46Jqg9SLNN7DWbSNa217VcZcYEtfDbWKZ+ro
-         pTpyujtdOm5j39A7vRbwrc8tS/GrxqLOzHnnEUY7yEGvujURXprc4qYFtTNAo9N1kcm4
-         uYS9th+lV2uBPj3HZEnl/Z6KRtqw0Hwdb748wqe6A1px9tdg7Ot6+y9BVFUlqYq3XpXm
-         BuSX32azdekNqG+ojYiLZsVLQhK0RuRQk6FIokSXLujaG/wGGCMS6oWZ0ogTCbS7YIma
-         qoW223lpxoJMh5dJHTtTCurAbnQ1ZZTT96CtKot03dCMBiSYzhTq3qML2YsGbb6CPITP
-         vhCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=+QwuD9TuGNSCLvPM2blxffUhnZ2RtJhExgcIPoLd+QM=;
-        b=omemzPUVyaRL2aDzt9MPSf7gg4n5U+zIHK7DpANwz1YCqI1j7ex9G0+Mmt2DjVW5BJ
-         f+wnEAedpD2exfEzaoSX3AEnd1NozWnGB9QRparzsOzvatVUazzM1IfcPEWB8lBvxW01
-         TZDtIyUg5XMRVCMRZennS2G/S2Lc2z2ujSLj/2dH584RTJYMkwgdS9W+wvClCNBNuz4f
-         SyCkVwxO5DorrzWqJmv0g6Vy/0HiK/CDzrdRvVJBer2hhwDuWAoba3Qpg8Bd3HmZewBv
-         H0njdt/QgJvYHNa5/FHvejZReVfqzD1ELbsLPG5THq1C+zD/AEf+RO+n+XWyubTX6a+/
-         aMCw==
-X-Gm-Message-State: AO0yUKWKwSPow2S3uJxeUTRv0j54fA2WhzLv9wDOr2Y77J9AP22kiuib
-	EoKsGq4dU0ChWqDph0b1olph5g==
-X-Google-Smtp-Source: AK7set9bqN341dPHhfT97aUYzzSZBGnfTu3JIZgicnUoniM+wDk0UFc0vzIdu1RIl/3gjqCIATPA8g==
-X-Received: by 2002:a05:6000:10c3:b0:2bf:b2c2:e122 with SMTP id b3-20020a05600010c300b002bfb2c2e122mr2349373wrx.29.1675256394953;
-        Wed, 01 Feb 2023 04:59:54 -0800 (PST)
-Received: from localhost.localdomain (054592b0.skybroadband.com. [5.69.146.176])
-        by smtp.gmail.com with ESMTPSA id m15-20020a056000024f00b002bfae16ee2fsm17972811wrz.111.2023.02.01.04.59.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Feb 2023 04:59:54 -0800 (PST)
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: maz@kernel.org,
-	catalin.marinas@arm.com,
-	will@kernel.org,
-	joro@8bytes.org
-Cc: robin.murphy@arm.com,
-	james.morse@arm.com,
-	suzuki.poulose@arm.com,
-	oliver.upton@linux.dev,
-	yuzenghui@huawei.com,
-	smostafa@google.com,
-	dbrazdil@google.com,
-	ryan.roberts@arm.com,
-	linux-arm-kernel@lists.infradead.org,
-	kvmarm@lists.linux.dev,
-	iommu@lists.linux.dev,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [RFC PATCH 45/45] iommu/arm-smmu-v3-kvm: Enable runtime PM
-Date: Wed,  1 Feb 2023 12:53:29 +0000
-Message-Id: <20230201125328.2186498-46-jean-philippe@linaro.org>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230201125328.2186498-1-jean-philippe@linaro.org>
-References: <20230201125328.2186498-1-jean-philippe@linaro.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2571E3207
+	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 14:09:26 +0000 (UTC)
+Received: from lhrpeml500005.china.huawei.com (unknown [172.18.147.200])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4P6NwG19ZDz6J7Z5;
+	Wed,  1 Feb 2023 22:05:02 +0800 (CST)
+Received: from localhost (10.45.150.75) by lhrpeml500005.china.huawei.com
+ (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Wed, 1 Feb
+ 2023 14:09:16 +0000
+Date: Wed, 1 Feb 2023 14:09:15 +0000
+From: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Bjorn Helgaas <helgaas@kernel.org>, Baolu Lu <baolu.lu@linux.intel.com>,
+	Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <jroedel@suse.de>, "Matt
+ Fagnani" <matt.fagnani@bell.net>, Christian =?ISO-8859-1?Q?K=F6nig?=
+	<christian.koenig@amd.com>, Kevin Tian <kevin.tian@intel.com>, Vasant Hegde
+	<vasant.hegde@amd.com>, Tony Zhu <tony.zhu@intel.com>,
+	<linux-pci@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 1/1] PCI: Add translated request only flag for
+ pci_enable_pasid()
+Message-ID: <20230201140915.000024a0@Huawei.com>
+In-Reply-To: <Y9nQK9P3HOxEeZ4U@nvidia.com>
+References: <030e66e0-fb54-b77d-5094-4786684ba97d@linux.intel.com>
+	<20230201001419.GA1776086@bhelgaas>
+	<Y9nQK9P3HOxEeZ4U@nvidia.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.45.150.75]
+X-ClientProxiedBy: lhrpeml500004.china.huawei.com (7.191.163.9) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
+X-CFilter-Loop: Reflected
 
-Enable runtime PM for the KVM SMMUv3 driver. The PM link to DMA masters
-dictates when the SMMU should be powered on.
+On Tue, 31 Jan 2023 22:36:27 -0400
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
----
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c   | 54 +++++++++++++++++++
- 1 file changed, 54 insertions(+)
+> On Tue, Jan 31, 2023 at 06:14:19PM -0600, Bjorn Helgaas wrote:
+> 
+> > > AMD GPU is one of those devices.  
+> > 
+> > I guess you mean the AMD GPU has ATS, PRI, and PASID Capabilities?
+> > And furthermore, that the GPU *always* uses Translated addresses with
+> > PASID?  
+> 
+> I'm not versed in the spec lingo, but the GPU issues MemRd/Wrs with
+> the translated bit set and no PASID header - which is the correct form
+> for an address that was translated by ATS.
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
-index 198e41d808b0..cd865049f89a 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
-@@ -8,6 +8,7 @@
- #include <linux/local_lock.h>
- #include <linux/of_address.h>
- #include <linux/of_platform.h>
-+#include <linux/pm_runtime.h>
- 
- #include <kvm/arm_smmu_v3.h>
- 
-@@ -18,6 +19,7 @@ struct host_arm_smmu_device {
- 	pkvm_handle_t			id;
- 	u32				boot_gbpa;
- 	unsigned int			pgd_order;
-+	atomic_t			initialized;
- };
- 
- #define smmu_to_host(_smmu) \
-@@ -134,8 +136,10 @@ static struct iommu_ops kvm_arm_smmu_ops;
- 
- static struct iommu_device *kvm_arm_smmu_probe_device(struct device *dev)
- {
-+	int ret;
- 	struct arm_smmu_device *smmu;
- 	struct kvm_arm_smmu_master *master;
-+	struct host_arm_smmu_device *host_smmu;
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 
- 	if (!fwspec || fwspec->ops != &kvm_arm_smmu_ops)
-@@ -156,7 +160,28 @@ static struct iommu_device *kvm_arm_smmu_probe_device(struct device *dev)
- 	master->smmu = smmu;
- 	dev_iommu_priv_set(dev, master);
- 
-+	if (!device_link_add(dev, smmu->dev,
-+			     DL_FLAG_PM_RUNTIME | DL_FLAG_RPM_ACTIVE |
-+			     DL_FLAG_AUTOREMOVE_SUPPLIER)) {
-+		ret = -ENOLINK;
-+		goto err_free;
-+	}
-+
-+	/*
-+	 * If the SMMU has just been initialized by the hypervisor, release the
-+	 * extra PM reference taken by kvm_arm_smmu_probe().  Not sure yet how
-+	 * to improve this. Maybe have KVM call us back when it finished
-+	 * initializing?
-+	 */
-+	host_smmu = smmu_to_host(smmu);
-+	if (atomic_add_unless(&host_smmu->initialized, 1, 1))
-+		pm_runtime_put_noidle(smmu->dev);
-+
- 	return &smmu->iommu;
-+
-+err_free:
-+	kfree(master);
-+	return ERR_PTR(ret);
- }
- 
- static void kvm_arm_smmu_release_device(struct device *dev)
-@@ -685,6 +710,30 @@ static int kvm_arm_smmu_probe(struct platform_device *pdev)
- 
- 	kvm_arm_smmu_cur++;
- 
-+	/*
-+	 * The state of endpoints dictates when the SMMU is powered off. To turn
-+	 * the SMMU on and off, a genpd driver uses SCMI over the SMC transport,
-+	 * or some other platform-specific SMC. Those power requests are caught
-+	 * by the hypervisor, so that the hyp driver doesn't touch the hardware
-+	 * state while it is off.
-+	 *
-+	 * We are making a big assumption here, that TLBs and caches are invalid
-+	 * on power on, and therefore we don't need to wake the SMMU when
-+	 * modifying page tables, stream tables and context tables. If this
-+	 * assumption does not hold on some systems, then we'll need to grab RPM
-+	 * reference in map(), attach(), etc, so the hyp driver can send
-+	 * invalidations.
-+	 */
-+	hyp_smmu->caches_clean_on_power_on = true;
-+
-+	pm_runtime_set_active(dev);
-+	pm_runtime_enable(dev);
-+	/*
-+	 * Take a reference to keep the SMMU powered on while the hypervisor
-+	 * initializes it.
-+	 */
-+	pm_runtime_resume_and_get(dev);
-+
- 	return 0;
- }
- 
-@@ -697,6 +746,11 @@ static int kvm_arm_smmu_remove(struct platform_device *pdev)
- 	 * There was an error during hypervisor setup. The hyp driver may
- 	 * have already enabled the device, so disable it.
- 	 */
-+
-+	if (!atomic_read(&host_smmu->initialized))
-+		pm_runtime_put_noidle(&pdev->dev);
-+	pm_runtime_disable(&pdev->dev);
-+	pm_runtime_set_suspended(&pdev->dev);
- 	arm_smmu_unregister_iommu(smmu);
- 	arm_smmu_device_disable(smmu);
- 	arm_smmu_update_gbpa(smmu, host_smmu->boot_gbpa, GBPA_ABORT);
--- 
-2.39.0
+FWIW there is a capability bit and enable bit in the PASID cap/control
+registers that says whether a device can/should add a PASID to a
+translated request or not.  I think the intent is that a host can
+sanity check AT requests to make sure the device isn't making them
+up. To do that it needs the PASID.  Not sure any hosts do this yet
+though ;)
+
+Not worth much, but I thought it always sent the PASID so dug out spec
+to check (I was wrong as it is both optional and configurable).
+
+> 
+> To get to that it issues ATS requests, and only the ATS related
+> requests will carry the PASID.
+> 
+> ATS related requests always route to the root port, which is why it is
+> functionally equivalent to ACS RR/UF in these cases.
+> 
+> Translated requests always route where they are supposed to go, even
+> with P2P and things.
+> 
+> > And this applies even if there is no ACS or ACS doesn't support
+> > PCI_ACS_RR and PCI_ACS_UF.
+> > 
+> > The black screen happens because ... ?  
+> 
+> AMD GPU driver bugs blow up if it cannot setup PASID.
+> 
+> > I couldn't figure out the NULL pointer dereference.  I expected it to
+> > be from a BUG() or similar in report_iommu_fault(), but I don't see
+> > that.  
+> 
+> IIRC it is a buggy error unwind handling in the AMD GPU driver.
+>  
+> Jason
 
