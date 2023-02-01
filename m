@@ -1,43 +1,43 @@
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AA4F6ADF
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C33F3847A
 	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 12:59:44 +0000 (UTC)
-Received: by mail-wr1-f48.google.com with SMTP id y1so17249457wru.2
+Received: by mail-wr1-f44.google.com with SMTP id h16so17197304wrz.12
         for <iommu@lists.linux.dev>; Wed, 01 Feb 2023 04:59:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=k6RVVU/cDR30+b5v6ryQ9Qt2Qe/cZnMA4vlAa66b2Ys=;
-        b=mu2lBA0BxxQukvTi9iYO7jhBZ8zYvtylLgUP8D/nnzbjtu9Fu04DCXo+9J1OplFloM
-         2mj2s/TUMEjjGh7q8zbfwjap7eipolwiOV2dAJNt542PBtjSN3gAJiCFlbpAKAN8x236
-         0URl9fMplXSkkpdd7gl6Id5htSLQPE1CjcYNrCeA6Fka/TxJwWHtJbfqwNRLX/svQ2S+
-         B7OKZ2fBCpZKe2E0IftP4GTip2tljs8v5kjvZ8IbyV/HNVDtWAt58/uEsW1xrYXxPore
-         SCYiHi/EwNvHSShyXk2rFhXByNJD7hnOTg0itBO2+7QQuUJF8kqLN/fplMCLxCQWJjPB
-         r54g==
+        bh=Y2CxERzENf3OXQ6RA/4LliXUQhYEHALLxxSjcL/OTSc=;
+        b=ND9R85amaEKTBRYBScK+MS8kwPbtxgNTNa3ZbpXyeTz+nJs0MpyMq+XBJ/8KiEtIaw
+         YH74H4wIdJFs2x6ebN8bHiVqXDaPA9vAGTvDoPU14AjYZhEozo/7u3NUWHHVH08YQfkt
+         WE2D7rYAAA215fwgT5lTmjMUhCOMuYHOueyuBKcWLl9g+UYVq17cNKqTEyisHzZ8pSPI
+         l2eobme1YPNBwy4LD1NBkP5V5KPFVYLLAWteQnEgNLhuGO+nhjzjSeIhXdSOgeS20BmD
+         dXrV9KGkppFsV8AZNHxI0Qq/Al1uARMGS0eoWjH2bXIVLyqfFoZ7T9H2r/21JUvFNGlc
+         ogag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=k6RVVU/cDR30+b5v6ryQ9Qt2Qe/cZnMA4vlAa66b2Ys=;
-        b=yjxxUI2KrbQCDQXSfeV4K0lgyhHpheqS5xa0YmRIoQLi8nrXD8d3c7tpdl4TxRCvpr
-         0vHvuUXdopXLOIIcPe2xc3G/pUG5NB92HSHIW8G/EttMvJsyNeFgAYQx4J/8P+KQwAvk
-         4GAfhrJQxaJ2ghXdPcdLISbpAHoiCLDxJtUg8S1xfayvNjn8WrxntkxtYeYjFuslYHfw
-         SWNc2IYB1QWWfdUGDtTri9ZiL+3TSmexUFGkhZtANOAiDH9ZokH6WjwI0+FcLQl9ogIo
-         3BbX/Lwq8d7BmswNkPozqqwftRw2Y8ZIiPW2TI+g42kG/DvxpzDofA5H/EhS0kZOkSoU
-         Ok8g==
-X-Gm-Message-State: AO0yUKUsCRGOLMeXFJDyunOfBfWjksB5ZwAJODTLAJP5eLni21s5Y5OC
-	ekf2YL4VVy6d/6EH1n/6v7XPXg==
-X-Google-Smtp-Source: AK7set9KZvY706CH4tuKx5S8bX1dcbZP46wQLmL4WsIGvMixGthlW8NKXtzmya0mXpXaEnKYzEH3wA==
-X-Received: by 2002:a5d:5e81:0:b0:2be:c41:4758 with SMTP id ck1-20020a5d5e81000000b002be0c414758mr2211733wrb.38.1675256383907;
+        bh=Y2CxERzENf3OXQ6RA/4LliXUQhYEHALLxxSjcL/OTSc=;
+        b=u3dCAJgYN0sHJiTGGqWRn502IRZqj5LfN/Snch7zwCjA1RZdoFylZCmVsIts534ltX
+         DAVG6G9cEAW6gVsvQvigvjUEUGEKBc43NcK+r4i/OJkuD8S1yRUjtzghIGKInf4fBQj/
+         znB2jm3rd4ziyzpR7udB2JIoBEEkFtoab/1PWDtHniO+p4FaUsacDVc2Lz2urU3X0Bsg
+         P1Lk/MYeGpLaHPaAPTXX+Ei8AJwf2XN/ovBu+4bGXTf7SxiOQU7bm6HFoOQsMLog5awM
+         dW/+Ki/BYyq7e+WAw1Zh8aTC+0voe03R7kXQeczXK79T670mCCOj9F02H7c4lqyoPO5t
+         f4rQ==
+X-Gm-Message-State: AO0yUKW56osai2t1Z/98l8zX4ZIlDH0N4YmlLVc+A+//Ogd4iYasOqEJ
+	e9TSdy+M82FpfcO4q0EH20VcIA==
+X-Google-Smtp-Source: AK7set/PK2nsyarD5mtJeYsZRnDC5Z8ddlvBx7Lhat2lkWzB11Nf7Xr1gUPq5poRd3YMJ3fQODqlMQ==
+X-Received: by 2002:adf:9c8e:0:b0:2bf:d034:f49 with SMTP id d14-20020adf9c8e000000b002bfd0340f49mr2145130wre.1.1675256383089;
         Wed, 01 Feb 2023 04:59:43 -0800 (PST)
 Received: from localhost.localdomain (054592b0.skybroadband.com. [5.69.146.176])
-        by smtp.gmail.com with ESMTPSA id m15-20020a056000024f00b002bfae16ee2fsm17972811wrz.111.2023.02.01.04.59.43
+        by smtp.gmail.com with ESMTPSA id m15-20020a056000024f00b002bfae16ee2fsm17972811wrz.111.2023.02.01.04.59.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Feb 2023 04:59:43 -0800 (PST)
+        Wed, 01 Feb 2023 04:59:42 -0800 (PST)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: maz@kernel.org,
 	catalin.marinas@arm.com,
@@ -55,9 +55,9 @@ Cc: robin.murphy@arm.com,
 	kvmarm@lists.linux.dev,
 	iommu@lists.linux.dev,
 	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [RFC PATCH 31/45] iommu/arm-smmu-v3: Move firmware probe to arm-smmu-v3-common
-Date: Wed,  1 Feb 2023 12:53:15 +0000
-Message-Id: <20230201125328.2186498-32-jean-philippe@linaro.org>
+Subject: [RFC PATCH 30/45] iommu/arm-smmu-v3: Move queue and table allocation to arm-smmu-v3-common.c
+Date: Wed,  1 Feb 2023 12:53:14 +0000
+Message-Id: <20230201125328.2186498-31-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230201125328.2186498-1-jean-philippe@linaro.org>
 References: <20230201125328.2186498-1-jean-philippe@linaro.org>
@@ -69,306 +69,499 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Move the FW probe functions to the common source, and take the
-opportunity to clean up the 'bypass' behaviour a bit (see dc87a98db751
-("iommu/arm-smmu: Fall back to global bypass"))
+Move more code to arm-smmu-v3-common.c, so that the KVM driver can reuse
+it.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |   4 +
- .../arm/arm-smmu-v3/arm-smmu-v3-common.c      | 107 ++++++++++++++++++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 106 +----------------
- 3 files changed, 114 insertions(+), 103 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |   8 +
+ .../arm/arm-smmu-v3/arm-smmu-v3-common.c      | 190 ++++++++++++++++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 215 ++----------------
+ 3 files changed, 219 insertions(+), 194 deletions(-)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 8ab84282f62a..345aac378712 100644
+index 59e8101d4ff5..8ab84282f62a 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -276,6 +276,10 @@ int arm_smmu_device_disable(struct arm_smmu_device *smmu);
- bool arm_smmu_capable(struct device *dev, enum iommu_cap cap);
+@@ -277,6 +277,14 @@ bool arm_smmu_capable(struct device *dev, enum iommu_cap cap);
  struct iommu_group *arm_smmu_device_group(struct device *dev);
  int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args);
-+
-+struct platform_device;
-+int arm_smmu_fw_probe(struct platform_device *pdev,
-+		      struct arm_smmu_device *smmu, bool *bypass);
  int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu);
- int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
- 			    struct arm_smmu_queue *q,
++int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
++			    struct arm_smmu_queue *q,
++			    void __iomem *page,
++			    unsigned long prod_off,
++			    unsigned long cons_off,
++			    size_t dwords, const char *name);
++int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid);
++int arm_smmu_init_strtab(struct arm_smmu_device *smmu);
+ 
+ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
+ 			    struct arm_smmu_ctx_desc *cd);
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common.c
-index 9226971b6e53..4e945df5d64f 100644
+index 5e43329c0826..9226971b6e53 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common.c
-@@ -1,10 +1,117 @@
- // SPDX-License-Identifier: GPL-2.0
-+#include <linux/acpi.h>
- #include <linux/dma-mapping.h>
- #include <linux/iopoll.h>
-+#include <linux/of.h>
-+#include <linux/of_address.h>
-+#include <linux/of_platform.h>
- #include <linux/pci.h>
- 
- #include "arm-smmu-v3.h"
- 
-+struct arm_smmu_option_prop {
-+	u32 opt;
-+	const char *prop;
-+};
+@@ -294,3 +294,193 @@ int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
+ {
+ 	return iommu_fwspec_add_ids(dev, args->args, 1);
+ }
 +
-+static struct arm_smmu_option_prop arm_smmu_options[] = {
-+	{ ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
-+	{ ARM_SMMU_OPT_PAGE0_REGS_ONLY, "cavium,cn9900-broken-page1-regspace"},
-+	{ 0, NULL},
-+};
-+
-+static void parse_driver_options(struct arm_smmu_device *smmu)
++int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
++			    struct arm_smmu_queue *q,
++			    void __iomem *page,
++			    unsigned long prod_off,
++			    unsigned long cons_off,
++			    size_t dwords, const char *name)
 +{
-+	int i = 0;
++	size_t qsz;
 +
 +	do {
-+		if (of_property_read_bool(smmu->dev->of_node,
-+						arm_smmu_options[i].prop)) {
-+			smmu->options |= arm_smmu_options[i].opt;
-+			dev_notice(smmu->dev, "option %s\n",
-+				arm_smmu_options[i].prop);
-+		}
-+	} while (arm_smmu_options[++i].opt);
-+}
++		qsz = ((1 << q->llq.max_n_shift) * dwords) << 3;
++		q->base = dmam_alloc_coherent(smmu->dev, qsz, &q->base_dma,
++					      GFP_KERNEL);
++		if (q->base || qsz < PAGE_SIZE)
++			break;
 +
-+static int arm_smmu_device_dt_probe(struct platform_device *pdev,
-+				    struct arm_smmu_device *smmu,
-+				    bool *bypass)
-+{
-+	struct device *dev = &pdev->dev;
-+	u32 cells;
++		q->llq.max_n_shift--;
++	} while (1);
 +
-+	*bypass = true;
-+	if (of_property_read_u32(dev->of_node, "#iommu-cells", &cells))
-+		dev_err(dev, "missing #iommu-cells property\n");
-+	else if (cells != 1)
-+		dev_err(dev, "invalid #iommu-cells value (%d)\n", cells);
-+	else
-+		*bypass = false;
-+
-+	parse_driver_options(smmu);
-+
-+	if (of_dma_is_coherent(dev->of_node))
-+		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
-+
-+	return 0;
-+}
-+
-+#ifdef CONFIG_ACPI
-+static void acpi_smmu_get_options(u32 model, struct arm_smmu_device *smmu)
-+{
-+	switch (model) {
-+	case ACPI_IORT_SMMU_V3_CAVIUM_CN99XX:
-+		smmu->options |= ARM_SMMU_OPT_PAGE0_REGS_ONLY;
-+		break;
-+	case ACPI_IORT_SMMU_V3_HISILICON_HI161X:
-+		smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
-+		break;
++	if (!q->base) {
++		dev_err(smmu->dev,
++			"failed to allocate queue (0x%zx bytes) for %s\n",
++			qsz, name);
++		return -ENOMEM;
 +	}
 +
-+	dev_notice(smmu->dev, "option mask 0x%x\n", smmu->options);
-+}
++	if (!WARN_ON(q->base_dma & (qsz - 1))) {
++		dev_info(smmu->dev, "allocated %u entries for %s\n",
++			 1 << q->llq.max_n_shift, name);
++	}
 +
-+static int arm_smmu_device_acpi_probe(struct platform_device *pdev,
-+				      struct arm_smmu_device *smmu,
-+				      bool *bypass)
-+{
-+	struct acpi_iort_smmu_v3 *iort_smmu;
-+	struct device *dev = smmu->dev;
-+	struct acpi_iort_node *node;
++	q->prod_reg	= page + prod_off;
++	q->cons_reg	= page + cons_off;
++	q->ent_dwords	= dwords;
 +
-+	node = *(struct acpi_iort_node **)dev_get_platdata(dev);
++	q->q_base  = Q_BASE_RWA;
++	q->q_base |= q->base_dma & Q_BASE_ADDR_MASK;
++	q->q_base |= FIELD_PREP(Q_BASE_LOG2SIZE, q->llq.max_n_shift);
 +
-+	/* Retrieve SMMUv3 specific data */
-+	iort_smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
-+
-+	acpi_smmu_get_options(iort_smmu->model, smmu);
-+
-+	if (iort_smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE)
-+		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
-+
-+	*bypass = false;
++	q->llq.prod = q->llq.cons = 0;
 +	return 0;
 +}
 +
-+#else
-+static inline int arm_smmu_device_acpi_probe(struct platform_device *pdev,
-+					     struct arm_smmu_device *smmu,
-+					     bool *bypass)
++/* Stream table initialization functions */
++static void
++arm_smmu_write_strtab_l1_desc(__le64 *dst, struct arm_smmu_strtab_l1_desc *desc)
 +{
-+	return -ENODEV;
-+}
-+#endif
++	u64 val = 0;
 +
-+int arm_smmu_fw_probe(struct platform_device *pdev,
-+		      struct arm_smmu_device *smmu, bool *bypass)
++	val |= FIELD_PREP(STRTAB_L1_DESC_SPAN, desc->span);
++	val |= desc->l2ptr_dma & STRTAB_L1_DESC_L2PTR_MASK;
++
++	/* Ensure the SMMU sees a zeroed table after reading this pointer */
++	WRITE_ONCE(*dst, cpu_to_le64(val));
++}
++
++int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
 +{
-+	if (smmu->dev->of_node)
-+		return arm_smmu_device_dt_probe(pdev, smmu, bypass);
++	size_t size;
++	void *strtab;
++	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
++	struct arm_smmu_strtab_l1_desc *desc = &cfg->l1_desc[sid >> STRTAB_SPLIT];
++
++	if (desc->l2ptr)
++		return 0;
++
++	size = 1 << (STRTAB_SPLIT + ilog2(STRTAB_STE_DWORDS) + 3);
++	strtab = &cfg->strtab[(sid >> STRTAB_SPLIT) * STRTAB_L1_DESC_DWORDS];
++
++	desc->span = STRTAB_SPLIT + 1;
++	desc->l2ptr = dmam_alloc_coherent(smmu->dev, size, &desc->l2ptr_dma,
++					  GFP_KERNEL);
++	if (!desc->l2ptr) {
++		dev_err(smmu->dev,
++			"failed to allocate l2 stream table for SID %u\n",
++			sid);
++		return -ENOMEM;
++	}
++
++	arm_smmu_write_strtab_l1_desc(strtab, desc);
++	return 0;
++}
++
++static int arm_smmu_init_l1_strtab(struct arm_smmu_device *smmu)
++{
++	unsigned int i;
++	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
++	void *strtab = smmu->strtab_cfg.strtab;
++
++	cfg->l1_desc = devm_kcalloc(smmu->dev, cfg->num_l1_ents,
++				    sizeof(*cfg->l1_desc), GFP_KERNEL);
++	if (!cfg->l1_desc)
++		return -ENOMEM;
++
++	for (i = 0; i < cfg->num_l1_ents; ++i) {
++		arm_smmu_write_strtab_l1_desc(strtab, &cfg->l1_desc[i]);
++		strtab += STRTAB_L1_DESC_DWORDS << 3;
++	}
++
++	return 0;
++}
++
++static int arm_smmu_init_strtab_2lvl(struct arm_smmu_device *smmu)
++{
++	void *strtab;
++	u64 reg;
++	u32 size, l1size;
++	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
++
++	/* Calculate the L1 size, capped to the SIDSIZE. */
++	size = STRTAB_L1_SZ_SHIFT - (ilog2(STRTAB_L1_DESC_DWORDS) + 3);
++	size = min(size, smmu->sid_bits - STRTAB_SPLIT);
++	cfg->num_l1_ents = 1 << size;
++
++	size += STRTAB_SPLIT;
++	if (size < smmu->sid_bits)
++		dev_warn(smmu->dev,
++			 "2-level strtab only covers %u/%u bits of SID\n",
++			 size, smmu->sid_bits);
++
++	l1size = cfg->num_l1_ents * (STRTAB_L1_DESC_DWORDS << 3);
++	strtab = dmam_alloc_coherent(smmu->dev, l1size, &cfg->strtab_dma,
++				     GFP_KERNEL);
++	if (!strtab) {
++		dev_err(smmu->dev,
++			"failed to allocate l1 stream table (%u bytes)\n",
++			l1size);
++		return -ENOMEM;
++	}
++	cfg->strtab = strtab;
++
++	/* Configure strtab_base_cfg for 2 levels */
++	reg  = FIELD_PREP(STRTAB_BASE_CFG_FMT, STRTAB_BASE_CFG_FMT_2LVL);
++	reg |= FIELD_PREP(STRTAB_BASE_CFG_LOG2SIZE, size);
++	reg |= FIELD_PREP(STRTAB_BASE_CFG_SPLIT, STRTAB_SPLIT);
++	cfg->strtab_base_cfg = reg;
++
++	return arm_smmu_init_l1_strtab(smmu);
++}
++
++static int arm_smmu_init_strtab_linear(struct arm_smmu_device *smmu)
++{
++	void *strtab;
++	u64 reg;
++	u32 size;
++	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
++
++	size = (1 << smmu->sid_bits) * (STRTAB_STE_DWORDS << 3);
++	strtab = dmam_alloc_coherent(smmu->dev, size, &cfg->strtab_dma,
++				     GFP_KERNEL);
++	if (!strtab) {
++		dev_err(smmu->dev,
++			"failed to allocate linear stream table (%u bytes)\n",
++			size);
++		return -ENOMEM;
++	}
++	cfg->strtab = strtab;
++	cfg->num_l1_ents = 1 << smmu->sid_bits;
++
++	/* Configure strtab_base_cfg for a linear table covering all SIDs */
++	reg  = FIELD_PREP(STRTAB_BASE_CFG_FMT, STRTAB_BASE_CFG_FMT_LINEAR);
++	reg |= FIELD_PREP(STRTAB_BASE_CFG_LOG2SIZE, smmu->sid_bits);
++	cfg->strtab_base_cfg = reg;
++
++	return 0;
++}
++
++int arm_smmu_init_strtab(struct arm_smmu_device *smmu)
++{
++	u64 reg;
++	int ret;
++
++	if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB)
++		ret = arm_smmu_init_strtab_2lvl(smmu);
 +	else
-+		return arm_smmu_device_acpi_probe(pdev, smmu, bypass);
-+}
++		ret = arm_smmu_init_strtab_linear(smmu);
 +
- int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- {
- 	u32 reg;
++	if (ret)
++		return ret;
++
++	/* Set the strtab base address */
++	reg  = smmu->strtab_cfg.strtab_dma & STRTAB_BASE_ADDR_MASK;
++	reg |= STRTAB_BASE_RA;
++	smmu->strtab_cfg.strtab_base = reg;
++
++	/* Allocate the first VMID for stage-2 bypass STEs */
++	set_bit(0, smmu->vmid_map);
++	return 0;
++}
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 2baaf064a324..7cb171304953 100644
+index 08fd79f66d29..2baaf064a324 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -9,7 +9,6 @@
-  * This driver is powered by bad coffee and bombay mix.
-  */
- 
--#include <linux/acpi.h>
- #include <linux/acpi_iort.h>
- #include <linux/bitops.h>
- #include <linux/crash_dump.h>
-@@ -19,9 +18,6 @@
- #include <linux/io-pgtable.h>
- #include <linux/module.h>
- #include <linux/msi.h>
--#include <linux/of.h>
--#include <linux/of_address.h>
--#include <linux/of_platform.h>
- #include <linux/pci-ats.h>
- #include <linux/platform_device.h>
- 
-@@ -64,11 +60,6 @@ static phys_addr_t arm_smmu_msi_cfg[ARM_SMMU_MAX_MSIS][3] = {
- 	},
- };
- 
--struct arm_smmu_option_prop {
--	u32 opt;
--	const char *prop;
--};
--
- DEFINE_XARRAY_ALLOC1(arm_smmu_asid_xa);
- DEFINE_MUTEX(arm_smmu_asid_lock);
- 
-@@ -78,26 +69,6 @@ DEFINE_MUTEX(arm_smmu_asid_lock);
-  */
- struct arm_smmu_ctx_desc quiet_cd = { 0 };
- 
--static struct arm_smmu_option_prop arm_smmu_options[] = {
--	{ ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
--	{ ARM_SMMU_OPT_PAGE0_REGS_ONLY, "cavium,cn9900-broken-page1-regspace"},
--	{ 0, NULL},
--};
--
--static void parse_driver_options(struct arm_smmu_device *smmu)
--{
--	int i = 0;
--
--	do {
--		if (of_property_read_bool(smmu->dev->of_node,
--						arm_smmu_options[i].prop)) {
--			smmu->options |= arm_smmu_options[i].opt;
--			dev_notice(smmu->dev, "option %s\n",
--				arm_smmu_options[i].prop);
--		}
--	} while (arm_smmu_options[++i].opt);
--}
--
- /* Low-level queue manipulation functions */
- static bool queue_has_space(struct arm_smmu_ll_queue *q, u32 n)
- {
-@@ -3147,70 +3118,6 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
- 	return 0;
+@@ -1209,18 +1209,6 @@ bool arm_smmu_free_asid(struct arm_smmu_ctx_desc *cd)
  }
  
--#ifdef CONFIG_ACPI
--static void acpi_smmu_get_options(u32 model, struct arm_smmu_device *smmu)
+ /* Stream table manipulation functions */
+-static void
+-arm_smmu_write_strtab_l1_desc(__le64 *dst, struct arm_smmu_strtab_l1_desc *desc)
 -{
--	switch (model) {
--	case ACPI_IORT_SMMU_V3_CAVIUM_CN99XX:
--		smmu->options |= ARM_SMMU_OPT_PAGE0_REGS_ONLY;
--		break;
--	case ACPI_IORT_SMMU_V3_HISILICON_HI161X:
--		smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
--		break;
--	}
+-	u64 val = 0;
 -
--	dev_notice(smmu->dev, "option mask 0x%x\n", smmu->options);
+-	val |= FIELD_PREP(STRTAB_L1_DESC_SPAN, desc->span);
+-	val |= desc->l2ptr_dma & STRTAB_L1_DESC_L2PTR_MASK;
+-
+-	/* See comment in arm_smmu_write_ctx_desc() */
+-	WRITE_ONCE(*dst, cpu_to_le64(val));
 -}
 -
--static int arm_smmu_device_acpi_probe(struct platform_device *pdev,
--				      struct arm_smmu_device *smmu)
+ static void arm_smmu_sync_ste_for_sid(struct arm_smmu_device *smmu, u32 sid)
+ {
+ 	struct arm_smmu_cmdq_ent cmd = {
+@@ -1395,34 +1383,6 @@ static void arm_smmu_init_bypass_stes(__le64 *strtab, unsigned int nent, bool fo
+ 	}
+ }
+ 
+-static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
 -{
--	struct acpi_iort_smmu_v3 *iort_smmu;
--	struct device *dev = smmu->dev;
--	struct acpi_iort_node *node;
+-	size_t size;
+-	void *strtab;
+-	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
+-	struct arm_smmu_strtab_l1_desc *desc = &cfg->l1_desc[sid >> STRTAB_SPLIT];
 -
--	node = *(struct acpi_iort_node **)dev_get_platdata(dev);
+-	if (desc->l2ptr)
+-		return 0;
 -
--	/* Retrieve SMMUv3 specific data */
--	iort_smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
+-	size = 1 << (STRTAB_SPLIT + ilog2(STRTAB_STE_DWORDS) + 3);
+-	strtab = &cfg->strtab[(sid >> STRTAB_SPLIT) * STRTAB_L1_DESC_DWORDS];
 -
--	acpi_smmu_get_options(iort_smmu->model, smmu);
+-	desc->span = STRTAB_SPLIT + 1;
+-	desc->l2ptr = dmam_alloc_coherent(smmu->dev, size, &desc->l2ptr_dma,
+-					  GFP_KERNEL);
+-	if (!desc->l2ptr) {
+-		dev_err(smmu->dev,
+-			"failed to allocate l2 stream table for SID %u\n",
+-			sid);
+-		return -ENOMEM;
+-	}
 -
--	if (iort_smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE)
--		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
+-	arm_smmu_init_bypass_stes(desc->l2ptr, 1 << STRTAB_SPLIT, false);
+-	arm_smmu_write_strtab_l1_desc(strtab, desc);
+-	return 0;
+-}
+-
+ static struct arm_smmu_master *
+ arm_smmu_find_master(struct arm_smmu_device *smmu, u32 sid)
+ {
+@@ -2515,13 +2475,24 @@ static bool arm_smmu_sid_in_range(struct arm_smmu_device *smmu, u32 sid)
+ 
+ static int arm_smmu_init_sid_strtab(struct arm_smmu_device *smmu, u32 sid)
+ {
++	int ret;
++
+ 	/* Check the SIDs are in range of the SMMU and our stream table */
+ 	if (!arm_smmu_sid_in_range(smmu, sid))
+ 		return -ERANGE;
+ 
+ 	/* Ensure l2 strtab is initialised */
+-	if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB)
+-		return arm_smmu_init_l2_strtab(smmu, sid);
++	if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB) {
++		struct arm_smmu_strtab_l1_desc *desc;
++
++		ret = arm_smmu_init_l2_strtab(smmu, sid);
++		if (ret)
++			return ret;
++
++		desc = &smmu->strtab_cfg.l1_desc[sid >> STRTAB_SPLIT];
++		arm_smmu_init_bypass_stes(desc->l2ptr, 1 << STRTAB_SPLIT,
++					  false);
++	}
+ 
+ 	return 0;
+ }
+@@ -2821,49 +2792,6 @@ static struct iommu_ops arm_smmu_ops = {
+ };
+ 
+ /* Probing and initialisation functions */
+-static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
+-				   struct arm_smmu_queue *q,
+-				   void __iomem *page,
+-				   unsigned long prod_off,
+-				   unsigned long cons_off,
+-				   size_t dwords, const char *name)
+-{
+-	size_t qsz;
+-
+-	do {
+-		qsz = ((1 << q->llq.max_n_shift) * dwords) << 3;
+-		q->base = dmam_alloc_coherent(smmu->dev, qsz, &q->base_dma,
+-					      GFP_KERNEL);
+-		if (q->base || qsz < PAGE_SIZE)
+-			break;
+-
+-		q->llq.max_n_shift--;
+-	} while (1);
+-
+-	if (!q->base) {
+-		dev_err(smmu->dev,
+-			"failed to allocate queue (0x%zx bytes) for %s\n",
+-			qsz, name);
+-		return -ENOMEM;
+-	}
+-
+-	if (!WARN_ON(q->base_dma & (qsz - 1))) {
+-		dev_info(smmu->dev, "allocated %u entries for %s\n",
+-			 1 << q->llq.max_n_shift, name);
+-	}
+-
+-	q->prod_reg	= page + prod_off;
+-	q->cons_reg	= page + cons_off;
+-	q->ent_dwords	= dwords;
+-
+-	q->q_base  = Q_BASE_RWA;
+-	q->q_base |= q->base_dma & Q_BASE_ADDR_MASK;
+-	q->q_base |= FIELD_PREP(Q_BASE_LOG2SIZE, q->llq.max_n_shift);
+-
+-	q->llq.prod = q->llq.cons = 0;
+-	return 0;
+-}
+-
+ static int arm_smmu_cmdq_init(struct arm_smmu_device *smmu)
+ {
+ 	struct arm_smmu_cmdq *cmdq = &smmu->cmdq;
+@@ -2918,114 +2846,6 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
+ 				       PRIQ_ENT_DWORDS, "priq");
+ }
+ 
+-static int arm_smmu_init_l1_strtab(struct arm_smmu_device *smmu)
+-{
+-	unsigned int i;
+-	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
+-	void *strtab = smmu->strtab_cfg.strtab;
+-
+-	cfg->l1_desc = devm_kcalloc(smmu->dev, cfg->num_l1_ents,
+-				    sizeof(*cfg->l1_desc), GFP_KERNEL);
+-	if (!cfg->l1_desc)
+-		return -ENOMEM;
+-
+-	for (i = 0; i < cfg->num_l1_ents; ++i) {
+-		arm_smmu_write_strtab_l1_desc(strtab, &cfg->l1_desc[i]);
+-		strtab += STRTAB_L1_DESC_DWORDS << 3;
+-	}
 -
 -	return 0;
 -}
--#else
--static inline int arm_smmu_device_acpi_probe(struct platform_device *pdev,
--					     struct arm_smmu_device *smmu)
+-
+-static int arm_smmu_init_strtab_2lvl(struct arm_smmu_device *smmu)
 -{
--	return -ENODEV;
--}
--#endif
+-	void *strtab;
+-	u64 reg;
+-	u32 size, l1size;
+-	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
 -
--static int arm_smmu_device_dt_probe(struct platform_device *pdev,
--				    struct arm_smmu_device *smmu)
--{
--	struct device *dev = &pdev->dev;
--	u32 cells;
--	int ret = -EINVAL;
+-	/* Calculate the L1 size, capped to the SIDSIZE. */
+-	size = STRTAB_L1_SZ_SHIFT - (ilog2(STRTAB_L1_DESC_DWORDS) + 3);
+-	size = min(size, smmu->sid_bits - STRTAB_SPLIT);
+-	cfg->num_l1_ents = 1 << size;
 -
--	if (of_property_read_u32(dev->of_node, "#iommu-cells", &cells))
--		dev_err(dev, "missing #iommu-cells property\n");
--	else if (cells != 1)
--		dev_err(dev, "invalid #iommu-cells value (%d)\n", cells);
--	else
--		ret = 0;
+-	size += STRTAB_SPLIT;
+-	if (size < smmu->sid_bits)
+-		dev_warn(smmu->dev,
+-			 "2-level strtab only covers %u/%u bits of SID\n",
+-			 size, smmu->sid_bits);
 -
--	parse_driver_options(smmu);
--
--	if (of_dma_is_coherent(dev->of_node))
--		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
--
--	return ret;
--}
--
- static unsigned long arm_smmu_resource_size(struct arm_smmu_device *smmu)
- {
- 	if (smmu->options & ARM_SMMU_OPT_PAGE0_REGS_ONLY)
-@@ -3271,16 +3178,9 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 	smmu->dev = dev;
- 
--	if (dev->of_node) {
--		ret = arm_smmu_device_dt_probe(pdev, smmu);
--	} else {
--		ret = arm_smmu_device_acpi_probe(pdev, smmu);
--		if (ret == -ENODEV)
--			return ret;
+-	l1size = cfg->num_l1_ents * (STRTAB_L1_DESC_DWORDS << 3);
+-	strtab = dmam_alloc_coherent(smmu->dev, l1size, &cfg->strtab_dma,
+-				     GFP_KERNEL);
+-	if (!strtab) {
+-		dev_err(smmu->dev,
+-			"failed to allocate l1 stream table (%u bytes)\n",
+-			l1size);
+-		return -ENOMEM;
 -	}
+-	cfg->strtab = strtab;
 -
--	/* Set bypass mode according to firmware probing result */
--	bypass = !!ret;
-+	ret = arm_smmu_fw_probe(pdev, smmu, &bypass);
+-	/* Configure strtab_base_cfg for 2 levels */
+-	reg  = FIELD_PREP(STRTAB_BASE_CFG_FMT, STRTAB_BASE_CFG_FMT_2LVL);
+-	reg |= FIELD_PREP(STRTAB_BASE_CFG_LOG2SIZE, size);
+-	reg |= FIELD_PREP(STRTAB_BASE_CFG_SPLIT, STRTAB_SPLIT);
+-	cfg->strtab_base_cfg = reg;
+-
+-	return arm_smmu_init_l1_strtab(smmu);
+-}
+-
+-static int arm_smmu_init_strtab_linear(struct arm_smmu_device *smmu)
+-{
+-	void *strtab;
+-	u64 reg;
+-	u32 size;
+-	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
+-
+-	size = (1 << smmu->sid_bits) * (STRTAB_STE_DWORDS << 3);
+-	strtab = dmam_alloc_coherent(smmu->dev, size, &cfg->strtab_dma,
+-				     GFP_KERNEL);
+-	if (!strtab) {
+-		dev_err(smmu->dev,
+-			"failed to allocate linear stream table (%u bytes)\n",
+-			size);
+-		return -ENOMEM;
+-	}
+-	cfg->strtab = strtab;
+-	cfg->num_l1_ents = 1 << smmu->sid_bits;
+-
+-	/* Configure strtab_base_cfg for a linear table covering all SIDs */
+-	reg  = FIELD_PREP(STRTAB_BASE_CFG_FMT, STRTAB_BASE_CFG_FMT_LINEAR);
+-	reg |= FIELD_PREP(STRTAB_BASE_CFG_LOG2SIZE, smmu->sid_bits);
+-	cfg->strtab_base_cfg = reg;
+-
+-	arm_smmu_init_bypass_stes(strtab, cfg->num_l1_ents, false);
+-	return 0;
+-}
+-
+-static int arm_smmu_init_strtab(struct arm_smmu_device *smmu)
+-{
+-	u64 reg;
+-	int ret;
+-
+-	if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB)
+-		ret = arm_smmu_init_strtab_2lvl(smmu);
+-	else
+-		ret = arm_smmu_init_strtab_linear(smmu);
+-
+-	if (ret)
+-		return ret;
+-
+-	/* Set the strtab base address */
+-	reg  = smmu->strtab_cfg.strtab_dma & STRTAB_BASE_ADDR_MASK;
+-	reg |= STRTAB_BASE_RA;
+-	smmu->strtab_cfg.strtab_base = reg;
+-
+-	/* Allocate the first VMID for stage-2 bypass STEs */
+-	set_bit(0, smmu->vmid_map);
+-	return 0;
+-}
+-
+ static int arm_smmu_init_structures(struct arm_smmu_device *smmu)
+ {
+ 	int ret;
+@@ -3037,7 +2857,14 @@ static int arm_smmu_init_structures(struct arm_smmu_device *smmu)
+ 	if (ret)
+ 		return ret;
+ 
+-	return arm_smmu_init_strtab(smmu);
++	ret = arm_smmu_init_strtab(smmu);
 +	if (ret)
 +		return ret;
++
++	if (!(smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB))
++		arm_smmu_init_bypass_stes(smmu->strtab_cfg.strtab,
++					  smmu->strtab_cfg.num_l1_ents, false);
++	return 0;
+ }
  
- 	/* Base address */
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ static void arm_smmu_free_msis(void *data)
 -- 
 2.39.0
 
