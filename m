@@ -1,43 +1,43 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBE392F44
-	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 12:59:32 +0000 (UTC)
-Received: by mail-wr1-f42.google.com with SMTP id a3so10534027wrt.6
-        for <iommu@lists.linux.dev>; Wed, 01 Feb 2023 04:59:32 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2457333D0
+	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 12:59:34 +0000 (UTC)
+Received: by mail-wr1-f48.google.com with SMTP id y1so17249010wru.2
+        for <iommu@lists.linux.dev>; Wed, 01 Feb 2023 04:59:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=lU6O9CZcUVv8hYcDQ334N0zwZYT/omiCvAafRyvmTzE=;
-        b=m/voFpeGQsUt+6NrWmVb5fj87WGpfE8oDM/HYbxPMBaboItMuRhjxJpWOC0UMmot2U
-         HKiagg3IyUbb7RAY8EOvyDQ7kQrzP5VHWttvLSk3E6AM1J5Mbjt+FfakdBoywoJrkuev
-         whu4Zb/6+vc3sD6va7O/OM5TjGtMaKYW8uiJxQQHP+I89qPsMHvnujrHvYUkmc7Km9Cp
-         jw58YT7nvqAtjn66VOgsCgsENZyeq1kzuA17D18ZlCVWR6+hoVL1jC1uOJomzKkdLi5d
-         TaBeleGJimSEybsh7xkzdNXyAeURNnapi11HfA5nZfDPdACQAqJu3gyVjm+f0KNh4XaA
-         e1Fg==
+        bh=GNUt4LXC/vnI+uinFgyT66VRoqWna4CviemrNT21aBc=;
+        b=thk5T6OXjBQKQ8JCuo3/JBvaiAeliPJbKUA6Ev5LIvBWS09yiKK0shaiUVxTtsTeBt
+         c+XuSCQ1TP1IABgnoI6i3lGgX+giB2jgzc1THVgnusuLSQNNNt6bS+ImpDXuysQeJ11F
+         JLcR0da7d/4keUdWrMMV2L7qbinuKb59mEpdP3CKABCoa7skqfyKpnUaZECC+1fYWn+j
+         l070kGUPgEqRTrzSe+a7rh2sFc8U5Y5/WwbZmcxsKDn5r9s/zFcm47LcB05dNt10Vb1q
+         pEcW8SBeF5Bj3vtIw+Q+nhL7Z+MyrwOPXm6jZ+5aZvuVzUPsAqGjE1ZVojd5nV5B6WZX
+         GYGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=lU6O9CZcUVv8hYcDQ334N0zwZYT/omiCvAafRyvmTzE=;
-        b=yy+Ow9cuxT+S0IOR7H7xeiQpp04EDv4PsSWSEBX3bJhGletlSwzwm+034LW3Shw5+N
-         yeC5pboRoblsdvPiojdWaWpFG+lUFlCHzDtMu+5NXZ0wzf3E8QxBGwo5VDXaCia43g4R
-         NBf2DlLBJcD7+nH19tQvMRQDnedv9n94GAW71mD9NnTapKOPaSubO7I912jbx9hTiCce
-         hAw1OVbHFb7Kk238jt+VysujRlliz2ess5Qn8US75oJjM7mLdQ0+rmyUKcm/5r63qn0P
-         eErlO4CHgBb0W3JtJgWzA8GhoHNvkkcv57e3u1hfKnfNtUS7VYN+BeoEDF5RR/DcUzCY
-         Tt1g==
-X-Gm-Message-State: AO0yUKWo4QYbfV9tFw9e7plnawparznEsaD3jOu8GvoAWu8r5BGIphND
-	6MkLX/jRrRrM4mVr+8wbp0SXSQ==
-X-Google-Smtp-Source: AK7set8mqrMZj30mZqLkmp/Suy++GhfmsN1hQm9nbWbdJ8dYAZEUk6nRMACSn+IwYHRF/R++5hECXw==
-X-Received: by 2002:a05:6000:1285:b0:2bf:c58b:9cba with SMTP id f5-20020a056000128500b002bfc58b9cbamr2384179wrx.60.1675256371211;
-        Wed, 01 Feb 2023 04:59:31 -0800 (PST)
+        bh=GNUt4LXC/vnI+uinFgyT66VRoqWna4CviemrNT21aBc=;
+        b=gBZjdg5YF499+lGGq3wOl9/bUPJKRyuJdBn02bInM8LOMC0vwt6kiZHzmhoqxigYXC
+         OIix78zTspKm544weFEX11pWxiXZn0BN60FVv5bhyIfQoVcrtKewo2YACyg59q+w4JcB
+         C2+ARuTz1Pi+tGUXkU5k73whh978EPlDHl487PMYhY3GyOkYNEkbG/WNYcLBVIXfLzXW
+         1WRyDo9uNEOf9WeWcoMyWWIkqx39tuRhckYK1SRbzgYVjTTN1AR4xt8Yj6MogPqDEyK/
+         S2wUXpZVvW0hhhIyDoN6EMBSWkNueIl3PFI5bjUO3dlZIzQME5kNFv3zM5DR1H0iMiyK
+         XgPQ==
+X-Gm-Message-State: AO0yUKV6Lk+X3yn0bMcpxeIgTPgaeJmkpUrKTUIT5eaHX8wRg5th0e5L
+	gLomM+QN59zyyWuF9t3vvZ0YGg==
+X-Google-Smtp-Source: AK7set9dF9IqnNhJnBWjTtGsSxR/PrtlZWcMlOX8jMonsihAZRhFZWtS6tLGLt7ILypTZ2wjrtzJig==
+X-Received: by 2002:a05:6000:1889:b0:2bf:c5e4:1af4 with SMTP id a9-20020a056000188900b002bfc5e41af4mr2995748wri.15.1675256373642;
+        Wed, 01 Feb 2023 04:59:33 -0800 (PST)
 Received: from localhost.localdomain (054592b0.skybroadband.com. [5.69.146.176])
-        by smtp.gmail.com with ESMTPSA id m15-20020a056000024f00b002bfae16ee2fsm17972811wrz.111.2023.02.01.04.59.30
+        by smtp.gmail.com with ESMTPSA id m15-20020a056000024f00b002bfae16ee2fsm17972811wrz.111.2023.02.01.04.59.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Feb 2023 04:59:30 -0800 (PST)
+        Wed, 01 Feb 2023 04:59:33 -0800 (PST)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: maz@kernel.org,
 	catalin.marinas@arm.com,
@@ -55,9 +55,9 @@ Cc: robin.murphy@arm.com,
 	kvmarm@lists.linux.dev,
 	iommu@lists.linux.dev,
 	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [RFC PATCH 15/45] KVM: arm64: pkvm: Add __pkvm_host_share/unshare_dma()
-Date: Wed,  1 Feb 2023 12:52:59 +0000
-Message-Id: <20230201125328.2186498-16-jean-philippe@linaro.org>
+Subject: [RFC PATCH 18/45] KVM: arm64: iommu: Add per-cpu page queue
+Date: Wed,  1 Feb 2023 12:53:02 +0000
+Message-Id: <20230201125328.2186498-19-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230201125328.2186498-1-jean-philippe@linaro.org>
 References: <20230201125328.2186498-1-jean-philippe@linaro.org>
@@ -69,262 +69,135 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Host pages mapped in the SMMU must not be donated to the guest or
-hypervisor, since the host could then use DMA to break confidentiality.
-Mark them shared in the host stage-2 page tables, and keep a refcount in
-the hyp vmemmap.
+The hyp driver will need to allocate pages when handling some
+hypercalls, to populate page, stream and domain tables. Add a per-cpu
+page queue that will contain host pages to be donated and reclaimed.
+When the driver needs a new page, it sets the needs_page bit and returns
+to the host with an error. The host pushes a page and retries the
+hypercall.
+
+The queue is per-cpu to ensure that IOMMU map()/unmap() requests from
+different CPUs don't step on each others. It is populated on demand
+rather than upfront to avoid wasting memory, as these allocations should
+be relatively rare.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- arch/arm64/kvm/hyp/include/nvhe/mem_protect.h |   3 +
- arch/arm64/kvm/hyp/nvhe/mem_protect.c         | 185 ++++++++++++++++++
- 2 files changed, 188 insertions(+)
+ arch/arm64/kvm/hyp/nvhe/Makefile        |  2 +
+ arch/arm64/kvm/hyp/include/nvhe/iommu.h |  4 ++
+ include/kvm/iommu.h                     | 15 +++++++
+ arch/arm64/kvm/hyp/nvhe/iommu/iommu.c   | 52 +++++++++++++++++++++++++
+ 4 files changed, 73 insertions(+)
+ create mode 100644 include/kvm/iommu.h
+ create mode 100644 arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
 
-diff --git a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
-index 021825aee854..a363d58a998b 100644
---- a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
-+++ b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
-@@ -58,6 +58,7 @@ enum pkvm_component_id {
- 	PKVM_ID_HOST,
- 	PKVM_ID_HYP,
- 	PKVM_ID_GUEST,
-+	PKVM_ID_IOMMU,
- };
+diff --git a/arch/arm64/kvm/hyp/nvhe/Makefile b/arch/arm64/kvm/hyp/nvhe/Makefile
+index 530347cdebe3..f7dfc88c9f5b 100644
+--- a/arch/arm64/kvm/hyp/nvhe/Makefile
++++ b/arch/arm64/kvm/hyp/nvhe/Makefile
+@@ -28,6 +28,8 @@ hyp-obj-y += ../vgic-v3-sr.o ../aarch32.o ../vgic-v2-cpuif-proxy.o ../entry.o \
+ hyp-obj-$(CONFIG_DEBUG_LIST) += list_debug.o
+ hyp-obj-y += $(lib-objs)
  
- extern unsigned long hyp_nr_cpus;
-@@ -72,6 +73,8 @@ int __pkvm_host_share_guest(u64 pfn, u64 gfn, struct pkvm_hyp_vcpu *vcpu);
- int __pkvm_host_donate_guest(u64 pfn, u64 gfn, struct pkvm_hyp_vcpu *vcpu);
- int __pkvm_guest_share_host(struct pkvm_hyp_vcpu *hyp_vcpu, u64 ipa);
- int __pkvm_guest_unshare_host(struct pkvm_hyp_vcpu *hyp_vcpu, u64 ipa);
-+int __pkvm_host_share_dma(u64 phys_addr, size_t size, bool is_ram);
-+int __pkvm_host_unshare_dma(u64 phys_addr, size_t size);
++hyp-obj-$(CONFIG_KVM_IOMMU) += iommu/iommu.o
++
+ ##
+ ## Build rules for compiling nVHE hyp code
+ ## Output of this folder is `kvm_nvhe.o`, a partially linked object
+diff --git a/arch/arm64/kvm/hyp/include/nvhe/iommu.h b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
+index 26a95717b613..4959c30977b8 100644
+--- a/arch/arm64/kvm/hyp/include/nvhe/iommu.h
++++ b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
+@@ -3,6 +3,10 @@
+ #define __ARM64_KVM_NVHE_IOMMU_H__
  
- bool addr_is_memory(phys_addr_t phys);
- int host_stage2_idmap_locked(phys_addr_t addr, u64 size, enum kvm_pgtable_prot prot);
-diff --git a/arch/arm64/kvm/hyp/nvhe/mem_protect.c b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
-index 856673291d70..dcf08ce03790 100644
---- a/arch/arm64/kvm/hyp/nvhe/mem_protect.c
-+++ b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
-@@ -1148,6 +1148,9 @@ static int check_share(struct pkvm_mem_share *share)
- 	case PKVM_ID_GUEST:
- 		ret = guest_ack_share(completer_addr, tx, share->completer_prot);
- 		break;
-+	case PKVM_ID_IOMMU:
-+		ret = 0;
-+		break;
- 	default:
- 		ret = -EINVAL;
- 	}
-@@ -1185,6 +1188,9 @@ static int __do_share(struct pkvm_mem_share *share)
- 	case PKVM_ID_GUEST:
- 		ret = guest_complete_share(completer_addr, tx, share->completer_prot);
- 		break;
-+	case PKVM_ID_IOMMU:
-+		ret = 0;
-+		break;
- 	default:
- 		ret = -EINVAL;
- 	}
-@@ -1239,6 +1245,9 @@ static int check_unshare(struct pkvm_mem_share *share)
- 	case PKVM_ID_HYP:
- 		ret = hyp_ack_unshare(completer_addr, tx);
- 		break;
-+	case PKVM_ID_IOMMU:
-+		ret = 0;
-+		break;
- 	default:
- 		ret = -EINVAL;
- 	}
-@@ -1273,6 +1282,9 @@ static int __do_unshare(struct pkvm_mem_share *share)
- 	case PKVM_ID_HYP:
- 		ret = hyp_complete_unshare(completer_addr, tx);
- 		break;
-+	case PKVM_ID_IOMMU:
-+		ret = 0;
-+		break;
- 	default:
- 		ret = -EINVAL;
- 	}
-@@ -1633,6 +1645,179 @@ void hyp_unpin_shared_mem(void *from, void *to)
- 	host_unlock_component();
- }
- 
-+static int __host_check_page_dma_shared(phys_addr_t phys_addr)
-+{
-+	int ret;
-+	u64 hyp_addr;
+ #if IS_ENABLED(CONFIG_KVM_IOMMU)
++int kvm_iommu_init(void);
++void *kvm_iommu_donate_page(void);
++void kvm_iommu_reclaim_page(void *p);
 +
-+	/*
-+	 * The page is already refcounted. Make sure it's owned by the host, and
-+	 * not part of the hyp pool.
-+	 */
-+	ret = __host_check_page_state_range(phys_addr, PAGE_SIZE,
-+					    PKVM_PAGE_SHARED_OWNED);
-+	if (ret)
-+		return ret;
+ /* Hypercall handlers */
+ int kvm_iommu_alloc_domain(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
+ 			   unsigned long pgd_hva);
+diff --git a/include/kvm/iommu.h b/include/kvm/iommu.h
+new file mode 100644
+index 000000000000..12b06a5df889
+--- /dev/null
++++ b/include/kvm/iommu.h
+@@ -0,0 +1,15 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __KVM_IOMMU_H
++#define __KVM_IOMMU_H
 +
-+	/*
-+	 * Refcounted and owned by host, means it's either mapped in the
-+	 * SMMU, or it's some VM/VCPU state shared with the hypervisor.
-+	 * The host has no reason to use a page for both.
-+	 */
-+	hyp_addr = (u64)hyp_phys_to_virt(phys_addr);
-+	return __hyp_check_page_state_range(hyp_addr, PAGE_SIZE, PKVM_NOPAGE);
-+}
++#include <asm/kvm_host.h>
 +
-+static int __pkvm_host_share_dma_page(phys_addr_t phys_addr, bool is_ram)
-+{
-+	int ret;
-+	struct hyp_page *p = hyp_phys_to_page(phys_addr);
-+	struct pkvm_mem_share share = {
-+		.tx	= {
-+			.nr_pages	= 1,
-+			.initiator	= {
-+				.id	= PKVM_ID_HOST,
-+				.addr	= phys_addr,
-+			},
-+			.completer	= {
-+				.id	= PKVM_ID_IOMMU,
-+			},
-+		},
-+	};
++struct kvm_hyp_iommu_memcache {
++	struct kvm_hyp_memcache	pages;
++	bool needs_page;
++} ____cacheline_aligned_in_smp;
 +
-+	hyp_assert_lock_held(&host_mmu.lock);
-+	hyp_assert_lock_held(&pkvm_pgd_lock);
++extern struct kvm_hyp_iommu_memcache *kvm_nvhe_sym(kvm_hyp_iommu_memcaches);
++#define kvm_hyp_iommu_memcaches kvm_nvhe_sym(kvm_hyp_iommu_memcaches)
 +
-+	/*
-+	 * Some differences between handling of RAM and device memory:
-+	 * - The hyp vmemmap area for device memory is not backed by physical
-+	 *   pages in the hyp page tables.
-+	 * - Device memory is unmapped automatically under memory pressure
-+	 *   (host_stage2_try()) and the ownership information would be
-+	 *   discarded.
-+	 * We don't need to deal with that at the moment, because the host
-+	 * cannot share or donate device memory, only RAM.
-+	 *
-+	 * Since 'is_ram' is only a hint provided by the host, we do need to
-+	 * make sure of it.
-+	 */
-+	if (!is_ram)
-+		return addr_is_memory(phys_addr) ? -EINVAL : 0;
-+
-+	ret = hyp_page_ref_inc_return(p);
-+	BUG_ON(ret == 0);
-+	if (ret < 0)
-+		return ret;
-+	else if (ret == 1)
-+		ret = do_share(&share);
-+	else
-+		ret = __host_check_page_dma_shared(phys_addr);
-+
-+	if (ret)
-+		hyp_page_ref_dec(p);
-+
-+	return ret;
-+}
-+
-+static int __pkvm_host_unshare_dma_page(phys_addr_t phys_addr)
-+{
-+	struct hyp_page *p = hyp_phys_to_page(phys_addr);
-+	struct pkvm_mem_share share = {
-+		.tx	= {
-+			.nr_pages	= 1,
-+			.initiator	= {
-+				.id	= PKVM_ID_HOST,
-+				.addr	= phys_addr,
-+			},
-+			.completer	= {
-+				.id	= PKVM_ID_IOMMU,
-+			},
-+		},
-+	};
-+
-+	hyp_assert_lock_held(&host_mmu.lock);
-+	hyp_assert_lock_held(&pkvm_pgd_lock);
-+
-+	if (!addr_is_memory(phys_addr))
-+		return 0;
-+
-+	if (!hyp_page_ref_dec_and_test(p))
-+		return 0;
-+
-+	return do_unshare(&share);
-+}
-+
++#endif /* __KVM_IOMMU_H */
+diff --git a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
+new file mode 100644
+index 000000000000..1a9184fbbd27
+--- /dev/null
++++ b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
+@@ -0,0 +1,52 @@
++// SPDX-License-Identifier: GPL-2.0
 +/*
-+ * __pkvm_host_share_dma - Mark host memory as used for DMA
-+ * @phys_addr:	physical address of the DMA region
-+ * @size:	size of the DMA region
-+ * @is_ram:	whether it is RAM or device memory
++ * IOMMU operations for pKVM
 + *
-+ * We must not allow the host to donate pages that are mapped in the IOMMU for
-+ * DMA. So:
-+ * 1. Mark the host S2 entry as being owned by IOMMU
-+ * 2. Refcount it, since a page may be mapped in multiple device address spaces.
-+ *
-+ * At some point we may end up needing more than the current 16 bits for
-+ * refcounting, for example if all devices and sub-devices map the same MSI
-+ * doorbell page. It will do for now.
++ * Copyright (C) 2022 Linaro Ltd.
 + */
-+int __pkvm_host_share_dma(phys_addr_t phys_addr, size_t size, bool is_ram)
++
++#include <asm/kvm_hyp.h>
++#include <kvm/iommu.h>
++#include <nvhe/iommu.h>
++#include <nvhe/mem_protect.h>
++#include <nvhe/mm.h>
++
++struct kvm_hyp_iommu_memcache __ro_after_init *kvm_hyp_iommu_memcaches;
++
++void *kvm_iommu_donate_page(void)
 +{
-+	int i;
-+	int ret;
-+	size_t nr_pages = size >> PAGE_SHIFT;
++	void *p;
++	int cpu = hyp_smp_processor_id();
++	struct kvm_hyp_memcache tmp = kvm_hyp_iommu_memcaches[cpu].pages;
 +
-+	if (WARN_ON(!PAGE_ALIGNED(phys_addr | size)))
-+		return -EINVAL;
-+
-+	host_lock_component();
-+	hyp_lock_component();
-+
-+	for (i = 0; i < nr_pages; i++) {
-+		ret = __pkvm_host_share_dma_page(phys_addr + i * PAGE_SIZE,
-+						 is_ram);
-+		if (ret)
-+			break;
++	if (!tmp.nr_pages) {
++		kvm_hyp_iommu_memcaches[cpu].needs_page = true;
++		return NULL;
 +	}
 +
-+	if (ret) {
-+		for (--i; i >= 0; --i)
-+			__pkvm_host_unshare_dma_page(phys_addr + i * PAGE_SIZE);
-+	}
++	p = pkvm_admit_host_page(&tmp);
++	if (!p)
++		return NULL;
 +
-+	hyp_unlock_component();
-+	host_unlock_component();
-+
-+	return ret;
++	kvm_hyp_iommu_memcaches[cpu].pages = tmp;
++	memset(p, 0, PAGE_SIZE);
++	return p;
 +}
 +
-+int __pkvm_host_unshare_dma(phys_addr_t phys_addr, size_t size)
++void kvm_iommu_reclaim_page(void *p)
 +{
-+	int i;
-+	int ret;
-+	size_t nr_pages = size >> PAGE_SHIFT;
++	int cpu = hyp_smp_processor_id();
 +
-+	host_lock_component();
-+	hyp_lock_component();
-+
-+	/*
-+	 * We end up here after the caller successfully unmapped the page from
-+	 * the IOMMU table. Which means that a ref is held, the page is shared
-+	 * in the host s2, there can be no failure.
-+	 */
-+	for (i = 0; i < nr_pages; i++) {
-+		ret = __pkvm_host_unshare_dma_page(phys_addr + i * PAGE_SIZE);
-+		if (ret)
-+			break;
-+	}
-+
-+	hyp_unlock_component();
-+	host_unlock_component();
-+
-+	return ret;
++	pkvm_teardown_donated_memory(&kvm_hyp_iommu_memcaches[cpu].pages, p,
++				     PAGE_SIZE);
 +}
 +
- int __pkvm_host_share_guest(u64 pfn, u64 gfn, struct pkvm_hyp_vcpu *vcpu)
- {
- 	int ret;
++int kvm_iommu_init(void)
++{
++	enum kvm_pgtable_prot prot;
++
++	/* The memcache is shared with the host */
++	prot = pkvm_mkstate(PAGE_HYP, PKVM_PAGE_SHARED_OWNED);
++	return pkvm_create_mappings(kvm_hyp_iommu_memcaches,
++				    kvm_hyp_iommu_memcaches + NR_CPUS, prot);
++}
 -- 
 2.39.0
 
