@@ -1,43 +1,43 @@
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AAB42F32
-	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 12:59:23 +0000 (UTC)
-Received: by mail-wr1-f43.google.com with SMTP id d14so17221330wrr.9
-        for <iommu@lists.linux.dev>; Wed, 01 Feb 2023 04:59:22 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A69A2CA2
+	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 12:59:26 +0000 (UTC)
+Received: by mail-wr1-f49.google.com with SMTP id m7so17222252wru.8
+        for <iommu@lists.linux.dev>; Wed, 01 Feb 2023 04:59:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=eAC1lP6EVsxQ6cWZKQ+kd+wU7MPt1TmTk8/S67gp2M0=;
-        b=w4vJzCvawMc999TOnrJV0tQeBCtOsQRWvV57bojsKb9lEtYGP8IGDHzH0S2aPhAj/I
-         udFzlNkNn8lPVdxLZutwCEqnCwpLVXtl+K0pkZtHFmZGDdOKsUEg6VCCpkjitLIjrofB
-         Y7AJ9gaJF6cOP3ry9E+TBd84XkGGHDpJsG/9RLCwoCQXDjzwAkviNizOIUZ51vQfyYDV
-         SLJ0SPIXHHsjc++GMa5+6adQEbEISPWv4KYsYpRGyZePuV1tjsJQxgsUCIMd6vi+2/JK
-         ATFtIXFy9NNxBpWc5cgRBp2efiJfSQc88/62AnpEayqWkwUdi2HboEjp0Fo+9MIt0zW6
-         EhCw==
+        bh=mpqAxnbuSEle+b4ZozqvuRbtg84sOU2wLsHHXy60Xf4=;
+        b=H8N6t8azgmWBH886NvtNIa/88xftg/d47CN1lNWpwQY8g41X2dJULDBUt8RWJTJeSI
+         WThReSjvqRrR6PVFUKbeH+UFULZSwESdu2a/Lm9dDMa5lpETn4ZZ/+Opu68LiZmqq9sN
+         7P/93+ZxvEA2KO5Usrr4b/D33b6zAhssqHN/jocvhOTGBVp9C2dmRhMkotIsbkaCIu35
+         VlkRPDQbg9E1wdVnf/L6ySFyOuxkCqSpAFTCvU8t7w+YTqswvLQFx7+ljAE9t0xAPWKe
+         1n4xTnAPGdVNWDKH/odBfQ6RBeJ1YG99BQDMs9ceNFwJeIzOmly9KiYRBCORoZE+neG/
+         rcxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=eAC1lP6EVsxQ6cWZKQ+kd+wU7MPt1TmTk8/S67gp2M0=;
-        b=WtK7s6tzncqxaI+SqI+y+1b8fRmXaLwobTGXvjxhwOuoMEkpzsTeeolw0PEStjMRIg
-         /mOdFczf7QAE+Akvf1YEuihLULCU1RavN+cIAgfQnONrkl8JdpKgNqN844i4Bvd5iaSs
-         QHSclOf972rg9G1IQGpuYtverYxMGqdiQuoL4mxR1RYuqZC2z+/cK0KnURLuBhYLjM3s
-         xElH723h5+jB4msXEVRva/MY23/59kBgJilQC/MYEH6c6MeQ5m6cTItkuHyjBY0bF8Xo
-         TxMdQ7LeysnT9NuCRCeewd4PykxtgUjy1+Ef5LhwU/CifJWe30nyF1C+lxcXgOsct8ig
-         5Aow==
-X-Gm-Message-State: AO0yUKXDC/Vhh21nUMEcSBJhUOm6dNL5jFTu66r5QMV4+kzZqD6anTO8
-	5D0qDCB21+nmTQ/kU0FiPyhRdg==
-X-Google-Smtp-Source: AK7set8lcZHDDrM2/NwAgTEvSykoOX8z0G7efK9YIQNKtEjePM8qYTEccwXQhcVFZQ/ZP3uvTMGjvw==
-X-Received: by 2002:a05:6000:1449:b0:2bd:d34e:5355 with SMTP id v9-20020a056000144900b002bdd34e5355mr3116261wrx.20.1675256361465;
-        Wed, 01 Feb 2023 04:59:21 -0800 (PST)
+        bh=mpqAxnbuSEle+b4ZozqvuRbtg84sOU2wLsHHXy60Xf4=;
+        b=sXChnXMUYuu5W9wlSbMoMHVphGbqxC8SBHXDWCF3J89OPZqdEUHdDPuetHvdiksphm
+         VAZ2LgHRy12BzXjM44TQBbtr+8Ahu/1geZTnr5cLVKtUmxNzmPr2CURQSKYY2bk0NuIK
+         t8gFjz3eriX9kPclUZ6RDSS/q2X2ZmdUeivIWKoXVE20BsdaIMGe3EMG3MK9mcWPwqIz
+         vZ0fabj2q8h1JlCCLC4tDSNCQrbZCMjIDXC8OKlB+AHbohbyvw9ZJ7KHDXKi7PeWiZJf
+         VC6cLo2J3PH+8fhXB9lYNYqzQ5BIvFlr2K7pFYEvHfSuiajOh9+gC7f8o5QfYKIaVrR8
+         /GCQ==
+X-Gm-Message-State: AO0yUKUTHESQIRkaygJ5Am2NnalnufvqbiGxzFCYzA+yAoh53CvTeW4x
+	8JjMMd9ZesfJcUjGWxGIqGvDRg==
+X-Google-Smtp-Source: AK7set8PyrVNoe2MKjwL7WkMsO801xwUwupVDKmMI+GE07B0RcxtODTmVsZbmKSEFKICiI5L55zPfQ==
+X-Received: by 2002:adf:e181:0:b0:2bd:c4ea:3b59 with SMTP id az1-20020adfe181000000b002bdc4ea3b59mr2690988wrb.0.1675256365691;
+        Wed, 01 Feb 2023 04:59:25 -0800 (PST)
 Received: from localhost.localdomain (054592b0.skybroadband.com. [5.69.146.176])
-        by smtp.gmail.com with ESMTPSA id m15-20020a056000024f00b002bfae16ee2fsm17972811wrz.111.2023.02.01.04.59.20
+        by smtp.gmail.com with ESMTPSA id m15-20020a056000024f00b002bfae16ee2fsm17972811wrz.111.2023.02.01.04.59.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Feb 2023 04:59:21 -0800 (PST)
+        Wed, 01 Feb 2023 04:59:25 -0800 (PST)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: maz@kernel.org,
 	catalin.marinas@arm.com,
@@ -55,9 +55,9 @@ Cc: robin.murphy@arm.com,
 	kvmarm@lists.linux.dev,
 	iommu@lists.linux.dev,
 	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [RFC PATCH 04/45] iommu/io-pgtable: Add configure() operation
-Date: Wed,  1 Feb 2023 12:52:48 +0000
-Message-Id: <20230201125328.2186498-5-jean-philippe@linaro.org>
+Subject: [RFC PATCH 08/45] KVM: arm64: pkvm: Add pkvm_udelay()
+Date: Wed,  1 Feb 2023 12:52:52 +0000
+Message-Id: <20230201125328.2186498-9-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230201125328.2186498-1-jean-philippe@linaro.org>
 References: <20230201125328.2186498-1-jean-philippe@linaro.org>
@@ -69,159 +69,106 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Allow IOMMU drivers to create the io-pgtable configuration without
-allocating any tables. This will be used by the SMMUv3-KVM driver to
-initialize a config and pass it to KVM.
+Add a simple delay loop for drivers.
+
+This could use more work. It should be possible to insert a wfe and save
+power, but I haven't studied whether it is safe to do so with the host
+in control of the event stream. The SMMU driver will use wfe anyway for
+frequent waits (provided the implementation can send command queue
+events).
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- include/linux/io-pgtable.h     | 14 +++++++++++
- drivers/iommu/io-pgtable-arm.c | 46 ++++++++++++++++++++++++++--------
- drivers/iommu/io-pgtable.c     | 15 +++++++++++
- 3 files changed, 65 insertions(+), 10 deletions(-)
+ arch/arm64/kvm/hyp/include/nvhe/pkvm.h |  3 ++
+ arch/arm64/kvm/hyp/nvhe/setup.c        |  4 +++
+ arch/arm64/kvm/hyp/nvhe/timer-sr.c     | 43 ++++++++++++++++++++++++++
+ 3 files changed, 50 insertions(+)
 
-diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-index 1b0c26241a78..ee6484d7a5e0 100644
---- a/include/linux/io-pgtable.h
-+++ b/include/linux/io-pgtable.h
-@@ -191,6 +191,18 @@ struct io_pgtable_ops *alloc_io_pgtable_ops(struct io_pgtable_cfg *cfg,
-  */
- void free_io_pgtable_ops(struct io_pgtable_ops *ops);
+diff --git a/arch/arm64/kvm/hyp/include/nvhe/pkvm.h b/arch/arm64/kvm/hyp/include/nvhe/pkvm.h
+index 6160d1a34fa2..746dc1c05a8e 100644
+--- a/arch/arm64/kvm/hyp/include/nvhe/pkvm.h
++++ b/arch/arm64/kvm/hyp/include/nvhe/pkvm.h
+@@ -109,4 +109,7 @@ bool kvm_handle_pvm_hvc64(struct kvm_vcpu *vcpu, u64 *exit_code);
  
-+/**
-+ * io_pgtable_configure - Create page table config
-+ *
-+ * @cfg:	The page table configuration.
-+ * @pgd_size:	On success, size of the top-level table in bytes.
-+ *
-+ * Initialize @cfg in the same way as alloc_io_pgtable_ops(), without allocating
-+ * anything.
-+ *
-+ * Not all io_pgtable drivers implement this operation.
-+ */
-+int io_pgtable_configure(struct io_pgtable_cfg *cfg, size_t *pgd_size);
+ struct pkvm_hyp_vcpu *pkvm_mpidr_to_hyp_vcpu(struct pkvm_hyp_vm *vm, u64 mpidr);
  
- /*
-  * Internal structures for page table allocator implementations.
-@@ -241,10 +253,12 @@ io_pgtable_tlb_add_page(struct io_pgtable *iop,
-  *
-  * @alloc: Allocate a set of page tables described by cfg.
-  * @free:  Free the page tables associated with iop.
-+ * @configure: Create the configuration without allocating anything. Optional.
-  */
- struct io_pgtable_init_fns {
- 	struct io_pgtable *(*alloc)(struct io_pgtable_cfg *cfg, void *cookie);
- 	void (*free)(struct io_pgtable *iop);
-+	int (*configure)(struct io_pgtable_cfg *cfg, size_t *pgd_size);
- };
- 
- extern struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s1_init_fns;
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index b76b903400de..c412500efadf 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -118,6 +118,18 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 	return NULL;
- }
- 
-+static int arm_64_lpae_configure_s1(struct io_pgtable_cfg *cfg, size_t *pgd_size)
-+{
-+	int ret;
-+	struct arm_lpae_io_pgtable data = {};
++int pkvm_timer_init(void);
++void pkvm_udelay(unsigned long usecs);
 +
-+	ret = arm_lpae_init_pgtable_s1(cfg, &data);
+ #endif /* __ARM64_KVM_NVHE_PKVM_H__ */
+diff --git a/arch/arm64/kvm/hyp/nvhe/setup.c b/arch/arm64/kvm/hyp/nvhe/setup.c
+index 8a357637ce81..629e74c46b35 100644
+--- a/arch/arm64/kvm/hyp/nvhe/setup.c
++++ b/arch/arm64/kvm/hyp/nvhe/setup.c
+@@ -300,6 +300,10 @@ void __noreturn __pkvm_init_finalise(void)
+ 	};
+ 	pkvm_pgtable.mm_ops = &pkvm_pgtable_mm_ops;
+ 
++	ret = pkvm_timer_init();
 +	if (ret)
-+		return ret;
-+	*pgd_size = sizeof(arm_lpae_iopte) << data.pgd_bits;
++		goto out;
++
+ 	ret = fix_host_ownership();
+ 	if (ret)
+ 		goto out;
+diff --git a/arch/arm64/kvm/hyp/nvhe/timer-sr.c b/arch/arm64/kvm/hyp/nvhe/timer-sr.c
+index 9072e71693ba..202df9003a0d 100644
+--- a/arch/arm64/kvm/hyp/nvhe/timer-sr.c
++++ b/arch/arm64/kvm/hyp/nvhe/timer-sr.c
+@@ -10,6 +10,10 @@
+ 
+ #include <asm/kvm_hyp.h>
+ 
++#include <nvhe/pkvm.h>
++
++static u32 timer_freq;
++
+ void __kvm_timer_set_cntvoff(u64 cntvoff)
+ {
+ 	write_sysreg(cntvoff, cntvoff_el2);
+@@ -46,3 +50,42 @@ void __timer_enable_traps(struct kvm_vcpu *vcpu)
+ 	val |= CNTHCTL_EL1PCTEN;
+ 	write_sysreg(val, cnthctl_el2);
+ }
++
++static u64 pkvm_ticks_get(void)
++{
++	return __arch_counter_get_cntvct();
++}
++
++#define SEC_TO_US 1000000
++
++int pkvm_timer_init(void)
++{
++	timer_freq = read_sysreg(cntfrq_el0);
++	/*
++	 * TODO: The highest privileged level is supposed to initialize this
++	 * register. But on some systems (which?), this information is only
++	 * contained in the device-tree, so we'll need to find it out some other
++	 * way.
++	 */
++	if (!timer_freq || timer_freq < SEC_TO_US)
++		return -ENODEV;
 +	return 0;
 +}
 +
- static struct io_pgtable *
- arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
- {
-@@ -148,6 +160,18 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
- 	return NULL;
- }
- 
-+static int arm_64_lpae_configure_s2(struct io_pgtable_cfg *cfg, size_t *pgd_size)
++
++#define pkvm_time_us_to_ticks(us) ((u64)(us) * timer_freq / SEC_TO_US)
++
++void pkvm_udelay(unsigned long usecs)
 +{
-+	int ret;
-+	struct arm_lpae_io_pgtable data = {};
++	u64 ticks = pkvm_time_us_to_ticks(usecs);
++	u64 start = pkvm_ticks_get();
 +
-+	ret = arm_lpae_init_pgtable_s2(cfg, &data);
-+	if (ret)
-+		return ret;
-+	*pgd_size = sizeof(arm_lpae_iopte) << data.pgd_bits;
-+	return 0;
++	while (true) {
++		u64 cur = pkvm_ticks_get();
++
++		if ((cur - start) >= ticks || cur < start)
++			break;
++		/* TODO wfe */
++		cpu_relax();
++	}
 +}
-+
- static struct io_pgtable *
- arm_32_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- {
-@@ -231,28 +255,30 @@ arm_mali_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
- }
- 
- struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns = {
--	.alloc	= arm_64_lpae_alloc_pgtable_s1,
--	.free	= arm_lpae_free_pgtable,
-+	.alloc		= arm_64_lpae_alloc_pgtable_s1,
-+	.free		= arm_lpae_free_pgtable,
-+	.configure	= arm_64_lpae_configure_s1,
- };
- 
- struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s2_init_fns = {
--	.alloc	= arm_64_lpae_alloc_pgtable_s2,
--	.free	= arm_lpae_free_pgtable,
-+	.alloc		= arm_64_lpae_alloc_pgtable_s2,
-+	.free		= arm_lpae_free_pgtable,
-+	.configure	= arm_64_lpae_configure_s2,
- };
- 
- struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s1_init_fns = {
--	.alloc	= arm_32_lpae_alloc_pgtable_s1,
--	.free	= arm_lpae_free_pgtable,
-+	.alloc		= arm_32_lpae_alloc_pgtable_s1,
-+	.free		= arm_lpae_free_pgtable,
- };
- 
- struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s2_init_fns = {
--	.alloc	= arm_32_lpae_alloc_pgtable_s2,
--	.free	= arm_lpae_free_pgtable,
-+	.alloc		= arm_32_lpae_alloc_pgtable_s2,
-+	.free		= arm_lpae_free_pgtable,
- };
- 
- struct io_pgtable_init_fns io_pgtable_arm_mali_lpae_init_fns = {
--	.alloc	= arm_mali_lpae_alloc_pgtable,
--	.free	= arm_lpae_free_pgtable,
-+	.alloc		= arm_mali_lpae_alloc_pgtable,
-+	.free		= arm_lpae_free_pgtable,
- };
- 
- #ifdef CONFIG_IOMMU_IO_PGTABLE_LPAE_SELFTEST
-diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
-index 79e459f95012..2aba691db1da 100644
---- a/drivers/iommu/io-pgtable.c
-+++ b/drivers/iommu/io-pgtable.c
-@@ -74,3 +74,18 @@ void free_io_pgtable_ops(struct io_pgtable_ops *ops)
- 	io_pgtable_init_table[iop->cfg.fmt]->free(iop);
- }
- EXPORT_SYMBOL_GPL(free_io_pgtable_ops);
-+
-+int io_pgtable_configure(struct io_pgtable_cfg *cfg, size_t *pgd_size)
-+{
-+	const struct io_pgtable_init_fns *fns;
-+
-+	if (cfg->fmt >= IO_PGTABLE_NUM_FMTS)
-+		return -EINVAL;
-+
-+	fns = io_pgtable_init_table[cfg->fmt];
-+	if (!fns || !fns->configure)
-+		return -EOPNOTSUPP;
-+
-+	return fns->configure(cfg, pgd_size);
-+}
-+EXPORT_SYMBOL_GPL(io_pgtable_configure);
 -- 
 2.39.0
 
