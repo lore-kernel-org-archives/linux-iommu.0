@@ -1,43 +1,43 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C7C963B2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C04CA847F
 	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 12:59:50 +0000 (UTC)
-Received: by mail-wm1-f52.google.com with SMTP id o36so6577094wms.1
+Received: by mail-wr1-f46.google.com with SMTP id o18so7754541wrj.3
         for <iommu@lists.linux.dev>; Wed, 01 Feb 2023 04:59:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=DAR858KRQvKPg9d8btbK56RFwJ6U3P1FOrADuTdQSiU=;
-        b=Ggyb3+Q97jwaq1nLUdEGCN/DmIa9T+TVIlNdQsa9leOlAfSvRNt1uXcyTN1GD+135G
-         R77p3qJrpFcF9f5i8a0xPRilpSW6r6jSZeWNj5JfGc7ve7E9J0dCL9QoWw6rHLjBJhMA
-         l+yjZVQR/gIfvs29AwC7zMLP2kmS34HW6UiaOlED2PTNOSPOcLJa65+ozh4XI3tOYbPh
-         ybxXFnOfIvQ2gh3mm+WWi1Y5RYjUZY9QPb3v90eB/lCy2CilYg/1B9N+AZKXfR+eNB76
-         cmC8MG7IxBkKv/RY7OILPUPSV/AOHj4cLG9vAlzQqkHcuLxlwSO5PajbdTbxsob4IR/y
-         QfLA==
+        bh=YMChfuBGSkCRdEX7dXsLebM7lClmVnVl8CvGgr6HzRY=;
+        b=srCsWRWYFUxl5KjOXa87GRxFlT6IkdbliPebR7kMfam6aaIU88cEBhi5qgJreiVImp
+         oDINu2/MTn+O5qImdl6mtgdhDF/BEWTZy+UMXvQ7hsnYPbNCqogwRCRIpeyrKuNkcTIE
+         pfqCS5kzvG+HrVW0OllEqKe+t2Znov5jY1F8RGXQyMDLGHxiCIZKM5Fx57gp+UhhluH6
+         W6kq1D/CTZP3THYxNmReLiFFFesMewDb9B/9HcV4Za6MSn3WuaR6Q8sW5L3Y0p4lHZ1X
+         CaEJa6OYiT6noSUV7s0lOcfcPVytx8h2idueowJNA4xzccdmCgvBAh7+Yc6VkyLgHGvx
+         ggmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=DAR858KRQvKPg9d8btbK56RFwJ6U3P1FOrADuTdQSiU=;
-        b=Z9XrjWC+pElGzkhi947j6I7Tr9WjYYMWcB10KSJrkzVk6hW+HbaG/BxSlVtTQbdEYt
-         yzut7D1wOOTdLxrAPGGyaRfmzJ8iqNynfP07MLQdeRMfArH1T9Ouc8lVDKnCM3Wh9LoB
-         i1y0GCANBiOmqFU8VcJbeWe9UW0zSNnM2rCVI2QiKiiqRyW5MN4YQZQAPqg2XPvHmFxH
-         7TUJUlIBdBkxOVxV7MoFvcJ4ZyppS2mFIS2i//Qoenhpt0OMu/KEFsbTJSR2/WwSNYTR
-         c/OG4T3WbLrKQWARJ7A1KenLqM9iW3eqvfVDmoYrT0PlyE99Jbqpye4pJ1WJLvHfu2ca
-         mDug==
-X-Gm-Message-State: AO0yUKX4DBChzDfJMXJefz95eH5nvckD75v3qkz1gUy4fz2mvkWOSoB9
-	KkYdX/rkv0frq2D7wSE7Pjyhkw==
-X-Google-Smtp-Source: AK7set+iGCoWOT606yNywkv2PHuH9O8/l5rQaiMO8pv3IURPxlu09QCKUnSrv4mv91hqJwJ7knQZYQ==
-X-Received: by 2002:a05:600c:4f07:b0:3da:fd06:a6f1 with SMTP id l7-20020a05600c4f0700b003dafd06a6f1mr1937037wmq.31.1675256388617;
-        Wed, 01 Feb 2023 04:59:48 -0800 (PST)
+        bh=YMChfuBGSkCRdEX7dXsLebM7lClmVnVl8CvGgr6HzRY=;
+        b=mnkmA3RrO8mjP+Yq+uujSTZYKS6LMbKWsvjpx4G2SRdIz8KvdQt5F3+qf8Emw9yevD
+         zgbJdJ9z9arMIKZDcl74vSq3xkwqf5QjHuXgP0AfX3tpNfQJQKmMsP8Ctask+d+xfMBV
+         gwaD6UvmTa8WPn6B4WJrixgcJuUA9GKORXzPe1GJArQeccTJAYo4VRhyVHst/rAeBOWa
+         nH1kRjxJtBWgIzT0JRRTX5Ech4FOyDu2AP6Eq56+URuy2L7LK6hzpbJ+Gsvm8kpQpZde
+         ASSKWcnTSUyLTafZxiOJhfHcepI8s/X6rhVsDFF6Iks7BzwYI34ZxedT8GONevjVcu/2
+         l5jQ==
+X-Gm-Message-State: AO0yUKVEU7iOMygYpdjDZ9FJW3Ajaw9oyv7FtgbAK3LD8SP3+K6+XdUg
+	/5BEQNZRkGRyBfzgUF4a3zqe2awl5Otfk3Ia
+X-Google-Smtp-Source: AK7set8WgL+UDWIXb0NySo6GmdM6brHPe1cx2lexpL4QuzIoR1sXY+vgwT5LNEovfuXVdncaE2W8cg==
+X-Received: by 2002:a05:6000:613:b0:2bf:d937:3589 with SMTP id bn19-20020a056000061300b002bfd9373589mr6629086wrb.14.1675256390366;
+        Wed, 01 Feb 2023 04:59:50 -0800 (PST)
 Received: from localhost.localdomain (054592b0.skybroadband.com. [5.69.146.176])
-        by smtp.gmail.com with ESMTPSA id m15-20020a056000024f00b002bfae16ee2fsm17972811wrz.111.2023.02.01.04.59.47
+        by smtp.gmail.com with ESMTPSA id m15-20020a056000024f00b002bfae16ee2fsm17972811wrz.111.2023.02.01.04.59.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Feb 2023 04:59:48 -0800 (PST)
+        Wed, 01 Feb 2023 04:59:49 -0800 (PST)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: maz@kernel.org,
 	catalin.marinas@arm.com,
@@ -55,9 +55,9 @@ Cc: robin.murphy@arm.com,
 	kvmarm@lists.linux.dev,
 	iommu@lists.linux.dev,
 	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [RFC PATCH 37/45] iommu/arm-smmu-v3-kvm: Allocate structures and reset device
-Date: Wed,  1 Feb 2023 12:53:21 +0000
-Message-Id: <20230201125328.2186498-38-jean-philippe@linaro.org>
+Subject: [RFC PATCH 39/45] iommu/arm-smmu-v3-kvm: Initialize page table configuration
+Date: Wed,  1 Feb 2023 12:53:23 +0000
+Message-Id: <20230201125328.2186498-40-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230201125328.2186498-1-jean-philippe@linaro.org>
 References: <20230201125328.2186498-1-jean-philippe@linaro.org>
@@ -69,104 +69,75 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Allocate the structures that will be shared between hypervisor and SMMU:
-command queue and stream table. Install them in the MMIO registers,
-along with some configuration bits. After hyp initialization, the host
-won't have access to those pages anymore.
+Prepare the stage-2 I/O page table configuration that will be used by
+the hypervisor driver.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c   | 56 +++++++++++++++++++
- 1 file changed, 56 insertions(+)
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c   | 29 +++++++++++++++++++
+ 1 file changed, 29 insertions(+)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
-index 2cc632f6b256..8808890f4dc0 100644
+index 755c77bc0417..55489d56fb5b 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
-@@ -14,6 +14,7 @@
- struct host_arm_smmu_device {
+@@ -16,6 +16,7 @@ struct host_arm_smmu_device {
  	struct arm_smmu_device		smmu;
  	pkvm_handle_t			id;
-+	u32				boot_gbpa;
+ 	u32				boot_gbpa;
++	unsigned int			pgd_order;
  };
  
  #define smmu_to_host(_smmu) \
-@@ -76,6 +77,38 @@ static bool kvm_arm_smmu_validate_features(struct arm_smmu_device *smmu)
- 	return true;
- }
- 
-+static int kvm_arm_smmu_device_reset(struct host_arm_smmu_device *host_smmu)
-+{
-+	int ret;
-+	u32 reg;
-+	struct arm_smmu_device *smmu = &host_smmu->smmu;
-+
-+	reg = readl_relaxed(smmu->base + ARM_SMMU_CR0);
-+	if (reg & CR0_SMMUEN)
-+		dev_warn(smmu->dev, "SMMU currently enabled! Resetting...\n");
-+
-+	/* Disable bypass */
-+	host_smmu->boot_gbpa = readl_relaxed(smmu->base + ARM_SMMU_GBPA);
-+	ret = arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
-+	if (ret)
-+		return ret;
-+
-+	ret = arm_smmu_device_disable(smmu);
-+	if (ret)
-+		return ret;
-+
-+	/* Stream table */
-+	writeq_relaxed(smmu->strtab_cfg.strtab_base,
-+		       smmu->base + ARM_SMMU_STRTAB_BASE);
-+	writel_relaxed(smmu->strtab_cfg.strtab_base_cfg,
-+		       smmu->base + ARM_SMMU_STRTAB_BASE_CFG);
-+
-+	/* Command queue */
-+	writeq_relaxed(smmu->cmdq.q.q_base, smmu->base + ARM_SMMU_CMDQ_BASE);
-+
-+	return 0;
-+}
-+
- static int kvm_arm_smmu_probe(struct platform_device *pdev)
- {
- 	int ret;
-@@ -124,6 +157,20 @@ static int kvm_arm_smmu_probe(struct platform_device *pdev)
+@@ -192,6 +193,7 @@ static int kvm_arm_smmu_probe(struct platform_device *pdev)
+ 	size_t size;
+ 	phys_addr_t ioaddr;
+ 	struct resource *res;
++	struct io_pgtable_cfg cfg;
+ 	struct arm_smmu_device *smmu;
+ 	struct device *dev = &pdev->dev;
+ 	struct host_arm_smmu_device *host_smmu;
+@@ -233,6 +235,31 @@ static int kvm_arm_smmu_probe(struct platform_device *pdev)
  	if (!kvm_arm_smmu_validate_features(smmu))
  		return -ENODEV;
  
-+	ret = arm_smmu_init_one_queue(smmu, &smmu->cmdq.q, smmu->base,
-+				      ARM_SMMU_CMDQ_PROD, ARM_SMMU_CMDQ_CONS,
-+				      CMDQ_ENT_DWORDS, "cmdq");
-+	if (ret)
-+		return ret;
-+
-+	ret = arm_smmu_init_strtab(smmu);
-+	if (ret)
-+		return ret;
-+
-+	ret = kvm_arm_smmu_device_reset(host_smmu);
-+	if (ret)
-+		return ret;
-+
- 	platform_set_drvdata(pdev, host_smmu);
- 
- 	/* Hypervisor parameters */
-@@ -137,6 +184,15 @@ static int kvm_arm_smmu_probe(struct platform_device *pdev)
- 
- static int kvm_arm_smmu_remove(struct platform_device *pdev)
- {
-+	struct host_arm_smmu_device *host_smmu = platform_get_drvdata(pdev);
-+	struct arm_smmu_device *smmu = &host_smmu->smmu;
++	/*
++	 * Stage-1 should be easy to support, though we do need to allocate a
++	 * context descriptor table.
++	 */
++	cfg = (struct io_pgtable_cfg) {
++		.fmt = ARM_64_LPAE_S2,
++		.pgsize_bitmap = smmu->pgsize_bitmap,
++		.ias = smmu->ias,
++		.oas = smmu->oas,
++		.coherent_walk = smmu->features & ARM_SMMU_FEAT_COHERENCY,
++	};
 +
 +	/*
-+	 * There was an error during hypervisor setup. The hyp driver may
-+	 * have already enabled the device, so disable it.
++	 * Choose the page and address size. Compute the PGD size and number of
++	 * levels as well, so we know how much memory to pre-allocate.
 +	 */
-+	arm_smmu_device_disable(smmu);
-+	arm_smmu_update_gbpa(smmu, host_smmu->boot_gbpa, GBPA_ABORT);
- 	return 0;
- }
++	ret = io_pgtable_configure(&cfg, &size);
++	if (ret)
++		return ret;
++
++	host_smmu->pgd_order = get_order(size);
++	smmu->pgsize_bitmap = cfg.pgsize_bitmap;
++	smmu->ias = cfg.ias;
++	smmu->oas = cfg.oas;
++
+ 	ret = arm_smmu_init_one_queue(smmu, &smmu->cmdq.q, smmu->base,
+ 				      ARM_SMMU_CMDQ_PROD, ARM_SMMU_CMDQ_CONS,
+ 				      CMDQ_ENT_DWORDS, "cmdq");
+@@ -253,6 +280,8 @@ static int kvm_arm_smmu_probe(struct platform_device *pdev)
+ 	hyp_smmu->mmio_addr = ioaddr;
+ 	hyp_smmu->mmio_size = size;
+ 	hyp_smmu->features = smmu->features;
++	hyp_smmu->iommu.pgtable_cfg = cfg;
++
+ 	kvm_arm_smmu_cur++;
  
+ 	return 0;
 -- 
 2.39.0
 
