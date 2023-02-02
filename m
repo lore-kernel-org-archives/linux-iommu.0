@@ -1,163 +1,119 @@
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2079.outbound.protection.outlook.com [40.107.95.79])
+Received: from mx0.infotecs.ru (mx0.infotecs.ru [91.244.183.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4745F7F
-	for <iommu@lists.linux.dev>; Thu,  2 Feb 2023 07:28:16 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ipnGckK7wShcAorrvjhhJ+FcaD74FLasoUKRIVgWckNxcAl7VXmo8Mi3mml6cR1j9eBvYIyx/C/K7YR8FK9cEb3Gbzzqzvg1QaGhj0ahXRRVYO9ClpSR85eOp5zG01rR/T1f1QWaHbGpGDeq6p6QNZ9B8HNY/8Txfv76GbE8dhI0pZFFcIOTIvS5/zQfK63gsNSf6Li7psdhractTKoXQbD0JxcnkWIe08ERaIPooekNkFaNe+OEgYRMPXL4+1h3+cgi6HGpxMzilCXsYYMVvxbwJ1DnRp3a8wZhWNbO1i8G7DfbuWERo9YZtOnExjIC8LuMyFXQxiF17Eqi3c2EjA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vSx87uuFJZ4ISGevB8rVmAS2QW2Smi1RVMFylHUJLJs=;
- b=ONaQ7UUZwzCUCQldpJ0z88hHcWKOgAEFhk14fKx2uxXyvXJ77gQ9L51KSn0qInIBs8D8krQiwuKFTPuXcWw6zq95puSGkVMkad4meAtGcu1vT++MbV1T0brh/SbA/ZIVBPYUx0haieaObOhHdg6oXkJdvPm2Y64CUaqZh9ZVoXPXHMFESIRyVIAUqiLnTxDcoFheiQRFUKMz+29ixxZfilY8qDMbaJtFovlO8wl2T6jsK1GttoezpX3A8kG5JaWmhC5YMKU4y2SNhoPNnkhEAbwY/Vcr++2jSYc3tU9SHLxzSXOVvqObF80Ih1CJNZfa2h1mg8y0gruZzd9nsrY11w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vSx87uuFJZ4ISGevB8rVmAS2QW2Smi1RVMFylHUJLJs=;
- b=g4W2MgPkL8cl5fgQ9ZYqWNSETNonBbhq0D1YLwnj0za6mDg50fNfgtwMBXzsNWVCxr2HSDk7ED3IwroyIcVvHx0k0PeFJkxlw3BKniDwK//EwHS/en+EdOk0VF+XWqcH7LSRtDHbRYeE59sXWQBBP5xKduuth2honV135gfaLbHuGcizoZOSmyDxm61fszjZSmhWypjcjH4tf5xaSzCUz6YWUbmX27t0sAkhI//6LUA47TDOOPuPWJj5PHELXEOdKTjvfRUTag0XO8Iq9ioDsVwKvBBnhVd7mLo52E1huDnjMHeiOO2fZ/dQ1bsmJTFGMmSkBSsTgDqDLyGpYt2MSw==
-Received: from MW4PR04CA0159.namprd04.prod.outlook.com (2603:10b6:303:85::14)
- by PH7PR12MB6882.namprd12.prod.outlook.com (2603:10b6:510:1b8::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.25; Thu, 2 Feb
- 2023 07:28:13 +0000
-Received: from CO1NAM11FT093.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:85:cafe::96) by MW4PR04CA0159.outlook.office365.com
- (2603:10b6:303:85::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.27 via Frontend
- Transport; Thu, 2 Feb 2023 07:28:13 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- CO1NAM11FT093.mail.protection.outlook.com (10.13.175.59) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6064.27 via Frontend Transport; Thu, 2 Feb 2023 07:28:13 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 1 Feb 2023
- 23:28:07 -0800
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.36; Wed, 1 Feb 2023 23:28:07 -0800
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36 via Frontend
- Transport; Wed, 1 Feb 2023 23:28:07 -0800
-Date: Wed, 1 Feb 2023 23:28:05 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <kevin.tian@intel.com>, <yi.l.liu@intel.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/3] iommufd: Add devices_users to track the
- hw_pagetable usage by device
-Message-ID: <Y9tmBW/wnZJ0JyBk@Asurada-Nvidia>
-References: <Y9gfbx/fszb0aTJn@nvidia.com>
- <Y9gi0UaE1PlKVzmn@Asurada-Nvidia>
- <Y9gqFwDNd3VKQvC3@nvidia.com>
- <Y9oNSUbDe1YOTj+b@Asurada-Nvidia>
- <Y9qK3nJHjU4Bvxaf@nvidia.com>
- <Y9qlb0SZWEpJs0v1@Asurada-Nvidia>
- <Y9qxdinaS6anoWhH@nvidia.com>
- <Y9q8llC0JVokHLf7@Asurada-Nvidia>
- <Y9rE6L8Nr0xShiKy@nvidia.com>
- <Y9rW01eROepZuMt3@Asurada-Nvidia>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B00C57F
+	for <iommu@lists.linux.dev>; Thu,  2 Feb 2023 08:05:31 +0000 (UTC)
+Received: from mx0.infotecs-nt (localhost [127.0.0.1])
+	by mx0.infotecs.ru (Postfix) with ESMTP id D1D26104943A;
+	Thu,  2 Feb 2023 11:05:22 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mx0.infotecs.ru D1D26104943A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=infotecs.ru; s=mx;
+	t=1675325123; bh=9Oqp75BixNkux9SygXqMuKmFPr/E9t9JHbS1PuBL4dE=;
+	h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+	b=fpuHBxITVC5M8u0gXZoDpplTHD3R5r325hGiLRI19fY81CGOdDC8imIWGeRPWtPfC
+	 lhfviGJuC6AlNy0gIWkMZXa8ZkaoUZgAQo8SP6T0FNoglNH3XLjhL/DJFr/C0xB7TI
+	 NJitehrYTk8tloMnbSOSQrGyopKtaYlmv/i7re1g=
+Received: from msk-exch-02.infotecs-nt (msk-exch-02.infotecs-nt [10.0.7.192])
+	by mx0.infotecs-nt (Postfix) with ESMTP id CD90B30A8127;
+	Thu,  2 Feb 2023 11:05:22 +0300 (MSK)
+From: Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>
+To: Kim Phillips <kim.phillips@amd.com>, Joerg Roedel <joro@8bytes.org>
+CC: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Will Deacon
+	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Wan Zongshun
+	<Vincent.Wan@amd.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"lvc-project@linuxtesting.org" <lvc-project@linuxtesting.org>
+Subject: Re: [PATCH] iommu/amd: @Add a length limitation for the ivrs_acpihid
+ command-line parameter
+Thread-Topic: [PATCH] iommu/amd: @Add a length limitation for the ivrs_acpihid
+ command-line parameter
+Thread-Index: AQHZNt0ZVMqor8E7oU2uXGP1Yfs9UA==
+Date: Thu, 2 Feb 2023 08:05:22 +0000
+Message-ID: <54fe84de-5144-3ec0-1329-2e9dca41ab17@infotecs.ru>
+References: <20230130083843.802106-1-Ilia.Gavrilov@infotecs.ru>
+ <39506e9f-9bbb-fcf6-b488-542fd3657eae@amd.com>
+In-Reply-To: <39506e9f-9bbb-fcf6-b488-542fd3657eae@amd.com>
+Accept-Language: ru-RU, en-US
+Content-Language: ru-RU
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-originating-ip: [10.17.0.10]
+x-exclaimer-md-config: 208ac3cd-1ed4-4982-a353-bdefac89ac0a
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <2B0D37E79BA76A458153168438879B6D@infotecs.ru>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <Y9rW01eROepZuMt3@Asurada-Nvidia>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT093:EE_|PH7PR12MB6882:EE_
-X-MS-Office365-Filtering-Correlation-Id: 35fcf490-8fdd-47a1-06f4-08db04ef0b61
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	v1EU1HqTGKB8LOlyn8CT5v1qOAcP71MYDVogVD6ZDgKjti/XtY2OJIyXSr25+OEo1ymqaWmmDngzvaiTy1PmPfouM4hBis4GpHk4wCwWbCTbJfy3whFAmEqHTOKBWJBYux3NgBJreSK2opYZxPWhuuZZImwBLVLWU3s3LXWz6TMXbncSToadPxWtDv+xH1wFf+yl8PzUYt+EDbtRUfXQcCD/41O0ihdu50fjVSVK8swBG+L9VMcG9/Kuf16zoYCARTrZHgGEo1piphtRsL+htGgxo/9qb78ZFsJp+akMv3Wttj1frgwiePvBh9d9Yj/FknxGt3CzWASz1TEbf6IxZYx/+kHglHcMtHNqMz5DfZymH5Vq1mGFAz2BzxFTvj1ckBjNjEqeNTImRXC2F+NgZr9vLHeLHoVuzZ1plLWDtF8J6Zf4RLEurp+FCie5uL6dJKYaVyJ1qnSFMUlRZOfPiSve8bPfxunHOQDB10D5WhvLDcCCJoVUUxj86+/1ghl0mNwqGCnhx+gk2zy0W/WfT+r2gA8pBtFKqnCl7Xz9esALncugP7F7IMw6Ey0OIVoDGh3jmKHoP+8iFHJFeE6BgvqBn+s3WhJLROug3dVFQ7QTzUJ6jEq402a8D3j9hNuYxiKjFcv9ZQ2OPhpSkiPXB5b3tFvbSg5+aTJfm6j3hoGpZ4psZcV3V2KVTJiIKEgdNYYtiNBYpWdlwtEuoUBBwQ==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(396003)(376002)(136003)(346002)(451199018)(36840700001)(46966006)(40470700004)(316002)(40480700001)(82740400003)(6636002)(54906003)(70586007)(8676002)(41300700001)(7636003)(478600001)(70206006)(4326008)(36860700001)(9686003)(26005)(186003)(40460700003)(47076005)(8936002)(336012)(55016003)(426003)(83380400001)(82310400005)(33716001)(6862004)(2906002)(5660300002)(86362001)(356005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2023 07:28:13.6722
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 35fcf490-8fdd-47a1-06f4-08db04ef0b61
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT093.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6882
+X-KLMS-Rule-ID: 1
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Lua-Profiles: 175194 [Feb 02 2023]
+X-KLMS-AntiSpam-Version: 5.9.59.0
+X-KLMS-AntiSpam-Envelope-From: Ilia.Gavrilov@infotecs.ru
+X-KLMS-AntiSpam-Rate: 0
+X-KLMS-AntiSpam-Status: not_detected
+X-KLMS-AntiSpam-Method: none
+X-KLMS-AntiSpam-Auth: dkim=none
+X-KLMS-AntiSpam-Info: LuaCore: 502 502 69dee8ef46717dd3cb3eeb129cb7cc8dab9e30f6, {Tracking_msgid_8}, {Tracking_from_domain_doesnt_match_to}, d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;infotecs.ru:7.1.1
+X-MS-Exchange-Organization-SCL: -1
+X-KLMS-AntiSpam-Interceptor-Info: scan successful
+X-KLMS-AntiPhishing: Clean, bases: 2023/02/02 07:35:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2023/02/02 02:42:00 #20830374
+X-KLMS-AntiVirus-Status: Clean, skipped
 
-On Wed, Feb 01, 2023 at 01:18:08PM -0800, Nicolin Chen wrote:
-> On Wed, Feb 01, 2023 at 04:00:40PM -0400, Jason Gunthorpe wrote:
-> > On Wed, Feb 01, 2023 at 11:25:10AM -0800, Nicolin Chen wrote:
-> > 
-> > > The "finalise" is one of the very first lines of the attach_dev()
-> > > callback function in SMMU driver, though it might still undesirably
-> > > fail the replace().
-> > 
-> > It won't get that far.
-> > 
-> > Remember how this all works - only autodomains have the special path
-> > that allocates a domain, attaches the empty domain, and then populates
-> > it with the ioas. We made this special path specifically to accomodate
-> > the current ARM drivers, otherwise they wouldn't work at all.
-> 
-> Yes.
-> 
-> > replace can't do this - replace must always start out with a
-> > pre-existing hwpt that was allocated with a dedicated hwpt allocation
-> > ioctl.
-> > 
-> > Wwhen the hwpt was allocated it must be linked to the IOAS at that
-> > time, because we definately don't do defered IOAS linkage.
-> >
-> > So on ARM when you create an unfinalizes iommu_domain it cannot be
-> > added to the IOAS (because it has an empty aperture) and creation will
-> > fail, or worse, it will get added to an empty IOAS and make the IOAS
-> > permanently unusable.
-> 
-> IIUIC, user space might add some IOVA mappings to the hwpt/iopt,
-> before doing a replace(). If we do a deferred IOAS linkage to
-> this hwpt/iopt, it will cause a problem because we are adding
-> the reserved region for the MSI window later than IOMMU_IOAS_MAP
-> calls. Thus, "we definately don't do defered IOAS linkage".
-> 
-> With this justification, I think I should include my patch of
-> moving iopt_table_add/remove_domain(), in the replace series.
-
-I just posted the replace series. But I found that the base
-line (without the nesting series) allocates iommu_domains
-always with the ->domain_alloc() op. So, we cannot actually
-move the iopt_table_add_domain() in the replace series, as I
-intended to.
-
-Yet, a great news is that our nesting series replaces the
-domain_alloc() op entirely with ->domain_alloc_user() for all
-the iommu_domain allocations, including for auto_domains. So,
-we can completely move iopt_table_add_domain() to the hwpt
-allocation function. And we don't really need a big change
-in the SMMU driver nor Robin's patch that passes in dev ptr
-to domain_alloc() op. And even this device_users refcount in
-this patch is no longer needed. It also simplifies the shared
-device locking situation, if I am not missing anything.
-
-So, in short, we'll have to wait for ->domain_alloc_user()
-patch (in the nesting series) to unblock the problem that we
-discussed above regarding the iopt_table_add_domain().
-
-Thanks
-Nic
+T24gMi8yLzIzIDAzOjQ0LCBLaW0gUGhpbGxpcHMgd3JvdGU6DQo+IE5vdCBzdXJlIHdoYXQgdGhh
+dCAnQCcgaXMgZG9pbmcgaW4gdGhlIHN1YmplY3QgbGluZS4uLg0KPiANCg0KU29ycnksIHRoaXMg
+aXMgbXkgdHlwby4NCkknbGwgZml4IGl0IGluIFYyLg0KDQo+IE9uIDEvMzAvMjMgMjozOCBBTSwg
+R2F2cmlsb3YgSWxpYSB3cm90ZToNCj4+IFRoZSAnYWNwaWlkJyBidWZmZXIgaW4gdGhlIHBhcnNl
+X2l2cnNfYWNwaWhpZCBmdW5jdGlvbiBtYXkgb3ZlcmZsb3csDQo+PiBiZWNhdXNlIHRoZSBzdHJp
+bmcgc3BlY2lmaWVyIGluIHRoZSBmb3JtYXQgc3RyaW5nIHNzY2FuZigpDQo+PiBoYXMgbm8gd2lk
+dGggbGltaXRhdGlvbi4NCj4+DQo+PiBGb3VuZCBieSBJbmZvVGVDUyBvbiBiZWhhbGYgb2YgTGlu
+dXggVmVyaWZpY2F0aW9uIENlbnRlcg0KPj4gKGxpbnV4dGVzdGluZy5vcmcpIHdpdGggU1ZBQ0Uu
+DQo+Pg0KPj4gRml4ZXM6IGNhM2JmNWQ0N2NlYyAoImlvbW11L2FtZDogSW50cm9kdWNlcyBpdnJz
+X2FjcGloaWQga2VybmVsIA0KPj4gcGFyYW1ldGVyIikNCj4+IFNpZ25lZC1vZmYtYnk6IElsaWEu
+R2F2cmlsb3YgPElsaWEuR2F2cmlsb3ZAaW5mb3RlY3MucnU+DQo+IA0KPiBjYzogc3RhYmxlPw0K
+PiANCg0KSSdsbCBhZGQgaXQgdG8gVjIuDQo+PiAtLS0NCj4+IMKgIGRyaXZlcnMvaW9tbXUvYW1k
+L2luaXQuYyB8IDE2ICsrKysrKysrKysrKysrKy0NCj4+IMKgIDEgZmlsZSBjaGFuZ2VkLCAxNSBp
+bnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pDQo+Pg0KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
+aW9tbXUvYW1kL2luaXQuYyBiL2RyaXZlcnMvaW9tbXUvYW1kL2luaXQuYw0KPj4gaW5kZXggNDY3
+YjE5NDk3NWIzLi4xOWE0NmI5ZjczNTcgMTAwNjQ0DQo+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2Ft
+ZC9pbml0LmMNCj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYW1kL2luaXQuYw0KPj4gQEAgLTM0NzUs
+MTUgKzM0NzUsMjYgQEAgc3RhdGljIGludCBfX2luaXQgcGFyc2VfaXZyc19ocGV0KGNoYXIgKnN0
+cikNCj4+IMKgwqDCoMKgwqAgcmV0dXJuIDE7DQo+PiDCoCB9DQo+PiArI2RlZmluZSBBQ1BJSURf
+TEVOIChBQ1BJSElEX1VJRF9MRU4gKyBBQ1BJSElEX0hJRF9MRU4pDQo+PiArDQo+PiDCoCBzdGF0
+aWMgaW50IF9faW5pdCBwYXJzZV9pdnJzX2FjcGloaWQoY2hhciAqc3RyKQ0KPj4gwqAgew0KPj4g
+wqDCoMKgwqDCoCB1MzIgc2VnID0gMCwgYnVzLCBkZXYsIGZuOw0KPj4gwqDCoMKgwqDCoCBjaGFy
+ICpoaWQsICp1aWQsICpwLCAqYWRkcjsNCj4+IC3CoMKgwqAgY2hhciBhY3BpaWRbQUNQSUhJRF9V
+SURfTEVOICsgQUNQSUhJRF9ISURfTEVOXSA9IHswfTsNCj4+ICvCoMKgwqAgY2hhciBhY3BpaWRb
+QUNQSUlEX0xFTl0gPSB7MH07DQo+PiDCoMKgwqDCoMKgIGludCBpOw0KPj4gwqDCoMKgwqDCoCBh
+ZGRyID0gc3RyY2hyKHN0ciwgJ0AnKTsNCj4+IMKgwqDCoMKgwqAgaWYgKCFhZGRyKSB7DQo+PiAr
+wqDCoMKgwqDCoMKgwqAgYWRkciA9IHN0cmNocihzdHIsICc9Jyk7DQo+PiArwqDCoMKgwqDCoMKg
+wqAgaWYgKCFhZGRyKQ0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZ290byBub3RfZm91bmQ7
+DQo+PiArDQo+PiArwqDCoMKgwqDCoMKgwqAgKythZGRyOw0KPj4gKw0KPj4gK8KgwqDCoMKgwqDC
+oMKgIGlmIChzdHJsZW4oYWRkcikgPiBBQ1BJSURfTEVOKQ0KPj4gK8KgwqDCoMKgwqDCoMKgwqDC
+oMKgwqAgZ290byBub3RfZm91bmQ7DQo+PiArDQo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgaWYgKHNz
+Y2FuZihzdHIsICJbJXg6JXguJXhdPSVzIiwgJmJ1cywgJmRldiwgJmZuLCBhY3BpaWQpID09IA0K
+Pj4gNCB8fA0KPj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc3NjYW5mKHN0ciwgIlsleDol
+eDoleC4leF09JXMiLCAmc2VnLCAmYnVzLCAmZGV2LCAmZm4sIA0KPj4gYWNwaWlkKSA9PSA1KSB7
+DQo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBwcl93YXJuKCJpdnJzX2FjcGloaWQlcyBv
+cHRpb24gZm9ybWF0IGRlcHJlY2F0ZWQ7IHVzZSANCj4+IGl2cnNfYWNwaWhpZD0lc0AlMDR4OiUw
+Mng6JTAyeC4lZCBpbnN0ZWFkXG4iLA0KPj4gQEAgLTM0OTYsNiArMzUwNyw5IEBAIHN0YXRpYyBp
+bnQgX19pbml0IHBhcnNlX2l2cnNfYWNwaWhpZChjaGFyICpzdHIpDQo+PiDCoMKgwqDCoMKgIC8q
+IFdlIGhhdmUgdGhlICdAJywgbWFrZSBpdCB0aGUgdGVybWluYXRvciB0byBnZXQganVzdCB0aGUg
+DQo+PiBhY3BpaWQgKi8NCj4+IMKgwqDCoMKgwqAgKmFkZHIrKyA9IDA7DQo+PiArwqDCoMKgIGlm
+IChzdHJsZW4oc3RyKSA+IEFDUElJRF9MRU4gKyAxKQ0KPj4gK8KgwqDCoMKgwqDCoMKgIGdvdG8g
+bm90X2ZvdW5kOw0KPj4gKw0KPj4gwqDCoMKgwqDCoCBpZiAoc3NjYW5mKHN0ciwgIj0lcyIsIGFj
+cGlpZCkgIT0gMSkNCj4+IMKgwqDCoMKgwqDCoMKgwqDCoCBnb3RvIG5vdF9mb3VuZDsNCj4gDQo+
+IFRoYXQgd29ya3MsIG9yLCB0aGlzIGZpeCBtaWdodCBiZSBhYmxlIHRvIGJlIG1hZGUgbW9yZSBi
+cmllZiBpZg0KPiB3ZSBjb3VsZCB0cmFuc2Zvcm0gYWxsIHRoZSBzc2NhbmYncyAnJXMncyB0bzoN
+Cj4gDQo+ICIlIiBfX3N0cmluZ2lmeShBQ1BJSURfTEVOKSAicyINCj4gDQoNCkkgdHJpZWQgdG8g
+dXNlIF9fc3RyaW5naWZ5LCBidXQgSSBkaWRuJ3QgZmluZCBhIGJyaWVmIHdheSB0byBkbyBpdCAN
+CmNvcnJlY3RseSBmb3IgdGhlIGV4cHJlc3Npb24gKEFDUElISURfVUlEX0xBTiArIEFDUElISURf
+SElEX0xBTikuIFRoZSANCnByZXByb2Nlc3NvciBkb2VzIG5vdCBldmFsdWF0ZXMgYSBjb25zdGFu
+dCwgYnV0IHNpbXBseSBzdWJzdGl0dXRlcyAoMjU2KzkpLg0KDQo+IGJ1dCB0aGUgbGF0dGVyIG1p
+Z2h0IG1ha2UgdGhlIGFscmVhZHkgbG9uZyBzc2NhbmYgbGluZSBsZW5ndGhzIGxvbmdlci4uLg0K
+PiAgPiBFaXRoZXIgd2F5Og0KPiANCj4gUmV2aWV3ZWQtYnk6IEtpbSBQaGlsbGlwcyA8a2ltLnBo
+aWxsaXBzQGFtZC5jb20+DQo+IA0KPiBLaW0NCg0KVGhhbmsgeW91IGZvciByZXZpZXcuDQoNCg==
