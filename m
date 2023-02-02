@@ -1,193 +1,415 @@
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2052.outbound.protection.outlook.com [40.107.100.52])
+Received: from mx.treblig.org (mx.treblig.org [46.43.15.161])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C96E77E5
-	for <iommu@lists.linux.dev>; Thu,  2 Feb 2023 00:44:34 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=G8bkbf2Rqsugbixm4HOYp7n++8fPcX4t5zJakiaiO2NQpZwvlxEZu3sXeIQYutQlvHw0vrxfbX0p012Kc58F9tzIe2JuTYQYKZ5rkofuDo9AWSTPVSevcEmN1LyfMOYRUtphwvf8pJ+SqUCRnZJP8tSerFXxM0Ds9gXyQHMasmsaWiuRG72mGi9ZN6WtooKFa7viV4bEPzUcHg3YfaLWDDi0QPdtstpqM/CMhO7+RQpoV22BWKdpc8Uf3pUhyVEeZhd1aT5BZTjFkdJpDylhuFLANwrwYaSZcLCOdOPEYESNkt4fPGoCfbOY0GqkdtMwY4pO5txrhN30pZeZUWKUBQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8ORxS1KZIoxqa985O2jT1IkeqYoDzwihKqisj5IJ5Rw=;
- b=lHZ+EdL7fi3eJ07RXsMkVjWZTkzkngAPcm/T9eoP/i9wcbtG/2ef4ca6WqpLtirnkl0S0nIqUUkdw4DbBhoSor58f9M8wQ1VD3ArvSbJ1MyKS7Husn002/b8nt0IzGdhqxFCI5xtscOsdnvy4fRVQxYaFJT2fIP7ZLkkkHhtnbhz7FNTi6c7pwk6Rt6UmUHTSN5PeM0pwrhU9+nYTggy88XQoOfszU0CqOwkXB3U3XUyQqCr/07X9HZKNlh/dDqdBckrhG9MfaFXn91rijbyGTpPwAH8Xj1iYZ6p7/SKGjtZxI8KjFvA+gMmV9ukAEYt3IfI4O5/uNZxzQhdh5dgtw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8ORxS1KZIoxqa985O2jT1IkeqYoDzwihKqisj5IJ5Rw=;
- b=aesHn5HG6mOAb28yPa264eQwey8GUAT21MIOUc+dbahJ5xc2SQjglvhrJbSpBHQt4OutsmxgpOZZXXhIn0sk056bk+xoQTFF/bTdW1RoBMtQK4u4Hs1oVtkvMS6oJ5Kyi7j7JGBUTpAk99X2bPUEjn80k0V9wROP5PV9/I0nGJg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6263.namprd12.prod.outlook.com (2603:10b6:8:95::17) by
- CY5PR12MB6574.namprd12.prod.outlook.com (2603:10b6:930:42::12) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6043.33; Thu, 2 Feb 2023 00:44:31 +0000
-Received: from DS7PR12MB6263.namprd12.prod.outlook.com
- ([fe80::2ba2:7ffc:1e24:4bba]) by DS7PR12MB6263.namprd12.prod.outlook.com
- ([fe80::2ba2:7ffc:1e24:4bba%9]) with mapi id 15.20.6064.024; Thu, 2 Feb 2023
- 00:44:31 +0000
-Message-ID: <39506e9f-9bbb-fcf6-b488-542fd3657eae@amd.com>
-Date: Wed, 1 Feb 2023 18:44:28 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH] iommu/amd: @Add a length limitation for the ivrs_acpihid
- command-line parameter
-To: Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>, Joerg Roedel <joro@8bytes.org>
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Wan Zongshun <Vincent.Wan@amd.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "lvc-project@linuxtesting.org" <lvc-project@linuxtesting.org>
-References: <20230130083843.802106-1-Ilia.Gavrilov@infotecs.ru>
-Content-Language: en-US
-From: Kim Phillips <kim.phillips@amd.com>
-Organization: AMD
-In-Reply-To: <20230130083843.802106-1-Ilia.Gavrilov@infotecs.ru>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: CH0PR03CA0114.namprd03.prod.outlook.com
- (2603:10b6:610:cd::29) To DS7PR12MB6263.namprd12.prod.outlook.com
- (2603:10b6:8:95::17)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A83A27E
+	for <iommu@lists.linux.dev>; Thu,  2 Feb 2023 03:04:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=treblig.org
+	; s=bytemarkmx; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=07BiCaPOrteX+5h2GBhhzld4j64PeVgOXBt0lQwwlvk=; b=EIIMKEk78qw6SCeHYpxtopyXqZ
+	cdDbP/KNWbGTtIg5TvAh3nG8eN7VdHMgdpRRFTGa5HGAI8DmuPDfQoSu25UeANAmGmHR+c9Z/P6K9
+	bVbN028jqRCkrGBKzhSKbcX472YW5c2FwGmuHBwxVZUQO/BK/1WozfjGrHJoJJzkLC/pDdzDtLjTo
+	RtxguZEuI3XrHW6D9JUGOEh/nNdVNyMm1EQnVMWirX70lYLJu7CZcopJzAEAAghPuWSHAF/EON0Rp
+	nYMDe1JySsZwOUchX4tEgD+npClFgahiQ91YVoX4/mzvMNceXN2y8Je2rsMeKXnWH/x2IkeeaPIiU
+	3+6eR6/A==;
+Received: from dg by mx.treblig.org with local (Exim 4.94.2)
+	(envelope-from <dg@treblig.org>)
+	id 1pNPu1-000ymN-0U; Thu, 02 Feb 2023 03:04:45 +0000
+Date: Thu, 2 Feb 2023 03:04:44 +0000
+From: "Dr. David Alan Gilbert" <dave@treblig.org>
+To: Hans Verkuil <hverkuil@xs4all.nl>
+Cc: iommu@lists.linux.dev, mchehab@kernel.org, hch@lst.de,
+	linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: Regression: v4l/bttv vbi vs iommu
+Message-ID: <Y9soTEzU42p7yfua@gallifrey>
+References: <Y9qSwkLxeMpffZK/@gallifrey>
+ <d363902d-e465-8411-0c1e-58411b3a19b0@xs4all.nl>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6263:EE_|CY5PR12MB6574:EE_
-X-MS-Office365-Filtering-Correlation-Id: 32414902-764f-4983-9269-08db04b6a5cc
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	n5u8tk5XYusruDR372+6wq56rMr2chXxU1uYOjauGLLfPSQPnyvfLagsvs3eOxSseWv1+XxTj9/NYHNtY9MdOS717iikFNy+jlcOeDJrBf3Y2fetjpP1c0GEkA4cN6dyH5q24Veyy9HGj9AkiE4tph1JFvKHwpwGMHGkjPcyLp1R0CpxXhI0CM53ViZUKt2557y1+oiETxkZfk9CeZR76xqas6Q3AQSFSJC+zD6OHDIqnHTT2LPgWyihlhm9ovTRi2JI6VAZxp0/yqvrO6yMXPMM8a3L+jxbN7YS9l9leA2ReWoGN71gNdoGg5vK8V1uRPzab8oajq81jf/Vw6f/1ycy5PLiiqD0FfJzsYQTU5U1oMDJ53i1MBDCoVttCqAEfKiV0vW9OCTXnrS12Pwq+XoF4+ywZtb7OP5egnq0kHvzRFJ/dSzdrnPCHkeNKANib7GtrzNhu/tvhtNsNQqtoz+iqoZJHYzTX30WU3n0gMIk5NsPi2g9Jgub1e1q2fctc0VRwsOiiBOThQXRruSZnthXbpeaArmgYhiB/xJcBfMJp0oz69E7qH6BiI5J0uTdK3EFzQSYAEAyKjOxpNDDrmhPaJfUpnfcFfdRLLS6GgWzJQX5kFd8s6qIxm8E/V1VBEWtHTGGK/Ji3j/U3Y+UL928o3TbnSTh80RLOfObqSsv88lqRWMbO4fO/H+SkYd0FPZEFlWpeJNfgU7i0eybPRWLmKuFvhmCs+I6IrLCiH4=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6263.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(39860400002)(136003)(376002)(366004)(346002)(451199018)(186003)(66476007)(6506007)(41300700001)(86362001)(2616005)(83380400001)(53546011)(38100700002)(31696002)(36756003)(54906003)(316002)(110136005)(66946007)(6486002)(66556008)(8676002)(4326008)(6666004)(478600001)(36916002)(6512007)(44832011)(2906002)(8936002)(31686004)(5660300002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?dU1SWFlFNjk2czMwMFEzd2dROE9pWGk2elNoTnpCNDc3M2ZIcTRYK2NJcnlu?=
- =?utf-8?B?UlFuUnd0WnJ0SisxQXp0OFVjRkl2UVR1Y0ZyL3JaUE1TSTFBaTViaFJ5RFB3?=
- =?utf-8?B?ZnhMS1RpWDdKcjB0eXY0d2JSSk9RWHZRNiszV00zaHJQeml2b3I3UVgvdjJr?=
- =?utf-8?B?WDE0SkpvWVlOUTI3dlJuQlZZbnMwQUloSmo4MUhyNE5mWUNMRWpPQ2o1akM1?=
- =?utf-8?B?NndaNlVYVU1ST0JGSlVxeUk1YmhmRXpHUnIxaEIvaHhRK2ZVaWtPLzJERXNP?=
- =?utf-8?B?bXpIUWRJMGxVYi9VTnhBOWFjeUl1dGFJWmF1T20wcUdGQUI1T3BKODZ4U0N1?=
- =?utf-8?B?ejEwUVVOTWliNEh4RkZ5czRuUW9xaVVicFBuZzl1MjIrczBZRElzQmlqR1VY?=
- =?utf-8?B?ek5vUkFmQjJoRkorSis5blVpNlh6bjl1UzNJNHFDVE02K0ZHMFkxSjVGSGZC?=
- =?utf-8?B?VnY0MU9vWWVmYkdjVHY2WTFsRzhiOXgzZlYwaldwY1ozWCtHWFNPcjkrRVZ3?=
- =?utf-8?B?NUQ2MjR2dEprZTc1TFpaRVZIbXRxNGdxMTF2ZTVJZWlDV05pb2JVaTg1YW9y?=
- =?utf-8?B?dVpIanpBdnQ3ZmFVRWt4U3ovNDV3UUttQkpzZHIwWTJPbUpZZFloZERrQ05H?=
- =?utf-8?B?THVxU0d3YjlKWW1RSFNSSTRLVFZNQzM2U2VnYmRDWkJ0SDBaUFlaRXk2eDdL?=
- =?utf-8?B?S3dhZ2lxdzBNZHpCMGMrVDFINHE0K21TRW5hRVNIL3dKRG9ySzUyMFQ5NTk0?=
- =?utf-8?B?bFhIZ0JmdG56MS8yU0lxcWFCTXB0M2I3bE9GUzFEd3IxRVJGTzFLUW9sM3dX?=
- =?utf-8?B?L0Q3Q3dGME56TkxtWkkrMjdWdUcxcno3R1NMbDJ3dnM3WWhFWmpqR0RMWGh6?=
- =?utf-8?B?amtLbENrVElpNkRCbDFUbndQM0s3Z1F2VXhGT2xzK3JFc3JQRUM3VGxzclpp?=
- =?utf-8?B?STdBZElBWGRCTUluMDRRVEV0MzJnLzAwdk1mcEh1Q2ROSDNycldYcGRJVDRL?=
- =?utf-8?B?bUlxWG5xNnFrZ004Z1l1Y3dxSkFieHZQTUVoS3k0SS85SWhDcFFqdE9vZnpz?=
- =?utf-8?B?aDVwSHhxT1lIUHNQTDFUYVMxamdPeEdtWWFtS3kzQkdRQ0hkNmRGVUhHWlZq?=
- =?utf-8?B?U0psWFFKUkxpcFQ2SmIrcjYzOElPdFBzWkFMSkJ4MTg1bjVGMGovYXFsVFox?=
- =?utf-8?B?SlhBc1l5QzE5L0piTmxPdUI3a2FGVkdxVm1CbFFTczVHSlVoZXRmeURQUlc2?=
- =?utf-8?B?cFg2SkVBRWZ4a0R3SEhQZGtMU1dSNTBua1ZJSGw0ckZ4ZW5RUklDbzRYSE9m?=
- =?utf-8?B?WlFCbWsxQThmeit6VjZUNGE3Q2FBcFgrdk4xWjJKTnRKdTBXMU53UFNadm1C?=
- =?utf-8?B?V09nZkVabDg0TkY2L0RJL0JJVHFyNUlMaVZkd2xJWXoyWkxWVllYb1JoaGpF?=
- =?utf-8?B?SlhmbDVnK0JYNlpDQ3lHb09EcnJzRll3dWZlcGFiTFBhWEh5bnU1dEppRGtw?=
- =?utf-8?B?dVV0cGR2VTE4TFBwL2NmV1VMVHlXU1NHTDMvYkcwbDErTS9JaDJLeWxPK0tq?=
- =?utf-8?B?czRZY0dKcjhRQVBWR1ZqNzVlQ3ZoMU5iRGdHU1djM2o5RWFjMTBoczhOLzRo?=
- =?utf-8?B?RzU5WFFtVnRuUG92dkFya3R1bXh0aDRXM1dnK2ZIVGNUUWladjdpZlpzY29G?=
- =?utf-8?B?dEMvY2U3MDNZeEdEU2o2cUozUGU4ZGllaUxmcDY2VHpIMHlwUlBlZlJ1ZDlE?=
- =?utf-8?B?NVVSR082TmdxYWxZQlZLNHhJL3ZiK2JLWXkyei9iUS94WURuWklvcDBHK2VO?=
- =?utf-8?B?K04wYkVlMEFMdU9NSUd1aGFTQmNHVy9GYWJ3Y3pBZ1FaU3VwZFpocFVMRi9p?=
- =?utf-8?B?MGZUUUlmei9Rd0syaVBSaWJaeFB6L3U3ZStpd2tnUXRrckNLeDNQNmsxYkdN?=
- =?utf-8?B?NmxQcjc3VCs0c2FtT3RRY0JvRytZN214di9kZVFnVSt4RFUvcWpnUzhOcE5o?=
- =?utf-8?B?TythMFBrV3dHNUMxVS9KMnNhUjAwSktTSzFNTUZZRGVHTG9hU0NGK3p0M3M2?=
- =?utf-8?B?SnpmenZLUyt5b0xLakxTNzNsZ3o2K2M2TUsvNWd6WExCWGc2N2FpNTdERmtT?=
- =?utf-8?B?bVF0eFMxd3NsWFEyTHJ5S1B1N2UrVTRJOHA5aUhBa0R3TUwxSTB3aFUyTGlO?=
- =?utf-8?Q?NyYwzY+TKet25xcXrCbcpa/yaX/Phu1mg3u3Rnvm1J2e?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 32414902-764f-4983-9269-08db04b6a5cc
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6263.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2023 00:44:31.6683
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7cTVLez3fwW4c/yNafEH3G6tFyckyk5To4mK3sa8/GDgOnc3FKsME8PSCiRwyEKJqjdJg/TIVTA+iUDsLUT1gg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6574
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <d363902d-e465-8411-0c1e-58411b3a19b0@xs4all.nl>
+X-Chocolate: 70 percent or better cocoa solids preferably
+X-Operating-System: Linux/5.10.0-12-amd64 (x86_64)
+X-Uptime: 02:48:30 up 327 days, 13:14,  1 user,  load average: 0.00, 0.00,
+ 0.00
+User-Agent: Mutt/2.0.5 (2021-01-21)
 
-Not sure what that '@' is doing in the subject line...
+* Hans Verkuil (hverkuil@xs4all.nl) wrote:
+> Hi Dave,
 
-On 1/30/23 2:38 AM, Gavrilov Ilia wrote:
-> The 'acpiid' buffer in the parse_ivrs_acpihid function may overflow,
-> because the string specifier in the format string sscanf()
-> has no width limitation.
-> 
-> Found by InfoTeCS on behalf of Linux Verification Center
-> (linuxtesting.org) with SVACE.
-> 
-> Fixes: ca3bf5d47cec ("iommu/amd: Introduces ivrs_acpihid kernel parameter")
-> Signed-off-by: Ilia.Gavrilov <Ilia.Gavrilov@infotecs.ru>
+Hi Hans,
+  Thanks for the reply,
 
-cc: stable?
+> It is probably related to the use of VM_IOREMAP in drivers/media/v4l2-cor=
+e/videobuf-dma-sg.c.
+>=20
+> If you drop that flag, does it work?
 
-> ---
->   drivers/iommu/amd/init.c | 16 +++++++++++++++-
->   1 file changed, 15 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-> index 467b194975b3..19a46b9f7357 100644
-> --- a/drivers/iommu/amd/init.c
-> +++ b/drivers/iommu/amd/init.c
-> @@ -3475,15 +3475,26 @@ static int __init parse_ivrs_hpet(char *str)
->   	return 1;
->   }
->   
-> +#define ACPIID_LEN (ACPIHID_UID_LEN + ACPIHID_HID_LEN)
-> +
->   static int __init parse_ivrs_acpihid(char *str)
->   {
->   	u32 seg = 0, bus, dev, fn;
->   	char *hid, *uid, *p, *addr;
-> -	char acpiid[ACPIHID_UID_LEN + ACPIHID_HID_LEN] = {0};
-> +	char acpiid[ACPIID_LEN] = {0};
->   	int i;
->   
->   	addr = strchr(str, '@');
->   	if (!addr) {
-> +		addr = strchr(str, '=');
-> +		if (!addr)
-> +			goto not_found;
-> +
-> +		++addr;
-> +
-> +		if (strlen(addr) > ACPIID_LEN)
-> +			goto not_found;
-> +
->   		if (sscanf(str, "[%x:%x.%x]=%s", &bus, &dev, &fn, acpiid) == 4 ||
->   		    sscanf(str, "[%x:%x:%x.%x]=%s", &seg, &bus, &dev, &fn, acpiid) == 5) {
->   			pr_warn("ivrs_acpihid%s option format deprecated; use ivrs_acpihid=%s@%04x:%02x:%02x.%d instead\n",
-> @@ -3496,6 +3507,9 @@ static int __init parse_ivrs_acpihid(char *str)
->   	/* We have the '@', make it the terminator to get just the acpiid */
->   	*addr++ = 0;
->   
-> +	if (strlen(str) > ACPIID_LEN + 1)
-> +		goto not_found;
-> +
->   	if (sscanf(str, "=%s", acpiid) != 1)
->   		goto not_found;
->   
+No, doesn't seem to change it unfortunately.
 
-That works, or, this fix might be able to be made more brief if
-we could transform all the sscanf's '%s's to:
+> I'm not really sure what it does in the first place,
+> or if it should be used at all. The videobuf code is very old and messy.
 
-"%" __stringify(ACPIID_LEN) "s"
+It seems to have come from commit 7b4eeed174b71c325705ff8c53f333bc79d0ee7a
+that's some Xen related hack to get allocation under 4GB at the Xen layer
+I think; but I can't say I understand how.
 
-but the latter might make the already long sscanf line lengths longer...
+> In fact, the plan is to replace the old and deprecated videobuf framework=
+ by the vb2
+> framework in the bttv driver in the next 2-3 months or so. That will also=
+ automatically
+> solve this problem.
 
-Either way:
+Yeh I realised things were moving in that direction once I started
+poking at this code and saw patches for other drivers on the list.
 
-Reviewed-by: Kim Phillips <kim.phillips@amd.com>
+Dave
 
-Kim
+> Regards,
+>=20
+> 	Hans
+>=20
+> On 01/02/2023 17:26, Dr. David Alan Gilbert wrote:
+> > Hi,
+> >   I've got a regression that started out somewhere around 5.17
+> > that's triggered in the v4l/bttv code when IOMMU is enabled.
+> >=20
+> > A bisection got me to:
+> >=20
+> > GOOD [37fcacb50be7071d146144a6c5c5bf0194b9a1cf] phy: PHY_FSL_LYNX_28G s=
+hould depend on ARCH_LAYERSCAPE
+> > BAD [f5ff79fddf0efecca538046b5cc20fb3ded2ec4f] dma-mapping: remove CONF=
+IG_DMA_REMAP
+> > GOOD [e62c17f0455a74b182ce6373e2777817256afaa1] MAINTAINERS: update mai=
+ntainer list of DMA MAPPING BENCHMARK
+> > GOOD [0fb3436b4b36cf69f4544385aa2bb8c5a4913509] sparc: Remove usage of =
+the deprecated "pci-dma-compat.h" API
+> > GOOD [fba09099c6e506608e05e08ac717bf34501f821b] media: v4l2-pci-skeleto=
+n: Remove usage of the deprecated "pci-dma-compat.h" API
+> >=20
+> > dg@major:~/kernel/kernel-clone$ git bisect good
+> > f5ff79fddf0efecca538046b5cc20fb3ded2ec4f is the first bad commit
+> > commit f5ff79fddf0efecca538046b5cc20fb3ded2ec4f
+> > Author: Christoph Hellwig <hch@lst.de>
+> > Date:   Sat Feb 26 16:40:21 2022 +0100
+> >=20
+> >     dma-mapping: remove CONFIG_DMA_REMAP
+> >=20
+> > It still happens on 6.2rc6
+> >=20
+> > a) Trigger
+> >=20
+> >    cat /dev/vbi0 > /dev/null
+> >=20
+> >   (Originally found using Alistair Buxton's Teletext recovery script)
+> >=20
+> >   xawtv works fine on this card/box, so it's only the vbi that seems to
+> >    be upset.
+> >=20
+> > b) Symptom
+> >   On head we get:
+> > Feb 01 13:58:00 major kernel: ------------[ cut here ]------------
+> > Feb 01 13:58:00 major kernel: WARNING: CPU: 1 PID: 899 at mm/vmalloc.c:=
+490 __vmap_pages_range_noflush+0x3e4/0x4e0
+> > Feb 01 13:58:00 major kernel: Modules linked in: rfkill qrtr intel_powe=
+rclamp tuner_simple tuner_types tuner coretemp tda7432 kvm_intel binfmt_mis=
+c snd_hda_codec_via snd_hda_codec_generic tvaudio kvm msp3400 snd_hda_codec=
+_hdmi ledtrig_a>
+> > Feb 01 13:58:00 major kernel:  firewire_ohci r8169 scsi_mod realtek mdi=
+o_devres crc32c_intel libphy lpc_ich firewire_core i2c_smbus usb_common scs=
+i_common crc_itu_t button
+> > Feb 01 13:58:00 major kernel: CPU: 1 PID: 899 Comm: cat Tainted: G     =
+     I        6.2.0-rc6dg #21
+> > Feb 01 13:58:00 major kernel: Hardware name: To Be Filled By O.E.M. To =
+Be Filled By O.E.M./P55M Pro, BIOS P1.50 09/10/2009
+> > Feb 01 13:58:00 major kernel: RIP: 0010:__vmap_pages_range_noflush+0x3e=
+4/0x4e0
+> > Feb 01 13:58:00 major kernel: Code: 48 48 83 c6 08 4d 39 d6 0f 85 39 fd=
+ ff ff 48 83 c4 58 31 c0 5b 5d 41 5c 41 5d 41 5e 41 5f c3 cc cc cc cc 0f 0b=
+ e9 5f fc ff ff <0f> 0b b8 f4 ff ff ff e9 bd fc ff ff 48 8b 4c 24 18 48 31 =
+cf 48 21
+> > Feb 01 13:58:00 major kernel: RSP: 0018:ffffb02a41773c30 EFLAGS: 000102=
+46
+> > Feb 01 13:58:00 major kernel: RAX: 000000000004dc48 RBX: ffff894a2b4da2=
+00 RCX: ffffe7c549054640
+> > Feb 01 13:58:00 major kernel: RDX: 000000026e241519 RSI: 00000000000000=
+00 RDI: 000000026e241519
+> > Feb 01 13:58:00 major kernel: RBP: 0000000000000000 R08: 00000000000009=
+b8 R09: ffffb02a41850000
+> > Feb 01 13:58:00 major kernel: R10: ffffb02a41850000 R11: ffffb02a418510=
+00 R12: 8000000000000063
+> > Feb 01 13:58:00 major kernel: R13: ffffb02a41840000 R14: ffffb02a418500=
+00 R15: ffff894a2c360380
+> > Feb 01 13:58:00 major kernel: FS:  00007fd7738c0740(0000) GS:ffff894a2f=
+c40000(0000) knlGS:0000000000000000
+> > Feb 01 13:58:00 major kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 00000000=
+80050033
+> > Feb 01 13:58:00 major kernel: CR2: 00007fd77389e000 CR3: 000000011f21e0=
+00 CR4: 00000000000006e0
+> > Feb 01 13:58:00 major kernel: Call Trace:
+> > Feb 01 13:58:00 major kernel:  <TASK>
+> > Feb 01 13:58:00 major kernel:  vmap+0xa7/0x100
+> > Feb 01 13:58:00 major kernel:  __videobuf_iolock+0x5b2/0x670 [videobuf_=
+dma_sg]
+> > Feb 01 13:58:00 major kernel:  vbi_buffer_prepare+0x1b2/0x2c0 [bttv]
+> > Feb 01 13:58:00 major kernel:  __videobuf_read_start+0xb9/0x1d0 [videob=
+uf_core]
+> > Feb 01 13:58:00 major kernel:  videobuf_read_stream+0x2d7/0x330 [videob=
+uf_core]
+> > Feb 01 13:58:00 major kernel:  bttv_read+0xc8/0x210 [bttv]
+> > Feb 01 13:58:00 major kernel:  v4l2_read+0x73/0x90 [videodev]
+> > Feb 01 13:58:00 major kernel:  vfs_read+0xa9/0x2d0
+> > Feb 01 13:58:00 major kernel:  ? handle_mm_fault+0xd7/0x2b0
+> > Feb 01 13:58:00 major kernel:  ksys_read+0x67/0xe0
+> > Feb 01 13:58:00 major kernel:  do_syscall_64+0x3e/0x90
+> > Feb 01 13:58:00 major kernel:  entry_SYSCALL_64_after_hwframe+0x72/0xdc
+> > Feb 01 13:58:00 major kernel: RIP: 0033:0x7fd7739bb0ed
+> > Feb 01 13:58:00 major kernel: Code: 31 c0 e9 c6 fe ff ff 50 48 8d 3d f6=
+ 54 0a 00 e8 39 fe 01 00 66 0f 1f 84 00 00 00 00 00 80 3d f1 24 0e 00 00 74=
+ 17 31 c0 0f 05 <48> 3d 00 f0 ff ff 77 5b c3 66 2e 0f 1f 84 00 00 00 00 00 =
+48 83 ec
+> > Feb 01 13:58:00 major kernel: RSP: 002b:00007fffe000df38 EFLAGS: 000002=
+46 ORIG_RAX: 0000000000000000
+> > Feb 01 13:58:00 major kernel: RAX: ffffffffffffffda RBX: 00000000000200=
+00 RCX: 00007fd7739bb0ed
+> > Feb 01 13:58:00 major kernel: RDX: 0000000000020000 RSI: 00007fd77389f0=
+00 RDI: 0000000000000003
+> > Feb 01 13:58:00 major kernel: RBP: 0000000000020000 R08: 00000000ffffff=
+ff R09: 0000000000000000
+> > Feb 01 13:58:00 major kernel: R10: 00007fd7738d2b40 R11: 00000000000002=
+46 R12: 00007fd77389f000
+> > Feb 01 13:58:00 major kernel: R13: 0000000000000003 R14: 00000000000200=
+00 R15: 0000000000000000
+> > Feb 01 13:58:00 major kernel:  </TASK>
+> > Feb 01 13:58:00 major kernel: ---[ end trace 0000000000000000 ]---
+> >=20
+> > On the first version after the bisect the failure is a BUG rather than =
+the warn:
+> >=20
+> > [   78.988024] BUG: unable to handle page fault for address: ffffbd7fc1=
+100000
+> > [   78.988033] #PF: supervisor write access in kernel mode
+> > [   78.988036] #PF: error_code(0x000b) - reserved bit violation
+> > [   78.988038] PGD 100000067 P4D 100000067 PUD 1001a6067 PMD 22b791067 =
+PTE 8000270800cb9063
+> > [   78.988046] Oops: 000b [#1] PREEMPT SMP PTI
+> > [   78.988050] CPU: 7 PID: 879 Comm: cat Tainted: G          I       5.=
+17.0-rc1dg+ #20
+> > [   78.988054] Hardware name: To Be Filled By O.E.M. To Be Filled By O.=
+E.M./P55M Pro, BIOS P1.50 09/10/2009
+> > [   78.988056] RIP: 0010:__memset+0x24/0x30
+> > [   78.988063] Code: cc cc cc cc cc cc 0f 1f 44 00 00 49 89 f9 48 89 d1=
+ 83 e2 07 48 c1 e9 03 40 0f b6 f6 48 b8 01 01 01 01 01 01 01 01 48 0f af c6=
+ <f3> 48 ab 89 d1 f3 aa 4c 89 c8 c3 90 49 89 f9 40 88 f0 48 89 d1 f3
+> > [   78.988067] RSP: 0018:ffffbd7fc0cc7d50 EFLAGS: 00010206
+> > [   78.988071] RAX: 0000000000000000 RBX: ffff9679eb788a88 RCX: 0000000=
+000002000
+> > [   78.988073] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffbd7=
+fc1100000
+> > [   78.988076] RBP: 0000000080000000 R08: 0000000000000000 R09: ffffbd7=
+fc1100000
+> > [   78.988079] R10: 0000000000010000 R11: ffffbd7fc1100000 R12: 0000000=
+000000010
+> > [   78.988081] R13: 0000000000000010 R14: ffff9679ec8e4130 R15: 0000000=
+000000010
+> > [   78.988084] FS:  00007f91fb65a740(0000) GS:ffff9679efdc0000(0000) kn=
+lGS:0000000000000000
+> > [   78.988087] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > [   78.988090] CR2: ffffbd7fc1100000 CR3: 000000022ce02000 CR4: 0000000=
+0000006e0
+> > [   78.988093] Call Trace:
+> > [   78.988096]  <TASK>
+> > [   78.988100]  __videobuf_iolock+0x5cd/0x659 [videobuf_dma_sg]
+> > [   78.988110]  vbi_buffer_prepare+0x1aa/0x2b0 [bttv]
+> > [   78.988125]  __videobuf_read_start+0xb9/0x1d0 [videobuf_core]
+> > [   78.988133]  videobuf_read_stream+0x2cb/0x330 [videobuf_core]
+> > [   78.988140]  bttv_read+0xc5/0x1d0 [bttv]
+> > [   78.988151]  v4l2_read+0x6b/0x80 [videodev]
+> > [   78.988169]  vfs_read+0x97/0x190
+> > [   78.988175]  ksys_read+0x63/0xe0
+> > [   78.988179]  do_syscall_64+0x3a/0x80
+> > [   78.988185]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> > [   78.988191] RIP: 0033:0x7f91fb7550ed
+> > [   78.988194] Code: 31 c0 e9 c6 fe ff ff 50 48 8d 3d f6 54 0a 00 e8 39=
+ fe 01 00 66 0f 1f 84 00 00 00 00 00 80 3d f1 24 0e 00 00 74 17 31 c0 0f 05=
+ <48> 3d 00 f0 ff ff 77 5b c3 66 2e 0f 1f 84 00 00 00 00 00 48 83 ec
+> > [   78.988198] RSP: 002b:00007ffdad058348 EFLAGS: 00000246 ORIG_RAX: 00=
+00000000000000
+> > [   78.988202] RAX: ffffffffffffffda RBX: 0000000000020000 RCX: 00007f9=
+1fb7550ed
+> > [   78.988204] RDX: 0000000000020000 RSI: 00007f91fb350000 RDI: 0000000=
+000000003
+> > [   78.988207] RBP: 0000000000020000 R08: 00000000ffffffff R09: 0000000=
+000000000
+> > [   78.988209] R10: 00007f91fb66cb40 R11: 0000000000000246 R12: 00007f9=
+1fb350000
+> > [   78.988212] R13: 0000000000000003 R14: 0000000000020000 R15: 0000000=
+000000000
+> > [   78.988216]  </TASK>
+> > [   78.988218] Modules linked in: rfkill qrtr tuner_simple tuner_types =
+intel_powerclamp coretemp tuner snd_hda_codec_via tda7432 kvm_intel snd_hda=
+_codec_generic snd_hda_codec_hdmi tvaudio ledtrig_audio msp3400 snd_hda_int=
+el kvm snd_intel_dspcfg bttv snd_intel_sdw_acpi snd_hda_codec irqbypass tea=
+575x snd_hda_core tveeprom videobuf_dma_sg intel_cstate videobuf_core video=
+dev snd_hwdep snd_bt87x intel_uncore snd_pcm serio_raw pcspkr iTCO_wdt i7co=
+re_edac mc joydev intel_pmc_bxt snd_timer iTCO_vendor_support snd watchdog =
+soundcore sg evdev acpi_cpufreq firewire_sbp2 fuse msr configfs efi_pstore =
+ip_tables x_tables autofs4 ext4 crc32c_generic crc16 mbcache jbd2 nouveau s=
+d_mod t10_pi crc_t10dif crct10dif_generic ata_generic crct10dif_common hid_=
+generic usbhid hid mxm_wmi wmi video i2c_algo_bit drm_ttm_helper ttm drm_km=
+s_helper cec rc_core drm ahci libahci pata_via libata ehci_pci ehci_hcd psm=
+ouse r8169 usbcore scsi_mod crc32c_intel realtek i2c_i801 mdio_devres i2c_s=
+mbus libphy firewire_ohci
+> > [   78.988301]  firewire_core lpc_ich usb_common scsi_common crc_itu_t =
+button
+> > [   78.988311] CR2: ffffbd7fc1100000
+> > [   78.988314] ---[ end trace 0000000000000000 ]---
+> > [   78.988316] RIP: 0010:__memset+0x24/0x30
+> > [   78.988320] Code: cc cc cc cc cc cc 0f 1f 44 00 00 49 89 f9 48 89 d1=
+ 83 e2 07 48 c1 e9 03 40 0f b6 f6 48 b8 01 01 01 01 01 01 01 01 48 0f af c6=
+ <f3> 48 ab 89 d1 f3 aa 4c 89 c8 c3 90 49 89 f9 40 88 f0 48 89 d1 f3
+> > [   78.988324] RSP: 0018:ffffbd7fc0cc7d50 EFLAGS: 00010206
+> > [   78.988327] RAX: 0000000000000000 RBX: ffff9679eb788a88 RCX: 0000000=
+000002000
+> > [   78.988329] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffbd7=
+fc1100000
+> > [   78.988332] RBP: 0000000080000000 R08: 0000000000000000 R09: ffffbd7=
+fc1100000
+> > [   78.988334] R10: 0000000000010000 R11: ffffbd7fc1100000 R12: 0000000=
+000000010
+> > [   78.988337] R13: 0000000000000010 R14: ffff9679ec8e4130 R15: 0000000=
+000000010
+> > [   78.988340] FS:  00007f91fb65a740(0000) GS:ffff9679efdc0000(0000) kn=
+lGS:0000000000000000
+> > [   78.988343] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > [   78.988346] CR2: ffffbd7fc1100000 CR3: 000000022ce02000 CR4: 0000000=
+0000006e0
+> >=20
+> > c) Hardware
+> >   Motherboard: ASRock P55M Pro=20
+> >     + 8GB RAM
+> >   Video capture card: Hauppage WinTV 44805
+> >      That's a 32bit PCI card
+> >   =20
+> > 01:00.0 Multimedia video controller: Brooktree Corporation Bt878 Video =
+Capture (rev 11)
+> > 	Subsystem: Hauppauge computer works Inc. WinTV Series
+> > 	Flags: bus master, medium devsel, latency 32, IRQ 21, IOMMU group 15
+> > 	Memory at d5bfe000 (32-bit, prefetchable) [size=3D4K]
+> > 	Capabilities: [44] Vital Product Data
+> > 	Capabilities: [4c] Power Management version 2
+> > 	Kernel driver in use: bttv
+> > 	Kernel modules: bttv
+> >=20
+> > 01:00.1 Multimedia controller: Brooktree Corporation Bt878 Audio Captur=
+e (rev 11)
+> > 	Subsystem: Hauppauge computer works Inc. WinTV Series
+> > 	Flags: bus master, medium devsel, latency 32, IRQ 21, IOMMU group 15
+> > 	Memory at d5bff000 (32-bit, prefetchable) [size=3D4K]
+> > 	Capabilities: [44] Vital Product Data
+> > 	Capabilities: [4c] Power Management version 2
+> > 	Kernel driver in use: snd_bt87x
+> > 	Kernel modules: snd_bt87x
+> >=20
+> > d) Bug link
+> >    https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D1029968
+> >    I origianlly triggered this on Debian 12's kernel which has iommu on
+> >    by default, but it triggers on upstream as long as I turn iommu on
+> >=20
+> > e) kernel command line
+> >    root=3DUUID=3Dbce3fb05-edb4-4c73-b71d-86707031ffd1 ro intel_iommu=3D=
+on intremap=3Dnosid quiet
+> >=20
+> >    The intremap issue is a long known problem on this board.
+> >=20
+> > f) Some more debug
+> >=20
+> > I added some more debug:
+> >         switch (vb->memory) {
+> >         case V4L2_MEMORY_MMAP:
+> >         case V4L2_MEMORY_USERPTR:
+> > +                pr_warn("__videobuf_iolock: USERPTR case; size=3D%zx b=
+addr=3D%lx bsize=3D%lx\n",
+> > +                        vb->size, vb->baddr, vb->bsize);
+> >                 if (0 =3D=3D vb->baddr) {
+> >                         /* no userspace addr -- kernel bounce buffer */
+> >                         pages =3D PAGE_ALIGN(vb->size) >> PAGE_SHIFT;
+> >=20
+> > [  890.606742] __videobuf_iolock: USERPTR case; size=3D10000 baddr=3D0 =
+bsize=3D10000
+> >=20
+> > +++ b/mm/vmalloc.c
+> > @@ -487,8 +487,11 @@ static int vmap_pages_pte_range(pmd_t *pmd, unsign=
+ed long addr,
+> >                         return -EBUSY;
+> >                 if (WARN_ON(!page))
+> >                         return -ENOMEM;
+> > -               if (WARN_ON(!pfn_valid(page_to_pfn(page))))
+> > +               if (WARN_ON(!pfn_valid(page_to_pfn(page)))) {
+> > +                        pr_warn("vmap_pages_pte_range pfn not valid nr=
+=3D%d page=3D%p pfn=3D%lx addr=3D%lx end=3D%lx\n",
+> > +                                 *nr, page, page_to_pfn(page), addr, e=
+nd);
+> >                         return -EINVAL;
+> > +                }
+> >=20
+> > [  395.134606] vmap_pages_pte_range pfn not valid nr=3D0 page=3D0000000=
+0ec8bb27c pfn=3D1b0280053 addr=3Dffffaaef00ce0000 end=3Dffffaaef00cf0000
+> >=20
+> > g) Note
+> > There are some DMAR warnings during boot, so I'm not sure if it's
+> > just this system or not, but hmm I doubt it from the other debug?
+> > Feb 01 15:38:31 major kernel: DMAR: Host address width 36
+> > Feb 01 15:38:31 major kernel: DMAR: DRHD base: 0x000000fed91000 flags: =
+0x0
+> > Feb 01 15:38:31 major kernel: DMAR: dmar0: reg_base_addr fed91000 ver 1=
+:0 cap c9008010e60262 ecap f0206a
+> > Feb 01 15:38:31 major kernel: DMAR: DRHD base: 0x000000fed90000 flags: =
+0x1
+> > Feb 01 15:38:31 major kernel: DMAR: dmar1: reg_base_addr fed90000 ver 1=
+:0 cap c90780106f0462 ecap f020ea
+> > Feb 01 15:38:31 major kernel: DMAR: RMRR base: 0x000000000e4000 end: 0x=
+000000000e8bff
+> > Feb 01 15:38:31 major kernel: DMAR: [Firmware Bug]: Your BIOS is broken=
+; bad RMRR [0x00000000000e4000-0x00000000000e8bff]
+> >                               BIOS vendor: American Megatrends Inc.; Ve=
+r: P1.50; Product Version: To Be Filled By O.E.M.
+> > Feb 01 15:38:31 major kernel: DMAR: RMRR base: 0x000000cf7eb400 end: 0x=
+000000cf7fffff
+> > Feb 01 15:38:31 major kernel: DMAR: [Firmware Bug]: Your BIOS is broken=
+; bad RMRR [0x00000000cf7eb400-0x00000000cf7fffff]
+> >                               BIOS vendor: American Megatrends Inc.; Ve=
+r: P1.50; Product Version: To Be Filled By O.E.M.
+> > Feb 01 15:38:31 major kernel: DMAR-IR: IOAPIC id 8 under DRHD base  0xf=
+ed90000 IOMMU 1
+> > Feb 01 15:38:31 major kernel: DMAR-IR: HPET id 0 under DRHD base 0xfed9=
+0000
+> > Feb 01 15:38:31 major kernel: DMAR-IR: IRQ remapping was enabled on dma=
+r0 but we are not in kdump mode
+> > Feb 01 15:38:31 major kernel: DMAR: DRHD: handling fault status reg 400
+> > Feb 01 15:38:31 major kernel: DMAR-IR: IRQ remapping was enabled on dma=
+r1 but we are not in kdump mode
+> > Feb 01 15:38:31 major kernel: DMAR-IR: Enabled IRQ remapping in xapic m=
+ode
+> > Feb 01 15:38:31 major kernel: ..TIMER: vector=3D0x30 apic1=3D0 pin1=3D2=
+ apic2=3D-1 pin2=3D-1
+> >=20
+> > Thanks in advance for any suggestions,
+> >=20
+> > Dave
+> >=20
+>=20
+--=20
+ -----Open up your eyes, open up your mind, open up your code -------  =20
+/ Dr. David Alan Gilbert    |       Running GNU/Linux       | Happy  \=20
+\        dave @ treblig.org |                               | In Hex /
+ \ _________________________|_____ http://www.treblig.org   |_______/
