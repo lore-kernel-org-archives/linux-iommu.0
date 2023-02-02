@@ -1,98 +1,109 @@
-Received: from mx.treblig.org (mx.treblig.org [46.43.15.161])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F52D8F43
-	for <iommu@lists.linux.dev>; Thu,  2 Feb 2023 17:09:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=treblig.org
-	; s=bytemarkmx; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID
-	:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID
-	:Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-	Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe
-	:List-Post:List-Owner:List-Archive;
-	bh=FgJ1MpEAedxgRW92zU8Oq1Rlz5dibZ2q/uh+lDC8C1s=; b=K3ceqWXBPGBOcpnSN5X9Yy12pi
-	mYF++2H/Ro6jIt+ddYjdDxkr8ZWQrwxhwMLM5n2ngKS0qO7TUDyHiW04c35b2jRT/ljeX/NRZoDCz
-	sXchYBAIgR84pgLmNwOGGiJQcdozeg5zYkLzmMRGWPgkhhbctfgKAth9o8+KJg9KehddYdrWP/QGH
-	SJBgq9zLSeSHaRLWh7li+I73/iGIp0f1T5icwCEegART9hrIC0wbETcZMuqLzmS3aR+x5yg7mEen0
-	+rrXqRgBAp7wwIqCmXq/Y8/PcevVy8++7v7LMPdaWOusGh0nz5iL3mIthh0dTI9eaFnsRZZUPlTKO
-	r89C3y+w==;
-Received: from dg by mx.treblig.org with local (Exim 4.94.2)
-	(envelope-from <dg@treblig.org>)
-	id 1pNd53-001lSA-FT; Thu, 02 Feb 2023 17:09:01 +0000
-Date: Thu, 2 Feb 2023 17:09:01 +0000
-From: "Dr. David Alan Gilbert" <dave@treblig.org>
-To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux.dev, mchehab@kernel.org, linux-media@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: Regression: v4l/bttv vbi vs iommu
-Message-ID: <Y9vuLV+dQM/MpyWv@gallifrey>
-References: <Y9qSwkLxeMpffZK/@gallifrey>
- <20230202100926.GA14931@lst.de>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 305008F43
+	for <iommu@lists.linux.dev>; Thu,  2 Feb 2023 17:42:45 +0000 (UTC)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 312G70iv014674;
+	Thu, 2 Feb 2023 17:04:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=THmzzCVcKPPGZMPEbQflXm3IvB3LKRlax4gS3uPm2Cg=;
+ b=TrxNGHtP3zuDTiRB+QF5ll3EWkcYVujoAKXghE8rtaJu26XV8VJ/t7M8gt4vHbGaYr6u
+ wS0iwPRgWM3SvjC4k2ucaS6INccYjuM1SqIYAyfTLjka1cjjbprLkNXGU9yn9qD87yZd
+ mO+v2TqIqrACv71/CvbH1BuWsZYlNhkw3s4sCX4/TuV04c0BWj2sWALiK6jyXghQAG/0
+ fMXfZQRBe/fL4TwbDwbdDhB1om9qeKNpkpiGyKVaBD3Cy9+QkrRtBW2jt7DjwVbJCSG2
+ 1CKRQyOhVuQ/THAusffCDfNOC8uLwuMCLDjNr9nxNpYrebHbJGQ+eCQiDa5/Yo5lhYPc GQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nge3bwf46-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 02 Feb 2023 17:04:55 +0000
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 312G79gm016181;
+	Thu, 2 Feb 2023 17:04:54 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nge3bwf2k-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 02 Feb 2023 17:04:54 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+	by ppma04ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 312C25cu026867;
+	Thu, 2 Feb 2023 17:04:50 GMT
+Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
+	by ppma04ams.nl.ibm.com (PPS) with ESMTPS id 3ncvs7pf5n-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 02 Feb 2023 17:04:50 +0000
+Received: from smtpav06.fra02v.mail.ibm.com (smtpav06.fra02v.mail.ibm.com [10.20.54.105])
+	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 312H4kMv22217088
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 2 Feb 2023 17:04:47 GMT
+Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id D43692004B;
+	Thu,  2 Feb 2023 17:04:46 +0000 (GMT)
+Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 05CC320043;
+	Thu,  2 Feb 2023 17:04:45 +0000 (GMT)
+Received: from osiris (unknown [9.171.31.155])
+	by smtpav06.fra02v.mail.ibm.com (Postfix) with ESMTPS;
+	Thu,  2 Feb 2023 17:04:44 +0000 (GMT)
+Date: Thu, 2 Feb 2023 18:04:43 +0100
+From: Heiko Carstens <hca@linux.ibm.com>
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: torvalds@linux-foundation.org, corbet@lwn.net, will@kernel.org,
+        boqun.feng@gmail.com, mark.rutland@arm.com, catalin.marinas@arm.com,
+        dennis@kernel.org, tj@kernel.org, cl@linux.com, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, borntraeger@linux.ibm.com, svens@linux.ibm.com,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        joro@8bytes.org, suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
+        dwmw2@infradead.org, baolu.lu@linux.intel.com,
+        Arnd Bergmann <arnd@arndb.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>, davem@davemloft.net,
+        penberg@kernel.org, rientjes@google.com, iamjoonsoo.kim@lge.com,
+        Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz,
+        roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-s390@vger.kernel.org, iommu@lists.linux.dev,
+        linux-arch@vger.kernel.org, linux-crypto@vger.kernel.org
+Subject: Re: [PATCH v2 03/10] arch: Introduce
+ arch_{,try_}_cmpxchg128{,_local}()
+Message-ID: <Y9vtK1voirb1wUfW@osiris>
+References: <20230202145030.223740842@infradead.org>
+ <20230202152655.373335780@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230202100926.GA14931@lst.de>
-X-Chocolate: 70 percent or better cocoa solids preferably
-X-Operating-System: Linux/5.10.0-12-amd64 (x86_64)
-X-Uptime: 17:04:19 up 328 days,  3:30,  1 user,  load average: 0.00, 0.00,
- 0.00
-User-Agent: Mutt/2.0.5 (2021-01-21)
+In-Reply-To: <20230202152655.373335780@infradead.org>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: FHdsPEaqsFg45qSGo90As5Aep1zo1_oE
+X-Proofpoint-GUID: hpauW67JMPa2pJxw-_S6KStoX2TLt-s_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
+ definitions=2023-02-02_10,2023-02-02_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 bulkscore=0
+ phishscore=0 spamscore=0 adultscore=0 suspectscore=0 mlxlogscore=383
+ mlxscore=0 clxscore=1011 malwarescore=0 priorityscore=1501
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2302020148
 
-* Christoph Hellwig (hch@lst.de) wrote:
-> On Wed, Feb 01, 2023 at 04:26:42PM +0000, Dr. David Alan Gilbert wrote:
-> > f5ff79fddf0efecca538046b5cc20fb3ded2ec4f is the first bad commit
-> > commit f5ff79fddf0efecca538046b5cc20fb3ded2ec4f
-> > Author: Christoph Hellwig <hch@lst.de>
-> > Date:   Sat Feb 26 16:40:21 2022 +0100
-> > 
-> >     dma-mapping: remove CONFIG_DMA_REMAP
-
-Hi Christoph,
-  Thanks for having a look.
-
-> Which just enabled some code on common x86 configs that was already
-> used on many other platforms.  In other words:  the code already
-> was buggy, but got away with it on x86 so far as no one tested on
-> e.g. arm or arm64.
-
-I guess most of these are older PCI devices (that are on the older
-v4l api), and there were never a huge number of arm boxes with
-parallel PCI, and the ones that there were became even rarer
-by 2014 when this code was added.
-
-> The bug is in videobuf_dma_init_kernel:
+On Thu, Feb 02, 2023 at 03:50:33PM +0100, Peter Zijlstra wrote:
+> For all architectures that currently support cmpxchg_double()
+> implement the cmpxchg128() family of functions that is basically the
+> same but with a saner interface.
 > 
-> 	for (i = 0; i < nr_pages; i++) {
-> 		void *addr;
-> 
-> 		addr = dma_alloc_coherent(dma->dev, PAGE_SIZE,
-> 					  &(dma->dma_addr[i]), GFP_KERNEL);
-> 		if (addr == NULL)
-> 			goto out_free_pages;
-> 
-> 		dma->vaddr_pages[i] = virt_to_page(addr);
-> 	}
-> 	dma->vaddr = vmap(dma->vaddr_pages, nr_pages, VM_MAP | VM_IOREMAP,
-> 			  PAGE_KERNEL);
-> 
-> The address by dma_alloc_coherent is just a kernel virtual address,
-> and virt_to_page must not be used on it as it could be vmalloc (as in
-> this case) or various other really odd forms of memory.
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> ---
+>  arch/arm64/include/asm/atomic_ll_sc.h |   41 +++++++++++++++++++++++++
+>  arch/arm64/include/asm/atomic_lse.h   |   31 +++++++++++++++++++
+>  arch/arm64/include/asm/cmpxchg.h      |   26 ++++++++++++++++
+>  arch/s390/include/asm/cmpxchg.h       |   14 ++++++++
+>  arch/x86/include/asm/cmpxchg_32.h     |    3 +
+>  arch/x86/include/asm/cmpxchg_64.h     |   55 +++++++++++++++++++++++++++++++++-
+>  6 files changed, 168 insertions(+), 2 deletions(-)
 
-OK, so at least why we know it's broken, the temporary work around
-for most is turning the iommu off, and the long term fix is the new
-API.
-
-Thanks,
-
-Dave
-
--- 
- -----Open up your eyes, open up your mind, open up your code -------   
-/ Dr. David Alan Gilbert    |       Running GNU/Linux       | Happy  \ 
-\        dave @ treblig.org |                               | In Hex /
- \ _________________________|_____ http://www.treblig.org   |_______/
+For s390:
+Acked-by: Heiko Carstens <hca@linux.ibm.com>
