@@ -1,128 +1,167 @@
-Received: from mx0.infotecs.ru (mx0.infotecs.ru [91.244.183.115])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2042.outbound.protection.outlook.com [40.107.92.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BBE47F
-	for <iommu@lists.linux.dev>; Thu,  2 Feb 2023 08:26:59 +0000 (UTC)
-Received: from mx0.infotecs-nt (localhost [127.0.0.1])
-	by mx0.infotecs.ru (Postfix) with ESMTP id E8FC013ED236;
-	Thu,  2 Feb 2023 11:26:56 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mx0.infotecs.ru E8FC013ED236
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=infotecs.ru; s=mx;
-	t=1675326417; bh=P4Sz+Or5QkPB22EwbVluoSpgaCwjgCRN0S/0gr+vhzU=;
-	h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-	b=hUfRX5pCc32k5dkeDAzM5xQL98bzrQ3Aao7+lHC3atpQrZSEvTGKrTJgTNCRdhInz
-	 5Cq+8V1yFtZMGIhjlZFI0zE7ML7YCTbolOQOMvmQvQFF+5Z5pJZab22Xz2YBBsjUKM
-	 UWgefXPVUtuUUnMigIUKSqrqLVjIX2b9cqwahszs=
-Received: from msk-exch-01.infotecs-nt (msk-exch-01.infotecs-nt [10.0.7.191])
-	by mx0.infotecs-nt (Postfix) with ESMTP id E388D3069DA4;
-	Thu,  2 Feb 2023 11:26:56 +0300 (MSK)
-From: Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>
-To: "kim.phillips@amd.com" <kim.phillips@amd.com>
-CC: Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>, "Vincent.Wan@amd.com"
-	<Vincent.Wan@amd.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"joro@8bytes.org" <joro@8bytes.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "lvc-project@linuxtesting.org"
-	<lvc-project@linuxtesting.org>, "robin.murphy@arm.com"
-	<robin.murphy@arm.com>, "suravee.suthikulpanit@amd.com"
-	<suravee.suthikulpanit@amd.com>, "will@kernel.org" <will@kernel.org>,
-	"stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: [PATCH v2] iommu/amd: Add a length limitation for the ivrs_acpihid
- command-line parameter
-Thread-Topic: [PATCH v2] iommu/amd: Add a length limitation for the
- ivrs_acpihid command-line parameter
-Thread-Index: AQHZNuAcYYi++x82V0GUoMRoGydTPg==
-Date: Thu, 2 Feb 2023 08:26:56 +0000
-Message-ID: <20230202082719.1513849-1-Ilia.Gavrilov@infotecs.ru>
-References: <39506e9f-9bbb-fcf6-b488-542fd3657eae@amd.com>
-In-Reply-To: <39506e9f-9bbb-fcf6-b488-542fd3657eae@amd.com>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-originating-ip: [10.17.0.10]
-x-exclaimer-md-config: 208ac3cd-1ed4-4982-a353-bdefac89ac0a
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6867010FD
+	for <iommu@lists.linux.dev>; Thu,  2 Feb 2023 09:12:20 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Jb+i8/wVxVWXw+DRorhKaQVGZuKZxwEf2lByZ8aO/gZyv7IjlyXsOetamF4Qigss6RnpIS3Ty+xWKtsdfzfSecSMNSkAGvbQVg8/BUtci75k8ZBbjjQsXquGU/nnfzsbIWzDIu2NA7prRvpKcoj4NyU/zxvmwI/9bizx0a17Esptp6zb6o2F6E/nJp9tPw8dSBrMSM+NqM88zv0l3JpOi3Y6FIskZ3dzeSZVrIHhUapPFwq2Awv4gt4GSOj3Ymge6c6vzlaHCUNi9IrtT1kvz9nwkoCNWgY0liepfTJgjilfwyRNlLq01Uvneuj0iNkHqKcqeQlj4coFUGv7TWjfHg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3BoJeiXDh8VyLeak4L9Hv8q5BYHkZCOzGeqdFr2ks5s=;
+ b=Y+GgSHnWaF7lp9yG+Znh4L7ym9yqrhaSVxrefB1leQp+eQIUkyh5kNPiYl7lYRWQgmM056h/nYDI4iPeJrQefCdqjYjDw3xm1DtxhL3UXJHIZlPzsd+jMEgZGTE26O6VmjjZw4VhCpllazuNeFI0cDbYMmsiC3KUx7gy7isMrtX/7tJJjQAJCLDSaVU9R2fYYjWmZ8U4nF2u5WFeUvAjg8gdxLWyxqe1zQ9DKLpVq5FKlKXVb7QBFbb9vwR21vgMS6oiHdlopGowI+JXwD3oT1xZ23rOXUeROaLRdOc9+/jOdEtRWRhvu+stYHh+eJmY8Lv+JsF93ws8eM+H38dP9A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3BoJeiXDh8VyLeak4L9Hv8q5BYHkZCOzGeqdFr2ks5s=;
+ b=nufU93LL5qjoHCyqObPjHLTmLXVFJgBidMOvlbNikCs+CbJ0xSnsgJLpEfhGFksrmW6/eSJADByY5GG5D5S6Gn7LVzl8p2y66FbJizAVJshIxnoj/Cx5TC5eMYQcNexJ7hzhsh/Bz0LA8kqrkBzHmawVF52ls8PAr/j2wd0HomRjEpT/gG/KLdrrVNobkctypzDqvlB2/5phVYfGfQ/TMoV/jcj/ZntVi33iAgtgY7t7homEBWltQTwT+qoNZtRC7BnByKTxfGxjpTJCbMveyTJRcPZvTJ08KEZZJSBQ8mxmIZY9k79gMvihnmN3Aex0oKBJ9XNRoQsGIEFKV4Plxw==
+Received: from DM6PR12CA0022.namprd12.prod.outlook.com (2603:10b6:5:1c0::35)
+ by MN2PR12MB4405.namprd12.prod.outlook.com (2603:10b6:208:26d::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.27; Thu, 2 Feb
+ 2023 09:12:18 +0000
+Received: from DS1PEPF0000E632.namprd02.prod.outlook.com
+ (2603:10b6:5:1c0:cafe::c2) by DM6PR12CA0022.outlook.office365.com
+ (2603:10b6:5:1c0::35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.27 via Frontend
+ Transport; Thu, 2 Feb 2023 09:12:17 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ DS1PEPF0000E632.mail.protection.outlook.com (10.167.17.136) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6064.21 via Frontend Transport; Thu, 2 Feb 2023 09:12:17 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 2 Feb 2023
+ 01:12:07 -0800
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.36; Thu, 2 Feb 2023 01:12:07 -0800
+Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36 via Frontend
+ Transport; Thu, 2 Feb 2023 01:12:07 -0800
+Date: Thu, 2 Feb 2023 01:12:06 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <yi.l.liu@intel.com>
+CC: <kevin.tian@intel.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH v2 1/3] iommufd: Add devices_users to track the
+ hw_pagetable usage by device
+Message-ID: <Y9t+ZtnphowLFwr1@Asurada-Nvidia>
+References: <cover.1674939002.git.nicolinc@nvidia.com>
+ <c1c65ce093a3b585546dd17a77949efbe03a81d9.1674939002.git.nicolinc@nvidia.com>
+ <Y9fcAdFxl7GVSH9r@nvidia.com>
+ <Y9gaKaMKOf+P2NtK@Asurada-Nvidia>
+ <Y9gfbx/fszb0aTJn@nvidia.com>
+ <Y9gi0UaE1PlKVzmn@Asurada-Nvidia>
+ <Y9gqFwDNd3VKQvC3@nvidia.com>
+ <Y9guZhNve8A1DGL6@Asurada-Nvidia>
+ <Y9oZMTMRG4mL5FT1@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-KLMS-Rule-ID: 1
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Lua-Profiles: 175194 [Feb 02 2023]
-X-KLMS-AntiSpam-Version: 5.9.59.0
-X-KLMS-AntiSpam-Envelope-From: Ilia.Gavrilov@infotecs.ru
-X-KLMS-AntiSpam-Rate: 0
-X-KLMS-AntiSpam-Status: not_detected
-X-KLMS-AntiSpam-Method: none
-X-KLMS-AntiSpam-Auth: dkim=none
-X-KLMS-AntiSpam-Info: LuaCore: 502 502 69dee8ef46717dd3cb3eeb129cb7cc8dab9e30f6, {Tracking_from_domain_doesnt_match_to}, infotecs.ru:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
-X-MS-Exchange-Organization-SCL: -1
-X-KLMS-AntiSpam-Interceptor-Info: scan successful
-X-KLMS-AntiPhishing: Clean, bases: 2023/02/02 07:35:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2023/02/02 02:42:00 #20830374
-X-KLMS-AntiVirus-Status: Clean, skipped
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <Y9oZMTMRG4mL5FT1@Asurada-Nvidia>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS1PEPF0000E632:EE_|MN2PR12MB4405:EE_
+X-MS-Office365-Filtering-Correlation-Id: 53b8e10a-3cea-4981-0ab7-08db04fd9531
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	FgbtVhnhUYjS4B+5ycaU17Pa7dzCyaLcn0fogJ9KZcofhr6iH48L0geOsZCIp+omMWpy+Nt0mLQOYzQECe00kaVMUoyUQs4cd8XqOS9WQXIA4OfT1HhjPURg0hHKGoa5hEWXG7V6QCQHOvBV4VOYfnxtORYwZ9pz1zUnL/E5gsMdgJAaPmkltadBKrujq6uFw1gKulGFXKcWRb41WlGA+yzPc097G2fGNwCG5+TEZ3UP+zcCuK2K78Y9tTHnXotw5b/Jt6ofkizmPSmhMnPLUOoTlGH80Mug5641jLsLvDY108tuMwtuRnwQMtyT2pa8dUyrMjcPB4wPEsw+VAGd9CPxny7b8twr86+KMaOCPLh8cLX/YAMf1g/LVF/Ogm/xypQcZ17mDFGc5G61B/77c7GQ8LRgc/47bwHd26WTbrZtjywWN95EUDymapbeGeebhlxPfvryFCpnQTXQcctl+IaYjTDGmC1J5GYqdirpQ5i169trUBsdr4O8DATS2hK9yEvTLDZ4FAomY1+NHO/1YliVqUVkCFGXJ5nNbNQwgLhteIuVYtz5C777aiFbVkIiVNzu3fgaoQwH4C3z4fzBRMEBhg98zD6XO69yhRHxEH3zXM8ddJ/QnsE+harGWELrQYQwGiv7BQeja3cj4DIlGiVxSHjCXjAvqGiqUw6Fkc9jDMaR2doX6AmniBJITinZodoGuzcKfp6tYhiZ9vZ8LbnN9p8wk2Y2T+tSGHSNVgGi7q/E15/81yE1D9/WUVeR4kFwUyeiAod51ai6gO7+xLJPHj2pld4THFRSD0AciqoPM7Xy3nYdsJ3T0amCrydmzIUCzuLTiy60J3u1Ahm9sJzvj+4qOOkpjU2KF2zbXAI=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(396003)(39860400002)(346002)(376002)(136003)(451199018)(36840700001)(40470700004)(46966006)(966005)(336012)(186003)(26005)(9686003)(36860700001)(478600001)(54906003)(426003)(47076005)(107886003)(316002)(83380400001)(70586007)(70206006)(8676002)(6916009)(4326008)(8936002)(41300700001)(2906002)(40460700003)(55016003)(5660300002)(82740400003)(7636003)(86362001)(82310400005)(33716001)(356005)(40480700001)(67856001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2023 09:12:17.7907
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 53b8e10a-3cea-4981-0ab7-08db04fd9531
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS1PEPF0000E632.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4405
 
-The 'acpiid' buffer in the parse_ivrs_acpihid function may overflow,
-because the string specifier in the format string sscanf()
-has no width limitation.
+On Tue, Jan 31, 2023 at 11:48:04PM -0800, Nicolin Chen wrote:
+> On Mon, Jan 30, 2023 at 12:54:01PM -0800, Nicolin Chen wrote:
+> > On Mon, Jan 30, 2023 at 04:35:35PM -0400, Jason Gunthorpe wrote:
+> > > On Mon, Jan 30, 2023 at 12:04:33PM -0800, Nicolin Chen wrote:
+> > > 
+> > > > I recall we've discussed this that SMMU sets up domain when it
+> > > > attaches the device to, so we made a compromise here...
+> > > 
+> > > The ARM driver has a problem that it doesn't know what SMMU instance
+> > > will host the domain when it is allocated so it doesn't know if it
+> > > should select a S1 or S2 page table format - which is determined by
+> > > the capabilities of the specific SMMU HW block.
+> > > 
+> > > However, we don't have this problem when creating the S2. The S2
+> > > should be created by a special alloc_domain_iommufd() asking for the
+> > > S2 format. Not only does the new alloc_domain_iommufd API directly
+> > > request a S2 format table, but it also specifies the struct device so
+> > > any residual details can be determined directly.
+> > > 
+> > > Thus there is no need to do the two stage process when working with
+> > > the S2.
+> > 
+> > Ah, right! Taking a quick look, we should be able to call that
+> > arm_smmu_domain_finalise when handling alloc_domain_iommufd().
+> > 
+> > > So fixup the driver to create fully configured iommu_domain's
+> > > immediately and get rid of this problem.
+> > 
+> > OK. I will draft a patch today.
+> 
+> @Yi
+> Do you recall doing iopt_table_add_domain() in hwpt_alloc()?
+> 
+> Jason has a great point above. So even SMMU should be able to
+> call the iopt_table_add_domain() after a kernel-manged hwpt
+> allocation rather than after an iommu_attach_group(), except
+> an auto_domain or a selftest mock_domain that still needs to
+> attach the device first, otherwise the SMMU driver (currently)
+> cannot finalize the domain aperture.
 
-Found by InfoTeCS on behalf of Linux Verification Center
-(linuxtesting.org) with SVACE.
+Some update today: I found ops->domain_alloc_user() is used
+for all domain allocations inside IOMMUFD. So, without any
+special case, we could entirely do iopt_table_add_domain()
+in the __iommufd_hw_pagetable_alloc() and accordingly do
+iopt_table_remove_domain() in the hw_pagetable_destroy():
+https://github.com/nicolinc/iommufd/commit/85248e1c5f645e1eb701562eb078cf586af617fe
+(We can also skip that "symmetric" patch for the list_add,
+ moving the list_add/del calls directly to alloc/destroy.)
 
-Fixes: ca3bf5d47cec ("iommu/amd: Introduces ivrs_acpihid kernel parameter")
-Cc: stable@vger.kernel.org
-Signed-off-by: Ilia.Gavrilov <Ilia.Gavrilov@infotecs.ru>
----
-V2: Fix typo in the subject
- drivers/iommu/amd/init.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+Without the complication of the add/remove_domain() calls
+in the do_attach/detach() functions, there is no need for
+the device_users counter any more.
 
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 467b194975b3..19a46b9f7357 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -3475,15 +3475,26 @@ static int __init parse_ivrs_hpet(char *str)
- 	return 1;
- }
-=20
-+#define ACPIID_LEN (ACPIHID_UID_LEN + ACPIHID_HID_LEN)
-+
- static int __init parse_ivrs_acpihid(char *str)
- {
- 	u32 seg =3D 0, bus, dev, fn;
- 	char *hid, *uid, *p, *addr;
--	char acpiid[ACPIHID_UID_LEN + ACPIHID_HID_LEN] =3D {0};
-+	char acpiid[ACPIID_LEN] =3D {0};
- 	int i;
-=20
- 	addr =3D strchr(str, '@');
- 	if (!addr) {
-+		addr =3D strchr(str, '=3D');
-+		if (!addr)
-+			goto not_found;
-+
-+		++addr;
-+
-+		if (strlen(addr) > ACPIID_LEN)
-+			goto not_found;
-+
- 		if (sscanf(str, "[%x:%x.%x]=3D%s", &bus, &dev, &fn, acpiid) =3D=3D 4 ||
- 		    sscanf(str, "[%x:%x:%x.%x]=3D%s", &seg, &bus, &dev, &fn, acpiid) =3D=
-=3D 5) {
- 			pr_warn("ivrs_acpihid%s option format deprecated; use ivrs_acpihid=3D%s=
-@%04x:%02x:%02x.%d instead\n",
-@@ -3496,6 +3507,9 @@ static int __init parse_ivrs_acpihid(char *str)
- 	/* We have the '@', make it the terminator to get just the acpiid */
- 	*addr++ =3D 0;
-=20
-+	if (strlen(str) > ACPIID_LEN + 1)
-+		goto not_found;
-+
- 	if (sscanf(str, "=3D%s", acpiid) !=3D 1)
- 		goto not_found;
-=20
---=20
-2.30.2
+I am not 100% sure if we still need the shared device lock,
+though so far the sanity that I run doesn't show a problem.
+We may discuss about it later when we converge our branches.
+As before, I am also okay to do in the way with incremental
+changes on top of your tree and to ask you to integrate,
+once you have your branch ready.
+
+My full wip branch:
+https://github.com/nicolinc/iommufd/commits/wip/iommufd-v6.2-rc5-nesting
+
+Thanks
+Nic
