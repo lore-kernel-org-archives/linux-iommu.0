@@ -1,77 +1,106 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59D4B8F60
-	for <iommu@lists.linux.dev>; Thu,  2 Feb 2023 20:12:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A003CC433EF;
-	Thu,  2 Feb 2023 20:12:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1675368772;
-	bh=MQKMITOOkVxwlfpaG6ybSkQudYIrm/IEf9Xq09VMI4k=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=Ij6k1W+x/btHjzibEPP+mqaOcORyoeROaRTKdXR0bqowRVwYIzV0mZ8tt3Z2tfEYy
-	 5j7kv3AtMz37z1ZRatjdsDESWXFI6G3dfvrYN4dFp5hwgMviQU9g0fxM34HB/mmddk
-	 KcM/5lGPrDWiZ/8lx07wvvv833yy+88EC4dVLYdlPCVyjr1NXUJtiktYSFjHsSP0ud
-	 UwNboaJUXukFznvNekv4QWnohI7QPvbTdwOtBvvljr/Ka09+FAJRJrcK65ZIhjiR7S
-	 /BovMJY8UilkkZ591J9xncErp1HuUL25+d5nbX5eQi9s9pG9t3oTmtX9xSyn1L0z0s
-	 p0Yb83XECJJVg==
-Date: Thu, 2 Feb 2023 14:12:49 -0600
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <jroedel@suse.de>,
-	Matt Fagnani <matt.fagnani@bell.net>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Tony Zhu <tony.zhu@intel.com>,
-	linux-pci@vger.kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/1] PCI: Add translated request only flag for
- pci_enable_pasid()
-Message-ID: <20230202201249.GA1963053@bhelgaas>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00FEF8F60
+	for <iommu@lists.linux.dev>; Thu,  2 Feb 2023 20:23:08 +0000 (UTC)
+Received: from [127.0.0.1] ([73.223.250.219])
+	(authenticated bits=0)
+	by mail.zytor.com (8.17.1/8.17.1) with ESMTPSA id 312KLhl02116280
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
+	Thu, 2 Feb 2023 12:21:43 -0800
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 312KLhl02116280
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
+	s=2023010601; t=1675369310;
+	bh=dXToUAE7pJaQg5q02/GLa3Mz5KxM6AhfOCiviB9LkQ0=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
+	b=UFfeQLpd1CqaHNn2oWCKbjD/Ifu3loYs//M/YBH4IzNZ5zM+uQu+ca+o7wZeN5w3F
+	 DsbUdz66y666X/uc3jG3vgwkg5rRf6GtVkLag+fJE2MvpK5A0UNEmO1M3fnQXeE1Lo
+	 Fnl4Ppvdj9DkLLQ/AJYxM7e3cAS5zRrO/+4y12Pny3EZtxFITNqL4C9j1UlDEGI9HH
+	 V7hreJiSU/iR392Npg1nWQoPfZXJyKUx9354wvJDSamVNEibIAyoENMY/UFznsWzLs
+	 NKi29eZOby3JTQ76f7S8MgceIaH2aMGDaJX/L7Onx4h96zynB+LoMD69Q9XjMUGe2n
+	 iFW315XTSuLfQ==
+Date: Thu, 02 Feb 2023 12:21:41 -0800
+From: "H. Peter Anvin" <hpa@zytor.com>
+To: Peter Zijlstra <peterz@infradead.org>, torvalds@linux-foundation.org
+CC: corbet@lwn.net, will@kernel.org, peterz@infradead.org,
+        boqun.feng@gmail.com, mark.rutland@arm.com, catalin.marinas@arm.com,
+        dennis@kernel.org, tj@kernel.org, cl@linux.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+        svens@linux.ibm.com, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+        joro@8bytes.org, suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
+        dwmw2@infradead.org, baolu.lu@linux.intel.com,
+        Arnd Bergmann <arnd@arndb.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>, davem@davemloft.net,
+        penberg@kernel.org, rientjes@google.com, iamjoonsoo.kim@lge.com,
+        Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz,
+        roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-s390@vger.kernel.org, iommu@lists.linux.dev,
+        linux-arch@vger.kernel.org, linux-crypto@vger.kernel.org
+Subject: Re: [PATCH v2 01/10] cyrpto/b128ops: Remove struct u128
+User-Agent: K-9 Mail for Android
+In-Reply-To: <20230202152655.250913242@infradead.org>
+References: <20230202145030.223740842@infradead.org> <20230202152655.250913242@infradead.org>
+Message-ID: <6B45ADCF-4E3C-4D01-92AB-87BFF6BEE744@zytor.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b75a5a94-a962-f88e-149e-7d23982a7ad2@linux.intel.com>
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-[Joerg, you may be able to answer this.  Patch under discussion is:
-https://lore.kernel.org/r/20230114073420.759989-1-baolu.lu@linux.intel.com]
+On February 2, 2023 6:50:31 AM PST, Peter Zijlstra <peterz@infradead=2Eorg>=
+ wrote:
+>Per git-grep u128_xor() and its related struct u128 are unused except
+>to implement {be,le}128_xor()=2E Remove them to free up the namespace=2E
+>
+>Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead=2Eorg>
+>---
+> include/crypto/b128ops=2Eh |   14 +++-----------
+> 1 file changed, 3 insertions(+), 11 deletions(-)
+>
+>--- a/include/crypto/b128ops=2Eh
+>+++ b/include/crypto/b128ops=2Eh
+>@@ -50,10 +50,6 @@
+> #include <linux/types=2Eh>
+>=20
+> typedef struct {
+>-	u64 a, b;
+>-} u128;
+>-
+>-typedef struct {
+> 	__be64 a, b;
+> } be128;
+>=20
+>@@ -61,20 +57,16 @@ typedef struct {
+> 	__le64 b, a;
+> } le128;
+>=20
+>-static inline void u128_xor(u128 *r, const u128 *p, const u128 *q)
+>+static inline void be128_xor(be128 *r, const be128 *p, const be128 *q)
+> {
+> 	r->a =3D p->a ^ q->a;
+> 	r->b =3D p->b ^ q->b;
+> }
+>=20
+>-static inline void be128_xor(be128 *r, const be128 *p, const be128 *q)
+>-{
+>-	u128_xor((u128 *)r, (u128 *)p, (u128 *)q);
+>-}
+>-
+> static inline void le128_xor(le128 *r, const le128 *p, const le128 *q)
+> {
+>-	u128_xor((u128 *)r, (u128 *)p, (u128 *)q);
+>+	r->a =3D p->a ^ q->a;
+>+	r->b =3D p->b ^ q->b;
+> }
+>=20
+> #endif /* _CRYPTO_B128OPS_H */
+>
+>
 
-On Thu, Feb 02, 2023 at 11:08:25AM +0800, Baolu Lu wrote:
-> ...
-
-> ACS is unnecessary for the devices that only use translated memory request
-> for PASID. All translated addresses are granted by the Linux kernel which
-> ensures that such addresses will never be in a P2P address, i.e., it's not
-> contained in any bridge aperture, will *always* be routed toward the RC.
-
-Re 201007ef707a ("PCI: Enable PASID only when ACS RR & UF enabled on
-upstream path"), does that commit actually *fix* anything?  I wonder
-whether we could revert it completely.
-
-The intent of 201007ef707a is to use ACS to prevent misrouting, which
-would happen if a TLP contained an address that *looked* like a PCI
-bus address, i.e., it was inside a host bridge aperture, but was
-*intended* to reach an IOMMU or main memory directly.
-
-201007ef707a only affects pci_enable_pasid(), so I think we already
-avoid this misrouting by restricting DMA address allocation for both
-non-IOMMU scenarios and non-PASID IOMMU scenarios.
-
-So what about PASID mappings, e.g., consider a mapping of (Requester
-ID, PASID, Untranslated Address) -> Translated Address?  If either the
-Untranslated Address or the Translated Address looks like a PCI bus
-address, a Memory Request or Translation Request could be misrouted.
-
-Does that actually happen?  I assume it does not happen for Translated
-Addresses because that's basically the non-IOMMU case, and we don't
-need ACS to prevent misrouting there.
-
-Do IOMMUs allocate (PASID, Untranslated Addresses) that look like PCI
-bus addresses?
-
-Bjorn
+Can we centralize these ordered types, too?
