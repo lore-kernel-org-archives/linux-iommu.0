@@ -1,173 +1,104 @@
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2069.outbound.protection.outlook.com [40.107.100.69])
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC5D93201
-	for <iommu@lists.linux.dev>; Thu,  2 Feb 2023 20:45:09 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fFYICSOnbs0PQ4h6IQLnXyey4BfOAfJ6YlYMDYJZtfLbQTzdK/R9kk70WHpZTCS8WWyui6NtmzMHDpbXRdGRoTrXF52N4fNVaviszbfXE4asYbPIolicy/5kCZgC8JGZKld5MEIVmqEnyZbHTbWPm5qEOyQCcz4ZffFCG8Fp506k5OZswxWol8jp7r9AiDkYFCkBlCQc6A4U19bNb2quxStlF+UBBVVxiwvxBU0UVHI7TS44sDJX/4EJQFX5o2+LoLqfazM5sOXFIcxYVJcAMZCZvCtouyrmEWp0o54MAHQBfEWGMBnV6YrR2qkUfNCxNTsdyeFaLqNgyIQ1G1J10g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sc/EkkgzaTbVSegKJWR0go/aHsDna1tV7OAYzPGrfqA=;
- b=Os0h6EgSbsBEZUedVdUjchpkV2sQLoig71utd1jiHVhh7c8SWUpx2BAj8jV9Uw10mNP96ii49zyZC4Yis1y2PnIakm5SloNvhi5K3wct8WoiFrppmI7myvjsk0scpHaJ1J1vbYKiBH57e+ROlAun8o8hZQM6wa44m0175Rb4SN+Dkn4rRWuQrHUZjT5o7XxxingO+Q/2a9n1Ddph0mMr1R6CM/LygtBRRBxEb9tQqAOUimOvtjO0BWPpSsRHwXzQbR3f1R2UzwyewkZwL0p0yNPAajRCiRz5W0h/HhOwf9SwDQ+b1sJrbDZBC7Yi6nySLs6bHOi8Oz+y8Zcc7QtYUw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sc/EkkgzaTbVSegKJWR0go/aHsDna1tV7OAYzPGrfqA=;
- b=sRJ/lLu+fqm+hDN02YnWLTaHKpecdEyn32hepBODxH1LvuJHFCarKqh8xiBi5i0zMSotMApp+OK/xLSdk58EpujJbRE1cSN06laLx4+Q2wFwdplPFuyw9kI1gTe7OEn38yzxUPt7ShjoTXExJKHoZRMITvK0RWVgdZTH2+f3j695DW7EUh9xH5LYdMvSfcB65rR8y+gBNE3tPPu+E98X8bCi1pQyvHzj4Hbkx09uThp4ZazjwRoHJ6pW+ClcA34EpFvdTBYvIp/wcihjpy/S4LNsGcgO/gKLJ3L6epsFGCHWgCtZ1H+HwW+vuL6VoeiJ+zSla7iIUrsOmywEkP9/sg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DS7PR12MB6008.namprd12.prod.outlook.com (2603:10b6:8:7f::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.36; Thu, 2 Feb
- 2023 20:45:07 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee%4]) with mapi id 15.20.6043.038; Thu, 2 Feb 2023
- 20:45:06 +0000
-Date: Thu, 2 Feb 2023 16:45:05 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>,
-	Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <jroedel@suse.de>,
-	Matt Fagnani <matt.fagnani@bell.net>,
-	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Tony Zhu <tony.zhu@intel.com>,
-	linux-pci@vger.kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/1] PCI: Add translated request only flag for
- pci_enable_pasid()
-Message-ID: <Y9wg0Znc0tRWj4O9@nvidia.com>
-References: <b75a5a94-a962-f88e-149e-7d23982a7ad2@linux.intel.com>
- <20230202201249.GA1963053@bhelgaas>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230202201249.GA1963053@bhelgaas>
-X-ClientProxiedBy: BL0PR01CA0017.prod.exchangelabs.com (2603:10b6:208:71::30)
- To LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 410E37E4
+	for <iommu@lists.linux.dev>; Thu,  2 Feb 2023 22:46:02 +0000 (UTC)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-29-y36o5xIlPiWVEvSaXEynsQ-1; Thu, 02 Feb 2023 22:45:59 +0000
+X-MC-Unique: y36o5xIlPiWVEvSaXEynsQ-1
+Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
+ (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.45; Thu, 2 Feb
+ 2023 22:45:57 +0000
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.045; Thu, 2 Feb 2023 22:45:57 +0000
+From: David Laight <David.Laight@ACULAB.COM>
+To: 'Linus Torvalds' <torvalds@linux-foundation.org>, Peter Zijlstra
+	<peterz@infradead.org>
+CC: "corbet@lwn.net" <corbet@lwn.net>, "will@kernel.org" <will@kernel.org>,
+	"boqun.feng@gmail.com" <boqun.feng@gmail.com>, "mark.rutland@arm.com"
+	<mark.rutland@arm.com>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+	"dennis@kernel.org" <dennis@kernel.org>, "tj@kernel.org" <tj@kernel.org>,
+	"cl@linux.com" <cl@linux.com>, "hca@linux.ibm.com" <hca@linux.ibm.com>,
+	"gor@linux.ibm.com" <gor@linux.ibm.com>, "agordeev@linux.ibm.com"
+	<agordeev@linux.ibm.com>, "borntraeger@linux.ibm.com"
+	<borntraeger@linux.ibm.com>, "svens@linux.ibm.com" <svens@linux.ibm.com>,
+	"tglx@linutronix.de" <tglx@linutronix.de>, "mingo@redhat.com"
+	<mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
+	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>, "x86@kernel.org"
+	<x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>, "joro@8bytes.org"
+	<joro@8bytes.org>, "suravee.suthikulpanit@amd.com"
+	<suravee.suthikulpanit@amd.com>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, Arnd Bergmann
+	<arnd@arndb.de>, Herbert Xu <herbert@gondor.apana.org.au>,
+	"davem@davemloft.net" <davem@davemloft.net>, "penberg@kernel.org"
+	<penberg@kernel.org>, "rientjes@google.com" <rientjes@google.com>,
+	"iamjoonsoo.kim@lge.com" <iamjoonsoo.kim@lge.com>, Andrew Morton
+	<akpm@linux-foundation.org>, "vbabka@suse.cz" <vbabka@suse.cz>,
+	"roman.gushchin@linux.dev" <roman.gushchin@linux.dev>, "42.hyeyoo@gmail.com"
+	<42.hyeyoo@gmail.com>, "linux-doc@vger.kernel.org"
+	<linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>,
+	"linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "linux-arch@vger.kernel.org"
+	<linux-arch@vger.kernel.org>, "linux-crypto@vger.kernel.org"
+	<linux-crypto@vger.kernel.org>
+Subject: RE: [PATCH v2 00/10] Introduce cmpxchg128() -- aka. the demise of
+ cmpxchg_double()
+Thread-Topic: [PATCH v2 00/10] Introduce cmpxchg128() -- aka. the demise of
+ cmpxchg_double()
+Thread-Index: AQHZNz4vE8dWPUdohk2nkEpDmnikoa68PlfA
+Date: Thu, 2 Feb 2023 22:45:57 +0000
+Message-ID: <fe484df93b1d437b84edfd85fed66191@AcuMS.aculab.com>
+References: <20230202145030.223740842@infradead.org>
+ <CAHk-=wiF6y7CwR1P5_73aK2f=x=RZjwgh3sgeO3Mczv4XcDc8g@mail.gmail.com>
+In-Reply-To: <CAHk-=wiF6y7CwR1P5_73aK2f=x=RZjwgh3sgeO3Mczv4XcDc8g@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DS7PR12MB6008:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2dcb0ae0-6456-42b2-346a-08db055e5e0b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	kPbdDFrWeRLt2Ls/j7Yt0x5WH9XMK+4f1TYNdu94TIt++JCG23hlkonadHeahgCXPkq9rJJpOgT59w5V8JhLmrVQZG37lD273BNSBnTEi2JAZAxkW22VfitPBkSC9GxA88CKnKh726SQTr90CPF0YVzn8Nh7a2ecCEUvl9dstqtRDE1vLeHl9m9LgpxqfTyXmA+w7W6wGyTbiH9Kqg2vkBo/6lISNl0wiYdpvQg/rixI2bCwxlvR3WGxznodsMQODPGxKCiZHhJ3bH4XfaoQrndSk1gS7JVYbYN113Z8nlLEQ8ACm5W3LgzX3D5b6kamCGBpcaujKWth3LEM3slm70FfonDcGb2h2rx7BNaiQg26hkUT2jd6H4DbaC/EJsTNd+3zuoSwZRVnGEp14IF9uN067aeQKl5zsQvjvg3XNkk9tiRYjcMnyAT/FVv4Mps1OCgrEzNUje/csrgXqILjhd7TWszJnjnOa+Xbq0mKc9rKM+WucrvRG/sH0xFLqm25quoe2R9antbR6/gVxkfNh9+gJVOFpSs9ws/ztzUm2gTaOvfGQVycoW78mRs1NTcEfHYl0ST/0oPWosmoZXGsIRsxxit8jwXq3dZu3200mxX9P+8o+hmRjqbN6chCatipI0RQHOh2VDBmw5U251apPJKceisRkw0NcrVm5XjwJ4kq6CX25KQ7IYPrIXTgkU5/pBGBSIqMF5DixH1/sc9m3ZeScniJNR+utUVhWs6TSyc=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(39860400002)(136003)(366004)(396003)(376002)(451199018)(966005)(2906002)(186003)(36756003)(6512007)(54906003)(26005)(316002)(2616005)(66946007)(6506007)(66556008)(66476007)(478600001)(86362001)(4326008)(5660300002)(6916009)(41300700001)(8936002)(6486002)(8676002)(38100700002)(83380400001)(7416002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?nQ32V47ARvPgWnRGknLAGWNHs7PZn8y04q9UmhKezspY4DRiMgGSWYGTNpw3?=
- =?us-ascii?Q?8T+Z4LhrijgHLqNSi50e60qKsQkgZM2gy/+zKRJFFEU99edozNs5oEvEdMuT?=
- =?us-ascii?Q?6ULmquSfNiO5lVE5neQrdq52HkXi7/VkmZyestVXl7E4wrNIW0+6oNd7A150?=
- =?us-ascii?Q?SZRuFd4MKUG6AZMXt/HA5HPwc0jrOyIxERaOdPK7H820Zij0wOCIlepeh6G8?=
- =?us-ascii?Q?P5Nra/Ye8UM55fcG+xQBTIqppYtrFFNTvJMEZ958hLzFvMqsGdzLq6FyD55B?=
- =?us-ascii?Q?PtmiZ1j3I3VntF4zwg2iWRGwnpVndOPReUf455Fdo5fRsc33rALVZ4p1Huft?=
- =?us-ascii?Q?qwmOdAmpFQpAmJNlr5/uRr30+1Wpa+gaaToVNwOqHQ0Fn0xZg2ANyFmRWNG9?=
- =?us-ascii?Q?VzfmXWv8IasI9R4IKayB71ZBC1SvcBWz44O3+QO73IbfwSOwsUxucDzSDYhi?=
- =?us-ascii?Q?Rao0ZQcb6zUmEcJr+HcMTJ+Kcizqy2OG/MHcFZp2WOEIPtj1x2nG9keltNGX?=
- =?us-ascii?Q?v7okEnEbufcx8UcJ287GeJ6U/M5jtEXZHqnoJjvjv0IPdYU609IqJkIL7Pld?=
- =?us-ascii?Q?JWlMVdcas6Sk5+FC3WNng2ROML5Wb4cB9sRQjpcRHiOpbIqkxXDSyjqtvrcd?=
- =?us-ascii?Q?0I37QV0fHDjUa4tbY6Rd3V7fqld7xW1CB0dXOHerumMDU85ksNA/ZsX69rsX?=
- =?us-ascii?Q?x1Y6Nw26Xb9o3afMELn51fUFaWiYFsLyOqAnlSKXq9i3FFOH2hP1askGulOQ?=
- =?us-ascii?Q?Co2oT4I4NwYguvUuxQe69QHDQm8EhJbmYHHf9YoXmkeIIqjXIb4WB2fIRz0n?=
- =?us-ascii?Q?NThb7e/liELazLqLT39PDfx0NamRplN99T8jLRTof5t1NmgdRjL73RmPPzpH?=
- =?us-ascii?Q?21JqSEI9k1cRFoMyJ/WCGCxLpg/Fe1PfuQQVxjbwCoBvhUVHWPa8kVAHQkrr?=
- =?us-ascii?Q?iJk4uLBKbU6AF9iKOdGnlZkbb9VpeIUoMAjTbjnbsN/vWX5k0GOqRKQIGbwt?=
- =?us-ascii?Q?O99VBg4NXok2qhqCi2znO5AdjflNQVxqMEcnOQhaHoHCZU1cQ6ajqgYKOw5o?=
- =?us-ascii?Q?In+Fh6l8Sx7IT+FLodm90Mmayg4fGO2Pysnw52yWvlR8hSJEBVI8gSaC4WjV?=
- =?us-ascii?Q?UVs2WzjVbTXevSoJIQHQzyRtbHNsPKTjuzdWpf+Ga3zkkMRilu24vJORQvjW?=
- =?us-ascii?Q?NkJwxCzKSX8cbdlycmyMFNKXu0bizS4ouPdBsEdd9yziidCTgrPW6P5I/YLF?=
- =?us-ascii?Q?iomhhWP7SJxVOsQ2B+YHe3FTeoeiYNPFY/XlH0TYc3g/RtVkT1jlTn5iJD5b?=
- =?us-ascii?Q?8RARvo8UqeUq46jSAfIhnaK6uj/2dSYnZL5AutDX2NROooWp5SvfEjHa3ZQt?=
- =?us-ascii?Q?kjN7VKns87Z2PjGulXBZ1U0jd8LlDRGZFykllHhW3wtu6gFdkoQU2X4Vp4Ak?=
- =?us-ascii?Q?VuOwGyrOrdXyDCBeTRqtWmOP1nwdATKPx7HPXA+AxEVJ78OowpmCuRwymNCr?=
- =?us-ascii?Q?HPWkhz4MPb5STdDG0x8yc8F86hTiA22sYtrK7GDFDa70gTaAQgVsJmKJ4uMJ?=
- =?us-ascii?Q?2EmnEtJEmpOLtiFrdbN2M/byOw4slMesZ9wquak2?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2dcb0ae0-6456-42b2-346a-08db055e5e0b
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2023 20:45:06.7632
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sablJoe/ahA3dZ79L3wTYaT+dlra+BJua4KQMZXhir9Ikh44NWaMl4wkWyxlM/ol
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6008
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 
-On Thu, Feb 02, 2023 at 02:12:49PM -0600, Bjorn Helgaas wrote:
-> [Joerg, you may be able to answer this.  Patch under discussion is:
-> https://lore.kernel.org/r/20230114073420.759989-1-baolu.lu@linux.intel.com]
-> 
-> On Thu, Feb 02, 2023 at 11:08:25AM +0800, Baolu Lu wrote:
-> > ...
-> 
-> > ACS is unnecessary for the devices that only use translated memory request
-> > for PASID. All translated addresses are granted by the Linux kernel which
-> > ensures that such addresses will never be in a P2P address, i.e., it's not
-> > contained in any bridge aperture, will *always* be routed toward the RC.
-> 
-> Re 201007ef707a ("PCI: Enable PASID only when ACS RR & UF enabled on
-> upstream path"), does that commit actually *fix* anything?  I wonder
-> whether we could revert it completely.
-> 
-> The intent of 201007ef707a is to use ACS to prevent misrouting, which
-> would happen if a TLP contained an address that *looked* like a PCI
-> bus address, i.e., it was inside a host bridge aperture, but was
-> *intended* to reach an IOMMU or main memory directly.
+RnJvbTogTGludXMgVG9ydmFsZHMNCj4gU2VudDogMDIgRmVicnVhcnkgMjAyMyAxOTozOQ0KPiAN
+Cj4gT24gVGh1LCBGZWIgMiwgMjAyMyBhdCA3OjI5IEFNIFBldGVyIFppamxzdHJhIDxwZXRlcnpA
+aW5mcmFkZWFkLm9yZz4gd3JvdGU6DQo+ID4NCj4gPiAgLSBmaXhlZCB1cCB0aGUgaW5saW5lIGFz
+bSB0byB1c2UgJ3UxMjggKicgbWVtIGFyZ3VtZW50IHNvIHRoZSBjb21waWxlciBrbm93cw0KPiA+
+ICAgIGhvdyB3aWRlIHRoZSBtb2RpZmljYXRpb24gaXMuDQo+ID4gIC0gcmV3b3JrZWQgdGhlIHBl
+cmNwdSB0aGluZyB0byB1c2UgdW5pb24gYmFzZWQgdHlwZS1wdW5uaW5nIGluc3RlYWQgb2YNCj4g
+PiAgICBfR2VuZXJpYygpIGJhc2VkIGNhc3RzLg0KPiANCj4gTG9va3MgbG92ZWx5IHRvIG1lLiBU
+aGlzIHJlbW92ZWQgYWxsIG15IGNvbmNlcm5zIChleGNlcHQgZm9yIHRoZQ0KPiB0ZXN0aW5nIG9u
+ZSwgYnV0IGFsbCB0aGUgcGF0Y2hlcyBsb29rZWQgbmljZSBhbmQgY2xlYW4gdG8gbWUsIHNvDQo+
+IGNsZWFybHkgaXQgbXVzdCBiZSBwZXJmZWN0KS4NCg0KVGhlIGNoYW5nZSBpcyBhbG1vc3QgY2Vy
+dGFpbmx5IGZvciB0aGUgYmV0dGVyLg0KDQpCdXQgZGlkIEkgc3BvdCBvbmUgb2YgdGhlIGJpdHMg
+dXNpbmcgY21weGNoZzEyOCBqdXN0IHRvIGRvIGFuIGF0b21pYyB3cml0ZT8NCkkgdGhpbmsgaXQg
+d2FzIHVwZGF0aW5nIHNvbWUgaW50ZXJydXB0IGluZm8gdGhhdCB3YXMgYXQgZmlyc3QgZ2xhbmNl
+IG5vdA0KZGlzc2ltaWxhciB0byB0aGF0IHVzZWQgYnkgTVNJLVggKGl0IHdhc24ndCBNU0ktWCku
+DQoNCklmIHRoYXQgd2FzIGEgaGFyZHdhcmUgcmVnaXN0ZXIgdGhlbiBpdCBjb3VsZCB3ZWxsIHJl
+cXVpcmUgYSBmdWxsIGJ1cyBsb2NrLg0KVXNpbmcgYSB3cml0ZSBvZiBhIHNzZSAob3IgZXF1aXYp
+IDEyOGJpdCByZWdpc3RlciB3b3VsZCBiZSBhbiBhdG9taWMgd3JpdGUNCndpdGhvdXQgdGhlIGJ1
+cyBsb2NrIHByb2JsZW0uDQoNCkFsc28sIHRoYXQgaXMgb25seSBnb2luZyB0byB3b3JrIGlmIHRo
+ZSBoYXJkd2FyZS9sb2dpYyBzaWRlIGd1YXJhbnRlZXMgdG8NCnRyZWF0IGEgc2luZ2xlIHdyaXRl
+IGFzIGF0b21pYy4NCkkga25vdyB0aGVyZSBhcmUgTVNJLVggaW1wbGVtZW50YXRpb25zIG91dCB0
+aGVyZSB3aGVyZSB0aGUgY3B1IHdyaXRlDQp3aWxsIGJlIHNwbGl0IGludG8gZm91ciAzMmJpdCB3
+cml0ZXMgdG8gc29tZSBpbnRlcm5hbCBtZW1vcnkgYW5kIHRoZQ0KaGFyZHdhcmUgc2lkZSB3aWxs
+IGFsc28gZG8gbXVsdGlwbGUgYWNjZXNzZXMuDQooUHJldHR5IG11Y2ggYW55IGltcGxlbWVudGF0
+aW9uIG9uIGFuIGZwZ2Egd2lsbCBiZWhhdmUgbGlrZSB0aGF0LA0Kbm90IGp1c3QgdGhlIG9uZSBJ
+IHdyb3RlLikNCkkgZGlkbid0IHNlZSB0aGUgTVNJLVggY29kZSB0aGVyZSwgYnV0IEkgZG8gd29u
+ZGVyIGhvdyBpdCBzYWZlbHkgY2hhbmdlcw0KYWZmaW5pdGllcy4NCg0KCURhdmlkDQoNCi0NClJl
+Z2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0
+b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykN
+Cg==
 
-Yes.
-
-> 201007ef707a only affects pci_enable_pasid(), so I think we already
-> avoid this misrouting by restricting DMA address allocation for both
-> non-IOMMU scenarios and non-PASID IOMMU scenarios.
-
-There is no restriction on DMA address allocation with PASID.
-
-The typical PASID use case is to point the PASID at the CPU page table
-and then all VA's are fair game by userspace. There is no carve out
-like the DMA API has to protect from bus address confusion.
- 
-> So what about PASID mappings, e.g., consider a mapping of (Requester
-> ID, PASID, Untranslated Address) -> Translated Address?  If either the
-> Untranslated Address or the Translated Address looks like a PCI bus
-> address, a Memory Request or Translation Request could be misrouted.
-
-The PCI rules are a bit complicated:
- - A simple MemRd/Wr with a PASID will be routed according to the
-   address. This can be mis-routed
- - A ATS translation request with a PASID is always routed to the host
-   bridge
- - A MemRd/Wr with Translated set and no PASID is always routed to the
-   correct destination, even if that is not the host bridge
-
-> Do IOMMUs allocate (PASID, Untranslated Addresses) that look like PCI
-> bus addresses?
-
-Yes, because it is mapped to a mm_struct userspace can use any mmap to
-access any valid address as an IOVA and thus PASID tagged translation
-must never become confused with bus addresses.
-
-Further, and worse, the common use model for PASID SVA is for
-userspace to directly submit IOVA to the device for operation. If
-userspace can submit a hostile IOVA and cause DMA to reach something
-that is not the host bridge then system security is completely
-wrecked.
-
-So, as an API in Linux we felt it was best to only enable PASID if
-PASID is secure and truely isolated, otherwise leave PASID off. The
-use cases for insecure PASID seem small.
-
-Jason
