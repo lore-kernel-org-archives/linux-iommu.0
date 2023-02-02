@@ -1,84 +1,77 @@
-Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C75168F60
-	for <iommu@lists.linux.dev>; Thu,  2 Feb 2023 19:39:33 +0000 (UTC)
-Received: by mail-lj1-f175.google.com with SMTP id d8so3006799ljq.9
-        for <iommu@lists.linux.dev>; Thu, 02 Feb 2023 11:39:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=JmnIaySd7zoAM6xF2ibXT8yo+UTOpvQnMVr9b5O/7+w=;
-        b=ca1h9KkMFNsKgO7Ao0NeYlaifxp7NzGcaaakgNFyQLMxBSXDHTcSanf/uonLuKRR18
-         lO7gVsm341hb9Nhg1BLsB8gPuvWRYHLOlq9HV87cUF6Vj8wjTPtsHShRpe/Vd30GyM78
-         DjJAMh6ZqNcvDd+rLB79O+fNMlUiqjmmCA6so=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=JmnIaySd7zoAM6xF2ibXT8yo+UTOpvQnMVr9b5O/7+w=;
-        b=sz7zwYPMxbAb1JwtJjC1hPhv34ZRPLktay/JlH4SmdYO3drTHhoDbEwYSCJyppGxUP
-         nZIQoBF1gdT2jo1MPWeEaktyOh0mTOm+kxw3hXSq056iXjW3zA4xHgyA2gAhMuvAP/sj
-         3HvQ8JehetzbGrxA7bwfRL0wkoTOK+m61kokHAjatinjY3hpPwvejdzBkONaNFWI4eGV
-         mKVk4wmYIuGMmY/0aD3DC96d1zt77zlveF9LKfOwwce00tZE4hPhW+Rnzfs/6UJQNnvB
-         73GMuVUB+O8dUhEn02xECQ0Jda0m8+WZWJSv/Dg8OFeqynKLpwOPuSbjT3dago7CxSwy
-         dnag==
-X-Gm-Message-State: AO0yUKVHxXrbgavYfitrahEML7OB2rhIO3Qoc2UD9XhyqduakGRQYpYq
-	/wHKxP0utcJi+gWxyOJLKMJrALUoqughdqw+bdw=
-X-Google-Smtp-Source: AK7set+tnj5ZlneoVlE68Ayt2cjDwms1qCMYjc4qZtIJTKSQDW+TFktTXBF3OooLmL47zIHogMHoVA==
-X-Received: by 2002:a05:651c:8c:b0:28e:3e6:f3f4 with SMTP id 12-20020a05651c008c00b0028e03e6f3f4mr1840313ljq.21.1675366771463;
-        Thu, 02 Feb 2023 11:39:31 -0800 (PST)
-Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com. [209.85.167.47])
-        by smtp.gmail.com with ESMTPSA id w6-20020a05651234c600b00492c663bba2sm25434lfr.124.2023.02.02.11.39.30
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Feb 2023 11:39:30 -0800 (PST)
-Received: by mail-lf1-f47.google.com with SMTP id v17so4550517lfd.7
-        for <iommu@lists.linux.dev>; Thu, 02 Feb 2023 11:39:30 -0800 (PST)
-X-Received: by 2002:a17:906:f109:b0:882:e1b7:a90b with SMTP id
- gv9-20020a170906f10900b00882e1b7a90bmr2112186ejb.187.1675366759217; Thu, 02
- Feb 2023 11:39:19 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59D4B8F60
+	for <iommu@lists.linux.dev>; Thu,  2 Feb 2023 20:12:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A003CC433EF;
+	Thu,  2 Feb 2023 20:12:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1675368772;
+	bh=MQKMITOOkVxwlfpaG6ybSkQudYIrm/IEf9Xq09VMI4k=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=Ij6k1W+x/btHjzibEPP+mqaOcORyoeROaRTKdXR0bqowRVwYIzV0mZ8tt3Z2tfEYy
+	 5j7kv3AtMz37z1ZRatjdsDESWXFI6G3dfvrYN4dFp5hwgMviQU9g0fxM34HB/mmddk
+	 KcM/5lGPrDWiZ/8lx07wvvv833yy+88EC4dVLYdlPCVyjr1NXUJtiktYSFjHsSP0ud
+	 UwNboaJUXukFznvNekv4QWnohI7QPvbTdwOtBvvljr/Ka09+FAJRJrcK65ZIhjiR7S
+	 /BovMJY8UilkkZ591J9xncErp1HuUL25+d5nbX5eQi9s9pG9t3oTmtX9xSyn1L0z0s
+	 p0Yb83XECJJVg==
+Date: Thu, 2 Feb 2023 14:12:49 -0600
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <jroedel@suse.de>,
+	Matt Fagnani <matt.fagnani@bell.net>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+	Vasant Hegde <vasant.hegde@amd.com>, Tony Zhu <tony.zhu@intel.com>,
+	linux-pci@vger.kernel.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/1] PCI: Add translated request only flag for
+ pci_enable_pasid()
+Message-ID: <20230202201249.GA1963053@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230202145030.223740842@infradead.org>
-In-Reply-To: <20230202145030.223740842@infradead.org>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Thu, 2 Feb 2023 11:39:02 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wiF6y7CwR1P5_73aK2f=x=RZjwgh3sgeO3Mczv4XcDc8g@mail.gmail.com>
-Message-ID: <CAHk-=wiF6y7CwR1P5_73aK2f=x=RZjwgh3sgeO3Mczv4XcDc8g@mail.gmail.com>
-Subject: Re: [PATCH v2 00/10] Introduce cmpxchg128() -- aka. the demise of cmpxchg_double()
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: corbet@lwn.net, will@kernel.org, boqun.feng@gmail.com, 
-	mark.rutland@arm.com, catalin.marinas@arm.com, dennis@kernel.org, 
-	tj@kernel.org, cl@linux.com, hca@linux.ibm.com, gor@linux.ibm.com, 
-	agordeev@linux.ibm.com, borntraeger@linux.ibm.com, svens@linux.ibm.com, 
-	tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, 
-	dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com, joro@8bytes.org, 
-	suravee.suthikulpanit@amd.com, robin.murphy@arm.com, dwmw2@infradead.org, 
-	baolu.lu@linux.intel.com, Arnd Bergmann <arnd@arndb.de>, 
-	Herbert Xu <herbert@gondor.apana.org.au>, davem@davemloft.net, penberg@kernel.org, 
-	rientjes@google.com, iamjoonsoo.kim@lge.com, 
-	Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz, roman.gushchin@linux.dev, 
-	42.hyeyoo@gmail.com, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-mm@kvack.org, linux-s390@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-arch@vger.kernel.org, linux-crypto@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b75a5a94-a962-f88e-149e-7d23982a7ad2@linux.intel.com>
 
-On Thu, Feb 2, 2023 at 7:29 AM Peter Zijlstra <peterz@infradead.org> wrote:
->
->  - fixed up the inline asm to use 'u128 *' mem argument so the compiler knows
->    how wide the modification is.
->  - reworked the percpu thing to use union based type-punning instead of
->    _Generic() based casts.
+[Joerg, you may be able to answer this.  Patch under discussion is:
+https://lore.kernel.org/r/20230114073420.759989-1-baolu.lu@linux.intel.com]
 
-Looks lovely to me. This removed all my concerns (except for the
-testing one, but all the patches looked nice and clean to me, so
-clearly it must be perfect).
+On Thu, Feb 02, 2023 at 11:08:25AM +0800, Baolu Lu wrote:
+> ...
 
-                Linus
+> ACS is unnecessary for the devices that only use translated memory request
+> for PASID. All translated addresses are granted by the Linux kernel which
+> ensures that such addresses will never be in a P2P address, i.e., it's not
+> contained in any bridge aperture, will *always* be routed toward the RC.
+
+Re 201007ef707a ("PCI: Enable PASID only when ACS RR & UF enabled on
+upstream path"), does that commit actually *fix* anything?  I wonder
+whether we could revert it completely.
+
+The intent of 201007ef707a is to use ACS to prevent misrouting, which
+would happen if a TLP contained an address that *looked* like a PCI
+bus address, i.e., it was inside a host bridge aperture, but was
+*intended* to reach an IOMMU or main memory directly.
+
+201007ef707a only affects pci_enable_pasid(), so I think we already
+avoid this misrouting by restricting DMA address allocation for both
+non-IOMMU scenarios and non-PASID IOMMU scenarios.
+
+So what about PASID mappings, e.g., consider a mapping of (Requester
+ID, PASID, Untranslated Address) -> Translated Address?  If either the
+Untranslated Address or the Translated Address looks like a PCI bus
+address, a Memory Request or Translation Request could be misrouted.
+
+Does that actually happen?  I assume it does not happen for Translated
+Addresses because that's basically the non-IOMMU case, and we don't
+need ACS to prevent misrouting there.
+
+Do IOMMUs allocate (PASID, Untranslated Addresses) that look like PCI
+bus addresses?
+
+Bjorn
