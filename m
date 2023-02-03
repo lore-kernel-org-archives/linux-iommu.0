@@ -1,36 +1,19 @@
-Received: from formenos.hmeau.com (167-179-156-38.a7b39c.syd.nbn.aussiebb.net [167.179.156.38])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F50410E6
-	for <iommu@lists.linux.dev>; Fri,  3 Feb 2023 03:38:49 +0000 (UTC)
-Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
-	by formenos.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-	id 1pNmt8-0070dc-T8; Fri, 03 Feb 2023 11:37:23 +0800
-Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Fri, 03 Feb 2023 11:37:22 +0800
-Date: Fri, 3 Feb 2023 11:37:22 +0800
-From: Herbert Xu <herbert@gondor.apana.org.au>
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: torvalds@linux-foundation.org, corbet@lwn.net, will@kernel.org,
-	boqun.feng@gmail.com, mark.rutland@arm.com, catalin.marinas@arm.com,
-	dennis@kernel.org, tj@kernel.org, cl@linux.com, hca@linux.ibm.com,
-	gor@linux.ibm.com, agordeev@linux.ibm.com,
-	borntraeger@linux.ibm.com, svens@linux.ibm.com, tglx@linutronix.de,
-	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-	x86@kernel.org, hpa@zytor.com, joro@8bytes.org,
-	suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
-	dwmw2@infradead.org, baolu.lu@linux.intel.com,
-	Arnd Bergmann <arnd@arndb.de>, davem@davemloft.net,
-	penberg@kernel.org, rientjes@google.com, iamjoonsoo.kim@lge.com,
-	Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz,
-	roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org, linux-s390@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
-	linux-crypto@vger.kernel.org
-Subject: Re: [PATCH v2 02/10] types: Introduce [us]128
-Message-ID: <Y9yBcu6ThKC7tVdt@gondor.apana.org.au>
-References: <20230202145030.223740842@infradead.org>
- <20230202152655.313053173@infradead.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B679F7F
+	for <iommu@lists.linux.dev>; Fri,  3 Feb 2023 06:35:04 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 57D1F68C4E; Fri,  3 Feb 2023 07:35:00 +0100 (CET)
+Date: Fri, 3 Feb 2023 07:35:00 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: Hans Verkuil <hverkuil@xs4all.nl>
+Cc: "Dr. David Alan Gilbert" <dave@treblig.org>, iommu@lists.linux.dev,
+	mchehab@kernel.org, hch@lst.de, linux-media@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: Regression: v4l/bttv vbi vs iommu
+Message-ID: <20230203063500.GA23520@lst.de>
+References: <Y9qSwkLxeMpffZK/@gallifrey> <d363902d-e465-8411-0c1e-58411b3a19b0@xs4all.nl>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -39,25 +22,13 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230202152655.313053173@infradead.org>
+In-Reply-To: <d363902d-e465-8411-0c1e-58411b3a19b0@xs4all.nl>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Thu, Feb 02, 2023 at 03:50:32PM +0100, Peter Zijlstra wrote:
-> Introduce [us]128 (when available). Unlike [us]64, ensure they are
-> always naturally aligned.
-> 
-> This also enables 128bit wide atomics (which require natural
-> alignment) such as cmpxchg128().
-> 
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> ---
->  include/linux/types.h      |    5 +++++
->  include/uapi/linux/types.h |    4 ++++
->  2 files changed, 9 insertions(+)
+On Wed, Feb 01, 2023 at 09:48:46PM +0100, Hans Verkuil wrote:
+> In fact, the plan is to replace the old and deprecated videobuf framework by the vb2
+> framework in the bttv driver in the next 2-3 months or so. That will also automatically
+> solve this problem.
 
-Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
-
-Thanks,
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+It would be great to expedite removal of the old videbuf code given
+how many problems it has.
