@@ -1,32 +1,32 @@
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 579FD1863
-	for <iommu@lists.linux.dev>; Fri,  3 Feb 2023 08:53:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC35A1863
+	for <iommu@lists.linux.dev>; Fri,  3 Feb 2023 08:53:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675414408; x=1706950408;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=i+nB9deLrKt42Lj4h2Ozf3dM6yQz6iX8nZHKknJIu1g=;
-  b=gr4nXkPsxME15TI646JW3oTFS19FOld9UZrRX4mMDGx5dRoG7RRGQ4Rb
-   zAuiQ8T5obrld3ytcyNqUuGbJHnW7yq1Z8Jx15WJzi+cIswbxlAPXRf/G
-   6THDXgDz7sBoE4RiTxQXV7Yg2+zZOWtfExnygnJbTR1WA1PJyAqA8W3tl
-   Y9yk3LL4bFavNhN/g1BusXUYf9OfgOK18tILkd9R8/nt4O1VhEbsxOwgL
-   pTenZjUztqbrjNxIizVkyv+PEODCR6bMTzInzwuq3m/H41EX+dLNu4E26
-   jZYruEdHlzZy38CM/PbFfcOpk2/FxVIfhS2mYfZOWJ85bAdKy9ws7dgoT
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10609"; a="327337321"
+  t=1675414411; x=1706950411;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=kB18aiVy7J86X3vvgBkRFgvMDABP1q/NhATKJ+pNSBQ=;
+  b=heduQZAjnxSSVRtsj2Ub6eat/kaMzfdcrSpL9GTR1raDO8nIN5FbFbyo
+   TDcgEEnud5nrlOuQzTIVuzBpP5OJHqKR837O8/nZegyiDULItOfD57RCS
+   yR7dz+FalwhXMbSTMEy6EPfr9Jt2zVo3Gzkie0wMsQ4pSCOwvvzZiV08o
+   E+vUlAL3uZ1vLojgcyLFGfzDjFCfI+Qi57JxSAWSXKOqEh4ufEEM9XJnE
+   EyiHl56ny4rjWyM/g1z5mwcPeRJS8bfDw2/lTdYMyTtgVUxf2owHKCOj/
+   Ds6VREYqcfUUSSNTbWKbCn7t+nbu3kc9NFYre+CmboQHXA6/rH5dJ6uwS
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10609"; a="327337329"
 X-IronPort-AV: E=Sophos;i="5.97,269,1669104000"; 
-   d="scan'208";a="327337321"
+   d="scan'208";a="327337329"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2023 00:53:27 -0800
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2023 00:53:28 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10609"; a="994447929"
+X-IronPort-AV: E=McAfee;i="6500,9779,10609"; a="994447955"
 X-IronPort-AV: E=Sophos;i="5.97,269,1669104000"; 
-   d="scan'208";a="994447929"
+   d="scan'208";a="994447955"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga005.fm.intel.com with ESMTP; 03 Feb 2023 00:53:12 -0800
+  by fmsmga005.fm.intel.com with ESMTP; 03 Feb 2023 00:53:15 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: iommu@lists.linux.dev,
 	dmaengine@vger.kernel.org
@@ -39,10 +39,12 @@ Cc: Joerg Roedel <joro@8bytes.org>,
 	Vinod Koul <vkoul@kernel.org>,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 1/2] dmaengine: idxd: Add enable/disable device IOPF feature
-Date: Fri,  3 Feb 2023 16:44:55 +0800
-Message-Id: <20230203084456.469641-1-baolu.lu@linux.intel.com>
+Subject: [PATCH 2/2] iommu/vt-d: Move iopf code from SVA to IOPF enabling path
+Date: Fri,  3 Feb 2023 16:44:56 +0800
+Message-Id: <20230203084456.469641-2-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230203084456.469641-1-baolu.lu@linux.intel.com>
+References: <20230203084456.469641-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,94 +53,90 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The iommu subsystem requires IOMMU_DEV_FEAT_IOPF must be enabled before
-and disabled after IOMMU_DEV_FEAT_SVA, if device's I/O page faults rely
-on the IOMMU. Add explicit IOMMU_DEV_FEAT_IOPF enabling/disabling in this
-driver.
+Generally enabling IOMMU_DEV_FEAT_SVA requires IOMMU_DEV_FEAT_IOPF, but
+some devices manage I/O Page Faults themselves instead of relying on the
+IOMMU. Move IOPF related code from SVA to IOPF enabling path to make the
+driver work for devices that manage IOPF themselves.
 
-At present, missing IOPF enabling/disabling doesn't cause any real issue,
-because the IOMMU driver places the IOPF enabling/disabling in the path
-of SVA feature handling. But this may change.
+For the device drivers that relies on the IOMMU for IOPF through PCI/PRI,
+IOMMU_DEV_FEAT_IOPF must be enabled before and disabled after
+IOMMU_DEV_FEAT_SVA.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/dma/idxd/init.c | 31 +++++++++++++++++++++++++------
- 1 file changed, 25 insertions(+), 6 deletions(-)
+ drivers/iommu/intel/iommu.c | 30 +++++++++++++++++-------------
+ 1 file changed, 17 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/dma/idxd/init.c b/drivers/dma/idxd/init.c
-index 529ea09c9094..d5a709a842a8 100644
---- a/drivers/dma/idxd/init.c
-+++ b/drivers/dma/idxd/init.c
-@@ -511,6 +511,27 @@ static void idxd_disable_system_pasid(struct idxd_device *idxd)
- 	idxd->sva = NULL;
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index a1a66798e1f0..149cb20d8dd5 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4632,7 +4632,6 @@ static int intel_iommu_enable_sva(struct device *dev)
+ {
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 	struct intel_iommu *iommu;
+-	int ret;
+ 
+ 	if (!info || dmar_disabled)
+ 		return -EINVAL;
+@@ -4644,17 +4643,13 @@ static int intel_iommu_enable_sva(struct device *dev)
+ 	if (!(iommu->flags & VTD_FLAG_SVM_CAPABLE))
+ 		return -ENODEV;
+ 
+-	if (!info->pasid_enabled || !info->pri_enabled || !info->ats_enabled)
++	if (!info->pasid_enabled)
+ 		return -EINVAL;
+ 
+-	ret = iopf_queue_add_device(iommu->iopf_queue, dev);
+-	if (!ret)
+-		ret = iommu_register_device_fault_handler(dev, iommu_queue_iopf, dev);
+-
+-	return ret;
++	return 0;
  }
  
-+static int idxd_enable_sva(struct pci_dev *pdev)
-+{
+-static int intel_iommu_disable_sva(struct device *dev)
++static int intel_iommu_disable_iopf(struct device *dev)
+ {
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 	struct intel_iommu *iommu = info->iommu;
+@@ -4670,11 +4665,20 @@ static int intel_iommu_disable_sva(struct device *dev)
+ static int intel_iommu_enable_iopf(struct device *dev)
+ {
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
 +	int ret;
-+
-+	ret = iommu_dev_enable_feature(&pdev->dev, IOMMU_DEV_FEAT_IOPF);
+ 
+-	if (info && info->pri_supported)
+-		return 0;
++	if (!info || !info->ats_enabled || !info->pri_enabled)
++		return -ENODEV;
+ 
+-	return -ENODEV;
++	ret = iopf_queue_add_device(info->iommu->iopf_queue, dev);
 +	if (ret)
 +		return ret;
 +
-+	ret = iommu_dev_enable_feature(&pdev->dev, IOMMU_DEV_FEAT_SVA);
++	ret = iommu_register_device_fault_handler(dev, iommu_queue_iopf, dev);
 +	if (ret)
-+		iommu_dev_disable_feature(&pdev->dev, IOMMU_DEV_FEAT_IOPF);
++		iopf_queue_remove_device(info->iommu->iopf_queue, dev);
 +
 +	return ret;
-+}
-+
-+static void idxd_disable_sva(struct pci_dev *pdev)
-+{
-+	iommu_dev_disable_feature(&pdev->dev, IOMMU_DEV_FEAT_SVA);
-+	iommu_dev_disable_feature(&pdev->dev, IOMMU_DEV_FEAT_IOPF);
-+}
-+
- static int idxd_probe(struct idxd_device *idxd)
- {
- 	struct pci_dev *pdev = idxd->pdev;
-@@ -525,7 +546,7 @@ static int idxd_probe(struct idxd_device *idxd)
- 	dev_dbg(dev, "IDXD reset complete\n");
- 
- 	if (IS_ENABLED(CONFIG_INTEL_IDXD_SVM) && sva) {
--		if (iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA)) {
-+		if (idxd_enable_sva(pdev)) {
- 			dev_warn(dev, "Unable to turn on user SVA feature.\n");
- 		} else {
- 			set_bit(IDXD_FLAG_USER_PASID_ENABLED, &idxd->flags);
-@@ -573,21 +594,19 @@ static int idxd_probe(struct idxd_device *idxd)
- 	if (device_pasid_enabled(idxd))
- 		idxd_disable_system_pasid(idxd);
- 	if (device_user_pasid_enabled(idxd))
--		iommu_dev_disable_feature(dev, IOMMU_DEV_FEAT_SVA);
-+		idxd_disable_sva(pdev);
- 	return rc;
  }
  
- static void idxd_cleanup(struct idxd_device *idxd)
+ static int
+@@ -4697,10 +4701,10 @@ intel_iommu_dev_disable_feat(struct device *dev, enum iommu_dev_features feat)
  {
--	struct device *dev = &idxd->pdev->dev;
--
- 	perfmon_pmu_remove(idxd);
- 	idxd_cleanup_interrupts(idxd);
- 	idxd_cleanup_internals(idxd);
- 	if (device_pasid_enabled(idxd))
- 		idxd_disable_system_pasid(idxd);
- 	if (device_user_pasid_enabled(idxd))
--		iommu_dev_disable_feature(dev, IOMMU_DEV_FEAT_SVA);
-+		idxd_disable_sva(idxd->pdev);
- }
+ 	switch (feat) {
+ 	case IOMMU_DEV_FEAT_IOPF:
+-		return 0;
++		return intel_iommu_disable_iopf(dev);
  
- static int idxd_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-@@ -705,7 +724,7 @@ static void idxd_remove(struct pci_dev *pdev)
- 	pci_free_irq_vectors(pdev);
- 	pci_iounmap(pdev, idxd->reg_base);
- 	if (device_user_pasid_enabled(idxd))
--		iommu_dev_disable_feature(&pdev->dev, IOMMU_DEV_FEAT_SVA);
-+		idxd_disable_sva(pdev);
- 	pci_disable_device(pdev);
- 	destroy_workqueue(idxd->wq);
- 	perfmon_pmu_remove(idxd);
+ 	case IOMMU_DEV_FEAT_SVA:
+-		return intel_iommu_disable_sva(dev);
++		return 0;
+ 
+ 	default:
+ 		return -ENODEV;
 -- 
 2.34.1
 
