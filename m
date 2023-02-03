@@ -1,79 +1,102 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76C8529A2
-	for <iommu@lists.linux.dev>; Fri,  3 Feb 2023 12:05:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76D4BC433EF;
-	Fri,  3 Feb 2023 12:05:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1675425917;
-	bh=0lFtytynqLkq8kJIpsrWpdqTQgna4urzc2JF1yxsxnQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=f7LxKwIiJWDREcPzlQp1Nkr+1E8PUzD8RvgkDrmri/8BGgRxfmZZimGAEqBclIh5I
-	 zbzwUvBvW7UzIhIQqprXumtriCc06ocpOHEMEQ+KyAo6s5uLjOlOhw+je87zQFS6vd
-	 EmLglq/qb/MZD1/rX+U+WeRfI5BdgeG5/815jRCBAkI2zSXdPzy2gNlGjiv2eKB6ei
-	 +kxZARRrrwiDwHcy+VmM9G7v1aUQp3evao/BqzVe+qQDQwN3gE2mijzgvYu2g6gKPz
-	 tRSlmdT+XOD7p7PVi0wvUQNIwhr7DWTjVpeNKKleNRDPeZKABj9iLjzDd16z/YFchJ
-	 UoxYycFh9AapA==
-Date: Fri, 3 Feb 2023 12:05:11 +0000
-From: Will Deacon <will@kernel.org>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, robin.murphy@arm.com, joro@8bytes.org,
-	darren@os.amperecomputing.com, scott@os.amperecomputing.com
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Enable PCI ATS in passthrough mode as
- well
-Message-ID: <20230203120511.GA6274@willie-the-truck>
-References: <20230202124053.848792-1-gankulkarni@os.amperecomputing.com>
- <Y9z3UG+wEBn4i3G2@myrica>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D4B6329A2
+	for <iommu@lists.linux.dev>; Fri,  3 Feb 2023 12:12:17 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 526014B3;
+	Fri,  3 Feb 2023 04:12:59 -0800 (PST)
+Received: from [10.57.90.124] (unknown [10.57.90.124])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 146A93F8D6;
+	Fri,  3 Feb 2023 04:12:14 -0800 (PST)
+Message-ID: <0f605a38-5ec9-9979-d904-c73bd7fe69a1@arm.com>
+Date: Fri, 3 Feb 2023 12:12:09 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y9z3UG+wEBn4i3G2@myrica>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Enable PCI ATS in passthrough mode as
+ well
+Content-Language: en-GB
+To: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, will@kernel.org, joro@8bytes.org
+Cc: jean-philippe@linaro.org, darren@os.amperecomputing.com,
+ scott@os.amperecomputing.com
+References: <20230202124053.848792-1-gankulkarni@os.amperecomputing.com>
+ <0833e426-d03d-b856-3cb3-8fe97adbb8c1@arm.com>
+ <ddbea706-52dc-1505-988a-acc390add3bf@os.amperecomputing.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <ddbea706-52dc-1505-988a-acc390add3bf@os.amperecomputing.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Fri, Feb 03, 2023 at 12:00:16PM +0000, Jean-Philippe Brucker wrote:
-> On Thu, Feb 02, 2023 at 04:40:53AM -0800, Ganapatrao Kulkarni wrote:
-> > The current smmu-v3 driver does not enable PCI ATS for physical functions
-> > of ATS capable End Points when booted in smmu bypass mode
-> > (iommu.passthrough=1). This will not allow virtual functions to enable
-> > ATS(even though EP supports it) while they are attached to a VM using
-> > VFIO driver.
-> > 
-> > This patch adds changes to enable ATS support for physical functions
-> > in passthrough/bypass mode as well.
-> [...]
-> > @@ -2453,8 +2458,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
-> >  
-> >  	master->domain = smmu_domain;
-> >  
-> > -	if (smmu_domain->stage != ARM_SMMU_DOMAIN_BYPASS)
-> > -		master->ats_enabled = arm_smmu_ats_supported(master);
-> > +	master->ats_enabled = arm_smmu_ats_supported(master);
+On 2023-02-03 10:44, Ganapatrao Kulkarni wrote:
 > 
-> I should have added a comment for this. Only found the reason in an old
-> cover letter [1]:
 > 
-> "When no translation stages are enabled (0b100), ATS Translation Requests
-> (and Translated traffic, if SMMU_CR0.ATSCHK == 1) are denied as though
-> EATS == 0b00; the actual value of the EATS field is IGNORED. Such a
-> Translation Request causes F_BAD_ATS_TREQ and Translated traffic causes
-> F_TRANSL_FORBIDDEN."
+> On 02-02-2023 06:52 pm, Robin Murphy wrote:
+>> On 2023-02-02 12:40, Ganapatrao Kulkarni wrote:
+>>> The current smmu-v3 driver does not enable PCI ATS for physical 
+>>> functions
+>>> of ATS capable End Points when booted in smmu bypass mode
+>>> (iommu.passthrough=1). This will not allow virtual functions to enable
+>>> ATS(even though EP supports it) while they are attached to a VM using
+>>> VFIO driver.
+>>>
+>>> This patch adds changes to enable ATS support for physical functions
+>>> in passthrough/bypass mode as well.
+>>>
+>>> Also, adding check to avoid disabling of ATS if it is not enabled,
+>>> to avoid unnecessary call-traces.
+>>>
+>>> Signed-off-by: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>
+>>> ---
+>>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 10 +++++++---
+>>>   1 file changed, 7 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c 
+>>> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>> index 6d5df91c5c46..5a605cb5ccef 100644
+>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>> @@ -2313,11 +2313,16 @@ static void arm_smmu_enable_ats(struct 
+>>> arm_smmu_master *master)
+>>>   static void arm_smmu_disable_ats(struct arm_smmu_master *master)
+>>>   {
+>>>       struct arm_smmu_domain *smmu_domain = master->domain;
+>>> +    struct pci_dev *pdev;
+>>>       if (!master->ats_enabled)
+>>>           return;
+>>> -    pci_disable_ats(to_pci_dev(master->dev));
+>>> +    pdev = to_pci_dev(master->dev);
+>>> +
+>>> +    if (pdev->ats_enabled)
+>>
+>> If the master->ats_enabled check above passes when ATS isn't actually 
+>> enabled, surely that's a bug?
 > 
-> (See 3.9.1.1 "Responses to ATS Translation Requests and Translated
-> transactions" and 5.2 "Stream Table Entry")
-> 
-> So I don't think we can enable ATS for bypass domains :/ The PF needs to
-> be in translated mode in that case.
-> 
-> I can send a patch adding the comment next cycle.
+> IIUC, It means ATS feature is supported (just check for existence of ATS 
+> extended capability and smmu capability) and not necessarily enabled.
+> Function pci_enable_ats(called by arm_smmu_enable_ats) enables the ATS 
+> by setting bit 15 of ATS Control Register (Offset 06h).
+> If pci_enable_ats is not successful, it will not set dev->ats_enabled 
+> flag. So calling pci_disable_ats later results in call-trace, if 
+> dev->ats_enabled is not set.
 
-Yes, please!
+And like I say, that appears to be a bug, or at least something 
+deserving of improvement. If we *know* that enabling ATS failed, leaving 
+it hanging in some half-enabled state seems wrong. I know the PCI spec 
+says that functions must accept ATS invalidate requests even when ATS is 
+disabled, but that still doesn't make it a great idea for the driver to 
+spend time and effort sending them when it should know they are 
+unnecessarily (especially given the infamous 90-second maximum timeout).
 
-Will
+> Function arm_smmu_enable_ats already prints error message if ATS enable 
+> is failed.
+
+Printing a message hardly constitutes robust error handling...
+
+Thanks,
+Robin.
