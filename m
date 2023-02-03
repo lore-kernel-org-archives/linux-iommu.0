@@ -1,158 +1,138 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2044.outbound.protection.outlook.com [40.107.237.44])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AA4EAD3A
-	for <iommu@lists.linux.dev>; Fri,  3 Feb 2023 17:53:19 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KGecZPgIqr103gFUz+xPR7x8d5QF2fnmCP1kinmEg6eN12COitHAESJQGPlB9gqQZZSnmPy+Wf+7XMYomuhfGmE517EKOh87ZWQHt+Jktdtadhmj5xWNGsWAAOt0BIi6MgTNex+ULIz4PnKK26oOtxNeol+6UNnxLwvpKKJbYFrZXIFiMA76/kfVYYC3KeRsu7dJWmN4uhHPleXSFc4uJZVcfj26Dz7TKjPLvH2VEr/06soDgSsLKJfP5TOLH7fpRg4GDHUI21m24UMjNMfGAwhHvEjQtRsqGeMPhwFQz7U8g6SXnFZ5hZaDNnCBdoeARXGkMRFQRyO7vn9huEaDSw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OgUuY8vcE8F2ZzbsE+TE7PDo41+oKeTWt6CgfbQ6tYE=;
- b=Z0GkRt693UTaukH3xrGkLE6oplYhL2LkN9AyDIwVkjiwW6oVmaHqm782l928+LgGQyQySxdMUQCKLqZdqxZju+k7qr5uh06WKRYWcAymTGqWtOXxEv++KdiPUQrChKcXdRQsjR/ntI1tR2+E6JGnJAiOItRx/+KLsyyFIDuY8qmjHh0NW1yPTdfp8HXDZsYk+CMHM+Q3/+9GwgfHhm+07LbOpI+JmVfy1eKNVLHx5ytIg3S9hmCq8J0vNp6w8VDE4KJd6eT0RZTjxp4Kz0CallFOX0jSJrz95dsuTpFPuJYFj+6N85LD6RKMlLY5HV25PtDllePQqaKcVVbjp5v1iQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OgUuY8vcE8F2ZzbsE+TE7PDo41+oKeTWt6CgfbQ6tYE=;
- b=atqTjwfa+VU06tO2lQbeISR370elxESfnvCEQnb/iTZxNkguNNdTSTGPDzbbHGyOxWd5eV8nvFjxDdTCZq2v1JsC3S/xU6E+7tjKBZMlfT+iV93pvSROKF34I06r7iVZ8QFxQqLle21HisTHrdSULSJOqvORylJ1CLXe2Eo4njR1FYwGPpEkuI7zZa61PI9LM9xfunEc79sxlfBI+dca6a0zbAGdmVVwB0RWsupSAfRo5ExdeIxTMnxPGDEzKPGqmLLTvRkBnJQMS+8+255NjszWVFrg2msLrLsmV58rnfExIUlMNyB7qxd/ut/XlPXnZ+KfxVwHyVD+zYwwUEcm9A==
-Received: from DS7PR07CA0023.namprd07.prod.outlook.com (2603:10b6:5:3af::28)
- by SN7PR12MB7323.namprd12.prod.outlook.com (2603:10b6:806:29a::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.31; Fri, 3 Feb
- 2023 17:53:17 +0000
-Received: from DM6NAM11FT111.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3af:cafe::42) by DS7PR07CA0023.outlook.office365.com
- (2603:10b6:5:3af::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.31 via Frontend
- Transport; Fri, 3 Feb 2023 17:53:16 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DM6NAM11FT111.mail.protection.outlook.com (10.13.173.26) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6064.31 via Frontend Transport; Fri, 3 Feb 2023 17:53:16 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 3 Feb 2023
- 09:53:06 -0800
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 3 Feb 2023
- 09:53:06 -0800
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.9)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36 via Frontend
- Transport; Fri, 3 Feb 2023 09:53:05 -0800
-Date: Fri, 3 Feb 2023 09:53:04 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC1C9AD3A
+	for <iommu@lists.linux.dev>; Fri,  3 Feb 2023 18:20:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47D0FC433D2;
+	Fri,  3 Feb 2023 18:20:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1675448447;
+	bh=3D+/sZZJmLI9fYcwlfraDrdIRTAmIP2cDnIjI/PzcSM=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=LKf4mIORaBua0cHD1bhn4kid4fjCZXFof1Ia/hXLrofBPF72QXlGOr9u11xm06uru
+	 hMyNoPUJcW6WYd7eJuYJZrDZXpkyNlgnp5bsFYAHIhngWlWbaxCgZbSzQZCkaqefYi
+	 r8874MLJveiWJBkcrpj6bvSzB9SOYC9ZFYHWVw/zRAAGWiKRarbYY5Ekm92pxQZNfR
+	 gjebtgSN0bz2QvthrYPFJnEFVivVzNWg4q49aFDIsMu6/dev5VA0uAYC6M/e9UcZ7d
+	 yAXgi3zL9Pa+Bc6VDkwaEbm+zoPQyIH55FeqrOb7ui/3hnAaV92a5VYraCMqti7X1S
+	 8zbUcvZjilSYA==
+Date: Fri, 3 Feb 2023 12:20:45 -0600
+From: Bjorn Helgaas <helgaas@kernel.org>
 To: Jason Gunthorpe <jgg@nvidia.com>
-CC: "Tian, Kevin" <kevin.tian@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
-	<robin.murphy@arm.com>, "alex.williamson@redhat.com"
-	<alex.williamson@redhat.com>, "shuah@kernel.org" <shuah@kernel.org>, "Liu, Yi
- L" <yi.l.liu@intel.com>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v1 2/8] iommu: Introduce a new
- iommu_group_replace_domain() API
-Message-ID: <Y91KAHxQIDnaGbYs@Asurada-Nvidia>
-References: <cover.1675320212.git.nicolinc@nvidia.com>
- <a98e622f41d76b64f5a7d0c758d8bda5e8043013.1675320212.git.nicolinc@nvidia.com>
- <BN9PR11MB5276BB497D32073A1F4CBE238CD79@BN9PR11MB5276.namprd11.prod.outlook.com>
- <Y90iOAmnBtqQtmiA@ziepe.ca>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>,
+	Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <jroedel@suse.de>,
+	Matt Fagnani <matt.fagnani@bell.net>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Vasant Hegde <vasant.hegde@amd.com>, Tony Zhu <tony.zhu@intel.com>,
+	linux-pci@vger.kernel.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH v3 1/1] PCI: Add translated request only flag for
+ pci_enable_pasid()
+Message-ID: <20230203182045.GA1972366@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y90iOAmnBtqQtmiA@ziepe.ca>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT111:EE_|SN7PR12MB7323:EE_
-X-MS-Office365-Filtering-Correlation-Id: bdd2463a-acc0-447a-e285-08db060f874c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	iCXKWHzrRBVfB0nlsR31YXJMyRM6a7SZoPCMIsllhiqy/fudK1zoDP1RUAMnOSC4AxOnBoYFRvYA3QXsqwZyQtop61KxhlpG3EKKDtaj6Xxdw70jaXSwFN6xMx3L2ZQ6HXUjR0KF+0MMMhYiHD9tIVbMsVjJ9s4n+QclOXjmHIqvAAidYLAg7RvPAIryVxwBX9d0TptQX6jNrCT40m5W9bq2tQPbS9nnINrB60ENRK9VIqqwJylRGwApsbZoO7AlD5Ke8WvE/qH+VG86vuEaa04bV24+ugvkS+xA9oHwvPjjhQZ1NQX1luduge+gUas4SKctMedsNy5FOlawXrmtNwAxvwca1lOxib9EENdPigZVMZzF+0b60iccphg2AXu9GfLeAyuuEzd9c5JOO1nX7ounCs1XUSeU5Oal8uwNn17P/V54HVZqnW4AIMdpw3XqkcL1zjP/hK/Q81rKLfMRxt4ftKLGeUE5OM18aZvL6GfA48xvXa6sX1boeEYX8PfEnlqZxlx02UGQvnzfLkJ33DfVsRrxq1wpmfM/B/C2rPfUxD/MlYqRpn7hEo9g5lVPzUJs4b/wcH5COROJP+QXS1MKf1HoR0yJHBSCeHAI04P5UVt2ten93gUfV6GnRzVeIGiFeYBDi944U1PpCJ9q0uk9ORcgEi5LCbs4cGjtCr3hcrnFBh/+OyPjUsHWQskeC3Avv0QsDQosQMTyxD0uIQ==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(376002)(39860400002)(346002)(396003)(136003)(451199018)(46966006)(36840700001)(40470700004)(4326008)(8676002)(82740400003)(82310400005)(83380400001)(6636002)(54906003)(40480700001)(336012)(2906002)(316002)(356005)(70206006)(55016003)(70586007)(40460700003)(478600001)(47076005)(7636003)(426003)(9686003)(26005)(186003)(8936002)(36860700001)(6862004)(7416002)(41300700001)(86362001)(33716001)(5660300002)(66899018);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2023 17:53:16.5733
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: bdd2463a-acc0-447a-e285-08db060f874c
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT111.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7323
+In-Reply-To: <Y9wg0Znc0tRWj4O9@nvidia.com>
 
-On Fri, Feb 03, 2023 at 11:03:20AM -0400, Jason Gunthorpe wrote:
-> > > + */
-> > > +int iommu_group_replace_domain(struct iommu_group *group,
-> > > +			       struct iommu_domain *new_domain)
+[+cc Alex in case you're interested in the ACS angle]
+
+On Thu, Feb 02, 2023 at 04:45:05PM -0400, Jason Gunthorpe wrote:
+> On Thu, Feb 02, 2023 at 02:12:49PM -0600, Bjorn Helgaas wrote:
+> > On Thu, Feb 02, 2023 at 11:08:25AM +0800, Baolu Lu wrote:
+> > > ...
 > > 
-> > what actual value does 'replace' give us? It's just a wrapper of
-> > __iommu_group_set_domain() then calling it set_domain is
-> > probably clearer. You can clarify the 'replace' behavior in the
-> > comment.
-> 
-> As the APIs are setup:
-> 
-> attach demands that no domain is currently set (eg the domain must be blocking)
-> 
-> replace permits the domain to be currently set
-> 
-> 'set' vs 'attach' is really unclear what the intended difference is.
-> 
-> We could also address this by simply removing the protection from
-> attach, but it is not so clear if that is safe for the few users.
-
-I can add a couple of lines to the commit message to make things
-clear.
-
-> > > +{
-> > > +	int ret;
-> > > +
-> > > +	if (!new_domain)
-> > > +		return -EINVAL;
-> > > +
-> > > +	mutex_lock(&group->mutex);
-> > > +	ret = __iommu_group_set_domain(group, new_domain);
-> > > +	if (ret) {
-> > > +		if (__iommu_group_set_domain(group, group->domain))
-> > > +			__iommu_group_set_core_domain(group);
-> > > +	}
+> > > ACS is unnecessary for the devices that only use translated
+> > > memory request for PASID. All translated addresses are granted
+> > > by the Linux kernel which ensures that such addresses will never
+> > > be in a P2P address, i.e., it's not contained in any bridge
+> > > aperture, will *always* be routed toward the RC.
 > > 
-> > Can you elaborate the error handling here? Ideally if
-> > __iommu_group_set_domain() fails then group->domain shouldn't
-> > be changed. 
+> > Re 201007ef707a ("PCI: Enable PASID only when ACS RR & UF enabled
+> > on upstream path"), does that commit actually *fix* anything?  I
+> > wonder whether we could revert it completely.
+> > 
+> > The intent of 201007ef707a is to use ACS to prevent misrouting,
+> > which would happen if a TLP contained an address that *looked*
+> > like a PCI bus address, i.e., it was inside a host bridge
+> > aperture, but was *intended* to reach an IOMMU or main memory
+> > directly.
 > 
-> That isn't what it implements though. The internal helper leaves
-> things in a mess, it is for the caller to fix it, and it depends on
-> the caller what that means.
+> Yes.
 > 
-> In this case the API cannot retain a hidden reference to the new
-> domain, so it must be purged, one way or another.
+> > 201007ef707a only affects pci_enable_pasid(), so I think we
+> > already avoid this misrouting by restricting DMA address
+> > allocation for both non-IOMMU scenarios and non-PASID IOMMU
+> > scenarios.
+> 
+> There is no restriction on DMA address allocation with PASID.
+> 
+> The typical PASID use case is to point the PASID at the CPU page
+> table and then all VA's are fair game by userspace. There is no
+> carve out like the DMA API has to protect from bus address
+> confusion.
 
-Considering it is a bit different than the existing APIs like
-iommu_attach_group(), perhaps I should add a line of comments
-in the fallback routine.
+I think you're saying that for (Requester ID, PASID, Untranslated
+Address), the Untranslated Address is not restricted at all, and it
+may look like a PCI bus address.
 
-Thanks
-Nic
+> > So what about PASID mappings, e.g., consider a mapping of
+> > (Requester ID, PASID, Untranslated Address) -> Translated Address?
+> > If either the Untranslated Address or the Translated Address looks
+> > like a PCI bus address, a Memory Request or Translation Request
+> > could be misrouted.
+> 
+> The PCI rules are a bit complicated:
+>  - A simple MemRd/Wr with a PASID will be routed according to the
+>    address. This can be mis-routed
+>  - A ATS translation request with a PASID is always routed to the host
+>    bridge
+
+From a PCIe point of view, I think these cases are equivalent because
+a PASID prefix doesn't affect routing (sec 2.2.10.4).  A Translation
+Request includes an Untranslated Address, and if that happens to look
+like a PCI bus address, I think it will be mis-routed just like a
+MemRd/Wr would be.
+
+>  - A MemRd/Wr with Translated set and no PASID is always routed to the
+>    correct destination, even if that is not the host bridge
+
+I don't think Address Type 10b ("Translated") affects routing.  A
+MemRd/Wr should be routed to a PCI peer if the Translated Address is
+inside a host bridge aperture, or to the host bridge otherwise.
+
+> > Do IOMMUs allocate (PASID, Untranslated Addresses) that look like
+> > PCI bus addresses?
+> 
+> Yes, because it is mapped to a mm_struct userspace can use any mmap
+> to access any valid address as an IOVA and thus PASID tagged
+> translation must never become confused with bus addresses.
+
+If PCI bus addresses are carved out of the Translated Address arena,
+the MemRd/Wr TLPs should be fine, but I think the Translation Requests
+that include Untranslated Addresses are still a problem.
+
+> Further, and worse, the common use model for PASID SVA is for
+> userspace to directly submit IOVA to the device for operation. If
+> userspace can submit a hostile IOVA and cause DMA to reach something
+> that is not the host bridge then system security is completely
+> wrecked.
+> 
+> So, as an API in Linux we felt it was best to only enable PASID if
+> PASID is secure and truely isolated, otherwise leave PASID off. The
+> use cases for insecure PASID seem small.
+
+The patch under discussion is intended to fix a v6.2-rc1 regression
+added by 201007ef707a ("PCI: Enable PASID only when ACS RR & UF
+enabled on upstream path").
+
+Are we on track to fix this before v6.2?  I don't have a clear
+understanding of how we know this change is safe and it only affects
+AMD GPU and not other devices below the same IOMMU.
+
+Bjorn
