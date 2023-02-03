@@ -1,104 +1,57 @@
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+Received: from formenos.hmeau.com (167-179-156-38.a7b39c.syd.nbn.aussiebb.net [167.179.156.38])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 410E37E4
-	for <iommu@lists.linux.dev>; Thu,  2 Feb 2023 22:46:02 +0000 (UTC)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-29-y36o5xIlPiWVEvSaXEynsQ-1; Thu, 02 Feb 2023 22:45:59 +0000
-X-MC-Unique: y36o5xIlPiWVEvSaXEynsQ-1
-Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
- (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.45; Thu, 2 Feb
- 2023 22:45:57 +0000
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.045; Thu, 2 Feb 2023 22:45:57 +0000
-From: David Laight <David.Laight@ACULAB.COM>
-To: 'Linus Torvalds' <torvalds@linux-foundation.org>, Peter Zijlstra
-	<peterz@infradead.org>
-CC: "corbet@lwn.net" <corbet@lwn.net>, "will@kernel.org" <will@kernel.org>,
-	"boqun.feng@gmail.com" <boqun.feng@gmail.com>, "mark.rutland@arm.com"
-	<mark.rutland@arm.com>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-	"dennis@kernel.org" <dennis@kernel.org>, "tj@kernel.org" <tj@kernel.org>,
-	"cl@linux.com" <cl@linux.com>, "hca@linux.ibm.com" <hca@linux.ibm.com>,
-	"gor@linux.ibm.com" <gor@linux.ibm.com>, "agordeev@linux.ibm.com"
-	<agordeev@linux.ibm.com>, "borntraeger@linux.ibm.com"
-	<borntraeger@linux.ibm.com>, "svens@linux.ibm.com" <svens@linux.ibm.com>,
-	"tglx@linutronix.de" <tglx@linutronix.de>, "mingo@redhat.com"
-	<mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
-	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>, "x86@kernel.org"
-	<x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>, "joro@8bytes.org"
-	<joro@8bytes.org>, "suravee.suthikulpanit@amd.com"
-	<suravee.suthikulpanit@amd.com>, "robin.murphy@arm.com"
-	<robin.murphy@arm.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, Arnd Bergmann
-	<arnd@arndb.de>, Herbert Xu <herbert@gondor.apana.org.au>,
-	"davem@davemloft.net" <davem@davemloft.net>, "penberg@kernel.org"
-	<penberg@kernel.org>, "rientjes@google.com" <rientjes@google.com>,
-	"iamjoonsoo.kim@lge.com" <iamjoonsoo.kim@lge.com>, Andrew Morton
-	<akpm@linux-foundation.org>, "vbabka@suse.cz" <vbabka@suse.cz>,
-	"roman.gushchin@linux.dev" <roman.gushchin@linux.dev>, "42.hyeyoo@gmail.com"
-	<42.hyeyoo@gmail.com>, "linux-doc@vger.kernel.org"
-	<linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>,
-	"linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "linux-arch@vger.kernel.org"
-	<linux-arch@vger.kernel.org>, "linux-crypto@vger.kernel.org"
-	<linux-crypto@vger.kernel.org>
-Subject: RE: [PATCH v2 00/10] Introduce cmpxchg128() -- aka. the demise of
- cmpxchg_double()
-Thread-Topic: [PATCH v2 00/10] Introduce cmpxchg128() -- aka. the demise of
- cmpxchg_double()
-Thread-Index: AQHZNz4vE8dWPUdohk2nkEpDmnikoa68PlfA
-Date: Thu, 2 Feb 2023 22:45:57 +0000
-Message-ID: <fe484df93b1d437b84edfd85fed66191@AcuMS.aculab.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DBC57C
+	for <iommu@lists.linux.dev>; Fri,  3 Feb 2023 01:33:04 +0000 (UTC)
+Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
+	by formenos.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+	id 1pNkWl-006ynM-1B; Fri, 03 Feb 2023 09:06:08 +0800
+Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Fri, 03 Feb 2023 09:06:07 +0800
+Date: Fri, 3 Feb 2023 09:06:07 +0800
+From: Herbert Xu <herbert@gondor.apana.org.au>
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: torvalds@linux-foundation.org, corbet@lwn.net, will@kernel.org,
+	boqun.feng@gmail.com, mark.rutland@arm.com, catalin.marinas@arm.com,
+	dennis@kernel.org, tj@kernel.org, cl@linux.com, hca@linux.ibm.com,
+	gor@linux.ibm.com, agordeev@linux.ibm.com,
+	borntraeger@linux.ibm.com, svens@linux.ibm.com, tglx@linutronix.de,
+	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+	x86@kernel.org, hpa@zytor.com, joro@8bytes.org,
+	suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
+	dwmw2@infradead.org, baolu.lu@linux.intel.com,
+	Arnd Bergmann <arnd@arndb.de>, davem@davemloft.net,
+	penberg@kernel.org, rientjes@google.com, iamjoonsoo.kim@lge.com,
+	Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz,
+	roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, linux-s390@vger.kernel.org,
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+	linux-crypto@vger.kernel.org
+Subject: Re: [PATCH v2 01/10] cyrpto/b128ops: Remove struct u128
+Message-ID: <Y9xd/+vMOTtMlxJL@gondor.apana.org.au>
 References: <20230202145030.223740842@infradead.org>
- <CAHk-=wiF6y7CwR1P5_73aK2f=x=RZjwgh3sgeO3Mczv4XcDc8g@mail.gmail.com>
-In-Reply-To: <CAHk-=wiF6y7CwR1P5_73aK2f=x=RZjwgh3sgeO3Mczv4XcDc8g@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+ <20230202152655.250913242@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230202152655.250913242@infradead.org>
 
-RnJvbTogTGludXMgVG9ydmFsZHMNCj4gU2VudDogMDIgRmVicnVhcnkgMjAyMyAxOTozOQ0KPiAN
-Cj4gT24gVGh1LCBGZWIgMiwgMjAyMyBhdCA3OjI5IEFNIFBldGVyIFppamxzdHJhIDxwZXRlcnpA
-aW5mcmFkZWFkLm9yZz4gd3JvdGU6DQo+ID4NCj4gPiAgLSBmaXhlZCB1cCB0aGUgaW5saW5lIGFz
-bSB0byB1c2UgJ3UxMjggKicgbWVtIGFyZ3VtZW50IHNvIHRoZSBjb21waWxlciBrbm93cw0KPiA+
-ICAgIGhvdyB3aWRlIHRoZSBtb2RpZmljYXRpb24gaXMuDQo+ID4gIC0gcmV3b3JrZWQgdGhlIHBl
-cmNwdSB0aGluZyB0byB1c2UgdW5pb24gYmFzZWQgdHlwZS1wdW5uaW5nIGluc3RlYWQgb2YNCj4g
-PiAgICBfR2VuZXJpYygpIGJhc2VkIGNhc3RzLg0KPiANCj4gTG9va3MgbG92ZWx5IHRvIG1lLiBU
-aGlzIHJlbW92ZWQgYWxsIG15IGNvbmNlcm5zIChleGNlcHQgZm9yIHRoZQ0KPiB0ZXN0aW5nIG9u
-ZSwgYnV0IGFsbCB0aGUgcGF0Y2hlcyBsb29rZWQgbmljZSBhbmQgY2xlYW4gdG8gbWUsIHNvDQo+
-IGNsZWFybHkgaXQgbXVzdCBiZSBwZXJmZWN0KS4NCg0KVGhlIGNoYW5nZSBpcyBhbG1vc3QgY2Vy
-dGFpbmx5IGZvciB0aGUgYmV0dGVyLg0KDQpCdXQgZGlkIEkgc3BvdCBvbmUgb2YgdGhlIGJpdHMg
-dXNpbmcgY21weGNoZzEyOCBqdXN0IHRvIGRvIGFuIGF0b21pYyB3cml0ZT8NCkkgdGhpbmsgaXQg
-d2FzIHVwZGF0aW5nIHNvbWUgaW50ZXJydXB0IGluZm8gdGhhdCB3YXMgYXQgZmlyc3QgZ2xhbmNl
-IG5vdA0KZGlzc2ltaWxhciB0byB0aGF0IHVzZWQgYnkgTVNJLVggKGl0IHdhc24ndCBNU0ktWCku
-DQoNCklmIHRoYXQgd2FzIGEgaGFyZHdhcmUgcmVnaXN0ZXIgdGhlbiBpdCBjb3VsZCB3ZWxsIHJl
-cXVpcmUgYSBmdWxsIGJ1cyBsb2NrLg0KVXNpbmcgYSB3cml0ZSBvZiBhIHNzZSAob3IgZXF1aXYp
-IDEyOGJpdCByZWdpc3RlciB3b3VsZCBiZSBhbiBhdG9taWMgd3JpdGUNCndpdGhvdXQgdGhlIGJ1
-cyBsb2NrIHByb2JsZW0uDQoNCkFsc28sIHRoYXQgaXMgb25seSBnb2luZyB0byB3b3JrIGlmIHRo
-ZSBoYXJkd2FyZS9sb2dpYyBzaWRlIGd1YXJhbnRlZXMgdG8NCnRyZWF0IGEgc2luZ2xlIHdyaXRl
-IGFzIGF0b21pYy4NCkkga25vdyB0aGVyZSBhcmUgTVNJLVggaW1wbGVtZW50YXRpb25zIG91dCB0
-aGVyZSB3aGVyZSB0aGUgY3B1IHdyaXRlDQp3aWxsIGJlIHNwbGl0IGludG8gZm91ciAzMmJpdCB3
-cml0ZXMgdG8gc29tZSBpbnRlcm5hbCBtZW1vcnkgYW5kIHRoZQ0KaGFyZHdhcmUgc2lkZSB3aWxs
-IGFsc28gZG8gbXVsdGlwbGUgYWNjZXNzZXMuDQooUHJldHR5IG11Y2ggYW55IGltcGxlbWVudGF0
-aW9uIG9uIGFuIGZwZ2Egd2lsbCBiZWhhdmUgbGlrZSB0aGF0LA0Kbm90IGp1c3QgdGhlIG9uZSBJ
-IHdyb3RlLikNCkkgZGlkbid0IHNlZSB0aGUgTVNJLVggY29kZSB0aGVyZSwgYnV0IEkgZG8gd29u
-ZGVyIGhvdyBpdCBzYWZlbHkgY2hhbmdlcw0KYWZmaW5pdGllcy4NCg0KCURhdmlkDQoNCi0NClJl
-Z2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0
-b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykN
-Cg==
+On Thu, Feb 02, 2023 at 03:50:31PM +0100, Peter Zijlstra wrote:
+> Per git-grep u128_xor() and its related struct u128 are unused except
+> to implement {be,le}128_xor(). Remove them to free up the namespace.
+> 
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> ---
+>  include/crypto/b128ops.h |   14 +++-----------
+>  1 file changed, 3 insertions(+), 11 deletions(-)
 
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
