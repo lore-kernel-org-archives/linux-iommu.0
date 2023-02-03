@@ -1,142 +1,293 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2042.outbound.protection.outlook.com [40.107.223.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7E9379D9
-	for <iommu@lists.linux.dev>; Fri,  3 Feb 2023 16:52:19 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DVTZS8fjOviccXC99/PBHueIyHYxkymngTs+1FtNqtUsj0koKmj9cU6M4IXL68KPKuEdjYfseWHuYKLr3zlSjQS6R+nRqLdPuNvCXQ8E7th+wlbitDLE6b6xqcdRx9DVEq0ZBPnB5FrJ3TP0d1ZQXkCufXUMxVQa7vmNTCEvbO/chafMJXCY9W0W9vHbuDHweyp2MP022HSeVR0M9x/8L8HrUaeKEqeig55h17rIiBgLRVSvSUDB/ddp64VuPML/NBBwRxpN0A/8QXb/f12GNOn4pra6twQz+d4B8paXVZJFTXbDLGBIFzo83Q/J0oxPpZo+PX1azRZiGj4aPZUExg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bEFhg/28DQdjBf6q5gsTfzkmnzpp2Wm3ZTh6zuy+Ze4=;
- b=l3juse0pNo+9hnI6OH/BoUP3Tl6fPbI8OY+UGakXpZA0RKY7tRdyAhmxs4VWyUeEVpq1GV5umFn5WMYCAcU7Fb68i/mVqLFIT9BIdXkgkavGLjJWJltxTHhpq35q5bVDO5lqxufHxRw10KrQA4tUdvdOW2r4p2qSBbVSAR05wccvfr34lbKYokT0jh87BZ3NOA3nVokpfuOb8fU0EIDlDlGTFpZQtPMnFPqHKEnIAYtlG6O8UQBP0Le0QoZhZDxbQOtq8FFlKhdaTp3lKfgzRHF+ri1rgSMtI+MSe9UrQj+IhIGhMAL80A3Ozr0u/M8uvZ8bBDcwIRqolJXMSXXwPw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bEFhg/28DQdjBf6q5gsTfzkmnzpp2Wm3ZTh6zuy+Ze4=;
- b=rqw8Z76F5hHm7+0cI/72rXt7UFdRL43S1aH1sEPBFtIVYAob1tzXl4HwaGbYKWWELhFqizsjXFT7BTVIqoV7aJPkbuD63TZ7suN3tqePjrqYie4RQr5Spc3B2dEHHH/vl2XFn9iVekUvXkRYWSjnAnL711PHkkcbaUDYMVHSZiI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- SA1PR12MB5638.namprd12.prod.outlook.com (2603:10b6:806:229::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.31; Fri, 3 Feb
- 2023 16:52:17 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::4014:79ea:392b:b4f6]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::4014:79ea:392b:b4f6%3]) with mapi id 15.20.6043.038; Fri, 3 Feb 2023
- 16:52:17 +0000
-Message-ID: <2dec28fa-3de6-ed0f-6d9f-0aba12be5052@amd.com>
-Date: Fri, 3 Feb 2023 22:22:05 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 3/3] iommu/amd: Call BUG_ON in page fault hanlder path if
- domain is NULL
-Content-Language: en-US
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux.dev, robin.murphy@arm.com, will@kernel.org,
- suravee.suthikulpanit@amd.com, Matt Fagnani <matt.fagnani@bell.net>
-References: <20230113135956.5788-1-vasant.hegde@amd.com>
- <20230113135956.5788-3-vasant.hegde@amd.com> <Y9zVnkfEp3bC+UfL@8bytes.org>
- <8f161d2b-2c00-5a91-5799-36746af5b32c@amd.com> <Y9zsE800/NhF8unH@8bytes.org>
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <Y9zsE800/NhF8unH@8bytes.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN3PR01CA0116.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:96::6) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8770E79D9
+	for <iommu@lists.linux.dev>; Fri,  3 Feb 2023 16:53:13 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0CD93C14;
+	Fri,  3 Feb 2023 08:53:55 -0800 (PST)
+Received: from FVFF77S0Q05N (unknown [10.57.90.37])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EF3D43F71E;
+	Fri,  3 Feb 2023 08:53:06 -0800 (PST)
+Date: Fri, 3 Feb 2023 16:52:59 +0000
+From: Mark Rutland <mark.rutland@arm.com>
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: torvalds@linux-foundation.org, corbet@lwn.net, will@kernel.org,
+	boqun.feng@gmail.com, catalin.marinas@arm.com, dennis@kernel.org,
+	tj@kernel.org, cl@linux.com, hca@linux.ibm.com, gor@linux.ibm.com,
+	agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+	svens@linux.ibm.com, tglx@linutronix.de, mingo@redhat.com,
+	bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+	hpa@zytor.com, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
+	Arnd Bergmann <arnd@arndb.de>,
+	Herbert Xu <herbert@gondor.apana.org.au>, davem@davemloft.net,
+	penberg@kernel.org, rientjes@google.com, iamjoonsoo.kim@lge.com,
+	Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz,
+	roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, linux-s390@vger.kernel.org,
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+	linux-crypto@vger.kernel.org
+Subject: Re: [PATCH v2 03/10] arch: Introduce
+ arch_{,try_}_cmpxchg128{,_local}()
+Message-ID: <Y90763uF/cHqiOYN@FVFF77S0Q05N>
+References: <20230202145030.223740842@infradead.org>
+ <20230202152655.373335780@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|SA1PR12MB5638:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8a062137-e004-4ef8-d5ea-08db0607020f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	zGTgD0FbAOKZxBbWBfb+A5/G5ysYlFXFHQHBJyrRQVlA+iEFGBbUxFv7sdNKarCV52yB2meSXulEFJTwitshJ22Xuli6AIzRbCzL7yD3ygXlBG+Xy4b0KOCevsHGIw9H9WPLNvoB2G87Eapd1VC+l4wtA711Bamc5vIuRHfrl45f4zZ31nT0aTrD93eQ/xEyfzoIgLYEHmD6wenfeC7hU1/pCOydxVtO1z5v5FyrO5lRrEZiI2U3xVzrC92/RejJR1ijrNaStm36aklX/5MtM6TWHZ+c5YGtc6O7lCnxCifM+SmC/H7UZKFE6Cc2JQ0JaiD0+2SHDrylBQEZvz9jME96ZATKvUGbNWAfRtQU9SnKYjBd80sknSaPs3ENdyeIoMOfi8Ac+GTh9CKO4Ghsi+I+2HV1LpdiXaV6b+CCsium0a5O4MVwA5bTMcpHgiv2DOkQnpzZx/r5/K6uGs39fzpkzrl0bXMPu1n/i5yEn5gw5/7Kz3qyconvf2Q72ivqz2CXwFriL/s+HnyNN8g0WPRqF5Cxld1n2IaABZyCPnjS4gy+LcW9RCHpNUrekvrRGadxpwY/19dO8L1my1hNmRcytQgAMcC44eh3uUE3B78sSsQ5zrAnABmjQntabxHAj1GcM292J79OsLlfgfMYHWZF2l7Bcvx9KKOVw4+SAsRrImn/bOs7Obhz8+D9QrxD1WnxB+PWGGeywytLULEv7mgHAKf2M0Q8f/TVa5SS3Bk=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(376002)(346002)(136003)(39860400002)(396003)(451199018)(26005)(31686004)(2616005)(31696002)(86362001)(186003)(6512007)(83380400001)(38100700002)(36756003)(41300700001)(8936002)(4744005)(44832011)(66556008)(66476007)(6916009)(66946007)(316002)(2906002)(6666004)(53546011)(6506007)(6486002)(478600001)(4326008)(8676002)(5660300002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?L2MxTXUwMWkrbEZyMEdjcnRyU0FTMWpZdG1SdTBnMC8wZ2prT21HMjJ5eTJJ?=
- =?utf-8?B?UzgxczJSME9GNFZBTEVVaXNvT0dxWExMSFZaaG9EOWVPQ2NpUGtKMk8zOUdM?=
- =?utf-8?B?RjhxQmFaaUxvQjdKSUxEM1hQV1hlV1A2QlB6RHlpTHNnc243dEpYMHFWRU8y?=
- =?utf-8?B?TG42cUNkTUwrM3dYY1VhY3lrbmJWdmNxbGt4dXBLYnI1SURiSnFiR29aeTMy?=
- =?utf-8?B?ZFFLQlcxUHgxM01sYTV2aXJtWWdGQWFMVlpsN29rNjhhMkloT25PTVM3amtt?=
- =?utf-8?B?eExwMXdYUWI4VVYydjlsbWRVRXVoZXE3UHIxMHNvbUQ0RXA3RjVib2tsREQr?=
- =?utf-8?B?SzEzc3dhZHc3N2w1STFnMVJvRVVkOEc3V3FZcUxtWDEzRm9VMUsvUFYvQjdD?=
- =?utf-8?B?Y2Y2NjFuckxKNkhTZnNuVG9UKzVNblFsOVdyZzh2T3o0MTZ0eURIWUtDNXp5?=
- =?utf-8?B?bThZVnN6RmcxcSs3c3BBYmxHRFMxNnZDWWJVa1dybTFzYklqNFIxTnpCVmk2?=
- =?utf-8?B?MGVOc2NPYVZ1cVNIUmVWa0Z4NTZ2dGpWVnN4R25DSmFza2cxT29jOHd3UStX?=
- =?utf-8?B?ZEZ5bmJJVWJvcEwwanRock0xQzRMSWtWQlFBcVhoU0x1RkM5bHBpNE1tSDE4?=
- =?utf-8?B?endad3BnZTVaRm5KeXpuM1pxUkovWVo4RUpmcnF5cm55Z3o5VkhPRUZ4WEZv?=
- =?utf-8?B?a1A5ejh3YmNVVVFLQ0lCVk5jdXg1clhTc0d6K1F2Wmc3WDhZNERvWnRKbzBB?=
- =?utf-8?B?ZXQ4b3lSOTArU0M2cXR3QythSDF5WlJTdzg5bCtmckprTHFHWDV0TVVlbEts?=
- =?utf-8?B?VjV6ZHFGOXdtdEFKOUZmRzF1ZVJFaGNjMzNSNXJRZlRZUkZSZFRIdlhmUGVP?=
- =?utf-8?B?UDVSbzVwdkhZeVFrYTFzTHN2REtZNVVOa242b2Y1emFPcGZMSUxCNTgzdTlk?=
- =?utf-8?B?Um9MRkR1KzVtY3EzU2xRcmJsb1dBeGNxaFN4b1IrK2xyK1hpdk5tRXJsaSsr?=
- =?utf-8?B?d0k5ZHc4RE13UFBJTHdCdmM1ck9RdmFJUy9UTlpBZ0lCazJjZVdNZUJvUzU0?=
- =?utf-8?B?UUxHS0ExK1Z6d0QvenZyYkUrcFdQMXpLQi8rSUJjTFdLVVZITDdJSWFNYktr?=
- =?utf-8?B?TFZCV2JlNmppQlNXVjdQWjVHbnptc3pHQU5GZGd4TjJQNUJKNUF6aXZhd2V0?=
- =?utf-8?B?OTU1U2dPNUpPN0k2OFNtY0JiWEx0TlNNS2tJVkcwMHMzSkpSMnRoVkFyaVhY?=
- =?utf-8?B?MUtwd3RqRnk2dUJMMWlFZFpteVlaNktncFdXaVNJUzFxMDJuaE44eXZieTBC?=
- =?utf-8?B?bEt2aTNvVEdkNnNJSWlmcE5tdTRMaU8xVVJHSXRPem9QRUdjbVRNYVB4M0VG?=
- =?utf-8?B?WFQvMHZJWGMxanpDeTVLeVNaYkl5OWN3WXBTTTN1SWVWRTFOcmUvNENBUmhv?=
- =?utf-8?B?VDhIVkcwUmJzU1FIbm45QStzd09sdXJld204T2pkMG1FQUtkYWVvNUgvZXRM?=
- =?utf-8?B?Ky9iUE9oZUlva090OXpCRkNSbFhzQ1h3ekE0ejNSYnBVSVFUN2o3bTJMRWF4?=
- =?utf-8?B?SUZkZHRzN1JlTWlqa01CczRrb3NiaGJZNjZLT3lwKzB3aXlqclpGR3RhdGV5?=
- =?utf-8?B?aGU5Z05nY1Rab09oMWRZZ0Y3QjdJZi9iQmxRazZ0OW5xYTA3WVFvRC9Pb29M?=
- =?utf-8?B?OVdzR2p4TUVETnZnYTdqYUNLMUV2R28zTGt0b0RvYktOckZWQkt6RUVVMGFl?=
- =?utf-8?B?T3BOcDV2VGVlN1pvaXltNC9ud3BnWnVOclE2WGtaaG4rZHBSRk0xZC9pTnFr?=
- =?utf-8?B?aG0vRmlveTYwRmRmSHRWTGl2bkVYazI0OHBZRnZmNWtpN21ldWN1ZWUzL1JH?=
- =?utf-8?B?ZzdmN3JEekJZcW9pWmdBdFdXc0RaQ0piRkpxMTdqeTV3VUdQS3VncU5RckVD?=
- =?utf-8?B?OGdIOXZnNTVwS1JnM0dFOWVoYWViZUtkV3p0QXdJWE5mQ2hlRzdmWDJ6TEd2?=
- =?utf-8?B?SmpMVUJ5bVV1RUk3OE41bHVKSDY0dmpudy9qUU1ZRGxtVk9HNEJqNU1tMkdi?=
- =?utf-8?B?R1hJYlNJVXRXYUMwdnA0SGRybytrWkVQRTlZL2RRVmJkT24vTzMzTExqd0ti?=
- =?utf-8?Q?2xD6K32MTQi6M2ciHAHuvH4TB?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8a062137-e004-4ef8-d5ea-08db0607020f
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2023 16:52:17.6717
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OcNwddzzs97ANXPzmLokDE8nbKhgmh4LATKB6jepoeaBYV3mBicjn4PqtZpAIoAmuVRxW9cykJYHhL8OhsDEEw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB5638
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230202152655.373335780@infradead.org>
 
-Joerg,
-
-
-On 2/3/2023 4:42 PM, Joerg Roedel wrote:
-> Hi Vasant
+On Thu, Feb 02, 2023 at 03:50:33PM +0100, Peter Zijlstra wrote:
+> For all architectures that currently support cmpxchg_double()
+> implement the cmpxchg128() family of functions that is basically the
+> same but with a saner interface.
 > 
-> On Fri, Feb 03, 2023 at 04:10:33PM +0530, Vasant Hegde wrote:
->> Initially I was thinking of logging error message and return. But it will hit
->> device faults continuously.  Also we don't have nice way to recover from this
->> condition.
->>
->> So I thought crashing here with explicit BUG_ON is better. But I agree with
->> Robin's comment. We don't really get anything extra with BUG_ON. We should be
->> able to figureout crash reason based on NULL pointer dereference easily.
->>
->> Do you want me to just add explicit log here? Otherwise I am fine dropping this
->> patch (3/3). I think we still need first two patches from this series.
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+
+For arm64:
+
+Acked-by: Mark Rutland <mark.rutland@arm.com>
+
+Mark.
+
+> ---
+>  arch/arm64/include/asm/atomic_ll_sc.h |   41 +++++++++++++++++++++++++
+>  arch/arm64/include/asm/atomic_lse.h   |   31 +++++++++++++++++++
+>  arch/arm64/include/asm/cmpxchg.h      |   26 ++++++++++++++++
+>  arch/s390/include/asm/cmpxchg.h       |   14 ++++++++
+>  arch/x86/include/asm/cmpxchg_32.h     |    3 +
+>  arch/x86/include/asm/cmpxchg_64.h     |   55 +++++++++++++++++++++++++++++++++-
+>  6 files changed, 168 insertions(+), 2 deletions(-)
 > 
-> The best for now is to print a ratelimited error message and just return
-> from the handler. The ratelimit ensures that no misbehaving device can
-> flood the kernel log.
-
-Sure. Let me fix it and send v2.
-
--Vasant
-
+> --- a/arch/arm64/include/asm/atomic_ll_sc.h
+> +++ b/arch/arm64/include/asm/atomic_ll_sc.h
+> @@ -326,6 +326,47 @@ __CMPXCHG_DBL(   ,        ,  ,         )
+>  __CMPXCHG_DBL(_mb, dmb ish, l, "memory")
+>  
+>  #undef __CMPXCHG_DBL
+> +
+> +union __u128_halves {
+> +	u128 full;
+> +	struct {
+> +		u64 low, high;
+> +	};
+> +};
+> +
+> +#define __CMPXCHG128(name, mb, rel, cl...)                             \
+> +static __always_inline u128						\
+> +__ll_sc__cmpxchg128##name(volatile u128 *ptr, u128 old, u128 new)	\
+> +{									\
+> +	union __u128_halves r, o = { .full = (old) },			\
+> +			       n = { .full = (new) };			\
+> +       unsigned int tmp;                                               \
+> +									\
+> +	asm volatile("// __cmpxchg128" #name "\n"			\
+> +       "       prfm    pstl1strm, %[v]\n"                              \
+> +       "1:     ldxp    %[rl], %[rh], %[v]\n"                           \
+> +       "       cmp     %[rl], %[ol]\n"                                 \
+> +       "       ccmp    %[rh], %[oh], 0, eq\n"                          \
+> +       "       b.ne    2f\n"                                           \
+> +       "       st" #rel "xp    %w[tmp], %[nl], %[nh], %[v]\n"          \
+> +       "       cbnz    %w[tmp], 1b\n"                                  \
+> +	"	" #mb "\n"						\
+> +	"2:"								\
+> +       : [v] "+Q" (*(u128 *)ptr),                                      \
+> +         [rl] "=&r" (r.low), [rh] "=&r" (r.high),                      \
+> +         [tmp] "=&r" (tmp)                                             \
+> +       : [ol] "r" (o.low), [oh] "r" (o.high),                          \
+> +         [nl] "r" (n.low), [nh] "r" (n.high)                           \
+> +       : "cc", ##cl);                                                  \
+> +									\
+> +	return r.full;							\
+> +}
+> +
+> +__CMPXCHG128(   ,        ,  )
+> +__CMPXCHG128(_mb, dmb ish, l, "memory")
+> +
+> +#undef __CMPXCHG128
+> +
+>  #undef K
+>  
+>  #endif	/* __ASM_ATOMIC_LL_SC_H */
+> --- a/arch/arm64/include/asm/atomic_lse.h
+> +++ b/arch/arm64/include/asm/atomic_lse.h
+> @@ -324,4 +324,35 @@ __CMPXCHG_DBL(_mb, al, "memory")
+>  
+>  #undef __CMPXCHG_DBL
+>  
+> +#define __CMPXCHG128(name, mb, cl...)					\
+> +static __always_inline u128						\
+> +__lse__cmpxchg128##name(volatile u128 *ptr, u128 old, u128 new)		\
+> +{									\
+> +	union __u128_halves r, o = { .full = (old) },			\
+> +			       n = { .full = (new) };			\
+> +	register unsigned long x0 asm ("x0") = o.low;			\
+> +	register unsigned long x1 asm ("x1") = o.high;			\
+> +	register unsigned long x2 asm ("x2") = n.low;			\
+> +	register unsigned long x3 asm ("x3") = n.high;			\
+> +	register unsigned long x4 asm ("x4") = (unsigned long)ptr;	\
+> +									\
+> +	asm volatile(							\
+> +	__LSE_PREAMBLE							\
+> +	"	casp" #mb "\t%[old1], %[old2], %[new1], %[new2], %[v]\n"\
+> +	: [old1] "+&r" (x0), [old2] "+&r" (x1),				\
+> +	  [v] "+Q" (*(u128 *)ptr)					\
+> +	: [new1] "r" (x2), [new2] "r" (x3), [ptr] "r" (x4),		\
+> +	  [oldval1] "r" (o.low), [oldval2] "r" (o.high)			\
+> +	: cl);								\
+> +									\
+> +	r.low = x0; r.high = x1;					\
+> +									\
+> +	return r.full;							\
+> +}
+> +
+> +__CMPXCHG128(   ,   )
+> +__CMPXCHG128(_mb, al, "memory")
+> +
+> +#undef __CMPXCHG128
+> +
+>  #endif	/* __ASM_ATOMIC_LSE_H */
+> --- a/arch/arm64/include/asm/cmpxchg.h
+> +++ b/arch/arm64/include/asm/cmpxchg.h
+> @@ -147,6 +147,19 @@ __CMPXCHG_DBL(_mb)
+>  
+>  #undef __CMPXCHG_DBL
+>  
+> +#define __CMPXCHG128(name)						\
+> +static inline u128 __cmpxchg128##name(volatile u128 *ptr,		\
+> +				      u128 old, u128 new)		\
+> +{									\
+> +	return __lse_ll_sc_body(_cmpxchg128##name,			\
+> +				ptr, old, new);				\
+> +}
+> +
+> +__CMPXCHG128(   )
+> +__CMPXCHG128(_mb)
+> +
+> +#undef __CMPXCHG128
+> +
+>  #define __CMPXCHG_GEN(sfx)						\
+>  static __always_inline unsigned long __cmpxchg##sfx(volatile void *ptr,	\
+>  					   unsigned long old,		\
+> @@ -229,6 +242,19 @@ __CMPXCHG_GEN(_mb)
+>  	__ret;									\
+>  })
+>  
+> +/* cmpxchg128 */
+> +#define system_has_cmpxchg128()		1
+> +
+> +#define arch_cmpxchg128(ptr, o, n)						\
+> +({										\
+> +	__cmpxchg128_mb((ptr), (o), (n));					\
+> +})
+> +
+> +#define arch_cmpxchg128_local(ptr, o, n)					\
+> +({										\
+> +	__cmpxchg128((ptr), (o), (n));						\
+> +})
+> +
+>  #define __CMPWAIT_CASE(w, sfx, sz)					\
+>  static inline void __cmpwait_case_##sz(volatile void *ptr,		\
+>  				       unsigned long val)		\
+> --- a/arch/s390/include/asm/cmpxchg.h
+> +++ b/arch/s390/include/asm/cmpxchg.h
+> @@ -201,4 +201,18 @@ static __always_inline int __cmpxchg_dou
+>  			 (unsigned long)(n1), (unsigned long)(n2));	\
+>  })
+>  
+> +#define system_has_cmpxchg128()		1
+> +
+> +static __always_inline u128 arch_cmpxchg128(volatile u128 *ptr, u128 old, u128 new)
+> +{
+> +	asm volatile(
+> +		"	cdsg	%[old],%[new],%[ptr]\n"
+> +		: [old] "+d" (old), [ptr] "+QS" (*ptr)
+> +		: [new] "d" (new)
+> +		: "memory", "cc");
+> +	return old;
+> +}
+> +
+> +#define arch_cmpxchg128		arch_cmpxchg128
+> +
+>  #endif /* __ASM_CMPXCHG_H */
+> --- a/arch/x86/include/asm/cmpxchg_32.h
+> +++ b/arch/x86/include/asm/cmpxchg_32.h
+> @@ -103,6 +103,7 @@ static inline bool __try_cmpxchg64(volat
+>  
+>  #endif
+>  
+> -#define system_has_cmpxchg_double() boot_cpu_has(X86_FEATURE_CX8)
+> +#define system_has_cmpxchg_double()	boot_cpu_has(X86_FEATURE_CX8)
+> +#define system_has_cmpxchg64()		boot_cpu_has(X86_FEATURE_CX8)
+>  
+>  #endif /* _ASM_X86_CMPXCHG_32_H */
+> --- a/arch/x86/include/asm/cmpxchg_64.h
+> +++ b/arch/x86/include/asm/cmpxchg_64.h
+> @@ -20,6 +20,59 @@
+>  	arch_try_cmpxchg((ptr), (po), (n));				\
+>  })
+>  
+> -#define system_has_cmpxchg_double() boot_cpu_has(X86_FEATURE_CX16)
+> +union __u128_halves {
+> +	u128 full;
+> +	struct {
+> +		u64 low, high;
+> +	};
+> +};
+> +
+> +static __always_inline u128 arch_cmpxchg128(volatile u128 *ptr, u128 old, u128 new)
+> +{
+> +	union __u128_halves o = { .full = old, }, n = { .full = new, };
+> +
+> +	asm volatile(LOCK_PREFIX "cmpxchg16b %[ptr]"
+> +		     : [ptr] "+m" (*ptr),
+> +		       "+a" (o.low), "+d" (o.high)
+> +		     : "b" (n.low), "c" (n.high)
+> +		     : "memory");
+> +
+> +	return o.full;
+> +}
+> +
+> +static __always_inline u128 arch_cmpxchg128_local(volatile u128 *ptr, u128 old, u128 new)
+> +{
+> +	union __u128_halves o = { .full = old, }, n = { .full = new, };
+> +
+> +	asm volatile("cmpxchg16b %[ptr]"
+> +		     : [ptr] "+m" (*ptr),
+> +		       "+a" (o.low), "+d" (o.high)
+> +		     : "b" (n.low), "c" (n.high)
+> +		     : "memory");
+> +
+> +	return o.full;
+> +}
+> +
+> +static __always_inline bool arch_try_cmpxchg128(volatile u128 *ptr, u128 *old, u128 new)
+> +{
+> +	union __u128_halves o = { .full = *old, }, n = { .full = new, };
+> +	bool ret;
+> +
+> +	asm volatile(LOCK_PREFIX "cmpxchg16b %[ptr]"
+> +		     CC_SET(e)
+> +		     : CC_OUT(e) (ret),
+> +		       [ptr] "+m" (*ptr),
+> +		       "+a" (o.low), "+d" (o.high)
+> +		     : "b" (n.low), "c" (n.high)
+> +		     : "memory");
+> +
+> +	if (unlikely(!ret))
+> +		*old = o.full;
+> +
+> +	return likely(ret);
+> +}
+> +
+> +#define system_has_cmpxchg_double()	boot_cpu_has(X86_FEATURE_CX16)
+> +#define system_has_cmpxchg128()		boot_cpu_has(X86_FEATURE_CX16)
+>  
+>  #endif /* _ASM_X86_CMPXCHG_64_H */
+> 
+> 
