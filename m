@@ -1,121 +1,108 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5237CBA3F
-	for <iommu@lists.linux.dev>; Fri,  3 Feb 2023 21:56:03 +0000 (UTC)
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 313KTSjW025071;
-	Fri, 3 Feb 2023 21:55:36 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=date : from : to :
- cc : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=qcppdkim1; bh=zXDLHevRmbNSieNjjZ1itBUbVMHRS4dQ8ncRciz05CU=;
- b=FnAt2NZyHNV925FRMJKX5HNFpbtGl80xJ5Simzd4dnspOfwMwmJY3Kq/mxJkJYucCcM5
- ZrhNIHiMbmasCmA+UdX35t4SvXC3y//w9S0LXF8zViotoGYqj3OS4TMFPlxLKVWRm2Sb
- S74EUPFZJEbnmYukTsRs75yWT0n1UEAzFeqdEtOGZ0CAjUAusSbb7RlU/C5+zYoWzf+3
- UZBV7FdzQl84NnWUgpDVWIhzXwFgYB3XpHwpHwkrNj+5OcIFqU34wjW5EeP/Ev207PNW
- vV42m8XCBn1squCKUoXdorylZE2Y3lNSWd2RsmFrF00WR+bdSkVYJNCrKSo/35wP8dFA QA== 
-Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3ngw4p9thc-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 03 Feb 2023 21:55:35 +0000
-Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
-	by NASANPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 313LtYE4001279
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 3 Feb 2023 21:55:34 GMT
-Received: from quicinc.com (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 3 Feb 2023
- 13:55:33 -0800
-Date: Fri, 3 Feb 2023 13:55:32 -0800
-From: Guru Das Srinagesh <quic_gurus@quicinc.com>
-To: Elliot Berman <quic_eberman@quicinc.com>
-CC: Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Russell King
-	<linux@armlinux.org.uk>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Daniel
- Lezcano" <daniel.lezcano@linaro.org>,
-        Rob Clark <robdclark@gmail.com>,
-        "Abhinav Kumar" <quic_abhinavk@quicinc.com>,
-        Dmitry Baryshkov
-	<dmitry.baryshkov@linaro.org>,
-        Sean Paul <sean@poorly.run>, David Airlie
-	<airlied@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>, Will Deacon
-	<will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Joerg Roedel
-	<joro@8bytes.org>,
-        Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
-        "Vikash
- Garodia" <quic_vgarodia@quicinc.com>,
-        Mauro Carvalho Chehab
-	<mchehab@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Amol Maheshwari <amahesh@qti.qualcomm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Adrian Hunter
-	<adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>, Alex Elder
-	<elder@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet
-	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni
-	<pabeni@redhat.com>, Kalle Valo <kvalo@kernel.org>,
-        Linus Walleij
-	<linus.walleij@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Thara Gopinath <thara.gopinath@gmail.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <freedreno@lists.freedesktop.org>, <iommu@lists.linux.dev>,
-        <linux-media@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <ath10k@lists.infradead.org>,
-        <linux-wireless@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
-        <linux-remoteproc@vger.kernel.org>, <linux-scsi@vger.kernel.org>
-Subject: Re: [PATCH] firmware: qcom_scm: Move qcom_scm.h to
- include/linux/firmware/qcom/
-Message-ID: <20230203215532.GA10258@quicinc.com>
-References: <20230203210956.3580811-1-quic_eberman@quicinc.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59C86BA3F
+	for <iommu@lists.linux.dev>; Fri,  3 Feb 2023 22:03:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1675461822; x=1706997822;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=cskhf8vcDlJ5KLsoC6Xpt8pWGcbFmVNKlwLnbgeY8uI=;
+  b=V4bIHfVAugkLqMVD+HNa1mRbMBSxBwPLAGkQImFFInsLPzi+m0H3mZAu
+   tB2NAbrFeiHHY8hkpLI71M5YOirbci9s1zSJZpFNOiuvFCTAmtLZ8WS+f
+   uf4WBGKvZR1Mxh8Si2mHHql3Abxc8WHb185e/taGgxH6VS2dACs6skE2s
+   gDK1HMrVttFiGdwIYePMct/ejAbd2d25De6RSDJ9WKgCChUgBWSSyDEnC
+   fq5t9yEl5zKk/yzT3ugVgmXie9L/qAPs8EyW1c6i9/xoI+xNNkg69jHSw
+   ORcbUQy4ByUmIk/mH262nbcHvrPszN1bnXtPZIm9FTh1HtXEu+ouGFe1v
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10610"; a="309202204"
+X-IronPort-AV: E=Sophos;i="5.97,271,1669104000"; 
+   d="scan'208";a="309202204"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2023 14:03:41 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10610"; a="839742743"
+X-IronPort-AV: E=Sophos;i="5.97,271,1669104000"; 
+   d="scan'208";a="839742743"
+Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.106])
+  by orsmga005.jf.intel.com with ESMTP; 03 Feb 2023 14:03:41 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: LKML <linux-kernel@vger.kernel.org>,
+	iommu@lists.linux.dev,
+	"Lu Baolu" <baolu.lu@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>
+Cc: David Woodhouse <dwmw2@infradead.org>,
+	Raj Ashok <ashok.raj@intel.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	Yi Liu <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	stable@vger.kernel.org,
+	Sukumar Ghorai <sukumar.ghorai@intel.com>
+Subject: [PATCH] iommu/vt-d: Fix PASID directory pointer coherency
+Date: Fri,  3 Feb 2023 14:07:14 -0800
+Message-Id: <20230203220714.1283383-1-jacob.jun.pan@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20230203210956.3580811-1-quic_eberman@quicinc.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: IakSQGYsVJaEfb-gAExeEyYclWwLMuK5
-X-Proofpoint-ORIG-GUID: IakSQGYsVJaEfb-gAExeEyYclWwLMuK5
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-02-03_19,2023-02-03_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 impostorscore=0 spamscore=0 suspectscore=0 adultscore=0
- clxscore=1011 lowpriorityscore=0 mlxscore=0 phishscore=0 bulkscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2302030197
+Content-Transfer-Encoding: 8bit
 
-On Feb 03 2023 13:09, Elliot Berman wrote:
-> Move include/linux/qcom_scm.h to include/linux/firmware/qcom/qcom_scm.h.
-> This removes 1 of a few remaining Qualcomm-specific headers into a more
-> approciate subdirectory under include/.
-> 
-> Suggested-by: Bjorn Andersson <andersson@kernel.org>
-> Signed-off-by: Elliot Berman <quic_eberman@quicinc.com>
+On platforms that do not support IOMMU Extended capability bit 0
+Page-walk Coherency, CPU caches are not snooped when IOMMU is accessing
+any translation structures. IOMMU access goes only directly to
+memory. Intel IOMMU code was missing a flush for the PASID table
+directory that resulted in the unrecoverable fault as shown below.
 
-Reviewed-by: Guru Das Srinagesh <quic_gurus@quicinc.com>
+This patch adds a clflush when activating a PASID table directory.
+There's no need to do clflush of the PASID directory pointer when we
+deactivate a context entry in that IOMMU hardware will not see the old
+PASID directory pointer after we clear the context entry.
+
+[    0.555386] DMAR: DRHD: handling fault status reg 3
+[    0.555805] DMAR: [DMA Read NO_PASID] Request device [00:0d.2] fault addr 0x1026a4000 [fault reason 0x51] SM: Present bit in Directory Entry is clear
+[    0.556348] DMAR: Dump dmar1 table entries for IOVA 0x1026a4000
+[    0.556348] DMAR: scalable mode root entry: hi 0x0000000102448001, low 0x0000000101b3e001
+[    0.556348] DMAR: context entry: hi 0x0000000000000000, low 0x0000000101b4d401
+[    0.556348] DMAR: pasid dir entry: 0x0000000101b4e001
+[    0.556348] DMAR: pasid table entry[0]: 0x0000000000000109
+[    0.556348] DMAR: pasid table entry[1]: 0x0000000000000001
+[    0.556348] DMAR: pasid table entry[2]: 0x0000000000000000
+[    0.556348] DMAR: pasid table entry[3]: 0x0000000000000000
+[    0.556348] DMAR: pasid table entry[4]: 0x0000000000000000
+[    0.556348] DMAR: pasid table entry[5]: 0x0000000000000000
+[    0.556348] DMAR: pasid table entry[6]: 0x0000000000000000
+[    0.556348] DMAR: pasid table entry[7]: 0x0000000000000000
+[    0.556348] DMAR: PTE not present at level 4
+
+Cc: <stable@vger.kernel.org>
+Reported-by: Sukumar Ghorai <sukumar.ghorai@intel.com>
+Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+---
+ drivers/iommu/intel/iommu.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 59df7e42fd53..b4878c7ac008 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1976,6 +1976,12 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+ 		pds = context_get_sm_pds(table);
+ 		context->lo = (u64)virt_to_phys(table->table) |
+ 				context_pdts(pds);
++		/*
++		 * Scalable-mode PASID directory pointer is not snooped if the
++		 * coherent bit is not set.
++		 */
++		if (!ecap_coherent(iommu->ecap))
++			clflush_cache_range(table->table, sizeof(void *));
+ 
+ 		/* Setup the RID_PASID field: */
+ 		context_set_sm_rid2pasid(context, PASID_RID2PASID);
+-- 
+2.25.1
+
