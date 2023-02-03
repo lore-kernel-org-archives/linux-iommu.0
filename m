@@ -1,33 +1,33 @@
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87C6F816
-	for <iommu@lists.linux.dev>; Fri,  3 Feb 2023 02:35:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69B9CED9
+	for <iommu@lists.linux.dev>; Fri,  3 Feb 2023 02:51:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675391710; x=1706927710;
+  t=1675392705; x=1706928705;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=iod8J9etbm7Ci1/s59zXc4sCIyKrpNgCrTwFA48/dcw=;
-  b=JkTsig6koV+IJeBtG3CdfRk9qjCV0Hwcw0N5H9Jqx9cYO4Jq64SviyEd
-   WUG3Sp/Bd74e3QrwyiRusD3gFOPOOvS1uFqo2oWiWPv60KnggH+J3l+dM
-   IRcsGXvaS9iJAqUDgRPWKdvlQKNqBMD2IuGdfcD13/i+9EGa+pRt0gsta
-   OL9+TLwWQCXUEmdGercaK3IbA+AAmNlM0o4EFWz8mLr5ov9v2ii7flFy3
-   WT6zzq6xtPdnQ682cD18wLPLG/6qCljU70NVH4oWAU18kUWsG2Sgv6RPf
-   UoHPPN6Gjq6HysboW3z9fSZPGWn4n4ZYRrcoDfSoqurjdyLjswoYTiGOK
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10609"; a="329924204"
+  bh=UxeZ8FJwNzkiSv+FCcjHMP+ssabzgfr3PcMLKiBT6p0=;
+  b=WTtTHnc4Iyd5y1FWOzWjW8o2fqGDG0DwHnj/sCgYtlbcsqpRMrklqY08
+   Kg5rxnbgcrAjYKs3qY9NPYh+vqPa40MWiHog4vU4fMNZh5o6zloThN5A1
+   hO5YpD4JCB+F87ccIKQfqp0SCOX+FoVJYfnDwIGRM7vLwI/65iUwfiSCQ
+   Tb2P1jpDehG3aBDW0IEGyvYOFV70c6PBCxS64UdBBLxI9nlUbiq1s8p/3
+   QCTMShQYagh8KJsayZCNglOjt93HKEZaqb5taDkYmE1UTNRsbR3NBrNnR
+   3Ivay3NHweWfdZeA3zHdiLdVXBtiY/kANh28GLDthssmho54U9gDvTUPA
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10609"; a="414851309"
 X-IronPort-AV: E=Sophos;i="5.97,269,1669104000"; 
-   d="scan'208";a="329924204"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2023 18:35:09 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10609"; a="774139664"
+   d="scan'208";a="414851309"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2023 18:51:44 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10609"; a="615547679"
 X-IronPort-AV: E=Sophos;i="5.97,269,1669104000"; 
-   d="scan'208";a="774139664"
+   d="scan'208";a="615547679"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.208.253]) ([10.254.208.253])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2023 18:35:06 -0800
-Message-ID: <afe65351-8481-63ef-749f-54b151431af3@linux.intel.com>
-Date: Fri, 3 Feb 2023 10:35:04 +0800
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2023 18:51:35 -0800
+Message-ID: <018498d7-d966-6c87-d829-50270565147d@linux.intel.com>
+Date: Fri, 3 Feb 2023 10:51:33 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,64 +36,38 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Cc: baolu.lu@linux.intel.com, jgg@nvidia.com, kevin.tian@intel.com,
- joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
- alex.williamson@redhat.com, shuah@kernel.org, yi.l.liu@intel.com,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev, kvm@vger.kernel.org,
- linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v1 2/8] iommu: Introduce a new
- iommu_group_replace_domain() API
+Cc: baolu.lu@linux.intel.com, corbet@lwn.net, will@kernel.org,
+ boqun.feng@gmail.com, mark.rutland@arm.com, catalin.marinas@arm.com,
+ dennis@kernel.org, tj@kernel.org, cl@linux.com, hca@linux.ibm.com,
+ gor@linux.ibm.com, agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+ svens@linux.ibm.com, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com, joro@8bytes.org,
+ suravee.suthikulpanit@amd.com, robin.murphy@arm.com, dwmw2@infradead.org,
+ Arnd Bergmann <arnd@arndb.de>, Herbert Xu <herbert@gondor.apana.org.au>,
+ davem@davemloft.net, penberg@kernel.org, rientjes@google.com,
+ iamjoonsoo.kim@lge.com, Andrew Morton <akpm@linux-foundation.org>,
+ vbabka@suse.cz, roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+ linux-s390@vger.kernel.org, iommu@lists.linux.dev,
+ linux-arch@vger.kernel.org, linux-crypto@vger.kernel.org
+Subject: Re: [PATCH v2 07/10] x86,intel_iommu: Replace cmpxchg_double()
 Content-Language: en-US
-To: Nicolin Chen <nicolinc@nvidia.com>
-References: <cover.1675320212.git.nicolinc@nvidia.com>
- <a98e622f41d76b64f5a7d0c758d8bda5e8043013.1675320212.git.nicolinc@nvidia.com>
- <d5147b2f-4698-b39f-e956-84db122e9822@linux.intel.com>
- <Y9wLmBZzkZk2Mkh9@Asurada-Nvidia>
- <58837041-c0ea-2c65-4ed5-6b2d2189415e@linux.intel.com>
- <Y9xmTRQH7wjb07gl@Asurada-Nvidia>
+To: Peter Zijlstra <peterz@infradead.org>, torvalds@linux-foundation.org
+References: <20230202145030.223740842@infradead.org>
+ <20230202152655.624998774@infradead.org>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Y9xmTRQH7wjb07gl@Asurada-Nvidia>
+In-Reply-To: <20230202152655.624998774@infradead.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/2/3 9:41, Nicolin Chen wrote:
-> On Fri, Feb 03, 2023 at 09:33:44AM +0800, Baolu Lu wrote:
->> External email: Use caution opening links or attachments
->>
->>
->> On 2023/2/3 3:14, Nicolin Chen wrote:
->>> On Thu, Feb 02, 2023 at 06:21:20PM +0800, Baolu Lu wrote:
->>>> External email: Use caution opening links or attachments
->>>>
->>>>
->>>> On 2023/2/2 15:05, Nicolin Chen wrote:
->>>>> +/**
->>>>> + * iommu_group_replace_domain - replace the domain that a group is attached to
->>>>> + * @new_domain: new IOMMU domain to replace with
->>>>> + * @group: IOMMU group that will be attached to the new domain
->>>>> + *
->>>>> + * This API allows the group to switch domains without being forced to go to
->>>>> + * the blocking domain in-between.
->>>>> + *
->>>>> + * If the attached domain is a core domain (e.g. a default_domain), it will act
->>>>> + * just like the iommu_attach_group().
->>>> I am not following above two lines. Why and how could iommufd set a
->>>> core domain to an iommu_group?
->>> Perhaps this isn't the best narrative. What it's supposed to say
->>> is that this function acts as an iommu_attach_group() call if the
->>> device is "detached", yet we have changed the semantics about the
->>> word "detach". So, what should the correct way to write such a
->>> note?
->> How could this interface be used as detaching a domain from a group?
->> Even it could be used, doesn't it act as an iommu_detach_group()?
-> No. I didn't say that. It doesn't act as detach(), but attach()
-> when a device is already "detached".
-> 
-> The original statement is saying, "if the attached domain is a
-> core domain", i.e. the device is detach()-ed, "it will act just
-> like the iommu_attach_group()".
+On 2023/2/2 22:50, Peter Zijlstra wrote:
+> Signed-off-by: Peter Zijlstra (Intel)<peterz@infradead.org>
+> ---
+>   drivers/iommu/intel/irq_remapping.c |    8 --
+>   include/linux/dmar.h                |  125 +++++++++++++++++++-----------------
+>   2 files changed, 68 insertions(+), 65 deletions(-)
 
-Oh! My bad. I misunderstood it. Sorry for the noise. :-)
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
 Best regards,
 baolu
