@@ -1,142 +1,170 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC35A1863
-	for <iommu@lists.linux.dev>; Fri,  3 Feb 2023 08:53:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 776961863
+	for <iommu@lists.linux.dev>; Fri,  3 Feb 2023 09:23:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675414411; x=1706950411;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=kB18aiVy7J86X3vvgBkRFgvMDABP1q/NhATKJ+pNSBQ=;
-  b=heduQZAjnxSSVRtsj2Ub6eat/kaMzfdcrSpL9GTR1raDO8nIN5FbFbyo
-   TDcgEEnud5nrlOuQzTIVuzBpP5OJHqKR837O8/nZegyiDULItOfD57RCS
-   yR7dz+FalwhXMbSTMEy6EPfr9Jt2zVo3Gzkie0wMsQ4pSCOwvvzZiV08o
-   E+vUlAL3uZ1vLojgcyLFGfzDjFCfI+Qi57JxSAWSXKOqEh4ufEEM9XJnE
-   EyiHl56ny4rjWyM/g1z5mwcPeRJS8bfDw2/lTdYMyTtgVUxf2owHKCOj/
-   Ds6VREYqcfUUSSNTbWKbCn7t+nbu3kc9NFYre+CmboQHXA6/rH5dJ6uwS
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10609"; a="327337329"
-X-IronPort-AV: E=Sophos;i="5.97,269,1669104000"; 
-   d="scan'208";a="327337329"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2023 00:53:28 -0800
+  t=1675416217; x=1706952217;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=QGoCc3GtwRCcTmavGEHyaSP57kpmvXw7nKGPdB0nKAU=;
+  b=Ib6v/7EfNZZFggwWc2q0VfXyuHrjB99mHCfA+qzXD6r/9a9PfQq9g01d
+   3u6Shu4IWMlhgWN5dH5ReqQFLdv5yaume3C0onFllfbfsX/rcdIIl2b1N
+   CTS6gcl62ShKVVpc1NxPCzlOC5EBO+Gcp5a/lgne3LKLybpQ0LE659o7Z
+   Ll7QXxeaQ3t5pdMTUr9cBMC07io6+NTfrvG+dBp8cnAp5b+eI9Sagxxa9
+   CkuwCJvZV1PQ6O1aYte/lvFo/gP7Jt2eQ+42C9FPw3fgplEiUpuN9mJqJ
+   tNxsfVIFO6BPDc++a0cPHoyRLVIhCTlxnGVccSE21hHx4l2vyxuLS8iXN
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10609"; a="326398434"
+X-IronPort-AV: E=Sophos;i="5.97,270,1669104000"; 
+   d="scan'208";a="326398434"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2023 01:23:35 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10609"; a="994447955"
-X-IronPort-AV: E=Sophos;i="5.97,269,1669104000"; 
-   d="scan'208";a="994447955"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga005.fm.intel.com with ESMTP; 03 Feb 2023 00:53:15 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: iommu@lists.linux.dev,
-	dmaengine@vger.kernel.org
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Fenghua Yu <fenghua.yu@intel.com>,
-	Dave Jiang <dave.jiang@intel.com>,
-	Vinod Koul <vkoul@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 2/2] iommu/vt-d: Move iopf code from SVA to IOPF enabling path
-Date: Fri,  3 Feb 2023 16:44:56 +0800
-Message-Id: <20230203084456.469641-2-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230203084456.469641-1-baolu.lu@linux.intel.com>
-References: <20230203084456.469641-1-baolu.lu@linux.intel.com>
+X-IronPort-AV: E=McAfee;i="6500,9779,10609"; a="643207241"
+X-IronPort-AV: E=Sophos;i="5.97,270,1669104000"; 
+   d="scan'208";a="643207241"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by orsmga006.jf.intel.com with ESMTP; 03 Feb 2023 01:23:35 -0800
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Fri, 3 Feb 2023 01:23:35 -0800
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Fri, 3 Feb 2023 01:23:34 -0800
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Fri, 3 Feb 2023 01:23:34 -0800
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.170)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Fri, 3 Feb 2023 01:23:34 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aQNa+B8tj38KmCHCOM1bJ8Lpt8OWuiHqa2Xs/FprJfB6TOJAqiYM7e8iVcvGzaqBr4vNuLaRI8xeDnmEsqyNoB2AElhMPtTBzmRypT/KTqiDtF6/rTwj9jPnx7BRREUMMMqfDBnr8bHSOr74acv/j8+MbV4z//3Rx7bglSgTtCC15EOTInCfcg3LK+vx67Idyqz0tRCZUnvoAGm0jvXv5Uv2FPBv662m8Dm0WA+reA8oaZh9exR4KF4/AcS6/uU8mWULQDaRuRzOCv0NtLvSbzWGR29CiLri254+tG/FZ5Dx/BI2qkm4qfk8Z3ErtUgKvfblF+CAPJlSldcUhIIJuQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QGoCc3GtwRCcTmavGEHyaSP57kpmvXw7nKGPdB0nKAU=;
+ b=fIMOMkm0C+X1x9auPe1HtPE6TRsMRCOVsUn3yT3Nm0HW65oVvZY7RfCP/Oq4SWzdD0W2tCcCYV8OB27hDkbTVmvmEALBAqzms++exmoafX9rOTp/2MT81NCOAtkVvZ+UiLiuKyNMA66U8xt+FtiYC8HGv45U9rSwcyY1qBJ2MEYbq45T2qRey0M1G80KC0TI7jb+gU1Z4AK4Xu9gR6c3OzSgS+TaWCEQIlpWCchTPzGUKkSrg+SdHj3u/BaGVPYHSyZuUQJW7hX4liKFf/cNwcMJRABW8iOON/wexC/n8K3K4HhARDcBe+DX/5POnlWm2BEHijygFd9yyWCoX2+LqQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by IA0PR11MB7308.namprd11.prod.outlook.com (2603:10b6:208:436::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.25; Fri, 3 Feb
+ 2023 09:23:33 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::6a8d:b95:e1b5:d79d]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::6a8d:b95:e1b5:d79d%8]) with mapi id 15.20.6064.027; Fri, 3 Feb 2023
+ 09:23:32 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Nicolin Chen <nicolinc@nvidia.com>, "jgg@nvidia.com" <jgg@nvidia.com>,
+	"joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "alex.williamson@redhat.com"
+	<alex.williamson@redhat.com>, "shuah@kernel.org" <shuah@kernel.org>
+CC: "Liu, Yi L" <yi.l.liu@intel.com>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>
+Subject: RE: [PATCH v1 3/8] iommufd: Create access in
+ vfio_iommufd_emulated_bind()
+Thread-Topic: [PATCH v1 3/8] iommufd: Create access in
+ vfio_iommufd_emulated_bind()
+Thread-Index: AQHZNtTJDNGdO3E9fUqqSA0twolHd6688sNA
+Date: Fri, 3 Feb 2023 09:23:32 +0000
+Message-ID: <BN9PR11MB52762E0F30E88F9FFEBD94308CD79@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <cover.1675320212.git.nicolinc@nvidia.com>
+ <f86e468509886c8fe59d2326f83bbf95254e0913.1675320212.git.nicolinc@nvidia.com>
+In-Reply-To: <f86e468509886c8fe59d2326f83bbf95254e0913.1675320212.git.nicolinc@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|IA0PR11MB7308:EE_
+x-ms-office365-filtering-correlation-id: e586f879-c455-49f2-0ed1-08db05c851c9
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 33W9PW6eg4vW8Z155SEsBgreuVFTp8K2Gu+dLtsKN4jx3MvjjYoGBrNTWDJy1zmteqeF7sa/sIgbGNd6pVAdjhH8e1mO7KH7tWzDAUUqMjWOPmW5OhL/EhkZ4NbUyD3bEyXSE+5222AGKQJzaJhJJlEC97HXpbrmw/KRzxYQzZjoF2pp0CNN0A/gPiNKrkCewGihKxqF7LHcU0bAI7Vmc7wSk0MqJWA1Yf7cEXU13CDwhUKfpMw3xlaQsHDwuiGm8U/VZax6o+BXJNBp1xp9nNYf2+xKaqOo4k6w0bfu7D+lGii4Aik8ogmNR2oftS3yPtAe8S+dln9VaabAO2lCgYO6v2mIXeceuNETT2Ba4ZY4gzjmx+Vj5cWrp+6QOYWcy80IQKAYJBQVLPh3bfBH8qB6y8chynJwmU+GM9Kq+hh2WOko9R9kkS1pfXrbF2rcwvvq0Ujupg+2t+JoBJmAnYjWYqfQvJ/nyUuJnIfeiJPLlFyDKCG+MWtIrjxcn/uZYE+A2+AcemacgdP8hgAKt+3P+tmzGMk0SKOA/hxYHBy3eJFuCpWta9sCtGEAleuTTu1NgB/f2PWdt6Edx7ACdyP94m0X82w6DXwHlgTjyWjmH9NUmq/98+a91qUvHRF+aJbGRInHhdr3GaH7S6IpGV75ZlWwZ84tQu33FaxJHavKfBKJucHqutuTO0ecbbrPVwWEwSKCgpsb9KhBYnOjLg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(39860400002)(136003)(346002)(376002)(366004)(396003)(451199018)(66946007)(76116006)(86362001)(41300700001)(2906002)(316002)(122000001)(55016003)(33656002)(52536014)(38100700002)(7696005)(478600001)(8936002)(38070700005)(82960400001)(6506007)(26005)(186003)(9686003)(8676002)(66476007)(66556008)(54906003)(110136005)(66446008)(64756008)(7416002)(5660300002)(4326008)(71200400001)(83380400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?7WYHmwsuS+Of7PnsEiDMD/4idHT7JmPZhlgAqQ5FLjYq/4k/pKmbEC06eCaJ?=
+ =?us-ascii?Q?uh1UD/kjfpQ9NOYXtClS9TZNpWVIot8zQqhxWJMlOl56srJpjmL0ly1QnFjx?=
+ =?us-ascii?Q?VoKlKAoIx5KGJOf1NWubTDW/anIUKCugKvD6ievUu/mcLifRGj8ez9jfIAoN?=
+ =?us-ascii?Q?IqDiuUsnJ9CS11QWtwbJR4T2eFesJrW/CATLmy3gzsL/T3JciGdVXIV9pku2?=
+ =?us-ascii?Q?8VftgAKTPmeIjjTqbM37CtgG94/8L6jCTtMmfjyWvvbtmZqF6PJ0NWQ4hD66?=
+ =?us-ascii?Q?6GvlGMVaR+ff/wzZj7t/hYXZk+bnGx2IS/KAL4UzmnutJRy5GerKCCNtjz3t?=
+ =?us-ascii?Q?GegYoxVwdfqp15H0awG0ECOIiG97xppQ1sV2z3Zk0s4Ztyn7bsWJwjjs5GGE?=
+ =?us-ascii?Q?sq2q0XQ3+j9T0eFUCOm/E8O2IjOF65LmU7v2OvVVis/ZM1bO+9IU/8XqnEHL?=
+ =?us-ascii?Q?5wHiafN1JlreNyrgBJqvjLoSsY+wJhXr8Wof3LFmoibKu3b+NCJkf251UHuR?=
+ =?us-ascii?Q?oSvQuECuoNkAofLjHLcAI1Rtl4LqZ2u9sJ879z9RbQC2aTKjono/5sKXwKnK?=
+ =?us-ascii?Q?eM9tdkWYiQFoXRKS/X6TyUIjGrQ+S6N5mN+3dtiVoRd8HpO7+j1biMShwCJq?=
+ =?us-ascii?Q?Gr17hrTwAUq5GHoUK1k9GlQtVFjuAt7hri9/pPtJWCnZrqpDTvC4pcIc995y?=
+ =?us-ascii?Q?NNpRpirze/b8Z7Qhj2MJNYDP7UTO2CV5MeiVt1ZZfarVrBvblPBRIkjd19hV?=
+ =?us-ascii?Q?eJPcxXvffa/X/FUvFoJqpMjphfS0uDjeqCf2y9kwKQV0fIs8Hb3/ewT18EYy?=
+ =?us-ascii?Q?0jQCRDaFbJiY+NIIJULRSuqNiy1U5WmcNisxXnoloP9IAsd1D0dRyo+f1Ivi?=
+ =?us-ascii?Q?YBSuHGv+7YB5sF+yEi96naJhE4aavjFUrG4WtV2DDT6smlQcH61xE5EMrm2w?=
+ =?us-ascii?Q?RWg6fvmCJO57Bflk+JcBgp9SZxPPdKg4rPbdwxFm1D5KT2dfkLCL8Fu9qhEq?=
+ =?us-ascii?Q?bCnFJuVsMKbEwJi+DMLI3oXZdZsY7IjoVEGPndRHKZHgLBaNVGB2cP9mfihs?=
+ =?us-ascii?Q?qpoX/9NXsrttgH6T+802UQv/RJGIcssNyob0Q7fQW3dc0Nev7TCoD1GwuVxg?=
+ =?us-ascii?Q?kPxPIB519YuCg19Hw6oTpEp6+m3fT2uOik0Jej5ewwn7+nL6j8cPtnCXMHMM?=
+ =?us-ascii?Q?wJC+ArfwJEruFp8UAVanwSfSk8XmEjaYxF+zQFjFKBic6Bmst/EqFEkwD1Z0?=
+ =?us-ascii?Q?rntUFoHI2TiRPOmQ5Kbb+JUHIrdnMGeuHs1o/Now7iyPPQjngORfWH3DCJYX?=
+ =?us-ascii?Q?rQDMLQoPNqlKTcv6ys4N4F/NtTHQGE6UGc/5ihqXiDiNoY7OizQAgyOYDyay?=
+ =?us-ascii?Q?Q+Xy0VaTsOhf++7M57+nYvapV8Ks79y8JswRWmjGIN4xCs0Nd4dPUzkFTDBd?=
+ =?us-ascii?Q?T1A10V5SYj4DAwhwIzU0KALfdBk1VtVD8i5/vXZGboKxC58QIlkGgTEIslkl?=
+ =?us-ascii?Q?8CfPI+XIw48RGGmVP4hb4x3KTwd/ReJyhsefJoAvTIYtP6ZxA4aqeSC9zO52?=
+ =?us-ascii?Q?qL0BuaaGjggT+sy9Jp5VJHUGD9+WO1TpkCaGx7ty?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e586f879-c455-49f2-0ed1-08db05c851c9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Feb 2023 09:23:32.6161
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: eEom130QUBts6kb3GKctj8KYWCi75UFRPPTsdq5sfqTzINShZMyhPOMdOSQIM1znM7/k31Zx2MPpeO34/dsvww==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR11MB7308
+X-OriginatorOrg: intel.com
 
-Generally enabling IOMMU_DEV_FEAT_SVA requires IOMMU_DEV_FEAT_IOPF, but
-some devices manage I/O Page Faults themselves instead of relying on the
-IOMMU. Move IOPF related code from SVA to IOPF enabling path to make the
-driver work for devices that manage IOPF themselves.
+> From: Nicolin Chen <nicolinc@nvidia.com>
+> Sent: Thursday, February 2, 2023 3:05 PM
+>=20
+> To prepare for an access->ioas replacement, move iommufd_access_create()
+> call into vfio_iommufd_emulated_bind(), making it symmetric with the
+> __vfio_iommufd_access_destroy() call in vfio_iommufd_emulated_unbind().
+> This means an access is created/destroyed by the bind()/unbind(), and the
+> vfio_iommufd_emulated_attach_ioas() only updates the access->ioas pointer=
+.
+>=20
+> Since there's no longer an ioas_id input for iommufd_access_create(), add
+> a new helper iommufd_access_set_ioas() to set access->ioas. We can later
+> add a "replace" feature simply to the new iommufd_access_set_ioas() too.
+>=20
+> Leaving the access->ioas in vfio_iommufd_emulated_attach_ioas(), however,
+> can introduce some potential of a race condition during pin_/unpin_pages(=
+)
+> call where access->ioas->iopt is getting referenced. So, add an ioas_lock
+> to protect it.
+>=20
 
-For the device drivers that relies on the IOMMU for IOPF through PCI/PRI,
-IOMMU_DEV_FEAT_IOPF must be enabled before and disabled after
-IOMMU_DEV_FEAT_SVA.
-
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.c | 30 +++++++++++++++++-------------
- 1 file changed, 17 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index a1a66798e1f0..149cb20d8dd5 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4632,7 +4632,6 @@ static int intel_iommu_enable_sva(struct device *dev)
- {
- 	struct device_domain_info *info = dev_iommu_priv_get(dev);
- 	struct intel_iommu *iommu;
--	int ret;
- 
- 	if (!info || dmar_disabled)
- 		return -EINVAL;
-@@ -4644,17 +4643,13 @@ static int intel_iommu_enable_sva(struct device *dev)
- 	if (!(iommu->flags & VTD_FLAG_SVM_CAPABLE))
- 		return -ENODEV;
- 
--	if (!info->pasid_enabled || !info->pri_enabled || !info->ats_enabled)
-+	if (!info->pasid_enabled)
- 		return -EINVAL;
- 
--	ret = iopf_queue_add_device(iommu->iopf_queue, dev);
--	if (!ret)
--		ret = iommu_register_device_fault_handler(dev, iommu_queue_iopf, dev);
--
--	return ret;
-+	return 0;
- }
- 
--static int intel_iommu_disable_sva(struct device *dev)
-+static int intel_iommu_disable_iopf(struct device *dev)
- {
- 	struct device_domain_info *info = dev_iommu_priv_get(dev);
- 	struct intel_iommu *iommu = info->iommu;
-@@ -4670,11 +4665,20 @@ static int intel_iommu_disable_sva(struct device *dev)
- static int intel_iommu_enable_iopf(struct device *dev)
- {
- 	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+	int ret;
- 
--	if (info && info->pri_supported)
--		return 0;
-+	if (!info || !info->ats_enabled || !info->pri_enabled)
-+		return -ENODEV;
- 
--	return -ENODEV;
-+	ret = iopf_queue_add_device(info->iommu->iopf_queue, dev);
-+	if (ret)
-+		return ret;
-+
-+	ret = iommu_register_device_fault_handler(dev, iommu_queue_iopf, dev);
-+	if (ret)
-+		iopf_queue_remove_device(info->iommu->iopf_queue, dev);
-+
-+	return ret;
- }
- 
- static int
-@@ -4697,10 +4701,10 @@ intel_iommu_dev_disable_feat(struct device *dev, enum iommu_dev_features feat)
- {
- 	switch (feat) {
- 	case IOMMU_DEV_FEAT_IOPF:
--		return 0;
-+		return intel_iommu_disable_iopf(dev);
- 
- 	case IOMMU_DEV_FEAT_SVA:
--		return intel_iommu_disable_sva(dev);
-+		return 0;
- 
- 	default:
- 		return -ENODEV;
--- 
-2.34.1
-
+What about introducing another flag e.g. vdev->iommufd_access_attached
+which got set in vfio_iommufd_emulated_attach_ioas() to fulfill what
+vdev->iommufd_access guards today?
