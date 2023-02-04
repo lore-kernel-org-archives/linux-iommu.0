@@ -1,106 +1,59 @@
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7D5F2568;
-	Sat,  4 Feb 2023 14:49:45 +0000 (UTC)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-	by mailout.nyi.internal (Postfix) with ESMTP id 0B1115C00EC;
-	Sat,  4 Feb 2023 09:49:45 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Sat, 04 Feb 2023 09:49:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-	cc:cc:content-transfer-encoding:content-type:date:date:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:sender:subject:subject:to:to; s=fm1; t=1675522185; x=
-	1675608585; bh=gMF2GYBH1UtrzPcwansQiHlAFbQcqh9mttTQYrPJ6Fk=; b=L
-	xUMCZHVeWVpTjgMEckVHJJ2xwG8302Y+EFEninU5mI5Az3XieJ+wFnic4r78V5BC
-	BdioDdnnpsaCQTptXOMCBfAVVwcNmqcPooinD2woY96DRkDMSUFMHgExRDWSaN1K
-	ITjRktPngy2YIsL/uLYxMfzkRAI24SYqqJvd7eQ0q8qFSEmoZM6RiXbINYV9Bb8S
-	YjYtQzCeWkkh90K1iY9fxGq7GGeCX9E1/a+TCAbVPBOdNnRogZAe+zrnQ0aJngW3
-	2gePpo0d6JtXMrcQ1T1fXRlYalrPiMTv97V+4CaSCcHMojSun91iZlNqD4AYLUz3
-	jrHZ4RboTqHSCCyvbnZYg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:date:date:feedback-id:feedback-id:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1675522185; x=
-	1675608585; bh=gMF2GYBH1UtrzPcwansQiHlAFbQcqh9mttTQYrPJ6Fk=; b=j
-	4Hwd0wmVUOsbmo/ozZmsrivkhAeC8BAmMSEp9MDCPkNDTJjrjns/Ah24Cbqf4TgR
-	XHvY/XI0ZAQFryw37+szzVGHk39mTNPlY7fcxeARNXLqlHwSuJPUTdxDElbxe8nO
-	hg53hgu0s1oP7KeqtVv9X931nW8qYqMmDNkZbMCjPypxtH61s3NUpG9VX8Z74y4K
-	6p9p6cuvgkTFwP8tgU2Wz107xsTJ+6dq5QzM3VMVTGgPn9wMpNF111jRVRRQDMco
-	wt/FAY1/s2/HGyI4l1Wms87w39uk4YylfrJsn/pvaZU/3aKqfncJMvCtZzXwIeG9
-	PlAs4cEbbX1VHbbbMQG4g==
-X-ME-Sender: <xms:iHDeYx4LV1QEi-Tjgm-rM6U07FpVIdikQEOQAd5yLx2oDWqtERxk9Q>
-    <xme:iHDeY-7LqqjHEN3YORxLqrti-j9radWayFGESMZeMbb2JA_T5omStAoTkXbBKmKhU
-    fv-8sS6MJkZ5cqk5g>
-X-ME-Received: <xmr:iHDeY4cAuZ5uuruZ6ncS4JmS3IjKZYvTbUlrSv3wxmOWwawE0JlstrZWfzzftv1aOIVcDBESnWRcFh7k-86zAi5Ox5EV5jaRBwOJ2ao8YXGqtXTMSCPVsDfb1g>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudegvddgieekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepkfffgggfvfevfhfhufgjtgfgsehtjeertddtfeejnecuhfhrohhmpefurghm
-    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
-    ggtffrrghtthgvrhhnpeejgfffhfdujeeftdeuudeguedttefgieetffffheejuefguedv
-    heejteeftdfftdenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
-    hrohhmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:iHDeY6LvlZ7wOnTn0YYcH7j-jKc6jrnqVUe09Y0LJwIZ2oOFFD22bw>
-    <xmx:iHDeY1JYvtxYbdCaZrzOP7ert_TxMPV2hJNqb5L2BhKyjoK_ud05VA>
-    <xmx:iHDeYzzj4wglxWykOC-5YLfBikH-jJJ9IHM9N_ZSU_IQvK-x6FtAtA>
-    <xmx:iXDeY_w8ab8XNThP-41BpYCbGop_9p0l9YFQQSgdDyz4p-dWbb27iA>
-Feedback-ID: i0ad843c9:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
- 4 Feb 2023 09:49:43 -0500 (EST)
-Message-ID: <6302b081-fab5-2eea-1a56-5ad903ff7d54@sholland.org>
-Date: Sat, 4 Feb 2023 08:49:48 -0600
+Received: from smtp.smtpout.orange.fr (smtp-15.smtpout.orange.fr [80.12.242.15])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2820B23DC
+	for <iommu@lists.linux.dev>; Sat,  4 Feb 2023 20:39:44 +0000 (UTC)
+Received: from pop-os.home ([86.243.2.178])
+	by smtp.orange.fr with ESMTPA
+	id OPCRpn7kE4UotOPCRphKuG; Sat, 04 Feb 2023 21:32:06 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sat, 04 Feb 2023 21:32:06 +0100
+X-ME-IP: 86.243.2.178
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To: David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>
+Cc: linux-kernel@vger.kernel.org,
+	kernel-janitors@vger.kernel.org,
+	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+	iommu@lists.linux.dev
+Subject: [PATCH] iommu/intel: Do not use GFP_ATOMIC when not needed
+Date: Sat,  4 Feb 2023 21:31:45 +0100
+Message-Id: <e2a8a1019ffc8a86b4b4ed93def3623f60581274.1675542576.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux ppc64le; rv:102.0) Gecko/20100101
- Thunderbird/102.3.3
-Content-Language: en-US
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Chen-Yu Tsai <wens@csie.org>, Jernej Skrabec <jernej.skrabec@gmail.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Rob Herring <robh+dt@kernel.org>, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
- Maxime Ripard <mripard@kernel.org>
-References: <20230103010903.11181-1-samuel@sholland.org>
- <Y8qvIRXcCdLZjDCK@8bytes.org> <Y9zgKUUjjPq8ifPn@8bytes.org>
-From: Samuel Holland <samuel@sholland.org>
-Subject: Re: [PATCH v2 0/6] iommu/sun50i: Allwinner D1 support
-In-Reply-To: <Y9zgKUUjjPq8ifPn@8bytes.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Hi Joerg,
+There is no need to use GFP_ATOMIC here. GFP_KERNEL is already used for
+some other memory allocations just a few lines above.
 
-On 2/3/23 04:21, Joerg Roedel wrote:
-> On Fri, Jan 20, 2023 at 04:11:30PM +0100, Joerg Roedel wrote:
->> There is a conflict between these patches and changes in the IOMMU
->> core branch. With those merged in there is a compile warning about 
->> sun50i_iommu_detach_domain() being unused. Fixing that requires
->> removing of 3-4 functions, which I am not sure is the right
->> solution.
->>
->> Once this is fixed I will include the arm/allwinner branch into my
->> next branch again.
-> 
-> Since there was no reply to this I nuked the patches from the IOMMU 
-> tree. If this is still relevant please resubmit them after the next 
-> merge window.
+Commit e3a981d61d15 ("iommu/vt-d: Convert allocations to GFP_KERNEL") has
+changed the other memory allocation flags.
 
-I am not sure what the right solution is here either, and I have not had
-the chance to look at it again. With my limited understanding of how the
-default domain logic works, and the fact that the IOMMU driver only
-supports one domain, it seems the driver should keep that domain enabled
-permanently, regardless of which devices are attached. So my patch 2
-would be wrong. I will investigate and send a v3 after the merge window.
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/iommu/intel/irq_remapping.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Regards,
-Samuel
+diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
+index 6d01fa078c36..013ccc25ee4f 100644
+--- a/drivers/iommu/intel/irq_remapping.c
++++ b/drivers/iommu/intel/irq_remapping.c
+@@ -552,7 +552,7 @@ static int intel_setup_irq_remapping(struct intel_iommu *iommu)
+ 		goto out_free_table;
+ 	}
+ 
+-	bitmap = bitmap_zalloc(INTR_REMAP_TABLE_ENTRIES, GFP_ATOMIC);
++	bitmap = bitmap_zalloc(INTR_REMAP_TABLE_ENTRIES, GFP_KERNEL);
+ 	if (bitmap == NULL) {
+ 		pr_err("IR%d: failed to allocate bitmap\n", iommu->seq_id);
+ 		goto out_free_pages;
+-- 
+2.34.1
+
