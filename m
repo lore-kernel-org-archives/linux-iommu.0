@@ -1,96 +1,122 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6567290B
-	for <iommu@lists.linux.dev>; Fri,  3 Feb 2023 23:00:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F7797C
+	for <iommu@lists.linux.dev>; Sat,  4 Feb 2023 03:37:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675465244; x=1707001244;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=EO0ERNsg/JaJf9M549xNqhj8+NRaDqR0k8t51qqu0po=;
-  b=K9QI17wKf+nd+rQUPbTgWs+EhXmf1FkK+P8A1dt7HxXka9eBAdJPlJxh
-   6EI1fMvtyIMPl1qXYo8JR1FpwuAfngiAnbSgEEGw1ns1L1CCCsFf8mPcy
-   WnSE5dqmndUMWyEYOMEONNs+DbZCcPGc0wm+RzbmUtR2Ae4E6H5+RpOwn
-   6m9cerAzuZnF8CCNvQWhiNbyKxzySWfYFsm3ffAHc4rmOAfV4/ETNhucS
-   sXCEac53kkAJPWDbgk8mMAkMmbtKLhkK3ohhQj2NBjPGgCh00rnFpx6EU
-   IoYh3uJC1JXNJLQvkQ/wm6NFoQip19EFJ3bL6FCEpPfSPS05Ewyo0fPYj
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10610"; a="316877107"
-X-IronPort-AV: E=Sophos;i="5.97,271,1669104000"; 
-   d="scan'208";a="316877107"
+  t=1675481868; x=1707017868;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=7/sGV1UG/zr2CwnREojEupH6s+d9jTNzHbuzjM+j/sc=;
+  b=ZT6IAQe9KaLaLl64PW5oY+uNccaCcoy+Ev3lAdk1SmIqXnBYEIxzym87
+   0Usy2NfNoGN4vKe2dNBrzk8JjQVhCjigIRR5vfsE8oOx0HYLf0AHK4fYX
+   90Ov7Lm6iIBnEjUrXanPpuABx9jQH5o1foC4F62v48M/MWK3Be3Kw1ovr
+   myXLrt/4olYzV8j/RwhlQW5JlocG4WHSDvm6PSKpNDajlQlTJ2mnM0uZl
+   9SiDI8XZe1MDZnx8B91PYapornqEI1wn/twVvouc6xcAbm8HIw5apecLP
+   X3Te67lfp7NEuQeknqspBglBL4aeL/Ii/k37z8yomhN/Lqi+voeuSvAju
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10610"; a="330204019"
+X-IronPort-AV: E=Sophos;i="5.97,272,1669104000"; 
+   d="scan'208";a="330204019"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2023 15:00:44 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10610"; a="839753006"
-X-IronPort-AV: E=Sophos;i="5.97,271,1669104000"; 
-   d="scan'208";a="839753006"
-Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.106])
-  by orsmga005.jf.intel.com with ESMTP; 03 Feb 2023 15:00:44 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: LKML <linux-kernel@vger.kernel.org>,
-	iommu@lists.linux.dev,
-	"Lu Baolu" <baolu.lu@linux.intel.com>,
-	Joerg Roedel <joro@8bytes.org>
-Cc: David Woodhouse <dwmw2@infradead.org>,
-	Raj Ashok <ashok.raj@intel.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>,
-	Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	stable@vger.kernel.org,
-	Sanjay Kumar <sanjay.k.kumar@intel.com>
-Subject: [PATCH] iommu/vt-d: Avoid superfluous IOTLB tracking in lazy mode
-Date: Fri,  3 Feb 2023 15:04:17 -0800
-Message-Id: <20230203230417.1287325-1-jacob.jun.pan@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2023 19:37:48 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10610"; a="839809451"
+X-IronPort-AV: E=Sophos;i="5.97,272,1669104000"; 
+   d="scan'208";a="839809451"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.174.222]) ([10.249.174.222])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2023 19:37:46 -0800
+Message-ID: <f5af1701-1707-23c8-3f62-ad4ffae21387@linux.intel.com>
+Date: Sat, 4 Feb 2023 11:37:43 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Cc: baolu.lu@linux.intel.com, suravee.suthikulpanit@amd.com,
+ robin.murphy@arm.com, will@kernel.org
+Subject: Re: [PATCH v2 1/3] iommu: Attach device group to old domain in error
+ path
+To: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
+ joro@8bytes.org
+References: <20230203173623.18308-1-vasant.hegde@amd.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20230203173623.18308-1-vasant.hegde@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Intel IOMMU driver implements IOTLB flush queue with domain selective
-or PASID selective invalidations. In this case there's no need to track
-IOVA page range and sync IOTLBs, which may cause significant performance
-hit.
+On 2023/2/4 1:36, Vasant Hegde wrote:
+> iommu_attach_group() attaches all devices in a group to domain and then
+> sets group domain (group->domain). Current code (__iommu_attach_group())
+> does not handle error path. This creates problem as devices to domain
+> attachment is in inconsistent state.
+> 
+> To recover from this situation, we need force attaching all devices back
+> to the old domain. This patch introduces `force` parameter to
+> __iommu_group_set_domain() so that we can attach devices back to old
+> domain.
+> 
+> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+> ---
+>   drivers/iommu/iommu.c | 24 +++++++++++++++++-------
+>   1 file changed, 17 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index de91dd88705b..e58683cd3bf7 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -95,7 +95,8 @@ static int __iommu_attach_device(struct iommu_domain *domain,
+>   static int __iommu_attach_group(struct iommu_domain *domain,
+>   				struct iommu_group *group);
+>   static int __iommu_group_set_domain(struct iommu_group *group,
+> -				    struct iommu_domain *new_domain);
+> +				    struct iommu_domain *new_domain,
+> +				    bool force);
+>   static int iommu_create_device_direct_mappings(struct iommu_group *group,
+>   					       struct device *dev);
+>   static struct iommu_group *iommu_group_get_for_dev(struct device *dev);
+> @@ -1974,7 +1975,7 @@ static void __iommu_group_set_core_domain(struct iommu_group *group)
+>   	else
+>   		new_domain = group->default_domain;
+>   
+> -	ret = __iommu_group_set_domain(group, new_domain);
+> +	ret = __iommu_group_set_domain(group, new_domain, false);
+>   	WARN(ret, "iommu driver failed to attach the default/blocking domain");
+>   }
+>   
+> @@ -2124,8 +2125,16 @@ static int __iommu_attach_group(struct iommu_domain *domain,
+>   
+>   	ret = __iommu_group_for_each_dev(group, domain,
+>   					 iommu_group_do_attach_device);
+> -	if (ret == 0)
+> +	if (ret == 0) {
+>   		group->domain = domain;
+> +	} else {
+> +		/*
+> +		 * To recover from the case when certain device within the
+> +		 * group fails to attach to the new domain, we need force
+> +		 * attaching all devices back to the old domain.
+> +		 */
+> +		__iommu_group_set_domain(group, group->domain, true);
 
-This patch adds a check to avoid IOVA gather page and IOTLB sync for
-the lazy path.
+Adding force parameter to __iommu_group_set_domain() looks strange. Does
+it work if we make above line like below?
 
-The performance difference on Sapphire Rapids 100Gb NIC is improved by
-the following (as measured by iperf send):
+		/*
+		 * To recover from the case when certain device within the
+		 * group fails to attach to the new domain, we need force
+		 * attaching all devices back to the old domain. The old
+		 * domain is compatible for all devices in the group,
+		 * hence the iommu driver should always return success.
+		 */
+		old_domain = group->domain;
+		group->domain = NULL;
+		WARN(__iommu_group_set_domain(group, old_domain),
+		     "iommu driver failed to attach a compatible domain");
 
-w/o this fix~48 Gbits/s. with this fix ~54 Gbits/s
-
-Cc: <stable@vger.kernel.org>
-Tested-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
-Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
----
- drivers/iommu/intel/iommu.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index b4878c7ac008..705a1c66691a 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4352,7 +4352,13 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
- 	if (dmar_domain->max_addr == iova + size)
- 		dmar_domain->max_addr = iova;
- 
--	iommu_iotlb_gather_add_page(domain, gather, iova, size);
-+	/*
-+	 * We do not use page-selective IOTLB invalidation in flush queue,
-+	 * There is no need to track page and sync iotlb. Domain-selective or
-+	 * PASID-selective validation are used in the flush queue.
-+	 */
-+	if (!gather->queued)
-+		iommu_iotlb_gather_add_page(domain, gather, iova, size);
- 
- 	return size;
- }
--- 
-2.25.1
-
+Best regards,
+baolu
