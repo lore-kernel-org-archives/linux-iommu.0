@@ -1,33 +1,33 @@
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F7797C
-	for <iommu@lists.linux.dev>; Sat,  4 Feb 2023 03:37:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D1F37C
+	for <iommu@lists.linux.dev>; Sat,  4 Feb 2023 03:43:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675481868; x=1707017868;
+  t=1675482187; x=1707018187;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=7/sGV1UG/zr2CwnREojEupH6s+d9jTNzHbuzjM+j/sc=;
-  b=ZT6IAQe9KaLaLl64PW5oY+uNccaCcoy+Ev3lAdk1SmIqXnBYEIxzym87
-   0Usy2NfNoGN4vKe2dNBrzk8JjQVhCjigIRR5vfsE8oOx0HYLf0AHK4fYX
-   90Ov7Lm6iIBnEjUrXanPpuABx9jQH5o1foC4F62v48M/MWK3Be3Kw1ovr
-   myXLrt/4olYzV8j/RwhlQW5JlocG4WHSDvm6PSKpNDajlQlTJ2mnM0uZl
-   9SiDI8XZe1MDZnx8B91PYapornqEI1wn/twVvouc6xcAbm8HIw5apecLP
-   X3Te67lfp7NEuQeknqspBglBL4aeL/Ii/k37z8yomhN/Lqi+voeuSvAju
+  bh=uMsa6W80lQBbzaUuhOxR/OchovtSZ5wheoHgf4HWRHM=;
+  b=JuJwDJ6c9lfH5NJ5KnBbSDePzJHo7dTEKzp0810Q6OiTAm7xIwm9mD9o
+   ADf2NPzImChWH5mHDZEUaCv1eAk44ppzOI6IVq5d2afTyTGvqAF7JNFDa
+   VUB3tGLy6t/I5l9IoWp0IMsJ8mAx/veHGJfUtV1ZPtW2VHq6BVbuUsfZ9
+   ogn63IGbctFF9DnDqjtb5COPHqssuR2Ci+4hk42H2ouLPQIyDpYcpkoZ2
+   5rLwWDb5CYp2GrM83vGzCtTxfhgjZWIcovj6xtH38Elq3HcqxG24KZhNL
+   l/zpYttgrEyvqHh3CpysUk0isfSrY3daTxKVtnAjHd5RF8Yw1lb53Idj2
    g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10610"; a="330204019"
+X-IronPort-AV: E=McAfee;i="6500,9779,10610"; a="356258917"
 X-IronPort-AV: E=Sophos;i="5.97,272,1669104000"; 
-   d="scan'208";a="330204019"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2023 19:37:48 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10610"; a="839809451"
+   d="scan'208";a="356258917"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2023 19:43:06 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10610"; a="808552631"
 X-IronPort-AV: E=Sophos;i="5.97,272,1669104000"; 
-   d="scan'208";a="839809451"
+   d="scan'208";a="808552631"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.174.222]) ([10.249.174.222])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2023 19:37:46 -0800
-Message-ID: <f5af1701-1707-23c8-3f62-ad4ffae21387@linux.intel.com>
-Date: Sat, 4 Feb 2023 11:37:43 +0800
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2023 19:43:04 -0800
+Message-ID: <de4d0617-ceef-efca-69f1-a095ce91588e@linux.intel.com>
+Date: Sat, 4 Feb 2023 11:43:01 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,87 +36,84 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Cc: baolu.lu@linux.intel.com, suravee.suthikulpanit@amd.com,
- robin.murphy@arm.com, will@kernel.org
-Subject: Re: [PATCH v2 1/3] iommu: Attach device group to old domain in error
- path
-To: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
- joro@8bytes.org
-References: <20230203173623.18308-1-vasant.hegde@amd.com>
+Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>,
+ Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+ Yi Liu <yi.l.liu@intel.com>, stable@vger.kernel.org,
+ Sukumar Ghorai <sukumar.ghorai@intel.com>
+Subject: Re: [PATCH] iommu/vt-d: Fix PASID directory pointer coherency
 Content-Language: en-US
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>
+References: <20230203220714.1283383-1-jacob.jun.pan@linux.intel.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230203173623.18308-1-vasant.hegde@amd.com>
+In-Reply-To: <20230203220714.1283383-1-jacob.jun.pan@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/2/4 1:36, Vasant Hegde wrote:
-> iommu_attach_group() attaches all devices in a group to domain and then
-> sets group domain (group->domain). Current code (__iommu_attach_group())
-> does not handle error path. This creates problem as devices to domain
-> attachment is in inconsistent state.
+On 2023/2/4 6:07, Jacob Pan wrote:
+> On platforms that do not support IOMMU Extended capability bit 0
+> Page-walk Coherency, CPU caches are not snooped when IOMMU is accessing
+> any translation structures. IOMMU access goes only directly to
+> memory. Intel IOMMU code was missing a flush for the PASID table
+> directory that resulted in the unrecoverable fault as shown below.
+
+Thanks for the fix.
+
+> This patch adds a clflush when activating a PASID table directory.
+> There's no need to do clflush of the PASID directory pointer when we
+> deactivate a context entry in that IOMMU hardware will not see the old
+> PASID directory pointer after we clear the context entry.
 > 
-> To recover from this situation, we need force attaching all devices back
-> to the old domain. This patch introduces `force` parameter to
-> __iommu_group_set_domain() so that we can attach devices back to old
-> domain.
+> [    0.555386] DMAR: DRHD: handling fault status reg 3
+> [    0.555805] DMAR: [DMA Read NO_PASID] Request device [00:0d.2] fault addr 0x1026a4000 [fault reason 0x51] SM: Present bit in Directory Entry is clear
+> [    0.556348] DMAR: Dump dmar1 table entries for IOVA 0x1026a4000
+> [    0.556348] DMAR: scalable mode root entry: hi 0x0000000102448001, low 0x0000000101b3e001
+> [    0.556348] DMAR: context entry: hi 0x0000000000000000, low 0x0000000101b4d401
+> [    0.556348] DMAR: pasid dir entry: 0x0000000101b4e001
+> [    0.556348] DMAR: pasid table entry[0]: 0x0000000000000109
+> [    0.556348] DMAR: pasid table entry[1]: 0x0000000000000001
+> [    0.556348] DMAR: pasid table entry[2]: 0x0000000000000000
+> [    0.556348] DMAR: pasid table entry[3]: 0x0000000000000000
+> [    0.556348] DMAR: pasid table entry[4]: 0x0000000000000000
+> [    0.556348] DMAR: pasid table entry[5]: 0x0000000000000000
+> [    0.556348] DMAR: pasid table entry[6]: 0x0000000000000000
+> [    0.556348] DMAR: pasid table entry[7]: 0x0000000000000000
+> [    0.556348] DMAR: PTE not present at level 4
 > 
-> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+> Cc: <stable@vger.kernel.org>
+> Reported-by: Sukumar Ghorai <sukumar.ghorai@intel.com>
+> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+
+Add a Fixes tag so that people know how far this fix should be back
+ported.
+
 > ---
->   drivers/iommu/iommu.c | 24 +++++++++++++++++-------
->   1 file changed, 17 insertions(+), 7 deletions(-)
+>   drivers/iommu/intel/iommu.c | 6 ++++++
+>   1 file changed, 6 insertions(+)
 > 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index de91dd88705b..e58683cd3bf7 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -95,7 +95,8 @@ static int __iommu_attach_device(struct iommu_domain *domain,
->   static int __iommu_attach_group(struct iommu_domain *domain,
->   				struct iommu_group *group);
->   static int __iommu_group_set_domain(struct iommu_group *group,
-> -				    struct iommu_domain *new_domain);
-> +				    struct iommu_domain *new_domain,
-> +				    bool force);
->   static int iommu_create_device_direct_mappings(struct iommu_group *group,
->   					       struct device *dev);
->   static struct iommu_group *iommu_group_get_for_dev(struct device *dev);
-> @@ -1974,7 +1975,7 @@ static void __iommu_group_set_core_domain(struct iommu_group *group)
->   	else
->   		new_domain = group->default_domain;
->   
-> -	ret = __iommu_group_set_domain(group, new_domain);
-> +	ret = __iommu_group_set_domain(group, new_domain, false);
->   	WARN(ret, "iommu driver failed to attach the default/blocking domain");
->   }
->   
-> @@ -2124,8 +2125,16 @@ static int __iommu_attach_group(struct iommu_domain *domain,
->   
->   	ret = __iommu_group_for_each_dev(group, domain,
->   					 iommu_group_do_attach_device);
-> -	if (ret == 0)
-> +	if (ret == 0) {
->   		group->domain = domain;
-> +	} else {
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 59df7e42fd53..b4878c7ac008 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -1976,6 +1976,12 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+>   		pds = context_get_sm_pds(table);
+>   		context->lo = (u64)virt_to_phys(table->table) |
+>   				context_pdts(pds);
 > +		/*
-> +		 * To recover from the case when certain device within the
-> +		 * group fails to attach to the new domain, we need force
-> +		 * attaching all devices back to the old domain.
+> +		 * Scalable-mode PASID directory pointer is not snooped if the
+> +		 * coherent bit is not set.
 > +		 */
-> +		__iommu_group_set_domain(group, group->domain, true);
+> +		if (!ecap_coherent(iommu->ecap))
+> +			clflush_cache_range(table->table, sizeof(void *));
 
-Adding force parameter to __iommu_group_set_domain() looks strange. Does
-it work if we make above line like below?
+This isn't comprehensive. The clflush should be called whenever the
+pasid directory table is allocated or updated.
 
-		/*
-		 * To recover from the case when certain device within the
-		 * group fails to attach to the new domain, we need force
-		 * attaching all devices back to the old domain. The old
-		 * domain is compatible for all devices in the group,
-		 * hence the iommu driver should always return success.
-		 */
-		old_domain = group->domain;
-		group->domain = NULL;
-		WARN(__iommu_group_set_domain(group, old_domain),
-		     "iommu driver failed to attach a compatible domain");
+>   
+>   		/* Setup the RID_PASID field: */
+>   		context_set_sm_rid2pasid(context, PASID_RID2PASID);
 
 Best regards,
 baolu
