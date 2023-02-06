@@ -1,306 +1,178 @@
-Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2075.outbound.protection.outlook.com [40.107.93.75])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E19923220
-	for <iommu@lists.linux.dev>; Mon,  6 Feb 2023 12:49:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=bcFixH8+YqomwdNAIz5TC0lbv8llOKjCDTzT/15p89Y=; b=gDr6q+UUUvpmalKveY90Z9mKoU
-	feL7VIJlC7cOsfPh7TWmPCKxMv/3rZe/BGG7ZoJI8x2UqBwhLbYi85gyj63IbvaRUs4GIiTSO3Pqo
-	OVK5BTPq+pLIlLu+H1RxuK8O9yhcxWGvv4PBrGClRiRRzIlOCLrSWoSK80kPb8FC2Z/3vi44br+dz
-	QqiszmVInSmiuqpwITmG88XRQlvSb/CZcPEGuI9mtOZ6RJLfuLIgomGZUS1RojJOkp3LECt8WAq3T
-	70mP4KpcwQH+siIlqQo8iRSiyKggIkVR5F3EMW/BFFEjqMwd8rtkS5Yyzd0SDfDSezVzpyJz95bd8
-	Atrsuu0g==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-	by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-	id 1pP0uT-006YgS-2N;
-	Mon, 06 Feb 2023 12:47:50 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
-	(Client did not present a certificate)
-	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id ED3B830012F;
-	Mon,  6 Feb 2023 13:48:23 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-	id BCEBF207A0B88; Mon,  6 Feb 2023 13:48:23 +0100 (CET)
-Date: Mon, 6 Feb 2023 13:48:23 +0100
-From: Peter Zijlstra <peterz@infradead.org>
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>,
-	Jonathan Corbet <corbet@lwn.net>, Will Deacon <will@kernel.org>,
-	Boqun Feng <boqun.feng@gmail.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>, dennis@kernel.org,
-	Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@linux.com>,
-	Heiko Carstens <hca@linux.ibm.com>, gor@linux.ibm.com,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	borntraeger@linux.ibm.com, Sven Schnelle <svens@linux.ibm.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-	"H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>,
-	suravee.suthikulpanit@amd.com, Robin Murphy <robin.murphy@arm.com>,
-	dwmw2@infradead.org, Baolu Lu <baolu.lu@linux.intel.com>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	"David S . Miller" <davem@davemloft.net>,
-	Pekka Enberg <penberg@kernel.org>,
-	David Rientjes <rientjes@google.com>,
-	Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Vlastimil Babka <vbabka@suse.cz>,
-	Roman Gushchin <roman.gushchin@linux.dev>,
-	Hyeonggon Yoo <42.hyeyoo@gmail.com>, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-	linux-s390@vger.kernel.org, iommu@lists.linux.dev,
-	Linux-Arch <linux-arch@vger.kernel.org>,
-	linux-crypto@vger.kernel.org
-Subject: Re: [PATCH v2 05/10] percpu: Wire up cmpxchg128
-Message-ID: <Y+D3F2pg7X4XFT4r@hirez.programming.kicks-ass.net>
-References: <20230202145030.223740842@infradead.org>
- <20230202152655.494373332@infradead.org>
- <24007667-1ff3-4c86-9c17-a361c3f9f072@app.fastmail.com>
- <Y+DjULnIxcPU/rtp@hirez.programming.kicks-ass.net>
- <Y+DvI7ai/wuovjER@hirez.programming.kicks-ass.net>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96AC23FDD
+	for <iommu@lists.linux.dev>; Mon,  6 Feb 2023 13:05:31 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ScD0gm3USIGLNUXixcHxQMDyuBU11Ru4eFKmOTzIbbHSYPUXitZ+KX0sQP0p4Qnee1DRNnQG64gCXOu9lqMGt159xTBcaqxTIGleHQ+dj0sKOTmAYest/vEsU1BCmMJYL+5p2RONYbZNfuF5kiHX/HRQA08oKXkPfF3zDJs495IgRrU51up/5NMmbcnaR8sEf8s6tG79kA9HBRVsuCYBEf35/JclqQ8yF5sOvAvKUBKuP2/I+1lDeAKJSZTftqaF4+T3wf3XAXo7lItscDK9mxstRtGosju5BtKx4s8Zob+xdIJweccoDnQdEGCc9Mev2qAzxUThvaokMurN9E/yLw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0HmHS4sVD3IXgJfjkccoqFfTyHOljIYh8CEc9cZWdjU=;
+ b=bB82xI5rC5Qfk8kEHNfyxAIXYCfQqafk35io3S0LllpZrAoOrofXTsJfjbJl/DprVXaFkEaGT8HTq9i72JK16vmJv5jDgjuoZQCbcS/n27ws8G/6SY/UflLgz6VfHPykdbddh6LNPUQt4Plu6p8sFIhQaIvPK6ufhwg5FN495JmxyZK7Dj4ftwpXSxM1T4BYtE8JZHLGbr15kiup2ONFw/AtFDRdc+FrdLUM58i5mc7bnF9jT7rNzdvCRmnCjYiF3Y+91cqQIvUBWjPLsuzHdLs9wxbDbZQB9ctF2ZwHoIeRp5PkzqJ9bSnIKnD02FNdkKUWnwqmXsuTXZRVKrrbIQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0HmHS4sVD3IXgJfjkccoqFfTyHOljIYh8CEc9cZWdjU=;
+ b=w8ZkS+FOM4kk69PJsp1wNWwm9udFiVaXsb826f7EYZyCAo0Byihw9xA2vFUrmJEgCRgnYoCB0a3Dgw/JET160zS02DKER/Qfoxx1YWOvSRxpQ/w9MnoOHBM2Tzrul8iyV14zJihkwk/qhrv8x0dcR+m5woXiHONObNoEMYv0fRo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ CY8PR12MB7561.namprd12.prod.outlook.com (2603:10b6:930:94::22) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6064.32; Mon, 6 Feb 2023 13:05:29 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::4014:79ea:392b:b4f6]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::4014:79ea:392b:b4f6%4]) with mapi id 15.20.6064.032; Mon, 6 Feb 2023
+ 13:05:29 +0000
+Message-ID: <fe6ecfd2-3ccc-36e2-0569-323e663a691f@amd.com>
+Date: Mon, 6 Feb 2023 18:35:17 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 1/3] iommu: Attach device group to old domain in error
+ path
+Content-Language: en-US
+To: Baolu Lu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev,
+ joro@8bytes.org
+Cc: suravee.suthikulpanit@amd.com, robin.murphy@arm.com, will@kernel.org
+References: <20230203173623.18308-1-vasant.hegde@amd.com>
+ <f5af1701-1707-23c8-3f62-ad4ffae21387@linux.intel.com>
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <f5af1701-1707-23c8-3f62-ad4ffae21387@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: PN2PR01CA0213.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:ea::7) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y+DvI7ai/wuovjER@hirez.programming.kicks-ass.net>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|CY8PR12MB7561:EE_
+X-MS-Office365-Filtering-Correlation-Id: 27fa4df9-fdb5-424b-d263-08db0842d218
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	M5s5/6QQCEDOZ85TvlWmLw4jHph8fGAlGtMsawOavui9+xU/cN9l4oDNchiJK9u+XbH1l/CzHy1Aa7U3RdHZIuvEe6hEZfVqOFFMYH1gMEWEM87it81+f0HxuR7l4iTy3KlDoYJ4W4JjWsHcyxU152RVQLx/109V77bGLgb3FRAoy+IGG+LwC6ut9DyNyz7ePWQyCUJvC9+I0nnKxfgzQ9fzNZiY7qOKjnQuxltn735H2tK+m9w5sk7yq8OsUdgUORJHk4vn+sSeF1OEqU8qvgKUpKs9PtOS9Ba7v9aTWtUQ5RgDyO3SrxAaivfPK9Ca+YQi2OIhAy9bUSTtB6Qz9r9IaIcy3kVJgssU88YlTnxDu9sfNxxkINoo8UG8xmsIpbc6nMXyw9oasqCo3aLIn7kwr45WO0zg05rF3bWhNmB+y9ZEM0HSEjjRf32WFm1BP7iFtSXO4EKRqXBsB2VEeY/5pw3iHw6x8GsYst3Vwk8S6SGNnuM0MTcXt19OgeQr+a2beFYMBUVcOfm4ZEspjj3pJLWarUyemdFlZ9hJaMp9aspjVzRqNlLHn+uPJrqrSqJjV22Qe8ubk31OXJafF11gX/KFTvp0xiB3Rt78JeWMGBndi/tNw5pP0sBAAihdF5jMr4PveBWshFsrwvJo1FZticrVay01CZY9e8AnpOMC6ZV12r+zeL0mTVf1TXfGndkGem+3pJ0iW6N/hNM4r8LNyV5VNSrN27EsRspsR0k=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(396003)(376002)(366004)(346002)(136003)(451199018)(478600001)(2906002)(6486002)(6512007)(26005)(186003)(66946007)(66476007)(6666004)(41300700001)(6506007)(66556008)(8676002)(53546011)(4326008)(316002)(5660300002)(38100700002)(8936002)(36756003)(44832011)(86362001)(83380400001)(31696002)(2616005)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?aDhMc3g5aHNkU24weFpWZ3IyOTdxNmhSMHpodXFHb2MyTDc1NEdST0xlQWtm?=
+ =?utf-8?B?RVBQeHVWUVBONVdZMGVmelJ5MnA1QTRrajV2Qm9lelRTME42VGZ3M0huWE9i?=
+ =?utf-8?B?aTB2WlJDWHNMY0RJUEZKaVpPb0p2M0RtazRpT3pFTG1WeG9SWE5YQ1dFK1Jh?=
+ =?utf-8?B?M201eWJyRmlrS0ZwU0U0RVVUMnpTZVk1N1BWUyt1TEJQMWhSbllTVUhPQWtq?=
+ =?utf-8?B?NzROR3ZLTnVHcUZVak9hRkpGclZpTHpPcWpnS3l4UTdESDY4bGhydDJTb0NX?=
+ =?utf-8?B?UENmWDZCTzd0MEdLN2txY0hLM1Z4T01pRjM5ZWJoeXNRZEp0NmVXSDFEbzEz?=
+ =?utf-8?B?MTRqNGZQeVBXTjI2MHNjUUI0MElwMHNUekxUWEErK3hsR3l5WFg5TkoxQnlI?=
+ =?utf-8?B?Ulh5ZmZhaGIvdWp1MFZqUlBpYUwxNTc0T3pwNDBWQm9OM0c5eVoxcHlaWm1o?=
+ =?utf-8?B?czZ1U3BQTTBYZmRGTFFaNzBUeXFPbytJU2diLzN2Y2x4YW5kb3JxN2Q2OTRj?=
+ =?utf-8?B?MTZEeUNIbDYveWFHejBSbUtkcFI3ekJEdjFweUlCZEJmaHJYcXVDdkp3amRH?=
+ =?utf-8?B?UmorNHF4TTRiQ1VNSGFNam1RTmV4T1FQUzI2cWROSFZDb0xsekp5SklmZit4?=
+ =?utf-8?B?VnNDaThKV1pRVGlGcURJU0g2WDF5T2dBTE9SNmNOV0ZnQXp6cGpQSnplQTFE?=
+ =?utf-8?B?S29CaWhVcHAyRUZRTWdnZWtkOGYyck1aUWJSV1dsbEhhZ0JBOFNoRUcwSzUv?=
+ =?utf-8?B?eUp4UVZ1NFZKdll5S2lRbzNhUFlBNnZHQUVGS1ZNMUpINEpOK3kvbmZ0YTBI?=
+ =?utf-8?B?TVgxU2FMWnQxWEtLbVhibzRYUXdWbytRd0dMbkxIUkNIWEVMUTZELzBsbENE?=
+ =?utf-8?B?L3ZTSTNVNE93U0dWRlBGcmc1aWp5WGRpRzN3TzFnSURRZXczUjEwcFR2eWJP?=
+ =?utf-8?B?czVPRFBLT3I0RnZGeG1VZUZnUW5VanAycmRONVU4VE1DWTBYcXM0OFlsanNr?=
+ =?utf-8?B?NkJDWFVGTkMxOUl4TFozcWRsS05DN1k4WVNyVkFZbGZ1TWtubGVEcEpHelNj?=
+ =?utf-8?B?QUZ2bitRZTJBSzBJZ0gvWUhsajJxY0JRdDlVOGxieVRnbGJ1NXBtQlhnRTha?=
+ =?utf-8?B?OVRMR2hOblFocndXWmc0ZzF3UGcvc2VkdkxnM0MrOUpMNS8vQ1lVdVJwRHU1?=
+ =?utf-8?B?TTFiWGhydXZWNm5mMFJuOUpSU2ZkMSsvbHdlbElvYXI3bG1BZFZ4MFpxVy9l?=
+ =?utf-8?B?dURNZlJ5bTduTFdrNitGdkQzREYremljRFkyQ1M5THBDRytzbmg1TnM3L3RJ?=
+ =?utf-8?B?NXJraHlkYVVFRC84QXlhTU5CVUErenpaN3c3bVl0cXFVak5yS3RteFFHbUFs?=
+ =?utf-8?B?YlI2VmZUTFc4ak9XWk44UVNOTDA1d2s5N2svNnBQUzdQL09XeC9ObXdqczMw?=
+ =?utf-8?B?VHY0THhXSDR6dytlVHoraHI1cXhpMnF3Q3pjUjFkMFBkcVlmalNDaXEra0tp?=
+ =?utf-8?B?L1MvNFJFcHdRZ2hUaGgwS0JLYW9LZ1llMEFMY2NkK0pYT0ZHdS8zOUdKeWFK?=
+ =?utf-8?B?ZnNCekFKWGZsMlcxMmsyVURMdlBFTjJGbWpiU3RkaEF4YjN4bVVUVm9GdXpP?=
+ =?utf-8?B?NU90dlllS1JSQjRCcHVZQkI4b3RTNTZCdlA2citWZFo1ckZFdnpUM0pQWGNO?=
+ =?utf-8?B?N2tyQjJJSjd4b1dGb3BSZUpDNWtPUzJ0NlBCMWxtWklhaklUdnNCUDcvTXli?=
+ =?utf-8?B?WjZmTEVxVVdxcTZJWTIrMmdKd2ZRUDJCYlZaTi9IS3dFUW40cW9FSEFsZmtB?=
+ =?utf-8?B?bnNKQ1ozb25LL01ucFIyanhVSVF3TkdxRzZ2SFFzT0wzaUJkVjVxTTRkV3U2?=
+ =?utf-8?B?eTE3eUtsS01wRzVaN3NCZStPZEFDaklZMlUwUWhZaWlhSFJsQ0tCdnpIZ0xs?=
+ =?utf-8?B?VlRCTll1M1ZlNWJaM1NtTUdJR01qWjlNOWttKzlTZEVGVVd0KzZXQ0oxblZp?=
+ =?utf-8?B?QURnYVdMTk1jcklrcEVYanNMZ2huUjVaWnNIYXB6d2pqQTFmcHhyaDBjeWpa?=
+ =?utf-8?B?Z2lQOUVBdHJNN095WFhYcHRrbHRZdGVHV3JqTDJLNEJ1RUhCZlhpMTd2a3hG?=
+ =?utf-8?Q?HICy9fHgLnt7/XflEWDTzJAFi?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 27fa4df9-fdb5-424b-d263-08db0842d218
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2023 13:05:29.2512
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: N7nUVhqmWw4SPVYZH0qxlwsr9xcyQ0dUugE5RuO9xCy0KUmFZ3bFPxuChIUKjlYfRInhr3juBynOyxpJDGRFzw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7561
 
-On Mon, Feb 06, 2023 at 01:14:28PM +0100, Peter Zijlstra wrote:
-> On Mon, Feb 06, 2023 at 12:24:00PM +0100, Peter Zijlstra wrote:
-> 
-> > > Unless I have misunderstood what you are doing, my concerns are
-> > > still the same:
-> > > 
-> > > >  #define this_cpu_cmpxchg(pcp, oval, nval) \
-> > > > -	__pcpu_size_call_return2(this_cpu_cmpxchg_, pcp, oval, nval)
-> > > > +	__pcpu_size16_call_return2(this_cpu_cmpxchg_, pcp, oval, nval)
-> > > >  #define this_cpu_cmpxchg_double(pcp1, pcp2, oval1, oval2, nval1, 
-> > > > nval2) \
-> > > >  	__pcpu_double_call_return_bool(this_cpu_cmpxchg_double_, pcp1, pcp2, 
-> > > > oval1, oval2, nval1, nval2)
-> > > 
-> > > Having a variable-length this_cpu_cmpxchg() that turns into cmpxchg128()
-> > > and cmpxchg64() even on CPUs where this traps (!X86_FEATURE_CX16) seems
-> > > like a bad design to me.
-> > > 
-> > > I would much prefer fixed-length this_cpu_cmpxchg64()/this_cpu_cmpxchg128()
-> > > calls that never trap but fall back to the generic version on CPUs that
-> > > are lacking the atomics.
-> > 
-> > You're thinking acidental usage etc..? Lemme see what I can do.
-> 
-> So lookng at this I remember why I did it like this, currently 32bit
-> archs silently fall back to the generics for most/all 64bit ops.
-> 
-> And personally I would just as soon drop support for the
-> !X86_FEATURE_CX* cpus... :/ Those are some serious museum pieces.
-> 
-> One problem with silent downgrades like this is that semantics vs NMI
-> change, which makes for subtle bugs on said museum pieces.
-> 
-> Basically, using 64bit percpu ops on 32bit is already somewhat dangerous
-> -- wiring up native cmpxchg64 support in that case seemed an
-> improvement.
-> 
-> Anyway... let me get on with doing explicit
-> {raw,this}_cpu_cmpxchg{64,128}() thingies.
+Hi Baolu,
 
-I only converted x86 and didn't do the automagic downgrade...
 
-Opinions?
+On 2/4/2023 9:07 AM, Baolu Lu wrote:
+> On 2023/2/4 1:36, Vasant Hegde wrote:
+>> iommu_attach_group() attaches all devices in a group to domain and then
+>> sets group domain (group->domain). Current code (__iommu_attach_group())
+>> does not handle error path. This creates problem as devices to domain
+>> attachment is in inconsistent state.
+>>
+>> To recover from this situation, we need force attaching all devices back
+>> to the old domain. This patch introduces `force` parameter to
+>> __iommu_group_set_domain() so that we can attach devices back to old
+>> domain.
+>>
+>> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+>> ---
+>>   drivers/iommu/iommu.c | 24 +++++++++++++++++-------
+>>   1 file changed, 17 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index de91dd88705b..e58683cd3bf7 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -95,7 +95,8 @@ static int __iommu_attach_device(struct iommu_domain *domain,
+>>   static int __iommu_attach_group(struct iommu_domain *domain,
+>>                   struct iommu_group *group);
+>>   static int __iommu_group_set_domain(struct iommu_group *group,
+>> -                    struct iommu_domain *new_domain);
+>> +                    struct iommu_domain *new_domain,
+>> +                    bool force);
+>>   static int iommu_create_device_direct_mappings(struct iommu_group *group,
+>>                              struct device *dev);
+>>   static struct iommu_group *iommu_group_get_for_dev(struct device *dev);
+>> @@ -1974,7 +1975,7 @@ static void __iommu_group_set_core_domain(struct
+>> iommu_group *group)
+>>       else
+>>           new_domain = group->default_domain;
+>>   -    ret = __iommu_group_set_domain(group, new_domain);
+>> +    ret = __iommu_group_set_domain(group, new_domain, false);
+>>       WARN(ret, "iommu driver failed to attach the default/blocking domain");
+>>   }
+>>   @@ -2124,8 +2125,16 @@ static int __iommu_attach_group(struct iommu_domain
+>> *domain,
+>>         ret = __iommu_group_for_each_dev(group, domain,
+>>                        iommu_group_do_attach_device);
+>> -    if (ret == 0)
+>> +    if (ret == 0) {
+>>           group->domain = domain;
+>> +    } else {
+>> +        /*
+>> +         * To recover from the case when certain device within the
+>> +         * group fails to attach to the new domain, we need force
+>> +         * attaching all devices back to the old domain.
+>> +         */
+>> +        __iommu_group_set_domain(group, group->domain, true);
+> 
+> Adding force parameter to __iommu_group_set_domain() looks strange. Does
+> it work if we make above line like below?
 
----
- arch/x86/include/asm/percpu.h | 11 +++++++----
- include/asm-generic/percpu.h  | 18 ++++++++++++++----
- include/linux/percpu-defs.h   | 20 ++------------------
- mm/slab.h                     |  2 ++
- mm/slub.c                     | 21 +++++++++++----------
- 5 files changed, 36 insertions(+), 36 deletions(-)
+Yeah. It should work fine. Will fix it in v3.
 
-diff --git a/arch/x86/include/asm/percpu.h b/arch/x86/include/asm/percpu.h
-index 4c803a1fd0e7..7515e065369b 100644
---- a/arch/x86/include/asm/percpu.h
-+++ b/arch/x86/include/asm/percpu.h
-@@ -214,7 +214,7 @@ do {									\
- #define percpu_cmpxchg64_op(size, qual, _var, _oval, _nval)		\
- ({									\
- 	union {								\
--		typeof(_var) var;					\
-+		u64 val;						\
- 		struct {						\
- 			u32 low, high;					\
- 		};							\
-@@ -234,15 +234,18 @@ do {									\
- 	old__.var;							\
- })
- 
--#define raw_cpu_cmpxchg_8(pcp, oval, nval)	percpu_cmpxchg64_op(8,         , pcp, oval, nval)
--#define this_cpu_cmpxchg_8(pcp, oval, nval)	percpu_cmpxchg64_op(8, volatile, pcp, oval, nval)
-+#define raw_cpu_cmpxchg64(pcp, oval, nval)	percpu_cmpxchg64_op(8,         , pcp, oval, nval)
-+#define this_cpu_cmpxchg64(pcp, oval, nval)	percpu_cmpxchg64_op(8, volatile, pcp, oval, nval)
- #endif
- 
- #ifdef CONFIG_X86_64
-+#define raw_cpu_cmpxchg64(pcp, oval, nval)	percpu_cmpxchg_op(8,         , pcp, oval, nval);
-+#define this_cpu_cmpxchg64(pcp, oval, nval)	percpu_cmpxchg_op(8, volatile, pcp, oval, nval);
-+
- #define percpu_cmpxchg128_op(size, qual, _var, _oval, _nval)		\
- ({									\
- 	union {								\
--		typeof(_var) var;					\
-+		u128 var;						\
- 		struct {						\
- 			u64 low, high;					\
- 		};							\
-diff --git a/include/asm-generic/percpu.h b/include/asm-generic/percpu.h
-index ad254a20fe68..7da7d1793411 100644
---- a/include/asm-generic/percpu.h
-+++ b/include/asm-generic/percpu.h
-@@ -274,8 +274,13 @@ do {									\
- #define raw_cpu_cmpxchg_8(pcp, oval, nval) \
- 	raw_cpu_generic_cmpxchg(pcp, oval, nval)
- #endif
--#ifndef raw_cpu_cmpxchg_16
--#define raw_cpu_cmpxchg_16(pcp, oval, nval) \
-+
-+#ifndef raw_cpu_cmpxchg64
-+#define raw_cpu_cmpxchg64(pcp, oval, nval) \
-+	raw_cpu_generic_cmpxchg(pcp, oval, nval)
-+#endif
-+#ifndef raw_cpu_cmpxchg128
-+#define raw_cpu_cmpxchg128(pcp, oval, nval) \
- 	raw_cpu_generic_cmpxchg(pcp, oval, nval)
- #endif
- 
-@@ -386,8 +391,13 @@ do {									\
- #define this_cpu_cmpxchg_8(pcp, oval, nval) \
- 	this_cpu_generic_cmpxchg(pcp, oval, nval)
- #endif
--#ifndef this_cpu_cmpxchg_16
--#define this_cpu_cmpxchg_16(pcp, oval, nval) \
-+
-+#ifndef this_cpu_cmpxchg64
-+#define this_cpu_cmpxchg64(pcp, oval, nval) \
-+	this_cpu_generic_cmpxchg(pcp, oval, nval)
-+#endif
-+#ifndef this_cpu_cmpxchg128
-+#define this_cpu_cmpxchg128(pcp, oval, nval) \
- 	this_cpu_generic_cmpxchg(pcp, oval, nval)
- #endif
- 
-diff --git a/include/linux/percpu-defs.h b/include/linux/percpu-defs.h
-index fe3c7fc2d411..7cd614a46af4 100644
---- a/include/linux/percpu-defs.h
-+++ b/include/linux/percpu-defs.h
-@@ -343,22 +343,6 @@ static inline void __this_cpu_preempt_check(const char *op) { }
- 	pscr2_ret__;							\
- })
- 
--#define __pcpu_size16_call_return2(stem, variable, ...)			\
--({									\
--	typeof(variable) pscr2_ret__;					\
--	__verify_pcpu_ptr(&(variable));					\
--	switch(sizeof(variable)) {					\
--	case 1: pscr2_ret__ = stem##1(variable, __VA_ARGS__); break;	\
--	case 2: pscr2_ret__ = stem##2(variable, __VA_ARGS__); break;	\
--	case 4: pscr2_ret__ = stem##4(variable, __VA_ARGS__); break;	\
--	case 8: pscr2_ret__ = stem##8(variable, __VA_ARGS__); break;	\
--	case 16: pscr2_ret__ = stem##16(variable, __VA_ARGS__); break;	\
--	default:							\
--		__bad_size_call_parameter(); break;			\
--	}								\
--	pscr2_ret__;							\
--})
--
- #define __pcpu_size_call(stem, variable, ...)				\
- do {									\
- 	__verify_pcpu_ptr(&(variable));					\
-@@ -414,7 +398,7 @@ do {									\
- #define raw_cpu_add_return(pcp, val)	__pcpu_size_call_return2(raw_cpu_add_return_, pcp, val)
- #define raw_cpu_xchg(pcp, nval)		__pcpu_size_call_return2(raw_cpu_xchg_, pcp, nval)
- #define raw_cpu_cmpxchg(pcp, oval, nval) \
--	__pcpu_size16_call_return2(raw_cpu_cmpxchg_, pcp, oval, nval)
-+	__pcpu_size_call_return2(raw_cpu_cmpxchg_, pcp, oval, nval)
- #define raw_cpu_sub(pcp, val)		raw_cpu_add(pcp, -(val))
- #define raw_cpu_inc(pcp)		raw_cpu_add(pcp, 1)
- #define raw_cpu_dec(pcp)		raw_cpu_sub(pcp, 1)
-@@ -493,7 +477,7 @@ do {									\
- #define this_cpu_add_return(pcp, val)	__pcpu_size_call_return2(this_cpu_add_return_, pcp, val)
- #define this_cpu_xchg(pcp, nval)	__pcpu_size_call_return2(this_cpu_xchg_, pcp, nval)
- #define this_cpu_cmpxchg(pcp, oval, nval) \
--	__pcpu_size16_call_return2(this_cpu_cmpxchg_, pcp, oval, nval)
-+	__pcpu_size_call_return2(this_cpu_cmpxchg_, pcp, oval, nval)
- #define this_cpu_sub(pcp, val)		this_cpu_add(pcp, -(typeof(pcp))(val))
- #define this_cpu_inc(pcp)		this_cpu_add(pcp, 1)
- #define this_cpu_dec(pcp)		this_cpu_sub(pcp, 1)
-diff --git a/mm/slab.h b/mm/slab.h
-index 19e1899673ef..50b5edd6a950 100644
---- a/mm/slab.h
-+++ b/mm/slab.h
-@@ -25,11 +25,13 @@ typedef union {
- # ifdef system_has_cmpxchg128
- # define system_has_freelist_aba()	system_has_cmpxchg128()
- # define try_cmpxchg_freelist		try_cmpxchg128
-+# define this_cpu_cmpxchg_freelist	this_cpu_cmpxchg128
- # endif
- #else /* CONFIG_64BIT */
- # ifdef system_has_cmpxchg64
- # define system_has_freelist_aba()	system_has_cmpxchg64()
- # define try_cmpxchg_freelist		try_cmpxchg64
-+# define this_cpu_cmpxchg_freelist	this_cpu_cmpxchg64
- # endif
- #endif /* CONFIG_64BIT */
- 
-diff --git a/mm/slub.c b/mm/slub.c
-index 45f2b28d60e1..35939c5aa28a 100644
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -523,17 +523,14 @@ __update_freelist_fast(struct slab *slab,
- 		      void *freelist_old, unsigned long counters_old,
- 		      void *freelist_new, unsigned long counters_new)
- {
--
--	bool ret = false;
--
--#ifdef system_has_freelist_aba
-+#ifdef syste_has_freelist_aba
- 	freelist_aba_t old = { .freelist = freelist_old, .counter = counters_old };
- 	freelist_aba_t new = { .freelist = freelist_new, .counter = counters_new };
- 
--	ret = try_cmpxchg_freelist(&slab->freelist_counter.full, &old.full, new.full);
--#endif /* system_has_freelist_aba */
--
--	return ret;
-+	return try_cmpxchg_freelist(&slab->freelist_counter.full, &old.full, new.full);
-+#else
-+	return false;
-+#endif
- }
- 
- static inline bool
-@@ -3039,11 +3036,15 @@ __update_cpu_freelist_fast(struct kmem_cache *s,
- 			   void *freelist_old, void *freelist_new,
- 			   unsigned long tid)
- {
-+#ifdef system_has_freelist_aba
- 	freelist_aba_t old = { .freelist = freelist_old, .counter = tid };
- 	freelist_aba_t new = { .freelist = freelist_new, .counter = next_tid(tid) };
- 
--	return this_cpu_cmpxchg(s->cpu_slab->freelist_tid.full,
--				old.full, new.full) == old.full;
-+	return this_cpu_cmpxchg_freelist(s->cpu_slab->freelist_tid.full,
-+					 old.full, new.full) == old.full;
-+#else
-+	return false;
-+#endif
- }
- 
- /*
+-Vasant
+
