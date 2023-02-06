@@ -1,175 +1,136 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2109.outbound.protection.outlook.com [40.107.94.109])
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E43EA7B
-	for <iommu@lists.linux.dev>; Mon,  6 Feb 2023 17:20:12 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Z3Gg3ywx0TT+5BTrqOKkDoA4B8bYFLEJE+8D36ZKd3Z4zR5Z5zaX17fJu+cyND578H2djI9sQM72qGwuYORz9BKifAjlmTVjzEbiA2WrJMcp0pStkd2cqCyDRJuFgsN0//FwdroFqgP0z7aOU8QO+Jkf13QOerFxPd6EljWgOaxo6CPdMYu5S9icLbPoKFooKWI6Q7nhI8msk/pco/s3t/zFFS9v36mzZVGhJ7P53Y9884A6XPgyHuARY9FjWDmnLxT8cMTBB+K3Vkd02axkLujgXz/y2HsYOT9xGeFRagcQbQQ+siEyCCWf2JAQcJ1CAz1MrAWtTTaEfjDMq6jUPA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iU8gviTqw5d9pn5KjdX2hvN3yYQJ/p05QSFnoYnk/Sc=;
- b=SysUC3qb2aGoBimCzSQv17t6Jv3btVz5HErk87ng4ZjltMxyxgNM9swRZiTslaYPNhDhVmz8wfW/KdcjLdH1opJeW9bnQayJYOfO08Is4deRavEHBNMF2V7f8eUUhYQQcuaaqb772Sfb+jt1MBsREx0t/f4LnY2SJABHNI3BdQ7R5wAvFmi3fNmX0v3Xgk7kAc8Lb4G4L3O4yy2ArEyPDkBMWXD+BouaHe1EEs9mYqaUnvqFScJqte/3t01hncXPPfaSgfPQ/s9/9nZezX9ufaPLCLoXQP2uQ7nUA83DfUJfr/+V4Uikz2piC9aX2f4etXO3gQIkBFUnypQQOSttWw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=os.amperecomputing.com; dmarc=pass action=none
- header.from=os.amperecomputing.com; dkim=pass
- header.d=os.amperecomputing.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=os.amperecomputing.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iU8gviTqw5d9pn5KjdX2hvN3yYQJ/p05QSFnoYnk/Sc=;
- b=r6Iiy1kUFXGmBJdbfEqcJQxts3oiqHfEO+Z3aH3wL4tYy3rrsaEUZ2KsSR9QxyvnQY25ac3HRl5InWegNrCSPA0ixNSWOjFz6iF2dXnReV5MIufEivgVMJuvXR80Neqr0qKyokMM7JeNxEpe6/qfItNy4Vmb9vKZV2m6KcXi44w=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=os.amperecomputing.com;
-Received: from DM8PR01MB6824.prod.exchangelabs.com (2603:10b6:8:23::24) by
- PH7PR01MB7535.prod.exchangelabs.com (2603:10b6:510:1e2::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6064.34; Mon, 6 Feb 2023 17:20:09 +0000
-Received: from DM8PR01MB6824.prod.exchangelabs.com
- ([fe80::6b5b:1242:818c:e70d]) by DM8PR01MB6824.prod.exchangelabs.com
- ([fe80::6b5b:1242:818c:e70d%3]) with mapi id 15.20.6064.034; Mon, 6 Feb 2023
- 17:20:08 +0000
-Message-ID: <3a681b82-d840-6ef1-40dd-358f34c8be9c@os.amperecomputing.com>
-Date: Mon, 6 Feb 2023 22:50:00 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Enable PCI ATS in passthrough mode as
- well
-Content-Language: en-US
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, robin.murphy@arm.com, will@kernel.org,
- joro@8bytes.org, darren@os.amperecomputing.com, scott@os.amperecomputing.com
-References: <20230202124053.848792-1-gankulkarni@os.amperecomputing.com>
- <Y9z3UG+wEBn4i3G2@myrica>
-From: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>
-In-Reply-To: <Y9z3UG+wEBn4i3G2@myrica>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: CH0PR03CA0385.namprd03.prod.outlook.com
- (2603:10b6:610:119::20) To DM8PR01MB6824.prod.exchangelabs.com
- (2603:10b6:8:23::24)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE21F7B
+	for <iommu@lists.linux.dev>; Mon,  6 Feb 2023 17:21:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1675704112; x=1707240112;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=0gctpzQ14E7N77mb7AzU/PZrWJdp1++fnSUrFflVR3Y=;
+  b=Fjmo0+gO5qSn+x/qTd1qKgy4VKBhKCJtHPNaTlJN/rUAHDGn9tQilD6x
+   6oZrLxvtKrB5mpLzNndvznRUF2p62fMKwrzObvZm7F/eCoQSSjbCtquBD
+   5w/tSaiV6Ds+lJaoFCMzz/9GV6+cFPzE/VtE67eHWTLMdHS7/+kDyQBP2
+   CujguBYAE4QVo5o7IrYJMMWf+A44/gHFRIi0RAni4BCpVPMLoGqTV4ZL3
+   VBoFy4PHnd1KrsP2s40QUGKNqxRGgbyGeB/z5G3/e+3EYZP2HZCzJXsAt
+   l5O8vg7V5Z4kZnko6JajZDTDYCsf/ZWhD84PXsRV+tw/stsoh5znOa0HG
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="327895056"
+X-IronPort-AV: E=Sophos;i="5.97,276,1669104000"; 
+   d="scan'208";a="327895056"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2023 09:21:51 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="696912022"
+X-IronPort-AV: E=Sophos;i="5.97,276,1669104000"; 
+   d="scan'208";a="696912022"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2023 09:21:51 -0800
+Date: Mon, 6 Feb 2023 09:25:27 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Joerg Roedel
+ <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Raj Ashok
+ <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
+ <yi.l.liu@intel.com>, stable@vger.kernel.org, Sukumar Ghorai
+ <sukumar.ghorai@intel.com>, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH] iommu/vt-d: Fix PASID directory pointer coherency
+Message-ID: <20230206092527.670f7ef7@jacob-builder>
+In-Reply-To: <de4d0617-ceef-efca-69f1-a095ce91588e@linux.intel.com>
+References: <20230203220714.1283383-1-jacob.jun.pan@linux.intel.com>
+	<de4d0617-ceef-efca-69f1-a095ce91588e@linux.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM8PR01MB6824:EE_|PH7PR01MB7535:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4fd6a98b-6cc0-4e8c-feab-08db0866651b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	DYH0r44fawqI2QUtSin59tov9ysCEmDTaPHhsBY/aWSCVPUycebvcMARPqKQNKh80O2BP5wx3+atKpLPeh8aDVJKGj+kEX0bc2iVu/TH7kF9nScyN9EIzmjgwUMbROfkU+vEjJiTZMHwZmMkH5R8AG9ThVkZjvJoiKyUot7gp++qgRe6qVAGc8aU5Xtwmey5kWblVDCAnMrc2OnuuAFUODE5pSOzdCRibiPC0zJpyVwqVKwqXjTLTJcK/7Fdy6f6h0a1S3t4HqpRuZ2q4owkYyjZPRHtFPiJFN9KTWIER6ytW7tg8fYPMiPitcCfIbiE3esilpimKrZGRz/hte5a1/Ztnz8O259FtNonLrZrq+7yEWNPB+xapxkvHx7cb6dxpHdZZaibB0n9GauPuJn50ZlUdxdwjFhVt0ijQfI2uZpn3o4LYl5YmmjksfVsdQDEGx1UIeiPHInKGSw0fxLKoemVCFjGA+zVmpRk1Q5jK6eOQK5DGxOPP7IxkW/BqMajG1yUJgjB05wwFtteVeG9AgQI8lvnV6uuOpoCKt6aukhpZ8yDb2NOoEgQ8n3JRaTG6VHI2wLhYQngddzLr9brlHTi7Dxk7RCa1nCZmjZw1QKKDGsljXcI7vILyfDCSAWyV63dvS7as/w5iY902iwUwADQu0kLVyHC3ZEMcPID2lGFBF55GdW3vxINPwclS6NwEHSkkV0wAdkLO8wNrcGUTDonv70s1EbhfythXPYlae8=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR01MB6824.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(366004)(39850400004)(396003)(376002)(136003)(451199018)(31686004)(6486002)(478600001)(966005)(316002)(2906002)(38100700002)(86362001)(31696002)(53546011)(66476007)(2616005)(6666004)(66556008)(6916009)(83380400001)(8676002)(4326008)(107886003)(8936002)(41300700001)(5660300002)(66946007)(6506007)(26005)(186003)(6512007)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?U1paTGttN05neFpIR1lwcjlsNkVTekhPbjZUSzFLVlJ6RE1KNGxVOTQ3aHdF?=
- =?utf-8?B?V1E2UEl5QWZ2OFh1TTVxQjB3ajZYdVNXaWdkVWwrdGRtSFcvZFlZejhFMkg0?=
- =?utf-8?B?L0NhRFdScWJXZHkvLzZQYmxaWUJWd2lRd3AyUHd4M2JLbWNsMnluT0FlQS9s?=
- =?utf-8?B?NllEU01jWUNrVHZQMUJhSkE2T1NicDNRc2ZWeHFuSWJZakxvQzMvVi9LUTJ3?=
- =?utf-8?B?YnV6NzNRZGo0SWM4VVN2cVhQcVlIK2FqR3pKM3JFaVBuS2dtN1Nwemg3K09Z?=
- =?utf-8?B?cTRtc2F2QW9sTi9Zd3NBUmFFSzNVS09iVHJjb0IvSDdvL1pxU3ByQThreWdv?=
- =?utf-8?B?dmZadC8vNjZGNUJRVkV3WEJGOHJIOStLTG1QRDh3NEtMV0ppNElxYk5ORjVt?=
- =?utf-8?B?Rld1eUs3a2lqeS9NZnp5cVJPdjFFTU04QVlIQnVLZzRvUGZ0anozcjZYKzNG?=
- =?utf-8?B?K2d5VXV4UzNDaGxWYlFPVVplMEQ2NUwzbEp2YWVxY05odlhGMFN1b2ZuU3dV?=
- =?utf-8?B?T3hpcmdVT2xLRklyQXBXa3Rmb1ZtN1l2QXRzSDBoamxVdzk1VXBPWVF5ejlF?=
- =?utf-8?B?UmcvU0xIYkY2dzZuSVNycXJyL3gvWTVMMEVrN0drOWFCelBVdForSDNGZWho?=
- =?utf-8?B?cXlqbm9xWGdEcGZzSUR5TE83YkdnMTVkQVlwQ29UM21pZzgwU29VbW5HNzB6?=
- =?utf-8?B?Z1FST01ldVZsclMxbEE5SHcrWE1aeU92Rldvbm1TaVdQbzdteVlOay9DMStk?=
- =?utf-8?B?SXhzOXQreEc2NzJNUUhySUthWWEzZWJqTFVUaGd3eTJrdnZIK2htckxIaFNo?=
- =?utf-8?B?R2VEeSt4N01IZXFPT1JCczd4SjdJR0pKajdzNWR3aERINHYxR0ZvL2lIQnlz?=
- =?utf-8?B?ejRwRGU4T0JBU2JnRFF3dm9VbWNGK0hWcUJvRVNoZzJNc29YVVV5L0ZrY09l?=
- =?utf-8?B?cnd4WVU3SFBRYXcxY3BTb2Fzb0pWM0hJTWZVNlJ0dzNNNTdiM2wwdk9VVjF5?=
- =?utf-8?B?V0FGSXd5S2hTUEg1bExqZmhOVFhIVnlNaFBwQmR2dkZkNUFEK1p0QU9mMTFB?=
- =?utf-8?B?MWN6d0dFQUZManM4Zk9nZ2lQR25pKzZrWWJrL0Z0eTRLNFVua1ZCSGR2cHRH?=
- =?utf-8?B?cHVYU2ZheXFmSElWcHdVY1dvaU93Y0crQk9mTHlrQ0hhOC9MNTlRRXZBbU5o?=
- =?utf-8?B?K2w0U3g5bndmeWhWdHVHLzJ5UGJrQXR6OFc5SVBJWTA5TWNzWldVNTcrQThs?=
- =?utf-8?B?dERyWXVnMmthb3ZqbG5Cd2xhYlRBZFVlZlRHRUxuNThWN3FyMURoU1grWUts?=
- =?utf-8?B?UW92NEtQWnRSMlpYSW1pc1lXTlBkYjJKRVJJR0pkNE5zMjU5MW5DeUFGT081?=
- =?utf-8?B?V21xZ3ZlUDRvdWx3cmZVSUNHbi9JbHNnM3k5cnNWeGVwQmJkMXJGMDB0SXVv?=
- =?utf-8?B?WCsvdWlsWFhwb2RLSldBeGx5VkRIYktObGVHWXpUL3VXbmtZUWU1Zm9tTTdp?=
- =?utf-8?B?bWtEdFQ2dGZrZ3pPb05QMmoxY2Z6cFJFRXc2RlZ2dVRQdmdFbVdWYit6Yitu?=
- =?utf-8?B?bTVpK1JSVm5xMklMUFdENEFpbk5jUnphWWRyd0RiQnFHQmg4VEpQSElWZmdO?=
- =?utf-8?B?VXJic2dIUGVZcUFHK2V3VGVBTDY0aE5JQkZDRm1IUmtFcXdLVTI4NFlwVng2?=
- =?utf-8?B?UW9FSFVGdzNYcERrcENUYkhyWHFkUyt5dWM0YjZSSXdNdXlibWdvcFFqMElo?=
- =?utf-8?B?aGdTWERhRnJiS3crdXB3aUJvT001c0xsN2hwQWZaRHZnNWNRL2lKaTFiSFZ3?=
- =?utf-8?B?VkVBcUtCYzFOVWIvUXVnWVIyYkhzOXBoOVo0b2NPcFpST015ZTdzVFQxdVVZ?=
- =?utf-8?B?UWlzNmRHcnpzRXBpRWdZZlhBR1NuUWMyQ2h4RnJ1Q2xyRHRFdktKdFpwT0xR?=
- =?utf-8?B?NzBST0QzSWNsSGFRUzZLTGZCVUt5aWFpYVlwTG13T2hid1dHZkFOSFYrc1VO?=
- =?utf-8?B?VCtsa1RiVGNyQWd6bUVTOWtGNDFmSW5qSWtYckk3VWJJZXdENU0yajdCbGJM?=
- =?utf-8?B?WkU4Uk51Uy9PTUR6R3lKTWUyc2xud0tXTWJoQzJ5eHN1MjR0enNOeEtaVFVj?=
- =?utf-8?B?VTBkUlhwL0Y4VzUvOWxCUHpRNmtyaUtaVnMyRnZ4R2VwVmJLV2t1eFRYNHM5?=
- =?utf-8?Q?Hn1e/eavdQRUVw+FchQ9Y104MpLAKUIuXTheafq2xB3v?=
-X-OriginatorOrg: os.amperecomputing.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4fd6a98b-6cc0-4e8c-feab-08db0866651b
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR01MB6824.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2023 17:20:08.8137
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3bc2b170-fd94-476d-b0ce-4229bdc904a7
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: l+cBC5CwSuRMjl2E+RCxySElpfdqKOy0+tV6pFGNJ42vLY+486RAqTaAnSh4w4y/cU+8NHZPMwLvHZvcnHUeMd6kjizLeXVXyhMdmYyGnTmJ29RMuR0PMVmULFS72YBB
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR01MB7535
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
+Hi Baolu,
 
+On Sat, 4 Feb 2023 11:43:01 +0800, Baolu Lu <baolu.lu@linux.intel.com>
+wrote:
 
-On 03-02-2023 05:30 pm, Jean-Philippe Brucker wrote:
-> On Thu, Feb 02, 2023 at 04:40:53AM -0800, Ganapatrao Kulkarni wrote:
->> The current smmu-v3 driver does not enable PCI ATS for physical functions
->> of ATS capable End Points when booted in smmu bypass mode
->> (iommu.passthrough=1). This will not allow virtual functions to enable
->> ATS(even though EP supports it) while they are attached to a VM using
->> VFIO driver.
->>
->> This patch adds changes to enable ATS support for physical functions
->> in passthrough/bypass mode as well.
-> [...]
->> @@ -2453,8 +2458,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->>   
->>   	master->domain = smmu_domain;
->>   
->> -	if (smmu_domain->stage != ARM_SMMU_DOMAIN_BYPASS)
->> -		master->ats_enabled = arm_smmu_ats_supported(master);
->> +	master->ats_enabled = arm_smmu_ats_supported(master);
+> On 2023/2/4 6:07, Jacob Pan wrote:
+> > On platforms that do not support IOMMU Extended capability bit 0
+> > Page-walk Coherency, CPU caches are not snooped when IOMMU is accessing
+> > any translation structures. IOMMU access goes only directly to
+> > memory. Intel IOMMU code was missing a flush for the PASID table
+> > directory that resulted in the unrecoverable fault as shown below.  
 > 
-> I should have added a comment for this. Only found the reason in an old
-> cover letter [1]:
+> Thanks for the fix.
 > 
-> "When no translation stages are enabled (0b100), ATS Translation Requests
-> (and Translated traffic, if SMMU_CR0.ATSCHK == 1) are denied as though
-> EATS == 0b00; the actual value of the EATS field is IGNORED. Such a
-> Translation Request causes F_BAD_ATS_TREQ and Translated traffic causes
-> F_TRANSL_FORBIDDEN."
+> > This patch adds a clflush when activating a PASID table directory.
+> > There's no need to do clflush of the PASID directory pointer when we
+> > deactivate a context entry in that IOMMU hardware will not see the old
+> > PASID directory pointer after we clear the context entry.
+> > 
+> > [    0.555386] DMAR: DRHD: handling fault status reg 3
+> > [    0.555805] DMAR: [DMA Read NO_PASID] Request device [00:0d.2] fault
+> > addr 0x1026a4000 [fault reason 0x51] SM: Present bit in Directory Entry
+> > is clear [    0.556348] DMAR: Dump dmar1 table entries for IOVA
+> > 0x1026a4000 [    0.556348] DMAR: scalable mode root entry: hi
+> > 0x0000000102448001, low 0x0000000101b3e001 [    0.556348] DMAR: context
+> > entry: hi 0x0000000000000000, low 0x0000000101b4d401 [    0.556348]
+> > DMAR: pasid dir entry: 0x0000000101b4e001 [    0.556348] DMAR: pasid
+> > table entry[0]: 0x0000000000000109 [    0.556348] DMAR: pasid table
+> > entry[1]: 0x0000000000000001 [    0.556348] DMAR: pasid table entry[2]:
+> > 0x0000000000000000 [    0.556348] DMAR: pasid table entry[3]:
+> > 0x0000000000000000 [    0.556348] DMAR: pasid table entry[4]:
+> > 0x0000000000000000 [    0.556348] DMAR: pasid table entry[5]:
+> > 0x0000000000000000 [    0.556348] DMAR: pasid table entry[6]:
+> > 0x0000000000000000 [    0.556348] DMAR: pasid table entry[7]:
+> > 0x0000000000000000 [    0.556348] DMAR: PTE not present at level 4
+> > 
+> > Cc: <stable@vger.kernel.org>
+> > Reported-by: Sukumar Ghorai <sukumar.ghorai@intel.com>
+> > Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>  
 > 
-> (See 3.9.1.1 "Responses to ATS Translation Requests and Translated
-> transactions" and 5.2 "Stream Table Entry")
+> Add a Fixes tag so that people know how far this fix should be back
+> ported.
 > 
-> So I don't think we can enable ATS for bypass domains :/ The PF needs to
-> be in translated mode in that case.
+will do.
+> > ---
+> >   drivers/iommu/intel/iommu.c | 6 ++++++
+> >   1 file changed, 6 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> > index 59df7e42fd53..b4878c7ac008 100644
+> > --- a/drivers/iommu/intel/iommu.c
+> > +++ b/drivers/iommu/intel/iommu.c
+> > @@ -1976,6 +1976,12 @@ static int domain_context_mapping_one(struct
+> > dmar_domain *domain, pds = context_get_sm_pds(table);
+> >   		context->lo = (u64)virt_to_phys(table->table) |
+> >   				context_pdts(pds);
+> > +		/*
+> > +		 * Scalable-mode PASID directory pointer is not
+> > snooped if the
+> > +		 * coherent bit is not set.
+> > +		 */
+> > +		if (!ecap_coherent(iommu->ecap))
+> > +			clflush_cache_range(table->table, sizeof(void
+> > *));  
+> 
+> This isn't comprehensive. The clflush should be called whenever the
+> pasid directory table is allocated or updated.
+> 
+allocate a pasid table does not mean it gets used by iommu hw, not until it
+is programmed into context entry.
 
-Are you intending to say smmu-v3 driver/spec will not support ATS to a 
-VF, if it's PF is in bypass?
-
+> >   
+> >   		/* Setup the RID_PASID field: */
+> >   		context_set_sm_rid2pasid(context, PASID_RID2PASID);  
 > 
-> I can send a patch adding the comment next cycle.
-
-I am more keen to know, how we enable ATS to a VF of ATS capable EP when 
-it's PF is in bypass?
-or it is mandatory to have a PF also translated? then that should be 
-captured somewhere in documentation.
-
-
+> Best regards,
+> baolu
 > 
-> Thanks,
-> Jean
-> 
-> [1] https://lore.kernel.org/linux-iommu/20190409165245.26500-1-jean-philippe.brucker@arm.com/
-> 
+
 
 Thanks,
-Ganapat
+
+Jacob
