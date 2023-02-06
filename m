@@ -1,14 +1,14 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 13DE428E8
-	for <iommu@lists.linux.dev>; Mon,  6 Feb 2023 11:05:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0E04C28E8
+	for <iommu@lists.linux.dev>; Mon,  6 Feb 2023 11:20:51 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AFE9313D5;
-	Mon,  6 Feb 2023 03:06:19 -0800 (PST)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 828E5C14;
+	Mon,  6 Feb 2023 03:21:32 -0800 (PST)
 Received: from [10.57.89.151] (unknown [10.57.89.151])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C1EF43F8C6;
-	Mon,  6 Feb 2023 03:05:35 -0800 (PST)
-Message-ID: <e40cb8c2-1124-4002-75f5-671b4c758b5d@arm.com>
-Date: Mon, 6 Feb 2023 11:05:32 +0000
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8AD653F8C6;
+	Mon,  6 Feb 2023 03:20:48 -0800 (PST)
+Message-ID: <4d90da14-8c08-62e1-814f-ee14fab375f8@arm.com>
+Date: Mon, 6 Feb 2023 11:20:44 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -19,58 +19,104 @@ User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
 Subject: Re: [PATCH] iommu/vt-d: Avoid superfluous IOTLB tracking in lazy mode
 Content-Language: en-GB
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+To: Baolu Lu <baolu.lu@linux.intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>,
  LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
- Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>
+ Joerg Roedel <joro@8bytes.org>
 Cc: David Woodhouse <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>,
  "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
  stable@vger.kernel.org, Sanjay Kumar <sanjay.k.kumar@intel.com>
 References: <20230203230417.1287325-1-jacob.jun.pan@linux.intel.com>
+ <ef65f1cf-d04c-8c35-7144-d30504bf7a1c@linux.intel.com>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230203230417.1287325-1-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <ef65f1cf-d04c-8c35-7144-d30504bf7a1c@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2023-02-03 23:04, Jacob Pan wrote:
-> Intel IOMMU driver implements IOTLB flush queue with domain selective
-> or PASID selective invalidations. In this case there's no need to track
-> IOVA page range and sync IOTLBs, which may cause significant performance
-> hit.
+On 2023-02-04 06:32, Baolu Lu wrote:
+> On 2023/2/4 7:04, Jacob Pan wrote:
+>> Intel IOMMU driver implements IOTLB flush queue with domain selective
+>> or PASID selective invalidations. In this case there's no need to track
+>> IOVA page range and sync IOTLBs, which may cause significant performance
+>> hit.
 > 
-> This patch adds a check to avoid IOVA gather page and IOTLB sync for
-> the lazy path.
+> [Add cc Robin]
 > 
-> The performance difference on Sapphire Rapids 100Gb NIC is improved by
-> the following (as measured by iperf send):
+> If I understand this patch correctly, this might be caused by below
+> helper:
 > 
-> w/o this fix~48 Gbits/s. with this fix ~54 Gbits/s
+> /**
+>   * iommu_iotlb_gather_add_page - Gather for page-based TLB invalidation
+>   * @domain: IOMMU domain to be invalidated
+>   * @gather: TLB gather data
+>   * @iova: start of page to invalidate
+>   * @size: size of page to invalidate
+>   *
+>   * Helper for IOMMU drivers to build invalidation commands based on 
+> individual
+>   * pages, or with page size/table level hints which cannot be gathered 
+> if they
+>   * differ.
+>   */
+> static inline void iommu_iotlb_gather_add_page(struct iommu_domain *domain,
+>                                                 struct 
+> iommu_iotlb_gather *gather,
+>                                                 unsigned long iova, 
+> size_t size)
+> {
+>          /*
+>           * If the new page is disjoint from the current range or is 
+> mapped at
+>           * a different granularity, then sync the TLB so that the gather
+>           * structure can be rewritten.
+>           */
+>          if ((gather->pgsize && gather->pgsize != size) ||
+>              iommu_iotlb_gather_is_disjoint(gather, iova, size))
+>                  iommu_iotlb_sync(domain, gather);
+> 
+>          gather->pgsize = size;
+>          iommu_iotlb_gather_add_range(gather, iova, size);
+> }
+> 
+> As the comments for iommu_iotlb_gather_is_disjoint() says,
+> 
+> "...For many IOMMUs, flushing the IOMMU in this case is better
+>   than merging the two, which might lead to unnecessary invalidations.
+>   ..."
+> 
+> So, perhaps the right fix for this performance issue is to add
+> 
+>      if (!gather->queued)
+> 
+> in iommu_iotlb_gather_add_page() or iommu_iotlb_gather_is_disjoint()?
+> It should benefit other arch's as well.
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+The iotlb_gather helpers are really just that - little tools to help 
+drivers with various common iotlb_gather accounting patterns. The 
+decision whether to bother with that accounting at all should really 
+come beforehand, and whether a driver supports flush queues is 
+orthogonal to whether it uses any particular gather helper(s) or not, so 
+I think the patch as-is is correct.
 
-> Cc: <stable@vger.kernel.org>
-> Tested-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
-> Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> ---
->   drivers/iommu/intel/iommu.c | 8 +++++++-
->   1 file changed, 7 insertions(+), 1 deletion(-)
+>> This patch adds a check to avoid IOVA gather page and IOTLB sync for
+>> the lazy path.
+>>
+>> The performance difference on Sapphire Rapids 100Gb NIC is improved by
+>> the following (as measured by iperf send):
 > 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index b4878c7ac008..705a1c66691a 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -4352,7 +4352,13 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
->   	if (dmar_domain->max_addr == iova + size)
->   		dmar_domain->max_addr = iova;
->   
-> -	iommu_iotlb_gather_add_page(domain, gather, iova, size);
-> +	/*
-> +	 * We do not use page-selective IOTLB invalidation in flush queue,
-> +	 * There is no need to track page and sync iotlb. Domain-selective or
-> +	 * PASID-selective validation are used in the flush queue.
-> +	 */
-> +	if (!gather->queued)
-> +		iommu_iotlb_gather_add_page(domain, gather, iova, size);
->   
->   	return size;
->   }
+> Which test case have you done? Post the real data if you have any.
+> 
+>>
+>> w/o this fix~48 Gbits/s. with this fix ~54 Gbits/s
+>>
+>> Cc: <stable@vger.kernel.org>
+> 
+> Again, add a Fixes tag so that people know how far this fix should be
+> back ported.
+
+Note that the overall issue probably dates back to the initial iommu-dma 
+conversion, but if you think it's important enough to go back beyond 
+5.15 when gather->queued was introduced, that'll need a different fix.
+
+Cheers,
+Robin.
