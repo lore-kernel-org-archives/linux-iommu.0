@@ -1,122 +1,106 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0E04C28E8
-	for <iommu@lists.linux.dev>; Mon,  6 Feb 2023 11:20:51 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 828E5C14;
-	Mon,  6 Feb 2023 03:21:32 -0800 (PST)
-Received: from [10.57.89.151] (unknown [10.57.89.151])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8AD653F8C6;
-	Mon,  6 Feb 2023 03:20:48 -0800 (PST)
-Message-ID: <4d90da14-8c08-62e1-814f-ee14fab375f8@arm.com>
-Date: Mon, 6 Feb 2023 11:20:44 +0000
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3A1228E8
+	for <iommu@lists.linux.dev>; Mon,  6 Feb 2023 11:24:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=6p5UcUVJMB6FcC7LDxPnes2LOQaJUS8z6IEOS3X783s=; b=Ea7S5G84aDpNMvL/Suxi9XIvmP
+	C3d8gqapGDHgOfKkaP3NfNlfpuswBdZ+/65aPGo8Ipfi4ygRk8xZ7E1lb+BYSVGzxaS2sN48Bj+uV
+	7EcpbhbKtu3+Vy6v0rx38wmRy2zhh9BHTpbWgMb6B1VUojynlRhGLZwyBBeJ97ZTbSyUL+nN/9cdA
+	g3KAlOkdL6bK9I8Ru0c8Xd4so95LlWcA9jGTKHdvLf99ddC9qSvsG4IxnKgYDCF/ShOfXC3/ZQNuz
+	+ltBvaSkLaaFq/cirv5PAA/Jvc9EmJp6O0MLa9hEeS1tkPMdnYzaGXwcTfJ4KZOOty5sepN3i9T7J
+	b/03MOXw==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+	by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1pOzbS-00Gi9E-Dh; Mon, 06 Feb 2023 11:24:06 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id C110E30013F;
+	Mon,  6 Feb 2023 12:24:00 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+	id 8C4252CFF4E16; Mon,  6 Feb 2023 12:24:00 +0100 (CET)
+Date: Mon, 6 Feb 2023 12:24:00 +0100
+From: Peter Zijlstra <peterz@infradead.org>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>,
+	Jonathan Corbet <corbet@lwn.net>, Will Deacon <will@kernel.org>,
+	Boqun Feng <boqun.feng@gmail.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>, dennis@kernel.org,
+	Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@linux.com>,
+	Heiko Carstens <hca@linux.ibm.com>, gor@linux.ibm.com,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	borntraeger@linux.ibm.com, Sven Schnelle <svens@linux.ibm.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	"H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>,
+	suravee.suthikulpanit@amd.com, Robin Murphy <robin.murphy@arm.com>,
+	dwmw2@infradead.org, Baolu Lu <baolu.lu@linux.intel.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	"David S . Miller" <davem@davemloft.net>,
+	Pekka Enberg <penberg@kernel.org>,
+	David Rientjes <rientjes@google.com>,
+	Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Vlastimil Babka <vbabka@suse.cz>,
+	Roman Gushchin <roman.gushchin@linux.dev>,
+	Hyeonggon Yoo <42.hyeyoo@gmail.com>, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+	linux-s390@vger.kernel.org, iommu@lists.linux.dev,
+	Linux-Arch <linux-arch@vger.kernel.org>,
+	linux-crypto@vger.kernel.org
+Subject: Re: [PATCH v2 05/10] percpu: Wire up cmpxchg128
+Message-ID: <Y+DjULnIxcPU/rtp@hirez.programming.kicks-ass.net>
+References: <20230202145030.223740842@infradead.org>
+ <20230202152655.494373332@infradead.org>
+ <24007667-1ff3-4c86-9c17-a361c3f9f072@app.fastmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH] iommu/vt-d: Avoid superfluous IOTLB tracking in lazy mode
-Content-Language: en-GB
-To: Baolu Lu <baolu.lu@linux.intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>
-Cc: David Woodhouse <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>,
- "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
- stable@vger.kernel.org, Sanjay Kumar <sanjay.k.kumar@intel.com>
-References: <20230203230417.1287325-1-jacob.jun.pan@linux.intel.com>
- <ef65f1cf-d04c-8c35-7144-d30504bf7a1c@linux.intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ef65f1cf-d04c-8c35-7144-d30504bf7a1c@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <24007667-1ff3-4c86-9c17-a361c3f9f072@app.fastmail.com>
 
-On 2023-02-04 06:32, Baolu Lu wrote:
-> On 2023/2/4 7:04, Jacob Pan wrote:
->> Intel IOMMU driver implements IOTLB flush queue with domain selective
->> or PASID selective invalidations. In this case there's no need to track
->> IOVA page range and sync IOTLBs, which may cause significant performance
->> hit.
+On Fri, Feb 03, 2023 at 06:25:04PM +0100, Arnd Bergmann wrote:
+> On Thu, Feb 2, 2023, at 15:50, Peter Zijlstra wrote:
+> > In order to replace cmpxchg_double() with the newly minted
+> > cmpxchg128() family of functions, wire it up in this_cpu_cmpxchg().
+> >
+> > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 > 
-> [Add cc Robin]
+> I commented on this in the previous version but never got any
+> reply from you:
 > 
-> If I understand this patch correctly, this might be caused by below
-> helper:
-> 
-> /**
->   * iommu_iotlb_gather_add_page - Gather for page-based TLB invalidation
->   * @domain: IOMMU domain to be invalidated
->   * @gather: TLB gather data
->   * @iova: start of page to invalidate
->   * @size: size of page to invalidate
->   *
->   * Helper for IOMMU drivers to build invalidation commands based on 
-> individual
->   * pages, or with page size/table level hints which cannot be gathered 
-> if they
->   * differ.
->   */
-> static inline void iommu_iotlb_gather_add_page(struct iommu_domain *domain,
->                                                 struct 
-> iommu_iotlb_gather *gather,
->                                                 unsigned long iova, 
-> size_t size)
-> {
->          /*
->           * If the new page is disjoint from the current range or is 
-> mapped at
->           * a different granularity, then sync the TLB so that the gather
->           * structure can be rewritten.
->           */
->          if ((gather->pgsize && gather->pgsize != size) ||
->              iommu_iotlb_gather_is_disjoint(gather, iova, size))
->                  iommu_iotlb_sync(domain, gather);
-> 
->          gather->pgsize = size;
->          iommu_iotlb_gather_add_range(gather, iova, size);
-> }
-> 
-> As the comments for iommu_iotlb_gather_is_disjoint() says,
-> 
-> "...For many IOMMUs, flushing the IOMMU in this case is better
->   than merging the two, which might lead to unnecessary invalidations.
->   ..."
-> 
-> So, perhaps the right fix for this performance issue is to add
-> 
->      if (!gather->queued)
-> 
-> in iommu_iotlb_gather_add_page() or iommu_iotlb_gather_is_disjoint()?
-> It should benefit other arch's as well.
+> https://lore.kernel.org/all/1d88ba9f-5541-4b67-9cc8-a361eef36547@app.fastmail.com/
 
-The iotlb_gather helpers are really just that - little tools to help 
-drivers with various common iotlb_gather accounting patterns. The 
-decision whether to bother with that accounting at all should really 
-come beforehand, and whether a driver supports flush queues is 
-orthogonal to whether it uses any particular gather helper(s) or not, so 
-I think the patch as-is is correct.
+Sorry, seem to have missed that :/
 
->> This patch adds a check to avoid IOVA gather page and IOTLB sync for
->> the lazy path.
->>
->> The performance difference on Sapphire Rapids 100Gb NIC is improved by
->> the following (as measured by iperf send):
+> Unless I have misunderstood what you are doing, my concerns are
+> still the same:
 > 
-> Which test case have you done? Post the real data if you have any.
+> >  #define this_cpu_cmpxchg(pcp, oval, nval) \
+> > -	__pcpu_size_call_return2(this_cpu_cmpxchg_, pcp, oval, nval)
+> > +	__pcpu_size16_call_return2(this_cpu_cmpxchg_, pcp, oval, nval)
+> >  #define this_cpu_cmpxchg_double(pcp1, pcp2, oval1, oval2, nval1, 
+> > nval2) \
+> >  	__pcpu_double_call_return_bool(this_cpu_cmpxchg_double_, pcp1, pcp2, 
+> > oval1, oval2, nval1, nval2)
 > 
->>
->> w/o this fix~48 Gbits/s. with this fix ~54 Gbits/s
->>
->> Cc: <stable@vger.kernel.org>
+> Having a variable-length this_cpu_cmpxchg() that turns into cmpxchg128()
+> and cmpxchg64() even on CPUs where this traps (!X86_FEATURE_CX16) seems
+> like a bad design to me.
 > 
-> Again, add a Fixes tag so that people know how far this fix should be
-> back ported.
+> I would much prefer fixed-length this_cpu_cmpxchg64()/this_cpu_cmpxchg128()
+> calls that never trap but fall back to the generic version on CPUs that
+> are lacking the atomics.
 
-Note that the overall issue probably dates back to the initial iommu-dma 
-conversion, but if you think it's important enough to go back beyond 
-5.15 when gather->queued was introduced, that'll need a different fix.
-
-Cheers,
-Robin.
+You're thinking acidental usage etc..? Lemme see what I can do.
