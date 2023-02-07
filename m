@@ -1,214 +1,225 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AC6715BD;
-	Tue,  7 Feb 2023 02:38:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675737494; x=1707273494;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=LK26NHBLsTO57qFqZ4Hn7QfcMwDhQvXbHLdiVS55djA=;
-  b=f2QIftuIT6HZay+rdRy4cQsv5Wz8P10EcCe0mTegkZpCnw5HphJDRK42
-   ZL9RplsB3R70TVHY/9mUzgbAAevA4NHXv7k0xv5U6LRCc8MfwDn0onYTc
-   dC721V2+eWndt0KSBM7N7X35e8DtlSJUQvzdNMmwiRQ0pbnDtY55o1xra
-   UTs5oJz8hyYRo3FI+HaY3n45RzRAYxkkLQtfXVOrAk9hYkQZib4O1VA5a
-   FnLrmmuNOYYr0ouWRs+aVocqYGTFCPTwJVBi2AdxI3f9PqElHxPMmHHzg
-   3K0n/P1bkOVitVgB4ECTVCCRuDYq7W/NIa6+lqQySVGgV6uemlKhYMpDD
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="415603161"
-X-IronPort-AV: E=Sophos;i="5.97,278,1669104000"; 
-   d="scan'208";a="415603161"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2023 18:38:07 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="735388715"
-X-IronPort-AV: E=Sophos;i="5.97,278,1669104000"; 
-   d="scan'208";a="735388715"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmsmga004.fm.intel.com with ESMTP; 06 Feb 2023 18:38:07 -0800
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Mon, 6 Feb 2023 18:38:06 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Mon, 6 Feb 2023 18:38:06 -0800
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Mon, 6 Feb 2023 18:38:06 -0800
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.103)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Mon, 6 Feb 2023 18:38:06 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oN0CGxr0BRqNycd3FEwfzUoTc/HCS97G2NdkivH7h6qk5zwdusi6kDeRSE7/hvs5Ub/+Ogs9ispQcbWlhbyVSxYnyBENbarrlLk8lSoBSfUCUCR126apjOiw6lA2Rn7gLbfrDYYfXZRd2MNs2izVYzWoUyAwX78rYkpdW4kR8h7RyUJ9/C/Zllk7cg0qmDyMjL1x1+lZvLNPSGktQt2wL+ajPqjV0XKlp5GZNUCmcyhKTxyXKYHUaEpshmtzUQzwgiu1X+n2zoJYFL0miNRC2fVm/dCSDliZ/OgYX0kSYgcOkY6+U856xidKvt4M/W3gQmuZd1FqHDtF7brYXzGbdw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XBqoVPVs1ycYGzIzErX/HnahQlowJx7Z/+05wztH6iw=;
- b=MoaWgqvoKeG1z92CD9OW/QR7yqLHlIqZIBnR85Xk9sVQk/2940fbjf8Gt7Q8DTG+TDnaiFuXq/Agld9IHjXapovgqVFmhobInXy5MwwEbApIYnoWhRaUaYox8et3+T8Grqz45+O45w/U69sAulVY/PKKFWd1pJybq1UFzgCLM/OYfmiXJMh7Td/mCDNPMIT2V/sUpMnL8Y6O+HVJNMWgOo7n0mRlkzq3mW7UgRNS8ufnFmBNmZw0IpEyyBnYhFC/fnsAKrW/S/AneDYtfiijH9xKwmhj4YCobVLKdbuOiXvjhM7V/hWYADU2mmU9JBOJ3112SSe9Ppxax2L9c+i7Nw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from MW5PR11MB5881.namprd11.prod.outlook.com (2603:10b6:303:19d::14)
- by MW5PR11MB5882.namprd11.prod.outlook.com (2603:10b6:303:19e::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.27; Tue, 7 Feb
- 2023 02:38:05 +0000
-Received: from MW5PR11MB5881.namprd11.prod.outlook.com
- ([fe80::d1f4:4d52:6667:5479]) by MW5PR11MB5881.namprd11.prod.outlook.com
- ([fe80::d1f4:4d52:6667:5479%6]) with mapi id 15.20.6064.027; Tue, 7 Feb 2023
- 02:38:05 +0000
-Message-ID: <c06440b2-1ce6-b2c2-59b7-6ccdfd8b5ab4@intel.com>
-Date: Tue, 7 Feb 2023 10:37:51 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.7.1
-Subject: Re: [RFC PATCH 15/45] KVM: arm64: pkvm: Add
- __pkvm_host_share/unshare_dma()
-Content-Language: en-US
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-CC: <maz@kernel.org>, <catalin.marinas@arm.com>, <will@kernel.org>,
-	<joro@8bytes.org>, <robin.murphy@arm.com>, <james.morse@arm.com>,
-	<suzuki.poulose@arm.com>, <oliver.upton@linux.dev>, <yuzenghui@huawei.com>,
-	<smostafa@google.com>, <dbrazdil@google.com>, <ryan.roberts@arm.com>,
-	<linux-arm-kernel@lists.infradead.org>, <kvmarm@lists.linux.dev>,
-	<iommu@lists.linux.dev>
-References: <20230201125328.2186498-1-jean-philippe@linaro.org>
- <20230201125328.2186498-16-jean-philippe@linaro.org>
- <dec54922-37cf-89df-477e-eed1e9461db3@intel.com> <Y+Du0fZetGVdPVW2@myrica>
-From: tina.zhang <tina.zhang@intel.com>
-In-Reply-To: <Y+Du0fZetGVdPVW2@myrica>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SG2PR02CA0041.apcprd02.prod.outlook.com
- (2603:1096:3:18::29) To MW5PR11MB5881.namprd11.prod.outlook.com
- (2603:10b6:303:19d::14)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40C7317CB
+	for <iommu@lists.linux.dev>; Tue,  7 Feb 2023 03:33:29 +0000 (UTC)
+Received: by mail-pj1-f42.google.com with SMTP id bg10-20020a17090b0d8a00b00230c7f312d4so4125532pjb.3
+        for <iommu@lists.linux.dev>; Mon, 06 Feb 2023 19:33:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=jZ+4hAwmP/Wq7HMXGBwWwMQ58wAzyvKIfT8l5MVctqA=;
+        b=GEvRbWsdrNSjNTj8GEescS6JrVW0Ycs6jHwPtsXuvZCNQqQ8fjp4Y/bEcCjfGuVfvC
+         o1tY+Fq8A5guU8wf5aqYziykIYyFFLojmBqUpuZszBewyLlfUFLluBbeYphG1QlPflT7
+         MbPiavJcyehwbCxK9Wf89KafdwV59QGm9sdELqOAkPg+jqT54HmyTID2PZphVfKb7uID
+         NTsvPZY+1vPd2ewKh0pmoMSNESrVwP6vlJn0DPYV32uB25cppCz7b9CD2sO5XzYaAgQX
+         oMZkK64uGSkTw/+ce8QkuRAhh86nb8fPnfwgGLsM05bC0/bsyn4VHQEoHXsObPaVVGxR
+         Z6ig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=jZ+4hAwmP/Wq7HMXGBwWwMQ58wAzyvKIfT8l5MVctqA=;
+        b=FiVL/Fp0yQvV4OfCepqS8eH/vFz73nJPUzgosepOxq5KD6tdH4SLfIA52tT4Yy547J
+         ECHxGw0M2p4gET8s3Ss6RI+8GhJog2QxIV1oGttfxsazeqocbnfWHlLJ+fo19slkROi1
+         Yf0gHgOxUPjxWempy6iW9zs84aPYREz7gZ3YujafWFxFOfa3WhDQWAz9P3tgHs4jFnL1
+         F+jPLW8OOkSjomugmnIbKFeVqEw9OtaERHccQ8f1hroIiqLc53ztTdmdS4p+UOrT9iYy
+         x8u5q8U0Uo9ra83E8aTcpC88bw8rwZvRyRdTE7MNJeibyyyPFKMWGBcM+SUmVknim6Ha
+         T7uQ==
+X-Gm-Message-State: AO0yUKVkh7gvb2neBgWCBQ99KE1kDPZAS2quxnGHEbzASm74bOiFy9CL
+	lT6ylr1tUkuv1LidsOylqlP9mvRlpj7ingyxh+rrQA==
+X-Google-Smtp-Source: AK7set8/tdh3z8+hwGRprHytiFQk4NEtrGhWl5Yoj/Zs4oIXQ4+pkldjQzMwuNY1PSyLGTcyeZ30Y0LRa22tyDhdiPw=
+X-Received: by 2002:a17:902:714b:b0:194:6253:d685 with SMTP id
+ u11-20020a170902714b00b001946253d685mr332680plm.3.1675740808337; Mon, 06 Feb
+ 2023 19:33:28 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MW5PR11MB5881:EE_|MW5PR11MB5882:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6e24bc82-870c-47b3-5d8e-08db08b456df
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: V2wNmk6Elmc45KvBFYxCmyjwMnEF+RlNgOiMELpP88t2ql/IDBFJMRdUWu8xQLosAf7shg3zfZ5/xoEViiKIbs0FWMlpE2mWtC1FI60FIq7HnQBFzgQWSSKGPp4AY1n/5UK8eQxfG/XS/pFMrH4YXZeW6hU8bquj9OAf/7rrDk7hU4yx/ZE4x8kRDe0VSdPe2kGPmtjVjDhWZurrDYkp4SnvO7IoSTLmb9/UGPkiiKVsJmMK5NdUaq1hq63JdqwIg7A3tM1a5ChhNdQKlKoqKrHeN+rDgmLJVibeRyNemF4cBBrrS42uyBVyz4iPSy+ZlRlmXm4P0frc2WOWqLC1WACn2e6e5RdH6kC4hw3UmLBd3Odh+XWRiiB5Mzydbk87om87z1gJDzzhNrAIA/hunXpHMDNxPHu6DbTfQJzWn0KLUrA9dsAkenHGZrhP1GUOFpsvkgJU38lCGSdwSwx1g4JemTtZPyL2mAdGFGLSQ+6b3DsAQku3c4QVYW60iJ1oIGGaPugzXLCB8joiAfova20WD/e+kvaXK+/TBRiM5tmKt6Qsu/zi7wxi/0uxRNWSDadPv5gleMFWsqQini81rNNMQcvfolc0YIFL4oihZofyVcZJHznkj2FqHC4014SQ5Vxe7iYc5P8G589m2UBY+XhGv1mXeiTwrFxGzkBdOVZB5IYmWrOD0EuZLkZsmkyBSubISgd4U6tpsXTLjqCzM7hDiQzc76ZgQSCMXLm92mU=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW5PR11MB5881.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(39860400002)(136003)(396003)(346002)(366004)(376002)(451199018)(7416002)(53546011)(41300700001)(186003)(26005)(66556008)(38100700002)(2616005)(6512007)(6666004)(83380400001)(66946007)(6916009)(8936002)(31696002)(316002)(4326008)(36756003)(86362001)(6506007)(478600001)(82960400001)(66476007)(6486002)(5660300002)(8676002)(31686004)(2906002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cGQxZCs2NCtBRjRWSklac1ZDQWFEaEsrcEV0Ulpha3ZSTGJDZHVnb0QrbmJy?=
- =?utf-8?B?ZXdvZWZVV1BvVHV2UC9RZWJJLzVpKzcwaDVtN1IzdWErakpZdWFSVXJ6RnA1?=
- =?utf-8?B?YzUxSXp6UlEzSFVXaSsxTVlyaDVla09YMkZsUW1MUzhqcDNXalV6eTNtQ0FS?=
- =?utf-8?B?OExpUHVRYlNocFIxMjJiWGp5Vy8xazZ4aFBrNjlCMGNtZ2pDUXIzRDhKTDFG?=
- =?utf-8?B?NFFod1h4aHorbHVQWUs1aitZUEFVb3RwazREVzRLZ2NRUHladzdFSVlmM3FM?=
- =?utf-8?B?VmJBWVJ3ZGU1WVpaTHZGazlUVEVXVlFqYzN6akkwdkRCUjZZUXdNNVNHZnhS?=
- =?utf-8?B?SXp6WTFadmNyMU1JdUFrVTl3UmNOMFNtVHM5VFhFMFhJbDg0Z3N0TEZmT3or?=
- =?utf-8?B?Y2hHdi8rZjFJQ0xZWDFKbHdPNUZLTWJWQnVHMlA3d3k4dTFqNnhzL2QxbGxE?=
- =?utf-8?B?QTNmbThUV3ZRdStwRjZFTEI2NzNkOW8wZit0ZWlQTFF2TzUyNnZNUEJ3Tng2?=
- =?utf-8?B?dGQ0UjU2OTArdnBmSW96cFFyR2c4Uk1kajczdE5Fc0RBQUFrTVVteEphTjd4?=
- =?utf-8?B?SFFybHVod21DWTlTOENDQkJ3eUZXek5WdndqVWpNcnJSNmxZL0ZLNXJRYUph?=
- =?utf-8?B?SDhvZjUyWVd1c2pyZnBNSWdLUXBSRmVZNlFZVjdwMmY1RTJZMVVhTmxpakZS?=
- =?utf-8?B?Z1BlS2w4aVVIL216c2I1VDlzYzBLMHJvc2JnbERSRlJ1bDFiU0x3YkRlR1p4?=
- =?utf-8?B?cDIzQXBoS0JQTXhkQTdTMEVremF4Y0haWkpjYjRqeWZ6aE53a3pEdDlxZWNG?=
- =?utf-8?B?TnVZbVlIUFNUM3ZJN1Z4Q0tOa3JqajJ5NVViQzZqaEVZUXVvR0RYN3Jvemtm?=
- =?utf-8?B?RkxIRm9XRXFlSXEvelNKQzRUbWtGNFlYalJjVTBYQTl1Z3RkNEsycU5zQVM1?=
- =?utf-8?B?LzlXcGFDTExUakxQZTNjUEY2LytBZC90M2JlbzV0ZUpza0FJUkVmWkRVRVh2?=
- =?utf-8?B?Wk9EZXpMT3VTVTBIdTA3L0tQWFdWVUdzMDRXd1NUWlRIbUpkVVErUGdSTmpo?=
- =?utf-8?B?OGFBTFhyS01YYVhrUllPNTA1WVg5RmN1TzZyMmxNbndmQktmTXRtbnZyQTY3?=
- =?utf-8?B?cVVWVk9rOHNDK29sbG9jSkpFWFZrbzFWeFcrM3ZSWFdQUjAzTE4wbzREYUJX?=
- =?utf-8?B?Rzc5ZDR6dWtncVhBYXVSMW1pRGlPMmoxL0hkYnBycFllOU9TQm1jZXNSc0xU?=
- =?utf-8?B?c3ZZbHB0cUhxbVZrMEdXa25ScmJtOVRzUitTdERqRzk1TU9PZjh5YUU4dmho?=
- =?utf-8?B?K0hhWjRheHpQT1l0NkhVaHpzcHNaSU9JVEs0Z0I0TUFJTEJxTW5MeFFKYUQw?=
- =?utf-8?B?MEJ5YVJvdmxlUStHMDRRSWR1eER2dWpwNDQydnlBSnllVmxMQ1NBSjVGemho?=
- =?utf-8?B?dURhZ1oySGRVc2JJOHh1Ny9zZnB5aVRwaUJxNjc4WThlYWRBRUgra1pnQU1m?=
- =?utf-8?B?SXpFTFFabHBiLzQ2TlRJamg1UXpNMXdKQVZXVEFOcFZ3d1Eyb09Dd09hTi9q?=
- =?utf-8?B?UjhVOFllZG1GMjMxcW9SQ2pVK20wVXZXSmZsOFBNa0VQak1CUmtTTTR3MXY1?=
- =?utf-8?B?ckIwSU1Bb3IveDJPYUVJM1VPZzNxOS9TLzI3eFhCeHJwTWRlVEJ4TkxLUnB5?=
- =?utf-8?B?ZjNSc3QzZlo1NldyRU0yZ214M0k0Q2FZUk5ta01MbW80REhKZm9kcnJ4NGU5?=
- =?utf-8?B?TmlxSEdZV0FVZmEwb05qYkNEcFpBSUd5dFJBM0kyWWVObmk2NXF3YU1vV3JW?=
- =?utf-8?B?YmRDOTNKT0JZZWJ3cGVGYTJYQnVzNFAzUDJ6L0VLUzNRbTlwY0dHbTBaUFNV?=
- =?utf-8?B?ay9KS0RhZ2IxWklyeGZFNlg1VDNyNllzYS9jYzRpS3N0WGYyVXlYNGVZRmFF?=
- =?utf-8?B?K1ZPWmp3eUlTcEtXZ2p4UzRlSFBvMktQdUJMcnVUL1RwU0I3OG1PM2taNUQy?=
- =?utf-8?B?Rmw2U1MyYlFoT3lHRWtVeGtPelR5ajZsbDZRYjJvek1Ea0M5N3pKOGxrdFRF?=
- =?utf-8?B?MS9Pb3pZckxwbHVKaDBxYlpkaXFPbmhIeGMxQnk5UjBXdHBJeGNtMk4rbCsz?=
- =?utf-8?Q?LTMIr/EkbP2mNI1iJIb363q2t?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6e24bc82-870c-47b3-5d8e-08db08b456df
-X-MS-Exchange-CrossTenant-AuthSource: MW5PR11MB5881.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2023 02:38:05.0795
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pvnerzut9cVVw+8DJqMIMHqbHPhCT1exBEJ1/zvX54G17EK/PKpcPJRkXwO8o5fm9CAgLOosyiJfwmxC3giX9w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR11MB5882
-X-OriginatorOrg: intel.com
+References: <CGME20221103195201eucas1p2a6ec2df41ebac3d9ccbb0b252c2cad34@eucas1p2.samsung.com>
+ <20221103195154.21495-1-semen.protsenko@linaro.org> <a7d9cd18-a328-209c-c89f-afdcb7db3eb0@samsung.com>
+ <b7ad6444-e7d2-1150-6134-3dae8129dcdb@samsung.com> <CAPLW+4=Y6qZG2XjJR_BkX-ar4GWdETKO1tteJjfbxVc664e4Kg@mail.gmail.com>
+In-Reply-To: <CAPLW+4=Y6qZG2XjJR_BkX-ar4GWdETKO1tteJjfbxVc664e4Kg@mail.gmail.com>
+From: Saravana Kannan <saravanak@google.com>
+Date: Mon, 6 Feb 2023 19:32:51 -0800
+Message-ID: <CAGETcx9ApZFvKjEaxvvgsoHDzOq06ZiROZ5npYt+suNdE4KWDg@mail.gmail.com>
+Subject: Re: [PATCH v2 0/6] iommu/exynos: Convert to a module
+To: Sam Protsenko <semen.protsenko@linaro.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Sumit Semwal <sumit.semwal@linaro.org>, Alim Akhtar <alim.akhtar@samsung.com>, 
+	Janghyuck Kim <janghyuck.kim@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, 
+	Daniel Mentz <danielmentz@google.com>, David Virag <virag.david003@gmail.com>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-samsung-soc@vger.kernel.org, Rob Herring <robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-Hi Jean,
+On Fri, Nov 11, 2022 at 5:30 AM Sam Protsenko
+<semen.protsenko@linaro.org> wrote:
+>
+> On Thu, 10 Nov 2022 at 15:36, Marek Szyprowski <m.szyprowski@samsung.com> wrote:
+>
+> [snip]
 
-On 2/6/23 20:13, Jean-Philippe Brucker wrote:
-> Hi Tina,
-> 
-> On Sat, Feb 04, 2023 at 08:51:38PM +0800, tina.zhang wrote:
->>> +int __pkvm_host_share_dma(phys_addr_t phys_addr, size_t size, bool is_ram)
->>> +{
->>> +	int i;
->>> +	int ret;
->>> +	size_t nr_pages = size >> PAGE_SHIFT;
->>> +
->>> +	if (WARN_ON(!PAGE_ALIGNED(phys_addr | size)))
->>> +		return -EINVAL;
->>> +
->>> +	host_lock_component();
->>> +	hyp_lock_component();
->>> +
->>> +	for (i = 0; i < nr_pages; i++) {
->>> +		ret = __pkvm_host_share_dma_page(phys_addr + i * PAGE_SIZE,
->>> +						 is_ram);
->> Hi Jean,
->>
->> I'm not familiar with ARM arch. Just out of curiosity. If pKVM-ARM populates
->> the host stage-2 page table lazily, would there be a case that device driver
->> in host triggers DMA with pages which have not been mapped to the host
->> stage-2 page table yet? How do we handle this situation?
-> 
-> It's possible that the host asks the hypervisor to map on the IOMMU side
-> a page that is not yet mapped on the CPU side. In general before calling
-> map_pages() the host zero-initializes the page, triggering a page fault
-> which creates the mapping, so this case is rare. But if it happens,
-> __pkvm_host_share_dma() will create the CPU stage-2 mapping:
-> 
->   __pkvm_host_share_dma()
->    do_share()
->     host_initiate_share()
->      host_stage2_idmap_locked()
-> 
-> which creates a valid identity mapping, along with the ownership
-> information PVKM_PAGE_SHARED_OWNED. That ownership info is really all we
-> need here, to prevent future donations to guests or hyp. Since the SMMU
-> side uses separate stage-2 page tables, we don't actually need to create a
-> valid mapping on the CPU side yet, that's just how pKVM's mem_protect
-> currently works. But I don't think it hurts to create the mapping right
-> away instead of waiting for the CPU page fault, because the host will
-> likely access the page soon to read what the device wrote there.
-Right. I was thinking if stage-2 lazy mapping method is being adopted, 
-whether there would be a case that the check_share() couldn't pass, as 
-the pte might not be valid at that time. After checking the logic, I see 
-we check kvm_pte_valid(pte) as well as the value of pte. So I guess the 
-check_share() can return successfully even w/o having triggered host CPU 
-page fault. Thanks for the elaborating.
+Hi Marek and Sam,
 
-Regards,
--Tina
+I'm replying to both of your comments in this email.
 
-> 
-> Thanks,
-> Jean
-> 
+> > I've finally made Exynos IOMMU working as a module on Exynos5433 based
+> > TM2e board. It looks that this will be a bit longer journey that I've
+> > initially thought. I've posted a simple update of the fix for the driver
+> > initialization sequence, but the real problem is in the platform driver
+> > framework and OF helpers.
+> >
+> > Basically to get it working as a module I had to apply the following
+> > changes:
+> >
+> > diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+> > index 3dda62503102..f6921f5fcab6 100644
+> > --- a/drivers/base/dd.c
+> > +++ b/drivers/base/dd.c
+> > @@ -257,7 +257,7 @@ static int deferred_devs_show(struct seq_file *s,
+> > void *data)
+> >   DEFINE_SHOW_ATTRIBUTE(deferred_devs);
+> >
+> >   #ifdef CONFIG_MODULES
+> > -int driver_deferred_probe_timeout = 10;
+> > +int driver_deferred_probe_timeout = 30;
+> >   #else
+> >   int driver_deferred_probe_timeout;
+> >   #endif
+> > diff --git a/drivers/of/property.c b/drivers/of/property.c
+> > index 967f79b59016..e5df6672fee6 100644
+> > --- a/drivers/of/property.c
+> > +++ b/drivers/of/property.c
+> > @@ -1384,7 +1384,7 @@ static struct device_node *parse_interrupts(struct
+> > device_node *np,
+> >   static const struct supplier_bindings of_supplier_bindings[] = {
+> >          { .parse_prop = parse_clocks, },
+> >          { .parse_prop = parse_interconnects, },
+> > -       { .parse_prop = parse_iommus, .optional = true, },
+> > +       { .parse_prop = parse_iommus, },
+> >          { .parse_prop = parse_iommu_maps, .optional = true, },
+> >          { .parse_prop = parse_mboxes, },
+> >          { .parse_prop = parse_io_channels, },
+> >
+> > Without that a really nasty things happened.
+
+I have a command line option to do this without code changes. Use
+fw_devlink.strict=1. That makes all optional properties into mandatory
+ones.
+
+I sent out a series[1] that tried to make fw_devlink.strict=1 the
+default and then use the timeout behavior (more details) to handle
+cases where iommu and dmas (or any other supplier) are optional on a
+specific board. The cover letter of [1] should give some more context.
+
+> > Initialization of the built-in drivers and loading modules takes time,
+> > so the default 10s deferred probe timeout is not enough to ensure that
+> > the built-in driver won't be probed before the Exynos IOMMU driver is
+> > loaded.
+
+The 10 second is the minimum delay from the time we hit late_initcall.
+If a driver is registered before the 10s expires, then the timer will
+be extended by another 10s. This behavior landed sometime around the
+end of May 2022. So it should have been in your tree when you tested
+this. I'm surprised this isn't sufficient for your case. Is there
+really a 10s gap in your boot sequence where no module is being loaded
+and then IOMMU modules get loaded later on? I'm kinda surprised by
+this. Is it this long because some serial UART is enabled and it's
+slowing down boot? Or something else?
+
+I'm not saying your case isn't valid or we shouldn't extend the
+timeout. I'm just trying to understand why the current timer behavior
+wasn't able to cover your case.
+
+> Yeah, the whole time-based sync looks nasty... I remember coming
+> across the slides by Andrzej Hajda called "Deferred Problem" [1], but
+> I guess the proposed solution was never applied. Just hope that
+> increasing the timeout is upstreamable solution.
+>
+> [1] https://events19.linuxfoundation.org/wp-content/uploads/2017/12/Deferred-Problem-Issues-With-Complex-Dependencies-Between-Devices-in-Linux-Kernel-Andrzej-Hajda-Samsung.pdf
+
+Sam, I kinda skimmed the slides right now. Looks like it talks about
+device links and why they aren't sufficient and makes an alternate
+proposal. fw_devlink is a solution that uses device links and I think
+addresses a lot of the issues that were raised about device links.
+There's still a bunch of TODOs left, but I think the end goal is the
+same. I'm hoping to keep chipping away at it. For now, I've tried to
+make the timer a bit more smart about detecting when modules are
+getting loaded and extending the timer. fw_devlink also enables
+something called sync_state() that's invaluable on a fully modular
+system (search lore for references to that to get some idea).
+
+The slides talk about a solution that will allow devices to probe with
+limited functionality with whatever suppliers are available and then
+reprobe as more suppliers are available. I'm not sure how well that'll
+work across the board. It's going to be a bit weird if your phone
+display goes off and then comes on again because an IOMMU driver got
+loaded (and it can now do DRM playback). For now, I'm not going to
+focus on that option because there are enough existing issues/TODOs to
+work on for fw_devlink.
+
+> > The second change fixes the problem that driver core probes Exynos IOMMU
+> > controllers in parallel to probing the master devices, what results in
+> > calling exynos_iommu_of_xlate() and exynos_iommu_probe_device() even on
+> > the partially initialized IOMMU controllers or initializing the dma_ops
+> > under the already probed and working master device. This was easy to
+> > observe especially on the master devices with multiple IOMMU
+> > controllers. I wasn't able to solve this concurrency/race issues inside
+> > the Exynos IOMMU driver.
+> >
+> > Frankly speaking I don't know what is the rationale for making the
+> > 'iommus' property optional, but this simply doesn't work well with IOMMU
+> > driver being a module. CCed Saravana and Rob for this.
+> >
+>
+> The patch which makes 'iommus' optional doesn't provide much of
+> insight on reasons in commit message either.
+
+This was the commit text:
+
+    Not all DT bindings are mandatory bindings. Add support for optional DT
+    bindings and mark iommus, iommu-map, dmas as optional DT bindings.
+
+I thought it was obvious enough, but I guess I could have done better.
+Geert convinced me that iommu's aren't always necessary and devices
+could work perfectly well without them or dmas. And he has a bunch of
+boards like that. So I went with adding optional and then introducing
+fw_devlink.strict.
+
+However, at this point in time, I believe none of them should be
+marked as optional because technically any property can be optional
+depending on what the firmware has set up and what the driver does. We
+should figure this out at runtime on a board level -- which is what
+[1] is trying to do. Yeah, not very pretty, but there hasn't been a
+better solution that's not "have userspace tell us it's done loading
+modules" (that's a "kernel depends on userspace to work correctly"
+thing that no one likes). I've fixed some of the issues raised in [1]
+in a fw_devlink improvement series[2] and I plan on continuing to work
+on this until hopefully [1] can land.
+
+> > Without fixing the above issues, I would add a warning that compiling
+> > the driver as a module leads to serious issues.
+> >
+>
+> Nice catch! It doesn't reproduce on my platform, alas. Can I expect
+> you to submit those patches? If so, I'll probably just wait for those
+> to be applied, and then re-send my modularization series on top of it.
+> Does that sounds reasonable?
+
+For now, maybe we could add a config to enable fw_devlink.strict=1 by
+default and then select it if you make specific iommu drivers into
+modules? And then Geert won't set it for his driver, but you can set
+it for your driver?
+
+Thanks,
+Saravana
+
+[1] - https://lore.kernel.org/lkml/20220601070707.3946847-1-saravanak@google.com/
+[2] - https://lore.kernel.org/lkml/20230207014207.1678715-1-saravanak@google.com/
