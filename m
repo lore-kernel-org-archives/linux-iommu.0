@@ -1,167 +1,129 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 228BE20E8
-	for <iommu@lists.linux.dev>; Tue,  7 Feb 2023 10:09:25 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B728E106F;
-	Tue,  7 Feb 2023 02:10:07 -0800 (PST)
-Received: from [10.57.90.93] (unknown [10.57.90.93])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4AF8C3F8C6;
-	Tue,  7 Feb 2023 02:09:24 -0800 (PST)
-Message-ID: <acf8fbd2-907c-01dc-0bff-23d28a869b66@arm.com>
-Date: Tue, 7 Feb 2023 10:09:21 +0000
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 194E820FE
+	for <iommu@lists.linux.dev>; Tue,  7 Feb 2023 10:39:53 +0000 (UTC)
+Received: by mail-wr1-f44.google.com with SMTP id i5so5912317wrc.0
+        for <iommu@lists.linux.dev>; Tue, 07 Feb 2023 02:39:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Ezuf8zIGtjTbwprIBH3RkeiO7eWB8R8vQxUpLhGnoGw=;
+        b=xUgt49eDesXWBFfzjD7n4TFdFOPbhMqmAkmaDcQH1O33LN7B2lcB7F1wc4hYi3wmv1
+         r2hEgVKt/oPCqgxpok1UG2a0ILNWdzHuypas15hOUaPavVxoc6ea7c757XOj7HTgh72S
+         SmzjrczVxPKuzed5ze9dxd6V65pu9+h88/y/cb558ytu5qjDB3sp8PWJ3f0xJ9ha5PoJ
+         vRED/uIoGf3O3sYnGYRWy0aXnDYNOfJzjQKTK/Tj9AwqXAfmokk6dcuWJeJGFgpneV/y
+         gxrskFJsHWVoQwdjj0VD0pYzcmP+cVivQO5tZnPknSFZbcsDxbpR9drG7X5LP2UPL2K/
+         3h3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Ezuf8zIGtjTbwprIBH3RkeiO7eWB8R8vQxUpLhGnoGw=;
+        b=zPD+v1HmCwP2JebGPtP/+qYZaa2CcpglQ5utgVMC4uInf+/QeY9YyIQjXScTlhb/ak
+         WlbGPNVXBS4yVOqk+jZhkv3kOgeNmlW5OFuShKnfSgwkZdWo7wDnHRB4OaRyc9imkTF4
+         uKr5L34+iXpij4+z1L++poeYltpOdHuYBMGzDdzmdLD52kRCOrCD4GHyL/cVsOr+GdSj
+         WyzJne3MYTVUn9hbbTzDDRRvtONar7cEGRAppvTQavKOdx8ByvtO9qTvKyU2ABp3sAPm
+         7d3+U6yR9FksS1VimJU2dk0ltuNWFr9Iq5F8a5HOg/Jenxqb9aLw2d2IuAGxn2/aBfrm
+         kstQ==
+X-Gm-Message-State: AO0yUKXFqbCdLzeLLF6/goq8V8EZubqQ77W/aTlh8nWGr4f9eJOYMnms
+	XFJ5mCdtMqJPgX64U0wrqBsfhw==
+X-Google-Smtp-Source: AK7set8URL8FZwsSiW+sDnFANc5QHMcYb6CW6VXqlAe361UtKx/EnW5TcnLZYj/p4W5+PO6ACStkBw==
+X-Received: by 2002:adf:f712:0:b0:2bf:b281:1bbb with SMTP id r18-20020adff712000000b002bfb2811bbbmr2244453wrp.36.1675766391394;
+        Tue, 07 Feb 2023 02:39:51 -0800 (PST)
+Received: from myrica (054592b0.skybroadband.com. [5.69.146.176])
+        by smtp.gmail.com with ESMTPSA id l5-20020adfe585000000b002c3e3ee7d1asm6290379wrm.79.2023.02.07.02.39.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Feb 2023 02:39:51 -0800 (PST)
+Date: Tue, 7 Feb 2023 10:39:46 +0000
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: "tina.zhang" <tina.zhang@intel.com>
+Cc: maz@kernel.org, catalin.marinas@arm.com, will@kernel.org,
+	joro@8bytes.org, robin.murphy@arm.com, james.morse@arm.com,
+	suzuki.poulose@arm.com, oliver.upton@linux.dev,
+	yuzenghui@huawei.com, smostafa@google.com, dbrazdil@google.com,
+	ryan.roberts@arm.com, linux-arm-kernel@lists.infradead.org,
+	kvmarm@lists.linux.dev, iommu@lists.linux.dev
+Subject: Re: [RFC PATCH 15/45] KVM: arm64: pkvm: Add
+ __pkvm_host_share/unshare_dma()
+Message-ID: <Y+Iqcm3Do00Jj6vb@myrica>
+References: <20230201125328.2186498-1-jean-philippe@linaro.org>
+ <20230201125328.2186498-16-jean-philippe@linaro.org>
+ <dec54922-37cf-89df-477e-eed1e9461db3@intel.com>
+ <Y+Du0fZetGVdPVW2@myrica>
+ <c06440b2-1ce6-b2c2-59b7-6ccdfd8b5ab4@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v2 1/3] iommu: Attach device group to old domain in error
- path
-Content-Language: en-GB
-To: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
- joro@8bytes.org
-Cc: suravee.suthikulpanit@amd.com, will@kernel.org
-References: <20230203173623.18308-1-vasant.hegde@amd.com>
- <b2061df7-d28b-207f-1968-a7dac3171cfe@arm.com>
- <ae54a94b-5927-927d-1fad-1bb49a2a64b9@amd.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ae54a94b-5927-927d-1fad-1bb49a2a64b9@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c06440b2-1ce6-b2c2-59b7-6ccdfd8b5ab4@intel.com>
 
-On 2023-02-06 13:55, Vasant Hegde wrote:
-> Hi Robin,
+On Tue, Feb 07, 2023 at 10:37:51AM +0800, tina.zhang wrote:
+> Hi Jean,
 > 
-> 
-> On 2/6/2023 6:59 PM, Robin Murphy wrote:
->> On 2023-02-03 17:36, Vasant Hegde wrote:
->>> iommu_attach_group() attaches all devices in a group to domain and then
->>> sets group domain (group->domain). Current code (__iommu_attach_group())
->>> does not handle error path. This creates problem as devices to domain
->>> attachment is in inconsistent state.
->>
->> Can you clarify the circumstances for this happening? I think the implicit
->> assumption here is that if first attach_dev succeeds, then the group is
->> compatible with the domain in general, so then any subsequent attach_dev calls
->> are mostly just updating data for additional RIDs, and as such would not be
->> expected to fail.
-> 
-> It can happen with even single device in the device group.
-> 
-> Flow :
->    - Try to attach device to new domain (say IOMMU_DOMAIN_UMANAGED)
->    - In iommu_attach_group() path we detach device from current domain. Then it
-> tries to attach device to new group.
->    - If it fails then device to domain link is broken.
->    - iommu_attach_group() returns error.
->    - At this stage caller assumes attaching device to new domain failed.
->    - But it should work fine with old domain.
->      This is what I'm trying to fix it in this patch.
+> On 2/6/23 20:13, Jean-Philippe Brucker wrote:
+> > Hi Tina,
+> > 
+> > On Sat, Feb 04, 2023 at 08:51:38PM +0800, tina.zhang wrote:
+> > > > +int __pkvm_host_share_dma(phys_addr_t phys_addr, size_t size, bool is_ram)
+> > > > +{
+> > > > +	int i;
+> > > > +	int ret;
+> > > > +	size_t nr_pages = size >> PAGE_SHIFT;
+> > > > +
+> > > > +	if (WARN_ON(!PAGE_ALIGNED(phys_addr | size)))
+> > > > +		return -EINVAL;
+> > > > +
+> > > > +	host_lock_component();
+> > > > +	hyp_lock_component();
+> > > > +
+> > > > +	for (i = 0; i < nr_pages; i++) {
+> > > > +		ret = __pkvm_host_share_dma_page(phys_addr + i * PAGE_SIZE,
+> > > > +						 is_ram);
+> > > Hi Jean,
+> > > 
+> > > I'm not familiar with ARM arch. Just out of curiosity. If pKVM-ARM populates
+> > > the host stage-2 page table lazily, would there be a case that device driver
+> > > in host triggers DMA with pages which have not been mapped to the host
+> > > stage-2 page table yet? How do we handle this situation?
+> > 
+> > It's possible that the host asks the hypervisor to map on the IOMMU side
+> > a page that is not yet mapped on the CPU side. In general before calling
+> > map_pages() the host zero-initializes the page, triggering a page fault
+> > which creates the mapping, so this case is rare. But if it happens,
+> > __pkvm_host_share_dma() will create the CPU stage-2 mapping:
+> > 
+> >   __pkvm_host_share_dma()
+> >    do_share()
+> >     host_initiate_share()
+> >      host_stage2_idmap_locked()
+> > 
+> > which creates a valid identity mapping, along with the ownership
+> > information PVKM_PAGE_SHARED_OWNED. That ownership info is really all we
+> > need here, to prevent future donations to guests or hyp. Since the SMMU
+> > side uses separate stage-2 page tables, we don't actually need to create a
+> > valid mapping on the CPU side yet, that's just how pKVM's mem_protect
+> > currently works. But I don't think it hurts to create the mapping right
+> > away instead of waiting for the CPU page fault, because the host will
+> > likely access the page soon to read what the device wrote there.
+> Right. I was thinking if stage-2 lazy mapping method is being adopted,
+> whether there would be a case that the check_share() couldn't pass, as the
+> pte might not be valid at that time. After checking the logic, I see we
+> check kvm_pte_valid(pte) as well as the value of pte. So I guess the
+> check_share() can return successfully even w/o having triggered host CPU
+> page fault.
 
-Oh, I see. However, in that case the assumption in the core code is 
-definitely that if the attach failed then the device remains attached to 
-the original domain. If the AMD driver is doing something different, 
-shouldn't that just be fixed in the driver (i.e. do all the preparation 
-on the new domain *before* the detach_device()/do_attach() cycle)?
+Yes, during check_share(), host_get_page_state() allows disabled PTE
+unless the PTE already contains ownership information (in particular, if
+the page has been donated to a guest or to the hypervisor, the PTE is
+invalid and contains the non-zero owner ID.)
 
 Thanks,
-Robin.
+Jean
 
-> 
-> 
-> Recently we hit this issue with AMD IOMMU v2 driver [1], but it can happen with
-> any other code path (like VFIO path).
-> 
-> [1]
-> https://lore.kernel.org/linux-iommu/15d0f9ff-2a56-b3e9-5b45-e6b23300ae3b@leemhuis.info/
-> 
-> -Vasant
-> 
-> 
-> 
->>
->> Thanks,
->> Robin.
->>
->>> To recover from this situation, we need force attaching all devices back
->>> to the old domain. This patch introduces `force` parameter to
->>> __iommu_group_set_domain() so that we can attach devices back to old
->>> domain.
->>>
->>> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
->>> ---
->>>    drivers/iommu/iommu.c | 24 +++++++++++++++++-------
->>>    1 file changed, 17 insertions(+), 7 deletions(-)
->>>
->>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>> index de91dd88705b..e58683cd3bf7 100644
->>> --- a/drivers/iommu/iommu.c
->>> +++ b/drivers/iommu/iommu.c
->>> @@ -95,7 +95,8 @@ static int __iommu_attach_device(struct iommu_domain *domain,
->>>    static int __iommu_attach_group(struct iommu_domain *domain,
->>>                    struct iommu_group *group);
->>>    static int __iommu_group_set_domain(struct iommu_group *group,
->>> -                    struct iommu_domain *new_domain);
->>> +                    struct iommu_domain *new_domain,
->>> +                    bool force);
->>>    static int iommu_create_device_direct_mappings(struct iommu_group *group,
->>>                               struct device *dev);
->>>    static struct iommu_group *iommu_group_get_for_dev(struct device *dev);
->>> @@ -1974,7 +1975,7 @@ static void __iommu_group_set_core_domain(struct
->>> iommu_group *group)
->>>        else
->>>            new_domain = group->default_domain;
->>>    -    ret = __iommu_group_set_domain(group, new_domain);
->>> +    ret = __iommu_group_set_domain(group, new_domain, false);
->>>        WARN(ret, "iommu driver failed to attach the default/blocking domain");
->>>    }
->>>    @@ -2124,8 +2125,16 @@ static int __iommu_attach_group(struct iommu_domain
->>> *domain,
->>>          ret = __iommu_group_for_each_dev(group, domain,
->>>                         iommu_group_do_attach_device);
->>> -    if (ret == 0)
->>> +    if (ret == 0) {
->>>            group->domain = domain;
->>> +    } else {
->>> +        /*
->>> +         * To recover from the case when certain device within the
->>> +         * group fails to attach to the new domain, we need force
->>> +         * attaching all devices back to the old domain.
->>> +         */
->>> +        __iommu_group_set_domain(group, group->domain, true);
->>> +    }
->>>          return ret;
->>>    }
->>> @@ -2164,11 +2173,12 @@ static int iommu_group_do_detach_device(struct device
->>> *dev, void *data)
->>>    }
->>>      static int __iommu_group_set_domain(struct iommu_group *group,
->>> -                    struct iommu_domain *new_domain)
->>> +                    struct iommu_domain *new_domain,
->>> +                    bool force)
->>>    {
->>>        int ret;
->>>    -    if (group->domain == new_domain)
->>> +    if (!force && group->domain == new_domain)
->>>            return 0;
->>>          /*
->>> @@ -3135,7 +3145,7 @@ static int __iommu_take_dma_ownership(struct iommu_group
->>> *group, void *owner)
->>>        ret = __iommu_group_alloc_blocking_domain(group);
->>>        if (ret)
->>>            return ret;
->>> -    ret = __iommu_group_set_domain(group, group->blocking_domain);
->>> +    ret = __iommu_group_set_domain(group, group->blocking_domain, false);
->>>        if (ret)
->>>            return ret;
->>>    @@ -3222,7 +3232,7 @@ static void __iommu_release_dma_ownership(struct
->>> iommu_group *group)
->>>          group->owner_cnt = 0;
->>>        group->owner = NULL;
->>> -    ret = __iommu_group_set_domain(group, group->default_domain);
->>> +    ret = __iommu_group_set_domain(group, group->default_domain, false);
->>>        WARN(ret, "iommu driver failed to attach the default domain");
->>>    }
->>>    
