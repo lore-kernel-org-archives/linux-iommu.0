@@ -1,33 +1,33 @@
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95CD615A7
-	for <iommu@lists.linux.dev>; Tue,  7 Feb 2023 06:45:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE60FBD2B
+	for <iommu@lists.linux.dev>; Tue,  7 Feb 2023 07:10:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675752342; x=1707288342;
+  t=1675753854; x=1707289854;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=AaUf0zG3WU35FnYxi/A+oYi6a97oKHZ4rYfEtRF+/Vc=;
-  b=EjbtUhxgPCXJ6j/vBKEij8VCF26PoEBNGWRXK5ZgvUa1ZsUvERHqjrI5
-   aNCK+X58W4eMXIt19CG+uLXEGomACoQasiBf7v8amesPpKBg/V38TWJkx
-   ZnaoOdhVJ9uB3DeDI1roPb0CTb+So2vXgjgZi8wgxTYmmyJUEcEpHeFW0
-   LPdJjN5GmgnrlRKq+XQ5jMWCoUP49Hhrfsjqgi7ZWusyglSg84xwGPwR2
-   hNslj7cVO2jWSUfu0ZXHGOzv9oH48xZAcDtw0CrEq/rjhYNZlcCD8VKBY
-   mVXKNb+BWZpEzbYThcN8mdrToComhuAh5fcGf8gEJqkGJ70EW5FhA2YE4
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="329441403"
+  bh=3QNV1VfOaBLnQHC8TJ/Ap8oam3W/AnPXIGugPixqf7Q=;
+  b=YIzi1qb4DTtN8xYCJhMeI5RTzidhyCuJydc9KGOtk/Tf+gVoqJlf6z68
+   4mtx6se23d6FYYF/0PmANAzaVtzYOSt9CLdCKfLfLlxTX1ceyuoJueZyL
+   9Dul4q7mFlDhD0lGKbrmNFATi5WleKS8U5X6MBck26mL5VMdM3eZ0imEY
+   Hf4WBPCXBCP5B7PpuiZnsF7cYwqCuoNl2xX6WJNeNpz8JdYt0CvHIzJRU
+   XVsL3JpNENQ6bOInZKUY9G3+6/5bDabB5FUM3Fm2tw3CmKvGMj4BeAoEg
+   HajQVR0QygFjaQ8ssYzWN4H96etdBwKCPTj/P4onqlS7UFMmREVSlYJlP
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="391821416"
 X-IronPort-AV: E=Sophos;i="5.97,278,1669104000"; 
-   d="scan'208";a="329441403"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2023 22:45:42 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="668680659"
+   d="scan'208";a="391821416"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2023 23:10:54 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="790692258"
 X-IronPort-AV: E=Sophos;i="5.97,278,1669104000"; 
-   d="scan'208";a="668680659"
+   d="scan'208";a="790692258"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.209.26]) ([10.254.209.26])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2023 22:45:39 -0800
-Message-ID: <b190ddb3-eb1d-cd72-ce03-1127af228bf0@linux.intel.com>
-Date: Tue, 7 Feb 2023 14:45:37 +0800
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2023 23:10:50 -0800
+Message-ID: <4a22577b-2bbc-d731-95e1-aee95d4a8c8e@linux.intel.com>
+Date: Tue, 7 Feb 2023 15:10:48 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,104 +36,60 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>,
- "Raj, Ashok" <ashok.raj@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
- "stable@vger.kernel.org" <stable@vger.kernel.org>,
- "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
- Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/vt-d: Avoid superfluous IOTLB tracking in lazy mode
+Cc: baolu.lu@linux.intel.com, LKML <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ David Woodhouse <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>,
+ "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+ stable@vger.kernel.org, Sukumar Ghorai <sukumar.ghorai@intel.com>
+Subject: Re: [PATCH] iommu/vt-d: Fix PASID directory pointer coherency
 Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- LKML <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- Joerg Roedel <joro@8bytes.org>
-References: <20230203230417.1287325-1-jacob.jun.pan@linux.intel.com>
- <ef65f1cf-d04c-8c35-7144-d30504bf7a1c@linux.intel.com>
- <BN9PR11MB52764498929E4978B3A8740D8CDA9@BN9PR11MB5276.namprd11.prod.outlook.com>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+References: <20230203220714.1283383-1-jacob.jun.pan@linux.intel.com>
+ <de4d0617-ceef-efca-69f1-a095ce91588e@linux.intel.com>
+ <20230206092527.670f7ef7@jacob-builder>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB52764498929E4978B3A8740D8CDA9@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <20230206092527.670f7ef7@jacob-builder>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/2/6 11:48, Tian, Kevin wrote:
->> From: Baolu Lu <baolu.lu@linux.intel.com>
->> Sent: Saturday, February 4, 2023 2:32 PM
+On 2023/2/7 1:25, Jacob Pan wrote:
+>>> ---
+>>>    drivers/iommu/intel/iommu.c | 6 ++++++
+>>>    1 file changed, 6 insertions(+)
+>>>
+>>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+>>> index 59df7e42fd53..b4878c7ac008 100644
+>>> --- a/drivers/iommu/intel/iommu.c
+>>> +++ b/drivers/iommu/intel/iommu.c
+>>> @@ -1976,6 +1976,12 @@ static int domain_context_mapping_one(struct
+>>> dmar_domain *domain, pds = context_get_sm_pds(table);
+>>>    		context->lo = (u64)virt_to_phys(table->table) |
+>>>    				context_pdts(pds);
+>>> +		/*
+>>> +		 * Scalable-mode PASID directory pointer is not
+>>> snooped if the
+>>> +		 * coherent bit is not set.
+>>> +		 */
+>>> +		if (!ecap_coherent(iommu->ecap))
+>>> +			clflush_cache_range(table->table, sizeof(void
+>>> *));
+>> This isn't comprehensive. The clflush should be called whenever the
+>> pasid directory table is allocated or updated.
 >>
->> On 2023/2/4 7:04, Jacob Pan wrote:
->>> Intel IOMMU driver implements IOTLB flush queue with domain selective
->>> or PASID selective invalidations. In this case there's no need to track
->>> IOVA page range and sync IOTLBs, which may cause significant
->> performance
->>> hit.
->>
->> [Add cc Robin]
->>
->> If I understand this patch correctly, this might be caused by below
->> helper:
->>
->> /**
->>    * iommu_iotlb_gather_add_page - Gather for page-based TLB invalidation
->>    * @domain: IOMMU domain to be invalidated
->>    * @gather: TLB gather data
->>    * @iova: start of page to invalidate
->>    * @size: size of page to invalidate
->>    *
->>    * Helper for IOMMU drivers to build invalidation commands based on
->> individual
->>    * pages, or with page size/table level hints which cannot be gathered
->> if they
->>    * differ.
->>    */
->> static inline void iommu_iotlb_gather_add_page(struct iommu_domain
->> *domain,
->>                                                  struct
->> iommu_iotlb_gather *gather,
->>                                                  unsigned long iova,
->> size_t size)
->> {
->>           /*
->>            * If the new page is disjoint from the current range or is
->> mapped at
->>            * a different granularity, then sync the TLB so that the gather
->>            * structure can be rewritten.
->>            */
->>           if ((gather->pgsize && gather->pgsize != size) ||
->>               iommu_iotlb_gather_is_disjoint(gather, iova, size))
->>                   iommu_iotlb_sync(domain, gather);
->>
->>           gather->pgsize = size;
->>           iommu_iotlb_gather_add_range(gather, iova, size);
->> }
->>
->> As the comments for iommu_iotlb_gather_is_disjoint() says,
->>
->> "...For many IOMMUs, flushing the IOMMU in this case is better
->>    than merging the two, which might lead to unnecessary invalidations.
->>    ..."
->>
->> So, perhaps the right fix for this performance issue is to add
->>
->> 	if (!gather->queued)
->>
->> in iommu_iotlb_gather_add_page() or iommu_iotlb_gather_is_disjoint()?
->> It should benefit other arch's as well.
->>
-> 
-> There are only two callers of this helper: intel and arm-smmu-v3.
-> 
-> Looks other drivers just implements direct flush via io_pgtable_tlb_add_page().
-> 
-> and their unmap callback typically does:
-> 
-> if (!iommu_iotlb_gather_queued(gather))
-> 	io_pgtable_tlb_add_page();
-> 
-> from this angle it's same policy as Jacob's does, i.e. if it's already
-> queued then no need to further call optimization for direct flush.
+> allocate a pasid table does not mean it gets used by iommu hw, not until it
+> is programmed into context entry.
 
-Perhaps we can use iommu_iotlb_gather_queued() to replace direct
-gather->queued check in this patch as well?
+Hi Jacob,
+
+This page is used by the device, and the device's access to this memory
+is not coherent. So after the page is allocated, any changes made by the
+CPU to this page must be written back to the real memory.
+
+This patch only flushes the first 8 bytes of the table. That's not
+enough.
+
+Be aware that page allocation also requires a clflush, because at least
+__GFP_ ZERO implies modification to page.
 
 Best regards,
 baolu
