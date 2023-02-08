@@ -1,96 +1,99 @@
-Received: from mxct.zte.com.cn (mxct.zte.com.cn [58.251.27.85])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CDE6944A
-	for <iommu@lists.linux.dev>; Wed,  8 Feb 2023 08:15:32 +0000 (UTC)
-Received: from mxde.zte.com.cn (unknown [10.35.20.165])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mxct.zte.com.cn (FangMail) with ESMTPS id 4PBXdq0XmXz1Drq
-	for <iommu@lists.linux.dev>; Wed,  8 Feb 2023 16:06:55 +0800 (CST)
-Received: from mxus.zte.com.cn (unknown [10.36.20.94])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mxde.zte.com.cn (FangMail) with ESMTPS id 4PBXdQ6xqrz54hQ7
-	for <iommu@lists.linux.dev>; Wed,  8 Feb 2023 16:06:34 +0800 (CST)
-Received: from mxhk.zte.com.cn (unknown [192.168.250.137])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mxus.zte.com.cn (FangMail) with ESMTPS id 4PBXdG4kjSz9wlkQ
-	for <iommu@lists.linux.dev>; Wed,  8 Feb 2023 16:06:26 +0800 (CST)
-Received: from mxct.zte.com.cn (unknown [192.168.251.13])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4PBXd45nSCz8RTZJ
-	for <iommu@lists.linux.dev>; Wed,  8 Feb 2023 16:06:16 +0800 (CST)
-Received: from mse-fl1.zte.com.cn (unknown [10.5.228.132])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mxct.zte.com.cn (FangMail) with ESMTPS id 4PBXcs209Wz501R8;
-	Wed,  8 Feb 2023 16:06:05 +0800 (CST)
-Received: from xaxapp02.zte.com.cn ([10.88.97.241])
-	by mse-fl1.zte.com.cn with SMTP id 31885rCj058224;
-	Wed, 8 Feb 2023 16:05:53 +0800 (+08)
-	(envelope-from ye.xingchen@zte.com.cn)
-Received: from mapi (xaxapp01[null])
-	by mapi (Zmail) with MAPI id mid31;
-	Wed, 8 Feb 2023 16:05:55 +0800 (CST)
-Date: Wed, 8 Feb 2023 16:05:55 +0800 (CST)
-X-Zmail-TransId: 2af963e357e330e91502
-X-Mailer: Zmail v1.0
-Message-ID: <202302081605554841069@zte.com.cn>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5571E2105
+	for <iommu@lists.linux.dev>; Wed,  8 Feb 2023 09:07:13 +0000 (UTC)
+Received: by mail-wr1-f42.google.com with SMTP id bu23so162286wrb.8
+        for <iommu@lists.linux.dev>; Wed, 08 Feb 2023 01:07:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=s4ZQciB8ZwmkpMVddUcUzrwLwz6Z7cq/83Qj3Q0atmU=;
+        b=hkDoqVGsptUTfJqlyT49ejMokW0JYKMZbQol5A5WUZiFInHZ1jrH/PdWqc1S0JMhfJ
+         pZW+Q6dzDM4r7+GTwb4D+ZbUzSrymoVGq28pT56o6EyUfYZWAn27ahyQhRFfE3mgxQMP
+         jF8yxOoZ1yOy3yE94ibybLSJ8HKo0+SCUH8LmFXpgKa+Fd1xffaVT3vJdjSeKkF+sC0S
+         HaXmh7u7oaMNOu3vTDzuH/pBxNTKoU3btXtWBq9cPljLZBJPa6oCCTCf+LAW0I1XhN94
+         oohsgeUrECqkRlIt4D46u5zE/UEW8Qts/K8SUIIobyjJJs78L6xcPZ6obac011uONbVC
+         uzRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=s4ZQciB8ZwmkpMVddUcUzrwLwz6Z7cq/83Qj3Q0atmU=;
+        b=6/ryqPE0DRoFo80BAkcvtxyomGnsvv6kDf8QKZWGOOxD4y/KG4q9kwGYnX4X5AZ+S6
+         27oTAgnJynmTngpkVvYxYegy69zHmuethRuPxrOZUOvO1xWhSnCBYOF7VjD8F4+2kr3t
+         /Syh7Hpp0XmjHWkh2nsG5MN5vikHWHdpFWfrrToMlcm4dcQ3Dlrmqr9FkeWyhkyoiEF+
+         xX5OA6V/OmA4bePRm5ZzgCYZrkhpFH7GWlmxxuQurx0cTgYHY3+Xtw6HXilp+/EG9e3A
+         nPvJ69pgy6QU4GaBuW5lvjK96nDNjcHNT5vXASfdC17IKsI76oUX+ELzowpjvFbvvJXo
+         CRsA==
+X-Gm-Message-State: AO0yUKWDYJJmzt507wPKvVNZbFJlRJvPxHiA6o7oXu2FGNddqDUmxPxN
+	rwTS0yDEVPhB52EOGsWVt142lw==
+X-Google-Smtp-Source: AK7set+i4/mF3tuzG+szJ2lcPZsyvdjR9PF/3EclzZpQf/1YK2drwfAH9ZsvoZR0IL+XWJwpk2btMQ==
+X-Received: by 2002:a5d:6e8b:0:b0:2bf:c753:573f with SMTP id k11-20020a5d6e8b000000b002bfc753573fmr5357264wrz.24.1675847231626;
+        Wed, 08 Feb 2023 01:07:11 -0800 (PST)
+Received: from [192.168.1.109] ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id u7-20020a5d4687000000b002c4008f0daasm927795wrq.107.2023.02.08.01.07.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Feb 2023 01:07:11 -0800 (PST)
+Message-ID: <d6338459-1aed-b4ed-52de-941b37ef420a@linaro.org>
+Date: Wed, 8 Feb 2023 10:07:10 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-From: <ye.xingchen@zte.com.cn>
-To: <joro@8bytes.org>
-Cc: <will@kernel.org>, <robin.murphy@arm.com>, <iommu@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>
-Subject: =?UTF-8?B?W1BBVENIXSBpb21tdS9pcG1tdS12bXNhOiB1c2XCoGRldm1fcGxhdGZvcm1fZ2V0X2FuZF9pb3JlbWFwX3Jlc291cmNlKCk=?=
-Content-Type: text/plain;
-	charset="UTF-8"
-X-MAIL:mse-fl1.zte.com.cn 31885rCj058224
-X-FangMail-Miltered: at esgde01-1.novalocal with ID 63E3580A.000 by FangMail milter!
-X-FangMail-Envelope: 1675843595/4PBXdQ6xqrz54hQ7/63E3580A.000/10.36.20.94/[10.36.20.94]/mxus.zte.com.cn/<ye.xingchen@zte.com.cn>
-X-Fangmail-Gw-Spam-Type: 0
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 63E3581E.000/4PBXdq0XmXz1Drq
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v2] dt-bindings: arm-smmu: Add compatible for SM8550 SoC
+Content-Language: en-US
+To: neil.armstrong@linaro.org, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Abel Vesa <abel.vesa@linaro.org>
+References: <20230207-topic-sm8550-upstream-smmu-bindings-v2-1-680cbfae6dac@linaro.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230207-topic-sm8550-upstream-smmu-bindings-v2-1-680cbfae6dac@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-From: Ye Xingchen <ye.xingchen@zte.com.cn>
+On 07/02/2023 14:40, neil.armstrong@linaro.org wrote:
+> From: Abel Vesa <abel.vesa@linaro.org>
+> 
+> Add the SoC specific compatible for SM8550 implementing
+> arm,mmu-500.
+> 
+> Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
+> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+> ---
+> Changes in v2:
+> - Rebased on new bindings using qcom,smmu-500 & arm,mmu-500
+> - Dropped driver changes since we rely on qcom,smmu-500 fallback
+> - Link to v1: https://lore.kernel.org/all/20221116114001.2669003-1-abel.vesa@linaro.org/
+> ---
+>  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> index 807cb511fe18..bc27919ab9f9 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> @@ -53,6 +53,7 @@ properties:
+>                - qcom,sm8250-smmu-500
+>                - qcom,sm8350-smmu-500
+>                - qcom,sm8450-smmu-500
+> +              - qcom,sm8550-smmu-500
+>            - const: qcom,smmu-500
 
-Convert platform_get_resource(), devm_ioremap_resource() to a single
-call to devm_platform_get_and_ioremap_resource(), as this is exactly
-what this function does.
+This still needs update in allOf:if: for disallowing clocks (or
+specifying them).
 
-Signed-off-by: Ye Xingchen <ye.xingchen@zte.com.cn>
----
- drivers/iommu/ipmmu-vmsa.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+Best regards,
+Krzysztof
 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index bdf1a4e5eae0..aca7ca8b5543 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -967,7 +967,6 @@ static const struct of_device_id ipmmu_of_ids[] = {
- static int ipmmu_probe(struct platform_device *pdev)
- {
- 	struct ipmmu_vmsa_device *mmu;
--	struct resource *res;
- 	int irq;
- 	int ret;
-
-@@ -987,8 +986,7 @@ static int ipmmu_probe(struct platform_device *pdev)
- 		return ret;
-
- 	/* Map I/O memory and request IRQ. */
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	mmu->base = devm_ioremap_resource(&pdev->dev, res);
-+	mmu->base = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
- 	if (IS_ERR(mmu->base))
- 		return PTR_ERR(mmu->base);
-
--- 
-2.25.1
