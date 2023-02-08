@@ -1,172 +1,163 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B688B2C80
-	for <iommu@lists.linux.dev>; Wed,  8 Feb 2023 15:13:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC23F361
+	for <iommu@lists.linux.dev>; Wed,  8 Feb 2023 16:31:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675869225; x=1707405225;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=S9tdno62LdkcJlHA3/wN/huJrL89J4P/0p6DKCZ9KvM=;
-  b=YU12lj0YkpBet0BeyJPJ/MaY6cbbDX6p9h/pemORmBE06uxqtfTNI6yw
-   YqbbBKLaBftQQX26Mt9VWgWNJaG4cwR78KGNMMn0xdkhOrNM12kJwUQt3
-   /UiXC5ZeBjRIZyf3sNjLj0DfMt9IIpzP9R0GtQbqhSqwC4NoDr/JCRYmV
-   rrPZJdZt+zR9he2JEEAB/l3p6/tsigB5mlWvX53LWjylpNwyFBJTTWYfM
-   jqrRYDckEMt7dJPfJUkQc6RRCm8LMQgFSyxMhmWw4G4mGLPD/ZNpZTfup
-   opAI1v94yxLlKOhblzIR6LMHpAZVm1ul9vBc/XezL/SXtIb0rPv7knK4Q
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="317824125"
+  t=1675873919; x=1707409919;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=DrxyrS9fcF2Z7IFnOpdeLdaLWCYGNwXwVIJ5fncGZPM=;
+  b=iOOn9u8fC+iboDpmFbFHtLUjech+tjFG24ba9O1OdZ9mEL7A3K61vhao
+   pgFLgYHbcRkpIGZZTbBqVkYU8g8fW+F/YqeR8e76rQS7N7MGv6RbTfKcl
+   otKYGXx9nHQh3mcC40jJtlq2GMm4jaQPXnXmrDxHbSI0If5jZcRdJZMEo
+   8IidqUoH5yXKXazRJP9VDVN8Of546G9oxCPuMtP82jS64ie++DQoWK+wN
+   ytEaMH9yIBHYpP3qXceejpf8IaTPpbds1w6XnEObWHEK0OEQiwAwCC0S/
+   GIAumIp8APgUcETrjaVd5cNw+b+fV7eO6iaUA+QhfXaLuIA5yr7Cvennf
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="329873840"
 X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
-   d="scan'208";a="317824125"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 07:09:41 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="735971467"
+   d="scan'208";a="329873840"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 08:31:59 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="617251555"
 X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
-   d="scan'208";a="735971467"
-Received: from tbacklun-mobl.amr.corp.intel.com (HELO [10.209.14.225]) ([10.209.14.225])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 07:09:38 -0800
-Message-ID: <76566fc4-d6be-8ebf-7e9d-d0b7918cb880@intel.com>
-Date: Wed, 8 Feb 2023 07:09:36 -0800
+   d="scan'208";a="617251555"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 08:31:59 -0800
+Date: Wed, 8 Feb 2023 08:35:36 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Joerg Roedel
+ <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon
+ <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Raj Ashok
+ <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
+ <yi.l.liu@intel.com>, stable@vger.kernel.org, Sukumar Ghorai
+ <sukumar.ghorai@intel.com>, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v2] iommu/vt-d: Fix PASID directory pointer coherency
+Message-ID: <20230208083536.3d8f5f7a@jacob-builder>
+In-Reply-To: <18bbd442-c892-1f17-bf6c-b6d797379deb@linux.intel.com>
+References: <20230208000938.1527079-1-jacob.jun.pan@linux.intel.com>
+	<18bbd442-c892-1f17-bf6c-b6d797379deb@linux.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
- to map as encrypted
-Content-Language: en-US
-To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
- Borislav Petkov <bp@alien8.de>,
- "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>
-Cc: "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
- Haiyang Zhang <haiyangz@microsoft.com>,
- "wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
- "luto@kernel.org" <luto@kernel.org>,
- "peterz@infradead.org" <peterz@infradead.org>,
- "davem@davemloft.net" <davem@davemloft.net>,
- "edumazet@google.com" <edumazet@google.com>,
- "kuba@kernel.org" <kuba@kernel.org>, "pabeni@redhat.com"
- <pabeni@redhat.com>, "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
- "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
- "bhelgaas@google.com" <bhelgaas@google.com>, "arnd@arndb.de"
- <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
- "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
- "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
- "tglx@linutronix.de" <tglx@linutronix.de>,
- "mingo@redhat.com" <mingo@redhat.com>, Tianyu Lan
- <Tianyu.Lan@microsoft.com>,
- "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
- "sathyanarayanan.kuppuswamy@linux.intel.com"
- <sathyanarayanan.kuppuswamy@linux.intel.com>,
- "ak@linux.intel.com" <ak@linux.intel.com>,
- "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
- "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
- "jane.chu@oracle.com" <jane.chu@oracle.com>,
- "seanjc@google.com" <seanjc@google.com>,
- "tony.luck@intel.com" <tony.luck@intel.com>, "x86@kernel.org"
- <x86@kernel.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
- "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <1673559753-94403-1-git-send-email-mikelley@microsoft.com>
- <1673559753-94403-7-git-send-email-mikelley@microsoft.com>
- <Y8r2TjW/R3jymmqT@zn.tnic>
- <BYAPR21MB168897DBA98E91B72B4087E1D7CA9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y9FC7Dpzr5Uge/Mi@zn.tnic>
- <BYAPR21MB16883BB6178DDEEA10FD1F1CD7D69@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+JG9+zdSwZlz6FU@zn.tnic>
- <BYAPR21MB1688A80B91CC4957D938191ED7DB9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+KndbrS1/1i0IFd@zn.tnic>
- <BYAPR21MB1688608129815E4F90B9CAA3D7DB9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+KseRfWlnf/bvnF@zn.tnic>
- <BYAPR21MB16880F67072368255CBD815AD7D89@BYAPR21MB1688.namprd21.prod.outlook.com>
-From: Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <BYAPR21MB16880F67072368255CBD815AD7D89@BYAPR21MB1688.namprd21.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 2/7/23 16:18, Michael Kelley (LINUX) wrote:
-> In v2 of this patch series, you had concerns about CC_ATTR_PARAVISOR being too
-> generic. [1]   After some back-and-forth discussion in this thread, Boris is back to
-> preferring it.   Can you live with CC_ATTR_PARAVISOR?  Just trying to reach
-> consensus ... 
+Hi Baolu,
 
-I still think it's too generic.  Even the comment was trying to be too
-generic:
+On Wed, 8 Feb 2023 11:46:37 +0800, Baolu Lu <baolu.lu@linux.intel.com>
+wrote:
 
-> +	/**
-> +	 * @CC_ATTR_HAS_PARAVISOR: Guest VM is running with a paravisor
-> +	 *
-> +	 * The platform/OS is running as a guest/virtual machine with
-> +	 * a paravisor in VMPL0. Having a paravisor affects things
-> +	 * like whether the I/O APIC is emulated and operates in the
-> +	 * encrypted or decrypted portion of the guest physical address
-> +	 * space.
-> +	 *
-> +	 * Examples include Hyper-V SEV-SNP guests using vTOM.
-> +	 */
-> +	CC_ATTR_HAS_PARAVISOR,
+> On 2023/2/8 8:09, Jacob Pan wrote:
+> > On platforms that do not support IOMMU Extended capability bit 0
+> > Page-walk Coherency, CPU caches are not snooped when IOMMU is accessing
+> > any translation structures. IOMMU access goes only directly to
+> > memory. Intel IOMMU code was missing a flush for the PASID table
+> > directory that resulted in the unrecoverable fault as shown below.
+> > 
+> > This patch adds clflush calls whenever activating and updating
+> > a PASID table directory to ensure cache coherency.
+> > 
+> > On the reverse direction, there's no need to clflush the PASID directory
+> > pointer when we deactivate a context entry in that IOMMU hardware will
+> > not see the old PASID directory pointer after we clear the context
+> > entry. PASID directory entries are also never freed once allocated.
+> > 
+> > [    0.555386] DMAR: DRHD: handling fault status reg 3
+> > [    0.555805] DMAR: [DMA Read NO_PASID] Request device [00:0d.2] fault
+> > addr 0x1026a4000 [fault reason 0x51] SM: Present bit in Directory Entry
+> > is clear [    0.556348] DMAR: Dump dmar1 table entries for IOVA
+> > 0x1026a4000 [    0.556348] DMAR: scalable mode root entry: hi
+> > 0x0000000102448001, low 0x0000000101b3e001 [    0.556348] DMAR: context
+> > entry: hi 0x0000000000000000, low 0x0000000101b4d401 [    0.556348]
+> > DMAR: pasid dir entry: 0x0000000101b4e001 [    0.556348] DMAR: pasid
+> > table entry[0]: 0x0000000000000109 [    0.556348] DMAR: pasid table
+> > entry[1]: 0x0000000000000001 [    0.556348] DMAR: pasid table entry[2]:
+> > 0x0000000000000000 [    0.556348] DMAR: pasid table entry[3]:
+> > 0x0000000000000000 [    0.556348] DMAR: pasid table entry[4]:
+> > 0x0000000000000000 [    0.556348] DMAR: pasid table entry[5]:
+> > 0x0000000000000000 [    0.556348] DMAR: pasid table entry[6]:
+> > 0x0000000000000000 [    0.556348] DMAR: pasid table entry[7]:
+> > 0x0000000000000000 [    0.556348] DMAR: PTE not present at level 4
+> > 
+> > Cc:<stable@vger.kernel.org>
+> > Fixes: 0bbeb01a4faf ("iommu/vt-d: Manage scalalble mode PASID tables")
+> > Reported-by: Sukumar Ghorai<sukumar.ghorai@intel.com>
+> > Signed-off-by: Ashok Raj<ashok.raj@intel.com>
+> > Signed-off-by: Jacob Pan<jacob.jun.pan@linux.intel.com>
+> > ---
+> > v2: Add clflush to PASID directory update case (Baolu, Kevin review)
+> > ---
+> >   drivers/iommu/intel/iommu.c | 2 ++
+> >   drivers/iommu/intel/pasid.c | 2 ++
+> >   2 files changed, 4 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> > index 59df7e42fd53..161342e7149d 100644
+> > --- a/drivers/iommu/intel/iommu.c
+> > +++ b/drivers/iommu/intel/iommu.c
+> > @@ -1976,6 +1976,8 @@ static int domain_context_mapping_one(struct
+> > dmar_domain *domain, pds = context_get_sm_pds(table);
+> >   		context->lo = (u64)virt_to_phys(table->table) |
+> >   				context_pdts(pds);
+> > +		if (!ecap_coherent(iommu->ecap))
+> > +			clflush_cache_range(table->table,
+> > sizeof(u64));  
+> 
+> This leaves other pasid dir entries not clflush'ed. It is possible that
+> IOMMU hardware sees different value from what CPU has set. This may
+> leave security holes for malicious devices. It's same to the pasid entry
+> table.
+agreed, we need to address security and functional aspects. good point.
 
-This doesn't help me figure out when I should use CC_ATTR_HAS_PARAVISOR
-really at all.  It "operates in the encrypted or decrypted portion..."
-Which one is it?  Should I be adding or removing encryption on the
-mappings for paravisors?
+thanks
 
-That's opposed to:
+Jacob
 
-> +	/**
-> +	 * @CC_ATTR_ACCESS_IOAPIC_ENCRYPTED: Guest VM IO-APIC is encrypted
-> +	 *
-> +	 * The platform/OS is running as a guest/virtual machine with
-> +	 * an IO-APIC that is emulated by a paravisor running in the
-> +	 * guest VM context. As such, the IO-APIC is accessed in the
-> +	 * encrypted portion of the guest physical address space.
-> +	 *
-> +	 * Examples include Hyper-V SEV-SNP guests using vTOM.
-> +	 */
-> +	CC_ATTR_ACCESS_IOAPIC_ENCRYPTED,
+> How about below change? It does clflush whenever CPU changes the pasid
+> dir/entry tables.
+> 
+> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+> index fb3c7020028d..aeb0517826a2 100644
+> --- a/drivers/iommu/intel/pasid.c
+> +++ b/drivers/iommu/intel/pasid.c
+> @@ -128,6 +128,9 @@ int intel_pasid_alloc_table(struct device *dev)
+>          pasid_table->max_pasid = 1 << (order + PAGE_SHIFT + 3);
+>          info->pasid_table = pasid_table;
+> 
+> +       if (!ecap_coherent(info->iommu->ecap))
+> +               clflush_cache_range(pasid_table->table, size);
+> +
+>          return 0;
+>   }
+> 
+> @@ -215,6 +218,11 @@ static struct pasid_entry 
+> *intel_pasid_get_entry(struct device *dev, u32 pasid)
+>                          free_pgtable_page(entries);
+>                          goto retry;
+>                  }
+> +
+> +               if (!ecap_coherent(info->iommu->ecap)) {
+> +                       clflush_cache_range(entries, VTD_PAGE_SIZE);
+> +                       clflush_cache_range(&dir[dir_index].val, 
+> sizeof(*dir));
+> +               }
+>          }
+> 
+>          return &entries[index];
+> 
+> Best regards,
+> baolu
 
-Which makes this code almost stupidly obvious:
 
-> -	flags = pgprot_decrypted(flags);
-> +	if (!cc_platform_has(CC_ATTR_ACCESS_IOAPIC_ENCRYPTED))
-> +		flags = pgprot_decrypted(flags);
+Thanks,
 
-"Oh, if it's access is not encrypted, then get the decrypted version of
-the flags."
-
-Compare that to:
-
-	if (!cc_platform_has(CC_ATTR_PARAVISOR))
-		flags = pgprot_decrypted(flags);
-
-Which is a big fat WTF.  Because a paravisor "operates in the encrypted
-or decrypted portion..."  So is this if() condition correct or inverted?
-It's utterly impossible to tell because of how generic the option is.
-
-The only way to make sense of the generic thing is to do:
-
-	/* Paravisors have a decrypted IO-APIC mapping: */
-	if (!cc_platform_has(CC_ATTR_PARAVISOR))
-		flags = pgprot_decrypted(flags);
-
-at every site to state the assumption and make the connection between
-paravisors and the behavior.  If you want to go do _that_, then fine by
-me.  But, at that point, the naming is pretty worthless because you
-could also have said "goldfish" instead of "paravisor" and it makes an
-equal amount of sense:
-
-	/* Goldfish have a decrypted IO-APIC mapping: */
-	if (!cc_platform_has(CC_ATTR_GOLDFISH))
-		flags = pgprot_decrypted(flags);
-
-I get it, naming is hard.
+Jacob
