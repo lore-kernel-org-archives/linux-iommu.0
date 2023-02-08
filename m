@@ -1,72 +1,84 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D3A222109
-	for <iommu@lists.linux.dev>; Wed,  8 Feb 2023 09:48:31 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 61F00FEC;
-	Wed,  8 Feb 2023 01:49:07 -0800 (PST)
-Received: from [192.168.1.123] (unknown [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9822F3F8C6;
-	Wed,  8 Feb 2023 01:48:22 -0800 (PST)
-Message-ID: <384ef4c4-3dc5-b9e6-d9be-09d611dacbc0@arm.com>
-Date: Wed, 8 Feb 2023 09:48:13 +0000
+Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 188C42561
+	for <iommu@lists.linux.dev>; Wed,  8 Feb 2023 12:31:27 +0000 (UTC)
+Received: by mail-qv1-f54.google.com with SMTP id mm5so6901861qvb.12
+        for <iommu@lists.linux.dev>; Wed, 08 Feb 2023 04:31:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=x2ONYko8lOL1nBDH25lfplxwHP04VK/kwi3k1cUKn+E=;
+        b=PQp5h1oc5pSIiwKvZCj1sK3/ln1MutbovvxQ1C1NyhFKNPdXeEGr/ow18JKKL2wTxf
+         LMVIxK7H6AegLdykrYg1HvVo2xybmpw5Ncz2bsWFn/5zNWdyybHVBAV/60Er7aryqrrr
+         3+RFCLyxAvTR3BBwSdF7ZEvofTaJBwsjAoqdvjBiq/cdfuyOadKlSS+N82JHyvOFXafd
+         uugZi8vftI95yQQNcjPOHJtNoFqnfH8zoQ1kz5DUcQ5Vb5N+p2GCnxB1n2c9fSYTIYTd
+         u6aZ3acNo9etlUEqbWUPJRWothblIdDcGVP7+nSEOn2fBYWU1X9iv+2NQ7Uv0iGkdlFW
+         br6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=x2ONYko8lOL1nBDH25lfplxwHP04VK/kwi3k1cUKn+E=;
+        b=F+Kas4zd7gyT07FTkv5v6z0Kk1kLaOyzU8uLtMshVtDfWA4K58Qjc0iSb664nfrzF9
+         W4o2T2NzFdWsy6ZiEJoad4HkVY2O8ca3AFQoFp5dUzOKMbyKvWhTcuqoscowWn4yPjbn
+         VBoqJrcsWiJY626g2JLOhyt8vuG9eYSfXxiAO3vSg1pvGQ4nA8DARL91BxYnGkTIS+02
+         csw9ySeaaXR2BMBnRzv1EgKYKysQbwYe0+PVMe/X9mCVa9TjpnynCfNRON9cl3ZhaMPg
+         QCkD4ZuF65T9dffVjVWxcrXmCNojDfM1IjcRmotIaQ7VDzL6y4gz/8d+5u2dc8ZTOrTM
+         gphw==
+X-Gm-Message-State: AO0yUKWm5uyRGt5quxY7hsu0ox0wiCVYwnQ5CVyZEkX+jvw9ua/APg6o
+	j7D+fhzTKU9KDDOYqB7Atx6QSt45Dx8aMgVoZy85xA==
+X-Google-Smtp-Source: AK7set9fcPkR3BEe44mOMFljqcE5dePAc8nQVXRrv9prnVcoAyBUeN5S8E8QrSNgSMq8cxcr62jPqo+N+5d3nJF6Frc=
+X-Received: by 2002:a0c:8c81:0:b0:56c:11df:b0f0 with SMTP id
+ p1-20020a0c8c81000000b0056c11dfb0f0mr545525qvb.81.1675859485960; Wed, 08 Feb
+ 2023 04:31:25 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.13.1
-Subject: =?UTF-8?Q?Re=3a_=5bPATCH=5d_iommu/ipmmu-vmsa=3a_use=c2=a0devm=5fpla?=
- =?UTF-8?Q?tform=5fget=5fand=5fioremap=5fresource=28=29?=
-Content-Language: en-GB
-To: ye.xingchen@zte.com.cn, joro@8bytes.org
-Cc: will@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <202302081605554841069@zte.com.cn>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <202302081605554841069@zte.com.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20230201125328.2186498-1-jean-philippe@linaro.org>
+ <20230201125328.2186498-20-jean-philippe@linaro.org> <Y+JOhEfi8mu1RuOt@google.com>
+In-Reply-To: <Y+JOhEfi8mu1RuOt@google.com>
+From: Mostafa Saleh <smostafa@google.com>
+Date: Wed, 8 Feb 2023 12:31:15 +0000
+Message-ID: <CAFgf54q+R6nQBUAz9Quj8pQiTgKe7R_7BdQ=PWWay0WqDVzL1Q@mail.gmail.com>
+Subject: Re: [RFC PATCH 19/45] KVM: arm64: iommu: Add domains
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: maz@kernel.org, catalin.marinas@arm.com, will@kernel.org, joro@8bytes.org, 
+	robin.murphy@arm.com, james.morse@arm.com, suzuki.poulose@arm.com, 
+	oliver.upton@linux.dev, yuzenghui@huawei.com, dbrazdil@google.com, 
+	ryan.roberts@arm.com, linux-arm-kernel@lists.infradead.org, 
+	kvmarm@lists.linux.dev, iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2023-02-08 08:05, ye.xingchen@zte.com.cn wrote:
-> From: Ye Xingchen <ye.xingchen@zte.com.cn>
-> 
-> Convert platform_get_resource(), devm_ioremap_resource() to a single
-> call to devm_platform_get_and_ioremap_resource(), as this is exactly
-> what this function does.
+On Tue, Feb 7, 2023 at 1:13 PM Mostafa Saleh <smostafa@google.com> wrote:
 
-Not exactly - it also returns the resource data to the caller, which is 
-not needed here. Please use the regular devm_platform_ioremap_resource() 
-in such cases - it's silly to call the overcomplicated function that 
-does two things when you only ever need one of the things.
+> I was wondering about the need for pre-allocation of the domain array.
+>
+> An alternative way I see:
+> - We don=E2=80=99t pre-allocate any domain.
+>
+> - When the EL1 driver has a request to domain_alloc, it will allocate
+> both kernel(iommu_domain) and hypervisor domains(kvm_hyp_iommu_domain).
+>
+> - In __pkvm_host_iommu_alloc_domain, it will take over the hyp struct
+> from the kernel (via donation).
+>
+> - In all other hypercalls, the kernel address of kvm_hyp_iommu_domain wil=
+l
+> be used as domain ID, which guarantees uniqueness and O(1) access.
+>
+> - The hypervisor would just need to transform the address(kern_hyp_va)
+> to get the domain pointer.
 
-Thanks,
-Robin.
 
-> Signed-off-by: Ye Xingchen <ye.xingchen@zte.com.cn>
-> ---
->   drivers/iommu/ipmmu-vmsa.c | 4 +---
->   1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> index bdf1a4e5eae0..aca7ca8b5543 100644
-> --- a/drivers/iommu/ipmmu-vmsa.c
-> +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -967,7 +967,6 @@ static const struct of_device_id ipmmu_of_ids[] = {
->   static int ipmmu_probe(struct platform_device *pdev)
->   {
->   	struct ipmmu_vmsa_device *mmu;
-> -	struct resource *res;
->   	int irq;
->   	int ret;
-> 
-> @@ -987,8 +986,7 @@ static int ipmmu_probe(struct platform_device *pdev)
->   		return ret;
-> 
->   	/* Map I/O memory and request IRQ. */
-> -	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> -	mmu->base = devm_ioremap_resource(&pdev->dev, res);
-> +	mmu->base = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
->   	if (IS_ERR(mmu->base))
->   		return PTR_ERR(mmu->base);
-> 
+This actually will not work with the current sequence, as we can't
+guarantee that the domain_id sent later from the host is trusted, and as
+the domain points to the page table this can be dangerous, I will have a
+closer look to see if we can make this work somehow.
