@@ -1,131 +1,142 @@
-Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67FB52561
-	for <iommu@lists.linux.dev>; Wed,  8 Feb 2023 13:45:05 +0000 (UTC)
-Received: by mail-pj1-f51.google.com with SMTP id j1so12548716pjd.0
-        for <iommu@lists.linux.dev>; Wed, 08 Feb 2023 05:45:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=alfJUZBV+BrVmvoYfSmGRjxyktkbme4Dc/pX5IUBNAo=;
-        b=qOV7ysnAAE47VMzfW+KW7uRQ3waC/E8XmADC10hm4irUlpgyQ7W9iYPxZ4ELgAqlhT
-         LjIlmiu2gGIqass/jeVRMyvjNwUEv+WV5tdMSo2zQLMRN2vxuod8wxnC6nkM3y/R+I+h
-         K8aFy5z+AEHJZW5D7ypP7nruC1fDjCbfW2Ce/nkXTsnVFsJ86n5MCU4QSDWSSK+YQC1V
-         eR7xjDBpbTf+S+YnpbqpO3YFtt4f2FioYXoa7qazR595af1e5Vo1MyyVHSzK9M+3XQCB
-         tZ+YpRzE0Ktq/8lxY6zE8zSXlnjcecUsfEcPZIpiBBxPwscyLA9a8qvnWbtq6WFjvcKS
-         imlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=alfJUZBV+BrVmvoYfSmGRjxyktkbme4Dc/pX5IUBNAo=;
-        b=EwTBSTWWRZXT5gg8TKUNrYi0aJVZjWf61t1dshTkuX4Bvkz+tlt1CR5M0EiUytjhaW
-         OcIECIgf9l9Lwx5DXHMhgJv3rg6T5utqVBhqtTPsRhwLAGMtNvJ1mKQ9TctxEQdyHewN
-         1Gx50mP18R8fDXuNp+f6PZGvX1IRD8S1FdOu+1PIimk+HkINE7rzavVf0d/aTBJRWUSR
-         Rv7zC/l683L1LN4UbpqKttRy7fmzG/z4QDFU2QOXM4QXiyVG5YIvbxVbwxLnwQrEJ2nO
-         EUyD2ShzP0901aF3tl24tZ0OiLp2qxmlM9ms2Vih3AYQeEUVgNs+icx2GbVpLeD8DOkj
-         /CNg==
-X-Gm-Message-State: AO0yUKWcSZPAJ8N7qEYk9D0NXzrW2VTtGu5SRK7W5OVLQcVP3xGeuEro
-	hoEB1Ij0mzZom6IRd10jiro=
-X-Google-Smtp-Source: AK7set+sPEOSedwTYT2y4bNUQKcEXNgoZqhXS89DjZ61bh7BdhGz84e05koI5bATzWm0v/BjRJNztQ==
-X-Received: by 2002:a17:903:120b:b0:194:58c7:ab79 with SMTP id l11-20020a170903120b00b0019458c7ab79mr9146382plh.63.1675863904496;
-        Wed, 08 Feb 2023 05:45:04 -0800 (PST)
-Received: from localhost ([2400:8902::f03c:93ff:fe27:642a])
-        by smtp.gmail.com with ESMTPSA id jc10-20020a17090325ca00b00199190b00efsm6056928plb.97.2023.02.08.05.44.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Feb 2023 05:45:02 -0800 (PST)
-Date: Wed, 8 Feb 2023 13:44:49 +0000
-From: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: torvalds@linux-foundation.org, corbet@lwn.net, will@kernel.org,
-	boqun.feng@gmail.com, mark.rutland@arm.com, catalin.marinas@arm.com,
-	dennis@kernel.org, tj@kernel.org, cl@linux.com, hca@linux.ibm.com,
-	gor@linux.ibm.com, agordeev@linux.ibm.com,
-	borntraeger@linux.ibm.com, svens@linux.ibm.com, tglx@linutronix.de,
-	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-	x86@kernel.org, hpa@zytor.com, joro@8bytes.org,
-	suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
-	dwmw2@infradead.org, baolu.lu@linux.intel.com,
-	Arnd Bergmann <arnd@arndb.de>,
-	Herbert Xu <herbert@gondor.apana.org.au>, davem@davemloft.net,
-	penberg@kernel.org, rientjes@google.com, iamjoonsoo.kim@lge.com,
-	Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz,
-	roman.gushchin@linux.dev, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-	linux-s390@vger.kernel.org, iommu@lists.linux.dev,
-	linux-arch@vger.kernel.org, linux-crypto@vger.kernel.org
-Subject: Re: [PATCH v2 09/10] arch: Remove cmpxchg_double
-Message-ID: <Y+OnUXkKcT2Y7Yiq@localhost>
-References: <20230202145030.223740842@infradead.org>
- <20230202152655.746130134@infradead.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D7AA2C80
+	for <iommu@lists.linux.dev>; Wed,  8 Feb 2023 14:46:54 +0000 (UTC)
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 318CxOJG029158;
+	Wed, 8 Feb 2023 13:19:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding;
+ s=corp-2022-7-12; bh=mE+9p3YOZ5A2VnmUTTG1XvVYzuf+jVwVnx+IylGjcZI=;
+ b=wLNLK21dMcl5prV2+auMhB9iFDEME5ra0N8xXHZfFAZ+IEitX9Uz25FXY841bCXTf2bE
+ W5+1bxf/2Ar9IR1kDm4IeUlWcvMGY5sGxgXtwobh0LDIm46M0wadqcYfhbA4P0r3WX70
+ +t8Ba8/1jTCuwQowLYISiCZ2TAQ21yi4hAnTe9hWnlGFdTYETf/aArI9jSGh2/6xBbnv
+ xCzXLRWJTauqlT8nPHVcCiyz3bWxe/NGx4allWND4gBAXTlXckSe79zefhETUrqvi4Pj
+ Ay72RFTTa2xDNoUQJ6Z5thq7lQaccSkKOqA7Zh8zFKjBQP20dRNjERFt+2cU316o0iKw Bw== 
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3nhfwu821s-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 08 Feb 2023 13:19:46 +0000
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 318DFGNI015917;
+	Wed, 8 Feb 2023 13:19:45 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3njrbbp7nk-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 08 Feb 2023 13:19:45 +0000
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 318DG6gu023485;
+	Wed, 8 Feb 2023 13:19:44 GMT
+Received: from joaomart-mac.uk.oracle.com (dhcp-10-175-178-235.vpn.oracle.com [10.175.178.235])
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3njrbbp7ma-1;
+	Wed, 08 Feb 2023 13:19:44 +0000
+From: Joao Martins <joao.m.martins@oracle.com>
+To: iommu@lists.linux.dev
+Cc: Joerg Roedel <joro@8bytes.org>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
+        kvm@vger.kernel.org, Joao Martins <joao.m.martins@oracle.com>
+Subject: [PATCH v1] iommu/amd: Don't block updates to GATag if guest mode is already on
+Date: Wed,  8 Feb 2023 13:19:38 +0000
+Message-Id: <20230208131938.39898-1-joao.m.martins@oracle.com>
+X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230202152655.746130134@infradead.org>
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
+ definitions=2023-02-08_04,2023-02-08_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 phishscore=0 spamscore=0
+ malwarescore=0 suspectscore=0 mlxscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
+ definitions=main-2302080118
+X-Proofpoint-GUID: hwaleoxYoRRRKzJj6w82_rFKs_HG8klt
+X-Proofpoint-ORIG-GUID: hwaleoxYoRRRKzJj6w82_rFKs_HG8klt
 
-On Thu, Feb 02, 2023 at 03:50:39PM +0100, Peter Zijlstra wrote:
-> No moar users, remove the monster.
-> 
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> ---
->  Documentation/core-api/this_cpu_ops.rst    |    2 -
->  arch/arm64/include/asm/atomic_ll_sc.h      |   33 ----------------
->  arch/arm64/include/asm/atomic_lse.h        |   36 ------------------
->  arch/arm64/include/asm/cmpxchg.h           |   46 -----------------------
->  arch/arm64/include/asm/percpu.h            |   10 -----
->  arch/s390/include/asm/cmpxchg.h            |   34 -----------------
->  arch/s390/include/asm/percpu.h             |   18 ---------
->  arch/x86/include/asm/cmpxchg.h             |   25 ------------
->  arch/x86/include/asm/cmpxchg_32.h          |    1 
->  arch/x86/include/asm/cmpxchg_64.h          |    1 
->  arch/x86/include/asm/percpu.h              |   41 --------------------
->  include/asm-generic/percpu.h               |   58 -----------------------------
->  include/linux/atomic/atomic-instrumented.h |   17 --------
->  include/linux/percpu-defs.h                |   38 -------------------
->  scripts/atomic/gen-atomic-instrumented.sh  |   17 ++------
->  15 files changed, 6 insertions(+), 371 deletions(-)
-> 
-> --- a/arch/x86/include/asm/cmpxchg.h
-> +++ b/arch/x86/include/asm/cmpxchg.h
-> --- a/arch/x86/include/asm/percpu.h
-> +++ b/arch/x86/include/asm/percpu.h
-> @@ -385,30 +368,6 @@ do {									\
->  #define this_cpu_add_return_8(pcp, val)		percpu_add_return_op(8, volatile, pcp, val)
->  #define this_cpu_xchg_8(pcp, nval)		percpu_xchg_op(8, volatile, pcp, nval)
->  #define this_cpu_cmpxchg_8(pcp, oval, nval)	percpu_cmpxchg_op(8, volatile, pcp, oval, nval)
-> -
-> -/*
-> - * Pretty complex macro to generate cmpxchg16 instruction.  The instruction
-> - * is not supported on early AMD64 processors so we must be able to emulate
-> - * it in software.  The address used in the cmpxchg16 instruction must be
-> - * aligned to a 16 byte boundary.
-> - */
-> -#define percpu_cmpxchg16b_double(pcp1, pcp2, o1, o2, n1, n2)		\
-> -({									\
-> -	bool __ret;							\
-> -	typeof(pcp1) __o1 = (o1), __n1 = (n1);				\
-> -	typeof(pcp2) __o2 = (o2), __n2 = (n2);				\
-> -	alternative_io("leaq %P1,%%rsi\n\tcall this_cpu_cmpxchg16b_emu\n\t", \
+On KVM GSI routing table updates, specially those where they have vIOMMUs
+with interrupt remapping enabled (e.g. to boot >255vcpus guests without
+relying on KVM_FEATURE_MSI_EXT_DEST_ID), a VMM may update the backing VF
+MSIs with new VCPU affinities.
 
-I guess now arch/x86/lib/cmpxchg*b_emu.S could be dropped too?
+On AMD this translates to calls to amd_ir_set_vcpu_affinity() and
+eventually to amd_iommu_{de}activate_guest_mode() with a new GATag
+outlining the VM ID and (new) VCPU ID. On vCPU blocking and unblocking
+paths it disables AVIC, and rely on GALog to convey the wakeups to any
+sleeping vCPUs. KVM will store a list of GA-mode IR entries to each
+running/blocked vCPU. So any vCPU Affinity update to a VF interrupt happen
+via KVM, and it will change already-configured-guest-mode IRTEs with a new
+GATag.
 
-> -		       "cmpxchg16b " __percpu_arg(1) "\n\tsetz %0\n\t",	\
-> -		       X86_FEATURE_CX16,				\
-> -		       ASM_OUTPUT2("=a" (__ret), "+m" (pcp1),		\
-> -				   "+m" (pcp2), "+d" (__o2)),		\
-> -		       "b" (__n1), "c" (__n2), "a" (__o1) : "rsi");	\
-> -	__ret;								\
-> -})
-> -
-> -#define raw_cpu_cmpxchg_double_8	percpu_cmpxchg16b_double
-> -#define this_cpu_cmpxchg_double_8	percpu_cmpxchg16b_double
-> -
->  #endif
+The issue is that amd_iommu_activate_guest_mode() will essentially only
+change IRTE fields on transitions from non-guest-mode to guest-mode and
+otherwise returns *with no changes to IRTE* on already configured
+guest-mode interrupts. To the guest this means that the VF interrupts
+remain affined to the first vCPU these were first configured, and guest
+will be unable to either VF interrupts and receive messages like this from
+spurious interrupts (e.g. from waking the wrong vCPU in GALog):
+
+[  167.759472] __common_interrupt: 3.34 No irq handler for vector
+[  230.680927] mlx5_core 0000:00:02.0: mlx5_cmd_eq_recover:247:(pid
+3122): Recovered 1 EQEs on cmd_eq
+[  230.681799] mlx5_core 0000:00:02.0:
+wait_func_handle_exec_timeout:1113:(pid 3122): cmd[0]: CREATE_CQ(0x400)
+recovered after timeout
+[  230.683266] __common_interrupt: 3.34 No irq handler for vector
+
+Given that amd_ir_set_vcpu_affinity() uses amd_iommu_activate_guest_mode()
+underneath it essentially means that VCPU affinity changes of IRTEs are
+nops if it was called once for the IRTE already (on VMENTER). Fix it by
+dropping the check for guest-mode at amd_iommu_activate_guest_mode().  Same
+thing is applicable to amd_iommu_deactivate_guest_mode() although, even if
+the IRTE doesn't change underlying DestID on the host, the VFIO IRQ handler
+will still be able to poke at the right guest-vCPU.
+
+Fixes: b9c6ff94e43a ("iommu/amd: Re-factor guest virtual APIC (de-)activation code")
+Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
+---
+Some notes in other related flaws as I looked at this:
+
+1) amd_iommu_deactivate_guest_mode() suffers from the same issue as this patch,
+but it should only matter for the case where you rely on irqbalance-like
+daemons balancing VFIO IRQs in the hypervisor. Though, it doesn't translate
+into guest failures, more like performance "misdirection". Happy to fix it, if
+folks also deem it as a problem.
+
+2) This patch doesn't attempt at changing semantics around what
+amd_iommu_activate_guest_mode() has been doing for a long time [since v5.4]
+(i.e. clear the whole IRTE and then changes its fields). As such when
+updating the IRTEs the interrupts get isRunning and DestId cleared, thus
+we rely on the GALog to inject IRQs into vCPUs /until/ the vCPUs block
+and unblock again (which is when they update the IOMMU affinity), or the
+AVIC gets momentarily disabled. I have patches that improve this part as a
+follow-up, but I thought that this patch had value on its own onto fixing
+what has been broken since v5.4 ... and that it could be easily carried
+to stable trees.
+
+---
+ drivers/iommu/amd/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index cbeaab55c0db..afe1f35a4dd9 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -3476,7 +3476,7 @@ int amd_iommu_activate_guest_mode(void *data)
+ 	u64 valid;
+ 
+ 	if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir) ||
+-	    !entry || entry->lo.fields_vapic.guest_mode)
++	    !entry)
+ 		return 0;
+ 
+ 	valid = entry->lo.fields_vapic.valid;
+-- 
+2.17.2
+
