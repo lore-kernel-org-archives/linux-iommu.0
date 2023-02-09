@@ -1,38 +1,79 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4080627
-	for <iommu@lists.linux.dev>; Thu,  9 Feb 2023 04:22:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A777AC433A4;
-	Thu,  9 Feb 2023 04:22:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B5B2627
+	for <iommu@lists.linux.dev>; Thu,  9 Feb 2023 04:22:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1454C433EF;
+	Thu,  9 Feb 2023 04:22:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1675916524;
-	bh=6a8IHCccFNXAqRbdKPys5PCrGXhM//ox9j3YLmVPDYY=;
+	s=k20201202; t=1675916532;
+	bh=r896al9/ic3TVzWhQihrH5WWe9yq5i1aPuOB0FJblUQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=lbFOz4zaaTcQ19ymnxXHyCOL2Kx6Md/2lqVLvfsCZy2Y49Mdy2REkslp2kf57ZnJ+
-	 qY+Ej7GN+1O+l+DhggGB20on1OgfTy4senOqv1+egENUEWASMRYjiMuYt0tDsnc/TG
-	 d3E+8tjeE8q1Stl0XOpwhSetg8keMws7DDOPUyAYmZi3zptb3pHh8Blo8KAz5OwdSu
-	 NSHYxYVPh3ZU+D52EP5weulVuLpwCnjsE1hBaeOqNytE7b41gT64BUewuOmwEGqgKI
-	 JWbLF3DTaZKmaYrDSU0oBMa5UE9OzvftqrH1jYM0girzhUiarxzI3FgOyPD3Mrn90O
-	 FKOnjUk9VATMQ==
+	b=BN/W1fmhyUDYnWQNFRl0yiZAlLtkPZOeM9PRJliT8ril6wiUbcRvBv1HMVz8E0tvT
+	 mbyq5LYLXG+Q0iC3FE+j8oPN8wrX8CzcUUbhXZ8fLkv6SW7OFkTdgoSDQ4Z4S7676q
+	 ekM+HlbJO6e1a7rJmpHX2uhrjQmq5U7OdTYpCuhnJvE8DoMV488k6BQ9GV5iJQMl+R
+	 Z4eAbD3zOtPVRjxwl6mYHQRaDOaj1IjnIDvEt0MNJ02q3yVnhiKjhsmUqY3r16pJbp
+	 2l1erYVmeAs/OrQ3L+bCLx5ypvDAgc3kGR5MyqzFDCB3QgSGPs4TzDKRQdWSO0Gb80
+	 XNY+n6Qa5PJyg==
 From: Bjorn Andersson <andersson@kernel.org>
-To: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-	robh+dt@kernel.org,
-	joro@8bytes.org,
-	krzysztof.kozlowski+dt@linaro.org,
-	will@kernel.org
-Cc: konrad.dybcio@linaro.org,
-	devicetree@vger.kernel.org,
-	dmitry.baryshkov@linaro.org,
+To: Rob Clark <robdclark@gmail.com>,
+	Eric Dumazet <edumazet@google.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Jakub Kicinski <kuba@kernel.org>,
+	"James E.J. Bottomley" <jejb@linux.ibm.com>,
+	Elliot Berman <quic_eberman@quicinc.com>,
+	Mathieu Poirier <mathieu.poirier@linaro.org>,
+	Adrian Hunter <adrian.hunter@intel.com>,
+	Andy Gross <agross@kernel.org>,
+	"Martin K. Petersen" <martin.petersen@oracle.com>,
+	Alex Elder <elder@kernel.org>,
+	Sean Paul <sean@poorly.run>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Kalle Valo <kvalo@kernel.org>,
+	Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Arnd Bergmann <arnd@arndb.de>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	Abhinav Kumar <quic_abhinavk@quicinc.com>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+	Will Deacon <will@kernel.org>,
+	Thara Gopinath <thara.gopinath@gmail.com>,
+	Vikash Garodia <quic_vgarodia@quicinc.com>,
+	David Airlie <airlied@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+	Daniel Vetter <daniel@ffwll.ch>,
+	Amit Kucheria <amitk@kernel.org>,
+	Amol Maheshwari <amahesh@qti.qualcomm.com>,
+	Zhang Rui <rui.zhang@intel.com>,
+	Ulf Hansson <ulf.hansson@linaro.org>
+Cc: linux-pm@vger.kernel.org,
+	linux-gpio@vger.kernel.org,
+	linux-mmc@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-remoteproc@vger.kernel.org,
+	linux-wireless@vger.kernel.org,
+	linux-media@vger.kernel.org,
+	linux-scsi@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	ath10k@lists.infradead.org,
+	freedreno@lists.freedesktop.org,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
+	netdev@vger.kernel.org,
 	linux-arm-msm@vger.kernel.org
-Subject: Re: (subset) [PATCH 0/3] Fix SMMU on SDX55 and SDX65
-Date: Wed,  8 Feb 2023 20:23:20 -0800
-Message-Id: <167591660366.1230100.12722515257767815828.b4-ty@kernel.org>
+Subject: Re: [PATCH] firmware: qcom_scm: Move qcom_scm.h to include/linux/firmware/qcom/
+Date: Wed,  8 Feb 2023 20:23:26 -0800
+Message-Id: <167591660372.1230100.2523010471979974316.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.39.1
-In-Reply-To: <20230123131931.263024-1-manivannan.sadhasivam@linaro.org>
-References: <20230123131931.263024-1-manivannan.sadhasivam@linaro.org>
+In-Reply-To: <20230203210956.3580811-1-quic_eberman@quicinc.com>
+References: <20230203210956.3580811-1-quic_eberman@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,23 +83,17 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Mon, 23 Jan 2023 18:49:28 +0530, Manivannan Sadhasivam wrote:
-> Both SDX55 and SDX65 SoCs are using the Qcom version of the ARM SMMU-500
-> IP. Even though the SoC specfic compatibles were being used in devicetree,
-> the compatibles were not added to the arm-smmu-qcom driver. So they end up
-> using the generic ARM SMMU-500 driver instead.
+On Fri, 3 Feb 2023 13:09:52 -0800, Elliot Berman wrote:
+> Move include/linux/qcom_scm.h to include/linux/firmware/qcom/qcom_scm.h.
+> This removes 1 of a few remaining Qualcomm-specific headers into a more
+> approciate subdirectory under include/.
 > 
-> Spotting this discrepancy, the recent arm,smmu bindings change moved these
-> SoCs under the non-qcom implementation of the SMMU.
 > 
-> [...]
 
 Applied, thanks!
 
-[2/3] ARM: dts: qcom: sdx55: Add Qcom SMMU-500 as the fallback for IOMMU node
-      commit: af4ab377543853b690cc85b4c46cf976ab560dc2
-[3/3] ARM: dts: qcom: sdx65: Add Qcom SMMU-500 as the fallback for IOMMU node
-      commit: 157178a7912e00a0aa0371dc9041952c1a21d112
+[1/1] firmware: qcom_scm: Move qcom_scm.h to include/linux/firmware/qcom/
+      commit: 3bf90eca76c98c55c975fa817799789b9176f9f3
 
 Best regards,
 -- 
