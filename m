@@ -1,32 +1,32 @@
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE79A627
-	for <iommu@lists.linux.dev>; Thu,  9 Feb 2023 04:16:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54970634
+	for <iommu@lists.linux.dev>; Thu,  9 Feb 2023 04:16:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675916208; x=1707452208;
+  t=1675916210; x=1707452210;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=yLfWIPfMZf4ex+xdPNvOR4QIAocyXgXzIiZTA67s30A=;
-  b=Pi9xs+rZbc/Qd9yPRWaWD9sTr6RsSwgNVK1gUn5i6UaXw8ob3Cgp0zKz
-   5HgFBRLmwAlg/Cx1lLECRpyX9Pt+UhwfAvuhdWixI3z88iO5/gbn4Qtdr
-   0sOUaVi+WxXVe2PfzrbwioBcS3FPGhVOmrxqUCMWfn6//OcfvisvAuM5G
-   V874k3/ev6iTSMu3bAJzlo1W70eY9LDURzd8LrFbwCgGkotEKpMMRKKMw
-   0vOR4uV1P4lnLus4s6oZp5JgjQDkud9DX3k3yPcrsqdhpH94fiocL9cWx
-   eWo247leILR4oUW6SZ3z8nSBrSTCrBCn4LCWQ/x1R5cGcxPymRlQHcp4g
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="394600706"
+  bh=FHpZ/QqiMDOUDlV/6MH/yoSElx9gu3oQTNg7c3bopYs=;
+  b=DpweOg0TbEXqdiv/QxMKFRueOcwKPeeisrWDuUfAQjKl3+Zf3szLvFBf
+   J9YovCOaYgkUpqtm3BzA+KpU89CESHzd7H53WQB3Q7ILcPYIH9DiVSPmH
+   vEJK2r5Si/dD19PzTLapS/3SaYQBXHWEtKAqCaoi9yr8PSR+SwYCBFt+o
+   ovYOR/jb0+34AgeCeiAj1kGajGD/3vCctiiA8bCXTgijkkdKGAaGpF0ze
+   TeVYEdgyjkZWZijpsx6p7kzh+Jgrjquhv7zv/V1se+59ugAJMIOyUIUe6
+   5yVO1sOEdR5v8+nGWu76hqJAKvBPc7JUmF6Pttz9cLvKqd/97nae+yIyb
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="394600720"
 X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
-   d="scan'208";a="394600706"
+   d="scan'208";a="394600720"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 20:16:48 -0800
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 20:16:49 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="912982084"
+X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="912982088"
 X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
-   d="scan'208";a="912982084"
+   d="scan'208";a="912982088"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga006.fm.intel.com with ESMTP; 08 Feb 2023 20:16:45 -0800
+  by fmsmga006.fm.intel.com with ESMTP; 08 Feb 2023 20:16:47 -0800
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -50,9 +50,9 @@ Cc: cohuck@redhat.com,
 	linux-kernel@vger.kernel.org,
 	linux-kselftest@vger.kernel.org,
 	baolu.lu@linux.intel.com
-Subject: [PATCH 1/6] iommu: Add new iommu op to get iommu hardware information
-Date: Wed,  8 Feb 2023 20:16:37 -0800
-Message-Id: <20230209041642.9346-2-yi.l.liu@intel.com>
+Subject: [PATCH 2/6] iommu/vt-d: Implement hw_info for iommu capability query
+Date: Wed,  8 Feb 2023 20:16:38 -0800
+Message-Id: <20230209041642.9346-3-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230209041642.9346-1-yi.l.liu@intel.com>
 References: <20230209041642.9346-1-yi.l.liu@intel.com>
@@ -66,80 +66,104 @@ Content-Transfer-Encoding: 8bit
 
 From: Lu Baolu <baolu.lu@linux.intel.com>
 
-Introduce a new iommu op get the IOMMU hardware capabilities for iommufd.
-This information will be used by any vIOMMU driver which is owned by
-userspace.
+To support nested translation in the userspace, it should check the
+underlying hardware information for the capabilities.
 
-This op chooses to make the special parameters opaque to the core. This
-suits the current usage model where accessing any of the IOMMU device
-special parameters does require a userspace driver that matches the kernel
-driver. If a need for common parameters, implemented similarly by several
-drivers, arises then there is room in the design to grow a generic parameter
-set as well. No warpper API is added as it is supposed to be used by
-iommufd only.
+Add intel_iommu_hw_info() to report cap_reg and ecap_reg information.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+Signed-off-by: Yi Sun <yi.y.sun@linux.intel.com>
 ---
- include/linux/iommu.h        | 8 ++++++++
- include/uapi/linux/iommufd.h | 6 ++++++
- 2 files changed, 14 insertions(+)
+ drivers/iommu/intel/iommu.c  | 19 +++++++++++++++++++
+ drivers/iommu/intel/iommu.h  |  1 +
+ include/uapi/linux/iommufd.h | 21 +++++++++++++++++++++
+ 3 files changed, 41 insertions(+)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index cb586d054c57..97b398d19fd2 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -15,6 +15,7 @@
- #include <linux/of.h>
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 59df7e42fd53..929f600cc350 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4760,8 +4760,26 @@ static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
+ 	intel_pasid_tear_down_entry(iommu, dev, pasid, false);
+ }
+ 
++static void *intel_iommu_hw_info(struct device *dev, u32 *length)
++{
++	struct device_domain_info *info = dev_iommu_priv_get(dev);
++	struct intel_iommu *iommu = info->iommu;
++	struct iommu_device_info_vtd *vtd;
++
++	vtd = kzalloc(sizeof(*vtd), GFP_KERNEL);
++	if (!vtd)
++		return ERR_PTR(-ENOMEM);
++
++	vtd->cap_reg = iommu->cap;
++	vtd->ecap_reg = iommu->ecap;
++	*length = sizeof(*vtd);
++
++	return vtd;
++}
++
+ const struct iommu_ops intel_iommu_ops = {
+ 	.capable		= intel_iommu_capable,
++	.hw_info		= intel_iommu_hw_info,
+ 	.domain_alloc		= intel_iommu_domain_alloc,
+ 	.probe_device		= intel_iommu_probe_device,
+ 	.probe_finalize		= intel_iommu_probe_finalize,
+@@ -4774,6 +4792,7 @@ const struct iommu_ops intel_iommu_ops = {
+ 	.def_domain_type	= device_def_domain_type,
+ 	.remove_dev_pasid	= intel_iommu_remove_dev_pasid,
+ 	.pgsize_bitmap		= SZ_4K,
++	.driver_type		= IOMMU_DEVICE_DATA_INTEL_VTD,
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ 	.page_response		= intel_svm_page_response,
+ #endif
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 06e61e474856..2e70265d4ceb 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -22,6 +22,7 @@
  #include <linux/ioasid.h>
- #include <uapi/linux/iommu.h>
+ #include <linux/bitfield.h>
+ #include <linux/xarray.h>
 +#include <uapi/linux/iommufd.h>
  
- #define IOMMU_READ	(1 << 0)
- #define IOMMU_WRITE	(1 << 1)
-@@ -223,6 +224,11 @@ struct iommu_iotlb_gather {
- /**
-  * struct iommu_ops - iommu ops and capabilities
-  * @capable: check capability
-+ * @hw_info: IOMMU hardware capabilities. The type of the returned data is
-+ *           defined in include/uapi/linux/iommufd.h. The data buffer is
-+ *           allocated in the IOMMU driver and the caller should free it
-+ *           after use. Return the data buffer if success, or ERR_PTR on
-+ *	      failure.
-  * @domain_alloc: allocate iommu domain
-  * @probe_device: Add device to iommu driver handling
-  * @release_device: Remove device from iommu driver handling
-@@ -252,6 +258,7 @@ struct iommu_iotlb_gather {
-  */
- struct iommu_ops {
- 	bool (*capable)(struct device *dev, enum iommu_cap);
-+	void *(*hw_info)(struct device *dev, u32 *length);
- 
- 	/* Domain allocation and freeing by the iommu driver */
- 	struct iommu_domain *(*domain_alloc)(unsigned iommu_domain_type);
-@@ -280,6 +287,7 @@ struct iommu_ops {
- 	void (*remove_dev_pasid)(struct device *dev, ioasid_t pasid);
- 
- 	const struct iommu_domain_ops *default_domain_ops;
-+	enum iommu_device_data_type driver_type;
- 	unsigned long pgsize_bitmap;
- 	struct module *owner;
- };
+ #include <asm/cacheflush.h>
+ #include <asm/iommu.h>
 diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index 98ebba80cfa1..2309edb55028 100644
+index 2309edb55028..fda75c8450ee 100644
 --- a/include/uapi/linux/iommufd.h
 +++ b/include/uapi/linux/iommufd.h
-@@ -344,4 +344,10 @@ struct iommu_vfio_ioas {
- 	__u16 __reserved;
- };
- #define IOMMU_VFIO_IOAS _IO(IOMMUFD_TYPE, IOMMUFD_CMD_VFIO_IOAS)
+@@ -347,7 +347,28 @@ struct iommu_vfio_ioas {
+ 
+ /**
+  * enum iommu_device_data_type - IOMMU hardware Data types
++ * @IOMMU_DEVICE_DATA_INTEL_VTD: Intel VT-d iommu data type
+  */
+ enum iommu_device_data_type {
++	IOMMU_DEVICE_DATA_INTEL_VTD = 1,
++};
 +
 +/**
-+ * enum iommu_device_data_type - IOMMU hardware Data types
++ * struct iommu_device_info_vtd - Intel VT-d device info
++ *
++ * @flags: Must be set to 0
++ * @__reserved: Must be 0
++ * @cap_reg: Value of Intel VT-d capability register defined in chapter
++ *	     11.4.2 of Intel VT-d spec.
++ * @ecap_reg: Value of Intel VT-d capability register defined in chapter
++ *	     11.4.3 of Intel VT-d spec.
++ *
++ * Intel hardware iommu capability.
 + */
-+enum iommu_device_data_type {
-+};
++struct iommu_device_info_vtd {
++	__u32 flags;
++	__u32 __reserved;
++	__aligned_u64 cap_reg;
++	__aligned_u64 ecap_reg;
+ };
  #endif
 -- 
 2.34.1
