@@ -1,152 +1,104 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2072.outbound.protection.outlook.com [40.107.94.72])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7A4A6D1B
-	for <iommu@lists.linux.dev>; Thu,  9 Feb 2023 16:19:40 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Rssut8R6XR08sLWN9OToOOXDu6xNQx5GC60bI+zFpm5HNz7XPlz/BH8zluv4v9Fuk6A4+IyP32FLBoo5kFMwOszbusMa7F7avantGRu/pjJ+nAR2mqSVo1nYHgB0VlxvsDhYxFb3IJR7gwV1lARAu9F3Xn8k2XGrqBmiQSFRLcWTEWr19Zo1MpbsNTpcxB0A2hlyzqrhf1TuKN1DOYYC0mufaOhICO9XXb5ovadQMP+VoCx4wxU1szEp93TKFpu4o4J6KQ8CRx0sk6aTyqp9l3BrmR9uqja8oTIXyVYQBs9XEaTAY4J8PL4IKA0lPaDiP05fy3RSyE/p0NhMLHg8bg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CO/ZXq5XATc6aa6+0Ckd/maHZ/f0WVz/Vql93RopThU=;
- b=KfvF8/B3SYszVEpSOJgDB60ij6jLKLVJFEUjPI5SH/5wnonwtb3GxPB8u6fl4vmIRn2tDCoBRTtCTpSilif4eDitsI27+ZelSF3kNP6M8PEHE9mb3DFCqOHArv2dt6qucFKAlIH29zb4fBU4/fi6EyyWPi/I8kgztnqGf3gMVttW+1opKb/sFljAW2KSyTGA9TwzRYoS7hJSsxdKou4Rn51HjY4q/Zm5hSBj/teQ59MCApZiOgJD109tLMKIzXn0ElW5GkUJ1zRJh8ZMK3NYPEK4AFPelcuyNegOPGCy1Fb8F1SfGJ+572RnZS7uq+PLo6yrRg52anEgfNO5xwS3TQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CO/ZXq5XATc6aa6+0Ckd/maHZ/f0WVz/Vql93RopThU=;
- b=YnAnsi8ukxFpy3x5d/Cb/iOAnx8L3Dmk8u0xFSzsWFr2eM7VoJQ9wQUBpZ1mYOwKxhTkfU/yrvDAfvpP/l6/nG1HOWSOvEGBSDw0Lg2whyE/ZSA8nGxCYBTCOcOq43dBsMUGV1UKzFgIn3JzunmV/r5wpGre74KWCwPTZa7ScDAzbFGMpXONpHrAu1V/PShisDCeJN4ExoT6lt9o1qOZm10LSZYokgnY9aMaQG8Z69A9a92FeyEYzWdLfM+x72nc/0ryGMvbpYFlehHIXDpXpq8BeW8US16F42sZ9/rqomA1qv0yBWzISIkHJy516N/wxs+aHZwPfMA38N/ljqDbdw==
-Received: from BN9PR03CA0339.namprd03.prod.outlook.com (2603:10b6:408:f6::14)
- by CH3PR12MB8281.namprd12.prod.outlook.com (2603:10b6:610:128::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.17; Thu, 9 Feb
- 2023 16:19:38 +0000
-Received: from BL02EPF000108E9.namprd05.prod.outlook.com
- (2603:10b6:408:f6:cafe::c) by BN9PR03CA0339.outlook.office365.com
- (2603:10b6:408:f6::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.19 via Frontend
- Transport; Thu, 9 Feb 2023 16:19:38 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- BL02EPF000108E9.mail.protection.outlook.com (10.167.241.202) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6086.16 via Frontend Transport; Thu, 9 Feb 2023 16:19:37 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 9 Feb 2023
- 08:19:21 -0800
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.36; Thu, 9 Feb 2023 08:19:20 -0800
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.126.190.180)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36 via Frontend
- Transport; Thu, 9 Feb 2023 08:19:20 -0800
-Date: Thu, 9 Feb 2023 08:19:18 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: "Tian, Kevin" <kevin.tian@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
-	<robin.murphy@arm.com>, "alex.williamson@redhat.com"
-	<alex.williamson@redhat.com>, "shuah@kernel.org" <shuah@kernel.org>, "Liu, Yi
- L" <yi.l.liu@intel.com>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v2 10/10] vfio: Do not allow !ops->dma_unmap in
- vfio_pin/unpin_pages()
-Message-ID: <Y+UdBvoSb90cCa40@Asurada-Nvidia>
-References: <cover.1675802050.git.nicolinc@nvidia.com>
- <59e5eeac675172ab1cb07236a3eb3e166553fe71.1675802050.git.nicolinc@nvidia.com>
- <BN9PR11MB527687E27FC35CD842E4EA7B8CD99@BN9PR11MB5276.namprd11.prod.outlook.com>
- <Y+T0d9ox3KnqMDIL@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4989C64A
+	for <iommu@lists.linux.dev>; Thu,  9 Feb 2023 17:01:48 +0000 (UTC)
+Received: by mail-qv1-f45.google.com with SMTP id j6so1774307qvm.1
+        for <iommu@lists.linux.dev>; Thu, 09 Feb 2023 09:01:48 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=u6eP2iG0J519XNQxcdOCAFcleHBjRH+XT7X5573aPPQ=;
+        b=he+8+1l5Tef+l5ZYfbbjbuHKQEnOnBGZInsBbyUZf9Gf1WRQjD5wzr7KYbpXoJowva
+         SHbYcD6T1eaWCPG9Cs0XXFSbUVutpkiV+8rxYPcOmXF5PV7IYyXIbpwCpwWcckiPyM6o
+         rUZVFZdANiSc1UujT0TH5HeYeSarwTTxXEo4H/7uG/dLJGsbtj/q1o+QYE13uHUcdy0/
+         sJtwSI2I1Xb1UuZdzvBKXY5bm/Q2ACH5R7iTSKeWNZ3wFBko/XkGZ3jBUPzCH0OFauL9
+         bxOhyqWZuWpDUC7dhSFJud41m+PvgDrGoYpn7R5caXVVQz4GmcXnwshvyvQuwBRipth1
+         0uiw==
+X-Gm-Message-State: AO0yUKXKjgLH47tfNYRa2+wYBN4ehlOTpEh3tTxka748PCLQ4sZDZ9N1
+	hFNigyO2zBXyaVHsbw1Lp44RmrQrLfTOkURa
+X-Google-Smtp-Source: AK7set+P7aLMdvmRX8HBZUt1XonyN2SULjrzKTh5FT/r3h0cBUEUdkDgKBSd51x7G5+TtR2GFr6oAA==
+X-Received: by 2002:a05:6214:765:b0:56c:20e1:2669 with SMTP id f5-20020a056214076500b0056c20e12669mr8540791qvz.42.1675962106861;
+        Thu, 09 Feb 2023 09:01:46 -0800 (PST)
+Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com. [209.85.128.171])
+        by smtp.gmail.com with ESMTPSA id b124-20020a379982000000b0071bfeaf5688sm1736682qke.72.2023.02.09.09.01.46
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Feb 2023 09:01:46 -0800 (PST)
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-4a263c4ddbaso34172277b3.0
+        for <iommu@lists.linux.dev>; Thu, 09 Feb 2023 09:01:46 -0800 (PST)
+X-Received: by 2002:a0d:e9c1:0:b0:514:a90f:10ea with SMTP id
+ s184-20020a0de9c1000000b00514a90f10eamr1125133ywe.316.1675962105673; Thu, 09
+ Feb 2023 09:01:45 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <Y+T0d9ox3KnqMDIL@nvidia.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF000108E9:EE_|CH3PR12MB8281:EE_
-X-MS-Office365-Filtering-Correlation-Id: f76cfd41-2942-48af-186a-08db0ab970f9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	mmDaQRCo8hzKq/Q3D3iK2e/moQnKq4tsF+VKItaA5fP8LGZWpR5FSg3YVLvxqes6/XKjfXvVUN5kxLfUqjYKIybGQC3VCid54LtRaSk72G1eEDVH3B0xBEFhEst4W/7STJJ3VBmW7MgapHB6eOMDRV1sgqsqU/pjcsTbTHgwUKJ83c4nCTDE+ODk+AL3LTQZ8n8xVPihNfqJsHpveuuH5FheeJcri3BTYvHpYFI46HYqZ0kJbKOimWPVKH2FhFDYL4HdGEphjtfqqOtv1qABcKNyXUJkNzcl01cu6UP45AUUsOdnaTBfl1XeVY0lx5G4kTGVToxkLuPCOVcsHZuPCsNFVk2066f7r13Jgia6Po58zCcsFCFTqVuv0X6/g6pQOtBpL1XdTNZU7tfbLcCLG/STlNQcIUDoFrwPCc3woA6esIwVsoHBWtuaZ1NAjWG0Xqik6+dZT8gBGV5LI/IqtA6ht22nSKI2+oWSk4wQqOthGXhPEzv8OBAp4UW7PM3YoZUKaIriYC2P3/BynKRdQufJZbGAjLsySRPxwKYqWVGlGz9QzRhknhsqQ95xCrhFMn1mGJ9Qy8RBbfE7GWNAk28ir5Dz8LwmlSWhcB71y/2NRcwkFjiMK0WYnjXqnKNfuDOJDIpP0nkDc0knmBHJ9ZXXdlTnbCIqWiXIDF+h2YuDpP9JlzNQqAdYcBi7HWeJoV6OfivediN4m+OGUditg4yG4cJKhcoHcmsycHRngxk=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(396003)(136003)(346002)(39860400002)(376002)(451199018)(46966006)(36840700001)(40470700004)(4326008)(70586007)(70206006)(8676002)(336012)(36860700001)(7636003)(316002)(33716001)(6636002)(40460700003)(83380400001)(54906003)(86362001)(426003)(5660300002)(7416002)(478600001)(356005)(186003)(26005)(9686003)(2906002)(47076005)(82740400003)(41300700001)(82310400005)(8936002)(6862004)(55016003)(40480700001)(67856001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2023 16:19:37.7876
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f76cfd41-2942-48af-186a-08db0ab970f9
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL02EPF000108E9.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8281
+References: <20230209133440.2643228-1-yoshihiro.shimoda.uh@renesas.com> <167595345406.213374.1795032702431324096.robh@kernel.org>
+In-Reply-To: <167595345406.213374.1795032702431324096.robh@kernel.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Thu, 9 Feb 2023 18:01:32 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdV_i8crAKW3yxpHWw7MXYsrdpUh4JH6PQZ_kr+qVViH4A@mail.gmail.com>
+Message-ID: <CAMuHMdV_i8crAKW3yxpHWw7MXYsrdpUh4JH6PQZ_kr+qVViH4A@mail.gmail.com>
+Subject: Re: [PATCH v3] dt-bindings: iommu: renesas,ipmmu-vmsa: Update for
+ R-Car Gen4
+To: Rob Herring <robh@kernel.org>
+Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, will@kernel.org, 
+	iommu@lists.linux.dev, joro@8bytes.org, krzysztof.kozlowski+dt@linaro.org, 
+	devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org, 
+	robh+dt@kernel.org, robin.murphy@arm.com
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, Feb 09, 2023 at 09:26:15AM -0400, Jason Gunthorpe wrote:
-> On Thu, Feb 09, 2023 at 04:10:04AM +0000, Tian, Kevin wrote:
-> > > From: Nicolin Chen <nicolinc@nvidia.com>
-> > > Sent: Wednesday, February 8, 2023 5:18 AM
-> > > 
-> > > A driver that doesn't implement ops->dma_unmap shouldn't be allowed to
-> > > do
-> > > vfio_pin/unpin_pages(), though it can use vfio_dma_rw() to access an iova
-> > > range. Deny !ops->dma_unmap cases in vfio_pin/unpin_pages().
-> > > 
-> > > Suggested-by: Kevin Tian <kevin.tian@intel.com>
-> > > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> > > ---
-> > >  drivers/vfio/vfio_main.c | 4 ++++
-> > >  1 file changed, 4 insertions(+)
-> > > 
-> > > diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
-> > > index 8559c3dfb335..c7f3251ad6e5 100644
-> > > --- a/drivers/vfio/vfio_main.c
-> > > +++ b/drivers/vfio/vfio_main.c
-> > > @@ -1543,6 +1543,8 @@ int vfio_pin_pages(struct vfio_device *device,
-> > > dma_addr_t iova,
-> > > 
-> > >  		if (iova > ULONG_MAX)
-> > >  			return -EINVAL;
-> > > +		if (!device->ops->dma_unmap)
-> > > +			return -EINVAL;
-> > >  		/*
-> > >  		 * VFIO ignores the sub page offset, npages is from the start
-> > > of
-> > >  		 * a PAGE_SIZE chunk of IOVA. The caller is expected to
-> > > recover
-> > > @@ -1580,6 +1582,8 @@ void vfio_unpin_pages(struct vfio_device *device,
-> > > dma_addr_t iova, int npage)
-> > >  	if (device->iommufd_access) {
-> > >  		if (WARN_ON(iova > ULONG_MAX))
-> > >  			return;
-> > > +		if (!device->ops->dma_unmap)
-> > > +			return;
-> > 
-> > IMHO this restriction applies to both iommufd and legacy container.
-> 
-> Yeah that makes sense
+Hi Rob,
 
-Will move them to the beginning of vfio_pin_pages/vfio_unpin_pages.
+On Thu, Feb 9, 2023 at 3:54 PM Rob Herring <robh@kernel.org> wrote:
+> On Thu, 09 Feb 2023 22:34:40 +0900, Yoshihiro Shimoda wrote:
+> > Since R-Car Gen4 doens't have the main IPMMU IMSSTR register, update
+> > the renesas,ipmmu-main property which sets maxItems as 1.
+> >
+> > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> > ---
+> > Changes from v2:
+> > https://lore.kernel.org/all/20230127140446.1728102-1-yoshihiro.shimoda.uh@renesas.com/
+> >  - Set maxItems to renesas,ipmmu-main if R-Car Gen4.
+> >
+> > Changes from v1:
+> > https://lore.kernel.org/all/20230123012940.1250879-1-yoshihiro.shimoda.uh@renesas.com/
+> >  - Change number of argument for R-Car Gen4 instead of "module id".
+> >    On the discussion, using 'minItems' is a solution. But, it causes
+> >    "too short" errors on dtbs_check. So, using "oneOf" instead.
+> >
+> >  .../bindings/iommu/renesas,ipmmu-vmsa.yaml    | 19 ++++++++++++++-----
+> >  1 file changed, 14 insertions(+), 5 deletions(-)
+> >
+>
+> Running 'make dtbs_check' with the schema in this patch gives the
+> following warnings. Consider if they are expected or the schema is
+> incorrect. These may not be new warnings.
+>
+> Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+> This will change in the future.
+>
+> Full log is available here: https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230209133440.2643228-1-yoshihiro.shimoda.uh@renesas.com
+>
+>
+> iommu@ee480000: renesas,ipmmu-main: [[40], [10]] is too long
+>         arch/arm64/boot/dts/renesas/r8a779f0-spider.dtb
 
-Thanks
-Nic
+This is expected, as we're changing the bindings to match the (updated)
+documentation, but haven't updated the DTS yet.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
