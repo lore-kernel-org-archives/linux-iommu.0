@@ -1,90 +1,124 @@
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A1D5533ED
-	for <iommu@lists.linux.dev>; Thu,  9 Feb 2023 13:39:55 +0000 (UTC)
-X-IronPort-AV: E=Sophos;i="5.97,283,1669042800"; 
-   d="scan'208";a="152256220"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 09 Feb 2023 22:34:46 +0900
-Received: from localhost.localdomain (unknown [10.166.15.32])
-	by relmlir6.idc.renesas.com (Postfix) with ESMTP id 8D19743638B8;
-	Thu,  9 Feb 2023 22:34:46 +0900 (JST)
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To: joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	robh+dt@kernel.org,
-	krzysztof.kozlowski+dt@linaro.org
-Cc: iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: [PATCH v3] dt-bindings: iommu: renesas,ipmmu-vmsa: Update for R-Car Gen4
-Date: Thu,  9 Feb 2023 22:34:40 +0900
-Message-Id: <20230209133440.2643228-1-yoshihiro.shimoda.uh@renesas.com>
-X-Mailer: git-send-email 2.25.1
+Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AA32370
+	for <iommu@lists.linux.dev>; Thu,  9 Feb 2023 14:46:18 +0000 (UTC)
+Received: by mail-ot1-f51.google.com with SMTP id d21-20020a056830005500b0068bd2e0b25bso598354otp.1
+        for <iommu@lists.linux.dev>; Thu, 09 Feb 2023 06:46:18 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=date:subject:message-id:references:in-reply-to:cc:to:from
+         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=L0IsK2xSsS5OLgO8WkubMEfQeWPK1YLozz7woppgDfo=;
+        b=IiCaZoEoEZWPo54GVU2wzJEoXH+OR49+HOkPLb7OL9vLof1XcdsHPLsRuwqw57etka
+         N567ysXanapWInEh3nOToW7X5o7dD93lta+oo0x6ko7+qUoJarqS/j9qqN06ZQz5zQFg
+         m5W7uKdJXQJqIhXIDxsS7Kt/9C4ESvMYhaS3B0OfNGOiobRDbmtMA19lrIm29RPveI9l
+         idl70UoMItgpppEs4RP+qCdGF/o+Br8usnI3HwPtspmHUWjAnKOMvX2UtcS43WggiJMa
+         WAEcckT6ggemqtLcPk3TZXcunBaPk3XVuruTv35mgpmAshWlzDMm4vuifdG0fD+uEPZD
+         l+tg==
+X-Gm-Message-State: AO0yUKXw95ot4Fby7G5nFa3g2+JH6d+lCr/pp3/MSUXXupSHGvyykVHd
+	QCGKb47P/ReXVA+SZjjKiw==
+X-Google-Smtp-Source: AK7set+q5OalpUjikAsspoQdb8nUMQnZ0KiQ2l5msb6Jvx61NEus/27RAUZRuZ5dYtRx9n0wbx6Q5w==
+X-Received: by 2002:a05:6830:410c:b0:68b:e109:c40f with SMTP id w12-20020a056830410c00b0068be109c40fmr7637238ott.26.1675953977627;
+        Thu, 09 Feb 2023 06:46:17 -0800 (PST)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id h23-20020a9d6f97000000b006884c42a38asm757231otq.41.2023.02.09.06.46.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Feb 2023 06:46:17 -0800 (PST)
+Received: (nullmailer pid 222556 invoked by uid 1000);
+	Thu, 09 Feb 2023 14:46:16 -0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: Rob Herring <robh@kernel.org>
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: will@kernel.org, iommu@lists.linux.dev, joro@8bytes.org, krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org, robh+dt@kernel.org, robin.murphy@arm.com
+In-Reply-To: <20230209133440.2643228-1-yoshihiro.shimoda.uh@renesas.com>
+References: <20230209133440.2643228-1-yoshihiro.shimoda.uh@renesas.com>
+Message-Id: <167595345406.213374.1795032702431324096.robh@kernel.org>
+Subject: Re: [PATCH v3] dt-bindings: iommu: renesas,ipmmu-vmsa: Update for
+ R-Car Gen4
+Date: Thu, 09 Feb 2023 08:46:16 -0600
 
-Since R-Car Gen4 doens't have the main IPMMU IMSSTR register, update
-the renesas,ipmmu-main property which sets maxItems as 1.
 
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
----
-Changes from v2:
-https://lore.kernel.org/all/20230127140446.1728102-1-yoshihiro.shimoda.uh@renesas.com/
- - Set maxItems to renesas,ipmmu-main if R-Car Gen4.
+On Thu, 09 Feb 2023 22:34:40 +0900, Yoshihiro Shimoda wrote:
+> Since R-Car Gen4 doens't have the main IPMMU IMSSTR register, update
+> the renesas,ipmmu-main property which sets maxItems as 1.
+> 
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> ---
+> Changes from v2:
+> https://lore.kernel.org/all/20230127140446.1728102-1-yoshihiro.shimoda.uh@renesas.com/
+>  - Set maxItems to renesas,ipmmu-main if R-Car Gen4.
+> 
+> Changes from v1:
+> https://lore.kernel.org/all/20230123012940.1250879-1-yoshihiro.shimoda.uh@renesas.com/
+>  - Change number of argument for R-Car Gen4 instead of "module id".
+>    On the discussion, using 'minItems' is a solution. But, it causes
+>    "too short" errors on dtbs_check. So, using "oneOf" instead.
+> 
+>  .../bindings/iommu/renesas,ipmmu-vmsa.yaml    | 19 ++++++++++++++-----
+>  1 file changed, 14 insertions(+), 5 deletions(-)
+> 
 
-Changes from v1:
-https://lore.kernel.org/all/20230123012940.1250879-1-yoshihiro.shimoda.uh@renesas.com/
- - Change number of argument for R-Car Gen4 instead of "module id".
-   On the discussion, using 'minItems' is a solution. But, it causes
-   "too short" errors on dtbs_check. So, using "oneOf" instead.
+Running 'make dtbs_check' with the schema in this patch gives the
+following warnings. Consider if they are expected or the schema is
+incorrect. These may not be new warnings.
 
- .../bindings/iommu/renesas,ipmmu-vmsa.yaml    | 19 ++++++++++++++-----
- 1 file changed, 14 insertions(+), 5 deletions(-)
+Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+This will change in the future.
 
-diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-index 72308a4c14e7..cc81bce44f3f 100644
---- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-+++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-@@ -74,11 +74,10 @@ properties:
-   renesas,ipmmu-main:
-     $ref: /schemas/types.yaml#/definitions/phandle-array
-     items:
--      - items:
--          - description: phandle to main IPMMU
--          - description: the interrupt bit number associated with the particular
--              cache IPMMU device. The interrupt bit number needs to match the main
--              IPMMU IMSSTR register. Only used by cache IPMMU instances.
-+      - description: phandle to main IPMMU
-+      - description: the interrupt bit number associated with the particular
-+          cache IPMMU device. The interrupt bit number needs to match the main
-+          IPMMU IMSSTR register. Only used by cache IPMMU instances.
-     description:
-       Reference to the main IPMMU phandle plus 1 cell. The cell is
-       the interrupt bit number associated with the particular cache IPMMU
-@@ -109,6 +108,16 @@ allOf:
-       required:
-         - power-domains
- 
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: renesas,rcar-gen4-ipmmu-vmsa
-+    then:
-+      properties:
-+        renesas,ipmmu-main:
-+          maxItems: 1
-+
- examples:
-   - |
-     #include <dt-bindings/clock/r8a7791-cpg-mssr.h>
--- 
-2.25.1
+Full log is available here: https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230209133440.2643228-1-yoshihiro.shimoda.uh@renesas.com
+
+
+iommu@ee480000: renesas,ipmmu-main: [[40], [10]] is too long
+	arch/arm64/boot/dts/renesas/r8a779f0-spider.dtb
+
+iommu@ee480000: renesas,ipmmu-main: [[70], [10]] is too long
+	arch/arm64/boot/dts/renesas/r8a779a0-falcon.dtb
+
+iommu@ee4c0000: renesas,ipmmu-main: [[40], [19]] is too long
+	arch/arm64/boot/dts/renesas/r8a779f0-spider.dtb
+
+iommu@ee4c0000: renesas,ipmmu-main: [[70], [19]] is too long
+	arch/arm64/boot/dts/renesas/r8a779a0-falcon.dtb
+
+iommu@eed00000: renesas,ipmmu-main: [[40], [0]] is too long
+	arch/arm64/boot/dts/renesas/r8a779f0-spider.dtb
+
+iommu@eed00000: renesas,ipmmu-main: [[70], [0]] is too long
+	arch/arm64/boot/dts/renesas/r8a779a0-falcon.dtb
+
+iommu@eed40000: renesas,ipmmu-main: [[40], [2]] is too long
+	arch/arm64/boot/dts/renesas/r8a779f0-spider.dtb
+
+iommu@eed40000: renesas,ipmmu-main: [[70], [1]] is too long
+	arch/arm64/boot/dts/renesas/r8a779a0-falcon.dtb
+
+iommu@eed80000: renesas,ipmmu-main: [[70], [3]] is too long
+	arch/arm64/boot/dts/renesas/r8a779a0-falcon.dtb
+
+iommu@eedc0000: renesas,ipmmu-main: [[70], [12]] is too long
+	arch/arm64/boot/dts/renesas/r8a779a0-falcon.dtb
+
+iommu@eee00000: renesas,ipmmu-main: [[70], [6]] is too long
+	arch/arm64/boot/dts/renesas/r8a779a0-falcon.dtb
+
+iommu@eee80000: renesas,ipmmu-main: [[70], [14]] is too long
+	arch/arm64/boot/dts/renesas/r8a779a0-falcon.dtb
+
+iommu@eeec0000: renesas,ipmmu-main: [[70], [15]] is too long
+	arch/arm64/boot/dts/renesas/r8a779a0-falcon.dtb
+
+iommu@eef00000: renesas,ipmmu-main: [[70], [5]] is too long
+	arch/arm64/boot/dts/renesas/r8a779a0-falcon.dtb
+
+iommu@eef40000: renesas,ipmmu-main: [[70], [11]] is too long
+	arch/arm64/boot/dts/renesas/r8a779a0-falcon.dtb
 
