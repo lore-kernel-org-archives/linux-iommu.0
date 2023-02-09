@@ -1,50 +1,32 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C3726AAD
-	for <iommu@lists.linux.dev>; Wed,  8 Feb 2023 18:15:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675880102; x=1707416102;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=As20+I70osPLt7xJAYqyaX04fxh8ItmR/mRaZGCCZAw=;
-  b=aJ4v9YL/LGaqDNaHQIEP/q3eSC8vOxcNRxtEfc7E7N5DqTdXr2wpF+xR
-   k9fW+3DpmFEWeaqwLSa1FSMUoVWO+AasegrBKKJ0YU39KeFMAW64IEmLP
-   wieFU0JlGH0wq1seRGrcOJB6IPz4Jocf2Q/POkSHayk1vBS/9Ip4W9hM5
-   drOAvrWYOgAw7jx77TJNl7TC+Rydwx55R4i6cxhKb4KMJQodSkLpxJQAc
-   z1V3Bis9Ctugl8DqLtNwAia6fEcNT8otMY20KFE6epgzKuSNtLRtVh0fg
-   QZDs05NF2yWEcDXYWzQlIPs/Nk1nruhLev5jPcgrP4GdE8L5LoykDBKWm
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="392273349"
-X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
-   d="scan'208";a="392273349"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 10:15:01 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="810028905"
-X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
-   d="scan'208";a="810028905"
-Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.106])
-  by fmsmga001.fm.intel.com with ESMTP; 08 Feb 2023 10:15:00 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: LKML <linux-kernel@vger.kernel.org>,
-	iommu@lists.linux.dev,
-	"Lu Baolu" <baolu.lu@linux.intel.com>,
-	Joerg Roedel <joro@8bytes.org>
-Cc: David Woodhouse <dwmw2@infradead.org>,
-	Raj Ashok <ashok.raj@intel.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>,
-	Yi Liu <yi.l.liu@intel.com>,
-	sukumar.ghorai@intel.com,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	stable@vger.kernel.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sanjay Kumar <sanjay.k.kumar@intel.com>
-Subject: [PATCH v2] iommu/vt-d: Avoid superfluous IOTLB tracking in lazy mode
-Date: Wed,  8 Feb 2023 10:18:34 -0800
-Message-Id: <20230208181834.1601211-1-jacob.jun.pan@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7119A36C
+	for <iommu@lists.linux.dev>; Thu,  9 Feb 2023 01:04:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+	Content-ID:Content-Description:In-Reply-To:References;
+	bh=1Gyq1awD3AbR7Lmv5tDTtOp1bGuIK/qy5UCH4ZKCpzA=; b=1GgKQNB2tG2kDejzQFjuAu3yN5
+	z8j3w1kG6dBKT1aUQuDghMF/AWfUGHK8U2OL6+Za4vKT0ixlEw9u/+D7f6hBRrzJujGurz7iEnT6V
+	9PYOvG2TfVF+auVMWC37/K8SitvGzaI00PfwUzew7BOvbTk9/LrdC+HBtsYpsJkWehTOKWBRrlGkc
+	EYjzqGWsmqdVINhybhqg5+izd59iHqb1Z/X+NgumiBIMxoymv1pLoHN+VPPMUeP5JFlGTgwQWp3N4
+	GkHW2UwQC1Bla9wMWyTfSGV3WV5LIEkbd3kaZQBD97L19WGbRBijfIzVsvcmr21DaWmKLJGgrYWc2
+	sfD6dQuA==;
+Received: from [2601:1c2:980:9ec0::df2f] (helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1pPvM0-00HMPI-44; Thu, 09 Feb 2023 01:04:00 +0000
+From: Randy Dunlap <rdunlap@infradead.org>
+To: linux-kernel@vger.kernel.org
+Cc: Randy Dunlap <rdunlap@infradead.org>,
+	Thierry Reding <treding@nvidia.com>,
+	Joerg Roedel <jroedel@suse.de>,
+	Will Deacon <will@kernel.org>,
+	iommu@lists.linux.dev
+Subject: [PATCH] iommu/of: mark an unused function as __maybe_unused
+Date: Wed,  8 Feb 2023 17:03:59 -0800
+Message-Id: <20230209010359.23831-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.39.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,51 +35,36 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Intel IOMMU driver implements IOTLB flush queue with domain selective
-or PASID selective invalidations. In this case there's no need to track
-IOVA page range and sync IOTLBs, which may cause significant performance
-hit.
+When CONFIG_OF_ADDRESS is not set, there is a build warning/error
+about an unused function.
+Annotate the function to quieten the warning/error.
 
-This patch adds a check to avoid IOVA gather page and IOTLB sync for
-the lazy path.
+../drivers/iommu/of_iommu.c:176:29: warning: 'iommu_resv_region_get_type' defined but not used [-Wunused-function]
+  176 | static enum iommu_resv_type iommu_resv_region_get_type(struct device *dev, struct resource *phys,
+      |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The performance difference on Sapphire Rapids 100Gb NIC is improved by
-the following (as measured by iperf send):
-
-w/o this fix~48 Gbits/s. with this fix ~54 Gbits/s
-
-Cc: <stable@vger.kernel.org>
-Fixes: 2a2b8eaa5b25 ("iommu: Handle freelists when using deferred flushing in iommu drivers")
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Tested-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
-Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Fixes: a5bf3cfce8cb ("iommu: Implement of_iommu_get_resv_regions()")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Thierry Reding <treding@nvidia.com>
+Cc: Joerg Roedel <jroedel@suse.de>
+Cc: Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux.dev
 ---
-v2: use helper function iommu_iotlb_gather_queued() instead of open
-coding
----
- drivers/iommu/intel/iommu.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/iommu/of_iommu.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 161342e7149d..18265fa07828 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4348,7 +4348,13 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
- 	if (dmar_domain->max_addr == iova + size)
- 		dmar_domain->max_addr = iova;
- 
--	iommu_iotlb_gather_add_page(domain, gather, iova, size);
-+	/*
-+	 * We do not use page-selective IOTLB invalidation in flush queue,
-+	 * There is no need to track page and sync iotlb. Domain-selective or
-+	 * PASID-selective validation are used in the flush queue.
-+	 */
-+	if (!iommu_iotlb_gather_queued(gather))
-+		iommu_iotlb_gather_add_page(domain, gather, iova, size);
- 
- 	return size;
+diff -- a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -173,8 +173,9 @@ const struct iommu_ops *of_iommu_configu
+ 	return ops;
  }
--- 
-2.25.1
-
+ 
+-static enum iommu_resv_type iommu_resv_region_get_type(struct device *dev, struct resource *phys,
+-						       phys_addr_t start, size_t length)
++static enum iommu_resv_type __maybe_unused iommu_resv_region_get_type(struct device *dev,
++						struct resource *phys,
++						phys_addr_t start, size_t length)
+ {
+ 	phys_addr_t end = start + length - 1;
+ 
