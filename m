@@ -1,227 +1,175 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2071.outbound.protection.outlook.com [40.107.94.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2284371
-	for <iommu@lists.linux.dev>; Thu,  9 Feb 2023 10:29:23 +0000 (UTC)
-Received: from lhrpeml100003.china.huawei.com (unknown [172.18.147.206])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PCCGd3Dh7z6J6Yh;
-	Thu,  9 Feb 2023 18:07:37 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- lhrpeml100003.china.huawei.com (7.191.160.210) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.17; Thu, 9 Feb 2023 10:11:43 +0000
-Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
- lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.017;
- Thu, 9 Feb 2023 10:11:42 +0000
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Yi Liu <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jgg@nvidia.com"
-	<jgg@nvidia.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>
-CC: "cohuck@redhat.com" <cohuck@redhat.com>, "eric.auger@redhat.com"
-	<eric.auger@redhat.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
-	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
-	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
-	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>, "lulu@redhat.com"
-	<lulu@redhat.com>, "suravee.suthikulpanit@amd.com"
-	<suravee.suthikulpanit@amd.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-kselftest@vger.kernel.org"
-	<linux-kselftest@vger.kernel.org>, "baolu.lu@linux.intel.com"
-	<baolu.lu@linux.intel.com>, "zhangfei.gao@linaro.org"
-	<zhangfei.gao@linaro.org>
-Subject: RE: [PATCH 00/17] Add Intel VT-d nested translation
-Thread-Topic: [PATCH 00/17] Add Intel VT-d nested translation
-Thread-Index: AQHZPD95hqLckmeZEk+opw51qnHtYq7GX1jw
-Date: Thu, 9 Feb 2023 10:11:42 +0000
-Message-ID: <0bea6077f0634587b744ec2b421205e1@huawei.com>
-References: <20230209043153.14964-1-yi.l.liu@intel.com>
-In-Reply-To: <20230209043153.14964-1-yi.l.liu@intel.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-originating-ip: [10.195.245.52]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 110AE33EA
+	for <iommu@lists.linux.dev>; Thu,  9 Feb 2023 10:45:47 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lzDijywC91fSlXPoU3wWWxALa2rZJ0j0w1sr7YEUpQy02B6qbYgsc0Su4LE53k555HqgxsvItfnwOK+n9rnQ2WxpL5OkgqK5MAKR0bGUZgdi9TUHwiXVX7ggbnbQMtNXoNFMEucSkg0RhVk0WhjYSbECaB+TkJP9uDPeEVhHoyYRTCbNvUEbkhkaWT8BC2XrR/Vgnc5ch5YtBj6n/voQLSpdsoKCDHX4mdsyphodSljzNyIC7gbgcf0LYkItthwT9ixp/4QgQQAuJmjfP8OPez4q2PCn0pq5NEM6dJ8rAV+Bov37XuC8N5FGCZiiWafvA2Zru4mUZfNb6Pvx3zAW1Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HjdT2I26cMLWS/Gvr0GyXlf1/8oOkbIkS40QXUfGYlg=;
+ b=XCHXlXsjMPaPrbMGpJ4Rl+J9jMgscUOZX9DYMrn2O4tidbfW3/oK37FApy3Kbfi2CaaplevQyWSMZSubICkBCguMeiTsSWpmVQYgj9GOa4kSoCNn5yIwHhAN0zT23mHhcm5KMQ8q3IMVNLiaZwezysDQ25zkKP58JlUTaEkRqVNmSxylOKSUiT9qevM7kadVC8qtGKqn6vMx12f4fF/YjWnNjjMqCFa65cSc8MZpu6joz/RDA8Y3EcWFVAFJzlg7l1t4/xbEVot3oH9EKPBjf9LPXQeMylK5AwSmz/jcJJmCoSAjqCqt8nkFr/bmIr6xlO4qYEeMaq/T9AIxqrS8gA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HjdT2I26cMLWS/Gvr0GyXlf1/8oOkbIkS40QXUfGYlg=;
+ b=TyluydCYsdj/1p6eYt9O2nL2aK6nvcgwCZpaxvN/ya4UabjduPkJ3n0u0E8GxJGYhP5eyKRAixiIopj3kpNq4dzPeetpPPDSg096n3Cr1YjD0As5kVpFIxCxRcuF/RKAIhkaItLR3ocOmGgZvT6whlqZgmbswM5S2rSjcqJm7daPhUXPwwMNPEEKPyfmu+CBnqg/YKNxRYddVI4XuTA22g4PNn14ML6Bhq1CCkVygw9zjME63K6aGOtEccyy3A8rb45GH75v8thtO8+rSfrCAnKe1KYU7nQ2R37i0hEz7mNyeuIM7lXOTFoFAjmxitMd1bhStIV++v/UhNSV4cnvyw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM8PR12MB5413.namprd12.prod.outlook.com (2603:10b6:8:3b::8) by
+ PH0PR12MB7792.namprd12.prod.outlook.com (2603:10b6:510:281::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.19; Thu, 9 Feb
+ 2023 10:45:46 +0000
+Received: from DM8PR12MB5413.namprd12.prod.outlook.com
+ ([fe80::6988:39d7:86a0:fa7b]) by DM8PR12MB5413.namprd12.prod.outlook.com
+ ([fe80::6988:39d7:86a0:fa7b%5]) with mapi id 15.20.6086.017; Thu, 9 Feb 2023
+ 10:45:45 +0000
+Date: Thu, 9 Feb 2023 11:45:39 +0100
+From: Thierry Reding <treding@nvidia.com>
+To: Randy Dunlap <rdunlap@infradead.org>
+Cc: linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>,
+	Will Deacon <will@kernel.org>, iommu@lists.linux.dev
+Subject: Re: [PATCH] iommu/of: mark an unused function as __maybe_unused
+Message-ID: <Y+TO0yEdUNzWUUrA@orome>
+References: <20230209010359.23831-1-rdunlap@infradead.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="zIyMWYSQYQZxu/NB"
+Content-Disposition: inline
+In-Reply-To: <20230209010359.23831-1-rdunlap@infradead.org>
+X-NVConfidentiality: public
+User-Agent: Mutt/2.2.9 (2022-11-12)
+X-ClientProxiedBy: FR2P281CA0086.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:9b::14) To DM8PR12MB5413.namprd12.prod.outlook.com
+ (2603:10b6:8:3b::8)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM8PR12MB5413:EE_|PH0PR12MB7792:EE_
+X-MS-Office365-Filtering-Correlation-Id: 57422fc5-4734-4f90-d370-08db0a8acc88
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	W0gI5U9pILsk794XVMEywU74wMo+q7ULgxHy4FypPaIwzd503f4vfPfC4zii/JMGE4yWd32ufY1oHGTlXUQ4SIlbdo5nA4I2Nw+ULdeYQ9N6nCU5OYRbsmIqgdwIMrkS+X+otsbfyFNLm1xXtww0CH3uk6LzLgos2z/oCcFNk3yobLHGAKWI5qB0KhD00SpLJXDtoFXQYAa50NkRLGhgK40XEwW+frOBbMVBj0RMudVNLf1MUKbpA6lQ4+g14IEkp/DocGn9B80QSdK2/EQZKJvPrgBiX155ONfR8mzjAZR77k7h3zkUOg5VIarPzy7bX0JfZuqh/lk4fI3BnXnaF84Qndav1WETntlrf0sOcbZs+PMADvBtwaYTn/2piVKmdZbsoMLhTzhY518t0Qwh2yhvlMqUfmO2NEd1o+BXvzX5kw7PlArxYE+nnwyUIlDqNpqCIQyHwKD1XoCqf9B+yy45yW5v54bkDcWT/ltc4xhihAPRgPS9AVEg6mONnrPGrxILINXv2xXbVuvNmRCSHQTPhv6fh36LOlCKJxkCUS8ZXrFiwwxw8xjwGZeeYkfEkolBr05l4hrGNOgPpicu9Y9pToUDvt2T63S7GaPJPjSDr/Zi+1rZ0z4BO4oxUinJ/bRLJRogNNMowMWYnn4jE9J2T8C2ZJhOe/p7fg9msO8PojEse2s6L7WDXtzRe3ZKaeg9dCZXi1w5eNbdle0X7CmBZlgE3M1EGSGijoG0Atk=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5413.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(7916004)(366004)(396003)(136003)(376002)(39860400002)(346002)(451199018)(316002)(66556008)(66476007)(6916009)(66946007)(4326008)(8936002)(41300700001)(8676002)(5660300002)(38100700002)(86362001)(33716001)(54906003)(44144004)(9686003)(6506007)(6512007)(6666004)(186003)(21480400003)(2906002)(83380400001)(478600001)(6486002)(67856001)(2700100001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?VYCs6ineGDgQKprC+hzJKoNktoPmz26hvM9UjEtiHI/JOuNtwR5O5pt0JOSN?=
+ =?us-ascii?Q?cs8EAR32J9KWLcc514658jNoB/PsCbBtvAdLgpSZ3VZ0rxWF6R5rYnPiP9di?=
+ =?us-ascii?Q?I1f46c3QRCrTCrx5xKxbXMNAGWqr7WNhSf3YT7wzyGUQBz7xH6qVMLS6Pyub?=
+ =?us-ascii?Q?CawgE8H+I7QKd5GEBrb7kqajQhnYdn8KEFo2OBf1SQoonUMYtkNj1JQ7cesn?=
+ =?us-ascii?Q?OIBMkBndpk1xSqXoBH/BzYevBBMeUJSlEqpt19kScUNqCngdpjloGBVqiQA0?=
+ =?us-ascii?Q?ZL6/KQLQe+oJBazdEWIhvpJne8hxiEqIw59HuIZ92t+MMvobDZJK95VVDuNI?=
+ =?us-ascii?Q?mnofZtWhlJMtO6Buw7ZpMO2N7RvhFdgvvxgNrSzlwocY+iNmSDeeZypiFuDN?=
+ =?us-ascii?Q?lyGRYOhT1xTFjNNXDMV88eAwfsuW8vUlWF9Ft9UGa+tjauOoF02LiC6/8lGa?=
+ =?us-ascii?Q?zacWLMShyBnq8FK/zOtRXT+xLVOg9xMpnqkigjU1iBOaRQnCg2twP8QlzMnZ?=
+ =?us-ascii?Q?X0sG79xP69mSV1jfxDSCJndrXBCqsNFW1fgP9i8jWQrcIxV/r2pWUh8jJMZg?=
+ =?us-ascii?Q?gq1otq6dfdqtXrGuYkPsOLpfCOGTdbFKfn6+m8aSJkhaOogbqnjkUvDcywZr?=
+ =?us-ascii?Q?IFN65gECf3DIWCBYeyh2pX/s4FmhqPnZHu/h9uLgKxigOPhE5PkAm3os19Ui?=
+ =?us-ascii?Q?v+IMXCvqsZCfiagRdRoZPGvaAGffAp+TaSE6tK9yrqv0QX0w9b6D256Or2RS?=
+ =?us-ascii?Q?b2YL5a/msRoGloE9TYQTFIboR8kKMd4oULByasujKj580XuisfXZ7yWtnf+r?=
+ =?us-ascii?Q?UN9DH/jTQbD3PlIYAPZD0TQ2/k/pnYD2qfDu1FMHGEbqpNlP+DjzXJzRikiC?=
+ =?us-ascii?Q?pGdRIHN7FYieHT8Eeh1R1hsfYz8qTcu6I0kkDHT1jWoAckqo7QZwXO+yqF/p?=
+ =?us-ascii?Q?uFH4Gy/1jQsHm/NaJAorb+U0zK+QoVBsH48ETk6hMnXEi1W4qm1llXVKYAcw?=
+ =?us-ascii?Q?JSB30+x5hW5pcvnX8H8PxDWys849FkfFw8YbSSmz5C8w/XIjRBOV93Dr+FHL?=
+ =?us-ascii?Q?+R1oH3bBoLX/eU/2rNalqZR0PXia5siScPfkMnYEdY/n1vc2yeeWq/mxDLDY?=
+ =?us-ascii?Q?2R83y1lnzC+e/LPQrJaZmQsLaB1CV9D+Pwu53lTdOm2z3GSnz/PcxTct0Beu?=
+ =?us-ascii?Q?B9edJnQMzvKtG+yqi0ItRL+Q+ODYADvpczMQ9w9W7Iuja4n5ykNrheooITzp?=
+ =?us-ascii?Q?8fNqfip+Wf/I++lfz6OUc0bRAb6yJ3+iAkTNWVFToXTkLygcFZjUVRqqOnsU?=
+ =?us-ascii?Q?zj1xmw6Ovxl9Iyj4qLFMZxw0kDc/xnihMY/qxxs1/QViRO+KAdTOs8zKOmwX?=
+ =?us-ascii?Q?a8nKyzTrU5ZREY/jzlztyXNLxRsxLKI8F136rXv/Xe75OfjL2fiZZmAqV7MG?=
+ =?us-ascii?Q?5MckpKOpHF07ZQGKMZcj8BzTFpkemzf17287L2ohyhGJ0kJrbUtxEBc1u6dV?=
+ =?us-ascii?Q?HXMoAdX2yhhyp21U7YMIKhmoE8HztD8k/czuiFoSqFAn7lji8vYa5JEwV/tQ?=
+ =?us-ascii?Q?u2J8vuwBirLkyQK9IRq3rahwmdfP7MbdP0n8i+Q0bo25FoWa8bafycpAvi1y?=
+ =?us-ascii?Q?KUZti+yTrBtYQox61X2/JWvh65KVwnx/4JYZUskEfnjA?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 57422fc5-4734-4f90-d370-08db0a8acc88
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5413.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2023 10:45:45.8215
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Ls4wRLKhMdNTtfeGtDTFvFryFHji0vPOy/75QQch45mS5a1kgeslbup8MX9AsTRqtDPz8Cz9Tfd4mwoYvAi/+g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7792
 
+--zIyMWYSQYQZxu/NB
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Wed, Feb 08, 2023 at 05:03:59PM -0800, Randy Dunlap wrote:
+> When CONFIG_OF_ADDRESS is not set, there is a build warning/error
+> about an unused function.
+> Annotate the function to quieten the warning/error.
+>=20
+> ../drivers/iommu/of_iommu.c:176:29: warning: 'iommu_resv_region_get_type'=
+ defined but not used [-Wunused-function]
+>   176 | static enum iommu_resv_type iommu_resv_region_get_type(struct dev=
+ice *dev, struct resource *phys,
+>       |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~
+>=20
+> Fixes: a5bf3cfce8cb ("iommu: Implement of_iommu_get_resv_regions()")
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Cc: Thierry Reding <treding@nvidia.com>
+> Cc: Joerg Roedel <jroedel@suse.de>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: iommu@lists.linux.dev
+> ---
+>  drivers/iommu/of_iommu.c |    5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+>=20
+> diff -- a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -173,8 +173,9 @@ const struct iommu_ops *of_iommu_configu
+>  	return ops;
+>  }
+> =20
+> -static enum iommu_resv_type iommu_resv_region_get_type(struct device *de=
+v, struct resource *phys,
+> -						       phys_addr_t start, size_t length)
+> +static enum iommu_resv_type __maybe_unused iommu_resv_region_get_type(st=
+ruct device *dev,
+> +						struct resource *phys,
+> +						phys_addr_t start, size_t length)
 
-> -----Original Message-----
-> From: Yi Liu [mailto:yi.l.liu@intel.com]
-> Sent: 09 February 2023 04:32
-> To: joro@8bytes.org; alex.williamson@redhat.com; jgg@nvidia.com;
-> kevin.tian@intel.com; robin.murphy@arm.com
-> Cc: cohuck@redhat.com; eric.auger@redhat.com; nicolinc@nvidia.com;
-> kvm@vger.kernel.org; mjrosato@linux.ibm.com;
-> chao.p.peng@linux.intel.com; yi.l.liu@intel.com; yi.y.sun@linux.intel.com=
-;
-> peterx@redhat.com; jasowang@redhat.com; Shameerali Kolothum Thodi
-> <shameerali.kolothum.thodi@huawei.com>; lulu@redhat.com;
-> suravee.suthikulpanit@amd.com; iommu@lists.linux.dev;
-> linux-kernel@vger.kernel.org; linux-kselftest@vger.kernel.org;
-> baolu.lu@linux.intel.com
-> Subject: [PATCH 00/17] Add Intel VT-d nested translation
->=20
-> Nested translation has two stage address translations to get the final
-> physical addresses. Take Intel VT-d as an example, the first stage transl=
-ation
-> structure is I/O page table. As the below diagram shows, guest I/O page
-> table pointer in GPA (guest physical address) is passed to host to do the
-> first stage translation. Along with it, guest modifications to present
-> mappings in the first stage page should be followed with an iotlb invalid=
-ation
-> to sync host iotlb.
->=20
->     .-------------.  .---------------------------.
->     |   vIOMMU    |  | Guest I/O page table      |
->     |             |  '---------------------------'
->     .----------------/
->     | PASID Entry |--- PASID cache flush --+
->     '-------------'                        |
->     |             |                        V
->     |             |           I/O page table pointer in GPA
->     '-------------'
-> Guest
-> ------| Shadow |--------------------------|--------
->       v        v                          v
-> Host
->     .-------------.  .------------------------.
->     |   pIOMMU    |  |  FS for GIOVA->GPA      |
->     |             |  '------------------------'
->     .----------------/  |
->     | PASID Entry |     V (Nested xlate)
->     '----------------\.----------------------------------.
->     |             |   | SS for GPA->HPA, unmanaged domain|
->     |             |   '----------------------------------'
->     '-------------'
-> Where:
->  - FS =3D First stage page tables
->  - SS =3D Second stage page tables
-> <Intel VT-d Nested translation>
->=20
-> Different platform vendors have different first stage translation formats=
-,
-> so userspace should query the underlying iommu capability before setting
-> first stage translation structures to host.[1]
->=20
-> In iommufd subsystem, I/O page tables would be tracked by hw_pagetable
-> objects.
-> First stage page table is owned by userspace (guest), while second stage
-> page
-> table is owned by kernel for security. So First stage page tables are tra=
-cked
-> by user-managed hw_pagetable, second stage page tables are tracked by
-> kernel-
-> managed hw_pagetable.
->=20
-> This series first introduces new iommu op for allocating domains for
-> iommufd,
-> and op for syncing iotlb for first stage page table modifications, and th=
-en
-> add the implementation of the new ops in intel-iommu driver. After this
-> preparation, adds kernel-managed and user-managed hw_pagetable
-> allocation for
-> userspace. Last, add self-test for the new ioctls.
->=20
-> This series is based on "[PATCH 0/6] iommufd: Add iommu capability
-> reporting"[1]
-> and Nicolin's "[PATCH v2 00/10] Add IO page table replacement support"[2]=
-.
-> Complete
-> code can be found in[3]. Draft Qemu code can be found in[4].
->=20
-> Basic test done with DSA device on VT-d. Where the guest has a vIOMMU
-> built
-> with nested translation.
+Maybe this is one of those cases where we should wrap after the return
+type/attributes to keep this somewhat readable?
 
-Hi Yi Liu,
+Either way:
 
-Thanks for sending this out. Will go through this one. As I informed before=
- we keep
-an internal branch based on your work and rebase few patches to get the ARM
-SMMUv3 nesting support. The recent one is based on your "iommufd-v6.2-rc4-n=
-esting"
-branch and is here,
+Reviewed-by: Thierry Reding <treding@nvidia.com>
 
-https://github.com/hisilicon/kernel-dev/commits/iommufd-v6.2-rc4-nesting-ar=
-m
+--zIyMWYSQYQZxu/NB
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Just wondering any chance the latest "Add SMMUv3 nesting support" series wi=
-ll
-be send out soon? Please let me know if you need any help with that.
+-----BEGIN PGP SIGNATURE-----
 
-Thanks,
-Shameer
->=20
-> [1]
-> https://lore.kernel.org/linux-iommu/20230209041642.9346-1-yi.l.liu@intel.
-> com/
-> [2]
-> https://lore.kernel.org/linux-iommu/cover.1675802050.git.nicolinc@nvidia.=
-c
-> om/
-> [3] https://github.com/yiliu1765/iommufd/tree/iommufd_nesting_vtd_v1
-> [4] https://github.com/yiliu1765/qemu/tree/wip/iommufd_rfcv3%2Bnesting
->=20
-> Regards,
-> 	Yi Liu
->=20
-> Lu Baolu (5):
->   iommu: Add new iommu op to create domains owned by userspace
->   iommu: Add nested domain support
->   iommu/vt-d: Extend dmar_domain to support nested domain
->   iommu/vt-d: Add helper to setup pasid nested translation
->   iommu/vt-d: Add nested domain support
->=20
-> Nicolin Chen (6):
->   iommufd: Add/del hwpt to IOAS at alloc/destroy()
->   iommufd/device: Move IOAS attaching and detaching operations into
->     helpers
->   iommufd/selftest: Add IOMMU_TEST_OP_MOCK_DOMAIN_REPLACE test
-> op
->   iommufd/selftest: Add coverage for IOMMU_HWPT_ALLOC ioctl
->   iommufd/selftest: Add IOMMU_TEST_OP_MD_CHECK_IOTLB test op
->   iommufd/selftest: Add coverage for IOMMU_HWPT_INVALIDATE ioctl
->=20
-> Yi Liu (6):
->   iommufd/hw_pagetable: Use domain_alloc_user op for domain allocation
->   iommufd: Split iommufd_hw_pagetable_alloc()
->   iommufd: Add kernel-managed hw_pagetable allocation for userspace
->   iommufd: Add infrastructure for user-managed hw_pagetable allocation
->   iommufd: Add user-managed hw_pagetable allocation
->   iommufd/device: Report supported stage-1 page table types
->=20
->  drivers/iommu/intel/Makefile                  |   2 +-
->  drivers/iommu/intel/iommu.c                   |  38 ++-
->  drivers/iommu/intel/iommu.h                   |  50 +++-
->  drivers/iommu/intel/nested.c                  | 143 +++++++++
->  drivers/iommu/intel/pasid.c                   | 142 +++++++++
->  drivers/iommu/intel/pasid.h                   |   2 +
->  drivers/iommu/iommufd/device.c                | 117 ++++----
->  drivers/iommu/iommufd/hw_pagetable.c          | 280
-> +++++++++++++++++-
->  drivers/iommu/iommufd/iommufd_private.h       |  23 +-
->  drivers/iommu/iommufd/iommufd_test.h          |  35 +++
->  drivers/iommu/iommufd/main.c                  |  11 +
->  drivers/iommu/iommufd/selftest.c              | 149 +++++++++-
->  include/linux/iommu.h                         |  11 +
->  include/uapi/linux/iommufd.h                  | 196 ++++++++++++
->  tools/testing/selftests/iommu/iommufd.c       | 124 +++++++-
->  tools/testing/selftests/iommu/iommufd_utils.h | 106 +++++++
->  16 files changed, 1329 insertions(+), 100 deletions(-)
->  create mode 100644 drivers/iommu/intel/nested.c
->=20
-> --
-> 2.34.1
->=20
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmPkztMACgkQ3SOs138+
+s6HHGQ//QoL+mGw1QUVwpdjWVREnT+jOyOPd0Y8gbVXHdkV6J58abv/qZyV+4jef
+ckvwJOgt25kKKJYSnoeL+nt0Cths2tdgYiWaEkeYnx73JAeb40/22lGf/w9nbmVT
+FJmHFIeJS3Wqygni9ltTkRB6Z6kSj+xuNo6CD/VBFO9E9nc6pI9ThS9g+z2B5ST8
+FfksCRJa0LYYoKay8gr5gXD0uZ5yQzrHuc92BAkXOJibPPE5PQ0n6LKY1+pem4Rl
+gy6g4Q/4EeY8KpR4JwaAfsmU+A1gSZiXEg1YkBLIhVye/mUzY4rJiEH2wYHGXNLi
+czf3TSfpt9A8ENIvUcbXaKtJKPZU6++NEACBFOArileQymR1MqlSrAxHJYmlhOuh
+MRGtmz0cVyH5zMsY7QorP+re2Q/jhW/HvAehpnGca8xAyMIR2AVjBe+yOcDVNMmn
+xpK1GM8rLxgAwSu9Klag3fFFriu48XsHiqBcsY5U+7xPHLTOyG1e2EO8d/xS9pLF
+BWcWSC6YMtXJske32knIL9HK4fcDuFP4uIeN66lhjdUz6eKXHThVJ0pIl4PIlkO/
+OHXN0zwqkc6+VaA9Zk2zfrLacN/kujO/a6g2n4b93sZXVlM6w3Tj+3TcQzJ3Hb4r
++RM1I810/x/Pqiwi0FfaN22NAv7JWvi22/53/xEa6uN7iY1h/+0=
+=yZj+
+-----END PGP SIGNATURE-----
 
+--zIyMWYSQYQZxu/NB--
