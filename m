@@ -1,134 +1,90 @@
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36B8433ED
-	for <iommu@lists.linux.dev>; Thu,  9 Feb 2023 13:39:17 +0000 (UTC)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: kholk11)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id D2A5566020C1;
-	Thu,  9 Feb 2023 13:39:14 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1675949956;
-	bh=el4tNcyCAEC+oZUCSzKc3hOlEvtwGNspm+w1ZpzJ3Xc=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=PnIJTG5CsdKRvBB73UJzYfCjjNgqY23zH/q7x5WGlFRPSrLBHu9CyGzclXShDplHr
-	 45GsGoCaH00ri7vEucAQPXhh/joZ9GEq9XG99bRA+up1lx2CqyxK4xVHKuN2SP8gxg
-	 lEju+dRBhSt0L+rz020G7wc3zzIGABTZI3iHjwTVcRZc2WbwN2dY+JblmWU4PGVeNC
-	 HLk+2yPVDm3nY8fAzXqQDf7IfbABLHe19vK47nnz+pAsEHyhOQDe7X7YtlQJY8PDYW
-	 BiUUvawIe6u27YSuqS7Pkmw6HXEOOTxrwmqwFRoRZTK01bW65YDAvAsieLMfpy6egQ
-	 AGblF49BAwfhw==
-Message-ID: <cab40506-8b3a-0b53-b45d-a8000e953289@collabora.com>
-Date: Thu, 9 Feb 2023 14:39:11 +0100
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A1D5533ED
+	for <iommu@lists.linux.dev>; Thu,  9 Feb 2023 13:39:55 +0000 (UTC)
+X-IronPort-AV: E=Sophos;i="5.97,283,1669042800"; 
+   d="scan'208";a="152256220"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 09 Feb 2023 22:34:46 +0900
+Received: from localhost.localdomain (unknown [10.166.15.32])
+	by relmlir6.idc.renesas.com (Postfix) with ESMTP id 8D19743638B8;
+	Thu,  9 Feb 2023 22:34:46 +0900 (JST)
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To: joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	robh+dt@kernel.org,
+	krzysztof.kozlowski+dt@linaro.org
+Cc: iommu@lists.linux.dev,
+	devicetree@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH v3] dt-bindings: iommu: renesas,ipmmu-vmsa: Update for R-Car Gen4
+Date: Thu,  9 Feb 2023 22:34:40 +0900
+Message-Id: <20230209133440.2643228-1-yoshihiro.shimoda.uh@renesas.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v2 03/10] iommu/mediatek: Get regionid from larb/port id
-Content-Language: en-US
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh+dt@kernel.org>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Hans Verkuil <hverkuil@xs4all.nl>, nfraprado@collabora.com,
- linux-media@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- mingyuan.ma@mediatek.com, yf.wang@mediatek.com, libo.kang@mediatek.com,
- Yunfei Dong <yunfei.dong@mediatek.com>,
- kyrie wu <kyrie.wu@mediatek.corp-partner.google.com>,
- chengci.xu@mediatek.com, youlin.pei@mediatek.com, anan.sun@mediatek.com
-References: <20230208053643.28249-1-yong.wu@mediatek.com>
- <20230208053643.28249-4-yong.wu@mediatek.com>
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20230208053643.28249-4-yong.wu@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Il 08/02/23 06:36, Yong Wu ha scritto:
-> After commit f1ad5338a4d5 ("of: Fix "dma-ranges" handling for bus
-> controllers"), the dma-ranges is not allowed for dts leaf node.
-> but we still would like to separate to different masters
-> into different iova regions.
-> 
-> Thus we have to separate it by the HW larbid and portid. For example,
-> larb1/2 are in region2 and larb3 is in region3. The problem is that
-> some ports inside a larb are in region4 while some ports inside this
-> larb are in region5. Therefore I define a "larb_region_msk" to help
-> record the information for each a port. Take a example for a larb:
->   [1] = ~0: means all ports in this larb are in region1;
->   [2] = BIT(3) | BIT(4): means port3/4 in this larb are region2;
->   [3] = ~(BIT(3) | BIT(4)): means all the other ports except port3/4
->                             in this larb are region3.
-> 
-> This method also avoids the users forget/abuse the iova regions.
-> 
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> ---
->   drivers/iommu/mtk_iommu.c | 43 +++++++++++++++++++++------------------
->   1 file changed, 23 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index d5a4955910ff..fc3d9be120a0 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -8,7 +8,6 @@
->   #include <linux/clk.h>
->   #include <linux/component.h>
->   #include <linux/device.h>
-> -#include <linux/dma-direct.h>
->   #include <linux/err.h>
->   #include <linux/interrupt.h>
->   #include <linux/io.h>
-> @@ -194,6 +193,7 @@ struct mtk_iommu_plat_data {
->   	enum mtk_iommu_plat	m4u_plat;
->   	u32			flags;
->   	u32			inv_sel_reg;
-> +	const u32		(*larb_region_msk)[32];
+Since R-Car Gen4 doens't have the main IPMMU IMSSTR register, update
+the renesas,ipmmu-main property which sets maxItems as 1.
 
-Can you please document this larb region mask in code, other than the commit
-description?
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+---
+Changes from v2:
+https://lore.kernel.org/all/20230127140446.1728102-1-yoshihiro.shimoda.uh@renesas.com/
+ - Set maxItems to renesas,ipmmu-main if R-Car Gen4.
 
-I can see this being essential for the next person reading this driver's code
-without digging through the commit history. At least some comment on top of
-the pointer, or on top of the struct declaration... and perhaps also describe
-briefly that the array is "indexed by region" (so 1 = region 1; 2 = region 2)
-and that the region index corresponds to the same index as `mtk_iommu_iova_region`.
+Changes from v1:
+https://lore.kernel.org/all/20230123012940.1250879-1-yoshihiro.shimoda.uh@renesas.com/
+ - Change number of argument for R-Car Gen4 instead of "module id".
+   On the discussion, using 'minItems' is a solution. But, it causes
+   "too short" errors on dtbs_check. So, using "oneOf" instead.
 
+ .../bindings/iommu/renesas,ipmmu-vmsa.yaml    | 19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
 
-Before doing that, I'd like to check if anyone else has a better solution for
-that... because when looking at data for one of the SoCs in here, it looks a bit
-intimidating!
-
-Copy-paste from patch [04/10] of this series for the reader's commodity:
-
-static const unsigned int mt8195_larb_region_msk[][32] = {
-	[0] = {~0, ~0, ~0, ~0},               /* Region0: all ports for larb0/1/2/3 */
-	[1] = {0, 0, 0, 0, 0, 0, 0, 0,
-	       0, 0, 0, 0, 0, 0, 0, 0,
-	       0, 0, 0, ~0, ~0, ~0, ~0, ~0,   /* Region1: larb19/20/21/22/23/24 */
-	       ~0},
-	[2] = {0, 0, 0, 0, ~0, ~0, ~0, ~0,    /* Region2: the other larbs. */
-	       ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0,
-	       ~0, ~0, 0, 0, 0, 0, 0, 0,
-	       0, ~0, ~0, ~0, ~0},
-	[3] = {0},
-	[4] = {[18] = BIT(0) | BIT(1)},       /* Only larb18 port0/1 */
-	[5] = {[18] = BIT(2) | BIT(3)},       /* Only larb18 port2/3 */
-};
-
-^^^^ That's what I actually mean by "intimidating"... :-P
-
-It's just looks though, there's nothing much complicated here.
-
-Regards,
-Angelo
-
+diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
+index 72308a4c14e7..cc81bce44f3f 100644
+--- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
++++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
+@@ -74,11 +74,10 @@ properties:
+   renesas,ipmmu-main:
+     $ref: /schemas/types.yaml#/definitions/phandle-array
+     items:
+-      - items:
+-          - description: phandle to main IPMMU
+-          - description: the interrupt bit number associated with the particular
+-              cache IPMMU device. The interrupt bit number needs to match the main
+-              IPMMU IMSSTR register. Only used by cache IPMMU instances.
++      - description: phandle to main IPMMU
++      - description: the interrupt bit number associated with the particular
++          cache IPMMU device. The interrupt bit number needs to match the main
++          IPMMU IMSSTR register. Only used by cache IPMMU instances.
+     description:
+       Reference to the main IPMMU phandle plus 1 cell. The cell is
+       the interrupt bit number associated with the particular cache IPMMU
+@@ -109,6 +108,16 @@ allOf:
+       required:
+         - power-domains
+ 
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: renesas,rcar-gen4-ipmmu-vmsa
++    then:
++      properties:
++        renesas,ipmmu-main:
++          maxItems: 1
++
+ examples:
+   - |
+     #include <dt-bindings/clock/r8a7791-cpg-mssr.h>
+-- 
+2.25.1
 
