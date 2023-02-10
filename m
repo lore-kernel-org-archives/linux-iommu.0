@@ -1,43 +1,43 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5876B6D1B
-	for <iommu@lists.linux.dev>; Fri, 10 Feb 2023 19:21:25 +0000 (UTC)
-Received: by mail-wr1-f46.google.com with SMTP id m14so6008121wrg.13
-        for <iommu@lists.linux.dev>; Fri, 10 Feb 2023 11:21:25 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A16A8483
+	for <iommu@lists.linux.dev>; Fri, 10 Feb 2023 19:23:39 +0000 (UTC)
+Received: by mail-wm1-f47.google.com with SMTP id u10so4544913wmj.3
+        for <iommu@lists.linux.dev>; Fri, 10 Feb 2023 11:23:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=1Tz1WhSiDyiHb7swgsfraxGg6wWStHRX2Amb3b1VcmU=;
-        b=WKCPMt8G4P6kglvBEYuR6Y8VGe4vLKREbo46B1FzP36qdC9o/gXh5YU6gEW7L3708X
-         lrxXAzEPB1j3pGDdzQh1aduk3Z9ZrGueXQk2asJVFXfbphcdAajT2cuL8SDpesGlCuT5
-         zP27G5KvohxP/B+J2p8XFakN/0ZUkhWnnBrHWiIoZRCeISeKJDx0vx5qCieGs4EnxLMv
-         DR+bECwo2Frc9+Tg0Sq3Y8jMTdALTUIhprnoG8OmKK9vaJW9Bl1ofg1Vnea3kae6KK3A
-         RYJiA29h4m4QGtT3sklUElmYPdchtrnZQvS2mzkuO+xv8NS8SwBva8yxv2T57qImR1fr
-         WyNw==
+        bh=lKfwFWPx0mrSaDUSu+IwD5rq4TMnBt0i+kbnmd2g5/o=;
+        b=fKOFy+nxE2mxy+0q4b3+SYDPuE4uFMODmK1JmAKI2/Nk498QHkmjMLG1xKbT7lDMxU
+         WxcT2uc8nwtbsNxkhcXQVlLpZp0tcmKK5G/FTqSxr2bvnq5hQ4xMDcqr+5DbHOJgw0ZC
+         pCtBxHz1JGtDBnaEJ0GBulsNhJnI7n1DeEBu0LNBbum2CAZofI7qLbdfQj5LbJaw+zdo
+         HQcsF8FWmO7quEzsA9FWhKm9A7Bci4VWehUxYVx4zwBebKmZusFljhmFD+Xj1YE+wpnQ
+         W+SaLU+E8mh9Tg98ERLKvg9bOS974FB7MNZtL/IYLRoPbv5uM2K2qAKApcQq6An4KCa6
+         wAWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=1Tz1WhSiDyiHb7swgsfraxGg6wWStHRX2Amb3b1VcmU=;
-        b=DEzIXJJ4Rx1F/S3Xb5ubrKQLabMF2U4pKNdqu1MEU58ItcvhUXO54F254bf4Z0glTm
-         wuOa5ppPLFOaZmlbeS7hFIFoyc2PDiv/C6CcR/n1h0q0xUGOcutmK+SYgr9ljwKVBWQH
-         LwG7SsG4IXGZhH3oWhb6TqVcdjPdlJdBfs056Sfbj3Zb5KZHKs7jDjMZ7DZdCdSk33cX
-         36E5i1W6yW46U9fFpmjr2/ZLBnqNv8e34XTJgRZtoBrbG9NdmisAIdzAtNd/fp+dUkm7
-         jtZG7LZRJz0rv3iIp63fM+Ez7oitKoI3YNVDJ/0rcJw0A09x0ODjrvCYcUwBkMaNsmTd
-         V1WQ==
-X-Gm-Message-State: AO0yUKWw9JrTeBvFbw8cqXK2dOx0z6ox/hdmcmyIiMGBbMTQZFFK0Fot
-	zk9CmFijeRMI7X76mb28WNJLwQ==
-X-Google-Smtp-Source: AK7set81Xt2KccZQRdMWDTRiY2Gd0tbVvECaL276b9b5J5FRXHU0WwGuCEaGmrLLiiQcY/fFP5oI7g==
-X-Received: by 2002:adf:f212:0:b0:2c3:dbe0:58ea with SMTP id p18-20020adff212000000b002c3dbe058eamr16025908wro.47.1676056883588;
-        Fri, 10 Feb 2023 11:21:23 -0800 (PST)
+        bh=lKfwFWPx0mrSaDUSu+IwD5rq4TMnBt0i+kbnmd2g5/o=;
+        b=gaFy0tv4eRuJdO4AdwID4DPuuvv3oX/568di37awlpaVKB4VytWjjR6InyqmdyHy6P
+         0PpqMKgp0b5DU9f708YrmhbWGCiGZ5ejiR2bFKUEiLdt3a+NVjAdoDOr4C5or+sJfY8t
+         hpwxKum9n6KJGH+E/v+NeKJr3znYJ56HJn3vZzHO599ZDgIOOFRffr/I4Y1Rz9SZsJjS
+         +L3TITF0lbEbbNIcPufm5t4HHE/JERlEaLrAXYT1lZBLXM0+zEJbSX2nJQZ4Kgbv8c2K
+         Qc2tus0p9Oas3AJPfKt4s9kURb990/OPfQQqL6Uy2v5nQpcNrHDKhdwnF1abUDGv0C4E
+         7IDQ==
+X-Gm-Message-State: AO0yUKV2YAbpkC8I/brWYGHVRsdSH45Nd50kj6XcRZVVs4j4V5sc99yn
+	nShtZy8n86Lt85SKaIoRCWpjSg==
+X-Google-Smtp-Source: AK7set/tV2rdWgmvhNxuUBbH5Kp+VjGk9gubEi8GFZRRtNk7BxFlPuMUDMhx4sndvqkKHAXXt1J4sw==
+X-Received: by 2002:a05:600c:b58:b0:3df:e752:35ca with SMTP id k24-20020a05600c0b5800b003dfe75235camr17613840wmr.32.1676057017763;
+        Fri, 10 Feb 2023 11:23:37 -0800 (PST)
 Received: from myrica (054592b0.skybroadband.com. [5.69.146.176])
-        by smtp.gmail.com with ESMTPSA id y1-20020a5d6201000000b002c3ea5ebc73sm4253499wru.101.2023.02.10.11.21.22
+        by smtp.gmail.com with ESMTPSA id t15-20020a05600c198f00b003ddc781b1d4sm6466877wmq.33.2023.02.10.11.23.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Feb 2023 11:21:23 -0800 (PST)
-Date: Fri, 10 Feb 2023 19:21:14 +0000
+        Fri, 10 Feb 2023 11:23:37 -0800 (PST)
+Date: Fri, 10 Feb 2023 19:23:29 +0000
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: Mostafa Saleh <smostafa@google.com>
 Cc: maz@kernel.org, catalin.marinas@arm.com, will@kernel.org,
@@ -46,12 +46,11 @@ Cc: maz@kernel.org, catalin.marinas@arm.com, will@kernel.org,
 	yuzenghui@huawei.com, dbrazdil@google.com, ryan.roberts@arm.com,
 	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev,
 	iommu@lists.linux.dev
-Subject: Re: [RFC PATCH 15/45] KVM: arm64: pkvm: Add
- __pkvm_host_share/unshare_dma()
-Message-ID: <Y+aZKmXJAVwpPbF0@myrica>
+Subject: Re: [RFC PATCH 42/45] KVM: arm64: pkvm: Support SCMI power domain
+Message-ID: <Y+aZsYDYUGuhTVrh@myrica>
 References: <20230201125328.2186498-1-jean-philippe@linaro.org>
- <20230201125328.2186498-16-jean-philippe@linaro.org>
- <Y+JJ5HJpKGy3P04V@google.com>
+ <20230201125328.2186498-43-jean-philippe@linaro.org>
+ <Y+JRl3WRwzDJOe2J@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -60,81 +59,53 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y+JJ5HJpKGy3P04V@google.com>
+In-Reply-To: <Y+JRl3WRwzDJOe2J@google.com>
 
-On Tue, Feb 07, 2023 at 12:53:56PM +0000, Mostafa Saleh wrote:
-> > +static int __host_check_page_dma_shared(phys_addr_t phys_addr)
+On Tue, Feb 07, 2023 at 01:27:17PM +0000, Mostafa Saleh wrote:
+> Hi Jean,
+> 
+> > +bool kvm_host_scmi_handler(struct kvm_cpu_context *host_ctxt)
 > > +{
-> > +	int ret;
-> > +	u64 hyp_addr;
+> > +	DECLARE_REG(u64, func_id, host_ctxt, 0);
+> > +
+> > +	if (!scmi_channel.shmem || func_id != scmi_channel.smc_id)
+> > +		return false; /* Unhandled */
 > > +
 > > +	/*
-> > +	 * The page is already refcounted. Make sure it's owned by the host, and
-> > +	 * not part of the hyp pool.
+> > +	 * Prevent the host from modifying the request while it is in flight.
+> > +	 * One page is enough, SCMI messages are smaller than that.
+> > +	 *
+> > +	 * FIXME: the host is allowed to poll the shmem while the request is in
+> > +	 * flight, or read shmem when receiving the SCMI interrupt. Although
+> > +	 * it's unlikely with the SMC-based transport, this too requires some
+> > +	 * tightening in the spec.
 > > +	 */
-> > +	ret = __host_check_page_state_range(phys_addr, PAGE_SIZE,
-> > +					    PKVM_PAGE_SHARED_OWNED);
-> > +	if (ret)
-> > +		return ret;
+> > +	if (WARN_ON(__pkvm_host_add_remove_page(scmi_channel.shmem_pfn, true)))
+> > +		return true;
 > > +
-> > +	/*
-> > +	 * Refcounted and owned by host, means it's either mapped in the
-> > +	 * SMMU, or it's some VM/VCPU state shared with the hypervisor.
-> > +	 * The host has no reason to use a page for both.
-> > +	 */
-> > +	hyp_addr = (u64)hyp_phys_to_virt(phys_addr);
-> > +	return __hyp_check_page_state_range(hyp_addr, PAGE_SIZE, PKVM_NOPAGE);
+> > +	__kvm_host_scmi_handler(host_ctxt);
+> > +
+> > +	WARN_ON(__pkvm_host_add_remove_page(scmi_channel.shmem_pfn, false));
+> > +	return true; /* Handled */
+> > +}
 > 
-> This works for hyp-host sharing, I am worried about scalability of this.
-> For example FFA(still on the list) adds a new entity that can share data
-> with host, and we would need an extra check for it.
-> https://lore.kernel.org/kvmarm/20221116170335.2341003-1-qperret@google.com/
+> I am not sure what a typical SCMI channel shmem_size would be.
 
-Right, although it looks like the ff-a support doesn't need a refcount at
-the moment so passing such a page to iommu_map() would fail at
-check_share() (but I may be wrong, I'll need another look). Even if it did
-use a refcount, I think it may be fine to share it between different
-entities: the refcount ensures that every sharing is undone before the
-page can be donated to another entity, and a separate tracking ensures
-that the host undoes the right thing (the io-pgtable mappings for pages
-shared with the IOMMU, and the secure world for ff-a)
+shmem_size is large but a SCMI message isn't bigger than 128 bytes at the
+moment, so copying would certainly be more performant.
 
-Regardless I agree that this doesn't scale, it gets too complex and I'd
-prefer if tracking the page state was less subtle. I'll try to find
-something more generic.
+> But would map/unmap be more performant than
+> memcpy(hyp_local_copy,scmi_channel.pfn,scmi_channel.shmem_size ); ?
 
-> 
-> One way I can think about this, is to use the SW bits in SMMU page table to
-> represent ownership, for example for PKVM_ID_IOMMU
-> do_share:
-> -completer: set SW bits in the SMMU page table to
-> PKVM_PAGE_SHARED_BORROWED
+The problem is that we're forwarding this to the SCMI server, which
+expects to find the command in the shmem.
 
-I'm not sure I understand, would we add this in order to share a page that
-is already mapped in the SMMU with another entity (e.g. ff-a)?  Doing it
-this way would be difficult because there may be a lot of different SMMU
-page tables mapping the page.
-
-The fact that a page is mapped in the SMMU page table already indicates
-that it's borrowed from the host so the SW bits seem redundant.
-
-> 
-> do_unshare:
-> -completer: set SW bit back to PKVM_PAGE_OWNED(I think this is good
-> enough for host ownership)
-> 
-> In __pkvm_host_share_dma_page
-> If page refcount > 1, it succeeds if only the page was borrowed in the
-> SMMU page table and shared in the host page table.
-
-We could also move more information into the vmemmap, because struct
-hyp_page still has some space for page state. It has six free bits at the
-moment, which is enough for both owner ID and share state, and maybe we
-could steal a couple more from the refcount and order fields if necessary.
-
-With that the iommu_map() and unmap() path could also be made a lot more
-scalable because they wouldn't need to take any page table locks when
-updating page state, a cmpxchg may be sufficient.
+I took the easy route here, but a more efficient way to support SCMI would
+be for the hypervisor to own the channel permanently, and the host<->hyp
+communication would use a separate shared page. The hypervisor could then
+copy from one channel to the other. It requires more support in the host
+driver so I'd like to see if there is any interest in supporting SCMI
+before working on this.
 
 Thanks,
 Jean
