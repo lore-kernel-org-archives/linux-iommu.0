@@ -1,43 +1,43 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F4222FAF
-	for <iommu@lists.linux.dev>; Fri, 10 Feb 2023 20:51:02 +0000 (UTC)
-Received: by mail-pl1-f174.google.com with SMTP id m2so7772691plg.4
-        for <iommu@lists.linux.dev>; Fri, 10 Feb 2023 12:51:02 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 842612FAF
+	for <iommu@lists.linux.dev>; Fri, 10 Feb 2023 20:57:58 +0000 (UTC)
+Received: by mail-pj1-f41.google.com with SMTP id z14-20020a17090abd8e00b00233bb9d6bdcso1551423pjr.4
+        for <iommu@lists.linux.dev>; Fri, 10 Feb 2023 12:57:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=G6ClxDPqqo9XGMX8nibdBrVqKRqBmlDx/QkEPTPhrmI=;
-        b=CQBERmQX6UW6aN9ppCfG84ilCLxw0hROZywoezlBpkLDc3CEV63muuePgbkAQ4uUTP
-         eVYf0yxkeklltYT638VQVLUGWm1IlB+L0GPDdKLiHtJ2WGGLYu5qt7LaGHGnoriCzhpY
-         R+rRH6ybKW9tvY9M0IWhT2J77tmpZgTgfGz4/AjJwGtMfQMpO3Z9MH3hGi7qiajkr+a0
-         Y2Jn4OfuyhOTmpuJkEJNnPsE2TTKLu6+AWlepChxd0I9e52F1UgvI/MMVi8hWWHW24z8
-         FPaztSxLf0zInUZVGmjknEYg8NwCn/c2YtYGTgPHz05CyujaIUcMVeTONN+TBbui6M5V
-         +u4w==
+        bh=evdRb0y0uW0suzf6IqaYt5x7djfotbgzG0ewIjt0Uk8=;
+        b=KUT+l2F2GWE7igSYQ8d5+p5+59DtVXpCEXbLlVmc96yZz0C6BTvOrxsmTe+OBsGL6s
+         y2rzOIBMtqUvWwibc6YD8yAi5yQL/cH6XRbNvg4K7cDiXdcIFRxcLSduB35wUWXXA0VJ
+         UeK9Fr3MnD+UOG5bxYvcENuScn2VK2MbwHDh6DLWlTMMB6ENfQqUGQCX/ex0dNBaX4/L
+         Vh+BtiM/GbqdCb8E9zZUPWET+0t1LsXdZfKblrGrFj3BpftIY518+n8kbXbPsSi8YbwV
+         /d3USSewKz7NLQ6A/T63dPWA2RxNmCM816H+HjOkO44vyORTTbVJHwxomoZAon+9gPk5
+         VCWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=G6ClxDPqqo9XGMX8nibdBrVqKRqBmlDx/QkEPTPhrmI=;
-        b=zzuNSs+glv3v+2+tFGqrjxrLxyhwi55S5p4WqwIC6s+vKzyXbQL2DRprL883kv3lDW
-         1ciXRrh5vtDl4OQl8AEXnDmzdPPxBT6fNzFEs8tyZECBxuINMXilE3aT+CnyIAfei01y
-         2/YyqcEo/aQ54G4R1sAmzc/2mxhVat1IRv5vBzQT7POdGcMOaJHeLUMLEhNw39JIQilb
-         9h2keuZRdPhx1rfoL1r7ogpVTfvH7xhEqXvyQmzWiaMyIwpZTBieEGEjhNv47Pg8AYm5
-         /au8zJX6XTACdCuWv1ErLkFUXSRIzkU+bDcMqpkqGZsLZvS81gWWVJFPkr1f7jU1ppV1
-         U+3A==
-X-Gm-Message-State: AO0yUKW9bVQv/+b5vGUgJrKXhwXiEDTJcbsHKSWpCZMrqfU8+PPXFNe2
-	BGUvF+vfo7VVfmoA8WrsDIGIEg==
-X-Google-Smtp-Source: AK7set87/K1BTbtqK1YxC0xEr79tEEU7ncmCCfkbuZto381YIZlqqRDqWHnUS/qjJKIZM1QnsMq8jQ==
-X-Received: by 2002:a17:902:7c07:b0:198:af50:e4e6 with SMTP id x7-20020a1709027c0700b00198af50e4e6mr48370pll.12.1676062261748;
-        Fri, 10 Feb 2023 12:51:01 -0800 (PST)
+        bh=evdRb0y0uW0suzf6IqaYt5x7djfotbgzG0ewIjt0Uk8=;
+        b=QxdG2D2r9DIQsHCaoxhLw+amQv7DWCnK9gsVx5aWO346rL0r1lSW/N9zP6jcuBUFXl
+         qCoTsG0oan/y8Opt8yi+xclGR++yh7V5EAkJc8nL1XV5QVYoxfyb0N22JfSRcUnHRbJn
+         cFSujOAGV/SCJzs+AXaAs00H96kED5AkWKqmS2+P0rkxEThtJDpVNK+ol2JFNJlt1VZ8
+         oiTbh8bRXehwug4Fg3/XexRLDWkkno+ssudmwwiQA1FQkPgpY7ciT178LZ3A7SO4uMRs
+         BGffm9R4SFID6rD3Vzuz+8JGRiP8Sjkq8ByIO6ZhdSr3td3GAm6DARKClwV50IVE7yQl
+         Ki6w==
+X-Gm-Message-State: AO0yUKVpTJykaD1aitG72iRBNXjZPCK7DdD8CR58aabOKhq2SUlqB7+8
+	VIuxcNgZiPdUhopFZqMt5EAC1g==
+X-Google-Smtp-Source: AK7set9CwV4ClXZtXo/ecYginhuJqO7iCZWxx36BetrGYm8vH3+HGalmqFIH3VMl3TsAt45IiN7jgw==
+X-Received: by 2002:a17:903:111:b0:198:af4f:de12 with SMTP id y17-20020a170903011100b00198af4fde12mr42392plc.18.1676062677683;
+        Fri, 10 Feb 2023 12:57:57 -0800 (PST)
 Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id p6-20020aa78606000000b005828071bf7asm3698940pfn.22.2023.02.10.12.51.00
+        by smtp.gmail.com with ESMTPSA id ms16-20020a17090b235000b00233864f21a7sm2070323pjb.51.2023.02.10.12.57.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Feb 2023 12:51:01 -0800 (PST)
-Date: Fri, 10 Feb 2023 20:50:57 +0000
+        Fri, 10 Feb 2023 12:57:57 -0800 (PST)
+Date: Fri, 10 Feb 2023 20:57:53 +0000
 From: Sean Christopherson <seanjc@google.com>
 To: Dave Hansen <dave.hansen@intel.com>
 Cc: Borislav Petkov <bp@alien8.de>,
@@ -80,9 +80,8 @@ Cc: Borislav Petkov <bp@alien8.de>,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
 Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
  to map as encrypted
-Message-ID: <Y+auMQ88In7NEc30@google.com>
-References: <Y9FC7Dpzr5Uge/Mi@zn.tnic>
- <BYAPR21MB16883BB6178DDEEA10FD1F1CD7D69@BYAPR21MB1688.namprd21.prod.outlook.com>
+Message-ID: <Y+av0SVUHBLCVdWE@google.com>
+References: <BYAPR21MB16883BB6178DDEEA10FD1F1CD7D69@BYAPR21MB1688.namprd21.prod.outlook.com>
  <Y+JG9+zdSwZlz6FU@zn.tnic>
  <4216dea6-d899-aecb-2207-caa2ae7db0e3@intel.com>
  <BYAPR21MB16886D92828BA2CA8D47FEA4D7D99@BYAPR21MB1688.namprd21.prod.outlook.com>
@@ -91,6 +90,7 @@ References: <Y9FC7Dpzr5Uge/Mi@zn.tnic>
  <BYAPR21MB16882083E84F20B906E2C847D7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
  <Y+aczIbbQm/ZNunZ@zn.tnic>
  <cb80e102-4b78-1a03-9c32-6450311c0f55@intel.com>
+ <Y+auMQ88In7NEc30@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -99,44 +99,54 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cb80e102-4b78-1a03-9c32-6450311c0f55@intel.com>
+In-Reply-To: <Y+auMQ88In7NEc30@google.com>
 
-On Fri, Feb 10, 2023, Dave Hansen wrote:
-> On 2/10/23 11:36, Borislav Petkov wrote:
-> >> One approach is to go with the individual device attributes for now.>> If the list does grow significantly, there will probably be patterns
-> >> or groupings that we can't discern now.  We could restructure into
-> >> larger buckets at that point based on those patterns/groupings.
-> > There's a reason the word "platform" is in cc_platform_has(). Initially
-> > we wanted to distinguish attributes of the different platforms. So even
-> > if y'all don't like CC_ATTR_PARAVISOR, that is what distinguishes this
-> > platform and it *is* one platform.
+On Fri, Feb 10, 2023, Sean Christopherson wrote:
+> On Fri, Feb 10, 2023, Dave Hansen wrote:
+> > On 2/10/23 11:36, Borislav Petkov wrote:
+> > >> One approach is to go with the individual device attributes for now.>> If the list does grow significantly, there will probably be patterns
+> > >> or groupings that we can't discern now.  We could restructure into
+> > >> larger buckets at that point based on those patterns/groupings.
+> > > There's a reason the word "platform" is in cc_platform_has(). Initially
+> > > we wanted to distinguish attributes of the different platforms. So even
+> > > if y'all don't like CC_ATTR_PARAVISOR, that is what distinguishes this
+> > > platform and it *is* one platform.
+> > > 
+> > > So call it CC_ATTR_SEV_VTOM as it uses that technology or whatever. But
+> > > call it like the platform, not to mean "I need this functionality".
 > > 
-> > So call it CC_ATTR_SEV_VTOM as it uses that technology or whatever. But
-> > call it like the platform, not to mean "I need this functionality".
+> > I can live with that.  There's already a CC_ATTR_GUEST_SEV_SNP, so it
+> > would at least not be too much of a break from what we already have.
 > 
-> I can live with that.  There's already a CC_ATTR_GUEST_SEV_SNP, so it
-> would at least not be too much of a break from what we already have.
+> I'm fine with CC_ATTR_SEV_VTOM, assuming the proposal is to have something like:
+> 
+> 	static inline bool is_address_range_private(resource_size_t addr)
+> 	{
+> 		if (cc_platform_has(CC_ATTR_SEV_VTOM))
+> 			return is_address_below_vtom(addr);
+> 
+> 		return false;
+> 	}
+> 
+> i.e. not have SEV_VTOM mean "I/O APIC and vTPM are private".  Though I don't see
+> the point in making it SEV vTOM specific or using a flag.  Despite what any of us
+> think about TDX paravisors, it's completely doable within the confines of TDX to
+> have an emulated device reside in the private address space.  E.g. why not
+> something like this? 
+> 
+> 	static inline bool is_address_range_private(resource_size_t addr)
+> 	{
+> 		return addr < cc_platform_private_end;
+> 	}
+> 
+> where SEV fills in "cc_platform_private_end" when vTOM is enabled, and TDX does
+> the same.  Or wrap cc_platform_private_end in a helper, etc.
 
-I'm fine with CC_ATTR_SEV_VTOM, assuming the proposal is to have something like:
+Gah, forgot that the intent with TDX is to enumerate devices in their legacy
+address spaces.  So a TDX guest couldn't do this by default, but if/when Hyper-V
+or some other hypervisor moves I/O APIC, vTPM, etc... into the TCB, the common
+code would just work and only the hypervisor-specific paravirt code would need
+to change.
 
-	static inline bool is_address_range_private(resource_size_t addr)
-	{
-		if (cc_platform_has(CC_ATTR_SEV_VTOM))
-			return is_address_below_vtom(addr);
-
-		return false;
-	}
-
-i.e. not have SEV_VTOM mean "I/O APIC and vTPM are private".  Though I don't see
-the point in making it SEV vTOM specific or using a flag.  Despite what any of us
-think about TDX paravisors, it's completely doable within the confines of TDX to
-have an emulated device reside in the private address space.  E.g. why not
-something like this? 
-
-	static inline bool is_address_range_private(resource_size_t addr)
-	{
-		return addr < cc_platform_private_end;
-	}
-
-where SEV fills in "cc_platform_private_end" when vTOM is enabled, and TDX does
-the same.  Or wrap cc_platform_private_end in a helper, etc.
+Probably need a more specific name than is_address_range_private() though, e.g.
+is_mmio_address_range_private()?
