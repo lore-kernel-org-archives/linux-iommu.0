@@ -1,230 +1,179 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D377F2F41
-	for <iommu@lists.linux.dev>; Fri, 10 Feb 2023 23:47:32 +0000 (UTC)
-Received: by mail-pl1-f175.google.com with SMTP id v23so8325235plo.1
-        for <iommu@lists.linux.dev>; Fri, 10 Feb 2023 15:47:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=yvOux52E5DbaWC84jPuO4nUHQ0TNZblI+i2jTa4EFtQ=;
-        b=ED8dYO9FNKMIjc/TCRz/NpirWuHWiTRnFNfdsQVxx2FJMVek+p15igeFFuXcpBXiOC
-         Y0a+I/8ktLsvo3N5MdhQG37xXQrx30WhEOaTl6+S07YfwDwd7bxXvNesnYzJp+eALuXo
-         KUm26Y7UUTPzjXC3YigSUPU2ZEFQyvhYKC6NLXmHB9dOWCDM+zVS8t88EyA/nvZ/QbDK
-         8FD2HHMAj8KT15+W5edNMPTzLH5+nKRXdDg4mgYOhHKejxL2iW0ecDLrjngpdxLYu4LP
-         J8W0zZa/WSCXNSOByPNry0lATSsomc5uTjI7VP4ZjipR1KOZBz1HUYtsgK0oewTB3pet
-         KGnw==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCB002F41
+	for <iommu@lists.linux.dev>; Fri, 10 Feb 2023 23:51:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1676073074;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=zxG2e2jd/Ft5YwmWrl0Bp+sdIxiuwt9Kd232cbEoDxs=;
+	b=fP8ygXSKd9toKX+RNShuSUKdxRME1pGdqCwLayp+DpYhmf1POP0pwWee5DBrWIA58ueABp
+	qArzQS05WnpZhtnfSAqEMC8Rgrsqfdc4LkiYVbo5Cx0Qd8roC2KrsOSOBM6q8Vb5WUmx1f
+	N+laIKD5Wx30RocUAPI7gnZVZikg0wo=
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
+ [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-672-GZzlj3WtNYOFUmBwKc5iTw-1; Fri, 10 Feb 2023 18:51:13 -0500
+X-MC-Unique: GZzlj3WtNYOFUmBwKc5iTw-1
+Received: by mail-il1-f199.google.com with SMTP id 9-20020a056e0220c900b0030f1b0dfa9dso5268734ilq.4
+        for <iommu@lists.linux.dev>; Fri, 10 Feb 2023 15:51:13 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=yvOux52E5DbaWC84jPuO4nUHQ0TNZblI+i2jTa4EFtQ=;
-        b=lJJKLrOVmiPDwpKRk3YI1I+5MribA4m1i1iLw7GFtQqfAc7cmBcftcyza77F0f7BWy
-         hTTKsax2MgtQcLJF/Mdcdvb23HTjEqFz/dIskE9jVq3jmWMla8xSvdebDvq1pW3Rke0O
-         74AFitscVrEQYsJCso7xcB0mTgWfou87dXX9o82KY6jJphknBtN5n/bxxL/XSHoObETU
-         dZSsiOqiv+ohj+CgKHDU0mAbOrZEcsviA6+wfYtvs8kuzJ3WUCItEmGsnk27cNH4o3VW
-         z7DsjvZ/q9ePvoE/Ztcs+8T6zkvXQ6DmPp6sDugJIwX7GTwWwPdI1ZRCgn4RuUhpjBks
-         Oc9Q==
-X-Gm-Message-State: AO0yUKWB+BS6NPQ7Acj+HYC10ji6oVIgmzQQGD1s97hjo7vy93qfAgK5
-	Sy019iO3pVpn/gfnyTLi2Xkzxg==
-X-Google-Smtp-Source: AK7set9RitrimshGarArBisRdiVw5OT6p3mabnFwY8OKzVIC3UbTvCc/t/dpUCvTiH/5rQmO/QGGqQ==
-X-Received: by 2002:a17:902:ee89:b0:19a:5a9d:3c with SMTP id a9-20020a170902ee8900b0019a5a9d003cmr82270pld.16.1676072851861;
-        Fri, 10 Feb 2023 15:47:31 -0800 (PST)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id 12-20020a170902c10c00b00189743ed3b6sm3885380pli.64.2023.02.10.15.47.30
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=zxG2e2jd/Ft5YwmWrl0Bp+sdIxiuwt9Kd232cbEoDxs=;
+        b=kHHNkVQhgyhkbyBsM7m0uC+IXZYAxIinUwyKQCaRs7VbmzHlzdrGg0uVIGoEGImtOx
+         5CGUM2ZJhwoeB5UOxbYuoZcvPwkmsgNXxn+CNAXY/qiWMe6xqL2bT+cLSmMGuZIvn+IC
+         v0BNasTozHg2+63uRHCwsgUCE/glzerrUDTNkifPMhIfkjRJzdAPphyD8qz0T2KZRo+c
+         NSbLf8kvyJO4+OXbn9J+mDygr7r+BA33uQvxRy/nDIC990P+VJhJDL5RH2mquttOWKNT
+         tsXpYD81j7xqk+CGCiRMfh3Sk/XFe/5BFJQTWPn29CrYDRJ5W5uzZN68OmIjzBVGeLYG
+         xlEw==
+X-Gm-Message-State: AO0yUKUnLagPGyDueIp0JQ+HEeARIh0wRAf03kzDqAriRhzbKZ93Pl+s
+	RauFYHw9PmluT8qcjq/y+DGQL8c8gW9jqw3hpLzFYpGxiYW3mn+DBe0p6fWM4PJv2Ps+KWZnQT1
+	8V6eCE55ON0LxmJo=
+X-Received: by 2002:a05:6e02:19cf:b0:315:2b7c:3bcd with SMTP id r15-20020a056e0219cf00b003152b7c3bcdmr227361ill.23.1676073072671;
+        Fri, 10 Feb 2023 15:51:12 -0800 (PST)
+X-Google-Smtp-Source: AK7set842Z0z6M94KbGdEcodes2zf58/JeUwSHWqWrZfu04modlNc2olG9foLCn5r2HwqlyIBAtLsA==
+X-Received: by 2002:a05:6e02:19cf:b0:315:2b7c:3bcd with SMTP id r15-20020a056e0219cf00b003152b7c3bcdmr227334ill.23.1676073072410;
+        Fri, 10 Feb 2023 15:51:12 -0800 (PST)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id t26-20020a02c49a000000b0035678e2e175sm1766330jam.50.2023.02.10.15.51.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Feb 2023 15:47:31 -0800 (PST)
-Date: Fri, 10 Feb 2023 23:47:27 +0000
-From: Sean Christopherson <seanjc@google.com>
-To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc: Dave Hansen <dave.hansen@intel.com>, Borislav Petkov <bp@alien8.de>,
-	"hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	"wei.liu@kernel.org" <wei.liu@kernel.org>,
-	Dexuan Cui <decui@microsoft.com>,
-	"luto@kernel.org" <luto@kernel.org>,
-	"peterz@infradead.org" <peterz@infradead.org>,
-	"davem@davemloft.net" <davem@davemloft.net>,
-	"edumazet@google.com" <edumazet@google.com>,
-	"kuba@kernel.org" <kuba@kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>,
-	"lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-	"robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-	"bhelgaas@google.com" <bhelgaas@google.com>,
-	"arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
-	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-	"brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-	"tglx@linutronix.de" <tglx@linutronix.de>,
-	"mingo@redhat.com" <mingo@redhat.com>,
-	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-	Tianyu Lan <Tianyu.Lan@microsoft.com>,
-	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-	"sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>,
-	"ak@linux.intel.com" <ak@linux.intel.com>,
-	"isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-	"dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-	"jane.chu@oracle.com" <jane.chu@oracle.com>,
-	"tony.luck@intel.com" <tony.luck@intel.com>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
- to map as encrypted
-Message-ID: <Y+bXjxUtSf71E5SS@google.com>
-References: <4216dea6-d899-aecb-2207-caa2ae7db0e3@intel.com>
- <BYAPR21MB16886D92828BA2CA8D47FEA4D7D99@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+aP8rHr6H3LIf/c@google.com>
- <Y+aVFxrE6a6b37XN@zn.tnic>
- <BYAPR21MB16882083E84F20B906E2C847D7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+aczIbbQm/ZNunZ@zn.tnic>
- <cb80e102-4b78-1a03-9c32-6450311c0f55@intel.com>
- <Y+auMQ88In7NEc30@google.com>
- <Y+av0SVUHBLCVdWE@google.com>
- <BYAPR21MB168864EF662ABC67B19654CCD7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
+        Fri, 10 Feb 2023 15:51:11 -0800 (PST)
+Date: Fri, 10 Feb 2023 16:51:10 -0700
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: <jgg@nvidia.com>, <kevin.tian@intel.com>, <joro@8bytes.org>,
+ <will@kernel.org>, <robin.murphy@arm.com>, <shuah@kernel.org>,
+ <yi.l.liu@intel.com>, <linux-kernel@vger.kernel.org>,
+ <iommu@lists.linux.dev>, <kvm@vger.kernel.org>,
+ <linux-kselftest@vger.kernel.org>, <baolu.lu@linux.intel.com>, "Raj, Ashok"
+ <ashok.raj@intel.com>
+Subject: Re: [PATCH v2 02/10] iommu: Introduce a new
+ iommu_group_replace_domain() API
+Message-ID: <20230210165110.4e89ce55.alex.williamson@redhat.com>
+In-Reply-To: <fa81379dca611c1d9f50f9d8cd2bca0d4ec7f965.1675802050.git.nicolinc@nvidia.com>
+References: <cover.1675802050.git.nicolinc@nvidia.com>
+	<fa81379dca611c1d9f50f9d8cd2bca0d4ec7f965.1675802050.git.nicolinc@nvidia.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.35; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BYAPR21MB168864EF662ABC67B19654CCD7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, Feb 10, 2023, Michael Kelley (LINUX) wrote:
-> From: Sean Christopherson <seanjc@google.com> Sent: Friday, February 10, 2023 12:58 PM
-> > 
-> > On Fri, Feb 10, 2023, Sean Christopherson wrote:
-> > > On Fri, Feb 10, 2023, Dave Hansen wrote:
-> > > > On 2/10/23 11:36, Borislav Petkov wrote:
-> > > > >> One approach is to go with the individual device attributes for now.>> If the list
-> > does grow significantly, there will probably be patterns
-> > > > >> or groupings that we can't discern now.  We could restructure into
-> > > > >> larger buckets at that point based on those patterns/groupings.
-> > > > > There's a reason the word "platform" is in cc_platform_has(). Initially
-> > > > > we wanted to distinguish attributes of the different platforms. So even
-> > > > > if y'all don't like CC_ATTR_PARAVISOR, that is what distinguishes this
-> > > > > platform and it *is* one platform.
-> > > > >
-> > > > > So call it CC_ATTR_SEV_VTOM as it uses that technology or whatever. But
-> > > > > call it like the platform, not to mean "I need this functionality".
-> > > >
-> > > > I can live with that.  There's already a CC_ATTR_GUEST_SEV_SNP, so it
-> > > > would at least not be too much of a break from what we already have.
-> > >
-> > > I'm fine with CC_ATTR_SEV_VTOM, assuming the proposal is to have something like:
-> > >
-> > > 	static inline bool is_address_range_private(resource_size_t addr)
-> > > 	{
-> > > 		if (cc_platform_has(CC_ATTR_SEV_VTOM))
-> > > 			return is_address_below_vtom(addr);
-> > >
-> > > 		return false;
-> > > 	}
-> > >
-> > > i.e. not have SEV_VTOM mean "I/O APIC and vTPM are private".  Though I don't see
-> > > the point in making it SEV vTOM specific or using a flag.  Despite what any of us
-> > > think about TDX paravisors, it's completely doable within the confines of TDX to
-> > > have an emulated device reside in the private address space.  E.g. why not
-> > > something like this?
-> > >
-> > > 	static inline bool is_address_range_private(resource_size_t addr)
-> > > 	{
-> > > 		return addr < cc_platform_private_end;
-> > > 	}
-> > >
-> > > where SEV fills in "cc_platform_private_end" when vTOM is enabled, and TDX does
-> > > the same.  Or wrap cc_platform_private_end in a helper, etc.
-> > 
-> > Gah, forgot that the intent with TDX is to enumerate devices in their legacy
-> > address spaces.  So a TDX guest couldn't do this by default, but if/when Hyper-V
-> > or some other hypervisor moves I/O APIC, vTPM, etc... into the TCB, the common
-> > code would just work and only the hypervisor-specific paravirt code would need
-> > to change.
-> > 
-> > Probably need a more specific name than is_address_range_private() though, e.g.
-> > is_mmio_address_range_private()?
+On Tue, 7 Feb 2023 13:17:54 -0800
+Nicolin Chen <nicolinc@nvidia.com> wrote:
+
+> qemu has a need to replace the translations associated with a domain
+> when the guest does large-scale operations like switching between an
+> IDENTITY domain and, say, dma-iommu.c.
 > 
-> Maybe I'm not understanding what you are proposing, but in an SEV-SNP
-> VM using vTOM, devices like the IO-APIC and TPM live at their usual guest
-> physical addresses.
+> Currently, it does this by replacing all the mappings in a single
+> domain, but this is very inefficient and means that domains have to be
+> per-device rather than per-translation.
+> 
+> Provide a high-level API to allow replacements of one domain with
+> another. This is similar to a detach/attach cycle except it doesn't
+> force the group to go to the blocking domain in-between.
+> 
+> By removing this forced blocking domain the iommu driver has the
+> opportunity to implement an atomic replacement of the domains to the
+> greatest extent its hardware allows.
+> 
+> It could be possible to adderss this by simply removing the protection
+> from the iommu_attach_group(), but it is not so clear if that is safe
+> for the few users. Thus, add a new API to serve this new purpose.
+> 
+> Atomic replacement allows the qemu emulation of the viommu to be more
+> complete, as real hardware has this ability.
 
-Ah, so as the cover letter says, the intent really is to treat vTOM as an
-attribute bit.  Sorry, I got confused by Boris's comment:
+I was under the impression that we could not atomically switch a
+device's domain relative to in-flight DMA.  IIRC, the discussion was
+relative to VT-d, and I vaguely recall something about the domain
+needing to be invalidated before it could be replaced.  Am I
+mis-remembering or has this since been solved?  Adding Ashok, who might
+have been involved in one of those conversations.
 
-  : What happens if the next silly HV guest scheme comes along and they do
-  : need more and different ones?
+Or maybe atomic is the wrong word here since we expect no in-flight DMA
+during the sort of mode transitions referred to here, and we're really
+just trying to convey that we can do this via a single operation with
+reduced latency?  Thanks,
 
-Based on that comment, I assumed the proposal to use CC_ATTR_SEV_VTOM was intended
-to be a generic range-based thing, but it sounds like that's not the case. 
+Alex
 
-IMO, using CC_ATTR_SEV_VTOM to infer anything about the state of I/O APIC or vTPM
-is wrong.  vTOM as a platform feature effectively says "physical address bit X
-controls private vs. shared" (ignoring weird usage of vTOM).  vTOM does not mean
-I/O APIC and vTPM are private, that's very much a property of Hyper-V's current
-generation of vTOM-based VMs.
-
-Hardcoding this in the guest feels wrong.  Ideally, we would have a way to enumerate
-that a device is private/trusted, e.g. through ACPI.  I'm guessing we already
-missed the boat on that, so the next best thing is to do something like Michael
-originally proposed in this patch and shove the "which devices are private" logic
-into hypervisor-specific code, i.e. let Hyper-V figure out how to enumerate to its
-guests which devices are shared.
-
-I agree with Boris' comment that a one-off "other encrypted range" is a hack, but
-that's just an API problem.  The kernel already has hypervisor specific hooks (and
-for SEV-ES even), why not expand that?  That way figuring out which devices are
-private is wholly contained in Hyper-V code, at least until there's a generic
-solution for enumerating private devices, though that seems unlikely to happen
-and will be a happy problem to solve if it does come about.
-
-diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-index a868b76cd3d4..08f65ed439d9 100644
---- a/arch/x86/kernel/apic/io_apic.c
-+++ b/arch/x86/kernel/apic/io_apic.c
-@@ -2682,11 +2682,16 @@ static void io_apic_set_fixmap(enum fixed_addresses idx, phys_addr_t phys)
- {
-        pgprot_t flags = FIXMAP_PAGE_NOCACHE;
- 
--       /*
--        * Ensure fixmaps for IOAPIC MMIO respect memory encryption pgprot
--        * bits, just like normal ioremap():
--        */
--       flags = pgprot_decrypted(flags);
-+       if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT)) {
-+               /*
-+               * Ensure fixmaps for IOAPIC MMIO respect memory encryption pgprot
-+               * bits, just like normal ioremap():
-+               */
-+               if (x86_platform.hyper.is_private_mmio(phys))
-+                       flags = pgprot_encrypted(flags);
-+               else
-+                       flags = pgprot_decrypted(flags);
-+       }
- 
-        __set_fixmap(idx, phys, flags);
- }
-diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
-index 6453fbaedb08..0baec766b921 100644
---- a/arch/x86/mm/ioremap.c
-+++ b/arch/x86/mm/ioremap.c
-@@ -116,6 +116,9 @@ static void __ioremap_check_other(resource_size_t addr, struct ioremap_desc *des
-        if (!cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
-                return;
- 
-+       if (x86_platform.hyper.is_private_mmio(addr))
-+               desc->flags |= IORES_MAP_ENCRYPTED;
-+
-        if (!IS_ENABLED(CONFIG_EFI))
-                return;
- 
+> All drivers are already required to support changing between active
+> UNMANAGED domains when using their attach_dev ops.
+> 
+> This API is expected to be used by IOMMUFD, so add to the iommu-priv
+> header and mark it as IOMMUFD_INTERNAL.
+> 
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>  drivers/iommu/iommu-priv.h |  4 ++++
+>  drivers/iommu/iommu.c      | 28 ++++++++++++++++++++++++++++
+>  2 files changed, 32 insertions(+)
+> 
+> diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
+> index 9e1497027cff..b546795a7e49 100644
+> --- a/drivers/iommu/iommu-priv.h
+> +++ b/drivers/iommu/iommu-priv.h
+> @@ -15,4 +15,8 @@ static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
+>  	 */
+>  	return dev->iommu->iommu_dev->ops;
+>  }
+> +
+> +extern int iommu_group_replace_domain(struct iommu_group *group,
+> +				      struct iommu_domain *new_domain);
+> +
+>  #endif /* __LINUX_IOMMU_PRIV_H */
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index a18b7f1a4e6e..15e07d39cd8d 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2151,6 +2151,34 @@ int iommu_attach_group(struct iommu_domain *domain, struct iommu_group *group)
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_attach_group);
+>  
+> +/**
+> + * iommu_group_replace_domain - replace the domain that a group is attached to
+> + * @new_domain: new IOMMU domain to replace with
+> + * @group: IOMMU group that will be attached to the new domain
+> + *
+> + * This API allows the group to switch domains without being forced to go to
+> + * the blocking domain in-between.
+> + *
+> + * If the currently attached domain is a core domain (e.g. a default_domain),
+> + * it will act just like the iommu_attach_group().
+> + */
+> +int iommu_group_replace_domain(struct iommu_group *group,
+> +			       struct iommu_domain *new_domain)
+> +{
+> +	int ret;
+> +
+> +	if (!new_domain)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&group->mutex);
+> +	ret = __iommu_group_set_domain(group, new_domain);
+> +	if (ret)
+> +		__iommu_group_set_domain(group, group->domain);
+> +	mutex_unlock(&group->mutex);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_NS_GPL(iommu_group_replace_domain, IOMMUFD_INTERNAL);
+> +
+>  static int iommu_group_do_set_platform_dma(struct device *dev, void *data)
+>  {
+>  	const struct iommu_ops *ops = dev_iommu_ops(dev);
 
