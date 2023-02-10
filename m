@@ -1,111 +1,135 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A16A8483
-	for <iommu@lists.linux.dev>; Fri, 10 Feb 2023 19:23:39 +0000 (UTC)
-Received: by mail-wm1-f47.google.com with SMTP id u10so4544913wmj.3
-        for <iommu@lists.linux.dev>; Fri, 10 Feb 2023 11:23:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=lKfwFWPx0mrSaDUSu+IwD5rq4TMnBt0i+kbnmd2g5/o=;
-        b=fKOFy+nxE2mxy+0q4b3+SYDPuE4uFMODmK1JmAKI2/Nk498QHkmjMLG1xKbT7lDMxU
-         WxcT2uc8nwtbsNxkhcXQVlLpZp0tcmKK5G/FTqSxr2bvnq5hQ4xMDcqr+5DbHOJgw0ZC
-         pCtBxHz1JGtDBnaEJ0GBulsNhJnI7n1DeEBu0LNBbum2CAZofI7qLbdfQj5LbJaw+zdo
-         HQcsF8FWmO7quEzsA9FWhKm9A7Bci4VWehUxYVx4zwBebKmZusFljhmFD+Xj1YE+wpnQ
-         W+SaLU+E8mh9Tg98ERLKvg9bOS974FB7MNZtL/IYLRoPbv5uM2K2qAKApcQq6An4KCa6
-         wAWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lKfwFWPx0mrSaDUSu+IwD5rq4TMnBt0i+kbnmd2g5/o=;
-        b=gaFy0tv4eRuJdO4AdwID4DPuuvv3oX/568di37awlpaVKB4VytWjjR6InyqmdyHy6P
-         0PpqMKgp0b5DU9f708YrmhbWGCiGZ5ejiR2bFKUEiLdt3a+NVjAdoDOr4C5or+sJfY8t
-         hpwxKum9n6KJGH+E/v+NeKJr3znYJ56HJn3vZzHO599ZDgIOOFRffr/I4Y1Rz9SZsJjS
-         +L3TITF0lbEbbNIcPufm5t4HHE/JERlEaLrAXYT1lZBLXM0+zEJbSX2nJQZ4Kgbv8c2K
-         Qc2tus0p9Oas3AJPfKt4s9kURb990/OPfQQqL6Uy2v5nQpcNrHDKhdwnF1abUDGv0C4E
-         7IDQ==
-X-Gm-Message-State: AO0yUKV2YAbpkC8I/brWYGHVRsdSH45Nd50kj6XcRZVVs4j4V5sc99yn
-	nShtZy8n86Lt85SKaIoRCWpjSg==
-X-Google-Smtp-Source: AK7set/tV2rdWgmvhNxuUBbH5Kp+VjGk9gubEi8GFZRRtNk7BxFlPuMUDMhx4sndvqkKHAXXt1J4sw==
-X-Received: by 2002:a05:600c:b58:b0:3df:e752:35ca with SMTP id k24-20020a05600c0b5800b003dfe75235camr17613840wmr.32.1676057017763;
-        Fri, 10 Feb 2023 11:23:37 -0800 (PST)
-Received: from myrica (054592b0.skybroadband.com. [5.69.146.176])
-        by smtp.gmail.com with ESMTPSA id t15-20020a05600c198f00b003ddc781b1d4sm6466877wmq.33.2023.02.10.11.23.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Feb 2023 11:23:37 -0800 (PST)
-Date: Fri, 10 Feb 2023 19:23:29 +0000
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: maz@kernel.org, catalin.marinas@arm.com, will@kernel.org,
-	joro@8bytes.org, robin.murphy@arm.com, james.morse@arm.com,
-	suzuki.poulose@arm.com, oliver.upton@linux.dev,
-	yuzenghui@huawei.com, dbrazdil@google.com, ryan.roberts@arm.com,
-	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev,
-	iommu@lists.linux.dev
-Subject: Re: [RFC PATCH 42/45] KVM: arm64: pkvm: Support SCMI power domain
-Message-ID: <Y+aZsYDYUGuhTVrh@myrica>
-References: <20230201125328.2186498-1-jean-philippe@linaro.org>
- <20230201125328.2186498-43-jean-philippe@linaro.org>
- <Y+JRl3WRwzDJOe2J@google.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99FA88483
+	for <iommu@lists.linux.dev>; Fri, 10 Feb 2023 19:36:50 +0000 (UTC)
+Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 8DDB11EC050D;
+	Fri, 10 Feb 2023 20:36:48 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+	t=1676057808;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+	bh=MCUnDKhNZsvKrZ9QNPESgINSnYhmEBzZTjPQK8LCLnU=;
+	b=i+NQevbA7LtkcbzT2PGrHbq2DIT6X25Rbd3CXV09Dc8ZWcx1vQup1zkH2Wpg/6volIOuly
+	w90ABVMsvyrZ3owzfQHkr/9UmrAgXII6VE6w3OMVsa2PMGUtxuNxfGs3vztWu4Sd2Go3gP
+	+Ir4ttC/7lxJLRG0dghM2/nPfHpGz+I=
+Date: Fri, 10 Feb 2023 20:36:44 +0100
+From: Borislav Petkov <bp@alien8.de>
+To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Cc: Sean Christopherson <seanjc@google.com>,
+	Dave Hansen <dave.hansen@intel.com>,
+	"hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	"wei.liu@kernel.org" <wei.liu@kernel.org>,
+	Dexuan Cui <decui@microsoft.com>,
+	"luto@kernel.org" <luto@kernel.org>,
+	"peterz@infradead.org" <peterz@infradead.org>,
+	"davem@davemloft.net" <davem@davemloft.net>,
+	"edumazet@google.com" <edumazet@google.com>,
+	"kuba@kernel.org" <kuba@kernel.org>,
+	"pabeni@redhat.com" <pabeni@redhat.com>,
+	"lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+	"robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
+	"bhelgaas@google.com" <bhelgaas@google.com>,
+	"arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+	"brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+	"tglx@linutronix.de" <tglx@linutronix.de>,
+	"mingo@redhat.com" <mingo@redhat.com>,
+	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+	Tianyu Lan <Tianyu.Lan@microsoft.com>,
+	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+	"sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>,
+	"ak@linux.intel.com" <ak@linux.intel.com>,
+	"isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+	"dan.j.williams@intel.com" <dan.j.williams@intel.com>,
+	"jane.chu@oracle.com" <jane.chu@oracle.com>,
+	"tony.luck@intel.com" <tony.luck@intel.com>,
+	"x86@kernel.org" <x86@kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
+ to map as encrypted
+Message-ID: <Y+aczIbbQm/ZNunZ@zn.tnic>
+References: <Y8r2TjW/R3jymmqT@zn.tnic>
+ <BYAPR21MB168897DBA98E91B72B4087E1D7CA9@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y9FC7Dpzr5Uge/Mi@zn.tnic>
+ <BYAPR21MB16883BB6178DDEEA10FD1F1CD7D69@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y+JG9+zdSwZlz6FU@zn.tnic>
+ <4216dea6-d899-aecb-2207-caa2ae7db0e3@intel.com>
+ <BYAPR21MB16886D92828BA2CA8D47FEA4D7D99@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y+aP8rHr6H3LIf/c@google.com>
+ <Y+aVFxrE6a6b37XN@zn.tnic>
+ <BYAPR21MB16882083E84F20B906E2C847D7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <Y+JRl3WRwzDJOe2J@google.com>
+In-Reply-To: <BYAPR21MB16882083E84F20B906E2C847D7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
 
-On Tue, Feb 07, 2023 at 01:27:17PM +0000, Mostafa Saleh wrote:
-> Hi Jean,
-> 
-> > +bool kvm_host_scmi_handler(struct kvm_cpu_context *host_ctxt)
-> > +{
-> > +	DECLARE_REG(u64, func_id, host_ctxt, 0);
-> > +
-> > +	if (!scmi_channel.shmem || func_id != scmi_channel.smc_id)
-> > +		return false; /* Unhandled */
-> > +
-> > +	/*
-> > +	 * Prevent the host from modifying the request while it is in flight.
-> > +	 * One page is enough, SCMI messages are smaller than that.
-> > +	 *
-> > +	 * FIXME: the host is allowed to poll the shmem while the request is in
-> > +	 * flight, or read shmem when receiving the SCMI interrupt. Although
-> > +	 * it's unlikely with the SMC-based transport, this too requires some
-> > +	 * tightening in the spec.
-> > +	 */
-> > +	if (WARN_ON(__pkvm_host_add_remove_page(scmi_channel.shmem_pfn, true)))
-> > +		return true;
-> > +
-> > +	__kvm_host_scmi_handler(host_ctxt);
-> > +
-> > +	WARN_ON(__pkvm_host_add_remove_page(scmi_channel.shmem_pfn, false));
-> > +	return true; /* Handled */
-> > +}
-> 
-> I am not sure what a typical SCMI channel shmem_size would be.
+On Fri, Feb 10, 2023 at 07:15:41PM +0000, Michael Kelley (LINUX) wrote:
+> FWIW, I don't think the list of devices to be accessed encrypted is likely
+> to grow significantly.  Is one or two more possible?  Perhaps.  Does it
+> become a list of ten?  I doubt it.
 
-shmem_size is large but a SCMI message isn't bigger than 128 bytes at the
-moment, so copying would certainly be more performant.
+What happens if the next silly HV guest scheme comes along and they do
+need more and different ones?
 
-> But would map/unmap be more performant than
-> memcpy(hyp_local_copy,scmi_channel.pfn,scmi_channel.shmem_size ); ?
+Do I say, but but, Michael said that he doubted at the time that that
+list would grow... ;-\
 
-The problem is that we're forwarding this to the SCMI server, which
-expects to find the command in the shmem.
+And then all our paths are sprinkled with
 
-I took the easy route here, but a more efficient way to support SCMI would
-be for the hypervisor to own the channel permanently, and the host<->hyp
-communication would use a separate shared page. The hypervisor could then
-copy from one channel to the other. It requires more support in the host
-driver so I'd like to see if there is any interest in supporting SCMI
-before working on this.
+	if (cc_platform_has())
 
-Thanks,
-Jean
+and we can't change sh*t anymore out of fear that some weird guest type
+will break.
+
+> One approach is to go with the individual device attributes for now.
+> If the list does grow significantly, there will probably be patterns
+> or groupings that we can't discern now.  We could restructure into
+> larger buckets at that point based on those patterns/groupings.
+
+There's a reason the word "platform" is in cc_platform_has(). Initially
+we wanted to distinguish attributes of the different platforms. So even
+if y'all don't like CC_ATTR_PARAVISOR, that is what distinguishes this
+platform and it *is* one platform.
+
+So call it CC_ATTR_SEV_VTOM as it uses that technology or whatever. But
+call it like the platform, not to mean "I need this functionality".
+
+And yes, we could do the regroupings later because, yeah, those things
+are not exposed to userspace so it's not like they're cast in stone but
+I fear that we will do regroupings and we will break guests.
+
+Now if you had CC_ATTR_<PLATFORM_TYPE> then you break (or not) only that
+platform.
+
+Oh, and then there's the thing that this is kernel proper - that code
+still runs on real hardware, for now, and is not only guests. And not
+everything is a damn cloud.
+
+So I don't want a zoo here and we'd have to agree to distinguish by
+platform and not by different functionality required.
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
