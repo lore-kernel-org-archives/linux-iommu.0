@@ -1,114 +1,124 @@
-Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 105BE2FAF
-	for <iommu@lists.linux.dev>; Fri, 10 Feb 2023 22:03:15 +0000 (UTC)
-Received: by mail-qt1-f174.google.com with SMTP id g18so7473157qtb.6
-        for <iommu@lists.linux.dev>; Fri, 10 Feb 2023 14:03:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Id2+UsrVYKoKh+v2gTwy3GQbNktc9GS1SBwYfNKmfZk=;
-        b=iqtd9Kec5IJph3ZTrG8aQ9XA8blKN8EHZeUno7ZWq0Z74T/ZFpvFUAI6XOOFsTmA+m
-         rwX4VSVwFgKG8++rIsb1NW+uwc20/oMmEguoB1q+abQT6HtYJ8zcOy86uB+rZ8vVmRld
-         2ONCeJrkJs+1bJKW5qNSOuxc0l3Dq+MJAP89YqTRGA3SLzYY2WI9GZ5/n1vyx8Hb9I6K
-         g6dceqVSlv7QHhSyY3OjMwlusWa/Dq/WWiaDmeEmV9/JziIURezkSEHg6LZWQ0IvbAHe
-         Wb8vXjAFl6FrlH8LF4jBZCY1SxXhNRje/gAIV0F5rBtBGYv4x3oZkaGae96O34RyiNO3
-         gbjw==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CE1F2F41
+	for <iommu@lists.linux.dev>; Fri, 10 Feb 2023 22:44:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1676069054;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=8VZLwEZ0VhiWmW6aalUpiTNY5oCQlCmFrf7N1T4iZuc=;
+	b=cgt/nRk9la+RvyddEagInq3UKLEkDd+OYfIYKq3t8udgrm3AOreQmGe2gt9b5M0Jt4iCVd
+	2opA5nGnyLw/X933I7FR9q69UV6SFvGmkfcSXed7EF3SfkhaNRCiDXwCbsm1kix5Hv9Pbg
+	sF/XB9myzbDyNTOMgWGKk9vFdLHThGY=
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
+ [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-166-KxWUwKDtPpGRjbJuCtw4wA-1; Fri, 10 Feb 2023 17:44:13 -0500
+X-MC-Unique: KxWUwKDtPpGRjbJuCtw4wA-1
+Received: by mail-il1-f197.google.com with SMTP id k13-20020a056e021a8d00b00313951035ccso5169623ilv.22
+        for <iommu@lists.linux.dev>; Fri, 10 Feb 2023 14:44:13 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Id2+UsrVYKoKh+v2gTwy3GQbNktc9GS1SBwYfNKmfZk=;
-        b=j4GNYoS6Q/G1fCKNPu2DmEE8vMXt/lmEKrnOLy+fT7Luii+7ZClxJSfPvLFRkrjgB+
-         cElVEN7t9JmlIFzAvyQUqKz+Pbnp6u8rmLwtYEXp/gBfGTIAteVcblFQ26yqSubG/Ttu
-         TnsyuRfUCFY4FMYYItl8Cf8bwrkOQPJJ7MViPCtmasX2BigCb9CKMlKeSOxFaiL37VXc
-         9KgN15ZZC/BIb+HpBC6KyDAVL+7XtX3GmqjWLXKYgZ2lZMWqN8GjP8e6cud/wLD+XYr+
-         qpM3wUBVCQcnxmFKR4gzJ6xwI+ctOIxfk06NlPkKC7whYtHBY7KlneRYnjMZcjIOI3Xt
-         BvTQ==
-X-Gm-Message-State: AO0yUKWOewYUm8vOz2ENhi8BPjOo7FIenselk5+kEeOGzg2bPTUD4yuu
-	ywP0Ljxy5maNSh8lQ4RKA6/DByAS5sQ0bAndSZFyxw==
-X-Google-Smtp-Source: AK7set+a2IupuOe1iheQ8otTvVtY3AqFS2GYaIMQsbCA6aSlPzZqYmefbzH5B1fbTNFe1V6Vb61IH3YUyWK6KZqlu0U=
-X-Received: by 2002:ac8:584e:0:b0:3ba:1f09:94b5 with SMTP id
- h14-20020ac8584e000000b003ba1f0994b5mr2106266qth.358.1676066593926; Fri, 10
- Feb 2023 14:03:13 -0800 (PST)
+        bh=8VZLwEZ0VhiWmW6aalUpiTNY5oCQlCmFrf7N1T4iZuc=;
+        b=IW/TKGekoH4Ega7yfJdiCbqTTYnB5epuJqV0PwC/25I/VPdoS5OTxplpjpGFXpViBw
+         ZI+1GKasEOzlYb6C5OllVx+sXQCqwyP7uIjsG1iqxXe2UnJ2MAqXrBBtFcXUXRI/vBCo
+         hxlf/hcZjB/s3KQGOBj1Sj+3SQgacT0gkxIrIDWZeAyxcVbqS58iU/AKZx720ZEXx2YN
+         9o4cEaZwruENzc/u8FBdbolJ+KV0yRmc2IFxuuhJGN0Zw0UPgsKr8ZtXhZcsExXkhN3W
+         n+Fe07rWm+13Jfb2yWYo9LYyaeynrSzPhUtevAW7unjSYl94/K5tSJSlqowEpf8KI8AU
+         Ak1w==
+X-Gm-Message-State: AO0yUKVVdsh/GgAbAmiJy6MwkwGQsl5H0FHQvxYq6DZuNI4ZtmxNjrXC
+	qWM65GN7i0UlGDIUS1T03yoPMM4MRHK2SX/loAheKQqXr2rEY0bWWSpltC5xPyzoEc1mBxaITS8
+	Cvl9l8DNDczqKuo0=
+X-Received: by 2002:a05:6602:2acd:b0:722:827d:e6ac with SMTP id m13-20020a0566022acd00b00722827de6acmr17507159iov.6.1676069052832;
+        Fri, 10 Feb 2023 14:44:12 -0800 (PST)
+X-Google-Smtp-Source: AK7set/pYb5EOh/Drz42V1PJ5+VKWj6WP/ITUzBus6W3/LeQWRmoejvgCP3pyCdxFAjIjZZ39ARC1A==
+X-Received: by 2002:a05:6602:2acd:b0:722:827d:e6ac with SMTP id m13-20020a0566022acd00b00722827de6acmr17507122iov.6.1676069052584;
+        Fri, 10 Feb 2023 14:44:12 -0800 (PST)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id c11-20020a02a40b000000b003bf39936d1esm1666882jal.131.2023.02.10.14.44.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Feb 2023 14:44:11 -0800 (PST)
+Date: Fri, 10 Feb 2023 15:44:10 -0700
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: joro@8bytes.org, jgg@nvidia.com, kevin.tian@intel.com,
+ robin.murphy@arm.com, cohuck@redhat.com, eric.auger@redhat.com,
+ nicolinc@nvidia.com, kvm@vger.kernel.org, mjrosato@linux.ibm.com,
+ chao.p.peng@linux.intel.com, yi.y.sun@linux.intel.com, peterx@redhat.com,
+ jasowang@redhat.com, shameerali.kolothum.thodi@huawei.com, lulu@redhat.com,
+ suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ baolu.lu@linux.intel.com
+Subject: Re: [PATCH 2/6] iommu/vt-d: Implement hw_info for iommu capability
+ query
+Message-ID: <20230210154410.2b3b8296.alex.williamson@redhat.com>
+In-Reply-To: <20230209041642.9346-3-yi.l.liu@intel.com>
+References: <20230209041642.9346-1-yi.l.liu@intel.com>
+	<20230209041642.9346-3-yi.l.liu@intel.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.35; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230201125328.2186498-1-jean-philippe@linaro.org>
- <20230201125328.2186498-20-jean-philippe@linaro.org> <Y+JOhEfi8mu1RuOt@google.com>
- <CAFgf54q+R6nQBUAz9Quj8pQiTgKe7R_7BdQ=PWWay0WqDVzL1Q@mail.gmail.com> <Y+PkUKe72Q2WJGlp@myrica>
-In-Reply-To: <Y+PkUKe72Q2WJGlp@myrica>
-From: Mostafa Saleh <smostafa@google.com>
-Date: Fri, 10 Feb 2023 22:03:03 +0000
-Message-ID: <CAFgf54r6r8n6wYQqHuCqeuTiOp4h0PehR4yFaJLa0cchAbRTtw@mail.gmail.com>
-Subject: Re: [RFC PATCH 19/45] KVM: arm64: iommu: Add domains
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: maz@kernel.org, catalin.marinas@arm.com, will@kernel.org, joro@8bytes.org, 
-	robin.murphy@arm.com, james.morse@arm.com, suzuki.poulose@arm.com, 
-	oliver.upton@linux.dev, yuzenghui@huawei.com, dbrazdil@google.com, 
-	ryan.roberts@arm.com, linux-arm-kernel@lists.infradead.org, 
-	kvmarm@lists.linux.dev, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, Feb 8, 2023 at 6:05 PM Jean-Philippe Brucker
-<jean-philippe@linaro.org> wrote:
->
-> On Wed, Feb 08, 2023 at 12:31:15PM +0000, Mostafa Saleh wrote:
-> > On Tue, Feb 7, 2023 at 1:13 PM Mostafa Saleh <smostafa@google.com> wrot=
-e:
-> >
-> > > I was wondering about the need for pre-allocation of the domain array=
-.
-> > >
-> > > An alternative way I see:
-> > > - We don=E2=80=99t pre-allocate any domain.
-> > >
-> > > - When the EL1 driver has a request to domain_alloc, it will allocate
-> > > both kernel(iommu_domain) and hypervisor domains(kvm_hyp_iommu_domain=
-).
-> > >
-> > > - In __pkvm_host_iommu_alloc_domain, it will take over the hyp struct
-> > > from the kernel (via donation).
->
-> That also requires an entire page for each domain no?  I guess this domai=
-n
-> table would only be worse in memory use if we have fewer than 2 domains,
-> since it costs one page for the root table, and then stores 256 domains
-> per leaf page.
+On Wed,  8 Feb 2023 20:16:38 -0800
+Yi Liu <yi.l.liu@intel.com> wrote:
 
-Yes, that would require a page for a domain also, which is inefficient.
+> From: Lu Baolu <baolu.lu@linux.intel.com>
+> 
+> To support nested translation in the userspace, it should check the
+> underlying hardware information for the capabilities.
+> 
+> Add intel_iommu_hw_info() to report cap_reg and ecap_reg information.
+> 
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Yi Sun <yi.y.sun@linux.intel.com>
+> ---
+>  drivers/iommu/intel/iommu.c  | 19 +++++++++++++++++++
+>  drivers/iommu/intel/iommu.h  |  1 +
+>  include/uapi/linux/iommufd.h | 21 +++++++++++++++++++++
+>  3 files changed, 41 insertions(+)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 59df7e42fd53..929f600cc350 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -4760,8 +4760,26 @@ static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
+>  	intel_pasid_tear_down_entry(iommu, dev, pasid, false);
+>  }
+>  
+> +static void *intel_iommu_hw_info(struct device *dev, u32 *length)
+> +{
+> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
+> +	struct intel_iommu *iommu = info->iommu;
+> +	struct iommu_device_info_vtd *vtd;
+> +
+> +	vtd = kzalloc(sizeof(*vtd), GFP_KERNEL);
+> +	if (!vtd)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	vtd->cap_reg = iommu->cap;
+> +	vtd->ecap_reg = iommu->ecap;
 
-> What I've been trying to avoid with this table is introducing a malloc in
-> the hypervisor, but we might have to bite the bullet eventually (although
-> with a malloc, access will probably worse than O(1)).
+Just a friendly reminder that these registers are already exposed to
+userspace under /sys/class/iommu/ and each device has an iommu link
+back to their iommu device there.  This series doesn't really stand on
+its own without some discussion of why that interface is not sufficient
+for this use case.  Thanks,
 
-An alternative approach,
+Alex
 
-1- At SMMU init, it will alloc va range which is not backed by any memory
-(via pkvm_alloc_private_va_range) that is contiguous with the max size
-of domains.
-2- This will be like a large array indexed by domain id, and it would
-be filled on demand
-from memcache.
-3-alloc_domain will make sure that the new domain_id has a page and
-then any other
-access from map and unmap would just index this memory.
-
-This can save the extra page in the root table, handle_to_domain would
-slightly be
-more efficient.
-But this can cause page faults in EL2 if domain_id was not correct (allocat=
-ed in
-EL2 before). So I am not sure if it is worth it.
-
-
-Thanks,
-Mostafa
