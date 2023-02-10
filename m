@@ -1,482 +1,230 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B8C62F41
-	for <iommu@lists.linux.dev>; Fri, 10 Feb 2023 22:58:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676069914; x=1707605914;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=V62zNsOgOFRg0pqcZAWx+q0H//GVFp2Mbu6WcKQSqMg=;
-  b=Si6z9YVVpr8rTMigVpymJdFlL9DS8infrzCoZ3RsDKFTbyYjiqdkzdT6
-   Afv53zbSzxVmDTwanki5QkuYMtaltxAVeeM9BvxBM9LEyzIGJ9w3J39w9
-   /KisHds9F18g/kt5KOqc2OTOiZMCbeOqhynL66xKDnFzVmLlRGG339ZOV
-   JDtVTdZBgFjBoe5g8gmRNdgdi1TtJWaIoMnQUuCT8NQHgUev56ta7LTiv
-   q+lbfdc95ritZKjI1+y95X/oNdL3UZvjMPy8svzz+KBJAkLt3Q9FPcC6h
-   /upygdZsbjTlbw35ZAoIsLZ5vgz8YXHlWoV8GiRsgTYRyfPMmNo/x1oVE
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="310179497"
-X-IronPort-AV: E=Sophos;i="5.97,287,1669104000"; 
-   d="scan'208";a="310179497"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2023 14:58:33 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="777093503"
-X-IronPort-AV: E=Sophos;i="5.97,287,1669104000"; 
-   d="scan'208";a="777093503"
-Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.106])
-  by fmsmga002.fm.intel.com with ESMTP; 10 Feb 2023 14:58:33 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: LKML <linux-kernel@vger.kernel.org>,
-	iommu@lists.linux.dev,
-	"Lu Baolu" <baolu.lu@linux.intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>,
-	"Robin Murphy" <robin.murphy@arm.com>
-Cc: David Woodhouse <dwmw2@infradead.org>,
-	Raj Ashok <ashok.raj@intel.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>,
-	Yi Liu <yi.l.liu@intel.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH 2/2] iommu/ioasid: Remove custom IOASID allocator
-Date: Fri, 10 Feb 2023 15:02:06 -0800
-Message-Id: <20230210230206.3160144-3-jacob.jun.pan@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230210230206.3160144-1-jacob.jun.pan@linux.intel.com>
-References: <20230210230206.3160144-1-jacob.jun.pan@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D377F2F41
+	for <iommu@lists.linux.dev>; Fri, 10 Feb 2023 23:47:32 +0000 (UTC)
+Received: by mail-pl1-f175.google.com with SMTP id v23so8325235plo.1
+        for <iommu@lists.linux.dev>; Fri, 10 Feb 2023 15:47:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=yvOux52E5DbaWC84jPuO4nUHQ0TNZblI+i2jTa4EFtQ=;
+        b=ED8dYO9FNKMIjc/TCRz/NpirWuHWiTRnFNfdsQVxx2FJMVek+p15igeFFuXcpBXiOC
+         Y0a+I/8ktLsvo3N5MdhQG37xXQrx30WhEOaTl6+S07YfwDwd7bxXvNesnYzJp+eALuXo
+         KUm26Y7UUTPzjXC3YigSUPU2ZEFQyvhYKC6NLXmHB9dOWCDM+zVS8t88EyA/nvZ/QbDK
+         8FD2HHMAj8KT15+W5edNMPTzLH5+nKRXdDg4mgYOhHKejxL2iW0ecDLrjngpdxLYu4LP
+         J8W0zZa/WSCXNSOByPNry0lATSsomc5uTjI7VP4ZjipR1KOZBz1HUYtsgK0oewTB3pet
+         KGnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=yvOux52E5DbaWC84jPuO4nUHQ0TNZblI+i2jTa4EFtQ=;
+        b=lJJKLrOVmiPDwpKRk3YI1I+5MribA4m1i1iLw7GFtQqfAc7cmBcftcyza77F0f7BWy
+         hTTKsax2MgtQcLJF/Mdcdvb23HTjEqFz/dIskE9jVq3jmWMla8xSvdebDvq1pW3Rke0O
+         74AFitscVrEQYsJCso7xcB0mTgWfou87dXX9o82KY6jJphknBtN5n/bxxL/XSHoObETU
+         dZSsiOqiv+ohj+CgKHDU0mAbOrZEcsviA6+wfYtvs8kuzJ3WUCItEmGsnk27cNH4o3VW
+         z7DsjvZ/q9ePvoE/Ztcs+8T6zkvXQ6DmPp6sDugJIwX7GTwWwPdI1ZRCgn4RuUhpjBks
+         Oc9Q==
+X-Gm-Message-State: AO0yUKWB+BS6NPQ7Acj+HYC10ji6oVIgmzQQGD1s97hjo7vy93qfAgK5
+	Sy019iO3pVpn/gfnyTLi2Xkzxg==
+X-Google-Smtp-Source: AK7set9RitrimshGarArBisRdiVw5OT6p3mabnFwY8OKzVIC3UbTvCc/t/dpUCvTiH/5rQmO/QGGqQ==
+X-Received: by 2002:a17:902:ee89:b0:19a:5a9d:3c with SMTP id a9-20020a170902ee8900b0019a5a9d003cmr82270pld.16.1676072851861;
+        Fri, 10 Feb 2023 15:47:31 -0800 (PST)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id 12-20020a170902c10c00b00189743ed3b6sm3885380pli.64.2023.02.10.15.47.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Feb 2023 15:47:31 -0800 (PST)
+Date: Fri, 10 Feb 2023 23:47:27 +0000
+From: Sean Christopherson <seanjc@google.com>
+To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Cc: Dave Hansen <dave.hansen@intel.com>, Borislav Petkov <bp@alien8.de>,
+	"hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	"wei.liu@kernel.org" <wei.liu@kernel.org>,
+	Dexuan Cui <decui@microsoft.com>,
+	"luto@kernel.org" <luto@kernel.org>,
+	"peterz@infradead.org" <peterz@infradead.org>,
+	"davem@davemloft.net" <davem@davemloft.net>,
+	"edumazet@google.com" <edumazet@google.com>,
+	"kuba@kernel.org" <kuba@kernel.org>,
+	"pabeni@redhat.com" <pabeni@redhat.com>,
+	"lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+	"robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
+	"bhelgaas@google.com" <bhelgaas@google.com>,
+	"arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+	"brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+	"tglx@linutronix.de" <tglx@linutronix.de>,
+	"mingo@redhat.com" <mingo@redhat.com>,
+	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+	Tianyu Lan <Tianyu.Lan@microsoft.com>,
+	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+	"sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>,
+	"ak@linux.intel.com" <ak@linux.intel.com>,
+	"isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+	"dan.j.williams@intel.com" <dan.j.williams@intel.com>,
+	"jane.chu@oracle.com" <jane.chu@oracle.com>,
+	"tony.luck@intel.com" <tony.luck@intel.com>,
+	"x86@kernel.org" <x86@kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
+ to map as encrypted
+Message-ID: <Y+bXjxUtSf71E5SS@google.com>
+References: <4216dea6-d899-aecb-2207-caa2ae7db0e3@intel.com>
+ <BYAPR21MB16886D92828BA2CA8D47FEA4D7D99@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y+aP8rHr6H3LIf/c@google.com>
+ <Y+aVFxrE6a6b37XN@zn.tnic>
+ <BYAPR21MB16882083E84F20B906E2C847D7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y+aczIbbQm/ZNunZ@zn.tnic>
+ <cb80e102-4b78-1a03-9c32-6450311c0f55@intel.com>
+ <Y+auMQ88In7NEc30@google.com>
+ <Y+av0SVUHBLCVdWE@google.com>
+ <BYAPR21MB168864EF662ABC67B19654CCD7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BYAPR21MB168864EF662ABC67B19654CCD7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
 
-Custom allocator feature was introduced to support VT-d's virtual
-command, an enlightened interface designed for VMs to allocate PASIDs
-from the host.
+On Fri, Feb 10, 2023, Michael Kelley (LINUX) wrote:
+> From: Sean Christopherson <seanjc@google.com> Sent: Friday, February 10, 2023 12:58 PM
+> > 
+> > On Fri, Feb 10, 2023, Sean Christopherson wrote:
+> > > On Fri, Feb 10, 2023, Dave Hansen wrote:
+> > > > On 2/10/23 11:36, Borislav Petkov wrote:
+> > > > >> One approach is to go with the individual device attributes for now.>> If the list
+> > does grow significantly, there will probably be patterns
+> > > > >> or groupings that we can't discern now.  We could restructure into
+> > > > >> larger buckets at that point based on those patterns/groupings.
+> > > > > There's a reason the word "platform" is in cc_platform_has(). Initially
+> > > > > we wanted to distinguish attributes of the different platforms. So even
+> > > > > if y'all don't like CC_ATTR_PARAVISOR, that is what distinguishes this
+> > > > > platform and it *is* one platform.
+> > > > >
+> > > > > So call it CC_ATTR_SEV_VTOM as it uses that technology or whatever. But
+> > > > > call it like the platform, not to mean "I need this functionality".
+> > > >
+> > > > I can live with that.  There's already a CC_ATTR_GUEST_SEV_SNP, so it
+> > > > would at least not be too much of a break from what we already have.
+> > >
+> > > I'm fine with CC_ATTR_SEV_VTOM, assuming the proposal is to have something like:
+> > >
+> > > 	static inline bool is_address_range_private(resource_size_t addr)
+> > > 	{
+> > > 		if (cc_platform_has(CC_ATTR_SEV_VTOM))
+> > > 			return is_address_below_vtom(addr);
+> > >
+> > > 		return false;
+> > > 	}
+> > >
+> > > i.e. not have SEV_VTOM mean "I/O APIC and vTPM are private".  Though I don't see
+> > > the point in making it SEV vTOM specific or using a flag.  Despite what any of us
+> > > think about TDX paravisors, it's completely doable within the confines of TDX to
+> > > have an emulated device reside in the private address space.  E.g. why not
+> > > something like this?
+> > >
+> > > 	static inline bool is_address_range_private(resource_size_t addr)
+> > > 	{
+> > > 		return addr < cc_platform_private_end;
+> > > 	}
+> > >
+> > > where SEV fills in "cc_platform_private_end" when vTOM is enabled, and TDX does
+> > > the same.  Or wrap cc_platform_private_end in a helper, etc.
+> > 
+> > Gah, forgot that the intent with TDX is to enumerate devices in their legacy
+> > address spaces.  So a TDX guest couldn't do this by default, but if/when Hyper-V
+> > or some other hypervisor moves I/O APIC, vTPM, etc... into the TCB, the common
+> > code would just work and only the hypervisor-specific paravirt code would need
+> > to change.
+> > 
+> > Probably need a more specific name than is_address_range_private() though, e.g.
+> > is_mmio_address_range_private()?
+> 
+> Maybe I'm not understanding what you are proposing, but in an SEV-SNP
+> VM using vTOM, devices like the IO-APIC and TPM live at their usual guest
+> physical addresses.
 
-As we remove/withdraw the VT-d virtual command feature, the sole user
-of custom allocator, we can safely remove the custom allocator as well.
-Effectively, this will return IOASID core to the original simple global
-namespace allocator.
+Ah, so as the cover letter says, the intent really is to treat vTOM as an
+attribute bit.  Sorry, I got confused by Boris's comment:
 
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
----
- drivers/iommu/ioasid.c | 293 ++---------------------------------------
- include/linux/ioasid.h |  28 ----
- 2 files changed, 9 insertions(+), 312 deletions(-)
+  : What happens if the next silly HV guest scheme comes along and they do
+  : need more and different ones?
 
-diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
-index a786c034907c..85715e171db2 100644
---- a/drivers/iommu/ioasid.c
-+++ b/drivers/iommu/ioasid.c
-@@ -16,246 +16,7 @@ struct ioasid_data {
- 	void *private;
- 	struct rcu_head rcu;
- };
--
--/*
-- * struct ioasid_allocator_data - Internal data structure to hold information
-- * about an allocator. There are two types of allocators:
-- *
-- * - Default allocator always has its own XArray to track the IOASIDs allocated.
-- * - Custom allocators may share allocation helpers with different private data.
-- *   Custom allocators that share the same helper functions also share the same
-- *   XArray.
-- * Rules:
-- * 1. Default allocator is always available, not dynamically registered. This is
-- *    to prevent race conditions with early boot code that want to register
-- *    custom allocators or allocate IOASIDs.
-- * 2. Custom allocators take precedence over the default allocator.
-- * 3. When all custom allocators sharing the same helper functions are
-- *    unregistered (e.g. due to hotplug), all outstanding IOASIDs must be
-- *    freed. Otherwise, outstanding IOASIDs will be lost and orphaned.
-- * 4. When switching between custom allocators sharing the same helper
-- *    functions, outstanding IOASIDs are preserved.
-- * 5. When switching between custom allocator and default allocator, all IOASIDs
-- *    must be freed to ensure unadulterated space for the new allocator.
-- *
-- * @ops:	allocator helper functions and its data
-- * @list:	registered custom allocators
-- * @slist:	allocators share the same ops but different data
-- * @flags:	attributes of the allocator
-- * @xa:		xarray holds the IOASID space
-- * @rcu:	used for kfree_rcu when unregistering allocator
-- */
--struct ioasid_allocator_data {
--	struct ioasid_allocator_ops *ops;
--	struct list_head list;
--	struct list_head slist;
--#define IOASID_ALLOCATOR_CUSTOM BIT(0) /* Needs framework to track results */
--	unsigned long flags;
--	struct xarray xa;
--	struct rcu_head rcu;
--};
--
--static DEFINE_SPINLOCK(ioasid_allocator_lock);
--static LIST_HEAD(allocators_list);
--
--static ioasid_t default_alloc(ioasid_t min, ioasid_t max, void *opaque);
--static void default_free(ioasid_t ioasid, void *opaque);
--
--static struct ioasid_allocator_ops default_ops = {
--	.alloc = default_alloc,
--	.free = default_free,
--};
--
--static struct ioasid_allocator_data default_allocator = {
--	.ops = &default_ops,
--	.flags = 0,
--	.xa = XARRAY_INIT(ioasid_xa, XA_FLAGS_ALLOC),
--};
--
--static struct ioasid_allocator_data *active_allocator = &default_allocator;
--
--static ioasid_t default_alloc(ioasid_t min, ioasid_t max, void *opaque)
--{
--	ioasid_t id;
--
--	if (xa_alloc(&default_allocator.xa, &id, opaque, XA_LIMIT(min, max), GFP_ATOMIC)) {
--		pr_err("Failed to alloc ioasid from %d to %d\n", min, max);
--		return INVALID_IOASID;
--	}
--
--	return id;
--}
--
--static void default_free(ioasid_t ioasid, void *opaque)
--{
--	struct ioasid_data *ioasid_data;
--
--	ioasid_data = xa_erase(&default_allocator.xa, ioasid);
--	kfree_rcu(ioasid_data, rcu);
--}
--
--/* Allocate and initialize a new custom allocator with its helper functions */
--static struct ioasid_allocator_data *ioasid_alloc_allocator(struct ioasid_allocator_ops *ops)
--{
--	struct ioasid_allocator_data *ia_data;
--
--	ia_data = kzalloc(sizeof(*ia_data), GFP_ATOMIC);
--	if (!ia_data)
--		return NULL;
--
--	xa_init_flags(&ia_data->xa, XA_FLAGS_ALLOC);
--	INIT_LIST_HEAD(&ia_data->slist);
--	ia_data->flags |= IOASID_ALLOCATOR_CUSTOM;
--	ia_data->ops = ops;
--
--	/* For tracking custom allocators that share the same ops */
--	list_add_tail(&ops->list, &ia_data->slist);
--
--	return ia_data;
--}
--
--static bool use_same_ops(struct ioasid_allocator_ops *a, struct ioasid_allocator_ops *b)
--{
--	return (a->free == b->free) && (a->alloc == b->alloc);
--}
--
--/**
-- * ioasid_register_allocator - register a custom allocator
-- * @ops: the custom allocator ops to be registered
-- *
-- * Custom allocators take precedence over the default xarray based allocator.
-- * Private data associated with the IOASID allocated by the custom allocators
-- * are managed by IOASID framework similar to data stored in xa by default
-- * allocator.
-- *
-- * There can be multiple allocators registered but only one is active. In case
-- * of runtime removal of a custom allocator, the next one is activated based
-- * on the registration ordering.
-- *
-- * Multiple allocators can share the same alloc() function, in this case the
-- * IOASID space is shared.
-- */
--int ioasid_register_allocator(struct ioasid_allocator_ops *ops)
--{
--	struct ioasid_allocator_data *ia_data;
--	struct ioasid_allocator_data *pallocator;
--	int ret = 0;
--
--	spin_lock(&ioasid_allocator_lock);
--
--	ia_data = ioasid_alloc_allocator(ops);
--	if (!ia_data) {
--		ret = -ENOMEM;
--		goto out_unlock;
--	}
--
--	/*
--	 * No particular preference, we activate the first one and keep
--	 * the later registered allocators in a list in case the first one gets
--	 * removed due to hotplug.
--	 */
--	if (list_empty(&allocators_list)) {
--		WARN_ON(active_allocator != &default_allocator);
--		/* Use this new allocator if default is not active */
--		if (xa_empty(&active_allocator->xa)) {
--			rcu_assign_pointer(active_allocator, ia_data);
--			list_add_tail(&ia_data->list, &allocators_list);
--			goto out_unlock;
--		}
--		pr_warn("Default allocator active with outstanding IOASID\n");
--		ret = -EAGAIN;
--		goto out_free;
--	}
--
--	/* Check if the allocator is already registered */
--	list_for_each_entry(pallocator, &allocators_list, list) {
--		if (pallocator->ops == ops) {
--			pr_err("IOASID allocator already registered\n");
--			ret = -EEXIST;
--			goto out_free;
--		} else if (use_same_ops(pallocator->ops, ops)) {
--			/*
--			 * If the new allocator shares the same ops,
--			 * then they will share the same IOASID space.
--			 * We should put them under the same xarray.
--			 */
--			list_add_tail(&ops->list, &pallocator->slist);
--			goto out_free;
--		}
--	}
--	list_add_tail(&ia_data->list, &allocators_list);
--
--	spin_unlock(&ioasid_allocator_lock);
--	return 0;
--out_free:
--	kfree(ia_data);
--out_unlock:
--	spin_unlock(&ioasid_allocator_lock);
--	return ret;
--}
--EXPORT_SYMBOL_GPL(ioasid_register_allocator);
--
--/**
-- * ioasid_unregister_allocator - Remove a custom IOASID allocator ops
-- * @ops: the custom allocator to be removed
-- *
-- * Remove an allocator from the list, activate the next allocator in
-- * the order it was registered. Or revert to default allocator if all
-- * custom allocators are unregistered without outstanding IOASIDs.
-- */
--void ioasid_unregister_allocator(struct ioasid_allocator_ops *ops)
--{
--	struct ioasid_allocator_data *pallocator;
--	struct ioasid_allocator_ops *sops;
--
--	spin_lock(&ioasid_allocator_lock);
--	if (list_empty(&allocators_list)) {
--		pr_warn("No custom IOASID allocators active!\n");
--		goto exit_unlock;
--	}
--
--	list_for_each_entry(pallocator, &allocators_list, list) {
--		if (!use_same_ops(pallocator->ops, ops))
--			continue;
--
--		if (list_is_singular(&pallocator->slist)) {
--			/* No shared helper functions */
--			list_del(&pallocator->list);
--			/*
--			 * All IOASIDs should have been freed before
--			 * the last allocator that shares the same ops
--			 * is unregistered.
--			 */
--			WARN_ON(!xa_empty(&pallocator->xa));
--			if (list_empty(&allocators_list)) {
--				pr_info("No custom IOASID allocators, switch to default.\n");
--				rcu_assign_pointer(active_allocator, &default_allocator);
--			} else if (pallocator == active_allocator) {
--				rcu_assign_pointer(active_allocator,
--						list_first_entry(&allocators_list,
--								struct ioasid_allocator_data, list));
--				pr_info("IOASID allocator changed");
--			}
--			kfree_rcu(pallocator, rcu);
--			break;
--		}
--		/*
--		 * Find the matching shared ops to delete,
--		 * but keep outstanding IOASIDs
--		 */
--		list_for_each_entry(sops, &pallocator->slist, list) {
--			if (sops == ops) {
--				list_del(&ops->list);
--				break;
--			}
--		}
--		break;
--	}
--
--exit_unlock:
--	spin_unlock(&ioasid_allocator_lock);
--}
--EXPORT_SYMBOL_GPL(ioasid_unregister_allocator);
-+static DEFINE_XARRAY_ALLOC(ioasid_xa);
- 
- /**
-  * ioasid_set_data - Set private data for an allocated ioasid
-@@ -270,13 +31,13 @@ int ioasid_set_data(ioasid_t ioasid, void *data)
- 	struct ioasid_data *ioasid_data;
- 	int ret = 0;
- 
--	spin_lock(&ioasid_allocator_lock);
--	ioasid_data = xa_load(&active_allocator->xa, ioasid);
-+	xa_lock(&ioasid_xa);
-+	ioasid_data = xa_load(&ioasid_xa, ioasid);
- 	if (ioasid_data)
- 		rcu_assign_pointer(ioasid_data->private, data);
- 	else
- 		ret = -ENOENT;
--	spin_unlock(&ioasid_allocator_lock);
-+	xa_unlock(&ioasid_xa);
- 
- 	/*
- 	 * Wait for readers to stop accessing the old private data, so the
-@@ -305,7 +66,6 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
- 		      void *private)
+Based on that comment, I assumed the proposal to use CC_ATTR_SEV_VTOM was intended
+to be a generic range-based thing, but it sounds like that's not the case. 
+
+IMO, using CC_ATTR_SEV_VTOM to infer anything about the state of I/O APIC or vTPM
+is wrong.  vTOM as a platform feature effectively says "physical address bit X
+controls private vs. shared" (ignoring weird usage of vTOM).  vTOM does not mean
+I/O APIC and vTPM are private, that's very much a property of Hyper-V's current
+generation of vTOM-based VMs.
+
+Hardcoding this in the guest feels wrong.  Ideally, we would have a way to enumerate
+that a device is private/trusted, e.g. through ACPI.  I'm guessing we already
+missed the boat on that, so the next best thing is to do something like Michael
+originally proposed in this patch and shove the "which devices are private" logic
+into hypervisor-specific code, i.e. let Hyper-V figure out how to enumerate to its
+guests which devices are shared.
+
+I agree with Boris' comment that a one-off "other encrypted range" is a hack, but
+that's just an API problem.  The kernel already has hypervisor specific hooks (and
+for SEV-ES even), why not expand that?  That way figuring out which devices are
+private is wholly contained in Hyper-V code, at least until there's a generic
+solution for enumerating private devices, though that seems unlikely to happen
+and will be a happy problem to solve if it does come about.
+
+diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
+index a868b76cd3d4..08f65ed439d9 100644
+--- a/arch/x86/kernel/apic/io_apic.c
++++ b/arch/x86/kernel/apic/io_apic.c
+@@ -2682,11 +2682,16 @@ static void io_apic_set_fixmap(enum fixed_addresses idx, phys_addr_t phys)
  {
- 	struct ioasid_data *data;
--	void *adata;
- 	ioasid_t id;
+        pgprot_t flags = FIXMAP_PAGE_NOCACHE;
  
- 	data = kzalloc(sizeof(*data), GFP_ATOMIC);
-@@ -314,32 +74,13 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
+-       /*
+-        * Ensure fixmaps for IOAPIC MMIO respect memory encryption pgprot
+-        * bits, just like normal ioremap():
+-        */
+-       flags = pgprot_decrypted(flags);
++       if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT)) {
++               /*
++               * Ensure fixmaps for IOAPIC MMIO respect memory encryption pgprot
++               * bits, just like normal ioremap():
++               */
++               if (x86_platform.hyper.is_private_mmio(phys))
++                       flags = pgprot_encrypted(flags);
++               else
++                       flags = pgprot_decrypted(flags);
++       }
  
- 	data->set = set;
- 	data->private = private;
--
--	/*
--	 * Custom allocator needs allocator data to perform platform specific
--	 * operations.
--	 */
--	spin_lock(&ioasid_allocator_lock);
--	adata = active_allocator->flags & IOASID_ALLOCATOR_CUSTOM ? active_allocator->ops->pdata : data;
--	id = active_allocator->ops->alloc(min, max, adata);
--	if (id == INVALID_IOASID) {
--		pr_err("Failed ASID allocation %lu\n", active_allocator->flags);
--		goto exit_free;
--	}
--
--	if ((active_allocator->flags & IOASID_ALLOCATOR_CUSTOM) &&
--	     xa_alloc(&active_allocator->xa, &id, data, XA_LIMIT(id, id), GFP_ATOMIC)) {
--		/* Custom allocator needs framework to store and track allocation results */
--		pr_err("Failed to alloc ioasid from %d\n", id);
--		active_allocator->ops->free(id, active_allocator->ops->pdata);
-+	if (xa_alloc(&ioasid_xa, &id, data, XA_LIMIT(min, max), GFP_ATOMIC)) {
-+		pr_err("Failed to alloc ioasid from %d to %d\n", min, max);
- 		goto exit_free;
- 	}
- 	data->id = id;
--
--	spin_unlock(&ioasid_allocator_lock);
- 	return id;
- exit_free:
--	spin_unlock(&ioasid_allocator_lock);
- 	kfree(data);
- 	return INVALID_IOASID;
+        __set_fixmap(idx, phys, flags);
  }
-@@ -353,22 +94,8 @@ void ioasid_free(ioasid_t ioasid)
- {
- 	struct ioasid_data *ioasid_data;
+diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
+index 6453fbaedb08..0baec766b921 100644
+--- a/arch/x86/mm/ioremap.c
++++ b/arch/x86/mm/ioremap.c
+@@ -116,6 +116,9 @@ static void __ioremap_check_other(resource_size_t addr, struct ioremap_desc *des
+        if (!cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
+                return;
  
--	spin_lock(&ioasid_allocator_lock);
--	ioasid_data = xa_load(&active_allocator->xa, ioasid);
--	if (!ioasid_data) {
--		pr_err("Trying to free unknown IOASID %u\n", ioasid);
--		goto exit_unlock;
--	}
--
--	active_allocator->ops->free(ioasid, active_allocator->ops->pdata);
--	/* Custom allocator needs additional steps to free the xa element */
--	if (active_allocator->flags & IOASID_ALLOCATOR_CUSTOM) {
--		ioasid_data = xa_erase(&active_allocator->xa, ioasid);
--		kfree_rcu(ioasid_data, rcu);
--	}
--
--exit_unlock:
--	spin_unlock(&ioasid_allocator_lock);
-+	ioasid_data = xa_erase(&ioasid_xa, ioasid);
-+	kfree_rcu(ioasid_data, rcu);
- }
- EXPORT_SYMBOL_GPL(ioasid_free);
++       if (x86_platform.hyper.is_private_mmio(addr))
++               desc->flags |= IORES_MAP_ENCRYPTED;
++
+        if (!IS_ENABLED(CONFIG_EFI))
+                return;
  
-@@ -391,11 +118,9 @@ void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
- {
- 	void *priv;
- 	struct ioasid_data *ioasid_data;
--	struct ioasid_allocator_data *idata;
- 
- 	rcu_read_lock();
--	idata = rcu_dereference(active_allocator);
--	ioasid_data = xa_load(&idata->xa, ioasid);
-+	ioasid_data = xa_load(&ioasid_xa, ioasid);
- 	if (!ioasid_data) {
- 		priv = ERR_PTR(-ENOENT);
- 		goto unlock;
-diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-index af1c9d62e642..fdfa70857227 100644
---- a/include/linux/ioasid.h
-+++ b/include/linux/ioasid.h
-@@ -7,28 +7,11 @@
- 
- #define INVALID_IOASID ((ioasid_t)-1)
- typedef unsigned int ioasid_t;
--typedef ioasid_t (*ioasid_alloc_fn_t)(ioasid_t min, ioasid_t max, void *data);
--typedef void (*ioasid_free_fn_t)(ioasid_t ioasid, void *data);
- 
- struct ioasid_set {
- 	int dummy;
- };
- 
--/**
-- * struct ioasid_allocator_ops - IOASID allocator helper functions and data
-- *
-- * @alloc:	helper function to allocate IOASID
-- * @free:	helper function to free IOASID
-- * @list:	for tracking ops that share helper functions but not data
-- * @pdata:	data belong to the allocator, provided when calling alloc()
-- */
--struct ioasid_allocator_ops {
--	ioasid_alloc_fn_t alloc;
--	ioasid_free_fn_t free;
--	struct list_head list;
--	void *pdata;
--};
--
- #define DECLARE_IOASID_SET(name) struct ioasid_set name = { 0 }
- 
- #if IS_ENABLED(CONFIG_IOASID)
-@@ -37,8 +20,6 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
- void ioasid_free(ioasid_t ioasid);
- void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
- 		  bool (*getter)(void *));
--int ioasid_register_allocator(struct ioasid_allocator_ops *allocator);
--void ioasid_unregister_allocator(struct ioasid_allocator_ops *allocator);
- int ioasid_set_data(ioasid_t ioasid, void *data);
- static inline bool pasid_valid(ioasid_t ioasid)
- {
-@@ -60,15 +41,6 @@ static inline void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
- 	return NULL;
- }
- 
--static inline int ioasid_register_allocator(struct ioasid_allocator_ops *allocator)
--{
--	return -ENOTSUPP;
--}
--
--static inline void ioasid_unregister_allocator(struct ioasid_allocator_ops *allocator)
--{
--}
--
- static inline int ioasid_set_data(ioasid_t ioasid, void *data)
- {
- 	return -ENOTSUPP;
--- 
-2.25.1
 
