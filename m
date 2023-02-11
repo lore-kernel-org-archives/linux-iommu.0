@@ -1,33 +1,33 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AED80A23
-	for <iommu@lists.linux.dev>; Sat, 11 Feb 2023 03:38:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1FE4A23
+	for <iommu@lists.linux.dev>; Sat, 11 Feb 2023 03:42:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676086691; x=1707622691;
+  t=1676086971; x=1707622971;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=fjfJYgr9l7FY6AeaHSqoSGiUSdbIvnX9HseUvyVfHkU=;
-  b=FPyNJJMHgUe6XDbYFCq1eu0DOaQHWw8tAUfHEgruGJNZKCHfGwqYArA6
-   KjuakIBY38BMbFfmAnzTm7ozcAMc+os3duwv+a+YMuyZHRyoZldPI6ULF
-   T8J3vGERpc2fqMwS8ysekynLX3JZueXYK6Kd//QRh07nyf7YS0D1wFQZc
-   QRqjm2G0YMapwXwo02QDrEst1+vlikvPr+XA9FhY6JG9SERqHEklH366+
-   F8qGN8DnR/RqvzklrOIanCDnnLOFH+DjIl0mLRgiZ+mxv9mrTmP7pgEQy
-   PhPzt3kRnJ6YCFCk+NGyK87pM7v5rDnt+TOIvYzzSBK7luzMRjBDCG+i8
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="318597345"
+  bh=Mb6jH6AmOE4FzUbSjuwgu/iwgBs2C4fgrjOWh5cufe0=;
+  b=KhMGiknLAQguc3DTVCqAoSCJ8xUtFuALnndZ5Ge8Ri2zV+vaX6z01WkH
+   Fb8OgDKYqJk9O8d5O7fjPkrpd4SlZRzuwo0cYSwc87vvPYqKsdGiYnvHl
+   KOUR8Qfs9ubNwiwTiaiS8lnZIZ7i38mBesgnLvsi+nE3vx8m2VVEgrwho
+   jBgUftFGh2L/0Vb8z6e0iRez775WGqTRtL8MTK5EjWBpUPNLN5v77mpGq
+   3Q1NPa+CUBjbAZJ7MMM2UEFaEeLwAQHiAYivAS9KBR4RQONdPLdQK0pAm
+   6huKq3rA5ZbFbxG1N3IHENQ7OaFRjypXionxGLQ4zMKWabbadqKRwDtqw
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="331883147"
 X-IronPort-AV: E=Sophos;i="5.97,287,1669104000"; 
-   d="scan'208";a="318597345"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2023 19:38:10 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="618087971"
+   d="scan'208";a="331883147"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2023 19:42:51 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="842224646"
 X-IronPort-AV: E=Sophos;i="5.97,287,1669104000"; 
-   d="scan'208";a="618087971"
+   d="scan'208";a="842224646"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.168.175]) ([10.249.168.175])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2023 19:38:05 -0800
-Message-ID: <b50ca15b-81fb-d8e6-90fd-210ab0916d31@linux.intel.com>
-Date: Sat, 11 Feb 2023 11:38:03 +0800
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2023 19:42:46 -0800
+Message-ID: <8665f299-fd4f-738a-6492-59f0deef444f@linux.intel.com>
+Date: Sat, 11 Feb 2023 11:42:44 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -68,7 +68,7 @@ Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 2023/2/10 15:28, Tian, Kevin wrote:
->> From: Liu, Yi L <yi.l.liu@intel.com>
+>> From: Liu, Yi L<yi.l.liu@intel.com>
 >> Sent: Thursday, February 9, 2023 12:17 PM
 >> @@ -223,6 +224,11 @@ struct iommu_iotlb_gather {
 >>   /**
@@ -76,38 +76,14 @@ On 2023/2/10 15:28, Tian, Kevin wrote:
 >>    * @capable: check capability
 >> + * @hw_info: IOMMU hardware capabilities. The type of the returned data
 >> is
-> 
 > is it 'info' or 'capability'?
-> 
->> + *           defined in include/uapi/linux/iommufd.h. The data buffer is
->> + *           allocated in the IOMMU driver and the caller should free it
->> + *           after use. Return the data buffer if success, or ERR_PTR on
->> + *	      failure.
->>    * @domain_alloc: allocate iommu domain
->>    * @probe_device: Add device to iommu driver handling
->>    * @release_device: Remove device from iommu driver handling
->> @@ -252,6 +258,7 @@ struct iommu_iotlb_gather {
->>    */
->>   struct iommu_ops {
->>   	bool (*capable)(struct device *dev, enum iommu_cap);
->> +	void *(*hw_info)(struct device *dev, u32 *length);
->>
->>   	/* Domain allocation and freeing by the iommu driver */
->>   	struct iommu_domain *(*domain_alloc)(unsigned
->> iommu_domain_type);
->> @@ -280,6 +287,7 @@ struct iommu_ops {
->>   	void (*remove_dev_pasid)(struct device *dev, ioasid_t pasid);
->>
->>   	const struct iommu_domain_ops *default_domain_ops;
->> +	enum iommu_device_data_type driver_type;
-> 
-> the enum is called 'device_data_type' while the field is called 'driver_type'.
 
-The enum is named from uAPI's p-o-v and driver_type is from IOMMU's.
+hw_info. IOMMU core does not care about specific content, so it is not
+necessary to define it as capability or anything else.
 
-> btw this new field is not documented above.
-
-Yes. Will do that.
+Perhaps we need to change the comments a bit, say, "IOMMU hardware
+information"?
 
 Best regards,
 baolu
+
