@@ -1,98 +1,81 @@
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from soltyk.jannau.net (soltyk.jannau.net [144.76.91.90])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ADB91C10
-	for <iommu@lists.linux.dev>; Sat, 11 Feb 2023 12:27:29 +0000 (UTC)
-Received: by mail-ej1-f52.google.com with SMTP id dr8so21790459ejc.12
-        for <iommu@lists.linux.dev>; Sat, 11 Feb 2023 04:27:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZFp89ec0Gr3RlKfBxRJjtE1gTMumSINkw7PnkXnimnY=;
-        b=xk2doebZQk6auFDtj5Y099pDIP8MRfOdDuETsAZCKXxbAFDrNHqvoWJKumQkRcWmVo
-         scg59xqSLqN4MBxnrDUvGLzHEBBZE67AhYwwOopbRpF+U/UWJvHrWIcSCRA2DyAuyAGH
-         D9rjVKAdhGPLozHkdhPLfFQ+6XU8KapCeY7nOV6iLo560OmwQ08bXsthRvt6q7oCc/is
-         rxy0K83qK0+aBLXe742rYNoK36PFOQLnKg3TLgktJJvbjfgplkb/G29rwCuHQyUGQcfC
-         9MIMDH9mBYfUBgIxrGld0ZQMsseOnb9IwCpGq7RwmZoHgSmcH8z07CirveHCbWdwFS8H
-         5bmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ZFp89ec0Gr3RlKfBxRJjtE1gTMumSINkw7PnkXnimnY=;
-        b=qIqgk3ZbUnkFsdEDDv1dH0ZVLcWvnnIOhjBiwvzNzUHXiVW18N9LL9MCPIvAfHjXm0
-         3cgYVUfF6Jl8zZXlQRYeNbYAgazGhV7WzFNY24TOlin8CsXINlZqa34wcOKa+B1fFpVt
-         LX9l1R4EUMTuJSuPL26j5DIH+Mc3oukhCA6KTzg15qn5QGGUREiupCoY4a125vOaVzwh
-         UwxXuyGbjWVYQ4s1TaiAnsJJFQ1dXU9yL7x1jsqvBrRRLKXh9MEFfQKKyXmBaurhvbTE
-         XDizPcTqBHMV4aqs1//SP0/1wI54TJlqQPoHTMfKk/HSnJLNU0L5NunRwHoUQqII5VHF
-         aXZQ==
-X-Gm-Message-State: AO0yUKWs8+RsBVp1kxGLdXLmPu6HfpwKkhZfabPSpMDRe0re+bdpbYoU
-	zj42BSOSAprPVsNvGz5RwJc7lQ==
-X-Google-Smtp-Source: AK7set9p+k1epdfPMeJFIaVVZ7jZqPY7vKLLqQRPkBgc/mL3tFJSTXK5kqJUzyLMwwkvBXzWQas3DA==
-X-Received: by 2002:a17:906:7c07:b0:880:2870:7849 with SMTP id t7-20020a1709067c0700b0088028707849mr20575594ejo.74.1676118447566;
-        Sat, 11 Feb 2023 04:27:27 -0800 (PST)
-Received: from localhost.localdomain (abxh117.neoplus.adsl.tpnet.pl. [83.9.1.117])
-        by smtp.gmail.com with ESMTPSA id mv9-20020a170907838900b0087bd2ebe474sm3767941ejc.208.2023.02.11.04.27.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Feb 2023 04:27:27 -0800 (PST)
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-To: linux-arm-msm@vger.kernel.org,
-	andersson@kernel.org,
-	agross@kernel.org,
-	krzysztof.kozlowski@linaro.org
-Cc: marijn.suijten@somainline.org,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6859D257D;
+	Sun, 12 Feb 2023 15:41:38 +0000 (UTC)
+Received: from robin.home.jannau.net (p579ad32f.dip0.t-ipconnect.de [87.154.211.47])
+	by soltyk.jannau.net (Postfix) with ESMTPSA id C545D26F77C;
+	Sun, 12 Feb 2023 16:41:31 +0100 (CET)
+From: Janne Grunau <j@jannau.net>
+To: Hector Martin <marcan@marcan.st>,
+	Sven Peter <sven@svenpeter.dev>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Mark Kettenis <kettenis@openbsd.org>,
 	Joerg Roedel <joro@8bytes.org>,
-	Konrad Dybcio <konrad.dybcio@somainline.org>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-	Bjorn Andersson <quic_bjorande@quicinc.com>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>
+Cc: asahi@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 10/10] iommu/arm-smmu-qcom: Sort the compatible list alphabetically
-Date: Sat, 11 Feb 2023 13:26:56 +0100
-Message-Id: <20230211122656.1479141-11-konrad.dybcio@linaro.org>
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: [PATCH 07/17] dt-bindings: iommu: apple,sart: Add apple,t8112-sart compatible string
+Date: Sun, 12 Feb 2023 16:41:17 +0100
+Message-Id: <20230202-asahi-t8112-dt-v1-7-cb5442d1c229@jannau.net>
 X-Mailer: git-send-email 2.39.1
-In-Reply-To: <20230211122656.1479141-1-konrad.dybcio@linaro.org>
-References: <20230211122656.1479141-1-konrad.dybcio@linaro.org>
+In-Reply-To: <20230202-asahi-t8112-dt-v1-0-cb5442d1c229@jannau.net>
+References: <20230202-asahi-t8112-dt-v1-0-cb5442d1c229@jannau.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+X-Mailer: b4 0.12.1
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1211; i=j@jannau.net; h=from:subject:message-id; bh=behPg4aqpLIrrMH961E72k3iDwv6hRfXJBOGGtz768o=; b=owGbwMvMwCG2UNrmdq9+ahrjabUkhuSX7Cf4X0YsM642XdA5x2bKI/nFe7c2fZ7wvFHZM+dA6 rqnR1UedZSyMIhxMMiKKbIkab/sYFhdoxhT+yAMZg4rE8gQBi5OAZiIxQ9GhhXTr/5Z1xPnzVzg /idBNK/VQVvsQsSMj/LP/Qy+yEj+P8HwT1V2ydoI7lIev97pGzj0SxWeTt/75mXexMeXP1fxuHx T4wYA
+X-Developer-Key: i=j@jannau.net; a=openpgp; fpr=8B336A6BE4E5695E89B8532B81E806F586338419
 Content-Transfer-Encoding: 8bit
 
-It got broken at some point, fix it up.
+"apple,t8112-sart" as found on the Apple M2 SoC appears to be SART3 as
+well. To allow for later discovered incompatibilities use
+'"apple,t8112-sart", "apple,t6000-sart"' as compatible string.
 
-Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+Signed-off-by: Janne Grunau <j@jannau.net>
+
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This trivial dt-bindings update should be merged through the asahi-soc
+tree to ensure validation of the Apple M2 (t8112) devicetrees in this
+series.
+---
+ Documentation/devicetree/bindings/iommu/apple,sart.yaml | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index 959516bbfe65..d49cf7e0a777 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -251,10 +251,10 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
- 	{ .compatible = "qcom,sc7280-mss-pil" },
- 	{ .compatible = "qcom,sc8180x-mdss" },
- 	{ .compatible = "qcom,sc8280xp-mdss" },
--	{ .compatible = "qcom,sm8150-mdss" },
--	{ .compatible = "qcom,sm8250-mdss" },
- 	{ .compatible = "qcom,sdm845-mdss" },
- 	{ .compatible = "qcom,sdm845-mss-pil" },
-+	{ .compatible = "qcom,sm8150-mdss" },
-+	{ .compatible = "qcom,sm8250-mdss" },
- 	{ .compatible = "qcom,sm6350-mdss" },
- 	{ .compatible = "qcom,sm6375-mdss" },
- 	{ }
+diff --git a/Documentation/devicetree/bindings/iommu/apple,sart.yaml b/Documentation/devicetree/bindings/iommu/apple,sart.yaml
+index 1524fa3094ef..07d2d68a87df 100644
+--- a/Documentation/devicetree/bindings/iommu/apple,sart.yaml
++++ b/Documentation/devicetree/bindings/iommu/apple,sart.yaml
+@@ -28,9 +28,14 @@ description:
+ 
+ properties:
+   compatible:
+-    enum:
+-      - apple,t6000-sart
+-      - apple,t8103-sart
++    oneOf:
++      - items:
++          - const: apple,t8112-sart
++          - const: apple,t6000-sart
++      - items:
++          enum:
++            - apple,t6000-sart
++            - apple,t8103-sart
+ 
+   reg:
+     maxItems: 1
+
 -- 
 2.39.1
 
