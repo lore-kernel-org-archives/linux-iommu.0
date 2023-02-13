@@ -1,33 +1,33 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8D46ED8
-	for <iommu@lists.linux.dev>; Mon, 13 Feb 2023 08:34:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EC391FDA
+	for <iommu@lists.linux.dev>; Mon, 13 Feb 2023 08:46:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676277288; x=1707813288;
+  t=1676278014; x=1707814014;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=cwbWY0MYycEcAmZ1WT+ohW6HXdmMTj+4gVFJ3q+KyUo=;
-  b=RL9BEic7lDYb6c9dMqyKdwZujDjmA0q3qTM1B4vIBUEmPNuQ3oCgov9n
-   z4VkjMmD17DhpbXD4YW/hDcoxhbXfd1C36b3UXo4HpKguXLZogT5Fk5B7
-   wM3/YyOO1Lg9djKiPZ6vgY062dfNP9Rsnm0NlPEMM1rpcOqtWMF2d42xt
-   vBHAA60L4Ffv41ePoP3iL+SLJa3H2X0+eSzM41+CZ+rLgSLQlkYk88OXn
-   ylQuE0ZjZz/DsB9QB9ixmc8qZ+01vlM+oM4aNzHUasEXMpIPSaz16DsI8
-   mN83Y4P2WZFPwin+NeqPuXgAg5JvNhRwQHEIPhJVxFx8USjty0NkYupRH
+  bh=hF+DxzbjbhKvEg/0pJMJc8Z+u7gnh4hyoeWzVaXXI2c=;
+  b=Y5KpDjMzKsn5V6gWwb4m6pg8VCmWJSgOMD9feqMHScSZf55XdAaK03G+
+   7FRjXDK8atd+IN3/fWZwoswJMRQ+vFRteOkbidKbutlL16q7dD/2baOvB
+   bpkauO8bBflhP8L+h425mCopJInYEtcQuU3eYHuN6UQacKyW6Y1+kzKtt
+   kTXy4BQUwLHjzdfC9fnbfCrNYGQOmgV2gXY2cs0tEteDFRykihw8NEMyK
+   TpW/d34S9mOfkbJaZbho9EAzeJpN1avLU+GpkgCoccUpLurg+jMfQuHhM
+   IUrNTB0kWfKoMW71xtBQVdxPfjaxiMYpx7kXAD/P7SBG6w6h5+XO+ahJ6
    g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="329468494"
+X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="328550183"
 X-IronPort-AV: E=Sophos;i="5.97,293,1669104000"; 
-   d="scan'208";a="329468494"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 00:34:48 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="701185884"
+   d="scan'208";a="328550183"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 00:46:52 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="618578446"
 X-IronPort-AV: E=Sophos;i="5.97,293,1669104000"; 
-   d="scan'208";a="701185884"
+   d="scan'208";a="618578446"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.169.207]) ([10.249.169.207])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 00:34:34 -0800
-Message-ID: <ff0b2a68-8aeb-426b-0fb4-010c5e7b20b8@linux.intel.com>
-Date: Mon, 13 Feb 2023 16:34:32 +0800
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 00:46:46 -0800
+Message-ID: <3da4035b-da17-94dc-a641-224676025285@linux.intel.com>
+Date: Mon, 13 Feb 2023 16:46:44 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,75 +36,110 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.2
-Cc: baolu.lu@linux.intel.com, Nicolin Chen <nicolinc@nvidia.com>,
- "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "shuah@kernel.org" <shuah@kernel.org>, "Liu, Yi L" <yi.l.liu@intel.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
- "Raj, Ashok" <ashok.raj@intel.com>
-Subject: Re: [PATCH v2 02/10] iommu: Introduce a new
- iommu_group_replace_domain() API
-To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
- Alex Williamson <alex.williamson@redhat.com>
-References: <cover.1675802050.git.nicolinc@nvidia.com>
- <fa81379dca611c1d9f50f9d8cd2bca0d4ec7f965.1675802050.git.nicolinc@nvidia.com>
- <20230210165110.4e89ce55.alex.williamson@redhat.com>
- <Y+bk+GSCPKOJfr1f@nvidia.com>
- <BL1PR11MB527176BE1F6DFA3D2942664D8CDD9@BL1PR11MB5271.namprd11.prod.outlook.com>
+Cc: baolu.lu@linux.intel.com, cohuck@redhat.com, eric.auger@redhat.com,
+ nicolinc@nvidia.com, kvm@vger.kernel.org, mjrosato@linux.ibm.com,
+ chao.p.peng@linux.intel.com, yi.y.sun@linux.intel.com, peterx@redhat.com,
+ jasowang@redhat.com, shameerali.kolothum.thodi@huawei.com, lulu@redhat.com,
+ suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH 1/6] iommu: Add new iommu op to get iommu hardware
+ information
 Content-Language: en-US
+To: Binbin Wu <binbin.wu@linux.intel.com>, Yi Liu <yi.l.liu@intel.com>,
+ joro@8bytes.org, alex.williamson@redhat.com, jgg@nvidia.com,
+ kevin.tian@intel.com, robin.murphy@arm.com
+References: <20230209041642.9346-1-yi.l.liu@intel.com>
+ <20230209041642.9346-2-yi.l.liu@intel.com>
+ <aa9ee0db-c9d9-9b3f-8f63-cbc76bb3ccdd@linux.intel.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BL1PR11MB527176BE1F6DFA3D2942664D8CDD9@BL1PR11MB5271.namprd11.prod.outlook.com>
+In-Reply-To: <aa9ee0db-c9d9-9b3f-8f63-cbc76bb3ccdd@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2023/2/13 10:24, Tian, Kevin wrote:
->> From: Jason Gunthorpe<jgg@nvidia.com>
->> Sent: Saturday, February 11, 2023 8:45 AM
->>
->> On Fri, Feb 10, 2023 at 04:51:10PM -0700, Alex Williamson wrote:
->>> On Tue, 7 Feb 2023 13:17:54 -0800
->>> Nicolin Chen<nicolinc@nvidia.com>  wrote:
->>>
->>>> qemu has a need to replace the translations associated with a domain
->>>> when the guest does large-scale operations like switching between an
->>>> IDENTITY domain and, say, dma-iommu.c.
->>>>
->>>> Currently, it does this by replacing all the mappings in a single
->>>> domain, but this is very inefficient and means that domains have to be
->>>> per-device rather than per-translation.
->>>>
->>>> Provide a high-level API to allow replacements of one domain with
->>>> another. This is similar to a detach/attach cycle except it doesn't
->>>> force the group to go to the blocking domain in-between.
->>>>
->>>> By removing this forced blocking domain the iommu driver has the
->>>> opportunity to implement an atomic replacement of the domains to the
->>>> greatest extent its hardware allows.
->>>>
->>>> It could be possible to adderss this by simply removing the protection
->>>> from the iommu_attach_group(), but it is not so clear if that is safe
->>>> for the few users. Thus, add a new API to serve this new purpose.
->>>>
->>>> Atomic replacement allows the qemu emulation of the viommu to be
->> more
->>>> complete, as real hardware has this ability.
->>> I was under the impression that we could not atomically switch a
->>> device's domain relative to in-flight DMA.
-> it's possible as long as the mappings for in-flight DMA don't change
-> in the transition.
+On 2023/2/13 10:36, Binbin Wu wrote:
 > 
+> On 2/9/2023 12:16 PM, Yi Liu wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>>
+>> Introduce a new iommu op get
+> 
+> get -> to get
+> 
+> 
+>> the IOMMU hardware capabilities for iommufd.
+>> This information will be used by any vIOMMU driver which is owned by
+>> userspace.
+>>
+>> This op chooses to make the special parameters opaque to the core. This
+>> suits the current usage model where accessing any of the IOMMU device
+>> special parameters does require a userspace driver that matches the 
+>> kernel
+>> driver. If a need for common parameters, implemented similarly by several
+>> drivers, arises then there is room in the design to grow a generic 
+>> parameter
+>> set as well. No warpper
+> 
+> warpper -> wrapper
 
-It also requires the mappings in old and new domains are identical. In
-another word, any IOVA should be translated to a same result no matter
-through the old domain, the new domain, or hardware caches.
+Thanks, will update.
 
-A similar replacement has been implemented in the code. For example,
-the Intel IOMMU driver dynamically transforms a large range (2M or 1G)
-mapping from discrete 4k pages to a super pages to improve the paging
-cache efficiency.
+> 
+>>   API is added as it is supposed to be used by
+>> iommufd only.
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+>> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+>> ---
+>>   include/linux/iommu.h        | 8 ++++++++
+>>   include/uapi/linux/iommufd.h | 6 ++++++
+>>   2 files changed, 14 insertions(+)
+>>
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index cb586d054c57..97b398d19fd2 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -15,6 +15,7 @@
+>>   #include <linux/of.h>
+>>   #include <linux/ioasid.h>
+>>   #include <uapi/linux/iommu.h>
+>> +#include <uapi/linux/iommufd.h>
+>>   #define IOMMU_READ    (1 << 0)
+>>   #define IOMMU_WRITE    (1 << 1)
+>> @@ -223,6 +224,11 @@ struct iommu_iotlb_gather {
+>>   /**
+>>    * struct iommu_ops - iommu ops and capabilities
+>>    * @capable: check capability
+>> + * @hw_info: IOMMU hardware capabilities. The type of the returned 
+>> data is
+>> + *           defined in include/uapi/linux/iommufd.h. The data buffer is
+>> + *           allocated in the IOMMU driver and the caller should free it
+>> + *           after use. Return the data buffer if success, or ERR_PTR on
+>> + *          failure.
+>>    * @domain_alloc: allocate iommu domain
+>>    * @probe_device: Add device to iommu driver handling
+>>    * @release_device: Remove device from iommu driver handling
+>> @@ -252,6 +258,7 @@ struct iommu_iotlb_gather {
+>>    */
+>>   struct iommu_ops {
+>>       bool (*capable)(struct device *dev, enum iommu_cap);
+>> +    void *(*hw_info)(struct device *dev, u32 *length);
+>>       /* Domain allocation and freeing by the iommu driver */
+>>       struct iommu_domain *(*domain_alloc)(unsigned iommu_domain_type);
+>> @@ -280,6 +287,7 @@ struct iommu_ops {
+>>       void (*remove_dev_pasid)(struct device *dev, ioasid_t pasid);
+>>       const struct iommu_domain_ops *default_domain_ops;
+>> +    enum iommu_device_data_type driver_type;
+> 
+> 
+> How to understand the name "iommu_device_data_type"?
+
+This is to tell userspace which type of IOMMU the returned information
+comes from, Intel VT-d, ARM or others...
+
+> Is it just refer to the driver types or it has a more generic meaning?
+
+IOMMU driver sets this field to distinguish different IOMMU hardware.
 
 Best regards,
 baolu
