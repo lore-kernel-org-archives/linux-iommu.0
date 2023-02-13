@@ -1,54 +1,72 @@
-Received: from out30-111.freemail.mail.aliyun.com (out30-111.freemail.mail.aliyun.com [115.124.30.111])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F72C23A5;
-	Mon, 13 Feb 2023 09:35:51 +0000 (UTC)
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=guorui.yu@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VbZAMby_1676280947;
-Received: from 30.221.130.243(mailfrom:GuoRui.Yu@linux.alibaba.com fp:SMTPD_---0VbZAMby_1676280947)
-          by smtp.aliyun-inc.com;
-          Mon, 13 Feb 2023 17:35:49 +0800
-Message-ID: <36c2bc37-714b-2251-942f-1d02f4b77d5a@linux.alibaba.com>
-Date: Mon, 13 Feb 2023 17:35:47 +0800
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DCF65256F
+	for <iommu@lists.linux.dev>; Mon, 13 Feb 2023 10:34:38 +0000 (UTC)
+Received: from vm02.corp.microsoft.com (unknown [167.220.196.155])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 3A2B320C8B73;
+	Mon, 13 Feb 2023 02:34:36 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 3A2B320C8B73
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1676284478;
+	bh=seVPAjNfSiYKxnX2j0YblQLtaiY/QQf1dxqHVHTN/Zc=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=YQaKS8/tWGPsg/vr+lv3W7e7ETHFnqAEdaZn7cwscr/pRpUtFeY5yo4n4AFouND64
+	 QvKhy7BXBALbt13SRO9CASzhjkwKrgJgvBepCJ9MK6xl3KloUl2x6WuXb0cb6qIY2k
+	 2F98P3q2k92KEl2+UF5tE+nrqNorqi8OJIFvgbo0=
+From: Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
+To: linux-kernel@vger.kernel.org
+Cc: Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>,
+	Wei Liu <wei.liu@kernel.org>,
+	Dexuan Cui <decui@microsoft.com>,
+	Tianyu Lan <Tianyu.Lan@microsoft.com>,
+	Michael Kelley <mikelley@microsoft.com>,
+	linux-hyperv@vger.kernel.org,
+	Brijesh Singh <brijesh.singh@amd.com>,
+	Michael Roth <michael.roth@amd.com>,
+	Ashish Kalra <ashish.kalra@amd.com>,
+	Tom Lendacky <thomas.lendacky@amd.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	iommu@lists.linux.dev
+Subject: [RFC PATCH v2 5/7] iommu/amd: Don't fail snp_enable when running virtualized
+Date: Mon, 13 Feb 2023 10:34:00 +0000
+Message-Id: <20230213103402.1189285-6-jpiotrowski@linux.microsoft.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230213103402.1189285-1-jpiotrowski@linux.microsoft.com>
+References: <20230213103402.1189285-1-jpiotrowski@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.7.2
-Subject: Re: [PATCH] swiotlb: fix the deadlock in swiotlb_do_find_slots
-To: kernel test robot <lkp@intel.com>, hch@lst.de, m.szyprowski@samsung.com
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
- robin.murphy@arm.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- xiaokang.hxk@alibaba-inc.com
-References: <20230213063604.127526-1-GuoRui.Yu@linux.alibaba.com>
- <202302131748.pa5NGbb9-lkp@intel.com>
-From: Guorui Yu <GuoRui.Yu@linux.alibaba.com>
-In-Reply-To: <202302131748.pa5NGbb9-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
+Hyper-V VMs do not have access to an IOMMU but can support hosting SNP
+VMs. amd_iommu_snp_enable() is on the SNP init path and should not fail
+in that case.
 
+Signed-off-by: Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
+---
+ drivers/iommu/amd/init.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-在 2023/2/13 17:28, kernel test robot 写道:
-> Hi GuoRui.Yu",
-> 
-> Thank you for the patch! Perhaps something to improve:
-> 
->     654		spin_lock_irqsave(&area->lock, flags);
->     655		if (unlikely(nslots > mem->area_nslabs - area->used))
->     656			goto not_found;
->     657	
->     658		slot_base = area_index * mem->area_nslabs;
->     659		index = wrap = wrap_area_index(mem, ALIGN(area->index, stride));
-index_nowrap should be initialized to "index" here, and I will add this 
-in v2.
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index d1270e3c5baf..8049dbe78a27 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -3619,6 +3619,12 @@ int amd_iommu_pc_set_reg(struct amd_iommu *iommu, u8 bank, u8 cntr, u8 fxn, u64
+ #ifdef CONFIG_AMD_MEM_ENCRYPT
+ int amd_iommu_snp_enable(void)
+ {
++	/*
++	 * If we're running virtualized there doesn't have to be an IOMMU for SNP to work.
++	 */
++	if (init_state == IOMMU_NOT_FOUND && boot_cpu_has(X86_FEATURE_HYPERVISOR))
++		return 0;
++
+ 	/*
+ 	 * The SNP support requires that IOMMU must be enabled, and is
+ 	 * not configured in the passthrough mode.
+-- 
+2.25.1
 
-I have done some stress tests locally to check if they can avoid the 
-deadlock but they did not reveal this problem, I will pay more attention 
-next time.
->     660	
->     661		do {
-
-Guorui
