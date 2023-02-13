@@ -1,115 +1,100 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 98500256F
-	for <iommu@lists.linux.dev>; Mon, 13 Feb 2023 10:41:17 +0000 (UTC)
-Received: from vm02.corp.microsoft.com (unknown [167.220.196.155])
-	by linux.microsoft.com (Postfix) with ESMTPSA id C5DD320C8B6F;
-	Mon, 13 Feb 2023 02:34:20 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com C5DD320C8B6F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1676284464;
-	bh=kUxyGvvc3xmDFCdw49PrKXz00eMSLrPZ+lnvBvg/bD8=;
-	h=From:To:Cc:Subject:Date:From;
-	b=H4ZuISmDctrnLzjAXkk3Dr6el126LBocSFL3rBzKdKa8DiPxthZamKsRcEJqRuIHZ
-	 2FXmYdreUkEh62Ae8oeatyNusCF4pK/6A7cKs1Y0czMvFWkeea8r3anBHXBG5myjZR
-	 lPRBgRbmWniwN4iPAuiM1HUUaqSOOoIB/d2D3Ocw=
-From: Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
-To: linux-kernel@vger.kernel.org
-Cc: Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>,
-	Wei Liu <wei.liu@kernel.org>,
-	Dexuan Cui <decui@microsoft.com>,
-	Tianyu Lan <Tianyu.Lan@microsoft.com>,
-	Michael Kelley <mikelley@microsoft.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	x86@kernel.org,
-	linux-hyperv@vger.kernel.org,
-	Brijesh Singh <brijesh.singh@amd.com>,
-	Michael Roth <michael.roth@amd.com>,
-	Ashish Kalra <ashish.kalra@amd.com>,
-	Tom Lendacky <thomas.lendacky@amd.com>,
-	linux-crypto@vger.kernel.org,
-	Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	iommu@lists.linux.dev
-Subject: [RFC PATCH v2 0/7] Support nested SNP KVM guests on Hyper-V
-Date: Mon, 13 Feb 2023 10:33:55 +0000
-Message-Id: <20230213103402.1189285-1-jpiotrowski@linux.microsoft.com>
-X-Mailer: git-send-email 2.25.1
+Received: from mail-io1-f77.google.com (mail-io1-f77.google.com [209.85.166.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA3C3256F
+	for <iommu@lists.linux.dev>; Mon, 13 Feb 2023 10:50:38 +0000 (UTC)
+Received: by mail-io1-f77.google.com with SMTP id n85-20020a6b8b58000000b0073a2fb71d15so8082744iod.6
+        for <iommu@lists.linux.dev>; Mon, 13 Feb 2023 02:50:38 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=imWoWn1wOb/vHQ2rwIhB6EiQHzFH9YLuSzF5fLaP5a8=;
+        b=cotCYunlxKc5WIXhHZ+erb4GJqGQLg+urA3ao90ZjbiLQNpcAFkAU0bWvQ5ATtS7Wz
+         OLUQ61FMpWWa1SyjCsLYy+8zwxhtkNChDoV6oaLiIRnDbajXrIxFxLX3EYhS1L/AFvtE
+         4I7o2mjS9Ecwa2SZ0Vvsakx7j7uj7cbW1rcZKs+xXcLXKUb+u9IuBQFKeXzLMULA07cX
+         pQscONSOWqZUsuA/hw3ZLbVHZxt9h8rIwWS8BOlcwuuCHaxCLIs5sUz/tck8OTBkpOdy
+         g1u+i5iSHaiSar2Ylw46ucimVqjTloUk6zlk2PaF6qKj+ds0Fo1B+CS6/eIyud31g1lk
+         MJMA==
+X-Gm-Message-State: AO0yUKXWEW/t1ClsxEgkmTtuj1iQx231JTFm7AJdcyD8kfQVIcGNeeAZ
+	m2dLdB0PvmJB6lv4ZxXCl82q7t3NTSxg6jMTCX6JBoAllTLB
+X-Google-Smtp-Source: AK7set/WN+UOLOs4DAALUK/amyT8Wo5FY+PLHjMTrHUAcbxEpBKP6hQ4Cs3EKhHICCncrcOqnn41I/NywnTL42T1vEEuHy46ZJn5
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a02:c8da:0:b0:3c4:aa6f:6de3 with SMTP id
+ q26-20020a02c8da000000b003c4aa6f6de3mr3784746jao.136.1676285437668; Mon, 13
+ Feb 2023 02:50:37 -0800 (PST)
+Date: Mon, 13 Feb 2023 02:50:37 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000000df2c105f4929eb5@google.com>
+Subject: [syzbot] KMSAN: kernel-infoleak in iommufd_vfio_ioctl
+From: syzbot <syzbot+cb1e0978f6bf46b83a58@syzkaller.appspotmail.com>
+To: glider@google.com, iommu@lists.linux.dev, jgg@ziepe.ca, joro@8bytes.org, 
+	kevin.tian@intel.com, linux-kernel@vger.kernel.org, robin.murphy@arm.com, 
+	syzkaller-bugs@googlegroups.com, will@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-This patch series enables SNP-host support when running on Hyper-V, which
-allows launching SNP guests while running as a nested hypervisor. This works
-with SNP guest side support that was merged in v5.19, and the snp capable qemu
-from AMD.
+Hello,
 
-In this scenario the L0 hypervisor is Hyper-V, L1 is KVM, and L2 is an SNP
-guest. The code from this patchset runs in L1. L1 is not an SNP guest itself,
-SNP guests are not capable of supporting virtualization.
+syzbot found the following issue on:
 
-Patch 1 deals with allocating an RMP table which is not provided by
-firmware/hypervisor, but is needed by the kernel to keep track of page
-assignment to guests and rmp page size. Patch 2 implements MSR-based
-rmpupdate/psmash instructions which are meant for virtualized environments.
-Patch 3 containts the logic to update the rmp table when rmpupdate/psmash is
-issued. Patch 4 makes sure that the kernel does not disable SNP support during
-early CPU init. Patch 5 allows SNP initialization to proceed when no iommus
-are available. Patch 6 adds a quirk in psp command buffer handling, because of
-differences in SNP firmware spec interpretation. Patch 7 adds handling for RMP
-faults which occur as NPF and the L0 is not able to resolve the address that
-the fault occurred at.
+HEAD commit:    8c89ecf5c13b kmsan: silence -Wmissing-prototypes warnings
+git tree:       https://github.com/google/kmsan.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=1592ac0b480000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=91d3152219aa6b45
+dashboard link: https://syzkaller.appspot.com/bug?extid=cb1e0978f6bf46b83a58
+compiler:       Debian clang version 15.0.7, GNU ld (GNU Binutils for Debian) 2.35.2
 
-This series depends on:
+Unfortunately, I don't have any reproducer for this issue yet.
 
-- "Add AMD Secure Nested Paging (SEV-SNP) Hypervisor Support" (applies on top of RFC v7)
-  https://lore.kernel.org/lkml/20221214194056.161492-1-michael.roth@amd.com/
-- "Support ACPI PSP on Hyper-V"
-  https://lore.kernel.org/lkml/20230213092429.1167812-1-jpiotrowski@linux.microsoft.com/
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/c9d1327adc33/disk-8c89ecf5.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/8a07e8c41800/vmlinux-8c89ecf5.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/fe36dc6c869b/bzImage-8c89ecf5.xz
 
-Changes since v1:
-* added handling for rmp page faults that occur during copy_to_user() that
-  don't come with a proper fault address when running nested.
-* fold IS_ENABLED() test into hv_needs_snp_rmp(), and use CONFIG_KVM_AMD_SEV
-  instead of CONFIG_AMD_MEM_ENCRYPT
-* introduce snp_soft_rmptable() wrapper to remove core dependency on hyperv
-  specific code
-* use msr_set_bit for SYSCFG_MEM_ENCRYPT bit instead of open coding
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+cb1e0978f6bf46b83a58@syzkaller.appspotmail.com
 
-Jeremi Piotrowski (7):
-  x86/hyperv: Allocate RMP table during boot
-  x86/sev: Add support for NestedVirtSnpMsr
-  x86/sev: Maintain shadow rmptable on Hyper-V
-  x86/amd: Configure necessary MSRs for SNP during CPU init when running
-    as a guest
-  iommu/amd: Don't fail snp_enable when running virtualized
-  crypto: ccp - Introduce quirk to always reclaim pages after SEV-legacy
-    commands
-  x86/fault: Handle RMP faults with 0 address when nested
+=====================================================
+BUG: KMSAN: kernel-infoleak in instrument_copy_to_user include/linux/instrumented.h:121 [inline]
+BUG: KMSAN: kernel-infoleak in _copy_to_user+0x1c5/0x270 lib/usercopy.c:33
+ instrument_copy_to_user include/linux/instrumented.h:121 [inline]
+ _copy_to_user+0x1c5/0x270 lib/usercopy.c:33
+ copy_to_user include/linux/uaccess.h:169 [inline]
+ iommufd_vfio_iommu_get_info drivers/iommu/iommufd/vfio_compat.c:437 [inline]
+ iommufd_vfio_ioctl+0x1e57/0x2330 drivers/iommu/iommufd/vfio_compat.c:462
+ iommufd_fops_ioctl+0x254/0xb10 drivers/iommu/iommufd/main.c:315
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:870 [inline]
+ __se_sys_ioctl+0x2dd/0x4b0 fs/ioctl.c:856
+ __x64_sys_ioctl+0xdc/0x120 fs/ioctl.c:856
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x41/0xc0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
- arch/x86/hyperv/hv_init.c          |   5 +
- arch/x86/include/asm/cpufeatures.h |   1 +
- arch/x86/include/asm/hyperv-tlfs.h |   3 +
- arch/x86/include/asm/mshyperv.h    |   3 +
- arch/x86/include/asm/msr-index.h   |   2 +
- arch/x86/include/asm/sev.h         |   6 ++
- arch/x86/kernel/cpu/amd.c          |   5 +-
- arch/x86/kernel/cpu/mshyperv.c     |  47 +++++++++
- arch/x86/kernel/sev.c              | 150 ++++++++++++++++++++++++++---
- arch/x86/mm/fault.c                |  14 +++
- drivers/crypto/ccp/sev-dev.c       |   6 +-
- drivers/crypto/ccp/sp-dev.h        |   4 +
- drivers/crypto/ccp/sp-platform.c   |   1 +
- drivers/iommu/amd/init.c           |   6 ++
- 14 files changed, 240 insertions(+), 13 deletions(-)
+Local variable info.i created at:
+ iommufd_vfio_iommu_get_info drivers/iommu/iommufd/vfio_compat.c:384 [inline]
+ iommufd_vfio_ioctl+0x423/0x2330 drivers/iommu/iommufd/vfio_compat.c:462
+ iommufd_fops_ioctl+0x254/0xb10 drivers/iommu/iommufd/main.c:315
 
--- 
-2.25.1
+Bytes 20-23 of 24 are uninitialized
+Memory access of size 24 starts at ffff8880ab237cb0
+Data copied to user address 0000000020000000
 
+CPU: 0 PID: 7156 Comm: syz-executor.5 Not tainted 6.2.0-rc7-syzkaller-80760-g8c89ecf5c13b #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/21/2023
+=====================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
