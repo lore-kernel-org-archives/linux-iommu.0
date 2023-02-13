@@ -1,93 +1,116 @@
-Received: from mail-io1-f77.google.com (mail-io1-f77.google.com [209.85.166.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51289AD52
-	for <iommu@lists.linux.dev>; Mon, 13 Feb 2023 21:14:41 +0000 (UTC)
-Received: by mail-io1-f77.google.com with SMTP id k4-20020a6b7e44000000b0071e11cafea7so9137755ioq.15
-        for <iommu@lists.linux.dev>; Mon, 13 Feb 2023 13:14:41 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=5MOkuFS9QIN3mf/KRy78aCAqz7A+XmCO2P1W5d9dmcE=;
-        b=rhO8rjulS6rs8+HH6deruNbNprE9JaqDDYlIcaMSnR1BK0wKIJuwHRrUDZcWVfo1k1
-         mfVftn6qIXui1znYhEESR0qbvOHl2IJwZCtqPvPizrvQ/iRl+AqMB/hJpmKHkRxcrFbK
-         EA4HJ1V9g8xTCxDPdflqOBQxK2OX7yLwAnDCLrveKT/xFpjtYqsI4b1s2mp8NDCDp/A7
-         c8m+A1qxWNS8yYFGZrNxwpCxg3SSkUP6a6fF5z/9Zwg6TJrCwh51IhZ10d3aRgNsaAMY
-         HLHnCzrhuc2zmPfHIi4AVjcBunFOsqFZUrhji0UwPO0IOd/HaDeKqAI3NmsyIcCL/Psr
-         ycDA==
-X-Gm-Message-State: AO0yUKUK58MWgPSuH28nEKQ6TPO0U8ImmOCmnEm+DlxdCel47aErMZpa
-	al1WO8eiW1yIuavo/hzRtRynpSzewq5RLG08hiC0SaMus1Tb
-X-Google-Smtp-Source: AK7set/pAxwmNE14kr483ZJxL58VyTsM9vtXj+L/vRdydrx/Cjd+AOO1D/oO8Rw3FfGbzFqamqHiq88zxHchWOXVRzY/eQmle91o
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EA08AD52
+	for <iommu@lists.linux.dev>; Mon, 13 Feb 2023 21:40:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676324423; x=1707860423;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=fjiKvrHISbinyt7S0bRErJ7/aoSEHDwLa1AouQtc4WM=;
+  b=QifnvOeLvzgpNk4aMCjJXFXBrhFHvsjIjh876fqizbAH9ZsUdVl7YoVv
+   Vl8gefkPWM53yBrmfE4UzylhW/1Kf80zpsVC7JyxdhR2Bl+j5yk3PvQ7r
+   KKIWFn0LM4DpXBlgvxFLpywj8DXol3wkMZjXoq+W05E3bXa9jSsJwNLkE
+   N3O3nJaUuGuUIVX9Gxdd+hMOYHgNvb7pGtVPM6b5I2qPddaCi8iSnV52r
+   nITk3mD4i92pmgkL5+Z32npjFTIQgd621hQMCKMg7jgT3XfQIFex2qVS5
+   oM/f8PopJQ22ROiJE4+ZDTbScuptMhNPvVl6NetuvFpvJf2JqfbU9C2UA
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10620"; a="314652771"
+X-IronPort-AV: E=Sophos;i="5.97,294,1669104000"; 
+   d="scan'208";a="314652771"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 13:40:22 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10620"; a="646534746"
+X-IronPort-AV: E=Sophos;i="5.97,294,1669104000"; 
+   d="scan'208";a="646534746"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 13:40:22 -0800
+Date: Mon, 13 Feb 2023 13:44:02 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, LKML
+ <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Lu Baolu
+ <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Jean-Philippe
+ Brucker <jean-philippe@linaro.com>, Robin Murphy <robin.murphy@arm.com>,
+ David Woodhouse <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>,
+ "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+ jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH 2/2] iommu/ioasid: Remove custom IOASID allocator
+Message-ID: <20230213134402.194ed7fd@jacob-builder>
+In-Reply-To: <Y+qR5zC8ZOkVphgv@nvidia.com>
+References: <20230210230206.3160144-1-jacob.jun.pan@linux.intel.com>
+	<20230210230206.3160144-3-jacob.jun.pan@linux.intel.com>
+	<Y+pjTR80bnl9rMK1@myrica>
+	<20230213103455.02f3ac37@jacob-builder>
+	<Y+qR5zC8ZOkVphgv@nvidia.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a02:ccf4:0:b0:38a:adeb:d4d1 with SMTP id
- l20-20020a02ccf4000000b0038aadebd4d1mr13143021jaq.81.1676322880445; Mon, 13
- Feb 2023 13:14:40 -0800 (PST)
-Date: Mon, 13 Feb 2023 13:14:40 -0800
-In-Reply-To: <0000000000000df2c105f4929eb5@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000d1610405f49b5514@google.com>
-Subject: Re: [syzbot] KMSAN: kernel-infoleak in iommufd_vfio_ioctl
-From: syzbot <syzbot+cb1e0978f6bf46b83a58@syzkaller.appspotmail.com>
-To: eric.auger@redhat.com, glider@google.com, iommu@lists.linux.dev, 
-	jgg@nvidia.com, jgg@ziepe.ca, joro@8bytes.org, kevin.tian@intel.com, 
-	linux-kernel@vger.kernel.org, lixiao.yang@intel.com, mjrosato@linux.ibm.com, 
-	nicolinc@nvidia.com, robin.murphy@arm.com, syzkaller-bugs@googlegroups.com, 
-	will@kernel.org, yi.l.liu@intel.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-syzbot has found a reproducer for the following issue on:
+Hi Jason,
 
-HEAD commit:    da13c00eebfb kmsan: silence -Wmissing-prototypes warnings
-git tree:       https://github.com/google/kmsan.git master
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=10d56c2b480000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=41295d7e980cccef
-dashboard link: https://syzkaller.appspot.com/bug?extid=cb1e0978f6bf46b83a58
-compiler:       Debian clang version 15.0.7, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16560c43480000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=109a7207480000
+On Mon, 13 Feb 2023 15:39:19 -0400, Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/316f273df601/disk-da13c00e.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/c2802e9a4fe3/vmlinux-da13c00e.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/6211b8a40cab/bzImage-da13c00e.xz
+> On Mon, Feb 13, 2023 at 10:34:55AM -0800, Jacob Pan wrote:
+> > Hi Jean-Philippe,
+> > 
+> > On Mon, 13 Feb 2023 16:20:29 +0000, Jean-Philippe Brucker
+> > <jean-philippe@linaro.org> wrote:
+> >   
+> > > On Fri, Feb 10, 2023 at 03:02:06PM -0800, Jacob Pan wrote:  
+> > > > Custom allocator feature was introduced to support VT-d's virtual
+> > > > command, an enlightened interface designed for VMs to allocate
+> > > > PASIDs from the host.
+> > > > 
+> > > > As we remove/withdraw the VT-d virtual command feature, the sole
+> > > > user of custom allocator, we can safely remove the custom allocator
+> > > > as well. Effectively, this will return IOASID core to the original
+> > > > simple global namespace allocator.
+> > > > 
+> > > > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>    
+> > > 
+> > > You can also drop the spinlock.h include. With that:
+> > >   
+> > good catch, thanks  
+> > > Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > > 
+> > > On a related note, it looks like 100b8a14a370 ("iommu/vt-d: Add pasid
+> > > private data helpers") removed the last user of ioasid_set_data(). I
+> > > guess that could be dropped too, unless you plan to still use it?
+> > >   
+> > You are right, will remove.
+> > I was planning on the other way around which will convert VT-d's private
+> > pasid data helpers to common ioasid code, but when I look closer the
+> > private pasid xa is just holding a list of pasid/mm which could be per
+> > iommu not global. Another cleanup I suppose.  
+> 
+> Please lets just delete this entire ioasid thing, it has no purpose
+> anymore at all.
+> 
+> I did a sketch on how it do it here:
+> 
+> https://github.com/jgunthorpe/linux/commits/iommu_remove_ioasid
+> 
+> I wasn't very careful or elegant with the last patch, can you tidy it
+> up and repost this as your v2?
+> 
+yes, will do.
+> Your DMA API PASID thing will simply need one new API to alloc/free a
+> PASID from the iommu_global_pasid_ida
+It should satisfy what we need right now.
+Just wondering if we were to do resource management of global PASIDs, say
+with the new misc cgroup controller, do we plan to expand in iommu sva code?
+If yes, do we keep DMA API PASID in a separate range/set?
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+cb1e0978f6bf46b83a58@syzkaller.appspotmail.com
 
-=====================================================
-BUG: KMSAN: kernel-infoleak in instrument_copy_to_user include/linux/instrumented.h:121 [inline]
-BUG: KMSAN: kernel-infoleak in _copy_to_user+0x1c5/0x270 lib/usercopy.c:33
- instrument_copy_to_user include/linux/instrumented.h:121 [inline]
- _copy_to_user+0x1c5/0x270 lib/usercopy.c:33
- copy_to_user include/linux/uaccess.h:169 [inline]
- iommufd_vfio_iommu_get_info drivers/iommu/iommufd/vfio_compat.c:437 [inline]
- iommufd_vfio_ioctl+0x1e57/0x2330 drivers/iommu/iommufd/vfio_compat.c:462
- iommufd_fops_ioctl+0x254/0xb10 drivers/iommu/iommufd/main.c:315
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:870 [inline]
- __se_sys_ioctl+0x2dd/0x4b0 fs/ioctl.c:856
- __x64_sys_ioctl+0xdc/0x120 fs/ioctl.c:856
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x41/0xc0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
+Thanks,
 
-Local variable info.i created at:
- iommufd_vfio_iommu_get_info drivers/iommu/iommufd/vfio_compat.c:384 [inline]
- iommufd_vfio_ioctl+0x423/0x2330 drivers/iommu/iommufd/vfio_compat.c:462
- iommufd_fops_ioctl+0x254/0xb10 drivers/iommu/iommufd/main.c:315
-
-Bytes 20-23 of 24 are uninitialized
-Memory access of size 24 starts at ffff88810ed3bcb0
-Data copied to user address 0000000020000100
-
-CPU: 0 PID: 5039 Comm: syz-executor178 Not tainted 6.2.0-rc8-syzkaller-80994-gda13c00eebfb #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/21/2023
-=====================================================
-
+Jacob
