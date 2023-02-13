@@ -1,117 +1,222 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69922256F
-	for <iommu@lists.linux.dev>; Mon, 13 Feb 2023 11:13:59 +0000 (UTC)
-Received: by mail-wm1-f52.google.com with SMTP id j32-20020a05600c1c2000b003dc4fd6e61dso10990166wms.5
-        for <iommu@lists.linux.dev>; Mon, 13 Feb 2023 03:13:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=2DC7PNhEXzA2bTr1kLiLOYy2/RflLZLk44uc5OBrkDU=;
-        b=NhsfQn9M+LQfHXjtLuyMn+rbwSANp21Nrv2vCtpxpiRP3TAs4Pe5JtiKCKWRdK7Neo
-         yh1bEbreLT9t7gqhI2r6PQYkd44lns5uvBPjI9bmzx5SDBz/tW5/fSJoqZJVntoVGYn1
-         UahBuQ6sDZQ35tXCa09Z6PXrtwlKFmItyHLZZfb0T+QymWzxnaNrciZgGppzd3YP/MAO
-         cgFZ6OsQI9uznZQ14IOZSwvNyuxdNlAP3JcIBbld8vce0FD8ITdODm5tdZAf+MJVtqsM
-         wW9PtyM8JWy4Osr9ir16CfjzHDeSIB8vYTktLRYQxLmS23hknl3tkx79wlhXopgijmIX
-         Z00A==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B74306FB7
+	for <iommu@lists.linux.dev>; Mon, 13 Feb 2023 12:22:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1676290954;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=B4q1SzzSkeGCFe9/8C3qxd/S7XbmX53zhkt3d/qbfHY=;
+	b=RbXzvmpP7Hl1iM9WiJlAD53Sfk/YiicJ8An5CM/ZPW3eA35DOqPp+uXtQLk/Y/XsIR/JLf
+	yru7JKkmnFSfB6cRIiucPoOHPgSFvmBf6R3koNco81iXKTvteNDopIGjMHw96UIO1iUUeP
+	fNYMzOojnoeeZYFH1PhIUmv647oK+nE=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-606-Edt8PU9hPWmCuuM1K2JIzA-1; Mon, 13 Feb 2023 07:22:33 -0500
+X-MC-Unique: Edt8PU9hPWmCuuM1K2JIzA-1
+Received: by mail-wm1-f69.google.com with SMTP id o42-20020a05600c512a00b003dc5341afbaso6753433wms.7
+        for <iommu@lists.linux.dev>; Mon, 13 Feb 2023 04:22:33 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=2DC7PNhEXzA2bTr1kLiLOYy2/RflLZLk44uc5OBrkDU=;
-        b=Wds+OqW+jbehMoAgXa6Bcev9jFPm1qny5+18jz/q5M1526x39l08ekD109wbRKATLX
-         1j82azU3GYxboGQ5Zj6nSmnmNXjweOak4I+0kcU4hIAI6IGuRtNE8QQv06v2ZlChYGtr
-         0ic6Ut4RpYI6agZfdS0zeJLs9eIXPExC03JtJUL/tK5fqPt+0SBtYYLvLZPWlG5UflB2
-         sxU0XIqjbRkuz/+2812/W2FGtsLfP1N7w1cGYka6KixMKd0xY1GiZkRGVisVN6j6mCRD
-         tKIMFiauxhVDR9s2cQBxwep11XMKkpXhaOsgDf6cj7/JwxU9bIfSXRvZYZ87L+nV6Hcn
-         wb6Q==
-X-Gm-Message-State: AO0yUKWiRtEu2MlvScXIEGM3IIwpaganrrD8wC+89u4czT2E5nkn6hIw
-	+xgKcWrfQS3JUHv7QXEnkWoxbQ==
-X-Google-Smtp-Source: AK7set8oaYgKuifU2vnMqa/UyN+qhFOxV+HTfzbIYnI0rfevBi+VqDzI0c19eTP++f607dQNSoioXw==
-X-Received: by 2002:a05:600c:16c4:b0:3dc:1f90:35b with SMTP id l4-20020a05600c16c400b003dc1f90035bmr22771879wmn.34.1676286837823;
-        Mon, 13 Feb 2023 03:13:57 -0800 (PST)
-Received: from [192.168.1.109] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id a3-20020a05600c224300b003db01178b62sm16737485wmm.40.2023.02.13.03.13.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Feb 2023 03:13:57 -0800 (PST)
-Message-ID: <6e18ab3a-512e-ffe2-1c88-9b57bd1d3960@linaro.org>
-Date: Mon, 13 Feb 2023 12:13:55 +0100
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=B4q1SzzSkeGCFe9/8C3qxd/S7XbmX53zhkt3d/qbfHY=;
+        b=T98B3BcnR/dhAjxW7ZeHrEq7LiCgfmaw+GYGPI1orV8ryKRP7iuKohtny6zDLAg8db
+         CWCsECaaclOQ9nqt4+9pwwCEmv283rDSds0nCkqa6bdt4xFmca9sTgF+e6cnn0TeaS9e
+         PU6v0krOKf3IE/InPvms0mVBpMgJkxdWUyv6DSOJJmgbu8i0wzQZoMPAFVHZL9F1yxj/
+         vyM6tH6tCrxphFK2G4J4tvb2LZg3bASCWSCgckw4EMdUwfgEnGCTVeHaIzRL+yVCGlkr
+         JwWuyWT03icInILs47ic0IWcrW115t+cZBmBzYrkWtXHSwv7zEFNuZ9onwQVbS+tJOwZ
+         MbDg==
+X-Gm-Message-State: AO0yUKWPoZBS7AqwZ7+2Y0bWYHir13ZEtPD3WX3+9AI+w9fgWEzDBwht
+	jQ/e0UsCwNszJnJC5fXgbw6TWdeiJbwYqcdj1mJFnQAu+xrt4PRPZ76dZXGT23RQMLhFuoMomqn
+	mpO0nzl2Afa6UhD8=
+X-Received: by 2002:a05:600c:70a:b0:3d2:bca5:10a2 with SMTP id i10-20020a05600c070a00b003d2bca510a2mr18060996wmn.22.1676290952125;
+        Mon, 13 Feb 2023 04:22:32 -0800 (PST)
+X-Google-Smtp-Source: AK7set/T7H3nAjnlRKhrLexMtRRHRR8M9RpmKLwTHA0bClwCZtI38bMLCp3Sa2SV3T6zx059/lY1zQ==
+X-Received: by 2002:a05:600c:70a:b0:3d2:bca5:10a2 with SMTP id i10-20020a05600c070a00b003d2bca510a2mr18060988wmn.22.1676290951881;
+        Mon, 13 Feb 2023 04:22:31 -0800 (PST)
+Received: from redhat.com ([2.52.132.212])
+        by smtp.gmail.com with ESMTPSA id y6-20020a05600c364600b003df7b40f99fsm16255933wmq.11.2023.02.13.04.22.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Feb 2023 04:22:31 -0800 (PST)
+Date: Mon, 13 Feb 2023 07:22:27 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Nanyong Sun <sunnanyong@huawei.com>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+	jasowang@redhat.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+	virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+	wangrong68@huawei.com
+Subject: Re: [PATCH v2] vhost/vdpa: Add MSI translation tables to iommu for
+ software-managed MSI
+Message-ID: <20230213072118-mutt-send-email-mst@kernel.org>
+References: <20230207120843.1580403-1-sunnanyong@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH 07/17] dt-bindings: iommu: apple,sart: Add
- apple,t8112-sart compatible string
-Content-Language: en-US
-To: Janne Grunau <j@jannau.net>, Hector Martin <marcan@marcan.st>,
- Sven Peter <sven@svenpeter.dev>, Alyssa Rosenzweig <alyssa@rosenzweig.io>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Mark Kettenis <kettenis@openbsd.org>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev
-References: <20230202-asahi-t8112-dt-v1-0-cb5442d1c229@jannau.net>
- <20230202-asahi-t8112-dt-v1-7-cb5442d1c229@jannau.net>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230202-asahi-t8112-dt-v1-7-cb5442d1c229@jannau.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20230207120843.1580403-1-sunnanyong@huawei.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 12/02/2023 16:41, Janne Grunau wrote:
-> "apple,t8112-sart" as found on the Apple M2 SoC appears to be SART3 as
-> well. To allow for later discovered incompatibilities use
-> '"apple,t8112-sart", "apple,t6000-sart"' as compatible string.
+On Tue, Feb 07, 2023 at 08:08:43PM +0800, Nanyong Sun wrote:
+> From: Rong Wang <wangrong68@huawei.com>
 > 
-> Signed-off-by: Janne Grunau <j@jannau.net>
+> Once enable iommu domain for one device, the MSI
+> translation tables have to be there for software-managed MSI.
+> Otherwise, platform with software-managed MSI without an
+> irq bypass function, can not get a correct memory write event
+> from pcie, will not get irqs.
+> The solution is to obtain the MSI phy base address from
+> iommu reserved region, and set it to iommu MSI cookie,
+> then translation tables will be created while request irq.
 > 
+> Change log
+> ----------
+> 
+> v1->v2:
+> - add resv iotlb to avoid overlap mapping.
+> 
+> Signed-off-by: Rong Wang <wangrong68@huawei.com>
+> Signed-off-by: Nanyong Sun <sunnanyong@huawei.com>
+
+
+Could I get an ACK from IOMMU maintainers on exporting this pls?
 > ---
-> This trivial dt-bindings update should be merged through the asahi-soc
-> tree to ensure validation of the Apple M2 (t8112) devicetrees in this
-> series.
-
-Same comment as in other cases.
-
-> ---
->  Documentation/devicetree/bindings/iommu/apple,sart.yaml | 11 ++++++++---
->  1 file changed, 8 insertions(+), 3 deletions(-)
+>  drivers/iommu/iommu.c |  1 +
+>  drivers/vhost/vdpa.c  | 59 ++++++++++++++++++++++++++++++++++++++++---
+>  2 files changed, 57 insertions(+), 3 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iommu/apple,sart.yaml b/Documentation/devicetree/bindings/iommu/apple,sart.yaml
-> index 1524fa3094ef..07d2d68a87df 100644
-> --- a/Documentation/devicetree/bindings/iommu/apple,sart.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/apple,sart.yaml
-> @@ -28,9 +28,14 @@ description:
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 5f6a85aea501..af9c064ad8b2 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2623,6 +2623,7 @@ void iommu_get_resv_regions(struct device *dev, struct list_head *list)
+>  	if (ops->get_resv_regions)
+>  		ops->get_resv_regions(dev, list);
+>  }
+> +EXPORT_SYMBOL(iommu_get_resv_regions);
 >  
->  properties:
->    compatible:
-> -    enum:
-> -      - apple,t6000-sart
-> -      - apple,t8103-sart
-> +    oneOf:
-> +      - items:
-> +          - const: apple,t8112-sart
-> +          - const: apple,t6000-sart
-> +      - items:
-
-Drop items.
-
-> +          enum:
-> +            - apple,t6000-sart
-> +            - apple,t8103-sart
+>  /**
+>   * iommu_put_resv_regions - release resered regions
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index ec32f785dfde..a58979da8acd 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -49,6 +49,7 @@ struct vhost_vdpa {
+>  	struct completion completion;
+>  	struct vdpa_device *vdpa;
+>  	struct hlist_head as[VHOST_VDPA_IOTLB_BUCKETS];
+> +	struct vhost_iotlb resv_iotlb;
+>  	struct device dev;
+>  	struct cdev cdev;
+>  	atomic_t opened;
+> @@ -216,6 +217,8 @@ static int vhost_vdpa_reset(struct vhost_vdpa *v)
 >  
->    reg:
->      maxItems: 1
-> 
+>  	v->in_batch = 0;
+>  
+> +	vhost_iotlb_reset(&v->resv_iotlb);
+> +
+>  	return vdpa_reset(vdpa);
+>  }
+>  
+> @@ -1013,6 +1016,10 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+>  	    msg->iova + msg->size - 1 > v->range.last)
+>  		return -EINVAL;
+>  
+> +	if (vhost_iotlb_itree_first(&v->resv_iotlb, msg->iova,
+> +					msg->iova + msg->size - 1))
+> +		return -EINVAL;
+> +
+>  	if (vhost_iotlb_itree_first(iotlb, msg->iova,
+>  				    msg->iova + msg->size - 1))
+>  		return -EEXIST;
+> @@ -1103,6 +1110,45 @@ static ssize_t vhost_vdpa_chr_write_iter(struct kiocb *iocb,
+>  	return vhost_chr_write_iter(dev, from);
+>  }
+>  
+> +static int vhost_vdpa_resv_iommu_region(struct iommu_domain *domain, struct device *dma_dev,
+> +	struct vhost_iotlb *resv_iotlb)
+> +{
+> +	struct list_head dev_resv_regions;
+> +	phys_addr_t resv_msi_base = 0;
+> +	struct iommu_resv_region *region;
+> +	int ret = 0;
+> +	bool with_sw_msi = false;
+> +	bool with_hw_msi = false;
+> +
+> +	INIT_LIST_HEAD(&dev_resv_regions);
+> +	iommu_get_resv_regions(dma_dev, &dev_resv_regions);
+> +
+> +	list_for_each_entry(region, &dev_resv_regions, list) {
+> +		ret = vhost_iotlb_add_range_ctx(resv_iotlb, region->start,
+> +				region->start + region->length - 1,
+> +				0, 0, NULL);
+> +		if (ret) {
+> +			vhost_iotlb_reset(resv_iotlb);
+> +			break;
+> +		}
+> +
+> +		if (region->type == IOMMU_RESV_MSI)
+> +			with_hw_msi = true;
+> +
+> +		if (region->type == IOMMU_RESV_SW_MSI) {
+> +			resv_msi_base = region->start;
+> +			with_sw_msi = true;
+> +		}
+> +	}
+> +
+> +	if (!ret && !with_hw_msi && with_sw_msi)
+> +		ret = iommu_get_msi_cookie(domain, resv_msi_base);
+> +
+> +	iommu_put_resv_regions(dma_dev, &dev_resv_regions);
+> +
+> +	return ret;
+> +}
+> +
+>  static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
+>  {
+>  	struct vdpa_device *vdpa = v->vdpa;
+> @@ -1128,11 +1174,16 @@ static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
+>  
+>  	ret = iommu_attach_device(v->domain, dma_dev);
+>  	if (ret)
+> -		goto err_attach;
+> +		goto err_alloc_domain;
+>  
+> -	return 0;
+> +	ret = vhost_vdpa_resv_iommu_region(v->domain, dma_dev, &v->resv_iotlb);
+> +	if (ret)
+> +		goto err_attach_device;
+>  
+> -err_attach:
+> +	return 0;
+> +err_attach_device:
+> +	iommu_detach_device(v->domain, dma_dev);
+> +err_alloc_domain:
+>  	iommu_domain_free(v->domain);
+>  	return ret;
+>  }
+> @@ -1385,6 +1436,8 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
+>  		goto err;
+>  	}
+>  
+> +	vhost_iotlb_init(&v->resv_iotlb, 0, 0);
+> +
+>  	r = dev_set_name(&v->dev, "vhost-vdpa-%u", minor);
+>  	if (r)
+>  		goto err;
 
-Best regards,
-Krzysztof
+Jason any feedback on vdpa change here?
+
+> -- 
+> 2.25.1
 
