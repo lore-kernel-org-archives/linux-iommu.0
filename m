@@ -1,154 +1,163 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91DC215A0
-	for <iommu@lists.linux.dev>; Mon, 13 Feb 2023 02:54:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85455185A
+	for <iommu@lists.linux.dev>; Mon, 13 Feb 2023 03:09:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676256845; x=1707792845;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=hCThvEYc5lLKtKjISX1LTLgy4WE8z0KDQJ0AfOjv1xo=;
-  b=W0+I3bT89rET/Be8nYTm+6LgwzGjPwJBXNVOflb2uHSS5ByO1jSrcZFT
-   5iIxuwEZvpZ/rNarzxI6TElEXeSFeHkluBLUzgRDrIIQzjQtwRpX8MITN
-   48NkAagXTXcMExCQJRFYC52YPq1j9q3g0XU5fSwZEzXTMtYfOoYArMNEh
-   kXeRGQE3ecPrnA4V9j2TANeTBzwtTNLPCyDX7rxOrQrRbtntsElANOTiC
-   +0H+nvPAzN4hoAaIhutvpCX514gjrMhTKFkZBSdHe4bzqgrM49Ab8be8C
-   t/FCnTq47iso+JlhA8TAZ2dmXoTg8Wyl8MBpSzT5cI/+zBlOc1nKzQ8QV
+  t=1676257788; x=1707793788;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Mx8hjkquFcdwVnwjv95J9hNvyTNxMHzbXHuu8sq9qEI=;
+  b=SmoTw1dyhECTZjl7kgKjJ42qcuiUYf1ySvGAYzeC2CAQnWU+ji0YLWJV
+   Xci9dC1f0HK6zXb3xNMlMmNQ6zzbFkIK1eqKpEc20i19LFVm3FklftUFL
+   jX5ZMebn+pLWIs1s660xHo4cP51zy1m5egQP5pZLqjCL2sf0a9KQJdRY+
+   6EiuCQYlIm3UXf7fQsdXFg1I0JNKwgG6UbQyJ5ZgBM5jor38gIkgjTG5t
+   A+CjZC0RSNcem1kXYrvXeBsdupaz4QyYd1YtX9ASiXVgGAUFY4/uonmBd
+   q8hjdM3aB77aQ4SGLMLaBtKp7pMNKQcZYY+paShX7CqgSg+7+xHTlVQiK
    Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="395404849"
+X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="329424704"
 X-IronPort-AV: E=Sophos;i="5.97,291,1669104000"; 
-   d="scan'208";a="395404849"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2023 18:54:05 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="997538418"
+   d="scan'208";a="329424704"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2023 19:09:46 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="842621921"
 X-IronPort-AV: E=Sophos;i="5.97,291,1669104000"; 
-   d="scan'208";a="997538418"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga005.fm.intel.com with ESMTP; 12 Feb 2023 18:54:04 -0800
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Sun, 12 Feb 2023 18:54:03 -0800
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Sun, 12 Feb 2023 18:54:03 -0800
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Sun, 12 Feb 2023 18:54:03 -0800
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.109)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Sun, 12 Feb 2023 18:54:03 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Iexi2FhX33cVHRblDzWac9Iom1XjkSHDol5cCxngsvpb9aKi3+ruoZmiSrHbI4E7nhNcB91Bni9tUzHIfFY5TzzgPnLhEzjdzEchGOBLZfvIaY1w0fXD+zvxA8u+rMTkGYkI2L2rkNMqZiKT+FF5iFYqztcf7f6L8zCoxr6ap+4PE8Q10gYwL4o4unOtTPoWPsH/Xg53X3vpRwLgzomP7UBpK7YHcalfrQmv2nFgXWTw5kYdwPjFDNxzjc08pyNQHGAZx7iQouqH7oYdtoj/6S6+p+ucshUY8UGj0pUDlZNwX+Sgj4TvYBSYEhOnivaBrhpsEwVn0QCp6BWETnE51A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hCThvEYc5lLKtKjISX1LTLgy4WE8z0KDQJ0AfOjv1xo=;
- b=TNQpHqeBzgOkmxwibyUocdb1we1bsJ1khwJ+ZW9p0vVdyCRo1TyuFD+VGkvcRL1AQTELd/elYNTS2klt49pbZAuw3SalL/7ixohChh1U67TC4ws7+/lAKpsQIgSnTHuobTtben6LWZd9Uje7lbWrWWtSCt2L8lA7Q6DWXMpD2uYmKyFvUhCoe5CvaQgzMVXqmVn1XrLxRniVBb0+xxBo8c4nM3YZWanivWGY9ZKb59tvM2CgCVSh7sg5Ya9/TiOQlNz2hxUjqNSsVeFfceQklljA0keHb/FMKSgDITYMjnOaMWqSu9u+vugE2k+TCVmAXElDgpOliFXdCr3VnuqgKQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BL1PR11MB5271.namprd11.prod.outlook.com (2603:10b6:208:31a::21)
- by BL1PR11MB6051.namprd11.prod.outlook.com (2603:10b6:208:393::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.23; Mon, 13 Feb
- 2023 02:54:01 +0000
-Received: from BL1PR11MB5271.namprd11.prod.outlook.com
- ([fe80::38d9:ca7f:b9fc:ef7f]) by BL1PR11MB5271.namprd11.prod.outlook.com
- ([fe80::38d9:ca7f:b9fc:ef7f%8]) with mapi id 15.20.6086.023; Mon, 13 Feb 2023
- 02:54:01 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>, LKML
-	<linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel
-	<joro@8bytes.org>, Jean-Philippe Brucker <jean-philippe@linaro.com>, "Robin
- Murphy" <robin.murphy@arm.com>
-CC: David Woodhouse <dwmw2@infradead.org>, "Raj, Ashok" <ashok.raj@intel.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
-Subject: RE: [PATCH 1/2] iommu/vt-d: Remove virtual command interface
-Thread-Topic: [PATCH 1/2] iommu/vt-d: Remove virtual command interface
-Thread-Index: AQHZPaM3Vcrh8SEZ5U2vV5OMc6whuq7MMXaA
-Date: Mon, 13 Feb 2023 02:54:01 +0000
-Message-ID: <BL1PR11MB5271A71D6AA85028D2C3778C8CDD9@BL1PR11MB5271.namprd11.prod.outlook.com>
-References: <20230210230206.3160144-1-jacob.jun.pan@linux.intel.com>
- <20230210230206.3160144-2-jacob.jun.pan@linux.intel.com>
-In-Reply-To: <20230210230206.3160144-2-jacob.jun.pan@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BL1PR11MB5271:EE_|BL1PR11MB6051:EE_
-x-ms-office365-filtering-correlation-id: 40c30703-8bc6-4869-d0ea-08db0d6d8f9e
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 2EPwnXnbJz3pUYYa8uUczWujxRYreGlB/YjsdL5xlmnGUarCg3DF9aeNFtzoUeM2n3BIZPDg2vYCs1ZjTk6PKA3FvdCF7WvwbEs7EsERQlCwiXuuOocDVJ1bc7KQAVr3ilVo/+P+0UAK8vkKP/Nop2az0HFFS3VV4iXlPlIVKYgfi4Dww8yn6qKRFxTzdjnjuU+z3u+k5UYSmE8znNob5Clw0sX56CTgnhKPfkrpQha10yjLynuLZIFZcSNxDq1KOX7CDcnqnut/iufUD5ylSXLvmQieD206YVrlaqZW5DkISEQLGEUkd/vUMU0+n0XZ3gdNOMtoOcIzwWHS06UaFxIe5//AENnaeiiJGVNeMnn2UTVbjF6UKL/pIdcjohGQfAfeFotvw3ediAgMEBqCrvvCnflaPJ1eg6mHMFkLJCqGT6W6BG6k1Q0t7aqrlVNbqQUStLbvh+OsFPdwJMiCDjw579Q2Fo4TUcRSmVjUEGuYfRnlkHVTEhZLTzQN1Uj15UH74pKgmnaipkAM5N9NyOCJAFuT4XNpa/omEOtdoDZtavYljsSBn3wMpaJX/KNGi00Rmo7lSK5EyA7SejscxfAqJ8u75NsrtTUW6NPzPQYxYmfpFKrZH94g80mGNv4bXGHu/zjgzNKsMtfEunmERLDI+V1tdgSNAF7LO84jgmY4uFgf3pK8gbZxOFO/ehvaYxVvjp2TfgYeawKvK7uDHA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR11MB5271.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(396003)(346002)(376002)(366004)(136003)(39860400002)(451199018)(5660300002)(8936002)(4744005)(52536014)(41300700001)(71200400001)(26005)(186003)(9686003)(6506007)(2906002)(38100700002)(38070700005)(478600001)(110136005)(7696005)(316002)(54906003)(8676002)(4326008)(76116006)(86362001)(66556008)(66446008)(66946007)(66476007)(64756008)(55016003)(33656002)(122000001)(82960400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?T4bdIeTmV9m/8jXijbQMukuyNJo+DPYSvvdwAmWLdqBjY+pzPL7LvQ0yvp9Y?=
- =?us-ascii?Q?pCiRYNMgsvptUEIDE+9P+ligzwz+XLglPM3+BSynLuJy1XMhs2T+0irVs5hP?=
- =?us-ascii?Q?AMO6WDIbD2nHNa9/HJW6k8wO8X6c3Hqr4yrQU7zWq9nvJZVtzsPz2k1tXSpc?=
- =?us-ascii?Q?RJcr2QbUmXpY57csvPxSstwk0wSJydtsDXifWuVB34oXtUUkvgkxazb58T0T?=
- =?us-ascii?Q?S7JhtsxW1W3Vpdztl47oJo/C7TGNvba4Nm/BEyrEzrFpvFWrxudjRWUroV7B?=
- =?us-ascii?Q?5yeZ1nOql+HbEP9Fjg+D79N0Ph8XwvJlugi1i3o57IqJKvSr90sne+mayJb/?=
- =?us-ascii?Q?wfagLm2K1IUDQQ0AVPRGTKPnIiaT380UflJmdQ6Ae87KdlWRm3kyLNoCkWkG?=
- =?us-ascii?Q?68Pgs+xLbVjc/dp2/eDaEVkT4xIDlhtKTwP93BLwjVJXno0GtfvGeMCB2vMH?=
- =?us-ascii?Q?li3cCn+tvz7pKvJRtusWUARDx1IWa7u+9K36i+SwMUDf57KOjosjenS6RURc?=
- =?us-ascii?Q?G81y1EWBpzJSkl4S2ARPsu8gqD08LV8CFqvkv0RvKhvmWx+UQrZNDwIcPanH?=
- =?us-ascii?Q?6ntByzh+uW5qoV3KV7ed3Gl0uwBXLdok4q1ENwM0zDciZtF/gWqtgE1V7Jh+?=
- =?us-ascii?Q?InuUSh4ueQa5utP5uNeBy57+HQOvOrzRAYz5NuQMCf4FEugL1a3xYn4RhCOJ?=
- =?us-ascii?Q?p9V2/Q2py4k/PZGTl8Vkxi+awnnWOWE8HDAer1hzKJRMKIJbOindTYheYeZz?=
- =?us-ascii?Q?n3LlW/AuwOYTsRhtF7Cn3Bz860IB1KcKawaoq9SQPwvAcUwCyCnB5B9F+NLx?=
- =?us-ascii?Q?ABT630wdELWF25gBxzOHDTWmCAjQmg4WRsJUy0VpzTrAXh+h9K54Mu+3lKEV?=
- =?us-ascii?Q?xtfkY5V/hJ31yNgLxwjU7xsghOQ6avA60AMp17YN4omysYmuvsc6iR3gpVfn?=
- =?us-ascii?Q?XzTt+ZhfJG5Rp/At1ggi/IpnumKeTU7Sh+fsBVDi9+sFAgwNPrQ1Pc/ywCL/?=
- =?us-ascii?Q?24nM2Exy6LcSGvlhdjV/DnUQ1ELHekzEiCijVwdVNnplVh86LhF1fGQUKNdx?=
- =?us-ascii?Q?UPW7NQ5bafNVNIYXvv34aVOa7pP6qBkmgrxeKXjmbs4SvAhoHJTiifM8phbh?=
- =?us-ascii?Q?ejzCJed9QBPbM0Ye7+GOelIJgtNXGsMHt83dJS2Uk8gO4uwXqBpE4PaaOZ5J?=
- =?us-ascii?Q?IGv9IDOJBEVJQGjuLDoR9w+DBopE01AdjsMgt0poZPLN5spTxubJOniEvGBy?=
- =?us-ascii?Q?AjY9fljYAhJd1aYoVjF7R/4sGqF0EvgGcW/00cSBJ5RpZWlsXpGGpGCtNdKU?=
- =?us-ascii?Q?prPIGfK3jsfKsu4znZG0Hp6XXbJdNnv6a5EMpnigscPszyHQ24qO/0q5EpFi?=
- =?us-ascii?Q?8ufnP+RTVXG2L6lY7XcIpbQtqmRod/ed9zxeOC4bhuAEoUdauV2V3rVaU6CV?=
- =?us-ascii?Q?uBt6T1UPANB+NWObWO6yI6xybBuzinaFUZzREL3pC6/x8ZmS4PoOlxYZQ7S1?=
- =?us-ascii?Q?wySocYiGCJE29thVEkiQF0A5QI8DOE+S6ViN8zKjfYj/Fw/r9PB7GtdUeGJ6?=
- =?us-ascii?Q?EwQPUcwThCTvxo9f8rDYBnb5fUDKQzAV9s3NDcZD?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+   d="scan'208";a="842621921"
+Received: from binbinwu-mobl.ccr.corp.intel.com (HELO [10.254.214.18]) ([10.254.214.18])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2023 19:09:41 -0800
+Message-ID: <0581875e-f0af-582e-82fb-62cf03ba39b2@linux.intel.com>
+Date: Mon, 13 Feb 2023 11:09:39 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BL1PR11MB5271.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 40c30703-8bc6-4869-d0ea-08db0d6d8f9e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Feb 2023 02:54:01.5047
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: xzusACY2r350Q53qE3Fvaxm2fXIgyQ3T6QUbzkw7qNLiGh4csU3o3EAxAwiOCkSpCg7tv/2j5xGtqSRHXCwA3Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB6051
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.2
+Subject: Re: [PATCH 2/6] iommu/vt-d: Implement hw_info for iommu capability
+ query
+To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, alex.williamson@redhat.com,
+ jgg@nvidia.com, kevin.tian@intel.com, robin.murphy@arm.com
+Cc: cohuck@redhat.com, eric.auger@redhat.com, nicolinc@nvidia.com,
+ kvm@vger.kernel.org, mjrosato@linux.ibm.com, chao.p.peng@linux.intel.com,
+ yi.y.sun@linux.intel.com, peterx@redhat.com, jasowang@redhat.com,
+ shameerali.kolothum.thodi@huawei.com, lulu@redhat.com,
+ suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ baolu.lu@linux.intel.com
+References: <20230209041642.9346-1-yi.l.liu@intel.com>
+ <20230209041642.9346-3-yi.l.liu@intel.com>
+From: Binbin Wu <binbin.wu@linux.intel.com>
+In-Reply-To: <20230209041642.9346-3-yi.l.liu@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Sent: Saturday, February 11, 2023 7:02 AM
->=20
-> Virtual command interface was introduced to allow using host PASIDs
-> inside VMs. It is unused and abandoned due to architectural change.
->=20
-> With this patch, we can safely remove this feature and the related helper=
-s.
->=20
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+On 2/9/2023 12:16 PM, Yi Liu wrote:
+> From: Lu Baolu <baolu.lu@linux.intel.com>
+>
+> To support nested translation in the userspace, it should check the
+> underlying hardware information for the capabilities.
+>
+> Add intel_iommu_hw_info() to report cap_reg and ecap_reg information.
+>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Yi Sun <yi.y.sun@linux.intel.com>
+> ---
+>   drivers/iommu/intel/iommu.c  | 19 +++++++++++++++++++
+>   drivers/iommu/intel/iommu.h  |  1 +
+>   include/uapi/linux/iommufd.h | 21 +++++++++++++++++++++
+>   3 files changed, 41 insertions(+)
+>
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 59df7e42fd53..929f600cc350 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -4760,8 +4760,26 @@ static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
+>   	intel_pasid_tear_down_entry(iommu, dev, pasid, false);
+>   }
+>   
+> +static void *intel_iommu_hw_info(struct device *dev, u32 *length)
+> +{
+> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
+> +	struct intel_iommu *iommu = info->iommu;
+> +	struct iommu_device_info_vtd *vtd;
+> +
+> +	vtd = kzalloc(sizeof(*vtd), GFP_KERNEL);
+> +	if (!vtd)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	vtd->cap_reg = iommu->cap;
+> +	vtd->ecap_reg = iommu->ecap;
+> +	*length = sizeof(*vtd);
+> +
+> +	return vtd;
+> +}
+> +
+>   const struct iommu_ops intel_iommu_ops = {
+>   	.capable		= intel_iommu_capable,
+> +	.hw_info		= intel_iommu_hw_info,
+>   	.domain_alloc		= intel_iommu_domain_alloc,
+>   	.probe_device		= intel_iommu_probe_device,
+>   	.probe_finalize		= intel_iommu_probe_finalize,
+> @@ -4774,6 +4792,7 @@ const struct iommu_ops intel_iommu_ops = {
+>   	.def_domain_type	= device_def_domain_type,
+>   	.remove_dev_pasid	= intel_iommu_remove_dev_pasid,
+>   	.pgsize_bitmap		= SZ_4K,
+> +	.driver_type		= IOMMU_DEVICE_DATA_INTEL_VTD,
+>   #ifdef CONFIG_INTEL_IOMMU_SVM
+>   	.page_response		= intel_svm_page_response,
+>   #endif
+> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+> index 06e61e474856..2e70265d4ceb 100644
+> --- a/drivers/iommu/intel/iommu.h
+> +++ b/drivers/iommu/intel/iommu.h
+> @@ -22,6 +22,7 @@
+>   #include <linux/ioasid.h>
+>   #include <linux/bitfield.h>
+>   #include <linux/xarray.h>
+> +#include <uapi/linux/iommufd.h>
+>   
+>   #include <asm/cacheflush.h>
+>   #include <asm/iommu.h>
+> diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+> index 2309edb55028..fda75c8450ee 100644
+> --- a/include/uapi/linux/iommufd.h
+> +++ b/include/uapi/linux/iommufd.h
+> @@ -347,7 +347,28 @@ struct iommu_vfio_ioas {
+>   
+>   /**
+>    * enum iommu_device_data_type - IOMMU hardware Data types
+> + * @IOMMU_DEVICE_DATA_INTEL_VTD: Intel VT-d iommu data type
+>    */
+>   enum iommu_device_data_type {
+> +	IOMMU_DEVICE_DATA_INTEL_VTD = 1,
+> +};
+> +
+> +/**
+> + * struct iommu_device_info_vtd - Intel VT-d device info
+> + *
+> + * @flags: Must be set to 0
+
+Could you add more description about the usage of flags here?
+
+
+> + * @__reserved: Must be 0
+> + * @cap_reg: Value of Intel VT-d capability register defined in chapter
+> + *	     11.4.2 of Intel VT-d spec.
+> + * @ecap_reg: Value of Intel VT-d capability register defined in chapter
+> + *	     11.4.3 of Intel VT-d spec.
+> + *
+> + * Intel hardware iommu capability.
+> + */
+> +struct iommu_device_info_vtd {
+> +	__u32 flags;
+> +	__u32 __reserved;
+> +	__aligned_u64 cap_reg;
+> +	__aligned_u64 ecap_reg;
+>   };
+>   #endif
