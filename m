@@ -1,46 +1,48 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DB7B173
-	for <iommu@lists.linux.dev>; Mon, 13 Feb 2023 18:31:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ACFC290B
+	for <iommu@lists.linux.dev>; Mon, 13 Feb 2023 19:08:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676313103; x=1707849103;
+  t=1676315294; x=1707851294;
   h=date:from:to:cc:subject:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=ctixiST2ow9yoUlfeU4eXd6rri6AYzsTWly0/plDjIk=;
-  b=B9OMHz9yazT/HQlYJt3uSK1hcWFtKx1fkjcgVDKZFTF+nRHNfqPs/eRS
-   uZFJzPLsJCRXNShHgKFYYOwxbpBNlMq6cLS4MyzmQcz3UYRZTufNWvymF
-   rCOLYW5qL+IGRbc9T4lKlUj0CgAP0cFdZB5NBc73s1Pp3jSARRXlWyGMz
-   s5TRmZi/tgcjlXiR1qGcV5T+MO1D3VhuBfVB03cLW+pmb271XlbTbd89V
-   nGQ/RiGmrrXChIzvPz+bvS0rJKbRMFTDCxLIA7Zq4RsDJr9/3sMWed7CO
-   TegC0WcfzS4ly4MrILLInKevDq05UsP3+9+XWZ7RQstIZezpcbkNAlwIz
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10620"; a="314602819"
+  bh=rEZn1HNF1pwFcnYLItVTRWNXypbJQGpnhpvtfKy2o20=;
+  b=bDHLB+8c26PXdsNNE6ygOorrLGWukIHlna3nMPs9jjgbRAkEq/hCsj1L
+   rifc4yFhaakyA6f5wwT6O49Rp5TbDpwSk0yuiq3Zhu08ngv7hix0iaATy
+   cnSsYZTF06f/6epx8yd1thuaFXJS0aml/C41ajLl+oPTnnVtw6tbVYq2v
+   bc33SXA8EX3L49URergh9zB+C7fY9i//sHLi/6yZWkFnI96GrIhdoO5IO
+   rT4S6mR89LxPbVEKkPyklei5bhSbqQhnIj8MYpdsDJVgHf1+KVFTP/nyr
+   1HNL3eIeiHSuitN4obdBOXnEB7dYAlTdv5tZ7f0LbDmOzhIzNQZtluBpS
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10620"; a="328682751"
 X-IronPort-AV: E=Sophos;i="5.97,294,1669104000"; 
-   d="scan'208";a="314602819"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 10:31:16 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10620"; a="670917839"
+   d="scan'208";a="328682751"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 11:08:13 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10620"; a="646489422"
 X-IronPort-AV: E=Sophos;i="5.97,294,1669104000"; 
-   d="scan'208";a="670917839"
+   d="scan'208";a="646489422"
 Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 10:31:15 -0800
-Date: Mon, 13 Feb 2023 10:34:55 -0800
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 11:08:12 -0800
+Date: Mon, 13 Feb 2023 11:11:52 -0800
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Lu Baolu
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, LKML
+ <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Lu Baolu
  <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Jean-Philippe
  Brucker <jean-philippe@linaro.com>, Robin Murphy <robin.murphy@arm.com>,
  David Woodhouse <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>,
- "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>, Jason
- Gunthorpe <jgg@nvidia.com>, jacob.jun.pan@linux.intel.com
+ "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+ jacob.jun.pan@linux.intel.com
 Subject: Re: [PATCH 2/2] iommu/ioasid: Remove custom IOASID allocator
-Message-ID: <20230213103455.02f3ac37@jacob-builder>
-In-Reply-To: <Y+pjTR80bnl9rMK1@myrica>
+Message-ID: <20230213111152.5ecf734b@jacob-builder>
+In-Reply-To: <Y+pkL5b6mGv40nZy@nvidia.com>
 References: <20230210230206.3160144-1-jacob.jun.pan@linux.intel.com>
 	<20230210230206.3160144-3-jacob.jun.pan@linux.intel.com>
 	<Y+pjTR80bnl9rMK1@myrica>
+	<Y+pkL5b6mGv40nZy@nvidia.com>
 Organization: OTC
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
@@ -52,56 +54,27 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-Hi Jean-Philippe,
+Hi Jason,
 
-On Mon, 13 Feb 2023 16:20:29 +0000, Jean-Philippe Brucker
-<jean-philippe@linaro.org> wrote:
+On Mon, 13 Feb 2023 12:24:15 -0400, Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-> On Fri, Feb 10, 2023 at 03:02:06PM -0800, Jacob Pan wrote:
-> > Custom allocator feature was introduced to support VT-d's virtual
-> > command, an enlightened interface designed for VMs to allocate PASIDs
-> > from the host.
-> > 
-> > As we remove/withdraw the VT-d virtual command feature, the sole user
-> > of custom allocator, we can safely remove the custom allocator as well.
-> > Effectively, this will return IOASID core to the original simple global
-> > namespace allocator.
-> > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>  
+> > We could also merge ioasid.c into iommu-sva.c at this point, since I
+> > haven't seen any interest for having multiple IOASID sets on Arm, but
+> > I'm not sure what the current plan is for vSVA on x86.  
 > 
-> You can also drop the spinlock.h include. With that:
+> Once the customer allocator is removed this is bascially a thin
+> wrapper around xarray
 > 
-good catch, thanks
-> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> So anything that needs multiple pasid spaces should just create it on
+> its own directly with xarray
 > 
-> On a related note, it looks like 100b8a14a370 ("iommu/vt-d: Add pasid
-> private data helpers") removed the last user of ioasid_set_data(). I guess
-> that could be dropped too, unless you plan to still use it?
-> 
-You are right, will remove.
-I was planning on the other way around which will convert VT-d's private
-pasid data helpers to common ioasid code, but when I look closer the
-private pasid xa is just holding a list of pasid/mm which could be per iommu
-not global. Another cleanup I suppose.
+Just wanted to double check that for devices on VT-d platforms that support
+both SVA and DMA API with PASID, we will still need a single global pasid
+space (due to IOTLB tagging). So this is not the "multiple pasid spaces"
+case here, right?
 
-> We could also merge ioasid.c into iommu-sva.c at this point, since I
-> haven't seen any interest for having multiple IOASID sets on Arm, but I'm
-> not sure what the current plan is for vSVA on x86.
-VT-d do plan to use global PASIDs for DMA API with PASIDs since the
-work submited via ENQCMDS must use a PASID must != RIDPASID.
-https://lore.kernel.org/lkml/20220518182120.1136715-1-jacob.jun.pan@linux.intel.com/T/
-
-So I was thinking a separate ioasid_set for devices that allocates global
-PASIDs for DMA API usage. ioasid_set will be useful here for limiting
-lookup and resource management. e.g. PASIDs used under in-kernel DMA API
-are not subject to cgroups.
-
-
-> Thanks,
-> Jean
-> 
-> 
-
+As I replied to Jean as well, we could use the ioasid_set to separate SVA
+and DMA API PASIDs.
 
 Thanks,
 
