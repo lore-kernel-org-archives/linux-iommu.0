@@ -1,37 +1,37 @@
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22F8723BD;
-	Mon, 13 Feb 2023 09:29:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA7C723A5;
+	Mon, 13 Feb 2023 09:29:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676280556; x=1707816556;
+  t=1676280558; x=1707816558;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=9FwOfNFDMQvA9eUplObDU3WspLsuxTJWoEuUtfj/uVw=;
-  b=P2TAiwjjY8HUpQ8np8hc5IJokzCvH3drnK6eBUuLx3TpINLAui7EvXpO
-   M8twCnJS9UHHJGj5x5r3ydthkj2Yt9mLr7JKfztLR0Mby42q8zfErOACj
-   98tsRUvEr2kfWYRcCe9v48jcJLOIcuFzBQipd4SdaO+oSIWbn0RcO7J2l
-   FLSCNwsw5IhFfpuRfk7EN+61TDPA8LkwlIb0AF2xiuD5bDkTNM5fZDpae
-   +kFDidek2/WVyqjK5wImyUofv+Vw0sOY0Z3bnM/ney5Z9mz3g3fp+8RUY
-   VIKbWcocbt1a3e7ELgfP4e16CW8YPmlTZZmse3wCykdj1yMuBL9xvPXFq
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="358258499"
+  bh=bainX+rNjEUG4h7jBawjp/NmO2u89bcT7SfBlCxrDXk=;
+  b=MBU+hld5lBqAgcUPkDavZuxXgo++THTGwhe6TLqjg8gYuRW2lCoxnlXo
+   Qp5vX+wgeQ4vNpARHyfmQPjDoS1pguqruDMk1lsXnET0i4Ytsbw9ki3V7
+   RRGmdQdrGEUQirFGOKoXfTPIQV6mw7kPoi1LErGvb8T3pyGFL38heGu9p
+   QbvdMlYpIjG2elK9FNTlZw+ki+/2I/wY0W5okHMpyxAmfxH9sYwsyaNso
+   kBUdbX1l/00aYIZtnz071m34b0KHXaqXJoVMp1PuiA4Xa5fy2LUL6pCMG
+   pdAx/JjF06eNA1O3xweFO1KellSiS/dfHQNoWmKyFyarXe+GabdnDonHt
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="358258505"
 X-IronPort-AV: E=Sophos;i="5.97,293,1669104000"; 
-   d="scan'208";a="358258499"
+   d="scan'208";a="358258505"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 01:29:15 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="732433074"
+X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="732433075"
 X-IronPort-AV: E=Sophos;i="5.97,293,1669104000"; 
-   d="scan'208";a="732433074"
+   d="scan'208";a="732433075"
 Received: from lkp-server01.sh.intel.com (HELO 4455601a8d94) ([10.239.97.150])
   by fmsmga008.fm.intel.com with ESMTP; 13 Feb 2023 01:29:13 -0800
 Received: from kbuild by 4455601a8d94 with local (Exim 4.96)
 	(envelope-from <lkp@intel.com>)
-	id 1pRV96-0007eT-10;
+	id 1pRV96-0007eX-18;
 	Mon, 13 Feb 2023 09:29:12 +0000
-Date: Mon, 13 Feb 2023 17:28:41 +0800
+Date: Mon, 13 Feb 2023 17:28:32 +0800
 From: kernel test robot <lkp@intel.com>
 To: "GuoRui.Yu" <GuoRui.Yu@linux.alibaba.com>, hch@lst.de,
 	m.szyprowski@samsung.com
@@ -40,7 +40,7 @@ Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
 	linux-kernel@vger.kernel.org, GuoRui.Yu@linux.alibaba.com,
 	xiaokang.hxk@alibaba-inc.com
 Subject: Re: [PATCH] swiotlb: fix the deadlock in swiotlb_do_find_slots
-Message-ID: <202302131748.pa5NGbb9-lkp@intel.com>
+Message-ID: <202302131745.cIrweVLs-lkp@intel.com>
 References: <20230213063604.127526-1-GuoRui.Yu@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -57,7 +57,7 @@ Hi GuoRui.Yu",
 Thank you for the patch! Perhaps something to improve:
 
 [auto build test WARNING on linus/master]
-[also build test WARNING on hch-configfs/for-next v6.2-rc8]
+[also build test WARNING on v6.2-rc8 next-20230213]
 [If your patch is applied to the wrong git tree, kindly drop us a note.
 And when submitting patch, we suggest to use '--base' as documented in
 https://git-scm.com/docs/git-format-patch#_base_tree_information]
@@ -65,23 +65,25 @@ https://git-scm.com/docs/git-format-patch#_base_tree_information]
 url:    https://github.com/intel-lab-lkp/linux/commits/GuoRui-Yu/swiotlb-fix-the-deadlock-in-swiotlb_do_find_slots/20230213-143625
 patch link:    https://lore.kernel.org/r/20230213063604.127526-1-GuoRui.Yu%40linux.alibaba.com
 patch subject: [PATCH] swiotlb: fix the deadlock in swiotlb_do_find_slots
-config: x86_64-randconfig-a001-20230213 (https://download.01.org/0day-ci/archive/20230213/202302131748.pa5NGbb9-lkp@intel.com/config)
-compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
+config: riscv-randconfig-r004-20230213 (https://download.01.org/0day-ci/archive/20230213/202302131745.cIrweVLs-lkp@intel.com/config)
+compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project db0e6591612b53910a1b366863348bdb9d7d2fb1)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
         # https://github.com/intel-lab-lkp/linux/commit/d3d8e60e47bb50892fbde7c6fa81562f8ea916a3
         git remote add linux-review https://github.com/intel-lab-lkp/linux
         git fetch --no-tags linux-review GuoRui-Yu/swiotlb-fix-the-deadlock-in-swiotlb_do_find_slots/20230213-143625
         git checkout d3d8e60e47bb50892fbde7c6fa81562f8ea916a3
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash kernel/dma/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash kernel/dma/
 
 If you fix the issue, kindly add following tag where applicable
 | Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202302131748.pa5NGbb9-lkp@intel.com/
+| Link: https://lore.kernel.org/oe-kbuild-all/202302131745.cIrweVLs-lkp@intel.com/
 
 All warnings (new ones prefixed by >>):
 
