@@ -1,152 +1,200 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 824931FDA
-	for <iommu@lists.linux.dev>; Mon, 13 Feb 2023 08:49:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22F8723BD;
+	Mon, 13 Feb 2023 09:29:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676278152; x=1707814152;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=KAwjNWKfwZLbbE6KInWg5vm/UVyZV8wU47/eph2XrPs=;
-  b=W/wDDSoaOEQeFmJcb6gFFClczEmVleTdnkrK9olDSgVwBXPTj4NOQDpu
-   1msZWixvnInIFMjJikVDAIAb8vGb7RyVxVJq7VlSoSkURAJKlP+s++nti
-   1+v2O/hv3HDpF9ij+S9WG43gm/Uhmer/68+Wvkrx2Inqgbspk3xj0qzVn
-   ZfizfrOV/GPqnien+l89S2EVje8qPFBHRzZ+nJmJ9GXzshvNdN5M4d5cH
-   Bt/V+UQtl1aYzEufj8m6PoycdxGs70lmwvY0GjDAp6FvbFqchF6UizZPB
-   MlcCtqLBhUiFarnRDux45z/G0CMtw1geFr0ZIsZJc1ozDMTSV/BnV1Aj5
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="310475829"
+  t=1676280556; x=1707816556;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=9FwOfNFDMQvA9eUplObDU3WspLsuxTJWoEuUtfj/uVw=;
+  b=P2TAiwjjY8HUpQ8np8hc5IJokzCvH3drnK6eBUuLx3TpINLAui7EvXpO
+   M8twCnJS9UHHJGj5x5r3ydthkj2Yt9mLr7JKfztLR0Mby42q8zfErOACj
+   98tsRUvEr2kfWYRcCe9v48jcJLOIcuFzBQipd4SdaO+oSIWbn0RcO7J2l
+   FLSCNwsw5IhFfpuRfk7EN+61TDPA8LkwlIb0AF2xiuD5bDkTNM5fZDpae
+   +kFDidek2/WVyqjK5wImyUofv+Vw0sOY0Z3bnM/ney5Z9mz3g3fp+8RUY
+   VIKbWcocbt1a3e7ELgfP4e16CW8YPmlTZZmse3wCykdj1yMuBL9xvPXFq
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="358258499"
 X-IronPort-AV: E=Sophos;i="5.97,293,1669104000"; 
-   d="scan'208";a="310475829"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 00:49:11 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="842694391"
+   d="scan'208";a="358258499"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 01:29:15 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="732433074"
 X-IronPort-AV: E=Sophos;i="5.97,293,1669104000"; 
-   d="scan'208";a="842694391"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.169.207]) ([10.249.169.207])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 00:49:02 -0800
-Message-ID: <041912b6-f13c-f83d-ce6b-f3a7ceb674ee@linux.intel.com>
-Date: Mon, 13 Feb 2023 16:48:59 +0800
+   d="scan'208";a="732433074"
+Received: from lkp-server01.sh.intel.com (HELO 4455601a8d94) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 13 Feb 2023 01:29:13 -0800
+Received: from kbuild by 4455601a8d94 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1pRV96-0007eT-10;
+	Mon, 13 Feb 2023 09:29:12 +0000
+Date: Mon, 13 Feb 2023 17:28:41 +0800
+From: kernel test robot <lkp@intel.com>
+To: "GuoRui.Yu" <GuoRui.Yu@linux.alibaba.com>, hch@lst.de,
+	m.szyprowski@samsung.com
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	robin.murphy@arm.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, GuoRui.Yu@linux.alibaba.com,
+	xiaokang.hxk@alibaba-inc.com
+Subject: Re: [PATCH] swiotlb: fix the deadlock in swiotlb_do_find_slots
+Message-ID: <202302131748.pa5NGbb9-lkp@intel.com>
+References: <20230213063604.127526-1-GuoRui.Yu@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.2
-Cc: baolu.lu@linux.intel.com, cohuck@redhat.com, eric.auger@redhat.com,
- nicolinc@nvidia.com, kvm@vger.kernel.org, mjrosato@linux.ibm.com,
- chao.p.peng@linux.intel.com, yi.y.sun@linux.intel.com, peterx@redhat.com,
- jasowang@redhat.com, shameerali.kolothum.thodi@huawei.com, lulu@redhat.com,
- suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH 2/6] iommu/vt-d: Implement hw_info for iommu capability
- query
-Content-Language: en-US
-To: Binbin Wu <binbin.wu@linux.intel.com>, Yi Liu <yi.l.liu@intel.com>,
- joro@8bytes.org, alex.williamson@redhat.com, jgg@nvidia.com,
- kevin.tian@intel.com, robin.murphy@arm.com
-References: <20230209041642.9346-1-yi.l.liu@intel.com>
- <20230209041642.9346-3-yi.l.liu@intel.com>
- <0581875e-f0af-582e-82fb-62cf03ba39b2@linux.intel.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <0581875e-f0af-582e-82fb-62cf03ba39b2@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230213063604.127526-1-GuoRui.Yu@linux.alibaba.com>
 
-On 2023/2/13 11:09, Binbin Wu wrote:
-> 
-> On 2/9/2023 12:16 PM, Yi Liu wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->>
->> To support nested translation in the userspace, it should check the
->> underlying hardware information for the capabilities.
->>
->> Add intel_iommu_hw_info() to report cap_reg and ecap_reg information.
->>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
->> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
->> Signed-off-by: Yi Sun <yi.y.sun@linux.intel.com>
->> ---
->>   drivers/iommu/intel/iommu.c  | 19 +++++++++++++++++++
->>   drivers/iommu/intel/iommu.h  |  1 +
->>   include/uapi/linux/iommufd.h | 21 +++++++++++++++++++++
->>   3 files changed, 41 insertions(+)
->>
->> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->> index 59df7e42fd53..929f600cc350 100644
->> --- a/drivers/iommu/intel/iommu.c
->> +++ b/drivers/iommu/intel/iommu.c
->> @@ -4760,8 +4760,26 @@ static void intel_iommu_remove_dev_pasid(struct 
->> device *dev, ioasid_t pasid)
->>       intel_pasid_tear_down_entry(iommu, dev, pasid, false);
->>   }
->> +static void *intel_iommu_hw_info(struct device *dev, u32 *length)
->> +{
->> +    struct device_domain_info *info = dev_iommu_priv_get(dev);
->> +    struct intel_iommu *iommu = info->iommu;
->> +    struct iommu_device_info_vtd *vtd;
->> +
->> +    vtd = kzalloc(sizeof(*vtd), GFP_KERNEL);
->> +    if (!vtd)
->> +        return ERR_PTR(-ENOMEM);
->> +
->> +    vtd->cap_reg = iommu->cap;
->> +    vtd->ecap_reg = iommu->ecap;
->> +    *length = sizeof(*vtd);
->> +
->> +    return vtd;
->> +}
->> +
->>   const struct iommu_ops intel_iommu_ops = {
->>       .capable        = intel_iommu_capable,
->> +    .hw_info        = intel_iommu_hw_info,
->>       .domain_alloc        = intel_iommu_domain_alloc,
->>       .probe_device        = intel_iommu_probe_device,
->>       .probe_finalize        = intel_iommu_probe_finalize,
->> @@ -4774,6 +4792,7 @@ const struct iommu_ops intel_iommu_ops = {
->>       .def_domain_type    = device_def_domain_type,
->>       .remove_dev_pasid    = intel_iommu_remove_dev_pasid,
->>       .pgsize_bitmap        = SZ_4K,
->> +    .driver_type        = IOMMU_DEVICE_DATA_INTEL_VTD,
->>   #ifdef CONFIG_INTEL_IOMMU_SVM
->>       .page_response        = intel_svm_page_response,
->>   #endif
->> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
->> index 06e61e474856..2e70265d4ceb 100644
->> --- a/drivers/iommu/intel/iommu.h
->> +++ b/drivers/iommu/intel/iommu.h
->> @@ -22,6 +22,7 @@
->>   #include <linux/ioasid.h>
->>   #include <linux/bitfield.h>
->>   #include <linux/xarray.h>
->> +#include <uapi/linux/iommufd.h>
->>   #include <asm/cacheflush.h>
->>   #include <asm/iommu.h>
->> diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
->> index 2309edb55028..fda75c8450ee 100644
->> --- a/include/uapi/linux/iommufd.h
->> +++ b/include/uapi/linux/iommufd.h
->> @@ -347,7 +347,28 @@ struct iommu_vfio_ioas {
->>   /**
->>    * enum iommu_device_data_type - IOMMU hardware Data types
->> + * @IOMMU_DEVICE_DATA_INTEL_VTD: Intel VT-d iommu data type
->>    */
->>   enum iommu_device_data_type {
->> +    IOMMU_DEVICE_DATA_INTEL_VTD = 1,
->> +};
->> +
->> +/**
->> + * struct iommu_device_info_vtd - Intel VT-d device info
->> + *
->> + * @flags: Must be set to 0
-> 
-> Could you add more description about the usage of flags here?
+Hi GuoRui.Yu",
 
-This is a Reserved 0 fields for other coming features.
+Thank you for the patch! Perhaps something to improve:
 
-Best regards,
-baolu
+[auto build test WARNING on linus/master]
+[also build test WARNING on hch-configfs/for-next v6.2-rc8]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/GuoRui-Yu/swiotlb-fix-the-deadlock-in-swiotlb_do_find_slots/20230213-143625
+patch link:    https://lore.kernel.org/r/20230213063604.127526-1-GuoRui.Yu%40linux.alibaba.com
+patch subject: [PATCH] swiotlb: fix the deadlock in swiotlb_do_find_slots
+config: x86_64-randconfig-a001-20230213 (https://download.01.org/0day-ci/archive/20230213/202302131748.pa5NGbb9-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/d3d8e60e47bb50892fbde7c6fa81562f8ea916a3
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review GuoRui-Yu/swiotlb-fix-the-deadlock-in-swiotlb_do_find_slots/20230213-143625
+        git checkout d3d8e60e47bb50892fbde7c6fa81562f8ea916a3
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash kernel/dma/
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202302131748.pa5NGbb9-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+>> kernel/dma/swiotlb.c:668:4: warning: variable 'index_nowrap' is uninitialized when used here [-Wuninitialized]
+                           index_nowrap += 1;
+                           ^~~~~~~~~~~~
+   kernel/dma/swiotlb.c:635:34: note: initialize the variable 'index_nowrap' to silence this warning
+           unsigned int index, index_nowrap, wrap, count = 0, i;
+                                           ^
+                                            = 0
+   1 warning generated.
+
+
+vim +/index_nowrap +668 kernel/dma/swiotlb.c
+
+   617	
+   618	/*
+   619	 * Find a suitable number of IO TLB entries size that will fit this request and
+   620	 * allocate a buffer from that IO TLB pool.
+   621	 */
+   622	static int swiotlb_do_find_slots(struct device *dev, int area_index,
+   623			phys_addr_t orig_addr, size_t alloc_size,
+   624			unsigned int alloc_align_mask)
+   625	{
+   626		struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
+   627		struct io_tlb_area *area = mem->areas + area_index;
+   628		unsigned long boundary_mask = dma_get_seg_boundary(dev);
+   629		dma_addr_t tbl_dma_addr =
+   630			phys_to_dma_unencrypted(dev, mem->start) & boundary_mask;
+   631		unsigned long max_slots = get_max_slots(boundary_mask);
+   632		unsigned int iotlb_align_mask =
+   633			dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);
+   634		unsigned int nslots = nr_slots(alloc_size), stride;
+   635		unsigned int index, index_nowrap, wrap, count = 0, i;
+   636		unsigned int offset = swiotlb_align_offset(dev, orig_addr);
+   637		unsigned long flags;
+   638		unsigned int slot_base;
+   639		unsigned int slot_index;
+   640	
+   641		BUG_ON(!nslots);
+   642		BUG_ON(area_index >= mem->nareas);
+   643	
+   644		/*
+   645		 * For mappings with an alignment requirement don't bother looping to
+   646		 * unaligned slots once we found an aligned one.  For allocations of
+   647		 * PAGE_SIZE or larger only look for page aligned allocations.
+   648		 */
+   649		stride = (iotlb_align_mask >> IO_TLB_SHIFT) + 1;
+   650		if (alloc_size >= PAGE_SIZE)
+   651			stride = max(stride, stride << (PAGE_SHIFT - IO_TLB_SHIFT));
+   652		stride = max(stride, (alloc_align_mask >> IO_TLB_SHIFT) + 1);
+   653	
+   654		spin_lock_irqsave(&area->lock, flags);
+   655		if (unlikely(nslots > mem->area_nslabs - area->used))
+   656			goto not_found;
+   657	
+   658		slot_base = area_index * mem->area_nslabs;
+   659		index = wrap = wrap_area_index(mem, ALIGN(area->index, stride));
+   660	
+   661		do {
+   662			slot_index = slot_base + index;
+   663	
+   664			if (orig_addr &&
+   665			    (slot_addr(tbl_dma_addr, slot_index) &
+   666			     iotlb_align_mask) != (orig_addr & iotlb_align_mask)) {
+   667				index = wrap_area_index(mem, index + 1);
+ > 668				index_nowrap += 1;
+   669				continue;
+   670			}
+   671	
+   672			/*
+   673			 * If we find a slot that indicates we have 'nslots' number of
+   674			 * contiguous buffers, we allocate the buffers from that slot
+   675			 * and mark the entries as '0' indicating unavailable.
+   676			 */
+   677			if (!iommu_is_span_boundary(slot_index, nslots,
+   678						    nr_slots(tbl_dma_addr),
+   679						    max_slots)) {
+   680				if (mem->slots[slot_index].list >= nslots)
+   681					goto found;
+   682			}
+   683			index = wrap_area_index(mem, index + stride);
+   684			index_nowrap += stride;
+   685		} while (index_nowrap < wrap + mem->area_nslabs);
+   686	
+   687	not_found:
+   688		spin_unlock_irqrestore(&area->lock, flags);
+   689		return -1;
+   690	
+   691	found:
+   692		for (i = slot_index; i < slot_index + nslots; i++) {
+   693			mem->slots[i].list = 0;
+   694			mem->slots[i].alloc_size = alloc_size - (offset +
+   695					((i - slot_index) << IO_TLB_SHIFT));
+   696		}
+   697		for (i = slot_index - 1;
+   698		     io_tlb_offset(i) != IO_TLB_SEGSIZE - 1 &&
+   699		     mem->slots[i].list; i--)
+   700			mem->slots[i].list = ++count;
+   701	
+   702		/*
+   703		 * Update the indices to avoid searching in the next round.
+   704		 */
+   705		if (index + nslots < mem->area_nslabs)
+   706			area->index = index + nslots;
+   707		else
+   708			area->index = 0;
+   709		area->used += nslots;
+   710		spin_unlock_irqrestore(&area->lock, flags);
+   711		return slot_index;
+   712	}
+   713	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
