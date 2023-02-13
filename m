@@ -1,70 +1,137 @@
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2084.outbound.protection.outlook.com [40.107.101.84])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89424AD39
-	for <iommu@lists.linux.dev>; Mon, 13 Feb 2023 19:30:38 +0000 (UTC)
-Received: by mail-wr1-f52.google.com with SMTP id by3so12064577wrb.10
-        for <iommu@lists.linux.dev>; Mon, 13 Feb 2023 11:30:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7+PQ5ihkLZBX24QKUEX6RYAfdl271h7g2O+CKjE4XF8=;
-        b=W9Fhgi3XjTdcf7W0zcPgebL2IWIvv30t9YVJAYhFMJZgypIwvmhTDrlTjlx7bj4JyY
-         PpAj2Rnj+Eu0F/ftO4StwyJ+ydtbU+O5Odfx3z9IVQx9MvXEN+LHzpORKuG7eB6fAvwt
-         qVhWF4Qf3TXzdUUzRv9xX+MO49/Vyq13B8YiAjscE+Ww+WQKq8Yqzk7cvzMLN7Lepm4q
-         IWAgciG95B8WQUxEIPkzY6VZuyEktXzzv1M81AHayyUqNTsEFvXOcDXuQFMus0P6j/zT
-         PJa9kk5ViT/sg0qGq7qAQ8pmUHQIp2ybCri5YlLGTawCl3xOYjgFRVpIJIx1lhGDX87v
-         sDDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7+PQ5ihkLZBX24QKUEX6RYAfdl271h7g2O+CKjE4XF8=;
-        b=3lvpW0vKy/ZqQCDNoRyc2Etd5dUYRFRqlUwk63k9p//udPVWIoQddaCsx7ESorD/Yq
-         jEdSp464ehcgHQBq4rnXOGTjTGDBXWDBBrkwVUyb16nXHsi8R2rEg87Wmt/72/OIwBDC
-         W43a2N+BG2HEBzcHPMVhCzdHnoPRCBwZQLcb0vfrhoSJo8b/eGQ2TMA64OKDgIOJ4dEb
-         +SHK9Mw0g/jzWgb4b8AzkSreqtg8uWY80MSZhvRG8ovZPv8CiOr+j7StEK0IPlT8YA8p
-         dNAJAkOv+wQpn99oQMdvyYG2CBYiRLsBS+7/iTFPPwB4zpo9z0qhQWDxC4ypB5NgDBEy
-         LUJA==
-X-Gm-Message-State: AO0yUKWXR/qnC5Bbd8LE/PQbmeBizUXAPkH/NqTLDyI6kMwfJd5das9I
-	3TwdHHNMCTVzGEPAIIoRFXCSNg==
-X-Google-Smtp-Source: AK7set/SYf0lCxkP9aBTPKdR3/1lqJqR5cFvQtyk1WKeA0gQqK2dqeIy6SzYJwn/pOlPJbO9Mr0yMw==
-X-Received: by 2002:a05:6000:10c2:b0:2c5:53e6:9aba with SMTP id b2-20020a05600010c200b002c553e69abamr4941296wrx.5.1676316636680;
-        Mon, 13 Feb 2023 11:30:36 -0800 (PST)
-Received: from myrica (054592b0.skybroadband.com. [5.69.146.176])
-        by smtp.gmail.com with ESMTPSA id j40-20020a05600c1c2800b003dc4480df80sm20126681wms.34.2023.02.13.11.30.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Feb 2023 11:30:36 -0800 (PST)
-Date: Mon, 13 Feb 2023 19:30:26 +0000
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22550AD39
+	for <iommu@lists.linux.dev>; Mon, 13 Feb 2023 19:39:22 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RdadhnTJmmRiXptT2bbJWZFnw0VctAINRh3xe8Pkn1e7lFNdH4hIcKOKeAuHR/CHPifBym1++7HH5GnI3t3maJT8mJuySrPLSaK5fPzFKkpBazJvi50n7r24h0Mf+2qjG+jFW2gndzRdrO47x8sk6zD1mtgUsQ4ES78S+hHU4tQ2BCSKU4vbre335JDQaYiFyvE+rw8M2Efwtiu0cFJi5yMICKDfLO7Iy/MaFCII1iO5OQn/mZmvCY4xno4//ccJVI/WaUVGa6rTTByMqLhkZSeZ9yT4eZsjx7CElUtIGO3/BWPd85KDEsl/BiM4/KE8DFZhIg1fnT9zDZ6LwS725w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XktDnU8sSr+fQes4S/YXF3ntnWSXP5brkbRYadKHNfQ=;
+ b=fFt2uMv2YQ+lD3Uq8Dx3t8wEJsl6c0/GISILci0EtWO9Nt3lnM+4ToHbi0AlVR+zwRrYHVpJ6PPhhZIS5ysJTY71zyPn0H6ORN+8QUfVBw+Y1E37dpzd/LqU7VNrtTkhAhXwWwd8bybTv/v/DOiT5sOgNbCvh/Rd33NlJCBkq3KwfuIvhK6v2Tdum7Ho4QUFRIbbXr1ENTjdPKI3BOMQlyDbfaII7E1+oOeSSlMK9J0hj/I/SJj3eeR5j9RZnDi9rGkWYSMIixJTGNWvVA2c5vkXXvwW2Qvc1EUQgo3FDvwLQx+GCXXUQFl19KuLZ/ypWfzmxm0EqJcH1vHuIQ6Irw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XktDnU8sSr+fQes4S/YXF3ntnWSXP5brkbRYadKHNfQ=;
+ b=Dw4P0l08HUNF1nDiLawafcc4YobPjBl4/Kt9bOONKuU1+QhTRsFYG5lqLxzB3WYn17RI7vA2SnZ2zDd+kIeggR7b4EppySP8gzf9ZEt+K5mBHlCqEpyyctuH3Ex5Yb7C+EJqFgX9RjigITGGKUFpMXtNDMCFX6eyjlw5UOkAu0ftcd79RpgAimq1j9sdgDlfnZQFTvMNU2CZ+ewV/CxsnzWEKZ9Wfy05Vmwv5CGFJtrlBot3JpixNfxfM6ae5JHnq2/PDvsnB24NCncFe8WwHYFWC/Av3NQp5WwmspLb6k0CSf8o7z2jGACtDQtG1gXiTRIjGN8d8PvZ0CYm8OhVSA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DM4PR12MB6567.namprd12.prod.outlook.com (2603:10b6:8:8e::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.24; Mon, 13 Feb
+ 2023 19:39:21 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3cb3:2fce:5c8f:82ee%6]) with mapi id 15.20.6086.023; Mon, 13 Feb 2023
+ 19:39:20 +0000
+Date: Mon, 13 Feb 2023 15:39:19 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
 To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
 	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
 	Jean-Philippe Brucker <jean-philippe@linaro.com>,
 	Robin Murphy <robin.murphy@arm.com>,
 	David Woodhouse <dwmw2@infradead.org>,
 	Raj Ashok <ashok.raj@intel.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jason Gunthorpe <jgg@nvidia.com>
+	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>
 Subject: Re: [PATCH 2/2] iommu/ioasid: Remove custom IOASID allocator
-Message-ID: <Y+qP0q9U0J2UfIxX@myrica>
+Message-ID: <Y+qR5zC8ZOkVphgv@nvidia.com>
 References: <20230210230206.3160144-1-jacob.jun.pan@linux.intel.com>
  <20230210230206.3160144-3-jacob.jun.pan@linux.intel.com>
  <Y+pjTR80bnl9rMK1@myrica>
  <20230213103455.02f3ac37@jacob-builder>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230213103455.02f3ac37@jacob-builder>
+X-ClientProxiedBy: BL1PR13CA0113.namprd13.prod.outlook.com
+ (2603:10b6:208:2b9::28) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230213103455.02f3ac37@jacob-builder>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB6567:EE_
+X-MS-Office365-Filtering-Correlation-Id: c4323be7-dcd7-44e3-d5e7-08db0dfa0084
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	nzKx7iIfc8kaIKpzOFWYWeHYTtZ88N5Gj5vq3O7cxF95h1tOBxXsXNS1MesUA9/Ig/ivw6FsK9KCg39F0K8rLu4LSdlHd+shOHrHzb5+WkVHv1cm2ZpFmxANNll5wkLb5N1JGvLAZBSBc4vI+4jULsBTfK8onE4VeuJocu0TBCA7qhiI79EGlM3m+ONMd/SmeI4k9qxuBT61YbeFYcViIvTesr+cdJRn45807YFTPesb+FgLtAf4noNigQgfF6xX9s7O/X/Uz7LOOcvLovg1a0whicaqJLWOHaOsXQFvWVEO2WOs0OlHK7kxbIesNVeMASecm4vAE9lrXhaYuYu/36USvi1sjlHJw6VNqNHluXFlTxVC/UvEHWtbTtggrsjlIQHVObeRXLBZQ8NOI7LDfwHfjDW+4uI45Z6exzQy/6ZNn9R0u5dqvV2h6ybr+eKakfDukOW9LdPHYMHV+AMiIgXSkY88IDEOq3hTYmMvBBthZJ5Nfxhw2L6SfZrNJ1NVRzrUZU3ccL2jwYxL+8Yh8TLWnzT0kc6Vmn4VXhdlQIYn/ENfdHeCLB/kfJmLf30fEHNYxCH1o15TkgPGY2M/NjwqmMuRyVPv1qrgwPoPpDrwEc8RZgg/dqBVLndC4dyiCzFinuxRIn3AtLzHt59BniOBIWfMLbq96voFcQ0lQkpLhQMJT7OKc4QgbBs8g7w2G4yzXnbkZoKzqU7FmhQk2hcfanfxSRyArNv0HiQmhsNNmgZxhPT2/zflAa86a6swmqUwHf5YDFZBiUt4/SnsRg==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(136003)(39860400002)(376002)(346002)(396003)(451199018)(5660300002)(54906003)(7416002)(316002)(2906002)(478600001)(6486002)(966005)(66476007)(66946007)(6916009)(41300700001)(66556008)(8676002)(8936002)(4326008)(6506007)(2616005)(36756003)(83380400001)(26005)(6512007)(86362001)(186003)(38100700002)(67856001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?ULYXKrrwDdNIf/axHCXiBqHSZAyYEZogUxe2iFu7u6D5ZqYXfF02oIPUYEqD?=
+ =?us-ascii?Q?ON5cRq/DP5vBwDvjKuIbzFiHNLRaUAs0nSzC8rU/HBQ3mLm2QNUPq80mT2dr?=
+ =?us-ascii?Q?DdzirG1bgAHCaqzkSXUGWwByg99SBtPvmd0s0Ovhmwat0t+RxlaNj50DEwts?=
+ =?us-ascii?Q?gtY/kvs3DxDRI76f3jqVqlPWF5RYZtG8MWwUa17Ek4aCvaol7JOY3IkbEZD0?=
+ =?us-ascii?Q?muKPG5ys3CKcPZOrl9MONk3RsHbLy06wpluajtj7ecVmMLbshVXnSEhdBdiq?=
+ =?us-ascii?Q?jt50XbfjQh73hOHn2Ba/3bqZPotAEKuHafOaabjLJcfD3toJJH6jxtF4b2r4?=
+ =?us-ascii?Q?Kp8s92YLPhC7uVOdE7HArpBZUkHWjP/XzcZ8LuVET6sbHN9VhqQqby0OgjFG?=
+ =?us-ascii?Q?P7021D9AOab91FNvGaVlKhAchYaoJafbztH92QKEKSZF9OVbewsg4mChgLyI?=
+ =?us-ascii?Q?/JWCMmFWlnx79S7pA+NlJOCK8srvi+9VMY/C2RLh9YDcCMCxc6Z8onD5wI3M?=
+ =?us-ascii?Q?QiDjVMjgALE8EqqdfbHmS7eEUZDQu9up24zkpQPgDcK+A6tayv5PlfgjFQwi?=
+ =?us-ascii?Q?PrhS7qO6Ocs4KSNsjueFvsh9gofJShvHACorr+XAGS3P43rF5hYzfyb8sJoR?=
+ =?us-ascii?Q?VRZuhvJX2qPM0Lk7aTW2z2VeMcETdHmbIr4w01hRb40laRvIUAS1JkURPASb?=
+ =?us-ascii?Q?3l46XMeQLprgo01Jo/mH6yc/9DLz1F8BLzEJsDbKODV9+YcvyhrC4T55GB2h?=
+ =?us-ascii?Q?We18AjSw8VZxZ2GKdtnkzCHXQ3IhTyN9TxoD/W/Wrg3xpynBtsg4BZ3Qkvjg?=
+ =?us-ascii?Q?/fC56eLPgNRLPJIcYMTZUIAmUgvXsLlfOt9h5H3xaxSHRxZP/Zij9VlHeALH?=
+ =?us-ascii?Q?Wjpafy5gJ1fiszkRI7jEaewn7CRZlIYDvxiIaUfB3wp86Lm2XjECMZxWdT2R?=
+ =?us-ascii?Q?hz/5p3up9F99LOkGRIf8bGlfaxXQR+w4P+X+o65xi8M7ouOcl6tQAslZlFzs?=
+ =?us-ascii?Q?a4d0Wmm4KVVxY+GhiHO71nwTKB8DWNR5SK7fpghKq9hL+O0wpyEjVgt9MDJ2?=
+ =?us-ascii?Q?PmxOHkrPFxz2fXz1L/FOR69foCZuVVWxD4zDWqg7Jo87sODoDJMhmwwYAInr?=
+ =?us-ascii?Q?JKxi3QAvLOW2cG/IFxOBVPDtgbBRs6z/7OdEyHpBUtSI45voZDBDFsSSnOqE?=
+ =?us-ascii?Q?BUIXlIOzHXTJrENGzqjLuAaXPMIfct1zINhsY+KO3e60xAZs3IGfV4fn55vO?=
+ =?us-ascii?Q?e2ehAqGcpMEe4ERJQsIAXchpU4LUUR3hZbGIhiTOUnwYJFzOwHpMxnobqNFI?=
+ =?us-ascii?Q?lZ3vShx01cCjOdLo3UCIcv2O8hXHhNUO1as+Zgz/+D4Q55z36F2ATWd84u7s?=
+ =?us-ascii?Q?n+FIO8ZCl0lsDsMfGQX7EFC3Bwaqr89pMjrFumwOHeaKGMf7I+E7nFore2mL?=
+ =?us-ascii?Q?VfZKL8uIMZJyOcifPBqQyIr5T1/FbpXhWAiqCunf15IxdGi/gFg8c2gDNl5M?=
+ =?us-ascii?Q?rfBxfnw8B8yX6PiRn/Nr3jUsfctudRTS7mjDdNQek2/sjVA0qMipsKcvmVct?=
+ =?us-ascii?Q?pTSupLX8bpwiubDLaGW0+arnglD4pKy4F4DKTE/j?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c4323be7-dcd7-44e3-d5e7-08db0dfa0084
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Feb 2023 19:39:20.6309
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: EdLOjD6Z9MRxnMxz9IZNI9XwXsFUO+POG8gwHWEjcbOcqUkX5rm0ywp3X7DtxiK1
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6567
 
 On Mon, Feb 13, 2023 at 10:34:55AM -0800, Jacob Pan wrote:
+> Hi Jean-Philippe,
+> 
+> On Mon, 13 Feb 2023 16:20:29 +0000, Jean-Philippe Brucker
+> <jean-philippe@linaro.org> wrote:
+> 
+> > On Fri, Feb 10, 2023 at 03:02:06PM -0800, Jacob Pan wrote:
+> > > Custom allocator feature was introduced to support VT-d's virtual
+> > > command, an enlightened interface designed for VMs to allocate PASIDs
+> > > from the host.
+> > > 
+> > > As we remove/withdraw the VT-d virtual command feature, the sole user
+> > > of custom allocator, we can safely remove the custom allocator as well.
+> > > Effectively, this will return IOASID core to the original simple global
+> > > namespace allocator.
+> > > 
+> > > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>  
+> > 
+> > You can also drop the spinlock.h include. With that:
+> > 
+> good catch, thanks
+> > Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > 
 > > On a related note, it looks like 100b8a14a370 ("iommu/vt-d: Add pasid
 > > private data helpers") removed the last user of ioasid_set_data(). I guess
 > > that could be dropped too, unless you plan to still use it?
@@ -75,23 +142,18 @@ On Mon, Feb 13, 2023 at 10:34:55AM -0800, Jacob Pan wrote:
 > private pasid xa is just holding a list of pasid/mm which could be per iommu
 > not global. Another cleanup I suppose.
 
-Yes that should probably be common to SVA. I'm planning to take another
-look at SVA on the SMMU side following the recent API changes, and from a
-quick glance the problem that VT-d's private helpers solves is common.
+Please lets just delete this entire ioasid thing, it has no purpose
+anymore at all.
 
-> > We could also merge ioasid.c into iommu-sva.c at this point, since I
-> > haven't seen any interest for having multiple IOASID sets on Arm, but I'm
-> > not sure what the current plan is for vSVA on x86.
-> VT-d do plan to use global PASIDs for DMA API with PASIDs since the
-> work submited via ENQCMDS must use a PASID must != RIDPASID.
-> https://lore.kernel.org/lkml/20220518182120.1136715-1-jacob.jun.pan@linux.intel.com/T/
-> 
-> So I was thinking a separate ioasid_set for devices that allocates global
-> PASIDs for DMA API usage. ioasid_set will be useful here for limiting
-> lookup and resource management. e.g. PASIDs used under in-kernel DMA API
-> are not subject to cgroups.
+I did a sketch on how it do it here:
 
-Ok. Yes that was the goal of ioasid_set
+https://github.com/jgunthorpe/linux/commits/iommu_remove_ioasid
+
+I wasn't very careful or elegant with the last patch, can you tidy it
+up and repost this as your v2?
+
+Your DMA API PASID thing will simply need one new API to alloc/free a
+PASID from the iommu_global_pasid_ida
 
 Thanks,
-Jean
+Jason
