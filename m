@@ -1,126 +1,210 @@
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2043.outbound.protection.outlook.com [40.107.100.43])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AE0327721
-	for <iommu@lists.linux.dev>; Tue, 14 Feb 2023 13:06:22 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cwvVN6hf05t0oFXd8HFshkYrpsidxc1sv/Hmr3RwELEkwmp7ojDx2/mQLjAEVA4Q0th+gPaHAZt5Zi0LHZOM8F8rlZnVNbGMwP2pprBlPZCpT82/ShdFI5IuFxebt4MmZxzDKJJvSpZH6FzWdJ+BlgaCnkgUMzgqI6N/jTttulYksvXOXSwLjJiP3vzZGdPJhnKDM/ZylF+tl5c5TPO4iRiUo5Zkqfc2ZTQXxqe6Pk7I76G5aOYcQfjIvQxzCAPNki/rVJ0eZhzQXqmaE7oKT7YfCGpMT+gKlO4IVeF0Hn4WVhcGIkqX0q4bEQyxc1kS/g1PtLRYpCfwkvvPR0muAQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7WxE1VQBQ5HeO79aVP2DekS8/L+qQaCy1jWAL3JmXmw=;
- b=PgXIN1Q4zo/GFTUWQ6E6Ms2I7YZBMJJInZY36/LWlQ/Cjnid6oCvcnEUmWG2T2coE7WP+fqA+LXAXp0OnL8JSRAPda/vMq56R5jGAU1bN6Yw7N53bekP9q0JDfCoaDnqYHlQ6CSnpPLYjS/nJNBL10BOg8YCd9HgBcbgewbIXkdoQhtU6Gn0MWv80FnX7SkYG2Mg7I2h+SYtrSLy3NZE29SvjlIBJByZ/mjVeoW8vFS9DlA0hn8QczfPS3JoVCkIWGQgGyXgmYxwlCIak47PFAIpwHCLN6gAxuUDATq4XbnFEi/ez/l/WV3n326o2k67tJsZG9+LilAsE6KILAXJ/Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7WxE1VQBQ5HeO79aVP2DekS8/L+qQaCy1jWAL3JmXmw=;
- b=KKRBb+hJbjXWHWhkXSMsx6/Mp3yF8n4klD9DiGPQPoSEQms2ANEXh/TVEQregidCEvoc5esBJzkPBqrFhdZsAXmNz/o/y/yjMXh+P3woORjGYSEHAm3sA7ndMSZ3IzlvHOwAeQDRsd9NzkqxXbZ2+izvzQylz9rDYcCT490pfCjgL2fKJn+FFzbqP6ns+Aa+4SPpUDi88d/BzuwunmO7ef4ie08tI8+vUmdX/j2BBqTBRoDKhQYUqVdGr/fO5TLOoQLejxql/AXE05qLFcdoYdp7bDaW6P/nfvjIgLb6Tdz8MFxnWkxVqiAouowWiNxdr7QOAKU9EsF0iwOUvoyDag==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by SA1PR12MB8721.namprd12.prod.outlook.com (2603:10b6:806:38d::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.23; Tue, 14 Feb
- 2023 13:06:19 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee%4]) with mapi id 15.20.6086.024; Tue, 14 Feb 2023
- 13:06:19 +0000
-Date: Tue, 14 Feb 2023 09:06:18 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Raj Ashok <ashok.raj@intel.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>
-Subject: Re: [PATCH v2 3/3] iommu: Remove ioasid infrastructure
-Message-ID: <Y+uHSry/tpgGNr/b@nvidia.com>
-References: <20230214064414.1038058-1-jacob.jun.pan@linux.intel.com>
- <20230214064414.1038058-4-jacob.jun.pan@linux.intel.com>
- <Y+tVMRzRQbcc7Guz@myrica>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y+tVMRzRQbcc7Guz@myrica>
-X-ClientProxiedBy: MN2PR19CA0006.namprd19.prod.outlook.com
- (2603:10b6:208:178::19) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97EDAC081
+	for <iommu@lists.linux.dev>; Tue, 14 Feb 2023 14:01:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA14DC4339E;
+	Tue, 14 Feb 2023 14:01:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1676383287;
+	bh=342zi7MEWsj7/lDCSvCJ+labpXMYUi8EQs0i5hRM0Dk=;
+	h=From:To:Cc:Subject:Date:From;
+	b=mmfQLdVx91NQE6lB5dtbHDXa9bcKcIDXg4ijH/ZbJ7h/71Y81AZzfLw0Z1OeDh0qR
+	 60tfJCrqA+Bv6CD0AxuFUxazB9AfKrqBICDDFXZbUs/1+5SQ3Z3/cPaIPaZ6KjN1kN
+	 LPXnPLwgacBoI3+E4VqTXEyHsjsXXNowqKU0Ika4=
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+	Matt Turner <mattst88@gmail.com>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	"James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+	Helge Deller <deller@gmx.de>,
+	"David S. Miller" <davem@davemloft.net>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	x86@kernel.org,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	linux-alpha@vger.kernel.org,
+	linux-ia64@vger.kernel.org,
+	linux-mips@vger.kernel.org,
+	linux-parisc@vger.kernel.org,
+	sparclinux@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-arch@vger.kernel.org
+Subject: [PATCH] dma-mapping: no need to pass a bus_type into get_arch_dma_ops()
+Date: Tue, 14 Feb 2023 15:01:21 +0100
+Message-Id: <20230214140121.131859-1-gregkh@linuxfoundation.org>
+X-Mailer: git-send-email 2.39.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SA1PR12MB8721:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2a941801-6f5d-4baf-92a7-08db0e8c438e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	5W2PiYNGwOWcKQaQFf9K/WFszudYe0o0gdyJFmaaIgQdWJgu/jN8PQy8yF3EhVueA7z64HRmHK7BVRWqyq+7gcDzL6h9imPUl+y+qxA9TQvjj4Esb2uDPqZpqZ0I88UL4JHS+wxTOPUiBikP8wHFAmDbBKVVeHCF4Wavu0F9UwUyLJcuVwBBF3chsPD3pzmPMgZ/nsqE2Ea8arjOlmtkH+jGrInCwGnC+PUid+kR+e8qpHqRBKmhoQVIav6nBY0mvw1IWi4ojMCBNS9EJGN+x9QPPPtCiLdlqld3hilrIKQ+LsAiEvOrda3YZszqFCR0ETrUkCUVC+ktKAd7WTn3l9WI3BZ0zsAAQkKzu44bZJgm+UOvrcw6LQFVPF1MmUlj6iVeuZjYkPlZiuTqavIBoyVRRRZDwOZ7/7XK2fZ0gmln88Emz4qi9B5DcOjE0N4Ahc36PEPH8DGSKueLxFWow6EOIXlc+HO10sTwTKEdUkKmAdm0ejzc9q4QELWGfhmt84mrM8TVqTCxPBZyBOJhzRNMtjahrfAFK81P4o2G704Fbz9TCR5aZW5Cyw4Az3vPveX1hvq/A4xzaT/6AHvb0QVfG4GoT1YyGmYSb5ReIUjAm1dpsR2P3gN35Hv5QVqb7k6K0xP9V13777Y6NU0f/w==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(136003)(346002)(376002)(39860400002)(396003)(451199018)(38100700002)(86362001)(36756003)(6916009)(8676002)(4326008)(2616005)(66946007)(66476007)(316002)(478600001)(6486002)(26005)(6506007)(186003)(54906003)(6512007)(2906002)(66556008)(4744005)(7416002)(41300700001)(8936002)(83380400001)(5660300002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?rE/totnrezW9kMYC2qESI0gC8ww/EObihMuJFa1lJIPbWG3dTYfcXqAwyV3c?=
- =?us-ascii?Q?NqnvwGQv7QOUsLHjTqbgnMq75yo4a7sSn5o5dogh7UwntqCc+/Wpt8nDvnaQ?=
- =?us-ascii?Q?23c2mbmCti/4O9568UY0zjAYgbMEF+ol+82GIfp9kI+6vJGCnxXgYBw2DDDD?=
- =?us-ascii?Q?NhFY4bODwtDNc5BWWGnx8Hfvu3N99dnjuJzfCW9r8bJActcrkZYj7L1N6OSh?=
- =?us-ascii?Q?JC7IW1mKA+LJSdJvGB/Cp3MuhBL3Cxwg0kECuCwyY8BbObn0P9DnJt8WMXXo?=
- =?us-ascii?Q?Jo/miAo/vbsxgmHZ/pL9oBRvvpv5i1MiQeE10HpLDjwHZ5kUD29hN83DJKGw?=
- =?us-ascii?Q?7aw9u5Nokig0p0izGoQpNHsS/0BUuCg23wD1OcVwtOyjnM+tV2Z/CXqJ6/RY?=
- =?us-ascii?Q?2X37mw5pgcq4v4AH6J86F2qU/2DfijzAdd0j0sjA6ItRfsLnjA+yTZCa+cCA?=
- =?us-ascii?Q?X3ZQZS9TBE8wAjgaD1o6gCZPfVhWzG+0FcLA0yJqVgHAMMNpWgqepWBg0l8g?=
- =?us-ascii?Q?/JXMliNci5WozQJh7Eo6ngHlrSIdouxey+n3sIKGwQWZk3UOxq22zqNBsfu0?=
- =?us-ascii?Q?yfaDwVbJoGIfj7V2+BzTrRjBqHr3CdsJeZTlk04yGQCYpomLbJea396CORHq?=
- =?us-ascii?Q?fUvETnulkG3waO2aZyJsEvJV48NlmM6esXhT/9Dg1n6tJhphtJpDrSM1EStj?=
- =?us-ascii?Q?7oaZeBAky+sZuT8tNzgQ+vMdWEPB7IMYWYj9GN4Y4/tGMKqgDgEE7Ce4aSWZ?=
- =?us-ascii?Q?DHLO8Zot8uMFYYlgz++NJvo0SM6smALzqS6hhcQ1RX7ZrUfsbVVTK40ZkK+Y?=
- =?us-ascii?Q?A/wBgzBVWFEC734mh8TwpzxOYFf+UKhYrdnZJME9DYDSp1sLh7WZzW+V0CiA?=
- =?us-ascii?Q?NvlRq9GQLQ2NBaCQCC3PKUKeEo6wa5dI01hQgjNuZlyh3GfBdNc+cLQCvEro?=
- =?us-ascii?Q?pKwJOc+haLY0vnXit/aY8fvSSg146f9gZ2QTyBBVaFmMrjN30i1/exQLjbGo?=
- =?us-ascii?Q?wwBJ7Mwzorwko3in5Abh5jvxkKnfz6n7u3LR7KAg5pJd8VfXocn6RGl5a2D7?=
- =?us-ascii?Q?L2+BVSNkpC8bPO3gULBOT6q3+NlNACNRlOt/iV4/ZVy/FgEu8ZBbBDtO8fBn?=
- =?us-ascii?Q?L0TvvnE/NMVMFEw84YUDpoUMg7q00VC5N5OQ/MnHPDYjPZStrDy7Lv6JbVaj?=
- =?us-ascii?Q?U1qNIOuv0GDnhaRPNWIY2KtsqoBIIyAhTizXz/7eGLNOwXQi9RagLUFAE3Cp?=
- =?us-ascii?Q?BoYP0xDGlaGNnNOc/pEsTxyLpq62wWVWijtfUSDf5V6bArG+ozFPhDQwpx9Q?=
- =?us-ascii?Q?xqtogu9JKBMi5OvMFNbpavznQbu3sJkB8ijPlgvrSfeIzRPlf1nutnu2GJzF?=
- =?us-ascii?Q?XKqFIIVXQvOy1057gaFsgn7vJTi6InwMkkyBuUcWHJihpADFiiIxvph/7iPe?=
- =?us-ascii?Q?NBFYqOxssSlwU/Eu+ujcbo7yooPp0uAWFt3aH41pDmiH9gHuoT/GOfEgWdqS?=
- =?us-ascii?Q?7MnE9OIglAlDTo1FgB00gpNyk/3Jew54wHqL3vEabhi+LBaSF0hwF16Nt0ej?=
- =?us-ascii?Q?xEtj+3Pwjawlpt7dRuf2U2cvzM01pEnT/qHW8cyF?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2a941801-6f5d-4baf-92a7-08db0e8c438e
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2023 13:06:19.5621
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: m6XWxfUXXIVSBWZeefoxAq4IEYDdkJixHAoQ3rTk1YyEzvIf66Zzb1y42Y2Q1zQR
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8721
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5743; i=gregkh@linuxfoundation.org; h=from:subject; bh=342zi7MEWsj7/lDCSvCJ+labpXMYUi8EQs0i5hRM0Dk=; b=owGbwMvMwCRo6H6F97bub03G02pJDMmvpxjwVfOYxDPv/u1hVin4IpN32rO65gh5806rrx+sJS5V TjnZEcvCIMjEICumyPJlG8/R/RWHFL0MbU/DzGFlAhnCwMUpABN5UcewYO9NztTkbdkal2eFvxd49k nd7PjBOwwLdq3/Yfh1S4EE95rJmQ5By5dsvrl5OQA=
+X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
+Content-Transfer-Encoding: 8bit
 
-On Tue, Feb 14, 2023 at 09:32:33AM +0000, Jean-Philippe Brucker wrote:
-> > diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-> > index 65d8b0234f69..a95f07f0c98c 100644
-> > --- a/include/uapi/linux/iommu.h
-> > +++ b/include/uapi/linux/iommu.h
-> > @@ -157,5 +157,6 @@ struct iommu_page_response {
-> >  	__u32	grpid;
-> >  	__u32	code;
-> >  };
-> > +#define IOMMU_PASID_INVALID	(-1U)
-> 
-> Why change UAPI?
+The get_arch_dma_ops() arch-specific function never does anything with
+the struct bus_type that is passed into it, so remove it entirely as it
+is not needed.
 
-There is no uapi, this whole file needs to be deleted too
+Cc: Richard Henderson <richard.henderson@linaro.org>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
+Cc: Helge Deller <deller@gmx.de>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: x86@kernel.org
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-ia64@vger.kernel.org
+Cc: linux-mips@vger.kernel.org
+Cc: linux-parisc@vger.kernel.org
+Cc: sparclinux@vger.kernel.org
+Cc: iommu@lists.linux.dev
+Cc: linux-arch@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+Note: Unless someone objects, I would like to take this through the
+driver-core tree, as further bus_type cleanups depend on it, and it's
+stand-alone from everyone else's tree at the moment from what I can
+determine.
 
-JAson
+ arch/alpha/include/asm/dma-mapping.h  | 2 +-
+ arch/ia64/include/asm/dma-mapping.h   | 2 +-
+ arch/mips/include/asm/dma-mapping.h   | 2 +-
+ arch/parisc/include/asm/dma-mapping.h | 2 +-
+ arch/sparc/include/asm/dma-mapping.h  | 2 +-
+ arch/x86/include/asm/dma-mapping.h    | 2 +-
+ include/asm-generic/dma-mapping.h     | 2 +-
+ include/linux/dma-map-ops.h           | 2 +-
+ 8 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/arch/alpha/include/asm/dma-mapping.h b/arch/alpha/include/asm/dma-mapping.h
+index 0ee6a5c99b16..6ce7e2041685 100644
+--- a/arch/alpha/include/asm/dma-mapping.h
++++ b/arch/alpha/include/asm/dma-mapping.h
+@@ -4,7 +4,7 @@
+ 
+ extern const struct dma_map_ops alpha_pci_ops;
+ 
+-static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
++static inline const struct dma_map_ops *get_arch_dma_ops(void)
+ {
+ #ifdef CONFIG_ALPHA_JENSEN
+ 	return NULL;
+diff --git a/arch/ia64/include/asm/dma-mapping.h b/arch/ia64/include/asm/dma-mapping.h
+index a5d9d788eede..af6fa8e1597c 100644
+--- a/arch/ia64/include/asm/dma-mapping.h
++++ b/arch/ia64/include/asm/dma-mapping.h
+@@ -8,7 +8,7 @@
+  */
+ extern const struct dma_map_ops *dma_ops;
+ 
+-static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
++static inline const struct dma_map_ops *get_arch_dma_ops(void)
+ {
+ 	return dma_ops;
+ }
+diff --git a/arch/mips/include/asm/dma-mapping.h b/arch/mips/include/asm/dma-mapping.h
+index 34de7b17b41b..0fee561ac796 100644
+--- a/arch/mips/include/asm/dma-mapping.h
++++ b/arch/mips/include/asm/dma-mapping.h
+@@ -6,7 +6,7 @@
+ 
+ extern const struct dma_map_ops jazz_dma_ops;
+ 
+-static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
++static inline const struct dma_map_ops *get_arch_dma_ops(void)
+ {
+ #if defined(CONFIG_MACH_JAZZ)
+ 	return &jazz_dma_ops;
+diff --git a/arch/parisc/include/asm/dma-mapping.h b/arch/parisc/include/asm/dma-mapping.h
+index d5bd94247371..635665004fe6 100644
+--- a/arch/parisc/include/asm/dma-mapping.h
++++ b/arch/parisc/include/asm/dma-mapping.h
+@@ -21,7 +21,7 @@
+ 
+ extern const struct dma_map_ops *hppa_dma_ops;
+ 
+-static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
++static inline const struct dma_map_ops *get_arch_dma_ops(void)
+ {
+ 	return hppa_dma_ops;
+ }
+diff --git a/arch/sparc/include/asm/dma-mapping.h b/arch/sparc/include/asm/dma-mapping.h
+index 2f051343612e..55c12fc2ba63 100644
+--- a/arch/sparc/include/asm/dma-mapping.h
++++ b/arch/sparc/include/asm/dma-mapping.h
+@@ -4,7 +4,7 @@
+ 
+ extern const struct dma_map_ops *dma_ops;
+ 
+-static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
++static inline const struct dma_map_ops *get_arch_dma_ops(void)
+ {
+ 	/* sparc32 uses per-device dma_ops */
+ 	return IS_ENABLED(CONFIG_SPARC64) ? dma_ops : NULL;
+diff --git a/arch/x86/include/asm/dma-mapping.h b/arch/x86/include/asm/dma-mapping.h
+index 1c66708e3062..d1dac96ee30b 100644
+--- a/arch/x86/include/asm/dma-mapping.h
++++ b/arch/x86/include/asm/dma-mapping.h
+@@ -4,7 +4,7 @@
+ 
+ extern const struct dma_map_ops *dma_ops;
+ 
+-static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
++static inline const struct dma_map_ops *get_arch_dma_ops(void)
+ {
+ 	return dma_ops;
+ }
+diff --git a/include/asm-generic/dma-mapping.h b/include/asm-generic/dma-mapping.h
+index c13f46109e88..46a0016efd81 100644
+--- a/include/asm-generic/dma-mapping.h
++++ b/include/asm-generic/dma-mapping.h
+@@ -2,7 +2,7 @@
+ #ifndef _ASM_GENERIC_DMA_MAPPING_H
+ #define _ASM_GENERIC_DMA_MAPPING_H
+ 
+-static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
++static inline const struct dma_map_ops *get_arch_dma_ops(void)
+ {
+ 	return NULL;
+ }
+diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+index d678afeb8a13..41bf4bdb117a 100644
+--- a/include/linux/dma-map-ops.h
++++ b/include/linux/dma-map-ops.h
+@@ -90,7 +90,7 @@ static inline const struct dma_map_ops *get_dma_ops(struct device *dev)
+ {
+ 	if (dev->dma_ops)
+ 		return dev->dma_ops;
+-	return get_arch_dma_ops(dev->bus);
++	return get_arch_dma_ops();
+ }
+ 
+ static inline void set_dma_ops(struct device *dev,
+-- 
+2.39.1
+
