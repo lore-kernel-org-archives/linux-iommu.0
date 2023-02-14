@@ -1,161 +1,111 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C1D57C
-	for <iommu@lists.linux.dev>; Tue, 14 Feb 2023 09:06:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16F5FC4339B;
-	Tue, 14 Feb 2023 09:06:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1676365604;
-	bh=kp1wVIwcdvhNcVUnIXnS31Y8JKlXiQHAlaDN5T+0ibM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=G4ewpXF7SjWjM+mb44swT+LqkLRokikcBkPsFkRTGptgmYyFy+SRvG4LiW/il+X79
-	 k7xtdgIK2/YXfWze9ZalwbeL5114R9T1x9y0/NwyTHJ6iU5x8thP7fM4X31lphbSMy
-	 N8gBbP92PzVRl5Z5abUZQJivPclFdsKA7R4GJTm5NJ0RNYq7fBEoz/WGtWIw5V46Ox
-	 1UiV37T90KUrCzF76Z3Ekoc3HVri/NWChojUunn+nf5RK8sGwek8B+xDHXat7SdRoS
-	 m9QGI/tYgV56tzox2iUHajoy+7tpdTID8zEdRQA/juASftcp48cZ7pi1+ixEDN/HTs
-	 G2plgh7se8R/g==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-	(envelope-from <johan@kernel.org>)
-	id 1pRrHk-0002ld-VL; Tue, 14 Feb 2023 10:07:37 +0100
-Date: Tue, 14 Feb 2023 10:07:36 +0100
-From: Johan Hovold <johan@kernel.org>
-To: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc: will@kernel.org, joro@8bytes.org, robin.murphy@arm.com,
-	andersson@kernel.org, johan+linaro@kernel.org, steev@kali.org,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/arm-smmu-qcom: Rework the logic finding the bypass
- quirk
-Message-ID: <Y+tPWAUBwBxcOPFm@hovoldconsulting.com>
-References: <20230201082500.61656-1-manivannan.sadhasivam@linaro.org>
- <Y+pozM9iTbQcx6cl@hovoldconsulting.com>
- <20230214075312.GB4981@thinkpad>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 829CF7C
+	for <iommu@lists.linux.dev>; Tue, 14 Feb 2023 09:07:24 +0000 (UTC)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: kholk11)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id 0F042660216A;
+	Tue, 14 Feb 2023 09:07:16 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1676365637;
+	bh=exml4rk8nqwZKBNU5UVCpjJdwJUrGJx/1QP9f2Pscz0=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=ElAUuXnIEuGj+oHHRkeho+XGKOxgC9yqdGkGy2tGbAIG8xbFjE5dtadhKMCD5dC9M
+	 Keux8qe+dMHe1Fwr0osNgSZRdqXq/kHIWLcaJY6f0tDyMIjNgKUD3ErAqK1wxT/LRg
+	 oZqwTfxDUmEHc6YgYxZ83s/pXKx1HMwpB62BRrIZI0oe1zxp57SEX/EiFhB93vEnDP
+	 RpvvOd5cr16Qf9cTyedRrskLH07xQSH/IUVNjgGKWp8xCUu3evk0z+02OCyrR4qw+5
+	 Pr1OPcRjUHi6XDiEG9lhaO2iljeLK3i9gGLpHiUg2sagLDoJ/0IN9PpVauJ2DH70Bt
+	 0q9+dUmbALnMw==
+Message-ID: <ab778f16-3cda-6c06-c5a5-6a4b4d1b3974@collabora.com>
+Date: Tue, 14 Feb 2023 10:07:13 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230214075312.GB4981@thinkpad>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.2
+Subject: Re: [PATCH v3 04/11] iommu/mediatek: Get regionid from larb/port id
+Content-Language: en-US
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh+dt@kernel.org>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Hans Verkuil <hverkuil@xs4all.nl>, nfraprado@collabora.com,
+ linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ mingyuan.ma@mediatek.com, yf.wang@mediatek.com, jianjiao.zeng@mediatek.com,
+ Yunfei Dong <yunfei.dong@mediatek.com>,
+ kyrie wu <kyrie.wu@mediatek.corp-partner.google.com>,
+ chengci.xu@mediatek.com, youlin.pei@mediatek.com, anan.sun@mediatek.com
+References: <20230214031114.926-1-yong.wu@mediatek.com>
+ <20230214031114.926-5-yong.wu@mediatek.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20230214031114.926-5-yong.wu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Feb 14, 2023 at 01:23:12PM +0530, Manivannan Sadhasivam wrote:
-> On Mon, Feb 13, 2023 at 05:43:56PM +0100, Johan Hovold wrote:
-> > On Wed, Feb 01, 2023 at 01:55:00PM +0530, Manivannan Sadhasivam wrote:
-> > > The logic used to find the quirky firmware that intercepts the writes to
-> > > S2CR register to replace bypass type streams with a fault, and ignore the
-> > > fault type, is not working with the firmware on newer SoCs like SC8280XP.
-> > > 
-> > > The current logic uses the last stream mapping group (num_mapping_groups
-> > > - 1) as an index for finding quirky firmware. But on SC8280XP, this
-> > > logic is not working as the number of stream mapping groups reported by
-> > > the SMMU (163 as on the SC8280XP-CRD device) is not valid for some reason.
-> > 
-> > NUMSMRG read back as 162 here, both on my CRD and X13s. Was '163' a typo
-> > or a real difference?
-> > 
+Il 14/02/23 04:11, Yong Wu ha scritto:
+> After commit f1ad5338a4d5 ("of: Fix "dma-ranges" handling for bus
+> controllers"), the dma-ranges is not allowed for dts leaf node.
+> but we still would like to separate to different masters
+> into different iova regions.
 > 
-> Ah yes, it is 162 indeed. Sorry, typo!
+> Thus we have to separate it by the HW larbid and portid. For example,
+> larb1/2 are in region2 and larb3 is in region3. The problem is that
+> some ports inside a larb are in region4 while some ports inside this
+> larb are in region5. Therefore I define a "iova_region_larb_msk" to help
+> record the information for each a port. Take a example for a larb:
+>   [1] = ~0: means all ports in this larb are in region1;
+>   [2] = BIT(3) | BIT(4): means port3/4 in this larb are region2;
+>   [3] = ~(BIT(3) | BIT(4)): means all the other ports except port3/4
+>                             in this larb are region3.
 > 
-> > > So the current logic that checks the (163-1) S2CR entry fails to detect
-> > > the quirky firmware on these devices and triggers invalid context fault
-> > > for bypass streams.
-> > > 
-> > > To fix this issue, rework the logic to find the first non-valid (free)
-> > > stream mapping register group (SMR) and use that index to access S2CR
-> > > for detecting the bypass quirk.
-> > 
-> > So while this works for the quirk detection, shouldn't we also do
-> > something about that bogus NUMSMRG value? At least cap it at 128, which
-> > appears to be the maximum according to the specification, for example,
-> > by clearing bit 7 when any of the lower bits are set?
-> > 
-> > That would give us 35 (or 36) groups and working quirk detection with
-> > just the following smaller patch:
-> > 
+> This method also avoids the users forget/abuse the iova regions.
 > 
-> I'm not certain if the value is bogus or not. It is clear that the spec
-> specifies 128 as the max but internal qcom document shows that they indeed
-> set 162 on purpose in the hypervisor.
->
-> So until we get a clear view on that, I'd not cap it.
-
-But if we fault as soon as we try to do something with those register
-groups above 128 that also violate the spec, it doesn't seem right to
-trust the fw value here.
-
-Clarification from Qualcomm would be good either way, but if they are
-indication that it's not just a bug that has left bit 7 set then
-limiting to 128 also seems reasonable (i.e. not by clearing the high
-bit, but by using the minimum of 128 and size below).
-
-> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > index 2ff7a72cf377..0f564a86c352 100644
-> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > @@ -1744,6 +1744,12 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
-> >                         return -ENODEV;
-> >                 }
-> >  
-> > +               if (size > 0x80) {
-> > +                       dev_warn(smmu->dev,
-> > +                                "invalid number of SMR groups, clearing bit 7\n");
-> > +                       size -= 0x80;
-> > +               }
-> > +
-> >                 /* Zero-initialised to mark as invalid */
-> >                 smmu->smrs = devm_kcalloc(smmu->dev, size, sizeof(*smmu->smrs),
-> >                                           GFP_KERNEL);
-> > 
-> > I also verified that using index 127 (group 128) for the quirk detection
-> > works on my CRD, while the invalid index 128 fails (as do index 161
-> > which would currently be used).
-> > 
-> > > This also warrants a change in variable name from last_s2cr to free_s2cr.
-> > > 
-> > > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> > > ---
-> > >  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 24 +++++++++++++++++-----
-> > >  1 file changed, 19 insertions(+), 5 deletions(-)
-> > > 
-> > > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > > index 78fc0e1bf215..4104f81b8d8f 100644
-> > > --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > > @@ -267,23 +267,37 @@ static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
-> > >  
-> > >  static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
-> > >  {
-> > > -	unsigned int last_s2cr = ARM_SMMU_GR0_S2CR(smmu->num_mapping_groups - 1);
-> > >  	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
-> > > +	u32 free_s2cr;
-> > >  	u32 reg;
-> > >  	u32 smr;
-> > >  	int i;
-> > >  
-> > > +	/*
-> > > +	 * Find the first non-valid (free) stream mapping register group and
-> > > +	 * use that index to access S2CR for detecting the bypass quirk.
-> > > +	 */
-> > > +	for (i = 0; i < smmu->num_mapping_groups; i++) {
-> > > +		smr = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_SMR(i));
-> > > +
-> > > +		if (!FIELD_GET(ARM_SMMU_SMR_VALID, smr))
-> > > +			break;
-> > > +	}
-> > > +
-> > > +	free_s2cr = ARM_SMMU_GR0_S2CR(i);
-> > 
-> > In the unlikely event that there is no free group this would access an
-> > invalid index.
-> > 
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
+>   drivers/iommu/mtk_iommu.c | 47 ++++++++++++++++++++++-----------------
+>   1 file changed, 27 insertions(+), 20 deletions(-)
 > 
-> Hmm, theoretically yes. But what would be the plan of action if that happens?
-> Should we just bail out with error or skip the quirk detection?
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index ab53edcb221f..7e2cb3b8cac8 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -8,7 +8,6 @@
+>   #include <linux/clk.h>
+>   #include <linux/component.h>
+>   #include <linux/device.h>
+> -#include <linux/dma-direct.h>
+>   #include <linux/err.h>
+>   #include <linux/interrupt.h>
+>   #include <linux/io.h>
+> @@ -212,6 +211,11 @@ struct mtk_iommu_plat_data {
+>   	struct {
+>   		unsigned int	iova_region_nr;
+>   		const struct mtk_iommu_iova_region	*iova_region;
+> +		/*
+> +		 * Indicate the correspondence between larbs/ports and regions.
+> +		 * The index is same with iova_region.
 
-Yes, skipping quirk detection seems preferable to crashing systems that
-don't need the quirk.
+* The index is the same as iova_region and larb port numbers are
+* described as bit positions.
+* For example, storing BIT(0) at index 2 means "port 0 is in region 2".
 
-Johan
+That's most probably the best short explanation that we can give, so that nobody
+goes crazy with understanding this one.
+
+After fixing that comment, you totally deserve my
+
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+
+Cheers!
+
+
