@@ -1,142 +1,160 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2079.outbound.protection.outlook.com [40.107.92.79])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 013872569
-	for <iommu@lists.linux.dev>; Tue, 14 Feb 2023 15:14:52 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NxrVgWRn6HW3i68Dfw29wuw2qD+fgP/pkR2ad22AY4/OtUh+GOLZLewrZOjzFv0Yp8K8r+I5KLe+hW9VbpDn68sG0cYIUMd1pFCS6at7g8ehGGGgLnbfzCT2OV9OJbZNuRrodvFpirIqwa8372XE5B4nJIj34Ov3dYtWDYzXhxSw3GXq5zVYyZ49sWl9xMBEY+wJzqphmlT6UGtlyvwWLwL02SCkgwqPqzlfOD74OpGjRelAVVGcuWKShL5Q9868C1efS5HthZmnz1ISjM2X0JR3LBRe3QBzEWq9Xj+4casoA0B9Cw8X3YR2EunPMvXpCirnVGGWlicHxxCVdSQnSA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=RVoQU/OaCxSTT6dpohUz7fOF2Mx4rRC4C5QO1w2xB9w=;
- b=YFuqIb8JS36+UGbNmM2pdBxn9Ut8HMZuzUPYATyRI5J0gtop7hNZ8FBvjq/iPKe7MqrwSY8CXeYuLQuSD3I1YdaIwywR1D/iYmzS00yzzpYDfDBQdOC5lpUKev9CLgmqSsS3E28KUPKOXrGYLs+Y2dwhAxhyXoJTnZASSELeR6MFjvTScDzl9OPDIaw40SVUAoTTv4e6Rp2wymT1IYInIrpjd8eamJetGlsw8RDMz2FWjemLVlCjq5+1jZPhvJHz8NfStlOX1tlb6+Kmyb9vL+9eSTzGrIvptVfy0FBgThlawJnZgR9BeWQX0WZOZfSjAJL5BwJRuUw+5JFIXxzUuQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RVoQU/OaCxSTT6dpohUz7fOF2Mx4rRC4C5QO1w2xB9w=;
- b=pbLuM6B0Ar1ys5eZL6X8J4ff4k6iCZRvn9m22PW7Tt7qohdNDNVd+oZtgD8rgjmxd2jVgZaO3Z4O1MCreU6E4svxFDXmZaFjYkIETSXxna2TfEUc3AqE88IW41be6U+mPuAQrB6RL6dz4tJnOdV37mjC37UbU53uAZBGe2sdAO1uWY6WNsoc0WsuxUmNlAuAsv+8rlvKAFCSuThT3arInpeXhHpVlYdofHyk5L5lnlmmHzF7VbLDGG4NP/KskVD/3yco8+55aAS5LXVdI1Vue7XBxl20rTADwVMel95600j5YMjGN7iOvJnZi/7Yw+9SetLJ7XOyy+ElNZlXSJrAyA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by SA0PR12MB4448.namprd12.prod.outlook.com (2603:10b6:806:94::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26; Tue, 14 Feb
- 2023 15:14:50 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee%4]) with mapi id 15.20.6086.024; Tue, 14 Feb 2023
- 15:14:49 +0000
-Date: Tue, 14 Feb 2023 11:14:48 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"Yang, Lixiao" <lixiao.yang@intel.com>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>
-Subject: Re: [PATCH 1/4] iommufd: Do not add the same hwpt to the
- ioas->hwpt_list twice
-Message-ID: <Y+ulaEHbx/uHqx8B@nvidia.com>
-References: <0-v1-4336b5cb2fe4+1d7-iommufd_hwpt_jgg@nvidia.com>
- <1-v1-4336b5cb2fe4+1d7-iommufd_hwpt_jgg@nvidia.com>
- <BN9PR11MB527654AA7B3BE05FCD7A12108CA29@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB527654AA7B3BE05FCD7A12108CA29@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: BL0PR02CA0117.namprd02.prod.outlook.com
- (2603:10b6:208:35::22) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F0EB2569
+	for <iommu@lists.linux.dev>; Tue, 14 Feb 2023 15:19:44 +0000 (UTC)
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31EEPX9J023815;
+	Tue, 14 Feb 2023 15:05:28 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=RNn24WMncYpG1WZiiL9SwUs4Vx6FstrQ3cKXsmoo6DY=;
+ b=KK1nAXvj8NxjI8SAnDVkznN5sXU2HJHtocnmt5PB9/0vzjUjl8rs5aJa3tjHo2j5WSyv
+ x5ULovwlrwWcZeCpDf5Gipw0D9Gufmsrzz3o65scX3pNAU1QzdO+seCZiY62ByVyyMaw
+ CzRL7OYzPTdS0wJM9HQ1qRqk6aePF+2WRmJ0khFAfn588gArSLtymDV2g63WxwAZeyC/
+ 01VCokCFBDqGwKe+iRRNrlJH5wTItvqSAdI0WUtXnll2yjBb7E/Nq/xi5Z5PP5G2fCmC
+ tJxY8W6kv5aQcEEBrPlB2Y8X3CrWXpVIZa8yqaokSTfmk3FogaBqVhkkwYfWZpYvHZr4 xg== 
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3nqyygstcu-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 14 Feb 2023 15:05:27 +0000
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 31EF5QKY022496
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 14 Feb 2023 15:05:26 GMT
+Received: from [10.253.73.60] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Tue, 14 Feb
+ 2023 07:05:25 -0800
+Message-ID: <8fe546b5-2cac-7f52-d875-c66c4458996a@quicinc.com>
+Date: Tue, 14 Feb 2023 23:05:22 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SA0PR12MB4448:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5eb876a7-82c4-4328-6140-08db0e9e370b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	0UgmUh1JAjeuKwFBDk1nD+BUKOkk1EC5Zj3PkidXU5Qtn0/jAk7XvJ5m4+1SN59M1U/m3i4PaXR8VHOwe++RRNXvEfcnmwYWoqlUqvs5oOPAKvnJu+FE83h4j+Q/OqFKT3Rvi4fmpij8+87pSEkil69/W7Q2maqfZyaw04f6lf0xFMnPOCGt+nMNjfm3MVJKQ0dAhg1MTa34cIYm8mFsrzNVCbGqDS53DZNbxhshrylMNY49Zsb2mK3JgUn5Mjak3DgJVwGCvzbTCwOMnPhzksSV4B1NNxabkRYKCHCpZmBaq589XEFWn2eNrVr7pbHeaXy0P23Zz3l9dzyrZVMRnZ0iaaKhsrImK34PovzZV1uA7TwxedBpr3xrJfiBsd7WEGR1rIXes3ea1RQURx+wvXSSD1mN5Hj14lkHjVcKkKhfYa9i6Vrfb7KIfjiXSjwEpHSvMBG227lbWyirRYYeWKKfaU6LZE/U1mfAZIQHHtGjFWAKOQYEy2TcednYM9bOt68IlQ+jLXH3BxLZoR7DHLw1NqI5pbA4NJA2f2iKk53bgCGoCpgsICcPbY0vYzI5Fdi7T2MRA+tFyrfW5ZecEKSiyodS2p0Ld77VEdIuztDE5GnzrQCDYqYHHZjSCXRMkZn/+hB7Mq0MStQDd7gjwA==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(39860400002)(346002)(136003)(396003)(366004)(451199018)(66476007)(66946007)(6916009)(8676002)(5660300002)(8936002)(66556008)(41300700001)(4326008)(38100700002)(36756003)(2616005)(6512007)(26005)(186003)(6506007)(478600001)(54906003)(86362001)(6486002)(316002)(83380400001)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?DKEWgi0JhR8Bscsv4sFOK7tGjBVre18oSrIYBStF3y8K+3KXvQxE3ZP+f2UA?=
- =?us-ascii?Q?WLtJTxx3Qy/QQmJC1MZC67zNuCLyveEU/2X+qwDVWWNvYixlBEoMnOW/if8i?=
- =?us-ascii?Q?qhSuqR2VXKxfbfOH21pU2T51jIlyE88Y/6aSRiXB3x6it3PQ3xZLWwrOUqOh?=
- =?us-ascii?Q?isHa6enrls02e7LKZR4TEwT7brc9oCD+EpVhuQRf67sx4w2MWONU0dbWrJ5K?=
- =?us-ascii?Q?aE/rtLQZp8n0oYNVi5K681YxVgmK2Phqm1CZ07OKQEjg5+L+vtUuUBpnfnCS?=
- =?us-ascii?Q?7GOz30U5oPbbuPeVpoW1aFYiGCVrLp4ZISKdLT6VIygIzBVxm8NEVt/xooKr?=
- =?us-ascii?Q?rLeVtdwhoK++f5ehLWJfPclzvQF9izDVxwv/NNmU0B+HsH8OQzclPNJFnMDt?=
- =?us-ascii?Q?ai9IJDWOl3FDmYMZ3gpUrTNtHsD3gL/yfJYZjrAkmn3VW4wShM+0xjqN7sbP?=
- =?us-ascii?Q?Kun+3pJ/we6xidajbED3LMxflY8dtQO6r4Wn8plXBmldcwyS3c429NsmAfoO?=
- =?us-ascii?Q?9BEhZGPda9mLrZd3blDmmr7sZqXgNaqMHEKNhjKmpKe6ALJAu+XUMshDyCMV?=
- =?us-ascii?Q?BDUi9m+vDJSCgSChZJol4ZQmpndmaL7IYCHCt7iA6bp/bKQaNNAyvGMDxiMp?=
- =?us-ascii?Q?7zSzzFOTAzgGr6YC/aEO1cJqlqCic/yFrs9+CBC7S0xpNuzJzgQON+ImJBiH?=
- =?us-ascii?Q?xfzh8Mf9pSmPDOkpHAUVbl+GpmjAmsifNCopSOG2pQjuzdVfyNhIYcnEb8nL?=
- =?us-ascii?Q?LUwLzpgMigQuPmGu41lwIAOyvBLR5F/TWX9Qd2gFsCeSjSNmdOQpulQBk/qu?=
- =?us-ascii?Q?bWntGed3ePgOZrmavnvC9SrLVEDmueNfPWfXs2iCcXsJHZTo12fJGcTnLJGk?=
- =?us-ascii?Q?KHQZ9sdftRhetL6inbmhaeSl8bIWSxDKWW4fUxZchI+9PKSIzEB0yhEvlDAD?=
- =?us-ascii?Q?m6krnF60vNlD8OveO2uyJtmV8yxcJeT+4PuAzaawZvDCIjurQ4GO9c4Ie4mW?=
- =?us-ascii?Q?Ldt/qxauGhPeQt/4epNCxvOoLPdjqs8Ail/JgshpyWans+d96eDQTT2G6heC?=
- =?us-ascii?Q?ny0G7Lgm0jDNcYkHpWPYvrP5dCayAKDydGFmzBVhMen8DMNcIEBBzll0/I3B?=
- =?us-ascii?Q?kcSwQFh1jwWjZ2Buzjqe8Qyaax3ggdAyX8U7ZEtUAmgYbvLFBU9022qfH+IH?=
- =?us-ascii?Q?ee3TWy/8eD+qp38Dvj6a5T0CkCQaNGgVsW6jLxU6yhOXu+A3sgwfrGiVQIZx?=
- =?us-ascii?Q?trNFL9KJoa4St6qMVB1CU6rsE3/sagovcGClp7BB77lb4twZoDZBMUmlMMZi?=
- =?us-ascii?Q?rYWT6oCllgs8lN9DCdlJ3WYpNVjw29opq8C1Z8TqXdtxOReaRi9INGGfZh99?=
- =?us-ascii?Q?jQRRDJM32swI8jjK8yBtkwR34osKELpPF/uYJywayBnYGTkGa/PTGnH17Y72?=
- =?us-ascii?Q?hEZpNIbTI22Yvh/FuLz+j6lxMTfxEeiVBXz2uoeIkoA8ArAB2cwXPVZgqoQi?=
- =?us-ascii?Q?H4W5jLfc7Wyo8LNqDFrSHL3mhG2P3L5iJctB3v4ANI6Ajgn2Upizx+GAWjRS?=
- =?us-ascii?Q?P9rZRDd6JpLrBoBFzvEEDtpHBhiBDPKRcyYD9RYe?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5eb876a7-82c4-4328-6140-08db0e9e370b
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2023 15:14:49.5889
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lpnXeerk/c3cHIsPF9Kr0DhkNlXDYq3eYoHyOXvGae8ITYWUpgwlCKWn7MpBsvRN
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4448
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH] iommu: Fix potential concurrent free issue
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>
+CC: <iommu@lists.linux.dev>, <quic_tingweiz@quicinc.com>
+References: <1676358214-25732-1-git-send-email-quic_zhenhuah@quicinc.com>
+ <2f1e67de-645d-2da9-d46c-d37d28ddc03b@arm.com>
+ <6e1b0bea-00d9-6aeb-2d0a-a8fd4650e389@quicinc.com>
+ <9687190c-eb3b-f72a-d2a7-964ccd640f8c@arm.com>
+From: Zhenhua Huang <quic_zhenhuah@quicinc.com>
+In-Reply-To: <9687190c-eb3b-f72a-d2a7-964ccd640f8c@arm.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: 31DvdoUg5TEElDJKKBU1Z4L4iZvuc2U6
+X-Proofpoint-GUID: 31DvdoUg5TEElDJKKBU1Z4L4iZvuc2U6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
+ definitions=2023-02-14_10,2023-02-14_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 phishscore=0
+ impostorscore=0 malwarescore=0 adultscore=0 mlxlogscore=999 mlxscore=0
+ priorityscore=1501 lowpriorityscore=0 spamscore=0 bulkscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2302140130
 
-On Tue, Feb 14, 2023 at 05:51:13AM +0000, Tian, Kevin wrote:
-> > From: Jason Gunthorpe <jgg@nvidia.com>
-> > Sent: Tuesday, February 14, 2023 2:03 AM
-> > 
-> > The hwpt is added to the hwpt_list only during its creation, it is never
-> > added again. This hunk is some missed leftover from rework. Adding it
-> > twice will corrupt the linked list in some cases.
-> > 
-> > It effects HWPT specific attachment, which is something the test suite
-> > cannot cover until we can create a legitimate struct device with a
-> > non-system iommu "driver" (ie we need the bus removed from the iommu
-> > code)
-> > 
-> > Cc: stable@vger.kernel.org
-> > Fixes: e8d57210035b ("iommufd: Add kAPI toward external drivers for
-> > physical devices")
-> > Reported-by: Kevin Tian <kevin.tian@intel.com>
-> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Thanks Robin.
+
+On 2023/2/14 19:20, Robin Murphy wrote:
+> On 2023-02-14 10:51, Zhenhua Huang wrote:
+>> Thanks Robin.
+>>
+>> On 2023/2/14 18:25, Robin Murphy wrote:
+>>> On 2023-02-14 07:03, Zhenhua Huang wrote:
+>>>> Some cases in which probing with a non-iommu bind device,
+>>>> we saw dev_iommu_free() called in the same time. Add checking
+>>>> to avoid NULL dereference.
+>>>>
+>>>> One path was with smmu driver probing:
+>>>> [    0.538555][  T165]  dev_iommu_free+0xa0/0x198
+>>>> [    0.538557][  T165]  __iommu_probe_device+0x244/0x2e4
+>>>> [    0.538559][  T165]  probe_iommu_group+0x38/0x54
+>>>> [    0.538561][  T165]  bus_iommu_probe+0x70/0x37c
+>>>> [    0.538563][  T165]  bus_set_iommu+0xcc/0x1b8
+>>>> [    0.538578][  T165]  arm_smmu_bus_init+0x38/0xd0 [arm_smmu]
+>>>> [    0.538592][  T165]  arm_smmu_device_probe+0x630/0x6d8 [arm_smmu]
+>>>> The other was with device itself probing:
+>>>> [    0.529488][    T9]  __iommu_probe_device+0x244/0x354
+>>>> [    0.529490][    T9]  iommu_probe_device+0x44/0x460
+>>>> [    0.529492][    T9]  iommu_bus_notifier+0x44/0x160
+>>>> [    0.529494][    T9]  device_add+0x9f0/0x12a0
+>>>> [    0.529497][    T9]  of_platform_device_create_pdata+0xc8/0x168
+>>>> [    0.529499][    T9]  of_platform_bus_create+0x1b0/0x254
+>>>> [    0.529500][    T9]  of_platform_populate+0x9c/0x114
+>>>> [    0.529502][    T9]  devm_of_platform_populate+0xb4/0x118
+>>>> [    0.529507][    T9]  pmic_spmi_probe+0x108/0x140 [qcom_spmi_pmic]
+>>>> [    0.529511][    T9]  spmi_drv_probe+0x70/0x140
+>>>> [    0.529514][    T9]  really_probe+0x3f0/0x8dc
+>>>> [    0.529515][    T9]  driver_probe_device+0x1b0/0x230
+>>>> ...
+>>>
+>>> This looks like the same thing that commit 01657bc14a39 ("iommu: 
+>>> Avoid races around device probe") was supposed to have fixed. But 
+>>> then bus_set_iommu() no longer exists in mainline anyway, so I'm not 
+>>> sure what kernel you're using :/
+>>>
+>>> Thanks,
+>>> Robin.
+>>>
+>>
+>> Yes, Robin. The change you provided are with same purpose. I was using 
+>> 5.10 kernel.
 > 
-> for stable kernels this kind of fixes an issue in a dead code path
-> where no uAPI for user to manually create hwpt or return the
-> hwpt id of auto domain to userspace.
->
-> from that angle do we still want a fix tag?
+> Aha, I did note in that commit that it appeared theoretically possible 
+> to hit the same race on older kernels, but I hadn't fully realised that 
+> even a single bus_set_iommu() call could effectively race with its own 
+> notifier, if a new device was added to the bus at just the right time 
+> while the initial bus_iommu_probe() walk was still running. Nice find!
+> 
+> Off the top of my head, I don't *think* there should be any major issue 
+> with backporting 01657bc14a39 beyond its nominal fixes tag, if you need it.
 
-I always put fixes tags, no matter how minor.
+Nice for me, will pick the fix. Thanks very much.
 
-The cc stable is the thoughtful one.
-
-In this case though there is no way to formall access this API the
-HWPT ID does exist and a hostile userspace can guess it to trigger a
-kernel bug. So it should be fixed.
-
-Jason
+> 
+> Thanks,
+> Robin.
+> 
+>>>> Signed-off-by: Zhenhua Huang <quic_zhenhuah@quicinc.com>
+>>>> ---
+>>>>   drivers/iommu/iommu.c | 16 +++++++++++-----
+>>>>   1 file changed, 11 insertions(+), 5 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>>>> index 42891e5..30f8d8f 100644
+>>>> --- a/drivers/iommu/iommu.c
+>>>> +++ b/drivers/iommu/iommu.c
+>>>> @@ -276,12 +276,18 @@ static void dev_iommu_free(struct device *dev)
+>>>>   {
+>>>>       struct dev_iommu *param = dev->iommu;
+>>>> -    dev->iommu = NULL;
+>>>> -    if (param->fwspec) {
+>>>> -        fwnode_handle_put(param->fwspec->iommu_fwnode);
+>>>> -        kfree(param->fwspec);
+>>>> +    if (!param)
+>>>> +        return;
+>>>> +
+>>>> +    if (param == cmpxchg(&dev->iommu, param, NULL)) {
+>>>> +        if (param->fwspec) {
+>>>> +            fwnode_handle_put(param->fwspec->iommu_fwnode);
+>>>> +            kfree(param->fwspec);
+>>>> +        }
+>>>> +        kfree(param);
+>>>> +    } else {
+>>>> +        return;
+>>>>       }
+>>>> -    kfree(param);
+>>>>   }
+>>>>   static u32 dev_iommu_get_max_pasids(struct device *dev)
