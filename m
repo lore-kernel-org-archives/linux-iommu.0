@@ -1,119 +1,70 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 170B4107B7
-	for <iommu@lists.linux.dev>; Tue, 14 Feb 2023 11:20:28 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F1BBB1042;
-	Tue, 14 Feb 2023 03:21:10 -0800 (PST)
-Received: from [10.57.89.147] (unknown [10.57.89.147])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 497D73F703;
-	Tue, 14 Feb 2023 03:20:27 -0800 (PST)
-Message-ID: <9687190c-eb3b-f72a-d2a7-964ccd640f8c@arm.com>
-Date: Tue, 14 Feb 2023 11:20:22 +0000
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0003107B7
+	for <iommu@lists.linux.dev>; Tue, 14 Feb 2023 11:26:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676373970; x=1707909970;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=I4OsreHvErywjGFLpFA5RnxHZeaT7fEvihXK6cVLf40=;
+  b=E8dAWmMn4FkHLLb8Sy1FN9LSGaKroRNxRezkURKJHfUHb6iMt8csFGw8
+   NvGN70niknk9r2KLrNUii5lfFpfMrpJ4YDM0rd7arLy+gfoTC70xJ6SX2
+   4JKX1BrI8sHpnXI5mpiV4f3Rd1FFaa0HGlrhEL+hIW3sIqaQh1rBCQj9u
+   tKiN/s5F5lu5k2awkGGvgXEd+S2/m/AHSrnx63PphibKgOkLcTa4rIskH
+   WIOgTeMituusUNUU9Lpkvs8cLL4NZuboKk07mShW9LQgZvzla96Z1kZgI
+   Gy1hQz8KkbfY2Lpa+WVm5zdY0jcw8sBYWbq7F4Z08TzH9ubgoeO7zEtYU
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10620"; a="395753466"
+X-IronPort-AV: E=Sophos;i="5.97,296,1669104000"; 
+   d="scan'208";a="395753466"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2023 03:26:10 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10620"; a="778290040"
+X-IronPort-AV: E=Sophos;i="5.97,296,1669104000"; 
+   d="scan'208";a="778290040"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.29.229]) ([10.255.29.229])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2023 03:26:06 -0800
+Message-ID: <28b41700-d9f8-c065-7599-6c4b32fdfe4d@linux.intel.com>
+Date: Tue, 14 Feb 2023 19:26:04 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH] iommu: Fix potential concurrent free issue
-Content-Language: en-GB
-To: Zhenhua Huang <quic_zhenhuah@quicinc.com>, joro@8bytes.org,
- will@kernel.org
-Cc: iommu@lists.linux.dev, quic_tingweiz@quicinc.com
-References: <1676358214-25732-1-git-send-email-quic_zhenhuah@quicinc.com>
- <2f1e67de-645d-2da9-d46c-d37d28ddc03b@arm.com>
- <6e1b0bea-00d9-6aeb-2d0a-a8fd4650e389@quicinc.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <6e1b0bea-00d9-6aeb-2d0a-a8fd4650e389@quicinc.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.2
+Cc: baolu.lu@linux.intel.com, Robin Murphy <robin.murphy@arm.com>,
+ Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
+ Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+ Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH v2 1/3] iommu/vt-d: Remove virtual command interface
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
+ Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>
+References: <20230214064414.1038058-1-jacob.jun.pan@linux.intel.com>
+ <20230214064414.1038058-2-jacob.jun.pan@linux.intel.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20230214064414.1038058-2-jacob.jun.pan@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 2023-02-14 10:51, Zhenhua Huang wrote:
-> Thanks Robin.
+On 2023/2/14 14:44, Jacob Pan wrote:
+> Virtual command interface was introduced to allow using host PASIDs
+> inside VMs. It is unused and abandoned due to architectural change.
 > 
-> On 2023/2/14 18:25, Robin Murphy wrote:
->> On 2023-02-14 07:03, Zhenhua Huang wrote:
->>> Some cases in which probing with a non-iommu bind device,
->>> we saw dev_iommu_free() called in the same time. Add checking
->>> to avoid NULL dereference.
->>>
->>> One path was with smmu driver probing:
->>> [    0.538555][  T165]  dev_iommu_free+0xa0/0x198
->>> [    0.538557][  T165]  __iommu_probe_device+0x244/0x2e4
->>> [    0.538559][  T165]  probe_iommu_group+0x38/0x54
->>> [    0.538561][  T165]  bus_iommu_probe+0x70/0x37c
->>> [    0.538563][  T165]  bus_set_iommu+0xcc/0x1b8
->>> [    0.538578][  T165]  arm_smmu_bus_init+0x38/0xd0 [arm_smmu]
->>> [    0.538592][  T165]  arm_smmu_device_probe+0x630/0x6d8 [arm_smmu]
->>> The other was with device itself probing:
->>> [    0.529488][    T9]  __iommu_probe_device+0x244/0x354
->>> [    0.529490][    T9]  iommu_probe_device+0x44/0x460
->>> [    0.529492][    T9]  iommu_bus_notifier+0x44/0x160
->>> [    0.529494][    T9]  device_add+0x9f0/0x12a0
->>> [    0.529497][    T9]  of_platform_device_create_pdata+0xc8/0x168
->>> [    0.529499][    T9]  of_platform_bus_create+0x1b0/0x254
->>> [    0.529500][    T9]  of_platform_populate+0x9c/0x114
->>> [    0.529502][    T9]  devm_of_platform_populate+0xb4/0x118
->>> [    0.529507][    T9]  pmic_spmi_probe+0x108/0x140 [qcom_spmi_pmic]
->>> [    0.529511][    T9]  spmi_drv_probe+0x70/0x140
->>> [    0.529514][    T9]  really_probe+0x3f0/0x8dc
->>> [    0.529515][    T9]  driver_probe_device+0x1b0/0x230
->>> ...
->>
->> This looks like the same thing that commit 01657bc14a39 ("iommu: Avoid 
->> races around device probe") was supposed to have fixed. But then 
->> bus_set_iommu() no longer exists in mainline anyway, so I'm not sure 
->> what kernel you're using :/
->>
->> Thanks,
->> Robin.
->>
+> With this patch, we can safely remove this feature and the related helpers.
 > 
-> Yes, Robin. The change you provided are with same purpose. I was using 
-> 5.10 kernel.
+> Link:https://lore.kernel.org/r/20230210230206.3160144-2-jacob.jun.pan@linux.intel.com
+> Signed-off-by: Jacob Pan<jacob.jun.pan@linux.intel.com>
+> Reviewed-by: Kevin Tian<kevin.tian@intel.com>
+> Reviewed-by: Jason Gunthorpe<jgg@nvidia.com>
 
-Aha, I did note in that commit that it appeared theoretically possible 
-to hit the same race on older kernels, but I hadn't fully realised that 
-even a single bus_set_iommu() call could effectively race with its own 
-notifier, if a new device was added to the bus at just the right time 
-while the initial bus_iommu_probe() walk was still running. Nice find!
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-Off the top of my head, I don't *think* there should be any major issue 
-with backporting 01657bc14a39 beyond its nominal fixes tag, if you need it.
-
-Thanks,
-Robin.
-
->>> Signed-off-by: Zhenhua Huang <quic_zhenhuah@quicinc.com>
->>> ---
->>>   drivers/iommu/iommu.c | 16 +++++++++++-----
->>>   1 file changed, 11 insertions(+), 5 deletions(-)
->>>
->>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>> index 42891e5..30f8d8f 100644
->>> --- a/drivers/iommu/iommu.c
->>> +++ b/drivers/iommu/iommu.c
->>> @@ -276,12 +276,18 @@ static void dev_iommu_free(struct device *dev)
->>>   {
->>>       struct dev_iommu *param = dev->iommu;
->>> -    dev->iommu = NULL;
->>> -    if (param->fwspec) {
->>> -        fwnode_handle_put(param->fwspec->iommu_fwnode);
->>> -        kfree(param->fwspec);
->>> +    if (!param)
->>> +        return;
->>> +
->>> +    if (param == cmpxchg(&dev->iommu, param, NULL)) {
->>> +        if (param->fwspec) {
->>> +            fwnode_handle_put(param->fwspec->iommu_fwnode);
->>> +            kfree(param->fwspec);
->>> +        }
->>> +        kfree(param);
->>> +    } else {
->>> +        return;
->>>       }
->>> -    kfree(param);
->>>   }
->>>   static u32 dev_iommu_get_max_pasids(struct device *dev)
+Best regards,
+baolu
