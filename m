@@ -1,65 +1,231 @@
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 598267C
-	for <iommu@lists.linux.dev>; Tue, 14 Feb 2023 09:36:40 +0000 (UTC)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
-	(No client certificate requested)
-	(Authenticated sender: kholk11)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id D5CD3660216A;
-	Tue, 14 Feb 2023 09:36:37 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1676367399;
-	bh=KEvBOTJKbpFhyye3ZLlwgSOwJ6jxAXg5LhVQKyf3mH0=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=f43377jF4Ep/JH9vExzxgxt2mEO8v9H9ThY9tQ6x499rLkt0TY8ipqkwGo3YzprF+
-	 tzK5r+7djXjk2asIzt8Js70zXSGboGwBerQ1ikQY8C/8dHxPs1QPyHADuQWaoaJr6Y
-	 xqqZUGJfgmA5ZDip4swamJu7EAbRNWbrjOdhPE3SntG7jED9oupyhkLsZN+x53amwi
-	 oLNtvbjfGkYj0C631YbCatYoT/jRJKtUfcHLUSmxwBrJqqIu7SobzWu+esIw+NKJwI
-	 KLZr2C4NPBPq0H3feHrYeZujr69HJHiVmoZl8w/R2cRCjj7n0zLbdmt0/JuIVtDXPj
-	 4iQeJdysH5aNQ==
-Message-ID: <e11a0dfe-160a-93fe-c3a8-6868cf6a0083@collabora.com>
-Date: Tue, 14 Feb 2023 10:36:35 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4DD97C
+	for <iommu@lists.linux.dev>; Tue, 14 Feb 2023 09:39:54 +0000 (UTC)
+Received: by mail-wm1-f54.google.com with SMTP id g6-20020a05600c310600b003e1f6dff952so558792wmo.1
+        for <iommu@lists.linux.dev>; Tue, 14 Feb 2023 01:39:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=GYSOqh+epggXyQJ84hoERRy0Xj7egAj9eOYVZ2BXBMY=;
+        b=ju0PbuyOde5q/FGE/90fi1JGDicPBL3vuNd5Sau6YrZ8yaeDKmoBLlm9IAlCTCFddw
+         py/lAMypvI5K+m1xGViTTLlYkbEE2ct1st0PJywVQFBJX21/Mfql5zQqxsIP0r3P9jds
+         JDZDhNkxh02Zox8uknOVSFnABIMofe3aXXRbCs+2WQILLR+4mJnIkD0BZjIPJMF7mNGw
+         c6ds31PjhsyRCtcYiRn4+PZzakMQejWGvHfXpvR4e9qPd4zIzHLIMpR5t1tjfqTe0u1d
+         FCMsxS/U2m4AliBWBcfnSCF+iM14NaJmcMLnrsTGdDIaOqHuDwmjqB1mWBigbGSwFrrJ
+         r9vw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=GYSOqh+epggXyQJ84hoERRy0Xj7egAj9eOYVZ2BXBMY=;
+        b=0xT781rZfQpw3M2riTkhceiEGv65/bUE/zOwBcxdz2lmUixbyRyIFkwlLiCnQLhXlO
+         CLCzeK1QxjXoD9bN4D6qUet3YKsPO6tZEkYrz7wVdKAU0ReUmHnnN1cFsoOO4m60rW8G
+         492PihotUeDPdEpBBF7NjNZUkfyszvh4oB1/OtPwxCSwB1waPjEYNimG5ArfChCJRwdt
+         tJOLtK7phXqDQrTEqMFjiXQv8a3jOYX629nxVa5i8NHRVvETAYgw8TuLcHCcOs1W7LDw
+         g7BYv5dZXMOGO2PxQvbmeh+kWJC9xhH1vG9T/tFdtb+Tq3apjE74lHQkSCriXIezV/hK
+         qOuQ==
+X-Gm-Message-State: AO0yUKUEittMP1cmbBgg4izRUgp+Gnsi0hE0uSaCGWw2Im5w+HwSrLQn
+	dmmMXaBIKDoxLZ9ZBeWnmHIVYyGpDboDoQON
+X-Google-Smtp-Source: AK7set+Zn6u6ABlGI2bSGcoAIHCIRY2YRaNvKZptdoJ3tI15YkFLwwFTvSisfVsjELcbaikAODPmxQ==
+X-Received: by 2002:a05:600c:3084:b0:3e0:99:b59d with SMTP id g4-20020a05600c308400b003e00099b59dmr1476026wmn.21.1676367593155;
+        Tue, 14 Feb 2023 01:39:53 -0800 (PST)
+Received: from myrica (054592b0.skybroadband.com. [5.69.146.176])
+        by smtp.gmail.com with ESMTPSA id p14-20020a1c544e000000b003db06493ee7sm20729991wmi.47.2023.02.14.01.39.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Feb 2023 01:39:52 -0800 (PST)
+Date: Tue, 14 Feb 2023 09:39:42 +0000
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Jean-Philippe Brucker <jean-philippe@linaro.com>,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Raj Ashok <ashok.raj@intel.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH v2 2/3] iommu/sva: Stop using ioasid_set for SVA
+Message-ID: <Y+tW3kxFeOMcELww@myrica>
+References: <20230214064414.1038058-1-jacob.jun.pan@linux.intel.com>
+ <20230214064414.1038058-3-jacob.jun.pan@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.2
-Subject: Re: [PATCH v3 06/11] iommu/mediatek: mt8186: Add iova_region_larb_msk
-Content-Language: en-US
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh+dt@kernel.org>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Hans Verkuil <hverkuil@xs4all.nl>, nfraprado@collabora.com,
- linux-media@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- mingyuan.ma@mediatek.com, yf.wang@mediatek.com, jianjiao.zeng@mediatek.com,
- Yunfei Dong <yunfei.dong@mediatek.com>,
- kyrie wu <kyrie.wu@mediatek.corp-partner.google.com>,
- chengci.xu@mediatek.com, youlin.pei@mediatek.com, anan.sun@mediatek.com
-References: <20230214031114.926-1-yong.wu@mediatek.com>
- <20230214031114.926-7-yong.wu@mediatek.com>
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20230214031114.926-7-yong.wu@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230214064414.1038058-3-jacob.jun.pan@linux.intel.com>
 
-Il 14/02/23 04:11, Yong Wu ha scritto:
-> Add iova_region_larb_msk for mt8186. We separate the 16GB iova regions
-> by each device's larbid/portid.
-> Note: larb5/6/10/12/14/15/18 connect nothing in this SoC.
-> Refer to include/dt-bindings/memory/mt8186-memory-port.h
+On Mon, Feb 13, 2023 at 10:44:13PM -0800, Jacob Pan wrote:
+> From: Jason Gunthorpe <jgg@nvidia.com>
 > 
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> Instead SVA drivers can use a simple global IDA to allocate PASIDs for
+> each mm_struct.
+> 
+> Future work would be to allow drivers using the SVA APIs to reserve global
+> PASIDs from this IDA for their internal use, eg with the DMA API PASID
+> support.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+> v2: minor fixes
+> 	- let idxd driver use iommu.h for ioasid_t
+> 	- return 0 after mm_pasid_set()
+> ---
+>  drivers/dma/idxd/idxd.h   |  1 +
+>  drivers/iommu/iommu-sva.c | 53 +++++++++++----------------------------
+>  drivers/iommu/iommu-sva.h |  3 ---
+>  include/linux/sched/mm.h  |  8 +-----
+>  4 files changed, 17 insertions(+), 48 deletions(-)
+> 
+> diff --git a/drivers/dma/idxd/idxd.h b/drivers/dma/idxd/idxd.h
+> index 7ced8d283d98..417e602a46b6 100644
+> --- a/drivers/dma/idxd/idxd.h
+> +++ b/drivers/dma/idxd/idxd.h
+> @@ -13,6 +13,7 @@
+>  #include <linux/ioasid.h>
+>  #include <linux/bitmap.h>
+>  #include <linux/perf_event.h>
+> +#include <linux/iommu.h>
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Unrelated 
 
+>  #include <uapi/linux/idxd.h>
+>  #include "registers.h"
+>  
+> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+> index 24bf9b2b58aa..8fb6f1867af3 100644
+> --- a/drivers/iommu/iommu-sva.c
+> +++ b/drivers/iommu/iommu-sva.c
+> @@ -9,24 +9,11 @@
+>  #include "iommu-sva.h"
+>  
+>  static DEFINE_MUTEX(iommu_sva_lock);
+> -static DECLARE_IOASID_SET(iommu_sva_pasid);
+> +static DEFINE_IDA(iommu_global_pasid_ida);
+>  
+> -/**
+> - * iommu_sva_alloc_pasid - Allocate a PASID for the mm
+> - * @mm: the mm
+> - * @min: minimum PASID value (inclusive)
+> - * @max: maximum PASID value (inclusive)
+> - *
+> - * Try to allocate a PASID for this mm, or take a reference to the existing one
+> - * provided it fits within the [@min, @max] range. On success the PASID is
+> - * available in mm->pasid and will be available for the lifetime of the mm.
+> - *
+> - * Returns 0 on success and < 0 on error.
+> - */
+> -int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max)
+> +static int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max)
+>  {
+> -	int ret = 0;
+> -	ioasid_t pasid;
+> +	int ret;
+>  
+>  	if (min == INVALID_IOASID || max == INVALID_IOASID ||
+>  	    min == 0 || max < min)
+> @@ -37,39 +24,29 @@ int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max)
+>  	if (pasid_valid(mm->pasid)) {
+>  		if (mm->pasid < min || mm->pasid >= max)
+>  			ret = -EOVERFLOW;
+> +		else
+> +			ret = 0;
+>  		goto out;
+>  	}
+>  
+> -	pasid = ioasid_alloc(&iommu_sva_pasid, min, max, mm);
+> -	if (!pasid_valid(pasid))
+> -		ret = -ENOMEM;
+> -	else
+> -		mm_pasid_set(mm, pasid);
+> +	ret = ida_alloc_range(&iommu_global_pasid_ida, min, max, GFP_KERNEL);
+> +	if (ret < min)
 
+Just check ret < 0
+
+> +		goto out;
+> +	mm_pasid_set(mm, ret);
+> +	ret = 0;
+>  out:
+>  	mutex_unlock(&iommu_sva_lock);
+>  	return ret;
+>  }
+> -EXPORT_SYMBOL_GPL(iommu_sva_alloc_pasid);
+>  
+> -/* ioasid_find getter() requires a void * argument */
+> -static bool __mmget_not_zero(void *mm)
+> +void mm_pasid_drop(struct mm_struct *mm)
+>  {
+> -	return mmget_not_zero(mm);
+> -}
+> +	pr_alert("%s %d", __func__, mm->pasid);
+
+Debug print
+
+Thanks,
+Jean
+
+> +	if (likely(!pasid_valid(mm->pasid)))
+> +		return;
+>  
+> -/**
+> - * iommu_sva_find() - Find mm associated to the given PASID
+> - * @pasid: Process Address Space ID assigned to the mm
+> - *
+> - * On success a reference to the mm is taken, and must be released with mmput().
+> - *
+> - * Returns the mm corresponding to this PASID, or an error if not found.
+> - */
+> -struct mm_struct *iommu_sva_find(ioasid_t pasid)
+> -{
+> -	return ioasid_find(&iommu_sva_pasid, pasid, __mmget_not_zero);
+> +	ida_free(&iommu_global_pasid_ida, mm->pasid);
+>  }
+> -EXPORT_SYMBOL_GPL(iommu_sva_find);
+>  
+>  /**
+>   * iommu_sva_bind_device() - Bind a process address space to a device
+> diff --git a/drivers/iommu/iommu-sva.h b/drivers/iommu/iommu-sva.h
+> index 7215a761b962..c22d0174ad61 100644
+> --- a/drivers/iommu/iommu-sva.h
+> +++ b/drivers/iommu/iommu-sva.h
+> @@ -8,9 +8,6 @@
+>  #include <linux/ioasid.h>
+>  #include <linux/mm_types.h>
+>  
+> -int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max);
+> -struct mm_struct *iommu_sva_find(ioasid_t pasid);
+> -
+>  /* I/O Page fault */
+>  struct device;
+>  struct iommu_fault;
+> diff --git a/include/linux/sched/mm.h b/include/linux/sched/mm.h
+> index 2a243616f222..cdc138086230 100644
+> --- a/include/linux/sched/mm.h
+> +++ b/include/linux/sched/mm.h
+> @@ -463,13 +463,7 @@ static inline void mm_pasid_set(struct mm_struct *mm, u32 pasid)
+>  	mm->pasid = pasid;
+>  }
+>  
+> -static inline void mm_pasid_drop(struct mm_struct *mm)
+> -{
+> -	if (pasid_valid(mm->pasid)) {
+> -		ioasid_free(mm->pasid);
+> -		mm->pasid = INVALID_IOASID;
+> -	}
+> -}
+> +void mm_pasid_drop(struct mm_struct *mm);
+>  #else
+>  static inline void mm_pasid_init(struct mm_struct *mm) {}
+>  static inline void mm_pasid_set(struct mm_struct *mm, u32 pasid) {}
+> -- 
+> 2.25.1
+> 
