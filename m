@@ -1,127 +1,206 @@
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FF167C
-	for <iommu@lists.linux.dev>; Tue, 14 Feb 2023 09:12:26 +0000 (UTC)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
-	(No client certificate requested)
-	(Authenticated sender: kholk11)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id ECE67660216A;
-	Tue, 14 Feb 2023 09:12:23 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1676365945;
-	bh=wNNWVklVHmzhbEv++PA7rXDFmZVhNIaqUY/+tOe7Ue8=;
-	h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
-	b=Gbbf8ZbE1iIjzKzDVrDk2n1facFjipcen8TIWGSNZGugZ48XED+XWVie8M1hGvovd
-	 5/EQPh+XNWB/ZNPs5QjlqWdZ8E4egNt7H428Zdek3yW9R4s22hmJt98rqVS8kTIueu
-	 zHhf0tR5ZxD1SgumVgLHr1/xWF6r+Ha9cG+rTa+yoFCVb53Ne+vz53OhMXo7EjKP5B
-	 0CH5cAm2yNbChER6cgjx6ScMyj5mp6pkkvbjpFwhT/OK0vA27dR/5zFOQIK0ingXTa
-	 EYlGekKZ0Lciw9u4e+DFYqVteE8bFiOSz2VEIxrKpL88+rsBbKDpKveYPH3CY4TrWk
-	 JtO63m5DxqRnQ==
-Message-ID: <c3513a9d-a98f-11de-ba6e-251b0e7f0993@collabora.com>
-Date: Tue, 14 Feb 2023 10:12:21 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5ED957C
+	for <iommu@lists.linux.dev>; Tue, 14 Feb 2023 09:32:46 +0000 (UTC)
+Received: by mail-wr1-f47.google.com with SMTP id j23so14982505wra.0
+        for <iommu@lists.linux.dev>; Tue, 14 Feb 2023 01:32:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=feQgqf0TlS1+YtPXugmH99WSVIfKoWnBpS+qs1gtI/s=;
+        b=gPgxou4tJOJTYCemcLXdASH3TKfmjwXcQS1SKUsHTJY1Bytj6hQo6kg2lpcbjLe0G8
+         IxHKSWsJrjF65FDyRz9dmtVBOTmJGIPHpUWZzpJdzvwmP4heiSLRiCdsqPK/lW3sHEnE
+         qyk9q8Uwvl0MlTPHdj0QFaswubfQJy3Y01tTdvuPW9up92JDE+cCwQztZ6Glw6YhzRND
+         OsfJLmtiXwZSgBDpHJStK0y7qcN6vj3sbLvIv6AuHt9BgV5HGxRO0mjkLNbpMX9z0qet
+         KHTaGghKH9zsoh8gGvmNnjKFd27ueFu6hPIXHd3octKYHWImhrFcuZKQnjfkHYnMNO/m
+         5JEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=feQgqf0TlS1+YtPXugmH99WSVIfKoWnBpS+qs1gtI/s=;
+        b=zk+axOWEupc1P4HjKAWJ+NTBW8ePFVFF9k/orfmnIiRx+O4QEQhod01nTirfNYR0pN
+         2UpkEBORSmvsJkFM8vqahsIWGp98ngQDwM+laebMKeGGgATOH9d1qOldcgHLngHQ22Ho
+         vydLzlczJITsVCjoewK5e/stnAe1x8Wgl97A8RqF4zyqnGHbt5x99PO5sAYziS28Iqq8
+         PV60hFSp0R4tQekGzJ2LMslRzP2tpDKBjyPD3HB4DBIohw7HV+siRHNDhISOhNn5tS+W
+         idQli2zCEZRCgSw5kzSsxjXH+JIRSBe5Rozq5tYxH40pqzi8SyJWpb8EsIqXZ6FjTvjs
+         jpeQ==
+X-Gm-Message-State: AO0yUKXujNb4QKB3lLGdLIO6hLHvJDPvkUEgN45aaYKL1lxV6GgO6uYt
+	omHXUJsxNLYdkwVmblQxYtaHKQ==
+X-Google-Smtp-Source: AK7set/WC01x4imaV87XB8VanV8Br1rNMOtMY5b40aLGEMbxfKvI9jownVsV6Mha6mc8AexhODk/4A==
+X-Received: by 2002:a5d:63cc:0:b0:2c5:594a:a4f0 with SMTP id c12-20020a5d63cc000000b002c5594aa4f0mr1586282wrw.58.1676367164673;
+        Tue, 14 Feb 2023 01:32:44 -0800 (PST)
+Received: from myrica (054592b0.skybroadband.com. [5.69.146.176])
+        by smtp.gmail.com with ESMTPSA id i20-20020a1c5414000000b003dc53217e07sm16874606wmb.16.2023.02.14.01.32.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Feb 2023 01:32:44 -0800 (PST)
+Date: Tue, 14 Feb 2023 09:32:33 +0000
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Jean-Philippe Brucker <jean-philippe@linaro.com>,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Raj Ashok <ashok.raj@intel.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH v2 3/3] iommu: Remove ioasid infrastructure
+Message-ID: <Y+tVMRzRQbcc7Guz@myrica>
+References: <20230214064414.1038058-1-jacob.jun.pan@linux.intel.com>
+ <20230214064414.1038058-4-jacob.jun.pan@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.2
-Subject: Re: [PATCH v3 04/11] iommu/mediatek: Get regionid from larb/port id
-Content-Language: en-US
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh+dt@kernel.org>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Hans Verkuil <hverkuil@xs4all.nl>, nfraprado@collabora.com,
- linux-media@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- mingyuan.ma@mediatek.com, yf.wang@mediatek.com, jianjiao.zeng@mediatek.com,
- Yunfei Dong <yunfei.dong@mediatek.com>,
- kyrie wu <kyrie.wu@mediatek.corp-partner.google.com>,
- chengci.xu@mediatek.com, youlin.pei@mediatek.com, anan.sun@mediatek.com
-References: <20230214031114.926-1-yong.wu@mediatek.com>
- <20230214031114.926-5-yong.wu@mediatek.com>
- <ab778f16-3cda-6c06-c5a5-6a4b4d1b3974@collabora.com>
-In-Reply-To: <ab778f16-3cda-6c06-c5a5-6a4b4d1b3974@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230214064414.1038058-4-jacob.jun.pan@linux.intel.com>
 
-Il 14/02/23 10:07, AngeloGioacchino Del Regno ha scritto:
-> Il 14/02/23 04:11, Yong Wu ha scritto:
->> After commit f1ad5338a4d5 ("of: Fix "dma-ranges" handling for bus
->> controllers"), the dma-ranges is not allowed for dts leaf node.
->> but we still would like to separate to different masters
->> into different iova regions.
->>
->> Thus we have to separate it by the HW larbid and portid. For example,
->> larb1/2 are in region2 and larb3 is in region3. The problem is that
->> some ports inside a larb are in region4 while some ports inside this
->> larb are in region5. Therefore I define a "iova_region_larb_msk" to help
->> record the information for each a port. Take a example for a larb:
->>   [1] = ~0: means all ports in this larb are in region1;
->>   [2] = BIT(3) | BIT(4): means port3/4 in this larb are region2;
->>   [3] = ~(BIT(3) | BIT(4)): means all the other ports except port3/4
->>                             in this larb are region3.
->>
->> This method also avoids the users forget/abuse the iova regions.
->>
->> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
->> ---
->>   drivers/iommu/mtk_iommu.c | 47 ++++++++++++++++++++++-----------------
->>   1 file changed, 27 insertions(+), 20 deletions(-)
->>
->> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
->> index ab53edcb221f..7e2cb3b8cac8 100644
->> --- a/drivers/iommu/mtk_iommu.c
->> +++ b/drivers/iommu/mtk_iommu.c
->> @@ -8,7 +8,6 @@
->>   #include <linux/clk.h>
->>   #include <linux/component.h>
->>   #include <linux/device.h>
->> -#include <linux/dma-direct.h>
->>   #include <linux/err.h>
->>   #include <linux/interrupt.h>
->>   #include <linux/io.h>
->> @@ -212,6 +211,11 @@ struct mtk_iommu_plat_data {
->>       struct {
->>           unsigned int    iova_region_nr;
->>           const struct mtk_iommu_iova_region    *iova_region;
->> +        /*
->> +         * Indicate the correspondence between larbs/ports and regions.
->> +         * The index is same with iova_region.
+On Mon, Feb 13, 2023 at 10:44:14PM -0800, Jacob Pan wrote:
+> This has no use anymore, delete it all.
 > 
-> * The index is the same as iova_region and larb port numbers are
-> * described as bit positions.
-> * For example, storing BIT(0) at index 2 means "port 0 is in region 2".
-> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 
-Sorry, I'm reiterating because the proposed comment is wrong.
+Yes, a number of intended users haven't materialized yet. They can
+re-introduce the allocator when they need it.
 
-/*
-  * Indicates the correspondance between larbs, ports and regions.
-  *
-  * The index is the same as iova_region and larb port numbers are
-  * described as bit positions.
-  * For example, storing BIT(0) at index 2,1 means "larb 1, port0 is in region 2".
-  *              [2] = { [1] = BIT(0) }
-  */
+> ---
+> v2:
+> 	- fix compile issue w/o CONFIG_IOMMU_SVA
+> 	- consolidate INVALID_IOASID w/ IOMMU_PASID_INVALID
 
+Why not rename ioasid_t as well?  Probably better to move all the renaming
+to a separate patch
 
-> That's most probably the best short explanation that we can give, so that nobody
-> goes crazy with understanding this one.
-> 
-> After fixing that comment, you totally deserve my
-> 
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> 
-> Cheers!
-> 
-> 
+> ---
+>  Documentation/x86/sva.rst   |   2 +-
+>  arch/x86/kernel/traps.c     |   5 +-
+>  drivers/dma/idxd/device.c   |   8 +-
+>  drivers/dma/idxd/idxd.h     |   1 -
+>  drivers/dma/idxd/init.c     |   2 +-
+>  drivers/dma/idxd/irq.c      |   2 +-
+>  drivers/iommu/intel/dmar.c  |   4 +-
+>  drivers/iommu/intel/iommu.c |   2 +-
+>  drivers/iommu/intel/iommu.h |   1 -
+>  drivers/iommu/intel/svm.c   |   3 +-
+>  drivers/iommu/ioasid.c      | 422 ------------------------------------
+>  drivers/iommu/iommu-sva.c   |   2 +-
+>  drivers/iommu/iommu-sva.h   |   1 -
+>  include/linux/ioasid.h      |  83 -------
+>  include/linux/iommu.h       |  11 +-
+>  include/linux/sched/mm.h    |   4 +-
+>  include/uapi/linux/iommu.h  |   1 +
+>  mm/init-mm.c                |   4 +-
 
+drivers/iommu/{Makefile,Kconfig} also need updates
+
+>  18 files changed, 29 insertions(+), 529 deletions(-)
+>  delete mode 100644 drivers/iommu/ioasid.c
+>  delete mode 100644 include/linux/ioasid.h
+
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 46e1347bfa22..7cbcf37df8cd 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -13,7 +13,6 @@
+>  #include <linux/errno.h>
+>  #include <linux/err.h>
+>  #include <linux/of.h>
+> -#include <linux/ioasid.h>
+>  #include <uapi/linux/iommu.h>
+>  
+>  #define IOMMU_READ	(1 << 0)
+> @@ -192,8 +191,14 @@ enum iommu_dev_features {
+>  	IOMMU_DEV_FEAT_IOPF,
+>  };
+>  
+> -#define IOMMU_PASID_INVALID	(-1U)
+> -
+> +//#define IOMMU_PASID_INVALID	(-1U)
+
+Remove this
+
+> +typedef unsigned int ioasid_t;
+> +#ifdef CONFIG_IOMMU_SVA
+> +static inline bool pasid_valid(ioasid_t ioasid)
+> +{
+> +	return ioasid != IOMMU_PASID_INVALID;
+> +}
+> +#endif
+
+This isn't specific to SVA, doesn't need an ifdef
+
+>  #ifdef CONFIG_IOMMU_API
+>  
+>  /**
+> diff --git a/include/linux/sched/mm.h b/include/linux/sched/mm.h
+> index cdc138086230..4c52835d3359 100644
+> --- a/include/linux/sched/mm.h
+> +++ b/include/linux/sched/mm.h
+> @@ -8,7 +8,7 @@
+>  #include <linux/mm_types.h>
+>  #include <linux/gfp.h>
+>  #include <linux/sync_core.h>
+> -#include <linux/ioasid.h>
+> +#include <uapi/linux/iommu.h>
+>  
+>  /*
+>   * Routines for handling mm_structs
+> @@ -454,7 +454,7 @@ static inline void membarrier_update_current_mm(struct mm_struct *next_mm)
+>  #ifdef CONFIG_IOMMU_SVA
+>  static inline void mm_pasid_init(struct mm_struct *mm)
+>  {
+> -	mm->pasid = INVALID_IOASID;
+> +	mm->pasid = IOMMU_PASID_INVALID;
+>  }
+>  
+>  /* Associate a PASID with an mm_struct: */
+> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
+> index 65d8b0234f69..a95f07f0c98c 100644
+> --- a/include/uapi/linux/iommu.h
+> +++ b/include/uapi/linux/iommu.h
+> @@ -157,5 +157,6 @@ struct iommu_page_response {
+>  	__u32	grpid;
+>  	__u32	code;
+>  };
+> +#define IOMMU_PASID_INVALID	(-1U)
+
+Why change UAPI?
+
+Thanks,
+Jean
+
+>  
+>  #endif /* _UAPI_IOMMU_H */
+> diff --git a/mm/init-mm.c b/mm/init-mm.c
+> index c9327abb771c..a084039f55d8 100644
+> --- a/mm/init-mm.c
+> +++ b/mm/init-mm.c
+> @@ -10,7 +10,7 @@
+>  
+>  #include <linux/atomic.h>
+>  #include <linux/user_namespace.h>
+> -#include <linux/ioasid.h>
+> +#include <linux/iommu.h>
+>  #include <asm/mmu.h>
+>  
+>  #ifndef INIT_MM_CONTEXT
+> @@ -40,7 +40,7 @@ struct mm_struct init_mm = {
+>  	.user_ns	= &init_user_ns,
+>  	.cpu_bitmap	= CPU_BITS_NONE,
+>  #ifdef CONFIG_IOMMU_SVA
+> -	.pasid		= INVALID_IOASID,
+> +	.pasid		= IOMMU_PASID_INVALID,
+>  #endif
+>  	INIT_MM_CONTEXT(init_mm)
+>  };
+> -- 
+> 2.25.1
+> 
