@@ -1,73 +1,99 @@
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B50F37C
-	for <iommu@lists.linux.dev>; Tue, 14 Feb 2023 09:55:39 +0000 (UTC)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
-	(No client certificate requested)
-	(Authenticated sender: kholk11)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id B28E8660216A;
-	Tue, 14 Feb 2023 09:55:36 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1676368538;
-	bh=GPjPDcw1DbLNEhZjsESUC0x1/RTrz5my5LsVvj59CxA=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=WKwDiZfZDreJQUUcDZVtXsHfDDDLyl4UY9y5+xPfwoy1SISoTcKrDPhBym55Bcxx5
-	 l/NEVmt5QUxTz+rQieXWPq0PIOLKzLoyXH9eZP6Kt3dF6udQc8jaQC7ognMDzA9j+7
-	 Gm4I4LdqadFRsS2EHDa5H5bP0acoBppYfrf3R3FYVCYEHtCoQt0VP3TKSj+oejLUvh
-	 ekDYMFfeEhZWh8YKfV5AaHlxg4M0wygu/UbdszAaOU1F9+0gKHX15r8DGX87/JaPKI
-	 MNT1y1sdhN6wRZFjT6s3HkJO5TAmaZ7dhlF0atET7citXogkyWw3Ol9VnHECD/Cw1Q
-	 ozGbkXm89CUhw==
-Message-ID: <5f66275f-5440-38ee-60e7-3b4ea276aae7@collabora.com>
-Date: Tue, 14 Feb 2023 10:55:33 +0100
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A721E1078A
+	for <iommu@lists.linux.dev>; Tue, 14 Feb 2023 10:26:01 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AADFE1042;
+	Tue, 14 Feb 2023 02:26:37 -0800 (PST)
+Received: from [10.57.89.147] (unknown [10.57.89.147])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2AA173F703;
+	Tue, 14 Feb 2023 02:25:54 -0800 (PST)
+Message-ID: <2f1e67de-645d-2da9-d46c-d37d28ddc03b@arm.com>
+Date: Tue, 14 Feb 2023 10:25:49 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.2
-Subject: Re: [PATCH v3 08/11] iommu/mediatek: Add a gap for the iova regions
-Content-Language: en-US
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh+dt@kernel.org>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Hans Verkuil <hverkuil@xs4all.nl>, nfraprado@collabora.com,
- linux-media@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- mingyuan.ma@mediatek.com, yf.wang@mediatek.com, jianjiao.zeng@mediatek.com,
- Yunfei Dong <yunfei.dong@mediatek.com>,
- kyrie wu <kyrie.wu@mediatek.corp-partner.google.com>,
- chengci.xu@mediatek.com, youlin.pei@mediatek.com, anan.sun@mediatek.com
-References: <20230214031114.926-1-yong.wu@mediatek.com>
- <20230214031114.926-9-yong.wu@mediatek.com>
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20230214031114.926-9-yong.wu@mediatek.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH] iommu: Fix potential concurrent free issue
+To: Zhenhua Huang <quic_zhenhuah@quicinc.com>, joro@8bytes.org,
+ will@kernel.org
+Cc: iommu@lists.linux.dev
+References: <1676358214-25732-1-git-send-email-quic_zhenhuah@quicinc.com>
+Content-Language: en-GB
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <1676358214-25732-1-git-send-email-quic_zhenhuah@quicinc.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Il 14/02/23 04:11, Yong Wu ha scritto:
-> As the removed property in the vcodec dt-binding, the property is:
-> dma-ranges = <0x1 0x0 0x0 0x40000000 0x0 0xfff00000>;
+On 2023-02-14 07:03, Zhenhua Huang wrote:
+> Some cases in which probing with a non-iommu bind device,
+> we saw dev_iommu_free() called in the same time. Add checking
+> to avoid NULL dereference.
 > 
-> The length is 0xfff0_0000 rather than 0x1_0000_0000, this means it
-> requires 1M as a gap. This is because the end address for some vcodec
-> HW is (address + size). If the size is 4G, the end address may be
-> 0x2_0000_0000, and the width for vcodec register only is 32, then the
-> HW may get the ZERO address.
+> One path was with smmu driver probing:
+> [    0.538555][  T165]  dev_iommu_free+0xa0/0x198
+> [    0.538557][  T165]  __iommu_probe_device+0x244/0x2e4
+> [    0.538559][  T165]  probe_iommu_group+0x38/0x54
+> [    0.538561][  T165]  bus_iommu_probe+0x70/0x37c
+> [    0.538563][  T165]  bus_set_iommu+0xcc/0x1b8
+> [    0.538578][  T165]  arm_smmu_bus_init+0x38/0xd0 [arm_smmu]
+> [    0.538592][  T165]  arm_smmu_device_probe+0x630/0x6d8 [arm_smmu]
+> The other was with device itself probing:
+> [    0.529488][    T9]  __iommu_probe_device+0x244/0x354
+> [    0.529490][    T9]  iommu_probe_device+0x44/0x460
+> [    0.529492][    T9]  iommu_bus_notifier+0x44/0x160
+> [    0.529494][    T9]  device_add+0x9f0/0x12a0
+> [    0.529497][    T9]  of_platform_device_create_pdata+0xc8/0x168
+> [    0.529499][    T9]  of_platform_bus_create+0x1b0/0x254
+> [    0.529500][    T9]  of_platform_populate+0x9c/0x114
+> [    0.529502][    T9]  devm_of_platform_populate+0xb4/0x118
+> [    0.529507][    T9]  pmic_spmi_probe+0x108/0x140 [qcom_spmi_pmic]
+> [    0.529511][    T9]  spmi_drv_probe+0x70/0x140
+> [    0.529514][    T9]  really_probe+0x3f0/0x8dc
+> [    0.529515][    T9]  driver_probe_device+0x1b0/0x230
+> ...
+
+This looks like the same thing that commit 01657bc14a39 ("iommu: Avoid 
+races around device probe") was supposed to have fixed. But then 
+bus_set_iommu() no longer exists in mainline anyway, so I'm not sure 
+what kernel you're using :/
+
+Thanks,
+Robin.
+
+> Signed-off-by: Zhenhua Huang <quic_zhenhuah@quicinc.com>
+> ---
+>   drivers/iommu/iommu.c | 16 +++++++++++-----
+>   1 file changed, 11 insertions(+), 5 deletions(-)
 > 
-> Currently the consumer's dma-ranges property doesn't work, IOMMU
-> has to consider this case. Add a bigger gap(8M) for all the regions
-> to avoid it.
-> 
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-
-
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 42891e5..30f8d8f 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -276,12 +276,18 @@ static void dev_iommu_free(struct device *dev)
+>   {
+>   	struct dev_iommu *param = dev->iommu;
+>   
+> -	dev->iommu = NULL;
+> -	if (param->fwspec) {
+> -		fwnode_handle_put(param->fwspec->iommu_fwnode);
+> -		kfree(param->fwspec);
+> +	if (!param)
+> +		return;
+> +
+> +	if (param == cmpxchg(&dev->iommu, param, NULL)) {
+> +		if (param->fwspec) {
+> +			fwnode_handle_put(param->fwspec->iommu_fwnode);
+> +			kfree(param->fwspec);
+> +		}
+> +		kfree(param);
+> +	} else {
+> +		return;
+>   	}
+> -	kfree(param);
+>   }
+>   
+>   static u32 dev_iommu_get_max_pasids(struct device *dev)
