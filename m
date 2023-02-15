@@ -1,103 +1,97 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C395F2CA5
-	for <iommu@lists.linux.dev>; Tue, 14 Feb 2023 21:30:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676410213; x=1707946213;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=7A6xUgg1KlIcBAaPTam1mZddqUhKOilo6t8rJoPOkyc=;
-  b=jbiYPvCt9roxG+wCR/Ykq2BvnRXPl/tGkQEoX66EKoYqK0M7mk6Ai9uY
-   R15pMkKZMS9ytFmJ77jvaWlRkuWavF0iwp7a2vQmNpUuoCKw7gvnAH3It
-   iOHt6F3y3IWkB5MwoSLRxGWjZ17kOjeBgWd4xgyhrDaj+pL0zfWQMjdke
-   YCLlFTV1EbLM9CZMT1w/nWepa42Le7f8L00FFzMpx+H8xrJmEdUqjj2zQ
-   h0lpMus6kRT+bTjMUpSBQYot3jWPxCPdOT/amRFpC//3im0WBbFFwhy5e
-   J7E9ggl+DCJOYjnC1RUHltcHblJ/94zSdPEQNDMN6ETQ/UMqL/aNEfwzM
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="329902985"
-X-IronPort-AV: E=Sophos;i="5.97,297,1669104000"; 
-   d="scan'208";a="329902985"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2023 13:30:12 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="646912439"
-X-IronPort-AV: E=Sophos;i="5.97,297,1669104000"; 
-   d="scan'208";a="646912439"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2023 13:30:12 -0800
-Date: Tue, 14 Feb 2023 13:33:52 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, LKML
- <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Lu Baolu
- <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Jean-Philippe
- Brucker <jean-philippe@linaro.com>, Robin Murphy <robin.murphy@arm.com>,
- Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Raj
- Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
- <yi.l.liu@intel.com>, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v2 3/3] iommu: Remove ioasid infrastructure
-Message-ID: <20230214133352.1f69b624@jacob-builder>
-In-Reply-To: <Y+vLiWS3+Rp+If6U@nvidia.com>
-References: <20230214064414.1038058-1-jacob.jun.pan@linux.intel.com>
-	<20230214064414.1038058-4-jacob.jun.pan@linux.intel.com>
-	<Y+tVMRzRQbcc7Guz@myrica>
-	<Y+uHSry/tpgGNr/b@nvidia.com>
-	<20230214093107.323d7e76@jacob-builder>
-	<Y+vLiWS3+Rp+If6U@nvidia.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 106677B
+	for <iommu@lists.linux.dev>; Wed, 15 Feb 2023 00:14:46 +0000 (UTC)
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31F03JEI021693;
+	Wed, 15 Feb 2023 00:14:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=date : from : to :
+ cc : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=qcppdkim1; bh=ddsdczJhsXsfiJeJX5z9f8r0qYEreyvU3Fkv3xiBW7U=;
+ b=axmiYSFWwvA+mQe7GdE9MklsPpVvKcsEpu/YOJlAyWlQG3t0gUMFlevFak+fy9KJWyO2
+ vipG0l+rERuvVSVAsIvjwwaM8uDGXBiuddq+NKBMGP0+0d6ULcpvA01jcrMOhEcpRBbB
+ A7gXsZwTG7IIw4HlH3BpwCxMQz8m+AYfWqp0qweTWlAcnExRs/wrysgjfOLEm0hI6gXd
+ 8dgQnLwcCZMD4p7PhsN52kmN1DmnCozVlDOheDpgKxQqFMq2NlrrxQu+Adz/8ik284Jl
+ yYF3pyQJLtrWNuAcJ6N35aUFdwL0s35t490V/xtAI5r9SBWmDIHo4NeHy8c/WkkzoFv4 RQ== 
+Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3nr661adpy-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 15 Feb 2023 00:14:39 +0000
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 31F0EcV4017882
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 15 Feb 2023 00:14:38 GMT
+Received: from hu-cgoldswo-sd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.36; Tue, 14 Feb 2023 16:14:38 -0800
+Date: Tue, 14 Feb 2023 16:14:30 -0800
+From: Chris Goldsworthy <quic_cgoldswo@quicinc.com>
+To: Zhenhua Huang <quic_zhenhuah@quicinc.com>
+CC: Robin Murphy <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>,
+        <iommu@lists.linux.dev>, <quic_tingweiz@quicinc.com>
+Subject: Re: [PATCH] iommu: Fix potential concurrent free issue
+Message-ID: <20230215001402.GA22222@hu-cgoldswo-sd.qualcomm.com>
+References: <1676358214-25732-1-git-send-email-quic_zhenhuah@quicinc.com>
+ <2f1e67de-645d-2da9-d46c-d37d28ddc03b@arm.com>
+ <6e1b0bea-00d9-6aeb-2d0a-a8fd4650e389@quicinc.com>
+ <9687190c-eb3b-f72a-d2a7-964ccd640f8c@arm.com>
+ <8fe546b5-2cac-7f52-d875-c66c4458996a@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <8fe546b5-2cac-7f52-d875-c66c4458996a@quicinc.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: R8onNx53jYDsHqaVjgM37EQfX3XwhdFu
+X-Proofpoint-GUID: R8onNx53jYDsHqaVjgM37EQfX3XwhdFu
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
+ definitions=2023-02-14_16,2023-02-14_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxlogscore=914
+ mlxscore=0 spamscore=0 impostorscore=0 lowpriorityscore=0 malwarescore=0
+ priorityscore=1501 clxscore=1011 adultscore=0 bulkscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
+ definitions=main-2302150000
 
-Hi Jason,
+On Tue, Feb 14, 2023 at 11:05:22PM +0800, Zhenhua Huang wrote:
 
-On Tue, 14 Feb 2023 13:57:29 -0400, Jason Gunthorpe <jgg@nvidia.com> wrote:
-
-> On Tue, Feb 14, 2023 at 09:31:07AM -0800, Jacob Pan wrote:
-> > Hi Jason,
-> > 
-> > On Tue, 14 Feb 2023 09:06:18 -0400, Jason Gunthorpe <jgg@nvidia.com>
-> > wrote: 
-> > > On Tue, Feb 14, 2023 at 09:32:33AM +0000, Jean-Philippe Brucker
-> > > wrote:  
-> > > > > diff --git a/include/uapi/linux/iommu.h
-> > > > > b/include/uapi/linux/iommu.h index 65d8b0234f69..a95f07f0c98c
-> > > > > 100644 --- a/include/uapi/linux/iommu.h
-> > > > > +++ b/include/uapi/linux/iommu.h
-> > > > > @@ -157,5 +157,6 @@ struct iommu_page_response {
-> > > > >  	__u32	grpid;
-> > > > >  	__u32	code;
-> > > > >  };
-> > > > > +#define IOMMU_PASID_INVALID	(-1U)    
-> > > > 
-> > > > Why change UAPI?    
-> > > 
-> > > There is no uapi, this whole file needs to be deleted too
-> > >   
-> > ok. another clean up.
-> > 
-> > As I also replied to Jean, I ran into a circular #include problem if
-> > mm.h #include iommu.h, I guess I could also create another header, e.g.
-> > iommu_defs.h to avoid it. any other suggestions?  
+> >>
+> >>Yes, Robin. The change you provided are with same purpose. I was using
+> >>5.10 kernel.
+> >
+> >Aha, I did note in that commit that it appeared theoretically possible to
+> >hit the same race on older kernels, but I hadn't fully realised that even
+> >a single bus_set_iommu() call could effectively race with its own
+> >notifier, if a new device was added to the bus at just the right time
+> >while the initial bus_iommu_probe() walk was still running. Nice find!
+> >
+> >Off the top of my head, I don't *think* there should be any major issue
+> >with backporting 01657bc14a39 beyond its nominal fixes tag, if you need
+> >it.
 > 
-> Given this header is not used, just delete things from it to resolve
-> the problem?
-no, sorry i didn't make it clear. I meant if we do #include <linux/iommu.h>
-in sched/mm.h, then I got circular include problem.
+> Nice for me, will pick the fix. Thanks very much.
+> 
+> >
+> >Thanks,
+> >Robin.
+> >
 
-The problem is not with include/uapi/linux/iommu.h
-
-I could fix it by adding another header include/linux/iommu_defs.h for
-#define IOMMU_PASID_INVALID	(-1U) 
-But it feels like an overkill.
+Actually Robin, could we get this backported to 5.10, 6.1 and 5.15?
+We've only observed the issue on 5.10 and 6.1 (after a recent eruption
+in occurences), but we also use 5.15.
 
 Thanks,
 
-Jacob
+Chris.
+
