@@ -1,275 +1,218 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A04467C
-	for <iommu@lists.linux.dev>; Wed, 15 Feb 2023 11:24:43 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9B8BC1042;
-	Wed, 15 Feb 2023 03:25:25 -0800 (PST)
-Received: from [10.57.90.25] (unknown [10.57.90.25])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 347FE3F703;
-	Wed, 15 Feb 2023 03:24:41 -0800 (PST)
-Message-ID: <d4f1b33d-dec7-6582-34a1-495bacfcd396@arm.com>
-Date: Wed, 15 Feb 2023 11:24:35 +0000
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A81547C
+	for <iommu@lists.linux.dev>; Wed, 15 Feb 2023 11:48:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1676461711;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Z/H0rotavd9oyHOO+0LmtN00go4zSs58DTjk4UZUpfA=;
+	b=PD7A+gW7kIOwBc8wPhgOY0WwU7gNMFO2xakKhGZw9RqeNYmu74ZoyAjny7JJSYN/mJQZ/d
+	Qq6nVLr/iP35dx6idum9sklBRtDyWTsSvDM1i8CDn4gYi1Wj4Qvkf5fPnVYESSJl1Kk8yG
+	OZdLr67Gxs4XyIEPjHVyTjW56nsrbbU=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-427-85JiHrDiNI6MK4UaP5h1Qw-1; Wed, 15 Feb 2023 06:48:27 -0500
+X-MC-Unique: 85JiHrDiNI6MK4UaP5h1Qw-1
+Received: by mail-wm1-f70.google.com with SMTP id iz20-20020a05600c555400b003dc53fcc88fso1010010wmb.2
+        for <iommu@lists.linux.dev>; Wed, 15 Feb 2023 03:48:27 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Z/H0rotavd9oyHOO+0LmtN00go4zSs58DTjk4UZUpfA=;
+        b=Hy4knPzCTlUy7R8mFHUYxW+WQzqfa00E4cddrn8jTxt8Aejdp09Q5niyG3MzI0A+q6
+         Ubv6/GTqldNwBubT2/S/IpAEv4k9fNBqcRFEWyHNeuFjcu+u+kX1pD/tcbFBiSXP/xS0
+         zK0ws1AZfHOU0mMVYXbAEKB9UkxwzPoiItne0TItDg1HTqI9PdejYTc2XxcKXMXkLSok
+         NpKfYeVTHmGhMzbBfeRF9RADDBKa8sEQvAIFk6VCTmUvgsFea6TphBalcJO5+R4wGUd1
+         Hlx3Zesm5gd/bvmOwNrxTLy/CbSM2bcjdVWid/xutG/3dEPiwcPEG8aLanK3U3GlPDiJ
+         ubaA==
+X-Gm-Message-State: AO0yUKXQvP2LoN+UdaitpyBpgkDR6d0tkrUpac3l4RKyLH1bf9QRt40U
+	7lS+DMSvj2CX/mRJtBj9DZJ3uka++bsoAkjeBs3f7CtcWixpAxNBZMrYovo0rlNRCJE4tKru22a
+	1WXDYGeP3/0aiOAJ+kzeR
+X-Received: by 2002:a05:600c:318f:b0:3e1:f8af:8772 with SMTP id s15-20020a05600c318f00b003e1f8af8772mr2325068wmp.9.1676461706062;
+        Wed, 15 Feb 2023 03:48:26 -0800 (PST)
+X-Google-Smtp-Source: AK7set8OYAXBJzFVluU8HCwAVQMa/cFq9Nf1S2p+oFvhdxz8zS5w1AxVlAWS//WkraJpLlX5F/zY9Q==
+X-Received: by 2002:a05:600c:318f:b0:3e1:f8af:8772 with SMTP id s15-20020a05600c318f00b003e1f8af8772mr2325057wmp.9.1676461705784;
+        Wed, 15 Feb 2023 03:48:25 -0800 (PST)
+Received: from redhat.com ([2.52.5.34])
+        by smtp.gmail.com with ESMTPSA id c3-20020a1c3503000000b003dc522dd25esm1920544wma.30.2023.02.15.03.48.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Feb 2023 03:48:25 -0800 (PST)
+Date: Wed, 15 Feb 2023 06:48:21 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Nanyong Sun <sunnanyong@huawei.com>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+	jasowang@redhat.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+	virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+	wangrong68@huawei.com
+Subject: Re: [PATCH v2] vhost/vdpa: Add MSI translation tables to iommu for
+ software-managed MSI
+Message-ID: <20230215064759-mutt-send-email-mst@kernel.org>
+References: <20230207120843.1580403-1-sunnanyong@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.7.2
-Subject: Re: [PATCH 1/4] iommu: Add dev_iommu->ops_rwsem
-Content-Language: en-GB
-To: Baolu Lu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
- Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org
-References: <20230213074941.919324-1-baolu.lu@linux.intel.com>
- <20230213074941.919324-2-baolu.lu@linux.intel.com>
- <Y+pGUOkLVUMFYWOb@nvidia.com>
- <9f516f44-3dc9-6f15-11d0-10bfb1b29b1e@linux.intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <9f516f44-3dc9-6f15-11d0-10bfb1b29b1e@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230207120843.1580403-1-sunnanyong@huawei.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 2023-02-15 05:34, Baolu Lu wrote:
-> On 2/13/23 10:16 PM, Jason Gunthorpe wrote:
->> On Mon, Feb 13, 2023 at 03:49:38PM +0800, Lu Baolu wrote:
->>
->>> +static int iommu_group_freeze_dev_ops(struct iommu_group *group)
->>> +{
->>> +    struct group_device *device;
->>> +    struct device *dev;
->>> +
->>> +    mutex_lock(&group->mutex);
->>> +    list_for_each_entry(device, &group->devices, list) {
->>> +        dev = device->dev;
->>> +        down_read(&dev->iommu->ops_rwsem);
->>
->> This isn't allowed, you can't obtain locks in a loop like this, it
->> will deadlock.
->>
->> You don't need more locks, we already have the group mutex, the
->> release path should be fixed to use it properly as I was trying to do 
->> here:
->>
->> https://lore.kernel.org/kvm/4-v1-ef00ffecea52+2cb-iommu_group_lifetime_jgg@nvidia.com/
->> https://lore.kernel.org/kvm/YyyTxx0HnA3maxEk@nvidia.com/
->>
->> Then what you'd do in a path like this is:
->>
->>    mutex_lock(&group->mutex);
->>    dev = iommu_group_first_device(group)
->>    if (!dev)
->>       /* Racing with group cleanup */
->>       return -EINVAL;
->>    /* Now dev->ops is valid and must remain valid so long as
->>       group->mutex is held */
->>
->> The only reason this doesn't work already is because of the above
->> stuff about release not holding the group mutex when manipulating the
->> devices in the group. This is simply mis-locked.
->>
->> Robin explained it was done like this because
->> arm_iommu_detach_device() re-enters the iommu core during release_dev,
->> so I suggest fixing that by simply not doing that (see above)
->>
->> Below is the lastest attempt I had tried, I didn't have time to get back
->> to it and we fixed the bug another way. It needs a bit of adjusting to
->> also remove the device from the group after release is called within
->> the same mutex critical region.
+On Tue, Feb 07, 2023 at 08:08:43PM +0800, Nanyong Sun wrote:
+> From: Rong Wang <wangrong68@huawei.com>
 > 
-> Yes. If we can make remove device from list and device release in the
-> same mutex critical region, we don't need any other lock mechanism
-> anymore.
+> Once enable iommu domain for one device, the MSI
+> translation tables have to be there for software-managed MSI.
+> Otherwise, platform with software-managed MSI without an
+> irq bypass function, can not get a correct memory write event
+> from pcie, will not get irqs.
+> The solution is to obtain the MSI phy base address from
+> iommu reserved region, and set it to iommu MSI cookie,
+> then translation tables will be created while request irq.
 > 
-> The ipmmu driver supports default domain.
+> Change log
+> ----------
+> 
+> v1->v2:
+> - add resv iotlb to avoid overlap mapping.
 
-It supports default domains *on arm64*. Nothing on 32-bit ARM uses 
-default domains, they won't even exist since iommu-dma is not enabled, 
-and either way the ARM DMA ops don't understand groups. I don't see an 
-obvious satisfactory solution while the arm_iommu_* APIs still exist, 
-but if we need bodges in the interim could we please try to concentrate 
-them in ARM-specific code?
+put changelog after --- pls
 
-Thanks,
-Robin.
-
-> When code comes to release
-> device, the device driver has already been unbound. The default domain
-> should have been attached to the device. Then iommu_detach_device() does
-> nothing because what it really does is just attaching default domain.
-> 
-> How about removing iommu_detach_device() from ipmmu's release path like
-> below?
-> 
-> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> index bdf1a4e5eae0..0bc29009703e 100644
-> --- a/drivers/iommu/ipmmu-vmsa.c
-> +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -820,7 +820,16 @@ static void ipmmu_probe_finalize(struct device *dev)
-> 
->   static void ipmmu_release_device(struct device *dev)
->   {
-> -       arm_iommu_detach_device(dev);
-> +       struct dma_iommu_mapping *mapping = to_dma_iommu_mapping(dev);
-> +
-> +       if (!mapping) {
-> +               dev_warn(dev, "Not attached\n");
-> +               return;
-> +       }
-> +
-> +       arm_iommu_release_mapping(mapping);
-> +       to_dma_iommu_mapping(dev) = NULL;
-> +       set_dma_ops(dev, NULL);
->   }
-> 
-> After fixing this in ipmmu driver, we can safely put removing device and
-> release_device in a group->mutex critical region in two steps:
-> 
-> Step 1: Refactor iommu_group_remove_device() w/o functionality change:
+> Signed-off-by: Rong Wang <wangrong68@huawei.com>
+> Signed-off-by: Nanyong Sun <sunnanyong@huawei.com>
+> ---
+>  drivers/iommu/iommu.c |  1 +
+>  drivers/vhost/vdpa.c  | 59 ++++++++++++++++++++++++++++++++++++++++---
+>  2 files changed, 57 insertions(+), 3 deletions(-)
 > 
 > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 05522eace439..17b2e358a6fd 100644
+> index 5f6a85aea501..af9c064ad8b2 100644
 > --- a/drivers/iommu/iommu.c
 > +++ b/drivers/iommu/iommu.c
-> @@ -1065,6 +1065,46 @@ int iommu_group_add_device(struct iommu_group 
-> *group, struct device *dev)
->   }
->   EXPORT_SYMBOL_GPL(iommu_group_add_device);
-> 
-> +/*
-> + * Remove a device from a group's device list and return the group device
-> + * if successful.
-> + */
-> +static struct group_device *
-> +__iommu_group_remove_device(struct iommu_group *group, struct device *dev)
+> @@ -2623,6 +2623,7 @@ void iommu_get_resv_regions(struct device *dev, struct list_head *list)
+>  	if (ops->get_resv_regions)
+>  		ops->get_resv_regions(dev, list);
+>  }
+> +EXPORT_SYMBOL(iommu_get_resv_regions);
+>  
+>  /**
+>   * iommu_put_resv_regions - release resered regions
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index ec32f785dfde..a58979da8acd 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -49,6 +49,7 @@ struct vhost_vdpa {
+>  	struct completion completion;
+>  	struct vdpa_device *vdpa;
+>  	struct hlist_head as[VHOST_VDPA_IOTLB_BUCKETS];
+> +	struct vhost_iotlb resv_iotlb;
+>  	struct device dev;
+>  	struct cdev cdev;
+>  	atomic_t opened;
+> @@ -216,6 +217,8 @@ static int vhost_vdpa_reset(struct vhost_vdpa *v)
+>  
+>  	v->in_batch = 0;
+>  
+> +	vhost_iotlb_reset(&v->resv_iotlb);
+> +
+>  	return vdpa_reset(vdpa);
+>  }
+>  
+> @@ -1013,6 +1016,10 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+>  	    msg->iova + msg->size - 1 > v->range.last)
+>  		return -EINVAL;
+>  
+> +	if (vhost_iotlb_itree_first(&v->resv_iotlb, msg->iova,
+> +					msg->iova + msg->size - 1))
+> +		return -EINVAL;
+> +
+>  	if (vhost_iotlb_itree_first(iotlb, msg->iova,
+>  				    msg->iova + msg->size - 1))
+>  		return -EEXIST;
+> @@ -1103,6 +1110,45 @@ static ssize_t vhost_vdpa_chr_write_iter(struct kiocb *iocb,
+>  	return vhost_chr_write_iter(dev, from);
+>  }
+>  
+> +static int vhost_vdpa_resv_iommu_region(struct iommu_domain *domain, struct device *dma_dev,
+> +	struct vhost_iotlb *resv_iotlb)
 > +{
-> +    struct group_device *device;
+> +	struct list_head dev_resv_regions;
+> +	phys_addr_t resv_msi_base = 0;
+> +	struct iommu_resv_region *region;
+> +	int ret = 0;
+> +	bool with_sw_msi = false;
+> +	bool with_hw_msi = false;
 > +
-> +    lockdep_assert_held(&group->mutex);
-> +    list_for_each_entry(device, &group->devices, list) {
-> +        if (device->dev == dev) {
-> +            list_del(&device->list);
-> +            return device;
-> +        }
-> +    }
+> +	INIT_LIST_HEAD(&dev_resv_regions);
+> +	iommu_get_resv_regions(dma_dev, &dev_resv_regions);
 > +
-> +    return NULL;
+> +	list_for_each_entry(region, &dev_resv_regions, list) {
+> +		ret = vhost_iotlb_add_range_ctx(resv_iotlb, region->start,
+> +				region->start + region->length - 1,
+> +				0, 0, NULL);
+> +		if (ret) {
+> +			vhost_iotlb_reset(resv_iotlb);
+> +			break;
+> +		}
+> +
+> +		if (region->type == IOMMU_RESV_MSI)
+> +			with_hw_msi = true;
+> +
+> +		if (region->type == IOMMU_RESV_SW_MSI) {
+> +			resv_msi_base = region->start;
+> +			with_sw_msi = true;
+> +		}
+> +	}
+> +
+> +	if (!ret && !with_hw_msi && with_sw_msi)
+> +		ret = iommu_get_msi_cookie(domain, resv_msi_base);
+> +
+> +	iommu_put_resv_regions(dma_dev, &dev_resv_regions);
+> +
+> +	return ret;
 > +}
 > +
-> +/*
-> + * Release a device from its group and decrements the iommu group 
-> reference
-> + * count.
-> + */
-> +static void __iommu_group_release_device(struct iommu_group *group,
-> +                     struct group_device *grp_dev)
-> +{
-> +    struct device *dev = grp_dev->dev;
+>  static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
+>  {
+>  	struct vdpa_device *vdpa = v->vdpa;
+> @@ -1128,11 +1174,16 @@ static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
+>  
+>  	ret = iommu_attach_device(v->domain, dma_dev);
+>  	if (ret)
+> -		goto err_attach;
+> +		goto err_alloc_domain;
+>  
+> -	return 0;
+> +	ret = vhost_vdpa_resv_iommu_region(v->domain, dma_dev, &v->resv_iotlb);
+> +	if (ret)
+> +		goto err_attach_device;
+>  
+> -err_attach:
+> +	return 0;
+> +err_attach_device:
+> +	iommu_detach_device(v->domain, dma_dev);
+> +err_alloc_domain:
+>  	iommu_domain_free(v->domain);
+>  	return ret;
+>  }
+> @@ -1385,6 +1436,8 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
+>  		goto err;
+>  	}
+>  
+> +	vhost_iotlb_init(&v->resv_iotlb, 0, 0);
 > +
-> +    sysfs_remove_link(group->devices_kobj, grp_dev->name);
-> +    sysfs_remove_link(&dev->kobj, "iommu_group");
-> +
-> +    trace_remove_device_from_group(group->id, dev);
-> +
-> +    kfree(grp_dev->name);
-> +    kfree(grp_dev);
-> +    dev->iommu_group = NULL;
-> +    kobject_put(group->devices_kobj);
-> +}
-> +
->   /**
->    * iommu_group_remove_device - remove a device from it's current group
->    * @dev: device to be removed
-> @@ -1075,7 +1115,7 @@ EXPORT_SYMBOL_GPL(iommu_group_add_device);
->   void iommu_group_remove_device(struct device *dev)
->   {
->       struct iommu_group *group = dev->iommu_group;
-> -    struct group_device *tmp_device, *device = NULL;
-> +    struct group_device *device;
-> 
->       if (!group)
->           return;
-> @@ -1083,27 +1123,11 @@ void iommu_group_remove_device(struct device *dev)
->       dev_info(dev, "Removing from iommu group %d\n", group->id);
-> 
->       mutex_lock(&group->mutex);
-> -    list_for_each_entry(tmp_device, &group->devices, list) {
-> -        if (tmp_device->dev == dev) {
-> -            device = tmp_device;
-> -            list_del(&device->list);
-> -            break;
-> -        }
-> -    }
-> +    device = __iommu_group_remove_device(group, dev);
->       mutex_unlock(&group->mutex);
-> 
-> -    if (!device)
-> -        return;
-> -
-> -    sysfs_remove_link(group->devices_kobj, device->name);
-> -    sysfs_remove_link(&dev->kobj, "iommu_group");
-> -
-> -    trace_remove_device_from_group(group->id, dev);
-> -
-> -    kfree(device->name);
-> -    kfree(device);
-> -    dev->iommu_group = NULL;
-> -    kobject_put(group->devices_kobj);
-> +    if (device)
-> +        __iommu_group_release_device(group, device);
->   }
->   EXPORT_SYMBOL_GPL(iommu_group_remove_device);
-> 
-> 
-> Step 2: Put removing group and release_device in a same critical region:
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 17b2e358a6fd..eeb2907472bc 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -101,6 +101,10 @@ static int 
-> iommu_create_device_direct_mappings(struct iommu_group *group,
->   static struct iommu_group *iommu_group_get_for_dev(struct device *dev);
->   static ssize_t iommu_group_store_type(struct iommu_group *group,
->                         const char *buf, size_t count);
-> +static struct group_device *
-> +__iommu_group_remove_device(struct iommu_group *group, struct device 
-> *dev);
-> +static void __iommu_group_release_device(struct iommu_group *group,
-> +                     struct group_device *grp_dev);
-> 
->   #define IOMMU_GROUP_ATTR(_name, _mode, _show, _store)        \
->   struct iommu_group_attribute iommu_group_attr_##_name =        \
-> @@ -466,18 +470,25 @@ int iommu_probe_device(struct device *dev)
-> 
->   void iommu_release_device(struct device *dev)
->   {
-> +    struct iommu_group *group = dev->iommu_group;
-> +    struct group_device *device;
->       const struct iommu_ops *ops;
-> 
-> -    if (!dev->iommu)
-> +    if (!dev->iommu || !group)
->           return;
-> 
->       iommu_device_unlink(dev->iommu->iommu_dev, dev);
-> 
-> +    mutex_lock(&group->mutex);
->       ops = dev_iommu_ops(dev);
->       if (ops->release_device)
->           ops->release_device(dev);
-> +    device = __iommu_group_remove_device(group, dev);
-> +    mutex_unlock(&group->mutex);
-> +
-> +    if (device)
-> +        __iommu_group_release_device(group, device);
-> 
-> -    iommu_group_remove_device(dev);
->       module_put(ops->owner);
->       dev_iommu_free(dev);
->   }
-> 
-> Best regards,
-> baolu
+>  	r = dev_set_name(&v->dev, "vhost-vdpa-%u", minor);
+>  	if (r)
+>  		goto err;
+> -- 
+> 2.25.1
+
