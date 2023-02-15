@@ -1,124 +1,96 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 106573C1E
-	for <iommu@lists.linux.dev>; Wed, 15 Feb 2023 09:26:41 +0000 (UTC)
-Received: by mail-wm1-f53.google.com with SMTP id j29-20020a05600c1c1d00b003dc52fed235so995538wms.1
-        for <iommu@lists.linux.dev>; Wed, 15 Feb 2023 01:26:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:organization:references:cc:to
-         :content-language:subject:reply-to:from:user-agent:mime-version:date
-         :message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=pDqcpoPLiHDU8oCdM3OoiluY+MByg/cYzVfroSMx2sk=;
-        b=jLIs2Rig2UH6N2f26DYyKCpi7GHi9aVUFhIFP1oGC8vd4gluc++9Uo186mUVJkb3nX
-         HKsBY/O/iBPF/+IcDqCglEoHxPRITux9SUEhfB1pGsjncJPpnphXZK1WE0L+utCFB7mW
-         vMLmNn8iXoRjUr5MqCCib8L2PpF3p0gEDIHJJG7Q4qSDZZ1pv/lv0D8kZrqxwshxZ6C9
-         SxO9URZgHAR3b/iJ7VGuPlkWEsUb3fDk9MM6N4Yp4oJL8YUEGBfxPh6LMYwPQhrNUI3H
-         GMW5kQkzYvsbiRbGfAvdi8AZlXBjJVWvFWD2dSy+1vkhbllK3f2E9yFXVwraQCMsw/WX
-         KTpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:references:cc:to
-         :content-language:subject:reply-to:from:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=pDqcpoPLiHDU8oCdM3OoiluY+MByg/cYzVfroSMx2sk=;
-        b=C7uRYG8+FUX2k0bWR6MCSnI82JrDr4IZuoTZSPzvDbaDodlXIpw3tUVK8J2jYat05n
-         CZi1qSmJih8dbPur2BowNp8xBzL+pxGyx6usCGz00R2LVvuaY4d/hMnRtBzWeCuTBcQh
-         1OcePRV1Gee3d+D6ButWijdzKHRbqTIh3hWqCz0VhBZpHpgyn5VCvE+O4WEeTYJst/Nj
-         mfpOxcu0U+BV7/YUo12UQ6GLFJTzIaMOlgdTm7NPHkkQoLRzOILKy2CmGmm8cebUnvZd
-         xmE8iRlCRuQeoY4IA9S05C3DAf2ASMsPD69ejDQR4PI9Y2QJkoji9aNDpQnZE3yrpGM3
-         O3Gg==
-X-Gm-Message-State: AO0yUKWNGjhveFHgtQTRPg+2lR59U/CC57j7kDmcxKraJbAUEeKluqJV
-	b9XGGMQGWnzjUCU1OhAn2FnWfg==
-X-Google-Smtp-Source: AK7set8RA5uU58/+01j7yB6ab5moJgdO2RqwtybuzHkNa6HHIX9IfrfNZyIuB4QKCVA3fe7Va27xjQ==
-X-Received: by 2002:a05:600c:46c6:b0:3e0:14a:697a with SMTP id q6-20020a05600c46c600b003e0014a697amr1682223wmo.6.1676453200227;
-        Wed, 15 Feb 2023 01:26:40 -0800 (PST)
-Received: from ?IPV6:2a01:e0a:982:cbb0:7fda:5fd:df14:bb65? ([2a01:e0a:982:cbb0:7fda:5fd:df14:bb65])
-        by smtp.gmail.com with ESMTPSA id he7-20020a05600c540700b003e118684d56sm1393389wmb.45.2023.02.15.01.26.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Feb 2023 01:26:39 -0800 (PST)
-Message-ID: <bb6f65a0-a4af-c9e6-ddc8-6ff06452c9dc@linaro.org>
-Date: Wed, 15 Feb 2023 10:26:39 +0100
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B47297C
+	for <iommu@lists.linux.dev>; Wed, 15 Feb 2023 11:09:36 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2FCBB1042;
+	Wed, 15 Feb 2023 03:10:13 -0800 (PST)
+Received: from [10.57.90.25] (unknown [10.57.90.25])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CAC213F703;
+	Wed, 15 Feb 2023 03:09:28 -0800 (PST)
+Message-ID: <f4559966-c99e-47d2-a5ab-d248c7ed8e52@arm.com>
+Date: Wed, 15 Feb 2023 11:09:22 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-From: Neil Armstrong <neil.armstrong@linaro.org>
-Reply-To: neil.armstrong@linaro.org
-Subject: Re: [PATCH v3] dt-bindings: arm-smmu: Add compatible for SM8550 SoC
-Content-Language: en-US
-To: Will Deacon <will@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org, Robin Murphy
- <robin.murphy@arm.com>, linux-arm-msm@vger.kernel.org,
- iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, Abel Vesa <abel.vesa@linaro.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Rob Herring <robh+dt@kernel.org>, Joerg Roedel <joro@8bytes.org>
-References: <20230207-topic-sm8550-upstream-smmu-bindings-v3-1-cb15a7123cfe@linaro.org>
-Organization: Linaro Developer Services
-In-Reply-To: <20230207-topic-sm8550-upstream-smmu-bindings-v3-1-cb15a7123cfe@linaro.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.2
+Subject: Re: [PATCH 2/4] iommu: Use group ownership to avoid driver attachment
+Content-Language: en-GB
+To: Baolu Lu <baolu.lu@linux.intel.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
+Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@infradead.org>,
+ Will Deacon <will@kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20230213074941.919324-1-baolu.lu@linux.intel.com>
+ <20230213074941.919324-3-baolu.lu@linux.intel.com>
+ <Y+pG9kWzR2c5I9FU@nvidia.com>
+ <b7f501b0-42c4-5402-7bb1-b4681b6e624c@linux.intel.com>
+ <BN9PR11MB52768BD174CE9F4AE40C12078CA39@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <4ac228af-fb74-2d89-b8d7-462186170e12@linux.intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <4ac228af-fb74-2d89-b8d7-462186170e12@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Hi Will,
+On 2023-02-15 07:28, Baolu Lu wrote:
+> On 2023/2/15 14:56, Tian, Kevin wrote:
+>>> From: Baolu Lu<baolu.lu@linux.intel.com>
+>>> Sent: Wednesday, February 15, 2023 1:51 PM
+>>>
+>>> On 2/13/23 10:19 PM, Jason Gunthorpe wrote:
+>>>> On Mon, Feb 13, 2023 at 03:49:39PM +0800, Lu Baolu wrote:
+>>>>> @@ -2992,6 +2987,14 @@ static ssize_t iommu_group_store_type(struct
+>>> iommu_group *group,
+>>>>>        else
+>>>>>            return -EINVAL;
+>>>>>
+>>>>> +    if (req_type != IOMMU_DOMAIN_DMA_FQ ||
+>>>>> +        group->default_domain->type != IOMMU_DOMAIN_DMA) {
+>>>>> +        ret = iommu_group_claim_dma_owner(group, (void *)buf);
+>>>>> +        if (ret)
+>>>>> +            return ret;
+>>>>> +        group_owner_claimed = true;
+>>>>> +    }
+>>>> I don't get it, this should be done unconditionally. If we couldn't
+>>>> take ownership then we simply can't progress.
+>>> The existing code allows the user to switch the default domain from
+>>> strict to lazy invalidation mode. The default domain is not changed,
+>>> hence it should be seamless and transparent to the device driver.
+>> Is there real usage relying on this transition for a bound device?
+>>
+>> In concept strict->lazy transition implies relaxed DMA security. It's 
+>> hard
+>> to think of a motivation of doing so while the device might be doing
+>> in-fly DMAs.
+>>
+>> Presumably such perf/security tradeoff should be planned way before
+>> binding device/driver together.
+>>
+>> btw if strict->lazy is allowed why lazy->strict is prohibited?
+>>
+> 
+> We all know, strict vs. lazy is a tradeoff between performance and
+> security.
+> 
+> strict -> lazy: driver works in secure mode. This transition trades off
+> security for better performance.
+> 
+> lazy->strict: The driver is already working in non-safety mode. This
+> transition only results in worse performance. It makes no sense. If user
+> want to put the driver in a secure mode, they need to unbind the driver,
+> reset the device and do the lazy->strict transition.
+> 
+> Robin might have better insights.
 
-On 08/02/2023 10:13, neil.armstrong@linaro.org wrote:
-> From: Abel Vesa <abel.vesa@linaro.org>
-> 
-> Add the SoC specific compatible for SM8550 implementing
-> arm,mmu-500.
-> 
-> Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
-> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
-> ---
-> Changes in v3:
-> - update allOf:if: for disallowing clocks
-> - Link to v2: https://lore.kernel.org/r/20230207-topic-sm8550-upstream-smmu-bindings-v2-1-680cbfae6dac@linaro.org
-> 
-> Changes in v2:
-> - Rebased on new bindings using qcom,smmu-500 & arm,mmu-500
-> - Dropped driver changes since we rely on qcom,smmu-500 fallback
-> - Link to v1: https://lore.kernel.org/all/20221116114001.2669003-1-abel.vesa@linaro.org/
-> ---
->   Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 2 ++
->   1 file changed, 2 insertions(+)
-
-Do you think you can pick this patch for v6.3 ?
+Yes, this was added for a definite use-case in ChromeOS, where 
+strict->lazy needs to support being done "live" since the device in 
+question is the storage controller for the already-mounted root 
+filesystem. Your reasoning seems to match what I summarised in the 
+original commit message :)
 
 Thanks,
-Neil
-
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> index 807cb511fe18..ea81e9b1860c 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> @@ -53,6 +53,7 @@ properties:
->                 - qcom,sm8250-smmu-500
->                 - qcom,sm8350-smmu-500
->                 - qcom,sm8450-smmu-500
-> +              - qcom,sm8550-smmu-500
->             - const: qcom,smmu-500
->             - const: arm,mmu-500
->   
-> @@ -389,6 +390,7 @@ allOf:
->                 - qcom,sm6375-smmu-500
->                 - qcom,sm8350-smmu-500
->                 - qcom,sm8450-smmu-500
-> +              - qcom,sm8550-smmu-500
->       then:
->         properties:
->           clock-names: false
-> 
-> ---
-> base-commit: 49a8133221c71b935f36a7c340c0271c2a9ee2db
-> change-id: 20230207-topic-sm8550-upstream-smmu-bindings-dbf9242cc313
-> 
-> Best regards,
-
+Robin.
