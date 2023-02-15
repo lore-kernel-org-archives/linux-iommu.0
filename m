@@ -1,160 +1,281 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2083.outbound.protection.outlook.com [40.107.94.83])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E79EE17F5
-	for <iommu@lists.linux.dev>; Wed, 15 Feb 2023 05:27:57 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=N1UuyC3gHOimXmNENW8fz0uYP4RNNrpmaFyjySR3mNmHz1e5a87mmZf0TekBynznsYZZJlHlL3QsaZ0Ntkm/J5sE4mhUEh/AzvmFvpDYv7Ql99SIG9LD8IEHHv4wjs2kbxX17fOhH5ZxHFEgKXHFimxi6Rkjz/KsTzgCeDRtojoX14oTgVvzWv2OoyG+uNSGdLdT8Lts7g/afgzyLfRHympcsOEz2jJET8ldVXzU70Cvs18Tdq9Qv+UU2UhuJgDwjwBy29f7gfHtDxd9D7neCktRwXxFrXqHlZ6FjxdQ9MYguJKwkTzXkPRIejzYvVEg0eDLKpfezE64BKFHAC6Yjg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2A450avS394eP89Q08HzutBhTxb5DOBuutD5mBJ0F9Y=;
- b=dUY8cOiMnI6VQVz6xzqcFcOs0fTUD+yQAu4cyjPxe56vIOV15y4Vfslm2SjXpM8JqF4RC2q18pIRN00HPB+xeDIdEE6TYFBNFSll3TH5EvOrkd/b/L9VzecUDi0Y8KOWQTRSZhPo8ilTiRwi0MBlqa5nj5BsC/AtDXXaieLNLcJ6i/7mqCwz2n7TJB1uWzevMieY0SvLCM9vvdQcMaP48EEmK1s1IyvqANNARx2rDurs9ROqkV0Opp2J/bfhkDScK+yEtPu6FJQacbyZE/kc64l+X7NhGm/D9jsyWe2jMp+vZ1vZAHfAwYQriICyrvjtemam7qyVFp5wI2jFd1mJog==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2A450avS394eP89Q08HzutBhTxb5DOBuutD5mBJ0F9Y=;
- b=1Cr/1YQr/MMdgrqFzMK7ISpGebLphHbJ4oj9UlA1WiNtd0+yX1AHcB5vY6W7wA811++/NF4SkMM2dVVvcDyWZ86sjflwXbs8Gxjc/3AwGrskijyzCugbRFCudb5ih1YuLdNoWC+OcyC1T6T9Xv8ucsNMVOwmt1iw4y3yB8nU9lQ=
-Received: from BN9PR03CA0706.namprd03.prod.outlook.com (2603:10b6:408:ef::21)
- by DM6PR12MB4187.namprd12.prod.outlook.com (2603:10b6:5:212::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26; Wed, 15 Feb
- 2023 05:27:55 +0000
-Received: from BL02EPF0000C406.namprd05.prod.outlook.com
- (2603:10b6:408:ef:cafe::9a) by BN9PR03CA0706.outlook.office365.com
- (2603:10b6:408:ef::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26 via Frontend
- Transport; Wed, 15 Feb 2023 05:27:55 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BL02EPF0000C406.mail.protection.outlook.com (10.167.241.8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6111.8 via Frontend Transport; Wed, 15 Feb 2023 05:27:55 +0000
-Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 14 Feb
- 2023 23:27:52 -0600
-From: Vasant Hegde <vasant.hegde@amd.com>
-To: <iommu@lists.linux.dev>, <joro@8bytes.org>, <baolu.lu@linux.intel.com>
-CC: <suravee.suthikulpanit@amd.com>, <robin.murphy@arm.com>,
-	<will@kernel.org>, Vasant Hegde <vasant.hegde@amd.com>, Matt Fagnani
-	<matt.fagnani@bell.net>
-Subject: [PATCH v3 3/3] iommu/amd: Improve page fault error reporting
-Date: Wed, 15 Feb 2023 05:26:42 +0000
-Message-ID: <20230215052642.6016-3-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230215052642.6016-1-vasant.hegde@amd.com>
-References: <20230215052642.6016-1-vasant.hegde@amd.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EABBFCBA9
+	for <iommu@lists.linux.dev>; Wed, 15 Feb 2023 05:43:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676439806; x=1707975806;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=SehO2pfMACkfE6etG3eoVFEtRQzAQtbxDiF2gzX8Z6E=;
+  b=bZ0EGEoXLXbZ/EurxqanG32ZTVX4C/AlL3euvDI/Oy2c6+CcM9o/S9WF
+   NxmuJM4zB4jXLy1CbYSUoCOVrefwT0k7jOPCtsCDHnABgLvvKauwdIyqd
+   ttjm2JjxY4ccunBq1QykDnOaqRuBXNag4ukhDZmbllRDZUT/ZREgdPYZB
+   W2oRaL4BPxxVrrksS4FPMRpbkpGOmi4g0lH0EaNwa1yK3UymVILt9DWtR
+   f3vNhLNecezpApdgcdrYblGtwTu39MP2PMTqWfMM5pTTFqnT1EOKRhjTF
+   yiyjxNsLLoYvVf3vNc9RjdcE18oCxHWc7jXTbE7w29lVdmWIjig05yaAh
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="310981593"
+X-IronPort-AV: E=Sophos;i="5.97,298,1669104000"; 
+   d="scan'208";a="310981593"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2023 21:43:25 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="619305562"
+X-IronPort-AV: E=Sophos;i="5.97,298,1669104000"; 
+   d="scan'208";a="619305562"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
+  by orsmga003.jf.intel.com with ESMTP; 14 Feb 2023 21:43:22 -0800
+Message-ID: <9f516f44-3dc9-6f15-11d0-10bfb1b29b1e@linux.intel.com>
+Date: Wed, 15 Feb 2023 13:34:59 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF0000C406:EE_|DM6PR12MB4187:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4dc06639-cfc6-497e-9707-08db0f156473
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	YtzxzVwOl+CJVqWOf83Dr2r2rRFnhHGx0L9RGgeDylAw8IXUthRXos1vRmtBH4VBv2AeulW7WoyqqzliogNSgAsbmqxiNxDjGoFZSghbPSS7ZohbLzvGP4QWEKqntNHPNlaEMrKgFGQClXXGGZAvE3twx3TOYhgiqQJRri8pMFw80grqf9xihGN8w2OfOsOy+hObycp5O1F+O2Cyr1oAhlSgPCcW8ynY+Ilhlb55envGVoSIZIYdI47hslzo81Ipp3l986u/ReLo6x92djrAAG6VxiCA1sG+vtYXV980Gmo31/Z0HSqkOvGs4s5PaFMkvo7KRtgrGoNJsm+kSGBadtL6e1xlzgKUSGBVI8SZ9DrihCYkkBRqxTNcB4HIEOY7moyT1rQIv5o5GDUfiwJuK7yOSc60vrUCjGlofuGs+NFAna1+XiljXkgZtO5Yp4r42xRRV5fqWPk3x4IYWwJU2NtVUJlw1EhCD4jcHAO3thzX74l72VxKQWD6WUOX2UwiAQhP+d5Vqq7LJLl/qEjC00m27GjGJ2amA5nsLNDmLTnVPp6yeJ602S3GiKWaXX+G//rTtvPU5NuuTiaGhHyqMwvc+fugXE3hAQf+YueAkPwP6P0nsB/TkeQP62NkiVaTey9EVRM0NH1/ZyMRdMIZZ170sZDvgUrByp2gH92KlMyfbOnLA3vmMHBNuwqGgQolJEN1Dhr+lvrfz83yS5LyqJc9zJD8tI+c6QuetwotF2cm7Z0/1Zcu88JLnx4Q6+X7
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(376002)(39860400002)(136003)(346002)(396003)(451199018)(40470700004)(36840700001)(46966006)(36756003)(40480700001)(6666004)(110136005)(316002)(83380400001)(54906003)(40460700003)(16526019)(186003)(26005)(2616005)(1076003)(2906002)(44832011)(5660300002)(8936002)(36860700001)(47076005)(426003)(478600001)(336012)(82740400003)(7696005)(356005)(86362001)(8676002)(4326008)(82310400005)(70586007)(81166007)(70206006)(41300700001)(21314003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2023 05:27:55.6614
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4dc06639-cfc6-497e-9707-08db0f156473
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL02EPF0000C406.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4187
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@infradead.org>,
+ Kevin Tian <kevin.tian@intel.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] iommu: Add dev_iommu->ops_rwsem
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <20230213074941.919324-1-baolu.lu@linux.intel.com>
+ <20230213074941.919324-2-baolu.lu@linux.intel.com>
+ <Y+pGUOkLVUMFYWOb@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <Y+pGUOkLVUMFYWOb@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-If IOMMU domain for device group is not setup properly then we may hit
-IOMMU page fault. Current page fault handler assumes that domain is
-always setup and it will hit NULL pointer derefence (see below sample log).
+On 2/13/23 10:16 PM, Jason Gunthorpe wrote:
+> On Mon, Feb 13, 2023 at 03:49:38PM +0800, Lu Baolu wrote:
+> 
+>> +static int iommu_group_freeze_dev_ops(struct iommu_group *group)
+>> +{
+>> +	struct group_device *device;
+>> +	struct device *dev;
+>> +
+>> +	mutex_lock(&group->mutex);
+>> +	list_for_each_entry(device, &group->devices, list) {
+>> +		dev = device->dev;
+>> +		down_read(&dev->iommu->ops_rwsem);
+> 
+> This isn't allowed, you can't obtain locks in a loop like this, it
+> will deadlock.
+> 
+> You don't need more locks, we already have the group mutex, the
+> release path should be fixed to use it properly as I was trying to do here:
+> 
+> https://lore.kernel.org/kvm/4-v1-ef00ffecea52+2cb-iommu_group_lifetime_jgg@nvidia.com/
+> https://lore.kernel.org/kvm/YyyTxx0HnA3maxEk@nvidia.com/
+> 
+> Then what you'd do in a path like this is:
+> 
+>    mutex_lock(&group->mutex);
+>    dev = iommu_group_first_device(group)
+>    if (!dev)
+>       /* Racing with group cleanup */
+>       return -EINVAL;
+>    
+>    /* Now dev->ops is valid and must remain valid so long as
+>       group->mutex is held */
+>     
+> 
+> The only reason this doesn't work already is because of the above
+> stuff about release not holding the group mutex when manipulating the
+> devices in the group. This is simply mis-locked.
+> 
+> Robin explained it was done like this because
+> arm_iommu_detach_device() re-enters the iommu core during release_dev,
+> so I suggest fixing that by simply not doing that (see above)
+> 
+> Below is the lastest attempt I had tried, I didn't have time to get back
+> to it and we fixed the bug another way. It needs a bit of adjusting to
+> also remove the device from the group after release is called within
+> the same mutex critical region.
 
-Lets check whether domain is setup or not and log appropriate message.
+Yes. If we can make remove device from list and device release in the
+same mutex critical region, we don't need any other lock mechanism
+anymore.
 
-Sample log:
-----------
-Jan 06 02:07:52 kernel: amdgpu 0000:00:01.0: amdgpu: SE 1, SH per SE 1, CU per SH 8, active_cu_number 6
-Jan 06 02:07:52 kernel: BUG: kernel NULL pointer dereference, address: 0000000000000058
-Jan 06 02:07:52 kernel: #PF: supervisor read access in kernel mode
-Jan 06 02:07:53 kernel: #PF: error_code(0x0000) - not-present page
-Jan 06 02:07:53 kernel: PGD 0 P4D 0
-Jan 06 02:07:53 kernel: Oops: 0000 [#1] PREEMPT SMP NOPTI
-Jan 06 02:07:53 kernel: CPU: 2 PID: 56 Comm: irq/24-AMD-Vi Not tainted 6.2.0-rc2+ #89
-Jan 06 02:07:53 kernel: Hardware name: xxx
-Jan 06 02:07:53 kernel: RIP: 0010:report_iommu_fault+0x11/0x90
-Jan 06 02:07:53 kernel: Code: 0f 0b eb cd 0f 1f 44 00 00 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 0f 1f 44 00 00 41 55 41 54 41 89 cc 55 48 89 d5 53 <48> 8b 47 48 48 89 f3 48 85 c0 74 64 4c 8b 47 50 e8 ea e8 4a 00 41
-Jan 06 02:07:53 kernel: RSP: 0018:ffffb9b7803ebe08 EFLAGS: 00010246
-Jan 06 02:07:53 kernel: RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-Jan 06 02:07:53 kernel: RDX: 00000001522e2500 RSI: ffff940cc09e30d0 RDI: 0000000000000010
-Jan 06 02:07:53 kernel: RBP: 00000001522e2500 R08: ffff940cc12c2b00 R09: 0000000000000050
-Jan 06 02:07:53 kernel: R10: ffff940cc021e000 R11: 0000000000000000 R12: 0000000000000000
-Jan 06 02:07:53 kernel: R13: ffff940cc005b000 R14: 0000000000000008 R15: 0000000000000000
-Jan 06 02:07:53 kernel: FS:  0000000000000000(0000) GS:ffff940db7500000(0000) knlGS:0000000000000000
-Jan 06 02:07:53 kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-Jan 06 02:07:53 kernel: CR2: 0000000000000058 CR3: 000000010230a000 CR4: 00000000001506e0
-Jan 06 02:07:53 kernel: Call Trace:
-Jan 06 02:07:53 kernel:  <TASK>
-Jan 06 02:07:53 kernel:  amd_iommu_int_thread+0x60c/0x760
-Jan 06 02:07:53 kernel:  ? __pfx_irq_thread_fn+0x10/0x10
-Jan 06 02:07:53 kernel:  irq_thread_fn+0x1f/0x60
-Jan 06 02:07:53 kernel:  irq_thread+0xea/0x1a0
-Jan 06 02:07:53 kernel:  ? preempt_count_add+0x6a/0xa0
-Jan 06 02:07:53 kernel:  ? __pfx_irq_thread_dtor+0x10/0x10
-Jan 06 02:07:53 kernel:  ? __pfx_irq_thread+0x10/0x10
-Jan 06 02:07:53 kernel:  kthread+0xe9/0x110
-Jan 06 02:07:53 kernel:  ? __pfx_kthread+0x10/0x10
-Jan 06 02:07:53 kernel:  ret_from_fork+0x2c/0x50
-Jan 06 02:07:53 kernel:  </TASK>
+The ipmmu driver supports default domain. When code comes to release
+device, the device driver has already been unbound. The default domain
+should have been attached to the device. Then iommu_detach_device() does
+nothing because what it really does is just attaching default domain.
 
-Reported-by: Matt Fagnani <matt.fagnani@bell.net>
-Suggested-by: Joerg Roedel <joro@8bytes.org>
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
----
- drivers/iommu/amd/iommu.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+How about removing iommu_detach_device() from ipmmu's release path like
+below?
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 26c96b821fa2..9dc41c48c29d 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -558,6 +558,15 @@ static void amd_iommu_report_page_fault(struct amd_iommu *iommu,
- 		 * prevent logging it.
- 		 */
- 		if (IS_IOMMU_MEM_TRANSACTION(flags)) {
-+			/* Device not attached to domain properly */
-+			if (dev_data->domain == NULL) {
-+				pr_err_ratelimited("Event logged [Device not attached to domain properly]\n");
-+				pr_err_ratelimited("  device=%04x:%02x:%02x.%x domain=0x%04x\n",
-+						   iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid),
-+						   PCI_FUNC(devid), domain_id);
-+				goto out;
-+			}
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index bdf1a4e5eae0..0bc29009703e 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -820,7 +820,16 @@ static void ipmmu_probe_finalize(struct device *dev)
+
+  static void ipmmu_release_device(struct device *dev)
+  {
+-       arm_iommu_detach_device(dev);
++       struct dma_iommu_mapping *mapping = to_dma_iommu_mapping(dev);
 +
- 			if (!report_iommu_fault(&dev_data->domain->domain,
- 						&pdev->dev, address,
- 						IS_WRITE_REQUEST(flags) ?
--- 
-2.31.1
++       if (!mapping) {
++               dev_warn(dev, "Not attached\n");
++               return;
++       }
++
++       arm_iommu_release_mapping(mapping);
++       to_dma_iommu_mapping(dev) = NULL;
++       set_dma_ops(dev, NULL);
+  }
 
+After fixing this in ipmmu driver, we can safely put removing device and
+release_device in a group->mutex critical region in two steps:
+
+Step 1: Refactor iommu_group_remove_device() w/o functionality change:
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 05522eace439..17b2e358a6fd 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1065,6 +1065,46 @@ int iommu_group_add_device(struct iommu_group 
+*group, struct device *dev)
+  }
+  EXPORT_SYMBOL_GPL(iommu_group_add_device);
+
++/*
++ * Remove a device from a group's device list and return the group device
++ * if successful.
++ */
++static struct group_device *
++__iommu_group_remove_device(struct iommu_group *group, struct device *dev)
++{
++	struct group_device *device;
++
++	lockdep_assert_held(&group->mutex);
++	list_for_each_entry(device, &group->devices, list) {
++		if (device->dev == dev) {
++			list_del(&device->list);
++			return device;
++		}
++	}
++
++	return NULL;
++}
++
++/*
++ * Release a device from its group and decrements the iommu group reference
++ * count.
++ */
++static void __iommu_group_release_device(struct iommu_group *group,
++					 struct group_device *grp_dev)
++{
++	struct device *dev = grp_dev->dev;
++
++	sysfs_remove_link(group->devices_kobj, grp_dev->name);
++	sysfs_remove_link(&dev->kobj, "iommu_group");
++
++	trace_remove_device_from_group(group->id, dev);
++
++	kfree(grp_dev->name);
++	kfree(grp_dev);
++	dev->iommu_group = NULL;
++	kobject_put(group->devices_kobj);
++}
++
+  /**
+   * iommu_group_remove_device - remove a device from it's current group
+   * @dev: device to be removed
+@@ -1075,7 +1115,7 @@ EXPORT_SYMBOL_GPL(iommu_group_add_device);
+  void iommu_group_remove_device(struct device *dev)
+  {
+  	struct iommu_group *group = dev->iommu_group;
+-	struct group_device *tmp_device, *device = NULL;
++	struct group_device *device;
+
+  	if (!group)
+  		return;
+@@ -1083,27 +1123,11 @@ void iommu_group_remove_device(struct device *dev)
+  	dev_info(dev, "Removing from iommu group %d\n", group->id);
+
+  	mutex_lock(&group->mutex);
+-	list_for_each_entry(tmp_device, &group->devices, list) {
+-		if (tmp_device->dev == dev) {
+-			device = tmp_device;
+-			list_del(&device->list);
+-			break;
+-		}
+-	}
++	device = __iommu_group_remove_device(group, dev);
+  	mutex_unlock(&group->mutex);
+
+-	if (!device)
+-		return;
+-
+-	sysfs_remove_link(group->devices_kobj, device->name);
+-	sysfs_remove_link(&dev->kobj, "iommu_group");
+-
+-	trace_remove_device_from_group(group->id, dev);
+-
+-	kfree(device->name);
+-	kfree(device);
+-	dev->iommu_group = NULL;
+-	kobject_put(group->devices_kobj);
++	if (device)
++		__iommu_group_release_device(group, device);
+  }
+  EXPORT_SYMBOL_GPL(iommu_group_remove_device);
+
+
+Step 2: Put removing group and release_device in a same critical region:
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 17b2e358a6fd..eeb2907472bc 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -101,6 +101,10 @@ static int 
+iommu_create_device_direct_mappings(struct iommu_group *group,
+  static struct iommu_group *iommu_group_get_for_dev(struct device *dev);
+  static ssize_t iommu_group_store_type(struct iommu_group *group,
+  				      const char *buf, size_t count);
++static struct group_device *
++__iommu_group_remove_device(struct iommu_group *group, struct device *dev);
++static void __iommu_group_release_device(struct iommu_group *group,
++					 struct group_device *grp_dev);
+
+  #define IOMMU_GROUP_ATTR(_name, _mode, _show, _store)		\
+  struct iommu_group_attribute iommu_group_attr_##_name =		\
+@@ -466,18 +470,25 @@ int iommu_probe_device(struct device *dev)
+
+  void iommu_release_device(struct device *dev)
+  {
++	struct iommu_group *group = dev->iommu_group;
++	struct group_device *device;
+  	const struct iommu_ops *ops;
+
+-	if (!dev->iommu)
++	if (!dev->iommu || !group)
+  		return;
+
+  	iommu_device_unlink(dev->iommu->iommu_dev, dev);
+
++	mutex_lock(&group->mutex);
+  	ops = dev_iommu_ops(dev);
+  	if (ops->release_device)
+  		ops->release_device(dev);
++	device = __iommu_group_remove_device(group, dev);
++	mutex_unlock(&group->mutex);
++
++	if (device)
++		__iommu_group_release_device(group, device);
+
+-	iommu_group_remove_device(dev);
+  	module_put(ops->owner);
+  	dev_iommu_free(dev);
+  }
+
+Best regards,
+baolu
