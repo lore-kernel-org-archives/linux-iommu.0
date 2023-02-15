@@ -1,175 +1,122 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2049.outbound.protection.outlook.com [40.107.244.49])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C52C710784
-	for <iommu@lists.linux.dev>; Wed, 15 Feb 2023 18:46:46 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EWINMKWDTvKTEJOLP/4qa//u9CQz33t6huRHAD5J3IxqEj/NN7Hfx+eXHtg3N6lr5bIVArIibF3atJUBR/jZ06mXu4uvNu4r9L0Wl8/GvrtJKxMZTI3CUCNXB17cnVhm98/LjP6K9sIe/QRDIcyjeij9W/KtYL7zLXHxgRctwt1QYBr9PcCi6YeJSU/7Pfk+ObIpvUxK0RCTlygMjm2Z4Ebmkj6aIt6fSMjyRbUyB2eCCZe5WcM9+7Wvy8jCKu67J+tTuZHKiVJc6t84eYvNH3p7I0eK7VMOiKbD4HrrBGYOgQVUEnJA2sYBxyHQh+1iaHx5H5PtMMed/RCQ6JqrXA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=i7+ocF1XTodoVj+guL3bqg/vxjxC6BrXYEcec3Dvgs8=;
- b=Fxh4xXOn/hdWwNHObCHrzTbwnS9o14alkuDw7udEad5+G55hUcRu9m2PBXLz7q2GnmJsgKuv1xuWJmo0zY5r0KI9sLryEsvyQ1Q9WhOX80ZjxENimIrek/6uZofi5Jmikx0GNcE+M51NYm+RvmzWmdWyAZFXCzFUKaNl7KXoeYUn5CaaNFPBMkDCvUDXZvhGLsTPeHqNIgskcA2Z68LwJKazMSXLZt8/JYGkNKN4n72zKWuT5kcmhbTYEojAl420QgGgaW055tXHey5f7lRfG/S6ma0N10/XwX5+VyPwAseoTq/eJBNiOSZzqhNLVoQWYerG35iZsuQGPqqxuCzQRQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=i7+ocF1XTodoVj+guL3bqg/vxjxC6BrXYEcec3Dvgs8=;
- b=I2zoy3wKIxgmIu012unCjwo0DItaWwRegrP65Y79hwHkEC4XSw8fwODJ0vH2xRGAZ6bUKQJwy3ykM4/EjjqhGtW8EIfkZJP3OC4mQ0dh7crUGOmTqYY7LxyklWoguYaYsGl+JRcvzGwa+Xz6vAmGg+qMLf6fEzpOPtkTM6xcG4uIxu3Q5kLi6hi+r8XA2XfnTfgMO/+ONszb2LDeOCOqTN/xgZ124zeQSDqoi8ZRsUGO8iKq15c2xL+05VlFncWDwlkw/bZn2hkzni+kzJ6SA0aPYE/siDPgCAkeXpvcmbES4Yv/LNyBs+2fWJ2VZWf788eD9aQUYUr7CPhQn68fSw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by PH0PR12MB8032.namprd12.prod.outlook.com (2603:10b6:510:26f::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26; Wed, 15 Feb
- 2023 18:46:44 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee%4]) with mapi id 15.20.6086.024; Wed, 15 Feb 2023
- 18:46:44 +0000
-Date: Wed, 15 Feb 2023 14:46:43 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
-	LKML <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	David Woodhouse <dwmw2@infradead.org>,
-	"Raj, Ashok" <ashok.raj@intel.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>
-Subject: Re: [PATCH v2 2/3] iommu/sva: Stop using ioasid_set for SVA
-Message-ID: <Y+0okzkbTh6mw0EM@nvidia.com>
-References: <20230214064414.1038058-1-jacob.jun.pan@linux.intel.com>
- <20230214064414.1038058-3-jacob.jun.pan@linux.intel.com>
- <BN9PR11MB527670F77FADCB351E41F8B78CA39@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20230215103822.6235ada9@jacob-builder>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230215103822.6235ada9@jacob-builder>
-X-ClientProxiedBy: MN2PR20CA0014.namprd20.prod.outlook.com
- (2603:10b6:208:e8::27) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3163DD2E7
+	for <iommu@lists.linux.dev>; Wed, 15 Feb 2023 20:57:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC14FC433EF;
+	Wed, 15 Feb 2023 20:57:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1676494647;
+	bh=L7iL02aPlYxbwnt1oXsjVxdLXXr3uFE8b+MsguWRWfA=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=NFwJFk8a2PU4AbCXca0VIbTRRKa6Kq3ZwDubDgOFTLh9mxLpU8Ct0EfmjeWLca8x6
+	 obnGL5bIaMYp1+zQ/DfoFm1SGK4aNBuwkuYD8x0TPP3n5aWZQKFtioUceb5H1XUlk/
+	 jgkyTy6OgNlv/XUEj9PVpPW99QpgB7Arlw4HlFEGLZwrfDjhT3ZGZ/m6RBr5A92KfI
+	 Ek21aBhMrHRKJOzJQ2T2N4znNHEWXzFrCQr+HgpxLRsmAZxAhSa7dnG7thY6KeQ3OK
+	 kUXGVh9G6wq4ufrmPmGaYFqt8DFWbTKYwxyMHZVl6Cqe4Ce8v8STY0Wqvq4+XGlHfU
+	 tESLFGGLRIOZg==
+Date: Wed, 15 Feb 2023 14:57:26 -0600
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>,
+	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+	bhelgaas@google.com, jean-philippe@linaro.org,
+	darren@os.amperecomputing.com, scott@os.amperecomputing.com,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+Subject: Re: [PATCH] PCI/ATS:  Allow to enable ATS on VFs even if it is not
+ enabled on PF
+Message-ID: <20230215205726.GA3213227@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|PH0PR12MB8032:EE_
-X-MS-Office365-Filtering-Correlation-Id: a9696bfe-20c2-4faa-d896-08db0f84fc46
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	yvX2NmEGh//zVzM087ye2s/m5Y/mjE3kL6OyfBr2T+CoLGcgHAIzXADzu+Z3jmaJln+lH1xddG65BBOQUKAj/83fX92Pgl8HpDW02oqI32oIYKvgKwoGMwgytsJEuJcAwHGKJy+XMqQitaavrLV8sE/5Ax4c4Z+t56++PPBvWJj/iZNydYI2pE0mKWGVLk70NkpEG7d+o7yptynDFTDZIO648FyOHNnnbp6t2dAkxzGuIZnP6uMg4Kg/VnAtktpnPH4Vxh8C3LGlhQI/Lp1IliBpBjC5An7KErAkSb31EydFy870zLFnuTYfernue7pJxWM6jawXKY0Xz/PwY51GyO0qiJgvLJ8KodBVQXNhvjKz1wqtc6eGte43WRbkk8LMiKf0f/4sDcyTfFiS4/eicyBlCFEIDVLS2cKExgtMye4siJZ0VkJ4+PY/NS9T+uRlKGQRLfwQw/D6HvXW7jPKAV+rMBRzcYdt7N2ul0WMDG242w0Zi/84w/5AFfeI4cdClAjppDt/4kuRIrhvP3TzWelz77iXEBhdatPCJBCDspsCAIo6pEwIiZH2JBHjh3fUi1U1KR55G03VDscsCBGJAWWX+xNKT2aPNCSezjATilGzOmCJXLM81R97KX9yr/LEvppUcVWmFh9/MlzKkG3Z9NzAMgYuu0jdlm4m1UqbXly8sR0EWAJWG9yZxQe93mEc
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(346002)(366004)(136003)(39860400002)(396003)(451199018)(7416002)(41300700001)(5660300002)(8936002)(2906002)(54906003)(66476007)(66556008)(6916009)(316002)(36756003)(8676002)(66946007)(4326008)(2616005)(38100700002)(83380400001)(86362001)(26005)(186003)(6512007)(478600001)(6506007)(6486002)(67856001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?q12mA/+eZuhICir0Y2NrIAFtIvn7XYnAfHNslEGs6PvzqhtNv9t6UMHV0YSs?=
- =?us-ascii?Q?ZEyV7Q8blhIBr8BwmlGPY2Q+H/GQG8JA7fOW9HgLIELR5HTYvbCT2i/CNoiM?=
- =?us-ascii?Q?/d1MtUd4yJnw0gVD5uR71iktmvHXktxBg4cKhcx458nhLlhJsyNUseAYqfqo?=
- =?us-ascii?Q?8IPk8Rx3od8bJUXeIdKVU0NR9mXLMXIaGNpA9gmhmihGejHhdGk3QJ/2MfZk?=
- =?us-ascii?Q?xUItk2SxUx6kCVPJA28q/Rkzgk3Tom3qY5nPf6iqKhomjIetgJB9xKz4mq2e?=
- =?us-ascii?Q?FebGrIyPHhaZ7w4joZdiwZd/+jEFJ2o0T9dyGUOwrB598cn6sh2U9J8eqxPB?=
- =?us-ascii?Q?ULdVb33jDvqQkLzfq0pMvDD2X614xHZBk3MvJY6oIbZ4QLzWX7OZAlWrLgfk?=
- =?us-ascii?Q?tz4/l3o8hKZxbJ4RpM4D4gNw/RowkbwvItCrnTq3AFutNkZHw+RFiYUZPy8o?=
- =?us-ascii?Q?1suX5I1JhwiQ8VVgc0xGILSKTJv3T8xqxC1tP/6jq3hVUjwWPtmVr7zbVqgN?=
- =?us-ascii?Q?UGl5TJED2aHQ3V663Xel2erprj2CzfcJxGctdN9yRVi0SbyvTuCgeS3trNNr?=
- =?us-ascii?Q?lwPiCWzNBMmE3Bhq29YP0lSO7MmIQdF+JzYSaVBbPE1JS9runl4CnHGwZjdk?=
- =?us-ascii?Q?aIO2ZvK3GBZFFrOoeZEyUHQt+5M4ssTJZ8NKmOaWXEz0ZgC0xOLqahAr+vDp?=
- =?us-ascii?Q?+qIu2RIRT7t+B7CivwykQxb6odpC9OU2/0QATnJRFQpgJkEOEdTakrxBnY0f?=
- =?us-ascii?Q?hTzkjncFhGNPTC0zfnDLRo/HQd9pKafkT2x2xyID33QUzqk/9dbyitCdBuQB?=
- =?us-ascii?Q?nqL1iWSHZgkrvGI3lXyAn1Z7joTKS2JDke4Raho+A6O3UjI8+Ifk4nHf3dUw?=
- =?us-ascii?Q?GP45UL1m1a1VQK+ZzxtdHQonAyebQf+MY/BhYWi19vgZex4vupZ4kULI4ceN?=
- =?us-ascii?Q?Q5yeDSZrJJuDa/q+SeJ5nWA7n3lWAunV2K3yjtJGnwH7ozSEpdl+1l875Hb5?=
- =?us-ascii?Q?x0ytZytn1lMHwxbE0F+kYl7H7t71LoNRgKqYvFfm9OOEthp7jFFOeSDtg27W?=
- =?us-ascii?Q?KM6Lzk25UjOPSxnpPcaUwhFHz3qwNVyhzw9OAZPGbXn1py0k3fFEcPZ555MS?=
- =?us-ascii?Q?xbDhxvSIxhdMwhOb3bf4VRUrwk4K5F8p4R1N6dd/NQr2H0shtnPEWu+ZgdfN?=
- =?us-ascii?Q?JWQESDHl+MD8oU4E8xjf1rDwKMSGySlTHM2nY+7Rshpb1SiuCu9hK5MHFWP8?=
- =?us-ascii?Q?+3/XjpVEG4dJr02FhAYo6JauhC/72EeU2y65KCK6JvpayYTGGv0Q6tHc0d0h?=
- =?us-ascii?Q?ATNIJ2yj/qaOx51OxTAXNoDJYowbfTEeYNFlgvtoP1Xaf18PllWkpXdw7o6M?=
- =?us-ascii?Q?wzAYTHP/HLNs7C/gXgRgcXlN9cr7B/6wALf5NADaY/TDwpVMDRKRW8xfVA4l?=
- =?us-ascii?Q?40d1AQmXvVk+zMPJLiCQQ7S6toUyT5GaaXdolOuYFUmHvq9NXdXJ3wWyegiB?=
- =?us-ascii?Q?16vCk54mhbBzsTuc5xynhJUIS1rfb5BDLYzbEu/ml23OyT8yRsYxvNMK3EZt?=
- =?us-ascii?Q?C88gDGhbyujxRbkpRZ8qpPaQhiJ6q9l151mOts/Q?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a9696bfe-20c2-4faa-d896-08db0f84fc46
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2023 18:46:44.6908
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hQF0SXo4RSpm3edxpqINQ12zAYa9jgcpeksfo9V9TcOqBKnlk+fufVF+RHaaaFKV
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB8032
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y+ksmNWJdWNkGAU9@unreal>
 
-On Wed, Feb 15, 2023 at 10:38:22AM -0800, Jacob Pan wrote:
-> Hi Kevin,
-> 
-> On Wed, 15 Feb 2023 03:24:18 +0000, "Tian, Kevin" <kevin.tian@intel.com>
-> wrote:
-> 
-> > > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > > Sent: Tuesday, February 14, 2023 2:44 PM
-> > > 
-> > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > 
-> > > Instead SVA drivers can use a simple global IDA to allocate PASIDs for
-> > > each mm_struct.
-> > > 
-> > > Future work would be to allow drivers using the SVA APIs to reserve
-> > > global PASIDs from this IDA for their internal use, eg with the DMA API
-> > > PASID support.  
-> > 
-> > I think DMA API PASID will need new API around this IDA. SVA APIs should
-> > be just for SVA.
-> > 
-> > > +void mm_pasid_drop(struct mm_struct *mm)
-> > >  {
-> > > -	return mmget_not_zero(mm);
-> > > -}
-> > > +	pr_alert("%s %d", __func__, mm->pasid);
-> > > +	if (likely(!pasid_valid(mm->pasid)))
-> > > +		return;
-> > > 
-> > > -/**
-> > > - * iommu_sva_find() - Find mm associated to the given PASID
-> > > - * @pasid: Process Address Space ID assigned to the mm
-> > > - *
-> > > - * On success a reference to the mm is taken, and must be released with
-> > > mmput().
-> > > - *
-> > > - * Returns the mm corresponding to this PASID, or an error if not
-> > > found.
-> > > - */
-> > > -struct mm_struct *iommu_sva_find(ioasid_t pasid)
-> > > -{
-> > > -	return ioasid_find(&iommu_sva_pasid, pasid, __mmget_not_zero);
-> > > +	ida_free(&iommu_global_pasid_ida, mm->pasid);
-> > >  }  
-> > 
-> > when moving this function following line is missed:
-> > 
-> > 	mm->pasid = INVALID_IOASID;
-> > 
-> not needed, mm is gone by now.
-> 
-> > btw the current placement looks asymmetric. We now have
-> > mm_pasid_init() and mm_pasid_set() in mm.h while mm_pasid_drop()
-> > in iommu-sva.c.
-> > Is it cleaner to introduce a iommu_sva_free_pasid() helper and then
-> > call it from mm_pasid_drop() in mm.h?
-> That is what we had before, it seems logical to me. Jason?
+[+cc Will, Robin, Joerg for arm-smmu-v3 page size question]
 
-I don't much like a maze of functions calling each other.
+On Sun, Feb 12, 2023 at 08:14:48PM +0200, Leon Romanovsky wrote:
+> On Wed, Feb 08, 2023 at 10:43:21AM -0800, Ganapatrao Kulkarni wrote:
+> > As per PCIe specification(section 10.5), If a VF implements an
+> > ATS capability, its associated PF must implement an ATS capability.
+> > The ATS Capabilities in VFs and their associated PFs are permitted to
+> > be enabled independently.
+> > Also, it states that the Smallest Translation Unit (STU) for VFs must be
+> > hardwired to Zero and the associated PF's value applies to VFs STU.
+> > 
+> > The current code allows to enable ATS on VFs only if it is already
+> > enabled on associated PF, which is not necessary as per the specification.
+> > 
+> > It is only required to have valid STU programmed on PF to enable
+> > ATS on VFs. Adding code to write the first VFs STU to a PF's STU
+> > when PFs ATS is not enabled.
+>
+> Can you please add here quotes from the spec and its version? I don't see
+> anything like this in my version of PCIe specification.
 
-Renaming the helper might help, especially if it comes from iommu.h
+See PCIe r6.0, sec 10.5.1.
 
-Jason
+> > Signed-off-by: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>
+> > ---
+> >  drivers/pci/ats.c | 15 +++++++++++----
+> >  1 file changed, 11 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+> > index f9cc2e10b676..a97ec67201d1 100644
+> > --- a/drivers/pci/ats.c
+> > +++ b/drivers/pci/ats.c
+> > @@ -67,13 +67,20 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
+> >  	if (ps < PCI_ATS_MIN_STU)
+> >  		return -EINVAL;
+> >  
+> > -	/*
+> > -	 * Note that enabling ATS on a VF fails unless it's already enabled
+> > -	 * with the same STU on the PF.
+> > -	 */
+> >  	ctrl = PCI_ATS_CTRL_ENABLE;
+> >  	if (dev->is_virtfn) {
+> >  		pdev = pci_physfn(dev);
+> > +
+> > +		if (!pdev->ats_enabled &&
+> > +				(pdev->ats_stu < PCI_ATS_MIN_STU)) {
+> > +			u16 ctrl2;
+> > +
+> > +			/* Associated PF's STU value applies to VFs. */
+> > +			pdev->ats_stu = ps;
+> > +			ctrl2 = PCI_ATS_CTRL_STU(pdev->ats_stu - PCI_ATS_MIN_STU);
+> > +			pci_write_config_word(pdev, pdev->ats_cap + PCI_ATS_CTRL, ctrl2);
+> > +		}
+
+For reference, it is this way because of edc90fee916b ("PCI: Allocate
+ATS struct during enumeration").  The rationale was that since the PF
+STU applies to all VFs, we should require that the PF STU be
+programmed before enabling ATS on any of the VFs.
+
+This patch relaxes that so the PF STU would be set either by (a)
+enabling ATS on the PF or (b) enabling ATS on the first VF.
+
+This looks racy because theoretically drivers for VF A and VF B could
+independently call pci_enable_ats() with different IOMMU page sizes,
+and we don't know which will get there first.
+
+Most callers supply a compile-time constant (PAGE_SHIFT or
+VTD_PAGE_SHIFT), so it won't matter.  arm_smmu_enable_ats() is
+fancier, but I *assume* it would still supply the same IOMMU page size
+for all VFs of a given PF.
+
+But it's still kind of ugly to call pci_enable_ats(dev_A) and have it
+muck with the configuration of dev_B.  Maybe we should configure the
+PF STU (without enabling ATS) at enumeration-time in pci_ats_init()?
+Is there some way to get the IOMMU page size at that time?
+
+> >  		if (pdev->ats_stu != ps)
+> >  			return -EINVAL;
+> >  	} else {
+> > -- 
+> > 2.39.1
+> > 
