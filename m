@@ -1,34 +1,34 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EABBFCBA9
-	for <iommu@lists.linux.dev>; Wed, 15 Feb 2023 05:43:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61933CBAB
+	for <iommu@lists.linux.dev>; Wed, 15 Feb 2023 05:59:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676439806; x=1707975806;
+  t=1676440791; x=1707976791;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=SehO2pfMACkfE6etG3eoVFEtRQzAQtbxDiF2gzX8Z6E=;
-  b=bZ0EGEoXLXbZ/EurxqanG32ZTVX4C/AlL3euvDI/Oy2c6+CcM9o/S9WF
-   NxmuJM4zB4jXLy1CbYSUoCOVrefwT0k7jOPCtsCDHnABgLvvKauwdIyqd
-   ttjm2JjxY4ccunBq1QykDnOaqRuBXNag4ukhDZmbllRDZUT/ZREgdPYZB
-   W2oRaL4BPxxVrrksS4FPMRpbkpGOmi4g0lH0EaNwa1yK3UymVILt9DWtR
-   f3vNhLNecezpApdgcdrYblGtwTu39MP2PMTqWfMM5pTTFqnT1EOKRhjTF
-   yiyjxNsLLoYvVf3vNc9RjdcE18oCxHWc7jXTbE7w29lVdmWIjig05yaAh
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="310981593"
+  bh=+Nbi3mP9Kgb35UQ1cRJ+mP6vwRct3vE93ciQ5o3UA2Q=;
+  b=gzIdgo5OndIKaATFPb5Z5fBTovkiKjSJv7W/V7FAw+YbKui8HoSl0eLq
+   iH2oduJgR99Bk/BW6RpVHefrTcmAL3wMXvsDPmY5u6st9Qvg6F/Caj9I+
+   cheoL/JuU4s4zuTcJdPFxHcs80RpQjp1xTivlqwPBq3CTheXXIwxMz/vv
+   +9crINkJNUiR3SeX64vS9teXPAHuiKl0ngd0jsfe/e56tD9Zhft/Erj3d
+   0/fLGFKjLO1UlzEQ8nDPBL/TFgE69FX0qVFojL4L94dKRO0fX66Kc8n2C
+   c2zXZn0H/KVivJr2ZTR7qIJiivHpWoT0Hzpe+fqmg2wUxfmABOMM8G9Xi
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="311719995"
 X-IronPort-AV: E=Sophos;i="5.97,298,1669104000"; 
-   d="scan'208";a="310981593"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2023 21:43:25 -0800
+   d="scan'208";a="311719995"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2023 21:59:39 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="619305562"
+X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="671499354"
 X-IronPort-AV: E=Sophos;i="5.97,298,1669104000"; 
-   d="scan'208";a="619305562"
+   d="scan'208";a="671499354"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by orsmga003.jf.intel.com with ESMTP; 14 Feb 2023 21:43:22 -0800
-Message-ID: <9f516f44-3dc9-6f15-11d0-10bfb1b29b1e@linux.intel.com>
-Date: Wed, 15 Feb 2023 13:34:59 +0800
+  by fmsmga007.fm.intel.com with ESMTP; 14 Feb 2023 21:59:37 -0800
+Message-ID: <b7f501b0-42c4-5402-7bb1-b4681b6e624c@linux.intel.com>
+Date: Wed, 15 Feb 2023 13:51:14 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -41,241 +41,107 @@ Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
  Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@infradead.org>,
  Kevin Tian <kevin.tian@intel.com>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] iommu: Add dev_iommu->ops_rwsem
+Subject: Re: [PATCH 2/4] iommu: Use group ownership to avoid driver attachment
+Content-Language: en-US
 To: Jason Gunthorpe <jgg@nvidia.com>
 References: <20230213074941.919324-1-baolu.lu@linux.intel.com>
- <20230213074941.919324-2-baolu.lu@linux.intel.com>
- <Y+pGUOkLVUMFYWOb@nvidia.com>
-Content-Language: en-US
+ <20230213074941.919324-3-baolu.lu@linux.intel.com>
+ <Y+pG9kWzR2c5I9FU@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Y+pGUOkLVUMFYWOb@nvidia.com>
+In-Reply-To: <Y+pG9kWzR2c5I9FU@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2/13/23 10:16 PM, Jason Gunthorpe wrote:
-> On Mon, Feb 13, 2023 at 03:49:38PM +0800, Lu Baolu wrote:
+On 2/13/23 10:19 PM, Jason Gunthorpe wrote:
+> On Mon, Feb 13, 2023 at 03:49:39PM +0800, Lu Baolu wrote:
+>> The iommu_group_store_type() requires the devices in the iommu group are
+>> not bound to any device driver during the whole operation. The existing
+>> code locks the device with device_lock(dev) and use device_is_bound() to
+>> check whether any driver is bound to device.
+>>
+>> In fact, this can be achieved through the DMA ownership helpers. Replace
+>> them with iommu_group_claim/release_dma_owner() helpers.
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/iommu/iommu.c | 27 +++++++++++++--------------
+>>   1 file changed, 13 insertions(+), 14 deletions(-)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 4f71dcd2621b..6547cb38480c 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -2807,12 +2807,6 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
+>>   
+>>   	mutex_lock(&group->mutex);
+>>   
+>> -	if (group->default_domain != group->domain) {
+>> -		dev_err_ratelimited(prev_dev, "Group not assigned to default domain\n");
+>> -		ret = -EBUSY;
+>> -		goto out;
+>> -	}
+>> -
+>>   	/*
+>>   	 * iommu group wasn't locked while acquiring device lock in
+>>   	 * iommu_group_store_type(). So, make sure that the device count hasn't
+>> @@ -2971,6 +2965,7 @@ static void iommu_group_unfreeze_dev_ops(struct iommu_group *group)
+>>   static ssize_t iommu_group_store_type(struct iommu_group *group,
+>>   				      const char *buf, size_t count)
+>>   {
+>> +	bool group_owner_claimed = false;
+>>   	struct group_device *grp_dev;
+>>   	struct device *dev;
+>>   	int ret, req_type;
+>> @@ -2992,6 +2987,14 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
+>>   	else
+>>   		return -EINVAL;
+>>   
+>> +	if (req_type != IOMMU_DOMAIN_DMA_FQ ||
+>> +	    group->default_domain->type != IOMMU_DOMAIN_DMA) {
+>> +		ret = iommu_group_claim_dma_owner(group, (void *)buf);
+>> +		if (ret)
+>> +			return ret;
+>> +		group_owner_claimed = true;
+>> +	}
 > 
->> +static int iommu_group_freeze_dev_ops(struct iommu_group *group)
->> +{
->> +	struct group_device *device;
->> +	struct device *dev;
->> +
->> +	mutex_lock(&group->mutex);
->> +	list_for_each_entry(device, &group->devices, list) {
->> +		dev = device->dev;
->> +		down_read(&dev->iommu->ops_rwsem);
+> I don't get it, this should be done unconditionally. If we couldn't
+> take ownership then we simply can't progress.
+
+The existing code allows the user to switch the default domain from
+strict to lazy invalidation mode. The default domain is not changed,
+hence it should be seamless and transparent to the device driver.
+
 > 
-> This isn't allowed, you can't obtain locks in a loop like this, it
-> will deadlock.
+> But there is more to it than that, a device that is owned should not
+> be release and to achieve this the general logic around the owner
+> scheme assumes that a driver is attached.
+
+Yes. Current ownership scheme was built on this assumption.
+
 > 
-> You don't need more locks, we already have the group mutex, the
-> release path should be fixed to use it properly as I was trying to do here:
-> 
-> https://lore.kernel.org/kvm/4-v1-ef00ffecea52+2cb-iommu_group_lifetime_jgg@nvidia.com/
-> https://lore.kernel.org/kvm/YyyTxx0HnA3maxEk@nvidia.com/
-> 
-> Then what you'd do in a path like this is:
-> 
->    mutex_lock(&group->mutex);
->    dev = iommu_group_first_device(group)
->    if (!dev)
->       /* Racing with group cleanup */
->       return -EINVAL;
->    
->    /* Now dev->ops is valid and must remain valid so long as
->       group->mutex is held */
->     
-> 
-> The only reason this doesn't work already is because of the above
-> stuff about release not holding the group mutex when manipulating the
-> devices in the group. This is simply mis-locked.
-> 
-> Robin explained it was done like this because
-> arm_iommu_detach_device() re-enters the iommu core during release_dev,
-> so I suggest fixing that by simply not doing that (see above)
-> 
-> Below is the lastest attempt I had tried, I didn't have time to get back
-> to it and we fixed the bug another way. It needs a bit of adjusting to
-> also remove the device from the group after release is called within
-> the same mutex critical region.
+> So if you call it from this non-driver context you have to hold the
+> group_mutex as previously discussed,
 
-Yes. If we can make remove device from list and device release in the
-same mutex critical region, we don't need any other lock mechanism
-anymore.
+Yes.
 
-The ipmmu driver supports default domain. When code comes to release
-device, the device driver has already been unbound. The default domain
-should have been attached to the device. Then iommu_detach_device() does
-nothing because what it really does is just attaching default domain.
+> which also means this needs to be
+> an externally version of iommu_group_claim_dma_owner()
 
-How about removing iommu_detach_device() from ipmmu's release path like
-below?
+Sorry! What does "an externally version of
+iommu_group_claim_dma_owner()" mean?
 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index bdf1a4e5eae0..0bc29009703e 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -820,7 +820,16 @@ static void ipmmu_probe_finalize(struct device *dev)
+My understanding is that we should limit iommu_group_claim_dma_owner()
+use in the driver context. For this non-driver context, we should not
+use iommu_group_claim_dma_owner() directly, but hold the group->mutex
+and check the group->owner_cnt directly:
 
-  static void ipmmu_release_device(struct device *dev)
-  {
--       arm_iommu_detach_device(dev);
-+       struct dma_iommu_mapping *mapping = to_dma_iommu_mapping(dev);
-+
-+       if (!mapping) {
-+               dev_warn(dev, "Not attached\n");
-+               return;
-+       }
-+
-+       arm_iommu_release_mapping(mapping);
-+       to_dma_iommu_mapping(dev) = NULL;
-+       set_dma_ops(dev, NULL);
-  }
+         mutex_lock(&group->mutex);
+         if (group->owner_cnt) {
+                 ret = -EPERM;
+                 goto unlock_out;
+         }
 
-After fixing this in ipmmu driver, we can safely put removing device and
-release_device in a group->mutex critical region in two steps:
-
-Step 1: Refactor iommu_group_remove_device() w/o functionality change:
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 05522eace439..17b2e358a6fd 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1065,6 +1065,46 @@ int iommu_group_add_device(struct iommu_group 
-*group, struct device *dev)
-  }
-  EXPORT_SYMBOL_GPL(iommu_group_add_device);
-
-+/*
-+ * Remove a device from a group's device list and return the group device
-+ * if successful.
-+ */
-+static struct group_device *
-+__iommu_group_remove_device(struct iommu_group *group, struct device *dev)
-+{
-+	struct group_device *device;
-+
-+	lockdep_assert_held(&group->mutex);
-+	list_for_each_entry(device, &group->devices, list) {
-+		if (device->dev == dev) {
-+			list_del(&device->list);
-+			return device;
-+		}
-+	}
-+
-+	return NULL;
-+}
-+
-+/*
-+ * Release a device from its group and decrements the iommu group reference
-+ * count.
-+ */
-+static void __iommu_group_release_device(struct iommu_group *group,
-+					 struct group_device *grp_dev)
-+{
-+	struct device *dev = grp_dev->dev;
-+
-+	sysfs_remove_link(group->devices_kobj, grp_dev->name);
-+	sysfs_remove_link(&dev->kobj, "iommu_group");
-+
-+	trace_remove_device_from_group(group->id, dev);
-+
-+	kfree(grp_dev->name);
-+	kfree(grp_dev);
-+	dev->iommu_group = NULL;
-+	kobject_put(group->devices_kobj);
-+}
-+
-  /**
-   * iommu_group_remove_device - remove a device from it's current group
-   * @dev: device to be removed
-@@ -1075,7 +1115,7 @@ EXPORT_SYMBOL_GPL(iommu_group_add_device);
-  void iommu_group_remove_device(struct device *dev)
-  {
-  	struct iommu_group *group = dev->iommu_group;
--	struct group_device *tmp_device, *device = NULL;
-+	struct group_device *device;
-
-  	if (!group)
-  		return;
-@@ -1083,27 +1123,11 @@ void iommu_group_remove_device(struct device *dev)
-  	dev_info(dev, "Removing from iommu group %d\n", group->id);
-
-  	mutex_lock(&group->mutex);
--	list_for_each_entry(tmp_device, &group->devices, list) {
--		if (tmp_device->dev == dev) {
--			device = tmp_device;
--			list_del(&device->list);
--			break;
--		}
--	}
-+	device = __iommu_group_remove_device(group, dev);
-  	mutex_unlock(&group->mutex);
-
--	if (!device)
--		return;
--
--	sysfs_remove_link(group->devices_kobj, device->name);
--	sysfs_remove_link(&dev->kobj, "iommu_group");
--
--	trace_remove_device_from_group(group->id, dev);
--
--	kfree(device->name);
--	kfree(device);
--	dev->iommu_group = NULL;
--	kobject_put(group->devices_kobj);
-+	if (device)
-+		__iommu_group_release_device(group, device);
-  }
-  EXPORT_SYMBOL_GPL(iommu_group_remove_device);
-
-
-Step 2: Put removing group and release_device in a same critical region:
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 17b2e358a6fd..eeb2907472bc 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -101,6 +101,10 @@ static int 
-iommu_create_device_direct_mappings(struct iommu_group *group,
-  static struct iommu_group *iommu_group_get_for_dev(struct device *dev);
-  static ssize_t iommu_group_store_type(struct iommu_group *group,
-  				      const char *buf, size_t count);
-+static struct group_device *
-+__iommu_group_remove_device(struct iommu_group *group, struct device *dev);
-+static void __iommu_group_release_device(struct iommu_group *group,
-+					 struct group_device *grp_dev);
-
-  #define IOMMU_GROUP_ATTR(_name, _mode, _show, _store)		\
-  struct iommu_group_attribute iommu_group_attr_##_name =		\
-@@ -466,18 +470,25 @@ int iommu_probe_device(struct device *dev)
-
-  void iommu_release_device(struct device *dev)
-  {
-+	struct iommu_group *group = dev->iommu_group;
-+	struct group_device *device;
-  	const struct iommu_ops *ops;
-
--	if (!dev->iommu)
-+	if (!dev->iommu || !group)
-  		return;
-
-  	iommu_device_unlink(dev->iommu->iommu_dev, dev);
-
-+	mutex_lock(&group->mutex);
-  	ops = dev_iommu_ops(dev);
-  	if (ops->release_device)
-  		ops->release_device(dev);
-+	device = __iommu_group_remove_device(group, dev);
-+	mutex_unlock(&group->mutex);
-+
-+	if (device)
-+		__iommu_group_release_device(group, device);
-
--	iommu_group_remove_device(dev);
-  	module_put(ops->owner);
-  	dev_iommu_free(dev);
-  }
+the group->mutex should be held until everything is done.
 
 Best regards,
 baolu
