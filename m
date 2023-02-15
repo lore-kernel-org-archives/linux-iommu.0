@@ -1,218 +1,109 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A81547C
-	for <iommu@lists.linux.dev>; Wed, 15 Feb 2023 11:48:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1676461711;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Z/H0rotavd9oyHOO+0LmtN00go4zSs58DTjk4UZUpfA=;
-	b=PD7A+gW7kIOwBc8wPhgOY0WwU7gNMFO2xakKhGZw9RqeNYmu74ZoyAjny7JJSYN/mJQZ/d
-	Qq6nVLr/iP35dx6idum9sklBRtDyWTsSvDM1i8CDn4gYi1Wj4Qvkf5fPnVYESSJl1Kk8yG
-	OZdLr67Gxs4XyIEPjHVyTjW56nsrbbU=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-427-85JiHrDiNI6MK4UaP5h1Qw-1; Wed, 15 Feb 2023 06:48:27 -0500
-X-MC-Unique: 85JiHrDiNI6MK4UaP5h1Qw-1
-Received: by mail-wm1-f70.google.com with SMTP id iz20-20020a05600c555400b003dc53fcc88fso1010010wmb.2
-        for <iommu@lists.linux.dev>; Wed, 15 Feb 2023 03:48:27 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Z/H0rotavd9oyHOO+0LmtN00go4zSs58DTjk4UZUpfA=;
-        b=Hy4knPzCTlUy7R8mFHUYxW+WQzqfa00E4cddrn8jTxt8Aejdp09Q5niyG3MzI0A+q6
-         Ubv6/GTqldNwBubT2/S/IpAEv4k9fNBqcRFEWyHNeuFjcu+u+kX1pD/tcbFBiSXP/xS0
-         zK0ws1AZfHOU0mMVYXbAEKB9UkxwzPoiItne0TItDg1HTqI9PdejYTc2XxcKXMXkLSok
-         NpKfYeVTHmGhMzbBfeRF9RADDBKa8sEQvAIFk6VCTmUvgsFea6TphBalcJO5+R4wGUd1
-         Hlx3Zesm5gd/bvmOwNrxTLy/CbSM2bcjdVWid/xutG/3dEPiwcPEG8aLanK3U3GlPDiJ
-         ubaA==
-X-Gm-Message-State: AO0yUKXQvP2LoN+UdaitpyBpgkDR6d0tkrUpac3l4RKyLH1bf9QRt40U
-	7lS+DMSvj2CX/mRJtBj9DZJ3uka++bsoAkjeBs3f7CtcWixpAxNBZMrYovo0rlNRCJE4tKru22a
-	1WXDYGeP3/0aiOAJ+kzeR
-X-Received: by 2002:a05:600c:318f:b0:3e1:f8af:8772 with SMTP id s15-20020a05600c318f00b003e1f8af8772mr2325068wmp.9.1676461706062;
-        Wed, 15 Feb 2023 03:48:26 -0800 (PST)
-X-Google-Smtp-Source: AK7set8OYAXBJzFVluU8HCwAVQMa/cFq9Nf1S2p+oFvhdxz8zS5w1AxVlAWS//WkraJpLlX5F/zY9Q==
-X-Received: by 2002:a05:600c:318f:b0:3e1:f8af:8772 with SMTP id s15-20020a05600c318f00b003e1f8af8772mr2325057wmp.9.1676461705784;
-        Wed, 15 Feb 2023 03:48:25 -0800 (PST)
-Received: from redhat.com ([2.52.5.34])
-        by smtp.gmail.com with ESMTPSA id c3-20020a1c3503000000b003dc522dd25esm1920544wma.30.2023.02.15.03.48.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Feb 2023 03:48:25 -0800 (PST)
-Date: Wed, 15 Feb 2023 06:48:21 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Nanyong Sun <sunnanyong@huawei.com>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	jasowang@redhat.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-	virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-	wangrong68@huawei.com
-Subject: Re: [PATCH v2] vhost/vdpa: Add MSI translation tables to iommu for
- software-managed MSI
-Message-ID: <20230215064759-mutt-send-email-mst@kernel.org>
-References: <20230207120843.1580403-1-sunnanyong@huawei.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15FF37C
+	for <iommu@lists.linux.dev>; Wed, 15 Feb 2023 12:03:52 +0000 (UTC)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31FABxtw029599;
+	Wed, 15 Feb 2023 12:03:34 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=JyS/DaEvjYz3Yy6r5m4p+hsTqT6eqxTIuVtmSoHg8Qg=;
+ b=sJk4u0KzZVb6Y4LrY36fLlLhJXszq/8cOn9gaPNQhaIP/ie9pW5FGNPA8Z9HZ9gBjeXS
+ BcGagTqdoId+z5O5rYHaUUUxiopFnYYYdpGVp9HVcpf1WcijYVw7wGfFfx/vkcA+sSW/
+ NrVCjbDm4UltA4Pv2DOMXODVCp9w1gNDfTXmhU9DIAaRNAhgQdhKdumxPopq68zT5o62
+ Go+Um+PvG4aCjLjLvx3oihSzaukVxYjZCUEF0uYxoo8rlUoLmoljtp1xrnIkOtSXpwdB
+ jBnv+VUp3SWM0njHeODf+QFBVjcIAmEBv8P4ATg+N/gNlH0A44aHzUMxD/y1iuCRa8gU Qg== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nrwe32nkt-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 15 Feb 2023 12:03:34 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+	by ppma03ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 31EKtIPL018185;
+	Wed, 15 Feb 2023 12:03:32 GMT
+Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
+	by ppma03ams.nl.ibm.com (PPS) with ESMTPS id 3np2n6nacq-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 15 Feb 2023 12:03:32 +0000
+Received: from smtpav01.fra02v.mail.ibm.com (smtpav01.fra02v.mail.ibm.com [10.20.54.100])
+	by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 31FC3SoP24773354
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 15 Feb 2023 12:03:28 GMT
+Received: from smtpav01.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id BBB1320040;
+	Wed, 15 Feb 2023 12:03:28 +0000 (GMT)
+Received: from smtpav01.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 5E4872004B;
+	Wed, 15 Feb 2023 12:03:28 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+	by smtpav01.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Wed, 15 Feb 2023 12:03:28 +0000 (GMT)
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>, Gerd Bayer <gbayer@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev,
+        linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        agordeev@linux.ibm.com, svens@linux.ibm.com,
+        linux-kernel@vger.kernel.org, Julian Ruess <julianr@linux.ibm.com>
+Subject: [PATCH v6 1/6] s390/ism: Set DMA coherent mask
+Date: Wed, 15 Feb 2023 13:03:22 +0100
+Message-Id: <20230215120327.947336-2-schnelle@linux.ibm.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20230215120327.947336-1-schnelle@linux.ibm.com>
+References: <20230215120327.947336-1-schnelle@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20230207120843.1580403-1-sunnanyong@huawei.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 31MuNRERGY5e1anxjzSCh24sJ3Gg7wYr
+X-Proofpoint-ORIG-GUID: 31MuNRERGY5e1anxjzSCh24sJ3Gg7wYr
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
+ definitions=2023-02-15_06,2023-02-15_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 mlxlogscore=999
+ malwarescore=0 phishscore=0 adultscore=0 suspectscore=0 priorityscore=1501
+ bulkscore=0 spamscore=0 impostorscore=0 mlxscore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
+ definitions=main-2302150109
 
-On Tue, Feb 07, 2023 at 08:08:43PM +0800, Nanyong Sun wrote:
-> From: Rong Wang <wangrong68@huawei.com>
-> 
-> Once enable iommu domain for one device, the MSI
-> translation tables have to be there for software-managed MSI.
-> Otherwise, platform with software-managed MSI without an
-> irq bypass function, can not get a correct memory write event
-> from pcie, will not get irqs.
-> The solution is to obtain the MSI phy base address from
-> iommu reserved region, and set it to iommu MSI cookie,
-> then translation tables will be created while request irq.
-> 
-> Change log
-> ----------
-> 
-> v1->v2:
-> - add resv iotlb to avoid overlap mapping.
+A future change will convert the DMA API implementation from the
+architecture specific arch/s390/pci/pci_dma.c to using the common code
+drivers/iommu/dma-iommu.c which the utilizes the same IOMMU hardware
+through the s390-iommu driver. Unlike the s390 specific DMA API this
+requires devices to correctly call set the coherent mask to be allowed
+to use IOVAs >2^32 in dma_alloc_coherent(). This was however not done
+for ISM devices. ISM requires such addresses since currently the DMA
+aperture for PCI devices starts at 2^32 and all calls to
+dma_alloc_coherent() would thus fail.
 
-put changelog after --- pls
+Reviewed-by: Alexandra Winter <wintera@linux.ibm.com>
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+---
+ drivers/s390/net/ism_drv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> Signed-off-by: Rong Wang <wangrong68@huawei.com>
-> Signed-off-by: Nanyong Sun <sunnanyong@huawei.com>
-> ---
->  drivers/iommu/iommu.c |  1 +
->  drivers/vhost/vdpa.c  | 59 ++++++++++++++++++++++++++++++++++++++++---
->  2 files changed, 57 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 5f6a85aea501..af9c064ad8b2 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -2623,6 +2623,7 @@ void iommu_get_resv_regions(struct device *dev, struct list_head *list)
->  	if (ops->get_resv_regions)
->  		ops->get_resv_regions(dev, list);
->  }
-> +EXPORT_SYMBOL(iommu_get_resv_regions);
->  
->  /**
->   * iommu_put_resv_regions - release resered regions
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index ec32f785dfde..a58979da8acd 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -49,6 +49,7 @@ struct vhost_vdpa {
->  	struct completion completion;
->  	struct vdpa_device *vdpa;
->  	struct hlist_head as[VHOST_VDPA_IOTLB_BUCKETS];
-> +	struct vhost_iotlb resv_iotlb;
->  	struct device dev;
->  	struct cdev cdev;
->  	atomic_t opened;
-> @@ -216,6 +217,8 @@ static int vhost_vdpa_reset(struct vhost_vdpa *v)
->  
->  	v->in_batch = 0;
->  
-> +	vhost_iotlb_reset(&v->resv_iotlb);
-> +
->  	return vdpa_reset(vdpa);
->  }
->  
-> @@ -1013,6 +1016,10 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
->  	    msg->iova + msg->size - 1 > v->range.last)
->  		return -EINVAL;
->  
-> +	if (vhost_iotlb_itree_first(&v->resv_iotlb, msg->iova,
-> +					msg->iova + msg->size - 1))
-> +		return -EINVAL;
-> +
->  	if (vhost_iotlb_itree_first(iotlb, msg->iova,
->  				    msg->iova + msg->size - 1))
->  		return -EEXIST;
-> @@ -1103,6 +1110,45 @@ static ssize_t vhost_vdpa_chr_write_iter(struct kiocb *iocb,
->  	return vhost_chr_write_iter(dev, from);
->  }
->  
-> +static int vhost_vdpa_resv_iommu_region(struct iommu_domain *domain, struct device *dma_dev,
-> +	struct vhost_iotlb *resv_iotlb)
-> +{
-> +	struct list_head dev_resv_regions;
-> +	phys_addr_t resv_msi_base = 0;
-> +	struct iommu_resv_region *region;
-> +	int ret = 0;
-> +	bool with_sw_msi = false;
-> +	bool with_hw_msi = false;
-> +
-> +	INIT_LIST_HEAD(&dev_resv_regions);
-> +	iommu_get_resv_regions(dma_dev, &dev_resv_regions);
-> +
-> +	list_for_each_entry(region, &dev_resv_regions, list) {
-> +		ret = vhost_iotlb_add_range_ctx(resv_iotlb, region->start,
-> +				region->start + region->length - 1,
-> +				0, 0, NULL);
-> +		if (ret) {
-> +			vhost_iotlb_reset(resv_iotlb);
-> +			break;
-> +		}
-> +
-> +		if (region->type == IOMMU_RESV_MSI)
-> +			with_hw_msi = true;
-> +
-> +		if (region->type == IOMMU_RESV_SW_MSI) {
-> +			resv_msi_base = region->start;
-> +			with_sw_msi = true;
-> +		}
-> +	}
-> +
-> +	if (!ret && !with_hw_msi && with_sw_msi)
-> +		ret = iommu_get_msi_cookie(domain, resv_msi_base);
-> +
-> +	iommu_put_resv_regions(dma_dev, &dev_resv_regions);
-> +
-> +	return ret;
-> +}
-> +
->  static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
->  {
->  	struct vdpa_device *vdpa = v->vdpa;
-> @@ -1128,11 +1174,16 @@ static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
->  
->  	ret = iommu_attach_device(v->domain, dma_dev);
->  	if (ret)
-> -		goto err_attach;
-> +		goto err_alloc_domain;
->  
-> -	return 0;
-> +	ret = vhost_vdpa_resv_iommu_region(v->domain, dma_dev, &v->resv_iotlb);
-> +	if (ret)
-> +		goto err_attach_device;
->  
-> -err_attach:
-> +	return 0;
-> +err_attach_device:
-> +	iommu_detach_device(v->domain, dma_dev);
-> +err_alloc_domain:
->  	iommu_domain_free(v->domain);
->  	return ret;
->  }
-> @@ -1385,6 +1436,8 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
->  		goto err;
->  	}
->  
-> +	vhost_iotlb_init(&v->resv_iotlb, 0, 0);
-> +
->  	r = dev_set_name(&v->dev, "vhost-vdpa-%u", minor);
->  	if (r)
->  		goto err;
-> -- 
-> 2.25.1
+diff --git a/drivers/s390/net/ism_drv.c b/drivers/s390/net/ism_drv.c
+index dfd401d9e362..aba03b613296 100644
+--- a/drivers/s390/net/ism_drv.c
++++ b/drivers/s390/net/ism_drv.c
+@@ -557,7 +557,7 @@ static int ism_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	if (ret)
+ 		goto err_disable;
+ 
+-	ret = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64));
++	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+ 	if (ret)
+ 		goto err_resource;
+ 
+-- 
+2.37.2
 
