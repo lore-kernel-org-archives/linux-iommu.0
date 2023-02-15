@@ -1,44 +1,44 @@
 Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15FF37C
-	for <iommu@lists.linux.dev>; Wed, 15 Feb 2023 12:03:52 +0000 (UTC)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31FABxtw029599;
-	Wed, 15 Feb 2023 12:03:34 GMT
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FF535256
+	for <iommu@lists.linux.dev>; Wed, 15 Feb 2023 12:03:53 +0000 (UTC)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31FBBivx019488;
+	Wed, 15 Feb 2023 12:03:36 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=JyS/DaEvjYz3Yy6r5m4p+hsTqT6eqxTIuVtmSoHg8Qg=;
- b=sJk4u0KzZVb6Y4LrY36fLlLhJXszq/8cOn9gaPNQhaIP/ie9pW5FGNPA8Z9HZ9gBjeXS
- BcGagTqdoId+z5O5rYHaUUUxiopFnYYYdpGVp9HVcpf1WcijYVw7wGfFfx/vkcA+sSW/
- NrVCjbDm4UltA4Pv2DOMXODVCp9w1gNDfTXmhU9DIAaRNAhgQdhKdumxPopq68zT5o62
- Go+Um+PvG4aCjLjLvx3oihSzaukVxYjZCUEF0uYxoo8rlUoLmoljtp1xrnIkOtSXpwdB
- jBnv+VUp3SWM0njHeODf+QFBVjcIAmEBv8P4ATg+N/gNlH0A44aHzUMxD/y1iuCRa8gU Qg== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nrwe32nkt-1
+ bh=Ac90uGhf/T5m+1S/3rArlS6chgzl/olsKFs1JCJluak=;
+ b=l+XqDzoXcwRSZ4m11rrmGteYdnL0wtZp790gpQ+uFFf+I34ggBSg0xd6C/+3vPgj7EEA
+ N7AzXif6H3+RFzGVoFMOB8Ovxya/3pL+vctygQpLqAmasIFjYGqom/JfEkJ9l7DM+EN1
+ uVP2mqEwaJijE1l7r5BR3Xelq/XUp3jpPc2LBhvc+pIhfMD/USE8GKPDzcn//z5Ix6TN
+ ruU9R2QXrcUetI8ce9IMdTqO3YCpt89fdHLY3Eor00lUJYBviRh69Zr8ZlJ717KJvAfx
+ Ivz9rwur4OX/LBN2lcwXYtpJrwPu3AIM0DCgYlfW4pCeWgPZ//TtGo6qJ2Q85uKSaT/n rA== 
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nrvcdd16t-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 15 Feb 2023 12:03:34 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-	by ppma03ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 31EKtIPL018185;
-	Wed, 15 Feb 2023 12:03:32 GMT
-Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
-	by ppma03ams.nl.ibm.com (PPS) with ESMTPS id 3np2n6nacq-1
+	Wed, 15 Feb 2023 12:03:35 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+	by ppma06fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 31F1es81007478;
+	Wed, 15 Feb 2023 12:03:33 GMT
+Received: from smtprelay05.fra02v.mail.ibm.com ([9.218.2.225])
+	by ppma06fra.de.ibm.com (PPS) with ESMTPS id 3np29fbx9m-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 15 Feb 2023 12:03:32 +0000
+	Wed, 15 Feb 2023 12:03:33 +0000
 Received: from smtpav01.fra02v.mail.ibm.com (smtpav01.fra02v.mail.ibm.com [10.20.54.100])
-	by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 31FC3SoP24773354
+	by smtprelay05.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 31FC3Tv249349078
 	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 15 Feb 2023 12:03:28 GMT
+	Wed, 15 Feb 2023 12:03:29 GMT
 Received: from smtpav01.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id BBB1320040;
-	Wed, 15 Feb 2023 12:03:28 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id 8387220040;
+	Wed, 15 Feb 2023 12:03:29 +0000 (GMT)
 Received: from smtpav01.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 5E4872004B;
-	Wed, 15 Feb 2023 12:03:28 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id 31D8E2004B;
+	Wed, 15 Feb 2023 12:03:29 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
 	by smtpav01.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Wed, 15 Feb 2023 12:03:28 +0000 (GMT)
+	Wed, 15 Feb 2023 12:03:29 +0000 (GMT)
 From: Niklas Schnelle <schnelle@linux.ibm.com>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
         Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
@@ -49,9 +49,9 @@ Cc: Matthew Rosato <mjrosato@linux.ibm.com>, Gerd Bayer <gbayer@linux.ibm.com>,
         hca@linux.ibm.com, gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
         agordeev@linux.ibm.com, svens@linux.ibm.com,
         linux-kernel@vger.kernel.org, Julian Ruess <julianr@linux.ibm.com>
-Subject: [PATCH v6 1/6] s390/ism: Set DMA coherent mask
-Date: Wed, 15 Feb 2023 13:03:22 +0100
-Message-Id: <20230215120327.947336-2-schnelle@linux.ibm.com>
+Subject: [PATCH v6 3/6] s390/pci: prepare is_passed_through() for dma-iommu
+Date: Wed, 15 Feb 2023 13:03:24 +0100
+Message-Id: <20230215120327.947336-4-schnelle@linux.ibm.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230215120327.947336-1-schnelle@linux.ibm.com>
 References: <20230215120327.947336-1-schnelle@linux.ibm.com>
@@ -63,47 +63,69 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 31MuNRERGY5e1anxjzSCh24sJ3Gg7wYr
-X-Proofpoint-ORIG-GUID: 31MuNRERGY5e1anxjzSCh24sJ3Gg7wYr
+X-Proofpoint-ORIG-GUID: fn8v-3PqAV9m08V9HB-5l-2iTiDNX4Qt
+X-Proofpoint-GUID: fn8v-3PqAV9m08V9HB-5l-2iTiDNX4Qt
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
  definitions=2023-02-15_06,2023-02-15_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 mlxlogscore=999
- malwarescore=0 phishscore=0 adultscore=0 suspectscore=0 priorityscore=1501
- bulkscore=0 spamscore=0 impostorscore=0 mlxscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
- definitions=main-2302150109
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501 mlxscore=0
+ impostorscore=0 bulkscore=0 adultscore=0 spamscore=0 suspectscore=0
+ malwarescore=0 clxscore=1015 phishscore=0 lowpriorityscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2302150109
 
-A future change will convert the DMA API implementation from the
-architecture specific arch/s390/pci/pci_dma.c to using the common code
-drivers/iommu/dma-iommu.c which the utilizes the same IOMMU hardware
-through the s390-iommu driver. Unlike the s390 specific DMA API this
-requires devices to correctly call set the coherent mask to be allowed
-to use IOVAs >2^32 in dma_alloc_coherent(). This was however not done
-for ISM devices. ISM requires such addresses since currently the DMA
-aperture for PCI devices starts at 2^32 and all calls to
-dma_alloc_coherent() would thus fail.
+With the IOMMU always controlled through the IOMMU driver testing for
+zdev->s390_domain is not a valid indication of the device being
+passed-through. Instead test if zdev->kzdev is set.
 
-Reviewed-by: Alexandra Winter <wintera@linux.ibm.com>
+Reviewed-by: Pierre Morel <pmorel@linux.ibm.com>
 Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
 Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 ---
- drivers/s390/net/ism_drv.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/s390/pci/pci_event.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/s390/net/ism_drv.c b/drivers/s390/net/ism_drv.c
-index dfd401d9e362..aba03b613296 100644
---- a/drivers/s390/net/ism_drv.c
-+++ b/drivers/s390/net/ism_drv.c
-@@ -557,7 +557,7 @@ static int ism_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	if (ret)
- 		goto err_disable;
+diff --git a/arch/s390/pci/pci_event.c b/arch/s390/pci/pci_event.c
+index b9324ca2eb94..4ef5a6a1d618 100644
+--- a/arch/s390/pci/pci_event.c
++++ b/arch/s390/pci/pci_event.c
+@@ -59,9 +59,16 @@ static inline bool ers_result_indicates_abort(pci_ers_result_t ers_res)
+ 	}
+ }
  
--	ret = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64));
-+	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
- 	if (ret)
- 		goto err_resource;
+-static bool is_passed_through(struct zpci_dev *zdev)
++static bool is_passed_through(struct pci_dev *pdev)
+ {
+-	return zdev->s390_domain;
++	struct zpci_dev *zdev = to_zpci(pdev);
++	bool ret;
++
++	mutex_lock(&zdev->kzdev_lock);
++	ret = !!zdev->kzdev;
++	mutex_unlock(&zdev->kzdev_lock);
++
++	return ret;
+ }
  
+ static bool is_driver_supported(struct pci_driver *driver)
+@@ -176,7 +183,7 @@ static pci_ers_result_t zpci_event_attempt_error_recovery(struct pci_dev *pdev)
+ 	}
+ 	pdev->error_state = pci_channel_io_frozen;
+ 
+-	if (is_passed_through(to_zpci(pdev))) {
++	if (is_passed_through(pdev)) {
+ 		pr_info("%s: Cannot be recovered in the host because it is a pass-through device\n",
+ 			pci_name(pdev));
+ 		goto out_unlock;
+@@ -239,7 +246,7 @@ static void zpci_event_io_failure(struct pci_dev *pdev, pci_channel_state_t es)
+ 	 * we will inject the error event and let the guest recover the device
+ 	 * itself.
+ 	 */
+-	if (is_passed_through(to_zpci(pdev)))
++	if (is_passed_through(pdev))
+ 		goto out;
+ 	driver = to_pci_driver(pdev->dev.driver);
+ 	if (driver && driver->err_handler && driver->err_handler->error_detected)
 -- 
 2.37.2
 
