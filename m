@@ -1,194 +1,159 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2060.outbound.protection.outlook.com [40.107.93.60])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2717C29A5
-	for <iommu@lists.linux.dev>; Wed, 15 Feb 2023 12:56:35 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EsTWTjiJrAUhD0WWTMHVFvL3WSJO6Pco+KCo+lXfkuy6SMLCp++yMAvDoBQ7yRTC51HuMpdfwpv6fVYq2ALmlHNGXwJRmu5os+pD8l2s4DbnVoM+lyngOMcT93AkZbQ5CP8K3b2iXPkIo+PU8UQQBuvZ7dmqS7GLOuDdOUZJ1zQCs5pOZpLk2sEE45pbiaAWHRe0E7LUuls+xKhtFmNMDr2dRTH4znPAXWJuSfOka8q8aZ0+pB3oWn8n0qmk7rNGEhdWJ5qJ4+lHsjDGeSI1U1xmLphfq8keyd7Tt3H6hPxfuXQ0FaPsTbu2NH56P0egFeN6t9JtzSkFjmm5G9rhmw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HcuRoRfwkDD3KxSf8sGH3uRVJEejV/erZATL3UA1OrI=;
- b=Sd+3KEW/Bi0oOlmRS+IBNwdXePR3P422lXYtm0q3PdxhdS1mpwn0WWLrv5mUaw0HJpD1ZkYqs509ypVO4BFOGwjSb9+FI7h917Kz7d53ntrz6XdJqiLLQ73yMP+6JzN3vIvMvAwRaCgDtgDb+zcA7A4je7gv2KqIKAGGSXTYldkPiHrQX3KnzdIMgNfx74+rULvPM4MMfFjcy/V70fKRnoj5rwNKNqgzh87i11aCHHLwPd9BDZQOrFi66Xp6yNBEbZ1jsPO0SK39hlpWknGOD1r5gzO+rBEdLigyW4ZaiXJ6yx8ETgCIE9TfauFo/4WSfcUg+nfkOHtJW+17z/Bhhw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HcuRoRfwkDD3KxSf8sGH3uRVJEejV/erZATL3UA1OrI=;
- b=XRNVl6LUgFC/mdtNQFA/VCIunKv0svicJ2dB3xW76IDSPGVmxaIhlQuXLYKqIcBed1obpzABNqtJnyhWiKuCz75DrtA3Cwn7IY2BhnNAScISiX4yItxEKilKlZUpoYlb1FmVKyMQSIrD1AmUlBMWsWvcxvkIpi/ML6s3OW/zwTpfv7eOQoPkUf/M8lQntU2vrq32b86KoQqBvkojBP7XYGkO62gKGBamQB5txkJ0zZ4KBcRq/7XwBNQPYI6dzhK6cyo2F0Wl858AOl2tMa9LUpXq2eRvBi1wf7C85g6JbLBHg+MctyIS1rde2z0FaUC7hMEYk1Wmtz4Z+RKrAh3Aag==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by BN9PR12MB5273.namprd12.prod.outlook.com (2603:10b6:408:11e::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26; Wed, 15 Feb
- 2023 12:56:34 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee%4]) with mapi id 15.20.6086.024; Wed, 15 Feb 2023
- 12:56:34 +0000
-Date: Wed, 15 Feb 2023 08:56:33 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	Christoph Hellwig <hch@infradead.org>,
-	Kevin Tian <kevin.tian@intel.com>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] iommu: Use group ownership to avoid driver attachment
-Message-ID: <Y+zWgSzwzWFjGL6m@nvidia.com>
-References: <20230213074941.919324-1-baolu.lu@linux.intel.com>
- <20230213074941.919324-3-baolu.lu@linux.intel.com>
- <Y+pG9kWzR2c5I9FU@nvidia.com>
- <b7f501b0-42c4-5402-7bb1-b4681b6e624c@linux.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b7f501b0-42c4-5402-7bb1-b4681b6e624c@linux.intel.com>
-X-ClientProxiedBy: BLAPR05CA0024.namprd05.prod.outlook.com
- (2603:10b6:208:36e::20) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83D7453AF
+	for <iommu@lists.linux.dev>; Wed, 15 Feb 2023 13:07:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25876C433EF;
+	Wed, 15 Feb 2023 13:07:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1676466443;
+	bh=+hwO7JErfYD4tISTCHkKL1+A6053koS9PX7XC0ujeYE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=a3EhsgsZn0VTwpxr63gGNBnxf8CoaEmcUge3otJJ6MWz5zRz+LI3pc69Zbrxcg+te
+	 eo6dq34XdS7Ni/ySYttdumSi0fK2VlgBMm0pBqEBaVpbemjguqBpQ2UlWDhZFERr0z
+	 Syi5Kp2osRKtcJSwWEhS8UJTpzD1HJsrvzCrWL01Qd1cG7nW3y0iIXbgk5lVJcTrAN
+	 dqKgmn05rtTpvkjr6CZFFi77NSiSO3grK/dI0vP30bIJoyIejtmlfafTBwkAYBA8VA
+	 5RlcF//1vvYgHZeHMGq7vWy7G0G7WvXd9HDblUY/U8MA7tH076/wQ68GKvpSWTwkTq
+	 5unmPNdr8X9AQ==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+	(envelope-from <johan@kernel.org>)
+	id 1pSHWF-0002Ri-Q4; Wed, 15 Feb 2023 14:08:19 +0100
+Date: Wed, 15 Feb 2023 14:08:19 +0100
+From: Johan Hovold <johan@kernel.org>
+To: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc: will@kernel.org, joro@8bytes.org, robin.murphy@arm.com,
+	andersson@kernel.org, johan+linaro@kernel.org, steev@kali.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu-qcom: Rework the logic finding the bypass
+ quirk
+Message-ID: <Y+zZQ0PKW1d2XGbW@hovoldconsulting.com>
+References: <20230201082500.61656-1-manivannan.sadhasivam@linaro.org>
+ <Y+pozM9iTbQcx6cl@hovoldconsulting.com>
+ <20230214075312.GB4981@thinkpad>
+ <Y+tPWAUBwBxcOPFm@hovoldconsulting.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BN9PR12MB5273:EE_
-X-MS-Office365-Filtering-Correlation-Id: f9cb1297-7608-4af8-f031-08db0f5410f4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	skbWEz9s0tnDCgZ8Cbga49tmLtfX+qrFczrWGvDUPdUSj+JSc+Js9AYkUKo3XMSSHgpTKoE2rm0xbj6twZ6toU+SCjCzLksu8m/T2o9uUNMqnvi38gok5XKjNKugAKWjhzERqZk8Oi4haLdKdelNvnqYISu5BirtOHdigZkWa8RN76kMu9r+va/QJ07abU94PkZVmnLZ22YBL/MX7iZaHFgfSFWfic9zy0Gz/7ZPF5QlSv0Angk5BTULrZQxvVE1kofUux5QIjxykjLy3ISCfB6rxQQ5+UrrVPBYLkAoN0El70rBJOtSqpIIx1SZ98syQpqGYbI7gRDzHj2fFUh7mNqyWckr6mRV23/5yzHsE32pMipCXA04QqHkJXo6efCbtA47Tpcck9ziDIuY6BcCE8kljQIksc4xoPaoGVw13loiODN4/m6mUHSE9JQdkZjvQZrbxDEyzAWMh7PbJwgNaKgGY1mjAZgwS33wD0FxEcERnx7SXJeuqEN7cjX/2L8gT0HeSTiQfcZN1hJhBt1HjOSVVFEDJjDndcqJFa0wb9LUDL5wtUuvaJmuJAafZULysEmC2QzF8Bmv7FQltlUwbnJ9CUKgd6UyxRdQ08iRES443G6asRfvGbNmgIgEufm/hUQlkGYdHZLAIBENDobZUTTg4jlfR6Ah5JlGqntf1g85IwJE4PMvAyNF/CmH0FdA
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(346002)(39860400002)(396003)(376002)(366004)(451199018)(36756003)(8676002)(66476007)(66556008)(5660300002)(8936002)(316002)(54906003)(38100700002)(2616005)(83380400001)(6486002)(478600001)(6916009)(86362001)(4326008)(2906002)(186003)(26005)(6512007)(53546011)(6506007)(41300700001)(66946007)(67856001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?aag9Fab4bxtn5XOfT+ygyBkrpALMrKz0v04653iMv2ZFQ7+ja0grhyirxtud?=
- =?us-ascii?Q?zt6dEfmdEnc5nW7l6v/9/NQBEHSYStUiE0xUCGglgvdTaZm1VMmp33kTCZpI?=
- =?us-ascii?Q?UP2KbrgZXrDoEv7gT4Qd7CBjPr9kaljD7IeubDCgh6k0R6UOLfYHa+z1in9b?=
- =?us-ascii?Q?N7T33iZZj8S0Um5Mk6IxM+ZmBTwtkiWp5hPBzNP9SYCoerW7tnWyKCHhAAl8?=
- =?us-ascii?Q?iAmW9U1im63RX+atTBjm/yU+xk21bBGrNdPDaz1D+XQKwB4lUpeBBLejZvra?=
- =?us-ascii?Q?ZhgCWwm2CCytSPim1uSYHOpWnHIgW196mnluu3rwhbtM/KW37nsz3s0ksbE3?=
- =?us-ascii?Q?hdFmPPiBvJqMYZVmPsI3vHMS0hG/wShKirHG5ivPIBXo0fQCs+4RA7RGPKrj?=
- =?us-ascii?Q?9RBu37nkKvTtdAdl3a2m9z5pySUKconb32trGiR21BucYKxJrgQSdsDURkDo?=
- =?us-ascii?Q?ajAmNsBzKO+tTnsCkBrhyzuthvfBId/dtQn78mNdjTWIOTATZcgvcsb2AGAf?=
- =?us-ascii?Q?0rxzoDM65xqZSUokrIXJXnrDeOvA5t4i/s8mSqAPg/e950P1KDoNba/ZF5UP?=
- =?us-ascii?Q?8jYtcAfF3qCBJH3IoadKgF3TqD5NkfQb4Qdl6QQVSDHCEsDgRy7V2lY9VmTF?=
- =?us-ascii?Q?5kcWjae/IVcxU6LFlRPK9S+sLBJ1+th38a9qnzNzzyLeMyD2VBBbBPWPFutQ?=
- =?us-ascii?Q?YSBOqSDtmFUkEtXqPHU4ZHXDyd2zDp7K+BWrbTrjz1AuEAL9bW5LNgUiPU0w?=
- =?us-ascii?Q?uLVWEIWis/a/vCBJv4MCsRJJ6WpflCu2YbVLUo8G1SICIVJKmEM3Kc1pQtvv?=
- =?us-ascii?Q?G5pTYa5Swkjc960bkMKFpaTFPgt/s73C+aqkVy20LoSu32NLG4sHGBNQHkrd?=
- =?us-ascii?Q?pJsmXL5wf+LGkpPcOIIZm1jyqvoNEeKymgnQtN6shvOYgl3S4dA2bxeJIf3S?=
- =?us-ascii?Q?/qr7sDY7on5zCnDeX2tBg+hBRZHQXXMx1YTVGZb0+OgtkK0Yd8sfYw3mxJL7?=
- =?us-ascii?Q?BfiUKfnCTdOCycUoS+7TPfWa8lnJtGdQDzggF5tPUhhUB0TBnqoAAOnkGb2S?=
- =?us-ascii?Q?XRCak7XutSHiRU2fRL0tiFcXfc0GbGoGRfz5s9kHHwGHD1+9ovh5noCw25J9?=
- =?us-ascii?Q?b0XDHA9UorWayt6ZsEPCqTbAzlNJOjPJyh9PJg4/7vFaJJykKuJrDtKB62Au?=
- =?us-ascii?Q?ujAKLOruXrtBSN/BZIdoL1z8weMHOWD6JQ2gvxNxza/vTtRAo0RnGS/MrREl?=
- =?us-ascii?Q?nOCZPWZyOnQd0vMK7Wy9a+RMysOSX3hxBW1AlvksEIHhWHOy9DTAP+/ViwNW?=
- =?us-ascii?Q?NcZkQX1LRv4TjMZoy2s/o2GCaifVpy1QoJRnFVRcdxcr312obCHrO9Xrrp6t?=
- =?us-ascii?Q?It2R8Ofqosya4h1UwzQ4j1QQFUGX7IUcSCN9aI/QDCCv4TzJ2VfW3VUQECXV?=
- =?us-ascii?Q?baep9xVSLt1oy0maZhGbTQdlKbbdAIxwsdbFmQD+UygU0wyN450JtPdePpCX?=
- =?us-ascii?Q?0pllsKVIYgHsujtgSgUHoMAZElboiXI5aNMX/glrWdQEhWnaZmeVZgK0stsp?=
- =?us-ascii?Q?RWUUvOOBqbWB56qMh0MaELBQ1Z/+l718+VcoRtzc?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f9cb1297-7608-4af8-f031-08db0f5410f4
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2023 12:56:34.0464
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: f9DZ4QRd+r236iOtYtV7RgXXjxWHGFq/ZHdY0xcr9mLAEdwR4il0Cc+p/19n6opV
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5273
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y+tPWAUBwBxcOPFm@hovoldconsulting.com>
 
-On Wed, Feb 15, 2023 at 01:51:14PM +0800, Baolu Lu wrote:
-> On 2/13/23 10:19 PM, Jason Gunthorpe wrote:
-> > On Mon, Feb 13, 2023 at 03:49:39PM +0800, Lu Baolu wrote:
-> > > The iommu_group_store_type() requires the devices in the iommu group are
-> > > not bound to any device driver during the whole operation. The existing
-> > > code locks the device with device_lock(dev) and use device_is_bound() to
-> > > check whether any driver is bound to device.
+On Tue, Feb 14, 2023 at 10:07:36AM +0100, Johan Hovold wrote:
+> On Tue, Feb 14, 2023 at 01:23:12PM +0530, Manivannan Sadhasivam wrote:
+> > On Mon, Feb 13, 2023 at 05:43:56PM +0100, Johan Hovold wrote:
+> > > On Wed, Feb 01, 2023 at 01:55:00PM +0530, Manivannan Sadhasivam wrote:
+> > > > The logic used to find the quirky firmware that intercepts the writes to
+> > > > S2CR register to replace bypass type streams with a fault, and ignore the
+> > > > fault type, is not working with the firmware on newer SoCs like SC8280XP.
+> > > > 
+> > > > The current logic uses the last stream mapping group (num_mapping_groups
+> > > > - 1) as an index for finding quirky firmware. But on SC8280XP, this
+> > > > logic is not working as the number of stream mapping groups reported by
+> > > > the SMMU (163 as on the SC8280XP-CRD device) is not valid for some reason.
 > > > 
-> > > In fact, this can be achieved through the DMA ownership helpers. Replace
-> > > them with iommu_group_claim/release_dma_owner() helpers.
+> > > NUMSMRG read back as 162 here, both on my CRD and X13s. Was '163' a typo
+> > > or a real difference?
 > > > 
-> > > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> > > ---
-> > >   drivers/iommu/iommu.c | 27 +++++++++++++--------------
-> > >   1 file changed, 13 insertions(+), 14 deletions(-)
-> > > 
-> > > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > > index 4f71dcd2621b..6547cb38480c 100644
-> > > --- a/drivers/iommu/iommu.c
-> > > +++ b/drivers/iommu/iommu.c
-> > > @@ -2807,12 +2807,6 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
-> > >   	mutex_lock(&group->mutex);
-> > > -	if (group->default_domain != group->domain) {
-> > > -		dev_err_ratelimited(prev_dev, "Group not assigned to default domain\n");
-> > > -		ret = -EBUSY;
-> > > -		goto out;
-> > > -	}
-> > > -
-> > >   	/*
-> > >   	 * iommu group wasn't locked while acquiring device lock in
-> > >   	 * iommu_group_store_type(). So, make sure that the device count hasn't
-> > > @@ -2971,6 +2965,7 @@ static void iommu_group_unfreeze_dev_ops(struct iommu_group *group)
-> > >   static ssize_t iommu_group_store_type(struct iommu_group *group,
-> > >   				      const char *buf, size_t count)
-> > >   {
-> > > +	bool group_owner_claimed = false;
-> > >   	struct group_device *grp_dev;
-> > >   	struct device *dev;
-> > >   	int ret, req_type;
-> > > @@ -2992,6 +2987,14 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
-> > >   	else
-> > >   		return -EINVAL;
-> > > +	if (req_type != IOMMU_DOMAIN_DMA_FQ ||
-> > > +	    group->default_domain->type != IOMMU_DOMAIN_DMA) {
-> > > +		ret = iommu_group_claim_dma_owner(group, (void *)buf);
-> > > +		if (ret)
-> > > +			return ret;
-> > > +		group_owner_claimed = true;
-> > > +	}
 > > 
-> > I don't get it, this should be done unconditionally. If we couldn't
-> > take ownership then we simply can't progress.
+> > Ah yes, it is 162 indeed. Sorry, typo!
+> > 
+> > > > So the current logic that checks the (163-1) S2CR entry fails to detect
+> > > > the quirky firmware on these devices and triggers invalid context fault
+> > > > for bypass streams.
+> > > > 
+> > > > To fix this issue, rework the logic to find the first non-valid (free)
+> > > > stream mapping register group (SMR) and use that index to access S2CR
+> > > > for detecting the bypass quirk.
+> > > 
+> > > So while this works for the quirk detection, shouldn't we also do
+> > > something about that bogus NUMSMRG value? At least cap it at 128, which
+> > > appears to be the maximum according to the specification, for example,
+> > > by clearing bit 7 when any of the lower bits are set?
+> > > 
+> > > That would give us 35 (or 36) groups and working quirk detection with
+> > > just the following smaller patch:
+> > > 
+> > 
+> > I'm not certain if the value is bogus or not. It is clear that the spec
+> > specifies 128 as the max but internal qcom document shows that they indeed
+> > set 162 on purpose in the hypervisor.
+> >
+> > So until we get a clear view on that, I'd not cap it.
 > 
-> The existing code allows the user to switch the default domain from
-> strict to lazy invalidation mode. The default domain is not changed,
-> hence it should be seamless and transparent to the device driver.
+> But if we fault as soon as we try to do something with those register
+> groups above 128 that also violate the spec, it doesn't seem right to
+> trust the fw value here.
 
-So make that a special case, get the group lock check if it is this
-case and then just adjust it and exit, otherwise get ownership under
-the group lock as discussed.
-> 
-> > which also means this needs to be
-> > an externally version of iommu_group_claim_dma_owner()
-> 
-> Sorry! What does "an externally version of
-> iommu_group_claim_dma_owner()" mean?
-> 
+I realised that the fault is due to the quirk not being detected
+properly as writes to groups above index 127 apparently succeeds
+(including out-of-bounds index 162):
 
-Oops "externally locked"
+	qcom_smmu_cfg_probe - index = 127, reg = 200ff, type = 02
+	qcom_smmu_cfg_probe - index = 128, reg = 100ff, type = 01
+	qcom_smmu_cfg_probe - index = 161, reg = 100ff, type = 01
+	qcom_smmu_cfg_probe - index = 162, reg = 100ff, type = 01
 
-> My understanding is that we should limit iommu_group_claim_dma_owner()
-> use in the driver context. For this non-driver context, we should not
-> use iommu_group_claim_dma_owner() directly, but hold the group->mutex
-> and check the group->owner_cnt directly:
+So leaving smmu->num_mapping_groups unchanged for now and using the
+first available group for the detection indeed seems like the right
+thing to do here (alternatively, never use an index above 127).
+
+But perhaps you can update to commit message to reflect this finding
+(i.e. that the num groups value is probably bogus, and that you at least
+need to use an index < 128 for quirk detection).
+
+By the way, I noticed that the number of groups is reported as 162 on
+the sa8295p-adp as well.
+
+> > > > This also warrants a change in variable name from last_s2cr to free_s2cr.
+> > > > 
+> > > > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> > > > ---
+> > > >  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 24 +++++++++++++++++-----
+> > > >  1 file changed, 19 insertions(+), 5 deletions(-)
+> > > > 
+> > > > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> > > > index 78fc0e1bf215..4104f81b8d8f 100644
+> > > > --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> > > > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> > > > @@ -267,23 +267,37 @@ static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+> > > >  
+> > > >  static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
+> > > >  {
+> > > > -	unsigned int last_s2cr = ARM_SMMU_GR0_S2CR(smmu->num_mapping_groups - 1);
+> > > >  	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
+> > > > +	u32 free_s2cr;
+> > > >  	u32 reg;
+> > > >  	u32 smr;
+> > > >  	int i;
+> > > >  
+> > > > +	/*
+> > > > +	 * Find the first non-valid (free) stream mapping register group and
+> > > > +	 * use that index to access S2CR for detecting the bypass quirk.
+> > > > +	 */
+> > > > +	for (i = 0; i < smmu->num_mapping_groups; i++) {
+> > > > +		smr = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_SMR(i));
+> > > > +
+> > > > +		if (!FIELD_GET(ARM_SMMU_SMR_VALID, smr))
+> > > > +			break;
+> > > > +	}
+> > > > +
+> > > > +	free_s2cr = ARM_SMMU_GR0_S2CR(i);
+> > > 
+> > > In the unlikely event that there is no free group this would access an
+> > > invalid index.
+> > > 
+> > 
+> > Hmm, theoretically yes. But what would be the plan of action if that happens?
+> > Should we just bail out with error or skip the quirk detection?
 > 
->         mutex_lock(&group->mutex);
->         if (group->owner_cnt) {
->                 ret = -EPERM;
->                 goto unlock_out;
->         }
-> 
-> the group->mutex should be held until everything is done.
+> Yes, skipping quirk detection seems preferable to crashing systems that
+> don't need the quirk.
 
-Yes, that would be fine as long as we can hold the group mutex
-throughout
+Perhaps you can move the quirk handling to its own function and simply
+return early in case there is no free group.
 
-Jason
+Johan
