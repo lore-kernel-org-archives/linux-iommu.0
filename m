@@ -1,111 +1,98 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FBC26109;
-	Wed, 15 Feb 2023 15:39:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96E44C4339B;
-	Wed, 15 Feb 2023 15:39:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1676475554;
-	bh=KAqVQM9UCH1nsN4dVqO6EI2zHup8vWAXhFqadtkfxJM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=RaKm6Vd89p1r/UPhvnoxGM8/yaSzsjglgOBhaKDjkb66pV8QyxW8L6p+iTAWHw5fr
-	 ow8VrkUQ47yCIqPBTU12Y1e5i6FQqvtasc3nI4nTwipHy5QQbmYPKq03feQ7lj4lxB
-	 4QvQP7lmtYdMV0LqxnrmYKW366R92hVLF2jIVfEPtf9kxNDIL2kuPkGfGAeNKJhSNf
-	 4mXkTP0lpilWn114gDuj2C6vCcgr+i1x6jYnf/mpp5g7Cpy2lNTa75PV15gDik493s
-	 EuhBBIu98FjsuRQjkJIexThiNjQJYAiaNHezaExE++u+q49OIi+57CU1rQ5jj4Q5ii
-	 nBJHKKqXH+3UA==
-Date: Wed, 15 Feb 2023 09:39:13 -0600
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Felix Kuehling <felix.kuehling@amd.com>,
-	"Deucher, Alexander" <Alexander.Deucher@amd.com>,
-	"Hegde, Vasant" <Vasant.Hegde@amd.com>,
-	Matt Fagnani <matt.fagnani@bell.net>,
-	Thorsten Leemhuis <regressions@leemhuis.info>,
-	Joerg Roedel <jroedel@suse.de>, Jason Gunthorpe <jgg@nvidia.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	LKML <linux-kernel@vger.kernel.org>,
-	"regressions@lists.linux.dev" <regressions@lists.linux.dev>,
-	Linux PCI <linux-pci@vger.kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	"Pan, Xinhui" <Xinhui.Pan@amd.com>, amd-gfx@lists.freedesktop.org
-Subject: Re: [regression, =?iso-8859-1?Q?bisected?=
- =?iso-8859-1?Q?=2C_pci=2Fiommu=5D_Bug=A0216865_-_Black_screen_when_amdgp?=
- =?iso-8859-1?Q?u?= started during 6.2-rc1 boot with AMD IOMMU enabled
-Message-ID: <20230215153913.GA3189407@bhelgaas>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 929E67B
+	for <iommu@lists.linux.dev>; Wed, 15 Feb 2023 18:00:26 +0000 (UTC)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31FHXO71032265;
+	Wed, 15 Feb 2023 18:00:14 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=huAOFH+wzio3JWWNZAJliW4HDetlKh7gD65mTH90JEQ=;
+ b=nPlfi5S53WxIYoN5+jrdA4QKNTFdIfOOj93boCV1PZFydolejYSLM0Tot8BSbPuoJp3G
+ zgmXvludDiEUFHOcA2zhAT317D6cp3vb2H3VXCerM9X1AjyQ0FEopaTFlxadi2EsbEIl
+ 2RTk7DOQPy+WPlH30omOLkZoMJMDGWtXalb40KHoFNu+zh+O8h/U+KjpQHCcsuNiSzEX
+ 464S9fA6LLbmsxVMf+SlECofKS/eCU/QTNOGfQGoxPWjAdKQBxEggf/KCNUi0+JGEwCs
+ Z2Z5bjH2PPzquEhW72rQQWtYVJXI9V1VI8zENK7woAnyngkL/34IS1PDeAmfH/oAd0s+ sQ== 
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ns3a3hw1m-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 15 Feb 2023 18:00:13 +0000
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+	by ppma01dal.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 31FG51HH009847;
+	Wed, 15 Feb 2023 18:00:12 GMT
+Received: from smtprelay01.wdc07v.mail.ibm.com ([9.208.129.119])
+	by ppma01dal.us.ibm.com (PPS) with ESMTPS id 3np2n7uyk9-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 15 Feb 2023 18:00:12 +0000
+Received: from smtpav05.dal12v.mail.ibm.com (smtpav05.dal12v.mail.ibm.com [10.241.53.104])
+	by smtprelay01.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 31FI0AxT28770970
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 15 Feb 2023 18:00:10 GMT
+Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 181F058076;
+	Wed, 15 Feb 2023 18:00:10 +0000 (GMT)
+Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id DB21058070;
+	Wed, 15 Feb 2023 18:00:08 +0000 (GMT)
+Received: from [9.60.89.243] (unknown [9.60.89.243])
+	by smtpav05.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Wed, 15 Feb 2023 18:00:08 +0000 (GMT)
+Message-ID: <4ad0d2b9-2465-b42d-c0f9-b48caadfd72c@linux.ibm.com>
+Date: Wed, 15 Feb 2023 13:00:08 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <7bbc0f65-e1c6-f388-29a8-390b8c9c92c8@linux.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v6 4/6] s390/pci: Use dma-iommu layer
+To: Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Jason Gunthorpe <jgg@nvidia.com>, Wenjia Zhang <wenjia@linux.ibm.com>
+Cc: Gerd Bayer <gbayer@linux.ibm.com>, Pierre Morel <pmorel@linux.ibm.com>,
+        iommu@lists.linux.dev, linux-s390@vger.kernel.org,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, linux-kernel@vger.kernel.org,
+        Julian Ruess <julianr@linux.ibm.com>
+References: <20230215120327.947336-1-schnelle@linux.ibm.com>
+ <20230215120327.947336-5-schnelle@linux.ibm.com>
+Content-Language: en-US
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <20230215120327.947336-5-schnelle@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: ir9BlGa-9OeRYihge9S9OWDaTu0bi6j4
+X-Proofpoint-GUID: ir9BlGa-9OeRYihge9S9OWDaTu0bi6j4
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
+ definitions=2023-02-15_07,2023-02-15_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=675 bulkscore=0
+ clxscore=1015 spamscore=0 adultscore=0 mlxscore=0 lowpriorityscore=0
+ suspectscore=0 impostorscore=0 priorityscore=1501 malwarescore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2302150157
 
-[+cc Christian, Xinhui, amd-gfx]
-
-On Fri, Jan 06, 2023 at 01:48:11PM +0800, Baolu Lu wrote:
-> On 1/5/23 11:27 PM, Felix Kuehling wrote:
-> > Am 2023-01-05 um 09:46 schrieb Deucher, Alexander:
-> > > > -----Original Message-----
-> > > > From: Hegde, Vasant <Vasant.Hegde@amd.com>
-> > > > On 1/5/2023 4:07 PM, Baolu Lu wrote:
-> > > > > On 2023/1/5 18:27, Vasant Hegde wrote:
-> > > > > > On 1/5/2023 6:39 AM, Matt Fagnani wrote:
-> > > > > > > I built 6.2-rc2 with the patch applied. The same black
-> > > > > > > screen problem happened with 6.2-rc2 with the patch. I
-> > > > > > > tried to use early kdump with 6.2-rc2 with the patch
-> > > > > > > twice by panicking the kernel with sysrq+alt+c after the
-> > > > > > > black screen happened. The system rebooted after about
-> > > > > > > 10-20 seconds both times, but no kdump and dmesg files
-> > > > > > > were saved in /var/crash. I'm attaching the lspci -vvv
-> > > > > > > output as requested. ...
-
-> > > > > > Looking into lspci output, it doesn't list ACS feature
-> > > > > > for Graphics card. So with your fix it didn't enable PASID
-> > > > > > and hence it failed to boot. ...
-
-> > > > > So do you mind telling why does the PASID need to be enabled
-> > > > > for the graphic device? Or in another word, what does the
-> > > > > graphic driver use the PASID for? ...
-
-> > > The GPU driver uses the pasid for shared virtual memory between
-> > > the CPU and GPU.  I.e., so that the user apps can use the same
-> > > virtual address space on the GPU and the CPU.  It also uses
-> > > pasid to take advantage of recoverable device page faults using
-> > > PRS. ...
-
-> > Agreed. This applies to GPU computing on some older AMD APUs that
-> > take advantage of memory coherence and IOMMUv2 address translation
-> > to create a shared virtual address space between the CPU and GPU.
-> > In this case it seems to be a Carrizo APU. It is also true for
-> > Raven APUs. ...
-
-> Thanks for the explanation.
+On 2/15/23 7:03 AM, Niklas Schnelle wrote:
+> While s390 already has a standard IOMMU driver and previous changes have
+> added I/O TLB flushing operations this driver is currently only used for
+> user-space PCI access such as vfio-pci. For the DMA API s390 instead
+> utilizes its own implementation in arch/s390/pci/pci_dma.c which drives
+> the same hardware and shares some code but requires a complex and
+> fragile hand over between DMA API and IOMMU API use of a device and
+> despite code sharing still leads to significant duplication and
+> maintenance effort. Let's utilize the common code DMAP API
+> implementation from drivers/iommu/dma-iommu.c instead allowing us to
+> get rid of arch/s390/pci/pci_dma.c.
 > 
-> This is actually the problem that commit 201007ef707a was trying to
-> fix.  The PCIe fabric routes Memory Requests based on the TLP
-> address, ignoring any PASID (PCIe r6.0, sec 2.2.10.4), so a TLP with
-> PASID that should go upstream to the IOMMU may instead be routed as
-> a P2P Request if its address falls in a bridge window.
-> 
-> In SVA case, the IOMMU shares the address space of a user
-> application.  The user application side has no knowledge about the
-> PCI bridge window.  It is entirely possible that the device is
-> programed with a P2P address and results in a disaster.
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> ---
 
-Is this stalled?  We explored the idea of changing the PCI core so
-that for devices that use ATS/PRI, we could enable PASID without
-checking for ACS [1], but IIUC we ultimately concluded that it was
-based on a misunderstanding of how ATS Translation Requests are routed
-and that an AMD driver change would be required [2].
+FYI, this patch doesn't fit on top of iommu-next, I'd guess at least due to baolu's 'Retire detach_dev callback' series, which removed .detach_dev and added .set_platform_dma_ops for s390-iommu.  That's relevant here, because now that this patch enables dma-iommu for s390 and removes the platform DMA ops it must now remove .set_platform_dma_ops/s390_iommu_set_platform_dma for s390-iommu.
 
-So it seems like we still have this regression, and we're running out
-of time before v6.2.
-
-[1] https://lore.kernel.org/all/20230114073420.759989-1-baolu.lu@linux.intel.com/
-[2] https://lore.kernel.org/all/Y91X9MeCOsa67CC6@nvidia.com/
+Matt
