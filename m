@@ -1,237 +1,219 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2079.outbound.protection.outlook.com [40.107.96.79])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EED3D198
-	for <iommu@lists.linux.dev>; Thu, 16 Feb 2023 04:43:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1676522589;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=3DDHO8i0zvrnMlu2LxipZBzY2ZSSiL5SyYkVWHiaTdo=;
-	b=VTkjZLv4aDGdghk9qh2B1loERMLXGSuuiNwNJDRNq6xYYJxjU+ng44yk/8UncSWzcvYAeU
-	cKzDyTgnLPXOQHRvMKJnUBGf7AOPalBqKyKj610Eg8YUd3ddz12iEH4TegLdul71+F7ppr
-	XkEi05UPVUDKpER5V8bTfDl7+dBMYVs=
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
- [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-294-Mdl0U_YINzGyOsrJj-lRVg-1; Wed, 15 Feb 2023 23:43:08 -0500
-X-MC-Unique: Mdl0U_YINzGyOsrJj-lRVg-1
-Received: by mail-pj1-f71.google.com with SMTP id lx15-20020a17090b4b0f00b0023465ea4b65so430412pjb.3
-        for <iommu@lists.linux.dev>; Wed, 15 Feb 2023 20:43:08 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=3DDHO8i0zvrnMlu2LxipZBzY2ZSSiL5SyYkVWHiaTdo=;
-        b=XLg6VONf70WKon16wCuFQJcHxci23YCEa92+TfzJnhPqiZFmnyxpB3ETXoAk4mggD5
-         Cr+LUCg+BLrW8LQa02kVuC05RR/OsLcRnE4rCIrIuGarkWtl6QXUu2ytapo6M92cAC2N
-         bWllIuQyGuChMgo8L25QvriB26T9ZlvxV5YJdnq7oFXSej8vP14+ewvRouITqMhjEHgS
-         a0d1KYvJhXt/ZA9o10nbPDd3jM3bpOS0p4J/Jqsc4JpqDCR2Pyj+EAfRM4OKz50yTq/5
-         C9G2T2Oy6yVJazse06XuobsOq51fCDpRamiVGjAYonIcBh2wmg7mo1yZHcfUUuDi2peg
-         iyOQ==
-X-Gm-Message-State: AO0yUKV4FcYJBWnkCN/5Jjsl+2ax0op7JNyWMq7TzRRHjcVWKUTzN6rW
-	y93HDW06GjTnnRRkNUKcMR9GBmv+7A4b1flpAtr3gXTy6ZkJN9KsCPwR19ebO19Y8M/HaVFcehW
-	+WKU57MOOw/SMPuM=
-X-Received: by 2002:a17:90b:4c04:b0:234:bf0:86bc with SMTP id na4-20020a17090b4c0400b002340bf086bcmr5369926pjb.31.1676522587179;
-        Wed, 15 Feb 2023 20:43:07 -0800 (PST)
-X-Google-Smtp-Source: AK7set/qQ5O/TZ0PJALyrxA2Lethp9rxzMGA6y2yAhomtgRtTLlXGq4nNUzsUdYKVT2TS5pjlJl+Xw==
-X-Received: by 2002:a17:90b:4c04:b0:234:bf0:86bc with SMTP id na4-20020a17090b4c0400b002340bf086bcmr5369907pjb.31.1676522586789;
-        Wed, 15 Feb 2023 20:43:06 -0800 (PST)
-Received: from [10.72.12.253] ([43.228.180.230])
-        by smtp.gmail.com with ESMTPSA id l2-20020a17090aec0200b00233b5d6b4b5sm2306741pjy.16.2023.02.15.20.43.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Feb 2023 20:43:06 -0800 (PST)
-Message-ID: <3bb88db8-1283-f16d-d16a-5d3fb958b584@redhat.com>
-Date: Thu, 16 Feb 2023 12:43:00 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66E74D317;
+	Thu, 16 Feb 2023 05:25:52 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RN0hXGGKszY5OKUCyQTqRis84T+QGFkpozdY6AvTYi/1iol730S7JP/iu0C7q8mDGJDB6chsx8OT0q/F/QZ/Y9y6EUQ7db0ujE6xnT2pOz7HKot3qdzWqNdKuVF9eZWZU+ASefZSw4MkYU5gjwSMFdn4Lcng/fXxu9CuVvXRw5m1M6IRUpd2vU5JmOX81/vyXjT1bQU6BtCbbgnHk+yYibGvejGVQ9O1d5A4j4UHpGl314+lEibWNDZRcJxlFM3EdGn59x/CbLzntOIi9PlQb1dnlNZuNpBa+6uRqKtimbdfWCGlcRZSsFfIppD4CBnlh6YoQyZdKpndRRmUrEWtyw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fHruO6wtBqMvfqMcRqY4gg41ZRetMZwkp7kQPpTYFDY=;
+ b=OsxYX/fLDHGK0emt0ikbNaJRWARhKRw86QUhvFNX7om6t3kbdoadXYrbaBMxrIVaOaQDBon/kY7RSWojMHs00Wl4WoAXt9wcg0D8VAzw8JFvOWXvwHjSWp/8xO4KIabFFYuR0EqhCLY8rqyiuJA0E8jDTixmt/lzUWFJysYy780Ejo78A9RtBPhyd/PRCkroxuHEv1s6kVwnLrbXAWrQvOVl1njeaOmqqUDetlGdUrPiLcTjFl1oVyWrT6ViFjV/qvdEQNR2wNTq+ANL2T8UR2w1sB2KRWmrkAh0xwvlcTlNVYYTVYK0knNTI8gFSyTkUaA+GC//nS6LNip1q25j6Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fHruO6wtBqMvfqMcRqY4gg41ZRetMZwkp7kQPpTYFDY=;
+ b=XFel0syknNoa/d6p0YE0Wqt6Hxrc+eqtHTQeL64TbpfaM+QcKKpAbCjIzC1L3QZ8hZBfOU0CpcfKkoCuT17/SdFBPUPpPdoKNIIqSphSgu1eRRZFvfDrHTuckBiZhUcyA4YjyQcY14RkHnRNK6+8zcKApz7Ta/B/SMlAXSS1G+0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ PH7PR12MB7140.namprd12.prod.outlook.com (2603:10b6:510:200::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26; Thu, 16 Feb
+ 2023 05:25:49 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::56d2:cfa0:4e19:40cd]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::56d2:cfa0:4e19:40cd%4]) with mapi id 15.20.6086.024; Thu, 16 Feb 2023
+ 05:25:49 +0000
+Message-ID: <51861ff2-380f-640d-d5e8-7efe979a97ea@amd.com>
+Date: Thu, 16 Feb 2023 10:55:33 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: =?UTF-8?Q?Re=3a_=5bregression=2c_bisected=2c_pci/iommu=5d_Bug=c2=a0?=
+ =?UTF-8?Q?216865_-_Black_screen_when_amdgpu_started_during_6=2e2-rc1_boot_w?=
+ =?UTF-8?Q?ith_AMD_IOMMU_enabled?=
+Content-Language: en-US
+To: Felix Kuehling <felix.kuehling@amd.com>,
+ Bjorn Helgaas <helgaas@kernel.org>, Baolu Lu <baolu.lu@linux.intel.com>,
+ "Huang, Shimmer" <Shimmer.Huang@amd.com>, "Liu, Aaron" <Aaron.Liu@amd.com>,
+ Matt Fagnani <matt.fagnani@bell.net>, Jason Gunthorpe <jgg@nvidia.com>
+Cc: Joerg Roedel <jroedel@suse.de>,
+ "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+ Thorsten Leemhuis <regressions@leemhuis.info>,
+ Linux PCI <linux-pci@vger.kernel.org>, "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+ amd-gfx@lists.freedesktop.org, LKML <linux-kernel@vger.kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "Deucher, Alexander" <Alexander.Deucher@amd.com>,
+ =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+References: <20230215153913.GA3189407@bhelgaas>
+ <e3b866eb-830c-9037-39c7-978714aaf4d2@amd.com>
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <e3b866eb-830c-9037-39c7-978714aaf4d2@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: PN3PR01CA0038.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:98::6) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.6.1
-Subject: Re: [PATCH v2] vhost/vdpa: Add MSI translation tables to iommu for
- software-managed MSI
-To: Nanyong Sun <sunnanyong@huawei.com>, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, mst@redhat.com
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
- virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
- wangrong68@huawei.com
-References: <20230207120843.1580403-1-sunnanyong@huawei.com>
-From: Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20230207120843.1580403-1-sunnanyong@huawei.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|PH7PR12MB7140:EE_
+X-MS-Office365-Filtering-Correlation-Id: 830a98db-aa6d-4333-6372-08db0fde4322
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	X5fnxEH/9fIHsxgUb5nLM4rK+y2pLGmv1Ovw/PEK6Mgp4QYMQoROgceGnksysr27iQSwVQZyDE2QLAK0lsLXnQRk2445N743yDuFX+5bmHTnMva6S9EzGaMaziekGlDiA5iorbRXgfGGv7MFtLSnuLgwwlyGAdEUC/AqQl87ULdmdFLzX0q9EbPvP8yxKvJ9ncNDKzk0t5dEQeURxm8wp9KB6Hc82xkgDBJ1vbCKHHoMjMlFKi/zHZNDpgmuLzrkA6B4JYO+PB+bbu+8uQiH3rmpupTjWl6yG+0qMF3i238KIRJvmJkft4xJSvqdWUDZHGEAxFwjZwlAonvU6avCjriqu6vsDcsMVBxdXZK/QjEwYOU4cJ8Nkv+QQWykL6kKggRp2wkvyBVtNspUjAljfadyd9cG4VYFh+y1cMMJwwWrhY9pV4a2QezMHxDdteQEsUP/v98wbDhd7cMnu2XcYTJuElp9XC96hMj0iE6a/Gjt8bv5USeiK5ZDHkco7WY5ZFcdB4Q1RH6ZF+wRM1wH22KslfvxP9rE0T6+incdHZxXWPVMfa/OrAOJJbl+ZOzvhZSTHRBVgjvd39T74g4PyMR23+UozmcKxZ0rRlS3sXO9DhIh2uHuGkto1GkDZTjBRf15ulhmXR9ntpBFGfZoj7BvbNmd5Ot6/aOxfPaW3adD7y4RQAWD5eXrgjub4iiK6k9oZRoq0cchxBiioqOOk5RNk7bCQFXEvPbAXys22FDiTYMC66GpW3rA8u4QQsoWmgidj0rRHuGJMRO0v4B9Qg==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(136003)(346002)(376002)(366004)(39860400002)(451199018)(316002)(54906003)(2616005)(478600001)(6666004)(86362001)(110136005)(31696002)(31686004)(44832011)(6512007)(4326008)(41300700001)(66556008)(8936002)(5660300002)(6486002)(26005)(53546011)(6506007)(186003)(36756003)(966005)(66476007)(66946007)(38100700002)(7416002)(2906002)(83380400001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?VERVR3R5ZDl0TGVPYVJKZ1NscjZSdDBFNUloV29SRkxGLzFXdzZxMUxtbENY?=
+ =?utf-8?B?S2plczJHeUc5ZEJyaWxNSTBFRzQ5bG1sc0RSL015ZGQ0SHIyRUwzVDM1RER6?=
+ =?utf-8?B?aFpJMmpiakxmN25oM0UzVVQvaFRyY2V5ckwrTlhlWUlyakdEVUpwZEtqSzdD?=
+ =?utf-8?B?c1lDZnpXY0JqT05VbVJXMGtKL0RSZDNFVWV2NVRxcjFzU3hMdDA4YThnaW1Z?=
+ =?utf-8?B?MUQxaS9zNWJWZlYxS0xQM1JBM1dtelhNemR0ZnZvMVFSZy9OV2s2ZDVlRExR?=
+ =?utf-8?B?QW8rL0cvTTdPeDZyWEVpOThYeXdYZjNSenNEd1RDemVrSW11Z1FzUzFVQW5L?=
+ =?utf-8?B?S0J3bE1ld01wUkJsZUFUa29NeG41Qk15WGJDQUF1bE1RSVV0TE1WZnM0bGEw?=
+ =?utf-8?B?cjRSaFRpUzk0R1MycUlSRG53QjdqeTlvQXZzWXR4WE4rdlYzMENKNU5TdUN6?=
+ =?utf-8?B?UWZDM3hhWHpFVDdScFVlTGRoSnh2bFJpcWNWUUVJRUJLMjFVOUVOVGpTcUpQ?=
+ =?utf-8?B?OVVUSjhyVXFEWUt1Y1F4dEJQYkVaWkdmb1JpZVphOFpNc09tNDlLYkRmQk5j?=
+ =?utf-8?B?TXhwdzZSSEF0Q09LalNOY0s0TGFvZktSdDZ0dHJUbk10b2VlQnZaT0g5aWF6?=
+ =?utf-8?B?N2V0bDJNSTJJcDZZMTdZRmgvL1BjYS9CdFFKQVladTFHRXRCZXB1MTlDdkJB?=
+ =?utf-8?B?VVFzMnJFYnowbXFFanFqQjJDY1UyZHAySTRPTVNKWXhXemh6YU5PTXZiZSs2?=
+ =?utf-8?B?NXhRTEFsamRYellpeTY4QXVwVXh5b1plQ0VLNUlKd1F6RTFCVFUxWnlaeWFQ?=
+ =?utf-8?B?KzNLNjBZczRkZDNVNU9WTzF4aEI5aDhxelBLNGtuSzNmOUpOcnNXSkN6QVVC?=
+ =?utf-8?B?S1gxU0lWcDFSNUx4QXRHV1hpVGQ5UWI1c1RRSklXazYwYnM2NlBLeTREVXR6?=
+ =?utf-8?B?NDltTHRBdTVJUGFmTzl4dzd0eHUvNVF1YUdZNGwvQ0U0VVF3MHd4WXVuU2JD?=
+ =?utf-8?B?RXg1d3RBNnVMbTJ2cXMwS205RndKZ2dnT3AvNkRaNkpOOVVDY1p6WXcvejll?=
+ =?utf-8?B?bFZIMXVZVVhGY085KzcrU2RMcWoxNWxCU0xSNzJDNXhaQ1VZSVI5ZlUwVmdB?=
+ =?utf-8?B?MVBRbkE3Vm91Uzcvck4yYjZMSVRKaHlOQ1BqVXhPMHc5QTk2YU5RUktsWHEx?=
+ =?utf-8?B?L2lHdzNCQ1E5YnNVRjhZSVhsSkZJT0o4am51VzFUdnNidjZpM2JVblBOY2wy?=
+ =?utf-8?B?M0lzb25qbzRhQnRNMnJOSjZMUEhBbVA2R3JPNmY5SmE0eHE2WVVIRkVNT3ZJ?=
+ =?utf-8?B?K3dNR2tabzJiblpzTzBoWUdKUTV2TTlpZnA4dXlRSVhPZzEyR1lrTnRHMzF0?=
+ =?utf-8?B?TTNpS3RNU1pRdXFOaFNOd1QyMXc4SVY4U1VxZ3V0dXlrZHc5dFRnWXhEUDU3?=
+ =?utf-8?B?Y3lSMnlqU0JLVWtEWTFuK1ZzU0tISS9KbCszN2MxWlJ6d3BUL2ZITXhXZU9t?=
+ =?utf-8?B?eGp5SW84dERvdUdjMzd3UjR3NTU1cWcxTXhEaTV3MWxMZXRXY056L25VaDNa?=
+ =?utf-8?B?dFJIZkMwci9DZW1WTllQcmswZ2pSZEN4WHFIOGJqQTZpNzlibWRHVUJjTGRx?=
+ =?utf-8?B?TWdFUnJJODdxVmZzbTRqUFd0VUIxeGF1OWdieHVDek5OV2FoYlJkcVhPQ1lj?=
+ =?utf-8?B?RlhlN0hXV1hUa0JLTVhvZ2ZHTWlCQUNTTFd2bzZidGhMcm9oVGFqZjZIUnlw?=
+ =?utf-8?B?TkdDNC9TaXdURjdWNFlsUnp4MGRNSjlnMU5lZmx4dHNEWEJhcm1FQ2tnK1Vs?=
+ =?utf-8?B?bHJ6RUo4Mm9DSHFDbHNyeHhFeG9OQkhzVHRCOGZxT3AzV1htNU5oREh5NjdL?=
+ =?utf-8?B?am1oVVMzbVhZWGd1a1RlaW1sUHdIREt4ZGxYbHB0YzZLOTZPMkVNdUpZWGRE?=
+ =?utf-8?B?Zzk0WVAzbnFscnE0emZjWUw1UnB2K0RWU1ZYSmw1L3RmbEhwVkV1Y2J0QXVP?=
+ =?utf-8?B?VTBhQm5Gd09KandSVjNkOWxqYk5jUGIvelBrNy8weWV1YTdWOE9JemUyMytp?=
+ =?utf-8?B?WXk3WVVuQmVXejEwZk02Z1lBa0dWaWZON0NBVy9idVkzNXNEcGRnSStIOC9M?=
+ =?utf-8?Q?xHVTL09sH1an/Rqpso/uwVgM1?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 830a98db-aa6d-4333-6372-08db0fde4322
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2023 05:25:49.0289
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7QJol1oTOrCIRjOdkxbbkE5jhKzPimfTzUxuLwnjH0TrqaN7cOleHhz8zAohGpu62iwJ4PoZVYdYAwy45RuGsQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7140
+
+Felix, Jason, Matt,
 
 
-在 2023/2/7 20:08, Nanyong Sun 写道:
-> From: Rong Wang <wangrong68@huawei.com>
->
-> Once enable iommu domain for one device, the MSI
-> translation tables have to be there for software-managed MSI.
-> Otherwise, platform with software-managed MSI without an
-> irq bypass function, can not get a correct memory write event
-> from pcie, will not get irqs.
-> The solution is to obtain the MSI phy base address from
-> iommu reserved region, and set it to iommu MSI cookie,
-> then translation tables will be created while request irq.
->
-> Change log
-> ----------
->
-> v1->v2:
-> - add resv iotlb to avoid overlap mapping.
->
-> Signed-off-by: Rong Wang <wangrong68@huawei.com>
-> Signed-off-by: Nanyong Sun <sunnanyong@huawei.com>
-> ---
->   drivers/iommu/iommu.c |  1 +
->   drivers/vhost/vdpa.c  | 59 ++++++++++++++++++++++++++++++++++++++++---
->   2 files changed, 57 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 5f6a85aea501..af9c064ad8b2 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -2623,6 +2623,7 @@ void iommu_get_resv_regions(struct device *dev, struct list_head *list)
->   	if (ops->get_resv_regions)
->   		ops->get_resv_regions(dev, list);
->   }
-> +EXPORT_SYMBOL(iommu_get_resv_regions);
->   
->   /**
->    * iommu_put_resv_regions - release resered regions
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index ec32f785dfde..a58979da8acd 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -49,6 +49,7 @@ struct vhost_vdpa {
->   	struct completion completion;
->   	struct vdpa_device *vdpa;
->   	struct hlist_head as[VHOST_VDPA_IOTLB_BUCKETS];
-> +	struct vhost_iotlb resv_iotlb;
+On 2/16/2023 6:05 AM, Felix Kuehling wrote:
+> [+Shimmer, Aaron]
+> 
+> Am 2023-02-15 um 10:39 schrieb Bjorn Helgaas:
+>> [+cc Christian, Xinhui, amd-gfx]
+>>
+>> On Fri, Jan 06, 2023 at 01:48:11PM +0800, Baolu Lu wrote:
+>>> On 1/5/23 11:27 PM, Felix Kuehling wrote:
+>>>> Am 2023-01-05 um 09:46 schrieb Deucher, Alexander:
+>>>>>> -----Original Message-----
+>>>>>> From: Hegde, Vasant <Vasant.Hegde@amd.com>
+>>>>>> On 1/5/2023 4:07 PM, Baolu Lu wrote:
+>>>>>>> On 2023/1/5 18:27, Vasant Hegde wrote:
+>>>>>>>> On 1/5/2023 6:39 AM, Matt Fagnani wrote:
+>>>>>>>>> I built 6.2-rc2 with the patch applied. The same black
+>>>>>>>>> screen problem happened with 6.2-rc2 with the patch. I
+>>>>>>>>> tried to use early kdump with 6.2-rc2 with the patch
+>>>>>>>>> twice by panicking the kernel with sysrq+alt+c after the
+>>>>>>>>> black screen happened. The system rebooted after about
+>>>>>>>>> 10-20 seconds both times, but no kdump and dmesg files
+>>>>>>>>> were saved in /var/crash. I'm attaching the lspci -vvv
+>>>>>>>>> output as requested. ...
+>>>>>>>> Looking into lspci output, it doesn't list ACS feature
+>>>>>>>> for Graphics card. So with your fix it didn't enable PASID
+>>>>>>>> and hence it failed to boot. ...
+>>>>>>> So do you mind telling why does the PASID need to be enabled
+>>>>>>> for the graphic device? Or in another word, what does the
+>>>>>>> graphic driver use the PASID for? ...
+>>>>> The GPU driver uses the pasid for shared virtual memory between
+>>>>> the CPU and GPU.  I.e., so that the user apps can use the same
+>>>>> virtual address space on the GPU and the CPU.  It also uses
+>>>>> pasid to take advantage of recoverable device page faults using
+>>>>> PRS. ...
+>>>> Agreed. This applies to GPU computing on some older AMD APUs that
+>>>> take advantage of memory coherence and IOMMUv2 address translation
+>>>> to create a shared virtual address space between the CPU and GPU.
+>>>> In this case it seems to be a Carrizo APU. It is also true for
+>>>> Raven APUs. ...
+>>> Thanks for the explanation.
+>>>
+>>> This is actually the problem that commit 201007ef707a was trying to
+>>> fix.  The PCIe fabric routes Memory Requests based on the TLP
+>>> address, ignoring any PASID (PCIe r6.0, sec 2.2.10.4), so a TLP with
+>>> PASID that should go upstream to the IOMMU may instead be routed as
+>>> a P2P Request if its address falls in a bridge window.
+>>>
+>>> In SVA case, the IOMMU shares the address space of a user
+>>> application.  The user application side has no knowledge about the
+>>> PCI bridge window.  It is entirely possible that the device is
+>>> programed with a P2P address and results in a disaster.
+>> Is this stalled?  We explored the idea of changing the PCI core so
+>> that for devices that use ATS/PRI, we could enable PASID without
+>> checking for ACS [1], but IIUC we ultimately concluded that it was
+>> based on a misunderstanding of how ATS Translation Requests are routed
+>> and that an AMD driver change would be required [2].
+>>
+>> So it seems like we still have this regression, and we're running out
+>> of time before v6.2.
+>>
+>> [1] https://lore.kernel.org/all/20230114073420.759989-1-baolu.lu@linux.intel.com/
+>> [2] https://lore.kernel.org/all/Y91X9MeCOsa67CC6@nvidia.com/
+> 
+> If I understand this correctly, the HW or the BIOS is doing something wrong
+> about reporting ACS. I don't know what the GPU driver can do other than add some
+> quirk to stop using AMD IOMMUv2 on this HW/BIOS.
+> 
+> It looks like the problem is triggered when the driver calls
+> amd_iommu_init_device. That's when the first WARNs happen, soon followed by a
+> kernel oops in report_iommu_fault. The driver doesn't know anything is wrong
+> because amd_iommu_init_device seems to return "success". And the oops is not in
+> the GPU driver either.
+
+WARN is fixed and its in Joerg's tree.
+https://lore.kernel.org/all/20230111121503.5931-1-vasant.hegde@amd.com/
+
+report_iommu_fault() happened because in amd_iommu_init_device() path it failed
+to attach devices to new domain and returned error. But it didn't put devices
+back to old domain properly. It left in incosistent state and resulted in IO
+page fault. I have proposed series to handle device to domain attachment failure
+and better handling of subsequent report_iommu_fault().
+https://lore.kernel.org/linux-iommu/20230215052642.6016-1-vasant.hegde@amd.com/
 
 
-Nit: it might be better to rename this as resv_regions.
+@Matt,
+  Can you please help to verify above patches on your system where you hit the
+issue originally?
+  (Grab above two series, apply it on top of latest kernel and test it)
 
-
->   	struct device dev;
->   	struct cdev cdev;
->   	atomic_t opened;
-> @@ -216,6 +217,8 @@ static int vhost_vdpa_reset(struct vhost_vdpa *v)
->   
->   	v->in_batch = 0;
->   
-> +	vhost_iotlb_reset(&v->resv_iotlb);
-> +
->   	return vdpa_reset(vdpa);
->   }
->   
-> @@ -1013,6 +1016,10 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
->   	    msg->iova + msg->size - 1 > v->range.last)
->   		return -EINVAL;
->   
-> +	if (vhost_iotlb_itree_first(&v->resv_iotlb, msg->iova,
-> +					msg->iova + msg->size - 1))
-> +		return -EINVAL;
-> +
->   	if (vhost_iotlb_itree_first(iotlb, msg->iova,
->   				    msg->iova + msg->size - 1))
->   		return -EEXIST;
-> @@ -1103,6 +1110,45 @@ static ssize_t vhost_vdpa_chr_write_iter(struct kiocb *iocb,
->   	return vhost_chr_write_iter(dev, from);
->   }
->   
-> +static int vhost_vdpa_resv_iommu_region(struct iommu_domain *domain, struct device *dma_dev,
-> +	struct vhost_iotlb *resv_iotlb)
-> +{
-> +	struct list_head dev_resv_regions;
-> +	phys_addr_t resv_msi_base = 0;
-> +	struct iommu_resv_region *region;
-> +	int ret = 0;
-> +	bool with_sw_msi = false;
-> +	bool with_hw_msi = false;
-> +
-> +	INIT_LIST_HEAD(&dev_resv_regions);
-> +	iommu_get_resv_regions(dma_dev, &dev_resv_regions);
-> +
-> +	list_for_each_entry(region, &dev_resv_regions, list) {
-> +		ret = vhost_iotlb_add_range_ctx(resv_iotlb, region->start,
-> +				region->start + region->length - 1,
-> +				0, 0, NULL);
-> +		if (ret) {
-> +			vhost_iotlb_reset(resv_iotlb);
-> +			break;
-> +		}
-> +
-> +		if (region->type == IOMMU_RESV_MSI)
-> +			with_hw_msi = true;
-> +
-> +		if (region->type == IOMMU_RESV_SW_MSI) {
-> +			resv_msi_base = region->start;
-> +			with_sw_msi = true;
-> +		}
-> +	}
-> +
-> +	if (!ret && !with_hw_msi && with_sw_msi)
-> +		ret = iommu_get_msi_cookie(domain, resv_msi_base);
-> +
-> +	iommu_put_resv_regions(dma_dev, &dev_resv_regions);
-> +
-> +	return ret;
-> +}
-
-
-As discussed in v1, I still prefer to factor out the common logic and 
-move them to iommu.c. It helps to simplify the future bug fixing and 
-enhancement.
-
-
-> +
->   static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
->   {
->   	struct vdpa_device *vdpa = v->vdpa;
-> @@ -1128,11 +1174,16 @@ static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
->   
->   	ret = iommu_attach_device(v->domain, dma_dev);
->   	if (ret)
-> -		goto err_attach;
-> +		goto err_alloc_domain;
->   
-> -	return 0;
-> +	ret = vhost_vdpa_resv_iommu_region(v->domain, dma_dev, &v->resv_iotlb);
-> +	if (ret)
-> +		goto err_attach_device;
->   
-> -err_attach:
-> +	return 0;
-> +err_attach_device:
-> +	iommu_detach_device(v->domain, dma_dev);
-> +err_alloc_domain:
->   	iommu_domain_free(v->domain);
->   	return ret;
->   }
-> @@ -1385,6 +1436,8 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
->   		goto err;
->   	}
->   
-> +	vhost_iotlb_init(&v->resv_iotlb, 0, 0);
-> +
->   	r = dev_set_name(&v->dev, "vhost-vdpa-%u", minor);
->   	if (r)
->   		goto err;
-
-
-We need clean resv_iotlb during release().
-
-Other looks good.
-
-Thanks
+-Vasant
 
