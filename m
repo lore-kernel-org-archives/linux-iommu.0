@@ -1,88 +1,160 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB2E133DC
-	for <iommu@lists.linux.dev>; Thu, 16 Feb 2023 11:03:06 +0000 (UTC)
-Received: by mail-pl1-f171.google.com with SMTP id i18so1663912pli.3
-        for <iommu@lists.linux.dev>; Thu, 16 Feb 2023 03:03:06 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00AF333DC
+	for <iommu@lists.linux.dev>; Thu, 16 Feb 2023 11:12:27 +0000 (UTC)
+Received: by mail-wm1-f46.google.com with SMTP id hg24-20020a05600c539800b003e1f5f2a29cso3859121wmb.4
+        for <iommu@lists.linux.dev>; Thu, 16 Feb 2023 03:12:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZesZ6O765cPopeyel8yKHxm28ifXaTYkteY+hv+F5nc=;
-        b=qS79uQP9tK+tFDTR4rZ8X8fvvYzODLZ0MAjR1P8T9m5/aN9U666FR8fOvLZvU62KJb
-         /Jfl9dje7cd9iRjTruRqe4QlKUAXLaDj1aUw/6QPtPzOXi7EKfYClzLoby+LSCZFiP/4
-         BdpjKSekvIMkDkRfWhXX6Iu9Xz4RxfiMqEplcVKJzYe31xN6N9LR0HiP5gUT6LiN9sSf
-         RZZGKWXR9Y3qvHMdxku6/0pdm0uvgHRyDKK0ANaNsWuiWR9zztzvMT8CRGuapbGOEhRE
-         oGM08PJfHk1gUgYL+4CQ/zWP5nlZAsdkg1vyP3rCxI+t1JYrIyrmf9FO9kjIFXiAfkwM
-         rcww==
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=om86lkZfJsY4anvwokkpK35xQ29f8CqUJvo8NLWwWIc=;
+        b=b7Di8OKegz1NYy+ugYqHyN5vi1A78FcTbBM2sZ11SQcIHppc3NYDsu2TCY0dOc+n6f
+         7So+jsquf5asNx1ZUb5BiiEjHkduo0Kswx5zVG9Y2yz8He9MzEf5tAAP+au/s6F+OWzV
+         WEgoO90M5DAQ6ta0zxMQIcZKU+JhfYuyzhF3DAZvhKaMFFZMPdQtv8s3q8ud3i/mFCQX
+         2iKXFQ5VjeyRTFX1qZ8C1KQC/aB6FrxB2ghYOJB6y1y5RWDWefMiMi+gThQv17foHDBr
+         p6RxHAenlih3jV///aQ+ojoFKixPfvcd6JFiCuEdqXCUeVbT304GtKP0HPQd3usA5mXT
+         TG0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=ZesZ6O765cPopeyel8yKHxm28ifXaTYkteY+hv+F5nc=;
-        b=3XvMO1hV25vqTmq3xFbLSRD+6QooMXkZtCTRqcEyAI0fqMG80rbMcotl8AsEu0mw7T
-         jXG5iIGl0agxXbGCwf4WtHqk8Xzh3RKHZG3EGrXV5FrvfoPvq5i943J4LaLKvi4WluDu
-         Oev0KvF2j2WNDhauOa08ZsoOqUf7rhXqaSyKBxFL1u4zXDTQMChwNGEG0l1EvFGmRxcs
-         PbQu3mYfVH5v00Lq9yqSpRC1YzsgTy/SMxCnFvCPEQcw9d4u05GrluXOFUe8WHF+J/4p
-         WvxgJ0/F/D9zn54A2eL4Ad7xP9saSoxb6ciV8ESsUGZ7hOUbglbeKR6uuodcVzf5uoHX
-         coYw==
-X-Gm-Message-State: AO0yUKUmS9P8udkR3y86swN0glG8vXUORQplhdOTU9Y6WGo4qqx6fiZw
-	SkKW/PN/cSCzUnX3T2fkqg1O3w==
-X-Google-Smtp-Source: AK7set9k7mN5Id553IfFvspFJotRYHTYjINaH96bAFxRYOjdEylLggakRhZbMS+bcDU4VTQNFrKMXg==
-X-Received: by 2002:a17:902:f68f:b0:19a:6b03:c375 with SMTP id l15-20020a170902f68f00b0019a6b03c375mr6909254plg.0.1676545386135;
-        Thu, 16 Feb 2023 03:03:06 -0800 (PST)
-Received: from [10.90.35.114] ([139.177.225.255])
-        by smtp.gmail.com with ESMTPSA id f15-20020a170902ff0f00b00198f1de408csm1018874plj.268.2023.02.16.03.03.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Feb 2023 03:03:05 -0800 (PST)
-Message-ID: <65da1862-364b-9500-4be7-a463a12e6a7f@bytedance.com>
-Date: Thu, 16 Feb 2023 19:02:59 +0800
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=om86lkZfJsY4anvwokkpK35xQ29f8CqUJvo8NLWwWIc=;
+        b=p+JSjTCKWWHKZ0N9r09UbbhG73xJirv3GW3QFD4CJobdYsbFSMcG3wcl7UigxE2RL4
+         ZMZ0dseS0cvwKktHW1rKWeVkzVBy6JIkF9BwSxvrZ3AEBLCR9AX2JRKFknuNEbQDnP9D
+         2EeJXAVs+isten0jynPuygWqYkbq6yReTwOpjXLVb7zr5tcn0ahpmaplGaMRZX8iGi8C
+         CHLzTAAagEM6i2TvQEVsissosO6Zg005whkhpTjxviYa0OvL4pzLIrD0ZBxKPl6Mi4CZ
+         HLkQSWd78jij99lHVnSRBWAykHQEJbiSiByifj3EPKJ/i2Xn4xkhbp+5G0BLHxXo3dyK
+         4BwQ==
+X-Gm-Message-State: AO0yUKV7QJCkLalgrdGv5WxO4YaWOwfOx9H2Vo5JKhlbb7Pv6CM2Lybw
+	2j6uT5HhlzuxedIrPUmcuxsTWQ==
+X-Google-Smtp-Source: AK7set/uPweYVu6MAtPL+QX+e4WnluRTA8Ib+OTCn3hxd/IgE0ct5FP6T04lRolBRQ2LyvEUj7LOTg==
+X-Received: by 2002:a05:600c:746:b0:3de:d52:2cd2 with SMTP id j6-20020a05600c074600b003de0d522cd2mr4376053wmn.4.1676545946170;
+        Thu, 16 Feb 2023 03:12:26 -0800 (PST)
+Received: from myrica (054592b0.skybroadband.com. [5.69.146.176])
+        by smtp.gmail.com with ESMTPSA id o10-20020a1c750a000000b003dc4aae4739sm4841874wmc.27.2023.02.16.03.12.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Feb 2023 03:12:25 -0800 (PST)
+Date: Thu, 16 Feb 2023 11:12:24 +0000
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Leon Romanovsky <leon@kernel.org>,
+	Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>,
+	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+	bhelgaas@google.com, darren@os.amperecomputing.com,
+	scott@os.amperecomputing.com, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+Subject: Re: [PATCH] PCI/ATS:  Allow to enable ATS on VFs even if it is not
+ enabled on PF
+Message-ID: <Y+4PmJb2rBGMhS1y@myrica>
+References: <Y+ksmNWJdWNkGAU9@unreal>
+ <20230215205726.GA3213227@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.7.2
-Subject: Re: [PATCH] iommu: Avoid softlockup and rcu stall in
- fq_flush_timeout().
-To: Hillf Danton <hdanton@sina.com>
-Cc: robin.murphy@arm.com, joro@8bytes.org, will@kernel.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- Li Bin <huawei.libin@huawei.com>, Xie XiuQi <xiexiuqi@huawei.com>,
- Yang Yingliang <yangyingliang@huawei.com>
-References: <20230216084902.1486-1-hdanton@sina.com>
-From: Peng Zhang <zhangpeng.00@bytedance.com>
-In-Reply-To: <20230216084902.1486-1-hdanton@sina.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230215205726.GA3213227@bhelgaas>
 
-
-
-在 2023/2/16 16:49, Hillf Danton 写道:
-> On Thu, 16 Feb 2023 15:11:48 +0800 Peng Zhang <zhangpeng.00@bytedance.com>
->> There is softlockup under fio pressure test with smmu enabled:
->> watchdog: BUG: soft lockup - CPU#81 stuck for 22s!  [swapper/81:0]
+On Wed, Feb 15, 2023 at 02:57:26PM -0600, Bjorn Helgaas wrote:
+> [+cc Will, Robin, Joerg for arm-smmu-v3 page size question]
 > 
-> What is your kernel version?
-Rcu stall occurs in kernel version 5.4.
-The test where the softlockup happened was not done by me, so I don't 
-know the kernel version.
-However, it is the same as the code logic of fq_flush_timeout in the 
-mainline kernel.
-
->> This is because the timer callback fq_flush_timeout may run more than
->> 10ms, and timer may be processed continuously in the softirq so trigger
->> softlockup and rcu stall. We can use work to deal with fq_ring_free for
->> each cpu which may take long time, that to avoid triggering softlockup
->> and rcu stall.
->>
->> This patch is modified from the patch[1] of openEuler.
+> On Sun, Feb 12, 2023 at 08:14:48PM +0200, Leon Romanovsky wrote:
+> > On Wed, Feb 08, 2023 at 10:43:21AM -0800, Ganapatrao Kulkarni wrote:
+> > > As per PCIe specification(section 10.5), If a VF implements an
+> > > ATS capability, its associated PF must implement an ATS capability.
+> > > The ATS Capabilities in VFs and their associated PFs are permitted to
+> > > be enabled independently.
+> > > Also, it states that the Smallest Translation Unit (STU) for VFs must be
+> > > hardwired to Zero and the associated PF's value applies to VFs STU.
+> > > 
+> > > The current code allows to enable ATS on VFs only if it is already
+> > > enabled on associated PF, which is not necessary as per the specification.
+> > > 
+> > > It is only required to have valid STU programmed on PF to enable
+> > > ATS on VFs. Adding code to write the first VFs STU to a PF's STU
+> > > when PFs ATS is not enabled.
+> >
+> > Can you please add here quotes from the spec and its version? I don't see
+> > anything like this in my version of PCIe specification.
 > 
-> Because of a timer hog observed on your system with 128 CPUs for instance
-> does it make any sense to ask Peter to apply the patch for his 2-CPU box?
-What is 2-CPU box?
+> See PCIe r6.0, sec 10.5.1.
+> 
+> > > Signed-off-by: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>
+> > > ---
+> > >  drivers/pci/ats.c | 15 +++++++++++----
+> > >  1 file changed, 11 insertions(+), 4 deletions(-)
+> > > 
+> > > diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+> > > index f9cc2e10b676..a97ec67201d1 100644
+> > > --- a/drivers/pci/ats.c
+> > > +++ b/drivers/pci/ats.c
+> > > @@ -67,13 +67,20 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
+> > >  	if (ps < PCI_ATS_MIN_STU)
+> > >  		return -EINVAL;
+> > >  
+> > > -	/*
+> > > -	 * Note that enabling ATS on a VF fails unless it's already enabled
+> > > -	 * with the same STU on the PF.
+> > > -	 */
+> > >  	ctrl = PCI_ATS_CTRL_ENABLE;
+> > >  	if (dev->is_virtfn) {
+> > >  		pdev = pci_physfn(dev);
+> > > +
+> > > +		if (!pdev->ats_enabled &&
+> > > +				(pdev->ats_stu < PCI_ATS_MIN_STU)) {
+> > > +			u16 ctrl2;
+> > > +
+> > > +			/* Associated PF's STU value applies to VFs. */
+> > > +			pdev->ats_stu = ps;
+> > > +			ctrl2 = PCI_ATS_CTRL_STU(pdev->ats_stu - PCI_ATS_MIN_STU);
+> > > +			pci_write_config_word(pdev, pdev->ats_cap + PCI_ATS_CTRL, ctrl2);
+> > > +		}
+> 
+> For reference, it is this way because of edc90fee916b ("PCI: Allocate
+> ATS struct during enumeration").  The rationale was that since the PF
+> STU applies to all VFs, we should require that the PF STU be
+> programmed before enabling ATS on any of the VFs.
+> 
+> This patch relaxes that so the PF STU would be set either by (a)
+> enabling ATS on the PF or (b) enabling ATS on the first VF.
+> 
+> This looks racy because theoretically drivers for VF A and VF B could
+> independently call pci_enable_ats() with different IOMMU page sizes,
+> and we don't know which will get there first.
+> 
+> Most callers supply a compile-time constant (PAGE_SHIFT or
+> VTD_PAGE_SHIFT), so it won't matter.  arm_smmu_enable_ats() is
+> fancier, but I *assume* it would still supply the same IOMMU page size
+> for all VFs of a given PF.
+> 
+> But it's still kind of ugly to call pci_enable_ats(dev_A) and have it
+> muck with the configuration of dev_B.  Maybe we should configure the
+> PF STU (without enabling ATS) at enumeration-time in pci_ats_init()?
+> Is there some way to get the IOMMU page size at that time?
+
+Not really, on Arm the supported page sizes are discovered when probing
+the SMMU registers, which may happen later than enumeration, during module
+loading.
+
+What this patch is trying to solve is:
+* want the PF to bypass SMMU translation, and the VF to undergo SMMU
+  translation (in order to assign it to a VM)
+* SMMU forbids enabling ATS for a configuration that bypasses translation.
+  So the PF ATS capability must be left disabled.
+
+For this situation I wonder if we could do: the SMMU driver, seeing that
+the PF is configured to bypass, calls a new function "pci_configure_ats()"
+instead of pci_enable_ats(), which would only set the STU but leave the
+cap disabled. Then when setting up translation for the VF, the SMMU driver
+calls pci_enable_ats() as usual, which sees the PF's STU set appropriately
+and succeeds.
+
+Thanks,
+Jean
