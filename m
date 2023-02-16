@@ -1,85 +1,49 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9ADEA7B
-	for <iommu@lists.linux.dev>; Thu, 16 Feb 2023 09:42:37 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6E76C1042;
-	Thu, 16 Feb 2023 01:43:19 -0800 (PST)
-Received: from [10.57.89.217] (unknown [10.57.89.217])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1D05F3F703;
-	Thu, 16 Feb 2023 01:42:35 -0800 (PST)
-Message-ID: <d2d4510d-4d28-8471-626c-f3e998a4014c@arm.com>
-Date: Thu, 16 Feb 2023 09:42:30 +0000
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4AB0A7B
+	for <iommu@lists.linux.dev>; Thu, 16 Feb 2023 09:53:15 +0000 (UTC)
+Received: from 8bytes.org (p200300c27714bc0086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:7714:bc00:86ad:4f9d:2505:dd0d])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 23A222218D1;
+	Thu, 16 Feb 2023 10:47:16 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1676540836;
+	bh=IWLxM5BXTLinsRNlBwzac2xA7Bwuk5b/hHmu7MqqICU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=INTgNSoPf4nDOsEStHX992gp0uB5C3W7xfSFDmaVvCOh2cNxLw3rwc7bPbEPyh+mb
+	 lhPn3ysXM0wfSWsBqTHUHbmUfUf5cuz51JWfsUpqGEA/o88sFYc7XuuAwEkOGbcW0/
+	 UkMI95PW42fdeEJeeFFx9qGhjO4ykrv6FYxfYweXD3W3/R0J1uX/Obp/0GQcIxQxZw
+	 jclsWDSczFQ5qrMz2YegDsnD4tN+gHGjPDsAQGAUxiKg+FGIDBbi3LpDZul7ij5xWY
+	 awJpIIKilZxjt5pjBg3V3MLnrmQPLd2RAU5AsNFmraboCz2xswyU/wLohVyu7O6QNb
+	 anAMsh3AQHmnQ==
+Date: Thu, 16 Feb 2023 10:47:14 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, suravee.suthikulpanit@amd.com
+Subject: Re: [PATCH] iommu/amd: Do not identity map v2 capable device when
+ snp is enabled
+Message-ID: <Y+37or/jktnlKUsp@8bytes.org>
+References: <20230207091752.7656-1-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.7.2
-Subject: Re: [PATCH] swiotlb: remove swiotlb_max_segment
-Content-Language: en-GB
-To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux.dev
-Cc: m.szyprowski@samsung.com
-References: <20230216062553.2151773-1-hch@lst.de>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230216062553.2151773-1-hch@lst.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230207091752.7656-1-vasant.hegde@amd.com>
 
-On 2023-02-16 06:25, Christoph Hellwig wrote:
-> swiotlb_max_segment has always been a bogus API, so remove it now that
-> the remaining callers are gone.
+Hi Vasant,
 
-Hooray!
+On Tue, Feb 07, 2023 at 09:17:52AM +0000, Vasant Hegde wrote:
+>  drivers/iommu/amd/iommu.c | 13 +++++++++----
+>  1 file changed, 9 insertions(+), 4 deletions(-)
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Applied and fixed a checkpatch warning. Please use check-patch in the
+future before submitting.
 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->   include/linux/swiotlb.h | 5 -----
->   kernel/dma/swiotlb.c    | 8 --------
->   2 files changed, 13 deletions(-)
-> 
-> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-> index 35bc4e281c2125..bcef10e20ea4fa 100644
-> --- a/include/linux/swiotlb.h
-> +++ b/include/linux/swiotlb.h
-> @@ -121,7 +121,6 @@ static inline bool is_swiotlb_force_bounce(struct device *dev)
->   
->   void swiotlb_init(bool addressing_limited, unsigned int flags);
->   void __init swiotlb_exit(void);
-> -unsigned int swiotlb_max_segment(void);
->   size_t swiotlb_max_mapping_size(struct device *dev);
->   bool is_swiotlb_active(struct device *dev);
->   void __init swiotlb_adjust_size(unsigned long size);
-> @@ -140,10 +139,6 @@ static inline bool is_swiotlb_force_bounce(struct device *dev)
->   static inline void swiotlb_exit(void)
->   {
->   }
-> -static inline unsigned int swiotlb_max_segment(void)
-> -{
-> -	return 0;
-> -}
->   static inline size_t swiotlb_max_mapping_size(struct device *dev)
->   {
->   	return SIZE_MAX;
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index a34c38bbe28f10..f35d934f6e5822 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -156,14 +156,6 @@ setup_io_tlb_npages(char *str)
->   }
->   early_param("swiotlb", setup_io_tlb_npages);
->   
-> -unsigned int swiotlb_max_segment(void)
-> -{
-> -	if (!io_tlb_default_mem.nslabs)
-> -		return 0;
-> -	return rounddown(io_tlb_default_mem.nslabs << IO_TLB_SHIFT, PAGE_SIZE);
-> -}
-> -EXPORT_SYMBOL_GPL(swiotlb_max_segment);
-> -
->   unsigned long swiotlb_size_or_default(void)
->   {
->   	return default_nslabs << IO_TLB_SHIFT;
+Regards,
+
+	Joerg
