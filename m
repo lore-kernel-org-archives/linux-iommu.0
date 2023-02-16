@@ -1,120 +1,58 @@
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7297B5663
+	for <iommu@lists.linux.dev>; Thu, 16 Feb 2023 13:42:20 +0000 (UTC)
+Received: from 8bytes.org (p200300c27714bc0086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:7714:bc00:86ad:4f9d:2505:dd0d])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB66A5663
-	for <iommu@lists.linux.dev>; Thu, 16 Feb 2023 13:33:04 +0000 (UTC)
-Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id B43F21EC0758;
-	Thu, 16 Feb 2023 14:33:02 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-	t=1676554382;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=4It5WNTzj3y34rvlS749Hz/wiDmES420yCM4l9P4P7U=;
-	b=gf0e1sXnrMK9yS752n1XbBJTfBklzKLy7wB4qpiBtyaSiWE4u5Ms3bcAVOBWSRzBs7ZCi7
-	ETAO1fzNXRcZQ1jN2Sp0UDeGfWP3jiEh9EHGoEZdEJUy8MSZz1Hg3TttFzAuZAE1KbSkAw
-	nbmwnCc/eKTOd9FQYcQRUonTAtj6tZ8=
-Date: Thu, 16 Feb 2023 14:32:59 +0100
-From: Borislav Petkov <bp@alien8.de>
-To: Sean Christopherson <seanjc@google.com>
-Cc: "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-	Dave Hansen <dave.hansen@intel.com>,
-	"hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	"wei.liu@kernel.org" <wei.liu@kernel.org>,
-	Dexuan Cui <decui@microsoft.com>,
-	"luto@kernel.org" <luto@kernel.org>,
-	"peterz@infradead.org" <peterz@infradead.org>,
-	"davem@davemloft.net" <davem@davemloft.net>,
-	"edumazet@google.com" <edumazet@google.com>,
-	"kuba@kernel.org" <kuba@kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>,
-	"lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-	"robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-	"bhelgaas@google.com" <bhelgaas@google.com>,
-	"arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
-	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-	"brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-	"tglx@linutronix.de" <tglx@linutronix.de>,
-	"mingo@redhat.com" <mingo@redhat.com>,
-	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-	Tianyu Lan <Tianyu.Lan@microsoft.com>,
-	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-	"sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>,
-	"ak@linux.intel.com" <ak@linux.intel.com>,
-	"isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-	"dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-	"jane.chu@oracle.com" <jane.chu@oracle.com>,
-	"tony.luck@intel.com" <tony.luck@intel.com>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
- to map as encrypted
-Message-ID: <Y+4wiyepKU8IEr48@zn.tnic>
-References: <BYAPR21MB16886D92828BA2CA8D47FEA4D7D99@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+aP8rHr6H3LIf/c@google.com>
- <Y+aVFxrE6a6b37XN@zn.tnic>
- <BYAPR21MB16882083E84F20B906E2C847D7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+aczIbbQm/ZNunZ@zn.tnic>
- <cb80e102-4b78-1a03-9c32-6450311c0f55@intel.com>
- <Y+auMQ88In7NEc30@google.com>
- <Y+av0SVUHBLCVdWE@google.com>
- <BYAPR21MB168864EF662ABC67B19654CCD7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+bXjxUtSf71E5SS@google.com>
+	by mail.8bytes.org (Postfix) with ESMTPSA id 28D312245E3;
+	Thu, 16 Feb 2023 14:42:19 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1676554939;
+	bh=yOTiUP0Jwiv6lAYuLmeP8b3CGVgkw7PMeJqE90Xxj+E=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=2L34TKAd+XrPb/18XNnKZpLr4BFEot2XeuXjTL0whTNiLrE1E7Cu88Aw926/WmiUt
+	 0mPCi7JKC7lNZsx/lvvwUQYsiagESxyGCATaGsRMGk4fkX1/QHFBYTzrlsDZPqpLDz
+	 NFVZYnfB0fiH83OEXdl+XJ/P6YYzofRu//INuUSZX9Qg0uFJskO3zFP8ETrpbSxsoJ
+	 3HTb5QYWXGYX5+GnQa6BzMN0MbtefMtmxsixjGow0NXmzJGn8Yl3UmvqONLOhslQ1i
+	 YC3eJDC/w8EOXPY+si49N6OXqFB+y410vEhzSIasZQ9okkZMaun35RivIP6TUAWBSA
+	 GDgvyItR8k2mQ==
+Date: Thu, 16 Feb 2023 14:42:17 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	Tina Zhang <tina.zhang@intel.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/4] [PULL REQUEST] iommu/vt-d: Fixes for v6.2-rc8
+Message-ID: <Y+4yuaciYYnptpKI@8bytes.org>
+References: <20230216130816.151824-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Y+bXjxUtSf71E5SS@google.com>
+In-Reply-To: <20230216130816.151824-1-baolu.lu@linux.intel.com>
 
-On Fri, Feb 10, 2023 at 11:47:27PM +0000, Sean Christopherson wrote:
-> I agree with Boris' comment that a one-off "other encrypted range" is a hack, but
-> that's just an API problem.  The kernel already has hypervisor specific hooks (and
-> for SEV-ES even), why not expand that?  That way figuring out which devices are
-> private is wholly contained in Hyper-V code, at least until there's a generic
-> solution for enumerating private devices, though that seems unlikely to happen
-> and will be a happy problem to solve if it does come about.
+Hi Baolu,
 
-I feel ya and this all makes sense and your proposals look clean enough
-to me but we still need some way of determining whether this is a vTOM
-on hyperv because there's the next crapola with
+On Thu, Feb 16, 2023 at 09:08:12PM +0800, Lu Baolu wrote:
+> Below iommu/vt-d fixes are queued for your fixes branch.
+> 
+> - Two performance optimizations
+> - Fix PASID directory pointer coherency
+> - Fix missed rollbacks in error path
+> 
+> Please consider it for the iommu/fixes branch.
 
-https://lore.kernel.org/r/20230209072220.6836-4-jgross@suse.com
+So nothing of this seems really critical (e.g. fixes a regression that a
+number of people are encountering). Especially the performance
+optimizations do not qualify as fixes at this stage of the cycle. I will
+queue them in the VT-d branch so that they go upstream in the next merge
+window, unless you convince me otherwise.
 
-because apparently hyperv does PAT but disables MTRRs for such vTOM
-SEV-SNP guests and ... madness.
+Regards,
 
-But that's not the only example - Xen has been doing this thing too.
-
-And Jürgen has been trying to address this in a clean way but it is
-a pain.
-
-What I don't want to have is a gazillion ways to check what needs to
-happen for which guest type. Because people who change the kernel to run
-on baremetal, will break them. And I can't blame them. We try to support
-all kinds of guests in the x86 code but this support should be plain and
-simple.
-
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+	Joerg
