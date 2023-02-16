@@ -1,58 +1,51 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2136.outbound.protection.outlook.com [40.107.93.136])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2054.outbound.protection.outlook.com [40.107.243.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B68493C3B
-	for <iommu@lists.linux.dev>; Thu, 16 Feb 2023 11:37:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF8633C3B
+	for <iommu@lists.linux.dev>; Thu, 16 Feb 2023 11:42:29 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Hp7CvKNNs/Gp1IUwv/YuRsLNUTo9v01o+SJbVmQr9aHfuX91hXXG7N/QqeIXFViOpriGQmrciHS4KgcgV+l1iLf4H9pYhWLbtBKILzNAp4B9uqL+FH0Uf2hjmwffwsn4WDGWdBSzceWquDh99XR3z4DjHczQW4BMzkjK0rXNH50MPhWvNEoPOCb8mOrfcWx5moUcej3ndbRnp0PQYuJLj5OReelGvMiEU47fIiCIy2ROYvRb+MXCRA7yKzHHrQN6KozIaI/EaReJ6eELzeqVUFQXbxq6dgxwkpS8+svJdxFKInzBqtRB6SAG2Xpygd0hxPLqivxxJP9oiULDJGnShw==
+ b=HOpmDCjBuMSbLerrJWDJp3iEfov2BbDSzftuC02YTLesZs8XxVPptJrOqgHTuIYzHaNxL3TdhUyVn4A5RxpWThRAcYMs1XvHRQA4qqoua2W2WlWUdtwUEtbTR+EQxJIevuXhu1RjALS+F9WcaKbzhK9zwfGCpTPterRZHpC5WYF6Anx9xdF+ggC3Fup/5TmYy59PbQKcpYBnkmRvLsg6HFQ/P3MjHEHvv2WU2mlUuw58aGlyY4XfJVHw2FvvDLCdHt3hbYgRsLE7OuW2IOIuLVdHsdXTOi/pHy5HoR1P+CTNXUdLfg3iI/1jM2t4PCxJTCLmaGbBM4nFEDuwgyUFFA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NVoGVxFtljYpomKj1eIQhqoB4asBsT4gazb5oUGDGCo=;
- b=eAnJDl1qJrvBk91eGzHqWpief/CZjPHMiV74sXzV9gZXm+bSyUGaa7xAu7in97CQ635n4lJ8tW8liSkG5lY9dlQ9ufdI+frabUPiLKeinLD9fqcNDyvlN2sgNfy8ebuw/Mg25PcELt7MMj+9TG261O7jrIBtffYXUOcPNl7Z8B0UPApiLcAKGTInWpMljhH0sGhkGtlU6DkVX+Gpw2TvGhQ6Q7G7vWaKS7OJGfWetjLCb+AmTwz72L2yU+VqbE01SH3YI3Im+tXVwwFpsUW2Ui67T/7YG/LFocm6wqbpqYsh6xlqm4XAzXvHPAyiyy8t+2HRDAtT5gHqlloIWXeVww==
+ bh=BhfYAdVNLp5yfe04UmwGgNX/QChzyu1N/w4IGtLcXDY=;
+ b=UkMwU6u7fTHWEW19mKhtG3dcfzo0yxDrMFD6vVZoBW7ORY/DigbuXrh2Q4huBDAhFmHRWclUv/FZ5Le+NtHO2ryzrfWcQIdAoeTMBFdtIWpjlQh9YRtQa9OrzI4vTUZssorDI73+BzTpaQcLkyLgcZ2RSZnL5AOx3ff+/QcHUEuLytQI5fljSPbCLOZ+Y94Qt1oYcc8nL046tcmL171ywkz38PQP7zBvsOI49i26VfPTc3FIjThtFI+9diZBgjIUumqd5oHUBOXqzr+zzQO+joBi/+FPX8vbaNtYUbiAEQq7MI0cIeBVi1EiqXgJQ/P5XwrTI+uKiwkCPiM2d1HZ1Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=os.amperecomputing.com; dmarc=pass action=none
- header.from=os.amperecomputing.com; dkim=pass
- header.d=os.amperecomputing.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=os.amperecomputing.com; s=selector2;
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NVoGVxFtljYpomKj1eIQhqoB4asBsT4gazb5oUGDGCo=;
- b=Zpz33dzx89292TirzOjtqQsj2F/t5/G2TEI54DMmtJFo7gbeYftB2oye7SCYSnMZounvg4pTzi7wV1uAlVryZj3oINezVj5A2nsnVy9eu5rQrrJQigoK7AfyhRkxSyY8+lTefqTHzrkLZr+//JOCAveugkCvQ9EMkK7gIu6xIwY=
+ bh=BhfYAdVNLp5yfe04UmwGgNX/QChzyu1N/w4IGtLcXDY=;
+ b=oYy/pdIZBO9JslTp2388hATI6hwfjpgbvcTbTEn4V+27VJQE2/y9Wn73mZN/IdPNqlHikHgbK8rlJ30R5QnhE3rQhrD/3HhSbFHb1JHoIbl7ppt5F0bIowty8zvXxiIOZE6EnbWBTdo2NIOC385KqE4269G57l1iHFhSNHTkPlA=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=os.amperecomputing.com;
-Received: from DM8PR01MB6824.prod.exchangelabs.com (2603:10b6:8:23::24) by
- SN6PR01MB4029.prod.exchangelabs.com (2603:10b6:805:a3::14) with Microsoft
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
+ CH0PR12MB5203.namprd12.prod.outlook.com (2603:10b6:610:ba::24) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6111.13; Thu, 16 Feb 2023 11:36:57 +0000
-Received: from DM8PR01MB6824.prod.exchangelabs.com
- ([fe80::fc8b:5e5e:a850:7f0a]) by DM8PR01MB6824.prod.exchangelabs.com
- ([fe80::fc8b:5e5e:a850:7f0a%5]) with mapi id 15.20.6111.012; Thu, 16 Feb 2023
- 11:36:56 +0000
-Message-ID: <3877b6fe-2b7e-3e0c-8b69-65e84c09cdd2@os.amperecomputing.com>
-Date: Thu, 16 Feb 2023 17:06:49 +0530
+ 15.20.6086.26; Thu, 16 Feb 2023 11:42:27 +0000
+Received: from DM8PR12MB5445.namprd12.prod.outlook.com
+ ([fe80::c4fa:4cd7:4538:e54b]) by DM8PR12MB5445.namprd12.prod.outlook.com
+ ([fe80::c4fa:4cd7:4538:e54b%6]) with mapi id 15.20.6086.026; Thu, 16 Feb 2023
+ 11:42:27 +0000
+Message-ID: <5df77c33-21cd-51cd-92c6-46241951e30a@amd.com>
+Date: Thu, 16 Feb 2023 18:42:16 +0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.2
-Subject: Re: [PATCH] PCI/ATS: Allow to enable ATS on VFs even if it is not
- enabled on PF
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Bjorn Helgaas <helgaas@kernel.org>
-Cc: Leon Romanovsky <leon@kernel.org>, linux-kernel@vger.kernel.org,
- linux-pci@vger.kernel.org, bhelgaas@google.com,
- darren@os.amperecomputing.com, scott@os.amperecomputing.com,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev
-References: <Y+ksmNWJdWNkGAU9@unreal> <20230215205726.GA3213227@bhelgaas>
- <Y+4PmJb2rBGMhS1y@myrica>
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v1] iommu/amd: Don't block updates to GATag if guest mode
+ is already on
 Content-Language: en-US
-From: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>
-In-Reply-To: <Y+4PmJb2rBGMhS1y@myrica>
+To: Joao Martins <joao.m.martins@oracle.com>, iommu@lists.linux.dev
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Maxim Levitsky <mlevitsk@redhat.com>,
+ Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, kvm@vger.kernel.org
+References: <20230208131938.39898-1-joao.m.martins@oracle.com>
+From: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
+In-Reply-To: <20230208131938.39898-1-joao.m.martins@oracle.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: CH0PR03CA0260.namprd03.prod.outlook.com
- (2603:10b6:610:e5::25) To DM8PR01MB6824.prod.exchangelabs.com
- (2603:10b6:8:23::24)
+X-ClientProxiedBy: SI1PR02CA0014.apcprd02.prod.outlook.com
+ (2603:1096:4:1f7::9) To DM8PR12MB5445.namprd12.prod.outlook.com
+ (2603:10b6:8:24::7)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -60,171 +53,160 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM8PR01MB6824:EE_|SN6PR01MB4029:EE_
-X-MS-Office365-Filtering-Correlation-Id: fe293ba1-dd45-4c2b-925e-08db10121bd8
+X-MS-TrafficTypeDiagnostic: DM8PR12MB5445:EE_|CH0PR12MB5203:EE_
+X-MS-Office365-Filtering-Correlation-Id: b3b50508-8b92-421e-4935-08db1012e0c5
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	2e3c86z8oTcXnlhYl4t08cSDFCzxkYfxLpJi+e6WIzYuZp55acCIAK1/SiO7dxKX+nvrJQp8i/yLOPzKtFlPYkvFN2iUmCE4SQkiUkg9Fd+pKoKjjUaMCgwQujAGm+SO4bly6GTEd0ZX/j28xdnDgIQqFdUPFsCPiPlaCFRfG6VJBovngMyvuevLsR57ayCBMSJEh7raXeCa+8/t8zfnXYJNXmqx4teasuEO0btX8RInWJnCodE7GKce8h02w9mA2jfQ1z+Lw358iCQjRKZobmARuxNMFDJycXUS8WVuwQPZCjFzLSCHhYha/L35UO5jPlTUor/f0jAGNjSB3RISmGU0joZaZ504ilZEhJYHCEdMHucvnXXVD5XpW517egFhYTPBU0ZlgfR+Of54RqxBooq8bFHn8uVAb4aBk4VtKGGCKw2AtW5UeMPWSi14CoseO5EuqnH3gnOciQrbKb3CwUe1+rZhAL5E7zteMqumxULkk2HrSHrIReUpuYu0AvVJFTMvSWVRXlkk4Saglg2f4hD5RTT0esLjngwx8IMRmnXvuWIFpAevdpXKoYjKzZaAadnxROqRVhCSUjaSYl+djpGW53lZIWMmloV0c5vEe7sPafEcwAjaevDmH/aDdFP8ucc4a3b+b9ylM2cXk5hbQ2X08zeZVOMA3Lf+XOCE60/w2d4vu71K5WYvTI7ATdV3eLbxZIMILqgfF/1nVCYbAg==
+	mqoobOlqhWIXMBJtaJZBZghAlbHD/VxqoUv85zGSXV/0lJrBPHzyh3VWmgliVmRDYzxGu7uyqeZUITeGd3YexxQN+D27OhIS6foxkzX2bSZBn2frjhaq+QClIDLnMdycRwBPFHfP8xbsAqiU06qeqL8q1+GqS2WKi4awHPdM1Hjd97B2mERG57p3hlsbv7V2GnnLoLlQTEC0CDsiy/WWltv0doBgdkMQUOP9mePgasJyvvKJ1qqN8wh+R6Dub1a0jtUe87w4IZX5lanEeCdXtn38IzSGYaDAMWJxant77gqVC2jZ68EGpqdW0bfT5Cpazy0K/ZG2L0FHhj1MIB4EIku3wmmOb69D5QRLbyuLhsW4dA9naid+QQVNV6COU2J7bVrS4DOmNfz6/sDre8/K7Y/IThRshSKDWHSjngcUvKuKoxAHg1Li3Z1lmYErbwY4ftfxcvLhyYNocdHVOCHQQ+ToWq68pGVW17yctplP3x1crhXmVkdepKAK5ANQgHuMSzLsAFkzMAxgq+pfQcK3TXI+825gLMKHMiQLPaw5kIiR0YMGwMV7L9aofVjKMDPihng5y7dluIMzqJ/4m25YA8AQuhQWk7R8MiUJUS1fLUiMS7qaLoSMuY7yn8keSBBYFd1Fa3KTKHZCevNLtKGAkCJlQWIFogOfw3ixcHfLBGM6FCjV+MIhvJL7vLH6C9FFAqohuGaaJANPvzea26nxc8i7oUMumDchhCz+GZmU9ak=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR01MB6824.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(366004)(396003)(346002)(39850400004)(376002)(451199018)(2906002)(83380400001)(86362001)(31696002)(2616005)(38100700002)(66476007)(8676002)(66946007)(66556008)(54906003)(110136005)(316002)(8936002)(5660300002)(7416002)(4326008)(41300700001)(6506007)(6666004)(53546011)(6512007)(26005)(186003)(478600001)(6486002)(31686004)(43740500002);DIR:OUT;SFP:1102;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5445.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(136003)(396003)(376002)(366004)(346002)(451199018)(53546011)(2616005)(316002)(2906002)(15650500001)(478600001)(31696002)(38100700002)(8936002)(8676002)(86362001)(4326008)(6512007)(6666004)(41300700001)(66476007)(6506007)(36756003)(5660300002)(66946007)(31686004)(66556008)(26005)(186003)(6486002)(83380400001)(54906003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?QnVNLzZlc1d1UGRldXMvcWVTTVA0c3QyMTc3Q09yUk5kWlBnN0llb1VWL3JK?=
- =?utf-8?B?bUlSWW10TkdJalFOYm0vTkh0cjFlbk95TmJEbmNMMHlJTDZGSXhnOU5iVHY5?=
- =?utf-8?B?U3JOZmZoTitDT0k1bXEwUjNoQVNrOE9nWVBPVU85YmJrWWtZdlQ2THd0dnBU?=
- =?utf-8?B?QUxrRklQWkxROWE3ckRGbENGUy9pSEZMamlpeWRYK09uWHBydGRmNDdnQ2R4?=
- =?utf-8?B?c1ZHK3hYeUFicUpDTHlkSHBoWTRRRk5pWUhiTFhIUC9MY0EyTlJmekp0d2JM?=
- =?utf-8?B?MWsxTVBYQnUxMkVLWU9JOWczYkUyYkVtNyt3blJ5QmZrMW5kcVhWWDN2U0tN?=
- =?utf-8?B?Z0E0ZCt3S09pbkJzSlhWbS9HYWp6WG9LZElXUGROY0VUR2V4cXh4TFVtOWxq?=
- =?utf-8?B?UlpSczltb09XeitKVmg2aTV4dm9iUlFNRW5xTklRT2ZZVHo3T0tsYy9iYW1q?=
- =?utf-8?B?U1V2aXRCeFZaK0p3Y29yV0ViQ2ptU0E3SEZiREZ5K2pVWU9vdkdXdU5uY3RT?=
- =?utf-8?B?UDlVaFo2SDZEdzREdWdCUy9wQTUreTlqUzVvVjV6MEVEbkVVWW9pWGNmL0gw?=
- =?utf-8?B?cjYwT3hqbEVlaktSbDI3RmR5NlhpWDMrM3pZUmJxNHdEbzFMWHpTTitOQ2hr?=
- =?utf-8?B?VjFVcXFXNFpiNG5EZ0RsN21KWE5iN3duZG9SUm03emJUdzkycENVU0orek81?=
- =?utf-8?B?U2RhelJDOStia2tKTEVCQW1BK081YmhGT25EdW5mY055TnBoQ3RxRTMyNy8z?=
- =?utf-8?B?SmlZYU9laThSLytUMDJCUjdOQ1NOQkhFdnhvZjg1OXpzaDl5QVhwZkV5RTNP?=
- =?utf-8?B?Q2U2WlQ5SlNENlJmR1dBQUZkbytqa2R5SmpFNVRIQlBxenN5L1lXQmlVc01Z?=
- =?utf-8?B?RGpad0lBVUk0Y1Q1R1VScjlZMnkvQ3RnTXpQWHFaQndEcDIyNE5LZy9rZXFo?=
- =?utf-8?B?Zmw3LzB2by95Q0pVYXF6elJsUFhiZXV0QVZCU1lXN3M1Z3p1a3JGRTQ5Snh0?=
- =?utf-8?B?M0txS1pGTnBZYnA4OEhEZ2FJZnFoQkVWb2lCT1RISkh1UmtZUTBaelVtNGRL?=
- =?utf-8?B?U3RieDBhdDQxa1BKWXZjaWdQYXpVZnRXQzVHT1hiMU1jZTNNVmRZamVVK0U5?=
- =?utf-8?B?c045dGY1WWVZQTB3L0xnTmNMdUxCOEFVaEZpbjBZemd6Z2U5SU5uL3VOOElF?=
- =?utf-8?B?TW01b2Y0b3l6L2JHRXJBdXptZUNpNnpKeEM4ckhIMlhncUZ1U3U3eWR2dDVq?=
- =?utf-8?B?MExhWFZJeFRLSDJOK0RVVEhjQmRtZjExUGdURVdjMmUzTm1NcVFXZ3FFRW93?=
- =?utf-8?B?bjliNWl0TkFjUVBDMDU5M2kxK2xTZ3pHTkdsTTZyVC8wTnhrNWJuM1JuU2hY?=
- =?utf-8?B?czkxdmtxSFZCSzJxTjlaSUd4Sk9nZG9WN2VWcVlSeklUcmtNTlJ3WVpjdWNS?=
- =?utf-8?B?VlplN3lGL3JnOXBaT1Q3NVc0d2taRHMraFJxTXR1UEpKMHFqNUZhY1FzUm1W?=
- =?utf-8?B?ak4ybm4wSElUa0drSHdBMDFCNTQvbWoxWUpGdlhvQzA2QTZRalc4QWdWVldM?=
- =?utf-8?B?WEhxQnZqUXZleThYcmlvRTN3WVFnVVJ5T1haZDRVK21hM0tVczdoMGloa3li?=
- =?utf-8?B?QWtnZlc0U2xRYzVTNk84T3A2SjV6WWF1YVhwN1RSKzMxTWthS1EzdlpIZFhC?=
- =?utf-8?B?UGJqb05XK3Uwa1VoTmhPOUR3WXlnNWpPQ28zSDVpajl5MmM2aWhWUnhJbFNl?=
- =?utf-8?B?bGl3SW10V1B4K1UzZmdHOFh5WFR3QnBwc1ZZSGw0b0svR0ZxUVBCdmNYQkFJ?=
- =?utf-8?B?RHNaVmRqTGRuUFFrTGREUWNVRUxid0N1dVRBYXpQczdMazdhdk40QTJqRy9p?=
- =?utf-8?B?MTJQeXV6WlpBVHc0cmxxS2Q4YmpqLzQ1dnBIcU9vVG4yZXpwWG96c2FVbTAw?=
- =?utf-8?B?NGUwZ2hIV0NxalZkSTArY0d0ZnJSYXQ3SmRpWjk3b01OVVNpSHdraGVMbExt?=
- =?utf-8?B?NzdiNGd3VUM0MjYwVnRRQ00ydU5tZVhzVVVrRko0VlhlVWZML3pNR3BzTFpz?=
- =?utf-8?B?S21JUVZrS3NseUN2QTVZM0RRR0JkeEgyZFNLbXpKRTN1QklPOU4rdWY0YWRQ?=
- =?utf-8?B?N2Y4L0ZFbXVyTUpFdVVQcDlTbWk2WGp1emVmR3MwZFdIcjBKTS83YysxMkhU?=
- =?utf-8?Q?SzsMj/P8kjBFTH2zi434c9+Ycz2EcMCKCnl+9oBhIoHZ?=
-X-OriginatorOrg: os.amperecomputing.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fe293ba1-dd45-4c2b-925e-08db10121bd8
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR01MB6824.prod.exchangelabs.com
+	=?utf-8?B?YlVTb2UxbUpDVmVXd2hLdmdNamtsejNHVVRiY0ZicGYzRWdRWTNKWkJGTlBV?=
+ =?utf-8?B?Sk12akF1ZHFVVStSMlRSaTRobWg5RC9sWjB6eHRnRWlVd01jRXhMWXFDbE5B?=
+ =?utf-8?B?MmwvbmxtVkIzZEFVNWJ0dUxxNis3QXlkNE5ZbnFET0hOUlIzZkh3NGhwQVR6?=
+ =?utf-8?B?ejh5WVorUnZ0RGJ1Q0xtemlXTDJudU4rdVlNZ213MDhZWkNBK0NLMkpXbWdX?=
+ =?utf-8?B?TzNXMkxkZFFLL09xUXpBdXlpeHV0eURHY2xVTnJpZWJ4L0VUVFo1eWpDSVpp?=
+ =?utf-8?B?ZkZ4QXFkNEJkTEU3Ui9ublB2dWVkSlEvR2FQLzNuZjljeSt0c21xZWpOVFhV?=
+ =?utf-8?B?MFYwU1JmbUxERVJlZFJDaExsK0pSa2lZUzRxWUZQOEowNmV3Y0tuRHVxL2VH?=
+ =?utf-8?B?d01la1F6eHIydExLZUt3YzVHbHhvUXlDdlg5SXJYNnR4SlcyWGtyRlQwV1V6?=
+ =?utf-8?B?TGloMlhyUXB4VHNEYVFrL2l4YjVxVXFiM1M0bXhnLzdLWjg3ZnNNWE83cXBE?=
+ =?utf-8?B?ZVpIYmN0eC9lMHJ3NFhjQS9EQ0VvZU9yRmV0NTNnMjRtVU5WdjZ1em9FTS9U?=
+ =?utf-8?B?VVVta1RiNGtWalp1bm9BZmduK000VUJLV2U3VGhwbHBueHJWM1NVOWtBKzNp?=
+ =?utf-8?B?QTN1NFArSVVKK3BYRGs5SURWWUN5cGs5OTZnbFV5Tkt4R1Q4QzB6bFlFTGFY?=
+ =?utf-8?B?VkhoakRNOU1RcjFJR3FlVXhZZTJJL2xJOUNMemFiRnFhQkxtUjNJTnBkY3Ru?=
+ =?utf-8?B?QVdMcGYyOG1MTFVaeEVpeGdRNEEyMTBPZkFhdHlJN1lvL2IvdnZwcGVrblJI?=
+ =?utf-8?B?THNsY3N1cVBMelVtQ2t4STZucXh5NktoTTlDZGxnL2xqZHB4WFlWRXg3V2dm?=
+ =?utf-8?B?YnBkN2Ewck8xcDg4ZlJMLzZUSXVwZjJnN2svYnhDMWNxZFJhaHptdHdPUWg4?=
+ =?utf-8?B?aDRPTGsyd0hZL1orYzY5OEFCYXNHNkNCdENtbHQ0ZlE0dUovb2Y0R2I0L2FS?=
+ =?utf-8?B?VE4vbm84cXR2V1prV0hRQ3c3OU55OFFIMEYyU082NkdKbzVtaGdIY0xyUHY4?=
+ =?utf-8?B?eXJmSFhSM2xHY3l0YkhGYmdxQVY0SUMwZUxiZUpXVEU2cWdKRVFrNjBiVHA1?=
+ =?utf-8?B?dkdCcU1qS01KSW11NWNyVElmSk4rZzdMUGF4TC9hNVhoeDZMbkpHZjRQcVpF?=
+ =?utf-8?B?aTJFVzFQTm4xVko1UGJYL0tHcGFUNDZoWFhkZG04SldUSUIyK2VEU0taWG0r?=
+ =?utf-8?B?bmUyVWR6MHZQcVUzYVNjR2FmbXdSdHlxQmthMDRVQWJyZWxUUVE2eXFyUmRW?=
+ =?utf-8?B?eVhRL3E3eXJKQWI1bC9iTWdFNm5HMUpqUWpCZHc5MnBzMTc4UTk1Rk85YUVr?=
+ =?utf-8?B?WjZPYXY4ME5CNk01ZTBXZVlaU2VIZFkwZXhxNjA3eUtIWE5BbE9yU0llenhw?=
+ =?utf-8?B?dk1JTEtyUmEzNm84SEJodUUzNDJWSDhORHp1ZTZXVXN4VGNOMEpvOXJ0dlpp?=
+ =?utf-8?B?bmhjNkpUd2w5U0lKOUdSVEtmRW1nNGhTcStTVEZmRkx3cE1MbE4zaTUyVU1P?=
+ =?utf-8?B?b3NnRHVpRG9XeXZzUmlETkhLSCtNTzFoL2FSQ2l2d0ZzWVE3RWRoK2lYUUxl?=
+ =?utf-8?B?ZWlsRHhkVjluRXZVWnQ3ZUdCZnpHcjNyWG43ODFKbEVUVkI0aXoycXY3MXFa?=
+ =?utf-8?B?NmdFVFVlbGl4VlBrUnhzNlpVYmNPSU5hTnNaVGF6b0REYU5SZUpKREwzLzZ6?=
+ =?utf-8?B?WEZ0WkI1bmNHdlZtSmFHV0U3ekcwN0RtekkzRzVXdXhhOTc5b09yRzVPWEtm?=
+ =?utf-8?B?NmlGT1F6Zi91bldsSmcyRk9qTHZna3dGMnZFYmErMXVjYWl3WjFKOTRDNUtD?=
+ =?utf-8?B?UkdGZDhqSEwyOEszY3l4QVVZVWtDR09ZbzBHMmhsaEttbWw2cjZ4UWtHZnMx?=
+ =?utf-8?B?MUxwNXVsU1QrU1YrN0xwc1RVd1NJaC9teFBDTmgrRkY1Y2pxODZJV1NkR0J2?=
+ =?utf-8?B?ekhvWXlYN1I2Qmh1R0N0TFhqZzJsQ3NWeHRYWDhuaHB4eHhKODlQTnJteThO?=
+ =?utf-8?B?SlFCRWMwYkROZU1GYU1Nc25nTU1oNDVnRSs3NUl2aEpCM05aL2MzaFRhaEdl?=
+ =?utf-8?Q?aKqjUdSpUhVq8a0oSPTBCibIH?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b3b50508-8b92-421e-4935-08db1012e0c5
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2023 11:36:56.6628
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2023 11:42:27.3131
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3bc2b170-fd94-476d-b0ce-4229bdc904a7
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: W4X2cCmsV5Jvm1TZmWqoqGsJrPhTHbmmyQva+/PtaFRrIlF8AVkE+6mKeRaAHTA6K3GRgEYN2IDkXOKsK0yvfDjB2+U1y542M2xpj8bW9j27A7j9zxnh9GdPqxgHV3Eg
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR01MB4029
+X-MS-Exchange-CrossTenant-UserPrincipalName: a0Q02suQ/mkbIoFxEVxZRUokAncm/coWT4sq6l8OhqAncI/SDzTA9f3rrdMVKr1/IXy9f0KUu5jCKen5k+AmPw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5203
 
-
-
-On 16-02-2023 04:42 pm, Jean-Philippe Brucker wrote:
-> On Wed, Feb 15, 2023 at 02:57:26PM -0600, Bjorn Helgaas wrote:
->> [+cc Will, Robin, Joerg for arm-smmu-v3 page size question]
->>
->> On Sun, Feb 12, 2023 at 08:14:48PM +0200, Leon Romanovsky wrote:
->>> On Wed, Feb 08, 2023 at 10:43:21AM -0800, Ganapatrao Kulkarni wrote:
->>>> As per PCIe specification(section 10.5), If a VF implements an
->>>> ATS capability, its associated PF must implement an ATS capability.
->>>> The ATS Capabilities in VFs and their associated PFs are permitted to
->>>> be enabled independently.
->>>> Also, it states that the Smallest Translation Unit (STU) for VFs must be
->>>> hardwired to Zero and the associated PF's value applies to VFs STU.
->>>>
->>>> The current code allows to enable ATS on VFs only if it is already
->>>> enabled on associated PF, which is not necessary as per the specification.
->>>>
->>>> It is only required to have valid STU programmed on PF to enable
->>>> ATS on VFs. Adding code to write the first VFs STU to a PF's STU
->>>> when PFs ATS is not enabled.
->>>
->>> Can you please add here quotes from the spec and its version? I don't see
->>> anything like this in my version of PCIe specification.
->>
->> See PCIe r6.0, sec 10.5.1.
->>
->>>> Signed-off-by: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>
->>>> ---
->>>>   drivers/pci/ats.c | 15 +++++++++++----
->>>>   1 file changed, 11 insertions(+), 4 deletions(-)
->>>>
->>>> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
->>>> index f9cc2e10b676..a97ec67201d1 100644
->>>> --- a/drivers/pci/ats.c
->>>> +++ b/drivers/pci/ats.c
->>>> @@ -67,13 +67,20 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
->>>>   	if (ps < PCI_ATS_MIN_STU)
->>>>   		return -EINVAL;
->>>>   
->>>> -	/*
->>>> -	 * Note that enabling ATS on a VF fails unless it's already enabled
->>>> -	 * with the same STU on the PF.
->>>> -	 */
->>>>   	ctrl = PCI_ATS_CTRL_ENABLE;
->>>>   	if (dev->is_virtfn) {
->>>>   		pdev = pci_physfn(dev);
->>>> +
->>>> +		if (!pdev->ats_enabled &&
->>>> +				(pdev->ats_stu < PCI_ATS_MIN_STU)) {
->>>> +			u16 ctrl2;
->>>> +
->>>> +			/* Associated PF's STU value applies to VFs. */
->>>> +			pdev->ats_stu = ps;
->>>> +			ctrl2 = PCI_ATS_CTRL_STU(pdev->ats_stu - PCI_ATS_MIN_STU);
->>>> +			pci_write_config_word(pdev, pdev->ats_cap + PCI_ATS_CTRL, ctrl2);
->>>> +		}
->>
->> For reference, it is this way because of edc90fee916b ("PCI: Allocate
->> ATS struct during enumeration").  The rationale was that since the PF
->> STU applies to all VFs, we should require that the PF STU be
->> programmed before enabling ATS on any of the VFs.
->>
->> This patch relaxes that so the PF STU would be set either by (a)
->> enabling ATS on the PF or (b) enabling ATS on the first VF.
->>
->> This looks racy because theoretically drivers for VF A and VF B could
->> independently call pci_enable_ats() with different IOMMU page sizes,
->> and we don't know which will get there first.
->>
->> Most callers supply a compile-time constant (PAGE_SHIFT or
->> VTD_PAGE_SHIFT), so it won't matter.  arm_smmu_enable_ats() is
->> fancier, but I *assume* it would still supply the same IOMMU page size
->> for all VFs of a given PF.
->>
->> But it's still kind of ugly to call pci_enable_ats(dev_A) and have it
->> muck with the configuration of dev_B.  Maybe we should configure the
->> PF STU (without enabling ATS) at enumeration-time in pci_ats_init()?
->> Is there some way to get the IOMMU page size at that time?
+On 2/8/2023 8:19 PM, Joao Martins wrote:
+> On KVM GSI routing table updates, specially those where they have vIOMMUs
+> with interrupt remapping enabled (e.g. to boot >255vcpus guests without
+> relying on KVM_FEATURE_MSI_EXT_DEST_ID), a VMM may update the backing VF
+> MSIs with new VCPU affinities.
 > 
-> Not really, on Arm the supported page sizes are discovered when probing
-> the SMMU registers, which may happen later than enumeration, during module
-> loading.
-> 
-> What this patch is trying to solve is:
-> * want the PF to bypass SMMU translation, and the VF to undergo SMMU
->    translation (in order to assign it to a VM)
-> * SMMU forbids enabling ATS for a configuration that bypasses translation.
->    So the PF ATS capability must be left disabled.
-> 
-> For this situation I wonder if we could do: the SMMU driver, seeing that
-> the PF is configured to bypass, calls a new function "pci_configure_ats()"
+> On AMD this translates to calls to amd_ir_set_vcpu_affinity() and
+> eventually to amd_iommu_{de}activate_guest_mode() with a new GATag
+> outlining the VM ID and (new) VCPU ID. On vCPU blocking and unblocking
+> paths it disables AVIC, and rely on GALog to convey the wakeups to any
+> sleeping vCPUs. KVM will store a list of GA-mode IR entries to each
+> running/blocked vCPU. So any vCPU Affinity update to a VF interrupt happen
+> via KVM, and it will change already-configured-guest-mode IRTEs with a new
+> GATag.
 
-IMO, This seems to be feasible solution for this situation, which 
-addresses SMMU-ATS expectation in bypass and we could avoid PCI VFs 
-race. pci_configure_ats() can be called to program/configure STU of a PF 
-in smmu-bypass mode.
+Could we simplify this paragraph to:
 
-> instead of pci_enable_ats(), which would only set the STU but leave the
-> cap disabled. Then when setting up translation for the VF, the SMMU driver
-> calls pci_enable_ats() as usual, which sees the PF's STU set appropriately
-> and succeeds.
+On AMD with AVIC enabled, the new vcpu affinity info is updated via:
+	avic_pi_update_irte()
+		irq_set_vcpu_affinity()
+			amd_ir_set_vcpu_affinity()
+				amd_iommu_{de}activate_guest_mode()
+
+where the IRTE[GATag] is updated with the new vcpu affinity. The GATag 
+contains VM ID and VCPU ID, and is used by IOMMU hardware to signal KVM 
+(via GALog) when interrupt cannot be delivered due to vCPU is in 
+blocking state.
+
+> The issue is that amd_iommu_activate_guest_mode() will essentially only
+> change IRTE fields on transitions from non-guest-mode to guest-mode and
+> otherwise returns *with no changes to IRTE* on already configured
+> guest-mode interrupts. To the guest this means that the VF interrupts
+> remain affined to the first vCPU these were first configured, and guest
+> will be unable to either VF interrupts and receive messages like this from
+> spurious interrupts (e.g. from waking the wrong vCPU in GALog):
 > 
-> Thanks,
-> Jean
+> [  167.759472] __common_interrupt: 3.34 No irq handler for vector
+> [  230.680927] mlx5_core 0000:00:02.0: mlx5_cmd_eq_recover:247:(pid
+> 3122): Recovered 1 EQEs on cmd_eq
+> [  230.681799] mlx5_core 0000:00:02.0:
+> wait_func_handle_exec_timeout:1113:(pid 3122): cmd[0]: CREATE_CQ(0x400)
+> recovered after timeout
+> [  230.683266] __common_interrupt: 3.34 No irq handler for vector
+> 
+> Given that amd_ir_set_vcpu_affinity() uses amd_iommu_activate_guest_mode()
+> underneath it essentially means that VCPU affinity changes of IRTEs are
+> nops if it was called once for the IRTE already (on VMENTER). Fix it by
+> dropping the check for guest-mode at amd_iommu_activate_guest_mode().  Same
+> thing is applicable to amd_iommu_deactivate_guest_mode() although, even if
+> the IRTE doesn't change underlying DestID on the host, the VFIO IRQ handler
+> will still be able to poke at the right guest-vCPU.
+> 
+> Fixes: b9c6ff94e43a ("iommu/amd: Re-factor guest virtual APIC (de-)activation code")
+> Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
+> ---
+> Some notes in other related flaws as I looked at this:
+> 
+> 1) amd_iommu_deactivate_guest_mode() suffers from the same issue as this patch,
+> but it should only matter for the case where you rely on irqbalance-like
+> daemons balancing VFIO IRQs in the hypervisor. Though, it doesn't translate
+> into guest failures, more like performance "misdirection". Happy to fix it, if
+> folks also deem it as a problem.
+> 
+> 2) This patch doesn't attempt at changing semantics around what
+> amd_iommu_activate_guest_mode() has been doing for a long time [since v5.4]
+> (i.e. clear the whole IRTE and then changes its fields). As such when
+> updating the IRTEs the interrupts get isRunning and DestId cleared, thus
+> we rely on the GALog to inject IRQs into vCPUs /until/ the vCPUs block
+> and unblock again (which is when they update the IOMMU affinity), or the
+> AVIC gets momentarily disabled. I have patches that improve this part as a
+> follow-up, but I thought that this patch had value on its own onto fixing
+> what has been broken since v5.4 ... and that it could be easily carried
+> to stable trees.
+> 
+> ---
+>   drivers/iommu/amd/iommu.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index cbeaab55c0db..afe1f35a4dd9 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -3476,7 +3476,7 @@ int amd_iommu_activate_guest_mode(void *data)
+>   	u64 valid;
+>   
+>   	if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir) ||
+> -	    !entry || entry->lo.fields_vapic.guest_mode)
+> +	    !entry)
+>   		return 0;
+>   
+>   	valid = entry->lo.fields_vapic.valid;
+
+Apart from the commit message change:
+
+Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 
 Thanks,
-Ganapat
+Suravee
