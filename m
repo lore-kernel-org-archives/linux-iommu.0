@@ -1,94 +1,85 @@
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9468B7B;
-	Thu, 16 Feb 2023 09:42:01 +0000 (UTC)
-Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
-	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-	id 1pSam6-00044m-EV; Thu, 16 Feb 2023 10:41:58 +0100
-Message-ID: <7c8a2356-4964-20a7-2f8b-4836c1f6a9ff@leemhuis.info>
-Date: Thu, 16 Feb 2023 10:41:57 +0100
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9ADEA7B
+	for <iommu@lists.linux.dev>; Thu, 16 Feb 2023 09:42:37 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6E76C1042;
+	Thu, 16 Feb 2023 01:43:19 -0800 (PST)
+Received: from [10.57.89.217] (unknown [10.57.89.217])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1D05F3F703;
+	Thu, 16 Feb 2023 01:42:35 -0800 (PST)
+Message-ID: <d2d4510d-4d28-8471-626c-f3e998a4014c@arm.com>
+Date: Thu, 16 Feb 2023 09:42:30 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
  Thunderbird/102.7.2
-Subject: Re: [PATCH v3 3/3] iommu/amd: Improve page fault error reporting
-Content-Language: en-US, de-DE
-To: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
- joro@8bytes.org, baolu.lu@linux.intel.com
-Cc: suravee.suthikulpanit@amd.com, robin.murphy@arm.com, will@kernel.org,
- Matt Fagnani <matt.fagnani@bell.net>,
- Linux kernel regressions list <regressions@lists.linux.dev>
-References: <20230215052642.6016-1-vasant.hegde@amd.com>
- <20230215052642.6016-3-vasant.hegde@amd.com>
-From: Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <20230215052642.6016-3-vasant.hegde@amd.com>
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: [PATCH] swiotlb: remove swiotlb_max_segment
+Content-Language: en-GB
+To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux.dev
+Cc: m.szyprowski@samsung.com
+References: <20230216062553.2151773-1-hch@lst.de>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20230216062553.2151773-1-hch@lst.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1676540521;bfe5a8a2;
-X-HE-SMSGID: 1pSam6-00044m-EV
 
-On 15.02.23 06:26, Vasant Hegde wrote:
-> If IOMMU domain for device group is not setup properly then we may hit
-> IOMMU page fault. Current page fault handler assumes that domain is
-> always setup and it will hit NULL pointer derefence (see below sample log).
+On 2023-02-16 06:25, Christoph Hellwig wrote:
+> swiotlb_max_segment has always been a bogus API, so remove it now that
+> the remaining callers are gone.
+
+Hooray!
+
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>   include/linux/swiotlb.h | 5 -----
+>   kernel/dma/swiotlb.c    | 8 --------
+>   2 files changed, 13 deletions(-)
 > 
-> Lets check whether domain is setup or not and log appropriate message.
->
-> [...]
-
-Many thx for taking care of this. Is this something that is still
-suitable for merging before 6.2 is released? If not it would be good to
-directly add a "CC: <stable.." tag to ensure it's backported to 6.2
-later, as maybe there are more people affected by this.
-
-> Reported-by: Matt Fagnani <matt.fagnani@bell.net>
-
-There is one small thing to improve, please add the following tags here
-to make things easier for future code archaeologists:
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216865
-Link:
-https://lore.kernel.org/lkml/15d0f9ff-2a56-b3e9-5b45-e6b23300ae3b@leemhuis.info/
-
-To explain: Linus[1] and others considered proper link tags with the URL
-to the report important, as they allow anyone to look into the backstory
-of a fix weeks or years later. That's nothing new, the documentation[2]
-for some time says to place such tags in cases like this. I care
-personally (and made it a bit more explicit in the docs a while ago),
-because these tags make my regression tracking efforts a whole lot
-easier, as they allow my tracking bot 'regzbot' to automatically connect
-reports with patches posted or committed to fix tracked regressions.
-
-Apropos regzbot, let me tell regzbot to monitor this thread:
-
-#regzbot ^backmonitor:
-https://lore.kernel.org/lkml/15d0f9ff-2a56-b3e9-5b45-e6b23300ae3b@leemhuis.info/
-
-> Suggested-by: Joerg Roedel <joro@8bytes.org>
-> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-> [...]
-
-/me wonders if this also should have a Fixes: tag.
-
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-
-[1] for details, see:
-https://lore.kernel.org/all/CAHk-=wjMmSZzMJ3Xnskdg4+GGz=5p5p+GSYyFBTh0f-DgvdBWg@mail.gmail.com/
-https://lore.kernel.org/all/CAHk-=wgs38ZrfPvy=nOwVkVzjpM3VFU1zobP37Fwd_h9iAD5JQ@mail.gmail.com/
-https://lore.kernel.org/all/CAHk-=wjxzafG-=J8oT30s7upn4RhBs6TX-uVFZ5rME+L5_DoJA@mail.gmail.com/
-
-[2] see Documentation/process/submitting-patches.rst
-(http://docs.kernel.org/process/submitting-patches.html) and
-Documentation/process/5.Posting.rst
-(https://docs.kernel.org/process/5.Posting.html)
-
---
-Everything you wanna know about Linux kernel regression tracking:
-https://linux-regtracking.leemhuis.info/about/#tldr
-If I did something stupid, please tell me, as explained on that page.
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index 35bc4e281c2125..bcef10e20ea4fa 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -121,7 +121,6 @@ static inline bool is_swiotlb_force_bounce(struct device *dev)
+>   
+>   void swiotlb_init(bool addressing_limited, unsigned int flags);
+>   void __init swiotlb_exit(void);
+> -unsigned int swiotlb_max_segment(void);
+>   size_t swiotlb_max_mapping_size(struct device *dev);
+>   bool is_swiotlb_active(struct device *dev);
+>   void __init swiotlb_adjust_size(unsigned long size);
+> @@ -140,10 +139,6 @@ static inline bool is_swiotlb_force_bounce(struct device *dev)
+>   static inline void swiotlb_exit(void)
+>   {
+>   }
+> -static inline unsigned int swiotlb_max_segment(void)
+> -{
+> -	return 0;
+> -}
+>   static inline size_t swiotlb_max_mapping_size(struct device *dev)
+>   {
+>   	return SIZE_MAX;
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index a34c38bbe28f10..f35d934f6e5822 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -156,14 +156,6 @@ setup_io_tlb_npages(char *str)
+>   }
+>   early_param("swiotlb", setup_io_tlb_npages);
+>   
+> -unsigned int swiotlb_max_segment(void)
+> -{
+> -	if (!io_tlb_default_mem.nslabs)
+> -		return 0;
+> -	return rounddown(io_tlb_default_mem.nslabs << IO_TLB_SHIFT, PAGE_SIZE);
+> -}
+> -EXPORT_SYMBOL_GPL(swiotlb_max_segment);
+> -
+>   unsigned long swiotlb_size_or_default(void)
+>   {
+>   	return default_nslabs << IO_TLB_SHIFT;
