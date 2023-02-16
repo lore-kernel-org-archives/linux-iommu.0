@@ -1,34 +1,34 @@
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B6017B
-	for <iommu@lists.linux.dev>; Thu, 16 Feb 2023 00:49:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDC1C7B
+	for <iommu@lists.linux.dev>; Thu, 16 Feb 2023 00:51:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676508549; x=1708044549;
+  t=1676508695; x=1708044695;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=abVxdTrQXyJIRwvmXFMJIhwBu4SaHWDquF+Ed+Z40fE=;
-  b=D7g0r4qV3VPfKFQg05nG/pfwYo22Ncbp8B+BA7XlRyuzE3JAtBa63GEQ
-   jmC5GvlkrrUdKNfT5ux2VKUM7AkQEIYImTtoy/VN8lfS3PfmsdgV0shiH
-   T2xTKxpIkHK/GCJPcke4w4carzw3XeNBxgmpktK5Z3eqmDDF+vzv0LZVw
-   If9xZB6toIULqYTNGYF2HBC7sH7Ow1ZGLUy/Af5pGzUy4YBtAxw3jfEnT
-   Bomk6ovLybjuMn37SovhVNrp5jx1vZHA5ZHJK0PxDycrpklxIUoMv4xur
-   QipDbsB4J9MBE+w9BL6oiBubnKNfZTxdEGLmtpgrAmpKFe204lNivF8PP
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="311950483"
+  bh=oMDsR2cvqxAJeRoEB/geejBEB5K+GYsJeTdIhBnoWzI=;
+  b=HJU6vu/Q1dntZbFarwJ+4zHEbPmA0QN+k7+qd8H3uDRBZ23kLUq8o76M
+   PFyim4otE4HDMJGlxh+GHUGCKgNW/aZQBZflYKPRsm4lkuavb5/Cntg3R
+   xwb6KM62jJY7K+t9U2nLh3JqX9ufADK77MfHatz/yxedFb/bpS5gAWG/f
+   N+6XJW94Gmon7rfiJovlev8QrqIzU4SRpeXCmCdxPJieUvVs/u8aVJzZA
+   BdB1GI7nDxYucgv+oeXH81/e+nIXiWJCK9rh07aeDIh5unCJKUvdLvSus
+   9ZYcyxKAyhgb0qZaruO+RK8PgHn4j4Jcou7yA92QKTOj8wCVUwW29qdac
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="417808076"
 X-IronPort-AV: E=Sophos;i="5.97,301,1669104000"; 
-   d="scan'208";a="311950483"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2023 16:49:09 -0800
+   d="scan'208";a="417808076"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2023 16:51:19 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="843934984"
+X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="793835234"
 X-IronPort-AV: E=Sophos;i="5.97,301,1669104000"; 
-   d="scan'208";a="843934984"
+   d="scan'208";a="793835234"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by orsmga005.jf.intel.com with ESMTP; 15 Feb 2023 16:49:06 -0800
-Message-ID: <ba0fab4b-61dc-a5de-cc0e-70a6e6f66f51@linux.intel.com>
-Date: Thu, 16 Feb 2023 08:40:42 +0800
+  by orsmga004.jf.intel.com with ESMTP; 15 Feb 2023 16:51:16 -0800
+Message-ID: <694e3fe4-084d-2da5-83f6-cc275fac4463@linux.intel.com>
+Date: Thu, 16 Feb 2023 08:42:53 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,85 +37,88 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@infradead.org>,
- Kevin Tian <kevin.tian@intel.com>, Will Deacon <will@kernel.org>,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] iommu: Add dev_iommu->ops_rwsem
+Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>,
+ Christoph Hellwig <hch@infradead.org>, Will Deacon <will@kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/4] iommu: Use group ownership to avoid driver attachment
 Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
 References: <20230213074941.919324-1-baolu.lu@linux.intel.com>
- <20230213074941.919324-2-baolu.lu@linux.intel.com>
- <Y+pGUOkLVUMFYWOb@nvidia.com>
- <9f516f44-3dc9-6f15-11d0-10bfb1b29b1e@linux.intel.com>
- <d4f1b33d-dec7-6582-34a1-495bacfcd396@arm.com>
+ <20230213074941.919324-3-baolu.lu@linux.intel.com>
+ <Y+pG9kWzR2c5I9FU@nvidia.com>
+ <b7f501b0-42c4-5402-7bb1-b4681b6e624c@linux.intel.com>
+ <BN9PR11MB52768BD174CE9F4AE40C12078CA39@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <4ac228af-fb74-2d89-b8d7-462186170e12@linux.intel.com>
+ <f4559966-c99e-47d2-a5ab-d248c7ed8e52@arm.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <d4f1b33d-dec7-6582-34a1-495bacfcd396@arm.com>
+In-Reply-To: <f4559966-c99e-47d2-a5ab-d248c7ed8e52@arm.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 2/15/23 7:24 PM, Robin Murphy wrote:
-> On 2023-02-15 05:34, Baolu Lu wrote:
->> On 2/13/23 10:16 PM, Jason Gunthorpe wrote:
->>> On Mon, Feb 13, 2023 at 03:49:38PM +0800, Lu Baolu wrote:
+On 2/15/23 7:09 PM, Robin Murphy wrote:
+> On 2023-02-15 07:28, Baolu Lu wrote:
+>> On 2023/2/15 14:56, Tian, Kevin wrote:
+>>>> From: Baolu Lu<baolu.lu@linux.intel.com>
+>>>> Sent: Wednesday, February 15, 2023 1:51 PM
+>>>>
+>>>> On 2/13/23 10:19 PM, Jason Gunthorpe wrote:
+>>>>> On Mon, Feb 13, 2023 at 03:49:39PM +0800, Lu Baolu wrote:
+>>>>>> @@ -2992,6 +2987,14 @@ static ssize_t iommu_group_store_type(struct
+>>>> iommu_group *group,
+>>>>>>        else
+>>>>>>            return -EINVAL;
+>>>>>>
+>>>>>> +    if (req_type != IOMMU_DOMAIN_DMA_FQ ||
+>>>>>> +        group->default_domain->type != IOMMU_DOMAIN_DMA) {
+>>>>>> +        ret = iommu_group_claim_dma_owner(group, (void *)buf);
+>>>>>> +        if (ret)
+>>>>>> +            return ret;
+>>>>>> +        group_owner_claimed = true;
+>>>>>> +    }
+>>>>> I don't get it, this should be done unconditionally. If we couldn't
+>>>>> take ownership then we simply can't progress.
+>>>> The existing code allows the user to switch the default domain from
+>>>> strict to lazy invalidation mode. The default domain is not changed,
+>>>> hence it should be seamless and transparent to the device driver.
+>>> Is there real usage relying on this transition for a bound device?
 >>>
->>>> +static int iommu_group_freeze_dev_ops(struct iommu_group *group)
->>>> +{
->>>> +    struct group_device *device;
->>>> +    struct device *dev;
->>>> +
->>>> +    mutex_lock(&group->mutex);
->>>> +    list_for_each_entry(device, &group->devices, list) {
->>>> +        dev = device->dev;
->>>> +        down_read(&dev->iommu->ops_rwsem);
+>>> In concept strict->lazy transition implies relaxed DMA security. It's 
+>>> hard
+>>> to think of a motivation of doing so while the device might be doing
+>>> in-fly DMAs.
 >>>
->>> This isn't allowed, you can't obtain locks in a loop like this, it
->>> will deadlock.
+>>> Presumably such perf/security tradeoff should be planned way before
+>>> binding device/driver together.
 >>>
->>> You don't need more locks, we already have the group mutex, the
->>> release path should be fixed to use it properly as I was trying to do 
->>> here:
+>>> btw if strict->lazy is allowed why lazy->strict is prohibited?
 >>>
->>> https://lore.kernel.org/kvm/4-v1-ef00ffecea52+2cb-iommu_group_lifetime_jgg@nvidia.com/
->>> https://lore.kernel.org/kvm/YyyTxx0HnA3maxEk@nvidia.com/
->>>
->>> Then what you'd do in a path like this is:
->>>
->>>    mutex_lock(&group->mutex);
->>>    dev = iommu_group_first_device(group)
->>>    if (!dev)
->>>       /* Racing with group cleanup */
->>>       return -EINVAL;
->>>    /* Now dev->ops is valid and must remain valid so long as
->>>       group->mutex is held */
->>>
->>> The only reason this doesn't work already is because of the above
->>> stuff about release not holding the group mutex when manipulating the
->>> devices in the group. This is simply mis-locked.
->>>
->>> Robin explained it was done like this because
->>> arm_iommu_detach_device() re-enters the iommu core during release_dev,
->>> so I suggest fixing that by simply not doing that (see above)
->>>
->>> Below is the lastest attempt I had tried, I didn't have time to get back
->>> to it and we fixed the bug another way. It needs a bit of adjusting to
->>> also remove the device from the group after release is called within
->>> the same mutex critical region.
 >>
->> Yes. If we can make remove device from list and device release in the
->> same mutex critical region, we don't need any other lock mechanism
->> anymore.
+>> We all know, strict vs. lazy is a tradeoff between performance and
+>> security.
 >>
->> The ipmmu driver supports default domain.
+>> strict -> lazy: driver works in secure mode. This transition trades off
+>> security for better performance.
+>>
+>> lazy->strict: The driver is already working in non-safety mode. This
+>> transition only results in worse performance. It makes no sense. If user
+>> want to put the driver in a secure mode, they need to unbind the driver,
+>> reset the device and do the lazy->strict transition.
+>>
+>> Robin might have better insights.
 > 
-> It supports default domains *on arm64*. Nothing on 32-bit ARM uses 
-> default domains, they won't even exist since iommu-dma is not enabled, 
-> and either way the ARM DMA ops don't understand groups. I don't see an 
-> obvious satisfactory solution while the arm_iommu_* APIs still exist, 
-> but if we need bodges in the interim could we please try to concentrate 
-> them in ARM-specific code?
+> Yes, this was added for a definite use-case in ChromeOS, where 
+> strict->lazy needs to support being done "live" since the device in 
+> question is the storage controller for the already-mounted root 
+> filesystem.
 
-Yes, sure. Thanks for the guide.
+Thanks for letting us know this.
+
+> Your reasoning seems to match what I summarised in the 
+> original commit message 😄
+
+Haha, it seems that my memory is till good. :-)
 
 Best regards,
 baolu
