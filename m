@@ -1,124 +1,149 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2079.outbound.protection.outlook.com [40.107.243.79])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDC1C7B
-	for <iommu@lists.linux.dev>; Thu, 16 Feb 2023 00:51:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676508695; x=1708044695;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=oMDsR2cvqxAJeRoEB/geejBEB5K+GYsJeTdIhBnoWzI=;
-  b=HJU6vu/Q1dntZbFarwJ+4zHEbPmA0QN+k7+qd8H3uDRBZ23kLUq8o76M
-   PFyim4otE4HDMJGlxh+GHUGCKgNW/aZQBZflYKPRsm4lkuavb5/Cntg3R
-   xwb6KM62jJY7K+t9U2nLh3JqX9ufADK77MfHatz/yxedFb/bpS5gAWG/f
-   N+6XJW94Gmon7rfiJovlev8QrqIzU4SRpeXCmCdxPJieUvVs/u8aVJzZA
-   BdB1GI7nDxYucgv+oeXH81/e+nIXiWJCK9rh07aeDIh5unCJKUvdLvSus
-   9ZYcyxKAyhgb0qZaruO+RK8PgHn4j4Jcou7yA92QKTOj8wCVUwW29qdac
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="417808076"
-X-IronPort-AV: E=Sophos;i="5.97,301,1669104000"; 
-   d="scan'208";a="417808076"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2023 16:51:19 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="793835234"
-X-IronPort-AV: E=Sophos;i="5.97,301,1669104000"; 
-   d="scan'208";a="793835234"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by orsmga004.jf.intel.com with ESMTP; 15 Feb 2023 16:51:16 -0800
-Message-ID: <694e3fe4-084d-2da5-83f6-cc275fac4463@linux.intel.com>
-Date: Thu, 16 Feb 2023 08:42:53 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C2B97B
+	for <iommu@lists.linux.dev>; Thu, 16 Feb 2023 01:21:20 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Y11O67723xmkgTWUFgS3E4SJE33MDR/f18GGMRXASIHY6wdqBs1Xe3MasCRMG3LAm2c/PzLgkoYSgvwfNFFFbLO0TkBQ8kV1hfNMpNPosP0cUfj6ivi8cm1FnrYAlSLEE612o2nCGhGzIWdoAMn0X/SdgQu3Uu+NJKBJbjKD5GJMQnz0Z2oYKpvbgkqimhR22oA2/YxgaWgNFQGHen6dU7ZSbRHdCRBYa7O2a2qrmt2jV6hZA9uhnMnPWwGMzR/Na6+B0nFlcdL817P9wowoWw+yor99gW7iktboC2Nxae6D+VCT8Z5AWGsZDZ+NzUoQ44QPPJhwgFXTEcSkX/F0nw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UpK7cmYVMRELDgm1axU11mlZkj7f771hlOVX88B3lrY=;
+ b=DJX/2xBx21syrsyDLD7mUOCWcy4Kb56uPllwI0fqP1d4yvaMpc0vfqoXvVZVrwk/C0WD3qB+8/DQm2ozZSApKQT6gOq0z6B7NDw/781G3CaF1DD776Iy2UBc/c/yPlkxozAu/eQ4pIeUP9lHJguW5Ow0t+lpBpqXd23bT7z665J9KOiw9LuJhOBqgkINaukw8/rtFI+iOAIevLUDzDLKMs22XNAvtbDW5d3GfbV363HtZf4maeplGzlkbunPurEhPzNWkbIIrPILUJc8uR+czSouXsXdtpbV2kbjWQCRWGPUDf8HgPV3CuvxafWIdyqVYgO+lObNpoYEDlQkJhvOZA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UpK7cmYVMRELDgm1axU11mlZkj7f771hlOVX88B3lrY=;
+ b=NiYh47NhBDaYOqfkJzhVCswnkwkouMdtKOyz7lzlGPPuywRSZvEvpoZf3vjqRW5rin+h7cT3q/DQ/QeCz22aNnNuoKIyUrVm5KPmSjk/o79F0ID2sXXkR7m7xglaFIykt+DhvkDH8nrdOWwtyVpBL6T0hdhyLjy96KEn9CqI1+DTOuHsPIhU7ClLBU8hT9kSEOtkFp2nFZ+05r0TgF7J837ukWynNu/R0CqV99rS5tVBhciBoXcfl1Ysj7v7PFWqX8vkwaPF7KD/o21svJDIU/lBnbzSJGXMQ2GrilnzOzhHa2YDbfDbd6aerphkMlPWDvn4Kbp55RA2UDUPv/Igow==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by SA3PR12MB7949.namprd12.prod.outlook.com (2603:10b6:806:31a::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26; Thu, 16 Feb
+ 2023 01:21:18 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3cb3:2fce:5c8f:82ee%4]) with mapi id 15.20.6086.024; Thu, 16 Feb 2023
+ 01:21:17 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>
+Cc: Bharat Bhushan <bharat.bhushan@nxp.com>,
+	Eric Auger <eric.auger@redhat.com>,
+	Joerg Roedel <jroedel@suse.de>,
+	Olof Johansson <olof@lixom.net>,
+	Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>,
+	Will Deacon <will.deacon@arm.com>
+Subject: [PATCH] iommu: Fix error unwind in iommu_group_alloc()
+Date: Wed, 15 Feb 2023 21:21:16 -0400
+Message-Id: <0-v1-8f616bee028d+8b-iommu_group_alloc_leak_jgg@nvidia.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BL1PR13CA0209.namprd13.prod.outlook.com
+ (2603:10b6:208:2be::34) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>,
- Christoph Hellwig <hch@infradead.org>, Will Deacon <will@kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/4] iommu: Use group ownership to avoid driver attachment
-Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, "Tian, Kevin"
- <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
-References: <20230213074941.919324-1-baolu.lu@linux.intel.com>
- <20230213074941.919324-3-baolu.lu@linux.intel.com>
- <Y+pG9kWzR2c5I9FU@nvidia.com>
- <b7f501b0-42c4-5402-7bb1-b4681b6e624c@linux.intel.com>
- <BN9PR11MB52768BD174CE9F4AE40C12078CA39@BN9PR11MB5276.namprd11.prod.outlook.com>
- <4ac228af-fb74-2d89-b8d7-462186170e12@linux.intel.com>
- <f4559966-c99e-47d2-a5ab-d248c7ed8e52@arm.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <f4559966-c99e-47d2-a5ab-d248c7ed8e52@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SA3PR12MB7949:EE_
+X-MS-Office365-Filtering-Correlation-Id: b448835f-2541-4ce5-ca80-08db0fbc1a7b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	GL5I4gzitSAL6uKn8zBwxSVQVFqziDVimHurkBYF5ZBmppGxTfgqBOcuHipVQzxhosHjjXWX0BDzas9jT09vLGnz6GffO5azlj+yfbV3zhIH3e/XUoNBuBm2v8M9CIUxJlR1R8O3P+GqqMHtnsbkyR2ww0nI6e/eMvEdoHyWxxTS6zG/+OGbZSUtCrvX6b2HIulmoeKN/tG1hG9RS7PUl0FK9NPBdbCmwal7lyAA9S5MG4Rz/VvyxwWAlSlCVVFTFrPN1Wn0p+lHAwh+zoZ5XvQOYh2DJlYue5XXD4e0FnQWtrH5fw6+Z5O94hGpWSO8YYgTIBIlJaWTAUAJxv0cv1F9ksanq7CKQg/910xFt76uDkKSQogP3NNYk62WIDgFSyGp2kkk9A+h3q81CK3tPURtGga8zACS8JD0qLJCrZidYmZV46Wtf7Cy8vIclIg2MLiG+XXOs1YBQQagkUPSGJCowwTLp+uQTSwYJINojiqFYh8WQ/TA74GuvpTCk7oMNs+qLGMF7q74NtvL+7y6TuZxatV8YhgvxMzyU/PK7CsXfNiBKMOgPs7y9tL14r7KSngKbJBScdtNiSQJ4bvZNx6FvIZ6m0/M/v/RPsJIZ5w6eHf0lZdCNBHcszfnnZYN4MrieH+MKQqlwOEUsKCkmmNrXj3ze9VogfNuwsa+UExMMAMFDLxczu6Agxgr4IUd
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(396003)(376002)(136003)(366004)(346002)(451199018)(2616005)(86362001)(2906002)(36756003)(66476007)(41300700001)(5660300002)(66946007)(66556008)(38100700002)(8676002)(6486002)(478600001)(110136005)(83380400001)(6512007)(54906003)(4326008)(186003)(7416002)(6506007)(8936002)(26005)(316002)(4216001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?DsLzEWMAcePsOHs6vJqWUEWK69M8zfvnqAU6FoL1s985frlTIGIlC+PTahzk?=
+ =?us-ascii?Q?xDjVYyc1O/CFNcuY2bYDN3Ty/tH5HjKgC07fGTzLRKa0//C0UvFwD/k0V8nm?=
+ =?us-ascii?Q?0mh8IcG+zpisnO9S204fbfvtHS9W0bsxJo589n/XB6NqkTHvb9NX64vpk5se?=
+ =?us-ascii?Q?7ScXZv/CUJjgd8QO62kwffoys2gBz2mjSTONaGDrczCgEThbwzkSFBSygb1g?=
+ =?us-ascii?Q?iR0qpmfFqlQvtJHQ9OKq8BuRV9BInVWNzr3u+MSQnVPtDsMqNa4hxUecCJbf?=
+ =?us-ascii?Q?NXoxhbdK9SmrJhYC8moYweMzTIueg7xNVmKaIONj2oTLcgOAaYLLRbfsLn2U?=
+ =?us-ascii?Q?A1p3ZtsQgmLYDXsu80SdPNfFZ76jIQD0WZEyNk0Hyy4s5Jf3PNAfTdEB9Y9f?=
+ =?us-ascii?Q?3H+5t8c7GBjO/dOAhPhyl1tovhFTAbfuML3+/fUkKeOui7zLAXx9fNoD+kFb?=
+ =?us-ascii?Q?xb2VEjZ0aNF93s9216NpeYxcSPVODQNR0Nma+SKMEGklZ8DGkhAQUe5x1YFT?=
+ =?us-ascii?Q?3ezBFCngH1sv+jVBREo7FLlYrweGNL7HZ5ruT0tg26Pi2tLjnA0YuPHAvEp7?=
+ =?us-ascii?Q?WG5ASEoXEVqGBjiz6MCaZX5PM/hlU9u1BN0ZS0UTHDwURvLZ9I2v0OkCuxBY?=
+ =?us-ascii?Q?2JOPeDAc6vtVrl3Gk8hiKvug/M6m1rRyJrCDNRaq0sZAlO8M4U1U/XiOBL7P?=
+ =?us-ascii?Q?KMGaCjXugml9NrcLqpR0cwlt3k5WAtL/zAk6O+nuJ2oaDcGj8Y7uaadd+yWF?=
+ =?us-ascii?Q?LyXmdDzTA7uAcGy7Clxff+GGIdqw7K0HkjvaHbmaCaYMjlwA/hOzQA7h7jKA?=
+ =?us-ascii?Q?RnZd3TJsIoqjmac2e0EwsRn+oOVTE0vlwUzMg9zbZlUDCAwhuGHAJagCqFTj?=
+ =?us-ascii?Q?YeEDiSgeLzDByynn7h7hoi6Xduyi+RhSiE9DRkIk1y0NtAWG5us1EDJoAn7s?=
+ =?us-ascii?Q?mcUC3Wvv2iZt2Z8eJCh8nwnfsPgichqwXc3gjtkpxWfNisFpg0koGu9xI6qQ?=
+ =?us-ascii?Q?tM8gkk875cCQL9uzMY3xC/3eCr9L2XwTxHKmO8hnWWEEyG0SAVv0BtN0jX3/?=
+ =?us-ascii?Q?GXS3P+wcc0/KiAE5+qSSFYn5Fsm/NMSGVN7Slm376hnQ8/YCo9Utr1DeVeX3?=
+ =?us-ascii?Q?e/pYdTaLGtq7JxswOPBQGHr/wZFjHqojoZqCY644EpviU0BMRpvHDNfsAn2B?=
+ =?us-ascii?Q?s4orZ2FHdGFhQYCG+DbZCkfd+5aU1mXNtdS6w5h50jfpJa/C3ucnvXa9ujt2?=
+ =?us-ascii?Q?+rK0DdCSpyHLd72AEB6YlgCc0Z2zwNlJQ8FwMfreoT69XcdrEc/rBNyI5cEG?=
+ =?us-ascii?Q?c6JGCokv1gVdsvUxvCSzsTgL1+62FwTgRJd2PkhcNIBWN2np49u5ZTsvOJ6o?=
+ =?us-ascii?Q?txGQ7vBO8cqTibt023uwTMKijjqPU+clR4pa7j5FGDyrj8soYaK9yiYypCDH?=
+ =?us-ascii?Q?/qvJQoKZRIuwuqhyJhGIL0O350yxcZlRpYR0n9nNu2bTWP3+UflTvkvyuEqX?=
+ =?us-ascii?Q?pjYh71pbUfixr168NhSHbFWJs+L4aFMuWlBfZNHcVHedmrWiAsM5WKh15xEY?=
+ =?us-ascii?Q?XyJ56K3tJukV5T1fmh5IxuaofKzvP8sdIvQtUJ8R?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b448835f-2541-4ce5-ca80-08db0fbc1a7b
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2023 01:21:17.6583
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: jGDVNZjaEmu1FBZ/V+n/VMkeRzwunaA9T1ChCNu9Ly64wA5+aEbMSQ/gVGqC/IeO
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB7949
 
-On 2/15/23 7:09 PM, Robin Murphy wrote:
-> On 2023-02-15 07:28, Baolu Lu wrote:
->> On 2023/2/15 14:56, Tian, Kevin wrote:
->>>> From: Baolu Lu<baolu.lu@linux.intel.com>
->>>> Sent: Wednesday, February 15, 2023 1:51 PM
->>>>
->>>> On 2/13/23 10:19 PM, Jason Gunthorpe wrote:
->>>>> On Mon, Feb 13, 2023 at 03:49:39PM +0800, Lu Baolu wrote:
->>>>>> @@ -2992,6 +2987,14 @@ static ssize_t iommu_group_store_type(struct
->>>> iommu_group *group,
->>>>>>        else
->>>>>>            return -EINVAL;
->>>>>>
->>>>>> +    if (req_type != IOMMU_DOMAIN_DMA_FQ ||
->>>>>> +        group->default_domain->type != IOMMU_DOMAIN_DMA) {
->>>>>> +        ret = iommu_group_claim_dma_owner(group, (void *)buf);
->>>>>> +        if (ret)
->>>>>> +            return ret;
->>>>>> +        group_owner_claimed = true;
->>>>>> +    }
->>>>> I don't get it, this should be done unconditionally. If we couldn't
->>>>> take ownership then we simply can't progress.
->>>> The existing code allows the user to switch the default domain from
->>>> strict to lazy invalidation mode. The default domain is not changed,
->>>> hence it should be seamless and transparent to the device driver.
->>> Is there real usage relying on this transition for a bound device?
->>>
->>> In concept strict->lazy transition implies relaxed DMA security. It's 
->>> hard
->>> to think of a motivation of doing so while the device might be doing
->>> in-fly DMAs.
->>>
->>> Presumably such perf/security tradeoff should be planned way before
->>> binding device/driver together.
->>>
->>> btw if strict->lazy is allowed why lazy->strict is prohibited?
->>>
->>
->> We all know, strict vs. lazy is a tradeoff between performance and
->> security.
->>
->> strict -> lazy: driver works in secure mode. This transition trades off
->> security for better performance.
->>
->> lazy->strict: The driver is already working in non-safety mode. This
->> transition only results in worse performance. It makes no sense. If user
->> want to put the driver in a secure mode, they need to unbind the driver,
->> reset the device and do the lazy->strict transition.
->>
->> Robin might have better insights.
-> 
-> Yes, this was added for a definite use-case in ChromeOS, where 
-> strict->lazy needs to support being done "live" since the device in 
-> question is the storage controller for the already-mounted root 
-> filesystem.
+If either iommu_group_grate_file() fails then then the iommu_group
+is leaked.
 
-Thanks for letting us know this.
+Destroy it on these error paths.
 
-> Your reasoning seems to match what I summarised in the 
-> original commit message 😄
+Found by kselftest/iommu/iommufd_fail_nth
 
-Haha, it seems that my memory is till good. :-)
+Fixes: bc7d12b91bd3 ("iommu: Implement reserved_regions iommu-group sysfs file")
+Fixes: c52c72d3dee8 ("iommu: Add sysfs attribyte for domain type")
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/iommu/iommu.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-Best regards,
-baolu
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index dd9b60897c8673..e41c9df1504ba3 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -775,12 +775,16 @@ struct iommu_group *iommu_group_alloc(void)
+ 
+ 	ret = iommu_group_create_file(group,
+ 				      &iommu_group_attr_reserved_regions);
+-	if (ret)
++	if (ret) {
++		kobject_put(group->devices_kobj);
+ 		return ERR_PTR(ret);
++	}
+ 
+ 	ret = iommu_group_create_file(group, &iommu_group_attr_type);
+-	if (ret)
++	if (ret) {
++		kobject_put(group->devices_kobj);
+ 		return ERR_PTR(ret);
++	}
+ 
+ 	pr_debug("Allocated group %d\n", group->id);
+ 
+
+base-commit: c643eb52cb7c1f6747ddc60d8a187a3ca0746a12
+-- 
+2.39.1
+
