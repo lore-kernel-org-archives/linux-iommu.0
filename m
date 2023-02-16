@@ -1,113 +1,120 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 721A65663
-	for <iommu@lists.linux.dev>; Thu, 16 Feb 2023 13:16:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676553410; x=1708089410;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=NCCqLc87j+n2TX4S0I5r808qPN4XxFBlCpxujEbhTfo=;
-  b=YulFT56SjFb5xcJNjrsTMZ61tm+hAGXJ9iPgi0ZhYio+YWJwEUbuuVGA
-   9Uo+c907ZmoKXoyiPi5IVCEy/MSjZHcmgWLAHJJTmJtQsp8EK6q7MtUe2
-   2Y2sm8fQ2H2k1Qb1M3x2ysEisQWaorJ1/yPLfmtoxg9HDb8BdhUg/S6Vd
-   GLh6Y9hlIy2urMQgdF+gUtYT4feIurXh+SKQPxmPWp/uwaOjm+BsVozPP
-   1LLKHOg5vQ3JdNfvKvw1uPo4OuOspiAjqwyN7d4zrvxwcl88ftTcsxu3W
-   mAxVH1eHcGxjL734ennk1/9UIUwfGHfP/K7DW8+v8XZUSbBEIzb+0TgLI
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="333883333"
-X-IronPort-AV: E=Sophos;i="5.97,302,1669104000"; 
-   d="scan'208";a="333883333"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2023 05:16:50 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="647674974"
-X-IronPort-AV: E=Sophos;i="5.97,302,1669104000"; 
-   d="scan'208";a="647674974"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga006.jf.intel.com with ESMTP; 16 Feb 2023 05:16:48 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Tina Zhang <tina.zhang@intel.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 4/4] iommu/vt-d: Allow to use flush-queue when first level is default
-Date: Thu, 16 Feb 2023 21:08:16 +0800
-Message-Id: <20230216130816.151824-5-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230216130816.151824-1-baolu.lu@linux.intel.com>
-References: <20230216130816.151824-1-baolu.lu@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB66A5663
+	for <iommu@lists.linux.dev>; Thu, 16 Feb 2023 13:33:04 +0000 (UTC)
+Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id B43F21EC0758;
+	Thu, 16 Feb 2023 14:33:02 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+	t=1676554382;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=4It5WNTzj3y34rvlS749Hz/wiDmES420yCM4l9P4P7U=;
+	b=gf0e1sXnrMK9yS752n1XbBJTfBklzKLy7wB4qpiBtyaSiWE4u5Ms3bcAVOBWSRzBs7ZCi7
+	ETAO1fzNXRcZQ1jN2Sp0UDeGfWP3jiEh9EHGoEZdEJUy8MSZz1Hg3TttFzAuZAE1KbSkAw
+	nbmwnCc/eKTOd9FQYcQRUonTAtj6tZ8=
+Date: Thu, 16 Feb 2023 14:32:59 +0100
+From: Borislav Petkov <bp@alien8.de>
+To: Sean Christopherson <seanjc@google.com>
+Cc: "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+	Dave Hansen <dave.hansen@intel.com>,
+	"hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	"wei.liu@kernel.org" <wei.liu@kernel.org>,
+	Dexuan Cui <decui@microsoft.com>,
+	"luto@kernel.org" <luto@kernel.org>,
+	"peterz@infradead.org" <peterz@infradead.org>,
+	"davem@davemloft.net" <davem@davemloft.net>,
+	"edumazet@google.com" <edumazet@google.com>,
+	"kuba@kernel.org" <kuba@kernel.org>,
+	"pabeni@redhat.com" <pabeni@redhat.com>,
+	"lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+	"robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
+	"bhelgaas@google.com" <bhelgaas@google.com>,
+	"arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+	"brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+	"tglx@linutronix.de" <tglx@linutronix.de>,
+	"mingo@redhat.com" <mingo@redhat.com>,
+	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+	Tianyu Lan <Tianyu.Lan@microsoft.com>,
+	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+	"sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>,
+	"ak@linux.intel.com" <ak@linux.intel.com>,
+	"isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+	"dan.j.williams@intel.com" <dan.j.williams@intel.com>,
+	"jane.chu@oracle.com" <jane.chu@oracle.com>,
+	"tony.luck@intel.com" <tony.luck@intel.com>,
+	"x86@kernel.org" <x86@kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
+ to map as encrypted
+Message-ID: <Y+4wiyepKU8IEr48@zn.tnic>
+References: <BYAPR21MB16886D92828BA2CA8D47FEA4D7D99@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y+aP8rHr6H3LIf/c@google.com>
+ <Y+aVFxrE6a6b37XN@zn.tnic>
+ <BYAPR21MB16882083E84F20B906E2C847D7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y+aczIbbQm/ZNunZ@zn.tnic>
+ <cb80e102-4b78-1a03-9c32-6450311c0f55@intel.com>
+ <Y+auMQ88In7NEc30@google.com>
+ <Y+av0SVUHBLCVdWE@google.com>
+ <BYAPR21MB168864EF662ABC67B19654CCD7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y+bXjxUtSf71E5SS@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <Y+bXjxUtSf71E5SS@google.com>
 
-From: Tina Zhang <tina.zhang@intel.com>
+On Fri, Feb 10, 2023 at 11:47:27PM +0000, Sean Christopherson wrote:
+> I agree with Boris' comment that a one-off "other encrypted range" is a hack, but
+> that's just an API problem.  The kernel already has hypervisor specific hooks (and
+> for SEV-ES even), why not expand that?  That way figuring out which devices are
+> private is wholly contained in Hyper-V code, at least until there's a generic
+> solution for enumerating private devices, though that seems unlikely to happen
+> and will be a happy problem to solve if it does come about.
 
-Commit 29b32839725f ("iommu/vt-d: Do not use flush-queue when caching-mode
-is on") forced default domains to be strict mode as long as IOMMU
-caching-mode is flagged. The reason for doing this is that when vIOMMU
-uses VT-d caching mode to synchronize shadowing page tables, the strict
-mode shows better performance.
+I feel ya and this all makes sense and your proposals look clean enough
+to me but we still need some way of determining whether this is a vTOM
+on hyperv because there's the next crapola with
 
-However, this optimization is orthogonal to the first-level page table
-because the Intel VT-d architecture does not define the caching mode of
-the first-level page table. Refer to VT-d spec, section 6.1, "When the
-CM field is reported as Set, any software updates to remapping
-structures other than first-stage mapping (including updates to not-
-present entries or present entries whose programming resulted in
-translation faults) requires explicit invalidation of the caches."
-Exclude the first-level page table from this optimization.
+https://lore.kernel.org/r/20230209072220.6836-4-jgross@suse.com
 
-Generally using first-stage translation in vIOMMU implies nested
-translation enabled in the physical IOMMU. In this case the first-stage
-page table is wholly captured by the guest. The vIOMMU only needs to
-transfer the cache invalidations on vIOMMU to the physical IOMMU.
-Forcing the default domain to strict mode will cause more frequent
-cache invalidations, resulting in performance degradation. In a real
-performance benchmark test measured by iperf receive, the performance
-result on Sapphire Rapids 100Gb NIC shows:
-w/ this fix ~51 Gbits/s, w/o this fix ~39.3 Gbits/s.
+because apparently hyperv does PAT but disables MTRRs for such vTOM
+SEV-SNP guests and ... madness.
 
-Theoretically a first-stage IOMMU page table can still be shadowed
-in absence of the caching mode, e.g. with host write-protecting guest
-IOMMU page table to synchronize changed PTEs with the physical
-IOMMU page table. In this case the shadowing overhead is decoupled
-from emulating IOTLB invalidation then the overhead of the latter part
-is solely decided by the frequency of IOTLB invalidations. Hence
-allowing guest default dma domain to be lazy can also benefit the
-overall performance by reducing the total VM-exit numbers.
+But that's not the only example - Xen has been doing this thing too.
 
-Fixes: 29b32839725f ("iommu/vt-d: Do not use flush-queue when caching-mode is on")
-Reported-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
-Suggested-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
-Signed-off-by: Tina Zhang <tina.zhang@intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Link: https://lore.kernel.org/r/20230214025618.2292889-1-tina.zhang@intel.com
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+And Jürgen has been trying to address this in a clean way but it is
+a pain.
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index ce36a16efc97..52afcdaf7c7f 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4005,7 +4005,8 @@ int __init intel_iommu_init(void)
- 		 * is likely to be much lower than the overhead of synchronizing
- 		 * the virtual and physical IOMMU page-tables.
- 		 */
--		if (cap_caching_mode(iommu->cap)) {
-+		if (cap_caching_mode(iommu->cap) &&
-+		    !first_level_by_default(IOMMU_DOMAIN_DMA)) {
- 			pr_info_once("IOMMU batching disallowed due to virtualization\n");
- 			iommu_set_dma_strict();
- 		}
+What I don't want to have is a gazillion ways to check what needs to
+happen for which guest type. Because people who change the kernel to run
+on baremetal, will break them. And I can't blame them. We try to support
+all kinds of guests in the x86 code but this support should be plain and
+simple.
+
+Thx.
+
 -- 
-2.34.1
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
