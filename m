@@ -1,117 +1,112 @@
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8880746A
-	for <iommu@lists.linux.dev>; Fri, 17 Feb 2023 14:55:11 +0000 (UTC)
-Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 9E1411EC0752;
-	Fri, 17 Feb 2023 15:55:09 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-	t=1676645709;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-	bh=JrwIMUT5Q2EPqy66puuhgnw/kQvrwJKXmMCph/xJRv8=;
-	b=F8KVnbnRylxJ3Q02ws1l0VvHI+pqIFwZ1eG+bUBhyQcBH77nB5uGm3NXUfLfTM+jAZ9qWV
-	EjmR+A9IDxQ7tJs6n0Uk0eIcVbmm4y3scun/CE/aGmm2u+MyGtco3V4SevPzjW5pt/YqGr
-	d4KXmWnegvfpTMUjXFbEa7c7+k7ZAq0=
-Date: Fri, 17 Feb 2023 15:55:05 +0100
-From: Borislav Petkov <bp@alien8.de>
-To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc: Sean Christopherson <seanjc@google.com>,
-	Dave Hansen <dave.hansen@intel.com>,
-	"hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	"wei.liu@kernel.org" <wei.liu@kernel.org>,
-	Dexuan Cui <decui@microsoft.com>,
-	"luto@kernel.org" <luto@kernel.org>,
-	"peterz@infradead.org" <peterz@infradead.org>,
-	"davem@davemloft.net" <davem@davemloft.net>,
-	"edumazet@google.com" <edumazet@google.com>,
-	"kuba@kernel.org" <kuba@kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>,
-	"lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-	"robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-	"bhelgaas@google.com" <bhelgaas@google.com>,
-	"arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
-	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-	"brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-	"tglx@linutronix.de" <tglx@linutronix.de>,
-	"mingo@redhat.com" <mingo@redhat.com>,
-	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-	Tianyu Lan <Tianyu.Lan@microsoft.com>,
-	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-	"sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>,
-	"ak@linux.intel.com" <ak@linux.intel.com>,
-	"isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-	"dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-	"jane.chu@oracle.com" <jane.chu@oracle.com>,
-	"tony.luck@intel.com" <tony.luck@intel.com>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
- to map as encrypted
-Message-ID: <Y++VSZNAX9Cstbqo@zn.tnic>
-References: <Y+aczIbbQm/ZNunZ@zn.tnic>
- <cb80e102-4b78-1a03-9c32-6450311c0f55@intel.com>
- <Y+auMQ88In7NEc30@google.com>
- <Y+av0SVUHBLCVdWE@google.com>
- <BYAPR21MB168864EF662ABC67B19654CCD7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+bXjxUtSf71E5SS@google.com>
- <Y+4wiyepKU8IEr48@zn.tnic>
- <BYAPR21MB168853FD0676CCACF7C249B0D7A09@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+5immKTXCsjSysx@zn.tnic>
- <BYAPR21MB16880EC9C85EC9343F9AF178D7A19@BYAPR21MB1688.namprd21.prod.outlook.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7494D746A
+	for <iommu@lists.linux.dev>; Fri, 17 Feb 2023 14:56:31 +0000 (UTC)
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31HEgIJX027606;
+	Fri, 17 Feb 2023 14:56:14 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=e8xe4P5N3/xfcsU15zARpw5D2BXKecFA5uBFpgNAqII=;
+ b=NPOZAI4rcgGtbPqP+Vknc0HK9sc704yKXJm9Rk/sHexqM/zyx6s/1jqUgyJDTQ88HirG
+ Xpz51XXN2KcuxxHo27uqUcn5atw1OJVG/2zMh1iiN8D8VagyvHNcQgXVaPpoB04kj1nX
+ +/xMsZ2AI56Xdj1CFb2eBGmbSM1grpq+pwNSo1ftgL1k2gYKAbGO0yzXWLtrPIEliQld
+ umOvTQ5NqbQVWzijypxevPkyptb8nEJkuwmzctkCuMMF7eIfVM95Ti7BDK9Xudnu+ka0
+ 2UD4Rno1ZhIRV9SnirQ6UBr6vHeUZ20p4f0jQL+PRpetve1nEyW0vyk4Z6xjMGx6pxNG Jw== 
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ntbjura57-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 17 Feb 2023 14:56:14 +0000
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+	by ppma03dal.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 31HCTHc9007447;
+	Fri, 17 Feb 2023 14:56:13 GMT
+Received: from smtprelay02.wdc07v.mail.ibm.com ([9.208.129.120])
+	by ppma03dal.us.ibm.com (PPS) with ESMTPS id 3np2n7r620-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 17 Feb 2023 14:56:12 +0000
+Received: from smtpav04.dal12v.mail.ibm.com (smtpav04.dal12v.mail.ibm.com [10.241.53.103])
+	by smtprelay02.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 31HEuARL1245844
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 17 Feb 2023 14:56:11 GMT
+Received: from smtpav04.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id C826758066;
+	Fri, 17 Feb 2023 14:56:10 +0000 (GMT)
+Received: from smtpav04.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 5C77858056;
+	Fri, 17 Feb 2023 14:56:09 +0000 (GMT)
+Received: from [9.77.136.58] (unknown [9.77.136.58])
+	by smtpav04.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Fri, 17 Feb 2023 14:56:09 +0000 (GMT)
+Message-ID: <7dc31552-1b7a-aeaa-eb88-a60d96e28f3c@linux.ibm.com>
+Date: Fri, 17 Feb 2023 09:56:08 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <BYAPR21MB16880EC9C85EC9343F9AF178D7A19@BYAPR21MB1688.namprd21.prod.outlook.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v6 4/6] s390/pci: Use dma-iommu layer
+Content-Language: en-US
+To: Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Jason Gunthorpe <jgg@nvidia.com>, Wenjia Zhang <wenjia@linux.ibm.com>
+Cc: Gerd Bayer <gbayer@linux.ibm.com>, Pierre Morel <pmorel@linux.ibm.com>,
+        iommu@lists.linux.dev, linux-s390@vger.kernel.org,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, linux-kernel@vger.kernel.org,
+        Julian Ruess <julianr@linux.ibm.com>
+References: <20230215120327.947336-1-schnelle@linux.ibm.com>
+ <20230215120327.947336-5-schnelle@linux.ibm.com>
+ <4ad0d2b9-2465-b42d-c0f9-b48caadfd72c@linux.ibm.com>
+ <59a61553a81282fed88c03af096b2a0830b94302.camel@linux.ibm.com>
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <59a61553a81282fed88c03af096b2a0830b94302.camel@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: BUSQb5EkyR9LCL0HNzLyWQRHkR5GSLbG
+X-Proofpoint-ORIG-GUID: BUSQb5EkyR9LCL0HNzLyWQRHkR5GSLbG
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
+ definitions=2023-02-17_09,2023-02-17_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=662
+ impostorscore=0 clxscore=1015 spamscore=0 mlxscore=0 bulkscore=0
+ priorityscore=1501 phishscore=0 suspectscore=0 adultscore=0
+ lowpriorityscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2212070000 definitions=main-2302170132
 
-On Fri, Feb 17, 2023 at 06:16:56AM +0000, Michael Kelley (LINUX) wrote:
-> Is that consistent with your thinking, or is the whole
-> cc_platform_has() approach problematic, including for the existing SEV
-> flavors and for TDX?
+On 2/17/23 3:51 AM, Niklas Schnelle wrote:
+> On Wed, 2023-02-15 at 13:00 -0500, Matthew Rosato wrote:
+>> On 2/15/23 7:03 AM, Niklas Schnelle wrote:
+>>> While s390 already has a standard IOMMU driver and previous changes have
+>>> added I/O TLB flushing operations this driver is currently only used for
+>>> user-space PCI access such as vfio-pci. For the DMA API s390 instead
+>>> utilizes its own implementation in arch/s390/pci/pci_dma.c which drives
+>>> the same hardware and shares some code but requires a complex and
+>>> fragile hand over between DMA API and IOMMU API use of a device and
+>>> despite code sharing still leads to significant duplication and
+>>> maintenance effort. Let's utilize the common code DMAP API
+>>> implementation from drivers/iommu/dma-iommu.c instead allowing us to
+>>> get rid of arch/s390/pci/pci_dma.c.
+>>>
+>>> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+>>> ---
+>>
+>> FYI, this patch doesn't fit on top of iommu-next, I'd guess at least due to baolu's 'Retire detach_dev callback' series, which removed .detach_dev and added .set_platform_dma_ops for s390-iommu.  That's relevant here, because now that this patch enables dma-iommu for s390 and removes the platform DMA ops it must now remove .set_platform_dma_ops/s390_iommu_set_platform_dma for s390-iommu.
+>>
+>> Matt
+> 
+> 
+> Ok, yes this series is currently against v6.2-rc8. Should I rebase
+> against iommu-next and send a v7 before further review or after?
+> 
 
-The confidential computing attributes are, yes, features. I've been
-preaching since the very beginning that vTOM *is* *also* one such
-feature. It is a feature bit in sev_features, for chrissakes. So by that
-logic, those SEV-SNP HyperV guests should return true when
+So, overall I'm fine with the code in this patch (and this series) at this point; however I'd like to do one more pass of testing rebased on top of iommu-next / with the set_platform_dma collision handled, so I'm going to hold off on tagging my review of this one until v7.  That really only impacts this patch so if you want to give others a chance to review the rest of the series before rolling out v7 that's OK by me.  
 
-	cc_platform_has(CC_ATTR_GUEST_SEV_SNP_VTOM);
-
-is tested.
-
-But Sean doesn't like that.
-
-If the access method to the IO-APIC and vTPM are specific to the
-HyperV's vTOM implementation, then I don't mind if this were called
-
-	cc_platform_has(CC_ATTR_GUEST_HYPERV_VTOM);
-
-Frankly, I don't see any other enlightened guest using vTOM except
-HyperV's but virt folks have managed to surprise me in the past too.
-
-In any case, a single flag which is specific to that guest type is fine
-too.
-
-It feels like we're running in circles by now... ;-\
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Thanks,
+Matt
