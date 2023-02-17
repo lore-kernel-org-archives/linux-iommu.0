@@ -1,103 +1,108 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C451B5692
-	for <iommu@lists.linux.dev>; Fri, 17 Feb 2023 11:55:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676634907; x=1708170907;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=+3ZcUtit/3uVD0eeixju/VUDfax2Cl0zCUwn1Ui9mCk=;
-  b=hGeVguTsp0kS/1kunBTuZGo+ZQZMGS8j3jgSpY8hmzh5/Im7hiBXUPL3
-   acOvk+sYq3nr+kwXWoCLZeQsT6w/JQFs+FiRLA1JHo00XZXYH4oK5js87
-   ySp/iEILyXdrYRF5dYTGOoMrLpsjMKzS9/UZDvVfO6c6GwOAGrRjEi0SO
-   55UcPrYl3nwBGdTIRCNPgQqUpTcy5mbV1EHjy8I4A9fQtZtkwjQvIx2bp
-   0EnE8nj4OckZSduAlq5+vdu02+UPnL1i1BMDMk1kKekS7Y0gJ625a4gnv
-   mmvhCsJkC5AvKnZU9KTS16l2M5aP79l/7Ci/akevIr8bIVwCJW2odsqmE
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="330632232"
-X-IronPort-AV: E=Sophos;i="5.97,304,1669104000"; 
-   d="scan'208";a="330632232"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2023 03:55:07 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="759349050"
-X-IronPort-AV: E=Sophos;i="5.97,304,1669104000"; 
-   d="scan'208";a="759349050"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.30.9]) ([10.255.30.9])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2023 03:55:03 -0800
-Message-ID: <68a4f742-fbeb-5a7b-79ca-0ca8b68d2208@linux.intel.com>
-Date: Fri, 17 Feb 2023 19:55:02 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90E1E3D65
+	for <iommu@lists.linux.dev>; Fri, 17 Feb 2023 12:36:00 +0000 (UTC)
+Received: by mail-qt1-f170.google.com with SMTP id v3so626379qta.2
+        for <iommu@lists.linux.dev>; Fri, 17 Feb 2023 04:36:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=H6ylVVjWrPaYJcA3ux2lI5605W12dXBlhPx+mi97Pp0=;
+        b=agm1UNnxDumI4+z/tyRqkXAdxFP3/0LO/DXHGeHusxzUUHGZszSg+AfNrT32IzVg2l
+         bbZv3OqTjW2vyJI8DLRWRE7fwCoOB5fRrDb3kAJPd4pEGS6NQ38hq0t+EmeQe2AcmOo6
+         WOWKl++8ph4yhuMQ1vaqhBNLBdQbwZaeqgC/ksLtkHfoeRVVPXKXi18GILcVO/Q1zTAN
+         LvPT+J8WFtDG89DkZczPgF7eOGzUmvWmg04/OdKqm+PBQfuL7m4EqbI8tonpwvXuTezC
+         HvdNSQRy5GrtHKKOnZobqqfrzk7+30tIslpoVlNdxKI4N/57l80KNsd2CJbk6QM0u2O3
+         ntug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=H6ylVVjWrPaYJcA3ux2lI5605W12dXBlhPx+mi97Pp0=;
+        b=5RCGH6D+QSuNRYohKyGhNwOK6GguAvP8/k+NmcyG5xrK4JgPfQ+Av5nQ45HLj4jzCA
+         HRZaNABBXGfes60taUsKFefnEyRZj4sSonostsu+lD9G+TQvowSWfrG62eFanht9F9H7
+         VYmeqLtL3mUHW0zn6Vzw8/uE6RYty/kiZW6NCvFByfNSj8/jUINxQFpJDF3OQDgIDTnb
+         UPLZEBkzyl1a6/Neaqa5lNdINL74Wt/4p6sdMcThvKhMkKhHhH8MtP9ZYTUl9BNXriZB
+         pSgxBeL+GAs0kGCYIUD+Pv5dz3nLFRHC3+k6fHbxGNmKCTVl2fThlNORy0bgVfvjMDFa
+         leog==
+X-Gm-Message-State: AO0yUKW7uCQzfn/9EAEHOqRitUwo+stWLnnHaKHACdPdgGGBuMYNnxSG
+	nNMjN0nVdUdyz28RZRthd/E7TQ==
+X-Google-Smtp-Source: AK7set9Qww8MxkEenI3GgxUUK5ReouGiIDSZwTwMF1Bt/gDfEKdywTCHAooHf3YDUWpy3OwN42Bk9A==
+X-Received: by 2002:ac8:4e45:0:b0:3b9:a4c8:d57a with SMTP id e5-20020ac84e45000000b003b9a4c8d57amr2339760qtw.32.1676637359414;
+        Fri, 17 Feb 2023 04:35:59 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
+        by smtp.gmail.com with ESMTPSA id d17-20020ac800d1000000b003b9b8ec742csm3181866qtg.14.2023.02.17.04.35.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Feb 2023 04:35:58 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1pSzy2-00362g-1s;
+	Fri, 17 Feb 2023 08:35:58 -0400
+Date: Fri, 17 Feb 2023 08:35:58 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: iommu@lists.linux.dev, linux-samsung-soc@vger.kernel.org,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	lim Akhtar <alim.akhtar@samsung.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH] iommu/exynos: add missing set_platform_dma_ops callback
+Message-ID: <Y+90rkPHe/+eSLs6@ziepe.ca>
+References: <CGME20230123093116eucas1p19b8fe8afc4b631debbdc5321c53009e9@eucas1p1.samsung.com>
+ <20230123093102.12392-1-m.szyprowski@samsung.com>
+ <Y871a3elCP1gmPQi@ziepe.ca>
+ <e7aa3a5d-c8f9-ad7d-4c5c-08756c1ab2d3@samsung.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.2
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- lim Akhtar <alim.akhtar@samsung.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH] iommu/exynos: Fix set_platform_dma_ops() callback
-Content-Language: en-US
-To: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
- linux-samsung-soc@vger.kernel.org
-References: <CGME20230217112140eucas1p1703b82cfcdb933f07baa154183845986@eucas1p1.samsung.com>
- <20230217112129.18879-1-m.szyprowski@samsung.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230217112129.18879-1-m.szyprowski@samsung.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e7aa3a5d-c8f9-ad7d-4c5c-08756c1ab2d3@samsung.com>
 
-On 2023/2/17 19:21, Marek Szyprowski wrote:
-> There are some subtle differences between release_device() and
-> set_platform_dma_ops() callbacks, so separate those two callbacks. Device
-> links should be removed only in release_device(), because they were
-> created in probe_device(). While fixing this, remove the conditional code
-> as it is not really needed.
+On Fri, Feb 17, 2023 at 12:08:42PM +0100, Marek Szyprowski wrote:
+> Hi,
 > 
-> Reported-by: Jason Gunthorpe<jgg@ziepe.ca>
-> Fixes: 189d496b48b1 ("iommu/exynos: Add missing set_platform_dma_ops callback")
+> I'm sorry for a delay in replying, but I was busy with other stuff.
+> 
+> On 23.01.2023 22:00, Jason Gunthorpe wrote:
+> > On Mon, Jan 23, 2023 at 10:31:01AM +0100, Marek Szyprowski wrote:
+> >> Add set_platform_dma_ops() required for proper driver operation on ARM
+> >> 32bit arch after recent changes in the IOMMU framework (detach ops
+> >> removal).
+> > Thanks for looking into this!
+> >
+> > Can you explain more about how this actually solves the problem in the
+> > commit message? I don't get it.
+> 
+> Exynos DRM driver calls arm_iommu_detach_device(), then 
+> arm_iommu_attach_device() with a difrent 'mapping', see 
+> drivers/gpu/drm/exynos/exynos_drm_dma.c Lack of set_platform_dma_ops 
+> leads to a warning in iommu_group_do_set_platform_dma(). The other case 
+> of calling arm_iommu_detach_device() is after unsuccessful probe of the 
+> platform device.
 
-The exynos iommu driver actually supports default domain. Why need to
-add the set_platform_dma_ops?
+Why can't this just use the normal iommu path in all cases?
 
-  897 static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
-  898 {
-  899         struct exynos_iommu_domain *domain;
-  900         dma_addr_t handle;
-  901         int i;
-  902
-  903         /* Check if correct PTE offsets are initialized */
-  904         BUG_ON(PG_ENT_SHIFT < 0 || !dma_dev);
-  905
-  906         if (type != IOMMU_DOMAIN_DMA && type != 
-IOMMU_DOMAIN_UNMANAGED)
-  907                 return NULL;
+It looks like it is trying to copy the DMA API domain from a parent
+device to a sub device.
 
-It actually doesn't support identity default domain. But the iommu core
-allows this and roll back to DMA domain instead.
+Even when using arm_iommu an iommu_domain is still present, so the
+copy code should work?
 
-1686 static int iommu_group_alloc_default_domain(struct iommu_group *group,
-1687                                             struct device *dev,
-1688                                             unsigned int type)
-1689 {
-1690         struct iommu_domain *dom;
-1691
-1692         dom = __iommu_domain_alloc(dev, type);
-1693         if (!dom && type != IOMMU_DOMAIN_DMA) {
-1694                 dom = __iommu_domain_alloc(dev, IOMMU_DOMAIN_DMA);
-1695                 if (dom)
-1696                         pr_warn("Failed to allocate default IOMMU 
-domain of type %u for group %s - Falling back to IOMMU_DOMAIN_D     MA", 
+Though I'm still not really sure how this arm_iommu stuff works..
 
-1697                                 type, group->name);
-1698         }
+eg if a driver does iommu_device_claim_dma_owner() how does the
+iommu_domain get set back to the arm_iommu's mapping's iommu_domain?
 
-I have a feeling, set_platform_dma_ops was mistakenly added to fix other
-problems instead of missing a callback.
+According to the API that is what set_platform is supposed to do (eg
+it is what s390 does), but I don't see any code like that in any of
+the ARM32 drivers..
 
-Best regards,
-baolu
+Jason
