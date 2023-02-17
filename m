@@ -1,96 +1,89 @@
-Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADFD53C3A
-	for <iommu@lists.linux.dev>; Fri, 17 Feb 2023 11:16:28 +0000 (UTC)
-Received: by mail-lj1-f176.google.com with SMTP id r28so817998ljk.1
-        for <iommu@lists.linux.dev>; Fri, 17 Feb 2023 03:16:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=QUKqOclF/IMyzXt4+fGb5sDCuf0d8h/lEm7jg21Dcd4=;
-        b=OdYgHszFs9+rIVPcJOczB0ZfI8VdZWLiDLg9OcOB+M9zQ/5l+OPW9aLKeHqi+EeAQh
-         GsI6FAjY+62326gpU6sdJpBSNvCy9HXEGm5eJCS5r/gkha7f0nIkG21hw4nlyQYZ2Rri
-         O90Sw/94xumrs+/347ePGrg+Sr1qX0wZ84T4jlb2lkaY+Yp5d4SiuX6nGFTKzw1Ff3Ai
-         Tw3MIAQ4CZXGaj6zNNyU/HtmrWnjSSbFrWUHe8xVt6fM3Akp1Pxu6UA8CAtThlcFo7ib
-         yrUibwSC7YCHr/HHDsLQ7c5yLs1n3Pkb8DK2YwmZkLZ3th9/Do6Z6kYP2LKghrD97IEA
-         X0Ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=QUKqOclF/IMyzXt4+fGb5sDCuf0d8h/lEm7jg21Dcd4=;
-        b=XyVtLW3hEfL7VIuQI6ukmjjXJyREGXF07g8Fmup9joJ4rZlBKcRwef2iN0C3cuhjgW
-         zq9j/OkngYnYfqrXTvmXSW/pUj0KEoCHWbcb82h6JUwOifTCrqwatemcKVqMOcgNSShR
-         lrfuzuea22gFdSnKoTOsCU6dohnSgvinlc5pfQpkCAtOnwGCluYAFbiMGFuYtpf1wGwk
-         NV2CAaT81OfEHVEJiLo9Fajobpib0vWSpmsMEuBcgPTgAREV4W7vNHlpLjRSy+qCYgF9
-         /poOkuEyChhnh8XWyYpXRcVyBCVNr1AzoJaIUTL6t2/CcJVcfmK5uY1iAYUw7OIu76NK
-         4LTg==
-X-Gm-Message-State: AO0yUKXn84wHPyUIBWYOHhzaKbg82AlzEA2gVngjtQYF6mQSHAPXjqUY
-	HszUz53Ilgwd8ascw6u7VYTDxWz0r35CjRsC
-X-Google-Smtp-Source: AK7set/qzGs71L7hCHzM6bWc+ba5WTEBUcFQ55EA5QPR5GM0kEMsY+gNG2k14sSDwmK1AWDQphpnNg==
-X-Received: by 2002:a05:651c:323:b0:293:4a87:1790 with SMTP id b3-20020a05651c032300b002934a871790mr183307ljp.9.1676632588245;
-        Fri, 17 Feb 2023 03:16:28 -0800 (PST)
-Received: from localhost.localdomain (abxh117.neoplus.adsl.tpnet.pl. [83.9.1.117])
-        by smtp.gmail.com with ESMTPSA id u21-20020a2e9b15000000b002935899fe3fsm554818lji.116.2023.02.17.03.16.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Feb 2023 03:16:27 -0800 (PST)
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-To: linux-arm-msm@vger.kernel.org,
-	andersson@kernel.org,
-	agross@kernel.org
-Cc: marijn.suijten@somainline.org,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 6/6] arm64: dts: qcom: sm8350: Add qcom,smmu-500 to Adreno SMMU
-Date: Fri, 17 Feb 2023 12:16:13 +0100
-Message-Id: <20230217111613.306978-6-konrad.dybcio@linaro.org>
-X-Mailer: git-send-email 2.39.1
-In-Reply-To: <20230217111613.306978-1-konrad.dybcio@linaro.org>
-References: <20230217111613.306978-1-konrad.dybcio@linaro.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32BED5692
+	for <iommu@lists.linux.dev>; Fri, 17 Feb 2023 11:18:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676632716; x=1708168716;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=yrRSVErPU459BxzhezG2FKcPrwrMLF+zESuxtlMeo/A=;
+  b=cbfRq/aE1mfY8KbvoASuVYFBy3pMkj17xbG8ENCb23E0uygKeIWV1h7I
+   oJxDfVdeMtp4Q4efBoYRqeMbxToG1YqtZNYJniqn/RhTAtNtPMILDuGEV
+   yPPrzXEfrVFbUuyXrT5vJl+g+pT9D5owmot1650H1SVSphrPkWDlG7JXU
+   Zb3icWGTom+1akwXitn2dKvQTdbTNsfRZxuFNWPpifMi//6U1UkJ2Frm2
+   TEbTLOKIlDQDMlmpy/Twgym9JbHRcJ1fIlPSojydCguDIScilEvXv5Y7P
+   zIK79JIFYtvromPwQ3nEXVxGB4NrXJ2Rny++Eoxc0CkxxQnD9FzoCLYSB
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="333325013"
+X-IronPort-AV: E=Sophos;i="5.97,304,1669104000"; 
+   d="scan'208";a="333325013"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2023 03:18:35 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="844539389"
+X-IronPort-AV: E=Sophos;i="5.97,304,1669104000"; 
+   d="scan'208";a="844539389"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.30.9]) ([10.255.30.9])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2023 03:18:33 -0800
+Message-ID: <d6d3fa24-86f9-f5c4-5292-ccb0db6b986b@linux.intel.com>
+Date: Fri, 17 Feb 2023 19:18:31 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.2
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
+ linux-samsung-soc@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ lim Akhtar <alim.akhtar@samsung.com>
+Subject: Re: [PATCH] iommu/exynos: add missing set_platform_dma_ops callback
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>
+References: <CGME20230123093116eucas1p19b8fe8afc4b631debbdc5321c53009e9@eucas1p1.samsung.com>
+ <20230123093102.12392-1-m.szyprowski@samsung.com> <Y871a3elCP1gmPQi@ziepe.ca>
+ <e7aa3a5d-c8f9-ad7d-4c5c-08756c1ab2d3@samsung.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <e7aa3a5d-c8f9-ad7d-4c5c-08756c1ab2d3@samsung.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Add the fallback Qualcomm SMMU500 compatible to the Adreno SMMU.
+On 2023/2/17 19:08, Marek Szyprowski wrote:
+> Hi,
+> 
+> I'm sorry for a delay in replying, but I was busy with other stuff.
+> 
+> On 23.01.2023 22:00, Jason Gunthorpe wrote:
+>> On Mon, Jan 23, 2023 at 10:31:01AM +0100, Marek Szyprowski wrote:
+>>> Add set_platform_dma_ops() required for proper driver operation on ARM
+>>> 32bit arch after recent changes in the IOMMU framework (detach ops
+>>> removal).
+>> Thanks for looking into this!
+>>
+>> Can you explain more about how this actually solves the problem in the
+>> commit message? I don't get it.
+> Exynos DRM driver calls arm_iommu_detach_device(), then
+> arm_iommu_attach_device() with a difrent 'mapping', see
+> drivers/gpu/drm/exynos/exynos_drm_dma.c Lack of set_platform_dma_ops
+> leads to a warning in iommu_group_do_set_platform_dma(). The other case
+> of calling arm_iommu_detach_device() is after unsuccessful probe of the
+> platform device.
 
-Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
----
-v1 -> v2:
-No changes
+Do we really need to call iommu_detach_device() in
+arm_iommu_detach_device() for 32-bit ARM? The dma-iommu is disabled for
+32-bit ARM, hence calling .set_platform_dma_ops makes no sense.
 
- arch/arm64/boot/dts/qcom/sm8350.dtsi | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+In below patch,
 
-diff --git a/arch/arm64/boot/dts/qcom/sm8350.dtsi b/arch/arm64/boot/dts/qcom/sm8350.dtsi
-index f9822afedd89..07349d37f852 100644
---- a/arch/arm64/boot/dts/qcom/sm8350.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8350.dtsi
-@@ -1932,7 +1932,8 @@ gpucc: clock-controller@3d90000 {
- 		};
- 
- 		adreno_smmu: iommu@3da0000 {
--			compatible = "qcom,sm8350-smmu-500", "qcom,adreno-smmu", "arm,mmu-500";
-+			compatible = "qcom,sm8350-smmu-500", "qcom,adreno-smmu",
-+				     "qcom,smmu-500", "arm,mmu-500";
- 			reg = <0 0x03da0000 0 0x20000>;
- 			#iommu-cells = <2>;
- 			#global-interrupts = <2>;
--- 
-2.39.1
+https://lore.kernel.org/linux-iommu/20230217094736.159005-2-baolu.lu@linux.intel.com/
+
+I removed iommu_detach_device() from arm_iommu_detach_device().
+
+Best regards,
+baolu
 
