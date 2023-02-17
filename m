@@ -1,140 +1,133 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3D857F
-	for <iommu@lists.linux.dev>; Fri, 17 Feb 2023 16:34:56 +0000 (UTC)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31HEXGjC015815;
-	Fri, 17 Feb 2023 16:34:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=WVmDyqoL2x31lTLvSI3i5tHZv8yFdzS5hZPtnpVo3Zc=;
- b=MoV7OZ5kamYco6O5h4/qOsqB7eTGz+GE7W36xQmJ9vuhdkowzqHA2UskcstDsMTdKWDj
- FbIbk/vg0ip/fB17jcs0IQO3pltm66xOKMCF1EuOXTxjVmEA3IwahTmH4z9be9hBAZkw
- 6ktNinu5oUlw+OyWgFAYlxfG0IC1CnFqf1BJJPLkeWU7zo6gUARVke59uN5nUCIOfokQ
- ZjScrj3tee/3/mTYaqNiuOlm47i5WSHoG2YeBBq++te90jKU3wxIEINCQ0PFq6TF+Zrw
- YjszKTdl3o46GDBwkb2gcuWoo+N/fNog/fR30tYnH+2lAXf7j/DO6dDESH/N1vitidLi Ig== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ntbesjytd-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 17 Feb 2023 16:34:50 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-	by ppma03ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 31HBfXbw017758;
-	Fri, 17 Feb 2023 16:34:48 GMT
-Received: from smtprelay02.fra02v.mail.ibm.com ([9.218.2.226])
-	by ppma03ams.nl.ibm.com (PPS) with ESMTPS id 3np2n6r8pe-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 17 Feb 2023 16:34:48 +0000
-Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
-	by smtprelay02.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 31HGYiAM43712812
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 17 Feb 2023 16:34:44 GMT
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id C093220043;
-	Fri, 17 Feb 2023 16:34:44 +0000 (GMT)
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 858C02004D;
-	Fri, 17 Feb 2023 16:34:43 +0000 (GMT)
-Received: from [9.171.12.102] (unknown [9.171.12.102])
-	by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Fri, 17 Feb 2023 16:34:43 +0000 (GMT)
-Message-ID: <d8656a67a875b72dfdf5826ec4ff7154022f1ef6.camel@linux.ibm.com>
-Subject: Re: [PATCH v6 4/6] s390/pci: Use dma-iommu layer
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Matthew Rosato <mjrosato@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Jason
- Gunthorpe <jgg@nvidia.com>, Wenjia Zhang <wenjia@linux.ibm.com>
-Cc: Gerd Bayer <gbayer@linux.ibm.com>, Pierre Morel <pmorel@linux.ibm.com>,
-        iommu@lists.linux.dev, linux-s390@vger.kernel.org,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, linux-kernel@vger.kernel.org,
-        Julian Ruess
- <julianr@linux.ibm.com>
-Date: Fri, 17 Feb 2023 17:34:43 +0100
-In-Reply-To: <7dc31552-1b7a-aeaa-eb88-a60d96e28f3c@linux.ibm.com>
-References: <20230215120327.947336-1-schnelle@linux.ibm.com>
-	 <20230215120327.947336-5-schnelle@linux.ibm.com>
-	 <4ad0d2b9-2465-b42d-c0f9-b48caadfd72c@linux.ibm.com>
-	 <59a61553a81282fed88c03af096b2a0830b94302.camel@linux.ibm.com>
-	 <7dc31552-1b7a-aeaa-eb88-a60d96e28f3c@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C26829446
+	for <iommu@lists.linux.dev>; Fri, 17 Feb 2023 18:20:42 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oF/xnsRZ26KYGrvB19BuSQW1BHisolr5hbC9fzBX/ZKa8Flj2WjY54IaRdTIjQaOYkRa76flkx4H+ZJ7owZfXQJKbHpxh+wK1yP78/yn4eX7ilGxEbzbUXEVe+cu5yhfAsMYpVe0myntkR8l85QHhPeXobAJUlGA4VHLnQ0exv5dcgueawiS+eXEyjtkjU+krdok9gbX0lhSPP1ye1WpcK4TBL3pbA7RQ8CuuTbt0BcTNKuPWKPiY9fD32PEtQ046SyOVD4sBNHFo35frKh5f5+CD1PiS0cmkLHtfSw6Zq952I580UbRkVT5+d2+e7soU/ZvaRYJsMEC4350nG+5IA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SNWbJ2BKiILDAR5ZaJTsujZ0+6hY/AgEr44XX2lA7Ic=;
+ b=itFzZmwy0cM7N2NZxVkGbS3pfoI4bKMTaXOdWHIKzY61rWNpohzuqI9aT6Gb1IQ5HZRgBNbSpF++Q9aLAwmbIAqA6ZVF0WQY9bunfxLQFot2avxf8QE3R9nWnbl4JtQD/NrO3W1/gf+6EV9+UeKhwXPH8RVeaa7Ks0TpzOg2nJate/V7riJ2anSNtSBz/B5M4zIC0Q7hJ5oIBM0G284XYbrItCOhDsvknAO5z0YezXcnjsbXzzw3JHlNTiFcXEU41ftJ1LRc+o3Lzn92emjIowxIC8IKPEMywXXstHnAm3mbGJdYvVdA89//i39o1fC271rIGsRApydOdnarISsXKQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SNWbJ2BKiILDAR5ZaJTsujZ0+6hY/AgEr44XX2lA7Ic=;
+ b=aohbWF3oDrgSPqZAwpeyLXx4XHDjj/bySdGEDkZCgkPNzI0E5YTULqp2f2JQkdBO5Qof+aWORrfMa963QA0DP8EZqfhchioJb+tndq4C7U8eNNoAkocUYVvTBjDQ2zDLHQxiHQZw9LpOALxBv3bnIAaA/VgpQu6WAfgFei3DmlOXcMQu7g60xxReQnpYupa4yZQ9MR1sPVDsWO0Ma/HADk2drflv7hYPtTEpThfZbpoHIXV27zc+oxfr4w+P0L8Aq4ZoGugybp6gWTYk5X8cWSU+HlzkbOe+FRPSrvkoprQS8Q8KCUuMh9WvFHoPSh0fFdoGxrx+ZVf92Cq8QEDRNA==
+Received: from DM6PR02CA0091.namprd02.prod.outlook.com (2603:10b6:5:1f4::32)
+ by BL1PR12MB5159.namprd12.prod.outlook.com (2603:10b6:208:318::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.13; Fri, 17 Feb
+ 2023 18:20:40 +0000
+Received: from DM6NAM11FT109.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:1f4:cafe::d) by DM6PR02CA0091.outlook.office365.com
+ (2603:10b6:5:1f4::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.17 via Frontend
+ Transport; Fri, 17 Feb 2023 18:20:40 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ DM6NAM11FT109.mail.protection.outlook.com (10.13.173.178) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6111.17 via Frontend Transport; Fri, 17 Feb 2023 18:20:40 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 17 Feb
+ 2023 10:20:28 -0800
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 17 Feb
+ 2023 10:20:28 -0800
+Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.8)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36 via Frontend
+ Transport; Fri, 17 Feb 2023 10:20:27 -0800
+Date: Fri, 17 Feb 2023 10:20:25 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Yi Liu <yi.l.liu@intel.com>
+CC: <joro@8bytes.org>, <alex.williamson@redhat.com>, <jgg@nvidia.com>,
+	<kevin.tian@intel.com>, <robin.murphy@arm.com>, <cohuck@redhat.com>,
+	<eric.auger@redhat.com>, <kvm@vger.kernel.org>, <mjrosato@linux.ibm.com>,
+	<chao.p.peng@linux.intel.com>, <yi.y.sun@linux.intel.com>,
+	<peterx@redhat.com>, <jasowang@redhat.com>,
+	<shameerali.kolothum.thodi@huawei.com>, <lulu@redhat.com>,
+	<suravee.suthikulpanit@amd.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+	<baolu.lu@linux.intel.com>
+Subject: Re: [PATCH 00/17] Add Intel VT-d nested translation
+Message-ID: <Y+/FOar7KXKAb2VQ@Asurada-Nvidia>
+References: <20230209043153.14964-1-yi.l.liu@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 99dDQd0MGujpakVqZ3QqVbzPDiNxRP6c
-X-Proofpoint-ORIG-GUID: 99dDQd0MGujpakVqZ3QqVbzPDiNxRP6c
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
- definitions=2023-02-17_10,2023-02-17_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- clxscore=1015 mlxscore=0 bulkscore=0 malwarescore=0 suspectscore=0
- adultscore=0 mlxlogscore=581 impostorscore=0 spamscore=0 phishscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2302170143
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20230209043153.14964-1-yi.l.liu@intel.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT109:EE_|BL1PR12MB5159:EE_
+X-MS-Office365-Filtering-Correlation-Id: edb699f7-016a-4a35-bdd7-08db1113acbf
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	Q/YMYLR3ANt46mT2XH2GZ5d/kMu2vA/OhJdj2leOMdMA2iuU4N6wk1jsTxLslm7/4ojKdQPHFS3dGNCibf2e2txv2ebG3GHscF4vjy1Ng2yneAF2siUTMM/70PZyHeHL4zq1E2T9iqsxda5FFbfT0PT175fdDR0sT+u8JVuOltE6BNMUVbhzpLpwb7iTkPbVi3n6JbmcaCN4un7C4PooEVi2KRCy6RSGc67SOj7+gUjMKIz/VIrd74Zc28b/5RGzklnsImp7yLidUnFS8/EOrU+Ijyvh/PoiwvfebLfmbm6gzdmKF/04oS+EmgWgWQ2/f62asEk5Lie42ZM/l1o0JBJia3YFGNeg2h/LNwQX/EbxXHlc8nrTX/7wjnk5iNVVcM9jyuBNhQ2FNZQIsIZMiGk5dyFXrn+qW8CwxFgrfA0j2ajcRbvPeMKfBpJiNuWbbyvK5qFT94+SWanotf0iGH0D+j9v7IuyctP5l/wVHbh0Aq9qPC5T7lZLT6nLq0eExy76dsFdmfrTLD9tef+liY/gBckt79sfXTp/8cFL9OzA2tXoWtbw3lvcOO+SupwxwBaX+MRS6ctGfrIot6Hm31jiDEHtAAD9CIwyu9fAN7ZrOiFim91ysac8fk14V9QigtdYmkEIF+Ay40M9ukEA2QXqylkSoT45ZNBaeOfs5cCcRRTKxBD/gMT6mEProeT9WPAok1npyBpionRCrrbSFnxHRMnURrpj8Y1srpJYOUstwGsBj1Ng7B0QqVyl2ud/
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(136003)(396003)(39860400002)(346002)(376002)(451199018)(40470700004)(36840700001)(46966006)(2906002)(54906003)(8936002)(82740400003)(316002)(7416002)(5660300002)(40460700003)(70206006)(356005)(70586007)(8676002)(41300700001)(6916009)(426003)(4326008)(47076005)(336012)(33716001)(86362001)(7636003)(40480700001)(83380400001)(36860700001)(966005)(55016003)(478600001)(82310400005)(26005)(9686003)(186003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Feb 2023 18:20:40.1948
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: edb699f7-016a-4a35-bdd7-08db1113acbf
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DM6NAM11FT109.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5159
 
-On Fri, 2023-02-17 at 09:56 -0500, Matthew Rosato wrote:
-> On 2/17/23 3:51 AM, Niklas Schnelle wrote:
-> > On Wed, 2023-02-15 at 13:00 -0500, Matthew Rosato wrote:
-> > > On 2/15/23 7:03 AM, Niklas Schnelle wrote:
-> > > > While s390 already has a standard IOMMU driver and previous changes=
- have
-> > > > added I/O TLB flushing operations this driver is currently only use=
-d for
-> > > > user-space PCI access such as vfio-pci. For the DMA API s390 instea=
-d
-> > > > utilizes its own implementation in arch/s390/pci/pci_dma.c which dr=
-ives
-> > > > the same hardware and shares some code but requires a complex and
-> > > > fragile hand over between DMA API and IOMMU API use of a device and
-> > > > despite code sharing still leads to significant duplication and
-> > > > maintenance effort. Let's utilize the common code DMAP API
-> > > > implementation from drivers/iommu/dma-iommu.c instead allowing us t=
-o
-> > > > get rid of arch/s390/pci/pci_dma.c.
-> > > >=20
-> > > > Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> > > > ---
-> > >=20
-> > > FYI, this patch doesn't fit on top of iommu-next, I'd guess at least =
-due to baolu's 'Retire detach_dev callback' series, which removed .detach_d=
-ev and added .set_platform_dma_ops for s390-iommu.  That's relevant here, b=
-ecause now that this patch enables dma-iommu for s390 and removes the platf=
-orm DMA ops it must now remove .set_platform_dma_ops/s390_iommu_set_platfor=
-m_dma for s390-iommu.
-> > >=20
-> > > Matt
-> >=20
-> >=20
-> > Ok, yes this series is currently against v6.2-rc8. Should I rebase
-> > against iommu-next and send a v7 before further review or after?
-> >=20
->=20
-> So, overall I'm fine with the code in this patch (and this series) at thi=
-s point; however I'd like to do one more pass of testing rebased on top of =
-iommu-next / with the set_platform_dma collision handled, so I'm going to h=
-old off on tagging my review of this one until v7.  That really only impact=
-s this patch so if you want to give others a chance to review the rest of t=
-he series before rolling out v7 that's OK by me. =20
->=20
-> Thanks,
-> Matt
+Hi Yi,
 
+On Wed, Feb 08, 2023 at 08:31:36PM -0800, Yi Liu wrote:
 
-Ok, I've got a version on top of iommu-next running locally and will
-send that as v7 next week. Thankfully the conflict resolution is pretty
-simple. We get rid of set_platform_dma() completely and the detach is
-only used internally when attaching to a different domain. Also got rid
-of a missed superfluous zdev->dma_table assignment that I missed as
-feedback.
+> Nicolin Chen (6):
+>   iommufd: Add/del hwpt to IOAS at alloc/destroy()
+>   iommufd/device: Move IOAS attaching and detaching operations into
+>     helpers
+>   iommufd/selftest: Add IOMMU_TEST_OP_MOCK_DOMAIN_REPLACE test op
+>   iommufd/selftest: Add coverage for IOMMU_HWPT_ALLOC ioctl
+>   iommufd/selftest: Add IOMMU_TEST_OP_MD_CHECK_IOTLB test op
+>   iommufd/selftest: Add coverage for IOMMU_HWPT_INVALIDATE ioctl
+> 
+> Yi Liu (6):
+>   iommufd/hw_pagetable: Use domain_alloc_user op for domain allocation
+>   iommufd: Split iommufd_hw_pagetable_alloc()
+>   iommufd: Add kernel-managed hw_pagetable allocation for userspace
+>   iommufd: Add infrastructure for user-managed hw_pagetable allocation
+>   iommufd: Add user-managed hw_pagetable allocation
 
-Thanks,
-Niklas
+Just want to let you know that Jason made some major changes
+in device/hw_pagetable and selftest (mock_domain):
+https://github.com/jgunthorpe/linux/commits/iommufd_hwpt
+
+So most of changes above need to be redone. I am now rebasing
+the replace and the nesting series, and probably will finish
+by early next week.
+
+If you are reworking this series, perhaps can hold for a few
+days at these changes.
+
+Thanks
+Nic
