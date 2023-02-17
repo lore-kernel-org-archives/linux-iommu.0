@@ -1,114 +1,78 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12D9D2560
-	for <iommu@lists.linux.dev>; Fri, 17 Feb 2023 08:52:15 +0000 (UTC)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31H63Dbw015429;
-	Fri, 17 Feb 2023 08:51:57 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=nsaYQXNgH2rVl32gKAfvOrfr7P7WiyR42lIu9o5373E=;
- b=b2AwyBFJV600sYEpnQwajdxXzOcv/tBy5593N3YYNMtb+feT3PdBF6EIgmAhzCe6RMO7
- KuO88jM547LgUBzcojhiYcVIqL9Gbu0Mi3K0PyDURD+w7y2CiSYBU8q4Vv0FRLRqa+ga
- xnXHaw/c40GnQwXKZcOnMPiwLu/oZ8aQXU2NwSZbEx5dC3n+Rf6AqosMuG9Rx0b23bwS
- btFFSmE/SF9aFW62s0ZjfFjMircgAhNIU4zvZi84Cpr8TYTHxUourdSNS3hpW++OL5f2
- ExMv/xObmBnNqMS0VqZ0/MO274UfHZ8iToi8giF+OaYX8axAugsnxSYM5gjgq7lBJQf4 DA== 
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nt15wpvmv-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 17 Feb 2023 08:51:57 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-	by ppma04fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 31GJkaWd006567;
-	Fri, 17 Feb 2023 08:51:55 GMT
-Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
-	by ppma04fra.de.ibm.com (PPS) with ESMTPS id 3np2n6dqsv-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 17 Feb 2023 08:51:55 +0000
-Received: from smtpav06.fra02v.mail.ibm.com (smtpav06.fra02v.mail.ibm.com [10.20.54.105])
-	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 31H8ppaE23855704
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 17 Feb 2023 08:51:51 GMT
-Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id C4D6120043;
-	Fri, 17 Feb 2023 08:51:51 +0000 (GMT)
-Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id AA90320040;
-	Fri, 17 Feb 2023 08:51:50 +0000 (GMT)
-Received: from [9.171.12.102] (unknown [9.171.12.102])
-	by smtpav06.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Fri, 17 Feb 2023 08:51:50 +0000 (GMT)
-Message-ID: <59a61553a81282fed88c03af096b2a0830b94302.camel@linux.ibm.com>
-Subject: Re: [PATCH v6 4/6] s390/pci: Use dma-iommu layer
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Matthew Rosato <mjrosato@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Jason
- Gunthorpe <jgg@nvidia.com>, Wenjia Zhang <wenjia@linux.ibm.com>
-Cc: Gerd Bayer <gbayer@linux.ibm.com>, Pierre Morel <pmorel@linux.ibm.com>,
-        iommu@lists.linux.dev, linux-s390@vger.kernel.org,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, linux-kernel@vger.kernel.org,
-        Julian Ruess
- <julianr@linux.ibm.com>
-Date: Fri, 17 Feb 2023 09:51:50 +0100
-In-Reply-To: <4ad0d2b9-2465-b42d-c0f9-b48caadfd72c@linux.ibm.com>
-References: <20230215120327.947336-1-schnelle@linux.ibm.com>
-	 <20230215120327.947336-5-schnelle@linux.ibm.com>
-	 <4ad0d2b9-2465-b42d-c0f9-b48caadfd72c@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C9592560
+	for <iommu@lists.linux.dev>; Fri, 17 Feb 2023 08:55:04 +0000 (UTC)
+Received: by mail-ed1-f44.google.com with SMTP id dn12so9355223edb.5
+        for <iommu@lists.linux.dev>; Fri, 17 Feb 2023 00:55:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ms/iLQOf6WZ9kdAbvZ5kczj2Q3S8/Va+SZXQUp0aFpI=;
+        b=kyzKIEWzCOJNIjmoYP09ulmEIikLSDcsMAPktcU/zWhA8o+CjPafc5vCUetue3nzNw
+         yZJajUL3OKiOn4cPunKJmdk6bY8dn/9B/wqP/ak4CccyAwha4eEfTZIFRto1eQHfZR5T
+         hbmWXWAAUNSa2k987EgtNHckC0Uk5yEaGLndg17UBttAMDoSLQZN0Z3NpEbY6U+6qyiS
+         RQ9cuKe0Nys02eKGay+6fVitO/IfdcfyZJeKiqELcsQW6jUD5c03QeweZNTK3qNNvjby
+         QRbDy/hBo5yJT8Lo5l6ouL05JQEk4g3y03z2phQE7necbjVx6yWeXzvgZDGkjwwiuMLj
+         Ok1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ms/iLQOf6WZ9kdAbvZ5kczj2Q3S8/Va+SZXQUp0aFpI=;
+        b=dG33v9xjNKbPU7l6gMe8uZ4OGsZJoH4jEHb0tYWq60QfVNjcTyX4BKES/qkIkDujth
+         a4SgeBLzSXo5bQYy0PW7rkzdym+ArzJuwbq2WXr5FF0/iNWkRBqZvJz/FUuSezeKBMwy
+         98EE2toZE0T/3fkPThMdl0EnFE6/J0Xtog3VFFtrNuCa7uz1f3zmnDz572WMdLjLmZRu
+         gvo/HvLAipe4HuNhFE9ealjo9/Huxjef4t/ugigYd0ayxsmLzeK9salMg8PGtbh+GS0G
+         5EjOOrPl/eSuJ/ycwtYTH8VJhY0/4bKO/8rWVPD3KbLrhWsZKsB+WMeDnBiIlBq9L1NS
+         nyig==
+X-Gm-Message-State: AO0yUKWym/Tz+9p9WEX3wdoRTIJOJzofWF937i1lwRPeBZF27TKWpiUU
+	TLSb1ZPusPZLYOB+68vww4BIHA==
+X-Google-Smtp-Source: AK7set+IEv2TbISTklidgD6uq9zlJmbOrq7lhiGovewXGe1Rb+O6Stn+ccGdmM+r+kEvUce/0FYZYg==
+X-Received: by 2002:a05:6402:784:b0:4ab:4411:2f71 with SMTP id d4-20020a056402078400b004ab44112f71mr156745edy.37.1676624102715;
+        Fri, 17 Feb 2023 00:55:02 -0800 (PST)
+Received: from [192.168.1.109] ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id a36-20020a509ea7000000b004a7e9ec2087sm1964054edf.76.2023.02.17.00.55.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Feb 2023 00:55:02 -0800 (PST)
+Message-ID: <2d2290c3-e4ac-aee3-f2cf-496c6d29a188@linaro.org>
+Date: Fri, 17 Feb 2023 09:55:00 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: w3KPuegSdxg3SnnJVL_x_u3UmxgLOgZz
-X-Proofpoint-GUID: w3KPuegSdxg3SnnJVL_x_u3UmxgLOgZz
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
- definitions=2023-02-17_04,2023-02-16_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- clxscore=1015 suspectscore=0 malwarescore=0 adultscore=0 bulkscore=0
- lowpriorityscore=0 phishscore=0 mlxscore=0 mlxlogscore=502 spamscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2302170076
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH 1/5] dt-bindings: arm-smmu: Add SM8350 Adreno SMMU
+Content-Language: en-US
+To: Konrad Dybcio <konrad.dybcio@linaro.org>, linux-arm-msm@vger.kernel.org,
+ andersson@kernel.org, agross@kernel.org
+Cc: marijn.suijten@somainline.org, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20230216145646.4095336-1-konrad.dybcio@linaro.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230216145646.4095336-1-konrad.dybcio@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Wed, 2023-02-15 at 13:00 -0500, Matthew Rosato wrote:
-> On 2/15/23 7:03 AM, Niklas Schnelle wrote:
-> > While s390 already has a standard IOMMU driver and previous changes hav=
-e
-> > added I/O TLB flushing operations this driver is currently only used fo=
-r
-> > user-space PCI access such as vfio-pci. For the DMA API s390 instead
-> > utilizes its own implementation in arch/s390/pci/pci_dma.c which drives
-> > the same hardware and shares some code but requires a complex and
-> > fragile hand over between DMA API and IOMMU API use of a device and
-> > despite code sharing still leads to significant duplication and
-> > maintenance effort. Let's utilize the common code DMAP API
-> > implementation from drivers/iommu/dma-iommu.c instead allowing us to
-> > get rid of arch/s390/pci/pci_dma.c.
-> >=20
-> > Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> > ---
->=20
-> FYI, this patch doesn't fit on top of iommu-next, I'd guess at least due =
-to baolu's 'Retire detach_dev callback' series, which removed .detach_dev a=
-nd added .set_platform_dma_ops for s390-iommu.  That's relevant here, becau=
-se now that this patch enables dma-iommu for s390 and removes the platform =
-DMA ops it must now remove .set_platform_dma_ops/s390_iommu_set_platform_dm=
-a for s390-iommu.
->=20
-> Matt
+On 16/02/2023 15:56, Konrad Dybcio wrote:
+> Document the Adreno SMMU present on SM8350.
+> 
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> ---
 
 
-Ok, yes this series is currently against v6.2-rc8. Should I rebase
-against iommu-next and send a v7 before further review or after?
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Thanks,
-Niklas
+Best regards,
+Krzysztof
+
