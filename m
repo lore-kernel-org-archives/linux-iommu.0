@@ -1,218 +1,115 @@
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41E9D33D2
-	for <iommu@lists.linux.dev>; Fri, 17 Feb 2023 09:56:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676627783; x=1708163783;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=L0BLlBlx7/lIGCWsyetXVIlqgQEx+QKVJ6i4zLx6NnI=;
-  b=Md1qDKVQACDyefwtH6zjbVYoiUT4gHvZhbYcHlc4NCwi01V93GWgjr2G
-   oJZJi3rINceIgOnHddEgC1NrTPo8aoGFBaU4bTnOdQI4XoaHblcAJtoUn
-   I/KTKMpBNmh4OkaI6mlyHdS14hEaNVFQk61zN4hkUbg1Pdz7snqzuLq1D
-   NfD9MDvMTJ+2lJUuqk55/KyPZz1Grxl8RupLloSQVQx66jYvJRMS/elBj
-   xHUd9uk0Vqx0rfJPeU3rRsCylbBqfL6Ns7SqRs7XK6cLO6O6fEDrwHrAb
-   prvGCkbQZhTd9WGRoHtSgLya89HDOWimaXmyVkHZuunHiGTBNTwUelRKN
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="331955299"
-X-IronPort-AV: E=Sophos;i="5.97,304,1669104000"; 
-   d="scan'208";a="331955299"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2023 01:56:21 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="999391241"
-X-IronPort-AV: E=Sophos;i="5.97,304,1669104000"; 
-   d="scan'208";a="999391241"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga005.fm.intel.com with ESMTP; 17 Feb 2023 01:56:19 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: iommu@lists.linux.dev
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Christoph Hellwig <hch@infradead.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v2 6/6] iommu: Cleanup iommu_change_dev_def_domain()
-Date: Fri, 17 Feb 2023 17:47:36 +0800
-Message-Id: <20230217094736.159005-7-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230217094736.159005-1-baolu.lu@linux.intel.com>
-References: <20230217094736.159005-1-baolu.lu@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D581323E
+	for <iommu@lists.linux.dev>; Fri, 17 Feb 2023 10:11:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1676628706;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=dvpK31b66LZjOlbG0RKceUyJP6Xe2y/6MQclDivAbW8=;
+	b=a162mr4qXZaVlzcIKbKIwdArdg9ZR32w3iHdjSPwfZDn5WRO2s4I3ANQEQHfncjmTX6rSR
+	I1WJviZxOYssxqU1zGAE91d0rdPxwnQm6FKap1pUM/cCaNV+3xVK5A/JbDXae5HrRA4Li7
+	Kg4lcWA77wlBotkB9hXxBpWQnV+lvI0=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-610-3oNh5Pb9OKyNyN1H7YVGdA-1; Fri, 17 Feb 2023 05:11:44 -0500
+X-MC-Unique: 3oNh5Pb9OKyNyN1H7YVGdA-1
+Received: by mail-wm1-f71.google.com with SMTP id o12-20020a05600c4fcc00b003dd1b5d2a36so184014wmq.1
+        for <iommu@lists.linux.dev>; Fri, 17 Feb 2023 02:11:44 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dvpK31b66LZjOlbG0RKceUyJP6Xe2y/6MQclDivAbW8=;
+        b=prw6ENaBl68ptdh/qGgPWiW9BYbW8D+cRYWc33FTemMtuQjMk8T3eD9qvvlcnMzC0Q
+         62gQ84rqbM3efGqeG3TtCS8HLpGIiyuVjQvGGGMpvrDOlfmy3+wkjuoq30wcpmbPUx5b
+         WmNvhG2jer2pbBYGkU7vcuWuZ9/28BPyI5KKL+HerGxE3GYkCTViUp/6ZqmahkXMRZRJ
+         GDJU4G37NjhCY6YZWvSjEJDZcp0MfAFB5H2H0YwF/HXZoMS87ZeSVYerrHmnOhZDuNGe
+         krk2/9OWJjfA6sFUx3spCmg7oxYupyleMU5QgX/IDL43aplDrTDYWscgCv2E0zfsQWvQ
+         qkfg==
+X-Gm-Message-State: AO0yUKUj3gMm9WgHNdFignho9dnXod13R/vUpDudcy0xqQCdBYxyfVYE
+	Sy9Rl52kjfjh6Lgq2npQdByXljNXpuQ/VhCWIQPrEiMlQK/CIgtiODt2dYxk2nUoMSN6JeQmuDE
+	P/WqfW0G42HRJdzk=
+X-Received: by 2002:a05:600c:4d21:b0:3d9:f769:2115 with SMTP id u33-20020a05600c4d2100b003d9f7692115mr188609wmp.26.1676628703387;
+        Fri, 17 Feb 2023 02:11:43 -0800 (PST)
+X-Google-Smtp-Source: AK7set+Kcg4izxtCX4bYTTRixMiAEVt9Z6ixnz/KbWXmJ3fdzzSg3LAlSGK6fov0vMkMCzQhoGEOjA==
+X-Received: by 2002:a05:600c:4d21:b0:3d9:f769:2115 with SMTP id u33-20020a05600c4d2100b003d9f7692115mr188590wmp.26.1676628703126;
+        Fri, 17 Feb 2023 02:11:43 -0800 (PST)
+Received: from redhat.com ([2.52.5.34])
+        by smtp.gmail.com with ESMTPSA id az5-20020a05600c600500b003e20a6fd604sm4644634wmb.4.2023.02.17.02.11.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Feb 2023 02:11:42 -0800 (PST)
+Date: Fri, 17 Feb 2023 05:11:38 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Jason Wang <jasowang@redhat.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Nanyong Sun <sunnanyong@huawei.com>,
+	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+	netdev@vger.kernel.org, wangrong68@huawei.com
+Subject: Re: [PATCH v2] vhost/vdpa: Add MSI translation tables to iommu for
+ software-managed MSI
+Message-ID: <20230217051038-mutt-send-email-mst@kernel.org>
+References: <20230207120843.1580403-1-sunnanyong@huawei.com>
+ <Y+7G+tiBCjKYnxcZ@nvidia.com>
+ <CACGkMEtehykvqNUnfCi0VmHR1xpmhj4sSWdYW1-0oATY=0YhXw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CACGkMEtehykvqNUnfCi0VmHR1xpmhj4sSWdYW1-0oATY=0YhXw@mail.gmail.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-As the singleton group limitation has been removed, cleanup the code
-in iommu_change_dev_def_domain() accordingly.
+On Fri, Feb 17, 2023 at 01:35:59PM +0800, Jason Wang wrote:
+> On Fri, Feb 17, 2023 at 8:15 AM Jason Gunthorpe <jgg@nvidia.com> wrote:
+> >
+> > On Tue, Feb 07, 2023 at 08:08:43PM +0800, Nanyong Sun wrote:
+> > > From: Rong Wang <wangrong68@huawei.com>
+> > >
+> > > Once enable iommu domain for one device, the MSI
+> > > translation tables have to be there for software-managed MSI.
+> > > Otherwise, platform with software-managed MSI without an
+> > > irq bypass function, can not get a correct memory write event
+> > > from pcie, will not get irqs.
+> > > The solution is to obtain the MSI phy base address from
+> > > iommu reserved region, and set it to iommu MSI cookie,
+> > > then translation tables will be created while request irq.
+> >
+> > Probably not what anyone wants to hear, but I would prefer we not add
+> > more uses of this stuff. It looks like we have to get rid of
+> > iommu_get_msi_cookie() :\
+> >
+> > I'd like it if vdpa could move to iommufd not keep copying stuff from
+> > it..
+> 
+> Yes, but we probably need a patch for -stable.
 
-Documentation is also updated.
+Hmm do we? this looks like it's enabling new platforms is not a bugfix...
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/iommu.c                         | 81 +++++--------------
- .../ABI/testing/sysfs-kernel-iommu_groups     |  1 -
- 2 files changed, 21 insertions(+), 61 deletions(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 18dac155a178..c06757224bec 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2871,11 +2871,10 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
- EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
- 
- /*
-- * Changes the default domain of an iommu group that has *only* one device
-+ * Changes the default domain of an iommu group
-  *
-  * @group: The group for which the default domain should be changed
-- * @prev_dev: The device in the group (this is used to make sure that the device
-- *	 hasn't changed after the caller has called this function)
-+ * @dev: The first device in the group
-  * @type: The type of the new default domain that gets associated with the group
-  *
-  * Returns 0 on success and error code on failure
-@@ -2886,101 +2885,63 @@ EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
-  *    Please take a closer look if intended to use for other purposes.
-  */
- static int iommu_change_dev_def_domain(struct iommu_group *group,
--				       struct device *prev_dev, int type)
-+				       struct device *dev, int type)
- {
-+	struct __group_domain_type gtype = {NULL, 0};
- 	struct iommu_domain *prev_dom;
--	int ret, dev_def_dom;
--	struct device *dev;
-+	int ret;
- 
- 	lockdep_assert_held(&group->mutex);
- 
--	if (group->default_domain != group->domain) {
--		dev_err_ratelimited(prev_dev, "Group not assigned to default domain\n");
--		ret = -EBUSY;
--		goto out;
--	}
--
--	/*
--	 * iommu group wasn't locked while acquiring device lock in
--	 * iommu_group_store_type(). So, make sure that the device count hasn't
--	 * changed while acquiring device lock.
--	 *
--	 * Changing default domain of an iommu group with two or more devices
--	 * isn't supported because there could be a potential deadlock. Consider
--	 * the following scenario. T1 is trying to acquire device locks of all
--	 * the devices in the group and before it could acquire all of them,
--	 * there could be another thread T2 (from different sub-system and use
--	 * case) that has already acquired some of the device locks and might be
--	 * waiting for T1 to release other device locks.
--	 */
--	if (iommu_group_device_count(group) != 1) {
--		dev_err_ratelimited(prev_dev, "Cannot change default domain: Group has more than one device\n");
--		ret = -EINVAL;
--		goto out;
--	}
--
--	/* Since group has only one device */
--	dev = iommu_group_first_dev(group);
--
--	if (prev_dev != dev) {
--		dev_err_ratelimited(prev_dev, "Cannot change default domain: Device has been changed\n");
--		ret = -EBUSY;
--		goto out;
--	}
--
- 	prev_dom = group->default_domain;
--	if (!prev_dom) {
--		ret = -EINVAL;
--		goto out;
--	}
--
--	dev_def_dom = iommu_get_def_domain_type(dev);
-+	__iommu_group_for_each_dev(group, &gtype,
-+				   probe_get_default_domain_type);
- 	if (!type) {
- 		/*
- 		 * If the user hasn't requested any specific type of domain and
- 		 * if the device supports both the domains, then default to the
- 		 * domain the device was booted with
- 		 */
--		type = dev_def_dom ? : iommu_def_domain_type;
--	} else if (dev_def_dom && type != dev_def_dom) {
--		dev_err_ratelimited(prev_dev, "Device cannot be in %s domain\n",
-+		type = gtype.type ? : iommu_def_domain_type;
-+	} else if (gtype.type && type != gtype.type) {
-+		dev_err_ratelimited(dev, "Device cannot be in %s domain\n",
- 				    iommu_domain_type_str(type));
--		ret = -EINVAL;
--		goto out;
-+		return -EINVAL;
- 	}
- 
- 	/*
- 	 * Switch to a new domain only if the requested domain type is different
- 	 * from the existing default domain type
- 	 */
--	if (prev_dom->type == type) {
--		ret = 0;
--		goto out;
--	}
-+	if (prev_dom->type == type)
-+		return 0;
-+
-+	group->default_domain = NULL;
-+	group->domain = NULL;
- 
- 	/* Sets group->default_domain to the newly allocated domain */
- 	ret = iommu_group_alloc_default_domain(group, dev, type);
- 	if (ret)
--		goto out;
-+		goto restore_old_domain;
- 
--	ret = iommu_create_device_direct_mappings(group, dev);
-+	ret = iommu_group_create_direct_mappings(group);
- 	if (ret)
- 		goto free_new_domain;
- 
--	ret = __iommu_attach_device(group->default_domain, dev);
-+	ret = __iommu_attach_group(group->default_domain, group);
- 	if (ret)
- 		goto free_new_domain;
- 
--	group->domain = group->default_domain;
- 	iommu_domain_free(prev_dom);
- 
- 	return 0;
- 
- free_new_domain:
- 	iommu_domain_free(group->default_domain);
-+restore_old_domain:
- 	group->default_domain = prev_dom;
- 	group->domain = prev_dom;
--out:
-+
- 	return ret;
- }
- 
-diff --git a/Documentation/ABI/testing/sysfs-kernel-iommu_groups b/Documentation/ABI/testing/sysfs-kernel-iommu_groups
-index b15af6a5bc08..a42d4383d999 100644
---- a/Documentation/ABI/testing/sysfs-kernel-iommu_groups
-+++ b/Documentation/ABI/testing/sysfs-kernel-iommu_groups
-@@ -53,7 +53,6 @@ Description:	/sys/kernel/iommu_groups/<grp_id>/type shows the type of default
- 
- 		The default domain type of a group may be modified only when
- 
--		- The group has only one device.
- 		- The device in the group is not bound to any device driver.
- 		  So, the users must unbind the appropriate driver before
- 		  changing the default domain type.
--- 
-2.34.1
+> >
+> > Also the iommu_group_has_isolated_msi() check is missing on the vdpa
+> > path, and it is missing the iommu ownership mechanism.
+> 
+> Ok.
+> 
+> >
+> > Also which in-tree VDPA driver that uses the iommu runs on ARM? Please
+> 
+> ifcvf and vp_vpda are two drivers that use platform IOMMU.
+> 
+> Thanks
+> 
+> > don't propose core changes for unmerged drivers. :(
+> >
+> > Jason
+> >
 
