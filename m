@@ -1,32 +1,32 @@
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F81328EB
-	for <iommu@lists.linux.dev>; Fri, 17 Feb 2023 09:56:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C86DD28EB
+	for <iommu@lists.linux.dev>; Fri, 17 Feb 2023 09:56:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676627777; x=1708163777;
+  t=1676627780; x=1708163780;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=svzPQoaIiOVo1++kdQiL9mjZd3QRrwDo4zYQS1l6NZs=;
-  b=oC79neqPbAOIBG61OSaNlie66MCpHcqYQ3VTlGHLmqFHmFogM4zpeJr9
-   2MMaILIUisIlkgWTB/F5VPAWSQaKogkM+pQ5ea72JBmntg0k31e/+RJHL
-   qUauYFJdUpXxzw+XIcQ0MxStfGgpV8wuunhKtdfCqc/kL16yGkFdTXTFZ
-   XekHCHMyKtf7KtaNQckOGaMalbPBhfq0E9afUPRtV7ZrAOQLs2mQV0D7L
-   khp0eiHepOvhNrUsiqKMuVDoj+nQcB674L6aGT1JTD9iftjXLJH/5/hjk
-   xkj7B+mCPoZW3fE5ZbsQzGZaJ/DabE6Yo1k7S/RiMO09HYfg0db0fzEXm
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="331955233"
+  bh=I7zwcHhE0QciS3+BHxkcRCwFeb6U9lVqL1VaFiFdxu8=;
+  b=ARjSuEMMDcLME6W+BJb3dxQPBB6brx7iJZDL394ExTujLZ+nB+KDLtBb
+   d7cTJrODTaxHPFYoeC6Yiu5mBkEL46JJMXw6P0DKRpNgfnp3kyPHuKc1J
+   f+zJASO9KiPlReAa5GxPZcU0CT5p9QTbZ7NLGaS4+uJ31eOol/c42ynCL
+   yZxVi71pp1PtswKLqUi0GOinnBfekc7wCrbik+SeBnWJyQOOwrgCOQCpq
+   jufQyG3cstZUfza1k75jNz6Zx+Gy6hi5vZZG5wSvYprjeeYB+vhtIVk+5
+   RnYqm85cQwrKwW6f9qruwqSWkuVno9d1bcJqET1urOn6YhK50wW9Y3CPD
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="331955259"
 X-IronPort-AV: E=Sophos;i="5.97,304,1669104000"; 
-   d="scan'208";a="331955233"
+   d="scan'208";a="331955259"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2023 01:56:15 -0800
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2023 01:56:17 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="999391225"
+X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="999391230"
 X-IronPort-AV: E=Sophos;i="5.97,304,1669104000"; 
-   d="scan'208";a="999391225"
+   d="scan'208";a="999391230"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga005.fm.intel.com with ESMTP; 17 Feb 2023 01:56:13 -0800
+  by fmsmga005.fm.intel.com with ESMTP; 17 Feb 2023 01:56:15 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: iommu@lists.linux.dev
 Cc: Joerg Roedel <joro@8bytes.org>,
@@ -37,9 +37,9 @@ Cc: Joerg Roedel <joro@8bytes.org>,
 	Robin Murphy <robin.murphy@arm.com>,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v2 3/6] iommu: Same critical region for device release and removal
-Date: Fri, 17 Feb 2023 17:47:33 +0800
-Message-Id: <20230217094736.159005-4-baolu.lu@linux.intel.com>
+Subject: [PATCH v2 4/6] iommu: Move lock from iommu_change_dev_def_domain() to its caller
+Date: Fri, 17 Feb 2023 17:47:34 +0800
+Message-Id: <20230217094736.159005-5-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230217094736.159005-1-baolu.lu@linux.intel.com>
 References: <20230217094736.159005-1-baolu.lu@linux.intel.com>
@@ -51,63 +51,78 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-In a non-driver context, it is crucial to ensure the consistency of a
-device's iommu ops. Otherwise, it may result in a situation where a
-device is released but it's iommu ops are still used.
-
-Put the ops->release_device and __iommu_group_remove_device() in a some
-group->mutext critical region, so that, as long as group->mutex is held
-and the device is in its group's device list, its iommu ops are always
-consistent.
+The intention is to make it possible to put group ownership check and
+default domain change in a same critical region protected by the group's
+mutex lock. No intentional functional change.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/iommu.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ drivers/iommu/iommu.c | 29 ++++++++++++++---------------
+ 1 file changed, 14 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 6247883991e2..093692308b80 100644
+index 093692308b80..e1ae1eb4faf0 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -101,6 +101,10 @@ static int iommu_create_device_direct_mappings(struct iommu_group *group,
- static struct iommu_group *iommu_group_get_for_dev(struct device *dev);
- static ssize_t iommu_group_store_type(struct iommu_group *group,
- 				      const char *buf, size_t count);
-+static struct group_device *
-+__iommu_group_remove_device(struct iommu_group *group, struct device *dev);
-+static void __iommu_group_release_device(struct iommu_group *group,
-+					 struct group_device *grp_dev);
+@@ -2892,7 +2892,7 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
+ 	int ret, dev_def_dom;
+ 	struct device *dev;
  
- #define IOMMU_GROUP_ATTR(_name, _mode, _show, _store)		\
- struct iommu_group_attribute iommu_group_attr_##_name =		\
-@@ -466,18 +470,25 @@ int iommu_probe_device(struct device *dev)
+-	mutex_lock(&group->mutex);
++	lockdep_assert_held(&group->mutex);
  
- void iommu_release_device(struct device *dev)
- {
-+	struct iommu_group *group = dev->iommu_group;
-+	struct group_device *device;
- 	const struct iommu_ops *ops;
+ 	if (group->default_domain != group->domain) {
+ 		dev_err_ratelimited(prev_dev, "Group not assigned to default domain\n");
+@@ -2980,28 +2980,15 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
+ 		goto free_new_domain;
  
--	if (!dev->iommu)
-+	if (!dev->iommu || !group)
- 		return;
+ 	group->domain = group->default_domain;
+-
+-	/*
+-	 * Release the mutex here because ops->probe_finalize() call-back of
+-	 * some vendor IOMMU drivers calls arm_iommu_attach_device() which
+-	 * in-turn might call back into IOMMU core code, where it tries to take
+-	 * group->mutex, resulting in a deadlock.
+-	 */
+-	mutex_unlock(&group->mutex);
+-
+-	/* Make sure dma_ops is appropriatley set */
+-	iommu_group_do_probe_finalize(dev, group->default_domain);
+ 	iommu_domain_free(prev_dom);
++
+ 	return 0;
  
- 	iommu_device_unlink(dev->iommu->iommu_dev, dev);
+ free_new_domain:
+ 	iommu_domain_free(group->default_domain);
+ 	group->default_domain = prev_dom;
+ 	group->domain = prev_dom;
+-
+ out:
+-	mutex_unlock(&group->mutex);
+-
+ 	return ret;
+ }
+ 
+@@ -3089,7 +3076,19 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
+ 		goto out;
+ 	}
  
 +	mutex_lock(&group->mutex);
- 	ops = dev_iommu_ops(dev);
- 	if (ops->release_device)
- 		ops->release_device(dev);
-+	device = __iommu_group_remove_device(group, dev);
+ 	ret = iommu_change_dev_def_domain(group, dev, req_type);
++	/*
++	 * Release the mutex here because ops->probe_finalize() call-back of
++	 * some vendor IOMMU drivers calls arm_iommu_attach_device() which
++	 * in-turn might call back into IOMMU core code, where it tries to take
++	 * group->mutex, resulting in a deadlock.
++	 */
 +	mutex_unlock(&group->mutex);
 +
-+	if (device)
-+		__iommu_group_release_device(group, device);
++	/* Make sure dma_ops is appropriatley set */
++	if (!ret)
++		iommu_group_do_probe_finalize(dev, group->default_domain);
+ 	ret = ret ?: count;
  
--	iommu_group_remove_device(dev);
- 	module_put(ops->owner);
- 	dev_iommu_free(dev);
- }
+ out:
 -- 
 2.34.1
 
