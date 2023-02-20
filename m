@@ -1,45 +1,45 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B59E37E8
-	for <iommu@lists.linux.dev>; Mon, 20 Feb 2023 02:36:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6A987E8
+	for <iommu@lists.linux.dev>; Mon, 20 Feb 2023 02:37:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1676860600;
+	s=mimecast20190719; t=1676860651;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=+QRTKe9fslXsmMjbWLGC+1jCq193n05lX0twVp21S3I=;
-	b=hsGpX6976hdhAd1NgH70VDZh0rG01tRZWoHcrTr3H/+aWtrTKiD15S/nkUTGEVJ3N6+cvo
-	oqbg77tBv5eMvPLwey23tOajo+slchKYyv6Dm1KxJkIAiSfjMcQ65hw0h+iKPGfXg24KXO
-	Nph51+kvI6djeAp4kWlnHXexl91LPfs=
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com
- [209.85.161.69]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=Z4mF9eRLWUighxaWu/WlNqJCc0pM0J+zyyIk2SE2gxU=;
+	b=fPygkbLALlk+6ukzBEvSJLsPhuqYnNPH0N7bl7BG0m0F3E6y+Pfob4gWdaTJz9lCvJobxG
+	fLG5thQGVgd5lqzmTEaK+4VJqNjDNVV5AqTmIVNbM6TxWm8X8UXf6x9VIgJMcbcNqKkxoW
+	PWh5hg2L2e56X4rdY32ZSAVN2Bs/ppo=
+Received: from mail-oa1-f71.google.com (mail-oa1-f71.google.com
+ [209.85.160.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-662-E3MeZTBZPvySqM5xORY9fw-1; Sun, 19 Feb 2023 21:36:39 -0500
-X-MC-Unique: E3MeZTBZPvySqM5xORY9fw-1
-Received: by mail-oo1-f69.google.com with SMTP id v20-20020a4ae054000000b0051760012060so810120oos.16
-        for <iommu@lists.linux.dev>; Sun, 19 Feb 2023 18:36:38 -0800 (PST)
+ us-mta-9-bGf9YIBoOgKu4VTPq156bw-1; Sun, 19 Feb 2023 21:37:30 -0500
+X-MC-Unique: bGf9YIBoOgKu4VTPq156bw-1
+Received: by mail-oa1-f71.google.com with SMTP id 586e51a60fabf-171d9537ec5so562356fac.8
+        for <iommu@lists.linux.dev>; Sun, 19 Feb 2023 18:37:30 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=+QRTKe9fslXsmMjbWLGC+1jCq193n05lX0twVp21S3I=;
-        b=IwdXL5o9giyKSNMtCbCXNunMoWTtzIAgsB2WaP8Skmvu4kfR+RVxDDQ7Y6fgO/gZ2D
-         YsN8Hykw/ywjYIYK3kVWp2iijmHWc5sxzMRetL2PnKUAOx4LaOtKxI+KpIw6SMIRMlMD
-         DizvdPl6tLr77b+0lBjQktZKklFyicYW5+66vOx+fB7urSakRucL9jIqxz1Gh+KNnw4r
-         lYyGAPHHqnPpkk86jHq9F1MLkJG6mUB/HXJPVjxXKyTL5XxN28EzgZZWxTg9V7k0lUjb
-         1vsMOStcPtICPp27nu3kd9MeXK1Lw83JxZxHJdRLGfFPKa9fVSPVefFAO/lWeGPKG7dx
-         dU6A==
-X-Gm-Message-State: AO0yUKUlDhbu9VfdhrnOtif9egwY4cJmBkfYqFzNwGnBVk39BHjY+cBG
-	KNqiS3tZL9XBfaTSLcDruTHyaJ4uAMfAuVL5suVI2PQi63xWe7HMC4untAm2Lo2vWe37rugslTS
-	9ru1HoZBmSKaZvG/TKzly7bjuzOyfGgY=
-X-Received: by 2002:a05:6870:610c:b0:171:d1a1:c5cb with SMTP id s12-20020a056870610c00b00171d1a1c5cbmr212605oae.217.1676860598331;
-        Sun, 19 Feb 2023 18:36:38 -0800 (PST)
-X-Google-Smtp-Source: AK7set+o/PIyYCf/r6enEsMKw/BDh3XyDsV2IO5FKzRCPBc/l0Kkzql2S6nZ1RAhn3rjmZd7RJyHVxQxAPtJc0uZzgY=
-X-Received: by 2002:a05:6870:610c:b0:171:d1a1:c5cb with SMTP id
- s12-20020a056870610c00b00171d1a1c5cbmr212592oae.217.1676860598109; Sun, 19
- Feb 2023 18:36:38 -0800 (PST)
+        bh=Z4mF9eRLWUighxaWu/WlNqJCc0pM0J+zyyIk2SE2gxU=;
+        b=h+YQnlMgh76ZP2SThocHsM3PZ5AB0ISwLB7qC/ducz8BvKZ2vG298KIgGMMifG4rT+
+         gn6B9kgzqJwhbA4L6eSUyeX3UTy9dKwfI/rXKWY3kd7IQCKaPL+XXyuWrzvDkppNyh6s
+         p9Eafr0FxVO03Qw/G2uHu0VxHI5dP8QRD5EevER71Cph1G03zblXBBcVMxtskdTbCi+u
+         bCEn6xjzs7kzSvtapJkdne0KH6yaYxhcrRnPIo5+NnkikhOmcWskKU2gD/5SccWXi5XR
+         /QWHJ0tGUN8kDIQph6Mvut9zitqw6Mk+tnUv4m2lmbRc5d58y1wioN/4iNr8XIu2fdYo
+         gWpg==
+X-Gm-Message-State: AO0yUKVs8zdbWeJcsXAPscXIVim0KsRXgz+8cngvZNJVG0Os21N86b+8
+	A63ITmsrSgGSoK/xxwl33mJK2Zl4aAQYYmuWj99MNHmTj5rjLZ2UVOuwxOv8mcwlOPT1g9GE80A
+	bZKQB2g7IR9Adm6XFavMdcoYix19wZBQ=
+X-Received: by 2002:a05:6870:e309:b0:16a:cfba:d187 with SMTP id z9-20020a056870e30900b0016acfbad187mr57937oad.2.1676860649424;
+        Sun, 19 Feb 2023 18:37:29 -0800 (PST)
+X-Google-Smtp-Source: AK7set8SJitLQ9LUE3u1syC+o7Uv38TErayt/RAfp5Ui0lrmlYgjeBjytjXtpn+4L/G0i6tLLMj766NjBhCbz614fY0=
+X-Received: by 2002:a05:6870:e309:b0:16a:cfba:d187 with SMTP id
+ z9-20020a056870e30900b0016acfbad187mr57932oad.2.1676860649055; Sun, 19 Feb
+ 2023 18:37:29 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -47,29 +47,27 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 References: <20230207120843.1580403-1-sunnanyong@huawei.com>
- <Y+7G+tiBCjKYnxcZ@nvidia.com> <CACGkMEtehykvqNUnfCi0VmHR1xpmhj4sSWdYW1-0oATY=0YhXw@mail.gmail.com>
- <20230217051038-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230217051038-mutt-send-email-mst@kernel.org>
+ <Y+7G+tiBCjKYnxcZ@nvidia.com> <20230217051158-mutt-send-email-mst@kernel.org> <Y+92c9us3HVjO2Zq@nvidia.com>
+In-Reply-To: <Y+92c9us3HVjO2Zq@nvidia.com>
 From: Jason Wang <jasowang@redhat.com>
-Date: Mon, 20 Feb 2023 10:36:27 +0800
-Message-ID: <CACGkMEuDG1NUs0=ry1=Mphfd+TrqAvVS0yeu9hcni2VrPkB8tQ@mail.gmail.com>
+Date: Mon, 20 Feb 2023 10:37:18 +0800
+Message-ID: <CACGkMEsVBhxtpUFs7TrQzAecO8kK_NR+b1EvD2H7MjJ+2aEKJw@mail.gmail.com>
 Subject: Re: [PATCH v2] vhost/vdpa: Add MSI translation tables to iommu for
  software-managed MSI
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Nanyong Sun <sunnanyong@huawei.com>, joro@8bytes.org, 
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Nanyong Sun <sunnanyong@huawei.com>, joro@8bytes.org, 
 	will@kernel.org, robin.murphy@arm.com, iommu@lists.linux.dev, 
 	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, 
 	virtualization@lists.linux-foundation.org, netdev@vger.kernel.org, 
-	wangrong68@huawei.com
+	wangrong68@huawei.com, Cindy Lu <lulu@redhat.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset="UTF-8"
 
-On Fri, Feb 17, 2023 at 6:11 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+On Fri, Feb 17, 2023 at 8:43 PM Jason Gunthorpe <jgg@nvidia.com> wrote:
 >
-> On Fri, Feb 17, 2023 at 01:35:59PM +0800, Jason Wang wrote:
-> > On Fri, Feb 17, 2023 at 8:15 AM Jason Gunthorpe <jgg@nvidia.com> wrote:
-> > >
+> On Fri, Feb 17, 2023 at 05:12:29AM -0500, Michael S. Tsirkin wrote:
+> > On Thu, Feb 16, 2023 at 08:14:50PM -0400, Jason Gunthorpe wrote:
 > > > On Tue, Feb 07, 2023 at 08:08:43PM +0800, Nanyong Sun wrote:
 > > > > From: Rong Wang <wangrong68@huawei.com>
 > > > >
@@ -89,31 +87,22 @@ On Fri, Feb 17, 2023 at 6:11 PM Michael S. Tsirkin <mst@redhat.com> wrote:
 > > > I'd like it if vdpa could move to iommufd not keep copying stuff from
 > > > it..
 > >
-> > Yes, but we probably need a patch for -stable.
+> > Absolutely but when is that happening?
 >
-> Hmm do we? this looks like it's enabling new platforms is not a bugfix...
+> Don't know, I think it has to come from the VDPA maintainers, Nicolin
+> made some drafts but wasn't able to get it beyond that.
 
-I think we haven't limited vDPA to any specific arch in the past?
+Cindy (cced) will carry on the work.
 
 Thanks
 
 >
-> > >
-> > > Also the iommu_group_has_isolated_msi() check is missing on the vdpa
-> > > path, and it is missing the iommu ownership mechanism.
-> >
-> > Ok.
-> >
-> > >
-> > > Also which in-tree VDPA driver that uses the iommu runs on ARM? Please
-> >
-> > ifcvf and vp_vpda are two drivers that use platform IOMMU.
-> >
-> > Thanks
-> >
-> > > don't propose core changes for unmerged drivers. :(
-> > >
-> > > Jason
-> > >
+> Please have people who need more iommu platform enablement to pick it
+> up instead of merging hacks like this..
+>
+> We are very close to having nested translation on ARM so anyone who is
+> serious about VDPA on ARM is going to need iommufd anyhow.
+>
+> Jason
 >
 
