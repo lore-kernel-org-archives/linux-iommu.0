@@ -1,116 +1,270 @@
-Received: from frasgout12.his.huawei.com (frasgout12.his.huawei.com [14.137.139.154])
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05olkn2074.outbound.protection.outlook.com [40.92.91.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CAD463DB
-	for <iommu@lists.linux.dev>; Mon, 20 Feb 2023 15:32:21 +0000 (UTC)
-Received: from mail02.huawei.com (unknown [172.18.147.227])
-	by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4PL5M40P5Bz9xGX8
-	for <iommu@lists.linux.dev>; Mon, 20 Feb 2023 23:05:20 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.81.223.230])
-	by APP2 (Coremail) with SMTP id GxC2BwD37mU1jvNjxxw4AQ--.54334S2;
-	Mon, 20 Feb 2023 16:14:03 +0100 (CET)
-From: Petr Tesarik <petrtesarik@huaweicloud.com>
-To: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
-	linux-kernel@vger.kernel.org (open list)
-Cc: roberto.sassu@huaweicloud.com,
-	Petr Tesarik <petrtesarik@huaweicloud.com>,
-	Petr Tesarik <Petr.Tesarik.ext@huawei.com>
-Subject: [PATCH] dma-direct: cleanup parameters to dma_direct_optimal_gfp_mask
-Date: Mon, 20 Feb 2023 16:13:47 +0100
-Message-Id: <20230220151347.590-1-petrtesarik@huaweicloud.com>
-X-Mailer: git-send-email 2.25.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF5938497
+	for <iommu@lists.linux.dev>; Mon, 20 Feb 2023 19:21:48 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Os7GtlLipoBSCDn6HCQpez9ZcL54vv+I6Z0dH7QlAo1bDbHaTGD44/kYHIsqlqfExAezzWFa7MW6qKE4oCbugnzTTAJzETUmlrqsjHFEGvq3bdNhY1rISXGtZ9Gi6k6cQjkn7x7ImKS9EvsNUpsxgKvO2WoBNh8JM8uoXIKUIuhFoM7veEm2FZrZA4hXSZueGiJ6XgU8lEOPWUFc5Og8R1vsL6LZmRz8/v1kf6GcoPIrSXzaOYgyRntVKPCMiq8qQg5XjCWOXzdsCSRLX6l+HDqmK0T+JuYiP6pD0O3dCimdju74BGSkp+9K2roKM6T2Wua7kccp0v5xvuV8k5GDpg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9iBjaZre3pYH7hpVb0UtHPOugvxi0R80kH+p5qw4Lt8=;
+ b=TkuBlAgLO54GzrGVltAwm8Uc0PhQTrXJTaafjnvdexEpQKJIG/+tdZ2L/7vUs/UUgTe/QJhrnPtYaJXrwjd2VNE0hgc1XtrV95h5fjOs98ThgJTSx2+Ga4by5xEOhkLOVTyyvmUH44+ISoSOtCGMGa1pp/VVLmVWX3rTeAlGU/0Q7KFcpU0UW7NKk+V4hj5FCAKcln7ws87L9jdpuk+AXhMk7XP8RXdmmgsDYjHL2WavtFpb0sADkPndcNrChNUGsXH0wZSqKFZCi8e7LQZx4QYc5FD+9vxRIl2NdVadEiSJEqVCeeUF3NgEkWk0YD1vr7aXt0p3D7NXawpC+TPJdw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9iBjaZre3pYH7hpVb0UtHPOugvxi0R80kH+p5qw4Lt8=;
+ b=eHo5YN9/0rGtKQIv119ef001KMl5h3ZC3jnQ7MZbbHBCpq+O9xy0DUb8d9okTUatks5q/+xIU1wtjVcS46S1dh7kHxQBTu8COIEnDm2aWaFg96YrNabgxSgPiyIe+fKQZqA/2QuTmsYN30jjw0F8adhd09S+NxtQO7chfTBA1l4PgsLINLZG8gnOjbAaxXivPRxv9vvZyPKpILN/Y0CZMaZXeGDqk5LfDeLUcDrgaV/KyX0CYJcSQoi2qQR3nCKZ2wbyiRA/0emh10wWciPYlIZEPEMJSG/+rTXSkKZF0+lEiD5sZ1EXjf50rX0mnx8Qzv0ccZWCa70GFKcD8igCqg==
+Received: from AS8P193MB2095.EURP193.PROD.OUTLOOK.COM (2603:10a6:20b:40e::16)
+ by DU2P193MB2226.EURP193.PROD.OUTLOOK.COM (2603:10a6:10:2ff::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.20; Mon, 20 Feb
+ 2023 19:21:45 +0000
+Received: from AS8P193MB2095.EURP193.PROD.OUTLOOK.COM
+ ([fe80::3d5a:43b6:acd8:3be8]) by AS8P193MB2095.EURP193.PROD.OUTLOOK.COM
+ ([fe80::3d5a:43b6:acd8:3be8%9]) with mapi id 15.20.6111.021; Mon, 20 Feb 2023
+ 19:21:45 +0000
+Message-ID:
+ <AS8P193MB209596DC2B89931C57C565BDD2A49@AS8P193MB2095.EURP193.PROD.OUTLOOK.COM>
+Date: Mon, 20 Feb 2023 20:21:43 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: SR-IOV on ARM64 system with SMMU
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, will@kernel.org, joro@8bytes.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+References: <AS8P193MB2095640357779A7F9B6026F8D2A19@AS8P193MB2095.EURP193.PROD.OUTLOOK.COM>
+ <c8366f3a-3eba-6a54-558d-c87350187793@arm.com>
+From: Martin Bayern <martinbayern@outlook.com>
+In-Reply-To: <c8366f3a-3eba-6a54-558d-c87350187793@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TMN: [vsuXEWkN8FllBZM7lGEcPj3NSUKdMAuE]
+X-ClientProxiedBy: ZR2P278CA0062.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:52::10) To AS8P193MB2095.EURP193.PROD.OUTLOOK.COM
+ (2603:10a6:20b:40e::16)
+X-Microsoft-Original-Message-ID:
+ <54e0899b-cbb8-403e-a7ae-38515a48373c@outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:GxC2BwD37mU1jvNjxxw4AQ--.54334S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Zr48CFyDtr4rAr4kCw48Zwb_yoW8KF1kpr
-	4xGFy3GrWFvF1fZa9rZa1kCryYyr9Yka1fJa4xtwn3ArZ8Wr9aqF9rKw15tw1fJF9Ygr1f
-	XF4kJa45Ars8AaUanT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUU9F14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWUuVWrJwAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-	1l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-	6F4UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r4UJV
-	WxJr1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-	2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-	W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc7CjxVAaw2AFwI0_
-	Jw0_GFylc7CjxVAKzI0EY4vE52x082I5MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4
-	AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE
-	17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMI
-	IF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3
-	Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcS
-	sGvfC2KfnxnUUI43ZEXa7VUjHmh7UUUUU==
-X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
-X-CFilter-Loop: Reflected
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS8P193MB2095:EE_|DU2P193MB2226:EE_
+X-MS-Office365-Filtering-Correlation-Id: f7ae06a7-82db-4452-ff6e-08db1377b472
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	7ILCIdCbEHmse/Ed8KsQJuiYgaHJOLj9BpTIpXcYcHXga8uVuD4sOj8JRQaSi8IxiijmL1GETZPiR6JpKXLwFGl5k/wCB9GVFVww/bU1htKC211NBR0v1N6MRVF6D11cvoO+IdamVFY9he3q+SxNmrHS2WYRt5tmSvgk9k5rWgXeYoVVaJRU1Qzps+VT1ugWFu5bjhBPG2RKQ9MHIyTRFwx/1iqhLuOMeumoe9An/7F5LfIsdnbf5jmYcwMX9IBRoPlIAHJMblokIG6pQxALeTPgDkI5xO5onwq91r3bE/U7iBW9I8NWmJbWsxTCO/vMK8HQJIHuPT2P/UHtYWgC0k0YeVVk2brTlqcOUszrdSakujMHN9ZObtCOjYIlg9EX3ESs8956dyxFY653XhD+A/96OYduzm+sB1zCegU+haDgctSuygz7O4lUqgl9LFAbBeByl/kfubpmOGp07Xi1vb0yCeBH04FQblTrVtmrRBV9PvDFX+0+IEQOsLFXoat95BgGIyE5bQfO3zIJYN+VDBwJ7e7JxAHaIvxfVc9oUnKcdeFmFmlKIOpIc2yyBXnGS5bKP0xpAgtl2Ilxv/dnvG050KNbS++DPSA02NQaX9J+QQxDgO5TAhWEZM/3YSw/xP5Ggadt/DShGJSqw+FBVw==
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?VHIwdmtVQ1o5NXpicy9VTzVJVk1VWXlQOUFqMVlKMVlmU1BadmNMRE1FcUtI?=
+ =?utf-8?B?aVloaVZPNzcxQmU4Q0hTWXV1MW50dW9NUDFoOUtzYjIvTlVvMU53VVZaK0l2?=
+ =?utf-8?B?Z1FSUzd5VEJSZGY0RDIxdExkNGNKUHpmT0VDUnE4cjltUHFtS0lucE5GVkh2?=
+ =?utf-8?B?RERJRkZwVGJOOXVReEI0R1IxRzQ0VEdjUDZnSFNXN3dKTFo2MzNlOFY2RVpy?=
+ =?utf-8?B?SkY4SU12cW9IS01VWVFVSHgwTHpTMEpjUW1PQU1xaW0wU0lYVUE1a21yR0ZN?=
+ =?utf-8?B?NnBaS1JNL0lzM1RjWFh6U1o0TCtpbHRWZHM5bGFha1lSc3k5TTZrR0EydkhD?=
+ =?utf-8?B?ZjFEU1V2cmE0ci9aMUM0SEcwUzk2SHlSZlZWWGc4NHJZYko5K0Rjb252dnlm?=
+ =?utf-8?B?cmk5Sms1L0Q5K2VaN0o4U2gzaUVPSlozM3o1aHNtNTE0a3hxbmhoOE1hTndD?=
+ =?utf-8?B?YWN4YndSNWc3UHNTK1hJckViaUlKdmVSSlJVNmdtdmxaVHRaeUhsZEo0dmpT?=
+ =?utf-8?B?OXI2Y2Ixbk5YTTI5Q0N4ZXZsSkp3eERRTGZNUlRKdW1ReXExZ1NNN3N1emxZ?=
+ =?utf-8?B?clY1Rm9RVy95WVdiaW9uckt6VnljVS9LZGRURlFPNVpvS3BrR1dDV1FuTzZ4?=
+ =?utf-8?B?T2d6VTNneitsZHI5L3RtajlvU0F2YmhmSlo2dlRpTTNKOU5JOXBzVFErZ05u?=
+ =?utf-8?B?MUtXazFpaVVRV1VhUnBQMG9HVGJUbWFuTUpKMnFCV0hUalRyYVlCcVAvWXRu?=
+ =?utf-8?B?UjN5eldqWUxLQ1E2T0RXaW1LUFZDdDdiYnJtellJbWRHV0hCMGs1b0U5ODYr?=
+ =?utf-8?B?c1kwMml4Nzk2V3IwakxLMFdSTXhwREhpRlNMNVh0YitFSmQzVmxzUk9COXg2?=
+ =?utf-8?B?NEROa2tQVzR5OTV2dW9KeHpLcXNmWnJlWnhjY2xHSFQ2cmtQZ3FFY3dlbVA3?=
+ =?utf-8?B?cHZxTzZSSEFEcXlBYVc4VE96Mmw2Y1JIOUdRclFkYy9LUjJicGhMUFZwRDVu?=
+ =?utf-8?B?bWRGeVV0enR5ejBLS0lPdmJqQVlvS2UzS3FlWFQ2cTIwdXNQcnltTmtwVGdU?=
+ =?utf-8?B?NmpyTFBqeXRGMjRhOVBzTnJUbDRiRUtqSzRaU0JMdUxnbEw2MkJoQVZhVGhr?=
+ =?utf-8?B?b2pMaWFXOS93cHU3TlBKYlk2VlFMalBNQklueUFKUXpPVHRsZmhQRXE2cng5?=
+ =?utf-8?B?ckhKQlVFTHZnbUEwVFRRaFZJZHdZVnhvdVByQjZ5K3NJMHlFSFdUa3ZjYzNu?=
+ =?utf-8?B?Q081aklpSXdWcXl4T1Y0akJjNm9HYnJNcVRTZDZleDZWc0I4Rk5yL1FaTEpi?=
+ =?utf-8?B?YjdPQnFyV3d1ZUQ5R2s5Nm45YkVUeGJHbmtKWmNmVGtIZnM5U1QzNEFCYkFz?=
+ =?utf-8?B?ZFNZRFZuMDJyempHVGRWN1hUWmJnQ1lVT3RGWTcxSFd4M25TMkp1YU9OWWI5?=
+ =?utf-8?B?Tk1kcGlqUFZDOXYzRUNMK2VzVjZyZGlzYzlrcHJmSEpEdVc0L0RIRi94VFJV?=
+ =?utf-8?B?WlYvSGdidE43VjY4am5rdzh6VWdOVFg4RkFWd3VNdTFvU0ZvVWVZUW1sR0pD?=
+ =?utf-8?B?bitudjA5T1cveXhML1VYd2xjVVd5VXZBS04ycXluK0xjdVZQYXhjUGpBZVVn?=
+ =?utf-8?B?RjV6ZDFIZ0g1MUhWMkVrdzVRbzNBaTdUZUFTcUdvaGkxWXkxV2xVV3NMMHQ1?=
+ =?utf-8?B?OUE2MzlWVkg0WG9LRjNYVjJFZ2grTEFMelVNUVJvQ1g4dmxISkcrN0NMZTNQ?=
+ =?utf-8?Q?//esVDG15KgLSXly1I=3D?=
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f7ae06a7-82db-4452-ff6e-08db1377b472
+X-MS-Exchange-CrossTenant-AuthSource: AS8P193MB2095.EURP193.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Feb 2023 19:21:45.5652
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2P193MB2226
 
-Since both callers of dma_direct_optimal_gfp_mask() pass
-dev->coherent_dma_mask as the second argument, it is better to
-remove that parameter altogether.
+Hi Robin,
 
-Not only is reducing number of parameters good for readability, but
-the new function signature is also more logical: The optimal flags
-depend only on data contained in struct device.
+thanks for your email. the platform doesn't support ACS, so I added  
+pcie ACS override patch:
 
-While touching this code, let's also rename phys_mask to phys_limit
-in dma_direct_alloc_from_pool(), because it is indeed a limit.
+martin@ubuntu:~$ sudo dmesg | grep ACS
+[    0.000000] Warning: PCIe ACS overrides enabled; This may allow 
+non-IOMMU protected peer-to-peer DMA
 
-Signed-off-by: Petr Tesarik <Petr.Tesarik.ext@huawei.com>
----
- kernel/dma/direct.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+but, after applying this patch, the PCIe VFs and PF are still grouped in 
+the same IOMMU group 10:
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 63859a101ed8..5595d1d5cdcc 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -44,10 +44,11 @@ u64 dma_direct_get_required_mask(struct device *dev)
- 	return (1ULL << (fls64(max_dma) - 1)) * 2 - 1;
- }
- 
--static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
--				  u64 *phys_limit)
-+static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 *phys_limit)
- {
--	u64 dma_limit = min_not_zero(dma_mask, dev->bus_dma_limit);
-+	u64 dma_limit = min_not_zero(
-+		dev->coherent_dma_mask,
-+		dev->bus_dma_limit);
- 
- 	/*
- 	 * Optimistically try the zone that the physical address mask falls
-@@ -126,8 +127,7 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 	if (is_swiotlb_for_alloc(dev))
- 		return dma_direct_alloc_swiotlb(dev, size);
- 
--	gfp |= dma_direct_optimal_gfp_mask(dev, dev->coherent_dma_mask,
--					   &phys_limit);
-+	gfp |= dma_direct_optimal_gfp_mask(dev, &phys_limit);
- 	page = dma_alloc_contiguous(dev, size, gfp);
- 	if (page) {
- 		if (!dma_coherent_ok(dev, page_to_phys(page), size) ||
-@@ -172,14 +172,13 @@ static void *dma_direct_alloc_from_pool(struct device *dev, size_t size,
- 		dma_addr_t *dma_handle, gfp_t gfp)
- {
- 	struct page *page;
--	u64 phys_mask;
-+	u64 phys_limit;
- 	void *ret;
- 
- 	if (WARN_ON_ONCE(!IS_ENABLED(CONFIG_DMA_COHERENT_POOL)))
- 		return NULL;
- 
--	gfp |= dma_direct_optimal_gfp_mask(dev, dev->coherent_dma_mask,
--					   &phys_mask);
-+	gfp |= dma_direct_optimal_gfp_mask(dev, &phys_limit);
- 	page = dma_alloc_from_pool(dev, size, &ret, gfp, dma_coherent_ok);
- 	if (!page)
- 		return NULL;
--- 
-2.25.1
 
+martin@ubuntu:~$ find /sys/kernel/iommu_groups/ -type l
+/sys/kernel/iommu_groups/20/devices/15340000.vic
+/sys/kernel/iommu_groups/10/devices/0005:01:00.2
+/sys/kernel/iommu_groups/10/devices/0005:01:00.0
+/sys/kernel/iommu_groups/10/devices/0005:00:00.0
+/sys/kernel/iommu_groups/10/devices/0005:01:00.3
+/sys/kernel/iommu_groups/10/devices/141a0000.pcie
+
+martin@ubuntu:~$ sudo lspci -vvt
+-+-[0005:00]---00.0-[01-ff]--+-00.0  Micron NVMe SSD Controller PCC
+  |                           +-00.2 Micron NVMe SSD Controller PCC
+  |                           \-00.3  Micron NVMe SSD Controller PCC
+  +-[0001:00]---00.0-[01-ff]----00.0  Marvell Technology Group Ltd. 
+Device 9171
+  \-[0000:00]-
+
+
+
+martin@ubuntu:~$ ls -lah /sys/kernel/iommu_groups/10/devices/
+total 0
+drwxr-xr-x 2 root root 0 Feb 17 17:58 .
+drwxr-xr-x 3 root root 0 Feb 17 17:58 ..
+lrwxrwxrwx 1 root root 0 Feb 17 18:09 0005:00:00.0 -> 
+../../../../devices/platform/141a0000.pcie/pci0005:00/0005:00:00.0
+lrwxrwxrwx 1 root root 0 Feb 17 18:09 0005:01:00.0 -> 
+../../../../devices/platform/141a0000.pcie/pci0005:00/0005:00:00.0/0005:01:00.0
+lrwxrwxrwx 1 root root 0 Feb 17 18:09 0005:01:00.2 -> 
+../../../../devices/platform/141a0000.pcie/pci0005:00/0005:00:00.0/0005:01:00.2
+lrwxrwxrwx 1 root root 0 Feb 17 18:09 0005:01:00.3 -> 
+../../../../devices/platform/141a0000.pcie/pci0005:00/0005:00:00.0/0005:01:00.3
+lrwxrwxrwx 1 root root 0 Feb 17 18:09 141a0000.pcie -> 
+../../../../devices/platform/141a0000.pcie
+
+
+IOMMU Group 10:
+     0005:00:00.0 PCI bridge [0604]: NVIDIA Corporation Device 
+[10de:1ad0] (rev a1)
+     0005:01:00.0 Non-Volatile memory controller [0108]: Micron NVMe SSD 
+Controller PCC [144d:a824]
+     0005:01:00.2 Non-Volatile memory controller [0108]: Micron NVMe SSD 
+Controller PCC [144d:a824]
+     0005:01:00.3 Non-Volatile memory controller [0108]: Micron NVMe SSD 
+Controller PCC [144d:a824]
+
+martin@ubuntu:~$ lspci
+0001:00:00.0 PCI bridge: NVIDIA Corporation Device 1ad2 (rev a1)
+0001:01:00.0 SATA controller: Marvell Technology Group Ltd. Device 9171 
+(rev 13)
+0005:00:00.0 PCI bridge: NVIDIA Corporation Device 1ad0 (rev a1)   // 
+this is PCIe bridge
+0005:01:00.0 Non-Volatile memory controller: Micron NVMe SSD Controller 
+PCC   // this is PF
+0005:01:00.2 Non-Volatile memory controller: Micron NVMe SSD Controller 
+PCC   // this is VF1
+0005:01:00.3 Non-Volatile memory controller: Micron NVMe SSD Controller 
+PCC   //this is VF2
+
+
+
+so after creating VFs,  bind the vfio-pci driver to the relevant 
+device(s), here I use VF1
+
+
+martin@ubuntu:~$ sudo modprobe -v vfio-pci
+insmod /lib/modules/5.10.104-tegra/kernel/drivers/vfio/vfio.ko
+insmod /lib/modules/5.10.104-tegra/kernel/drivers/vfio/vfio_iommu_type1.ko
+insmod /lib/modules/5.10.104-tegra/kernel/drivers/vfio/vfio_virqfd.ko
+insmod /lib/modules/5.10.104-tegra/kernel/drivers/vfio/pci/vfio-pci.ko
+
+martin@ubuntu:~$ sudo modprobe -r vfio_iommu_type1
+
+martin@ubuntu:~$ sudo modprobe -v vfio_iommu_type1 
+allow_unsafe_interrupts=1
+insmod 
+/lib/modules/5.10.104-tegra/kernel/drivers/vfio/vfio_iommu_type1.ko 
+allow_unsafe_interrupts=1
+
+
+martin@ubuntu:~$ echo vfio-pci > 
+/sys/bus/pci/devices/0005\:01\:00.2/driver_override
+
+martin@ubuntu:~$ sudo chmod 777 -R /sys/bus/pci
+martin@ubuntu:~$ echo 0005:01:00.2 > /sys/bus/pci/drivers/nvme/unbind
+martin@ubuntu:~$ echo 144d a824 > /sys/bus/pci/drivers/vfio-pci/new_id
+martin@ubuntu:~$ sudo echo 0005:01:00.2 > /sys/bus/pci/drivers_probe
+martin@ubuntu:~$
+martin@ubuntu:~$
+
+after that, the VF1 disappears in the nvme list, but "virsh 
+nodedev-list" still doesn't have VF PCIe, and I added VF PCIe bus in the 
+vm.xml, after start vm,
+I got this error,
+
+martin@ubuntu:~$ virsh start --domain vm1
+error: Failed to start domain vm1
+error: internal error: Found invalid device link '141a0000.pcie' in 
+'/sys/bus/pci/devices/0005:01:00.2/iommu_group/devices' //141a0000 is 
+PCIe bridge
+
+I checked the IOMMU group 10, VFs, PF and a PCIe bridge are still 
+grouped in the same group.
+
+
+do you know what else I missed?
+
+kind regards,
+Martin
+
+
+On 20.02.23 2:15 PM, Robin Murphy wrote:
+> Hi Martin,
+>
+> On 2023-02-17 15:42, Martin Bayern wrote:
+>> Hello,
+>>
+>> Recently I faced the challenge of enabling SR-IOV on an ARM based 
+>> system, PCIe devices have SR-IOV capability, I enabled it and created 
+>> its VF, "lspci -nn" can also list these PF and VF PCIe nodes, but the 
+>> command  'virsh nodedev-list' lists no PCIe node devices, and the 
+>> hypervisor cannot detach the VF from the host, attaches to the 
+>> virtual machine. I checked many blogs and papers, it seems that for 
+>> ARM-based systems, we should use VFIO-PCI or pci-stub module,I tried 
+>> these commands:
+>>
+>>
+>> sudo modprobe -v vfio-pci
+>> sudo modprobe -r vfio_iommu_type1
+>> sudo modprobe -v vfio_iommu_type1 allow_unsafe_interrupts=1
+>>
+>> After that, the problem persists, do you know what else I should 
+>> check and enable? Does this require ARM64 chipset support SR-IOV? If 
+>> yes, how can I check if the CPU supports it?
+>
+> If you can successfully enable VFs, then the system supports SR-IOV as 
+> far as is relevant. Beyond that it's just regular VFIO usage - there's 
+> nothing Arm-specific about that (note that if you have a sufficiently 
+> modern system you shouldn't need allow_unsafe_interrupts either). 
+> Taking the above at face value it looks like you're missing the steps 
+> to actually bind the vfio-pci driver to the relevant device(s) - see 
+> here:
+>
+> https://www.kernel.org/doc/html/latest/driver-api/vfio.html?highlight=vfio#vfio-usage-example 
+>
+>
+> However it's also possible that you won't get usefully-assignable 
+> groups because the system doesn't support PCIe ACS (and therefore 
+> can't prevent peer-to-peer traffic between your VFs and other devices 
+> the host is still using).
+>
+> Thanks,
+> Robin.
