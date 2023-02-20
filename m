@@ -1,131 +1,116 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from frasgout12.his.huawei.com (frasgout12.his.huawei.com [14.137.139.154])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7ECDE63DB
-	for <iommu@lists.linux.dev>; Mon, 20 Feb 2023 15:24:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1676906670;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=XXbeg/8n4ojsPY6rFquIIVMt+7vRYFxzuQ9z7o+cgT8=;
-	b=AjbXDjPHVKBbHJsXTgWkgZX8qJ32lC7L0co1Nue0JK/0XlSYAuk5R4Sz8TOiqap4dY4/ot
-	elLAJH/mOc7NLy/oJWFSjV7uGl7FouDLtymj0H6IHevlmwN9XJp3sXWjQMMA0/8+y95K1+
-	55dNdAlqVjayKOv50onwyqOTgRbgyTE=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-208-ikD8o5M1NVOEDF2vtck6Ag-1; Mon, 20 Feb 2023 10:24:28 -0500
-X-MC-Unique: ikD8o5M1NVOEDF2vtck6Ag-1
-Received: by mail-wm1-f72.google.com with SMTP id t1-20020a7bc3c1000000b003dfe223de49so747450wmj.5
-        for <iommu@lists.linux.dev>; Mon, 20 Feb 2023 07:24:28 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XXbeg/8n4ojsPY6rFquIIVMt+7vRYFxzuQ9z7o+cgT8=;
-        b=Y8YzWud49P9LBUabN+GOEBzmTvHajEB0eKC1aITutk/EA2VTwLSUCxctmmsyDgEcep
-         vYwIH5PqJOP/YgjHRKeNAxTAcWA/z+ADBuzs1mPVEHH3InRc9RwF93BvnAkjokQcuZQ3
-         9MWCdXGl6sM+9MHvn+xhXPpRxYMwJHmoMDnqOORxLWNWKjyQhZ13LJCoafeb/qnTDuoz
-         037iayKlpn++SIIzMGSEXPp75VhzjpdeuiKQK05PDIFMGiFfkqs6usfMdjaPSKwdXpFI
-         VV9VnT/VySonatDsGOaDqNTV75R1oRlxzOW/v2HmZ9TbYbXOX8on6SC6dDycbk2m6oRb
-         3f9Q==
-X-Gm-Message-State: AO0yUKXHPZSVjZ9WemqHMxhaH6cogX4cs17q4QrfmUNRZfxFPxCwT2FQ
-	/bx6tiqotHZwumWi5BWhBNhhjZfkxBvVbTOXW8dExnA3ATHWO+ZdziPO3VbPD4+MDEP0TaDmQJm
-	2aovJ7KuHf85gwCM=
-X-Received: by 2002:a05:600c:4591:b0:3e0:481:c897 with SMTP id r17-20020a05600c459100b003e00481c897mr1269885wmo.37.1676906667352;
-        Mon, 20 Feb 2023 07:24:27 -0800 (PST)
-X-Google-Smtp-Source: AK7set9tFwhAVYPdJYx0EhG2sVxAmzmAIlOl5vAvFJ3YD45gjzKLDP25kfvtfbMuXNPd38LD2ll++g==
-X-Received: by 2002:a05:600c:4591:b0:3e0:481:c897 with SMTP id r17-20020a05600c459100b003e00481c897mr1269863wmo.37.1676906667016;
-        Mon, 20 Feb 2023 07:24:27 -0800 (PST)
-Received: from redhat.com ([2.52.5.34])
-        by smtp.gmail.com with ESMTPSA id p8-20020a1c7408000000b003b47b80cec3sm541587wmc.42.2023.02.20.07.24.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Feb 2023 07:24:26 -0800 (PST)
-Date: Mon, 20 Feb 2023 10:24:22 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Jason Wang <jasowang@redhat.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Nanyong Sun <sunnanyong@huawei.com>,
-	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-	netdev@vger.kernel.org, wangrong68@huawei.com
-Subject: Re: [PATCH v2] vhost/vdpa: Add MSI translation tables to iommu for
- software-managed MSI
-Message-ID: <20230220102216-mutt-send-email-mst@kernel.org>
-References: <20230207120843.1580403-1-sunnanyong@huawei.com>
- <Y+7G+tiBCjKYnxcZ@nvidia.com>
- <CACGkMEtehykvqNUnfCi0VmHR1xpmhj4sSWdYW1-0oATY=0YhXw@mail.gmail.com>
- <20230217051038-mutt-send-email-mst@kernel.org>
- <CACGkMEuDG1NUs0=ry1=Mphfd+TrqAvVS0yeu9hcni2VrPkB8tQ@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CAD463DB
+	for <iommu@lists.linux.dev>; Mon, 20 Feb 2023 15:32:21 +0000 (UTC)
+Received: from mail02.huawei.com (unknown [172.18.147.227])
+	by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4PL5M40P5Bz9xGX8
+	for <iommu@lists.linux.dev>; Mon, 20 Feb 2023 23:05:20 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.81.223.230])
+	by APP2 (Coremail) with SMTP id GxC2BwD37mU1jvNjxxw4AQ--.54334S2;
+	Mon, 20 Feb 2023 16:14:03 +0100 (CET)
+From: Petr Tesarik <petrtesarik@huaweicloud.com>
+To: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
+	linux-kernel@vger.kernel.org (open list)
+Cc: roberto.sassu@huaweicloud.com,
+	Petr Tesarik <petrtesarik@huaweicloud.com>,
+	Petr Tesarik <Petr.Tesarik.ext@huawei.com>
+Subject: [PATCH] dma-direct: cleanup parameters to dma_direct_optimal_gfp_mask
+Date: Mon, 20 Feb 2023 16:13:47 +0100
+Message-Id: <20230220151347.590-1-petrtesarik@huaweicloud.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <CACGkMEuDG1NUs0=ry1=Mphfd+TrqAvVS0yeu9hcni2VrPkB8tQ@mail.gmail.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:GxC2BwD37mU1jvNjxxw4AQ--.54334S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7Zr48CFyDtr4rAr4kCw48Zwb_yoW8KF1kpr
+	4xGFy3GrWFvF1fZa9rZa1kCryYyr9Yka1fJa4xtwn3ArZ8Wr9aqF9rKw15tw1fJF9Ygr1f
+	XF4kJa45Ars8AaUanT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUU9F14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+	rVWUuVWrJwAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+	1l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+	6F4UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r4UJV
+	WxJr1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+	2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+	W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc7CjxVAaw2AFwI0_
+	Jw0_GFylc7CjxVAKzI0EY4vE52x082I5MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4
+	AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE
+	17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMI
+	IF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3
+	Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcS
+	sGvfC2KfnxnUUI43ZEXa7VUjHmh7UUUUU==
+X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
+X-CFilter-Loop: Reflected
 
-On Mon, Feb 20, 2023 at 10:36:27AM +0800, Jason Wang wrote:
-> On Fri, Feb 17, 2023 at 6:11 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Fri, Feb 17, 2023 at 01:35:59PM +0800, Jason Wang wrote:
-> > > On Fri, Feb 17, 2023 at 8:15 AM Jason Gunthorpe <jgg@nvidia.com> wrote:
-> > > >
-> > > > On Tue, Feb 07, 2023 at 08:08:43PM +0800, Nanyong Sun wrote:
-> > > > > From: Rong Wang <wangrong68@huawei.com>
-> > > > >
-> > > > > Once enable iommu domain for one device, the MSI
-> > > > > translation tables have to be there for software-managed MSI.
-> > > > > Otherwise, platform with software-managed MSI without an
-> > > > > irq bypass function, can not get a correct memory write event
-> > > > > from pcie, will not get irqs.
-> > > > > The solution is to obtain the MSI phy base address from
-> > > > > iommu reserved region, and set it to iommu MSI cookie,
-> > > > > then translation tables will be created while request irq.
-> > > >
-> > > > Probably not what anyone wants to hear, but I would prefer we not add
-> > > > more uses of this stuff. It looks like we have to get rid of
-> > > > iommu_get_msi_cookie() :\
-> > > >
-> > > > I'd like it if vdpa could move to iommufd not keep copying stuff from
-> > > > it..
-> > >
-> > > Yes, but we probably need a patch for -stable.
-> >
-> > Hmm do we? this looks like it's enabling new platforms is not a bugfix...
-> 
-> I think we haven't limited vDPA to any specific arch in the past?
-> 
-> Thanks
+Since both callers of dma_direct_optimal_gfp_mask() pass
+dev->coherent_dma_mask as the second argument, it is better to
+remove that parameter altogether.
 
-No, but it still fails gracefully right?
+Not only is reducing number of parameters good for readability, but
+the new function signature is also more logical: The optimal flags
+depend only on data contained in struct device.
 
-Anyway, this will need iommu maintainer's ack.  We'll see.
+While touching this code, let's also rename phys_mask to phys_limit
+in dma_direct_alloc_from_pool(), because it is indeed a limit.
 
+Signed-off-by: Petr Tesarik <Petr.Tesarik.ext@huawei.com>
+---
+ kernel/dma/direct.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
-> >
-> > > >
-> > > > Also the iommu_group_has_isolated_msi() check is missing on the vdpa
-> > > > path, and it is missing the iommu ownership mechanism.
-> > >
-> > > Ok.
-> > >
-> > > >
-> > > > Also which in-tree VDPA driver that uses the iommu runs on ARM? Please
-> > >
-> > > ifcvf and vp_vpda are two drivers that use platform IOMMU.
-> > >
-> > > Thanks
-> > >
-> > > > don't propose core changes for unmerged drivers. :(
-> > > >
-> > > > Jason
-> > > >
-> >
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 63859a101ed8..5595d1d5cdcc 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -44,10 +44,11 @@ u64 dma_direct_get_required_mask(struct device *dev)
+ 	return (1ULL << (fls64(max_dma) - 1)) * 2 - 1;
+ }
+ 
+-static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
+-				  u64 *phys_limit)
++static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 *phys_limit)
+ {
+-	u64 dma_limit = min_not_zero(dma_mask, dev->bus_dma_limit);
++	u64 dma_limit = min_not_zero(
++		dev->coherent_dma_mask,
++		dev->bus_dma_limit);
+ 
+ 	/*
+ 	 * Optimistically try the zone that the physical address mask falls
+@@ -126,8 +127,7 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
+ 	if (is_swiotlb_for_alloc(dev))
+ 		return dma_direct_alloc_swiotlb(dev, size);
+ 
+-	gfp |= dma_direct_optimal_gfp_mask(dev, dev->coherent_dma_mask,
+-					   &phys_limit);
++	gfp |= dma_direct_optimal_gfp_mask(dev, &phys_limit);
+ 	page = dma_alloc_contiguous(dev, size, gfp);
+ 	if (page) {
+ 		if (!dma_coherent_ok(dev, page_to_phys(page), size) ||
+@@ -172,14 +172,13 @@ static void *dma_direct_alloc_from_pool(struct device *dev, size_t size,
+ 		dma_addr_t *dma_handle, gfp_t gfp)
+ {
+ 	struct page *page;
+-	u64 phys_mask;
++	u64 phys_limit;
+ 	void *ret;
+ 
+ 	if (WARN_ON_ONCE(!IS_ENABLED(CONFIG_DMA_COHERENT_POOL)))
+ 		return NULL;
+ 
+-	gfp |= dma_direct_optimal_gfp_mask(dev, dev->coherent_dma_mask,
+-					   &phys_mask);
++	gfp |= dma_direct_optimal_gfp_mask(dev, &phys_limit);
+ 	page = dma_alloc_from_pool(dev, size, &ret, gfp, dma_coherent_ok);
+ 	if (!page)
+ 		return NULL;
+-- 
+2.25.1
 
