@@ -1,26 +1,60 @@
-Received: from frasgout13.his.huawei.com (frasgout13.his.huawei.com [14.137.139.46])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF3E763D1
-	for <iommu@lists.linux.dev>; Mon, 20 Feb 2023 15:22:14 +0000 (UTC)
-Received: from mail02.huawei.com (unknown [172.18.147.229])
-	by frasgout13.his.huawei.com (SkyGuard) with ESMTP id 4PL5C70mBjz9xyNC
-	for <iommu@lists.linux.dev>; Mon, 20 Feb 2023 22:58:27 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.81.223.230])
-	by APP1 (Coremail) with SMTP id LxC2BwCXHwuAjPNjH5A6AQ--.54716S2;
-	Mon, 20 Feb 2023 16:06:47 +0100 (CET)
-From: Petr Tesarik <petrtesarik@huaweicloud.com>
-To: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
-	linux-kernel@vger.kernel.org (open list)
-Cc: roberto.sassu@huaweicloud.com,
-	Petr Tesarik <petrtesarik@huaweicloud.com>
-Subject: [PATCH] dma-direct: cleanup parameters to dma_direct_optimal_gfp_mask
-Date: Mon, 20 Feb 2023 16:06:22 +0100
-Message-Id: <20230220150622.454-1-petrtesarik@huaweicloud.com>
-X-Mailer: git-send-email 2.25.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71F5E63D1
+	for <iommu@lists.linux.dev>; Mon, 20 Feb 2023 15:22:37 +0000 (UTC)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31KEtJVD003209;
+	Mon, 20 Feb 2023 15:22:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=JyS/DaEvjYz3Yy6r5m4p+hsTqT6eqxTIuVtmSoHg8Qg=;
+ b=Mbf75rbALo099Ru+phBfhzZ1f2zNpo2wNhOsVeMGacZpV1NSEAZ6BzlJzv2DgFUTvSkb
+ 9RY0SdgfG6BbgyiLr7/aVc6AoNqv+4FkIMK+Ormqa0pdZo3D7gKkOc3cUxYvo/zsCdTB
+ XnY1kESIDgVA/ZNf4ymY0mMuTJGEzAOWx3mPS0W0nlyqk5t1XsSmYbWWPvcqCGY99Vcd
+ p9DNgw4O7fjgu7IktxVb4p2GfakqPu5uaSuV343uyFQO+jy8J9dMV07ESsFCWEJYHMeN
+ EzfeOzciJpUr0fukhMh7ARlqH3AiQXicBfVvMtJmVnlHs2anPfS9yIk8K8QyqIeZfx4k 1A== 
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nv8ngd2v1-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 20 Feb 2023 15:22:29 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+	by ppma04fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 31KFJNE6014278;
+	Mon, 20 Feb 2023 15:22:27 GMT
+Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
+	by ppma04fra.de.ibm.com (PPS) with ESMTPS id 3ntpa625hq-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 20 Feb 2023 15:22:27 +0000
+Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
+	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 31KFMN6D23658948
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 20 Feb 2023 15:22:23 GMT
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 900912004B;
+	Mon, 20 Feb 2023 15:22:23 +0000 (GMT)
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 26BA62004D;
+	Mon, 20 Feb 2023 15:22:23 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+	by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Mon, 20 Feb 2023 15:22:23 +0000 (GMT)
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>, Gerd Bayer <gbayer@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev,
+        linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        agordeev@linux.ibm.com, svens@linux.ibm.com,
+        linux-kernel@vger.kernel.org, Julian Ruess <julianr@linux.ibm.com>
+Subject: [PATCH v7 1/6] s390/ism: Set DMA coherent mask
+Date: Mon, 20 Feb 2023 16:22:17 +0100
+Message-Id: <20230220152222.1818344-2-schnelle@linux.ibm.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20230220152222.1818344-1-schnelle@linux.ibm.com>
+References: <20230220152222.1818344-1-schnelle@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -28,88 +62,48 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:LxC2BwCXHwuAjPNjH5A6AQ--.54716S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Zr48CFyDtr4rAr4kCw48Zwb_yoW8KF1kpr
-	4xGFy3GrWFvF1fZa9rZa1kCryYy3sYka1fJFyxtwn3ArZ8Wr9aqF9rKw15tw1fJF9Y9r1f
-	XFs5Ja45Ars8ZaUanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUv014x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWUuVWrJwAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-	1l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r1j
-	6r4UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r4UJV
-	WxJr1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-	2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-	W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc7CjxVAKzI0EY4vE
-	52x082I5MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrV
-	AFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCI
-	c40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267
-	AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_
-	Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUj
-	dHUDUUUUU==
-X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
-X-CFilter-Loop: Reflected
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: Uhyh2ZlhWhC7qzJY899muNb2p5hnQrdp
+X-Proofpoint-GUID: Uhyh2ZlhWhC7qzJY899muNb2p5hnQrdp
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
+ definitions=2023-02-20_12,2023-02-20_02,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
+ clxscore=1015 mlxlogscore=999 impostorscore=0 suspectscore=0 mlxscore=0
+ adultscore=0 lowpriorityscore=0 bulkscore=0 phishscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2302200138
 
-Since both callers of dma_direct_optimal_gfp_mask() pass
-dev->coherent_dma_mask as the second argument, it is better to
-remove that parameter altogether.
+A future change will convert the DMA API implementation from the
+architecture specific arch/s390/pci/pci_dma.c to using the common code
+drivers/iommu/dma-iommu.c which the utilizes the same IOMMU hardware
+through the s390-iommu driver. Unlike the s390 specific DMA API this
+requires devices to correctly call set the coherent mask to be allowed
+to use IOVAs >2^32 in dma_alloc_coherent(). This was however not done
+for ISM devices. ISM requires such addresses since currently the DMA
+aperture for PCI devices starts at 2^32 and all calls to
+dma_alloc_coherent() would thus fail.
 
-Not only is reducing number of parameters good for readability, but
-the new function signature is also more logical: The optimal flags
-depend only on data contained in struct device.
-
-While touching this code, let's also rename phys_mask to phys_limit
-in dma_direct_alloc_from_pool(), because it is indeed a limit.
-
-Signed-off-by: Petr Tesarik <petrtesarik@huaweicloud.com>
+Reviewed-by: Alexandra Winter <wintera@linux.ibm.com>
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 ---
- kernel/dma/direct.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+ drivers/s390/net/ism_drv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 63859a101ed8..5595d1d5cdcc 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -44,10 +44,11 @@ u64 dma_direct_get_required_mask(struct device *dev)
- 	return (1ULL << (fls64(max_dma) - 1)) * 2 - 1;
- }
+diff --git a/drivers/s390/net/ism_drv.c b/drivers/s390/net/ism_drv.c
+index dfd401d9e362..aba03b613296 100644
+--- a/drivers/s390/net/ism_drv.c
++++ b/drivers/s390/net/ism_drv.c
+@@ -557,7 +557,7 @@ static int ism_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	if (ret)
+ 		goto err_disable;
  
--static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
--				  u64 *phys_limit)
-+static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 *phys_limit)
- {
--	u64 dma_limit = min_not_zero(dma_mask, dev->bus_dma_limit);
-+	u64 dma_limit = min_not_zero(
-+		dev->coherent_dma_mask,
-+		dev->bus_dma_limit);
+-	ret = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64));
++	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+ 	if (ret)
+ 		goto err_resource;
  
- 	/*
- 	 * Optimistically try the zone that the physical address mask falls
-@@ -126,8 +127,7 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 	if (is_swiotlb_for_alloc(dev))
- 		return dma_direct_alloc_swiotlb(dev, size);
- 
--	gfp |= dma_direct_optimal_gfp_mask(dev, dev->coherent_dma_mask,
--					   &phys_limit);
-+	gfp |= dma_direct_optimal_gfp_mask(dev, &phys_limit);
- 	page = dma_alloc_contiguous(dev, size, gfp);
- 	if (page) {
- 		if (!dma_coherent_ok(dev, page_to_phys(page), size) ||
-@@ -172,14 +172,13 @@ static void *dma_direct_alloc_from_pool(struct device *dev, size_t size,
- 		dma_addr_t *dma_handle, gfp_t gfp)
- {
- 	struct page *page;
--	u64 phys_mask;
-+	u64 phys_limit;
- 	void *ret;
- 
- 	if (WARN_ON_ONCE(!IS_ENABLED(CONFIG_DMA_COHERENT_POOL)))
- 		return NULL;
- 
--	gfp |= dma_direct_optimal_gfp_mask(dev, dev->coherent_dma_mask,
--					   &phys_mask);
-+	gfp |= dma_direct_optimal_gfp_mask(dev, &phys_limit);
- 	page = dma_alloc_from_pool(dev, size, &ret, gfp, dma_coherent_ok);
- 	if (!page)
- 		return NULL;
 -- 
-2.25.1
+2.37.2
 
