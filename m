@@ -1,142 +1,107 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 141D14C64
-	for <iommu@lists.linux.dev>; Tue, 21 Feb 2023 15:46:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78C51C433D2;
-	Tue, 21 Feb 2023 15:46:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1676994385;
-	bh=3ziXPbYFYizCBUeyvb04vAcb5WYuXVHnd8S6KPsXNSc=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=BChNJXQFE+PHOoIHC++wCPzIlV+ConDuZjFxGG2C3wzrjZHPiJlLhTbjK2jA9w/K8
-	 jddKsGrlS1sCpOoDuWdZTnQBvXIG5g7ehA0AbQpxVyGUeshxcIlcQIbwq5Aypytybp
-	 Bb0kKTw9de/65Ut+XcHg9KsPWI2UH4nCpH2fp6rOYcUIn9BSmHdkN70viXaqc2hR0w
-	 lJLVPsUNFn+r9oS153CbUVZG5fDDxFsIAD78Nbh4JyPRmYBDgVN9cveaFFxKIb2lGo
-	 GVHE30c9Ry889YorHI1lXJhsG/704AHdgkLhISVwv9g5GKdADb7deBSviirBz6MsTL
-	 dfCZk7MT00sHg==
-Date: Tue, 21 Feb 2023 09:46:24 -0600
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: Leon Romanovsky <leon@kernel.org>,
-	Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>,
-	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-	bhelgaas@google.com, darren@os.amperecomputing.com,
-	scott@os.amperecomputing.com, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
-Subject: Re: [PATCH] PCI/ATS:  Allow to enable ATS on VFs even if it is not
- enabled on PF
-Message-ID: <20230221154624.GA3701506@bhelgaas>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48E3D4C64
+	for <iommu@lists.linux.dev>; Tue, 21 Feb 2023 16:11:15 +0000 (UTC)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31LFFXFC031431;
+	Tue, 21 Feb 2023 16:10:50 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=JymdbLQeTeDhlP2A/OsKh68JdIUnbSBDiFwxb0u8pO4=;
+ b=HGTQRnc/Tu1es4Vq1INy2HGCNlBNcEGMECB6ZHMbqbcKplRji4vtRk6/19RKLpzsxZnR
+ 98tt4kX6MR7a1t55ObvtY0nYmB3xVzFzN7UsvmbNqope53AzW5rMkBaJt7d+1yoqVZUk
+ EqNYBUipiCEBsg8emdkxoM3tOknFL+yQotpT+bSNTT1rlFIGAmNZJ2UmQ+v3/Bv+j8IS
+ nWYdwJfTyamZp7+FWmIDhC4HhxDroP8JZCymZrhCYF1mAqmFj7EMeRct1BaTzjgpn2La
+ WdUdX7kMF3v38nA9CQezRTfnZJKmFS+aJoWd0wsLrFOVqsZ2YaXgeo3zk3cr6QP73X54 Yg== 
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nw0cp204j-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 21 Feb 2023 16:10:50 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+	by ppma05fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 31LCVcXd031864;
+	Tue, 21 Feb 2023 16:10:48 GMT
+Received: from smtprelay01.fra02v.mail.ibm.com ([9.218.2.227])
+	by ppma05fra.de.ibm.com (PPS) with ESMTPS id 3ntpa6b6v5-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 21 Feb 2023 16:10:47 +0000
+Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
+	by smtprelay01.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 31LGAivC43909608
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 21 Feb 2023 16:10:44 GMT
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 3FA732004D;
+	Tue, 21 Feb 2023 16:10:44 +0000 (GMT)
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id CB7AC20043;
+	Tue, 21 Feb 2023 16:10:43 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+	by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Tue, 21 Feb 2023 16:10:43 +0000 (GMT)
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>, Gerd Bayer <gbayer@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev,
+        linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        agordeev@linux.ibm.com, Sven Schnelle <svens@linux.ibm.com>,
+        Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+        Julian Ruess <julianr@linux.ibm.com>
+Subject: [PATCH] MAINTAINERS: Update s390-iommu driver maintainer information
+Date: Tue, 21 Feb 2023 17:10:43 +0100
+Message-Id: <20230221161043.37065-1-schnelle@linux.ibm.com>
+X-Mailer: git-send-email 2.37.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y+4PmJb2rBGMhS1y@myrica>
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: inK0pKToyXumXYAitzx08cjAJ_52Mm3g
+X-Proofpoint-ORIG-GUID: inK0pKToyXumXYAitzx08cjAJ_52Mm3g
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
+ definitions=2023-02-21_08,2023-02-20_02,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=949
+ clxscore=1015 impostorscore=0 lowpriorityscore=0 malwarescore=0
+ bulkscore=0 mlxscore=0 spamscore=0 phishscore=0 suspectscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2302210133
 
-On Thu, Feb 16, 2023 at 11:12:24AM +0000, Jean-Philippe Brucker wrote:
-> On Wed, Feb 15, 2023 at 02:57:26PM -0600, Bjorn Helgaas wrote:
-> > On Sun, Feb 12, 2023 at 08:14:48PM +0200, Leon Romanovsky wrote:
-> > > On Wed, Feb 08, 2023 at 10:43:21AM -0800, Ganapatrao Kulkarni wrote:
-> > > > As per PCIe specification(section 10.5), If a VF implements an
-> > > > ATS capability, its associated PF must implement an ATS capability.
-> > > > The ATS Capabilities in VFs and their associated PFs are permitted to
-> > > > be enabled independently.
-> > > > Also, it states that the Smallest Translation Unit (STU) for VFs must be
-> > > > hardwired to Zero and the associated PF's value applies to VFs STU.
-> > > > 
-> > > > The current code allows to enable ATS on VFs only if it is already
-> > > > enabled on associated PF, which is not necessary as per the specification.
-> > > > 
-> > > > It is only required to have valid STU programmed on PF to enable
-> > > > ATS on VFs. Adding code to write the first VFs STU to a PF's STU
-> > > > when PFs ATS is not enabled.
-> > >
-> > > Can you please add here quotes from the spec and its version? I don't see
-> > > anything like this in my version of PCIe specification.
-> > 
-> > See PCIe r6.0, sec 10.5.1.
-> > 
-> > > > Signed-off-by: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>
-> > > > ---
-> > > >  drivers/pci/ats.c | 15 +++++++++++----
-> > > >  1 file changed, 11 insertions(+), 4 deletions(-)
-> > > > 
-> > > > diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-> > > > index f9cc2e10b676..a97ec67201d1 100644
-> > > > --- a/drivers/pci/ats.c
-> > > > +++ b/drivers/pci/ats.c
-> > > > @@ -67,13 +67,20 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
-> > > >  	if (ps < PCI_ATS_MIN_STU)
-> > > >  		return -EINVAL;
-> > > >  
-> > > > -	/*
-> > > > -	 * Note that enabling ATS on a VF fails unless it's already enabled
-> > > > -	 * with the same STU on the PF.
-> > > > -	 */
-> > > >  	ctrl = PCI_ATS_CTRL_ENABLE;
-> > > >  	if (dev->is_virtfn) {
-> > > >  		pdev = pci_physfn(dev);
-> > > > +
-> > > > +		if (!pdev->ats_enabled &&
-> > > > +				(pdev->ats_stu < PCI_ATS_MIN_STU)) {
-> > > > +			u16 ctrl2;
-> > > > +
-> > > > +			/* Associated PF's STU value applies to VFs. */
-> > > > +			pdev->ats_stu = ps;
-> > > > +			ctrl2 = PCI_ATS_CTRL_STU(pdev->ats_stu - PCI_ATS_MIN_STU);
-> > > > +			pci_write_config_word(pdev, pdev->ats_cap + PCI_ATS_CTRL, ctrl2);
-> > > > +		}
-> > 
-> > For reference, it is this way because of edc90fee916b ("PCI: Allocate
-> > ATS struct during enumeration").  The rationale was that since the PF
-> > STU applies to all VFs, we should require that the PF STU be
-> > programmed before enabling ATS on any of the VFs.
-> > 
-> > This patch relaxes that so the PF STU would be set either by (a)
-> > enabling ATS on the PF or (b) enabling ATS on the first VF.
-> > 
-> > This looks racy because theoretically drivers for VF A and VF B could
-> > independently call pci_enable_ats() with different IOMMU page sizes,
-> > and we don't know which will get there first.
-> > 
-> > Most callers supply a compile-time constant (PAGE_SHIFT or
-> > VTD_PAGE_SHIFT), so it won't matter.  arm_smmu_enable_ats() is
-> > fancier, but I *assume* it would still supply the same IOMMU page size
-> > for all VFs of a given PF.
-> > 
-> > But it's still kind of ugly to call pci_enable_ats(dev_A) and have it
-> > muck with the configuration of dev_B.  Maybe we should configure the
-> > PF STU (without enabling ATS) at enumeration-time in pci_ats_init()?
-> > Is there some way to get the IOMMU page size at that time?
-> 
-> Not really, on Arm the supported page sizes are discovered when probing
-> the SMMU registers, which may happen later than enumeration, during module
-> loading.
->
-> What this patch is trying to solve is:
-> * want the PF to bypass SMMU translation, and the VF to undergo SMMU
->   translation (in order to assign it to a VM)
-> * SMMU forbids enabling ATS for a configuration that bypasses translation.
->   So the PF ATS capability must be left disabled.
-> 
-> For this situation I wonder if we could do: the SMMU driver, seeing that
-> the PF is configured to bypass, calls a new function "pci_configure_ats()"
-> instead of pci_enable_ats(), which would only set the STU but leave the
-> cap disabled. Then when setting up translation for the VF, the SMMU driver
-> calls pci_enable_ats() as usual, which sees the PF's STU set appropriately
-> and succeeds.
+The s390 DMA API conversion changes currently under review will extend
+the use of the s390-iommu driver to the DMA API. With s390's mandatory
+use of an IOMMU this means all DMA for PCI devices will then use the
+s390-iommu driver. With this in mind and considering my involvement in
+these changes it makes sense to reflect this increased interdependence
+in the maintainer structure. Thus add myself as first maintainer and
+move Gerald to reviewer status.
 
-Seems reasonable.
+Reviewed-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+Acked-by: Peter Oberparleiter <oberpar@linux.ibm.com>
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+---
+ MAINTAINERS | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-It's weird to me that the SMMU is between PCI and memory, but the
-driver seems to insert itself in the middle after PCI enumeration.
-And maybe even after some PCI device driver binding?  But I guess if
-you arrange for the SMMU driver to configure the PF before the VF
-driver gets started, that's all we need from a PCI perspective.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 135d93368d36..ad6536817f88 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -18291,8 +18291,9 @@ F:	drivers/s390/block/dasd*
+ F:	include/linux/dasd_mod.h
+ 
+ S390 IOMMU (PCI)
++M:	Niklas Schnelle <schnelle@linux.ibm.com>
+ M:	Matthew Rosato <mjrosato@linux.ibm.com>
+-M:	Gerald Schaefer <gerald.schaefer@linux.ibm.com>
++R:	Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+ L:	linux-s390@vger.kernel.org
+ S:	Supported
+ F:	drivers/iommu/s390-iommu.c
+-- 
+2.37.2
 
-Bjorn
