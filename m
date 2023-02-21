@@ -1,104 +1,96 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A68EE8C0B
-	for <iommu@lists.linux.dev>; Tue, 21 Feb 2023 19:30:20 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AE4371650;
-	Tue, 21 Feb 2023 11:31:02 -0800 (PST)
-Received: from [10.57.13.181] (unknown [10.57.13.181])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E3B363F703;
-	Tue, 21 Feb 2023 11:30:18 -0800 (PST)
-Message-ID: <e182594b-5cdb-881d-59c8-a20dc90b62fb@arm.com>
-Date: Tue, 21 Feb 2023 19:30:12 +0000
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6222E8F78
+	for <iommu@lists.linux.dev>; Tue, 21 Feb 2023 21:05:33 +0000 (UTC)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+	by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31LIi2PQ016966;
+	Tue, 21 Feb 2023 21:05:24 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=l89w9hTDLGhdANTTPiC9rJMAvvdMVotwgL6kR6zoB54=;
+ b=VKlsqfwTzV/QGnxmJ+3NvXb47SUtRmNeu9pS7Pb1mZ4PJNI9AOX8SOCrh079Ha/GsZ3c
+ L/mIpKU7R4NjBe7F41EY2bXu1zPMbnxLO1Hc+JaGhqRLgIIaTbkYbFVhRoOoI8VvlBy0
+ PGJomREdn41Sd1jw9DsQK7zWAcU4aUtkxuhrjG9m1B4CKAJdAKb+PxC8i7QOF8J9GGKr
+ hPvvun0HGi7xz7lx86tpAghwrVwJPvq97eoiBKevhvvLNtzZ5dhCB7qOlH/lLoyRi8ce
+ tZ00axE/C5++wupERXKHULpOalXXcn3CSq8nP2i2Ic3MGIvGvAgd5tPNrEbnYv1oHwI9 Uw== 
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3nw3amu1mc-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 21 Feb 2023 21:05:24 +0000
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+	by ppma04dal.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 31LIXw5n000579;
+	Tue, 21 Feb 2023 21:05:23 GMT
+Received: from smtprelay04.dal12v.mail.ibm.com ([9.208.130.102])
+	by ppma04dal.us.ibm.com (PPS) with ESMTPS id 3ntpa79uxn-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 21 Feb 2023 21:05:23 +0000
+Received: from smtpav01.dal12v.mail.ibm.com (smtpav01.dal12v.mail.ibm.com [10.241.53.100])
+	by smtprelay04.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 31LL5MST4129402
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 21 Feb 2023 21:05:22 GMT
+Received: from smtpav01.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 2908D58063;
+	Tue, 21 Feb 2023 21:05:22 +0000 (GMT)
+Received: from smtpav01.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id D1C405805D;
+	Tue, 21 Feb 2023 21:05:20 +0000 (GMT)
+Received: from [9.60.89.243] (unknown [9.60.89.243])
+	by smtpav01.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Tue, 21 Feb 2023 21:05:20 +0000 (GMT)
+Message-ID: <ace6750d-c2ff-dffa-ef0a-3face3f17f28@linux.ibm.com>
+Date: Tue, 21 Feb 2023 16:05:20 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.7.2
-Subject: Re: SR-IOV on ARM64 system with SMMU
-Content-Language: en-GB
-To: Martin Bayern <martinbayern@outlook.com>, will@kernel.org,
- joro@8bytes.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
-References: <AS8P193MB2095640357779A7F9B6026F8D2A19@AS8P193MB2095.EURP193.PROD.OUTLOOK.COM>
- <c8366f3a-3eba-6a54-558d-c87350187793@arm.com>
- <AS8P193MB209596DC2B89931C57C565BDD2A49@AS8P193MB2095.EURP193.PROD.OUTLOOK.COM>
- <77bf61fd-485e-7162-c0d3-c1bd7735deaa@arm.com>
- <AS8P193MB2095CD44400D95C79C262249D2A59@AS8P193MB2095.EURP193.PROD.OUTLOOK.COM>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <AS8P193MB2095CD44400D95C79C262249D2A59@AS8P193MB2095.EURP193.PROD.OUTLOOK.COM>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v7 4/6] s390/pci: Use dma-iommu layer
+Content-Language: en-US
+To: Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Jason Gunthorpe <jgg@nvidia.com>, Wenjia Zhang <wenjia@linux.ibm.com>
+Cc: Gerd Bayer <gbayer@linux.ibm.com>, Pierre Morel <pmorel@linux.ibm.com>,
+        iommu@lists.linux.dev, linux-s390@vger.kernel.org,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, linux-kernel@vger.kernel.org,
+        Julian Ruess <julianr@linux.ibm.com>
+References: <20230220152222.1818344-1-schnelle@linux.ibm.com>
+ <20230220152222.1818344-5-schnelle@linux.ibm.com>
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <20230220152222.1818344-5-schnelle@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: N_92_8Yv43Xoo772wijkO5u1DJuRd871
+X-Proofpoint-ORIG-GUID: N_92_8Yv43Xoo772wijkO5u1DJuRd871
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
+ definitions=2023-02-21_12,2023-02-20_02,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501 mlxscore=0
+ bulkscore=0 malwarescore=0 suspectscore=0 phishscore=0 spamscore=0
+ lowpriorityscore=0 clxscore=1015 impostorscore=0 mlxlogscore=595
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2302210182
 
-On 2023-02-21 17:27, Martin Bayern wrote:
-> Hi Robin
+On 2/20/23 10:22 AM, Niklas Schnelle wrote:
+> While s390 already has a standard IOMMU driver and previous changes have
+> added I/O TLB flushing operations this driver is currently only used for
+> user-space PCI access such as vfio-pci. For the DMA API s390 instead
+> utilizes its own implementation in arch/s390/pci/pci_dma.c which drives
+> the same hardware and shares some code but requires a complex and
+> fragile hand over between DMA API and IOMMU API use of a device and
+> despite code sharing still leads to significant duplication and
+> maintenance effort. Let's utilize the common code DMAP API
+> implementation from drivers/iommu/dma-iommu.c instead allowing us to
+> get rid of arch/s390/pci/pci_dma.c.
 > 
-> thanks for your replying.
-> 
-> On 21.02.23 12:43 PM, Robin Murphy wrote:
->> ...so given the implication that this is an older kernel, your 
->> "internal error" below is almost certainly the -EINVAL from that check.
->>
->> The rest of the information here also points to why you have that 
->> grouping, and unfortunately it appears that it's not just down to ACS 
->> but to a fundamental limitation of that platform. Looking at the 
->> upstream Tegra DTs which match that PCIe layout, it appears there's 
->> only a single StreamID for each whole PCIe segment. Thus all the 
->> devices and functions *have* to be grouped together since the SMMU has 
->> not been given the ability to distinguish one's traffic from another's.
->>
->> Even if you could solve the platform device conundrum (which is not 
->> reflected in the upstream DTs, and I can't speak for whether the 
->> downstream kernel actually *needs* an "iommus" property there or not), 
->> the best you'd be able to achieve on a system like that is to give the 
->> whole group over to VFIO, PF and all. 
-> 
-> I tried to apply your patch to the current v5.10 kernel, there are so 
-> many sub-patches needed to be applied as well, so I give up that.  and 
-> then,  I tried to give the whole group over to VFIO, PF, and VFs, I 
-> cannot give the PCIe bridge to VFIO since I got a permission error. 
-> after that, I saw VF is in use by vfio-pci with lspci command, but try 
-> to start vm with virsh, but still got the same error.
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 
-Sorry, I probably could have been clearer - the only difference those 
-recent changes will make in this case is that instead of VFIO 
-automatically rejecting the group for having both PCI and platform 
-devices, it would get a bit further and end up still rejecting the group 
-because the platform device isn't bound to a VFIO driver. And of course 
-removing the platform driver would unhelpfully make the whole PCI bus 
-disappear :)
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
 
-The only actual solution to that problem is to make the platform device 
-not be in the group to begin with. As mentioned, that is presumably 
-because the PCIe node in the DT has an "iommus = ..." property (not to 
-be confused with the "iommu-map" properties which are for the PCI side). 
-I'd expect you could probably get away with removing that - the only 
-reason I can imagine it being functionally necessary is if the root 
-complex has internal DMA engines that the downstream kernel is using.
-
-But yeah, by that point it's arguably just an exercise in achieving 
-satisfaction by making *something* work, rather than a really practical 
-prospect.
-
-> martin@ubuntu:~$ virsh start --domain vm1
-> error: Failed to start domain vm1
-> error: internal error: Found invalid device link '141a0000.pcie' in 
-> '/sys/bus/pci/devices/0005:01:00.2/iommu_group/devices'
-> 
-> I'm going to completely give up on implementing SR-IOV on NVIDIA 
-> platforms, too bad I posted the same question on their forum with no 
-> response. So if you want to try SR-IOV on an ARM-based platform, don't 
-> use an NVIDIA Orin board.
-> 
-> do you have any idea which ARM-based platform can be used to implement 
-> SR-IOV?
-
-As far as I'm aware, SoCs with a sensible SMMU/PCIe integration are 
-still mostly up at the server end where the systems come with 4-figure 
-price tags. The most accessible options off the top of my head would 
-probably be network-focused SoCs like the Marvell Armada 8040 or NXP 
-LX2160A/LS1088A/LS1028A.
-
-Cheers,
-Robin.
