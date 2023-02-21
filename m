@@ -1,107 +1,154 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05olkn2046.outbound.protection.outlook.com [40.92.89.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48E3D4C64
-	for <iommu@lists.linux.dev>; Tue, 21 Feb 2023 16:11:15 +0000 (UTC)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31LFFXFC031431;
-	Tue, 21 Feb 2023 16:10:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=JymdbLQeTeDhlP2A/OsKh68JdIUnbSBDiFwxb0u8pO4=;
- b=HGTQRnc/Tu1es4Vq1INy2HGCNlBNcEGMECB6ZHMbqbcKplRji4vtRk6/19RKLpzsxZnR
- 98tt4kX6MR7a1t55ObvtY0nYmB3xVzFzN7UsvmbNqope53AzW5rMkBaJt7d+1yoqVZUk
- EqNYBUipiCEBsg8emdkxoM3tOknFL+yQotpT+bSNTT1rlFIGAmNZJ2UmQ+v3/Bv+j8IS
- nWYdwJfTyamZp7+FWmIDhC4HhxDroP8JZCymZrhCYF1mAqmFj7EMeRct1BaTzjgpn2La
- WdUdX7kMF3v38nA9CQezRTfnZJKmFS+aJoWd0wsLrFOVqsZ2YaXgeo3zk3cr6QP73X54 Yg== 
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nw0cp204j-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 21 Feb 2023 16:10:50 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-	by ppma05fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 31LCVcXd031864;
-	Tue, 21 Feb 2023 16:10:48 GMT
-Received: from smtprelay01.fra02v.mail.ibm.com ([9.218.2.227])
-	by ppma05fra.de.ibm.com (PPS) with ESMTPS id 3ntpa6b6v5-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 21 Feb 2023 16:10:47 +0000
-Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
-	by smtprelay01.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 31LGAivC43909608
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 21 Feb 2023 16:10:44 GMT
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 3FA732004D;
-	Tue, 21 Feb 2023 16:10:44 +0000 (GMT)
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id CB7AC20043;
-	Tue, 21 Feb 2023 16:10:43 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-	by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Tue, 21 Feb 2023 16:10:43 +0000 (GMT)
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-Cc: Matthew Rosato <mjrosato@linux.ibm.com>, Gerd Bayer <gbayer@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev,
-        linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        agordeev@linux.ibm.com, Sven Schnelle <svens@linux.ibm.com>,
-        Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
-        Julian Ruess <julianr@linux.ibm.com>
-Subject: [PATCH] MAINTAINERS: Update s390-iommu driver maintainer information
-Date: Tue, 21 Feb 2023 17:10:43 +0100
-Message-Id: <20230221161043.37065-1-schnelle@linux.ibm.com>
-X-Mailer: git-send-email 2.37.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 873E26FC4
+	for <iommu@lists.linux.dev>; Tue, 21 Feb 2023 17:27:50 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=W68hDxXPRohYnsWwHsYvW/K3jhXiY6IOVB+v1/dmaUYNQocpscTgEJKewjCzwpkk3NAbH/YqriI7bEwxPaS99ZguHWAEVu9AEDCAktgnJKgGGQt0HsKtEpOemgowrDUz07NTvHm1spcYasvPlj4PhXoeBrWu3fb49vqOFmtqD3Spp2AG/tSA0pJFHDuLgbWrijvtByG5Q7p9q0Mut/cVc+MYTWWjFdfLMUrjwxeF+bBe82iEIIGs6ygcrmLNEb3WhoqGnd+8AOY9mzfjRQMUMvbM6pAFzkkzjmAEzYNC6u5+xlfTsy4sm8LoltNTLlGlafnK55GiGk4PT7bb7KorLA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UODAit3Yw6HQRQHt6NE+acmNU8J1r4pwhSTsECvd0aM=;
+ b=NvBlUW9DO7rF7pUQeJffJoy95D+PKi/PrOc4EZJZeX3nkH16mtmyM6sJEjQs1Lq5gDT17ZJVwwLigfYvLrvQgE79lejC5LF6QwatirkjKLWAEnlPx0XbHW8dJwOLApq/hsI3c+QIm7PThd800xFqgNP0AMhFsMDp+QVzsaPRYn4nkeOFXGis4RFmRFAy320nrOprsRggIbmdBYhTk28X5z+k9+L4jmUvUB7aKQfbxFEffIP0qF9FwmuEO/SvoFklH+TWRdmbA0qO3FGdC+WtefN9k8GPyvpW6q1rAYhy3J7/BawzkU9BejP1gnOIy5sNifZRLlF0H9Rw1REYh1UCZg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UODAit3Yw6HQRQHt6NE+acmNU8J1r4pwhSTsECvd0aM=;
+ b=CBJEYdA6ZCZxxZ9DrrQ1a0jRO7po+b1COWmSmZDILUAQmw6GTjRUNp/4c5uIDbp45m0ZHlKCbnT7zzO3nLV5U/WIoyj8l8jPwsRvXnieik4nAQQPhCTzT2lL9TppiDRp4EPX6N/Md1+r97DL3FQaIRTeiEl+r5kq+n6rgzR0P7bR0Xrjhxtox3ErU+9vrxpKXtw4MX+tZT/m6H2LzB0OHg6/L755y30L7xqu7kgupNIdEVSIkb+2YKvuptJbaNeHPgtKPGM2qQv6/JNR/Cn/uYxx+HkYaxkPR9FtSCgn8N7VnCK4wTxiTRci4GtsJNYJV05jVygR6+FYLw688cC3bg==
+Received: from AS8P193MB2095.EURP193.PROD.OUTLOOK.COM (2603:10a6:20b:40e::16)
+ by GV1P193MB2006.EURP193.PROD.OUTLOOK.COM (2603:10a6:150:2c::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.21; Tue, 21 Feb
+ 2023 17:27:45 +0000
+Received: from AS8P193MB2095.EURP193.PROD.OUTLOOK.COM
+ ([fe80::3d5a:43b6:acd8:3be8]) by AS8P193MB2095.EURP193.PROD.OUTLOOK.COM
+ ([fe80::3d5a:43b6:acd8:3be8%9]) with mapi id 15.20.6111.021; Tue, 21 Feb 2023
+ 17:27:45 +0000
+Message-ID:
+ <AS8P193MB2095CD44400D95C79C262249D2A59@AS8P193MB2095.EURP193.PROD.OUTLOOK.COM>
+Date: Tue, 21 Feb 2023 18:27:43 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: SR-IOV on ARM64 system with SMMU
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, will@kernel.org, joro@8bytes.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+References: <AS8P193MB2095640357779A7F9B6026F8D2A19@AS8P193MB2095.EURP193.PROD.OUTLOOK.COM>
+ <c8366f3a-3eba-6a54-558d-c87350187793@arm.com>
+ <AS8P193MB209596DC2B89931C57C565BDD2A49@AS8P193MB2095.EURP193.PROD.OUTLOOK.COM>
+ <77bf61fd-485e-7162-c0d3-c1bd7735deaa@arm.com>
+From: Martin Bayern <martinbayern@outlook.com>
+In-Reply-To: <77bf61fd-485e-7162-c0d3-c1bd7735deaa@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TMN: [q9UB6ALHsXbLp2Kd4xJGlCxugwA3daaN]
+X-ClientProxiedBy: ZR0P278CA0012.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:16::22) To AS8P193MB2095.EURP193.PROD.OUTLOOK.COM
+ (2603:10a6:20b:40e::16)
+X-Microsoft-Original-Message-ID:
+ <095c238f-432d-d1a2-8fbf-f796b2cd5ee7@outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: inK0pKToyXumXYAitzx08cjAJ_52Mm3g
-X-Proofpoint-ORIG-GUID: inK0pKToyXumXYAitzx08cjAJ_52Mm3g
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
- definitions=2023-02-21_08,2023-02-20_02,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=949
- clxscore=1015 impostorscore=0 lowpriorityscore=0 malwarescore=0
- bulkscore=0 mlxscore=0 spamscore=0 phishscore=0 suspectscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2302210133
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS8P193MB2095:EE_|GV1P193MB2006:EE_
+X-MS-Office365-Filtering-Correlation-Id: d4669d60-1caa-4603-ba7e-08db1430f1c6
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	6nQU8OGSYT8pmBBDs/rGsX1WvmjnOr9HJN03iScBVJuHj2AzdGYiUPkYtqTn3QkOUzE1D2sKNSCIwtFmb39J2eyXFMpbV2X6cBKW1+AZDjpOXZvh74Ju1k/0gNa+ykZvaoHaz3Hoaw26BGC6akhjXQ+nqq9qSwG3qS1i63Vp3+tP/+gL0pLlKe8lQSW4BZMnKSPdTd1XivHNgmIOyYt4Hvw7reqNPaMqLqAU6fVNKRdN2v4z8fZ2ops/J1+T0DJHcfW1nw6YJzsBNGz1CvaTVdFMBHqa6pQMHfKLJd4qr8EFtYIgd+9D6e3QP7Foiu8a5JtGB001/JwghwNzrPsyWInQZ7sAYRuu4I7Tb47P4pmHD0pctWTHgcQUwTv/JJ/3AIeqqueEsxhklC8DmdNi4dNV4dQkXlbC2Ms2rRkFU/8P17cO+IcpZRUpI3Tl/GGcbbuPZpu6j/n6epnUb2BK6O1FfxwU3HtctyTiyidtzjDo6YeqOma91Hs7gVPktLfGzyajYCLEmifZ8iGDE++t1Kh6bGtaGZMmr2/T/Oz/kG4pxbJcUeCsWwlARdCHjUNWohkZiQPvuDi7fwuotwGIneZxt8P0s45T5s8hJ2/Q14WZLl6kpPA2JvBh6XBAVoQMgwxnulmEpXit/Dv0gI1Rug==
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?ZDV1SWQxYUlZTnA5TWl0Wko5WkhVVFFRWndRUE5adDNHWm5nQVlsWnYzZ3Nr?=
+ =?utf-8?B?bzhjR2pvdTNuWWxsK0E5QUpGNXlIRFVhSGxvbFh3MmlTOXNJU0F1VnNhbGpl?=
+ =?utf-8?B?RDh4bHoyazJMZTJ0QnpEb1FZd1RzRldXYkEvMzJ2L2FCSFdUTm56ZXhSbjV4?=
+ =?utf-8?B?dzJnSTBTRnZqVmZ6Yk5haXVnR1ZtNXFTcThodFBrRXlJQmdDbmlmNkY2cDFv?=
+ =?utf-8?B?TTB1MFYyNXhTVWNaM0FZYjNVWDg4TmRlN2xIYVZhMkI0SGQyNzFsN2hDMHE3?=
+ =?utf-8?B?Vmt6azYyZHlISDhUNVJ3cm9LTi9Tc0pNU3V0QmxabjEzZmJCdkI2NTZpbjln?=
+ =?utf-8?B?YUdJa0pWUE1idWFsZDhQT1VIaXVtcDRPTFN0MElRcWFlRmtnTUdBT2g5bVNN?=
+ =?utf-8?B?Z2hlNjRDUDR2RENYWkpCajI3MGVuYTFtUTRyQit4SHluMDA1NDVFOUdVUk5C?=
+ =?utf-8?B?NVlJT1UwREhaSnp3OEFpT2QvbS9Ud2hUVE9WMlFEQVEwcHRDNkxCYjBhL29L?=
+ =?utf-8?B?MGRGQnBkSFcxSXFod2c3b21HSnNZbXZZUmZ4Y1lFSU5EaWRoaDRYQkI1aFRk?=
+ =?utf-8?B?S0I5cm1GQnFURGhOVkQzZnBnSE9QSGxBblhYN2FsdlEwVHhxTmpEa01qK3JR?=
+ =?utf-8?B?VWZtZnZYU3p4Wm5rcFVmZnFFTUhlaGZORWFxRWl4bVV4TTJNUEpFYXFXeHgz?=
+ =?utf-8?B?bEF4azlXL1V0elVzVS9iRWZScjBMUEg4RldZbmxPNllBNFFOMnFYMk9qYUdI?=
+ =?utf-8?B?TWVWTzVRWE4wTFFaU2hFWm5lNGpxQlppVElYeGhkVnZSdUVMV0tleTVkZm5Q?=
+ =?utf-8?B?Y0s0TEJYVk9UNVRFNU41RkgrdGdEVGRFRGhiRm5BNFZNQlZzeUJwNVUwQ1lX?=
+ =?utf-8?B?UkhuVng0RTA4VlVrVVAxU25sK0JYSVJzMndyU1VEUDFRTldmaWUyMUFZcnlq?=
+ =?utf-8?B?Mno0c0wzbkNrOW1iVi85U2NHWGJmV0dPeG1xYTNJV1ZJTURCOTg3KytCUUFM?=
+ =?utf-8?B?WkZiOTFHeUdSWDYrVmhTZUFzWlVmMWpRL2NpeGtGbGVsR3RrV1IrL0ZxVktO?=
+ =?utf-8?B?L2FuWHJZbThPL2VCaEh5M2dQc1ZYS2RsK1dYSFRiM3JuUnpzSmFRMU1LR2lK?=
+ =?utf-8?B?bGtEZnlXNFNLOVpzN3JWQnBPUzdyUG1xQWtDT0ZUY1BNNWRpYVRCTWlFM0hH?=
+ =?utf-8?B?OHVVOHc0b08yZ2ovUHpPYWdlNTRVakppdzRNUkNsSWNOc2gyeURWN3NPOUk1?=
+ =?utf-8?B?cjhxNVFMd0Z3WnBIVTU3TzJQeTM5OE5PeklJcW1KYUpkRXQySllrU1o2K2p5?=
+ =?utf-8?B?ditOdHYvVmR4OGRYVjlzbEg4VmwvektRTm51cDVxQ0ZBY3JmaS9JbUM5dHkw?=
+ =?utf-8?B?MHp4MVZOaEdheDZRbnRId0xIM2EwTWIvdGg3eHR2cUZ0cjVNUFJTMWJYc2g5?=
+ =?utf-8?B?aUVNSjNHMjhodTZraGplOEFwdnBpMkxGNjVmOWlsdG5mM1NlVFJDNzNKQURQ?=
+ =?utf-8?B?Y0NYc2JwMUlHNnd3d0VmUWdZK1dvQSsrTlhrVFlrQmZxTFVoalRrM1orcTQ3?=
+ =?utf-8?B?MXJwOEZKT1cvTzhvb0FQZmFFRXFSNDBjeW5iU25FUldHY0hsa0ZNUTFFZ2JY?=
+ =?utf-8?B?N3Qvd2lpZHBnblZrNXJWREw4eHlsQjdVU1dnc25UVVRST1FhaUtrSVdoa3pp?=
+ =?utf-8?B?Y0dCMDQvMEszTkMveWIzWVpMa0ZKRTlBQlNPbkN5MytReFNXL21SeVlzWENo?=
+ =?utf-8?Q?nll0XCW4PuBfrDJpnQ=3D?=
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d4669d60-1caa-4603-ba7e-08db1430f1c6
+X-MS-Exchange-CrossTenant-AuthSource: AS8P193MB2095.EURP193.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2023 17:27:45.6156
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1P193MB2006
 
-The s390 DMA API conversion changes currently under review will extend
-the use of the s390-iommu driver to the DMA API. With s390's mandatory
-use of an IOMMU this means all DMA for PCI devices will then use the
-s390-iommu driver. With this in mind and considering my involvement in
-these changes it makes sense to reflect this increased interdependence
-in the maintainer structure. Thus add myself as first maintainer and
-move Gerald to reviewer status.
+Hi Robin
 
-Reviewed-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
-Acked-by: Peter Oberparleiter <oberpar@linux.ibm.com>
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
----
- MAINTAINERS | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+thanks for your replying.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 135d93368d36..ad6536817f88 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -18291,8 +18291,9 @@ F:	drivers/s390/block/dasd*
- F:	include/linux/dasd_mod.h
- 
- S390 IOMMU (PCI)
-+M:	Niklas Schnelle <schnelle@linux.ibm.com>
- M:	Matthew Rosato <mjrosato@linux.ibm.com>
--M:	Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-+R:	Gerald Schaefer <gerald.schaefer@linux.ibm.com>
- L:	linux-s390@vger.kernel.org
- S:	Supported
- F:	drivers/iommu/s390-iommu.c
--- 
-2.37.2
+On 21.02.23 12:43 PM, Robin Murphy wrote:
+> ...so given the implication that this is an older kernel, your 
+> "internal error" below is almost certainly the -EINVAL from that check.
+>
+> The rest of the information here also points to why you have that 
+> grouping, and unfortunately it appears that it's not just down to ACS 
+> but to a fundamental limitation of that platform. Looking at the 
+> upstream Tegra DTs which match that PCIe layout, it appears there's 
+> only a single StreamID for each whole PCIe segment. Thus all the 
+> devices and functions *have* to be grouped together since the SMMU has 
+> not been given the ability to distinguish one's traffic from another's.
+>
+> Even if you could solve the platform device conundrum (which is not 
+> reflected in the upstream DTs, and I can't speak for whether the 
+> downstream kernel actually *needs* an "iommus" property there or not), 
+> the best you'd be able to achieve on a system like that is to give the 
+> whole group over to VFIO, PF and all. 
+
+I tried to apply your patch to the current v5.10 kernel, there are so 
+many sub-patches needed to be applied as well, so I give up that.  and 
+then,  I tried to give the whole group over to VFIO, PF, and VFs, I 
+cannot give the PCIe bridge to VFIO since I got a permission error.  
+after that, I saw VF is in use by vfio-pci with lspci command, but try 
+to start vm with virsh, but still got the same error.
+
+martin@ubuntu:~$ virsh start --domain vm1
+error: Failed to start domain vm1
+error: internal error: Found invalid device link '141a0000.pcie' in 
+'/sys/bus/pci/devices/0005:01:00.2/iommu_group/devices'
+
+I'm going to completely give up on implementing SR-IOV on NVIDIA 
+platforms, too bad I posted the same question on their forum with no 
+response. So if you want to try SR-IOV on an ARM-based platform, don't 
+use an NVIDIA Orin board.
+
+do you have any idea which ARM-based platform can be used to implement 
+SR-IOV?
+
+Kind regards,
+
+Martin
 
