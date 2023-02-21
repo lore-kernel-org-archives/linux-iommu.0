@@ -1,151 +1,341 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2074.outbound.protection.outlook.com [40.107.244.74])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E3E0C1390
+	for <iommu@lists.linux.dev>; Tue, 21 Feb 2023 08:51:20 +0000 (UTC)
+Received: from 8bytes.org (p200300c27714bc0086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:7714:bc00:86ad:4f9d:2505:dd0d])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65082EA4
-	for <iommu@lists.linux.dev>; Tue, 21 Feb 2023 01:13:10 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=h3ocy6YA3js+W9f4vR7DXXb7Rb4HvL5oqY+nlOcVsnxn5Y6avkbvRcSnWdTiCx96QoxofI8KVU8sbTQpugF7MsycMHcshlijQf0SUNlaHZnJqBApY6nVwOg5cELJ+2Qpg4sxZS7h9UUC5KdumRWvYIBdWIFggTIeT47QzpR7OOWLWdkTLkLbtBRJREUYzijiyP8BzJM4RMQ8tG3erf4EqZKIg9H2lkbx9a5ZQHc6/nZzQNHTQvt1vJNgg3y1Y+bLfURLob9JGeU2LC2TgNtU+WTwQZat3co10EQd4m0FwNws1kJWDofGAo6fXr1zTrfXs2RYksMWXXc91uS5kB6PjA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=t6MJq3McgVP8I9pTozyzpLNE3cNs6pqUueqxl2xfESE=;
- b=eD/isWYAvkewsrh8SAGYbE9De9k7SxvL+PKsDG//O3IfvTc4PRdjPok2Kyg56T0SqNSbJrr2C5VoakKDu5WL5xiMqXh+XcDUkKrW6rK1zKazExQfUqmg2uWOq5dafFmh4iRUUotsstGgETg0LYoAoC0EH8gqFpbbHNHKr83L6oEWamQPU92warP/b60FbS8gAQ7qYET72KO+PV8Di4HZjETqPbWFO0U9oeFeprLlMXuCVfaQRtvx4j9ExsScoHvSLo7G64M79WLuCnO9YJlxYDMtwkOCdA2KiOfb2gD/HE6NnYo7DYq2y2jW0GdT5/0prObbFoNVZCXbe48WWWcFIQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=t6MJq3McgVP8I9pTozyzpLNE3cNs6pqUueqxl2xfESE=;
- b=rXKNFfvoDuIOA5sr6DeeRI6ZPE/0rKVocRPo3wFGBbGKUYdMKCjxGpb7S9YEc27fY9EgKcyQLmuYILFcXc5Rf3ZJB1nGsQF6q2p8f7xK/gAwTJv+jWu3dtN+cB1QAUC0YtTIQruuIFAxsykrJJtWGTFNT2ChhhyN7+pxGwmZQ+kT3QaV3LY3zzcWDkz3IMhrY7VEH8w6N78nz3eWUevx0phNcrcU4qXoak99kjY1l6pEL36i59Z9t4puP/1JYT5hBD+oICyfo7urJphiNDb6hyKrLiiwtOHRVQqCagUnMnwnvkgEkUWuF71/Eyqc2yI+wpH5GkTYtOW1f/pDyLUjzw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DM6PR12MB4107.namprd12.prod.outlook.com (2603:10b6:5:218::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.21; Tue, 21 Feb
- 2023 01:13:08 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee%5]) with mapi id 15.20.6111.019; Tue, 21 Feb 2023
- 01:13:08 +0000
-Date: Mon, 20 Feb 2023 21:13:07 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	Christoph Hellwig <hch@infradead.org>,
-	Kevin Tian <kevin.tian@intel.com>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/6] iommu: Same critical region for device release
- and removal
-Message-ID: <Y/Qao5Yvam1YPXKi@nvidia.com>
-References: <20230217094736.159005-1-baolu.lu@linux.intel.com>
- <20230217094736.159005-4-baolu.lu@linux.intel.com>
- <Y++f8UmMK4AvrwBF@nvidia.com>
- <71646179-0da1-8136-f60c-9b31f9c7da6d@linux.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <71646179-0da1-8136-f60c-9b31f9c7da6d@linux.intel.com>
-X-ClientProxiedBy: MN2PR08CA0005.namprd08.prod.outlook.com
- (2603:10b6:208:239::10) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 62D2522425A;
+	Tue, 21 Feb 2023 09:51:14 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1676969474;
+	bh=x9WsyvGJ/BNVAAqSwl4JpFU98i9nTyZlPjeRW5BWdAs=;
+	h=Date:From:To:Cc:Subject:From;
+	b=wOskxfsHpgJ/Y+YcSSENztXPQwss70bg5LTENfzI6IVvvnY//6ErdWaZsi7ZqxipX
+	 m+2s6hlilRw2oRBdKvdnPYJTDDmQTcM8oeSZ3BSJPSMOaVdfFLmOTGK7jA0b7Kvgfy
+	 C0qsPuxrtepL1XmUxwiEIWPGm/kZkTjSkfrCZEtSq7Fe5F16OlnWm6NJ0xzzb7jLm9
+	 JOdMDrSo0yCymzUK1soaHaduB8CQDKbH365luFRoBq84detggTXMpqFrIq/hcJypxS
+	 RRqaoUgWpo/bkigFkUjnIR0Ab7ga8QqknXjyEurbGRaHVAjXJrq11v9d7RB+3W476P
+	 92Hk6WwMYHl2g==
+Date: Tue, 21 Feb 2023 09:51:13 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: [git pull] IOMMU Updates for Linux v6.3
+Message-ID: <Y/SGAafMEGBn4fWy@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM6PR12MB4107:EE_
-X-MS-Office365-Filtering-Correlation-Id: a1035737-b67b-44ef-64c7-08db13a8caf0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	ZILYSkKP1CBjWHLY1YdexEZfNIkAtZaDFyp0DjUR+aAsL8jzmvqOxCAKoMXUW3v0KhhijzgA6KAq2CXPbhaTHZuuVHLm+gg6F8udOf0KPPxCG/YAMAJ9PwAp2XTUVwPVMiYd5P0RWEpxAs/jYKJYr+vd7KmTXD0FndteG3tMPeWG32icd3TsxP/4J6dPmsHhvReVDoY5Z0/+r86Rsxyw75bh8Mbq126PnVxDExKuYbtyI+mNf9oEjhJJTp414X/b/2YxFBbXU+tunXZLXKRmfH74b/ZaPhP2k3gE7d0KjFlrlkPiuqsplgaKhHtVIH20iyLcfek9a/38+9zNicqzm3l01bVpirKp0a75spZC43aE/bk4OEBHQAgaNRkhSJha+jh5hF09DPUyw7tZMq83FbdPt7f6K84U4GAsdMtsgWLo7CyqK4TszE3wckYnPXGDPTZCLEfjCsCEigmJsd/4nxmsSeiyJpZEYxMN/k507teFVw+JsGWqIIlmjkfMMIPANbqO/sbGw2yQAJrsiPYHKPmQoufU+v8T3u2j1VHxUXc30qROdyWRngOzoBHm1VkDbSHkKrcioQEHCrTIZ54VYoN+HXGprgZY74XsTAJX3VF5tSrDU+XJoIJGgIw+OBAeijUqv7furlFcoLIcDCaUVw==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(366004)(346002)(396003)(39860400002)(136003)(451199018)(38100700002)(2906002)(8936002)(5660300002)(6512007)(26005)(54906003)(186003)(83380400001)(41300700001)(2616005)(36756003)(8676002)(6916009)(66556008)(66946007)(4326008)(66476007)(6486002)(86362001)(6506007)(478600001)(316002)(53546011);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?30jvQAa84SCPxJKsFpp76tMnJ86IYEsW8jERqnErxVkX1B9N1EnhL0UzkgUe?=
- =?us-ascii?Q?dGM7H/pbkjDVXCFUKjZMoow/vjYtx7Efd7zaMIxQjlcoqgycip48IWOfBZz0?=
- =?us-ascii?Q?O0joYtvu4y4ANGYg5bOFHVpiQaXSNxElB9fP17PBZJIhxRkIEP/f3EC2VbHD?=
- =?us-ascii?Q?TcN1Hl1JIJQfDfNamZzI4n9RhRR2k79+7fj8c8b5zOnsY5MYCbUHGM8WCID8?=
- =?us-ascii?Q?jf8zvlVHKDW5JANA10uAu4xc2e+9G+hiYQSui9ghSewZP5TCNXzQ8f7oay+7?=
- =?us-ascii?Q?LjjDxgB9kVoZX2Kxo/hoMnTmEgAYx77xKBl+gSyu/U8gnVfecxqFcdQsXtf/?=
- =?us-ascii?Q?ChB3OIk57qxutnYMvr1Xnsw/u5mmTSW8HypAr8+zKONXhifj7bX7zOdLB/0u?=
- =?us-ascii?Q?hIpv/YBz5hbIum0oUzFC7WsNq3gE5TnRylpcAUxI/SSjs+A/d5LI+J5mUURs?=
- =?us-ascii?Q?wxjqMasEchiEOkymnLPagJfp6hqydW5efOuiFGb1n0CaARWidIRE/owop4FJ?=
- =?us-ascii?Q?Og3xuqVJmrJbnTODRKvXlZ2EveIWV1zfxbWp9vcLZ6L7tXraluCR4NAhWCk9?=
- =?us-ascii?Q?RI89tn28bi34LzbqlzmSR2hOY+zp6oyfCctQtlZf08Tsu7tJ179kPDSAVNmH?=
- =?us-ascii?Q?U9gr7kqgeF3Uk2P2AMKECsI99nvOAIdMTBYn8yZQtwjPSefs3GUsSWGP4TFr?=
- =?us-ascii?Q?jco6b2JaBNOHrsfOX3VMbdh4L5y+VsHAw438OIRt8lkhFtBZrjeg610xNjZr?=
- =?us-ascii?Q?R7C8NGncpMQlE5PWZfCUwyCGp/qiki3sikuvTeh+JXnpKt5vau9JzIC79YcO?=
- =?us-ascii?Q?qGtk/UtFkEESCF/D6Gna0bgrEYbxYmpHEQPtTYJAoOWRGAah3yB9Pjdrs0nn?=
- =?us-ascii?Q?OSt7QSN5IgyZMVcBunTIcG5Z5+i4NL7YOebcTaUVhW8QmEDUMWP9USmGhhhw?=
- =?us-ascii?Q?ffic45L976QCGBx7HSodftWJsfYoDXI/rHCetshk6VL50j30a39xh1skWaya?=
- =?us-ascii?Q?ub0kxhUOpzMNgd1cMx7juzpDPCGddlzkOvdNL4ZS/Nu7SroahM0fPYX9a/l8?=
- =?us-ascii?Q?CI7xxE+mg/+d9xdn2CJB1LVnFVHAC5aG7Zi3OacH3uplVFbg7F8aOw4PULMK?=
- =?us-ascii?Q?DSMKBpNjTa2X/yRW3yp4nH9ppNW8f3Ds/G9vZ1VgS78hls9FogmcUqV/9uOf?=
- =?us-ascii?Q?85beuukwas8B/gweVD3vFS1agzNNkBfhxW6DCR2Nj+vu7e+e97sSSZ+JrqP0?=
- =?us-ascii?Q?Ekgsc95Zyd6cZmlHsVB0ewqHMAouhi1qhi85ZpyDnD6TVHn3FNsICALiIMOM?=
- =?us-ascii?Q?cY2w8FpPH3+YCjPIIALfeqzQZcmI/hoMR3V5rfqdmTEH69NfdFUEbcXUIX+j?=
- =?us-ascii?Q?P7QlGkSHSlU62/hDwoNVXAF3pS7+Y8f9lUp/OJe2SFeOIgBc7eHBZcChOiXS?=
- =?us-ascii?Q?zKdRN7xUApYINnxYVCsS5M+frIfsL9IDguKYwO8pPl1GkXphdzP6DV83suLI?=
- =?us-ascii?Q?7/9aT9bC5ujx6eDWXEDrVaRsga7+DDo5ECBQwCFtG4FrVJUxK1JWNNlcnPHL?=
- =?us-ascii?Q?lWwG71+tYoUPsWfymiyp+RxnLeL6SgCggG03TtIw?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a1035737-b67b-44ef-64c7-08db13a8caf0
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2023 01:13:08.4805
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4DOIyWiD2DxLpKLpD/eth0IrX1Hm5vKq+tvLOPtHMIkiFWWoXF4anbtq6XHRKoIL
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4107
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="xsEv6tzStRkCI0Br"
+Content-Disposition: inline
 
-On Sat, Feb 18, 2023 at 03:29:12PM +0800, Baolu Lu wrote:
-> On 2/17/23 11:40 PM, Jason Gunthorpe wrote:
-> > On Fri, Feb 17, 2023 at 05:47:33PM +0800, Lu Baolu wrote:
-> > > In a non-driver context, it is crucial to ensure the consistency of a
-> > > device's iommu ops. Otherwise, it may result in a situation where a
-> > > device is released but it's iommu ops are still used.
-> > > 
-> > > Put the ops->release_device and __iommu_group_remove_device() in a some
-> > > group->mutext critical region, so that, as long as group->mutex is held
-> > > and the device is in its group's device list, its iommu ops are always
-> > > consistent.
-> > > 
-> > > Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
-> > > ---
-> > >   drivers/iommu/iommu.c | 15 +++++++++++++--
-> > >   1 file changed, 13 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > > index 6247883991e2..093692308b80 100644
-> > > --- a/drivers/iommu/iommu.c
-> > > +++ b/drivers/iommu/iommu.c
-> > > @@ -101,6 +101,10 @@ static int iommu_create_device_direct_mappings(struct iommu_group *group,
-> > >   static struct iommu_group *iommu_group_get_for_dev(struct device *dev);
-> > >   static ssize_t iommu_group_store_type(struct iommu_group *group,
-> > >   				      const char *buf, size_t count);
-> > > +static struct group_device *
-> > > +__iommu_group_remove_device(struct iommu_group *group, struct device *dev);
-> > > +static void __iommu_group_release_device(struct iommu_group *group,
-> > > +					 struct group_device *grp_dev);
-> > Seems like a hunk is missing from this patch?
-> 
-> Did you mean below block of change? If so, I will add it in the next
-> version.
 
-I  mean this changed the protoype but I didn't see a change in the
-actual funtion?
+--xsEv6tzStRkCI0Br
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> By the way, can I add you signed-off-by when I use the code you posted
-> in the discussion thread?
+Hi Linus,
 
-Yes
+Please note the first item in the tag-message, there is some potential
+for conflicts between these changes and other trees due to changed
+function signatures.
 
-Jason
+With that in mind, please consider:
+
+The following changes since commit ceaa837f96adb69c0df0397937cd74991d5d821a:
+
+  Linux 6.2-rc8 (2023-02-12 14:10:17 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v6.3
+
+for you to fetch changes up to bedd29d793da3312e1350a56245c4971a38d4453:
+
+  Merge branches 'apple/dart', 'arm/exynos', 'arm/renesas', 'arm/smmu', 'x86/vt-d', 'x86/amd' and 'core' into next (2023-02-18 15:43:04 +0100)
+
+----------------------------------------------------------------
+IOMMU Updates for Linux v6.3:
+
+Including:
+
+	- Consolidate iommu_map/unmap functions. There have been
+	  blocking and atomic variants so far, but that was problematic
+	  as this approach does not scale with required new variants
+	  which just differ in the GFP flags used.
+	  So Jason consolidated this back into single functions that
+	  take a GFP parameter. This has the potential to cause
+	  conflicts with other trees, as they introduce new call-sites
+	  for the changed functions. I offered them to pull in the
+	  branch containing these changes and resolve it, but I am not
+	  sure everyone did that. The conflicts this caused with
+	  upstream up to v6.2-rc8 are resolved in the final merge
+	  commit.
+
+	- Retire the detach_dev() call-back in iommu_ops
+
+	- Arm SMMU updates from Will:
+	  - Device-tree binding updates:
+	    * Cater for three power domains on SM6375
+	    * Document existing compatible strings for Qualcomm SoCs
+	    * Tighten up clocks description for platform-specific compatible strings
+	  - Enable Qualcomm workarounds for some additional platforms that need them
+
+	- Intel VT-d updates from Lu Baolu:
+	  - Add Intel IOMMU performance monitoring support
+	  - Set No Execute Enable bit in PASID table entry
+	  - Two performance optimizations
+	  - Fix PASID directory pointer coherency
+	  - Fix missed rollbacks in error path
+	  - Cleanups
+
+	- Apple t8110 DART support
+
+	- Exynos IOMMU:
+	  - Implement better fault handling
+	  - Error handling fixes
+
+	- Renesas IPMMU:
+	  - Add device tree bindings for r8a779g0
+
+	- AMD IOMMU:
+	  - Various fixes for handling on SNP-enabled systems and
+	    handling of faults with unknown request-ids
+	  - Cleanups and other small fixes
+
+	- Various other smaller fixes and cleanups
+
+----------------------------------------------------------------
+Bartosz Golaszewski (1):
+      dt-bindings: arm-smmu: document the smmu on Qualcomm SA8775P
+
+Bjorn Andersson (1):
+      iommu/arm-smmu-qcom: Select identity domain for sc8280xp MDSS
+
+Eric Curtin (1):
+      iommu: dart: DART_T8110_ERROR range should be 0 to 5
+
+Gavrilov Ilia (1):
+      iommu/amd: Add a length limitation for the ivrs_acpihid command-line parameter
+
+Hector Martin (7):
+      dt-bindings: iommu: dart: add t8110 compatible
+      iommu: dart: Add suspend/resume support
+      iommu: dart: Support >64 stream IDs
+      iommu: dart: Support a variable number of TTBRs per stream
+      iommu: dart: Fix DART_PARAMS1/2 bit define names
+      iommu: dart: Support different variants with different registers
+      iommu: dart: Add t8110 DART support
+
+Jacob Pan (2):
+      iommu/vt-d: Avoid superfluous IOTLB tracking in lazy mode
+      iommu/vt-d: Fix PASID directory pointer coherency
+
+Jason Gunthorpe (12):
+      iommu: Remove deferred attach check from __iommu_detach_device()
+      iommu: Add a gfp parameter to iommu_map()
+      iommu: Remove iommu_map_atomic()
+      iommu: Add a gfp parameter to iommu_map_sg()
+      iommu/dma: Use the gfp parameter in __iommu_dma_alloc_noncontiguous()
+      iommufd: Use GFP_KERNEL_ACCOUNT for iommu_map()
+      iommu/intel: Add a gfp parameter to alloc_pgtable_page()
+      iommu/intel: Support the gfp argument to the map_pages op
+      iommu/intel: Use GFP_KERNEL in sleepable contexts
+      iommu/s390: Push the gfp parameter to the kmem_cache_alloc()'s
+      iommu/s390: Use GFP_KERNEL in sleepable contexts
+      iommu: Fix error unwind in iommu_group_alloc()
+
+Joerg Roedel (5):
+      iommu/ipmmu-vmsa: Remove ipmmu_utlb_disable()
+      iommu/fsl_pamu: Fix compile error after adding set_platform_dma_ops
+      Merge tag 'arm-smmu-updates' of git://git.kernel.org/pub/scm/linux/kernel/git/will/linux into arm/smmu
+      Merge branch 'iommu-memory-accounting' into core
+      Merge branches 'apple/dart', 'arm/exynos', 'arm/renesas', 'arm/smmu', 'x86/vt-d', 'x86/amd' and 'core' into next
+
+Kan Liang (7):
+      iommu/vt-d: Support size of the register set in DRHD
+      iommu/vt-d: Retrieve IOMMU perfmon capability information
+      iommu/vt-d: Support Enhanced Command Interface
+      iommu/vt-d: Add IOMMU perfmon support
+      iommu/vt-d: Support cpumask for IOMMU perfmon
+      iommu/vt-d: Add IOMMU perfmon overflow handler support
+      iommu/vt-d: Enable IOMMU perfmon support
+
+Konrad Dybcio (1):
+      dt-bindings: arm-smmu: Allow 3 power domains on SM6375 MMU500
+
+Krzysztof Kozlowski (1):
+      dt-bindings: arm-smmu: disallow clocks when not used
+
+Lu Baolu (10):
+      iommu: Remove detach_dev callbacks
+      iommu: Add set_platform_dma_ops iommu ops
+      iommu: Add set_platform_dma_ops callbacks
+      iommu: Remove detach_dev callback
+      iommu/vt-d: Remove include/linux/intel-svm.h
+      iommu/vt-d: Remove unused fields in svm structures
+      iommu/vt-d: Remove users from intel_svm_dev
+      iommu/vt-d: Remove sva from intel_svm_dev
+      iommu/vt-d: Set No Execute Enable bit in PASID table entry
+      iommu/vt-d: Fix error handling in sva enable/disable paths
+
+Luca Weiss (1):
+      dt-bindings: iommu: qcom: Add Qualcomm MSM8953 compatible
+
+Manivannan Sadhasivam (1):
+      dt-bindings: arm-smmu: Fix binding for SDX55 and SDX65
+
+Marek Szyprowski (1):
+      iommu/exynos: Add missing set_platform_dma_ops callback
+
+Marijn Suijten (2):
+      dt-bindings: arm-smmu: Add sm8150-smmu-500 to the list of Adreno smmus
+      iommu/arm-smmu-qcom: Add SM8150 DPU compatible
+
+Martin Botka (1):
+      dt-bindings: arm-smmu: Document smmu-500 binding for SM6125
+
+Randy Dunlap (1):
+      iommu/of: mark an unused function as __maybe_unused
+
+Robin Murphy (1):
+      iommu: Tidy up io-pgtable dependencies
+
+Sam Protsenko (2):
+      iommu/exynos: Abstract getting the fault info
+      iommu/exynos: Implement fault handling on SysMMU v7
+
+Sven Peter (1):
+      iommu/dart: Fix apple_dart_device_group for PCI groups
+
+Thierry Reding (4):
+      of: Introduce of_translate_dma_region()
+      dt-bindings: reserved-memory: Document iommu-addresses
+      iommu: Implement of_iommu_get_resv_regions()
+      iommu: dma: Use of_iommu_get_resv_regions()
+
+Tina Zhang (1):
+      iommu/vt-d: Allow to use flush-queue when first level is default
+
+Tom Lendacky (1):
+      iommu/amd: Do not clear event/ppr log buffer when snp is enabled
+
+Vasant Hegde (6):
+      iommu/amd: Do not allocate io_pgtable_ops for passthrough domain
+      iommu/amd: Fix error handling for pdev_pri_ats_enable()
+      iommu/amd: Do not identity map v2 capable device when snp is enabled
+      iommu/amd: Improve page fault error reporting
+      iommu: Attach device group to old domain in error path
+      iommu/amd: Skip attach device domain is same as new domain
+
+Will Deacon (1):
+      Merge branch 'for-joerg/arm-smmu/bindings' into for-joerg/arm-smmu/updates
+
+Yang Yingliang (1):
+      iommu/exynos: Fix error handling in exynos_iommu_init()
+
+Yoshihiro Shimoda (1):
+      dt-bindings: iommu: renesas,ipmmu-vmsa: add r8a779g0 support
+
+ .../testing/sysfs-bus-event_source-devices-iommu   |  37 +
+ .../devicetree/bindings/iommu/apple,dart.yaml      |   1 +
+ .../devicetree/bindings/iommu/arm,smmu.yaml        |  66 +-
+ .../devicetree/bindings/iommu/qcom,iommu.txt       |   1 +
+ .../bindings/iommu/renesas,ipmmu-vmsa.yaml         |   1 +
+ .../bindings/reserved-memory/reserved-memory.yaml  |  89 ++-
+ MAINTAINERS                                        |   1 -
+ arch/arm/mm/dma-mapping.c                          |  11 +-
+ arch/s390/include/asm/pci_dma.h                    |   5 +-
+ arch/s390/pci/pci_dma.c                            |  31 +-
+ .../gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c    |   3 +-
+ drivers/gpu/drm/tegra/drm.c                        |   2 +-
+ drivers/gpu/host1x/cdma.c                          |   2 +-
+ drivers/infiniband/hw/usnic/usnic_uiom.c           |   8 +-
+ drivers/iommu/Kconfig                              |  18 +-
+ drivers/iommu/amd/init.c                           |  16 +-
+ drivers/iommu/amd/iommu.c                          |  89 ++-
+ drivers/iommu/apple-dart.c                         | 632 +++++++++++----
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |   2 +
+ drivers/iommu/arm/arm-smmu/qcom_iommu.c            |  23 -
+ drivers/iommu/dma-iommu.c                          |  21 +-
+ drivers/iommu/exynos-iommu.c                       | 216 +++--
+ drivers/iommu/fsl_pamu_domain.c                    |   6 +-
+ drivers/iommu/intel/Kconfig                        |  11 +
+ drivers/iommu/intel/Makefile                       |   1 +
+ drivers/iommu/intel/dmar.c                         |  33 +-
+ drivers/iommu/intel/iommu.c                        | 122 ++-
+ drivers/iommu/intel/iommu.h                        | 115 ++-
+ drivers/iommu/intel/pasid.c                        |  20 +-
+ drivers/iommu/intel/perfmon.c                      | 877 +++++++++++++++++++++
+ drivers/iommu/intel/perfmon.h                      |  64 ++
+ drivers/iommu/intel/svm.c                          |  90 +--
+ drivers/iommu/iommu-traces.c                       |   1 -
+ drivers/iommu/iommu.c                              | 171 ++--
+ drivers/iommu/iommufd/pages.c                      |   6 +-
+ drivers/iommu/ipmmu-vmsa.c                         |  28 -
+ drivers/iommu/msm_iommu.c                          |   6 +-
+ drivers/iommu/mtk_iommu.c                          |   9 -
+ drivers/iommu/mtk_iommu_v1.c                       |   4 +-
+ drivers/iommu/of_iommu.c                           |  96 +++
+ drivers/iommu/omap-iommu.c                         |   6 +-
+ drivers/iommu/rockchip-iommu.c                     |   1 -
+ drivers/iommu/s390-iommu.c                         |  22 +-
+ drivers/iommu/sprd-iommu.c                         |  16 -
+ drivers/iommu/sun50i-iommu.c                       |   1 -
+ drivers/iommu/tegra-gart.c                         |   6 +-
+ drivers/iommu/tegra-smmu.c                         |   5 +-
+ drivers/media/platform/qcom/venus/firmware.c       |   2 +-
+ drivers/net/ipa/ipa_mem.c                          |   6 +-
+ drivers/net/wireless/ath/ath10k/snoc.c             |   2 +-
+ drivers/net/wireless/ath/ath11k/ahb.c              |   4 +-
+ drivers/of/address.c                               |  41 +
+ drivers/remoteproc/remoteproc_core.c               |   5 +-
+ drivers/vfio/vfio_iommu_type1.c                    |   9 +-
+ drivers/vhost/vdpa.c                               |   2 +-
+ include/acpi/actbl1.h                              |   2 +-
+ include/linux/cpuhotplug.h                         |   1 +
+ include/linux/dmar.h                               |   1 +
+ include/linux/intel-svm.h                          |  16 -
+ include/linux/iommu.h                              |  39 +-
+ include/linux/of_address.h                         |   2 +
+ include/linux/of_iommu.h                           |   8 +
+ include/trace/events/iommu.h                       |   7 -
+ 63 files changed, 2493 insertions(+), 646 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-event_source-devices-iommu
+ create mode 100644 drivers/iommu/intel/perfmon.c
+ create mode 100644 drivers/iommu/intel/perfmon.h
+ delete mode 100644 include/linux/intel-svm.h
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--xsEv6tzStRkCI0Br
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmP0hgEACgkQK/BELZcB
+GuOQdA//aUZOy5xpupEcBRTk5WYrnrDkYVMkgKF22iDqLnZxI6eWkXt5sYATODoe
+sMlCekV6cZT6AdGWI091jt2+ZlagH9vywZpkzHMhBhsFZdtcsDGHsdKDrxZsA2dd
+IWU4YCIuxNVgQufoNYBmU1D43IG5rCWc9rm0z3n+7bqzkTmBlv3+F4yoXixIKYpX
+5LeNK7zRvtyru1HgZ6xJh5iiqRdMLkqu5mwvx0Bo5Qvkhs/zIilkdz7RO5c4T7ZI
+lsP+5fO9rCpwMTQ0ju/GahSgOCWY8vONY3Vb1OcbrhKW6bwoVhpInh1YdNlywpBI
+FDaxYPyZq5CphZdKNttz+iYb5Yfm0OGxcQREQD40zEE7bdLS+mgzwHBlgh2f+l1s
+MHt9WYrmPavWR+1h9W/7Eggng1j40jjBP20Wbm6VrU9Y9/bpWRHj8f5A+FUSPt/l
+tjxpU+hnUUcWtHbB6ciC18+fLTG9/Qjl79XwPUCvcJ1j6b/aig4nylG2tMgsV7y7
+dxbANTF7gfsBb1MWTG6OGC5f5KqLTQHb/qn6gmRJFpyQPS0fHwB7sTkdBDvLBBx1
+m2ujGQGJLsWLlaA9wm8SThvedxkVpDET5Q4f+28o6tGqkkc1TXcTzwYsYSNCpWOS
+/6kaalkrsSO6kX/Uz6JFaqrLrhlYQLl+OxK2seMJrLN33VfqV6E=
+=5tBc
+-----END PGP SIGNATURE-----
+
+--xsEv6tzStRkCI0Br--
