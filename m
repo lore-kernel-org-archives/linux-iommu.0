@@ -1,76 +1,109 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E3BA1FB5
-	for <iommu@lists.linux.dev>; Wed, 22 Feb 2023 07:04:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-	Content-ID:Content-Description:In-Reply-To:References;
-	bh=MNjuw99R4HgS/gXxR2rjHmB3r482Mpv9GRPW/CNskZA=; b=1jOsEuWgQSmtMaFWKT/scfSbVT
-	lUFFM6ktVoaRkQFLyF2Dqnlavx3hi4StHJOm3DIiyzYMOpwbJ/WiD7wqWbLdQo8P/dysFa+u8qZ7/
-	1MvcLDhfikHckihLkREpGhA4gg5GQtI2db0kGet+cg5T+sz0sQ/ewjGxM9k9gaU3BwTUUiMH+KfqD
-	/s9h3kxBXjw459cZ0TTwSJpkRXO+OtKN2smJA1oX4s20l56bHONL4yKZUcHSqtuMVy0tWPTUh6Hu0
-	Nv4I0pQkkr9AiEsRjrUIOEJtPb0FW/mnpre2CKXICO+75bn2r2Nmd+jrHN9UoGutp3RNYMgq/aOZW
-	t6b7kSeg==;
-Received: from [2601:1c2:980:9ec0::df2f] (helo=bombadil.infradead.org)
-	by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-	id 1pUjAi-00B17L-2z; Wed, 22 Feb 2023 07:04:12 +0000
-From: Randy Dunlap <rdunlap@infradead.org>
-To: linux-kernel@vger.kernel.org
-Cc: Randy Dunlap <rdunlap@infradead.org>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Christoph Hellwig <hch@lst.de>,
-	iommu@lists.linux.dev,
-	Mike Rapoport <rppt@kernel.org>,
-	linux-mm@kvack.org
-Subject: [PATCH] swiotlb: mark swiotlb_memblock_alloc() as __init
-Date: Tue, 21 Feb 2023 23:04:11 -0800
-Message-Id: <20230222070411.6186-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.39.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F75D23A5
+	for <iommu@lists.linux.dev>; Wed, 22 Feb 2023 09:57:52 +0000 (UTC)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: kholk11)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id A0B9B660215E;
+	Wed, 22 Feb 2023 09:57:49 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1677059870;
+	bh=iupWZw710RJlsDfuH6ZphQSX1uucYuxWxs1WrmnL4w8=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=kYas5w6Jegs2D/xpl1OhhLiy3FMEDgo+bWugL3ObzJ6yUfY8RVjdpWT0v3PMM8ROa
+	 FbQt7XjJu6chr4H7X5bPZ3pBh1oKjYp0XDSyCIGhG/dx8hniNm4UAXzi6+iq+OFVQ9
+	 ehdh4DPCjknbUjVL0u5Yn13Yhp+dLjY9TOw/P0lYAg16ZiWStTX1dPy9HWD7QPVx5D
+	 WCwh3HvdC8/AzDe3fPs1Lzh7mTUqtH7No8/JHuysZpSHJvNEKcB4eZGh56xXNIBvWB
+	 6lzBLMfag4WOstlYU8BPcGljCfPOPI8VM1Vuk+axO/gYCVpo3ss4n/AtA5AzGjFIsI
+	 f+O0O8yI0VFrw==
+Message-ID: <254cfbb5-c8b8-0abc-e6bc-5007fe757004@collabora.com>
+Date: Wed, 22 Feb 2023 10:57:47 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v3 0/6] Add support for Qualcomm's legacy IOMMU v2
+Content-Language: en-US
+To: agross@kernel.org
+Cc: andersson@kernel.org, konrad.dybcio@linaro.org, joro@8bytes.org,
+ will@kernel.org, robin.murphy@arm.com, robh+dt@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org, robdclark@gmail.com,
+ linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, marijn.suijten@somainline.org,
+ kernel@collabora.com, luca@z3ntu.xyz, a39.skl@gmail.com,
+ phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
+References: <20221115101122.155440-1-angelogioacchino.delregno@collabora.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20221115101122.155440-1-angelogioacchino.delregno@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-swiotlb_memblock_alloc() calls memblock_alloc(), which calls
-(__init) memblock_alloc_try_nid(). However, swiotlb_membloc_alloc()
-can be marked as __init since it is only called by swiotlb_init_remap(),
-which is already marked as __init. This prevents a modpost build
-warning/error:
+Il 15/11/22 11:11, AngeloGioacchino Del Regno ha scritto:
+> This series adds support for handling "v2" firmware's IOMMU, found
+> on at least MSM8956 and MSM8976 (some other SoCs also need the same
+> but I honestly don't remember which ones precisely).
+> 
+> This is strictly required to get functional IOMMUs on these SoCs.
+> 
+> I'm sorry for not performing a much needed schema conversion on
+> qcom,iommu.txt, but I really didn't have time to do that :-(
+> 
+> This series was tested on Sony Xperia X and X Compact (MSM8956):
+> ADSP, LPASS, Venus, MSS, MDP and GPU are happy :-)
+> 
+> 
 
-WARNING: modpost: vmlinux.o: section mismatch in reference: swiotlb_memblock_alloc (section: .text) -> memblock_alloc_try_nid (section: .init.text)
-WARNING: modpost: vmlinux.o: section mismatch in reference: swiotlb_memblock_alloc (section: .text) -> memblock_alloc_try_nid (section: .init.text)
+Hello,
+this series is really old and got sent and resent many times.
+The first time I've sent this one was .. I think in 2019, then, at the
+end of 2022, I had some time to actually respin it and send another
+three versions. It's been 3 long years :-)
+The third version got the last comments addressed.
 
-This fixes the build warning/error seen on ARM64, PPC64, S390, i386,
-and x86_64.
+Since this didn't get any more feedback for 3 months, I'm worried that it
+will be forgotten again, hence:
 
-Fixes: 8d58aa484920 ("swiotlb: reduce the swiotlb buffer size on allocation failure")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Alexey Kardashevskiy <aik@amd.com>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux.dev
-Cc: Mike Rapoport <rppt@kernel.org>
-Cc: linux-mm@kvack.org
----
- kernel/dma/swiotlb.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Is there any more feedback? Anything else to fix?
+If not, can this be picked, please?
 
-diff -- a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -292,8 +292,9 @@ static void swiotlb_init_io_tlb_mem(stru
- 	return;
- }
- 
--static void *swiotlb_memblock_alloc(unsigned long nslabs, unsigned int flags,
--		int (*remap)(void *tlb, unsigned long nslabs))
-+static void __init *swiotlb_memblock_alloc(unsigned long nslabs,
-+			unsigned int flags,
-+			int (*remap)(void *tlb, unsigned long nslabs))
- {
- 	size_t bytes = PAGE_ALIGN(nslabs << IO_TLB_SHIFT);
- 	void *tlb;
+Thank you.
+
+Best regards,
+Angelo
+
+
+> Changes in v3:
+>   - Removed useless FSRRESTORE reset and definition as pointed
+>     out in Robin Murphy's review
+>   - Fixed qcom,iommu.txt changes: squashed MSM8976 compatible
+>     string addition with msm-iommu-v2 generics addition
+> 
+> Changes in v2:
+>   - Added back Marijn's notes (sorry man!)
+>   - Added ARM_SMMU_CB_FSRRESTORE definition
+>   - Changed context bank reset to properly set FSR and FSRRESTORE
+> 
+> AngeloGioacchino Del Regno (6):
+>    dt-bindings: iommu: qcom,iommu: Document qcom,ctx-num property
+>    iommu/qcom: Use the asid read from device-tree if specified
+>    iommu/qcom: Properly reset the IOMMU context
+>    iommu/qcom: Index contexts by asid number to allow asid 0
+>    dt-bindings: iommu: qcom,iommu: Document QSMMUv2 and MSM8976
+>      compatibles
+>    iommu/qcom: Add support for QSMMUv2 and QSMMU-500 secured contexts
+> 
+>   .../devicetree/bindings/iommu/qcom,iommu.txt  |  9 +++
+>   drivers/iommu/arm/arm-smmu/qcom_iommu.c       | 78 +++++++++++++++----
+>   2 files changed, 70 insertions(+), 17 deletions(-)
+> 
+
+
