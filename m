@@ -1,119 +1,161 @@
-Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
+Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-db5eur01olkn2043.outbound.protection.outlook.com [40.92.64.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3FDE10E7
-	for <iommu@lists.linux.dev>; Wed, 22 Feb 2023 17:09:00 +0000 (UTC)
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=guorui.yu@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VcHOdvq_1677084795;
-Received: from localhost(mailfrom:GuoRui.Yu@linux.alibaba.com fp:SMTPD_---0VcHOdvq_1677084795)
-          by smtp.aliyun-inc.com;
-          Thu, 23 Feb 2023 00:53:16 +0800
-From: "GuoRui.Yu" <GuoRui.Yu@linux.alibaba.com>
-To: hch@lst.de,
-	m.szyprowski@samsung.com
-Cc: robin.murphy@arm.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	GuoRui.Yu@linux.alibaba.com,
-	linux-mm@kvack.org
-Subject: [PATCH v2] swiotlb: fix the deadlock in swiotlb_do_find_slots
-Date: Thu, 23 Feb 2023 00:53:15 +0800
-Message-Id: <20230222165315.89135-1-GuoRui.Yu@linux.alibaba.com>
-X-Mailer: git-send-email 2.29.2.540.g3cf59784d4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D258929A8
+	for <iommu@lists.linux.dev>; Wed, 22 Feb 2023 19:31:30 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iMTD4Zf+u6/KmvgJ9WmpaqcZtSDB/lAXNa2FMjxgz5EiodUfUn8PYiTa7UAW8VIiQOc+3iLtV3M/FJhgNtKbpheh9gj/47u2YHVitYK2HQkZLrW14hvkQwke85FjgmnROz5zizWVQ/beZkH7Iy/nSGYpirXMEu3V3BKPKUIngoSK7VHLaA0p5O3+H/ONPWzcP3HwGeBMMUYHl2r5Z/goxcyydJUIigyIYpjC6rI2VxxXcNvE/1kCuvLKOLolNkkxRgLy16oRm9srHC0Zsd3Vm3mTTmVI8xWODrwqS8sSw8C6iB08lqN2IEdmvCMx5TvwC5j5QwB7f5TmxXnb6ZwDbA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=hvs0fyO2aswKMoKsdvu+1xpbB1U9q/W1CErvX1L/ebo=;
+ b=ZAWIkx6VOIo/HongEMEebB6ZZV/mJrl7tcwJeKf70EthrKQg+v7weDZiS3IEymRdzumyIResagK1TC1OappN1cwBsXEiNU8//9Np42P0kUZpTafG2OufZ4LE31FxBxsrj+w0Fnsm1+wK6zlMQUVXaqaVO7h44480zAtgDc+6cr+vjMcrXkAn6qQOhanotd6dBUlooSv9ep1gyz+Jjwnv/QrLwb6ISDNIkSRV48Tx+DRQGZTUz7i4EY/LOSTAXIAyT28+oKllgcM4xTyyAdCN/EJAkejeHkbHWH/LCDaGLBCiy0S7Vbeqou0VK5anu1lP0EGnDRvNh0lpZhoEjbGoEA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hvs0fyO2aswKMoKsdvu+1xpbB1U9q/W1CErvX1L/ebo=;
+ b=VYLpbOJKVYM0AMMbp86ozLvHU6kj57YHOKiv3Rt+e+qXWL9wZQv6LCaJk4nPX7IEF3KzaK8+DdvnUhjWvOJASpaxkkhY2YGWYdLGrQ0RiKqdL8os6W/Fkd1rfijbiLSQFHvWjQGSO9fvPvpxfY6zVsks3oUa/Mi1ofhXNnLL5hRceJ4q7uo7c9Sk5q8FL0VLTFkw7Gtkb1yCv27tQjSuDyPcdpkSbnhVf1cNqFm8oeM8ckBqDoMP+hOgKDZblaZRCYUGpMXpyzBCxJAxWHNWIOL2qhzscgDm7uTYGGS3CPgwUHCZyRycc/dSZj4nLYxnHH9qSaG49qt+FMSXS0kfyg==
+Received: from AS8P193MB2095.EURP193.PROD.OUTLOOK.COM (2603:10a6:20b:40e::16)
+ by PR3P193MB0846.EURP193.PROD.OUTLOOK.COM (2603:10a6:102:ab::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.21; Wed, 22 Feb
+ 2023 19:31:28 +0000
+Received: from AS8P193MB2095.EURP193.PROD.OUTLOOK.COM
+ ([fe80::a948:f3d:75c5:1a0a]) by AS8P193MB2095.EURP193.PROD.OUTLOOK.COM
+ ([fe80::a948:f3d:75c5:1a0a%6]) with mapi id 15.20.6134.019; Wed, 22 Feb 2023
+ 19:31:22 +0000
+Message-ID:
+ <AS8P193MB20955442176F3BFFB022CACAD2AA9@AS8P193MB2095.EURP193.PROD.OUTLOOK.COM>
+Date: Wed, 22 Feb 2023 20:31:20 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: SR-IOV on ARM64 system with SMMU
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, will@kernel.org, joro@8bytes.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+References: <AS8P193MB2095640357779A7F9B6026F8D2A19@AS8P193MB2095.EURP193.PROD.OUTLOOK.COM>
+ <c8366f3a-3eba-6a54-558d-c87350187793@arm.com>
+ <AS8P193MB209596DC2B89931C57C565BDD2A49@AS8P193MB2095.EURP193.PROD.OUTLOOK.COM>
+ <77bf61fd-485e-7162-c0d3-c1bd7735deaa@arm.com>
+ <AS8P193MB2095CD44400D95C79C262249D2A59@AS8P193MB2095.EURP193.PROD.OUTLOOK.COM>
+ <e182594b-5cdb-881d-59c8-a20dc90b62fb@arm.com>
+ <PAXP193MB2105A8519929AD3E4A508F25D2AA9@PAXP193MB2105.EURP193.PROD.OUTLOOK.COM>
+ <28ef1727-161d-1165-3878-08f7534f6e47@arm.com>
+From: Martin Bayern <martinbayern@outlook.com>
+In-Reply-To: <28ef1727-161d-1165-3878-08f7534f6e47@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TMN: [wNt03fAj55N2nUswgnlpXsbWF8BS7s2S]
+X-ClientProxiedBy: MR1P264CA0157.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:501:54::16) To AS8P193MB2095.EURP193.PROD.OUTLOOK.COM
+ (2603:10a6:20b:40e::16)
+X-Microsoft-Original-Message-ID:
+ <f8b1dbc7-4242-78ff-803f-5bc6a7797ccf@outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS8P193MB2095:EE_|PR3P193MB0846:EE_
+X-MS-Office365-Filtering-Correlation-Id: 33a90388-6909-481b-8631-08db150b6148
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	oni4DHRAjY2y8qSxxBR3P9iSI3L4Iv7VLL3HycFpSPYVb2NWw5adpasoeCXeDXjQeadhwad5lWdia94PZvVpxcBDwSvlShNqVHQUrLoo+m10BQuCd7XMGNrj9FjRbxWry3FtphsD7mD5HE/UV6mz6V2REuWgwTlzM+SigmMXFUQ+19LIjanfhmN+GPaV9U0l87wUxw8tu4JuznQ7B6X6rtm/YvC3T9kaG9ml3Y66bZLnr/fgXxTMhfAMOrq8tqUeim2fNON0d+UiUaEF9gR0pQTy0q/xADqg8o3zv+FNREvTz4FyYcoCFqiS48EpYaU681jbrg9Wsfwe6/WpqFET2XGsQRkG9gWTwah4PuhXzTBQ93m8cAglZ1eT4jCbn+ROFYTMtf1Gx+/RS5TcnRlyq3Sb7sat+MmDAJIXQ5Qc3NjSMpBFibP2VNQd8i44JdMzSJZU7i2ajEScfRY7ODmTwfXvHsfWs1xCgyTA3i/tSeZX+UHuemR4/rpVhjklMkCoaOBPrhklYc7/vYEcz6KevQHblIcySAplw77w/VS5fWI90/rymP5l1ODxXUJcXvzc+X5CgdKeU3cDYTlveDJsAOcxJsNmG3cK6hWaV9bD9bEmg1vriP6cX1vOrj2tkcrsQ6GQDisCRBcAZhIt6sDRFQ==
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?WEdsZlFYNkZvR2ZKVnRrVVhoRzBzSmhKcFpsRVpMM3lqUWpSdGxSVWR2SkVz?=
+ =?utf-8?B?bWgxS2dLQytOeWU5dzUrZ0ZXOTlWZ2R3WDYxcnJSMmw3d3grNE5BQm84ZDM0?=
+ =?utf-8?B?V0MwT3FrcTN1N09UUThEU1BpVmd6MDQ4emt6YTZTSHB1eFhoN3BhcTdVdis4?=
+ =?utf-8?B?M0V3QnJzS2hncGRyS2I3QW13dGJMemF3SmNSOWZrcVFuNWxUZWtwTFpmb1Rp?=
+ =?utf-8?B?U2NwOG9Jd2cwdnVXaW1Xbko0dEhQeVJrdkEraWdyRWFSYUxRdFF3eHorY1M1?=
+ =?utf-8?B?aDBMV1hGWHdzT3NyWUR5cXUxZ3FCTGZmWkVjdE5FTVl1dGt2SDd5TWxjRGV2?=
+ =?utf-8?B?OEJoeGZHdDZ0WmZMdktlb3ZVa1RjRVZiaHk0MXJ5VTdGVHhPRGh2cFVGV3Av?=
+ =?utf-8?B?S2pWSzk3ZUFseUZwcERKOVlpTTNDd3RDTXFSVHFVN2ZvSytEc3dBMjBmOTl5?=
+ =?utf-8?B?cWxZTTlRM1ZXYng1dm5UYmNWWXZTS005a2hlL3pQNXlJR3FsUkxuU24wZGt0?=
+ =?utf-8?B?K2YvTFpaR2ZkTCtmdC9pUFpPK0ZRaWdNOEFMSi9zRE84RnpsMHNJaFMza1c3?=
+ =?utf-8?B?ZS9tcTlNam9lZlhZTmJoUCtiREpmNkY5eUk3dzdnRmlLbnpWRUNoYXE4enZ6?=
+ =?utf-8?B?SkJ5SStRRk9Pa2tiTnZ5cW5uN1hFN3RyRTZZeHlGdDBSUUlJKzhBZDZ4b1VX?=
+ =?utf-8?B?ZHdIU2t4bzg4ak4vOU1jaUErOXZla01xU01lV3pzYkZvT3NXNzhSbGQ1a3Vl?=
+ =?utf-8?B?bEhjN21mbVRpMGRJcFFKWkdkVE5vTzYrVklXdjJkb2xCLytXeEVZeVhueTFL?=
+ =?utf-8?B?Nnl2THRHWEhNYUVHdmVsRlc5V0tFcHQ4QitsZDFWOWp5cm5GVmxRcVE1My9z?=
+ =?utf-8?B?NTFYZFhDU28wQmJpcjVBWEIzdWVockhQRTZ2TjZQa2RoUnovM3NNdkoxdWNh?=
+ =?utf-8?B?OHhST21TNFZxbnp3UTM4V1luQVVpaEI0aFVMK3VLd2RabzRxRXhVR01qZ0RE?=
+ =?utf-8?B?bWpBS3hQak1yckJlUEg5ZTJHTVM0NTYycjVUY2tDUm9aeTgvQ2tGaHZTYWwx?=
+ =?utf-8?B?c1dJQ2JZN3NDRGpQanpyaWtYQ3MrODhnUXNFTmtFWWtrV0c2b0RWQ3cxbXV0?=
+ =?utf-8?B?ZXdaME9aUHNpRy8zR1VyaWxqRFIxRXZyS2Rwd1BYR0liRzNzUTd6S2tvRkE3?=
+ =?utf-8?B?Wkx1Tllwa2U4c3BnODN6ck8zNndqVEM1ZDRiYmRrYktsT005WTR4WUN4MkJN?=
+ =?utf-8?B?TDhBSUlBOVVoMHFLYTY2cjhQelR0L2J3amZFUmtEYVp2d0hpM3VXSVU1N0tC?=
+ =?utf-8?B?a1J4MWVYanUxaktXbG9XVDExL1hiZUJpUzk0bFpHekdKVG9jMHVJaUVTNUd1?=
+ =?utf-8?B?UzFwM3pOQlR0bkplcXkra3hDejh2NmkzckFnUWNoVlBIYTNCdWI3VVFPT1BE?=
+ =?utf-8?B?eUVjejM3S3JoLyt6bEFwK3RhSFgvNUl1VHROa2hPRmdhdG9yWUdhdHFlMGxM?=
+ =?utf-8?B?RnIzMHlRQ2dSOXh2Q0tyVDBPckdKTjl6dzU3M0NreVpzUlZSZHZ1Q1RUREpO?=
+ =?utf-8?B?QUIwbERkeUVlZTl1dGl4YlpRNjRxOG5mTlhRNmFnUzUyUjdJYTh1aXFWT2tJ?=
+ =?utf-8?B?OURpQXdKL0prbllqL3lQVmM1dEpWSG43NW9Nd0hoUzd4ak4zNkp6YjhTWEFn?=
+ =?utf-8?B?VVQ1MnFxb0E0S1hRclFMU3pTaHJMNFlXRTZ2Vy9YN1VSek9vdjJMZDQ2U2ZX?=
+ =?utf-8?Q?BFLigTswt5xQBTuLfg=3D?=
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 33a90388-6909-481b-8631-08db150b6148
+X-MS-Exchange-CrossTenant-AuthSource: AS8P193MB2095.EURP193.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2023 19:31:22.8866
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3P193MB0846
 
-In general, if swiotlb is sufficient, the logic of index =
-wrap_area_index(mem, index + 1) is fine, it will quickly take a slot and
-release the area->lock; But if swiotlb is insufficient and the device
-has min_align_mask requirements, such as NVME, we may not be able to
-satisfy index == wrap and exit the loop properly. In this case, other
-kernel threads will not be able to acquire the area->lock and release
-the slot, resulting in a deadlock.
+On 22.02.23 1:38 PM, Robin Murphy wrote:
+>> hi Robin
+>>
+>> Thank you so much for your support on this!
+>>
+>> On 21.02.23 8:30 PM, Robin Murphy wrote:
+>>> The only actual solution to that problem is to make the platform 
+>>> device not be in the group to begin with. As mentioned, that is 
+>>> presumably because the PCIe node in the DT has an "iommus = ..." 
+>>> property (not to be confused with the "iommu-map" properties which 
+>>> are for the PCI side). I'd expect you could probably get away with 
+>>> removing that - the only reason I can imagine it being functionally 
+>>> necessary is if the root complex has internal DMA engines that the 
+>>> downstream kernel is using.
+>>>
+>>> But yeah, by that point it's arguably just an exercise in achieving 
+>>> satisfaction by making *something* work, rather than a really 
+>>> practical prospect
+>>
+>> I search the keyword string "iommus" in NVIDIA Orin/Xavier related 
+>> dts/dtsi, but there is no iommus attribute node, nor iommu-map. 
+>> Relevant questions have been posted in the NVIDIA forum, and I hope 
+>> NVIDIA can respond. Please let me know if you have any other 
+>> thoughts/suggestions. I'm currently working on study of the drivers 
+>> of smmu and iommu, trying to figure out the root cause of it.
+>
+> That sounds like the properties are getting added dynamically by the 
+> bootloader (or possibly an overlay), or it might be using a DTB from 
+> some other source entirely - I'd check under 
+> /sys/firmware/devicetree/base/ at runtime and/or decompile 
+> /sys/firmware/fdt to see what ends up actually passed to the kernel.
+>
+> Unless the downstream kernel has made major changes to the IOMMU 
+> logic, it's the only way to explain why the SMMU driver would be aware 
+> of the PCI controller platform device at all. 
 
-The current implementation of wrap_area_index does not involve a modulo
-operation, so adjusting the wrap to ensure the loop ends is not trivial.
-Introduce the index_nowrap variable to record the number of loops and
-exit the loop after completing the traversal.
 
-Backtraces:
-Other CPUs are waiting this core to exit the swiotlb_do_find_slots
-loop.
-[10199.924391] RIP: 0010:swiotlb_do_find_slots+0x1fe/0x3e0
-[10199.924403] Call Trace:
-[10199.924404]  <TASK>
-[10199.924405]  swiotlb_tbl_map_single+0xec/0x1f0
-[10199.924407]  swiotlb_map+0x5c/0x260
-[10199.924409]  ? nvme_pci_setup_prps+0x1ed/0x340
-[10199.924411]  dma_direct_map_page+0x12e/0x1c0
-[10199.924413]  nvme_map_data+0x304/0x370
-[10199.924415]  nvme_prep_rq.part.0+0x31/0x120
-[10199.924417]  nvme_queue_rq+0x77/0x1f0
+Hi Robin,
 
-...
-[ 9639.596311] NMI backtrace for cpu 48
-[ 9639.596336] Call Trace:
-[ 9639.596337]
-[ 9639.596338] _raw_spin_lock_irqsave+0x37/0x40
-[ 9639.596341] swiotlb_do_find_slots+0xef/0x3e0
-[ 9639.596344] swiotlb_tbl_map_single+0xec/0x1f0
-[ 9639.596347] swiotlb_map+0x5c/0x260
-[ 9639.596349] dma_direct_map_sg+0x7a/0x280
-[ 9639.596352] __dma_map_sg_attrs+0x30/0x70
-[ 9639.596355] dma_map_sgtable+0x1d/0x30
-[ 9639.596356] nvme_map_data+0xce/0x370
+Thanks again, your interest in this topic is greatly appreciated! I 
+hope, I could implement SR-IOV on this ARM based system with your support.
 
-...
-[ 9639.595665] NMI backtrace for cpu 50
-[ 9639.595682] Call Trace:
-[ 9639.595682]
-[ 9639.595683] _raw_spin_lock_irqsave+0x37/0x40
-[ 9639.595686] swiotlb_release_slots.isra.0+0x86/0x180
-[ 9639.595688] dma_direct_unmap_sg+0xcf/0x1a0
-[ 9639.595690] nvme_unmap_data.part.0+0x43/0xc0
+Might be an overlay, I'll double-check and get back to you asap.
 
-Fixes: 1f221a0d0dbf ("swiotlb: respect min_align_mask")
-Signed-off-by: GuoRui.Yu <GuoRui.Yu@linux.alibaba.com>
-Signed-off-by: Xiaokang Hu <xiaokang.hxk@alibaba-inc.com>
----
- kernel/dma/swiotlb.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index a34c38bbe28f..638ba3ea94f4 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -632,7 +632,7 @@ static int swiotlb_do_find_slots(struct device *dev, int area_index,
- 	unsigned int iotlb_align_mask =
- 		dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);
- 	unsigned int nslots = nr_slots(alloc_size), stride;
--	unsigned int index, wrap, count = 0, i;
-+	unsigned int index, index_nowrap = 0, wrap, count = 0, i;
- 	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
- 	unsigned long flags;
- 	unsigned int slot_base;
-@@ -665,6 +665,7 @@ static int swiotlb_do_find_slots(struct device *dev, int area_index,
- 		    (slot_addr(tbl_dma_addr, slot_index) &
- 		     iotlb_align_mask) != (orig_addr & iotlb_align_mask)) {
- 			index = wrap_area_index(mem, index + 1);
-+			index_nowrap++;
- 			continue;
- 		}
- 
-@@ -680,7 +681,8 @@ static int swiotlb_do_find_slots(struct device *dev, int area_index,
- 				goto found;
- 		}
- 		index = wrap_area_index(mem, index + stride);
--	} while (index != wrap);
-+		index_nowrap += stride;
-+	} while (index_nowrap < mem->area_nslabs);
- 
- not_found:
- 	spin_unlock_irqrestore(&area->lock, flags);
--- 
-2.31.1
+Kind regards,
+
+Martin
 
