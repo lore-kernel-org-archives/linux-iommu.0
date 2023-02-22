@@ -1,81 +1,76 @@
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D98031C17
-	for <iommu@lists.linux.dev>; Wed, 22 Feb 2023 06:15:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677046523; x=1708582523;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ZeXJ7DB5YT2ntkxG4DK0XkeNPwdLeW8BHoIQ2ji0wqc=;
-  b=OiHME6xm6FpkkuV6GAK7KLRjVzRI7asdWMkiCOGSqGyWBgHlxiUKtsP2
-   0FAhIB0V0Uoqqy2btG7KVMFlXAWxCAEWzCPI30U1Wm9kp3uGHqqBv6Ku5
-   /eEY1b77YQUSOYrUEXJd4D78mRqpPVK0AY69Aqs4SpvpEft8EH/s25Nxi
-   Xt5fOLCjCSR0c5M2XN35PqJUwzXx1J1rbD/widQSdhsqQbyJt7dfn/LfD
-   hZXbkwYu7AeKyflw/SjxdjGmYlNaVdvo4iJC9AgtGAAqbR4HtSgQGdvYF
-   TuQBmw5PoMw/arWmsPwA2y42XhkRqqAstjkjI6zn2S2V6ndnl9b/gZHnp
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10628"; a="334210579"
-X-IronPort-AV: E=Sophos;i="5.97,318,1669104000"; 
-   d="scan'208";a="334210579"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2023 22:15:22 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10628"; a="1000881310"
-X-IronPort-AV: E=Sophos;i="5.97,318,1669104000"; 
-   d="scan'208";a="1000881310"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2023 22:15:21 -0800
-Date: Tue, 21 Feb 2023 22:19:05 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Lu Baolu
- <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Jean-Philippe
- Brucker" <jean-philippe@linaro.com>, Robin Murphy <robin.murphy@arm.com>,
- Will Deacon <will@kernel.org>, "David Woodhouse" <dwmw2@infradead.org>,
- "Raj, Ashok" <ashok.raj@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Yu,
- Fenghua" <fenghua.yu@intel.com>, "Hansen, Dave" <dave.hansen@intel.com>,
- Thomas Gleixner <tglx@linutronix.de>, "X86 Kernel" <x86@kernel.org>,
- "Jiang, Dave" <dave.jiang@intel.com>, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v3 3/5] iommu/sva: Stop using ioasid_set for SVA
-Message-ID: <20230221221905.4759b2ac@jacob-builder>
-In-Reply-To: <BN9PR11MB5276EC1F0926256D0E8F05F58CAA9@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20230216235951.3573059-1-jacob.jun.pan@linux.intel.com>
-	<20230216235951.3573059-4-jacob.jun.pan@linux.intel.com>
-	<BN9PR11MB5276EC1F0926256D0E8F05F58CAA9@BN9PR11MB5276.namprd11.prod.outlook.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E3BA1FB5
+	for <iommu@lists.linux.dev>; Wed, 22 Feb 2023 07:04:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+	Content-ID:Content-Description:In-Reply-To:References;
+	bh=MNjuw99R4HgS/gXxR2rjHmB3r482Mpv9GRPW/CNskZA=; b=1jOsEuWgQSmtMaFWKT/scfSbVT
+	lUFFM6ktVoaRkQFLyF2Dqnlavx3hi4StHJOm3DIiyzYMOpwbJ/WiD7wqWbLdQo8P/dysFa+u8qZ7/
+	1MvcLDhfikHckihLkREpGhA4gg5GQtI2db0kGet+cg5T+sz0sQ/ewjGxM9k9gaU3BwTUUiMH+KfqD
+	/s9h3kxBXjw459cZ0TTwSJpkRXO+OtKN2smJA1oX4s20l56bHONL4yKZUcHSqtuMVy0tWPTUh6Hu0
+	Nv4I0pQkkr9AiEsRjrUIOEJtPb0FW/mnpre2CKXICO+75bn2r2Nmd+jrHN9UoGutp3RNYMgq/aOZW
+	t6b7kSeg==;
+Received: from [2601:1c2:980:9ec0::df2f] (helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1pUjAi-00B17L-2z; Wed, 22 Feb 2023 07:04:12 +0000
+From: Randy Dunlap <rdunlap@infradead.org>
+To: linux-kernel@vger.kernel.org
+Cc: Randy Dunlap <rdunlap@infradead.org>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Christoph Hellwig <hch@lst.de>,
+	iommu@lists.linux.dev,
+	Mike Rapoport <rppt@kernel.org>,
+	linux-mm@kvack.org
+Subject: [PATCH] swiotlb: mark swiotlb_memblock_alloc() as __init
+Date: Tue, 21 Feb 2023 23:04:11 -0800
+Message-Id: <20230222070411.6186-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Hi Kevin,
+swiotlb_memblock_alloc() calls memblock_alloc(), which calls
+(__init) memblock_alloc_try_nid(). However, swiotlb_membloc_alloc()
+can be marked as __init since it is only called by swiotlb_init_remap(),
+which is already marked as __init. This prevents a modpost build
+warning/error:
 
-On Wed, 22 Feb 2023 02:22:48 +0000, "Tian, Kevin" <kevin.tian@intel.com>
-wrote:
+WARNING: modpost: vmlinux.o: section mismatch in reference: swiotlb_memblock_alloc (section: .text) -> memblock_alloc_try_nid (section: .init.text)
+WARNING: modpost: vmlinux.o: section mismatch in reference: swiotlb_memblock_alloc (section: .text) -> memblock_alloc_try_nid (section: .init.text)
 
-> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Sent: Friday, February 17, 2023 8:00 AM
-> >
-> > +	ret = ida_alloc_range(&iommu_global_pasid_ida, min, max,
-> > GFP_KERNEL);
-> > +	if (ret < min)
-> > +		goto out;  
-> 
-> ioasid_alloc() currently uses GFP_ATOMIC.
-> 
-> since this is kind of a replacement w/o functional impact, it'd be cleaner
-> from bisect p.o.v. to have a separate patch changing GFP_ATOMIC
-> to GFP_KERNEL in ioasid_alloc() and then this patch.
-> 
-makes sense,
+This fixes the build warning/error seen on ARM64, PPC64, S390, i386,
+and x86_64.
 
-Thanks,
+Fixes: 8d58aa484920 ("swiotlb: reduce the swiotlb buffer size on allocation failure")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Alexey Kardashevskiy <aik@amd.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux.dev
+Cc: Mike Rapoport <rppt@kernel.org>
+Cc: linux-mm@kvack.org
+---
+ kernel/dma/swiotlb.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Jacob
+diff -- a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -292,8 +292,9 @@ static void swiotlb_init_io_tlb_mem(stru
+ 	return;
+ }
+ 
+-static void *swiotlb_memblock_alloc(unsigned long nslabs, unsigned int flags,
+-		int (*remap)(void *tlb, unsigned long nslabs))
++static void __init *swiotlb_memblock_alloc(unsigned long nslabs,
++			unsigned int flags,
++			int (*remap)(void *tlb, unsigned long nslabs))
+ {
+ 	size_t bytes = PAGE_ALIGN(nslabs << IO_TLB_SHIFT);
+ 	void *tlb;
