@@ -1,42 +1,119 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from out30-119.freemail.mail.aliyun.com (out30-119.freemail.mail.aliyun.com [115.124.30.119])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E9022F3F
-	for <iommu@lists.linux.dev>; Wed, 22 Feb 2023 14:49:01 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 5EF19227AA8; Wed, 22 Feb 2023 15:48:57 +0100 (CET)
-Date: Wed, 22 Feb 2023 15:48:56 +0100
-From: Christoph Hellwig <hch@lst.de>
-To: Nick Alcock <nick.alcock@oracle.com>
-Cc: mcgrof@kernel.org, linux-modules@vger.kernel.org,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13EB410E7
+	for <iommu@lists.linux.dev>; Wed, 22 Feb 2023 16:58:18 +0000 (UTC)
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R381e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=guorui.yu@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VcHP-D1_1677084772;
+Received: from localhost(mailfrom:GuoRui.Yu@linux.alibaba.com fp:SMTPD_---0VcHP-D1_1677084772)
+          by smtp.aliyun-inc.com;
+          Thu, 23 Feb 2023 00:52:52 +0800
+From: "GuoRui.Yu" <GuoRui.Yu@linux.alibaba.com>
+To: hch@lst.de,
+	m.szyprowski@samsung.com
+Cc: robin.murphy@arm.com,
+	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
-	Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev
-Subject: Re: [PATCH 21/27] kbuild, dma-mapping: benchmark: remove
- MODULE_LICENSE in non-modules
-Message-ID: <20230222144856.GA14220@lst.de>
-References: <20230222121453.91915-1-nick.alcock@oracle.com> <20230222121453.91915-22-nick.alcock@oracle.com>
+	GuoRui.Yu@linux.alibaba.com,
+	linux-mm@kvack.org
+Subject: [PATCH] swiotlb: fix the deadlock in swiotlb_do_find_slots
+Date: Thu, 23 Feb 2023 00:52:51 +0800
+Message-Id: <20230222165251.88700-1-GuoRui.Yu@linux.alibaba.com>
+X-Mailer: git-send-email 2.29.2.540.g3cf59784d4
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230222121453.91915-22-nick.alcock@oracle.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 8bit
 
-Looks good:
+In general, if swiotlb is sufficient, the logic of index =
+wrap_area_index(mem, index + 1) is fine, it will quickly take a slot and
+release the area->lock; But if swiotlb is insufficient and the device
+has min_align_mask requirements, such as NVME, we may not be able to
+satisfy index == wrap and exit the loop properly. In this case, other
+kernel threads will not be able to acquire the area->lock and release
+the slot, resulting in a deadlock.
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+The current implementation of wrap_area_index does not involve a modulo
+operation, so adjusting the wrap to ensure the loop ends is not trivial.
+Introduce the index_nowrap variable to record the number of loops and
+exit the loop after completing the traversal.
 
-On Wed, Feb 22, 2023 at 12:14:47PM +0000, Nick Alcock wrote:
-> Since commit 8b41fc4454e ("kbuild: create modules.builtin without
-> Makefile.modbuiltin or tristate.conf"), MODULE_LICENSE declarations
-> are used to identify modules.
+Backtraces:
+Other CPUs are waiting this core to exit the swiotlb_do_find_slots
+loop.
+[10199.924391] RIP: 0010:swiotlb_do_find_slots+0x1fe/0x3e0
+[10199.924403] Call Trace:
+[10199.924404]  <TASK>
+[10199.924405]  swiotlb_tbl_map_single+0xec/0x1f0
+[10199.924407]  swiotlb_map+0x5c/0x260
+[10199.924409]  ? nvme_pci_setup_prps+0x1ed/0x340
+[10199.924411]  dma_direct_map_page+0x12e/0x1c0
+[10199.924413]  nvme_map_data+0x304/0x370
+[10199.924415]  nvme_prep_rq.part.0+0x31/0x120
+[10199.924417]  nvme_queue_rq+0x77/0x1f0
 
-.. but this seems like a really odd design.  How is this going to
-continue working once we can autogenerate the module license section
-from the SPDX tags, which we eventually really should?
+...
+[ 9639.596311] NMI backtrace for cpu 48
+[ 9639.596336] Call Trace:
+[ 9639.596337]
+[ 9639.596338] _raw_spin_lock_irqsave+0x37/0x40
+[ 9639.596341] swiotlb_do_find_slots+0xef/0x3e0
+[ 9639.596344] swiotlb_tbl_map_single+0xec/0x1f0
+[ 9639.596347] swiotlb_map+0x5c/0x260
+[ 9639.596349] dma_direct_map_sg+0x7a/0x280
+[ 9639.596352] __dma_map_sg_attrs+0x30/0x70
+[ 9639.596355] dma_map_sgtable+0x1d/0x30
+[ 9639.596356] nvme_map_data+0xce/0x370
+
+...
+[ 9639.595665] NMI backtrace for cpu 50
+[ 9639.595682] Call Trace:
+[ 9639.595682]
+[ 9639.595683] _raw_spin_lock_irqsave+0x37/0x40
+[ 9639.595686] swiotlb_release_slots.isra.0+0x86/0x180
+[ 9639.595688] dma_direct_unmap_sg+0xcf/0x1a0
+[ 9639.595690] nvme_unmap_data.part.0+0x43/0xc0
+
+Fixes: 1f221a0d0dbf ("swiotlb: respect min_align_mask")
+Signed-off-by: GuoRui.Yu <GuoRui.Yu@linux.alibaba.com>
+Signed-off-by: Xiaokang Hu <xiaokang.hxk@alibaba-inc.com>
+---
+ kernel/dma/swiotlb.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index a34c38bbe28f..638ba3ea94f4 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -632,7 +632,7 @@ static int swiotlb_do_find_slots(struct device *dev, int area_index,
+ 	unsigned int iotlb_align_mask =
+ 		dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);
+ 	unsigned int nslots = nr_slots(alloc_size), stride;
+-	unsigned int index, wrap, count = 0, i;
++	unsigned int index, index_nowrap = 0, wrap, count = 0, i;
+ 	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
+ 	unsigned long flags;
+ 	unsigned int slot_base;
+@@ -665,6 +665,7 @@ static int swiotlb_do_find_slots(struct device *dev, int area_index,
+ 		    (slot_addr(tbl_dma_addr, slot_index) &
+ 		     iotlb_align_mask) != (orig_addr & iotlb_align_mask)) {
+ 			index = wrap_area_index(mem, index + 1);
++			index_nowrap++;
+ 			continue;
+ 		}
+ 
+@@ -680,7 +681,8 @@ static int swiotlb_do_find_slots(struct device *dev, int area_index,
+ 				goto found;
+ 		}
+ 		index = wrap_area_index(mem, index + stride);
+-	} while (index != wrap);
++		index_nowrap += stride;
++	} while (index_nowrap < mem->area_nslabs);
+ 
+ not_found:
+ 	spin_unlock_irqrestore(&area->lock, flags);
+-- 
+2.31.1
+
