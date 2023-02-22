@@ -1,12 +1,12 @@
-Received: from out30-119.freemail.mail.aliyun.com (out30-119.freemail.mail.aliyun.com [115.124.30.119])
+Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13EB410E7
-	for <iommu@lists.linux.dev>; Wed, 22 Feb 2023 16:58:18 +0000 (UTC)
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R381e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=guorui.yu@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VcHP-D1_1677084772;
-Received: from localhost(mailfrom:GuoRui.Yu@linux.alibaba.com fp:SMTPD_---0VcHP-D1_1677084772)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3FDE10E7
+	for <iommu@lists.linux.dev>; Wed, 22 Feb 2023 17:09:00 +0000 (UTC)
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=guorui.yu@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VcHOdvq_1677084795;
+Received: from localhost(mailfrom:GuoRui.Yu@linux.alibaba.com fp:SMTPD_---0VcHOdvq_1677084795)
           by smtp.aliyun-inc.com;
-          Thu, 23 Feb 2023 00:52:52 +0800
+          Thu, 23 Feb 2023 00:53:16 +0800
 From: "GuoRui.Yu" <GuoRui.Yu@linux.alibaba.com>
 To: hch@lst.de,
 	m.szyprowski@samsung.com
@@ -15,9 +15,9 @@ Cc: robin.murphy@arm.com,
 	linux-kernel@vger.kernel.org,
 	GuoRui.Yu@linux.alibaba.com,
 	linux-mm@kvack.org
-Subject: [PATCH] swiotlb: fix the deadlock in swiotlb_do_find_slots
-Date: Thu, 23 Feb 2023 00:52:51 +0800
-Message-Id: <20230222165251.88700-1-GuoRui.Yu@linux.alibaba.com>
+Subject: [PATCH v2] swiotlb: fix the deadlock in swiotlb_do_find_slots
+Date: Thu, 23 Feb 2023 00:53:15 +0800
+Message-Id: <20230222165315.89135-1-GuoRui.Yu@linux.alibaba.com>
 X-Mailer: git-send-email 2.29.2.540.g3cf59784d4
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
