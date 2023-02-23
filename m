@@ -1,117 +1,87 @@
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B92B33D6
-	for <iommu@lists.linux.dev>; Thu, 23 Feb 2023 20:41:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677184910; x=1708720910;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=QYtWiziCNJFTwuqjw+jdZbD6GHrBqdHN07ZRiLxTuts=;
-  b=A9P7q+LqgSuvsZ0m6xzFKbqzREr4XVf5DCxRXtSxLp5e8BFQGvKIVzC+
-   OxUd20YOUIUi1WhxBr36PTm4jnve9i9DA4iuWerXuR9WXat5uKs7g6LD6
-   wXBatGyz/isFj7e/KRTojXeX9TO0cLKWM77BrPbRTOhQpduBMvlc+IbNH
-   Kq0evlaF/R0IB387sn9/Q6ILlrhRbTdDHJTUY8ksf6RvT9OjSpcLqCqDy
-   pTwEEFYQ5dlwVXtrjr42LWOjAvxm/w9NmrZnL17iPpmJZjglXXfthI2Ss
-   EUKUuAWFMO23VZhBj4G8kAE24PhriYjipIE5fxVSwv6rZq31yLF9D8Pf/
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10630"; a="313707196"
-X-IronPort-AV: E=Sophos;i="5.97,322,1669104000"; 
-   d="scan'208";a="313707196"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2023 12:41:49 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10630"; a="672649594"
-X-IronPort-AV: E=Sophos;i="5.97,322,1669104000"; 
-   d="scan'208";a="672649594"
-Received: from bhouse-desk.amr.corp.intel.com (HELO [10.255.229.193]) ([10.255.229.193])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2023 12:41:48 -0800
-Message-ID: <e517d9dd-c1a2-92f6-6b4b-c77d9ea47546@intel.com>
-Date: Thu, 23 Feb 2023 12:41:47 -0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0537433D6
+	for <iommu@lists.linux.dev>; Thu, 23 Feb 2023 20:51:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=7DGlfUnvfYwWSCguIE8WPkrvQTnToMa0+8F0V8cNuK4=; b=SSJshkyAK6myKyRuj/x4FeypBG
+	bOOgui2oKkxOQjbvkfDpyqI6t6jR6wKjOlCisEHEKbXk6T3tvNpJrr00V5LSDQNWQVzOBVse4g8Hj
+	KG8ZVeu8hoxbaU3SdL3fI1D1iFnHOil7jkHZQxtgfTZ7+6TtPin0pVbFevZoKqDGwpqElKRakJdSG
+	u8jeBOI94RgPzxlfFOxk4T7SJQxITvCaDwq6BgW8MbcE68XBs88+EToJmEeASSyBk8DMncP+D2sOz
+	bDs6xzdXUVfUGa0eGdXM3t4Zr1OiBacm1JDZcY+42+JNIebkHUjSBvRNhjexJuLDsmQ0iNJqD7cMJ
+	y3Qa2Txw==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1pVIYq-000JbX-G5; Thu, 23 Feb 2023 20:51:28 +0000
+Date: Thu, 23 Feb 2023 12:51:28 -0800
+From: Luis Chamberlain <mcgrof@kernel.org>
+To: Nick Alcock <nick.alcock@oracle.com>
+Cc: Christoph Hellwig <hch@lst.de>, Thomas Gleixner <tglx@linutronix.de>,
+	Masahiro Yamada <masahiroy@kernel.org>,
+	linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev
+Subject: Re: [PATCH 21/27] kbuild, dma-mapping: benchmark: remove
+ MODULE_LICENSE in non-modules
+Message-ID: <Y/fR0KnxKP2rF3Da@bombadil.infradead.org>
+References: <20230222121453.91915-1-nick.alcock@oracle.com>
+ <20230222121453.91915-22-nick.alcock@oracle.com>
+ <20230222144856.GA14220@lst.de>
+ <Y/acoc6MDKNnrG+g@bombadil.infradead.org>
+ <878rgopfdl.fsf@esperi.org.uk>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
- to map as encrypted
-Content-Language: en-US
-To: Sean Christopherson <seanjc@google.com>,
- "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc: Borislav Petkov <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
- KY Srinivasan <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>,
- "wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
- "luto@kernel.org" <luto@kernel.org>,
- "peterz@infradead.org" <peterz@infradead.org>,
- "davem@davemloft.net" <davem@davemloft.net>,
- "edumazet@google.com" <edumazet@google.com>,
- "kuba@kernel.org" <kuba@kernel.org>, "pabeni@redhat.com"
- <pabeni@redhat.com>, "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
- "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
- "bhelgaas@google.com" <bhelgaas@google.com>, "arnd@arndb.de"
- <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
- "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
- "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
- "tglx@linutronix.de" <tglx@linutronix.de>,
- "mingo@redhat.com" <mingo@redhat.com>,
- "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
- Tianyu Lan <Tianyu.Lan@microsoft.com>,
- "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
- "sathyanarayanan.kuppuswamy@linux.intel.com"
- <sathyanarayanan.kuppuswamy@linux.intel.com>,
- "ak@linux.intel.com" <ak@linux.intel.com>,
- "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
- "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
- "jane.chu@oracle.com" <jane.chu@oracle.com>,
- "tony.luck@intel.com" <tony.luck@intel.com>, "x86@kernel.org"
- <x86@kernel.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
- "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <4216dea6-d899-aecb-2207-caa2ae7db0e3@intel.com>
- <BYAPR21MB16886D92828BA2CA8D47FEA4D7D99@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+aP8rHr6H3LIf/c@google.com> <Y+aVFxrE6a6b37XN@zn.tnic>
- <BYAPR21MB16882083E84F20B906E2C847D7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+aczIbbQm/ZNunZ@zn.tnic> <cb80e102-4b78-1a03-9c32-6450311c0f55@intel.com>
- <Y+auMQ88In7NEc30@google.com> <Y+av0SVUHBLCVdWE@google.com>
- <BYAPR21MB168864EF662ABC67B19654CCD7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+bXjxUtSf71E5SS@google.com>
- <e15a1d20-5014-d704-d747-01069b5f4c88@intel.com>
-From: Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <e15a1d20-5014-d704-d747-01069b5f4c88@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <878rgopfdl.fsf@esperi.org.uk>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 
-On 2/23/23 12:26, Dave Hansen wrote:
->> +       if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT)) {
->> +               /*
->> +               * Ensure fixmaps for IOAPIC MMIO respect memory encryption pgprot
->> +               * bits, just like normal ioremap():
->> +               */
->> +               if (x86_platform.hyper.is_private_mmio(phys))
->> +                       flags = pgprot_encrypted(flags);
->> +               else
->> +                       flags = pgprot_decrypted(flags);
->> +       }
-...
-> It does seem a bit odd that there's a new CC_ATTR_GUEST_MEM_ENCRYPT
-> check wrapping this whole thing.  I guess the trip through
-> pgprot_decrypted() is harmless on normal platforms, though.
+On Thu, Feb 23, 2023 at 03:31:50PM +0000, Nick Alcock wrote:
+> On 22 Feb 2023, Luis Chamberlain spake thusly:
+> > Then we look for an optimal way to address the final step:
+> >
+> >  * remove all MODULE_LICENSE() and autogenerate them from SPDX
+> 
+> Ooh that would be nice!
+> 
+> > The difficulty in this will be that we want to upkeep existing build
+> > heuristics and avoid to have to traverse the tree twice (see details
+> > on commit 8b41fc4454e). I can't think of an easy way to do this that
+> > does not involve using kconfig tristate somehow.
+> 
+> Nor can I -- and more generally I can't figure out a way to get from the
+> Kconfig symbols to the source files that constitute them without
+> retraversing the tree, since the only place the relationship is recorded
+> is in makefiles, and those makefiles use a lot of make functionality
+> (including more or less arbitrary make functions).
 
-Yeah, that's _really_ odd.  Sean, were you trying to optimize away the
-indirect call or something?
+$ grep "_MODULE 1" ./include/generated/autoconf.h| wc -l
+560
 
-I would just expect the Hyper-V/vTOM code to leave
-x86_platform.hyper.is_private_mmio alone unless
-it *knows* the platform has private MMIO *and* CC_ATTR_GUEST_MEM_ENCRYPT.
+$ grep "_MODULE 1" ./include/generated/autoconf.h| grep XFS
+#define CONFIG_XFS_FS_MODULE 1
 
-Is there ever a case where CC_ATTR_GUEST_MEM_ENCRYPT==0 and he
-Hyper-V/vTOM code would need to set x86_platform.hyper.is_private_mmio?
+I *think* the trick will likely be to have new a possibilities.h or just
+agument autoconf.h with POSSIBLE_MODULE for each module.
+
+The next complexity lies in inferring the license and doing the license
+output given a combination. I *think* you already figured out the objs
+from the module, and in fact your new kallsyms extension I think prints
+these out right (which I find highly useful)? If so then we use these as
+input source for an SPDX license lookup. Instead of having this
+relationship grep'd after at build time, I wonder if might be good to
+just collect all license associates to all files in a header file
+similar to _MODULE prefix so maybe SPDX_$(file_path)_LICENSE_$license
+which creates a header file 1-1 mapping.
+
+Not sure if that's too much noise.
+
+Just a thought, to get the wheels spinning.
+
+  Luis
