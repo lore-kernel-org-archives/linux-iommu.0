@@ -1,134 +1,235 @@
-Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB38D15B7
-	for <iommu@lists.linux.dev>; Thu, 23 Feb 2023 01:21:29 +0000 (UTC)
-Received: by mail-pl1-f202.google.com with SMTP id c9-20020a170902d48900b0019ab46166a3so4801456plg.5
-        for <iommu@lists.linux.dev>; Wed, 22 Feb 2023 17:21:29 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5D4015B6
+	for <iommu@lists.linux.dev>; Thu, 23 Feb 2023 04:33:16 +0000 (UTC)
+Received: by mail-pl1-f180.google.com with SMTP id i10so2512563plr.9
+        for <iommu@lists.linux.dev>; Wed, 22 Feb 2023 20:33:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Utax3e55p3N2FiK+44m4EPF0IspqZNOsObveiGZKnps=;
-        b=qEb0sRMMQP+D3NIM0EavDhPqQ4MvMH/BkwStlAQZrjsNxsvp5AK1UfYEygcyPWPwJL
-         aw+JkiEqI0Wk8zGQmrouiI1z4upjRMubH9ZbMcD4DfUtX9Kh6wziQif1uoq55HTC3OnT
-         FkqnuFlPOv90b4F9aF2KaT24ghCOlh+8WCOGn6hLcFk+lS1tpcpAs56CWVfDHEhq5Ah+
-         M5mzL9C5YTPTLkTiGKHI6Qe115kFoyX58YgaW0qYBkv6o9AziLvKdimHbPOGepgb44h4
-         mzvdFkwJ0UuukAL7MBFDuYqBQ7qmF7FQJtSZrsAyl+BiB9B4nmX4rvZmwl8TcRhOvWlG
-         zxDw==
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=wG/6wi8FA7LC2E67A3OVEJ/iTQlZXTd9mLmf0AaucdY=;
+        b=h/L9Lg3IsZ1aj36X6s/a1fkapT+vTbUin8UyP/ZvKZBKLjP7+Emtg1fhUTmaCo55Xb
+         K1bg6Qtxn07LPbab2qvPTE7Zf7DL+2g8nwam0cRUx58+0nLFn1FHUQV+wVoK65Boq84L
+         IT9w2+pD2UouMdXb8LJJIkXq6eI6S4cIOdSNVxF+DpgrHw9ppwSOU1oc8wYPYo/sw5Pl
+         ycnJyTZHc0ZICLfgsiYc14TNmo8UxBJ8MqdmE9jJyBWK1Nhghb5Zk3W56nRGBzAjxAcb
+         zmfp5BVdKAuYjHsVVw4tV8HkTedlUYpiFnrQ3B/ZJo3gmf69l2Vzh4QwEL8icXO1KlQw
+         miaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Utax3e55p3N2FiK+44m4EPF0IspqZNOsObveiGZKnps=;
-        b=HVPY7tw4OTx+ACANjo3YKF7oBO3vrEeh1I9Y/266exjrs6pG6VniBn1T2GuJw/0juA
-         CIKkXy2oJualbcKEWjS0ZjGRyelEF2j0Ckgr+r7WHO4rNwjzVdx4kS7TJuKPfWC+HC2S
-         ZOgD5yF0P53KF5GWg7z+2Jbx4ogQQqG9UVy7hBeq5e4OBxf2e/LYOhoAARLZahcLcheE
-         8eD8dOhDHEIDy7U1qTsOslpX+uH2of0/OW5x+QQKMlf/QMSwooJbIyIXfh4+G7ezS5QR
-         f7OrD8DvbQqhRLTUpzcquGN9hUGzlfgoaQJJ9zHg+2aj0IWbf9qEwjWDmPNotZ5U4/1P
-         B7KA==
-X-Gm-Message-State: AO0yUKX+2457u2IAD3fc8ONU2N1aNUb2iaoojWBKNie39bi/d8mwElBe
-	uD9XT7S+flrUo0gVwZMaNZ2LhqdmclQ=
-X-Google-Smtp-Source: AK7set8uqJFTeifQRndK5OY7LsjNYEZihFhZGcRxMmqtrSL2SRl7UXNO3Bil4Wyqwogd1sRe6etbqkK7/G4=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a65:66c6:0:b0:4fc:1da2:5f95 with SMTP id
- c6-20020a6566c6000000b004fc1da25f95mr1307512pgw.7.1677115288904; Wed, 22 Feb
- 2023 17:21:28 -0800 (PST)
-Date: Wed, 22 Feb 2023 17:21:27 -0800
-In-Reply-To: <Y/ammgkyo3QVon+A@zn.tnic>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=wG/6wi8FA7LC2E67A3OVEJ/iTQlZXTd9mLmf0AaucdY=;
+        b=w1mmahFoxcuWIMiuZENe4c5FdTI8QEwVt75rffcGVJQjsp9E3SskRL9Oftg6KYfd74
+         M4BU632CK6hDXX6l2+46Vw4BWfI6Fhoz5sG6hJqyx6szRtnJShhUglujn5Mn3MrdAZ97
+         4t2mOuHKxeALSFwQQI2jggDE331WoYFB+KHxtgMmTCZnQerf3drUr/KPZz1VC1n/06PR
+         GbSBgSKp90h5InrGRHsSJEM6+5NRJkhae3cHulE5hFgzwmECzjr5Z8UPfzxG+cvt0cJH
+         YtdBVQYJkDdZMWAkVMn0J8uEccc5SduTYNo1q7Mu4EbAKQ1gh2H2O/82jwegi6OPQcwa
+         3nxg==
+X-Gm-Message-State: AO0yUKWmUzShgRSgqo2y8r05J+RKRnwuYTaXCMX4sA11ttG23fnqrbg1
+	XZNGzobf50ECUB4HV+YvefPZFHYNZd6A0sV8fHPJgw==
+X-Google-Smtp-Source: AK7set9Q1XGuOAuksQMQTUHoBleoXSQcBUcmi3gyIMaZGRBCN4TnDKJ2kRdHm6Gg8wKbRn7Zg9tIscJflmguP5aSZps=
+X-Received: by 2002:a17:90b:4d0d:b0:233:e8b8:5d4e with SMTP id
+ mw13-20020a17090b4d0d00b00233e8b85d4emr1752957pjb.73.1677126796191; Wed, 22
+ Feb 2023 20:33:16 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <Y+bXjxUtSf71E5SS@google.com> <Y+4wiyepKU8IEr48@zn.tnic>
- <BYAPR21MB168853FD0676CCACF7C249B0D7A09@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+5immKTXCsjSysx@zn.tnic> <BYAPR21MB16880EC9C85EC9343F9AF178D7A19@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y++VSZNAX9Cstbqo@zn.tnic> <Y/aTmL5Y8DtOJu9w@google.com> <Y/aYQlQzRSEH5II/@zn.tnic>
- <Y/adN3GQJTdDPmS8@google.com> <Y/ammgkyo3QVon+A@zn.tnic>
-Message-ID: <Y/a/lzOwqMjOUaYZ@google.com>
-Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
- to map as encrypted
-From: Sean Christopherson <seanjc@google.com>
-To: Borislav Petkov <bp@alien8.de>
-Cc: "Michael Kelley (LINUX)" <mikelley@microsoft.com>, Dave Hansen <dave.hansen@intel.com>, 
-	"hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>, 
-	Haiyang Zhang <haiyangz@microsoft.com>, "wei.liu@kernel.org" <wei.liu@kernel.org>, 
-	Dexuan Cui <decui@microsoft.com>, "luto@kernel.org" <luto@kernel.org>, 
-	"peterz@infradead.org" <peterz@infradead.org>, "davem@davemloft.net" <davem@davemloft.net>, 
-	"edumazet@google.com" <edumazet@google.com>, "kuba@kernel.org" <kuba@kernel.org>, 
-	"pabeni@redhat.com" <pabeni@redhat.com>, "lpieralisi@kernel.org" <lpieralisi@kernel.org>, 
-	"robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>, 
-	"bhelgaas@google.com" <bhelgaas@google.com>, "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>, 
-	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, 
-	"thomas.lendacky@amd.com" <thomas.lendacky@amd.com>, "brijesh.singh@amd.com" <brijesh.singh@amd.com>, 
-	"tglx@linutronix.de" <tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>, 
-	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>, Tianyu Lan <Tianyu.Lan@microsoft.com>, 
-	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>, 
-	"sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>, 
-	"ak@linux.intel.com" <ak@linux.intel.com>, "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>, 
-	"dan.j.williams@intel.com" <dan.j.williams@intel.com>, "jane.chu@oracle.com" <jane.chu@oracle.com>, 
-	"tony.luck@intel.com" <tony.luck@intel.com>, "x86@kernel.org" <x86@kernel.org>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>, 
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>, 
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, 
-	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, 
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+References: <CGME20221103195201eucas1p2a6ec2df41ebac3d9ccbb0b252c2cad34@eucas1p2.samsung.com>
+ <20221103195154.21495-1-semen.protsenko@linaro.org> <a7d9cd18-a328-209c-c89f-afdcb7db3eb0@samsung.com>
+ <b7ad6444-e7d2-1150-6134-3dae8129dcdb@samsung.com> <CAPLW+4=Y6qZG2XjJR_BkX-ar4GWdETKO1tteJjfbxVc664e4Kg@mail.gmail.com>
+ <CAGETcx9ApZFvKjEaxvvgsoHDzOq06ZiROZ5npYt+suNdE4KWDg@mail.gmail.com>
+In-Reply-To: <CAGETcx9ApZFvKjEaxvvgsoHDzOq06ZiROZ5npYt+suNdE4KWDg@mail.gmail.com>
+From: Sam Protsenko <semen.protsenko@linaro.org>
+Date: Wed, 22 Feb 2023 22:33:20 -0600
+Message-ID: <CAPLW+4kbi3cDNu7wXTjeDskk40da5vhAVXG8Am-MHN+REuLDrw@mail.gmail.com>
+Subject: Re: [PATCH v2 0/6] iommu/exynos: Convert to a module
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Saravana Kannan <saravanak@google.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>, 
+	Alim Akhtar <alim.akhtar@samsung.com>, Janghyuck Kim <janghyuck.kim@samsung.com>, 
+	Cho KyongHo <pullip.cho@samsung.com>, Daniel Mentz <danielmentz@google.com>, 
+	David Virag <virag.david003@gmail.com>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-samsung-soc@vger.kernel.org, Rob Herring <robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, Feb 23, 2023, Borislav Petkov wrote:
-> On Wed, Feb 22, 2023 at 02:54:47PM -0800, Sean Christopherson wrote:
-> > Why?  I genuinely don't understand the motivation for bundling all of this stuff
-> > under a single "feature".
-> 
-> It is called "sanity".
-> 
-> See here:
-> 
-> https://lore.kernel.org/r/Y%2B5immKTXCsjSysx@zn.tnic
-> 
-> We support SEV, SEV-ES, SEV-SNP, TDX, HyperV... guests and whatever's
-> coming down the pipe. And all that goes into arch/x86/ kernel proper
-> code.
-> 
-> The CC_ATTR stuff is clean-ish in the sense that we have separation by
-> confidential computing platform - AMD's and Intel's. Hyper-V comes along
-> and wants to define a different subset of that. And that's only the
-> SEV-SNP side - there's a TDX patchset too.
-> 
-> And then some other hypervisor will come along and say, but but, I wanna
-> have X and Y and a pink pony too.
-> 
-> Oh, and there's this other fun with MTRRs where each HV decides to do
-> whatever it wants.
+On Mon, 6 Feb 2023 at 21:33, Saravana Kannan <saravanak@google.com> wrote:
+>
+> On Fri, Nov 11, 2022 at 5:30 AM Sam Protsenko
+> <semen.protsenko@linaro.org> wrote:
+> >
+> > On Thu, 10 Nov 2022 at 15:36, Marek Szyprowski <m.szyprowski@samsung.com> wrote:
+> >
+> > [snip]
+>
+> Hi Marek and Sam,
+>
+> I'm replying to both of your comments in this email.
+>
+> > > I've finally made Exynos IOMMU working as a module on Exynos5433 based
+> > > TM2e board. It looks that this will be a bit longer journey that I've
+> > > initially thought. I've posted a simple update of the fix for the driver
+> > > initialization sequence, but the real problem is in the platform driver
+> > > framework and OF helpers.
+> > >
+> > > Basically to get it working as a module I had to apply the following
+> > > changes:
+> > >
+> > > diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+> > > index 3dda62503102..f6921f5fcab6 100644
+> > > --- a/drivers/base/dd.c
+> > > +++ b/drivers/base/dd.c
+> > > @@ -257,7 +257,7 @@ static int deferred_devs_show(struct seq_file *s,
+> > > void *data)
+> > >   DEFINE_SHOW_ATTRIBUTE(deferred_devs);
+> > >
+> > >   #ifdef CONFIG_MODULES
+> > > -int driver_deferred_probe_timeout = 10;
+> > > +int driver_deferred_probe_timeout = 30;
+> > >   #else
+> > >   int driver_deferred_probe_timeout;
+> > >   #endif
+> > > diff --git a/drivers/of/property.c b/drivers/of/property.c
+> > > index 967f79b59016..e5df6672fee6 100644
+> > > --- a/drivers/of/property.c
+> > > +++ b/drivers/of/property.c
+> > > @@ -1384,7 +1384,7 @@ static struct device_node *parse_interrupts(struct
+> > > device_node *np,
+> > >   static const struct supplier_bindings of_supplier_bindings[] = {
+> > >          { .parse_prop = parse_clocks, },
+> > >          { .parse_prop = parse_interconnects, },
+> > > -       { .parse_prop = parse_iommus, .optional = true, },
+> > > +       { .parse_prop = parse_iommus, },
+> > >          { .parse_prop = parse_iommu_maps, .optional = true, },
+> > >          { .parse_prop = parse_mboxes, },
+> > >          { .parse_prop = parse_io_channels, },
+> > >
+> > > Without that a really nasty things happened.
+>
+> I have a command line option to do this without code changes. Use
+> fw_devlink.strict=1. That makes all optional properties into mandatory
+> ones.
+>
+> I sent out a series[1] that tried to make fw_devlink.strict=1 the
+> default and then use the timeout behavior (more details) to handle
+> cases where iommu and dmas (or any other supplier) are optional on a
+> specific board. The cover letter of [1] should give some more context.
+>
+> > > Initialization of the built-in drivers and loading modules takes time,
+> > > so the default 10s deferred probe timeout is not enough to ensure that
+> > > the built-in driver won't be probed before the Exynos IOMMU driver is
+> > > loaded.
+>
+> The 10 second is the minimum delay from the time we hit late_initcall.
+> If a driver is registered before the 10s expires, then the timer will
+> be extended by another 10s. This behavior landed sometime around the
+> end of May 2022. So it should have been in your tree when you tested
+> this. I'm surprised this isn't sufficient for your case. Is there
+> really a 10s gap in your boot sequence where no module is being loaded
+> and then IOMMU modules get loaded later on? I'm kinda surprised by
+> this. Is it this long because some serial UART is enabled and it's
+> slowing down boot? Or something else?
+>
+> I'm not saying your case isn't valid or we shouldn't extend the
+> timeout. I'm just trying to understand why the current timer behavior
+> wasn't able to cover your case.
+>
+> > Yeah, the whole time-based sync looks nasty... I remember coming
+> > across the slides by Andrzej Hajda called "Deferred Problem" [1], but
+> > I guess the proposed solution was never applied. Just hope that
+> > increasing the timeout is upstreamable solution.
+> >
+> > [1] https://events19.linuxfoundation.org/wp-content/uploads/2017/12/Deferred-Problem-Issues-With-Complex-Dependencies-Between-Devices-in-Linux-Kernel-Andrzej-Hajda-Samsung.pdf
+>
+> Sam, I kinda skimmed the slides right now. Looks like it talks about
+> device links and why they aren't sufficient and makes an alternate
+> proposal. fw_devlink is a solution that uses device links and I think
+> addresses a lot of the issues that were raised about device links.
+> There's still a bunch of TODOs left, but I think the end goal is the
+> same. I'm hoping to keep chipping away at it. For now, I've tried to
+> make the timer a bit more smart about detecting when modules are
+> getting loaded and extending the timer. fw_devlink also enables
+> something called sync_state() that's invaluable on a fully modular
+> system (search lore for references to that to get some idea).
+>
+> The slides talk about a solution that will allow devices to probe with
+> limited functionality with whatever suppliers are available and then
+> reprobe as more suppliers are available. I'm not sure how well that'll
+> work across the board. It's going to be a bit weird if your phone
+> display goes off and then comes on again because an IOMMU driver got
+> loaded (and it can now do DRM playback). For now, I'm not going to
+> focus on that option because there are enough existing issues/TODOs to
+> work on for fw_devlink.
+>
+> > > The second change fixes the problem that driver core probes Exynos IOMMU
+> > > controllers in parallel to probing the master devices, what results in
+> > > calling exynos_iommu_of_xlate() and exynos_iommu_probe_device() even on
+> > > the partially initialized IOMMU controllers or initializing the dma_ops
+> > > under the already probed and working master device. This was easy to
+> > > observe especially on the master devices with multiple IOMMU
+> > > controllers. I wasn't able to solve this concurrency/race issues inside
+> > > the Exynos IOMMU driver.
+> > >
+> > > Frankly speaking I don't know what is the rationale for making the
+> > > 'iommus' property optional, but this simply doesn't work well with IOMMU
+> > > driver being a module. CCed Saravana and Rob for this.
+> > >
+> >
+> > The patch which makes 'iommus' optional doesn't provide much of
+> > insight on reasons in commit message either.
+>
+> This was the commit text:
+>
+>     Not all DT bindings are mandatory bindings. Add support for optional DT
+>     bindings and mark iommus, iommu-map, dmas as optional DT bindings.
+>
+> I thought it was obvious enough, but I guess I could have done better.
+> Geert convinced me that iommu's aren't always necessary and devices
+> could work perfectly well without them or dmas. And he has a bunch of
+> boards like that. So I went with adding optional and then introducing
+> fw_devlink.strict.
+>
+> However, at this point in time, I believe none of them should be
+> marked as optional because technically any property can be optional
+> depending on what the firmware has set up and what the driver does. We
+> should figure this out at runtime on a board level -- which is what
+> [1] is trying to do. Yeah, not very pretty, but there hasn't been a
+> better solution that's not "have userspace tell us it's done loading
+> modules" (that's a "kernel depends on userspace to work correctly"
+> thing that no one likes). I've fixed some of the issues raised in [1]
+> in a fw_devlink improvement series[2] and I plan on continuing to work
+> on this until hopefully [1] can land.
+>
+> > > Without fixing the above issues, I would add a warning that compiling
+> > > the driver as a module leads to serious issues.
+> > >
+> >
+> > Nice catch! It doesn't reproduce on my platform, alas. Can I expect
+> > you to submit those patches? If so, I'll probably just wait for those
+> > to be applied, and then re-send my modularization series on top of it.
+> > Does that sounds reasonable?
+>
+> For now, maybe we could add a config to enable fw_devlink.strict=1 by
+> default and then select it if you make specific iommu drivers into
+> modules? And then Geert won't set it for his driver, but you can set
+> it for your driver?
+>
 
-The MTRR mess isn't unique to coco guests, e.g. KVM explicitly "supports" VMMs
-hiding MTTRs from the guest by defaulting to WB if MTTRs aren't exposed to the
-guest.  Why on earth Hyper-V suddenly needs to enlighten the guest is beyond me,
-but whatever the reason, it's not unique to coco VMs.
+Marek, what is your take on this? I probably can't provide any useful
+comments, as the issue is not even reproducible on my platform. Do you
+think some easy solution exists to make modularized IOMMU driver work?
+That series has been sitting for a while on ML now, so I wonder if we
+can handle it somehow, w.r.t. Saravana's input.
 
-> So, we have a zoo brewing on the horizon already!
-> 
-> If there's no clean definition of what each guest is and requires and
-> that stuff isn't documented properly and if depending on which "feature"
-> I need to check, I need to call a different function or query
-> a different variable, then it won't go anywhere as far as guest support
-> goes.
-> 
-> The cc_platform_has() thing gives us a relatively clean way to abstract
-> all those differences away and keep the code sane-ish.
-
-For features that are inherent to the platform, I agree, or at least I don't hate
-the interface.  But defining a platform to have specific devices runs counter to
-pretty much the entire x86 ecosystem.  At some point, there _will_ be more devices
-in private memory than just IO-APIC and TPM, and conversely there will be "platforms"
-that support a trusted TPM but not a trusted IO-APIC, and probably even vice versa.
-
-All I'm advocating is that for determining whether or not a device should be mapped
-private vs. shared, provide an API so that the hypervisor-specific enlightened code
-can manage that insanity without polluting common code.  If we are ever fortunate
-enough to have common enumeration, e.g. through ACPI or something, the enlightened
-code can simply reroute to the common code.  This is a well established pattern for
-many paravirt features, I don't see why it wouldn't work here.
+> Thanks,
+> Saravana
+>
+> [1] - https://lore.kernel.org/lkml/20220601070707.3946847-1-saravanak@google.com/
+> [2] - https://lore.kernel.org/lkml/20230207014207.1678715-1-saravanak@google.com/
