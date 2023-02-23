@@ -1,33 +1,33 @@
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42A476FB7
-	for <iommu@lists.linux.dev>; Thu, 23 Feb 2023 20:26:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B40FD6FB7
+	for <iommu@lists.linux.dev>; Thu, 23 Feb 2023 20:27:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677184009; x=1708720009;
+  t=1677184072; x=1708720072;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=IGl0r14webusJRTD0HcY0iXfPccIG/+jMeNAYQxtmZc=;
-  b=gCVfwmx3flmE6bzOdKuQQLGdaJSCh/3u25qFX3zPhzUYFz7aP44alrFD
-   0VlM859sABPfIgbtaN98vwYnYIbpQurgEcFYefVN9uzoGVH9gWSZIiO/p
-   xuoHSvvGOQ+oWFKYMyaRG+JbVXcC+SJwHd67VboVpKq0uBfrEnjjIXLHV
-   GvpPN2WvbcrfsopYa47dLGVk45/kudoiWs5NoPnmFPITN1s5JvnxpKc9o
-   +RlfTO2nHcLJJe/5YgxIZ2t9RXRX87tBwn451hrL5eTvFldCBoRgu3JXd
-   rQv/Bg1m4FuNCyCgV6OgoQko7Q9CZY01hN2R82/jSav+2epVlpMyBTGui
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10630"; a="312952870"
+  bh=uYJJ9B2/rZBB8KZfwDJG3ySZUo1TW5EEXpQK8NDa9M4=;
+  b=cW3jf0owwWRYKuA+VjAOG13H37F75d2t7CZTJ2aMHWWs+cGNHvjxO81D
+   mlscmR6WcG/SkBJkzPSo77/UzyVDo6O3HFGBuQpyguzbS6NYRSwjHZIdk
+   yFW9cH/EYJG8wyiGsxgeTifFcqoPp86mDbLgn60gckbpUdVzZUMHNVyDq
+   XYvE6RhzIKK7zPml9SYv6lfctk3X+CU1YQnXUAWNwrWRBN76FyLUj/BGk
+   8G/BLnxMAtEVHqHcCNNeEVoRr5KVU/v2Vr4k7mdpqV/bVS71VpI5n4xFj
+   HDSlZtAadRiRqpDUo1gibBgQynW0m9qAPgrltNSkr5tEuqvCtuXWVcsvq
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10630"; a="312953013"
 X-IronPort-AV: E=Sophos;i="5.97,322,1669104000"; 
-   d="scan'208";a="312952870"
+   d="scan'208";a="312953013"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2023 12:26:48 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10630"; a="650117218"
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2023 12:27:52 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10630"; a="650117385"
 X-IronPort-AV: E=Sophos;i="5.97,322,1669104000"; 
-   d="scan'208";a="650117218"
+   d="scan'208";a="650117385"
 Received: from bhouse-desk.amr.corp.intel.com (HELO [10.255.229.193]) ([10.255.229.193])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2023 12:26:47 -0800
-Message-ID: <e15a1d20-5014-d704-d747-01069b5f4c88@intel.com>
-Date: Thu, 23 Feb 2023 12:26:46 -0800
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2023 12:27:51 -0800
+Message-ID: <255249f2-47af-07b7-d9d9-9edfdd108348@intel.com>
+Date: Thu, 23 Feb 2023 12:27:50 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -39,10 +39,10 @@ User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
 Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
  to map as encrypted
 Content-Language: en-US
-To: Sean Christopherson <seanjc@google.com>,
- "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc: Borislav Petkov <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
- KY Srinivasan <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>,
+To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+ Borislav Petkov <bp@alien8.de>, Sean Christopherson <seanjc@google.com>
+Cc: "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>,
  "wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
  "luto@kernel.org" <luto@kernel.org>,
  "peterz@infradead.org" <peterz@infradead.org>,
@@ -76,75 +76,22 @@ Cc: Borislav Petkov <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
  "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
  "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
  "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <4216dea6-d899-aecb-2207-caa2ae7db0e3@intel.com>
- <BYAPR21MB16886D92828BA2CA8D47FEA4D7D99@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+aP8rHr6H3LIf/c@google.com> <Y+aVFxrE6a6b37XN@zn.tnic>
- <BYAPR21MB16882083E84F20B906E2C847D7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+aczIbbQm/ZNunZ@zn.tnic> <cb80e102-4b78-1a03-9c32-6450311c0f55@intel.com>
- <Y+auMQ88In7NEc30@google.com> <Y+av0SVUHBLCVdWE@google.com>
- <BYAPR21MB168864EF662ABC67B19654CCD7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+bXjxUtSf71E5SS@google.com>
+References: <Y+4wiyepKU8IEr48@zn.tnic>
+ <BYAPR21MB168853FD0676CCACF7C249B0D7A09@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y+5immKTXCsjSysx@zn.tnic>
+ <BYAPR21MB16880EC9C85EC9343F9AF178D7A19@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y++VSZNAX9Cstbqo@zn.tnic> <Y/aTmL5Y8DtOJu9w@google.com>
+ <Y/aYQlQzRSEH5II/@zn.tnic> <Y/adN3GQJTdDPmS8@google.com>
+ <Y/ammgkyo3QVon+A@zn.tnic> <Y/a/lzOwqMjOUaYZ@google.com>
+ <Y/dDvTMrCm4GFsvv@zn.tnic>
+ <BYAPR21MB1688F68888213E5395396DD9D7AB9@BYAPR21MB1688.namprd21.prod.outlook.com>
 From: Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <Y+bXjxUtSf71E5SS@google.com>
+In-Reply-To: <BYAPR21MB1688F68888213E5395396DD9D7AB9@BYAPR21MB1688.namprd21.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 2/10/23 15:47, Sean Christopherson wrote:
-> diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-> index a868b76cd3d4..08f65ed439d9 100644
-> --- a/arch/x86/kernel/apic/io_apic.c
-> +++ b/arch/x86/kernel/apic/io_apic.c
-> @@ -2682,11 +2682,16 @@ static void io_apic_set_fixmap(enum fixed_addresses idx, phys_addr_t phys)
->  {
->         pgprot_t flags = FIXMAP_PAGE_NOCACHE;
->  
-> -       /*
-> -        * Ensure fixmaps for IOAPIC MMIO respect memory encryption pgprot
-> -        * bits, just like normal ioremap():
-> -        */
-> -       flags = pgprot_decrypted(flags);
-> +       if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT)) {
-> +               /*
-> +               * Ensure fixmaps for IOAPIC MMIO respect memory encryption pgprot
-> +               * bits, just like normal ioremap():
-> +               */
-> +               if (x86_platform.hyper.is_private_mmio(phys))
-> +                       flags = pgprot_encrypted(flags);
-> +               else
-> +                       flags = pgprot_decrypted(flags);
-> +       }
+On 2/23/23 12:01, Michael Kelley (LINUX) wrote:
+> Dave Hansen:  Are you also OK with Sean's proposal?  Looking for consensus
+> here ....
 
-I don't completely hate this.  Thinking to the future, I'd hope that
-future platforms will include information about which physical addresses
-are shared or private.  This might even vary per device, but this
-interface would still work.
-
-I _think_ it would be nicer to wrap both checks up in a helper where the
-comments can be more detailed, like:
-
-	if (cc_private_mmio(phys))
-		flags = pgprot_encrypted(flags);
-	else
-		flags = pgprot_decrypted(flags);
-
-but I honestly don't feel that strongly about it.
-
-It does seem a bit odd that there's a new CC_ATTR_GUEST_MEM_ENCRYPT
-check wrapping this whole thing.  I guess the trip through
-pgprot_decrypted() is harmless on normal platforms, though.
-
-> diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
-> index 6453fbaedb08..0baec766b921 100644
-> --- a/arch/x86/mm/ioremap.c
-> +++ b/arch/x86/mm/ioremap.c
-> @@ -116,6 +116,9 @@ static void __ioremap_check_other(resource_size_t addr, struct ioremap_desc *des
->         if (!cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
->                 return;
->  
-> +       if (x86_platform.hyper.is_private_mmio(addr))
-> +               desc->flags |= IORES_MAP_ENCRYPTED;
-> +
->         if (!IS_ENABLED(CONFIG_EFI))
->                 return;
->  
-
+Yeah, I'm generally OK with it as long as Borislav is.
