@@ -1,70 +1,53 @@
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA42E3D8F
-	for <iommu@lists.linux.dev>; Fri, 24 Feb 2023 23:14:41 +0000 (UTC)
-Received: by mail-ed1-f49.google.com with SMTP id ec43so3387075edb.8
-        for <iommu@lists.linux.dev>; Fri, 24 Feb 2023 15:14:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=FDST2wkPRWvHQ65nOtR6NGENXRjzl9toU3LAW8CGWC4=;
-        b=CyDDFTt/F3/H13vGxJ3s6LwCojFc9mpfq17dldA6sEdum7g624H4R0/TVod34xyoHV
-         SlhlxV/4VNMr6VdCjFsAxcV9WeVp3/5AgPek1VC/0fQFV2gORxj7n5mQ+ikq5wjNjjF3
-         dAXFLPG/o7wtN6HbK645i2DBtB5EXJBeFbQzo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=FDST2wkPRWvHQ65nOtR6NGENXRjzl9toU3LAW8CGWC4=;
-        b=5hjlhCjU+v9XPs2OlshZXCUOU5I8bgC0gxowGg1T4NGSnI0SDWviX9LK6uir1CCyUT
-         lp5QDC0f4yFjRG8cM1IKqWbwmtqhb29ndPcYyBS1mVdwaaB6/oB5i5PtxZmfFwnaZCTH
-         JTELMmDYCs3W5LJIfMO+OrRYRuGtHoZD8J/kvI4TlcJ6nvcszyaErHMdaL0HoljjXA1v
-         Rdw625jraFJ6eVJ/rjRNLqJxabpe6o9giuxBeSEmmNQGyi+chWUnT/tRvAzCe+cmdT7j
-         ZZBxANAd60jONyUNRxqYPFPJKUIVh8/M96ObzK3TRFR+gMzu6U6jXq7hfpnL2QyAuYQg
-         0yZg==
-X-Gm-Message-State: AO0yUKV3LpajZvkUZoGDcPp16GNRT6dzgC1iiBcY/nFRPyMuAm0nT7dI
-	rfD5B5wQk+pBGJ9FknqEDly50B1VuYLPTvMIKaCI9A==
-X-Google-Smtp-Source: AK7set/YVzW3rwwl71iLn8bMDgcTEPbxhf+7QvjHirvGpm/Wl8ucuZWgZWqGl9N1W/9sTYYoBGEFVw==
-X-Received: by 2002:a05:6402:401:b0:4ab:4011:ff3d with SMTP id q1-20020a056402040100b004ab4011ff3dmr16928674edv.0.1677280479654;
-        Fri, 24 Feb 2023 15:14:39 -0800 (PST)
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com. [209.85.208.50])
-        by smtp.gmail.com with ESMTPSA id n30-20020a50935e000000b004af640933desm232176eda.78.2023.02.24.15.14.38
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Feb 2023 15:14:39 -0800 (PST)
-Received: by mail-ed1-f50.google.com with SMTP id d30so3473807eda.4
-        for <iommu@lists.linux.dev>; Fri, 24 Feb 2023 15:14:38 -0800 (PST)
-X-Received: by 2002:a50:f694:0:b0:4ad:6d57:4e16 with SMTP id
- d20-20020a50f694000000b004ad6d574e16mr8362677edn.5.1677280478558; Fri, 24 Feb
- 2023 15:14:38 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16AA03D8F
+	for <iommu@lists.linux.dev>; Fri, 24 Feb 2023 23:27:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B3ED6C433D2;
+	Fri, 24 Feb 2023 23:27:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1677281243;
+	bh=Pqa2kD1e3ty1mu/6mFhXtOA85raIOxf6WhYPqFB7Ut8=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=dueHWze63ngFe6BFTbNMnjoTJJTDNHWBex5H6O8GRGuZUQqFMSSMubMaJPkcMFct5
+	 0Sg2/p1jpmTey23hdvW7xbX3oe1NK/5e9AqDuoHj1A0xDjQY5z2//UmsyXopdTQuER
+	 efXodsPeLdu6C2FAeuHyoOxNSNDyM3rP33AKPCGZAPI6IaQb4AhRODbXFG9KGhAOlZ
+	 A/Cdmjjpul7gGhh4ne8c5aJoF19lgoeyEolzPO+2uO6JUPFyB2uRdWXyA5jAgG1uyP
+	 mdntLl0z58k4CTpcjjszMN6tvBGoOKYCuYaQ8xWKQRZvmCkbFR56wgquBS0P5B2OyK
+	 LjbYzgm6dwcyw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A2F78C43151;
+	Fri, 24 Feb 2023 23:27:23 +0000 (UTC)
+Subject: Re: [git pull] IOMMU Updates for Linux v6.3
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <Y/SGAafMEGBn4fWy@8bytes.org>
+References: <Y/SGAafMEGBn4fWy@8bytes.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <Y/SGAafMEGBn4fWy@8bytes.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v6.3
+X-PR-Tracked-Commit-Id: bedd29d793da3312e1350a56245c4971a38d4453
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: a13de74e476532e32efb06e96acae84c634f0159
+Message-Id: <167728124365.28021.16477662593673489130.pr-tracker-bot@kernel.org>
+Date: Fri, 24 Feb 2023 23:27:23 +0000
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-References: <Y/SGAafMEGBn4fWy@8bytes.org> <CAHk-=wg71g9S0F8V-=97XQsaf6Edbxhfx-xS+x894w8sMZW+=w@mail.gmail.com>
- <Y/k1pGjjRIznCIu2@8bytes.org>
-In-Reply-To: <Y/k1pGjjRIznCIu2@8bytes.org>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Fri, 24 Feb 2023 15:14:21 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wg__gUh4gSVzCJqoCFMDiiQRDRuBaX=Yhra3=mxb7uSHA@mail.gmail.com>
-Message-ID: <CAHk-=wg__gUh4gSVzCJqoCFMDiiQRDRuBaX=Yhra3=mxb7uSHA@mail.gmail.com>
-Subject: Re: [git pull] IOMMU Updates for Linux v6.3
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
 
-On Fri, Feb 24, 2023 at 2:09 PM Joerg Roedel <joro@8bytes.org> wrote:
->
-> Aside from the conflicts with upstream, which I resolved in the merge
-> commit, the only other conflict that Stephen reported for linux-next was
-> in the rdma tree, iirc. So fingers crossed that this is the only one.
+The pull request you sent on Tue, 21 Feb 2023 09:51:13 +0100:
 
-I suspect you mean rpmsg, not rdma. Because I just pulled the latter
-with no conflicts that I can tell.
+> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v6.3
 
-            Linus
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/a13de74e476532e32efb06e96acae84c634f0159
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
