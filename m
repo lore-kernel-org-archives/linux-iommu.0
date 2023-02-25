@@ -1,33 +1,34 @@
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2051.outbound.protection.outlook.com [40.107.212.51])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2055.outbound.protection.outlook.com [40.107.92.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B56A7B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7B05194
 	for <iommu@lists.linux.dev>; Sat, 25 Feb 2023 00:28:10 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=S4tCRjr+aUJ1sOGEEX3wioa0l3nMDXSjxyhdByvxVdAZOqfHkmALna5WYiRjJfw3Ot9g7OehUXCyG7cDNaaH3PT6Do2hwGpKopGqb0ywPwcZl+t48rdpckY70e5XTBH46t4bYx28fZjkWNuIdFv+A/LHhgYzhW+9Bb2TFXV4NsZzPwr4l/yiz4FR0rSIGEvz+JsuLKL8puUslIq8oSeUntO8DuRu0qEmUmOdmJXF0/A9IMtHe1lUIsniG7uQq+JNMN/IAHzKsVUFeJACjKht8SOA+YjLyASXnaaU+cN0SlVvnneYD26dwP9SXQOCwVvezIzp0NnbZnd8bDfdhkltng==
+ b=fBkj6CjfhBHjKshAivf4mIGo2u6axRUTwdTR+Dhj1ijbdi4G5hMTfQE5SecBBq43rTXyLF5xdoecEeDavJKVrT+lBFQYkpJGAo/giXe72ss1KK265JOefhL3BPR7tIK+PRKG3idDfgT7toe750RNXuwWFvXTcF6SWKQ0a/HiJmPK2vIxCWce2FBaYL4wbnjyVS7s63e+C8vNAj2Qoa6LF/gKHjpNH0TXKGVs1BR6KOyabs+PIg9XmrepMXsxUO3aE+jaboKcIUNyvNi6WlUl4D9zlqFs2uUkc5XJx481Ww08OnWPy6isrMuCCemVxhm6qKBZPbDPcSWIcDvnvaYxKg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UfkDS3OHo5KvGeEkDinURCWayrdEg6pubPX6m+SQ2yw=;
- b=ajbmv29AsEktEV9vpk8C0uUcbYRUbXue1Rhhnp5M/n+bS1ORDUj6O33W5aol1le8zFrXjPXl4SHRngPLtvJ7j3sErF0d+KabykdAOFlsnqNYe65oX42VTwCk8P4sswn6WpVSr+fSdJd7VcvpdmNxGuU/VwqvH1Fu1gwTD3YkFezRwwEh0JwPrkGMNZmjQwBymhWYE3hYSp5zPNGMEl9MHNfRgtVTtBNBo3x2SLsxQqu6XW9lUjnc8Y9f+L93z9l/YNYi5xGhI72fy1dMHRL3pVoRKMydTmHCIcsxN2aHWlgtluJw2KJf4tPQvazdubzyPJgEwNRZdr0qy/MH9ZVoig==
+ bh=2zZyToX+vqatFFYVHBK3thKEYjf42q4vRD8Ucb7WcpA=;
+ b=FtHRY1FF7xkK/akWd0va25FHbQCVvaDzYg+Kvs2yye77tvQ33KX93BxlkyDRIfzDt7QwxWsjPcloxQUgf0nPm9VIv6v55Q90dHko7ihfnphphFiOvPAdaIbSJc+dzHgxB1HuhyiBWtwFTGFw11IQcgAtycEN7VUH8EVMES2/unEp7C3z/d2aVEUq5E8iOR4U0OzEe/B7O++f+FGia+3Ipc0u/WCWMJfE6uAf2JG8otmQzNdLXT2RWynfqpMMN6VRioV9t2YOmPPhV3nqepeGVDQ5qE12Is2VLhbW1S5nlWFLwf72lZMUuG8FR/q1O7gCvq9UDVILfMgAnfGyYB5cEw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UfkDS3OHo5KvGeEkDinURCWayrdEg6pubPX6m+SQ2yw=;
- b=JsYpXj9HQa5EDtaSrlpW/jiV9t7WcxjLtJyhAIkpVpKGU0xh0+BpuhZNGlDumY294DdUKqavsLH6ZdiI1I+5xtAzr6boAdqFUcdr2s/YCaG8gbmzNkU41OejQrK3dWDwXAplYBkLqmcIprcokMf6Aac4anEIRklkCsXbAznynuEINyndrZsboEUCxki+eu0HYtSHDellNfcF0jyoakqHOQdBa10czggGoQwU/9++FZXQnaG4Qv/nblBN8PXq0bXLnCJzQFagUEaCjrSmBIqE6SDlkkWR+/AEx8Tgxoiobbh7JAv0ko5uZNztHQkKLQd/zNnU3gpJ35OxR9HGkcqRzA==
+ bh=2zZyToX+vqatFFYVHBK3thKEYjf42q4vRD8Ucb7WcpA=;
+ b=rizj9yJuXL7RojiULGrgqHLi3+cSxzL30RE0DYC3a2686CE4sryX5X7pmQgOIJehGbCnepu7XwGR3xHC79afnamENLK1yhUX54pGJBq3fiItF+shF1eqhVTy+PiDrcLdXd9m4ybzX1j9h0GUNBRsvmjj3+bAFOwjYdAhP/kZ7qvm0htpubaaBeKib/avG0KKjPFqU0BjnMDtJDMLU+5f/t/i4w8Mf6DaBgCBthtTu6zbiku82MFREiTv/dKeTKWjkAX7UzFbogxfq3yZ/3Gw0BSGETGsL0eRe446Qr8ZB5gMBUPcDbeeL6Vxh9umj5eGDDdUjyCjzFUL04jL6JuCuw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DS7PR12MB6096.namprd12.prod.outlook.com (2603:10b6:8:9b::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6134.21; Sat, 25 Feb 2023 00:28:03 +0000
+ by BL0PR12MB5507.namprd12.prod.outlook.com (2603:10b6:208:1c4::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.24; Sat, 25 Feb
+ 2023 00:28:07 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::3cb3:2fce:5c8f:82ee%4]) with mapi id 15.20.6134.021; Sat, 25 Feb 2023
- 00:28:03 +0000
+ 00:28:06 +0000
 From: Jason Gunthorpe <jgg@nvidia.com>
 To: iommu@lists.linux.dev,
 	Kevin Tian <kevin.tian@intel.com>,
@@ -35,15 +36,13 @@ To: iommu@lists.linux.dev,
 Cc: kvm@vger.kernel.org,
 	Nicolin Chen <nicolinc@nvidia.com>,
 	Yi Liu <yi.l.liu@intel.com>
-Subject: [PATCH 10/14] iommufd: Make destroy_rwsem use a lock class per object type
-Date: Fri, 24 Feb 2023 20:27:55 -0400
-Message-Id: <10-v1-7612f88c19f5+2f21-iommufd_alloc_jgg@nvidia.com>
-In-Reply-To: <0-v1-7612f88c19f5+2f21-iommufd_alloc_jgg@nvidia.com>
-References:
+Subject: [PATCH 00/14] Add iommufd physical device operations for replace and alloc hwpt
+Date: Fri, 24 Feb 2023 20:27:45 -0400
+Message-Id: <0-v1-7612f88c19f5+2f21-iommufd_alloc_jgg@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: MN2PR15CA0033.namprd15.prod.outlook.com
- (2603:10b6:208:1b4::46) To LV2PR12MB5869.namprd12.prod.outlook.com
+X-ClientProxiedBy: MN2PR20CA0024.namprd20.prod.outlook.com
+ (2603:10b6:208:e8::37) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -52,108 +51,126 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DS7PR12MB6096:EE_
-X-MS-Office365-Filtering-Correlation-Id: 402d8fc5-03b2-48a8-c8d0-08db16c72707
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BL0PR12MB5507:EE_
+X-MS-Office365-Filtering-Correlation-Id: 61551ade-d863-45ad-8975-08db16c727bf
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	GygNCsJuvlDlWtTBwl9JWVcRAfeOP7dd1jgBbDG/Wm5xJxI7ejxUxi3gqL5HV/g9JK8gvY+iT3QKtUO7eoEbYemv6JLvtz/mFVUXHdxKWRSlEplf6ISlVQWGbNPs0oHNJCZus/uLkrsytGoh5h+tK4W9+urNXgfJN/kjOEsaeif3z2tdH51O+q/lUTJ+fnsNf3L96NdqBhIelz2vJZbfScXV0AheOVdtKQTpLevm7zblICV1AMJB+rGAHZF08Ayg92J3C1eccGKTdggVCXtEWs0qvGNlaTd43nD6STZ+5L0fbET1K0j5YzpPCGMJZ/le2iQRO36Via8DZRnSeG0XOuBlVo+0J8jk/4orsEbael36e4O14C8BRsBNLeQg5/e/FHpDurhMPcNHIaTGKvZ1hPOKXdDu4biGuwjgWppqujB6w8iEnWZ1lWL+PfCxm83eokXDCzAqE/LcIHUqFfeb/1FAuPVotRtbKl+V8aqSWwviW1Y0xiqfPd4LE/2KU3/+sxZ7A2axnyHFewqRWVcMJsMpgGAyfi3wPIELG+OltCXw9hSp9VHMCxerrXsQHrGGIV/pImuOdZjO7DVDtEn3Rf0UNHgrxg4R2/qyPKLmOD1QgvpcdidZitYlUGXSsAJ1ck0wXnG5I2JmIAuOmRhYEw==
+	xBBQUDkOO7fX7GiNc5kdMKMJZ4R1g939j6Mu7W763lyveSgxBctAWMPBoIU2xw0UAbx0HN6IB/lQZTUcZ99KEw9mNV/bvChbl0JGbKqKczysr8A/q5u86jePSXN30mdVXnOcGL7NyjUJtnvM9q1TEXUdETTSV3euDqhUY9FPF/WeuwTqO0f+sl2s6Z775Cqkw9tR9I6xJuyxvG8IujJd6Pt7GdrCTdbDKzUZgK7tRf6VZsZX07dhHAGvNtcIdgxmdio8FL0szBGQaqv3zRhL9TTFo4GRQQcj+szVG4T+qrFB/qUwxoyhbTYhs0fPHONEmT+qXXvUVX1E14a0aUMRvjFM7DwcyTynIT0NlosoymY3HxMFljKSBz+mUEwdphmRfJhttbiCZ7GKiaoEey/ZvC4twDUlqOJYUuIp8A3LEa3L5FvwJAfJD3sImIq9N5/c70Cw5+84+BaeVDa0yv9gQ7HL7fhHoRZcCTCO3eG2o21CbXVbiAD1B+0065+Sob/mqzgEMho7fOa9xXC+OPnaLH3t5Y05mTnf1XxUDd4d5yFyL4vs/aiWQTY0H+4lNOY65ZFCz4KjriEFFROmB3ujoBC3aqJyvM1DAC0WpjuYoyxW2zNLInxDgMYLai96Z/VWHviKIYpq5jMmN/3EX0ADJVO5wsRs5sekpFaAHUGzMhpxr6VR1A93EpQKPR6YjDu4MDrIwmrhLgaDcR01lgMJizaemFqV/1Dh/5JxsPT3qoc=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(346002)(366004)(396003)(376002)(39860400002)(451199018)(2616005)(41300700001)(83380400001)(5660300002)(54906003)(478600001)(8936002)(4326008)(38100700002)(26005)(186003)(86362001)(8676002)(66946007)(6506007)(6512007)(66556008)(316002)(66476007)(36756003)(6486002)(2906002)(6666004);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(136003)(396003)(39860400002)(376002)(366004)(451199018)(26005)(6506007)(186003)(6512007)(6666004)(41300700001)(83380400001)(86362001)(36756003)(38100700002)(2616005)(66476007)(66946007)(66556008)(8676002)(4326008)(2906002)(8936002)(5660300002)(6486002)(966005)(54906003)(478600001)(316002)(4216001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?0fTVXTXZAU9UorreBhSw89ZXwm6JLk8yHDKNna32EA4A0SKSarOf3/qRTLAj?=
- =?us-ascii?Q?TH5z/ziCvopLPeKJRkctZwEDM76tV9Gm4SisDhkXzOff8Us9jh1Exz3rUHd8?=
- =?us-ascii?Q?z8Y1kDjDc31JTLOW2k00w6Cg7hOuTOCGUPQkTA7jDu+6xVxHr8CaTqCmm6bN?=
- =?us-ascii?Q?Dv1d5GSCYVKbU5L5/IccfOkWHLd57woXq1VoEByAvjdxfC3nXfzftDpQSkYS?=
- =?us-ascii?Q?jwQJ1JOW0qrlj3yrG099puyXrjuDrT6nuDixIpdOQZpBa1hfxoyZPw7cRm/6?=
- =?us-ascii?Q?eNHU80aDKP3daygnydGkHQ116t4t5VyEspGtgw98t0ej1+gWIXO7dMroIAP0?=
- =?us-ascii?Q?UB0t8NDJB66+bHZAMhjG2A+yEHu2/DEZ5urbo5yrvuY0uM1jRieOuvGeDfw4?=
- =?us-ascii?Q?zmAKK0lj7C2r+z2skskccTP2uV2Q1VVLnNG4rU7EP553h4tYVlcFhVFA9dBm?=
- =?us-ascii?Q?eipuylsHNH9esCMhOseDBlkkOGHodApiY/lVcXU+otuZyJYsP8gWFdoPRmE0?=
- =?us-ascii?Q?S35VwdrlcAHy33qAxRGsZiUd4DBEtOyFlZOhH28Xm2kx5Di5HhmGt4mKtiFu?=
- =?us-ascii?Q?xjV8UQtNTTkb3h0ohVu9R28YtjhFFPEeFngJZfKb9lubhemyayWkRe2pQIBk?=
- =?us-ascii?Q?kWdUAxB+Jf6G4pjmdPI6RpJReiM1cd0qp1/PMJea6ol0lvwbA6KfS86uvsJt?=
- =?us-ascii?Q?EpOcLJJ6uP7cCTmUAjwwRiSq+1JSikS5Zs+WytzwOtAILLSdBAm09NITm101?=
- =?us-ascii?Q?Sie82YunEuaq2/tY715SWqGVxlmsNoGnb4Vj35YKQeqaUZqPYZoSdn/IumPS?=
- =?us-ascii?Q?KD5EAZe/hNLJBxQ9Jq+nulgOsrXOU+NBX9mbCx+x6gQfH/FTtnhF2O9/Xd7c?=
- =?us-ascii?Q?XaghmcsnhflWoH9mG13SFJGbcYXV83DzQtx8KGG0yU0p5tcBZmQrj3TA5hmz?=
- =?us-ascii?Q?JzuS6CcoKNgtxB593l58GLEO1xnn7nBKBM28/d74nGT9K2O4RjtGGH64WdGO?=
- =?us-ascii?Q?7fkQW47cSbKbH4SQj5nHFG2esHgzQ9GdJAzIwQ3CM2/qbRFOSSKp9x7LdsAc?=
- =?us-ascii?Q?xKaS9jqkF91Nlwglm6LK8QcT35SDzvoUiCYTBbav4LlsVgp3lmBTNsWqdla1?=
- =?us-ascii?Q?WJFQSFWjafhREkpqo3iSY8pR7fb/bbQ9iHeSbQgx1d7pRcYjusf5TCyVjFUN?=
- =?us-ascii?Q?wrZnS7ju7wY3jQkXLuSTXExl0zK67btiGkt9qH/vy2PN0GCgNZh/KkVG5s8i?=
- =?us-ascii?Q?dd14dsaf3SGe0Ty17OBytknSobZmoG34TGJUOwfoIgWvUXvUB9QS0spWMtBx?=
- =?us-ascii?Q?Y7kiEs23KI1hFJiQfUDwrypYg+OrZ3Y4HaY21dsUn2Bx7H21pCcC3S/jsgoW?=
- =?us-ascii?Q?JY8piMLPIN+jHJblLIqZOYmGJ/Zj9iYIupWs+isPFVyil74dJfE5dVIh2lPe?=
- =?us-ascii?Q?8ZU4NHg9D6fQIf9khyhNYYB5c2YdsuT+Rfzf6UkRMGwITSLBfylPqc1nzcqL?=
- =?us-ascii?Q?QqbKcp/kM/azm7g2UDPdBkj7+9+x0uEsIVA3xG1EiHAE3pnmP9D+AZv5JVhN?=
- =?us-ascii?Q?qSoydDse4PI1b7nD8WDi6cdLfm/5yz6Ui+WH2xxV?=
+	=?us-ascii?Q?Mak12T4OdGIf02E8Y6i8kV3WJgt3lUqaYVO5ihDLSQibk80Z8XN+VBk1QXsn?=
+ =?us-ascii?Q?QlKeqsGn7q+d5Ep/DgsmChCbCZH0xGNBtStc8hWPra/08bTp98m/+BssRbiL?=
+ =?us-ascii?Q?ejswfjt0FvSdgU4rPvrXfTQe6q+3uqIu/h6lhXRX3C3ClNk8nYXX5iN37bZr?=
+ =?us-ascii?Q?ouHsA+Su914eb7pt79objuE955fxD9Q1FsX0pkdjpIu+qtVkGvVlJ6J3YAfk?=
+ =?us-ascii?Q?JJYtdIdWHjABO9Wn5GW5irhp84cYtN2PiEaT9Aip36P3WZbmxz9lq8bUswSm?=
+ =?us-ascii?Q?tVqKLrppAI+gLOmyZhD8/pzabo3rYBBofI+pvrhmnRK6N5GjDnIowwJ64D+M?=
+ =?us-ascii?Q?W0WU9bu8FRXbhvCG6R9N3SfdipdFs9w7f9hRG00V9O+24i2pk1Zdh6FrmAvy?=
+ =?us-ascii?Q?9/xtZDb1q4mauOHeKi7tJ1R1HQXumpT0+M15fKX9XxJ3GwIg6URPMJNf6EI9?=
+ =?us-ascii?Q?uK7NV6upRk6wa7VjzpD+Nqec063I/7ftcU03cLb97IALb+F6BazhCuPyBVLW?=
+ =?us-ascii?Q?A+UV4h7yo1+FmUljELTLKcnkX3/isud0xYoPC4whzEDdEk0JFZSTsm9EyhLE?=
+ =?us-ascii?Q?b+RY/aYs2YCc3V+a8OqWYuGQJRLl6zzutxU0pE3MjW6mOTck4JiJBUqdGZGx?=
+ =?us-ascii?Q?SxL3UCKTzQxT02cG7MU/O1bZrGJ7Uumux2WsM09nxOYEqw1e+1v/KZlCrvKu?=
+ =?us-ascii?Q?ubbKoyeONZ9KKdTNQx15XEb+yLLeRp3ClGHQaT1pClL5WruvDUWbKZUcJgYn?=
+ =?us-ascii?Q?AMXywRp87sUKwTtl1lgDCOSR0Tc3/+9ySMNasfAqqUcpcuzoQOQHaKBtB0Ys?=
+ =?us-ascii?Q?d0wG8q9MfQNk0JRoROQaaQUDVs0EjpItELEk+09148J5yNKOCWeSbQiWjCsM?=
+ =?us-ascii?Q?R2siB7g1efrPD6MvpqRPMN+tB6dkbuheb09JMtuq2Yeb5ghOizx3hv1z6lmb?=
+ =?us-ascii?Q?nihprJ9eRe8SZGH3P6hAMc2RYGkkKjXOJrfnU8vUoawqL4B0Euf7Tnm44DZ8?=
+ =?us-ascii?Q?k2JMqx9YHA/x8XgP6XxmFO//ajsdBCQ9rp+/nXfUVaC9lPpkuTUQScUkxT/f?=
+ =?us-ascii?Q?rcD1bHR8bDarZ0Z/9RHrLc0Ho632Klmsyhd4/ghoTdBWHOAgxs49zz6HDKaE?=
+ =?us-ascii?Q?mvpGQp/O6S3CgsZ4Mcge2BgaoSgGwbyKAfFJTyVSijaHFHmn7SyhfFQg3S2j?=
+ =?us-ascii?Q?c3Zd2xUA+rk54TEAIJWHaHIm3ix/XZ+bRH2A8ey8B39vQcrLzObh7VEfq2V1?=
+ =?us-ascii?Q?9Ce87aUubutMq0XPYWafBM9VLTIOpiAPm/LOciXT/mBmxm+t8tNxrPftAhgv?=
+ =?us-ascii?Q?yTL9hFagJ2XC1llVrjPj5c0oaDXn705ogMloAFK0R0Knc2sQjd7fNeBka7GR?=
+ =?us-ascii?Q?FiXNyzTfJVwfqR4qlqfCYfLLnrGOpQz3reQRRe1FRuEXhMQqKbmsH2+MTqcn?=
+ =?us-ascii?Q?RXxkNo+qEID3+p5MBo8+JKQgyp6WbghK/lJC70RVghTMoRQ0FsMAZ8uzccEl?=
+ =?us-ascii?Q?uAGLaTSkCwIJs9K2LuwBJ/r4syC2P96//Mj7YPWQvp9vBQuiohDelxCwajEJ?=
+ =?us-ascii?Q?Q++kjGT4awBHp7oorIVww/OlOIX9YHGEtoxiRCCo?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 402d8fc5-03b2-48a8-c8d0-08db16c72707
+X-MS-Exchange-CrossTenant-Network-Message-Id: 61551ade-d863-45ad-8975-08db16c727bf
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2023 00:28:01.4368
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2023 00:28:02.5942
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WouUf24WuEOlOpw+w7tXmcjqXv0+kK8LlTnA4gBg0xjBZgRwO7JlvjCxwf23Ut4o
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6096
+X-MS-Exchange-CrossTenant-UserPrincipalName: txA8nvOcsVhKYob/ODFZCdMQBnw4Dc9jDqTUPisbqf7yXAg3ahTHSRYrJ/w9AqVK
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB5507
 
-The selftest invokes things like replace under the object lock of its
-idev which protects the idev in a similar way to a real user.
-Unfortunately this triggers lockdep. A lock class per type will solve the
-problem.
+This is the basic functionality for iommufd to support
+iommufd_device_replace() and IOMMU_HWPT_ALLOC for physical devices.
 
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/iommu/iommufd/iommufd_private.h |  1 +
- drivers/iommu/iommufd/main.c            | 11 ++++++++++-
- 2 files changed, 11 insertions(+), 1 deletion(-)
+iommufd_device_replace() allows changing the HWPT associated with the
+device to a new IOAS or HWPT. Replace does this in way that failure leaves
+things unchanged, and utilizes the iommu iommu_group_replace_domain() API
+to allow the iommu driver to perform an optional non-disruptive change.
 
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 8921761ff98980..cfcda73942b533 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -119,6 +119,7 @@ enum iommufd_object_type {
- #ifdef CONFIG_IOMMUFD_TEST
- 	IOMMUFD_OBJ_SELFTEST,
- #endif
-+	IOMMUFD_OBJ_MAX,
- };
- 
- /* Base struct for all objects with a userspace ID handle. */
-diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-index 8597f2fb88da3a..9cba592d0482e7 100644
---- a/drivers/iommu/iommufd/main.c
-+++ b/drivers/iommu/iommufd/main.c
-@@ -32,6 +32,7 @@ struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
- 					     size_t size,
- 					     enum iommufd_object_type type)
- {
-+	static struct lock_class_key obj_keys[IOMMUFD_OBJ_MAX];
- 	struct iommufd_object *obj;
- 	int rc;
- 
-@@ -39,7 +40,15 @@ struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
- 	if (!obj)
- 		return ERR_PTR(-ENOMEM);
- 	obj->type = type;
--	init_rwsem(&obj->destroy_rwsem);
-+	/*
-+	 * In most cases the destroy_rwsem is obtained with try so it doesn't
-+	 * interact with lockdep, however on destroy we have to sleep. This
-+	 * means if we have to destroy an object while holding a get on another
-+	 * object it triggers lockdep. Using one locking class per object type
-+	 * is a simple and reasonable way to avoid this.
-+	 */
-+	__init_rwsem(&obj->destroy_rwsem, "iommufd_object::destroy_rwsem",
-+		     &obj_keys[type]);
- 	refcount_set(&obj->users, 1);
- 
- 	/*
+IOMMU_HWPT_ALLOC allows HWPTs to be explicitly allocated by the user and
+used by attach or replace. At this point it isn't very useful since the
+HWPT is the same as the automatically managed HWPT from the IOAS. However
+a following series will allow userspace to customize the created HWPT.
+
+The implementation is complicated because we have to introduce some
+per-iommu_group memory in iommufd and redo how we think about multi-device
+groups to be more explicit. This solves all the locking problems in the
+prior attempts.
+
+This series is infrastructure work for the following series which:
+ - Add replace for attach
+ - Expose replace through VFIO APIs
+ - Implement driver parameters for HWPT creation (nesting)
+
+Once review of this is complete I will keep it on a side branch and
+accumulate the following series when they are ready so we can have a
+stable base and make more incremental progress. When we have all the parts
+together to get a full implementation it can go to Linus.
+
+I have this on github:
+
+https://github.com/jgunthorpe/linux/commits/iommufd_hwpt
+
+Jason Gunthorpe (12):
+  iommufd: Move isolated msi enforcement to iommufd_device_bind()
+  iommufd: Add iommufd_group
+  iommufd: Replace the hwpt->devices list with iommufd_group
+  iommufd: Use the iommufd_group to avoid duplicate reserved groups and
+    msi setup
+  iommufd: Make sw_msi_start a group global
+  iommufd: Move putting a hwpt to a helper function
+  iommufd: Add enforced_cache_coherency to iommufd_hw_pagetable_alloc()
+  iommufd: Add iommufd_device_replace()
+  iommufd: Make destroy_rwsem use a lock class per object type
+  iommufd: Add IOMMU_HWPT_ALLOC
+  iommufd/selftest: Return the real idev id from selftest mock_domain
+  iommufd/selftest: Add a selftest for IOMMU_HWPT_ALLOC
+
+Nicolin Chen (2):
+  iommu: Introduce a new iommu_group_replace_domain() API
+  iommufd/selftest: Test iommufd_device_replace()
+
+ drivers/iommu/iommu-priv.h                    |  10 +
+ drivers/iommu/iommu.c                         |  30 ++
+ drivers/iommu/iommufd/device.c                | 482 +++++++++++++-----
+ drivers/iommu/iommufd/hw_pagetable.c          |  96 +++-
+ drivers/iommu/iommufd/io_pagetable.c          |   5 +-
+ drivers/iommu/iommufd/iommufd_private.h       |  44 +-
+ drivers/iommu/iommufd/iommufd_test.h          |   7 +
+ drivers/iommu/iommufd/main.c                  |  17 +-
+ drivers/iommu/iommufd/selftest.c              |  40 ++
+ include/linux/iommufd.h                       |   1 +
+ include/uapi/linux/iommufd.h                  |  26 +
+ tools/testing/selftests/iommu/iommufd.c       |  64 ++-
+ .../selftests/iommu/iommufd_fail_nth.c        |  57 ++-
+ tools/testing/selftests/iommu/iommufd_utils.h |  59 ++-
+ 14 files changed, 758 insertions(+), 180 deletions(-)
+ create mode 100644 drivers/iommu/iommu-priv.h
+
+
+base-commit: ac395958f9156733246b5bc3a481c6d38c321a7a
 -- 
 2.39.1
 
