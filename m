@@ -1,34 +1,34 @@
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5BBB386
-	for <iommu@lists.linux.dev>; Sun, 26 Feb 2023 03:10:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48CD7386
+	for <iommu@lists.linux.dev>; Sun, 26 Feb 2023 03:21:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677381035; x=1708917035;
+  t=1677381713; x=1708917713;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=MnGgGG690MrqMdCmd1NNGfR/VC2G3XNNomAqNGjX3Ao=;
-  b=NJUBZi4Dxmf4kLgDsMCWeKXRrE0urnYQA6NcQxA7rIXR1rEe8E7sP+F+
-   c6lFopIm5ubqFwV++FarPoYovRcIhQtHeLGEbsnG5gd73fReavaL/0Voh
-   RKooxi0LVpg2UkiIKgJfJj6FCzxhR1casE4ChBCez0a9qE4JlPRbrx9Np
-   sw9+06VqzMIEQDxZZveGb8pF8Yh4JIdKd0ThXgByOHWm5/UNJcQLN+MyG
-   YTBN+2Tfepww9mC/+mHjgTIZEeB/+ZgtaVTT6vIxLlVdI3/mvVQErcG/s
-   k0ams6prKSPfVHuHnnnOOl+2hKOn89ii6oUi/RF9QzNvqeuyxL73Yd82D
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10632"; a="314104941"
+  bh=7Ub4xNplwsCdyqlJn5ofe69te68wyHVta6/prD6UN/E=;
+  b=P/hHGaj976eFt9FprSQAiexJLjd4pcAyry5JZhndg7aVmt1uji/uA3or
+   /L8mfkvxHcI6F/Afb21Ug0Q1+PD01OmV0MUPZyFO/9LBldN/1+IoeVyr8
+   HZmUfEczVkI+gfGkIae0cHnqkFGdD0lC2JQP3ZVRCc1jIu0QOmj3fIHBF
+   R/vy5pdNYpdVS1/a9Js3UHI0sw+RKQ+MYxjt8ZmIkqksNL8vUGZAs6tEV
+   1DD9sWh+heh4ehSgjGWoT9pGUW4mgc95AbMf7aPgKTzvC62ntuRRXnhwo
+   aX1sZ8KTNNp+eNxNI/yuP7fs51SEjySrApu4fqbJId3z4u+KhvhKCh82f
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10632"; a="314105492"
 X-IronPort-AV: E=Sophos;i="5.97,328,1669104000"; 
-   d="scan'208";a="314104941"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2023 19:10:35 -0800
+   d="scan'208";a="314105492"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2023 19:21:52 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10632"; a="1002259676"
+X-IronPort-AV: E=McAfee;i="6500,9779,10632"; a="623161119"
 X-IronPort-AV: E=Sophos;i="5.97,328,1669104000"; 
-   d="scan'208";a="1002259676"
+   d="scan'208";a="623161119"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by fmsmga005.fm.intel.com with ESMTP; 25 Feb 2023 19:10:33 -0800
-Message-ID: <cdbc3707-d326-26d4-3adc-ff2ed80aa2ba@linux.intel.com>
-Date: Sun, 26 Feb 2023 11:01:59 +0800
+  by orsmga003.jf.intel.com with ESMTP; 25 Feb 2023 19:21:50 -0800
+Message-ID: <909ee61a-9cbd-eda1-89a2-349348eeb735@linux.intel.com>
+Date: Sun, 26 Feb 2023 11:13:16 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,44 +50,64 @@ Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 2/25/23 8:27 AM, Jason Gunthorpe wrote:
-> @@ -437,25 +517,77 @@ int iommufd_device_attach(struct iommufd_device *idev, u32 *pt_id)
->   		struct iommufd_ioas *ioas =
->   			container_of(pt_obj, struct iommufd_ioas, obj);
->   
-> -		rc = iommufd_device_auto_get_domain(idev, ioas, pt_id);
-> -		if (rc)
-> +		destroy_hwpt = iommufd_device_auto_get_domain(idev, ioas, pt_id,
-> +							      do_attach);
-> +		if (IS_ERR(destroy_hwpt))
->   			goto out_put_pt_obj;
->   		break;
->   	}
->   	default:
-> -		rc = -EINVAL;
-> +		destroy_hwpt = ERR_PTR(-EINVAL);
->   		goto out_put_pt_obj;
->   	}
-> +	iommufd_put_object(pt_obj);
->   
-> -	refcount_inc(&idev->obj.users);
-> -	rc = 0;
-> +	/* This destruction has to be after we unlock everything */
-> +	if (destroy_hwpt)
+> +/**
+> + * iommufd_device_attach - Connect a device to an iommu_domain
+> + * @idev: device to attach
+> + * @pt_id: Input a IOMMUFD_OBJ_IOAS, or IOMMUFD_OBJ_HW_PAGETABLE
+> + *         Output the IOMMUFD_OBJ_HW_PAGETABLE ID
 
-Should this be
+"Output the hwpt ID" only happens when the caller input an IOAS object
+and an auto domain was selected or created for the device.
 
-	if (!IS_ERR_OR_NULL(destroy_hwpt))
+Do I understand it right?
 
-?
-
-> +		iommufd_hw_pagetable_put(idev->ictx, destroy_hwpt);
+> + *
+> + * This connects the device to an iommu_domain, either automatically or manually
+> + * selected. Once this completes the device could do DMA.
+> + *
+> + * The caller should return the resulting pt_id back to userspace.
+> + * This function is undone by calling iommufd_device_detach().
+> + */
+> +int iommufd_device_attach(struct iommufd_device *idev, u32 *pt_id)
+> +{
+> +	int rc;
+> +
+> +	rc = iommufd_device_change_pt(idev, pt_id, &iommufd_device_do_attach);
+> +	if (rc)
+> +		return rc;
+> +
+> +	/*
+> +	 * Pairs with iommufd_device_detach() - catches caller bugs attempting
+> +	 * to destroy a device with an attachment.
+> +	 */
+> +	refcount_inc(&idev->obj.users);
 > +	return 0;
+>   }
+>   EXPORT_SYMBOL_NS_GPL(iommufd_device_attach, IOMMUFD);
 >   
->   out_put_pt_obj:
->   	iommufd_put_object(pt_obj);
-> -	return rc;
-> +	return PTR_ERR(destroy_hwpt);
+> +/**
+> + * iommufd_device_replace - Change the device's iommu_domain
+> + * @idev: device to change
+> + * @pt_id: Input a IOMMUFD_OBJ_IOAS, or IOMMUFD_OBJ_HW_PAGETABLE
+> + *         Output the IOMMUFD_OBJ_HW_PAGETABLE ID
+
+If my above understanding is correct, then replace will never output a
+hwpt id as it only happens after a successful attach.
+
+> + *
+> + * This is the same as:
+> + *   iommufd_device_detach();
+> + *   iommufd_device_attach()
+> + * If it fails then no change is made to the attachment. The iommu driver may
+> + * implement this so there is no disruption in translation. This can only be
+> + * called if iommufd_device_attach() has already succeeded.
+> + */
+> +int iommufd_device_replace(struct iommufd_device *idev, u32 *pt_id)
+> +{
+> +	return iommufd_device_change_pt(idev, pt_id,
+> +					&iommufd_device_do_replace);
 > +}
+> +EXPORT_SYMBOL_NS_GPL(iommufd_device_replace, IOMMUFD);
 
 Best regards,
 baolu
