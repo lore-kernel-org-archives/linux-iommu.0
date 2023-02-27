@@ -1,129 +1,134 @@
-Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2126.outbound.protection.outlook.com [40.107.93.126])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5536B808
-	for <iommu@lists.linux.dev>; Mon, 27 Feb 2023 08:43:19 +0000 (UTC)
-Received: by mail-lj1-f176.google.com with SMTP id z5so5577128ljc.8
-        for <iommu@lists.linux.dev>; Mon, 27 Feb 2023 00:43:19 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EAEE33DA
+	for <iommu@lists.linux.dev>; Mon, 27 Feb 2023 13:22:12 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cf0Fwhi57cWm+d6ApZeqqqX1Jn1y56PziNjQ658Nf/2GyXulTrhFLbssTlbiUlSzKAmp6Y/lLbE6E0n2Xo/gRwij56uSk3lIIFrWKuY6LoPrnBKhaq/3gfZ5AnWOoGDHVn/1t/AfedaR/isly+eng0UltN4Ogq4A2UnCME9kFgJndFxrOb+Fyle09uXqNIbaq7rl9/8vJ/iD1ZqbXoES+TZfHw/67IND2NQZ6He2E0XBSi0dsNY7phcd7KUdA2eiy78b6jNpXGA1Sd7w/xDec2gp6JHweFkqG5VJXHYpINOpaaY3wXxL2ssqfWqwv8nFzm9AG6TQ9XqAuDExDBhEag==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=hEHzOK+0dYpV0ltEgeBv9S5VqpSxJaAI5Jzyun9Aabw=;
+ b=nsyXl5ziNVsF+Ub4A9QlMQCbCq9BvZhEydBfwFwPwX1EAsINnmclCLTGuoEqCHZ532cot/u5YsU5oun9ofjC64raVNbn7rym2r5cRShV1aL/Vb0+NIWxIQ0T0rvpl7xLhXuQqNh1HmQyMdPFzSEFR9jFRcPipgoxHAmwKIjjtvZKdRK7uOzuDgLUWuC55FUsnCYUBoUO56qqLxaksU92WsgWY+JnACHIpECy3BMDOrwlGkDpZ0vXrqjTNfmMT2IwUVjRR45W7jRg9EAfbrI0Np0cDxi1lYtjh2PuINurhjedwwTWaA7gldZEueVYxnDofjaFotpsiikoeK0hQsuIbg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=os.amperecomputing.com; dmarc=pass action=none
+ header.from=os.amperecomputing.com; dkim=pass
+ header.d=os.amperecomputing.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1677487397;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=pl3dkRXMmAk1JBFimIqhpxnC6XsfsDXMDQ44PxTCQ/s=;
-        b=DtxNJ6ePjQ/i4m/NMWNDtDHj6jb+VPPrSwrShpD9ysYFk+mdEp1ayrEGACcGBLYzkV
-         2jyWy+BksOm5xtg2FTLlj5vcPRD1W4cN95un71DyKs7L+FilsP2x7WPsJBDkjJWhpKdC
-         F3qbguO2fGdC/e4BRKHSRed36QUraJsMFex/pvrMCTpZY2J7ZIV+Jc4d5JWdpuyVMk5p
-         b+z1PXXCw0DM3G9Ispl81es5iGClOZHsO1BQizMXge71LOCI7C/tySGssjGHEMls/L5m
-         Epi/B0lFr91Ei45CM/egghyOdHb2H9gFn1r7DSbJQwyz47+qDOT2fGW8+EpflibkZt3F
-         5Huw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677487397;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=pl3dkRXMmAk1JBFimIqhpxnC6XsfsDXMDQ44PxTCQ/s=;
-        b=fK63eN0C6YlRK2U/nJOBPbkJvbEARvtvM+GvqnIuptaWQus0i1UYjDaMZRzLnDCE+F
-         qshh+WyxoSwr8tKt9w0aCStgSiWpzQ9DPQJr/kmSprweI7VobvgtYbPhQOY6PPewCSxg
-         WN5Yu1tgToSs5ZdymrZmiag4mXz6enJcRBRGt+Tv5Q1HsfW174P0dv83mMq7CYJBqdJS
-         AciOQddr0nVUsCyREWguOj3pbh56385MSeFRf3/8ZzDUgYSnjWKAWIrpn7N9Hfg4U/pS
-         v/sIeTADvLWKRzogIvuUDXNoH9CXgRBHUh5hdp57rCaac/bk2/qz7W40mBTFN32t+JrG
-         G84w==
-X-Gm-Message-State: AO0yUKUfrnWBv44hUuAsEuKrx7fLQQ0TrJT6AhN7TX+yp3Jx/x4CDj5R
-	01kzbiVtTT5tHMdtGtLFf8C8UA==
-X-Google-Smtp-Source: AK7set/Gvtsf5P7zOB+MC4cBLFFsUoGA6x+8HxOLVIaK3IY1MS+lDHx3oVzZik2heawiFH8nJ7qjMg==
-X-Received: by 2002:a05:651c:2228:b0:295:9c2e:7324 with SMTP id y40-20020a05651c222800b002959c2e7324mr7173325ljq.4.1677487397220;
-        Mon, 27 Feb 2023 00:43:17 -0800 (PST)
-Received: from [192.168.1.101] (abym99.neoplus.adsl.tpnet.pl. [83.9.32.99])
-        by smtp.gmail.com with ESMTPSA id i2-20020a05651c120200b002935305ff4asm643079lja.82.2023.02.27.00.43.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Feb 2023 00:43:16 -0800 (PST)
-Message-ID: <3aa78b15-8e6c-9657-0d08-0d0452d51fbe@linaro.org>
-Date: Mon, 27 Feb 2023 09:43:15 +0100
+ d=os.amperecomputing.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hEHzOK+0dYpV0ltEgeBv9S5VqpSxJaAI5Jzyun9Aabw=;
+ b=IqhQjMKsBFePAwitmyshNDtya9E5pkMx9HZoYGEmYViFXnZOUiKf93o/K45bD3FAxjRtTLF4VjmhDW70Fv6jpdVGvq1c+3CiyZ2e/OfCbdIxO1pyq9LXkOpBk8Th+qa25Xd+4nzwKCPnIIiRYcq4FP7pt1Fh7b6p3WCmrDj/Uuo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=os.amperecomputing.com;
+Received: from DM8PR01MB6824.prod.exchangelabs.com (2603:10b6:8:23::24) by
+ MWHPR01MB2719.prod.exchangelabs.com (2603:10b6:300:f8::21) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6134.29; Mon, 27 Feb 2023 13:22:09 +0000
+Received: from DM8PR01MB6824.prod.exchangelabs.com
+ ([fe80::fc8b:5e5e:a850:7f0a]) by DM8PR01MB6824.prod.exchangelabs.com
+ ([fe80::fc8b:5e5e:a850:7f0a%6]) with mapi id 15.20.6134.029; Mon, 27 Feb 2023
+ 13:22:09 +0000
+From: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>
+To: linux-kernel@vger.kernel.org,
+	linux-pci@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	joro@8bytes.org,
+	bhelgaas@google.com,
+	robin.murphy@arm.com,
+	will@kernel.org
+Cc: jean-philippe@linaro.org,
+	darren@os.amperecomputing.com,
+	scott@os.amperecomputing.com,
+	gankulkarni@os.amperecomputing.com
+Subject: [PATCH 0/2] Add support to enable ATS on VFs independently.
+Date: Mon, 27 Feb 2023 05:21:49 -0800
+Message-Id: <20230227132151.1907480-1-gankulkarni@os.amperecomputing.com>
+X-Mailer: git-send-email 2.38.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: CH2PR05CA0013.namprd05.prod.outlook.com (2603:10b6:610::26)
+ To DM8PR01MB6824.prod.exchangelabs.com (2603:10b6:8:23::24)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v2 1/6] dt-bindings: arm-smmu: Use qcom,smmu compatible
- for MMU500 adreno SMMUs
-To: Rob Herring <robh@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, andersson@kernel.org, agross@kernel.org,
- marijn.suijten@somainline.org, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20230217111613.306978-1-konrad.dybcio@linaro.org>
- <20230226173706.GA60188-robh@kernel.org>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <20230226173706.GA60188-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM8PR01MB6824:EE_|MWHPR01MB2719:EE_
+X-MS-Office365-Filtering-Correlation-Id: b1be4bbd-a2d4-4748-b392-08db18c5a0d6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	er4aGU0PqCGl6XUX4dp6vcKwDqDVsIJQ8pw3Vr4lNB+7N4f4YXjCEFeon7mOW+65IeSNDT0JLFGrVrcdt7Fy8v+rhVZ8xN/w6+sBT54zWI5EjPnNQfEafdO7AW9EhCWhFa8LURVxriHRaYVHEQ/FD6h1UfQ+CC97Bt8vKjOxw5IB8rbRz63kKVXUZ7Qel6YGOacAgJTK/KyA7bWp0VpCr37ugnRMtlMeI0+W2wMGhW2bzfcYE70nRO737ypkkT9n9Uv0PuvCP+hrjtoi4c0jhO36blK0JXzFCIjoAYvbJuJbxCvPuHHFQKTH0zEzl2LsgEoipg+uRJsLJhLEtN0mUERs+rVUelHdKjfZ0ZgbOsmVX9+lyR21rIUaMGeNCyoQcgI8xaa0ZHGldRBFHa74COfPzxC9wtaih8J7PALRamNaw0+tPsitKrihKvmGOxoHObsm9ISP67cZ4QYOMcnVev9hSL4I5iqfTWisdEQ+6TxFMPoIPuanEjjfWZEnDb4ddHt3URfFyQUBPnILVnEzpHclAQsZd4xizhLS+J9pPeiRCO4Hsub+ErNBx7ZcftlXdMaG2PHKcvqZtiIy9WBJ4+EywvrSg9Zq/pq3RcTeGwmvBdJe2TMuD44ZbdRjztiMtsfg5tk83Nylk5KdtZKncVaNt3CMsoyF2r62QhkXNAJM/WkHSoRwnT9/ErkSpzjm
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR01MB6824.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39850400004)(376002)(366004)(346002)(136003)(396003)(451199018)(8936002)(2906002)(5660300002)(4744005)(41300700001)(66946007)(66556008)(66476007)(4326008)(8676002)(316002)(966005)(478600001)(6486002)(52116002)(6666004)(107886003)(26005)(6512007)(186003)(1076003)(6506007)(2616005)(86362001)(83380400001)(38350700002)(38100700002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?lj7RxcjC/qptuwKdOJXcQXYoYhd4W1pCi19OVgb9/2zCn6/M8G9Cxsr0wTyD?=
+ =?us-ascii?Q?tbSCITME12lm5g1MBpkKNcNoK81FCpYDlYBoCpl4KbIbwqfkbH7AzrOYq/hg?=
+ =?us-ascii?Q?Dzeb542nLw1mvGLDctxZNXaGHpKilreAr3cxCBNPNQqyYra5oayCkDxgXw96?=
+ =?us-ascii?Q?KSPlYdqijqEVLRifsY0/DaOtWzxU2BGkm6pJv7wN7oASTShnq59YrWhWnNTH?=
+ =?us-ascii?Q?LPrKuRvO5W4IA0Xl1OZDFDcflQBjfkJMPyzI0s3Obx5cMIvNd68dA4D9Z5Ep?=
+ =?us-ascii?Q?MApSSq9+ducWYnWQW4kr22F1aLPvfyFHbUSuk1KUZ2Rx2T9Mpo//lu2h5e2g?=
+ =?us-ascii?Q?l9TFkwv6YYzRTi/OhQZF0Qi+42PlXZwyAncAhn2DFPTjakjcy53CSaR39CsE?=
+ =?us-ascii?Q?6eTj3qp/uXI7YKtq3RFfl8FV2vb8M8UQiNRI0eZrFQP8ilRm3OPRqQDizZxE?=
+ =?us-ascii?Q?PzUUTQg9mplDdQPgSvDTO4VhzgjD/Zs08QcX6sPJ0E16DAVNUS5+Yq8zKiS5?=
+ =?us-ascii?Q?lpJXNVtcoSIJyGDasLekNUFtR0QFsu83USp3bKoYqO58AC9TGer2vh0TSHSd?=
+ =?us-ascii?Q?KcrsQ6M+BCAX5zvXCjn21JrzMbCqpZ0Hq8oaERCi7E1jzoAWNrUe9IxUaha8?=
+ =?us-ascii?Q?7V9oXMsQTVzGXa+Qw5Nhx/pqBUUo7yhC0scpkKMlSh2ejmggiQA10tWdUNGO?=
+ =?us-ascii?Q?yrPIwf93HNbZCpCcN40T8IBA9cd3HukkWaawOPJ2IDFvrzraMfqnx011iB+x?=
+ =?us-ascii?Q?VW8BA6lLxSTeNBMDgMLjC+V7i3rJR1f2r8eVLn1ULmI/tHVJEyjcg+8Gkb2k?=
+ =?us-ascii?Q?sH2NavmtkIZZVFWuM6z54R78Mbs5Vb+hNdAkjrEyCrDj35jnwkip3vygodqw?=
+ =?us-ascii?Q?0qL6bh3T89t7TcTwBftiiGhYP+xTKRQsV9l7l+g1MIsmd/ayvrGkJMawNezj?=
+ =?us-ascii?Q?rb3Xij6C5Mieo6OV5dwY1hov3H2QrigwO4AiyUeaQ2GGgBi+Be9feWLj+7iW?=
+ =?us-ascii?Q?NrZs6PlkTrui++Qo5UB2YZKumkrT4YkLoV43pJFba+QhYycFAmnIJ5KpA6Np?=
+ =?us-ascii?Q?PKKKv/0rGlePtiCbBIAv+tPq18ltbXMspTfFAGkjtY54Xs0L97IoebjTzilD?=
+ =?us-ascii?Q?K8Cm2Lkq4WQT0kNgWE59vpeWuWp6Z3mPaerzHNe4KrVqHH6Wh+upXZUnjP3F?=
+ =?us-ascii?Q?atjRW3+Np6eLcXQVWqrmt7WaQedCwBk6v21Siffz/6Z2y31Dx0Yr4oFpOy12?=
+ =?us-ascii?Q?TVXUCQ7McgxthN4gZ+JmAPrQ6dnc8LXPKwN3fp3i5bPoiRwkLlZSAA1BViQI?=
+ =?us-ascii?Q?hrHOBIZw0dEAPBYMdQl1CKFuxWT+Iey1X5ZSmSEgVhw5EjM+dXQP81LVtIIm?=
+ =?us-ascii?Q?6i5swAOteGNp7zF2u7rBV5kWg8lZyBTaVN5ZaKjunl0C74wpaDZekJB3/yUe?=
+ =?us-ascii?Q?gUl0qn28r6AiicGCQ7C/++DCjaA4rxjcHsseS+SPh958ljf69MWoJJFV3WwI?=
+ =?us-ascii?Q?pGkogHFWb6/9SN+wRHFrgkr17VgRU7bjr8yGIHfK6eouiSnheHthz7v7LGjj?=
+ =?us-ascii?Q?myruoLRD44VvgQgOOg7MUxRSjwfuzU0e6jduOdHdRyuNoJpvF+Rg/j69DuZc?=
+ =?us-ascii?Q?AzBOie8DOdz+p1xD2YHPSdw=3D?=
+X-OriginatorOrg: os.amperecomputing.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b1be4bbd-a2d4-4748-b392-08db18c5a0d6
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR01MB6824.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Feb 2023 13:22:09.0525
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3bc2b170-fd94-476d-b0ce-4229bdc904a7
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Q6cXfBwqFawXe29bX34iQptQL1H2BGlhFWB3es7UcFonVq+tuuuXLcxMqu5HX2WtaMZX3TYy8O4NorBIMHpBJlLQGVq8bs+NszNubnZmO5s26wVJrOzVgHyW05/GXE1U
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR01MB2719
+
+As discussed in [1], adding a helper function to configure the STU of an
+ATS capability. Function pci_ats_stu_configure() can be called to program
+the STU while enumerating the PF, to support scenarios like PF is not
+enabled with ATS, whereas VFs can enable it.
+
+In SMMU-V3 driver, calling pci_ats_stu_configure() to confgiure the STU
+while enumerating a PF in passthrough mode.
 
 
+[1] https://lore.kernel.org/linux-arm-kernel/20230221154624.GA3701506@bhelgaas/T/
 
-On 26.02.2023 18:37, Rob Herring wrote:
-> On Fri, Feb 17, 2023 at 12:16:08PM +0100, Konrad Dybcio wrote:
->> qcom,smmu-500 was introduced to prevent people from adding new
->> compatibles for what seems to roughly be the same hardware. Use it for
->> qcom,adreno-smmu-compatible targets as well.
->>
->> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
->> ---
->> v1 -> v2:
->> - Add this patch, omitted previously (big oops)
->>
->>  .../devicetree/bindings/iommu/arm,smmu.yaml        | 14 ++++++++++++--
->>  1 file changed, 12 insertions(+), 2 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->> index 807cb511fe18..4d7f61700cae 100644
->> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->> @@ -75,9 +75,19 @@ properties:
->>                - qcom,sm8350-smmu-500
->>                - qcom,sm8450-smmu-500
->>            - const: arm,mmu-500
->> -
->> -      - description: Qcom Adreno GPUs implementing "arm,smmu-500"
->> +      - description: Qcom Adreno GPUs implementing "qcom,smmu-500" and "arm,smmu-500"
->> +        items:
->> +          - enum:
->> +              - qcom,sc7280-smmu-500
->> +              - qcom,sm8150-smmu-500
->> +              - qcom,sm8250-smmu-500
->> +          - const: qcom,adreno-smmu
->> +          - const: qcom,smmu-500
->> +          - const: arm,mmu-500
-> 
-> 4 compatibles seems excessive. Is adding one that helpful? Is 
-> 'arm,mmu-500' useful on its own?
-Yes.
 
-per-soc compatible is there for per-soc quirks should there be any
-qcom,adreno-smmu enabled per-process pagetables
-qcom,smmu-500 matches the qcom smmu implementation
-arm,mmu-500 matches the smmu driver as a whole
+Ganapatrao Kulkarni (2):
+  PCI/ATS: Add a helper function to configure ATS STU of a PF.
+  iommu/arm-smmu-v3: Configure STU of a PF if ATS is not enabled.
 
-> 
->> +      - description: Qcom Adreno GPUs implementing "arm,smmu-500" (legacy binding)
-> 
-> Perhaps fix the existing typo: arm,mmu-500
-Ack
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 25 +++++++++++++++-
+ drivers/pci/ats.c                           | 32 +++++++++++++++++++--
+ include/linux/pci-ats.h                     |  1 +
+ 3 files changed, 55 insertions(+), 3 deletions(-)
 
-Konrad
-> 
->> +        deprecated: true
->>          items:
->> +          # Do not add additional SoC to this list. Instead use previous list.
->>            - enum:
->>                - qcom,sc7280-smmu-500
->>                - qcom,sm8150-smmu-500
->> -- 
->> 2.39.1
->>
+-- 
+2.38.1
+
