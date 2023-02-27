@@ -1,125 +1,242 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2047.outbound.protection.outlook.com [40.107.93.47])
+Received: from DM6FTOPR00CU001-vft-obe.outbound.protection.outlook.com (mail-cusazon11020026.outbound.protection.outlook.com [52.101.61.26])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE6A0746B
-	for <iommu@lists.linux.dev>; Mon, 27 Feb 2023 15:02:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 417132F3A
+	for <iommu@lists.linux.dev>; Mon, 27 Feb 2023 16:42:42 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WQeTYf9iL6MzD8jGBZKY4LRRLl/BkrbUP9fGKxN9Y54RtJOx+1U+w9H9wNKYjsrKbn+uRyfAhGyzMvnlVhAGw02Y4VCFZo3vyHoEpijCan+oU8RL3/tN2t3gSWhao4T0VtE2QNpp9BmLST629h5UGa3DUpWeKDKFiPBukDjnDuBY8PZRR+ua4vZPFJv8qoKAuOtOKMAZvM6m6HnSNF/nhOH54TWO61Yqh41Dt5IXRa9qjczbFwo9YivMUu6GhI1cXOW2HjvnvUq0HrRQwF3JSNnGqzpVnt2lofzEGd3i5YkPwB1J7QieKxhN37hqJaLu0xavQ4KvYiy08gOY0tx1pQ==
+ b=I2CumN9YzvN0hG49YQ3LKtIQEYb1wwgBOEta9CANCMvA4MAPcy1MC/KeKESPCjJZSX8OMrQy5fWal8Je4lDwFPN/ij6CSrCiO+8EHyaNRfPSsunLVtmo9rqAqbOk+cTqhqqlVRbwHZHt0mD3Q8aihFEAVnONH8M3Y5e9X/1j28cy5Vd3ZkdcxhlSnVwavMeKbmSkQNgLCMs7a+TyH3Xj+DMLepZSB9Sjvs0k/YcWKSgds5K4NPvIYSy5O6gzJbyCIPtoeA+MP96jz0BFiROBXlQ4ifhYhS/rtkCgnZJthqt/yX2Hj/2Ln2NTHfow3uU259URwhoRmxIT95Ju6HqfeQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pr72OOHKT6UrlUQ9tz/heDjryEmN2wwxGocpsgtHSXY=;
- b=DMiOCRrfhA0KNsvLwSJ3RWaG6Y9/fIbWAEUfxsD2r9Aid9De6hGS/GP1HmLOhIjwonQ0uFl1s4tO0Ig1t7v/LT6e95DHsGrMom7VouM4W/9m0/mcB3FTQx9Beu1vZyXlOZ46Nc2Gz1uyVYpQvmNviRvlJKQS5Mjx0gk2mQkxaeYD4aK+Pjzpjyn3LcirFOSXxNG4jbWF5EJ1MYl5MD9ynKyaOdgEJqUnsR0t0yweVJhC3bUHlMldF0WFBC9BBu19Asjz4yH5hChoF0LyKXTeaHX2XghM4V1blfCBNBqgfYelNoSJgnTMQs9MAbzRR+qR1ojh6V7JdFFucAFuBv0S9w==
+ bh=huZNkWlTjjQ55cVmPorFyLqWXcDKXvQLcAbdL1NRNnM=;
+ b=hMfiBZXc/WRqnh6vgH84SwRMEYc4fBcgirTsiOpwsDfmnUZImTAat6O56pEcJ9mqzLKYFQJiz+c1AeWvVNUVJFCVUbpzHgBKN9XyL+KbktAvGbDBUxYR5PGHwysUdvO1swVrjljnYz751T5ljOaVv0X7VqauFR/nmssWOVZ9inUuRfIczA8rwznz8UYa2aSOKubVNYAUZwKIZ0BYMs1XMJbZB0T40IPrOScHyNlLNmfoNr6d+t7KZfuaqoFI7er9a5Axi4FHb7sD8cl1v9XAExujJHLmEtsQUCgnLa/c1314/0wpkcfLStm4UCzUO1l/Fjg8AlS976Xy0gbqEDfiPQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pr72OOHKT6UrlUQ9tz/heDjryEmN2wwxGocpsgtHSXY=;
- b=fDzynzXcnyFeDcPr5TXUxOU3qDUCQ12mb0RvogVklGUxMhJMrAH/l96F9W2aCJK7GFoiT+UrrYVfecq87TR0gcT9ZfmQEtFw5/D7IBoUO5dwssIkXZ/aVA9F0OXaG1HQy204AY2wWnJ1JMx+M9UPJU5VNmZmVBK3sfbutgTymslWt/5Kp6G42hRmu69RdDm5VkIykOdVvf6oo622dJISZii7YB4e335VIwOpm3Sq7QI4VIS0+jgeFCMfD75LsbqoRM8ZPZwiQZ+5T7zgyAUUt4N6g5TIVlY5qOYumgoHILLLvutQJxJsX01SUgm5HtJTX5DAkaDPsQshO7IxRoU3iQ==
+ bh=huZNkWlTjjQ55cVmPorFyLqWXcDKXvQLcAbdL1NRNnM=;
+ b=SBM5yc6CNzneLF6DSXHlB88zi5Msr/B0x3yonwNmAy/G4dtwoVKUrjwUip6VkJ4Y5mZHXaNIRHO9VaAEDFU2CykHh358hupqFzpvafAgtAGFB9I40F8LywcL8efFNZPsUGmsrdKXKnWSc4gqmwySM4JyWkHFQv4EK93+j7VLlW0=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by BN9PR12MB5354.namprd12.prod.outlook.com (2603:10b6:408:103::22) with
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+Received: from DM6PR21MB1370.namprd21.prod.outlook.com (2603:10b6:5:16b::28)
+ by BL1PR21MB3043.namprd21.prod.outlook.com (2603:10b6:208:387::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.26; Mon, 27 Feb
- 2023 15:02:33 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee%4]) with mapi id 15.20.6134.029; Mon, 27 Feb 2023
- 15:02:33 +0000
-Date: Mon, 27 Feb 2023 11:02:32 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
-	linux-kselftest@vger.kernel.org, kvm@vger.kernel.org,
-	Yi Liu <yi.l.liu@intel.com>
-Subject: Re: [PATCH 14/14] iommufd/selftest: Add a selftest for
- IOMMU_HWPT_ALLOC
-Message-ID: <Y/zGCLb5aGmxWPHu@nvidia.com>
-References: <0-v1-7612f88c19f5+2f21-iommufd_alloc_jgg@nvidia.com>
- <14-v1-7612f88c19f5+2f21-iommufd_alloc_jgg@nvidia.com>
- <Y/uzM8PD/XY0WI7f@Asurada-Nvidia>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y/uzM8PD/XY0WI7f@Asurada-Nvidia>
-X-ClientProxiedBy: BL0PR1501CA0032.namprd15.prod.outlook.com
- (2603:10b6:207:17::45) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.4; Mon, 27 Feb
+ 2023 16:42:39 +0000
+Received: from DM6PR21MB1370.namprd21.prod.outlook.com
+ ([fe80::caf1:81fb:4297:bf17]) by DM6PR21MB1370.namprd21.prod.outlook.com
+ ([fe80::caf1:81fb:4297:bf17%7]) with mapi id 15.20.6178.004; Mon, 27 Feb 2023
+ 16:42:39 +0000
+From: Michael Kelley <mikelley@microsoft.com>
+To: hch@lst.de,
+	m.szyprowski@samsung.com,
+	robin.murphy@arm.com,
+	decui@microsoft.com,
+	tiala@microsoft.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: mikelley@microsoft.com
+Subject: [PATCH 1/1] swiotlb: Track and report io_tlb_used high water mark in debugfs
+Date: Mon, 27 Feb 2023 08:41:46 -0800
+Message-Id: <1677516106-85971-1-git-send-email-mikelley@microsoft.com>
+X-Mailer: git-send-email 1.8.3.1
+Content-Type: text/plain
+X-ClientProxiedBy: MW4PR03CA0127.namprd03.prod.outlook.com
+ (2603:10b6:303:8c::12) To DM6PR21MB1370.namprd21.prod.outlook.com
+ (2603:10b6:5:16b::28)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BN9PR12MB5354:EE_
-X-MS-Office365-Filtering-Correlation-Id: ac99f7a2-8293-4772-eac3-08db18d3a7a1
+X-MS-TrafficTypeDiagnostic: DM6PR21MB1370:EE_|BL1PR21MB3043:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9c03b9d2-8d63-4cc7-a2a6-08db18e1a33e
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	GP2xv1K2Vrm3TfjsROQWEZgrBt4I6JJBjokMz1a3+JX5UpbVYme/qStgILoelLTJaAyiBcBbf8rnVT2ttj2Lf/H+/Rij8qCtmgcup7byaJ7Caklv+TCCGVXlqJLHe61AV6ZFDroZbNiKXkYFVM+ib01aUpHoahmgm6CW+l+hbhrK4gbsRDY20nFjXd9GYgPm0nV1hDAeZI7hQ0payrZrelbTV7agw5MgPx1OY1NAuUgfvBxQj658LNcBfmxojrE3Rfx6JDLp7RX0XBvSelcNIWGpBb0SiuSvCLfAfToob4oYTN75eq7OPCan0LDTZltsrgrsduhvSmeVMUdzpykgl+GdnkCtNo3Ox1kf3dN7stG5xK48Blx4jO5njGdcD4AGnNJXqUuM3ZQTac8A/aC2ZgqH2fyx0521Rj2VDHF1LznKWf2Gf7D3Olx7xhnow/ao4AcZut4qpzvr+EnlmNUIm9aT3myS7j4RhxzPy6AGaNhrNOCTJBfqwYvEmsqzWVNfauU6AkwCl9Nv5acUsRDrackfZA8eucRm8SR9yB00FegLyWbdcm+LMNJH3HhsZNs83P1uBgvTYX1KXsDg7IpHKbaaYTbpXIBCNIjAiXRUaOe8cQI09ar9K5FY/ZdlpQDsiJ25lL6xRMEjOqIFsltwBA==
+	BILJE99M63Pv3DK4f3dblSGLsw1nUfyaFrzyheHagf8CjR3H6eW1zuxVLEYBVz3qvMnK4Kjb3QuqPpg50D3O+W+RtNaFuic8F2so1gWamTQS3K5a8/YAYncmBlTmE5GSi84g287iuCRWni7YdkMbxuCt2wL+rEs66RRi57JZGq+oafRG88VHZylvi5iDPgtOox57xyDVTTtcUiqPnwRAbDi9uHh6I2rm22SsTI4WV5t3l67Tl1PIK37UXAXMnxZ93lBdR6wwyGvXtKb9gRLTfGqk+fqOqG1t3PAIK35KgfJpFf6sQr5KAcZ+aNSMuaigbWfXAL4OAgLtN7SkXJglnfeKeYDrfZ/8p95il+w5p7CzAMOgod2jlhyFbCYax5J49V3KeV5RD8cgV+RjzngA/H+7CJchb3bCIcA5SPFe+uuZv5Q5GL6K4nM9+coA3jt4Livsj+7sjZdORD2QZbW355GtnmU1Ff4CFB0qNH3lMlL9Y+aaZUoiyR+CGm5AVHCN7VzowcFuyfLayKOjVPeGOv5BEMH8zgzyvWC0kzWSve4bYNmDQnI2a1WJBiqk5MEgecgQQkYdV9NMouIoG16BdLcCw2etQa5+qlhUQNvtxjT3TFI7Z1e2uk1oIXFVwdTRy1OaGmRr0VeGQTiGlLwZjG6FpNJEtFaPsbAnkmHYb3dJdyy4QuRcpEiehD4wzpB0rHoxoj/Q8Gc2bLlSFhHVDVCjlyG8ZeLHvv5XO7k0nTp5pJ4ajwGprpTajyj0F1fP
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(376002)(136003)(396003)(366004)(346002)(451199018)(6862004)(8936002)(5660300002)(4744005)(66556008)(66476007)(66946007)(8676002)(4326008)(2906002)(54906003)(6636002)(316002)(478600001)(37006003)(41300700001)(6486002)(186003)(6512007)(26005)(6506007)(2616005)(86362001)(36756003)(38100700002);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1370.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(39860400002)(366004)(136003)(396003)(346002)(451199018)(82950400001)(82960400001)(2906002)(316002)(478600001)(83380400001)(5660300002)(36756003)(86362001)(8936002)(8676002)(66946007)(66476007)(66556008)(4326008)(38350700002)(38100700002)(41300700001)(52116002)(6666004)(107886003)(10290500003)(2616005)(26005)(186003)(6506007)(6512007)(6486002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?zKU1KAZgGdVXw0DHs2duATyhWiTSRktqdOsYmrb42e5yg/FyLF4CU1Y/Fa4O?=
- =?us-ascii?Q?2jl4NCBH9Ch5ylPKVwcGTN4MNlDIlGp8hCu1SNGhd5A2nYBXUDdTcFlWH9Fi?=
- =?us-ascii?Q?jBMlJjM7wFzy7jMbRNXY/iP6c+HE9L+IB0YHt2V5b+caCyJIT5myTWudU6R4?=
- =?us-ascii?Q?AdxqNoSPFClxG4GheiSlKHYdALoYH7CvyrDRKR4+IuENC57Dr64yvmKogdEw?=
- =?us-ascii?Q?lxdbnEh53M5mPDz5BZLW8F1mPHdwpNocJzesOrmUiaoNfQ5oRywC8Y49s1Mb?=
- =?us-ascii?Q?sHX91oO295W63ZWuZoXNmT0mEycafLAbIfuQzE9zoc1uQ6AuuV62De7tOR5v?=
- =?us-ascii?Q?0x6D4Es5YQtMvxKgP9JvL7Yznpjd+W8EMQ1kfGGvxsFR9quQa7G7J0mhnUck?=
- =?us-ascii?Q?9cu20OujlXzDe+YgkU2J35jXNnmZmdHlrJAE3U8RCY7YompZf2GAyS2jjXLi?=
- =?us-ascii?Q?sQKprtbePZO3nZBL91ScH0BhdgdMsITEvjU3K5ofXZbHbnDHFo5LKo2SmHJU?=
- =?us-ascii?Q?k8qZQ7mOEF+tkNnIMV/Qteh4j5p0EPZ/a1yCoY3wv2JgQITJ38Wpb4KcN1OV?=
- =?us-ascii?Q?eCBq+tKhh3TElDP7h+uTxLfuq1JJnZqkzp3SufkmR0CXZ1Dmf6BMHaWCX2HO?=
- =?us-ascii?Q?CXL8v1VljaVG5JuPL93y2pAhxsOZAe2sSJwPN6ziblen/khk1+R2LDmVlomS?=
- =?us-ascii?Q?DqLPssXm89cWsjiNHVUYW2aqBQbwD575aQ/NL01No6fzAyDl9WcSvhRbDORI?=
- =?us-ascii?Q?YIMPyDMOw6hicJhSScVI1AOtxqwV9nPXwwIhpOFyXTnvf8YSj+W277cm5PXh?=
- =?us-ascii?Q?ndvTST/PTMfAWDHDq1cLMnhh69iawmjNY4VF9Kk6dNWJ6VLtfnk5kEPJnJU+?=
- =?us-ascii?Q?/WCdp6h0z7mH0xPvTDy3Kq5XdtnU8xXy2Yp6tlqv4eLfGkSUzF8dFX5jOGtc?=
- =?us-ascii?Q?bvAypDeL5T80riNz++zR7QfIzN2QXRFof1aMpjT9I+ue/P2xP8qdoErl6TsN?=
- =?us-ascii?Q?/Nuiygvi96h3K89XifPn9p7J1BHYf6Q0wXc4O/lTBMfFETfq71C7tAog4adN?=
- =?us-ascii?Q?cLMydA0lhm7vL63clSD0aSum6wksbHs+MSgBDsTPH2xGK/sl9E+vL3Cn4Z+g?=
- =?us-ascii?Q?k40zi6BAE6+E62Vrygz6RZu+B9+DEOUd22uUM15a8jn2s8u5QrbUjRjN7mkz?=
- =?us-ascii?Q?BkprldVyMIDdnmkEeek24HylroM/zMQkvPyTlO3zY2CphkUn/ubAAl50tpya?=
- =?us-ascii?Q?FonhoYIJtalqOGg6m2egTjTeh45XQodpVjbJW3pI6Ah3ikLoF9AWlkOeNors?=
- =?us-ascii?Q?hcl7Ra1YcExyF4w/Xuc5kN8gLradgQhHYSVFrexd5FnCPasIRQFZfr4CIGLo?=
- =?us-ascii?Q?p3HZd7ZtIQH2OkiCGHBlPsfNPn/vVbXHbnPmr3V2rs6fFDj3j35XUzjDSH4Z?=
- =?us-ascii?Q?6v0GtdTS3RCfVuuzLaxY6k08V49UUKtl6Y//G/WyCcXHvtJ7YLPNYFQ4Dzbc?=
- =?us-ascii?Q?nQrVIZe7AxYzxqakJvkaqzpoMMh6AB29VGSDvaIApJ87qLTYUXWQoIsk/a4Q?=
- =?us-ascii?Q?Sx9AAr3nJ55dHZm5aMCDv+6/vkhV6kwRaARPefi/?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ac99f7a2-8293-4772-eac3-08db18d3a7a1
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+	=?us-ascii?Q?rVLIdHLCHW/trOGjAKgWM+BmZUCCoZKYZi+3FKgKEZ/Dzvl1NrXbyTZIhJY/?=
+ =?us-ascii?Q?+bDe3O7k0fBaXyrxv7MvltH3h6nd8cl6uolUsVJRLFYwHV2KpceybuhSQtJ3?=
+ =?us-ascii?Q?UPy56TuAw8FaT9vw2MR0rWspZKH/a9QNb7TutO2664WYYKAadFqnZGYiKA8N?=
+ =?us-ascii?Q?A/DQ/mmDMPOS7G5flDGIwLZ7ok10FdJdo1/FkkHsZjnhXMRD2AH1sa0/7BI/?=
+ =?us-ascii?Q?rjIUm7fFw5npue7AVEsIFMtcLlO6E97P0jfj7lWfEiK9v9eVAWIKTmhozzpX?=
+ =?us-ascii?Q?6AMC4umRIUr33ksVKGJavlsyTuNo5ID31sFJS+M1rjawY93XxxxZfCfQjM+N?=
+ =?us-ascii?Q?Xc5GJlLIwz9O+cg5MizL95oC+zngdMr3sUt7hdyR9XcURKSbt6Ief35uhofE?=
+ =?us-ascii?Q?wkgZ9kvt/BUZR4pLdwB75Kc/gAaAjCnFSF6FBeS7GHJn9GO/R6FlGaBDBlAm?=
+ =?us-ascii?Q?9ZbyTWiZ+VipMm5mBHlh3CCkaIKhgZNYYyILtAmdP2FzeSXsSmn1bTAS+8qd?=
+ =?us-ascii?Q?1q9ciK75kQ5vUrjzIgKaO44eG4c+vKsqFC/tRFgADe6CE5D6k4e1bCNRxCuD?=
+ =?us-ascii?Q?NvykeVxasfq614vmRSWQDA4sTDcIbbr0tIbbVT17k+SPMJzXtzsB8kqA90Cz?=
+ =?us-ascii?Q?hgrOH9MqqRh8r6lsnoqzKfctQv0z4nqjzocHYRaJfushFubJtgFDESxqNF/W?=
+ =?us-ascii?Q?GtB6vR3Nzg/ooeLIPs6rURCMPgBvCtVsgmTt0YnDpH5SmF1DXVPafdGeKxsq?=
+ =?us-ascii?Q?WNBkFlTOF60/5a+FPlLs3OjoJ2jixjPeY57n/MyMu3JEqRDhFuPAIfgIapq6?=
+ =?us-ascii?Q?Yb7NNSMxLyzXCTxPHS/e9iweCECo0a+rsBfkmQcITha7/GJ/VnU90nZSlTG3?=
+ =?us-ascii?Q?eP+rn1C5i49XglX1O3GQsfCP4v2N8ea4Vvvjzve2fppQLArLD2IziG6GphFy?=
+ =?us-ascii?Q?um69yTFhiSZNI9DzfXG1JoE1NEvyBalyT2LrgE3+vTHBwvISCc8MMdO3ddKw?=
+ =?us-ascii?Q?7jYG31m6/9txPCUykQ1xmu8lgZOuHHomNdR7IvN4JEWK1a2JfJZJKsREU1WD?=
+ =?us-ascii?Q?xSyrm+h2pOHKJBmiS/87zkebOlMgtJQyYtxXiIYP+dfhReUEDDSWv76ZQlZQ?=
+ =?us-ascii?Q?6XCODPvZn4HlEn/ZH89TlA2bbWxo8FUIShv6vc3RDCRY66pR1XVQy6LM3jJn?=
+ =?us-ascii?Q?CokaY1Jb6F1saBMkKqO9fgEovgSJ//XJQFDn7Hkx7khX+u2MivaxMtMC2WM/?=
+ =?us-ascii?Q?Dr+z7YksjEMQm+eh5FktnDgHADPh0/6Apfqb8FiQ7ORerGDgf0F7uQY6RrSc?=
+ =?us-ascii?Q?TO642jC6JFKlzcr/RzGEhwHQuQE9h0M13xKyvqnwUUtPZRSOhYQltEpMbpIY?=
+ =?us-ascii?Q?dDd0W9sBiR6BuubF2lCLKnsr3KCCYhkMcSek/UTnmaSaUNKktZWWui0A08bg?=
+ =?us-ascii?Q?NPw08/CQbA60hFnucQEpfRYHUa66ClKrtCDttv+xkmstYwbxQBjWE97PaCtI?=
+ =?us-ascii?Q?p0el11OJgCi6F6l651ASsS/4sZHYLQ9/Cz7E1iBLH0LEVlrEozLAe83GZn0c?=
+ =?us-ascii?Q?vcvwS18LV/18o592Ghp5nxBdxbZPtljI4VRFOqwu?=
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9c03b9d2-8d63-4cc7-a2a6-08db18e1a33e
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1370.namprd21.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Feb 2023 15:02:33.4816
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Feb 2023 16:42:39.0275
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: I6b04TjJCbFILpgsNv08vE+MsMXNztSQwl9HH6JbFDjwoemv5oBlD7piNQRX4ANc
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5354
+X-MS-Exchange-CrossTenant-UserPrincipalName: L8pkHV0RJuvRbbXEhmSEoJW5v0IEkkvxnemokXMioF2+VRuyt6bPBhfCVPa2ljdwxWHKbDM9DqalvwuEjCn9/g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR21MB3043
 
-On Sun, Feb 26, 2023 at 11:29:55AM -0800, Nicolin Chen wrote:
-> On Fri, Feb 24, 2023 at 08:27:59PM -0400, Jason Gunthorpe wrote:
->   
-> > +static int _test_cmd_hwpt_alloc(int fd, __u32 device_id, __u32 pt_id,
-> > +					 __u32 *hwpt_id)
-> > +{
-> > +	struct iommu_hwpt_alloc cmd = {
-> > +		.size = sizeof(cmd),
-> > +		.dev_id = device_id,
-> > +		.pt_id = pt_id,
-> > +	};
-> > +	int ret;
-> 
-> Can we do "s/device_id/idev_id" to differentiate it from the
-> "device_id" being used for a selftest device object?
+swiotlb currently reports the total number of slabs and the instantaneous
+in-use slabs in debugfs. But with increased usage of swiotlb for all I/O
+in Confidential Computing (coco) VMs, it has become difficult to know
+how much memory to allocate for swiotlb bounce buffers, either via the
+automatic algorithm in the kernel or by specifying a value on the
+kernel boot line. The current automatic algorithm generously allocates
+swiotlb bounce buffer memory, and may be wasting significant memory in
+many use cases.
 
-I renamed the selftest device object to 'stdev_id' instead
+To support better understanding swiotlb usage, add tracking of the
+the high water mark usage of swiotlb bounce buffer memory. Report the
+high water mark in debugfs along with the other swiotlb metrics.  Allow
+the high water to be reset to zero at runtime by writing to it.
 
-Jason
+Since a global in-use slab count is added alongside the existing
+per-area in-use count, the mem_used() function that sums across all
+areas is no longer needed.  Remove it and replace with the global
+in-use count.
+
+Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+---
+ kernel/dma/swiotlb.c | 46 ++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 34 insertions(+), 12 deletions(-)
+
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index d3d6be0..2dc501e 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -76,6 +76,9 @@ struct io_tlb_slot {
+ static unsigned long default_nslabs = IO_TLB_DEFAULT_SIZE >> IO_TLB_SHIFT;
+ static unsigned long default_nareas;
+ 
++static atomic_long_t total_used = ATOMIC_LONG_INIT(0);
++static atomic_long_t used_hiwater = ATOMIC_LONG_INIT(0);
++
+ /**
+  * struct io_tlb_area - IO TLB memory area descriptor
+  *
+@@ -594,6 +597,7 @@ static int swiotlb_do_find_slots(struct device *dev, int area_index,
+ 	unsigned long flags;
+ 	unsigned int slot_base;
+ 	unsigned int slot_index;
++	unsigned long old_hiwater, new_used;
+ 
+ 	BUG_ON(!nslots);
+ 	BUG_ON(area_index >= mem->nareas);
+@@ -663,6 +667,14 @@ static int swiotlb_do_find_slots(struct device *dev, int area_index,
+ 		area->index = 0;
+ 	area->used += nslots;
+ 	spin_unlock_irqrestore(&area->lock, flags);
++
++	new_used = atomic_long_add_return(nslots, &total_used);
++	old_hiwater = atomic_long_read(&used_hiwater);
++	do {
++		if (new_used <= old_hiwater)
++			break;
++	} while (!atomic_long_try_cmpxchg(&used_hiwater, &old_hiwater, new_used));
++
+ 	return slot_index;
+ }
+ 
+@@ -685,16 +697,6 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+ 	return -1;
+ }
+ 
+-static unsigned long mem_used(struct io_tlb_mem *mem)
+-{
+-	int i;
+-	unsigned long used = 0;
+-
+-	for (i = 0; i < mem->nareas; i++)
+-		used += mem->areas[i].used;
+-	return used;
+-}
+-
+ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 		size_t mapping_size, size_t alloc_size,
+ 		unsigned int alloc_align_mask, enum dma_data_direction dir,
+@@ -727,7 +729,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 		if (!(attrs & DMA_ATTR_NO_WARN))
+ 			dev_warn_ratelimited(dev,
+ 	"swiotlb buffer is full (sz: %zd bytes), total %lu (slots), used %lu (slots)\n",
+-				 alloc_size, mem->nslabs, mem_used(mem));
++				 alloc_size, mem->nslabs, atomic_long_read(&total_used));
+ 		return (phys_addr_t)DMA_MAPPING_ERROR;
+ 	}
+ 
+@@ -795,6 +797,8 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
+ 		mem->slots[i].list = ++count;
+ 	area->used -= nslots;
+ 	spin_unlock_irqrestore(&area->lock, flags);
++
++	atomic_long_sub(nslots, &total_used);
+ }
+ 
+ /*
+@@ -891,10 +895,26 @@ bool is_swiotlb_active(struct device *dev)
+ 
+ static int io_tlb_used_get(void *data, u64 *val)
+ {
+-	*val = mem_used(&io_tlb_default_mem);
++	*val = (u64)atomic_long_read(&total_used);
+ 	return 0;
+ }
++
++static int io_tlb_hiwater_get(void *data, u64 *val)
++{
++	*val = (u64)atomic_long_read(&used_hiwater);
++	return 0;
++}
++
++static int io_tlb_hiwater_set(void *data, u64 val)
++{
++	/* Write of any value resets high water mark to zero */
++	atomic_long_set(&used_hiwater, 0);
++	return 0;
++}
++
+ DEFINE_DEBUGFS_ATTRIBUTE(fops_io_tlb_used, io_tlb_used_get, NULL, "%llu\n");
++DEFINE_DEBUGFS_ATTRIBUTE(fops_io_tlb_hiwater, io_tlb_hiwater_get,
++				io_tlb_hiwater_set, "%llu\n");
+ 
+ static void swiotlb_create_debugfs_files(struct io_tlb_mem *mem,
+ 					 const char *dirname)
+@@ -906,6 +926,8 @@ static void swiotlb_create_debugfs_files(struct io_tlb_mem *mem,
+ 	debugfs_create_ulong("io_tlb_nslabs", 0400, mem->debugfs, &mem->nslabs);
+ 	debugfs_create_file("io_tlb_used", 0400, mem->debugfs, NULL,
+ 			&fops_io_tlb_used);
++	debugfs_create_file("io_tlb_used_hiwater", 0600, mem->debugfs, NULL,
++			&fops_io_tlb_hiwater);
+ }
+ 
+ static int __init __maybe_unused swiotlb_create_default_debugfs(void)
+-- 
+1.8.3.1
+
