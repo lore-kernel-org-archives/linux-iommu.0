@@ -1,53 +1,152 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 627E079E0
-	for <iommu@lists.linux.dev>; Mon, 27 Feb 2023 18:18:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0861BC433EF;
-	Mon, 27 Feb 2023 18:18:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1677521891;
-	bh=QiQzYSGEYbDulghC9uA026aE6bWEsEXAa4zZo+ohEvY=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=E3IhVg6k32sq0J+Un2fg9lf0m6o7vudDkrmKK5C3vUwH9g0FYKfosA+if3n3YZ1/t
-	 niFCFs1t5iANq535xt84kLKn9DptOA6PUY6lgasTdL7W5idOy0DdpTwGW+cJxH4Z0s
-	 NPD+kN8J2l1ihIyz4S4MGgXid7S0Z8Mq5TVE78DwaaV0cFwb2eWda8YNPL3c/L79kQ
-	 TFk+tuYODZbSc3h1uf2ywD9sNUwfDb0EfV2KlNxfc5x2kk87hRAv7zyq8utVTkCPfL
-	 hlis56vpfuEjXcpbZns8SAn0U/fsrv4idmTe92FWZuJGhdDmE3gTttYFncd+GcMiv/
-	 odlRTKF2Lq96w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EC5CEE1CF31;
-	Mon, 27 Feb 2023 18:18:10 +0000 (UTC)
-Subject: Re: [GIT PULL] dma-mapping updates for Linux 6.3
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <Y/yz1im8klkg0J84@infradead.org>
-References: <Y/yz1im8klkg0J84@infradead.org>
-X-PR-Tracked-List-Id: <iommu.lists.linux.dev>
-X-PR-Tracked-Message-Id: <Y/yz1im8klkg0J84@infradead.org>
-X-PR-Tracked-Remote: git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.3-2022-02-27
-X-PR-Tracked-Commit-Id: 9b07d27d0fbb7f7441aa986859a0f53ec93a0335
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 6ffb575bebb983b982240372ecf976188451dd1c
-Message-Id: <167752189096.27343.9543390132973660152.pr-tracker-bot@kernel.org>
-Date: Mon, 27 Feb 2023 18:18:10 +0000
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 511FE79EF
+	for <iommu@lists.linux.dev>; Mon, 27 Feb 2023 19:29:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1677526190; x=1709062190;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=v3mSa++3w5di4VuVyxMCx7ivKLHS0LlRNUH1BB+AgB8=;
+  b=ftgu/xX5wOyUGfALo4kLPFZC8jnVJq/Bc9p9bqj7XsFJ5EHh09ssZhrg
+   iitgtwL+lh9fCRmE/L1FaORsKVwsgznKuhhOy13JqPX+R6yRqWvf9VtPM
+   rJHRt0MxFVhKWkX/Fm7gVRlIMazuYDcnI9AF8U8mV6xy40eA94SNhMh4C
+   f6Zpq6n9YMghHN8NyRuylX7wJUDv55a0eec3bnnjfwUBfOyeAFVk3rXHp
+   5nWppZFn7jcC+ExLUA8hICQ7Xp7xG5NqzUM0uO1LsHl7bW+qS2gieAujX
+   LSBvQ7ZFNGZHue4e1Js6pBL75kQoDxGdrF5Qzmt4AlotBltXMltMEgT7q
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10634"; a="313619218"
+X-IronPort-AV: E=Sophos;i="5.98,219,1673942400"; 
+   d="scan'208";a="313619218"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2023 11:29:49 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10634"; a="737856265"
+X-IronPort-AV: E=Sophos;i="5.98,219,1673942400"; 
+   d="scan'208";a="737856265"
+Received: from cpalit-mobl2.amr.corp.intel.com (HELO [10.212.235.220]) ([10.212.235.220])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2023 11:29:48 -0800
+Message-ID: <b7a71cca-8223-7346-c024-edc80a106042@linux.intel.com>
+Date: Mon, 27 Feb 2023 11:29:47 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.4.2
+Subject: Re: [PATCH 1/2] PCI/ATS: Add a helper function to configure ATS STU
+ of a PF.
+Content-Language: en-US
+To: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>,
+ linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ joro@8bytes.org, bhelgaas@google.com, robin.murphy@arm.com, will@kernel.org
+Cc: jean-philippe@linaro.org, darren@os.amperecomputing.com,
+ scott@os.amperecomputing.com
+References: <20230227132151.1907480-1-gankulkarni@os.amperecomputing.com>
+ <20230227132151.1907480-2-gankulkarni@os.amperecomputing.com>
+From: Sathyanarayanan Kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <20230227132151.1907480-2-gankulkarni@os.amperecomputing.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-The pull request you sent on Mon, 27 Feb 2023 06:44:54 -0700:
+Hi,
 
-> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.3-2022-02-27
+On 2/27/23 5:21 AM, Ganapatrao Kulkarni wrote:
+> As per PCI specification (PCI Express Base Specification Revision
+> 6.0, Section 10.5) both PF and VFs of a PCI EP are permitted to be enabled
+> independently for ATS capability, however the STU(Smallest Translation
+> Unit) is shared between PF and VFs. For VFs, it is hardwired to Zero and
+> the associated PF's value applies to VFs.
+> 
+> In the current code, the STU is being configured while enabling the PF ATS.
+> Hence, it is not able to enable ATS for VFs, if it is not enabled on the
+> associated PF already.> 
+> Adding a function pci_ats_stu_configure(), which can be called to
+> configure the STU during PF enumeration.
+> Latter enumerations of VFs can successfully enable ATS independently.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/6ffb575bebb983b982240372ecf976188451dd1c
+Why not enable ATS in PF before enabling it in VF? Just updating STU of
+PF and not enabling it seem odd.
 
-Thank you!
+> 
+> Signed-off-by: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>
+> ---
+>  drivers/pci/ats.c       | 32 ++++++++++++++++++++++++++++++--
+>  include/linux/pci-ats.h |  1 +
+>  2 files changed, 31 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+> index f9cc2e10b676..70e1982efdb4 100644
+> --- a/drivers/pci/ats.c
+> +++ b/drivers/pci/ats.c
+> @@ -46,6 +46,34 @@ bool pci_ats_supported(struct pci_dev *dev)
+>  }
+>  EXPORT_SYMBOL_GPL(pci_ats_supported);
+>  
+> +/**
+> + * pci_ats_stu_configure - Configure STU of a PF.
+> + * @dev: the PCI device
+> + * @ps: the IOMMU page shift
+> + *
+> + * Returns 0 on success, or negative on failure.
+> + */
+> +int pci_ats_stu_configure(struct pci_dev *dev, int ps)
+> +{
+> +	u16 ctrl;
+> +
+> +	if (dev->ats_enabled || dev->is_virtfn)
+> +		return 0;
+> +
+> +	if (!pci_ats_supported(dev))
+> +		return -EINVAL;
+> +
+> +	if (ps < PCI_ATS_MIN_STU)
+> +		return -EINVAL;
+> +
+> +	dev->ats_stu = ps;
+> +	ctrl = PCI_ATS_CTRL_STU(dev->ats_stu - PCI_ATS_MIN_STU);
+> +	pci_write_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, ctrl);
+
+If you just want to update the STU, don't overwrite other fields.
+
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(pci_ats_stu_configure);
+> +
+>  /**
+>   * pci_enable_ats - enable the ATS capability
+>   * @dev: the PCI device
+> @@ -68,8 +96,8 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
+>  		return -EINVAL;
+>  
+>  	/*
+> -	 * Note that enabling ATS on a VF fails unless it's already enabled
+> -	 * with the same STU on the PF.
+> +	 * Note that enabling ATS on a VF fails unless it's already
+> +	 * configured with the same STU on the PF.
+>  	 */
+>  	ctrl = PCI_ATS_CTRL_ENABLE;
+>  	if (dev->is_virtfn) {
+> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
+> index df54cd5b15db..9b40eb555124 100644
+> --- a/include/linux/pci-ats.h
+> +++ b/include/linux/pci-ats.h
+> @@ -8,6 +8,7 @@
+>  /* Address Translation Service */
+>  bool pci_ats_supported(struct pci_dev *dev);
+>  int pci_enable_ats(struct pci_dev *dev, int ps);
+> +int pci_ats_stu_configure(struct pci_dev *dev, int ps);
+
+What about dummy declaration for !CONFIG_PCI_ATS case?
+
+>  void pci_disable_ats(struct pci_dev *dev);
+>  int pci_ats_queue_depth(struct pci_dev *dev);
+>  int pci_ats_page_aligned(struct pci_dev *dev);
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
