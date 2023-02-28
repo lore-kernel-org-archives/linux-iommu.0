@@ -1,34 +1,34 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3960F636
-	for <iommu@lists.linux.dev>; Tue, 28 Feb 2023 01:59:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23F6A636
+	for <iommu@lists.linux.dev>; Tue, 28 Feb 2023 02:19:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677549570; x=1709085570;
+  t=1677550758; x=1709086758;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=tM9zExhdsZkMDzEMOeD9THty+rKAp+OwuxntkkK6SV4=;
-  b=dfz5czKc0uhe1GVPQ0dpeb5CnHiOoq0+X7MsLJX3DEga97knl13ZZ5jl
-   n2gXqDx9GzuBFgk4UhwfCUk7d1F6rgNIJrbYXfQn0AOX+S3VGrVcYJiX+
-   tcAcOb+L5fpC52yMgI1J0Or49DmwUt3dtXs+DblXE/4QdBlI8ClWTNBXs
-   zGy+L9DY5vhRmaLbUxw742DOtPVIibaAQHE8c0grE9z8Rh9bBMv8iYTtR
-   sfSW7GUdrmlXNQ4CTlbLJeiHZfRQChJaRLFNadA7zdkG6jw3uD8BfxQIx
-   hjjwIgx4opcxdyUoJlS9L6EXuL9rwv5hJOH+zIrFd3sGle4/DutSrVBTH
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10634"; a="361583334"
+  bh=A8N9428Tcr7/tfdQWiJlI1cxLImMy9WDZy/+x8nbwRk=;
+  b=LaJMbWHS52aGP5STVmq3JyoPwx/V3VSBs+XG+uxpCdl0+zNj1OPa8eNZ
+   1m9Zg1omm7IWjnXP28HPFHGnsHYc4y/H94XaYT0lo+BeqwCfg/CrKJXlu
+   RR3dEiutHFMqOI7XOrIUlz26KoY8M+NPLisZoQKwMW37+bz+Ca79va83u
+   /GQc3Eah3FtNrmEDhX3fbVlALMGS7kXX/3WP5NIXCwa7B5eMYM2uxZQzm
+   ErWjonSVQFXionMUWFFHcQhq0lWjF6GrHNZd1bMn6k/SC4PCTT/Nx/oO0
+   J2WJXzstiU8vBUDEBG5/DXLF9NIsdTGQklp7DMNyEucqCKG0v8XI7HSE5
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10634"; a="336312331"
 X-IronPort-AV: E=Sophos;i="5.98,220,1673942400"; 
-   d="scan'208";a="361583334"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2023 17:59:29 -0800
+   d="scan'208";a="336312331"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2023 18:19:18 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10634"; a="762982545"
+X-IronPort-AV: E=McAfee;i="6500,9779,10634"; a="797889831"
 X-IronPort-AV: E=Sophos;i="5.98,220,1673942400"; 
-   d="scan'208";a="762982545"
+   d="scan'208";a="797889831"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by FMSMGA003.fm.intel.com with ESMTP; 27 Feb 2023 17:59:27 -0800
-Message-ID: <adfd78d1-006e-5e7c-236b-cc00e8afb8c0@linux.intel.com>
-Date: Tue, 28 Feb 2023 09:50:52 +0800
+  by orsmga004.jf.intel.com with ESMTP; 27 Feb 2023 18:19:16 -0800
+Message-ID: <322462b2-a3e2-31a3-d520-34fe1467b26e@linux.intel.com>
+Date: Tue, 28 Feb 2023 10:10:41 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -45,53 +45,58 @@ Subject: Re: [PATCH 09/14] iommufd: Add iommufd_device_replace()
 Content-Language: en-US
 To: Jason Gunthorpe <jgg@nvidia.com>
 References: <9-v1-7612f88c19f5+2f21-iommufd_alloc_jgg@nvidia.com>
- <cdbc3707-d326-26d4-3adc-ff2ed80aa2ba@linux.intel.com>
- <Y/y3A4LJqunT0ZwS@nvidia.com>
+ <909ee61a-9cbd-eda1-89a2-349348eeb735@linux.intel.com>
+ <Y/y3fnSJZB7QhAKM@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Y/y3A4LJqunT0ZwS@nvidia.com>
+In-Reply-To: <Y/y3fnSJZB7QhAKM@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2/27/23 9:58 PM, Jason Gunthorpe wrote:
-> On Sun, Feb 26, 2023 at 11:01:59AM +0800, Baolu Lu wrote:
+On 2/27/23 10:00 PM, Jason Gunthorpe wrote:
+> On Sun, Feb 26, 2023 at 11:13:16AM +0800, Baolu Lu wrote:
 >> On 2/25/23 8:27 AM, Jason Gunthorpe wrote:
->>> @@ -437,25 +517,77 @@ int iommufd_device_attach(struct iommufd_device *idev, u32 *pt_id)
->>>    		struct iommufd_ioas *ioas =
->>>    			container_of(pt_obj, struct iommufd_ioas, obj);
->>> -		rc = iommufd_device_auto_get_domain(idev, ioas, pt_id);
->>> -		if (rc)
->>> +		destroy_hwpt = iommufd_device_auto_get_domain(idev, ioas, pt_id,
->>> +							      do_attach);
->>> +		if (IS_ERR(destroy_hwpt))
->>>    			goto out_put_pt_obj;
->>>    		break;
->>>    	}
->>>    	default:
->>> -		rc = -EINVAL;
->>> +		destroy_hwpt = ERR_PTR(-EINVAL);
->>>    		goto out_put_pt_obj;
->>>    	}
->>> +	iommufd_put_object(pt_obj);
->>> -	refcount_inc(&idev->obj.users);
->>> -	rc = 0;
->>> +	/* This destruction has to be after we unlock everything */
->>> +	if (destroy_hwpt)
->> Should this be
+>>> +/**
+>>> + * iommufd_device_attach - Connect a device to an iommu_domain
+>>> + * @idev: device to attach
+>>> + * @pt_id: Input a IOMMUFD_OBJ_IOAS, or IOMMUFD_OBJ_HW_PAGETABLE
+>>> + *         Output the IOMMUFD_OBJ_HW_PAGETABLE ID
 >>
->> 	if (!IS_ERR_OR_NULL(destroy_hwpt))
+>> "Output the hwpt ID" only happens when the caller input an IOAS object
+>> and an auto domain was selected or created for the device.
 >>
->> ?
-> Never use IS_ERR_OR_NULL ..
+>> Do I understand it right?
+> 
+> Technically it always outputs the hwpt, if a hwpt is in put then the
+> same hwpt is output.
 
-Can you please elaborate a bit on this? I can still see a lot of use of
-it in the tree.
+ From the code point of view, the pt_id is set only when an auto domain
+is selected. Otherwise, it is untouched. Hence, probably we could
+describe it more accurately in the comments. That is, if auto domain is
+selected, its hwpt id will be returned in pt_id and the caller could
+return it to userspace.
 
 > 
-> What am I missing? all the flows that could possibly have err_ptr here
-> do goto_out_put_pt_obj ?
+>>>    EXPORT_SYMBOL_NS_GPL(iommufd_device_attach, IOMMUFD);
+>>> +/**
+>>> + * iommufd_device_replace - Change the device's iommu_domain
+>>> + * @idev: device to change
+>>> + * @pt_id: Input a IOMMUFD_OBJ_IOAS, or IOMMUFD_OBJ_HW_PAGETABLE
+>>> + *         Output the IOMMUFD_OBJ_HW_PAGETABLE ID
+>>
+>> If my above understanding is correct, then replace will never output a
+>> hwpt id as it only happens after a successful attach.
+> 
+> Replace calls iommufd_device_auto_get_domain() which always sets pt_id
+> on success?
 
-Oh yes! You are right. All err_ptr's have gone to an error handling
-path.
+Yes. replace also calls iommufd_device_auto_get_domain().
+
+> 
+> If a HWPT was passed in then it just leaves it unchanged which is also
+> correct.
+
+Functionally right. Above I just want to make the comment matches what
+the real code does.
 
 Best regards,
 baolu
