@@ -1,118 +1,157 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2053.outbound.protection.outlook.com [40.107.93.53])
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 998E4323D
-	for <iommu@lists.linux.dev>; Tue, 28 Feb 2023 13:52:26 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GvpPnOnlZSVI1w7K77A68CleyB4uos1db96GoeFP89bAlf+J7XUrgptUycic/A/cKAKmfjnYaNReboRq2lxVEu++1bJe8Smma/G7zxvMffqnqL/fO0L9xxyd1cnKp5DCsetOIkgXqtC4cQDpOr/4WNcZK+br4w+4NZ9utmaW4oCV4WMeh8fxBTS96B4Alxw12Gf0bOfznx9KkGecudG6PK6JdCd3oeJktdD3qU5wlOZY9sgWElygEKnhx6nEHX+UR/IW7H4DFZTgFWXzlW7x/Zze/jUTQ1vPPLhy5k6OvT4lHNXQT7BkzLVr7nm/hX3iM+zXL1VXzjvV7a9bSsZ6mQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iJ6LqF+h3A6Gb2rqvtIujvuohfPhK+OmYw2pXTO/YLo=;
- b=Kq+7IuplYAjPzCwKEggA7pVd51iMSuRiWG23F10L16Wxr4lVkT+vvO9m0XCS/axoCkyH0fhLpccwrLRyytkB3+CCGyaeVgEy7pBkXboahKtcmaTzcjvHq013Xbn5XPIzK2r1w7VGJsb72CIBMlq4H/x7YKGjzWDprIhT4dooZunuo10+OVLaKD9jm2QMhuir3Pnl7b+DsQAQz0xBNZP499ZX+mgY127lQTzek1pVynXwJO/EmCrlMrkX9WqHrM21jC8Bk49SiYNoLY4cJ0R1dDGSnOeBsgO2WXNLBv8dTFbNb6uwKO/DgOoNzBNBHfJznC3NQt0eRzJD86v29EB1tg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iJ6LqF+h3A6Gb2rqvtIujvuohfPhK+OmYw2pXTO/YLo=;
- b=qFVqbJIFGGtsfvzuXpFb7fnATtv8KN22Kabx6zL1Od6rn1fel4QyGheXrZWiWu4ZMaYfI8wher+qloyN1z6wXcdgRzmCaovizWWJvjWmUThdffbCpH6bpJiQWRy1PROKF/qkY2TbIlNjNvAtPa85bFG5SOZa2VEl3V0WF56RGuXNMBY7IhbmEFtbRq1J7UuzLhlFJiy3mSUV0AGDAYdEP0/MMwUKDL8oqKWYtzrLDjDIsgHkPqRcH0g+k0wZxyhDzlMivdXlO8RokGh2ES1FUt7fROLX57jY9kck/3Nir2v+vDM9I/XNmG4LklM26IwqFL1vuirqA34mMvf0KudjYw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DM4PR12MB6541.namprd12.prod.outlook.com (2603:10b6:8:88::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.25; Tue, 28 Feb
- 2023 13:52:24 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee%4]) with mapi id 15.20.6134.029; Tue, 28 Feb 2023
- 13:52:24 +0000
-Date: Tue, 28 Feb 2023 09:52:23 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
-	linux-kselftest@vger.kernel.org, kvm@vger.kernel.org,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
-Subject: Re: [PATCH 09/14] iommufd: Add iommufd_device_replace()
-Message-ID: <Y/4HF2bc/uBydmgG@nvidia.com>
-References: <9-v1-7612f88c19f5+2f21-iommufd_alloc_jgg@nvidia.com>
- <909ee61a-9cbd-eda1-89a2-349348eeb735@linux.intel.com>
- <Y/y3fnSJZB7QhAKM@nvidia.com>
- <322462b2-a3e2-31a3-d520-34fe1467b26e@linux.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <322462b2-a3e2-31a3-d520-34fe1467b26e@linux.intel.com>
-X-ClientProxiedBy: BLAPR05CA0031.namprd05.prod.outlook.com
- (2603:10b6:208:335::12) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F9693D84
+	for <iommu@lists.linux.dev>; Tue, 28 Feb 2023 16:30:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1677601826; x=1709137826;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=dyojsfFIUKPS3PvJ1BbTCwtCmtNpDYEHb7YR/J13vUk=;
+  b=OwLI+VrDCL8o0K15172bWMqQtuNJP/+rTm2b603cwaE5sFZi2J5nM3WO
+   IDqO/3MPkkkaBzCrN/29PQAGrS6mF9xt7Cu+NpRfuk3rgQy/4lP3zx258
+   uH2rK0EoRmS3fT/5Ej1ZgOmq7AJwC5tKPBnW/sOedp2QtfTOky7up/du8
+   S2m3Q1q6B/ykq4U2Byfu9jkYGNLD1Dll3bD1bhuubmGwoKKM5D1fztQOy
+   BGxp5XafYGx9NV8WaDbt96aZrIBx9lUSXCHu5yDnq/Yc2omVFvv1yrsGA
+   55CcyMUk0O8tugHKNYC6ks6QmhhthCzbLbOXP62hyaxzgjTPb2IYamnNc
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10635"; a="396751347"
+X-IronPort-AV: E=Sophos;i="5.98,222,1673942400"; 
+   d="scan'208";a="396751347"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2023 08:30:25 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10635"; a="798107637"
+X-IronPort-AV: E=Sophos;i="5.98,222,1673942400"; 
+   d="scan'208";a="798107637"
+Received: from ticela-az-102.amr.corp.intel.com (HELO [10.209.55.154]) ([10.209.55.154])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2023 08:30:24 -0800
+Message-ID: <eefaf1bc-586b-aa0f-8899-fcce0460b733@linux.intel.com>
+Date: Tue, 28 Feb 2023 08:30:24 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB6541:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3b84aff8-1972-4aa0-a6a5-08db19930576
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	+bOpsMJSAlNrL2FzOapWaiDOOMWUtGRLyH17JxwAbJLI41vdjV75Ov93GmmI0Tmi4C18Xj4Lgs1YhvMY0speS7U8H7Ois0f8LDNAvsa6ChdQyeIFksNL5J91R+FjrFLxJyZtUVlU7U8GzF1o42Yu/z78S/F/8EtQ0ePxQDToFTDnsmC35KvgLRI2qombjobXY86l8oZOVzS8ow0AOrcb4XBofyeGLDTvCZFiYk/ke17EajGF21miwV4f09AjcaKtqnBpVYEHxYZj9/deFif5MejTkNjJXJ/DcGvsibON4tXdaUUqQWfJs0HMJt6MjZ6ANcRDHCgGUgUE06g9W0DaDDUQdyw+jBF36BNTZ5PwCx5YSHLfcUgreAHRZob498rJ4MXfakYlpq353+wSYcyEbWjdCvj370asZX20mKWF4hR1IbKtEQUSTUrVG7tcQ2BhpzellJmMjFK3p8zCyzTDxRL9YHhborFO5vOMfQAzrSUUUtuiFUcQSEsSXpGw3t8HGUvddRlqQR/4QLeOdCuMwUaQLgb58iPtWckpika/sTssTS2rAQ+zBWMwx9Ia56krtJmvy58bzt2ZcIMVVJlCjr66yBciyH7Hfki2R2XUv5qJmZ0ZUeXWYsvVcSkCeOIuNVymX94RaBWzCh+BZLGePg==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(39860400002)(366004)(136003)(346002)(376002)(451199018)(2616005)(6506007)(66946007)(38100700002)(4326008)(41300700001)(2906002)(6916009)(8676002)(66556008)(66476007)(4744005)(8936002)(26005)(186003)(5660300002)(6512007)(6486002)(478600001)(316002)(36756003)(86362001)(54906003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?FK9pCDRhJnNVXnPShQzRlsQjDBrij+u97IT8XGaR6jrRa/pwzjO2A2lGO62D?=
- =?us-ascii?Q?KqebP/p9ozgCj7btrklCg/jFnKnrl4Kas4OlELYEtzUbA/y4zpBOwiBglO7h?=
- =?us-ascii?Q?tq6fRQS/mfi7bCxlFJCG/09LrwzlLI2GZYIRY2Vy7J4oiRcoctLEspItiO8I?=
- =?us-ascii?Q?CxCs5U1/RVp3svmx6BGUwvulEjxc/2Tn6xpPsyfMbHpfcgcm6GO7/OlA8Hza?=
- =?us-ascii?Q?hlK0Y7dk4qsIpIa02Zy1XdIbUD4X5qSAp/gcNnRtaPVz2Xlf4KGRvEf3twNy?=
- =?us-ascii?Q?ex5DY11j6lmMqnFrBNELYUohFxOS0oulHuuNvL2cMJn0gC7XK3kjKXWGyy51?=
- =?us-ascii?Q?/HRdNfQL1q0PTroivavwOpJRlQacDcaNXCYYnHsy+n377c/W71UiFAgpB8sC?=
- =?us-ascii?Q?786btn+7kGl7CnyrizRYigNyYrPreUj4+lv/ZwW5uJYyaNZ8FOw+16MlNqu5?=
- =?us-ascii?Q?H4c4d+BnFb6sbtAKMjGeTpbx5h8Ewm6eUfkAsAi5A2L2lc7aK0YoDUr4Vqzb?=
- =?us-ascii?Q?twTYXX0vnOM6n3TL2x7KI8Hv+QrPpVIln++kd1Ie+ckmGquAzHPkaNhwpTr8?=
- =?us-ascii?Q?Ue4EhcEjI+bZx68Ntq6BqmZzAdYoRH7TWMU8sX3LtiT6Dz5w1xq8cu5fa6eT?=
- =?us-ascii?Q?ZQtp9/y6thqhYPthAbIGVW+BqO99oAS82GXc9GX6pYNMaYjC2dLQOR8VUOlR?=
- =?us-ascii?Q?TEAggid/oyBCzmYk+Zej97QE/Qdxr3OQsKNEkhXMxoLTpKEbG6m4OuSyKJAK?=
- =?us-ascii?Q?ez7ODTRKpYXSPHAu7OSsGcjSE6x1ZRGiQCS/+qYapNdF87fTB1GhvP5h5rGQ?=
- =?us-ascii?Q?dZfPq8YcZCMmaGfTmXpeNA1zOf0BOazRKI5SGEtLjxOYkvSImhoEKymtOF9z?=
- =?us-ascii?Q?Ps5hjGAI0ZqODGAMS5RHXAKedD6GimktC10oyltcE0gXz8YDtPw/BwNzXjDy?=
- =?us-ascii?Q?TPvYT3BmIzQSZpwJHmsIDK+PGYhW6IuePhLiWNWP5v2YBFbsLaoa6EvHt8/z?=
- =?us-ascii?Q?zDgdeT9UstHVwbm8GOW49swk0r8B0MhhQMvVqlYv/w1gonCB+3ni/tMtp325?=
- =?us-ascii?Q?+twbpghJNPFsREg/Qkv8lqA8TqDqHEP0bPdBtwLWOSigDTlhPTtue2btU/c8?=
- =?us-ascii?Q?IPQGHq22DbtJJCfQiv9j0GhLJPB0Rk+0WmqQKvo0su1usjCppJWsawfBQ4iF?=
- =?us-ascii?Q?sWhpQnzydJBNMR/qEjcCOdZ0MVUcT3BNYWgxR+TJApqTde2Gb4C/l7WQmU70?=
- =?us-ascii?Q?OB7uS6HyZg9HY3O11CBtC1DggWS5eAgVgdLbvsNwUaBPKxggCscYHEG2inYM?=
- =?us-ascii?Q?as3QrT19zwgUe/RnMg76IaPz7Q0bKiqHJu5Fa4UMO8Tc6IN3xmJQTjKoc5x9?=
- =?us-ascii?Q?XOZiHnjshGdCbwtXo6iFV+sPVWeBlZ/poDCua5pBZe1Lv/XfiAc0Ks8ClHtn?=
- =?us-ascii?Q?F5SuHAha363zYaFxpZVG382Nz3cGhfnxbvFFts0JMCYP9Ka5bqB71fYJr1Y6?=
- =?us-ascii?Q?Ktibn1TfHWFX+stKFAa1InLXkg79YgUHdgTLmwiFaPlzani1YGLLD0EJMyLL?=
- =?us-ascii?Q?WkVO+RCjBzqoMkoL13O8Ga/LODxP9d009ZhFSNXE?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3b84aff8-1972-4aa0-a6a5-08db19930576
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Feb 2023 13:52:24.7324
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NqHULe/bBgBgR6jOZBbNU4Bu9QAmB24Mk2MlaMy/DwCblbBx9bmfeiktQk0u3GTX
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6541
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.4.2
+Subject: Re: [PATCH v2 1/2] PCI/ATS: Add a helper function to configure ATS
+ STU of a PF
+Content-Language: en-US
+To: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>,
+ linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ joro@8bytes.org, bhelgaas@google.com, robin.murphy@arm.com, will@kernel.org
+Cc: jean-philippe@linaro.org, darren@os.amperecomputing.com,
+ scott@os.amperecomputing.com
+References: <20230228042137.1941024-1-gankulkarni@os.amperecomputing.com>
+ <20230228042137.1941024-2-gankulkarni@os.amperecomputing.com>
+From: Sathyanarayanan Kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <20230228042137.1941024-2-gankulkarni@os.amperecomputing.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Tue, Feb 28, 2023 at 10:10:41AM +0800, Baolu Lu wrote:
 
-> > If a HWPT was passed in then it just leaves it unchanged which is also
-> > correct.
+
+On 2/27/23 8:21 PM, Ganapatrao Kulkarni wrote:
+> As per PCI specification (PCI Express Base Specification Revision
+> 6.0, Section 10.5) both PF and VFs of a PCI EP are permitted to be enabled
+> independently for ATS capability, however the STU(Smallest Translation
+> Unit) is shared between PF and VFs. For VFs, it is hardwired to Zero and
+> the associated PF's value applies to VFs.
 > 
-> Functionally right. Above I just want to make the comment matches what
-> the real code does.
+> In the current code, the STU is being configured while enabling the PF ATS.
+> Hence, it is not able to enable ATS for VFs, if it is not enabled on the
+> associated PF already.
+> 
+> Adding a function pci_ats_stu_configure(), which can be called to
+> configure the STU during PF enumeration.
+> Latter enumerations of VFs can successfully enable ATS independently.
+> 
+> Signed-off-by: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>
+> ---
+>  drivers/pci/ats.c       | 33 +++++++++++++++++++++++++++++++--
+>  include/linux/pci-ats.h |  3 +++
+>  2 files changed, 34 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+> index f9cc2e10b676..1611bfa1d5da 100644
+> --- a/drivers/pci/ats.c
+> +++ b/drivers/pci/ats.c
+> @@ -46,6 +46,35 @@ bool pci_ats_supported(struct pci_dev *dev)
+>  }
+>  EXPORT_SYMBOL_GPL(pci_ats_supported);
+>  
+> +/**
+> + * pci_ats_stu_configure - Configure STU of a PF.
+> + * @dev: the PCI device
+> + * @ps: the IOMMU page shift
+> + *
+> + * Returns 0 on success, or negative on failure.
+> + */
+> +int pci_ats_stu_configure(struct pci_dev *dev, int ps)
+> +{
+> +	u16 ctrl;
+> +
+> +	if (dev->ats_enabled || dev->is_virtfn)
+> +		return 0;
 
-It does, on output the pt_id is always the IOMMUFD_OBJ_HW_PAGETABLE ID
-of the attached HWPT.
+Is PF allowed to re-configure STU if there are other active
+VF's which uses it?
 
-Jason
+> +
+> +	if (!pci_ats_supported(dev))
+> +		return -EINVAL;
+> +
+> +	if (ps < PCI_ATS_MIN_STU)
+> +		return -EINVAL;
+> +
+> +	dev->ats_stu = ps;
+> +	pci_read_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, &ctrl);
+> +	ctrl |= PCI_ATS_CTRL_STU(dev->ats_stu - PCI_ATS_MIN_STU);
+> +	pci_write_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, ctrl);
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(pci_ats_stu_configure);
+> +
+>  /**
+>   * pci_enable_ats - enable the ATS capability
+>   * @dev: the PCI device
+> @@ -68,8 +97,8 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
+>  		return -EINVAL;
+>  
+>  	/*
+> -	 * Note that enabling ATS on a VF fails unless it's already enabled
+> -	 * with the same STU on the PF.
+> +	 * Note that enabling ATS on a VF fails unless it's already
+> +	 * configured with the same STU on the PF.
+>  	 */
+>  	ctrl = PCI_ATS_CTRL_ENABLE;
+>  	if (dev->is_virtfn) {
+> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
+> index df54cd5b15db..7d62a92aaf23 100644
+> --- a/include/linux/pci-ats.h
+> +++ b/include/linux/pci-ats.h
+> @@ -8,6 +8,7 @@
+>  /* Address Translation Service */
+>  bool pci_ats_supported(struct pci_dev *dev);
+>  int pci_enable_ats(struct pci_dev *dev, int ps);
+> +int pci_ats_stu_configure(struct pci_dev *dev, int ps);
+>  void pci_disable_ats(struct pci_dev *dev);
+>  int pci_ats_queue_depth(struct pci_dev *dev);
+>  int pci_ats_page_aligned(struct pci_dev *dev);
+> @@ -16,6 +17,8 @@ static inline bool pci_ats_supported(struct pci_dev *d)
+>  { return false; }
+>  static inline int pci_enable_ats(struct pci_dev *d, int ps)
+>  { return -ENODEV; }
+> +static inline int pci_ats_stu_configure(struct pci_dev *d, int ps)
+> +{ return -ENODEV; }
+>  static inline void pci_disable_ats(struct pci_dev *d) { }
+>  static inline int pci_ats_queue_depth(struct pci_dev *d)
+>  { return -ENODEV; }
+
+-- 
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
