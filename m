@@ -1,151 +1,110 @@
-Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3FD19459;
-	Tue, 28 Feb 2023 20:22:01 +0000 (UTC)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-	by mailout.west.internal (Postfix) with ESMTP id 2C45A3200916;
-	Tue, 28 Feb 2023 15:22:00 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Tue, 28 Feb 2023 15:22:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
-	 h=cc:cc:content-transfer-encoding:date:date:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:sender:subject:subject:to:to; s=fm1; t=1677615719; x=
-	1677702119; bh=p8ZqQhrJ3wpAF4QuT+1zVLuNbpYdyDzeaaN6r1CTKxU=; b=t
-	rlGkeujQfNFXD62Xfz3q4LflZgaZJsFzXo3DQBvFa0VNGFDiZWMh1IeRQwDYHGTK
-	+HZJdsRyEgMRq5tCCgkfO/hWPiuGt4jtVT1oS8hdduw6lXVLsZCkuAD+ZQqxSoEq
-	woW4O9IYhWuLyIVd9iPVLfVgCoIHxiK9Nv4gPsOGZElihm3mh7uPEbEy3tB2wMQC
-	nbK1zQrIbdDphRvyjwFezNWD79Oecx3nIHaJMT6SdsYaGIstMB6hYPbFVXhJSaCb
-	3NUV0/Ta2XNdR3P3hn89Ik2qIx+8hrA5roaMnXBRQ3OZ8KlUnaW9SzeCcQpBNorI
-	RwNNqjvbeeOGpzhotN2wQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:sender:subject
-	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-	:x-sasl-enc; s=fm1; t=1677615719; x=1677702119; bh=p8ZqQhrJ3wpAF
-	4QuT+1zVLuNbpYdyDzeaaN6r1CTKxU=; b=f3lmAnn4WfiAWAm3n4Xyv/uaTT4S4
-	e07toQkoAM1x4TorxcCICgPOVT2nNVQHl5hnaIWwbb6zR29bEhP1kHVKvSUT5w61
-	bMEPRApxa1U2e8V0f4Pt+063ZkM3WCGvR1nQ1ob+wS3TNNwxiUNOR1y7+sEgv2Zp
-	qoHyQqBQyiadW8ogumsqo0PFINYEGL6cr/jjriRimO5ugh5Gg9RgVPumw6vHz4Np
-	CBE0sgP0BvjfNA3zMnR5nwHAD69wI/tKPwtK1L3klmUO5mJDDL77rz+sxNbl4iPp
-	9pO2tTW7QRM+QcPyC948ol5IAtEEjpUhE635amScHqvyhQH7YUYmJ70Lg==
-X-ME-Sender: <xms:Z2L-Y7S9I8oHZwna1yO9-fUM6OYZdVJawak-TZqMKQ3mwr4QkmXqEQ>
-    <xme:Z2L-Y8yZjW9Gf27mLFw0aJOoW7VuuQxCq9RR0ib9RSdHdxFXZ-cEWEeI8xXPLd_eX
-    dJcPZUFnj5Nbx8Tag8>
-X-ME-Received: <xmr:Z2L-Yw0c6F44MRWLzjYf43i22bLTAZH4RjF35zoCtQb0jbRdJIyKDIHB3Qd4o4TTchl2cwTPfScCgx0xMQ0uTqwYeaRS728jwy58LLoV0KQtpmrK47qMZKSjGD12lg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudelfedgjeefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvvefufffkofgjfhgggfestdekredtredttdenucfhrhhomhepufhvvghn
-    ucfrvghtvghruceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrghtth
-    gvrhhnpeejieehheekgedvjefhveekjefguddtfefhteehtdeiffelkeeiuedufeelkeej
-    geenucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehsvh
-    gvnhesshhvvghnphgvthgvrhdruggvvh
-X-ME-Proxy: <xmx:Z2L-Y7AL51je9_5K7W9NK3w-lOcHfrFyNyCTxZ-MtQuHsbBySDcJig>
-    <xmx:Z2L-Y0jeYxFm_DrYcSlskAkxfHSGCyFdXLCxd5JTmKO-O3-fpccpRQ>
-    <xmx:Z2L-Y_rwgPwlGn0OWfmyEAWL6PoIIx1HZltUCceFr7lvFZZJSObQUg>
-    <xmx:Z2L-Yzo2fU5t4QrKXyVPYMTy5hW2JvHfSGHS96eBOxwKzlCIFkjYIQ>
-Feedback-ID: i51094778:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 28 Feb 2023 15:21:57 -0500 (EST)
-From: Sven Peter <sven@svenpeter.dev>
-To: Hector Martin <marcan@marcan.st>,
-	Sven Peter <sven@svenpeter.dev>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-	linux-arm-kernel@lists.infradead.org,
-	asahi@lists.linux.dev,
-	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 4/4] iommu: dart: Add support for t8103 USB4 DART
-Date: Tue, 28 Feb 2023 21:21:32 +0100
-Message-Id: <20230228202132.4919-5-sven@svenpeter.dev>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
-In-Reply-To: <20230228202132.4919-1-sven@svenpeter.dev>
-References: <20230228202132.4919-1-sven@svenpeter.dev>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1CCA371
+	for <iommu@lists.linux.dev>; Tue, 28 Feb 2023 20:59:53 +0000 (UTC)
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-536bbef1c5eso309424207b3.9
+        for <iommu@lists.linux.dev>; Tue, 28 Feb 2023 12:59:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=H15Wgrg45uphokJUqJE+ge3DLPSULLnvrd4PVO7cLLc=;
+        b=fF7yR1zieU4gkviG5qrWrdfSWhtKPGGWlvtMBXv4KHBDu0aJ3gWsucs0SnY/VXu9xI
+         98ilQKazhvCJdc/WBewUB+5SWcdhorii7J1pOeAzos6f/dQqHZdg02M4AtOUfeTq8eOO
+         f09htTPMG/pkdx7lHQGqeX5kSZIxN5OkkPfc77FKJnyPHYn11vG35NdgnRPHPkAFKcea
+         XgImIWOsGyc18s8CqlKSzyo64N6r/4hd/TI5CyRtFIgPb+s+gMlpDT8KVNO9m7c21yRW
+         SoYMoaCOLdsdFi4o18FJKo606Yo0hMRNZOz6SykPjzCGVDwzVDiSukBxaNiAwswCzVE4
+         k7xA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=H15Wgrg45uphokJUqJE+ge3DLPSULLnvrd4PVO7cLLc=;
+        b=JDb6u/9xMhu1bhGY4+P5lyl0tT38vj4jI+uSR840y6ROmq82KQAEmhXzzE8R1+dDtw
+         pqbm2NxUpBMVToPBd015qXm3VsfXKs+oS2+BRvBJzTxnsYWag0DU/SRbEy/OZvMykCWZ
+         odaOhDAlnaE2pxMxMnTug5MpHopdkVpCAAwnGA8F3udOCj2CGjMOsadhJ0Gomu1Sc1t8
+         ELfjsn9I9une47+U165xZJO0c4XEjWl2ZfBombU/583moudx59RLb3vfD2H9gEX6kZJo
+         l83szpCa9XJrTqTGcz1l+9Lvv/2sTQbEpa7v+Fueqyuma0eOSuqZ2e8yZig0TFqYznu0
+         qkBQ==
+X-Gm-Message-State: AO0yUKVLuCTOr8yLH8eerg5XDNTC3oryQ3gFtPsyHm4d60mHXIbOTQFJ
+	E2O0DhXzj1CwMr0wGVyK3x/JHkKxtq0TvfKoOnUBUQ==
+X-Google-Smtp-Source: AK7set+d6vs4ymgWzsVBho7zIKcb2AoIn1quNMhQ7GG855RnJ+2d+gNas87Vdn9aekeC5XgvBudues+ObsH6EIGw7ZY=
+X-Received: by 2002:a5b:8b:0:b0:90d:af77:9ca6 with SMTP id b11-20020a5b008b000000b0090daf779ca6mr2178238ybp.7.1677617992660;
+ Tue, 28 Feb 2023 12:59:52 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <Y8v+qVZ8OmodOCQ9@nvidia.com>
+In-Reply-To: <Y8v+qVZ8OmodOCQ9@nvidia.com>
+From: "T.J. Mercier" <tjmercier@google.com>
+Date: Tue, 28 Feb 2023 12:59:41 -0800
+Message-ID: <CABdmKX3kJZKsOQSi=4+RE8D3AF=-823B9WV11sC4WH67hjzqSQ@mail.gmail.com>
+Subject: Re: [LSF/MM/BPF proposal]: Physr discussion
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: lsf-pc@lists.linuxfoundation.org, linux-mm@kvack.org, 
+	iommu@lists.linux.dev, linux-rdma@vger.kernel.org, 
+	Matthew Wilcox <willy@infradead.org>, Christoph Hellwig <hch@lst.de>, 
+	Joao Martins <joao.m.martins@oracle.com>, John Hubbard <jhubbard@nvidia.com>, 
+	Logan Gunthorpe <logang@deltatee.com>, Ming Lei <ming.lei@redhat.com>, linux-block@vger.kernel.org, 
+	netdev@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+	nvdimm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-This variant of the regular t8103 DART is used for the two
-USB4/Thunderbolt PCIe controllers. It supports 64 instead of 16 streams
-which requires a slightly different MMIO layout. We also disallow bypass
-support since these DARTs will only ever be used for externally facing
-devices on the USB4 ports.
+On Sat, Jan 21, 2023 at 7:03 AM Jason Gunthorpe <jgg@nvidia.com> wrote:
+>
+> I would like to have a session at LSF to talk about Matthew's
+> physr discussion starter:
+>
+>  https://lore.kernel.org/linux-mm/YdyKWeU0HTv8m7wD@casper.infradead.org/
+>
+> I have become interested in this with some immediacy because of
+> IOMMUFD and this other discussion with Christoph:
+>
+>  https://lore.kernel.org/kvm/4-v2-472615b3877e+28f7-vfio_dma_buf_jgg@nvidia.com/
+>
+> Which results in, more or less, we have no way to do P2P DMA
+> operations without struct page - and from the RDMA side solving this
+> well at the DMA API means advancing at least some part of the physr
+> idea.
+>
+> So - my objective is to enable to DMA API to "DMA map" something that
+> is not a scatterlist, may or may not contain struct pages, but can
+> still contain P2P DMA data. From there I would move RDMA MR's to use
+> this new API, modify DMABUF to export it, complete the above VFIO
+> series, and finally, use all of this to add back P2P support to VFIO
+> when working with IOMMUFD by allowing IOMMUFD to obtain a safe
+> reference to the VFIO memory using DMABUF. From there we'd want to see
+> pin_user_pages optimized, and that also will need some discussion how
+> best to structure it.
+>
+> I also have several ideas on how something like physr can optimize the
+> iommu driver ops when working with dma-iommu.c and IOMMUFD.
+>
+> I've been working on an implementation and hope to have something
+> draft to show on the lists in a few weeks. It is pretty clear there
+> are several interesting decisions to make that I think will benefit
+> from a live discussion.
+>
+> Providing a kernel-wide alternative to scatterlist is something that
+> has general interest across all the driver subsystems. I've started to
+> view the general problem rather like xarray where the main focus is to
+> create the appropriate abstraction and then go about transforming
+> users to take advatange of the cleaner abstraction. scatterlist
+> suffers here because it has an incredibly leaky API, a huge number of
+> (often sketchy driver) users, and has historically been very difficult
+> to improve.
+>
+> The session would quickly go over the current state of whatever the
+> mailing list discussion evolves into and an open discussion around the
+> different ideas.
+>
+> Thanks,
+> Jason
+>
 
-Acked-by: Hector Martin <marcan@marcan.st>
-Signed-off-by: Sven Peter <sven@svenpeter.dev>
----
- drivers/iommu/apple-dart.c | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
-
-diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-index 7579c97a9062..b9886d40a4d1 100644
---- a/drivers/iommu/apple-dart.c
-+++ b/drivers/iommu/apple-dart.c
-@@ -81,6 +81,7 @@
- #define DART_T8020_TCR_BYPASS_DAPF      BIT(12)
- 
- #define DART_T8020_TTBR       0x200
-+#define DART_T8020_USB4_TTBR  0x400
- #define DART_T8020_TTBR_VALID BIT(31)
- #define DART_T8020_TTBR_ADDR_FIELD_SHIFT 0
- #define DART_T8020_TTBR_SHIFT 12
-@@ -1184,6 +1185,35 @@ static const struct apple_dart_hw apple_dart_hw_t8103 = {
- 	.ttbr_shift = DART_T8020_TTBR_SHIFT,
- 	.ttbr_count = 4,
- };
-+
-+static const struct apple_dart_hw apple_dart_hw_t8103_usb4 = {
-+	.type = DART_T8020,
-+	.irq_handler = apple_dart_t8020_irq,
-+	.invalidate_tlb = apple_dart_t8020_hw_invalidate_tlb,
-+	.oas = 36,
-+	.fmt = APPLE_DART,
-+	.max_sid_count = 64,
-+
-+	.enable_streams = DART_T8020_STREAMS_ENABLE,
-+	.lock = DART_T8020_CONFIG,
-+	.lock_bit = DART_T8020_CONFIG_LOCK,
-+
-+	.error = DART_T8020_ERROR,
-+
-+	.tcr = DART_T8020_TCR,
-+	.tcr_enabled = DART_T8020_TCR_TRANSLATE_ENABLE,
-+	.tcr_disabled = 0,
-+	.tcr_bypass = 0,
-+
-+	.ttbr = DART_T8020_USB4_TTBR,
-+	.ttbr_valid = DART_T8020_TTBR_VALID,
-+	.ttbr_addr_field_shift = DART_T8020_TTBR_ADDR_FIELD_SHIFT,
-+	.ttbr_shift = DART_T8020_TTBR_SHIFT,
-+	.ttbr_count = 4,
-+
-+	.disable_bypass = true,
-+};
-+
- static const struct apple_dart_hw apple_dart_hw_t6000 = {
- 	.type = DART_T6000,
- 	.irq_handler = apple_dart_t8020_irq,
-@@ -1276,6 +1306,7 @@ DEFINE_SIMPLE_DEV_PM_OPS(apple_dart_pm_ops, apple_dart_suspend, apple_dart_resum
- 
- static const struct of_device_id apple_dart_of_match[] = {
- 	{ .compatible = "apple,t8103-dart", .data = &apple_dart_hw_t8103 },
-+	{ .compatible = "apple,t8103-usb4-dart", .data = &apple_dart_hw_t8103_usb4 },
- 	{ .compatible = "apple,t8110-dart", .data = &apple_dart_hw_t8110 },
- 	{ .compatible = "apple,t6000-dart", .data = &apple_dart_hw_t6000 },
- 	{},
--- 
-2.25.1
-
+Hi, I'm interested in participating in this discussion!
