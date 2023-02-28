@@ -1,152 +1,120 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2066.outbound.protection.outlook.com [40.107.237.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 511FE79EF
-	for <iommu@lists.linux.dev>; Mon, 27 Feb 2023 19:29:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677526190; x=1709062190;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=v3mSa++3w5di4VuVyxMCx7ivKLHS0LlRNUH1BB+AgB8=;
-  b=ftgu/xX5wOyUGfALo4kLPFZC8jnVJq/Bc9p9bqj7XsFJ5EHh09ssZhrg
-   iitgtwL+lh9fCRmE/L1FaORsKVwsgznKuhhOy13JqPX+R6yRqWvf9VtPM
-   rJHRt0MxFVhKWkX/Fm7gVRlIMazuYDcnI9AF8U8mV6xy40eA94SNhMh4C
-   f6Zpq6n9YMghHN8NyRuylX7wJUDv55a0eec3bnnjfwUBfOyeAFVk3rXHp
-   5nWppZFn7jcC+ExLUA8hICQ7Xp7xG5NqzUM0uO1LsHl7bW+qS2gieAujX
-   LSBvQ7ZFNGZHue4e1Js6pBL75kQoDxGdrF5Qzmt4AlotBltXMltMEgT7q
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10634"; a="313619218"
-X-IronPort-AV: E=Sophos;i="5.98,219,1673942400"; 
-   d="scan'208";a="313619218"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2023 11:29:49 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10634"; a="737856265"
-X-IronPort-AV: E=Sophos;i="5.98,219,1673942400"; 
-   d="scan'208";a="737856265"
-Received: from cpalit-mobl2.amr.corp.intel.com (HELO [10.212.235.220]) ([10.212.235.220])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2023 11:29:48 -0800
-Message-ID: <b7a71cca-8223-7346-c024-edc80a106042@linux.intel.com>
-Date: Mon, 27 Feb 2023 11:29:47 -0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEB64363
+	for <iommu@lists.linux.dev>; Tue, 28 Feb 2023 00:18:01 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=D+4LgMc0zhpNNDELfc2xlf8fo6tCijsZTg3NyIH0wQhVWvLqRKXoji7xv1FCeER3Hjssx4D1o8w4Ifmambe17sRtC2HgkdhQJqHd/EujcoQZBrVMKjOrpa1ykMalD9LKor+2BpibKpj4H+IBMingkOQNPtmFu3MwGwKEqs/U5d2gCSs9odUULpxN8VNdA03qMGMffJZ78oT+ZGUM9FoHo3vLU6htCPJ7aZdeGUvlEbdCn8TPB9pQuZJzy40GqccE87LTMtdeT5bhZq7j0liStGq64UpNOtl8gSHxnVLSCtCRvUma3fkO6RtmI9aUNGx3Cy6FkAx+KGDQWRnSkiFaWA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=H15CRLyaxYSA/YU5L0tz8pFa9Y0L+wefwgiVMwnOx2M=;
+ b=U7LUVjsyJw/zyX6kGxrOKX9BH5HPCfrQt+gip2EKR0COh0YKGWsLw8tX/Bpm9SYoRhvGjzMbUK5/ecibp7ZeBdfmKNwXhXAsfrT4JbRuU3puha3Y0Kt5eTUOHbVpp1zYJ2rofmnXHbxE+ZekdqEeAOkNeXK3u5J7BB1oZvG2AOHTsBzcDgPFTAyCB+QPg+5gnoUQaPELFE4FJi4JFEU2UqV0m4LEyd9LqS0KckLdJORPqTeay/fxYP2qss2Y/n015+J3XZu3P7hIk5Oi/ZVpAj1iJtlgT/s2x38wMU/jxw5iWu9IlPb5ySMTybgqEyAHERqeEyMARJUe9RYAFQKWFA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=H15CRLyaxYSA/YU5L0tz8pFa9Y0L+wefwgiVMwnOx2M=;
+ b=DrIPrBnvXtBbBJqSD9tcQdKO5sk42wj+YyfTLg0zjMLOd1HHPEb7t/qUhQvH3IT/39c/EjYJuqGeDnSZt5RbkDuKHIh0nHAEnJHKi90EmJYz0l4FlkcxL9pwS+mbpihVvchVrOEeAZwgc+CvIxAJF2hvgicgOWw2lMHG9Uiv1iLuCKXsaFgo9EBjzrHx5eMS/TzpafipW8y0PTVLHFUbQW/lqDD/GZAMtKxKuqirezduTb47nxjlYAaPpnKzLP67viG1Ddu6qiScBdlYgj1nxOoH4i+cQcqHmemn4Brd/c62d9XwXJAXvdNb919NYpc5g9OVdpnuYZtgLCdju4W4Wg==
+Received: from CY5P221CA0073.NAMP221.PROD.OUTLOOK.COM (2603:10b6:930:9::10) by
+ DM4PR12MB5940.namprd12.prod.outlook.com (2603:10b6:8:6b::10) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6134.26; Tue, 28 Feb 2023 00:17:59 +0000
+Received: from CY4PEPF0000C970.namprd02.prod.outlook.com
+ (2603:10b6:930:9:cafe::3e) by CY5P221CA0073.outlook.office365.com
+ (2603:10b6:930:9::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.29 via Frontend
+ Transport; Tue, 28 Feb 2023 00:17:59 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ CY4PEPF0000C970.mail.protection.outlook.com (10.167.242.8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6156.12 via Frontend Transport; Tue, 28 Feb 2023 00:17:58 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Mon, 27 Feb 2023
+ 16:17:49 -0800
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Mon, 27 Feb
+ 2023 16:17:49 -0800
+Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com (10.129.68.7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5 via Frontend
+ Transport; Mon, 27 Feb 2023 16:17:48 -0800
+Date: Mon, 27 Feb 2023 16:17:47 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <iommu@lists.linux.dev>, Kevin Tian <kevin.tian@intel.com>,
+	<linux-kselftest@vger.kernel.org>, <kvm@vger.kernel.org>, Yi Liu
+	<yi.l.liu@intel.com>
+Subject: Re: [PATCH 14/14] iommufd/selftest: Add a selftest for
+ IOMMU_HWPT_ALLOC
+Message-ID: <Y/1IK4kVz07xiY8G@Asurada-Nvidia>
+References: <0-v1-7612f88c19f5+2f21-iommufd_alloc_jgg@nvidia.com>
+ <14-v1-7612f88c19f5+2f21-iommufd_alloc_jgg@nvidia.com>
+ <Y/uzM8PD/XY0WI7f@Asurada-Nvidia>
+ <Y/zGCLb5aGmxWPHu@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.4.2
-Subject: Re: [PATCH 1/2] PCI/ATS: Add a helper function to configure ATS STU
- of a PF.
-Content-Language: en-US
-To: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>,
- linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- joro@8bytes.org, bhelgaas@google.com, robin.murphy@arm.com, will@kernel.org
-Cc: jean-philippe@linaro.org, darren@os.amperecomputing.com,
- scott@os.amperecomputing.com
-References: <20230227132151.1907480-1-gankulkarni@os.amperecomputing.com>
- <20230227132151.1907480-2-gankulkarni@os.amperecomputing.com>
-From: Sathyanarayanan Kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>
-In-Reply-To: <20230227132151.1907480-2-gankulkarni@os.amperecomputing.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <Y/zGCLb5aGmxWPHu@nvidia.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000C970:EE_|DM4PR12MB5940:EE_
+X-MS-Office365-Filtering-Correlation-Id: b27cf57c-f0c4-4912-f496-08db19213f55
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	8DmRfPG+Fhqx4nYO1u0/RbvIFmCfKktUyQkQQGo5jSqQCNG/qgbvj+VcTEB+sW56Qb9fKfbRC8aNZeGs4fMJkqOz2SiMkn+W7xdBCYEC+dXc+kIFlwTxwNUPfzQbYLZV7tgMs7PI8ezzv6Oct9Fd+Q+Rxf2TX2qKAVdVoAghMnzfF6XpXuYLWypghagxOco5fgpGYRuxjQyAYPLicJao4qc5G4kb4W7lDWdI+ISeWnH85lz/hek4FPxz8TsVN+oXuqkEqYtGJwQgOo11f9yaUydsF4yd+s3GMabBGQIJMatVT/gKLC9mtFkx/65LWtbRLSDpWgISkKsErF5LREwtu65TYMOCRLWeKkr8pVP105LEDp8E0JBDj5ujFm0cqWhPfWPZQ1JKEy8+emfEqi9E/or/904wEvdYlgqPLq8Ocm1sJQGljF/7LXb3WfcSGS7thQikq/6Ty+k5sXJYCbiStXvV/4Du7kLFan3JbOJOb4gYIap4j7V3Ju+RCS+x2xq2qZOul0iuknzinxL93Gwrmje+TxoS5vqO00nfDCSwqdd9bPi5msHL/V1so9zad+jwyPaV8N/9kMFP2Pr61C5Otdlio3+Zs6TE05ckhr4urg9NX1m15KezSpCfvgUX+YGYQAkLHjNjboRUqduvUAPdMIAWC0C2REcepjRKPsEPJPiVo1+Wp/gm4ybbbteG3tKKGy4l2VjSnV6OKx8pMit2PQ==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(346002)(376002)(396003)(39860400002)(136003)(451199018)(36840700001)(46966006)(40470700004)(9686003)(26005)(36860700001)(186003)(426003)(47076005)(82310400005)(356005)(7636003)(55016003)(86362001)(82740400003)(40460700003)(40480700001)(336012)(33716001)(70206006)(4326008)(8676002)(70586007)(6862004)(8936002)(4744005)(5660300002)(478600001)(41300700001)(54906003)(2906002)(6636002)(316002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Feb 2023 00:17:58.9177
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b27cf57c-f0c4-4912-f496-08db19213f55
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000C970.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5940
 
-Hi,
-
-On 2/27/23 5:21 AM, Ganapatrao Kulkarni wrote:
-> As per PCI specification (PCI Express Base Specification Revision
-> 6.0, Section 10.5) both PF and VFs of a PCI EP are permitted to be enabled
-> independently for ATS capability, however the STU(Smallest Translation
-> Unit) is shared between PF and VFs. For VFs, it is hardwired to Zero and
-> the associated PF's value applies to VFs.
+On Mon, Feb 27, 2023 at 11:02:32AM -0400, Jason Gunthorpe wrote:
+> On Sun, Feb 26, 2023 at 11:29:55AM -0800, Nicolin Chen wrote:
+> > On Fri, Feb 24, 2023 at 08:27:59PM -0400, Jason Gunthorpe wrote:
+> >   
+> > > +static int _test_cmd_hwpt_alloc(int fd, __u32 device_id, __u32 pt_id,
+> > > +					 __u32 *hwpt_id)
+> > > +{
+> > > +	struct iommu_hwpt_alloc cmd = {
+> > > +		.size = sizeof(cmd),
+> > > +		.dev_id = device_id,
+> > > +		.pt_id = pt_id,
+> > > +	};
+> > > +	int ret;
+> > 
+> > Can we do "s/device_id/idev_id" to differentiate it from the
+> > "device_id" being used for a selftest device object?
 > 
-> In the current code, the STU is being configured while enabling the PF ATS.
-> Hence, it is not able to enable ATS for VFs, if it is not enabled on the
-> associated PF already.> 
-> Adding a function pci_ats_stu_configure(), which can be called to
-> configure the STU during PF enumeration.
-> Latter enumerations of VFs can successfully enable ATS independently.
+> I renamed the selftest device object to 'stdev_id' instead
 
-Why not enable ATS in PF before enabling it in VF? Just updating STU of
-PF and not enabling it seem odd.
+Cool. I will pull-rebase.
 
-> 
-> Signed-off-by: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>
-> ---
->  drivers/pci/ats.c       | 32 ++++++++++++++++++++++++++++++--
->  include/linux/pci-ats.h |  1 +
->  2 files changed, 31 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-> index f9cc2e10b676..70e1982efdb4 100644
-> --- a/drivers/pci/ats.c
-> +++ b/drivers/pci/ats.c
-> @@ -46,6 +46,34 @@ bool pci_ats_supported(struct pci_dev *dev)
->  }
->  EXPORT_SYMBOL_GPL(pci_ats_supported);
->  
-> +/**
-> + * pci_ats_stu_configure - Configure STU of a PF.
-> + * @dev: the PCI device
-> + * @ps: the IOMMU page shift
-> + *
-> + * Returns 0 on success, or negative on failure.
-> + */
-> +int pci_ats_stu_configure(struct pci_dev *dev, int ps)
-> +{
-> +	u16 ctrl;
-> +
-> +	if (dev->ats_enabled || dev->is_virtfn)
-> +		return 0;
-> +
-> +	if (!pci_ats_supported(dev))
-> +		return -EINVAL;
-> +
-> +	if (ps < PCI_ATS_MIN_STU)
-> +		return -EINVAL;
-> +
-> +	dev->ats_stu = ps;
-> +	ctrl = PCI_ATS_CTRL_STU(dev->ats_stu - PCI_ATS_MIN_STU);
-> +	pci_write_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, ctrl);
-
-If you just want to update the STU, don't overwrite other fields.
-
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(pci_ats_stu_configure);
-> +
->  /**
->   * pci_enable_ats - enable the ATS capability
->   * @dev: the PCI device
-> @@ -68,8 +96,8 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
->  		return -EINVAL;
->  
->  	/*
-> -	 * Note that enabling ATS on a VF fails unless it's already enabled
-> -	 * with the same STU on the PF.
-> +	 * Note that enabling ATS on a VF fails unless it's already
-> +	 * configured with the same STU on the PF.
->  	 */
->  	ctrl = PCI_ATS_CTRL_ENABLE;
->  	if (dev->is_virtfn) {
-> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
-> index df54cd5b15db..9b40eb555124 100644
-> --- a/include/linux/pci-ats.h
-> +++ b/include/linux/pci-ats.h
-> @@ -8,6 +8,7 @@
->  /* Address Translation Service */
->  bool pci_ats_supported(struct pci_dev *dev);
->  int pci_enable_ats(struct pci_dev *dev, int ps);
-> +int pci_ats_stu_configure(struct pci_dev *dev, int ps);
-
-What about dummy declaration for !CONFIG_PCI_ATS case?
-
->  void pci_disable_ats(struct pci_dev *dev);
->  int pci_ats_queue_depth(struct pci_dev *dev);
->  int pci_ats_page_aligned(struct pci_dev *dev);
-
--- 
-Sathyanarayanan Kuppuswamy
-Linux Kernel Developer
+Thanks
+Nic
