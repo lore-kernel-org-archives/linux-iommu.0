@@ -1,102 +1,126 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23F6A636
-	for <iommu@lists.linux.dev>; Tue, 28 Feb 2023 02:19:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EE13623
+	for <iommu@lists.linux.dev>; Tue, 28 Feb 2023 02:42:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677550758; x=1709086758;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=A8N9428Tcr7/tfdQWiJlI1cxLImMy9WDZy/+x8nbwRk=;
-  b=LaJMbWHS52aGP5STVmq3JyoPwx/V3VSBs+XG+uxpCdl0+zNj1OPa8eNZ
-   1m9Zg1omm7IWjnXP28HPFHGnsHYc4y/H94XaYT0lo+BeqwCfg/CrKJXlu
-   RR3dEiutHFMqOI7XOrIUlz26KoY8M+NPLisZoQKwMW37+bz+Ca79va83u
-   /GQc3Eah3FtNrmEDhX3fbVlALMGS7kXX/3WP5NIXCwa7B5eMYM2uxZQzm
-   ErWjonSVQFXionMUWFFHcQhq0lWjF6GrHNZd1bMn6k/SC4PCTT/Nx/oO0
-   J2WJXzstiU8vBUDEBG5/DXLF9NIsdTGQklp7DMNyEucqCKG0v8XI7HSE5
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10634"; a="336312331"
+  t=1677552141; x=1709088141;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=A0CRrdLyu+AkROlOaV6sxjn4YAoa5LBpAtnl3pAoGX8=;
+  b=T631mDimijDQTmeZ0aRqjVg6B2lLQWh99jZtCugdALht7WpMLRuZ+vwn
+   g3ubAJV2Ys8ZztbzlU3m2Gf/OnEaKOvBA7apMQZYnZG7xOCc1o+6Wpotu
+   F7M22bP2sC2SKZEYFO1Sx+w0a3alpLzO7T1HSQyQF4fCRLaB+xP2YOb+c
+   aQ8oDylzQVKgq40wpxQ9Lias3ENGrhnqZrWJttcFgNIdYhIbwYa/VvKid
+   2Y92YYzqFzjeaEuP2SvaTJgGc5Cog2mp93QGKhlg7AsqdqlvJLzAWnvJY
+   QdOVCtdyz9msSTrrzpkruo5VOs6Hbrae0dmEpL1HsTH3s04byJFG9qHlh
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10634"; a="322278098"
 X-IronPort-AV: E=Sophos;i="5.98,220,1673942400"; 
-   d="scan'208";a="336312331"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2023 18:19:18 -0800
+   d="scan'208";a="322278098"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2023 18:42:20 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10634"; a="797889831"
+X-IronPort-AV: E=McAfee;i="6500,9779,10634"; a="673963809"
 X-IronPort-AV: E=Sophos;i="5.98,220,1673942400"; 
-   d="scan'208";a="797889831"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by orsmga004.jf.intel.com with ESMTP; 27 Feb 2023 18:19:16 -0800
-Message-ID: <322462b2-a3e2-31a3-d520-34fe1467b26e@linux.intel.com>
-Date: Tue, 28 Feb 2023 10:10:41 +0800
+   d="scan'208";a="673963809"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by orsmga002.jf.intel.com with ESMTP; 27 Feb 2023 18:42:18 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: iommu@lists.linux.dev
+Cc: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 1/1] iommu/vt-d: Add opt-in for ATS support on discrete devices
+Date: Tue, 28 Feb 2023 10:33:41 +0800
+Message-Id: <20230228023341.973671-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
- Kevin Tian <kevin.tian@intel.com>, linux-kselftest@vger.kernel.org,
- kvm@vger.kernel.org, Nicolin Chen <nicolinc@nvidia.com>,
- Yi Liu <yi.l.liu@intel.com>
-Subject: Re: [PATCH 09/14] iommufd: Add iommufd_device_replace()
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <9-v1-7612f88c19f5+2f21-iommufd_alloc_jgg@nvidia.com>
- <909ee61a-9cbd-eda1-89a2-349348eeb735@linux.intel.com>
- <Y/y3fnSJZB7QhAKM@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Y/y3fnSJZB7QhAKM@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On 2/27/23 10:00 PM, Jason Gunthorpe wrote:
-> On Sun, Feb 26, 2023 at 11:13:16AM +0800, Baolu Lu wrote:
->> On 2/25/23 8:27 AM, Jason Gunthorpe wrote:
->>> +/**
->>> + * iommufd_device_attach - Connect a device to an iommu_domain
->>> + * @idev: device to attach
->>> + * @pt_id: Input a IOMMUFD_OBJ_IOAS, or IOMMUFD_OBJ_HW_PAGETABLE
->>> + *         Output the IOMMUFD_OBJ_HW_PAGETABLE ID
->>
->> "Output the hwpt ID" only happens when the caller input an IOAS object
->> and an auto domain was selected or created for the device.
->>
->> Do I understand it right?
-> 
-> Technically it always outputs the hwpt, if a hwpt is in put then the
-> same hwpt is output.
+In normal processing of PCIe ATS requests, the IOMMU performs address
+translation and returns the device a physical memory address which
+will be stored in that device's IOTLB. The device may subsequently
+issue Translated DMA request containing physical memory address. The
+IOMMU only checks that the device was allowed to issue such requests
+and does not attempt to validate the physical address.
 
- From the code point of view, the pt_id is set only when an auto domain
-is selected. Otherwise, it is untouched. Hence, probably we could
-describe it more accurately in the comments. That is, if auto domain is
-selected, its hwpt id will be returned in pt_id and the caller could
-return it to userspace.
+The Intel IOMMU implementation only allows PCIe ATS on several SOC-
+integrated devices which are opt-in’ed through the ACPI tables to
+prevent any compromised device from accessing arbitrary physical
+memory.
 
-> 
->>>    EXPORT_SYMBOL_NS_GPL(iommufd_device_attach, IOMMUFD);
->>> +/**
->>> + * iommufd_device_replace - Change the device's iommu_domain
->>> + * @idev: device to change
->>> + * @pt_id: Input a IOMMUFD_OBJ_IOAS, or IOMMUFD_OBJ_HW_PAGETABLE
->>> + *         Output the IOMMUFD_OBJ_HW_PAGETABLE ID
->>
->> If my above understanding is correct, then replace will never output a
->> hwpt id as it only happens after a successful attach.
-> 
-> Replace calls iommufd_device_auto_get_domain() which always sets pt_id
-> on success?
+Add a kernel option intel_iommu=relax_ats to allow users to have an
+opt-in to allow turning on ATS at as wish, especially for CSP-owned
+vertical devices. In any case, risky devices are not allowed to use
+ATS.
 
-Yes. replace also calls iommufd_device_auto_get_domain().
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ Documentation/admin-guide/kernel-parameters.txt | 6 ++++++
+ drivers/iommu/intel/iommu.c                     | 7 +++++++
+ 2 files changed, 13 insertions(+)
 
-> 
-> If a HWPT was passed in then it just leaves it unchanged which is also
-> correct.
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 6221a1d057dd..490fae585f73 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -2075,6 +2075,12 @@
+ 			Note that using this option lowers the security
+ 			provided by tboot because it makes the system
+ 			vulnerable to DMA attacks.
++		relax_ats
++			By default, the Intel IOMMU implementation only allows
++			ATS to be enabled on certain devices. The platform
++			advertises its allowed devices in ACPI tables like SATC
++			and ATSR. With this option, this ATS requirement is
++			relaxed so that discrete PCI devices can also use ATS.
+ 
+ 	intel_idle.max_cstate=	[KNL,HW,ACPI,X86]
+ 			0	disables intel_idle and fall back on acpi_idle.
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 7c2f4bd33582..4f6c6d8716bd 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -290,6 +290,7 @@ static int dmar_map_gfx = 1;
+ static int intel_iommu_superpage = 1;
+ static int iommu_identity_mapping;
+ static int iommu_skip_te_disable;
++static int iommu_relaxed_ats;
+ 
+ #define IDENTMAP_GFX		2
+ #define IDENTMAP_AZALIA		4
+@@ -349,6 +350,9 @@ static int __init intel_iommu_setup(char *str)
+ 		} else if (!strncmp(str, "tboot_noforce", 13)) {
+ 			pr_info("Intel-IOMMU: not forcing on after tboot. This could expose security risk for tboot\n");
+ 			intel_iommu_tboot_noforce = 1;
++		} else if (!strncmp(str, "relax_ats", 9)) {
++			pr_info("ATS reqirement is relaxed\n");
++			iommu_relaxed_ats = 1;
+ 		} else {
+ 			pr_notice("Unknown option - '%s'\n", str);
+ 		}
+@@ -3557,6 +3561,9 @@ static int dmar_ats_supported(struct pci_dev *dev, struct intel_iommu *iommu)
+ 	struct dmar_atsr_unit *atsru;
+ 	struct dmar_satc_unit *satcu;
+ 
++	if (iommu_relaxed_ats && !dev->untrusted)
++		return 1;
++
+ 	dev = pci_physfn(dev);
+ 	satcu = dmar_find_matched_satc_unit(dev);
+ 	if (satcu)
+-- 
+2.34.1
 
-Functionally right. Above I just want to make the comment matches what
-the real code does.
-
-Best regards,
-baolu
