@@ -1,157 +1,108 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F9693D84
-	for <iommu@lists.linux.dev>; Tue, 28 Feb 2023 16:30:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677601826; x=1709137826;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=dyojsfFIUKPS3PvJ1BbTCwtCmtNpDYEHb7YR/J13vUk=;
-  b=OwLI+VrDCL8o0K15172bWMqQtuNJP/+rTm2b603cwaE5sFZi2J5nM3WO
-   IDqO/3MPkkkaBzCrN/29PQAGrS6mF9xt7Cu+NpRfuk3rgQy/4lP3zx258
-   uH2rK0EoRmS3fT/5Ej1ZgOmq7AJwC5tKPBnW/sOedp2QtfTOky7up/du8
-   S2m3Q1q6B/ykq4U2Byfu9jkYGNLD1Dll3bD1bhuubmGwoKKM5D1fztQOy
-   BGxp5XafYGx9NV8WaDbt96aZrIBx9lUSXCHu5yDnq/Yc2omVFvv1yrsGA
-   55CcyMUk0O8tugHKNYC6ks6QmhhthCzbLbOXP62hyaxzgjTPb2IYamnNc
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10635"; a="396751347"
-X-IronPort-AV: E=Sophos;i="5.98,222,1673942400"; 
-   d="scan'208";a="396751347"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2023 08:30:25 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10635"; a="798107637"
-X-IronPort-AV: E=Sophos;i="5.98,222,1673942400"; 
-   d="scan'208";a="798107637"
-Received: from ticela-az-102.amr.corp.intel.com (HELO [10.209.55.154]) ([10.209.55.154])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2023 08:30:24 -0800
-Message-ID: <eefaf1bc-586b-aa0f-8899-fcce0460b733@linux.intel.com>
-Date: Tue, 28 Feb 2023 08:30:24 -0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB9B39459;
+	Tue, 28 Feb 2023 20:21:42 +0000 (UTC)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+	by mailout.west.internal (Postfix) with ESMTP id 24B58320027A;
+	Tue, 28 Feb 2023 15:21:41 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Tue, 28 Feb 2023 15:21:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+	 h=cc:cc:content-transfer-encoding:date:date:from:from
+	:in-reply-to:message-id:mime-version:reply-to:sender:subject
+	:subject:to:to; s=fm1; t=1677615700; x=1677702100; bh=80HN6tNx1o
+	zGuvhWGo3Rdaml7NQ1ggVCX7mzw8UAeq4=; b=VNnIAw7Z+so5a+07y3LSfMCrG8
+	olIHuKQ4ehz/JcEbUxjawVcyh+XebLoflCRa79c8n+jkl55K82TIVT+2E//jm2hn
+	tZLek8JsY5s2X+I2cF67j1aFGlXTr1IiWoFDP79zM65tkJ1wfNYocD1uCYIcT6Jl
+	a1yin/aBCTZGVaKY0bQgSHdQ31qfOaEYh84SMC7LNsceMz7MKOZPnnVroGVMzDEZ
+	GkRB66Y4Ky9mr5jrrKhudFc0uqLgs+reaDq9PfwWPp/+Jchu2g7ELabZ+k6I00sR
+	AEi3ewVJWl+woqSSSGg2JNJK5+17zit7YCiFdCux4DEtl3d1Gs5pwk2d/bIQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:message-id
+	:mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+	:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
+	1677615700; x=1677702100; bh=80HN6tNx1ozGuvhWGo3Rdaml7NQ1ggVCX7m
+	zw8UAeq4=; b=gP+yMM/OKUfYKb9I4a53t7ZaW01eyg/xajf+r8BWcDUAWw08xNp
+	//DaQKJsfU60GlTj60fCm666+lUHKf1SLnqF32wdjoK5qs5ZjBBvrMd2zN8tT/kt
+	QXxex/eqRN4q9/wdPue2nlbQDO8nOGVc7ygdjPxLeSPgKu8e133soWl6LlZNrm2e
+	Pl1XgNDXTwFp7TrEZhI57Nde2+P7cAvoaLqd9BWSUh6YxsyHaurQBuCOlR+LtxDd
+	Sgy4/5jZFX69fnKHaOd4LgiaO3olY6u0F8mJXVwC6+lNeZf6EmePksBdVEPAysH9
+	U6wlHViFIjyhtsIW73kxuX8XOjgUIDFNxbg==
+X-ME-Sender: <xms:VGL-Y3G00odI-HEg2RwJxrEajIf-IE7eT5gF5BWQXhwbIUcRpeNiKw>
+    <xme:VGL-Y0V29sAVoqwIG7l5ltMKwMZYTO4msVVRGPA72535ULBpJqhGlSpeG6MVNsTMK
+    QK8TIeDMeUUuRR2sbA>
+X-ME-Received: <xmr:VGL-Y5KxLmwEBXXb8W7lTz9V1dVAAmoHQiPiZTU77y23Y9b4iyTWvnvGuLRcTYI7HLUUSavRsC785cW25Twc4Xw7VnceIpEhzhJ1TtE5Ej3jcLZ8MYVxqH0egc6OwA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudelfedgjeefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvvefufffkofgggfestdekredtredttdenucfhrhhomhepufhvvghnucfr
+    vghtvghruceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrghtthgvrh
+    hnpeeludffieehueevtdffvedtueelleejuddugfettdevhfefffdvgffhjeehgfelleen
+    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsvhgvnh
+    esshhvvghnphgvthgvrhdruggvvh
+X-ME-Proxy: <xmx:VGL-Y1Ez5paHXevuEnqAyQvLOWNrtoN4fi_FWxysO64ZW4ftkAV5vg>
+    <xmx:VGL-Y9VjDtvS5EJ28BtTNBXEnNIWVziPj2f-IbVJIYsgNX9h1LBHng>
+    <xmx:VGL-YwN8FHKFAG22LuzO1mvMRcCVFAxssgicgkmfGhBXeAYLXRRPjA>
+    <xmx:VGL-Y4OVHbB-QS-VB8Hg1_b71U-Ij2w_YauTsmXzdQfgFJbnbNTQWQ>
+Feedback-ID: i51094778:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 28 Feb 2023 15:21:38 -0500 (EST)
+From: Sven Peter <sven@svenpeter.dev>
+To: Hector Martin <marcan@marcan.st>,
+	Sven Peter <sven@svenpeter.dev>
+Cc: Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	linux-arm-kernel@lists.infradead.org,
+	asahi@lists.linux.dev,
+	iommu@lists.linux.dev,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/4] Apple M1 USB4/Thunderbolt DART support
+Date: Tue, 28 Feb 2023 21:21:28 +0100
+Message-Id: <20230228202132.4919-1-sven@svenpeter.dev>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.4.2
-Subject: Re: [PATCH v2 1/2] PCI/ATS: Add a helper function to configure ATS
- STU of a PF
-Content-Language: en-US
-To: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>,
- linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- joro@8bytes.org, bhelgaas@google.com, robin.murphy@arm.com, will@kernel.org
-Cc: jean-philippe@linaro.org, darren@os.amperecomputing.com,
- scott@os.amperecomputing.com
-References: <20230228042137.1941024-1-gankulkarni@os.amperecomputing.com>
- <20230228042137.1941024-2-gankulkarni@os.amperecomputing.com>
-From: Sathyanarayanan Kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>
-In-Reply-To: <20230228042137.1941024-2-gankulkarni@os.amperecomputing.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
+Hi,
 
+The M1 SoCs have a second slightly different variant of the regular
+DART used for the USB4 PCIe ports. It supports 64 instead of 16 streams
+which requires a minor change to the MMIO layout.
+There seems to be no way to tell them apart from the regular DARTs by
+just looking at the DART_PARAMs register so we have to add a new
+compatible for those.
 
-On 2/27/23 8:21 PM, Ganapatrao Kulkarni wrote:
-> As per PCI specification (PCI Express Base Specification Revision
-> 6.0, Section 10.5) both PF and VFs of a PCI EP are permitted to be enabled
-> independently for ATS capability, however the STU(Smallest Translation
-> Unit) is shared between PF and VFs. For VFs, it is hardwired to Zero and
-> the associated PF's value applies to VFs.
-> 
-> In the current code, the STU is being configured while enabling the PF ATS.
-> Hence, it is not able to enable ATS for VFs, if it is not enabled on the
-> associated PF already.
-> 
-> Adding a function pci_ats_stu_configure(), which can be called to
-> configure the STU during PF enumeration.
-> Latter enumerations of VFs can successfully enable ATS independently.
-> 
-> Signed-off-by: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>
-> ---
->  drivers/pci/ats.c       | 33 +++++++++++++++++++++++++++++++--
->  include/linux/pci-ats.h |  3 +++
->  2 files changed, 34 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-> index f9cc2e10b676..1611bfa1d5da 100644
-> --- a/drivers/pci/ats.c
-> +++ b/drivers/pci/ats.c
-> @@ -46,6 +46,35 @@ bool pci_ats_supported(struct pci_dev *dev)
->  }
->  EXPORT_SYMBOL_GPL(pci_ats_supported);
->  
-> +/**
-> + * pci_ats_stu_configure - Configure STU of a PF.
-> + * @dev: the PCI device
-> + * @ps: the IOMMU page shift
-> + *
-> + * Returns 0 on success, or negative on failure.
-> + */
-> +int pci_ats_stu_configure(struct pci_dev *dev, int ps)
-> +{
-> +	u16 ctrl;
-> +
-> +	if (dev->ats_enabled || dev->is_virtfn)
-> +		return 0;
+Change since v1:
+  - apple,t8103-usb4-dart instead of apple,t8103-dart-usb4 as the
+    compatible
+  - collected Hector's tags
 
-Is PF allowed to re-configure STU if there are other active
-VF's which uses it?
+Best,
 
-> +
-> +	if (!pci_ats_supported(dev))
-> +		return -EINVAL;
-> +
-> +	if (ps < PCI_ATS_MIN_STU)
-> +		return -EINVAL;
-> +
-> +	dev->ats_stu = ps;
-> +	pci_read_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, &ctrl);
-> +	ctrl |= PCI_ATS_CTRL_STU(dev->ats_stu - PCI_ATS_MIN_STU);
-> +	pci_write_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, ctrl);
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(pci_ats_stu_configure);
-> +
->  /**
->   * pci_enable_ats - enable the ATS capability
->   * @dev: the PCI device
-> @@ -68,8 +97,8 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
->  		return -EINVAL;
->  
->  	/*
-> -	 * Note that enabling ATS on a VF fails unless it's already enabled
-> -	 * with the same STU on the PF.
-> +	 * Note that enabling ATS on a VF fails unless it's already
-> +	 * configured with the same STU on the PF.
->  	 */
->  	ctrl = PCI_ATS_CTRL_ENABLE;
->  	if (dev->is_virtfn) {
-> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
-> index df54cd5b15db..7d62a92aaf23 100644
-> --- a/include/linux/pci-ats.h
-> +++ b/include/linux/pci-ats.h
-> @@ -8,6 +8,7 @@
->  /* Address Translation Service */
->  bool pci_ats_supported(struct pci_dev *dev);
->  int pci_enable_ats(struct pci_dev *dev, int ps);
-> +int pci_ats_stu_configure(struct pci_dev *dev, int ps);
->  void pci_disable_ats(struct pci_dev *dev);
->  int pci_ats_queue_depth(struct pci_dev *dev);
->  int pci_ats_page_aligned(struct pci_dev *dev);
-> @@ -16,6 +17,8 @@ static inline bool pci_ats_supported(struct pci_dev *d)
->  { return false; }
->  static inline int pci_enable_ats(struct pci_dev *d, int ps)
->  { return -ENODEV; }
-> +static inline int pci_ats_stu_configure(struct pci_dev *d, int ps)
-> +{ return -ENODEV; }
->  static inline void pci_disable_ats(struct pci_dev *d) { }
->  static inline int pci_ats_queue_depth(struct pci_dev *d)
->  { return -ENODEV; }
+Sven
+
+Sven Peter (4):
+  dt-bindings: iommu: dart: Add t8103-usb4-dart compatible
+  iommu: dart: Add flag to override bypass support
+  iommu: dart: Write to all DART_T8020_STREAM_SELECT
+  iommu: dart: Add support for t8103 USB4 DART
+
+ .../devicetree/bindings/iommu/apple,dart.yaml |  1 +
+ drivers/iommu/apple-dart.c                    | 42 ++++++++++++++++++-
+ 2 files changed, 41 insertions(+), 2 deletions(-)
 
 -- 
-Sathyanarayanan Kuppuswamy
-Linux Kernel Developer
+2.25.1
+
