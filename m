@@ -1,128 +1,165 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 116C2847A
-	for <iommu@lists.linux.dev>; Wed,  1 Mar 2023 18:19:36 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 79B322F4;
-	Wed,  1 Mar 2023 10:20:19 -0800 (PST)
-Received: from [10.57.78.237] (unknown [10.57.78.237])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1E33E3F587;
-	Wed,  1 Mar 2023 10:19:34 -0800 (PST)
-Message-ID: <9aec8741-9394-60ad-70c5-f8da773d7da8@arm.com>
-Date: Wed, 1 Mar 2023 18:19:30 +0000
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2042.outbound.protection.outlook.com [40.107.223.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7072881F
+	for <iommu@lists.linux.dev>; Wed,  1 Mar 2023 19:30:32 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gUPL00PKbZ3rlk64bB2ilcHutbfOszh37eVM5pWUnt4f27lLRpNiugn8BTKaeenrbXom3cSDcQcOgs94tUVD54XLhau7+7TGnb6AEDj5RW4Ei4kfUaPOoVAI43jIuansLeoL3uXnrm7PNWTX9vYvbqehoSX3wIWGENJ2fZ44B6G7uM8lNEvt7KIJLpMbOanfLNhb6Rp+ED2KFPDTqjFS6vCyWt3oMCH2+KHn4aCiW4SPiUIzGTPXUlMfySRDBs8YS0+cyo6zgJGo4dKWGlE4ZGaR9K8jiFHc2X4RMw58z+diGzfl4RZrrGQE0cataiADvgf2d4iqCwZ4vDOOmY2Wzw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=60gA5gvuE3y89wzlaXgX7fxwtUYaOAQtWTVh2/J7tMs=;
+ b=Q9B0i7afBpujP83re1CXFv8hDufIuU9YlPaCRfdEQMqzA6YkXG/2LTol2o6x3pstiITdXiRF//esbf2i5sAUOS3fmMqknf6qZ3h9ptHAFvEz5VqpziEWO6vm1JqL0q4PwS5ryPZbhwR/ufdS0Kn+FXbuc8muhy5K9pv22R5tB4xQHLOaIKWyA4+1hacs4LuJpb8O36P53IxSz422GIC7rrdeoMfvZuuA2+m5QLHdwVSoOhBO9+kjlutINHDWHD0o1NT8M88VyaD7A/Au9e7U/Sh3hMVf615OwIxcfAWeWGdkZC84AbudiRaHNJU7ckg32o9yt3WsH9sTNC3XWuYwoQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=60gA5gvuE3y89wzlaXgX7fxwtUYaOAQtWTVh2/J7tMs=;
+ b=DN+csh/maK5XHPaxOB1FTxXaMtiYuK7RFmsVQMTCI7sor+IH+KdIA+yTikyEZ6sNxaEKDMTiAqUCsotAHmWRUt+bDrZU8wfWfJDS36N6K+vW0s3JC+dfJcNWNNHQnFcPWV+ePt08CC2knzQKhgxY8a/N69uNKpNTOc9wdWIyv2YDqpsIHRGgyAdL1rXTN3Eb/v/N0MFIapYi9L/wLUJC2NMzaYYCo2jtE3JQnigQfd8zE7DqgDibw3BzXEzQYasLUwBz8nSTf7vYsSc208wvTSWEtQrozvazyTHT6cz7E+m6lpu3kR66va4irBDptkuCfy2FcUTNXxioS1B/OcgcgQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by IA0PR12MB8086.namprd12.prod.outlook.com (2603:10b6:208:403::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.30; Wed, 1 Mar
+ 2023 19:30:31 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3cb3:2fce:5c8f:82ee%4]) with mapi id 15.20.6134.029; Wed, 1 Mar 2023
+ 19:30:30 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: iommu@lists.linux.dev,
+	Kevin Tian <kevin.tian@intel.com>,
+	linux-kselftest@vger.kernel.org,
+	Shuah Khan <shuah@kernel.org>
+Cc: Nicolin Chen <nicolinc@nvidia.com>,
+	Yi Liu <yi.l.liu@intel.com>
+Subject: [PATCH v3 00/12] Revise the hwpt lifetime model
+Date: Wed,  1 Mar 2023 15:30:17 -0400
+Message-Id: <0-v3-ae9c2975a131+2e1e8-iommufd_hwpt_jgg@nvidia.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: YT4PR01CA0064.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:111::6) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH 1/1] iommu/vt-d: Add opt-in for ATS support on discrete
- devices
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Kevin Tian <kevin.tian@intel.com>, linux-kernel@vger.kernel.org
-References: <20230228023341.973671-1-baolu.lu@linux.intel.com>
- <Y/3yNaQD5Pkvf61k@nvidia.com>
- <3891a9a8-c796-2644-9473-aafc9ecea64e@linux.intel.com>
- <Y/9bWMoAYF10ynO3@nvidia.com> <0f162421-479e-6ab3-bbaf-0090b1a2472c@arm.com>
- <Y/+OobufnmGhg/R7@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <Y/+OobufnmGhg/R7@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|IA0PR12MB8086:EE_
+X-MS-Office365-Filtering-Correlation-Id: 72dc2285-7217-45ae-cb5b-08db1a8b6b57
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	i6EWIX78Uc0n5J465/H0JESgcSwK1Ie2hU4OlGRiJjdpuoa+5l/RbVS/2ViuTh5uQOhiaY5CZkLuFew5oJ3dA7pPLrTWCFDkgxu9cIN2L7kTcu08x6/x5QojG/uyuFWzMXs7DSA0Y8A4DrfUczZpTyhCcULCnheiWyL89yLIWxJJuQtedOdUWPrdNIijP2Un84NS/x4TsOQMLX9DB4X2TGLTc/yl4/HvTPzBsGY9Xmm0Ps89yJQULyo4IKDUrI+ZAN2MsSImzzf7TnQlm26nH5AGjwLUDPZv/97DrfKlNYQkxVn/CmsWgPhusgOnf4H6ul7phmGUd4l/mgtctWXsY6jyoHLYwY1D+DFG/2XMpxoqLs3houEjymUc9NeHolWToWJ5g7k/vB8g9CtZBj3F+Aho6BK3aJq1YDyt4ZVqoWEbRLMpa8GE4jcs9PWv5QjO9frUwyzU5Yd7FMqGsvovP3v75p16lk+RStzogWZ6C+YG5k8zXJhUqO+ts1Onqc100iWOI9KUh4sC5FQIA73Xy211S3HWhGLu0KDyHcqtiBQcOeXF4WcRwkNTGq9qU9GjmWJYVIQ2PaOvzve7beMSP5NeijVwm5WNjsqAjlQsrzDK5h/pZnDCSDOtUsFABAVPXF4+hfWwVznWqjszcUXORfd8yE2OLA64p3uGDsakKQ99evXDI7R6AFEtvIHmlp9zMOriJFcDGJmUSSZroG4lKXTQbzRpT6CRLqwwk3orvapyOVPTIoIgBeDN74oe1FU7qXJgHidnUSD8aVt9dQeHFQ==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(376002)(346002)(366004)(39860400002)(136003)(451199018)(186003)(2906002)(6512007)(5660300002)(38100700002)(26005)(6506007)(8936002)(4326008)(966005)(6486002)(41300700001)(86362001)(2616005)(8676002)(66946007)(66556008)(66476007)(6666004)(110136005)(36756003)(54906003)(83380400001)(316002)(478600001)(4216001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?kVrPaAhVu5FVP7caodl3vF+hykIn27WZyuYWdiQcN6b0ZBG8Ige7tDteC2sv?=
+ =?us-ascii?Q?VekWl+Jy4Om+yDwI9QaGCssHIJzqiWhwct6fcLs0I/tE6IBdCuP8CvO5/Pjx?=
+ =?us-ascii?Q?/kmciZGr/t8gaSaX5/IEemEhrCnvPkpeh+mYuYKnzejSUZIQNFPLbzZ41xtS?=
+ =?us-ascii?Q?UtZXNxAeyQF0jfNwoUyEK1FvekA4tb1IyLHGizEwO5tTv2HzExUHZqZHopF7?=
+ =?us-ascii?Q?o1mxTjsCzO9uAgAbBu2hCK738pOt4bx+DAAD5co3wEDSFpOKy4aXzh4b1uVu?=
+ =?us-ascii?Q?MsQb+oH6WmyKp9mqa6OajsOQ9DiJZYsw0z++mPOLB1AsB1kJIzdQvwtzTq+8?=
+ =?us-ascii?Q?17bn8CiI5Zq3eYxUExuiQYqSOPfrJZZRFGWUotU4w3n29B5RpSksEWEhPv2I?=
+ =?us-ascii?Q?tc6OnQPCBnF46cb6ch8bsI/+IGX/6B0MbbNvZIY1m27kJq/eFgXPG7Z4InXl?=
+ =?us-ascii?Q?aG78UlFmgKKdOZzBZAZ3OEj5RWKjagK6gOxntf8c4Gs36Kx52OnY0GUK6cHK?=
+ =?us-ascii?Q?Zru4mZAEOl+CroHo8I5R7aObxUyItjMtOqKFyZ6PDjjrVkiPQgcMlFiW2dsa?=
+ =?us-ascii?Q?FxuD8Qhe6jjMSEvrFv8hrA/apdVrRXZO+ABhwx3KlQChxHnjnxQ9nTxidtuo?=
+ =?us-ascii?Q?ZgFtF5Sqbtkbl3rujMhToy8dPm3SZJXqCsba6HHeid9ugdc94ZhxRCeAEuu+?=
+ =?us-ascii?Q?Fo08Havw1ckXcStFIFyg/zhenTG5HzVWtA61rgK8UYXFWOvcyroZYGJ4Gd43?=
+ =?us-ascii?Q?92aZv32HfHb9Mm3X1F4uZ8VDh2PEOEl6dNes7R/UIR71O9yOHazM70EEwRZ9?=
+ =?us-ascii?Q?w80KkYuFNBB7FV185u5kDtC82XAjuU3630/7eKUnn5rSxEIj/5oGWYODkcUr?=
+ =?us-ascii?Q?Xjq0w4XZAuT5ZzwrhVZGmn89f6FFu/QuMFzLBphRaT9kr7VygYCYwb4mmeC6?=
+ =?us-ascii?Q?Kw7fuc29ti53jQQ5TMG7sinOP72ZShnJDQ9yc7W7FLHGE2l2i2BGAC/lTrLI?=
+ =?us-ascii?Q?+gca/CeFo0MJ+Uq8brbc8s3bSuQQyufUemIBjREDvEU0tsW6HP8AWedUwFoh?=
+ =?us-ascii?Q?MwNAD/a/2uePxyw84H2gqm3oEtQowlUoRoqtgaMhDiRhdy33ezOX2LjPMTGX?=
+ =?us-ascii?Q?omCCblzdkh9YZqNU96s12uO52+k62GIA/pBHQx5pCusY/frde4AM02ii9Fbe?=
+ =?us-ascii?Q?0zriVeq1l1nNJ9F+98XD+0PMXy36FrGG4KyadWx7KQrU/300Uk0gOzVrrg2D?=
+ =?us-ascii?Q?PA7ZKXc/jGz7XrODYtC0alnHw6yoSxATpVM4X55OisHin/3QH4K8h0JPzqCK?=
+ =?us-ascii?Q?9DRnnK09vM/htl9XMRyyWo/+rxmLwHwqkr4DPveA3CPumJlixJil3Z3dYyUt?=
+ =?us-ascii?Q?iLzcQMm08JlFhbZcLKjZr3e9X8tgskwt8RvSkIUsYWbFfrG0fq/LNitR2uDS?=
+ =?us-ascii?Q?MQILCmIC8hAZfn1h+XStBc9PbqOjdVSEJmf3Q2UuEicKq8qApY68UfaAgr//?=
+ =?us-ascii?Q?Lt8M4Ax0EZ5jTufUGioqI/EM7/pDSArlJz2ICD8vKpS/fD3tgBzed/HZ6M9Y?=
+ =?us-ascii?Q?+8BckQMXnjZOVuxNe1y/oWsas7vQsqGZiqV1BQIy?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 72dc2285-7217-45ae-cb5b-08db1a8b6b57
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Mar 2023 19:30:30.7842
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: CxZoLFi5M2Jp0h9ijFoPqffBPsZXsUDxtzmBVFLVXaC7dM+J51DDeEa2U/P2fQqt
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8086
 
-On 2023-03-01 17:42, Jason Gunthorpe wrote:
-> On Wed, Mar 01, 2023 at 05:15:33PM +0000, Robin Murphy wrote:
->> On 2023-03-01 14:04, Jason Gunthorpe wrote:
->>> On Wed, Mar 01, 2023 at 12:22:23PM +0800, Baolu Lu wrote:
->>>> On 2/28/23 8:23 PM, Jason Gunthorpe wrote:
->>>>> On Tue, Feb 28, 2023 at 10:33:41AM +0800, Lu Baolu wrote:
->>>>>> In normal processing of PCIe ATS requests, the IOMMU performs address
->>>>>> translation and returns the device a physical memory address which
->>>>>> will be stored in that device's IOTLB. The device may subsequently
->>>>>> issue Translated DMA request containing physical memory address. The
->>>>>> IOMMU only checks that the device was allowed to issue such requests
->>>>>> and does not attempt to validate the physical address.
->>>>>>
->>>>>> The Intel IOMMU implementation only allows PCIe ATS on several SOC-
->>>>>> integrated devices which are opt-in’ed through the ACPI tables to
->>>>>> prevent any compromised device from accessing arbitrary physical
->>>>>> memory.
->>>>>>
->>>>>> Add a kernel option intel_iommu=relax_ats to allow users to have an
->>>>>> opt-in to allow turning on ATS at as wish, especially for CSP-owned
->>>>>> vertical devices. In any case, risky devices are not allowed to use
->>>>>> ATS.
->>>>> Why is this an intel specific option?
->>>>
->>>> I only see similar situation on ARM SMMUv3 platforms. The device ATS is
->>>> only allowed when the ATS bit is set in RC node of the ACPI/IORT table.
->>>
->>> It should be common, all iommus using ATS need this logic.
->>
->> The IORT flags are not this kind of policy, they are a necessary description
->> of the hardware. The mix-and-match nature of licensable IP means that just
->> because an SMMU supports the ATS-relevant features defined by the SMMU
->> architecture, that doesn't say that whatever PCIe IP the customer has chosen
->> to pair it with also supports ATS. Even when both ends nominally support it,
->> it's still possible to integrate them together in ways where ATS wouldn't be
->> functional.
->>
->> In general, if a feature is marked as unsupported in IORT, the only way to
->> "relax" that would be if you have a silicon fab handy. If any system vendor
->> *was* to misuse IORT to impose arbitrary and unwelcome usage policy on their
->> customers, then those customers should demand a firmware update (or at least
->> use their own patched IORT, which is pretty trivial with the kernel's
->> existing ACPI table override mechanism).
-> 
-> This makes sense.
-> 
-> I think Intel has confused their version of the IORT.
-> 
-> The ACPI tables read by the iommu driver should be strictly about
-> IOMMU HW capability, like Robin describes for ARM.
-> 
-> Security policy flows through the ExternalFacingPort ACPI via
-> pci_acpi_set_external_facing() and triggers pdev->untrusted.
-> 
-> When an iommu driver sees pdev->untrusted it is supposed to ensure
-> that translated TLPs are blocked. Since nothing does this explicitly
-> it is presumably happening because ATS being disabled also blocks
-> translated TLPs and we check untrusted as part of pci_enable_ats()
+As discussed here is a small series to address the confusing lifetime
+scheme for the hwpt. This was some leftover from prior rework that was
+never fully cleaned up.
 
-At least for SMMU, we seem to be relying on pci_ats_supported() 
-including pdev->untrusted in its decision - that will propagate back to 
-master->ats_enabled = false inside the driver, which in turn will lead 
-to arm_smmu_write_strtab_ent() leaving STE.EATS at the default setting 
-which aborts all translation requests and translated transactions.
+Make it clear that the ioas and ioas->hwpt_list are associated with the
+hwpt during creation and never changed until it is destroyed. A hwpt with
+a positive reference count is always valid for device attachment.
 
-> If Intel BIOS's have populated the "satcu" to say that ATS is not
-> supported by the HW when the HW supports ATS perfectly fine, then get
-> the BIOS fixed or patch the ACPI until it is fixed. The BIOS should
-> not be saying that the HW does not support ATS when it does, it is a
-> simple BIOS bug.
-> 
-> Alternatively if you have some definitive way to know that the HW
-> supports ATS then you should route the satcu information to
-> pdev->untrusted and ignore it at the iommu driver level.
+This also improves the selftest handling of the mock domains so that we
+can implement more testing for the hwpt model.
 
- From a quick look at the VT-d spec, it sounds like the ATSR structure 
-is intended to be functionally equivalent to IORT's Root Complex "ATS 
-Attribute", while the SATC is a slightly specialised version for RCiEPs. 
-The spec even says "Software must enable ATS on endpoint devices behind 
-a Root Port only if the Root Port is reported as supporting ATS 
-transactions". It also seems to be implied that this should be based on 
-what Intel themselves have validated, so an option for the user to say 
-"sure, ATS works everywhere, I know better" and simply bypass all the 
-existing checks doesn't really seem safe to me :/
+This is a step toward the nesting and replace series.
 
-I'd be inclined to hold the same opinion as for IORT here - if a user 
-ever really does need to engage expert mode to safely work around a bad 
-BIOS with known-good information, they should already have the tools to 
-override the whole DMAR table as they see fit.
+I have this on github:
 
-Thanks,
-Robin.
+https://github.com/jgunthorpe/linux/commits/iommufd_hwpt
+
+v3:
+ - Split patch to just make the hwpt_item handling consistent
+ - Remove two confusing comments
+ - Four new patches to clean up the confusing 'domain_id' in the selftest
+v2: https://lore.kernel.org/r/0-v2-406f7ac07936+6a-iommufd_hwpt_jgg@nvidia.com
+ - Basically completely different
+ - Add a test for HWPT cases by enhancing the mock iommu driver to be more
+   complete
+ - Move the device attachment as well into iommufd_hw_pagetable_alloc()
+   so destroy is more symmetric
+v1: https://lore.kernel.org/r/0-v1-4336b5cb2fe4+1d7-iommufd_hwpt_jgg@nvidia.com
+
+Jason Gunthorpe (12):
+  iommufd: Assert devices_lock for iommufd_hw_pagetable_has_group()
+  iommufd: Add iommufd_lock_obj() around the auto-domains hwpts
+  iommufd: Consistently manage hwpt_item
+  iommufd: Move ioas related HWPT destruction into
+    iommufd_hw_pagetable_destroy()
+  iommufd: Move iommufd_device to iommufd_private.h
+  iommufd: Make iommufd_hw_pagetable_alloc() do iopt_table_add_domain()
+  iommufd/selftest: Rename the sefltest 'device_id' to 'stdev_id'
+  iommufd/selftest: Rename domain_id to stdev_id for FIXTURE
+    iommufd_ioas
+  iommufd/selftest: Rename domain_id to hwpt_id for FIXTURE
+    iommufd_mock_domain
+  iommufd/selftest: Rename the remaining mock device_id's to stdev_id
+  iommufd/selftest: Make selftest create a more complete mock device
+  iommufd/selftest: Add a selftest for iommufd_device_attach() with a
+    hwpt argument
+
+ drivers/iommu/iommufd/device.c                | 149 +++++--------
+ drivers/iommu/iommufd/hw_pagetable.c          |  70 ++++++-
+ drivers/iommu/iommufd/iommufd_private.h       |  35 +++-
+ drivers/iommu/iommufd/iommufd_test.h          |   2 +-
+ drivers/iommu/iommufd/selftest.c              | 198 +++++++++++++++---
+ tools/testing/selftests/iommu/iommufd.c       |  68 +++---
+ .../selftests/iommu/iommufd_fail_nth.c        |  38 ++--
+ tools/testing/selftests/iommu/iommufd_utils.h |  16 +-
+ 8 files changed, 368 insertions(+), 208 deletions(-)
+
+
+base-commit: 8473685c99683f9e2c7e2a42ef3d3f14a79be274
+-- 
+2.39.2
+
