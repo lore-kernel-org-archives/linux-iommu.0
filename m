@@ -1,110 +1,109 @@
-Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1CCA371
-	for <iommu@lists.linux.dev>; Tue, 28 Feb 2023 20:59:53 +0000 (UTC)
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-536bbef1c5eso309424207b3.9
-        for <iommu@lists.linux.dev>; Tue, 28 Feb 2023 12:59:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=H15Wgrg45uphokJUqJE+ge3DLPSULLnvrd4PVO7cLLc=;
-        b=fF7yR1zieU4gkviG5qrWrdfSWhtKPGGWlvtMBXv4KHBDu0aJ3gWsucs0SnY/VXu9xI
-         98ilQKazhvCJdc/WBewUB+5SWcdhorii7J1pOeAzos6f/dQqHZdg02M4AtOUfeTq8eOO
-         f09htTPMG/pkdx7lHQGqeX5kSZIxN5OkkPfc77FKJnyPHYn11vG35NdgnRPHPkAFKcea
-         XgImIWOsGyc18s8CqlKSzyo64N6r/4hd/TI5CyRtFIgPb+s+gMlpDT8KVNO9m7c21yRW
-         SoYMoaCOLdsdFi4o18FJKo606Yo0hMRNZOz6SykPjzCGVDwzVDiSukBxaNiAwswCzVE4
-         k7xA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=H15Wgrg45uphokJUqJE+ge3DLPSULLnvrd4PVO7cLLc=;
-        b=JDb6u/9xMhu1bhGY4+P5lyl0tT38vj4jI+uSR840y6ROmq82KQAEmhXzzE8R1+dDtw
-         pqbm2NxUpBMVToPBd015qXm3VsfXKs+oS2+BRvBJzTxnsYWag0DU/SRbEy/OZvMykCWZ
-         odaOhDAlnaE2pxMxMnTug5MpHopdkVpCAAwnGA8F3udOCj2CGjMOsadhJ0Gomu1Sc1t8
-         ELfjsn9I9une47+U165xZJO0c4XEjWl2ZfBombU/583moudx59RLb3vfD2H9gEX6kZJo
-         l83szpCa9XJrTqTGcz1l+9Lvv/2sTQbEpa7v+Fueqyuma0eOSuqZ2e8yZig0TFqYznu0
-         qkBQ==
-X-Gm-Message-State: AO0yUKVLuCTOr8yLH8eerg5XDNTC3oryQ3gFtPsyHm4d60mHXIbOTQFJ
-	E2O0DhXzj1CwMr0wGVyK3x/JHkKxtq0TvfKoOnUBUQ==
-X-Google-Smtp-Source: AK7set+d6vs4ymgWzsVBho7zIKcb2AoIn1quNMhQ7GG855RnJ+2d+gNas87Vdn9aekeC5XgvBudues+ObsH6EIGw7ZY=
-X-Received: by 2002:a5b:8b:0:b0:90d:af77:9ca6 with SMTP id b11-20020a5b008b000000b0090daf779ca6mr2178238ybp.7.1677617992660;
- Tue, 28 Feb 2023 12:59:52 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 560CD7F0
+	for <iommu@lists.linux.dev>; Wed,  1 Mar 2023 01:56:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1677635775; x=1709171775;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=JvUgqcrgfQlznLASCJxhJivg+YLodSnLHw0JHLUxNf0=;
+  b=Ai451P0FkiurqhI1GqtLt9dxiki1O8UNxmGbu92aOB3KfL03U6VjIbCB
+   N/N6QZBYJ9bjdl4FuU/gFw0qQxMXf6VcTxn2La0zp5UQ93XxGjnTLEtdF
+   NtrCKrI1K/pggJi2SiVQpkvdYRvDP1j6UOis0MT/MuY6ZFW/xhdS92/OV
+   XxRmcwOTyRveM9I7MKD0BGfS/8nw4qaz9Xfose8hQCfdJvNBrX5nvF1iK
+   zhyZW7kBkvr/PCNOR+0t+lHEgZ/V1PRotwpTuyaCgXUrLTlX1DmNstg9j
+   lyOk4v2NcmLLVW+jAqAjQfV80t6YXzmJldS/SSksjQZw/NpeV1EL7l4cY
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10635"; a="336590408"
+X-IronPort-AV: E=Sophos;i="5.98,223,1673942400"; 
+   d="scan'208";a="336590408"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2023 17:56:14 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10635"; a="651828038"
+X-IronPort-AV: E=Sophos;i="5.98,223,1673942400"; 
+   d="scan'208";a="651828038"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
+  by orsmga006.jf.intel.com with ESMTP; 28 Feb 2023 17:56:12 -0800
+Message-ID: <91e8d0ee-ee28-0866-85c9-2b499a5dcc38@linux.intel.com>
+Date: Wed, 1 Mar 2023 09:55:21 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <Y8v+qVZ8OmodOCQ9@nvidia.com>
-In-Reply-To: <Y8v+qVZ8OmodOCQ9@nvidia.com>
-From: "T.J. Mercier" <tjmercier@google.com>
-Date: Tue, 28 Feb 2023 12:59:41 -0800
-Message-ID: <CABdmKX3kJZKsOQSi=4+RE8D3AF=-823B9WV11sC4WH67hjzqSQ@mail.gmail.com>
-Subject: Re: [LSF/MM/BPF proposal]: Physr discussion
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
+ Kevin Tian <kevin.tian@intel.com>, linux-kselftest@vger.kernel.org,
+ kvm@vger.kernel.org, Nicolin Chen <nicolinc@nvidia.com>,
+ Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH 09/14] iommufd: Add iommufd_device_replace()
 To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: lsf-pc@lists.linuxfoundation.org, linux-mm@kvack.org, 
-	iommu@lists.linux.dev, linux-rdma@vger.kernel.org, 
-	Matthew Wilcox <willy@infradead.org>, Christoph Hellwig <hch@lst.de>, 
-	Joao Martins <joao.m.martins@oracle.com>, John Hubbard <jhubbard@nvidia.com>, 
-	Logan Gunthorpe <logang@deltatee.com>, Ming Lei <ming.lei@redhat.com>, linux-block@vger.kernel.org, 
-	netdev@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	nvdimm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+References: <9-v1-7612f88c19f5+2f21-iommufd_alloc_jgg@nvidia.com>
+ <cdbc3707-d326-26d4-3adc-ff2ed80aa2ba@linux.intel.com>
+ <Y/y3A4LJqunT0ZwS@nvidia.com>
+ <adfd78d1-006e-5e7c-236b-cc00e8afb8c0@linux.intel.com>
+ <Y/4G4u/uYA3eg7OY@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <Y/4G4u/uYA3eg7OY@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Sat, Jan 21, 2023 at 7:03 AM Jason Gunthorpe <jgg@nvidia.com> wrote:
->
-> I would like to have a session at LSF to talk about Matthew's
-> physr discussion starter:
->
->  https://lore.kernel.org/linux-mm/YdyKWeU0HTv8m7wD@casper.infradead.org/
->
-> I have become interested in this with some immediacy because of
-> IOMMUFD and this other discussion with Christoph:
->
->  https://lore.kernel.org/kvm/4-v2-472615b3877e+28f7-vfio_dma_buf_jgg@nvidia.com/
->
-> Which results in, more or less, we have no way to do P2P DMA
-> operations without struct page - and from the RDMA side solving this
-> well at the DMA API means advancing at least some part of the physr
-> idea.
->
-> So - my objective is to enable to DMA API to "DMA map" something that
-> is not a scatterlist, may or may not contain struct pages, but can
-> still contain P2P DMA data. From there I would move RDMA MR's to use
-> this new API, modify DMABUF to export it, complete the above VFIO
-> series, and finally, use all of this to add back P2P support to VFIO
-> when working with IOMMUFD by allowing IOMMUFD to obtain a safe
-> reference to the VFIO memory using DMABUF. From there we'd want to see
-> pin_user_pages optimized, and that also will need some discussion how
-> best to structure it.
->
-> I also have several ideas on how something like physr can optimize the
-> iommu driver ops when working with dma-iommu.c and IOMMUFD.
->
-> I've been working on an implementation and hope to have something
-> draft to show on the lists in a few weeks. It is pretty clear there
-> are several interesting decisions to make that I think will benefit
-> from a live discussion.
->
-> Providing a kernel-wide alternative to scatterlist is something that
-> has general interest across all the driver subsystems. I've started to
-> view the general problem rather like xarray where the main focus is to
-> create the appropriate abstraction and then go about transforming
-> users to take advatange of the cleaner abstraction. scatterlist
-> suffers here because it has an incredibly leaky API, a huge number of
-> (often sketchy driver) users, and has historically been very difficult
-> to improve.
->
-> The session would quickly go over the current state of whatever the
-> mailing list discussion evolves into and an open discussion around the
-> different ideas.
->
-> Thanks,
-> Jason
->
+On 2/28/23 9:51 PM, Jason Gunthorpe wrote:
+> On Tue, Feb 28, 2023 at 09:50:52AM +0800, Baolu Lu wrote:
+>> On 2/27/23 9:58 PM, Jason Gunthorpe wrote:
+>>> On Sun, Feb 26, 2023 at 11:01:59AM +0800, Baolu Lu wrote:
+>>>> On 2/25/23 8:27 AM, Jason Gunthorpe wrote:
+>>>>> @@ -437,25 +517,77 @@ int iommufd_device_attach(struct iommufd_device *idev, u32 *pt_id)
+>>>>>     		struct iommufd_ioas *ioas =
+>>>>>     			container_of(pt_obj, struct iommufd_ioas, obj);
+>>>>> -		rc = iommufd_device_auto_get_domain(idev, ioas, pt_id);
+>>>>> -		if (rc)
+>>>>> +		destroy_hwpt = iommufd_device_auto_get_domain(idev, ioas, pt_id,
+>>>>> +							      do_attach);
+>>>>> +		if (IS_ERR(destroy_hwpt))
+>>>>>     			goto out_put_pt_obj;
+>>>>>     		break;
+>>>>>     	}
+>>>>>     	default:
+>>>>> -		rc = -EINVAL;
+>>>>> +		destroy_hwpt = ERR_PTR(-EINVAL);
+>>>>>     		goto out_put_pt_obj;
+>>>>>     	}
+>>>>> +	iommufd_put_object(pt_obj);
+>>>>> -	refcount_inc(&idev->obj.users);
+>>>>> -	rc = 0;
+>>>>> +	/* This destruction has to be after we unlock everything */
+>>>>> +	if (destroy_hwpt)
+>>>> Should this be
+>>>>
+>>>> 	if (!IS_ERR_OR_NULL(destroy_hwpt))
+>>>>
+>>>> ?
+>>> Never use IS_ERR_OR_NULL ..
+>> Can you please elaborate a bit on this? I can still see a lot of use of
+>> it in the tree.
+> Yes, sadly. It is usually some signal of toxic confusion about what
+> things mean.
+> 
+> A function that returns an ERR_PTR should very rarely return NULL, and
+> if it does return NULL then NULL wasn't an error.
 
-Hi, I'm interested in participating in this discussion!
+That's true.
+
+> Further you should never store an ERR_PTR in some structure and then
+> later try to test it, that is madness.
+> 
+> So with properly structured code the need should not exist.
+> 
+> https://lore.kernel.org/all/20130109150427.GL3931@n2100.arm.linux.org.uk/
+
+It's clear to me now. Thanks a lot for the explanation.
+
+Best regards,
+baolu
