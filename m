@@ -1,34 +1,34 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 560CD7F0
-	for <iommu@lists.linux.dev>; Wed,  1 Mar 2023 01:56:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1100A32
+	for <iommu@lists.linux.dev>; Wed,  1 Mar 2023 02:24:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677635775; x=1709171775;
+  t=1677637484; x=1709173484;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=JvUgqcrgfQlznLASCJxhJivg+YLodSnLHw0JHLUxNf0=;
-  b=Ai451P0FkiurqhI1GqtLt9dxiki1O8UNxmGbu92aOB3KfL03U6VjIbCB
-   N/N6QZBYJ9bjdl4FuU/gFw0qQxMXf6VcTxn2La0zp5UQ93XxGjnTLEtdF
-   NtrCKrI1K/pggJi2SiVQpkvdYRvDP1j6UOis0MT/MuY6ZFW/xhdS92/OV
-   XxRmcwOTyRveM9I7MKD0BGfS/8nw4qaz9Xfose8hQCfdJvNBrX5nvF1iK
-   zhyZW7kBkvr/PCNOR+0t+lHEgZ/V1PRotwpTuyaCgXUrLTlX1DmNstg9j
-   lyOk4v2NcmLLVW+jAqAjQfV80t6YXzmJldS/SSksjQZw/NpeV1EL7l4cY
+  bh=OZGp5hXF6CZvm8yWSWR+ZVs80Q6jK1b91kMjRcBnI+k=;
+  b=V5GBSAYAUVilAzSWLQ1meHlu3MabRtRZJujnG3eV18cg+WEcoR4oTnG5
+   zvdt6lA2ojukHngWztv8SLTDyHaL4vASMylKaF0K3rcwawgKEGjX2KUtt
+   zgaSbdRSPFhpNAQvQA7QPMGE3aUM3xft9+RzoF/FuUYHVdl1XLbNMMm1a
+   IZkT8aeL5tgMz93mrPaApm0CIT7ApZG3bZnUPBTI4Ol2g9PmrmwaD0lhg
+   BnqEUUF66AltrPjL0t2kOqNLZZDg6fuhSQbd7g+l0qSMqBnYDFQnKGesc
+   RaWn6Puyhm0Xzu6yn8myaBm6STwnXu3zJEYE7v0gk2OWgdqk2g/C4JeZa
    Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10635"; a="336590408"
+X-IronPort-AV: E=McAfee;i="6500,9779,10635"; a="314725775"
 X-IronPort-AV: E=Sophos;i="5.98,223,1673942400"; 
-   d="scan'208";a="336590408"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2023 17:56:14 -0800
+   d="scan'208";a="314725775"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2023 18:24:44 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10635"; a="651828038"
+X-IronPort-AV: E=McAfee;i="6500,9779,10635"; a="706796735"
 X-IronPort-AV: E=Sophos;i="5.98,223,1673942400"; 
-   d="scan'208";a="651828038"
+   d="scan'208";a="706796735"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by orsmga006.jf.intel.com with ESMTP; 28 Feb 2023 17:56:12 -0800
-Message-ID: <91e8d0ee-ee28-0866-85c9-2b499a5dcc38@linux.intel.com>
-Date: Wed, 1 Mar 2023 09:55:21 +0800
+  by orsmga001.jf.intel.com with ESMTP; 28 Feb 2023 18:24:41 -0800
+Message-ID: <67dfd68d-7de5-08fc-35db-284731007b29@linux.intel.com>
+Date: Wed, 1 Mar 2023 10:23:50 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,68 +42,29 @@ Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
  kvm@vger.kernel.org, Nicolin Chen <nicolinc@nvidia.com>,
  Yi Liu <yi.l.liu@intel.com>
 Subject: Re: [PATCH 09/14] iommufd: Add iommufd_device_replace()
+Content-Language: en-US
 To: Jason Gunthorpe <jgg@nvidia.com>
 References: <9-v1-7612f88c19f5+2f21-iommufd_alloc_jgg@nvidia.com>
- <cdbc3707-d326-26d4-3adc-ff2ed80aa2ba@linux.intel.com>
- <Y/y3A4LJqunT0ZwS@nvidia.com>
- <adfd78d1-006e-5e7c-236b-cc00e8afb8c0@linux.intel.com>
- <Y/4G4u/uYA3eg7OY@nvidia.com>
-Content-Language: en-US
+ <909ee61a-9cbd-eda1-89a2-349348eeb735@linux.intel.com>
+ <Y/y3fnSJZB7QhAKM@nvidia.com>
+ <322462b2-a3e2-31a3-d520-34fe1467b26e@linux.intel.com>
+ <Y/4HF2bc/uBydmgG@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Y/4G4u/uYA3eg7OY@nvidia.com>
+In-Reply-To: <Y/4HF2bc/uBydmgG@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2/28/23 9:51 PM, Jason Gunthorpe wrote:
-> On Tue, Feb 28, 2023 at 09:50:52AM +0800, Baolu Lu wrote:
->> On 2/27/23 9:58 PM, Jason Gunthorpe wrote:
->>> On Sun, Feb 26, 2023 at 11:01:59AM +0800, Baolu Lu wrote:
->>>> On 2/25/23 8:27 AM, Jason Gunthorpe wrote:
->>>>> @@ -437,25 +517,77 @@ int iommufd_device_attach(struct iommufd_device *idev, u32 *pt_id)
->>>>>     		struct iommufd_ioas *ioas =
->>>>>     			container_of(pt_obj, struct iommufd_ioas, obj);
->>>>> -		rc = iommufd_device_auto_get_domain(idev, ioas, pt_id);
->>>>> -		if (rc)
->>>>> +		destroy_hwpt = iommufd_device_auto_get_domain(idev, ioas, pt_id,
->>>>> +							      do_attach);
->>>>> +		if (IS_ERR(destroy_hwpt))
->>>>>     			goto out_put_pt_obj;
->>>>>     		break;
->>>>>     	}
->>>>>     	default:
->>>>> -		rc = -EINVAL;
->>>>> +		destroy_hwpt = ERR_PTR(-EINVAL);
->>>>>     		goto out_put_pt_obj;
->>>>>     	}
->>>>> +	iommufd_put_object(pt_obj);
->>>>> -	refcount_inc(&idev->obj.users);
->>>>> -	rc = 0;
->>>>> +	/* This destruction has to be after we unlock everything */
->>>>> +	if (destroy_hwpt)
->>>> Should this be
->>>>
->>>> 	if (!IS_ERR_OR_NULL(destroy_hwpt))
->>>>
->>>> ?
->>> Never use IS_ERR_OR_NULL ..
->> Can you please elaborate a bit on this? I can still see a lot of use of
->> it in the tree.
-> Yes, sadly. It is usually some signal of toxic confusion about what
-> things mean.
+On 2/28/23 9:52 PM, Jason Gunthorpe wrote:
+> On Tue, Feb 28, 2023 at 10:10:41AM +0800, Baolu Lu wrote:
 > 
-> A function that returns an ERR_PTR should very rarely return NULL, and
-> if it does return NULL then NULL wasn't an error.
+>>> If a HWPT was passed in then it just leaves it unchanged which is also
+>>> correct.
+>> Functionally right. Above I just want to make the comment matches what
+>> the real code does.
+> It does, on output the pt_id is always the IOMMUFD_OBJ_HW_PAGETABLE ID
+> of the attached HWPT.
 
-That's true.
-
-> Further you should never store an ERR_PTR in some structure and then
-> later try to test it, that is madness.
-> 
-> So with properly structured code the need should not exist.
-> 
-> https://lore.kernel.org/all/20130109150427.GL3931@n2100.arm.linux.org.uk/
-
-It's clear to me now. Thanks a lot for the explanation.
+OK. That's fine.
 
 Best regards,
 baolu
