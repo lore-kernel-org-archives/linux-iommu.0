@@ -1,87 +1,79 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8848929B0
-	for <iommu@lists.linux.dev>; Thu,  2 Mar 2023 14:20:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677766830; x=1709302830;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=3676zTBvU6TZnvPW7IT27dMb+Hxhu8evGp71QQAk5BI=;
-  b=Is3IgV8V4HOna2dAZZJRZR9Wo1zagyY74uCpWZ23pnvMpv0i7QaFH+Cl
-   XH5cTuG6xIlda0Cx+eBFfWxFImYF+HiwPfw/fBJtGrzmhWMVaShIQCkqv
-   /8ODhlSjgt5stm4wVKh3Cf8eR4fV4o79VPAABE6u+GZFv5V8miAb++l75
-   IGW2UNh6WF3+Jn+/MFZIVezdBV7KlpiesMIGgQorCr3hrFp0PwwzcspXy
-   jUQN+ar0ouPqGzGrUnZH9LqCzWnITof2cC/UzUfEA8FDG7NsKV0jIHKUg
-   3P3JKPVOkvsC6T96szaUCsZne9jAqK8KpJcW3UjylMS7IvkyXJO6WEPFt
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10637"; a="397299718"
-X-IronPort-AV: E=Sophos;i="5.98,227,1673942400"; 
-   d="scan'208";a="397299718"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2023 06:11:43 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10637"; a="739086119"
-X-IronPort-AV: E=Sophos;i="5.98,227,1673942400"; 
-   d="scan'208";a="739086119"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.214.218]) ([10.254.214.218])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2023 06:11:39 -0800
-Message-ID: <0afa8e6e-1676-d6a5-d679-173351fe439c@linux.intel.com>
-Date: Thu, 2 Mar 2023 22:11:36 +0800
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 841DB110B;
+	Thu,  2 Mar 2023 15:04:22 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1556F1FB;
+	Thu,  2 Mar 2023 07:05:05 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5F5203F67D;
+	Thu,  2 Mar 2023 07:04:20 -0800 (PST)
+Message-ID: <f79c884a-e344-f434-7adb-8b9e3034027c@arm.com>
+Date: Thu, 2 Mar 2023 15:04:16 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Cc: baolu.lu@linux.intel.com, Robin Murphy <robin.murphy@arm.com>,
- Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
- Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- Yi Liu <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>,
- Dave Jiang <dave.jiang@intel.com>, Tony Luck <tony.luck@intel.com>,
- "Zanussi, Tom" <tom.zanussi@intel.com>
-Subject: Re: [PATCH 2/4] iommu/vt-d: Use non-privileged mode for all PASIDs
-Content-Language: en-US
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
- Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- dmaengine@vger.kernel.org, vkoul@kernel.org
-References: <20230302005959.2695267-1-jacob.jun.pan@linux.intel.com>
- <20230302005959.2695267-3-jacob.jun.pan@linux.intel.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230302005959.2695267-3-jacob.jun.pan@linux.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v2 2/4] iommu: dart: Add flag to override bypass support
+Content-Language: en-GB
+To: Sven Peter <sven@svenpeter.dev>, Hector Martin <marcan@marcan.st>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+Cc: Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+ linux-arm-kernel@lists.infradead.org, asahi@lists.linux.dev,
+ iommu@lists.linux.dev, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20230228202132.4919-1-sven@svenpeter.dev>
+ <20230228202132.4919-3-sven@svenpeter.dev>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20230228202132.4919-3-sven@svenpeter.dev>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/3/2 8:59, Jacob Pan wrote:
-> For in-kernel DMA, use non-privileged access for all PASIDs to be
-> consistent with RID_PASID.
-> There's no need to differentiate user and kernel for in-kernel DMA. >
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+On 28/02/2023 8:21 pm, Sven Peter wrote:
+> The USB4 PCIe DARTs claim to support bypass but we never want to allow
+> that on externally facing ports.
+
+IOMMU drivers shouldn't be implementing their own individual policies 
+for this - externally-facing ports should be correctly marked as 
+such[1], so that the PCI layer is properly informed, which in turn will 
+be picked up and handled properly by IOMMU core code.
+
+Thanks,
+Robin.
+
+[1] see Documentation/devicetree/bindings/pci/pci.txt
+
+> Acked-by: Hector Martin <marcan@marcan.st>
+> Signed-off-by: Sven Peter <sven@svenpeter.dev>
 > ---
->   drivers/iommu/intel/iommu.c | 2 --
->   1 file changed, 2 deletions(-)
+>   drivers/iommu/apple-dart.c | 5 +++++
+>   1 file changed, 5 insertions(+)
 > 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index a0cb3bc851ac..9e3c056e392d 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -2334,8 +2334,6 @@ static int domain_setup_first_level(struct intel_iommu *iommu,
->   	if (level != 4 && level != 5)
->   		return -EINVAL;
+> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+> index 42666617803d..7d8b2b90cdb6 100644
+> --- a/drivers/iommu/apple-dart.c
+> +++ b/drivers/iommu/apple-dart.c
+> @@ -182,6 +182,8 @@ struct apple_dart_hw {
+>   	u64 ttbr_addr_field_shift;
+>   	u64 ttbr_shift;
+>   	int ttbr_count;
+> +
+> +	bool disable_bypass;
+>   };
 >   
-> -	if (pasid != PASID_RID2PASID)
-> -		flags |= PASID_FLAG_SUPERVISOR_MODE;
-
-With above removed, PASID_FLAG_SUPERVISOR_MODE is not used anywhere?
-Perhaps you can cleanup it to avoid dead code?
-
->   	if (level == 5)
->   		flags |= PASID_FLAG_FL5LP;
+>   /*
+> @@ -1075,6 +1077,9 @@ static int apple_dart_probe(struct platform_device *pdev)
+>   	dart->pgsize = 1 << FIELD_GET(DART_PARAMS1_PAGE_SHIFT, dart_params[0]);
+>   	dart->supports_bypass = dart_params[1] & DART_PARAMS2_BYPASS_SUPPORT;
 >   
-
-Best regards,
-baolu
+> +	if (dart->hw->disable_bypass)
+> +		dart->supports_bypass = 0;
+> +
+>   	switch (dart->hw->type) {
+>   	case DART_T8020:
+>   	case DART_T6000:
