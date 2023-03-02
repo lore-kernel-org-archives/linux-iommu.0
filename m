@@ -1,34 +1,34 @@
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B5A9EA1
-	for <iommu@lists.linux.dev>; Thu,  2 Mar 2023 01:57:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5B177E7
+	for <iommu@lists.linux.dev>; Thu,  2 Mar 2023 02:31:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677722254; x=1709258254;
+  t=1677724283; x=1709260283;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=VRqd90hY1t2FT2RytSp8WhhcLmPRYFAUnVuH7PxZTFs=;
-  b=kr80JiXYb+yZMpD9ZDCREiMLEB0p+uITzNXcctb1Cw4KrFrpA3JQNLfu
-   LDF/2sfLO9Ks+qbBMPru8MwHhYlvyMdJitAYzoyhyZaa11cklpofvwriI
-   Xd03aK8w+pqpHF+AWrisgqOXZqqFflZyfgbzFTvq6CRpEBQf2gb9D5pRf
-   BkHptXfurO0FrflFm4wwKvadk4hGbLoQllMUIgKGutK10HG3aBo8w4i9N
-   2AKVtfy4gL7d0fUJIUn5HEqI2rU350L46A5Ux8poS16vgktLklXR7sHq1
-   YUgmWbaDkEUsU4b2b+J7NTjmsH9k+UjiLeRZxh9/CVvsKlWemmzztFzUj
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10636"; a="336084411"
+  bh=zXsz0L2xHLtSQ1rP40WgNGCJVV1zdFVoJYTu07FMoLE=;
+  b=GGeolP/NG3bwKh8mX9aU+xvCZfVZD9k5EPyldNPVRKAUzcI+f+YZzvUp
+   J5U9N7+5jApG1Z8gFXdr0kpm6t4wwfI+YnFsUgVTi0iCIl7QPdPus1ONd
+   MkXEk6A/VQTVs17XoIm8NKVupdfGHwdTZ8RzJnb4phKt57wFrnOjFlg99
+   W8mezo+86MydkS4gFejFAvO3x96Y63K9Ka6Z8NEgqGzu5a9P6CeGh/HtE
+   I83VE+H6YxLCWkbISjzkW0W1OzzC0kVtO22imdo0SRrKk4CLG9S8zHT82
+   vcUClB67JClXln9A7K6f+fALEydSkWC+Rk5y3KqOorGIcYD3XnIcF0Qks
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10636"; a="322865159"
 X-IronPort-AV: E=Sophos;i="5.98,226,1673942400"; 
-   d="scan'208";a="336084411"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2023 17:57:33 -0800
+   d="scan'208";a="322865159"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2023 18:31:19 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10636"; a="624728809"
+X-IronPort-AV: E=McAfee;i="6500,9779,10636"; a="677002232"
 X-IronPort-AV: E=Sophos;i="5.98,226,1673942400"; 
-   d="scan'208";a="624728809"
+   d="scan'208";a="677002232"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by orsmga003.jf.intel.com with ESMTP; 01 Mar 2023 17:57:31 -0800
-Message-ID: <f0ddf129-ec38-05d2-07dc-be5f97d37c78@linux.intel.com>
-Date: Thu, 2 Mar 2023 09:56:39 +0800
+  by fmsmga007.fm.intel.com with ESMTP; 01 Mar 2023 18:31:17 -0800
+Message-ID: <da143a6f-3eda-0292-d86b-a9283ba61a72@linux.intel.com>
+Date: Thu, 2 Mar 2023 10:30:25 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -39,97 +39,133 @@ User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
 Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
  Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- linux-kernel@vger.kernel.org
+ Kevin Tian <kevin.tian@intel.com>, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH 1/1] iommu/vt-d: Add opt-in for ATS support on discrete
  devices
 Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>
 References: <20230228023341.973671-1-baolu.lu@linux.intel.com>
  <Y/3yNaQD5Pkvf61k@nvidia.com>
  <3891a9a8-c796-2644-9473-aafc9ecea64e@linux.intel.com>
- <Y/9bWMoAYF10ynO3@nvidia.com>
+ <Y/9bWMoAYF10ynO3@nvidia.com> <0f162421-479e-6ab3-bbaf-0090b1a2472c@arm.com>
+ <Y/+OobufnmGhg/R7@nvidia.com> <9aec8741-9394-60ad-70c5-f8da773d7da8@arm.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Y/9bWMoAYF10ynO3@nvidia.com>
+In-Reply-To: <9aec8741-9394-60ad-70c5-f8da773d7da8@arm.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 3/1/23 10:04 PM, Jason Gunthorpe wrote:
->> Here we are talking about soc-integrated devices vs. discrete PCI
->> devices (connected to the system through internal PCI slot). The problem
->> is that the DMAR ACPI table only defines ATS attribute for Soc-
->> integrated devices, which causes ATS (and its ancillary features) on the
->> discrete PCI devices not to work.
-> So, IMHO, it is a bug to set what Linux calls as untrusted for
-> discrete slots. We also definately don't want internal slots forced to
-> non-identity mode either, for example.
+On 3/2/23 2:19 AM, Robin Murphy wrote:
+> On 2023-03-01 17:42, Jason Gunthorpe wrote:
+>> On Wed, Mar 01, 2023 at 05:15:33PM +0000, Robin Murphy wrote:
+>>> On 2023-03-01 14:04, Jason Gunthorpe wrote:
+>>>> On Wed, Mar 01, 2023 at 12:22:23PM +0800, Baolu Lu wrote:
+>>>>> On 2/28/23 8:23 PM, Jason Gunthorpe wrote:
+>>>>>> On Tue, Feb 28, 2023 at 10:33:41AM +0800, Lu Baolu wrote:
+>>>>>>> In normal processing of PCIe ATS requests, the IOMMU performs 
+>>>>>>> address
+>>>>>>> translation and returns the device a physical memory address which
+>>>>>>> will be stored in that device's IOTLB. The device may subsequently
+>>>>>>> issue Translated DMA request containing physical memory address. The
+>>>>>>> IOMMU only checks that the device was allowed to issue such requests
+>>>>>>> and does not attempt to validate the physical address.
+>>>>>>>
+>>>>>>> The Intel IOMMU implementation only allows PCIe ATS on several SOC-
+>>>>>>> integrated devices which are opt-in’ed through the ACPI tables to
+>>>>>>> prevent any compromised device from accessing arbitrary physical
+>>>>>>> memory.
+>>>>>>>
+>>>>>>> Add a kernel option intel_iommu=relax_ats to allow users to have an
+>>>>>>> opt-in to allow turning on ATS at as wish, especially for CSP-owned
+>>>>>>> vertical devices. In any case, risky devices are not allowed to use
+>>>>>>> ATS.
+>>>>>> Why is this an intel specific option?
+>>>>>
+>>>>> I only see similar situation on ARM SMMUv3 platforms. The device 
+>>>>> ATS is
+>>>>> only allowed when the ATS bit is set in RC node of the ACPI/IORT 
+>>>>> table.
+>>>>
+>>>> It should be common, all iommus using ATS need this logic.
+>>>
+>>> The IORT flags are not this kind of policy, they are a necessary 
+>>> description
+>>> of the hardware. The mix-and-match nature of licensable IP means that 
+>>> just
+>>> because an SMMU supports the ATS-relevant features defined by the SMMU
+>>> architecture, that doesn't say that whatever PCIe IP the customer has 
+>>> chosen
+>>> to pair it with also supports ATS. Even when both ends nominally 
+>>> support it,
+>>> it's still possible to integrate them together in ways where ATS 
+>>> wouldn't be
+>>> functional.
+>>>
+>>> In general, if a feature is marked as unsupported in IORT, the only 
+>>> way to
+>>> "relax" that would be if you have a silicon fab handy. If any system 
+>>> vendor
+>>> *was* to misuse IORT to impose arbitrary and unwelcome usage policy 
+>>> on their
+>>> customers, then those customers should demand a firmware update (or 
+>>> at least
+>>> use their own patched IORT, which is pretty trivial with the kernel's
+>>> existing ACPI table override mechanism).
+>>
+>> This makes sense.
+>>
+>> I think Intel has confused their version of the IORT.
+>>
+>> The ACPI tables read by the iommu driver should be strictly about
+>> IOMMU HW capability, like Robin describes for ARM.
+>>
+>> Security policy flows through the ExternalFacingPort ACPI via
+>> pci_acpi_set_external_facing() and triggers pdev->untrusted.
+>>
+>> When an iommu driver sees pdev->untrusted it is supposed to ensure
+>> that translated TLPs are blocked. Since nothing does this explicitly
+>> it is presumably happening because ATS being disabled also blocks
+>> translated TLPs and we check untrusted as part of pci_enable_ats()
+> 
+> At least for SMMU, we seem to be relying on pci_ats_supported() 
+> including pdev->untrusted in its decision - that will propagate back to 
+> master->ats_enabled = false inside the driver, which in turn will lead 
+> to arm_smmu_write_strtab_ent() leaving STE.EATS at the default setting 
+> which aborts all translation requests and translated transactions.
 
-Linux doesn't set untrusted for PCI discrete slots. It reads port's
-ExternalFacingPort property and set pdev->untrusted for all devices
-underneath it. For ACPI compatible platforms, this property is only set
-for thunderbolt ports as far as I have seen.
-
-drivers/pci/pci-acpi.c:
-1373 static void pci_acpi_set_external_facing(struct pci_dev *dev)
-1374 {
-1375         u8 val;
-1376
-1377         if (pci_pcie_type(dev) != PCI_EXP_TYPE_ROOT_PORT)
-1378                 return;
-1379         if (device_property_read_u8(&dev->dev, 
-"ExternalFacingPort", &val))
-1380                 return;
-1381
-1382         /*
-1383          * These root ports expose PCIe (including DMA) outside of the
-1384          * system.  Everything downstream from them is external.
-1385          */
-1386         if (val)
-1387                 dev->external_facing = 1;
-1388 }
-
-and
-
-drivers/pci/probe.c:
-1597 static void set_pcie_untrusted(struct pci_dev *dev)
-1598 {
-1599         struct pci_dev *parent;
-1600
-1601         /*
-1602          * If the upstream bridge is untrusted we treat this device
-1603          * untrusted as well.
-1604          */
-1605         parent = pci_upstream_bridge(dev);
-1606         if (parent && (parent->untrusted || parent->external_facing))
-1607                 dev->untrusted = true;
-1608 }
+Intel VT-d does the same thing.
 
 > 
-> This should be addressed at the PCI layer. Untrusted should always
-> mean that the iommu layer should fully secure the device. It means
-> identity translation should be blocked, it means the HW should reject
-> translated requests, and ATS thus is not supported.
+>> If Intel BIOS's have populated the "satcu" to say that ATS is not
+>> supported by the HW when the HW supports ATS perfectly fine, then get
+>> the BIOS fixed or patch the ACPI until it is fixed. The BIOS should
+>> not be saying that the HW does not support ATS when it does, it is a
+>> simple BIOS bug.
+>>
+>> Alternatively if you have some definitive way to know that the HW
+>> supports ATS then you should route the satcu information to
+>> pdev->untrusted and ignore it at the iommu driver level.
 > 
-> Every single iommu driver should implement this consistently across
-> the whole subsystem.
+>  From a quick look at the VT-d spec, it sounds like the ATSR structure 
+> is intended to be functionally equivalent to IORT's Root Complex "ATS 
+> Attribute", while the SATC is a slightly specialised version for RCiEPs. 
+> The spec even says "Software must enable ATS on endpoint devices behind 
+> a Root Port only if the Root Port is reported as supporting ATS 
+> transactions". It also seems to be implied that this should be based on 
+> what Intel themselves have validated, so an option for the user to say 
+> "sure, ATS works everywhere, I know better" and simply bypass all the 
+> existing checks doesn't really seem safe to me :/
 > 
-> If you don't want devices to be secured then that is a PCI/bios layer
-> problem to get the correct data into the untrusted flag.
-> 
-> Not an iommu problem to ignore the flag.
+> I'd be inclined to hold the same opinion as for IORT here - if a user 
+> ever really does need to engage expert mode to safely work around a bad 
+> BIOS with known-good information, they should already have the tools to 
+> override the whole DMAR table as they see fit.
 
-The problem here is that, even for PCI *trusted* devices, the IOMMU
-drivers (Intel and SMMUv3) still have a allowed list for ATS. Only
-devices in this list are allowed to use ATS. This cause some PCI
-discrete devices not able to use ATS even its pdev->untrust is *not*
-set.
+Make sense to me. BIOS upgrading or ACPI table overriding should help in
+such cases. I will stop this patch unless there're any other special
+reasons.
 
-The purpose of this patch is to allow privileged users to choose to skip
-the allowed list according to their wishes. So that, as long as the PCI
-layer treats the device as trusted, it can use ATS in the IOMMU layer.
-
-At present, this patch is only for VT-d driver, but I have no objection
-to bring it up to the core as a common mechanism.
+> Thanks,
+> Robin.
 
 Best regards,
 baolu
