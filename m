@@ -1,180 +1,175 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2044.outbound.protection.outlook.com [40.107.244.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 137C95381
-	for <iommu@lists.linux.dev>; Thu,  2 Mar 2023 12:21:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677759705; x=1709295705;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Of/AsuqTwoVolH92KoxBEtDCauJhEREASxt+u67TwW4=;
-  b=dB4cOwx5cIvsVsp8mIVusPsF52U3dykltZBcsNi9FibK5yiM8W33DjU+
-   lwnsO0cf/H3YQq7s1U1qg59bA87hy7VKsdC53yhV9i2Y4D35U/k4DYK90
-   LuJaFMEwuIh/r2U4iC4cpEfZahEkvb4yS5WFzo676IVoAcoje6AVxVq1A
-   bQCWDW+Aw9snFE8au0Wfx1j13J4zWHJDEkuliYyGMlym7963O8eeXvTD4
-   SYVP7//d50dcLPn0BfU2Pbkxm6L58yxMElRHzaUUUMBvZ4bY0hsG3AZ+u
-   BuL4Hyr4+kD5fshDeSKmJ9eLJKij0Gj8Ldrs4ScEkP4Uh/t3ZmmE05j4b
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10636"; a="397270910"
-X-IronPort-AV: E=Sophos;i="5.98,227,1673942400"; 
-   d="scan'208";a="397270910"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2023 04:21:44 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10636"; a="817988909"
-X-IronPort-AV: E=Sophos;i="5.98,227,1673942400"; 
-   d="scan'208";a="817988909"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.214.218]) ([10.254.214.218])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2023 04:21:35 -0800
-Message-ID: <5b441119-59ff-997f-ee59-a062ac2ddcca@linux.intel.com>
-Date: Thu, 2 Mar 2023 20:21:33 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB29229B0
+	for <iommu@lists.linux.dev>; Thu,  2 Mar 2023 12:51:54 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dOnmiHoEvBc7TpMSThtfFLbZeAHa8VlvCfYalaFKkGAFfaxBmBuLCzaZd9FJ7WiJ5nkD/LqrvkINSCpe2GIQa21P637kJwA/pvAC6Q7cM4qRm6ss+WOE1PkQiY9k/3jNUgTFtafhenInNWCFatSibJO/TAGBm8/urfqPoNmPf8H0dMQdjgvgF3LKOyMgcR0QFpkzfGXyT+2vFbqZOv61b1skcDihDfQlyB+b8hgo4oZlijI9vRXfXToLCDiPAnNEzr1wM9oNzuS3ieBuCbnKg3ohbJ8KMTSFha16GhDdPsszRr5IbigrZs+zrDgrxfT9K+eQxB3X0Ac90rHdMF7Jig==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GxDfzwVYWyTSJw9+2UBLp4eNI5Dhwmhg71nqxG/XpHs=;
+ b=ORfW+JpB667ni7Hz7nEO6ntpFV7MKdgpZRT5MKJZscxoJorWTnVrXdlX+Vii2EjRcB8SDDNf4fAtaQH9oe9keEA33Tl9dOAtgDXkzWJMP7IuGNWRB+96jkKXnBroH5HnDICyhrP14hDXNBfaxzID+2saRVispmvl/Tfce9JwophNUZ24S0NzX0kzlPE/gcFCVjB4ZlRFbwY3DPcTML/z5LQeXcFSTQXyLzl3QI//Sey024wuMK2kUwvsWcti98JqlIzyQQblldPqTjbD+GaxZmOLgMAMC42D9rfJ19+z76/jT6uDpPh/YBi0DbDvh9dVks/iqQY8KCIF71CypB+Yaw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GxDfzwVYWyTSJw9+2UBLp4eNI5Dhwmhg71nqxG/XpHs=;
+ b=h22CTg7ufOQitN5rHEzGiUDKCFhWG7pt1BxH6+se1mPGjFdaqwjhrO/Aw118sdBKduy7krkPNnfT5Kkv7p4u4Gj7nXcsP/DowygoO1LQ6xlqSlxs9TaaPw1DY4nmDS4G8JIOOq9YEsqj7paglTLBllT+UfMhlRC540wlIFM7NPG3urX+2hlFwnqXFDVGUeGWySio73XR3SsNQAsFvSHnzqM9kmsgCVVS0xuDtWO7/zATp0yOuKuImQgnm3TzS4ExZWIz2Zv8+ltvG59vXi3Am8h6NsiQUHDDYaD/cMFJwD/tKhg3GapQOI8U/33PZEdeCtBU68jQM8gqTRjECK409w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by PH7PR12MB8106.namprd12.prod.outlook.com (2603:10b6:510:2ba::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.18; Thu, 2 Mar
+ 2023 12:51:52 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3cb3:2fce:5c8f:82ee%5]) with mapi id 15.20.6156.019; Thu, 2 Mar 2023
+ 12:51:51 +0000
+Date: Thu, 2 Mar 2023 08:51:47 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	"Liu, Yi L" <yi.l.liu@intel.com>
+Subject: Re: [PATCH 02/14] iommufd: Add iommufd_group
+Message-ID: <ZACb415lOsmjaJz1@nvidia.com>
+References: <0-v1-7612f88c19f5+2f21-iommufd_alloc_jgg@nvidia.com>
+ <2-v1-7612f88c19f5+2f21-iommufd_alloc_jgg@nvidia.com>
+ <BN9PR11MB52768565CB65BCACA4E3808E8CB29@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB52768565CB65BCACA4E3808E8CB29@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-ClientProxiedBy: SJ0PR13CA0021.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c0::26) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Cc: baolu.lu@linux.intel.com, Robin Murphy <robin.murphy@arm.com>,
- Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
- Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- Yi Liu <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>,
- Dave Jiang <dave.jiang@intel.com>,
- Kirill Shutemov <kirill.shutemov@linux.intel.com>
-Subject: Re: [PATCH v4 2/6] iommu/sva: Move PASID helpers to sva code
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
- Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Dave Hansen <dave.hansen@intel.com>, Thomas Gleixner <tglx@linutronix.de>,
- X86 Kernel <x86@kernel.org>, bp@alien8.de, "H. Peter Anvin" <hpa@zytor.com>,
- Peter Zijlstra <peterz@infradead.org>, corbet@lwn.net, vkoul@kernel.org,
- dmaengine@vger.kernel.org, linux-doc@vger.kernel.org
-References: <20230301235646.2692846-1-jacob.jun.pan@linux.intel.com>
- <20230301235646.2692846-3-jacob.jun.pan@linux.intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230301235646.2692846-3-jacob.jun.pan@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|PH7PR12MB8106:EE_
+X-MS-Office365-Filtering-Correlation-Id: bae6e56d-af9b-4e13-6d22-08db1b1ce4e2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	ybPzFBkNG18Fc2rR0rbD88nGkS3ipcQ1DZnVYO6yF6iKOPYtFVKtoM38wk1exr2aYtFgksLBvbLTNk0E0bb/O+Th67am5V8mN329AhQfLOf2XpHnUQJi5vXMlAv82gKQgWzGpUiyQnm9vKjR53hqLtJDeONmGNxHAu8Rul5ax4kgyUq00dC2//0+MGXvFYu0jcCfdqQTDqElm7D6lQE5EnTkhRjEhr5jcJk1lrnOvuEsgRonAAaszwFCE6SQv9p1uqFV48VtHwBV9McLG4Obe0SpfAwRT9I+zntcqQ7j1ulI5dX+7tL4X4HCxoaU41yY9U+V+olpALS/S+pH7N7roWCB0jGGAKa+QbuI+cePxwAbKUWfodUL4X6ca6dWSJXMVjL4y46CEt6SXC+oEBrDZ/E914u+nz2peQzOd3edJTOaRUOlYUKQX+14S5t58wkMHfKycVl88KCGaLf8hgIxUsl5jr3dUq6uf2qdM16VNGQocJnvkR0Y/o6jY8iqdihqtecSv60+quGAvI4uqObcZXfKmWN+3cfmKHGeGvDXXIPAyMk2mTC1CujXbCAHozKTr+3fjnojyZW5EgWYrJn+3jdy6ZDNn9cXXVkq9TNs/GMnIgujGI3aG8VkGAspg4KncTvKt+VBHIWFSRHKh0tlew==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(396003)(376002)(136003)(39860400002)(366004)(451199018)(36756003)(6506007)(6512007)(6666004)(66946007)(66556008)(8676002)(66476007)(4326008)(316002)(83380400001)(38100700002)(6916009)(26005)(478600001)(54906003)(86362001)(5660300002)(2906002)(186003)(2616005)(8936002)(41300700001)(6486002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?O4O/bM4f0YY30MsaMZWAPSDWl7ZLOX7ll35q0rNsyO1jcvI+Uj7be0SDdHs9?=
+ =?us-ascii?Q?3PAiH9D0X345rJWI71OQkX1aKcm1O56twmg7KEZ3BoBKw5NaoRItF1Yt+qB1?=
+ =?us-ascii?Q?2g2d2HoMghCBazHJNXbC7dnM4S6T0kQ7IHqxlU+kR8yeB1pby+yAEdJNsKhu?=
+ =?us-ascii?Q?IDxHBvpvaVA0HI3CY/AO13ylW0AV/lSU+t2y+NMLaOxGPU/5JqmrWOFD4Wn9?=
+ =?us-ascii?Q?MHu2yrSJQ9bYq08J3rOUy8qeeN7ulpU+U/vhzBFXo+Cvkj3znlUy8uH/AQp9?=
+ =?us-ascii?Q?ypkQRhWEFL3ri0zC/4xGm+c9z10tV4bdhhvbCbyRP9F+bEpDO0qzMcnxg2XZ?=
+ =?us-ascii?Q?ta5D/gscZtHHMxo5Yhf8Kz2cU4ByJimCwUdIs/NS24cabUhstYGNNx+Q+SJV?=
+ =?us-ascii?Q?SRD7rkuLCQDXWmbM8EjeOdrsuYQNcRY0dmehd6MfeMhpV1cwKROnSMoSkfSV?=
+ =?us-ascii?Q?dYF5A+FpRiLwMIKt0o7vY3mFbhTX+vKutVxMkhBqSfqtfG8OMvtB8RNKE805?=
+ =?us-ascii?Q?twNfE3xKDDK6rcMUFCGi9LWoCBn1hZlok1CzqUIoC7yE6lyQuysk0VL3zZFN?=
+ =?us-ascii?Q?H8cC4AakTz220XmntVB+fBtUe77ApxydXUeKg+idEvuZOi2I04trrqhCI4s2?=
+ =?us-ascii?Q?rtVpx03M0o1cF5XXkQ5ukE5kB0jTke7/Zdlbl6Wlfum/pedcXZkCqlcdtfd+?=
+ =?us-ascii?Q?sOWQlN9jGM7zsuq4ti3sf/gg2XhOd2Og4dQkIMVuBidiWGmvHZTEU734HxmB?=
+ =?us-ascii?Q?9OsQAzZ7j5n5uMjDFpbFKxKTa43QDIo87hC2yS1QkmLH7Dv191H+CMLhB8pS?=
+ =?us-ascii?Q?5VMqydNhOXpOwqT/am+T8JjF41Hip4KpOP2BZCe9euTktD4Wd+/kcKe/VA0D?=
+ =?us-ascii?Q?MLGf6714bQdemfzWSf21zad86bnuJCHMDXzu5h8ckH7A9IjLQZCWAhtWby2x?=
+ =?us-ascii?Q?CLOr0vLlkmF1DjGQPWYF6Uc5iZjjIndcbjTUti9LEiT0VKbd4iA+BuMeGTvL?=
+ =?us-ascii?Q?i6GjxrI8kMhmv40dGzgItYxBfFyF4A9l3+pVJ++QXbcxM79845CSj/B/KX9y?=
+ =?us-ascii?Q?J2U5o2w9YTbAy7drRGwGbWwFrg/YjKGO4Qg8999En5I/ld7ark3Gsf0tk66I?=
+ =?us-ascii?Q?ijyGuT5OImOyatBONzek3t4ult7OyTXv2Ce9NaUAqIEJer7Ywhnbjgl+pqIm?=
+ =?us-ascii?Q?Naw+qYeXSF+4EpKcu+0bSJasq6xYsYKIBhJljxo4ptvCC5cQox8cMfQoz9+y?=
+ =?us-ascii?Q?TdIEknu85goJMceiMZukmH3rv55TIpxE1sou3Z0lfuczyIOX6QUKfDoHyPwf?=
+ =?us-ascii?Q?pFr9rD6BzqL9dO+WkRCRJhJ40REjYH0nD+XIJjlAhX4yFFZD1ox2Yp5TCa42?=
+ =?us-ascii?Q?MivYlZKXHPaJIHzcV4Ac9m28Ol8iAIFasH4xWwB8+eJ4Un/jYhdAx+agQlQV?=
+ =?us-ascii?Q?voj/0eu16Y3Gwr7KfjvpO2Chx2vFM+qakFDIL7278MBfZiOY/FJu7r3tS560?=
+ =?us-ascii?Q?uSe6izc8LhvBsPB7jMTQkXzO3lzYPsNPw82onKFwXC/8f6SBvw4tEoz9yqYF?=
+ =?us-ascii?Q?mQvJAwVIxGCkO3h1e49EFxjM0UaAPEKlQM/oPqfD?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bae6e56d-af9b-4e13-6d22-08db1b1ce4e2
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2023 12:51:51.8180
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: y849Hz2S+JxR4lwfcZEUDkQIuPabjqgBfWXwWF5VMtMfOdNMCSDqMNRiRQSdawql
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB8106
 
-On 2023/3/2 7:56, Jacob Pan wrote:
-> Preparing to remove IOASID infrastructure, PASID management will be
-> under SVA code. Decouple mm code from IOASID. Use iommu-help.h instead
-> of iommu.h to prevent circular inclusion.
+On Thu, Mar 02, 2023 at 07:55:12AM +0000, Tian, Kevin wrote:
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > Sent: Saturday, February 25, 2023 8:28 AM
+> > 
+> > +
+> > +	/*
+> > +	 * All objects using a group reference must put it before their destroy
+> > +	 * completes
+> > +	 */
+> > +	new_igroup->ictx = ictx;
 > 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> ---
-> v4: (Jason's comments)
-> 	- delete and open code mm_set_pasid
-> 	- keep mm_init_pasid() as inline for fork performance
-> ---
->   drivers/iommu/iommu-sva.c    | 10 +++++++++-
->   include/linux/ioasid.h       |  2 +-
->   include/linux/iommu-helper.h |  1 +
->   include/linux/sched/mm.h     | 18 ++----------------
->   4 files changed, 13 insertions(+), 18 deletions(-)
+> Looks the comment is not related to the code. Probably put it in the
+> destroy function?
+
+It explains why we don't take a reference on ictx here.
+
+> > +	cur_igroup = NULL;
+> > +	xa_lock(&ictx->groups);
+> > +	while (true) {
+> > +		igroup = __xa_cmpxchg(&ictx->groups, id, cur_igroup,
+> > new_igroup,
+> > +				      GFP_KERNEL);
+> > +		if (xa_is_err(igroup)) {
+> > +			xa_unlock(&ictx->groups);
+> > +			iommufd_put_group(new_igroup);
+> > +			return ERR_PTR(xa_err(igroup));
+> > +		}
+> > +
+> > +		/* new_group was successfully installed */
+> > +		if (cur_igroup == igroup) {
+> > +			xa_unlock(&ictx->groups);
+> > +			return new_igroup;
+> > +		}
+> > +
+> > +		/* Check again if the current group is any good */
+> > +		if (igroup && igroup->group == group &&
+> > +		    kref_get_unless_zero(&igroup->ref)) {
+> > +			xa_unlock(&ictx->groups);
+> > +			iommufd_put_group(new_igroup);
+> > +			return igroup;
+> > +		}
+> > +		cur_igroup = igroup;
+> > +	}
 > 
-> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-> index 24bf9b2b58aa..376b2a9e2543 100644
-> --- a/drivers/iommu/iommu-sva.c
-> +++ b/drivers/iommu/iommu-sva.c
-> @@ -44,7 +44,7 @@ int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max)
->   	if (!pasid_valid(pasid))
->   		ret = -ENOMEM;
->   	else
-> -		mm_pasid_set(mm, pasid);
-> +		mm->pasid = ret;
+> Add a WARN_ON(igroup->group != group). The only valid race should
+> be when an existing group which is created by another device in the
+> same iommu group is being destroyed then we want another try
+> hoping that object will be removed from xarray soon. But there should
+> not be a case with the same slot pointing to a different iommu group.
 
-This seems obviously incorrect.
+Yeah, that is the case, both the group checks are WARN_ON's
+because we hold an iommu_group reference as long as the xarray entry
+is popoulated so it should be impossible for another iommu_group
+pointer to have the same ID.
 
-		mm->pasid = pasid;
+> > @@ -98,7 +195,7 @@ struct iommufd_device *iommufd_device_bind(struct
+> > iommufd_ctx *ictx,
+> >  	/* The calling driver is a user until iommufd_device_unbind() */
+> >  	refcount_inc(&idev->obj.users);
+> >  	/* group refcount moves into iommufd_device */
+> > -	idev->group = group;
+> > +	idev->igroup = igroup;
+> 
+> the comment about group refcount is stale now.
 
-?
+You mean it should say 'igroup refcount' ?
 
->   out:
->   	mutex_unlock(&iommu_sva_lock);
->   	return ret;
-> @@ -238,3 +238,11 @@ iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
->   
->   	return status;
->   }
-> +
-> +void mm_pasid_drop(struct mm_struct *mm)
-> +{
-> +	if (pasid_valid(mm->pasid)) {
-> +		ioasid_free(mm->pasid);
-> +		mm->pasid = INVALID_IOASID;
-> +	}
-> +}
-> diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-> index af1c9d62e642..2c502e77ee78 100644
-> --- a/include/linux/ioasid.h
-> +++ b/include/linux/ioasid.h
-> @@ -4,8 +4,8 @@
->   
->   #include <linux/types.h>
->   #include <linux/errno.h>
-> +#include <linux/iommu-helper.h>
->   
-> -#define INVALID_IOASID ((ioasid_t)-1)
->   typedef unsigned int ioasid_t;
->   typedef ioasid_t (*ioasid_alloc_fn_t)(ioasid_t min, ioasid_t max, void *data);
->   typedef void (*ioasid_free_fn_t)(ioasid_t ioasid, void *data);
-> diff --git a/include/linux/iommu-helper.h b/include/linux/iommu-helper.h
-> index 74be34f3a20a..0aa922f6bfad 100644
-> --- a/include/linux/iommu-helper.h
-> +++ b/include/linux/iommu-helper.h
-> @@ -40,5 +40,6 @@ static inline unsigned long iommu_num_pages(unsigned long addr,
->   
->   	return DIV_ROUND_UP(size, io_page_size);
->   }
-> +#define INVALID_IOASID	(-1U)
->   
->   #endif
-> diff --git a/include/linux/sched/mm.h b/include/linux/sched/mm.h
-> index 2a243616f222..ae5a3f16b321 100644
-> --- a/include/linux/sched/mm.h
-> +++ b/include/linux/sched/mm.h
-> @@ -8,7 +8,7 @@
->   #include <linux/mm_types.h>
->   #include <linux/gfp.h>
->   #include <linux/sync_core.h>
-> -#include <linux/ioasid.h>
-> +#include <linux/iommu-helper.h>
->   
->   /*
->    * Routines for handling mm_structs
-> @@ -456,23 +456,9 @@ static inline void mm_pasid_init(struct mm_struct *mm)
->   {
->   	mm->pasid = INVALID_IOASID;
->   }
-> -
-> -/* Associate a PASID with an mm_struct: */
-> -static inline void mm_pasid_set(struct mm_struct *mm, u32 pasid)
-> -{
-> -	mm->pasid = pasid;
-> -}
-> -
-> -static inline void mm_pasid_drop(struct mm_struct *mm)
-> -{
-> -	if (pasid_valid(mm->pasid)) {
-> -		ioasid_free(mm->pasid);
-> -		mm->pasid = INVALID_IOASID;
-> -	}
-> -}
-> +void mm_pasid_drop(struct mm_struct *mm);
->   #else
->   static inline void mm_pasid_init(struct mm_struct *mm) {}
-> -static inline void mm_pasid_set(struct mm_struct *mm, u32 pasid) {}
->   static inline void mm_pasid_drop(struct mm_struct *mm) {}
-
-Above mm_pasid_drop() should also be removed.
-
->   #endif
->   
-
-Best regards,
-baolu
+Jason
