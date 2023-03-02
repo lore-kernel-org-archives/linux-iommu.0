@@ -1,79 +1,88 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 841DB110B;
-	Thu,  2 Mar 2023 15:04:22 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1556F1FB;
-	Thu,  2 Mar 2023 07:05:05 -0800 (PST)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5F5203F67D;
-	Thu,  2 Mar 2023 07:04:20 -0800 (PST)
-Message-ID: <f79c884a-e344-f434-7adb-8b9e3034027c@arm.com>
-Date: Thu, 2 Mar 2023 15:04:16 +0000
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53F3C8C10
+	for <iommu@lists.linux.dev>; Thu,  2 Mar 2023 16:43:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1677775435; x=1709311435;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ZVR0fEMxC1xCM/KNPaB7wfbb6IVdTmO+3FaxenBdqhA=;
+  b=PAigMWcO8ATw/2yI+79k0XOdnMFSZJ5XwMYi/aHp/earOXD8ve4ybNZl
+   HmauD6/A447LjDfnxbtKJDJ6mdjx0rnA37Ls/OWVYiTUz2HDTNlQnRCnp
+   fS38ptYdfllUTI8t46rgaddgVWf3rreXaiE2juf50K87VBN0Kgu4CueD7
+   AJ9ug9nvpJ+KrMpG0PCenFnKwcxT6jg59/ORkRhze9jgDhwwigt5GO2mx
+   x9QFQQc1WTun/lVUr41NvfxPKvuKAxN4wwEM8AkNG6KMPfAuLpGyMZIrf
+   fIwL61yyEjeEzrvj9df5JgT9suXPbbwiFoBoSBx3aO+FXqw/uW6xHF5Ww
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10637"; a="334801858"
+X-IronPort-AV: E=Sophos;i="5.98,228,1673942400"; 
+   d="scan'208";a="334801858"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2023 08:43:52 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10637"; a="668314513"
+X-IronPort-AV: E=Sophos;i="5.98,228,1673942400"; 
+   d="scan'208";a="668314513"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2023 08:43:50 -0800
+Date: Thu, 2 Mar 2023 08:47:39 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Lu Baolu
+ <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Jean-Philippe
+ Brucker" <jean-philippe@linaro.com>, "Hansen, Dave"
+ <dave.hansen@intel.com>, Thomas Gleixner <tglx@linutronix.de>, X86 Kernel
+ <x86@kernel.org>, "bp@alien8.de" <bp@alien8.de>, "H. Peter Anvin"
+ <hpa@zytor.com>, "Peter Zijlstra" <peterz@infradead.org>, "corbet@lwn.net"
+ <corbet@lwn.net>, "vkoul@kernel.org" <vkoul@kernel.org>,
+ "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
+ "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Robin Murphy
+ <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, "David Woodhouse"
+ <dwmw2@infradead.org>, "Raj, Ashok" <ashok.raj@intel.com>, "Liu, Yi L"
+ <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>, "Jiang, Dave"
+ <dave.jiang@intel.com>, Kirill Shutemov <kirill.shutemov@linux.intel.com>,
+ jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v4 2/6] iommu/sva: Move PASID helpers to sva code
+Message-ID: <20230302084518.33712064@jacob-builder>
+In-Reply-To: <BN9PR11MB5276E466C33CB6240B06B0728CB29@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20230301235646.2692846-1-jacob.jun.pan@linux.intel.com>
+ <20230301235646.2692846-3-jacob.jun.pan@linux.intel.com>
+ <BN9PR11MB5276E466C33CB6240B06B0728CB29@BN9PR11MB5276.namprd11.prod.outlook.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH v2 2/4] iommu: dart: Add flag to override bypass support
-Content-Language: en-GB
-To: Sven Peter <sven@svenpeter.dev>, Hector Martin <marcan@marcan.st>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-Cc: Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Alyssa Rosenzweig <alyssa@rosenzweig.io>,
- linux-arm-kernel@lists.infradead.org, asahi@lists.linux.dev,
- iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20230228202132.4919-1-sven@svenpeter.dev>
- <20230228202132.4919-3-sven@svenpeter.dev>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230228202132.4919-3-sven@svenpeter.dev>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 28/02/2023 8:21 pm, Sven Peter wrote:
-> The USB4 PCIe DARTs claim to support bypass but we never want to allow
-> that on externally facing ports.
+Hi Kevin,
 
-IOMMU drivers shouldn't be implementing their own individual policies 
-for this - externally-facing ports should be correctly marked as 
-such[1], so that the PCI layer is properly informed, which in turn will 
-be picked up and handled properly by IOMMU core code.
+On Thu, 2 Mar 2023 09:03:52 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+wrote:
+
+> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Sent: Thursday, March 2, 2023 7:57 AM
+> >
+> > -static inline void mm_pasid_drop(struct mm_struct *mm)
+> > -{
+> > -	if (pasid_valid(mm->pasid)) {
+> > -		ioasid_free(mm->pasid);
+> > -		mm->pasid = INVALID_IOASID;
+> > -	}
+> > -}
+> > +void mm_pasid_drop(struct mm_struct *mm);  
+> 
+> Is it good to have a function declared in a header file of one
+> subsystem while being implemented in another subsystem?
+Good point!  I will move it to iommu_helper.h
 
 Thanks,
-Robin.
 
-[1] see Documentation/devicetree/bindings/pci/pci.txt
-
-> Acked-by: Hector Martin <marcan@marcan.st>
-> Signed-off-by: Sven Peter <sven@svenpeter.dev>
-> ---
->   drivers/iommu/apple-dart.c | 5 +++++
->   1 file changed, 5 insertions(+)
-> 
-> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-> index 42666617803d..7d8b2b90cdb6 100644
-> --- a/drivers/iommu/apple-dart.c
-> +++ b/drivers/iommu/apple-dart.c
-> @@ -182,6 +182,8 @@ struct apple_dart_hw {
->   	u64 ttbr_addr_field_shift;
->   	u64 ttbr_shift;
->   	int ttbr_count;
-> +
-> +	bool disable_bypass;
->   };
->   
->   /*
-> @@ -1075,6 +1077,9 @@ static int apple_dart_probe(struct platform_device *pdev)
->   	dart->pgsize = 1 << FIELD_GET(DART_PARAMS1_PAGE_SHIFT, dart_params[0]);
->   	dart->supports_bypass = dart_params[1] & DART_PARAMS2_BYPASS_SUPPORT;
->   
-> +	if (dart->hw->disable_bypass)
-> +		dart->supports_bypass = 0;
-> +
->   	switch (dart->hw->type) {
->   	case DART_T8020:
->   	case DART_T6000:
+Jacob
