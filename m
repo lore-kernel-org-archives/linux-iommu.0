@@ -1,158 +1,69 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20F3DEC4;
-	Thu,  2 Mar 2023 03:20:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7574C10FA
+	for <iommu@lists.linux.dev>; Thu,  2 Mar 2023 04:24:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677727223; x=1709263223;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=5wCXS3NGbhL2UyPQFWo52MSxzJKpnJXFbkk9FAvmH6g=;
-  b=O98+j6eEmN1oCRLj3ikJXFObwh7zjGTaoNX53hYKTdVAjBQOixFAFlCh
-   dWEgmst3XTc/qaXmnGsNh7utBd4Nnm2j2DsKi/rnggf3dvcC2V7r7JeQs
-   fJRRWz2aDRo5jyTxUzrUCjq3IEcN46wf+RZOsvd4VqFiHNKYBMbjDIKZq
-   ieaD/vKvclZyH/r3Ml7ZMWBeHuOQrVBGnq0aE7Q7lLqCOJNCX9gmDMgSI
-   AbVJINNafOTcDsbHcc0IkudF5tDaVmo9vzy4gF/CVWGF/wN//pTGJrHh/
-   Mp1UM3YXQfZ9fQSm2cUSp82IJZ92s3bcwkbOZfgpSEpn09wdgMhFOZB8k
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10636"; a="336898262"
+  t=1677731053; x=1709267053;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=v5b7ljPO/DDlID9gofehMryLNcSPUQ8+e5skFkdCs8E=;
+  b=gMpRGsh7Sa3bgmNFJ3OGvonhFMC/OMaJn68VxRCXdfptd3vrrovE9F/+
+   Uy0CwOtp8Eypdm0JFlwUrnOEqR0OEQ6CnzTmDylMYqHd/HytnMZYyNPcJ
+   14AEsDuhHRlEwaT21nlrfPZqznnJw+x+Uq7bnRFAbuA+kWAZjtbBmpVAR
+   O13kdnaBUwWTtDR6gcWj40FivR62WbvGd1zsX65SWbS+dQ3NJvmsfH3HT
+   niiYT0NHId63EH6/jkzm/1HdHqj5dSHmCstK9EvoU5/jB/AEH/7PSzi5M
+   lXZXPdN/W1iFjy5KdHD0g7IB1jECe18JiXdFjox94XAxsgx3FP68PPeiR
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10636"; a="420873170"
 X-IronPort-AV: E=Sophos;i="5.98,226,1673942400"; 
-   d="scan'208";a="336898262"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2023 19:20:22 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10636"; a="920497304"
+   d="scan'208";a="420873170"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2023 20:24:12 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10636"; a="817836706"
 X-IronPort-AV: E=Sophos;i="5.98,226,1673942400"; 
-   d="scan'208";a="920497304"
-Received: from lkp-server01.sh.intel.com (HELO 776573491cc5) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 01 Mar 2023 19:20:18 -0800
-Received: from kbuild by 776573491cc5 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1pXZU5-00008f-1k;
-	Thu, 02 Mar 2023 03:19:57 +0000
-Date: Thu, 2 Mar 2023 11:19:15 +0800
-From: kernel test robot <lkp@intel.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	dmaengine@vger.kernel.org, vkoul@kernel.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Raj Ashok <ashok.raj@intel.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
-	"Yu, Fenghua" <fenghua.yu@intel.com>,
-	Dave Jiang <dave.jiang@intel.com>, Tony Luck <tony.luck@intel.com>,
-	"Zanussi, Tom" <tom.zanussi@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH 3/4] iommu/sva: Support reservation of global PASIDs
-Message-ID: <202303021143.qA8IMjmN-lkp@intel.com>
-References: <20230302005959.2695267-4-jacob.jun.pan@linux.intel.com>
+   d="scan'208";a="817836706"
+Received: from rmarti10-mobl2.amr.corp.intel.com (HELO [10.212.193.233]) ([10.212.193.233])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2023 20:24:11 -0800
+Message-ID: <917b1d52-54c2-ea8b-5382-dbd8ce71a76c@linux.intel.com>
+Date: Wed, 1 Mar 2023 20:24:10 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230302005959.2695267-4-jacob.jun.pan@linux.intel.com>
-
-Hi Jacob,
-
-I love your patch! Yet something to improve:
-
-[auto build test ERROR on vkoul-dmaengine/next]
-[also build test ERROR on v6.2]
-[cannot apply to joro-iommu/next linus/master next-20230302]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Jacob-Pan/iommu-vt-d-Implement-set-device-pasid-op-for-default-domain/20230302-085748
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/vkoul/dmaengine.git next
-patch link:    https://lore.kernel.org/r/20230302005959.2695267-4-jacob.jun.pan%40linux.intel.com
-patch subject: [PATCH 3/4] iommu/sva: Support reservation of global PASIDs
-config: hexagon-buildonly-randconfig-r005-20230302 (https://download.01.org/0day-ci/archive/20230302/202303021143.qA8IMjmN-lkp@intel.com/config)
-compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project 67409911353323ca5edf2049ef0df54132fa1ca7)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/b27170369658e99a0aafd84985de0ce48c1b2539
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Jacob-Pan/iommu-vt-d-Implement-set-device-pasid-op-for-default-domain/20230302-085748
-        git checkout b27170369658e99a0aafd84985de0ce48c1b2539
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/crypto/hisilicon/sec/
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202303021143.qA8IMjmN-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
-   In file included from drivers/crypto/hisilicon/sec/sec_drv.c:11:
-   In file included from include/linux/dma-mapping.h:10:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/hexagon/include/asm/io.h:334:
-   include/asm-generic/io.h:547:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __raw_readb(PCI_IOBASE + addr);
-                             ~~~~~~~~~~ ^
-   include/asm-generic/io.h:560:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/little_endian.h:37:51: note: expanded from macro '__le16_to_cpu'
-   #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
-                                                     ^
-   In file included from drivers/crypto/hisilicon/sec/sec_drv.c:11:
-   In file included from include/linux/dma-mapping.h:10:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/hexagon/include/asm/io.h:334:
-   include/asm-generic/io.h:573:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/little_endian.h:35:51: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) ((__force __u32)(__le32)(x))
-                                                     ^
-   In file included from drivers/crypto/hisilicon/sec/sec_drv.c:11:
-   In file included from include/linux/dma-mapping.h:10:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/hexagon/include/asm/io.h:334:
-   include/asm-generic/io.h:584:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writeb(value, PCI_IOBASE + addr);
-                               ~~~~~~~~~~ ^
-   include/asm-generic/io.h:594:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:604:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   In file included from drivers/crypto/hisilicon/sec/sec_drv.c:14:
->> include/linux/iommu.h:1215:1: error: expected identifier or '('
-   {
-   ^
-   drivers/crypto/hisilicon/sec/sec_drv.c:1209:39: warning: shift count >= width of type [-Wshift-count-overflow]
-           ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64));
-                                                ^~~~~~~~~~~~~~~~
-   include/linux/dma-mapping.h:76:54: note: expanded from macro 'DMA_BIT_MASK'
-   #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
-                                                        ^ ~~~
-   7 warnings and 1 error generated.
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.4.2
+Subject: Re: [PATCH v2 0/2] Add support to enable ATS on VFs independently
+Content-Language: en-US
+To: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>,
+ linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ joro@8bytes.org, bhelgaas@google.com, robin.murphy@arm.com, will@kernel.org
+Cc: jean-philippe@linaro.org, darren@os.amperecomputing.com,
+ scott@os.amperecomputing.com
+References: <20230228042137.1941024-1-gankulkarni@os.amperecomputing.com>
+From: Sathyanarayanan Kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <20230228042137.1941024-1-gankulkarni@os.amperecomputing.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
 
-vim +1215 include/linux/iommu.h
 
-  1213	
-  1214	static inline ioasid_t iommu_sva_reserve_pasid(ioasid_t min, ioasid_t max);
-> 1215	{
-  1216		return IOMMU_PASID_INVALID;
-  1217	}
-  1218	
+On 2/27/23 8:21 PM, Ganapatrao Kulkarni wrote:
+> As discussed in [1], adding a helper function to configure the STU of an
+> ATS capability. Function pci_ats_stu_configure() can be called to program
+> the STU while enumerating the PF, to support scenarios like PF is not
+> enabled with ATS, whereas VFs can enable it.
+> 
+> In SMMU-V3 driver, calling pci_ats_stu_configure() to confgiure the STU
+> while enumerating a PF in passthrough mode.
+
+It looks like you are fixing this issue only for your platform. Is there any
+way to generically program PF STU? May be from pci_ats_init()?
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
