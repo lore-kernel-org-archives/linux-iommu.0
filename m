@@ -1,105 +1,132 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B6C78F7B
-	for <iommu@lists.linux.dev>; Fri,  3 Mar 2023 21:43:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16CAEC433A7;
-	Fri,  3 Mar 2023 21:43:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1677879799;
-	bh=rzW9X9ipoEhCccEc6DGVUzm0CbhKj6YR3rzIakLS3Uw=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=B3y0ntXmgpKGa2gj/BJrgLkEsR6JMFf/H5CRXT9mKi7La/epJTuSXtnbu9JSTNoPU
-	 x5e4xdZECZHtx7GTW6l51/Lep86UAkXTdZxTbEHypSs9kKeOBWw1BnVbrQO/gTzUzl
-	 U/zDgsCVHimrNrZDrue1N1kUhcDqNrluz6/O9ffTAz6INZTfdeSfLG9w87VeAA0LlT
-	 zHK7wGDYGChQoUXyw5mggO/svT2htlV+65QcFpep5DQHMBbOy+qhPSYG9+bsuwaLe5
-	 caE6gYB/bYNzstU+IpIyw5EsQtTXimVyXh7ReVMT/axd6mF9uqHgNqZk6LpXvlGmks
-	 Tpx43Ghircr4w==
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Cc: Vasant Hegde <vasant.hegde@amd.com>,
-	Matt Fagnani <matt.fagnani@bell.net>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Joerg Roedel <jroedel@suse.de>,
-	Sasha Levin <sashal@kernel.org>,
-	joro@8bytes.org,
-	will@kernel.org,
-	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.1 02/60] iommu/amd: Fix error handling for pdev_pri_ats_enable()
-Date: Fri,  3 Mar 2023 16:42:16 -0500
-Message-Id: <20230303214315.1447666-2-sashal@kernel.org>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230303214315.1447666-1-sashal@kernel.org>
-References: <20230303214315.1447666-1-sashal@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23C629446
+	for <iommu@lists.linux.dev>; Fri,  3 Mar 2023 21:44:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1677879845; x=1709415845;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=kj65eZ6x1XaMxzFMjvimVXP1TU9dIZpyh6Wk8sLAlnk=;
+  b=kn+Fr9EhqNEd2eCfKeHuu3tA2/mqOounzHQvwzs3ikC/ich137UI5l2E
+   arBUKH5rOqiV3/H+TMbworbN6ujcJoYwAGH3mBz6gs0E3LVZZZOaS0X3X
+   vsn5Zius+MER4E0OsidFn8fCbbs0Q1cnRAbgbZrzMmp20+asMNWr+k1Tk
+   CwpalWosi4o+a9U+2Tm+ByN4gGIG1FK0n2zkmnc70twIf7TzAufnLmFgN
+   sfZmbsSCUvGaswOibTRs173S5E6pDhFZzSzdy2iR+gmeEwcB1EayBQK3s
+   BSeNAJX7LWDyQKR4ug+1e0T3X5rvO2SwQh6nFsgPOxAVCNSTcyLnoUDXf
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10638"; a="337481928"
+X-IronPort-AV: E=Sophos;i="5.98,231,1673942400"; 
+   d="scan'208";a="337481928"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2023 13:44:03 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10638"; a="668795971"
+X-IronPort-AV: E=Sophos;i="5.98,231,1673942400"; 
+   d="scan'208";a="668795971"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2023 13:44:03 -0800
+Date: Fri, 3 Mar 2023 13:47:53 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Lu Baolu
+ <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "vkoul@kernel.org"
+ <vkoul@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon
+ <will@kernel.org>, "David Woodhouse" <dwmw2@infradead.org>, "Raj, Ashok"
+ <ashok.raj@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Yu, Fenghua"
+ <fenghua.yu@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Luck, Tony"
+ <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
+ jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH 3/4] iommu/sva: Support reservation of global PASIDs
+Message-ID: <20230303134753.660d0755@jacob-builder>
+In-Reply-To: <BN9PR11MB52765C5E0DC0759880C08E258CB29@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20230302005959.2695267-1-jacob.jun.pan@linux.intel.com>
+	<20230302005959.2695267-4-jacob.jun.pan@linux.intel.com>
+	<BN9PR11MB52765C5E0DC0759880C08E258CB29@BN9PR11MB5276.namprd11.prod.outlook.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-From: Vasant Hegde <vasant.hegde@amd.com>
+Hi Kevin,
 
-[ Upstream commit 080920e52148b4fbbf9360d5345fdcd7846e4841 ]
+On Thu, 2 Mar 2023 09:43:03 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+wrote:
 
-Current code throws kernel warning if it fails to enable pasid/pri [1].
-Do not call pci_disable_[pasid/pri] if pci_enable_[pasid/pri] failed.
+> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Sent: Thursday, March 2, 2023 9:00 AM
+> > 
+> > Global PASID allocation is under IOMMU SVA code since it is the primary
+> > use case.  However, some architecture such as VT-d, global PASIDs are
+> > necessary for its internal use of DMA API with PASID.  
+> 
+> No, global PASID is not a VT-d restriction. It's from ENQCMD/S hence a
+> device requirement.
+I meant VT-d based platforms, it is kind of intertwined in that ENQCMDS
+does not restrict RIDPASID!=DMA PASID, vt-d does. Without this
+restriction, there wouldn't be a need for this patch. Let me reword.
+> > 
+> > This patch introduces SVA APIs to reserve and release global PASIDs.
+> > 
+> > Link: https://lore.kernel.org/all/20230301235646.2692846-4-
+> > jacob.jun.pan@linux.intel.com/
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > ---
+> >  drivers/iommu/iommu-sva.c | 25 +++++++++++++++++++++++++
+> >  include/linux/iommu.h     | 14 ++++++++++++++
+> >  2 files changed, 39 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+> > index 8c92a145e15d..cfdeafde88a9 100644
+> > --- a/drivers/iommu/iommu-sva.c
+> > +++ b/drivers/iommu/iommu-sva.c
+> > @@ -149,6 +149,31 @@ u32 iommu_sva_get_pasid(struct iommu_sva
+> > *handle)
+> >  }
+> >  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
+> > 
+> > +ioasid_t iommu_sva_reserve_pasid(ioasid_t min, ioasid_t max)
+> > +{
+> > +	int ret;
+> > +
+> > +	if (min == IOMMU_PASID_INVALID || max ==
+> > IOMMU_PASID_INVALID ||
+> > +	    min == 0 || max < min)
+> > +		return IOMMU_PASID_INVALID;
+> > +
+> > +	ret = ida_alloc_range(&iommu_global_pasid_ida, min, max,
+> > GFP_KERNEL);
+> > +	if (ret < 0)
+> > +		return IOMMU_PASID_INVALID;
+> > +
+> > +	return ret;
+> > +}
+> > +EXPORT_SYMBOL_GPL(iommu_sva_reserve_pasid);
+> > +  
+> 
+> I'm not sure it's the right way. It's not related to SVA.
+> 
+> We should move iommu_global_pasid_ida to iomm.c and then have
+> another interface for allocation.
+> 
+> Above is pretty generic so probably a general one like:
+> 
+> 	ioasid_t iommu_allocate_global_pasid(struct device *dev)
+> 
+> internally it can use [1, dev->iommu->max_pasids] as min/max instead
+> of passed in from the caller.
+sounds good to me, will do.
 
-[1] https://lore.kernel.org/linux-iommu/15d0f9ff-2a56-b3e9-5b45-e6b23300ae3b@leemhuis.info/
 
-Reported-by: Matt Fagnani <matt.fagnani@bell.net>
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Link: https://lore.kernel.org/r/20230111121503.5931-1-vasant.hegde@amd.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iommu/amd/iommu.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+Thanks,
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index d3b39d0416fa3..7f15e9c658412 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -1703,27 +1703,29 @@ static int pdev_pri_ats_enable(struct pci_dev *pdev)
- 	/* Only allow access to user-accessible pages */
- 	ret = pci_enable_pasid(pdev, 0);
- 	if (ret)
--		goto out_err;
-+		return ret;
- 
- 	/* First reset the PRI state of the device */
- 	ret = pci_reset_pri(pdev);
- 	if (ret)
--		goto out_err;
-+		goto out_err_pasid;
- 
- 	/* Enable PRI */
- 	/* FIXME: Hardcode number of outstanding requests for now */
- 	ret = pci_enable_pri(pdev, 32);
- 	if (ret)
--		goto out_err;
-+		goto out_err_pasid;
- 
- 	ret = pci_enable_ats(pdev, PAGE_SHIFT);
- 	if (ret)
--		goto out_err;
-+		goto out_err_pri;
- 
- 	return 0;
- 
--out_err:
-+out_err_pri:
- 	pci_disable_pri(pdev);
-+
-+out_err_pasid:
- 	pci_disable_pasid(pdev);
- 
- 	return ret;
--- 
-2.39.2
-
+Jacob
