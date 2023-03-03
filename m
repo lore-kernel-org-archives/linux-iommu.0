@@ -1,170 +1,256 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B34C01363
-	for <iommu@lists.linux.dev>; Fri,  3 Mar 2023 02:16:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 191BB1363
+	for <iommu@lists.linux.dev>; Fri,  3 Mar 2023 02:25:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677809782; x=1709345782;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=zcumD9XzWEokIb/LOAuDbgf8Ot54aNBE4FwGl3MaggA=;
-  b=nrWin8iQBz4fMfcb1SquKHC3Etum85gS/YE7xd2JZUI4NVXL4jIPN+yD
-   NXPk/RHjv0sjJD6srumsmFZ8YrZ2qAUbDJz9AeF57puI3MfA7Fqb7eFL3
-   nzYEErgSWopzuVfPz1SldnKhuRgexwDkA8N9OpUGvK7WSDFEq7WYontm9
-   HvaRNARvYpOtC8pWAO78ez0NZU0ub4aMuoY2AzaFUJGNnkelPau+/i+3X
-   ub8dgB0MPSocqkJnywEk2rtyn4cHVkbOeDsOgTKXuxOob8HnRoRClZ9a0
-   s39CtD22P/s9HO7KfjRbAOiuFem71wPzAHtoVZR386HP5tLw2D/cpiUl4
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10637"; a="323223790"
+  t=1677810343; x=1709346343;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=W+SrNllZInPCiK6vR9t2oCCKH1HMniP23Avh0Rh2exg=;
+  b=dgfHNKVdq2nwH+BctfqPdGf4+YPAIGq7fjzyBS5oN4AIHpwLqIeeFwUL
+   H7eQQz/tsObATHkGCVpW0zcVdKYHPulmsm2kuRd88tPk/eQeLVBt56hOE
+   xu3dD6dT0brW0rDdIv82ZnkVF06gZ+EV/eECpWhXUgnQXVw/tWBhJx5GZ
+   edG61pn8EvxXbl7MKpSFDBW6C926VSMrb0LIPguM8llabmWm6CW7drB8D
+   wmlR51EGNj7+0rW678+neaL7AgviYQlSZXTbhaJtPsH0zGQHN4Q3wV2D+
+   s7EjVIajvZCj4Fdn67l3MEkstaFNd/8XO5G8QOiDbXz/zfELoqeolN5vX
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10637"; a="315334743"
 X-IronPort-AV: E=Sophos;i="5.98,229,1673942400"; 
-   d="scan'208";a="323223790"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2023 18:16:22 -0800
+   d="scan'208";a="315334743"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2023 18:25:42 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10637"; a="739334782"
+X-IronPort-AV: E=McAfee;i="6500,9779,10637"; a="652633078"
 X-IronPort-AV: E=Sophos;i="5.98,229,1673942400"; 
-   d="scan'208";a="739334782"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga008.fm.intel.com with ESMTP; 02 Mar 2023 18:16:21 -0800
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Thu, 2 Mar 2023 18:16:21 -0800
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Thu, 2 Mar 2023 18:16:20 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21 via Frontend Transport; Thu, 2 Mar 2023 18:16:20 -0800
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.170)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Thu, 2 Mar 2023 18:16:20 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=esCsWcMexNtVDa+qkNyaU3I04fFVYii5sJmyIQqW1r9FdiFeTFexqC9A7E4pi5+c3TvqH+TliJcof/Shds3z3K+SQS6mw4FxSSBvMardVklGF+BQYchtMg9uOM2CJq2ggPmvTisFaMd5MzmxuwWLbKGU30waR2WHtBwely8W3JNBiHl8m/fp0WHR9il1DSsQqN9NcJcy3ec8185zvOmjNGamNf+aEAVW7Pu1nPUid0rFhwa2nLdXWaGrsa2h3xWuP5kVxWo3TXypMHEnjkz5/JLG4fT94JTFb3cDrPTXo0xGlPaH4WkjRC4UBF723wMe9gYQ+1PtHG6yUQc0zkm8aA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zcumD9XzWEokIb/LOAuDbgf8Ot54aNBE4FwGl3MaggA=;
- b=ZudPwkBHs/YR/e1ZaRzgeQdZh0Wt3HTBCHkqXRen4+LZeS2Iuz8HW7LNqbhJRjRr/n5k42eqSPzhhs9xOZw6AsItmRC8n1Wa9livtoU1TRH2n+KoufV10aAd+c70faTzFbRv/dKf18SWm8WMO8VbDINCeWE1yjvpiHvG2UhB9LI5tzB2zjDU44kGL1fDRZHzdGbykLSlQmkKIr/XqMh5c5aVKOsaRCEvNqrBHXrKghV+dXe4eUsS+fi3KAUY0QwhTaoSuI8OndpCrkOMOjuRZWmKAgZcn6R67YgaIBdtr5Rta6Y2kvJC8LotfBeAWeStNmeLg1D5x8Bo3wdfTslb5w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by MN0PR11MB6010.namprd11.prod.outlook.com (2603:10b6:208:371::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.29; Fri, 3 Mar
- 2023 02:16:19 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::1aac:b695:f7c5:bcac]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::1aac:b695:f7c5:bcac%9]) with mapi id 15.20.6156.019; Fri, 3 Mar 2023
- 02:16:19 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, Nicolin Chen
-	<nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>
-Subject: RE: [PATCH 04/14] iommufd: Use the iommufd_group to avoid duplicate
- reserved groups and msi setup
-Thread-Topic: [PATCH 04/14] iommufd: Use the iommufd_group to avoid duplicate
- reserved groups and msi setup
-Thread-Index: AQHZSLAO9s9EoxaOzE2w9MkhlKiB967nKSTwgABR5gCAAN/GUA==
-Date: Fri, 3 Mar 2023 02:16:19 +0000
-Message-ID: <BN9PR11MB527659F5D95A4F05C9A7247D8CB39@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <0-v1-7612f88c19f5+2f21-iommufd_alloc_jgg@nvidia.com>
- <4-v1-7612f88c19f5+2f21-iommufd_alloc_jgg@nvidia.com>
- <BN9PR11MB5276499B820C0250B4364AC98CB29@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZACcqDj9lgbOayDP@nvidia.com>
-In-Reply-To: <ZACcqDj9lgbOayDP@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|MN0PR11MB6010:EE_
-x-ms-office365-filtering-correlation-id: f20e4873-9f90-4abc-f4d1-08db1b8d46b7
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: DqI5IiCMs0OmBBBCoIODNt9Jcw5kstwkTxqOSwKOoQqWzU7TWq+tSWHTMAtzLGylREWBAO0Q+dZ8ibNQiziH0y2StBP1NEt5F/rTlSX4ryhxLKsLaUiSDCnm0RvErbVX1li1SvSwtaThcjoPxSxHe/z6gDs8idXfsQ3xFNjIjgGxIpDwXBMQz8goe34TkDsWg/nz8opOpXrC5jkPi5rTUu3F8FQuIvBEOnv6aDsKC6EHvUUsqV4vXEaaryDbApqIiTW/NInIIdqB1R1pUb2Uj5TUGujIxahEAEgWTqC6mwMgCgrI5EFKKd/lw0FAlqfmC4HiU+bI0lpqsUP28ImIibbSuQqjCDSPfevnzlIUHCFOB2uPWgMVV1lIlMrA0JPmwtCUQ/NetygcAuPV4pE+AqnQI0CIVUtpAtapQik/WgJ4HmPzqMx+NzE9uXDFZ1SubBPOW4BdxstGXTFQfIO8jicc8H2zClH92HSUnRc06x8Uf1RAJ7MrKPTbtB1YEqB0U8kKf5tJdjD+xzGesuOcs+9TnpZfWaktMjcofqar40eS9bquX76T1TBUQCE43sgMZA7vDaTeMGhhGon8au5ydii3vHqx6XTIh2gzC0vX72Pi+UAaLKlXyTjMddrDM9CfwGMh82LWMU2oP/e73DxhA5S0M2Kzbt0U0EFMKKMprVN7zc73+oo+9uyiie2EaIO0nfE9A02C3ilASWGj9sTEAg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(366004)(136003)(346002)(376002)(39860400002)(396003)(451199018)(316002)(55016003)(54906003)(33656002)(86362001)(107886003)(38070700005)(6506007)(478600001)(9686003)(122000001)(26005)(82960400001)(38100700002)(186003)(8936002)(71200400001)(7696005)(52536014)(5660300002)(4744005)(2906002)(66556008)(66946007)(41300700001)(64756008)(66446008)(8676002)(4326008)(6916009)(76116006)(66476007);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Dj5TY6HVUfjJOu4d7FsSFo2cybgJZwKIGNd81eg4Ms84uHtUSbic6PbFM//l?=
- =?us-ascii?Q?2VCZ0wnQch87gcOocDKIz9ooEIwJk/j2M+5jy/9QswX7W4e4epr298um0b8r?=
- =?us-ascii?Q?OULiB9m4I4eJXGAV0HCvS/9CtMZqOV1usWaQrtBzH86bWwGReqkNt15J7Zh9?=
- =?us-ascii?Q?a83J/CYB34uz3JN47JOmdUMKmDEdF5/cXFiD3fcnOgZ6nUrmIxorag1gpjUv?=
- =?us-ascii?Q?0DFa2mBurtYvu8/jyQMopScC55pm5jJD52x3yOBvCpWov7uU6FsU5Jl/fqCP?=
- =?us-ascii?Q?iZnYPAPTzdm32C8SfpZhAVXN/PcoXYkyZ+O1wOgypB6iq63zXyCy7CpYMrgV?=
- =?us-ascii?Q?4SHLbVBH57ui5Dh0iLoWS2u+tr6sIBsK7z970NzLFrimtmIDB/tAt1WOeQDA?=
- =?us-ascii?Q?DLF7k6LaTRGxXCta+btCnrE94bB0p23Q/2gcbzGh/liDWe/D4xXvrPFVJaAS?=
- =?us-ascii?Q?+dhHrZ5mQDA09aDc9jYOHyqpSHHL2ew26aI+x/gPKxnTjgo1RcehuGzqMbDZ?=
- =?us-ascii?Q?D7Sdz6xXMJMReBvQ/5KV9RYo9Zb1+GNAgyrwSyftn1gbUMEgp9j12mZ+7HIn?=
- =?us-ascii?Q?alZpio6O8UaCQRzt3YBG6qkuTRZXs6w4AaaDc1kxTHHKv0Vpa3VVyKBTKAPF?=
- =?us-ascii?Q?x0PkS9vPXn2W8I+1s3qMflu6CvDV4moFJ3ByaWeLjPEgzbRI5cczBCfUS7RH?=
- =?us-ascii?Q?+ir9NM4l39nActxg4ZuwadxCgu6YUEPqljcQqkvC8JOHVytzaLyBhg/VXQsB?=
- =?us-ascii?Q?uia+KV0ROcgEjOEEhmMuUhbnQ4wTMHyPNkewYHJ3O3ErpNyHcutaCjKbcI6F?=
- =?us-ascii?Q?OPFjw05P3ZK02x2Zi/VYM7TUNRK+nEHY2pp4SSy7VqGhTykEYF1iJQmw9fOc?=
- =?us-ascii?Q?jLA4w7Mo3eB+Kq1zltwEg/s9KBJerotfAN8wXi6gRUt0lYjwQmONH14OUoef?=
- =?us-ascii?Q?XY/qCB4PxMaW69Y2veW+xhLrjhtw1IfwYzAoxdSdsrZn2AAo6vbTgR7ZBBg8?=
- =?us-ascii?Q?4X70L1Syv0SwvIPTnxzO+h3CthpFqf5kcWE2Pdk+qnDT75+bfZTLlnY8Fv8/?=
- =?us-ascii?Q?+bdkRj1YMhZ6mVw4WJaGAGZDrEjVtTU6Yfv81RiVSnJxG1tyCucxLfyjccAg?=
- =?us-ascii?Q?gN6YkCDxuJsuJwxmRhJ0MesjvMr4etoPxRGS33rNNLAqo1fCdExauflADVuT?=
- =?us-ascii?Q?6rEOMEJbFNRISFCEP2vFN10a7JVe3K1i9nxngMf+a1bXkltjdeWHZzBv0gJ1?=
- =?us-ascii?Q?TNtbWL9F3fDpFNRiZ/+2MPdnyLHPJKTHis036szuuSyEEhWC2FvPUJo8VY+d?=
- =?us-ascii?Q?sy3LTYLQVCSpYR9GQ3bUpozMsa/2Yu6GnEsJZpDfcDvI4zuUuBU9BXxA+Dam?=
- =?us-ascii?Q?1MPuMTQD0IYoyInsUvZ8gCEtQbFf43wI4gx5GDhkjY+MlZd74kIYfR60UzC4?=
- =?us-ascii?Q?/xzet16gjds8wLFxEdXjOSkdpJyk1rVSaFW0cmJwRj8kkGM4JFHn3yPP5dyZ?=
- =?us-ascii?Q?xapBCz7B2NfIgdvgdd911BT6Re0EDuyhVcKox+FW7yQdMWBymqmA3qAqnfXl?=
- =?us-ascii?Q?1JllLQ8n7zBUzZWLHq3sayJcjHUD+P9z3juo1MDL?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+   d="scan'208";a="652633078"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
+  by orsmga006.jf.intel.com with ESMTP; 02 Mar 2023 18:25:35 -0800
+Message-ID: <794c7dad-2e62-3afa-ea10-92179b0d1659@linux.intel.com>
+Date: Fri, 3 Mar 2023 10:24:42 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f20e4873-9f90-4abc-f4d1-08db1b8d46b7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Mar 2023 02:16:19.3544
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: T9wCz1HcC1GhMUO/zsRUs6blfaPJP9B9eUv2bU8N7nlXUxihYvkuoL9kdBGsnd3xt1x/tVX4jTwWwODOUHch5w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR11MB6010
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Cc: baolu.lu@linux.intel.com, LKML <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux.dev, Jason Gunthorpe <jgg@nvidia.com>,
+ Joerg Roedel <joro@8bytes.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Dave Hansen <dave.hansen@intel.com>, Thomas Gleixner <tglx@linutronix.de>,
+ X86 Kernel <x86@kernel.org>, bp@alien8.de, "H. Peter Anvin" <hpa@zytor.com>,
+ Peter Zijlstra <peterz@infradead.org>, corbet@lwn.net, vkoul@kernel.org,
+ dmaengine@vger.kernel.org, linux-doc@vger.kernel.org,
+ Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+ David Woodhouse <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>,
+ "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+ "Yu, Fenghua" <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Kirill Shutemov <kirill.shutemov@linux.intel.com>
+Subject: Re: [PATCH v4 3/6] iommu/sva: Stop using ioasid_set for SVA
+Content-Language: en-US
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+References: <20230301235646.2692846-1-jacob.jun.pan@linux.intel.com>
+ <20230301235646.2692846-4-jacob.jun.pan@linux.intel.com>
+ <3b7fb4d3-1fe9-a3be-46ad-c271be9f96c7@linux.intel.com>
+ <20230302091707.58d59964@jacob-builder>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20230302091707.58d59964@jacob-builder>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Thursday, March 2, 2023 8:55 PM
->=20
-> On Thu, Mar 02, 2023 at 08:06:27AM +0000, Tian, Kevin wrote:
-> > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > Sent: Saturday, February 25, 2023 8:28 AM
-> > >
-> > > These items only needs to be done once per group, not once per device=
-.
-> The
-> > > once per device was a way to make the device list work. Since we are
-> > > abandoning this we can optimize things a bit.
-> > >
-> >
-> > Are we sure that a device hot-plugged into the group won't increase the
-> > list of reserved IOVA ranges?
-> >
-> > Currently iommu_get_group_resv_regions() queries reserved regions per
-> > device and then merge them into the specified list.
->=20
-> So, maybe we should export the device API from the core code and use
-> it here instead of this group stuff. We don't need the core code to
-> merge each device together for us anyhow.
->=20
+On 3/3/23 1:17 AM, Jacob Pan wrote:
+> Hi Baolu,
+> 
+> On Thu, 2 Mar 2023 21:01:42 +0800, Baolu Lu <baolu.lu@linux.intel.com>
+> wrote:
+> 
+>> On 2023/3/2 7:56, Jacob Pan wrote:
+>>> From: Jason Gunthorpe <jgg@nvidia.com>
+>>>
+>>> Instead SVA drivers can use a simple global IDA to allocate PASIDs for
+>>> each mm_struct.
+>>>
+>>> Future work would be to allow drivers using the SVA APIs to reserve
+>>> global PASIDs from this IDA for their internal use, eg with the DMA API
+>>> PASID support.
+>>>
+>>> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+>>> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+>>> ---
+>>> v4:
+>>> 	- Keep GFP_ATOMIC flag for PASID allocation, will changed to
+>>> 	GFP_KERNEL in a separate patch.
+>>> ---
+>>>    drivers/iommu/iommu-sva.c | 62 ++++++++++-----------------------------
+>>>    drivers/iommu/iommu-sva.h |  3 --
+>>>    2 files changed, 15 insertions(+), 50 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+>>> index 376b2a9e2543..297852ae5e7c 100644
+>>> --- a/drivers/iommu/iommu-sva.c
+>>> +++ b/drivers/iommu/iommu-sva.c
+>>> @@ -9,26 +9,13 @@
+>>>    #include "iommu-sva.h"
+>>>    
+>>>    static DEFINE_MUTEX(iommu_sva_lock);
+>>> -static DECLARE_IOASID_SET(iommu_sva_pasid);
+>>> +static DEFINE_IDA(iommu_global_pasid_ida);
+>>>    
+>>> -/**
+>>> - * iommu_sva_alloc_pasid - Allocate a PASID for the mm
+>>> - * @mm: the mm
+>>> - * @min: minimum PASID value (inclusive)
+>>> - * @max: maximum PASID value (inclusive)
+>>> - *
+>>> - * Try to allocate a PASID for this mm, or take a reference to the
+>>> existing one
+>>> - * provided it fits within the [@min, @max] range. On success the
+>>> PASID is
+>>> - * available in mm->pasid and will be available for the lifetime of
+>>> the mm.
+>>> - *
+>>> - * Returns 0 on success and < 0 on error.
+>>> - */
+>>> -int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t
+>>> max) +static int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t
+>>> min, ioasid_t max) {
+>>> -	int ret = 0;
+>>> -	ioasid_t pasid;
+>>> +	int ret;
+>>>    
+>>> -	if (min == INVALID_IOASID || max == INVALID_IOASID ||
+>>> +	if (min == IOMMU_PASID_INVALID || max == IOMMU_PASID_INVALID ||
+>>>    	    min == 0 || max < min)
+>>
+>> It's irrelevant to this patch. Just out of curiosity, why do we need to
+>> exclude PASID 0 here? I just had a quick look at PCI spec section 6.20.
+>> The spec does not state that PASID 0 is invalid.
+>>
+> my understanding is that ARM reserves PASID0, unlike VT-d where RID_PASID
+> is programmable.
 
-Yes, that'd be clearer in this context.
+I suppose the common thing is reserving some kind of special PASIDs.
+
+> 
+>>>    		return -EINVAL;
+>>>    
+>>> @@ -37,39 +24,20 @@ int iommu_sva_alloc_pasid(struct mm_struct *mm,
+>>> ioasid_t min, ioasid_t max) if (pasid_valid(mm->pasid)) {
+>>>    		if (mm->pasid < min || mm->pasid >= max)
+>>>    			ret = -EOVERFLOW;
+>>> +		else
+>>> +			ret = 0;
+>>
+>> Nit:
+>>
+>> If you didn't change "int ret = 0" to "int ret", we don't need above two
+>> lines. Did I miss anything?
+>>
+> you are right
+> 
+>>>    		goto out;
+>>>    	}
+>>>    
+>>> -	pasid = ioasid_alloc(&iommu_sva_pasid, min, max, mm);
+>>> -	if (!pasid_valid(pasid))
+>>> -		ret = -ENOMEM;
+>>> -	else
+>>> -		mm->pasid = ret;
+>>> +	ret = ida_alloc_range(&iommu_global_pasid_ida, min, max,
+>>> GFP_ATOMIC);
+>>> +	if (ret < min)
+>>
+>> Nit:
+>> 	    ret < 0?
+> will do
+> 
+>> ida_alloc_range() returns negative error number on failure.
+>>
+>>> +		goto out;
+>>> +	mm->pasid = ret;
+>>> +	ret = 0;
+>>>    out:
+>>>    	mutex_unlock(&iommu_sva_lock);
+>>>    	return ret;
+>>>    }
+>>> -EXPORT_SYMBOL_GPL(iommu_sva_alloc_pasid);
+>>> -
+>>> -/* ioasid_find getter() requires a void * argument */
+>>> -static bool __mmget_not_zero(void *mm)
+>>> -{
+>>> -	return mmget_not_zero(mm);
+>>> -}
+>>> -
+>>> -/**
+>>> - * iommu_sva_find() - Find mm associated to the given PASID
+>>> - * @pasid: Process Address Space ID assigned to the mm
+>>> - *
+>>> - * On success a reference to the mm is taken, and must be released
+>>> with mmput().
+>>> - *
+>>> - * Returns the mm corresponding to this PASID, or an error if not
+>>> found.
+>>> - */
+>>> -struct mm_struct *iommu_sva_find(ioasid_t pasid)
+>>> -{
+>>> -	return ioasid_find(&iommu_sva_pasid, pasid, __mmget_not_zero);
+>>> -}
+>>> -EXPORT_SYMBOL_GPL(iommu_sva_find);
+>>
+>> Removing iommu_sva_find() has nothing to do with the intention of this
+>> patch. Perhaps make it in a separated patch?
+> will do
+> 
+>>>    
+>>>    /**
+>>>     * iommu_sva_bind_device() - Bind a process address space to a device
+>>> @@ -241,8 +209,8 @@ iommu_sva_handle_iopf(struct iommu_fault *fault,
+>>> void *data)
+>>>    void mm_pasid_drop(struct mm_struct *mm)
+>>>    {
+>>> -	if (pasid_valid(mm->pasid)) {
+>>> -		ioasid_free(mm->pasid);
+>>> -		mm->pasid = INVALID_IOASID;
+>>> -	}
+>>> +	if (likely(!pasid_valid(mm->pasid)))
+>>
+>> Why is this a likely?
+> most mm does not have a PASID, thus initialized with invalid ioasid during
+> fork. This function is called for every mm.
+
+Make sense.
+
+> 
+>>> +		return;
+>>> +
+>>> +	ida_free(&iommu_global_pasid_ida, mm->pasid);
+>>>    }
+>>> diff --git a/drivers/iommu/iommu-sva.h b/drivers/iommu/iommu-sva.h
+>>> index 7215a761b962..c22d0174ad61 100644
+>>> --- a/drivers/iommu/iommu-sva.h
+>>> +++ b/drivers/iommu/iommu-sva.h
+>>> @@ -8,9 +8,6 @@
+>>>    #include <linux/ioasid.h>
+>>>    #include <linux/mm_types.h>
+>>>    
+>>> -int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t
+>>> max); -struct mm_struct *iommu_sva_find(ioasid_t pasid);
+>>> -
+>>>    /* I/O Page fault */
+>>>    struct device;
+>>>    struct iommu_fault;
+>>
+>> Best regards,
+>> baolu
+> 
+> 
+> Thanks,
+> 
+> Jacob
+
+Best regards,
+baolu
