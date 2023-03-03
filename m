@@ -1,20 +1,20 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01963A938
-	for <iommu@lists.linux.dev>; Fri,  3 Mar 2023 21:47:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE38CC433A0;
-	Fri,  3 Mar 2023 21:47:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53382A938
+	for <iommu@lists.linux.dev>; Fri,  3 Mar 2023 21:48:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38E84C4339E;
+	Fri,  3 Mar 2023 21:48:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1677880039;
-	bh=IrJ5E0bGRhC1as+odz5Z3Y0jR45FkR8gwv6cGovNbRM=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=pjWaNu3B9gINSZJuSVIOg/REDHmKj8ufhW2L/26DKmvsOs5KujCsOhD0g2WFgFSjk
-	 Z5Lq2TgDWuG3jLw6d3ip50lNlhcmXWjCbRnEFfH5HbSsqA2wmezZfuGY+nOlf6jIM1
-	 HYV8MuZfwbsFp6jwF/xS9cyaDuvtFFkjKDGu1FYh/JDs/NBMaTxeCJxAbN8x6VNjDG
-	 dM+dyZAE+1NPHuaKvbdEFpDBcWBcmO5x8e2HGl7HCSgGMISYcIbpPIGGHgUgu0puve
-	 my6fHqA7lFlh+sXioB3vUWnfeNNFoNSpgorXTOUnOVmsvRdAfMvd00uywMbIi7w8+l
-	 ATJBvpb2ATUNQ==
+	s=k20201202; t=1677880089;
+	bh=RQi+ULgVroW/0a+juihRVBiqhQ2ycJLiUsbRMu2BT1I=;
+	h=From:To:Cc:Subject:Date:From;
+	b=ZmBHzV+Ga/Gm6ma+T/2nFg9BNOeGpfkVl3eLUrowqcZYvQOd8GmqLMsoR/L48Ytvy
+	 fdevIyyQ/lmXL0p3VJpzIlADlMStFOjTz4psrIaPfKvAa+zBOT77ZiYzYQ7sGjqHNa
+	 9H73WPfTvRRutkAHy3XjsM6IIBGofu8VYAI3XPoX13g+pjMrUd50EEmqGfsIUI1Cti
+	 86xNdSj9a0eWWd6RGUm0DW6H6ee8V4y0XVfiNhbRNPnbRLZ0K4X3bUKE1b347TLVaJ
+	 SwRGJCHCDnTtNNxCtV6PwM1SRT6NjiEvX6OBOa1z7UFkVSo0xwziOTy1fJQemAOuXo
+	 PTatP0gu0vOrA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -26,12 +26,10 @@ Cc: Vasant Hegde <vasant.hegde@amd.com>,
 	joro@8bytes.org,
 	will@kernel.org,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.10 02/30] iommu/amd: Fix error handling for pdev_pri_ats_enable()
-Date: Fri,  3 Mar 2023 16:46:47 -0500
-Message-Id: <20230303214715.1452256-2-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 01/20] iommu/amd: Fix error handling for pdev_pri_ats_enable()
+Date: Fri,  3 Mar 2023 16:47:47 -0500
+Message-Id: <20230303214806.1453287-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230303214715.1452256-1-sashal@kernel.org>
-References: <20230303214715.1452256-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,14 +56,14 @@ Link: https://lore.kernel.org/r/20230111121503.5931-1-vasant.hegde@amd.com
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/amd/iommu.c | 12 +++++++-----
+ drivers/iommu/amd_iommu.c | 12 +++++++-----
  1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index f216a86d9c817..bb0983c9fbdf4 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2078,17 +2078,17 @@ static int pdev_iommuv2_enable(struct pci_dev *pdev)
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index b79309928d786..a51e78caa9c8e 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2120,17 +2120,17 @@ static int pdev_iommuv2_enable(struct pci_dev *pdev)
  	/* Only allow access to user-accessible pages */
  	ret = pci_enable_pasid(pdev, 0);
  	if (ret)
@@ -86,7 +84,7 @@ index f216a86d9c817..bb0983c9fbdf4 100644
  
  	if (reset_enable) {
  		ret = pri_reset_while_enabled(pdev);
-@@ -2098,12 +2098,14 @@ static int pdev_iommuv2_enable(struct pci_dev *pdev)
+@@ -2140,12 +2140,14 @@ static int pdev_iommuv2_enable(struct pci_dev *pdev)
  
  	ret = pci_enable_ats(pdev, PAGE_SHIFT);
  	if (ret)
