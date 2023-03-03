@@ -1,96 +1,105 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C2AD945D
-	for <iommu@lists.linux.dev>; Fri,  3 Mar 2023 21:45:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677879934; x=1709415934;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=qGV5bJjDHw2ZzOUEb+Ljo+MxhpwEmK8AGP04i4kgrdk=;
-  b=Xme8cgEdgp7HfWK53BZntsooPlMtI/7LcrcHH9SIEpD9uHYfUmoIWMor
-   aO5fLGgFJLAUp9Y3S1kTU7lBu9KDmWYmDfaXGl3YSKSM617YECx+rTO5K
-   TrSjcWJUQlzYj+1dugWm5bmsHLO6LW/3nu6lxWtPV3hFz7o2IRkEBM8Bj
-   HrjC1zSta6Ch5QQDL+dMwxDQPzbMPfQQ+EPtDgyMRDVqv8pztRHJWnRvL
-   pBfr9mtrJJvkdjV4SY2wp68+3vwNVL8q/cV7SHdfvNkayBXixURmVRTGk
-   IM3dgDv08A12/aevnwTf5Fp3cD0fSh5PoOQyehHRT60K3iOnU6NnOQ46x
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10638"; a="397753655"
-X-IronPort-AV: E=Sophos;i="5.98,231,1673942400"; 
-   d="scan'208";a="397753655"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2023 13:45:33 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10638"; a="707993274"
-X-IronPort-AV: E=Sophos;i="5.98,231,1673942400"; 
-   d="scan'208";a="707993274"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2023 13:45:33 -0800
-Date: Fri, 3 Mar 2023 13:49:23 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, LKML
- <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel
- <joro@8bytes.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
- "vkoul@kernel.org" <vkoul@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>, "Raj,
- Ashok" <ashok.raj@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Yu,
- Fenghua" <fenghua.yu@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>,
- "Luck, Tony" <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
- jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH 4/4] dmaengine/idxd: Re-enable kernel workqueue under
- DMA API
-Message-ID: <20230303134923.22b7686f@jacob-builder>
-In-Reply-To: <ZACdTG4QZSHF2QRj@nvidia.com>
-References: <20230302005959.2695267-1-jacob.jun.pan@linux.intel.com>
-	<20230302005959.2695267-5-jacob.jun.pan@linux.intel.com>
-	<BN9PR11MB527624EDB9FCD26751C73B128CB29@BN9PR11MB5276.namprd11.prod.outlook.com>
-	<ZACdTG4QZSHF2QRj@nvidia.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8C6BA938
+	for <iommu@lists.linux.dev>; Fri,  3 Mar 2023 21:45:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 917BAC4339C;
+	Fri,  3 Mar 2023 21:45:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1677879935;
+	bh=7mN5K6WGupD/dFIqT4uaE4ZFUsk9zTi4db6IxIbVEs4=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=eoIonoM70mY4xCN6izLcPQBiL2uHdqJXuT6eMCRTP3CzF5w0TfqqIH3rvOxgQVAMg
+	 1wy9fwxHZrNxIxRlYmJeXvnscgsDjzdPRiY6ZAzgc7xsdu0ux8ZjRriXgcQUwkjrT8
+	 pPhpvyRdUd3ip6EukLXlux4+UVq75Bh+VjVeEFkB8TcsYSGUIvvQqA6ccQTnsjLfBN
+	 I7uEI2norQ91y5wJ7Y9Yu+VD1NAWP9RG0vcYpAFhy4t/cZe5n8SFHNDJDeTPGtzIwf
+	 40yeh/6K5aBRxHR59Akzl1lhNlgMHpRDAvlZ5L5ejJoiVBg9KG2epge+uz4jHd6LEx
+	 VcywsGVJnoVgQ==
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Cc: Vasant Hegde <vasant.hegde@amd.com>,
+	Matt Fagnani <matt.fagnani@bell.net>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Joerg Roedel <jroedel@suse.de>,
+	Sasha Levin <sashal@kernel.org>,
+	joro@8bytes.org,
+	will@kernel.org,
+	iommu@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.15 02/50] iommu/amd: Fix error handling for pdev_pri_ats_enable()
+Date: Fri,  3 Mar 2023 16:44:43 -0500
+Message-Id: <20230303214531.1450154-2-sashal@kernel.org>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230303214531.1450154-1-sashal@kernel.org>
+References: <20230303214531.1450154-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 
-Hi Jason,
+From: Vasant Hegde <vasant.hegde@amd.com>
 
-On Thu, 2 Mar 2023 08:57:48 -0400, Jason Gunthorpe <jgg@nvidia.com> wrote:
+[ Upstream commit 080920e52148b4fbbf9360d5345fdcd7846e4841 ]
 
-> On Thu, Mar 02, 2023 at 09:47:00AM +0000, Tian, Kevin wrote:
-> > > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > > Sent: Thursday, March 2, 2023 9:00 AM
-> > > 
-> > >  static int idxd_enable_system_pasid(struct idxd_device *idxd)
-> > >  {
-> > > -	return -EOPNOTSUPP;
-> > > +	struct pci_dev *pdev = idxd->pdev;
-> > > +	struct device *dev = &pdev->dev;
-> > > +	struct iommu_domain *domain;
-> > > +	union gencfg_reg gencfg;
-> > > +	ioasid_t pasid;
-> > > +	int ret;
-> > > +
-> > > +	domain = iommu_get_domain_for_dev(dev);
-> > > +	if (!domain || domain->type == IOMMU_DOMAIN_BLOCKED)
-> > > +		return -EPERM;  
-> > 
-> > what about UNMANAGED?  
-> 
-> Why are we checking this anyhow?
-> 
-> Get the domain the DMA API is using and feed it to
-> iommu_attach_device_pasid(). If the driver can't mirror the DMA API's
-> domain onto the PASID then it will just fail the attach. A domain
-> cannot even be NULL on x86.
-makes sense,
+Current code throws kernel warning if it fails to enable pasid/pri [1].
+Do not call pci_disable_[pasid/pri] if pci_enable_[pasid/pri] failed.
 
-Thanks,
+[1] https://lore.kernel.org/linux-iommu/15d0f9ff-2a56-b3e9-5b45-e6b23300ae3b@leemhuis.info/
 
-Jacob
+Reported-by: Matt Fagnani <matt.fagnani@bell.net>
+Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Link: https://lore.kernel.org/r/20230111121503.5931-1-vasant.hegde@amd.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iommu/amd/iommu.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 7154fb551ddc9..5ceaaabb4f9da 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -1586,27 +1586,29 @@ static int pdev_iommuv2_enable(struct pci_dev *pdev)
+ 	/* Only allow access to user-accessible pages */
+ 	ret = pci_enable_pasid(pdev, 0);
+ 	if (ret)
+-		goto out_err;
++		return ret;
+ 
+ 	/* First reset the PRI state of the device */
+ 	ret = pci_reset_pri(pdev);
+ 	if (ret)
+-		goto out_err;
++		goto out_err_pasid;
+ 
+ 	/* Enable PRI */
+ 	/* FIXME: Hardcode number of outstanding requests for now */
+ 	ret = pci_enable_pri(pdev, 32);
+ 	if (ret)
+-		goto out_err;
++		goto out_err_pasid;
+ 
+ 	ret = pci_enable_ats(pdev, PAGE_SHIFT);
+ 	if (ret)
+-		goto out_err;
++		goto out_err_pri;
+ 
+ 	return 0;
+ 
+-out_err:
++out_err_pri:
+ 	pci_disable_pri(pdev);
++
++out_err_pasid:
+ 	pci_disable_pasid(pdev);
+ 
+ 	return ret;
+-- 
+2.39.2
+
