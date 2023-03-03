@@ -1,90 +1,235 @@
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 463403222
-	for <iommu@lists.linux.dev>; Fri,  3 Mar 2023 21:36:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677879381; x=1709415381;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=1OKCAy9ob19J/BmWrfVVQDL23h90LsZl9wS/K15VWWs=;
-  b=beAtohhfu4nJ8VwtTFDin/0hCpBYw2R7dWQQjcoO+gFw/wKtyMUPw9sO
-   lCM5oupURpGBe909BkNMyhRZUK13GTK24ffRgUjS0/INu1So9JBfRexDo
-   v9oLOqhOWE6a6D/o5+WqDeKksGtF31Bfo8UqjTXf1+D+CdKjfwaUhvtW4
-   YjipPrTNA3G2wnPBgDNmvjSiJ2NxKZnUqL7U09T3IOtReO4L7rREUssj4
-   hXJSM26tCDTCEMexb9nsUbFBagNqMCW/QC41yvuLXaGgSVDhANkGPhriE
-   nMccaaydzruFsxrPXg2aAFJdRorhZY/putnIadwj7x59hJkKIxprLFWEB
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10638"; a="336682316"
-X-IronPort-AV: E=Sophos;i="5.98,231,1673942400"; 
-   d="scan'208";a="336682316"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2023 13:36:20 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10638"; a="739651237"
-X-IronPort-AV: E=Sophos;i="5.98,231,1673942400"; 
-   d="scan'208";a="739651237"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2023 13:36:20 -0800
-Date: Fri, 3 Mar 2023 13:40:09 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Jason
- Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- dmaengine@vger.kernel.org, vkoul@kernel.org, Robin Murphy
- <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, David Woodhouse
- <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin"
- <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>, "Yu, Fenghua"
- <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>, Tony Luck
- <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
- jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH 2/4] iommu/vt-d: Use non-privileged mode for all PASIDs
-Message-ID: <20230303134009.189d792f@jacob-builder>
-In-Reply-To: <0afa8e6e-1676-d6a5-d679-173351fe439c@linux.intel.com>
-References: <20230302005959.2695267-1-jacob.jun.pan@linux.intel.com>
-	<20230302005959.2695267-3-jacob.jun.pan@linux.intel.com>
-	<0afa8e6e-1676-d6a5-d679-173351fe439c@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69BD33222
+	for <iommu@lists.linux.dev>; Fri,  3 Mar 2023 21:41:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3402DC433A0;
+	Fri,  3 Mar 2023 21:41:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1677879671;
+	bh=yU2Kns+nfberkrKPELqHy6W980G/yiYouKTOPDsATi4=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=of2gZftlC1CQJhqrINqrGCMm4Fnb0FyA4rbCJxR6JYpgRon5ktuSqDZXGmQaINnvp
+	 4M2HaHHQ9jQDtOq3ZqfUaIGjVGkMh5sBzClPDc2es8zNRVXAXyvnD7O1sSsKSCbHFh
+	 ZIFNIE6FSn/5ckg63ExkH9TMls0/jT5R6Ara1DbH4QSER+rpEmSEdHc9OvrW/Kw4H8
+	 9HZ9Bz6yKMUokqzC2fZYLP60+Ruv5FfRH08nwP1Auh5hDsQkMsmSfs3joVx1fWjDPR
+	 7gSsFl4GCSxJr3n6cakjwM0/144xB9q6jkKOXL1CZDQpGpJYbIfZw6gjvzoW0O+5WL
+	 0ZBU8699F0NYg==
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Cc: Jason Gunthorpe <jgg@nvidia.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Joerg Roedel <jroedel@suse.de>,
+	Sasha Levin <sashal@kernel.org>,
+	joro@8bytes.org,
+	will@kernel.org,
+	iommu@lists.linux.dev
+Subject: [PATCH AUTOSEL 6.2 02/64] iommu: Remove deferred attach check from __iommu_detach_device()
+Date: Fri,  3 Mar 2023 16:40:04 -0500
+Message-Id: <20230303214106.1446460-2-sashal@kernel.org>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230303214106.1446460-1-sashal@kernel.org>
+References: <20230303214106.1446460-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 
-Hi Baolu,
+From: Jason Gunthorpe <jgg@nvidia.com>
 
-On Thu, 2 Mar 2023 22:11:36 +0800, Baolu Lu <baolu.lu@linux.intel.com>
-wrote:
+[ Upstream commit dd8a25c557e109f868430bd2e3e8f394cb40eaa7 ]
 
-> On 2023/3/2 8:59, Jacob Pan wrote:
-> > For in-kernel DMA, use non-privileged access for all PASIDs to be
-> > consistent with RID_PASID.
-> > There's no need to differentiate user and kernel for in-kernel DMA. >
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > ---
-> >   drivers/iommu/intel/iommu.c | 2 --
-> >   1 file changed, 2 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> > index a0cb3bc851ac..9e3c056e392d 100644
-> > --- a/drivers/iommu/intel/iommu.c
-> > +++ b/drivers/iommu/intel/iommu.c
-> > @@ -2334,8 +2334,6 @@ static int domain_setup_first_level(struct
-> > intel_iommu *iommu, if (level != 4 && level != 5)
-> >   		return -EINVAL;
-> >   
-> > -	if (pasid != PASID_RID2PASID)
-> > -		flags |= PASID_FLAG_SUPERVISOR_MODE;  
-> 
-> With above removed, PASID_FLAG_SUPERVISOR_MODE is not used anywhere?
-> Perhaps you can cleanup it to avoid dead code?
-good point, we could remove pasid_set_sre() related code for FL,SL, and PT.
+At the current moment, __iommu_detach_device() is only called via call
+chains that are after the device driver is attached - eg via explicit
+attach APIs called by the device driver.
 
-Thanks,
+Commit bd421264ed30 ("iommu: Fix deferred domain attachment") has removed
+deferred domain attachment check from __iommu_attach_device() path, so it
+should just unconditionally work in the __iommu_detach_device() path.
 
-Jacob
+It actually looks like a bug that we were blocking detach on these paths
+since the attach was unconditional and the caller is going to free the
+(probably) UNAMANGED domain once this returns.
+
+The only place we should be testing for deferred attach is during the
+initial point the dma device is linked to the group, and then again
+during the dma api calls.
+
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Link: https://lore.kernel.org/r/20230110025408.667767-5-baolu.lu@linux.intel.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iommu/iommu.c | 70 ++++++++++++++++++++++---------------------
+ include/linux/iommu.h |  2 ++
+ 2 files changed, 38 insertions(+), 34 deletions(-)
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 5f6a85aea501e..54e1306a99a47 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -371,6 +371,30 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
+ 	return ret;
+ }
+ 
++static bool iommu_is_attach_deferred(struct device *dev)
++{
++	const struct iommu_ops *ops = dev_iommu_ops(dev);
++
++	if (ops->is_attach_deferred)
++		return ops->is_attach_deferred(dev);
++
++	return false;
++}
++
++static int iommu_group_do_dma_first_attach(struct device *dev, void *data)
++{
++	struct iommu_domain *domain = data;
++
++	lockdep_assert_held(&dev->iommu_group->mutex);
++
++	if (iommu_is_attach_deferred(dev)) {
++		dev->iommu->attach_deferred = 1;
++		return 0;
++	}
++
++	return __iommu_attach_device(domain, dev);
++}
++
+ int iommu_probe_device(struct device *dev)
+ {
+ 	const struct iommu_ops *ops;
+@@ -401,7 +425,7 @@ int iommu_probe_device(struct device *dev)
+ 	 * attach the default domain.
+ 	 */
+ 	if (group->default_domain && !group->owner) {
+-		ret = __iommu_attach_device(group->default_domain, dev);
++		ret = iommu_group_do_dma_first_attach(dev, group->default_domain);
+ 		if (ret) {
+ 			mutex_unlock(&group->mutex);
+ 			iommu_group_put(group);
+@@ -947,16 +971,6 @@ static int iommu_create_device_direct_mappings(struct iommu_group *group,
+ 	return ret;
+ }
+ 
+-static bool iommu_is_attach_deferred(struct device *dev)
+-{
+-	const struct iommu_ops *ops = dev_iommu_ops(dev);
+-
+-	if (ops->is_attach_deferred)
+-		return ops->is_attach_deferred(dev);
+-
+-	return false;
+-}
+-
+ /**
+  * iommu_group_add_device - add a device to an iommu group
+  * @group: the group into which to add the device (reference should be held)
+@@ -1009,8 +1023,8 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+ 
+ 	mutex_lock(&group->mutex);
+ 	list_add_tail(&device->list, &group->devices);
+-	if (group->domain  && !iommu_is_attach_deferred(dev))
+-		ret = __iommu_attach_device(group->domain, dev);
++	if (group->domain)
++		ret = iommu_group_do_dma_first_attach(dev, group->domain);
+ 	mutex_unlock(&group->mutex);
+ 	if (ret)
+ 		goto err_put_group;
+@@ -1776,21 +1790,10 @@ static void probe_alloc_default_domain(struct bus_type *bus,
+ 
+ }
+ 
+-static int iommu_group_do_dma_attach(struct device *dev, void *data)
+-{
+-	struct iommu_domain *domain = data;
+-	int ret = 0;
+-
+-	if (!iommu_is_attach_deferred(dev))
+-		ret = __iommu_attach_device(domain, dev);
+-
+-	return ret;
+-}
+-
+-static int __iommu_group_dma_attach(struct iommu_group *group)
++static int __iommu_group_dma_first_attach(struct iommu_group *group)
+ {
+ 	return __iommu_group_for_each_dev(group, group->default_domain,
+-					  iommu_group_do_dma_attach);
++					  iommu_group_do_dma_first_attach);
+ }
+ 
+ static int iommu_group_do_probe_finalize(struct device *dev, void *data)
+@@ -1855,7 +1858,7 @@ int bus_iommu_probe(struct bus_type *bus)
+ 
+ 		iommu_group_create_direct_mappings(group);
+ 
+-		ret = __iommu_group_dma_attach(group);
++		ret = __iommu_group_dma_first_attach(group);
+ 
+ 		mutex_unlock(&group->mutex);
+ 
+@@ -1987,9 +1990,11 @@ static int __iommu_attach_device(struct iommu_domain *domain,
+ 		return -ENODEV;
+ 
+ 	ret = domain->ops->attach_dev(domain, dev);
+-	if (!ret)
+-		trace_attach_device_to_domain(dev);
+-	return ret;
++	if (ret)
++		return ret;
++	dev->iommu->attach_deferred = 0;
++	trace_attach_device_to_domain(dev);
++	return 0;
+ }
+ 
+ /**
+@@ -2034,7 +2039,7 @@ EXPORT_SYMBOL_GPL(iommu_attach_device);
+ 
+ int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
+ {
+-	if (iommu_is_attach_deferred(dev))
++	if (dev->iommu && dev->iommu->attach_deferred)
+ 		return __iommu_attach_device(domain, dev);
+ 
+ 	return 0;
+@@ -2043,9 +2048,6 @@ int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
+ static void __iommu_detach_device(struct iommu_domain *domain,
+ 				  struct device *dev)
+ {
+-	if (iommu_is_attach_deferred(dev))
+-		return;
+-
+ 	domain->ops->detach_dev(domain, dev);
+ 	trace_detach_device_from_domain(dev);
+ }
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 46e1347bfa228..7695d9e14277f 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -401,6 +401,7 @@ struct iommu_fault_param {
+  * @iommu_dev:	 IOMMU device this device is linked to
+  * @priv:	 IOMMU Driver private data
+  * @max_pasids:  number of PASIDs this device can consume
++ * @attach_deferred: the dma domain attachment is deferred
+  *
+  * TODO: migrate other per device data pointers under iommu_dev_data, e.g.
+  *	struct iommu_group	*iommu_group;
+@@ -413,6 +414,7 @@ struct dev_iommu {
+ 	struct iommu_device		*iommu_dev;
+ 	void				*priv;
+ 	u32				max_pasids;
++	u32				attach_deferred:1;
+ };
+ 
+ int iommu_device_register(struct iommu_device *iommu,
+-- 
+2.39.2
+
