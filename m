@@ -1,122 +1,111 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA8E4A938
-	for <iommu@lists.linux.dev>; Fri,  3 Mar 2023 22:08:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCF5FD2E2
+	for <iommu@lists.linux.dev>; Sun,  5 Mar 2023 03:06:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677881315; x=1709417315;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=F0jJypZHaRaBJ6BMYaW1CHf7YuZJ1wW4P1q1vVBdKzE=;
-  b=hwm9DZTfV7IntQWWM0S8Jgpps8+VprWU7eeaPtjtMlAux2Ylet6W/hK6
-   AfvABRVQ+qS7ygXICLaqL17jylVrVT8YItOPTCo9Y8geOpwBmAfs6Yknm
-   IY8EDNe32NXeXNzZd0j2xGP2zEcxl2ZTUMeEYUWQF5/Qda7UYYn0h8H5Q
-   HTbcXbWqyvoQ1WmsJMzV3TD4p6F2cV0GPwGCnEQTzc7ehSsOA/6rwPJ4v
-   HMU6+T5g23iUelwEvsfNGdomQhu2/OrIoBigA3pea87xwTrlyKTu9pckd
-   SP6SEhpfAp38MljZOW1wO5GD9naMljO4xgy5lZ8+M7Uqdqysa9khHDROZ
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10638"; a="421443553"
-X-IronPort-AV: E=Sophos;i="5.98,231,1673942400"; 
-   d="scan'208";a="421443553"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2023 14:08:35 -0800
+  t=1677985609; x=1709521609;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=6j2czBUasix/Si30IrOEzCkpwnec8zlaVJBpQd4RERs=;
+  b=FS0LuZ2shW9x//rlGYksPis+abX+Ej3NxKuKkVK/21GZ7Ka+HZ358yS9
+   P0han9EWw4Nvm2Jk4mFJhie8iQUYoGbWhY+uuh78AJuzk78s+TjUx95Ez
+   NxGi8O1WRfyioPwB8PqBal8UO01ekQImJNdjOAQtUvUtUF7yDIqBPsjDX
+   p3GgKhfhnmfbbdvQDnzAG74QHLz/7TIQe+nuTd/Z8Z+ZX6t8Gssp8Edes
+   FhzlHt3rvuOP7agmJy3DIHQpeWuyqYSEHmemAc/j0N2nsvhmCwt8+Ai2u
+   DnsDV93TiuPtn1dLs+ImwpNY2rRiyA8fQ0eePCEchi0d3dfQFW/FVeWkM
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10639"; a="362944370"
+X-IronPort-AV: E=Sophos;i="5.98,234,1673942400"; 
+   d="scan'208";a="362944370"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2023 19:06:49 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10638"; a="677809639"
-X-IronPort-AV: E=Sophos;i="5.98,231,1673942400"; 
-   d="scan'208";a="677809639"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2023 14:08:34 -0800
-Date: Fri, 3 Mar 2023 14:12:24 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Lu Baolu
- <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "vkoul@kernel.org"
- <vkoul@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon
- <will@kernel.org>, "David Woodhouse" <dwmw2@infradead.org>, "Raj, Ashok"
- <ashok.raj@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Yu, Fenghua"
- <fenghua.yu@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Luck, Tony"
- <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
- jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH 4/4] dmaengine/idxd: Re-enable kernel workqueue under
- DMA API
-Message-ID: <20230303141224.7f1bf7e0@jacob-builder>
-In-Reply-To: <BN9PR11MB527624EDB9FCD26751C73B128CB29@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20230302005959.2695267-1-jacob.jun.pan@linux.intel.com>
-	<20230302005959.2695267-5-jacob.jun.pan@linux.intel.com>
-	<BN9PR11MB527624EDB9FCD26751C73B128CB29@BN9PR11MB5276.namprd11.prod.outlook.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+X-IronPort-AV: E=McAfee;i="6500,9779,10639"; a="818927690"
+X-IronPort-AV: E=Sophos;i="5.98,234,1673942400"; 
+   d="scan'208";a="818927690"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
+  by fmsmga001.fm.intel.com with ESMTP; 04 Mar 2023 19:06:45 -0800
+Message-ID: <c54aebf7-4282-b8a6-f03b-03af2deea59c@linux.intel.com>
+Date: Sun, 5 Mar 2023 11:05:50 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Cc: baolu.lu@linux.intel.com, LKML <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
+ "vkoul@kernel.org" <vkoul@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
+ "Raj, Ashok" <ashok.raj@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+ "Yu, Fenghua" <fenghua.yu@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>,
+ "Luck, Tony" <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>
+Subject: Re: [PATCH 1/4] iommu/vt-d: Implement set device pasid op for default
+ domain
+Content-Language: en-US
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ "Tian, Kevin" <kevin.tian@intel.com>
+References: <20230302005959.2695267-1-jacob.jun.pan@linux.intel.com>
+ <20230302005959.2695267-2-jacob.jun.pan@linux.intel.com>
+ <fad7f28f-b4e8-c1c3-4ca4-a48c5c6d7f4a@linux.intel.com>
+ <BN9PR11MB527627C597F6478536477A8F8CB39@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20230303083512.663ce758@jacob-builder>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20230303083512.663ce758@jacob-builder>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Hi Kevin,
+On 3/4/23 12:35 AM, Jacob Pan wrote:
+>>> From: Baolu Lu<baolu.lu@linux.intel.com>
+>>> Sent: Thursday, March 2, 2023 10:07 PM
+>>>    
+>>>> +
+>>>> +	if (hw_pass_through && domain_type_is_si(dmar_domain))
+>>>> +		ret = intel_pasid_setup_pass_through(iommu,
+>>>> dmar_domain,
+>>>> +						     dev, pasid);
+>>>> +	else if (dmar_domain->use_first_level)
+>>>> +		ret = domain_setup_first_level(iommu, dmar_domain,
+>>>> +					       dev, pasid);
+>>>> +	else
+>>>> +		ret = intel_pasid_setup_second_level(iommu,
+>>>> dmar_domain,
+>>>> +						     dev, pasid);
+>>>> +
+>>>> +	return ret;
+>>>> +}
+>>> Do you need to consider pasid cache invalidation?
+>>>    
+>> To avoid confusion this is not about invalidation of pasid cache itself
+>> which should be covered by above setup functions already.
+>>
+>> Here actually means per-PASID invalidation in iotlb and devtlb. Today
+>> only RID is tracked per domain for invalidation. it needs extension to
+>> walk attached pasid too.
+> Yes, will add.
+> 
+> For the set up path, there is no need to flush IOTLBs,  because we're going
+> from non present to present.
+> 
+> On the remove path, IOTLB flush should be covered when device driver
+> calls iommu_detach_device_pasid(). Covered with this patch.
 
-On Thu, 2 Mar 2023 09:47:00 +0000, "Tian, Kevin" <kevin.tian@intel.com>
-wrote:
+It's not only for the PASID teardown path, but also for unmap(). As the
+device has issued DMA requests with PASID, the IOMMU probably will cache
+the DMA translation with PASID tagged. Hence, we need to invalidate the
+PASID-specific IOTLB and device TLB in the unmap() path.
 
-> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Sent: Thursday, March 2, 2023 9:00 AM
-> > 
-> >  static int idxd_enable_system_pasid(struct idxd_device *idxd)
-> >  {
-> > -	return -EOPNOTSUPP;
-> > +	struct pci_dev *pdev = idxd->pdev;
-> > +	struct device *dev = &pdev->dev;
-> > +	struct iommu_domain *domain;
-> > +	union gencfg_reg gencfg;
-> > +	ioasid_t pasid;
-> > +	int ret;
-> > +
-> > +	domain = iommu_get_domain_for_dev(dev);
-> > +	if (!domain || domain->type == IOMMU_DOMAIN_BLOCKED)
-> > +		return -EPERM;  
-> 
-> what about UNMANAGED?
-will fix this by getting the dma domain.
-> 
-> > +
-> > +	pasid = iommu_sva_reserve_pasid(1, dev->iommu->max_pasids);
-> > +	if (pasid == IOMMU_PASID_INVALID)
-> > +		return -ENOSPC;  
-> 
-> as commented in last patch we can just pass a device pointer to a
-> general allocation interface.
-will do
-> 
-> > +
-> > +	ret = iommu_attach_device_pasid(domain, dev, pasid);
-> > +	if (ret) {
-> > +		dev_err(dev, "failed to attach device pasid %d, domain
-> > type %d",
-> > +			pasid, domain->type);
-> > +		iommu_sva_unreserve_pasid(pasid);
-> > +		return ret;
-> > +	}
-> > +
-> > +	/* Since we set user privilege for kernel DMA, enable
-> > completion IRQ */
-> > +	gencfg.bits = ioread32(idxd->reg_base + IDXD_GENCFG_OFFSET);
-> > +	gencfg.user_int_en = 1;
-> > +	iowrite32(gencfg.bits, idxd->reg_base + IDXD_GENCFG_OFFSET);
-> > +	idxd->pasid = pasid;  
-> 
-> Why does user privilege requires a completion interrupt?
-> 
-> Or instead it's more due to doing kernel DMA itself then we certainly
-> don't want to poll in the kernel?
-yes, kernel wq does not support polling, therefore it needs interrupts.
-Without user_int_en bit set, there would be no interrupts if we use user
-privilege for kernel wq.
+I once had a patch for this:
 
-Thanks,
+https://lore.kernel.org/linux-iommu/20220614034411.1634238-1-baolu.lu@linux.intel.com/
 
-Jacob
+Probably you can use it as a starting point.
+
+Best regards,
+baolu
