@@ -1,166 +1,124 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2A4D2CA7
-	for <iommu@lists.linux.dev>; Mon,  6 Mar 2023 18:49:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C69082CA7
+	for <iommu@lists.linux.dev>; Mon,  6 Mar 2023 19:00:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678128554; x=1709664554;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Sd152X7t2obY89N7T+yb8zPezpwCa4tk55MFgObrCTU=;
-  b=EOwy9xWIwiPce2yvRjpyRgx7OdPdkkqagerStlEYum/Ny7QBWn6tXyPX
-   zdzAN4THqJBTNv4gOgq3anQu0jz3vg+60z1PW3QNoIM5wOcn3x4KxOfVF
-   +o1A6X/3Ww7eKhOQCFc2R2phrApM7hQ+PSiNlDEJCrzrFYo5sIzLgi3P0
-   HBy7VLfC4k4YbyB9peKIWeHfcuMP3Bh0n2V69JV/B2tm4QkuRYlIfsQvC
-   ZGHugYK+PUcyp6Bg6roqvb5g9f3jlak9Yt07+fFvaP2WdJf8SdpwDSm+1
-   kx9Npvp2IdQYavwEuIx1jUHsVmFct1foxxJHOSqpXjTSL1uRhUDsl6pra
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="319472800"
+  t=1678129252; x=1709665252;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=yrqs2zzNZs4rk995C3e1KJ/BxQPhG0SO/C+asiFrH3k=;
+  b=bNrv7IQJdA0fAv/Bqfid6qYrT7Ynvuw6d7RrWu1rTjOfSo0LAakkdKP2
+   G0QwG287uQtvOSs2Cv2HfFBjdBGLIYskZIBuDBixYZrG8kkO1ZGPWldNR
+   ku/Y+/hS6m2198W7GRfzOY/XP0P07+gB+ro1aQetOotvyjtHOQbPo6Isr
+   kysYMu8hzVT6d1nokGxog+hp/i2a+5v2XKsIrL2SkSdX49NzIcm2CCBbW
+   tv1BdxoQugrDsVsoKzvntIcqhkDE6MiNiREFsGKqiPlCBmAENHBL8sd97
+   1rXYSaKTqTeZi1a+JwiVTHxJsGaIQnz4cgTr1YUt+h7S7xyBmj52ZFuo3
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="337969364"
 X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
-   d="scan'208";a="319472800"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 10:48:46 -0800
+   d="scan'208";a="337969364"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 11:00:52 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="678595220"
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="708763645"
 X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
-   d="scan'208";a="678595220"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga007.fm.intel.com with ESMTP; 06 Mar 2023 10:48:45 -0800
-Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Mon, 6 Mar 2023 10:48:45 -0800
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21 via Frontend Transport; Mon, 6 Mar 2023 10:48:45 -0800
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.100)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.21; Mon, 6 Mar 2023 10:48:45 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nPKknq8MMo+1i5KkwA87EhcHZaiFgE0W6IrWMxfm31WYFS66GSHUec50YBklu2dpQuIvKRwTzfeJkBw1ZZhiOKqpa/QbNLlSUHuCRzRLrxxvx5okZlce3S0Ahk/jOTH8pNE3cjBkb1HVWKu6VT8KlkvG49BN7ICboPAyezUPh4oy0hvYTiH2hZUhTo0eviw/HpAZzpNpBQFkf0k567NlbaSYA0XgHthSwZXX/OrmoeGmwF/3YJSpEK+5iaTH4yH5RuHyVV+wOFlWcUxnDGiWuCFj1Et/2DMVdudK501xkxeQ1VCpGxZNlTHJ+DAYecjHrpWj9EjfZXZAiZCONt34YA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Sd152X7t2obY89N7T+yb8zPezpwCa4tk55MFgObrCTU=;
- b=lLBYGBRhffpHwrQ/lKvU7P8jgUn91buErAh4e8Ka0+B64+Pu2SnoUr9wD+sOGgoAngo7yir8h7pqPbBftpdkcWrFM2mAqISpG91ezsakVy6Fr9DiWs0ziwhjqfE3Qu4XpZyGqqLmIavoAaL+x7yumVd6Fr4VoAMpgy/CDj0c8iRqCweN3qqHD0eE7zoUn+mQuPVruQqca+M+fWzYdkIQNRq7Bs0LBNEusOncnKnjD/Vhro8iNvHtyYCE8dqcS099vMy36vZwyPt4/JGK6dE4QZB5qe60J1YbpUnwhb2HcP4cJF8ursgW2BZp9/jCCols1LTECP45DTNeVykwl7PFqA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from SJ1PR11MB6083.namprd11.prod.outlook.com (2603:10b6:a03:48a::9)
- by MW3PR11MB4713.namprd11.prod.outlook.com (2603:10b6:303:2f::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.28; Mon, 6 Mar
- 2023 18:48:43 +0000
-Received: from SJ1PR11MB6083.namprd11.prod.outlook.com
- ([fe80::ee6a:b9b2:6f37:86a1]) by SJ1PR11MB6083.namprd11.prod.outlook.com
- ([fe80::ee6a:b9b2:6f37:86a1%8]) with mapi id 15.20.6156.019; Mon, 6 Mar 2023
- 18:48:43 +0000
-From: "Luck, Tony" <tony.luck@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, Jacob Pan
-	<jacob.jun.pan@linux.intel.com>
-CC: "Tian, Kevin" <kevin.tian@intel.com>, LKML <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, Lu Baolu
-	<baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	"dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "vkoul@kernel.org"
-	<vkoul@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon
-	<will@kernel.org>, David Woodhouse <dwmw2@infradead.org>, "Raj, Ashok"
-	<ashok.raj@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Yu, Fenghua"
-	<fenghua.yu@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Zanussi, Tom"
-	<tom.zanussi@intel.com>
-Subject: RE: [PATCH 3/4] iommu/sva: Support reservation of global PASIDs
-Thread-Topic: [PATCH 3/4] iommu/sva: Support reservation of global PASIDs
-Thread-Index: AQHZTKHLMpaMrjsH4E2pa8RpL32hkK7nPYCAgAJc2YCABCPvAIAATvUA////3YCAAAQCgIAABegAgAAHJ2A=
-Date: Mon, 6 Mar 2023 18:48:43 +0000
-Message-ID: <SJ1PR11MB6083DFA2C1D00B00C3918982FCB69@SJ1PR11MB6083.namprd11.prod.outlook.com>
+   d="scan'208";a="708763645"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 11:00:52 -0800
+Date: Mon, 6 Mar 2023 11:04:43 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, LKML
+ <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel
+ <joro@8bytes.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
+ "vkoul@kernel.org" <vkoul@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Will Deacon <will@kernel.org>, "David Woodhouse" <dwmw2@infradead.org>,
+ "Raj, Ashok" <ashok.raj@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Yu,
+ Fenghua" <fenghua.yu@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>,
+ "Luck, Tony" <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
+ jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH 1/4] iommu/vt-d: Implement set device pasid op for
+ default domain
+Message-ID: <20230306110443.4ca52204@jacob-builder>
+In-Reply-To: <BN9PR11MB5276E48AA1680C76A3ED66AD8CB39@BN9PR11MB5276.namprd11.prod.outlook.com>
 References: <20230302005959.2695267-1-jacob.jun.pan@linux.intel.com>
- <20230302005959.2695267-4-jacob.jun.pan@linux.intel.com>
- <BN9PR11MB52765C5E0DC0759880C08E258CB29@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20230303134753.660d0755@jacob-builder> <ZAXkLN39VUSl+t65@nvidia.com>
- <20230306094408.2d675d5b@jacob-builder> <ZAYmS4Sx6bm+ziDY@nvidia.com>
- <20230306095759.1dd65cca@jacob-builder> <ZAYunPcgSOGFK8Qi@nvidia.com>
-In-Reply-To: <ZAYunPcgSOGFK8Qi@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SJ1PR11MB6083:EE_|MW3PR11MB4713:EE_
-x-ms-office365-filtering-correlation-id: 08f1c4d5-7e43-497d-3952-08db1e736918
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ExiUh+guc7vnT0Y5teVRQ6Z4m++zoeClIfxzPqaBO97lK3NUbMpX6i5XBDpxIo8PyEQ/JU9OC8mRSQ8rXl0akqwk9su9ZlV3n5ONe0l6zWpqyhSkTGj7HO+eR2yAEtWAulUt3kBPleVmvcRnekzdtxrbGF96HS5MKkWj1cA5kn3gdysRyHzvpS+9T7VveUv1G+imIoGCRUGZUlgTBq5eavyQMLCv5zFXIrqi8zNIyKw8q7uZTE98ncmQEa0uIJfNLHDLqYtIPSDtmTa2jx6scJWaLtCZsmSHbSMad82XLouO+OAClh8rTKEiB2LR00gbaLK+Z4YPrg81N2aZCHu2yJVjEHW0D3hfnbFqSxnu9j6ZlBowoFmatPrSPocOneUPeWGYG1SssN4kbUm69bRyXGXKc842RhkXtdlNApNhnbAi7nSHQy6ire0RRynz00kQ4k6VrJ+ngrVOeHfp3GDtzzVGoU3O/GwrhVrMNpTaY/lJiRADFNdug9RTsEqFPbzfp4ouDvpb8NeQPy3oFsARDyJYcCB0Oz7MH+8H8lp4d7AGtmWghYlAI0dgf2WG+7BkX8s0LKvcwfE0NCpgVfbi5GmZ+AkSwwJcTJsxTAwZXZc9xjgtSNScSoNSs4owSWQvnet0fZ8pTHTigeyBIiL6KfdE/8+5tMYGT93Bd9TpZXIySksTFXyTSnmpm6nR0C+XP5W1xXcjPJK/4DKBd2cxLg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ1PR11MB6083.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(136003)(366004)(346002)(39860400002)(396003)(376002)(451199018)(9686003)(186003)(122000001)(38100700002)(38070700005)(52536014)(8936002)(66446008)(66556008)(66946007)(41300700001)(8676002)(2906002)(5660300002)(4744005)(66476007)(4326008)(76116006)(71200400001)(7416002)(7696005)(82960400001)(478600001)(26005)(64756008)(6506007)(316002)(110136005)(54906003)(86362001)(55016003)(33656002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?KjDZc3Lf2dUX12TAfvEzzpf1hYOg/aZJsk4bxOI6SSnc3Jr+JOm8ZtEQ9qMP?=
- =?us-ascii?Q?vJrb4si7bHYCdVP0j+/gG2BNl8/lYGWftPbEZgmzhItV+3A2etrCEHXpNcI4?=
- =?us-ascii?Q?G/IM50l6R8+JKFQzFgnbxomyh5wjmxHXd9YQmMjqZwIO8jv/dvP9xuQBfUtj?=
- =?us-ascii?Q?+dvyNjomtb7KW2cy/+69YGv8bAcnjidFll34YwXoMCucX7w4ri/CTeg3WGvd?=
- =?us-ascii?Q?gHutUVAW/KuK/zb7jijSft12Ka+3Sr82G8AXZQWiPtW7wysHDDixjR9NhMpS?=
- =?us-ascii?Q?lmVLkHY2iQtsR6V9SzDXPieVDNjzTvRhqgTEX+2u2fYuEdwANlmdZ7+qH3aq?=
- =?us-ascii?Q?gGvKIoPxnlzmNKUvQlHcuGg6It30qkKlCUWMns1LfUNSVXwTJxBpOgHViB2p?=
- =?us-ascii?Q?T3+GKs2avW8hgtJNN7ibfW8p3C8OV4/jn9vibbGJISYLUg4KnllahzLaxpDX?=
- =?us-ascii?Q?PN5LWfWCaDcp5OO4IGRRfenAWnQ9FQYMDiveA0msGngADtk9kxwvqcxerwPU?=
- =?us-ascii?Q?ceyk/dYe9NZ0l0+Fb2nQvdzDFJkUpZNMLqntRJrvVRZOnlOFCNV/Rw8ZWH3f?=
- =?us-ascii?Q?GzjkwFR+llc2etjDxCJrBHrZezjo8oIvoi9+slXcJwfE/rourT+i6didzyL9?=
- =?us-ascii?Q?VEtzOGC0mTlfXEIW/GtJAEz6FWWgH4a/7xYV3ApPibPO6b4IwbK5BzcQdfvM?=
- =?us-ascii?Q?l+M9h5OwRreEWwHQD13OrlUal9iq+XffU8mtzYzh6S95kEI7DKQSJMBXiXnb?=
- =?us-ascii?Q?XuoTYVW4SnYOsbAsS5Cn+4XdgqsHHCc9C0fg5WXf3yBjh4J6lkM91/tOi8VH?=
- =?us-ascii?Q?1mM/QcfTeKhWJ5e7EQyj2Ap8eMxeBhOKFwn8Ytdl5fe88UmSwZ5xw8TarzyV?=
- =?us-ascii?Q?k2Knd8kDJeCk08PaK2WHQQmlZExOvhOj/7PbCuc7ihlKd26/9EHYSQdUCabS?=
- =?us-ascii?Q?J0rUVeV45SETyMV6oxV694s7UrZvcIZeuFz0pDDcUElm7Ygce6z4Y9qH2wNa?=
- =?us-ascii?Q?RygCPWMeLwfQm9pAFxafjudgE7MQDEdalf4CzGKHTK12G9DRoOKUWmWeqnon?=
- =?us-ascii?Q?Ktxxhx2CMckvNj3skwAHbiv64B35mOlGQGEnP7Rx9RAAWzwvGoL6P68QAyDg?=
- =?us-ascii?Q?Pcz+1PXQ97Idzr3m8Nc8IqD3r8CZTcg27J2lMQDyhuwM/H7qgIaFMfmoN0Xl?=
- =?us-ascii?Q?qlnShv9Oq+BrvSlwO6bhlPEkfsBSCYtDAyQ801iTLy/gJLTswyzOwxya/0JH?=
- =?us-ascii?Q?AdAB/CN/eRjIVlC/8VZPQJRBjai4Yd/ggN3wm7nAB//0v1/7MXZOHv3RJzaX?=
- =?us-ascii?Q?qmCw2x91iuuz4Ls5KFVwyrBx86o2GqYxWUj6+sllu8ilxe5k5kzfYqSEMio9?=
- =?us-ascii?Q?BXOPrevsIrzLuoWYeM4juA/LqAVsJRdSmvzirSDJ8UTkPnoP+kEfu1ixP8F2?=
- =?us-ascii?Q?tl3axTNxpxJnyFbi2voWphAH1yfB8hIZmXxtLJp42N/PoryKTbFPMj7YU9uy?=
- =?us-ascii?Q?vDNisrMECipMg3qcG5SPIEhR95vpd/t8cOoLmC2Dlz7WpDjBSqQfMlkMkX99?=
- =?us-ascii?Q?y93e4Je9GI3XqRTOUoQ=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	<20230302005959.2695267-2-jacob.jun.pan@linux.intel.com>
+	<fad7f28f-b4e8-c1c3-4ca4-a48c5c6d7f4a@linux.intel.com>
+	<BN9PR11MB52762957011E60E935E82CC88CB39@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<2c9115d0-f251-c284-63d6-73714edc96b4@linux.intel.com>
+	<BN9PR11MB527634EA1ED5067D1FC0D7C68CB39@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<7f8983c8-b703-4960-67b5-97f4053329db@linux.intel.com>
+	<BN9PR11MB5276E48AA1680C76A3ED66AD8CB39@BN9PR11MB5276.namprd11.prod.outlook.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SJ1PR11MB6083.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 08f1c4d5-7e43-497d-3952-08db1e736918
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Mar 2023 18:48:43.5856
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 2Y+rW7noMNUf/XjG1oavRrRohSt4LWMdsQycnFLp+CsMgRWASBgradtakHMyL3mII+SbCtJAaqVLj0OI1koMFg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4713
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
->> ENQCMDS does not have the restriction of using a single CPU MSR to store
->> PASIDs, PASID is supplied to the instruction operand.=20
->
-> Huh? That isn't what it says in the programming manual. It says the
-> PASID only comes from the IA32_PASID msr and the only two operands are
-> the destination MMIO and the memory source for the rest of the payload.
+Hi Kevin,
 
-Jason,
+On Fri, 3 Mar 2023 05:35:58 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+wrote:
 
-Two different instructions with only one letter different in the name.
+> > From: Baolu Lu <baolu.lu@linux.intel.com>
+> > Sent: Friday, March 3, 2023 12:38 PM
+> > 
+> > On 3/3/23 11:02 AM, Tian, Kevin wrote:  
+> > >> From: Baolu Lu <baolu.lu@linux.intel.com>
+> > >> Sent: Friday, March 3, 2023 10:49 AM
+> > >>
+> > >> On 3/3/23 10:36 AM, Tian, Kevin wrote:  
+> > >>>> From: Baolu Lu <baolu.lu@linux.intel.com>
+> > >>>> Sent: Thursday, March 2, 2023 10:07 PM  
+> > >>>>> +
+> > >>>>> +	if (!sm_supported(iommu) || !info)  
+> > >>>>
+> > >>>> @info has been referenced. !info check makes no sense.
+> > >>>>
+> > >>>> Add pasid_supported(iommu).
+> > >>>>
+> > >>>> Do you need to check whether the domain is compatible for this rid
+> > >>>> pasid?  
+> > >>>
+> > >>> what kind of compatibility is concerned here? In concept a pasid
+> > >>> can be attached to any domain if it has been successfully attached
+> > >>> to rid. Probably we can add a check here that RID2PASID must
+> > >>> point to the domain already.  
+> > >>
+> > >> "...if it has been successfully attached to rid..."
+> > >>
+> > >> We should not have this assumption in iommu driver's callback. The  
+> > iommu  
+> > >> driver has no (and should not have) knowledge about the history of
+> > >> any domain.  
+> > >
+> > > but this is an op for default domain which must have been attached
+> > > to RID2PASID and any compatibility check between this domain and
+> > > device should be passed.  
+> > 
+> > This is an op for DMA, DMA-FQ and UNMANAGED domain. The IOMMU
+> > driver
+> > doesn't need to interpret the default domain concept. :-)
+> >   
+> 
+> yes if we target a general callback for all those domain types.
+> 
+> and probably this is the right thing to do as in the end DMA type will
+> be removed with Jason's cleanup
+so, let me recap. set_dev_pasid() should make no assumptions of
+ordering, i.e. it is equal to iommu_domain_ops.attach_dev().
+It will be kind of the same as Baolu's old patch
+https://lore.kernel.org/linux-iommu/20220614034411.1634238-1-baolu.lu@linux.intel.com/
 
-ENQCMD - ring 3 instruction. The PASID is inserted into the descriptor
-pushed to the device from the IA32_PASID MSR.
 
-ENQCMDS - ring 0 instruction (see that trailing "S" for Supervisor mode).
-In this case the submitter can include any PASID value they want in the
-in-memory copy of the descriptor and ENQCMDS will pass that to the
-device.
+Thanks,
 
--Tony
+Jacob
