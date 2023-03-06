@@ -1,120 +1,81 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+Received: from SHSQR01.spreadtrum.com (unknown [222.66.158.135])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4ED4D315
-	for <iommu@lists.linux.dev>; Mon,  6 Mar 2023 05:57:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678082243; x=1709618243;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=tGl9Y7rGNOqc+3WfAtbo6hMfh8OFQWxWhmVI5Kclh60=;
-  b=bw6mIaTOQvICfUZpMV6+1dyQDlwnCipv8tJCrbgysylcaFvI447/NvIQ
-   6mrsph12GgmccDNJODxckn1K9LMAvV1z+ZzBQK+yIUzL8V4uNQY9SmATV
-   iZmZEgAi1TwVsL1N0d+vE9naUfOF0WM24xNaYfZmK1VVizNg2EdWPU8OO
-   T4SCChyj7u09n83+lzxlj10mUUStzPnBO/KsKVqaQsx350X1JaHZ+84LW
-   G/mwq33AIk+78p6b+SD+XHv7vlipxqQ/V8QOkduP++OjQYLfJbrm0XyV2
-   OpueCQFFEmQ7D6d6CN5n6laFpRuaQrio+dQkmyYbGWb5iYfyhrjpGB1rQ
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10640"; a="315135452"
-X-IronPort-AV: E=Sophos;i="5.98,236,1673942400"; 
-   d="scan'208";a="315135452"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2023 21:57:23 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10640"; a="626043634"
-X-IronPort-AV: E=Sophos;i="5.98,236,1673942400"; 
-   d="scan'208";a="626043634"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.209.193]) ([10.254.209.193])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2023 21:57:20 -0800
-Message-ID: <d18d3026-a3a9-a92b-3735-f4045f96ff4e@linux.intel.com>
-Date: Mon, 6 Mar 2023 13:57:18 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 623FC20F0
+	for <iommu@lists.linux.dev>; Mon,  6 Mar 2023 06:25:33 +0000 (UTC)
+Received: from SHSQR01.spreadtrum.com (localhost [127.0.0.2] (may be forged))
+	by SHSQR01.spreadtrum.com with ESMTP id 3265Qwfs020403
+	for <iommu@lists.linux.dev>; Mon, 6 Mar 2023 13:26:58 +0800 (+08)
+	(envelope-from Chunyan.Zhang@unisoc.com)
+Received: from SHSend.spreadtrum.com (bjmbx02.spreadtrum.com [10.0.64.8])
+	by SHSQR01.spreadtrum.com with ESMTP id 3265QHdV017866;
+	Mon, 6 Mar 2023 13:26:17 +0800 (+08)
+	(envelope-from Chunyan.Zhang@unisoc.com)
+Received: from ubt.spreadtrum.com (10.0.74.87) by BJMBX02.spreadtrum.com
+ (10.0.64.8) with Microsoft SMTP Server (TLS) id 15.0.1497.23; Mon, 6 Mar 2023
+ 13:26:15 +0800
+From: Chunyan Zhang <chunyan.zhang@unisoc.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        "Robin
+ Murphy" <robin.murphy@arm.com>
+CC: <iommu@lists.linux.dev>, Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Orson Zhai <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
+        Chunyan Zhang <chunyan.zhang@unisoc.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: [PATCH V2] iommu: sprd: fix a dma buffer leak issue
+Date: Mon, 6 Mar 2023 13:26:13 +0800
+Message-ID: <20230306052613.411400-1-chunyan.zhang@unisoc.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
- Baolin Wang <baolin.wang@linux.alibaba.com>, Orson Zhai
- <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
- LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH V2] iommu: sprd: fix a dma buffer leak issue
-To: Chunyan Zhang <chunyan.zhang@unisoc.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-References: <20230306052613.411400-1-chunyan.zhang@unisoc.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230306052613.411400-1-chunyan.zhang@unisoc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.0.74.87]
+X-ClientProxiedBy: SHCAS03.spreadtrum.com (10.0.1.207) To
+ BJMBX02.spreadtrum.com (10.0.64.8)
+X-MAIL:SHSQR01.spreadtrum.com 3265QHdV017866
 
-On 2023/3/6 13:26, Chunyan Zhang wrote:
-> The DMA buffer used to store the address mpping table is alloced when
-> attaching device to a domain, and had been released in .detach_dev()
-> callback which will never be called since this driver supports default
-> domain, that will cause memory leak.
-> 
-> Move the dma buffer free before freeing sprd iommu domain to fix
-> this issue.
-> 
-> Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
-> ---
-> V2: Modified commit message
-> ---
->   drivers/iommu/sprd-iommu.c | 11 +++++++++++
->   1 file changed, 11 insertions(+)
-> 
-> diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
-> index ae94d74b73f4..4de2e79d2226 100644
-> --- a/drivers/iommu/sprd-iommu.c
-> +++ b/drivers/iommu/sprd-iommu.c
-> @@ -154,6 +154,17 @@ static struct iommu_domain *sprd_iommu_domain_alloc(unsigned int domain_type)
->   static void sprd_iommu_domain_free(struct iommu_domain *domain)
->   {
->   	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
-> +	size_t pgt_size = sprd_iommu_pgt_size(domain);
-> +	struct sprd_iommu_device *sdev = dom->sdev;
-> +
-> +	/*
-> +	 * If the domain has been attached to a device already,
-> +	 * free the dma buffer first.
+The DMA buffer used to store the address mpping table is alloced when
+attaching device to a domain, and had been released in .detach_dev()
+callback which will never be called since this driver supports default
+domain, that will cause memory leak.
 
-Is it possible that a domain is attached to multiple devices or attached
-to a device multiple times? If so, perhaps the memory is also leaked in
-sprd_iommu_attach_device():
+Move the dma buffer free before freeing sprd iommu domain to fix
+this issue.
 
-233 static int sprd_iommu_attach_device(struct iommu_domain *domain,
-234                                     struct device *dev)
-235 {
-236         struct sprd_iommu_device *sdev = dev_iommu_priv_get(dev);
-237         struct sprd_iommu_domain *dom = to_sprd_domain(domain);
-238         size_t pgt_size = sprd_iommu_pgt_size(domain);
-239
-240         if (dom->sdev)
-241                 return -EINVAL;
-242
-243         dom->pgt_va = dma_alloc_coherent(sdev->dev, pgt_size, 
-&dom->pgt_pa, GFP_KERNEL);
-244         if (!dom->pgt_va)
-245                 return -ENOMEM;
+Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
+---
+V2: Modified commit message
+---
+ drivers/iommu/sprd-iommu.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-as dom->pgt_va is not checked before setting a new pointer.
+diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
+index ae94d74b73f4..4de2e79d2226 100644
+--- a/drivers/iommu/sprd-iommu.c
++++ b/drivers/iommu/sprd-iommu.c
+@@ -154,6 +154,17 @@ static struct iommu_domain *sprd_iommu_domain_alloc(unsigned int domain_type)
+ static void sprd_iommu_domain_free(struct iommu_domain *domain)
+ {
+ 	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
++	size_t pgt_size = sprd_iommu_pgt_size(domain);
++	struct sprd_iommu_device *sdev = dom->sdev;
++
++	/*
++	 * If the domain has been attached to a device already,
++	 * free the dma buffer first.
++	 */
++	if (sdev) {
++		dma_free_coherent(sdev->dev, pgt_size, dom->pgt_va, dom->pgt_pa);
++		dom->sdev = NULL;
++	}
+ 
+ 	kfree(dom);
+ }
+-- 
+2.25.1
 
-If sprd iommu driver only supports one-time use of domain， perhaps put
-a comment around above code so that people can take care of it when the
-assumption changes.
-
-> +	 */
-> +	if (sdev) {
-> +		dma_free_coherent(sdev->dev, pgt_size, dom->pgt_va, dom->pgt_pa);
-> +		dom->sdev = NULL;
-> +	}
->   
->   	kfree(dom);
->   }
-
-Best regards,
-baolu
