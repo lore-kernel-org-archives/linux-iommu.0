@@ -1,110 +1,97 @@
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6F2C7473
-	for <iommu@lists.linux.dev>; Mon,  6 Mar 2023 21:51:11 +0000 (UTC)
-Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 645651EC0373;
-	Mon,  6 Mar 2023 22:51:04 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-	t=1678139464;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-	bh=ZcMCliQs5T2pgPApnAR1x0YFEL96itD44N0jLsGaXgQ=;
-	b=BE+qJc2rT1BVVGQjQtVN1VU23K9ps6I+5GT/nqUHZmIagIglFZLKot+VP4zRkBAPauEzGy
-	yxINZtrTb7YccV3vtMI3Hqj4U+AKE7uNYf4iwdrP4wHjlUA2enUjve3en1uiov2yU4qPGa
-	cYI94G79L+ABKsKYlLPF8CjD+oagt3s=
-Date: Mon, 6 Mar 2023 22:51:04 +0100
-From: Borislav Petkov <bp@alien8.de>
-To: Dave Hansen <dave.hansen@intel.com>
-Cc: "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-	Sean Christopherson <seanjc@google.com>,
-	"hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	"wei.liu@kernel.org" <wei.liu@kernel.org>,
-	Dexuan Cui <decui@microsoft.com>,
-	"luto@kernel.org" <luto@kernel.org>,
-	"peterz@infradead.org" <peterz@infradead.org>,
-	"davem@davemloft.net" <davem@davemloft.net>,
-	"edumazet@google.com" <edumazet@google.com>,
-	"kuba@kernel.org" <kuba@kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>,
-	"lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-	"robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-	"bhelgaas@google.com" <bhelgaas@google.com>,
-	"arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
-	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-	"brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-	"tglx@linutronix.de" <tglx@linutronix.de>,
-	"mingo@redhat.com" <mingo@redhat.com>,
-	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-	Tianyu Lan <Tianyu.Lan@microsoft.com>,
-	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-	"sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>,
-	"ak@linux.intel.com" <ak@linux.intel.com>,
-	"isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-	"dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-	"jane.chu@oracle.com" <jane.chu@oracle.com>,
-	"tony.luck@intel.com" <tony.luck@intel.com>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
- to map as encrypted
-Message-ID: <20230306215104.GEZAZgSPa4qBBu9lRd@fat_crate.local>
-References: <BYAPR21MB16880EC9C85EC9343F9AF178D7A19@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y++VSZNAX9Cstbqo@zn.tnic>
- <Y/aTmL5Y8DtOJu9w@google.com>
- <Y/aYQlQzRSEH5II/@zn.tnic>
- <Y/adN3GQJTdDPmS8@google.com>
- <Y/ammgkyo3QVon+A@zn.tnic>
- <Y/a/lzOwqMjOUaYZ@google.com>
- <Y/dDvTMrCm4GFsvv@zn.tnic>
- <BYAPR21MB1688F68888213E5395396DD9D7AB9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <255249f2-47af-07b7-d9d9-9edfdd108348@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 718BE53A6
+	for <iommu@lists.linux.dev>; Mon,  6 Mar 2023 23:41:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678146073; x=1709682073;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=0QV3lB69qzmHWTtL05fwlUGsbzm0tkLqs6qOyxA/zJk=;
+  b=L1V7lmO55g0uJjRZsJcg54yEPTJNMy1Fq2WoKt4JsawOCwrN6qkPPLTQ
+   qizMCJQlyxX3/+LS6jOl2kjJ9ws9E54c7+QRsZT1mCd3/jC/Q1Y5EcGdT
+   TKQC/pKr7Nw+KBBmZzWuCk2zFaCWoZu5R2XyhSufONhNpscNGiE8eAUN6
+   W34i+R1fjASE/ZLvY3fQ9OG4qlAtHVhJEn0JrwSLnLux5Si6N76sPYGeO
+   DRkYiqQFmnXhJP/jlYhx0cZbA5gMnfoQ+hxU3S8wEEizeGSXtQII6IEaR
+   Rbi9uUTlVE4di0wJGpMl8MEFcCjnC8HCpfYMijtXDFqbtBflygVGbApyG
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="400535243"
+X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
+   d="scan'208";a="400535243"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 15:41:12 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="708830232"
+X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
+   d="scan'208";a="708830232"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 15:41:12 -0800
+Date: Mon, 6 Mar 2023 15:45:04 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Baolu Lu
+ <baolu.lu@linux.intel.com>, LKML <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Joerg Roedel
+ <joro@8bytes.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
+ "vkoul@kernel.org" <vkoul@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>, "Raj,
+ Ashok" <ashok.raj@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Yu,
+ Fenghua" <fenghua.yu@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>,
+ "Luck, Tony" <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
+ jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH 1/4] iommu/vt-d: Implement set device pasid op for
+ default domain
+Message-ID: <20230306154504.04769726@jacob-builder>
+In-Reply-To: <ZAY4zd4OlgSz+puZ@nvidia.com>
+References: <20230302005959.2695267-1-jacob.jun.pan@linux.intel.com>
+	<20230302005959.2695267-2-jacob.jun.pan@linux.intel.com>
+	<fad7f28f-b4e8-c1c3-4ca4-a48c5c6d7f4a@linux.intel.com>
+	<BN9PR11MB52762957011E60E935E82CC88CB39@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<2c9115d0-f251-c284-63d6-73714edc96b4@linux.intel.com>
+	<BN9PR11MB527634EA1ED5067D1FC0D7C68CB39@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<7f8983c8-b703-4960-67b5-97f4053329db@linux.intel.com>
+	<BN9PR11MB5276E48AA1680C76A3ED66AD8CB39@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20230306110443.4ca52204@jacob-builder>
+	<ZAY4zd4OlgSz+puZ@nvidia.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <255249f2-47af-07b7-d9d9-9edfdd108348@intel.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, Feb 23, 2023 at 12:27:50PM -0800, Dave Hansen wrote:
-> On 2/23/23 12:01, Michael Kelley (LINUX) wrote:
-> > Dave Hansen:  Are you also OK with Sean's proposal?  Looking for consensus
-> > here ....
+Hi Jason,
+
+On Mon, 6 Mar 2023 15:02:37 -0400, Jason Gunthorpe <jgg@nvidia.com> wrote:
+
+> On Mon, Mar 06, 2023 at 11:04:43AM -0800, Jacob Pan wrote:
 > 
-> Yeah, I'm generally OK with it as long as Borislav is.
+> > > and probably this is the right thing to do as in the end DMA type will
+> > > be removed with Jason's cleanup  
+> >
+> > so, let me recap. set_dev_pasid() should make no assumptions of
+> > ordering, i.e. it is equal to iommu_domain_ops.attach_dev().  
+> 
+> Absolutely yes.
+> 
+> You should factor out all the "prepare the domain to be used" code and
+> call it in both places.
+> 
+I think this has been done by Baolu
+https://lore.kernel.org/linux-iommu/20190325013036.18400-1-baolu.lu@linux.intel.com/T/#m8c980357a39dc75dc360ff0f71dc7ebe1e49f9a6
+iommu/vt-d: Move common code out of iommu_attch_device()
+    
+    This part of code could be used by both normal and aux
+    domain specific attach entries. Hence move them into a
+    common function to avoid duplication.
 
-Right, I think we're ok with the following basic rules:
+set_dev_pasid() will call prepare_domain_attach_device() as well.
 
-- pure arch/x86/ code should use the x86_platform function pointers to
-  query hypervisor capabilities/peculiarities
+Thanks,
 
-- cc_platform_has() should be used in generic/driver code as it
-  abstracts away the underlying platform better. IOW, querying
-  x86_platform.... in generic, platform-agnostic driver code looks weird to
-  say the least
-
-The hope is that those two should be enough to support most guest types
-and not let the zoo get too much out of hand...
-
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Jacob
