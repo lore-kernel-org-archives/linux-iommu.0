@@ -1,218 +1,120 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2029F17D7
-	for <iommu@lists.linux.dev>; Mon,  6 Mar 2023 02:59:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4ED4D315
+	for <iommu@lists.linux.dev>; Mon,  6 Mar 2023 05:57:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678071570; x=1709607570;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Taiw2o2chkLGjTGNeAmtwqU/UhEE9L3oW9AzQ9w2d3I=;
-  b=mAtgoytfVraoykZ6qVCf+TvF0IPuLGw/txjzRvN9GMVa0YVXwtQIM2AB
-   X1XvLgvuS/oEwOgEMgOoruQeV+Duc7D34CTZWZHbPCPSH52d+Mndgt/vt
-   jjcpLXFNK4I9Hf2JVqOpOLqJiJHdTlimGljngkM2EkpK/G8WUNE1u3zHW
-   wbrTT8rRdDQR3NZNSog324A1qMp4j5LH+Q4XBzhEBVpxT+4u7xQcmjh6r
-   qCcHsd5yJ/COq0y+dku6r3isu0SIym40aUAJcyqZnoBtukpDjmyUV/xjX
-   G6vc0rutLwDFTF+RN44LRKWx/T6OpnLmnpHwkr1EL/JrbIjIH2DjaAwSr
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10640"; a="363071544"
+  t=1678082243; x=1709618243;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=tGl9Y7rGNOqc+3WfAtbo6hMfh8OFQWxWhmVI5Kclh60=;
+  b=bw6mIaTOQvICfUZpMV6+1dyQDlwnCipv8tJCrbgysylcaFvI447/NvIQ
+   6mrsph12GgmccDNJODxckn1K9LMAvV1z+ZzBQK+yIUzL8V4uNQY9SmATV
+   iZmZEgAi1TwVsL1N0d+vE9naUfOF0WM24xNaYfZmK1VVizNg2EdWPU8OO
+   T4SCChyj7u09n83+lzxlj10mUUStzPnBO/KsKVqaQsx350X1JaHZ+84LW
+   G/mwq33AIk+78p6b+SD+XHv7vlipxqQ/V8QOkduP++OjQYLfJbrm0XyV2
+   OpueCQFFEmQ7D6d6CN5n6laFpRuaQrio+dQkmyYbGWb5iYfyhrjpGB1rQ
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10640"; a="315135452"
 X-IronPort-AV: E=Sophos;i="5.98,236,1673942400"; 
-   d="scan'208";a="363071544"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2023 18:59:29 -0800
+   d="scan'208";a="315135452"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2023 21:57:23 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10640"; a="765072490"
+X-IronPort-AV: E=McAfee;i="6500,9779,10640"; a="626043634"
 X-IronPort-AV: E=Sophos;i="5.98,236,1673942400"; 
-   d="scan'208";a="765072490"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by FMSMGA003.fm.intel.com with ESMTP; 05 Mar 2023 18:59:27 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: iommu@lists.linux.dev
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Christoph Hellwig <hch@infradead.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v3 6/6] iommu: Cleanup iommu_change_dev_def_domain()
-Date: Mon,  6 Mar 2023 10:58:04 +0800
-Message-Id: <20230306025804.13912-7-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230306025804.13912-1-baolu.lu@linux.intel.com>
-References: <20230306025804.13912-1-baolu.lu@linux.intel.com>
+   d="scan'208";a="626043634"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.209.193]) ([10.254.209.193])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2023 21:57:20 -0800
+Message-ID: <d18d3026-a3a9-a92b-3735-f4045f96ff4e@linux.intel.com>
+Date: Mon, 6 Mar 2023 13:57:18 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
+ Baolin Wang <baolin.wang@linux.alibaba.com>, Orson Zhai
+ <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
+ LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH V2] iommu: sprd: fix a dma buffer leak issue
+To: Chunyan Zhang <chunyan.zhang@unisoc.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+References: <20230306052613.411400-1-chunyan.zhang@unisoc.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20230306052613.411400-1-chunyan.zhang@unisoc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-As the singleton group limitation has been removed, cleanup the code
-in iommu_change_dev_def_domain() accordingly.
+On 2023/3/6 13:26, Chunyan Zhang wrote:
+> The DMA buffer used to store the address mpping table is alloced when
+> attaching device to a domain, and had been released in .detach_dev()
+> callback which will never be called since this driver supports default
+> domain, that will cause memory leak.
+> 
+> Move the dma buffer free before freeing sprd iommu domain to fix
+> this issue.
+> 
+> Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
+> ---
+> V2: Modified commit message
+> ---
+>   drivers/iommu/sprd-iommu.c | 11 +++++++++++
+>   1 file changed, 11 insertions(+)
+> 
+> diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
+> index ae94d74b73f4..4de2e79d2226 100644
+> --- a/drivers/iommu/sprd-iommu.c
+> +++ b/drivers/iommu/sprd-iommu.c
+> @@ -154,6 +154,17 @@ static struct iommu_domain *sprd_iommu_domain_alloc(unsigned int domain_type)
+>   static void sprd_iommu_domain_free(struct iommu_domain *domain)
+>   {
+>   	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
+> +	size_t pgt_size = sprd_iommu_pgt_size(domain);
+> +	struct sprd_iommu_device *sdev = dom->sdev;
+> +
+> +	/*
+> +	 * If the domain has been attached to a device already,
+> +	 * free the dma buffer first.
 
-Documentation is also updated.
+Is it possible that a domain is attached to multiple devices or attached
+to a device multiple times? If so, perhaps the memory is also leaked in
+sprd_iommu_attach_device():
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/iommu.c                         | 81 +++++--------------
- .../ABI/testing/sysfs-kernel-iommu_groups     |  1 -
- 2 files changed, 21 insertions(+), 61 deletions(-)
+233 static int sprd_iommu_attach_device(struct iommu_domain *domain,
+234                                     struct device *dev)
+235 {
+236         struct sprd_iommu_device *sdev = dev_iommu_priv_get(dev);
+237         struct sprd_iommu_domain *dom = to_sprd_domain(domain);
+238         size_t pgt_size = sprd_iommu_pgt_size(domain);
+239
+240         if (dom->sdev)
+241                 return -EINVAL;
+242
+243         dom->pgt_va = dma_alloc_coherent(sdev->dev, pgt_size, 
+&dom->pgt_pa, GFP_KERNEL);
+244         if (!dom->pgt_va)
+245                 return -ENOMEM;
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 9fe6d149f281..735554ccc04b 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2924,11 +2924,10 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
- EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
- 
- /*
-- * Changes the default domain of an iommu group that has *only* one device
-+ * Changes the default domain of an iommu group
-  *
-  * @group: The group for which the default domain should be changed
-- * @prev_dev: The device in the group (this is used to make sure that the device
-- *	 hasn't changed after the caller has called this function)
-+ * @dev: The first device in the group
-  * @type: The type of the new default domain that gets associated with the group
-  *
-  * Returns 0 on success and error code on failure
-@@ -2939,101 +2938,63 @@ EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
-  *    Please take a closer look if intended to use for other purposes.
-  */
- static int iommu_change_dev_def_domain(struct iommu_group *group,
--				       struct device *prev_dev, int type)
-+				       struct device *dev, int type)
- {
-+	struct __group_domain_type gtype = {NULL, 0};
- 	struct iommu_domain *prev_dom;
--	int ret, dev_def_dom;
--	struct device *dev;
-+	int ret;
- 
- 	lockdep_assert_held(&group->mutex);
- 
--	if (group->default_domain != group->domain) {
--		dev_err_ratelimited(prev_dev, "Group not assigned to default domain\n");
--		ret = -EBUSY;
--		goto out;
--	}
--
--	/*
--	 * iommu group wasn't locked while acquiring device lock in
--	 * iommu_group_store_type(). So, make sure that the device count hasn't
--	 * changed while acquiring device lock.
--	 *
--	 * Changing default domain of an iommu group with two or more devices
--	 * isn't supported because there could be a potential deadlock. Consider
--	 * the following scenario. T1 is trying to acquire device locks of all
--	 * the devices in the group and before it could acquire all of them,
--	 * there could be another thread T2 (from different sub-system and use
--	 * case) that has already acquired some of the device locks and might be
--	 * waiting for T1 to release other device locks.
--	 */
--	if (iommu_group_device_count(group) != 1) {
--		dev_err_ratelimited(prev_dev, "Cannot change default domain: Group has more than one device\n");
--		ret = -EINVAL;
--		goto out;
--	}
--
--	/* Since group has only one device */
--	dev = iommu_group_first_dev(group);
--
--	if (prev_dev != dev) {
--		dev_err_ratelimited(prev_dev, "Cannot change default domain: Device has been changed\n");
--		ret = -EBUSY;
--		goto out;
--	}
--
- 	prev_dom = group->default_domain;
--	if (!prev_dom) {
--		ret = -EINVAL;
--		goto out;
--	}
--
--	dev_def_dom = iommu_get_def_domain_type(dev);
-+	__iommu_group_for_each_dev(group, &gtype,
-+				   probe_get_default_domain_type);
- 	if (!type) {
- 		/*
- 		 * If the user hasn't requested any specific type of domain and
- 		 * if the device supports both the domains, then default to the
- 		 * domain the device was booted with
- 		 */
--		type = dev_def_dom ? : iommu_def_domain_type;
--	} else if (dev_def_dom && type != dev_def_dom) {
--		dev_err_ratelimited(prev_dev, "Device cannot be in %s domain\n",
-+		type = gtype.type ? : iommu_def_domain_type;
-+	} else if (gtype.type && type != gtype.type) {
-+		dev_err_ratelimited(dev, "Device cannot be in %s domain\n",
- 				    iommu_domain_type_str(type));
--		ret = -EINVAL;
--		goto out;
-+		return -EINVAL;
- 	}
- 
- 	/*
- 	 * Switch to a new domain only if the requested domain type is different
- 	 * from the existing default domain type
- 	 */
--	if (prev_dom->type == type) {
--		ret = 0;
--		goto out;
--	}
-+	if (prev_dom->type == type)
-+		return 0;
-+
-+	group->default_domain = NULL;
-+	group->domain = NULL;
- 
- 	/* Sets group->default_domain to the newly allocated domain */
- 	ret = iommu_group_alloc_default_domain(group, dev, type);
- 	if (ret)
--		goto out;
-+		goto restore_old_domain;
- 
--	ret = iommu_create_device_direct_mappings(group, dev);
-+	ret = iommu_group_create_direct_mappings(group);
- 	if (ret)
- 		goto free_new_domain;
- 
--	ret = __iommu_attach_device(group->default_domain, dev);
-+	ret = __iommu_attach_group(group->default_domain, group);
- 	if (ret)
- 		goto free_new_domain;
- 
--	group->domain = group->default_domain;
- 	iommu_domain_free(prev_dom);
- 
- 	return 0;
- 
- free_new_domain:
- 	iommu_domain_free(group->default_domain);
-+restore_old_domain:
- 	group->default_domain = prev_dom;
- 	group->domain = prev_dom;
--out:
-+
- 	return ret;
- }
- 
-diff --git a/Documentation/ABI/testing/sysfs-kernel-iommu_groups b/Documentation/ABI/testing/sysfs-kernel-iommu_groups
-index b15af6a5bc08..a42d4383d999 100644
---- a/Documentation/ABI/testing/sysfs-kernel-iommu_groups
-+++ b/Documentation/ABI/testing/sysfs-kernel-iommu_groups
-@@ -53,7 +53,6 @@ Description:	/sys/kernel/iommu_groups/<grp_id>/type shows the type of default
- 
- 		The default domain type of a group may be modified only when
- 
--		- The group has only one device.
- 		- The device in the group is not bound to any device driver.
- 		  So, the users must unbind the appropriate driver before
- 		  changing the default domain type.
--- 
-2.34.1
+as dom->pgt_va is not checked before setting a new pointer.
 
+If sprd iommu driver only supports one-time use of domain， perhaps put
+a comment around above code so that people can take care of it when the
+assumption changes.
+
+> +	 */
+> +	if (sdev) {
+> +		dma_free_coherent(sdev->dev, pgt_size, dom->pgt_va, dom->pgt_pa);
+> +		dom->sdev = NULL;
+> +	}
+>   
+>   	kfree(dom);
+>   }
+
+Best regards,
+baolu
