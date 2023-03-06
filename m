@@ -1,127 +1,170 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2051.outbound.protection.outlook.com [40.107.102.51])
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87890320E
-	for <iommu@lists.linux.dev>; Mon,  6 Mar 2023 14:50:19 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nLl1guoHCjGTMlayqW+Un7cblfQGsANPWVhhWtrW6rc+68duQ/cazT2FTepWHnYEHTwcgo5su8ea6ZoSEScLGNBDHulCvaW68nEA4Uy4BNKStAessX1PoW5fc2i4zHi6+ZZ2+ZkMEheItS4exMGcE12gfZGqgWBrdSAHuLLgStu1LeYs9Q16ShIKpu/9UYJR+yg5g1XLGXWIRdeORLk4V+uHKN0GZIte35PoRje+1Ll2HQJ7wuSTAxDfvHLexdcvAzo2hPjnMxm7jAjv3ALUC+6KAkpqDXDVBQIQUJBwiVyLS7U3Wk0+/3Arif3JDYxZD09LtYrJ14ZbPut3A52PFw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8VH5atoUeM1RuwGe/iokJoSsJCj91TmSA0gg51MC3ZE=;
- b=YxQOUoZOzj/DRSAOlnrfe2OcfJcPzcaWcNYT/0wTpcH89CvXgCwrSz3zn8f//H8KVEws7pRVs1DfGZCLdkbbR1iC5Nr/5aR4ThEq58IgKvyYbdKNoRh9Zx1RBw535CuL8GK5cqdhZGbgIHuiK+MFxDFHfZTLxCEKmdPJsgwZLk4pTO19ditjF297UwL4ZahM7+fxNUaUdYUeu22bxZ/bwWKaetE6rU7Bd6y0+d8iTG89VYm4ENzBv7pAogkHWI4lumU3FhhOiGsisEbUAQni5aYyGhQCQVQAYCWmoiimrfULvNLQHtkNxJB5kFp0nMwUYIjNBPXW+N1/cHTB/jFmvQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8VH5atoUeM1RuwGe/iokJoSsJCj91TmSA0gg51MC3ZE=;
- b=eLIy7Qe0iO0ExMYZeCQ1/GnQ0pTqmr/GcLC6vItBHJ8LJHfPSVRp58lh0oTtL5UN40ENXVRXloW4vsOu/Bj3O7QIHzhmIDdeaYtK3fwBIk4OSJfJ7A6zCst3x/BGG01aceLGSRsTAm5VwuL4M64F+cgoWHI3kQrpkLR4fkuJwpf6usRzukOp+04637CuvYiyC0LEed3DlHqQQy3wTZgy3JonbeJjcinFLR+eVdODiS//PE9+BVhEEXPHerQTwrxCEID8Ld2ATNtLxEM9lCeLT3UkguVagG5W/c7Rcq/NWZjjPCEM3GZHV47ips8A1h6Y8xc5kdGj3Rn+WyD1LR9pvA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by PH7PR12MB8178.namprd12.prod.outlook.com (2603:10b6:510:2b3::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.27; Mon, 6 Mar
- 2023 14:50:17 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee%4]) with mapi id 15.20.6156.027; Mon, 6 Mar 2023
- 14:50:17 +0000
-Date: Mon, 6 Mar 2023 10:50:16 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	Shuah Khan <shuah@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>
-Subject: Re: [PATCH v3 08/12] iommufd/selftest: Rename domain_id to stdev_id
- for FIXTURE iommufd_ioas
-Message-ID: <ZAX9qDZdM5h+TiYH@nvidia.com>
-References: <0-v3-ae9c2975a131+2e1e8-iommufd_hwpt_jgg@nvidia.com>
- <8-v3-ae9c2975a131+2e1e8-iommufd_hwpt_jgg@nvidia.com>
- <BN9PR11MB52767FE47436B23EA38CFCE68CB29@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB52767FE47436B23EA38CFCE68CB29@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: BL1PR13CA0224.namprd13.prod.outlook.com
- (2603:10b6:208:2bf::19) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03F0820F0
+	for <iommu@lists.linux.dev>; Mon,  6 Mar 2023 16:32:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678120337; x=1709656337;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ktIv+Rh9KBAfkRLGGpvik7AxgJzeQXcUN3sTRinZTIs=;
+  b=NI+8GarmxiX61sjgxgVZCc0kFE5XPI5Mhwr3+uZrnDoENzqwk9hy/qke
+   +tZfSmmfqfvLcOsYC+cRO0Iwam/qR3RX+TIF5KuAI3pSAs0kj1ZX9qIuq
+   r/3nMvfEtZJ4ZBSg5GBIRrgIYeLdAHcj/L9yUxjoyd062/iikGgbAIRsz
+   gW/COwYBxh7RbwhLKUbtZSVSTtYcdJsWFMk0hHC4ynN12Pe0SB/XDothm
+   cL8WExNp6rKNMs5tHCY5TlOTgHtTGmos7+4fpIcftLMNiYd1THCR8h5Pd
+   2FUnB4+yuEC6m3fPVTWbS6bLRjrZCNqjiovKnYSNoEe1YPktS8/xQQxwM
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="398181164"
+X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
+   d="scan'208";a="398181164"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 08:31:58 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="669504527"
+X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
+   d="scan'208";a="669504527"
+Received: from fyu1.sc.intel.com ([172.25.103.126])
+  by orsmga007.jf.intel.com with ESMTP; 06 Mar 2023 08:31:57 -0800
+From: Fenghua Yu <fenghua.yu@intel.com>
+To: "Vinod Koul" <vkoul@kernel.org>,
+	"Dave Jiang" <dave.jiang@intel.com>
+Cc: dmaengine@vger.kernel.org,
+	"linux-kernel" <linux-kernel@vger.kernel.org>,
+	Fenghua Yu <fenghua.yu@intel.com>,
+	Alistair Popple <apopple@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Lorenzo Stoakes <lstoakes@gmail.com>,
+	Christoph Hellwig <hch@infradead.org>,
+	iommu@lists.linux.dev
+Subject: [PATCH v2 08/16] iommu: define and export iommu_access_remote_vm()
+Date: Mon,  6 Mar 2023 08:31:30 -0800
+Message-Id: <20230306163138.587484-9-fenghua.yu@intel.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20230306163138.587484-1-fenghua.yu@intel.com>
+References: <20230306163138.587484-1-fenghua.yu@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|PH7PR12MB8178:EE_
-X-MS-Office365-Filtering-Correlation-Id: 77621569-e996-4b28-dd4a-08db1e5219b3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	yBRtGO4mb/IAFFfRpu+/sRz5a/LH8Qg8Fc+EoJPRKp9NdoysZuA5AAP0mDCM5EmgzbjTakMdwWd2J6NMhUZTLX7M2Fp3LNWlrt/pTrKGAE4S7bcoSjLzjIHDZTBYBWVVaWUiMFdoYyd6HAh168VkEwnNs2qB5rVkb8RVzodRru7C123HNd9GMlwPNgRbs2Kw2b/wAdz0NSKj0T7exj98XkuPHEfHNUYDfxEPr6GfYQeyLGaZ26pQ+7Y0UlK+VDEuOn86coiW8YJ3itj4S4tA0zrBEwrYFhOxo4cki1Ji/C6j6V/HUHMubIxRSe1DLPUBZPtFly71RWB0bRIdWyneF0FLmFnuIeG5wFSc8J2FPMzWytCziZaHr9jl8DMJBOjr3Srbvv6bN9QOQ/WYfp7i2gOuHuvdYteaYQq84BlG6UdY3utt++1QAgi77qcCw1yuB5WHwH++w1E6DpSAULs42B/ptKyerz7U3VP6R+auHwXQsuSzTxVeCVRFi8Cp8DX6q0VE0YNzOqvExUjMZxpus4Wb7cbnXfdhcN+bRElP/QVf8xt79hu56ZuUAY8S50gmyiLWQT8rzCNMUUTwFyj0YFRvZohdJmzn3dq3aGUD2qNheiw6tDpXZVmxZuCHKDArbVpHPR2R4/R523+SUKV9k2nd3LjqZGToDbEYhnSGrA8B8ogBjKqBnBj4hzyLd/rz
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(39860400002)(376002)(346002)(396003)(366004)(451199018)(4744005)(8936002)(5660300002)(66476007)(41300700001)(66946007)(66556008)(2906002)(4326008)(6916009)(8676002)(54906003)(316002)(478600001)(36756003)(6486002)(26005)(6506007)(6512007)(186003)(2616005)(86362001)(38100700002)(67856001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?AkCttqScycH9Pt0O97F9x+CI5hZLy5/xvlGNwU8i62qHs3UMwuvpT7Fyce/p?=
- =?us-ascii?Q?XeKw9BqvNwDwFvxC7alJaI30AAk7UlzYZvC6/llSSp9Vqfs+KmuqtMVJi9tX?=
- =?us-ascii?Q?RnNAAAvOJi0nRqS5eoOTI2vISgPhmeGTYwmo+6aBAS/6AqSBuC79zJVXby8G?=
- =?us-ascii?Q?S5JhVhh3aJvMxGvpH/Xhg64al6NoM+fqyXNadZ/ehOXYTw9Zd0e11USr8SMf?=
- =?us-ascii?Q?f4wfX001CVybjtJ/KtjYwWgI3QVvb2eUmVpLWOL2TOFHzWa4VwETPrgAjs+B?=
- =?us-ascii?Q?uYOidgMdnsvuWXWSEyMGNcVThHwsNqjt9nqIN7k0VgO2tYPVFr9slJ89TZ16?=
- =?us-ascii?Q?6CdyvEiXkuZUZ1RSOT7zpkFXxdDZSLLE3dhW1fsuOLDWgS1FGIu9IH/vsq8F?=
- =?us-ascii?Q?f3NYjeaFtQMGvbWjGdGSjvDnjVYsOb8JCC31xDpKIuuVmUhgrHkejMNI6RfX?=
- =?us-ascii?Q?LHCcqie7qJFvQGqPf5uLScbuZwgtPsagWwDMIlYW+yA63bo5rL2oVdFT7VwA?=
- =?us-ascii?Q?Jd2pgUYTpXnzASFbCBJX3aB9CKh9Lvl55YJtGLuEaMLKnnmSomHHbLhEZdvR?=
- =?us-ascii?Q?3Q9qkR7DaoI4BHSDIijOkmF75KRAB+2i8LwzqkiL6oEF8wItCegzcPaS3CuM?=
- =?us-ascii?Q?RA66LWPu4ecTxxQg0/+yx6UDXPoCMjEzCtL7GqYyiDHGHaLxhCG+P6LLJQW8?=
- =?us-ascii?Q?9KnKm50pIwJ33hLOMtdlsuV/uMkR4uXPMEkGduLSZxKMb4P7Vcw304H5jD8k?=
- =?us-ascii?Q?eQq1acNCF4glLJnrmYCoWUY9mBQKY/69upYAcZWVwAjDYHVtr2TDvBkuYaiP?=
- =?us-ascii?Q?B7ypXYyPWQbyZ831wb5YNci+WhcXI7NCghZGEU6PFiCNXky8fE6WqPYdPHde?=
- =?us-ascii?Q?TRvhJVv2US7T+pYsEDbgoZ8fqZ6b+LQJLW1NrWr2dZs/HZNC6OiP8yfLpm4j?=
- =?us-ascii?Q?gnqVsft/x5co8wiNDx9GWJazGHrlta5ZOMNhHppT/o19UQBK4XD0pGcovfnO?=
- =?us-ascii?Q?kGTnO3UgqOUnFv+ycf8fs44e3quLTjMpT8SUd6/KHffUaUe8ljaotU1Tj9zb?=
- =?us-ascii?Q?p9tRTIozN1lZu7k/5nOs+eJubsnCvMsvnbFcD1IyephKYIot7Wf2PvO8nZRX?=
- =?us-ascii?Q?4z4R1+axdAqM1KkbAZsYvJUBrzfaWUWb1xZOLEiVrgTy/jC7msYVLKhm5NDO?=
- =?us-ascii?Q?NKb9+ilMnh4fEEXcF0vs18cyrugi5TI1BXgRMd1jWtz3CxAdSKWhTtWg5vKM?=
- =?us-ascii?Q?2Uf77GthBl6t1ZdFvyfYP1N8BeH3DoOalgCnIPVZI757OuxVGEx3G7/YhCVg?=
- =?us-ascii?Q?rrnOAsuabMnoEIvhfs7BbQX+GwZAsJFqmoNBkATDljUkoJ/2wJly/xKJHAJ1?=
- =?us-ascii?Q?z07dXvUDmZ8LN6fFINdNPZZScnDOMsHMOvar9CWrc3vzG9nMg8iXYr1V6r9T?=
- =?us-ascii?Q?flYwl4oOeKBE9MN5mtS4FEndxlYlESPDwsvFmlRxFTA7ORmG+JuekrdYUylP?=
- =?us-ascii?Q?4pmDm5g4opdBId6wlmxoWLsPNd0lqxA8lmVxJwzXtm3jK/LqVhrObaWZoLOZ?=
- =?us-ascii?Q?KJaNurgx2SmjW16Y8NuE5Vj6dyxdlAu8fkT8AyfK?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 77621569-e996-4b28-dd4a-08db1e5219b3
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Mar 2023 14:50:17.2770
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uqTYQTexbP1kEaK4RPLRRDsMr2JvhmuCiO+KAvoLsupQPoLj1OvfF2qKgWHJPCEj
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB8178
+Content-Transfer-Encoding: 8bit
 
-On Thu, Mar 02, 2023 at 01:23:48AM +0000, Tian, Kevin wrote:
+Define and export iommu_access_remote_vm() to allow IOMMU related
+drivers to access user address space by PASID.
 
-> >  {
-> > -	if (self->domain_id) {
-> > +	if (self->stdev_id) {
-> >  		/* IOAS cannot be freed while a domain is on it */
-> >  		EXPECT_ERRNO(EBUSY,
-> >  			     _test_ioctl_destroy(self->fd, self->ioas_id));
-> 
-> it's easier to understand this comment.
+The IDXD driver would like to use it to write the user's completion
+record that the hardware device is not able to write to due to user
+page fault.
 
-I changed this comment to use the right language:
+Without the API, it's complex for IDXD driver to copy completion record
+to a process' fault address for two reasons:
+1. access_remote_vm() is not exported and shouldn't be exported for
+   drivers because drivers may easily cause mm reference issue.
+2. user frees fault address pages to trigger fault by IDXD device.
 
-	if (self->stdev_id) {
-		/* IOAS cannot be freed while a device has a HWPT using it */
-		EXPECT_ERRNO(EBUSY,
-			     _test_ioctl_destroy(self->fd, self->ioas_id));
+The driver has to call iommu_sva_find(), kthread_use_mm(), re-implement
+majority of access_remote_vm() etc to access remote vm.
 
-Thanks,
-Jason 
+This IOMMU specific API hides these details and provides a clean interface
+for idxd driver and potentially other IOMMU related drivers.
+
+Suggested-by: Alistair Popple <apopple@nvidia.com>
+Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Alistair Popple <apopple@nvidia.com>
+Cc: Lorenzo Stoakes <lstoakes@gmail.com>
+Cc: Christoph Hellwig <hch@infradead.org>
+Cc: iommu@lists.linux.dev
+---
+v2:
+- Define and export iommu_access_remote_vm() for IDXD driver to write
+  completion record to user address space. This change removes
+  patch 8 and 9 in v1 (Alistair Popple)
+
+ drivers/iommu/iommu-sva.c | 35 +++++++++++++++++++++++++++++++++++
+ include/linux/iommu.h     |  9 +++++++++
+ 2 files changed, 44 insertions(+)
+
+diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+index 24bf9b2b58aa..1d7a0aee58f7 100644
+--- a/drivers/iommu/iommu-sva.c
++++ b/drivers/iommu/iommu-sva.c
+@@ -71,6 +71,41 @@ struct mm_struct *iommu_sva_find(ioasid_t pasid)
+ }
+ EXPORT_SYMBOL_GPL(iommu_sva_find);
+ 
++/**
++ * iommu_access_remote_vm - access another process' address space by PASID
++ * @pasid:	Process Address Space ID assigned to the mm
++ * @addr:	start address to access
++ * @buf:	source or destination buffer
++ * @len:	number of bytes to transfer
++ * @gup_flags:	flags modifying lookup behaviour
++ *
++ * Another process' address space is found by PASID. A reference on @mm
++ * is taken and released inside the function.
++ *
++ * Return: number of bytes copied from source to destination.
++ */
++int iommu_access_remote_vm(ioasid_t pasid, unsigned long addr, void *buf,
++			   int len, unsigned int gup_flags)
++{
++	struct mm_struct *mm;
++	int copied;
++
++	mm = iommu_sva_find(pasid);
++	if (IS_ERR_OR_NULL(mm))
++		return 0;
++
++	/*
++	 * A reference on @mm has been held by mmget_not_zero()
++	 * during iommu_sva_find().
++	 */
++	copied = access_remote_vm(mm, addr, buf, len, gup_flags);
++	/* The reference is released. */
++	mmput(mm);
++
++	return copied;
++}
++EXPORT_SYMBOL_GPL(iommu_access_remote_vm);
++
+ /**
+  * iommu_sva_bind_device() - Bind a process address space to a device
+  * @dev: the device
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 6595454d4f48..414a46a53799 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -1177,6 +1177,8 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev,
+ 					struct mm_struct *mm);
+ void iommu_sva_unbind_device(struct iommu_sva *handle);
+ u32 iommu_sva_get_pasid(struct iommu_sva *handle);
++int iommu_access_remote_vm(ioasid_t pasid, unsigned long addr, void *buf,
++			   int len, unsigned int gup_flags);
+ #else
+ static inline struct iommu_sva *
+ iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
+@@ -1192,6 +1194,13 @@ static inline u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+ {
+ 	return IOMMU_PASID_INVALID;
+ }
++
++static inline int iommu_access_remote_vm(ioasid_t pasid, unsigned long addr,
++					 void *buf, int len,
++					 unsigned int gup_flags)
++{
++	return 0;
++}
+ #endif /* CONFIG_IOMMU_SVA */
+ 
+ #endif /* __LINUX_IOMMU_H */
+-- 
+2.37.1
+
