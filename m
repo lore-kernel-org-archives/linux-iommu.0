@@ -1,36 +1,36 @@
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E62D536E
-	for <iommu@lists.linux.dev>; Tue,  7 Mar 2023 02:35:52 +0000 (UTC)
-X-UUID: c3c61376bc9011ed945fc101203acc17-20230307
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7A2C36E
+	for <iommu@lists.linux.dev>; Tue,  7 Mar 2023 02:36:21 +0000 (UTC)
+X-UUID: d54e1c74bc9011ed945fc101203acc17-20230307
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=CvW+PcfeYqr3meNH9iMi1EeI6mUftOO0XUxpFMCnWnw=;
-	b=FXasqo4LV+8qgKOREAbYWqHgbxoZzCKU4vMFYQGSLtuHl4gdT4RxV9Ni1pliT2l20Uksf63fj792EhDIeIq7AYwMdN7XG0UoGCFa628xqhTS5gtRQykUH91bmNI0v+jxXm38xdeAxIw1kZsm20qup677JnyQMekdivE6eC4qqu8=;
+	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=XNsNsqm+tac4TqBDM7eY2YSHOJMel3hNuiOtLlMEMKY=;
+	b=eF94pGKlpfUnCLQ0/hcIM69hmO5NHdYiHRndX6QtivTxoONDa0WqC4xcxphRuJ4zXx/aPAMgpNpe032tuNQcXjqBEPdnGCWQ9cP1grSrY+G9f2XCt+s7RTlwx/NZCW/Yygf6lTJ1VLMbJGIFE7xqMDEZiuW7F9BxrLhZjVP9bU0=;
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.20,REQID:6b53ddcd-6451-47b5-948c-47bbf9a20ddf,IP:0,U
+X-CID-O-INFO: VERSION:1.1.20,REQID:c5670c87-f1c3-4df4-b32e-d9c88ee98ee4,IP:0,U
 	RL:0,TC:0,Content:-25,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Release_Ham,ACTI
 	ON:release,TS:70
-X-CID-INFO: VERSION:1.1.20,REQID:6b53ddcd-6451-47b5-948c-47bbf9a20ddf,IP:0,URL
+X-CID-INFO: VERSION:1.1.20,REQID:c5670c87-f1c3-4df4-b32e-d9c88ee98ee4,IP:0,URL
 	:0,TC:0,Content:-25,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Spam_GS981B3D,ACTI
 	ON:quarantine,TS:70
-X-CID-META: VersionHash:25b5999,CLOUDID:5420f7f4-ddba-41c3-91d9-10eeade8eac7,B
-	ulkID:230307103547S6XGYLM8,BulkQuantity:0,Recheck:0,SF:38|29|28|17|19|48,T
+X-CID-META: VersionHash:25b5999,CLOUDID:1b7969b2-beed-4dfc-bd9c-e1b22fa6ccc4,B
+	ulkID:230307103617MJZV16F3,BulkQuantity:0,Recheck:0,SF:38|29|28|17|19|48,T
 	C:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
 	,OSI:0,OSA:0,AV:0
 X-CID-BVR: 0
-X-UUID: c3c61376bc9011ed945fc101203acc17-20230307
+X-UUID: d54e1c74bc9011ed945fc101203acc17-20230307
 Received: from mtkmbs13n1.mediatek.inc [(172.21.101.193)] by mailgw02.mediatek.com
 	(envelope-from <yong.wu@mediatek.com>)
 	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 384112747; Tue, 07 Mar 2023 10:35:46 +0800
+	with ESMTP id 1828845615; Tue, 07 Mar 2023 10:36:15 +0800
 Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
  mtkmbs13n1.mediatek.inc (172.21.101.193) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.25; Tue, 7 Mar 2023 10:35:45 +0800
+ 15.2.1118.25; Tue, 7 Mar 2023 10:36:14 +0800
 Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
  mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.1118.25 via Frontend Transport; Tue, 7 Mar 2023 10:35:43 +0800
+ 15.2.1118.25 via Frontend Transport; Tue, 7 Mar 2023 10:36:13 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>,
 	Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh+dt@kernel.org>
@@ -45,11 +45,10 @@ CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
 	<yunfei.dong@mediatek.com>, kyrie wu
 	<kyrie.wu@mediatek.corp-partner.google.com>, <chengci.xu@mediatek.com>,
 	<youlin.pei@mediatek.com>, <anan.sun@mediatek.com>, Yong Wu
-	<yong.wu@mediatek.com>, Tiffany Lin <tiffany.lin@mediatek.com>, Andrew-CT
- Chen <andrew-ct.chen@mediatek.com>, Rob Herring <robh@kernel.org>
-Subject: [PATCH v5 01/11] dt-bindings: media: mediatek,vcodec: Remove dma-ranges property
-Date: Tue, 7 Mar 2023 10:34:57 +0800
-Message-ID: <20230307023507.13306-2-yong.wu@mediatek.com>
+	<yong.wu@mediatek.com>
+Subject: [PATCH v5 03/11] iommu/mediatek: Improve comment for the current region/bank
+Date: Tue, 7 Mar 2023 10:34:59 +0800
+Message-ID: <20230307023507.13306-4-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230307023507.13306-1-yong.wu@mediatek.com>
 References: <20230307023507.13306-1-yong.wu@mediatek.com>
@@ -63,102 +62,58 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-MTK: N
 
-After commit f1ad5338a4d5 ("of: Fix "dma-ranges" handling for bus
-controllers"), the dma-ranges of the leaf node doesn't work. Remove
-it for vcodec here.
+No functional change. Just add more comment about the current region/bank
+in the code.
 
-1) For mediatek,vcodec-decoder.yaml and mediatek,vcodec-encoder.yaml,
-this property is in the leaf node, it is invalid as the above comment.
-
-Currently there is only mt8195 VENC node has this property in upstream.
-Indeed, VENC is affected, but it is not a fatal issue. Originally it
-expects its iova range locate at 4GB-8GB. However after that commit, its
-expectation doesn't come true, it will fall back to 0-4GB iova and also
-could work well.
-
-2) For mediatek,vcodec-subdev-decoder.yaml, It already uses parent-child
-node, this property works. Instead, MediaTek iommu will control the
-masters' iova ranges by the master's larb/port id internally, then the
-dma-ranges property is unnecessary for the master's node.
-
-Cc: Tiffany Lin <tiffany.lin@mediatek.com>
-Cc: Andrew-CT Chen <andrew-ct.chen@mediatek.com>
-Cc: Yunfei Dong <yunfei.dong@mediatek.com>
-Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Acked-by: Rob Herring <robh@kernel.org>
 ---
- .../devicetree/bindings/media/mediatek,vcodec-decoder.yaml | 5 -----
- .../devicetree/bindings/media/mediatek,vcodec-encoder.yaml | 5 -----
- .../bindings/media/mediatek,vcodec-subdev-decoder.yaml     | 7 -------
- 3 files changed, 17 deletions(-)
+ drivers/iommu/mtk_iommu.c | 31 ++++++++++++++++++++++++++-----
+ 1 file changed, 26 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/media/mediatek,vcodec-decoder.yaml b/Documentation/devicetree/bindings/media/mediatek,vcodec-decoder.yaml
-index aa55ca65d6ed..fad59b486d5d 100644
---- a/Documentation/devicetree/bindings/media/mediatek,vcodec-decoder.yaml
-+++ b/Documentation/devicetree/bindings/media/mediatek,vcodec-decoder.yaml
-@@ -56,11 +56,6 @@ properties:
-       List of the hardware port in respective IOMMU block for current Socs.
-       Refer to bindings/iommu/mediatek,iommu.yaml.
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index d5a4955910ff..aa4bdcb65ea7 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -197,12 +197,33 @@ struct mtk_iommu_plat_data {
  
--  dma-ranges:
--    maxItems: 1
--    description: |
--      Describes the physical address space of IOMMU maps to memory.
--
-   mediatek,vpu:
-     $ref: /schemas/types.yaml#/definitions/phandle
-     description:
-diff --git a/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml b/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
-index 0f2ea8d9a10c..a2051b31fa29 100644
---- a/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
-+++ b/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
-@@ -49,11 +49,6 @@ properties:
-       List of the hardware port in respective IOMMU block for current Socs.
-       Refer to bindings/iommu/mediatek,iommu.yaml.
+ 	char			*pericfg_comp_str;
+ 	struct list_head	*hw_list;
+-	unsigned int		iova_region_nr;
+-	const struct mtk_iommu_iova_region	*iova_region;
  
--  dma-ranges:
--    maxItems: 1
--    description: |
--      Describes the physical address space of IOMMU maps to memory.
--
-   mediatek,vpu:
-     $ref: /schemas/types.yaml#/definitions/phandle
-     description:
-diff --git a/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml b/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml
-index c4f20acdc1f8..290594bc91cc 100644
---- a/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml
-+++ b/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml
-@@ -76,11 +76,6 @@ properties:
-       The node of system control processor (SCP), using
-       the remoteproc & rpmsg framework.
+-	u8                  banks_num;
+-	bool                banks_enable[MTK_IOMMU_BANK_MAX];
+-	unsigned int        banks_portmsk[MTK_IOMMU_BANK_MAX];
++	/*
++	 * The IOMMU HW may support 16GB iova. In order to balance the IOVA ranges,
++	 * different masters will be put in different iova ranges, for example vcodec
++	 * is in 4G-8G and cam is in 8G-12G. Meanwhile, some masters may have the
++	 * special IOVA range requirement, like CCU can only support the address
++	 * 0x40000000-0x44000000.
++	 * Here list the iova ranges this SoC supports and which larbs/ports are in
++	 * which region.
++	 *
++	 * 16GB iova all use one pgtable, but each a region is a iommu group.
++	 */
++	struct {
++		unsigned int	iova_region_nr;
++		const struct mtk_iommu_iova_region	*iova_region;
++	};
++
++	/*
++	 * The IOMMU HW may have 5 banks. Each bank has a independent pgtable.
++	 * Here list how many banks this SoC supports/enables and which ports are in which bank.
++	 */
++	struct {
++		u8		banks_num;
++		bool		banks_enable[MTK_IOMMU_BANK_MAX];
++		unsigned int	banks_portmsk[MTK_IOMMU_BANK_MAX];
++	};
++
+ 	unsigned char       larbid_remap[MTK_LARB_COM_MAX][MTK_LARB_SUBCOM_MAX];
+ };
  
--  dma-ranges:
--    maxItems: 1
--    description: |
--      Describes the physical address space of IOMMU maps to memory.
--
-   "#address-cells":
-     const: 2
- 
-@@ -203,7 +198,6 @@ required:
-   - reg
-   - iommus
-   - mediatek,scp
--  - dma-ranges
-   - ranges
- 
- if:
-@@ -236,7 +230,6 @@ examples:
-             compatible = "mediatek,mt8192-vcodec-dec";
-             mediatek,scp = <&scp>;
-             iommus = <&iommu0 M4U_PORT_L4_VDEC_MC_EXT>;
--            dma-ranges = <0x1 0x0 0x0 0x40000000 0x0 0xfff00000>;
-             #address-cells = <2>;
-             #size-cells = <2>;
-             ranges = <0 0 0 0x16000000 0 0x40000>;
 -- 
 2.25.1
 
