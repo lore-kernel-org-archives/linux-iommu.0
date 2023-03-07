@@ -1,106 +1,69 @@
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60760361
-	for <iommu@lists.linux.dev>; Tue,  7 Mar 2023 00:42:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C4E2361
+	for <iommu@lists.linux.dev>; Tue,  7 Mar 2023 01:42:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678149720; x=1709685720;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=XhNE9wpAaF+JRcQwnZM8UruFGzy4KLhJd78fbJA7ezg=;
-  b=mjQb7CKcvSpZHJnioSOwqEhvqMhaKqHjalbC5/MeGJTiBS/UnHCdR0Ku
-   grJoxOV3hDa0Z2NfWt3eQI1bSsdddgs4ttfR7scIKxqkcD0yM1/bJpNld
-   67Mcwdbq/M0Qf8r5ajDqcELpJ2CZDdkb5wrclJCiAnaU4xNfd6cDyVpdC
-   wMJPleucVOVa4SRbf2kmZo1bZJgtRVqhk65afNyz/ZY4pUCWIhOWDjALq
-   cafVuFjbc5lqmfq6pygXIYz1EKv3llGvfQYOxbbcucaDp1p35rkeozVkK
-   eY3oiwHkimW5YmeWAmSccnqMul/hdvEiDl5XbdfuLP/avoC8ICTp9pstF
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="335742845"
+  t=1678153363; x=1709689363;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=UMoRhlPDP2tn6UvYThHFlyDazIgakuaROHX7ynKFduQ=;
+  b=X0jGsPHEVrig5NZJ+2J1oeBj8mdkcaAtj07gM+XKI6Z66lLS9rxPV9pw
+   b/QqaJxcJTo3GEahQgXYlWLIffSrVGex8gzdReQJCw5OSRAtkHaK4saIz
+   43zhroHB0IRaRZqq7xs4wexr846+zRocU7efzfcPOC1rRYXLmcR0bHYNy
+   SYJrNcdjhpISn07rSP8s0ZQFNBlqhZjC01YhePYO754n0XFPV2DwCmfZA
+   kA/1DpOicWPJoH/TLkJfftDaIDhvtH9Yt6G6vg7frnJQOA+QgkhIAPAlh
+   Baefd4n7LhV14x3LhhAzCiIFSxa2rZkdvSkmVD9I3iYK9cnUkqMqKlodK
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="398314456"
 X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
-   d="scan'208";a="335742845"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 16:41:58 -0800
+   d="scan'208";a="398314456"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 17:42:42 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="922147808"
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="676384284"
 X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
-   d="scan'208";a="922147808"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 16:41:58 -0800
-Date: Mon, 6 Mar 2023 16:45:49 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Baolu Lu
- <baolu.lu@linux.intel.com>, LKML <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Joerg Roedel
- <joro@8bytes.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
- "vkoul@kernel.org" <vkoul@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>, "Raj,
- Ashok" <ashok.raj@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Yu,
- Fenghua" <fenghua.yu@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>,
- "Luck, Tony" <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
- jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH 1/4] iommu/vt-d: Implement set device pasid op for
- default domain
-Message-ID: <20230306164549.27ebf2ac@jacob-builder>
-In-Reply-To: <20230306154504.04769726@jacob-builder>
-References: <20230302005959.2695267-1-jacob.jun.pan@linux.intel.com>
-	<20230302005959.2695267-2-jacob.jun.pan@linux.intel.com>
-	<fad7f28f-b4e8-c1c3-4ca4-a48c5c6d7f4a@linux.intel.com>
-	<BN9PR11MB52762957011E60E935E82CC88CB39@BN9PR11MB5276.namprd11.prod.outlook.com>
-	<2c9115d0-f251-c284-63d6-73714edc96b4@linux.intel.com>
-	<BN9PR11MB527634EA1ED5067D1FC0D7C68CB39@BN9PR11MB5276.namprd11.prod.outlook.com>
-	<7f8983c8-b703-4960-67b5-97f4053329db@linux.intel.com>
-	<BN9PR11MB5276E48AA1680C76A3ED66AD8CB39@BN9PR11MB5276.namprd11.prod.outlook.com>
-	<20230306110443.4ca52204@jacob-builder>
-	<ZAY4zd4OlgSz+puZ@nvidia.com>
-	<20230306154504.04769726@jacob-builder>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+   d="scan'208";a="676384284"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
+  by orsmga002.jf.intel.com with ESMTP; 06 Mar 2023 17:42:39 -0800
+Message-ID: <f7b0cbef-3d7d-e5aa-1971-fe230d0c80e1@linux.intel.com>
+Date: Tue, 7 Mar 2023 09:41:42 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Cc: baolu.lu@linux.intel.com, dmaengine@vger.kernel.org,
+ linux-kernel <linux-kernel@vger.kernel.org>,
+ Alistair Popple <apopple@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Lorenzo Stoakes <lstoakes@gmail.com>, Christoph Hellwig <hch@infradead.org>,
+ iommu@lists.linux.dev
+Subject: Re: [PATCH v2 08/16] iommu: define and export
+ iommu_access_remote_vm()
+Content-Language: en-US
+To: Fenghua Yu <fenghua.yu@intel.com>, Vinod Koul <vkoul@kernel.org>,
+ Dave Jiang <dave.jiang@intel.com>
+References: <20230306163138.587484-1-fenghua.yu@intel.com>
+ <20230306163138.587484-9-fenghua.yu@intel.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20230306163138.587484-9-fenghua.yu@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Hi Jacob,
-
-On Mon, 6 Mar 2023 15:45:04 -0800, Jacob Pan
-<jacob.jun.pan@linux.intel.com> wrote:
-
-> Hi Jason,
+On 3/7/23 12:31 AM, Fenghua Yu wrote:
+> Define and export iommu_access_remote_vm() to allow IOMMU related
+> drivers to access user address space by PASID.
 > 
-> On Mon, 6 Mar 2023 15:02:37 -0400, Jason Gunthorpe <jgg@nvidia.com> wrote:
-> 
-> > On Mon, Mar 06, 2023 at 11:04:43AM -0800, Jacob Pan wrote:
-> >   
-> > > > and probably this is the right thing to do as in the end DMA type
-> > > > will be removed with Jason's cleanup    
-> > >
-> > > so, let me recap. set_dev_pasid() should make no assumptions of
-> > > ordering, i.e. it is equal to iommu_domain_ops.attach_dev().    
-> > 
-> > Absolutely yes.
-> > 
-> > You should factor out all the "prepare the domain to be used" code and
-> > call it in both places.
-> >   
-> I think this has been done by Baolu
-> https://lore.kernel.org/linux-iommu/20190325013036.18400-1-baolu.lu@linux.intel.com/T/#m8c980357a39dc75dc360ff0f71dc7ebe1e49f9a6
-> iommu/vt-d: Move common code out of iommu_attch_device()
->     
->     This part of code could be used by both normal and aux
->     domain specific attach entries. Hence move them into a
->     common function to avoid duplication.
-> 
-> set_dev_pasid() will call prepare_domain_attach_device() as well.
-Actually, there are more to be factored to common code if we take that
-assumption away. attach_dev() can be viewed as a special case for
-set_dev_pasid() except the PASID is RID_PASID.
+> The IDXD driver would like to use it to write the user's completion
+> record that the hardware device is not able to write to due to user
+> page fault.
 
-Thanks,
+I don't quite follow here. Isn't I/O page fault already supported?
 
-Jacob
+Best regards,
+baolu
