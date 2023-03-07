@@ -1,45 +1,45 @@
-Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
+Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3278AD5F
-	for <iommu@lists.linux.dev>; Tue,  7 Mar 2023 16:47:36 +0000 (UTC)
-Received: by mail-lj1-f178.google.com with SMTP id h9so13832439ljq.2
-        for <iommu@lists.linux.dev>; Tue, 07 Mar 2023 08:47:36 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7A18AD5F
+	for <iommu@lists.linux.dev>; Tue,  7 Mar 2023 16:50:33 +0000 (UTC)
+Received: by mail-lj1-f176.google.com with SMTP id g18so13852192ljl.3
+        for <iommu@lists.linux.dev>; Tue, 07 Mar 2023 08:50:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678207654;
+        d=linaro.org; s=google; t=1678207832;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=miubZc3CtDbzJl53cM6P+MCImyMemBlZXFn3W2kwl5E=;
-        b=YVIVbvYVE9eGrTyx8hARPRWJK6c8HJayfhsGrJaLe7yxQPtNbGFYK39eH4LV3WMEss
-         yxWNmzxA01gmuqorwe36v6twZKqcmqjtGz5VUchhKHkPrMUjIytMjEINw/TEQgPJFRhQ
-         7I4OFhSQt8uI298CWgI1HWrTKq0MAdZeLwdqLIo1q7mJ4r8yXN6UfqVAqJVSpjGUMjRq
-         ITC79DOiBEdzFhfdRvV89hlzrCvns0XrSn84X12PROvPnYJxTYIe1MICGudoj/SrGEky
-         B+OK2CCo8uA3u16dwL0UpRDqdVna2wglliFdhSExtbsJmK7gmH1cOJwTLQOG3Szv3wHD
-         0VUQ==
+        bh=rYssbtmmhgu9B9C9m6GQuu1pkArWLaKZR93g4QNlPz8=;
+        b=jUBJM89bQJ0VbXpwq/eE02FtMo8LTzyVZHHsxIsuWPmKn+Ke0/rpLCQcQmRvcs2YSd
+         M1bymcSND1h3e3cNiNPfSkAHIZtvuPYwp5mgMHwCS+hGd6dD5Tvy+yFasgzOxp+DZBGZ
+         4G7eBEuWBdIzklVLE1MNuI5I6YM9XSA/J0PJG1i3u6oj1B1IqlOmPAsVoL3YrHsCVNrB
+         yzPDhVKkW338MWcwDIr9P9kB+7byILHIPGAyatg03pt1LX3TkXQzi8gldu/2uKRuzLO2
+         //aLqJfC0vp+zYzMA+SK+/3/E/0SjH0eqJ0XIYl94artfPeY7GeL3aEFDoWptvWbULVK
+         7JQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678207654;
+        d=1e100.net; s=20210112; t=1678207832;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=miubZc3CtDbzJl53cM6P+MCImyMemBlZXFn3W2kwl5E=;
-        b=3KArGupMwF9aHAs6XrBs35DlD8+sPNOIODuJ5EtYUc5zDsAp05A9vhGa5srLdySA7D
-         4EsziucAKLHw/Nxbg/ybOoGb6USY6t02cEgiPoR+LAY04697Uew/Uidny/RNju1KST29
-         yq07ah6bmNz+o0SYsxRESbrcmJGuZyoIT2io3VsmzvBDNGZixOd2RCx1yOLdqEk4HRYh
-         9y6FpK9zZWxAdkf2H+8Eq8vH0fN1dwF/yVDjQJabFZVx1OnVE7+XxXvknmeiS3rc+Arn
-         NXiS00KwcuxDth2uNdeCdBUFhP+725+M6TfbIH1EHXNNhHWGbgERPY6WLCkE1+/Pv949
-         yQPg==
-X-Gm-Message-State: AO0yUKVlZWHwXKZUJGUGRWi8MfV/pKog6FwPgnFLUTO1YaICiwnWMIwp
-	EL4jaUZHPuX4/nhJ1ft5DWsdvA==
-X-Google-Smtp-Source: AK7set+3vw5K04+n8GjmNt7a8Fo4Kmc6WId+tcCTsw47pJ6eOSwFijvph/LKR1HJ3CaWNCiWlA7ECw==
-X-Received: by 2002:a2e:a98c:0:b0:298:39e6:cc1a with SMTP id x12-20020a2ea98c000000b0029839e6cc1amr4612782ljq.9.1678207654624;
-        Tue, 07 Mar 2023 08:47:34 -0800 (PST)
-Received: from [192.168.1.101] (abyj16.neoplus.adsl.tpnet.pl. [83.9.29.16])
-        by smtp.gmail.com with ESMTPSA id z5-20020a2e7e05000000b002958a51df76sm2230447ljc.92.2023.03.07.08.47.33
+        bh=rYssbtmmhgu9B9C9m6GQuu1pkArWLaKZR93g4QNlPz8=;
+        b=gma5wJZJRnKhqqpxOoezMlgZXM6IaD0/WVN+JOpKOlFi5lE7XyxJrjB4KeTO3Cy9l9
+         qIH265fCN/vkJ7sgZ8NS+rz78ie2i8sqAIKPK3bvbZJH4M4MyzDZsDsBUhj9xURW/b8R
+         y8ch2ly85ID/Hucjdi8+Yosvhs25UW5lCy4lKwuusM64CCKxqMmiJds8Y5xxwvSsOssI
+         VlBc6g7ubgQwfNdvvDK1YKljdPJwfqL2M29w50HSIVd9aTVFAY0t0IH8UkWZ3Exf4Z9r
+         1x298q8qjNySyMqeCcXtnHK3dOp9cqu5bEakYTCubKVVUYSEvL1yGjkgNReg8C7MoEmT
+         mwYw==
+X-Gm-Message-State: AO0yUKUrmkyLdfu6Akd/t+AsNhIx9P5eEh2WoZ9aNb9xwXcCYcdWZO4p
+	aQ1Lh1Gm0fA3MSf5ptqu191JGcA1EXN2v1XjKR5dgQ==
+X-Google-Smtp-Source: AK7set/FOFnx34TmTCvs98ArnR9vbhwewn3n4P4va9WH3254HIa76G0ozUN8qX5nuN+io/E69nkoCw==
+X-Received: by 2002:a2e:b0f6:0:b0:294:6e84:79bf with SMTP id h22-20020a2eb0f6000000b002946e8479bfmr4674994ljl.22.1678207831922;
+        Tue, 07 Mar 2023 08:50:31 -0800 (PST)
+Received: from [10.10.15.130] ([192.130.178.91])
+        by smtp.gmail.com with ESMTPSA id e30-20020a05651c039e00b002958c4e96fasm2236626ljp.3.2023.03.07.08.50.31
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Mar 2023 08:47:34 -0800 (PST)
-Message-ID: <bb0ffb47-c015-6315-2da4-341529a4a8ed@linaro.org>
-Date: Tue, 7 Mar 2023 17:47:32 +0100
+        Tue, 07 Mar 2023 08:50:31 -0800 (PST)
+Message-ID: <54615b1e-c452-7215-4aad-7a1c1f11aef5@linaro.org>
+Date: Tue, 7 Mar 2023 18:50:30 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,108 +48,95 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.8.0
-Subject: Re: [PATCH v3 2/6] iommu/qcom: Use the asid read from device-tree if
- specified
-Content-Language: en-US
-To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+Subject: Re: [PATCH v3 3/6] iommu/qcom: Properly reset the IOMMU context
+Content-Language: en-GB
+To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
  agross@kernel.org
-Cc: andersson@kernel.org, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
- robdclark@gmail.com, linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
+Cc: andersson@kernel.org, konrad.dybcio@linaro.org, joro@8bytes.org,
+ will@kernel.org, robin.murphy@arm.com, robh+dt@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org, robdclark@gmail.com,
+ linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, marijn.suijten@somainline.org,
  kernel@collabora.com, luca@z3ntu.xyz, a39.skl@gmail.com,
  phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
 References: <20221115101122.155440-1-angelogioacchino.delregno@collabora.com>
- <20221115101122.155440-3-angelogioacchino.delregno@collabora.com>
- <12f0800c-beb3-6fdc-b743-8624f0d5d6ac@linaro.org>
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <12f0800c-beb3-6fdc-b743-8624f0d5d6ac@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+ <20221115101122.155440-4-angelogioacchino.delregno@collabora.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20221115101122.155440-4-angelogioacchino.delregno@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
+On 15/11/2022 12:11, AngeloGioacchino Del Regno wrote:
+> Avoid context faults by resetting the context(s) entirely at
+> detach_dev() time and also do the same before programming the
+> context for domain initialization.
+> 
+> Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+> [Marijn: Rebased over next-20221111]
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
+Probably:
+Fixes: 0ae349a0f33f ("iommu/qcom: Add qcom_iommu")
 
-On 7.03.2023 17:44, Dmitry Baryshkov wrote:
-> On 15/11/2022 12:11, AngeloGioacchino Del Regno wrote:
->> As specified in this driver, the context banks are 0x1000 apart but
->> on some SoCs the context number does not necessarily match this
->> logic, hence we end up using the wrong ASID: keeping in mind that
->> this IOMMU implementation relies heavily on SCM (TZ) calls, it is
->> mandatory that we communicate the right context number.
->>
->> Since this is all about how context banks are mapped in firmware,
->> which may be board dependent (as a different firmware version may
->> eventually change the expected context bank numbers), introduce a
->> new property "qcom,ctx-num": when found, the ASID will be forced
->> as read from the devicetree.
->>
->> When "qcom,ctx-num" is not found, this driver retains the previous
->> behavior as to avoid breaking older devicetrees or systems that do
->> not require forcing ASID numbers.
->>
->> Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
->> [Marijn: Rebased over next-20221111]
->> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
->> ---
->>   drivers/iommu/arm/arm-smmu/qcom_iommu.c | 18 +++++++++++++++---
->>   1 file changed, 15 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
->> index bfd7b51eb5db..491a8093f3d6 100644
->> --- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
->> +++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
->> @@ -551,7 +551,8 @@ static int qcom_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
->>        * index into qcom_iommu->ctxs:
->>        */
->>       if (WARN_ON(asid < 1) ||
->> -        WARN_ON(asid > qcom_iommu->num_ctxs)) {
->> +        WARN_ON(asid > qcom_iommu->num_ctxs) ||
->> +        WARN_ON(qcom_iommu->ctxs[asid - 1] == NULL)) {
-> 
-> Separate change in my opinion. Please split it to a separate patch with proper Fixes: tag.
-> 
->>           put_device(&iommu_pdev->dev);
->>           return -EINVAL;
->>       }
->> @@ -638,7 +639,8 @@ static int qcom_iommu_sec_ptbl_init(struct device *dev)
->>     static int get_asid(const struct device_node *np)
->>   {
->> -    u32 reg;
->> +    u32 reg, val;
->> +    int asid;
->>         /* read the "reg" property directly to get the relative address
->>        * of the context bank, and calculate the asid from that:
->> @@ -646,7 +648,17 @@ static int get_asid(const struct device_node *np)
->>       if (of_property_read_u32_index(np, "reg", 0, &reg))
-Use platform_get_resource(pdev, IORESOURCE_MEM, 0); reg = res->start
-or something like this, the current approach relies on #address-cells = <1>
+What causes context faults? Shouldn't the context be disabled once we 
+write 0 to CB_SCTLR?
 
-Konrad
->>           return -ENODEV;
->>   -    return reg / 0x1000;      /* context banks are 0x1000 apart */
->> +    /*
->> +     * Context banks are 0x1000 apart but, in some cases, the ASID
->> +     * number doesn't match to this logic and needs to be passed
->> +     * from the DT configuration explicitly.
->> +     */
->> +    if (of_property_read_u32(np, "qcom,ctx-num", &val))
->> +        asid = reg / 0x1000;
->> +    else
->> +        asid = val;
+> ---
+>   drivers/iommu/arm/arm-smmu/qcom_iommu.c | 20 ++++++++++++++++++--
+>   1 file changed, 18 insertions(+), 2 deletions(-)
 > 
-> As a matter of preference (and logic) I'd have written that as:
-> 
-> if (!of_property_read(np, "qcom,ctx-num", &val))
->     asid = val;
-> else
->     asid = reg / 0x1000;
-> 
-> LGTM otherwise
-> 
->> +
->> +    return asid;
->>   }
->>     static int qcom_iommu_ctx_probe(struct platform_device *pdev)
-> 
+> diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+> index 491a8093f3d6..49f4308f1bd2 100644
+> --- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+> +++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+> @@ -223,6 +223,20 @@ static irqreturn_t qcom_iommu_fault(int irq, void *dev)
+>   	return IRQ_HANDLED;
+>   }
+>   
+> +static void qcom_iommu_reset_ctx(struct qcom_iommu_ctx *ctx)
+> +{
+> +	iommu_writel(ctx, ARM_SMMU_CB_FAR, 0);
+> +	iommu_writel(ctx, ARM_SMMU_CB_FSR, ARM_SMMU_FSR_FAULT);
+> +	iommu_writel(ctx, ARM_SMMU_CB_S1_MAIR1, 0);
+> +	iommu_writel(ctx, ARM_SMMU_CB_PAR, 0);
+> +	iommu_writel(ctx, ARM_SMMU_CB_S1_MAIR0, 0);
+> +	iommu_writel(ctx, ARM_SMMU_CB_SCTLR, 0);
+> +	iommu_writel(ctx, ARM_SMMU_CB_TCR2, 0);
+> +	iommu_writel(ctx, ARM_SMMU_CB_TCR, 0);
+> +	iommu_writeq(ctx, ARM_SMMU_CB_TTBR0, 0);
+> +	iommu_writeq(ctx, ARM_SMMU_CB_TTBR1, 0);
+> +}
+> +
+>   static int qcom_iommu_init_domain(struct iommu_domain *domain,
+>   				  struct qcom_iommu_dev *qcom_iommu,
+>   				  struct device *dev)
+> @@ -273,6 +287,8 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
+>   			ctx->secure_init = true;
+>   		}
+>   
+> +		qcom_iommu_reset_ctx(ctx);
+
+Is it enough to write 0 to ARM_SMMU_CB_SCTLR here instead of doing the 
+full reset?
+
+> +
+>   		/* TTBRs */
+>   		iommu_writeq(ctx, ARM_SMMU_CB_TTBR0,
+>   				pgtbl_cfg.arm_lpae_s1_cfg.ttbr |
+> @@ -401,8 +417,8 @@ static void qcom_iommu_detach_dev(struct iommu_domain *domain, struct device *de
+>   	for (i = 0; i < fwspec->num_ids; i++) {
+>   		struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, fwspec->ids[i]);
+>   
+> -		/* Disable the context bank: */
+> -		iommu_writel(ctx, ARM_SMMU_CB_SCTLR, 0);
+> +		/* Disable and reset the context bank */
+> +		qcom_iommu_reset_ctx(ctx);
+>   
+>   		ctx->domain = NULL;
+>   	}
+
+-- 
+With best wishes
+Dmitry
+
