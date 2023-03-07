@@ -1,45 +1,45 @@
-Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E35AAD5F
-	for <iommu@lists.linux.dev>; Tue,  7 Mar 2023 16:53:24 +0000 (UTC)
-Received: by mail-lf1-f44.google.com with SMTP id t11so17947047lfr.1
-        for <iommu@lists.linux.dev>; Tue, 07 Mar 2023 08:53:23 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26655AD5F
+	for <iommu@lists.linux.dev>; Tue,  7 Mar 2023 16:58:16 +0000 (UTC)
+Received: by mail-lj1-f179.google.com with SMTP id b13so13853734ljf.6
+        for <iommu@lists.linux.dev>; Tue, 07 Mar 2023 08:58:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678208002;
+        d=linaro.org; s=google; t=1678208295;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=y08XOal2sgn9w+oPn6eHEeifVAZN/V1k1ETzFCvtzUw=;
-        b=DmSXjgGrqTSxm9a6f5KXrU6uCRcQDbSZYnralTMu1sG9TkN3d7E8YwHm2nS/EJcKFL
-         ix0+um5qTzy5d7M/8kJVbaHOe3vtf5C/0gn2gmz2AWk2FhnbyzolLSgbeUmLHgv4aV+a
-         Pab5zT9nDYcf8rax2Gvy5KtZtYR2W0rep9QQ0UCDqg7n4qL7mUjaBsivKYeLyw602Au0
-         Cgehi2m8L1PpuPp3edK7lHhQvKGqhjfS6Ih/KBykKPdUW9YWe8CYRAxsK5cwITPN4+70
-         OKBq0GhHFS4szdGs9yPSVzH1ABwDzpeFPPytklhMwjliaAkUAWetTpxFJWo9fhCad+MI
-         EcHQ==
+        bh=GYPS6T0GQT0YMU3PoBe/ezLSZBLT3NTyr0o7Ri1kY9k=;
+        b=UY5DImM1KYh2Pcll+wLQFh6ZZ9XeQVrzKMzij0we3VeD/meacUUkLWEfu9XdsAnuJH
+         fKQqrD56jeBFjR/LND7RB3LfloFCotsIPs72SS+/Y1XbOpal1JNSScf8Av1ucq+KmAj1
+         W6g7quXpehwu703Puvoqt1yzFOY2Q6bI99Pk941TcN7pZ04BO9AeA0nG+dzLFbXcSQ7J
+         J+Nfx3EJOBf5TgQwRgf5JD4QriI8MifmzZzu5hTSS9oCHSpsv4LePN1LJyReVFhlS3US
+         2In1jrqo/YgeTLfhMVZuixBzECuWC9i+7oIEILlaqdmbiQZjAjduVLXjM5/kfp/GJrgt
+         JFEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678208002;
+        d=1e100.net; s=20210112; t=1678208295;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=y08XOal2sgn9w+oPn6eHEeifVAZN/V1k1ETzFCvtzUw=;
-        b=Syksxc2j7AiQ9deVxF1B9bCHb4H6w+yozHxq8Bdxkb64RfwRjw7APiwkZnJeXEaYjT
-         CpU1JD0a/l8hHbi5pGsyT5nHVctpxVkhz3XAtqkStnlLS1AdvBHJt0OyuPTOin3SgB3t
-         0YH/4YSMOO/zz7xMny+MY3f9lAg6aSvjcLWLazD0Ny31P3t1bjBhzUzJdhmh1Yg/ssDf
-         HW20CcG5lHRPK+4CEAG6XzVH9NVR/nJGnMqv32QO15oGpldLbRyEt+lm6j7MhRpGTsSk
-         +AZdt1Y2H2wePeh5TRaRWo/EUaKENHaP8ejHVZgDxRmaGjrsFhXNN3DGcIijNGz6+nps
-         98EA==
-X-Gm-Message-State: AO0yUKV+X51Lb2oB4aSZsV9AHEdgKztLXxSO8dfXCzorSmiS3oiPj/LA
-	XKMXhGoz6PZiTkR6+Dne9N/H2Q==
-X-Google-Smtp-Source: AK7set/TMsQfD3SSttUjeT2HgdBvrTfvMnAChaUCUF1G6wdV0NzcJSMh82qkk3rYfvqwTuFoI+Ldjw==
-X-Received: by 2002:ac2:5096:0:b0:4b9:a91c:b0c9 with SMTP id f22-20020ac25096000000b004b9a91cb0c9mr3972936lfm.7.1678208002180;
-        Tue, 07 Mar 2023 08:53:22 -0800 (PST)
+        bh=GYPS6T0GQT0YMU3PoBe/ezLSZBLT3NTyr0o7Ri1kY9k=;
+        b=ZQCyKhVYyhonDEmWzLmnvdUZcwxi7qQBJpnh3DkVhGYTeE4CZ0u1YpwjxaiA4rqVE5
+         WWWjiSeWE6wZh2acojswAlf8hC9g2VvhUV9Uhnv5ToJz395z2S5s/J9luF3nKQYDSCrd
+         EeuwTix25nibhDSVU6q7JJtoxhrc+yFgpNF04x3cmsvUVzLJAhbIaemYdjhm/0VO6XSj
+         tVozJCC0qrsr2xTgpZ1Pdnr+NPQD6R7jIsPJqJyxS8N33dPaQ1nsHkQawRfYIg9GxKob
+         xx7nvlRpajCHMl/JrmPiGUFn8ug2VwSZLTJi1ICwDLkGLIIajq1IKqF7jzeyNy19Z15d
+         lrqQ==
+X-Gm-Message-State: AO0yUKUD2sKofs7Wy1EOkbvO2SFRe7iBa2Q71HAsPqN2euIZmDBdgK42
+	Mxlnl5SwjhoqFvDAjPTMFKX5sQ==
+X-Google-Smtp-Source: AK7set/BvoPPVaX8qUlMUC5WSo8HDQZFTRScfOMiSPiSx0DvSiUNYFHH9jM3kIhnoq2STd3i6igBVQ==
+X-Received: by 2002:a2e:910d:0:b0:295:c39c:d8ab with SMTP id m13-20020a2e910d000000b00295c39cd8abmr4207730ljg.39.1678208295021;
+        Tue, 07 Mar 2023 08:58:15 -0800 (PST)
 Received: from [10.10.15.130] ([192.130.178.91])
-        by smtp.gmail.com with ESMTPSA id u3-20020a056512094300b004d7d13387b5sm2077894lft.116.2023.03.07.08.53.21
+        by smtp.gmail.com with ESMTPSA id l18-20020a2ea312000000b00290716d65dcsm2236391lje.136.2023.03.07.08.58.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Mar 2023 08:53:21 -0800 (PST)
-Message-ID: <8093d73c-aa26-65b0-529a-c7b482b315cb@linaro.org>
-Date: Tue, 7 Mar 2023 18:53:21 +0200
+        Tue, 07 Mar 2023 08:58:14 -0800 (PST)
+Message-ID: <d237d1c6-4b07-2f7f-8812-34365e56380b@linaro.org>
+Date: Tue, 7 Mar 2023 18:58:13 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,8 +48,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.8.0
-Subject: Re: [PATCH v3 4/6] iommu/qcom: Index contexts by asid number to allow
- asid 0
+Subject: Re: [PATCH v3 6/6] iommu/qcom: Add support for QSMMUv2 and QSMMU-500
+ secured contexts
 Content-Language: en-GB
 To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
  agross@kernel.org
@@ -62,115 +62,34 @@ Cc: andersson@kernel.org, konrad.dybcio@linaro.org, joro@8bytes.org,
  kernel@collabora.com, luca@z3ntu.xyz, a39.skl@gmail.com,
  phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
 References: <20221115101122.155440-1-angelogioacchino.delregno@collabora.com>
- <20221115101122.155440-5-angelogioacchino.delregno@collabora.com>
+ <20221115101122.155440-7-angelogioacchino.delregno@collabora.com>
 From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20221115101122.155440-5-angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20221115101122.155440-7-angelogioacchino.delregno@collabora.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 15/11/2022 12:11, AngeloGioacchino Del Regno wrote:
-> This driver was indexing the contexts by asid-1, which is probably
-> done under the assumption that the first ASID is always 1.
+> On some SoCs like MSM8956, MSM8976 and others, secure contexts are
+> also secured: these get programmed by the bootloader or TZ (as usual)
+> but their "interesting" registers are locked out by the hypervisor,
+> disallowing direct register writes from Linux and, in many cases,
+> completely disallowing the reprogramming of TTBR, TCR, MAIR and other
+> registers including, but not limited to, resetting contexts.
+> This is referred downstream as a "v2" IOMMU but this is effectively
+> a "v2 firmware configuration" instead.
 > 
-> Unfortunately this is not always true: at least for MSM8956 and
-> MSM8976's GPU IOMMU, the gpu_user context's ASID number is zero.
-> To allow using a zero asid number, index the contexts by `asid`
-> instead of by `asid - 1`.
+> Luckily, the described behavior of version 2 is effective only on
+> secure contexts and not on non-secure ones: add support for that,
+> finally getting a completely working IOMMU on at least MSM8956/76.
 > 
 > Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
 > [Marijn: Rebased over next-20221111]
 > Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 > ---
->   drivers/iommu/arm/arm-smmu/qcom_iommu.c | 24 ++++++++++++------------
->   1 file changed, 12 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-> index 49f4308f1bd2..94f51cafee17 100644
-> --- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-> +++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-> @@ -52,7 +52,7 @@ struct qcom_iommu_dev {
->   	void __iomem		*local_base;
->   	u32			 sec_id;
->   	u8			 num_ctxs;
-> -	struct qcom_iommu_ctx	*ctxs[];   /* indexed by asid-1 */
-> +	struct qcom_iommu_ctx	*ctxs[];   /* indexed by asid */
->   };
->   
->   struct qcom_iommu_ctx {
-> @@ -94,7 +94,7 @@ static struct qcom_iommu_ctx * to_ctx(struct qcom_iommu_domain *d, unsigned asid
->   	struct qcom_iommu_dev *qcom_iommu = d->iommu;
->   	if (!qcom_iommu)
->   		return NULL;
-> -	return qcom_iommu->ctxs[asid - 1];
-> +	return qcom_iommu->ctxs[asid];
->   }
->   
->   static inline void
-> @@ -563,12 +563,10 @@ static int qcom_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
->   	qcom_iommu = platform_get_drvdata(iommu_pdev);
->   
->   	/* make sure the asid specified in dt is valid, so we don't have
-> -	 * to sanity check this elsewhere, since 'asid - 1' is used to
-> -	 * index into qcom_iommu->ctxs:
-> +	 * to sanity check this elsewhere:
->   	 */
-> -	if (WARN_ON(asid < 1) ||
-> -	    WARN_ON(asid > qcom_iommu->num_ctxs) ||
-> -	    WARN_ON(qcom_iommu->ctxs[asid - 1] == NULL)) {
-> +	if (WARN_ON(asid >= qcom_iommu->num_ctxs) ||
+>   drivers/iommu/arm/arm-smmu/qcom_iommu.c | 22 +++++++++++++++++++---
+>   1 file changed, 19 insertions(+), 3 deletions(-)
 
-Could you please change qcom_iommu to store max_asid rather than 
-num_ctxs. This piece becomes logical then.
-
-Looks good to me otherwise.
-
-> +	    WARN_ON(qcom_iommu->ctxs[asid] == NULL)) {
->   		put_device(&iommu_pdev->dev);
->   		return -EINVAL;
->   	}
-> @@ -726,7 +724,7 @@ static int qcom_iommu_ctx_probe(struct platform_device *pdev)
->   
->   	dev_dbg(dev, "found asid %u\n", ctx->asid);
->   
-> -	qcom_iommu->ctxs[ctx->asid - 1] = ctx;
-> +	qcom_iommu->ctxs[ctx->asid] = ctx;
->   
->   	return 0;
->   }
-> @@ -738,7 +736,7 @@ static int qcom_iommu_ctx_remove(struct platform_device *pdev)
->   
->   	platform_set_drvdata(pdev, NULL);
->   
-> -	qcom_iommu->ctxs[ctx->asid - 1] = NULL;
-> +	qcom_iommu->ctxs[ctx->asid] = NULL;
->   
->   	return 0;
->   }
-> @@ -779,7 +777,7 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
->   	struct device *dev = &pdev->dev;
->   	struct resource *res;
->   	struct clk *clk;
-> -	int ret, max_asid = 0;
-> +	int ret, num_ctxs, max_asid = 0;
->   
->   	/* find the max asid (which is 1:1 to ctx bank idx), so we know how
->   	 * many child ctx devices we have:
-> @@ -787,11 +785,13 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
->   	for_each_child_of_node(dev->of_node, child)
->   		max_asid = max(max_asid, get_asid(child));
->   
-> -	qcom_iommu = devm_kzalloc(dev, struct_size(qcom_iommu, ctxs, max_asid),
-> +	num_ctxs = max_asid + 1;
-> +
-> +	qcom_iommu = devm_kzalloc(dev, struct_size(qcom_iommu, ctxs, num_ctxs),
->   				  GFP_KERNEL);
->   	if (!qcom_iommu)
->   		return -ENOMEM;
-> -	qcom_iommu->num_ctxs = max_asid;
-> +	qcom_iommu->num_ctxs = num_ctxs;
->   	qcom_iommu->dev = dev;
->   
->   	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
 -- 
 With best wishes
