@@ -1,159 +1,145 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2079.outbound.protection.outlook.com [40.107.95.79])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E7A76FC5
-	for <iommu@lists.linux.dev>; Tue,  7 Mar 2023 13:17:02 +0000 (UTC)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 327CreC9024670;
-	Tue, 7 Mar 2023 13:16:45 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=RbombY6WkH4lJKT52ssIwQZhPfm3t0xDTCi+53SOjO8=;
- b=oUDBmag/fNc99DbxOXF2cUJlDSqvlIiBi3K1Wwl97aAcpHhFkEXeG3fbh+cFOBvEkLsZ
- 9NecY+RDrmafA214+ggBqp1ycc44xFIPdIyeHygB6OOYAwbhLY1dsa/SUeiluCeALteJ
- RENnydkQ3tldeLtWNO2tMQ1/lu9xQAPnlWOwHCrMrTtEBbMNQYw3IAuCpTVn4VyHvAaw
- fpBR+3sI2+XRzTRzAyK3IQ6vto2o3Bq8xGBVIK3a+HqNJlwCtY4wT2QSu8V3vK4wYH1U
- UtnCC2ZG4EPBkp+3dLd921YQHnpWpCihpql2iqI8ukNrlS16hx1vGZOlxqRtQBa7G1bI Xw== 
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3p65p3gnrj-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 07 Mar 2023 13:16:44 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-	by ppma04fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 3277vEdi004261;
-	Tue, 7 Mar 2023 13:16:42 GMT
-Received: from smtprelay05.fra02v.mail.ibm.com ([9.218.2.225])
-	by ppma04fra.de.ibm.com (PPS) with ESMTPS id 3p41b0ubdf-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 07 Mar 2023 13:16:42 +0000
-Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
-	by smtprelay05.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 327DGcJL52166954
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 7 Mar 2023 13:16:38 GMT
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id A2F3220043;
-	Tue,  7 Mar 2023 13:16:38 +0000 (GMT)
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 2BA702004D;
-	Tue,  7 Mar 2023 13:16:38 +0000 (GMT)
-Received: from [9.155.211.163] (unknown [9.155.211.163])
-	by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Tue,  7 Mar 2023 13:16:38 +0000 (GMT)
-Message-ID: <a5e2178782c862dd3241ce821a471b584b8089a9.camel@linux.ibm.com>
-Subject: Re: [PATCH v7 0/6] iommu/dma: s390 DMA API conversion and optimized
- IOTLB flushing
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin
- Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
-        Wenjia
- Zhang <wenjia@linux.ibm.com>
-Cc: Matthew Rosato <mjrosato@linux.ibm.com>,
-        Gerd Bayer
- <gbayer@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev,
-        linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        agordeev@linux.ibm.com, svens@linux.ibm.com,
-        linux-kernel@vger.kernel.org, Julian Ruess <julianr@linux.ibm.com>
-Date: Tue, 07 Mar 2023 14:16:37 +0100
-In-Reply-To: <20230220152222.1818344-1-schnelle@linux.ibm.com>
-References: <20230220152222.1818344-1-schnelle@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 823EA6FC5
+	for <iommu@lists.linux.dev>; Tue,  7 Mar 2023 13:53:26 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Bzwj6FXmN+ZeL4d4BHEHY3uA97rczG4yu9yhJCBJNDOgr0jU9Z+u3XC9xdqCKYtkEp/4hXf4sEHjesPrYGbsCSYxZ+j/k2j6yxTfhui4h4de5xZ2Ps6XzjQvAMxS9XCPU40sSKIND+hs3VBmvNbxnOQ0Le4nJfg97hwVyHpz33YR04T2kMQbXgIn5T9m8Q6hW75afXCqpQluxXiNvvB2Kyqr4WF2t7OEty7NMkpdcgI4/Td0y3Gdm8hi24IFi9BQlxymZXTlZN47TcH853LFhBVfmW5dCQXbJk+jPqfyuSoK32PlnZ2rXddnIRE1xcYyMUiTKq/PhpQc+9yTGZZsvA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GlH2Z1l5qXYt6ETr2rFpHDUc02/rVRhAIuHVgS048A8=;
+ b=gzb9RxlsvgBZ0KHHAujjTV03O0L1qZ3nnH48r28dh86up3H14xGDaOp6a2sjaoGQmEc5rMhBBa++B7CECwo/bYeoerYcqwl2CCAgMXdX/7QdxLRJBAIjMT4W5E72bOTbFw6QkyJf3RueoN+nizxWIVnEx8aBRKwAwu7KUDqhky8PiOsMKymPjRI6QU96PcLKEQaT+Oxn1++dPN2pSkF/KK0BBNn4A5IaI2RjrVmx7TvBZUJwAG12gxGT0BrM3G/AOhACzhF1Xe1w/+62eYiR+TSXh2Cwa3xy9EQvnsqYU/PtMGePGpVgdHAW35oK52AvIA/sow8uFLEwIjIiyMit9Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GlH2Z1l5qXYt6ETr2rFpHDUc02/rVRhAIuHVgS048A8=;
+ b=FO6AuUjTOocalkLDvaBABCs+3KGgUIuUX7/LOxrksbTBlJ5wAAPUzC2ord+CI+R09kAtuCKNkVkOYl6dd9zoRrWNEas83BxFJy1ztQnKWHpL2xDLWZGeR5ztELcrrKFM1sMufyP2wMS81euVqlSXIEqlaHcWAV0ywVSYfWxeODtyJxo/+HftH/264P1X4zhFI7gFSTbGL5mF2iE/fwe776117nYVjokwcle6o8aFfnrXa99G9zwSzWTmNu01Bkgsl7Aq8n0/95Rx3oU4f1GTuNsSrc1mQAX3aKL/lI5T3YtZoMTqKUJt9P338FYQERavzIFdbHlbJfbgZDv/ZYi6VQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DM6PR12MB4466.namprd12.prod.outlook.com (2603:10b6:5:2ae::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.28; Tue, 7 Mar
+ 2023 13:53:24 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3cb3:2fce:5c8f:82ee%5]) with mapi id 15.20.6156.029; Tue, 7 Mar 2023
+ 13:53:24 +0000
+Date: Tue, 7 Mar 2023 09:53:23 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	"Liu, Yi L" <yi.l.liu@intel.com>
+Subject: Re: [PATCH 03/14] iommufd: Replace the hwpt->devices list with
+ iommufd_group
+Message-ID: <ZAdB04U96TojE0O6@nvidia.com>
+References: <0-v1-7612f88c19f5+2f21-iommufd_alloc_jgg@nvidia.com>
+ <3-v1-7612f88c19f5+2f21-iommufd_alloc_jgg@nvidia.com>
+ <BN9PR11MB52761557D23695475CCCF3B18CB29@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZAZLgSxd4AuWJSI3@nvidia.com>
+ <BN9PR11MB5276F4706574CDA936732E538CB79@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB5276F4706574CDA936732E538CB79@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-ClientProxiedBy: BL0PR0102CA0044.prod.exchangelabs.com
+ (2603:10b6:208:25::21) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: xWZtNCWb1-UDIaAdONcCovIaQpAlqo9V
-X-Proofpoint-ORIG-GUID: xWZtNCWb1-UDIaAdONcCovIaQpAlqo9V
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-07_07,2023-03-07_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 impostorscore=0
- spamscore=0 lowpriorityscore=0 phishscore=0 adultscore=0 suspectscore=0
- malwarescore=0 mlxlogscore=999 mlxscore=0 priorityscore=1501 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
- definitions=main-2303070118
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM6PR12MB4466:EE_
+X-MS-Office365-Filtering-Correlation-Id: 200bc3c7-1aaa-42f2-d36d-08db1f1351b8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	gtS6SR1eIbhg5Hh9Lh52VEIkSJTQhRGZbapbJtxlNF9i23iXQYHNJSRj8/3xZMw5jRFZT6zagzgGKvTDfnGaGPkumvwGjZ+SOeubUOuMN7pEm0IiTo4AmeYGpOI17XzReVATF4C57Eq7B/V5YGB6dyI6UJ/BynBM7p/P6RSh1tde1piUsw+DqmhFlIqaPQeUuDPvnJ0F6UhnTP6QJcp6Q8Vu2rVKlvw2r1Thf4MkZcZ5gPDLU0UUczaYfQ1BhAQMLX5rq/r3Bo1WIvSpu3iXb+m6Ar2GmNWrvl2hVHi9Kox5+9Gssglm5DG0w/Q/HfyMhUe8HHU6Gv7O3cJgGt0/fI0LCkz30ucxp417YTJB6OKq7oT3HtXD0OPUHLZTM0qmMi5vuGPI0mfQ3RHQ/NgGwlFa7aZltIoGTDtzS8+sL3IS58ItKtPV5tYwlhTV0TdYqCG+ErMWtJTJQYHZWpnBpbA7O4o784BuDRVknL87hqUQ0aAYUtINFMPXBsw107dLxxOt0NF6G+f5b7G5B6CbD57OQALMieu2R6zEYSBwfUVJ+BEEJQ+3r13XCVwPTC57P4ohWf3AtL4dqPt49b60MYHOmPmz6284gQUcVD8ULa2f0GYTuzyRc4cJh/1ewKSbzmSsj+ibZ2KeIDDSWqv5eg==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(39860400002)(346002)(366004)(136003)(396003)(451199018)(2906002)(5660300002)(8936002)(41300700001)(4326008)(66946007)(6916009)(66556008)(66476007)(83380400001)(8676002)(316002)(54906003)(478600001)(6486002)(6512007)(6506007)(2616005)(86362001)(186003)(38100700002)(26005)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?1969l+7WDxLZEBU5Pj8qGf4mbv7gh9qTQ8uzHDppUdgw9aHJ812fDFzRX030?=
+ =?us-ascii?Q?HNTFvqzeMUSIo4F0xDN6tJovTghjSEoVhxaJXRcb7tip4EYEEC37vChH61zC?=
+ =?us-ascii?Q?IJFNBh4N4CONm1ZLXnbkv+3/wGpUGQCyea+xsQtJ9YifNJ9Ez9JJzQ34Bv8J?=
+ =?us-ascii?Q?+Gara0QP3bKeIG7ni/KAshWhoc7EJhyFFHuRvGCUiv6cIvljDEqRh2Aebi1R?=
+ =?us-ascii?Q?Il1XdWfCCAnacRnkeo+y1PbzAn/HFQxgq72zWgsqhWhrxfzEp7fV3KlKjcD+?=
+ =?us-ascii?Q?iJI3QCJIhjNcFsBrDHXyo4uc5sBpR17WR6jMImm4rJFRe9e741LsR2uGulnR?=
+ =?us-ascii?Q?G7W3t02eioDGzro+8dlQ4h2NWrqc4dZEsr2gdJrqxQ60/uttd0hl5X42KE/L?=
+ =?us-ascii?Q?3wZZdR+TXGWF02STEPF9Y7hTZiRrw+WvlBSPwDXpOUzIlY1YHVPar7qaQ3QB?=
+ =?us-ascii?Q?Mn7vHuWNDufwc+2A9GYlWjoKE+c33QdXlsYDKOwDJnL3yGtSa2a29+cu0Lyh?=
+ =?us-ascii?Q?F8vFp710NX857/TcniIdcaAZaVfhPd0X9vkzpjvusvDYK6I9V9kzFrRmEKlm?=
+ =?us-ascii?Q?d1hHzfETXym7KPltmO10aE5VTxEB+NrrVisszS8JEgQlouDoatYHVhAF9gDc?=
+ =?us-ascii?Q?sAiMWLaN7tyA4zJpkJTCAOZA+hNsnfwXWG2XYqWGJ38cTvwtKgv2itX/XUlb?=
+ =?us-ascii?Q?L395NWK5GHSa9Q+jHwmgf6j74ZXssK09lcH5SfyrpsdS9Hcw/IGs1UjhYK4P?=
+ =?us-ascii?Q?TygHDIURRfvp5IhwFBTUh08Sj3SJY+SBHT8LXRZxhSABWjt8j3O9ERHhiu0B?=
+ =?us-ascii?Q?jiVwdwypopKFzJm84lc5dcz5/7andpufjoKgGy9zYXGVKK3G1qQ58IRljgd4?=
+ =?us-ascii?Q?N26WEc+x/5CcGsAOmnTbgAXNpEhrR5E976xpaQXkQpwieXQvQ7fONMwPJlha?=
+ =?us-ascii?Q?599LH8Y2YWhYK5bmXfKxQhmXSBKbjWFiLGM9P5/2esR+piikSXfrThn14d0E?=
+ =?us-ascii?Q?+u5O1i8axXuhRCbW2QEDROoX/4j5Z4WQEWqlihR5peCQ5nrLfRj2hD+iKwcJ?=
+ =?us-ascii?Q?xOTas5rtb/rKNySUlS+OcsoTskW493sT9vO40p2CToG2ys9D6EzdxQLMYGJa?=
+ =?us-ascii?Q?N50wp5XD6ULhQuwUpsS1wTBPzLrZBT/MRF6wda3N69+vny6w+maS+aHHiNv5?=
+ =?us-ascii?Q?T2JGNfOodKPurMEDmiSPcjYrYMhy2LDzR6rsPiQctnxNr+AsR5zYaqeTDdS0?=
+ =?us-ascii?Q?/dprwIR6RHprbG+/OCFvmAofiExB01Fz74R0Jmn1a/OC1uF/4jn/9d/ooysE?=
+ =?us-ascii?Q?Ogstuh4cijsMUb/eHg/03MITlTxsOiWbQ+vJbpk4G0VMHCqMPHykpoQrTtxM?=
+ =?us-ascii?Q?a3ffnyhhyMcCyygykC/ZrvpjES4tfRBKzDk1pTRBVWILiUjuWrv+W4+KnMgU?=
+ =?us-ascii?Q?ghd/Fr9zGBJt9OywVPsKTzML/1Gax5Gg4Gv4Ic+yO27+AGwEZ0QpE5tvAr1v?=
+ =?us-ascii?Q?rBi8f31JpGpQtp1CB9yWk6Clf7OIV6T9c9qaPl+g6ZTYYdlliV3gZyBzaPD/?=
+ =?us-ascii?Q?xA1jNC/RV/yhNjQDold0akg9fo60cMgBS4kQzYXm?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 200bc3c7-1aaa-42f2-d36d-08db1f1351b8
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2023 13:53:24.1151
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KrvJKEOyrBt5AfudRC9P2BSePBPvfIHG/pC/+K4thR0Dr98PkUMCmfSdqN7bPCjT
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4466
 
-On Mon, 2023-02-20 at 16:22 +0100, Niklas Schnelle wrote:
-> Hi All,
->=20
-> This patch series converts s390's PCI support from its platform specific =
-DMA
-> API implementation in arch/s390/pci/pci_dma.c to the common DMA IOMMU lay=
-er.
-> The conversion itself is done in patches 3-4 with patch 2 providing the f=
-inal
-> necessary IOMMU driver improvement to handle s390's special IOTLB flush
-> out-of-resource indication in virtualized environments. Patches 1-2 may b=
-e
-> applied independently. The conversion itself only touches the s390 IOMMU =
-driver
-> and s390 arch code moving over remaining functions from the s390 DMA API
-> implementation. No changes to common code are necessary.
->=20
-> After patch 4 the basic conversion is done and on our partitioning machin=
-e
-> hypervisor LPAR performance matches or exceeds the existing code. When ru=
-nning
-> under z/VM or KVM however, performance plummets to about half of the exis=
-ting
-> code due to a much higher rate of IOTLB flushes for unmapped pages. Due t=
-o the
-> hypervisors use of IOTLB flushes to synchronize their shadow tables these=
- are
-> very expensive and minimizing them is key for regaining the performance l=
-oss.
->=20
-> To this end patches 5-6 propose a new, single queue, IOTLB flushing schem=
-e as
-> an alternative to the existing per-CPU flush queues. Introducing an alter=
-native
-> scheme was also suggested by Robin Murphy[1]. In the previous RFC of this
-> conversion Robin suggested reusing more of the existing queuing logic whi=
-ch
-> I incorporated since v2. The single queue mode is introduced in patch
-> 5 together with a new dma_iommu_options struct and tune_dma_iommu callbac=
-k in
-> IOMMU ops which allows IOMMU drivers to switch to a single flush queue.
->=20
-> Then patch 6 enables variable queue sizes using power of 2 queue sizes an=
-d
-> shift/mask to keep performance as close to the existing code as possible.=
- The
-> variable queue size and a variable timeout are added to the dma_iommu_opt=
-ions
-> struct and utilized by s390 in the z/VM and KVM guest cases. As it is
-> implemented in common code the single queue IOTLB flushing scheme can of =
-course
-> be used by other platforms with expensive IOTLB flushes. Particularly
-> virtio-iommu may be a candidate.
->=20
-> In a previous version I verified that the new scheme does work on my x86_=
-64
-> Ryzen workstation by locally modifying iommu_subsys_init() to default to =
-the
-> single queue mode and verifying its use via "/sys/.../iommu_group/type". =
-I did
-> not find problems with an AMD GPU, Intel NIC (with SR-IOV and KVM
-> pass-through), NVMes or any on board peripherals.
->=20
-> As with previous series this is available via my git.kernel.org tree[3] i=
-n the
-> dma_iommu_v7 branch with signed s390_dma_iommu_v7 tag. This version appli=
-es
-> on top of iommu-next to incorporate the ops->set_platform_dma() and GFP
-> changes.
+On Tue, Mar 07, 2023 at 02:38:47AM +0000, Tian, Kevin wrote:
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > Sent: Tuesday, March 7, 2023 4:22 AM
+> > 
+> > On Thu, Mar 02, 2023 at 08:01:00AM +0000, Tian, Kevin wrote:
+> > > > From: Jason Gunthorpe <jgg@nvidia.com>
+> > > > Sent: Saturday, February 25, 2023 8:28 AM
+> > > >
+> > > > +struct iommufd_hw_pagetable *
+> > > > +iommufd_hw_pagetable_detach(struct iommufd_device *idev)
+> > > >  {
+> > > > -	if (!iommufd_hw_pagetable_has_group(hwpt, idev->igroup))
+> > > > +	struct iommufd_hw_pagetable *hwpt = idev->igroup->hwpt;
+> > > > +
+> > > > +	lockdep_assert_held(&idev->igroup->lock);
+> > > > +
+> > > > +	idev->igroup->devices--;
+> > > > +	if (!idev->igroup->devices) {
+> > > >  		iommu_detach_group(hwpt->domain, idev->igroup->group);
+> > > > +		idev->igroup->hwpt = NULL;
+> > >
+> > > hwpt->obj.users should be decremented here instead of leaving it
+> > > in iommufd_device_detach().
+> > 
+> > It is like this because eventually we can't call
+> > iommufd_object_destroy_user() while holding the locks.
+> > 
+> > So the lowest function returns the hwpt up the call chain and once
+> > everything is unlocked then it calls iommufd_hw_pagetable_put()
+> 
+> but don't we have unbalanced refcnt poke?
 
-FYI this patch set now applies cleanly (and works) on v6.3-rc1. If need
-be I can resend with Matt's R-b added but other than that I currently
-don't have open TODOs for this so review away.
+Yes, the refcount should be incremented for every attached device
 
-Thanks,
-Niklas
-
+Jason
