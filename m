@@ -1,97 +1,98 @@
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26655AD5F
-	for <iommu@lists.linux.dev>; Tue,  7 Mar 2023 16:58:16 +0000 (UTC)
-Received: by mail-lj1-f179.google.com with SMTP id b13so13853734ljf.6
-        for <iommu@lists.linux.dev>; Tue, 07 Mar 2023 08:58:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678208295;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=GYPS6T0GQT0YMU3PoBe/ezLSZBLT3NTyr0o7Ri1kY9k=;
-        b=UY5DImM1KYh2Pcll+wLQFh6ZZ9XeQVrzKMzij0we3VeD/meacUUkLWEfu9XdsAnuJH
-         fKQqrD56jeBFjR/LND7RB3LfloFCotsIPs72SS+/Y1XbOpal1JNSScf8Av1ucq+KmAj1
-         W6g7quXpehwu703Puvoqt1yzFOY2Q6bI99Pk941TcN7pZ04BO9AeA0nG+dzLFbXcSQ7J
-         J+Nfx3EJOBf5TgQwRgf5JD4QriI8MifmzZzu5hTSS9oCHSpsv4LePN1LJyReVFhlS3US
-         2In1jrqo/YgeTLfhMVZuixBzECuWC9i+7oIEILlaqdmbiQZjAjduVLXjM5/kfp/GJrgt
-         JFEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678208295;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GYPS6T0GQT0YMU3PoBe/ezLSZBLT3NTyr0o7Ri1kY9k=;
-        b=ZQCyKhVYyhonDEmWzLmnvdUZcwxi7qQBJpnh3DkVhGYTeE4CZ0u1YpwjxaiA4rqVE5
-         WWWjiSeWE6wZh2acojswAlf8hC9g2VvhUV9Uhnv5ToJz395z2S5s/J9luF3nKQYDSCrd
-         EeuwTix25nibhDSVU6q7JJtoxhrc+yFgpNF04x3cmsvUVzLJAhbIaemYdjhm/0VO6XSj
-         tVozJCC0qrsr2xTgpZ1Pdnr+NPQD6R7jIsPJqJyxS8N33dPaQ1nsHkQawRfYIg9GxKob
-         xx7nvlRpajCHMl/JrmPiGUFn8ug2VwSZLTJi1ICwDLkGLIIajq1IKqF7jzeyNy19Z15d
-         lrqQ==
-X-Gm-Message-State: AO0yUKUD2sKofs7Wy1EOkbvO2SFRe7iBa2Q71HAsPqN2euIZmDBdgK42
-	Mxlnl5SwjhoqFvDAjPTMFKX5sQ==
-X-Google-Smtp-Source: AK7set/BvoPPVaX8qUlMUC5WSo8HDQZFTRScfOMiSPiSx0DvSiUNYFHH9jM3kIhnoq2STd3i6igBVQ==
-X-Received: by 2002:a2e:910d:0:b0:295:c39c:d8ab with SMTP id m13-20020a2e910d000000b00295c39cd8abmr4207730ljg.39.1678208295021;
-        Tue, 07 Mar 2023 08:58:15 -0800 (PST)
-Received: from [10.10.15.130] ([192.130.178.91])
-        by smtp.gmail.com with ESMTPSA id l18-20020a2ea312000000b00290716d65dcsm2236391lje.136.2023.03.07.08.58.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Mar 2023 08:58:14 -0800 (PST)
-Message-ID: <d237d1c6-4b07-2f7f-8812-34365e56380b@linaro.org>
-Date: Tue, 7 Mar 2023 18:58:13 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E077FBA3E
+	for <iommu@lists.linux.dev>; Tue,  7 Mar 2023 17:38:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678210692; x=1709746692;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=AOProkfN/IGTr09CgulYGyixQP6qyB6RLNl6DtWsadA=;
+  b=MgQ9eQlza0ndLXd9fZ8hTztuTYWbszwG1NkBPINEwUK4s3Vszu1cQ6GV
+   eLoDTj55EqGRrVXuddjDwNMFoySkz8cyifrZ+T6WbmuCYqtntEkCkX/8r
+   YxO75jgiMN6L8COrFRXh1I2UpjzNnwONTotWvAwCUWdu9mR0umCWGzKKR
+   Wl/BleqBEnH6ZpPl/dH5iyA5ZZb4Bs0hi2/uHthUaIFNXAUVOuXZoQY0a
+   YuPvcfVSzGCzSScsV5RnLBhkJUQNsJl23jeshskovUSu+xko2d9AuxCZB
+   BcZUUikpX5LEYkXH0TtZUFha8IzgtQL7AF7FcwvENyR7WPYTfPP7fuU9w
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10642"; a="398497864"
+X-IronPort-AV: E=Sophos;i="5.98,241,1673942400"; 
+   d="scan'208";a="398497864"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 09:38:12 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10642"; a="786772295"
+X-IronPort-AV: E=Sophos;i="5.98,241,1673942400"; 
+   d="scan'208";a="786772295"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 09:38:11 -0800
+Date: Tue, 7 Mar 2023 09:42:03 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, Jean-Philippe Brucker
+ <jean-philippe@linaro.org>, LKML <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, Jean-Philippe
+ Brucker <jean-philippe@linaro.com>, Dave Hansen <dave.hansen@intel.com>,
+ Thomas Gleixner <tglx@linutronix.de>, X86 Kernel <x86@kernel.org>,
+ bp@alien8.de, "H. Peter Anvin" <hpa@zytor.com>, Peter Zijlstra
+ <peterz@infradead.org>, corbet@lwn.net, vkoul@kernel.org,
+ dmaengine@vger.kernel.org, linux-doc@vger.kernel.org, Robin Murphy
+ <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, David Woodhouse
+ <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>, "Yu, Fenghua"
+ <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>, Kirill Shutemov
+ <kirill.shutemov@linux.intel.com>, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v4 3/6] iommu/sva: Stop using ioasid_set for SVA
+Message-ID: <20230307094203.4dc51ff4@jacob-builder>
+In-Reply-To: <ZAHzAa0mnilf0N9K@nvidia.com>
+References: <20230301235646.2692846-1-jacob.jun.pan@linux.intel.com>
+	<20230301235646.2692846-4-jacob.jun.pan@linux.intel.com>
+	<3b7fb4d3-1fe9-a3be-46ad-c271be9f96c7@linux.intel.com>
+	<20230302091707.58d59964@jacob-builder>
+	<794c7dad-2e62-3afa-ea10-92179b0d1659@linux.intel.com>
+	<20230303093235.GB361458@myrica>
+	<3b2c6fe9-821f-9b84-acb6-777e8517a0fc@linux.intel.com>
+	<ZAHzAa0mnilf0N9K@nvidia.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v3 6/6] iommu/qcom: Add support for QSMMUv2 and QSMMU-500
- secured contexts
-Content-Language: en-GB
-To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- agross@kernel.org
-Cc: andersson@kernel.org, konrad.dybcio@linaro.org, joro@8bytes.org,
- will@kernel.org, robin.murphy@arm.com, robh+dt@kernel.org,
- krzysztof.kozlowski+dt@linaro.org, robdclark@gmail.com,
- linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, marijn.suijten@somainline.org,
- kernel@collabora.com, luca@z3ntu.xyz, a39.skl@gmail.com,
- phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
-References: <20221115101122.155440-1-angelogioacchino.delregno@collabora.com>
- <20221115101122.155440-7-angelogioacchino.delregno@collabora.com>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20221115101122.155440-7-angelogioacchino.delregno@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 15/11/2022 12:11, AngeloGioacchino Del Regno wrote:
-> On some SoCs like MSM8956, MSM8976 and others, secure contexts are
-> also secured: these get programmed by the bootloader or TZ (as usual)
-> but their "interesting" registers are locked out by the hypervisor,
-> disallowing direct register writes from Linux and, in many cases,
-> completely disallowing the reprogramming of TTBR, TCR, MAIR and other
-> registers including, but not limited to, resetting contexts.
-> This is referred downstream as a "v2" IOMMU but this is effectively
-> a "v2 firmware configuration" instead.
+Hi Jason,
+
+On Fri, 3 Mar 2023 09:15:45 -0400, Jason Gunthorpe <jgg@nvidia.com> wrote:
+
+> On Fri, Mar 03, 2023 at 05:57:41PM +0800, Baolu Lu wrote:
+> > On 2023/3/3 17:32, Jean-Philippe Brucker wrote:  
+> > > > I suppose the common thing is reserving some kind of special
+> > > > PASIDs.  
+> > > Are you planning to use RID_PASID != 0 in VT-d?  Otherwise we could
+> > > just communicate min_pasid from the IOMMU driver the same way we do
+> > > max_pasid.
+> > > 
+> > > Otherwise I guess re-introduce a lighter ioasid_alloc() that the IOMMU
+> > > driver calls to reserve PASID0/RID_PASID.  
+> > 
+> > Yes. We probably will use a non-zero RID_PASID in the future. An
+> > interface to reserve (or allocate) a PASID from iommu_global_pasid_ida
+> > should work then.  
 > 
-> Luckily, the described behavior of version 2 is effective only on
-> secure contexts and not on non-secure ones: add support for that,
-> finally getting a completely working IOMMU on at least MSM8956/76.
+> Just allowing the driver to store XA_ZERO_ENTRY would be fine
 > 
-> Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
-> [Marijn: Rebased over next-20221111]
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> ---
->   drivers/iommu/arm/arm-smmu/qcom_iommu.c | 22 +++++++++++++++++++---
->   1 file changed, 19 insertions(+), 3 deletions(-)
+So we provide APIs for both?
+1. alloc a global PASID, returned by this API
+2. try to reserve a global PASID given by the driver, i.e.
+	xa_cmpxchg(&iommu_global_pasid_ida.xa, 2, NULL, XA_ZERO_ENTRY,
+			 GFP_KERNEL);
+seems #1 is sufficient.
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Thanks,
 
--- 
-With best wishes
-Dmitry
-
+Jacob
