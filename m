@@ -1,33 +1,33 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 718BE53A6
-	for <iommu@lists.linux.dev>; Mon,  6 Mar 2023 23:41:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60760361
+	for <iommu@lists.linux.dev>; Tue,  7 Mar 2023 00:42:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678146073; x=1709682073;
+  t=1678149720; x=1709685720;
   h=date:from:to:cc:subject:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=0QV3lB69qzmHWTtL05fwlUGsbzm0tkLqs6qOyxA/zJk=;
-  b=L1V7lmO55g0uJjRZsJcg54yEPTJNMy1Fq2WoKt4JsawOCwrN6qkPPLTQ
-   qizMCJQlyxX3/+LS6jOl2kjJ9ws9E54c7+QRsZT1mCd3/jC/Q1Y5EcGdT
-   TKQC/pKr7Nw+KBBmZzWuCk2zFaCWoZu5R2XyhSufONhNpscNGiE8eAUN6
-   W34i+R1fjASE/ZLvY3fQ9OG4qlAtHVhJEn0JrwSLnLux5Si6N76sPYGeO
-   DRkYiqQFmnXhJP/jlYhx0cZbA5gMnfoQ+hxU3S8wEEizeGSXtQII6IEaR
-   Rbi9uUTlVE4di0wJGpMl8MEFcCjnC8HCpfYMijtXDFqbtBflygVGbApyG
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="400535243"
+  bh=XhNE9wpAaF+JRcQwnZM8UruFGzy4KLhJd78fbJA7ezg=;
+  b=mjQb7CKcvSpZHJnioSOwqEhvqMhaKqHjalbC5/MeGJTiBS/UnHCdR0Ku
+   grJoxOV3hDa0Z2NfWt3eQI1bSsdddgs4ttfR7scIKxqkcD0yM1/bJpNld
+   67Mcwdbq/M0Qf8r5ajDqcELpJ2CZDdkb5wrclJCiAnaU4xNfd6cDyVpdC
+   wMJPleucVOVa4SRbf2kmZo1bZJgtRVqhk65afNyz/ZY4pUCWIhOWDjALq
+   cafVuFjbc5lqmfq6pygXIYz1EKv3llGvfQYOxbbcucaDp1p35rkeozVkK
+   eY3oiwHkimW5YmeWAmSccnqMul/hdvEiDl5XbdfuLP/avoC8ICTp9pstF
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="335742845"
 X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
-   d="scan'208";a="400535243"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 15:41:12 -0800
+   d="scan'208";a="335742845"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 16:41:58 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="708830232"
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="922147808"
 X-IronPort-AV: E=Sophos;i="5.98,238,1673942400"; 
-   d="scan'208";a="708830232"
+   d="scan'208";a="922147808"
 Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 15:41:12 -0800
-Date: Mon, 6 Mar 2023 15:45:04 -0800
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2023 16:41:58 -0800
+Date: Mon, 6 Mar 2023 16:45:49 -0800
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
 Cc: "Tian, Kevin" <kevin.tian@intel.com>, Baolu Lu
@@ -42,8 +42,8 @@ Cc: "Tian, Kevin" <kevin.tian@intel.com>, Baolu Lu
  jacob.jun.pan@linux.intel.com
 Subject: Re: [PATCH 1/4] iommu/vt-d: Implement set device pasid op for
  default domain
-Message-ID: <20230306154504.04769726@jacob-builder>
-In-Reply-To: <ZAY4zd4OlgSz+puZ@nvidia.com>
+Message-ID: <20230306164549.27ebf2ac@jacob-builder>
+In-Reply-To: <20230306154504.04769726@jacob-builder>
 References: <20230302005959.2695267-1-jacob.jun.pan@linux.intel.com>
 	<20230302005959.2695267-2-jacob.jun.pan@linux.intel.com>
 	<fad7f28f-b4e8-c1c3-4ca4-a48c5c6d7f4a@linux.intel.com>
@@ -54,6 +54,7 @@ References: <20230302005959.2695267-1-jacob.jun.pan@linux.intel.com>
 	<BN9PR11MB5276E48AA1680C76A3ED66AD8CB39@BN9PR11MB5276.namprd11.prod.outlook.com>
 	<20230306110443.4ca52204@jacob-builder>
 	<ZAY4zd4OlgSz+puZ@nvidia.com>
+	<20230306154504.04769726@jacob-builder>
 Organization: OTC
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
@@ -65,32 +66,40 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-Hi Jason,
+Hi Jacob,
 
-On Mon, 6 Mar 2023 15:02:37 -0400, Jason Gunthorpe <jgg@nvidia.com> wrote:
+On Mon, 6 Mar 2023 15:45:04 -0800, Jacob Pan
+<jacob.jun.pan@linux.intel.com> wrote:
 
-> On Mon, Mar 06, 2023 at 11:04:43AM -0800, Jacob Pan wrote:
+> Hi Jason,
 > 
-> > > and probably this is the right thing to do as in the end DMA type will
-> > > be removed with Jason's cleanup  
-> >
-> > so, let me recap. set_dev_pasid() should make no assumptions of
-> > ordering, i.e. it is equal to iommu_domain_ops.attach_dev().  
+> On Mon, 6 Mar 2023 15:02:37 -0400, Jason Gunthorpe <jgg@nvidia.com> wrote:
 > 
-> Absolutely yes.
+> > On Mon, Mar 06, 2023 at 11:04:43AM -0800, Jacob Pan wrote:
+> >   
+> > > > and probably this is the right thing to do as in the end DMA type
+> > > > will be removed with Jason's cleanup    
+> > >
+> > > so, let me recap. set_dev_pasid() should make no assumptions of
+> > > ordering, i.e. it is equal to iommu_domain_ops.attach_dev().    
+> > 
+> > Absolutely yes.
+> > 
+> > You should factor out all the "prepare the domain to be used" code and
+> > call it in both places.
+> >   
+> I think this has been done by Baolu
+> https://lore.kernel.org/linux-iommu/20190325013036.18400-1-baolu.lu@linux.intel.com/T/#m8c980357a39dc75dc360ff0f71dc7ebe1e49f9a6
+> iommu/vt-d: Move common code out of iommu_attch_device()
+>     
+>     This part of code could be used by both normal and aux
+>     domain specific attach entries. Hence move them into a
+>     common function to avoid duplication.
 > 
-> You should factor out all the "prepare the domain to be used" code and
-> call it in both places.
-> 
-I think this has been done by Baolu
-https://lore.kernel.org/linux-iommu/20190325013036.18400-1-baolu.lu@linux.intel.com/T/#m8c980357a39dc75dc360ff0f71dc7ebe1e49f9a6
-iommu/vt-d: Move common code out of iommu_attch_device()
-    
-    This part of code could be used by both normal and aux
-    domain specific attach entries. Hence move them into a
-    common function to avoid duplication.
-
-set_dev_pasid() will call prepare_domain_attach_device() as well.
+> set_dev_pasid() will call prepare_domain_attach_device() as well.
+Actually, there are more to be factored to common code if we take that
+assumption away. attach_dev() can be viewed as a special case for
+set_dev_pasid() except the PASID is RID_PASID.
 
 Thanks,
 
