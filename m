@@ -1,112 +1,190 @@
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E9C82577
-	for <iommu@lists.linux.dev>; Tue,  7 Mar 2023 08:07:49 +0000 (UTC)
-X-UUID: 2400960cbcbf11ed945fc101203acc17-20230307
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=Xcl0geET81WYNBRHKToCqUUKoHCvhorE98xJYXCbui4=;
-	b=e7f+gbNQJEVMn52asKShIb4jvRrjO2mZpnHHYUVeFnk2JHfjv1FTc1M3nvNZSNxqvVMXvjz3CtRgdqk9lXwh2vgFwiSOuyVhfnXAa2QLdkpnJuW1pTOqgDyju1DTpREwsUZrHg7cankd0H3rU5JOTdO97wq41mWg3GNy6QRfA/4=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.20,REQID:075c8cbe-3d27-40a9-87d4-d7320c5ef510,IP:0,U
-	RL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTIO
-	N:release,TS:-20
-X-CID-META: VersionHash:25b5999,CLOUDID:34d69327-564d-42d9-9875-7c868ee415ec,B
-	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:1,EDM:-3,IP:nil,U
-	RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0
-X-CID-BVR: 0
-X-UUID: 2400960cbcbf11ed945fc101203acc17-20230307
-Received: from mtkmbs13n2.mediatek.inc [(172.21.101.108)] by mailgw02.mediatek.com
-	(envelope-from <yong.wu@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 704658285; Tue, 07 Mar 2023 16:07:44 +0800
-Received: from mtkmbs13n1.mediatek.inc (172.21.101.193) by
- mtkmbs13n2.mediatek.inc (172.21.101.108) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.25; Tue, 7 Mar 2023 16:07:42 +0800
-Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
- mtkmbs13n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.1118.25 via Frontend Transport; Tue, 7 Mar 2023 16:07:42 +0800
-From: Yong Wu <yong.wu@mediatek.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Rob Herring
-	<robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>
-CC: Robin Murphy <robin.murphy@arm.com>, Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>, Yong Wu <yong.wu@mediatek.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	<iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <mingyuan.ma@mediatek.com>,
-	<yf.wang@mediatek.com>, <jianjiao.zeng@mediatek.com>,
-	<chengci.xu@mediatek.com>, <youlin.pei@mediatek.com>
-Subject: [PATCH v8 7/7] iommu/mediatek: mt8188: Add iova_region_larb_msk
-Date: Tue, 7 Mar 2023 16:05:55 +0800
-Message-ID: <20230307080555.14399-8-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230307080555.14399-1-yong.wu@mediatek.com>
-References: <20230307080555.14399-1-yong.wu@mediatek.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CEA8364
+	for <iommu@lists.linux.dev>; Tue,  7 Mar 2023 08:40:58 +0000 (UTC)
+Received: by mail-wm1-f43.google.com with SMTP id j3so7233726wms.2
+        for <iommu@lists.linux.dev>; Tue, 07 Mar 2023 00:40:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1678178456;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=+0UKndbP14gZjHXMQXXDLbDlp36Mnb3xL7pi3Fj5BQw=;
+        b=P3b/7PQEXKyg73nyy4qZAscI5K/g2NnKp93Uh+3PIwOrasFJedSSjOLLd1bd903q4c
+         HMysVB702K66d76WiAOLkWrWKNwQiTrGtWV+zjvvDevRqA/j/TkzdsNPog4+X+2JOVdv
+         6gADtaQnNjnFICS84aOnziUt5awhzqAGZqsHGnkn8OIdIlFOntuSLRjggSpM6PqXcx59
+         /8lOei7vUv42kDrAjnMiBC7LIIcqDvehKjClc6DGa9ZbjLhXPRt2+ibjyeKoKcTOTChL
+         enw/VngLPJjqIKyEXmHn3YnrusHkHqvLFG590sGP1UnlFiihReClvyytQGXC6l98zu7Z
+         qexg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678178456;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+0UKndbP14gZjHXMQXXDLbDlp36Mnb3xL7pi3Fj5BQw=;
+        b=JYpeiAq+MNmOSdJT7XKW4r07/Z/QqID+kZR0KzSwXUUROCm1nutlCm28y6lm9G1bM2
+         npKLbtnnGXmNolnlKW0PR7i7rfHG7duBtPtkE+ubhiz3Y+PN6tTo85Xrsr4QeKC6JY2k
+         uxZ8OnsOapWMttFmRDQ+VayYTCoYSqcHXR7TkaIerSPXKOUSVlWQJoe1L2DCcv1VXgp3
+         RtpCo9fVkV0AxrBWb8ItONcBby2aly0rHZ4vDFDJaZMdjw+QvDhMRJMlZIJBmy0NRSNV
+         AbBioSQnJ3rmB8c2EqDR593Oh9fQUJiIkJ1DyZPJk4gMQHiBDf4Gt+HqMYfOZ5Y0ShgP
+         WS6Q==
+X-Gm-Message-State: AO0yUKXnFSPXYPwU4hIQyk2Q4J/sehoJdmFkXEf+Zr2Pmy3GHOsbDWtn
+	9nPVE+Ub9I4D/5youVPtWNN0WQ==
+X-Google-Smtp-Source: AK7set+52QDU/ZyulReQ++I2BeOAZ7h56nRoRwlNzYV9UZ5O+BKWRWrAUuleGQszagPqAWonnp2Bbg==
+X-Received: by 2002:a05:600c:1c1f:b0:3eb:3b7e:7b89 with SMTP id j31-20020a05600c1c1f00b003eb3b7e7b89mr12353899wms.3.1678178456567;
+        Tue, 07 Mar 2023 00:40:56 -0800 (PST)
+Received: from myrica (054592b0.skybroadband.com. [5.69.146.176])
+        by smtp.gmail.com with ESMTPSA id l8-20020a05600c4f0800b003b47b80cec3sm18273948wmq.42.2023.03.07.00.40.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Mar 2023 00:40:56 -0800 (PST)
+Date: Tue, 7 Mar 2023 08:40:58 +0000
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Fenghua Yu <fenghua.yu@intel.com>
+Cc: Vinod Koul <vkoul@kernel.org>, Dave Jiang <dave.jiang@intel.com>,
+	dmaengine@vger.kernel.org,
+	linux-kernel <linux-kernel@vger.kernel.org>,
+	Alistair Popple <apopple@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Lorenzo Stoakes <lstoakes@gmail.com>,
+	Christoph Hellwig <hch@infradead.org>, iommu@lists.linux.dev
+Subject: Re: [PATCH v2 08/16] iommu: define and export
+ iommu_access_remote_vm()
+Message-ID: <20230307084058.GA1330745@myrica>
+References: <20230306163138.587484-1-fenghua.yu@intel.com>
+ <20230306163138.587484-9-fenghua.yu@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-MTK: N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230306163138.587484-9-fenghua.yu@intel.com>
 
-Add iova_region_larb_msk for mt8188. We separate the 16GB iova regions
-by each device's larbid/portid.
-Refer to include/dt-bindings/memory/mediatek,mt8188-memory-port.h
+Hi Fenghua,
 
-Note: larb19(21) as commented in that h above, it means larb19 while its SW
-index is 21.
+On Mon, Mar 06, 2023 at 08:31:30AM -0800, Fenghua Yu wrote:
+> Define and export iommu_access_remote_vm() to allow IOMMU related
+> drivers to access user address space by PASID.
+> 
+> The IDXD driver would like to use it to write the user's completion
+> record that the hardware device is not able to write to due to user
+> page fault.
+> 
+> Without the API, it's complex for IDXD driver to copy completion record
+> to a process' fault address for two reasons:
+> 1. access_remote_vm() is not exported and shouldn't be exported for
+>    drivers because drivers may easily cause mm reference issue.
+> 2. user frees fault address pages to trigger fault by IDXD device.
+> 
+> The driver has to call iommu_sva_find(), kthread_use_mm(), re-implement
+> majority of access_remote_vm() etc to access remote vm.
+> 
+> This IOMMU specific API hides these details and provides a clean interface
+> for idxd driver and potentially other IOMMU related drivers.
+> 
+> Suggested-by: Alistair Popple <apopple@nvidia.com>
+> Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Alistair Popple <apopple@nvidia.com>
+> Cc: Lorenzo Stoakes <lstoakes@gmail.com>
+> Cc: Christoph Hellwig <hch@infradead.org>
+> Cc: iommu@lists.linux.dev
+> ---
+> v2:
+> - Define and export iommu_access_remote_vm() for IDXD driver to write
+>   completion record to user address space. This change removes
+>   patch 8 and 9 in v1 (Alistair Popple)
+> 
+>  drivers/iommu/iommu-sva.c | 35 +++++++++++++++++++++++++++++++++++
+>  include/linux/iommu.h     |  9 +++++++++
+>  2 files changed, 44 insertions(+)
+> 
+> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+> index 24bf9b2b58aa..1d7a0aee58f7 100644
+> --- a/drivers/iommu/iommu-sva.c
+> +++ b/drivers/iommu/iommu-sva.c
+> @@ -71,6 +71,41 @@ struct mm_struct *iommu_sva_find(ioasid_t pasid)
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_sva_find);
+>  
+> +/**
+> + * iommu_access_remote_vm - access another process' address space by PASID
+> + * @pasid:	Process Address Space ID assigned to the mm
+> + * @addr:	start address to access
+> + * @buf:	source or destination buffer
+> + * @len:	number of bytes to transfer
+> + * @gup_flags:	flags modifying lookup behaviour
+> + *
+> + * Another process' address space is found by PASID. A reference on @mm
+> + * is taken and released inside the function.
+> + *
+> + * Return: number of bytes copied from source to destination.
+> + */
+> +int iommu_access_remote_vm(ioasid_t pasid, unsigned long addr, void *buf,
+> +			   int len, unsigned int gup_flags)
+> +{
+> +	struct mm_struct *mm;
+> +	int copied;
+> +
+> +	mm = iommu_sva_find(pasid);
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
----
- drivers/iommu/mtk_iommu.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+The ability to find a mm by PASID is being removed, see 
+https://lore.kernel.org/linux-iommu/20230301235646.2692846-4-jacob.jun.pan@linux.intel.com/
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index c56f0f121be8..9ccdcf1aba2d 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -1603,6 +1603,20 @@ static const struct mtk_iommu_plat_data mt8188_data_infra = {
- 	.iova_region_nr   = ARRAY_SIZE(single_domain),
- };
- 
-+static const u32 mt8188_larb_region_msk[MT8192_MULTI_REGION_NR_MAX][MTK_LARB_NR_MAX] = {
-+	[0] = {~0, ~0, ~0, ~0},               /* Region0: all ports for larb0/1/2/3 */
-+	[1] = {0, 0, 0, 0, 0, 0, 0, 0,
-+	       0, 0, 0, 0, 0, 0, 0, 0,
-+	       0, 0, 0, 0, 0, ~0, ~0, ~0},    /* Region1: larb19(21)/21(22)/23 */
-+	[2] = {0, 0, 0, 0, ~0, ~0, ~0, ~0,    /* Region2: the other larbs. */
-+	       ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0,
-+	       ~0, ~0, ~0, ~0, ~0, 0, 0, 0,
-+	       0, ~0},
-+	[3] = {0},
-+	[4] = {[24] = BIT(0) | BIT(1)},       /* Only larb27(24) port0/1 */
-+	[5] = {[24] = BIT(2) | BIT(3)},       /* Only larb27(24) port2/3 */
-+};
-+
- static const struct mtk_iommu_plat_data mt8188_data_vdo = {
- 	.m4u_plat       = M4U_MT8188,
- 	.flags          = HAS_BCLK | HAS_SUB_COMM_3BITS | OUT_ORDER_WR_EN |
-@@ -1614,6 +1628,7 @@ static const struct mtk_iommu_plat_data mt8188_data_vdo = {
- 	.banks_enable   = {true},
- 	.iova_region    = mt8192_multi_dom,
- 	.iova_region_nr = ARRAY_SIZE(mt8192_multi_dom),
-+	.iova_region_larb_msk = mt8188_larb_region_msk,
- 	.larbid_remap   = {{2}, {0}, {21}, {0}, {19}, {9, 10,
- 			   11 /* 11a */, 25 /* 11c */},
- 			   {13, 0, 29 /* 16b */, 30 /* 17b */, 0}, {5}},
-@@ -1630,6 +1645,7 @@ static const struct mtk_iommu_plat_data mt8188_data_vpp = {
- 	.banks_enable   = {true},
- 	.iova_region    = mt8192_multi_dom,
- 	.iova_region_nr = ARRAY_SIZE(mt8192_multi_dom),
-+	.iova_region_larb_msk = mt8188_larb_region_msk,
- 	.larbid_remap   = {{1}, {3}, {23}, {7}, {MTK_INVALID_LARBID},
- 			   {12, 15, 24 /* 11b */}, {14, MTK_INVALID_LARBID,
- 			   16 /* 16a */, 17 /* 17a */, MTK_INVALID_LARBID,
--- 
-2.25.1
+Thanks,
+Jean
 
+> +	if (IS_ERR_OR_NULL(mm))
+> +		return 0;
+> +
+> +	/*
+> +	 * A reference on @mm has been held by mmget_not_zero()
+> +	 * during iommu_sva_find().
+> +	 */
+> +	copied = access_remote_vm(mm, addr, buf, len, gup_flags);
+> +	/* The reference is released. */
+> +	mmput(mm);
+> +
+> +	return copied;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_access_remote_vm);
+> +
+>  /**
+>   * iommu_sva_bind_device() - Bind a process address space to a device
+>   * @dev: the device
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 6595454d4f48..414a46a53799 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -1177,6 +1177,8 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev,
+>  					struct mm_struct *mm);
+>  void iommu_sva_unbind_device(struct iommu_sva *handle);
+>  u32 iommu_sva_get_pasid(struct iommu_sva *handle);
+> +int iommu_access_remote_vm(ioasid_t pasid, unsigned long addr, void *buf,
+> +			   int len, unsigned int gup_flags);
+>  #else
+>  static inline struct iommu_sva *
+>  iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
+> @@ -1192,6 +1194,13 @@ static inline u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+>  {
+>  	return IOMMU_PASID_INVALID;
+>  }
+> +
+> +static inline int iommu_access_remote_vm(ioasid_t pasid, unsigned long addr,
+> +					 void *buf, int len,
+> +					 unsigned int gup_flags)
+> +{
+> +	return 0;
+> +}
+>  #endif /* CONFIG_IOMMU_SVA */
+>  
+>  #endif /* __LINUX_IOMMU_H */
+> -- 
+> 2.37.1
+> 
+> 
