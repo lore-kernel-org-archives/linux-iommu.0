@@ -1,92 +1,98 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 671B06ADE
-	for <iommu@lists.linux.dev>; Wed,  8 Mar 2023 13:48:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678283309; x=1709819309;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=sML0Jp0ngAS0AophUFs7GWR5Tb8f53bTkEbS39Vp9L0=;
-  b=molrG+6tL67tPHNUDJKdFybWoTC+NjtoF2dLW7TU0ay5iFTHdWeFu0XK
-   yApWmck506WYKmMZ76+wRZDgjmz0Qi6dDVmb/cI5ao+z0C8XP7YJdAiKB
-   UTKvGAqWJcO88/Yr/513hyTlt3Dm60UcVKVk5PIYXrcjGwvNohK5Nip9Y
-   V3x1eJJT7oazYLphYoKjY+W0pENbRQ8g/wLHI7Wouggyd67RR1pzSm+W2
-   Ecx4XV6tO3XO9MDfTsIGG+U2ANRK2z7gtgN6VXFZeyioABNBntkEhrPSN
-   ZJccs5Nl7TRc++g6iEZeV7xz05EGtyqvb57F351R+6DCKZ3Waozf78/18
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10642"; a="422423689"
-X-IronPort-AV: E=Sophos;i="5.98,244,1673942400"; 
-   d="scan'208";a="422423689"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2023 05:48:14 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10642"; a="851089149"
-X-IronPort-AV: E=Sophos;i="5.98,244,1673942400"; 
-   d="scan'208";a="851089149"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.208.136]) ([10.254.208.136])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2023 05:48:12 -0800
-Message-ID: <74bdf564-cdfe-8416-6b20-b4f18d461799@linux.intel.com>
-Date: Wed, 8 Mar 2023 21:48:10 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C20F86D38
+	for <iommu@lists.linux.dev>; Wed,  8 Mar 2023 14:02:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazon201209;
+  t=1678284136; x=1709820136;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=YsCrycNZVu9ajvbzg05TfrxqY/+XEILB7/x3zK+Cnls=;
+  b=JAXQ9uJCf5IsJoBQIiDUgdvNzr1y6BAa9rMS8IGXt4y/hK9o9E+keJrj
+   MiOjlZjHpGxaiXm+2yuE4RMlLrAADdVSxh0GS37VpOIQtuZ+dom8pRFgu
+   lmolydVIqO1GT+zXWVjmHA+4+kzO4CifPJTMvCNPwwJ7Ixi73HV8A9koc
+   0=;
+X-IronPort-AV: E=Sophos;i="5.98,244,1673913600"; 
+   d="scan'208";a="316167520"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-e7094f15.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2023 14:02:09 +0000
+Received: from EX19D012EUA003.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+	by email-inbound-relay-pdx-2c-m6i4x-e7094f15.us-west-2.amazon.com (Postfix) with ESMTPS id 1399940D49;
+	Wed,  8 Mar 2023 14:02:08 +0000 (UTC)
+Received: from EX19D030EUB004.ant.amazon.com (10.252.61.33) by
+ EX19D012EUA003.ant.amazon.com (10.252.50.98) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.24; Wed, 8 Mar 2023 14:02:06 +0000
+Received: from EX13MTAUEA001.ant.amazon.com (10.43.61.82) by
+ EX19D030EUB004.ant.amazon.com (10.252.61.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.24;
+ Wed, 8 Mar 2023 14:02:06 +0000
+Received: from dev-dsk-krckatom-1b-7b393aa4.eu-west-1.amazon.com
+ (10.13.225.85) by mail-relay.amazon.com (10.43.61.243) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.45 via Frontend Transport; Wed, 8 Mar 2023 14:02:04
+ +0000
+From: Tomas Krcka <krckatom@amazon.de>
+To: <robin.murphy@arm.com>
+CC: <baolu.lu@linux.intel.com>, <iommu@lists.linux.dev>, <joro@8bytes.org>,
+	<krckatom@amazon.de>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>, <shameerali.kolothum.thodi@huawei.com>,
+	<will@kernel.org>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Fix event queue overflow acknowledgment
+Date: Wed, 8 Mar 2023 14:02:04 +0000
+Message-ID: <20230308140204.83249-1-krckatom@amazon.de>
+X-Mailer: git-send-email 2.39.1
+In-Reply-To: <8291b66d-b9b8-47c9-f5ed-a4e951c92154@arm.com>
+References: <8291b66d-b9b8-47c9-f5ed-a4e951c92154@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Cc: baolu.lu@linux.intel.com, kvm@vger.kernel.org,
- Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
-Subject: Re: [PATCH v2 11/17] iommu: Introduce a new
- iommu_group_replace_domain() API
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
- Kevin Tian <kevin.tian@intel.com>, linux-kselftest@vger.kernel.org
-References: <11-v2-51b9896e7862+8a8c-iommufd_alloc_jgg@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <11-v2-51b9896e7862+8a8c-iommufd_alloc_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-On 2023/3/8 8:35, Jason Gunthorpe wrote:
-> From: Nicolin Chen<nicolinc@nvidia.com>
-> 
-> qemu has a need to replace the translations associated with a domain
-> when the guest does large-scale operations like switching between an
-> IDENTITY domain and, say, dma-iommu.c.
-> 
-> Currently, it does this by replacing all the mappings in a single
-> domain, but this is very inefficient and means that domains have to be
-> per-device rather than per-translation.
-> 
-> Provide a high-level API to allow replacements of one domain with
-> another. This is similar to a detach/attach cycle except it doesn't
-> force the group to go to the blocking domain in-between.
-> 
-> By removing this forced blocking domain the iommu driver has the
-> opportunity to implement a non-disruptive replacement of the domain to the
-> greatest extent its hardware allows. This allows the qemu emulation of the
-> vIOMMU to be more complete, as real hardware often has a non-distruptive
-> replacement capability.
-> 
-> It could be possible to address this by simply removing the protection
-> from the iommu_attach_group(), but it is not so clear if that is safe for
-> the few users. Thus, add a new API to serve this new purpose.
-> 
-> All drivers are already required to support changing between active
-> UNMANAGED domains when using their attach_dev ops.
-> 
-> This API is expected to be used only by IOMMUFD, so add to the iommu-priv
-> header and mark it as IOMMUFD_INTERNAL.
-> 
-> Suggested-by: Jason Gunthorpe<jgg@nvidia.com>
-> Reviewed-by: Kevin Tian<kevin.tian@intel.com>
-> Signed-off-by: Nicolin Chen<nicolinc@nvidia.com>
-> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+Pj4gV2hlbiBhbiBvdmVyZmxvdyBvY2N1cnMgaW4gdGhlIGV2ZW50IHF1ZXVlLCB0aGUgU01NVSB0
+b2dnbGVzIG92ZXJmbG93Cj4+IGZsYWcgT1ZGTEcgaW4gdGhlIFBST0QgcmVnaXN0ZXIuCj4+IFRo
+ZSBldnRxIHRocmVhZCBpcyBzdXBwb3NlZCB0byBhY2tub3dsZWRnZSB0aGUgb3ZlcmZsb3cgZmxh
+ZyBieSB0b2dnbGluZwo+PiBmbGFnIE9WQUNLRkxHIGluIHRoZSBDT05TIHJlZ2lzdGVyLCBvdGhl
+cndpc2UgdGhlIG92ZXJmbG93IGNvbmRpdGlvbiBpcwo+PiBzdGlsbCBhY3RpdmUgKE9WRkxHICE9
+IE9WQUNLRkxHKS4KPj4KPj4gQ3VycmVudGx5IHRoZSBhY2tub3dsZWRnZSByZWdpc3RlciBpcyB0
+b2dnbGVkIGFmdGVyIGNsZWFyaW5nIHRoZSBldmVudAo+PiBxdWV1ZSBidXQgaXMgbmV2ZXIgcHJv
+cGFnYXRlZCB0byB0aGUgaGFyZHdhcmUuIEl0IHdvdWxkIGJlIGRvbmUgbmV4dAo+PiB0aW1lIHdo
+ZW4gZXhlY3V0aW5nIGV2dHEgdGhyZWFkLgo+Pgo+PiBUaGUgU01NVSBzdGlsbCBhZGRzIGVsZW1l
+bnRzIHRvIHRoZSBxdWV1ZSB3aGVuIHRoZSBvdmVyZmxvdyBjb25kaXRpb24gaXMKPj4gYWN0aXZl
+IGJ1dCBhbnkgc3Vic2VxdWVudCBvdmVyZmxvdyBpbmZvcm1hdGlvbiBhZnRlciBjbGVhcmluZyB0
+aGUgZXZlbnQKPj4gcXVldWUgd2lsbCBiZSBsb3N0Lgo+Pgo+PiBUaGlzIGNoYW5nZSBrZWVwcyB0
+aGUgU01NVSBpbiBzeW5jIGFzIGl0J3MgZXhwZWN0ZWQgYnkgZGVzaWduLgo+Cj4gSWYgSSd2ZSB1
+bmRlcnN0b29kIGNvcnJlY3RseSwgdGhlIHVwc2hvdCBvZiB0aGlzIGlzIHRoYXQgaWYgdGhlIHF1
+ZXVlCj4gaGFzIG92ZXJmbG93ZWQgb25jZSwgYmVjb21lIGVtcHR5LCB0aGVuIHNvbWVob3cgZ29l
+cyBmcm9tIGVtcHR5IHRvIGZ1bGwKPiBiZWZvcmUgd2UgbWFuYWdlIHRvIGNvbnN1bWUgYSBzaW5n
+bGUgZXZlbnQsIHdlIHdvbid0IHByaW50IHRoZSAiZXZlbnRzCj4gbG9zdCIgbWVzc2FnZSBhIHNl
+Y29uZCB0aW1lLgo+Cj4gSGF2ZSB5b3Ugc2VlbiB0aGlzIGhhcHBlbiBpbiBwcmFjdGljZT8gVEJI
+IGlmIHRoZSBldmVudCBxdWV1ZSBldmVyCj4gb3ZlcmZsb3dzIGV2ZW4gb25jZSBpdCdzIGluZGlj
+YXRpdmUgdGhhdCB0aGUgc3lzdGVtIGlzIGhvc2VkIGFueXdheSwgc28KPiBpdCdzIG5vdCBjbGVh
+ciB0byBtZSB0aGF0IHRoZXJlJ3MgYW55IGdyZWF0IGxvc3Mgb2YgdmFsdWUgaW4gc29tZXRpbWVz
+Cj4gZmFpbGluZyB0byByZXBlYXQgYSB3YXJuaW5nIGZvciBhIGNocm9uaWMgb25nb2luZyBvcGVy
+YXRpb25hbCBmYWlsdXJlLgo+CgpZZXMsIEkgZGlkIHNlZSBpbiBwcmFjdGljZS4gQW5kIGl04oCZ
+cyBub3QganVzdCBhYm91dCBsb29zaW5nIHN1YnNlcXVlbmNlIHdhcm5pbmcuClRoZSB3YXkgaG93
+IGl04oCZcyBkb25lIG5vdyBrZWVwcyBpbmNvbnNpc3RlbnQgQ09OUyByZWdpc3RlciB2YWx1ZSBi
+ZXR3ZWVuIFNNTVUgYW5kIHRoZSBrZXJuZWwKdW50aWwgYW55IG5ldyBldmVudCBoYXBwZW5zLiBU
+aGUga2VybmVsIGRvZXNu4oCZdCBpbmZvcm0gU01NVSB0aGF0IHdlIGtub3cgYWJvdXQgdGhlIG92
+ZXJmbG93CmFuZCBjb25zdW1pbmcgZXZlbnRzIGFzIGZhc3QgYXMgd2UgY2FuLgoKPiBJdCBjb3Vs
+ZCBiZSBhcmd1ZWQgdGhhdCB3ZSBoYXZlIGEgc3VidGxlIGluY29uc2lzdGVuY3kgYmV0d2Vlbgo+
+IGFybV9zbW11X2V2dHFfdGhyZWFkKCkgYW5kIGFybV9zbW11X3ByaXFfdGhyZWFkKCkgaGVyZSwg
+YnV0IHRoZSBmYWN0IGlzCj4gdGhhdCB0aGUgRXZlbnQgcXVldWUgYW5kIFBSSSBxdWV1ZSAqZG8q
+IGhhdmUgZGlmZmVyZW50IG92ZXJmbG93Cj4gYmVoYXZpb3Vycywgc28gaXQgY291bGQgZXF1YWxs
+eSBiZSBhcmd1ZWQgdGhhdCBpbmNvbnNpc3RlbmN5IGluIHRoZSBjb2RlCj4gaGVscHMgcmVmbGVj
+dCB0aGF0LiBGV0lXIEkgY2FuJ3Qgc2F5IEkgaGF2ZSBhIHN0cm9uZyBwcmVmZXJlbmNlIGVpdGhl
+ciB3YXkuCgpGb3IgdGhlIGFyZ3VtZW50IHRoYXQgdGhlIGNvZGUgY2FuIHJlZmxlY3QgdGhlIGRp
+ZmZlcmVuY2UuClRoZW4gdGhlIGNvbW1lbnQgJ1N5bmMgb3VyIG92ZXJmbG93IGZsYWcsIGFzIHdl
+IGJlbGlldmUgd2UncmUgdXAgdG8gc3BlZWTigJkgaXMKYWxyZWFkeSBtaXNsZWFkaW5nLgoKVGhh
+bmtzLgpCUiwKVG9tYXMKCgoKQW1hem9uIERldmVsb3BtZW50IENlbnRlciBHZXJtYW55IEdtYkgK
+S3JhdXNlbnN0ci4gMzgKMTAxMTcgQmVybGluCkdlc2NoYWVmdHNmdWVocnVuZzogQ2hyaXN0aWFu
+IFNjaGxhZWdlciwgSm9uYXRoYW4gV2Vpc3MKRWluZ2V0cmFnZW4gYW0gQW10c2dlcmljaHQgQ2hh
+cmxvdHRlbmJ1cmcgdW50ZXIgSFJCIDE0OTE3MyBCClNpdHo6IEJlcmxpbgpVc3QtSUQ6IERFIDI4
+OSAyMzcgODc5CgoK
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-
-Best regards,
-baolu
