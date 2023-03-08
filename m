@@ -1,71 +1,152 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+Received: from SHSQR01.spreadtrum.com (mx1.unisoc.com [222.66.158.135])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACAD062B
-	for <iommu@lists.linux.dev>; Wed,  8 Mar 2023 03:19:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678245551; x=1709781551;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=HnUh6zuWuK6/JGibCICoiHRkUWu1XWxkLwlxoYZmjKs=;
-  b=U37iBepvz6Ipvz3YcTLnbXiMYinJ3XJLXqU+XUqo0jdV69We7+XM4RLn
-   AAYIskgsFPOdppD6RuT4lwDTEvSGO1j8T6WIBRxDWQUySR8Rr+QoKy83J
-   wT3UQ4Ch+EGcVCd5N/z9skAHK8HBDg87OSw8wjtwpAXxrCKNhojq83yMe
-   QxSvZ0FNz205jsfISlJSXLMbAXKcinsS+XbVs1mxUeuOvM8z70MQMVKz6
-   mrb0OGfP9a4Z9hv7ur7MHQ3XhGzCcoxgyg5hjXc2eIB0xBPxKMzJIsOPH
-   YNmXGma64wL7rYI3pOhJozrWDDGiVmOG1BASZ7fTQk5kGGcFgfFD0m+2/
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10642"; a="315700886"
-X-IronPort-AV: E=Sophos;i="5.98,242,1673942400"; 
-   d="scan'208";a="315700886"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 19:19:10 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10642"; a="1006145193"
-X-IronPort-AV: E=Sophos;i="5.98,242,1673942400"; 
-   d="scan'208";a="1006145193"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by fmsmga005.fm.intel.com with ESMTP; 07 Mar 2023 19:19:09 -0800
-Message-ID: <3469063c-7ed4-3fda-0280-2cc6b4e6fd98@linux.intel.com>
-Date: Wed, 8 Mar 2023 11:18:11 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 842E562B
+	for <iommu@lists.linux.dev>; Wed,  8 Mar 2023 03:43:51 +0000 (UTC)
+Received: from SHSend.spreadtrum.com (bjmbx02.spreadtrum.com [10.0.64.8])
+	by SHSQR01.spreadtrum.com with ESMTP id 3283g5Qb087717;
+	Wed, 8 Mar 2023 11:42:05 +0800 (+08)
+	(envelope-from Chunyan.Zhang@unisoc.com)
+Received: from ubt.spreadtrum.com (10.0.74.87) by BJMBX02.spreadtrum.com
+ (10.0.64.8) with Microsoft SMTP Server (TLS) id 15.0.1497.23; Wed, 8 Mar 2023
+ 11:42:02 +0800
+From: Chunyan Zhang <chunyan.zhang@unisoc.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        "Robin
+ Murphy" <robin.murphy@arm.com>
+CC: <iommu@lists.linux.dev>, Baolu Lu <baolu.lu@linux.intel.com>,
+        Baolin Wang
+	<baolin.wang@linux.alibaba.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        "Chunyan
+ Zhang" <zhang.lyra@gmail.com>,
+        Chunyan Zhang <chunyan.zhang@unisoc.com>,
+        LKML
+	<linux-kernel@vger.kernel.org>
+Subject: [PATCH V2] iommu: sprd: release dma buffer to avoid memory leak
+Date: Wed, 8 Mar 2023 11:41:58 +0800
+Message-ID: <20230308034158.509458-1-chunyan.zhang@unisoc.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Cc: baolu.lu@linux.intel.com, kvm@vger.kernel.org,
- Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
-Subject: Re: [PATCH v2 02/17] iommufd: Add iommufd_group
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
- Kevin Tian <kevin.tian@intel.com>, linux-kselftest@vger.kernel.org
-References: <2-v2-51b9896e7862+8a8c-iommufd_alloc_jgg@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <2-v2-51b9896e7862+8a8c-iommufd_alloc_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.0.74.87]
+X-ClientProxiedBy: SHCAS01.spreadtrum.com (10.0.1.201) To
+ BJMBX02.spreadtrum.com (10.0.64.8)
+X-MAIL:SHSQR01.spreadtrum.com 3283g5Qb087717
 
-On 3/8/23 8:35 AM, Jason Gunthorpe wrote:
-> When the hwpt to device attachment is fairly static we could get
-> away with the simple approach of keeping track of the groups via a
-> device list. But with replace this is infeasible.
-> 
-> Add an automatically managed struct that is 1:1 with the iommu_group
-> per-ictx so we can store the necessary tracking information there.
-> 
-> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+Release page table DMA buffer when the IOMMU domain is not used:
 
-The iommufd_get_group() helper looks long. I went through it carefully
-and didn't find any problems. However, is it possible to add a mutex in
-ictx to protect the group array? Can it be simpler?
+- Domain freed.
 
-either way,
+- IOMMU is attaching to a new domain.
+  Since one sprd IOMMU servers only one client device, if the IOMMU has
+  been attached to other domain, it has to be detached first, that's
+  saying the DMA buffer should be released, otherwise that would
+  cause memory leak issue.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
+---
+V2:
+* Added some comment in sprd_iommu_attach_device() for the reason
+  of calling sprd_iommu_cleanup().
 
-Best regards,
-baolu
+V1: https://lkml.org/lkml/2023/2/10/198
+---
+ drivers/iommu/sprd-iommu.c | 46 ++++++++++++++++++++++++++++++++------
+ 1 file changed, 39 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
+index ae94d74b73f4..fb2f96df3bca 100644
+--- a/drivers/iommu/sprd-iommu.c
++++ b/drivers/iommu/sprd-iommu.c
+@@ -62,6 +62,7 @@ enum sprd_iommu_version {
+  * @eb: gate clock which controls IOMMU access
+  */
+ struct sprd_iommu_device {
++	struct sprd_iommu_domain	*dom;
+ 	enum sprd_iommu_version	ver;
+ 	u32			*prot_page_va;
+ 	dma_addr_t		prot_page_pa;
+@@ -151,13 +152,6 @@ static struct iommu_domain *sprd_iommu_domain_alloc(unsigned int domain_type)
+ 	return &dom->domain;
+ }
+ 
+-static void sprd_iommu_domain_free(struct iommu_domain *domain)
+-{
+-	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
+-
+-	kfree(dom);
+-}
+-
+ static void sprd_iommu_first_vpn(struct sprd_iommu_domain *dom)
+ {
+ 	struct sprd_iommu_device *sdev = dom->sdev;
+@@ -230,6 +224,29 @@ static void sprd_iommu_hw_en(struct sprd_iommu_device *sdev, bool en)
+ 	sprd_iommu_update_bits(sdev, reg_cfg, mask, 0, val);
+ }
+ 
++static void sprd_iommu_cleanup(struct sprd_iommu_device *sdev)
++{
++	struct sprd_iommu_domain *dom = sdev->dom;
++	size_t pgt_size = sprd_iommu_pgt_size(&dom->domain);
++
++	dma_free_coherent(sdev->dev, pgt_size, dom->pgt_va, dom->pgt_pa);
++	dom->sdev = NULL;
++	sdev->dom = NULL;
++	sprd_iommu_hw_en(sdev, false);
++}
++
++static void sprd_iommu_domain_free(struct iommu_domain *domain)
++{
++	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
++	struct sprd_iommu_device *sdev = dom->sdev;
++
++	/* Free DMA buffer first if the domain has been attached */
++	if (sdev)
++		sprd_iommu_cleanup(sdev);
++
++	kfree(dom);
++}
++
+ static int sprd_iommu_attach_device(struct iommu_domain *domain,
+ 				    struct device *dev)
+ {
+@@ -237,14 +254,29 @@ static int sprd_iommu_attach_device(struct iommu_domain *domain,
+ 	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
+ 	size_t pgt_size = sprd_iommu_pgt_size(domain);
+ 
++	/* Return directly if the domain attached to IOMMU already */
+ 	if (dom->sdev)
+ 		return -EINVAL;
+ 
++	/* The IOMMU already attached to a domain */
++	if (sdev->dom) {
++		if (sdev->dom == dom)
++			return 0;
++
++		/*
++		 * Clean up the previous domain, one sprd IOMMU servers only
++		 * one client device, if the IOMMU has been attached to other
++		 * domain, it has to be detached first.
++		 */
++		sprd_iommu_cleanup(sdev);
++	}
++
+ 	dom->pgt_va = dma_alloc_coherent(sdev->dev, pgt_size, &dom->pgt_pa, GFP_KERNEL);
+ 	if (!dom->pgt_va)
+ 		return -ENOMEM;
+ 
+ 	dom->sdev = sdev;
++	sdev->dom = dom;
+ 
+ 	sprd_iommu_first_ppn(dom);
+ 	sprd_iommu_first_vpn(dom);
+-- 
+2.25.1
+
