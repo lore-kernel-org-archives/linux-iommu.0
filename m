@@ -1,34 +1,34 @@
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3518F373
-	for <iommu@lists.linux.dev>; Wed,  8 Mar 2023 02:56:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACAD062B
+	for <iommu@lists.linux.dev>; Wed,  8 Mar 2023 03:19:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678244192; x=1709780192;
+  t=1678245551; x=1709781551;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=77QN2i2yZdUO/+6hL9TXXMuujJSXaX/G0JyFEyUwuBI=;
-  b=JnKmbcc/DDP+SpPAG9scSBATM+0KuVNJTNQpM/ay3tyYuoVsuTDqroxu
-   J2P1/SXWk/c7lOnsbGyI2yg6T3YRJhA8CCsFAi0SCjgJKtGNqlty5e567
-   6ysM26fqGnpiJKEliNnMM4pIMjvboOoV+WUkk0MwythSI9H1+lrh3daI1
-   0aMaHeK2rFqOVbvdzGX0XnchLu14O9ZeehFXbGX4JUlA6pqUGzHWNQhAG
-   awRKNta8AOyTGNTX7GqxLVW+RC7AaNiMkxPS7XKoO4QssFb9QU66Xp6bT
-   3U1RtF/bnq3iB+xI9Puw34eOZnvGDqqzZgF7bc5Zb/uV+yl+b5xe3Eb06
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10642"; a="336060473"
+  bh=HnUh6zuWuK6/JGibCICoiHRkUWu1XWxkLwlxoYZmjKs=;
+  b=U37iBepvz6Ipvz3YcTLnbXiMYinJ3XJLXqU+XUqo0jdV69We7+XM4RLn
+   AAYIskgsFPOdppD6RuT4lwDTEvSGO1j8T6WIBRxDWQUySR8Rr+QoKy83J
+   wT3UQ4Ch+EGcVCd5N/z9skAHK8HBDg87OSw8wjtwpAXxrCKNhojq83yMe
+   QxSvZ0FNz205jsfISlJSXLMbAXKcinsS+XbVs1mxUeuOvM8z70MQMVKz6
+   mrb0OGfP9a4Z9hv7ur7MHQ3XhGzCcoxgyg5hjXc2eIB0xBPxKMzJIsOPH
+   YNmXGma64wL7rYI3pOhJozrWDDGiVmOG1BASZ7fTQk5kGGcFgfFD0m+2/
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10642"; a="315700886"
 X-IronPort-AV: E=Sophos;i="5.98,242,1673942400"; 
-   d="scan'208";a="336060473"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 18:56:31 -0800
+   d="scan'208";a="315700886"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 19:19:10 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10642"; a="800598186"
+X-IronPort-AV: E=McAfee;i="6500,9779,10642"; a="1006145193"
 X-IronPort-AV: E=Sophos;i="5.98,242,1673942400"; 
-   d="scan'208";a="800598186"
+   d="scan'208";a="1006145193"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by orsmga004.jf.intel.com with ESMTP; 07 Mar 2023 18:56:29 -0800
-Message-ID: <b2a3ebf2-272d-2f4f-2489-253c4973a6db@linux.intel.com>
-Date: Wed, 8 Mar 2023 10:55:31 +0800
+  by fmsmga005.fm.intel.com with ESMTP; 07 Mar 2023 19:19:09 -0800
+Message-ID: <3469063c-7ed4-3fda-0280-2cc6b4e6fd98@linux.intel.com>
+Date: Wed, 8 Mar 2023 11:18:11 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -39,65 +39,31 @@ User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
 Cc: baolu.lu@linux.intel.com, kvm@vger.kernel.org,
  Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
-Subject: Re: [PATCH v2 01/17] iommufd: Move isolated msi enforcement to
- iommufd_device_bind()
+Subject: Re: [PATCH v2 02/17] iommufd: Add iommufd_group
 Content-Language: en-US
 To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
  Kevin Tian <kevin.tian@intel.com>, linux-kselftest@vger.kernel.org
-References: <1-v2-51b9896e7862+8a8c-iommufd_alloc_jgg@nvidia.com>
+References: <2-v2-51b9896e7862+8a8c-iommufd_alloc_jgg@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <1-v2-51b9896e7862+8a8c-iommufd_alloc_jgg@nvidia.com>
+In-Reply-To: <2-v2-51b9896e7862+8a8c-iommufd_alloc_jgg@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 3/8/23 8:35 AM, Jason Gunthorpe wrote:
-> With the recent rework this no longer needs to be done at domain
-> attachment time, we know if the device is usable by iommufd when we bind
-> it.
+> When the hwpt to device attachment is fairly static we could get
+> away with the simple approach of keeping track of the groups via a
+> device list. But with replace this is infeasible.
 > 
-> The value of msi_device_has_isolated_msi() is not allowed to change while
-> a driver is bound.
+> Add an automatically managed struct that is 1:1 with the iommu_group
+> per-ictx so we can store the necessary tracking information there.
 > 
-> Reviewed-by: Kevin Tian<kevin.tian@intel.com>
 > Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
-> ---
->   drivers/iommu/iommufd/device.c | 38 ++++++++++++++++++----------------
->   1 file changed, 20 insertions(+), 18 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-> index c6f4852a8a0c08..63b65cdfe97f29 100644
-> --- a/drivers/iommu/iommufd/device.c
-> +++ b/drivers/iommu/iommufd/device.c
-> @@ -60,6 +60,26 @@ struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
->   	if (!group)
->   		return ERR_PTR(-ENODEV);
->   
-> +	/*
-> +	 * For historical compat with VFIO the insecure interrupt path is
-> +	 * allowed if the module parameter is set. Insecure means that a MemWr
-> +	 * operation from the device (eg a simple DMA) cannot trigger an
 
-Nit:
+The iommufd_get_group() helper looks long. I went through it carefully
+and didn't find any problems. However, is it possible to add a mutex in
+ictx to protect the group array? Can it be simpler?
 
-"... cannot trigger an ..." or "... can trigger an ..."?
-
-> +	 * interrupt outside this iommufd context.
-> +	 */
-> +	if (!iommufd_selftest_is_mock_dev(dev) &&
-> +	    !iommu_group_has_isolated_msi(group)) {
-> +		if (!allow_unsafe_interrupts) {
-> +			rc = -EPERM;
-> +			goto out_group_put;
-> +		}
-> +
-> +		dev_warn(
-> +			dev,
-> +			"MSI interrupts are not secure, they cannot be isolated by the platform. "
-> +			"Check that platform features like interrupt remapping are enabled. "
-> +			"Use the \"allow_unsafe_interrupts\" module parameter to override\n");
-> +	}
-
-Anyway,
+either way,
 
 Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
