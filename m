@@ -1,98 +1,134 @@
-Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2077.outbound.protection.outlook.com [40.107.93.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C20F86D38
-	for <iommu@lists.linux.dev>; Wed,  8 Mar 2023 14:02:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazon201209;
-  t=1678284136; x=1709820136;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=YsCrycNZVu9ajvbzg05TfrxqY/+XEILB7/x3zK+Cnls=;
-  b=JAXQ9uJCf5IsJoBQIiDUgdvNzr1y6BAa9rMS8IGXt4y/hK9o9E+keJrj
-   MiOjlZjHpGxaiXm+2yuE4RMlLrAADdVSxh0GS37VpOIQtuZ+dom8pRFgu
-   lmolydVIqO1GT+zXWVjmHA+4+kzO4CifPJTMvCNPwwJ7Ixi73HV8A9koc
-   0=;
-X-IronPort-AV: E=Sophos;i="5.98,244,1673913600"; 
-   d="scan'208";a="316167520"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-e7094f15.us-west-2.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2023 14:02:09 +0000
-Received: from EX19D012EUA003.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-	by email-inbound-relay-pdx-2c-m6i4x-e7094f15.us-west-2.amazon.com (Postfix) with ESMTPS id 1399940D49;
-	Wed,  8 Mar 2023 14:02:08 +0000 (UTC)
-Received: from EX19D030EUB004.ant.amazon.com (10.252.61.33) by
- EX19D012EUA003.ant.amazon.com (10.252.50.98) with Microsoft SMTP Server
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C0166D38
+	for <iommu@lists.linux.dev>; Wed,  8 Mar 2023 14:26:30 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=egKeappAzFlWeDily9eQoWgpw0DTjAtw23trBMh1HGayc4HHu+J1TbQv3R9OId9QqXd+zHxktm5cYmt/Dmt6jw6JlXQ82D4ogdUsnBXJxALf82EH6o5o06DPBPnY3PYbtn1fgn0skV8f170bzFT2D0sjjwewxg3rXUpjriiLcdEF2wntziTeHEso2a+JjQB/Nj4XmBbccC92D41QqZpYZvRki0hynMvQ6DwItUIuJfglaki31Y/f5ghG+pT6yC/81AdWfAIt3ittc8iodKLxt1mR0IyT9WqvoGKwNlBjLmOLTLqou92/h18VdEyCbKHypVXIHhvKnjbGdLFGK3hkrg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Ss/5/RsG79O6QZhht0gvrXJr/7k9FG5EPgRft3KsyRk=;
+ b=mPoTWNkG9k4aTIVwH0J4j1/Tgjc4r2Y4EBKTMCMG4vSxq+TdnL+GyP2Pb8czCvtw1zhDGntUFfWZa65aFNr3HLsyS3nF/p4kbuVQkbJrjyiWOfqTAyVPoUSOq+hJZYWm4LsrKkvWhMtJR6WJRQYvEQwjFuekBbiCSbBGWblsaH9g3yiO+Zslq4o8EdFCTj33BHjMzlhqLzQJpiwRD4juTH6VGulm/gJa0ELLjeFgQ/0WN9iKvGxgMigeW1w7Jcdhi8jfMfNRZypOUzmmk+Flypv0qlhNSNTvjjA/a6iWe3TvRDSHbegDym08VmYF2JrNecDXSjOs9AxCbx4n8DG6FA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ss/5/RsG79O6QZhht0gvrXJr/7k9FG5EPgRft3KsyRk=;
+ b=X5MuPW7cDVe+hW+ZT4OzrNG7srm5HhtgZFlezsyep1QJU8u5qenelep9Ij5snIYYucK6hkFwauE3UBO2ZGkltiFV+s7vLit5MZ3hqNoeXS3vE38tzvhBffrCvP4FSAlCo77MWjLso0D1S3LFWL2Y5UVXcsKIdBBJbOY8oC/7JQUp4Ux3tPTvCiqXBNnAOoKCmJQlZc/HwR3QGFugJmTs4MaGlv9xpDVgZp0/q9hLmDJtVEa2PoRUJ1w5it+YiwFawYjHNS63sd+7LqlPnu2FfLox3H2u7F9dI1tI22M8/0oVPwhQXwW62AY75RIf0Kvgk/Oes7NahUqcaAw8mt9szw==
+Received: from BN9PR03CA0736.namprd03.prod.outlook.com (2603:10b6:408:110::21)
+ by DS0PR12MB8574.namprd12.prod.outlook.com (2603:10b6:8:166::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.29; Wed, 8 Mar
+ 2023 14:26:28 +0000
+Received: from BN8NAM11FT072.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:110:cafe::12) by BN9PR03CA0736.outlook.office365.com
+ (2603:10b6:408:110::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.17 via Frontend
+ Transport; Wed, 8 Mar 2023 14:26:28 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ BN8NAM11FT072.mail.protection.outlook.com (10.13.176.165) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6178.18 via Frontend Transport; Wed, 8 Mar 2023 14:26:28 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 8 Mar 2023
+ 06:26:20 -0800
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.24; Wed, 8 Mar 2023 14:02:06 +0000
-Received: from EX13MTAUEA001.ant.amazon.com (10.43.61.82) by
- EX19D030EUB004.ant.amazon.com (10.252.61.33) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.24;
- Wed, 8 Mar 2023 14:02:06 +0000
-Received: from dev-dsk-krckatom-1b-7b393aa4.eu-west-1.amazon.com
- (10.13.225.85) by mail-relay.amazon.com (10.43.61.243) with Microsoft SMTP
- Server (TLS) id 15.0.1497.45 via Frontend Transport; Wed, 8 Mar 2023 14:02:04
- +0000
-From: Tomas Krcka <krckatom@amazon.de>
-To: <robin.murphy@arm.com>
-CC: <baolu.lu@linux.intel.com>, <iommu@lists.linux.dev>, <joro@8bytes.org>,
-	<krckatom@amazon.de>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-kernel@vger.kernel.org>, <shameerali.kolothum.thodi@huawei.com>,
-	<will@kernel.org>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Fix event queue overflow acknowledgment
-Date: Wed, 8 Mar 2023 14:02:04 +0000
-Message-ID: <20230308140204.83249-1-krckatom@amazon.de>
-X-Mailer: git-send-email 2.39.1
-In-Reply-To: <8291b66d-b9b8-47c9-f5ed-a4e951c92154@arm.com>
-References: <8291b66d-b9b8-47c9-f5ed-a4e951c92154@arm.com>
+ 15.2.986.37; Wed, 8 Mar 2023 06:26:19 -0800
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.11) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server id 15.2.986.5 via Frontend
+ Transport; Wed, 8 Mar 2023 06:26:19 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <jgg@nvidia.com>, <kevin.tian@intel.com>, <joro@8bytes.org>,
+	<will@kernel.org>, <robin.murphy@arm.com>, <alex.williamson@redhat.com>,
+	<shuah@kernel.org>
+CC: <yi.l.liu@intel.com>, <linux-kernel@vger.kernel.org>,
+	<iommu@lists.linux.dev>, <kvm@vger.kernel.org>,
+	<linux-kselftest@vger.kernel.org>, <mjrosato@linux.ibm.com>,
+	<farman@linux.ibm.com>
+Subject: [PATCH v4 1/5] vfio: Do not allow !ops->dma_unmap in vfio_pin/unpin_pages()
+Date: Wed, 8 Mar 2023 06:25:58 -0800
+Message-ID: <2dc87ceb7bf02c7f405bde44e9ee9b21398c5228.1678284812.git.nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <cover.1678284812.git.nicolinc@nvidia.com>
+References: <cover.1678284812.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT072:EE_|DS0PR12MB8574:EE_
+X-MS-Office365-Filtering-Correlation-Id: e1f17bc5-39a1-4f32-f53f-08db1fe11afa
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	yguxdC/5yU068tLy30R/cpalEtay4fQozNcLFmxT9x3zkcH4JRzOlvJ6hAojYeUZ/Pxu7zxNulIQ9iGpkLV8dVpubvz5U+oQCRpB6tBAu6CVdSPIO237pkOYc6JYTpDheBkx82Kjst4ObaYrMmjkMzn+N1oofQ7jkYm705A/Q0mMiauviF19O/JOnAas19/iVO6dH1w0Dmk6iOiUL+i4YX7e3c3pEIX0jriBzBj4JsICkFK3v7GpePZdEj1/H2SgK0Oes4uTtwBvE6AKhOx5F7PO33RFIHe+E6q0H74cHcHVSCvw/O/6Or8MAX3IoXvwUMH3gs+l381bT9VCa4Vt09An/gJQcfXxUw8eeAnzJx+z///zIrlRBRCsFoXGXWZSffWIpSNh8cGnTbLPJw717h/gLjdlID8QTCQz/VSaNzBuP3AzTFBYJU8xE5VPMz03jZMRwf+NP8Omm7iY5VE7U7B3dNFaTqnjK21WD+I39knoOQMZIksadjlNLKkcjpfzdLrQG7IShdsKW1YNUU67vK3huIMlfLuPCi9ppJnDsBXLgWuusWbXJE7ytgEm3ojtPsrECiAk6ERdoQQVv91dCkS2w1FU9LcOssoKcufYoX2K2KIFiQPBxzb1JMn1780ppAiBFcokTAnawVrgn1YVhkGcQELpjxJmJhuxYP0us+V8IVjw4X0AN9MORMVlEAKaagMgXh5avRclUFAOCETm4Q==
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(376002)(346002)(136003)(396003)(39860400002)(451199018)(46966006)(40470700004)(36840700001)(36756003)(40460700003)(54906003)(316002)(110136005)(186003)(478600001)(8936002)(7416002)(7696005)(5660300002)(40480700001)(2906002)(70586007)(6666004)(70206006)(8676002)(4326008)(41300700001)(356005)(7636003)(82740400003)(86362001)(36860700001)(2616005)(83380400001)(26005)(82310400005)(47076005)(426003)(336012);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2023 14:26:28.1939
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e1f17bc5-39a1-4f32-f53f-08db1fe11afa
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN8NAM11FT072.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8574
 
-Pj4gV2hlbiBhbiBvdmVyZmxvdyBvY2N1cnMgaW4gdGhlIGV2ZW50IHF1ZXVlLCB0aGUgU01NVSB0
-b2dnbGVzIG92ZXJmbG93Cj4+IGZsYWcgT1ZGTEcgaW4gdGhlIFBST0QgcmVnaXN0ZXIuCj4+IFRo
-ZSBldnRxIHRocmVhZCBpcyBzdXBwb3NlZCB0byBhY2tub3dsZWRnZSB0aGUgb3ZlcmZsb3cgZmxh
-ZyBieSB0b2dnbGluZwo+PiBmbGFnIE9WQUNLRkxHIGluIHRoZSBDT05TIHJlZ2lzdGVyLCBvdGhl
-cndpc2UgdGhlIG92ZXJmbG93IGNvbmRpdGlvbiBpcwo+PiBzdGlsbCBhY3RpdmUgKE9WRkxHICE9
-IE9WQUNLRkxHKS4KPj4KPj4gQ3VycmVudGx5IHRoZSBhY2tub3dsZWRnZSByZWdpc3RlciBpcyB0
-b2dnbGVkIGFmdGVyIGNsZWFyaW5nIHRoZSBldmVudAo+PiBxdWV1ZSBidXQgaXMgbmV2ZXIgcHJv
-cGFnYXRlZCB0byB0aGUgaGFyZHdhcmUuIEl0IHdvdWxkIGJlIGRvbmUgbmV4dAo+PiB0aW1lIHdo
-ZW4gZXhlY3V0aW5nIGV2dHEgdGhyZWFkLgo+Pgo+PiBUaGUgU01NVSBzdGlsbCBhZGRzIGVsZW1l
-bnRzIHRvIHRoZSBxdWV1ZSB3aGVuIHRoZSBvdmVyZmxvdyBjb25kaXRpb24gaXMKPj4gYWN0aXZl
-IGJ1dCBhbnkgc3Vic2VxdWVudCBvdmVyZmxvdyBpbmZvcm1hdGlvbiBhZnRlciBjbGVhcmluZyB0
-aGUgZXZlbnQKPj4gcXVldWUgd2lsbCBiZSBsb3N0Lgo+Pgo+PiBUaGlzIGNoYW5nZSBrZWVwcyB0
-aGUgU01NVSBpbiBzeW5jIGFzIGl0J3MgZXhwZWN0ZWQgYnkgZGVzaWduLgo+Cj4gSWYgSSd2ZSB1
-bmRlcnN0b29kIGNvcnJlY3RseSwgdGhlIHVwc2hvdCBvZiB0aGlzIGlzIHRoYXQgaWYgdGhlIHF1
-ZXVlCj4gaGFzIG92ZXJmbG93ZWQgb25jZSwgYmVjb21lIGVtcHR5LCB0aGVuIHNvbWVob3cgZ29l
-cyBmcm9tIGVtcHR5IHRvIGZ1bGwKPiBiZWZvcmUgd2UgbWFuYWdlIHRvIGNvbnN1bWUgYSBzaW5n
-bGUgZXZlbnQsIHdlIHdvbid0IHByaW50IHRoZSAiZXZlbnRzCj4gbG9zdCIgbWVzc2FnZSBhIHNl
-Y29uZCB0aW1lLgo+Cj4gSGF2ZSB5b3Ugc2VlbiB0aGlzIGhhcHBlbiBpbiBwcmFjdGljZT8gVEJI
-IGlmIHRoZSBldmVudCBxdWV1ZSBldmVyCj4gb3ZlcmZsb3dzIGV2ZW4gb25jZSBpdCdzIGluZGlj
-YXRpdmUgdGhhdCB0aGUgc3lzdGVtIGlzIGhvc2VkIGFueXdheSwgc28KPiBpdCdzIG5vdCBjbGVh
-ciB0byBtZSB0aGF0IHRoZXJlJ3MgYW55IGdyZWF0IGxvc3Mgb2YgdmFsdWUgaW4gc29tZXRpbWVz
-Cj4gZmFpbGluZyB0byByZXBlYXQgYSB3YXJuaW5nIGZvciBhIGNocm9uaWMgb25nb2luZyBvcGVy
-YXRpb25hbCBmYWlsdXJlLgo+CgpZZXMsIEkgZGlkIHNlZSBpbiBwcmFjdGljZS4gQW5kIGl04oCZ
-cyBub3QganVzdCBhYm91dCBsb29zaW5nIHN1YnNlcXVlbmNlIHdhcm5pbmcuClRoZSB3YXkgaG93
-IGl04oCZcyBkb25lIG5vdyBrZWVwcyBpbmNvbnNpc3RlbnQgQ09OUyByZWdpc3RlciB2YWx1ZSBi
-ZXR3ZWVuIFNNTVUgYW5kIHRoZSBrZXJuZWwKdW50aWwgYW55IG5ldyBldmVudCBoYXBwZW5zLiBU
-aGUga2VybmVsIGRvZXNu4oCZdCBpbmZvcm0gU01NVSB0aGF0IHdlIGtub3cgYWJvdXQgdGhlIG92
-ZXJmbG93CmFuZCBjb25zdW1pbmcgZXZlbnRzIGFzIGZhc3QgYXMgd2UgY2FuLgoKPiBJdCBjb3Vs
-ZCBiZSBhcmd1ZWQgdGhhdCB3ZSBoYXZlIGEgc3VidGxlIGluY29uc2lzdGVuY3kgYmV0d2Vlbgo+
-IGFybV9zbW11X2V2dHFfdGhyZWFkKCkgYW5kIGFybV9zbW11X3ByaXFfdGhyZWFkKCkgaGVyZSwg
-YnV0IHRoZSBmYWN0IGlzCj4gdGhhdCB0aGUgRXZlbnQgcXVldWUgYW5kIFBSSSBxdWV1ZSAqZG8q
-IGhhdmUgZGlmZmVyZW50IG92ZXJmbG93Cj4gYmVoYXZpb3Vycywgc28gaXQgY291bGQgZXF1YWxs
-eSBiZSBhcmd1ZWQgdGhhdCBpbmNvbnNpc3RlbmN5IGluIHRoZSBjb2RlCj4gaGVscHMgcmVmbGVj
-dCB0aGF0LiBGV0lXIEkgY2FuJ3Qgc2F5IEkgaGF2ZSBhIHN0cm9uZyBwcmVmZXJlbmNlIGVpdGhl
-ciB3YXkuCgpGb3IgdGhlIGFyZ3VtZW50IHRoYXQgdGhlIGNvZGUgY2FuIHJlZmxlY3QgdGhlIGRp
-ZmZlcmVuY2UuClRoZW4gdGhlIGNvbW1lbnQgJ1N5bmMgb3VyIG92ZXJmbG93IGZsYWcsIGFzIHdl
-IGJlbGlldmUgd2UncmUgdXAgdG8gc3BlZWTigJkgaXMKYWxyZWFkeSBtaXNsZWFkaW5nLgoKVGhh
-bmtzLgpCUiwKVG9tYXMKCgoKQW1hem9uIERldmVsb3BtZW50IENlbnRlciBHZXJtYW55IEdtYkgK
-S3JhdXNlbnN0ci4gMzgKMTAxMTcgQmVybGluCkdlc2NoYWVmdHNmdWVocnVuZzogQ2hyaXN0aWFu
-IFNjaGxhZWdlciwgSm9uYXRoYW4gV2Vpc3MKRWluZ2V0cmFnZW4gYW0gQW10c2dlcmljaHQgQ2hh
-cmxvdHRlbmJ1cmcgdW50ZXIgSFJCIDE0OTE3MyBCClNpdHo6IEJlcmxpbgpVc3QtSUQ6IERFIDI4
-OSAyMzcgODc5CgoK
+A driver that doesn't implement ops->dma_unmap shouldn't be allowed to do
+vfio_pin/unpin_pages(), though it can use vfio_dma_rw() to access an iova
+range. Deny !ops->dma_unmap cases in vfio_pin/unpin_pages().
+
+Suggested-by: Kevin Tian <kevin.tian@intel.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Reviewed-by: Yi Liu <yi.l.liu@intel.com>
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+---
+ drivers/vfio/vfio_main.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
+index e5f4738692ac..32ea7cea1236 100644
+--- a/drivers/vfio/vfio_main.c
++++ b/drivers/vfio/vfio_main.c
+@@ -1522,6 +1522,8 @@ int vfio_pin_pages(struct vfio_device *device, dma_addr_t iova,
+ 	/* group->container cannot change while a vfio device is open */
+ 	if (!pages || !npage || WARN_ON(!vfio_assert_device_open(device)))
+ 		return -EINVAL;
++	if (!device->ops->dma_unmap)
++		return -EINVAL;
+ 	if (vfio_device_has_container(device))
+ 		return vfio_device_container_pin_pages(device, iova,
+ 						       npage, prot, pages);
+@@ -1559,6 +1561,8 @@ void vfio_unpin_pages(struct vfio_device *device, dma_addr_t iova, int npage)
+ {
+ 	if (WARN_ON(!vfio_assert_device_open(device)))
+ 		return;
++	if (WARN_ON(!device->ops->dma_unmap))
++		return;
+ 
+ 	if (vfio_device_has_container(device)) {
+ 		vfio_device_container_unpin_pages(device, iova, npage);
+-- 
+2.39.2
 
