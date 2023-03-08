@@ -1,150 +1,61 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9EB913C31
-	for <iommu@lists.linux.dev>; Wed,  8 Mar 2023 12:37:22 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 520091063;
-	Wed,  8 Mar 2023 04:38:05 -0800 (PST)
-Received: from [10.57.90.59] (unknown [10.57.90.59])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7726C3F5A1;
-	Wed,  8 Mar 2023 04:37:20 -0800 (PST)
-Message-ID: <af90fea4-5fa1-de7b-b80e-02fa8753b0fb@arm.com>
-Date: Wed, 8 Mar 2023 12:37:15 +0000
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D76EB3C31
+	for <iommu@lists.linux.dev>; Wed,  8 Mar 2023 12:42:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678279330; x=1709815330;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=29o2cwZcp0uNN2yTXLNULJ5waAjC0u0sMMDpQGf4E3s=;
+  b=cAqolY0WUvgls1D6opaCc5YhP6bR34kn+9T6PPaeFjT0wkTf+p9gt+/Z
+   nOn8l/+NtZ7qz0b1SNZzXZ3UYkDNx+antvbzHDnB1fTc9TjTmhqUHWrL5
+   /Zb37qjAZvG2lwrZbzntT7DNGt9N4mS9fNVZqQnaywgmnxNz7j3VaLL8X
+   uWotYsU1zRHh8t2AjT8oERtLk3/WctUsgeIf7BpM4YZ49Cr5RYY5QNsz8
+   sQgUmzbqyDva92kr0quxxEZ/VTwkF+5V+ZS1oDyn7fmHrGO7iRFoZdzte
+   9JNXrYWNJdA6M4193cl9XJ35sjoCfb/mzfkoVsFJSJUYwnsxP8RHPQ8gl
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10642"; a="333612095"
+X-IronPort-AV: E=Sophos;i="5.98,243,1673942400"; 
+   d="scan'208";a="333612095"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2023 04:42:10 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10642"; a="745896286"
+X-IronPort-AV: E=Sophos;i="5.98,243,1673942400"; 
+   d="scan'208";a="745896286"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.208.136]) ([10.254.208.136])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2023 04:42:08 -0800
+Message-ID: <3c7670bf-4929-63ef-fd3e-9a170d05bab1@linux.intel.com>
+Date: Wed, 8 Mar 2023 20:42:06 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.8.0
-Subject: Re: [PATCH V2] iommu: sprd: release dma buffer to avoid memory leak
-Content-Language: en-GB
-To: Chunyan Zhang <chunyan.zhang@unisoc.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>
-Cc: iommu@lists.linux.dev, Baolu Lu <baolu.lu@linux.intel.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>, Orson Zhai
- <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
- LKML <linux-kernel@vger.kernel.org>
-References: <20230308034158.509458-1-chunyan.zhang@unisoc.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230308034158.509458-1-chunyan.zhang@unisoc.com>
+Cc: baolu.lu@linux.intel.com, kvm@vger.kernel.org,
+ Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH v2 08/17] iommufd: Move putting a hwpt to a helper
+ function
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+ Kevin Tian <kevin.tian@intel.com>, linux-kselftest@vger.kernel.org
+References: <8-v2-51b9896e7862+8a8c-iommufd_alloc_jgg@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <8-v2-51b9896e7862+8a8c-iommufd_alloc_jgg@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023-03-08 03:41, Chunyan Zhang wrote:
-> Release page table DMA buffer when the IOMMU domain is not used:
+On 2023/3/8 8:35, Jason Gunthorpe wrote:
+> Next patch will need to call this from two places.
 > 
-> - Domain freed.
-> 
-> - IOMMU is attaching to a new domain.
->    Since one sprd IOMMU servers only one client device, if the IOMMU has
->    been attached to other domain, it has to be detached first, that's
->    saying the DMA buffer should be released, otherwise that would
->    cause memory leak issue.
+> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
 
-This is clearly wrong; domain resources should only be freed when the 
-domain is freed. Just because a caller has detached from a domain 
-doesn't mean that they can't reattach to it later and expect the 
-previous mappings to still be in place - it has nothing to do with how 
-many devices or domains can be active at once.
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-Thanks,
-Robin.
-
-> Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
-> ---
-> V2:
-> * Added some comment in sprd_iommu_attach_device() for the reason
->    of calling sprd_iommu_cleanup().
-> 
-> V1: https://lkml.org/lkml/2023/2/10/198
-> ---
->   drivers/iommu/sprd-iommu.c | 46 ++++++++++++++++++++++++++++++++------
->   1 file changed, 39 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
-> index ae94d74b73f4..fb2f96df3bca 100644
-> --- a/drivers/iommu/sprd-iommu.c
-> +++ b/drivers/iommu/sprd-iommu.c
-> @@ -62,6 +62,7 @@ enum sprd_iommu_version {
->    * @eb: gate clock which controls IOMMU access
->    */
->   struct sprd_iommu_device {
-> +	struct sprd_iommu_domain	*dom;
->   	enum sprd_iommu_version	ver;
->   	u32			*prot_page_va;
->   	dma_addr_t		prot_page_pa;
-> @@ -151,13 +152,6 @@ static struct iommu_domain *sprd_iommu_domain_alloc(unsigned int domain_type)
->   	return &dom->domain;
->   }
->   
-> -static void sprd_iommu_domain_free(struct iommu_domain *domain)
-> -{
-> -	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
-> -
-> -	kfree(dom);
-> -}
-> -
->   static void sprd_iommu_first_vpn(struct sprd_iommu_domain *dom)
->   {
->   	struct sprd_iommu_device *sdev = dom->sdev;
-> @@ -230,6 +224,29 @@ static void sprd_iommu_hw_en(struct sprd_iommu_device *sdev, bool en)
->   	sprd_iommu_update_bits(sdev, reg_cfg, mask, 0, val);
->   }
->   
-> +static void sprd_iommu_cleanup(struct sprd_iommu_device *sdev)
-> +{
-> +	struct sprd_iommu_domain *dom = sdev->dom;
-> +	size_t pgt_size = sprd_iommu_pgt_size(&dom->domain);
-> +
-> +	dma_free_coherent(sdev->dev, pgt_size, dom->pgt_va, dom->pgt_pa);
-> +	dom->sdev = NULL;
-> +	sdev->dom = NULL;
-> +	sprd_iommu_hw_en(sdev, false);
-> +}
-> +
-> +static void sprd_iommu_domain_free(struct iommu_domain *domain)
-> +{
-> +	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
-> +	struct sprd_iommu_device *sdev = dom->sdev;
-> +
-> +	/* Free DMA buffer first if the domain has been attached */
-> +	if (sdev)
-> +		sprd_iommu_cleanup(sdev);
-> +
-> +	kfree(dom);
-> +}
-> +
->   static int sprd_iommu_attach_device(struct iommu_domain *domain,
->   				    struct device *dev)
->   {
-> @@ -237,14 +254,29 @@ static int sprd_iommu_attach_device(struct iommu_domain *domain,
->   	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
->   	size_t pgt_size = sprd_iommu_pgt_size(domain);
->   
-> +	/* Return directly if the domain attached to IOMMU already */
->   	if (dom->sdev)
->   		return -EINVAL;
->   
-> +	/* The IOMMU already attached to a domain */
-> +	if (sdev->dom) {
-> +		if (sdev->dom == dom)
-> +			return 0;
-> +
-> +		/*
-> +		 * Clean up the previous domain, one sprd IOMMU servers only
-> +		 * one client device, if the IOMMU has been attached to other
-> +		 * domain, it has to be detached first.
-> +		 */
-> +		sprd_iommu_cleanup(sdev);
-> +	}
-> +
->   	dom->pgt_va = dma_alloc_coherent(sdev->dev, pgt_size, &dom->pgt_pa, GFP_KERNEL);
->   	if (!dom->pgt_va)
->   		return -ENOMEM;
->   
->   	dom->sdev = sdev;
-> +	sdev->dom = dom;
->   
->   	sprd_iommu_first_ppn(dom);
->   	sprd_iommu_first_vpn(dom);
+Best regards,
+baolu
