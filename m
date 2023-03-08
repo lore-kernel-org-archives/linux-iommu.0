@@ -1,32 +1,37 @@
-Received: from SHSQR01.spreadtrum.com (mx1.unisoc.com [222.66.158.135])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 842E562B
-	for <iommu@lists.linux.dev>; Wed,  8 Mar 2023 03:43:51 +0000 (UTC)
-Received: from SHSend.spreadtrum.com (bjmbx02.spreadtrum.com [10.0.64.8])
-	by SHSQR01.spreadtrum.com with ESMTP id 3283g5Qb087717;
-	Wed, 8 Mar 2023 11:42:05 +0800 (+08)
-	(envelope-from Chunyan.Zhang@unisoc.com)
-Received: from ubt.spreadtrum.com (10.0.74.87) by BJMBX02.spreadtrum.com
- (10.0.64.8) with Microsoft SMTP Server (TLS) id 15.0.1497.23; Wed, 8 Mar 2023
- 11:42:02 +0800
-From: Chunyan Zhang <chunyan.zhang@unisoc.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        "Robin
- Murphy" <robin.murphy@arm.com>
-CC: <iommu@lists.linux.dev>, Baolu Lu <baolu.lu@linux.intel.com>,
-        Baolin Wang
-	<baolin.wang@linux.alibaba.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        "Chunyan
- Zhang" <zhang.lyra@gmail.com>,
-        Chunyan Zhang <chunyan.zhang@unisoc.com>,
-        LKML
-	<linux-kernel@vger.kernel.org>
-Subject: [PATCH V2] iommu: sprd: release dma buffer to avoid memory leak
-Date: Wed, 8 Mar 2023 11:41:58 +0800
-Message-ID: <20230308034158.509458-1-chunyan.zhang@unisoc.com>
-X-Mailer: git-send-email 2.25.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00206634
+	for <iommu@lists.linux.dev>; Wed,  8 Mar 2023 03:45:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+	Content-ID:Content-Description:In-Reply-To:References;
+	bh=cAGQQH4wQyWDGC6FY8VeQxL7CF0wk1r7pps8zKct/lQ=; b=Js7x8WulqOLxQ+pRSWSdy/vrLn
+	jgRM0AK53k9TYypy3IWJokVkTZoAtqSGkqlZiQ0jRb8SbyF4heuf2bEww6xrcPa+qhI5Hg2HdLiVv
+	PlR7Ig00ZehMokI161qJdrMbETaTLpCc5L2ccLRMIB+9GyvQVX2+OfqUAuDKp9I+g39NRNLHACYDJ
+	DwwJFfsCuQU31sE727eMfZZdQPwTjwjD22E/+U897cV9xliJKn21KVB3vCYqlDVaBPIjZXV+B4y1B
+	AsbMP4EL8UM309QHKlm1GsEO578u3FcAvGLkmYPZeNK4/YG6sj2CibT4PknoOCzxAhlN3ic5XN8pP
+	Pco2HA4g==;
+Received: from [2601:1c2:980:9ec0::df2f] (helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1pZkjh-003MaC-AI; Wed, 08 Mar 2023 03:45:05 +0000
+From: Randy Dunlap <rdunlap@infradead.org>
+To: linux-kernel@vger.kernel.org
+Cc: Randy Dunlap <rdunlap@infradead.org>,
+	kernel test robot <lkp@intel.com>,
+	Aditya Srivastava <yashsri421@gmail.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev,
+	Timur Tabi <timur@tabi.org>,
+	Varun Sethi <Varun.Sethi@freescale.com>,
+	Emil Medve <Emilian.Medve@Freescale.com>
+Subject: [PATCH] iommu/fsl: fix all kernel-doc warnings in fsl_pamu.c
+Date: Tue,  7 Mar 2023 19:45:04 -0800
+Message-Id: <20230308034504.9985-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -34,119 +39,71 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.0.74.87]
-X-ClientProxiedBy: SHCAS01.spreadtrum.com (10.0.1.201) To
- BJMBX02.spreadtrum.com (10.0.64.8)
-X-MAIL:SHSQR01.spreadtrum.com 3283g5Qb087717
 
-Release page table DMA buffer when the IOMMU domain is not used:
+Fix kernel-doc warnings as reported by the kernel test robot:
 
-- Domain freed.
+fsl_pamu.c:192: warning: expecting prototype for pamu_config_paace(). Prototype was for pamu_config_ppaace() instead
+fsl_pamu.c:239: warning: Function parameter or member 'omi_index' not described in 'get_ome_index'
+fsl_pamu.c:239: warning: Function parameter or member 'dev' not described in 'get_ome_index'
+fsl_pamu.c:332: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+ * Setup operation mapping and stash destinations for QMAN and QMAN portal.
+fsl_pamu.c:361: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+ * Setup the operation mapping table for various devices. This is a static
 
-- IOMMU is attaching to a new domain.
-  Since one sprd IOMMU servers only one client device, if the IOMMU has
-  been attached to other domain, it has to be detached first, that's
-  saying the DMA buffer should be released, otherwise that would
-  cause memory leak issue.
-
-Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
+Fixes: 695093e38c3e ("iommu/fsl: Freescale PAMU driver and iommu implementation.")
+Fixes: cd70d4659ff3 ("iommu/fsl: Various cleanups")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Link: lore.kernel.org/r/202302281151.B1WtZvSC-lkp@intel.com
+Cc: Aditya Srivastava <yashsri421@gmail.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev
+Cc: Timur Tabi <timur@tabi.org>
+Cc: Varun Sethi <Varun.Sethi@freescale.com>
+Cc: Emil Medve <Emilian.Medve@Freescale.com>
 ---
-V2:
-* Added some comment in sprd_iommu_attach_device() for the reason
-  of calling sprd_iommu_cleanup().
+ drivers/iommu/fsl_pamu.c |    9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-V1: https://lkml.org/lkml/2023/2/10/198
----
- drivers/iommu/sprd-iommu.c | 46 ++++++++++++++++++++++++++++++++------
- 1 file changed, 39 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
-index ae94d74b73f4..fb2f96df3bca 100644
---- a/drivers/iommu/sprd-iommu.c
-+++ b/drivers/iommu/sprd-iommu.c
-@@ -62,6 +62,7 @@ enum sprd_iommu_version {
-  * @eb: gate clock which controls IOMMU access
+diff -- a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
+--- a/drivers/iommu/fsl_pamu.c
++++ b/drivers/iommu/fsl_pamu.c
+@@ -178,7 +178,7 @@ int pamu_update_paace_stash(int liodn, u
+ }
+ 
+ /**
+- * pamu_config_paace() - Sets up PPAACE entry for specified liodn
++ * pamu_config_ppaace() - Sets up PPAACE entry for specified liodn
+  *
+  * @liodn: Logical IO device number
+  * @omi: Operation mapping index -- if ~omi == 0 then omi not defined
+@@ -232,7 +232,8 @@ int pamu_config_ppaace(int liodn, u32 om
+ /**
+  * get_ome_index() - Returns the index in the operation mapping table
+  *                   for device.
+- * @*omi_index: pointer for storing the index value
++ * @omi_index: pointer for storing the index value
++ * @dev: target device
+  *
   */
- struct sprd_iommu_device {
-+	struct sprd_iommu_domain	*dom;
- 	enum sprd_iommu_version	ver;
- 	u32			*prot_page_va;
- 	dma_addr_t		prot_page_pa;
-@@ -151,13 +152,6 @@ static struct iommu_domain *sprd_iommu_domain_alloc(unsigned int domain_type)
- 	return &dom->domain;
+ void get_ome_index(u32 *omi_index, struct device *dev)
+@@ -328,7 +329,7 @@ found_cpu_node:
+ #define QMAN_PORTAL_PAACE 2
+ #define BMAN_PAACE 3
+ 
+-/**
++/*
+  * Setup operation mapping and stash destinations for QMAN and QMAN portal.
+  * Memory accesses to QMAN and BMAN private memory need not be coherent, so
+  * clear the PAACE entry coherency attribute for them.
+@@ -357,7 +358,7 @@ static void setup_qbman_paace(struct paa
+ 	}
  }
  
--static void sprd_iommu_domain_free(struct iommu_domain *domain)
--{
--	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
--
--	kfree(dom);
--}
--
- static void sprd_iommu_first_vpn(struct sprd_iommu_domain *dom)
- {
- 	struct sprd_iommu_device *sdev = dom->sdev;
-@@ -230,6 +224,29 @@ static void sprd_iommu_hw_en(struct sprd_iommu_device *sdev, bool en)
- 	sprd_iommu_update_bits(sdev, reg_cfg, mask, 0, val);
- }
- 
-+static void sprd_iommu_cleanup(struct sprd_iommu_device *sdev)
-+{
-+	struct sprd_iommu_domain *dom = sdev->dom;
-+	size_t pgt_size = sprd_iommu_pgt_size(&dom->domain);
-+
-+	dma_free_coherent(sdev->dev, pgt_size, dom->pgt_va, dom->pgt_pa);
-+	dom->sdev = NULL;
-+	sdev->dom = NULL;
-+	sprd_iommu_hw_en(sdev, false);
-+}
-+
-+static void sprd_iommu_domain_free(struct iommu_domain *domain)
-+{
-+	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
-+	struct sprd_iommu_device *sdev = dom->sdev;
-+
-+	/* Free DMA buffer first if the domain has been attached */
-+	if (sdev)
-+		sprd_iommu_cleanup(sdev);
-+
-+	kfree(dom);
-+}
-+
- static int sprd_iommu_attach_device(struct iommu_domain *domain,
- 				    struct device *dev)
- {
-@@ -237,14 +254,29 @@ static int sprd_iommu_attach_device(struct iommu_domain *domain,
- 	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
- 	size_t pgt_size = sprd_iommu_pgt_size(domain);
- 
-+	/* Return directly if the domain attached to IOMMU already */
- 	if (dom->sdev)
- 		return -EINVAL;
- 
-+	/* The IOMMU already attached to a domain */
-+	if (sdev->dom) {
-+		if (sdev->dom == dom)
-+			return 0;
-+
-+		/*
-+		 * Clean up the previous domain, one sprd IOMMU servers only
-+		 * one client device, if the IOMMU has been attached to other
-+		 * domain, it has to be detached first.
-+		 */
-+		sprd_iommu_cleanup(sdev);
-+	}
-+
- 	dom->pgt_va = dma_alloc_coherent(sdev->dev, pgt_size, &dom->pgt_pa, GFP_KERNEL);
- 	if (!dom->pgt_va)
- 		return -ENOMEM;
- 
- 	dom->sdev = sdev;
-+	sdev->dom = dom;
- 
- 	sprd_iommu_first_ppn(dom);
- 	sprd_iommu_first_vpn(dom);
--- 
-2.25.1
-
+-/**
++/*
+  * Setup the operation mapping table for various devices. This is a static
+  * table where each table index corresponds to a particular device. PAMU uses
+  * this table to translate device transaction to appropriate corenet
