@@ -1,104 +1,106 @@
-Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9B467C
-	for <iommu@lists.linux.dev>; Wed,  8 Mar 2023 09:21:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E4E728F3
+	for <iommu@lists.linux.dev>; Wed,  8 Mar 2023 10:35:22 +0000 (UTC)
+Received: by mail-ed1-f51.google.com with SMTP id k10so39862787edk.13
+        for <iommu@lists.linux.dev>; Wed, 08 Mar 2023 02:35:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazon201209;
-  t=1678267264; x=1709803264;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=y+qjIHWzcca+yd9j/kP72fFl8+TP5V5KFgYwtZbFabI=;
-  b=fN2mZzSDjExTM8cM6p0PCQCeoM8k1SP1hvkwVBq0/lYlRolz4A+jZuv/
-   IjxsHnMVg6qhDCF3HmPQTf96+jXm4JO8WTYumwvPeJv8q/+Mwo7MBpdTs
-   ZEK3p3Xd5YyC5o+d5PsHQSxcvElYj5gynvV26+Lsh1oej+WBVl6f73Oeo
-   Y=;
-X-IronPort-AV: E=Sophos;i="5.98,243,1673913600"; 
-   d="scan'208";a="300733479"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-32fb4f1a.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2023 09:20:55 +0000
-Received: from EX19D020EUA002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-	by email-inbound-relay-pdx-2b-m6i4x-32fb4f1a.us-west-2.amazon.com (Postfix) with ESMTPS id D51B0C185B;
-	Wed,  8 Mar 2023 09:20:53 +0000 (UTC)
-Received: from EX19D030EUC001.ant.amazon.com (10.252.61.228) by
- EX19D020EUA002.ant.amazon.com (10.252.50.89) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.21; Wed, 8 Mar 2023 09:20:52 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (10.43.160.58) by
- EX19D030EUC001.ant.amazon.com (10.252.61.228) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.24;
- Wed, 8 Mar 2023 09:20:51 +0000
-Received: from dev-dsk-krckatom-1b-7b393aa4.eu-west-1.amazon.com
- (10.13.225.85) by mail-relay.amazon.com (10.43.160.118) with Microsoft SMTP
- Server (TLS) id 15.0.1497.45 via Frontend Transport; Wed, 8 Mar 2023 09:20:49
- +0000
-From: Tomas Krcka <krckatom@amazon.de>
-To: <linux-arm-kernel@lists.infradead.org>
-CC: Tomas Krcka <krckatom@amazon.de>, Will Deacon <will@kernel.org>, "Robin
- Murphy" <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Lu Baolu
-	<baolu.lu@linux.intel.com>, Shameer Kolothum
-	<shameerali.kolothum.thodi@huawei.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>
-Subject: [PATCH] iommu/arm-smmu-v3: Fix event queue overflow acknowledgment
-Date: Wed, 8 Mar 2023 09:20:47 +0000
-Message-ID: <20230308092048.71390-1-krckatom@amazon.de>
-X-Mailer: git-send-email 2.39.1
+        d=linaro.org; s=google; t=1678271720;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=1eqhJeejf+RQmERnpGqMGzgAI9CUz2kwB1CbIir0tP8=;
+        b=ykMZOphQFA1DVSYvYk/K0/T3ZpYXYSMOYsUgSrev8ZzdS3BDpmr6OP1+nrm/d9U+2D
+         I5/FuOppgiSp2DjICE5b3FChw++7ies1Gq/GWCNV51wX+V+S0v6g2BXiARRFYDE+gsP0
+         6UgUE+Lip0yiSKrmlbSVXOttgUEZT6sLjjomSOtbLNvG2bNW33V25PcdEAAshy3tifHu
+         8TJbyP7cbB44nb7R5r7J+GouRiMHGaTeMR0OnAFaW+uf+gBlx4FN82TKlljm4f8VhB9N
+         YJ+7gBv8ezagrTk0R/nVw56gIAjc1k78sWaghur2EITACXeGtXmft1RZpnuufSjaWzgA
+         kGpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678271720;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=1eqhJeejf+RQmERnpGqMGzgAI9CUz2kwB1CbIir0tP8=;
+        b=rPi9uTXUO1QAFsRXp9kb2FnBit67FGKZGx/X4KEzo2hf2ZOIfhZWL3/tEnkheDacmn
+         BxWHHn7vodUroTmsQ9uPqUZk8A/RgdXU6XjXwrHFEH0+YsPmNGrJ9gD0ZuN/SPPeu+v9
+         ywW6F5ATNK6hNG4AfUCVFbTQi14MAeQqpGRYi0uuWLCF8VGZxQQRmPCGhpBtQaFjN9qh
+         8B6JYEkwIMJS9Saij4aDiXnDqB2bfTehgT1iFKn8mY5/Hnc9AAktZDVyueYCsJpBZL1o
+         jnTapCppycBrZlLgG666wcxjtFfyIllYIgb3rS7brXip53O6fYqS50zXG/GIH74kqOcy
+         oXrg==
+X-Gm-Message-State: AO0yUKVsnCOk80gUjkaXQhU+oP8glpwOXVpU+c8+aBFibkTi8mgrKChz
+	4r5eXeRiESUlZKQSbcRO7YQyuQ==
+X-Google-Smtp-Source: AK7set85h3HEkM1KFOIkaPrFIqwjm1PNUWaPYN8WE8M5LcYma/+vDI3oDsZBOeitBKuc8tC5KN/j0A==
+X-Received: by 2002:a05:6402:383:b0:4ad:1e35:771f with SMTP id o3-20020a056402038300b004ad1e35771fmr15484678edv.35.1678271720773;
+        Wed, 08 Mar 2023 02:35:20 -0800 (PST)
+Received: from ?IPV6:2a02:810d:15c0:828:ff33:9b14:bdd2:a3da? ([2a02:810d:15c0:828:ff33:9b14:bdd2:a3da])
+        by smtp.gmail.com with ESMTPSA id k17-20020a170906a39100b008b17fe9ac6csm7397482ejz.178.2023.03.08.02.35.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Mar 2023 02:35:20 -0800 (PST)
+Message-ID: <388e2274-d46a-68a4-3e85-5bd597085041@linaro.org>
+Date: Wed, 8 Mar 2023 11:35:19 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v8 1/7] dt-bindings: mediatek: mt8188: Add binding for MM
+ & INFRA IOMMU
+Content-Language: en-US
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, mingyuan.ma@mediatek.com,
+ yf.wang@mediatek.com, jianjiao.zeng@mediatek.com, chengci.xu@mediatek.com,
+ youlin.pei@mediatek.com
+References: <20230307080555.14399-1-yong.wu@mediatek.com>
+ <20230307080555.14399-2-yong.wu@mediatek.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230307080555.14399-2-yong.wu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-When an overflow occurs in the event queue, the SMMU toggles overflow
-flag OVFLG in the PROD register.
-The evtq thread is supposed to acknowledge the overflow flag by toggling
-flag OVACKFLG in the CONS register, otherwise the overflow condition is
-still active (OVFLG != OVACKFLG).
+On 07/03/2023 09:05, Yong Wu wrote:
+> From: "Chengci.Xu" <chengci.xu@mediatek.com>
+> 
+> Add descriptions for mt8188 IOMMU which also use ARM Short-Descriptor
+> translation table format.
+> 
+> In mt8188, there are two smi-common HW and IOMMU, one is for vdo(video
+> output), the other is for vpp(video processing pipe). They connects
+> with different smi-larbs, then some setting(larbid_remap) is different.
+> Differentiate them with the compatible string.
+> 
+> Something like this:
+> 
+>   IOMMU(VDO)          IOMMU(VPP)
+>       |                   |
+> SMI_COMMON_VDO      SMI_COMMON_VPP
+> 
+> ---------------     ----------------
+>   |     |    ...      |     |    ...
+> larb0 larb2  ...    larb1 larb3  ...
+> 
+> We also have an IOMMU that is for infra master like PCIe.
+> And infra master don't have the larb and ports.
+> 
+> Signed-off-by: Chengci.Xu <chengci.xu@mediatek.com>
+> Reviewed-by: Yong Wu <yong.wu@mediatek.com>
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Currently the acknowledge register is toggled after clearing the event
-queue but is never propagated to the hardware. It would be done next
-time when executing evtq thread.
+Indeed, I missed broken checkpatch/DCO chain.
 
-The SMMU still adds elements to the queue when the overflow condition is
-active but any subsequent overflow information after clearing the event
-queue will be lost.
+NAK. Please fix the chain.
 
-This change keeps the SMMU in sync as it's expected by design.
-
-Signed-off-by: Tomas Krcka <krckatom@amazon.de>
-Suggested-by: KarimAllah Ahmed <karahmed@amazon.de>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index f2425b0f0cd6..acc1ff5ff69b 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1579,6 +1579,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
- 	/* Sync our overflow flag, as we believe we're up to speed */
- 	llq->cons = Q_OVF(llq->prod) | Q_WRP(llq, llq->cons) |
- 		    Q_IDX(llq, llq->cons);
-+	queue_sync_cons_out(q);
- 	return IRQ_HANDLED;
- }
- 
--- 
-2.39.1
-
-
-
-
-Amazon Development Center Germany GmbH
-Krausenstr. 38
-10117 Berlin
-Geschaeftsfuehrung: Christian Schlaeger, Jonathan Weiss
-Eingetragen am Amtsgericht Charlottenburg unter HRB 149173 B
-Sitz: Berlin
-Ust-ID: DE 289 237 879
-
-
+Best regards,
+Krzysztof
 
