@@ -1,87 +1,69 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0FD5F6AB6
-	for <iommu@lists.linux.dev>; Wed,  8 Mar 2023 13:08:31 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BA59A106F;
-	Wed,  8 Mar 2023 05:09:14 -0800 (PST)
-Received: from [10.57.90.59] (unknown [10.57.90.59])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 110903F67D;
-	Wed,  8 Mar 2023 05:08:29 -0800 (PST)
-Message-ID: <8291b66d-b9b8-47c9-f5ed-a4e951c92154@arm.com>
-Date: Wed, 8 Mar 2023 13:08:24 +0000
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F6D66D19
+	for <iommu@lists.linux.dev>; Wed,  8 Mar 2023 13:46:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678283192; x=1709819192;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=cLzqhxsSIHp6ZP19aTukTvTx2N71d5JAOG3jNV7+GK4=;
+  b=itCTDGRAA7b0/7DeTpeB3sVXohFtaXzcUkLafIpFiL9Oy4/bBLxKEm2U
+   2iGJX0MlwSFt49sXSMYHehwJ/cnHijnny/8SX8f4xwevxjyIeMUmsQ0iZ
+   bBWfI2f7WhoxqLP90GnYPhLkFVM0Jh2jZLwJITt6VKS3LeL6AkyC/W5M3
+   uPO4k8nqsI1WExlUyp3T5bkfRGzv3yqC/7kSJNV1eRmo/JMpWPAnJb9Ry
+   qAjkzsbxuKTs+aqMV5seUIjlcyh3hDyk9fAp71Ci6bUjzsUnaUvZ5FbsF
+   GaW8gfYH7H601djUjDUVzzo8p5nk0+fwkPN54p7Kh/DubIoFttYGuikwO
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10642"; a="422423426"
+X-IronPort-AV: E=Sophos;i="5.98,244,1673942400"; 
+   d="scan'208";a="422423426"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2023 05:46:31 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10642"; a="800751524"
+X-IronPort-AV: E=Sophos;i="5.98,244,1673942400"; 
+   d="scan'208";a="800751524"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.208.136]) ([10.254.208.136])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2023 05:46:29 -0800
+Message-ID: <61a79971-6dc5-fb03-3fe8-eef1030b5dfb@linux.intel.com>
+Date: Wed, 8 Mar 2023 21:46:27 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.8.0
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Fix event queue overflow
- acknowledgment
-To: Tomas Krcka <krckatom@amazon.de>, linux-arm-kernel@lists.infradead.org
-Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
- Lu Baolu <baolu.lu@linux.intel.com>,
- Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20230308092048.71390-1-krckatom@amazon.de>
-Content-Language: en-GB
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230308092048.71390-1-krckatom@amazon.de>
+Cc: baolu.lu@linux.intel.com, kvm@vger.kernel.org,
+ Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH v2 10/17] iommufd: Reorganize iommufd_device_attach into
+ iommufd_device_change_pt
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+ Kevin Tian <kevin.tian@intel.com>, linux-kselftest@vger.kernel.org
+References: <10-v2-51b9896e7862+8a8c-iommufd_alloc_jgg@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <10-v2-51b9896e7862+8a8c-iommufd_alloc_jgg@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023-03-08 09:20, Tomas Krcka wrote:
-> When an overflow occurs in the event queue, the SMMU toggles overflow
-> flag OVFLG in the PROD register.
-> The evtq thread is supposed to acknowledge the overflow flag by toggling
-> flag OVACKFLG in the CONS register, otherwise the overflow condition is
-> still active (OVFLG != OVACKFLG).
+On 2023/3/8 8:35, Jason Gunthorpe wrote:
+> The code flow for first time attaching a PT and replacing a PT is very
+> similar except for the lowest do_attach step.
 > 
-> Currently the acknowledge register is toggled after clearing the event
-> queue but is never propagated to the hardware. It would be done next
-> time when executing evtq thread.
+> Reorganize this so that the do_attach step is a function pointer.
 > 
-> The SMMU still adds elements to the queue when the overflow condition is
-> active but any subsequent overflow information after clearing the event
-> queue will be lost.
+> Replace requires destroying the old HWPT once it is replaced. This
+> destruction cannot be done under all the locks that are held in the
+> function pointer, so the signature allows returning a HWPT which will be
+> destroyed by the caller after everything is unlocked.
 > 
-> This change keeps the SMMU in sync as it's expected by design.
+> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
 
-If I've understood correctly, the upshot of this is that if the queue 
-has overflowed once, become empty, then somehow goes from empty to full 
-before we manage to consume a single event, we won't print the "events 
-lost" message a second time.
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-Have you seen this happen in practice? TBH if the event queue ever 
-overflows even once it's indicative that the system is hosed anyway, so 
-it's not clear to me that there's any great loss of value in sometimes 
-failing to repeat a warning for a chronic ongoing operational failure.
-
-It could be argued that we have a subtle inconsistency between 
-arm_smmu_evtq_thread() and arm_smmu_priq_thread() here, but the fact is 
-that the Event queue and PRI queue *do* have different overflow 
-behaviours, so it could equally be argued that inconsistency in the code 
-helps reflect that. FWIW I can't say I have a strong preference either way.
-
-Thanks,
-Robin.
-
-> Signed-off-by: Tomas Krcka <krckatom@amazon.de>
-> Suggested-by: KarimAllah Ahmed <karahmed@amazon.de>
-> ---
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index f2425b0f0cd6..acc1ff5ff69b 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -1579,6 +1579,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
->   	/* Sync our overflow flag, as we believe we're up to speed */
->   	llq->cons = Q_OVF(llq->prod) | Q_WRP(llq, llq->cons) |
->   		    Q_IDX(llq, llq->cons);
-> +	queue_sync_cons_out(q);
->   	return IRQ_HANDLED;
->   }
->   
+Best regards,
+baolu
