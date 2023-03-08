@@ -1,117 +1,73 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1B15A79F5
-	for <iommu@lists.linux.dev>; Wed,  8 Mar 2023 16:46:56 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id ABEB81042;
-	Wed,  8 Mar 2023 08:47:39 -0800 (PST)
-Received: from [10.57.90.59] (unknown [10.57.90.59])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EE1343F67D;
-	Wed,  8 Mar 2023 08:46:54 -0800 (PST)
-Message-ID: <b8c21aec-75d6-7b5b-4777-58838f8d8602@arm.com>
-Date: Wed, 8 Mar 2023 16:46:49 +0000
+Received: from weierstrass.telenet-ops.be (weierstrass.telenet-ops.be [195.130.137.81])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B3CC79F5
+	for <iommu@lists.linux.dev>; Wed,  8 Mar 2023 17:26:41 +0000 (UTC)
+Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
+	by weierstrass.telenet-ops.be (Postfix) with ESMTPS id 4PWzWx6BjZz4wywm
+	for <iommu@lists.linux.dev>; Wed,  8 Mar 2023 18:17:17 +0100 (CET)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed50:614d:21b0:703:d0f9])
+	by michel.telenet-ops.be with bizsmtp
+	id VtH92900B3mNwr406tH9re; Wed, 08 Mar 2023 18:17:09 +0100
+Received: from rox.of.borg ([192.168.97.57])
+	by ramsan.of.borg with esmtp (Exim 4.95)
+	(envelope-from <geert@linux-m68k.org>)
+	id 1pZxP0-00BGGd-WD;
+	Wed, 08 Mar 2023 18:17:09 +0100
+Received: from geert by rox.of.borg with local (Exim 4.95)
+	(envelope-from <geert@linux-m68k.org>)
+	id 1pZxPZ-00FoRp-3z;
+	Wed, 08 Mar 2023 18:17:09 +0100
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] iommu: Spelling s/cpmxchg64/cmpxchg64/
+Date: Wed,  8 Mar 2023 18:17:08 +0100
+Message-Id: <eab156858147249d44463662eb9192202c39ab9f.1678295792.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Fix event queue overflow
- acknowledgment
-Content-Language: en-GB
-To: Tomas Krcka <krckatom@amazon.de>
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev, joro@8bytes.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- shameerali.kolothum.thodi@huawei.com, will@kernel.org
-References: <8291b66d-b9b8-47c9-f5ed-a4e951c92154@arm.com>
- <20230308140204.83249-1-krckatom@amazon.de>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230308140204.83249-1-krckatom@amazon.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 2023-03-08 14:02, Tomas Krcka wrote:
->>> When an overflow occurs in the event queue, the SMMU toggles overflow
->>> flag OVFLG in the PROD register.
->>> The evtq thread is supposed to acknowledge the overflow flag by toggling
->>> flag OVACKFLG in the CONS register, otherwise the overflow condition is
->>> still active (OVFLG != OVACKFLG).
->>>
->>> Currently the acknowledge register is toggled after clearing the event
->>> queue but is never propagated to the hardware. It would be done next
->>> time when executing evtq thread.
->>>
->>> The SMMU still adds elements to the queue when the overflow condition is
->>> active but any subsequent overflow information after clearing the event
->>> queue will be lost.
->>>
->>> This change keeps the SMMU in sync as it's expected by design.
->>
->> If I've understood correctly, the upshot of this is that if the queue
->> has overflowed once, become empty, then somehow goes from empty to full
->> before we manage to consume a single event, we won't print the "events
->> lost" message a second time.
->>
->> Have you seen this happen in practice? TBH if the event queue ever
->> overflows even once it's indicative that the system is hosed anyway, so
->> it's not clear to me that there's any great loss of value in sometimes
->> failing to repeat a warning for a chronic ongoing operational failure.
->>
-> 
-> Yes, I did see in practice. And it’s not just about loosing subsequence warning.
-> The way how it’s done now keeps inconsistent CONS register value between SMMU and the kernel
-> until any new event happens. The kernel doesn’t inform SMMU that we know about the overflow
-> and consuming events as fast as we can.
+Fix misspellings of "cmpxchg64"
 
-Interesting - out of curiosity, is something blocking the IRQ thread 
-from running in a timely manner, or are you just using a really tiny 
-event queue?
+Fixes: d286a58bc8f4d5cf ("iommu: Tidy up io-pgtable dependencies")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+---
+ drivers/iommu/Kconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Either way though, the point is that there is nothing to "inform" the 
-SMMU about here. It will see that we're consuming events and making 
-space in the queue, because we're still updating CONS.RD. All that an 
-update of PROD.OVFLG serves to do is indicate to software that events 
-have been discarded since the last time CONS.OVACKFLG was updated. It 
-makes no difference to the SMMU if it continues to discard *more* events 
-until software updates CONS.OVACKFLG again. It's entirely software's own 
-decision how closely it wants to keep track of overflows.
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 889c7efd050bc89f..c4928514e5e2a5ca 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -33,7 +33,7 @@ config IOMMU_IO_PGTABLE_LPAE
+ 	bool "ARMv7/v8 Long Descriptor Format"
+ 	select IOMMU_IO_PGTABLE
+ 	depends on ARM || ARM64 || COMPILE_TEST
+-	depends on !GENERIC_ATOMIC64	# for cpmxchg64()
++	depends on !GENERIC_ATOMIC64	# for cmpxchg64()
+ 	help
+ 	  Enable support for the ARM long descriptor pagetable format.
+ 	  This allocator supports 4K/2M/1G, 16K/32M and 64K/512M page
+@@ -72,7 +72,7 @@ config IOMMU_IO_PGTABLE_DART
+ 	bool "Apple DART Formats"
+ 	select IOMMU_IO_PGTABLE
+ 	depends on ARM64 || COMPILE_TEST
+-	depends on !GENERIC_ATOMIC64	# for cpmxchg64()
++	depends on !GENERIC_ATOMIC64	# for cmpxchg64()
+ 	help
+ 	  Enable support for the Apple DART pagetable formats. These include
+ 	  the t8020 and t6000/t8110 DART formats used in Apple M1/M2 family
+-- 
+2.34.1
 
-Like I say it's not clear how much Linux really cares about that, given 
-that all we do with the information is log a message to indicate that 
-some more events have been lost since the last time we logged the same 
-message. Furthermore, the only thing we'll do with the overwhelming 
-majority of events themselves is also log messages. Thus realistically 
-if we're suddenly faced with processing a full event queue out of 
-nowhere, then many of the events which *were* delivered to the queue 
-will also be "lost" thanks to rate-limiting.
-
-FWIW I think it's still true that for our currently supported use-cases 
-in Linux, *any* discardable event is a sign that something's gone wrong; 
-a full queue of 32K events would already be a sign that something's gone 
-*severely* wrong, so at that point knowing whether it was exactly 32K, 
-or 32K + n for some indeterminate value of n, is unlikely to be 
-significantly meaningful.
-
->> It could be argued that we have a subtle inconsistency between
->> arm_smmu_evtq_thread() and arm_smmu_priq_thread() here, but the fact is
->> that the Event queue and PRI queue *do* have different overflow
->> behaviours, so it could equally be argued that inconsistency in the code
->> helps reflect that. FWIW I can't say I have a strong preference either way.
-> 
-> For the argument that the code can reflect the difference.
-> Then the comment 'Sync our overflow flag, as we believe we're up to speed’ is
-> already misleading.
-
-Yes, that is what I was alluding to. Sometimes if a comment doesn't 
-clearly match the code it means the code is wrong. Sometimes it just 
-means the comment is wrong.
-
-I'm not saying this patch is the wrong answer, but as presented it 
-hasn't managed to convince me that it's the right one either. Largely 
-since I'm not 100% sure what the exact question is - even with this 
-change we'd still have the same ABA problem whenever the queue overflows 
-again *before* it's completely drained.
-
-Thanks,
-Robin.
