@@ -1,26 +1,28 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A9372107B9
-	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 14:44:33 +0000 (UTC)
-Received: from 8bytes.org (p5b006afb.dip0.t-ipconnect.de [91.0.106.251])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id D346522612F;
-	Thu,  9 Mar 2023 15:36:46 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1678372607;
-	bh=YEVQxyXVIWhtxmM89JVtDEvi45tG9UXS9RSbGs8FK7k=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=xCatCVjyEy4xQJHvjjbD2l9cMxXCXww3G7LEduHxM1vfuSPjxWRZg2kYog+LA0Wnk
-	 bAJrDbNQKKKbVV0Z3qrDvbqaZrCPE641s9105ZPbxhOLLA4uIfNZgZhLveaHzUOoFw
-	 ttR8WZFVJf9vZNlw8vQ43LUzsdU0ovlLOyu3NwD5+Kto4lKnZRokXfwpAcfsrYqMAC
-	 xXNHm1ZsKNVrU9YJK+NO1cvqS4pfNCf1VyYdeJ/BF9ebc7KhCajE0fNygY9zIJkQNd
-	 utNI0fJbSTdI1Y1uWTaEyB1W1JZ1HJUUfwT7eEkvsINHZcyAsOmlj/fCs7Q8UetRov
-	 2n+MpjSTBe+gQ==
-Date: Thu, 9 Mar 2023 15:36:45 +0100
-From: =?iso-8859-1?Q?J=F6rg_R=F6del?= <joro@8bytes.org>
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: Borislav Petkov <bp@alien8.de>, David Woodhouse <dwmw2@infradead.org>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DAC8D50B
+	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 14:45:11 +0000 (UTC)
+Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 0AC781EC06C0;
+	Thu,  9 Mar 2023 15:45:09 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+	t=1678373109;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=If/RB/hr/c7VUMqd+cgR77ldxUk5sLws7vhF9to8FDQ=;
+	b=jus71OLR74X/1ogUazggcBxXv8CUTmUJ1nEFSUoX3c2qdRny1LQLWh9C1o6fblZiFQqeMB
+	aZ1BaeLhfeAOgz3a0/k6Rz9q2rDEQvgImmdDPFWDJaDR93eM4YldkMU+jxzTn4PyNgGxpp
+	Pgtvm//JDTh8xON5nJ7CO7crxDtsGkY=
+Date: Thu, 9 Mar 2023 15:45:05 +0100
+From: Borislav Petkov <bp@alien8.de>
+To: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>,
+	David Woodhouse <dwmw2@infradead.org>,
 	Dave Hansen <dave.hansen@intel.com>,
 	"Michael Kelley (LINUX)" <mikelley@microsoft.com>,
 	Sean Christopherson <seanjc@google.com>,
@@ -61,9 +63,8 @@ Cc: Borislav Petkov <bp@alien8.de>, David Woodhouse <dwmw2@infradead.org>,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
 Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
  to map as encrypted
-Message-ID: <ZAnu/Um+4qq4Owuh@8bytes.org>
-References: <Y/adN3GQJTdDPmS8@google.com>
- <Y/ammgkyo3QVon+A@zn.tnic>
+Message-ID: <20230309144505.GEZAnw8QpyOyMpCD4r@fat_crate.local>
+References: <Y/ammgkyo3QVon+A@zn.tnic>
  <Y/a/lzOwqMjOUaYZ@google.com>
  <Y/dDvTMrCm4GFsvv@zn.tnic>
  <BYAPR21MB1688F68888213E5395396DD9D7AB9@BYAPR21MB1688.namprd21.prod.outlook.com>
@@ -72,26 +73,35 @@ References: <Y/adN3GQJTdDPmS8@google.com>
  <a23a36ccb8e1ad05e12a4c4192cdd98267591556.camel@infradead.org>
  <20230309115937.GAZAnKKRef99EwOu/S@fat_crate.local>
  <a4fc8686-f82d-370e-309f-d6d3fc0568e8@amd.com>
+ <ZAnu/Um+4qq4Owuh@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <a4fc8686-f82d-370e-309f-d6d3fc0568e8@amd.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ZAnu/Um+4qq4Owuh@8bytes.org>
 
-On Thu, Mar 09, 2023 at 08:19:58AM -0600, Tom Lendacky wrote:
-> I believe Joerg added that key for performance reasons, since it is used on
-> the exception path and can avoid all the calls to cc_platform_has(). I think
-> that key should stay.
+On Thu, Mar 09, 2023 at 03:36:45PM +0100, Jörg Rödel wrote:
+> Yes, that is right. The key is mainly for the NMI entry path which can
+> be performance relevant in some situations. For SEV-ES some special
+> handling is needed there to re-enable NMIs and adjust the #VC stack in
+> case it was raised on the VC-handlers entry path.
 
-Yes, that is right. The key is mainly for the NMI entry path which can
-be performance relevant in some situations. For SEV-ES some special
-handling is needed there to re-enable NMIs and adjust the #VC stack in
-case it was raised on the VC-handlers entry path.
+So the performance argument is meh. That key will be replaced by
 
-Regards,
+	if (cc_vendor == CC_VENDOR_AMD &&
+	    cc_platform_has(CC_ATTR_GUEST_STATE_ENCRYPT)
 
-	Joerg
+which is something like 4 insns or so. Tops.
+
+Haven't looked yet but it should be cheap.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
