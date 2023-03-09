@@ -1,247 +1,118 @@
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C516A29
-	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 16:34:37 +0000 (UTC)
-Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 16FCD1EC01CE;
-	Thu,  9 Mar 2023 17:34:35 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-	t=1678379675;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:in-reply-to:in-reply-to:references;
-	bh=hOei1CaI+9KLLzxWuYHEeWFq523hC358nYg82qEk0P8=;
-	b=lQXq02kbV26V098b2/yjVkgJDGMNI2zho6Gfyn8txrIWTk5PlovjwTXeA/A3Lr2JnqJDMn
-	4JJONSCvKRvdeQUqsg/EdUUl7mkVX4t16UEunFe1wXVWVpGDtfaMEE7g82LkN9ean15hUi
-	6D6zF6xljU+52MZ/unkZ2yfpSI4uZ2M=
-Date: Thu, 9 Mar 2023 17:34:31 +0100
-From: Borislav Petkov <bp@alien8.de>
-To: David Woodhouse <dwmw2@infradead.org>,
-	=?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>,
-	Tom Lendacky <thomas.lendacky@amd.com>
-Cc: Usama Arif <usama.arif@bytedance.com>,
-	Dave Hansen <dave.hansen@intel.com>,
-	"Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-	Sean Christopherson <seanjc@google.com>,
-	"hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	"wei.liu@kernel.org" <wei.liu@kernel.org>,
-	Dexuan Cui <decui@microsoft.com>,
-	"luto@kernel.org" <luto@kernel.org>,
-	"peterz@infradead.org" <peterz@infradead.org>,
-	"davem@davemloft.net" <davem@davemloft.net>,
-	"edumazet@google.com" <edumazet@google.com>,
-	"kuba@kernel.org" <kuba@kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>,
-	"lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-	"robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-	"bhelgaas@google.com" <bhelgaas@google.com>,
-	"arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
-	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-	"tglx@linutronix.de" <tglx@linutronix.de>,
-	"mingo@redhat.com" <mingo@redhat.com>,
-	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-	Tianyu Lan <Tianyu.Lan@microsoft.com>,
-	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-	"sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>,
-	"ak@linux.intel.com" <ak@linux.intel.com>,
-	"isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-	"dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-	"jane.chu@oracle.com" <jane.chu@oracle.com>,
-	"tony.luck@intel.com" <tony.luck@intel.com>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
- to map as encrypted
-Message-ID: <20230309163431.GFZAoKl2zgRdi8UXIQ@fat_crate.local>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68168C261
+	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 17:04:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678381491; x=1709917491;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=7G0O80eoi717307ESCF3NXvsdQ1Hks/w/yE5W6NxlwA=;
+  b=hu4T1vRH2Jr7FYKWqEjn6k0D8EmqaPKqTGlTkl/iETZewK9CgcEKPdsM
+   BLsaEJEA+vlopVrbRsUWfrqhsItEUtHlWEXTLksCmKjlcAfEbDpgJCHh4
+   jEIapWZjzsNjb/NuKvsJUF5z/SSEzxIh6FI4ElKTW13jtSXmYljcHrHgL
+   W41DSFVzpYImffTa/wk303nIZ8LK5b2OxRkz7QaHnfaj+pmEynvmOUcI3
+   50bMbWammJihTBpqLru+ihoZcYhATQ+Re9arbzjgcevHR+BQAZDQThyjq
+   PVL8OQTdkqqUWpcNBwDmLcAApYHrY0xiTrf0M1MMJIz310YNwaMWSaORv
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="333975374"
+X-IronPort-AV: E=Sophos;i="5.98,247,1673942400"; 
+   d="scan'208";a="333975374"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 09:02:31 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="787663874"
+X-IronPort-AV: E=Sophos;i="5.98,247,1673942400"; 
+   d="scan'208";a="787663874"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 09:02:31 -0800
+Date: Thu, 9 Mar 2023 09:06:23 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: "Luck, Tony" <tony.luck@intel.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, LKML <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Lu Baolu
+ <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "vkoul@kernel.org"
+ <vkoul@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon
+ <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>, "Raj, Ashok"
+ <ashok.raj@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Yu, Fenghua"
+ <fenghua.yu@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Zanussi,
+ Tom" <tom.zanussi@intel.com>, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH 3/4] iommu/sva: Support reservation of global PASIDs
+Message-ID: <20230309090623.7ea2c3fe@jacob-builder>
+In-Reply-To: <ZAY5d2MSXjWRGF0n@nvidia.com>
+References: <20230302005959.2695267-1-jacob.jun.pan@linux.intel.com>
+	<20230302005959.2695267-4-jacob.jun.pan@linux.intel.com>
+	<BN9PR11MB52765C5E0DC0759880C08E258CB29@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20230303134753.660d0755@jacob-builder>
+	<ZAXkLN39VUSl+t65@nvidia.com>
+	<20230306094408.2d675d5b@jacob-builder>
+	<ZAYmS4Sx6bm+ziDY@nvidia.com>
+	<20230306095759.1dd65cca@jacob-builder>
+	<ZAYunPcgSOGFK8Qi@nvidia.com>
+	<SJ1PR11MB6083DFA2C1D00B00C3918982FCB69@SJ1PR11MB6083.namprd11.prod.outlook.com>
+	<ZAY5d2MSXjWRGF0n@nvidia.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <ff5bec2dd121d598da3cfd74cc95e25856b54a34.camel@infradead.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, Mar 09, 2023 at 03:45:35PM +0000, David Woodhouse wrote:
-> cc_vendor isn't yet exposed. As we discussed this in IRC, I've been
+Hi Jason,
 
-Right, and we might just as well expose it because having
-a setter/getter is kinda silly for a __ro_after_init variable, see
-below.
+On Mon, 6 Mar 2023 15:05:27 -0400, Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-So here's what I was able to scratch up quickly to remove the static
-key.
+> On Mon, Mar 06, 2023 at 06:48:43PM +0000, Luck, Tony wrote:
+> > >> ENQCMDS does not have the restriction of using a single CPU MSR to
+> > >> store PASIDs, PASID is supplied to the instruction operand.   
+> > >
+> > > Huh? That isn't what it says in the programming manual. It says the
+> > > PASID only comes from the IA32_PASID msr and the only two operands are
+> > > the destination MMIO and the memory source for the rest of the
+> > > payload.  
+> > 
+> > Jason,
+> > 
+> > Two different instructions with only one letter different in the name.
+> > 
+> > ENQCMD - ring 3 instruction. The PASID is inserted into the descriptor
+> > pushed to the device from the IA32_PASID MSR.
+> > 
+> > ENQCMDS - ring 0 instruction (see that trailing "S" for Supervisor
+> > mode). In this case the submitter can include any PASID value they want
+> > in the in-memory copy of the descriptor and ENQCMDS will pass that to
+> > the device.  
+> 
+> Ah, well, my comment wasn't talking about ENQCMDS :)
+> 
+> If ENQCMDS can take in an arbitary PASID then there is no
+> justification here to use the global allocator.
+> 
+> The rational is more like:
+> 
+>  IDXD uses PASIDs that come from the SVA allocator. It needs to create
+>  an internal kernel-only PASID that is non-overlapping so allow the SVA
+>  allocator to reserve PASIDs for driver use.
+> 
+>  IDXD has to use the global SVA PASID allocator beacuse its userspace
+>  will use ENQCMD which requires global PASIDs.
+> 
+yes, great summary. I think that is the same as what I was trying to say
+earlier :)
+"due the unforgiving nature of ENQCMD that requires global PASIDs, ENQCMDS
+has no choice but to allocate from the same numberspace to avoid conflict."
 
-The asm looks like this:
+In that sense, I feel the global allocator should be staying with SVA
+instead of moving to iommu core (as Kevin suggested). Because we are trying
+to have non-overlapping pasid with SVA.
 
-# ./arch/x86/include/asm/sev.h:156: 	if (cc_vendor == CC_VENDOR_AMD &&
-	cmpl	$1, cc_vendor(%rip)	#, cc_vendor
-	je	.L204	#,
+Thanks,
 
-...
-
-.L204:
-# ./arch/x86/include/asm/sev.h:157:         cc_platform_has(CC_ATTR_GUEST_STATE_ENCRYPT))
-        movl    $3, %edi        #,
-        call    cc_platform_has #
-# ./arch/x86/include/asm/sev.h:156:     if (cc_vendor == CC_VENDOR_AMD &&
-        testb   %al, %al        # tmp134
-        je      .L158   #,
-
-and so I doubt that this is at all measureable comparing that to the
-rest of the code that gets executed in the NMI handler. And it lets us
-get rid of yet another static key and use only the CC APIs.
-
-Oh, and it bitches because cc_platform_has() is being called in noinstr
-region but we can mark it noinstr or add the drop-noinstr markers around
-it, if needed. Not that important as that function and what it calls
-don't do anything magical.
-
-Thx.
-
----
-diff --git a/arch/x86/coco/core.c b/arch/x86/coco/core.c
-index 49b44f881484..34446383e68b 100644
---- a/arch/x86/coco/core.c
-+++ b/arch/x86/coco/core.c
-@@ -13,7 +13,7 @@
- #include <asm/coco.h>
- #include <asm/processor.h>
- 
--static enum cc_vendor vendor __ro_after_init;
-+enum cc_vendor cc_vendor __ro_after_init;
- static u64 cc_mask __ro_after_init;
- 
- static bool intel_cc_platform_has(enum cc_attr attr)
-@@ -83,7 +83,7 @@ static bool hyperv_cc_platform_has(enum cc_attr attr)
- 
- bool cc_platform_has(enum cc_attr attr)
- {
--	switch (vendor) {
-+	switch (cc_vendor) {
- 	case CC_VENDOR_AMD:
- 		return amd_cc_platform_has(attr);
- 	case CC_VENDOR_INTEL:
-@@ -105,7 +105,7 @@ u64 cc_mkenc(u64 val)
- 	 * - for AMD, bit *set* means the page is encrypted
- 	 * - for Intel *clear* means encrypted.
- 	 */
--	switch (vendor) {
-+	switch (cc_vendor) {
- 	case CC_VENDOR_AMD:
- 		return val | cc_mask;
- 	case CC_VENDOR_INTEL:
-@@ -118,7 +118,7 @@ u64 cc_mkenc(u64 val)
- u64 cc_mkdec(u64 val)
- {
- 	/* See comment in cc_mkenc() */
--	switch (vendor) {
-+	switch (cc_vendor) {
- 	case CC_VENDOR_AMD:
- 		return val & ~cc_mask;
- 	case CC_VENDOR_INTEL:
-@@ -131,7 +131,7 @@ EXPORT_SYMBOL_GPL(cc_mkdec);
- 
- __init void cc_set_vendor(enum cc_vendor v)
- {
--	vendor = v;
-+	cc_vendor = v;
- }
- 
- __init void cc_set_mask(u64 mask)
-diff --git a/arch/x86/include/asm/coco.h b/arch/x86/include/asm/coco.h
-index 3d98c3a60d34..0563e07a1002 100644
---- a/arch/x86/include/asm/coco.h
-+++ b/arch/x86/include/asm/coco.h
-@@ -11,6 +11,8 @@ enum cc_vendor {
- 	CC_VENDOR_INTEL,
- };
- 
-+extern enum cc_vendor cc_vendor;
-+
- void cc_set_vendor(enum cc_vendor v);
- void cc_set_mask(u64 mask);
- 
-diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
-index ebc271bb6d8e..1335781e4976 100644
---- a/arch/x86/include/asm/sev.h
-+++ b/arch/x86/include/asm/sev.h
-@@ -12,6 +12,7 @@
- #include <asm/insn.h>
- #include <asm/sev-common.h>
- #include <asm/bootparam.h>
-+#include <asm/coco.h>
- 
- #define GHCB_PROTOCOL_MIN	1ULL
- #define GHCB_PROTOCOL_MAX	2ULL
-@@ -134,24 +135,26 @@ struct snp_secrets_page_layout {
- } __packed;
- 
- #ifdef CONFIG_AMD_MEM_ENCRYPT
--extern struct static_key_false sev_es_enable_key;
- extern void __sev_es_ist_enter(struct pt_regs *regs);
- extern void __sev_es_ist_exit(void);
- static __always_inline void sev_es_ist_enter(struct pt_regs *regs)
- {
--	if (static_branch_unlikely(&sev_es_enable_key))
-+	if (cc_vendor == CC_VENDOR_AMD &&
-+	    cc_platform_has(CC_ATTR_GUEST_STATE_ENCRYPT))
- 		__sev_es_ist_enter(regs);
- }
- static __always_inline void sev_es_ist_exit(void)
- {
--	if (static_branch_unlikely(&sev_es_enable_key))
-+	if (cc_vendor == CC_VENDOR_AMD &&
-+	    cc_platform_has(CC_ATTR_GUEST_STATE_ENCRYPT))
- 		__sev_es_ist_exit();
- }
- extern int sev_es_setup_ap_jump_table(struct real_mode_header *rmh);
- extern void __sev_es_nmi_complete(void);
- static __always_inline void sev_es_nmi_complete(void)
- {
--	if (static_branch_unlikely(&sev_es_enable_key))
-+	if (cc_vendor == CC_VENDOR_AMD &&
-+	    cc_platform_has(CC_ATTR_GUEST_STATE_ENCRYPT))
- 		__sev_es_nmi_complete();
- }
- extern int __init sev_es_efi_map_ghcbs(pgd_t *pgd);
-diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
-index 679026a640ef..7d873bffbd8e 100644
---- a/arch/x86/kernel/sev.c
-+++ b/arch/x86/kernel/sev.c
-@@ -111,7 +111,6 @@ struct ghcb_state {
- };
- 
- static DEFINE_PER_CPU(struct sev_es_runtime_data*, runtime_data);
--DEFINE_STATIC_KEY_FALSE(sev_es_enable_key);
- 
- static DEFINE_PER_CPU(struct sev_es_save_area *, sev_vmsa);
- 
-@@ -1393,9 +1392,6 @@ void __init sev_es_init_vc_handling(void)
- 			sev_es_terminate(SEV_TERM_SET_GEN, GHCB_SNP_UNSUPPORTED);
- 	}
- 
--	/* Enable SEV-ES special handling */
--	static_branch_enable(&sev_es_enable_key);
--
- 	/* Initialize per-cpu GHCB pages */
- 	for_each_possible_cpu(cpu) {
- 		alloc_runtime_data(cpu);
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Jacob
