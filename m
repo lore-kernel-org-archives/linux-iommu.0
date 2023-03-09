@@ -1,178 +1,133 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DE6936AD9
-	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 11:23:13 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 97315C14;
-	Thu,  9 Mar 2023 03:23:50 -0800 (PST)
-Received: from [10.57.91.145] (unknown [10.57.91.145])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B46D43F67D;
-	Thu,  9 Mar 2023 03:23:05 -0800 (PST)
-Message-ID: <9a88b12e-7169-7c7f-09a1-eef86f75891c@arm.com>
-Date: Thu, 9 Mar 2023 11:23:00 +0000
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D78E1944D
+	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 11:59:52 +0000 (UTC)
+Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 4E4001EC03CA;
+	Thu,  9 Mar 2023 12:59:44 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+	t=1678363184;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=90vFMcU1aj7MNl0YJWHq0D+SdgqMmwppIDssNkGHN0s=;
+	b=qiiJY7lCp+bHxVH6C28W+gwzLyykdT2M2oNSDZWtkL8aMO7DJ2N4sOH42a0CCM8tVyB+r9
+	FwX2ofvtwttj/UgIJETiFm7w1MLPzUyE1KS1uBIBuJw1QfPYSuP6AD5YlvEMj/M7TqnDal
+	MOJgdA8GVC26djw3lokZIYc9Pq/ibZE=
+Date: Thu, 9 Mar 2023 12:59:37 +0100
+From: Borislav Petkov <bp@alien8.de>
+To: David Woodhouse <dwmw2@infradead.org>,
+	"thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+	=?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
+Cc: Dave Hansen <dave.hansen@intel.com>,
+	"Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+	Sean Christopherson <seanjc@google.com>,
+	"hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	"wei.liu@kernel.org" <wei.liu@kernel.org>,
+	Dexuan Cui <decui@microsoft.com>,
+	"luto@kernel.org" <luto@kernel.org>,
+	"peterz@infradead.org" <peterz@infradead.org>,
+	"davem@davemloft.net" <davem@davemloft.net>,
+	"edumazet@google.com" <edumazet@google.com>,
+	"kuba@kernel.org" <kuba@kernel.org>,
+	"pabeni@redhat.com" <pabeni@redhat.com>,
+	"lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+	"robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
+	"bhelgaas@google.com" <bhelgaas@google.com>,
+	"arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+	"tglx@linutronix.de" <tglx@linutronix.de>,
+	"mingo@redhat.com" <mingo@redhat.com>,
+	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+	Tianyu Lan <Tianyu.Lan@microsoft.com>,
+	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+	"sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>,
+	"ak@linux.intel.com" <ak@linux.intel.com>,
+	"isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+	"dan.j.williams@intel.com" <dan.j.williams@intel.com>,
+	"jane.chu@oracle.com" <jane.chu@oracle.com>,
+	"tony.luck@intel.com" <tony.luck@intel.com>,
+	"x86@kernel.org" <x86@kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
+ to map as encrypted
+Message-ID: <20230309115937.GAZAnKKRef99EwOu/S@fat_crate.local>
+References: <Y/aTmL5Y8DtOJu9w@google.com>
+ <Y/aYQlQzRSEH5II/@zn.tnic>
+ <Y/adN3GQJTdDPmS8@google.com>
+ <Y/ammgkyo3QVon+A@zn.tnic>
+ <Y/a/lzOwqMjOUaYZ@google.com>
+ <Y/dDvTMrCm4GFsvv@zn.tnic>
+ <BYAPR21MB1688F68888213E5395396DD9D7AB9@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <255249f2-47af-07b7-d9d9-9edfdd108348@intel.com>
+ <20230306215104.GEZAZgSPa4qBBu9lRd@fat_crate.local>
+ <a23a36ccb8e1ad05e12a4c4192cdd98267591556.camel@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH V2] iommu: sprd: release dma buffer to avoid memory leak
-Content-Language: en-GB
-To: Baolu Lu <baolu.lu@linux.intel.com>,
- Chunyan Zhang <chunyan.zhang@unisoc.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>
-Cc: iommu@lists.linux.dev, Baolin Wang <baolin.wang@linux.alibaba.com>,
- Orson Zhai <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
- LKML <linux-kernel@vger.kernel.org>
-References: <20230308034158.509458-1-chunyan.zhang@unisoc.com>
- <af90fea4-5fa1-de7b-b80e-02fa8753b0fb@arm.com>
- <05fb17c7-397b-5b33-fbfa-df3bf48b0de8@linux.intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <05fb17c7-397b-5b33-fbfa-df3bf48b0de8@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <a23a36ccb8e1ad05e12a4c4192cdd98267591556.camel@infradead.org>
 
-On 2023-03-09 02:50, Baolu Lu wrote:
-> On 3/8/23 8:37 PM, Robin Murphy wrote:
->> On 2023-03-08 03:41, Chunyan Zhang wrote:
->>> Release page table DMA buffer when the IOMMU domain is not used:
->>>
->>> - Domain freed.
->>>
->>> - IOMMU is attaching to a new domain.
->>>    Since one sprd IOMMU servers only one client device, if the IOMMU has
->>>    been attached to other domain, it has to be detached first, that's
->>>    saying the DMA buffer should be released, otherwise that would
->>>    cause memory leak issue.
->>
->> This is clearly wrong; domain resources should only be freed when the 
->> domain is freed. 
-> 
-> Agreed. Perhaps, in the attach path:
-> 
->      if (!dom->pgt_va)
->          dom->pgt_va = dma_alloc_coherent(sdev->dev, pgt_size,
->                  &dom->pgt_pa, GFP_KERNEL);
-> ?
+First of all,
 
-Why? dom->pgt_va will always be NULL if dom->sdev is NULL, and once 
-dom->sdev is set then that allocation is not reachable (of course this 
-means the driver also has a separate bug where reattaching to a 
-previously-used domain will erroneously fail, but that's not a memory 
-leak as such). The only thing to recognise here is that the allocation 
-is logically not part of the .attach_dev operation, but really a one-off 
-deferred part of .domain_alloc, and thus it should be balanced in .free, 
-not anywhere else.
+thanks for proactively pointing that out instead of simply using what's
+there and we get to find out later, only by chance.
 
-Thanks,
-Robin.
+Much appreciated. :-)
 
-> 
-> Best regards,
-> baolu
-> 
->> Just because a caller has detached from a domain doesn't mean that 
->> they can't reattach to it later and expect the previous mappings to 
->> still be in place - it has nothing to do with how many devices or 
->> domains can be active at once.
->>
->> Thanks,
->> Robin.
->>
->>> Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
->>> ---
->>> V2:
->>> * Added some comment in sprd_iommu_attach_device() for the reason
->>>    of calling sprd_iommu_cleanup().
->>>
->>> V1: https://lkml.org/lkml/2023/2/10/198
->>> ---
->>>   drivers/iommu/sprd-iommu.c | 46 ++++++++++++++++++++++++++++++++------
->>>   1 file changed, 39 insertions(+), 7 deletions(-)
->>>
->>> diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
->>> index ae94d74b73f4..fb2f96df3bca 100644
->>> --- a/drivers/iommu/sprd-iommu.c
->>> +++ b/drivers/iommu/sprd-iommu.c
->>> @@ -62,6 +62,7 @@ enum sprd_iommu_version {
->>>    * @eb: gate clock which controls IOMMU access
->>>    */
->>>   struct sprd_iommu_device {
->>> +    struct sprd_iommu_domain    *dom;
->>>       enum sprd_iommu_version    ver;
->>>       u32            *prot_page_va;
->>>       dma_addr_t        prot_page_pa;
->>> @@ -151,13 +152,6 @@ static struct iommu_domain 
->>> *sprd_iommu_domain_alloc(unsigned int domain_type)
->>>       return &dom->domain;
->>>   }
->>> -static void sprd_iommu_domain_free(struct iommu_domain *domain)
->>> -{
->>> -    struct sprd_iommu_domain *dom = to_sprd_domain(domain);
->>> -
->>> -    kfree(dom);
->>> -}
->>> -
->>>   static void sprd_iommu_first_vpn(struct sprd_iommu_domain *dom)
->>>   {
->>>       struct sprd_iommu_device *sdev = dom->sdev;
->>> @@ -230,6 +224,29 @@ static void sprd_iommu_hw_en(struct 
->>> sprd_iommu_device *sdev, bool en)
->>>       sprd_iommu_update_bits(sdev, reg_cfg, mask, 0, val);
->>>   }
->>> +static void sprd_iommu_cleanup(struct sprd_iommu_device *sdev)
->>> +{
->>> +    struct sprd_iommu_domain *dom = sdev->dom;
->>> +    size_t pgt_size = sprd_iommu_pgt_size(&dom->domain);
->>> +
->>> +    dma_free_coherent(sdev->dev, pgt_size, dom->pgt_va, dom->pgt_pa);
->>> +    dom->sdev = NULL;
->>> +    sdev->dom = NULL;
->>> +    sprd_iommu_hw_en(sdev, false);
->>> +}
->>> +
->>> +static void sprd_iommu_domain_free(struct iommu_domain *domain)
->>> +{
->>> +    struct sprd_iommu_domain *dom = to_sprd_domain(domain);
->>> +    struct sprd_iommu_device *sdev = dom->sdev;
->>> +
->>> +    /* Free DMA buffer first if the domain has been attached */
->>> +    if (sdev)
->>> +        sprd_iommu_cleanup(sdev);
->>> +
->>> +    kfree(dom);
->>> +}
->>> +
->>>   static int sprd_iommu_attach_device(struct iommu_domain *domain,
->>>                       struct device *dev)
->>>   {
->>> @@ -237,14 +254,29 @@ static int sprd_iommu_attach_device(struct 
->>> iommu_domain *domain,
->>>       struct sprd_iommu_domain *dom = to_sprd_domain(domain);
->>>       size_t pgt_size = sprd_iommu_pgt_size(domain);
->>> +    /* Return directly if the domain attached to IOMMU already */
->>>       if (dom->sdev)
->>>           return -EINVAL;
->>> +    /* The IOMMU already attached to a domain */
->>> +    if (sdev->dom) {
->>> +        if (sdev->dom == dom)
->>> +            return 0;
->>> +
->>> +        /*
->>> +         * Clean up the previous domain, one sprd IOMMU servers only
->>> +         * one client device, if the IOMMU has been attached to other
->>> +         * domain, it has to be detached first.
->>> +         */
->>> +        sprd_iommu_cleanup(sdev);
->>> +    }
->>> +
->>>       dom->pgt_va = dma_alloc_coherent(sdev->dev, pgt_size, 
->>> &dom->pgt_pa, GFP_KERNEL);
->>>       if (!dom->pgt_va)
->>>           return -ENOMEM;
->>>       dom->sdev = sdev;
->>> +    sdev->dom = dom;
->>>       sprd_iommu_first_ppn(dom);
->>>       sprd_iommu_first_vpn(dom);
->>
+On Thu, Mar 09, 2023 at 11:12:10AM +0000, David Woodhouse wrote:
+> > Right, I think we're ok with the following basic rules:
+> >
+> > - pure arch/x86/ code should use the x86_platform function pointers to
+> >   query hypervisor capabilities/peculiarities
+> >
+> > - cc_platform_has() should be used in generic/driver code as it
+> >   abstracts away the underlying platform better. IOW, querying
+> >   x86_platform.... in generic, platform-agnostic driver code looks weird to
+> >   say the least
+> >
+> > The hope is that those two should be enough to support most guest types
+> > and not let the zoo get too much out of hand...
+> >
+> > Thx.
+>
+> In
+> https://lore.kernel.org/all/20230308171328.1562857-13-usama.arif@bytedance.com/
+> I added an sev_es_active() helper for x86 code.
+>
+> Is that consistent with the vision here, or should I do something different?
+
+So looking at sev_es_init_vc_handling() where we set that key, I'm
+*thinking* that key can be removed now and the code should check
+
+  cc_platform_has(CC_ATTR_GUEST_STATE_ENCRYPT)
+
+instead.
+
+Because if some of the checks in that function below fail, the guest
+will terminate anyway.
+
+Jörg, Tom?
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
