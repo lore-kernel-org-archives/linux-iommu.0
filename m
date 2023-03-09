@@ -1,32 +1,32 @@
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33CE881C
-	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 08:09:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8098807
+	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 08:09:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678349372; x=1709885372;
+  t=1678349373; x=1709885373;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=U1VZYmCOLesVIRYg1SmVLfX+1m4uRnRI1+5TxmUm/rk=;
-  b=SuHuIuvYtX5XwEeZxLplMCfAohMhhJxWJSTVLKggSmD6vSXLxaHrmh1z
-   9PZp7/6vGuT3SjwwOyWX/fvsZYOGjA2Lf8NaumVsZIzHnwzbT7i5hqAv+
-   LgZBU7hw1CfS0lh6Ba/VbEYHBsaNBgWFVVe6AGVz/+FuOtknx5ybjLCME
-   4NtfY3TPr3te2lHqn4VtzEUkoOQs51ZOILWd76CPaHOCloiA8qfE21PWZ
-   Sp+CqfW4u1RotluzC495G1Kur5w8ZYYLka95uKgdlFcS5jdD5rjIJHRwz
-   CBIIOHLMz/iYzKPiLLyLH7kgQ9MVYS8ayBqe+A3EKtiI6dzsxb1tbD8Qn
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="364023022"
+  bh=DK2k6evSa483gL5qczVDNJ/CshEmsXAsK8rNm81jnSk=;
+  b=HkE5suEMkRna5TaHDfXb4OIcbXQa6zP6vIz1QThw9PdaiGQWIsyz19ro
+   kE0YNi9hcEqNauMEAfiywBAmMrg1Xk/iSsLNrUV6SHxdxqLESjRBWU3W0
+   uoEclhdp+fVYpczywTVGSno3m+pwzmv03e3dZ+JMp36ZoRRcF6Bq/2/DQ
+   NyW3C6E9sEVOlULrjdCPsysbJ+7Ui5fAAbw2OOUB6hejTo8sj+8jwMqey
+   5IX35xhlCNm55ZYAsgzGVudbmbGdxxLPG1ft7tLANtm4G0uRbIEKdeJum
+   L3IJz2Moob4xlNeBYsPNY7Zw1NR+BWYZxxFHAQzkVaqB2mUxVtu/i/enk
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="364023013"
 X-IronPort-AV: E=Sophos;i="5.98,245,1673942400"; 
-   d="scan'208";a="364023022"
+   d="scan'208";a="364023013"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 00:09:23 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="787471348"
+X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="787471356"
 X-IronPort-AV: E=Sophos;i="5.98,245,1673942400"; 
-   d="scan'208";a="787471348"
+   d="scan'208";a="787471356"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga002.fm.intel.com with ESMTP; 09 Mar 2023 00:09:20 -0800
+  by fmsmga002.fm.intel.com with ESMTP; 09 Mar 2023 00:09:21 -0800
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -50,9 +50,9 @@ Cc: cohuck@redhat.com,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	linux-kselftest@vger.kernel.org
-Subject: [PATCH 01/12] iommu: Add new iommu op to create domains owned by userspace
-Date: Thu,  9 Mar 2023 00:08:59 -0800
-Message-Id: <20230309080910.607396-2-yi.l.liu@intel.com>
+Subject: [PATCH 02/12] iommu: Add nested domain support
+Date: Thu,  9 Mar 2023 00:09:00 -0800
+Message-Id: <20230309080910.607396-3-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230309080910.607396-1-yi.l.liu@intel.com>
 References: <20230309080910.607396-1-yi.l.liu@intel.com>
@@ -66,69 +66,67 @@ Content-Transfer-Encoding: 8bit
 
 From: Lu Baolu <baolu.lu@linux.intel.com>
 
-Introduce a new iommu_domain op to create domains owned by userspace,
-e.g. through iommufd. These domains have a few different properties
-compares to kernel owned domains:
+Introduce a new domain type for a user space I/O address, which is nested
+on top of another user space address represented by a UNMANAGED domain. The
+mappings of a nested domain are managed by user space software, therefore
+it's unnecessary to have map/unmap callbacks. But the updates of the PTEs
+in the nested domain page table must be propagated to the caches on both
+IOMMU (IOTLB) and devices (DevTLB).
 
- - They may be UNMANAGED domains, but created with special parameters.
-   For instance aperture size changes/number of levels, different
-   IOPTE formats, or other things necessary to make a vIOMMU work
+The nested domain is allocated by the domain_alloc_user op, and attached
+to the device through the existing iommu_attach_device/group() interfaces.
 
- - We have to track all the memory allocations with GFP_KERNEL_ACCOUNT
-   to make the cgroup sandbox stronger
+A new domain op, named cache_invalidate_user is added for the userspace to
+flush the hardware caches for a nested domain through iommufd. No wrapper
+for it, as it's only supposed to be used by iommufd.
 
- - Device-specialty domains, such as NESTED domains can be created by
-   iommufd.
-
-The new op clearly says the domain is being created by IOMMUFD, that
-the domain is intended for userspace use, and it provides a way to pass
-a driver specific uAPI structure to customize the created domain to
-exactly what the vIOMMU userspace driver requires.
-
-iommu drivers that cannot support VFIO/IOMMUFD should not support this
-op. This includes any driver that cannot provide a fully functional
-UNMANAGED domain.
-
-This op chooses to make the special parameters opaque to the core. This
-suits the current usage model where accessing any of the IOMMU device
-special parameters does require a userspace driver that matches the
-kernel driver. If a need for common parameters, implemented similarly
-by several drivers, arises then there is room in the design to grow a
-generic parameter set as well.
-
-This new op for now is only supposed to be used by iommufd, hence no
-wrapper for it. iommufd would call the callback directly. As for domain
-free, iommufd would use iommu_domain_free().
-
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Co-developed-by: Nicolin Chen <nicolinc@nvidia.com>
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- include/linux/iommu.h | 4 ++++
- 1 file changed, 4 insertions(+)
+ include/linux/iommu.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 3ef84ee359d2..a269bc62a31c 100644
+index a269bc62a31c..080278c8154d 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -229,6 +229,7 @@ struct iommu_iotlb_gather {
-  *           after use. Return the data buffer if success, or ERR_PTR on
-  *           failure.
-  * @domain_alloc: allocate iommu domain
-+ * @domain_alloc_user: allocate user iommu domain
-  * @probe_device: Add device to iommu driver handling
-  * @release_device: Remove device from iommu driver handling
-  * @probe_finalize: Do final setup work after the device is added to an IOMMU
-@@ -266,6 +267,9 @@ struct iommu_ops {
+@@ -67,6 +67,9 @@ struct iommu_domain_geometry {
  
- 	/* Domain allocation and freeing by the iommu driver */
- 	struct iommu_domain *(*domain_alloc)(unsigned iommu_domain_type);
-+	struct iommu_domain *(*domain_alloc_user)(struct device *dev,
-+						  struct iommu_domain *parent,
-+						  const void *user_data);
+ #define __IOMMU_DOMAIN_SVA	(1U << 4)  /* Shared process address space */
  
- 	struct iommu_device *(*probe_device)(struct device *dev);
- 	void (*release_device)(struct device *dev);
++#define __IOMMU_DOMAIN_NESTED	(1U << 5)  /* User-managed IOVA nested on
++					      a stage-2 translation        */
++
+ /*
+  * This are the possible domain-types
+  *
+@@ -92,6 +95,7 @@ struct iommu_domain_geometry {
+ 				 __IOMMU_DOMAIN_DMA_API |	\
+ 				 __IOMMU_DOMAIN_DMA_FQ)
+ #define IOMMU_DOMAIN_SVA	(__IOMMU_DOMAIN_SVA)
++#define IOMMU_DOMAIN_NESTED	(__IOMMU_DOMAIN_NESTED)
+ 
+ struct iommu_domain {
+ 	unsigned type;
+@@ -325,6 +329,7 @@ struct iommu_ops {
+  * @iotlb_sync_map: Sync mappings created recently using @map to the hardware
+  * @iotlb_sync: Flush all queued ranges from the hardware TLBs and empty flush
+  *            queue
++ * @cache_invalidate_user: Flush hardware TLBs caching user space IO mappings
+  * @iova_to_phys: translate iova to physical address
+  * @enforce_cache_coherency: Prevent any kind of DMA from bypassing IOMMU_CACHE,
+  *                           including no-snoop TLPs on PCIe or other platform
+@@ -354,6 +359,8 @@ struct iommu_domain_ops {
+ 			       size_t size);
+ 	void (*iotlb_sync)(struct iommu_domain *domain,
+ 			   struct iommu_iotlb_gather *iotlb_gather);
++	void (*cache_invalidate_user)(struct iommu_domain *domain,
++				      void *user_data);
+ 
+ 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain,
+ 				    dma_addr_t iova);
 -- 
 2.34.1
 
