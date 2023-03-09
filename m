@@ -1,34 +1,34 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0B4B628
-	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 02:06:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D2C0628
+	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 02:09:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678327577; x=1709863577;
+  t=1678327747; x=1709863747;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=vF2nj2/OYe2VSDrJh0vBQhjBrkwi0KFxwuhhKdnK85E=;
-  b=BRKx/i8Gmo8p+0ySYYr0bsBjLInMUNrihzlo0qSb8OpXJJhX4cnll5mJ
-   d5Me3a97oHkEakDoVh0bc/05vldV26hU8MnGj5V+kl8/ROZH2J0JyCKQn
-   d34DqsRztT4dPFFDk+2s+dmm+wXO26jh2BBNiYJmOXHVb/8yR3zR/4Grb
-   Dl6Yg4znCwqJE63YYRl5nZGFXy0YoPyzj5LVIl1Oru6sLZUWlVDimTS6+
-   mFGRM1PN/CIXjDLKO1uETNktX0NUJOeumO/HP8CS6DUQLt5z8iBaVWdeu
-   0F9/kGvyPt7WzrgeCSFJbF0uUTePDAkcDdg4V2vpTAdGtsZDtKMKjkHn7
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="363967268"
+  bh=h7L7WFI4DwTz9+2kCVoTF5JK2hgOIRTigia0Dllu/WQ=;
+  b=CMjsMSrvN3AIUTSme8//WGLJILk+YML+A0IC0aLNFx5bIvPXvPX/j0Gl
+   GplmjoaqHDC0VSLMPrC8aYVkj199gzRHEHLtAfgK3K0V/KAIvTMb7Sf3X
+   7AB6vAZa6+AyVPPtj+TFahrKhaL9AlV5zKtcYFgSlqMmWEx3BiDex+hYE
+   S3h6Nnwpz0JuaJz+jP3KU11+14JHWS2TlVDl/0/a4GdUTP8Y385rce6bX
+   +mRrDeJv5Ncart59FoSrtb2TuVdmgdpL1eF3UgH5uznvSUPNY/yemPFIN
+   nPNNiir8wRKZObZHOu5N1HeOjy12Wg3EbonSo3BVpFH/KYvbyvdABwQvT
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="335036051"
 X-IronPort-AV: E=Sophos;i="5.98,244,1673942400"; 
-   d="scan'208";a="363967268"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2023 18:06:17 -0800
+   d="scan'208";a="335036051"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2023 18:09:06 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="679565192"
+X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="746132715"
 X-IronPort-AV: E=Sophos;i="5.98,244,1673942400"; 
-   d="scan'208";a="679565192"
+   d="scan'208";a="746132715"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by fmsmga007.fm.intel.com with ESMTP; 08 Mar 2023 18:06:15 -0800
-Message-ID: <e0c93191-7cb8-29f2-add6-5e145e767243@linux.intel.com>
-Date: Thu, 9 Mar 2023 10:05:16 +0800
+  by fmsmga004.fm.intel.com with ESMTP; 08 Mar 2023 18:09:03 -0800
+Message-ID: <c1c8cc6f-6553-e60d-838e-dfaf06e3e412@linux.intel.com>
+Date: Thu, 9 Mar 2023 10:08:05 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,30 +37,32 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
-Cc: baolu.lu@linux.intel.com, kvm@vger.kernel.org,
- Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
-Subject: Re: [PATCH v2 09/17] iommufd: Add enforced_cache_coherency to
- iommufd_hw_pagetable_alloc()
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
+ Baolin Wang <baolin.wang@linux.alibaba.com>, Orson Zhai
+ <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
+ LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH V2] iommu: sprd: release dma buffer to avoid memory leak
 Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
- Kevin Tian <kevin.tian@intel.com>, linux-kselftest@vger.kernel.org
-References: <9-v2-51b9896e7862+8a8c-iommufd_alloc_jgg@nvidia.com>
+To: Chunyan Zhang <chunyan.zhang@unisoc.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+References: <20230308034158.509458-1-chunyan.zhang@unisoc.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <9-v2-51b9896e7862+8a8c-iommufd_alloc_jgg@nvidia.com>
+In-Reply-To: <20230308034158.509458-1-chunyan.zhang@unisoc.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 3/8/23 8:35 AM, Jason Gunthorpe wrote:
-> Logically the HWPT should have the coherency set properly for the device
-> that it is being created for when it is created.
+On 3/8/23 11:41 AM, Chunyan Zhang wrote:
+> Release page table DMA buffer when the IOMMU domain is not used:
 > 
-> This was happening implicitly if the immediate_attach was set because
-> iommufd_hw_pagetable_attach() does it as the first thing.
+> - Domain freed.
 > 
-> Do it unconditionally so !immediate_attach works properly.
+> - IOMMU is attaching to a new domain.
+>    Since one sprd IOMMU servers only one client device, if the IOMMU has
+>    been attached to other domain, it has to be detached first, that's
+>    saying the DMA buffer should be released, otherwise that would
+>    cause memory leak issue.
 > 
-> Reviewed-by: Kevin Tian<kevin.tian@intel.com>
-> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+> Signed-off-by: Chunyan Zhang<chunyan.zhang@unisoc.com>
 
 Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
