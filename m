@@ -1,32 +1,32 @@
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64F462F33
-	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 08:22:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE9AA2CA9
+	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 08:22:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1678350170; x=1709886170;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=/mmYgR+89ByI+p2Zr/OCn4pE2TGeXtXXbNuoqCFUfCE=;
-  b=VPmgptm28cBtPD1EBgjW1OhPxQJXKnN78bI/SMoJo0xa2nHtBSg2XU3u
-   tnHAFgu8Th/Ciz7E3JTnIooJtUd5ipEGXaeuaXJFvGBiCV1zWlVMH5Khd
-   W9LCBoasJna6FQmOKp04HmjWan7eO3+W5WunKDYn6jSs99ETVoBttRmbT
-   rie3w7bi9NSK8zLllqSxwlwQqijhm5vTV00xtp1Wx6DrRauGoNUKswi6j
-   lY60J+eMjgTkChW5tROd9RMFmLO+agFsHFVG+WQdP21UO3M7yS1KFLKWb
-   XHtiASLgI4pb/YPRDQ05sUv/sSUdgLPYUzsBE3x1THu7I/kSY+t9L0CQO
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="364026237"
+  bh=uVvRKgPxKSHuG1EtBteAi9d95M9LHVWKu0TnY2OCClA=;
+  b=LHfniv/I9p4U9qMSdD3reGnMlW15mZwLgphiM0QTc3qFmj/gC31Es270
+   +Gwtk2fzU+4QAlQLq2pH6mx4WtOUeblP+Au6pnnqiq1Xn/9ULkZxCl1ZC
+   tO5EjBMff1rn4T1fKFTasHeKJBvdeFvPT7aI0U8WccViJjfUiK3MbzuVW
+   dL7fwywO3c19NYiAPFl2Qkt3BRmSbfBSCLtJn6m4i2486ANpdn+pe6+21
+   Bi2OyJpeSVu0PEzqG8lydLLMsaGimELV9zMjEEIBcxL/Bz+hrdQcNv1kv
+   OLvHvV3p7eBqOrPkmHjjbIKHFPWdYUgmWAL3cDzIJbuc5cpY6gIPVoG5N
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="364026223"
 X-IronPort-AV: E=Sophos;i="5.98,245,1673942400"; 
-   d="scan'208";a="364026237"
+   d="scan'208";a="364026223"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 00:22:46 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="787474161"
+X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="787474154"
 X-IronPort-AV: E=Sophos;i="5.98,245,1673942400"; 
-   d="scan'208";a="787474161"
+   d="scan'208";a="787474154"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga002.fm.intel.com with ESMTP; 09 Mar 2023 00:22:14 -0800
+  by fmsmga002.fm.intel.com with ESMTP; 09 Mar 2023 00:22:13 -0800
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -49,11 +49,10 @@ Cc: cohuck@redhat.com,
 	suravee.suthikulpanit@amd.com,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
-	linux-kselftest@vger.kernel.org,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v2 5/5] iommu/vt-d: Add nested domain support
-Date: Thu,  9 Mar 2023 00:22:07 -0800
-Message-Id: <20230309082207.612346-6-yi.l.liu@intel.com>
+	linux-kselftest@vger.kernel.org
+Subject: [PATCH v2 3/5] iommu/vt-d: Extend dmar_domain to support nested domain
+Date: Thu,  9 Mar 2023 00:22:05 -0800
+Message-Id: <20230309082207.612346-4-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230309082207.612346-1-yi.l.liu@intel.com>
 References: <20230309082207.612346-1-yi.l.liu@intel.com>
@@ -67,335 +66,64 @@ Content-Transfer-Encoding: 8bit
 
 From: Lu Baolu <baolu.lu@linux.intel.com>
 
-This adds nested domain support in the Intel IOMMU driver. It allows to
-allocate and free a nested domain, set the nested domain to a device,
-and synchronize the caches when the userspace managed page tables are
-updated.
+The nested domain fields are exclusive to those that used for a DMA
+remapping domain. Use union to avoid memory waste.
 
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/intel/Makefile |   2 +-
- drivers/iommu/intel/iommu.c  |  38 ++++++----
- drivers/iommu/intel/iommu.h  |  15 ++++
- drivers/iommu/intel/nested.c | 143 +++++++++++++++++++++++++++++++++++
- 4 files changed, 182 insertions(+), 16 deletions(-)
- create mode 100644 drivers/iommu/intel/nested.c
+ drivers/iommu/intel/iommu.h | 35 +++++++++++++++++++++++++++++------
+ 1 file changed, 29 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iommu/intel/Makefile b/drivers/iommu/intel/Makefile
-index 7af3b8a4f2a0..5dabf081a779 100644
---- a/drivers/iommu/intel/Makefile
-+++ b/drivers/iommu/intel/Makefile
-@@ -1,6 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0
- obj-$(CONFIG_DMAR_TABLE) += dmar.o
--obj-$(CONFIG_INTEL_IOMMU) += iommu.o pasid.o
-+obj-$(CONFIG_INTEL_IOMMU) += iommu.o pasid.o nested.o
- obj-$(CONFIG_DMAR_TABLE) += trace.o cap_audit.o
- obj-$(CONFIG_DMAR_PERF) += perf.o
- obj-$(CONFIG_INTEL_IOMMU_DEBUGFS) += debugfs.o
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 004406209793..89cc7095afed 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -277,7 +277,6 @@ static LIST_HEAD(dmar_satc_units);
- #define for_each_rmrr_units(rmrr) \
- 	list_for_each_entry(rmrr, &dmar_rmrr_units, list)
- 
--static void device_block_translation(struct device *dev);
- static void intel_iommu_domain_free(struct iommu_domain *domain);
- 
- int dmar_disabled = !IS_ENABLED(CONFIG_INTEL_IOMMU_DEFAULT_ON);
-@@ -555,7 +554,7 @@ static unsigned long domain_super_pgsize_bitmap(struct dmar_domain *domain)
- }
- 
- /* Some capabilities may be different across iommus */
--static void domain_update_iommu_cap(struct dmar_domain *domain)
-+void domain_update_iommu_cap(struct dmar_domain *domain)
- {
- 	domain_update_iommu_coherency(domain);
- 	domain->iommu_superpage = domain_update_iommu_superpage(domain, NULL);
-@@ -1498,10 +1497,10 @@ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
- 	spin_unlock_irqrestore(&domain->lock, flags);
- }
- 
--static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
--				  struct dmar_domain *domain,
--				  unsigned long pfn, unsigned int pages,
--				  int ih, int map)
-+void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
-+			   struct dmar_domain *domain,
-+			   unsigned long pfn, unsigned int pages,
-+			   int ih, int map)
- {
- 	unsigned int aligned_pages = __roundup_pow_of_two(pages);
- 	unsigned int mask = ilog2(aligned_pages);
-@@ -1573,7 +1572,7 @@ static inline void __mapping_notify_one(struct intel_iommu *iommu,
- 		iommu_flush_write_buffer(iommu);
- }
- 
--static void intel_flush_iotlb_all(struct iommu_domain *domain)
-+void intel_flush_iotlb_all(struct iommu_domain *domain)
- {
- 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
- 	struct iommu_domain_info *info;
-@@ -1765,8 +1764,7 @@ static struct dmar_domain *alloc_domain(unsigned int type)
- 	return domain;
- }
- 
--static int domain_attach_iommu(struct dmar_domain *domain,
--			       struct intel_iommu *iommu)
-+int domain_attach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu)
- {
- 	struct iommu_domain_info *info, *curr;
- 	unsigned long ndomains;
-@@ -1815,8 +1813,7 @@ static int domain_attach_iommu(struct dmar_domain *domain,
- 	return ret;
- }
- 
--static void domain_detach_iommu(struct dmar_domain *domain,
--				struct intel_iommu *iommu)
-+void domain_detach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu)
- {
- 	struct iommu_domain_info *info;
- 
-@@ -4103,7 +4100,7 @@ static void dmar_remove_one_dev_info(struct device *dev)
-  * all DMA requests without PASID from the device are blocked. If the page
-  * table has been set, clean up the data structures.
-  */
--static void device_block_translation(struct device *dev)
-+void device_block_translation(struct device *dev)
- {
- 	struct device_domain_info *info = dev_iommu_priv_get(dev);
- 	struct intel_iommu *iommu = info->iommu;
-@@ -4204,14 +4201,24 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
- 	return NULL;
- }
- 
-+static struct iommu_domain *
-+intel_iommu_domain_alloc_user(struct device *dev, struct iommu_domain *parent,
-+			      const void *user_data)
-+{
-+	if (parent)
-+		return intel_nested_domain_alloc(parent, user_data);
-+	else
-+		return iommu_domain_alloc(dev->bus);
-+}
-+
- static void intel_iommu_domain_free(struct iommu_domain *domain)
- {
- 	if (domain != &si_domain->domain && domain != &blocking_domain)
- 		domain_exit(to_dmar_domain(domain));
- }
- 
--static int prepare_domain_attach_device(struct iommu_domain *domain,
--					struct device *dev)
-+int prepare_domain_attach_device(struct iommu_domain *domain,
-+				 struct device *dev)
- {
- 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
- 	struct intel_iommu *iommu;
-@@ -4450,7 +4457,7 @@ static void domain_set_force_snooping(struct dmar_domain *domain)
- 						     PASID_RID2PASID);
- }
- 
--static bool intel_iommu_enforce_cache_coherency(struct iommu_domain *domain)
-+bool intel_iommu_enforce_cache_coherency(struct iommu_domain *domain)
- {
- 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
- 	unsigned long flags;
-@@ -4801,6 +4808,7 @@ const struct iommu_ops intel_iommu_ops = {
- 	.capable		= intel_iommu_capable,
- 	.hw_info		= intel_iommu_hw_info,
- 	.domain_alloc		= intel_iommu_domain_alloc,
-+	.domain_alloc_user	= intel_iommu_domain_alloc_user,
- 	.probe_device		= intel_iommu_probe_device,
- 	.probe_finalize		= intel_iommu_probe_finalize,
- 	.release_device		= intel_iommu_release_device,
 diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 9446e17dd202..661fb5050e2d 100644
+index 9871de2170eb..9446e17dd202 100644
 --- a/drivers/iommu/intel/iommu.h
 +++ b/drivers/iommu/intel/iommu.h
-@@ -848,6 +848,19 @@ void qi_flush_pasid_cache(struct intel_iommu *iommu, u16 did, u64 granu,
+@@ -599,15 +599,38 @@ struct dmar_domain {
+ 	spinlock_t lock;		/* Protect device tracking lists */
+ 	struct list_head devices;	/* all devices' list */
  
- int qi_submit_sync(struct intel_iommu *iommu, struct qi_desc *desc,
- 		   unsigned int count, unsigned long options);
-+int domain_attach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu);
-+void domain_detach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu);
-+void device_block_translation(struct device *dev);
-+int prepare_domain_attach_device(struct iommu_domain *domain,
-+				 struct device *dev);
-+bool intel_iommu_enforce_cache_coherency(struct iommu_domain *domain);
-+void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
-+			   struct dmar_domain *domain,
-+			   unsigned long pfn, unsigned int pages,
-+			   int ih, int map);
-+void intel_flush_iotlb_all(struct iommu_domain *domain);
-+void domain_update_iommu_cap(struct dmar_domain *domain);
+-	struct dma_pte	*pgd;		/* virtual address */
+-	int		gaw;		/* max guest address width */
+-
+-	/* adjusted guest address width, 0 is level 2 30-bit */
+-	int		agaw;
+ 	int		iommu_superpage;/* Level of superpages supported:
+ 					   0 == 4KiB (no superpages), 1 == 2MiB,
+ 					   2 == 1GiB, 3 == 512GiB, 4 == 1TiB */
+-	u64		max_addr;	/* maximum mapped address */
++	union {
++		/* DMA remapping domain */
++		struct {
++			/* virtual address */
++			struct dma_pte	*pgd;
++			/* max guest address width */
++			int		gaw;
++			/*
++			 * adjusted guest address width:
++			 *   0: level 2 30-bit
++			 *   1: level 3 39-bit
++			 *   2: level 4 48-bit
++			 *   3: level 5 57-bit
++			 */
++			int		agaw;
++			/* maximum mapped address */
++			u64		max_addr;
++		};
 +
- /*
-  * Options used in qi_submit_sync:
-  * QI_OPT_WAIT_DRAIN - Wait for PRQ drain completion, spec 6.5.2.8.
-@@ -860,6 +873,8 @@ void *alloc_pgtable_page(int node, gfp_t gfp);
- void free_pgtable_page(void *vaddr);
- void iommu_flush_write_buffer(struct intel_iommu *iommu);
- struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn);
-+struct iommu_domain *intel_nested_domain_alloc(struct iommu_domain *s2_domain,
-+					       const void *data);
++		/* Nested user domain */
++		struct {
++			/* 2-level page table the user domain nested */
++			struct dmar_domain *s2_domain;
++			/* user page table pointer (in GPA) */
++			unsigned long s1_pgtbl;
++			/* page table attributes */
++			struct iommu_hwpt_intel_vtd s1_cfg;
++		};
++	};
  
- #ifdef CONFIG_INTEL_IOMMU_SVM
- extern void intel_svm_check(struct intel_iommu *iommu);
-diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
-new file mode 100644
-index 000000000000..64441d11a84d
---- /dev/null
-+++ b/drivers/iommu/intel/nested.c
-@@ -0,0 +1,143 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * nested.c - nested mode translation support
-+ *
-+ * Copyright (C) 2023 Intel Corporation
-+ *
-+ * Author: Lu Baolu <baolu.lu@linux.intel.com>
-+ *         Jacob Pan <jacob.jun.pan@linux.intel.com>
-+ */
-+
-+#define pr_fmt(fmt)	"DMAR: " fmt
-+
-+#include <linux/iommu.h>
-+#include <linux/pci.h>
-+#include <linux/pci-ats.h>
-+
-+#include "iommu.h"
-+#include "pasid.h"
-+
-+static int intel_nested_attach_dev(struct iommu_domain *domain,
-+				   struct device *dev)
-+{
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+	struct intel_iommu *iommu = info->iommu;
-+	unsigned long flags;
-+	int ret = 0;
-+
-+	if (info->domain)
-+		device_block_translation(dev);
-+
-+	/* Is s2_domain compatible with this IOMMU? */
-+	ret = prepare_domain_attach_device(&dmar_domain->s2_domain->domain, dev);
-+	if (ret) {
-+		dev_err_ratelimited(dev, "s2 domain is not compatible\n");
-+		return ret;
-+	}
-+
-+	ret = domain_attach_iommu(dmar_domain, iommu);
-+	if (ret) {
-+		dev_err_ratelimited(dev, "Failed to attach domain to iommu\n");
-+		return ret;
-+	}
-+
-+	ret = intel_pasid_setup_nested(iommu, dev,
-+				       PASID_RID2PASID, dmar_domain);
-+	if (ret) {
-+		domain_detach_iommu(dmar_domain, iommu);
-+		dev_err_ratelimited(dev, "Failed to setup pasid entry\n");
-+		return ret;
-+	}
-+
-+	info->domain = dmar_domain;
-+	spin_lock_irqsave(&dmar_domain->lock, flags);
-+	list_add(&info->link, &dmar_domain->devices);
-+	spin_unlock_irqrestore(&dmar_domain->lock, flags);
-+	domain_update_iommu_cap(dmar_domain);
-+
-+	return 0;
-+}
-+
-+static void intel_nested_domain_free(struct iommu_domain *domain)
-+{
-+	kfree(to_dmar_domain(domain));
-+}
-+
-+static void intel_nested_invalidate(struct device *dev,
-+				    struct dmar_domain *domain,
-+				    void *user_data)
-+{
-+	struct iommu_hwpt_invalidate_intel_vtd *inv_info = user_data;
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+	struct intel_iommu *iommu = info->iommu;
-+
-+	if (WARN_ON(!user_data))
-+		return;
-+
-+	switch (inv_info->granularity) {
-+	case IOMMU_VTD_QI_GRAN_ADDR:
-+		if (inv_info->granule_size != VTD_PAGE_SIZE ||
-+		    !IS_ALIGNED(inv_info->addr, VTD_PAGE_SIZE)) {
-+			dev_err_ratelimited(dev, "Invalid invalidation address 0x%llx\n",
-+					    inv_info->addr);
-+			return;
-+		}
-+
-+		iommu_flush_iotlb_psi(iommu, domain,
-+				      inv_info->addr >> VTD_PAGE_SHIFT,
-+				      inv_info->nb_granules, 1, 0);
-+		break;
-+	case IOMMU_VTD_QI_GRAN_DOMAIN:
-+		intel_flush_iotlb_all(&domain->domain);
-+		break;
-+	default:
-+		dev_err_ratelimited(dev, "Unsupported IOMMU invalidation type %d\n",
-+				    inv_info->granularity);
-+		break;
-+	}
-+}
-+
-+static void intel_nested_cache_invalidate_user(struct iommu_domain *domain,
-+					       void *user_data)
-+{
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+	struct device_domain_info *info;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&dmar_domain->lock, flags);
-+	list_for_each_entry(info, &dmar_domain->devices, link)
-+		intel_nested_invalidate(info->dev, dmar_domain,
-+					user_data);
-+	spin_unlock_irqrestore(&dmar_domain->lock, flags);
-+}
-+
-+static const struct iommu_domain_ops intel_nested_domain_ops = {
-+	.attach_dev		= intel_nested_attach_dev,
-+	.cache_invalidate_user	= intel_nested_cache_invalidate_user,
-+	.free			= intel_nested_domain_free,
-+	.enforce_cache_coherency = intel_iommu_enforce_cache_coherency,
-+};
-+
-+struct iommu_domain *intel_nested_domain_alloc(struct iommu_domain *s2_domain,
-+					       const void *user_data)
-+{
-+	const struct iommu_hwpt_intel_vtd *vtd = user_data;
-+	struct dmar_domain *domain;
-+
-+	domain = kzalloc(sizeof(*domain), GFP_KERNEL_ACCOUNT);
-+	if (!domain)
-+		return NULL;
-+
-+	domain->use_first_level = true;
-+	domain->s2_domain = to_dmar_domain(s2_domain);
-+	domain->s1_pgtbl = vtd->pgtbl_addr;
-+	domain->s1_cfg = *vtd;
-+	domain->domain.ops = &intel_nested_domain_ops;
-+	domain->domain.type = IOMMU_DOMAIN_NESTED;
-+	INIT_LIST_HEAD(&domain->devices);
-+	spin_lock_init(&domain->lock);
-+	xa_init(&domain->iommu_array);
-+
-+	return &domain->domain;
-+}
+ 	struct iommu_domain domain;	/* generic domain data structure for
+ 					   iommu core */
 -- 
 2.34.1
 
