@@ -1,166 +1,298 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9C09BC27F
-	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 19:04:30 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6961DC14;
-	Thu,  9 Mar 2023 11:05:13 -0800 (PST)
-Received: from [10.57.91.145] (unknown [10.57.91.145])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E89CF3F71A;
-	Thu,  9 Mar 2023 11:04:27 -0800 (PST)
-Message-ID: <64c7659b-9bd5-2239-cde9-f7b48f6877ca@arm.com>
-Date: Thu, 9 Mar 2023 19:04:19 +0000
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57DD0C297
+	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 21:01:23 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LMs1LSSHLb98z2149AsbpbQLARsSfr/LaJuIg1M34mlfgyOzc8HWzTkA0/QK3z3HuzxFzaqwXdzNZfKzO0JOUF7td9a5md3vWwsJk2Zrj9QCDMBY497zWNDpHef8eY2LpZXEd4kMK25f5sFpsUDfXyz/+avhOoP9CHxMoNccCINfWeMgfM3KQmxqMwiZ4pm8aszQIroxNVwp3Rez/R5eK2V/OWvaRBzGcsxdUDqbwyB6I1ZYjFXX3onJdpg2rMs/CYc8OdFLdD6J8hdlo6+5Aqg2r9xqtB1OV4/GjjywVtoqDSK9quYI5KRh+t/mxrx3feDRj3Ezpz+WqF9wbEA1Mw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=L6XWgeWtMC5uOVeEXB6h1vRKsFpmoKA6H0RuZHCr5hc=;
+ b=G1ydH5tMcMq/NL56jK0upfXPwIntq9zx+vse4YWzEUxAtqLcrme8FwZmh+khVvKbDjRHUXTKaT2TCtzDVVXTkS+q2hjDQbEGFE87JjYnGbVUYXamx+xfheTz0ZBvwsigM0AT21a/bRGZNuyUIi1BT25+yQ099iN2LJFMDf5Wi8Ni9KoC+dAVxT/1HWDPgOPP+FloyEh4da+bEc/xEJLfj2nZJdRz4gtS8w7br7PaVSLikRQeF1EJPR8ohWsyVQ0fxRceEJ14w8SLAWx1iLXcE/RcAjx0AKsGVi6D1tqiR/FQ8Hi9c/1Mdj9NwsbrNnQZp+oyUXn8kmkP4ZQHwZqPFQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=L6XWgeWtMC5uOVeEXB6h1vRKsFpmoKA6H0RuZHCr5hc=;
+ b=pCpQ0AuBQj5T75W4FdWVEwGdfnPDMMNJdYC4vQn/HbTt6XuRQNhVRnLMa+3fEmqIm9HC8Wpx1gJ4155XxEgL1gZDu0/uFsMpwF/SKLhiGaPCrBDraC9MJ6e0sKf/CRaNdkdfs8ng/VPU2oRdD98Je892mgZlZAg6OH0k0s3Q/m6nHAqnUGgNKplfhNJog7pbPWl+pmB2489v+MzNgJKovI0+mXB8iKLXdJBmtJAw0+yd6177TBtc/iqAumT4t9QJmigZ2ruKKp0Aq6xZadJpm1F0agwibMiRc7ziFZV0odMVUhTrBUzJvrMrunRgECoIOZPLsKEakT8k46EsKJTIFw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by SJ0PR12MB8089.namprd12.prod.outlook.com (2603:10b6:a03:4eb::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.17; Thu, 9 Mar
+ 2023 21:01:20 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::ef6d:fdf6:352f:efd1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::ef6d:fdf6:352f:efd1%3]) with mapi id 15.20.6178.017; Thu, 9 Mar 2023
+ 21:01:19 +0000
+Date: Thu, 9 Mar 2023 17:01:15 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, robin.murphy@arm.com,
+	will@kernel.org, eric.auger@redhat.com, kevin.tian@intel.com,
+	baolu.lu@linux.intel.com, joro@8bytes.org,
+	shameerali.kolothum.thodi@huawei.com,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, yi.l.liu@intel.com
+Subject: Re: [PATCH v1 02/14] iommufd: Add nesting related data structures
+ for ARM SMMUv3
+Message-ID: <ZApJGwPjHhlDwTDV@nvidia.com>
+References: <cover.1678348754.git.nicolinc@nvidia.com>
+ <364cfbe5b228ab178093db2de13fa3accf7a6120.1678348754.git.nicolinc@nvidia.com>
+ <20230309134217.GA1673607@myrica>
+ <ZAnx0lUkw02cVTi+@nvidia.com>
+ <20230309182659.GA1710571@myrica>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230309182659.GA1710571@myrica>
+X-ClientProxiedBy: SJ0PR05CA0012.namprd05.prod.outlook.com
+ (2603:10b6:a03:33b::17) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v1 01/14] iommu: Add iommu_get_unmanaged_domain helper
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
- eric.auger@redhat.com, kevin.tian@intel.com, baolu.lu@linux.intel.com,
- joro@8bytes.org, shameerali.kolothum.thodi@huawei.com,
- jean-philippe@linaro.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <cover.1678348754.git.nicolinc@nvidia.com>
- <9b1077601cace998533129327f5e7ad946752d29.1678348754.git.nicolinc@nvidia.com>
- <2118a147-ac95-d846-ad6f-85d7cebca46a@arm.com> <ZAnq/8Ak75Dr7JM0@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ZAnq/8Ak75Dr7JM0@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SJ0PR12MB8089:EE_
+X-MS-Office365-Filtering-Correlation-Id: c843803d-53f9-4267-474f-08db20e16e2b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	FGRPjjVdXVgzQykZTa2kYYKyLAKbHsinEIdlAmXTH39k+2F585THnc+QZ0e8FKMB2YlPGbLdY8tnH8BfyzXJvN2HpMpPLXBffmLke/HUoNuEaLhiYY97WUND3JjTziMqLcGwpbbMQtr/M3F9DcU1Vp+l4spOTqawWsg18MfkPFdbC2QdsRecqhkCXgpcsKWoFE7JkuwUQhNeR7aRgXV5APl6ihjLlGeFz/LzO8c9SCf8e9TO9f4RwgQlnYaBs0IXvIjZueL6zoAvvl+0r2HXwd0/zSDHKRCrxoiCf+3kxOK7rcowyZ5P4B2MHWf4CF6cw2tXRGjfv+qXoGrEAU7uNBOAYrwd1BmFDcOI+DN+/kZvYS4PTAt4Tsx1CAr4DGWHD0nR9absrWTfOHoRw1zgFyqvnb4vvXDw8QmN5ZW/Yymq7WTbk+Y1OJakGIwYcIPIbjy4NFFTMxzPoIXRLaop7+ux2zAuv6D4pq6BPOPcn6xsbE60ImT2stxbMQWLEEp8BGvC8/PtXG8oB4aIVSz+N+gQqoNP/GcW0Gm9ZuvW8d2ez4/Wo8+TsQJdIC3UM5AvYyf4sG8/ompSbnXKgByoYsmS4dj1qHmgUlbH8HcM0mnYIRqHqPIX5eO9NAGzYdTkA+uv3w26uBDfi5Ek4QxJzA==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(376002)(346002)(39860400002)(136003)(396003)(451199018)(26005)(66556008)(6506007)(66946007)(66476007)(8676002)(8936002)(6916009)(6512007)(186003)(4326008)(7416002)(478600001)(6666004)(2616005)(5660300002)(6486002)(41300700001)(86362001)(83380400001)(36756003)(38100700002)(316002)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?i3HNMCAoRIm718agRQXZAU6ih/rJ2Tyb7PIfff9ri4xrlhOZg4PM46qVkyLC?=
+ =?us-ascii?Q?EO4IrLR3AVFslabNGxU/AXnGOHdmKs2I0bHUIXYkjCGcLn1uN0dymggxjgmN?=
+ =?us-ascii?Q?V3dlo4CKYP6zIeQ0QAzrK+UDrIe03I7dUKoOuUbfBhhiHVsBiAkLjDQVFHkT?=
+ =?us-ascii?Q?UI34lUBsHWanIxt6CyJ7Iqp+qa/HKy5ElDoTIGPbc9+PT2O0wFnUFjKteMgS?=
+ =?us-ascii?Q?gPmeQcwsWn5IMV28RDcNd0ctC2ezjbSqij49Ns3dzD17UgT6fXV/jWerD30J?=
+ =?us-ascii?Q?ZGONoh0fP3p17L+z5kDVIry5gapy2oHYx8nZIJP8iwRMNKjkyQs+xZRXyWS/?=
+ =?us-ascii?Q?Z9YSXszIqudJXdQfg7GC5otHyMIiZbrNsx0AYP05rxi4a1EoAreOFloLRDX1?=
+ =?us-ascii?Q?XYU5JQtcGfggpSLPTdm0HfLNXQCb8MBTcLrLsOADOSEmk0XZpZlVoCEoPXSX?=
+ =?us-ascii?Q?0n7lpnVNZqag+EPKJ8MtaUEMVr2YfRJHTCjZZykFUp33VTVVTMoCi6cLH/Px?=
+ =?us-ascii?Q?JUEfC/IHE+Y01RRNmt6+f6gWo0S4PqSgCOUAzJ9Ot2nB4nGg05MwAk/PZ3Xw?=
+ =?us-ascii?Q?wAtYPmHOSvyFDs1Zbhx+gRfU+i1u7BkTsLT9BqywcI/ovFnx6fXmIrRk9Y0l?=
+ =?us-ascii?Q?gNW8pNzYIcRZZhy+/d6q/wowAZxyfntcTJ8Dx+CUJdog+6hPg3dug1YZd/Zc?=
+ =?us-ascii?Q?fjy54Toc61X9An+qBduG3paYl6FrENaFVZ89q1Ov81JrmUscc+NejOhUjn1H?=
+ =?us-ascii?Q?4aJrdT7E+RcPGsxW02+TLKSf//sFrNap1zS2zK8NxEK8w02ZXdxyWlYOblBm?=
+ =?us-ascii?Q?O2+lzxcvtC1O6FkHdTJLLPn3PyujhL0td9MlEbCCX3ERnhp1rLrV92qmpz2y?=
+ =?us-ascii?Q?bcARLMKhqWqyGGfuyzGKucpS3aUn8dmRP4QECBlHa6xwQ64Fs3vQmsoKsS5L?=
+ =?us-ascii?Q?nzU2xBXvVJzOcbjyeV6hHY/pERWZIX4FrTaH258M2D9twi8m2+fqyFU3HQrU?=
+ =?us-ascii?Q?yNZFNDECXxNGgDSQ4FLy+/chdE0WfOJVbNRyRpFKo+QclFTPkbY7QpP7hqP6?=
+ =?us-ascii?Q?5oBr8Gh3ne/2yIbjDWWxrCRT+D+5xA455OMEflxT4QCcg8Vs25w0BRh/lmTB?=
+ =?us-ascii?Q?DxgnJn6zSbWc9xuakQkS17A/dEDuTKPm6E46CKaRg4RzcB20njru2yIBWF+T?=
+ =?us-ascii?Q?LmQW2JF1uQby0jB3N9ke4Ao0xFju/3egmuB+Z4nIyxSVQDEUVHy5xmWj6bC7?=
+ =?us-ascii?Q?7GVNpmlMeNaLieCV+CJCsHud8JQNWlFmGgkJ9DIbKLTlflyy57arBERgY15c?=
+ =?us-ascii?Q?lIofvZi0nz+WfVms+As8HNX25Fk5Z4yonOCi0tGa6V+j3k5+YoKuiZOJxAbE?=
+ =?us-ascii?Q?JghhntykWImHnu6edxS/mv12djt79cQhZ+9YXhRYQv3smxgZGaS5gQkP1iUF?=
+ =?us-ascii?Q?Q4m3X08laOX6GsZ+5WFzIw5EoLyuYgvkMXqXYBeLzBa5a8aIJ2UIWcv6HA+x?=
+ =?us-ascii?Q?pp/0+6mE79HC9k2+Gltzy/q1VzDjjkTuZXsxEXy6CYxIDBJ1kBiS+Igfnu8E?=
+ =?us-ascii?Q?vF97lIeDRMzSv5fvugvaaOjXPeeMfstnwowRGg49?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c843803d-53f9-4267-474f-08db20e16e2b
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2023 21:01:19.5819
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5xDfKfzAU2jPFBEhzPxW9sXIvo80n+ersi13qG6ovijsNKMlyCpz0DxO/MVhlHkl
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB8089
 
-On 2023-03-09 14:19, Jason Gunthorpe wrote:
-> On Thu, Mar 09, 2023 at 12:51:20PM +0000, Robin Murphy wrote:
+On Thu, Mar 09, 2023 at 06:26:59PM +0000, Jean-Philippe Brucker wrote:
+> On Thu, Mar 09, 2023 at 10:48:50AM -0400, Jason Gunthorpe wrote:
+> > On Thu, Mar 09, 2023 at 01:42:17PM +0000, Jean-Philippe Brucker wrote:
+> > 
+> > > Although we can keep the alloc and hardware info separate for each IOMMU
+> > > architecture, we should try to come up with common invalidation methods.
+> > 
+> > The invalidation language is tightly linked to the actual cache block
+> > and cache tag in the IOMMU HW design.
 > 
->> Please note I stress "valid" since I'm not buying arbitrarily made-up
->> conceptual purity arguments. A nested domain cannot be the "one true domain"
->> that is an opaque combination of S1+S2; the IOMMU API view has to be more
->> like the device is attached to both the nested domain and the parent stage 2
->> domain somewhat in parallel.
+> Concretely though, what are the incompatibilities between the HW designs?
+> They all need to remove a range of TLB entries, using some address space
+> tag. But if there is an actual difference I do need to know.
+
+For instance the address space tags and the cache entires they match
+to are wildly different.
+
+ARM uses a fine grained ASID and Intel uses a shared ASID called a DID
+and incorporates the PASID into the cache tag.
+
+AMD uses something called a DID that covers a different set of stuff
+than the Intel DID, and it doesn't seem to work for nesting. AMD uses
+PASID as the primary nested cache tag.
+
+Superficially you can say all three have an ASID and you can have an
+invalidate ASID Operation and make it "look" the same, but the actual
+behavior is totally ill defined and the whole thing is utterly
+obfuscated as to what does it actually MEAN.
+
+But this doesn't matter for virtio. You have already got a spec that
+defines invalidation in terms of virtio objects that sort of match
+things like iommu_domains. I hope the virtio
+VIRTIO_IOMMU_INVAL_S_DOMAIN is very well defined as to exactly what
+objects a DOMAIN match applies to. The job of the hypervisor is to
+translate that to whatever invalidation(s) the real HW requires.
+
+ie virito is going to say "invalidate this domain" and expect the
+hypervisor to spew it to every attached PASID if that is what the HW
+requires (eg AMD), or do a single ASID invalidation (Intel, sometimes)
+
+But when a vIOMMU gets a vDID or vPASID invalidation command it
+doesn't mean the same thing as virtio. The driver must invalidate
+exactly what the vIOMMU programming model says to invalidate because
+the guest is going to spew more invalidations to cover what it
+needs. Over invalidation would be a performance problem.
+
+Exposing these subtle differences to userspace is necessary. What I do
+not want is leaking those differences through an ill-defined "generic"
+interface.
+
+Even more importantly Intel and ARM should not have to fight about the
+subtle implementation specific details of the specification of the
+"generic" interface. If Intel needs something dumb to make their
+viommu work well then they should simply be able to do it. I don't
+want to spend 6 months of pointless arguing about language details in
+an unnecessary "generic" spec.
+
+> > The purpose of these interfaces is to support high performance full
+> > functionality vIOMMUs of the real HW, we should not loose sight of
+> > that goal.
+> > 
+> > We are actually planning to go futher and expose direct invalidation
+> > work queues complete with HW doorbells to userspace. This obviously
+> > must be in native HW format.
 > 
-> I strongly disagree with this.
+> Doesn't seem relevant since direct access to command queue wouldn't use
+> this struct.
+
+The point is our design direction with iommufd is to expose the raw HW
+to userspace, not to obfuscate it with ill defined generalizations.
+
+> > Someone has to do the conversion. If you don't think virito should do
+> > it then I'd be OK to add a type tag for virtio format invalidation and
+> > put it in the IOMMU driver.
 > 
-> The design we have from the core perspective is an opaque domain that
-> is a hidden combination of S1/S2 inside the driver. We do not want to
-> change the basic design of the iommu core: there is only one domain
-> attached to a device/group at a time.
+> Implementing two invalidation formats in each IOMMU driver does not seem
+> practical.
+
+I don't see why.
+
+The advantage of the kernel side is that the implementation is not
+strong ABI. If we want to adjust and review the virtio invalidation
+path as new HW comes along we can, so long as it is only in the
+kernel.
+
+On the other hand if we mess up the uABI for iommufd we are stuck with
+it.
+
+The safest and best uABI for iommufd is the HW native uABI because it,
+almost by definition, cannot be wrong.
+
+Anyhow, I'm still not very convinced adapting to virtio invalidation
+format should be in iommu drivers. I think what you end up with for
+virtio is that Intel/AMD have some nice common code to invalidate an
+iommu_domain address range (probably even the existing invalidation
+interface), and SMMUv3 is just totally different and special.
+
+This is because SMMUv3 has no option to keep the PASID table in the
+hypervisor so you are sadly forced to expose both the native ASID and
+native PASID caches to the virtio protocol.
+
+Given that the VM virtio driver has to have SMMUv3 specific code to
+handle the CD table it must get, I don't see the problem with also
+having SMMUv3 specific code in the hypervisor virtio driver to handle
+invalidating based on the CD table.
+
+Really, I want to see patches implementing all of this before we make
+any decision on what the ops interface is for virtio-iommu kernel
+side.
+
+> > However, I don't know the rational for virtio-viommu, it seems like a
+> > strange direction to me.
 > 
-> This patch should be seen as a temporary hack to allow the ARM ITS
-> stuff to hobble on a little longer. We already know that iommufd use
-> cases are incompatible with the design and we need to fix it. The
-> fixed solution must have iommufd install the ITS pages at domain
-> allocation time and so it will not need these APIs at all. This
-> tempoary code should not dictate the overall design of the iommu core.
+> A couple of reasons are relevant here: non-QEMU VMMs don't want to emulate
+> all vendor IOMMUs, new architectures get vIOMMU mostly for free,
+
+So your argument is you can implement a simple map/unmap API riding
+on the common IOMMU API and this is portable?
+
+Seems sensible, but that falls apart pretty quickly when we talk about
+nesting.. I don't think we can avoid VMM components to set this up, so
+it stops being portable. At that point I'm back to asking why not use
+the real HW model?
+
+> > All the iommu drivers have native command
+> > queues. ARM and AMD are both supporting native command queues directly
+> > in the guest, complete with a direct guest MMIO doorbell ring.
 > 
-> If we belive exposing the S1/S2 relationships through the iommu core
-> is necessary for another legitimate purpose I would like to hear about
-> it. In my opinion using APIs to peek into these details is far more
-> likely to be buggy and long term I prefer to block the ability to
-> learn the S2 externally from iommufd completely.
+> Arm SMMUv3 mandates a single global command queue (SMMUv2 uses
+> registers). An SMMUv3 can optionally implement multiple command
+> queues, though I don't know if they can be safely assigned to
+> guests.
+
+It is not standardized by ARM, but it can (and has) been done.
+
+> For a lot of SMMUv3 implementations that have a single queue and for
+> other architectures, we can do better than hardware emulation.
+
+How is using a SW emulated virtio formatted queue better than using a
+SW emulated SMMUv3 ECMDQ?
+
+The vSMMUv3 driver controls what capabilites are shown to the guest it
+can definitely create a ECMDQ enabled device and do something like
+assign the 2ndary ECMDQs to hypervisor kernel SW queues the same way
+virito does.
+
+I don't think there is a very solid argument that virtio-iommu is
+necessary to get faster invalidation.
+
+> > If someone wants to optimize this I'd think the way to do it is to use
+> > virtio like techniques to put SW command queue processing in the
+> > kernel iommu driver and continue to use the HW native interface in the
+> > VM.
 > 
-> Thus the overall design of the iommu core APIs is not being changed.
-> The core API design follows this logic with and without nesting:
->     iommu_attach_device(domin);
->     WARN_ON(domain != iommu_get_domain_for_dev());
+> I didn't get which kernel this is.
 
-That is indeed one of many conditions that are true today, but the facts 
-are that nothing makes that specific assertion, nothing should ever 
-*need* to make that specific assertion, and any driver sufficiently dumb 
-to not bother keeping track of its own domain and relying on 
-iommu_get_domain_for_dev() to retrieve it should most definitely not be 
-allowed anywhere near nesting.
+hypervisor kernel.
 
-The overall design of the iommu core APIs *is* being changed, because 
-the current design is also that iommu_get_domain_for_dev() always 
-returns the correct domain that iommu_dma_prepare_msi() needs, which 
-breaks with nesting. You are literally insisting on changing this core 
-API, to work around intentionally breaking an existing behaviour which 
-could easily be preserved (far less invasively), for the sake of 
-preserving some other theoretical behaviour that IS NOT USEFUL.
-
-The overall design of the iommu core APIs *is* being changed, because 
-the core API design also follows this logic for any domain type:
-
-	domain = iommu_get_domain_for_dev();
-	phys = iommu_iova_to_phys(domain, iova);
-	//phys meaningfully represents whether iova was valid
-
-Yes, even blocking and identity domains, because drivers ACTUALLY DO 
-THIS. I'm not sure there even is a single correct thing that nesting 
-domains could do to satisfy all the possible expectations that callers 
-of iommu_iova_to_phys() may have. However if the grand design says it's 
-not OK for iommu_get_domain_for_dev() to return what 
-iommu_dma_prepare_msi() needs even though nobody else should ever be 
-passing a nesting domain to it, then it's also not OK for 
-iommu_iova_to_phys() to crash or lie and return 0 when a valid 
-translation (by some notion) exists, even though nobody should ever pass 
-a nesting domain in there either.
-
-Forgive me for getting wound up, but I'm a pragmatist and my tolerance 
-for ignoring reality is low.
-
-> The hack in this patch gets its own special single-use APIs so we can
-> purge them once they are not needed and do not confusingly contaminate
-> the whole design. For this reason the ops call back should only be
-> implemented by SMMUv3.
+> > IMHO this was just unioning all the different invalidation types
+> > together. It makes sense for something like virtio but it is
+> > illogical/obfuscated as a user/kernel interface since it still
+> > requires a userspace HW driver to understand what subset of the
+> > invalidations are used on the actual HW.
 > 
->> Even when nesting is active, the S2 domain still exists as a domain
->> in its own right, and still needs to be visible and operated on as
->> such, for instance if memory is hotplugged in or out of the VM.
-> 
-> It exists in iommufd and iommufd will operate it. This is not a
-> problem.
-> 
-> iommufd is not using a dual attach model.
-> 
-> The S2 is provided to the S1's domain allocation function as creation
-> data. The returned S1 domain opaquely embeds the S2. The embedded S2
-> cannot be changed once the S1 domain is allocated.
-> 
-> Attaching the S1 always causes the embedded S2 to be used too - they
-> are not separable so we don't have APIs talking about about
-> "attaching" the S2.
+> As above, decoding arch-specific structures into generic ones is what an
+> emulated IOMMU does,
 
-Yes, that is one way of viewing things, but it's far from the only way. 
-The typical lifecycle will involve starting the VM with S2 alone, then 
-enabling nesting later - we can view that as allocating a nested domain 
-based on S2, then "replacing" S2 with nested, but we could equally view 
-it as just attaching the nested domain on top of the existing S2, like 
-pushing to a stack (I do agree that trying to model it as two completely 
-independent and orthogonal attachments would not be sensible). It's 
-really just semantics of how we prefer to describe things, and whether 
-the s2_domain pointer is passed up-front to domain_alloc or later to 
-attach_dev.
+No, it is what virtio wants to do. We are deliberately trying not to
+do that for real accelerated HW vIOMMU emulators.
 
-The opaque nested domain looks clean in some ways, but on the other hand 
-it also heavily obfuscates how translations may be shared between one 
-nested domain and other nested and non-nested domains, such that 
-changing mappings in one may affect others. This is a major and 
-potentially surprising paradigm shift away from the current notion that 
-all domains represent individual isolated address spaces, so abstracting 
-it more openly within the core API internals would be clearer about 
-what's really going on. And putting common concepts at common levels of 
-abstraction makes things simpler and is why we have core API code at all.
+> and it doesn't make a performance difference in which
+> format it forwards that to the kernel. The host IOMMU driver checks the
+> guest request and copies them into the command queue. Whether that request
+> comes in the form of a structure binary-compatible with Arm SMMUvX.Y, or
+> some generic structure, does not make a difference.
 
-Frankly it's not like we don't already have various API-internal stuff 
-in struct iommu_domain that nobody external should ever be looking at, 
-but if that angst remains overwhelming then I can't imagine it being all 
-that much work to move the definition to iommu-priv.h - AFAICS it 
-shouldn't need much more than some helpers for the handful of 
-iommu_get_domain_for_dev() users currently inspecting the type, 
-pgsize_bitmap, or geometry - which would ultimately be a good deal 
-neater and more productive than adding yet more special-case ops that 
-every driver is just going to implement identically.
+It is not the structure layouts that matter!
 
-And to even imagine the future possibility of things like S2 pagetable 
-sharing with KVM, or unpinned S2 with ATS/PRI or SMMU stalls, by 
-tunnelling more private nesting interfaces directly between IOMMUFD and 
-individual drivers without some degree of common IOMMU API abstraction 
-in between... no. Just... no.
+It is the semantic meaning of each request, on each unique piece of
+hardware. We actually want to leak the subtle semantic differences to
+userspace.
 
-Thanks,
-Robin.
+Doing that and continuing to give them the same command label is
+exactly the kind of obfuscated ill defined "generic" interface I do
+not want.
+
+Jason
