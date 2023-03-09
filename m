@@ -1,118 +1,139 @@
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2051.outbound.protection.outlook.com [40.107.95.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68168C261
-	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 17:04:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678381491; x=1709917491;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=7G0O80eoi717307ESCF3NXvsdQ1Hks/w/yE5W6NxlwA=;
-  b=hu4T1vRH2Jr7FYKWqEjn6k0D8EmqaPKqTGlTkl/iETZewK9CgcEKPdsM
-   BLsaEJEA+vlopVrbRsUWfrqhsItEUtHlWEXTLksCmKjlcAfEbDpgJCHh4
-   jEIapWZjzsNjb/NuKvsJUF5z/SSEzxIh6FI4ElKTW13jtSXmYljcHrHgL
-   W41DSFVzpYImffTa/wk303nIZ8LK5b2OxRkz7QaHnfaj+pmEynvmOUcI3
-   50bMbWammJihTBpqLru+ihoZcYhATQ+Re9arbzjgcevHR+BQAZDQThyjq
-   PVL8OQTdkqqUWpcNBwDmLcAApYHrY0xiTrf0M1MMJIz310YNwaMWSaORv
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="333975374"
-X-IronPort-AV: E=Sophos;i="5.98,247,1673942400"; 
-   d="scan'208";a="333975374"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 09:02:31 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="787663874"
-X-IronPort-AV: E=Sophos;i="5.98,247,1673942400"; 
-   d="scan'208";a="787663874"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 09:02:31 -0800
-Date: Thu, 9 Mar 2023 09:06:23 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: "Luck, Tony" <tony.luck@intel.com>, "Tian, Kevin"
- <kevin.tian@intel.com>, LKML <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Lu Baolu
- <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "vkoul@kernel.org"
- <vkoul@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon
- <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>, "Raj, Ashok"
- <ashok.raj@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Yu, Fenghua"
- <fenghua.yu@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Zanussi,
- Tom" <tom.zanussi@intel.com>, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH 3/4] iommu/sva: Support reservation of global PASIDs
-Message-ID: <20230309090623.7ea2c3fe@jacob-builder>
-In-Reply-To: <ZAY5d2MSXjWRGF0n@nvidia.com>
-References: <20230302005959.2695267-1-jacob.jun.pan@linux.intel.com>
-	<20230302005959.2695267-4-jacob.jun.pan@linux.intel.com>
-	<BN9PR11MB52765C5E0DC0759880C08E258CB29@BN9PR11MB5276.namprd11.prod.outlook.com>
-	<20230303134753.660d0755@jacob-builder>
-	<ZAXkLN39VUSl+t65@nvidia.com>
-	<20230306094408.2d675d5b@jacob-builder>
-	<ZAYmS4Sx6bm+ziDY@nvidia.com>
-	<20230306095759.1dd65cca@jacob-builder>
-	<ZAYunPcgSOGFK8Qi@nvidia.com>
-	<SJ1PR11MB6083DFA2C1D00B00C3918982FCB69@SJ1PR11MB6083.namprd11.prod.outlook.com>
-	<ZAY5d2MSXjWRGF0n@nvidia.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 155DCC261
+	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 17:21:03 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=deOa48gyN54cotpHu4RmrMDdC0YT1d+w8D2tkGJXqb++mFbRna7aqJFGMU38zjU0XowR/psrS5kS6hIQ7Rxj3uYowGxfM9KZY8eQ1yKMaBmnKsD2b/ejUvFDuBo7rbOOJnkEV+hZDaj4pf0LD+C9yN1p9U/Yf1zf8lhtla9PmUOtDmQDV4mJlcboQj9OPVt4lbYFcDAemG8pz8KXwQ1SanoggNjlHFdI6/XzQujkGb/NChAuDIvTkE6CNq6cEyAig/YJuKZg/+Rvi70YfGBXmr3LXVKqzc1HTOHBPtcY4c8YNZTHITzJ4fGorVp0Y9g+6k0nsCihKuDYoKuv6ReWRA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=I2ColwMjueZ+u0KnqnMFLSfhm2F+7iidraEBEVbTypw=;
+ b=L7/4jxxxzn863xeVnTtq48kgzKWGmMO63OmJ2DjW0vg9H0dtuOj9Ss8GjCEg8AApNo8OGIuh0Ji8gwtSvwm52a+QVAdNMOg2ja5gFm395xyEUO6hqUwaNT1e5oEBvQ101B3PmnYuXR/eVyDmvQON5mWPzZces1Jy4Rbth2fjbN/C++qe2wfrX0k1ZFt7+3NBrz2BxiiIjTDwAzPt57IFPzKxLCcwCbDscUDlkPN0x5BDAXcRjqdZOi2X1bBzEvHM8031IIkkz5LHuBTIWEyMmjYKfOcl9PmT1gkK11yen01mFwyxKYQiABJJOaNoUq6cR9jHpZSzX6+tPUwniShvNg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=I2ColwMjueZ+u0KnqnMFLSfhm2F+7iidraEBEVbTypw=;
+ b=cEVx0kUnpa6PHUxikye8ju8uO2xU+ekdi/eL3SPfotyy7Q6WxN2ZwoddlnZakmBkMpcFaiff1zyEHm3wEJVPsz3sEmaX4SCPtFyectO1OVOlVyE33hD4K4gjaKRN3dAhNoqY8aNkNHci+2WF8e5sCSukXigkBIT1A19mXbsCA3KITD7FVFDzdPegDDlMKXLghg9UfstxN6iGy926a0Jw68n7MaRTBO+qnPDl9Cnp4UTiVxqimhs9z/7pVKyHF5ON9ts5ERKXJN6Rq6g6jOpW8MftVkOqAdIo3cLqS/g6uAqMmwBbZGAGYvOS8CszuK/kRUIkBS3a+RmnASfo23+3ow==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DS7PR12MB6166.namprd12.prod.outlook.com (2603:10b6:8:99::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.19; Thu, 9 Mar
+ 2023 17:21:01 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::ef6d:fdf6:352f:efd1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::ef6d:fdf6:352f:efd1%3]) with mapi id 15.20.6178.017; Thu, 9 Mar 2023
+ 17:21:01 +0000
+Date: Thu, 9 Mar 2023 13:20:58 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org,
+	alex.williamson@redhat.com, kevin.tian@intel.com,
+	robin.murphy@arm.com, cohuck@redhat.com, eric.auger@redhat.com,
+	nicolinc@nvidia.com, kvm@vger.kernel.org, mjrosato@linux.ibm.com,
+	chao.p.peng@linux.intel.com, yi.y.sun@linux.intel.com,
+	peterx@redhat.com, jasowang@redhat.com,
+	shameerali.kolothum.thodi@huawei.com, lulu@redhat.com,
+	suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v2 3/4] iommufd: Add IOMMU_DEVICE_GET_HW_INFO
+Message-ID: <ZAoVemZoGpx16P9E@nvidia.com>
+References: <20230309075358.571567-1-yi.l.liu@intel.com>
+ <20230309075358.571567-4-yi.l.liu@intel.com>
+ <6c1b221e-df8d-4b82-10e5-aa3027819d45@linux.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6c1b221e-df8d-4b82-10e5-aa3027819d45@linux.intel.com>
+X-ClientProxiedBy: SJ0PR05CA0141.namprd05.prod.outlook.com
+ (2603:10b6:a03:33d::26) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DS7PR12MB6166:EE_
+X-MS-Office365-Filtering-Correlation-Id: 13dbb63c-e221-44e6-94a1-08db20c2a7da
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	VT1nl0c+OvHMYgMlqI+4AS39leT1VGIN7iENUds09JmQIqfL6dwmhgqger0+pm1b/9z6/8p5Rery0UIbVb8rU+zvrjQX0S80aYg2yo9sZRobU7KIcdR4TZWHtHknD9EQXwAL8MzP0Ofqm2XhpHLLEGQrJFJ9nWa+Ar318V9CXQfUHEtPpaTN3on04hrAWlH0+eFw7Mts3iM7agyaGD3K33iq+VcogmCPkDIkAOkW+0g5T1G45Ih2Aj/ael8GP8c+TD0Sez4tZsmpJzeHVirIdeq4z/SYy4IUdNgh8egWckIMS0JgLYeLXOIEKhiwHZfOW9BDsLhrQQK43pKDmKm5xrpM0feDBVjN68aWs4sVRBBg1cgr7MNBWChwKV9p5iFHXQbkUEmI+MaDPkaslJtWLI3xM4CnsNEnWSdaN7t5jOeqVyGYBiZmnkAx6PGl0esWk56w+5h0XNa35OBMSOZyyUW4C2aHhSlw5vEJTDrQE3bMIRieue4FZXHgJQSrx44ctmIsKanqk/FmVebWijd21o1bz84VqIaM93vzIja3pKgklDzucyx+NjYGxP1WQyPeDR9EmZpKufti10ysNoN2KIQHU4Rh+spah+S2Mi6IiOs+ni4FuWsF7w7e/fAAH3re1txX0fY4uwlxO8mzxoh7aQ==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(396003)(39860400002)(366004)(376002)(136003)(451199018)(36756003)(6486002)(316002)(6916009)(5660300002)(7416002)(2906002)(8936002)(66476007)(66946007)(8676002)(66556008)(4744005)(41300700001)(4326008)(26005)(86362001)(186003)(6666004)(2616005)(478600001)(6512007)(6506007)(38100700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?giTJ0eotKAMxQIF7wp1ZUApxmz5yMAew0KcHZTLWr/sIGrAmyUq4Nt7Iep2q?=
+ =?us-ascii?Q?VIRb+hvU/kUJ/pyDh+BLX86wLAOo7kc0x+jzQQS/8kgjdOzbm4Uz0aqYYHy9?=
+ =?us-ascii?Q?UVAMSOlfQNb/Gqlcgs21oGJvwqDu8FBOim6a+8lA7R1oyQl+zUxNEtfq+wtW?=
+ =?us-ascii?Q?g4CucP0l2PmpMXMKBLfEHUmxFDvLtdk2KZwNrsREgb6CVHCctvCO4AnxeJZ5?=
+ =?us-ascii?Q?Qfb8892r6oK4gNQgaKpMu5/2Roprouh9Ay8l2nk6EXlYdqzfjNmreNBO2GtN?=
+ =?us-ascii?Q?y/R4hu4FnB0AXkQWx/p8GdAbZhcDybTEcYHEBFvD6w+pkddLB0YOGuXgVKlM?=
+ =?us-ascii?Q?MY5hQv1qHscNdQJf873X3/ISP9F6PGgu0mOpMGm4Jrgcsoce/P3T+Sauhbcw?=
+ =?us-ascii?Q?UIhAPPWefz8ah/LLIfX5IkZzzIyMq+wL+eMyKX3Tolk5QMK8KycyXMFUpkiw?=
+ =?us-ascii?Q?l6ogq+Q0VEdkCZ1mQh/KToy/k+ekSS+96v/+fC91eMbFIuY5wsgeXZT9fR3B?=
+ =?us-ascii?Q?f17iYH2XoxykM/pYzFg7n/UcCfSpQjAs9TtWEz6LBfpvIN85O7omJODCBzlx?=
+ =?us-ascii?Q?u7nCPFtCcHRJccOYRIJIARdftJZKx2sSBqsqYKm2CkfvMEM7qK6nTc+0FsWk?=
+ =?us-ascii?Q?mo+93kNk9YXz1XcllsbsMyMvvzef9dim/Dr+2OalNy1ZxeJH/kGw2DK3cWYr?=
+ =?us-ascii?Q?CLTzwRQqfX0fllTLwFvVYVL+u6qCW94lTWm44PXwyCyu1raSej1sS9rRaV4S?=
+ =?us-ascii?Q?vV94w2Ip2g0oS0rEol+T+phmLLUAqdS3EboLe38zhx7yWXMcuallun7choiE?=
+ =?us-ascii?Q?Q3blllUhOfjdyZr7p40oWi5+TJ8JLSeAmliDtAV7Imb38NRfhoj2fbaZW4GB?=
+ =?us-ascii?Q?5EMRgXD/JttfQUO2Kp/daLeEucp+/kSyQQXPRWTspz/2aZSgdjG+HQw2nzdG?=
+ =?us-ascii?Q?J8F4hh6+q+7+SN7U8L8rfJ9rESXCI1D6TeoL757pMmgnO44D2GAD0Npwgx72?=
+ =?us-ascii?Q?IUPJiGXY12uaG2ffoX+lGoVtm+4Vxht4hE0Sm9kkw4J9nUbgFnrIwwtfqhYO?=
+ =?us-ascii?Q?ylATfeRAfCyI+etZ89CJz3mwbq3SWt8P5RvON0WQrg3nEtPGMXDN0b131uiH?=
+ =?us-ascii?Q?0GGG7N8h5KVAxVvh6QJcgslrw7yobB20ZxcmDXsimNc/VQiSFoAt66RTQVgc?=
+ =?us-ascii?Q?BuzKOmyYROdlh3wmZcYqZfUB/y7dPoLrs3RXrfhteIy/Aym+HoU56hiSRy2t?=
+ =?us-ascii?Q?HyKcFjmEAJa1qRSo0yKiqb45MNouHE7hxD2KY13XI9Xd9gJM99FfKsPEkz1S?=
+ =?us-ascii?Q?NIMK4YiSl2QhxhfS7DAjjIe5gLnI4biwEtc9cJ57WBONC/g+koOrKsemf0Fs?=
+ =?us-ascii?Q?QqO40jC/K2r0y5pD5pHZ2udur/nag3wF84E6DKYvU8EeY7RBDoY2UvHQtMvJ?=
+ =?us-ascii?Q?OIh07oIpTD1ztND7gWmV9BUw1mZc7C8zLJpOE6gPndKNaFK6j5rnfub3uApi?=
+ =?us-ascii?Q?PJrc/cVFz9+dEputYfi7GlyBDsRkdD0Ht8c4PK3h2JWpGKWVGn0xXbnUP615?=
+ =?us-ascii?Q?9y0BN2dW35AD8jIlmMwLeLgq4jDlglVRm4Bhb1tG?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 13dbb63c-e221-44e6-94a1-08db20c2a7da
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2023 17:21:01.7577
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Gv61OLbGV0junHtjKKjf8Px7pNcISTq5M+T33gFlGN+xJHeH+WWst7skgqF3ugmW
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6166
 
-Hi Jason,
+On Thu, Mar 09, 2023 at 09:50:18PM +0800, Baolu Lu wrote:
 
-On Mon, 6 Mar 2023 15:05:27 -0400, Jason Gunthorpe <jgg@nvidia.com> wrote:
+> > +	if (cmd->flags || cmd->__reserved || !cmd->data_len)
+> > +		return -EOPNOTSUPP;
+> > +
+> > +	idev = iommufd_get_device(ucmd, cmd->dev_id);
+> > +	if (IS_ERR(idev))
+> > +		return PTR_ERR(idev);
+> > +
+> > +	ops = dev_iommu_ops(idev->dev);
+> > +	if (!ops || !ops->hw_info) {
+> 
+> dev_iommu_ops() will never return a NULL.
+> 
+> Need below check
+> 
+> 	dev->iommu && dev->iommu->iommu_dev
+> 
+> before dev_iommu_ops(). Perhaps something like below?
+> 
+> 	if (!dev->iommu || !dev->iommu->iommu_dev)
+> 		return -EINVAL;
 
-> On Mon, Mar 06, 2023 at 06:48:43PM +0000, Luck, Tony wrote:
-> > >> ENQCMDS does not have the restriction of using a single CPU MSR to
-> > >> store PASIDs, PASID is supplied to the instruction operand.   
-> > >
-> > > Huh? That isn't what it says in the programming manual. It says the
-> > > PASID only comes from the IA32_PASID msr and the only two operands are
-> > > the destination MMIO and the memory source for the rest of the
-> > > payload.  
-> > 
-> > Jason,
-> > 
-> > Two different instructions with only one letter different in the name.
-> > 
-> > ENQCMD - ring 3 instruction. The PASID is inserted into the descriptor
-> > pushed to the device from the IA32_PASID MSR.
-> > 
-> > ENQCMDS - ring 0 instruction (see that trailing "S" for Supervisor
-> > mode). In this case the submitter can include any PASID value they want
-> > in the in-memory copy of the descriptor and ENQCMDS will pass that to
-> > the device.  
-> 
-> Ah, well, my comment wasn't talking about ENQCMDS :)
-> 
-> If ENQCMDS can take in an arbitary PASID then there is no
-> justification here to use the global allocator.
-> 
-> The rational is more like:
-> 
->  IDXD uses PASIDs that come from the SVA allocator. It needs to create
->  an internal kernel-only PASID that is non-overlapping so allow the SVA
->  allocator to reserve PASIDs for driver use.
-> 
->  IDXD has to use the global SVA PASID allocator beacuse its userspace
->  will use ENQCMD which requires global PASIDs.
-> 
-yes, great summary. I think that is the same as what I was trying to say
-earlier :)
-"due the unforgiving nature of ENQCMD that requires global PASIDs, ENQCMDS
-has no choice but to allocate from the same numberspace to avoid conflict."
+At this point the device has become owned through the ownership API,
+it absolutely has to have an iommu and an ops. No need to check
+anything.
 
-In that sense, I feel the global allocator should be staying with SVA
-instead of moving to iommu core (as Kevin suggested). Because we are trying
-to have non-overlapping pasid with SVA.
-
-Thanks,
-
-Jacob
+Jason
