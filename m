@@ -1,184 +1,90 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D46447B
-	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 02:51:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE17B7B
+	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 02:57:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678330293; x=1709866293;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Sfy3RVQkVhkdnycyamTPB5zwaWdOCpmY/IhZLW0fhXo=;
-  b=XdW+A06TaAacb/wannolZ8LXbDRMhXHKZif1hFW/Mn2RaOOmN/KQ1lhH
-   HmqgNTbwXq2ViSSe5yY05u1VPzuDX/q6fiBX8Ia60XGbRVjSlXDO8i7Q3
-   gS922puSTktulXEpQ32WLqKSTXyWu6TsFuNs+syXER9bjj8Bk8RtdvjNL
-   h6iqPkzsbrSbkIeOLaG01Sr1YaK4VNMTx3mZ+jBEmAWhHhi7QcXM4TDhA
-   VaJbsT+k9l2T2SmJX+YdkpLjE/LFtf/VjoPP0ntcAcvWAm2OMzhIQi7/U
-   jDld+OHYr+PrV6YC0LYKPBGy035S/71eCLUMfAu2NuSeBgWJYseB9Yjhj
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="335042950"
+  t=1678330665; x=1709866665;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=+VIsfsC+ed2JLTW7RF02HMNBvU/A0rEn7DhKk0iBQSM=;
+  b=KS01tzCBQWnBOzBFBsSAMgrqNVLJmxLQ75m7hOYOFTkiVSfcwtMkg1Pk
+   3GOsW4YFL1OKaW84/1SXjxU7BmmiERsN/1DaBTGw6GL/nGdKvgn6Opl+G
+   RFs/0P/qHTaihoK+E0mVF3ob8SwB9DgD8CF7KP7Ap5GxuiU8gb4M1xvX6
+   O1Xq+FdStV+/CKIg5BQ/F9IA281ICIEbChNXgIgrDvxu/i+oZUK5f6nLt
+   zybxysvpBlqnFEUkMlRrPFjdYZTDcU50PUQdWSUHUTDc0Up2hJ392sUw1
+   Nopk59vHFtKUNUtwXSnoptHdTaJJ9yqjKUcdTpuix0HmkoUoWWRH3Egs9
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="316732630"
 X-IronPort-AV: E=Sophos;i="5.98,245,1673942400"; 
-   d="scan'208";a="335042950"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2023 18:51:33 -0800
+   d="scan'208";a="316732630"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2023 18:57:45 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="670568731"
+X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="746144602"
 X-IronPort-AV: E=Sophos;i="5.98,245,1673942400"; 
-   d="scan'208";a="670568731"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 08 Mar 2023 18:51:30 -0800
-Message-ID: <05fb17c7-397b-5b33-fbfa-df3bf48b0de8@linux.intel.com>
-Date: Thu, 9 Mar 2023 10:50:31 +0800
+   d="scan'208";a="746144602"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by fmsmga004.fm.intel.com with ESMTP; 08 Mar 2023 18:57:42 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: iommu@lists.linux.dev,
+	dmaengine@vger.kernel.org
+Cc: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Fenghua Yu <fenghua.yu@intel.com>,
+	Dave Jiang <dave.jiang@intel.com>,
+	Vinod Koul <vkoul@kernel.org>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v2 0/5] Refactor code for non-PRI IOPF
+Date: Thu,  9 Mar 2023 10:56:34 +0800
+Message-Id: <20230309025639.26109-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
- Baolin Wang <baolin.wang@linux.alibaba.com>, Orson Zhai
- <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
- LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH V2] iommu: sprd: release dma buffer to avoid memory leak
-Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>,
- Chunyan Zhang <chunyan.zhang@unisoc.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>
-References: <20230308034158.509458-1-chunyan.zhang@unisoc.com>
- <af90fea4-5fa1-de7b-b80e-02fa8753b0fb@arm.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <af90fea4-5fa1-de7b-b80e-02fa8753b0fb@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 3/8/23 8:37 PM, Robin Murphy wrote:
-> On 2023-03-08 03:41, Chunyan Zhang wrote:
->> Release page table DMA buffer when the IOMMU domain is not used:
->>
->> - Domain freed.
->>
->> - IOMMU is attaching to a new domain.
->>    Since one sprd IOMMU servers only one client device, if the IOMMU has
->>    been attached to other domain, it has to be detached first, that's
->>    saying the DMA buffer should be released, otherwise that would
->>    cause memory leak issue.
-> 
-> This is clearly wrong; domain resources should only be freed when the 
-> domain is freed. 
+The existing SVA and IOPF implementation assumes that devices report I/O
+page faults via PCI PRI. This is not always true as some emerging
+devices are designed to handle the I/O page faults by themselves without
+ever sending PCI page requests nor advertising PRI capability.
 
-Agreed. Perhaps, in the attach path:
+Refactor the SVA and IOPF code to allow SVA support with IOPF handled
+either by IOMMU (PCI PRI) or device driver (device-specific IOPF).
 
-	if (!dom->pgt_va)
-		dom->pgt_va = dma_alloc_coherent(sdev->dev, pgt_size,
-				&dom->pgt_pa, GFP_KERNEL);
-?
+This series is based on v6.3-rc1 and also available at github:
+https://github.com/LuBaolu/intel-iommu/commits/intel-iommu-refactor-iopf-v2
 
-Best regards,
-baolu
+Change log:
+v2:
+ - Separate a fix patch and merge it into v6. 3-rc1 [commit 60b1daa3b168
+   ("iommu/vt-d: Fix error handling in sva enable/disable paths")]
+ - Disallow device-specific IOPF is device advertising PRI capability;
+ - Add some extra patches to move all IOPF related code to the IOPF
+   enabling/disabling paths.
 
-> Just because a caller has detached from a domain 
-> doesn't mean that they can't reattach to it later and expect the 
-> previous mappings to still be in place - it has nothing to do with how 
-> many devices or domains can be active at once.
-> 
-> Thanks,
-> Robin.
-> 
->> Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
->> ---
->> V2:
->> * Added some comment in sprd_iommu_attach_device() for the reason
->>    of calling sprd_iommu_cleanup().
->>
->> V1: https://lkml.org/lkml/2023/2/10/198
->> ---
->>   drivers/iommu/sprd-iommu.c | 46 ++++++++++++++++++++++++++++++++------
->>   1 file changed, 39 insertions(+), 7 deletions(-)
->>
->> diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
->> index ae94d74b73f4..fb2f96df3bca 100644
->> --- a/drivers/iommu/sprd-iommu.c
->> +++ b/drivers/iommu/sprd-iommu.c
->> @@ -62,6 +62,7 @@ enum sprd_iommu_version {
->>    * @eb: gate clock which controls IOMMU access
->>    */
->>   struct sprd_iommu_device {
->> +    struct sprd_iommu_domain    *dom;
->>       enum sprd_iommu_version    ver;
->>       u32            *prot_page_va;
->>       dma_addr_t        prot_page_pa;
->> @@ -151,13 +152,6 @@ static struct iommu_domain 
->> *sprd_iommu_domain_alloc(unsigned int domain_type)
->>       return &dom->domain;
->>   }
->> -static void sprd_iommu_domain_free(struct iommu_domain *domain)
->> -{
->> -    struct sprd_iommu_domain *dom = to_sprd_domain(domain);
->> -
->> -    kfree(dom);
->> -}
->> -
->>   static void sprd_iommu_first_vpn(struct sprd_iommu_domain *dom)
->>   {
->>       struct sprd_iommu_device *sdev = dom->sdev;
->> @@ -230,6 +224,29 @@ static void sprd_iommu_hw_en(struct 
->> sprd_iommu_device *sdev, bool en)
->>       sprd_iommu_update_bits(sdev, reg_cfg, mask, 0, val);
->>   }
->> +static void sprd_iommu_cleanup(struct sprd_iommu_device *sdev)
->> +{
->> +    struct sprd_iommu_domain *dom = sdev->dom;
->> +    size_t pgt_size = sprd_iommu_pgt_size(&dom->domain);
->> +
->> +    dma_free_coherent(sdev->dev, pgt_size, dom->pgt_va, dom->pgt_pa);
->> +    dom->sdev = NULL;
->> +    sdev->dom = NULL;
->> +    sprd_iommu_hw_en(sdev, false);
->> +}
->> +
->> +static void sprd_iommu_domain_free(struct iommu_domain *domain)
->> +{
->> +    struct sprd_iommu_domain *dom = to_sprd_domain(domain);
->> +    struct sprd_iommu_device *sdev = dom->sdev;
->> +
->> +    /* Free DMA buffer first if the domain has been attached */
->> +    if (sdev)
->> +        sprd_iommu_cleanup(sdev);
->> +
->> +    kfree(dom);
->> +}
->> +
->>   static int sprd_iommu_attach_device(struct iommu_domain *domain,
->>                       struct device *dev)
->>   {
->> @@ -237,14 +254,29 @@ static int sprd_iommu_attach_device(struct 
->> iommu_domain *domain,
->>       struct sprd_iommu_domain *dom = to_sprd_domain(domain);
->>       size_t pgt_size = sprd_iommu_pgt_size(domain);
->> +    /* Return directly if the domain attached to IOMMU already */
->>       if (dom->sdev)
->>           return -EINVAL;
->> +    /* The IOMMU already attached to a domain */
->> +    if (sdev->dom) {
->> +        if (sdev->dom == dom)
->> +            return 0;
->> +
->> +        /*
->> +         * Clean up the previous domain, one sprd IOMMU servers only
->> +         * one client device, if the IOMMU has been attached to other
->> +         * domain, it has to be detached first.
->> +         */
->> +        sprd_iommu_cleanup(sdev);
->> +    }
->> +
->>       dom->pgt_va = dma_alloc_coherent(sdev->dev, pgt_size, 
->> &dom->pgt_pa, GFP_KERNEL);
->>       if (!dom->pgt_va)
->>           return -ENOMEM;
->>       dom->sdev = sdev;
->> +    sdev->dom = dom;
->>       sprd_iommu_first_ppn(dom);
->>       sprd_iommu_first_vpn(dom);
-> 
+v1: Initial post
+ - https://lore.kernel.org/linux-iommu/20230203084456.469641-1-baolu.lu@linux.intel.com/
+
+Lu Baolu (5):
+  dmaengine: idxd: Add enable/disable device IOPF feature
+  iommu/vt-d: Allow SVA with device-specific IOPF
+  iommu/vt-d: Move iopf code from SVA to IOPF enabling path
+  iommu/vt-d: Move pfsid and ats_qdep calculation to device probe path
+  iommu/vt-d: Move PRI handling to IOPF feature path
+
+ drivers/dma/idxd/init.c     |  31 ++++++++--
+ drivers/iommu/intel/iommu.c | 120 ++++++++++++++++++++++--------------
+ 2 files changed, 100 insertions(+), 51 deletions(-)
+
+-- 
+2.34.1
+
