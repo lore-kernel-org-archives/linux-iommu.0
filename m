@@ -1,32 +1,32 @@
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8098807
-	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 08:09:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F6C181C
+	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 08:09:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678349373; x=1709885373;
+  t=1678349374; x=1709885374;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=DK2k6evSa483gL5qczVDNJ/CshEmsXAsK8rNm81jnSk=;
-  b=HkE5suEMkRna5TaHDfXb4OIcbXQa6zP6vIz1QThw9PdaiGQWIsyz19ro
-   kE0YNi9hcEqNauMEAfiywBAmMrg1Xk/iSsLNrUV6SHxdxqLESjRBWU3W0
-   uoEclhdp+fVYpczywTVGSno3m+pwzmv03e3dZ+JMp36ZoRRcF6Bq/2/DQ
-   NyW3C6E9sEVOlULrjdCPsysbJ+7Ui5fAAbw2OOUB6hejTo8sj+8jwMqey
-   5IX35xhlCNm55ZYAsgzGVudbmbGdxxLPG1ft7tLANtm4G0uRbIEKdeJum
-   L3IJz2Moob4xlNeBYsPNY7Zw1NR+BWYZxxFHAQzkVaqB2mUxVtu/i/enk
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="364023013"
+  bh=f6a+QAIRGPkjHfuRSA0kkXfLfQHx0PbJp4L/PN4a0aE=;
+  b=egUgiFPoCCdg1TfUGNcINs8lSywjtIfYjLVI0iW6ViD/X2mNkovuw3bX
+   lkx0wVvzHvc0eyBwPRz14yRU7uqe7usd+rQ9FhpcvlNHPNe1Tb/TvyO/e
+   rNy8Bn0n+/cFB8DtL1fBWey0uOmfk+JR5U9+RKX577s75GI6btkXmADSG
+   toMxrZOrxZoxHof1RUpSZ0SWAQAmF1hGtGpTCzFgMbDKbtsbM3aelXbJg
+   s48V9hrTyEx6qR/kcnv1qjlpSqR+kCmpjF30l3H65pXx/Bldd1i/wDMD6
+   LmQRckHMrHNdsiMo61ldFjKVMBQVrqd4gHeoE1oFSvp6p/TKTTZRDyr/m
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="364023049"
 X-IronPort-AV: E=Sophos;i="5.98,245,1673942400"; 
-   d="scan'208";a="364023013"
+   d="scan'208";a="364023049"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 00:09:23 -0800
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 00:09:25 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="787471356"
+X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="787471371"
 X-IronPort-AV: E=Sophos;i="5.98,245,1673942400"; 
-   d="scan'208";a="787471356"
+   d="scan'208";a="787471371"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga002.fm.intel.com with ESMTP; 09 Mar 2023 00:09:21 -0800
+  by fmsmga002.fm.intel.com with ESMTP; 09 Mar 2023 00:09:24 -0800
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -50,9 +50,9 @@ Cc: cohuck@redhat.com,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	linux-kselftest@vger.kernel.org
-Subject: [PATCH 02/12] iommu: Add nested domain support
-Date: Thu,  9 Mar 2023 00:09:00 -0800
-Message-Id: <20230309080910.607396-3-yi.l.liu@intel.com>
+Subject: [PATCH 04/12] iommufd: Pass parent hwpt and user_data to iommufd_hw_pagetable_alloc()
+Date: Thu,  9 Mar 2023 00:09:02 -0800
+Message-Id: <20230309080910.607396-5-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230309080910.607396-1-yi.l.liu@intel.com>
 References: <20230309080910.607396-1-yi.l.liu@intel.com>
@@ -64,69 +64,146 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Lu Baolu <baolu.lu@linux.intel.com>
+Nested translation has stage-1 and stage-2 page tables. A stage-1 page
+table is managed by user space, and it needs to work with a stage-2 page
+table, which is a parent hwpt for the stage-1 hwpt.
 
-Introduce a new domain type for a user space I/O address, which is nested
-on top of another user space address represented by a UNMANAGED domain. The
-mappings of a nested domain are managed by user space software, therefore
-it's unnecessary to have map/unmap callbacks. But the updates of the PTEs
-in the nested domain page table must be propagated to the caches on both
-IOMMU (IOTLB) and devices (DevTLB).
+iommu core already supports accepting parent iommu_domain and user_data
+to allocate an iommu_domain. This makes iommufd_hw_pagetable_alloc() to
+accept the parent hwpt and user_data, and relays them to iommu core, to
+prepare for supporting hw_pagetable allocation with user_data.
 
-The nested domain is allocated by the domain_alloc_user op, and attached
-to the device through the existing iommu_attach_device/group() interfaces.
+Also, add a parent pointer in struct iommufd_hw_pagetable for taking and
+releasing its refcount.
 
-A new domain op, named cache_invalidate_user is added for the userspace to
-flush the hardware caches for a nested domain through iommufd. No wrapper
-for it, as it's only supposed to be used by iommufd.
-
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Co-developed-by: Nicolin Chen <nicolinc@nvidia.com>
 Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- include/linux/iommu.h | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/iommu/iommufd/device.c          |  2 +-
+ drivers/iommu/iommufd/hw_pagetable.c    | 28 ++++++++++++++++++++++---
+ drivers/iommu/iommufd/iommufd_private.h |  5 ++++-
+ 3 files changed, 30 insertions(+), 5 deletions(-)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index a269bc62a31c..080278c8154d 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -67,6 +67,9 @@ struct iommu_domain_geometry {
+diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+index 5c352807d946..19cd6df46c6a 100644
+--- a/drivers/iommu/iommufd/device.c
++++ b/drivers/iommu/iommufd/device.c
+@@ -558,7 +558,7 @@ iommufd_device_auto_get_domain(struct iommufd_device *idev,
+ 	}
  
- #define __IOMMU_DOMAIN_SVA	(1U << 4)  /* Shared process address space */
+ 	hwpt = iommufd_hw_pagetable_alloc(idev->ictx, ioas, idev,
+-					  immediate_attach);
++					  NULL, NULL, immediate_attach);
+ 	if (IS_ERR(hwpt)) {
+ 		destroy_hwpt = ERR_CAST(hwpt);
+ 		goto out_unlock;
+diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
+index 84b4a11e62f8..16e92a1c150b 100644
+--- a/drivers/iommu/iommufd/hw_pagetable.c
++++ b/drivers/iommu/iommufd/hw_pagetable.c
+@@ -24,6 +24,8 @@ void iommufd_hw_pagetable_destroy(struct iommufd_object *obj)
+ 	if (hwpt->domain)
+ 		iommu_domain_free(hwpt->domain);
  
-+#define __IOMMU_DOMAIN_NESTED	(1U << 5)  /* User-managed IOVA nested on
-+					      a stage-2 translation        */
-+
- /*
-  * This are the possible domain-types
++	if (hwpt->parent)
++		refcount_dec(&hwpt->parent->obj.users);
+ 	refcount_dec(&hwpt->ioas->obj.users);
+ }
+ 
+@@ -46,6 +48,8 @@ int iommufd_hw_pagetable_enforce_cc(struct iommufd_hw_pagetable *hwpt)
+  * @ictx: iommufd context
+  * @ioas: IOAS to associate the domain with
+  * @idev: Device to get an iommu_domain for
++ * @parent: Optional parent HWPT to associate with the domain with
++ * @user_data: Optional user_data pointer
+  * @immediate_attach: True if idev should be attached to the hwpt
   *
-@@ -92,6 +95,7 @@ struct iommu_domain_geometry {
- 				 __IOMMU_DOMAIN_DMA_API |	\
- 				 __IOMMU_DOMAIN_DMA_FQ)
- #define IOMMU_DOMAIN_SVA	(__IOMMU_DOMAIN_SVA)
-+#define IOMMU_DOMAIN_NESTED	(__IOMMU_DOMAIN_NESTED)
+  * Allocate a new iommu_domain and return it as a hw_pagetable. The HWPT
+@@ -54,14 +58,20 @@ int iommufd_hw_pagetable_enforce_cc(struct iommufd_hw_pagetable *hwpt)
+  */
+ struct iommufd_hw_pagetable *
+ iommufd_hw_pagetable_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+-			   struct iommufd_device *idev, bool immediate_attach)
++			   struct iommufd_device *idev,
++			   struct iommufd_hw_pagetable *parent,
++			   void *user_data, bool immediate_attach)
+ {
+ 	const struct iommu_ops *ops = dev_iommu_ops(idev->dev);
++	struct iommu_domain *parent_domain = NULL;
+ 	struct iommufd_hw_pagetable *hwpt;
+ 	int rc;
  
- struct iommu_domain {
- 	unsigned type;
-@@ -325,6 +329,7 @@ struct iommu_ops {
-  * @iotlb_sync_map: Sync mappings created recently using @map to the hardware
-  * @iotlb_sync: Flush all queued ranges from the hardware TLBs and empty flush
-  *            queue
-+ * @cache_invalidate_user: Flush hardware TLBs caching user space IO mappings
-  * @iova_to_phys: translate iova to physical address
-  * @enforce_cache_coherency: Prevent any kind of DMA from bypassing IOMMU_CACHE,
-  *                           including no-snoop TLPs on PCIe or other platform
-@@ -354,6 +359,8 @@ struct iommu_domain_ops {
- 			       size_t size);
- 	void (*iotlb_sync)(struct iommu_domain *domain,
- 			   struct iommu_iotlb_gather *iotlb_gather);
-+	void (*cache_invalidate_user)(struct iommu_domain *domain,
-+				      void *user_data);
+ 	lockdep_assert_held(&ioas->mutex);
  
- 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain,
- 				    dma_addr_t iova);
++	if (parent && !ops->domain_alloc_user)
++		return ERR_PTR(-EOPNOTSUPP);
++
+ 	hwpt = iommufd_object_alloc(ictx, hwpt, IOMMUFD_OBJ_HW_PAGETABLE);
+ 	if (IS_ERR(hwpt))
+ 		return hwpt;
+@@ -70,9 +80,15 @@ iommufd_hw_pagetable_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+ 	/* Pairs with iommufd_hw_pagetable_destroy() */
+ 	refcount_inc(&ioas->obj.users);
+ 	hwpt->ioas = ioas;
++	if (parent) {
++		hwpt->parent = parent;
++		parent_domain = parent->domain;
++		refcount_inc(&parent->obj.users);
++	}
+ 
+ 	if (ops->domain_alloc_user)
+-		hwpt->domain = ops->domain_alloc_user(idev->dev, NULL, NULL);
++		hwpt->domain = ops->domain_alloc_user(idev->dev,
++						      parent_domain, user_data);
+ 	else
+ 		hwpt->domain = iommu_domain_alloc(idev->dev->bus);
+ 	if (!hwpt->domain) {
+@@ -80,6 +96,11 @@ iommufd_hw_pagetable_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+ 		goto out_abort;
+ 	}
+ 
++	/* It must be either NESTED or UNMANAGED, depending on parent_domain */
++	if ((parent_domain && hwpt->domain->type != IOMMU_DOMAIN_NESTED) ||
++	    (!parent_domain && hwpt->domain->type != IOMMU_DOMAIN_UNMANAGED))
++		goto out_abort;
++
+ 	/*
+ 	 * Set the coherency mode before we do iopt_table_add_domain() as some
+ 	 * iommus have a per-PTE bit that controls it and need to decide before
+@@ -150,7 +171,8 @@ int iommufd_hwpt_alloc(struct iommufd_ucmd *ucmd)
+ 	}
+ 
+ 	mutex_lock(&ioas->mutex);
+-	hwpt = iommufd_hw_pagetable_alloc(ucmd->ictx, ioas, idev, false);
++	hwpt = iommufd_hw_pagetable_alloc(ucmd->ictx, ioas, idev,
++					  NULL, NULL, false);
+ 	mutex_unlock(&ioas->mutex);
+ 	if (IS_ERR(hwpt)) {
+ 		rc = PTR_ERR(hwpt);
+diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+index 05b5ad66f716..182c074eecdc 100644
+--- a/drivers/iommu/iommufd/iommufd_private.h
++++ b/drivers/iommu/iommufd/iommufd_private.h
+@@ -243,6 +243,7 @@ int iommufd_vfio_ioas(struct iommufd_ucmd *ucmd);
+  */
+ struct iommufd_hw_pagetable {
+ 	struct iommufd_object obj;
++	struct iommufd_hw_pagetable *parent;
+ 	struct iommufd_ioas *ioas;
+ 	struct iommu_domain *domain;
+ 	bool auto_domain : 1;
+@@ -254,7 +255,9 @@ struct iommufd_hw_pagetable {
+ 
+ struct iommufd_hw_pagetable *
+ iommufd_hw_pagetable_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+-			   struct iommufd_device *idev, bool immediate_attach);
++			   struct iommufd_device *idev,
++			   struct iommufd_hw_pagetable *parent,
++			   void *user_data, bool immediate_attach);
+ int iommufd_hw_pagetable_enforce_cc(struct iommufd_hw_pagetable *hwpt);
+ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
+ 				struct iommufd_device *idev);
 -- 
 2.34.1
 
