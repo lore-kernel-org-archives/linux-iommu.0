@@ -1,128 +1,121 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2087.outbound.protection.outlook.com [40.107.102.87])
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48873D50B
-	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 15:51:17 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eTw4S1VX/T0sZ1uNDOTf75gXPAqtcy46XmjIvko/YfUkgLwXYcoi03FuFg2x9MCmJLstbWds1J/UUBNJgamOl48Eu4hlY202eV+LggGkG87HdjZqXPe96ZT7CBVep1xUplz4p4J0nuaQGX46zq4crxZSsb2TSXC3vFmzlo94Vb0MLloZM6EOPmCyrjsjkMDHzmxEc/OFrkNDok9v2FJTjYClf6gVxUPuSlmnZg4rhMham18D8tAB0PjTTiSxiFj8XvK9ASd/6o8Xj1zmFFd3Aw3rRm/HKltMFkkeppxg8pxvqHNy2CYnnJlijXaWXem3z4aOcyOheRJL1r9TLUqmeQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=b1aAlz6lI3GgUoo8UqNIqpFZm0oqfy4qOAxq2Y7jQSc=;
- b=ZK6sAMvmWYN6708ECwdF0CEJyC+pAhL3/tCIZlvVzlUb33GyY+DpntbDjNBjV0hozewvyYbv7HIHi48FTTcYUScFnaG7mVdZMwvXwYfEnwfSGmDlSqXxuDMrPy06hVbbxZz6wWiDWEFzWE/3gxxI726Hz+7UW/aRTAoEBzii2GW7ChLvMderZeAnaLh3/ISRLqVGZXVmRiK8ukUFbeSfVQrd4K+cWWdxeBdLamQW0yQ1Bat2Rx0wOzEKbYknvqQdk5RPdpGIxeFQNJCtP7IwbfgwitZgHxvbHcw2ZSit0wdTxTA7/i2j4U8DQU5K8rzS7jwN9X16bNP+YGbZErvZyg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=b1aAlz6lI3GgUoo8UqNIqpFZm0oqfy4qOAxq2Y7jQSc=;
- b=s9sA4ZH8Id+u/wJbuX3kXsFmeLBZaRYvpbX/PvPJu1hwHpJMVSDqmGUfYG/SwpeIUmp/9EwmD7bkQZQ07kqazhk8Gd/HwfSKvMgkz6b+yHWB8pJGvp+LtfaUVtnHUx3gpBSy+shDoAzodrPCumj59PEHTEDc41z72hE/32nJCHMgB6jjo59f06waEtU7urNKGpln6BQIoCikqzpNJEGCSxjsrzwqptVxxqrogiethzssaDUBzGnSbaExvoQNNHq6Z+5vhLn0r9RfUSpnYlQU0MiHphZ86/A1rCFyzzRinw1xp4j0V5JHBU7GZPikTh5nuF/lNQN0p8Q0DhJF62w+FQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by MN0PR12MB6149.namprd12.prod.outlook.com (2603:10b6:208:3c7::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.29; Thu, 9 Mar
- 2023 15:51:14 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::ef6d:fdf6:352f:efd1]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::ef6d:fdf6:352f:efd1%3]) with mapi id 15.20.6178.017; Thu, 9 Mar 2023
- 15:51:14 +0000
-Date: Thu, 9 Mar 2023 11:51:11 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
-	linux-kselftest@vger.kernel.org, kvm@vger.kernel.org,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
-Subject: Re: [PATCH v2 02/17] iommufd: Add iommufd_group
-Message-ID: <ZAoAb8SJwC3EItM5@nvidia.com>
-References: <2-v2-51b9896e7862+8a8c-iommufd_alloc_jgg@nvidia.com>
- <3469063c-7ed4-3fda-0280-2cc6b4e6fd98@linux.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3469063c-7ed4-3fda-0280-2cc6b4e6fd98@linux.intel.com>
-X-ClientProxiedBy: BYAPR06CA0071.namprd06.prod.outlook.com
- (2603:10b6:a03:14b::48) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94F29D50B
+	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 15:51:45 +0000 (UTC)
+Received: from lhrpeml100005.china.huawei.com (unknown [172.18.147.200])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PXYWX5s9sz688wM;
+	Thu,  9 Mar 2023 23:48:56 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ lhrpeml100005.china.huawei.com (7.191.160.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Thu, 9 Mar 2023 15:51:42 +0000
+Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
+ lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.021;
+ Thu, 9 Mar 2023 15:51:42 +0000
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Jean-Philippe Brucker <jean-philippe@linaro.org>, Nicolin Chen
+	<nicolinc@nvidia.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"will@kernel.org" <will@kernel.org>, "eric.auger@redhat.com"
+	<eric.auger@redhat.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "joro@8bytes.org"
+	<joro@8bytes.org>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "yi.l.liu@intel.com" <yi.l.liu@intel.com>
+Subject: RE: [PATCH v1 02/14] iommufd: Add nesting related data structures for
+ ARM SMMUv3
+Thread-Topic: [PATCH v1 02/14] iommufd: Add nesting related data structures
+ for ARM SMMUv3
+Thread-Index: AQHZUnWTVXhuXoh0OkWPSyQY1srSfq7ydQKAgAAVzLCAAAsqAIAAANyQ
+Date: Thu, 9 Mar 2023 15:51:42 +0000
+Message-ID: <39979642ba8042ba9d4de651fecfeffb@huawei.com>
+References: <cover.1678348754.git.nicolinc@nvidia.com>
+ <364cfbe5b228ab178093db2de13fa3accf7a6120.1678348754.git.nicolinc@nvidia.com>
+ <20230309134217.GA1673607@myrica>
+ <213a05ef06944a55a148995053b187f8@huawei.com> <ZAn94BXkjiJKQ66O@nvidia.com>
+In-Reply-To: <ZAn94BXkjiJKQ66O@nvidia.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-originating-ip: [10.202.227.178]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MN0PR12MB6149:EE_
-X-MS-Office365-Filtering-Correlation-Id: b10dbe3d-6cb0-4d4c-27e4-08db20b61ccd
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	Hy8vpsnW8xmTdZb3lvxwflZoQokIkOyU958Z8yFSWCSBisXLf36nv8v6LEDM1HeQhA57NtsGshFBs3papoLWBDlmrGjcalPSoCWw69dPLEP4TzNyYN5Lrjv7vOjq/Ez0mJeJ+iKq46aQLSLHfGbGJtm2sLE3svr8CgZfs6g0jzKjBLQBWj27WFrXwGQl3cDgT20tN7/E0xgEZ6pqlTcNtQ8uO9PT1Dnjk4IXfSequ5DcUzImEm3grvzBNHkFxz9ZkaupkH5fx+Zpi0XUu0m8adyrP5+ICTo3ZV+zXAQHNrgZlMLELFUaoatQ3oNWg5qHmyZjpI1KHeqfIeG20VCi3dFylhkwZdYZuNr0nEz4QWTyyce+Hq4xjIr04DEo+QwloKdWVf9aS1UjfohkBD6mV82ojbR1OqG4VpnlWzpvOCH+u7Syk80ycIkNBD51ZR0c27iSU8WLnQPOU8nQDFokZo2TUFB7CNGBdwsJemU4vMTpmqbl0zHrLCgISyS0/rbziqRLMRJ/MktKRwP2ZgUEXKtDmgDDO5faN0horOMYziC4HEuE/pickrk7AW3+alV2HJ8SBA3ZgoYffApqdWSQ9YqtM4PU+ANmhvJBtqBlEOKntiNWx7G3/Ayw4wBqRVhPiCOO2ylxfd4BdaIpcyYsrw==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(366004)(396003)(39860400002)(346002)(376002)(451199018)(478600001)(6666004)(5660300002)(86362001)(186003)(2906002)(6512007)(26005)(6506007)(6486002)(36756003)(2616005)(53546011)(83380400001)(66946007)(66476007)(66556008)(4326008)(6916009)(38100700002)(8676002)(8936002)(41300700001)(316002)(54906003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?zcC54q6MUCrAqb/30IchGgKv8fu+AUvtP19W47cirQ3OEnWLfKv/X6lFZYDi?=
- =?us-ascii?Q?RsnKH36Wb89nW+FqSHBMUBGJQrul20mw12wib9hwmAw3xgsKXy/URpANgSA+?=
- =?us-ascii?Q?NJATR5vTisqyQIeRNC5lSTpn6P6hfSG6HrSITwngKeafEKz3g7KKqo+/UDgw?=
- =?us-ascii?Q?hyBGzCweJ2TRS1+uzPheG71wY0xlN2/R6lLcd8expqOFRkFPXcPAjMDEea/z?=
- =?us-ascii?Q?V1+9cNTP+GSzTNyOQrDzkFVoJ69+MUkRc7Hg1l2jC+aTzanLbNFrnPG2Reqw?=
- =?us-ascii?Q?OYuIyaKYzISmrCzTUO0u5od3Y+r3JlRdmdd3huy0R+oAqHB4m1GrsV2mvhB3?=
- =?us-ascii?Q?7JHyv5PwzcWovbaJPlBezaNt/jwONqAlCGyEX8WGkZXVnlUdaGWbmjrOFczO?=
- =?us-ascii?Q?dZjf09vAkp+cq4Lua5azE8rN00cnliLLVVcHaaSTwr18gIRUJ4ZjIpO/XbAX?=
- =?us-ascii?Q?vbX2ZWsd+GN0SRGEmxD4UsV5tbMU+GgH/zQIZth5LUJa5W+Glw//OJQuilXy?=
- =?us-ascii?Q?yYuVi1a+mPBoUY/tv9YN/5xacHapdZgoUT5MLF7+q3TJxzW8eJOUhl2kpq7f?=
- =?us-ascii?Q?f49WbbQIBKjhUhc10BgthHgzD9IqYT+oTnyznZ3KXPRmlCBTH13VegbF6dhO?=
- =?us-ascii?Q?FZ7GlK9xxjzrezI7Af+U8QyHLLYLqTD6jGLjaGmgai9QeljjP+0u6EYpc2U/?=
- =?us-ascii?Q?LxY7bhhwJX7zWbhK4gOF33I1dweRGTPCCZSthq+Gt8qITHMkS3NyCFyd/3MH?=
- =?us-ascii?Q?RcqyNxVy/Jej1VqMDlajzq+t5HkXVgWoGrjWt2nZLRGyoaw9VSBo7Es4f2ic?=
- =?us-ascii?Q?9/qYCIKNdSbesVjcWFGpQWia7C+a6oVjySzOfrMXqlal/PDa/rpF1Q11CTGD?=
- =?us-ascii?Q?UEP6LMYYMTD+vPZLzDcxmH48uG9LzP78+xL44nqr0sxybr760wmqh2NFUGZe?=
- =?us-ascii?Q?O1wf4SD/vIpfsKXPnwRcfXibJ8WAGYzQx+4o0FutV85TGNP2UuJTVo/nvUFP?=
- =?us-ascii?Q?oqulg7v1NOjOU7Q8jr1dtaa5jZOa8rx30eIphROGDTnyfWGeXJ13aVYchN9k?=
- =?us-ascii?Q?dABPYTaWOBjbmk4rB8LE2MZCfD5yDhS2PkM9tMqrLdm9Sxixns0Omq5GVwo0?=
- =?us-ascii?Q?Ox6fxoH7Gn/tL0H+JB+Vjyth/cnVEQ+VsD5mcOklKgKkk5h5T0btKCYk5VQP?=
- =?us-ascii?Q?iIlhb8VUcaz7M5XOrHQZ2W3LJgDXcOu0BPyeWH/UAZLTZ3JEjxPo5rW1bGpm?=
- =?us-ascii?Q?vdTATsrWhHoJsmKFfJ0/0a9wEUQmBbhXNj3iw5iqJMUtV1Sjra+VOJamXLx/?=
- =?us-ascii?Q?cj29MKNywAHjUmlE618b3/GIZauaj2hcC9xK7KuU0EQtpBJnZtdoX55REbch?=
- =?us-ascii?Q?0C+dqy3ghWsVTXMFADaG1LkHXtpnFdbGHyFU3M8xwW7GNJG2haHX88KFEgEo?=
- =?us-ascii?Q?oe4TLZlDdp3UffE5qLTq/ctXKUv2bu7xFZSEEP+s/kVtAEDeSWYgjQ2YyAWu?=
- =?us-ascii?Q?JoFJ5aTGnlRnkhG+oBIgx/n/cvGSLngDYVIX19ElwGN0ZT7eThUOpBU1Ivqm?=
- =?us-ascii?Q?9oZWePWhOtuKvsq3XMfZT8RsIBR2QtXqfX67ooVB?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b10dbe3d-6cb0-4d4c-27e4-08db20b61ccd
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2023 15:51:14.3806
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FhEKvXCvpcm/KE85ITD7mEgvkXUEy5GkntO/vKTMkJn8APJj+3K86HOd0Il8DHvF
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6149
+X-CFilter-Loop: Reflected
 
-On Wed, Mar 08, 2023 at 11:18:11AM +0800, Baolu Lu wrote:
-> On 3/8/23 8:35 AM, Jason Gunthorpe wrote:
-> > When the hwpt to device attachment is fairly static we could get
-> > away with the simple approach of keeping track of the groups via a
-> > device list. But with replace this is infeasible.
-> > 
-> > Add an automatically managed struct that is 1:1 with the iommu_group
-> > per-ictx so we can store the necessary tracking information there.
-> > 
-> > Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
-> 
-> The iommufd_get_group() helper looks long. I went through it carefully
-> and didn't find any problems. However, is it possible to add a mutex in
-> ictx to protect the group array? Can it be simpler?
 
-We have a spinlock to protect the array, that is why it is so long
-because we don't want to hold the spinlock and also allocate memory.
 
-This is still the "short" version because it doesn't also use RCU :)
+> -----Original Message-----
+> From: Jason Gunthorpe [mailto:jgg@nvidia.com]
+> Sent: 09 March 2023 15:40
+> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>; Nicolin Chen
+> <nicolinc@nvidia.com>; robin.murphy@arm.com; will@kernel.org;
+> eric.auger@redhat.com; kevin.tian@intel.com; baolu.lu@linux.intel.com;
+> joro@8bytes.org; linux-arm-kernel@lists.infradead.org;
+> iommu@lists.linux.dev; linux-kernel@vger.kernel.org; yi.l.liu@intel.com
+> Subject: Re: [PATCH v1 02/14] iommufd: Add nesting related data structure=
+s
+> for ARM SMMUv3
+>=20
+> On Thu, Mar 09, 2023 at 03:26:12PM +0000, Shameerali Kolothum Thodi
+> wrote:
+>=20
+> > On platforms that supports BTM [1], we may need the VMID allocated by
+> KVM.
+> > But again getting that from user pace doesn't look safe. I have attempt=
+ed
+> to revise
+> > the earlier RFC to pin and use the KVM VMID from SMMUv3 here[2].
+>=20
+> Gurk
+>=20
+> > " In the new design we can require from the start that creating a nesti=
+ng
+> IOMMU
+> > container through /dev/iommu *must* come with a KVM context, that way
+> > we're sure to reuse the existing VMID. "
+>=20
+> I've been dreading this but yes I execpt we will eventually need to
+> connect kvm and iommufd together. The iommu driver can receive a kvm
+> pointer as part of the alloc domain operation to do any setups like
+> this.
 
-It is true though, it would be nice if xarray.c had a helper for this
-"return existing w/ ref or allocate and ref" pattern.
+That will make life easier :)
+=20
+> If there is no KVM it should either fail to setup the domain or setup
+> a domain disconnected from KVM.
+>=20
 
-Jason
+If no KVM the SMMUv3 can fall back to its internal VMID allocation I guess.
+And my intention was to use KVM VMID only if the platform supports
+BTM.
+
+> If IOMMU HW and KVM HW are using the same ID number space then
+> arguably the two kernel drivers need to use a shared ID allocator in
+> the arch, regardless of what iommufd/etc does. Using KVM should not be
+> mandatory for iommufd.
+>=20
+> For ARM cases where there is no shared VMID space with KVM, the ARM
+> VMID should be somehow assigned to the iommfd_ctx itself and the alloc
+> domain op should receive it from there.
+
+Is there any use of VMID outside SMMUv3? I was thinking if nested domain al=
+loc
+doesn't provide the KVM instance, then SMMUv3 can use its internal VMID.=20
+
+Thanks,
+Shameer
+
+> Nicolin, that seems to be missing in this series? I'm not entirely
+> sure how to elegantly code it :\
+>=20
+> Jason
