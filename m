@@ -1,107 +1,247 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B7EFD50B
-	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 16:07:57 +0000 (UTC)
-Received: from lhrpeml500002.china.huawei.com (unknown [172.18.147.226])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PXYwl1bqWz6J6rf;
-	Fri, 10 Mar 2023 00:07:19 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- lhrpeml500002.china.huawei.com (7.191.160.78) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Thu, 9 Mar 2023 16:07:54 +0000
-Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
- lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.021;
- Thu, 9 Mar 2023 16:07:54 +0000
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Jean-Philippe Brucker <jean-philippe@linaro.org>, Nicolin Chen
-	<nicolinc@nvidia.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"will@kernel.org" <will@kernel.org>, "eric.auger@redhat.com"
-	<eric.auger@redhat.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "joro@8bytes.org"
-	<joro@8bytes.org>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "yi.l.liu@intel.com" <yi.l.liu@intel.com>
-Subject: RE: [PATCH v1 02/14] iommufd: Add nesting related data structures for
- ARM SMMUv3
-Thread-Topic: [PATCH v1 02/14] iommufd: Add nesting related data structures
- for ARM SMMUv3
-Thread-Index: AQHZUnWTVXhuXoh0OkWPSyQY1srSfq7ydQKAgAAVzLCAAAsqAIAAANyQgAAEp4CAAACeQA==
-Date: Thu, 9 Mar 2023 16:07:54 +0000
-Message-ID: <4c1f57adbe0c4d48849d585508595939@huawei.com>
-References: <cover.1678348754.git.nicolinc@nvidia.com>
- <364cfbe5b228ab178093db2de13fa3accf7a6120.1678348754.git.nicolinc@nvidia.com>
- <20230309134217.GA1673607@myrica>
- <213a05ef06944a55a148995053b187f8@huawei.com> <ZAn94BXkjiJKQ66O@nvidia.com>
- <39979642ba8042ba9d4de651fecfeffb@huawei.com> <ZAoCf9+kpMof6R+4@nvidia.com>
-In-Reply-To: <ZAoCf9+kpMof6R+4@nvidia.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-originating-ip: [10.202.227.178]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C516A29
+	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 16:34:37 +0000 (UTC)
+Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 16FCD1EC01CE;
+	Thu,  9 Mar 2023 17:34:35 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+	t=1678379675;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:in-reply-to:in-reply-to:references;
+	bh=hOei1CaI+9KLLzxWuYHEeWFq523hC358nYg82qEk0P8=;
+	b=lQXq02kbV26V098b2/yjVkgJDGMNI2zho6Gfyn8txrIWTk5PlovjwTXeA/A3Lr2JnqJDMn
+	4JJONSCvKRvdeQUqsg/EdUUl7mkVX4t16UEunFe1wXVWVpGDtfaMEE7g82LkN9ean15hUi
+	6D6zF6xljU+52MZ/unkZ2yfpSI4uZ2M=
+Date: Thu, 9 Mar 2023 17:34:31 +0100
+From: Borislav Petkov <bp@alien8.de>
+To: David Woodhouse <dwmw2@infradead.org>,
+	=?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>,
+	Tom Lendacky <thomas.lendacky@amd.com>
+Cc: Usama Arif <usama.arif@bytedance.com>,
+	Dave Hansen <dave.hansen@intel.com>,
+	"Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+	Sean Christopherson <seanjc@google.com>,
+	"hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	"wei.liu@kernel.org" <wei.liu@kernel.org>,
+	Dexuan Cui <decui@microsoft.com>,
+	"luto@kernel.org" <luto@kernel.org>,
+	"peterz@infradead.org" <peterz@infradead.org>,
+	"davem@davemloft.net" <davem@davemloft.net>,
+	"edumazet@google.com" <edumazet@google.com>,
+	"kuba@kernel.org" <kuba@kernel.org>,
+	"pabeni@redhat.com" <pabeni@redhat.com>,
+	"lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+	"robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
+	"bhelgaas@google.com" <bhelgaas@google.com>,
+	"arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+	"tglx@linutronix.de" <tglx@linutronix.de>,
+	"mingo@redhat.com" <mingo@redhat.com>,
+	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+	Tianyu Lan <Tianyu.Lan@microsoft.com>,
+	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+	"sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>,
+	"ak@linux.intel.com" <ak@linux.intel.com>,
+	"isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+	"dan.j.williams@intel.com" <dan.j.williams@intel.com>,
+	"jane.chu@oracle.com" <jane.chu@oracle.com>,
+	"tony.luck@intel.com" <tony.luck@intel.com>,
+	"x86@kernel.org" <x86@kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
+ to map as encrypted
+Message-ID: <20230309163431.GFZAoKl2zgRdi8UXIQ@fat_crate.local>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <ff5bec2dd121d598da3cfd74cc95e25856b54a34.camel@infradead.org>
 
+On Thu, Mar 09, 2023 at 03:45:35PM +0000, David Woodhouse wrote:
+> cc_vendor isn't yet exposed. As we discussed this in IRC, I've been
 
+Right, and we might just as well expose it because having
+a setter/getter is kinda silly for a __ro_after_init variable, see
+below.
 
-> -----Original Message-----
-> From: Jason Gunthorpe [mailto:jgg@nvidia.com]
-> Sent: 09 March 2023 16:00
-> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>; Nicolin Chen
-> <nicolinc@nvidia.com>; robin.murphy@arm.com; will@kernel.org;
-> eric.auger@redhat.com; kevin.tian@intel.com; baolu.lu@linux.intel.com;
-> joro@8bytes.org; linux-arm-kernel@lists.infradead.org;
-> iommu@lists.linux.dev; linux-kernel@vger.kernel.org; yi.l.liu@intel.com
-> Subject: Re: [PATCH v1 02/14] iommufd: Add nesting related data structure=
-s
-> for ARM SMMUv3
->=20
-> On Thu, Mar 09, 2023 at 03:51:42PM +0000, Shameerali Kolothum Thodi
-> wrote:
->=20
-> > > For ARM cases where there is no shared VMID space with KVM, the ARM
-> > > VMID should be somehow assigned to the iommfd_ctx itself and the allo=
-c
-> > > domain op should receive it from there.
-> >
-> > Is there any use of VMID outside SMMUv3? I was thinking if nested domai=
-n
-> alloc
-> > doesn't provide the KVM instance, then SMMUv3 can use its internal VMID=
-.
->=20
-> When we talk about exposing an SMMUv3 IOMMU CMDQ directly to
-> userspace then
-> VMID is the security token that protects it.
->=20
-> So in that environment every domain under the same iommufd should
-> share the same VMID so that the CMDQ's also share the same VMID.
->=20
-> I expect this to be a common sort of requirement as we will see
-> userspace command queues in the other HW as well.
->=20
-> So, I suppose the answer for now is that ARM SMMUv3 should just
-> allocate one VMID per iommu_domain and there should be no VMID in the
-> uapi at all.
->=20
-> Moving all iommu_domains to share the same VMID is a future patch.
->=20
-> Though.. I have no idea how vVMID is handled in the SMMUv3
-> architecture. I suppose the guest IOMMU HW caps are set in a way that
-> it knows it does not have VMID?
+So here's what I was able to scratch up quickly to remove the static
+key.
 
-I think, Guest only sets up the SMMUv3 S1 stage and it doesn't use VMID.
+The asm looks like this:
 
-Thanks,
-Shameer
+# ./arch/x86/include/asm/sev.h:156: 	if (cc_vendor == CC_VENDOR_AMD &&
+	cmpl	$1, cc_vendor(%rip)	#, cc_vendor
+	je	.L204	#,
+
+...
+
+.L204:
+# ./arch/x86/include/asm/sev.h:157:         cc_platform_has(CC_ATTR_GUEST_STATE_ENCRYPT))
+        movl    $3, %edi        #,
+        call    cc_platform_has #
+# ./arch/x86/include/asm/sev.h:156:     if (cc_vendor == CC_VENDOR_AMD &&
+        testb   %al, %al        # tmp134
+        je      .L158   #,
+
+and so I doubt that this is at all measureable comparing that to the
+rest of the code that gets executed in the NMI handler. And it lets us
+get rid of yet another static key and use only the CC APIs.
+
+Oh, and it bitches because cc_platform_has() is being called in noinstr
+region but we can mark it noinstr or add the drop-noinstr markers around
+it, if needed. Not that important as that function and what it calls
+don't do anything magical.
+
+Thx.
+
+---
+diff --git a/arch/x86/coco/core.c b/arch/x86/coco/core.c
+index 49b44f881484..34446383e68b 100644
+--- a/arch/x86/coco/core.c
++++ b/arch/x86/coco/core.c
+@@ -13,7 +13,7 @@
+ #include <asm/coco.h>
+ #include <asm/processor.h>
+ 
+-static enum cc_vendor vendor __ro_after_init;
++enum cc_vendor cc_vendor __ro_after_init;
+ static u64 cc_mask __ro_after_init;
+ 
+ static bool intel_cc_platform_has(enum cc_attr attr)
+@@ -83,7 +83,7 @@ static bool hyperv_cc_platform_has(enum cc_attr attr)
+ 
+ bool cc_platform_has(enum cc_attr attr)
+ {
+-	switch (vendor) {
++	switch (cc_vendor) {
+ 	case CC_VENDOR_AMD:
+ 		return amd_cc_platform_has(attr);
+ 	case CC_VENDOR_INTEL:
+@@ -105,7 +105,7 @@ u64 cc_mkenc(u64 val)
+ 	 * - for AMD, bit *set* means the page is encrypted
+ 	 * - for Intel *clear* means encrypted.
+ 	 */
+-	switch (vendor) {
++	switch (cc_vendor) {
+ 	case CC_VENDOR_AMD:
+ 		return val | cc_mask;
+ 	case CC_VENDOR_INTEL:
+@@ -118,7 +118,7 @@ u64 cc_mkenc(u64 val)
+ u64 cc_mkdec(u64 val)
+ {
+ 	/* See comment in cc_mkenc() */
+-	switch (vendor) {
++	switch (cc_vendor) {
+ 	case CC_VENDOR_AMD:
+ 		return val & ~cc_mask;
+ 	case CC_VENDOR_INTEL:
+@@ -131,7 +131,7 @@ EXPORT_SYMBOL_GPL(cc_mkdec);
+ 
+ __init void cc_set_vendor(enum cc_vendor v)
+ {
+-	vendor = v;
++	cc_vendor = v;
+ }
+ 
+ __init void cc_set_mask(u64 mask)
+diff --git a/arch/x86/include/asm/coco.h b/arch/x86/include/asm/coco.h
+index 3d98c3a60d34..0563e07a1002 100644
+--- a/arch/x86/include/asm/coco.h
++++ b/arch/x86/include/asm/coco.h
+@@ -11,6 +11,8 @@ enum cc_vendor {
+ 	CC_VENDOR_INTEL,
+ };
+ 
++extern enum cc_vendor cc_vendor;
++
+ void cc_set_vendor(enum cc_vendor v);
+ void cc_set_mask(u64 mask);
+ 
+diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
+index ebc271bb6d8e..1335781e4976 100644
+--- a/arch/x86/include/asm/sev.h
++++ b/arch/x86/include/asm/sev.h
+@@ -12,6 +12,7 @@
+ #include <asm/insn.h>
+ #include <asm/sev-common.h>
+ #include <asm/bootparam.h>
++#include <asm/coco.h>
+ 
+ #define GHCB_PROTOCOL_MIN	1ULL
+ #define GHCB_PROTOCOL_MAX	2ULL
+@@ -134,24 +135,26 @@ struct snp_secrets_page_layout {
+ } __packed;
+ 
+ #ifdef CONFIG_AMD_MEM_ENCRYPT
+-extern struct static_key_false sev_es_enable_key;
+ extern void __sev_es_ist_enter(struct pt_regs *regs);
+ extern void __sev_es_ist_exit(void);
+ static __always_inline void sev_es_ist_enter(struct pt_regs *regs)
+ {
+-	if (static_branch_unlikely(&sev_es_enable_key))
++	if (cc_vendor == CC_VENDOR_AMD &&
++	    cc_platform_has(CC_ATTR_GUEST_STATE_ENCRYPT))
+ 		__sev_es_ist_enter(regs);
+ }
+ static __always_inline void sev_es_ist_exit(void)
+ {
+-	if (static_branch_unlikely(&sev_es_enable_key))
++	if (cc_vendor == CC_VENDOR_AMD &&
++	    cc_platform_has(CC_ATTR_GUEST_STATE_ENCRYPT))
+ 		__sev_es_ist_exit();
+ }
+ extern int sev_es_setup_ap_jump_table(struct real_mode_header *rmh);
+ extern void __sev_es_nmi_complete(void);
+ static __always_inline void sev_es_nmi_complete(void)
+ {
+-	if (static_branch_unlikely(&sev_es_enable_key))
++	if (cc_vendor == CC_VENDOR_AMD &&
++	    cc_platform_has(CC_ATTR_GUEST_STATE_ENCRYPT))
+ 		__sev_es_nmi_complete();
+ }
+ extern int __init sev_es_efi_map_ghcbs(pgd_t *pgd);
+diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
+index 679026a640ef..7d873bffbd8e 100644
+--- a/arch/x86/kernel/sev.c
++++ b/arch/x86/kernel/sev.c
+@@ -111,7 +111,6 @@ struct ghcb_state {
+ };
+ 
+ static DEFINE_PER_CPU(struct sev_es_runtime_data*, runtime_data);
+-DEFINE_STATIC_KEY_FALSE(sev_es_enable_key);
+ 
+ static DEFINE_PER_CPU(struct sev_es_save_area *, sev_vmsa);
+ 
+@@ -1393,9 +1392,6 @@ void __init sev_es_init_vc_handling(void)
+ 			sev_es_terminate(SEV_TERM_SET_GEN, GHCB_SNP_UNSUPPORTED);
+ 	}
+ 
+-	/* Enable SEV-ES special handling */
+-	static_branch_enable(&sev_es_enable_key);
+-
+ 	/* Initialize per-cpu GHCB pages */
+ 	for_each_possible_cpu(cpu) {
+ 		alloc_runtime_data(cpu);
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
