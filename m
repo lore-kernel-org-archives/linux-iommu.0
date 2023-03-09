@@ -1,187 +1,140 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3C3432F28
-	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 12:51:29 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E8836AD7;
-	Thu,  9 Mar 2023 04:52:10 -0800 (PST)
-Received: from [10.57.91.145] (unknown [10.57.91.145])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9FA8D3F67D;
-	Thu,  9 Mar 2023 04:51:25 -0800 (PST)
-Message-ID: <2118a147-ac95-d846-ad6f-85d7cebca46a@arm.com>
-Date: Thu, 9 Mar 2023 12:51:20 +0000
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2073.outbound.protection.outlook.com [40.107.220.73])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EBAB2F28
+	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 12:53:36 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NvC7jlAhnXiWvgf0e6X61HWjC6Bv+UVSzNWSpzz/Jd0taU0uvhiazz2mj13eCEJqR5NnqxvaqP92fFmAyy1da8VZRnuy+Fxz8Q+QqWFaqxNSPMy+5Ls4ngQOUY40Dx6FP+NWPK9XJ8y9rvoXFmcYwg8/eRlwQW+W3g/Websz6m3N86DZ8EHq2OPXckOMeXSImdY8j7EHsfDUFSFf7AewZMyl91hvcn9i0iz4Z4zWC2Dq2vZCnUT4XWIR/b266m8vn26Of88VVuKIuQrw7TT45gO41JX+Xy2cph59jm/gAv33JEq8x7zisGsz+bhBhmZc+rsStepYvg9EoiAHC1QnVQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=txP9QfVmURjcA64zWGZWabuzA2mqoYeu3DQFN3lXfoY=;
+ b=eKanFwcAiz7EJRwck53PrfiWMqYq2JTAulxOWpaHDad/Bcp/1XcscOJb9poyJZ3THmc52Q3IYvOvpboLkYpPZxlyLcv0AuIqQm9buOrZVYIu1TDYEPGP2xoAJKMSNBnq9Y+nvyI13M3pXWGofr4sDYf9G3HNK+gr0lapezHHUyqjP2rGWoC3EUCgeg7dmTwd5vai0JpRfJJsKLBu/16KTL1kyEuuQVUIZa+n9uspEXprZociqbhFesDx4dvtYajIEQZf4a7YHROZ/HAkS/KHS6gM1RPB36mWJNiyQpD/Tm7CeSvrePpy2pqY22r2WqK7A9/CBfm8bSnz98mvfacFOw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=txP9QfVmURjcA64zWGZWabuzA2mqoYeu3DQFN3lXfoY=;
+ b=m2E0j/6mb1Sei9jxvYYuX07eFrtA+uRTu9jdgvaqye+/R/g9zmPhm/by36Dbi6bbuKCcaM244yhPOCWdSU8RMDYfjbYf4C4EhyLk97iA4pBQDg3utRA/PslBCUVHT5v2AwrFuUQjKlGIFLMx3SrqnbQHMn2F5u6wuawm1ZmqT642o8QmPWTG0V3Jzr9aSxwwVsivZKNCzeUMf+BgMauro14S1jc6rt9TMmny4fqVzG4mqPV0zDz1uj9ti6DOfkvzKyJXDUkPKAZqt4wvQ9QbZdX6cIauOSwdhYDoSVGk8gNuLx1JT3b440Mp5MfM0UDpn8UtGcXseHfzDZxb6SksiA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by IA0PR12MB7553.namprd12.prod.outlook.com (2603:10b6:208:43f::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.29; Thu, 9 Mar
+ 2023 12:53:35 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::ef6d:fdf6:352f:efd1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::ef6d:fdf6:352f:efd1%3]) with mapi id 15.20.6178.017; Thu, 9 Mar 2023
+ 12:53:35 +0000
+Date: Thu, 9 Mar 2023 08:53:32 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
+	linux-kselftest@vger.kernel.org, kvm@vger.kernel.org,
+	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH v2 01/17] iommufd: Move isolated msi enforcement to
+ iommufd_device_bind()
+Message-ID: <ZAnWzIbgxwoDlpc/@nvidia.com>
+References: <1-v2-51b9896e7862+8a8c-iommufd_alloc_jgg@nvidia.com>
+ <b2a3ebf2-272d-2f4f-2489-253c4973a6db@linux.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b2a3ebf2-272d-2f4f-2489-253c4973a6db@linux.intel.com>
+X-ClientProxiedBy: YT4PR01CA0044.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:fe::19) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v1 01/14] iommu: Add iommu_get_unmanaged_domain helper
-Content-Language: en-GB
-To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com, will@kernel.org
-Cc: eric.auger@redhat.com, kevin.tian@intel.com, baolu.lu@linux.intel.com,
- joro@8bytes.org, shameerali.kolothum.thodi@huawei.com,
- jean-philippe@linaro.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <cover.1678348754.git.nicolinc@nvidia.com>
- <9b1077601cace998533129327f5e7ad946752d29.1678348754.git.nicolinc@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <9b1077601cace998533129327f5e7ad946752d29.1678348754.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|IA0PR12MB7553:EE_
+X-MS-Office365-Filtering-Correlation-Id: c0d4a36d-3305-4e38-ee11-08db209d4b36
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	GiqUEXc8pwk47Hi9TeyBXxErVbl2NN9vgiw9XRMqZtnPeDPJWYpY/5t6oahS9urpVF4fkgXxsE6saCwQjzKQC3VEUST32NnUbblqdow95BS5K7Dy8ZzTw2ZWVHylDySpKPyqrb9cqkQAu3t5+u/px3GKSHvT7XPHNjAjC7jt3jJ6/hpaVWdTn/9i1HCKE/tP5o/1bxoMy7nJLZBbP3R/wS1RINfW2+xfXhYDkrgi0tRerqQzIq+jZU1oE6KkHaEe/ri6Uv27b0qqFmtFOBMcEN86amPQ4N6mTCvdUvNtmAqSCXkcZjKRNj2BieOhdJgkoyjpifZR20cU6Y+4q8oLhiCZDLf4r+/PnjucDNy8OpJb9oreg8dzojuV0buxa1fvYYuRqBRbyQvA1vYmHUWdp4i8+lIhn0u9EgC51gy9v9FDNQGXZAA7waaTo2ukyrlGDFMPs+oIz6Fr5Xc+ARVpH+IAEvnatZ1wTGivEwf/nBdyyjNuXMRszNL1epaxPPcIs/6Cnfzunb61XWwUckkMysL6VYv4/diQzWFp/yEKYRizhj8pqXqyGelLznVx4rDM29FVAac382PfYeAE/62pW4M+vbsMm6EfqK4R7qVtqhf1w8xpig6s2dafII677zevRyYZmWTla9y2Yl1ae9Va2g==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(136003)(366004)(376002)(396003)(346002)(451199018)(83380400001)(2616005)(2906002)(186003)(4326008)(5660300002)(66556008)(6916009)(66946007)(66476007)(8676002)(26005)(41300700001)(478600001)(36756003)(53546011)(8936002)(6666004)(38100700002)(86362001)(6486002)(316002)(6512007)(6506007)(54906003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?waK9krwCXL01p0Z6/7C2ROz3Qj8WQlgev4w0ontlrPUDe6UMxnSIRJespfmH?=
+ =?us-ascii?Q?2/mD3cRFLpfcA64oG6xONssdgG2zCw5glrYGMtwxMs8hDEODbo57RDuY4Ha9?=
+ =?us-ascii?Q?5MYwTvbmy52H2iSsHPO1m/nCRukrWTrD6hji2CwXSqjZBks6ndetBqwZop65?=
+ =?us-ascii?Q?Xnz6eXbAqfiEMfHt1L4MAc7Uo9o1SK5fdHdM1R6e2nMmevPkiim/a/r9ob+h?=
+ =?us-ascii?Q?OhOafdE+H33fnwEdlibRrUdOzU9+orKWZ+To80W3WLgkMgho7ITjWotpfTGX?=
+ =?us-ascii?Q?Nn40bCJ/lfYPrEYPFXdTSmjDuwchBrIYx2EatqiFVxA2e8INl2+Luwa5Tk0x?=
+ =?us-ascii?Q?pAmw2RAcKZbSo4gtxf+bLMJK6c6VqghOhZzfKD+XehtLNz2Fpv68watLsu9f?=
+ =?us-ascii?Q?mrSgvpl+PjKqGyvIRmqEHvMvRg/FVDjNb1OIeaMo+SiYOe8dj1U7geMhCGpH?=
+ =?us-ascii?Q?/p3o57FSGXgmm4a1g2T3uIJMXO5NUmEJdQivdyn98Rz8w5zwKyAvK5fkqHkt?=
+ =?us-ascii?Q?PcYv2+PF6wth3JJ0EAKyZuGr0LCngZUcbgOBKgbnLOXQpWKGSgeVqRq3wuoi?=
+ =?us-ascii?Q?hGi4rOH1tg12rETFfL82+0O8MkTPTB4Vm2WCJy7w1NvutouuoJ3o2ry8Lp3W?=
+ =?us-ascii?Q?gXCqBEl/Cf+BJUHN6Y/0d9hlueeMX7detL2M225oXsEyj/RCE5xn+WfTrxWG?=
+ =?us-ascii?Q?MhEhjFY1W+BvMKsgTniuZ2qYYL9mnFAj8FEvoB5sCMFde7saR9L6GUJkiPbb?=
+ =?us-ascii?Q?LmSTJGCLRCuZN8ttIHcpcRMSP0ETyp1tOOYKWwVQdUqUB7DOz5Gdb04J48vv?=
+ =?us-ascii?Q?fw1oZWA/mcCxXeUXgymgPBqH63yDTre/vXL/XbIDKJB0LeS0TNa27GtqvBlg?=
+ =?us-ascii?Q?DqrzdLaUlHXk9Afq65Gtes1+2sTLMoW7HyusAk3/xheUmM6ieLp7GEFCVRPj?=
+ =?us-ascii?Q?AZNevLK8EDykVqUNACg1vTwcXH09NkoN7++4AvrYFIjP/3DcUo+nZuFoM2Ty?=
+ =?us-ascii?Q?BeFqaFp+oHm7xpNejFKMGUoyvv01lPLUB2lZSf7zgVmeUpxX15T1Adco7H/+?=
+ =?us-ascii?Q?374IZbC+TxQQoWL9xYmLCOYyPFpRFNaVN4bSbDRw4bHC2UoGbQyk5VAgYrS1?=
+ =?us-ascii?Q?gDq/6lrOexZSWktz8tAvgBSLuoILrq4weoNmju1lOrl2UET+aGevxyCRenJG?=
+ =?us-ascii?Q?uUH2LzWUCFBxe/quBBtEwF5+NIAKd5ge09pilhHWwo6A1wYrRrqk7D2w8TSp?=
+ =?us-ascii?Q?eG14WTKSi0dqWliudOwV9Ucqf1WDRwVD4ssjVVFGtoDHwkpSQ2xBuuIMPL9m?=
+ =?us-ascii?Q?dHrFE/BRQQeeEwKfDg315rfjEmrHEtmm96qEjVVr3dSEy8OKxcLWhZj891tV?=
+ =?us-ascii?Q?txExZkCHTrkUeLJ3a7/q5ASxXWGtBG/llxDA7j1S3FtaD1HvbjLvnQtw4q8A?=
+ =?us-ascii?Q?Ln2sZ8kQwPACG5ityt6MeMxYdwgNTWZ7aUB5WYU8w1ykuZrBhODlK4YjCkYF?=
+ =?us-ascii?Q?bC3Uxosm0MZ6+ttHb5+g5X5SmrNmxyTgrrGGm1LHV5a8xPQChk5g0diOSpZU?=
+ =?us-ascii?Q?A6xYZZBGEzQNzKe5znkixlDMPNrhSmqfXwqWnyjx?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c0d4a36d-3305-4e38-ee11-08db209d4b36
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2023 12:53:35.2193
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: FuuEKYQAnilHQe3Sja0lEg6OT6KVwLC1ciUJWKGA+XN0sEQ7ewGrBPUArsClpORo
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7553
 
-On 2023-03-09 10:53, Nicolin Chen wrote:
-> The nature of ITS virtualization on ARM is done via hypercalls, so kernel
-> handles all IOVA mappings for the MSI doorbell in iommu_dma_prepare_msi()
-> and iommu_dma_compose_msi_msg(). The current virtualization solution with
-> a 2-stage nested translation setup is to do 1:1 IOVA mappings at stage-1
-> guest-level IO page table via a RMR region in guest-level IORT, aligning
-> with an IOVA region that's predefined and mapped in the host kernel:
+On Wed, Mar 08, 2023 at 10:55:31AM +0800, Baolu Lu wrote:
+> On 3/8/23 8:35 AM, Jason Gunthorpe wrote:
+> > With the recent rework this no longer needs to be done at domain
+> > attachment time, we know if the device is usable by iommufd when we bind
+> > it.
+> > 
+> > The value of msi_device_has_isolated_msi() is not allowed to change while
+> > a driver is bound.
+> > 
+> > Reviewed-by: Kevin Tian<kevin.tian@intel.com>
+> > Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+> > ---
+> >   drivers/iommu/iommufd/device.c | 38 ++++++++++++++++++----------------
+> >   1 file changed, 20 insertions(+), 18 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+> > index c6f4852a8a0c08..63b65cdfe97f29 100644
+> > --- a/drivers/iommu/iommufd/device.c
+> > +++ b/drivers/iommu/iommufd/device.c
+> > @@ -60,6 +60,26 @@ struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
+> >   	if (!group)
+> >   		return ERR_PTR(-ENODEV);
+> > +	/*
+> > +	 * For historical compat with VFIO the insecure interrupt path is
+> > +	 * allowed if the module parameter is set. Insecure means that a MemWr
+> > +	 * operation from the device (eg a simple DMA) cannot trigger an
 > 
->    [stage-2 host level]
->    #define MSI_IOVA_BASE		0x8000000
->    #define MSI_IOVA_LENGTH	0x100000
->    ...
->    iommu_get_msi_cookie():
-> 	cookie->msi_iova = MSI_IOVA_BASE;
->    ...
->    iommu_dma_prepare_msi(its_pa):
-> 	domain = iommu_get_domain_for_dev(dev);
-> 	iommu_dma_get_msi_page(its_pa, domain):
-> 		cookie = domain->iova_cookie;
-> 		iova = iommu_dma_alloc_iova():
-> 			return cookie->msi_iova - size;
-> 		iommu_map(iova, its_pa, ...);
+> Nit:
 > 
->    [stage-1 guest level]
->    // Define in IORT a RMR [MSI_IOVA_BASE, MSI_IOVA_LENGTH]
->    ...
->    iommu_create_device_direct_mappings():
-> 	iommu_map(iova=MSI_IOVA_BASE, pa=MSI_IOVA_BASE, len=MSI_IOVA_LENGTH);
-> 
-> This solution calling iommu_get_domain_for_dev() needs the device to get
-> attached to a host-level iommu_domain that has the msi_cookie.
-> 
-> On the other hand, IOMMUFD designs two iommu_domain objects to represent
-> the two stages: a stage-1 domain (IOMMU_DOMAIN_NESTED type) and a stage-2
-> domain (IOMMU_DOMAIN_UNMANAGED type). In this design, the device will be
-> attached to the stage-1 domain representing a guest-level IO page table,
-> or a Context Descriptor Table in SMMU's term.
-> 
-> This is obviously a mismatch, as the iommu_get_domain_for_dev() does not
-> return the correct domain pointer in iommu_dma_prepare_msi().
-> 
-> Add an iommu_get_unmanaged_domain helper to allow drivers to return the
-> correct IOMMU_DOMAIN_UNMANAGED iommu_domain having the IOVA mappings for
-> the msi_cookie. Keep it in the iommu-priv header for internal use only.
-> 
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->   drivers/iommu/dma-iommu.c  |  5 +++--
->   drivers/iommu/iommu-priv.h | 15 +++++++++++++++
->   include/linux/iommu.h      |  2 ++
->   3 files changed, 20 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 99b2646cb5c7..6b0409d0ff85 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -31,6 +31,7 @@
->   #include <linux/vmalloc.h>
->   
->   #include "dma-iommu.h"
-> +#include "iommu-priv.h"
->   
->   struct iommu_dma_msi_page {
->   	struct list_head	list;
-> @@ -1652,7 +1653,7 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
->   int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
->   {
->   	struct device *dev = msi_desc_to_dev(desc);
-> -	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> +	struct iommu_domain *domain = iommu_get_unmanaged_domain(dev);
+> "... cannot trigger an ..." or "... can trigger an ..."?
 
-This still doesn't make sense - most of the time this will be expected 
-to return the default DMA/identity domain if that's what the device is 
-currently using. We can't know whether the current domain is managed or 
-not until we look at it.
-
-Just like every other caller of iommu_get_domain_for_dev(), what we want 
-here is the current kernel-owned domain that we can inspect and maybe do 
-standard IOMMU API things with. Why can't iommu_get_domain_for_dev() 
-simply maintain that established usage model and return the kernel-owned 
-s2_domain from a nested domain automatically? No IOMMU API user expects 
-or needs it to return anything else (and IOMMUFD should certainly not be 
-losing track of a nested domain within its own higher-level abstractions 
-and needing to fall back on iommu_get_domain_for_dev()), so I really 
-don't see a valid reason to overcomplicate things.
-
-Please note I stress "valid" since I'm not buying arbitrarily made-up 
-conceptual purity arguments. A nested domain cannot be the "one true 
-domain" that is an opaque combination of S1+S2; the IOMMU API view has 
-to be more like the device is attached to both the nested domain and the 
-parent stage 2 domain somewhat in parallel. Even when nesting is active, 
-the S2 domain still exists as a domain in its own right, and still needs 
-to be visible and operated on as such, for instance if memory is 
-hotplugged in or out of the VM.
-
-TBH I'd also move the s2_domain pointer into the iommu_domain itself, 
-since it's going to be a common feature for all nesting implementations, 
-thus there seems little need to indirect lookups through the drivers at all.
+Oh, yes that got flipped at some point
 
 Thanks,
-Robin.
-
->   	struct iommu_dma_msi_page *msi_page;
->   	static DEFINE_MUTEX(msi_prepare_lock); /* see below */
->   
-> @@ -1685,7 +1686,7 @@ int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
->   void iommu_dma_compose_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
->   {
->   	struct device *dev = msi_desc_to_dev(desc);
-> -	const struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> +	const struct iommu_domain *domain = iommu_get_unmanaged_domain(dev);
->   	const struct iommu_dma_msi_page *msi_page;
->   
->   	msi_page = msi_desc_get_iommu_cookie(desc);
-> diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
-> index a6e694f59f64..da8044da9ad8 100644
-> --- a/drivers/iommu/iommu-priv.h
-> +++ b/drivers/iommu/iommu-priv.h
-> @@ -15,6 +15,21 @@ static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
->   	return dev->iommu->iommu_dev->ops;
->   }
->   
-> +static inline struct iommu_domain *iommu_get_unmanaged_domain(struct device *dev)
-> +{
-> +	const struct iommu_ops *ops;
-> +
-> +	if (!dev->iommu || !dev->iommu->iommu_dev)
-> +		goto attached_domain;
-> +
-> +	ops = dev_iommu_ops(dev);
-> +	if (ops->get_unmanaged_domain)
-> +		return ops->get_unmanaged_domain(dev);
-> +
-> +attached_domain:
-> +	return iommu_get_domain_for_dev(dev);
-> +}
-> +
->   int iommu_group_replace_domain(struct iommu_group *group,
->   			       struct iommu_domain *new_domain);
->   
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 080278c8154d..76c65cc4fc15 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -275,6 +275,8 @@ struct iommu_ops {
->   						  struct iommu_domain *parent,
->   						  const void *user_data);
->   
-> +	struct iommu_domain *(*get_unmanaged_domain)(struct device *dev);
-> +
->   	struct iommu_device *(*probe_device)(struct device *dev);
->   	void (*release_device)(struct device *dev);
->   	void (*probe_finalize)(struct device *dev);
+Jason
