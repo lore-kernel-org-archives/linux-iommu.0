@@ -1,32 +1,32 @@
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5F072CA9
-	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 08:22:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9658C2F33
+	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 08:22:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678350167; x=1709886167;
+  t=1678350168; x=1709886168;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=eosmom8m8jHTqT2C2nazDZTU+HJNVXBxSxneXzpiKIc=;
-  b=AKIC3MvrSIcpMeXEAL34AwhmHGEcPF/xBP2Slt6+pLYxhv2Jui23Rk7Y
-   50WkN50D2Md61ZICosNlIWOaLdDFDOSFJiItmZUiS1UjuOPAe+dyRScl4
-   qG5TAjnK/xM8zPxsmsarKc3YaG7c6aQ+fm0C8ZXji5zQd3DXxK4cIGzeh
-   PAeQt9uL13DH1MB35tbxTRvH4Oo0JoG8PkRHWkd+n15QeLXLSn6f3R/wW
-   Re4Qw4qLemvgPBpwKEHAvJjsv61t6gk7R4uy0UWATf0H5z2RSpbEuhs/j
-   zslNeJ0COT+RgI/vZz1fyqaB6e6ixq6HHJCQtf2dA9Lu09aDGtjmbdP+V
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="364026174"
+  bh=Baw+/7QBeZ0YQuTYvP7GMRvLkvX1hO3sRq7+Dy8YvqQ=;
+  b=IX50YEnsyUiKmcBWPNHhg+SD14CH3R/dYu/G1DVWeLvYNjCkOWvKjFF4
+   pVp37i34DkS/Y2rXtup2x7KBlF/LXqB+H/NnCUHWpK+edMGMdMwMViEM8
+   uacFsW9y08G1zer/s4NX06t871F5eSBQbvL3qFvT2hzeS/goyQUUTuwBV
+   Gm+nRKWbuHIYNz2MWFT0gbkUU4SUXJYy00usRmJQD8bQK+GhrpwpEKo2X
+   Ujqf6TxuVpAxttlZWZdic7FufQ6sR3+6X8V3K14xYiDRK94YT9x40rIkp
+   HNqCI67cCffxw/XXSCR6lMB6q4zzs8RO+Vgn53ThkIormNVXi49z97cxc
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="364026197"
 X-IronPort-AV: E=Sophos;i="5.98,245,1673942400"; 
-   d="scan'208";a="364026174"
+   d="scan'208";a="364026197"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 00:22:44 -0800
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 00:22:45 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="787474150"
+X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="787474157"
 X-IronPort-AV: E=Sophos;i="5.98,245,1673942400"; 
-   d="scan'208";a="787474150"
+   d="scan'208";a="787474157"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga002.fm.intel.com with ESMTP; 09 Mar 2023 00:22:11 -0800
+  by fmsmga002.fm.intel.com with ESMTP; 09 Mar 2023 00:22:14 -0800
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -49,10 +49,11 @@ Cc: cohuck@redhat.com,
 	suravee.suthikulpanit@amd.com,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
-	linux-kselftest@vger.kernel.org
-Subject: [PATCH v2 1/5] iommufd: Add nesting related data structures for Intel VT-d
-Date: Thu,  9 Mar 2023 00:22:03 -0800
-Message-Id: <20230309082207.612346-2-yi.l.liu@intel.com>
+	linux-kselftest@vger.kernel.org,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v2 4/5] iommu/vt-d: Add helper to setup pasid nested translation
+Date: Thu,  9 Mar 2023 00:22:06 -0800
+Message-Id: <20230309082207.612346-5-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230309082207.612346-1-yi.l.liu@intel.com>
 References: <20230309082207.612346-1-yi.l.liu@intel.com>
@@ -64,250 +65,201 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add the following data structures for corresponding ioctls:
-               iommu_hwpt_intel_vtd => IOMMU_HWPT_ALLOC
-              iommu_hw_info_vtd => IOMMU_DEVICE_GET_HW_INFO
-    iommu_hwpt_invalidate_intel_vtd => IOMMU_HWPT_INVALIDATE
+From: Lu Baolu <baolu.lu@linux.intel.com>
 
-Also, add IOMMU_HW_INFO_TYPE_INTEL_VTD and IOMMU_HWPT_TYPE_VTD_S1 to the
-header and corresponding type/size arrays.
+The configurations are passed in from the user when the user domain is
+allocated. This helper interprets these configurations according to the
+data structure defined in uapi/linux/iommufd.h. The EINVAL error will be
+returned if any of configurations are not compatible with the hardware
+capabilities. The caller can retry with another compatible user domain.
+The encoding of fields of each pasid entry is defined in section 9.6 of
+the VT-d spec.
 
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/iommufd/hw_pagetable.c |   7 +-
- drivers/iommu/iommufd/main.c         |   5 +
- include/uapi/linux/iommufd.h         | 136 +++++++++++++++++++++++++++
- 3 files changed, 147 insertions(+), 1 deletion(-)
+ drivers/iommu/intel/pasid.c | 142 ++++++++++++++++++++++++++++++++++++
+ drivers/iommu/intel/pasid.h |   2 +
+ 2 files changed, 144 insertions(+)
 
-diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
-index 76ff228dfc1f..36e79db8a17d 100644
---- a/drivers/iommu/iommufd/hw_pagetable.c
-+++ b/drivers/iommu/iommufd/hw_pagetable.c
-@@ -172,6 +172,7 @@ iommufd_hw_pagetable_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
-  */
- static const size_t iommufd_hwpt_alloc_data_size[] = {
- 	[IOMMU_HWPT_TYPE_DEFAULT] = 0,
-+	[IOMMU_HWPT_TYPE_VTD_S1] = sizeof(struct iommu_hwpt_intel_vtd),
- };
+diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+index 633e0a4a01e7..2e8a912b1499 100644
+--- a/drivers/iommu/intel/pasid.c
++++ b/drivers/iommu/intel/pasid.c
+@@ -21,6 +21,11 @@
+ #include "iommu.h"
+ #include "pasid.h"
  
++#define IOMMU_VTD_PGTBL_MTS_MASK	(IOMMU_VTD_PGTBL_CD | \
++					 IOMMU_VTD_PGTBL_EMTE | \
++					 IOMMU_VTD_PGTBL_PCD | \
++					 IOMMU_VTD_PGTBL_PWT)
++
  /*
-@@ -180,6 +181,8 @@ static const size_t iommufd_hwpt_alloc_data_size[] = {
+  * Intel IOMMU system wide PASID name space:
   */
- const u64 iommufd_hwpt_type_bitmaps[] =  {
- 	[IOMMU_HW_INFO_TYPE_DEFAULT] = BIT_ULL(IOMMU_HWPT_TYPE_DEFAULT),
-+	[IOMMU_HW_INFO_TYPE_INTEL_VTD] = BIT_ULL(IOMMU_HWPT_TYPE_DEFAULT) |
-+					 BIT_ULL(IOMMU_HWPT_TYPE_VTD_S1),
- };
+@@ -411,6 +416,15 @@ pasid_set_flpm(struct pasid_entry *pe, u64 value)
+ 	pasid_set_bits(&pe->val[2], GENMASK_ULL(3, 2), value << 2);
+ }
  
- /* Return true if type is supported, otherwise false */
-@@ -324,7 +327,9 @@ int iommufd_hwpt_alloc(struct iommufd_ucmd *ucmd)
-  * size of page table type specific invalidate_info, indexed by
-  * enum iommu_hwpt_type.
-  */
--static const size_t iommufd_hwpt_invalidate_info_size[] = {};
-+static const size_t iommufd_hwpt_invalidate_info_size[] = {
-+	[IOMMU_HWPT_TYPE_VTD_S1] = sizeof(struct iommu_hwpt_invalidate_intel_vtd),
-+};
- 
- int iommufd_hwpt_invalidate(struct iommufd_ucmd *ucmd)
- {
-diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-index 7ec3ceac01b3..514db4c26927 100644
---- a/drivers/iommu/iommufd/main.c
-+++ b/drivers/iommu/iommufd/main.c
-@@ -275,6 +275,11 @@ union ucmd_buffer {
- #ifdef CONFIG_IOMMUFD_TEST
- 	struct iommu_test_cmd test;
- #endif
++/*
++ * Setup the Extended Access Flag Enable (EAFE) field (Bit 135)
++ * of a scalable mode PASID entry.
++ */
++static inline void pasid_set_eafe(struct pasid_entry *pe)
++{
++	pasid_set_bits(&pe->val[2], 1 << 7, 1 << 7);
++}
++
+ static void
+ pasid_cache_invalidation_with_pasid(struct intel_iommu *iommu,
+ 				    u16 did, u32 pasid)
+@@ -756,3 +770,131 @@ void intel_pasid_setup_page_snoop_control(struct intel_iommu *iommu,
+ 	if (!cap_caching_mode(iommu->cap))
+ 		devtlb_invalidation_with_pasid(iommu, dev, pasid);
+ }
++
++/**
++ * intel_pasid_setup_nested() - Set up PASID entry for nested translation.
++ * This could be used for guest shared virtual address. In this case, the
++ * first level page tables are used for GVA-GPA translation in the guest,
++ * second level page tables are used for GPA-HPA translation.
++ *
++ * @iommu:      IOMMU which the device belong to
++ * @dev:        Device to be set up for translation
++ * @pasid:      PASID to be programmed in the device PASID table
++ * @domain:     User domain nested on a s2 domain
++ */
++int intel_pasid_setup_nested(struct intel_iommu *iommu, struct device *dev,
++			     u32 pasid, struct dmar_domain *domain)
++{
++	struct iommu_hwpt_intel_vtd *s1_cfg = &domain->s1_cfg;
++	pgd_t *s1_gpgd = (pgd_t *)(uintptr_t)domain->s1_pgtbl;
++	struct dmar_domain *s2_domain = domain->s2_domain;
++	u16 did = domain_id_iommu(domain, iommu);
++	struct dma_pte *pgd = s2_domain->pgd;
++	struct pasid_entry *pte;
++	int agaw;
++
++	if (!ecap_nest(iommu->ecap)) {
++		pr_err_ratelimited("%s: No nested translation support\n",
++				   iommu->name);
++		return -ENODEV;
++	}
++
 +	/*
-+	 * data_type specific structure used in the cache invalidation
-+	 * path.
++	 * Sanity checking performed by caller to make sure address width
++	 * matching in two dimensions: CPU vs. IOMMU, guest vs. host.
 +	 */
-+	struct iommu_hwpt_invalidate_intel_vtd vtd;
- };
- 
- struct iommufd_ioctl_op {
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index e2eff9c56ab3..2a6c326391b2 100644
---- a/include/uapi/linux/iommufd.h
-+++ b/include/uapi/linux/iommufd.h
-@@ -351,9 +351,64 @@ struct iommu_vfio_ioas {
- /**
-  * enum iommu_hwpt_type - IOMMU HWPT Type
-  * @IOMMU_HWPT_TYPE_DEFAULT: default
-+ * @IOMMU_HWPT_TYPE_VTD_S1: Intel VT-d stage-1 page table
-  */
- enum iommu_hwpt_type {
- 	IOMMU_HWPT_TYPE_DEFAULT,
-+	IOMMU_HWPT_TYPE_VTD_S1,
-+};
++	switch (s1_cfg->addr_width) {
++	case ADDR_WIDTH_4LEVEL:
++		break;
++#ifdef CONFIG_X86
++	case ADDR_WIDTH_5LEVEL:
++		if (!cpu_feature_enabled(X86_FEATURE_LA57) ||
++		    !cap_fl5lp_support(iommu->cap)) {
++			dev_err_ratelimited(dev,
++					    "5-level paging not supported\n");
++			return -EINVAL;
++		}
++		break;
++#endif
++	default:
++		dev_err_ratelimited(dev, "Invalid guest address width %d\n",
++				    s1_cfg->addr_width);
++		return -EINVAL;
++	}
 +
-+/**
-+ * enum iommu_hwpt_intel_vtd_flags - Intel VT-d stage-1 page
-+ *				     table entry attributes
-+ * @IOMMU_VTD_PGTBL_SRE: Supervisor request
-+ * @IOMMU_VTD_PGTBL_EAFE: Extended access enable
-+ * @IOMMU_VTD_PGTBL_PCD: Page-level cache disable
-+ * @IOMMU_VTD_PGTBL_PWT: Page-level write through
-+ * @IOMMU_VTD_PGTBL_EMTE: Extended mem type enable
-+ * @IOMMU_VTD_PGTBL_CD: PASID-level cache disable
-+ * @IOMMU_VTD_PGTBL_WPE: Write protect enable
-+ */
-+enum iommu_hwpt_intel_vtd_flags {
-+	IOMMU_VTD_PGTBL_SRE = 1 << 0,
-+	IOMMU_VTD_PGTBL_EAFE = 1 << 1,
-+	IOMMU_VTD_PGTBL_PCD = 1 << 2,
-+	IOMMU_VTD_PGTBL_PWT = 1 << 3,
-+	IOMMU_VTD_PGTBL_EMTE = 1 << 4,
-+	IOMMU_VTD_PGTBL_CD = 1 << 5,
-+	IOMMU_VTD_PGTBL_WPE = 1 << 6,
-+	IOMMU_VTD_PGTBL_LAST = 1 << 7,
-+};
++	if ((s1_cfg->flags & IOMMU_VTD_PGTBL_SRE) && !ecap_srs(iommu->ecap)) {
++		pr_err_ratelimited("No supervisor request support on %s\n",
++				   iommu->name);
++		return -EINVAL;
++	}
 +
-+/**
-+ * struct iommu_hwpt_intel_vtd - Intel VT-d specific user-managed
-+ *                               stage-1 page table info
-+ * @flags: Combination of enum iommu_hwpt_intel_vtd_flags
-+ * @pgtbl_addr: The base address of the user-managed stage-1 page table.
-+ * @pat: Page attribute table data to compute effective memory type
-+ * @emt: Extended memory type
-+ * @addr_width: The address width of the untranslated addresses that are
-+ *              subjected to the user-managed stage-1 page table.
-+ * @__reserved: Must be 0
-+ *
-+ * The Intel VT-d specific data for creating hw_pagetable to represent
-+ * the user-managed stage-1 page table that is used in nested translation.
-+ *
-+ * In nested translation, the stage-1 page table locates in the address
-+ * space that defined by the corresponding stage-2 page table. Hence the
-+ * stage-1 page table base address value should not be higher than the
-+ * maximum untranslated address of stage-2 page table.
-+ *
-+ * The paging level of the stage-1 page table should be compataible with
-+ * the hardware iommu. Otherwise, the allocation would be failed.
-+ */
-+struct iommu_hwpt_intel_vtd {
-+	__u64 flags;
-+	__u64 pgtbl_addr;
-+	__u32 pat;
-+	__u32 emt;
-+	__u32 addr_width;
-+	__u32 __reserved;
- };
- 
- /**
-@@ -389,6 +444,8 @@ enum iommu_hwpt_type {
-  * +------------------------------+-------------------------------------+-----------+
-  * | IOMMU_HWPT_TYPE_DEFAULT      |               N/A                   |    IOAS   |
-  * +------------------------------+-------------------------------------+-----------+
-+ * | IOMMU_HWPT_TYPE_VTD_S1       |      struct iommu_hwpt_intel_vtd    |    HWPT   |
-+ * +------------------------------+-------------------------------------+-----------+
-  */
- struct iommu_hwpt_alloc {
- 	__u32 size;
-@@ -405,9 +462,32 @@ struct iommu_hwpt_alloc {
- 
- /**
-  * enum iommu_hw_info_type - IOMMU Hardware Info Types
-+ * @IOMMU_HW_INFO_TYPE_INTEL_VTD: Intel VT-d iommu info type
-  */
- enum iommu_hw_info_type {
- 	IOMMU_HW_INFO_TYPE_DEFAULT,
-+	IOMMU_HW_INFO_TYPE_INTEL_VTD,
-+};
++	if ((s1_cfg->flags & IOMMU_VTD_PGTBL_EAFE) && !ecap_eafs(iommu->ecap)) {
++		pr_err_ratelimited("No extended access flag support on %s\n",
++				   iommu->name);
++		return -EINVAL;
++	}
 +
-+/**
-+ * struct iommu_hw_info_vtd - Intel VT-d hardware information
-+ *
-+ * @flags: Must be set to 0
-+ * @__reserved: Must be 0
-+ *
-+ * @cap_reg: Value of Intel VT-d capability register defined in VT-d spec
-+ *           section 11.4.2 Capability Register.
-+ * @ecap_reg: Value of Intel VT-d capability register defined in VT-d spec
-+ *            section 11.4.3 Extended Capability Register.
-+ *
-+ * User needs to understand the Intel VT-d specification to decode the
-+ * register value.
-+ */
-+struct iommu_hw_info_vtd {
-+	__u32 flags;
-+	__u32 __reserved;
-+	__aligned_u64 cap_reg;
-+	__aligned_u64 ecap_reg;
- };
- 
- /**
-@@ -457,6 +537,60 @@ struct iommu_hw_info {
- };
- #define IOMMU_DEVICE_GET_HW_INFO _IO(IOMMUFD_TYPE, IOMMUFD_CMD_DEVICE_GET_HW_INFO)
- 
-+/**
-+ * enum iommu_vtd_qi_granularity - Intel VT-d specific granularity of
-+ *                                 queued invalidation
-+ * @IOMMU_VTD_QI_GRAN_DOMAIN: domain-selective invalidation
-+ * @IOMMU_VTD_QI_GRAN_ADDR: page-selective invalidation
-+ */
-+enum iommu_vtd_qi_granularity {
-+	IOMMU_VTD_QI_GRAN_DOMAIN,
-+	IOMMU_VTD_QI_GRAN_ADDR,
-+};
++	/*
++	 * Memory type is only applicable to devices inside processor coherent
++	 * domain. Will add MTS support once coherent devices are available.
++	 */
++	if (s1_cfg->flags & IOMMU_VTD_PGTBL_MTS_MASK) {
++		pr_warn_ratelimited("No memory type support %s\n",
++				    iommu->name);
++		return -EINVAL;
++	}
 +
-+/**
-+ * enum iommu_hwpt_intel_vtd_invalidate_flags - Flags for Intel VT-d
-+ *                                              stage-1 page table cache
-+ *                                              invalidation
-+ * @IOMMU_VTD_QI_FLAGS_LEAF: The LEAF flag indicates whether only the
-+ *                           leaf PTE caching needs to be invalidated
-+ *                           and other paging structure caches can be
-+ *                           preserved.
-+ */
-+enum iommu_hwpt_intel_vtd_invalidate_flags {
-+	IOMMU_VTD_QI_FLAGS_LEAF = 1 << 0,
-+};
++	agaw = iommu_skip_agaw(s2_domain, iommu, &pgd);
++	if (agaw < 0) {
++		dev_err_ratelimited(dev, "Invalid domain page table\n");
++		return -EINVAL;
++	}
 +
-+/**
-+ * struct iommu_hwpt_invalidate_intel_vtd - Intel VT-d cache invalidation info
-+ * @granularity: One of enum iommu_vtd_qi_granularity.
-+ * @flags: Combination of enum iommu_hwpt_intel_vtd_invalidate_flags
-+ * @__reserved: Must be 0
-+ * @addr: The start address of the addresses to be invalidated.
-+ * @granule_size: Page/block size of the mapping in bytes. It is used to
-+ *                compute the invalidation range togehter with @nb_granules.
-+ * @nb_granules: Number of contiguous granules to be invalidated.
-+ *
-+ * The Intel VT-d specific invalidation data for user-managed stage-1 cache
-+ * invalidation under nested translation. Userspace uses this structure to
-+ * tell host about the impacted caches after modifying the stage-1 page table.
-+ *
-+ * @addr, @granule_size and @nb_granules are meaningful when
-+ * @granularity==IOMMU_VTD_QI_GRAN_ADDR. Intel VT-d currently only supports
-+ * 4kB page size, so @granule_size should be 4KB. @addr should be aligned
-+ * with @granule_size * @nb_granules, otherwise invalidation won't take
-+ * effect.
-+ */
-+struct iommu_hwpt_invalidate_intel_vtd {
-+	__u8 granularity;
-+	__u8 padding[7];
-+	__u32 flags;
-+	__u32 __reserved;
-+	__u64 addr;
-+	__u64 granule_size;
-+	__u64 nb_granules;
-+};
++	/* First level PGD (in GPA) must be supported by the second level. */
++	if ((uintptr_t)s1_gpgd > (1ULL << s2_domain->gaw)) {
++		dev_err_ratelimited(dev,
++				    "Guest PGD %lx not supported, max %llx\n",
++				    (uintptr_t)s1_gpgd, s2_domain->max_addr);
++		return -EINVAL;
++	}
 +
- /**
-  * struct iommu_hwpt_invalidate - ioctl(IOMMU_HWPT_INVALIDATE)
-  * @size: sizeof(struct iommu_hwpt_invalidate)
-@@ -473,6 +607,8 @@ struct iommu_hw_info {
-  * +==============================+========================================+
-  * | @data_type                   |     Data structure in @data_uptr       |
-  * +------------------------------+----------------------------------------+
-+ * | IOMMU_HWPT_TYPE_VTD_S1       | struct iommu_hwpt_invalidate_intel_vtd |
-+ * +------------------------------+----------------------------------------+
-  */
- struct iommu_hwpt_invalidate {
- 	__u32 size;
++	spin_lock(&iommu->lock);
++	pte = intel_pasid_get_entry(dev, pasid);
++	if (!pte) {
++		spin_unlock(&iommu->lock);
++		return -ENODEV;
++	}
++	if (pasid_pte_is_present(pte)) {
++		spin_unlock(&iommu->lock);
++		return -EBUSY;
++	}
++
++	pasid_clear_entry(pte);
++
++	if (s1_cfg->addr_width == ADDR_WIDTH_5LEVEL)
++		pasid_set_flpm(pte, 1);
++
++	pasid_set_flptr(pte, (uintptr_t)s1_gpgd);
++
++	if (s1_cfg->flags & IOMMU_VTD_PGTBL_SRE) {
++		pasid_set_sre(pte);
++		if (s1_cfg->flags & IOMMU_VTD_PGTBL_WPE)
++			pasid_set_wpe(pte);
++	}
++
++	if (s1_cfg->flags & IOMMU_VTD_PGTBL_EAFE)
++		pasid_set_eafe(pte);
++
++	pasid_set_slptr(pte, virt_to_phys(pgd));
++	pasid_set_fault_enable(pte);
++	pasid_set_domain_id(pte, did);
++	pasid_set_address_width(pte, agaw);
++	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
++	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_NESTED);
++	pasid_set_present(pte);
++	spin_unlock(&iommu->lock);
++
++	pasid_flush_caches(iommu, pte, pasid, did);
++
++	return 0;
++}
+diff --git a/drivers/iommu/intel/pasid.h b/drivers/iommu/intel/pasid.h
+index 20c54e50f533..2a72bbc79532 100644
+--- a/drivers/iommu/intel/pasid.h
++++ b/drivers/iommu/intel/pasid.h
+@@ -118,6 +118,8 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
+ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
+ 				   struct dmar_domain *domain,
+ 				   struct device *dev, u32 pasid);
++int intel_pasid_setup_nested(struct intel_iommu *iommu, struct device *dev,
++			     u32 pasid, struct dmar_domain *domain);
+ void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
+ 				 struct device *dev, u32 pasid,
+ 				 bool fault_ignore);
 -- 
 2.34.1
 
