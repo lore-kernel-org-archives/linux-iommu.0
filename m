@@ -1,14 +1,14 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 06EA82F28
-	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 13:03:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0B8E02F28
+	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 13:13:18 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D493EC14;
-	Thu,  9 Mar 2023 05:04:31 -0800 (PST)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C9148C14;
+	Thu,  9 Mar 2023 05:14:01 -0800 (PST)
 Received: from [10.57.91.145] (unknown [10.57.91.145])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 91B513F67D;
-	Thu,  9 Mar 2023 05:03:46 -0800 (PST)
-Message-ID: <bfa43614-c052-4bed-b87e-691141f41909@arm.com>
-Date: Thu, 9 Mar 2023 13:03:41 +0000
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6C52B3F67D;
+	Thu,  9 Mar 2023 05:13:16 -0800 (PST)
+Message-ID: <4e426dc4-6852-336f-7321-5b4df69fd430@arm.com>
+Date: Thu, 9 Mar 2023 13:13:11 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -17,7 +17,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
  Thunderbird/102.8.0
-Subject: Re: [PATCH v1 04/14] iommu/arm-smmu-v3: Add arm_smmu_hw_info
+Subject: Re: [PATCH v1 06/14] iommu/arm-smmu-v3: Unset corresponding STE
+ fields when s2_cfg is NULL
 Content-Language: en-GB
 To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com, will@kernel.org
 Cc: eric.auger@redhat.com, kevin.tian@intel.com, baolu.lu@linux.intel.com,
@@ -25,129 +26,51 @@ Cc: eric.auger@redhat.com, kevin.tian@intel.com, baolu.lu@linux.intel.com,
  jean-philippe@linaro.org, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux.dev, linux-kernel@vger.kernel.org
 References: <cover.1678348754.git.nicolinc@nvidia.com>
- <494e36cbb77d49e11427b308868dbc1b0e19fe18.1678348754.git.nicolinc@nvidia.com>
+ <995e48fe6eb9e31c71dbe8bb80d445aa34a51819.1678348754.git.nicolinc@nvidia.com>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <494e36cbb77d49e11427b308868dbc1b0e19fe18.1678348754.git.nicolinc@nvidia.com>
+In-Reply-To: <995e48fe6eb9e31c71dbe8bb80d445aa34a51819.1678348754.git.nicolinc@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 2023-03-09 10:53, Nicolin Chen wrote:
-> This is used to forward the host IDR values to the user space, so the
-> hypervisor and the guest VM can learn about the underlying hardware's
-> capabilities.
+> From: Eric Auger <eric.auger@redhat.com>
 > 
-> Also, set the driver_type to IOMMU_HW_INFO_TYPE_ARM_SMMUV3 to pass the
-> corresponding type sanity in the core.
-> 
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 25 +++++++++++++++++++++
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  2 ++
->   include/uapi/linux/iommufd.h                | 14 ++++++++++++
->   3 files changed, 41 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index f2425b0f0cd6..c1aac695ae0d 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2005,6 +2005,29 @@ static bool arm_smmu_capable(struct device *dev, enum iommu_cap cap)
->   	}
->   }
->   
-> +static void *arm_smmu_hw_info(struct device *dev, u32 *length)
-> +{
-> +	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-> +	struct iommu_hw_info_smmuv3 *info;
-> +	void *base_idr;
-> +	int i;
-> +
-> +	if (!master || !master->smmu)
-> +		return ERR_PTR(-ENODEV);
-> +
-> +	info = kzalloc(sizeof(*info), GFP_KERNEL);
-> +	if (!info)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	base_idr = master->smmu->base + ARM_SMMU_IDR0;
-> +	for (i = 0; i <= 5; i++)
-> +		info->idr[i] = readl_relaxed(base_idr + 0x4 * i);
+> Despite the spec does not seem to mention this, on some implementations,
+> when the STE configuration switches from an S1+S2 cfg to an S1 only one,
+> a C_BAD_STE error would happen if dst[3] (S2TTB) is not reset.
 
-You need to take firmware overrides etc. into account here. In 
-particular, features like BTM may need to be hidden to work around 
-errata either in the system integration or the SMMU itself. It isn't 
-reasonable to expect every VMM to be aware of every erratum and 
-workaround, and there may even be workarounds where we need to go out of 
-our way to prevent guests from trying to use certain features in order 
-to maintain correctness at S2.
-
-In general this should probably follow the same principle as KVM, where 
-we only expose sanitised feature registers representing the 
-functionality the host understands. Code written today is almost 
-guaranteed to be running on hardware released in 2030, at least *somewhere*.
+Can you provide more details, since it's not clear whether this is a 
+hardware erratum workaround or a bodge around the driver itself doing 
+something wrong like not doing a proper break-before-make transition of 
+the STE. The architecture explicitly states that all the STE.S2* fields 
+except S2VMID and potentially S2S are ignored when Stage 2 is bypassed.
 
 Thanks,
 Robin.
 
-> +
-> +	*length = sizeof(*info);
-> +
-> +	return info;
-> +}
-> +
->   static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
->   {
->   	struct arm_smmu_domain *smmu_domain;
-> @@ -2845,6 +2868,7 @@ static void arm_smmu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
+> Explicitly reset those two higher 64b fields, to prevent that.
+> 
+> Note that this is not a bug at this moment, since a 2-stage translation
+> setup is not yet enabled, until the following patches add its support.
+> 
+> Reported-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> Signed-off-by: Eric Auger <eric.auger@redhat.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 3 +++
+>   1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index c5616145e2a3..29e36448d23b 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -1361,6 +1361,9 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+>   		dst[3] = cpu_to_le64(s2_cfg->vttbr & STRTAB_STE_3_S2TTB_MASK);
 >   
->   static struct iommu_ops arm_smmu_ops = {
->   	.capable		= arm_smmu_capable,
-> +	.hw_info		= arm_smmu_hw_info,
->   	.domain_alloc		= arm_smmu_domain_alloc,
->   	.probe_device		= arm_smmu_probe_device,
->   	.release_device		= arm_smmu_release_device,
-> @@ -2857,6 +2881,7 @@ static struct iommu_ops arm_smmu_ops = {
->   	.page_response		= arm_smmu_page_response,
->   	.def_domain_type	= arm_smmu_def_domain_type,
->   	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
-> +	.driver_type		= IOMMU_HW_INFO_TYPE_ARM_SMMUV3,
->   	.owner			= THIS_MODULE,
->   	.default_domain_ops = &(const struct iommu_domain_ops) {
->   		.attach_dev		= arm_smmu_attach_dev,
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 8d772ea8a583..ba2b4562f4b2 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -14,6 +14,8 @@
->   #include <linux/mmzone.h>
->   #include <linux/sizes.h>
+>   		val |= FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S2_TRANS);
+> +	}  else {
+> +		dst[2] = 0;
+> +		dst[3] = 0;
+>   	}
 >   
-> +#include <uapi/linux/iommufd.h>
-> +
->   /* MMIO registers */
->   #define ARM_SMMU_IDR0			0x0
->   #define IDR0_ST_LVL			GENMASK(28, 27)
-> diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-> index 0d5551b1b2be..c7a37915b49c 100644
-> --- a/include/uapi/linux/iommufd.h
-> +++ b/include/uapi/linux/iommufd.h
-> @@ -519,6 +519,20 @@ struct iommu_hw_info_vtd {
->   	__aligned_u64 ecap_reg;
->   };
->   
-> +/**
-> + * struct iommu_hw_info_smmuv3 - ARM SMMUv3 device info
-> + *
-> + * @flags: Must be set to 0
-> + * @__reserved: Must be 0
-> + * @idr: Implemented features for the SMMU Non-secure programming interface.
-> + *       Please refer to the chapters from 6.3.1 to 6.3.6 in the SMMUv3 Spec.
-> + */
-> +struct iommu_hw_info_smmuv3 {
-> +	__u32 flags;
-> +	__u32 __reserved;
-> +	__u32 idr[6];
-> +};
-> +
->   /**
->    * struct iommu_hw_info - ioctl(IOMMU_DEVICE_GET_HW_INFO)
->    * @size: sizeof(struct iommu_hw_info)
+>   	if (master->ats_enabled)
