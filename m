@@ -1,163 +1,137 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 16132D50B
-	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 14:49:22 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B20E2AD7;
-	Thu,  9 Mar 2023 06:50:05 -0800 (PST)
-Received: from [10.57.91.145] (unknown [10.57.91.145])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6BDD63F5A1;
-	Thu,  9 Mar 2023 06:49:20 -0800 (PST)
-Message-ID: <1467e666-1b6c-c285-3f79-f8e8b088718b@arm.com>
-Date: Thu, 9 Mar 2023 14:49:14 +0000
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29D26D50B
+	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 15:26:22 +0000 (UTC)
+Received: from lhrpeml500006.china.huawei.com (unknown [172.18.147.200])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PXY186fLvz6J7Xn;
+	Thu,  9 Mar 2023 23:26:04 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ lhrpeml500006.china.huawei.com (7.191.161.198) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Thu, 9 Mar 2023 15:26:12 +0000
+Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
+ lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.021;
+ Thu, 9 Mar 2023 15:26:12 +0000
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>, Nicolin Chen
+	<nicolinc@nvidia.com>
+CC: "jgg@nvidia.com" <jgg@nvidia.com>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "will@kernel.org" <will@kernel.org>,
+	"eric.auger@redhat.com" <eric.auger@redhat.com>, "kevin.tian@intel.com"
+	<kevin.tian@intel.com>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "yi.l.liu@intel.com" <yi.l.liu@intel.com>
+Subject: RE: [PATCH v1 02/14] iommufd: Add nesting related data structures for
+ ARM SMMUv3
+Thread-Topic: [PATCH v1 02/14] iommufd: Add nesting related data structures
+ for ARM SMMUv3
+Thread-Index: AQHZUnWTVXhuXoh0OkWPSyQY1srSfq7ydQKAgAAVzLA=
+Date: Thu, 9 Mar 2023 15:26:12 +0000
+Message-ID: <213a05ef06944a55a148995053b187f8@huawei.com>
+References: <cover.1678348754.git.nicolinc@nvidia.com>
+ <364cfbe5b228ab178093db2de13fa3accf7a6120.1678348754.git.nicolinc@nvidia.com>
+ <20230309134217.GA1673607@myrica>
+In-Reply-To: <20230309134217.GA1673607@myrica>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-originating-ip: [10.202.227.178]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v1 14/14] iommu/arm-smmu-v3: Add
- arm_smmu_cache_invalidate_user
-Content-Language: en-GB
-To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com, will@kernel.org
-Cc: eric.auger@redhat.com, kevin.tian@intel.com, baolu.lu@linux.intel.com,
- joro@8bytes.org, shameerali.kolothum.thodi@huawei.com,
- jean-philippe@linaro.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <cover.1678348754.git.nicolinc@nvidia.com>
- <aa327f9ea61e5a4771c13e53639e33955b9acde3.1678348754.git.nicolinc@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <aa327f9ea61e5a4771c13e53639e33955b9acde3.1678348754.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-CFilter-Loop: Reflected
 
-On 2023-03-09 10:53, Nicolin Chen wrote:
-> Add arm_smmu_cache_invalidate_user() function for user space to invalidate
-> TLB entries and Context Descriptors, since either an IO page table entrie
-> or a Context Descriptor in the user space is still cached by the hardware.
-> 
-> The input user_data is defined in "struct iommu_hwpt_invalidate_arm_smmuv3"
-> that contains the essential data for corresponding invalidation commands.
-> 
-> Co-developed-by: Eric Auger <eric.auger@redhat.com>
-> Signed-off-by: Eric Auger <eric.auger@redhat.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 56 +++++++++++++++++++++
->   1 file changed, 56 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index ac63185ae268..7d73eab5e7f4 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2880,9 +2880,65 @@ static void arm_smmu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
->   	arm_smmu_sva_remove_dev_pasid(domain, dev, pasid);
->   }
->   
-> +static void arm_smmu_cache_invalidate_user(struct iommu_domain *domain,
-> +					   void *user_data)
-> +{
-> +	struct iommu_hwpt_invalidate_arm_smmuv3 *inv_info = user_data;
-> +	struct arm_smmu_cmdq_ent cmd = { .opcode = inv_info->opcode };
-> +	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
-> +	size_t granule_size = inv_info->granule_size;
-> +	unsigned long iova = 0;
-> +	size_t size = 0;
-> +	int ssid = 0;
-> +
-> +	if (!smmu || !smmu_domain->s2 || domain->type != IOMMU_DOMAIN_NESTED)
-> +		return;
-> +
-> +	switch (inv_info->opcode) {
-> +	case CMDQ_OP_CFGI_CD:
-> +	case CMDQ_OP_CFGI_CD_ALL:
-> +		return arm_smmu_sync_cd(smmu_domain, inv_info->ssid, true);
 
-Since we let the guest choose its own S1Fmt (and S1CDMax, yet not 
-S1DSS?), how can we assume leaf = true here?
 
-> +	case CMDQ_OP_TLBI_NH_VA:
-> +		cmd.tlbi.asid = inv_info->asid;
-> +		fallthrough;
-> +	case CMDQ_OP_TLBI_NH_VAA:
-> +		if (!granule_size || !(granule_size & smmu->pgsize_bitmap) ||
+> -----Original Message-----
+> From: Jean-Philippe Brucker [mailto:jean-philippe@linaro.org]
+> Sent: 09 March 2023 13:42
+> To: Nicolin Chen <nicolinc@nvidia.com>
+> Cc: jgg@nvidia.com; robin.murphy@arm.com; will@kernel.org;
+> eric.auger@redhat.com; kevin.tian@intel.com; baolu.lu@linux.intel.com;
+> joro@8bytes.org; Shameerali Kolothum Thodi
+> <shameerali.kolothum.thodi@huawei.com>;
+> linux-arm-kernel@lists.infradead.org; iommu@lists.linux.dev;
+> linux-kernel@vger.kernel.org; yi.l.liu@intel.com
+> Subject: Re: [PATCH v1 02/14] iommufd: Add nesting related data structure=
+s
+> for ARM SMMUv3
+>=20
+> Hi Nicolin,
+>=20
+> On Thu, Mar 09, 2023 at 02:53:38AM -0800, Nicolin Chen wrote:
+> > Add the following data structures for corresponding ioctls:
+> >                iommu_hwpt_arm_smmuv3 =3D>
+> IOMMUFD_CMD_HWPT_ALLOC
+> >     iommu_hwpt_invalidate_arm_smmuv3 =3D>
+> IOMMUFD_CMD_HWPT_INVALIDATE
+> >
+> > Also, add IOMMU_HW_INFO_TYPE_ARM_SMMUV3 and
+> IOMMU_PGTBL_TYPE_ARM_SMMUV3_S1
+> > to the header and corresponding type/size arrays.
+> >
+> > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+>=20
+> > +/**
+> > + * struct iommu_hwpt_arm_smmuv3 - ARM SMMUv3 specific page table
+> data
+> > + *
+> > + * @flags: page table entry attributes
+> > + * @s2vmid: Virtual machine identifier
+> > + * @s1ctxptr: Stage-1 context descriptor pointer
+> > + * @s1cdmax: Number of CDs pointed to by s1ContextPtr
+> > + * @s1fmt: Stage-1 Format
+> > + * @s1dss: Default substream
+> > + */
+> > +struct iommu_hwpt_arm_smmuv3 {
+> > +#define IOMMU_SMMUV3_FLAG_S2	(1 << 0) /* if unset, stage-1 */
+>=20
+> I don't understand the purpose of this flag, since the structure only
+> provides stage-1 configuration fields
+>=20
+> > +#define IOMMU_SMMUV3_FLAG_VMID	(1 << 1) /* vmid override */
+>=20
+> Doesn't this break isolation?  The VMID space is global for the SMMU, so
+> the guest could access cached mappings of another device
 
-Non-range invalidations with TG=0 are perfectly legal, and should not be 
-ignored.
+On platforms that supports BTM [1], we may need the VMID allocated by KVM.
+But again getting that from user pace doesn't look safe. I have attempted t=
+o revise
+the earlier RFC to pin and use the KVM VMID from SMMUv3 here[2].
 
-> +		    granule_size & ~(1ULL << __ffs(granule_size)))
+But the problem is getting the KVM instance associated with the device. Cur=
+rently I am=20
+going through the VFIO layer to retrieve the KVM instance(vfio_device->kvm)=
+.
 
-If that's intended to mean is_power_of_2(), please just use is_power_of_2().
+On the previous RFC discussion thread[3], Jean has proposed,
 
-> +			return;
-> +
-> +		iova = inv_info->range.start;
-> +		size = inv_info->range.last - inv_info->range.start + 1;
+" In the new design we can require from the start that creating a nesting I=
+OMMU
+container through /dev/iommu *must* come with a KVM context, that way
+we're sure to reuse the existing VMID. "
 
-If the design here is that user_data is so deeply driver-specific and 
-special to the point that it can't possibly be passed as a type-checked 
-union of the known and publicly-visible UAPI types that it is, wouldn't 
-it make sense to just encode the whole thing in the expected format and 
-not have to make these kinds of niggling little conversions at both ends?
-
-> +		if (!size)
-> +			return;
-> +
-> +		cmd.tlbi.vmid = smmu_domain->s2->s2_cfg.vmid;
-> +		cmd.tlbi.leaf = inv_info->flags & IOMMU_SMMUV3_CMDQ_TLBI_VA_LEAF;
-> +		__arm_smmu_tlb_inv_range(&cmd, iova, size, granule_size, smmu_domain);
-> +		break;
-> +	case CMDQ_OP_TLBI_NH_ASID:
-> +		cmd.tlbi.asid = inv_info->asid;
-> +		fallthrough;
-> +	case CMDQ_OP_TLBI_NH_ALL:
-> +		cmd.tlbi.vmid = smmu_domain->s2->s2_cfg.vmid;
-> +		arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
-> +		break;
-> +	case CMDQ_OP_ATC_INV:
-> +		ssid = inv_info->ssid;
-> +		iova = inv_info->range.start;
-> +		size = inv_info->range.last - inv_info->range.start + 1;
-> +		break;
-
-Can we do any better than multiplying every single ATC_INV command, even 
-for random bogus StreamIDs, into multiple commands across every physical 
-device? In fact, I'm not entirely confident this isn't problematic, if 
-the guest wishes to send invalidations for one device specifically while 
-it's put some other device into a state where sending it a command would 
-do something bad. At the very least, it's liable to be confusing if the 
-guest sends a command for one StreamID but gets an error back for a 
-different one.
-
-And if we expect ATS, what about PRI? Per patch #4 you're currently 
-offering that to the guest as well.
-
-> +	default:
-> +		return;
-
-What about NSNH_ALL? That still needs to invalidate all the S1 context 
-that the guest *thinks* it's invalidating.
-
-Also, perhaps I've overlooked something obvious, but what's the 
-procedure for reflecting illegal commands back to userspace? Some of the 
-things we're silently ignoring here would be expected to raise 
-CERROR_ILL. Same goes for all the other fault events which may occur due 
-to invalid S1 config, come to think of it.
+Is that something we can still do or there is a better way to handle this n=
+ow?
 
 Thanks,
-Robin.
+Shameer
 
-> +	}
-> +
-> +	arm_smmu_atc_inv_domain(smmu_domain, ssid, iova, size);
-> +}
-> +
->   static const struct iommu_domain_ops arm_smmu_nested_domain_ops = {
->   	.attach_dev		= arm_smmu_attach_dev,
->   	.free			= arm_smmu_domain_free,
-> +	.cache_invalidate_user	= arm_smmu_cache_invalidate_user,
->   };
->   
->   static struct iommu_domain *
+
+1. https://lore.kernel.org/linux-arm-kernel/YEEUocRn3IfIDpLj@myrica/T/#m478=
+f7e7d5dcb729e02721beda35efa12c1d20707
+2. https://github.com/hisilicon/kernel-dev/commits/iommufd-v6.2-rc4-nesting=
+-arm-btm-v2
+3. https://lore.kernel.org/linux-arm-kernel/YEEUocRn3IfIDpLj@myrica/T/#m11c=
+de7534943ea7cf35f534cb809a023eabd9da3
+
