@@ -1,88 +1,204 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F760C26E
-	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 18:24:32 +0000 (UTC)
-Received: from lhrpeml100003.china.huawei.com (unknown [172.18.147.226])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PXcyr3Yg1z6J7f5;
-	Fri, 10 Mar 2023 02:24:20 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- lhrpeml100003.china.huawei.com (7.191.160.210) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Thu, 9 Mar 2023 18:24:29 +0000
-Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
- lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.021;
- Thu, 9 Mar 2023 18:24:29 +0000
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Robin Murphy <robin.murphy@arm.com>, Nicolin Chen <nicolinc@nvidia.com>,
-	"jgg@nvidia.com" <jgg@nvidia.com>, "will@kernel.org" <will@kernel.org>
-CC: "eric.auger@redhat.com" <eric.auger@redhat.com>, "kevin.tian@intel.com"
-	<kevin.tian@intel.com>, "baolu.lu@linux.intel.com"
-	<baolu.lu@linux.intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"jean-philippe@linaro.org" <jean-philippe@linaro.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v1 06/14] iommu/arm-smmu-v3: Unset corresponding STE
- fields when s2_cfg is NULL
-Thread-Topic: [PATCH v1 06/14] iommu/arm-smmu-v3: Unset corresponding STE
- fields when s2_cfg is NULL
-Thread-Index: AQHZUnWW/wX8VWz+vEGpoiDFTSTiqa7ybOCAgABO2MA=
-Date: Thu, 9 Mar 2023 18:24:29 +0000
-Message-ID: <e923418a99e44cd38483ea24e4c1d373@huawei.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B21E6C26E
+	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 18:27:00 +0000 (UTC)
+Received: by mail-wm1-f41.google.com with SMTP id t25-20020a1c7719000000b003eb052cc5ccso4286990wmi.4
+        for <iommu@lists.linux.dev>; Thu, 09 Mar 2023 10:27:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1678386419;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=tSo3SrRrwG+Alf2X+q3mr8n740CsX06ZYBUOpvJ7CdE=;
+        b=IPIedD0SQGSBZITeBMup2NQnh39sEGFGa1cZddW8kIbf6ppxVYKHf3s2QOKb7ZmKji
+         ugdaUI9z05k+r+Ddg7ZGjyAOcmNExiHSByAMHAH9lwbvRj/x4yHKFHFXU9jswiNI7qUr
+         2DqUrM0lQ9bJQZHP+x6HBQic2DPQMRpYuIijk5YmG+yVbd82sOARPBNEQ50KSgyki1gq
+         yFKHtA8+o0XzffHCbQm2mUq9tn0VGuU3xpsaLU1TE2OP1lVwg8eYhh2BN2mOCNAqmI5e
+         e5HBvgqrH1Q5+fQ25eubeCez4+V6K9hE4XzMXLR4U7wWF8FQlVmIXDOfCK6ZL8prMb7M
+         7ZwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678386419;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=tSo3SrRrwG+Alf2X+q3mr8n740CsX06ZYBUOpvJ7CdE=;
+        b=6WLgQHQbfyNXv9gDJTXa/asdw/zsMPtmHS5Xg3yDNYdaU7iZXfP1PCj1LE7x5eS25a
+         MzjnJEDnxzfa0LFcb2mG2Y2ol/SvdsOycP6EDCsxPKkzkWyeJid7zdwpUFOHDczi+Ule
+         j+qiTfup+lz494OgQqWJW/jhLbCGxNB7nS+3V5lB8ZtxRsSm/VXqg1iD73nyV1Uf9TTl
+         XuSB5QFUbTzj4UDiTi+3eedMI+cmSJyXRhgGl5C18ILgxi9sTeuHlJ4ZAv5rGJrdiAIZ
+         Dqn/4pDs9dM3nfqnsih4RVoClArvJbunxAmF0k/peI1TBn1PQBPQJS5apJg4qRTOcvam
+         4WEg==
+X-Gm-Message-State: AO0yUKWfyy6bQ3tBB5ypD9CNAeP5qgxGIj3a9OqODYNN/Cn+mq4RK8/G
+	ZLMtl+0C0yeZucA/qhMd/WTuWA==
+X-Google-Smtp-Source: AK7set+z154uyP1Uipi6NNjIApt35+YbI32vUip5j8Zt23KIYEFqnQGAt+J8pFg8TzQ8QBBQG0qcwA==
+X-Received: by 2002:a05:600c:524b:b0:3ea:dc1b:90c with SMTP id fc11-20020a05600c524b00b003eadc1b090cmr184067wmb.20.1678386418874;
+        Thu, 09 Mar 2023 10:26:58 -0800 (PST)
+Received: from myrica (054592b0.skybroadband.com. [5.69.146.176])
+        by smtp.gmail.com with ESMTPSA id r7-20020a0560001b8700b002c7163660a9sm40251wru.105.2023.03.09.10.26.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Mar 2023 10:26:58 -0800 (PST)
+Date: Thu, 9 Mar 2023 18:26:59 +0000
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, robin.murphy@arm.com,
+	will@kernel.org, eric.auger@redhat.com, kevin.tian@intel.com,
+	baolu.lu@linux.intel.com, joro@8bytes.org,
+	shameerali.kolothum.thodi@huawei.com,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, yi.l.liu@intel.com
+Subject: Re: [PATCH v1 02/14] iommufd: Add nesting related data structures
+ for ARM SMMUv3
+Message-ID: <20230309182659.GA1710571@myrica>
 References: <cover.1678348754.git.nicolinc@nvidia.com>
-	<995e48fe6eb9e31c71dbe8bb80d445aa34a51819.1678348754.git.nicolinc@nvidia.com>
- <4e426dc4-6852-336f-7321-5b4df69fd430@arm.com>
-In-Reply-To: <4e426dc4-6852-336f-7321-5b4df69fd430@arm.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-originating-ip: [10.202.227.178]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <364cfbe5b228ab178093db2de13fa3accf7a6120.1678348754.git.nicolinc@nvidia.com>
+ <20230309134217.GA1673607@myrica>
+ <ZAnx0lUkw02cVTi+@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZAnx0lUkw02cVTi+@nvidia.com>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUm9iaW4gTXVycGh5IFtt
-YWlsdG86cm9iaW4ubXVycGh5QGFybS5jb21dDQo+IFNlbnQ6IDA5IE1hcmNoIDIwMjMgMTM6MTMN
-Cj4gVG86IE5pY29saW4gQ2hlbiA8bmljb2xpbmNAbnZpZGlhLmNvbT47IGpnZ0BudmlkaWEuY29t
-OyB3aWxsQGtlcm5lbC5vcmcNCj4gQ2M6IGVyaWMuYXVnZXJAcmVkaGF0LmNvbTsga2V2aW4udGlh
-bkBpbnRlbC5jb207IGJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbTsNCj4gam9yb0A4Ynl0ZXMub3Jn
-OyBTaGFtZWVyYWxpIEtvbG90aHVtIFRob2RpDQo+IDxzaGFtZWVyYWxpLmtvbG90aHVtLnRob2Rp
-QGh1YXdlaS5jb20+OyBqZWFuLXBoaWxpcHBlQGxpbmFyby5vcmc7DQo+IGxpbnV4LWFybS1rZXJu
-ZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsgaW9tbXVAbGlzdHMubGludXguZGV2Ow0KPiBsaW51eC1r
-ZXJuZWxAdmdlci5rZXJuZWwub3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggdjEgMDYvMTRdIGlv
-bW11L2FybS1zbW11LXYzOiBVbnNldCBjb3JyZXNwb25kaW5nDQo+IFNURSBmaWVsZHMgd2hlbiBz
-Ml9jZmcgaXMgTlVMTA0KPiANCj4gT24gMjAyMy0wMy0wOSAxMDo1MywgTmljb2xpbiBDaGVuIHdy
-b3RlOg0KPiA+IEZyb206IEVyaWMgQXVnZXIgPGVyaWMuYXVnZXJAcmVkaGF0LmNvbT4NCj4gPg0K
-PiA+IERlc3BpdGUgdGhlIHNwZWMgZG9lcyBub3Qgc2VlbSB0byBtZW50aW9uIHRoaXMsIG9uIHNv
-bWUgaW1wbGVtZW50YXRpb25zLA0KPiA+IHdoZW4gdGhlIFNURSBjb25maWd1cmF0aW9uIHN3aXRj
-aGVzIGZyb20gYW4gUzErUzIgY2ZnIHRvIGFuIFMxIG9ubHkgb25lLA0KPiA+IGEgQ19CQURfU1RF
-IGVycm9yIHdvdWxkIGhhcHBlbiBpZiBkc3RbM10gKFMyVFRCKSBpcyBub3QgcmVzZXQuDQo+IA0K
-PiBDYW4geW91IHByb3ZpZGUgbW9yZSBkZXRhaWxzLCBzaW5jZSBpdCdzIG5vdCBjbGVhciB3aGV0
-aGVyIHRoaXMgaXMgYQ0KPiBoYXJkd2FyZSBlcnJhdHVtIHdvcmthcm91bmQgb3IgYSBib2RnZSBh
-cm91bmQgdGhlIGRyaXZlciBpdHNlbGYgZG9pbmcNCj4gc29tZXRoaW5nIHdyb25nIGxpa2Ugbm90
-IGRvaW5nIGEgcHJvcGVyIGJyZWFrLWJlZm9yZS1tYWtlIHRyYW5zaXRpb24gb2YNCj4gdGhlIFNU
-RS4gVGhlIGFyY2hpdGVjdHVyZSBleHBsaWNpdGx5IHN0YXRlcyB0aGF0IGFsbCB0aGUgU1RFLlMy
-KiBmaWVsZHMNCj4gZXhjZXB0IFMyVk1JRCBhbmQgcG90ZW50aWFsbHkgUzJTIGFyZSBpZ25vcmVk
-IHdoZW4gU3RhZ2UgMiBpcyBieXBhc3NlZC4NCg0KVG9vayBhIHdoaWxlIHRvIGxvY2F0ZSB0aGUg
-ZW1haWwgdGhyZWFkIHdoZXJlIHRoaXMgd2FzIGRpc2N1c3NlZCwNCmh0dHBzOi8vcGF0Y2h3b3Jr
-Lmtlcm5lbC5vcmcvY292ZXIvMTE0NDk4OTUvIzIzMjQ0NDU3DQoNClRoaXMgd2FzIG9ic2VydmVk
-IG9uIGEgSGlTaWxpY29uIGltcGxlbWVudGF0aW9uIHdoZXJlLCBpZiB0aGUgU01NVXYzIGlzIGNv
-bmZpZ3VyZWQgd2l0aA0KYm90aCBTdGFnZSAxIGFuZCBTdGFnZSAyIChuZXN0ZWQpIG1vZGUgb25j
-ZSwgdGhlbiBpdCBpcyBub3QgcG9zc2libGUgdG8gY29uZmlndXJlIGl0IGJhY2sNCmZvciBTdGFn
-ZSAxIG1vZGUgZm9yIHRoZSBzYW1lIGRldmljZShzdHJlYW0gaWQpLg0KDQpJSVJDLCB0aGUgU01N
-VXYzIGltcGxlbWVudGF0aW9uIG9uIHRoZXNlIGJvYXJkcyBleHBlY3RzIHRvIHNldCB0aGUgUzJU
-VEIgZmllbGQgaW4gU1RFIHRvIHplcm8NCndoZW4gdXNpbmcgUzEsIG90aGVyd2lzZSBpdCByZXBv
-cnRzIENfQkFEX1NURSBlcnJvci4gOigNCg0KWW91IGFyZSByaWdodCB0aGF0IHRoZSBzcGVjaWZp
-Y2F0aW9uIGRvZXNuJ3QgZGVtYW5kIHRoaXMgYW5kIEkgYW0gbm90IHN1cmUgdGhlcmUgYXJlIGFu
-eSBvdGhlcg0KSGFyZHdhcmUgdGhhdCByZXF1aXJlcyB0aGlzLg0KDQpDb3VsZCB3ZSBwbGVhc2Ug
-aGF2ZSB0aGlzIHdpdGggYSBjb21tZW50IGFkZGVkIGluIHRoZSBjb2RlPw0KDQpUaGFua3MsDQpT
-aGFtZWVyDQoNCg0K
+On Thu, Mar 09, 2023 at 10:48:50AM -0400, Jason Gunthorpe wrote:
+> On Thu, Mar 09, 2023 at 01:42:17PM +0000, Jean-Philippe Brucker wrote:
+> 
+> > Although we can keep the alloc and hardware info separate for each IOMMU
+> > architecture, we should try to come up with common invalidation methods.
+> 
+> The invalidation language is tightly linked to the actual cache block
+> and cache tag in the IOMMU HW design.
+
+Concretely though, what are the incompatibilities between the HW designs?
+They all need to remove a range of TLB entries, using some address space
+tag. But if there is an actual difference I do need to know.
+
+> Generality will loose or
+> obfuscate the necessary specificity that is required for creating real
+> vIOMMUs.
+> 
+> Further, invalidation is a fast path, it is crazy to take a vIOMMU of
+> a real HW receving a native invalidation request, mangle it to some
+> obfuscated kernel version and then de-mangle it again in the kernel
+> driver. IMHO ideally qemu will simply point the invalidation at the
+> WQE in the SW vIOMMU command queue and invoke the ioctl. (Nicolin, we
+> should check more into this)
+
+Avoiding copying a few bytes won't make up for the extra context switches
+to userspace. An emulated IOMMU can easily decode commands and translate
+them to generic kernel structures, in a handful of CPU cycles, just like
+they decode STEs. It's what they do, and it's the opposite of obfuscation.
+
+> 
+> The purpose of these interfaces is to support high performance full
+> functionality vIOMMUs of the real HW, we should not loose sight of
+> that goal.
+> 
+> We are actually planning to go futher and expose direct invalidation
+> work queues complete with HW doorbells to userspace. This obviously
+> must be in native HW format.
+
+Doesn't seem relevant since direct access to command queue wouldn't use
+this struct.
+
+> 
+> Nicolin, I think we should tweak the uAPI here so that the
+> invalidation opaque data has a format tagged on its own, instead of
+> re-using the HWPT tag. Ie you can have a ARM SMMUv3 invalidate type
+> tag and also a virtio-viommu invalidate type tag.
+> 
+> This will allow Jean to put the invalidation decoding in the iommu
+> drivers if we think that is the right direction. virtio can
+> standardize it as a "HW format".
+> 
+> > Ideally I'd like something like this for vhost-iommu:
+> > 
+> > * slow path through userspace for complex requests like attach-table and
+> >   probe, where the VMM can decode arch-specific information and translate
+> >   them to iommufd and vhost-iommu ioctls to update the configuration.
+> > 
+> > * fast path within the kernel for performance-critical requests like
+> >   invalidate, page request and response. It would be absurd for the
+> >   vhost-iommu driver to translate generic invalidation requests from the
+> >   guest into arch-specific commands with special opcodes, when the next
+> >   step is calling the IOMMU driver which does that for free.
+> 
+> Someone has to do the conversion. If you don't think virito should do
+> it then I'd be OK to add a type tag for virtio format invalidation and
+> put it in the IOMMU driver.
+
+Implementing two invalidation formats in each IOMMU driver does not seem
+practical.
+
+> 
+> But given virtio overall already has to know *alot* about how the HW
+> it is wrapping works I don't think it is necessarily absurd for virtio
+> to do the conversion. I'd like to evaluate this in patches in context
+> with how much other unique HW code ends up in kernel-side vhost-iommu.
+
+Ideally none. I'd rather leave those, attach and probe, in userspace and
+if possible compatible with iommufd to avoid register decoding. 
+
+> 
+> However, I don't know the rational for virtio-viommu, it seems like a
+> strange direction to me.
+
+A couple of reasons are relevant here: non-QEMU VMMs don't want to emulate
+all vendor IOMMUs, new architectures get vIOMMU mostly for free, and vhost
+provides a faster path. Also the ability to optimize paravirtual
+interfaces for things like combined invalidation (IOTLB+ATC) or, later,
+nested page requests.
+
+For a while the main vIOMMU use-case was assignment to guest userspace,
+mainly DPDK, which works great with a generic and slow map/unmap
+interface. Since vSVA is still a niche use-case, and nesting without page
+faults requires pinning the whole guest memory, map/unmap still seems more
+desirable to me. But there is some renewed interest in supporting page
+tables with virtio-iommu for the reasons above.
+
+> All the iommu drivers have native command
+> queues. ARM and AMD are both supporting native command queues directly
+> in the guest, complete with a direct guest MMIO doorbell ring.
+
+Arm SMMUv3 mandates a single global command queue (SMMUv2 uses registers).
+An SMMUv3 can optionally implement multiple command queues, though I don't
+know if they can be safely assigned to guests. For a lot of SMMUv3
+implementations that have a single queue and for other architectures, we
+can do better than hardware emulation.
+
+> 
+> If someone wants to optimize this I'd think the way to do it is to use
+> virtio like techniques to put SW command queue processing in the
+> kernel iommu driver and continue to use the HW native interface in the
+> VM.
+
+I didn't get which kernel this is.
+
+> 
+> What benifit comes from replacing the HW native interface with virtio?
+> Especially on ARM where the native interface is pretty clean?
+> 
+> > During previous discussions we came up with generic invalidations that
+> > could fit both Arm and x86 [1][2]. The only difference was the ASID
+> > (called archid/id in those proposals) which VT-d didn't need. Could we try
+> > to build on that?
+> 
+> IMHO this was just unioning all the different invalidation types
+> together. It makes sense for something like virtio but it is
+> illogical/obfuscated as a user/kernel interface since it still
+> requires a userspace HW driver to understand what subset of the
+> invalidations are used on the actual HW.
+
+As above, decoding arch-specific structures into generic ones is what an
+emulated IOMMU does, and it doesn't make a performance difference in which
+format it forwards that to the kernel. The host IOMMU driver checks the
+guest request and copies them into the command queue. Whether that request
+comes in the form of a structure binary-compatible with Arm SMMUvX.Y, or
+some generic structure, does not make a difference.
+
+Thanks,
+Jean
+
