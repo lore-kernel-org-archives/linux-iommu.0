@@ -1,65 +1,70 @@
-Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC3598BF3;
-	Wed,  8 Mar 2023 19:31:16 +0000 (UTC)
-Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-176d93cd0daso10480464fac.4;
-        Wed, 08 Mar 2023 11:31:16 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678303876;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=OVRxkbAcOH49LnvQjybsYaSoW319krR81ouXEhY/1GA=;
-        b=JE1yVJLWt9NEHOD5WpWC/YgBbl3OcPPEz5AXdQOquicOk7x7WqCeYqYhLuuc75HbH0
-         lnEASOEi7tMOWKYkRMU+YNoaREbfODgybNRPe3jLm8FEnOSlsp7BngDLGaMYPwQNyAR7
-         wOtUCvmjWweoz7KAuhv5YUdhVHGgXaivsJzg3Tp+U3BeyODh+g3mgm5a11nAUGmC/D08
-         mJKTP/sYvInW5Ce1nsTOZdv3oleS81Y1nEqHMVwH09JPEgvuyWdEvBoe044e+VBGpdFR
-         lwUnzXpiDli+JdDmQLf0AS6JwtPo8gdoFNoAZfJfMpjOX34fw9IN7FHnl9QLNrmsiSbH
-         BKAA==
-X-Gm-Message-State: AO0yUKVo9Nt3tDeUz9602AgVC1iwcjnEufvnlaPMiHwxRnb5z6YfEIz2
-	xnZDfafuqFmIt6b9MS9Q5w==
-X-Google-Smtp-Source: AK7set+2G35ce6l0KBUah5lmSczkOPP8Rxk/KKrKFG3bwudwFBrKiHsr0HW+2VEzTaZfCdFpWT0Dvg==
-X-Received: by 2002:a05:6870:c69b:b0:16a:a965:87e0 with SMTP id cv27-20020a056870c69b00b0016aa96587e0mr12331912oab.54.1678303871060;
-        Wed, 08 Mar 2023 11:31:11 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id p13-20020a9d4e0d000000b0068bbc9e7cc9sm6745998otf.53.2023.03.08.11.31.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Mar 2023 11:31:10 -0800 (PST)
-Received: (nullmailer pid 3642800 invoked by uid 1000);
-	Wed, 08 Mar 2023 19:31:09 -0000
-Date: Wed, 8 Mar 2023 13:31:09 -0600
-From: Rob Herring <robh@kernel.org>
-To: Sven Peter <sven@svenpeter.dev>
-Cc: Alyssa Rosenzweig <alyssa@rosenzweig.io>, linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, devicetree@vger.kernel.org, Hector Martin <marcan@marcan.st>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Will Deacon <will@kernel.org>, Rob Herring <robh+dt@kernel.org>, Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v2 1/4] dt-bindings: iommu: dart: Add t8103-usb4-dart
- compatible
-Message-ID: <167830386930.3642740.3268632059091796734.robh@kernel.org>
-References: <20230228202132.4919-1-sven@svenpeter.dev>
- <20230228202132.4919-2-sven@svenpeter.dev>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05FFD628
+	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 01:15:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678324532; x=1709860532;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=n9/BFx00bk/6jqChuJmuyNT87149Jg6frqDApKRvQhA=;
+  b=iiHSHgB6MuU0ptIw93KOaHcilpMqRhcuYf2wnWIJVPsWvN8EcB24HxQc
+   xz/v8gVrxReTf4xvpi4jv2XO/+VqmzVwFD/tzTLre9HGcn5YJdhgCxSdZ
+   64RW8DVO1ZVqeq88AQr4tTVTol/sgzAsRtZVb9PM7YCkrGpwUa4h89g72
+   D2lUl4SD2GiTNL27naDySWR2TyvvLc9ykMJULGRgSVyYWMljMQrIjfClj
+   O0MNoladuW/Rk3H3QniR9hmSxr3EZ/Wxu30otATTLLrnrH1CaiZrp1Yov
+   0MgAoayXForA+nICYN7Zbf/RQuxeH/XzHTPL7z621px3UsWW46lEb9FdP
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="401156726"
+X-IronPort-AV: E=Sophos;i="5.98,244,1673942400"; 
+   d="scan'208";a="401156726"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2023 17:15:30 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="766224010"
+X-IronPort-AV: E=Sophos;i="5.98,244,1673942400"; 
+   d="scan'208";a="766224010"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
+  by FMSMGA003.fm.intel.com with ESMTP; 08 Mar 2023 17:15:28 -0800
+Message-ID: <94a68384-0541-affb-fb52-9644312c4b95@linux.intel.com>
+Date: Thu, 9 Mar 2023 09:14:29 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230228202132.4919-2-sven@svenpeter.dev>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Cc: baolu.lu@linux.intel.com, kvm@vger.kernel.org,
+ Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH v2 12/17] iommufd: Add iommufd_device_replace()
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+ Kevin Tian <kevin.tian@intel.com>, linux-kselftest@vger.kernel.org
+References: <12-v2-51b9896e7862+8a8c-iommufd_alloc_jgg@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <12-v2-51b9896e7862+8a8c-iommufd_alloc_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-
-On Tue, 28 Feb 2023 21:21:29 +0100, Sven Peter wrote:
-> This DART variant is found in the t8103 (M1) SoCs and used for the
-> USB4/Thunderbolt PCIe ports. Unlike the regular t8103 DART these support
-> up to 64 SIDs and require a slightly different MMIO layout. This variant
-> is only found on the M1 SoCs.
+On 3/8/23 8:35 AM, Jason Gunthorpe wrote:
+> Replace allows all the devices in a group to move in one step to a new
+> HWPT. Further, the HWPT move is done without going through a blocking
+> domain so that the IOMMU driver can implement some level of
+> non-distruption to ongoing DMA if that has meaning for it (eg for future
+> special driver domains)
 > 
-> Acked-by: Hector Martin <marcan@marcan.st>
-> Signed-off-by: Sven Peter <sven@svenpeter.dev>
-> ---
->  Documentation/devicetree/bindings/iommu/apple,dart.yaml | 1 +
->  1 file changed, 1 insertion(+)
+> Replace uses a lot of the same logic as normal attach, except the actual
+> domain change over has different restrictions, and we are careful to
+> sequence things so that failure is going to leave everything the way it
+> was, and not get trapped in a blocking domain or something if there is
+> ENOMEM.
 > 
+> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
 
-Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
+Best regards,
+baolu
