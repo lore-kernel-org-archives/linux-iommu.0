@@ -1,32 +1,32 @@
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6556C941
-	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 22:18:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5F7BC94A
+	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 22:18:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678400288; x=1709936288;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=++gHGBV14UtCVgFfuEfnS3kCGAlJwlUHhQirNwHAb7U=;
-  b=k+ZUszPc67Liw1CwwKeHx9KpTQWnKx0wy5kfzcn+lG0F5iJNhiUbDh/o
-   HdNt/xvVlQDieYC8VAfPz9qtsQMEJLoZxyu1qnhV01mD/S3BhrRMpYVMr
-   prs5wv/HpX4BsLTyQF4jpgAT0FeIjdNVvOWC8SaMiUHhjgSraniIe1qOa
-   ghXQxcYvwHRwkWVznG3nizeO+S+Dm8ycZlB5tY2nrYMET1bKKxTe2boL0
-   1/YOa7QJj+LowNsW2SpVuDBz8V+6rA+bsbW0QnKHttN/Txgg1/FdEbIxL
-   6z0FfuZF/rUqhVeyzSzS6RLAIVaLd9xcrQ/nsPz1raMHI1UoTSqnTjtcS
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="364235171"
+  t=1678400289; x=1709936289;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=qEZC/0d3RxKKD4t5SPbuVMigiv80v1jYfs2FicqiFA0=;
+  b=Bcqhca4Yr6F4tLHSWe35pP52ee5s4xf3+nbxdoK2DBBv70Y2/14cCWq2
+   4LaRNUVf6s697mw8wzOx81tUY1cAxaotAEC584zwC8GUFp2FghXLcwKZ7
+   niVDEx51R1JFabjZ7ctcsGTnN+2LnyELcjTKj6hMdnBz0OcmpR04q/pmE
+   AFddZkMq4uMdtKvg1928RgiCy5ajtp3Pe43QmW56JsQn1kYYip5pZUWjV
+   hWIBb+xYGM+RUKWE4cHK1kKqMsEkf7Wlmko78qwJUsAhGri6DKFuieCFz
+   0WJny0Na1h7C7s5qIfj2RyNzzk3V9gXMU3pQ1AaPiKAPicesa1qCPTrnn
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="364235184"
 X-IronPort-AV: E=Sophos;i="5.98,247,1673942400"; 
-   d="scan'208";a="364235171"
+   d="scan'208";a="364235184"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 14:18:07 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="707788820"
+X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="707788826"
 X-IronPort-AV: E=Sophos;i="5.98,247,1673942400"; 
-   d="scan'208";a="707788820"
+   d="scan'208";a="707788826"
 Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.106])
-  by orsmga008.jf.intel.com with ESMTP; 09 Mar 2023 14:18:06 -0800
+  by orsmga008.jf.intel.com with ESMTP; 09 Mar 2023 14:18:07 -0800
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: LKML <linux-kernel@vger.kernel.org>,
 	iommu@lists.linux.dev,
@@ -56,9 +56,11 @@ Cc: "Robin Murphy" <robin.murphy@arm.com>,
 	Tony Luck <tony.luck@intel.com>,
 	Jacob Pan <jacob.jun.pan@linux.intel.com>
 Subject: [PATCH v5 0/7] Remove VT-d virtual command interface and IOASID
-Date: Thu,  9 Mar 2023 14:21:51 -0800
-Message-Id: <20230309222159.487826-1-jacob.jun.pan@linux.intel.com>
+Date: Thu,  9 Mar 2023 14:21:52 -0800
+Message-Id: <20230309222159.487826-2-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230309222159.487826-1-jacob.jun.pan@linux.intel.com>
+References: <20230309222159.487826-1-jacob.jun.pan@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -83,7 +85,6 @@ Jacob
 
 ChangeLog:
 v5:
- - rebased on v6.3-rc1
  - put removing iommu_sva_find() in a separate patch (Kevin)
  - move definition of helpers to iommu code to be consistent with
    declarations. (Kevin)
