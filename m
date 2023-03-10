@@ -1,39 +1,39 @@
-Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
+Received: from mail-oo1-f44.google.com (mail-oo1-f44.google.com [209.85.161.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E6748821
-	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 14:47:40 +0000 (UTC)
-Received: by mail-ot1-f52.google.com with SMTP id g6-20020a056830308600b0068d4b30536aso3025480ots.9
-        for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 06:47:40 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 794AA8820
+	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 14:47:46 +0000 (UTC)
+Received: by mail-oo1-f44.google.com with SMTP id p8-20020a4a3c48000000b0052527a9d5f0so819118oof.1
+        for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 06:47:46 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678459659;
+        d=1e100.net; s=20210112; t=1678459665;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=v0H5Wu4JK6lQArjMSAowLoAG+26f+c1LrnbxEzmAS4U=;
-        b=q2HXnZamplihOQUsmFNj88i5ypFKlO794GGyW8KKehsT7/GVgFDyvHk+Gxf2+nY9sf
-         WHMhSgAI9+0jqSxI8pLCxLp1S1veep5D4/6nYV7t+MPOFCnvoIKHIXT4MPAsswAzrM3+
-         /0pzWqrGG3RlRh+rjfF7CYPeQW6ftkig53vqhJXu1xZvQXizuebkTxPFZQ0Tkh+MX97K
-         IQTZiWkaBgMdrAjCyBDr3c9hgOqqTYf3bDOWebSY2TCBSfVd95xT2AqChfz218W8u5oY
-         PthomjJX4WEGWZ9gDGjv2n/7gRAdIqRsxfb4ac9407NYliS8/ZmmFLj/Yh3dVOEfkIGu
-         SGvw==
-X-Gm-Message-State: AO0yUKW+Hw9eus7v44xE8xnefsdtuokm6yED9paovK3dbyMaxOi1xWQP
-	NmtgGEcIfmpVVnJ3YYDILkE7ODDTNA==
-X-Google-Smtp-Source: AK7set+1v0Oy317O/GgYXBQ/6eEBO/u3ew/d9R+Nk1dh3yQXWhHfEHApW3jqyFaoPyN4Vuj/ZB6org==
-X-Received: by 2002:a05:6830:807:b0:694:39e5:fdc8 with SMTP id r7-20020a056830080700b0069439e5fdc8mr12074773ots.32.1678459659397;
-        Fri, 10 Mar 2023 06:47:39 -0800 (PST)
+        bh=BaG0TuJkSsZEq6KyR2Pw2svGg0iIophmgifd7AAJgZA=;
+        b=ZT/CvKxSBhgiC7NEOHVyq4ToCzgVVZCOiKVyXoeTlQje6JtJvi4KCJTZLY0QtDF1Il
+         kvs9MeGIpntVu+XCWHvVWIlSUWrmYgD0LKgDTgp8ZwBTDr5XcVwlGuMHzig5l+W3Az4f
+         Zec60/0Cr73jRjC5Zmk+1EuocU+xKAatpjo532smZdYKBc7fzQONt8dOEihnG2f3d984
+         JuTGEyxzaWsmkxOItAxdrwe59nE16VPH8sz6VvklfTnI9/ov+8aqPSOD2kyMtvccWr48
+         iISewZNA/NjW9udzqrNmHLfLzR/atSJdrrkNQBb2wWokhVu29+g1tEZgkGs1zSvzn9kQ
+         VRSA==
+X-Gm-Message-State: AO0yUKW3Id4E06D86+Ay9lKuDwiDUVGE2485wAAuAZHq1PJ1L9LFf/eN
+	nFpnZ4+cV/QjIYKMWnc7XA==
+X-Google-Smtp-Source: AK7set8+gWXMSTtGEYuxYj+rHrEgRcQwcPQPrVXthx8wns6wXVi81jocwA/15crUkZWCDQp+pYVWYQ==
+X-Received: by 2002:a05:6820:174:b0:51a:ac9:775 with SMTP id k20-20020a056820017400b0051a0ac90775mr12553434ood.6.1678459665482;
+        Fri, 10 Mar 2023 06:47:45 -0800 (PST)
 Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id a26-20020a9d725a000000b00684c5211c58sm107392otk.60.2023.03.10.06.47.38
+        by smtp.gmail.com with ESMTPSA id 63-20020a9d0845000000b00690f6d9a737sm134796oty.8.2023.03.10.06.47.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Mar 2023 06:47:38 -0800 (PST)
-Received: (nullmailer pid 1542936 invoked by uid 1000);
+        Fri, 10 Mar 2023 06:47:44 -0800 (PST)
+Received: (nullmailer pid 1543027 invoked by uid 1000);
 	Fri, 10 Mar 2023 14:47:09 -0000
 From: Rob Herring <robh@kernel.org>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>
-Cc: devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu: Use of_property_present() for testing DT property presence
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Cc: devicetree@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH] iommu: omap: Use of_property_read_bool() for boolean properties
 Date: Fri, 10 Mar 2023 08:47:09 -0600
-Message-Id: <20230310144709.1542910-1-robh@kernel.org>
+Message-Id: <20230310144709.1542980-1-robh@kernel.org>
 X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -45,43 +45,27 @@ Content-Transfer-Encoding: 8bit
 
 It is preferred to use typed property access functions (i.e.
 of_property_read_<type> functions) rather than low-level
-of_get_property/of_find_property functions for reading properties. As
-part of this, convert of_get_property/of_find_property calls to the
-recently added of_property_present() helper when we just want to test
-for presence of a property and nothing more.
+of_get_property/of_find_property functions for reading properties.
+Convert reading boolean properties to to of_property_read_bool().
 
 Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu.c | 2 +-
- drivers/iommu/ipmmu-vmsa.c            | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/omap-iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 2ff7a72cf377..d0843caf8760 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -139,7 +139,7 @@ static int arm_smmu_register_legacy_master(struct device *dev,
- 	int err;
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index 3ab078112a7c..baafd6211ac4 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -1191,7 +1191,7 @@ static int omap_iommu_probe(struct platform_device *pdev)
+ 		return err;
+ 	if (obj->nr_tlb_entries != 32 && obj->nr_tlb_entries != 8)
+ 		return -EINVAL;
+-	if (of_find_property(of, "ti,iommu-bus-err-back", NULL))
++	if (of_property_read_bool(of, "ti,iommu-bus-err-back"))
+ 		obj->has_bus_err_back = MMU_GP_REG_BUS_ERR_BACK_EN;
  
- 	np = dev_get_dev_node(dev);
--	if (!np || !of_find_property(np, "#stream-id-cells", NULL)) {
-+	if (!np || !of_property_present(np, "#stream-id-cells")) {
- 		of_node_put(np);
- 		return -ENODEV;
- 	}
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index bdf1a4e5eae0..f4470303d906 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -1014,7 +1014,7 @@ static int ipmmu_probe(struct platform_device *pdev)
- 	 * the lack of has_cache_leaf_nodes flag or renesas,ipmmu-main property.
- 	 */
- 	if (!mmu->features->has_cache_leaf_nodes ||
--	    !of_find_property(pdev->dev.of_node, "renesas,ipmmu-main", NULL))
-+	    !of_property_present(pdev->dev.of_node, "renesas,ipmmu-main"))
- 		mmu->root = mmu;
- 	else
- 		mmu->root = ipmmu_find_root();
+ 	obj->dev = &pdev->dev;
 -- 
 2.39.2
 
