@@ -1,126 +1,143 @@
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2053.outbound.protection.outlook.com [40.107.212.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 984D1DAAD
-	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 20:15:37 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SIrY7pcz1uPFlZtqHq8OIwyl7e1koKvJgIil1vI3o8aWHIU/y+LDag5wCfNPPTsW0kQsF5BpBopEf4InNu5DwOJlQCJ8/USUuzwdzu0KGxQ9Nzudy1jE/KX/tkr7cuTmI056lGOIgV1yLXEQmMPinGSMw3l3ZG5wZHPg2qXF+9L0t/LLVF8C58+VwaPJt61rW87ULVnZJxmzkFdi6Q/26fqjDOYAiE4C3x2mqoqs2yHwjMn5WvrS14/61j/VjMIh8vspfMGhiZn1VZAoyCOhZ0ZKsY0cpRsfgT+SCf0QDXVeYEfblpRUdUvsa5CD1168yaO/SFL8jIpH0i/2ufSIlw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mzRa/YSW/ZmUcQnrDoCXMw4dVcIgcaZnjhmasHvr+WI=;
- b=XuLeK2v6s/sVEa3kBN5QUxuu51MzNawfmvJj9Z3tIrrw3J6X8UFpc4raY0Aax2g4JMSwDJ7Nt3N4qQLMIX6EQd0E9pD2JGK9HV0upOlpgPVhiGxhPMhpU0wVKaEtz6Kv+kaq67+n8mlLoFfYupVYw+wd35EhOeTmNzXlkAKpXNZAopTwZwik8k1yC1visj9ZNn11mpq9wzM5lwzGY+wvqO6GtanW9LYN8f38bcO3JQBIdLg+4J4TZRUFRYnUAJl5yw1gzzuNNC0+4lDXPZx9np0/bxrPhFbMO0xNJVqpXlxZFihBwRjUarIIMPWlL25d3N6hWCFfBl9+/r15h8cu3A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mzRa/YSW/ZmUcQnrDoCXMw4dVcIgcaZnjhmasHvr+WI=;
- b=nVYP64V7StmZ6BcwU9zxZuOgFQMBv/ty8YeWB2/HDZF8EBQkpP7Jn/PtgqFSAAfB4x4xmeIN544fwx8YTpXhH2IRO5AvMsGaRW8GJniU02IF7uGuV7dNazlU6gdWxrIxfAt82b2OaRDm9DjawobCiS5U9Q1chT4yXsBe375XSfm/WunIpjj4KEUTUuN3PFP8VYg9E6YSVjbDvTQV5dKmzaxkuSRP6wtttcfN0LgGGXSybN6rIeGAv42RN7bNShiNUskk7Y4LU99ZGGvJBcOjiBd9sf1N986ADPpIKZRyZaLaW9sJdkA1iHWvS3Rlhl05IsRhecPH3emCf180ioRDfA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by IA0PR12MB8694.namprd12.prod.outlook.com (2603:10b6:208:488::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.19; Fri, 10 Mar
- 2023 20:15:35 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::ef6d:fdf6:352f:efd1]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::ef6d:fdf6:352f:efd1%3]) with mapi id 15.20.6178.017; Fri, 10 Mar 2023
- 20:15:35 +0000
-Date: Fri, 10 Mar 2023 16:15:33 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: kevin.tian@intel.com, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, alex.williamson@redhat.com, shuah@kernel.org,
-	yi.l.liu@intel.com, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, kvm@vger.kernel.org,
-	linux-kselftest@vger.kernel.org, mjrosato@linux.ibm.com,
-	farman@linux.ibm.com
-Subject: Re: [PATCH v4 2/5] iommufd/selftest: Add
- IOMMU_TEST_OP_ACCESS_SET_IOAS coverage
-Message-ID: <ZAuP5ewmDwql8Pn5@nvidia.com>
-References: <cover.1678284812.git.nicolinc@nvidia.com>
- <08a875b83daf7047c3cc67ed0da23045b6dc6fb9.1678284812.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <08a875b83daf7047c3cc67ed0da23045b6dc6fb9.1678284812.git.nicolinc@nvidia.com>
-X-ClientProxiedBy: MN2PR01CA0048.prod.exchangelabs.com (2603:10b6:208:23f::17)
- To LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 476867E1
+	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 20:39:29 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 13872AD7;
+	Fri, 10 Mar 2023 12:40:12 -0800 (PST)
+Received: from [10.57.90.67] (unknown [10.57.90.67])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E55623F71A;
+	Fri, 10 Mar 2023 12:39:25 -0800 (PST)
+Message-ID: <0d1e585d-9a11-3f7b-4faa-dc2aa8f961cc@arm.com>
+Date: Fri, 10 Mar 2023 20:39:20 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|IA0PR12MB8694:EE_
-X-MS-Office365-Filtering-Correlation-Id: 47cccda4-9567-48eb-df89-08db21a434e5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	O3gLDXKbgC/J9DsWo6Tm+TWeqE60drM/LTp8p7CUkpkJ4qyCMTgjaANImbC6YWIGYSFFuYG+lLmdGAdQlIMPe4jzlScmM74HRG6flZYZlAmmoKdq+0tU/AH4EI7u6ttqTa1yRtaPBhEfHiMlRKYnNT+MDyv5YAUg53iIiDUKJjD2JXtH2QQvdIL8rB1rM/kgLNiLRXv6rQqreU0t3rhw8efN+IYaqf4IORoTJgDaqS5sMgXzk3/tKvnjCEedPtBHJ3mzIDXgybyuF71wZtVsrwrLPJ15So2M9asbcAO3P7PoY21vj5vwAKrSo1V0/m5fACJnk9i2hf+ODr0FoFWsD40r4fSHnZgRB8iHEXm3w0AQ6gDyhJ9PBzyUuCmokzsCuHWlbf0xfKrw8jNHDhIZlb5DbX4OSjYSQ+V2GaP6Im+tLJDK6+6IpXKd8v/MWwWQOysM5bkYlLb5CvW/oljF66OBBbCOzHJgUmHQEd8/SvScra3Nj1CANc/pm9O789I/D8y8tR78czr4PhXzcqW0LAMpuvk0mys2R/x5m7zhRnHgdcS3QMb3z3kNdyeJDsfC0VyNHO55dvvwl66UNDOrGkyhlXGdFLE39BoWJMn33KgqYHSXQFXjY8xBW7fr7+u6brCUQ8JD2XXcHlnmn5gSTw==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(39860400002)(396003)(366004)(136003)(376002)(451199018)(26005)(6512007)(6506007)(6486002)(66556008)(66476007)(6636002)(186003)(316002)(66946007)(8676002)(37006003)(6862004)(8936002)(41300700001)(5660300002)(4326008)(7416002)(2906002)(83380400001)(2616005)(4744005)(38100700002)(86362001)(478600001)(36756003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?0t2/lScQLUmKjhq8Tlc2FaUiCPnQXgFZQ/ooTvq8aNB8kItQfdhMRWnoWCMt?=
- =?us-ascii?Q?+2S1cK4awKMGK1Q0TtP/jNCIXc4VACRAOixE3rAD2n4Pk1+E97mIfywkkf8q?=
- =?us-ascii?Q?4YKARScwGArh/mOQSZNx7kY8tPya7pGULdBaUViosfasfHdLRG9Gmeud3wtc?=
- =?us-ascii?Q?tHmWQ4pOO8mnyTFH+YTff25dysJ9ioYpQP9EFPEIh47wIHshqIdUwLOTsgLZ?=
- =?us-ascii?Q?66n4jVgtIqg56FAN6aOgqTAVc4GZwqa9n4ttuRw7Orrhf2W9hfZWkaoKKu/0?=
- =?us-ascii?Q?2xLl+ajvIFk/t7iI+uAKhtOGsOjpbjYsRoRXAFIqgw7ruBeoAGHGpNAIaZey?=
- =?us-ascii?Q?xpmCYiVMzlvWEV1fg35lbrJyy6q+OHn38jNesNLdAbGFRZ0qey162PLD2i/H?=
- =?us-ascii?Q?Wvui4rUhubOpNXVfRgBJBYnPGGtxjtwiiSSUQrHczHaH7aBlSbIuvS8xj5Gj?=
- =?us-ascii?Q?j3la0WYsS8HC+3H9sSF4ZxyUVXTTRXtzGnR0LiNk6/nDsbfbWrxVkR+W2D85?=
- =?us-ascii?Q?NbTB7vEh1+qUn5hUeQ/kywd8ccTqAU3XtIOLEWqMo6fJ1hTTN4vU275bCLjZ?=
- =?us-ascii?Q?JsyceJFPDTSY5NVco/KDI8Zu9wHiJLEpz4URCnBHQ4m9Xc+WkJTqEabnIPNl?=
- =?us-ascii?Q?JVOHTMn0r+eBH5EbZaUOl43AYE8he6qmbngckvQ0JkayNEAfLWu2fvXILjfW?=
- =?us-ascii?Q?kPS1LngtoLiCHcb7dAMqRdiV8ki2T/rvR9d/sWoPsehT4JTVUxlox8lJgZlN?=
- =?us-ascii?Q?70uHBIYSixepwnkAqVKCvzaBhjvAlc19TyjBfRfpJQUUSAX6sEGg8GPe3Z1A?=
- =?us-ascii?Q?jCj1fLXJucZzzlvi763ESpDw1xoJ/DO/zalD2y4ghn7bdSig+GiRHcCWUOa+?=
- =?us-ascii?Q?AwTM8kOPrHQuxHY8GSm+ST11ky0Z/7Lg1O+XwiqSgdHAAaO3FNNy6KLwAbQK?=
- =?us-ascii?Q?HlTLlTI6UtP9xMZ3of8qjxtRRgS7IilWcqONWlcGUIny0LztL9Y8GcUMvqvt?=
- =?us-ascii?Q?3SpXGiyaJnx8jXeqBBGEkgXrMB7nfQ2OK5i716Eyjo9VXSD4+D9zLie2THpB?=
- =?us-ascii?Q?5W40JHsBfcla9584Zsw6MysA3DmIDNjdiKgy+yhqBCGMKzOVvlpXKHaEwTCf?=
- =?us-ascii?Q?BAOkxL/+tVif1eWabMifeG5q0Rkjst0seTCLDXVQGvcEEyb66AUY9jTrGrrH?=
- =?us-ascii?Q?s+sP+0UTqbVkaRAYt4F68azTcVtU4kjU7EOC9ngZPwWGKtYTjx3voAbzyNbj?=
- =?us-ascii?Q?0XPefk0Y5yfKw/eLtEOzlhFvmO4NNCJ/7LQVk6kkoYNU9OoBnz3f6hWW/dj7?=
- =?us-ascii?Q?H2u3uhEyKU/fhqZF72bNwVzmyPTT3q1PuPt0aldNAyhMWGmBcocGjCZp1XFn?=
- =?us-ascii?Q?ovLAf89dfg5AGqTBXqtzns2Yw1IbbmeYHut0wP3RmJar80/tVBUp6G1TBgyz?=
- =?us-ascii?Q?aY8FMtJtkreWmw6Y7wIckTJ4CI1HRZtPN2ZBRpXst5qIUPNEqMCWEpskcZGD?=
- =?us-ascii?Q?lmHxCZL3gNWsxm+dt+OmtUBFdxVfmah89pY6RUc7HU9yrP/9OZBXYBPzVLGG?=
- =?us-ascii?Q?ai7E9rDeonFl5dAA2SKdP8oMnJjyYtYPa+rn5yZs?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 47cccda4-9567-48eb-df89-08db21a434e5
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2023 20:15:35.4982
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zTr9hLZ04zoTTWijGnxKEPnvNKrfRWg4k/x6SDppO+MMFqFqFF2xFGrsT2SBkvYh
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8694
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v1 08/14] iommu/arm-smmu-v3: Prepare for nested domain
+ support
+Content-Language: en-GB
+To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com, will@kernel.org
+Cc: eric.auger@redhat.com, kevin.tian@intel.com, baolu.lu@linux.intel.com,
+ joro@8bytes.org, shameerali.kolothum.thodi@huawei.com,
+ jean-philippe@linaro.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <cover.1678348754.git.nicolinc@nvidia.com>
+ <4740f8a40caf68ccc1f9fee5fcdf1604546fb354.1678348754.git.nicolinc@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <4740f8a40caf68ccc1f9fee5fcdf1604546fb354.1678348754.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Mar 08, 2023 at 06:25:59AM -0800, Nicolin Chen wrote:
-> Add a new IOMMU_TEST_OP_ACCESS_SET_IOAS to allow setting access->ioas
-> individually, corresponding to the iommufd_access_set_ioas() helper.
+On 2023-03-09 10:53, Nicolin Chen wrote:
+> In a nested translation setup, the device is attached to a stage-1 domain
+> that represents the guest-level Context Descriptor table. A Stream Table
+> Entry for a 2-stage translation needs both the stage-1 Context Descriptor
+> table info and the stage-2 Translation table information, i.e. a pair of
+> s1_cfg and s2_cfg.
 > 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Add an "s2" pointer in struct arm_smmu_domain, so a nested stage-1 domain
+> can simply navigate its stage-2 domain for the s2_cfg pointer. Also, add
+> a to_s2_cfg() helper for this purpose, and use it at proper places.
+> 
 > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 > ---
->  drivers/iommu/iommufd/iommufd_test.h          |  4 +++
->  drivers/iommu/iommufd/selftest.c              | 26 +++++++++++++++----
->  tools/testing/selftests/iommu/iommufd_utils.h | 22 ++++++++++++++--
->  3 files changed, 45 insertions(+), 7 deletions(-)
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 25 +++++++++++++++++++--
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 +
+>   2 files changed, 24 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 21d819979865..fee5977feef3 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -100,6 +100,24 @@ static void parse_driver_options(struct arm_smmu_device *smmu)
+>   	} while (arm_smmu_options[++i].opt);
+>   }
+>   
+> +static struct arm_smmu_s2_cfg *to_s2_cfg(struct arm_smmu_domain *smmu_domain)
+> +{
+> +	if (!smmu_domain)
+> +		return NULL;
+> +
+> +	switch (smmu_domain->stage) {
+> +	case ARM_SMMU_DOMAIN_S1:
+> +		if (smmu_domain->s2)
+> +			return &smmu_domain->s2->s2_cfg;
+> +		return NULL;
+> +	case ARM_SMMU_DOMAIN_S2:
+> +		return &smmu_domain->s2_cfg;
+> +	case ARM_SMMU_DOMAIN_BYPASS:
+> +	default:
+> +		return NULL;
+> +	}
+> +}
+> +
+>   /* Low-level queue manipulation functions */
+>   static bool queue_has_space(struct arm_smmu_ll_queue *q, u32 n)
+>   {
+> @@ -1277,6 +1295,7 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+>   		switch (smmu_domain->stage) {
+>   		case ARM_SMMU_DOMAIN_S1:
+>   			s1_cfg = &smmu_domain->s1_cfg;
+> +			s2_cfg = to_s2_cfg(smmu_domain);
 
-I'd prefer we keep it so that the IOAS can be setup with an argument,
-this will greatly help syzkaller
+TBH I'd say you only need a 2-line change here. All the other cases 
+below are when the stage is guaranteed to be ARM_SMMU_DOMAIN_S2 (once 
+ARM_SMMU_DOMAIN_NESTED is gone), so pretending it might be otherwise 
+seems unnecessarily confusing.
 
-Lets have it so a 0 ioas will avoid the setup so the second call can
-happen
+Thanks,
+Robin.
 
-Jason
+>   			break;
+>   		case ARM_SMMU_DOMAIN_S2:
+>   			s2_cfg = &smmu_domain->s2_cfg;
+> @@ -1846,6 +1865,7 @@ int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
+>   static void arm_smmu_tlb_inv_context(void *cookie)
+>   {
+>   	struct arm_smmu_domain *smmu_domain = cookie;
+> +	struct arm_smmu_s2_cfg *s2_cfg = to_s2_cfg(smmu_domain);
+>   	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>   	struct arm_smmu_cmdq_ent cmd;
+>   
+> @@ -1860,7 +1880,7 @@ static void arm_smmu_tlb_inv_context(void *cookie)
+>   		arm_smmu_tlb_inv_asid(smmu, smmu_domain->s1_cfg.cd.asid);
+>   	} else {
+>   		cmd.opcode	= CMDQ_OP_TLBI_S12_VMALL;
+> -		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
+> +		cmd.tlbi.vmid	= s2_cfg->vmid;
+>   		arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
+>   	}
+>   	arm_smmu_atc_inv_domain(smmu_domain, 0, 0, 0);
+> @@ -1931,6 +1951,7 @@ static void arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
+>   					  size_t granule, bool leaf,
+>   					  struct arm_smmu_domain *smmu_domain)
+>   {
+> +	struct arm_smmu_s2_cfg *s2_cfg = to_s2_cfg(smmu_domain);
+>   	struct arm_smmu_cmdq_ent cmd = {
+>   		.tlbi = {
+>   			.leaf	= leaf,
+> @@ -1943,7 +1964,7 @@ static void arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
+>   		cmd.tlbi.asid	= smmu_domain->s1_cfg.cd.asid;
+>   	} else {
+>   		cmd.opcode	= CMDQ_OP_TLBI_S2_IPA;
+> -		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
+> +		cmd.tlbi.vmid	= s2_cfg->vmid;
+>   	}
+>   	__arm_smmu_tlb_inv_range(&cmd, iova, size, granule, smmu_domain);
+>   
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index 1a93eeb993ea..6cf516852721 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -709,6 +709,7 @@ enum arm_smmu_domain_stage {
+>   };
+>   
+>   struct arm_smmu_domain {
+> +	struct arm_smmu_domain		*s2;
+>   	struct arm_smmu_device		*smmu;
+>   	struct mutex			init_mutex; /* Protects smmu pointer */
+>   
