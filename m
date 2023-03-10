@@ -1,131 +1,91 @@
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CACCE6ADB
-	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 12:52:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678452720; x=1709988720;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=xJvBjtXFbTfnxL0oNKT/W4JlLqLJwv/8uOZC3buZbiQ=;
-  b=SG929EYJlfcx5a/2IFs1Ft+uBZbRUEBswylRvWUTgA1I+e+aYKGxmdZa
-   pj9yYHJ91LjGP6OvF3wQ/utM0XxiEaNF/J36bieb66RUpJx+6+pMNOdDd
-   UJTCh8aekTLJ0NFCn6soAS0/uRO0dqmdd9oqhLK+yB2Mzra0Y9JGpQJ+D
-   FdAuimVI6xaPq2wL0NsGOVnd/D7/nTvVooZZbArn+3gMGyUUKrKG84YsT
-   ZCT5QU2sz0M1QMUBi9nYuKOA+hTCl/3vk8uR+HOr+Nptc08Z3WWlGrsB+
-   F8Y+NiOSY8kNaBpFAQ8LjkBdnXXYvIkgSljcIYBorrYvIx8ZHpOh3OQj7
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="336738976"
-X-IronPort-AV: E=Sophos;i="5.98,249,1673942400"; 
-   d="scan'208";a="336738976"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2023 04:51:57 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="655173436"
-X-IronPort-AV: E=Sophos;i="5.98,249,1673942400"; 
-   d="scan'208";a="655173436"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.213.50]) ([10.254.213.50])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2023 04:51:52 -0800
-Message-ID: <9119912c-21d2-263f-ef7a-53e2eb827b18@linux.intel.com>
-Date: Fri, 10 Mar 2023 20:51:48 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD3F26ADB
+	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 12:54:53 +0000 (UTC)
+Received: by mail-wr1-f42.google.com with SMTP id h11so4937006wrm.5
+        for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 04:54:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1678452892;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=b0ospi7hAz+YOXFhrcdrmC0AaEAavOtedBIMfZumahw=;
+        b=S/embe4vV/aUjhx0hf78tsuqzg4I9LW1TABo3WKf3Hn0NoAUycBwCqiaehEFyDTrbT
+         sz484eR+p5i+W+sk8RE+Vxapu3B4oz9hr90IXE+/fJeCRjSbVDdj3sTf2k9KThyTu7Ma
+         idPDGLY17oNRfsmL+0ulcaVgbziP85JUTfY7pbrOzIqtmQ68pbed5oD3KhYdw7I1Trb6
+         a3z1KxDONrTwVY8IZKUI9EgPcv5nRyN+gLJet4b6fV9oENCuVXC/t3mYymJeqGmwAZfI
+         zJbWsZ4Kw9y43Nm1ikrPXOpUcSL4iaQsRD7pmXRUaiZggPArQJMDWk5H6G7FZKSVIbDE
+         vuFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678452892;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=b0ospi7hAz+YOXFhrcdrmC0AaEAavOtedBIMfZumahw=;
+        b=tXmf2LGSOVv916llnRpzn6lRMywmd2qP+MIO6abVg6XAC+2m44SaZ1KZiTbQOX6V+K
+         g+0DaEo8hq+jbDLcZ9Xu9lRbyMrFjUqKxxulkSPX2a03S4ojiXdVe8CRJvpEQAcrTTKD
+         0DfDXknmbpoz8uVBRuUHv2BJIYL1DEefGfMei63uJWfWP15eJuUWT4gAL3xFQNf+NsNt
+         Fyh9B9ZhcCIKfbOhCivD7j8wmrBfS0g1wOSaeTVzqZnLp7vtl7Qjugyvj7ouCbCUz7Jb
+         ltEtAY4oWVldYU8kFoIywDJPmRccjQ4Ul0Ocx7nnbfUE3YVL3uyfsl6iwav+/fhzReu4
+         ncng==
+X-Gm-Message-State: AO0yUKU8yx/ikrZfu7l2VOxWmicICMsR4hY8ptTHvbHTkZMLdnwPnnDO
+	QBj2yCn0AcXNQbVZPLNzzjoYPQ==
+X-Google-Smtp-Source: AK7set9QopboGBXW0L86P0Njeyu3ao51+5KPjvl3aAAxvX6GWgngEgPHqEMQjQqR8jTfSWeVmOBXpg==
+X-Received: by 2002:a5d:5344:0:b0:2cc:5ee8:fee5 with SMTP id t4-20020a5d5344000000b002cc5ee8fee5mr17048523wrv.71.1678452891891;
+        Fri, 10 Mar 2023 04:54:51 -0800 (PST)
+Received: from myrica (054592b0.skybroadband.com. [5.69.146.176])
+        by smtp.gmail.com with ESMTPSA id t15-20020adfe10f000000b002c5526234d2sm2089144wrz.8.2023.03.10.04.54.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Mar 2023 04:54:51 -0800 (PST)
+Date: Fri, 10 Mar 2023 12:54:53 +0000
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, robin.murphy@arm.com, will@kernel.org,
+	eric.auger@redhat.com, kevin.tian@intel.com,
+	baolu.lu@linux.intel.com, joro@8bytes.org,
+	shameerali.kolothum.thodi@huawei.com,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, yi.l.liu@intel.com
+Subject: Re: [PATCH v1 02/14] iommufd: Add nesting related data structures
+ for ARM SMMUv3
+Message-ID: <20230310125453.GB1745536@myrica>
+References: <cover.1678348754.git.nicolinc@nvidia.com>
+ <364cfbe5b228ab178093db2de13fa3accf7a6120.1678348754.git.nicolinc@nvidia.com>
+ <20230309134217.GA1673607@myrica>
+ <ZAnx0lUkw02cVTi+@nvidia.com>
+ <ZAq3LJgbo8ApejvU@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Cc: baolu.lu@linux.intel.com, joro@8bytes.org, alex.williamson@redhat.com,
- jgg@nvidia.com, kevin.tian@intel.com, robin.murphy@arm.com,
- cohuck@redhat.com, eric.auger@redhat.com, kvm@vger.kernel.org,
- mjrosato@linux.ibm.com, chao.p.peng@linux.intel.com,
- yi.y.sun@linux.intel.com, peterx@redhat.com, jasowang@redhat.com,
- shameerali.kolothum.thodi@huawei.com, lulu@redhat.com,
- suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH 05/12] iommufd/hw_pagetable: Do not populate user-managed
- hw_pagetables
-Content-Language: en-US
-To: Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
-References: <20230309080910.607396-1-yi.l.liu@intel.com>
- <20230309080910.607396-6-yi.l.liu@intel.com>
- <b0ea86fd-8350-f694-a93a-a8ccecd0c8e7@linux.intel.com>
- <ZArTN9tIDKuvmuje@Asurada-Nvidia>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ZArTN9tIDKuvmuje@Asurada-Nvidia>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZAq3LJgbo8ApejvU@Asurada-Nvidia>
 
-On 2023/3/10 14:50, Nicolin Chen wrote:
-> On Fri, Mar 10, 2023 at 10:25:10AM +0800, Baolu Lu wrote:
->> External email: Use caution opening links or attachments
->>
->>
->> On 3/9/23 4:09 PM, Yi Liu wrote:
->>> From: Nicolin Chen <nicolinc@nvidia.com>
->>>
->>> A user-managed hw_pagetable does not need to get populated, since it is
->>> managed by a guest OS. Move the iopt_table_add_domain and list_add_tail
->>> calls into a helper, where the hwpt pointer will be redirected to its
->>> hwpt->parent if it's available.
->>>
->>> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
->>> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
->>> ---
->>>    drivers/iommu/iommufd/hw_pagetable.c | 20 ++++++++++++++++++--
->>>    1 file changed, 18 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
->>> index 16e92a1c150b..6e45ec0a66fa 100644
->>> --- a/drivers/iommu/iommufd/hw_pagetable.c
->>> +++ b/drivers/iommu/iommufd/hw_pagetable.c
->>> @@ -43,6 +43,23 @@ int iommufd_hw_pagetable_enforce_cc(struct iommufd_hw_pagetable *hwpt)
->>>        return 0;
->>>    }
->>>
->>> +static int iommufd_hw_pagetable_link_ioas(struct iommufd_hw_pagetable *hwpt)
->>> +{
->>> +     int rc;
->>> +
->>> +     if (hwpt->parent)
->>> +             hwpt = hwpt->parent;
->>> +
->>> +     if (!list_empty(&hwpt->hwpt_item))
->>> +             return 0;
->>
->> What is above check for? Is it "the hwpt has already been inserted into
->> the hwpt list of its ioas in another place"?
->>
->> If so, is it possible that hwpt will be deleted from the list even when
->> this user hwpt is still linked to the ioas?
+On Thu, Mar 09, 2023 at 08:50:52PM -0800, Nicolin Chen wrote:
+> On Thu, Mar 09, 2023 at 10:48:50AM -0400, Jason Gunthorpe wrote:
 > 
-> It means that the hwpt is already linked to the ioas. And the
-> hwpt_item can be only empty after a destroy().
+> > Nicolin, I think we should tweak the uAPI here so that the
+> > invalidation opaque data has a format tagged on its own, instead of
+> > re-using the HWPT tag. Ie you can have a ARM SMMUv3 invalidate type
+> > tag and also a virtio-viommu invalidate type tag.
 > 
-> With that being said, after I think it through, perhaps Yi's
-> previous change removing it might be better. So, it could be:
-> 
-> -------------------------------------------------------------------------------
-> +	/*
-> +	 * Only a parent hwpt needs to be linked to the IOAS. And a hwpt->parent
-> +	 * must be linked to the IOAS already, when it's being allocated.
-> +	 */
->   	if (hwpt->parent)
-> -		hwpt = hwpt->parent;
-> -
-> -	if (!list_empty(&hwpt->hwpt_item))
->   		return 0;
->   
-> -------------------------------------------------------------------------------
-> 
-> I was concerned about the case where a device gets attached to
-> the nested hwpt without staging at the parent hwpt first. But,
-> the link between the parent hwpt and the IOAS happened inside
-> the allocation function now, not attach() any more.
+> The invalidation tage is shared with the hwpt allocation. Does
+> it mean that virtio-iommu won't have it's own allocation tag?
 
-Yes, it's clearer.
+I'm not entirely sure what you mean by allocation tag. For example with
+SMMU, when attaching page tables (SMMUv2), the guest passes an ASID at
+allocation, and when it modifies that address space it passes the same
+ASID for invalidation. When attaching PASID tables (SMMUv3), it writes the
+ASID/PASID in the PASID table, and passes both in the invalidation.
 
-Best regards,
-baolu
+Note that none of this is set in stone. It copies the Linux API we
+originally discussed, but we were waiting for progress on that front
+before committing to anything. Now we'll probably align to the new API
+where possible, leaving out what doesn't work for virtio-iommu.
+
+Thanks,
+Jean
+
