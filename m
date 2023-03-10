@@ -1,101 +1,142 @@
-Received: from mail-ua1-f42.google.com (mail-ua1-f42.google.com [209.85.222.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EEF07E6
-	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 02:11:48 +0000 (UTC)
-Received: by mail-ua1-f42.google.com with SMTP id x1so2564526uav.9
-        for <iommu@lists.linux.dev>; Thu, 09 Mar 2023 18:11:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678414307;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=a1ZsUGvFonlvfiaKRCYmvwX8nStrpniuXEAne8WWDIM=;
-        b=O3xAfPERsyzsNSvO01xPE65zentXGd2nG7NUqhE0yBIRYNcaGFZSkgW3QxM29rECZA
-         OoMTpIwEAsxqA36+6avufnu6Gd6Gj9KzzLYc5ghpEfcNKhfcFCxIsvSU7TZB3tlLDZlV
-         odT/bZWIRVsao5k1sX9JzDL+QqdCG5briNn5ouMY/SAcRHVQ4k2+WCz3TJ2Bpf3z0oNc
-         iBk9gvf5rvlHYs5mpZWFhY51cDg4+kBTPXcGhfKI63U31sycVQZ0GS+vgznShoXquuXH
-         hvUnBqj8NqRngpWNfhaZPCkxOtj0zYjr5Y3ysw1NXSrOzxjlMbyMHbWsbhwDp0fur8os
-         75mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678414307;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=a1ZsUGvFonlvfiaKRCYmvwX8nStrpniuXEAne8WWDIM=;
-        b=IX4wWs7n7eUQb2L6zd2armf9TrMTh0GJueQc9HltehmMSCl+R9UCw+3yCXOocSHb1d
-         mU55mAGBnGBRQdOKSWLKCN+FCBZfL2DL41SOQCbS3GMhbdUDEkxyY0FtYv3WPyjZwlCs
-         eCqQmjx0Z4aFl2NGQgQ5aSARwqO1WKgfjieoYNrEfxGJRtBu5jQgdcjnVySETfbWNmXL
-         pQhZIkBGviwCqJQsd+XYWuCTWWaKEmyY8Nd2Fs2544ws/I9cPPuGZy/Hjidp0JOVRmzI
-         9pu6sZ22TEmhsFlnTyviL9Q2i5hpNnXQoO2tVrlqidHiN38bs13wa/HgazvcuaZ6N4xW
-         QLJw==
-X-Gm-Message-State: AO0yUKWcsdSOa7sHpb8jOdHKwWQvMotMhXK938Kg+DyFiPfHsrRTh8JN
-	kp8AC1cFCXdgPpE07EP1jidVP0Tuy13JHCuRs4E=
-X-Google-Smtp-Source: AK7set8TqLUo956ZgPJDxKn7zpXxM6OoLfeyEV9el2lMME8YonUJpyAVx/FV+jx1YF+vPKIcOm/498ZnFK2IsZQjk6M=
-X-Received: by 2002:ab0:14c5:0:b0:67a:2833:5ceb with SMTP id
- f5-20020ab014c5000000b0067a28335cebmr241041uae.0.1678414307110; Thu, 09 Mar
- 2023 18:11:47 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C98E7E6
+	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 02:12:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678414322; x=1709950322;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=TA76+X6Otimiwp2K+IV8a+AGL8NgZEQqynp7zdfzDSs=;
+  b=L6DA6BvmbE5T8Z3EKFVqgJnbBGQkRWFBaS61ZXY4uNVxPYlJ8uBli3c6
+   53VKUayavKvBNhanp/T1wovDtzlYThWZzFq1CytzRkQ2z4o4nyxNRbYpj
+   IDr/ikiAxxrSbejq97gbwGhq/BC5e3ADzsmPDT+0ruA7Kp5Ukqk2pyb6i
+   jyMV2REZJ/qPr+3f1W9G7wfgE0BPRGRMRQjYs0xhPzzsaZZxhcC7XTdz6
+   E4ynY7zl+CnzZrloOYYNQiKnz1IIeFh+Ruk0RJhm6gnbdZiEYmqGeg6m2
+   bVoNzU3hEXzUMpHROW4saFb/m3TU6myIfrytXpPuL6VDDymvjeoxUqA1X
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="336642843"
+X-IronPort-AV: E=Sophos;i="5.98,248,1673942400"; 
+   d="scan'208";a="336642843"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 18:12:01 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="923497234"
+X-IronPort-AV: E=Sophos;i="5.98,248,1673942400"; 
+   d="scan'208";a="923497234"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
+  by fmsmga006.fm.intel.com with ESMTP; 09 Mar 2023 18:11:56 -0800
+Message-ID: <21c95149-6acb-e330-acaa-390309269a21@linux.intel.com>
+Date: Fri, 10 Mar 2023 10:10:56 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230308034158.509458-1-chunyan.zhang@unisoc.com>
- <af90fea4-5fa1-de7b-b80e-02fa8753b0fb@arm.com> <05fb17c7-397b-5b33-fbfa-df3bf48b0de8@linux.intel.com>
- <9a88b12e-7169-7c7f-09a1-eef86f75891c@arm.com>
-In-Reply-To: <9a88b12e-7169-7c7f-09a1-eef86f75891c@arm.com>
-From: Chunyan Zhang <zhang.lyra@gmail.com>
-Date: Fri, 10 Mar 2023 10:11:10 +0800
-Message-ID: <CAAfSe-vS0RatEQmDXutYjOMC50j1jo3s5r8QyrFCQqc_Ok1M6Q@mail.gmail.com>
-Subject: Re: [PATCH V2] iommu: sprd: release dma buffer to avoid memory leak
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, Chunyan Zhang <chunyan.zhang@unisoc.com>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, iommu@lists.linux.dev, 
-	Baolin Wang <baolin.wang@linux.alibaba.com>, Orson Zhai <orsonzhai@gmail.com>, 
-	LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Cc: baolu.lu@linux.intel.com, cohuck@redhat.com, eric.auger@redhat.com,
+ nicolinc@nvidia.com, kvm@vger.kernel.org, mjrosato@linux.ibm.com,
+ chao.p.peng@linux.intel.com, yi.y.sun@linux.intel.com, peterx@redhat.com,
+ jasowang@redhat.com, shameerali.kolothum.thodi@huawei.com, lulu@redhat.com,
+ suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH 04/12] iommufd: Pass parent hwpt and user_data to
+ iommufd_hw_pagetable_alloc()
+Content-Language: en-US
+To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, alex.williamson@redhat.com,
+ jgg@nvidia.com, kevin.tian@intel.com, robin.murphy@arm.com
+References: <20230309080910.607396-1-yi.l.liu@intel.com>
+ <20230309080910.607396-5-yi.l.liu@intel.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20230309080910.607396-5-yi.l.liu@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, 9 Mar 2023 at 19:23, Robin Murphy <robin.murphy@arm.com> wrote:
->
-> On 2023-03-09 02:50, Baolu Lu wrote:
-> > On 3/8/23 8:37 PM, Robin Murphy wrote:
-> >> On 2023-03-08 03:41, Chunyan Zhang wrote:
-> >>> Release page table DMA buffer when the IOMMU domain is not used:
-> >>>
-> >>> - Domain freed.
-> >>>
-> >>> - IOMMU is attaching to a new domain.
-> >>>    Since one sprd IOMMU servers only one client device, if the IOMMU has
-> >>>    been attached to other domain, it has to be detached first, that's
-> >>>    saying the DMA buffer should be released, otherwise that would
-> >>>    cause memory leak issue.
-> >>
-> >> This is clearly wrong; domain resources should only be freed when the
-> >> domain is freed.
-> >
-> > Agreed. Perhaps, in the attach path:
-> >
-> >      if (!dom->pgt_va)
-> >          dom->pgt_va = dma_alloc_coherent(sdev->dev, pgt_size,
-> >                  &dom->pgt_pa, GFP_KERNEL);
-> > ?
->
-> Why? dom->pgt_va will always be NULL if dom->sdev is NULL, and once
+On 3/9/23 4:09 PM, Yi Liu wrote:
+> Nested translation has stage-1 and stage-2 page tables. A stage-1 page
+> table is managed by user space, and it needs to work with a stage-2 page
+> table, which is a parent hwpt for the stage-1 hwpt.
+> 
+> iommu core already supports accepting parent iommu_domain and user_data
+> to allocate an iommu_domain. This makes iommufd_hw_pagetable_alloc() to
+> accept the parent hwpt and user_data, and relays them to iommu core, to
+> prepare for supporting hw_pagetable allocation with user_data.
+> 
+> Also, add a parent pointer in struct iommufd_hw_pagetable for taking and
+> releasing its refcount.
+> 
+> Co-developed-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+> ---
+>   drivers/iommu/iommufd/device.c          |  2 +-
+>   drivers/iommu/iommufd/hw_pagetable.c    | 28 ++++++++++++++++++++++---
+>   drivers/iommu/iommufd/iommufd_private.h |  5 ++++-
+>   3 files changed, 30 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+> index 5c352807d946..19cd6df46c6a 100644
+> --- a/drivers/iommu/iommufd/device.c
+> +++ b/drivers/iommu/iommufd/device.c
+> @@ -558,7 +558,7 @@ iommufd_device_auto_get_domain(struct iommufd_device *idev,
+>   	}
+>   
+>   	hwpt = iommufd_hw_pagetable_alloc(idev->ictx, ioas, idev,
+> -					  immediate_attach);
+> +					  NULL, NULL, immediate_attach);
+>   	if (IS_ERR(hwpt)) {
+>   		destroy_hwpt = ERR_CAST(hwpt);
+>   		goto out_unlock;
+> diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
+> index 84b4a11e62f8..16e92a1c150b 100644
+> --- a/drivers/iommu/iommufd/hw_pagetable.c
+> +++ b/drivers/iommu/iommufd/hw_pagetable.c
+> @@ -24,6 +24,8 @@ void iommufd_hw_pagetable_destroy(struct iommufd_object *obj)
+>   	if (hwpt->domain)
+>   		iommu_domain_free(hwpt->domain);
+>   
+> +	if (hwpt->parent)
+> +		refcount_dec(&hwpt->parent->obj.users);
+>   	refcount_dec(&hwpt->ioas->obj.users);
+>   }
+>   
+> @@ -46,6 +48,8 @@ int iommufd_hw_pagetable_enforce_cc(struct iommufd_hw_pagetable *hwpt)
+>    * @ictx: iommufd context
+>    * @ioas: IOAS to associate the domain with
+>    * @idev: Device to get an iommu_domain for
+> + * @parent: Optional parent HWPT to associate with the domain with
+> + * @user_data: Optional user_data pointer
+>    * @immediate_attach: True if idev should be attached to the hwpt
+>    *
+>    * Allocate a new iommu_domain and return it as a hw_pagetable. The HWPT
+> @@ -54,14 +58,20 @@ int iommufd_hw_pagetable_enforce_cc(struct iommufd_hw_pagetable *hwpt)
+>    */
+>   struct iommufd_hw_pagetable *
+>   iommufd_hw_pagetable_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+> -			   struct iommufd_device *idev, bool immediate_attach)
+> +			   struct iommufd_device *idev,
+> +			   struct iommufd_hw_pagetable *parent,
+> +			   void *user_data, bool immediate_attach)
+>   {
+>   	const struct iommu_ops *ops = dev_iommu_ops(idev->dev);
+> +	struct iommu_domain *parent_domain = NULL;
+>   	struct iommufd_hw_pagetable *hwpt;
+>   	int rc;
+>   
+>   	lockdep_assert_held(&ioas->mutex);
+>   
+> +	if (parent && !ops->domain_alloc_user)
+> +		return ERR_PTR(-EOPNOTSUPP);
 
-Yes, I also found this. I'm going to remove the check of dom->sdev
-that will make reattching being allowed, like you mentioned below, in
-the next version.
+My understanding here is that we are checking whether domain_alloc_user
+is required. It seems that as long as the caller inputs a valid
+user_data or parent, domain_alloc_user is required. If so,
 
-Thanks for your comments,
-Chunyan
+	if ((user_data || parent) && !ops->domain_alloc_user)
+		return ERR_PTR(-EOPNOTSUPP);
 
-> dom->sdev is set then that allocation is not reachable (of course this
-> means the driver also has a separate bug where reattaching to a
-> previously-used domain will erroneously fail, but that's not a memory
-> leak as such). The only thing to recognise here is that the allocation
-> is logically not part of the .attach_dev operation, but really a one-off
-> deferred part of .domain_alloc, and thus it should be balanced in .free,
-> not anywhere else.
->
-> Thanks,
-> Robin.
+Best regards,
+baolu
