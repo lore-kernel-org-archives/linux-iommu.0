@@ -1,102 +1,143 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85942C957
-	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 21:32:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678483963; x=1710019963;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ehc2G1Khk+7j9DBXV2qWdm7ZCJBZCQ3dNkGTzQyl2kg=;
-  b=LG+DezhbxAV+NSx/OWhkF+q7LOXwxCLlNRb830s9+uvT9N+lhulmRg97
-   Zc/ebI/9ghHCwhZDT7HoERIwNM97UjjDT3elF5u3OLYEyq2V7SH7YamXF
-   tvEurEF+5c9s11r3Y145V5TkiwC3gP7Nvf06wm249DgTQPtVp0SRl1R+B
-   0A/918jgi4ptSqC506cJb+BV5i68YpRAVEaVGtgU6Fxkx3vn9eS6jNwIR
-   yprlad/2M/yq1XYkJnTA2zczuL7qcrNFPdXHWSUWJjezIyzDAdDf33j9A
-   2LfQjsdBt/xeOovMSmzyReOGDXkQ0lN2A6L/xeS7jpZyEDBvS2fnM4tI/
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10645"; a="335530951"
-X-IronPort-AV: E=Sophos;i="5.98,250,1673942400"; 
-   d="scan'208";a="335530951"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2023 13:32:36 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10645"; a="766977604"
-X-IronPort-AV: E=Sophos;i="5.98,250,1673942400"; 
-   d="scan'208";a="766977604"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2023 13:32:35 -0800
-Date: Fri, 10 Mar 2023 13:36:28 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Jason
- Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg
- Roedel <joro@8bytes.org>, Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Dave Hansen <dave.hansen@intel.com>, Thomas Gleixner <tglx@linutronix.de>,
- X86 Kernel <x86@kernel.org>, bp@alien8.de, "H. Peter Anvin"
- <hpa@zytor.com>, Peter Zijlstra <peterz@infradead.org>, corbet@lwn.net,
- vkoul@kernel.org, dmaengine@vger.kernel.org, linux-doc@vger.kernel.org,
- Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Raj
- Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
- <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>, Dave Jiang
- <dave.jiang@intel.com>, Kirill Shutemov <kirill.shutemov@linux.intel.com>,
- Tony Luck <tony.luck@intel.com>, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v5 2/7] iommu/sva: Move PASID helpers to sva code
-Message-ID: <20230310133628.290c0efa@jacob-builder>
-In-Reply-To: <30923327-6c08-f0c1-1b52-c1d818f3a3a2@arm.com>
-References: <20230309222159.487826-1-jacob.jun.pan@linux.intel.com>
-	<20230309222159.487826-4-jacob.jun.pan@linux.intel.com>
-	<30923327-6c08-f0c1-1b52-c1d818f3a3a2@arm.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0A1FEE4C1
+	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 22:04:25 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8E55EAD7;
+	Fri, 10 Mar 2023 14:05:08 -0800 (PST)
+Received: from [10.57.90.67] (unknown [10.57.90.67])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BA8AA3F5A1;
+	Fri, 10 Mar 2023 14:04:23 -0800 (PST)
+Message-ID: <7b248ba1-3967-5cd8-82e9-0268c706d320@arm.com>
+Date: Fri, 10 Mar 2023 22:04:18 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v3 1/6] ARM/dma-mapping: Add arm_iommu_release_device()
+Content-Language: en-GB
+To: Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev
+Cc: Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+ Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
+ Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org
+References: <20230306025804.13912-1-baolu.lu@linux.intel.com>
+ <20230306025804.13912-2-baolu.lu@linux.intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20230306025804.13912-2-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Hi Robin,
-
-On Fri, 10 Mar 2023 20:00:52 +0000, Robin Murphy <robin.murphy@arm.com>
-wrote:
-
-> On 2023-03-09 22:21, Jacob Pan wrote:
-> > Preparing to remove IOASID infrastructure, PASID management will be
-> > under SVA code. Decouple mm code from IOASID. Use iommu-help.h instead
-> > of iommu.h to prevent circular inclusion.
-> > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > ---
-> > v5:
-> > 	- move definition of helpers to iommu code to be consistent with
-> > 	  declarations. (Kevin)
-> > 	- fix patch partitioning bug (Baolu)
-> > v4:
-> > 	- delete and open code mm_set_pasid
-> > 	- keep mm_init_pasid() as inline for fork performance
-> > ---
-> >   drivers/iommu/iommu-sva.c    | 10 +++++++++-
-> >   include/linux/ioasid.h       |  2 +-
-> >   include/linux/iommu-helper.h | 12 ++++++++++++  
+On 2023-03-06 02:57, Lu Baolu wrote:
+> It is like arm_iommu_detach_device() except it handles the special case
+> of being called under an iommu driver's release operation. In this case
+> the driver must have already detached the device from any attached
+> domain before calling this function.
 > 
-> Eww, can we not? iommu-helper is very much just parts of a specific type 
-> of bitmap-based IOVA allocator used by some crusty old arch-specific 
-> IOMMU code and SWIOTLB. It is unrelated to the iommu.h IOMMU API, and 
-> dragging that stuff into modern SVA-related matters seems bizarrely 
-> inappropriate. Could we just move the mm_pasid stuff into ioasid.h here, 
-> then maybe rename it to iommu-sva.h at the end if eradicating the old 
-> name really matters?
-thanks for explaining the history behind iommu-helper.h, having a new
-include/linux/iommu-sva.h would probably be cleaner.
+> Replace arm_iommu_detach_device() with arm_iommu_release_device() in the
+> release path of the ipmmu-vmsa driver.
+> 
+> The bonus is that it also removes a obstacle of arm_iommu_detach_device()
+> re-entering the iommu core during release_device. With this removed, the
+> iommu core code could be simplified a lot.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>   arch/arm/include/asm/dma-iommu.h |  1 +
+>   arch/arm/mm/dma-mapping.c        | 25 +++++++++++++++++++++++++
+>   drivers/iommu/ipmmu-vmsa.c       | 15 +++++++++++++--
+>   3 files changed, 39 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm/include/asm/dma-iommu.h b/arch/arm/include/asm/dma-iommu.h
+> index fe9ef6f79e9c..ea7198a17861 100644
+> --- a/arch/arm/include/asm/dma-iommu.h
+> +++ b/arch/arm/include/asm/dma-iommu.h
+> @@ -31,6 +31,7 @@ void arm_iommu_release_mapping(struct dma_iommu_mapping *mapping);
+>   int arm_iommu_attach_device(struct device *dev,
+>   					struct dma_iommu_mapping *mapping);
+>   void arm_iommu_detach_device(struct device *dev);
+> +void arm_iommu_release_device(struct device *dev);
+>   
+>   #endif /* __KERNEL__ */
+>   #endif
+> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+> index 8bc01071474a..96fa27f4a164 100644
+> --- a/arch/arm/mm/dma-mapping.c
+> +++ b/arch/arm/mm/dma-mapping.c
+> @@ -1682,6 +1682,31 @@ int arm_iommu_attach_device(struct device *dev,
+>   }
+>   EXPORT_SYMBOL_GPL(arm_iommu_attach_device);
+>   
+> +/**
+> + * arm_iommu_release_device
+> + * @dev: valid struct device pointer
+> + *
+> + * This is like arm_iommu_detach_device() except it handles the special
+> + * case of being called under an iommu driver's release operation. In this
+> + * case the driver must have already detached the device from any attached
+> + * domain before calling this function.
+> + */
+> +void arm_iommu_release_device(struct device *dev)
+> +{
+> +	struct dma_iommu_mapping *mapping;
+> +
+> +	mapping = to_dma_iommu_mapping(dev);
+> +	if (!mapping) {
+> +		dev_warn(dev, "Not attached\n");
+> +		return;
+> +	}
+> +
+> +	kref_put(&mapping->kref, release_iommu_mapping);
+> +	to_dma_iommu_mapping(dev) = NULL;
+> +	set_dma_ops(dev, NULL);
+> +}
+> +EXPORT_SYMBOL_GPL(arm_iommu_release_device);
+> +
+>   /**
+>    * arm_iommu_detach_device
+>    * @dev: valid struct device pointer
+> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+> index bdf1a4e5eae0..de9c74cf61a4 100644
+> --- a/drivers/iommu/ipmmu-vmsa.c
+> +++ b/drivers/iommu/ipmmu-vmsa.c
+> @@ -30,7 +30,7 @@
+>   #define arm_iommu_create_mapping(...)	NULL
+>   #define arm_iommu_attach_device(...)	-ENODEV
+>   #define arm_iommu_release_mapping(...)	do {} while (0)
+> -#define arm_iommu_detach_device(...)	do {} while (0)
+> +#define arm_iommu_release_device(...)	do {} while (0)
+>   #endif
+>   
+>   #define IPMMU_CTX_MAX		16U
+> @@ -820,7 +820,18 @@ static void ipmmu_probe_finalize(struct device *dev)
+>   
+>   static void ipmmu_release_device(struct device *dev)
+>   {
+> -	arm_iommu_detach_device(dev);
+> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+> +	struct ipmmu_vmsa_device *mmu = to_ipmmu(dev);
+> +	unsigned int i;
+> +
+> +	for (i = 0; i < fwspec->num_ids; ++i) {
+> +		unsigned int utlb = fwspec->ids[i];
+> +
+> +		ipmmu_imuctr_write(mmu, utlb, 0);
+> +		mmu->utlb_ctx[utlb] = IPMMU_CTX_INVALID;
+> +	}
+> +
+> +	arm_iommu_release_device(dev);
 
-my original intent for using iommu-helper.h was to avoid problems by mm.h
-#include iommu.h. So I just needed a separate small header. let me do
-without iommu-helper.h.
+Just call the existing arm_iommu_release_mapping(). Look at where the 
+BUS_NOTIFY_REMOVED_DEVICE point is in device_del(); this device is not 
+coming back. Zeroing out pointers and testing for a condition which 
+cannot be true by construction is simply a waste of time and code.
 
 Thanks,
+Robin.
 
-Jacob
+>   }
+>   
+>   static struct iommu_group *ipmmu_find_group(struct device *dev)
