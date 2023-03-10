@@ -1,711 +1,257 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2059.outbound.protection.outlook.com [40.107.244.59])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31FF2C94E
-	for <iommu@lists.linux.dev>; Thu,  9 Mar 2023 22:18:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678400295; x=1709936295;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=dxYel3ZlkSHs8JMhm6G5rUzIqRmXv6Tk+mhe99eZrVA=;
-  b=VcFsIHcsq1AE7+w2IhTvGWfj7tq/MMr21/R4tKQHk38m5i1bLvyWYtxT
-   0R2ar8a+jc+dPR9hNDPx3WxWxYLUMiSPnccTV3MEgzZkAZLTtSI4LSWDE
-   UKXxDvlTlM1miV4o8Yo2kkqesU1QMBRTeaBLMppWFHSi77DwGcfd/IRm9
-   MGyWvd0WXi0io1CrO8CH2qNWXufPKmfkZV2mcDQ9rnrBKCJakNiqSuU3L
-   CeW72W7VZLLlddpTIfEsOxdjthAP+65RyoOjv9VoAFEpbb0QNV7c/ETFI
-   cQ5BemHqucPTAZHgQeDeKlBS+GRCkpLqafVQ+wkXkdEredcc6D/9Fz/GQ
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="364235275"
-X-IronPort-AV: E=Sophos;i="5.98,247,1673942400"; 
-   d="scan'208";a="364235275"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 14:18:11 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="707788868"
-X-IronPort-AV: E=Sophos;i="5.98,247,1673942400"; 
-   d="scan'208";a="707788868"
-Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.106])
-  by orsmga008.jf.intel.com with ESMTP; 09 Mar 2023 14:18:10 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: LKML <linux-kernel@vger.kernel.org>,
-	iommu@lists.linux.dev,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	"Lu Baolu" <baolu.lu@linux.intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>,
-	Dave Hansen <dave.hansen@intel.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	X86 Kernel <x86@kernel.org>,
-	bp@alien8.de,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	corbet@lwn.net,
-	vkoul@kernel.org,
-	dmaengine@vger.kernel.org,
-	linux-doc@vger.kernel.org
-Cc: "Robin Murphy" <robin.murphy@arm.com>,
-	"Will Deacon" <will@kernel.org>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Raj Ashok <ashok.raj@intel.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>,
-	Yi Liu <yi.l.liu@intel.com>,
-	"Yu, Fenghua" <fenghua.yu@intel.com>,
-	Dave Jiang <dave.jiang@intel.com>,
-	Kirill Shutemov <kirill.shutemov@linux.intel.com>,
-	Tony Luck <tony.luck@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v5 7/7] iommu: Remove ioasid infrastructure
-Date: Thu,  9 Mar 2023 14:21:59 -0800
-Message-Id: <20230309222159.487826-9-jacob.jun.pan@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230309222159.487826-1-jacob.jun.pan@linux.intel.com>
-References: <20230309222159.487826-1-jacob.jun.pan@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC6CB363
+	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 00:23:16 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=k85gM2l/jPrmp4myrB9JkYt1aSCVqy4BO9AsHFuk4NL3vNclG4Km5fjlObVQcyJLC/XprADsdYh+pe8+wtaIuHuySEmwA6qDnYM72kGihLjEF94CiDBC5IInhB7ijEL2ovJpb/BHaHkno5lAt2RLYnFxXufYJ+KB7G8HnLCaELImQiYY7H5MGU71aDSEfMnLP2z+CtCiUo64EDqkj62VdRvBKq+cFaktIEdOo3CZJPSZw2yDtsMHu5dvWBiILdEN2O7nr1ts5gwKCo/4qLt4linlVPXe6Jr1w0Wi/bh1wVaoAWjIJWkeMyaIpej37vRHKm6HTAez4Q6sX44RMBqt9A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fpwkXXSkhbyvLAIlXT2DW5dK+uhu3+m0ZxgqyQAkTc0=;
+ b=iOjvys+PM+RWG8RIJDV5VcdR+VeyUXkO+IX7zw1ySumNkfl1BqijhcsZQglDQWlUA1XqvfDGN5SZ1O2ch39I/P+shxraZJ1MtPV4RZuJZBniC8kS8z+nHWVudQVzpfRz3ioRy4jIJllwQqUQf9TXPEmxL/vMCUzCJ06RTDrOAIM3TvgyOvlcR6SDfvu6FbfmNfHbf1pZtbXPHuvWI50+VbDyZ+R1BO5qWnivYZvgyofVysaK2soAoE0sTdzFxx+03YhAheSwWpQyRiJASM4552Oo6ZaYCM3O94H1nyjAlGMi1/vYfC+SHz+MJLSq79wBRJQMEbwLUrKcMnN+Jik0CA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fpwkXXSkhbyvLAIlXT2DW5dK+uhu3+m0ZxgqyQAkTc0=;
+ b=Et/atzmQanPEs54Wp+Rd9U7pWoRDyj+RQqHjABbPQwnKOGkWKVNQRgWuVmTo1Yyl5reBNapfhKfvz4hSfOhtLq3/Ul9KkLre36YosoC9tu/BzYlDPNxSh+EMkOAYl4cOXTM58Qo0jxQiX1WfODM8/lJOwVmHAkBOumnwgOEJZsjnL20XpcwwW7dMCXabpHV4OI6puiTNeZf+FIBPeS6Mw9c9FsJNI5sY0JwnvATs9QQwAHTX0vgv9gTgL7yftBh4DiA6mRnLsJ6PUiZ55+ihX0q/8+rddzAvFiVMXtxrU48Smdw+BPkM77vTdzciCirhGhd+5PHjvB4eWotzAReQ8w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by CY8PR12MB9036.namprd12.prod.outlook.com (2603:10b6:930:78::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.19; Fri, 10 Mar
+ 2023 00:23:14 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::ef6d:fdf6:352f:efd1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::ef6d:fdf6:352f:efd1%3]) with mapi id 15.20.6178.017; Fri, 10 Mar 2023
+ 00:23:13 +0000
+Date: Thu, 9 Mar 2023 20:23:10 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
+	eric.auger@redhat.com, kevin.tian@intel.com,
+	baolu.lu@linux.intel.com, joro@8bytes.org,
+	shameerali.kolothum.thodi@huawei.com, jean-philippe@linaro.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 01/14] iommu: Add iommu_get_unmanaged_domain helper
+Message-ID: <ZAp4bu53sGBBbAo+@nvidia.com>
+References: <cover.1678348754.git.nicolinc@nvidia.com>
+ <9b1077601cace998533129327f5e7ad946752d29.1678348754.git.nicolinc@nvidia.com>
+ <2118a147-ac95-d846-ad6f-85d7cebca46a@arm.com>
+ <ZAnq/8Ak75Dr7JM0@nvidia.com>
+ <64c7659b-9bd5-2239-cde9-f7b48f6877ca@arm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <64c7659b-9bd5-2239-cde9-f7b48f6877ca@arm.com>
+X-ClientProxiedBy: SJ0PR13CA0227.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c1::22) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CY8PR12MB9036:EE_
+X-MS-Office365-Filtering-Correlation-Id: 25e0ba62-c362-4ecb-8bd0-08db20fda304
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	NJo5pF6o8DKwuQUGshXtBJevignwRZxx4qVto3QYjGXY3ekXfo0dZPm5I5eKzxFA5y/MtU2lu+QHUNHiX+NChqhV2Nq7aCi36ORt4QCtVG/q9F1mzzZaPN0cfYYNWrwlHkyzVeHHLbZcYdiCKvYySq8Nxw8iF4/DElUS9FFmvHgvVTEUUkmKIv8oJccsawzD8JeA4qcanoN9WW37oN9Vp1mu0VlXozfgmQEj7CHWZrVivuLqWNV3eXYGeNrDq2RJ7N9x8gqLPas1vEHT69bsXj2RDvoCYN7gIumhiMH+FFp0XBgf7F+QHuqM2A/0xkR4qZCenFGmMhEo437PThJy0F2rfBRUW9ch4icJnyENykkpJqZCp7efECwOSW63pJD2YzENJzKo1U2rPouLTatujPzTiqIYPPox9Bh1WgbE8JJCEHG90vcYFxRpb5aLtngfbg+LOMGv5uXZF6u588Ub38tpWXyBRMUWa77E8srbEqwZS0aUbICN6dAXTiSEivIjdRI+I/neclgkV3C9XxqHCdNTDrW6B6Hl9S72Q0pzKEwh8ZN0tTB+3HdAN2eR/kdh6YS6DSPI1OiuSHT6taxgLxr5VviyesP2LVoHsZFl/yCIVZurxX1R+Vh1WieAnAbiFRR7RD/wzl52rWbfl2rNVA==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(366004)(39860400002)(376002)(346002)(136003)(451199018)(66899018)(83380400001)(36756003)(478600001)(316002)(38100700002)(2616005)(6486002)(6506007)(6512007)(186003)(26005)(5660300002)(7416002)(8676002)(66476007)(66556008)(66946007)(41300700001)(2906002)(8936002)(4326008)(86362001)(6916009);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?MH3HrZfMQVfmia3s7ShgQoVY6en6GCJgBrDYAFsvvpuA06wkMVYpKZ9sLfGx?=
+ =?us-ascii?Q?8f5IkLTOa+OcLr60hOoisSllASByVaUlm24fmDH/TQ05pgqs+pqGsSmX9D9D?=
+ =?us-ascii?Q?8CouyBxlX1nB45t+RU7CnV6SaHk0/WA8r35Foy+qqQmszS6/8HHOeLR1lR9c?=
+ =?us-ascii?Q?75gof8cBTtuluRYEOoK1WqIhTQqa/y+GVl4/EZMxzsfaGR6XzLGQ1lJjNk1A?=
+ =?us-ascii?Q?SUW6HB8hUdcjpqGA0RlCD9BWWpu70bKz6Utvtb1Mw/k22s68rLzJMWiA3a1v?=
+ =?us-ascii?Q?UUymfQHIa4Jbx1g5B0zCctsXd3SSTUX10+FXhIBXAS76wBIItpETmU7J8Rh2?=
+ =?us-ascii?Q?7hnGQgmNDiPmnLPB4jJXguGdIKF3Oj7TqyysHzvjpIImwtJRysgQ4WuEl8GV?=
+ =?us-ascii?Q?spvnHnIX+9MXNscr0uEXDa+EwV9VjCMiY5XOfV1EmvQECEFqgPRXRhhm5RDe?=
+ =?us-ascii?Q?/EycPXw//SWJSriiUfjhvCkTwkC8QEc9k9ub5awvya/bEwdbH/y9zmiZI7ix?=
+ =?us-ascii?Q?g0N1WWbyOFNt4D0nOTi52Gt/wUPl7nlfp+38POaxs7e2hIGrwOGk44WSqATj?=
+ =?us-ascii?Q?+XmtwmmaSItRMxKKdWjlszOIAC2/bx45ur2fCDD7+liBtekU2mhLnrAJI5p+?=
+ =?us-ascii?Q?DQ+qMZ3uMA+zt/QlSIUG0k6glBTf4CtmH8zgODSJgxxUsTVdg+5b44lNjF6U?=
+ =?us-ascii?Q?vkcDTNI3mWuL3k9jf/RntSAK6iq+7aXchmrjwXjaFDgXw4tPazBjmZvakmCc?=
+ =?us-ascii?Q?2OUOhcz08acwHu1k3Er6XjYX/33D++fkmhVveLsmKpnaFyGt9WsDrcu5BKv9?=
+ =?us-ascii?Q?wzapbesVHQhUgTZVnu3Po0s5JwfW1a4mNBavTe3p5mDygrxXhrhc/oGI8Ucv?=
+ =?us-ascii?Q?rR/Fs9nv51YshuTCULnVym307W/p0r+4D2G0FtjJRhDck7wbReOGRjj8h5TB?=
+ =?us-ascii?Q?8jqXq1+QbYcY05aKri+izmXm5V5Kxz2V602M8zkM8zpj8yVWUIfd6vJEDRaL?=
+ =?us-ascii?Q?oePc4m7QdndhM01mFa1fdUvpa5/yDroPydXP16dZoG0l3cPrHruPARegzkC1?=
+ =?us-ascii?Q?eVRNsG1wDNQJUsw4IKIzSmb/Ba0C9S8VO/Cg76F0hFV/3YfkLP7x+cLn7/hH?=
+ =?us-ascii?Q?F3CkaxjOAfXih275Ujwef47jUA7XqrnsEQlEZTKPOiqRXpSWxJ8jFoxGZrc6?=
+ =?us-ascii?Q?CNSHIEFGqtO0AyjR45IgbDh4WJVb5kwaD7D0PSoJseFfhCO1351C9QxyTHAg?=
+ =?us-ascii?Q?BezA3Ajh60iBwIckW/M1vGz4iTNaqNr8KI5wUEAHK698ss9Y9SKM8Bmd4ge7?=
+ =?us-ascii?Q?eBw6pgvvz1VA9aUkQvMIt5h0KQIDco+n6w2FAPldZ+FuajItQy5DY7+biITZ?=
+ =?us-ascii?Q?fJDlncjmlLGhtM/YEUWqYvTeE5q8BOKzJxCSYZBfRbh5adV8Q1XrAK6G12Kq?=
+ =?us-ascii?Q?+hd31ahAxcgB2zU+ba5juEZCL3STwJIoddgQMRATTyrn66cpIfx7eusA1eXc?=
+ =?us-ascii?Q?IqZSUUmWL9Z1+SzaC3VBqZpPAniTyszTIv2t5F+LtU1iEOjUrkf2KrqJYCwy?=
+ =?us-ascii?Q?7Y8Rpw9Z0iIfx0jZBXPGWRZYCoBtZ6cFVGPngebp?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 25e0ba62-c362-4ecb-8bd0-08db20fda304
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2023 00:23:13.8730
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ihCGRb1tK+RrEtRi7LM2FZby6Shx1pA5Hx6OT/pPnPGcTteP0SP+cT3VZ2BuSQv5
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB9036
 
-From: Jason Gunthorpe <jgg@nvidia.com>
+On Thu, Mar 09, 2023 at 07:04:19PM +0000, Robin Murphy wrote:
 
-This has no use anymore, delete it all.
+> You are literally insisting on changing this core API, to work
+> around intentionally breaking an existing behaviour which could easily be
+> preserved (far less invasively), for the sake of preserving some other
+> theoretical behaviour that IS NOT USEFUL.
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
----
-v3:	- put rename under a different patch
-	- delete makefile and Kconfig
-v2:
-	- fix compile issue w/o CONFIG_IOMMU_SVA
-	- consolidate INVALID_IOASID w/ IOMMU_PASID_INVALID
----
- drivers/dma/idxd/idxd.h     |   1 -
- drivers/iommu/Kconfig       |   5 -
- drivers/iommu/Makefile      |   1 -
- drivers/iommu/intel/iommu.h |   1 -
- drivers/iommu/intel/svm.c   |   1 -
- drivers/iommu/ioasid.c      | 422 ------------------------------------
- drivers/iommu/iommu-sva.h   |   1 -
- include/linux/ioasid.h      |  80 -------
- include/linux/iommu.h       |   1 -
- 9 files changed, 513 deletions(-)
- delete mode 100644 drivers/iommu/ioasid.c
- delete mode 100644 include/linux/ioasid.h
+No! I am insisting that the core API *make logical sense* and not be a
+random mismash of things that just happen to work. I'm not optimizing
+for LOC here.
 
-diff --git a/drivers/dma/idxd/idxd.h b/drivers/dma/idxd/idxd.h
-index 417e602a46b6..dd2a6ed8949b 100644
---- a/drivers/dma/idxd/idxd.h
-+++ b/drivers/dma/idxd/idxd.h
-@@ -10,7 +10,6 @@
- #include <linux/cdev.h>
- #include <linux/idr.h>
- #include <linux/pci.h>
--#include <linux/ioasid.h>
- #include <linux/bitmap.h>
- #include <linux/perf_event.h>
- #include <linux/iommu.h>
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 889c7efd050b..a799221f8844 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -3,10 +3,6 @@
- config IOMMU_IOVA
- 	tristate
- 
--# The IOASID library may also be used by non-IOMMU_API users
--config IOASID
--	tristate
--
- # IOMMU_API always gets selected by whoever wants it.
- config IOMMU_API
- 	bool
-@@ -160,7 +156,6 @@ config IOMMU_DMA
- # Shared Virtual Addressing
- config IOMMU_SVA
- 	bool
--	select IOASID
- 
- config FSL_PAMU
- 	bool "Freescale IOMMU support"
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index f461d0651385..769e43d780ce 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -9,7 +9,6 @@ obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_DART) += io-pgtable-dart.o
--obj-$(CONFIG_IOASID) += ioasid.o
- obj-$(CONFIG_IOMMU_IOVA) += iova.o
- obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
- obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index a2010fb120e2..65b15be72878 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -19,7 +19,6 @@
- #include <linux/iommu.h>
- #include <linux/io-64-nonatomic-lo-hi.h>
- #include <linux/dmar.h>
--#include <linux/ioasid.h>
- #include <linux/bitfield.h>
- #include <linux/xarray.h>
- #include <linux/perf_event.h>
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 3848a1b0800c..e95b339e9cdc 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -16,7 +16,6 @@
- #include <linux/interrupt.h>
- #include <linux/mm_types.h>
- #include <linux/xarray.h>
--#include <linux/ioasid.h>
- #include <asm/page.h>
- #include <asm/fpu/api.h>
- 
-diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
-deleted file mode 100644
-index a786c034907c..000000000000
---- a/drivers/iommu/ioasid.c
-+++ /dev/null
-@@ -1,422 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/*
-- * I/O Address Space ID allocator. There is one global IOASID space, split into
-- * subsets. Users create a subset with DECLARE_IOASID_SET, then allocate and
-- * free IOASIDs with ioasid_alloc() and ioasid_free().
-- */
--#include <linux/ioasid.h>
--#include <linux/module.h>
--#include <linux/slab.h>
--#include <linux/spinlock.h>
--#include <linux/xarray.h>
--
--struct ioasid_data {
--	ioasid_t id;
--	struct ioasid_set *set;
--	void *private;
--	struct rcu_head rcu;
--};
--
--/*
-- * struct ioasid_allocator_data - Internal data structure to hold information
-- * about an allocator. There are two types of allocators:
-- *
-- * - Default allocator always has its own XArray to track the IOASIDs allocated.
-- * - Custom allocators may share allocation helpers with different private data.
-- *   Custom allocators that share the same helper functions also share the same
-- *   XArray.
-- * Rules:
-- * 1. Default allocator is always available, not dynamically registered. This is
-- *    to prevent race conditions with early boot code that want to register
-- *    custom allocators or allocate IOASIDs.
-- * 2. Custom allocators take precedence over the default allocator.
-- * 3. When all custom allocators sharing the same helper functions are
-- *    unregistered (e.g. due to hotplug), all outstanding IOASIDs must be
-- *    freed. Otherwise, outstanding IOASIDs will be lost and orphaned.
-- * 4. When switching between custom allocators sharing the same helper
-- *    functions, outstanding IOASIDs are preserved.
-- * 5. When switching between custom allocator and default allocator, all IOASIDs
-- *    must be freed to ensure unadulterated space for the new allocator.
-- *
-- * @ops:	allocator helper functions and its data
-- * @list:	registered custom allocators
-- * @slist:	allocators share the same ops but different data
-- * @flags:	attributes of the allocator
-- * @xa:		xarray holds the IOASID space
-- * @rcu:	used for kfree_rcu when unregistering allocator
-- */
--struct ioasid_allocator_data {
--	struct ioasid_allocator_ops *ops;
--	struct list_head list;
--	struct list_head slist;
--#define IOASID_ALLOCATOR_CUSTOM BIT(0) /* Needs framework to track results */
--	unsigned long flags;
--	struct xarray xa;
--	struct rcu_head rcu;
--};
--
--static DEFINE_SPINLOCK(ioasid_allocator_lock);
--static LIST_HEAD(allocators_list);
--
--static ioasid_t default_alloc(ioasid_t min, ioasid_t max, void *opaque);
--static void default_free(ioasid_t ioasid, void *opaque);
--
--static struct ioasid_allocator_ops default_ops = {
--	.alloc = default_alloc,
--	.free = default_free,
--};
--
--static struct ioasid_allocator_data default_allocator = {
--	.ops = &default_ops,
--	.flags = 0,
--	.xa = XARRAY_INIT(ioasid_xa, XA_FLAGS_ALLOC),
--};
--
--static struct ioasid_allocator_data *active_allocator = &default_allocator;
--
--static ioasid_t default_alloc(ioasid_t min, ioasid_t max, void *opaque)
--{
--	ioasid_t id;
--
--	if (xa_alloc(&default_allocator.xa, &id, opaque, XA_LIMIT(min, max), GFP_ATOMIC)) {
--		pr_err("Failed to alloc ioasid from %d to %d\n", min, max);
--		return INVALID_IOASID;
--	}
--
--	return id;
--}
--
--static void default_free(ioasid_t ioasid, void *opaque)
--{
--	struct ioasid_data *ioasid_data;
--
--	ioasid_data = xa_erase(&default_allocator.xa, ioasid);
--	kfree_rcu(ioasid_data, rcu);
--}
--
--/* Allocate and initialize a new custom allocator with its helper functions */
--static struct ioasid_allocator_data *ioasid_alloc_allocator(struct ioasid_allocator_ops *ops)
--{
--	struct ioasid_allocator_data *ia_data;
--
--	ia_data = kzalloc(sizeof(*ia_data), GFP_ATOMIC);
--	if (!ia_data)
--		return NULL;
--
--	xa_init_flags(&ia_data->xa, XA_FLAGS_ALLOC);
--	INIT_LIST_HEAD(&ia_data->slist);
--	ia_data->flags |= IOASID_ALLOCATOR_CUSTOM;
--	ia_data->ops = ops;
--
--	/* For tracking custom allocators that share the same ops */
--	list_add_tail(&ops->list, &ia_data->slist);
--
--	return ia_data;
--}
--
--static bool use_same_ops(struct ioasid_allocator_ops *a, struct ioasid_allocator_ops *b)
--{
--	return (a->free == b->free) && (a->alloc == b->alloc);
--}
--
--/**
-- * ioasid_register_allocator - register a custom allocator
-- * @ops: the custom allocator ops to be registered
-- *
-- * Custom allocators take precedence over the default xarray based allocator.
-- * Private data associated with the IOASID allocated by the custom allocators
-- * are managed by IOASID framework similar to data stored in xa by default
-- * allocator.
-- *
-- * There can be multiple allocators registered but only one is active. In case
-- * of runtime removal of a custom allocator, the next one is activated based
-- * on the registration ordering.
-- *
-- * Multiple allocators can share the same alloc() function, in this case the
-- * IOASID space is shared.
-- */
--int ioasid_register_allocator(struct ioasid_allocator_ops *ops)
--{
--	struct ioasid_allocator_data *ia_data;
--	struct ioasid_allocator_data *pallocator;
--	int ret = 0;
--
--	spin_lock(&ioasid_allocator_lock);
--
--	ia_data = ioasid_alloc_allocator(ops);
--	if (!ia_data) {
--		ret = -ENOMEM;
--		goto out_unlock;
--	}
--
--	/*
--	 * No particular preference, we activate the first one and keep
--	 * the later registered allocators in a list in case the first one gets
--	 * removed due to hotplug.
--	 */
--	if (list_empty(&allocators_list)) {
--		WARN_ON(active_allocator != &default_allocator);
--		/* Use this new allocator if default is not active */
--		if (xa_empty(&active_allocator->xa)) {
--			rcu_assign_pointer(active_allocator, ia_data);
--			list_add_tail(&ia_data->list, &allocators_list);
--			goto out_unlock;
--		}
--		pr_warn("Default allocator active with outstanding IOASID\n");
--		ret = -EAGAIN;
--		goto out_free;
--	}
--
--	/* Check if the allocator is already registered */
--	list_for_each_entry(pallocator, &allocators_list, list) {
--		if (pallocator->ops == ops) {
--			pr_err("IOASID allocator already registered\n");
--			ret = -EEXIST;
--			goto out_free;
--		} else if (use_same_ops(pallocator->ops, ops)) {
--			/*
--			 * If the new allocator shares the same ops,
--			 * then they will share the same IOASID space.
--			 * We should put them under the same xarray.
--			 */
--			list_add_tail(&ops->list, &pallocator->slist);
--			goto out_free;
--		}
--	}
--	list_add_tail(&ia_data->list, &allocators_list);
--
--	spin_unlock(&ioasid_allocator_lock);
--	return 0;
--out_free:
--	kfree(ia_data);
--out_unlock:
--	spin_unlock(&ioasid_allocator_lock);
--	return ret;
--}
--EXPORT_SYMBOL_GPL(ioasid_register_allocator);
--
--/**
-- * ioasid_unregister_allocator - Remove a custom IOASID allocator ops
-- * @ops: the custom allocator to be removed
-- *
-- * Remove an allocator from the list, activate the next allocator in
-- * the order it was registered. Or revert to default allocator if all
-- * custom allocators are unregistered without outstanding IOASIDs.
-- */
--void ioasid_unregister_allocator(struct ioasid_allocator_ops *ops)
--{
--	struct ioasid_allocator_data *pallocator;
--	struct ioasid_allocator_ops *sops;
--
--	spin_lock(&ioasid_allocator_lock);
--	if (list_empty(&allocators_list)) {
--		pr_warn("No custom IOASID allocators active!\n");
--		goto exit_unlock;
--	}
--
--	list_for_each_entry(pallocator, &allocators_list, list) {
--		if (!use_same_ops(pallocator->ops, ops))
--			continue;
--
--		if (list_is_singular(&pallocator->slist)) {
--			/* No shared helper functions */
--			list_del(&pallocator->list);
--			/*
--			 * All IOASIDs should have been freed before
--			 * the last allocator that shares the same ops
--			 * is unregistered.
--			 */
--			WARN_ON(!xa_empty(&pallocator->xa));
--			if (list_empty(&allocators_list)) {
--				pr_info("No custom IOASID allocators, switch to default.\n");
--				rcu_assign_pointer(active_allocator, &default_allocator);
--			} else if (pallocator == active_allocator) {
--				rcu_assign_pointer(active_allocator,
--						list_first_entry(&allocators_list,
--								struct ioasid_allocator_data, list));
--				pr_info("IOASID allocator changed");
--			}
--			kfree_rcu(pallocator, rcu);
--			break;
--		}
--		/*
--		 * Find the matching shared ops to delete,
--		 * but keep outstanding IOASIDs
--		 */
--		list_for_each_entry(sops, &pallocator->slist, list) {
--			if (sops == ops) {
--				list_del(&ops->list);
--				break;
--			}
--		}
--		break;
--	}
--
--exit_unlock:
--	spin_unlock(&ioasid_allocator_lock);
--}
--EXPORT_SYMBOL_GPL(ioasid_unregister_allocator);
--
--/**
-- * ioasid_set_data - Set private data for an allocated ioasid
-- * @ioasid: the ID to set data
-- * @data:   the private data
-- *
-- * For IOASID that is already allocated, private data can be set
-- * via this API. Future lookup can be done via ioasid_find.
-- */
--int ioasid_set_data(ioasid_t ioasid, void *data)
--{
--	struct ioasid_data *ioasid_data;
--	int ret = 0;
--
--	spin_lock(&ioasid_allocator_lock);
--	ioasid_data = xa_load(&active_allocator->xa, ioasid);
--	if (ioasid_data)
--		rcu_assign_pointer(ioasid_data->private, data);
--	else
--		ret = -ENOENT;
--	spin_unlock(&ioasid_allocator_lock);
--
--	/*
--	 * Wait for readers to stop accessing the old private data, so the
--	 * caller can free it.
--	 */
--	if (!ret)
--		synchronize_rcu();
--
--	return ret;
--}
--EXPORT_SYMBOL_GPL(ioasid_set_data);
--
--/**
-- * ioasid_alloc - Allocate an IOASID
-- * @set: the IOASID set
-- * @min: the minimum ID (inclusive)
-- * @max: the maximum ID (inclusive)
-- * @private: data private to the caller
-- *
-- * Allocate an ID between @min and @max. The @private pointer is stored
-- * internally and can be retrieved with ioasid_find().
-- *
-- * Return: the allocated ID on success, or %INVALID_IOASID on failure.
-- */
--ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
--		      void *private)
--{
--	struct ioasid_data *data;
--	void *adata;
--	ioasid_t id;
--
--	data = kzalloc(sizeof(*data), GFP_ATOMIC);
--	if (!data)
--		return INVALID_IOASID;
--
--	data->set = set;
--	data->private = private;
--
--	/*
--	 * Custom allocator needs allocator data to perform platform specific
--	 * operations.
--	 */
--	spin_lock(&ioasid_allocator_lock);
--	adata = active_allocator->flags & IOASID_ALLOCATOR_CUSTOM ? active_allocator->ops->pdata : data;
--	id = active_allocator->ops->alloc(min, max, adata);
--	if (id == INVALID_IOASID) {
--		pr_err("Failed ASID allocation %lu\n", active_allocator->flags);
--		goto exit_free;
--	}
--
--	if ((active_allocator->flags & IOASID_ALLOCATOR_CUSTOM) &&
--	     xa_alloc(&active_allocator->xa, &id, data, XA_LIMIT(id, id), GFP_ATOMIC)) {
--		/* Custom allocator needs framework to store and track allocation results */
--		pr_err("Failed to alloc ioasid from %d\n", id);
--		active_allocator->ops->free(id, active_allocator->ops->pdata);
--		goto exit_free;
--	}
--	data->id = id;
--
--	spin_unlock(&ioasid_allocator_lock);
--	return id;
--exit_free:
--	spin_unlock(&ioasid_allocator_lock);
--	kfree(data);
--	return INVALID_IOASID;
--}
--EXPORT_SYMBOL_GPL(ioasid_alloc);
--
--/**
-- * ioasid_free - Free an ioasid
-- * @ioasid: the ID to remove
-- */
--void ioasid_free(ioasid_t ioasid)
--{
--	struct ioasid_data *ioasid_data;
--
--	spin_lock(&ioasid_allocator_lock);
--	ioasid_data = xa_load(&active_allocator->xa, ioasid);
--	if (!ioasid_data) {
--		pr_err("Trying to free unknown IOASID %u\n", ioasid);
--		goto exit_unlock;
--	}
--
--	active_allocator->ops->free(ioasid, active_allocator->ops->pdata);
--	/* Custom allocator needs additional steps to free the xa element */
--	if (active_allocator->flags & IOASID_ALLOCATOR_CUSTOM) {
--		ioasid_data = xa_erase(&active_allocator->xa, ioasid);
--		kfree_rcu(ioasid_data, rcu);
--	}
--
--exit_unlock:
--	spin_unlock(&ioasid_allocator_lock);
--}
--EXPORT_SYMBOL_GPL(ioasid_free);
--
--/**
-- * ioasid_find - Find IOASID data
-- * @set: the IOASID set
-- * @ioasid: the IOASID to find
-- * @getter: function to call on the found object
-- *
-- * The optional getter function allows to take a reference to the found object
-- * under the rcu lock. The function can also check if the object is still valid:
-- * if @getter returns false, then the object is invalid and NULL is returned.
-- *
-- * If the IOASID exists, return the private pointer passed to ioasid_alloc.
-- * Private data can be NULL if not set. Return an error if the IOASID is not
-- * found, or if @set is not NULL and the IOASID does not belong to the set.
-- */
--void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
--		  bool (*getter)(void *))
--{
--	void *priv;
--	struct ioasid_data *ioasid_data;
--	struct ioasid_allocator_data *idata;
--
--	rcu_read_lock();
--	idata = rcu_dereference(active_allocator);
--	ioasid_data = xa_load(&idata->xa, ioasid);
--	if (!ioasid_data) {
--		priv = ERR_PTR(-ENOENT);
--		goto unlock;
--	}
--	if (set && ioasid_data->set != set) {
--		/* data found but does not belong to the set */
--		priv = ERR_PTR(-EACCES);
--		goto unlock;
--	}
--	/* Now IOASID and its set is verified, we can return the private data */
--	priv = rcu_dereference(ioasid_data->private);
--	if (getter && !getter(priv))
--		priv = NULL;
--unlock:
--	rcu_read_unlock();
--
--	return priv;
--}
--EXPORT_SYMBOL_GPL(ioasid_find);
--
--MODULE_AUTHOR("Jean-Philippe Brucker <jean-philippe.brucker@arm.com>");
--MODULE_AUTHOR("Jacob Pan <jacob.jun.pan@linux.intel.com>");
--MODULE_DESCRIPTION("IO Address Space ID (IOASID) allocator");
--MODULE_LICENSE("GPL");
-diff --git a/drivers/iommu/iommu-sva.h b/drivers/iommu/iommu-sva.h
-index c22d0174ad61..54946b5a7caf 100644
---- a/drivers/iommu/iommu-sva.h
-+++ b/drivers/iommu/iommu-sva.h
-@@ -5,7 +5,6 @@
- #ifndef _IOMMU_SVA_H
- #define _IOMMU_SVA_H
- 
--#include <linux/ioasid.h>
- #include <linux/mm_types.h>
- 
- /* I/O Page fault */
-diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-deleted file mode 100644
-index 665a3773a409..000000000000
---- a/include/linux/ioasid.h
-+++ /dev/null
-@@ -1,80 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--#ifndef __LINUX_IOASID_H
--#define __LINUX_IOASID_H
--
--#include <linux/types.h>
--#include <linux/errno.h>
--#include <linux/iommu-helper.h>
--
--typedef unsigned int ioasid_t;
--#define INVALID_IOASID ((ioasid_t)-1)
--typedef ioasid_t (*ioasid_alloc_fn_t)(ioasid_t min, ioasid_t max, void *data);
--typedef void (*ioasid_free_fn_t)(ioasid_t ioasid, void *data);
--
--struct ioasid_set {
--	int dummy;
--};
--
--/**
-- * struct ioasid_allocator_ops - IOASID allocator helper functions and data
-- *
-- * @alloc:	helper function to allocate IOASID
-- * @free:	helper function to free IOASID
-- * @list:	for tracking ops that share helper functions but not data
-- * @pdata:	data belong to the allocator, provided when calling alloc()
-- */
--struct ioasid_allocator_ops {
--	ioasid_alloc_fn_t alloc;
--	ioasid_free_fn_t free;
--	struct list_head list;
--	void *pdata;
--};
--
--#define DECLARE_IOASID_SET(name) struct ioasid_set name = { 0 }
--
--#if IS_ENABLED(CONFIG_IOASID)
--ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
--		      void *private);
--void ioasid_free(ioasid_t ioasid);
--void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
--		  bool (*getter)(void *));
--int ioasid_register_allocator(struct ioasid_allocator_ops *allocator);
--void ioasid_unregister_allocator(struct ioasid_allocator_ops *allocator);
--int ioasid_set_data(ioasid_t ioasid, void *data);
--
--#else /* !CONFIG_IOASID */
--static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
--				    ioasid_t max, void *private)
--{
--	return INVALID_IOASID;
--}
--
--static inline void ioasid_free(ioasid_t ioasid) { }
--
--static inline void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
--				bool (*getter)(void *))
--{
--	return NULL;
--}
--
--static inline int ioasid_register_allocator(struct ioasid_allocator_ops *allocator)
--{
--	return -ENOTSUPP;
--}
--
--static inline void ioasid_unregister_allocator(struct ioasid_allocator_ops *allocator)
--{
--}
--
--static inline int ioasid_set_data(ioasid_t ioasid, void *data)
--{
--	return -ENOTSUPP;
--}
--
--static inline bool pasid_valid(ioasid_t ioasid)
--{
--	return false;
--}
--
--#endif /* CONFIG_IOASID */
--#endif /* __LINUX_IOASID_H */
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 945a2f09b442..94f4e53c50e7 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -13,7 +13,6 @@
- #include <linux/errno.h>
- #include <linux/err.h>
- #include <linux/of.h>
--#include <linux/ioasid.h>
- #include <uapi/linux/iommu.h>
- 
- #define IOMMU_READ	(1 << 0)
--- 
-2.25.1
+The end goal is to remove access to the S2 and not have this API at
+all. It makes no sense to have a temporary step that makes the S2 even
+more available then go and undo that.
 
+This is a 'code smell' annotation that it needs to use a special API
+because this code has a direct special requirement based on ARM's
+definition to work on the S2 of the nest.
+
+The goal for iommufd is to make ITS page mapping to have already
+happened at domain allocation time. It cannot be deferred until
+irq_domain_ops.alloc() time. Obviously once we do that we don't have a
+need to obtain the S2 from a nest domain.
+
+> The overall design of the iommu core APIs *is* being changed, because the
+> core API design also follows this logic for any domain type:
+> 
+> 	domain = iommu_get_domain_for_dev();
+> 	phys = iommu_iova_to_phys(domain, iova);
+> 	//phys meaningfully represents whether iova was valid
+
+If a nesting domain is used then this really should not translate the
+IOVA through the S2.
+
+IMHO the proper answer for a nesting domain is the same as for an SVA
+domain - EOPNOTSUP.
+
+But more importantly it is illegal to call this API unless the caller
+already has some range lock on the IOVA being queried. It is
+impossible to obtain a range lock on a NEST or SVA, so this is not
+allowed to be called on those domains.
+
+Currently it looks like it crashes if something calls it with an
+SVA/NEST to drive this point home :)
+
+> Forgive me for getting wound up, but I'm a pragmatist and my tolerance for
+> ignoring reality is low.
+
+Well, I would like this settled and it seems bike-shedding to me.
+
+> > Attaching the S1 always causes the embedded S2 to be used too - they
+> > are not separable so we don't have APIs talking about about
+> > "attaching" the S2.
+> 
+> Yes, that is one way of viewing things, but it's far from the only
+> way.
+
+Sure, but it is the design we are going with. It is the design that
+was built into iommufd from day 1.
+
+If there is a good reason to change it, I'm open to hear it, but we've
+gone through a lot of use cases now and it is holding up well.
+
+> typical lifecycle will involve starting the VM with S2 alone, then enabling
+> nesting later - we can view that as allocating a nested domain based on S2,
+> then "replacing" S2 with nested, but we could equally view it as just
+> attaching the nested domain on top of the existing S2, like pushing to a
+> stack (I do agree that trying to model it as two completely independent and
+> orthogonal attachments would not be sensible). It's really just semantics of
+> how we prefer to describe things, and whether the s2_domain pointer is
+> passed up-front to domain_alloc or later to attach_dev.
+
+We settled on domain_alloc time for a pretty basic reason - it keeps
+the invariant that the IOVA to Phys of an iommu_domain is
+universal. Meaning IOVA to Phys always gives the same answer
+regardless of what device is attached.
+
+We directly disallow mixing a S1 with different S2's. I also don't
+like the idea of 'first to reach attach_dev assigns the S2', partially
+initialized iommu_domains have not worked well so far IMHO.
+
+I think this makes it easier for the IOMMU to assign cache tags as the
+the S1 iommu_domain always gives the same translation so it can
+trivially be assigned to a cache tag.
+
+Ie a basic Intel implementation can assign a DID to the S1. We know
+that no matter what device the NEST iommu domain is used the DID is
+the correct cache tag because of the universal translation rule.
+
+ARM will assign a VMID to the S2, the S1 is actually a CD table handle
+and has its own invalidation.
+
+AFAICT AMD will assign a DID per-device to the S1, because they don't
+have ASIDs in their PASID table :\
+
+> The opaque nested domain looks clean in some ways, but on the other hand it
+> also heavily obfuscates how translations may be shared between one nested
+> domain and other nested and non-nested domains, such that changing mappings
+> in one may affect others.
+
+Well, it keeps the logic in iommufd which should be the only user of
+this stuff.
+
+If we develop a non-iommufd user then we can revist where the
+abstractions should live, but for now iommufd is handling the thin
+common abstraction.
+
+> This is a major and potentially surprising
+> paradigm shift away from the current notion that all domains represent
+> individual isolated address spaces, so abstracting it more openly within the
+> core API internals would be clearer about what's really going on. And
+> putting common concepts at common levels of abstraction makes things simpler
+> and is why we have core API code at all.
+
+I'm all for more commen concepts, but I'm pragmatic here - I'd like to
+see duplicated code in the drivers become unduplicated by the
+abstraction. I'm not sure what this is in the S2 area, so far I
+haven't noticed anything in the ARM and Intel patch series.
+
+Without a need for S2 pointers in any code outside iommufd and the
+driver I'd prefer to keep APIs out of there to prevent abuse.
+
+> ultimately be a good deal neater and more productive than adding yet more
+> special-case ops that every driver is just going to implement identically.
+
+To be clear for this patch only SMMUv3 will implement this op because
+only SMMUv3 has this ITS problem. Once we fix it the op will be
+deleted.
+
+It really is a hack because we are all too scared to fix this properly
+right now :)
+
+> And to even imagine the future possibility of things like S2 pagetable
+> sharing with KVM, or unpinned S2 with ATS/PRI or SMMU stalls, by tunnelling
+> more private nesting interfaces directly between IOMMUFD and individual
+> drivers without some degree of common IOMMU API abstraction in between...
+> no. Just... no.
+
+I'm all for abstractions that remove duplicated code from drivers, I'm
+just not sure right now what they will actualy be...
+
+Like I say, I don't view this as duplicated code, this is hack for ARM
+to temporarily break the architectural model of a hidden S2, not true
+lasting design.
+
+Thanks,
+Jason
