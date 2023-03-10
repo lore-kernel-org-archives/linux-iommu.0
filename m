@@ -1,135 +1,190 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2051.outbound.protection.outlook.com [40.107.102.51])
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEA9E7F4
-	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 05:04:37 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IJyiue+O8tHU5iB/C6CiDJfvfi+YbwtCwus9KzDmJm725h1ZpxM+NPW51lQleEfDuPCzSy2IkugxtvbNdKrogSKWRM4BJBnXeN/gP9/cqUhGMM0v93Hc0iR3wdc16LBnxG2mLEizyMnENPPkxX5tgXhLgkd7HjKo4O6suTBll1Rm2jSUc/49eaXIMTdEvujCePIRaXPAJJg8kfPuWWArzMKdGmBXgosT5HNoa5b8SKTIAtoKLIRccpUtCMebh/pfG3TqL3DS63maLYojYrIH5qLHUU/HnfZJKAauhIumyDR9Pd8SsMKzolfTMyDrXxsTLJqWLl/uet0hROhTAKX/KA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9nrkkIJYOyJ8xMVAHQcJ7JVQU5V+MSPytuMt6KScULE=;
- b=ZTiB+bmJPrx9zMYJKrWqv7qjcm7ISZAq8lF/+wihrXQDxOvRJUP8/i1fbDgQmcK7JCy74yjqGG2XnMnq5USW+eZK7CHgeVoBq0RD2/HI5mWccko0DL6eBzfWJKOgPWvtc/mdEhlQkLlHq+T6/2ZSsw8RyhGkdNebdol4Y2lg8zdRJwS5qtaMxbGBgIOP3vBcW6jjYM46XVWHc4vnBisqyYQvlpZI+C9EAFzx0tJTDZb8v2hoTKOIGge6tRKQltYXohsYbTpDUCJjgofzcQuSfD/pF9SvS1GjwhC6oJD/CsKWNuJovBoLCjcLdJmiywLlhiAhsevH7PTHoef2jDDYkg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=linaro.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9nrkkIJYOyJ8xMVAHQcJ7JVQU5V+MSPytuMt6KScULE=;
- b=Jf+WG9iRixyUMPkkbuGTltvY3aeLeVGLsHhRwhiwgPRUG3VawgAPb4/0N8APUYsLvREpKoziMHzOhdGhoxstCRAPEc0+udocvob9K7wFkIDDOS0qF0DriImtpQXfD1Y0KQwPBj3bwzlsI7LmjE92+NDPRVshTzLkyJCZAcz2HaAQdm+JrybRIRLhr/kadhbmdXmjWo72Tas/viqDS71S2GkoFLCy+u6wUR0JXW5A33tsY7OXv4nLWNWT3CGIDZ0q3qNoRDAGQY4AqzDFYgfnIVoaTB66KLUIdJT0WSOWc3z7LMhcWOOFxMrkVM/K1YA0k3iou+dF40HBq4C7IELgyw==
-Received: from CY5PR15CA0122.namprd15.prod.outlook.com (2603:10b6:930:68::6)
- by SJ1PR12MB6340.namprd12.prod.outlook.com (2603:10b6:a03:453::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.19; Fri, 10 Mar
- 2023 05:04:35 +0000
-Received: from CY4PEPF0000C96D.namprd02.prod.outlook.com
- (2603:10b6:930:68:cafe::53) by CY5PR15CA0122.outlook.office365.com
- (2603:10b6:930:68::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.19 via Frontend
- Transport; Fri, 10 Mar 2023 05:04:35 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- CY4PEPF0000C96D.mail.protection.outlook.com (10.167.242.5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6178.13 via Frontend Transport; Fri, 10 Mar 2023 05:04:34 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 9 Mar 2023
- 21:04:22 -0800
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Thu, 9 Mar 2023
- 21:04:22 -0800
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5 via Frontend
- Transport; Thu, 9 Mar 2023 21:04:21 -0800
-Date: Thu, 9 Mar 2023 21:04:20 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-CC: <jgg@nvidia.com>, <robin.murphy@arm.com>, <will@kernel.org>,
-	<eric.auger@redhat.com>, <kevin.tian@intel.com>, <baolu.lu@linux.intel.com>,
-	<joro@8bytes.org>, <shameerali.kolothum.thodi@huawei.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <yi.l.liu@intel.com>
-Subject: Re: [PATCH v1 02/14] iommufd: Add nesting related data structures
- for ARM SMMUv3
-Message-ID: <ZAq6VKmDbVT63cot@Asurada-Nvidia>
-References: <cover.1678348754.git.nicolinc@nvidia.com>
- <364cfbe5b228ab178093db2de13fa3accf7a6120.1678348754.git.nicolinc@nvidia.com>
- <20230309134217.GA1673607@myrica>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47766A54
+	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 05:08:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678424938; x=1709960938;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=+J49aPyhvpQwkShbD0yDrpi5G/X/Mfrh2uMgIT+15TA=;
+  b=L0+G6667X1UiPpBySRFckkQi8n8lKumXuPBmGxPAKbcFoDLQL+NnJadX
+   NELaxbYyveDWsysnLz8AWAlznNt9z8eVwMOZ1gxIaqNPnON9siJooi8dX
+   esBX8gtLQjgI1pcOd6IwCHE4OgZ7nMfeOU18u4vUiJ3rUQ+8lrPSexQ0k
+   Q3sdCPOzFiS6gl5adgABprQNGlNRu3spu9E6mrLg3TvCiZG4Mz2q2ymIA
+   2aWNXeilFJ1dQXQeib1JVlCv5OoPnx1oFQtvlF0G9fpXzBiY0QKCVrMXF
+   4uajH4/3AAPVmgxlDApn+j4R4u15lIayYGgIhas6uU0L9Um7gChnC6eHI
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="335345578"
+X-IronPort-AV: E=Sophos;i="5.98,248,1673942400"; 
+   d="scan'208";a="335345578"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 21:08:57 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="741826265"
+X-IronPort-AV: E=Sophos;i="5.98,248,1673942400"; 
+   d="scan'208";a="741826265"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
+  by fmsmga008.fm.intel.com with ESMTP; 09 Mar 2023 21:08:51 -0800
+Message-ID: <69753e4a-32f3-8760-ba1d-8286badd159e@linux.intel.com>
+Date: Fri, 10 Mar 2023 13:07:51 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20230309134217.GA1673607@myrica>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000C96D:EE_|SJ1PR12MB6340:EE_
-X-MS-Office365-Filtering-Correlation-Id: 598f0bd8-52b8-4618-18d6-08db2124f107
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	HulZdZPHGb/3w7/HEEl3M19ptbInsPDi+n9P4Lgx+MoAtk0TxajpSGW6DUnGHmg2GpErG5w0wPUCmVSgyo0+5tUHAktE6B2TGCo/u8YK6/NHH2jidJSoUGQJFa9fPiWi/yF8xZsIr52BMvNxnVPpPYNXWIc0cm9VI+/NxkUQ/4HKb1JUOkAllztcBecMcxTYcv7OCa/3PEc2p9cIAebOL9jd3T3Jszuh0RUXvQSpg6NsA4iDLT/M4cTM8fa6seIhuXZML6B708X3WJlQFJdelUwCxiZ460Cb505m9GtwEtQIyK8zh4aa6V1fAYeHt6N3pLdyAhMYoi/p5q1f70HYfhnAwvpBPq5PNRWjjTEW6rl3RKQV7aBO4KPXWgabeFc/XRMB/H/5//sew9+YH1Dn4zPSFmxqyqxCBMQAhV8SVD3CcuGfOMYpwEV/sgk/0tNwmkjP2gXL+j4d9x8s5hB+mQA5OiTnx6hQrI8Z2Tcy2v7jWLTJp0kKf8FGNyi4uPk9tNjRhuONiZNVDZbSmQp3DnvepcAM0kd+3o/6kefwL0EJ0IUtQoO6ant8oiARuCUdRagT7VMuybx2ECQH99g0Kk6iIK2FiGZY3X3fMFKGvwBKQ1SdoJhfdltgdDCm9q6iZYQYFRTsB3220Y139vLyzuoy+4F8zmlrEcW9CxX1tpoK+3Hiva2kGYw5f6IFPdCYf1nrJoPLYvdNdqTUbD2i3VcmVZoH1emw98rhDCzdyXVNNTTY1H0fWvVJPNoje77d
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(136003)(346002)(396003)(376002)(39860400002)(451199018)(46966006)(36840700001)(40470700004)(82310400005)(33716001)(82740400003)(36860700001)(83380400001)(426003)(47076005)(7636003)(54906003)(478600001)(40480700001)(55016003)(356005)(316002)(336012)(40460700003)(26005)(9686003)(186003)(5660300002)(7416002)(8676002)(8936002)(41300700001)(70206006)(4326008)(2906002)(70586007)(86362001)(6916009);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2023 05:04:34.8277
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 598f0bd8-52b8-4618-18d6-08db2124f107
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000C96D.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6340
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Cc: baolu.lu@linux.intel.com, Robin Murphy <robin.murphy@arm.com>,
+ Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
+ Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+ Yi Liu <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>,
+ Dave Jiang <dave.jiang@intel.com>,
+ Kirill Shutemov <kirill.shutemov@linux.intel.com>,
+ Tony Luck <tony.luck@intel.com>
+Subject: Re: [PATCH v5 4/7] iommu/sva: Stop using ioasid_set for SVA
+Content-Language: en-US
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
+ Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Dave Hansen <dave.hansen@intel.com>, Thomas Gleixner <tglx@linutronix.de>,
+ X86 Kernel <x86@kernel.org>, bp@alien8.de, "H. Peter Anvin" <hpa@zytor.com>,
+ Peter Zijlstra <peterz@infradead.org>, corbet@lwn.net, vkoul@kernel.org,
+ dmaengine@vger.kernel.org, linux-doc@vger.kernel.org
+References: <20230309222159.487826-1-jacob.jun.pan@linux.intel.com>
+ <20230309222159.487826-6-jacob.jun.pan@linux.intel.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20230309222159.487826-6-jacob.jun.pan@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-
-Hi Jeans,
-
-Allow me to partially reply your email:
-
-On Thu, Mar 09, 2023 at 01:42:17PM +0000, Jean-Philippe Brucker wrote:
-
-> > +struct iommu_hwpt_arm_smmuv3 {
-> > +#define IOMMU_SMMUV3_FLAG_S2 (1 << 0) /* if unset, stage-1 */
+On 3/10/23 6:21 AM, Jacob Pan wrote:
+> From: Jason Gunthorpe <jgg@nvidia.com>
 > 
-> I don't understand the purpose of this flag, since the structure only
-> provides stage-1 configuration fields
-
-I should have probably put more description for this flag. It
-is used to allocate a stage-2 domain for a nested translation
-setup. The default allocation for a kernel-managed domain will
-allocate an S1 format of IO page table, at ARM_SMMU_DOMAIN_S1
-stage. But a nested kernel-managed domain needs an S2 format,
-at ARM_SMMU_DOMAIN_S2.
-	
-So the whole structure seems to only provide stage-1 info but
-it's used for both stages. And a stage-2 allocation will only
-need s2vmid if VMID flag is set (explaining below).
-
-> > +#define IOMMU_SMMUV3_FLAG_VMID       (1 << 1) /* vmid override */
+> Instead SVA drivers can use a simple global IDA to allocate PASIDs for
+> each mm_struct.
 > 
-> Doesn't this break isolation?  The VMID space is global for the SMMU, so
-> the guest could access cached mappings of another device
+> Future work would be to allow drivers using the SVA APIs to reserve global
+> PASIDs from this IDA for their internal use, eg with the DMA API PASID
+> support.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+> v5:
+> 	- Put removing iommu_sva_find() to a separate patch (Kevin)
+> 	- Make pasid allocation range to be inclusive (Tina)
+> 	- Simplified return code handling (Baolu)
+> v4:
+> 	- Keep GFP_ATOMIC flag for PASID allocation, will changed to
+> 	GFP_KERNEL in a separate patch.
+> ---
+>   drivers/iommu/iommu-sva.c | 42 +++++++++++++--------------------------
+>   drivers/iommu/iommu-sva.h |  2 --
+>   2 files changed, 14 insertions(+), 30 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+> index 4f357ef14f04..b75711bdbe97 100644
+> --- a/drivers/iommu/iommu-sva.c
+> +++ b/drivers/iommu/iommu-sva.c
+> @@ -9,47 +9,33 @@
+>   #include "iommu-sva.h"
+>   
+>   static DEFINE_MUTEX(iommu_sva_lock);
+> -static DECLARE_IOASID_SET(iommu_sva_pasid);
+> +static DEFINE_IDA(iommu_global_pasid_ida);
+>   
+> -/**
+> - * iommu_sva_alloc_pasid - Allocate a PASID for the mm
+> - * @mm: the mm
+> - * @min: minimum PASID value (inclusive)
+> - * @max: maximum PASID value (inclusive)
+> - *
+> - * Try to allocate a PASID for this mm, or take a reference to the existing one
+> - * provided it fits within the [@min, @max] range. On success the PASID is
+> - * available in mm->pasid and will be available for the lifetime of the mm.
+> - *
+> - * Returns 0 on success and < 0 on error.
+> - */
+> -int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max)
+> +static int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max)
+>   {
+>   	int ret = 0;
+> -	ioasid_t pasid;
+>   
+> -	if (min == INVALID_IOASID || max == INVALID_IOASID ||
+> -	    min == 0 || max < min)
+> +	if (!pasid_valid(min) || !pasid_valid(max) ||
+> +	     min == 0 || max < min)
 
-This flag isn't mature yet. I kept it from my internal RFC to
-see if we can have a better solution. There are use cases on
-certain platforms where the VMIDs across all devices in the
-same VM need to be aligned.
+No need to change above line.
 
-Thanks
-Nic
+>   		return -EINVAL;
+>   
+>   	mutex_lock(&iommu_sva_lock);
+>   	/* Is a PASID already associated with this mm? */
+>   	if (pasid_valid(mm->pasid)) {
+> -		if (mm->pasid < min || mm->pasid >= max)
+> +		if (mm->pasid < min || mm->pasid > max)
+
+I forgot why do we need to change above line. But it's better to put
+some comments there so that people don't need to dive into
+ioasid_alloc() to know the inclusion or exclusion of @min or @max.
+
+>   			ret = -EOVERFLOW;
+>   		goto out;
+>   	}
+>   
+> -	pasid = ioasid_alloc(&iommu_sva_pasid, min, max, mm);
+> -	if (!pasid_valid(pasid))
+> -		ret = -ENOMEM;
+> -	else
+> -		mm->pasid = pasid;
+> +	ret = ida_alloc_range(&iommu_global_pasid_ida, min, max, GFP_ATOMIC);
+> +	if (ret < 0)
+> +		goto out;
+> +	mm->pasid = ret;
+> +	ret = 0;
+>   out:
+>   	mutex_unlock(&iommu_sva_lock);
+>   	return ret;
+>   }
+> -EXPORT_SYMBOL_GPL(iommu_sva_alloc_pasid);
+>   
+>   /**
+>    * iommu_sva_bind_device() - Bind a process address space to a device
+> @@ -221,8 +207,8 @@ iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
+>   
+>   void mm_pasid_drop(struct mm_struct *mm)
+>   {
+> -	if (pasid_valid(mm->pasid)) {
+> -		ioasid_free(mm->pasid);
+> -		mm->pasid = INVALID_IOASID;
+> -	}
+> +	if (likely(!pasid_valid(mm->pasid)))
+> +		return;
+> +
+> +	ida_free(&iommu_global_pasid_ida, mm->pasid);
+
+Any reason why do you drop "mm->pasid = INVALID_IOASID;" here?
+
+>   }
+> diff --git a/drivers/iommu/iommu-sva.h b/drivers/iommu/iommu-sva.h
+> index 102eae1817a2..c22d0174ad61 100644
+> --- a/drivers/iommu/iommu-sva.h
+> +++ b/drivers/iommu/iommu-sva.h
+> @@ -8,8 +8,6 @@
+>   #include <linux/ioasid.h>
+>   #include <linux/mm_types.h>
+>   
+> -int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max);
+> -
+>   /* I/O Page fault */
+>   struct device;
+>   struct iommu_fault;
+
+Best regards,
+baolu
