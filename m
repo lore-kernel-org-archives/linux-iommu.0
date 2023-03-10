@@ -1,128 +1,155 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 00F67882C
-	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 15:29:03 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A2F611FB;
-	Fri, 10 Mar 2023 07:29:46 -0800 (PST)
-Received: from [10.57.90.67] (unknown [10.57.90.67])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 559233F71A;
-	Fri, 10 Mar 2023 07:29:01 -0800 (PST)
-Message-ID: <5cc56149-965a-bb47-f23f-6aa9d0ecce4e@arm.com>
-Date: Fri, 10 Mar 2023 15:28:56 +0000
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2063.outbound.protection.outlook.com [40.107.244.63])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02709882C
+	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 15:29:18 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KrmQOFu7pY+G3v+EwfZXCdW/nf4ZNsV4b64lq17i2yOhMOnvRpXB5vzCWaCLELZM8wMKTk2WtWXlvXewOcwWonprMcv777aHpD0RJSdJLwMM4PdpzIEJ5VFse1yyOAfzBhX8kVzqhqJuHWmf1E3Gi4DWHnLC+IzCadJGvfYCTwdcHVWbLIVoAK4oGVmKsO7wcZ0JewZSNhpBiuNljwxV4lKyi3ha5HMpMOaENZ6RK0dh5sCHU17Mo5hq7jP6u0Syu9NyxcLpVW88H+LJoomAxpZonOBlROwGLXwkOSbpU/0stCnE95COCni3KU/DsG9pIUW23rM+e/vFWOnfdKFXxw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KxPn6KK0fnpSqYbqT6ygoKSKYFOl2psE01HXDRz1NOI=;
+ b=d2DBkcVlos27IbKtZygWgiMRWn/nB4nAP0Z8/f4q/kypusdPQCv5rNf9PH+eFXpUABp4Bn7WQ/LNpsQYy/CVwA+/inqTlgqY087BPc/+cr1eVH4R2SSvGI/04Hcb8EYxwFCmZjB9ub5QVTbYbtUO+/ZJ2bvQDZyN435l/2wPvhJQLXWsHYjlUAMalpF/omodPYcC5Lnq6gHByR5ngrkTQqAeYXq3azbrybbKVE33HiqWkAf2Wy5jNiTtSQBI1nVV0VKaLGKTdmuvCaxacOSKJQfQytW2wNTzlsozyE2FJasdZw1OIOoX2SAZ/8+YjiLiqHFqeIUknr1ALRXV/8pCFA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KxPn6KK0fnpSqYbqT6ygoKSKYFOl2psE01HXDRz1NOI=;
+ b=doA7O/swJXW7Wt3I8L0l9jWIqoilbNqN/Omqsb/xIaBloPKO9QrIoxuHZZztBHQxFI4kcbBi+/eUlCa15d3iHTlWuJ4comuNWjAqmMT3oxH6kIKUSoYFopeAav6qdp+My+cC2qGEwDf859DDOk9xuaChQvZDIlCq0gLJmich4wKFce0k0NcFptFbNgUOXdTmGykP7wO4Xf01QVeNKK3Nxn5V57ZgkBeVGNTx/+Zq5T38r4gg2afio6fg8TRm5cNo06rnnLZljID3LfW2OV2nqABEj/Jtb0yYMqOKPpLmj22A/PN1v8YwOXsYLB1Y9fEQg37OGC8w/AY9CxYqn0FE4w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by MN2PR12MB4143.namprd12.prod.outlook.com (2603:10b6:208:1d0::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.20; Fri, 10 Mar
+ 2023 15:29:17 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::ef6d:fdf6:352f:efd1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::ef6d:fdf6:352f:efd1%3]) with mapi id 15.20.6178.017; Fri, 10 Mar 2023
+ 15:29:16 +0000
+Date: Fri, 10 Mar 2023 11:29:14 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: joro@8bytes.org, alex.williamson@redhat.com, kevin.tian@intel.com,
+	robin.murphy@arm.com, baolu.lu@linux.intel.com, cohuck@redhat.com,
+	eric.auger@redhat.com, nicolinc@nvidia.com, kvm@vger.kernel.org,
+	mjrosato@linux.ibm.com, chao.p.peng@linux.intel.com,
+	yi.y.sun@linux.intel.com, peterx@redhat.com, jasowang@redhat.com,
+	shameerali.kolothum.thodi@huawei.com, lulu@redhat.com,
+	suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH 05/12] iommufd/hw_pagetable: Do not populate user-managed
+ hw_pagetables
+Message-ID: <ZAtMyrAOyWV1mDlx@nvidia.com>
+References: <20230309080910.607396-1-yi.l.liu@intel.com>
+ <20230309080910.607396-6-yi.l.liu@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230309080910.607396-6-yi.l.liu@intel.com>
+X-ClientProxiedBy: BYAPR11CA0093.namprd11.prod.outlook.com
+ (2603:10b6:a03:f4::34) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v1 04/14] iommu/arm-smmu-v3: Add arm_smmu_hw_info
-Content-Language: en-GB
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: jgg@nvidia.com, will@kernel.org, eric.auger@redhat.com,
- kevin.tian@intel.com, baolu.lu@linux.intel.com, joro@8bytes.org,
- shameerali.kolothum.thodi@huawei.com, jean-philippe@linaro.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <cover.1678348754.git.nicolinc@nvidia.com>
- <494e36cbb77d49e11427b308868dbc1b0e19fe18.1678348754.git.nicolinc@nvidia.com>
- <bfa43614-c052-4bed-b87e-691141f41909@arm.com>
- <ZAqFFolbw5xoJDfb@Asurada-Nvidia>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ZAqFFolbw5xoJDfb@Asurada-Nvidia>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MN2PR12MB4143:EE_
+X-MS-Office365-Filtering-Correlation-Id: 755f4eb6-7a7e-4354-7c14-08db217c35d9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	lj11vrTJPh6cqH75++oFnwk9nBxpfNNfX1IMqsSNRucEaduXzzz5LMEy6Glho/g75qP3tg6O7T8aJsVmeDdCL/yplfzXs7n8N1CwY81I1jGKc0/r/WPGUbyNmt5Hz3enn4hHC6ALtJOHMGMKwpQYm61r9WIz4w1hEsst+CNX7eIa0lu9jAKg0lCPpPbnkyFx4M/S1GbRKxnCGfGTZaU95JBCbJnUztzWzbXTAsxKgLKup8+exMOaxtb5KaJ2h6NXpzQCP7uQ1s7E3vzqKQRNvqW1vhaOnz29M/yYsIhWh/o22UL+hIuXQyOALgk4Ti8SLbIRgGV5eKAeu6X4BwiIOhqr7KWCS3lTzK4po9FRtFPus/cV1LwXYGMrTLM8vUs0IVZhuvRjTKeNC7bsL5fU2gbpOBJDTjlsG+bkTGX2WgaGNsS+C2xYOEphvi/2i6LRmi4y4PMq/Ulh95RuiQbRqltbZVHK3K97B9YBvuPbDliHIU1QodVAWqDh7ZPR3L6wzX4hkIMUfd1rgN4b1ZCmGrsntFncyUPP7bmRg/FyW2JmUEb9vEF1wANQgTR1JkNq7HiSmY37n5SzJjjBD6v1wDZ7hC8x6GotTDtMNFjCg5swRuakE4oKFb1ii0KIA2KTteki5v/42YlRJNl4nQOIVA==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(376002)(136003)(39860400002)(366004)(396003)(451199018)(36756003)(83380400001)(6512007)(6506007)(26005)(186003)(6486002)(2616005)(8936002)(8676002)(66556008)(66476007)(6916009)(86362001)(66946007)(4326008)(41300700001)(2906002)(7416002)(5660300002)(38100700002)(316002)(478600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?r8xjBOw9be/oFjmX/olzzETObieP1ZEj6r/ZZNvQw99zm6BGKQq23oN3OyYZ?=
+ =?us-ascii?Q?poslC/A/oP0SPunypDNc2NNZJIhrIh5pT9i8PRtMWKMgi7Alb+YFXLBEqrRb?=
+ =?us-ascii?Q?0srMXcZqUcwqWuEIk2t0JJFCElAyuPX76Lq3O61O4ysfbX10wsc087rAyNY+?=
+ =?us-ascii?Q?0+m8QDpnz/4RSjIh02+MQrXrQkqxvotk6SSJdqZR7TdBzvFD/wL1/YrgAQIk?=
+ =?us-ascii?Q?pDOY4YswW1F2UYFwxPMCLJX8sIhCLl5t3rx6vnm2SfxDVbl0fJwoMY50VX1X?=
+ =?us-ascii?Q?GOnsvK42nZpEAKTUwsfZJ16Wg0BfuoW0GW0SSbDK3FekYfx6mZpMmsGCzFec?=
+ =?us-ascii?Q?fEJmcR/Trd/CTykrGw+M1H7+DhfL3gWa82ug6szbgmbm/H1dl5RvAA13nO8R?=
+ =?us-ascii?Q?BTngqtMMJ3NB+FFDt1BcWoZR0UbgF1Hq7+XIiXe0b2AVxKBq2vQSZoH78iXk?=
+ =?us-ascii?Q?VgXWXA0U8UlK61FeP1xzbfijS5cLv4b7U1WNi5NSZZDYGDdSjk9ee2XFJ6Wp?=
+ =?us-ascii?Q?J3cVX3Wv6dND6BRfTW1nxX6XFQeo6z5UtA6+yCw/NWTDK1NeRiZ/YsJTwfux?=
+ =?us-ascii?Q?dnLhkjIfXsLtXshL1TX3IIJI1ztgiQUMinjkqmT62CDMnoZomko3CLILApGE?=
+ =?us-ascii?Q?XsRDKVqRm3anxEWKuyShwvBVVaznkn32Igd9+kHuBXwecKghjEOExxXDF2VN?=
+ =?us-ascii?Q?qkUSFagRGtc6UlhPcnEkdopfoCVdxZiDi0Qqz5Ri6emqr0CMsdsth6xFWCnr?=
+ =?us-ascii?Q?Ks7EwwrbDnXIdNCSb8/UEWBUv7j40RZZ83C0ZUEXaAaHfeNyO1PzKLslb1CN?=
+ =?us-ascii?Q?HJI72ZKxfZA1G1hK16ivEdO5n+jId7NH0dY5nRJHvbZrtXm173PSAFJP1iQ4?=
+ =?us-ascii?Q?ZdUsPrwT0wKhdj1AIlt9zG2TQZFYT47QUHDjKxP3NcIWfB3jgluw901ckX7L?=
+ =?us-ascii?Q?fqjEF7ruNzPBLSM1FNvbMLkf/A9e+EFptbk6dqjUMPV3Lv1RQT10jWUk+0wI?=
+ =?us-ascii?Q?G7shMPT1LYeO8N7LlEbsh8aIP7lTbg0Dl6IShGHYmjzJZRnc6o2y4dMNp+Z9?=
+ =?us-ascii?Q?kP29XBoB85gIGwBxWBsPhgIfX59jNVNFcnc1MFLuWGMbeBqXclCXMaSi1caC?=
+ =?us-ascii?Q?fJmIPK5y1uMAq8FcHMy3wDPo6FLzdGM48Ld8V8fnQB93MjcKhHKhhGs5mHFD?=
+ =?us-ascii?Q?NrmjPdRfBEE7Z6Kr+EE4oBiNX9mWmOO7hmb9IqMDoqVxj9ktz/IhxoCP99dH?=
+ =?us-ascii?Q?jSWkqUlZAeb1bU+iFOMCVi7Yo6SJheKFfF1WjPE2pC8tZKfsclVjECxNxqbF?=
+ =?us-ascii?Q?ztntIbXURQe3f48ZKu26wehRolHb/lhUXyMDf6c3OVbSKgn+2ibgjeoecIsO?=
+ =?us-ascii?Q?9LdGB7fnePeAo6Q3VIdANG/mKWPaLhYfByWHTdZx7XUapfcamKOh40JC5RW5?=
+ =?us-ascii?Q?DK089oX8PGN/fF6aJiiEYrpo6CnYzJ/a6S4YIZo0pl//iVdbTb2hOGpEw8wI?=
+ =?us-ascii?Q?8gJKyiwlz4JwWhl7CClmxZWKp46xcHz0qp8i4o5oD/aAQWK+80VzRAmrvvDt?=
+ =?us-ascii?Q?qeoPMBAuaKqoDrMNMlLD80y25iz5DmCOGbwe+F33?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 755f4eb6-7a7e-4354-7c14-08db217c35d9
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2023 15:29:16.7882
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6NCSsLKoF9vYSEZRxBC+0fEpQjpl03xRZjXDlMUfWa+atmTiBex/P7AZn7DufnT7
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4143
 
-On 2023-03-10 01:17, Nicolin Chen wrote:
-> Hi Robin,
+On Thu, Mar 09, 2023 at 12:09:03AM -0800, Yi Liu wrote:
+> From: Nicolin Chen <nicolinc@nvidia.com>
 > 
-> Thanks for the inputs.
+> A user-managed hw_pagetable does not need to get populated, since it is
+> managed by a guest OS. Move the iopt_table_add_domain and list_add_tail
+> calls into a helper, where the hwpt pointer will be redirected to its
+> hwpt->parent if it's available.
 > 
-> On Thu, Mar 09, 2023 at 01:03:41PM +0000, Robin Murphy wrote:
->> External email: Use caution opening links or attachments
->>
->>
->> On 2023-03-09 10:53, Nicolin Chen wrote:
->>> This is used to forward the host IDR values to the user space, so the
->>> hypervisor and the guest VM can learn about the underlying hardware's
->>> capabilities.
->>>
->>> Also, set the driver_type to IOMMU_HW_INFO_TYPE_ARM_SMMUV3 to pass the
->>> corresponding type sanity in the core.
->>>
->>> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
->>> ---
->>>    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 25 +++++++++++++++++++++
->>>    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  2 ++
->>>    include/uapi/linux/iommufd.h                | 14 ++++++++++++
->>>    3 files changed, 41 insertions(+)
->>>
->>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>> index f2425b0f0cd6..c1aac695ae0d 100644
->>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>> @@ -2005,6 +2005,29 @@ static bool arm_smmu_capable(struct device *dev, enum iommu_cap cap)
->>>        }
->>>    }
->>>
->>> +static void *arm_smmu_hw_info(struct device *dev, u32 *length)
->>> +{
->>> +     struct arm_smmu_master *master = dev_iommu_priv_get(dev);
->>> +     struct iommu_hw_info_smmuv3 *info;
->>> +     void *base_idr;
->>> +     int i;
->>> +
->>> +     if (!master || !master->smmu)
->>> +             return ERR_PTR(-ENODEV);
->>> +
->>> +     info = kzalloc(sizeof(*info), GFP_KERNEL);
->>> +     if (!info)
->>> +             return ERR_PTR(-ENOMEM);
->>> +
->>> +     base_idr = master->smmu->base + ARM_SMMU_IDR0;
->>> +     for (i = 0; i <= 5; i++)
->>> +             info->idr[i] = readl_relaxed(base_idr + 0x4 * i);
->>
->> You need to take firmware overrides etc. into account here. In
->> particular, features like BTM may need to be hidden to work around
->> errata either in the system integration or the SMMU itself. It isn't
->> reasonable to expect every VMM to be aware of every erratum and
->> workaround, and there may even be workarounds where we need to go out of
->> our way to prevent guests from trying to use certain features in order
->> to maintain correctness at S2.
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+> ---
+>  drivers/iommu/iommufd/hw_pagetable.c | 20 ++++++++++++++++++--
+>  1 file changed, 18 insertions(+), 2 deletions(-)
 > 
-> We can add a bit of overrides after this for errata, perhaps?
-> 
-> I have some trouble with finding the errata docs. Would it be
-> possible for you to direct me to it with a link maybe?
+> diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
+> index 16e92a1c150b..6e45ec0a66fa 100644
+> --- a/drivers/iommu/iommufd/hw_pagetable.c
+> +++ b/drivers/iommu/iommufd/hw_pagetable.c
+> @@ -43,6 +43,23 @@ int iommufd_hw_pagetable_enforce_cc(struct iommufd_hw_pagetable *hwpt)
+>  	return 0;
+>  }
+>  
+> +static int iommufd_hw_pagetable_link_ioas(struct iommufd_hw_pagetable *hwpt)
+> +{
+> +	int rc;
+> +
+> +	if (hwpt->parent)
 
-The key Arm term is "Software Developer Errata Notice", or just SDEN. 
-Here's the ones for MMU-600 and MMU-700:
+This should be:
 
-https://developer.arm.com/documentation/SDEN-946810/latest/
-https://developer.arm.com/documentation/SDEN-1786925/latest/
+   hwpt->domain->type != IOMMU_DOMAIN_UNMANAGED
 
-Note that until now it has been extremely fortunate that in pretty much 
-every case Linux either hasn't supported the affected feature at all, or 
-has happened to avoid meeting the conditions. Once we do introduce 
-nesting support that all goes out the window (and I'll have to think 
-more when reviewing new errata in future...)
+Ie if we asked the driver to alloc a domain and it allocated an
+UNMANAGED domain then it means IOMMUFD manages the mappings and it
+should be populated from the IOAS.
 
-I've been putting off revisiting all the existing errata to figure out 
-what we'd need to do until new nesting patches appeared, so I'll try to 
-get to that soon now. I think in many cases it's likely to be best to 
-just disallowing nesting entirely on affected implementations.
+Arguably drivers should EOPNOTSUPP if presented with a parent in this
+situation, but still this code should be clear about the purpose.
 
-Thanks,
-Robin.
+> +		hwpt = hwpt->parent;
 
->> In general this should probably follow the same principle as KVM, where
->> we only expose sanitised feature registers representing the
->> functionality the host understands. Code written today is almost
->> guaranteed to be running on hardware released in 2030, at least *somewhere*.
-> 
-> Yes.
-> 
-> Thanks
-> Nicolin
+And we definately shouldn't touch the parent. That is already setup
+and owned by someone else. Just return and don't do anything.
+
+Jason
