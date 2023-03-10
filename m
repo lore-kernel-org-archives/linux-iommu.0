@@ -1,155 +1,185 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CFC463B5
-	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 11:54:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678449240; x=1709985240;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=vJmgx24AKceq+nRzDeHhXfnPAuOp6MJK0DUp51w16yM=;
-  b=URPHJc6fqt9aio76OxqHeTrt+/Jm6OL8jDxC4+ankzfZaG/B/TeViGfp
-   /s5eNK+J1lAkEu2ijNo5q6KlGHkNuryB0ObFDtSs5K8DIJTpTH7OapliC
-   P+jNrAXd8ifj4b22C32YokU5oeX8F8DOMWyRW5HAebx55OGIk/0oZ3KXB
-   V445Sy5JwXamYKr4P1dRWRnYZIj/lWDVPgGJZIMaGrQhnKjv9JJqKp24K
-   Wi0ZJV0X60d98LB4I/Gy8XUDFOjpojZaeWaN0JJhc2g6MrmQoK+Kt3QzB
-   Oj/FrScCOAnNet699pQMi01Rx73PWTEc1EFwPyUVwxJ0G5VoLrJnEDWGY
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="316362987"
-X-IronPort-AV: E=Sophos;i="5.98,249,1673942400"; 
-   d="scan'208";a="316362987"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2023 03:53:59 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="741945688"
-X-IronPort-AV: E=Sophos;i="5.98,249,1673942400"; 
-   d="scan'208";a="741945688"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmsmga008.fm.intel.com with ESMTP; 10 Mar 2023 03:53:59 -0800
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Fri, 10 Mar 2023 03:53:59 -0800
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Fri, 10 Mar 2023 03:53:58 -0800
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21 via Frontend Transport; Fri, 10 Mar 2023 03:53:58 -0800
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (104.47.74.42) by
- edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.21; Fri, 10 Mar 2023 03:53:58 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Taw0X0USg2ksfKBzqt8oqryAjYX7Ih3scwBB4X+pTmmfIVLV+ZsiWupgrp1RJmOuaycjQh/lVhcnkkZgYkMFLX/dWIrJBtF1wmJGhTBK2fjzZuq9VEVFMDtSitqJG5JN35XrxwxcLfQG7Ke6bPzmBuIJGsRbXA6OdFShdWIp0UNoh7oDjzRvq9Dl+gZQj+KYJyZ/C0bgsiESLJrYE1TabixZmNd1qiZTy1bVuT4v/HLKdtJtZrrdLwAMUk1IoljnnntS4hA8A/XU9lX0rncKjJVJS2zuJCxXONITROzb92WjN935GcLcdBnwySiiQRL4qBm0KEpdfiLJQtPchu9h0Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vJmgx24AKceq+nRzDeHhXfnPAuOp6MJK0DUp51w16yM=;
- b=AldqxWnyxrRef+HsNmqNWV6RMTpdocnnUrgM3VEh5XR/3JDGeAOlUSxjdKPkH6woC9J7XBHJU/LyVMnrypjcGNp4M9HHUsbM00eFsOiYpG2vg/VCTRzdlesIwPK72p/Kl0PleaP9iZ8vbHEA2inKewrS/L8cxx32vN9j2qbsBQed2y7thUAbS5QDz+4g/SpUOarauqXLwGwgUhSU/3W8BUQR4LClEoh6ae9tZC8jzgOHiYBzxQVuV4gJMZ03Mt7770w/yCJOTMhRSxB69AIl8iJt/eL1rgRbLRguwOSoeGN+ZPidyL0J2k89SrkUfGStY356iN3qLhaFaTLxmHkXJA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by DM8PR11MB5637.namprd11.prod.outlook.com (2603:10b6:8:33::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6178.20; Fri, 10 Mar 2023 11:53:56 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::1aac:b695:f7c5:bcac]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::1aac:b695:f7c5:bcac%8]) with mapi id 15.20.6178.020; Fri, 10 Mar 2023
- 11:53:56 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Nicolin Chen <nicolinc@nvidia.com>, "jgg@nvidia.com" <jgg@nvidia.com>,
-	"joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "alex.williamson@redhat.com"
-	<alex.williamson@redhat.com>, "shuah@kernel.org" <shuah@kernel.org>
-CC: "Liu, Yi L" <yi.l.liu@intel.com>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	"mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>, "farman@linux.ibm.com"
-	<farman@linux.ibm.com>
-Subject: RE: [PATCH v4 5/5] vfio: Support IO page table replacement
-Thread-Topic: [PATCH v4 5/5] vfio: Support IO page table replacement
-Thread-Index: AQHZUcoFRLfg4HbeIES7vtug94baI67z6iAQ
-Date: Fri, 10 Mar 2023 11:53:56 +0000
-Message-ID: <BN9PR11MB5276F7F917F76DDC0D9186DD8CBA9@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <cover.1678284812.git.nicolinc@nvidia.com>
- <600343ffb282ff3bed5eb98a9255c0084d01a859.1678284812.git.nicolinc@nvidia.com>
-In-Reply-To: <600343ffb282ff3bed5eb98a9255c0084d01a859.1678284812.git.nicolinc@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|DM8PR11MB5637:EE_
-x-ms-office365-filtering-correlation-id: 553bfb29-fb43-40b2-a652-08db215e20a0
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: cheCSLFkLZ/YkPHudM7hAP78N2mK5xy25U1ZdO5zRfh5nIlGnJTGZqjiBYEB1/4nHA61u0FbwR4Z/A6lJB0rOlm7bADLKMnupsljaicI0nrJKXhYmqvklY9T4jnu7/iePHvH/rRV+8pq34ISiOXpjQ/SiAl/LAXay3T37sYzJT4oG2YHiyr/oqvqt8MCR3crHAj/LiVLH7Y8wIruPBY28T5Spj+R6W0MszfIG8J/OHAAt+qS4THOCvFWODgNwYkcr1pJkc1T/6byw6yobaeuYHGKmg7C97IThs3CfBs5KXTtUeik/f772JyW+Tbx+WIYo7XJh5AJIUJD8IMAF/ODnGi+o83gJHzGJkJlYQUiYP9/Is0g4ZMIR3gLqOZuQkTC/SOp7nK7TurQzjHIuyZhhHWDSAQ2H9xojqRNAWNHhW77BcnHjYtQ2XAJh5Q94i+ekbym8RBsZvMA/B/7d5DH7JWtUecivx+FsqK+3e/9Vh3AJGlH9KVhQ+EUdI1EPGhqDqYNE63ksAYDV4oQQ06Pp0dqYXoriMUle9iPSWejYzYot5D+5D5ODElKDn8MyOrLbySiDMTlRAek4FrgvAXam/rOAf8A3KDK5qtsUmRI/gFAHCEkCKHOhad5NW9ZFkRtB6JJUPWhcFk7ctqnGAyx8g6dV/ojJZVe5aNK6bpOqQgVqv5TV8ax2zb++o4duo/ydA6sKht/Pa25IwVUOqYMZg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(376002)(366004)(346002)(396003)(136003)(39860400002)(451199018)(82960400001)(33656002)(558084003)(478600001)(110136005)(54906003)(122000001)(38070700005)(55016003)(316002)(38100700002)(71200400001)(6506007)(9686003)(186003)(7696005)(26005)(76116006)(5660300002)(7416002)(2906002)(64756008)(66476007)(66556008)(8936002)(66446008)(8676002)(41300700001)(52536014)(86362001)(66946007)(4326008);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ZiRr6oWvNSE2Y0FxPDUrL4lnjJKFhAvEqGrxNwPmiqKlaTxiFxrzBYnZuD3y?=
- =?us-ascii?Q?mIOmiw8mk58K9/jWe2kd8P4CBZ8yDgoIhFyDd9+NZiE5lRTa/E/WP31PwYxN?=
- =?us-ascii?Q?q2k/RUD7FVFjvUQP+cFNSy9zQpuxh5qyaNVoTxEI358kAZlrmz3tg0VWFJmI?=
- =?us-ascii?Q?JiOmGjPBBsXFUDhHop1QXkmr5gyt1Y9EJPLaq0n2jg1Bi4rw4iwt174Gvwfa?=
- =?us-ascii?Q?9UzY3qh7YbjJzsXtPKz1OI5ffCiAYO1AVMj+cvkhzs0pqRAsjGS3SDJ4rx/9?=
- =?us-ascii?Q?OopR2iYmxjCUy7pp8YzA0qh2u8pG0yfltlhps1U6G/fQRSXYhhI6IB3Kwez8?=
- =?us-ascii?Q?CJToJGBtBFHiuViXRRXeyu7x7LrnoQbVMUg1t3a5gTqX52MT1QY/RXeNnfqI?=
- =?us-ascii?Q?X3Mwin8bd1fWqBXOI4WStiP1ysvVAAKkLjldLcyveh6U4ddDyrpLG03lES0S?=
- =?us-ascii?Q?OXRiH5qi0tQoY0+PY2cpa0y6fOQKtZn3gwDiUsPI3T6bkjFxsF46Nn+0j4eC?=
- =?us-ascii?Q?gLt3qkkovIY+t1w+fWQEjIecVXvDHtqBZWBCIDIzLHsX/+TtjAHfMzx/Uaug?=
- =?us-ascii?Q?/YxxBReMdFmOnTp3rWGvyVLKNKaWTOlxnW7qhjLxLSCRNfPswcxbpf5rHhrd?=
- =?us-ascii?Q?3Aby3LVhN4a13OJ3Kp2zrmkuEWa2GTGphwHg0e6ixh/Rhre5mpakRM/lUPzb?=
- =?us-ascii?Q?H2uZKkiPgFc1PXrsFPVm5ffvgwKmIoTVp8A6ux+FQ0Rl4nLSpNEKe3UW8s7/?=
- =?us-ascii?Q?TcNBhe5lGzooJXtALt+ODjW0CZT4ueFoGpGu45gcFHKTp8iAT/dpI0U3xVKw?=
- =?us-ascii?Q?cIhvlA6/+XB8lXnMyFav1Py5uD7WBA61aLvcfA7VC00HuGz0E4jbYmLs2098?=
- =?us-ascii?Q?rXZ/Nrr7A2RDGtwi+Fbps/7XjhB8KezwIsBOBNecuZuMw5q450wWqTKvD7lj?=
- =?us-ascii?Q?IoJA3Z372l4qN0SQmTeWJE3fFrVf9C9tciuWyHnr6D/max/Rqr2BI1He0TDK?=
- =?us-ascii?Q?8KZBVsm/I4FIlpniU7i+EpV88hKttEiGnQmXMvFuCtkR/Rjbjzal1X2vitdd?=
- =?us-ascii?Q?e+IQBEXuAlwXIIhbCosjhGarO7bEd4gDegOo6M3WGIh8Av44o8SpNIL4sHz4?=
- =?us-ascii?Q?LKa294mRIJxrk0F2dCbepdgBKJHgP9LeTxscUqrfiRowcqfqj2uG5IzL009i?=
- =?us-ascii?Q?QDFQGdHwcYo59BhwJJOTlH3xR9HBTZmjw5e82aYkocy+MgKqoQTyN9QobTq9?=
- =?us-ascii?Q?5rQwwGH2lriaFm+QrKgsLiSDeq1jcRlq6GmsBUAN/LrSTnfnLCp+aQm2RrM7?=
- =?us-ascii?Q?2IA7mV7FFh53Ip+V2W47oGe5pdNZh9t454XgNO1RyZKW3uOKCL9yVRc16Xwx?=
- =?us-ascii?Q?+WfIGCNG6fL9MsW1K2wPnSoCA2JNo6+4RivlEcETvRuS2yShXgDtphzufBAt?=
- =?us-ascii?Q?nj0LgC1Kig3n4YFvfOFOa1WF/hzc2WeVXbfsA5GIAW+v5ZeWWkShgrRJX2+a?=
- =?us-ascii?Q?mQX07+7fPRkJZjfhDaaiPMKkXTKpd6OesE6gqGWOv3Dssjzohufof5j8N6BD?=
- =?us-ascii?Q?XYMvx3r1YeK2cep2/e4SHNODTriuSC+PX9EMZPgK?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0669463B5
+	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 12:16:03 +0000 (UTC)
+Received: by mail-wm1-f52.google.com with SMTP id m25-20020a7bcb99000000b003e7842b75f2so3272413wmi.3
+        for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 04:16:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1678450562;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=KoNK7gOAZ0oywAGu2z7WPtU1u7GnN09K9Wgxc/GvSWc=;
+        b=pdg8LlhXhMUwas9rQklA0yeP3bqWGn5raQs0PitHqZrmu2LRh2ZwaFTB68nCj9S9Ug
+         Z8cG4CtAC7/y/0H8E9PZ9By9Rya7ppN55SUWzwoQzPJe+4IcdOYa7vlMe7qDDWhzvIqp
+         +8wsjbWhygNabvCywEsF6tEmZ42Jsjh1/yrRnFgDn7+xD8MVK14HRiXIs8u2JCle5hbK
+         6uEE+ncuU+tx1A6XD+qA8+637gMK21Qw+fJST836TJm2Kr3PFoc5SQ0l9DeqIEsdsmrX
+         PY4RUQU1rtoHdu7rqww2BJd9Jmiw6VG39ebfWHu+5FIdR7lpSvQJA+rgQ7Ji3WXcSWLB
+         bGIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678450562;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KoNK7gOAZ0oywAGu2z7WPtU1u7GnN09K9Wgxc/GvSWc=;
+        b=wJsOQQczRNHUkGn47tAOwk5QglRhE8U9AxmnKpn6M9LWLBiNmtpFNULjKlJDePtlZN
+         PQhucfEDlFP4lCu+I6Xg09PSu28uMv/hmln4HGAZ9nkYwq0UBgWN5aWWr7E8jJmLPDzs
+         /52eeT5tOzgLW0VrE19Kwkkr7iON3Bsjvi8cOgOA7w0HmmaaxvBsvd/nE/EErxU3E00i
+         6RRmj5QEk467nNH/e9kL/KhNx+xwzwysc+K3KMu+07qumZKc/rQuHXzBL3/TYI911YHn
+         4x6wvcf8iz87wK0qztiBp5ibL9pPkco9FBAQa4eq1OmzthzX5SBsiul26uW2EiWMgXxd
+         Vf1A==
+X-Gm-Message-State: AO0yUKWjwBDb2tO+YlpeYbgqT/kVA3q/JYgV9FReQsBMvenb2ZJllbPQ
+	oxGX5cyGqVWmPqBwo6qYsYoLnw==
+X-Google-Smtp-Source: AK7set/u+LYEhjoy3aHn9qaI7ZtcpW2lMWxRw935XoWMUCoTCahCUKIFrTWtmCyX/6GGi7HcPZupMw==
+X-Received: by 2002:a05:600c:3ca2:b0:3eb:3104:efec with SMTP id bg34-20020a05600c3ca200b003eb3104efecmr2595889wmb.16.1678450562210;
+        Fri, 10 Mar 2023 04:16:02 -0800 (PST)
+Received: from myrica (054592b0.skybroadband.com. [5.69.146.176])
+        by smtp.gmail.com with ESMTPSA id i22-20020a1c5416000000b003dc49e0132asm2920264wmb.1.2023.03.10.04.16.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Mar 2023 04:16:01 -0800 (PST)
+Date: Fri, 10 Mar 2023 12:16:03 +0000
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, robin.murphy@arm.com,
+	will@kernel.org, eric.auger@redhat.com, kevin.tian@intel.com,
+	baolu.lu@linux.intel.com, joro@8bytes.org,
+	shameerali.kolothum.thodi@huawei.com,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, yi.l.liu@intel.com
+Subject: Re: [PATCH v1 02/14] iommufd: Add nesting related data structures
+ for ARM SMMUv3
+Message-ID: <20230310121603.GA1745536@myrica>
+References: <cover.1678348754.git.nicolinc@nvidia.com>
+ <364cfbe5b228ab178093db2de13fa3accf7a6120.1678348754.git.nicolinc@nvidia.com>
+ <20230309134217.GA1673607@myrica>
+ <ZAnx0lUkw02cVTi+@nvidia.com>
+ <20230309182659.GA1710571@myrica>
+ <ZApJGwPjHhlDwTDV@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 553bfb29-fb43-40b2-a652-08db215e20a0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Mar 2023 11:53:56.0630
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: IexEMJKK1tOaViiJ+EK7cnOZ25zppef/zcxQTESS3ZJRG25xc+4PRz3D2B4zO47qBfqU4+YiwN3y2b9MvPqqLQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR11MB5637
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZApJGwPjHhlDwTDV@nvidia.com>
 
-> From: Nicolin Chen <nicolinc@nvidia.com>
-> Sent: Wednesday, March 8, 2023 10:26 PM
->=20
-> Now both the physical path and the emulated path should support an IO
-> page
-> table replacement.
->=20
-> Call iommufd_device_replace() when vdev->iommufd_attached is true.
->=20
+On Thu, Mar 09, 2023 at 05:01:15PM -0400, Jason Gunthorpe wrote:
+> > Concretely though, what are the incompatibilities between the HW designs?
+> > They all need to remove a range of TLB entries, using some address space
+> > tag. But if there is an actual difference I do need to know.
+> 
+> For instance the address space tags and the cache entires they match
+> to are wildly different.
+> 
+> ARM uses a fine grained ASID and Intel uses a shared ASID called a DID
+> and incorporates the PASID into the cache tag.
+> 
+> AMD uses something called a DID that covers a different set of stuff
+> than the Intel DID, and it doesn't seem to work for nesting. AMD uses
+> PASID as the primary nested cache tag.
 
-why is replace enabled only in physical path in this patch?
+Thanks, we'll look into that
+
+
+> This is because SMMUv3 has no option to keep the PASID table in the
+> hypervisor so you are sadly forced to expose both the native ASID and
+> native PASID caches to the virtio protocol.
+
+It is possible to keep the PASID table in the host, but you need a way to
+allocate GPA since the SMMU accesses it after stage-2 translation. I think
+that necessarily requires a PV interface, but you could look into it.
+Anyway, even with that, ATC invalidations take a PASID.
+
+> 
+> Given that the VM virtio driver has to have SMMUv3 specific code to
+> handle the CD table it must get, I don't see the problem with also
+> having SMMUv3 specific code in the hypervisor virtio driver to handle
+> invalidating based on the CD table.
+
+There isn't much we can't do, I'm just hoping to build something
+straightforward instead of having to work around awkward interfaces
+
+
+> > A couple of reasons are relevant here: non-QEMU VMMs don't want to emulate
+> > all vendor IOMMUs, new architectures get vIOMMU mostly for free,
+> 
+> So your argument is you can implement a simple map/unmap API riding
+> on the common IOMMU API and this is portable?
+> 
+> Seems sensible, but that falls apart pretty quickly when we talk about
+> nesting.. I don't think we can avoid VMM components to set this up, so
+> it stops being portable. At that point I'm back to asking why not use
+> the real HW model?
+
+A single VMM component that shovels data from the virtqueue to the kernel
+API and back, rather than four different hardware emulations, four
+different queues, four different device tables. It's obviously better for
+VMMs that don't do full-system emulation like QEMU, especially as they
+generally already implement a virtio transport. Smaller attack surface,
+fewer bugs.
+
+The VMM developer gets a multi-platform vIOMMU without having to study all
+the different architecture manuals. There is a small amount of HW specific
+data in there, but it only relates to table formats. 
+
+Ideally it wouldn't need any HW knowledge, but that would requires the
+APIs to be aligned: instead of ID registers we pass plain features, and
+invalidations don't require HW specific opcodes. Otherwise there is going
+to be a layer of glue everywhere, which is what I'm trying to avoid here.
+
+> 
+> > > All the iommu drivers have native command
+> > > queues. ARM and AMD are both supporting native command queues directly
+> > > in the guest, complete with a direct guest MMIO doorbell ring.
+> > 
+> > Arm SMMUv3 mandates a single global command queue (SMMUv2 uses
+> > registers). An SMMUv3 can optionally implement multiple command
+> > queues, though I don't know if they can be safely assigned to
+> > guests.
+> 
+> It is not standardized by ARM, but it can (and has) been done.
+> 
+> > For a lot of SMMUv3 implementations that have a single queue and for
+> > other architectures, we can do better than hardware emulation.
+> 
+> How is using a SW emulated virtio formatted queue better than using a
+> SW emulated SMMUv3 ECMDQ?
+
+We don't need to repeat it for all IOMMU architectures, not emulate a new
+queue in the kernel. The first motivator for virtio-iommu was avoiding to
+emulate hardware in the kernel. The SMMU maintainer saw how painful that
+was to do for the GIC, saw that there is a virtualization queue readily
+available in vhost and, well, it just made sense. Still does.
+
+
+> > As above, decoding arch-specific structures into generic ones is what an
+> > emulated IOMMU does,
+> 
+> No, it is what virtio wants to do. We are deliberately trying not to
+> do that for real accelerated HW vIOMMU emulators.
+
+Yes there is a line somewhere, and I'd prefer it to be the page table.
+Given how many possible hardware combinations exist and how many more will
+show up, it would be good to abstract things where possible.
+
+> 
+> > and it doesn't make a performance difference in which
+> > format it forwards that to the kernel. The host IOMMU driver checks the
+> > guest request and copies them into the command queue. Whether that request
+> > comes in the form of a structure binary-compatible with Arm SMMUvX.Y, or
+> > some generic structure, does not make a difference.
+> 
+> It is not the structure layouts that matter!
+> 
+> It is the semantic meaning of each request, on each unique piece of
+> hardware. We actually want to leak the subtle semantic differences to
+> userspace.
+
+These are hardware emulations, of course they have to know about hardware
+semantics. The QEMU IOMMUs can work in TCG mode where they decode and
+handle everything themselves.
+
+Thanks,
+Jean
