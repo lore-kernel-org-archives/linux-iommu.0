@@ -1,152 +1,101 @@
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2067.outbound.protection.outlook.com [40.107.95.67])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f42.google.com (mail-ua1-f42.google.com [209.85.222.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31BF37E6
-	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 01:54:39 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=f1r3i8ieJlvTAQvcxKoTJKY8omhX1N2ambpNbjsqi7DnloyY3Z9mvcN9+la6NDHPvl8Evo7/tlFKbjzpAmRC7R+7UFhX7N+E4I9+32D3Sgf7bgmjFBJGQqaEyZTZidEp+5KKMVIhbQr7tTNxG8TTwEWiThARmppe76FasIzbXjPZ4RTVsHqhfJ4vQopgoa+EU4WrD3hS40stR53Fe5255uTO8gkUVH3W5X0PHbk473IrBcQqJpd9ALegCn73JreYR75aQ7wl3+hPxlh204fNvJ9wErOI0/s/9SDzTt0TqGQUu4zd3f5XeXCINtXxJ4nSgSA2zEIc5U3lnnSw5sxtaw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OxtKAhbbf3kAnBMI5Y7rnHIJ/IKKT16LcK+usb4nmIs=;
- b=mkZTbCiBBfimVfNpvS8cnqMGgL33eoaehpgy2tY4L2wNOtC5O0H00RxY+XjaFGrFqTMaHEk8DkKaEby29vV9Kv+PnwXuuJepBSSAJndQLMC9VAt8aZe/2cSLVPB/ukqgch471fBqNxkiulngxcjrE1j8I2rZ4q5lyENMFMs/NruwLgrVuVI+9docA+fklLOVippoYJ5K+WZPc2rG8xamYDT6QCRgEIpD17Vr0F5ZphiMHDD9N6ZMZRNUA9ksJ3Ul67POYqQYJlmjJbnHRbSWhmt1sxIrtYODmgDJ5oG7SwzKXsICLnpf/oWqvKrLeHXQiLvJU2mlkNvXS7Bf+mD8KQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OxtKAhbbf3kAnBMI5Y7rnHIJ/IKKT16LcK+usb4nmIs=;
- b=MH2U6Rt0FVEtVvhjFYSnMrduxfCeTINpSbOSm420q/nS3QYywaNBN2Qei3+zG7G16eNkcchauAxeNZdrLfQ2IVCI+UEoj46x2u7Hdl9rUN21qL3yu0YbV+6phLvsWswjZmeWrX9P+ym0P88ndZ5QP2LKP0oJu1qZhuAzqUehIpb7LiIQ/mGEfwMRRLFfeGc2F6QFXynIAug6AfarnszDmtFbkSREwuuPDFFKi4P0LXbLyPbrUz0ekkoRj1OOQgvud717Ei6K3lFGRbQtdNHm1KRNONT0kiLzsl2qadq4SIgeivklU/0lRLYefSKh12qqnHVuA2RdN77CZmB72ccX/w==
-Received: from MW4PR03CA0045.namprd03.prod.outlook.com (2603:10b6:303:8e::20)
- by IA0PR12MB8328.namprd12.prod.outlook.com (2603:10b6:208:3dd::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.19; Fri, 10 Mar
- 2023 01:54:34 +0000
-Received: from CO1NAM11FT022.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8e:cafe::76) by MW4PR03CA0045.outlook.office365.com
- (2603:10b6:303:8e::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.19 via Frontend
- Transport; Fri, 10 Mar 2023 01:54:32 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CO1NAM11FT022.mail.protection.outlook.com (10.13.175.199) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6178.14 via Frontend Transport; Fri, 10 Mar 2023 01:54:32 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 9 Mar 2023
- 17:54:17 -0800
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Thu, 9 Mar 2023
- 17:54:17 -0800
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Thu, 9 Mar 2023 17:54:16 -0800
-Date: Thu, 9 Mar 2023 17:54:15 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-CC: Robin Murphy <robin.murphy@arm.com>, "jgg@nvidia.com" <jgg@nvidia.com>,
-	"will@kernel.org" <will@kernel.org>, "eric.auger@redhat.com"
-	<eric.auger@redhat.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "joro@8bytes.org"
-	<joro@8bytes.org>, "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 06/14] iommu/arm-smmu-v3: Unset corresponding STE
- fields when s2_cfg is NULL
-Message-ID: <ZAqNxxSQHE+MN/Sp@Asurada-Nvidia>
-References: <cover.1678348754.git.nicolinc@nvidia.com>
- <995e48fe6eb9e31c71dbe8bb80d445aa34a51819.1678348754.git.nicolinc@nvidia.com>
- <4e426dc4-6852-336f-7321-5b4df69fd430@arm.com>
- <e923418a99e44cd38483ea24e4c1d373@huawei.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EEF07E6
+	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 02:11:48 +0000 (UTC)
+Received: by mail-ua1-f42.google.com with SMTP id x1so2564526uav.9
+        for <iommu@lists.linux.dev>; Thu, 09 Mar 2023 18:11:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678414307;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=a1ZsUGvFonlvfiaKRCYmvwX8nStrpniuXEAne8WWDIM=;
+        b=O3xAfPERsyzsNSvO01xPE65zentXGd2nG7NUqhE0yBIRYNcaGFZSkgW3QxM29rECZA
+         OoMTpIwEAsxqA36+6avufnu6Gd6Gj9KzzLYc5ghpEfcNKhfcFCxIsvSU7TZB3tlLDZlV
+         odT/bZWIRVsao5k1sX9JzDL+QqdCG5briNn5ouMY/SAcRHVQ4k2+WCz3TJ2Bpf3z0oNc
+         iBk9gvf5rvlHYs5mpZWFhY51cDg4+kBTPXcGhfKI63U31sycVQZ0GS+vgznShoXquuXH
+         hvUnBqj8NqRngpWNfhaZPCkxOtj0zYjr5Y3ysw1NXSrOzxjlMbyMHbWsbhwDp0fur8os
+         75mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678414307;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=a1ZsUGvFonlvfiaKRCYmvwX8nStrpniuXEAne8WWDIM=;
+        b=IX4wWs7n7eUQb2L6zd2armf9TrMTh0GJueQc9HltehmMSCl+R9UCw+3yCXOocSHb1d
+         mU55mAGBnGBRQdOKSWLKCN+FCBZfL2DL41SOQCbS3GMhbdUDEkxyY0FtYv3WPyjZwlCs
+         eCqQmjx0Z4aFl2NGQgQ5aSARwqO1WKgfjieoYNrEfxGJRtBu5jQgdcjnVySETfbWNmXL
+         pQhZIkBGviwCqJQsd+XYWuCTWWaKEmyY8Nd2Fs2544ws/I9cPPuGZy/Hjidp0JOVRmzI
+         9pu6sZ22TEmhsFlnTyviL9Q2i5hpNnXQoO2tVrlqidHiN38bs13wa/HgazvcuaZ6N4xW
+         QLJw==
+X-Gm-Message-State: AO0yUKWcsdSOa7sHpb8jOdHKwWQvMotMhXK938Kg+DyFiPfHsrRTh8JN
+	kp8AC1cFCXdgPpE07EP1jidVP0Tuy13JHCuRs4E=
+X-Google-Smtp-Source: AK7set8TqLUo956ZgPJDxKn7zpXxM6OoLfeyEV9el2lMME8YonUJpyAVx/FV+jx1YF+vPKIcOm/498ZnFK2IsZQjk6M=
+X-Received: by 2002:ab0:14c5:0:b0:67a:2833:5ceb with SMTP id
+ f5-20020ab014c5000000b0067a28335cebmr241041uae.0.1678414307110; Thu, 09 Mar
+ 2023 18:11:47 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <e923418a99e44cd38483ea24e4c1d373@huawei.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT022:EE_|IA0PR12MB8328:EE_
-X-MS-Office365-Filtering-Correlation-Id: b0966e49-cb1a-47d2-dd9c-08db210a6474
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	W5kpdqviCm8PIZyLV+ug9Ubleoea1AQI4sIO97BJ4MwTC6oftxyhUZVEsl8qwaGcEwyfY0s3OIKDoTgaKUq5l5H3zRDrDOHzGsL28elE+RPyxfpY1b2blENxxhMMbZRxJpLSC5Ib/mNBY9k3oDgZGzmsub6sXGpCrbzpBOe3xxjNL4QV7+lR1d5csQ1LsLxzA3y4iJuSRQXc7ym1WR186+zga2DzxUcDvjmGge/aGND/MbSX31el7rIKA6xHaWxHCbYbK3VWFnikeDDrG10jTdXI+JhDwriTaYZGtpwSqC1AMADDRvmGrU3cxwh0TX+Z8QMcTL7bECevjTy68Lgn23eLHs3jUGU6UzilFqU9vnIwy2zUGVwO54n1PIZsMt5j67upQ/vjMwCczlyQD84z2ThVAWRSkSaqgsxq2W99SYGjLskAcsBZ2w0tb379Z3GLigBqTI+JJAVN++a3qheA6vV1JIysX9xrr+wQWeuZQiZHGw6Yrgfai7sjzOz0wFz9lvswrQp597RrUJtJHkDhcPITmhGc0Hz/UWfw8hDVWKrRlGE4D8TZ29Tadt4UG2wC2D4wz7qDwrSsUt7QBI+G5XFmfhSJUM1iWtE3ApDWzVxXAEfiiWlMeLsefx+2Hn7EEJ1C3sXKdTE/u/yJqQaE4XrmFXF9syms8YRMP/VCRPHH1stlGdrN0NqhvcwyofCoG6KSRkFesjeT5bTeHwz3BbcD+BTkTpMhQhJtP6FOH+Xu/udCbA+hSuEiCn0Onu1jRLAkhqHLPBT9J0F7C3icNbCqAwKKdGd9d1Ola3EgIHU=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(376002)(346002)(136003)(396003)(39860400002)(451199018)(36840700001)(40470700004)(46966006)(82310400005)(33716001)(82740400003)(36860700001)(83380400001)(47076005)(426003)(478600001)(40480700001)(55016003)(54906003)(7636003)(356005)(316002)(336012)(966005)(40460700003)(9686003)(186003)(26005)(53546011)(7416002)(2906002)(5660300002)(8676002)(70206006)(70586007)(41300700001)(8936002)(4326008)(6916009)(86362001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2023 01:54:32.0264
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b0966e49-cb1a-47d2-dd9c-08db210a6474
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT022.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8328
+References: <20230308034158.509458-1-chunyan.zhang@unisoc.com>
+ <af90fea4-5fa1-de7b-b80e-02fa8753b0fb@arm.com> <05fb17c7-397b-5b33-fbfa-df3bf48b0de8@linux.intel.com>
+ <9a88b12e-7169-7c7f-09a1-eef86f75891c@arm.com>
+In-Reply-To: <9a88b12e-7169-7c7f-09a1-eef86f75891c@arm.com>
+From: Chunyan Zhang <zhang.lyra@gmail.com>
+Date: Fri, 10 Mar 2023 10:11:10 +0800
+Message-ID: <CAAfSe-vS0RatEQmDXutYjOMC50j1jo3s5r8QyrFCQqc_Ok1M6Q@mail.gmail.com>
+Subject: Re: [PATCH V2] iommu: sprd: release dma buffer to avoid memory leak
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, Chunyan Zhang <chunyan.zhang@unisoc.com>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, iommu@lists.linux.dev, 
+	Baolin Wang <baolin.wang@linux.alibaba.com>, Orson Zhai <orsonzhai@gmail.com>, 
+	LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, Mar 09, 2023 at 06:24:29PM +0000, Shameerali Kolothum Thodi wrote:
-> External email: Use caution opening links or attachments
-> 
-> 
-> > -----Original Message-----
-> > From: Robin Murphy [mailto:robin.murphy@arm.com]
-> > Sent: 09 March 2023 13:13
-> > To: Nicolin Chen <nicolinc@nvidia.com>; jgg@nvidia.com; will@kernel.org
-> > Cc: eric.auger@redhat.com; kevin.tian@intel.com; baolu.lu@linux.intel.com;
-> > joro@8bytes.org; Shameerali Kolothum Thodi
-> > <shameerali.kolothum.thodi@huawei.com>; jean-philippe@linaro.org;
-> > linux-arm-kernel@lists.infradead.org; iommu@lists.linux.dev;
-> > linux-kernel@vger.kernel.org
-> > Subject: Re: [PATCH v1 06/14] iommu/arm-smmu-v3: Unset corresponding
-> > STE fields when s2_cfg is NULL
+On Thu, 9 Mar 2023 at 19:23, Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> On 2023-03-09 02:50, Baolu Lu wrote:
+> > On 3/8/23 8:37 PM, Robin Murphy wrote:
+> >> On 2023-03-08 03:41, Chunyan Zhang wrote:
+> >>> Release page table DMA buffer when the IOMMU domain is not used:
+> >>>
+> >>> - Domain freed.
+> >>>
+> >>> - IOMMU is attaching to a new domain.
+> >>>    Since one sprd IOMMU servers only one client device, if the IOMMU has
+> >>>    been attached to other domain, it has to be detached first, that's
+> >>>    saying the DMA buffer should be released, otherwise that would
+> >>>    cause memory leak issue.
+> >>
+> >> This is clearly wrong; domain resources should only be freed when the
+> >> domain is freed.
 > >
-> > On 2023-03-09 10:53, Nicolin Chen wrote:
-> > > From: Eric Auger <eric.auger@redhat.com>
-> > >
-> > > Despite the spec does not seem to mention this, on some implementations,
-> > > when the STE configuration switches from an S1+S2 cfg to an S1 only one,
-> > > a C_BAD_STE error would happen if dst[3] (S2TTB) is not reset.
+> > Agreed. Perhaps, in the attach path:
 > >
-> > Can you provide more details, since it's not clear whether this is a
-> > hardware erratum workaround or a bodge around the driver itself doing
-> > something wrong like not doing a proper break-before-make transition of
-> > the STE. The architecture explicitly states that all the STE.S2* fields
-> > except S2VMID and potentially S2S are ignored when Stage 2 is bypassed.
-> 
-> Took a while to locate the email thread where this was discussed,
-> https://patchwork.kernel.org/cover/11449895/#23244457
-> 
-> This was observed on a HiSilicon implementation where, if the SMMUv3 is configured with
-> both Stage 1 and Stage 2 (nested) mode once, then it is not possible to configure it back
-> for Stage 1 mode for the same device(stream id).
-> 
-> IIRC, the SMMUv3 implementation on these boards expects to set the S2TTB field in STE to zero
-> when using S1, otherwise it reports C_BAD_STE error. :(
-> 
-> You are right that the specification doesn't demand this and I am not sure there are any other
-> Hardware that requires this.
-> 
-> Could we please have this with a comment added in the code?
+> >      if (!dom->pgt_va)
+> >          dom->pgt_va = dma_alloc_coherent(sdev->dev, pgt_size,
+> >                  &dom->pgt_pa, GFP_KERNEL);
+> > ?
+>
+> Why? dom->pgt_va will always be NULL if dom->sdev is NULL, and once
 
-Yes, I can add that, and put that link in the commit message too.
+Yes, I also found this. I'm going to remove the check of dom->sdev
+that will make reattching being allowed, like you mentioned below, in
+the next version.
 
-Thanks
-Nicolin
+Thanks for your comments,
+Chunyan
+
+> dom->sdev is set then that allocation is not reachable (of course this
+> means the driver also has a separate bug where reattaching to a
+> previously-used domain will erroneously fail, but that's not a memory
+> leak as such). The only thing to recognise here is that the allocation
+> is logically not part of the .attach_dev operation, but really a one-off
+> deferred part of .domain_alloc, and thus it should be balanced in .free,
+> not anywhere else.
+>
+> Thanks,
+> Robin.
