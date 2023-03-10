@@ -1,205 +1,218 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 697D1C975
-	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 10:06:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=MIME-Version:Content-Type:References:
-	In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=84q5pyr/dcD+Y0Z73xp/RW/CA5Rhr5WvvDWxUci6lAw=; b=DFb6YzICTscPFx+mY5VQviZBx+
-	N2HQ9SzHoXDbuZ3uAIEXOKI39mTSzIj/ET7yVN3c+zg/v/UdMhcE5bg35PMmpadnESRfnteTH8Wsn
-	4RiwDUX8TaDbX0qyXafBvsAdgV66TZAgtZXhwubsuSnDNEyhKAhGdLyMnsdDTGnnihaLHH3Zg4WXJ
-	uc4mtCpxM+OhNq6ZZqc9ooVNKoSu0QRewm7CbmQh4DvN2MhbjaLZjd9e2xLzdayK8RMlmNd2vjZzu
-	S5S8F46YeIRj+P0oc/8axHEVqoaMSUlF9t366A+870QKUHhNzmKXe9wtv6NevsTSFb8KXpy4paoJC
-	bawPoxtA==;
-Received: from [2001:8b0:10b:5:fea5:d438:64bd:2b44] (helo=u3832b3a9db3152.ant.amazon.com)
-	by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-	id 1paZcx-009IEi-E0; Fri, 10 Mar 2023 10:05:32 +0000
-Message-ID: <91efa6ddafc290f05f847b69fef345db6123f8a6.camel@infradead.org>
-Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified
- range to map as encrypted
-From: David Woodhouse <dwmw2@infradead.org>
-To: Borislav Petkov <bp@alien8.de>, =?ISO-8859-1?Q?J=F6rg_R=F6del?=
-	 <joro@8bytes.org>, Tom Lendacky <thomas.lendacky@amd.com>
-Cc: Usama Arif <usama.arif@bytedance.com>, Dave Hansen
- <dave.hansen@intel.com>,  "Michael Kelley (LINUX)"
- <mikelley@microsoft.com>, Sean Christopherson <seanjc@google.com>, 
- "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>, Haiyang
- Zhang <haiyangz@microsoft.com>, "wei.liu@kernel.org" <wei.liu@kernel.org>,
- Dexuan Cui <decui@microsoft.com>, "luto@kernel.org" <luto@kernel.org>, 
- "peterz@infradead.org" <peterz@infradead.org>, "davem@davemloft.net"
- <davem@davemloft.net>,  "edumazet@google.com" <edumazet@google.com>,
- "kuba@kernel.org" <kuba@kernel.org>, "pabeni@redhat.com"
- <pabeni@redhat.com>, "lpieralisi@kernel.org" <lpieralisi@kernel.org>, 
- "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
- "bhelgaas@google.com" <bhelgaas@google.com>, "arnd@arndb.de"
- <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,  "m.szyprowski@samsung.com"
- <m.szyprowski@samsung.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, 
- "brijesh.singh@amd.com" <brijesh.singh@amd.com>, "tglx@linutronix.de"
- <tglx@linutronix.de>,  "mingo@redhat.com" <mingo@redhat.com>,
- "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,  Tianyu Lan
- <Tianyu.Lan@microsoft.com>, "kirill.shutemov@linux.intel.com"
- <kirill.shutemov@linux.intel.com>, 
- "sathyanarayanan.kuppuswamy@linux.intel.com"
- <sathyanarayanan.kuppuswamy@linux.intel.com>, "ak@linux.intel.com"
- <ak@linux.intel.com>, "isaku.yamahata@intel.com"
- <isaku.yamahata@intel.com>,  "dan.j.williams@intel.com"
- <dan.j.williams@intel.com>, "jane.chu@oracle.com" <jane.chu@oracle.com>, 
- "tony.luck@intel.com" <tony.luck@intel.com>, "x86@kernel.org"
- <x86@kernel.org>,  "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, "linux-hyperv@vger.kernel.org"
- <linux-hyperv@vger.kernel.org>, "netdev@vger.kernel.org"
- <netdev@vger.kernel.org>, "linux-pci@vger.kernel.org"
- <linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org"
- <linux-arch@vger.kernel.org>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>
-Date: Fri, 10 Mar 2023 10:05:29 +0000
-In-Reply-To: <20230309163431.GFZAoKl2zgRdi8UXIQ@fat_crate.local>
-References: <20230309163431.GFZAoKl2zgRdi8UXIQ@fat_crate.local>
-Content-Type: multipart/signed; micalg="sha-256"; protocol="application/pkcs7-signature";
-	boundary="=-gRY/54NjbtmNn5F48bY3"
-User-Agent: Evolution 3.44.4-0ubuntu1 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C42002582
+	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 10:15:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1678443303;
+	h=from:from:reply-to:reply-to:subject:subject:date:date:
+	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+	 content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ETwri0Lb5u/XoTqkQ552K4Q0/ZV79dpN0E7lfbInptY=;
+	b=SdNqZ5uxNSunZg2MTXFnWT2ImkeSeS1FJnZfmRy/UK7/Fvg0x/G+wIIaNnAC5tS39qfIAF
+	zpINRisqSfMfUc0v+5aKMzPQHhE4JVALzYYLDAxvUBNu4noYqJkUDWAMcqAYUmL+wU/at4
+	fGvXcRAShEoTb45QALNWIkKqlbHlBPA=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-592-H7y-utUTNH28DZwjVpLBDQ-1; Fri, 10 Mar 2023 05:15:02 -0500
+X-MC-Unique: H7y-utUTNH28DZwjVpLBDQ-1
+Received: by mail-wr1-f72.google.com with SMTP id by11-20020a056000098b00b002ce45687cbdso983406wrb.12
+        for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 02:15:02 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678443301;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:reply-to:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ETwri0Lb5u/XoTqkQ552K4Q0/ZV79dpN0E7lfbInptY=;
+        b=hIn1aV6iIFk1um+eKJe3P0FNjVhu1MHwT8W2Kf6cqcybYb6d2ixWvR4rN2E6puCXqi
+         j/22N5J4/RFiXXi+KbmuXq3C5UPt7KxizQG3DHpG9zjUhxh+20dBR7Orih34z27orXCC
+         4Bea9ODvUSl0zGbuux+O7KHOyVuR46GGNa2qgKfsPSRJVdKvBpG7LduxSD7y9DrI1FDM
+         po0X00JIczIHBc/QszyWdP6cI3t66yTWSNH1OOlzmmRE1aCx+RcZqhWoeL0NyxHRjGzV
+         M8cO8Kj8VK70eRp2+BzEc4N62NBeb3eTqG0M1V3yTF34rQ1QUULPdr+dQmYM4GXxAy6N
+         SdTg==
+X-Gm-Message-State: AO0yUKV1ibs7dJqMOi1yTZUV26Lzba2ASexwx5jf1KYDsqL0OjltedUO
+	56RB0nT8yQK5JUyxcrnZ9pFG8A1I7FAcS/CdUsz9YrPbbKGG7fWSAU0UrzsR0rImKFDq22t5+h3
+	WOCXVMJo36lkkZ40=
+X-Received: by 2002:a05:6000:118e:b0:2ca:e4ac:5089 with SMTP id g14-20020a056000118e00b002cae4ac5089mr16054749wrx.30.1678443301428;
+        Fri, 10 Mar 2023 02:15:01 -0800 (PST)
+X-Google-Smtp-Source: AK7set/RSIo4dqLWNAC2JYIQOcjcrJak1jBI4P4lDS7Q+nG9frkPuYJUc3dJzQYBO/nndN83PdPYOw==
+X-Received: by 2002:a05:6000:118e:b0:2ca:e4ac:5089 with SMTP id g14-20020a056000118e00b002cae4ac5089mr16054734wrx.30.1678443301160;
+        Fri, 10 Mar 2023 02:15:01 -0800 (PST)
+Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874? ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
+        by smtp.gmail.com with ESMTPSA id e15-20020a056000120f00b002c5493a17efsm1744232wrx.25.2023.03.10.02.14.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 10 Mar 2023 02:15:00 -0800 (PST)
+Message-ID: <eddde530-cd37-f493-7f0f-c97905f0de64@redhat.com>
+Date: Fri, 10 Mar 2023 11:14:59 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Reply-To: eric.auger@redhat.com
+Subject: Re: [PATCH v1 01/14] iommu: Add iommu_get_unmanaged_domain helper
+To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com, robin.murphy@arm.com,
+ will@kernel.org
+Cc: kevin.tian@intel.com, baolu.lu@linux.intel.com, joro@8bytes.org,
+ shameerali.kolothum.thodi@huawei.com, jean-philippe@linaro.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <cover.1678348754.git.nicolinc@nvidia.com>
+ <9b1077601cace998533129327f5e7ad946752d29.1678348754.git.nicolinc@nvidia.com>
+From: Eric Auger <eric.auger@redhat.com>
+In-Reply-To: <9b1077601cace998533129327f5e7ad946752d29.1678348754.git.nicolinc@nvidia.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
+Hi Nicolin,
 
---=-gRY/54NjbtmNn5F48bY3
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On 3/9/23 11:53, Nicolin Chen wrote:
+> The nature of ITS virtualization on ARM is done via hypercalls, so kernel
+> handles all IOVA mappings for the MSI doorbell in iommu_dma_prepare_msi()
+> and iommu_dma_compose_msi_msg(). The current virtualization solution with
+> a 2-stage nested translation setup is to do 1:1 IOVA mappings at stage-1
+Note that if we still intend to use that trick there is a known issue at
+kernel side that needs to be fixed.
 
-On Thu, 2023-03-09 at 17:34 +0100, Borislav Petkov wrote:
-> On Thu, Mar 09, 2023 at 03:45:35PM +0000, David Woodhouse wrote:
-> > cc_vendor isn't yet exposed. As we discussed this in IRC, I've been
->=20
-> Right, and we might just as well expose it because having
-> a setter/getter is kinda silly for a __ro_after_init variable, see
-> below.
->=20
-> So here's what I was able to scratch up quickly to remove the static
-> key.
->=20
-> The asm looks like this:
+ARM DEN 0049E.b IORT specification mandates that when
+RMRs are present, the OS must preserve PCIe configuration
+performed by the boot FW.
 
-Seems reasonable. I might just let you iterate on that, drop the SNP-ES
-part from the parallel boot series, then let Tom or someone send it in
-later once the dust settles.=20
+As discussed in the past, enforcing this causes issue with PCI devices
+with IO ports. See qemu commit
+40c3472a29c9 ("Revert "acpi/gpex: Inform os to keep firmware resource
+map"). This seemed to require a fix at kernel level. I am not sure this
+fix has been worked on.
 
---=-gRY/54NjbtmNn5F48bY3
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
+Thanks
 
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCEkQw
-ggYQMIID+KADAgECAhBNlCwQ1DvglAnFgS06KwZPMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQG
-EwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEUMBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoT
-FVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwGA1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0
-aW9uIEF1dGhvcml0eTAeFw0xODExMDIwMDAwMDBaFw0zMDEyMzEyMzU5NTlaMIGWMQswCQYDVQQG
-EwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYD
-VQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50
-aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAyjztlApB/975Rrno1jvm2pK/KxBOqhq8gr2+JhwpKirSzZxQgT9tlC7zl6hn1fXjSo5MqXUf
-ItMltrMaXqcESJuK8dtK56NCSrq4iDKaKq9NxOXFmqXX2zN8HHGjQ2b2Xv0v1L5Nk1MQPKA19xeW
-QcpGEGFUUd0kN+oHox+L9aV1rjfNiCj3bJk6kJaOPabPi2503nn/ITX5e8WfPnGw4VuZ79Khj1YB
-rf24k5Ee1sLTHsLtpiK9OjG4iQRBdq6Z/TlVx/hGAez5h36bBJMxqdHLpdwIUkTqT8se3ed0PewD
-ch/8kHPo5fZl5u1B0ecpq/sDN/5sCG52Ds+QU5O5EwIDAQABo4IBZDCCAWAwHwYDVR0jBBgwFoAU
-U3m/WqorSs9UgOHYm8Cd8rIDZsswHQYDVR0OBBYEFAnA8vwL2pTbX/4r36iZQs/J4K0AMA4GA1Ud
-DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEF
-BQcDBDARBgNVHSAECjAIMAYGBFUdIAAwUAYDVR0fBEkwRzBFoEOgQYY/aHR0cDovL2NybC51c2Vy
-dHJ1c3QuY29tL1VTRVJUcnVzdFJTQUNlcnRpZmljYXRpb25BdXRob3JpdHkuY3JsMHYGCCsGAQUF
-BwEBBGowaDA/BggrBgEFBQcwAoYzaHR0cDovL2NydC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJT
-QUFkZFRydXN0Q0EuY3J0MCUGCCsGAQUFBzABhhlodHRwOi8vb2NzcC51c2VydHJ1c3QuY29tMA0G
-CSqGSIb3DQEBDAUAA4ICAQBBRHUAqznCFfXejpVtMnFojADdF9d6HBA4kMjjsb0XMZHztuOCtKF+
-xswhh2GqkW5JQrM8zVlU+A2VP72Ky2nlRA1GwmIPgou74TZ/XTarHG8zdMSgaDrkVYzz1g3nIVO9
-IHk96VwsacIvBF8JfqIs+8aWH2PfSUrNxP6Ys7U0sZYx4rXD6+cqFq/ZW5BUfClN/rhk2ddQXyn7
-kkmka2RQb9d90nmNHdgKrwfQ49mQ2hWQNDkJJIXwKjYA6VUR/fZUFeCUisdDe/0ABLTI+jheXUV1
-eoYV7lNwNBKpeHdNuO6Aacb533JlfeUHxvBz9OfYWUiXu09sMAviM11Q0DuMZ5760CdO2VnpsXP4
-KxaYIhvqPqUMWqRdWyn7crItNkZeroXaecG03i3mM7dkiPaCkgocBg0EBYsbZDZ8bsG3a08LwEsL
-1Ygz3SBsyECa0waq4hOf/Z85F2w2ZpXfP+w8q4ifwO90SGZZV+HR/Jh6rEaVPDRF/CEGVqR1hiuQ
-OZ1YL5ezMTX0ZSLwrymUE0pwi/KDaiYB15uswgeIAcA6JzPFf9pLkAFFWs1QNyN++niFhsM47qod
-x/PL+5jR87myx5uYdBEQkkDc+lKB1Wct6ucXqm2EmsaQ0M95QjTmy+rDWjkDYdw3Ms6mSWE3Bn7i
-5ZgtwCLXgAIe5W8mybM2JzCCBhQwggT8oAMCAQICEQDGvhmWZ0DEAx0oURL6O6l+MA0GCSqGSIb3
-DQEBCwUAMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYD
-VQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28g
-UlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTIyMDEwNzAw
-MDAwMFoXDTI1MDEwNjIzNTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9y
-ZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALQ3GpC2bomUqk+91wLYBzDMcCj5C9m6
-oZaHwvmIdXftOgTbCJXADo6G9T7BBAebw2JV38EINgKpy/ZHh7htyAkWYVoFsFPrwHounto8xTsy
-SSePMiPlmIdQ10BcVSXMUJ3Juu16GlWOnAMJY2oYfEzmE7uT9YgcBqKCo65pTFmOnR/VVbjJk4K2
-xE34GC2nAdUQkPFuyaFisicc6HRMOYXPuF0DuwITEKnjxgNjP+qDrh0db7PAjO1D4d5ftfrsf+kd
-RR4gKVGSk8Tz2WwvtLAroJM4nXjNPIBJNT4w/FWWc/5qPHJy2U+eITZ5LLE5s45mX2oPFknWqxBo
-bQZ8a9dsZ3dSPZBvE9ZrmtFLrVrN4eo1jsXgAp1+p7bkfqd3BgBEmfsYWlBXO8rVXfvPgLs32VdV
-NZxb/CDWPqBsiYv0Hv3HPsz07j5b+/cVoWqyHDKzkaVbxfq/7auNVRmPB3v5SWEsH8xi4Bez2V9U
-KxfYCnqsjp8RaC2/khxKt0A552Eaxnz/4ly/2C7wkwTQnBmdlFYhAflWKQ03Ufiu8t3iBE3VJbc2
-5oMrglj7TRZrmKq3CkbFnX0fyulB+kHimrt6PIWn7kgyl9aelIl6vtbhMA+l0nfrsORMa4kobqQ5
-C5rveVgmcIad67EDa+UqEKy/GltUwlSh6xy+TrK1tzDvAgMBAAGjggHMMIIByDAfBgNVHSMEGDAW
-gBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUzMeDMcimo0oz8o1R1Nver3ZVpSkwDgYD
-VR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYwFAYIKwYBBQUHAwQGCCsGAQUFBwMC
-MEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYBBQUHAgEWF2h0dHBzOi8vc2VjdGln
-by5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9jcmwuc2VjdGlnby5jb20vU2VjdGln
-b1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcmwwgYoGCCsGAQUFBwEB
-BH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdvLmNvbS9TZWN0aWdvUlNBQ2xpZW50
-QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAjBggrBgEFBQcwAYYXaHR0cDovL29j
-c3Auc2VjdGlnby5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5mcmFkZWFkLm9yZzANBgkqhkiG9w0B
-AQsFAAOCAQEAyW6MUir5dm495teKqAQjDJwuFCi35h4xgnQvQ/fzPXmtR9t54rpmI2TfyvcKgOXp
-qa7BGXNFfh1JsqexVkIqZP9uWB2J+uVMD+XZEs/KYNNX2PvIlSPrzIB4Z2wyIGQpaPLlYflrrVFK
-v9CjT2zdqvy2maK7HKOQRt3BiJbVG5lRiwbbygldcALEV9ChWFfgSXvrWDZspnU3Gjw/rMHrGnql
-Htlyebp3pf3fSS9kzQ1FVtVIDrL6eqhTwJxe+pXSMMqFiN0whpBtXdyDjzBtQTaZJ7zTT/vlehc/
-tDuqZwGHm/YJy883Ll+GP3NvOkgaRGWEuYWJJ6hFCkXYjyR9IzCCBhQwggT8oAMCAQICEQDGvhmW
-Z0DEAx0oURL6O6l+MA0GCSqGSIb3DQEBCwUAMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3Jl
-YXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0
-ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJl
-IEVtYWlsIENBMB4XDTIyMDEwNzAwMDAwMFoXDTI1MDEwNjIzNTk1OVowJDEiMCAGCSqGSIb3DQEJ
-ARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALQ3
-GpC2bomUqk+91wLYBzDMcCj5C9m6oZaHwvmIdXftOgTbCJXADo6G9T7BBAebw2JV38EINgKpy/ZH
-h7htyAkWYVoFsFPrwHounto8xTsySSePMiPlmIdQ10BcVSXMUJ3Juu16GlWOnAMJY2oYfEzmE7uT
-9YgcBqKCo65pTFmOnR/VVbjJk4K2xE34GC2nAdUQkPFuyaFisicc6HRMOYXPuF0DuwITEKnjxgNj
-P+qDrh0db7PAjO1D4d5ftfrsf+kdRR4gKVGSk8Tz2WwvtLAroJM4nXjNPIBJNT4w/FWWc/5qPHJy
-2U+eITZ5LLE5s45mX2oPFknWqxBobQZ8a9dsZ3dSPZBvE9ZrmtFLrVrN4eo1jsXgAp1+p7bkfqd3
-BgBEmfsYWlBXO8rVXfvPgLs32VdVNZxb/CDWPqBsiYv0Hv3HPsz07j5b+/cVoWqyHDKzkaVbxfq/
-7auNVRmPB3v5SWEsH8xi4Bez2V9UKxfYCnqsjp8RaC2/khxKt0A552Eaxnz/4ly/2C7wkwTQnBmd
-lFYhAflWKQ03Ufiu8t3iBE3VJbc25oMrglj7TRZrmKq3CkbFnX0fyulB+kHimrt6PIWn7kgyl9ae
-lIl6vtbhMA+l0nfrsORMa4kobqQ5C5rveVgmcIad67EDa+UqEKy/GltUwlSh6xy+TrK1tzDvAgMB
-AAGjggHMMIIByDAfBgNVHSMEGDAWgBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUzMeD
-Mcimo0oz8o1R1Nver3ZVpSkwDgYDVR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYw
-FAYIKwYBBQUHAwQGCCsGAQUFBwMCMEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYB
-BQUHAgEWF2h0dHBzOi8vc2VjdGlnby5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9j
-cmwuc2VjdGlnby5jb20vU2VjdGlnb1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1h
-aWxDQS5jcmwwgYoGCCsGAQUFBwEBBH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdv
-LmNvbS9TZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAj
-BggrBgEFBQcwAYYXaHR0cDovL29jc3Auc2VjdGlnby5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
-cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAyW6MUir5dm495teKqAQjDJwuFCi35h4xgnQv
-Q/fzPXmtR9t54rpmI2TfyvcKgOXpqa7BGXNFfh1JsqexVkIqZP9uWB2J+uVMD+XZEs/KYNNX2PvI
-lSPrzIB4Z2wyIGQpaPLlYflrrVFKv9CjT2zdqvy2maK7HKOQRt3BiJbVG5lRiwbbygldcALEV9Ch
-WFfgSXvrWDZspnU3Gjw/rMHrGnqlHtlyebp3pf3fSS9kzQ1FVtVIDrL6eqhTwJxe+pXSMMqFiN0w
-hpBtXdyDjzBtQTaZJ7zTT/vlehc/tDuqZwGHm/YJy883Ll+GP3NvOkgaRGWEuYWJJ6hFCkXYjyR9
-IzGCBMcwggTDAgEBMIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVz
-dGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMT
-NVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA
-xr4ZlmdAxAMdKFES+jupfjANBglghkgBZQMEAgEFAKCCAeswGAYJKoZIhvcNAQkDMQsGCSqGSIb3
-DQEHATAcBgkqhkiG9w0BCQUxDxcNMjMwMzEwMTAwNTI5WjAvBgkqhkiG9w0BCQQxIgQgvWMwonqS
-1vLAoNXoaa0KpLLVHxPp0uh8Xns/78ymveEwgb0GCSsGAQQBgjcQBDGBrzCBrDCBljELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYG
-A1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVTZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVu
-dGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAMa+GZZnQMQDHShREvo7qX4wgb8GCyqGSIb3
-DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVy
-MRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNl
-Y3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAxr4Z
-lmdAxAMdKFES+jupfjANBgkqhkiG9w0BAQEFAASCAgBRNtnFyKq5MGUO+OLXvjcGKXW35Pzt8t3c
-mrOobBh5QwV55q7TERq2atYAAO+Tlm6wk1Bo40uQMSZTuPqNlJ5CL4PrIJi0/olAO7/NUzx1NElA
-K4KY5iWNy+uPy+kglj5hVrqC6yAMcYmjaiTTIQo7rbvUEWISCDRptwcQcIuYGwsIL/wp0Vc1C17c
-ToV3UjrfsHXfy81xr9pVnthu/HglKGM/IkqsVGJpkwVpIloRiFmKzpzv9cYWaxsUzyz+0ZRpgkZa
-D+TCC3P4H2r4ZKTYvcp6ZB0nzekqS+0UFTMfHSmwZOYrLeV2OOGG3wbAoySduRzj2ULazn/IsDJd
-E2b8ri8Ffk18YZlueZUgpBeBDWhJu9O3WT+EfL2rmmUAcs0NlZTJ2n+ccA35vdfuwsCb7LZuXC1G
-ED+BCsYhue2L5VOTY+SmCtq8SC7VA/oIE3klArqReYCg6vhoWI0Z9/RhlV8HnYTgJqrAGngTr5yl
-Nrp1u7xc9NHtwa3rtJ+eW+x4+qZrEBjJ5htn/RHMqZJkL08waGMXcYRL/v9hYP4vZ9wnO/u/kKlN
-NqaKnlh7GGh9dG5Zl89w89nAilGOKElR7Jfj4a5q4Fvm/JGXcu7DUnTe6ylD4eLZo5Q+zPCgM9PG
-FIla/r3h8dftDkUDx71lshSLNfR88fK36RYIzvjdVgAAAAAAAA==
+Eric
 
+> guest-level IO page table via a RMR region in guest-level IORT, aligning
+> with an IOVA region that's predefined and mapped in the host kernel:
+>
+>   [stage-2 host level]
+>   #define MSI_IOVA_BASE		0x8000000
+>   #define MSI_IOVA_LENGTH	0x100000
+>   ...
+>   iommu_get_msi_cookie():
+> 	cookie->msi_iova = MSI_IOVA_BASE;
+>   ...
+>   iommu_dma_prepare_msi(its_pa):
+> 	domain = iommu_get_domain_for_dev(dev);
+> 	iommu_dma_get_msi_page(its_pa, domain):
+> 		cookie = domain->iova_cookie;
+> 		iova = iommu_dma_alloc_iova():
+> 			return cookie->msi_iova - size;
+> 		iommu_map(iova, its_pa, ...);
+>
+>   [stage-1 guest level]
+>   // Define in IORT a RMR [MSI_IOVA_BASE, MSI_IOVA_LENGTH]
+>   ...
+>   iommu_create_device_direct_mappings():
+> 	iommu_map(iova=MSI_IOVA_BASE, pa=MSI_IOVA_BASE, len=MSI_IOVA_LENGTH);
+>
+> This solution calling iommu_get_domain_for_dev() needs the device to get
+> attached to a host-level iommu_domain that has the msi_cookie.
+>
+> On the other hand, IOMMUFD designs two iommu_domain objects to represent
+> the two stages: a stage-1 domain (IOMMU_DOMAIN_NESTED type) and a stage-2
+> domain (IOMMU_DOMAIN_UNMANAGED type). In this design, the device will be
+> attached to the stage-1 domain representing a guest-level IO page table,
+> or a Context Descriptor Table in SMMU's term.
+>
+> This is obviously a mismatch, as the iommu_get_domain_for_dev() does not
+> return the correct domain pointer in iommu_dma_prepare_msi().
+>
+> Add an iommu_get_unmanaged_domain helper to allow drivers to return the
+> correct IOMMU_DOMAIN_UNMANAGED iommu_domain having the IOVA mappings for
+> the msi_cookie. Keep it in the iommu-priv header for internal use only.
+>
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>  drivers/iommu/dma-iommu.c  |  5 +++--
+>  drivers/iommu/iommu-priv.h | 15 +++++++++++++++
+>  include/linux/iommu.h      |  2 ++
+>  3 files changed, 20 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 99b2646cb5c7..6b0409d0ff85 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -31,6 +31,7 @@
+>  #include <linux/vmalloc.h>
+>  
+>  #include "dma-iommu.h"
+> +#include "iommu-priv.h"
+>  
+>  struct iommu_dma_msi_page {
+>  	struct list_head	list;
+> @@ -1652,7 +1653,7 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+>  int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
+>  {
+>  	struct device *dev = msi_desc_to_dev(desc);
+> -	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+> +	struct iommu_domain *domain = iommu_get_unmanaged_domain(dev);
+>  	struct iommu_dma_msi_page *msi_page;
+>  	static DEFINE_MUTEX(msi_prepare_lock); /* see below */
+>  
+> @@ -1685,7 +1686,7 @@ int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
+>  void iommu_dma_compose_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
+>  {
+>  	struct device *dev = msi_desc_to_dev(desc);
+> -	const struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+> +	const struct iommu_domain *domain = iommu_get_unmanaged_domain(dev);
+>  	const struct iommu_dma_msi_page *msi_page;
+>  
+>  	msi_page = msi_desc_get_iommu_cookie(desc);
+> diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
+> index a6e694f59f64..da8044da9ad8 100644
+> --- a/drivers/iommu/iommu-priv.h
+> +++ b/drivers/iommu/iommu-priv.h
+> @@ -15,6 +15,21 @@ static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
+>  	return dev->iommu->iommu_dev->ops;
+>  }
+>  
+> +static inline struct iommu_domain *iommu_get_unmanaged_domain(struct device *dev)
+> +{
+> +	const struct iommu_ops *ops;
+> +
+> +	if (!dev->iommu || !dev->iommu->iommu_dev)
+> +		goto attached_domain;
+> +
+> +	ops = dev_iommu_ops(dev);
+> +	if (ops->get_unmanaged_domain)
+> +		return ops->get_unmanaged_domain(dev);
+> +
+> +attached_domain:
+> +	return iommu_get_domain_for_dev(dev);
+> +}
+> +
+>  int iommu_group_replace_domain(struct iommu_group *group,
+>  			       struct iommu_domain *new_domain);
+>  
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 080278c8154d..76c65cc4fc15 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -275,6 +275,8 @@ struct iommu_ops {
+>  						  struct iommu_domain *parent,
+>  						  const void *user_data);
+>  
+> +	struct iommu_domain *(*get_unmanaged_domain)(struct device *dev);
+> +
+>  	struct iommu_device *(*probe_device)(struct device *dev);
+>  	void (*release_device)(struct device *dev);
+>  	void (*probe_finalize)(struct device *dev);
 
---=-gRY/54NjbtmNn5F48bY3--
