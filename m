@@ -1,63 +1,57 @@
 Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D7278838;
-	Fri, 10 Mar 2023 16:09:06 +0000 (UTC)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32AG3wnt029782;
-	Fri, 10 Mar 2023 16:08:26 GMT
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 174ED9452;
+	Fri, 10 Mar 2023 16:09:07 +0000 (UTC)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32AF0wZI020552;
+	Fri, 10 Mar 2023 16:08:32 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : date : subject :
- mime-version : content-type : content-transfer-encoding : message-id :
- references : in-reply-to : to : cc; s=pp1;
- bh=SWBkcYuh4IJnIezE2OpMdAYZOU5hzcvpExBHImMkgyg=;
- b=EnsdmQxwg6sqFxXGVArxbm0LSZKXNyjNXxHnHYy81QLyNi0ul0ufKjeTVw/xBPr1GfBH
- IVwGJALaYaw7vnSAI/EO9foGLmh47xsMnbGHUVVJaoc7Ayw2cjGQVgyDa/21zpSS2Avx
- WPyAbdgn2CSTAJ8WLcwrG9iBSjYdqcLGbtmsWj4LHu3yK2rxl5MycfVosm3bH2ZZUeYS
- qLu6+pcb4SUP7YEtgCXFNDaDVaF/BEJQvlhcABTTet4DMuNfADohliasmv0uVdxeEhp7
- eY75B+cHdzyWgXNUGcm4lxw3LHHbQwe5GgkhBCv32qfulEWti9ZHvkOjd9F+AhS0dv5F 1w== 
+ content-type : message-id : references : in-reply-to : to : cc :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=AaAObrbm4EBKRfJda0O3pJUASkY2vicuQ13a5jf0XU4=;
+ b=ofKkh5qnlajMXOHCeuGphjpjcpuub6EhmmQKtfUdYLZsV54ueMVgMBO+oXNAbzuUsDBz
+ 6aDLw85c0zH0eMwQph9E2YaY4SMC8lyrdJToLQZktmGCeQZ/K3tXLMDPWKaI9pBChdV3
+ vZ4gL36iSqneHbvBXqGh71UMMAqyf4/AeRn5laCQPjAZAVlDi4Vf1aQ2su5aIBlqgg5E
+ xe+xVDWbO4apfh7PFvtCAYgWA1XpG6zUKirsr5MQUX3oy/iP0klznQHh5qXT3vYiwPtB
+ dwYXFQOiLPrEtMBD6vqgSqiu0Ds41o1S2X8YAvMO/AMTkjz/sg7lH3Ep0fh0/MJ9Qpbh Fg== 
 Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3p87r9r2ct-1
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3p86tshqcc-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 10 Mar 2023 16:08:32 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32AFhtEe025976;
+	Fri, 10 Mar 2023 16:08:31 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3p86tshqac-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 10 Mar 2023 16:08:31 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+	by ppma04fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 32A90r90015599;
+	Fri, 10 Mar 2023 16:08:26 GMT
+Received: from smtprelay02.fra02v.mail.ibm.com ([9.218.2.226])
+	by ppma04fra.de.ibm.com (PPS) with ESMTPS id 3p6gdqb1kw-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
 	Fri, 10 Mar 2023 16:08:26 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32AG4ctu031743;
-	Fri, 10 Mar 2023 16:08:25 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3p87r9r2bj-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 10 Mar 2023 16:08:25 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-	by ppma06ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 32A8USa4022977;
-	Fri, 10 Mar 2023 16:08:22 GMT
-Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
-	by ppma06ams.nl.ibm.com (PPS) with ESMTPS id 3p6fysv3ab-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 10 Mar 2023 16:08:22 +0000
 Received: from smtpav07.fra02v.mail.ibm.com (smtpav07.fra02v.mail.ibm.com [10.20.54.106])
-	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 32AG8Je631981916
+	by smtprelay02.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 32AG8MCx44958118
 	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 10 Mar 2023 16:08:19 GMT
+	Fri, 10 Mar 2023 16:08:22 GMT
 Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 39A6920040;
-	Fri, 10 Mar 2023 16:08:19 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id 718D62004D;
+	Fri, 10 Mar 2023 16:08:22 +0000 (GMT)
 Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id BA7022004E;
-	Fri, 10 Mar 2023 16:08:17 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id DFDFB2004B;
+	Fri, 10 Mar 2023 16:08:20 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
 	by smtpav07.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Fri, 10 Mar 2023 16:08:17 +0000 (GMT)
+	Fri, 10 Mar 2023 16:08:20 +0000 (GMT)
 From: Niklas Schnelle <schnelle@linux.ibm.com>
-Date: Fri, 10 Mar 2023 17:07:48 +0100
-Subject: [PATCH v8 3/6] s390/pci: prepare is_passed_through() for dma-iommu
-Precedence: bulk
-X-Mailing-List: iommu@lists.linux.dev
-List-Id: <iommu.lists.linux.dev>
-List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
-List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
+Date: Fri, 10 Mar 2023 17:07:50 +0100
+Subject: [PATCH v8 5/6] iommu/dma: Allow a single FQ in addition to per-CPU
+ FQs
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20230310-dma_iommu-v8-3-2347dfbed7af@linux.ibm.com>
+Message-Id: <20230310-dma_iommu-v8-5-2347dfbed7af@linux.ibm.com>
 References: <20230310-dma_iommu-v8-0-2347dfbed7af@linux.ibm.com>
 In-Reply-To: <20230310-dma_iommu-v8-0-2347dfbed7af@linux.ibm.com>
 To: Joerg Roedel <joro@8bytes.org>, Matthew Rosato <mjrosato@linux.ibm.com>,
@@ -97,79 +91,436 @@ Cc: Gerd Bayer <gbayer@linux.ibm.com>, Julian Ruess <julianr@linux.ibm.com>,
         linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
         linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
 X-Mailer: b4 0.12.1
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1902;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=13183;
  i=schnelle@linux.ibm.com; h=from:subject:message-id;
- bh=UFZ4h7XPUa2PISPEnSCNuaMyGMwcJutgOErG7r5Bobo=;
- b=owGbwMvMwCH2Wz534YHOJ2GMp9WSGFK4Q1/5pd0uL0hYeOJb8f2g/6yv0h49kVhmcFiQQ/IS9
- wT7PLMdHaUsDGIcDLJiiiyLupz91hVMMd0T1N8BM4eVCWQIAxenAEzkuxUjw+mW5vk7o363eb4M
- NtzyzFhJ7mfynvpP6xmWv9nwQrk6TJzhD58D1/bHO/w9k5Om+Rn/vrrMIO6C3bnoSz7uzfMUStW
- 28AAA
+ bh=JAstifVbluVdWhCehVO60V7Fl2xmys/DKEcXsVnxf8s=;
+ b=owGbwMvMwCH2Wz534YHOJ2GMp9WSGFK4Q197dZoH+7i4WD177SIwv2xW7paswEser2w1Ov49D
+ g189LCwo5SFQYyDQVZMkWVRl7PfuoIppnuC+jtg5rAygQxh4OIUgIlwrmP4K62W5NVwYN0eXsuF
+ 26z3mnxoTj33ztFNbW5iu/2cjI2VEowMJ9sPiddt0vz9OGj6W0Edg2N/mjO+RfLYTOBlrNMJFdd
+ jBQA=
 X-Developer-Key: i=schnelle@linux.ibm.com; a=openpgp;
  fpr=9DB000B2D2752030A5F72DDCAFE43F15E8C26090
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: MSjQmyGt5rG2WTKkx9qooV8XA6W5sxbk
-X-Proofpoint-ORIG-GUID: ah10nOs4nm9WTZ8iDuTBDNkA2uZifsi8
+X-Proofpoint-ORIG-GUID: 6yYApsGmwgQ7PqAgHw9Co9i25sHtAVtK
+X-Proofpoint-GUID: gkbNqMxh_14xMZ-eDg8Yk25k3TIQQJ9M
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+Precedence: bulk
+X-Mailing-List: iommu@lists.linux.dev
+List-Id: <iommu.lists.linux.dev>
+List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
+List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
  definitions=2023-03-10_06,2023-03-10_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
- priorityscore=1501 clxscore=1015 lowpriorityscore=0 mlxlogscore=999
- mlxscore=0 phishscore=0 impostorscore=0 adultscore=0 bulkscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ phishscore=0 clxscore=1015 spamscore=0 impostorscore=0 bulkscore=0
+ lowpriorityscore=0 malwarescore=0 adultscore=0 mlxscore=0 suspectscore=0
+ mlxlogscore=968 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2212070000 definitions=main-2303100124
 
-With the IOMMU always controlled through the IOMMU driver testing for
-zdev->s390_domain is not a valid indication of the device being
-passed-through. Instead test if zdev->kzdev is set.
+In some virtualized environments, including s390 paged memory guests,
+IOTLB flushes are used to update IOMMU shadow tables. Due to this, they
+are much more expensive than in typical bare metal environments or
+non-paged s390 guests. In addition they may parallelize more poorly in
+virtualized environments. This changes the trade off for flushing IOVAs
+such that minimizing the number of IOTLB flushes trumps any benefit of
+cheaper queuing operations or increased paralellism.
 
-Reviewed-by: Pierre Morel <pmorel@linux.ibm.com>
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+In this scenario per-CPU flush queues pose several problems. Firstly
+per-CPU memory is often quite limited prohibiting larger queues.
+Secondly collecting IOVAs per-CPU but flushing via a global timeout
+reduces the number of IOVAs flushed for each timeout especially on s390
+where PCI interrupts may not be bound to a specific CPU.
+
+Let's introduce a single flush queue mode that reuses the same queue
+logic but only allocates a single global queue. This mode can be
+selected as a flag bit in a new dma_iommu_options struct which can be
+modified from its defaults by IOMMU drivers implementing a new
+ops.tune_dma_iommu() callback. As a first user the s390 IOMMU driver
+selects the single queue mode if IOTLB flushes are needed on map which
+indicates shadow table use. With the unchanged small FQ size and
+timeouts this setting is worse than per-CPU queues but a follow up patch
+will make the FQ size and timeout variable. Together this allows the
+common IOVA flushing code to more closely resemble the global flush
+behavior used on s390's previous internal DMA API implementation.
+
+Link: https://lore.kernel.org/linux-iommu/3e402947-61f9-b7e8-1414-fde006257b6f@arm.com/
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com> #s390
 Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 ---
- arch/s390/pci/pci_event.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ drivers/iommu/dma-iommu.c  | 161 ++++++++++++++++++++++++++++++++++-----------
+ drivers/iommu/dma-iommu.h  |   4 +-
+ drivers/iommu/iommu.c      |   4 +-
+ drivers/iommu/s390-iommu.c |  10 +++
+ include/linux/iommu.h      |  21 ++++++
+ 5 files changed, 157 insertions(+), 43 deletions(-)
 
-diff --git a/arch/s390/pci/pci_event.c b/arch/s390/pci/pci_event.c
-index b9324ca2eb94..4ef5a6a1d618 100644
---- a/arch/s390/pci/pci_event.c
-+++ b/arch/s390/pci/pci_event.c
-@@ -59,9 +59,16 @@ static inline bool ers_result_indicates_abort(pci_ers_result_t ers_res)
- 	}
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 99b2646cb5c7..6f5fd110e0e0 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -49,8 +49,11 @@ struct iommu_dma_cookie {
+ 		/* Full allocator for IOMMU_DMA_IOVA_COOKIE */
+ 		struct {
+ 			struct iova_domain	iovad;
+-
+-			struct iova_fq __percpu *fq;	/* Flush queue */
++			/* Flush queue */
++			union {
++				struct iova_fq	*single_fq;
++				struct iova_fq	__percpu *percpu_fq;
++			};
+ 			/* Number of TLB flushes that have been started */
+ 			atomic64_t		fq_flush_start_cnt;
+ 			/* Number of TLB flushes that have been finished */
+@@ -67,6 +70,8 @@ struct iommu_dma_cookie {
+ 
+ 	/* Domain for flush queue callback; NULL if flush queue not in use */
+ 	struct iommu_domain		*fq_domain;
++	/* Options for dma-iommu use */
++	struct dma_iommu_options	options;
+ 	struct mutex			mutex;
+ };
+ 
+@@ -152,25 +157,44 @@ static void fq_flush_iotlb(struct iommu_dma_cookie *cookie)
+ 	atomic64_inc(&cookie->fq_flush_finish_cnt);
  }
  
--static bool is_passed_through(struct zpci_dev *zdev)
-+static bool is_passed_through(struct pci_dev *pdev)
+-static void fq_flush_timeout(struct timer_list *t)
++static void fq_flush_percpu(struct iommu_dma_cookie *cookie)
  {
--	return zdev->s390_domain;
-+	struct zpci_dev *zdev = to_zpci(pdev);
-+	bool ret;
-+
-+	mutex_lock(&zdev->kzdev_lock);
-+	ret = !!zdev->kzdev;
-+	mutex_unlock(&zdev->kzdev_lock);
-+
-+	return ret;
+-	struct iommu_dma_cookie *cookie = from_timer(cookie, t, fq_timer);
+ 	int cpu;
+ 
+-	atomic_set(&cookie->fq_timer_on, 0);
+-	fq_flush_iotlb(cookie);
+-
+ 	for_each_possible_cpu(cpu) {
+ 		unsigned long flags;
+ 		struct iova_fq *fq;
+ 
+-		fq = per_cpu_ptr(cookie->fq, cpu);
++		fq = per_cpu_ptr(cookie->percpu_fq, cpu);
+ 		spin_lock_irqsave(&fq->lock, flags);
+ 		fq_ring_free(cookie, fq);
+ 		spin_unlock_irqrestore(&fq->lock, flags);
+ 	}
  }
  
- static bool is_driver_supported(struct pci_driver *driver)
-@@ -176,7 +183,7 @@ static pci_ers_result_t zpci_event_attempt_error_recovery(struct pci_dev *pdev)
- 	}
- 	pdev->error_state = pci_channel_io_frozen;
- 
--	if (is_passed_through(to_zpci(pdev))) {
-+	if (is_passed_through(pdev)) {
- 		pr_info("%s: Cannot be recovered in the host because it is a pass-through device\n",
- 			pci_name(pdev));
- 		goto out_unlock;
-@@ -239,7 +246,7 @@ static void zpci_event_io_failure(struct pci_dev *pdev, pci_channel_state_t es)
- 	 * we will inject the error event and let the guest recover the device
- 	 * itself.
++static void fq_flush_single(struct iommu_dma_cookie *cookie)
++{
++	struct iova_fq *fq = cookie->single_fq;
++	unsigned long flags;
++
++	spin_lock_irqsave(&fq->lock, flags);
++	fq_ring_free(cookie, fq);
++	spin_unlock_irqrestore(&fq->lock, flags);
++}
++
++static void fq_flush_timeout(struct timer_list *t)
++{
++	struct iommu_dma_cookie *cookie = from_timer(cookie, t, fq_timer);
++
++	atomic_set(&cookie->fq_timer_on, 0);
++	fq_flush_iotlb(cookie);
++
++	if (cookie->options.flags & IOMMU_DMA_OPTS_SINGLE_QUEUE)
++		fq_flush_single(cookie);
++	else
++		fq_flush_percpu(cookie);
++}
++
+ static void queue_iova(struct iommu_dma_cookie *cookie,
+ 		unsigned long pfn, unsigned long pages,
+ 		struct list_head *freelist)
+@@ -188,7 +212,11 @@ static void queue_iova(struct iommu_dma_cookie *cookie,
  	 */
--	if (is_passed_through(to_zpci(pdev)))
-+	if (is_passed_through(pdev))
+ 	smp_mb();
+ 
+-	fq = raw_cpu_ptr(cookie->fq);
++	if (cookie->options.flags & IOMMU_DMA_OPTS_SINGLE_QUEUE)
++		fq = cookie->single_fq;
++	else
++		fq = raw_cpu_ptr(cookie->percpu_fq);
++
+ 	spin_lock_irqsave(&fq->lock, flags);
+ 
+ 	/*
+@@ -219,58 +247,114 @@ static void queue_iova(struct iommu_dma_cookie *cookie,
+ 			  jiffies + msecs_to_jiffies(IOVA_FQ_TIMEOUT));
+ }
+ 
+-static void iommu_dma_free_fq(struct iommu_dma_cookie *cookie)
++static void iommu_dma_free_fq_single(struct iova_fq *fq)
+ {
+-	int cpu, idx;
++	int idx;
+ 
+-	if (!cookie->fq)
++	if (!fq)
+ 		return;
++	fq_ring_for_each(idx, fq)
++		put_pages_list(&fq->entries[idx].freelist);
++	vfree(fq);
++}
++
++static void iommu_dma_free_fq_percpu(struct iova_fq __percpu *percpu_fq)
++{
++	int cpu, idx;
+ 
+-	del_timer_sync(&cookie->fq_timer);
+ 	/* The IOVAs will be torn down separately, so just free our queued pages */
+ 	for_each_possible_cpu(cpu) {
+-		struct iova_fq *fq = per_cpu_ptr(cookie->fq, cpu);
++		struct iova_fq *fq = per_cpu_ptr(percpu_fq, cpu);
+ 
+ 		fq_ring_for_each(idx, fq)
+ 			put_pages_list(&fq->entries[idx].freelist);
+ 	}
+ 
+-	free_percpu(cookie->fq);
++	free_percpu(percpu_fq);
++}
++
++static void iommu_dma_free_fq(struct iommu_dma_cookie *cookie)
++{
++	if (!cookie->fq_domain)
++		return;
++
++	del_timer_sync(&cookie->fq_timer);
++	if (cookie->options.flags & IOMMU_DMA_OPTS_SINGLE_QUEUE)
++		iommu_dma_free_fq_single(cookie->single_fq);
++	else
++		iommu_dma_free_fq_percpu(cookie->percpu_fq);
++}
++
++
++static void iommu_dma_init_one_fq(struct iova_fq *fq)
++{
++	int i;
++
++	fq->head = 0;
++	fq->tail = 0;
++
++	spin_lock_init(&fq->lock);
++
++	for (i = 0; i < IOVA_FQ_SIZE; i++)
++		INIT_LIST_HEAD(&fq->entries[i].freelist);
++}
++
++static int iommu_dma_init_fq_single(struct iommu_dma_cookie *cookie)
++{
++	struct iova_fq *queue;
++
++	queue = vzalloc(sizeof(*queue));
++	if (!queue)
++		return -ENOMEM;
++	iommu_dma_init_one_fq(queue);
++	cookie->single_fq = queue;
++
++	return 0;
++}
++
++static int iommu_dma_init_fq_percpu(struct iommu_dma_cookie *cookie)
++{
++	struct iova_fq __percpu *queue;
++	int cpu;
++
++	queue = alloc_percpu(struct iova_fq);
++	if (!queue)
++		return -ENOMEM;
++
++	for_each_possible_cpu(cpu)
++		iommu_dma_init_one_fq(per_cpu_ptr(queue, cpu));
++	cookie->percpu_fq = queue;
++	return 0;
+ }
+ 
+ /* sysfs updates are serialised by the mutex of the group owning @domain */
+-int iommu_dma_init_fq(struct iommu_domain *domain)
++int iommu_dma_init_fq(struct device *dev, struct iommu_domain *domain)
+ {
+ 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+-	struct iova_fq __percpu *queue;
+-	int i, cpu;
++	const struct iommu_ops *ops = dev_iommu_ops(dev);
++	int rc;
+ 
+ 	if (cookie->fq_domain)
+ 		return 0;
+ 
++	if (ops->tune_dma_iommu)
++		ops->tune_dma_iommu(dev, &cookie->options);
++
+ 	atomic64_set(&cookie->fq_flush_start_cnt,  0);
+ 	atomic64_set(&cookie->fq_flush_finish_cnt, 0);
+ 
+-	queue = alloc_percpu(struct iova_fq);
+-	if (!queue) {
+-		pr_warn("iova flush queue initialization failed\n");
+-		return -ENOMEM;
+-	}
+-
+-	for_each_possible_cpu(cpu) {
+-		struct iova_fq *fq = per_cpu_ptr(queue, cpu);
+-
+-		fq->head = 0;
+-		fq->tail = 0;
+-
+-		spin_lock_init(&fq->lock);
++	if (cookie->options.flags & IOMMU_DMA_OPTS_SINGLE_QUEUE)
++		rc = iommu_dma_init_fq_single(cookie);
++	else
++		rc = iommu_dma_init_fq_percpu(cookie);
+ 
+-		for (i = 0; i < IOVA_FQ_SIZE; i++)
+-			INIT_LIST_HEAD(&fq->entries[i].freelist);
++	if (rc) {
++		pr_warn("iova flush queue initialization failed\n");
++		/* fall back to strict mode */
++		domain->type = IOMMU_DOMAIN_DMA;
++		return rc;
+ 	}
+ 
+-	cookie->fq = queue;
+-
+ 	timer_setup(&cookie->fq_timer, fq_flush_timeout, 0);
+ 	atomic_set(&cookie->fq_timer_on, 0);
+ 	/*
+@@ -297,6 +381,7 @@ static struct iommu_dma_cookie *cookie_alloc(enum iommu_dma_cookie_type type)
+ 	if (cookie) {
+ 		INIT_LIST_HEAD(&cookie->msi_page_list);
+ 		cookie->type = type;
++		cookie->options.flags = IOMMU_DMA_OPTS_PER_CPU_QUEUE;
+ 	}
+ 	return cookie;
+ }
+@@ -585,9 +670,9 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+ 	if (ret)
+ 		goto done_unlock;
+ 
+-	/* If the FQ fails we can simply fall back to strict mode */
+-	if (domain->type == IOMMU_DOMAIN_DMA_FQ && iommu_dma_init_fq(domain))
+-		domain->type = IOMMU_DOMAIN_DMA;
++	/* If the FQ fails we fall back to strict mode */
++	if (domain->type == IOMMU_DOMAIN_DMA_FQ)
++		iommu_dma_init_fq(dev, domain);
+ 
+ 	ret = iova_reserve_iommu_regions(dev, domain);
+ 
+diff --git a/drivers/iommu/dma-iommu.h b/drivers/iommu/dma-iommu.h
+index 942790009292..4f727ab56d3c 100644
+--- a/drivers/iommu/dma-iommu.h
++++ b/drivers/iommu/dma-iommu.h
+@@ -12,7 +12,7 @@
+ int iommu_get_dma_cookie(struct iommu_domain *domain);
+ void iommu_put_dma_cookie(struct iommu_domain *domain);
+ 
+-int iommu_dma_init_fq(struct iommu_domain *domain);
++int iommu_dma_init_fq(struct device *dev, struct iommu_domain *domain);
+ 
+ void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
+ 
+@@ -20,7 +20,7 @@ extern bool iommu_dma_forcedac;
+ 
+ #else /* CONFIG_IOMMU_DMA */
+ 
+-static inline int iommu_dma_init_fq(struct iommu_domain *domain)
++static inline int iommu_dma_init_fq(struct device *dev, struct iommu_domain *domain)
+ {
+ 	return -EINVAL;
+ }
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index ae549b032a16..869dd0b6e1f3 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2920,9 +2920,7 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
+ 
+ 	/* We can bring up a flush queue without tearing down the domain */
+ 	if (type == IOMMU_DOMAIN_DMA_FQ && prev_dom->type == IOMMU_DOMAIN_DMA) {
+-		ret = iommu_dma_init_fq(prev_dom);
+-		if (!ret)
+-			prev_dom->type = IOMMU_DOMAIN_DMA_FQ;
++		ret = iommu_dma_init_fq(dev, prev_dom);
  		goto out;
- 	driver = to_pci_driver(pdev->dev.driver);
- 	if (driver && driver->err_handler && driver->err_handler->error_detected)
+ 	}
+ 
+diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+index 161b0be5aba6..65dd469ad524 100644
+--- a/drivers/iommu/s390-iommu.c
++++ b/drivers/iommu/s390-iommu.c
+@@ -451,6 +451,15 @@ static void s390_iommu_get_resv_regions(struct device *dev,
+ 	}
+ }
+ 
++static void s390_iommu_tune_dma_iommu(struct device *dev,
++					     struct dma_iommu_options *options)
++{
++	struct zpci_dev *zdev = to_zpci_dev(dev);
++
++	if (zdev->tlb_refresh)
++		options->flags |= IOMMU_DMA_OPTS_SINGLE_QUEUE;
++}
++
+ static struct iommu_device *s390_iommu_probe_device(struct device *dev)
+ {
+ 	struct zpci_dev *zdev;
+@@ -793,6 +802,7 @@ static const struct iommu_ops s390_iommu_ops = {
+ 	.device_group = generic_device_group,
+ 	.pgsize_bitmap = SZ_4K,
+ 	.get_resv_regions = s390_iommu_get_resv_regions,
++	.tune_dma_iommu = s390_iommu_tune_dma_iommu,
+ 	.default_domain_ops = &(const struct iommu_domain_ops) {
+ 		.attach_dev	= s390_iommu_attach_device,
+ 		.map_pages	= s390_iommu_map_pages,
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 932e5532ee33..2b43a3de2c4f 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -219,6 +219,21 @@ struct iommu_iotlb_gather {
+ 	bool			queued;
+ };
+ 
++/**
++ * struct dma_iommu_options - Options for dma-iommu
++ *
++ * @flags: Flag bits for enabling/disabling dma-iommu settings
++ *
++ * This structure is intended to provide IOMMU drivers a way to influence the
++ * behavior of the dma-iommu DMA API implementation. This allows optimizing for
++ * example for a virtualized environment with slow IOTLB flushes.
++ */
++struct dma_iommu_options {
++#define IOMMU_DMA_OPTS_PER_CPU_QUEUE	(0L << 0)
++#define IOMMU_DMA_OPTS_SINGLE_QUEUE	(1L << 0)
++	u64	flags;
++};
++
+ /**
+  * struct iommu_ops - iommu ops and capabilities
+  * @capable: check capability
+@@ -242,6 +257,9 @@ struct iommu_iotlb_gather {
+  *		- IOMMU_DOMAIN_IDENTITY: must use an identity domain
+  *		- IOMMU_DOMAIN_DMA: must use a dma domain
+  *		- 0: use the default setting
++ * @tune_dma_iommu: Allows the IOMMU driver to modify the default
++ *		    options of the dma-iommu layer for a specific
++ *		    device.
+  * @default_domain_ops: the default ops for domains
+  * @remove_dev_pasid: Remove any translation configurations of a specific
+  *                    pasid, so that any DMA transactions with this pasid
+@@ -278,6 +296,9 @@ struct iommu_ops {
+ 	int (*def_domain_type)(struct device *dev);
+ 	void (*remove_dev_pasid)(struct device *dev, ioasid_t pasid);
+ 
++	void (*tune_dma_iommu)(struct device *dev,
++			       struct dma_iommu_options *options);
++
+ 	const struct iommu_domain_ops *default_domain_ops;
+ 	unsigned long pgsize_bitmap;
+ 	struct module *owner;
 
 -- 
 2.37.2
