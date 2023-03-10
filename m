@@ -1,216 +1,185 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 043452F49
-	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 11:26:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678447606; x=1709983606;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=d77jpfLT1oEVggyxZWMH6vafHFnOT+o2d2PFmhqBNSQ=;
-  b=TbMNywoT346SN50QrPZ9zOdFKXfmsv6nAeqWebb54Blg9r5n84F/yVWm
-   P5ffRCsPEhbq4kUFdb0XYyZzVwDcQefMP97RMeR0EUgdO0j5plev+0T8f
-   PwqRvH7cvsVMfhiD25YRtcQX4lG1BKugKyVycxxdiNYLGkdO7YrCFK1tz
-   dXY8TrpeHDKdwBYceJdSBQxNk+h/cAu4TZJtBfoT6e9L8l26FtlPbQLs/
-   KsenVnOkBa9lRziyXdKhMpsnogoPGAyuY8oUa0rJVWmiPE5J3+6u9tnsu
-   1QMGFeAVcGA5jMnDUHGpLwacFYag7YSVf5Ehy07vgHZwgVOz6E3gC7vdF
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="399305744"
-X-IronPort-AV: E=Sophos;i="5.98,249,1673942400"; 
-   d="scan'208";a="399305744"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2023 03:26:46 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="923651678"
-X-IronPort-AV: E=Sophos;i="5.98,249,1673942400"; 
-   d="scan'208";a="923651678"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga006.fm.intel.com with ESMTP; 10 Mar 2023 03:26:45 -0800
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Fri, 10 Mar 2023 03:26:45 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Fri, 10 Mar 2023 03:26:45 -0800
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21 via Frontend Transport; Fri, 10 Mar 2023 03:26:45 -0800
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.106)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.21; Fri, 10 Mar 2023 03:26:44 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=f/s4dIVZNsBUWVcaeRVlk7x2igRWHcdM6vrbk09yFdW6pcrA6DJKewgFD4PW1xs7gCdep29ANwi3E3PoFqCDPAntQFWqqvuq7nGlpap0nowIHDo/zHyGbmeLKsJDLBhEubvDOVfqHzRk/LMVU6fHPZR1bf+/u16AK3PU+iQvYXjAykBSHrjuY3AxBQmvzLTkNjYLKzrC7nN135WBBnk3564py+t1OcnQ64D1nITqUtZqEzKTb7YWUE5LwHmq4Aw2OQipHNoh5ocFrXAhsEpocpButMOHWqz212/Px8ouEC0zxSrGCe8kIMDNoFx5qmzUHwkjeMO1YQ8y7MjTRKklNw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0PWBdtn0hFYuoq62tQORzPMx7QJ3t3LPgQpgBrDmG/s=;
- b=GdzfSGpyb0dmWaqSzIZFFAG+DV7gJlyClZ9qNQ013BGuL3m3LGEKzLVY24ePpPS9fURlbaG1AK5fU+7OzNpW3M0hSfflRGYWLRkDuXcHWD2FAT71eWhikYuUOocfF500M5XJVNedqtKMGphsjdtPZztsKex0vi1/Wum9j+YigaSsyMzxmI8bTHQLx+faqG8RAXGLNpoPooFTkVLj+dU4wIIunYteqpz4gp1H8sgDPjrDSwU93yp1k/d2u6cT+/Cwc88gTidjWatP2jg37+csfckqC7oMbn0gZZgoUrtmdw3tyzaM2YUk3sg5+XoV7zO1FgJzw/twemg/RUr88dZmtA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by SA1PR11MB7085.namprd11.prod.outlook.com (2603:10b6:806:2ba::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.19; Fri, 10 Mar
- 2023 11:26:43 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::1aac:b695:f7c5:bcac]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::1aac:b695:f7c5:bcac%8]) with mapi id 15.20.6178.020; Fri, 10 Mar 2023
- 11:26:43 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kselftest@vger.kernel.org"
-	<linux-kselftest@vger.kernel.org>
-CC: "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Nicolin Chen
-	<nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>
-Subject: RE: [PATCH v2 10/17] iommufd: Reorganize iommufd_device_attach into
- iommufd_device_change_pt
-Thread-Topic: [PATCH v2 10/17] iommufd: Reorganize iommufd_device_attach into
- iommufd_device_change_pt
-Thread-Index: AQHZUVYBZz2HI/d4HkatP4T1IE+lj67z4dOQ
-Date: Fri, 10 Mar 2023 11:26:42 +0000
-Message-ID: <BN9PR11MB52760C4E5C89118C1B898DA48CBA9@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <0-v2-51b9896e7862+8a8c-iommufd_alloc_jgg@nvidia.com>
- <10-v2-51b9896e7862+8a8c-iommufd_alloc_jgg@nvidia.com>
-In-Reply-To: <10-v2-51b9896e7862+8a8c-iommufd_alloc_jgg@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|SA1PR11MB7085:EE_
-x-ms-office365-filtering-correlation-id: 9e75ef21-2ec4-4708-1bc1-08db215a532e
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: P3Lyu1m52BnrrsQXySp5j9B87BLQOIZVNvQTpywcxjlPMtPNB7B/7D1T9XRUcMNoYHkDYqyqreLcWEMPjGCumOleZAhzNy9/YHzr0qjisLa+n6dpB0xyYUBGabxlQdSpqbCHKlCZ5MJW7tpnEMdWjQcHLGLIcdBnYLfRuXuxjhCbrANeOlz7cLOMX9n8Ozyz34HZHEOoFfCGCX8t9o7tixMbYm3VZlTYYuoT+iQ78/0rIkynjA//WAUAX5Kyq/stPOpST6Jogr43Uagz+pWZpSDn0m/xF5ZcKmbl5zoXSmX5LiKq+VGg+hx92JNlnBXj+sxvmrPy+0m/YWyck2S4Ubvn9XShAVh5lHayThUKHsMkyQjOaS72ZPPyJvz/Jf4JNdVsyV3AVHNT5adQ6v/UynrMY1xF5rfhwO0ulFWuo8LSCmKi99RnWPszg3h7AZkbbwF3R6OmbSyEKEjSoBtQgZ/emyyTK6bSipBrvKYMFPvSUucbJTZERNRwtUINQKqhDsd5WD3TxcTnjI3rqcEcDjLFqKRPQYvgt7rOH9XUtgQJRUkCoXLPH8O+AHC4+JSDSRwfiyMHeURTvC7u67DE6hZj4rNy0RQUSefM6MbFOfVpVSvwvj9UDCV4sm90rKiYI3ObfASB8EaMpQr0oCCzeJBkJQhVEu+GuhI3mwrDteFORw6k/joHXc31NUj1C+q82JYptOksxFkTNgh//ydXPg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(366004)(136003)(376002)(346002)(39860400002)(396003)(451199018)(33656002)(41300700001)(55016003)(186003)(71200400001)(82960400001)(7696005)(107886003)(83380400001)(6506007)(26005)(38070700005)(9686003)(66556008)(2906002)(8936002)(66946007)(76116006)(52536014)(64756008)(66446008)(4326008)(8676002)(66476007)(5660300002)(122000001)(316002)(110136005)(38100700002)(86362001)(478600001)(54906003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?e1j8uUrL1HFRHvxHmVWiPJzW/kBqjS9uFhlb2yG8RDcW1EfsWDdQcMPOG8Gj?=
- =?us-ascii?Q?mZRE5aS2RGCCNPIB+Za9/o3wq91kGdJd4QygjkEAlc6r+YYy7SycfeblFpVe?=
- =?us-ascii?Q?Fuf/55OhnxFBcHVCXaInSDNd6x5OYaCsaejXtVlysmXiotDjaFN7Ytqp/3iJ?=
- =?us-ascii?Q?5lh4muR765cGJPXxrdHN1tCpRMxWLL0YNbsfBhDsVfFdAbmAvTKwPlYNH5HK?=
- =?us-ascii?Q?134VqWtuyFLzqfPPw5YkkyFo3Jhpy9z85AJGnFHF6PxMuaLf5Wlq6SEwoWvO?=
- =?us-ascii?Q?YCT3Ozj/G/nLm0ss1GBdqdM8ggkluC5tU5pO/78HLwreTK8Iqi4qNAbwm0oP?=
- =?us-ascii?Q?zqY91gzwZRIu9hwucuUhaaOdZrD4wuBtXBGrWeg3tQchJI5mJXC+f6CYIptx?=
- =?us-ascii?Q?iin6gTsBQ4kmJJB6LfwbaK8XOdYGh76vsyziBb78bd591WegsmNB8ekkN32Y?=
- =?us-ascii?Q?aa/fBbaZCEb2hoH2u7uk6ASqTCsYuSq3o1y1SE8u6zY97e6tkfPFSvoJXKwh?=
- =?us-ascii?Q?4QBP43pFuVR57abmUlwfcqoNCliQcJE+et+2ffbrNT60kSZj3Sv3D8YkyydP?=
- =?us-ascii?Q?Ad3ozexvYz7U4TNklgtDm5cFQ/7D2uqDADqk+/i1iMvFQ42CCKt4fz5NsaOM?=
- =?us-ascii?Q?L2qpcgGpVS6W2IQTYCt+V4GPv49fn/eC5Aj43H2//KB8xLSOkKtJVmwYEDdu?=
- =?us-ascii?Q?1rY1EhEG3lB7Y2jzl7VU3456mzTyALsoHXp3T8CdOaPizsG/LW8SgbxxLGUl?=
- =?us-ascii?Q?TI+t1C0A2sjQ5oMm+e5T26+b9RZYHUe7rP74tBONvDS/NE6n4mq73y2ISEua?=
- =?us-ascii?Q?TqLBgOWa3bQRqfh9h8kbXH81TaUT+Tl/g5/LB0I6tR9XQ4J2b5XN7gc9BbN0?=
- =?us-ascii?Q?6z4izwX6FEC3IOduh/+3N8Ohf6K4f2yL3kdpaqf8sfL336jYDPG3BgOCM/kP?=
- =?us-ascii?Q?3VrX/MVln7XiroXuzt2VkKzmP8P3l8YUuWAxvt27WMGlIxTXQNUyV0OIGpVS?=
- =?us-ascii?Q?odfG5nZTzer13sLhVeUZONcKjqTpsNXehBaMQ5Hhp/9WCu8U1aTveZk4qUvE?=
- =?us-ascii?Q?aIp0npRLx2yzsT7tErijg6Am1JwOLn7kTLcbbqxLYU1GOP6Fyc9M4kKqgILZ?=
- =?us-ascii?Q?SNtIPy/tvc3btb8b7LCeXtcTV1KelNra5Np8jF4/vSZAPU9QDbb+8Oqkv6wY?=
- =?us-ascii?Q?PfTG8nZOUzjU7SsSe5+/KAukh27fTk7hv9UVR4+Rn0wFxlmqPVvRK74bgQAb?=
- =?us-ascii?Q?m1a/PaOvxMXEsK7x47El2ipulebJC/zxlDDQ2M6lfR/yHaxO1RGHm5moW/lk?=
- =?us-ascii?Q?2ZXb+q4MAFqYRp0dO6/wMmO+8QnAkWSSzbQYDSmSSKraKPNA6/SIT9IWRw56?=
- =?us-ascii?Q?8t9ML50QAgjwy7y9NltBGKkVO652hdOYONXcFhJ1KyqM5LMmK4jBshoX3x53?=
- =?us-ascii?Q?udAkIopOaXA2ap11BVNrZqkCb3ONeeKwg6IZ2G8xsDeTICZ1X387RWWKbSpl?=
- =?us-ascii?Q?0M94wl+8O8UoWgG4blLH3vb4ey6/KE5/vGVch5sW31jzhO3USdscNPs6ihum?=
- =?us-ascii?Q?gahCCSa/Xlc/8MvzhjMO7CmYgyuqSpNhISORculv?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B612A2F49
+	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 11:33:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1678447999;
+	h=from:from:reply-to:reply-to:subject:subject:date:date:
+	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+	 content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=O4S3SJNUbgNLYyhpATwshP+7xAKmJ12/+l9BB0p8/V4=;
+	b=dEkSk4/vf9jaktPzCY2e8gFSURN2qUjfxB1MJPczr7lExp8iSpu/4EXA4JQQwfxYFuGZXU
+	TooGNmFgfFCER+UUrLPM1VAzR04/9gs+AIIjUCEBznBI3dNMqD00zDbDoZbC4jR1LvLV4a
+	8bEmPmZnVOrN6yOKqkyVMe5WiyiXXPg=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-29-q9zaCrEPPB2o-5A7QjqciQ-1; Fri, 10 Mar 2023 06:33:18 -0500
+X-MC-Unique: q9zaCrEPPB2o-5A7QjqciQ-1
+Received: by mail-qt1-f199.google.com with SMTP id g11-20020ac8774b000000b003bfa92f56cbso2732025qtu.3
+        for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 03:33:18 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678447998;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:reply-to:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=O4S3SJNUbgNLYyhpATwshP+7xAKmJ12/+l9BB0p8/V4=;
+        b=RvYLnYs6hsNfxdOGf6tXe2pOdHRy3pnXlMKLqQVwX2Pi8MyKIz4FfDUVPLjak7ens5
+         Dwp3NdOORLoqAG47OziFdRWHVL25HOSX895DtZDUciCBi3d+b9rwuaRJ2DLXRHOxiHMh
+         7rNdT8pmtd0vCAkZavJ+zMq/MQdbxmNDWd9QvQB/8+AcA/H7kSb7UMnRUorTR585x6ud
+         kO2mpyqMbDFqzEwUGiAk3+wbM/wN6vYGmDuVCjqJe1ZwesmfQ5wQ3QL0YI+YKKSMCNOl
+         cPRsJbEyHtljFB9MVxojbgXcHi7EIKDX2IVa9oEtDMpFzTP96pzLq7xCYTl1d1LBGZ1p
+         g/hQ==
+X-Gm-Message-State: AO0yUKUSdWbMCrqOIUhgLtMbdyBhLX9jRjIO6TASE3sk7z+KDV5XQvFL
+	/tTo7ZZJKQuwyIFXT/MS3M/9U65grCpTvmrPQ0J+IeB/GHG40rSdbudaMA3vhGVrkGmz+z01zJ9
+	dC67GRjp7wj9LAEs=
+X-Received: by 2002:a05:6214:252c:b0:56e:fb4c:c1c4 with SMTP id gg12-20020a056214252c00b0056efb4cc1c4mr17633036qvb.14.1678447997929;
+        Fri, 10 Mar 2023 03:33:17 -0800 (PST)
+X-Google-Smtp-Source: AK7set+ObrN18F32cy+WpRBzCha3lX+Kgx4jipHI9s53RhcUyjRx5aXFaUu+xqai/SF8up4rIR787Q==
+X-Received: by 2002:a05:6214:252c:b0:56e:fb4c:c1c4 with SMTP id gg12-20020a056214252c00b0056efb4cc1c4mr17633010qvb.14.1678447997662;
+        Fri, 10 Mar 2023 03:33:17 -0800 (PST)
+Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874? ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
+        by smtp.gmail.com with ESMTPSA id y20-20020a37f614000000b0074308a0124asm1152231qkj.50.2023.03.10.03.33.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 10 Mar 2023 03:33:17 -0800 (PST)
+Message-ID: <5288c0e9-b806-370d-e7de-8d69d5b8e902@redhat.com>
+Date: Fri, 10 Mar 2023 12:33:12 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9e75ef21-2ec4-4708-1bc1-08db215a532e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Mar 2023 11:26:42.9205
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: PrQ6N2j9cDC+Z+kcW0aTvYTgId7K1p4bKMtZ1nDPltnAk4I7E422GAJtJIhIitQx55hzCDYmI9Msw8j5J1wxkw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB7085
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Reply-To: eric.auger@redhat.com
+Subject: Re: [PATCH v1 02/14] iommufd: Add nesting related data structures for
+ ARM SMMUv3
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, robin.murphy@arm.com, will@kernel.org,
+ kevin.tian@intel.com, baolu.lu@linux.intel.com, joro@8bytes.org,
+ shameerali.kolothum.thodi@huawei.com, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, yi.l.liu@intel.com
+References: <cover.1678348754.git.nicolinc@nvidia.com>
+ <364cfbe5b228ab178093db2de13fa3accf7a6120.1678348754.git.nicolinc@nvidia.com>
+ <20230309134217.GA1673607@myrica>
+From: Eric Auger <eric.auger@redhat.com>
+In-Reply-To: <20230309134217.GA1673607@myrica>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Wednesday, March 8, 2023 8:36 AM
->=20
-> @@ -379,52 +388,57 @@ static int
-> iommufd_device_auto_get_domain(struct iommufd_device *idev,
->=20
->  		if (!iommufd_lock_obj(&hwpt->obj))
->  			continue;
-> -		rc =3D iommufd_device_do_attach(idev, hwpt);
-> -		iommufd_put_object(&hwpt->obj);
-> -
-> -		/*
-> -		 * -EINVAL means the domain is incompatible with the device.
-> -		 * Other error codes should propagate to userspace as failure.
-> -		 * Success means the domain is attached.
-> -		 */
-> -		if (rc =3D=3D -EINVAL)
-> -			continue;
-> +		destroy_hwpt =3D (*do_attach)(idev, hwpt);
->  		*pt_id =3D hwpt->obj.id;
+Hi,
+On 3/9/23 14:42, Jean-Philippe Brucker wrote:
+> Hi Nicolin,
+>
+> On Thu, Mar 09, 2023 at 02:53:38AM -0800, Nicolin Chen wrote:
+>> Add the following data structures for corresponding ioctls:
+>>                iommu_hwpt_arm_smmuv3 => IOMMUFD_CMD_HWPT_ALLOC
+>>     iommu_hwpt_invalidate_arm_smmuv3 => IOMMUFD_CMD_HWPT_INVALIDATE
+>>
+>> Also, add IOMMU_HW_INFO_TYPE_ARM_SMMUV3 and IOMMU_PGTBL_TYPE_ARM_SMMUV3_S1
+>> to the header and corresponding type/size arrays.
+>>
+>> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+>> +/**
+>> + * struct iommu_hwpt_arm_smmuv3 - ARM SMMUv3 specific page table data
+>> + *
+>> + * @flags: page table entry attributes
+>> + * @s2vmid: Virtual machine identifier
+>> + * @s1ctxptr: Stage-1 context descriptor pointer
+>> + * @s1cdmax: Number of CDs pointed to by s1ContextPtr
+>> + * @s1fmt: Stage-1 Format
+>> + * @s1dss: Default substream
+>> + */
+>> +struct iommu_hwpt_arm_smmuv3 {
+>> +#define IOMMU_SMMUV3_FLAG_S2	(1 << 0) /* if unset, stage-1 */
+> I don't understand the purpose of this flag, since the structure only
+> provides stage-1 configuration fields
+>
+>> +#define IOMMU_SMMUV3_FLAG_VMID	(1 << 1) /* vmid override */
+> Doesn't this break isolation?  The VMID space is global for the SMMU, so
+> the guest could access cached mappings of another device
+>
+>> +	__u64 flags;
+>> +	__u32 s2vmid;
+>> +	__u32 __reserved;
+>> +	__u64 s1ctxptr;
+>> +	__u64 s1cdmax;
+>> +	__u64 s1fmt;
+>> +	__u64 s1dss;
+>> +};
+>> +
+>
+>> +/**
+>> + * struct iommu_hwpt_invalidate_arm_smmuv3 - ARM SMMUv3 cahce invalidation info
+>> + * @flags: boolean attributes of cache invalidation command
+>> + * @opcode: opcode of cache invalidation command
+>> + * @ssid: SubStream ID
+>> + * @granule_size: page/block size of the mapping in bytes
+>> + * @range: IOVA range to invalidate
+>> + */
+>> +struct iommu_hwpt_invalidate_arm_smmuv3 {
+>> +#define IOMMU_SMMUV3_CMDQ_TLBI_VA_LEAF	(1 << 0)
+>> +	__u64 flags;
+>> +	__u8 opcode;
+>> +	__u8 padding[3];
+>> +	__u32 asid;
+>> +	__u32 ssid;
+>> +	__u32 granule_size;
+>> +	struct iommu_iova_range range;
+>> +};
+> Although we can keep the alloc and hardware info separate for each IOMMU
+> architecture, we should try to come up with common invalidation methods.
+>
+> It matters because things like vSVA, or just efficient dynamic mappings,
+> will require optimal invalidation latency. A paravirtual interface like
+> vhost-iommu can help with that, as the host kernel will handle guest
+> invalidations directly instead of doing a round-trip to host userspace
+> (and we'll likely want the same path for PRI.)
+>
+> Supporting HW page tables for a common PV IOMMU does require some
+> architecture-specific knowledge, but invalidation messages contain roughly
+> the same information on all architectures. The PV IOMMU won't include
+> command opcodes for each possible architecture if one generic command does
+> the same job.
+>
+> Ideally I'd like something like this for vhost-iommu:
+>
+> * slow path through userspace for complex requests like attach-table and
+>   probe, where the VMM can decode arch-specific information and translate
+>   them to iommufd and vhost-iommu ioctls to update the configuration.
+>
+> * fast path within the kernel for performance-critical requests like
+>   invalidate, page request and response. It would be absurd for the
+>   vhost-iommu driver to translate generic invalidation requests from the
+>   guest into arch-specific commands with special opcodes, when the next
+>   step is calling the IOMMU driver which does that for free.
+>
+> During previous discussions we came up with generic invalidations that
+> could fit both Arm and x86 [1][2]. The only difference was the ASID
+> (called archid/id in those proposals) which VT-d didn't need. Could we try
+> to build on that?
 
-only when succeed?
+I do agree with Jean. We spent a lot of efforts all together to define
+this generic invalidation API and if there is compelling reason that
+prevents from using it, we should try to reuse it.
 
-> +		iommufd_put_object(&hwpt->obj);
-> +		if (IS_ERR(destroy_hwpt)) {
-> +			/*
-> +			 * -EINVAL means the domain is incompatible with
-> the
-> +			 * device. Other error codes should propagate to
-> +			 * userspace as failure. Success means the domain is
-> +			 * attached.
-> +			 */
-> +			if (PTR_ERR(destroy_hwpt) =3D=3D -EINVAL)
-> +				continue;
-> +			goto out_unlock;
-> +		}
->  		goto out_unlock;
+Thanks
 
-two goto's can be merged, if you still want to keep pt_id assignment
-in original place.
+Eric
+>
+> [1] https://elixir.bootlin.com/linux/v5.17/source/include/uapi/linux/iommu.h#L161
+> [2] https://lists.oasis-open.org/archives/virtio-dev/202102/msg00014.html
+>
+> Thanks,
+> Jean
+>
 
->  	}
->=20
-> -	hwpt =3D iommufd_hw_pagetable_alloc(idev->ictx, ioas, idev, true);
-> +	hwpt =3D iommufd_hw_pagetable_alloc(idev->ictx, ioas, idev,
-> +					  immediate_attach);
->  	if (IS_ERR(hwpt)) {
-> -		rc =3D PTR_ERR(hwpt);
-> +		destroy_hwpt =3D ERR_CAST(hwpt);
->  		goto out_unlock;
->  	}
-> +
-> +	if (!immediate_attach) {
-> +		destroy_hwpt =3D (*do_attach)(idev, hwpt);
-> +		if (IS_ERR(destroy_hwpt))
-> +			goto out_abort;
-> +	} else {
-> +		destroy_hwpt =3D NULL;
-> +	}
-> +
-
-Above is a bit confusing.
-
-On one hand we have immediate_attach for drivers which must
-complete attach before we can add the domain to iopt. From
-this angle it should always be set when calling
-iommufd_hw_pagetable_alloc() no matter it's attach or replace.
-
-On the other hand we assume *replace* doesn't work with
-driver which requires immediate_attach so it's done outside of
-iommufd_hw_pagetable_alloc().
-
-I'm unsure any better way of handling this transition phase, but
-at least some comment would be useful in this part.
