@@ -1,71 +1,61 @@
-Received: from mail-oo1-f44.google.com (mail-oo1-f44.google.com [209.85.161.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 794AA8820
-	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 14:47:46 +0000 (UTC)
-Received: by mail-oo1-f44.google.com with SMTP id p8-20020a4a3c48000000b0052527a9d5f0so819118oof.1
-        for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 06:47:46 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678459665;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=BaG0TuJkSsZEq6KyR2Pw2svGg0iIophmgifd7AAJgZA=;
-        b=ZT/CvKxSBhgiC7NEOHVyq4ToCzgVVZCOiKVyXoeTlQje6JtJvi4KCJTZLY0QtDF1Il
-         kvs9MeGIpntVu+XCWHvVWIlSUWrmYgD0LKgDTgp8ZwBTDr5XcVwlGuMHzig5l+W3Az4f
-         Zec60/0Cr73jRjC5Zmk+1EuocU+xKAatpjo532smZdYKBc7fzQONt8dOEihnG2f3d984
-         JuTGEyxzaWsmkxOItAxdrwe59nE16VPH8sz6VvklfTnI9/ov+8aqPSOD2kyMtvccWr48
-         iISewZNA/NjW9udzqrNmHLfLzR/atSJdrrkNQBb2wWokhVu29+g1tEZgkGs1zSvzn9kQ
-         VRSA==
-X-Gm-Message-State: AO0yUKW3Id4E06D86+Ay9lKuDwiDUVGE2485wAAuAZHq1PJ1L9LFf/eN
-	nFpnZ4+cV/QjIYKMWnc7XA==
-X-Google-Smtp-Source: AK7set8+gWXMSTtGEYuxYj+rHrEgRcQwcPQPrVXthx8wns6wXVi81jocwA/15crUkZWCDQp+pYVWYQ==
-X-Received: by 2002:a05:6820:174:b0:51a:ac9:775 with SMTP id k20-20020a056820017400b0051a0ac90775mr12553434ood.6.1678459665482;
-        Fri, 10 Mar 2023 06:47:45 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id 63-20020a9d0845000000b00690f6d9a737sm134796oty.8.2023.03.10.06.47.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Mar 2023 06:47:44 -0800 (PST)
-Received: (nullmailer pid 1543027 invoked by uid 1000);
-	Fri, 10 Mar 2023 14:47:09 -0000
-From: Rob Herring <robh@kernel.org>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-Cc: devicetree@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu: omap: Use of_property_read_bool() for boolean properties
-Date: Fri, 10 Mar 2023 08:47:09 -0600
-Message-Id: <20230310144709.1542980-1-robh@kernel.org>
-X-Mailer: git-send-email 2.39.2
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 99C948820
+	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 14:52:50 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 77AED1515;
+	Fri, 10 Mar 2023 06:53:33 -0800 (PST)
+Received: from [10.57.90.67] (unknown [10.57.90.67])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 11F5C3F71A;
+	Fri, 10 Mar 2023 06:52:47 -0800 (PST)
+Message-ID: <82f5b94b-01fe-5c99-608c-f7d124247b7c@arm.com>
+Date: Fri, 10 Mar 2023 14:52:42 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v1 02/14] iommufd: Add nesting related data structures for
+ ARM SMMUv3
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
+ eric.auger@redhat.com, kevin.tian@intel.com, baolu.lu@linux.intel.com,
+ joro@8bytes.org, shameerali.kolothum.thodi@huawei.com,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, yi.l.liu@intel.com
+References: <cover.1678348754.git.nicolinc@nvidia.com>
+ <364cfbe5b228ab178093db2de13fa3accf7a6120.1678348754.git.nicolinc@nvidia.com>
+ <20230309134217.GA1673607@myrica> <ZAnx0lUkw02cVTi+@nvidia.com>
+ <20230309182659.GA1710571@myrica> <ZApJGwPjHhlDwTDV@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <ZApJGwPjHhlDwTDV@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-It is preferred to use typed property access functions (i.e.
-of_property_read_<type> functions) rather than low-level
-of_get_property/of_find_property functions for reading properties.
-Convert reading boolean properties to to of_property_read_bool().
+On 2023-03-09 21:01, Jason Gunthorpe wrote:
+>> For a lot of SMMUv3 implementations that have a single queue and for
+>> other architectures, we can do better than hardware emulation.
+> 
+> How is using a SW emulated virtio formatted queue better than using a
+> SW emulated SMMUv3 ECMDQ?
 
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- drivers/iommu/omap-iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Since it's not been said, the really big thing is that virtio explicitly 
+informs the host whenever the guest maps something. Emulating SMMUv3 
+means the host has to chase all the pagetable pointers in guest memory 
+and trap writes such that it has visibility of invalid->valid 
+transitions and can update the physical shadow pagetable correspondingly.
 
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index 3ab078112a7c..baafd6211ac4 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -1191,7 +1191,7 @@ static int omap_iommu_probe(struct platform_device *pdev)
- 		return err;
- 	if (obj->nr_tlb_entries != 32 && obj->nr_tlb_entries != 8)
- 		return -EINVAL;
--	if (of_find_property(of, "ti,iommu-bus-err-back", NULL))
-+	if (of_property_read_bool(of, "ti,iommu-bus-err-back"))
- 		obj->has_bus_err_back = MMU_GP_REG_BUS_ERR_BACK_EN;
- 
- 	obj->dev = &pdev->dev;
--- 
-2.39.2
+FWIW we spent quite some time on and off discussing something like 
+VT-d's "caching mode", but never found a convincing argument that it was 
+a gap which needed filling, since we already had hardware nesting for 
+maximum performance and a paravirtualisation option for efficient 
+emulation. Thus full SMMUv3 emulation seems to just sit at the bottom as 
+the maximum-compatibility option for pushing an unmodified legacy 
+bare-metal software stack into a VM where nesting isn't available.
 
+Cheers,
+Robin.
