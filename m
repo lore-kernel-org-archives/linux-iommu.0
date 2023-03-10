@@ -1,143 +1,102 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 476867E1
-	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 20:39:29 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 13872AD7;
-	Fri, 10 Mar 2023 12:40:12 -0800 (PST)
-Received: from [10.57.90.67] (unknown [10.57.90.67])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E55623F71A;
-	Fri, 10 Mar 2023 12:39:25 -0800 (PST)
-Message-ID: <0d1e585d-9a11-3f7b-4faa-dc2aa8f961cc@arm.com>
-Date: Fri, 10 Mar 2023 20:39:20 +0000
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85942C957
+	for <iommu@lists.linux.dev>; Fri, 10 Mar 2023 21:32:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678483963; x=1710019963;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ehc2G1Khk+7j9DBXV2qWdm7ZCJBZCQ3dNkGTzQyl2kg=;
+  b=LG+DezhbxAV+NSx/OWhkF+q7LOXwxCLlNRb830s9+uvT9N+lhulmRg97
+   Zc/ebI/9ghHCwhZDT7HoERIwNM97UjjDT3elF5u3OLYEyq2V7SH7YamXF
+   tvEurEF+5c9s11r3Y145V5TkiwC3gP7Nvf06wm249DgTQPtVp0SRl1R+B
+   0A/918jgi4ptSqC506cJb+BV5i68YpRAVEaVGtgU6Fxkx3vn9eS6jNwIR
+   yprlad/2M/yq1XYkJnTA2zczuL7qcrNFPdXHWSUWJjezIyzDAdDf33j9A
+   2LfQjsdBt/xeOovMSmzyReOGDXkQ0lN2A6L/xeS7jpZyEDBvS2fnM4tI/
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10645"; a="335530951"
+X-IronPort-AV: E=Sophos;i="5.98,250,1673942400"; 
+   d="scan'208";a="335530951"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2023 13:32:36 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10645"; a="766977604"
+X-IronPort-AV: E=Sophos;i="5.98,250,1673942400"; 
+   d="scan'208";a="766977604"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2023 13:32:35 -0800
+Date: Fri, 10 Mar 2023 13:36:28 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Jason
+ Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg
+ Roedel <joro@8bytes.org>, Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Dave Hansen <dave.hansen@intel.com>, Thomas Gleixner <tglx@linutronix.de>,
+ X86 Kernel <x86@kernel.org>, bp@alien8.de, "H. Peter Anvin"
+ <hpa@zytor.com>, Peter Zijlstra <peterz@infradead.org>, corbet@lwn.net,
+ vkoul@kernel.org, dmaengine@vger.kernel.org, linux-doc@vger.kernel.org,
+ Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Raj
+ Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
+ <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>, Dave Jiang
+ <dave.jiang@intel.com>, Kirill Shutemov <kirill.shutemov@linux.intel.com>,
+ Tony Luck <tony.luck@intel.com>, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v5 2/7] iommu/sva: Move PASID helpers to sva code
+Message-ID: <20230310133628.290c0efa@jacob-builder>
+In-Reply-To: <30923327-6c08-f0c1-1b52-c1d818f3a3a2@arm.com>
+References: <20230309222159.487826-1-jacob.jun.pan@linux.intel.com>
+	<20230309222159.487826-4-jacob.jun.pan@linux.intel.com>
+	<30923327-6c08-f0c1-1b52-c1d818f3a3a2@arm.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v1 08/14] iommu/arm-smmu-v3: Prepare for nested domain
- support
-Content-Language: en-GB
-To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com, will@kernel.org
-Cc: eric.auger@redhat.com, kevin.tian@intel.com, baolu.lu@linux.intel.com,
- joro@8bytes.org, shameerali.kolothum.thodi@huawei.com,
- jean-philippe@linaro.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <cover.1678348754.git.nicolinc@nvidia.com>
- <4740f8a40caf68ccc1f9fee5fcdf1604546fb354.1678348754.git.nicolinc@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <4740f8a40caf68ccc1f9fee5fcdf1604546fb354.1678348754.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 2023-03-09 10:53, Nicolin Chen wrote:
-> In a nested translation setup, the device is attached to a stage-1 domain
-> that represents the guest-level Context Descriptor table. A Stream Table
-> Entry for a 2-stage translation needs both the stage-1 Context Descriptor
-> table info and the stage-2 Translation table information, i.e. a pair of
-> s1_cfg and s2_cfg.
-> 
-> Add an "s2" pointer in struct arm_smmu_domain, so a nested stage-1 domain
-> can simply navigate its stage-2 domain for the s2_cfg pointer. Also, add
-> a to_s2_cfg() helper for this purpose, and use it at proper places.
-> 
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 25 +++++++++++++++++++--
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 +
->   2 files changed, 24 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 21d819979865..fee5977feef3 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -100,6 +100,24 @@ static void parse_driver_options(struct arm_smmu_device *smmu)
->   	} while (arm_smmu_options[++i].opt);
->   }
->   
-> +static struct arm_smmu_s2_cfg *to_s2_cfg(struct arm_smmu_domain *smmu_domain)
-> +{
-> +	if (!smmu_domain)
-> +		return NULL;
-> +
-> +	switch (smmu_domain->stage) {
-> +	case ARM_SMMU_DOMAIN_S1:
-> +		if (smmu_domain->s2)
-> +			return &smmu_domain->s2->s2_cfg;
-> +		return NULL;
-> +	case ARM_SMMU_DOMAIN_S2:
-> +		return &smmu_domain->s2_cfg;
-> +	case ARM_SMMU_DOMAIN_BYPASS:
-> +	default:
-> +		return NULL;
-> +	}
-> +}
-> +
->   /* Low-level queue manipulation functions */
->   static bool queue_has_space(struct arm_smmu_ll_queue *q, u32 n)
->   {
-> @@ -1277,6 +1295,7 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
->   		switch (smmu_domain->stage) {
->   		case ARM_SMMU_DOMAIN_S1:
->   			s1_cfg = &smmu_domain->s1_cfg;
-> +			s2_cfg = to_s2_cfg(smmu_domain);
+Hi Robin,
 
-TBH I'd say you only need a 2-line change here. All the other cases 
-below are when the stage is guaranteed to be ARM_SMMU_DOMAIN_S2 (once 
-ARM_SMMU_DOMAIN_NESTED is gone), so pretending it might be otherwise 
-seems unnecessarily confusing.
+On Fri, 10 Mar 2023 20:00:52 +0000, Robin Murphy <robin.murphy@arm.com>
+wrote:
+
+> On 2023-03-09 22:21, Jacob Pan wrote:
+> > Preparing to remove IOASID infrastructure, PASID management will be
+> > under SVA code. Decouple mm code from IOASID. Use iommu-help.h instead
+> > of iommu.h to prevent circular inclusion.
+> > 
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > ---
+> > v5:
+> > 	- move definition of helpers to iommu code to be consistent with
+> > 	  declarations. (Kevin)
+> > 	- fix patch partitioning bug (Baolu)
+> > v4:
+> > 	- delete and open code mm_set_pasid
+> > 	- keep mm_init_pasid() as inline for fork performance
+> > ---
+> >   drivers/iommu/iommu-sva.c    | 10 +++++++++-
+> >   include/linux/ioasid.h       |  2 +-
+> >   include/linux/iommu-helper.h | 12 ++++++++++++  
+> 
+> Eww, can we not? iommu-helper is very much just parts of a specific type 
+> of bitmap-based IOVA allocator used by some crusty old arch-specific 
+> IOMMU code and SWIOTLB. It is unrelated to the iommu.h IOMMU API, and 
+> dragging that stuff into modern SVA-related matters seems bizarrely 
+> inappropriate. Could we just move the mm_pasid stuff into ioasid.h here, 
+> then maybe rename it to iommu-sva.h at the end if eradicating the old 
+> name really matters?
+thanks for explaining the history behind iommu-helper.h, having a new
+include/linux/iommu-sva.h would probably be cleaner.
+
+my original intent for using iommu-helper.h was to avoid problems by mm.h
+#include iommu.h. So I just needed a separate small header. let me do
+without iommu-helper.h.
 
 Thanks,
-Robin.
 
->   			break;
->   		case ARM_SMMU_DOMAIN_S2:
->   			s2_cfg = &smmu_domain->s2_cfg;
-> @@ -1846,6 +1865,7 @@ int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
->   static void arm_smmu_tlb_inv_context(void *cookie)
->   {
->   	struct arm_smmu_domain *smmu_domain = cookie;
-> +	struct arm_smmu_s2_cfg *s2_cfg = to_s2_cfg(smmu_domain);
->   	struct arm_smmu_device *smmu = smmu_domain->smmu;
->   	struct arm_smmu_cmdq_ent cmd;
->   
-> @@ -1860,7 +1880,7 @@ static void arm_smmu_tlb_inv_context(void *cookie)
->   		arm_smmu_tlb_inv_asid(smmu, smmu_domain->s1_cfg.cd.asid);
->   	} else {
->   		cmd.opcode	= CMDQ_OP_TLBI_S12_VMALL;
-> -		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
-> +		cmd.tlbi.vmid	= s2_cfg->vmid;
->   		arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
->   	}
->   	arm_smmu_atc_inv_domain(smmu_domain, 0, 0, 0);
-> @@ -1931,6 +1951,7 @@ static void arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
->   					  size_t granule, bool leaf,
->   					  struct arm_smmu_domain *smmu_domain)
->   {
-> +	struct arm_smmu_s2_cfg *s2_cfg = to_s2_cfg(smmu_domain);
->   	struct arm_smmu_cmdq_ent cmd = {
->   		.tlbi = {
->   			.leaf	= leaf,
-> @@ -1943,7 +1964,7 @@ static void arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
->   		cmd.tlbi.asid	= smmu_domain->s1_cfg.cd.asid;
->   	} else {
->   		cmd.opcode	= CMDQ_OP_TLBI_S2_IPA;
-> -		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
-> +		cmd.tlbi.vmid	= s2_cfg->vmid;
->   	}
->   	__arm_smmu_tlb_inv_range(&cmd, iova, size, granule, smmu_domain);
->   
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 1a93eeb993ea..6cf516852721 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -709,6 +709,7 @@ enum arm_smmu_domain_stage {
->   };
->   
->   struct arm_smmu_domain {
-> +	struct arm_smmu_domain		*s2;
->   	struct arm_smmu_device		*smmu;
->   	struct mutex			init_mutex; /* Protects smmu pointer */
->   
+Jacob
