@@ -1,120 +1,112 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2063.outbound.protection.outlook.com [40.107.237.63])
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA2DB7B
-	for <iommu@lists.linux.dev>; Sat, 11 Mar 2023 12:53:12 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eTIqqdZYf3awB3pw9+SmYxEInMzYf2fSRmAKUhgfboA1vmPksVwkPS9Yx7ahjmysCYX3ZxmMbjvT+TFpZux42ZL5BMTJstJeOcNooRA0qUeLEu/oR6shg2BoCXxCzY9vw37hR47ek861b2qNMhqTCOqcRfGMDTwARUI9JchwNDKZj2fXAPvtzcsWPqoy5I9R73l0NtmWnuhk0RpARK8dDB9PsNZ8T8PZxVyI8HA3Agca3Bi8oMnTfQVwa1rbpz2WEd0e5SSe8C0gNLteJfUA3uFVD/ywYZw8ZN5VQvDpIUrJALfXz0TU8UHCWBItKSbpKtsvk2r1KZz8wPCoQsZmTQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=maWc9Gax2msHB8eKtnrWT1VPdLaBUMAKSyKgxPUil5g=;
- b=oF9J/6b4uLz8sYrL4egb3R1tn4z9B7re90urcYRxR5AN9wzmm5/MfE/YPAqJxNmzTI5R+BGqE6aL/ZW4q+J6EnnAgqLJ/+3dVBHlCs3NuMaNlu2Bx/8XH2euTFzGPnzPW+TOAo92nEuL8eEvotl7sitAawcOW0LU+nvtKtNzhcLbMtXHB6JYF+hNbxub6JOlLt6CCrv0oejUxiGWG7ZUidqu2nxvohmnhdWh6uzcOWzNgjPhnvXfp5Sf2OrN8Tf1JIgny9yeooYNptSWz4EoWqBIz61J4j0LMHy3tS0WmaVg8qVO1n/Gkeyd+/jrE7zPk+PNRmg3GrmgIraAeIYlxw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=maWc9Gax2msHB8eKtnrWT1VPdLaBUMAKSyKgxPUil5g=;
- b=pfrEUOB7hDHx0pnzlSq5Z4jIWcf2zVxUhNhfAKgjkQnBXdZsGjiZluxLT63h3j9lds9nXyRsJRUN10tz1YHre6F5BnJSEp1+xFfBGPv5NtrUjZWk1NEOXYU3pwPGJ/tFQF+uQIcpyzWk2IcuQx3qD+4gL+3m524FqjS+DKLDrINMY42aYMTQJh+cG9IORIZMhyu/Var0XUdtVer5/V1lcwSuh1VqpbVBmh8V2pfqsdX6j2xyKNVysQ+qWHd00yahzflDgOAIxjhGWJwuav64CWIKd1z9R9z/a8jLzo+sYHnE/irOIqxodnTeINZSJ416G7qDorQnhcb/RRPwbtPBKA==
-Received: from BN1PR10CA0011.namprd10.prod.outlook.com (2603:10b6:408:e0::16)
- by BL1PR12MB5852.namprd12.prod.outlook.com (2603:10b6:208:397::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.19; Sat, 11 Mar
- 2023 12:53:10 +0000
-Received: from BN8NAM11FT089.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:e0:cafe::18) by BN1PR10CA0011.outlook.office365.com
- (2603:10b6:408:e0::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.23 via Frontend
- Transport; Sat, 11 Mar 2023 12:53:10 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- BN8NAM11FT089.mail.protection.outlook.com (10.13.176.105) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6178.22 via Frontend Transport; Sat, 11 Mar 2023 12:53:10 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Sat, 11 Mar 2023
- 04:53:09 -0800
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Sat, 11 Mar
- 2023 04:53:09 -0800
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Sat, 11 Mar 2023 04:53:08 -0800
-Date: Sat, 11 Mar 2023 04:53:07 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Robin Murphy <robin.murphy@arm.com>, <will@kernel.org>,
-	<eric.auger@redhat.com>, <kevin.tian@intel.com>, <baolu.lu@linux.intel.com>,
-	<joro@8bytes.org>, <shameerali.kolothum.thodi@huawei.com>,
-	<jean-philippe@linaro.org>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 14/14] iommu/arm-smmu-v3: Add
- arm_smmu_cache_invalidate_user
-Message-ID: <ZAx5s9tXiwFi50N9@Asurada-Nvidia>
-References: <cover.1678348754.git.nicolinc@nvidia.com>
- <aa327f9ea61e5a4771c13e53639e33955b9acde3.1678348754.git.nicolinc@nvidia.com>
- <1467e666-1b6c-c285-3f79-f8e8b088718b@arm.com>
- <ZAn7uC9UweiNdGkJ@nvidia.com>
- <ZAqv87fjbdynVaHA@Asurada-Nvidia>
- <ZAtYphmOuEqQ1BiC@nvidia.com>
- <ZAxsgjuuG3ziqs9E@Asurada-Nvidia>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01FE67B;
+	Sat, 11 Mar 2023 13:39:01 +0000 (UTC)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	by mailout.nyi.internal (Postfix) with ESMTP id 093D55C00E6;
+	Sat, 11 Mar 2023 08:39:01 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Sat, 11 Mar 2023 08:39:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+	 h=cc:cc:content-transfer-encoding:content-type:date:date:from
+	:from:in-reply-to:message-id:mime-version:reply-to:sender
+	:subject:subject:to:to; s=fm2; t=1678541941; x=1678628341; bh=it
+	VVtU9Drcg8BUr7cYlsI8p83sJPuETIMO1tPfSIU8I=; b=qh5Vg0pu/qeoEMsTJ/
+	5uBEZS1YZaiM32R6f98WgOzx+cW2iUdiW+ia+nJ4bYNIc87BsM+0aKWvi7DxhZzW
+	RQFXe6FHVD8Oz8dxOuCyF0Mvp0+ZFnztoYv8t1p26cmi/ELK5MxnVD7lqw0yz8x7
+	aPnTC16+641BekwZE1r2SxtupXthg6I5CGywBQCwRLVOiZVDPg6gspipqNhhVIhT
+	vFd4lAcG6+060KN80QNrNH0/l8eSwX2NxYwQiwRcsGaqxsjcUkRoTLowW+2Nkj6w
+	xwuQ7EPWCvde670yi42WxiUSnbtinrRxJOzbf56glZypEJGUabsB32AriNtx4BfG
+	wnpQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:date:date:feedback-id:feedback-id:from:from
+	:in-reply-to:message-id:mime-version:reply-to:sender:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=fm2; t=1678541941; x=1678628341; bh=itVVtU9Drcg8B
+	Ur7cYlsI8p83sJPuETIMO1tPfSIU8I=; b=Gz0GYODrCPnfczSiw5q94odxrLvIh
+	A3GbK2szijOCUNkDaKVBECc0C2tmGopgO33XrvtfTukX12HqmlfYrZjCJNgNJroG
+	9n8HL9HFlJ+kWYvwiHLtvyPNtQyOCOOvekF8mWvPQooRqj6bSb9zSLh98XJKWzFV
+	Z7hUrXU/CB895rELDSSsOWo4mVc/OpGx0Fd5VludgY1Ntv4BBp/q2y+JfB1IDIeB
+	l2bgYFN1+PpGqF2Ahceo+z3SLiG1t+fTBgBW7dPY5T0qyREIZPM3h6qkGcPeN/ND
+	8k0+it/pq1ktjPfVBexy9ocQV/UEiG3dikyg/G3tvol3ZiHqlA47FfdEg==
+X-ME-Sender: <xms:dIQMZLGdfcsDp7xbsXHuSDuhKPtQR_MgJ1EHx5nezmH0zra5au_JWw>
+    <xme:dIQMZIVGS6V2Iq_VT6oLDkKPBKJcKClOO_-ko0t65PlRwBZeO9nJHfO6r5mjGpQVz
+    Ol1rrh1m6BLf2049h4>
+X-ME-Received: <xmr:dIQMZNLcZFLl-BaTnAlkObfkt7EyFQTIYouIt0u2ECIs-l2O-fg5XvhkLALUND8pQk9l8blHdtfqWvsycHdYu8Fxe9XOdC1WocpNbV-8z5Mzj-gnykLtp9WM-jeq0A>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvddvtddgfedtucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvvefufffkofgggfestdekredtredttdenucfhrhhomhepufhvvghnucfr
+    vghtvghruceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrghtthgvrh
+    hnpeeludffieehueevtdffvedtueelleejuddugfettdevhfefffdvgffhjeehgfelleen
+    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsvhgvnh
+    esshhvvghnphgvthgvrhdruggvvh
+X-ME-Proxy: <xmx:dIQMZJEd0qWz6xLOr4i-t5JFzN2VHLmWIPkvTJ23-LUkcjA0GrKXzQ>
+    <xmx:dIQMZBWh9px26z-lJVb5cG6aBKw7DdTJlyJ_l-sohYVRllWFsaW8FQ>
+    <xmx:dIQMZEMQ_p-ceCycoDnSFWxuzyItT6owk69UDaaKQueSyiwVoV1GoQ>
+    <xmx:dYQMZMO5lFgkwADtvi8fhhpZzoqCukzZ1_35VKbhWBN05lxzFDN3qg>
+Feedback-ID: i51094778:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
+ 11 Mar 2023 08:38:58 -0500 (EST)
+From: Sven Peter <sven@svenpeter.dev>
+To: Hector Martin <marcan@marcan.st>,
+	Sven Peter <sven@svenpeter.dev>
+Cc: Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	linux-arm-kernel@lists.infradead.org,
+	asahi@lists.linux.dev,
+	iommu@lists.linux.dev,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/3] Apple M1 USB4/Thunderbolt DART support
+Date: Sat, 11 Mar 2023 14:38:53 +0100
+Message-Id: <20230311133856.63840-1-sven@svenpeter.dev>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ZAxsgjuuG3ziqs9E@Asurada-Nvidia>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT089:EE_|BL1PR12MB5852:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4cdd582a-f792-44fa-4132-08db222f9196
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	kztolyfCSvkaYrN8G1TeszY57075DhgL4yRluV5zegLtA5jtHO2SX9Fr73Rx9ooboJ5mYA6ONH/iFBPDP/hamLmFC9u8b6hOEb3h4SrsO7mNrYMyGhztyUAfPRzCwfjGjaq8tzHMY8ecxH/VRBsEvuIVY26/8PNh7ry2aCcyhD8zRkpkBThV6D0q0xXiahmaV0TX2/rkjenTojyzV2E5mg3Ct1S2YMjwanQxs0IBTLX+8PqsbE4yz8C5Fw8+temgdXJimrIW3Abzn64pYSefuLunp1jQk3eYJpy6THTruaoEBx18E1LDtpaw6TqMw6r7ua/dIKNgs3KWmPPpEe2yRYgu1IS2SaxeYyxnD2LkyBkwh9DbsHkLTtWmjq4uAWchHlwfDP+XqT5lcQDGa68SLmWoZB06QMMqdsCTOx4ACQ7CuTY1AfWcCYqRdQP6VKw1BBfgQ7lvGSKP3DhfYFf4Im1ZxU+zTCy9+i36rxmKxb9+Hf+vI7Z4DWRNNKkDbAmlmnEfRdD4PlfvN7s4zS5UBjYCqVmhTr1WvNZxuL6G+e+dz/W1tATr9n4XtJYpZszNzrm9357bm+5XWH1e/gKBulCQkyu2ZzEgwX9jxkkR9scgJWkZXgrou2/ITxpUSxn045ZYRLmC73tZW9pEKriHmR+W7gjqGAUrfRMK0wkV2vIK89oQO/5wsU5jbdYPHCuRVFW6IX/zX8wpxcr8jxgUxe8Sj6TJQjqKO+DK5szEvxvNpHDOxGvSAvmHNej6TRY0
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(396003)(346002)(136003)(39860400002)(376002)(451199018)(46966006)(40470700004)(36840700001)(82310400005)(33716001)(82740400003)(36860700001)(426003)(47076005)(54906003)(55016003)(6636002)(40480700001)(478600001)(26005)(7636003)(316002)(356005)(336012)(41300700001)(40460700003)(8936002)(186003)(9686003)(5660300002)(7416002)(4744005)(8676002)(2906002)(6862004)(4326008)(70586007)(86362001)(70206006);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2023 12:53:10.2376
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4cdd582a-f792-44fa-4132-08db222f9196
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT089.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5852
+Content-Transfer-Encoding: 8bit
 
-On Sat, Mar 11, 2023 at 03:56:56AM -0800, Nicolin Chen wrote:
- 
-> I recall that one difficulty is to pass the vSID from the guest
-> down to the host kernel driver and to link with the pSID. What I
-> did previously for VCMDQ was to set the SID_MATCH register with
-> iommu_group_id(group) and set the SID_REPLACE register with the
-> pSID. Then hyper will use the iommu_group_id to search for the
-> pair of the registers, and to set vSID. Perhaps we should think
-> of something smarter.
+Hi,
 
-I just found that the CFGI_STE command has the SID field, yet
-we just didn't pack it in the data structure for a hwpt_alloc
-ioctl. So, perhaps it isn't that difficult at all. I'll try a
-bit of a test run next week.
+The M1 SoCs have a second slightly different variant of the regular
+DART used for the USB4 PCIe ports. It supports 64 instead of 16 streams
+which requires a minor change to the MMIO layout.
+There seems to be no way to tell them apart from the regular DARTs by
+just looking at the DART_PARAMs register so we have to add a new
+compatible for those.
 
-Thanks
-Nic
+Changes since v2:
+  - drop the manual bypass disable
+	- added Rob's tag
+
+Changes since v1:
+  - apple,t8103-usb4-dart instead of apple,t8103-dart-usb4 as the
+    compatible
+  - collected Hector's tags
+
+Best,
+
+Sven
+
+Sven Peter (3):
+  dt-bindings: iommu: dart: Add t8103-usb4-dart compatible
+  iommu: dart: Write to all DART_T8020_STREAM_SELECT
+  iommu: dart: Add support for t8103 USB4 DART
+
+ .../devicetree/bindings/iommu/apple,dart.yaml |  1 +
+ drivers/iommu/apple-dart.c                    | 35 +++++++++++++++++--
+ 2 files changed, 34 insertions(+), 2 deletions(-)
+
+-- 
+2.25.1
+
