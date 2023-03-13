@@ -1,310 +1,102 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23D9228F2
-	for <iommu@lists.linux.dev>; Mon, 13 Mar 2023 16:07:12 +0000 (UTC)
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20230313155118euoutp0246078d7e121c7dfdbcb8c38f0d9c17fd~MBWG4xg3k0448104481euoutp02P
-	for <iommu@lists.linux.dev>; Mon, 13 Mar 2023 15:51:18 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20230313155118euoutp0246078d7e121c7dfdbcb8c38f0d9c17fd~MBWG4xg3k0448104481euoutp02P
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1678722678;
-	bh=idBYdNhVWG1lAl/DSsWHGmi6Mxp52JxM2Xrj0My8wl8=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=Epw1cIFc96W8DfNC22mbt1Akzwe9sMR7I/ntFaUkIZ6erCAt7hBcYgMkEfQL3KZZe
-	 Ifs3IJ1MgQgZTjQ7/pnjllxZuTaw44iJ0xDKH0uCr3+9kE4urd/CqKBIsA8d4PkiqG
-	 joawophi5m39MCc0YxvOIJmm4weGB7ZjCMcu2oxk=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-	20230313155117eucas1p25c793851df8978d362ae3e8bcd04dfd2~MBWGhwRGf0784407844eucas1p2P;
-	Mon, 13 Mar 2023 15:51:17 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-	eusmges2new.samsung.com (EUCPMTA) with SMTP id 5A.8A.09966.5764F046; Mon, 13
-	Mar 2023 15:51:17 +0000 (GMT)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20230313155117eucas1p2f6a1e1073dfb4c30275d85c8ddd55a04~MBWFwvcPn0785807858eucas1p2t;
-	Mon, 13 Mar 2023 15:51:17 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-	20230313155117eusmtrp2625f602c9dc7573e965f1b16445152b3~MBWFwDLqq1314813148eusmtrp2L;
-	Mon, 13 Mar 2023 15:51:17 +0000 (GMT)
-X-AuditID: cbfec7f4-d39ff700000026ee-e1-640f4675ed47
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-	eusmgms2.samsung.com (EUCPMTA) with SMTP id 2E.EA.09583.5764F046; Mon, 13
-	Mar 2023 15:51:17 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20230313155116eusmtip2f0cab9a54cc5285c2fe3b59863b1c6ca~MBWE3rDzb1543715437eusmtip2J;
-	Mon, 13 Mar 2023 15:51:16 +0000 (GMT)
-Message-ID: <18d8e595-837d-5f6c-2a7a-09a47cf18d2e@samsung.com>
-Date: Mon, 13 Mar 2023 16:51:16 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 384702CA4
+	for <iommu@lists.linux.dev>; Mon, 13 Mar 2023 16:47:51 +0000 (UTC)
+Received: by mail-lf1-f47.google.com with SMTP id d36so16516689lfv.8
+        for <iommu@lists.linux.dev>; Mon, 13 Mar 2023 09:47:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1678726069;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=H/Xng2L0Nis9bfcRngZjnYKolZIpIcLii2KfuUAhG9w=;
+        b=SBP3GdlgbK6AYF6nVDhkX7eVTZqx1J2dBpyxxNddA57rFzy4BZmTNYmtmkbnCKotzY
+         sdnzZDi/CaElBYvCa84hQJSN0DFLAEI+h9uqplNBHwZy2mkNHkk/w4WYIKusdARaCLzb
+         OLNvyJccRhChqef6QVKxFxpoczV0HmNlJpl1XmnRKwheIVB4DZRIfGO4up9AqfA/FLz7
+         sZuJTYNeGUzg/20faZe21N5PH9sl+9Hhc9a5s510yphLcte/eJW/A/rfJvN5T2dETBdy
+         wxujlUloBkFgNc1eV4esqHUPfIejznbuHmZt7hfMqzVv3cU1ryZ28MRBE/4AFGIS1XGf
+         CrDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678726069;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=H/Xng2L0Nis9bfcRngZjnYKolZIpIcLii2KfuUAhG9w=;
+        b=WRSOzEEZO7hHbWHHsxqU6pkbyGUJmTkvHVYeFHbE+DRATtVeQA7s6uB+MWtFV9B7Ut
+         3aCDltThyG/ri/FxA55rVr//IsQEEr2G+xaFv18hr8IPquFx9ZWLIq0XAZ90kTckH1NR
+         MRtGe/Zqu63ZRiNo4vDd9RewadC3UD3T/4JHXH72LSxOFaRxw+0jVrx5CsRQs+0J0KDO
+         YKgNRmLlpWVzKNp/vRQtNOs5N8c9QduPJvE3uSH9oxCZ8MvXs5827VDpA+m+rB8Riz/g
+         kHi/3OEreKFU3wT26F2QD3t0DIROOMCB9DvbWDHGqtO4Vs8mwQrac/G+EU3Yn7CMEXlB
+         eFnA==
+X-Gm-Message-State: AO0yUKVXNuhi/wgKD48BWa9kdAzf1f94qIlf74LC83s3uG9Sy+Q3PczD
+	v+WrMpM0sBI9Cy+E7tZGD0mAsg==
+X-Google-Smtp-Source: AK7set9iLcaH1qw5uFITqV5UI/uvee9wg1vWLJ3XeokSHZEBSBobWGYbvYXKxKAP85hVOi4pAd6rJw==
+X-Received: by 2002:ac2:54a7:0:b0:4b5:70e0:f2e6 with SMTP id w7-20020ac254a7000000b004b570e0f2e6mr3246542lfk.24.1678726069196;
+        Mon, 13 Mar 2023 09:47:49 -0700 (PDT)
+Received: from [192.168.1.101] (abyj16.neoplus.adsl.tpnet.pl. [83.9.29.16])
+        by smtp.gmail.com with ESMTPSA id o9-20020a05651238a900b004db48ae69cbsm18134lft.206.2023.03.13.09.47.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Mar 2023 09:47:48 -0700 (PDT)
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+Subject: [PATCH v3 0/6] Clean up Adreno SMMU bindings
+Date: Mon, 13 Mar 2023 17:44:15 +0100
+Message-Id: <20230313-topic-gpu_smmu_bindings-v3-0-66ab655fbfd5@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0)
-	Gecko/20100101 Thunderbird/102.8.0
-Subject: Re: [PATCH v2 0/6] iommu/exynos: Convert to a module
-Content-Language: en-US
-To: Saravana Kannan <saravanak@google.com>, Sam Protsenko
-	<semen.protsenko@linaro.org>
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Joerg Roedel
-	<joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>, Alim Akhtar
-	<alim.akhtar@samsung.com>, Janghyuck Kim <janghyuck.kim@samsung.com>, Cho
-	KyongHo <pullip.cho@samsung.com>, Daniel Mentz <danielmentz@google.com>,
-	David Virag <virag.david003@gmail.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org, Rob Herring <robh@kernel.org>
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <CAGETcx9ApZFvKjEaxvvgsoHDzOq06ZiROZ5npYt+suNdE4KWDg@mail.gmail.com>
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrCKsWRmVeSWpSXmKPExsWy7djPc7qlbvwpBidWGlk8mLeNzWJCRyuT
-	xa8vFhab5xRbdM7ewG6x9/VWdotNj6+xWlzeNYfNYsb5fUwW/3oPMlr837OD3eLghyesFl2H
-	/rJZPO8DSpy6+5nd4vj7x4wWLXdMHQQ9nhycx+SxZt4aRo+ds+6yeyzYVOqxaVUnm8eda3vY
-	PDYvqfd4sXkmo0ffllWMHp83yQVwRXHZpKTmZJalFunbJXBl7Dm9krVgvV/F/RnHmRoYW+y7
-	GDk5JARMJO63PmYCsYUEVjBK9N2X7mLkArK/MEpMvdLLBOF8ZpTofvaGDabjwMozrBCJ5YwS
-	q9dNZIFwPjJKbFnwjx2kilfATuJr1y0wm0VAVaKt/QYjRFxQ4uTMJywgtqhAisSO87vBaoQF
-	bCVa55wAs5kFxCVuPZkPdpOIQITE+6OrmUEWMAtsY5F4sOct2BlsAoYSXW+7gGwODk6BQIlr
-	V7UgeuUltr+dA1YvIXCYU+Lcs3YWiLNdJP7u2Q9lC0u8Or6FHcKWkfi/cz4TREM7o8SC3/eh
-	nAmMEg3PbzFCVFlL3Dn3C2wbs4CmxPpd+hBhR4kH144ygoQlBPgkbrwVhDiCT2LStunMEGFe
-	iY42IYhqNYlZx9fBrT144RLzBEalWUjBMgvJ+7OQvDMLYe8CRpZVjOKppcW56anFRnmp5XrF
-	ibnFpXnpesn5uZsYgQnx9L/jX3YwLn/1Ue8QIxMH4yFGCQ5mJRHeLfw8KUK8KYmVValF+fFF
-	pTmpxYcYpTlYlMR5tW1PJgsJpCeWpGanphakFsFkmTg4pRqY1lie3+Yu4Rsd2bZT2vv7BYtv
-	3AEHC+Y89T4rt/Jc9qzrV39mNMceTS50F8i8MpcpU/jsxK1R/+Zkb/nPnffe/0xOz/y3yxqm
-	zV74pzLzbWPxZPOJqyaoHP3wQzj9zIMdv3+f1UhZ93vzC8HvbbMeVsw+5cb0Ta/GzqJboPK9
-	SUajW+r87JjMjecinu9UWqFTp2x+qHjON1GOpo+flj/q8c/dbjH/ocO+9Y6twQeKOmW6xCxk
-	A1zaVsttYRCd+3HiAfML/vKmkirmlv4r3mye4av+SdqrNDbeeXUtT+zMfXuamhWC3a/u6be4
-	rqK6ZMqdf7Me5Pt5yum1Od92nle1aqGU/WLFq7NnLsvvOxsyT4mlOCPRUIu5qDgRAFJeNQn3
-	AwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrKIsWRmVeSWpSXmKPExsVy+t/xe7qlbvwpBvOOs1o8mLeNzWJCRyuT
-	xa8vFhab5xRbdM7ewG6x9/VWdotNj6+xWlzeNYfNYsb5fUwW/3oPMlr837OD3eLghyesFl2H
-	/rJZPO8DSpy6+5nd4vj7x4wWLXdMHQQ9nhycx+SxZt4aRo+ds+6yeyzYVOqxaVUnm8eda3vY
-	PDYvqfd4sXkmo0ffllWMHp83yQVwRenZFOWXlqQqZOQXl9gqRRtaGOkZWlroGZlY6hkam8da
-	GZkq6dvZpKTmZJalFunbJehl7Dm9krVgvV/F/RnHmRoYW+y7GDk5JARMJA6sPMPaxcjFISSw
-	lFFi3qF7jBAJGYmT0xpYIWxhiT/Xutggit4zSjw4c5YFJMErYCfxtesWO4jNIqAq0dZ+gxEi
-	LihxcuYToBoODlGBFInZXTogYWEBW4nWOSfAypkFxCVuPZnPBFIiIhAh8XmHAsh4ZoEdLBI7
-	F/+G2tXNLNF6dRYTSAObgKFE11uQIzg4OAUCJa5d1YKYYybRtbWLEcKWl9j+dg7zBEahWUiu
-	mIVk3SwkLbOQtCxgZFnFKJJaWpybnltspFecmFtcmpeul5yfu4kRGP/bjv3csoNx5auPeocY
-	mTgYDzFKcDArifBu4edJEeJNSaysSi3Kjy8qzUktPsRoCgyKicxSosn5wASUVxJvaGZgamhi
-	ZmlgamlmrCTO61nQkSgkkJ5YkpqdmlqQWgTTx8TBKdXAlMgsvWTRYk5x6YdCPs0b936qDzQL
-	2ffTcvFZ5uKEb0yzc2VfHhH+8d0vcfOqpnTl7bNv8enlcSSe1FA59HKu2FeH7adqNlvfrKm0
-	tQjsm7zCXWrWtqQ7HSof3eVXnH7lqt8hoLz6ZlBEd0FEjbrDqsB7YitYTq/iMOCIPKLGcWyP
-	37XgR0cP5h49JBt08JbrpncaeQvZqt0/rqrJdPxwmG/b7MzNNqaJ5bN8DF4pP/oTaWU4zcPj
-	tEY0O+v/1gvhVaaq6deq6y/0WASpFHY/kTqwf/m2l/V/Vuo2z/7w6NvEQI3K3D2REVJ7J+oW
-	3Vk4fe2TtrJ9u8xzd9vzT5QMap3Ko9i8e3/st8qmJsVpSizFGYmGWsxFxYkAjz7NR4gDAAA=
-X-CMS-MailID: 20230313155117eucas1p2f6a1e1073dfb4c30275d85c8ddd55a04
-X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20221103195201eucas1p2a6ec2df41ebac3d9ccbb0b252c2cad34
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20221103195201eucas1p2a6ec2df41ebac3d9ccbb0b252c2cad34
-References: <CGME20221103195201eucas1p2a6ec2df41ebac3d9ccbb0b252c2cad34@eucas1p2.samsung.com>
-	<20221103195154.21495-1-semen.protsenko@linaro.org>
-	<a7d9cd18-a328-209c-c89f-afdcb7db3eb0@samsung.com>
-	<b7ad6444-e7d2-1150-6134-3dae8129dcdb@samsung.com>
-	<CAPLW+4=Y6qZG2XjJR_BkX-ar4GWdETKO1tteJjfbxVc664e4Kg@mail.gmail.com>
-	<CAGETcx9ApZFvKjEaxvvgsoHDzOq06ZiROZ5npYt+suNdE4KWDg@mail.gmail.com>
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAN9SD2QC/x2N0QrDIAwAf6XkeYJTkLJfGaNEm9pAm4qZY1D67
+ 5M93sFxJyhVJoXHcEKlDysf0sHfBkgrSibDc2dw1nnr7968j8LJ5NIm3fc2RZaZJasJFpdxxBB
+ cQuh1RCUTK0paey9t27oslRb+/nfP13X9AHNYa+d+AAAA
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
+ Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-arm-msm@vger.kernel.org, Konrad Dybcio <konrad.dybcio@linaro.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+X-Mailer: b4 0.12.1
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1678726067; l=1268;
+ i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
+ bh=f4B1yJzVBbsZqehz8JLbHpySiLGAvrTlDRteS3PGcW0=;
+ b=0ksZnyi/nnvCpvu93COpZxIxLAkofAIO0o8CMs9a6YKsMYcpaqt99maJN0Bj97+fqQDOYqcQtkJ6
+ HsLVAj2ED/WYQcvwwtZkIiRID9VdiI2IypPjtTHnfkJR+PzOZ6Fn
+X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
+ pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
 
-Hi Saravana,
+v2 -> v3:
+- Pick up acks
+- Fix the "arm,smmu-500" typo in bindings (Rob)
+- use b4
 
-I'm sorry for the delay again, but finally I managed to get back to this 
-topic.
+v2: https://lore.kernel.org/lkml/3aa78b15-8e6c-9657-0d08-0d0452d51fbe@linaro.org/T/#md7074966fdcbbd884baf62153f726bec54b2e819
 
-On 07.02.2023 04:32, Saravana Kannan wrote:
-> On Fri, Nov 11, 2022 at 5:30 AM Sam Protsenko
-> <semen.protsenko@linaro.org> wrote:
->> On Thu, 10 Nov 2022 at 15:36, Marek Szyprowski <m.szyprowski@samsung.com> wrote:
->>
->> [snip]
-> Hi Marek and Sam,
->
-> I'm replying to both of your comments in this email.
->
->>> I've finally made Exynos IOMMU working as a module on Exynos5433 based
->>> TM2e board. It looks that this will be a bit longer journey that I've
->>> initially thought. I've posted a simple update of the fix for the driver
->>> initialization sequence, but the real problem is in the platform driver
->>> framework and OF helpers.
->>>
->>> Basically to get it working as a module I had to apply the following
->>> changes:
->>>
->>> diff --git a/drivers/base/dd.c b/drivers/base/dd.c
->>> index 3dda62503102..f6921f5fcab6 100644
->>> --- a/drivers/base/dd.c
->>> +++ b/drivers/base/dd.c
->>> @@ -257,7 +257,7 @@ static int deferred_devs_show(struct seq_file *s,
->>> void *data)
->>>    DEFINE_SHOW_ATTRIBUTE(deferred_devs);
->>>
->>>    #ifdef CONFIG_MODULES
->>> -int driver_deferred_probe_timeout = 10;
->>> +int driver_deferred_probe_timeout = 30;
->>>    #else
->>>    int driver_deferred_probe_timeout;
->>>    #endif
->>> diff --git a/drivers/of/property.c b/drivers/of/property.c
->>> index 967f79b59016..e5df6672fee6 100644
->>> --- a/drivers/of/property.c
->>> +++ b/drivers/of/property.c
->>> @@ -1384,7 +1384,7 @@ static struct device_node *parse_interrupts(struct
->>> device_node *np,
->>>    static const struct supplier_bindings of_supplier_bindings[] = {
->>>           { .parse_prop = parse_clocks, },
->>>           { .parse_prop = parse_interconnects, },
->>> -       { .parse_prop = parse_iommus, .optional = true, },
->>> +       { .parse_prop = parse_iommus, },
->>>           { .parse_prop = parse_iommu_maps, .optional = true, },
->>>           { .parse_prop = parse_mboxes, },
->>>           { .parse_prop = parse_io_channels, },
->>>
->>> Without that a really nasty things happened.
-> I have a command line option to do this without code changes. Use
-> fw_devlink.strict=1. That makes all optional properties into mandatory
-> ones.
->
-> I sent out a series[1] that tried to make fw_devlink.strict=1 the
-> default and then use the timeout behavior (more details) to handle
-> cases where iommu and dmas (or any other supplier) are optional on a
-> specific board. The cover letter of [1] should give some more context.
+Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+---
+Konrad Dybcio (6):
+      dt-bindings: arm-smmu: Use qcom,smmu compatible for MMU500 adreno SMMUs
+      dt-bindings: arm-smmu: Add SM8350 Adreno SMMU
+      arm64: dts: qcom: sc7280: Add qcom,smmu-500 to Adreno SMMU
+      arm64: dts: qcom: sm8150: Add qcom,smmu-500 to Adreno SMMU
+      arm64: dts: qcom: sm8250: Add qcom,smmu-500 to Adreno SMMU
+      arm64: dts: qcom: sm8350: Add qcom,smmu-500 to Adreno SMMU
 
-I'm for removing the optional properties or making them dependent on the 
-whole subsystem availability (see my next comments).
+ Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 15 +++++++++++++--
+ arch/arm64/boot/dts/qcom/sc7280.dtsi                  |  3 ++-
+ arch/arm64/boot/dts/qcom/sm8150.dtsi                  |  3 ++-
+ arch/arm64/boot/dts/qcom/sm8250.dtsi                  |  3 ++-
+ arch/arm64/boot/dts/qcom/sm8350.dtsi                  |  3 ++-
+ 5 files changed, 21 insertions(+), 6 deletions(-)
+---
+base-commit: 24469a0e5052ba01a35a15f104717a82b7a4798b
+change-id: 20230313-topic-gpu_smmu_bindings-60af88a662ca
 
-
->>> Initialization of the built-in drivers and loading modules takes time,
->>> so the default 10s deferred probe timeout is not enough to ensure that
->>> the built-in driver won't be probed before the Exynos IOMMU driver is
->>> loaded.
-> The 10 second is the minimum delay from the time we hit late_initcall.
-> If a driver is registered before the 10s expires, then the timer will
-> be extended by another 10s. This behavior landed sometime around the
-> end of May 2022. So it should have been in your tree when you tested
-> this. I'm surprised this isn't sufficient for your case. Is there
-> really a 10s gap in your boot sequence where no module is being loaded
-> and then IOMMU modules get loaded later on? I'm kinda surprised by
-> this. Is it this long because some serial UART is enabled and it's
-> slowing down boot? Or something else?
->
-> I'm not saying your case isn't valid or we shouldn't extend the
-> timeout. I'm just trying to understand why the current timer behavior
-> wasn't able to cover your case.
-
-
-Well, I have almost all possible CONFIG_DEBUG_* options enabled in 
-exynos_defconfig, as well as kernel messages routed to UART console, so 
-all my test system are really slow, but I do this intentionally. I 
-suspect that over half of the issues I've reported were found because of 
-such 'unusual' config. Loading modules also takes time in such case, so 
-maybe the timeout should be extended also by each loaded module?
-
-
->> Yeah, the whole time-based sync looks nasty... I remember coming
->> across the slides by Andrzej Hajda called "Deferred Problem" [1], but
->> I guess the proposed solution was never applied. Just hope that
->> increasing the timeout is upstreamable solution.
->>
->> [1] https://events19.linuxfoundation.org/wp-content/uploads/2017/12/Deferred-Problem-Issues-With-Complex-Dependencies-Between-Devices-in-Linux-Kernel-Andrzej-Hajda-Samsung.pdf
-> Sam, I kinda skimmed the slides right now. Looks like it talks about
-> device links and why they aren't sufficient and makes an alternate
-> proposal. fw_devlink is a solution that uses device links and I think
-> addresses a lot of the issues that were raised about device links.
-> There's still a bunch of TODOs left, but I think the end goal is the
-> same. I'm hoping to keep chipping away at it. For now, I've tried to
-> make the timer a bit more smart about detecting when modules are
-> getting loaded and extending the timer. fw_devlink also enables
-> something called sync_state() that's invaluable on a fully modular
-> system (search lore for references to that to get some idea).
->
-> The slides talk about a solution that will allow devices to probe with
-> limited functionality with whatever suppliers are available and then
-> reprobe as more suppliers are available. I'm not sure how well that'll
-> work across the board. It's going to be a bit weird if your phone
-> display goes off and then comes on again because an IOMMU driver got
-> loaded (and it can now do DRM playback). For now, I'm not going to
-> focus on that option because there are enough existing issues/TODOs to
-> work on for fw_devlink.
->
->>> The second change fixes the problem that driver core probes Exynos IOMMU
->>> controllers in parallel to probing the master devices, what results in
->>> calling exynos_iommu_of_xlate() and exynos_iommu_probe_device() even on
->>> the partially initialized IOMMU controllers or initializing the dma_ops
->>> under the already probed and working master device. This was easy to
->>> observe especially on the master devices with multiple IOMMU
->>> controllers. I wasn't able to solve this concurrency/race issues inside
->>> the Exynos IOMMU driver.
->>>
->>> Frankly speaking I don't know what is the rationale for making the
->>> 'iommus' property optional, but this simply doesn't work well with IOMMU
->>> driver being a module. CCed Saravana and Rob for this.
->>>
->> The patch which makes 'iommus' optional doesn't provide much of
->> insight on reasons in commit message either.
-> This was the commit text:
->
->      Not all DT bindings are mandatory bindings. Add support for optional DT
->      bindings and mark iommus, iommu-map, dmas as optional DT bindings.
->
-> I thought it was obvious enough, but I guess I could have done better.
-> Geert convinced me that iommu's aren't always necessary and devices
-> could work perfectly well without them or dmas. And he has a bunch of
-> boards like that. So I went with adding optional and then introducing
-> fw_devlink.strict.
-
-Well, that depends heavily on the kernel config and the intentions 
-behind it. Indeed one might have IOMMU driver not selected in the config 
-(for various reasons, like forcing drivers to use contiguous memory 
-buffers for max performance) and system should boot fine. That time one 
-didn't consider the IOMMUs being compiled as modules. The main problem 
-is how to distinguish between the first case (intentionally no IOMMU 
-driver or even no IOMMU support) and the modularized case (driver not 
-yet loaded). I assume that one can skip waiting for IOMMUs only if the 
-whole IOMMU subsystem is not compiled in, otherwise the IOMMU driver can 
-still come in and it cannot properly start operating if client device 
-drivers already started their operation.
-
-DMAs, although similar a bit, are imho a bit different. Drivers usually 
-have some kind of fallback if DMA is not yet available, but usually 
-drivers can switch their operation on-fly between PIO and DMA (and some 
-even do that intentionally and use PIO for very small transfers).
-
-> However, at this point in time, I believe none of them should be
-> marked as optional because technically any property can be optional
-> depending on what the firmware has set up and what the driver does. We
-> should figure this out at runtime on a board level -- which is what
-> [1] is trying to do. Yeah, not very pretty, but there hasn't been a
-> better solution that's not "have userspace tell us it's done loading
-> modules" (that's a "kernel depends on userspace to work correctly"
-> thing that no one likes). I've fixed some of the issues raised in [1]
-> in a fw_devlink improvement series[2] and I plan on continuing to work
-> on this until hopefully [1] can land.
->
->>> Without fixing the above issues, I would add a warning that compiling
->>> the driver as a module leads to serious issues.
->>>
->> Nice catch! It doesn't reproduce on my platform, alas. Can I expect
->> you to submit those patches? If so, I'll probably just wait for those
->> to be applied, and then re-send my modularization series on top of it.
->> Does that sounds reasonable?
-> For now, maybe we could add a config to enable fw_devlink.strict=1 by
-> default and then select it if you make specific iommu drivers into
-> modules? And then Geert won't set it for his driver, but you can set
-> it for your driver?
-
-I think the best we can do now is to either add a kconfig option to 
-force strict fw_devlinks (so Exynos IOMMU can be selected as a module 
-only if that one is selected) or do a runtime check during the Exynos 
-IOMMU initalization - and fail with appropriate error message if 
-fw_devlink.strict!=1. What do you think?
-
-
-Best regards
+Best regards,
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Konrad Dybcio <konrad.dybcio@linaro.org>
 
