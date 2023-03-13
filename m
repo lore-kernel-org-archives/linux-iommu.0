@@ -1,15 +1,15 @@
 Received: from SHSQR01.spreadtrum.com (unknown [222.66.158.135])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D4401FAE
-	for <iommu@lists.linux.dev>; Mon, 13 Mar 2023 07:52:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F0AB1FAE
+	for <iommu@lists.linux.dev>; Mon, 13 Mar 2023 07:52:07 +0000 (UTC)
 Received: from SHSend.spreadtrum.com (bjmbx02.spreadtrum.com [10.0.64.8])
-	by SHSQR01.spreadtrum.com with ESMTP id 32D7pAWJ066429;
+	by SHSQR01.spreadtrum.com with ESMTP id 32D7pAWI066429;
 	Mon, 13 Mar 2023 15:51:10 +0800 (+08)
 	(envelope-from Chunyan.Zhang@unisoc.com)
 Received: from ubt.spreadtrum.com (10.0.74.87) by BJMBX02.spreadtrum.com
  (10.0.64.8) with Microsoft SMTP Server (TLS) id 15.0.1497.23; Mon, 13 Mar
- 2023 15:51:07 +0800
+ 2023 15:51:05 +0800
 From: Chunyan Zhang <chunyan.zhang@unisoc.com>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
         "Robin
@@ -23,12 +23,10 @@ CC: <iommu@lists.linux.dev>, Baolu Lu <baolu.lu@linux.intel.com>,
         Chunyan Zhang <chunyan.zhang@unisoc.com>,
         LKML
 	<linux-kernel@vger.kernel.org>
-Subject: [PATCH V3 2/2] iommu: sprd: Add support for reattaching an existing domain
-Date: Mon, 13 Mar 2023 15:50:17 +0800
-Message-ID: <20230313075017.668204-3-chunyan.zhang@unisoc.com>
+Subject: [PATCH V3 0/2] Add reattaching support and fix memory leak issue
+Date: Mon, 13 Mar 2023 15:50:15 +0800
+Message-ID: <20230313075017.668204-1-chunyan.zhang@unisoc.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230313075017.668204-1-chunyan.zhang@unisoc.com>
-References: <20230313075017.668204-1-chunyan.zhang@unisoc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,67 +38,26 @@ Content-Type: text/plain
 X-Originating-IP: [10.0.74.87]
 X-ClientProxiedBy: SHCAS01.spreadtrum.com (10.0.1.201) To
  BJMBX02.spreadtrum.com (10.0.64.8)
-X-MAIL:SHSQR01.spreadtrum.com 32D7pAWJ066429
+X-MAIL:SHSQR01.spreadtrum.com 32D7pAWI066429
 
-This IOMMU driver should allow a domain to be attached more than once.
+V3:
+* Split into two patches;
+* Added support reattching an existing domain;
+* Release DMA buffer only when domain freed.
 
-If IOMMU is reattaching to the same domain which is attached, there's
-nothing to be done.
+V2: https://lkml.org/lkml/2023/3/7/1717
+* Added some comment in sprd_iommu_attach_device() for the reason
+  of calling sprd_iommu_cleanup().
 
-If reattching to a previously-used domain, do not alloc DMA buffer
-again which stores address mapping table to avoid memory leak.
+V1: https://lkml.org/lkml/2023/2/10/198
 
-Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
----
- drivers/iommu/sprd-iommu.c | 25 +++++++++++++++++++------
- 1 file changed, 19 insertions(+), 6 deletions(-)
+Chunyan Zhang (2):
+  iommu: sprd: release dma buffer to avoid memory leak
+  iommu: sprd: Add support for reattaching an existing domain
 
-diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
-index 7df1f730c778..3513b2b108bf 100644
---- a/drivers/iommu/sprd-iommu.c
-+++ b/drivers/iommu/sprd-iommu.c
-@@ -62,6 +62,7 @@ enum sprd_iommu_version {
-  * @eb: gate clock which controls IOMMU access
-  */
- struct sprd_iommu_device {
-+	struct sprd_iommu_domain	*dom;
- 	enum sprd_iommu_version	ver;
- 	u32			*prot_page_va;
- 	dma_addr_t		prot_page_pa;
-@@ -252,15 +253,27 @@ static int sprd_iommu_attach_device(struct iommu_domain *domain,
- 	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
- 	size_t pgt_size = sprd_iommu_pgt_size(domain);
- 
--	if (dom->sdev)
--		return -EINVAL;
-+	/* The device is attached to this domain */
-+	if (sdev->dom == dom)
-+		return 0;
- 
--	dom->pgt_va = dma_alloc_coherent(sdev->dev, pgt_size, &dom->pgt_pa, GFP_KERNEL);
--	if (!dom->pgt_va)
--		return -ENOMEM;
-+	/* The first time that domain is attaching to a device */
-+	if (!dom->pgt_va) {
-+		dom->pgt_va = dma_alloc_coherent(sdev->dev, pgt_size, &dom->pgt_pa, GFP_KERNEL);
-+		if (!dom->pgt_va)
-+			return -ENOMEM;
-+
-+		dom->sdev = sdev;
-+	}
- 
--	dom->sdev = sdev;
-+	sdev->dom = dom;
- 
-+	/*
-+	 * One sprd IOMMU serves one client device only, disabled it before
-+	 * configure mapping table to avoid access conflict in case other
-+	 * mapping table is stored in.
-+	 */
-+	sprd_iommu_hw_en(sdev, false);
- 	sprd_iommu_first_ppn(dom);
- 	sprd_iommu_first_vpn(dom);
- 	sprd_iommu_vpn_range(dom);
+ drivers/iommu/sprd-iommu.c | 54 +++++++++++++++++++++++++++++---------
+ 1 file changed, 41 insertions(+), 13 deletions(-)
+
 -- 
 2.25.1
 
