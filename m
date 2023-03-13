@@ -1,698 +1,163 @@
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32FE28C18
-	for <iommu@lists.linux.dev>; Mon, 13 Mar 2023 20:38:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678739890; x=1710275890;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=AE8a5J60lm2ExPmrAUwk6hAYLhb2V7vaXeCwOYYD2l8=;
-  b=fmGPLqAc0ZcnVQO7hI80TVSECxRY4Hwj9QKrzRbBZHXmJXcuC8MVVVGW
-   rDzbeyE/MA/yeFlyaBM9r7VVlaSwIphu45xR9q188u/uBwrKOb85bO2tG
-   gEUu+97x15gHBh8PgKXwuos513ELennyMMhAl8wIQNJw+Ekuey1xyRzap
-   ivTL0VBkLx+KFzVHcfGQfZwj9td3r0+SaYbvy1kVt0gWjIwTmXJXLZsAp
-   9zW4vEfA6QrCh7NoqqlGs/7ShBqyiD3CTtv1yR/X47El1Xsg4Y0iNwF6P
-   +4iccg65o7HSDzIWcmjBLaUnQ2Rb+FfyGHmPKa8cA3jL3KqVZ8CWJPmlS
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="334732111"
-X-IronPort-AV: E=Sophos;i="5.98,257,1673942400"; 
-   d="scan'208";a="334732111"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2023 13:38:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="802584794"
-X-IronPort-AV: E=Sophos;i="5.98,257,1673942400"; 
-   d="scan'208";a="802584794"
-Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.106])
-  by orsmga004.jf.intel.com with ESMTP; 13 Mar 2023 13:38:06 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: LKML <linux-kernel@vger.kernel.org>,
-	iommu@lists.linux.dev,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	"Lu Baolu" <baolu.lu@linux.intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>,
-	"Robin Murphy" <robin.murphy@arm.com>,
-	Dave Hansen <dave.hansen@intel.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	X86 Kernel <x86@kernel.org>,
-	bp@alien8.de,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	corbet@lwn.net,
-	vkoul@kernel.org,
-	dmaengine@vger.kernel.org,
-	linux-doc@vger.kernel.org
-Cc: "Will Deacon" <will@kernel.org>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Raj Ashok <ashok.raj@intel.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>,
-	Yi Liu <yi.l.liu@intel.com>,
-	"Yu, Fenghua" <fenghua.yu@intel.com>,
-	Dave Jiang <dave.jiang@intel.com>,
-	Kirill Shutemov <kirill.shutemov@linux.intel.com>,
-	Tony Luck <tony.luck@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v6 7/7] iommu: Remove ioasid infrastructure
-Date: Mon, 13 Mar 2023 13:41:58 -0700
-Message-Id: <20230313204158.1495067-8-jacob.jun.pan@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230313204158.1495067-1-jacob.jun.pan@linux.intel.com>
-References: <20230313204158.1495067-1-jacob.jun.pan@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1A6E8C17
+	for <iommu@lists.linux.dev>; Mon, 13 Mar 2023 21:12:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1479CC433EF;
+	Mon, 13 Mar 2023 21:12:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1678741923;
+	bh=7pHDCwjSyYBjKIi2jo6gMrexeoQMQqclXq25JlRTSmY=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=lqRGtSSkhrLPviO5u1/rX8UCXuASgHZYa4Ot5CmDnIbo2h6U05jVO5TOsLEOX0X4F
+	 ILta0kAvAsz3A/5rwEVpxSj2K45MaOFyZ9N24Mtnya98h/66TcdiAdckBoW1IKamxf
+	 KCiVGf29KkF9gTr/04XDBbVpUdW6OUdH3TFI6lOg04D4OmokRjvA3xKHGHgEB+FAmj
+	 H3amMTwhX3bBhcuhROtFmFwHu4XmbXFMYOEkQzdVBMhWtsk9b/vdQBA6ZAcMnzLkvW
+	 fNVEfKy41c5T2ef4rr6w9xcggcnNEczfxU8doBZ+F3npBDgXxwzMNSr480fPJQeE9U
+	 9XmU8Q6wVNjcQ==
+Date: Mon, 13 Mar 2023 16:12:01 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>
+Cc: linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	joro@8bytes.org, bhelgaas@google.com, robin.murphy@arm.com,
+	will@kernel.org, jean-philippe@linaro.org,
+	sathyanarayanan.kuppuswamy@linux.intel.com,
+	darren@os.amperecomputing.com, scott@os.amperecomputing.com
+Subject: Re: [PATCH v2 1/2] PCI/ATS: Add a helper function to configure ATS
+ STU of a PF
+Message-ID: <20230313211201.GA1540091@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230228042137.1941024-2-gankulkarni@os.amperecomputing.com>
 
-From: Jason Gunthorpe <jgg@nvidia.com>
+On Mon, Feb 27, 2023 at 08:21:36PM -0800, Ganapatrao Kulkarni wrote:
+> As per PCI specification (PCI Express Base Specification Revision
+> 6.0, Section 10.5) both PF and VFs of a PCI EP are permitted to be enabled
+> independently for ATS capability, however the STU(Smallest Translation
+> Unit) is shared between PF and VFs. For VFs, it is hardwired to Zero and
+> the associated PF's value applies to VFs.
+> 
+> In the current code, the STU is being configured while enabling the PF ATS.
+> Hence, it is not able to enable ATS for VFs, if it is not enabled on the
+> associated PF already.
+> 
+> Adding a function pci_ats_stu_configure(), which can be called to
+> configure the STU during PF enumeration.
+> Latter enumerations of VFs can successfully enable ATS independently.
 
-This has no use anymore, delete it all.
+s/STU(Smallest/STU (Smallest/ (add space before paren)
+s/Adding a function pci_ats_stu_configure()/Add pci_ats_stu_configure()/
+s/Latter/Subsequent/
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
----
-v3:	- put rename under a different patch
-	- delete makefile and Kconfig
-v2:
-	- fix compile issue w/o CONFIG_IOMMU_SVA
-	- consolidate INVALID_IOASID w/ IOMMU_PASID_INVALID
----
- drivers/dma/idxd/idxd.h     |   1 -
- drivers/iommu/Kconfig       |   5 -
- drivers/iommu/Makefile      |   1 -
- drivers/iommu/intel/iommu.h |   1 -
- drivers/iommu/intel/svm.c   |   1 -
- drivers/iommu/ioasid.c      | 422 ------------------------------------
- drivers/iommu/iommu-sva.h   |   1 -
- include/linux/ioasid.h      |  80 -------
- 8 files changed, 512 deletions(-)
- delete mode 100644 drivers/iommu/ioasid.c
- delete mode 100644 include/linux/ioasid.h
+Add blank line between paragraphs (it looks like "Latter enumerations"
+is intended to start a new paragraph).
 
-diff --git a/drivers/dma/idxd/idxd.h b/drivers/dma/idxd/idxd.h
-index 417e602a46b6..dd2a6ed8949b 100644
---- a/drivers/dma/idxd/idxd.h
-+++ b/drivers/dma/idxd/idxd.h
-@@ -10,7 +10,6 @@
- #include <linux/cdev.h>
- #include <linux/idr.h>
- #include <linux/pci.h>
--#include <linux/ioasid.h>
- #include <linux/bitmap.h>
- #include <linux/perf_event.h>
- #include <linux/iommu.h>
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 889c7efd050b..a799221f8844 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -3,10 +3,6 @@
- config IOMMU_IOVA
- 	tristate
- 
--# The IOASID library may also be used by non-IOMMU_API users
--config IOASID
--	tristate
--
- # IOMMU_API always gets selected by whoever wants it.
- config IOMMU_API
- 	bool
-@@ -160,7 +156,6 @@ config IOMMU_DMA
- # Shared Virtual Addressing
- config IOMMU_SVA
- 	bool
--	select IOASID
- 
- config FSL_PAMU
- 	bool "Freescale IOMMU support"
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index f461d0651385..769e43d780ce 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -9,7 +9,6 @@ obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_DART) += io-pgtable-dart.o
--obj-$(CONFIG_IOASID) += ioasid.o
- obj-$(CONFIG_IOMMU_IOVA) += iova.o
- obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
- obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index a2010fb120e2..65b15be72878 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -19,7 +19,6 @@
- #include <linux/iommu.h>
- #include <linux/io-64-nonatomic-lo-hi.h>
- #include <linux/dmar.h>
--#include <linux/ioasid.h>
- #include <linux/bitfield.h>
- #include <linux/xarray.h>
- #include <linux/perf_event.h>
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 3848a1b0800c..e95b339e9cdc 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -16,7 +16,6 @@
- #include <linux/interrupt.h>
- #include <linux/mm_types.h>
- #include <linux/xarray.h>
--#include <linux/ioasid.h>
- #include <asm/page.h>
- #include <asm/fpu/api.h>
- 
-diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
-deleted file mode 100644
-index a786c034907c..000000000000
---- a/drivers/iommu/ioasid.c
-+++ /dev/null
-@@ -1,422 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/*
-- * I/O Address Space ID allocator. There is one global IOASID space, split into
-- * subsets. Users create a subset with DECLARE_IOASID_SET, then allocate and
-- * free IOASIDs with ioasid_alloc() and ioasid_free().
-- */
--#include <linux/ioasid.h>
--#include <linux/module.h>
--#include <linux/slab.h>
--#include <linux/spinlock.h>
--#include <linux/xarray.h>
--
--struct ioasid_data {
--	ioasid_t id;
--	struct ioasid_set *set;
--	void *private;
--	struct rcu_head rcu;
--};
--
--/*
-- * struct ioasid_allocator_data - Internal data structure to hold information
-- * about an allocator. There are two types of allocators:
-- *
-- * - Default allocator always has its own XArray to track the IOASIDs allocated.
-- * - Custom allocators may share allocation helpers with different private data.
-- *   Custom allocators that share the same helper functions also share the same
-- *   XArray.
-- * Rules:
-- * 1. Default allocator is always available, not dynamically registered. This is
-- *    to prevent race conditions with early boot code that want to register
-- *    custom allocators or allocate IOASIDs.
-- * 2. Custom allocators take precedence over the default allocator.
-- * 3. When all custom allocators sharing the same helper functions are
-- *    unregistered (e.g. due to hotplug), all outstanding IOASIDs must be
-- *    freed. Otherwise, outstanding IOASIDs will be lost and orphaned.
-- * 4. When switching between custom allocators sharing the same helper
-- *    functions, outstanding IOASIDs are preserved.
-- * 5. When switching between custom allocator and default allocator, all IOASIDs
-- *    must be freed to ensure unadulterated space for the new allocator.
-- *
-- * @ops:	allocator helper functions and its data
-- * @list:	registered custom allocators
-- * @slist:	allocators share the same ops but different data
-- * @flags:	attributes of the allocator
-- * @xa:		xarray holds the IOASID space
-- * @rcu:	used for kfree_rcu when unregistering allocator
-- */
--struct ioasid_allocator_data {
--	struct ioasid_allocator_ops *ops;
--	struct list_head list;
--	struct list_head slist;
--#define IOASID_ALLOCATOR_CUSTOM BIT(0) /* Needs framework to track results */
--	unsigned long flags;
--	struct xarray xa;
--	struct rcu_head rcu;
--};
--
--static DEFINE_SPINLOCK(ioasid_allocator_lock);
--static LIST_HEAD(allocators_list);
--
--static ioasid_t default_alloc(ioasid_t min, ioasid_t max, void *opaque);
--static void default_free(ioasid_t ioasid, void *opaque);
--
--static struct ioasid_allocator_ops default_ops = {
--	.alloc = default_alloc,
--	.free = default_free,
--};
--
--static struct ioasid_allocator_data default_allocator = {
--	.ops = &default_ops,
--	.flags = 0,
--	.xa = XARRAY_INIT(ioasid_xa, XA_FLAGS_ALLOC),
--};
--
--static struct ioasid_allocator_data *active_allocator = &default_allocator;
--
--static ioasid_t default_alloc(ioasid_t min, ioasid_t max, void *opaque)
--{
--	ioasid_t id;
--
--	if (xa_alloc(&default_allocator.xa, &id, opaque, XA_LIMIT(min, max), GFP_ATOMIC)) {
--		pr_err("Failed to alloc ioasid from %d to %d\n", min, max);
--		return INVALID_IOASID;
--	}
--
--	return id;
--}
--
--static void default_free(ioasid_t ioasid, void *opaque)
--{
--	struct ioasid_data *ioasid_data;
--
--	ioasid_data = xa_erase(&default_allocator.xa, ioasid);
--	kfree_rcu(ioasid_data, rcu);
--}
--
--/* Allocate and initialize a new custom allocator with its helper functions */
--static struct ioasid_allocator_data *ioasid_alloc_allocator(struct ioasid_allocator_ops *ops)
--{
--	struct ioasid_allocator_data *ia_data;
--
--	ia_data = kzalloc(sizeof(*ia_data), GFP_ATOMIC);
--	if (!ia_data)
--		return NULL;
--
--	xa_init_flags(&ia_data->xa, XA_FLAGS_ALLOC);
--	INIT_LIST_HEAD(&ia_data->slist);
--	ia_data->flags |= IOASID_ALLOCATOR_CUSTOM;
--	ia_data->ops = ops;
--
--	/* For tracking custom allocators that share the same ops */
--	list_add_tail(&ops->list, &ia_data->slist);
--
--	return ia_data;
--}
--
--static bool use_same_ops(struct ioasid_allocator_ops *a, struct ioasid_allocator_ops *b)
--{
--	return (a->free == b->free) && (a->alloc == b->alloc);
--}
--
--/**
-- * ioasid_register_allocator - register a custom allocator
-- * @ops: the custom allocator ops to be registered
-- *
-- * Custom allocators take precedence over the default xarray based allocator.
-- * Private data associated with the IOASID allocated by the custom allocators
-- * are managed by IOASID framework similar to data stored in xa by default
-- * allocator.
-- *
-- * There can be multiple allocators registered but only one is active. In case
-- * of runtime removal of a custom allocator, the next one is activated based
-- * on the registration ordering.
-- *
-- * Multiple allocators can share the same alloc() function, in this case the
-- * IOASID space is shared.
-- */
--int ioasid_register_allocator(struct ioasid_allocator_ops *ops)
--{
--	struct ioasid_allocator_data *ia_data;
--	struct ioasid_allocator_data *pallocator;
--	int ret = 0;
--
--	spin_lock(&ioasid_allocator_lock);
--
--	ia_data = ioasid_alloc_allocator(ops);
--	if (!ia_data) {
--		ret = -ENOMEM;
--		goto out_unlock;
--	}
--
--	/*
--	 * No particular preference, we activate the first one and keep
--	 * the later registered allocators in a list in case the first one gets
--	 * removed due to hotplug.
--	 */
--	if (list_empty(&allocators_list)) {
--		WARN_ON(active_allocator != &default_allocator);
--		/* Use this new allocator if default is not active */
--		if (xa_empty(&active_allocator->xa)) {
--			rcu_assign_pointer(active_allocator, ia_data);
--			list_add_tail(&ia_data->list, &allocators_list);
--			goto out_unlock;
--		}
--		pr_warn("Default allocator active with outstanding IOASID\n");
--		ret = -EAGAIN;
--		goto out_free;
--	}
--
--	/* Check if the allocator is already registered */
--	list_for_each_entry(pallocator, &allocators_list, list) {
--		if (pallocator->ops == ops) {
--			pr_err("IOASID allocator already registered\n");
--			ret = -EEXIST;
--			goto out_free;
--		} else if (use_same_ops(pallocator->ops, ops)) {
--			/*
--			 * If the new allocator shares the same ops,
--			 * then they will share the same IOASID space.
--			 * We should put them under the same xarray.
--			 */
--			list_add_tail(&ops->list, &pallocator->slist);
--			goto out_free;
--		}
--	}
--	list_add_tail(&ia_data->list, &allocators_list);
--
--	spin_unlock(&ioasid_allocator_lock);
--	return 0;
--out_free:
--	kfree(ia_data);
--out_unlock:
--	spin_unlock(&ioasid_allocator_lock);
--	return ret;
--}
--EXPORT_SYMBOL_GPL(ioasid_register_allocator);
--
--/**
-- * ioasid_unregister_allocator - Remove a custom IOASID allocator ops
-- * @ops: the custom allocator to be removed
-- *
-- * Remove an allocator from the list, activate the next allocator in
-- * the order it was registered. Or revert to default allocator if all
-- * custom allocators are unregistered without outstanding IOASIDs.
-- */
--void ioasid_unregister_allocator(struct ioasid_allocator_ops *ops)
--{
--	struct ioasid_allocator_data *pallocator;
--	struct ioasid_allocator_ops *sops;
--
--	spin_lock(&ioasid_allocator_lock);
--	if (list_empty(&allocators_list)) {
--		pr_warn("No custom IOASID allocators active!\n");
--		goto exit_unlock;
--	}
--
--	list_for_each_entry(pallocator, &allocators_list, list) {
--		if (!use_same_ops(pallocator->ops, ops))
--			continue;
--
--		if (list_is_singular(&pallocator->slist)) {
--			/* No shared helper functions */
--			list_del(&pallocator->list);
--			/*
--			 * All IOASIDs should have been freed before
--			 * the last allocator that shares the same ops
--			 * is unregistered.
--			 */
--			WARN_ON(!xa_empty(&pallocator->xa));
--			if (list_empty(&allocators_list)) {
--				pr_info("No custom IOASID allocators, switch to default.\n");
--				rcu_assign_pointer(active_allocator, &default_allocator);
--			} else if (pallocator == active_allocator) {
--				rcu_assign_pointer(active_allocator,
--						list_first_entry(&allocators_list,
--								struct ioasid_allocator_data, list));
--				pr_info("IOASID allocator changed");
--			}
--			kfree_rcu(pallocator, rcu);
--			break;
--		}
--		/*
--		 * Find the matching shared ops to delete,
--		 * but keep outstanding IOASIDs
--		 */
--		list_for_each_entry(sops, &pallocator->slist, list) {
--			if (sops == ops) {
--				list_del(&ops->list);
--				break;
--			}
--		}
--		break;
--	}
--
--exit_unlock:
--	spin_unlock(&ioasid_allocator_lock);
--}
--EXPORT_SYMBOL_GPL(ioasid_unregister_allocator);
--
--/**
-- * ioasid_set_data - Set private data for an allocated ioasid
-- * @ioasid: the ID to set data
-- * @data:   the private data
-- *
-- * For IOASID that is already allocated, private data can be set
-- * via this API. Future lookup can be done via ioasid_find.
-- */
--int ioasid_set_data(ioasid_t ioasid, void *data)
--{
--	struct ioasid_data *ioasid_data;
--	int ret = 0;
--
--	spin_lock(&ioasid_allocator_lock);
--	ioasid_data = xa_load(&active_allocator->xa, ioasid);
--	if (ioasid_data)
--		rcu_assign_pointer(ioasid_data->private, data);
--	else
--		ret = -ENOENT;
--	spin_unlock(&ioasid_allocator_lock);
--
--	/*
--	 * Wait for readers to stop accessing the old private data, so the
--	 * caller can free it.
--	 */
--	if (!ret)
--		synchronize_rcu();
--
--	return ret;
--}
--EXPORT_SYMBOL_GPL(ioasid_set_data);
--
--/**
-- * ioasid_alloc - Allocate an IOASID
-- * @set: the IOASID set
-- * @min: the minimum ID (inclusive)
-- * @max: the maximum ID (inclusive)
-- * @private: data private to the caller
-- *
-- * Allocate an ID between @min and @max. The @private pointer is stored
-- * internally and can be retrieved with ioasid_find().
-- *
-- * Return: the allocated ID on success, or %INVALID_IOASID on failure.
-- */
--ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
--		      void *private)
--{
--	struct ioasid_data *data;
--	void *adata;
--	ioasid_t id;
--
--	data = kzalloc(sizeof(*data), GFP_ATOMIC);
--	if (!data)
--		return INVALID_IOASID;
--
--	data->set = set;
--	data->private = private;
--
--	/*
--	 * Custom allocator needs allocator data to perform platform specific
--	 * operations.
--	 */
--	spin_lock(&ioasid_allocator_lock);
--	adata = active_allocator->flags & IOASID_ALLOCATOR_CUSTOM ? active_allocator->ops->pdata : data;
--	id = active_allocator->ops->alloc(min, max, adata);
--	if (id == INVALID_IOASID) {
--		pr_err("Failed ASID allocation %lu\n", active_allocator->flags);
--		goto exit_free;
--	}
--
--	if ((active_allocator->flags & IOASID_ALLOCATOR_CUSTOM) &&
--	     xa_alloc(&active_allocator->xa, &id, data, XA_LIMIT(id, id), GFP_ATOMIC)) {
--		/* Custom allocator needs framework to store and track allocation results */
--		pr_err("Failed to alloc ioasid from %d\n", id);
--		active_allocator->ops->free(id, active_allocator->ops->pdata);
--		goto exit_free;
--	}
--	data->id = id;
--
--	spin_unlock(&ioasid_allocator_lock);
--	return id;
--exit_free:
--	spin_unlock(&ioasid_allocator_lock);
--	kfree(data);
--	return INVALID_IOASID;
--}
--EXPORT_SYMBOL_GPL(ioasid_alloc);
--
--/**
-- * ioasid_free - Free an ioasid
-- * @ioasid: the ID to remove
-- */
--void ioasid_free(ioasid_t ioasid)
--{
--	struct ioasid_data *ioasid_data;
--
--	spin_lock(&ioasid_allocator_lock);
--	ioasid_data = xa_load(&active_allocator->xa, ioasid);
--	if (!ioasid_data) {
--		pr_err("Trying to free unknown IOASID %u\n", ioasid);
--		goto exit_unlock;
--	}
--
--	active_allocator->ops->free(ioasid, active_allocator->ops->pdata);
--	/* Custom allocator needs additional steps to free the xa element */
--	if (active_allocator->flags & IOASID_ALLOCATOR_CUSTOM) {
--		ioasid_data = xa_erase(&active_allocator->xa, ioasid);
--		kfree_rcu(ioasid_data, rcu);
--	}
--
--exit_unlock:
--	spin_unlock(&ioasid_allocator_lock);
--}
--EXPORT_SYMBOL_GPL(ioasid_free);
--
--/**
-- * ioasid_find - Find IOASID data
-- * @set: the IOASID set
-- * @ioasid: the IOASID to find
-- * @getter: function to call on the found object
-- *
-- * The optional getter function allows to take a reference to the found object
-- * under the rcu lock. The function can also check if the object is still valid:
-- * if @getter returns false, then the object is invalid and NULL is returned.
-- *
-- * If the IOASID exists, return the private pointer passed to ioasid_alloc.
-- * Private data can be NULL if not set. Return an error if the IOASID is not
-- * found, or if @set is not NULL and the IOASID does not belong to the set.
-- */
--void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
--		  bool (*getter)(void *))
--{
--	void *priv;
--	struct ioasid_data *ioasid_data;
--	struct ioasid_allocator_data *idata;
--
--	rcu_read_lock();
--	idata = rcu_dereference(active_allocator);
--	ioasid_data = xa_load(&idata->xa, ioasid);
--	if (!ioasid_data) {
--		priv = ERR_PTR(-ENOENT);
--		goto unlock;
--	}
--	if (set && ioasid_data->set != set) {
--		/* data found but does not belong to the set */
--		priv = ERR_PTR(-EACCES);
--		goto unlock;
--	}
--	/* Now IOASID and its set is verified, we can return the private data */
--	priv = rcu_dereference(ioasid_data->private);
--	if (getter && !getter(priv))
--		priv = NULL;
--unlock:
--	rcu_read_unlock();
--
--	return priv;
--}
--EXPORT_SYMBOL_GPL(ioasid_find);
--
--MODULE_AUTHOR("Jean-Philippe Brucker <jean-philippe.brucker@arm.com>");
--MODULE_AUTHOR("Jacob Pan <jacob.jun.pan@linux.intel.com>");
--MODULE_DESCRIPTION("IO Address Space ID (IOASID) allocator");
--MODULE_LICENSE("GPL");
-diff --git a/drivers/iommu/iommu-sva.h b/drivers/iommu/iommu-sva.h
-index c22d0174ad61..54946b5a7caf 100644
---- a/drivers/iommu/iommu-sva.h
-+++ b/drivers/iommu/iommu-sva.h
-@@ -5,7 +5,6 @@
- #ifndef _IOMMU_SVA_H
- #define _IOMMU_SVA_H
- 
--#include <linux/ioasid.h>
- #include <linux/mm_types.h>
- 
- /* I/O Page fault */
-diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-deleted file mode 100644
-index 6cf5d1c904c5..000000000000
---- a/include/linux/ioasid.h
-+++ /dev/null
-@@ -1,80 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--#ifndef __LINUX_IOASID_H
--#define __LINUX_IOASID_H
--
--#include <linux/types.h>
--#include <linux/errno.h>
--#include <linux/iommu.h>
--
--typedef unsigned int ioasid_t;
--#define INVALID_IOASID ((ioasid_t)-1)
--typedef ioasid_t (*ioasid_alloc_fn_t)(ioasid_t min, ioasid_t max, void *data);
--typedef void (*ioasid_free_fn_t)(ioasid_t ioasid, void *data);
--
--struct ioasid_set {
--	int dummy;
--};
--
--/**
-- * struct ioasid_allocator_ops - IOASID allocator helper functions and data
-- *
-- * @alloc:	helper function to allocate IOASID
-- * @free:	helper function to free IOASID
-- * @list:	for tracking ops that share helper functions but not data
-- * @pdata:	data belong to the allocator, provided when calling alloc()
-- */
--struct ioasid_allocator_ops {
--	ioasid_alloc_fn_t alloc;
--	ioasid_free_fn_t free;
--	struct list_head list;
--	void *pdata;
--};
--
--#define DECLARE_IOASID_SET(name) struct ioasid_set name = { 0 }
--
--#if IS_ENABLED(CONFIG_IOASID)
--ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
--		      void *private);
--void ioasid_free(ioasid_t ioasid);
--void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
--		  bool (*getter)(void *));
--int ioasid_register_allocator(struct ioasid_allocator_ops *allocator);
--void ioasid_unregister_allocator(struct ioasid_allocator_ops *allocator);
--int ioasid_set_data(ioasid_t ioasid, void *data);
--
--#else /* !CONFIG_IOASID */
--static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
--				    ioasid_t max, void *private)
--{
--	return INVALID_IOASID;
--}
--
--static inline void ioasid_free(ioasid_t ioasid) { }
--
--static inline void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
--				bool (*getter)(void *))
--{
--	return NULL;
--}
--
--static inline int ioasid_register_allocator(struct ioasid_allocator_ops *allocator)
--{
--	return -ENOTSUPP;
--}
--
--static inline void ioasid_unregister_allocator(struct ioasid_allocator_ops *allocator)
--{
--}
--
--static inline int ioasid_set_data(ioasid_t ioasid, void *data)
--{
--	return -ENOTSUPP;
--}
--
--static inline bool pasid_valid(ioasid_t ioasid)
--{
--	return false;
--}
--
--#endif /* CONFIG_IOASID */
--#endif /* __LINUX_IOASID_H */
--- 
-2.25.1
+> Signed-off-by: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>
 
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+
+Given an ack for the IOMMU patch, I'd be happy to merge both (and I
+can do the commit log tweaks); just let me know.
+
+One comment/question below.
+
+> ---
+>  drivers/pci/ats.c       | 33 +++++++++++++++++++++++++++++++--
+>  include/linux/pci-ats.h |  3 +++
+>  2 files changed, 34 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+> index f9cc2e10b676..1611bfa1d5da 100644
+> --- a/drivers/pci/ats.c
+> +++ b/drivers/pci/ats.c
+> @@ -46,6 +46,35 @@ bool pci_ats_supported(struct pci_dev *dev)
+>  }
+>  EXPORT_SYMBOL_GPL(pci_ats_supported);
+>  
+> +/**
+> + * pci_ats_stu_configure - Configure STU of a PF.
+> + * @dev: the PCI device
+> + * @ps: the IOMMU page shift
+> + *
+> + * Returns 0 on success, or negative on failure.
+> + */
+> +int pci_ats_stu_configure(struct pci_dev *dev, int ps)
+> +{
+> +	u16 ctrl;
+> +
+> +	if (dev->ats_enabled || dev->is_virtfn)
+> +		return 0;
+
+I might return an error for the VF case on the assumption that it's
+likely an error in the caller.  I guess one could argue that it
+simplifies the caller if it doesn't have to check for PF vs VF.  But
+the fact that STU is shared between PF and VFs is an important part of
+understanding how ATS works, so the caller should be aware of the
+distinction anyway.
+
+> +
+> +	if (!pci_ats_supported(dev))
+> +		return -EINVAL;
+> +
+> +	if (ps < PCI_ATS_MIN_STU)
+> +		return -EINVAL;
+> +
+> +	dev->ats_stu = ps;
+> +	pci_read_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, &ctrl);
+> +	ctrl |= PCI_ATS_CTRL_STU(dev->ats_stu - PCI_ATS_MIN_STU);
+> +	pci_write_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, ctrl);
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(pci_ats_stu_configure);
+> +
+>  /**
+>   * pci_enable_ats - enable the ATS capability
+>   * @dev: the PCI device
+> @@ -68,8 +97,8 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
+>  		return -EINVAL;
+>  
+>  	/*
+> -	 * Note that enabling ATS on a VF fails unless it's already enabled
+> -	 * with the same STU on the PF.
+> +	 * Note that enabling ATS on a VF fails unless it's already
+> +	 * configured with the same STU on the PF.
+>  	 */
+>  	ctrl = PCI_ATS_CTRL_ENABLE;
+>  	if (dev->is_virtfn) {
+> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
+> index df54cd5b15db..7d62a92aaf23 100644
+> --- a/include/linux/pci-ats.h
+> +++ b/include/linux/pci-ats.h
+> @@ -8,6 +8,7 @@
+>  /* Address Translation Service */
+>  bool pci_ats_supported(struct pci_dev *dev);
+>  int pci_enable_ats(struct pci_dev *dev, int ps);
+> +int pci_ats_stu_configure(struct pci_dev *dev, int ps);
+>  void pci_disable_ats(struct pci_dev *dev);
+>  int pci_ats_queue_depth(struct pci_dev *dev);
+>  int pci_ats_page_aligned(struct pci_dev *dev);
+> @@ -16,6 +17,8 @@ static inline bool pci_ats_supported(struct pci_dev *d)
+>  { return false; }
+>  static inline int pci_enable_ats(struct pci_dev *d, int ps)
+>  { return -ENODEV; }
+> +static inline int pci_ats_stu_configure(struct pci_dev *d, int ps)
+> +{ return -ENODEV; }
+>  static inline void pci_disable_ats(struct pci_dev *d) { }
+>  static inline int pci_ats_queue_depth(struct pci_dev *d)
+>  { return -ENODEV; }
+> -- 
+> 2.38.1
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
