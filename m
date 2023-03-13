@@ -1,13 +1,12 @@
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BA1615A8;
-	Mon, 13 Mar 2023 10:30:14 +0000 (UTC)
-Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
-	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-	id 1pbfRT-0000zy-Qi; Mon, 13 Mar 2023 11:30:11 +0100
-Message-ID: <aef0902c-ef9a-c959-7786-d7362e15471a@leemhuis.info>
-Date: Mon, 13 Mar 2023 11:30:09 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E456423C5
+	for <iommu@lists.linux.dev>; Mon, 13 Mar 2023 11:51:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F38D5C433EF;
+	Mon, 13 Mar 2023 11:51:19 +0000 (UTC)
+Message-ID: <6625db2f-9b60-9f11-87ab-a1f8c4d9fd8e@xs4all.nl>
+Date: Mon, 13 Mar 2023 12:51:18 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -16,67 +15,134 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.8.0
-Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>
-Subject: Re: amdgpu failed to resume with AMD IOMMU enabled and 6.2.2-301 and
- 6.3.0-0.rc0.20230227gitf3a2439f20d9.9.fc39 and later resulting in a black
- screen
-Content-Language: en-US, de-DE
-To: Matt Fagnani <matt.fagnani@bell.net>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Cc: Vasant Hegde <vasant.hegde@amd.com>,
- Alex Deucher <alexander.deucher@amd.com>,
- Linux kernel regressions list <regressions@lists.linux.dev>
-References: <4a3b225c-2ffd-e758-4de1-447375e34cad@bell.net>
-From: "Linux regression tracking #adding (Thorsten Leemhuis)"
- <regressions@leemhuis.info>
-In-Reply-To: <4a3b225c-2ffd-e758-4de1-447375e34cad@bell.net>
+Subject: Re: [PATCH v5 01/11] dt-bindings: media: mediatek,vcodec: Remove
+ dma-ranges property
+Content-Language: en-US
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh+dt@kernel.org>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ nfraprado@collabora.com, linux-media@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ mingyuan.ma@mediatek.com, yf.wang@mediatek.com, jianjiao.zeng@mediatek.com,
+ Yunfei Dong <yunfei.dong@mediatek.com>,
+ kyrie wu <kyrie.wu@mediatek.corp-partner.google.com>,
+ chengci.xu@mediatek.com, youlin.pei@mediatek.com, anan.sun@mediatek.com,
+ Tiffany Lin <tiffany.lin@mediatek.com>,
+ Andrew-CT Chen <andrew-ct.chen@mediatek.com>, Rob Herring <robh@kernel.org>
+References: <20230307023507.13306-1-yong.wu@mediatek.com>
+ <20230307023507.13306-2-yong.wu@mediatek.com>
+From: Hans Verkuil <hverkuil@xs4all.nl>
+In-Reply-To: <20230307023507.13306-2-yong.wu@mediatek.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1678703414;e7250bfd;
-X-HE-SMSGID: 1pbfRT-0000zy-Qi
 
-[TLDR: I'm adding this report to the list of tracked Linux kernel
-regressions; the text you find below is based on a few templates
-paragraphs you might have encountered already in similar form.
-See link in footer if these mails annoy you.]
+On 07/03/2023 03:34, Yong Wu wrote:
+> After commit f1ad5338a4d5 ("of: Fix "dma-ranges" handling for bus
+> controllers"), the dma-ranges of the leaf node doesn't work. Remove
+> it for vcodec here.
+> 
+> 1) For mediatek,vcodec-decoder.yaml and mediatek,vcodec-encoder.yaml,
+> this property is in the leaf node, it is invalid as the above comment.
+> 
+> Currently there is only mt8195 VENC node has this property in upstream.
+> Indeed, VENC is affected, but it is not a fatal issue. Originally it
+> expects its iova range locate at 4GB-8GB. However after that commit, its
+> expectation doesn't come true, it will fall back to 0-4GB iova and also
+> could work well.
+> 
+> 2) For mediatek,vcodec-subdev-decoder.yaml, It already uses parent-child
+> node, this property works. Instead, MediaTek iommu will control the
+> masters' iova ranges by the master's larb/port id internally, then the
+> dma-ranges property is unnecessary for the master's node.
+> 
+> Cc: Tiffany Lin <tiffany.lin@mediatek.com>
+> Cc: Andrew-CT Chen <andrew-ct.chen@mediatek.com>
+> Cc: Yunfei Dong <yunfei.dong@mediatek.com>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: Matthias Brugger <matthias.bgg@gmail.com>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> Acked-by: Rob Herring <robh@kernel.org>
 
-On 11.03.23 19:57, Matt Fagnani wrote:
-> I booted a Fedora 38 KDE Plasma installation with the 6.2.2-301 kernel
-> on an hp laptop with an AMD A10-9620P CPU, an integrated Radeon R5 GPU,
-> and an AMD IOMMU enabled. I selected Sleep in either the Application
-> Launcher menu in Plasma 5.27.2 on Wayland or sddm on Wayland. The system
-> went to sleep. I moved the mouse to wake the system. The screen remained
-> black, but the LEDs on the side of the laptop flickered indicating drive
-> activity and the fan resumed making noise. I pressed sysrq+alt+s,u,b to
-> do an emergency sync, remount read-only, and reboot. The system
-> rebooted. The journal indicated the amdgpu failed to resume due to
-> errors including amdgpu: amdgpu_device_ip_resume failed (-6). which
-> started after the kernel failed to resume the AMD IOMMU.
-> [...]
-Thanks for the report. To be sure the issue doesn't fall through the
-cracks unnoticed, I'm adding it to regzbot, the Linux kernel regression
-tracking bot (note, the version number is not entirely correct, but
-things are a bit tricky here, but that version doesn't matter much
-anyway in this case):
+Acked-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 
-#regzbot ^introduced v6.1..v6.3-rc
-https://bugzilla.kernel.org/show_bug.cgi?id=217170
-#regzbot title amdgpu/iommu/: failed to resume
-#regzbot ignore-activity
+Regards,
 
-This isn't a regression? This issue or a fix for it are already
-discussed somewhere else? It was fixed already? You want to clarify when
-the regression started to happen? Or point out I got the title or
-something else totally wrong? Then just reply and tell me -- ideally
-while also telling regzbot about it, as explained by the page listed in
-the footer of this mail.
+	Hans
 
-Developers: When fixing the issue, remember to add 'Link:' tags pointing
-to the report (the parent of this mail). See page linked in footer for
-details.
+> ---
+>  .../devicetree/bindings/media/mediatek,vcodec-decoder.yaml | 5 -----
+>  .../devicetree/bindings/media/mediatek,vcodec-encoder.yaml | 5 -----
+>  .../bindings/media/mediatek,vcodec-subdev-decoder.yaml     | 7 -------
+>  3 files changed, 17 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/media/mediatek,vcodec-decoder.yaml b/Documentation/devicetree/bindings/media/mediatek,vcodec-decoder.yaml
+> index aa55ca65d6ed..fad59b486d5d 100644
+> --- a/Documentation/devicetree/bindings/media/mediatek,vcodec-decoder.yaml
+> +++ b/Documentation/devicetree/bindings/media/mediatek,vcodec-decoder.yaml
+> @@ -56,11 +56,6 @@ properties:
+>        List of the hardware port in respective IOMMU block for current Socs.
+>        Refer to bindings/iommu/mediatek,iommu.yaml.
+>  
+> -  dma-ranges:
+> -    maxItems: 1
+> -    description: |
+> -      Describes the physical address space of IOMMU maps to memory.
+> -
+>    mediatek,vpu:
+>      $ref: /schemas/types.yaml#/definitions/phandle
+>      description:
+> diff --git a/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml b/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
+> index 0f2ea8d9a10c..a2051b31fa29 100644
+> --- a/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
+> +++ b/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
+> @@ -49,11 +49,6 @@ properties:
+>        List of the hardware port in respective IOMMU block for current Socs.
+>        Refer to bindings/iommu/mediatek,iommu.yaml.
+>  
+> -  dma-ranges:
+> -    maxItems: 1
+> -    description: |
+> -      Describes the physical address space of IOMMU maps to memory.
+> -
+>    mediatek,vpu:
+>      $ref: /schemas/types.yaml#/definitions/phandle
+>      description:
+> diff --git a/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml b/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml
+> index c4f20acdc1f8..290594bc91cc 100644
+> --- a/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml
+> +++ b/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml
+> @@ -76,11 +76,6 @@ properties:
+>        The node of system control processor (SCP), using
+>        the remoteproc & rpmsg framework.
+>  
+> -  dma-ranges:
+> -    maxItems: 1
+> -    description: |
+> -      Describes the physical address space of IOMMU maps to memory.
+> -
+>    "#address-cells":
+>      const: 2
+>  
+> @@ -203,7 +198,6 @@ required:
+>    - reg
+>    - iommus
+>    - mediatek,scp
+> -  - dma-ranges
+>    - ranges
+>  
+>  if:
+> @@ -236,7 +230,6 @@ examples:
+>              compatible = "mediatek,mt8192-vcodec-dec";
+>              mediatek,scp = <&scp>;
+>              iommus = <&iommu0 M4U_PORT_L4_VDEC_MC_EXT>;
+> -            dma-ranges = <0x1 0x0 0x0 0x40000000 0x0 0xfff00000>;
+>              #address-cells = <2>;
+>              #size-cells = <2>;
+>              ranges = <0 0 0 0x16000000 0 0x40000>;
 
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
---
-Everything you wanna know about Linux kernel regression tracking:
-https://linux-regtracking.leemhuis.info/about/#tldr
-That page also explains what to do if mails like this annoy you.
