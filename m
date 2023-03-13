@@ -1,103 +1,82 @@
-Received: from SHSQR01.spreadtrum.com (mx1.unisoc.com [222.66.158.135])
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD6381FD0
-	for <iommu@lists.linux.dev>; Mon, 13 Mar 2023 07:52:07 +0000 (UTC)
-Received: from SHSend.spreadtrum.com (bjmbx02.spreadtrum.com [10.0.64.8])
-	by SHSQR01.spreadtrum.com with ESMTP id 32D7pAWH066429;
-	Mon, 13 Mar 2023 15:51:10 +0800 (+08)
-	(envelope-from Chunyan.Zhang@unisoc.com)
-Received: from ubt.spreadtrum.com (10.0.74.87) by BJMBX02.spreadtrum.com
- (10.0.64.8) with Microsoft SMTP Server (TLS) id 15.0.1497.23; Mon, 13 Mar
- 2023 15:51:06 +0800
-From: Chunyan Zhang <chunyan.zhang@unisoc.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        "Robin
- Murphy" <robin.murphy@arm.com>
-CC: <iommu@lists.linux.dev>, Baolu Lu <baolu.lu@linux.intel.com>,
-        Baolin Wang
-	<baolin.wang@linux.alibaba.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        "Chunyan
- Zhang" <zhang.lyra@gmail.com>,
-        Chunyan Zhang <chunyan.zhang@unisoc.com>,
-        LKML
-	<linux-kernel@vger.kernel.org>
-Subject: [PATCH V3 1/2] iommu: sprd: release dma buffer to avoid memory leak
-Date: Mon, 13 Mar 2023 15:50:16 +0800
-Message-ID: <20230313075017.668204-2-chunyan.zhang@unisoc.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230313075017.668204-1-chunyan.zhang@unisoc.com>
-References: <20230313075017.668204-1-chunyan.zhang@unisoc.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BA1615A8;
+	Mon, 13 Mar 2023 10:30:14 +0000 (UTC)
+Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
+	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+	id 1pbfRT-0000zy-Qi; Mon, 13 Mar 2023 11:30:11 +0100
+Message-ID: <aef0902c-ef9a-c959-7786-d7362e15471a@leemhuis.info>
+Date: Mon, 13 Mar 2023 11:30:09 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.0.74.87]
-X-ClientProxiedBy: SHCAS01.spreadtrum.com (10.0.1.201) To
- BJMBX02.spreadtrum.com (10.0.64.8)
-X-MAIL:SHSQR01.spreadtrum.com 32D7pAWH066429
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>
+Subject: Re: amdgpu failed to resume with AMD IOMMU enabled and 6.2.2-301 and
+ 6.3.0-0.rc0.20230227gitf3a2439f20d9.9.fc39 and later resulting in a black
+ screen
+Content-Language: en-US, de-DE
+To: Matt Fagnani <matt.fagnani@bell.net>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Cc: Vasant Hegde <vasant.hegde@amd.com>,
+ Alex Deucher <alexander.deucher@amd.com>,
+ Linux kernel regressions list <regressions@lists.linux.dev>
+References: <4a3b225c-2ffd-e758-4de1-447375e34cad@bell.net>
+From: "Linux regression tracking #adding (Thorsten Leemhuis)"
+ <regressions@leemhuis.info>
+In-Reply-To: <4a3b225c-2ffd-e758-4de1-447375e34cad@bell.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1678703414;e7250bfd;
+X-HE-SMSGID: 1pbfRT-0000zy-Qi
 
-When attaching to a domain, the driver would alloc a DMA buffer which
-is used to store address mapping table, and it need to be released
-when the IOMMU domain is freed.
+[TLDR: I'm adding this report to the list of tracked Linux kernel
+regressions; the text you find below is based on a few templates
+paragraphs you might have encountered already in similar form.
+See link in footer if these mails annoy you.]
 
-Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
----
- drivers/iommu/sprd-iommu.c | 29 ++++++++++++++++++++++-------
- 1 file changed, 22 insertions(+), 7 deletions(-)
+On 11.03.23 19:57, Matt Fagnani wrote:
+> I booted a Fedora 38 KDE Plasma installation with the 6.2.2-301 kernel
+> on an hp laptop with an AMD A10-9620P CPU, an integrated Radeon R5 GPU,
+> and an AMD IOMMU enabled. I selected Sleep in either the Application
+> Launcher menu in Plasma 5.27.2 on Wayland or sddm on Wayland. The system
+> went to sleep. I moved the mouse to wake the system. The screen remained
+> black, but the LEDs on the side of the laptop flickered indicating drive
+> activity and the fan resumed making noise. I pressed sysrq+alt+s,u,b to
+> do an emergency sync, remount read-only, and reboot. The system
+> rebooted. The journal indicated the amdgpu failed to resume due to
+> errors including amdgpu: amdgpu_device_ip_resume failed (-6). which
+> started after the kernel failed to resume the AMD IOMMU.
+> [...]
+Thanks for the report. To be sure the issue doesn't fall through the
+cracks unnoticed, I'm adding it to regzbot, the Linux kernel regression
+tracking bot (note, the version number is not entirely correct, but
+things are a bit tricky here, but that version doesn't matter much
+anyway in this case):
 
-diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
-index ae94d74b73f4..7df1f730c778 100644
---- a/drivers/iommu/sprd-iommu.c
-+++ b/drivers/iommu/sprd-iommu.c
-@@ -151,13 +151,6 @@ static struct iommu_domain *sprd_iommu_domain_alloc(unsigned int domain_type)
- 	return &dom->domain;
- }
- 
--static void sprd_iommu_domain_free(struct iommu_domain *domain)
--{
--	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
--
--	kfree(dom);
--}
--
- static void sprd_iommu_first_vpn(struct sprd_iommu_domain *dom)
- {
- 	struct sprd_iommu_device *sdev = dom->sdev;
-@@ -230,6 +223,28 @@ static void sprd_iommu_hw_en(struct sprd_iommu_device *sdev, bool en)
- 	sprd_iommu_update_bits(sdev, reg_cfg, mask, 0, val);
- }
- 
-+static void sprd_iommu_cleanup(struct sprd_iommu_domain *dom)
-+{
-+	size_t pgt_size;
-+
-+	/* Nothing need to do if the domain hasn't been attached */
-+	if (!dom->sdev)
-+		return;
-+
-+	pgt_size = sprd_iommu_pgt_size(&dom->domain);
-+	dma_free_coherent(dom->sdev->dev, pgt_size, dom->pgt_va, dom->pgt_pa);
-+	dom->sdev = NULL;
-+	sprd_iommu_hw_en(dom->sdev, false);
-+}
-+
-+static void sprd_iommu_domain_free(struct iommu_domain *domain)
-+{
-+	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
-+
-+	sprd_iommu_cleanup(dom);
-+	kfree(dom);
-+}
-+
- static int sprd_iommu_attach_device(struct iommu_domain *domain,
- 				    struct device *dev)
- {
--- 
-2.25.1
+#regzbot ^introduced v6.1..v6.3-rc
+https://bugzilla.kernel.org/show_bug.cgi?id=217170
+#regzbot title amdgpu/iommu/: failed to resume
+#regzbot ignore-activity
 
+This isn't a regression? This issue or a fix for it are already
+discussed somewhere else? It was fixed already? You want to clarify when
+the regression started to happen? Or point out I got the title or
+something else totally wrong? Then just reply and tell me -- ideally
+while also telling regzbot about it, as explained by the page listed in
+the footer of this mail.
+
+Developers: When fixing the issue, remember to add 'Link:' tags pointing
+to the report (the parent of this mail). See page linked in footer for
+details.
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+--
+Everything you wanna know about Linux kernel regression tracking:
+https://linux-regtracking.leemhuis.info/about/#tldr
+That page also explains what to do if mails like this annoy you.
