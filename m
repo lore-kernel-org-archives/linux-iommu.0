@@ -1,168 +1,149 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAFE53D7A
-	for <iommu@lists.linux.dev>; Mon, 13 Mar 2023 18:30:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CC29C433D2;
-	Mon, 13 Mar 2023 18:30:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1678732230;
-	bh=g4E1wcKH/Q2KGgYcTLAN52CLQs15rnqXo1TtKmLx46o=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=R61D2i5/fk67iJoda+wbgLOGSt9ImnLcOdLA4W24Yt1HFIVMotg2ZcGOSj9uk6Q6M
-	 YnGH0wG9ML2NWLHj1eimhg9xLWxAeY+ENtd9TOZk7HviDXvI1PS6vWR82vwHV/rpqo
-	 fPBlRktYODsEc2jf435Dcn1/ZL32WuRNl4OBPNkw=
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: linux-kernel@vger.kernel.org
-Cc: rafael@kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CE96847B
+	for <iommu@lists.linux.dev>; Mon, 13 Mar 2023 20:38:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678739885; x=1710275885;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=xhLemzapIYtjwt7W6UjVVSZx3bQKLmhz6UvBBX3dL3c=;
+  b=NYyfInkMm8rKQCdXPwFYho32BAhtDX4FwScEizr+Y9ocRy6vBohl5zi6
+   OkTigMJD3sZafm4Y1d6TTFkhXyJF+N6Qf3y4uj3CbY6yUz3Y4t4kB9Qo5
+   V2cOKEsPyPoUPg75hNwHNkMzUExVfVUhD4Ko2iSL3llQ3lcyEQe/qWAa1
+   zOIr3pVq9PKCDl1fi0EhKm4pyNG5+F2DagZMkGyrkdXhXRAkZNTiB/Db1
+   00ER/pDRL3fPrggUFKm09gw+CHdjzZxHqjxIHoZNfKWYVym+aezwcG+xZ
+   8kMoLgJhNUWPfhrp+FTIU/oZCSo7xAw9GVuSHnt/HcmJt524ihj7rxuWg
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="334732018"
+X-IronPort-AV: E=Sophos;i="5.98,257,1673942400"; 
+   d="scan'208";a="334732018"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2023 13:38:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="802584766"
+X-IronPort-AV: E=Sophos;i="5.98,257,1673942400"; 
+   d="scan'208";a="802584766"
+Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.106])
+  by orsmga004.jf.intel.com with ESMTP; 13 Mar 2023 13:38:03 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: LKML <linux-kernel@vger.kernel.org>,
+	iommu@lists.linux.dev,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	"Lu Baolu" <baolu.lu@linux.intel.com>,
 	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev
-Subject: [PATCH 34/36] iommu: make the pointer to struct bus_type constant
-Date: Mon, 13 Mar 2023 19:29:16 +0100
-Message-Id: <20230313182918.1312597-34-gregkh@linuxfoundation.org>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230313182918.1312597-1-gregkh@linuxfoundation.org>
-References: <20230313182918.1312597-1-gregkh@linuxfoundation.org>
+	Jean-Philippe Brucker <jean-philippe@linaro.com>,
+	"Robin Murphy" <robin.murphy@arm.com>,
+	Dave Hansen <dave.hansen@intel.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	X86 Kernel <x86@kernel.org>,
+	bp@alien8.de,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	corbet@lwn.net,
+	vkoul@kernel.org,
+	dmaengine@vger.kernel.org,
+	linux-doc@vger.kernel.org
+Cc: "Will Deacon" <will@kernel.org>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Raj Ashok <ashok.raj@intel.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	Yi Liu <yi.l.liu@intel.com>,
+	"Yu, Fenghua" <fenghua.yu@intel.com>,
+	Dave Jiang <dave.jiang@intel.com>,
+	Kirill Shutemov <kirill.shutemov@linux.intel.com>,
+	Tony Luck <tony.luck@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: 
+Date: Mon, 13 Mar 2023 13:41:51 -0700
+Message-Id: <20230313204158.1495067-1-jacob.jun.pan@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=5053; i=gregkh@linuxfoundation.org; h=from:subject; bh=g4E1wcKH/Q2KGgYcTLAN52CLQs15rnqXo1TtKmLx46o=; b=owGbwMvMwCRo6H6F97bub03G02pJDCn82TWL3ReXsm1/p/3H/ayG66UMRdHDNjF3rXSbyooqP my+6KzUEcvCIMjEICumyPJlG8/R/RWHFL0MbU/DzGFlAhnCwMUpABNZeIdhruBJw+nfCrtmTCvs df7p2VYjwxhjzTDPaLpDcDlXZca1N/d8RY+qp67qK5kAAA==
-X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 Content-Transfer-Encoding: 8bit
 
-A number of iommu functions take a struct bus_type * and never modify
-the data passed in, so make them all const * as that is what the driver
-core is expecting to have passed into as well.
+Subject: [PATCH v6 0/7] Remove VT-d virtual command interface and IOASID
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-This is a step toward making all struct bus_type pointers constant in
-the kernel.
+Hi all,
 
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
-Note, this is a patch that is a prepatory cleanup as part of a larger
-series of patches that is working on resolving some old driver core
-design mistakes.  It will build and apply cleanly on top of 6.3-rc2 on
-its own, but I'd prefer if I could take it through my driver-core tree
-so that the driver core changes can be taken through there for 6.4-rc1.
+This patch set removes unused VT-d virtual command interface followed by
+removal of the IOASID infrastructure.
 
- drivers/iommu/iommu.c | 14 +++++++-------
- include/linux/iommu.h | 10 +++++-----
- 2 files changed, 12 insertions(+), 12 deletions(-)
+This has only been tested on x86 platforms, need help with testing on ARM
+SMMU and other architectures.
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 10db680acaed..0b5e181998c9 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -89,7 +89,7 @@ static int iommu_bus_notifier(struct notifier_block *nb,
- 			      unsigned long action, void *data);
- static int iommu_alloc_default_domain(struct iommu_group *group,
- 				      struct device *dev);
--static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
-+static struct iommu_domain *__iommu_domain_alloc(const struct bus_type *bus,
- 						 unsigned type);
- static int __iommu_attach_device(struct iommu_domain *domain,
- 				 struct device *dev);
-@@ -1631,7 +1631,7 @@ static int iommu_get_def_domain_type(struct device *dev)
- 	return 0;
- }
- 
--static int iommu_group_alloc_default_domain(struct bus_type *bus,
-+static int iommu_group_alloc_default_domain(const struct bus_type *bus,
- 					    struct iommu_group *group,
- 					    unsigned int type)
- {
-@@ -1777,7 +1777,7 @@ static int probe_get_default_domain_type(struct device *dev, void *data)
- 	return 0;
- }
- 
--static void probe_alloc_default_domain(struct bus_type *bus,
-+static void probe_alloc_default_domain(const struct bus_type *bus,
- 				       struct iommu_group *group)
- {
- 	struct __group_domain_type gtype;
-@@ -1832,7 +1832,7 @@ static int iommu_group_create_direct_mappings(struct iommu_group *group)
- 					  iommu_do_create_direct_mappings);
- }
- 
--int bus_iommu_probe(struct bus_type *bus)
-+int bus_iommu_probe(const struct bus_type *bus)
- {
- 	struct iommu_group *group, *next;
- 	LIST_HEAD(group_list);
-@@ -1876,7 +1876,7 @@ int bus_iommu_probe(struct bus_type *bus)
- 	return ret;
- }
- 
--bool iommu_present(struct bus_type *bus)
-+bool iommu_present(const struct bus_type *bus)
- {
- 	return bus->iommu_ops != NULL;
- }
-@@ -1951,7 +1951,7 @@ void iommu_set_fault_handler(struct iommu_domain *domain,
- }
- EXPORT_SYMBOL_GPL(iommu_set_fault_handler);
- 
--static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
-+static struct iommu_domain *__iommu_domain_alloc(const struct bus_type *bus,
- 						 unsigned type)
- {
- 	struct iommu_domain *domain;
-@@ -1976,7 +1976,7 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
- 	return domain;
- }
- 
--struct iommu_domain *iommu_domain_alloc(struct bus_type *bus)
-+struct iommu_domain *iommu_domain_alloc(const struct bus_type *bus)
- {
- 	return __iommu_domain_alloc(bus, IOMMU_DOMAIN_UNMANAGED);
- }
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 6595454d4f48..0fd4e6734d5b 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -455,11 +455,11 @@ static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
- 	return dev->iommu->iommu_dev->ops;
- }
- 
--extern int bus_iommu_probe(struct bus_type *bus);
--extern bool iommu_present(struct bus_type *bus);
-+extern int bus_iommu_probe(const struct bus_type *bus);
-+extern bool iommu_present(const struct bus_type *bus);
- extern bool device_iommu_capable(struct device *dev, enum iommu_cap cap);
- extern bool iommu_group_has_isolated_msi(struct iommu_group *group);
--extern struct iommu_domain *iommu_domain_alloc(struct bus_type *bus);
-+extern struct iommu_domain *iommu_domain_alloc(const struct bus_type *bus);
- extern struct iommu_group *iommu_group_get_by_id(int id);
- extern void iommu_domain_free(struct iommu_domain *domain);
- extern int iommu_attach_device(struct iommu_domain *domain,
-@@ -732,7 +732,7 @@ struct iommu_device {};
- struct iommu_fault_param {};
- struct iommu_iotlb_gather {};
- 
--static inline bool iommu_present(struct bus_type *bus)
-+static inline bool iommu_present(const struct bus_type *bus)
- {
- 	return false;
- }
-@@ -742,7 +742,7 @@ static inline bool device_iommu_capable(struct device *dev, enum iommu_cap cap)
- 	return false;
- }
- 
--static inline struct iommu_domain *iommu_domain_alloc(struct bus_type *bus)
-+static inline struct iommu_domain *iommu_domain_alloc(const struct bus_type *bus)
- {
- 	return NULL;
- }
+
+Thanks,
+
+Jacob
+
+ChangeLog:
+v6:
+ - put pasid helpers under iommu.h instead of iommu-helper.h
+ - add comments for pasid allocation function to clarify inclusive range
+
+v5:
+ - rebased on v6.3-rc1
+ - put removing iommu_sva_find() in a separate patch (Kevin)
+ - move definition of helpers to iommu code to be consistent with
+   declarations. (Kevin)
+ - misc fixes
+
+v4:
+ - keep mm_pasid helpers inline as much as we can for fork performance
+ - separate GFP_ATOMIC to GFP_KERNEL change for bisectability
+
+v3:
+ - moved helper functions for PASID under SVA code, avoided circular inclusion
+   between mm.h and iommu.h
+ - deleted makefiles
+ - put rename under a different patch
+
+
+Jacob Pan (5):
+  iommu/vt-d: Remove virtual command interface
+  iommu/sva: Move PASID helpers to sva code
+  iommu/sva: Remove PASID to mm lookup function
+  iommu/sva: Use GFP_KERNEL for pasid allocation
+  iommu/ioasid: Rename INVALID_IOASID
+
+Jason Gunthorpe (2):
+  iommu/sva: Stop using ioasid_set for SVA
+  iommu: Remove ioasid infrastructure
+
+ Documentation/x86/sva.rst       |   2 +-
+ arch/x86/kernel/traps.c         |   5 +-
+ drivers/dma/idxd/device.c       |   8 +-
+ drivers/dma/idxd/idxd.h         |   2 +-
+ drivers/dma/idxd/init.c         |   2 +-
+ drivers/dma/idxd/irq.c          |   2 +-
+ drivers/iommu/Kconfig           |   5 -
+ drivers/iommu/Makefile          |   1 -
+ drivers/iommu/intel/cap_audit.c |   2 -
+ drivers/iommu/intel/dmar.c      |   6 +-
+ drivers/iommu/intel/iommu.c     |  87 +------
+ drivers/iommu/intel/iommu.h     |   3 -
+ drivers/iommu/intel/svm.c       |   3 +-
+ drivers/iommu/ioasid.c          | 422 --------------------------------
+ drivers/iommu/iommu-sva.c       |  63 ++---
+ drivers/iommu/iommu-sva.h       |   4 -
+ include/linux/ioasid.h          |  83 -------
+ include/linux/iommu.h           |  14 +-
+ include/linux/sched/mm.h        |  26 --
+ kernel/fork.c                   |   3 +
+ mm/init-mm.c                    |   4 +-
+ 21 files changed, 53 insertions(+), 694 deletions(-)
+ delete mode 100644 drivers/iommu/ioasid.c
+ delete mode 100644 include/linux/ioasid.h
+
 -- 
-2.39.2
+2.25.1
 
