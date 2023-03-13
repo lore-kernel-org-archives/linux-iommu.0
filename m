@@ -1,103 +1,118 @@
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8316C2569
-	for <iommu@lists.linux.dev>; Mon, 13 Mar 2023 12:45:43 +0000 (UTC)
-X-IronPort-AV: E=Sophos;i="5.98,256,1673881200"; 
-   d="scan'208";a="152420029"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie5.idc.renesas.com with ESMTP; 13 Mar 2023 21:40:34 +0900
-Received: from localhost.localdomain (unknown [10.166.15.32])
-	by relmlir5.idc.renesas.com (Postfix) with ESMTP id 62D454008558;
-	Mon, 13 Mar 2023 21:40:34 +0900 (JST)
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To: joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	robh+dt@kernel.org,
-	krzysztof.kozlowski+dt@linaro.org
-Cc: geert+renesas@glider.be,
-	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: [PATCH v4] dt-bindings: iommu: renesas, ipmmu-vmsa: Update for R-Car Gen4
-Date: Mon, 13 Mar 2023 21:40:26 +0900
-Message-Id: <20230313124026.954514-1-yoshihiro.shimoda.uh@renesas.com>
-X-Mailer: git-send-email 2.25.1
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8B78C2569
+	for <iommu@lists.linux.dev>; Mon, 13 Mar 2023 13:07:48 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 64AD91FB;
+	Mon, 13 Mar 2023 06:08:31 -0700 (PDT)
+Received: from [10.57.91.139] (unknown [10.57.91.139])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BB5C43F64C;
+	Mon, 13 Mar 2023 06:07:45 -0700 (PDT)
+Message-ID: <ab762cc6-5adf-2515-d9d2-d21d916eb6ad@arm.com>
+Date: Mon, 13 Mar 2023 13:07:42 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v1 14/14] iommu/arm-smmu-v3: Add
+ arm_smmu_cache_invalidate_user
+Content-Language: en-GB
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, will@kernel.org, eric.auger@redhat.com,
+ kevin.tian@intel.com, baolu.lu@linux.intel.com, joro@8bytes.org,
+ shameerali.kolothum.thodi@huawei.com, jean-philippe@linaro.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <cover.1678348754.git.nicolinc@nvidia.com>
+ <aa327f9ea61e5a4771c13e53639e33955b9acde3.1678348754.git.nicolinc@nvidia.com>
+ <1467e666-1b6c-c285-3f79-f8e8b088718b@arm.com>
+ <ZAqpOQ+DDvEfq0Dg@Asurada-Nvidia>
+ <92fdb06f-e5b1-8534-fb0e-ad47b5be9e1d@arm.com>
+ <ZAx2K08L5TIm6r3y@Asurada-Nvidia>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <ZAx2K08L5TIm6r3y@Asurada-Nvidia>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Since R-Car Gen4 does not have the main IPMMU IMSSTR register, update
-the bindings to drop the interrupt bit number from the
-renesas,ipmmu-main property.
+On 2023-03-11 12:38, Nicolin Chen wrote:
+> On Fri, Mar 10, 2023 at 05:53:46PM +0000, Robin Murphy wrote:
+> 
+>>>>> +     case CMDQ_OP_TLBI_NH_VA:
+>>>>> +             cmd.tlbi.asid = inv_info->asid;
+>>>>> +             fallthrough;
+>>>>> +     case CMDQ_OP_TLBI_NH_VAA:
+>>>>> +             if (!granule_size || !(granule_size & smmu->pgsize_bitmap) ||
+>>>>
+>>>> Non-range invalidations with TG=0 are perfectly legal, and should not be
+>>>> ignored.
+>>>
+>>> I assume that you are talking about the pgsize_bitmap check.
+>>>
+>>> QEMU embeds a !tg case into the granule_size [1]. So it might
+>>> not be straightforward to cover that case. Let me see how to
+>>> untangle different cases and handle them accordingly.
+>>
+>> Oh, double-checking patch #2, that might be me misunderstanding the
+>> interface. I hadn't realised that the UAPI was apparently modelled on
+>> arm_smmu_tlb_inv_range_asid() rather than actual SMMU commands :)
+> 
+> Yea. In fact, most of the invalidation info in QEMU was packed
+> for the previously defined general cache invalidation structure,
+> and the range invalidation part is still not quite independent.
+> 
+>> I really think UAPI should reflect the hardware and encode TG and TTL
+>> directly. Especially since there's technically a flaw in the current
+>> driver where we assume TTL in cases where it isn't actually known, thus
+>> may potentially fail to invalidate level 2 block entries when removing a
+>> level 1 table, since io-pgtable passes the level 3 granule in that case.
+> 
+> Do you mean something like hw_info forwarding pgsize_bitmap/tg
+> to the guest? Or the other direction?
 
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-[geert: Re-add removed items level, add minItems/maxItems constraints]
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
-Changes from v3:
-https://lore.kernel.org/all/20230209133440.2643228-1-yoshihiro.shimoda.uh@renesas.com/
- - Revise the dt-bindings by Geert-san (Thanks a lot!).
+I mean if the interface wants to support range invalidations in a way 
+which works correctly, then it should ideally carry both the TG and TTL 
+fields from the guest command straight through to the host. If not, then 
+at the very least the host must always assume TTL=0, because it cannot 
+correctly infer otherwise once the guest command's original intent has 
+been lost.
 
- .../bindings/iommu/renesas,ipmmu-vmsa.yaml    | 32 ++++++++++++++-----
- 1 file changed, 24 insertions(+), 8 deletions(-)
+>> When range invalidation came along, the distinction between "all leaves
+>> are definitely at the last level" and "use last-level granularity to
+>> make sure everything at at any level is hit" started to matter, but the
+>> interface never caught up. It hasn't seemed desperately urgent to fix
+>> (who does 1GB+ unmaps outside of VFIO teardown anyway?), but we must
+>> definitely not bake the same mistake into user ABI.
+>>
+>> Of course, there might then be cases where we need to transform
+>> non-range commands into range commands for the sake of workarounds, but
+>> that's our own problem to deal with.
+> 
+> Noted it down.
+> 
+>>>> What about NSNH_ALL? That still needs to invalidate all the S1 context
+>>>> that the guest *thinks* it's invalidating.
+>>>
+>>> NSNH_ALL is translated to NH_ALL at the guest level. But maybe
+>>> it should have been done here instead.
+>>
+>> Yes. It seems the worst of both worlds to have an interface which takes
+>> raw opcodes rather than an enum of supported commands, but still
+>> requires userspace to know which opcodes are supported and which ones
+>> don't work as expected even though they are entirely reasonable to use
+>> in the context of the stage-1-only SMMU being emulated.
+> 
+> Maybe a list of supported TLBI commands via the hw_info uAPI?
 
-diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-index 72308a4c14e7..be90f68c11d1 100644
---- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-+++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-@@ -74,16 +74,16 @@ properties:
-   renesas,ipmmu-main:
-     $ref: /schemas/types.yaml#/definitions/phandle-array
-     items:
--      - items:
-+      - minItems: 1
-+        items:
-           - description: phandle to main IPMMU
--          - description: the interrupt bit number associated with the particular
--              cache IPMMU device. The interrupt bit number needs to match the main
--              IPMMU IMSSTR register. Only used by cache IPMMU instances.
-+          - description:
-+              The interrupt bit number associated with the particular cache
-+              IPMMU device. If present, the interrupt bit number needs to match
-+              the main IPMMU IMSSTR register. Only used by cache IPMMU
-+              instances.
-     description:
--      Reference to the main IPMMU phandle plus 1 cell. The cell is
--      the interrupt bit number associated with the particular cache IPMMU
--      device. The interrupt bit number needs to match the main IPMMU IMSSTR
--      register. Only used by cache IPMMU instances.
-+      Reference to the main IPMMU.
- 
- required:
-   - compatible
-@@ -109,6 +109,22 @@ allOf:
-       required:
-         - power-domains
- 
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: renesas,rcar-gen4-ipmmu-vmsa
-+    then:
-+      properties:
-+        renesas,ipmmu-main:
-+          items:
-+            - maxItems: 1
-+    else:
-+      properties:
-+        renesas,ipmmu-main:
-+          items:
-+            - minItems: 2
-+
- examples:
-   - |
-     #include <dt-bindings/clock/r8a7791-cpg-mssr.h>
--- 
-2.25.1
+I don't think it's all that difficult to implicitly support all commands 
+that are valid for a stage-1-only SMMU, it just needs the right 
+interface design to be capable of encoding them all completely and 
+unambiguously. Coming back to the previous point about the address 
+encoding, I think that means basing it more directly on the actual 
+SMMUv3 commands, rather than on io-pgtable's abstraction of invalidation 
+with SMMUv3 opcodes bolted on.
 
+Thanks,
+Robin.
