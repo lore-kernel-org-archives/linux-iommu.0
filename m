@@ -1,152 +1,158 @@
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61EA08F69
-	for <iommu@lists.linux.dev>; Tue, 14 Mar 2023 15:11:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678806688; x=1710342688;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=79VXzKUbCpKzyI43FtKU7IvK1LvZdN9gS4iyBbKt50U=;
-  b=JsiPXM+5El2xjKIrl+qewbCM+7qLAu7/1eB9KB7LnwUCgbSEF7roCs9e
-   Ic0n/YlYqqoW2GVNlg35Yj27BF/6GUHcfkKn0O4fVGA6JeLLbsyHSSl5G
-   VfgdWjZXZ1Ao7TLWMJ1idl9WCNfJMjeF2IABmTUuNBvy+JKg61c6AOPkB
-   YLW/KS/O2NLrvgDPn3y3PNBBa+BehoKzWZDX1+m39lqWwGuUA9nZKcD8g
-   2ysjhk0oFOXPVF0fDFurmCdiif5AAmCSngKhQpO45iS1xYCYptQtUV6zz
-   7o6b6LN7+rLJDNmn0a37BEQyV5osoBYoZAy+e78Hjpoq3zMrEZsov54/q
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="317841671"
-X-IronPort-AV: E=Sophos;i="5.98,260,1673942400"; 
-   d="scan'208";a="317841671"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2023 08:11:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="681458589"
-X-IronPort-AV: E=Sophos;i="5.98,260,1673942400"; 
-   d="scan'208";a="681458589"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2023 08:11:26 -0700
-Date: Tue, 14 Mar 2023 08:15:22 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Jason
- Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Jean-Philippe
- Brucker <jean-philippe@linaro.com>, Robin Murphy <robin.murphy@arm.com>,
- Dave Hansen <dave.hansen@intel.com>, Thomas Gleixner <tglx@linutronix.de>,
- X86 Kernel <x86@kernel.org>, bp@alien8.de, "H. Peter Anvin"
- <hpa@zytor.com>, Peter Zijlstra <peterz@infradead.org>, corbet@lwn.net,
- vkoul@kernel.org, dmaengine@vger.kernel.org, linux-doc@vger.kernel.org,
- Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Raj
- Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
- <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>, Dave Jiang
- <dave.jiang@intel.com>, Kirill Shutemov <kirill.shutemov@linux.intel.com>,
- Tony Luck <tony.luck@intel.com>, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v6 4/7] iommu/sva: Stop using ioasid_set for SVA
-Message-ID: <20230314081522.11d2f921@jacob-builder>
-In-Reply-To: <0548021d-d9b3-3a2e-8c1f-e266dedb8f1c@linux.intel.com>
-References: <20230313204158.1495067-1-jacob.jun.pan@linux.intel.com>
-	<20230313204158.1495067-5-jacob.jun.pan@linux.intel.com>
-	<0548021d-d9b3-3a2e-8c1f-e266dedb8f1c@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5B0A28F69
+	for <iommu@lists.linux.dev>; Tue, 14 Mar 2023 15:25:31 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2FCF54B3;
+	Tue, 14 Mar 2023 08:26:14 -0700 (PDT)
+Received: from [10.57.91.139] (unknown [10.57.91.139])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 87A143F67D;
+	Tue, 14 Mar 2023 08:25:28 -0700 (PDT)
+Message-ID: <f718a517-c91a-0608-1d51-4edef8cc88cd@arm.com>
+Date: Tue, 14 Mar 2023 15:25:22 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v2] iommu/arm-smmu-qcom: Rework the logic finding the
+ bypass quirk
+Content-Language: en-GB
+To: Bjorn Andersson <andersson@kernel.org>
+Cc: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+ Johan Hovold <johan@kernel.org>, will@kernel.org, joro@8bytes.org,
+ johan+linaro@kernel.org, steev@kali.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20230314105905.137241-1-manivannan.sadhasivam@linaro.org>
+ <ZBBX0n4S2QBYB3Pi@hovoldconsulting.com> <20230314112620.GB137001@thinkpad>
+ <13b46d42-e497-8dd7-4785-f58447128a40@arm.com>
+ <20230314132018.GC137001@thinkpad>
+ <a81515c5-c88c-e3c2-2077-0a78b900bbe5@arm.com>
+ <20230314143218.fl3hedg336iofv3n@ripper>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20230314143218.fl3hedg336iofv3n@ripper>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Hi Baolu,
+On 2023-03-14 14:32, Bjorn Andersson wrote:
+> On Tue, Mar 14, 2023 at 01:41:56PM +0000, Robin Murphy wrote:
+>> On 2023-03-14 13:20, Manivannan Sadhasivam wrote:
+>>> On Tue, Mar 14, 2023 at 11:58:24AM +0000, Robin Murphy wrote:
+>>>> On 2023-03-14 11:26, Manivannan Sadhasivam wrote:
+>>>>> On Tue, Mar 14, 2023 at 12:17:38PM +0100, Johan Hovold wrote:
+>>>>>> On Tue, Mar 14, 2023 at 04:29:05PM +0530, Manivannan Sadhasivam wrote:
+>>>>>>> The logic used to find the quirky firmware that intercepts the writes to
+>>>>>>> S2CR register to replace bypass type streams with a fault, and ignore the
+>>>>>>> fault type, is not working with the firmware on newer SoCs like SC8280XP.
+>>>>>>>
+>>>>>>> The current logic uses the last stream mapping group (num_mapping_groups
+>>>>>>> - 1) as an index for finding quirky firmware. But on SC8280XP, NUSMRG
+>>>>>>> reports a value of 162 (possibly emulated by the hypervisor) and logic is
+>>>>>>> not working for stream mapping groups > 128. (Note that the ARM SMMU
+>>>>>>> architecture specification defines NUMSMRG in the range of 0-127).
+>>>>>>>
+>>>>>>> So the current logic that checks the (162-1)th S2CR entry fails to detect
+>>>>>>> the quirky firmware on these devices and SMMU triggers invalid context
+>>>>>>> fault for bypass streams.
+>>>>>>>
+>>>>>>> To fix this issue, rework the logic to find the first non-valid (free)
+>>>>>>> stream mapping register group (SMR) within 128 groups and use that index
+>>>>>>> to access S2CR for detecting the bypass quirk. If no free groups are
+>>>>>>> available, then just skip the quirk detection.
+>>>>>>>
+>>>>>>> While at it, let's move the quirk detection logic to a separate function
+>>>>>>> and change the local variable name from last_s2cr to free_s2cr.
+>>>>>>>
+>>>>>>> Reviewed-by: Bjorn Andersson <andersson@kernel.org>
+>>>>>>> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+>>>>>>> ---
+>>>>>>>
+>>>>>>> Changes in v2:
+>>>>>>>
+>>>>>>> * Limited the check to 128 groups as per ARM SMMU spec's NUMSMRG range
+>>>>>>> * Moved the quirk handling to its own function
+>>>>>>> * Collected review tag from Bjorn
+>>>>>>>
+>>>>>>>     drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 48 ++++++++++++++++++----
+>>>>>>>     1 file changed, 40 insertions(+), 8 deletions(-)
+>>>>>>>
+>>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>>> index d1b296b95c86..48362d7ef451 100644
+>>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>>> @@ -266,25 +266,49 @@ static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+>>>>>>>     	return 0;
+>>>>>>>     }
+>>>>>>> -static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
+>>>>>>> +static void qcom_smmu_bypass_quirk(struct arm_smmu_device *smmu)
+>>>>>>>     {
+>>>>>>> -	unsigned int last_s2cr = ARM_SMMU_GR0_S2CR(smmu->num_mapping_groups - 1);
+>>>>>>>     	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
+>>>>>>> -	u32 reg;
+>>>>>>> -	u32 smr;
+>>>>>>> +	u32 free_s2cr;
+>>>>>>> +	u32 reg, smr;
+>>>>>>>     	int i;
+>>>>>>> +	/*
+>>>>>>> +	 * Find the first non-valid (free) stream mapping register group and
+>>>>>>> +	 * use that index to access S2CR for detecting the bypass quirk.
+>>>>>>> +	 *
+>>>>>>> +	 * Note that only the first 128 stream mapping groups are considered for
+>>>>>>> +	 * the check. This is because the ARM SMMU architecture specification
+>>>>>>> +	 * defines NUMSMRG (Number of Stream Mapping Register Groups) in the
+>>>>>>> +	 * range of 0-127, but some Qcom platforms emulate more stream mapping
+>>>>>>> +	 * groups with the help of hypervisor. And those groups don't exhibit
+>>>>>>> +	 * the quirky behavior.
+>>>>>>> +	 */
+>>>>>>> +	for (i = 0; i < 128; i++) {
+>>>>>>
+>>>>>> This may now access registers beyond smmu->num_mapping_groups. Should
+>>>>>> you not use the minimum of these two values here (and below)?
+>>>>>>
+>>>>>
+>>>>> Doh! yeah, you're right. Will fix it in v3.
+>>>>
+>>>> FWIW I'd say it's probably best if the cfg_probe hook clamps
+>>>> smmu->num_mapping_groups to the architectural maximum straight away, to also
+>>>> prevent the main driver iterating off into the nonsensical area in
+>>>> arm_smmu_device_reset() or the SMR allocator itself.
+>>>>
+>>>
+>>> We considered that also but Qcom purposefully extended the NUMSMRG for
+>>> virtualization usecase and we do not have a clear picture of it.
+>>
+>> Whatever that supposed use-case may be, Linux does not support it, and
+>> clearly isn't going to support it any time soon if we don't even know what
+> 
+> Can you please elaborate on what it is that would prevent Linux to
+> handle hardware with more than 128 SMRs?
 
-On Tue, 14 Mar 2023 10:16:41 +0800, Baolu Lu <baolu.lu@linux.intel.com>
-wrote:
+https://developer.arm.com/documentation/ihi0062/latest
 
-> On 3/14/23 4:41 AM, Jacob Pan wrote:
-> > From: Jason Gunthorpe<jgg@nvidia.com>
-> > 
-> > Instead SVA drivers can use a simple global IDA to allocate PASIDs for
-> > each mm_struct.
-> > 
-> > Future work would be to allow drivers using the SVA APIs to reserve
-> > global PASIDs from this IDA for their internal use, eg with the DMA API
-> > PASID support.
-> > 
-> > Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
-> > Signed-off-by: Jacob Pan<jacob.jun.pan@linux.intel.com>
-> > ---
-> > v5:
-> > 	- Put removing iommu_sva_find() to a separate patch (Kevin)
-> > 	- Make pasid allocation range to be inclusive (Tina)
-> > 	- Simplified return code handling (Baolu)
-> > v4:
-> > 	- Keep GFP_ATOMIC flag for PASID allocation, will changed to
-> > 	GFP_KERNEL in a separate patch.
-> > ---
-> >   drivers/iommu/iommu-sva.c | 43 ++++++++++++++-------------------------
-> >   drivers/iommu/iommu-sva.h |  2 --
-> >   2 files changed, 15 insertions(+), 30 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-> > index 4f357ef14f04..d4640731727a 100644
-> > --- a/drivers/iommu/iommu-sva.c
-> > +++ b/drivers/iommu/iommu-sva.c
-> > @@ -9,47 +9,34 @@
-> >   #include "iommu-sva.h"
-> >   
-> >   static DEFINE_MUTEX(iommu_sva_lock);
-> > -static DECLARE_IOASID_SET(iommu_sva_pasid);
-> > +static DEFINE_IDA(iommu_global_pasid_ida);
-> >   
-> > -/**
-> > - * iommu_sva_alloc_pasid - Allocate a PASID for the mm
-> > - * @mm: the mm
-> > - * @min: minimum PASID value (inclusive)
-> > - * @max: maximum PASID value (inclusive)
-> > - *
-> > - * Try to allocate a PASID for this mm, or take a reference to the
-> > existing one
-> > - * provided it fits within the [@min, @max] range. On success the
-> > PASID is
-> > - * available in mm->pasid and will be available for the lifetime of
-> > the mm.
-> > - *
-> > - * Returns 0 on success and < 0 on error.
-> > - */
-> > -int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t
-> > max) +/* Allocate a PASID for the mm within range (inclusive) */
-> > +static int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min,
-> > ioasid_t max) {
-> >   	int ret = 0;
-> > -	ioasid_t pasid;
-> >   
-> > -	if (min == INVALID_IOASID || max == INVALID_IOASID ||
-> > -	    min == 0 || max < min)
-> > +	if (!pasid_valid(min) || !pasid_valid(max) ||
-> > +	     min == 0 || max < min)  
-> 
-> I still think the last line change is unnecessary. Otherwise, you
-> probably will get below CHECK warning:
-> 
-Got it :) I misunderstood, I thought you meant should not change to
-pasid_valid()
-will fix
-> CHECK: Alignment should match open parenthesis
-> #259: FILE: drivers/iommu/iommu-sva.c:20:
-> +	if (!pasid_valid(min) || !pasid_valid(max) ||
-> +	     min == 0 || max < min)
-> 
-> Besides that,
-> 
-> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-> 
-> Best regards,
-> baolu
-> 
+I would expect actual hardware to follow the architecture (because it 
+would need to pass validation suites etc.). The architecture defines an 
+extension for supporting up to 1024 stream mapping groups, but that 
+works very differently.
 
+The SC8280XP DT claims this SMMU is compatible with a standard Arm 
+MMU-500, which definitely does not support more than 128 SMRs, so I have 
+no idea what the hypervisor might be up to.
+
+>> it is. Therefore Linux does not need to accommodate this weirdness for the
+>> foreseeable future, beyond simply making sure it doesn't cause any problems
+>> for what Linux *does* support. It's bad enough that the emulation of
+>> "normal" SMRs continues to violate the architecture, but I'm even more
+>> uncomfortable letting the generic architecture driver poke at completely
+>> non-architectural registers which don't even have the same behaviour as the
+>> ones they're supposedly extending.
+> 
+> Afaict there's nothing special about the SMRs beyond 128 on this
+> platform...
+
+If that were true then why would this patch be a thing at all? :/
 
 Thanks,
-
-Jacob
+Robin.
