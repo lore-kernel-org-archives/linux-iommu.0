@@ -1,196 +1,177 @@
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FE052F29
-	for <iommu@lists.linux.dev>; Tue, 14 Mar 2023 10:14:18 +0000 (UTC)
-X-UUID: f3b24684c25011eda06fc9ecc4dadd91-20230314
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=MIME-Version:Content-Transfer-Encoding:Content-ID:Content-Type:In-Reply-To:References:Message-ID:Date:Subject:CC:To:From; bh=+zKWgH2K8LYpqiLdghK3Ozjf8OroUDY4hBiqGps4njI=;
-	b=EfRdfMSx/4j+B6WAhZrsB7ZDBKt47eshUC+IDsvuOsk0jvYsxcQU08FaCX9A2WxDVWMJjxOai5XgG2FeVFFlsS1+RLkV7BgxuU0i1ePclBvA6FOtfnADrfh4ER/RYW4c7ZSyFfCNsNICvMc8wX/LbOPdTLw6GL3Lg6Kr/XFirbI=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.21,REQID:ee9adbd6-d705-486b-bc7d-fed02a4664a7,IP:0,U
-	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-	release,TS:0
-X-CID-META: VersionHash:83295aa,CLOUDID:639a34b3-beed-4dfc-bd9c-e1b22fa6ccc4,B
-	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
-	RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0
-X-CID-BVR: 0,NGT
-X-CID-BAS: 0,NGT,0,_
-X-UUID: f3b24684c25011eda06fc9ecc4dadd91-20230314
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-	(envelope-from <yong.wu@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 1798086004; Tue, 14 Mar 2023 18:14:06 +0800
-Received: from mtkmbs10n1.mediatek.inc (172.21.101.34) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.25; Tue, 14 Mar 2023 18:14:04 +0800
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (172.21.101.239)
- by mtkmbs10n1.mediatek.com (172.21.101.34) with Microsoft SMTP Server id
- 15.2.1118.25 via Frontend Transport; Tue, 14 Mar 2023 18:14:04 +0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=S973l+Gt47sf3k3a+v6AqiH4EPmrF4wW/t+cjZcuKgPhe5rqWejVFV8EclM+lUAIcJvidM+UsEa5FEX+tRn+rzbP+siqgvVAx3HR8m9WoKCXnkBN5dW0UvWmUeg1c5sHFiTeGt2RNLXLc8dZ5Xg1kUCB8trLF19ZSZ2u7TD3gL5xeYdYcg4PPQ1TYrpSPdAtHjSWHEFdnhPi89dctvuxhNIgrylO3uNsj6Jt4NU3yzFGtqnBKjpRThO2FhaXW74yxFyftITfjXz6yFRTwCM4JWdo2ALojwEELNiTKu2J/18bXTMoW9IZiiWOT+CGOcyOyTj7cIrwPmUhLwPqtbX+YA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+zKWgH2K8LYpqiLdghK3Ozjf8OroUDY4hBiqGps4njI=;
- b=L525abJcXSGLhsEty3pwzyZEttCdSG2xkPPiawJKURhZ8TrmJck32iLIfFpXPU7KjkzQUf59QaJegv1ZIlRe8RsXQxXebWEIxujEa5O5vc/4Ds2FLtcfPyXgQ8MCBdif8iqRBpYrE2C8mS30vFnMkvMA/4pVrJUeMzw23jk4ox2VJE+ZgTbEMHCMKNhfs/YtbA37nA3c1moPz2dSoXwsYpyPk2BJ4HGEq8mBrLnqFpcfrNj3SAzwf4Z0vihAnrOBKA76XJFTitgLXploD5plXi9urBmPZNFcJGPoxNgXLB4jFT4IfFv8FJrFMPr7WAVIlmQrlNe/ykKb7ebxieID0g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mediatek.com; dmarc=pass action=none header.from=mediatek.com;
- dkim=pass header.d=mediatek.com; arc=none
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96853320A
+	for <iommu@lists.linux.dev>; Tue, 14 Mar 2023 10:59:18 +0000 (UTC)
+Received: by mail-pl1-f178.google.com with SMTP id a9so16135204plh.11
+        for <iommu@lists.linux.dev>; Tue, 14 Mar 2023 03:59:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mediateko365.onmicrosoft.com; s=selector2-mediateko365-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+zKWgH2K8LYpqiLdghK3Ozjf8OroUDY4hBiqGps4njI=;
- b=ErDPaVp8FQOzRcqkvrE5cW3Hf2ugLbkcAGox363zm3MRs8GtK/3FUp8ZaFkZg4kTznKCt1o8ga8ZlKDhnM5Z0QPedXg/+UKL6QgDEH2NQK8IKc4VPSWCA9aKsf34+MrgS+iz6kRFdQJoAmiHIpPXr6Wab1Rg02usZ6ND0UsZPUE=
-Received: from SI2PR03MB5885.apcprd03.prod.outlook.com (2603:1096:4:142::7) by
- TYZPR03MB7203.apcprd03.prod.outlook.com (2603:1096:400:339::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6178.24; Tue, 14 Mar 2023 10:14:02 +0000
-Received: from SI2PR03MB5885.apcprd03.prod.outlook.com
- ([fe80::4298:a8e4:7328:6bb1]) by SI2PR03MB5885.apcprd03.prod.outlook.com
- ([fe80::4298:a8e4:7328:6bb1%3]) with mapi id 15.20.6178.024; Tue, 14 Mar 2023
- 10:14:02 +0000
-From: =?utf-8?B?WW9uZyBXdSAo5ZC05YuHKQ==?= <Yong.Wu@mediatek.com>
-To: "krzysztof.kozlowski@linaro.org" <krzysztof.kozlowski@linaro.org>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
-	=?utf-8?B?WW91bGluIFBlaSAo6KO05Y+L5p6XKQ==?= <youlin.pei@mediatek.com>,
-	"robh+dt@kernel.org" <robh+dt@kernel.org>, "devicetree@vger.kernel.org"
-	<devicetree@vger.kernel.org>,
-	=?utf-8?B?SmlhbmppYW8gWmVuZyAo5pu+5YGl5aejKQ==?=
-	<Jianjiao.Zeng@mediatek.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	=?utf-8?B?Q2hlbmdjaSBYdSAo6K645om/6LWQKQ==?= <Chengci.Xu@mediatek.com>,
-	=?utf-8?B?WUYgV2FuZyAo546L5LqR6aOeKQ==?= <YF.Wang@mediatek.com>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "krzysztof.kozlowski+dt@linaro.org"
-	<krzysztof.kozlowski+dt@linaro.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-	=?utf-8?B?TWluZ3l1YW4gTWEgKOmprOm4o+i/nCk=?= <Mingyuan.Ma@mediatek.com>,
-	"angelogioacchino.delregno@collabora.com"
-	<angelogioacchino.delregno@collabora.com>, "will@kernel.org"
-	<will@kernel.org>
-Subject: Re: [PATCH v8 1/7] dt-bindings: mediatek: mt8188: Add binding for MM
- & INFRA IOMMU
-Thread-Topic: [PATCH v8 1/7] dt-bindings: mediatek: mt8188: Add binding for MM
- & INFRA IOMMU
-Thread-Index: AQHZUMu55xpLrGlpK0q5UZyv49KYAa7wscOAgAjpuACAAEQ8gIAAOgYA
-Date: Tue, 14 Mar 2023 10:14:01 +0000
-Message-ID: <43989ca5ffa67be0a21874dbdbdf38872f16378e.camel@mediatek.com>
-References: <20230307080555.14399-1-yong.wu@mediatek.com>
-	 <20230307080555.14399-2-yong.wu@mediatek.com>
-	 <388e2274-d46a-68a4-3e85-5bd597085041@linaro.org>
-	 <aba29e7fd9a461f2d94c83cf2c7496521433847d.camel@mediatek.com>
-	 <4ac7e2e0-9b19-c911-7297-3510e55d6cfd@linaro.org>
-In-Reply-To: <4ac7e2e0-9b19-c911-7297-3510e55d6cfd@linaro.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=mediatek.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SI2PR03MB5885:EE_|TYZPR03MB7203:EE_
-x-ms-office365-filtering-correlation-id: 10309334-461d-476a-c5e0-08db2474d5b3
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: SE1FRJJyICg/HqPcz/GxNOvU8ADk/r87AUN/Wzo/Cn8WVcxhpQvO9k5wgcvbJnthJ3MNIVfjWnkmHkK1NCEYfYM6A/Doc7UL+2hQ+bXv7qQ1jokiRkfj/QwXu0+qEKM7f79fr2npROG6KWJ3Iuo2aW9yTKeFkcLfHYgpVMh+zn+I6l67snz3A0MSjx3MIfmebMB7qzyNb6QpH/eTFNhTaktTITwkj9ukp/1JTLPwWK+MEVrw2gND6MDafoDmoL4lxLx0wyH0qIV7g012J95Mk/sSNt9hXAWTH0goJknMmkYiSkRklGG51Mh/ApvH77jimPSi8VPfzzrzp0Gq8k99iAlgewaDEZf0zQP9FQcyQDih86ePq0TFtwGpa1kYGOj0CMbv3TnaSrPTHL5jxlTGMugdy+x80HummaM1NIeQJYbnWXx867FltTTGuslDpdSBps1o00LuPKqGF+5ZuTB2QEvhIoJye5ftXf4SeZcnenbyaZQKzOAZDrDFbwzXIp2JZfiDXK63C/bDT7iNXvIjVy4NBEGbGOArH5A/hd3kvpo2E8FGvFfbmP+meZ/9mODGOMPAwLRWgsBXZf5pqcn1NY/N2C3WLqZISiZZadMy6qK5tX90vn0oglQGeBzsM+JKsY9C+9asfQOxejsIs3pGNTnRwAoNwsXIwTOBo002iG6FbqjmuIPY0jLV/vdWj6HRlvIwXFXkYTqF8o7Srjrq862oNE41g2pD/hM1pJIG3ssUpGzQs0q8YvSLmHDNIBPGdnE0gC6T/DogJQI9r+SJjg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SI2PR03MB5885.apcprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(366004)(376002)(396003)(39860400002)(346002)(451199018)(85182001)(83380400001)(5660300002)(38100700002)(478600001)(316002)(122000001)(54906003)(186003)(8936002)(71200400001)(86362001)(66556008)(6506007)(36756003)(26005)(4326008)(8676002)(76116006)(7416002)(66446008)(66476007)(53546011)(66946007)(6512007)(64756008)(41300700001)(38070700005)(2616005)(6916009)(6486002)(2906002)(99106002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?dVIzdFVCYVE4ZWpBUzZMWWZ4VjA3aFZPak1LZnI2VFIwcUNVeFNxU25EUkgx?=
- =?utf-8?B?ZGVpaFlEdzJXbEdseTZWMy9VdEdXOHhOK1VnOU9wa0ZMSWpFbTBqTWcxQ05k?=
- =?utf-8?B?dVlXSEZUZnRmb3ZNQjJzeTVwTEJOMDU3Z25KSWhFcUxZSjFKSnBwMFNaQTJ6?=
- =?utf-8?B?MzVmMEFBaHk0KzFaZHd5WjlnVjdKNDh6aXpTaXpJM0htTzhiRGkvRzJkWjhK?=
- =?utf-8?B?VTgxKy9kWHJqdVJRS0F4Rm5KSXJxTklpZ21Db3hnc2x2WU5rQkFLUGpUZVk1?=
- =?utf-8?B?Yk13cUVNMHhqaVpKalczNmVZSnAxYlZaU2pVT0tyVzFnM2wveVNSeEtSdHZV?=
- =?utf-8?B?SkNyZmhZV25EdnhjTmd1L0RMZ1ZHMUh6YVczS3krMzlmeXJhQy85Tm84MmRI?=
- =?utf-8?B?TEJGY3FXcGNJU3BvUUgxYTRKSEVKcUhkVTZjaGpieWQzbGZWdHh3MjdacGdQ?=
- =?utf-8?B?S3RKRElCMkpGTnk5aWRaTzVxN0MzQ3k1TzczMkRkZmdKVnJqR0Z6R2pWUFBs?=
- =?utf-8?B?Y1A2Qm9ZenFYZGhJcEduN2x5M2hoc04xWHY4NEtmOTlnUisxT1gyQnpzTlZT?=
- =?utf-8?B?a2E4dVRvSjhvNm03ZFhJRlkrYmdubkJMZkg5VW1CRTFhMmUwN05BbFQwRENJ?=
- =?utf-8?B?Z0xZcnRMK0hDTXZaVXlvd25rZ3hNbVlsczhQS201QTJVb1dpUlhRYXVJallP?=
- =?utf-8?B?aGpHYUd6NlJZcjkreUxjbGVFaWNEZEF1YzlxNFpJRmJrTndId0JKYlhHT0NZ?=
- =?utf-8?B?ZWhiS3Fxb0ZtRmk5b1Y3WXUyUlZNNVdPWnlpYk1rekU4ek13aGtnWmxwcENV?=
- =?utf-8?B?QkYrbXY1UmI0dEZZRXJrYUVLdkZnTFlzS1p4VzJaZUhWZmk3eTVDeHhkY0dh?=
- =?utf-8?B?YlFKQklhMXZjaXZvUU1TbWdrSTRVVTZpemRtYzRlQVlWTVVNL1U3NE9NRXhV?=
- =?utf-8?B?dlJTdTBDL3psREFHMHZsKzZ1NkNUOEpzelVGc1ZuMHpaa09kbDFGVmRNZE1r?=
- =?utf-8?B?Tnk3VktxUWZWY1JJUXlZYlJKZ1Z1TUM5LzlGT1dUbXBjVi9vSm9BNUxsRGZp?=
- =?utf-8?B?NmFGVjZuZS9mVmdnSlF6dk1DNi9IU0FuWlErQW95NnVUS2IyL3pnWC9ncmFa?=
- =?utf-8?B?UVhqU1FQMUV1dXpNTUM4U0VSa1c4Y0tjdW5xRUw0MThueW1Cbzc1akhRTjBK?=
- =?utf-8?B?ZFJvbVN1ODVEeUpRekN5d3NtaVIwQXFUZ3JWcWhvOWVWR0JlZzhKcG02K3JZ?=
- =?utf-8?B?bERNeHhaV3o5Y2tNZWlPSExmWko0V0YyNjI2N0pLNUg1bzYzTjFZeWZmTUFk?=
- =?utf-8?B?SEg1cUUrdGEvcEtWMElTdm44MEo5TEYyU2N2dEVyc2JUdElUbGU5QU93ZTlM?=
- =?utf-8?B?d05aLzQrVHRnS2U2eHA3YTREb0tLMTJ6SFBoelpwbzlDZFBwdVNGZlYwQjhZ?=
- =?utf-8?B?NHBCZXc1bnRtQnBvS2J5dSs5L3FMcXVIZ0x3dW0vbHkvQk1BUkR6eEpycVAv?=
- =?utf-8?B?WFAwanhXdmphSW9NMFBFZ3graUY3Q09YRGhjeEJvWFFpbmhzeDdBQjlHUFBt?=
- =?utf-8?B?L0g3aEpIWWZ3cVI0N0VmYmhZeGJpZjNWTUswaVByQzE0MlluUjhEUVZOL3ht?=
- =?utf-8?B?Skt1dmI0cGl3TG9Ed0VhQlVqR3lXMGx4VktzL0xPTkxERXZOenYwd0xXeUQz?=
- =?utf-8?B?TGcwb2tFc2VLOXMrekdERGp0bVpSUG4wZG1OWS9maU05R0g2YTdIcGt5WWhw?=
- =?utf-8?B?SisvM2ZYUjI0dGNZVXlqTSsxc0NNKzVxTTJpcWxlbDIxUUY2dEFvOGRIZ1ky?=
- =?utf-8?B?SEsveG5WUkFBOW85eFJtMGs5SS83ZSt0aUF2QVhKNm9IZW8wR01YSzBUSVI0?=
- =?utf-8?B?ZTJxTTBCcUdmNFA4TkNMYTRQZjlaYi8rQ2UxYnc5TkNMZU15NHRUeUM1bkg1?=
- =?utf-8?B?UlNwYXRKeHg4V3M1TXd6dExnTzlzYjRjdGdKRHJDWTgxTTArQWZsSVBiclZV?=
- =?utf-8?B?ZlRROHJtSy9VdG1GQ1VYOGNlQWkxRWNKNm13WDNSVEQ0Zk5iRXV0TlhoWUx6?=
- =?utf-8?B?UXhBTXlETzNSb2szZFZ0RzlxNHpXcEx3VGdvRzM0b3R1b0Z3ZmN4Y3RKTGRJ?=
- =?utf-8?B?NVg5T01TeDJLZ2hxN3kybW00NWJpbFJuQTIySVlOeWt6VWVYYkxkN2ladUZR?=
- =?utf-8?B?dFE9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <F892C6565FC0C34D9CE0D4D41DE513BE@apcprd03.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        d=linaro.org; s=google; t=1678791558;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=esY0PUr3KpLmlyLSgYjmN3E1hSTNbeaUPnE+inbUG44=;
+        b=NrBACpRog8R7FKmw5eS8aONTQolQr/MwHR5U0zBM55paV14LD6HMWdBtQqMiqSKRBZ
+         SpOYz9v88Xy4YLXeSzX0LX4aSLNDeKZ4hhzmA+IGRT7sM5J+f6FEdksfllw0Dnp3/XBc
+         xAlnUop6qEwlxL8IkF2UiOp5DXZ6HB37p7e8Fa2MSAfG6ISOPNVMql+8upLUhNSaYGWs
+         UUimxksR24PnGk7Ykr27lFj3lXJsQw9Iy8v91ZdJxAB6uGlAOGZCqbRHaLjopwoRyA93
+         9CbC+cwl2HNdFwpA71yzfuoxcsUOs8T1guL4PAFEl8OxDgcZkubXS1gPKwJnTXCO2vPm
+         PYLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678791558;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=esY0PUr3KpLmlyLSgYjmN3E1hSTNbeaUPnE+inbUG44=;
+        b=DpFmvvXzLAXfkC4o7zLjjfxzk7+CQ+fX2NGCSAvlyOIAD6IxDXbuHPqJ0MZT/LEszJ
+         7lOZKTF+yeABFnufvjLCSyabrc4BtVOuzwBFZv33V+VdSqbVRPQDd9wDBTFPBYV8TYUx
+         i3JWVmAL30VgSxRXA0oA8aUdYOJbLekqI0gOgGYMtb0D0wLn4CST4b7hqLivYCqklxQX
+         puEo7oHHkJjkpLeImVj8OsJuBYrfEdWQkmTaGwf/ditzjSRHRpKhsgZLB1hLLV/0sUSa
+         Vbgj2AP2ouEprBqCUkYaOzeGL514o9E2A8BF2aOlXnOcdB9Oi0LE6SjGve8dJa3lFG3B
+         8QjQ==
+X-Gm-Message-State: AO0yUKVrU0uNEZ4eo4vPxN13Ny4KXXdWXlR8irISqGHsCy9FMJL7iXnb
+	BoJI6MZMxDeQO4+tElekft0/
+X-Google-Smtp-Source: AK7set9QnpmzQqwH3+zL8nTYZYqNZD9jkBSs6ms001GQpkZrPswrWMuGlAIHQPGNwwFE/PsQxMYPog==
+X-Received: by 2002:a17:902:b593:b0:1a0:6c22:ff4d with SMTP id a19-20020a170902b59300b001a06c22ff4dmr1100491pls.16.1678791557954;
+        Tue, 14 Mar 2023 03:59:17 -0700 (PDT)
+Received: from localhost.localdomain ([117.217.177.49])
+        by smtp.gmail.com with ESMTPSA id ik13-20020a170902ab0d00b0019f39e4f120sm1491894plb.18.2023.03.14.03.59.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Mar 2023 03:59:17 -0700 (PDT)
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To: will@kernel.org,
+	joro@8bytes.org
+Cc: robin.murphy@arm.com,
+	andersson@kernel.org,
+	johan+linaro@kernel.org,
+	steev@kali.org,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH v2] iommu/arm-smmu-qcom: Rework the logic finding the bypass quirk
+Date: Tue, 14 Mar 2023 16:29:05 +0530
+Message-Id: <20230314105905.137241-1-manivannan.sadhasivam@linaro.org>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SI2PR03MB5885.apcprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 10309334-461d-476a-c5e0-08db2474d5b3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Mar 2023 10:14:02.2723
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a7687ede-7a6b-4ef6-bace-642f677fbe31
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Ey5R9N5XqnropleogyLhHXJvS4URWM0Am9NI401t1zG50OJ3HmV+xTj9OIfT5sXGCjp9D5UrUOHkQaa3LfyiMg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR03MB7203
-X-MTK: N
+Content-Transfer-Encoding: 8bit
 
-T24gVHVlLCAyMDIzLTAzLTE0IGF0IDA3OjQ2ICswMTAwLCBLcnp5c3p0b2YgS296bG93c2tpIHdy
-b3RlOg0KPiBPbiAxNC8wMy8yMDIzIDAzOjQxLCBZb25nIFd1ICjlkLTli4cpIHdyb3RlOg0KPiA+
-IEhpIEtyenlzenRvZiwNCj4gPiANCj4gPiBUaGFua3MgdmVyeSBtdWNoIGZvciB5b3VyIGhlbHAg
-cmV2aWV3Lg0KPiA+IA0KPiA+IE9uIFdlZCwgMjAyMy0wMy0wOCBhdCAxMTozNSArMDEwMCwgS3J6
-eXN6dG9mIEtvemxvd3NraSB3cm90ZToNCj4gPiA+IE9uIDA3LzAzLzIwMjMgMDk6MDUsIFlvbmcg
-V3Ugd3JvdGU6DQo+ID4gPiA+IEZyb206ICJDaGVuZ2NpLlh1IiA8Y2hlbmdjaS54dUBtZWRpYXRl
-ay5jb20+DQo+ID4gPiA+IA0KPiA+ID4gPiBBZGQgZGVzY3JpcHRpb25zIGZvciBtdDgxODggSU9N
-TVUgd2hpY2ggYWxzbyB1c2UgQVJNIFNob3J0LQ0KPiA+ID4gPiBEZXNjcmlwdG9yDQo+ID4gPiA+
-IHRyYW5zbGF0aW9uIHRhYmxlIGZvcm1hdC4NCj4gPiA+ID4gDQo+ID4gPiA+IEluIG10ODE4OCwg
-dGhlcmUgYXJlIHR3byBzbWktY29tbW9uIEhXIGFuZCBJT01NVSwgb25lIGlzIGZvcg0KPiA+ID4g
-PiB2ZG8odmlkZW8NCj4gPiA+ID4gb3V0cHV0KSwgdGhlIG90aGVyIGlzIGZvciB2cHAodmlkZW8g
-cHJvY2Vzc2luZyBwaXBlKS4gVGhleQ0KPiA+ID4gPiBjb25uZWN0cw0KPiA+ID4gPiB3aXRoIGRp
-ZmZlcmVudCBzbWktbGFyYnMsIHRoZW4gc29tZSBzZXR0aW5nKGxhcmJpZF9yZW1hcCkgaXMNCj4g
-PiA+ID4gZGlmZmVyZW50Lg0KPiA+ID4gPiBEaWZmZXJlbnRpYXRlIHRoZW0gd2l0aCB0aGUgY29t
-cGF0aWJsZSBzdHJpbmcuDQo+ID4gPiA+IA0KPiA+ID4gPiBTb21ldGhpbmcgbGlrZSB0aGlzOg0K
-PiA+ID4gPiANCj4gPiA+ID4gICBJT01NVShWRE8pICAgICAgICAgIElPTU1VKFZQUCkNCj4gPiA+
-ID4gICAgICAgfCAgICAgICAgICAgICAgICAgICB8DQo+ID4gPiA+IFNNSV9DT01NT05fVkRPICAg
-ICAgU01JX0NPTU1PTl9WUFANCj4gPiA+ID4gDQo+ID4gPiA+IC0tLS0tLS0tLS0tLS0tLSAgICAg
-LS0tLS0tLS0tLS0tLS0tLQ0KPiA+ID4gPiAgIHwgICAgIHwgICAgLi4uICAgICAgfCAgICAgfCAg
-ICAuLi4NCj4gPiA+ID4gbGFyYjAgbGFyYjIgIC4uLiAgICBsYXJiMSBsYXJiMyAgLi4uDQo+ID4g
-PiA+IA0KPiA+ID4gPiBXZSBhbHNvIGhhdmUgYW4gSU9NTVUgdGhhdCBpcyBmb3IgaW5mcmEgbWFz
-dGVyIGxpa2UgUENJZS4NCj4gPiA+ID4gQW5kIGluZnJhIG1hc3RlciBkb24ndCBoYXZlIHRoZSBs
-YXJiIGFuZCBwb3J0cy4NCj4gPiA+ID4gDQo+ID4gPiA+IFNpZ25lZC1vZmYtYnk6IENoZW5nY2ku
-WHUgPGNoZW5nY2kueHVAbWVkaWF0ZWsuY29tPg0KPiA+ID4gPiBSZXZpZXdlZC1ieTogWW9uZyBX
-dSA8eW9uZy53dUBtZWRpYXRlay5jb20+DQo+ID4gPiA+IEFja2VkLWJ5OiBLcnp5c3p0b2YgS296
-bG93c2tpIDxrcnp5c3p0b2Yua296bG93c2tpQGxpbmFyby5vcmc+DQo+ID4gPiANCj4gPiA+IElu
-ZGVlZCwgSSBtaXNzZWQgYnJva2VuIGNoZWNrcGF0Y2gvRENPIGNoYWluLg0KPiA+IA0KPiA+IEp1
-c3QgY29uZmlybSB3aGF0IHRoaXMgbWVhbnMuDQo+ID4gDQo+ID4gRG8geW91IG1lYW4gTUFJTlRB
-SU5FUlMgbmVlZCB0byBiZSB1cGRhdGVkIHNpbmNlIHdlIGFkZCBhIHByZWZpeA0KPiA+ICJtZWRp
-YXRlaywiIGZvciB0aGUgaGVhZGVyIGZpbGU/DQo+IA0KPiBObyBpdCBtZWFucywgcnVuIGNoZWNr
-cGF0Y2guDQoNCg0KIldBUk5JTkc6RklMRV9QQVRIX0NIQU5HRVM6IGFkZGVkLCBtb3ZlZCBvciBk
-ZWxldGVkIGZpbGUocyksIGRvZXMNCk1BSU5UQUlORVJTIG5lZWQgdXBkYXRpbmc/Ig0KICANCiBU
-aGlzIGlzIHRoZSBvbmx5IHdhcm5pbmcgd2hlbiBJIHJ1biBjaGVja3BhdGNoLiBJIHdpbGwgdXBk
-YXRlIHRoZQ0KTUFJTlRBSU5FUlMgaW4gbmV4dCB2ZXJzaW9uLiBQbGVhc2UgdGVsbCBtZSBpZiBJ
-IG1pc3NlZCBvdGhlciBwYXJ0cy4NCg0KVGhhbmtzLg0KDQo+IA0KPiBCZXN0IHJlZ2FyZHMsDQo+
-IEtyenlzenRvZg0KPiANCj4gDQo=
+The logic used to find the quirky firmware that intercepts the writes to
+S2CR register to replace bypass type streams with a fault, and ignore the
+fault type, is not working with the firmware on newer SoCs like SC8280XP.
+
+The current logic uses the last stream mapping group (num_mapping_groups
+- 1) as an index for finding quirky firmware. But on SC8280XP, NUSMRG
+reports a value of 162 (possibly emulated by the hypervisor) and logic is
+not working for stream mapping groups > 128. (Note that the ARM SMMU
+architecture specification defines NUMSMRG in the range of 0-127).
+
+So the current logic that checks the (162-1)th S2CR entry fails to detect
+the quirky firmware on these devices and SMMU triggers invalid context
+fault for bypass streams.
+
+To fix this issue, rework the logic to find the first non-valid (free)
+stream mapping register group (SMR) within 128 groups and use that index
+to access S2CR for detecting the bypass quirk. If no free groups are
+available, then just skip the quirk detection.
+
+While at it, let's move the quirk detection logic to a separate function
+and change the local variable name from last_s2cr to free_s2cr.
+
+Reviewed-by: Bjorn Andersson <andersson@kernel.org>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+---
+
+Changes in v2:
+
+* Limited the check to 128 groups as per ARM SMMU spec's NUMSMRG range
+* Moved the quirk handling to its own function
+* Collected review tag from Bjorn
+
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 48 ++++++++++++++++++----
+ 1 file changed, 40 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index d1b296b95c86..48362d7ef451 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -266,25 +266,49 @@ static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+ 	return 0;
+ }
+ 
+-static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
++static void qcom_smmu_bypass_quirk(struct arm_smmu_device *smmu)
+ {
+-	unsigned int last_s2cr = ARM_SMMU_GR0_S2CR(smmu->num_mapping_groups - 1);
+ 	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
+-	u32 reg;
+-	u32 smr;
++	u32 free_s2cr;
++	u32 reg, smr;
+ 	int i;
+ 
++	/*
++	 * Find the first non-valid (free) stream mapping register group and
++	 * use that index to access S2CR for detecting the bypass quirk.
++	 *
++	 * Note that only the first 128 stream mapping groups are considered for
++	 * the check. This is because the ARM SMMU architecture specification
++	 * defines NUMSMRG (Number of Stream Mapping Register Groups) in the
++	 * range of 0-127, but some Qcom platforms emulate more stream mapping
++	 * groups with the help of hypervisor. And those groups don't exhibit
++	 * the quirky behavior.
++	 */
++	for (i = 0; i < 128; i++) {
++		smr = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_SMR(i));
++
++		if (!FIELD_GET(ARM_SMMU_SMR_VALID, smr))
++			break;
++	}
++
++	/* If no free stream mapping register group is available, skip the check */
++	if (i == 128)
++		return;
++
++	free_s2cr = ARM_SMMU_GR0_S2CR(i);
++
+ 	/*
+ 	 * With some firmware versions writes to S2CR of type FAULT are
+ 	 * ignored, and writing BYPASS will end up written as FAULT in the
+-	 * register. Perform a write to S2CR to detect if this is the case and
+-	 * if so reserve a context bank to emulate bypass streams.
++	 * register. Perform a write to the first free S2CR to detect if
++	 * this is the case and if so reserve a context bank to emulate
++	 * bypass streams.
+ 	 */
+ 	reg = FIELD_PREP(ARM_SMMU_S2CR_TYPE, S2CR_TYPE_BYPASS) |
+ 	      FIELD_PREP(ARM_SMMU_S2CR_CBNDX, 0xff) |
+ 	      FIELD_PREP(ARM_SMMU_S2CR_PRIVCFG, S2CR_PRIVCFG_DEFAULT);
+-	arm_smmu_gr0_write(smmu, last_s2cr, reg);
+-	reg = arm_smmu_gr0_read(smmu, last_s2cr);
++	arm_smmu_gr0_write(smmu, free_s2cr, reg);
++	reg = arm_smmu_gr0_read(smmu, free_s2cr);
+ 	if (FIELD_GET(ARM_SMMU_S2CR_TYPE, reg) != S2CR_TYPE_BYPASS) {
+ 		qsmmu->bypass_quirk = true;
+ 		qsmmu->bypass_cbndx = smmu->num_context_banks - 1;
+@@ -296,6 +320,14 @@ static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
+ 		reg = FIELD_PREP(ARM_SMMU_CBAR_TYPE, CBAR_TYPE_S1_TRANS_S2_BYPASS);
+ 		arm_smmu_gr1_write(smmu, ARM_SMMU_GR1_CBAR(qsmmu->bypass_cbndx), reg);
+ 	}
++}
++
++static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
++{
++	u32 smr;
++	int i;
++
++	qcom_smmu_bypass_quirk(smmu);
+ 
+ 	for (i = 0; i < smmu->num_mapping_groups; i++) {
+ 		smr = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_SMR(i));
+-- 
+2.25.1
+
