@@ -1,201 +1,108 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 084798F69
-	for <iommu@lists.linux.dev>; Tue, 14 Mar 2023 16:02:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 631B0C433EF;
-	Tue, 14 Mar 2023 16:02:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1678809749;
-	bh=VpHJn4z9r1jAznNA4sbdVvzJN92KMr3BeQTf/ruLWp4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=DZ0R3uyRp1gp5r1o8Iy5IYxbR/8br2Ig9E0MGjCvsAiAct9860TK3UT3aTSJ+EW6k
-	 Y/bCrVpfQBUc4FBjLM2t2NtLBWUTS/3MAez+XdntXa3yk2bo29yX7AIH7hVkId76/H
-	 sEPZqtrC8wdbEOV46dmRBNKaS6/6ghTPZqkrzyyp3yBAO1TiGfeAtqajjzPsY4HYzt
-	 +LkUzYVOjZ6pkSExvSLKO8Pumn8hYLECvGTP6SBt7X8bF6zDIk9yOSjShwLhX+CwVs
-	 jAFHw6ByDiK7dYnsSyIa/16mN4aG5jJSLFCyIIEPo4Xzp+p75s23JYlQcnZG9HQhPu
-	 SyG6d0alVkXPQ==
-Date: Tue, 14 Mar 2023 11:02:27 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>
-Cc: Sathyanarayanan Kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>,
-	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	joro@8bytes.org, bhelgaas@google.com, robin.murphy@arm.com,
-	will@kernel.org, jean-philippe@linaro.org,
-	darren@os.amperecomputing.com, scott@os.amperecomputing.com
-Subject: Re: [PATCH v2 1/2] PCI/ATS: Add a helper function to configure ATS
- STU of a PF
-Message-ID: <20230314160227.GA1645738@bhelgaas>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A00FD3C30
+	for <iommu@lists.linux.dev>; Tue, 14 Mar 2023 16:44:30 +0000 (UTC)
+Received: by mail-ed1-f46.google.com with SMTP id h8so20785626ede.8
+        for <iommu@lists.linux.dev>; Tue, 14 Mar 2023 09:44:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1678812269;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=IVoWSrSw8iWnvdsUsZm3Xc3V9c32i6G9JTNL1QjtlpM=;
+        b=Q6clugfH2wohZW+/jssUotWY9EqeGyTOorxwY/50yJNmRT/yX+yr2l4b9WrkomV9M2
+         KA6RYdkb+Z82ezcLYElhpJ9q/kHG8WcSsHjFPIxYg1AF657VKEpQLmQ1vxzciKLLC9aY
+         FeDHZ8DC9Hv2G3jsbjPWgaicialWvwk8ZD1B9TQvcWNp7j6/3SSVtOiiugxciAUFRL39
+         aHk41xve72YWPyQmkFDWXwXxXVidovtu8+hBDuR35WKuTKXs8zTWYNG+SLAe2060h0K/
+         E9WKNP88fYFtJVfh4u3gJSf7uWNKIuPaA1uJvj70gU5vLYS60bdTxx5lnxdFmTbEmFu7
+         JPTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678812269;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=IVoWSrSw8iWnvdsUsZm3Xc3V9c32i6G9JTNL1QjtlpM=;
+        b=G7k4d0buoij4ZPF5pvUASBVcpkIyEyfV94Yvh8SSdNljf4YtxFoE8KCiUE1o3cZc3K
+         6ytlGsBvMJ2xdEHwpUEkN6yVaB4/wgv0HqgNbzNT5DdQaDYn8zIX/kghPmhx70mxWEUJ
+         +PlmPe5kQRW4ELehW6QZsOIot8aTJWddYpPOvtvSRoL4X7lySj/ZDt5IqlLl8V3afgFC
+         HGdm1URIezhcZIE4ailSfKdHMWK8+30W4jJv81qT/nOca2RAEHfGk21ycss8g5bLbKfy
+         gHAyADPU3GI/5WrQs5AbCRa1mKjVUGN5d5CncNnVdTnPSPCu40RW2S1y5KAJtejDeana
+         bSSQ==
+X-Gm-Message-State: AO0yUKU0uAmxbfWkeD60DAhCpCCOFEztfvW4udRGXZvstjO++FO3magL
+	/ua5sNddTSb2/JJTVnKlBzLcNw==
+X-Google-Smtp-Source: AK7set+yBLjEXWLeeOSy1YCkZG3vvlqho9+FJiah/pJcz/iWU3nnD6rKgcsZCn3D2SKW5QT0yWNd7A==
+X-Received: by 2002:a17:906:816:b0:924:d90a:6f97 with SMTP id e22-20020a170906081600b00924d90a6f97mr3276207ejd.13.1678812268851;
+        Tue, 14 Mar 2023 09:44:28 -0700 (PDT)
+Received: from localhost.localdomain (054592b0.skybroadband.com. [5.69.146.176])
+        by smtp.gmail.com with ESMTPSA id u21-20020a170906409500b00928de86245fsm1351055ejj.135.2023.03.14.09.44.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Mar 2023 09:44:28 -0700 (PDT)
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: eric.auger@redhat.com,
+	rafael@kernel.org
+Cc: lenb@kernel.org,
+	linux-acpi@vger.kernel.org,
+	iommu@lists.linux.dev,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: [PATCH] ACPI: VIOT: Initialize the correct IOMMU fwspec
+Date: Tue, 14 Mar 2023 16:44:16 +0000
+Message-Id: <20230314164416.2219829-1-jean-philippe@linaro.org>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <799c6c17-c448-387c-fea1-b5f1c5045819@os.amperecomputing.com>
 
-On Tue, Mar 14, 2023 at 08:06:07PM +0530, Ganapatrao Kulkarni wrote:
-> On 14-03-2023 06:22 pm, Sathyanarayanan Kuppuswamy wrote:
-> > On 3/14/23 3:08 AM, Ganapatrao Kulkarni wrote:
-> > > On 14-03-2023 04:00 am, Sathyanarayanan Kuppuswamy wrote:
-> > > > On 3/13/23 2:12 PM, Bjorn Helgaas wrote:
-> > > > > On Mon, Feb 27, 2023 at 08:21:36PM -0800, Ganapatrao Kulkarni wrote:
-> > > > > > As per PCI specification (PCI Express Base Specification
-> > > > > > Revision 6.0, Section 10.5) both PF and VFs of a PCI EP
-> > > > > > are permitted to be enabled independently for ATS
-> > > > > > capability, however the STU(Smallest Translation Unit) is
-> > > > > > shared between PF and VFs. For VFs, it is hardwired to
-> > > > > > Zero and the associated PF's value applies to VFs.
-> > > > > > 
-> > > > > > In the current code, the STU is being configured while
-> > > > > > enabling the PF ATS.  Hence, it is not able to enable ATS
-> > > > > > for VFs, if it is not enabled on the associated PF
-> > > > > > already.
-> > > > > > 
-> > > > > > Adding a function pci_ats_stu_configure(), which can be
-> > > > > > called to configure the STU during PF enumeration.  Latter
-> > > > > > enumerations of VFs can successfully enable ATS
-> > > > > > independently.
+When setting up DMA for a PCI device, we need to initialize its
+iommu_fwspec with all possible alias RIDs (such as PCI bridges). To do
+this we use pci_for_each_dma_alias() which calls
+viot_pci_dev_iommu_init(). This function incorrectly initializes the
+fwspec of the bridge instead of the device being configured. Fix it by
+passing the original device as context to pci_for_each_dma_alias().
 
-> > > > > > @@ -46,6 +46,35 @@ bool pci_ats_supported(struct pci_dev *dev)
-> > > > > >    }
-> > > > > >    EXPORT_SYMBOL_GPL(pci_ats_supported);
-> > > > > >    +/**
-> > > > > > + * pci_ats_stu_configure - Configure STU of a PF.
-> > > > > > + * @dev: the PCI device
-> > > > > > + * @ps: the IOMMU page shift
-> > > > > > + *
-> > > > > > + * Returns 0 on success, or negative on failure.
-> > > > > > + */
-> > > > > > +int pci_ats_stu_configure(struct pci_dev *dev, int ps)
-> > > > > > +{
-> > > > > > +    u16 ctrl;
-> > > > > > +
-> > > > > > +    if (dev->ats_enabled || dev->is_virtfn)
-> > > > > > +        return 0;
-> > > > > 
-> > > > > I might return an error for the VF case on the assumption
-> > > > > that it's likely an error in the caller.  I guess one could
-> > > > > argue that it simplifies the caller if it doesn't have to
-> > > > > check for PF vs VF.  But the fact that STU is shared between
-> > > > > PF and VFs is an important part of understanding how ATS
-> > > > > works, so the caller should be aware of the distinction
-> > > > > anyway.
-> > > > 
-> > > > I have already asked this question. But let me repeat it.
-> > > > 
-> > > > We don't have any checks for the PF case here. That means you
-> > > > can re-configure the STU as many times as you want until ATS
-> > > > is enabled in PF. So, if there are active VFs which uses this
-> > > > STU, can PF re-configure the STU at will?
-> > > 
-> > > IMO, Since STU is shared, programming it multiple times is not expected from callers code do it, however we can add below check to allow to program STU once from a PF.
-> > > 
-> > > diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-> > > index 1611bfa1d5da..f7bb01068e18 100644
-> > > --- a/drivers/pci/ats.c
-> > > +++ b/drivers/pci/ats.c
-> > > @@ -60,6 +60,10 @@ int pci_ats_stu_configure(struct pci_dev *dev, int ps)
-> > >          if (dev->ats_enabled || dev->is_virtfn)
-> > >                  return 0;
-> > > 
-> > > +       /* Configured already */
-> > > +       if (dev->ats_stu)
-> > > +               return 0;
-> > 
-> > Theoretically, you can re-configure STU as long as no one is using
-> > it. Instead of this check, is there a way to check whether there
-> > are active VMs which enables ATS?
-> 
-> Yes I agree, there is no limitation on how many times you write STU
-> bits, but practically it is happening while PF is enumerated.
-> 
-> The usage of function pci_ats_stu_configure is almost
-> similar(subset) to pci_enable_ats and only difference is one does
-> ATS enable + STU program and another does only STU program.
+Fixes: 3cf485540e7b ("ACPI: Add driver for the VIOT table")
+Reported-by: Eric Auger <eric.auger@redhat.com>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+---
+This fixes issue (1) reported here:
+https://lore.kernel.org/all/Y8qzOKm6kvhGWG1T@myrica/
+---
+ drivers/acpi/viot.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-What would you think of removing the STU update feature from
-pci_enable_ats() so it always fails if pci_ats_stu_configure() has not
-been called, even when called on the PF, e.g.,
+diff --git a/drivers/acpi/viot.c b/drivers/acpi/viot.c
+index ed752cbbe636..c8025921c129 100644
+--- a/drivers/acpi/viot.c
++++ b/drivers/acpi/viot.c
+@@ -328,6 +328,7 @@ static int viot_pci_dev_iommu_init(struct pci_dev *pdev, u16 dev_id, void *data)
+ {
+ 	u32 epid;
+ 	struct viot_endpoint *ep;
++	struct device *aliased_dev = data;
+ 	u32 domain_nr = pci_domain_nr(pdev->bus);
+ 
+ 	list_for_each_entry(ep, &viot_pci_ranges, list) {
+@@ -338,7 +339,7 @@ static int viot_pci_dev_iommu_init(struct pci_dev *pdev, u16 dev_id, void *data)
+ 			epid = ((domain_nr - ep->segment_start) << 16) +
+ 				dev_id - ep->bdf_start + ep->endpoint_id;
+ 
+-			return viot_dev_iommu_init(&pdev->dev, ep->viommu,
++			return viot_dev_iommu_init(aliased_dev, ep->viommu,
+ 						   epid);
+ 		}
+ 	}
+@@ -372,7 +373,7 @@ int viot_iommu_configure(struct device *dev)
+ {
+ 	if (dev_is_pci(dev))
+ 		return pci_for_each_dma_alias(to_pci_dev(dev),
+-					      viot_pci_dev_iommu_init, NULL);
++					      viot_pci_dev_iommu_init, dev);
+ 	else if (dev_is_platform(dev))
+ 		return viot_mmio_dev_iommu_init(to_platform_device(dev));
+ 	return -ENODEV;
+-- 
+2.39.2
 
-  if (ps != pci_physfn(dev)->ats_stu)
-    return -EINVAL;
-
-  pci_read_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, &ctrl);
-  ctrl |= PCI_ATS_CTRL_ENABLE;
-  pci_write_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, ctrl);
-
-Would probably also have to set "dev->ats_stu = 0" in
-pci_disable_ats() to allow the possibility of calling
-pci_ats_stu_configure() again.
-
-> IMO, I dont think, there is any need to find how many active VMs
-> with attached VFs and it is not done for pci_enable_ats as well.
-
-Enabling or disabling ATS in a PF or VF has no effect on other
-functions.
-
-But changing STU while a VF has ATS enabled would definitely break any
-user of that VF, so if it's practical to verify that no VFs have ATS
-enabled, I think we should.
-
-> Also the caller has the requirement to call either
-> pci_ats_stu_configure or pci_enable_ats while enumerating the PF.
->
-> > >          if (!pci_ats_supported(dev))
-> > >                  return -EINVAL;
-> > > > > 
-> > > > > > +
-> > > > > > +    if (!pci_ats_supported(dev))
-> > > > > > +        return -EINVAL;
-> > > > > > +
-> > > > > > +    if (ps < PCI_ATS_MIN_STU)
-> > > > > > +        return -EINVAL;
-> > > > > > +
-> > > > > > +    dev->ats_stu = ps;
-> > > > > > +    pci_read_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, &ctrl);
-> > > > > > +    ctrl |= PCI_ATS_CTRL_STU(dev->ats_stu - PCI_ATS_MIN_STU);
-> > > > > > +    pci_write_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, ctrl);
-> > > > > > +
-> > > > > > +    return 0;
-> > > > > > +}
-> > > > > > +EXPORT_SYMBOL_GPL(pci_ats_stu_configure);
-> > > > > > +
-> > > > > >    /**
-> > > > > >     * pci_enable_ats - enable the ATS capability
-> > > > > >     * @dev: the PCI device
-> > > > > > @@ -68,8 +97,8 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
-> > > > > >            return -EINVAL;
-> > > > > >          /*
-> > > > > > -     * Note that enabling ATS on a VF fails unless it's already enabled
-> > > > > > -     * with the same STU on the PF.
-> > > > > > +     * Note that enabling ATS on a VF fails unless it's already
-> > > > > > +     * configured with the same STU on the PF.
-> > > > > >         */
-> > > > > >        ctrl = PCI_ATS_CTRL_ENABLE;
-> > > > > >        if (dev->is_virtfn) {
-> > > > > > diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
-> > > > > > index df54cd5b15db..7d62a92aaf23 100644
-> > > > > > --- a/include/linux/pci-ats.h
-> > > > > > +++ b/include/linux/pci-ats.h
-> > > > > > @@ -8,6 +8,7 @@
-> > > > > >    /* Address Translation Service */
-> > > > > >    bool pci_ats_supported(struct pci_dev *dev);
-> > > > > >    int pci_enable_ats(struct pci_dev *dev, int ps);
-> > > > > > +int pci_ats_stu_configure(struct pci_dev *dev, int ps);
-> > > > > >    void pci_disable_ats(struct pci_dev *dev);
-> > > > > >    int pci_ats_queue_depth(struct pci_dev *dev);
-> > > > > >    int pci_ats_page_aligned(struct pci_dev *dev);
-> > > > > > @@ -16,6 +17,8 @@ static inline bool pci_ats_supported(struct pci_dev *d)
-> > > > > >    { return false; }
-> > > > > >    static inline int pci_enable_ats(struct pci_dev *d, int ps)
-> > > > > >    { return -ENODEV; }
-> > > > > > +static inline int pci_ats_stu_configure(struct pci_dev *d, int ps)
-> > > > > > +{ return -ENODEV; }
-> > > > > >    static inline void pci_disable_ats(struct pci_dev *d) { }
-> > > > > >    static inline int pci_ats_queue_depth(struct pci_dev *d)
-> > > > > >    { return -ENODEV; }
