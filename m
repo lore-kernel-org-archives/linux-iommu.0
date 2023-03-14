@@ -1,189 +1,169 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E76CC1FA8
-	for <iommu@lists.linux.dev>; Tue, 14 Mar 2023 04:18:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C14C23A0
+	for <iommu@lists.linux.dev>; Tue, 14 Mar 2023 05:19:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678767539; x=1710303539;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=heHYTyn8t+tSgC0zgbCnYcSRmqoeMvBoMKjqJEgqzk0=;
-  b=F8ITHdNAmumwSnpgrkEeS1FjzZjm/J6medHzwidiG+wpl7phtJbix42W
-   B7qjLg3hCwEbvBLX9iA5K27pTwmOalCGvM+1nFebhx3gvNlo38K1LG4DU
-   fiTv5GDWsLqgPl0HZsqZ8QphuPwaaWyCXMehmvHnbbTl7wpUvEOg/aJAe
-   w+GaCjAzy0f1eVM+3P8rNAqz+YEsqr2GrNTiqOYbZ+EW8sHeXrfbv9bju
-   URtFzSptwm3lNagI74NfarMYQc/A2VB/yluFqM7C5k4sXJ8qCNdkCHM6I
-   rUIcsNyEDxR85pBKhPZNHa2wl5b+yB3/jQRPehkbklK9z73HNHgThrPmG
+  t=1678771185; x=1710307185;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=AgQ9bSzSPzcGMLNoWPFkB0EICC/cZjX30lB9FzLG2Pc=;
+  b=FqS0PNy2gViVtnQPiqw+UsQ7vsbqyu3b0bnUW+VrkfkdtVbNenyMjHOA
+   cKKf2yQayvHDdj3gLJmXU1W3uZuPmM6zxj8jUK6cvUY6q7Rl23BApJ590
+   UcihPl20Y1elye5ci1Wxi3NKPjVeM8y/lnzkK23Qm/Cl3++uwI7HhMAwf
+   +4e3vUXPeCl1IlcDUB65AqAdTpeO7gi9830E341x1lgBHqpd8ygk5YtUs
+   3r1+uMJdhpkLc0ZkQ5L+rIE8lorVdhtAKWAwFMGxTFmPvOilEGsFRXOhs
+   AzNHT+AsP8JfNq+4xgCvIwKYUZDCK7Rb6gN8meAzAI4Sxcg4JZVyVJwhn
    A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="364990277"
-X-IronPort-AV: E=Sophos;i="5.98,258,1673942400"; 
-   d="scan'208";a="364990277"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2023 21:18:59 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="402205412"
+X-IronPort-AV: E=Sophos;i="5.98,259,1673942400"; 
+   d="scan'208";a="402205412"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2023 22:19:44 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="743156200"
-X-IronPort-AV: E=Sophos;i="5.98,258,1673942400"; 
-   d="scan'208";a="743156200"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmsmga008.fm.intel.com with ESMTP; 13 Mar 2023 21:18:59 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Mon, 13 Mar 2023 21:18:58 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21 via Frontend Transport; Mon, 13 Mar 2023 21:18:58 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.104)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.21; Mon, 13 Mar 2023 21:18:22 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Hl9AKyACBhOsQxMohfadmqDVDIDpR0a0ZcxpYjH4YIPA3C+XK9+0XCBb89EOMPBPc+Z1lywMEq2dNW3LXE61dyOM3AJAp6/meUtpykj/yRQkMnMfjTwwXDQjK7KPPzqfmiW/cB8SFgrOLVsmF0K6gpjXMygwDtBH5lrlNizl1JvUYDPizKygL9+nea1vHQcjYAsPDLgdEP1m4G8CbN12ym9QlYj6C6J/bzpBmFndXHqk4+sbNlQm/QtHGOP4ou6nR7kRG9qDz/mmEeFfDR+TfCxOOa5/jiHXHLMqKKZ8L37ZE8oNNmDuoV51BbYZeVmAEV3e8mcNKZuSEnETAZTD8g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=m1tq2PJ2uYVf2bfd2auIRJgUPkmkhpjmXQMYrOCBsNw=;
- b=dDvH7xkr9Sw8Qin5L2hGcIWRyTY6i0VyVjA7hp8T30533KsJbIQmN0tBOO/y6C6Hu1AAd7Z6F272sPQSHAuI/I+jHqZBbHIfrj2SIAdsSge1QSfS1rcdsLyU3eVRWr7d7QjvpZBxIxx32gYAcQxwk8AgDOB9fe748zmu4PqkgSllGbX9inT7WuarwNgw3iaKId1I+xHj25q8IPZcgo3sGQGFiYX1y8dOUbAO6VW3dz2uSKixOD7wpL0VHMGD87i1iveVjTTX3wmf/7tLx7qCeFJQ7Wu6tAkhBTfBwjylGEObApu7Celg8HxTcmsQogVLoLcaEZBQaAXTJvfFK0Fsiw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
- by DM4PR11MB5469.namprd11.prod.outlook.com (2603:10b6:5:399::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.25; Tue, 14 Mar
- 2023 04:18:21 +0000
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::6f7:944a:aaad:301f]) by DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::6f7:944a:aaad:301f%8]) with mapi id 15.20.6178.026; Tue, 14 Mar 2023
- 04:18:21 +0000
-From: "Liu, Yi L" <yi.l.liu@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com"
-	<alex.williamson@redhat.com>, "Tian, Kevin" <kevin.tian@intel.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "baolu.lu@linux.intel.com"
-	<baolu.lu@linux.intel.com>, "cohuck@redhat.com" <cohuck@redhat.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>, "nicolinc@nvidia.com"
-	<nicolinc@nvidia.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>, "peterx@redhat.com"
-	<peterx@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
-Subject: RE: [PATCH 07/12] iommufd: Add IOMMU_HWPT_INVALIDATE
-Thread-Topic: [PATCH 07/12] iommufd: Add IOMMU_HWPT_INVALIDATE
-Thread-Index: AQHZUl6BWo8K/M9cuUy0397Pqa8aG670TNcAgAVllSA=
-Date: Tue, 14 Mar 2023 04:18:21 +0000
-Message-ID: <DS0PR11MB7529853F52AE5E338A84AFE0C3BE9@DS0PR11MB7529.namprd11.prod.outlook.com>
-References: <20230309080910.607396-1-yi.l.liu@intel.com>
- <20230309080910.607396-8-yi.l.liu@intel.com> <ZAtt4F9zSZxptyZh@nvidia.com>
-In-Reply-To: <ZAtt4F9zSZxptyZh@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DS0PR11MB7529:EE_|DM4PR11MB5469:EE_
-x-ms-office365-filtering-correlation-id: 7754de7e-6c73-45d4-4861-08db2443257e
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: OovqPJ+Wmu6ctoEaFSa33uQuf2MkygOumo3u+GJpIrRyLr1pQ+stAGAZXidUMOp/84bqTbnrP/6OP9NPQjmQUDNcG+eXNLrg/F1Q1p1wC1X7oU5MgdKih9cx7BjAP3zybLAdaRkxkWt3qiXWfCc8vQxm/iOByYwRQb7EWwTRDM8Qf8pmNBzMrtcqwxUp3TtypzAJCcEBYeIOhqL71L9Sper720bSTG21jA8vTYM3ife4N8varNjJ0lfiAeflSYhQuygAG00hox/vbOQtdHKPoN3Cbc81GP3YtmEqZOyCLtnfP9eqAHau//a5mkVG6BwPSHF+dlBP8fnfjWI//aIbGoCXWsVWIPOL5Ayd6NY7c2Y801aeTbZIeltb+K4rMMSeoG3hwRVhN2BABKiIWkjLoYHIrIX+Ao1oxP3QtvgvadYIw+saf+e7/lKR1lhCJT4CwmZPPgJH7Hovfk/R4Dd55Sm3GP0XTdIDaiDUa+aUHFM6BlJKh/x65x9hNKQqUKZwIFOXfjnTK2dyq/xyDUQ2SilMAScuXaXXYWBYU3dgY86flZT5GF3FmtfX+i4QwvDGHT7XGfuOwORFHMUihwgwWZJVzyuARYzl3akgner7DanNC+wA/fgZPNO/0tpYuMj/muWG4VK23NqYMSb3o9kmswqNGQWoj4eQQ/bmph0ovMa0F7n9e3ZD+aWeR22aVW/EWm22OE9mMEeFMt/TPknZgA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(376002)(39860400002)(136003)(346002)(396003)(366004)(451199018)(5660300002)(7416002)(83380400001)(186003)(478600001)(26005)(71200400001)(6506007)(7696005)(66446008)(9686003)(54906003)(38070700005)(66476007)(8676002)(66946007)(64756008)(41300700001)(52536014)(66556008)(6916009)(33656002)(4326008)(8936002)(76116006)(316002)(86362001)(38100700002)(55016003)(82960400001)(122000001)(2906002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?NcAxu0bD8W1A6XcwinXiIPHtr1UYKK11kC5oeysj3CfPmC+VCHlMWxgP0srw?=
- =?us-ascii?Q?9LQiPBJEWEHLNhjePoIWFhwg5MF6mx9hg/h/bAhmNAAczvbYWJxPCiYZDepA?=
- =?us-ascii?Q?hg832A8OpqMXPXwY2D3vi4TF7XhP5UUhEpMVjHvh+CDb6qjUzqCP6QYE8Gsf?=
- =?us-ascii?Q?C4A9SJqtXypN6f7yOa8KOKDm4lvbJ9TywnZsTfNzCPtOm+a1rjLFJYVwEyJF?=
- =?us-ascii?Q?1w07f7gie10u1e/8g1EbGLdSEqDR/FBywk+pvjBo3pIleTwZOUzGbMOh8Sun?=
- =?us-ascii?Q?CAWlUS32p2SdUwN7NldDSUDv5cFZh2ZvPq8d3u5kPCMLu8d0RvbRvuAlAzKQ?=
- =?us-ascii?Q?70Ppgl+bckaNe7VWfBnR2uV5QI3GqKo7hlB10X7ZxZtSPF5nBLRLJRRmQ42d?=
- =?us-ascii?Q?rAA6lU6Np951wyAWvh1/0eRJEklhHuhAZPNX6pSQocE8PPkntM0niN8c7DaR?=
- =?us-ascii?Q?IzrexvwEH6/8Azv0QwTjcx7A4PlQC3GdbJDYVRzHN19RTKXgzpTa8IRgIsWo?=
- =?us-ascii?Q?buN9L27KW+Q1WlqNJus4o+b0S9Mdh2zpHma2wTpT+scEHJBVK3F2iiHfjQ8V?=
- =?us-ascii?Q?kgxFSKwLk2D1xpuDAr1QP/dtbG4ReDmM/Dww0ah4w0uHJvGaYJFAkoA1znQO?=
- =?us-ascii?Q?EKuu60jdkzza99Y/Xm0NxyIbMUEa2gHSy2jaD1VSZNj2VQ4IEddZkkpuz9Ep?=
- =?us-ascii?Q?JmU6AlJgRYYRvQXgqwL7El2JQYy7fbQCoRuhqVpfZX2flMK0Or41y71Rq2kp?=
- =?us-ascii?Q?t3fSHbGQhzGC0HTgfX6/g+nzUd1ehqrbIMuWIjt9QChdzimbEjc1s566t+MA?=
- =?us-ascii?Q?+foszKj5r851RQpkuONyiH5GJsWk6bSq011HtxNM4aurI1dl39RVd/83TkI9?=
- =?us-ascii?Q?rQY+jTDVzlDOJi5v5ZbFtlctmgURIYDS+dQ6rSHmJmfcerruX9w6CBazebAC?=
- =?us-ascii?Q?pN9DJTgC2nEBRlrM7owbyoehAOVwspunqV+lCzX2TFTY0L/LF4n2HVC1bLmz?=
- =?us-ascii?Q?PLHuZxTUi8oBcu6vBkCw7AwpjpuhwJ7bsE58SYFZla9Vo1Ga00R+1SaXpkWK?=
- =?us-ascii?Q?9tJS2Z7nCjO4SaJdGqO9kboKvP34edDvHMnd+alZvstpRuCr+BnEu+aIviEb?=
- =?us-ascii?Q?TozF6LMtRuoW/Qy53aIJDqDyrlLP4TQRPoKb83APo+9HCUAoAkxUK9gpvlns?=
- =?us-ascii?Q?Ztf0FHQ6owJe9AvjGjpmJh4aqZgxrefYHZiqK17yIhRK8RujpyN2J+49EwWg?=
- =?us-ascii?Q?DB0te9Z5MBMLscOH6v/cQygV3f3ZTeXBvJp2HAMQR8kYMbHqgnMig8g/weOo?=
- =?us-ascii?Q?4uBX6DWdWEvr8xcdexn+IPw0V92myMB7P8CIIJJh7cGHf8C69tCOKvMYC02Y?=
- =?us-ascii?Q?lMOazgwt5YAvXRZkEiuXX1rJfwwg3pHJlPT4D7kGY9hsteBl5YKoDGYha1IQ?=
- =?us-ascii?Q?wyI97v+Key1Z7GpW2nkuK2zx/i+XZ6QhWWMArMBpi/cNt2muDtWRoDEbg/Yo?=
- =?us-ascii?Q?Ti05tMmhJgCsL+3bI3+szQbiD2YVx34h8MuU/6Y/H81MPHH8RCgTGzs8jzql?=
- =?us-ascii?Q?w4UG5cfJkcfxkI4reG3OemAj6Vr2Ol0QYpuWIB6e?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="709139698"
+X-IronPort-AV: E=Sophos;i="5.98,259,1673942400"; 
+   d="scan'208";a="709139698"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by orsmga008.jf.intel.com with ESMTP; 13 Mar 2023 22:19:42 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: iommu@lists.linux.dev
+Cc: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH] iommu/vt-d: Remove unnecessary locking in intel_irq_remapping_alloc()
+Date: Tue, 14 Mar 2023 13:18:36 +0800
+Message-Id: <20230314051836.23817-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7754de7e-6c73-45d4-4861-08db2443257e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Mar 2023 04:18:21.3342
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: rq19gqdRH6DrIvPyUDjrB6XxujCdaLG7fJd8tyk+m3o07Vo7zvTRa6wcq1cEy+/RUY/0QVTyakJGmajREIOr4g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB5469
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: 8bit
 
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Saturday, March 11, 2023 1:50 AM
->=20
-> On Thu, Mar 09, 2023 at 12:09:05AM -0800, Yi Liu wrote:
-> > +int iommufd_hwpt_invalidate(struct iommufd_ucmd *ucmd)
-> > +{
-> > +	struct iommu_hwpt_invalidate *cmd =3D ucmd->cmd;
-> > +	struct iommufd_hw_pagetable *hwpt;
-> > +	u64 user_ptr;
-> > +	u32 user_data_len, klen;
-> > +	int rc =3D 0;
-> > +
-> > +	/*
-> > +	 * For a user-managed HWPT, type should not be
-> IOMMU_HWPT_TYPE_DEFAULT.
-> > +	 * data_len should not exceed the size of
-> iommufd_invalidate_buffer.
-> > +	 */
-> > +	if (cmd->data_type =3D=3D IOMMU_HWPT_TYPE_DEFAULT || !cmd-
-> >data_len ||
-> > +	    cmd->data_type >=3D
-> ARRAY_SIZE(iommufd_hwpt_invalidate_info_size))
-> > +		return -EOPNOTSUPP;
->=20
-> This needs to do the standard check for zeros in unknown trailing data
-> bit. Check that alloc does it too
+The global rwsem dmar_global_lock was introduced by commit 3a5670e8ac932
+("iommu/vt-d: Introduce a rwsem to protect global data structures"). It
+is used to protect DMAR related global data from DMAR hotplug operations.
 
-Maybe it has been covered by the copy_struct_from_user(). Is it?
+Using dmar_global_lock in intel_irq_remapping_alloc() is unnecessary as
+the DMAR global data structures are not touched there. Remove it to avoid
+below lockdep warning.
 
-+	/*
-+	 * Copy the needed fields before reusing the ucmd buffer, this
-+	 * avoids memory allocation in this path.
-+	 */
-+	user_ptr =3D cmd->data_uptr;
-+	user_data_len =3D cmd->data_len;
-+
-+	rc =3D copy_struct_from_user(cmd, klen,
-+				   u64_to_user_ptr(user_ptr), user_data_len);
+ ======================================================
+ WARNING: possible circular locking dependency detected
+ 6.3.0-rc2 #468 Not tainted
+ ------------------------------------------------------
+ swapper/0/1 is trying to acquire lock:
+ ff1db4cb40178698 (&domain->mutex){+.+.}-{3:3},
+   at: __irq_domain_alloc_irqs+0x3b/0xa0
 
-Regards,
-Yi Liu=20
+ but task is already holding lock:
+ ffffffffa0c1cdf0 (dmar_global_lock){++++}-{3:3},
+   at: intel_iommu_init+0x58e/0x880
+
+ which lock already depends on the new lock.
+
+ the existing dependency chain (in reverse order) is:
+
+ -> #1 (dmar_global_lock){++++}-{3:3}:
+        lock_acquire+0xd6/0x320
+        down_read+0x42/0x180
+        intel_irq_remapping_alloc+0xad/0x750
+        mp_irqdomain_alloc+0xb8/0x2b0
+        irq_domain_alloc_irqs_locked+0x12f/0x2d0
+        __irq_domain_alloc_irqs+0x56/0xa0
+        alloc_isa_irq_from_domain.isra.7+0xa0/0xe0
+        mp_map_pin_to_irq+0x1dc/0x330
+        setup_IO_APIC+0x128/0x210
+        apic_intr_mode_init+0x67/0x110
+        x86_late_time_init+0x24/0x40
+        start_kernel+0x41e/0x7e0
+        secondary_startup_64_no_verify+0xe0/0xeb
+
+ -> #0 (&domain->mutex){+.+.}-{3:3}:
+        check_prevs_add+0x160/0xef0
+        __lock_acquire+0x147d/0x1950
+        lock_acquire+0xd6/0x320
+        __mutex_lock+0x9c/0xfc0
+        __irq_domain_alloc_irqs+0x3b/0xa0
+        dmar_alloc_hwirq+0x9e/0x120
+        iommu_pmu_register+0x11d/0x200
+        intel_iommu_init+0x5de/0x880
+        pci_iommu_init+0x12/0x40
+        do_one_initcall+0x65/0x350
+        kernel_init_freeable+0x3ca/0x610
+        kernel_init+0x1a/0x140
+        ret_from_fork+0x29/0x50
+
+ other info that might help us debug this:
+
+ Possible unsafe locking scenario:
+
+        CPU0                    CPU1
+        ----                    ----
+   lock(dmar_global_lock);
+                                lock(&domain->mutex);
+                                lock(dmar_global_lock);
+   lock(&domain->mutex);
+
+                *** DEADLOCK ***
+
+Fixes: 9dbb8e3452ab ("irqdomain: Switch to per-domain locking")
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/irq_remapping.c | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
+index 6d01fa078c36..df9e261af0b5 100644
+--- a/drivers/iommu/intel/irq_remapping.c
++++ b/drivers/iommu/intel/irq_remapping.c
+@@ -311,14 +311,12 @@ static int set_ioapic_sid(struct irte *irte, int apic)
+ 	if (!irte)
+ 		return -1;
+ 
+-	down_read(&dmar_global_lock);
+ 	for (i = 0; i < MAX_IO_APICS; i++) {
+ 		if (ir_ioapic[i].iommu && ir_ioapic[i].id == apic) {
+ 			sid = (ir_ioapic[i].bus << 8) | ir_ioapic[i].devfn;
+ 			break;
+ 		}
+ 	}
+-	up_read(&dmar_global_lock);
+ 
+ 	if (sid == 0) {
+ 		pr_warn("Failed to set source-id of IOAPIC (%d)\n", apic);
+@@ -338,14 +336,12 @@ static int set_hpet_sid(struct irte *irte, u8 id)
+ 	if (!irte)
+ 		return -1;
+ 
+-	down_read(&dmar_global_lock);
+ 	for (i = 0; i < MAX_HPET_TBS; i++) {
+ 		if (ir_hpet[i].iommu && ir_hpet[i].id == id) {
+ 			sid = (ir_hpet[i].bus << 8) | ir_hpet[i].devfn;
+ 			break;
+ 		}
+ 	}
+-	up_read(&dmar_global_lock);
+ 
+ 	if (sid == 0) {
+ 		pr_warn("Failed to set source-id of HPET block (%d)\n", id);
+@@ -1339,9 +1335,7 @@ static int intel_irq_remapping_alloc(struct irq_domain *domain,
+ 	if (!data)
+ 		goto out_free_parent;
+ 
+-	down_read(&dmar_global_lock);
+ 	index = alloc_irte(iommu, &data->irq_2_iommu, nr_irqs);
+-	up_read(&dmar_global_lock);
+ 	if (index < 0) {
+ 		pr_warn("Failed to allocate IRTE\n");
+ 		kfree(data);
+-- 
+2.34.1
+
