@@ -1,188 +1,438 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71BDDA939
-	for <iommu@lists.linux.dev>; Tue, 14 Mar 2023 18:47:09 +0000 (UTC)
-Received: by mail-pl1-f170.google.com with SMTP id h8so17582423plf.10
-        for <iommu@lists.linux.dev>; Tue, 14 Mar 2023 11:47:09 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E208FA939;
+	Tue, 14 Mar 2023 20:06:17 +0000 (UTC)
+Received: by mail-ed1-f45.google.com with SMTP id fd5so32995177edb.7;
+        Tue, 14 Mar 2023 13:06:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678819629;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=fpiDPV6205M5h8bqVFYHaaAk5mlWpnrzsDJlxhDj4wc=;
-        b=oCIgU7JMjQpLn46jQ77R/mhDV9eGuDUoffPrfCIqkdC/ewgl5MGXUwcsQII6Gx9YQx
-         1G2aCGdEggBu5LZZxUKbLtU6tIBpQT7TKAS6FbudToJyon/o5E6tblEVKXQ6zZNiNw4u
-         wtcdB/WWAoX6wBx17h79kepvv/FYYAwksbUyWssAvwPhrl24fQusChPo3SgosrkFM0YK
-         BESclnIzMp/KTA/i6qzeyAmYmWtvlYrnu6+Av+SWD2R3GQiw1lgI2IQzKejxzm/mJl0G
-         Dc1oFfaDbYImcm2DqALJNuCs9rs+jeH1IW/k8aNaPHlpSHWf+NsWcpub1OclVMsjPwLv
-         HcTA==
+        d=gmail.com; s=20210112; t=1678824376;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=OjikSDB/A+i4L9BeqERv0l8R/cRWGNu1EDH8YsBPfDg=;
+        b=WhPYLI/Cny3mi6cww7cX6wbq3H92VOuCnEWKRdB6U2tK6BG3rs+aYdOWOJYDJMkf0a
+         YREyt5dhSV4EDSdN3YXUQLBsIucZwPq/g8ic4KrDpZeXc5d1yJ9FbiK60ubHgENmR5D5
+         AAP53U0dQ7M5LI77LqhB/hg3e2yuBptasDRCRWIoWeeiK6v5YIew+G1K9/3S5GpYUOvY
+         QKLtZqoUVDyLcXFxp+NL0kVxXSyrAN+LeHXs7HkVk9yTsuGEcryrqh3wmQVTVLuwQU6z
+         Bjn65mXLdmql8HJo/MZhcBsxZSdc64nEb/gFUi4xL+our/ooo2UtSGFmUvy6UwasRWa1
+         fFhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678819629;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=fpiDPV6205M5h8bqVFYHaaAk5mlWpnrzsDJlxhDj4wc=;
-        b=2eqaC3uyVTiaA7OQDUKpIHlulTC9eLKOz9Xv9cQ9+8WFMGOaVuf6B1a6DIzGcoSph/
-         POeX2BnuY4k/WcsuWz7KuFMCKb/JNMhGDCsZZkaagM+Q0+cruKGn4tmHYbzirObCytX1
-         1LQGQKkR0mA2Op2/yrDekBhvpOEc5VbFJI/sE0MIlLhPa6NLQFngoTTRgOG/f7iRJExL
-         jysDg5RdooYs+b9hYZ87TNOOBpDSakwAKuXzG2xx++zJ4SEZQ4mFR7ml1hGyt13MZRmv
-         ibVQDNbF6F2Um4h/DLaJL+StKZxoUQA6M2pWA4eZWRA9yYXeoYIdwqgxaJp2YTxlR1Rp
-         D43w==
-X-Gm-Message-State: AO0yUKW6MowHarARIKjthCUAiLuM+lZZ8/JofFE4eVoqOlbIvqqd84n7
-	LiRiqxAWj4PagvIAT7warZ4b
-X-Google-Smtp-Source: AK7set8sgfpF9mOdApPMdOBZ0pPNFxOPsRMsrK4PacGoB22l6tBaUnEkaBRLdNhQm73S/0ueBJwZbw==
-X-Received: by 2002:a17:902:740c:b0:19f:2dff:2199 with SMTP id g12-20020a170902740c00b0019f2dff2199mr10106839pll.68.1678819628793;
-        Tue, 14 Mar 2023 11:47:08 -0700 (PDT)
-Received: from localhost.localdomain ([117.217.182.35])
-        by smtp.gmail.com with ESMTPSA id kz11-20020a170902f9cb00b001a0667822c8sm1920782plb.94.2023.03.14.11.47.04
+        d=1e100.net; s=20210112; t=1678824376;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=OjikSDB/A+i4L9BeqERv0l8R/cRWGNu1EDH8YsBPfDg=;
+        b=PqQ6n4LTetoUTcy9/B6ph5tw/v38MUADmmqUK5iT6xLZKEZ0+E8Y5mFS/BcdkCz2x/
+         9mVAENERdps5NV0Ql0do3wFoQSdFhY9ibQfemVtYJ2pyFeSf4P67pb6DfI5gRrpj2z7I
+         1okCCqZoIAJYKbSSGk0bbCUqoPoNVRtfN+N/g68ipTJHWO/hcUPm7XpZYPNT11swnM1h
+         6gNTjRTJrXo7KjYnw8tQUFVSoA/S7oNt536ARLwgkEM/ztMsrId00fb8jMtkRGmYQ0Pc
+         fj8r72UhsuP+3cT2qrtdYN/SyRF+V2bkPfiGIBOgPHtlbgwJ7iq66SadkHa4FBC5Vtt6
+         ZxfQ==
+X-Gm-Message-State: AO0yUKULDYP1FwOHn+doMbw2dCx2CsDFCo/KZ0Y9+SF1+mTosbKmTN98
+	xRPJT65ihGBEipUlUtFlnlU=
+X-Google-Smtp-Source: AK7set/OF3AdfTGjwEHlL5tu1CQX7SQa6dKdOeg+TCkjQnwZiD4NH1p423e+b6+vxXGoSHFc7z6hVw==
+X-Received: by 2002:a17:906:32d4:b0:878:7f6e:38a7 with SMTP id k20-20020a17090632d400b008787f6e38a7mr3719709ejk.44.1678824375883;
+        Tue, 14 Mar 2023 13:06:15 -0700 (PDT)
+Received: from jernej-laptop.localnet (82-149-1-233.dynamic.telemach.net. [82.149.1.233])
+        by smtp.gmail.com with ESMTPSA id w11-20020a1709062f8b00b00923bb9f0c36sm1535480eji.127.2023.03.14.13.06.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Mar 2023 11:47:06 -0700 (PDT)
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To: will@kernel.org,
-	joro@8bytes.org
-Cc: robin.murphy@arm.com,
-	andersson@kernel.org,
-	johan+linaro@kernel.org,
-	steev@kali.org,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v3] iommu/arm-smmu-qcom: Rework the logic finding the bypass quirk
-Date: Wed, 15 Mar 2023 00:16:59 +0530
-Message-Id: <20230314184659.176473-1-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
+        Tue, 14 Mar 2023 13:06:15 -0700 (PDT)
+From: Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To: Joerg Roedel <joro@8bytes.org>, Matthew Rosato <mjrosato@linux.ibm.com>,
+ Will Deacon <will@kernel.org>, Wenjia Zhang <wenjia@linux.ibm.com>,
+ Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Gerd Bayer <gbayer@linux.ibm.com>, Julian Ruess <julianr@linux.ibm.com>,
+ Pierre Morel <pmorel@linux.ibm.com>,
+ Alexandra Winter <wintera@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>,
+ Vasily Gorbik <gor@linux.ibm.com>,
+ Alexander Gordeev <agordeev@linux.ibm.com>,
+ Christian Borntraeger <borntraeger@linux.ibm.com>,
+ Sven Schnelle <svens@linux.ibm.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+ Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+ David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konrad.dybcio@linaro.org>, Yong Wu <yong.wu@mediatek.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Orson Zhai <orsonzhai@gmail.com>,
+ Baolin Wang <baolin.wang@linux.alibaba.com>,
+ Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
+ Samuel Holland <samuel@sholland.org>,
+ Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy <vdumpa@nvidia.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>,
+ Niklas Schnelle <schnelle@linux.ibm.com>, Jonathan Corbet <corbet@lwn.net>,
+ linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev, asahi@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+ linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
+ linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
+Subject:
+ Re: [PATCH v8 2/6] iommu: Allow .iotlb_sync_map to fail and handle s390's
+ -ENOMEM return
+Date: Tue, 14 Mar 2023 21:06:12 +0100
+Message-ID: <3724716.kQq0lBPeGt@jernej-laptop>
+In-Reply-To: <20230310-dma_iommu-v8-2-2347dfbed7af@linux.ibm.com>
+References:
+ <20230310-dma_iommu-v8-0-2347dfbed7af@linux.ibm.com>
+ <20230310-dma_iommu-v8-2-2347dfbed7af@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 
-The logic used to find the quirky firmware that intercepts the writes to
-S2CR register to replace bypass type streams with a fault, and ignore the
-fault type, is not working with the firmware on newer SoCs like SC8280XP.
+Dne petek, 10. marec 2023 ob 17:07:47 CET je Niklas Schnelle napisal(a):
+> On s390 when using a paging hypervisor, .iotlb_sync_map is used to sync
+> mappings by letting the hypervisor inspect the synced IOVA range and
+> updating a shadow table. This however means that .iotlb_sync_map can
+> fail as the hypervisor may run out of resources while doing the sync.
+> This can be due to the hypervisor being unable to pin guest pages, due
+> to a limit on mapped addresses such as vfio_iommu_type1.dma_entry_limit
+> or lack of other resources. Either way such a failure to sync a mapping
+> should result in a DMA_MAPPING_ERROR.
+> 
+> Now especially when running with batched IOTLB flushes for unmap it may
+> be that some IOVAs have already been invalidated but not yet synced via
+> .iotlb_sync_map. Thus if the hypervisor indicates running out of
+> resources, first do a global flush allowing the hypervisor to free
+> resources associated with these mappings as well a retry creating the
+> new mappings and only if that also fails report this error to callers.
+> 
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> ---
+>  drivers/iommu/amd/iommu.c    |  5 +++--
+>  drivers/iommu/apple-dart.c   |  5 +++--
+>  drivers/iommu/intel/iommu.c  |  5 +++--
+>  drivers/iommu/iommu.c        | 20 ++++++++++++++++----
+>  drivers/iommu/msm_iommu.c    |  5 +++--
+>  drivers/iommu/mtk_iommu.c    |  5 +++--
+>  drivers/iommu/s390-iommu.c   | 29 ++++++++++++++++++++++++-----
+>  drivers/iommu/sprd-iommu.c   |  5 +++--
+>  drivers/iommu/sun50i-iommu.c |  4 +++-
 
-The current logic uses the last stream mapping group (num_mapping_groups
-- 1) as an index for finding quirky firmware. But on SC8280XP, NUMSMRG
-reports a value of 162 due to emulation and the logic is not working for
-stream mapping groups > 128. (Note that the ARM SMMU architecture
-specification defines NUMSMRG in the range of 0-127).
+For sun50i:
+Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-So the current logic that checks the (162-1)th S2CR entry fails to detect
-the quirky firmware on these devices and SMMU triggers invalid context
-fault for bypass streams.
+Best regards,
+Jernej
 
-To fix this issue, let's limit "num_mapping_groups" to 128 as per ARM SMMU
-spec and rework the logic to find the first non-valid (free) stream mapping
-register group (SMR) and use that index to access S2CR for detecting the
-bypass quirk. If no free groups are available, then just skip the quirk
-detection.
+>  drivers/iommu/tegra-gart.c   |  5 +++--
+>  include/linux/iommu.h        |  4 ++--
+>  11 files changed, 66 insertions(+), 26 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index 5a505ba5467e..ff309bd1bb8f 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -2187,14 +2187,15 @@ static int amd_iommu_attach_device(struct
+> iommu_domain *dom, return ret;
+>  }
+> 
+> -static void amd_iommu_iotlb_sync_map(struct iommu_domain *dom,
+> -				     unsigned long iova, size_t 
+size)
+> +static int amd_iommu_iotlb_sync_map(struct iommu_domain *dom,
+> +				    unsigned long iova, size_t 
+size)
+>  {
+>  	struct protection_domain *domain = to_pdomain(dom);
+>  	struct io_pgtable_ops *ops = &domain->iop.iop.ops;
+> 
+>  	if (ops->map_pages)
+>  		domain_flush_np_cache(domain, iova, size);
+> +	return 0;
+>  }
+> 
+>  static int amd_iommu_map_pages(struct iommu_domain *dom, unsigned long
+> iova, diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+> index 06169d36eab8..cbed1f87eae9 100644
+> --- a/drivers/iommu/apple-dart.c
+> +++ b/drivers/iommu/apple-dart.c
+> @@ -506,10 +506,11 @@ static void apple_dart_iotlb_sync(struct iommu_domain
+> *domain, apple_dart_domain_flush_tlb(to_dart_domain(domain));
+>  }
+> 
+> -static void apple_dart_iotlb_sync_map(struct iommu_domain *domain,
+> -				      unsigned long iova, size_t 
+size)
+> +static int apple_dart_iotlb_sync_map(struct iommu_domain *domain,
+> +				     unsigned long iova, size_t 
+size)
+>  {
+>  	apple_dart_domain_flush_tlb(to_dart_domain(domain));
+> +	return 0;
+>  }
+> 
+>  static phys_addr_t apple_dart_iova_to_phys(struct iommu_domain *domain,
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 7c2f4bd33582..b795b2f323e3 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -4745,8 +4745,8 @@ static bool risky_device(struct pci_dev *pdev)
+>  	return false;
+>  }
+> 
+> -static void intel_iommu_iotlb_sync_map(struct iommu_domain *domain,
+> -				       unsigned long iova, size_t 
+size)
+> +static int intel_iommu_iotlb_sync_map(struct iommu_domain *domain,
+> +				      unsigned long iova, size_t 
+size)
+>  {
+>  	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+>  	unsigned long pages = aligned_nrpages(iova, size);
+> @@ -4756,6 +4756,7 @@ static void intel_iommu_iotlb_sync_map(struct
+> iommu_domain *domain,
+> 
+>  	xa_for_each(&dmar_domain->iommu_array, i, info)
+>  		__mapping_notify_one(info->iommu, dmar_domain, pfn, 
+pages);
+> +	return 0;
+>  }
+> 
+>  static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t
+> pasid) diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 10db680acaed..ae549b032a16 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2410,8 +2410,17 @@ int iommu_map(struct iommu_domain *domain, unsigned
+> long iova, return -EINVAL;
+> 
+>  	ret = __iommu_map(domain, iova, paddr, size, prot, gfp);
+> -	if (ret == 0 && ops->iotlb_sync_map)
+> -		ops->iotlb_sync_map(domain, iova, size);
+> +	if (ret == 0 && ops->iotlb_sync_map) {
+> +		ret = ops->iotlb_sync_map(domain, iova, size);
+> +		if (ret)
+> +			goto out_err;
+> +	}
+> +
+> +	return ret;
+> +
+> +out_err:
+> +	/* undo mappings already done */
+> +	iommu_unmap(domain, iova, size);
+> 
+>  	return ret;
+>  }
+> @@ -2552,8 +2561,11 @@ ssize_t iommu_map_sg(struct iommu_domain *domain,
+> unsigned long iova, sg = sg_next(sg);
+>  	}
+> 
+> -	if (ops->iotlb_sync_map)
+> -		ops->iotlb_sync_map(domain, iova, mapped);
+> +	if (ops->iotlb_sync_map) {
+> +		ret = ops->iotlb_sync_map(domain, iova, mapped);
+> +		if (ret)
+> +			goto out_err;
+> +	}
+>  	return mapped;
+> 
+>  out_err:
+> diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+> index 454f6331c889..2033716eac78 100644
+> --- a/drivers/iommu/msm_iommu.c
+> +++ b/drivers/iommu/msm_iommu.c
+> @@ -486,12 +486,13 @@ static int msm_iommu_map(struct iommu_domain *domain,
+> unsigned long iova, return ret;
+>  }
+> 
+> -static void msm_iommu_sync_map(struct iommu_domain *domain, unsigned long
+> iova, -			       size_t size)
+> +static int msm_iommu_sync_map(struct iommu_domain *domain, unsigned long
+> iova, +			      size_t size)
+>  {
+>  	struct msm_priv *priv = to_msm_priv(domain);
+> 
+>  	__flush_iotlb_range(iova, size, SZ_4K, false, priv);
+> +	return 0;
+>  }
+> 
+>  static size_t msm_iommu_unmap(struct iommu_domain *domain, unsigned long
+> iova, diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index d5a4955910ff..29769fb5c51e 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -750,12 +750,13 @@ static void mtk_iommu_iotlb_sync(struct iommu_domain
+> *domain, mtk_iommu_tlb_flush_range_sync(gather->start, length, dom->bank);
+> }
+> 
+> -static void mtk_iommu_sync_map(struct iommu_domain *domain, unsigned long
+> iova, -			       size_t size)
+> +static int mtk_iommu_sync_map(struct iommu_domain *domain, unsigned long
+> iova, +			      size_t size)
+>  {
+>  	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+> 
+>  	mtk_iommu_tlb_flush_range_sync(iova, size, dom->bank);
+> +	return 0;
+>  }
+> 
+>  static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
+> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+> index fbf59a8db29b..17174b35db11 100644
+> --- a/drivers/iommu/s390-iommu.c
+> +++ b/drivers/iommu/s390-iommu.c
+> @@ -205,6 +205,14 @@ static void s390_iommu_release_device(struct device
+> *dev) __s390_iommu_detach_device(zdev);
+>  }
+> 
+> +
+> +static int zpci_refresh_all(struct zpci_dev *zdev)
+> +{
+> +	return zpci_refresh_trans((u64)zdev->fh << 32, zdev->start_dma,
+> +				  zdev->end_dma - zdev->start_dma 
++ 1);
+> +
+> +}
+> +
+>  static void s390_iommu_flush_iotlb_all(struct iommu_domain *domain)
+>  {
+>  	struct s390_domain *s390_domain = to_s390_domain(domain);
+> @@ -212,8 +220,7 @@ static void s390_iommu_flush_iotlb_all(struct
+> iommu_domain *domain)
+> 
+>  	rcu_read_lock();
+>  	list_for_each_entry_rcu(zdev, &s390_domain->devices, iommu_list) {
+> -		zpci_refresh_trans((u64)zdev->fh << 32, zdev-
+>start_dma,
+> -				   zdev->end_dma - zdev-
+>start_dma + 1);
+> +		zpci_refresh_all(zdev);
+>  	}
+>  	rcu_read_unlock();
+>  }
+> @@ -237,20 +244,32 @@ static void s390_iommu_iotlb_sync(struct iommu_domain
+> *domain, rcu_read_unlock();
+>  }
+> 
+> -static void s390_iommu_iotlb_sync_map(struct iommu_domain *domain,
+> +static int s390_iommu_iotlb_sync_map(struct iommu_domain *domain,
+>  				      unsigned long iova, size_t 
+size)
+>  {
+>  	struct s390_domain *s390_domain = to_s390_domain(domain);
+>  	struct zpci_dev *zdev;
+> +	int ret = 0;
+> 
+>  	rcu_read_lock();
+>  	list_for_each_entry_rcu(zdev, &s390_domain->devices, iommu_list) {
+>  		if (!zdev->tlb_refresh)
+>  			continue;
+> -		zpci_refresh_trans((u64)zdev->fh << 32,
+> -				   iova, size);
+> +		ret = zpci_refresh_trans((u64)zdev->fh << 32,
+> +					 iova, size);
+> +		/*
+> +		 * let the hypervisor discover invalidated entries
+> +		 * allowing it to free IOVAs and unpin pages
+> +		 */
+> +		if (ret == -ENOMEM) {
+> +			ret = zpci_refresh_all(zdev);
+> +			if (ret)
+> +				break;
+> +		}
+>  	}
+>  	rcu_read_unlock();
+> +
+> +	return ret;
+>  }
+> 
+>  static int s390_iommu_validate_trans(struct s390_domain *s390_domain,
+> diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
+> index ae94d74b73f4..74bcae69653c 100644
+> --- a/drivers/iommu/sprd-iommu.c
+> +++ b/drivers/iommu/sprd-iommu.c
+> @@ -315,8 +315,8 @@ static size_t sprd_iommu_unmap(struct iommu_domain
+> *domain, unsigned long iova, return size;
+>  }
+> 
+> -static void sprd_iommu_sync_map(struct iommu_domain *domain,
+> -				unsigned long iova, size_t size)
+> +static int sprd_iommu_sync_map(struct iommu_domain *domain,
+> +			       unsigned long iova, size_t size)
+>  {
+>  	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
+>  	unsigned int reg;
+> @@ -328,6 +328,7 @@ static void sprd_iommu_sync_map(struct iommu_domain
+> *domain,
+> 
+>  	/* clear IOMMU TLB buffer after page table updated */
+>  	sprd_iommu_write(dom->sdev, reg, 0xffffffff);
+> +	return 0;
+>  }
+> 
+>  static void sprd_iommu_sync(struct iommu_domain *domain,
+> diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
+> index 2d993d0cea7d..60a983f4a494 100644
+> --- a/drivers/iommu/sun50i-iommu.c
+> +++ b/drivers/iommu/sun50i-iommu.c
+> @@ -402,7 +402,7 @@ static void sun50i_iommu_flush_iotlb_all(struct
+> iommu_domain *domain) spin_unlock_irqrestore(&iommu->iommu_lock, flags);
+>  }
+> 
+> -static void sun50i_iommu_iotlb_sync_map(struct iommu_domain *domain,
+> +static int sun50i_iommu_iotlb_sync_map(struct iommu_domain *domain,
+>  					unsigned long iova, 
+size_t size)
+>  {
+>  	struct sun50i_iommu_domain *sun50i_domain = 
+to_sun50i_domain(domain);
+> @@ -412,6 +412,8 @@ static void sun50i_iommu_iotlb_sync_map(struct
+> iommu_domain *domain, spin_lock_irqsave(&iommu->iommu_lock, flags);
+>  	sun50i_iommu_zap_range(iommu, iova, size);
+>  	spin_unlock_irqrestore(&iommu->iommu_lock, flags);
+> +
+> +	return 0;
+>  }
+> 
+>  static void sun50i_iommu_iotlb_sync(struct iommu_domain *domain,
+> diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+> index a482ff838b53..44966d7b07ba 100644
+> --- a/drivers/iommu/tegra-gart.c
+> +++ b/drivers/iommu/tegra-gart.c
+> @@ -252,10 +252,11 @@ static int gart_iommu_of_xlate(struct device *dev,
+>  	return 0;
+>  }
+> 
+> -static void gart_iommu_sync_map(struct iommu_domain *domain, unsigned long
+> iova, -				size_t size)
+> +static int gart_iommu_sync_map(struct iommu_domain *domain, unsigned long
+> iova, +			       size_t size)
+>  {
+>  	FLUSH_GART_REGS(gart_handle);
+> +	return 0;
+>  }
+> 
+>  static void gart_iommu_sync(struct iommu_domain *domain,
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 6595454d4f48..932e5532ee33 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -333,8 +333,8 @@ struct iommu_domain_ops {
+>  			      struct iommu_iotlb_gather 
+*iotlb_gather);
+> 
+>  	void (*flush_iotlb_all)(struct iommu_domain *domain);
+> -	void (*iotlb_sync_map)(struct iommu_domain *domain, unsigned long 
+iova,
+> -			       size_t size);
+> +	int (*iotlb_sync_map)(struct iommu_domain *domain, unsigned long 
+iova,
+> +			      size_t size);
+>  	void (*iotlb_sync)(struct iommu_domain *domain,
+>  			   struct iommu_iotlb_gather *iotlb_gather);
 
-While at it, let's move the quirk detection logic to a separate function
-and change the local variable name from last_s2cr to free_s2cr.
 
-Reviewed-by: Bjorn Andersson <andersson@kernel.org>
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
 
-Changes in v3:
-
-* Limited num_mapping_groups to 128 as per ARM SMMU spec and removed the
-  check for 128 groups in qcom_smmu_bypass_quirk()
-* Reworded the commit message accordingly
-
-Changes in v2:
-
-* Limited the check to 128 groups as per ARM SMMU spec's NUMSMRG range
-* Moved the quirk handling to its own function
-* Collected review tag from Bjorn
-
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 52 ++++++++++++++++++----
- 1 file changed, 44 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index d1b296b95c86..301396b29024 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -266,25 +266,42 @@ static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
- 	return 0;
- }
- 
--static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
-+static void qcom_smmu_bypass_quirk(struct arm_smmu_device *smmu)
- {
--	unsigned int last_s2cr = ARM_SMMU_GR0_S2CR(smmu->num_mapping_groups - 1);
- 	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
--	u32 reg;
--	u32 smr;
-+	u32 free_s2cr;
-+	u32 reg, smr;
- 	int i;
- 
-+	/*
-+	 * Find the first non-valid (free) stream mapping register group and
-+	 * use that index to access S2CR for detecting the bypass quirk.
-+	 */
-+	for (i = 0; i < smmu->num_mapping_groups; i++) {
-+		smr = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_SMR(i));
-+
-+		if (!FIELD_GET(ARM_SMMU_SMR_VALID, smr))
-+			break;
-+	}
-+
-+	/* If no free stream mapping register group is available, skip the check */
-+	if (i == smmu->num_mapping_groups)
-+		return;
-+
-+	free_s2cr = ARM_SMMU_GR0_S2CR(i);
-+
- 	/*
- 	 * With some firmware versions writes to S2CR of type FAULT are
- 	 * ignored, and writing BYPASS will end up written as FAULT in the
--	 * register. Perform a write to S2CR to detect if this is the case and
--	 * if so reserve a context bank to emulate bypass streams.
-+	 * register. Perform a write to the first free S2CR to detect if
-+	 * this is the case and if so reserve a context bank to emulate
-+	 * bypass streams.
- 	 */
- 	reg = FIELD_PREP(ARM_SMMU_S2CR_TYPE, S2CR_TYPE_BYPASS) |
- 	      FIELD_PREP(ARM_SMMU_S2CR_CBNDX, 0xff) |
- 	      FIELD_PREP(ARM_SMMU_S2CR_PRIVCFG, S2CR_PRIVCFG_DEFAULT);
--	arm_smmu_gr0_write(smmu, last_s2cr, reg);
--	reg = arm_smmu_gr0_read(smmu, last_s2cr);
-+	arm_smmu_gr0_write(smmu, free_s2cr, reg);
-+	reg = arm_smmu_gr0_read(smmu, free_s2cr);
- 	if (FIELD_GET(ARM_SMMU_S2CR_TYPE, reg) != S2CR_TYPE_BYPASS) {
- 		qsmmu->bypass_quirk = true;
- 		qsmmu->bypass_cbndx = smmu->num_context_banks - 1;
-@@ -296,6 +313,25 @@ static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
- 		reg = FIELD_PREP(ARM_SMMU_CBAR_TYPE, CBAR_TYPE_S1_TRANS_S2_BYPASS);
- 		arm_smmu_gr1_write(smmu, ARM_SMMU_GR1_CBAR(qsmmu->bypass_cbndx), reg);
- 	}
-+}
-+
-+static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
-+{
-+	u32 smr;
-+	int i;
-+
-+	/*
-+	 * Limit the number of stream matching groups to 128 as the ARM SMMU architecture
-+	 * specification defines NUMSMRG (Number of Stream Mapping Register Groups) in the
-+	 * range of 0-127, but some Qcom platforms emulate more stream mapping groups. And
-+	 * those groups don't exhibit the same behavior as the architecture supported ones.
-+	 */
-+	if (smmu->num_mapping_groups > 128) {
-+		dev_warn(smmu->dev, "\tLimiting the stream matching groups to 128\n");
-+		smmu->num_mapping_groups = 128;
-+	}
-+
-+	qcom_smmu_bypass_quirk(smmu);
- 
- 	for (i = 0; i < smmu->num_mapping_groups; i++) {
- 		smr = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_SMR(i));
--- 
-2.25.1
 
