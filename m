@@ -1,123 +1,225 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A0CA63C10
-	for <iommu@lists.linux.dev>; Tue, 14 Mar 2023 11:58:31 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 947054B3;
-	Tue, 14 Mar 2023 04:59:14 -0700 (PDT)
-Received: from [10.57.91.139] (unknown [10.57.91.139])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E08E73F67D;
-	Tue, 14 Mar 2023 04:58:28 -0700 (PDT)
-Message-ID: <13b46d42-e497-8dd7-4785-f58447128a40@arm.com>
-Date: Tue, 14 Mar 2023 11:58:24 +0000
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFFE219D
+	for <iommu@lists.linux.dev>; Tue, 14 Mar 2023 12:52:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678798361; x=1710334361;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=rmow8MmVfNohfbbu6S6MxBXECwf/J7vfVWyiDy1C384=;
+  b=eTyVL1UoxO/9If3RVhIwSsyJAncCwSxXuVHIpNz/g4jWph1gMGKUjupF
+   Zr7TFk8gz8AAbRvsiHweOHTgMer8KaI5CTxAaO1A+SLiMAFPcDjRVo8VC
+   9l8UbIukNMtyTdtcEHYR3uTbbju+YFSIeTqjRMZ9ZToiQrQ9dBhWP7H9f
+   vYhGvwWRyh3QeBYB902F86AxsVHdXF4tkIOetECdbn3jwRxngnxcslVst
+   Rc6nfw25VvAHOnommkztAMTnprKUhJHqYWUd9SYPWO5+Dk8qUmd7b3ukj
+   A1pNtxAgQlnEh224HjtEy4FdxzxZTVZrHUPzZswgcbWIveswLEJRoLXvH
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="339777492"
+X-IronPort-AV: E=Sophos;i="5.98,259,1673942400"; 
+   d="scan'208";a="339777492"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2023 05:52:33 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="768077784"
+X-IronPort-AV: E=Sophos;i="5.98,259,1673942400"; 
+   d="scan'208";a="768077784"
+Received: from julieape-mobl.amr.corp.intel.com (HELO [10.209.119.116]) ([10.209.119.116])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2023 05:52:32 -0700
+Message-ID: <646638fa-42e8-624a-068b-9c8a26ebfd98@linux.intel.com>
+Date: Tue, 14 Mar 2023 05:52:31 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v2] iommu/arm-smmu-qcom: Rework the logic finding the
- bypass quirk
-Content-Language: en-GB
-To: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
- Johan Hovold <johan@kernel.org>
-Cc: will@kernel.org, joro@8bytes.org, andersson@kernel.org,
- johan+linaro@kernel.org, steev@kali.org,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.4.2
+Subject: Re: [PATCH v2 1/2] PCI/ATS: Add a helper function to configure ATS
+ STU of a PF
+Content-Language: en-US
+To: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>,
+ Bjorn Helgaas <helgaas@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20230314105905.137241-1-manivannan.sadhasivam@linaro.org>
- <ZBBX0n4S2QBYB3Pi@hovoldconsulting.com> <20230314112620.GB137001@thinkpad>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230314112620.GB137001@thinkpad>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+ joro@8bytes.org, bhelgaas@google.com, robin.murphy@arm.com, will@kernel.org,
+ jean-philippe@linaro.org, darren@os.amperecomputing.com,
+ scott@os.amperecomputing.com
+References: <20230313211201.GA1540091@bhelgaas>
+ <6339c50a-8dfe-f3a2-63d7-504abd4e62f0@linux.intel.com>
+ <c7a68d5f-3b95-723f-f384-223fcbd6a877@os.amperecomputing.com>
+From: Sathyanarayanan Kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <c7a68d5f-3b95-723f-f384-223fcbd6a877@os.amperecomputing.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On 2023-03-14 11:26, Manivannan Sadhasivam wrote:
-> On Tue, Mar 14, 2023 at 12:17:38PM +0100, Johan Hovold wrote:
->> On Tue, Mar 14, 2023 at 04:29:05PM +0530, Manivannan Sadhasivam wrote:
->>> The logic used to find the quirky firmware that intercepts the writes to
->>> S2CR register to replace bypass type streams with a fault, and ignore the
->>> fault type, is not working with the firmware on newer SoCs like SC8280XP.
->>>
->>> The current logic uses the last stream mapping group (num_mapping_groups
->>> - 1) as an index for finding quirky firmware. But on SC8280XP, NUSMRG
->>> reports a value of 162 (possibly emulated by the hypervisor) and logic is
->>> not working for stream mapping groups > 128. (Note that the ARM SMMU
->>> architecture specification defines NUMSMRG in the range of 0-127).
->>>
->>> So the current logic that checks the (162-1)th S2CR entry fails to detect
->>> the quirky firmware on these devices and SMMU triggers invalid context
->>> fault for bypass streams.
->>>
->>> To fix this issue, rework the logic to find the first non-valid (free)
->>> stream mapping register group (SMR) within 128 groups and use that index
->>> to access S2CR for detecting the bypass quirk. If no free groups are
->>> available, then just skip the quirk detection.
->>>
->>> While at it, let's move the quirk detection logic to a separate function
->>> and change the local variable name from last_s2cr to free_s2cr.
->>>
->>> Reviewed-by: Bjorn Andersson <andersson@kernel.org>
->>> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
->>> ---
->>>
->>> Changes in v2:
->>>
->>> * Limited the check to 128 groups as per ARM SMMU spec's NUMSMRG range
->>> * Moved the quirk handling to its own function
->>> * Collected review tag from Bjorn
->>>
->>>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 48 ++++++++++++++++++----
->>>   1 file changed, 40 insertions(+), 8 deletions(-)
->>>
->>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>> index d1b296b95c86..48362d7ef451 100644
->>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>> @@ -266,25 +266,49 @@ static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
->>>   	return 0;
->>>   }
->>>   
->>> -static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
->>> +static void qcom_smmu_bypass_quirk(struct arm_smmu_device *smmu)
->>>   {
->>> -	unsigned int last_s2cr = ARM_SMMU_GR0_S2CR(smmu->num_mapping_groups - 1);
->>>   	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
->>> -	u32 reg;
->>> -	u32 smr;
->>> +	u32 free_s2cr;
->>> +	u32 reg, smr;
->>>   	int i;
->>>   
->>> +	/*
->>> +	 * Find the first non-valid (free) stream mapping register group and
->>> +	 * use that index to access S2CR for detecting the bypass quirk.
->>> +	 *
->>> +	 * Note that only the first 128 stream mapping groups are considered for
->>> +	 * the check. This is because the ARM SMMU architecture specification
->>> +	 * defines NUMSMRG (Number of Stream Mapping Register Groups) in the
->>> +	 * range of 0-127, but some Qcom platforms emulate more stream mapping
->>> +	 * groups with the help of hypervisor. And those groups don't exhibit
->>> +	 * the quirky behavior.
->>> +	 */
->>> +	for (i = 0; i < 128; i++) {
+
+
+On 3/14/23 3:08 AM, Ganapatrao Kulkarni wrote:
+> 
+> 
+> On 14-03-2023 04:00 am, Sathyanarayanan Kuppuswamy wrote:
+>> Hi Kulkarni,
 >>
->> This may now access registers beyond smmu->num_mapping_groups. Should
->> you not use the minimum of these two values here (and below)?
+>> On 3/13/23 2:12 PM, Bjorn Helgaas wrote:
+>>> On Mon, Feb 27, 2023 at 08:21:36PM -0800, Ganapatrao Kulkarni wrote:
+>>>> As per PCI specification (PCI Express Base Specification Revision
+>>>> 6.0, Section 10.5) both PF and VFs of a PCI EP are permitted to be enabled
+>>>> independently for ATS capability, however the STU(Smallest Translation
+>>>> Unit) is shared between PF and VFs. For VFs, it is hardwired to Zero and
+>>>> the associated PF's value applies to VFs.
+>>>>
+>>>> In the current code, the STU is being configured while enabling the PF ATS.
+>>>> Hence, it is not able to enable ATS for VFs, if it is not enabled on the
+>>>> associated PF already.
+>>>>
+>>>> Adding a function pci_ats_stu_configure(), which can be called to
+>>>> configure the STU during PF enumeration.
+>>>> Latter enumerations of VFs can successfully enable ATS independently.
+>>>
+>>> s/STU(Smallest/STU (Smallest/ (add space before paren)
+>>> s/Adding a function pci_ats_stu_configure()/Add pci_ats_stu_configure()/
+>>> s/Latter/Subsequent/
+>>>
+>>> Add blank line between paragraphs (it looks like "Latter enumerations"
+>>> is intended to start a new paragraph).
+>>>
+>>>> Signed-off-by: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>
+>>>
+>>> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+>>>
+>>> Given an ack for the IOMMU patch, I'd be happy to merge both (and I
+>>> can do the commit log tweaks); just let me know.
+>>>
+>>> One comment/question below.
+>>>
+>>>> ---
+>>>>   drivers/pci/ats.c       | 33 +++++++++++++++++++++++++++++++--
+>>>>   include/linux/pci-ats.h |  3 +++
+>>>>   2 files changed, 34 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+>>>> index f9cc2e10b676..1611bfa1d5da 100644
+>>>> --- a/drivers/pci/ats.c
+>>>> +++ b/drivers/pci/ats.c
+>>>> @@ -46,6 +46,35 @@ bool pci_ats_supported(struct pci_dev *dev)
+>>>>   }
+>>>>   EXPORT_SYMBOL_GPL(pci_ats_supported);
+>>>>   +/**
+>>>> + * pci_ats_stu_configure - Configure STU of a PF.
+>>>> + * @dev: the PCI device
+>>>> + * @ps: the IOMMU page shift
+>>>> + *
+>>>> + * Returns 0 on success, or negative on failure.
+>>>> + */
+>>>> +int pci_ats_stu_configure(struct pci_dev *dev, int ps)
+>>>> +{
+>>>> +    u16 ctrl;
+>>>> +
+>>>> +    if (dev->ats_enabled || dev->is_virtfn)
+>>>> +        return 0;
+>>>
+>>> I might return an error for the VF case on the assumption that it's
+>>> likely an error in the caller.  I guess one could argue that it
+>>> simplifies the caller if it doesn't have to check for PF vs VF.  But
+>>> the fact that STU is shared between PF and VFs is an important part of
+>>> understanding how ATS works, so the caller should be aware of the
+>>> distinction anyway.
+>>
+>> I have already asked this question. But let me repeat it.
+>>
+>> We don't have any checks for the PF case here. That means you can re-configure
+>> the STU as many times as you want until ATS is enabled in PF. So, if there are
+>> active VFs which uses this STU, can PF re-configure the STU at will?
 >>
 > 
-> Doh! yeah, you're right. Will fix it in v3.
+> IMO, Since STU is shared, programming it multiple times is not expected from callers code do it, however we can add below check to allow to program STU once from a PF.
+> 
+> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+> index 1611bfa1d5da..f7bb01068e18 100644
+> --- a/drivers/pci/ats.c
+> +++ b/drivers/pci/ats.c
+> @@ -60,6 +60,10 @@ int pci_ats_stu_configure(struct pci_dev *dev, int ps)
+>         if (dev->ats_enabled || dev->is_virtfn)
+>                 return 0;
+> 
+> +       /* Configured already */
+> +       if (dev->ats_stu)
+> +               return 0;
+> +
 
-FWIW I'd say it's probably best if the cfg_probe hook clamps 
-smmu->num_mapping_groups to the architectural maximum straight away, to 
-also prevent the main driver iterating off into the nonsensical area in 
-arm_smmu_device_reset() or the SMR allocator itself.
+Theoretically, you can re-configure STU as long as no one is using it. Instead of this check, is
+there a way to check whether there are active VMs which enables ATS?
 
-(Note that we don't support the weird EXSMRGS extension that appeared in 
-a late version of the architecture, but even if we did, that still 
-reports 128 for IDR0.NUMSMRG, and the extra extended SMRs live somewhere 
-completely different.)
+>         if (!pci_ats_supported(dev))
+>                 return -EINVAL;
+>>>
+>>>> +
+>>>> +    if (!pci_ats_supported(dev))
+>>>> +        return -EINVAL;
+>>>> +
+>>>> +    if (ps < PCI_ATS_MIN_STU)
+>>>> +        return -EINVAL;
+>>>> +
+>>>> +    dev->ats_stu = ps;
+>>>> +    pci_read_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, &ctrl);
+>>>> +    ctrl |= PCI_ATS_CTRL_STU(dev->ats_stu - PCI_ATS_MIN_STU);
+>>>> +    pci_write_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, ctrl);
+>>>> +
+>>>> +    return 0;
+>>>> +}
+>>>> +EXPORT_SYMBOL_GPL(pci_ats_stu_configure);
+>>>> +
+>>>>   /**
+>>>>    * pci_enable_ats - enable the ATS capability
+>>>>    * @dev: the PCI device
+>>>> @@ -68,8 +97,8 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
+>>>>           return -EINVAL;
+>>>>         /*
+>>>> -     * Note that enabling ATS on a VF fails unless it's already enabled
+>>>> -     * with the same STU on the PF.
+>>>> +     * Note that enabling ATS on a VF fails unless it's already
+>>>> +     * configured with the same STU on the PF.
+>>>>        */
+>>>>       ctrl = PCI_ATS_CTRL_ENABLE;
+>>>>       if (dev->is_virtfn) {
+>>>> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
+>>>> index df54cd5b15db..7d62a92aaf23 100644
+>>>> --- a/include/linux/pci-ats.h
+>>>> +++ b/include/linux/pci-ats.h
+>>>> @@ -8,6 +8,7 @@
+>>>>   /* Address Translation Service */
+>>>>   bool pci_ats_supported(struct pci_dev *dev);
+>>>>   int pci_enable_ats(struct pci_dev *dev, int ps);
+>>>> +int pci_ats_stu_configure(struct pci_dev *dev, int ps);
+>>>>   void pci_disable_ats(struct pci_dev *dev);
+>>>>   int pci_ats_queue_depth(struct pci_dev *dev);
+>>>>   int pci_ats_page_aligned(struct pci_dev *dev);
+>>>> @@ -16,6 +17,8 @@ static inline bool pci_ats_supported(struct pci_dev *d)
+>>>>   { return false; }
+>>>>   static inline int pci_enable_ats(struct pci_dev *d, int ps)
+>>>>   { return -ENODEV; }
+>>>> +static inline int pci_ats_stu_configure(struct pci_dev *d, int ps)
+>>>> +{ return -ENODEV; }
+>>>>   static inline void pci_disable_ats(struct pci_dev *d) { }
+>>>>   static inline int pci_ats_queue_depth(struct pci_dev *d)
+>>>>   { return -ENODEV; }
+>>>> -- 
+>>>> 2.38.1
+>>>>
+>>>>
+>>>> _______________________________________________
+>>>> linux-arm-kernel mailing list
+>>>> linux-arm-kernel@lists.infradead.org
+>>>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>>
+> 
+> Thanks,
+> Ganapat
+> 
 
-Thanks,
-Robin.
+-- 
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
