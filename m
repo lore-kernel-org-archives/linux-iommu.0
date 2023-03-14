@@ -1,169 +1,131 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C14C23A0
-	for <iommu@lists.linux.dev>; Tue, 14 Mar 2023 05:19:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678771185; x=1710307185;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=AgQ9bSzSPzcGMLNoWPFkB0EICC/cZjX30lB9FzLG2Pc=;
-  b=FqS0PNy2gViVtnQPiqw+UsQ7vsbqyu3b0bnUW+VrkfkdtVbNenyMjHOA
-   cKKf2yQayvHDdj3gLJmXU1W3uZuPmM6zxj8jUK6cvUY6q7Rl23BApJ590
-   UcihPl20Y1elye5ci1Wxi3NKPjVeM8y/lnzkK23Qm/Cl3++uwI7HhMAwf
-   +4e3vUXPeCl1IlcDUB65AqAdTpeO7gi9830E341x1lgBHqpd8ygk5YtUs
-   3r1+uMJdhpkLc0ZkQ5L+rIE8lorVdhtAKWAwFMGxTFmPvOilEGsFRXOhs
-   AzNHT+AsP8JfNq+4xgCvIwKYUZDCK7Rb6gN8meAzAI4Sxcg4JZVyVJwhn
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="402205412"
-X-IronPort-AV: E=Sophos;i="5.98,259,1673942400"; 
-   d="scan'208";a="402205412"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2023 22:19:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="709139698"
-X-IronPort-AV: E=Sophos;i="5.98,259,1673942400"; 
-   d="scan'208";a="709139698"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga008.jf.intel.com with ESMTP; 13 Mar 2023 22:19:42 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: iommu@lists.linux.dev
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH] iommu/vt-d: Remove unnecessary locking in intel_irq_remapping_alloc()
-Date: Tue, 14 Mar 2023 13:18:36 +0800
-Message-Id: <20230314051836.23817-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9324715A3
+	for <iommu@lists.linux.dev>; Tue, 14 Mar 2023 06:46:12 +0000 (UTC)
+Received: by mail-lf1-f47.google.com with SMTP id br6so472918lfb.11
+        for <iommu@lists.linux.dev>; Mon, 13 Mar 2023 23:46:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1678776370;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=LhbXxJ4vpNqee73M6/vRlz+kqj3z39OL4xPkGR3We6k=;
+        b=GoWSTZrQsLS4XERhO2xMfwRPzK1whV8/7rN0TtUVHDXr6O3pyEMAtvwjGOv+9k0X0b
+         fY3z2pXoNlajopNs9VcuylCpda5CLsWW/4neKFcFVm2ODY+63VagW6eessvxkCtqesVQ
+         VB+eCpTKR6i+TCPxyzXgoNWVwFnzIK34Ql+ePGeI4WNemHqDOofhVWXoMv/jIm8te4Xk
+         6CjPrigAmIAWdgkr+k7dMYjGOs5FsqyEH+1sodzPTVFrCx4V9Q4rlrZ4lh1S720e91Ji
+         BPH46ULT+WyKwZC7wq7xK0Hn7Z21UlMVjiRKiPJxDaMbD14Lr+ybYHCaNVj8Xj1D4MZ5
+         KrFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678776370;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=LhbXxJ4vpNqee73M6/vRlz+kqj3z39OL4xPkGR3We6k=;
+        b=zH9Q05DQQWssdV0AQuJPN/PqQ7xzanlEodFOm/V4tt872HQfsv+/cGUw8xL8sWJBH8
+         Avtj95rjNpk3gA6bwy48EFt6GlMLDGMmJa8TsCuD4Rk15hOsgNczuV8VIWHZoO5DlBQT
+         Ax1d29EtZzgXO4jSAai7egHU9tNdmtLrSkQzLQ40jfwRSTfOQTawsx3cIenkBoNj2WWw
+         oDxL7H0c/E689hf/NYwyEyEONxWiW/1H3zeYLOE/zqreSbqYeZyBsI00wTMBocbieCKB
+         5Dx+mQoN7Iv8WDqmh+uQVK4Ur4KLtK5+r+eyG/e5D+deVeZvWChgUXzVVq3Ysf5tvLBX
+         MTMA==
+X-Gm-Message-State: AO0yUKXQk6FLunGpGNMWfgWa/+MiqG+uNp/08JeOoIAFv0GPxKVKC979
+	d6xb9iU0IJl8zfn8IMF/mRhX9w==
+X-Google-Smtp-Source: AK7set+h2ndOB4p0HTaSRJEa23fwejgd1QQBXJIK8545r8GXILzHRgIM69D8cqAOd6eDDgave0Vz3Q==
+X-Received: by 2002:ac2:4191:0:b0:4e8:401a:3e2b with SMTP id z17-20020ac24191000000b004e8401a3e2bmr448737lfh.5.1678776370465;
+        Mon, 13 Mar 2023 23:46:10 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:6932:5570:6254:9edd? ([2a02:810d:15c0:828:6932:5570:6254:9edd])
+        by smtp.gmail.com with ESMTPSA id t13-20020a19ad0d000000b004db45096c99sm272438lfc.85.2023.03.13.23.46.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Mar 2023 23:46:09 -0700 (PDT)
+Message-ID: <4ac7e2e0-9b19-c911-7297-3510e55d6cfd@linaro.org>
+Date: Tue, 14 Mar 2023 07:46:07 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v8 1/7] dt-bindings: mediatek: mt8188: Add binding for MM
+ & INFRA IOMMU
+Content-Language: en-US
+To: =?UTF-8?B?WW9uZyBXdSAo5ZC05YuHKQ==?= <Yong.Wu@mediatek.com>,
+ "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+ "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+ "robh+dt@kernel.org" <robh+dt@kernel.org>
+Cc: "linux-mediatek@lists.infradead.org"
+ <linux-mediatek@lists.infradead.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ =?UTF-8?B?WW91bGluIFBlaSAo6KO05Y+L5p6XKQ==?= <youlin.pei@mediatek.com>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ =?UTF-8?B?SmlhbmppYW8gWmVuZyAo5pu+5YGl5aejKQ==?=
+ <Jianjiao.Zeng@mediatek.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ =?UTF-8?B?Q2hlbmdjaSBYdSAo6K645om/6LWQKQ==?= <Chengci.Xu@mediatek.com>,
+ =?UTF-8?B?WUYgV2FuZyAo546L5LqR6aOeKQ==?= <YF.Wang@mediatek.com>,
+ "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>,
+ "krzysztof.kozlowski+dt@linaro.org" <krzysztof.kozlowski+dt@linaro.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ =?UTF-8?B?TWluZ3l1YW4gTWEgKOmprOm4o+i/nCk=?= <Mingyuan.Ma@mediatek.com>,
+ "angelogioacchino.delregno@collabora.com"
+ <angelogioacchino.delregno@collabora.com>
+References: <20230307080555.14399-1-yong.wu@mediatek.com>
+ <20230307080555.14399-2-yong.wu@mediatek.com>
+ <388e2274-d46a-68a4-3e85-5bd597085041@linaro.org>
+ <aba29e7fd9a461f2d94c83cf2c7496521433847d.camel@mediatek.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <aba29e7fd9a461f2d94c83cf2c7496521433847d.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-The global rwsem dmar_global_lock was introduced by commit 3a5670e8ac932
-("iommu/vt-d: Introduce a rwsem to protect global data structures"). It
-is used to protect DMAR related global data from DMAR hotplug operations.
+On 14/03/2023 03:41, Yong Wu (吴勇) wrote:
+> Hi Krzysztof,
+> 
+> Thanks very much for your help review.
+> 
+> On Wed, 2023-03-08 at 11:35 +0100, Krzysztof Kozlowski wrote:
+>> On 07/03/2023 09:05, Yong Wu wrote:
+>>> From: "Chengci.Xu" <chengci.xu@mediatek.com>
+>>>
+>>> Add descriptions for mt8188 IOMMU which also use ARM Short-
+>>> Descriptor
+>>> translation table format.
+>>>
+>>> In mt8188, there are two smi-common HW and IOMMU, one is for
+>>> vdo(video
+>>> output), the other is for vpp(video processing pipe). They connects
+>>> with different smi-larbs, then some setting(larbid_remap) is
+>>> different.
+>>> Differentiate them with the compatible string.
+>>>
+>>> Something like this:
+>>>
+>>>   IOMMU(VDO)          IOMMU(VPP)
+>>>       |                   |
+>>> SMI_COMMON_VDO      SMI_COMMON_VPP
+>>>
+>>> ---------------     ----------------
+>>>   |     |    ...      |     |    ...
+>>> larb0 larb2  ...    larb1 larb3  ...
+>>>
+>>> We also have an IOMMU that is for infra master like PCIe.
+>>> And infra master don't have the larb and ports.
+>>>
+>>> Signed-off-by: Chengci.Xu <chengci.xu@mediatek.com>
+>>> Reviewed-by: Yong Wu <yong.wu@mediatek.com>
+>>> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>>
+>> Indeed, I missed broken checkpatch/DCO chain.
+> 
+> Just confirm what this means.
+> 
+> Do you mean MAINTAINERS need to be updated since we add a prefix
+> "mediatek," for the header file?
 
-Using dmar_global_lock in intel_irq_remapping_alloc() is unnecessary as
-the DMAR global data structures are not touched there. Remove it to avoid
-below lockdep warning.
+No it means, run checkpatch.
 
- ======================================================
- WARNING: possible circular locking dependency detected
- 6.3.0-rc2 #468 Not tainted
- ------------------------------------------------------
- swapper/0/1 is trying to acquire lock:
- ff1db4cb40178698 (&domain->mutex){+.+.}-{3:3},
-   at: __irq_domain_alloc_irqs+0x3b/0xa0
-
- but task is already holding lock:
- ffffffffa0c1cdf0 (dmar_global_lock){++++}-{3:3},
-   at: intel_iommu_init+0x58e/0x880
-
- which lock already depends on the new lock.
-
- the existing dependency chain (in reverse order) is:
-
- -> #1 (dmar_global_lock){++++}-{3:3}:
-        lock_acquire+0xd6/0x320
-        down_read+0x42/0x180
-        intel_irq_remapping_alloc+0xad/0x750
-        mp_irqdomain_alloc+0xb8/0x2b0
-        irq_domain_alloc_irqs_locked+0x12f/0x2d0
-        __irq_domain_alloc_irqs+0x56/0xa0
-        alloc_isa_irq_from_domain.isra.7+0xa0/0xe0
-        mp_map_pin_to_irq+0x1dc/0x330
-        setup_IO_APIC+0x128/0x210
-        apic_intr_mode_init+0x67/0x110
-        x86_late_time_init+0x24/0x40
-        start_kernel+0x41e/0x7e0
-        secondary_startup_64_no_verify+0xe0/0xeb
-
- -> #0 (&domain->mutex){+.+.}-{3:3}:
-        check_prevs_add+0x160/0xef0
-        __lock_acquire+0x147d/0x1950
-        lock_acquire+0xd6/0x320
-        __mutex_lock+0x9c/0xfc0
-        __irq_domain_alloc_irqs+0x3b/0xa0
-        dmar_alloc_hwirq+0x9e/0x120
-        iommu_pmu_register+0x11d/0x200
-        intel_iommu_init+0x5de/0x880
-        pci_iommu_init+0x12/0x40
-        do_one_initcall+0x65/0x350
-        kernel_init_freeable+0x3ca/0x610
-        kernel_init+0x1a/0x140
-        ret_from_fork+0x29/0x50
-
- other info that might help us debug this:
-
- Possible unsafe locking scenario:
-
-        CPU0                    CPU1
-        ----                    ----
-   lock(dmar_global_lock);
-                                lock(&domain->mutex);
-                                lock(dmar_global_lock);
-   lock(&domain->mutex);
-
-                *** DEADLOCK ***
-
-Fixes: 9dbb8e3452ab ("irqdomain: Switch to per-domain locking")
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/irq_remapping.c | 6 ------
- 1 file changed, 6 deletions(-)
-
-diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
-index 6d01fa078c36..df9e261af0b5 100644
---- a/drivers/iommu/intel/irq_remapping.c
-+++ b/drivers/iommu/intel/irq_remapping.c
-@@ -311,14 +311,12 @@ static int set_ioapic_sid(struct irte *irte, int apic)
- 	if (!irte)
- 		return -1;
- 
--	down_read(&dmar_global_lock);
- 	for (i = 0; i < MAX_IO_APICS; i++) {
- 		if (ir_ioapic[i].iommu && ir_ioapic[i].id == apic) {
- 			sid = (ir_ioapic[i].bus << 8) | ir_ioapic[i].devfn;
- 			break;
- 		}
- 	}
--	up_read(&dmar_global_lock);
- 
- 	if (sid == 0) {
- 		pr_warn("Failed to set source-id of IOAPIC (%d)\n", apic);
-@@ -338,14 +336,12 @@ static int set_hpet_sid(struct irte *irte, u8 id)
- 	if (!irte)
- 		return -1;
- 
--	down_read(&dmar_global_lock);
- 	for (i = 0; i < MAX_HPET_TBS; i++) {
- 		if (ir_hpet[i].iommu && ir_hpet[i].id == id) {
- 			sid = (ir_hpet[i].bus << 8) | ir_hpet[i].devfn;
- 			break;
- 		}
- 	}
--	up_read(&dmar_global_lock);
- 
- 	if (sid == 0) {
- 		pr_warn("Failed to set source-id of HPET block (%d)\n", id);
-@@ -1339,9 +1335,7 @@ static int intel_irq_remapping_alloc(struct irq_domain *domain,
- 	if (!data)
- 		goto out_free_parent;
- 
--	down_read(&dmar_global_lock);
- 	index = alloc_irte(iommu, &data->irq_2_iommu, nr_irqs);
--	up_read(&dmar_global_lock);
- 	if (index < 0) {
- 		pr_warn("Failed to allocate IRTE\n");
- 		kfree(data);
--- 
-2.34.1
+Best regards,
+Krzysztof
 
