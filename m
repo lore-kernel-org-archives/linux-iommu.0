@@ -1,53 +1,57 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2064.outbound.protection.outlook.com [40.107.243.64])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2127.outbound.protection.outlook.com [40.107.93.127])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF3A928EF;
-	Tue, 14 Mar 2023 08:54:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB1DE2F29
+	for <iommu@lists.linux.dev>; Tue, 14 Mar 2023 10:08:30 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=H0nbU5m9S22U3oWQ6NGp8GfjtmgxOLRIFuDzov7mMooQxYu+Cp5WZor9SZNA58LGhpQgRzchYqHrdmMzyYYOR+yqVRYzfX7iEH7sUO2nE00LbTelj/lai8IMvH582wwX0VFx4LEhrGJoBfHJlcnr5UaJNVWT7WoUh92YiF+FuWulax9BeU99OvAaMqTZfDt0+YjXJ2sPOAnHc/1KPbVYIcfG1sUQzIxjQ5p30ROTHDwpY4R86sl4QrmA6tMep1AtHB9Wn29jUT2spLFbWXvYexXdsK9GzaTZJNVEcs6r1qJTyx11A5BK2vy1QjBw4VtqxiL6/UlRy+J00OaHIBWg5g==
+ b=QxOfV7Dm7MAHtH1cZfRrmm0xGUDhlPi0S5sFmDpOt+MV5ho2xevKuAgqPPNKUnOet3difgOEmpIquoMwEn7tLy4zrizjRGA+PwmieyPNIRJawhyDx2lBCdfzcSjC0PYxtUnx8Mc/07q6CLPPgV8nnUV9hshSY1KqIHzoVf5K0XyxTJ7+iTVWdXIy+PjT8nH6sQLFLHGLhlL03QFyFO9EXCgA0ShciX1YULEbFgPP2F4TA/6GkAm9jswI2GTyjcALqT2OtJd3czoq7bLJEgYkL7a0pw7kvSASqF2x++DmXbrHFIaqTyXtd4F10sodNTJPsvqKry4U/WU9qK+m4qBogA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZmPfHINyHAWSuQum0cd5NwpzlatMyNP+dNSuhczot+0=;
- b=j0pM8MlS2V+OGfeXP2LAFrCxP+2svsyO5OU3RsSkSz0+UNMyUUT3haBlxeMwoZLhijPHRzk1+WW4C6R+R2jtG7mfyfXX+8k2L5oBU1Bh6dpaggYzSdNcw70AHLlfLttlKlVNqPtVnARv/DpsUEk8oQO7il3yFVC9CEw3IwrtCrFjDOU+Xeqsa5QutrGUPEMeIMlU49f7dNCGISseIUdoJtE/P6cCDbZARZZW23l6+/cQWMIPHgsx1qFIOGWvELNrzX0ZFUtEDfrEG9kdGSS5AWzZvkYYVD0OVby46BDZ48LiNccwu/uV8IC1nuczEKh/uK7/BYxb3Txnvc+WMWGm7Q==
+ bh=QqQYcrInXiPnfQrNejEPOkl+j/vzUJ2Lj+IqlnuUt9E=;
+ b=M87Hnuw6ulcHDX/Kv4Q4z5Teq6jcEJAjCjGXPYMOva5jgy+yRV0N2NXHmIuDv2eiaw5VbG5WhDj87vxPOkL/zY1WxEwjGxwKW5UmMtx9+qf9eBqWRQmChiziNox7M5aXXDG4yfdJSTwFdYmpAyp1Jz4f1dUTQC7vey2GGvwAewKrPbHd9Bdh1T9ttdZK1tkcF4jOCkgI06z3xYzvzwm+CCb5gq9tbCHvD0KV7FuC3tfeh1/z84jYgMlTpT6lizT9TXxmBDUS7Iu+eZzY/IR7IG/zXmSlBhcCDK25DI7L93ecHljnKUrCINx14vEvP4QtZn+f+IDUhw/B821Qeutkqg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ smtp.mailfrom=os.amperecomputing.com; dmarc=pass action=none
+ header.from=os.amperecomputing.com; dkim=pass
+ header.d=os.amperecomputing.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=os.amperecomputing.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZmPfHINyHAWSuQum0cd5NwpzlatMyNP+dNSuhczot+0=;
- b=lkgcU26dJJDuVtTo6mw6diWvchqDCffqlc9JHjxeU/aZiQqHZ0oekW0CAIGhLsGH7BGlEJIAW3BoyUodHuPLBqthTMqykmX2CHef2ty3u9fomr5g7gFt4OM2MFAEqyMprz0yLLxGy6NWkQKBJnjTI6F4P/KuuThtXXV4lsjOXe4=
+ bh=QqQYcrInXiPnfQrNejEPOkl+j/vzUJ2Lj+IqlnuUt9E=;
+ b=YmHTvlk5dmgY7cfd6TCEEnJhXc25WG6ABBe+/SicFPwpkLPIGQCwpPJnAzQnzrye0U2FXum6NQEQdaJdU5hlhm8t3/7QeYsxUCCImQEzoL1krZeOAgFYgBWjJfOQbjXG/Az1FJaZ5vc1Xj1ixUjeHrbDtZVoTm538nFh9p/AQlc=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM6PR12MB2843.namprd12.prod.outlook.com (2603:10b6:5:48::24) by
- SA1PR12MB5659.namprd12.prod.outlook.com (2603:10b6:806:236::7) with Microsoft
+ header.d=none;dmarc=none action=none header.from=os.amperecomputing.com;
+Received: from DM8PR01MB6824.prod.exchangelabs.com (2603:10b6:8:23::24) by
+ BY5PR01MB5924.prod.exchangelabs.com (2603:10b6:a03:1bc::32) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6178.24; Tue, 14 Mar 2023 08:54:34 +0000
-Received: from DM6PR12MB2843.namprd12.prod.outlook.com
- ([fe80::1185:1d60:8b6e:89d3]) by DM6PR12MB2843.namprd12.prod.outlook.com
- ([fe80::1185:1d60:8b6e:89d3%7]) with mapi id 15.20.6178.024; Tue, 14 Mar 2023
- 08:54:34 +0000
-Message-ID: <2e14e654-e4f1-8c4a-a0ac-60f5e036659a@amd.com>
-Date: Tue, 14 Mar 2023 19:54:25 +1100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH 6.2 073/211] swiotlb: mark swiotlb_memblock_alloc() as
- __init
+ 15.20.6178.26; Tue, 14 Mar 2023 10:08:25 +0000
+Received: from DM8PR01MB6824.prod.exchangelabs.com
+ ([fe80::fc8b:5e5e:a850:7f0a]) by DM8PR01MB6824.prod.exchangelabs.com
+ ([fe80::fc8b:5e5e:a850:7f0a%7]) with mapi id 15.20.6178.024; Tue, 14 Mar 2023
+ 10:08:25 +0000
+Message-ID: <c7a68d5f-3b95-723f-f384-223fcbd6a877@os.amperecomputing.com>
+Date: Tue, 14 Mar 2023 15:38:16 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v2 1/2] PCI/ATS: Add a helper function to configure ATS
+ STU of a PF
 Content-Language: en-US
-To: Randy Dunlap <rdunlap@infradead.org>
-Cc: patches@lists.linux.dev, Christoph Hellwig <hch@lst.de>,
- iommu@lists.linux.dev, Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
- Sasha Levin <sashal@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org
-References: <20230310133718.689332661@linuxfoundation.org>
- <20230310133721.005935440@linuxfoundation.org>
-From: Alexey Kardashevskiy <aik@amd.com>
-In-Reply-To: <20230310133721.005935440@linuxfoundation.org>
+To: Sathyanarayanan Kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>,
+ Bjorn Helgaas <helgaas@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ joro@8bytes.org, bhelgaas@google.com, robin.murphy@arm.com, will@kernel.org,
+ jean-philippe@linaro.org, darren@os.amperecomputing.com,
+ scott@os.amperecomputing.com
+References: <20230313211201.GA1540091@bhelgaas>
+ <6339c50a-8dfe-f3a2-63d7-504abd4e62f0@linux.intel.com>
+From: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>
+In-Reply-To: <6339c50a-8dfe-f3a2-63d7-504abd4e62f0@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SY0PR01CA0011.ausprd01.prod.outlook.com
- (2603:10c6:10:1bb::8) To DM6PR12MB2843.namprd12.prod.outlook.com
- (2603:10b6:5:48::24)
+X-ClientProxiedBy: CH2PR07CA0024.namprd07.prod.outlook.com
+ (2603:10b6:610:20::37) To DM8PR01MB6824.prod.exchangelabs.com
+ (2603:10b6:8:23::24)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -55,117 +59,224 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB2843:EE_|SA1PR12MB5659:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6affb0fb-7cf1-40d8-b502-08db2469bb83
+X-MS-TrafficTypeDiagnostic: DM8PR01MB6824:EE_|BY5PR01MB5924:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5ea3c4dc-b420-413a-b60d-08db24740cce
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	5PR0u6TFqfrUplGFA+JUjDSl3XBNg3zWIFJzcjmbT1WA0PGwt9ExommaDAJ10uOh97jUf6riF1xsb0btN9xsILZi1ZOGHQHOkphczo3Ar0xf7VK90H6Mqv8FOIr5tfXUz4TpUpchN+48e2yTdxjlj8PexNgiPpNSBvcSEWhs+NhId2HiFXAcJZzg0mcc8YYgjWQXvKDoAavd4K6/xNwcJnd2UwhVke2bbyILw7BB95hl2+siExEfIME3RZ53Gz/2ChNbtL5PojzY4R0+P5nWfoqhExwJjCq4GAnas5ZKOjaTpWfSzMqADQeZZ8qw5p/x9/MA0fD7EvUuC6ky4EbP3DpdqfZZD2zh+ijUBFzS5W4/vD78v7WBjgj6EPPgMoxF+EvX8CbcdOJAxV2vSdMUrOFazJeARTOnRhE+1XsQHXn4SmWJz5nujopq7MTXYUTNiM8LEhHoRqk5j1Ot/yJRR2rWOj/8AepLxjMcEzlBkSK+bo+WfNvZ7CQGhgqThUWOtnpWsPVi0ULNKLcwV8LD5KL4CLTVzy++DJT7ZkIzE+JZsBvQCny8kr8ppl7FC75AVsQxOZbMnD6cxsPpABMZEeH8tEljkrCAV9BDcpfMV4D90lqBsVuT//CQ2ulfq+++FAlqH/arGAsBbUpD/FqCLfM66NzT3KwEoBukWfwJjpf5cFgxZidtJdChYGpDZSNXrJlSG6kKtQcjCj96Z5qy33nL7pLvKVFrPm+Xh7GUZP0=
+	o9PKpTAz1BMcNSZ/yd0xSBTkwNdda7j9cvWD6Xgnnc6QyKipQuGt+o7hapzbKTekzyY5RNME6dfrvO3QyGwjILhSAXgGgge4UVzrvblRp/d3bcIlfNzEHF7HgsDCGM5R5hOUwnKeFoSQS6w9xOVCt0km9Fe/m7hWf7/NcYRAVMnoiIRRRBhd6ZJR4NYAT4nmNJp1uKyGISfxFcyhk/4xXFst/udauMu0xc9yalPi/OK8StXS0KdBOrIFGfbrEES84QqzzoVi75VihbsS78K2G4fA2iioly4CIHSTUyZTi6xFkIiQTBsMItExkAk4+KwgxXn/TIvNbAAGqbReSGkc/rKnyuGkhtkqRYfTOA5rbY5TSu62sfey8oApuR+vaBMIXrzAUUZzUazF0aij23HnxL/DJij+EZjgX8N/uct70QxXjHCHDGwFpZnIEWqlfgj5uNs9oprmjtIecHA9O6bwyyh9lkgd0pF6hmNPx0AKAjJyvdUCKH+PSjQJzf1/piCucHBguoc0vEEu2Jo90iisL9nbr9VPExd9kW7Matv9+1wi1YFDFALtUKdLnKlFKBj6lgFHEPWFlV2ny9pdOcRH/D2NebJEZ94NbYQixzEzMB/6MuTZ6zsf3etXYQDl1QUCOb1ahgBLP6dHOuD06XHnsBr+tOJQ/Y189MDzL3tPsB+ISXrlhMhTHQHh9wfCww/N
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB2843.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(366004)(39860400002)(346002)(376002)(396003)(451199018)(5660300002)(36756003)(83380400001)(478600001)(26005)(6666004)(6506007)(6512007)(6486002)(53546011)(2616005)(8676002)(186003)(66556008)(4326008)(66476007)(316002)(8936002)(66946007)(6916009)(41300700001)(54906003)(31696002)(38100700002)(31686004)(2906002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR01MB6824.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(366004)(136003)(39850400004)(346002)(396003)(451199018)(478600001)(83380400001)(41300700001)(4326008)(66476007)(66556008)(66946007)(316002)(110136005)(8936002)(6666004)(107886003)(2616005)(53546011)(6512007)(6506007)(26005)(31696002)(86362001)(31686004)(186003)(2906002)(5660300002)(8676002)(7416002)(6486002)(966005)(38100700002)(43740500002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?R1VuZXVhU0J2cWlvWEIzVzRCSSsvenZxVnMwdG5hZ0lCQ2tyT2l2UlJKVVlw?=
- =?utf-8?B?c0xQZDZWamF6MVVtdFVrQ2VSSHcxY3V2VElzNXgzTlVDd0J3OGZGMUlRMmtU?=
- =?utf-8?B?dlUvOTBwMWlSa2lRQ21ycTlkZmVDZ3dTUWFnaklnMmNqVStubXA1WVczL2N5?=
- =?utf-8?B?L1ZzWVkxblg2MDNQRXhzdmdTSlp0a3NIY2hZSGR6dko0aXhYVnZXYlZObTZa?=
- =?utf-8?B?Tit1TnZTUjJvbFRkOEpCTkNQcnFjbG1nUVBESEdiSUdmRzRWRFlZY2hRY3hG?=
- =?utf-8?B?Y1AvQ2xQL1V1S0dnMnIwRm4wakIwYWk3RFlldUJMTXRDelRSOEd6OTc3UVRm?=
- =?utf-8?B?ZG5sSlBnV0FEZFhyblFmT3g1MkRBU3hPcXlHZW1pWlo4Ni9hakhFK1N4RXJh?=
- =?utf-8?B?a3VFUkdUMDBaQWlOOHRvWHhzVnY0UEdEUSt0N0Zqd0Ezd2NiMFRJSVErQU9E?=
- =?utf-8?B?VXR6M1A2K3IraEhpVFJOa3gyeFkxa2h6M2hsdTd1QXdwUE5DQnp6dVA4eW1w?=
- =?utf-8?B?R08rTTM4OEpJVjBwM2dxVUtidVhHN3h6QmNHbzBFMFVBVS9HTXdRSGU3TWg1?=
- =?utf-8?B?aVl2aW45L3BDUFNjeVdvY3U5Zks5aVUvTTNOSlNQMUhYVnZpUUtrbmdYVG04?=
- =?utf-8?B?VzhRY0s1WnlYU3hHbm9ma1lyOUdhc1p6S1VkaDZDQ1Z2TGdLbG0ySDZOTG1i?=
- =?utf-8?B?aTF6endYa1h0Z0xzQjd0emdOTXd2clFqamsrVzBJV0hrUFB4QzFlVmlVVExV?=
- =?utf-8?B?NXNsNmxhWklrQk5yQS9HSDhYY0IwdkRDb3MycWVWMWYrVkh0c0J3dFRkcTRx?=
- =?utf-8?B?eGJEYzVRN0xHN3Q1ZnNFUCtDK2xRVFpnTFBUNEdXM1hTMWZEWktBbHBnbk5x?=
- =?utf-8?B?aTZmcXRjc2E1Wmg1RDNhOVlLanJ0eTBSa3Q0L3FiK1BFVWtnYnZGR3VkRnQ4?=
- =?utf-8?B?MjdETit5eDdPYmMzTWNEN1A1MnhQVlR2aGNkNHJRSVBRZ21rTjRVckNuZ3JH?=
- =?utf-8?B?S2lhRjhlN3BCbVhxZGQ2WTl0ZUJuUllUUE9SL1FLaEEvT0ZKZ0FQSzlZdm5S?=
- =?utf-8?B?RHhWcllSUFlVMHlWTktQTXVqVG9wK3ZJSlRVQlpHYm41OHYwcHIzMzRRTEc1?=
- =?utf-8?B?Nm9tbnlhMEhRYnd6T0N1WnZ3MGdzMkFGajFYNjNaK1hLM1doWTNrSUlXL0E5?=
- =?utf-8?B?dCtSY2JFQmFvOHcrUG11WDUvSmpURkJ6Qi9TU0RiaFl5Z3JLOWd1MkpqSS83?=
- =?utf-8?B?bitjZHRBTVZWSWpwWmU2WWFqaEVON1F3cisyUXFTUUFmcWtQdHo3OHhTeld2?=
- =?utf-8?B?cC9kNElYUTFUSUJlQVNBVWlkWUdOSFNjOGZrelpQRCtVTkc1ZFBESkJMNFRy?=
- =?utf-8?B?QlVjUStZN21iUjFCaCtwSlA2RnlaZHNtaUw1V0FXRVRzM0k1cVcyT0VYYU1p?=
- =?utf-8?B?QW43bnpKNWFzMjJmakkzQWNUZHkwS29pUWtTY3VELzl1eGkzVUh6Z25XYk1S?=
- =?utf-8?B?bVhOZkNSUU5kR2pKQ1IxakdURTZyTndEeGJTVm93ZWxKZERoT1NwVWFNV09a?=
- =?utf-8?B?M1FOczJsV28yZVFsTnVLVm1POVZaMkRMNXZuZkQ4R2ZzUElPYnB6N0IycjIx?=
- =?utf-8?B?Q2xoRjM0MWU5dHJKR0dqcXlHc2RvL241TmRRZVhyT0FpbDdMZGpNRHgvVjFP?=
- =?utf-8?B?Y3BzaVlyM3hWdVdHeFZxMXdjVXBYbGxzNEtwV3hKNmlLdGtxbFZKMlBXekZN?=
- =?utf-8?B?UFZFNzV5cUZxc2dwMUhPR2YvdzJua2hSem9zR1RwNncweWtOK1NGS2ZzbHRz?=
- =?utf-8?B?Q2VuZ3R0dFhmZkIxdGM1eExWd3dOUU5XOHBLZHk0c0lKWjRvS1hIaXJaTGda?=
- =?utf-8?B?ZFFVVWhsczNtYzFCUzhCYzFPbnRmcDJMS0U2aXRweWlOM2k0M3hYeksxckJk?=
- =?utf-8?B?eUtueTBmWEk3dyt0QU94Y08zUmNsWDVaZWVBTktjbUU5WEloU09jbGVMZEtY?=
- =?utf-8?B?YjVGczcyTFUrVkJUZWdFWDdEWWZQbWlYYVlqZ1VQcmx2Nk1aOHd2QjRHbTNj?=
- =?utf-8?B?U2pETEtMNWNiRmdCaHJDbno4cGxlZTl2WEl4ckI3WkNkaFExZk1GUGQ1NWV3?=
- =?utf-8?Q?NLx7P0UplPzaAAuNdK7xs2nVJ?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6affb0fb-7cf1-40d8-b502-08db2469bb83
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB2843.namprd12.prod.outlook.com
+	=?utf-8?B?NHpvSDVNcHVCa1FnSTNhUEVLYkF1T2h5RzRiSHhCcjR1VExxTFZDQ3VsQ0c2?=
+ =?utf-8?B?UUFLMWZrR1p0ZC9DZnVBK0ZSd3prMzRidmc5YlFmWFZrTkExTFRXOFlLMWdm?=
+ =?utf-8?B?NGpuM0RsZVZJZTJmajJRc3NsZmRKQnRBNS8yaHpva3h0Y3ovTlVINHorY0pY?=
+ =?utf-8?B?NFc1SUNnWVg3c01KNlhjdmY1WDdscDRLaVM5bHphVW9NcXhCVWthbnpRTVhj?=
+ =?utf-8?B?OGczN2c5RGlkQTdJYkdVK0o0WXFpT05udkF1N2JlYk1HT2JVK25ocy9uODdr?=
+ =?utf-8?B?K095SC9qWVRlbXpMYkx0TFZpcFBMaEp6eitiTW5udktqRzIzaEpPOGRQdlpH?=
+ =?utf-8?B?T0REWjhWL1VqUEwrZ1pNVHlHWHFlRkUxbHNBL0tpRk1UaDNhMjVXR21CVGlS?=
+ =?utf-8?B?ZUh0SEJkU0tVeVJ3bzdDS0gybGI4a2ZnU1hXK29PMTczQmN3eFFzVWFNZXlk?=
+ =?utf-8?B?NFV2cENRckJBaTd1T1RHSHVwVllqTG9rRWtzQ1BSNG15Zm9iMEJLMTZjd3BL?=
+ =?utf-8?B?UUw4bDRTRU0wcWZXd2RKcXBESklZQWttU1VQVlNFRU1uU3Jsblk4U1FoRlox?=
+ =?utf-8?B?RmNob0tlVnNIVDlxWTFrZmxDdlRNajlsL3Y4TTZUbDZ5T2M1VXJMbHl3Mk9i?=
+ =?utf-8?B?M1RLcXJaSTBzYmkwWkR5a1FVN05rR1pxS1BGMnFVU2YwQk1acDI5ZzZPeURo?=
+ =?utf-8?B?YVM2RnMweHp4alFWYTNQbU02ZitkcDVCTmtlOWtyakExSVIzWnNuM2kwWC9P?=
+ =?utf-8?B?M1JSZXpRZXZ1cEtnMklMSk9XNlhUbUpPb3Q4NUJ4VTFUSGI1YmVnWFByY3B5?=
+ =?utf-8?B?cENudVhGRk4rOE9EK0hLM0hvek10bmcrMHVTaTRZazdYUDhXRTdUejNrejlm?=
+ =?utf-8?B?UmNvZzBRT3lvaWV4ckdSMFBadHRxczFoaHl0ZDV1ck9Ea3RZTGRqYzJleWVn?=
+ =?utf-8?B?eWFvMDh6MEVIdWtqOEt2MG1OVUV5U3I4YkRmWVhUYi95d21wTlRGMnFHdmgr?=
+ =?utf-8?B?d1dRTENiRkJhMGhoMS8zaW42MUJNUURZYm03Z1hmQzY2NzF3Y002RkxHM0dD?=
+ =?utf-8?B?bXdFNlZ3Q093UzlyQXhOUnlJVlM2c2xXVWtJblBHYjZSTzhOU3ZnVmtrYTU1?=
+ =?utf-8?B?aGx4Ui9GQ3lpV3ZuemJtRk9ydU5CTnlvd0k1WDYxa3h3endUTzZOblk0bVpo?=
+ =?utf-8?B?N0R3ZmVTTjlLbEorRWpSTUNwTG9weUNhWStCRmUrRytoa0FCS2lPaDhOV1NK?=
+ =?utf-8?B?blYrckMzQ1hESEh2aVJKVmlWUUdCVFpNdmF6YVU2VXQ4SzFyZHpPVVg1SlVv?=
+ =?utf-8?B?WHdjemJmcFlyUm5mZGdFejcySHdhN29JRzR3Z2JTUVBnSC9ScDJDS3A0dGtE?=
+ =?utf-8?B?MW92b0tXUWVvcUF1OVIwbDJpc05JUzFlRmxPY29qeVcycjBXRDBpY3pUYVdH?=
+ =?utf-8?B?VFBUVG04YnBmV0gyaXlXTE4rRkpoTXJwOHNEalFDc2kwSnY4elNtTG00Z0NB?=
+ =?utf-8?B?MWFOSTBISXQ4ZG96RzhRQkZRMTU4SGlnV2k5VUYzbFFFN2VxQkFXUHVNbmZk?=
+ =?utf-8?B?ZVoyVEZUMEFrVE5ObXlsVGtwVm1rRUdPUWh0bENMcjU0UGpwaE43eUhiVnp6?=
+ =?utf-8?B?NUZUN1pkUnZCanJieUJ5bjlqcmRmZ21WZWpQMmUwZkFDRExpL0ZIbWRabGxh?=
+ =?utf-8?B?aFllYXRleUhqbXVxeHhOb3BnWE9QVzhaNjlXUGRrZkZXNDJrQXhmTXhOeFM3?=
+ =?utf-8?B?bTYxM1AwVG1FV0lnMWY0Z0VQc3hiWTR6ZGtWRmtaeDNsb3BsS3lNMEd3T1lS?=
+ =?utf-8?B?cUhnY2NDZUFaTzc1ck9TWkJzZ256MnlpejYxeThYMS81cTNWOGpQM2NmelVh?=
+ =?utf-8?B?dGFwMHFEazdhV2ZQVzByRVd1ekpPYVYwNTFmVHFsTWM1R0ZhWTJybEgxdVky?=
+ =?utf-8?B?OUJpL0Y2Sm9QR0lWL3g3eXFuL2craGliYnUxL3RhOVRsQ3N1R0J4b1BJOFJ4?=
+ =?utf-8?B?YVpxbjE1UUNUU1N4MDJzZm9ZS1pBR1g5U1haditHK3JjdmJ3VHVUdE41OTd6?=
+ =?utf-8?B?NC9nRXFvVTJ2alRONEc2N2NudzFLampRT0NicEVTMEV5Q1V4Q3dRSml3d1dN?=
+ =?utf-8?B?M01YTldUTUZRZk02am5YUFdzZzBMWGs3ZWRhSkxhanZFUkpncmtEWjFqUXBh?=
+ =?utf-8?Q?yxP51BfFQPFJUlartcPzudVLHEWazTzXCNddD7wOaAlW?=
+X-OriginatorOrg: os.amperecomputing.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5ea3c4dc-b420-413a-b60d-08db24740cce
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR01MB6824.prod.exchangelabs.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Mar 2023 08:54:34.1850
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Mar 2023 10:08:25.4299
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-Id: 3bc2b170-fd94-476d-b0ce-4229bdc904a7
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XxCeqWdG54jKOO80oE0xXHMVallTiXkdA3QzxrziJFszcWU/n91nuoVlFyiuZStqREBdgFifafb3djiThVicpg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB5659
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4Huo/kAFudN9Xrzv8SJGxBemKaalQ7oRaRyE28eLQ/Oq3DQJ8IYs2kwJJWb4IVJ+JadxN8Xaw+bYzXAwjJU7CXgrqkCsm51h/KIxXeUdiw10rJ8jDnI4zkEVDvT4NZGz
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR01MB5924
 
 
 
-On 11/3/23 00:37, Greg Kroah-Hartman wrote:
-> From: Randy Dunlap <rdunlap@infradead.org>
+On 14-03-2023 04:00 am, Sathyanarayanan Kuppuswamy wrote:
+> Hi Kulkarni,
 > 
-> [ Upstream commit 9b07d27d0fbb7f7441aa986859a0f53ec93a0335 ]
+> On 3/13/23 2:12 PM, Bjorn Helgaas wrote:
+>> On Mon, Feb 27, 2023 at 08:21:36PM -0800, Ganapatrao Kulkarni wrote:
+>>> As per PCI specification (PCI Express Base Specification Revision
+>>> 6.0, Section 10.5) both PF and VFs of a PCI EP are permitted to be enabled
+>>> independently for ATS capability, however the STU(Smallest Translation
+>>> Unit) is shared between PF and VFs. For VFs, it is hardwired to Zero and
+>>> the associated PF's value applies to VFs.
+>>>
+>>> In the current code, the STU is being configured while enabling the PF ATS.
+>>> Hence, it is not able to enable ATS for VFs, if it is not enabled on the
+>>> associated PF already.
+>>>
+>>> Adding a function pci_ats_stu_configure(), which can be called to
+>>> configure the STU during PF enumeration.
+>>> Latter enumerations of VFs can successfully enable ATS independently.
+>>
+>> s/STU(Smallest/STU (Smallest/ (add space before paren)
+>> s/Adding a function pci_ats_stu_configure()/Add pci_ats_stu_configure()/
+>> s/Latter/Subsequent/
+>>
+>> Add blank line between paragraphs (it looks like "Latter enumerations"
+>> is intended to start a new paragraph).
+>>
+>>> Signed-off-by: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>
+>>
+>> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+>>
+>> Given an ack for the IOMMU patch, I'd be happy to merge both (and I
+>> can do the commit log tweaks); just let me know.
+>>
+>> One comment/question below.
+>>
+>>> ---
+>>>   drivers/pci/ats.c       | 33 +++++++++++++++++++++++++++++++--
+>>>   include/linux/pci-ats.h |  3 +++
+>>>   2 files changed, 34 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+>>> index f9cc2e10b676..1611bfa1d5da 100644
+>>> --- a/drivers/pci/ats.c
+>>> +++ b/drivers/pci/ats.c
+>>> @@ -46,6 +46,35 @@ bool pci_ats_supported(struct pci_dev *dev)
+>>>   }
+>>>   EXPORT_SYMBOL_GPL(pci_ats_supported);
+>>>   
+>>> +/**
+>>> + * pci_ats_stu_configure - Configure STU of a PF.
+>>> + * @dev: the PCI device
+>>> + * @ps: the IOMMU page shift
+>>> + *
+>>> + * Returns 0 on success, or negative on failure.
+>>> + */
+>>> +int pci_ats_stu_configure(struct pci_dev *dev, int ps)
+>>> +{
+>>> +	u16 ctrl;
+>>> +
+>>> +	if (dev->ats_enabled || dev->is_virtfn)
+>>> +		return 0;
+>>
+>> I might return an error for the VF case on the assumption that it's
+>> likely an error in the caller.  I guess one could argue that it
+>> simplifies the caller if it doesn't have to check for PF vs VF.  But
+>> the fact that STU is shared between PF and VFs is an important part of
+>> understanding how ATS works, so the caller should be aware of the
+>> distinction anyway.
 > 
-> swiotlb_memblock_alloc() calls memblock_alloc(), which calls
-> (__init) memblock_alloc_try_nid(). However, swiotlb_membloc_alloc()
-> can be marked as __init since it is only called by swiotlb_init_remap(),
-> which is already marked as __init. This prevents a modpost build
-> warning/error:
+> I have already asked this question. But let me repeat it.
 > 
-> WARNING: modpost: vmlinux.o: section mismatch in reference: swiotlb_memblock_alloc (section: .text) -> memblock_alloc_try_nid (section: .init.text)
-> WARNING: modpost: vmlinux.o: section mismatch in reference: swiotlb_memblock_alloc (section: .text) -> memblock_alloc_try_nid (section: .init.text)
+> We don't have any checks for the PF case here. That means you can re-configure
+> the STU as many times as you want until ATS is enabled in PF. So, if there are
+> active VFs which uses this STU, can PF re-configure the STU at will?
 > 
-> This fixes the build warning/error seen on ARM64, PPC64, S390, i386,
-> and x86_64.
 
-Did you do something special in your config to get these warnings? Or it 
-is your toolchain? I tested with whatever comes with Ubuntu2210 and 
-Fedora36 and neither printed the warning and I want to see those :-/ Thanks,
+IMO, Since STU is shared, programming it multiple times is not expected 
+from callers code do it, however we can add below check to allow to 
+program STU once from a PF.
 
+diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+index 1611bfa1d5da..f7bb01068e18 100644
+--- a/drivers/pci/ats.c
++++ b/drivers/pci/ats.c
+@@ -60,6 +60,10 @@ int pci_ats_stu_configure(struct pci_dev *dev, int ps)
+         if (dev->ats_enabled || dev->is_virtfn)
+                 return 0;
 
++       /* Configured already */
++       if (dev->ats_stu)
++               return 0;
++
+         if (!pci_ats_supported(dev))
+                 return -EINVAL;
+>>
+>>> +
+>>> +	if (!pci_ats_supported(dev))
+>>> +		return -EINVAL;
+>>> +
+>>> +	if (ps < PCI_ATS_MIN_STU)
+>>> +		return -EINVAL;
+>>> +
+>>> +	dev->ats_stu = ps;
+>>> +	pci_read_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, &ctrl);
+>>> +	ctrl |= PCI_ATS_CTRL_STU(dev->ats_stu - PCI_ATS_MIN_STU);
+>>> +	pci_write_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, ctrl);
+>>> +
+>>> +	return 0;
+>>> +}
+>>> +EXPORT_SYMBOL_GPL(pci_ats_stu_configure);
+>>> +
+>>>   /**
+>>>    * pci_enable_ats - enable the ATS capability
+>>>    * @dev: the PCI device
+>>> @@ -68,8 +97,8 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
+>>>   		return -EINVAL;
+>>>   
+>>>   	/*
+>>> -	 * Note that enabling ATS on a VF fails unless it's already enabled
+>>> -	 * with the same STU on the PF.
+>>> +	 * Note that enabling ATS on a VF fails unless it's already
+>>> +	 * configured with the same STU on the PF.
+>>>   	 */
+>>>   	ctrl = PCI_ATS_CTRL_ENABLE;
+>>>   	if (dev->is_virtfn) {
+>>> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
+>>> index df54cd5b15db..7d62a92aaf23 100644
+>>> --- a/include/linux/pci-ats.h
+>>> +++ b/include/linux/pci-ats.h
+>>> @@ -8,6 +8,7 @@
+>>>   /* Address Translation Service */
+>>>   bool pci_ats_supported(struct pci_dev *dev);
+>>>   int pci_enable_ats(struct pci_dev *dev, int ps);
+>>> +int pci_ats_stu_configure(struct pci_dev *dev, int ps);
+>>>   void pci_disable_ats(struct pci_dev *dev);
+>>>   int pci_ats_queue_depth(struct pci_dev *dev);
+>>>   int pci_ats_page_aligned(struct pci_dev *dev);
+>>> @@ -16,6 +17,8 @@ static inline bool pci_ats_supported(struct pci_dev *d)
+>>>   { return false; }
+>>>   static inline int pci_enable_ats(struct pci_dev *d, int ps)
+>>>   { return -ENODEV; }
+>>> +static inline int pci_ats_stu_configure(struct pci_dev *d, int ps)
+>>> +{ return -ENODEV; }
+>>>   static inline void pci_disable_ats(struct pci_dev *d) { }
+>>>   static inline int pci_ats_queue_depth(struct pci_dev *d)
+>>>   { return -ENODEV; }
+>>> -- 
+>>> 2.38.1
+>>>
+>>>
+>>> _______________________________________________
+>>> linux-arm-kernel mailing list
+>>> linux-arm-kernel@lists.infradead.org
+>>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
 > 
-> Fixes: 8d58aa484920 ("swiotlb: reduce the swiotlb buffer size on allocation failure")
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Alexey Kardashevskiy <aik@amd.com>
-> Cc: Christoph Hellwig <hch@lst.de>
-> Cc: iommu@lists.linux.dev
-> Cc: Mike Rapoport <rppt@kernel.org>
-> Cc: linux-mm@kvack.org
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->   kernel/dma/swiotlb.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index a34c38bbe28f1..ef3bc3a5bbed3 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -300,7 +300,8 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
->   	return;
->   }
->   
-> -static void *swiotlb_memblock_alloc(unsigned long nslabs, unsigned int flags,
-> +static void __init *swiotlb_memblock_alloc(unsigned long nslabs,
-> +		unsigned int flags,
->   		int (*remap)(void *tlb, unsigned long nslabs))
->   {
->   	size_t bytes = PAGE_ALIGN(nslabs << IO_TLB_SHIFT);
 
--- 
-Alexey
+Thanks,
+Ganapat
+
