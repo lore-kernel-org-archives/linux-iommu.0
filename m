@@ -1,111 +1,147 @@
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 460CEA939;
-	Tue, 14 Mar 2023 20:15:23 +0000 (UTC)
-Received: by mail-ed1-f49.google.com with SMTP id x13so19643683edd.1;
-        Tue, 14 Mar 2023 13:15:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678824921;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=iOERF+jCyt6cMLRNcuzDfYHf9edQe6iKfmTk13evlgE=;
-        b=AAj+e5IIgIccY1twGYsHPNoORZcdlYW3Rx1rQW/alPuaVuGooEwW2bykJEcIYTbFGt
-         OyDOEmDWuHvVGB9cCPI+DaKdclt+pSBfPRV0/zunyYa6S4bA36AT0jO63wQtE+Ihd87D
-         GLW5eq4pfVTn86QBtqYQVneVgR3McQ0YWojYD+LTg0WT5Kzl327rg8J6EUSUMqaeLNPI
-         y/JKNIHsDqZmeoT8u4/7Rjp+W1pzZy1sIaotANbKBGHnXRzJMA4a36FYaXszRB8a2+QL
-         3YYZhyyQ1Mkhcw1d/dcKfu+ggNpjRMdN4eXPIUSOSzh44CgJfNtwTC+XYAvm9LBXKeQO
-         QTDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678824921;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=iOERF+jCyt6cMLRNcuzDfYHf9edQe6iKfmTk13evlgE=;
-        b=gKR7u86Ghsd6kr6vHQOSPHOECuDHhBaadA+ZGEvc+KmvWSKeoYNNKiEddosDONacLk
-         g/8nG2HTNkPboYELpcspgRwQTydBWtiIbIVmTbkLYtEuyUW2Mi/ItAGt5/Tg/q1cyMqu
-         c2I26o7o4QNX62PVmhzlFdbM+LwFCWC4iZMDu7d4OyP37MYuzmEVV7NOlN3obLyQbWr0
-         HlW2+xcc9WFSnZU6zhdhbNigcJsyIUsURd6TMroJPvtKDes0l/v8xmTPmBL32Q4J7DVY
-         2pcbSLaH7MnfOqHrHw/GOvu07uvN1aI2wH5EuO/MS0WTZ8963RHOj/juVku9JjCC+m9m
-         4ArQ==
-X-Gm-Message-State: AO0yUKWWHmSVcMbVbIBqgwQx/8r5DFBQBLmt2okEpW3B1TUdmQ/vwNHw
-	1fQd2laCGLxhB9XTWrCt4Po=
-X-Google-Smtp-Source: AK7set/sMm0YjG7LDT1uBapw5l8BoDwtxlSY3JrUw3fv9um7gVJMKXwWuCWON77Fb1UYIhJnPAPx3w==
-X-Received: by 2002:a17:907:76ea:b0:928:9add:3f20 with SMTP id kg10-20020a17090776ea00b009289add3f20mr3871873ejc.61.1678824921286;
-        Tue, 14 Mar 2023 13:15:21 -0700 (PDT)
-Received: from jernej-laptop.localnet (82-149-1-233.dynamic.telemach.net. [82.149.1.233])
-        by smtp.gmail.com with ESMTPSA id jz14-20020a17090775ee00b00926f89e2213sm1527267ejc.190.2023.03.14.13.15.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Mar 2023 13:15:20 -0700 (PDT)
-From: Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To: mcgrof@kernel.org, Nick Alcock <nick.alcock@oracle.com>
-Cc: linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org,
- Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Chen-Yu Tsai <wens@csie.org>, Samuel Holland <samuel@sholland.org>,
- Philipp Zabel <p.zabel@pengutronix.de>, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH 07/27] iommu/sun50i: remove MODULE_LICENSE in non-modules
-Date: Tue, 14 Mar 2023 21:15:16 +0100
-Message-ID: <22999869.6Emhk5qWAg@jernej-laptop>
-In-Reply-To: <20230224150811.80316-8-nick.alcock@oracle.com>
-References:
- <20230224150811.80316-1-nick.alcock@oracle.com>
- <20230224150811.80316-8-nick.alcock@oracle.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F52E2CA6
+	for <iommu@lists.linux.dev>; Tue, 14 Mar 2023 21:17:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEB68C433EF;
+	Tue, 14 Mar 2023 21:17:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1678828661;
+	bh=G/tHROBbLosRdwkD3HnQ+KDGL8ERnNBNYYwwcSBmlnM=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=SIsDlJr6vwCZajryxKgx8JpvtrEJ3UXGk6m7S4iYNAPT3uStMQs6xQJ08hqULgaJa
+	 cII7DfIodlgNIeyHsfsGo052WFIOaONMsDsvsgxyCVtF2siZ99+Qa5OiF075tHtAvf
+	 HA841pv9Z61DetA7tZCDRDwWCQjvS+tgYppJ3bw4jft0drYyQhhClJCMv6dnKFSDoD
+	 64EjZ2yXK+oUZ35eIsF5JygpEkedPYZKWa+J3H0YDwY0t7thnLj7iMvUVnjcYXfeCM
+	 2AhEdFlVKrcBflr2W1NQJfp1x/zBM2kqykXEoFbUOpOpkMrMOzrTTvDX2gP9bqZ/78
+	 dF8AL6lMRmvlQ==
+Date: Tue, 14 Mar 2023 16:17:39 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Sathyanarayanan Kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc: Ganapatrao Kulkarni <gankulkarni@os.amperecomputing.com>,
+	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	joro@8bytes.org, bhelgaas@google.com, robin.murphy@arm.com,
+	will@kernel.org, jean-philippe@linaro.org,
+	darren@os.amperecomputing.com, scott@os.amperecomputing.com
+Subject: Re: [PATCH v2 1/2] PCI/ATS: Add a helper function to configure ATS
+ STU of a PF
+Message-ID: <20230314211739.GA1679724@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <63619dd6-8e59-89f1-8e3a-766ed9501f1d@linux.intel.com>
 
-Dne petek, 24. februar 2023 ob 16:07:51 CET je Nick Alcock napisal(a):
-> Since commit 8b41fc4454e ("kbuild: create modules.builtin without
-> Makefile.modbuiltin or tristate.conf"), MODULE_LICENSE declarations
-> are used to identify modules. As a consequence, uses of the macro
-> in non-modules will cause modprobe to misidentify their containing
-> object file as a module when it is not (false positives), and modprobe
-> might succeed rather than failing with a suitable error message.
+On Tue, Mar 14, 2023 at 11:12:11AM -0700, Sathyanarayanan Kuppuswamy wrote:
+> On 3/14/23 10:10 AM, Bjorn Helgaas wrote:
+> > On Tue, Mar 14, 2023 at 09:50:06AM -0700, Sathyanarayanan Kuppuswamy wrote:
+> >> On 3/14/23 9:02 AM, Bjorn Helgaas wrote:
+> >>> On Tue, Mar 14, 2023 at 08:06:07PM +0530, Ganapatrao Kulkarni wrote:
+> >>>> On 14-03-2023 06:22 pm, Sathyanarayanan Kuppuswamy wrote:
+> >>>>> On 3/14/23 3:08 AM, Ganapatrao Kulkarni wrote:
+> >>>>>> On 14-03-2023 04:00 am, Sathyanarayanan Kuppuswamy wrote:
+> >>>>>>> On 3/13/23 2:12 PM, Bjorn Helgaas wrote:
+> >>>>>>>> On Mon, Feb 27, 2023 at 08:21:36PM -0800, Ganapatrao Kulkarni wrote:
+> >>>>>>>>> As per PCI specification (PCI Express Base Specification
+> >>>>>>>>> Revision 6.0, Section 10.5) both PF and VFs of a PCI EP
+> >>>>>>>>> are permitted to be enabled independently for ATS
+> >>>>>>>>> capability, however the STU(Smallest Translation Unit) is
+> >>>>>>>>> shared between PF and VFs. For VFs, it is hardwired to
+> >>>>>>>>> Zero and the associated PF's value applies to VFs.
+> >>>>>>>>>
+> >>>>>>>>> In the current code, the STU is being configured while
+> >>>>>>>>> enabling the PF ATS.  Hence, it is not able to enable ATS
+> >>>>>>>>> for VFs, if it is not enabled on the associated PF
+> >>>>>>>>> already.
+> >>>>>>>>>
+> >>>>>>>>> Adding a function pci_ats_stu_configure(), which can be
+> >>>>>>>>> called to configure the STU during PF enumeration.  Latter
+> >>>>>>>>> enumerations of VFs can successfully enable ATS
+> >>>>>>>>> independently.
+> >>>
+> >>>>>>>>> @@ -46,6 +46,35 @@ bool pci_ats_supported(struct pci_dev *dev)
+> >>>>>>>>>    }
+> >>>>>>>>>    EXPORT_SYMBOL_GPL(pci_ats_supported);
+> >>>>>>>>>    +/**
+> >>>>>>>>> + * pci_ats_stu_configure - Configure STU of a PF.
+> >>>>>>>>> + * @dev: the PCI device
+> >>>>>>>>> + * @ps: the IOMMU page shift
+> >>>>>>>>> + *
+> >>>>>>>>> + * Returns 0 on success, or negative on failure.
+> >>>>>>>>> + */
+> >>>>>>>>> +int pci_ats_stu_configure(struct pci_dev *dev, int ps)
+> >>>>>>>>> +{
+> >>>>>>>>> +    u16 ctrl;
+> >>>>>>>>> +
+> >>>>>>>>> +    if (dev->ats_enabled || dev->is_virtfn)
+> >>>>>>>>> +        return 0;
+> >>>>>>>>
+> >>>>>>>> I might return an error for the VF case on the assumption
+> >>>>>>>> that it's likely an error in the caller.  I guess one could
+> >>>>>>>> argue that it simplifies the caller if it doesn't have to
+> >>>>>>>> check for PF vs VF.  But the fact that STU is shared between
+> >>>>>>>> PF and VFs is an important part of understanding how ATS
+> >>>>>>>> works, so the caller should be aware of the distinction
+> >>>>>>>> anyway.
+> >>>>>>>
+> >>>>>>> I have already asked this question. But let me repeat it.
+> >>>>>>>
+> >>>>>>> We don't have any checks for the PF case here. That means you
+> >>>>>>> can re-configure the STU as many times as you want until ATS
+> >>>>>>> is enabled in PF. So, if there are active VFs which uses this
+> >>>>>>> STU, can PF re-configure the STU at will?
+> >>>>>>
+> >>>>>> IMO, Since STU is shared, programming it multiple times is not expected from callers code do it, however we can add below check to allow to program STU once from a PF.
+> >>>>>>
+> >>>>>> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+> >>>>>> index 1611bfa1d5da..f7bb01068e18 100644
+> >>>>>> --- a/drivers/pci/ats.c
+> >>>>>> +++ b/drivers/pci/ats.c
+> >>>>>> @@ -60,6 +60,10 @@ int pci_ats_stu_configure(struct pci_dev *dev, int ps)
+> >>>>>>          if (dev->ats_enabled || dev->is_virtfn)
+> >>>>>>                  return 0;
+> >>>>>>
+> >>>>>> +       /* Configured already */
+> >>>>>> +       if (dev->ats_stu)
+> >>>>>> +               return 0;
+> >>>>>
+> >>>>> Theoretically, you can re-configure STU as long as no one is using
+> >>>>> it. Instead of this check, is there a way to check whether there
+> >>>>> are active VMs which enables ATS?
+> >>>>
+> >>>> Yes I agree, there is no limitation on how many times you write STU
+> >>>> bits, but practically it is happening while PF is enumerated.
+> >>>>
+> >>>> The usage of function pci_ats_stu_configure is almost
+> >>>> similar(subset) to pci_enable_ats and only difference is one does
+> >>>> ATS enable + STU program and another does only STU program.
+> >>>
+> >>> What would you think of removing the STU update feature from
+> >>> pci_enable_ats() so it always fails if pci_ats_stu_configure() has not
+> >>> been called, even when called on the PF, e.g.,
+> >>>
+> >>>   if (ps != pci_physfn(dev)->ats_stu)
+> >>>     return -EINVAL;
+> >>
+> >> If we are removing the STU update from pci_enable_ats(), why
+> >> even allow passing "ps (page shift)" parameter? IMO, we can assume that
+> >> for STU reconfigure, users will call pci_ats_stu_configure().
+> > 
+> > The reason to pass "ps" would be to verify that the STU the caller
+> > plans to use matches the actual STU.
 > 
-> So remove it in the files in this commit, none of which can be built as
-> modules.
-> 
-> Signed-off-by: Nick Alcock <nick.alcock@oracle.com>
-> Suggested-by: Luis Chamberlain <mcgrof@kernel.org>
-> Cc: Luis Chamberlain <mcgrof@kernel.org>
-> Cc: linux-modules@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Chen-Yu Tsai <wens@csie.org>
-> Cc: Jernej Skrabec <jernej.skrabec@gmail.com>
-> Cc: Samuel Holland <samuel@sholland.org>
-> Cc: Philipp Zabel <p.zabel@pengutronix.de>
-> Cc: iommu@lists.linux.dev
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-sunxi@lists.linux.dev
-> ---
->  drivers/iommu/sun50i-iommu.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
-> index 5b585eace3d4..63ac9d15b859 100644
-> --- a/drivers/iommu/sun50i-iommu.c
-> +++ b/drivers/iommu/sun50i-iommu.c
-> @@ -1077,4 +1077,3 @@ builtin_platform_driver_probe(sun50i_iommu_driver,
-> sun50i_iommu_probe); MODULE_DESCRIPTION("Allwinner H6 IOMMU driver");
->  MODULE_AUTHOR("Maxime Ripard <maxime@cerno.tech>");
->  MODULE_AUTHOR("zhuxianbin <zhuxianbin@allwinnertech.com>");
-> -MODULE_LICENSE("Dual BSD/GPL");
+> Do we really need to verify it? My thinking is, by introducing
+> pci_ats_stu_configure() we are already trying to decouple the STU config
+> from pci_enable_ats(). So why again check for it when enabling ATS?
 
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Yeah, maybe we don't need to.  I was thinking that STU would be
+configured by the host, while the caller of pci_enable_ats() for a VF
+might be in a guest, but I guess that's not the case, right?
 
-Best regards,
-Jernej
-
-
-
+Bjorn
