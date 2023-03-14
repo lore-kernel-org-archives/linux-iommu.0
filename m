@@ -1,158 +1,190 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5B0A28F69
-	for <iommu@lists.linux.dev>; Tue, 14 Mar 2023 15:25:31 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2FCF54B3;
-	Tue, 14 Mar 2023 08:26:14 -0700 (PDT)
-Received: from [10.57.91.139] (unknown [10.57.91.139])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 87A143F67D;
-	Tue, 14 Mar 2023 08:25:28 -0700 (PDT)
-Message-ID: <f718a517-c91a-0608-1d51-4edef8cc88cd@arm.com>
-Date: Tue, 14 Mar 2023 15:25:22 +0000
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94FFA8F69
+	for <iommu@lists.linux.dev>; Tue, 14 Mar 2023 15:50:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678809031; x=1710345031;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=lmj3zKUfjEw3Ftct0JN8uVNOHmN2vSM6YpYHRDqpHk8=;
+  b=OUxShvEFKT1LJiRZ4TCDZlU7DYbRj25s+GQqj28QyP5IbWS3BATstAw7
+   V6OJEIl7R4Pzvnv3YRqcdYHrcZCePxLLA4dqWcBeSegbVpV0zMvKKap9u
+   kBc8TWESFCsyHstxk/vztVDm4gqeKGJL0RgQovD9NK6pjoFLrf264KS1P
+   WjH0893PJx8lyRfb+CXV2DeSuHChGxdlisAcyXoY1j52r5NiA+1PYRq/D
+   NG+V/Kub3UppNIQ8ROzSzEQ0AcO7d/yciEVqgQLeKL2oC6IH07SR/Nj2H
+   OO6uSjB4HqqDHZ5qqNO3+zdVE7muUDoDrQp/dhJdFzi6erPxzcO2bx0Vu
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="339007316"
+X-IronPort-AV: E=Sophos;i="5.98,260,1673942400"; 
+   d="scan'208";a="339007316"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2023 08:50:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="709332223"
+X-IronPort-AV: E=Sophos;i="5.98,260,1673942400"; 
+   d="scan'208";a="709332223"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2023 08:50:29 -0700
+Date: Tue, 14 Mar 2023 08:54:24 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, Will Deacon
+ <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Kevin Tian
+ <kevin.tian@intel.com>, linux-kernel@vger.kernel.org,
+ jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH] iommu/vt-d: Remove unnecessary locking in
+ intel_irq_remapping_alloc()
+Message-ID: <20230314085424.3e6141d1@jacob-builder>
+In-Reply-To: <20230314051836.23817-1-baolu.lu@linux.intel.com>
+References: <20230314051836.23817-1-baolu.lu@linux.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v2] iommu/arm-smmu-qcom: Rework the logic finding the
- bypass quirk
-Content-Language: en-GB
-To: Bjorn Andersson <andersson@kernel.org>
-Cc: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
- Johan Hovold <johan@kernel.org>, will@kernel.org, joro@8bytes.org,
- johan+linaro@kernel.org, steev@kali.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20230314105905.137241-1-manivannan.sadhasivam@linaro.org>
- <ZBBX0n4S2QBYB3Pi@hovoldconsulting.com> <20230314112620.GB137001@thinkpad>
- <13b46d42-e497-8dd7-4785-f58447128a40@arm.com>
- <20230314132018.GC137001@thinkpad>
- <a81515c5-c88c-e3c2-2077-0a78b900bbe5@arm.com>
- <20230314143218.fl3hedg336iofv3n@ripper>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230314143218.fl3hedg336iofv3n@ripper>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 2023-03-14 14:32, Bjorn Andersson wrote:
-> On Tue, Mar 14, 2023 at 01:41:56PM +0000, Robin Murphy wrote:
->> On 2023-03-14 13:20, Manivannan Sadhasivam wrote:
->>> On Tue, Mar 14, 2023 at 11:58:24AM +0000, Robin Murphy wrote:
->>>> On 2023-03-14 11:26, Manivannan Sadhasivam wrote:
->>>>> On Tue, Mar 14, 2023 at 12:17:38PM +0100, Johan Hovold wrote:
->>>>>> On Tue, Mar 14, 2023 at 04:29:05PM +0530, Manivannan Sadhasivam wrote:
->>>>>>> The logic used to find the quirky firmware that intercepts the writes to
->>>>>>> S2CR register to replace bypass type streams with a fault, and ignore the
->>>>>>> fault type, is not working with the firmware on newer SoCs like SC8280XP.
->>>>>>>
->>>>>>> The current logic uses the last stream mapping group (num_mapping_groups
->>>>>>> - 1) as an index for finding quirky firmware. But on SC8280XP, NUSMRG
->>>>>>> reports a value of 162 (possibly emulated by the hypervisor) and logic is
->>>>>>> not working for stream mapping groups > 128. (Note that the ARM SMMU
->>>>>>> architecture specification defines NUMSMRG in the range of 0-127).
->>>>>>>
->>>>>>> So the current logic that checks the (162-1)th S2CR entry fails to detect
->>>>>>> the quirky firmware on these devices and SMMU triggers invalid context
->>>>>>> fault for bypass streams.
->>>>>>>
->>>>>>> To fix this issue, rework the logic to find the first non-valid (free)
->>>>>>> stream mapping register group (SMR) within 128 groups and use that index
->>>>>>> to access S2CR for detecting the bypass quirk. If no free groups are
->>>>>>> available, then just skip the quirk detection.
->>>>>>>
->>>>>>> While at it, let's move the quirk detection logic to a separate function
->>>>>>> and change the local variable name from last_s2cr to free_s2cr.
->>>>>>>
->>>>>>> Reviewed-by: Bjorn Andersson <andersson@kernel.org>
->>>>>>> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
->>>>>>> ---
->>>>>>>
->>>>>>> Changes in v2:
->>>>>>>
->>>>>>> * Limited the check to 128 groups as per ARM SMMU spec's NUMSMRG range
->>>>>>> * Moved the quirk handling to its own function
->>>>>>> * Collected review tag from Bjorn
->>>>>>>
->>>>>>>     drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 48 ++++++++++++++++++----
->>>>>>>     1 file changed, 40 insertions(+), 8 deletions(-)
->>>>>>>
->>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>>>>> index d1b296b95c86..48362d7ef451 100644
->>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>>>>> @@ -266,25 +266,49 @@ static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
->>>>>>>     	return 0;
->>>>>>>     }
->>>>>>> -static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
->>>>>>> +static void qcom_smmu_bypass_quirk(struct arm_smmu_device *smmu)
->>>>>>>     {
->>>>>>> -	unsigned int last_s2cr = ARM_SMMU_GR0_S2CR(smmu->num_mapping_groups - 1);
->>>>>>>     	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
->>>>>>> -	u32 reg;
->>>>>>> -	u32 smr;
->>>>>>> +	u32 free_s2cr;
->>>>>>> +	u32 reg, smr;
->>>>>>>     	int i;
->>>>>>> +	/*
->>>>>>> +	 * Find the first non-valid (free) stream mapping register group and
->>>>>>> +	 * use that index to access S2CR for detecting the bypass quirk.
->>>>>>> +	 *
->>>>>>> +	 * Note that only the first 128 stream mapping groups are considered for
->>>>>>> +	 * the check. This is because the ARM SMMU architecture specification
->>>>>>> +	 * defines NUMSMRG (Number of Stream Mapping Register Groups) in the
->>>>>>> +	 * range of 0-127, but some Qcom platforms emulate more stream mapping
->>>>>>> +	 * groups with the help of hypervisor. And those groups don't exhibit
->>>>>>> +	 * the quirky behavior.
->>>>>>> +	 */
->>>>>>> +	for (i = 0; i < 128; i++) {
->>>>>>
->>>>>> This may now access registers beyond smmu->num_mapping_groups. Should
->>>>>> you not use the minimum of these two values here (and below)?
->>>>>>
->>>>>
->>>>> Doh! yeah, you're right. Will fix it in v3.
->>>>
->>>> FWIW I'd say it's probably best if the cfg_probe hook clamps
->>>> smmu->num_mapping_groups to the architectural maximum straight away, to also
->>>> prevent the main driver iterating off into the nonsensical area in
->>>> arm_smmu_device_reset() or the SMR allocator itself.
->>>>
->>>
->>> We considered that also but Qcom purposefully extended the NUMSMRG for
->>> virtualization usecase and we do not have a clear picture of it.
->>
->> Whatever that supposed use-case may be, Linux does not support it, and
->> clearly isn't going to support it any time soon if we don't even know what
+Hi BaoLu,
+
+On Tue, 14 Mar 2023 13:18:36 +0800, Lu Baolu <baolu.lu@linux.intel.com>
+wrote:
+
+> The global rwsem dmar_global_lock was introduced by commit 3a5670e8ac932
+> ("iommu/vt-d: Introduce a rwsem to protect global data structures"). It
+> is used to protect DMAR related global data from DMAR hotplug operations.
 > 
-> Can you please elaborate on what it is that would prevent Linux to
-> handle hardware with more than 128 SMRs?
-
-https://developer.arm.com/documentation/ihi0062/latest
-
-I would expect actual hardware to follow the architecture (because it 
-would need to pass validation suites etc.). The architecture defines an 
-extension for supporting up to 1024 stream mapping groups, but that 
-works very differently.
-
-The SC8280XP DT claims this SMMU is compatible with a standard Arm 
-MMU-500, which definitely does not support more than 128 SMRs, so I have 
-no idea what the hypervisor might be up to.
-
->> it is. Therefore Linux does not need to accommodate this weirdness for the
->> foreseeable future, beyond simply making sure it doesn't cause any problems
->> for what Linux *does* support. It's bad enough that the emulation of
->> "normal" SMRs continues to violate the architecture, but I'm even more
->> uncomfortable letting the generic architecture driver poke at completely
->> non-architectural registers which don't even have the same behaviour as the
->> ones they're supposedly extending.
+> Using dmar_global_lock in intel_irq_remapping_alloc() is unnecessary as
+> the DMAR global data structures are not touched there. Remove it to avoid
+> below lockdep warning.
 > 
-> Afaict there's nothing special about the SMRs beyond 128 on this
-> platform...
+>  ======================================================
+>  WARNING: possible circular locking dependency detected
+>  6.3.0-rc2 #468 Not tainted
+>  ------------------------------------------------------
+>  swapper/0/1 is trying to acquire lock:
+>  ff1db4cb40178698 (&domain->mutex){+.+.}-{3:3},
+>    at: __irq_domain_alloc_irqs+0x3b/0xa0
+> 
+>  but task is already holding lock:
+>  ffffffffa0c1cdf0 (dmar_global_lock){++++}-{3:3},
+>    at: intel_iommu_init+0x58e/0x880
+> 
+>  which lock already depends on the new lock.
+> 
+>  the existing dependency chain (in reverse order) is:
+> 
+>  -> #1 (dmar_global_lock){++++}-{3:3}:
+>         lock_acquire+0xd6/0x320
+>         down_read+0x42/0x180
+>         intel_irq_remapping_alloc+0xad/0x750
+>         mp_irqdomain_alloc+0xb8/0x2b0
+>         irq_domain_alloc_irqs_locked+0x12f/0x2d0
+>         __irq_domain_alloc_irqs+0x56/0xa0
+>         alloc_isa_irq_from_domain.isra.7+0xa0/0xe0
+>         mp_map_pin_to_irq+0x1dc/0x330
+>         setup_IO_APIC+0x128/0x210
+>         apic_intr_mode_init+0x67/0x110
+>         x86_late_time_init+0x24/0x40
+>         start_kernel+0x41e/0x7e0
+>         secondary_startup_64_no_verify+0xe0/0xeb
+> 
+>  -> #0 (&domain->mutex){+.+.}-{3:3}:
+>         check_prevs_add+0x160/0xef0
+>         __lock_acquire+0x147d/0x1950
+>         lock_acquire+0xd6/0x320
+>         __mutex_lock+0x9c/0xfc0
+>         __irq_domain_alloc_irqs+0x3b/0xa0
+>         dmar_alloc_hwirq+0x9e/0x120
+>         iommu_pmu_register+0x11d/0x200
+>         intel_iommu_init+0x5de/0x880
+>         pci_iommu_init+0x12/0x40
+>         do_one_initcall+0x65/0x350
+>         kernel_init_freeable+0x3ca/0x610
+>         kernel_init+0x1a/0x140
+>         ret_from_fork+0x29/0x50
+> 
+>  other info that might help us debug this:
+> 
+>  Possible unsafe locking scenario:
+> 
+>         CPU0                    CPU1
+>         ----                    ----
+>    lock(dmar_global_lock);
+>                                 lock(&domain->mutex);
+>                                 lock(dmar_global_lock);
+>    lock(&domain->mutex);
+> 
+>                 *** DEADLOCK ***
+> 
+> Fixes: 9dbb8e3452ab ("irqdomain: Switch to per-domain locking")
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  drivers/iommu/intel/irq_remapping.c | 6 ------
+>  1 file changed, 6 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/irq_remapping.c
+> b/drivers/iommu/intel/irq_remapping.c index 6d01fa078c36..df9e261af0b5
+> 100644 --- a/drivers/iommu/intel/irq_remapping.c
+> +++ b/drivers/iommu/intel/irq_remapping.c
+> @@ -311,14 +311,12 @@ static int set_ioapic_sid(struct irte *irte, int
+> apic) if (!irte)
+>  		return -1;
+>  
+> -	down_read(&dmar_global_lock);
+>  	for (i = 0; i < MAX_IO_APICS; i++) {
+>  		if (ir_ioapic[i].iommu && ir_ioapic[i].id == apic) {
+>  			sid = (ir_ioapic[i].bus << 8) |
+> ir_ioapic[i].devfn; break;
+>  		}
+>  	}
+> -	up_read(&dmar_global_lock);
+>  
+>  	if (sid == 0) {
+>  		pr_warn("Failed to set source-id of IOAPIC (%d)\n",
+> apic); @@ -338,14 +336,12 @@ static int set_hpet_sid(struct irte *irte,
+> u8 id) if (!irte)
+>  		return -1;
+>  
+> -	down_read(&dmar_global_lock);
+>  	for (i = 0; i < MAX_HPET_TBS; i++) {
+>  		if (ir_hpet[i].iommu && ir_hpet[i].id == id) {
+>  			sid = (ir_hpet[i].bus << 8) | ir_hpet[i].devfn;
+>  			break;
+>  		}
+>  	}
+> -	up_read(&dmar_global_lock);
+>  
+>  	if (sid == 0) {
+>  		pr_warn("Failed to set source-id of HPET block (%d)\n",
+> id); @@ -1339,9 +1335,7 @@ static int intel_irq_remapping_alloc(struct
+> irq_domain *domain, if (!data)
+>  		goto out_free_parent;
+>  
+> -	down_read(&dmar_global_lock);
+>  	index = alloc_irte(iommu, &data->irq_2_iommu, nr_irqs);
+> -	up_read(&dmar_global_lock);
+>  	if (index < 0) {
+>  		pr_warn("Failed to allocate IRTE\n");
+>  		kfree(data);
+Reviewed-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 
-If that were true then why would this patch be a thing at all? :/
+slightly beyond the scope of this, do we need to take dmar_global_lock
+below? shouldn't it be in single threaded context?
+
+	down_write(&dmar_global_lock);
+	ret = dmar_dev_scope_init();
+	up_write(&dmar_global_lock);
+
+	return ret;
+}
+rootfs_initcall(ir_dev_scope_init);
 
 Thanks,
-Robin.
+
+Jacob
