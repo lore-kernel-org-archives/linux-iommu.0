@@ -1,111 +1,166 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A25A96123
-	for <iommu@lists.linux.dev>; Wed, 15 Mar 2023 19:22:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1678908132;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=i+mGYYulQUCelnuxj3PjgHCArB8Ei0mGxcOTGUHa8as=;
-	b=dNbhp/OnaAWIORaF7oElPWKaOr5aGKArDcOw+nkdxcj+Xuv6F9EthfJ8CkkZa6ErqIbUM1
-	MgJypeAvIrcMIZ9+f947C/DsXNnNCqvfSijYNz9LVGsyN/Rh3uQxtEtFRYIXUPjfDzNWwF
-	ezpXKo27OHi2yASR+THxzI9FD/jrHxU=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-22-MIUoPsYsPhadvaVkGwszxA-1; Wed, 15 Mar 2023 15:22:11 -0400
-X-MC-Unique: MIUoPsYsPhadvaVkGwszxA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 45D673801F4E;
-	Wed, 15 Mar 2023 19:22:10 +0000 (UTC)
-Received: from desnesn.remote.csb (ovpn-116-3.gru2.redhat.com [10.97.116.3])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id DB1E340C6E69;
-	Wed, 15 Mar 2023 19:22:07 +0000 (UTC)
-From: Desnes Nunes <desnesn@redhat.com>
-To: iommu@lists.linux.dev,
-	linux-scsi@vger.kernel.org,
-	storagedev@microchip.com,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1C8C7460;
+	Wed, 15 Mar 2023 21:47:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678916833; x=1710452833;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=cHzP/3Tzs/wORixRirXSEWJE6PYaNKurlGF+KU1RKV8=;
+  b=WJ+8Wk09AcGeT/eFJ7FgD2efy1oPn1aRK8GX7wEW+svWzJdsKCsYe3fl
+   VCqRShqYyEHkD19BLPUztcyQqBOdRW8DYgxTu/0gZBM0kjd3lmDt5sK7Z
+   UWAkBhM8INu+gDhSnJzPT3JI3qMgqvsvhwq494v8bE+5CHjsAUUxjwzcu
+   6EZp7UJWvvT4LuwnaEaTdsAiVqxMqkJiIdjwYob0ggqXW1QvY2BwhLL2R
+   dKlOW1Y7nhhcmsPTgujQQ5Y6rvD6TcnRdmtpCgX3+T6qn04nZSHYMo19V
+   G33MmD8vtun3+8zhOPnqgbyya5r+KooXOyzHFZAMgrSeI3J5b50G/5nik
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="337842527"
+X-IronPort-AV: E=Sophos;i="5.98,262,1673942400"; 
+   d="scan'208";a="337842527"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2023 14:47:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="748604027"
+X-IronPort-AV: E=Sophos;i="5.98,262,1673942400"; 
+   d="scan'208";a="748604027"
+Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 15 Mar 2023 14:47:09 -0700
+Received: from kbuild by b613635ddfff with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1pcYxg-00083T-2T;
+	Wed, 15 Mar 2023 21:47:08 +0000
+Date: Thu, 16 Mar 2023 05:46:29 +0800
+From: kernel test robot <lkp@intel.com>
+To: Desnes Nunes <desnesn@redhat.com>, iommu@lists.linux.dev,
+	linux-scsi@vger.kernel.org, storagedev@microchip.com,
 	linux-kernel@vger.kernel.org
-Cc: hch@lst.de,
-	martin.petersen@oracle.com,
-	don.brace@microchip.com,
-	m.szyprowski@samsung.com,
-	robin.murphy@arm.com,
-	jejb@linux.ibm.com,
-	jsnitsel@redhat.com,
+Cc: oe-kbuild-all@lists.linux.dev, hch@lst.de, martin.petersen@oracle.com,
+	don.brace@microchip.com, m.szyprowski@samsung.com,
+	robin.murphy@arm.com, jejb@linux.ibm.com, jsnitsel@redhat.com,
 	Desnes Nunes <desnesn@redhat.com>
-Subject: [PATCH 3/3] scsi: smartpqi: fix DMA overlapping mappings asymmetry
-Date: Wed, 15 Mar 2023 16:21:30 -0300
-Message-Id: <20230315192130.970021-4-desnesn@redhat.com>
-In-Reply-To: <20230315192130.970021-1-desnesn@redhat.com>
-References: <20230315192130.970021-1-desnesn@redhat.com>
+Subject: Re: [PATCH 2/3] dma-debug: add cacheline to user/kernel space dump
+ messages
+Message-ID: <202303160548.ReyuTsGD-lkp@intel.com>
+References: <20230315192130.970021-3-desnesn@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230315192130.970021-3-desnesn@redhat.com>
 
-Currently, pqi_keep_device_offline() calls pqi_build_raid_path_request()
-(i.e., a wrapper to pqi_map_single()), but there isn't a pqi_pci_unmap()
-call in pqi_keep_device_offline(). Hence, this is flaged as an API viola-
-tion due to the overlapping mapping of the physical address.
+Hi Desnes,
 
-This patch fixes following warning:
+Thank you for the patch! Perhaps something to improve:
 
-  DMA-API: smartpqi 0000:43:00.0: cacheline tracking EEXIST, overlapping
-  mappings aren't supported
-  WARNING: CPU: 0 PID: 15 at kernel/dma/debug.c:570
-  add_dma_entry+0x1f6/0x2f0
-  CPU: 0 PID: 15 Comm: kworker/0:1 Not tainted 6.3.0-rc1-linux #1
-  Call Trace:
-   <TASK>
-   dma_map_page_attrs+0x6f/0xa0
-   pqi_map_single+0xaa/0x160 [smartpqi]
-   pqi_keep_device_offline+0xaf/0x160 [smartpqi]
-   ? dma_unmap_page_attrs+0x1a1/0x1e0
-   ? pqi_identify_physical_device.constprop.0+0xd3/0xe0 [smartpqi]
-   pqi_update_scsi_devices+0x284/0x7e0 [smartpqi]
-   pqi_scan_scsi_devices+0x87/0xe0 [smartpqi]
-   pqi_ctrl_init+0x725/0xa60 [smartpqi]
-   pqi_pci_probe+0xa7/0x130 [smartpqi]
-   local_pci_probe+0x46/0xa0
-   work_for_cpu_fn+0x16/0x20
-   process_one_work+0x2bf/0x670
-   ? __pfx_worker_thread+0x10/0x10
-   worker_thread+0x1d1/0x3b0
-   ? __pfx_worker_thread+0x10/0x10
-   kthread+0xf3/0x120
-   ? __pfx_kthread+0x10/0x10
-   ret_from_fork+0x2c/0x50
-   </TASK>
+[auto build test WARNING on jejb-scsi/for-next]
+[also build test WARNING on mkp-scsi/for-next linus/master hch-configfs/for-next v6.3-rc2 next-20230315]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Fixes: be76f90668d8 ("scsi: smartpqi: Add TEST UNIT READY check for SANITIZE operation")
-Signed-off-by: Desnes Nunes <desnesn@redhat.com>
----
- drivers/scsi/smartpqi/smartpqi_init.c | 2 ++
- 1 file changed, 2 insertions(+)
+url:    https://github.com/intel-lab-lkp/linux/commits/Desnes-Nunes/dma-debug-small-dma_debug_entry-s-comment-and-variable-name-updates/20230316-032542
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jejb/scsi.git for-next
+patch link:    https://lore.kernel.org/r/20230315192130.970021-3-desnesn%40redhat.com
+patch subject: [PATCH 2/3] dma-debug: add cacheline to user/kernel space dump messages
+config: m68k-allyesconfig (https://download.01.org/0day-ci/archive/20230316/202303160548.ReyuTsGD-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/ae3f8fdd17c54b837d476952733456723c472ed8
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Desnes-Nunes/dma-debug-small-dma_debug_entry-s-comment-and-variable-name-updates/20230316-032542
+        git checkout ae3f8fdd17c54b837d476952733456723c472ed8
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=m68k olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash kernel/dma/
 
-diff --git a/drivers/scsi/smartpqi/smartpqi_init.c b/drivers/scsi/smartpqi/smartpqi_init.c
-index 49a8f91810b6..6fca497ca605 100644
---- a/drivers/scsi/smartpqi/smartpqi_init.c
-+++ b/drivers/scsi/smartpqi/smartpqi_init.c
-@@ -1726,6 +1726,8 @@ static bool pqi_keep_device_offline(struct pqi_ctrl_info *ctrl_info,
- 
- 	rc = pqi_submit_raid_request_synchronous(ctrl_info, &request.header, 0, &error_info);
- 
-+	pqi_pci_unmap(ctrl_info->pci_dev, request.sg_descriptors, 1, dir);
-+
- 	if (rc)
- 		goto out; /* Assume not offline */
- 
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202303160548.ReyuTsGD-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+   In file included from include/linux/device.h:15,
+                    from include/linux/dma-mapping.h:7,
+                    from include/linux/dma-map-ops.h:9,
+                    from kernel/dma/debug.c:12:
+   kernel/dma/debug.c: In function 'debug_dma_dump_mappings':
+>> kernel/dma/debug.c:537:42: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 9 has type 'phys_addr_t' {aka 'unsigned int'} [-Wformat=]
+     537 |                                          "%s idx %d P=%llx N=%lx D=%llx L=%llx cln=%llx %s %s\n",
+         |                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
+     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
+         |                              ^~~
+   include/linux/dev_printk.h:150:58: note: in expansion of macro 'dev_fmt'
+     150 |         dev_printk_index_wrap(_dev_info, KERN_INFO, dev, dev_fmt(fmt), ##__VA_ARGS__)
+         |                                                          ^~~~~~~
+   kernel/dma/debug.c:536:33: note: in expansion of macro 'dev_info'
+     536 |                                 dev_info(entry->dev,
+         |                                 ^~~~~~~~
+   kernel/dma/debug.c:537:87: note: format string is defined here
+     537 |                                          "%s idx %d P=%llx N=%lx D=%llx L=%llx cln=%llx %s %s\n",
+         |                                                                                    ~~~^
+         |                                                                                       |
+         |                                                                                       long long unsigned int
+         |                                                                                    %x
+   kernel/dma/debug.c: In function 'dump_show':
+   kernel/dma/debug.c:568:87: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 11 has type 'phys_addr_t' {aka 'unsigned int'} [-Wformat=]
+     568 |                                    "%s %s %s idx %d P=%llx N=%lx D=%llx L=%llx cln=%llx %s %s\n",
+         |                                                                                    ~~~^
+         |                                                                                       |
+         |                                                                                       long long unsigned int
+         |                                                                                    %x
+   ......
+     574 |                                    cln, dir2name[entry->direction],
+         |                                    ~~~                                                 
+         |                                    |
+         |                                    phys_addr_t {aka unsigned int}
+
+
+vim +537 kernel/dma/debug.c
+
+   518	
+   519	/*
+   520	 * Dump mappings entries on kernel space for debugging purposes
+   521	 */
+   522	void debug_dma_dump_mappings(struct device *dev)
+   523	{
+   524		int idx;
+   525		phys_addr_t cln;
+   526	
+   527		for (idx = 0; idx < HASH_SIZE; idx++) {
+   528			struct hash_bucket *bucket = &dma_entry_hash[idx];
+   529			struct dma_debug_entry *entry;
+   530			unsigned long flags;
+   531	
+   532			spin_lock_irqsave(&bucket->lock, flags);
+   533			list_for_each_entry(entry, &bucket->list, list) {
+   534				if (!dev || dev == entry->dev) {
+   535					cln = to_cacheline_number(entry);
+   536					dev_info(entry->dev,
+ > 537						 "%s idx %d P=%llx N=%lx D=%llx L=%llx cln=%llx %s %s\n",
+   538						 type2name[entry->type], idx,
+   539						 phys_addr(entry), entry->pfn,
+   540						 entry->dev_addr, entry->size,
+   541						 cln, dir2name[entry->direction],
+   542						 maperr2str[entry->map_err_type]);
+   543				}
+   544			}
+   545			spin_unlock_irqrestore(&bucket->lock, flags);
+   546	
+   547			cond_resched();
+   548		}
+   549	}
+   550	
+
 -- 
-2.39.1
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
