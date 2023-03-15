@@ -1,46 +1,46 @@
-Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
+Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42BC628EA
-	for <iommu@lists.linux.dev>; Wed, 15 Mar 2023 10:52:16 +0000 (UTC)
-Received: by mail-lf1-f46.google.com with SMTP id x17so7596709lfu.5
-        for <iommu@lists.linux.dev>; Wed, 15 Mar 2023 03:52:16 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37A4328EA
+	for <iommu@lists.linux.dev>; Wed, 15 Mar 2023 10:52:18 +0000 (UTC)
+Received: by mail-lf1-f44.google.com with SMTP id br6so5556377lfb.11
+        for <iommu@lists.linux.dev>; Wed, 15 Mar 2023 03:52:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678877534;
+        d=linaro.org; s=google; t=1678877536;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=FEwHDjEfUnaOF5mDQxskyKGW9CTDYJ/EYRnSGpx6ORg=;
-        b=eV+aNYACp1h/O61nrXpn47S06WK2FmoI0XfsVpQnUYKvJmP0LO6n1W+vry1aBDT7lP
-         2ALJw0tMMoLKtftidS+syV6KJ9Sna0QpbbXqYGth4e7rGSQxi0cXNUaOtkLdit2dnwrt
-         jNt75UfJIoSQsRhRtmZHq7ybWaJk5JZSQ9I+uDC2zI+gO4iHI6abG9RSjvGn1tnU1MFd
-         gdBLDGOMn0pvhAGSeo8GPMJ4Nl0CwSqKJTO2udxqIwfQejPqoewfwrFwPTb6iR+Gwoi1
-         jff/e5DTzVfs1f4H3XCeNHz2tihnaegcYXjrLISRVd+kvYK1bkZGML827BiKT8FAw+V1
-         NVww==
+        bh=bdl0RlZFPypGKRGyzZFN/ydDgJu/V+/+Pk1xTXyKWrI=;
+        b=bqtJQZOe55DYn/2V+wznVWxy6nZ9Wp3VqQW89I9EWdQ5Sc1pQKJ+55BLPd6qARroYR
+         ok3YTg8gNeR+PQR343hvM3X7i2OTddQDCGH1C1Uantxt/ZN8WRKz/7TdZ4NQorRIbr/U
+         1gMHvIbro+4yOWVSanJaSamYVBgmS7Vzc7idGVgFS6zHs6/iG40DBA8ysfJxoi+kOkzf
+         FluAufnB5w9MFoCpm5dfLoJFLiN0B4Ern587udYVh3n7Ils0oqut/9pIFuidwZQr++L/
+         N/cQfkTsx77WL2xVP83j57rbt959e5uPJ969Ohkdm7hvX9CjChjJs2NnzxZp4Ztx7ZRW
+         E+pg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678877534;
+        d=1e100.net; s=20210112; t=1678877536;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=FEwHDjEfUnaOF5mDQxskyKGW9CTDYJ/EYRnSGpx6ORg=;
-        b=huWX6Kf5UfK0PRBSvScEkNp5DoeK6Ceptv1J5rlyMgcXr0Hd/WpJR4ClR0ZzpTTvdg
-         JniL+6KsAw0UGy3BYs/Z75xcFG/4bRy03HIwnXE+fNRT3sV/s7EZO8rYbRlvUrKEXdbr
-         0fBFUeOysJP2mMu/X41Gv7L6owbBTObVVWlLX7SgdGzzOYEeIR7MKBaeqTVkblZL5cyt
-         Gzfj8yM3ybKG2T5UUNhYUB9GMMGnWCjD41f88/tA0vCz/ORPdEUBeeqzt+8Ut6sOvnnj
-         EKOHfwSUZfynJrAHRLUxN+Qi6z6uSDD4xvbg/WH4+K4GSg3xcH/MJkG69qbADQoRixPx
-         VV0g==
-X-Gm-Message-State: AO0yUKVpE1mPGzNMZud9ievXH4EvqfpGbyorUWTOekWm3uhcTQz+eyhk
-	D/03D7NcYxUNlir3GSGNJEv2NQ==
-X-Google-Smtp-Source: AK7set9YPAexQQAuzQbhCqyy9Nk9G4MaoZQC9AKF39lCT+02JcrgOWL/5/Zw1vuRA0D1GaTerNn0sw==
-X-Received: by 2002:a05:6512:114f:b0:4dd:9f03:1f7e with SMTP id m15-20020a056512114f00b004dd9f031f7emr1735699lfg.22.1678877534340;
-        Wed, 15 Mar 2023 03:52:14 -0700 (PDT)
+        bh=bdl0RlZFPypGKRGyzZFN/ydDgJu/V+/+Pk1xTXyKWrI=;
+        b=CZKv2GL7GPXus497nm4pCmefyltkBjxlm85CqTWG+iRdzHGOnqqNZwBMnfw/pPq8Yz
+         f7KB3v2HNkspNKl6ZcbYxv3JLAmS+7glVHZi6FvrUocmrttTuuRhiF8XY0cDlrXqlwhV
+         EauKlpwjZbpmkXUF6oio4JC/Mk0dnZGNy6xT+LI/jx8C7lYnFNvYKJmVfVQyFwBZkTkG
+         t2vqU4cRex7Eou8+r75qAdXiuchj7wia2FWsAlU44TKxF6+S5taIdBMHkw5xwQJr9dSd
+         nIqmZseMM2m0caZi/o20ftABuoU4icL2KThfflPZojp1xFjSNbpNH7lX16tpo/CkbSWJ
+         dM+A==
+X-Gm-Message-State: AO0yUKW7ZvMXCN+paGYPUN/0vyrHWjaeYttp6l0aX6WJcVhkDkKtUVR2
+	GGf7TdwzBGz1kGBj9OOQMxJtIQ==
+X-Google-Smtp-Source: AK7set+IBx9i/5w+IF1PkXqQMsvGoGIQHXi/vOHvJHD2FU+IheSn2dkE6FAGqhbQ5zS0W7yJdyE2sw==
+X-Received: by 2002:ac2:494b:0:b0:4b5:b06d:4300 with SMTP id o11-20020ac2494b000000b004b5b06d4300mr1435118lfi.29.1678877536315;
+        Wed, 15 Mar 2023 03:52:16 -0700 (PDT)
 Received: from [192.168.1.101] (abyj16.neoplus.adsl.tpnet.pl. [83.9.29.16])
-        by smtp.gmail.com with ESMTPSA id q3-20020ac25fc3000000b004d856fe5121sm767791lfg.194.2023.03.15.03.52.12
+        by smtp.gmail.com with ESMTPSA id q3-20020ac25fc3000000b004d856fe5121sm767791lfg.194.2023.03.15.03.52.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Mar 2023 03:52:13 -0700 (PDT)
+        Wed, 15 Mar 2023 03:52:15 -0700 (PDT)
 From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Date: Wed, 15 Mar 2023 11:52:08 +0100
-Subject: [PATCH 1/2] dt-bindings: arm-smmu: Document SM61[12]5 GPU SMMU
+Date: Wed, 15 Mar 2023 11:52:09 +0100
+Subject: [PATCH 2/2] arm64: dts: qcom: sm6115: Add GPUCC and Adreno SMMU
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,7 +49,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230315-topic-kamorta_adrsmmu-v1-1-d1c0dea90bd9@linaro.org>
+Message-Id: <20230315-topic-kamorta_adrsmmu-v1-2-d1c0dea90bd9@linaro.org>
 References: <20230315-topic-kamorta_adrsmmu-v1-0-d1c0dea90bd9@linaro.org>
 In-Reply-To: <20230315-topic-kamorta_adrsmmu-v1-0-d1c0dea90bd9@linaro.org>
 To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
@@ -61,81 +61,78 @@ Cc: Marijn Suijten <marijn.suijten@somainline.org>,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
  linux-arm-msm@vger.kernel.org, Konrad Dybcio <konrad.dybcio@linaro.org>
 X-Mailer: b4 0.12.1
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1678877530; l=2607;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1678877530; l=2214;
  i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
- bh=JaZgFPnneZ9HeE1XCgzUVaq2L6fgv/yMBSZREyHciPk=;
- b=48Y0l+WzxQs+J6eAfEUnHyzPTYixLUt3M2Rwl5Wjv2xfr7A36Ze5/S2CuGUaF3mMhSsxRylG5ps7
- gKNRazM3B660iLR1/7lohJ6QuscG1v1OLkNhjtCwlcP+3YbpnbyT
+ bh=4Yr3jyIzx6Uo9VaD9+bKTUbQOMghksaMqVasI0YJqlQ=;
+ b=/y5MREEnqichNpxqBG3CJz98rlDwF4UBmNYM4I8LMIk7z/75bl5dTtaQnNOR+3cO5oLdVtpcbvki
+ 1dlAXAJ2AM5G7jWobn1L5qakyP2sN3ftFFqJP9QHLZJD5Jqj7kxA
 X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
  pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
 
-Both of these SoCs have a Qualcomm MMU500 implementation of SMMU
-in front of their GPUs that expect 3 clocks. Both of them also have
-an APPS SMMU that expects no clocks. Remove qcom,sm61[12]5-smmu-500
-from the "no clocks" list (intentionally 'breaking' the schema checks
-of APPS SMMU, as now it *can* accept clocks - with the current
-structure of this file it would have taken a wastefully-long time to
-sort this out properly..) and add necessary yaml to describe the
-clocks required by the GPU SMMUs.
+Add GPUCC and Adreno SMMU nodes in preparation for adding the GPU
+itself.
 
 Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 ---
- .../devicetree/bindings/iommu/arm,smmu.yaml        | 28 ++++++++++++++++++++--
- 1 file changed, 26 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/qcom/sm6115.dtsi | 38 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-index a6224b7e5310..62c7a5ff148e 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-@@ -79,6 +79,8 @@ properties:
-         items:
-           - enum:
-               - qcom,sc7280-smmu-500
-+              - qcom,sm6115-smmu-500
-+              - qcom,sm6125-smmu-500
-               - qcom,sm8150-smmu-500
-               - qcom,sm8250-smmu-500
-               - qcom,sm8350-smmu-500
-@@ -375,6 +377,30 @@ allOf:
-             - description: interface clock required to access smmu's registers
-                 through the TCU's programming interface.
+diff --git a/arch/arm64/boot/dts/qcom/sm6115.dtsi b/arch/arm64/boot/dts/qcom/sm6115.dtsi
+index c56738633431..c1844abc4d9f 100644
+--- a/arch/arm64/boot/dts/qcom/sm6115.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm6115.dtsi
+@@ -5,6 +5,7 @@
  
-+  - if:
-+      properties:
-+        compatible:
-+          items:
-+            - enum:
-+                - qcom,sm6115-smmu-500
-+                - qcom,sm6125-smmu-500
-+            - const: qcom,adreno-smmu
-+            - const: qcom,smmu-500
-+            - const: arm,mmu-500
-+    then:
-+      properties:
-+        clock-names:
-+          items:
-+            - const: mem
-+            - const: hlos
-+            - const: iface
+ #include <dt-bindings/clock/qcom,gcc-sm6115.h>
+ #include <dt-bindings/clock/qcom,sm6115-dispcc.h>
++#include <dt-bindings/clock/qcom,sm6115-gpucc.h>
+ #include <dt-bindings/clock/qcom,rpmcc.h>
+ #include <dt-bindings/dma/qcom-gpi.h>
+ #include <dt-bindings/gpio/gpio.h>
+@@ -1135,6 +1136,43 @@ usb_1_dwc3: usb@4e00000 {
+ 			};
+ 		};
+ 
++		gpucc: clock-controller@5990000 {
++			compatible = "qcom,sm6115-gpucc";
++			reg = <0x0 0x05990000 0x0 0x9000>;
++			clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>,
++				 <&gcc GCC_GPU_GPLL0_CLK_SRC>,
++				 <&gcc GCC_GPU_GPLL0_DIV_CLK_SRC>;
++			#clock-cells = <1>;
++			#reset-cells = <1>;
++			#power-domain-cells = <1>;
++		};
 +
-+        clocks:
-+          items:
-+            - description: GPU memory bus clock
-+            - description: Voter clock required for HLOS SMMU access
-+            - description: Interface clock required for register access
++		adreno_smmu: iommu@59a0000 {
++			compatible = "qcom,sm6115-smmu-500", "qcom,adreno-smmu",
++				     "qcom,smmu-500", "arm,mmu-500";
++			reg = <0x0 0x059a0000 0x0 0x10000>;
++			interrupts = <GIC_SPI 163 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 167 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 168 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 169 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 171 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 172 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 173 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 174 IRQ_TYPE_LEVEL_HIGH>;
 +
-   # Disallow clocks for all other platforms with specific compatibles
-   - if:
-       properties:
-@@ -394,8 +420,6 @@ allOf:
-               - qcom,sdm845-smmu-500
-               - qcom,sdx55-smmu-500
-               - qcom,sdx65-smmu-500
--              - qcom,sm6115-smmu-500
--              - qcom,sm6125-smmu-500
-               - qcom,sm6350-smmu-500
-               - qcom,sm6375-smmu-500
-               - qcom,sm8350-smmu-500
++			clocks = <&gcc GCC_GPU_MEMNOC_GFX_CLK>,
++				 <&gpucc GPU_CC_HLOS1_VOTE_GPU_SMMU_CLK>,
++				 <&gcc GCC_GPU_SNOC_DVM_GFX_CLK>;
++			clock-names = "mem",
++				      "hlos",
++				      "iface";
++			power-domains = <&gpucc GPU_CX_GDSC>;
++
++			#global-interrupts = <1>;
++			#iommu-cells = <2>;
++		};
++
+ 		mdss: display-subsystem@5e00000 {
+ 			compatible = "qcom,sm6115-mdss";
+ 			reg = <0x0 0x05e00000 0x0 0x1000>;
 
 -- 
 2.39.2
