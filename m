@@ -1,139 +1,135 @@
-Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
+Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37A4328EA
-	for <iommu@lists.linux.dev>; Wed, 15 Mar 2023 10:52:18 +0000 (UTC)
-Received: by mail-lf1-f44.google.com with SMTP id br6so5556377lfb.11
-        for <iommu@lists.linux.dev>; Wed, 15 Mar 2023 03:52:18 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F03A4525D
+	for <iommu@lists.linux.dev>; Wed, 15 Mar 2023 13:37:38 +0000 (UTC)
+Received: by mail-pj1-f45.google.com with SMTP id h12-20020a17090aea8c00b0023d1311fab3so2008362pjz.1
+        for <iommu@lists.linux.dev>; Wed, 15 Mar 2023 06:37:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678877536;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=bdl0RlZFPypGKRGyzZFN/ydDgJu/V+/+Pk1xTXyKWrI=;
-        b=bqtJQZOe55DYn/2V+wznVWxy6nZ9Wp3VqQW89I9EWdQ5Sc1pQKJ+55BLPd6qARroYR
-         ok3YTg8gNeR+PQR343hvM3X7i2OTddQDCGH1C1Uantxt/ZN8WRKz/7TdZ4NQorRIbr/U
-         1gMHvIbro+4yOWVSanJaSamYVBgmS7Vzc7idGVgFS6zHs6/iG40DBA8ysfJxoi+kOkzf
-         FluAufnB5w9MFoCpm5dfLoJFLiN0B4Ern587udYVh3n7Ils0oqut/9pIFuidwZQr++L/
-         N/cQfkTsx77WL2xVP83j57rbt959e5uPJ969Ohkdm7hvX9CjChjJs2NnzxZp4Ztx7ZRW
-         E+pg==
+        d=linaro.org; s=google; t=1678887458;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=YePAT7cRSVCK2M5mNZ0SrXrbIX/sKHS6O/ir9QF/3YA=;
+        b=sWwAOsbgy+eqbrZ35YrkSLBldjwCCxqfc/OtqiTkZhbNBBnoqgR26+xqgxk+vKQM9w
+         a/rGmYCNTZtX0JtYPCXu4+mn488ZfVCHPnIIW5oCgnA4bd5MYmumJ2Eo0syFsNxrAs0x
+         a5paUBLKgUBJNXJOIvt3nVSVO9qglDnUIFWGubuN+d3LB+y+dToOAanWfbnPCaCj8TZP
+         QsCqx36GxIUgXRZ2ytHXfPBmQsE5tUvY6gS6jsqc/jBlHOS9IX5m9k0gQRa+coqtCVyo
+         V8DhH+QUlHEXkwLEnvSebQeMj8vBGuPboKSqb/yresH1uCctR8z51d2T7fmW+zQgOspg
+         mxeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678877536;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=bdl0RlZFPypGKRGyzZFN/ydDgJu/V+/+Pk1xTXyKWrI=;
-        b=CZKv2GL7GPXus497nm4pCmefyltkBjxlm85CqTWG+iRdzHGOnqqNZwBMnfw/pPq8Yz
-         f7KB3v2HNkspNKl6ZcbYxv3JLAmS+7glVHZi6FvrUocmrttTuuRhiF8XY0cDlrXqlwhV
-         EauKlpwjZbpmkXUF6oio4JC/Mk0dnZGNy6xT+LI/jx8C7lYnFNvYKJmVfVQyFwBZkTkG
-         t2vqU4cRex7Eou8+r75qAdXiuchj7wia2FWsAlU44TKxF6+S5taIdBMHkw5xwQJr9dSd
-         nIqmZseMM2m0caZi/o20ftABuoU4icL2KThfflPZojp1xFjSNbpNH7lX16tpo/CkbSWJ
-         dM+A==
-X-Gm-Message-State: AO0yUKW7ZvMXCN+paGYPUN/0vyrHWjaeYttp6l0aX6WJcVhkDkKtUVR2
-	GGf7TdwzBGz1kGBj9OOQMxJtIQ==
-X-Google-Smtp-Source: AK7set+IBx9i/5w+IF1PkXqQMsvGoGIQHXi/vOHvJHD2FU+IheSn2dkE6FAGqhbQ5zS0W7yJdyE2sw==
-X-Received: by 2002:ac2:494b:0:b0:4b5:b06d:4300 with SMTP id o11-20020ac2494b000000b004b5b06d4300mr1435118lfi.29.1678877536315;
-        Wed, 15 Mar 2023 03:52:16 -0700 (PDT)
-Received: from [192.168.1.101] (abyj16.neoplus.adsl.tpnet.pl. [83.9.29.16])
-        by smtp.gmail.com with ESMTPSA id q3-20020ac25fc3000000b004d856fe5121sm767791lfg.194.2023.03.15.03.52.14
+        d=1e100.net; s=20210112; t=1678887458;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=YePAT7cRSVCK2M5mNZ0SrXrbIX/sKHS6O/ir9QF/3YA=;
+        b=zgRlvxPrgZWD0RvHePk4/EdB06f3f3X/vGezyL7t1NhFY43mQRLO94HLDXi6Qg2cLg
+         sR+rtk/oJ3ImiAcJUstKTmnS8ok+pLTuATxpVvZRiM+oRS0eBIPuTrzl05yi9oZIj/eW
+         PYAngm8jq8mQeP36BJEVF0rX9nTk9sIR+QpFVIUq8QktM3hN0OHu34IC3nkVBWykXlmy
+         yefI25l1R90VuzKTsqQB40U/Bvx7aeUNqFsN3uYDFZCzke48UAaYok7N800nGspEuM5I
+         gSHXjlHU0doNP5AMThGXWq25TzfJ1E7DDodJXQBCidl7LyApVaAGN0bjVl/zBw8suWri
+         MR/g==
+X-Gm-Message-State: AO0yUKUzuythG/nLm+/+2mk7ZOwQQTbj25jsnSHSN/IOtynwlo/aJVBz
+	92KImRS6wZfKbBMl4UtPLQkR
+X-Google-Smtp-Source: AK7set+5E8xt64b6V5eMrpg1l077mbaN0K4ExGQ3kvL4USwI7EPfUzhMUK96WTT/fV9x7Pjs4/kmlw==
+X-Received: by 2002:a17:902:d4cd:b0:19d:af20:3fe8 with SMTP id o13-20020a170902d4cd00b0019daf203fe8mr2841030plg.21.1678887458252;
+        Wed, 15 Mar 2023 06:37:38 -0700 (PDT)
+Received: from thinkpad ([117.207.30.24])
+        by smtp.gmail.com with ESMTPSA id g2-20020a170902c38200b001a04d37a4acsm3691872plg.9.2023.03.15.06.37.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Mar 2023 03:52:15 -0700 (PDT)
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Date: Wed, 15 Mar 2023 11:52:09 +0100
-Subject: [PATCH 2/2] arm64: dts: qcom: sm6115: Add GPUCC and Adreno SMMU
+        Wed, 15 Mar 2023 06:37:37 -0700 (PDT)
+Date: Wed, 15 Mar 2023 19:07:30 +0530
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To: Johan Hovold <johan@kernel.org>
+Cc: will@kernel.org, joro@8bytes.org, robin.murphy@arm.com,
+	andersson@kernel.org, johan+linaro@kernel.org, steev@kali.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] iommu/arm-smmu-qcom: Rework the logic finding the
+ bypass quirk
+Message-ID: <20230315133730.GB98059@thinkpad>
+References: <20230314184659.176473-1-manivannan.sadhasivam@linaro.org>
+ <ZBF1vFBWKXhHeD2v@hovoldconsulting.com>
+ <20230315075958.GC25575@thinkpad>
+ <ZBGEEk1d1WtNq4lT@hovoldconsulting.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20230315-topic-kamorta_adrsmmu-v1-2-d1c0dea90bd9@linaro.org>
-References: <20230315-topic-kamorta_adrsmmu-v1-0-d1c0dea90bd9@linaro.org>
-In-Reply-To: <20230315-topic-kamorta_adrsmmu-v1-0-d1c0dea90bd9@linaro.org>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
- Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, 
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
- Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>, 
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-arm-msm@vger.kernel.org, Konrad Dybcio <konrad.dybcio@linaro.org>
-X-Mailer: b4 0.12.1
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1678877530; l=2214;
- i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
- bh=4Yr3jyIzx6Uo9VaD9+bKTUbQOMghksaMqVasI0YJqlQ=;
- b=/y5MREEnqichNpxqBG3CJz98rlDwF4UBmNYM4I8LMIk7z/75bl5dTtaQnNOR+3cO5oLdVtpcbvki
- 1dlAXAJ2AM5G7jWobn1L5qakyP2sN3ftFFqJP9QHLZJD5Jqj7kxA
-X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
- pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ZBGEEk1d1WtNq4lT@hovoldconsulting.com>
 
-Add GPUCC and Adreno SMMU nodes in preparation for adding the GPU
-itself.
+On Wed, Mar 15, 2023 at 09:38:42AM +0100, Johan Hovold wrote:
+> On Wed, Mar 15, 2023 at 01:29:58PM +0530, Manivannan Sadhasivam wrote:
+> > On Wed, Mar 15, 2023 at 08:37:32AM +0100, Johan Hovold wrote:
+> 
+> > > > +static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
+> > > > +{
+> > > > +	u32 smr;
+> > > > +	int i;
+> > > > +
+> > > > +	/*
+> > > > +	 * Limit the number of stream matching groups to 128 as the ARM SMMU architecture
+> > > > +	 * specification defines NUMSMRG (Number of Stream Mapping Register Groups) in the
+> > > > +	 * range of 0-127, but some Qcom platforms emulate more stream mapping groups. And
+> > > > +	 * those groups don't exhibit the same behavior as the architecture supported ones.
+> > > > +	 */
+> > > 
+> > > Please fix your editor so that it wraps lines at 80 columns, which is
+> > > still the preferred (soft) limit.
+> > > 
+> > 
+> > If exceeding 80 columns end up making the comment more readable (fewer lines),
+> > then why should we limit ourselves?
+> 
+> Exceeding 80 column for comments does generally not improve readability.
+> 
 
-Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
----
- arch/arm64/boot/dts/qcom/sm6115.dtsi | 38 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
+It all depends on the perspective/preference... But I can limit to 80 columns
+here.
 
-diff --git a/arch/arm64/boot/dts/qcom/sm6115.dtsi b/arch/arm64/boot/dts/qcom/sm6115.dtsi
-index c56738633431..c1844abc4d9f 100644
---- a/arch/arm64/boot/dts/qcom/sm6115.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm6115.dtsi
-@@ -5,6 +5,7 @@
- 
- #include <dt-bindings/clock/qcom,gcc-sm6115.h>
- #include <dt-bindings/clock/qcom,sm6115-dispcc.h>
-+#include <dt-bindings/clock/qcom,sm6115-gpucc.h>
- #include <dt-bindings/clock/qcom,rpmcc.h>
- #include <dt-bindings/dma/qcom-gpi.h>
- #include <dt-bindings/gpio/gpio.h>
-@@ -1135,6 +1136,43 @@ usb_1_dwc3: usb@4e00000 {
- 			};
- 		};
- 
-+		gpucc: clock-controller@5990000 {
-+			compatible = "qcom,sm6115-gpucc";
-+			reg = <0x0 0x05990000 0x0 0x9000>;
-+			clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>,
-+				 <&gcc GCC_GPU_GPLL0_CLK_SRC>,
-+				 <&gcc GCC_GPU_GPLL0_DIV_CLK_SRC>;
-+			#clock-cells = <1>;
-+			#reset-cells = <1>;
-+			#power-domain-cells = <1>;
-+		};
-+
-+		adreno_smmu: iommu@59a0000 {
-+			compatible = "qcom,sm6115-smmu-500", "qcom,adreno-smmu",
-+				     "qcom,smmu-500", "arm,mmu-500";
-+			reg = <0x0 0x059a0000 0x0 0x10000>;
-+			interrupts = <GIC_SPI 163 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 167 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 168 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 169 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 171 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 172 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 173 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 174 IRQ_TYPE_LEVEL_HIGH>;
-+
-+			clocks = <&gcc GCC_GPU_MEMNOC_GFX_CLK>,
-+				 <&gpucc GPU_CC_HLOS1_VOTE_GPU_SMMU_CLK>,
-+				 <&gcc GCC_GPU_SNOC_DVM_GFX_CLK>;
-+			clock-names = "mem",
-+				      "hlos",
-+				      "iface";
-+			power-domains = <&gpucc GPU_CX_GDSC>;
-+
-+			#global-interrupts = <1>;
-+			#iommu-cells = <2>;
-+		};
-+
- 		mdss: display-subsystem@5e00000 {
- 			compatible = "qcom,sm6115-mdss";
- 			reg = <0x0 0x05e00000 0x0 0x1000>;
+> That part of the coding standard has do to with not adding excessive
+> line breaks to *code*, where it can sometimes impact readability.
+> 
+> > > > +	if (smmu->num_mapping_groups > 128) {
+> > > > +		dev_warn(smmu->dev, "\tLimiting the stream matching groups to 128\n");
+> > > 
+> > > dev_notice() should do since there's nothing a user can do about this.
+> > > 
+> > 
+> > Ok.
+> > 
+> > > > +		smmu->num_mapping_groups = 128;
+> > > > +	}
+> > > 
+> > > So this hunk is really all that is needed to make the current quirk
+> > > detection work on sc8280xp. Why not simply stick with the current logic
+> > > and use the last group until there is a need for anything more?
+> > > 
+> > 
+> > No! What if the bootloader had set up mapping for 128 groups? In that case
+> > we'll overwrite the last group. It is still required to find the valid group
+> > and use it for quirk detection. If no group is available, we'll skip it.
+> 
+> Yes, but that's also entirely hypothetical (and could perhaps also be
+> handled by adding a warning for now).
+> 
+> If you want to rework the quirk handling for this you should at least do
+> so in a separate patch as it is arguably a separate change from fixing
+> the current quirk detection for newer SoCs by capping the number of
+> groups (a minimal fix that could be backported).
+> 
+
+Using a separate patch makes sense to me. Will do that in v4.
+
+Thanks,
+Mani
+
+> Johan
 
 -- 
-2.39.2
-
+மணிவண்ணன் சதாசிவம்
