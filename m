@@ -1,146 +1,147 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D92437C;
-	Thu, 16 Mar 2023 01:32:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678930340; x=1710466340;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=S95cFCVhbVDe/hqBvRJWMaoCaqk2ZdtQHjd7uKx/XA0=;
-  b=NfUQ9dv9P5aEcUEJb2i016o5dg12qWuHwP+JbRXYQGWtUZEuM0CU9WO8
-   QqGI8r2ix1lFNO2pEivILcTzT5gcFfjgCUugA0zUFKLF4PRBxwZHkj+Fs
-   D45tACzGPinHyzUKek83laJGL3JV0Ul0hmncZpAG7V966C1wzhCfzNWEh
-   HfksZOdBAZwMVxP4OxJwAcFGvOuJN5KIOteNN7kcBtkMU0pcMZVl1iyLN
-   00c6kvJKIapzu6ktv9FyNQF72AYHsh3wxIjDOKpZmVxFAA6rydLMw2HDy
-   BVTatybPyOPy5HKufiBO2i7lkbJ0t0sSmmlOPN6gY4FN0Kl5vhvLBkGEt
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="336552639"
-X-IronPort-AV: E=Sophos;i="5.98,264,1673942400"; 
-   d="scan'208";a="336552639"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2023 18:32:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="672954469"
-X-IronPort-AV: E=Sophos;i="5.98,264,1673942400"; 
-   d="scan'208";a="672954469"
-Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 15 Mar 2023 18:32:16 -0700
-Received: from kbuild by b613635ddfff with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1pccTX-0008Cv-1B;
-	Thu, 16 Mar 2023 01:32:15 +0000
-Date: Thu, 16 Mar 2023 09:32:14 +0800
-From: kernel test robot <lkp@intel.com>
-To: Desnes Nunes <desnesn@redhat.com>, iommu@lists.linux.dev,
-	linux-scsi@vger.kernel.org, storagedev@microchip.com,
-	linux-kernel@vger.kernel.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev, hch@lst.de,
-	martin.petersen@oracle.com, don.brace@microchip.com,
-	m.szyprowski@samsung.com, robin.murphy@arm.com, jejb@linux.ibm.com,
-	jsnitsel@redhat.com, Desnes Nunes <desnesn@redhat.com>
-Subject: Re: [PATCH 2/3] dma-debug: add cacheline to user/kernel space dump
- messages
-Message-ID: <202303160927.dwt0jHFb-lkp@intel.com>
-References: <20230315192130.970021-3-desnesn@redhat.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D441837C
+	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 02:02:12 +0000 (UTC)
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R741e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=guorui.yu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VdxtHh3_1678932119;
+Received: from 127.0.0.1(mailfrom:GuoRui.Yu@linux.alibaba.com fp:SMTPD_---0VdxtHh3_1678932119)
+          by smtp.aliyun-inc.com;
+          Thu, 16 Mar 2023 10:02:02 +0800
+Message-ID: <49d6a3df-4507-599c-8f4b-3f2ba78ac535@linux.alibaba.com>
+Date: Thu, 16 Mar 2023 10:01:58 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230315192130.970021-3-desnesn@redhat.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.8.0
+Subject: Re: [PATCH v2] swiotlb: fix the deadlock in swiotlb_do_find_slots
+To: Christoph Hellwig <hch@lst.de>
+Cc: m.szyprowski@samsung.com, robin.murphy@arm.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-mm@kvack.org
+References: <20230222165315.89135-1-GuoRui.Yu@linux.alibaba.com>
+ <20230315144737.GA28864@lst.de>
+From: Guorui Yu <GuoRui.Yu@linux.alibaba.com>
+In-Reply-To: <20230315144737.GA28864@lst.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Hi Desnes,
+Hi Christoph,
 
-Thank you for the patch! Perhaps something to improve:
+Thanks for your reply, and this new version looks go to me.
 
-[auto build test WARNING on jejb-scsi/for-next]
-[also build test WARNING on mkp-scsi/for-next linus/master]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Yours sincerely,
+Guorui
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Desnes-Nunes/dma-debug-small-dma_debug_entry-s-comment-and-variable-name-updates/20230316-032542
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jejb/scsi.git for-next
-patch link:    https://lore.kernel.org/r/20230315192130.970021-3-desnesn%40redhat.com
-patch subject: [PATCH 2/3] dma-debug: add cacheline to user/kernel space dump messages
-config: arm-randconfig-r046-20230312 (https://download.01.org/0day-ci/archive/20230316/202303160927.dwt0jHFb-lkp@intel.com/config)
-compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project 67409911353323ca5edf2049ef0df54132fa1ca7)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://github.com/intel-lab-lkp/linux/commit/ae3f8fdd17c54b837d476952733456723c472ed8
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Desnes-Nunes/dma-debug-small-dma_debug_entry-s-comment-and-variable-name-updates/20230316-032542
-        git checkout ae3f8fdd17c54b837d476952733456723c472ed8
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash kernel/dma/
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202303160927.dwt0jHFb-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
->> kernel/dma/debug.c:541:7: warning: format specifies type 'unsigned long long' but the argument has type 'phys_addr_t' (aka 'unsigned int') [-Wformat]
-                                            cln, dir2name[entry->direction],
-                                            ^~~
-   include/linux/dev_printk.h:150:67: note: expanded from macro 'dev_info'
-           dev_printk_index_wrap(_dev_info, KERN_INFO, dev, dev_fmt(fmt), ##__VA_ARGS__)
-                                                                    ~~~     ^~~~~~~~~~~
-   include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
-                   _p_func(dev, fmt, ##__VA_ARGS__);                       \
-                                ~~~    ^~~~~~~~~~~
-   kernel/dma/debug.c:574:8: warning: format specifies type 'unsigned long long' but the argument has type 'phys_addr_t' (aka 'unsigned int') [-Wformat]
-                                      cln, dir2name[entry->direction],
-                                      ^~~
-   2 warnings generated.
-
-
-vim +541 kernel/dma/debug.c
-
-   518	
-   519	/*
-   520	 * Dump mappings entries on kernel space for debugging purposes
-   521	 */
-   522	void debug_dma_dump_mappings(struct device *dev)
-   523	{
-   524		int idx;
-   525		phys_addr_t cln;
-   526	
-   527		for (idx = 0; idx < HASH_SIZE; idx++) {
-   528			struct hash_bucket *bucket = &dma_entry_hash[idx];
-   529			struct dma_debug_entry *entry;
-   530			unsigned long flags;
-   531	
-   532			spin_lock_irqsave(&bucket->lock, flags);
-   533			list_for_each_entry(entry, &bucket->list, list) {
-   534				if (!dev || dev == entry->dev) {
-   535					cln = to_cacheline_number(entry);
-   536					dev_info(entry->dev,
-   537						 "%s idx %d P=%llx N=%lx D=%llx L=%llx cln=%llx %s %s\n",
-   538						 type2name[entry->type], idx,
-   539						 phys_addr(entry), entry->pfn,
-   540						 entry->dev_addr, entry->size,
- > 541						 cln, dir2name[entry->direction],
-   542						 maperr2str[entry->map_err_type]);
-   543				}
-   544			}
-   545			spin_unlock_irqrestore(&bucket->lock, flags);
-   546	
-   547			cond_resched();
-   548		}
-   549	}
-   550	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+在 2023/3/15 22:47, Christoph Hellwig 写道:
+> I think this looks generall fine, but the index_nowrap variable
+> name seems very confusing.  What about this slighlt adjusted
+> version?
+> 
+> ---
+>  From 11559745f0920b53ba5f8b2fc6241891e1dfcf4b Mon Sep 17 00:00:00 2001
+> From: "GuoRui.Yu" <GuoRui.Yu@linux.alibaba.com>
+> Subject: swiotlb: fix the deadlock in swiotlb_do_find_slots
+> 
+> In general, if swiotlb is sufficient, the logic of index =
+> wrap_area_index(mem, index + 1) is fine, it will quickly take a slot and
+> release the area->lock; But if swiotlb is insufficient and the device
+> has min_align_mask requirements, such as NVME, we may not be able to
+> satisfy index == wrap and exit the loop properly. In this case, other
+> kernel threads will not be able to acquire the area->lock and release
+> the slot, resulting in a deadlock.
+> 
+> The current implementation of wrap_area_index does not involve a modulo
+> operation, so adjusting the wrap to ensure the loop ends is not trivial.
+> Introduce a new variable to record the number of loops and exit the loop
+> after completing the traversal.
+> 
+> Backtraces:
+> Other CPUs are waiting this core to exit the swiotlb_do_find_slots
+> loop.
+> [10199.924391] RIP: 0010:swiotlb_do_find_slots+0x1fe/0x3e0
+> [10199.924403] Call Trace:
+> [10199.924404]  <TASK>
+> [10199.924405]  swiotlb_tbl_map_single+0xec/0x1f0
+> [10199.924407]  swiotlb_map+0x5c/0x260
+> [10199.924409]  ? nvme_pci_setup_prps+0x1ed/0x340
+> [10199.924411]  dma_direct_map_page+0x12e/0x1c0
+> [10199.924413]  nvme_map_data+0x304/0x370
+> [10199.924415]  nvme_prep_rq.part.0+0x31/0x120
+> [10199.924417]  nvme_queue_rq+0x77/0x1f0
+> 
+> ...
+> [ 9639.596311] NMI backtrace for cpu 48
+> [ 9639.596336] Call Trace:
+> [ 9639.596337]
+> [ 9639.596338] _raw_spin_lock_irqsave+0x37/0x40
+> [ 9639.596341] swiotlb_do_find_slots+0xef/0x3e0
+> [ 9639.596344] swiotlb_tbl_map_single+0xec/0x1f0
+> [ 9639.596347] swiotlb_map+0x5c/0x260
+> [ 9639.596349] dma_direct_map_sg+0x7a/0x280
+> [ 9639.596352] __dma_map_sg_attrs+0x30/0x70
+> [ 9639.596355] dma_map_sgtable+0x1d/0x30
+> [ 9639.596356] nvme_map_data+0xce/0x370
+> 
+> ...
+> [ 9639.595665] NMI backtrace for cpu 50
+> [ 9639.595682] Call Trace:
+> [ 9639.595682]
+> [ 9639.595683] _raw_spin_lock_irqsave+0x37/0x40
+> [ 9639.595686] swiotlb_release_slots.isra.0+0x86/0x180
+> [ 9639.595688] dma_direct_unmap_sg+0xcf/0x1a0
+> [ 9639.595690] nvme_unmap_data.part.0+0x43/0xc0
+> 
+> Fixes: 1f221a0d0dbf ("swiotlb: respect min_align_mask")
+> Signed-off-by: GuoRui.Yu <GuoRui.Yu@linux.alibaba.com>
+> Signed-off-by: Xiaokang Hu <xiaokang.hxk@alibaba-inc.com>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>   kernel/dma/swiotlb.c | 10 ++++++----
+>   1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 03e3251cd9d2b6..91454b513db069 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -625,8 +625,8 @@ static int swiotlb_do_find_slots(struct device *dev, int area_index,
+>   	unsigned int iotlb_align_mask =
+>   		dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);
+>   	unsigned int nslots = nr_slots(alloc_size), stride;
+> -	unsigned int index, wrap, count = 0, i;
+>   	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
+> +	unsigned int index, slots_checked, count = 0, i;
+>   	unsigned long flags;
+>   	unsigned int slot_base;
+>   	unsigned int slot_index;
+> @@ -649,15 +649,16 @@ static int swiotlb_do_find_slots(struct device *dev, int area_index,
+>   		goto not_found;
+>   
+>   	slot_base = area_index * mem->area_nslabs;
+> -	index = wrap = wrap_area_index(mem, ALIGN(area->index, stride));
+> +	index = wrap_area_index(mem, ALIGN(area->index, stride));
+>   
+> -	do {
+> +	for (slots_checked = 0; slots_checked < mem->area_nslabs; ) {
+>   		slot_index = slot_base + index;
+>   
+>   		if (orig_addr &&
+>   		    (slot_addr(tbl_dma_addr, slot_index) &
+>   		     iotlb_align_mask) != (orig_addr & iotlb_align_mask)) {
+>   			index = wrap_area_index(mem, index + 1);
+> +			slots_checked++;
+>   			continue;
+>   		}
+>   
+> @@ -673,7 +674,8 @@ static int swiotlb_do_find_slots(struct device *dev, int area_index,
+>   				goto found;
+>   		}
+>   		index = wrap_area_index(mem, index + stride);
+> -	} while (index != wrap);
+> +		slots_checked += stride;
+> +	}
+>   
+>   not_found:
+>   	spin_unlock_irqrestore(&area->lock, flags);
