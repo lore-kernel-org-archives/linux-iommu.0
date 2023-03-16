@@ -1,95 +1,114 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 275CC29A2
-	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 18:38:53 +0000 (UTC)
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-1a04bd0ab07so153775ad.1
-        for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 11:38:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1678991932;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Aco+48KQSTXrRgbQkuc+78HSNv7058GW4RTMfCAnIHA=;
-        b=oVgVVSr3DpFodH/W7BEB8twr3ljYV/n6IfeeSQNw2KZSVWn1wUlErVeZyZDxN7u8ah
-         2WLpPfc07KAV4brUvbTfPm1hD3Xl+hniedRD6YoZwmdJnHxLU3Bt3lNfQifmAXLABFLJ
-         yi726pxGiBD/0r1OCjCb+3jxdD/Z8yI18AbzOVHfNHBWSeTOhNTW5O4VDQJLJfTPCEPV
-         UGNCKJn7qZHYmmfSHQqd+N6V7+nWV9V1HCwi4y0gELcQWwJxYnUiK+vDt6kuXP2DodMY
-         ubo1Iu2Ne1uES2/k/MkJwG8dzRBJw9vbfrqXv2L1n913ZJcftiop3F3bcmZisfGTDtyW
-         gZyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678991932;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Aco+48KQSTXrRgbQkuc+78HSNv7058GW4RTMfCAnIHA=;
-        b=l87PldEPm/fU/geX2+KdbrYfqqOa6IBkV4/hX4pc9i8p7YwG1mSzElVz4Iozcg0Wd3
-         Re9fZBMeNctzBHZHtHe8caKhnMOxvPMC3zBHKCVHNCIL4jYgtC9kxR4Cu2BV597gxSxV
-         zPa7yqkIt/N+M9kJ1d1Jkvo5kJblspOcDwJHZ8p3nCj3jf86XdWCkN0rvp+WqEbpuQOM
-         2X4hO3fIoLWlgtQtAJbCNrBU2OUTbAcHTXmiesftusApzwMjjPrRilutqiCt77xQRJsp
-         3E+ufojLRjRjS+61zSNYfU/LO0IOiL5/XblKugTvVG4OZpd6xHdAn5HPSoQcQTTmdVXx
-         Fu1Q==
-X-Gm-Message-State: AO0yUKXfZfZx2wrU/OGQrqZFJNRxbreCzRV46uGFx1q3KW+pY4lW+q4n
-	Y+/IW5Rajp4/Bi9eN8mOr4bNfg==
-X-Google-Smtp-Source: AK7set8t8uixLTKQFPibXI9O3Eyr3dYB1pWE4h2zKgCpwhJYghtHW0myy/GlG+JZ/ZkMAVXYVektCg==
-X-Received: by 2002:a17:902:dac6:b0:199:3909:eaee with SMTP id q6-20020a170902dac600b001993909eaeemr26571plx.6.1678991932413;
-        Thu, 16 Mar 2023 11:38:52 -0700 (PDT)
-Received: from google.com ([2620:15c:2d:3:c641:8e37:69f3:8d4c])
-        by smtp.gmail.com with ESMTPSA id w5-20020a1709029a8500b001a064cff3c5sm44886plp.43.2023.03.16.11.38.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Mar 2023 11:38:51 -0700 (PDT)
-Date: Thu, 16 Mar 2023 11:38:47 -0700
-From: Isaac Manjarres <isaacmanjarres@google.com>
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>,
-	Arnd Bergmann <arnd@arndb.de>, Christoph Hellwig <hch@lst.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	Ard Biesheuvel <ardb@kernel.org>,
-	Saravana Kannan <saravanak@google.com>,
-	Alasdair Kergon <agk@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
-	Joerg Roedel <joro@8bytes.org>, Mark Brown <broonie@kernel.org>,
-	Mike Snitzer <snitzer@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, linux-mm@kvack.org,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v3 00/13] mm, dma, arm64: Reduce ARCH_KMALLOC_MINALIGN to
- 8
-Message-ID: <ZBNiN9CR2F/fvUTh@google.com>
-References: <20221106220143.2129263-1-catalin.marinas@arm.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6D03A29A2
+	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 18:42:19 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3B8142F4;
+	Thu, 16 Mar 2023 11:42:57 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 09A373F67D;
+	Thu, 16 Mar 2023 11:42:11 -0700 (PDT)
+Message-ID: <cacb6338-6dc9-e8b6-426c-aeed3104c8af@arm.com>
+Date: Thu, 16 Mar 2023 18:42:07 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221106220143.2129263-1-catalin.marinas@arm.com>
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v1 01/14] iommu: Add iommu_get_unmanaged_domain helper
+Content-Language: en-GB
+To: Nicolin Chen <nicolinc@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>
+Cc: Eric Auger <eric.auger@redhat.com>, will@kernel.org,
+ kevin.tian@intel.com, baolu.lu@linux.intel.com, joro@8bytes.org,
+ shameerali.kolothum.thodi@huawei.com, jean-philippe@linaro.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <cover.1678348754.git.nicolinc@nvidia.com>
+ <9b1077601cace998533129327f5e7ad946752d29.1678348754.git.nicolinc@nvidia.com>
+ <2118a147-ac95-d846-ad6f-85d7cebca46a@arm.com>
+ <4938b20b-14d8-86f8-e80b-9d8ed9d8f28d@redhat.com>
+ <ZAtS21vqhp7LqA+B@nvidia.com> <ZBJvLsfeIRhV6cME@Asurada-Nvidia>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <ZBJvLsfeIRhV6cME@Asurada-Nvidia>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Sun, Nov 06, 2022 at 10:01:30PM +0000, Catalin Marinas wrote:
-> Patches 7-12 change some ARCH_KMALLOC_MINALIGN uses to
-> ARCH_DMA_MINALIGN. The crypto changes have been rejected by Herbert
-> previously but I still included them here until the crypto code is
-> refactored.
-Hi Catalin,
+On 16/03/2023 1:21 am, Nicolin Chen wrote:
+> Hi Robin,
+> 
+> How do you think about Jason's proposal below? I'd like to see
+> us come to an agreement on an acceptable solution...
 
-Herbert merged the changes to the crypto code that were required to be
-able to safely lower the minimum alignment for kmalloc in [1].
-
-Given this, I don't think there's anything blocking this series from
-being merged. The requirement for SWIOTLB to get to the minimum
-kmalloc alignment down to 8 bytes shouldn't prevent this series from
-being merged, as the amount of memory that is allocated for SWIOTLB
-can be configured through the commandline to minimize the impact of
-having SWIOTLB memory. Additionally, even if no SWIOTLB is present,
-this series still offers memory savings on a lot of ARM64 platforms
-by using the cache line size as the minimum alignment for kmalloc.
-
-Can you please rebase this series so that it can be merged?
+I think it's so thoroughly broken that I suspect Cunningham's law might
+be at play, but fine, you win :) Hopefully it's sufficiently obvious how
+the other pieces would fit around the patch below. FWIW I'd still prefer
+a generic domain->s2_domain pointer rather than any op at all, but I'm
+happy enough with this compromise.
 
 Thanks,
-Isaac
+Robin.
 
-[1]: https://lore.kernel.org/all/Y4nDL50nToBbi4DS@gondor.apana.org.au/
+----->8-----
+Subject: [PATCH] iommu/dma: Support MSIs through nested domains
+
+Currently, iommu-dma is the only place outside of IOMMUFD and drivers
+which might need to be aware of the stage 2 domain encapsulated within
+a nested domain. This would be in the legacy-VFIO-style case where we're
+using host-managed MSIs with an identity mapping at stage 1, where it is
+the underlying stage 2 domain which owns an MSI cookie and holds the
+corresponding dynamic mappings. Hook up the new op to resolve what we
+need from a nested domain.
+
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+  drivers/iommu/dma-iommu.c | 18 ++++++++++++++++--
+  1 file changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 99b2646cb5c7..66b0d5fa49f8 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -1642,6 +1642,20 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+  	return NULL;
+  }
+  
++/*
++ * Nested domains may not have an MSI cookie or accept mappings, but they may
++ * be related to a domain which does, so we let them tell us what they need.
++ */
++static struct iommu_domain *iommu_dma_get_msi_mapping_domain(struct device *dev)
++{
++	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
++
++	if (domain && domain->type == IOMMU_DOMAIN_NESTED &&
++	    domain->ops->get_msi_mapping_domain)
++		domain = domain->ops->get_msi_mapping_domain(domain);
++	return domain;
++}
++
+  /**
+   * iommu_dma_prepare_msi() - Map the MSI page in the IOMMU domain
+   * @desc: MSI descriptor, will store the MSI page
+@@ -1652,7 +1666,7 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+  int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
+  {
+  	struct device *dev = msi_desc_to_dev(desc);
+-	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
++	struct iommu_domain *domain = iommu_dma_get_msi_mapping_domain(dev);
+  	struct iommu_dma_msi_page *msi_page;
+  	static DEFINE_MUTEX(msi_prepare_lock); /* see below */
+  
+@@ -1685,7 +1699,7 @@ int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
+  void iommu_dma_compose_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
+  {
+  	struct device *dev = msi_desc_to_dev(desc);
+-	const struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
++	const struct iommu_domain *domain = iommu_dma_get_msi_mapping_domain(dev);
+  	const struct iommu_dma_msi_page *msi_page;
+  
+  	msi_page = msi_desc_get_iommu_cookie(desc);
+-- 
+2.39.2.101.g768bb238c484.dirty
+
