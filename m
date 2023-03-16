@@ -1,114 +1,131 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6D03A29A2
-	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 18:42:19 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3B8142F4;
-	Thu, 16 Mar 2023 11:42:57 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 09A373F67D;
-	Thu, 16 Mar 2023 11:42:11 -0700 (PDT)
-Message-ID: <cacb6338-6dc9-e8b6-426c-aeed3104c8af@arm.com>
-Date: Thu, 16 Mar 2023 18:42:07 +0000
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13472A938
+	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 19:20:17 +0000 (UTC)
+Received: by mail-pl1-f180.google.com with SMTP id iw3so2872401plb.6
+        for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 12:20:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1678994417;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=D3DngfJ3+Jb+3rKFdF51yVgT8GLTxx/0WtoHGrYOK1k=;
+        b=zfwerBpAdS3zSJ44bJ99Y0rz4LuLh0oPOLPB+eR0zCuSSbt8oMo6hsVuaAVeTJkUPx
+         MmVxan9XAmsTWM3cqE2jbsxqHC7cS2SF2WK9F4mGo0GRuaOfvNmKjY1mGbibmNy5uB9p
+         Ei3r/z8zGNan5/U7qLKXhLEgOyOQ2KRnhh/iitd7ARsf33UF/IYNRR9ArUNEMalFjhEv
+         +L/14MWkVXB8+wiXQXPNvpt/a9YcJjb0nWyDBo4V5wAo86PU2NpPWu19MO35EyzNJQHJ
+         txszql05rTp3dfvenpV97esWpaDCiOgI6iBAIc7rONQz7hWQGLeRZ2YnGMESG+UE3UbK
+         SZLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678994417;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=D3DngfJ3+Jb+3rKFdF51yVgT8GLTxx/0WtoHGrYOK1k=;
+        b=SmgvUgDD7/w5sCzG6kZT6UZQWdlaT6wc67qTVTz+J43ZKG6V0EaZBD8scq247epwEL
+         tECkmIj3+xxsPGPZlUWqd8+yszE5QUcYP4piUtu7ahbj3I4RtNuWeY7RUuYAx2JFsaUd
+         Juhtp9GuL9/4Odg+vrPbvrx4XbL9vvA6NSTqadpIs1U1LjPjYDFNYWtAeWI5xC11iXua
+         N4OtkK4oSjV2PDBIAKdI/8OLX9gwKaSUSzvtU9udHjK55+S8etTM5IoVXcb0iHRtdI5G
+         MjKAZZ6SttNa6BBvju6fhqUJCOyHrgRUunJQmfkQeOz1m6zbDZVOq5fUVERsNcZothsW
+         yycg==
+X-Gm-Message-State: AO0yUKV7NFB+x9DPXlBeIlQ4SoTHq4/rCxlIAkfFfRhu7rkI9oAfXs5K
+	O4l38wN5UnXOE37BDkSWg/QPFQj92g2+LLsJmn062g==
+X-Google-Smtp-Source: AK7set/QWfJoNWbRURvvrXPm+tab7bYhozsILCCqfPBN7Fcsggqaff5TiE2vRnY/IvIinOSMMSHiiJEXPEUSM5EaUAk=
+X-Received: by 2002:a17:90a:cf:b0:23e:fad0:dda1 with SMTP id
+ v15-20020a17090a00cf00b0023efad0dda1mr1555415pjd.1.1678994417218; Thu, 16 Mar
+ 2023 12:20:17 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH v1 01/14] iommu: Add iommu_get_unmanaged_domain helper
-Content-Language: en-GB
-To: Nicolin Chen <nicolinc@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: Eric Auger <eric.auger@redhat.com>, will@kernel.org,
- kevin.tian@intel.com, baolu.lu@linux.intel.com, joro@8bytes.org,
- shameerali.kolothum.thodi@huawei.com, jean-philippe@linaro.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <cover.1678348754.git.nicolinc@nvidia.com>
- <9b1077601cace998533129327f5e7ad946752d29.1678348754.git.nicolinc@nvidia.com>
- <2118a147-ac95-d846-ad6f-85d7cebca46a@arm.com>
- <4938b20b-14d8-86f8-e80b-9d8ed9d8f28d@redhat.com>
- <ZAtS21vqhp7LqA+B@nvidia.com> <ZBJvLsfeIRhV6cME@Asurada-Nvidia>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ZBJvLsfeIRhV6cME@Asurada-Nvidia>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <CGME20230315232523eucas1p2565ef5954e3b5b451803c6200c8bce32@eucas1p2.samsung.com>
+ <20230315232514.1046589-1-m.szyprowski@samsung.com>
+In-Reply-To: <20230315232514.1046589-1-m.szyprowski@samsung.com>
+From: Sam Protsenko <semen.protsenko@linaro.org>
+Date: Thu, 16 Mar 2023 14:20:06 -0500
+Message-ID: <CAPLW+4kjyPfHxbwwtP7pkO3NjeJqU6moLS=c8ftdsT1JK7zqHg@mail.gmail.com>
+Subject: Re: [PATCH v2] iommu/exynos: Fix set_platform_dma_ops() callback
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: iommu@lists.linux.dev, linux-samsung-soc@vger.kernel.org, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Alim Akhtar <alim.akhtar@samsung.com>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>
+Content-Type: text/plain; charset="UTF-8"
 
-On 16/03/2023 1:21 am, Nicolin Chen wrote:
-> Hi Robin,
-> 
-> How do you think about Jason's proposal below? I'd like to see
-> us come to an agreement on an acceptable solution...
+On Wed, 15 Mar 2023 at 18:25, Marek Szyprowski <m.szyprowski@samsung.com> wrote:
+>
+> There are some subtle differences between release_device() and
+> set_platform_dma_ops() callbacks, so separate those two callbacks. Device
+> links should be removed only in release_device(), because they were
+> created in probe_device() on purpose and they are needed for proper
+> Exynos IOMMU driver operation. While fixing this, remove the conditional
+> code as it is not really needed.
+>
+> Reported-by: Jason Gunthorpe <jgg@ziepe.ca>
+> Fixes: 189d496b48b1 ("iommu/exynos: Add missing set_platform_dma_ops callback")
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> ---
 
-I think it's so thoroughly broken that I suspect Cunningham's law might
-be at play, but fine, you win :) Hopefully it's sufficiently obvious how
-the other pieces would fit around the patch below. FWIW I'd still prefer
-a generic domain->s2_domain pointer rather than any op at all, but I'm
-happy enough with this compromise.
+Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
 
-Thanks,
-Robin.
-
------>8-----
-Subject: [PATCH] iommu/dma: Support MSIs through nested domains
-
-Currently, iommu-dma is the only place outside of IOMMUFD and drivers
-which might need to be aware of the stage 2 domain encapsulated within
-a nested domain. This would be in the legacy-VFIO-style case where we're
-using host-managed MSIs with an identity mapping at stage 1, where it is
-the underlying stage 2 domain which owns an MSI cookie and holds the
-corresponding dynamic mappings. Hook up the new op to resolve what we
-need from a nested domain.
-
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
-  drivers/iommu/dma-iommu.c | 18 ++++++++++++++++--
-  1 file changed, 16 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 99b2646cb5c7..66b0d5fa49f8 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -1642,6 +1642,20 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
-  	return NULL;
-  }
-  
-+/*
-+ * Nested domains may not have an MSI cookie or accept mappings, but they may
-+ * be related to a domain which does, so we let them tell us what they need.
-+ */
-+static struct iommu_domain *iommu_dma_get_msi_mapping_domain(struct device *dev)
-+{
-+	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-+
-+	if (domain && domain->type == IOMMU_DOMAIN_NESTED &&
-+	    domain->ops->get_msi_mapping_domain)
-+		domain = domain->ops->get_msi_mapping_domain(domain);
-+	return domain;
-+}
-+
-  /**
-   * iommu_dma_prepare_msi() - Map the MSI page in the IOMMU domain
-   * @desc: MSI descriptor, will store the MSI page
-@@ -1652,7 +1666,7 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
-  int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
-  {
-  	struct device *dev = msi_desc_to_dev(desc);
--	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-+	struct iommu_domain *domain = iommu_dma_get_msi_mapping_domain(dev);
-  	struct iommu_dma_msi_page *msi_page;
-  	static DEFINE_MUTEX(msi_prepare_lock); /* see below */
-  
-@@ -1685,7 +1699,7 @@ int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
-  void iommu_dma_compose_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
-  {
-  	struct device *dev = msi_desc_to_dev(desc);
--	const struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-+	const struct iommu_domain *domain = iommu_dma_get_msi_mapping_domain(dev);
-  	const struct iommu_dma_msi_page *msi_page;
-  
-  	msi_page = msi_desc_get_iommu_cookie(desc);
--- 
-2.39.2.101.g768bb238c484.dirty
-
+> v2:
+> - keep set_platform_dma_ops only on ARM 32bit
+>
+> Some more background why set_platform_dma_ops is needed on ARM 32bit is
+> available here:
+> https://lore.kernel.org/all/9a12fcac-c347-5d81-acef-1124c50d0c37@arm.com/
+> ---
+>  drivers/iommu/exynos-iommu.c | 17 ++++++++++-------
+>  1 file changed, 10 insertions(+), 7 deletions(-)
+>
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index 483aaaeb6dae..1abd187c6075 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -1415,23 +1415,26 @@ static struct iommu_device *exynos_iommu_probe_device(struct device *dev)
+>         return &data->iommu;
+>  }
+>
+> -static void exynos_iommu_release_device(struct device *dev)
+> +static void exynos_iommu_set_platform_dma(struct device *dev)
+>  {
+>         struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
+> -       struct sysmmu_drvdata *data;
+>
+>         if (owner->domain) {
+>                 struct iommu_group *group = iommu_group_get(dev);
+>
+>                 if (group) {
+> -#ifndef CONFIG_ARM
+> -                       WARN_ON(owner->domain !=
+> -                               iommu_group_default_domain(group));
+> -#endif
+>                         exynos_iommu_detach_device(owner->domain, dev);
+>                         iommu_group_put(group);
+>                 }
+>         }
+> +}
+> +
+> +static void exynos_iommu_release_device(struct device *dev)
+> +{
+> +       struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
+> +       struct sysmmu_drvdata *data;
+> +
+> +       exynos_iommu_set_platform_dma(dev);
+>
+>         list_for_each_entry(data, &owner->controllers, owner_node)
+>                 device_link_del(data->link);
+> @@ -1479,7 +1482,7 @@ static const struct iommu_ops exynos_iommu_ops = {
+>         .domain_alloc = exynos_iommu_domain_alloc,
+>         .device_group = generic_device_group,
+>  #ifdef CONFIG_ARM
+> -       .set_platform_dma_ops = exynos_iommu_release_device,
+> +       .set_platform_dma_ops = exynos_iommu_set_platform_dma,
+>  #endif
+>         .probe_device = exynos_iommu_probe_device,
+>         .release_device = exynos_iommu_release_device,
+> --
+> 2.34.1
+>
