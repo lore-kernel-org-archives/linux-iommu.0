@@ -1,71 +1,74 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2082.outbound.protection.outlook.com [40.107.93.82])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2042.outbound.protection.outlook.com [40.107.243.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0306C7F
-	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 00:13:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01EDB18F
+	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 00:59:44 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YxDAz8AaV0mmtsF/KgdBJYD5yV0zaRXutSnFKXM52CeT+6oK9LBdFt2OTctbdHbaI5P5rjpZJ/dSmU1neXuJzMNSFysOqYua5Ir+U23jzqf4pIxMlpI7AC69bfcBcX5qfcC0o7ChjXo9/WYoZA8gZB42ZL1XzX/lA2sSk8GqgA2qN7IZYY+sXyKonNwO3uns+FYhtDY7K/18wABkBKPp+/I39iEj2i635M8n5er9KmhnoTg8v+kMN2NoQbpKiK+/n0WfoPyRK84cEhOWaBZ36j4UNcVr8J4zSX1I8bSYBOegyrbRnyuz4/nqH+3RRN5hYCH/EcFyJOoIWg+hbDsY3Q==
+ b=gQ4xSmYuLldQvn53NhhuRJ/JRN+z1/hcpMgEb4pLG1E2tpFfHGZWC+qE0T0Nha1vn94kmVAleYYYEV7hq36bKcXzQzWX3DPnCcGEleD2SGh1QnBCxsKLe1n5TAf/0DQjhYXjljnTD/oDpdjYC4tr8zFmqbjZy2K1ghr6AvIl/7dCLZ+DSQH0nIS9xtiQDJ/oECiuuew4tUZh6KBmUbAE6WdlY75kmo7pHYmpeOpryWILGWc6iNKTMisUz4bUYu+DqIczCBXg/DQINAxaBC0Zw//kmKtFCdgdKS+HaF5u2d+O+4vpuNiT0k596uhvA6bRgYEFbwtMbfpkwj3VMmu+XA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sGpGtz0fL4b/ZVLNISXdfrP6IMnpyLkptZw/W0FjHpU=;
- b=nWVcHhYJFroRy86MViaXtyVElEGXLPXWDb27369Xy/DRSAXC++lEQFuX31j4u/hdZ7lk40hGQ/ZFJ6eRJf91smoPBKWmkVC3iP8g1z7tkQFuq1Z8nZrZ5haoYLisUVEUkqWOT9kSeRL8PVenGz+kuuGXWHjKfFoGaNlsIEzDvv58QF86DDy9PmX6QYVmtPREh/yHTt0weBNoyFgGph0vAP2vbEsXDBeSL4GwsJxLYjt86l8gsRJr20lXhnN/c+lVPZArAmLe3AIf0//KEXFy4QYu/XSPzx373DZI30f5Ep4GPzUe6DSsz4Zw9/iw/DAgNoo8kSFSyyZAdWV4ivzZvA==
+ bh=7Sc5ngt8zESYZYXPFu0DsdNN1usiEmPY9wvPeexNplY=;
+ b=l2r9N2w5A+fWM7EncPU79Q5AdLhGljw7aJvCeniQ4gxuRNfGxDPNnHXttPbspYzThGtJaAqH0u9UY/hTB+QzKjQDWDmv1q0VRVjjqYotqJbPR7RzF0OaJBx4sR7LRC6cHslPpiD6cZQ+TiXSNf5X3D0yMYPDjV+ckgxA1JtzpJn5LXPx4QWZozY7PdZr8wSWeb6xR5f/DJlodgNniOGNpo7HyrkhoZw6pbl0mi+DqNHFj6TjXXQ0qH79XpEuZIikZW1Nj3/XTB2c0ru9l1w9AZsfb/FhaHtXQtSVZ1Evbh8kQnXgIj0eKJJTIKsQoTM91Nqw5/XvaHdeCdoiX8x8iA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
+ 216.228.118.233) smtp.rcpttodomain=linaro.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sGpGtz0fL4b/ZVLNISXdfrP6IMnpyLkptZw/W0FjHpU=;
- b=StwIoVy1QJipzdW7E8hDld4DFJGWulTKRIvCJ8ejra4wO9FEeqnAFXdDV8Zh1aWRBIhKL06VRFpD4K8XBPvJ4QXAEjLkN+Za5nFhybWTPjdF+dmRBOWZmYEFT8+OAL2NfJygZcu/nhZjeJLrfBaFC/PeCgX07IFruqzRRiAc9ZCcBBE341kggYczMVWoUqKkL7C42Nebg9k9eLgPAf0dper0onB5BAmHLPgIsIbwgySOmaRx8ckjR/y9ou6oDjNqc4mVMNogf1viJM8Yc/Xp9g6RU4IB8dk8ji1X+b3Wf8rQTU8KGDy3daqTah8eYmyC8OIGF9nojxogA8G/lfXyuQ==
-Received: from DM6PR17CA0017.namprd17.prod.outlook.com (2603:10b6:5:1b3::30)
- by CH0PR12MB5267.namprd12.prod.outlook.com (2603:10b6:610:d2::18) with
+ bh=7Sc5ngt8zESYZYXPFu0DsdNN1usiEmPY9wvPeexNplY=;
+ b=qmru32V4b5QlKDfb9dWVVVvItaB0VgbG/Ru6r3hoyFhZpTyXX9xwgOz/v3JCRqzI5LiSaVcU7zQpKjkAuGggsVJlnIiiXSVwS5GD2vM3dKAnX6YOCv84XqaEqCEyj1jSKGg78eMTbBWjnNiwgXscDoU68NW29diYF0xT4lXnWdVV8Fleu3bUKLGvXoITDB69UEgM2xpvNazUilmX8l9a2gmP7NU9tSVCFqTgzFnTuMXXk8AMcsdr/4RNE+rHm3HJYSQDd1dqKd97fErSg/zr1ZsnsK7QOEfxePdLACPPNbEn2xwHipbpo+A+HhDpyEC7BCCQISbZatMW9Evp9uvJ1A==
+Received: from MW4PR04CA0119.namprd04.prod.outlook.com (2603:10b6:303:83::34)
+ by DM4PR12MB6009.namprd12.prod.outlook.com (2603:10b6:8:69::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.29; Thu, 16 Mar
- 2023 00:13:30 +0000
-Received: from DM6NAM11FT049.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:1b3:cafe::1a) by DM6PR17CA0017.outlook.office365.com
- (2603:10b6:5:1b3::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.29 via Frontend
- Transport; Thu, 16 Mar 2023 00:13:29 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.24; Thu, 16 Mar
+ 2023 00:59:43 +0000
+Received: from CO1NAM11FT021.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:83:cafe::49) by MW4PR04CA0119.outlook.office365.com
+ (2603:10b6:303:83::34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.26 via Frontend
+ Transport; Thu, 16 Mar 2023 00:59:40 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- DM6NAM11FT049.mail.protection.outlook.com (10.13.172.188) with Microsoft SMTP
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ CO1NAM11FT021.mail.protection.outlook.com (10.13.175.51) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6199.16 via Frontend Transport; Thu, 16 Mar 2023 00:13:29 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ 15.20.6199.17 via Frontend Transport; Thu, 16 Mar 2023 00:59:40 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 15 Mar 2023
- 17:13:28 -0700
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Wed, 15 Mar
- 2023 17:13:28 -0700
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.9)
+ 17:59:36 -0700
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.37; Wed, 15 Mar 2023 17:59:36 -0700
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.126.190.180)
  with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5 via Frontend
- Transport; Wed, 15 Mar 2023 17:13:27 -0700
-Date: Wed, 15 Mar 2023 17:13:25 -0700
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Wed, 15 Mar 2023 17:59:36 -0700
+Date: Wed, 15 Mar 2023 17:59:34 -0700
 From: Nicolin Chen <nicolinc@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>
-CC: <jgg@nvidia.com>, <will@kernel.org>, <eric.auger@redhat.com>,
-	<kevin.tian@intel.com>, <baolu.lu@linux.intel.com>, <joro@8bytes.org>,
-	<shameerali.kolothum.thodi@huawei.com>, <jean-philippe@linaro.org>,
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Jean-Philippe Brucker <jean-philippe@linaro.org>, <robin.murphy@arm.com>,
+	<will@kernel.org>, <eric.auger@redhat.com>, <kevin.tian@intel.com>,
+	<baolu.lu@linux.intel.com>, <joro@8bytes.org>,
+	<shameerali.kolothum.thodi@huawei.com>,
 	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 04/14] iommu/arm-smmu-v3: Add arm_smmu_hw_info
-Message-ID: <ZBJfJUjbAUId68s1@Asurada-Nvidia>
+	<linux-kernel@vger.kernel.org>, <yi.l.liu@intel.com>
+Subject: Re: [PATCH v1 02/14] iommufd: Add nesting related data structures
+ for ARM SMMUv3
+Message-ID: <ZBJp9qhc9UON/Z5/@Asurada-Nvidia>
 References: <cover.1678348754.git.nicolinc@nvidia.com>
- <494e36cbb77d49e11427b308868dbc1b0e19fe18.1678348754.git.nicolinc@nvidia.com>
- <bfa43614-c052-4bed-b87e-691141f41909@arm.com>
- <ZAqFFolbw5xoJDfb@Asurada-Nvidia>
- <5cc56149-965a-bb47-f23f-6aa9d0ecce4e@arm.com>
+ <364cfbe5b228ab178093db2de13fa3accf7a6120.1678348754.git.nicolinc@nvidia.com>
+ <20230309134217.GA1673607@myrica>
+ <ZAnx0lUkw02cVTi+@nvidia.com>
+ <ZAq3LJgbo8ApejvU@Asurada-Nvidia>
+ <ZAtVet99P22FNusJ@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -74,127 +77,56 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <5cc56149-965a-bb47-f23f-6aa9d0ecce4e@arm.com>
+In-Reply-To: <ZAtVet99P22FNusJ@nvidia.com>
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT049:EE_|CH0PR12MB5267:EE_
-X-MS-Office365-Filtering-Correlation-Id: 22f5e4d4-c465-4754-00f4-08db25b34589
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT021:EE_|DM4PR12MB6009:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1818604c-ccf0-4797-0aa8-08db25b9b925
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	ioxHrwDWCXRTnbEme/pnf6LE6VILYxc5/srq7XvB2TPZ/A7NuTYNaifs/1FpXch9zO/7UfEP8CxWYhRmogcqbnZ6FJBbmrq/cj413psh+kKlms4iROTrvMpIQWB8JuByoKgwytFyAPHU1NUKUu1iLTQ/JC+Np8JCHcGVqAi+BlmN0pCl6MypIJNzTQa3rHDPizm30Lr+bz6HiUJAntdok+JJkias9aS1upCCitqyIdfYJjnYLz7kCtZU4tjzoW2w9rivaFIftISSijuuK16ZKQi9o+xeG2IEdMkrblGWRQBznGY4YYBKrJ+ztzH3OAkLeU2cw4EEv4crjeVeXK4CoaYjPxpwVXoR3UQQzaYHYn2Mcl/QbwTHFbiTsxVWlApEctSCFZCG0wMhD5Dka6geS+XDYcFeDkAxVnjpBe+2yRHaY8DpjN5bjSGwNnfhlR+hMe63NbKgkqU5SdN/4HuvoSHM9EL/51BW3VflmNvD7NJ4uQlkuawrN1rSXlgiM96mCz85dsB8N8grzib8Lfh79vgGTqTKMxh4hLJGHMV9NJ2j5SAUTA7u5YuOVx31+GfSQeWMZ+seNzwGpZVPdCCSifkj7cPx32Pd2EAASthDfnPjdJK8ciDTeXETwyp0tQN/UWUoLMB67f3L50BfJV92z/PSH53uwy0v7f09k0Rm0ONCWEmB3UtmqBzNPpshiZgUhTHD1q75OpEshgbue5HiyGvJ35AcqhOWLfwnmNkcLGgfQ+qsf6ZAFjqbt1XmyPEgKrFeWUQzPfFJrcAPrzU+mLwgJ9fNFSNPuLOAhzFbWQx4nEprVoQFkdb+cF8ILKZVxq6hz0VuywITDiOGT3vRcw==
+	HJ9PkLBIeF0XYwQfzJsbfKk7k0GDeoY/uLT0VY+DepIAgJmN+aXIce0Ndh8SFxTkdTLtYkSii7yAbYuojJVr+4xNCj5ADQ2cDqBE3p5Xve1KgSgBz4MO2C21fBXXkUXSarbSEDF79oD93ZRx6qqq18w6BQJySf4+kQiK5uOF3LJxUZGqJ3l56qyVGsiEnId4V3koEoDb35EzhCmQy81d/GHlBxGCAiQ/2F0pe4cs/ZRSfS+v/tbnTI9VyQIqB9/iNX/mWOxPbrm8fHpdYGH19XcNU3wTAV+4TYbgW1TXAaQTNQk2qoEwFSTpheJbfjfqknWMmOzPQjhdmKWHnC5htb5Cv6veZY06NvXvs2QkUCzhVTWAkLKHKvwhFc/libm9j01tMQ9HRlIfbOQsqw+yP/DyzT6uo/VFAv0ZpHk4+ytzU3dGtg6TdqrTzBbIcwoqbri6ldp3YtbWq7kpMa5yF9i1F2LZOSg/iXA/cNgpzPSQVJZ5dFABncIJhhrQ9jkKSZ/RnD8P/Ro2QRjM2SmawddxEhmDs8E89/RArSN5Y7i7Om3L1FjANjUggH5g0MJph5DGhW80oqTKanYN+GXedN+eMLLvvTmPmqlvPBd85UqSwvMtFCOZ3Uu04fEmuJw8uzzrrmhM1pqKZxahKpapjYYLrvZjfqAYLzm+jmpCQXJdUIpD6MAInmj95Hf/SR8ae0PrZD1VEv2XWZOmtD05l8/MU35Kr8d3sn2ylSn5wO3sZJ1bjtyZqyyhn1U3QC1q
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(346002)(136003)(39860400002)(396003)(376002)(451199018)(40470700004)(46966006)(36840700001)(7636003)(2906002)(41300700001)(83380400001)(7416002)(5660300002)(40460700003)(54906003)(8676002)(40480700001)(55016003)(8936002)(4326008)(6916009)(356005)(70206006)(70586007)(36860700001)(82740400003)(86362001)(316002)(82310400005)(426003)(186003)(478600001)(47076005)(33716001)(336012)(966005)(53546011)(9686003)(26005);DIR:OUT;SFP:1101;
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(136003)(376002)(39860400002)(346002)(396003)(451199018)(40470700004)(46966006)(36840700001)(82740400003)(356005)(36860700001)(70586007)(41300700001)(2906002)(55016003)(40460700003)(478600001)(40480700001)(6636002)(86362001)(54906003)(316002)(8676002)(70206006)(5660300002)(426003)(7636003)(47076005)(4326008)(82310400005)(26005)(336012)(7416002)(186003)(9686003)(8936002)(33716001)(83380400001)(6862004);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2023 00:13:29.7474
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2023 00:59:40.7509
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 22f5e4d4-c465-4754-00f4-08db25b34589
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1818604c-ccf0-4797-0aa8-08db25b9b925
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT049.eop-nam11.prod.protection.outlook.com
+	CO1NAM11FT021.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5267
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6009
 
-On Fri, Mar 10, 2023 at 03:28:56PM +0000, Robin Murphy wrote:
-> External email: Use caution opening links or attachments
-> 
-> 
-> On 2023-03-10 01:17, Nicolin Chen wrote:
-> > Hi Robin,
+On Fri, Mar 10, 2023 at 12:06:18PM -0400, Jason Gunthorpe wrote:
+> On Thu, Mar 09, 2023 at 08:50:52PM -0800, Nicolin Chen wrote:
+> > On Thu, Mar 09, 2023 at 10:48:50AM -0400, Jason Gunthorpe wrote:
 > > 
-> > Thanks for the inputs.
+> > > Nicolin, I think we should tweak the uAPI here so that the
+> > > invalidation opaque data has a format tagged on its own, instead of
+> > > re-using the HWPT tag. Ie you can have a ARM SMMUv3 invalidate type
+> > > tag and also a virtio-viommu invalidate type tag.
 > > 
-> > On Thu, Mar 09, 2023 at 01:03:41PM +0000, Robin Murphy wrote:
-> > > External email: Use caution opening links or attachments
-> > > 
-> > > 
-> > > On 2023-03-09 10:53, Nicolin Chen wrote:
-> > > > This is used to forward the host IDR values to the user space, so the
-> > > > hypervisor and the guest VM can learn about the underlying hardware's
-> > > > capabilities.
-> > > > 
-> > > > Also, set the driver_type to IOMMU_HW_INFO_TYPE_ARM_SMMUV3 to pass the
-> > > > corresponding type sanity in the core.
-> > > > 
-> > > > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> > > > ---
-> > > >    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 25 +++++++++++++++++++++
-> > > >    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  2 ++
-> > > >    include/uapi/linux/iommufd.h                | 14 ++++++++++++
-> > > >    3 files changed, 41 insertions(+)
-> > > > 
-> > > > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > > index f2425b0f0cd6..c1aac695ae0d 100644
-> > > > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > > @@ -2005,6 +2005,29 @@ static bool arm_smmu_capable(struct device *dev, enum iommu_cap cap)
-> > > >        }
-> > > >    }
-> > > > 
-> > > > +static void *arm_smmu_hw_info(struct device *dev, u32 *length)
-> > > > +{
-> > > > +     struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-> > > > +     struct iommu_hw_info_smmuv3 *info;
-> > > > +     void *base_idr;
-> > > > +     int i;
-> > > > +
-> > > > +     if (!master || !master->smmu)
-> > > > +             return ERR_PTR(-ENODEV);
-> > > > +
-> > > > +     info = kzalloc(sizeof(*info), GFP_KERNEL);
-> > > > +     if (!info)
-> > > > +             return ERR_PTR(-ENOMEM);
-> > > > +
-> > > > +     base_idr = master->smmu->base + ARM_SMMU_IDR0;
-> > > > +     for (i = 0; i <= 5; i++)
-> > > > +             info->idr[i] = readl_relaxed(base_idr + 0x4 * i);
-> > > 
-> > > You need to take firmware overrides etc. into account here. In
-> > > particular, features like BTM may need to be hidden to work around
-> > > errata either in the system integration or the SMMU itself. It isn't
-> > > reasonable to expect every VMM to be aware of every erratum and
-> > > workaround, and there may even be workarounds where we need to go out of
-> > > our way to prevent guests from trying to use certain features in order
-> > > to maintain correctness at S2.
-> > 
-> > We can add a bit of overrides after this for errata, perhaps?
-> > 
-> > I have some trouble with finding the errata docs. Would it be
-> > possible for you to direct me to it with a link maybe?
+> > The invalidation tage is shared with the hwpt allocation. Does
+> > it mean that virtio-iommu won't have it's own allocation tag?
 > 
-> The key Arm term is "Software Developer Errata Notice", or just SDEN.
-> Here's the ones for MMU-600 and MMU-700:
-> 
-> https://developer.arm.com/documentation/SDEN-946810/latest/
+> We probably shouldn't assume it will
 
-This page shows "Arm CoreLink MMU-600 System Memory Management
-Unit Software Developer Errata Notice" but the downloaded file
-is "Arm CoreLink CI-700 Coherent Interconnect" errata notice.
-And I don't quite understand what it's about.
+In that case, why do have need an invalidation tag/type on its
+own? Can't we use an IOMMU_HWPT_TYPE_VIRTIO tag for allocation
+and invalidation together for virtio?
 
-> https://developer.arm.com/documentation/SDEN-1786925/latest/
+Or did you mean that we should define a flag inside the data
+structure like this?
 
-Yea, this one I got an "MMU-700 System Memory Management Unit"
-SMMU errata file that I can read and understand.
-
-> Note that until now it has been extremely fortunate that in pretty much
-> every case Linux either hasn't supported the affected feature at all, or
-> has happened to avoid meeting the conditions. Once we do introduce
-> nesting support that all goes out the window (and I'll have to think
-> more when reviewing new errata in future...)
-> 
-> I've been putting off revisiting all the existing errata to figure out
-> what we'd need to do until new nesting patches appeared, so I'll try to
-> get to that soon now. I think in many cases it's likely to be best to
-> just disallowing nesting entirely on affected implementations.
-
-Do we have already a list of "affected implementations"? Or,
-we would need to make such a list now? In a latter case, can
-these affected implementations be detected from their IRD0-5
-registers, so that we can simply do something in hw_info()?
+struct iommu_hwpt_invalidate_arm_smmuv3 {
+#define IOMMU_SMMUV3_CMDQ_TLBI_VA_LEAF  (1 << 0)
+#define IOMMU_SMMUV3_FORMAT_VIRTIO	(1 << 63)
+	__u64 flags;
+}
 
 Thanks
 Nic
