@@ -1,93 +1,100 @@
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99E3D28E3
-	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 10:14:54 +0000 (UTC)
-X-UUID: 61f2fbbec3e311edbd2e61cc88cc8f98-20230316
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=SIJTB2iw2ZKbVZypN9eh4Lmwq+P7EW/KvxfnNL94MRc=;
-	b=eeHeASbfC77etrde7DA+MUitBUz4AhQT+i6P4ftH6QWPOLqQ98KaNFto29qQKpP0Y8n9lxjbtDy9G/4jFPil8L4c9557MwsIJBJuwOgSBGXaqlfKAMQxWng1xN7eWy1ezguQu9bid0mLikDBdXj9Q2n7U0BKf2lVnErL50mH2nA=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.21,REQID:98d48548-f0a5-4308-b904-9efd6eeb21ca,IP:0,U
-	RL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION
-	:release,TS:-5
-X-CID-META: VersionHash:83295aa,CLOUDID:12a600f6-ddba-41c3-91d9-10eeade8eac7,B
-	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
-	RL:1,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0
-X-CID-BVR: 0
-X-CID-BAS: 0,_,0,_
-X-UUID: 61f2fbbec3e311edbd2e61cc88cc8f98-20230316
-Received: from mtkmbs13n2.mediatek.inc [(172.21.101.108)] by mailgw02.mediatek.com
-	(envelope-from <yong.wu@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 183096444; Thu, 16 Mar 2023 18:14:48 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs13n1.mediatek.inc (172.21.101.193) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.25; Thu, 16 Mar 2023 18:14:48 +0800
-Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.1118.25 via Frontend Transport; Thu, 16 Mar 2023 18:14:47 +0800
-From: Yong Wu <yong.wu@mediatek.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Matthias
- Brugger <matthias.bgg@gmail.com>
-CC: Robin Murphy <robin.murphy@arm.com>, Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>, Yong Wu <yong.wu@mediatek.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	<iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>, Yunfei Wang
-	<yf.wang@mediatek.com>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <jianjiao.zeng@mediatek.com>,
-	<chengci.xu@mediatek.com>
-Subject: [PATCH v3] iommu/mediatek: Set dma_mask for PGTABLE_PA_35_EN
-Date: Thu, 16 Mar 2023 18:14:45 +0800
-Message-ID: <20230316101445.12443-1-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C8E2D28E3
+	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 10:24:21 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A025C2F4;
+	Thu, 16 Mar 2023 03:25:04 -0700 (PDT)
+Received: from [10.57.54.201] (unknown [10.57.54.201])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 43C7F3F67D;
+	Thu, 16 Mar 2023 03:24:19 -0700 (PDT)
+Message-ID: <44d364bc-62ac-7d31-b886-0f7ee94e3a08@arm.com>
+Date: Thu, 16 Mar 2023 10:24:14 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-MTK: N
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH 1/3] dma-debug: small dma_debug_entry's comment and
+ variable name updates
+Content-Language: en-GB
+To: Desnes Nunes <desnesn@redhat.com>, iommu@lists.linux.dev,
+ linux-scsi@vger.kernel.org, storagedev@microchip.com,
+ linux-kernel@vger.kernel.org
+Cc: hch@lst.de, martin.petersen@oracle.com, don.brace@microchip.com,
+ m.szyprowski@samsung.com, jejb@linux.ibm.com, jsnitsel@redhat.com
+References: <20230315192130.970021-1-desnesn@redhat.com>
+ <20230315192130.970021-2-desnesn@redhat.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20230315192130.970021-2-desnesn@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-When we enable PGTABLE_PA_35_EN, the PA for pgtable may be 35bits.
-Thus add dma_mask for it.
+On 2023-03-15 19:21, Desnes Nunes wrote:
+> Small update on dma_debug_entry's struct commentary and also standardize
+> the usage of 'dma_addr' variable name from debug_dma_map_page() on
+> debug_dma_unmap_page(), and similarly on debug_dma_free_coherent()
+> 
+> Signed-off-by: Desnes Nunes <desnesn@redhat.com>
+> ---
+>   kernel/dma/debug.c | 11 ++++++-----
+>   1 file changed, 6 insertions(+), 5 deletions(-)
+> 
+> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+> index 18c93c2276ca..e0ad8db1ec25 100644
+> --- a/kernel/dma/debug.c
+> +++ b/kernel/dma/debug.c
+> @@ -52,7 +52,8 @@ enum map_err_types {
+>   /**
+>    * struct dma_debug_entry - track a dma_map* or dma_alloc_coherent mapping
+>    * @list: node on pre-allocated free_entries list
+> - * @dev: 'dev' argument to dma_map_{page|single|sg} or dma_alloc_coherent
+> + * @dev: pointer to the device driver
 
-Fixes: 301c3ca12576 ("iommu/mediatek: Allow page table PA up to 35bit")
-Signed-off-by: Chengci.Xu <chengci.xu@mediatek.com>
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
-v3: Sorry for a typo. Change from "if (!ret)" to "if (ret)".
+The original comment was correct...
 
-v2: Just move this out from mt8188 series. Nothing change.
+> + * @dev_addr: 'dev' argument to dma_map_{page|single|sg} or dma_alloc_coherent
 
-v1: https://lore.kernel.org/linux-mediatek/20230307080555.14399-3-yong.wu@mediatek.com/
----
- drivers/iommu/mtk_iommu.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+...and the address is clearly not the argument representing the device, 
+since it is an address :/
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index d5a4955910ff..6a00ce208dc2 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -1258,6 +1258,14 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 			return PTR_ERR(data->bclk);
- 	}
- 
-+	if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN)) {
-+		ret = dma_set_mask(dev, DMA_BIT_MASK(35));
-+		if (ret) {
-+			dev_err(dev, "Failed to set dma_mask 35.\n");
-+			return ret;
-+		}
-+	}
-+
- 	pm_runtime_enable(dev);
- 
- 	if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM)) {
--- 
-2.25.1
+Thanks,
+Robin.
 
+>    * @size: length of the mapping
+>    * @type: single, page, sg, coherent
+>    * @direction: enum dma_data_direction
+> @@ -1262,13 +1263,13 @@ void debug_dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
+>   }
+>   EXPORT_SYMBOL(debug_dma_mapping_error);
+>   
+> -void debug_dma_unmap_page(struct device *dev, dma_addr_t addr,
+> +void debug_dma_unmap_page(struct device *dev, dma_addr_t dma_addr,
+>   			  size_t size, int direction)
+>   {
+>   	struct dma_debug_entry ref = {
+>   		.type           = dma_debug_single,
+>   		.dev            = dev,
+> -		.dev_addr       = addr,
+> +		.dev_addr       = dma_addr,
+>   		.size           = size,
+>   		.direction      = direction,
+>   	};
+> @@ -1403,13 +1404,13 @@ void debug_dma_alloc_coherent(struct device *dev, size_t size,
+>   }
+>   
+>   void debug_dma_free_coherent(struct device *dev, size_t size,
+> -			 void *virt, dma_addr_t addr)
+> +			 void *virt, dma_addr_t dma_addr)
+>   {
+>   	struct dma_debug_entry ref = {
+>   		.type           = dma_debug_coherent,
+>   		.dev            = dev,
+>   		.offset		= offset_in_page(virt),
+> -		.dev_addr       = addr,
+> +		.dev_addr       = dma_addr,
+>   		.size           = size,
+>   		.direction      = DMA_BIDIRECTIONAL,
+>   	};
