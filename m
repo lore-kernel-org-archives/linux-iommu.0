@@ -1,134 +1,132 @@
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2046.outbound.protection.outlook.com [40.107.95.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBA95AD28
-	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 20:06:33 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kaUn6SdUHkc+wsE9oJcHHh4o/DnFB7uWGjDmxGNH3uossGu6cFXr4lTpS8ztBxFou++F4rznBX/RpgRMpzQjT0e1NHJX7/uQDVwXPloMz6igS51nvIxagyfij0/Tm/Q5V5sDM93e9nv+jlgpJd2PeCTVFrhAroQrF+/t8IGgrMBn0RKOF8S9lyGeb/ux7Pj1xWITZy/uWwiBkaU7AzvR2dtnt2ynCzsb+5/4MhSFOKQcUwjh8TkSfq2GrohbLH8A0I+TZwLaJGpaNQAU48rf2YoKGyABvBg9lj/sE7EbC8zez/Cy6GUUC7ynkRp7bV7j3N22ppiqV2no5iFRyW5Gsg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6hZVjjSF1qznhVfAth1Z2DmHdL7k/h9SQ5CmoF5F0y8=;
- b=ii9tUxpMiy6vbRO8gkMLdLQxGDToh5aKIKWL/vZ7pylo0dMWPfv3pD4W31gDtZBKWdkQJ2cRDlnZg8Oro0rwlKGWrgUtbpHXrZnMuath1atC/qE2uY21FxZt8tzJYOloiqHQZK+Lts1LB7c43xYDbUhVBS4ongxIoqb5++ltHV883J2jvtzjuvIc9bhvjQU2DPB0maAc3DjlAuIQmXhNOfiBvLhSvPhrQpNUjr+EKeb5Rdc8Tls6BHluqw9Mjkq4u/PybbYcaf4K0tb4Ewsi/KVbWQMJfsaQpVZ8HeCt82uT/EIeoKNpKiV98VVjX8gYpzjP2vpzGTM2JNbC8hDH0w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6hZVjjSF1qznhVfAth1Z2DmHdL7k/h9SQ5CmoF5F0y8=;
- b=EYKlNBoNsO7xQUg5qIaBh/LTOZj0rNSEzHfkvvK/eXAaHr3jmgAJtKMVR/68L4uKlrMIhRgSuQ90kpOB7/5bed5rhbG3JW6Mib/AINCoyBzysnoBm82rJRoD9OvZpjfyYPnwAiLQJ9+Ig3Gs8SUuJWda+t7XGzVzcqX6lv7UAH49i4R+r1+9TZRvVGh/nC+K9GZXo4i2GlWMn70XU4HU8Y6WMPIJy9hY/4P+RZWvbwcDgOoaDowbEey2SwptE7oFAXCgg0uKeZWUUbLSV/hK5a19diXGecvf/ngGnn3NmqmJX7/w36sHUOAU0IdDQReUOQ3Sa0wqusdUasxBT+H96g==
-Received: from BLAPR03CA0051.namprd03.prod.outlook.com (2603:10b6:208:32d::26)
- by IA0PR12MB7676.namprd12.prod.outlook.com (2603:10b6:208:432::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.24; Thu, 16 Mar
- 2023 20:06:31 +0000
-Received: from BL02EPF0000EE3F.namprd05.prod.outlook.com
- (2603:10b6:208:32d:cafe::6b) by BLAPR03CA0051.outlook.office365.com
- (2603:10b6:208:32d::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.29 via Frontend
- Transport; Thu, 16 Mar 2023 20:06:31 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- BL02EPF0000EE3F.mail.protection.outlook.com (10.167.241.133) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6178.30 via Frontend Transport; Thu, 16 Mar 2023 20:06:31 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 16 Mar 2023
- 13:06:17 -0700
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.37; Thu, 16 Mar 2023 13:06:16 -0700
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.126.190.180)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Thu, 16 Mar 2023 13:06:16 -0700
-Date: Thu, 16 Mar 2023 13:06:14 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>
-CC: <jgg@nvidia.com>, <will@kernel.org>, <eric.auger@redhat.com>,
-	<kevin.tian@intel.com>, <baolu.lu@linux.intel.com>, <joro@8bytes.org>,
-	<shameerali.kolothum.thodi@huawei.com>, <jean-philippe@linaro.org>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 04/14] iommu/arm-smmu-v3: Add arm_smmu_hw_info
-Message-ID: <ZBN2tmWoRURvjarc@Asurada-Nvidia>
-References: <cover.1678348754.git.nicolinc@nvidia.com>
- <494e36cbb77d49e11427b308868dbc1b0e19fe18.1678348754.git.nicolinc@nvidia.com>
- <bfa43614-c052-4bed-b87e-691141f41909@arm.com>
- <ZAqFFolbw5xoJDfb@Asurada-Nvidia>
- <5cc56149-965a-bb47-f23f-6aa9d0ecce4e@arm.com>
- <ZBJfJUjbAUId68s1@Asurada-Nvidia>
- <1d4ff93d-a97e-85bb-4259-9da259bc2ab7@arm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CC4AAD32
+	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 21:01:03 +0000 (UTC)
+Received: by mail-pj1-f73.google.com with SMTP id q30-20020a17090a17a100b0023d376ac2c5so1306892pja.5
+        for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 14:01:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1679000463;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=eVK7JSTP093HSgALaT47Fh8+kh5wLz2pU0fw8h+uNzk=;
+        b=VC+7zohdtySY73Crulq7TLz1D3N6/p5iXZkoxtBnpdgSSjnFYB7GYb4W93JJnnTtmR
+         MO9hM46dRuwESNW94ndnrSKz3ojzGoDmTdbYpT331oWt8LyUwG5rYyj2iQgGxkGGmwbz
+         E7+4Bez7jaOUKPfNk5CjnNU2e9smqF3th9aK0yWtyZX981bJy/FVZCYZ30ijiIXz9z6j
+         qq0KvbNw7/H4Wo2oLdAPRMYnfE1mCJDUiRWmRt1/fQ84mxFWQpIFwoZhh9niw2trS2d3
+         U2pHxh58XMA6Q66Ca3H/fnRVDi16tsjig1P++9v9cVOVHr9NUQJPbX0BvvfQHc8XgXu1
+         xjLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679000463;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=eVK7JSTP093HSgALaT47Fh8+kh5wLz2pU0fw8h+uNzk=;
+        b=dv41yK5m17di/w5IXbnFbSgxHda/3UpJUUVBuX2pG+qNGIadsUDcqNu61wDaLvpn4T
+         f4Zl7bgDOzW3CWJxmnH6upEswfQqC4FiqSf6Z2FYQ6nxrg5oYqPPuITxWiHfvLk6tsau
+         I/UADSz3ryiHoc22Jv/iTVzasa6FKoqKzysBEwVj4H8jxOhCq/bsA7t1GWZ7wnSEW/nB
+         gZwSqchiV2xCnb6fDy7yb37TItj1Gl39m5D82V80ZuthSQOyTF0l7xyXj+FH/ZUto0cT
+         nI3IZA8dn7PKAClVD87NX4+IbcCMfAs07b8/8F6o1141j+IAayRkdOJCApcyIwgr78rQ
+         4jgA==
+X-Gm-Message-State: AO0yUKUqzeLFIKUD7iyulqscs1kTr0aIKypQxJYi3uUmoiRkicvPpVPY
+	hbcKgqEr+2unUzEaDTmolVfuJdA2cWg=
+X-Google-Smtp-Source: AK7set+IknJoLX81zWcYwrbBvfKblRTYauFuiDDs8zokETO8eOVd3VU9JV4OYu6ck+KbMc0ZQD1hxNg9Xgk=
+X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
+ (user=seanjc job=sendgmr) by 2002:a17:90b:3183:b0:236:6e4c:8a1e with SMTP id
+ hc3-20020a17090b318300b002366e4c8a1emr1592277pjb.1.1679000463421; Thu, 16 Mar
+ 2023 14:01:03 -0700 (PDT)
+Date: Thu, 16 Mar 2023 14:01:02 -0700
+In-Reply-To: <20230316200219.42673-2-joao.m.martins@oracle.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
+Mime-Version: 1.0
+References: <20230316200219.42673-1-joao.m.martins@oracle.com> <20230316200219.42673-2-joao.m.martins@oracle.com>
+Message-ID: <ZBODjjANx6pkq5iq@google.com>
+Subject: Re: [PATCH v2 1/2] iommu/amd: Don't block updates to GATag if guest
+ mode is on
+From: Sean Christopherson <seanjc@google.com>
+To: Joao Martins <joao.m.martins@oracle.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Maxim Levitsky <mlevitsk@redhat.com>, Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, 
+	kvm@vger.kernel.org
 Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <1d4ff93d-a97e-85bb-4259-9da259bc2ab7@arm.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF0000EE3F:EE_|IA0PR12MB7676:EE_
-X-MS-Office365-Filtering-Correlation-Id: b6d6796d-44c5-4efe-49cd-08db2659ef73
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	442Jb7ByR6lxco3aAmq+x4hHgfYXpMyNV4c2iP9+Q1k4E4gFtFV6YsxBotBNywaS468j4SKJ+2xMPz7RYWGut3dNAhbJrNnBSNoNqtkHpEz590556JSDz7Nzm52CTSNMRMPzCBodTNVzlHOsjWZ5rdAs9KCfk4RDtP9DzWR78Gh4yOhCXEomJQedHDdKGfB+qJvHGPhSHx9pFIo4MyN3VyQX/OnnZnjzpnBpFQ88hN5CAFFSnupfA0QZ7a5f6mcpmfU3nQg/fJuCVTt7YIZtnY6Bw2ZlPl9oS9i2JwlxxLK3OKoMfB045Rsc6yegKIFRtPsvBaKv7dEXXhMOOfhdISWs504VT7jtPIC2MWUiNjEbMFw87KBYTaSjSsjcOs8vT9NcdaMdQjsYiNmzwKy+NeKAB690YyxlrCZYMsroqpA2nUUFYRm34evGuJPiauzKJaQABfzc/7B/j8cyLY2naqsw70TqgtoEPE03kMZKtxux4XgjpkrXWXArbkiZqHLQSZq7/xnADMNHiYsJmCii+l0SJgYdmrkv6pClqRPHQvSiQ1bKTVZRI4sAeAmvMcdu1LzcsNcF0puRn2FR4iV+0uGoKSwkYSdhWTSmcxDtqoABLJMqxXEzmAQ2OqmGeC7beyDIFyI8+jP7nmEosF1XvJmZjP0L9S/p2qasQBRVg9syq6oaTGWeMb32yIMMqpxWvERSc/tKxqN4ySZi2Y4kxk3dK4C0+p7N6AVHegn11xnAymkrBHvkYcBg9n05h8Yh
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(396003)(376002)(39860400002)(136003)(346002)(451199018)(46966006)(36840700001)(40470700004)(82740400003)(47076005)(356005)(36860700001)(55016003)(2906002)(41300700001)(478600001)(70586007)(40480700001)(40460700003)(86362001)(54906003)(8676002)(6916009)(316002)(70206006)(5660300002)(4326008)(82310400005)(426003)(7636003)(26005)(336012)(7416002)(186003)(9686003)(8936002)(83380400001)(33716001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2023 20:06:31.2436
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b6d6796d-44c5-4efe-49cd-08db2659ef73
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL02EPF0000EE3F.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7676
 
-On Thu, Mar 16, 2023 at 03:19:27PM +0000, Robin Murphy wrote:
-
-> > > Note that until now it has been extremely fortunate that in pretty much
-> > > every case Linux either hasn't supported the affected feature at all, or
-> > > has happened to avoid meeting the conditions. Once we do introduce
-> > > nesting support that all goes out the window (and I'll have to think
-> > > more when reviewing new errata in future...)
-> > > 
-> > > I've been putting off revisiting all the existing errata to figure out
-> > > what we'd need to do until new nesting patches appeared, so I'll try to
-> > > get to that soon now. I think in many cases it's likely to be best to
-> > > just disallowing nesting entirely on affected implementations.
-> > 
-> > Do we have already a list of "affected implementations"? Or,
-> > we would need to make such a list now? In a latter case, can
-> > these affected implementations be detected from their IRD0-5
-> > registers, so that we can simply do something in hw_info()?
+On Thu, Mar 16, 2023, Joao Martins wrote:
+> On KVM GSI routing table updates, specially those where they have vIOMMUs
+> with interrupt remapping enabled (to boot >255vcpus setups without relying
+> on KVM_FEATURE_MSI_EXT_DEST_ID), a VMM may update the backing VF MSIs
+> with a new VCPU affinity.
 > 
-> Somewhere I have a patch that adds all the IIDR stuff needed for this,
-> but I never sent it upstream since the erratum itself was an early
-> MMU-600 one which in practice doesn't matter. I'll dig that out and
-> update it with what I have in mind.
+> On AMD with AVIC enabled, the new vcpu affinity info is updated via:
+> 	avic_pi_update_irte()
+> 		irq_set_vcpu_affinity()
+> 			amd_ir_set_vcpu_affinity()
+> 				amd_iommu_{de}activate_guest_mode()
+> 
+> Where the IRTE[GATag] is updated with the new vcpu affinity. The GATag
+> contains VM ID and VCPU ID, and is used by IOMMU hardware to signal KVM
+> (via GALog) when interrupt cannot be delivered due to vCPU is in
+> blocking state.
+> 
+> The issue is that amd_iommu_activate_guest_mode() will essentially
+> only change IRTE fields on transitions from non-guest-mode to guest-mode
+> and otherwise returns *with no changes to IRTE* on already configured
+> guest-mode interrupts. To the guest this means that the VF interrupts
+> remain affined to the first vCPU they were first configured, and guest
+> will be unable to either VF interrupts and receive messages like this
+> from spuruious interrupts (e.g. from waking the wrong vCPU in GALog):
+> 
+> [  167.759472] __common_interrupt: 3.34 No irq handler for vector
+> [  230.680927] mlx5_core 0000:00:02.0: mlx5_cmd_eq_recover:247:(pid
+> 3122): Recovered 1 EQEs on cmd_eq
+> [  230.681799] mlx5_core 0000:00:02.0:
+> wait_func_handle_exec_timeout:1113:(pid 3122): cmd[0]: CREATE_CQ(0x400)
+> recovered after timeout
+> [  230.683266] __common_interrupt: 3.34 No irq handler for vector
+> 
+> Given the fact that amd_ir_set_vcpu_affinity() uses
+> amd_iommu_activate_guest_mode() underneath it essentially means that VCPU
+> affinity changes of IRTEs are nops. Fix it by dropping the check for
+> guest-mode at amd_iommu_activate_guest_mode(). Same thing is applicable to
+> amd_iommu_deactivate_guest_mode() although, even if the IRTE doesn't change
+> underlying DestID on the host, the VFIO IRQ handler will still be able to
+> poke at the right guest-vCPU.
 
-Nice!
+Is there any harm in giving deactivate the same treatement?  If the worst case
+scenario is a few wasted cycles, having symmetric flows and eliminating benign
+bugs seems like a worthwhile tradeoff (assuming this is indeed a relatively slow
+path like I think it is).
 
-Perhaps we should merge that first, or include in this series
-if you don't mind, so that we would be less worried about any
-affected platform when releasing the new Linux version having
-this nesting feature.
+> Fixes: b9c6ff94e43a ("iommu/amd: Re-factor guest virtual APIC (de-)activation code")
+> Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
+> Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> ---
+>  drivers/iommu/amd/iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index 5a505ba5467e..bf3ebc9d6cde 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -3485,7 +3485,7 @@ int amd_iommu_activate_guest_mode(void *data)
 
-Thanks!
-Nic
+Any chance you (or anyone) would want to create a follow-up series to rename and/or
+rework these flows to make it more obvious that the helpers handle updates as well
+as transitions between "guest mode" and "host mode"?  E.g. I can see KVM getting
+clever and skipping the "activation" when KVM knows AVIC is already active (though
+I can't tell for certain whether or not that would actually be problematic).
+
+>  	u64 valid;
+>  
+>  	if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir) ||
+> -	    !entry || entry->lo.fields_vapic.guest_mode)
+> +	    !entry)
+
+This can easily fit on the previous line.
+
+	if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir) || !entry)
+		return 0;
