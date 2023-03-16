@@ -1,189 +1,134 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2046.outbound.protection.outlook.com [40.107.95.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C935BAD28
-	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 20:02:42 +0000 (UTC)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32GJcsG8007167;
-	Thu, 16 Mar 2023 20:02:35 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=corp-2022-7-12;
- bh=dFtj/aRGKPao9dR6yCqnTW7Z0VF2q85l8yvy9JZgHLo=;
- b=QK36dW1K2KwGLlZvY4SFQU2IUyiyJIIc0+6gNGrtR2/oeIXvJQ6u4sf/h+h5QUqTKZFt
- /2In0XOqrW+0gKo8c2HYRxB+EZ9o1zPjadWjPoxfNEeJv0p5gqvz6JWiZ21Nt6z5hPUl
- aMbXBMEv4DGCFeVEyjShdhafAZmWFWIohRCiHx5GPLST/wxdyklKzSRJuvTnChW+ejwa
- oZrpTZYj7lW/vrfy0/wWj2c9LlzKAAEi9yeDI5iKT2fmecrBvfaOazVA9oR9lV4c7oFK
- eF7edD3XUrLQLlJScfwKpl9k2X/7zcxw6sj1NanvUiQlxKXkYSsKsIPlbPQKMojF68Ml iA== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3pbs29t4b3-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 16 Mar 2023 20:02:35 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 32GJUWWB020752;
-	Thu, 16 Mar 2023 20:02:35 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3pbq46u627-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 16 Mar 2023 20:02:34 +0000
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32GK2TMP028656;
-	Thu, 16 Mar 2023 20:02:34 GMT
-Received: from joaomart-mac.uk.oracle.com (dhcp-10-175-172-105.vpn.oracle.com [10.175.172.105])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3pbq46u5v8-3;
-	Thu, 16 Mar 2023 20:02:34 +0000
-From: Joao Martins <joao.m.martins@oracle.com>
-To: iommu@lists.linux.dev
-Cc: Joerg Roedel <joro@8bytes.org>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
-        kvm@vger.kernel.org, Joao Martins <joao.m.martins@oracle.com>
-Subject: [PATCH v2 2/2] iommu/amd: Handle GALog overflows
-Date: Thu, 16 Mar 2023 20:02:19 +0000
-Message-Id: <20230316200219.42673-3-joao.m.martins@oracle.com>
-In-Reply-To: <20230316200219.42673-1-joao.m.martins@oracle.com>
-References: <20230316200219.42673-1-joao.m.martins@oracle.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBA95AD28
+	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 20:06:33 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kaUn6SdUHkc+wsE9oJcHHh4o/DnFB7uWGjDmxGNH3uossGu6cFXr4lTpS8ztBxFou++F4rznBX/RpgRMpzQjT0e1NHJX7/uQDVwXPloMz6igS51nvIxagyfij0/Tm/Q5V5sDM93e9nv+jlgpJd2PeCTVFrhAroQrF+/t8IGgrMBn0RKOF8S9lyGeb/ux7Pj1xWITZy/uWwiBkaU7AzvR2dtnt2ynCzsb+5/4MhSFOKQcUwjh8TkSfq2GrohbLH8A0I+TZwLaJGpaNQAU48rf2YoKGyABvBg9lj/sE7EbC8zez/Cy6GUUC7ynkRp7bV7j3N22ppiqV2no5iFRyW5Gsg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6hZVjjSF1qznhVfAth1Z2DmHdL7k/h9SQ5CmoF5F0y8=;
+ b=ii9tUxpMiy6vbRO8gkMLdLQxGDToh5aKIKWL/vZ7pylo0dMWPfv3pD4W31gDtZBKWdkQJ2cRDlnZg8Oro0rwlKGWrgUtbpHXrZnMuath1atC/qE2uY21FxZt8tzJYOloiqHQZK+Lts1LB7c43xYDbUhVBS4ongxIoqb5++ltHV883J2jvtzjuvIc9bhvjQU2DPB0maAc3DjlAuIQmXhNOfiBvLhSvPhrQpNUjr+EKeb5Rdc8Tls6BHluqw9Mjkq4u/PybbYcaf4K0tb4Ewsi/KVbWQMJfsaQpVZ8HeCt82uT/EIeoKNpKiV98VVjX8gYpzjP2vpzGTM2JNbC8hDH0w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6hZVjjSF1qznhVfAth1Z2DmHdL7k/h9SQ5CmoF5F0y8=;
+ b=EYKlNBoNsO7xQUg5qIaBh/LTOZj0rNSEzHfkvvK/eXAaHr3jmgAJtKMVR/68L4uKlrMIhRgSuQ90kpOB7/5bed5rhbG3JW6Mib/AINCoyBzysnoBm82rJRoD9OvZpjfyYPnwAiLQJ9+Ig3Gs8SUuJWda+t7XGzVzcqX6lv7UAH49i4R+r1+9TZRvVGh/nC+K9GZXo4i2GlWMn70XU4HU8Y6WMPIJy9hY/4P+RZWvbwcDgOoaDowbEey2SwptE7oFAXCgg0uKeZWUUbLSV/hK5a19diXGecvf/ngGnn3NmqmJX7/w36sHUOAU0IdDQReUOQ3Sa0wqusdUasxBT+H96g==
+Received: from BLAPR03CA0051.namprd03.prod.outlook.com (2603:10b6:208:32d::26)
+ by IA0PR12MB7676.namprd12.prod.outlook.com (2603:10b6:208:432::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.24; Thu, 16 Mar
+ 2023 20:06:31 +0000
+Received: from BL02EPF0000EE3F.namprd05.prod.outlook.com
+ (2603:10b6:208:32d:cafe::6b) by BLAPR03CA0051.outlook.office365.com
+ (2603:10b6:208:32d::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.29 via Frontend
+ Transport; Thu, 16 Mar 2023 20:06:31 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ BL02EPF0000EE3F.mail.protection.outlook.com (10.167.241.133) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6178.30 via Frontend Transport; Thu, 16 Mar 2023 20:06:31 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 16 Mar 2023
+ 13:06:17 -0700
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.37; Thu, 16 Mar 2023 13:06:16 -0700
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.126.190.180)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Thu, 16 Mar 2023 13:06:16 -0700
+Date: Thu, 16 Mar 2023 13:06:14 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+CC: <jgg@nvidia.com>, <will@kernel.org>, <eric.auger@redhat.com>,
+	<kevin.tian@intel.com>, <baolu.lu@linux.intel.com>, <joro@8bytes.org>,
+	<shameerali.kolothum.thodi@huawei.com>, <jean-philippe@linaro.org>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 04/14] iommu/arm-smmu-v3: Add arm_smmu_hw_info
+Message-ID: <ZBN2tmWoRURvjarc@Asurada-Nvidia>
+References: <cover.1678348754.git.nicolinc@nvidia.com>
+ <494e36cbb77d49e11427b308868dbc1b0e19fe18.1678348754.git.nicolinc@nvidia.com>
+ <bfa43614-c052-4bed-b87e-691141f41909@arm.com>
+ <ZAqFFolbw5xoJDfb@Asurada-Nvidia>
+ <5cc56149-965a-bb47-f23f-6aa9d0ecce4e@arm.com>
+ <ZBJfJUjbAUId68s1@Asurada-Nvidia>
+ <1d4ff93d-a97e-85bb-4259-9da259bc2ab7@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-16_13,2023-03-16_02,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxscore=0 phishscore=0
- suspectscore=0 spamscore=0 malwarescore=0 mlxlogscore=862 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2303150002
- definitions=main-2303160152
-X-Proofpoint-GUID: 2y6Gi5_rS4Ij3E0lxnDdzlbjaihu9AKS
-X-Proofpoint-ORIG-GUID: 2y6Gi5_rS4Ij3E0lxnDdzlbjaihu9AKS
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <1d4ff93d-a97e-85bb-4259-9da259bc2ab7@arm.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL02EPF0000EE3F:EE_|IA0PR12MB7676:EE_
+X-MS-Office365-Filtering-Correlation-Id: b6d6796d-44c5-4efe-49cd-08db2659ef73
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	442Jb7ByR6lxco3aAmq+x4hHgfYXpMyNV4c2iP9+Q1k4E4gFtFV6YsxBotBNywaS468j4SKJ+2xMPz7RYWGut3dNAhbJrNnBSNoNqtkHpEz590556JSDz7Nzm52CTSNMRMPzCBodTNVzlHOsjWZ5rdAs9KCfk4RDtP9DzWR78Gh4yOhCXEomJQedHDdKGfB+qJvHGPhSHx9pFIo4MyN3VyQX/OnnZnjzpnBpFQ88hN5CAFFSnupfA0QZ7a5f6mcpmfU3nQg/fJuCVTt7YIZtnY6Bw2ZlPl9oS9i2JwlxxLK3OKoMfB045Rsc6yegKIFRtPsvBaKv7dEXXhMOOfhdISWs504VT7jtPIC2MWUiNjEbMFw87KBYTaSjSsjcOs8vT9NcdaMdQjsYiNmzwKy+NeKAB690YyxlrCZYMsroqpA2nUUFYRm34evGuJPiauzKJaQABfzc/7B/j8cyLY2naqsw70TqgtoEPE03kMZKtxux4XgjpkrXWXArbkiZqHLQSZq7/xnADMNHiYsJmCii+l0SJgYdmrkv6pClqRPHQvSiQ1bKTVZRI4sAeAmvMcdu1LzcsNcF0puRn2FR4iV+0uGoKSwkYSdhWTSmcxDtqoABLJMqxXEzmAQ2OqmGeC7beyDIFyI8+jP7nmEosF1XvJmZjP0L9S/p2qasQBRVg9syq6oaTGWeMb32yIMMqpxWvERSc/tKxqN4ySZi2Y4kxk3dK4C0+p7N6AVHegn11xnAymkrBHvkYcBg9n05h8Yh
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(396003)(376002)(39860400002)(136003)(346002)(451199018)(46966006)(36840700001)(40470700004)(82740400003)(47076005)(356005)(36860700001)(55016003)(2906002)(41300700001)(478600001)(70586007)(40480700001)(40460700003)(86362001)(54906003)(8676002)(6916009)(316002)(70206006)(5660300002)(4326008)(82310400005)(426003)(7636003)(26005)(336012)(7416002)(186003)(9686003)(8936002)(83380400001)(33716001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2023 20:06:31.2436
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b6d6796d-44c5-4efe-49cd-08db2659ef73
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL02EPF0000EE3F.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7676
 
-GALog exists to propagate interrupts into all vCPUs in the system when
-interrupts are marked as non running (e.g. when vCPUs aren't running). A
-GALog overflow happens when there's in no space in the log to record the
-GATag of the interrupt. So when the GALOverflow condition happens, the
-GALog queue is processed and the GALog is restarted, as the IOMMU
-manual indicates in section "2.7.4 Guest Virtual APIC Log Restart
-Procedure":
+On Thu, Mar 16, 2023 at 03:19:27PM +0000, Robin Murphy wrote:
 
-| * Wait until MMIO Offset 2020h[GALogRun]=0b so that all request
-|   entries are completed as circumstances allow. GALogRun must be 0b to
-|   modify the guest virtual APIC log registers safely.
-| * Write MMIO Offset 0018h[GALogEn]=0b.
-| * As necessary, change the following values (e.g., to relocate or
-| resize the guest virtual APIC event log):
-|   - the Guest Virtual APIC Log Base Address Register
-|      [MMIO Offset 00E0h],
-|   - the Guest Virtual APIC Log Head Pointer Register
-|      [MMIO Offset 2040h][GALogHead], and
-|   - the Guest Virtual APIC Log Tail Pointer Register
-|      [MMIO Offset 2048h][GALogTail].
-| * Write MMIO Offset 2020h[GALOverflow] = 1b to clear the bit (W1C).
-| * Write MMIO Offset 0018h[GALogEn] = 1b, and either set
-|   MMIO Offset 0018h[GAIntEn] to enable the GA log interrupt or clear
-|   the bit to disable it.
+> > > Note that until now it has been extremely fortunate that in pretty much
+> > > every case Linux either hasn't supported the affected feature at all, or
+> > > has happened to avoid meeting the conditions. Once we do introduce
+> > > nesting support that all goes out the window (and I'll have to think
+> > > more when reviewing new errata in future...)
+> > > 
+> > > I've been putting off revisiting all the existing errata to figure out
+> > > what we'd need to do until new nesting patches appeared, so I'll try to
+> > > get to that soon now. I think in many cases it's likely to be best to
+> > > just disallowing nesting entirely on affected implementations.
+> > 
+> > Do we have already a list of "affected implementations"? Or,
+> > we would need to make such a list now? In a latter case, can
+> > these affected implementations be detected from their IRD0-5
+> > registers, so that we can simply do something in hw_info()?
+> 
+> Somewhere I have a patch that adds all the IIDR stuff needed for this,
+> but I never sent it upstream since the erratum itself was an early
+> MMU-600 one which in practice doesn't matter. I'll dig that out and
+> update it with what I have in mind.
 
-Failing to handle the GALog overflow means that none of the VFs (in any
-guest) will work with IOMMU AVIC forcing the user to power cycle the
-host. When handling the event it resumes the GALog without resizing
-much like how it is done in the event handler overflow. The
-[MMIO Offset 2020h][GALOverflow] bit might be set in status register
-without the [MMIO Offset 2020h][GAInt] bit, so when deciding to poll
-for GA events (to clear space in the galog), also check the overflow
-bit.
+Nice!
 
-[suravee: Check for GAOverflow without GAInt, toggle CONTROL_GAINT_EN]
-Co-developed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
----
- drivers/iommu/amd/amd_iommu.h |  1 +
- drivers/iommu/amd/init.c      | 24 ++++++++++++++++++++++++
- drivers/iommu/amd/iommu.c     |  9 ++++++++-
- 3 files changed, 33 insertions(+), 1 deletion(-)
+Perhaps we should merge that first, or include in this series
+if you don't mind, so that we would be less worried about any
+affected platform when releasing the new Linux version having
+this nesting feature.
 
-diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index c160a332ce33..24c7e6c6c0de 100644
---- a/drivers/iommu/amd/amd_iommu.h
-+++ b/drivers/iommu/amd/amd_iommu.h
-@@ -15,6 +15,7 @@ extern irqreturn_t amd_iommu_int_thread(int irq, void *data);
- extern irqreturn_t amd_iommu_int_handler(int irq, void *data);
- extern void amd_iommu_apply_erratum_63(struct amd_iommu *iommu, u16 devid);
- extern void amd_iommu_restart_event_logging(struct amd_iommu *iommu);
-+extern void amd_iommu_restart_ga_log(struct amd_iommu *iommu);
- extern int amd_iommu_init_devices(void);
- extern void amd_iommu_uninit_devices(void);
- extern void amd_iommu_init_notifier(void);
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 19a46b9f7357..fd487c33b28a 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -751,6 +751,30 @@ void amd_iommu_restart_event_logging(struct amd_iommu *iommu)
- 	iommu_feature_enable(iommu, CONTROL_EVT_LOG_EN);
- }
- 
-+/*
-+ * This function restarts event logging in case the IOMMU experienced
-+ * an GA log overflow.
-+ */
-+void amd_iommu_restart_ga_log(struct amd_iommu *iommu)
-+{
-+	u32 status;
-+
-+	status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
-+	if (status & MMIO_STATUS_GALOG_RUN_MASK)
-+		return;
-+
-+	pr_info_ratelimited("IOMMU GA Log restarting\n");
-+
-+	iommu_feature_disable(iommu, CONTROL_GALOG_EN);
-+	iommu_feature_disable(iommu, CONTROL_GAINT_EN);
-+
-+	writel(MMIO_STATUS_GALOG_OVERFLOW_MASK,
-+	       iommu->mmio_base + MMIO_STATUS_OFFSET);
-+
-+	iommu_feature_enable(iommu, CONTROL_GAINT_EN);
-+	iommu_feature_enable(iommu, CONTROL_GALOG_EN);
-+}
-+
- /*
-  * This function resets the command buffer if the IOMMU stopped fetching
-  * commands from it.
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index bf3ebc9d6cde..ebb155bfef15 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -845,6 +845,7 @@ amd_iommu_set_pci_msi_domain(struct device *dev, struct amd_iommu *iommu) { }
- 	(MMIO_STATUS_EVT_OVERFLOW_INT_MASK | \
- 	 MMIO_STATUS_EVT_INT_MASK | \
- 	 MMIO_STATUS_PPR_INT_MASK | \
-+	 MMIO_STATUS_GALOG_OVERFLOW_MASK | \
- 	 MMIO_STATUS_GALOG_INT_MASK)
- 
- irqreturn_t amd_iommu_int_thread(int irq, void *data)
-@@ -868,10 +869,16 @@ irqreturn_t amd_iommu_int_thread(int irq, void *data)
- 		}
- 
- #ifdef CONFIG_IRQ_REMAP
--		if (status & MMIO_STATUS_GALOG_INT_MASK) {
-+		if (status & (MMIO_STATUS_GALOG_INT_MASK |
-+			      MMIO_STATUS_GALOG_OVERFLOW_MASK)) {
- 			pr_devel("Processing IOMMU GA Log\n");
- 			iommu_poll_ga_log(iommu);
- 		}
-+
-+		if (status & MMIO_STATUS_GALOG_OVERFLOW_MASK) {
-+			pr_info_ratelimited("IOMMU GA Log overflow\n");
-+			amd_iommu_restart_ga_log(iommu);
-+		}
- #endif
- 
- 		if (status & MMIO_STATUS_EVT_OVERFLOW_INT_MASK) {
--- 
-2.17.2
-
+Thanks!
+Nic
