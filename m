@@ -1,111 +1,158 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1268C33E9
-	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 14:09:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1678975789;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=i+mGYYulQUCelnuxj3PjgHCArB8Ei0mGxcOTGUHa8as=;
-	b=jMYPXM/gDrNGY695d7M1ilyJ/SfPWg8upAgMv/lxDGTsO2VxtswBb5O9fmGmolNg5gJRM0
-	kk8qaOEPPDJ91VE5SZACASHki7Uo5mqh4sU95SM5QOFAF+3b7mK9DmhctutBBbf6HTiCLU
-	iyJ+fqBW3qLbsC0J/PSarU0y64pKmbU=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-5-0S6QgkyZMHCDuzbWbgswFg-1; Thu, 16 Mar 2023 10:09:38 -0400
-X-MC-Unique: 0S6QgkyZMHCDuzbWbgswFg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6BA51381459A;
-	Thu, 16 Mar 2023 14:09:35 +0000 (UTC)
-Received: from desnesn.remote.csb (ovpn-116-3.gru2.redhat.com [10.97.116.3])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 8FA9F40C6E67;
-	Thu, 16 Mar 2023 14:09:27 +0000 (UTC)
-From: Desnes Nunes <desnesn@redhat.com>
-To: iommu@lists.linux.dev,
-	linux-scsi@vger.kernel.org,
-	storagedev@microchip.com,
-	linux-kernel@vger.kernel.org
-Cc: hch@lst.de,
-	martin.petersen@oracle.com,
-	don.brace@microchip.com,
-	m.szyprowski@samsung.com,
-	robin.murphy@arm.com,
-	jejb@linux.ibm.com,
-	jsnitsel@redhat.com,
-	Desnes Nunes <desnesn@redhat.com>
-Subject: [PATCH v2 3/3] scsi: smartpqi: fix DMA overlapping mappings asymmetry
-Date: Thu, 16 Mar 2023 11:09:12 -0300
-Message-Id: <20230316140912.1038404-4-desnesn@redhat.com>
-In-Reply-To: <20230316140912.1038404-1-desnesn@redhat.com>
-References: <20230316140912.1038404-1-desnesn@redhat.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3FE5D3C00
+	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 14:58:46 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 53F792F4;
+	Thu, 16 Mar 2023 07:59:29 -0700 (PDT)
+Received: from [10.1.32.58] (010265703453.arm.com [10.1.32.58])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 102003F67D;
+	Thu, 16 Mar 2023 07:58:43 -0700 (PDT)
+Message-ID: <c753c2a8-024d-5bef-8987-96582084991e@arm.com>
+Date: Thu, 16 Mar 2023 14:58:39 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v1 14/14] iommu/arm-smmu-v3: Add
+ arm_smmu_cache_invalidate_user
+Content-Language: en-GB
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, will@kernel.org, eric.auger@redhat.com,
+ kevin.tian@intel.com, baolu.lu@linux.intel.com, joro@8bytes.org,
+ shameerali.kolothum.thodi@huawei.com, jean-philippe@linaro.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <cover.1678348754.git.nicolinc@nvidia.com>
+ <aa327f9ea61e5a4771c13e53639e33955b9acde3.1678348754.git.nicolinc@nvidia.com>
+ <1467e666-1b6c-c285-3f79-f8e8b088718b@arm.com>
+ <ZAqpOQ+DDvEfq0Dg@Asurada-Nvidia>
+ <92fdb06f-e5b1-8534-fb0e-ad47b5be9e1d@arm.com>
+ <ZAx2K08L5TIm6r3y@Asurada-Nvidia>
+ <ab762cc6-5adf-2515-d9d2-d21d916eb6ad@arm.com>
+ <ZBJcS07G3mt7gjkA@Asurada-Nvidia>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <ZBJcS07G3mt7gjkA@Asurada-Nvidia>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Currently, pqi_keep_device_offline() calls pqi_build_raid_path_request()
-(i.e., a wrapper to pqi_map_single()), but there isn't a pqi_pci_unmap()
-call in pqi_keep_device_offline(). Hence, this is flaged as an API viola-
-tion due to the overlapping mapping of the physical address.
+On 2023-03-16 00:01, Nicolin Chen wrote:
+> On Mon, Mar 13, 2023 at 01:07:42PM +0000, Robin Murphy wrote:
+>> External email: Use caution opening links or attachments
+>>
+>>
+>> On 2023-03-11 12:38, Nicolin Chen wrote:
+>>> On Fri, Mar 10, 2023 at 05:53:46PM +0000, Robin Murphy wrote:
+>>>
+>>>>>>> +     case CMDQ_OP_TLBI_NH_VA:
+>>>>>>> +             cmd.tlbi.asid = inv_info->asid;
+>>>>>>> +             fallthrough;
+>>>>>>> +     case CMDQ_OP_TLBI_NH_VAA:
+>>>>>>> +             if (!granule_size || !(granule_size & smmu->pgsize_bitmap) ||
+>>>>>>
+>>>>>> Non-range invalidations with TG=0 are perfectly legal, and should not be
+>>>>>> ignored.
+>>>>>
+>>>>> I assume that you are talking about the pgsize_bitmap check.
+>>>>>
+>>>>> QEMU embeds a !tg case into the granule_size [1]. So it might
+>>>>> not be straightforward to cover that case. Let me see how to
+>>>>> untangle different cases and handle them accordingly.
+>>>>
+>>>> Oh, double-checking patch #2, that might be me misunderstanding the
+>>>> interface. I hadn't realised that the UAPI was apparently modelled on
+>>>> arm_smmu_tlb_inv_range_asid() rather than actual SMMU commands :)
+>>>
+>>> Yea. In fact, most of the invalidation info in QEMU was packed
+>>> for the previously defined general cache invalidation structure,
+>>> and the range invalidation part is still not quite independent.
+>>>
+>>>> I really think UAPI should reflect the hardware and encode TG and TTL
+>>>> directly. Especially since there's technically a flaw in the current
+>>>> driver where we assume TTL in cases where it isn't actually known, thus
+>>>> may potentially fail to invalidate level 2 block entries when removing a
+>>>> level 1 table, since io-pgtable passes the level 3 granule in that case.
+>>>
+>>> Do you mean something like hw_info forwarding pgsize_bitmap/tg
+>>> to the guest? Or the other direction?
+>>
+>> I mean if the interface wants to support range invalidations in a way
+>> which works correctly, then it should ideally carry both the TG and TTL
+>> fields from the guest command straight through to the host. If not, then
+>> at the very least the host must always assume TTL=0, because it cannot
+>> correctly infer otherwise once the guest command's original intent has
+>> been lost.
+> 
+> Oh, it's about hypervisor simply forwarding the entire CMD to
+> the host side. Jason is suggesting a fast approach by letting
+> host kernel read the CMDQ directly to get the raw CMD. Perhaps
+> that would address this comments about TG/TTL too.
 
-This patch fixes following warning:
+That did cross my mind, but given the usage model, having host userspace 
+give guest memory whose contents it can't control (unless it pauses the 
+whole VM on all CPUs) directly to the host kernel just seems to invite 
+more potential problems than necessary. Commands aren't big, so I think 
+it's fair to expect the VMM to marshal them into host memory, and save 
+the host kernel from ever having to reason about any races or other 
+emulation details which may exist between a VM and its VMM.
 
-  DMA-API: smartpqi 0000:43:00.0: cacheline tracking EEXIST, overlapping
-  mappings aren't supported
-  WARNING: CPU: 0 PID: 15 at kernel/dma/debug.c:570
-  add_dma_entry+0x1f6/0x2f0
-  CPU: 0 PID: 15 Comm: kworker/0:1 Not tainted 6.3.0-rc1-linux #1
-  Call Trace:
-   <TASK>
-   dma_map_page_attrs+0x6f/0xa0
-   pqi_map_single+0xaa/0x160 [smartpqi]
-   pqi_keep_device_offline+0xaf/0x160 [smartpqi]
-   ? dma_unmap_page_attrs+0x1a1/0x1e0
-   ? pqi_identify_physical_device.constprop.0+0xd3/0xe0 [smartpqi]
-   pqi_update_scsi_devices+0x284/0x7e0 [smartpqi]
-   pqi_scan_scsi_devices+0x87/0xe0 [smartpqi]
-   pqi_ctrl_init+0x725/0xa60 [smartpqi]
-   pqi_pci_probe+0xa7/0x130 [smartpqi]
-   local_pci_probe+0x46/0xa0
-   work_for_cpu_fn+0x16/0x20
-   process_one_work+0x2bf/0x670
-   ? __pfx_worker_thread+0x10/0x10
-   worker_thread+0x1d1/0x3b0
-   ? __pfx_worker_thread+0x10/0x10
-   kthread+0xf3/0x120
-   ? __pfx_kthread+0x10/0x10
-   ret_from_fork+0x2c/0x50
-   </TASK>
+> I wonder if there could be other case than a WAR, where TG/TTL
+> fields from the guest's aren't supported by the host. And then
+> should the host handle it with a different CMD?
 
-Fixes: be76f90668d8 ("scsi: smartpqi: Add TEST UNIT READY check for SANITIZE operation")
-Signed-off-by: Desnes Nunes <desnesn@redhat.com>
----
- drivers/scsi/smartpqi/smartpqi_init.c | 2 ++
- 1 file changed, 2 insertions(+)
+As Eric found previously, there's a clear benefit in emulating range 
+invalidation for guests even if the underlying hardware doesn't support 
+it, to minimise trapping. But that's not hard, and the patch as-is is 
+already achieving it. All we need to be careful to avoid is issuing 
+hardware commands with *less* scope than guest originally asked for - if 
+the guest asks for a nonsense TG/TTL which doesn't match its current 
+context, that's fine. The interface just has to ensure that a VMM's SMMU 
+emulation *is* able to make a nested S1 context behave as expected by 
+the architecture; we don't need to care if a guest uses the architecture 
+wrong, since it's only hurting itself.
+>>>> When range invalidation came along, the distinction between "all leaves
+>>>> are definitely at the last level" and "use last-level granularity to
+>>>> make sure everything at at any level is hit" started to matter, but the
+>>>> interface never caught up. It hasn't seemed desperately urgent to fix
+>>>> (who does 1GB+ unmaps outside of VFIO teardown anyway?), but we must
+>>>> definitely not bake the same mistake into user ABI.
+>>>>
+>>>> Of course, there might then be cases where we need to transform
+>>>> non-range commands into range commands for the sake of workarounds, but
+>>>> that's our own problem to deal with.
+>>>
+>>> Noted it down.
+>>>
+>>>>>> What about NSNH_ALL? That still needs to invalidate all the S1 context
+>>>>>> that the guest *thinks* it's invalidating.
+>>>>>
+>>>>> NSNH_ALL is translated to NH_ALL at the guest level. But maybe
+>>>>> it should have been done here instead.
+>>>>
+>>>> Yes. It seems the worst of both worlds to have an interface which takes
+>>>> raw opcodes rather than an enum of supported commands, but still
+>>>> requires userspace to know which opcodes are supported and which ones
+>>>> don't work as expected even though they are entirely reasonable to use
+>>>> in the context of the stage-1-only SMMU being emulated.
+>>>
+>>> Maybe a list of supported TLBI commands via the hw_info uAPI?
+>>
+>> I don't think it's all that difficult to implicitly support all commands
+>> that are valid for a stage-1-only SMMU, it just needs the right
+>> interface design to be capable of encoding them all completely and
+>> unambiguously. Coming back to the previous point about the address
+>> encoding, I think that means basing it more directly on the actual
+>> SMMUv3 commands, rather than on io-pgtable's abstraction of invalidation
+>> with SMMUv3 opcodes bolted on.
+> 
+> Yea, with the actual commands from the guest, the host can do
+> something with its supported commands, I think.
 
-diff --git a/drivers/scsi/smartpqi/smartpqi_init.c b/drivers/scsi/smartpqi/smartpqi_init.c
-index 49a8f91810b6..6fca497ca605 100644
---- a/drivers/scsi/smartpqi/smartpqi_init.c
-+++ b/drivers/scsi/smartpqi/smartpqi_init.c
-@@ -1726,6 +1726,8 @@ static bool pqi_keep_device_offline(struct pqi_ctrl_info *ctrl_info,
- 
- 	rc = pqi_submit_raid_request_synchronous(ctrl_info, &request.header, 0, &error_info);
- 
-+	pqi_pci_unmap(ctrl_info->pci_dev, request.sg_descriptors, 1, dir);
-+
- 	if (rc)
- 		goto out; /* Assume not offline */
- 
--- 
-2.39.1
+The one slightly fiddly case, of course, is CMD_SYNC, but I think that's 
+just a matter for clear documentation of the expectations and behaviour.
 
+Thanks,
+Robin.
