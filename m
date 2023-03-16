@@ -1,146 +1,95 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 18F533C00
-	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 15:19:33 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 25F4A2F4;
-	Thu, 16 Mar 2023 08:20:17 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EE8493F67D;
-	Thu, 16 Mar 2023 08:19:31 -0700 (PDT)
-Message-ID: <1d4ff93d-a97e-85bb-4259-9da259bc2ab7@arm.com>
-Date: Thu, 16 Mar 2023 15:19:27 +0000
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 275CC29A2
+	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 18:38:53 +0000 (UTC)
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-1a04bd0ab07so153775ad.1
+        for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 11:38:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1678991932;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Aco+48KQSTXrRgbQkuc+78HSNv7058GW4RTMfCAnIHA=;
+        b=oVgVVSr3DpFodH/W7BEB8twr3ljYV/n6IfeeSQNw2KZSVWn1wUlErVeZyZDxN7u8ah
+         2WLpPfc07KAV4brUvbTfPm1hD3Xl+hniedRD6YoZwmdJnHxLU3Bt3lNfQifmAXLABFLJ
+         yi726pxGiBD/0r1OCjCb+3jxdD/Z8yI18AbzOVHfNHBWSeTOhNTW5O4VDQJLJfTPCEPV
+         UGNCKJn7qZHYmmfSHQqd+N6V7+nWV9V1HCwi4y0gELcQWwJxYnUiK+vDt6kuXP2DodMY
+         ubo1Iu2Ne1uES2/k/MkJwG8dzRBJw9vbfrqXv2L1n913ZJcftiop3F3bcmZisfGTDtyW
+         gZyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678991932;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Aco+48KQSTXrRgbQkuc+78HSNv7058GW4RTMfCAnIHA=;
+        b=l87PldEPm/fU/geX2+KdbrYfqqOa6IBkV4/hX4pc9i8p7YwG1mSzElVz4Iozcg0Wd3
+         Re9fZBMeNctzBHZHtHe8caKhnMOxvPMC3zBHKCVHNCIL4jYgtC9kxR4Cu2BV597gxSxV
+         zPa7yqkIt/N+M9kJ1d1Jkvo5kJblspOcDwJHZ8p3nCj3jf86XdWCkN0rvp+WqEbpuQOM
+         2X4hO3fIoLWlgtQtAJbCNrBU2OUTbAcHTXmiesftusApzwMjjPrRilutqiCt77xQRJsp
+         3E+ufojLRjRjS+61zSNYfU/LO0IOiL5/XblKugTvVG4OZpd6xHdAn5HPSoQcQTTmdVXx
+         Fu1Q==
+X-Gm-Message-State: AO0yUKXfZfZx2wrU/OGQrqZFJNRxbreCzRV46uGFx1q3KW+pY4lW+q4n
+	Y+/IW5Rajp4/Bi9eN8mOr4bNfg==
+X-Google-Smtp-Source: AK7set8t8uixLTKQFPibXI9O3Eyr3dYB1pWE4h2zKgCpwhJYghtHW0myy/GlG+JZ/ZkMAVXYVektCg==
+X-Received: by 2002:a17:902:dac6:b0:199:3909:eaee with SMTP id q6-20020a170902dac600b001993909eaeemr26571plx.6.1678991932413;
+        Thu, 16 Mar 2023 11:38:52 -0700 (PDT)
+Received: from google.com ([2620:15c:2d:3:c641:8e37:69f3:8d4c])
+        by smtp.gmail.com with ESMTPSA id w5-20020a1709029a8500b001a064cff3c5sm44886plp.43.2023.03.16.11.38.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Mar 2023 11:38:51 -0700 (PDT)
+Date: Thu, 16 Mar 2023 11:38:47 -0700
+From: Isaac Manjarres <isaacmanjarres@google.com>
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>,
+	Arnd Bergmann <arnd@arndb.de>, Christoph Hellwig <hch@lst.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Ard Biesheuvel <ardb@kernel.org>,
+	Saravana Kannan <saravanak@google.com>,
+	Alasdair Kergon <agk@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Joerg Roedel <joro@8bytes.org>, Mark Brown <broonie@kernel.org>,
+	Mike Snitzer <snitzer@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, linux-mm@kvack.org,
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v3 00/13] mm, dma, arm64: Reduce ARCH_KMALLOC_MINALIGN to
+ 8
+Message-ID: <ZBNiN9CR2F/fvUTh@google.com>
+References: <20221106220143.2129263-1-catalin.marinas@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH v1 04/14] iommu/arm-smmu-v3: Add arm_smmu_hw_info
-Content-Language: en-GB
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: jgg@nvidia.com, will@kernel.org, eric.auger@redhat.com,
- kevin.tian@intel.com, baolu.lu@linux.intel.com, joro@8bytes.org,
- shameerali.kolothum.thodi@huawei.com, jean-philippe@linaro.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <cover.1678348754.git.nicolinc@nvidia.com>
- <494e36cbb77d49e11427b308868dbc1b0e19fe18.1678348754.git.nicolinc@nvidia.com>
- <bfa43614-c052-4bed-b87e-691141f41909@arm.com>
- <ZAqFFolbw5xoJDfb@Asurada-Nvidia>
- <5cc56149-965a-bb47-f23f-6aa9d0ecce4e@arm.com>
- <ZBJfJUjbAUId68s1@Asurada-Nvidia>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ZBJfJUjbAUId68s1@Asurada-Nvidia>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221106220143.2129263-1-catalin.marinas@arm.com>
 
-On 16/03/2023 12:13 am, Nicolin Chen wrote:
-> On Fri, Mar 10, 2023 at 03:28:56PM +0000, Robin Murphy wrote:
->> External email: Use caution opening links or attachments
->>
->>
->> On 2023-03-10 01:17, Nicolin Chen wrote:
->>> Hi Robin,
->>>
->>> Thanks for the inputs.
->>>
->>> On Thu, Mar 09, 2023 at 01:03:41PM +0000, Robin Murphy wrote:
->>>> External email: Use caution opening links or attachments
->>>>
->>>>
->>>> On 2023-03-09 10:53, Nicolin Chen wrote:
->>>>> This is used to forward the host IDR values to the user space, so the
->>>>> hypervisor and the guest VM can learn about the underlying hardware's
->>>>> capabilities.
->>>>>
->>>>> Also, set the driver_type to IOMMU_HW_INFO_TYPE_ARM_SMMUV3 to pass the
->>>>> corresponding type sanity in the core.
->>>>>
->>>>> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
->>>>> ---
->>>>>     drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 25 +++++++++++++++++++++
->>>>>     drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  2 ++
->>>>>     include/uapi/linux/iommufd.h                | 14 ++++++++++++
->>>>>     3 files changed, 41 insertions(+)
->>>>>
->>>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>>> index f2425b0f0cd6..c1aac695ae0d 100644
->>>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>>> @@ -2005,6 +2005,29 @@ static bool arm_smmu_capable(struct device *dev, enum iommu_cap cap)
->>>>>         }
->>>>>     }
->>>>>
->>>>> +static void *arm_smmu_hw_info(struct device *dev, u32 *length)
->>>>> +{
->>>>> +     struct arm_smmu_master *master = dev_iommu_priv_get(dev);
->>>>> +     struct iommu_hw_info_smmuv3 *info;
->>>>> +     void *base_idr;
->>>>> +     int i;
->>>>> +
->>>>> +     if (!master || !master->smmu)
->>>>> +             return ERR_PTR(-ENODEV);
->>>>> +
->>>>> +     info = kzalloc(sizeof(*info), GFP_KERNEL);
->>>>> +     if (!info)
->>>>> +             return ERR_PTR(-ENOMEM);
->>>>> +
->>>>> +     base_idr = master->smmu->base + ARM_SMMU_IDR0;
->>>>> +     for (i = 0; i <= 5; i++)
->>>>> +             info->idr[i] = readl_relaxed(base_idr + 0x4 * i);
->>>>
->>>> You need to take firmware overrides etc. into account here. In
->>>> particular, features like BTM may need to be hidden to work around
->>>> errata either in the system integration or the SMMU itself. It isn't
->>>> reasonable to expect every VMM to be aware of every erratum and
->>>> workaround, and there may even be workarounds where we need to go out of
->>>> our way to prevent guests from trying to use certain features in order
->>>> to maintain correctness at S2.
->>>
->>> We can add a bit of overrides after this for errata, perhaps?
->>>
->>> I have some trouble with finding the errata docs. Would it be
->>> possible for you to direct me to it with a link maybe?
->>
->> The key Arm term is "Software Developer Errata Notice", or just SDEN.
->> Here's the ones for MMU-600 and MMU-700:
->>
->> https://developer.arm.com/documentation/SDEN-946810/latest/
-> 
-> This page shows "Arm CoreLink MMU-600 System Memory Management
-> Unit Software Developer Errata Notice" but the downloaded file
-> is "Arm CoreLink CI-700 Coherent Interconnect" errata notice.
-> And I don't quite understand what it's about.
+On Sun, Nov 06, 2022 at 10:01:30PM +0000, Catalin Marinas wrote:
+> Patches 7-12 change some ARCH_KMALLOC_MINALIGN uses to
+> ARCH_DMA_MINALIGN. The crypto changes have been rejected by Herbert
+> previously but I still included them here until the crypto code is
+> refactored.
+Hi Catalin,
 
-Oh, wonderful... I've reported that now, hopefully it gets fixed soon...
+Herbert merged the changes to the crypto code that were required to be
+able to safely lower the minimum alignment for kmalloc in [1].
 
->> https://developer.arm.com/documentation/SDEN-1786925/latest/
-> 
-> Yea, this one I got an "MMU-700 System Memory Management Unit"
-> SMMU errata file that I can read and understand.
-> 
->> Note that until now it has been extremely fortunate that in pretty much
->> every case Linux either hasn't supported the affected feature at all, or
->> has happened to avoid meeting the conditions. Once we do introduce
->> nesting support that all goes out the window (and I'll have to think
->> more when reviewing new errata in future...)
->>
->> I've been putting off revisiting all the existing errata to figure out
->> what we'd need to do until new nesting patches appeared, so I'll try to
->> get to that soon now. I think in many cases it's likely to be best to
->> just disallowing nesting entirely on affected implementations.
-> 
-> Do we have already a list of "affected implementations"? Or,
-> we would need to make such a list now? In a latter case, can
-> these affected implementations be detected from their IRD0-5
-> registers, so that we can simply do something in hw_info()?
+Given this, I don't think there's anything blocking this series from
+being merged. The requirement for SWIOTLB to get to the minimum
+kmalloc alignment down to 8 bytes shouldn't prevent this series from
+being merged, as the amount of memory that is allocated for SWIOTLB
+can be configured through the commandline to minimize the impact of
+having SWIOTLB memory. Additionally, even if no SWIOTLB is present,
+this series still offers memory savings on a lot of ARM64 platforms
+by using the cache line size as the minimum alignment for kmalloc.
 
-Somewhere I have a patch that adds all the IIDR stuff needed for this, 
-but I never sent it upstream since the erratum itself was an early 
-MMU-600 one which in practice doesn't matter. I'll dig that out and 
-update it with what I have in mind.
+Can you please rebase this series so that it can be merged?
 
 Thanks,
-Robin.
+Isaac
+
+[1]: https://lore.kernel.org/all/Y4nDL50nToBbi4DS@gondor.apana.org.au/
