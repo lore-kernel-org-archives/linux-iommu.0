@@ -1,31 +1,31 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDB6633CC
-	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 14:09:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 766BD33E9
+	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 14:09:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1678975769;
+	s=mimecast20190719; t=1678975770;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=GCtPtzpuFMR8qAF/d/etYJgL7eXxb5y6E1pj/qDFqRA=;
-	b=NR+5s38KPK99j5tScOC5Dh0/vn04+/AFGBZcglDKtBQvdGIZTlSULAYKyBOXKPjJDPW5dO
-	4CwsiG79Uw7WAsfqBL6AuqnywmsVTFbkXJbrFBQCjxSs6EQ7rmNdJyLA5Louq7QvOYCYvG
-	Isy/97JTybKoRdV8Eir2ewYdb/gde+A=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=tS52zKBxg1UC4SRr3mUX7J3cjhaqnRbdGJlfsu7ZFVk=;
+	b=KVKOz29yaWYMiOmMusXXWNte7W78zKsmEtk6pA+tbMFUYM8v4oMelCvWL/ECw0qd8Iw28b
+	rIUFJNx4Xm7Y1coR+qnT9ZxpBVGfSMsl6tqfDf+4DbUD94UldVMcK/F6UAL746lItlFGvU
+	j4gNhxkdtw6O+8h5+KCNbOZXt7+wMw8=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-654-qAMHYbxdOieUAFWWDX3POg-1; Thu, 16 Mar 2023 10:09:27 -0400
-X-MC-Unique: qAMHYbxdOieUAFWWDX3POg-1
+ us-mta-147-f60fcco_OVaKhz9Y4YZ7Dg-1; Thu, 16 Mar 2023 10:09:25 -0400
+X-MC-Unique: f60fcco_OVaKhz9Y4YZ7Dg-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2E5CE3814590;
-	Thu, 16 Mar 2023 14:09:27 +0000 (UTC)
-Received: from desnesn.remote.csb (ovpn-116-3.gru2.redhat.com [10.97.116.3])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id C188F40C6E67;
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7FA0D10146ED;
 	Thu, 16 Mar 2023 14:09:24 +0000 (UTC)
+Received: from desnesn.remote.csb (ovpn-116-3.gru2.redhat.com [10.97.116.3])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id BE55040C6E67;
+	Thu, 16 Mar 2023 14:09:21 +0000 (UTC)
 From: Desnes Nunes <desnesn@redhat.com>
 To: iommu@lists.linux.dev,
 	linux-scsi@vger.kernel.org,
@@ -39,9 +39,9 @@ Cc: hch@lst.de,
 	jejb@linux.ibm.com,
 	jsnitsel@redhat.com,
 	Desnes Nunes <desnesn@redhat.com>
-Subject: [PATCH v2 2/3] dma-debug: add cacheline to user/kernel space dump messages
-Date: Thu, 16 Mar 2023 11:09:11 -0300
-Message-Id: <20230316140912.1038404-3-desnesn@redhat.com>
+Subject: [PATCH v2 1/3] dma-debug: small dma_debug_entry's comment and variable name updates
+Date: Thu, 16 Mar 2023 11:09:10 -0300
+Message-Id: <20230316140912.1038404-2-desnesn@redhat.com>
 In-Reply-To: <20230316140912.1038404-1-desnesn@redhat.com>
 References: <20230316140912.1038404-1-desnesn@redhat.com>
 Precedence: bulk
@@ -53,162 +53,61 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
 
-Having the cacheline also printed on the debug_dma_dump_mappings() and
-dump_show() is useful for debugging. Furthermore, this also standardizes
-the messages shown on both dump functions.
+Small update on dma_debug_entry's struct commentary and also standardize
+the usage of 'dma_addr' variable name from debug_dma_map_page() on
+debug_dma_unmap_page(), and similarly on debug_dma_free_coherent()
 
 Signed-off-by: Desnes Nunes <desnesn@redhat.com>
 ---
- kernel/dma/debug.c | 122 ++++++++++++++++++++++++---------------------
- 1 file changed, 64 insertions(+), 58 deletions(-)
+V1 -> V2: Updated comment properly
+
+ kernel/dma/debug.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
 diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index e0ad8db1ec25..19cc59829ffd 100644
+index 18c93c2276ca..9aa5100d0d7e 100644
 --- a/kernel/dma/debug.c
 +++ b/kernel/dma/debug.c
-@@ -396,37 +396,6 @@ static unsigned long long phys_addr(struct dma_debug_entry *entry)
- 	return page_to_phys(pfn_to_page(entry->pfn)) + entry->offset;
+@@ -53,6 +53,7 @@ enum map_err_types {
+  * struct dma_debug_entry - track a dma_map* or dma_alloc_coherent mapping
+  * @list: node on pre-allocated free_entries list
+  * @dev: 'dev' argument to dma_map_{page|single|sg} or dma_alloc_coherent
++ * @dev_addr: dma address
+  * @size: length of the mapping
+  * @type: single, page, sg, coherent
+  * @direction: enum dma_data_direction
+@@ -1262,13 +1263,13 @@ void debug_dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
  }
+ EXPORT_SYMBOL(debug_dma_mapping_error);
  
--/*
-- * Dump mapping entries for debugging purposes
-- */
--void debug_dma_dump_mappings(struct device *dev)
--{
--	int idx;
--
--	for (idx = 0; idx < HASH_SIZE; idx++) {
--		struct hash_bucket *bucket = &dma_entry_hash[idx];
--		struct dma_debug_entry *entry;
--		unsigned long flags;
--
--		spin_lock_irqsave(&bucket->lock, flags);
--
--		list_for_each_entry(entry, &bucket->list, list) {
--			if (!dev || dev == entry->dev) {
--				dev_info(entry->dev,
--					 "%s idx %d P=%Lx N=%lx D=%Lx L=%Lx %s %s\n",
--					 type2name[entry->type], idx,
--					 phys_addr(entry), entry->pfn,
--					 entry->dev_addr, entry->size,
--					 dir2name[entry->direction],
--					 maperr2str[entry->map_err_type]);
--			}
--		}
--
--		spin_unlock_irqrestore(&bucket->lock, flags);
--		cond_resched();
--	}
--}
--
- /*
-  * For each mapping (initial cacheline in the case of
-  * dma_alloc_coherent/dma_map_page, initial cacheline in each page of a
-@@ -547,6 +516,70 @@ static void active_cacheline_remove(struct dma_debug_entry *entry)
- 	spin_unlock_irqrestore(&radix_lock, flags);
- }
- 
-+/*
-+ * Dump mappings entries on kernel space for debugging purposes
-+ */
-+void debug_dma_dump_mappings(struct device *dev)
-+{
-+	int idx;
-+	phys_addr_t cln;
-+
-+	for (idx = 0; idx < HASH_SIZE; idx++) {
-+		struct hash_bucket *bucket = &dma_entry_hash[idx];
-+		struct dma_debug_entry *entry;
-+		unsigned long flags;
-+
-+		spin_lock_irqsave(&bucket->lock, flags);
-+		list_for_each_entry(entry, &bucket->list, list) {
-+			if (!dev || dev == entry->dev) {
-+				cln = to_cacheline_number(entry);
-+				dev_info(entry->dev,
-+					 "%s idx %d P=%llx N=%lx D=%llx L=%llx cln=%llx %s %s\n",
-+					 type2name[entry->type], idx,
-+					 phys_addr(entry), entry->pfn,
-+					 entry->dev_addr, entry->size,
-+					 cln, dir2name[entry->direction],
-+					 maperr2str[entry->map_err_type]);
-+			}
-+		}
-+		spin_unlock_irqrestore(&bucket->lock, flags);
-+
-+		cond_resched();
-+	}
-+}
-+
-+/*
-+ * Dump mappings entries on user space via debugfs
-+ */
-+static int dump_show(struct seq_file *seq, void *v)
-+{
-+	int idx;
-+	phys_addr_t cln;
-+
-+	for (idx = 0; idx < HASH_SIZE; idx++) {
-+		struct hash_bucket *bucket = &dma_entry_hash[idx];
-+		struct dma_debug_entry *entry;
-+		unsigned long flags;
-+
-+		spin_lock_irqsave(&bucket->lock, flags);
-+		list_for_each_entry(entry, &bucket->list, list) {
-+			cln = to_cacheline_number(entry);
-+			seq_printf(seq,
-+				   "%s %s %s idx %d P=%llx N=%lx D=%llx L=%llx cln=%llx %s %s\n",
-+				   dev_driver_string(entry->dev),
-+				   dev_name(entry->dev),
-+				   type2name[entry->type], idx,
-+				   phys_addr(entry), entry->pfn,
-+				   entry->dev_addr, entry->size,
-+				   cln, dir2name[entry->direction],
-+				   maperr2str[entry->map_err_type]);
-+		}
-+		spin_unlock_irqrestore(&bucket->lock, flags);
-+	}
-+	return 0;
-+}
-+DEFINE_SHOW_ATTRIBUTE(dump);
-+
- /*
-  * Wrapper function for adding an entry to the hash.
-  * This function takes care of locking itself.
-@@ -765,33 +798,6 @@ static const struct file_operations filter_fops = {
- 	.llseek = default_llseek,
- };
- 
--static int dump_show(struct seq_file *seq, void *v)
--{
--	int idx;
--
--	for (idx = 0; idx < HASH_SIZE; idx++) {
--		struct hash_bucket *bucket = &dma_entry_hash[idx];
--		struct dma_debug_entry *entry;
--		unsigned long flags;
--
--		spin_lock_irqsave(&bucket->lock, flags);
--		list_for_each_entry(entry, &bucket->list, list) {
--			seq_printf(seq,
--				   "%s %s %s idx %d P=%llx N=%lx D=%llx L=%llx %s %s\n",
--				   dev_name(entry->dev),
--				   dev_driver_string(entry->dev),
--				   type2name[entry->type], idx,
--				   phys_addr(entry), entry->pfn,
--				   entry->dev_addr, entry->size,
--				   dir2name[entry->direction],
--				   maperr2str[entry->map_err_type]);
--		}
--		spin_unlock_irqrestore(&bucket->lock, flags);
--	}
--	return 0;
--}
--DEFINE_SHOW_ATTRIBUTE(dump);
--
- static int __init dma_debug_fs_init(void)
+-void debug_dma_unmap_page(struct device *dev, dma_addr_t addr,
++void debug_dma_unmap_page(struct device *dev, dma_addr_t dma_addr,
+ 			  size_t size, int direction)
  {
- 	struct dentry *dentry = debugfs_create_dir("dma-api", NULL);
+ 	struct dma_debug_entry ref = {
+ 		.type           = dma_debug_single,
+ 		.dev            = dev,
+-		.dev_addr       = addr,
++		.dev_addr       = dma_addr,
+ 		.size           = size,
+ 		.direction      = direction,
+ 	};
+@@ -1403,13 +1404,13 @@ void debug_dma_alloc_coherent(struct device *dev, size_t size,
+ }
+ 
+ void debug_dma_free_coherent(struct device *dev, size_t size,
+-			 void *virt, dma_addr_t addr)
++			 void *virt, dma_addr_t dma_addr)
+ {
+ 	struct dma_debug_entry ref = {
+ 		.type           = dma_debug_coherent,
+ 		.dev            = dev,
+ 		.offset		= offset_in_page(virt),
+-		.dev_addr       = addr,
++		.dev_addr       = dma_addr,
+ 		.size           = size,
+ 		.direction      = DMA_BIDIRECTIONAL,
+ 	};
 -- 
 2.39.1
 
