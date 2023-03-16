@@ -1,134 +1,187 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2058.outbound.protection.outlook.com [40.107.223.58])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3442CAD21
-	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 19:56:44 +0000 (UTC)
-Received: from lhrpeml500002.china.huawei.com (unknown [172.18.147.201])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PcycS5638z67PTQ;
-	Fri, 17 Mar 2023 03:53:28 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- lhrpeml500002.china.huawei.com (7.191.160.78) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Thu, 16 Mar 2023 19:56:34 +0000
-Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
- lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.021;
- Thu, 16 Mar 2023 19:56:34 +0000
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Nicolin Chen <nicolinc@nvidia.com>, Eric Auger <eric.auger@redhat.com>,
-	"lpieralisi@kernel.org" <lpieralisi@kernel.org>
-CC: Jason Gunthorpe <jgg@nvidia.com>, "robin.murphy@arm.com"
-	<robin.murphy@arm.com>, "will@kernel.org" <will@kernel.org>,
-	"kevin.tian@intel.com" <kevin.tian@intel.com>, "baolu.lu@linux.intel.com"
-	<baolu.lu@linux.intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"jean-philippe@linaro.org" <jean-philippe@linaro.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v1 01/14] iommu: Add iommu_get_unmanaged_domain helper
-Thread-Topic: [PATCH v1 01/14] iommu: Add iommu_get_unmanaged_domain helper
-Thread-Index: AQHZUnWRmBwtrmleCk69JH8tQLhaPq7zzWuAgABY2gCAAAIMsIAABIwAgAABG+CAAAW9gIAAAcuwgAmm7QCAAAB98A==
-Date: Thu, 16 Mar 2023 19:56:34 +0000
-Message-ID: <7726b990f7c4486d9f3597979ebc4e7e@huawei.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E34EAD21
+	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 20:01:59 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=l40SAhM4pBE350uLM414jEKEKDuXP4KlZp9mwUx8pXefdRyE7HiRJYjjB1mI7p3jFp9/zGBLIVW7UVioxSAEtzrE+5nbb2sY+WqNlfNmA798QE+KcnD8RzQ/aXiEq8yjSuSQi98pH0UyHhNec6kWHXFjsPAnoN9i/Ws9UQn55jlCFZQ9hPUXhTcNIFOtqkvCYlcnou7A4APoGeOP6K8OJOUUxX2m7v7pmHue/8DnPwT6mTmmJgLPcXMjwAwYl6qS0me/FjD9I/Qh+a696QS8E6iD6xUZPHnMoW2oi7ARENnwpCRPtGR4gRQbOTZeRyGt+LyFt/6HDoFPah1bY9B68A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zAA/20Cb19god8DuIzjNi/YwdEGeEtfafkmFczOAd9U=;
+ b=cFxK5oTrgMlfHT8sG5Ghc3auuoP5YA1M8fTa0/Nt8SATyCZYxvZlbd2dkLUJJTOepu9SlG5WrOhto0v4eNYVzfCTmidkbh706K4T7DCBlUDvm2Yp967CO/LvM/jywDrPcYqN+4HbgRLVpx0KD0iihssdb086I2Px+E1LaIBs1tTiv47JWr1Rdqcdx9Udckt9IIPXDMx7Dd7OTye//aI0cpYoK2nZjoPwHsS+ZLiL8JtCa4a+nBl7B9PGH4Edlq0lYSLfcUZa+pMI7Yk+v20hKby/Re8CTDg/my0kJ0rm1ZiCghspkJQLiqHLqCXv0oVOzj4UtC0lZvJC0K9630e+aw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zAA/20Cb19god8DuIzjNi/YwdEGeEtfafkmFczOAd9U=;
+ b=Qo9PfxXuTPVZpiEY5q/DjkyYBCVuAvr4rYXcO0/L5vlyPB2VJ3RsGTskXfQ2GvIe8tmhORQHDEzdwRsII5He1TAQe5UqphQyEwq594V4pkgUj3yTvNgo6fLhWyMWEPCzHMi9PJZRBgL6gptPX7GSiw0PAnSWi1QDj0kOpEKOtwNs/1LLvZXNWgC7inS5zIzcUn69t8Y34EcsTQkg2sRmficwcMfw03eyy58KAR9WTgoDNefU0r0nY7WnL6ci1/XFDtavsJ131R7W7QC55wi60tgcsU496ycT61JVgiAmc3Ie//oZMa6i6LLgTzSyYnaZoXQRmzMCKFN7VjyAoCJcaQ==
+Received: from BL1PR13CA0332.namprd13.prod.outlook.com (2603:10b6:208:2c6::7)
+ by CY5PR12MB6275.namprd12.prod.outlook.com (2603:10b6:930:20::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.31; Thu, 16 Mar
+ 2023 20:01:57 +0000
+Received: from BL02EPF000108E9.namprd05.prod.outlook.com
+ (2603:10b6:208:2c6:cafe::15) by BL1PR13CA0332.outlook.office365.com
+ (2603:10b6:208:2c6::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.8 via Frontend
+ Transport; Thu, 16 Mar 2023 20:01:56 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ BL02EPF000108E9.mail.protection.outlook.com (10.167.241.202) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6178.30 via Frontend Transport; Thu, 16 Mar 2023 20:01:55 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 16 Mar 2023
+ 13:01:35 -0700
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.37; Thu, 16 Mar 2023 13:01:35 -0700
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.126.190.180)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Thu, 16 Mar 2023 13:01:34 -0700
+Date: Thu, 16 Mar 2023 13:01:33 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+CC: Jason Gunthorpe <jgg@nvidia.com>, Eric Auger <eric.auger@redhat.com>,
+	<will@kernel.org>, <kevin.tian@intel.com>, <baolu.lu@linux.intel.com>,
+	<joro@8bytes.org>, <shameerali.kolothum.thodi@huawei.com>,
+	<jean-philippe@linaro.org>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 01/14] iommu: Add iommu_get_unmanaged_domain helper
+Message-ID: <ZBN1nbjHzu1BJdOO@Asurada-Nvidia>
 References: <cover.1678348754.git.nicolinc@nvidia.com>
  <9b1077601cace998533129327f5e7ad946752d29.1678348754.git.nicolinc@nvidia.com>
- <eddde530-cd37-f493-7f0f-c97905f0de64@redhat.com>
- <ZAtNrFAEHvmM4FOW@nvidia.com> <f61ca5693d8845eba0a2139324e52d98@huawei.com>
- <ZAtTNK1NbMJ4iyE0@nvidia.com> <b9e850a91c494a5397a0ae154e9ef1da@huawei.com>
- <ZAtY8S53//5P5egd@nvidia.com> <ba7f4b9f81264832842a6c7486cb6dd7@huawei.com>
- <ZBNzNo96O/Cnhe2R@Asurada-Nvidia>
-In-Reply-To: <ZBNzNo96O/Cnhe2R@Asurada-Nvidia>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-originating-ip: [10.195.246.25]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ <2118a147-ac95-d846-ad6f-85d7cebca46a@arm.com>
+ <4938b20b-14d8-86f8-e80b-9d8ed9d8f28d@redhat.com>
+ <ZAtS21vqhp7LqA+B@nvidia.com>
+ <ZBJvLsfeIRhV6cME@Asurada-Nvidia>
+ <cacb6338-6dc9-e8b6-426c-aeed3104c8af@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <cacb6338-6dc9-e8b6-426c-aeed3104c8af@arm.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL02EPF000108E9:EE_|CY5PR12MB6275:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2b34c8cf-d974-46e0-62ee-08db26594af7
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	ZKEhAoJRailymkImL306g1iczDmdDHaDXb7hr3Y6ugSpkZFKeWUkuU7QKPKWHNgMCjoOSpzO6wV4Uy7ntsP21VOlQWJL90ipsVfWnIcn8cQTCLjxEppBXTajJC1F3HjwVIRlm3s3Kx4rAUCSAAoFsmcxh0HEnw0Na2szd1X8HgCN5PULtpvcKRO75faDae8fQ/XenY9bmZ9E17aFm/goCotCqZ1TfEtbPrrmDen7wVVgLr034IUenNs8i8U9U+tRO9jmR5AmUQ+V50B4CPdavVfN4PkCCI9KgUyQa9l27/BrxnG0jbMzZVJdOFIDqS000dSx6fUs9pq0TM3DD9heeLNB7Huletgn+3/Dwbo6LDc3EkgumWAswxkS+Q9rav8oJE6bmK/ot69a2Py9O2aRjJmzniy9gKHYEjCIqmo38lPV3jpl2gF5BnCUuKf/XTne0IJjhRy29E5TdKuhPe/dmfD295AVQPFWPeFVzJlfwZITYJ2OE8rwBLrUtqBBcJi1QGMH4Y/9HyZhxOZStsyGKOokvx/RXgLwYevcR0IEU4btk5QDjNZyhpIMHJuZRvndI26dqR1xO0UHBnWsOpbuQEx7PRNw7H4tbkPi1L2XrcPf5RtYt6nnilZ3Xo8cmIK7Hhxy9sCuGb7TZ0pYHSyz8Cs9/6E+SvEO1+orGlhLP2Z34L8qxvfrxSfN/t846/NVH6dzJWyAe+qUSfZf3PPPvjSxWCC/n+7g60j+gGNIeTW7YPv+ZnT5iYZbZA0v3x7C
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(396003)(39860400002)(376002)(346002)(136003)(451199018)(46966006)(36840700001)(40470700004)(41300700001)(4326008)(7416002)(5660300002)(8936002)(2906002)(36860700001)(82740400003)(356005)(86362001)(7636003)(70206006)(478600001)(8676002)(70586007)(6916009)(40460700003)(55016003)(33716001)(82310400005)(40480700001)(26005)(54906003)(426003)(316002)(9686003)(53546011)(83380400001)(186003)(336012)(47076005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2023 20:01:55.2697
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2b34c8cf-d974-46e0-62ee-08db26594af7
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL02EPF000108E9.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6275
 
+On Thu, Mar 16, 2023 at 06:42:07PM +0000, Robin Murphy wrote:
+> External email: Use caution opening links or attachments
+> 
+> 
+> On 16/03/2023 1:21 am, Nicolin Chen wrote:
+> > Hi Robin,
+> > 
+> > How do you think about Jason's proposal below? I'd like to see
+> > us come to an agreement on an acceptable solution...
+> 
+> I think it's so thoroughly broken that I suspect Cunningham's law might
+> be at play, but fine, you win :) Hopefully it's sufficiently obvious how
+> the other pieces would fit around the patch below. FWIW I'd still prefer
+> a generic domain->s2_domain pointer rather than any op at all, but I'm
+> happy enough with this compromise.
 
+Oh, I appreciate that! Looks like we can move on with a v2 :)
 
-> -----Original Message-----
-> From: Nicolin Chen [mailto:nicolinc@nvidia.com]
-> Sent: 16 March 2023 19:51
-> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>;
-> Eric Auger <eric.auger@redhat.com>
-> Cc: Jason Gunthorpe <jgg@nvidia.com>; robin.murphy@arm.com;
-> will@kernel.org; kevin.tian@intel.com; baolu.lu@linux.intel.com;
-> joro@8bytes.org; jean-philippe@linaro.org;
-> linux-arm-kernel@lists.infradead.org; iommu@lists.linux.dev;
-> linux-kernel@vger.kernel.org
-> Subject: Re: [PATCH v1 01/14] iommu: Add iommu_get_unmanaged_domain
-> helper
->=20
-> Hi Shameer/Eric,
->=20
-> On Fri, Mar 10, 2023 at 04:30:03PM +0000, Shameerali Kolothum Thodi
-> wrote:
-> > External email: Use caution opening links or attachments
-> >
-> >
-> > > -----Original Message-----
-> > > From: Jason Gunthorpe [mailto:jgg@nvidia.com]
-> > > Sent: 10 March 2023 16:21
-> > > To: Shameerali Kolothum Thodi
-> <shameerali.kolothum.thodi@huawei.com>
-> > > Cc: Eric Auger <eric.auger@redhat.com>; Nicolin Chen
-> > > <nicolinc@nvidia.com>; robin.murphy@arm.com; will@kernel.org;
-> > > kevin.tian@intel.com; baolu.lu@linux.intel.com; joro@8bytes.org;
-> > > jean-philippe@linaro.org; linux-arm-kernel@lists.infradead.org;
-> > > iommu@lists.linux.dev; linux-kernel@vger.kernel.org
-> > > Subject: Re: [PATCH v1 01/14] iommu: Add
-> iommu_get_unmanaged_domain
-> > > helper
-> > >
-> > > On Fri, Mar 10, 2023 at 04:07:38PM +0000, Shameerali Kolothum Thodi
-> > > wrote:
-> > > > >
-> > >
-> https://lore.kernel.org/linux-arm-kernel/20220420164836.1181-5-shame
-> > > er
-> > > > > > ali.kolothum.thodi@huawei.com/
-> > > > >
-> > > > > So "boot configration" is more like "don't change the RIDs"? Ie
-> > > > > don't
-> > > enable
-> > > > > SRIOV?
-> > > >
-> > > > Yes. Don't think it will work with SR-IOV if you can't guarantee
-> > > > the RMR
-> > > specified
-> > > > SID.
-> > >
-> > > So I think we are probably good them because vSR-IOV is already not
-> > > supported by qemu, so it impossible for a VM to change the PCI
-> > > configuration in a way that would alter the RID to SID mapping?
-> > >
-> >
-> > Provided we fix the issue mentioned by Eric. This was discussed here
-> > previously,
-> >
-> > https://lore.kernel.org/linux-arm-kernel/bb3688c7-8f42-039e-e22f-65290
-> > 78da97d@redhat.com/
->=20
-> Have we fixed the issue? I saw Lorenzo replying in that thread:
-> https://lore.kernel.org/linux-arm-kernel/Yi8nV8H4Jjlpadmk@lpieralisi/
->=20
-> Or, what's remaining here regarding this topic? Is it a blocker?
+I will include this patch replacing mine in the next version.
 
-[+Lorenzo]
+Thanks!
+Nic
 
-Not sure it is fixed yet. Also, assuming we take RMR path, do we plan to su=
-pport=20
-DT base Guests at all?
-
-Thanks,
-Shameer
-
+> ----->8-----
+> Subject: [PATCH] iommu/dma: Support MSIs through nested domains
+> 
+> Currently, iommu-dma is the only place outside of IOMMUFD and drivers
+> which might need to be aware of the stage 2 domain encapsulated within
+> a nested domain. This would be in the legacy-VFIO-style case where we're
+> using host-managed MSIs with an identity mapping at stage 1, where it is
+> the underlying stage 2 domain which owns an MSI cookie and holds the
+> corresponding dynamic mappings. Hook up the new op to resolve what we
+> need from a nested domain.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>  drivers/iommu/dma-iommu.c | 18 ++++++++++++++++--
+>  1 file changed, 16 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 99b2646cb5c7..66b0d5fa49f8 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -1642,6 +1642,20 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+>        return NULL;
+>  }
+> 
+> +/*
+> + * Nested domains may not have an MSI cookie or accept mappings, but they may
+> + * be related to a domain which does, so we let them tell us what they need.
+> + */
+> +static struct iommu_domain *iommu_dma_get_msi_mapping_domain(struct device *dev)
+> +{
+> +       struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+> +
+> +       if (domain && domain->type == IOMMU_DOMAIN_NESTED &&
+> +           domain->ops->get_msi_mapping_domain)
+> +               domain = domain->ops->get_msi_mapping_domain(domain);
+> +       return domain;
+> +}
+> +
+>  /**
+>   * iommu_dma_prepare_msi() - Map the MSI page in the IOMMU domain
+>   * @desc: MSI descriptor, will store the MSI page
+> @@ -1652,7 +1666,7 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+>  int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
+>  {
+>        struct device *dev = msi_desc_to_dev(desc);
+> -       struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+> +       struct iommu_domain *domain = iommu_dma_get_msi_mapping_domain(dev);
+>        struct iommu_dma_msi_page *msi_page;
+>        static DEFINE_MUTEX(msi_prepare_lock); /* see below */
+> 
+> @@ -1685,7 +1699,7 @@ int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
+>  void iommu_dma_compose_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
+>  {
+>        struct device *dev = msi_desc_to_dev(desc);
+> -       const struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+> +       const struct iommu_domain *domain = iommu_dma_get_msi_mapping_domain(dev);
+>        const struct iommu_dma_msi_page *msi_page;
+> 
+>        msi_page = msi_desc_get_iommu_cookie(desc);
+> --
+> 2.39.2.101.g768bb238c484.dirty
+> 
