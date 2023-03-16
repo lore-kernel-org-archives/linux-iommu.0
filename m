@@ -1,199 +1,123 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D9BF20EE
-	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 08:17:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87A6D20EE
+	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 08:17:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678954622; x=1710490622;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=oO1jpgjoT5YaamSNiLRYXDePLug0FnwuFVkPX/tD/kU=;
-  b=gxwquanS4ZF9zZfS1sOwqnX8eKbKwFkL5OcGNVyCWdIpee/t/jmscQzo
-   mnl8cKfVJ1ugjVF51pgP+teLE1gX6DJAWLa64TSLMe/VTxzrNUJL1Tmsh
-   FOb2c3SesTMk9zW8oVGmbbyX8k0kPXbYLEcG0vIwhgHpl9soghDtbnGqA
-   BD3aHWQgY07cLIp/U8pW46fB1pp0Lm5TNqYrEJhxm7hraPvnkJCQlg9nu
-   5PAp67kmFjQaDFwMuwAxA2DKcMa+xX2VKlWzrWiNSk7dTj4VhuviYb6M0
-   miQpbFFUBlV5UjFAbp/PZc31TU6od0TlUodpRY7WlxqzsLrekdfODro8b
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="424194798"
+  t=1678954626; x=1710490626;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=mvM3U4HAfsIGubHuWNsDYEqyKLly6yHWxDKSYIjSFvQ=;
+  b=XYLyLCEfmz8snZoTatk5sz92bG2Fmn7xrbNGo7lYCz/9MnzXyI9VciOp
+   +ho1rGQW3kHRxXtXa0FT1CpsdzTULTFebPpRvjD+8ojd831qzSEqLwLlc
+   jXAaJaEoXjLdZed3kzCZTu0uw3twvpRZZtUP8eZjz0BvpJ3ndukYsEKqU
+   /tD750Klahsi9KglHvPGZECTcx/YQx9XUTFoZzjlMwMAx6bMihacEB66Z
+   332c798+DpcpVbD6mAcQTXakq24X6waEdC+b4/tcVZ1n+l41g1XilQUkL
+   VNEUf+3RUPzl3CMXY3/eSmQrhx0xm+Fvu+A0YVaHYPH1qnSUiSE6H5pSI
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="400494717"
 X-IronPort-AV: E=Sophos;i="5.98,265,1673942400"; 
-   d="scan'208";a="424194798"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2023 01:16:39 -0700
+   d="scan'208";a="400494717"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2023 01:17:06 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="768843560"
+X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="853923169"
 X-IronPort-AV: E=Sophos;i="5.98,265,1673942400"; 
-   d="scan'208";a="768843560"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by FMSMGA003.fm.intel.com with ESMTP; 16 Mar 2023 01:16:38 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Thu, 16 Mar 2023 01:16:37 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21 via Frontend Transport; Thu, 16 Mar 2023 01:16:37 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.43) by
- edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.21; Thu, 16 Mar 2023 01:16:37 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TNeNe+dHgKUva5U+HGod9oOvSNev1gKrPk0ybdf3yBesWZZ19pgZhxpOFSEQyjgvuMIcPOnVip8MPFdQHdebUFfHltqFMZoxHHDJWzfVhSj33C7bhzVTPHjsYE4hGSE+zy9un1qs0EompLl7XeRTIgf+RvNCHRKhbkQi94Tg8gnp0g/3bYSxcUiLWJZOO8+0FNkXlWZYpxp5LyQ2Xn03r6/vysgTCg41TmHvVZMsy+bxu7zD/WQa9JlxXgV/SLEJKwAxyxNNGJynTS7M8tKq9ELBt9/I+DENvI5u8tIO98Z0tw183BWS6leugY8LMqr4MiX7fD6OtD0+TtXyCIL9cA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IuX1HRJaqHdr4WgWQZOtnJ7XmshuFJka1hJrETCJL7I=;
- b=KreXIRGTxtaUZj/cKkP8WIF5WZozH9pjvqJYrEdaxCdCcpbB+EquQFdyUOCPvMItH4ISeI5YG+XZsInFQy21EmrHpRxEq2q3mcBm27Ga9JUKq2pBjn6Yaeaau99aq9OWconY4lgNuVaQpNMq9P1frmndq1bfQAQ/UUaN5H0uZhD2PgVichS4K6xaCyRkdyXAuaMgowt+enRwOJGU9I6IVRyrMg/Z6YliR3m1W7aEPG7wqJ3c7qe0dvf/vCzKPOYyn3hSzMJ2/8FpWJhbL6kiEBMqehSMMz9zbGjIm+0vwUKeRsdDhFCRd/RCYLQwaKcaKSjcdC6mdeeBLcjJbtNoXA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by CH0PR11MB5235.namprd11.prod.outlook.com (2603:10b6:610:e2::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.31; Thu, 16 Mar
- 2023 08:16:35 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::1aac:b695:f7c5:bcac]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::1aac:b695:f7c5:bcac%9]) with mapi id 15.20.6178.031; Thu, 16 Mar 2023
- 08:16:35 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jgg@nvidia.com"
-	<jgg@nvidia.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>
-CC: "cohuck@redhat.com" <cohuck@redhat.com>, "eric.auger@redhat.com"
-	<eric.auger@redhat.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
-	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
-	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
-	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
-Subject: RE: [PATCH v2 2/4] iommu: Add new iommu op to get iommu hardware
- information
-Thread-Topic: [PATCH v2 2/4] iommu: Add new iommu op to get iommu hardware
- information
-Thread-Index: AQHZUlxYm6GOmk6wmUW710g04eg+cq79GCcg
-Date: Thu, 16 Mar 2023 08:16:35 +0000
-Message-ID: <BN9PR11MB5276C6A0F26954A42B8C23498CBC9@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20230309075358.571567-1-yi.l.liu@intel.com>
- <20230309075358.571567-3-yi.l.liu@intel.com>
-In-Reply-To: <20230309075358.571567-3-yi.l.liu@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|CH0PR11MB5235:EE_
-x-ms-office365-filtering-correlation-id: 28cfea90-0660-4a7d-ca48-08db25f6c243
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Anf907dIVwlfi5pp3yJ28QhyiOkBHi3aKvP6DqihGYOHiWaYyRZktIoNFHn4ZrVQh2QiC9uRHZ2sIUbSbWCO+2LWKje7YbaKXO3jIFZrD9u7vjvQ5+e0fnWuILOvxDi7Ze+VQU45aD1/jwKWO9NIso3o2IspZrYKcXaixFfPxY9m8pKpTdlFwY8kRG8BHQ0xhxKRwW7kRrJqvJVOYwaROP+nHKOhRluIx8die+acnzR8P4XDiYT8uFvExeEFwlZAJwkrUmu5HdTeBkCw9JGD8LpSgK7+I41F53tyW+2SiDta8FizMmRa9GNs15F+mSfoIspHEyCLJOkqEIGBA7Fu79+9RhiOlAGPkWDZj+vUf6Nh9vxdbwcT1lAqztqCEZ/MSN4vKzFy8HDri6Ejf6Q3Yd1aCxW4JEcAX9adMnXX1PNAIv7LDzCnvImwYgwlp7aiIx9CDgi3kAmikjjbMcAr5Hw8HKXf5HtvVPKS81KsJoWqc1Uo0ae/nNvogXz8NWIA9mLewAk7gKIsCmMb24eHFuXBVPsR3WxvYe3MQlYK5xQYC06ia8KmC6G9z82/a0MKmQvsAtRMpESpIocgOxGvdmsawLDVeW5UsH/UiyB8osum9c26jNBeDJbJR/bJDz8WvNhUJMz1wLVude+9/fJsVwL9OMvzVFG5ojncpezY3ERrKcjhLYvKW+cG/UGRMgtPS9/OtRSBUEIffIsTzU6yJ0l2mcBvNGD3qCOThCkr0FBSSnF10leQRXqouQCcEnJq
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(366004)(346002)(136003)(39860400002)(376002)(396003)(451199018)(38100700002)(38070700005)(86362001)(122000001)(82960400001)(33656002)(2906002)(41300700001)(7416002)(52536014)(4326008)(8936002)(5660300002)(55016003)(76116006)(186003)(9686003)(6506007)(83380400001)(26005)(316002)(110136005)(54906003)(64756008)(66556008)(66946007)(71200400001)(478600001)(7696005)(66476007)(8676002)(66446008);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?YjQ5+MdMU3rXNyElva1yFH0X+cMVVJzSGk54MuAtArv79RsXRavxONv2mlv3?=
- =?us-ascii?Q?ncckNsVYz3EQPnHnVIksigT74ePnvnhB+CjXWdHtgXw3aaZ37cn63HGI6/L9?=
- =?us-ascii?Q?YIiLJ44fLalPWfagSt2KFXd0CUXSjc6h/B3nup8EDmdZi6PXwk88zQ5fLu5G?=
- =?us-ascii?Q?mRl6/DTROQSoCixnguhtjksB7p1c2vSkYmF4nSoqB//QwOpuMpNuqLbkdPWV?=
- =?us-ascii?Q?x0mrUqUdl1CZeVYSBdyPZaUUtUbnSUu3l+uXmiYU/KTEo/MUwNkUrMX/JlLA?=
- =?us-ascii?Q?Fg/7CjmRTmjqXq9gMRgD4eINhRBmoo45dOkZN/jIqh3EXXr/O0ttL90DD7VS?=
- =?us-ascii?Q?jsW4396KDtDN2MXTnYKhTmQB7tmvhs21skXIFhhjICv5QXS3GqvjdJ0ZZSjm?=
- =?us-ascii?Q?ULaSWWzW683e50InJD+YO1HviU63RTeYsrFGuYpFhjbLRXp38q7VedLzI8jV?=
- =?us-ascii?Q?co3qwZXr6rsywwj/lqhkz/I+XHRURZpJfhUaiqw+3sN+jtmlAcq1u+VAWEV9?=
- =?us-ascii?Q?3bi5LPbFbzRrM9dLpnGCWOfBfoOyTTGmEnIC/O6sEmT89HK6tizvzSRJ1Rb+?=
- =?us-ascii?Q?qAKvM2ETtJNF+dPw8D/M3KAheMXBNh1Riu1MTDcelxVfTT9RbgT2k320pXXg?=
- =?us-ascii?Q?65N5yzbMQhVlHeYa9FLeyjdbgYamVVVTnpaNZQrVTa+pWiEkXXmwwNmBmd+O?=
- =?us-ascii?Q?/cxnYno+xLmkhF17FzO7T3AHfF/Bg0636Ll7zCvIT8cRjglAUXm4hdgIUtsc?=
- =?us-ascii?Q?xNCeabb7f/G3N1JiRAKTkGavij0h/yQSq2OqAgK13HziPpTyR+QkEMSjEzm0?=
- =?us-ascii?Q?wCrTn6Eo3qSAsW56rB1A0vBNkPwq0cl+ew/NVJTH9GR0UojYFlYYTT8RfLCi?=
- =?us-ascii?Q?6MsW7mM2KXdsEw7nUoCoXpvq90aZ7agdM23fau9JL7qs/0OB9jffsfZPoOPC?=
- =?us-ascii?Q?ZKtbEJIxyovt+xgDv1Rq9rPQs3khfT4teWDRHeQO/6fjIdx3YZdMQfG9ay9X?=
- =?us-ascii?Q?HJRl4a90+qKnpU/r2rzvYboni5ZGL1PiZhWKxjLlbqqU7op1ehIXVUbRrkPw?=
- =?us-ascii?Q?SGmcZXE1bfwi6l/udf4lk9CMwcuikZALR5i9Lxy/67/6AOxoS/UiT9SZGPnJ?=
- =?us-ascii?Q?jU+h0FNwg7PdEXF94AYJd/jAB3FRl4UGZW85vC4NFST2jafu3uM1YiWVs90C?=
- =?us-ascii?Q?xcPSUgdHOLA3jG/4sDsWRbX1lmXRY+yoXpFR9m9ZY3DBqYxAV4lhNoNLcEjF?=
- =?us-ascii?Q?BhVZtZOQ1p95oKN/xIf21KiwKj3UmnyXoqro9EPbxKeZx45kH8YzXKYojvFV?=
- =?us-ascii?Q?kcX9uQaeMk63fmZJlzPGUoitcVxR+NgYqWAqL97iTsNZP7sUny4cj+UC9/ZC?=
- =?us-ascii?Q?uXdoL6zQXuUEfz7dk+cQj3eVNzn91nFzCwXmHizTruPMmvMMjBjDbmQ0qmvQ?=
- =?us-ascii?Q?Y830UIScH+R8A7Q/hypoyHfTV8fajG7Ijf0h8C2mkMyLKiaEcF5+Hz7WODBR?=
- =?us-ascii?Q?zNCBD9HXPOGxYniNQXjfvdYg6hdfrv8vOvXzeGwvnUE7oRl1oQdNwpPCvEqr?=
- =?us-ascii?Q?15onFcrzko48y3Jyfmn1G6WMH6ffDbiD4cxC2LJG?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+   d="scan'208";a="853923169"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.173.173]) ([10.249.173.173])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2023 01:17:02 -0700
+Message-ID: <4a9dd732-344d-64f3-0c9c-b21c196bf940@linux.intel.com>
+Date: Thu, 16 Mar 2023 16:17:00 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 28cfea90-0660-4a7d-ca48-08db25f6c243
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Mar 2023 08:16:35.4149
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: yirhpbO4Pvqyq2WwB4esYVGjJAvM0E/lZqRzOg45syO+43VnU9Ntc+GNj2jEUFJKSPbejfBSG4k4JDvZOvAiDg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR11MB5235
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ "Yu, Fenghua" <fenghua.yu@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>,
+ Vinod Koul <vkoul@kernel.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 5/5] iommu/vt-d: Move PRI handling to IOPF feature path
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>
+References: <20230309025639.26109-1-baolu.lu@linux.intel.com>
+ <20230309025639.26109-6-baolu.lu@linux.intel.com>
+ <BN9PR11MB52766D4948FA00CB02D3F2188CBC9@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB52766D4948FA00CB02D3F2188CBC9@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-> From: Liu, Yi L <yi.l.liu@intel.com>
-> Sent: Thursday, March 9, 2023 3:54 PM
-> @@ -222,6 +223,11 @@ struct iommu_iotlb_gather {
->  /**
->   * struct iommu_ops - iommu ops and capabilities
->   * @capable: check capability
-> + * @hw_info: IOMMU hardware information. The type of the returned data
-> is
-> + *           defined in include/uapi/linux/iommufd.h. The data buffer is
+On 2023/3/16 15:17, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Thursday, March 9, 2023 10:57 AM
+>>
+>> @@ -4689,17 +4704,21 @@ static int intel_iommu_disable_iopf(struct device
+>> *dev)
+>>   {
+>>   	struct device_domain_info *info = dev_iommu_priv_get(dev);
+>>   	struct intel_iommu *iommu = info->iommu;
+>> -	int ret;
+>>
+>> -	ret = iommu_unregister_device_fault_handler(dev);
+>> -	if (ret)
+>> -		return ret;
+>> +	if (!info->pri_enabled)
+>> +		return -EINVAL;
+>>
+>> -	ret = iopf_queue_remove_device(iommu->iopf_queue, dev);
+>> -	if (ret)
+>> -		iommu_register_device_fault_handler(dev,
+>> iommu_queue_iopf, dev);
+>> +	pci_disable_pri(to_pci_dev(dev));
+>> +	info->pri_enabled = 0;
+>>
+>> -	return ret;
+>> +	/*
+>> +	 * With pri_enabled checked, unregistering fault handler and
+>> +	 * removing device from iopf queue should never fail.
+>> +	 */
+>> +	iommu_unregister_device_fault_handler(dev);
+>> +	iopf_queue_remove_device(iommu->iopf_queue, dev);
+>> +
+>> +	return 0;
+>>   }
+> 
+> PCIe spec says that clearing the enable bit doesn't mean in-fly
+> page requests are completed:
+> --
+> Enable (E) - This field, when set, indicates that the Page Request
+> Interface is allowed to make page requests. If this field is Clear,
+> the Page Request Interface is not allowed to issue page requests.
+> If both this field and the Stopped field are Clear, then the Page
+> Request Interface will not issue new page requests, but has
+> outstanding page requests that have been transmitted or are
+> queued for transmission
 
-"The type of the returned data is marked by @driver_type".
+Yes. So the iommu driver should drain the in-fly PRQs.
 
-"defined in include/uapi/linux/iommufd.h" should belong to the comment
-of @driver_type
+The Intel VT-d implementation drains the PRQs when any PASID is unbound
+from the iommu domain (see intel_svm_drain_prq()) before reuse. Before
+disabling iopf, the device driver should unbind pasid and disable sva,
+so when it comes here, the PRQ should have been drained.
 
-> + *           allocated in the IOMMU driver and the caller should free it
-> + *           after use. Return the data buffer if success, or ERR_PTR on
-> + *           failure.
->   * @domain_alloc: allocate iommu domain
->   * @probe_device: Add device to iommu driver handling
->   * @release_device: Remove device from iommu driver handling
-> @@ -246,11 +252,17 @@ struct iommu_iotlb_gather {
->   * @remove_dev_pasid: Remove any translation configurations of a specifi=
-c
->   *                    pasid, so that any DMA transactions with this pasi=
-d
->   *                    will be blocked by the hardware.
-> + * @driver_type: One of enum iommu_hw_info_type. This is used in the
-> hw_info
-> + *               reporting path. For the drivers that supports it, a uni=
-que
-> + *               type should be defined. For the driver that does not su=
-pport
-> + *               it, this field is the IOMMU_HW_INFO_TYPE_DEFAULT that i=
-s 0.
-> + *               Hence, such drivers do not need to care this field.
+Perhaps I can add below comments to make this clear:
 
-The meaning of "driver_type" is much broader than reporting hw_info.
+         /*
+          * PCIe spec states that by clearing PRI enable bit, the Page
+          * Request Interface will not issue new page requests, but has
+          * outstanding page requests that have been transmitted or are
+          * queued for transmission. This is supposed to be called after
+          * the device driver has stopped DMA, all PASIDs have been
+          * unbound and the outstanding PRQs have been drained.
+          */
 
-let's be accurate to call it as "hw_info_type". and while we have two
-separate fields for one feature where is the check enforced on whether
-both are provided?
-
-Is it simpler to return the type directly in @hw_info?
-
-btw IOMMU_HW_INFO_TYPE_DEFAULT also sounds misleading.
-'default' implies hw_info still available but in a default format.
-
-probably it's clearer to call it IOMMU_HW_INFO_TYPE_NONE.
+Best regards,
+baolu
