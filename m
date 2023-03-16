@@ -1,131 +1,123 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13472A938
-	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 19:20:17 +0000 (UTC)
-Received: by mail-pl1-f180.google.com with SMTP id iw3so2872401plb.6
-        for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 12:20:17 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B08C8A938
+	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 19:29:53 +0000 (UTC)
+Received: by mail-ed1-f43.google.com with SMTP id eh3so11805123edb.11
+        for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 12:29:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678994417;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=D3DngfJ3+Jb+3rKFdF51yVgT8GLTxx/0WtoHGrYOK1k=;
-        b=zfwerBpAdS3zSJ44bJ99Y0rz4LuLh0oPOLPB+eR0zCuSSbt8oMo6hsVuaAVeTJkUPx
-         MmVxan9XAmsTWM3cqE2jbsxqHC7cS2SF2WK9F4mGo0GRuaOfvNmKjY1mGbibmNy5uB9p
-         Ei3r/z8zGNan5/U7qLKXhLEgOyOQ2KRnhh/iitd7ARsf33UF/IYNRR9ArUNEMalFjhEv
-         +L/14MWkVXB8+wiXQXPNvpt/a9YcJjb0nWyDBo4V5wAo86PU2NpPWu19MO35EyzNJQHJ
-         txszql05rTp3dfvenpV97esWpaDCiOgI6iBAIc7rONQz7hWQGLeRZ2YnGMESG+UE3UbK
-         SZLQ==
+        d=linaro.org; s=google; t=1678994992;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=5WyU0qfnRULjYvTUDcZG4NUcXj63E3kuf4oqTEgEhWM=;
+        b=QpZ370ktfsNBat3WA/Sytl7eZ2icaf9k5ZVtBvzG+miJw0o3kMpS53pUzaPKYBRzlm
+         3RNMMlqqLCDNSmLyPt7rzFqC+e4fvuBk9STtIJQxJmZutKpTl9qYw6x1POw04z6kzTUC
+         mBhD+sk7VwyoRxOa4/5+XB7moNAKCb5l8reeiMvisr559sTx3FKtB8sRLssnbgn3heLz
+         6DzVS3WrFm01OYQjwtS+uNhqojvO8LfE5Gzve3HvboTn1r02KcYrfAxJ9fynmUczbplt
+         wf8G06BjUJVJsXw3O7H0NMaymAngotahtTTmOiIwcb1oM26a7hULDA9hT2FITUrb5NJB
+         D2/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678994417;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=D3DngfJ3+Jb+3rKFdF51yVgT8GLTxx/0WtoHGrYOK1k=;
-        b=SmgvUgDD7/w5sCzG6kZT6UZQWdlaT6wc67qTVTz+J43ZKG6V0EaZBD8scq247epwEL
-         tECkmIj3+xxsPGPZlUWqd8+yszE5QUcYP4piUtu7ahbj3I4RtNuWeY7RUuYAx2JFsaUd
-         Juhtp9GuL9/4Odg+vrPbvrx4XbL9vvA6NSTqadpIs1U1LjPjYDFNYWtAeWI5xC11iXua
-         N4OtkK4oSjV2PDBIAKdI/8OLX9gwKaSUSzvtU9udHjK55+S8etTM5IoVXcb0iHRtdI5G
-         MjKAZZ6SttNa6BBvju6fhqUJCOyHrgRUunJQmfkQeOz1m6zbDZVOq5fUVERsNcZothsW
-         yycg==
-X-Gm-Message-State: AO0yUKV7NFB+x9DPXlBeIlQ4SoTHq4/rCxlIAkfFfRhu7rkI9oAfXs5K
-	O4l38wN5UnXOE37BDkSWg/QPFQj92g2+LLsJmn062g==
-X-Google-Smtp-Source: AK7set/QWfJoNWbRURvvrXPm+tab7bYhozsILCCqfPBN7Fcsggqaff5TiE2vRnY/IvIinOSMMSHiiJEXPEUSM5EaUAk=
-X-Received: by 2002:a17:90a:cf:b0:23e:fad0:dda1 with SMTP id
- v15-20020a17090a00cf00b0023efad0dda1mr1555415pjd.1.1678994417218; Thu, 16 Mar
- 2023 12:20:17 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1678994992;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=5WyU0qfnRULjYvTUDcZG4NUcXj63E3kuf4oqTEgEhWM=;
+        b=17JdlaOo3XfrdjzsCdeF1vaUY17l30BhTseljrjZ81oCLKDJIYbWNMfWxop46rsz4D
+         tYtVkCLw/lrb5WN09Nj2XNIlaf16/s+9BSrjfnM3Rcf7iWif2G9HfrcQBkYFWEt2K3zK
+         RKiVCf5LPiDCi6dY+A3sPScHBoAqVaHnCr9Be1Zul0vVcoknbunzNXCWxnKKTIzLAMfH
+         7pNh4uBq5qphhit9QyIXIo/1g7cEHbXqY4JYYO2TUg1aE1uP0cqUULZN0iRWql+gU50m
+         D6BfNGRwd+fgLD/UZtp2Qb0FM2oHXBYUI/T3hqERWdKyr3j8L7sImZBn/TfCphAGifxK
+         iI2g==
+X-Gm-Message-State: AO0yUKWxONPNPSW049To7hL+zd607wiR88E7IPgcrUQMsS1TknMaJzF7
+	EN30Q1fk0ZCrbkC1pEDAOh9qTQ==
+X-Google-Smtp-Source: AK7set/rsWHRHF7nlHEmPrEiunpAYhgOMGUC46mRl1vyeV9hyy07MsCnraZ9ocmj2iYUnIVfgEGT5g==
+X-Received: by 2002:a17:907:c304:b0:8ae:e724:ea15 with SMTP id tl4-20020a170907c30400b008aee724ea15mr11491159ejc.76.1678994991923;
+        Thu, 16 Mar 2023 12:29:51 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:9827:5f65:8269:a95f? ([2a02:810d:15c0:828:9827:5f65:8269:a95f])
+        by smtp.gmail.com with ESMTPSA id t1-20020a170906178100b008d1dc5f5692sm17887eje.76.2023.03.16.12.29.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Mar 2023 12:29:51 -0700 (PDT)
+Message-ID: <f09e93e1-235a-ea0a-902d-4f41a8c90ee5@linaro.org>
+Date: Thu, 16 Mar 2023 20:29:50 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CGME20230315232523eucas1p2565ef5954e3b5b451803c6200c8bce32@eucas1p2.samsung.com>
- <20230315232514.1046589-1-m.szyprowski@samsung.com>
-In-Reply-To: <20230315232514.1046589-1-m.szyprowski@samsung.com>
-From: Sam Protsenko <semen.protsenko@linaro.org>
-Date: Thu, 16 Mar 2023 14:20:06 -0500
-Message-ID: <CAPLW+4kjyPfHxbwwtP7pkO3NjeJqU6moLS=c8ftdsT1JK7zqHg@mail.gmail.com>
-Subject: Re: [PATCH v2] iommu/exynos: Fix set_platform_dma_ops() callback
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: iommu@lists.linux.dev, linux-samsung-soc@vger.kernel.org, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Alim Akhtar <alim.akhtar@samsung.com>, 
-	Lu Baolu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH 1/2] dt-bindings: arm-smmu: Document SM61[12]5 GPU SMMU
+Content-Language: en-US
+To: Konrad Dybcio <konrad.dybcio@linaro.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org
+References: <20230315-topic-kamorta_adrsmmu-v1-0-d1c0dea90bd9@linaro.org>
+ <20230315-topic-kamorta_adrsmmu-v1-1-d1c0dea90bd9@linaro.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230315-topic-kamorta_adrsmmu-v1-1-d1c0dea90bd9@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Wed, 15 Mar 2023 at 18:25, Marek Szyprowski <m.szyprowski@samsung.com> wrote:
->
-> There are some subtle differences between release_device() and
-> set_platform_dma_ops() callbacks, so separate those two callbacks. Device
-> links should be removed only in release_device(), because they were
-> created in probe_device() on purpose and they are needed for proper
-> Exynos IOMMU driver operation. While fixing this, remove the conditional
-> code as it is not really needed.
->
-> Reported-by: Jason Gunthorpe <jgg@ziepe.ca>
-> Fixes: 189d496b48b1 ("iommu/exynos: Add missing set_platform_dma_ops callback")
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> ---
+On 15/03/2023 11:52, Konrad Dybcio wrote:
+> Both of these SoCs have a Qualcomm MMU500 implementation of SMMU
+> in front of their GPUs that expect 3 clocks. Both of them also have
+> an APPS SMMU that expects no clocks. Remove qcom,sm61[12]5-smmu-500
+> from the "no clocks" list (intentionally 'breaking' the schema checks
+> of APPS SMMU, as now it *can* accept clocks - with the current
+> structure of this file it would have taken a wastefully-long time to
+> sort this out properly..) and add necessary yaml to describe the
+> clocks required by the GPU SMMUs.
 
-Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
 
-> v2:
-> - keep set_platform_dma_ops only on ARM 32bit
->
-> Some more background why set_platform_dma_ops is needed on ARM 32bit is
-> available here:
-> https://lore.kernel.org/all/9a12fcac-c347-5d81-acef-1124c50d0c37@arm.com/
-> ---
->  drivers/iommu/exynos-iommu.c | 17 ++++++++++-------
->  1 file changed, 10 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index 483aaaeb6dae..1abd187c6075 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
-> @@ -1415,23 +1415,26 @@ static struct iommu_device *exynos_iommu_probe_device(struct device *dev)
->         return &data->iommu;
->  }
->
-> -static void exynos_iommu_release_device(struct device *dev)
-> +static void exynos_iommu_set_platform_dma(struct device *dev)
->  {
->         struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
-> -       struct sysmmu_drvdata *data;
->
->         if (owner->domain) {
->                 struct iommu_group *group = iommu_group_get(dev);
->
->                 if (group) {
-> -#ifndef CONFIG_ARM
-> -                       WARN_ON(owner->domain !=
-> -                               iommu_group_default_domain(group));
-> -#endif
->                         exynos_iommu_detach_device(owner->domain, dev);
->                         iommu_group_put(group);
->                 }
->         }
-> +}
+> +      properties:
+> +        compatible:
+> +          items:
+> +            - enum:
+> +                - qcom,sm6115-smmu-500
+> +                - qcom,sm6125-smmu-500
+> +            - const: qcom,adreno-smmu
+> +            - const: qcom,smmu-500
+> +            - const: arm,mmu-500
+
+If you drop the hunk later (from allOf:if), then what clocks do you
+expect for non-GPU SMMU?
+
+> +    then:
+> +      properties:
+> +        clock-names:
+> +          items:
+> +            - const: mem
+> +            - const: hlos
+> +            - const: iface
 > +
-> +static void exynos_iommu_release_device(struct device *dev)
-> +{
-> +       struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
-> +       struct sysmmu_drvdata *data;
+> +        clocks:
+> +          items:
+> +            - description: GPU memory bus clock
+> +            - description: Voter clock required for HLOS SMMU access
+> +            - description: Interface clock required for register access
 > +
-> +       exynos_iommu_set_platform_dma(dev);
->
->         list_for_each_entry(data, &owner->controllers, owner_node)
->                 device_link_del(data->link);
-> @@ -1479,7 +1482,7 @@ static const struct iommu_ops exynos_iommu_ops = {
->         .domain_alloc = exynos_iommu_domain_alloc,
->         .device_group = generic_device_group,
->  #ifdef CONFIG_ARM
-> -       .set_platform_dma_ops = exynos_iommu_release_device,
-> +       .set_platform_dma_ops = exynos_iommu_set_platform_dma,
->  #endif
->         .probe_device = exynos_iommu_probe_device,
->         .release_device = exynos_iommu_release_device,
-> --
-> 2.34.1
->
+>    # Disallow clocks for all other platforms with specific compatibles
+>    - if:
+>        properties:
+> @@ -394,8 +420,6 @@ allOf:
+>                - qcom,sdm845-smmu-500
+>                - qcom,sdx55-smmu-500
+>                - qcom,sdx65-smmu-500
+> -              - qcom,sm6115-smmu-500
+> -              - qcom,sm6125-smmu-500
+>                - qcom,sm6350-smmu-500
+>                - qcom,sm6375-smmu-500
+>                - qcom,sm8350-smmu-500
+> 
+
+Best regards,
+Krzysztof
+
