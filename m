@@ -1,123 +1,157 @@
-Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2075.outbound.protection.outlook.com [40.107.94.75])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B08C8A938
-	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 19:29:53 +0000 (UTC)
-Received: by mail-ed1-f43.google.com with SMTP id eh3so11805123edb.11
-        for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 12:29:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678994992;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=5WyU0qfnRULjYvTUDcZG4NUcXj63E3kuf4oqTEgEhWM=;
-        b=QpZ370ktfsNBat3WA/Sytl7eZ2icaf9k5ZVtBvzG+miJw0o3kMpS53pUzaPKYBRzlm
-         3RNMMlqqLCDNSmLyPt7rzFqC+e4fvuBk9STtIJQxJmZutKpTl9qYw6x1POw04z6kzTUC
-         mBhD+sk7VwyoRxOa4/5+XB7moNAKCb5l8reeiMvisr559sTx3FKtB8sRLssnbgn3heLz
-         6DzVS3WrFm01OYQjwtS+uNhqojvO8LfE5Gzve3HvboTn1r02KcYrfAxJ9fynmUczbplt
-         wf8G06BjUJVJsXw3O7H0NMaymAngotahtTTmOiIwcb1oM26a7hULDA9hT2FITUrb5NJB
-         D2/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678994992;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=5WyU0qfnRULjYvTUDcZG4NUcXj63E3kuf4oqTEgEhWM=;
-        b=17JdlaOo3XfrdjzsCdeF1vaUY17l30BhTseljrjZ81oCLKDJIYbWNMfWxop46rsz4D
-         tYtVkCLw/lrb5WN09Nj2XNIlaf16/s+9BSrjfnM3Rcf7iWif2G9HfrcQBkYFWEt2K3zK
-         RKiVCf5LPiDCi6dY+A3sPScHBoAqVaHnCr9Be1Zul0vVcoknbunzNXCWxnKKTIzLAMfH
-         7pNh4uBq5qphhit9QyIXIo/1g7cEHbXqY4JYYO2TUg1aE1uP0cqUULZN0iRWql+gU50m
-         D6BfNGRwd+fgLD/UZtp2Qb0FM2oHXBYUI/T3hqERWdKyr3j8L7sImZBn/TfCphAGifxK
-         iI2g==
-X-Gm-Message-State: AO0yUKWxONPNPSW049To7hL+zd607wiR88E7IPgcrUQMsS1TknMaJzF7
-	EN30Q1fk0ZCrbkC1pEDAOh9qTQ==
-X-Google-Smtp-Source: AK7set/rsWHRHF7nlHEmPrEiunpAYhgOMGUC46mRl1vyeV9hyy07MsCnraZ9ocmj2iYUnIVfgEGT5g==
-X-Received: by 2002:a17:907:c304:b0:8ae:e724:ea15 with SMTP id tl4-20020a170907c30400b008aee724ea15mr11491159ejc.76.1678994991923;
-        Thu, 16 Mar 2023 12:29:51 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:9827:5f65:8269:a95f? ([2a02:810d:15c0:828:9827:5f65:8269:a95f])
-        by smtp.gmail.com with ESMTPSA id t1-20020a170906178100b008d1dc5f5692sm17887eje.76.2023.03.16.12.29.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Mar 2023 12:29:51 -0700 (PDT)
-Message-ID: <f09e93e1-235a-ea0a-902d-4f41a8c90ee5@linaro.org>
-Date: Thu, 16 Mar 2023 20:29:50 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02F90A938
+	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 19:51:36 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dT0dIk4Le2Jkastv5B0IkOgSdNTri6NB5vyyyXaLcfwFXbqN/fsNH2UH4tnUIFLko66IZFCSmfYFu0R/Xl8F2npJvwjYN+O5SxtS/hB23sqOaJ2sWN4qU3LOJAcOJYocglFkXT6y4+8DDnwbOyBCHwsfnB3jleneNXPRFd80fRwriAOQxEyhxtA3j/G3VCQTF5KlmGur882OcQDc2hnmdC7vNVsmsmMdpQ1MPN73G2pWWcdU9uTrfAxhDO+DUbXk014opyMHlpm/dFLVNVLWZH8kekOTnrtRpu1+dVRbgFq5/Z9WBFJY3RUPjYs5PMCIfnPjB0c0iLRyERBodKb8Cg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7eXqHdKir2xBgeU7fZND8Z6z+u1qRc/SC8fJS7Yx4yA=;
+ b=V7jgFdMDrLPUxf84ki0Yvh7CPxflE0RaAkhacM48eJQXYJNAe9JjK3YrYwC+QqBoF7Q3paQErxGpJRe9pcidVIRX276RW7Azwgg6//T9oV4wT2FjDs5tbQkgy91t0xvetfLZiDU6OPnYhLI5HUOnX0DyyqnAyNtLYMW7c1u7x51eR9i/CpkaYcerCImm1RMIpnZQ/Eljr1aHggABKoVWxR6IbvhqtgTYaxqDoBoDsRV70ZAM/0BgueC1Hm5rxdxmfeOlU0V10WrNvEvKwMxDoKYo0i8ZBT6/soV93hpG1tiUxS9TYyXCXotNqM4qZ5FOZco0VsLbnlVmVMRBsxeU/g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7eXqHdKir2xBgeU7fZND8Z6z+u1qRc/SC8fJS7Yx4yA=;
+ b=JmxVtxKAV6q8qpwIz2HASmQrltpLbTG5g3GueXzY7TzitCgFAg3GXd63KFgHQoYOkmGnoPk+tuHd8rgSppcsiF9ZuYmj/VoWjP7/hCgM+Djo2LIXvJ4vY9VOlaIn2PFaWQrHi9bUtUR0s+hw5ZkMwjf0vt82Nb9DoSflQ9H4fCq+kemaBU/VI8mFmwCj2SyQDrYY6L420f4hwN+0anC9O4srEz1b1mUd6hf5QjUWe9l80Ok4X2qC33tes+ler1cnfIWo0jZs5DCmnfG00F4bjHq0IH1KNibpi/fDs3QaMkN6uSO6AVD/RfnBO86CcYa51BoFncJf2nuaz25q/Fd3yQ==
+Received: from BN9PR03CA0198.namprd03.prod.outlook.com (2603:10b6:408:f9::23)
+ by CYYPR12MB8653.namprd12.prod.outlook.com (2603:10b6:930:c5::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.31; Thu, 16 Mar
+ 2023 19:51:35 +0000
+Received: from BN8NAM11FT044.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:f9:cafe::b3) by BN9PR03CA0198.outlook.office365.com
+ (2603:10b6:408:f9::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.30 via Frontend
+ Transport; Thu, 16 Mar 2023 19:51:34 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BN8NAM11FT044.mail.protection.outlook.com (10.13.177.219) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6199.19 via Frontend Transport; Thu, 16 Mar 2023 19:51:33 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 16 Mar 2023
+ 12:51:21 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Thu, 16 Mar
+ 2023 12:51:21 -0700
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5 via Frontend
+ Transport; Thu, 16 Mar 2023 12:51:20 -0700
+Date: Thu, 16 Mar 2023 12:51:18 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>, "Eric
+ Auger" <eric.auger@redhat.com>
+CC: Jason Gunthorpe <jgg@nvidia.com>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "will@kernel.org" <will@kernel.org>,
+	"kevin.tian@intel.com" <kevin.tian@intel.com>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 01/14] iommu: Add iommu_get_unmanaged_domain helper
+Message-ID: <ZBNzNo96O/Cnhe2R@Asurada-Nvidia>
+References: <cover.1678348754.git.nicolinc@nvidia.com>
+ <9b1077601cace998533129327f5e7ad946752d29.1678348754.git.nicolinc@nvidia.com>
+ <eddde530-cd37-f493-7f0f-c97905f0de64@redhat.com>
+ <ZAtNrFAEHvmM4FOW@nvidia.com>
+ <f61ca5693d8845eba0a2139324e52d98@huawei.com>
+ <ZAtTNK1NbMJ4iyE0@nvidia.com>
+ <b9e850a91c494a5397a0ae154e9ef1da@huawei.com>
+ <ZAtY8S53//5P5egd@nvidia.com>
+ <ba7f4b9f81264832842a6c7486cb6dd7@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH 1/2] dt-bindings: arm-smmu: Document SM61[12]5 GPU SMMU
-Content-Language: en-US
-To: Konrad Dybcio <konrad.dybcio@linaro.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-msm@vger.kernel.org
-References: <20230315-topic-kamorta_adrsmmu-v1-0-d1c0dea90bd9@linaro.org>
- <20230315-topic-kamorta_adrsmmu-v1-1-d1c0dea90bd9@linaro.org>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230315-topic-kamorta_adrsmmu-v1-1-d1c0dea90bd9@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ba7f4b9f81264832842a6c7486cb6dd7@huawei.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT044:EE_|CYYPR12MB8653:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6a5ab261-df37-4c3e-20ad-08db2657d894
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	qMthd2Dmc6/p5jTRsPz+jM3E9UzUkGoY/OwLKqBT9leN7/lZSVD1DdsKOfjbjf+hvR7Bm5tUlaaEXGD0Ew9Nal5Ytn2q4NYClTgfhamGEnoGAroPFcMiWAGzTJ2pownZlrolsGz5g7bbm9Y6MYnHRhyupjsu+8sZpa8U6zR5Qnr1Gg4Bj6hmooH3MGilptOs4+zUg4QdcTOjOHUUgMpLKhrl6Np3SOKX+oCheiAJMA0wJFf0ML4tKViPeHmkmgvM9qa97f+PvMCFoIMGWX0NjPTDHhKaSNdCpaqlK/OQD1JGV3ENnLUDXrYU3USXLBIRcpHifQ3feQTInyya9WdNF11oBwR51Nx2nNfzkro4RsECae2dyWuHiSLUIfSivMwxLJSWEsyBxXW5iTmHU6GVefT0Tv5iS8UbEhEzLRX3eINK8BU1rCWzdF6jYduMkVcfVO9b89gtmRbfe/bX5qTOACZvQrRBsJKcc4NqDgKHBhWeVxadGcKl0ymk+vBlmlrEzGWLlCGdv0w4VRs+HEHum0ujaK1rK6bwiPNKe9SbxzBQOPCf4O+Md45dZbskcm0wATB110QsvFkregrYGfA8bq2s5aNF873+1AeE7wZXg345iNSBYKrUlSnmq7SK9GEV+BYGIhTaWwpDmyJc6AadxkiuIimOlInF3bzC9vI5O+Rsm+E2V/gheg74s+EUbIlWHhJnIqhXJi6pinURRuqoNpjEoLlzbs0NxAUX7uH7TFEFH2MeEngDzVbmszwQGJfKfFYo12gO3Cp1gp5DGEriCXXrQPQNU7DWBbgc6GHW/mpgIwywYFSKxb4LgAMdRpr/uY1tOUL2ISV++MxkuMLoTA==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(346002)(136003)(39860400002)(396003)(376002)(451199018)(36840700001)(40470700004)(46966006)(86362001)(36860700001)(356005)(82740400003)(7636003)(2906002)(4326008)(7416002)(41300700001)(5660300002)(8936002)(40480700001)(82310400005)(55016003)(40460700003)(33716001)(186003)(9686003)(53546011)(26005)(336012)(426003)(83380400001)(47076005)(110136005)(316002)(54906003)(8676002)(70586007)(70206006)(966005)(478600001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2023 19:51:33.8622
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6a5ab261-df37-4c3e-20ad-08db2657d894
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN8NAM11FT044.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR12MB8653
 
-On 15/03/2023 11:52, Konrad Dybcio wrote:
-> Both of these SoCs have a Qualcomm MMU500 implementation of SMMU
-> in front of their GPUs that expect 3 clocks. Both of them also have
-> an APPS SMMU that expects no clocks. Remove qcom,sm61[12]5-smmu-500
-> from the "no clocks" list (intentionally 'breaking' the schema checks
-> of APPS SMMU, as now it *can* accept clocks - with the current
-> structure of this file it would have taken a wastefully-long time to
-> sort this out properly..) and add necessary yaml to describe the
-> clocks required by the GPU SMMUs.
+Hi Shameer/Eric,
 
-
-> +      properties:
-> +        compatible:
-> +          items:
-> +            - enum:
-> +                - qcom,sm6115-smmu-500
-> +                - qcom,sm6125-smmu-500
-> +            - const: qcom,adreno-smmu
-> +            - const: qcom,smmu-500
-> +            - const: arm,mmu-500
-
-If you drop the hunk later (from allOf:if), then what clocks do you
-expect for non-GPU SMMU?
-
-> +    then:
-> +      properties:
-> +        clock-names:
-> +          items:
-> +            - const: mem
-> +            - const: hlos
-> +            - const: iface
-> +
-> +        clocks:
-> +          items:
-> +            - description: GPU memory bus clock
-> +            - description: Voter clock required for HLOS SMMU access
-> +            - description: Interface clock required for register access
-> +
->    # Disallow clocks for all other platforms with specific compatibles
->    - if:
->        properties:
-> @@ -394,8 +420,6 @@ allOf:
->                - qcom,sdm845-smmu-500
->                - qcom,sdx55-smmu-500
->                - qcom,sdx65-smmu-500
-> -              - qcom,sm6115-smmu-500
-> -              - qcom,sm6125-smmu-500
->                - qcom,sm6350-smmu-500
->                - qcom,sm6375-smmu-500
->                - qcom,sm8350-smmu-500
+On Fri, Mar 10, 2023 at 04:30:03PM +0000, Shameerali Kolothum Thodi wrote:
+> External email: Use caution opening links or attachments
 > 
+> 
+> > -----Original Message-----
+> > From: Jason Gunthorpe [mailto:jgg@nvidia.com]
+> > Sent: 10 March 2023 16:21
+> > To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+> > Cc: Eric Auger <eric.auger@redhat.com>; Nicolin Chen
+> > <nicolinc@nvidia.com>; robin.murphy@arm.com; will@kernel.org;
+> > kevin.tian@intel.com; baolu.lu@linux.intel.com; joro@8bytes.org;
+> > jean-philippe@linaro.org; linux-arm-kernel@lists.infradead.org;
+> > iommu@lists.linux.dev; linux-kernel@vger.kernel.org
+> > Subject: Re: [PATCH v1 01/14] iommu: Add iommu_get_unmanaged_domain
+> > helper
+> >
+> > On Fri, Mar 10, 2023 at 04:07:38PM +0000, Shameerali Kolothum Thodi
+> > wrote:
+> > > >
+> > https://lore.kernel.org/linux-arm-kernel/20220420164836.1181-5-shameer
+> > > > > ali.kolothum.thodi@huawei.com/
+> > > >
+> > > > So "boot configration" is more like "don't change the RIDs"? Ie don't
+> > enable
+> > > > SRIOV?
+> > >
+> > > Yes. Don't think it will work with SR-IOV if you can't guarantee the RMR
+> > specified
+> > > SID.
+> >
+> > So I think we are probably good them because vSR-IOV is already not
+> > supported by qemu, so it impossible for a VM to change the PCI
+> > configuration in a way that would alter the RID to SID mapping?
+> >
+> 
+> Provided we fix the issue mentioned by Eric. This was discussed here previously,
+> 
+> https://lore.kernel.org/linux-arm-kernel/bb3688c7-8f42-039e-e22f-6529078da97d@redhat.com/
 
-Best regards,
-Krzysztof
+Have we fixed the issue? I saw Lorenzo replying in that thread:
+https://lore.kernel.org/linux-arm-kernel/Yi8nV8H4Jjlpadmk@lpieralisi/
 
+Or, what's remaining here regarding this topic? Is it a blocker?
+
+Thanks
+Nic
