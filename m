@@ -1,131 +1,91 @@
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2058.outbound.protection.outlook.com [40.107.101.58])
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03D72376
-	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 05:39:08 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KUw7WsFn4Fvmmk2PJUvL1A8nNjQz8G27JUl4dYBqC9DC88SwUs0pj4ImMceH5SXHc2q9Qe2KAIEkLHwtp4/kY8drJfhzqnYC5TB6YCdceG+tsLvjfyI45llugetq7fWz+lABZDFsBunTjtcagj+ZFovyuh9bEeLl8aktrAYPkLaiwlQ3TCueZG10tv72jEvl+SgvU/JHnBaN8pMBf5jvprOIakR7QpJGdoYAqhQvMdHue0+3D+pv9Lq3RYpG6M85126bZaIYaNzazjrtcB5LmrqHRmKGBPCn9WulIwuBUAUB/aJDnSvQ5sJgCjkPtpfkBOvXC4oPb1YeIYxzA1JZEw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HPVyLdym2nbtLnalNUEeWN7wSTrF802cUPbot7Or9XI=;
- b=H5QCXJ2KX4aLQDIzkejpv3aWcaZxH6glQHM1GAHtmVbmcwZTGHOO2gJQzItN40h7pInGVUBpkvOqvLsOPltEeuHaeT64USjDG4PQjebNW35vaaNXn7GA7OLgijeR+eoGYpwPTaMbVFHr8bJIxoVY7DrkSeTupBGz2+xSaZqFYvO8vFN12V/lf7Xv6YFMnDhZXcnACg0/E5quNg5PibyxEtXKJKFruu+oTtJfBCiKZOoHblDwbGZVl4Fjspq5cJfDVKiDnrzDj4s4fu+F/h4EjFJp8l13r+MXCCfArTLSsWyO4Aoa42A4TtzLmXaAVP90xGJDNgcMQQFsZypvEH+CdQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HPVyLdym2nbtLnalNUEeWN7wSTrF802cUPbot7Or9XI=;
- b=EgoREAZcp99nQ8zahiGv3IUYpxTB90OD9Sblnve/e0SZtyO2tRRNAjVIHxv1KWDWnQBFQO1MJfPmieXfKIuh3mgc9Q3sE9kReVTJD4wPeDvSvX+uJ2i73ECkb2RvyVMiZZXVL5S1/xzthFgP9VtepKBeQPc8ingjeHi08ZZgsLLrWzCxgaMbbuIMM1ufIPepTkNvvTNBtCtjVvWR3ncMtXr4ojivSuhzOQTKlhKFFrToorLiRt9du1YvOQ0I96yCPhuhyd2YrJdcz3Jw43/RbvkV8qwZcYf9fGKwWjMCczJ8dTuPmmkdKlk1lLeSygxxRS+SQYZIhNumf3t6onQfGQ==
-Received: from BN9PR03CA0854.namprd03.prod.outlook.com (2603:10b6:408:13d::19)
- by MN2PR12MB4320.namprd12.prod.outlook.com (2603:10b6:208:15f::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.31; Thu, 16 Mar
- 2023 05:39:06 +0000
-Received: from BN8NAM11FT016.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:13d:cafe::6d) by BN9PR03CA0854.outlook.office365.com
- (2603:10b6:408:13d::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.29 via Frontend
- Transport; Thu, 16 Mar 2023 05:39:06 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- BN8NAM11FT016.mail.protection.outlook.com (10.13.176.97) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6199.18 via Frontend Transport; Thu, 16 Mar 2023 05:39:06 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 15 Mar 2023
- 22:38:56 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C453617CF
+	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 06:43:11 +0000 (UTC)
+X-UUID: cb339930c3c511edbd2e61cc88cc8f98-20230316
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=NtK/AMh/RAbTlyDMNdLBC7ow1fYH1iS/gmQ15B+V07o=;
+	b=aIZaeKwd9+0DkZ3KF1dRKN4tJPkEy+SowwOBOd28Z7BLs9lLaB2Otuwm19/PIi2W/ZNoNrKkskcDCHhcSszcfJf7uW0bFPKvmYji5NE5aorTptHmEm09Zoirl/qkRHSlAySlloaADF7Ccljwx9Gu+fiT5M+f7UYBhgX+bKT8CTo=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.21,REQID:aa6d1e9a-5c6b-46b3-85b8-db28e0982a60,IP:0,U
+	RL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION
+	:release,TS:-5
+X-CID-META: VersionHash:83295aa,CLOUDID:396b8b28-564d-42d9-9875-7c868ee415ec,B
+	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
+	RL:1,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0
+X-CID-BVR: 0
+X-CID-BAS: 0,_,0,_
+X-UUID: cb339930c3c511edbd2e61cc88cc8f98-20230316
+Received: from mtkmbs13n2.mediatek.inc [(172.21.101.108)] by mailgw02.mediatek.com
+	(envelope-from <yong.wu@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 1077396021; Thu, 16 Mar 2023 14:43:00 +0800
+Received: from mtkmbs13n2.mediatek.inc (172.21.101.108) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.37; Wed, 15 Mar 2023 22:38:56 -0700
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.126.190.181)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5 via Frontend
- Transport; Wed, 15 Mar 2023 22:38:55 -0700
-Date: Wed, 15 Mar 2023 22:38:54 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <kevin.tian@intel.com>, <joro@8bytes.org>, <will@kernel.org>,
-	<robin.murphy@arm.com>, <alex.williamson@redhat.com>, <shuah@kernel.org>,
-	<yi.l.liu@intel.com>, <linux-kernel@vger.kernel.org>,
-	<iommu@lists.linux.dev>, <kvm@vger.kernel.org>,
-	<linux-kselftest@vger.kernel.org>, <mjrosato@linux.ibm.com>,
-	<farman@linux.ibm.com>
-Subject: Re: [PATCH v4 2/5] iommufd/selftest: Add
- IOMMU_TEST_OP_ACCESS_SET_IOAS coverage
-Message-ID: <ZBKrboUWBsmmbP6Q@Asurada-Nvidia>
-References: <cover.1678284812.git.nicolinc@nvidia.com>
- <08a875b83daf7047c3cc67ed0da23045b6dc6fb9.1678284812.git.nicolinc@nvidia.com>
- <ZAuP5ewmDwql8Pn5@nvidia.com>
- <ZAvGGc5Jt0uSkN8M@Asurada-Nvidia>
+ 15.2.1118.25; Thu, 16 Mar 2023 14:42:59 +0800
+Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
+ mtkmbs13n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.1118.25 via Frontend Transport; Thu, 16 Mar 2023 14:42:58 +0800
+From: Yong Wu <yong.wu@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Matthias
+ Brugger" <matthias.bgg@gmail.com>
+CC: Robin Murphy <robin.murphy@arm.com>, Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>, Yong Wu <yong.wu@mediatek.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	<iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>, Yunfei Wang
+	<yf.wang@mediatek.com>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <jianjiao.zeng@mediatek.com>,
+	<chengci.xu@mediatek.com>
+Subject: [PATCH v2] iommu/mediatek: Set dma_mask for PGTABLE_PA_35_EN
+Date: Thu, 16 Mar 2023 14:42:51 +0800
+Message-ID: <20230316064251.7346-1-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ZAvGGc5Jt0uSkN8M@Asurada-Nvidia>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT016:EE_|MN2PR12MB4320:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1a03d597-316a-49c8-a930-08db25e0c21b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	vwiR7o3+O8ixMwkBkaksc+wB0JIwWi8eH8UWnh8v2QmdCdj7LstSl6jPvluvTb9Qz7foHwKAq1fL5gcmwh+YZeNRjwS1Wkd5KqjYR3/KuSiWOZiEXy8X1qNkaOK6tp1//+y9Du2w+8jCW1dEOU9TpyDp+8SkNA54jICJGC3AI8l6EfCeu4kCtnmLBY/Wzq0WmNi7oNprQPyNqOC57Sd6U4b/DZDR3b4CM5V1IEAr7S11ael7iv7WHPuqrBDyID5BSyYgY/+f49EIFLx0kyI6x0Cn2vcgz/DekQVGFRPSTfTwcSdWgMmtlSdn1LDWKcSJjC0MUTyMTrevf/6T78kWmqiLdf30Q3lf7MGzZxSrnjHXMTOIrlqSuHneRZ/u9OFOIu6am2HK9oggTlCe3wzBCIoptiNVls3qPm+/R60A8tMr+C9FNKiri47kc2QsAKVLlL30E/0Dky8TSq7kpcHb+t3W++OUqjzwcdUFdgaTJlfS4uhb5PqRQb462alhyqmoB90gRdB09xMIqpDOkLiz8drDzp4kVNdyZfdS36UGx7eYwOIkEq9kQNqwTG7lHQ4WQ9JW1oQzn5AtKeDerx11Y+gW28c9zV7uJ1hJ4Am0LJDt4xPjavIp0NfJ6y+yU7pww/bxN/OLnhN2gnOBeOxf51YvbYwIT8rddlGLWPtK8wC0zMelMx8oonVZuagIwwC4xTCRS/bH1KUDyM9/xJUUE18lWbGtf5J7Av7F6J9/6OS0rd5wmLqReeIFXWA8ELYl
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(136003)(39860400002)(346002)(376002)(396003)(451199018)(40470700004)(46966006)(36840700001)(8936002)(186003)(6862004)(336012)(7416002)(5660300002)(316002)(26005)(9686003)(47076005)(426003)(40460700003)(41300700001)(83380400001)(8676002)(4326008)(33716001)(70206006)(70586007)(36860700001)(356005)(40480700001)(86362001)(7636003)(82740400003)(55016003)(82310400005)(478600001)(6636002)(54906003)(2906002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2023 05:39:06.0364
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1a03d597-316a-49c8-a930-08db25e0c21b
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT016.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4320
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK: N
 
-On Fri, Mar 10, 2023 at 04:06:52PM -0800, Nicolin Chen wrote:
-> On Fri, Mar 10, 2023 at 04:15:33PM -0400, Jason Gunthorpe wrote:
-> > On Wed, Mar 08, 2023 at 06:25:59AM -0800, Nicolin Chen wrote:
-> > > Add a new IOMMU_TEST_OP_ACCESS_SET_IOAS to allow setting access->ioas
-> > > individually, corresponding to the iommufd_access_set_ioas() helper.
-> > > 
-> > > Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> > > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> > > ---
-> > >  drivers/iommu/iommufd/iommufd_test.h          |  4 +++
-> > >  drivers/iommu/iommufd/selftest.c              | 26 +++++++++++++++----
-> > >  tools/testing/selftests/iommu/iommufd_utils.h | 22 ++++++++++++++--
-> > >  3 files changed, 45 insertions(+), 7 deletions(-)
-> > 
-> > I'd prefer we keep it so that the IOAS can be setup with an argument,
-> > this will greatly help syzkaller
-> > 
-> > Lets have it so a 0 ioas will avoid the setup so the second call can
-> > happen
-> 
-> I assume that you mean the iommufd_access_set_ioas() call and
-> the "unsigned int ioas_id" input of iommufd_test_create_access?
+When we enable PGTABLE_PA_35_EN, the PA for pgtable may be 35bits.
+Thus add dma_mask for it.
 
-I changed it to keep the id in iommufd_test_create_access().
-Instead, I renamed the IOMMU_TEST_OP_ACCESS_SET_IOAS ioctl to
-IOMMU_TEST_OP_ACCESS_REPLACE_IOAS. So an access can be created
-by the original ioctl, and then be replaced using the new one.
+Fixes: 301c3ca12576 ("iommu/mediatek: Allow page table PA up to 35bit")
+Signed-off-by: Chengci.Xu <chengci.xu@mediatek.com>
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+v2: Just move this out from mt8188 series. Nothing change.
 
-Thanks
-Nic
+v1: https://lore.kernel.org/linux-mediatek/20230307080555.14399-3-yong.wu@mediatek.com/
+---
+ drivers/iommu/mtk_iommu.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index d5a4955910ff..1a75b4382a92 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -1258,6 +1258,14 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 			return PTR_ERR(data->bclk);
+ 	}
+ 
++	if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN)) {
++		ret = dma_set_mask(dev, DMA_BIT_MASK(35));
++		if (!ret) {
++			dev_err(dev, "Failed to set dma_mask 35.\n");
++			return ret;
++		}
++	}
++
+ 	pm_runtime_enable(dev);
+ 
+ 	if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM)) {
+-- 
+2.25.1
+
