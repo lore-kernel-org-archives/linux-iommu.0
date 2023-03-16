@@ -1,24 +1,23 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3FE5D3C00
-	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 14:58:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 18F533C00
+	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 15:19:33 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 53F792F4;
-	Thu, 16 Mar 2023 07:59:29 -0700 (PDT)
-Received: from [10.1.32.58] (010265703453.arm.com [10.1.32.58])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 102003F67D;
-	Thu, 16 Mar 2023 07:58:43 -0700 (PDT)
-Message-ID: <c753c2a8-024d-5bef-8987-96582084991e@arm.com>
-Date: Thu, 16 Mar 2023 14:58:39 +0000
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 25F4A2F4;
+	Thu, 16 Mar 2023 08:20:17 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EE8493F67D;
+	Thu, 16 Mar 2023 08:19:31 -0700 (PDT)
+Message-ID: <1d4ff93d-a97e-85bb-4259-9da259bc2ab7@arm.com>
+Date: Thu, 16 Mar 2023 15:19:27 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v1 14/14] iommu/arm-smmu-v3: Add
- arm_smmu_cache_invalidate_user
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v1 04/14] iommu/arm-smmu-v3: Add arm_smmu_hw_info
 Content-Language: en-GB
 To: Nicolin Chen <nicolinc@nvidia.com>
 Cc: jgg@nvidia.com, will@kernel.org, eric.auger@redhat.com,
@@ -27,132 +26,121 @@ Cc: jgg@nvidia.com, will@kernel.org, eric.auger@redhat.com,
  linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
  linux-kernel@vger.kernel.org
 References: <cover.1678348754.git.nicolinc@nvidia.com>
- <aa327f9ea61e5a4771c13e53639e33955b9acde3.1678348754.git.nicolinc@nvidia.com>
- <1467e666-1b6c-c285-3f79-f8e8b088718b@arm.com>
- <ZAqpOQ+DDvEfq0Dg@Asurada-Nvidia>
- <92fdb06f-e5b1-8534-fb0e-ad47b5be9e1d@arm.com>
- <ZAx2K08L5TIm6r3y@Asurada-Nvidia>
- <ab762cc6-5adf-2515-d9d2-d21d916eb6ad@arm.com>
- <ZBJcS07G3mt7gjkA@Asurada-Nvidia>
+ <494e36cbb77d49e11427b308868dbc1b0e19fe18.1678348754.git.nicolinc@nvidia.com>
+ <bfa43614-c052-4bed-b87e-691141f41909@arm.com>
+ <ZAqFFolbw5xoJDfb@Asurada-Nvidia>
+ <5cc56149-965a-bb47-f23f-6aa9d0ecce4e@arm.com>
+ <ZBJfJUjbAUId68s1@Asurada-Nvidia>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ZBJcS07G3mt7gjkA@Asurada-Nvidia>
+In-Reply-To: <ZBJfJUjbAUId68s1@Asurada-Nvidia>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023-03-16 00:01, Nicolin Chen wrote:
-> On Mon, Mar 13, 2023 at 01:07:42PM +0000, Robin Murphy wrote:
+On 16/03/2023 12:13 am, Nicolin Chen wrote:
+> On Fri, Mar 10, 2023 at 03:28:56PM +0000, Robin Murphy wrote:
 >> External email: Use caution opening links or attachments
 >>
 >>
->> On 2023-03-11 12:38, Nicolin Chen wrote:
->>> On Fri, Mar 10, 2023 at 05:53:46PM +0000, Robin Murphy wrote:
+>> On 2023-03-10 01:17, Nicolin Chen wrote:
+>>> Hi Robin,
 >>>
->>>>>>> +     case CMDQ_OP_TLBI_NH_VA:
->>>>>>> +             cmd.tlbi.asid = inv_info->asid;
->>>>>>> +             fallthrough;
->>>>>>> +     case CMDQ_OP_TLBI_NH_VAA:
->>>>>>> +             if (!granule_size || !(granule_size & smmu->pgsize_bitmap) ||
->>>>>>
->>>>>> Non-range invalidations with TG=0 are perfectly legal, and should not be
->>>>>> ignored.
->>>>>
->>>>> I assume that you are talking about the pgsize_bitmap check.
->>>>>
->>>>> QEMU embeds a !tg case into the granule_size [1]. So it might
->>>>> not be straightforward to cover that case. Let me see how to
->>>>> untangle different cases and handle them accordingly.
+>>> Thanks for the inputs.
+>>>
+>>> On Thu, Mar 09, 2023 at 01:03:41PM +0000, Robin Murphy wrote:
+>>>> External email: Use caution opening links or attachments
 >>>>
->>>> Oh, double-checking patch #2, that might be me misunderstanding the
->>>> interface. I hadn't realised that the UAPI was apparently modelled on
->>>> arm_smmu_tlb_inv_range_asid() rather than actual SMMU commands :)
+>>>>
+>>>> On 2023-03-09 10:53, Nicolin Chen wrote:
+>>>>> This is used to forward the host IDR values to the user space, so the
+>>>>> hypervisor and the guest VM can learn about the underlying hardware's
+>>>>> capabilities.
+>>>>>
+>>>>> Also, set the driver_type to IOMMU_HW_INFO_TYPE_ARM_SMMUV3 to pass the
+>>>>> corresponding type sanity in the core.
+>>>>>
+>>>>> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+>>>>> ---
+>>>>>     drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 25 +++++++++++++++++++++
+>>>>>     drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  2 ++
+>>>>>     include/uapi/linux/iommufd.h                | 14 ++++++++++++
+>>>>>     3 files changed, 41 insertions(+)
+>>>>>
+>>>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>>>> index f2425b0f0cd6..c1aac695ae0d 100644
+>>>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>>>> @@ -2005,6 +2005,29 @@ static bool arm_smmu_capable(struct device *dev, enum iommu_cap cap)
+>>>>>         }
+>>>>>     }
+>>>>>
+>>>>> +static void *arm_smmu_hw_info(struct device *dev, u32 *length)
+>>>>> +{
+>>>>> +     struct arm_smmu_master *master = dev_iommu_priv_get(dev);
+>>>>> +     struct iommu_hw_info_smmuv3 *info;
+>>>>> +     void *base_idr;
+>>>>> +     int i;
+>>>>> +
+>>>>> +     if (!master || !master->smmu)
+>>>>> +             return ERR_PTR(-ENODEV);
+>>>>> +
+>>>>> +     info = kzalloc(sizeof(*info), GFP_KERNEL);
+>>>>> +     if (!info)
+>>>>> +             return ERR_PTR(-ENOMEM);
+>>>>> +
+>>>>> +     base_idr = master->smmu->base + ARM_SMMU_IDR0;
+>>>>> +     for (i = 0; i <= 5; i++)
+>>>>> +             info->idr[i] = readl_relaxed(base_idr + 0x4 * i);
+>>>>
+>>>> You need to take firmware overrides etc. into account here. In
+>>>> particular, features like BTM may need to be hidden to work around
+>>>> errata either in the system integration or the SMMU itself. It isn't
+>>>> reasonable to expect every VMM to be aware of every erratum and
+>>>> workaround, and there may even be workarounds where we need to go out of
+>>>> our way to prevent guests from trying to use certain features in order
+>>>> to maintain correctness at S2.
 >>>
->>> Yea. In fact, most of the invalidation info in QEMU was packed
->>> for the previously defined general cache invalidation structure,
->>> and the range invalidation part is still not quite independent.
+>>> We can add a bit of overrides after this for errata, perhaps?
 >>>
->>>> I really think UAPI should reflect the hardware and encode TG and TTL
->>>> directly. Especially since there's technically a flaw in the current
->>>> driver where we assume TTL in cases where it isn't actually known, thus
->>>> may potentially fail to invalidate level 2 block entries when removing a
->>>> level 1 table, since io-pgtable passes the level 3 granule in that case.
->>>
->>> Do you mean something like hw_info forwarding pgsize_bitmap/tg
->>> to the guest? Or the other direction?
+>>> I have some trouble with finding the errata docs. Would it be
+>>> possible for you to direct me to it with a link maybe?
 >>
->> I mean if the interface wants to support range invalidations in a way
->> which works correctly, then it should ideally carry both the TG and TTL
->> fields from the guest command straight through to the host. If not, then
->> at the very least the host must always assume TTL=0, because it cannot
->> correctly infer otherwise once the guest command's original intent has
->> been lost.
-> 
-> Oh, it's about hypervisor simply forwarding the entire CMD to
-> the host side. Jason is suggesting a fast approach by letting
-> host kernel read the CMDQ directly to get the raw CMD. Perhaps
-> that would address this comments about TG/TTL too.
-
-That did cross my mind, but given the usage model, having host userspace 
-give guest memory whose contents it can't control (unless it pauses the 
-whole VM on all CPUs) directly to the host kernel just seems to invite 
-more potential problems than necessary. Commands aren't big, so I think 
-it's fair to expect the VMM to marshal them into host memory, and save 
-the host kernel from ever having to reason about any races or other 
-emulation details which may exist between a VM and its VMM.
-
-> I wonder if there could be other case than a WAR, where TG/TTL
-> fields from the guest's aren't supported by the host. And then
-> should the host handle it with a different CMD?
-
-As Eric found previously, there's a clear benefit in emulating range 
-invalidation for guests even if the underlying hardware doesn't support 
-it, to minimise trapping. But that's not hard, and the patch as-is is 
-already achieving it. All we need to be careful to avoid is issuing 
-hardware commands with *less* scope than guest originally asked for - if 
-the guest asks for a nonsense TG/TTL which doesn't match its current 
-context, that's fine. The interface just has to ensure that a VMM's SMMU 
-emulation *is* able to make a nested S1 context behave as expected by 
-the architecture; we don't need to care if a guest uses the architecture 
-wrong, since it's only hurting itself.
->>>> When range invalidation came along, the distinction between "all leaves
->>>> are definitely at the last level" and "use last-level granularity to
->>>> make sure everything at at any level is hit" started to matter, but the
->>>> interface never caught up. It hasn't seemed desperately urgent to fix
->>>> (who does 1GB+ unmaps outside of VFIO teardown anyway?), but we must
->>>> definitely not bake the same mistake into user ABI.
->>>>
->>>> Of course, there might then be cases where we need to transform
->>>> non-range commands into range commands for the sake of workarounds, but
->>>> that's our own problem to deal with.
->>>
->>> Noted it down.
->>>
->>>>>> What about NSNH_ALL? That still needs to invalidate all the S1 context
->>>>>> that the guest *thinks* it's invalidating.
->>>>>
->>>>> NSNH_ALL is translated to NH_ALL at the guest level. But maybe
->>>>> it should have been done here instead.
->>>>
->>>> Yes. It seems the worst of both worlds to have an interface which takes
->>>> raw opcodes rather than an enum of supported commands, but still
->>>> requires userspace to know which opcodes are supported and which ones
->>>> don't work as expected even though they are entirely reasonable to use
->>>> in the context of the stage-1-only SMMU being emulated.
->>>
->>> Maybe a list of supported TLBI commands via the hw_info uAPI?
+>> The key Arm term is "Software Developer Errata Notice", or just SDEN.
+>> Here's the ones for MMU-600 and MMU-700:
 >>
->> I don't think it's all that difficult to implicitly support all commands
->> that are valid for a stage-1-only SMMU, it just needs the right
->> interface design to be capable of encoding them all completely and
->> unambiguously. Coming back to the previous point about the address
->> encoding, I think that means basing it more directly on the actual
->> SMMUv3 commands, rather than on io-pgtable's abstraction of invalidation
->> with SMMUv3 opcodes bolted on.
+>> https://developer.arm.com/documentation/SDEN-946810/latest/
 > 
-> Yea, with the actual commands from the guest, the host can do
-> something with its supported commands, I think.
+> This page shows "Arm CoreLink MMU-600 System Memory Management
+> Unit Software Developer Errata Notice" but the downloaded file
+> is "Arm CoreLink CI-700 Coherent Interconnect" errata notice.
+> And I don't quite understand what it's about.
 
-The one slightly fiddly case, of course, is CMD_SYNC, but I think that's 
-just a matter for clear documentation of the expectations and behaviour.
+Oh, wonderful... I've reported that now, hopefully it gets fixed soon...
+
+>> https://developer.arm.com/documentation/SDEN-1786925/latest/
+> 
+> Yea, this one I got an "MMU-700 System Memory Management Unit"
+> SMMU errata file that I can read and understand.
+> 
+>> Note that until now it has been extremely fortunate that in pretty much
+>> every case Linux either hasn't supported the affected feature at all, or
+>> has happened to avoid meeting the conditions. Once we do introduce
+>> nesting support that all goes out the window (and I'll have to think
+>> more when reviewing new errata in future...)
+>>
+>> I've been putting off revisiting all the existing errata to figure out
+>> what we'd need to do until new nesting patches appeared, so I'll try to
+>> get to that soon now. I think in many cases it's likely to be best to
+>> just disallowing nesting entirely on affected implementations.
+> 
+> Do we have already a list of "affected implementations"? Or,
+> we would need to make such a list now? In a latter case, can
+> these affected implementations be detected from their IRD0-5
+> registers, so that we can simply do something in hw_info()?
+
+Somewhere I have a patch that adds all the IIDR stuff needed for this, 
+but I never sent it upstream since the erratum itself was an early 
+MMU-600 one which in practice doesn't matter. I'll dig that out and 
+update it with what I have in mind.
 
 Thanks,
 Robin.
