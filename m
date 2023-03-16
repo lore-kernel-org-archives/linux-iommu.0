@@ -1,132 +1,201 @@
-Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2085.outbound.protection.outlook.com [40.107.244.85])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CC4AAD32
-	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 21:01:03 +0000 (UTC)
-Received: by mail-pj1-f73.google.com with SMTP id q30-20020a17090a17a100b0023d376ac2c5so1306892pja.5
-        for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 14:01:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1679000463;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=eVK7JSTP093HSgALaT47Fh8+kh5wLz2pU0fw8h+uNzk=;
-        b=VC+7zohdtySY73Crulq7TLz1D3N6/p5iXZkoxtBnpdgSSjnFYB7GYb4W93JJnnTtmR
-         MO9hM46dRuwESNW94ndnrSKz3ojzGoDmTdbYpT331oWt8LyUwG5rYyj2iQgGxkGGmwbz
-         E7+4Bez7jaOUKPfNk5CjnNU2e9smqF3th9aK0yWtyZX981bJy/FVZCYZ30ijiIXz9z6j
-         qq0KvbNw7/H4Wo2oLdAPRMYnfE1mCJDUiRWmRt1/fQ84mxFWQpIFwoZhh9niw2trS2d3
-         U2pHxh58XMA6Q66Ca3H/fnRVDi16tsjig1P++9v9cVOVHr9NUQJPbX0BvvfQHc8XgXu1
-         xjLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679000463;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=eVK7JSTP093HSgALaT47Fh8+kh5wLz2pU0fw8h+uNzk=;
-        b=dv41yK5m17di/w5IXbnFbSgxHda/3UpJUUVBuX2pG+qNGIadsUDcqNu61wDaLvpn4T
-         f4Zl7bgDOzW3CWJxmnH6upEswfQqC4FiqSf6Z2FYQ6nxrg5oYqPPuITxWiHfvLk6tsau
-         I/UADSz3ryiHoc22Jv/iTVzasa6FKoqKzysBEwVj4H8jxOhCq/bsA7t1GWZ7wnSEW/nB
-         gZwSqchiV2xCnb6fDy7yb37TItj1Gl39m5D82V80ZuthSQOyTF0l7xyXj+FH/ZUto0cT
-         nI3IZA8dn7PKAClVD87NX4+IbcCMfAs07b8/8F6o1141j+IAayRkdOJCApcyIwgr78rQ
-         4jgA==
-X-Gm-Message-State: AO0yUKUqzeLFIKUD7iyulqscs1kTr0aIKypQxJYi3uUmoiRkicvPpVPY
-	hbcKgqEr+2unUzEaDTmolVfuJdA2cWg=
-X-Google-Smtp-Source: AK7set+IknJoLX81zWcYwrbBvfKblRTYauFuiDDs8zokETO8eOVd3VU9JV4OYu6ck+KbMc0ZQD1hxNg9Xgk=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a17:90b:3183:b0:236:6e4c:8a1e with SMTP id
- hc3-20020a17090b318300b002366e4c8a1emr1592277pjb.1.1679000463421; Thu, 16 Mar
- 2023 14:01:03 -0700 (PDT)
-Date: Thu, 16 Mar 2023 14:01:02 -0700
-In-Reply-To: <20230316200219.42673-2-joao.m.martins@oracle.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BA57AD32
+	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 21:09:18 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FMzFXQVaWGZ5WIwgIKd6CYyW8MYlHRJddLdtU5QTeljn/Ydf4KdSweJy4dRRp1j09H6RlehJDF/6UJ44vQrMuINO45LzkTp5GLePVVs6aVFR2PpbBY8Mh6KZDCF2qunofHaOvepvlVkwxOw3aMunF3aVJE2dnJ5YCM+jJRE4daiTXzEm3K7P2WzkUWVjbw2UoXuRvUDAjLgwQcRwHzwx787RGJHBls/GGjODRShNT68RFqaTAbW5CKPBNMAasp66oNHFKzUQoY66hoxcunIiWDG+41QTku+SiQG2Na8ZQaVxvG2yF3xme/LVVvIGXnqAEtkVFWjlTwnq0cjtnLTCQA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7MaHUDW1VWp22oU5rmXGmPLmIguo2zzmTgU3hj53Tnw=;
+ b=Djiha5+PvZ29jtUQwClZVytjtaTiEaQJTqlBVRW36EGMKaOc+nexptXgoSp3GSSDxFyq8+G86QXUvWDAgaFwXnQZEkNC2vE1R+k3ZW6qFzwEVFC30EGtC5MqiQ15350rJbB6xi1M75S7QrlL1a3KOy9KSg86bnxKyy9mhrhKdBFMMR9urt310GK62tH6hfL32DdCVcOYqekB2XfVBlR9rkKy3IJBIHoKvK7oj+fSBhrrf8vCsmzKeOTxurrjqdWF11NDhc1EvH9Pikj405bnWIkYFURH3mBlOmgrf7t709FpeHX9JD0DAfpn0uJZscFLPQnyTK6vRXPVuyajYJqjPg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7MaHUDW1VWp22oU5rmXGmPLmIguo2zzmTgU3hj53Tnw=;
+ b=Lhse83MifUh9H8lL0RmdehT37ZvYe0ndDrp+8FawqB+cw2X2bTOe7D40kN3sQYfREX6unI1WqcNdlHJM2fiznnRMMyHNj2eesWsHPepKBwyQJaV14B6u0IPgTKuIIM186vPDTOou1ChtzcidLrC41Fa+oWGuNRApAcIoThY7rdSl+M3/QhhwkxYqlU0vALrIyWGQjyfZqIiRG9AK4MbTxFvV9MfWq8lrrKQnUiaeiQsR+a8aGM8tBosfN+B6rfw4NNnClJG8N24R9aEYwLOUPInG7ITJnmklU2hw+8C978fQQsdrGwSRgQgdc6m9dX2/MUslu0hdv1tl7WhhsuygdA==
+Received: from DM6PR21CA0024.namprd21.prod.outlook.com (2603:10b6:5:174::34)
+ by DM6PR12MB4957.namprd12.prod.outlook.com (2603:10b6:5:20d::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.33; Thu, 16 Mar
+ 2023 21:09:15 +0000
+Received: from DM6NAM11FT054.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:174:cafe::48) by DM6PR21CA0024.outlook.office365.com
+ (2603:10b6:5:174::34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.8 via Frontend
+ Transport; Thu, 16 Mar 2023 21:09:15 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ DM6NAM11FT054.mail.protection.outlook.com (10.13.173.95) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6199.16 via Frontend Transport; Thu, 16 Mar 2023 21:09:15 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 16 Mar 2023
+ 14:09:08 -0700
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Thu, 16 Mar
+ 2023 14:09:08 -0700
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.8)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Thu, 16 Mar 2023 14:09:07 -0700
+Date: Thu, 16 Mar 2023 14:09:05 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+CC: <jgg@nvidia.com>, <will@kernel.org>, <eric.auger@redhat.com>,
+	<kevin.tian@intel.com>, <baolu.lu@linux.intel.com>, <joro@8bytes.org>,
+	<shameerali.kolothum.thodi@huawei.com>, <jean-philippe@linaro.org>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 14/14] iommu/arm-smmu-v3: Add
+ arm_smmu_cache_invalidate_user
+Message-ID: <ZBOFcenanpRsGFzF@Asurada-Nvidia>
+References: <cover.1678348754.git.nicolinc@nvidia.com>
+ <aa327f9ea61e5a4771c13e53639e33955b9acde3.1678348754.git.nicolinc@nvidia.com>
+ <1467e666-1b6c-c285-3f79-f8e8b088718b@arm.com>
+ <ZAqpOQ+DDvEfq0Dg@Asurada-Nvidia>
+ <92fdb06f-e5b1-8534-fb0e-ad47b5be9e1d@arm.com>
+ <ZAx2K08L5TIm6r3y@Asurada-Nvidia>
+ <ab762cc6-5adf-2515-d9d2-d21d916eb6ad@arm.com>
+ <ZBJcS07G3mt7gjkA@Asurada-Nvidia>
+ <c753c2a8-024d-5bef-8987-96582084991e@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20230316200219.42673-1-joao.m.martins@oracle.com> <20230316200219.42673-2-joao.m.martins@oracle.com>
-Message-ID: <ZBODjjANx6pkq5iq@google.com>
-Subject: Re: [PATCH v2 1/2] iommu/amd: Don't block updates to GATag if guest
- mode is on
-From: Sean Christopherson <seanjc@google.com>
-To: Joao Martins <joao.m.martins@oracle.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Maxim Levitsky <mlevitsk@redhat.com>, Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, 
-	kvm@vger.kernel.org
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <c753c2a8-024d-5bef-8987-96582084991e@arm.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT054:EE_|DM6PR12MB4957:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6994e20c-ed99-410f-8c55-08db2662b325
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	V4o/CTQRQYbblKqAPTv52N9PBSvkhAl5yZTqaBIQolIn09mMu8wfxLJEFQSRAUBu4n53GviVgdMMNAWsx4otydSQ3oQvfiC6Tu6sMp48SWDWFG5NSCHy3APL1W0n1JnJF/zQAitx86v+plf4yNAOfTDEdGsSBRWB/1Wr//91oE1oBiGpjjckC49I5xWrsxoCbo4woJUl4fk5uWJqYvuYSvYabiDEhF+qxLPAKHDgLmfPDH79PCsao5CxZRxAPc/AlNKo+PxgKUpu+vtEuUgBDzG1yR+8wJrYFUkw4Q9/+AyAr56kSqFCrcHhEFimHmVSlwLTRExY6LkrOnbPfvi7tFNXknCU94YHMNTe1ast6hdOmHx6sljC9wCi0oQKpiKsKe4kei38Tu6XwFXohy9Nm1OBBGoKYMIqWbBm704aJX0WCqJ1RLJJD7niMYAr4BrgurotMJB/ZVf/DRFR+WQ4THI0Nz5mIXNYeIWsyn4ByEuVg3kxrNUibVSyAoxOrz5ZbgIyin+PmWqP6jSfjzeUjFOWPQ6Q+KSZZmSSm7WJWPmS1PRhJzKxqYg6/woXimszrEHO82Ywkz3+0qn8cWRFKgTypa0SumDVvIO0xWngYw31JLJrjdDyeShC6FBdZRFPFaGDD5ZgPZR9JfeUCYjEs04pjlRLlhYZ51HwD0jKan/VDQWQ7ogVwa8/K0+ZA0RvxZwnQoQYILdgsRwpbjrxr9L19v7rpEPi7AtMcbYbw+c/1i39LVaT1csTshQoPNA9
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(136003)(376002)(39860400002)(396003)(346002)(451199018)(40470700004)(36840700001)(46966006)(33716001)(70206006)(70586007)(336012)(186003)(9686003)(4326008)(8676002)(6916009)(41300700001)(47076005)(316002)(426003)(478600001)(54906003)(26005)(2906002)(356005)(40460700003)(5660300002)(86362001)(83380400001)(7416002)(82310400005)(40480700001)(8936002)(82740400003)(55016003)(7636003)(36860700001)(66899018);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2023 21:09:15.5883
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6994e20c-ed99-410f-8c55-08db2662b325
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DM6NAM11FT054.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4957
 
-On Thu, Mar 16, 2023, Joao Martins wrote:
-> On KVM GSI routing table updates, specially those where they have vIOMMUs
-> with interrupt remapping enabled (to boot >255vcpus setups without relying
-> on KVM_FEATURE_MSI_EXT_DEST_ID), a VMM may update the backing VF MSIs
-> with a new VCPU affinity.
+On Thu, Mar 16, 2023 at 02:58:39PM +0000, Robin Murphy wrote:
+
+> > > > > I really think UAPI should reflect the hardware and encode TG and TTL
+> > > > > directly. Especially since there's technically a flaw in the current
+> > > > > driver where we assume TTL in cases where it isn't actually known, thus
+> > > > > may potentially fail to invalidate level 2 block entries when removing a
+> > > > > level 1 table, since io-pgtable passes the level 3 granule in that case.
+> > > > 
+> > > > Do you mean something like hw_info forwarding pgsize_bitmap/tg
+> > > > to the guest? Or the other direction?
+> > > 
+> > > I mean if the interface wants to support range invalidations in a way
+> > > which works correctly, then it should ideally carry both the TG and TTL
+> > > fields from the guest command straight through to the host. If not, then
+> > > at the very least the host must always assume TTL=0, because it cannot
+> > > correctly infer otherwise once the guest command's original intent has
+> > > been lost.
+> > 
+> > Oh, it's about hypervisor simply forwarding the entire CMD to
+> > the host side. Jason is suggesting a fast approach by letting
+> > host kernel read the CMDQ directly to get the raw CMD. Perhaps
+> > that would address this comments about TG/TTL too.
 > 
-> On AMD with AVIC enabled, the new vcpu affinity info is updated via:
-> 	avic_pi_update_irte()
-> 		irq_set_vcpu_affinity()
-> 			amd_ir_set_vcpu_affinity()
-> 				amd_iommu_{de}activate_guest_mode()
+> That did cross my mind, but given the usage model, having host userspace
+> give guest memory whose contents it can't control (unless it pauses the
+> whole VM on all CPUs) directly to the host kernel just seems to invite
+> more potential problems than necessary. Commands aren't big, so I think
+> it's fair to expect the VMM to marshal them into host memory, and save
+> the host kernel from ever having to reason about any races or other
+> emulation details which may exist between a VM and its VMM.
+
+An invalidation ioctl is synchronously executed from the top
+level in QEMU when it traps any CMDQ_PROD write. So, either
+packing the fields of a command into a data structure or just
+forwarding the command directly, it seems to be the same for
+the matter of worrying about race conditions?
+
+> > I wonder if there could be other case than a WAR, where TG/TTL
+> > fields from the guest's aren't supported by the host. And then
+> > should the host handle it with a different CMD?
 > 
-> Where the IRTE[GATag] is updated with the new vcpu affinity. The GATag
-> contains VM ID and VCPU ID, and is used by IOMMU hardware to signal KVM
-> (via GALog) when interrupt cannot be delivered due to vCPU is in
-> blocking state.
+> As Eric found previously, there's a clear benefit in emulating range
+> invalidation for guests even if the underlying hardware doesn't support
+> it, to minimise trapping. But that's not hard, and the patch as-is is
+> already achieving it. All we need to be careful to avoid is issuing
+> hardware commands with *less* scope than guest originally asked for - if
+> the guest asks for a nonsense TG/TTL which doesn't match its current
+> context, that's fine. The interface just has to ensure that a VMM's SMMU
+> emulation *is* able to make a nested S1 context behave as expected by
+> the architecture; we don't need to care if a guest uses the architecture
+> wrong, since it's only hurting itself.
+
+Agreed. Yet, similar to moving the emulation of TLBI_NSNH_ALL,
+from QEMU to the kernel, we could move the emulations of other
+TLBI commands to the kernel too? So that a hyperviosr doesn't
+need to know the underlying supported TLBI commands by a host,
+and then simply relies on the host to emulate the command with
+whatever the actual commands that the host can do, addressing
+one of your comments mentioned in the conversation below?
+
+> > > > > > > What about NSNH_ALL? That still needs to invalidate all the S1 context
+> > > > > > > that the guest *thinks* it's invalidating.
+> > > > > > 
+> > > > > > NSNH_ALL is translated to NH_ALL at the guest level. But maybe
+> > > > > > it should have been done here instead.
+> > > > > 
+> > > > > Yes. It seems the worst of both worlds to have an interface which takes
+> > > > > raw opcodes rather than an enum of supported commands, but still
+> > > > > requires userspace to know which opcodes are supported and which ones
+> > > > > don't work as expected even though they are entirely reasonable to use
+> > > > > in the context of the stage-1-only SMMU being emulated.
+> > > > 
+> > > > Maybe a list of supported TLBI commands via the hw_info uAPI?
+> > > 
+> > > I don't think it's all that difficult to implicitly support all commands
+> > > that are valid for a stage-1-only SMMU, it just needs the right
+> > > interface design to be capable of encoding them all completely and
+> > > unambiguously. Coming back to the previous point about the address
+> > > encoding, I think that means basing it more directly on the actual
+> > > SMMUv3 commands, rather than on io-pgtable's abstraction of invalidation
+> > > with SMMUv3 opcodes bolted on.
+> > 
+> > Yea, with the actual commands from the guest, the host can do
+> > something with its supported commands, I think.
 > 
-> The issue is that amd_iommu_activate_guest_mode() will essentially
-> only change IRTE fields on transitions from non-guest-mode to guest-mode
-> and otherwise returns *with no changes to IRTE* on already configured
-> guest-mode interrupts. To the guest this means that the VF interrupts
-> remain affined to the first vCPU they were first configured, and guest
-> will be unable to either VF interrupts and receive messages like this
-> from spuruious interrupts (e.g. from waking the wrong vCPU in GALog):
-> 
-> [  167.759472] __common_interrupt: 3.34 No irq handler for vector
-> [  230.680927] mlx5_core 0000:00:02.0: mlx5_cmd_eq_recover:247:(pid
-> 3122): Recovered 1 EQEs on cmd_eq
-> [  230.681799] mlx5_core 0000:00:02.0:
-> wait_func_handle_exec_timeout:1113:(pid 3122): cmd[0]: CREATE_CQ(0x400)
-> recovered after timeout
-> [  230.683266] __common_interrupt: 3.34 No irq handler for vector
-> 
-> Given the fact that amd_ir_set_vcpu_affinity() uses
-> amd_iommu_activate_guest_mode() underneath it essentially means that VCPU
-> affinity changes of IRTEs are nops. Fix it by dropping the check for
-> guest-mode at amd_iommu_activate_guest_mode(). Same thing is applicable to
-> amd_iommu_deactivate_guest_mode() although, even if the IRTE doesn't change
-> underlying DestID on the host, the VFIO IRQ handler will still be able to
-> poke at the right guest-vCPU.
+> The one slightly fiddly case, of course, is CMD_SYNC, but I think that's
+> just a matter for clear documentation of the expectations and behaviour.
 
-Is there any harm in giving deactivate the same treatement?  If the worst case
-scenario is a few wasted cycles, having symmetric flows and eliminating benign
-bugs seems like a worthwhile tradeoff (assuming this is indeed a relatively slow
-path like I think it is).
+What could be odd about CMD_SYNC?
 
-> Fixes: b9c6ff94e43a ("iommu/amd: Re-factor guest virtual APIC (de-)activation code")
-> Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
-> Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> ---
->  drivers/iommu/amd/iommu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index 5a505ba5467e..bf3ebc9d6cde 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -3485,7 +3485,7 @@ int amd_iommu_activate_guest_mode(void *data)
+Actually with QEMU, an ioctl for a CMD execution is initiated
+by a CMD_PROD write trapped by the QEMU, then a CMD_SYNC only
+triggers an IRQ in this setup.
 
-Any chance you (or anyone) would want to create a follow-up series to rename and/or
-rework these flows to make it more obvious that the helpers handle updates as well
-as transitions between "guest mode" and "host mode"?  E.g. I can see KVM getting
-clever and skipping the "activation" when KVM knows AVIC is already active (though
-I can't tell for certain whether or not that would actually be problematic).
-
->  	u64 valid;
->  
->  	if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir) ||
-> -	    !entry || entry->lo.fields_vapic.guest_mode)
-> +	    !entry)
-
-This can easily fit on the previous line.
-
-	if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir) || !entry)
-		return 0;
+Thanks
+Nic
