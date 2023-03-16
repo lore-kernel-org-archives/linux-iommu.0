@@ -1,100 +1,93 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E400625
-	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 08:30:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678955435; x=1710491435;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Mchnrg8Hxt/NFHcjv1NUznHa6A+fBfEdiQuXPmIfO/I=;
-  b=i/OLik3IUDnydM/chT6ldA2vxSg4zUCfWCVnriyH3ZorVdbKt1HN4l/E
-   bupS7T+FaBV1AiIDlkesJK88n84RHyztZRoxDGSUF0uwA7mdJYzq9fr7m
-   D8nVzkV50w5vOmW6AKBmQHhn2yxR3czfX050/QMN+h1zbxLHuHTlJnObj
-   +bOptOLnKVMOK18HdEzCuo5r0g14sxHrMml0OqH4txotMDLXfJ7g/11NU
-   qYUFBiXQc7/BPA/4U9UmZq/WSSudplJproyWRAWBPncOc613P5KAMY7t4
-   fToBAAFQ3Gj8GsxPjMtSEJAhKMfp/aj6rwnOWN9qsL04UyxwsYaqcV1le
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="317575384"
-X-IronPort-AV: E=Sophos;i="5.98,265,1673942400"; 
-   d="scan'208";a="317575384"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2023 01:30:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10650"; a="673056316"
-X-IronPort-AV: E=Sophos;i="5.98,265,1673942400"; 
-   d="scan'208";a="673056316"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.173.173]) ([10.249.173.173])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2023 01:30:29 -0700
-Message-ID: <7b588f1e-ddd0-d7e7-984b-29e8be8f19ec@linux.intel.com>
-Date: Thu, 16 Mar 2023 16:30:27 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99E3D28E3
+	for <iommu@lists.linux.dev>; Thu, 16 Mar 2023 10:14:54 +0000 (UTC)
+X-UUID: 61f2fbbec3e311edbd2e61cc88cc8f98-20230316
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=SIJTB2iw2ZKbVZypN9eh4Lmwq+P7EW/KvxfnNL94MRc=;
+	b=eeHeASbfC77etrde7DA+MUitBUz4AhQT+i6P4ftH6QWPOLqQ98KaNFto29qQKpP0Y8n9lxjbtDy9G/4jFPil8L4c9557MwsIJBJuwOgSBGXaqlfKAMQxWng1xN7eWy1ezguQu9bid0mLikDBdXj9Q2n7U0BKf2lVnErL50mH2nA=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.21,REQID:98d48548-f0a5-4308-b904-9efd6eeb21ca,IP:0,U
+	RL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION
+	:release,TS:-5
+X-CID-META: VersionHash:83295aa,CLOUDID:12a600f6-ddba-41c3-91d9-10eeade8eac7,B
+	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
+	RL:1,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0
+X-CID-BVR: 0
+X-CID-BAS: 0,_,0,_
+X-UUID: 61f2fbbec3e311edbd2e61cc88cc8f98-20230316
+Received: from mtkmbs13n2.mediatek.inc [(172.21.101.108)] by mailgw02.mediatek.com
+	(envelope-from <yong.wu@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 183096444; Thu, 16 Mar 2023 18:14:48 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs13n1.mediatek.inc (172.21.101.193) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.25; Thu, 16 Mar 2023 18:14:48 +0800
+Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.1118.25 via Frontend Transport; Thu, 16 Mar 2023 18:14:47 +0800
+From: Yong Wu <yong.wu@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Matthias
+ Brugger <matthias.bgg@gmail.com>
+CC: Robin Murphy <robin.murphy@arm.com>, Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>, Yong Wu <yong.wu@mediatek.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	<iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>, Yunfei Wang
+	<yf.wang@mediatek.com>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <jianjiao.zeng@mediatek.com>,
+	<chengci.xu@mediatek.com>
+Subject: [PATCH v3] iommu/mediatek: Set dma_mask for PGTABLE_PA_35_EN
+Date: Thu, 16 Mar 2023 18:14:45 +0800
+Message-ID: <20230316101445.12443-1-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Cc: baolu.lu@linux.intel.com, "cohuck@redhat.com" <cohuck@redhat.com>,
- "eric.auger@redhat.com" <eric.auger@redhat.com>,
- "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
- "chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
- "yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
- "peterx@redhat.com" <peterx@redhat.com>,
- "jasowang@redhat.com" <jasowang@redhat.com>,
- "shameerali.kolothum.thodi@huawei.com"
- <shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
- "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH v2 2/4] iommu: Add new iommu op to get iommu hardware
- information
-Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
- "joro@8bytes.org" <joro@8bytes.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "jgg@nvidia.com" <jgg@nvidia.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>
-References: <20230309075358.571567-1-yi.l.liu@intel.com>
- <20230309075358.571567-3-yi.l.liu@intel.com>
- <BN9PR11MB5276C6A0F26954A42B8C23498CBC9@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276C6A0F26954A42B8C23498CBC9@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK: N
 
-On 2023/3/16 16:16, Tian, Kevin wrote:
->> + *           allocated in the IOMMU driver and the caller should free it
->> + *           after use. Return the data buffer if success, or ERR_PTR on
->> + *           failure.
->>    * @domain_alloc: allocate iommu domain
->>    * @probe_device: Add device to iommu driver handling
->>    * @release_device: Remove device from iommu driver handling
->> @@ -246,11 +252,17 @@ struct iommu_iotlb_gather {
->>    * @remove_dev_pasid: Remove any translation configurations of a specific
->>    *                    pasid, so that any DMA transactions with this pasid
->>    *                    will be blocked by the hardware.
->> + * @driver_type: One of enum iommu_hw_info_type. This is used in the
->> hw_info
->> + *               reporting path. For the drivers that supports it, a unique
->> + *               type should be defined. For the driver that does not support
->> + *               it, this field is the IOMMU_HW_INFO_TYPE_DEFAULT that is 0.
->> + *               Hence, such drivers do not need to care this field.
-> The meaning of "driver_type" is much broader than reporting hw_info.
-> 
-> let's be accurate to call it as "hw_info_type". and while we have two
-> separate fields for one feature where is the check enforced on whether
-> both are provided?
-> 
-> Is it simpler to return the type directly in @hw_info?
+When we enable PGTABLE_PA_35_EN, the PA for pgtable may be 35bits.
+Thus add dma_mask for it.
 
-If I remember correctly, the vendor iommu type and hardware info are
-reported to user space separately.
+Fixes: 301c3ca12576 ("iommu/mediatek: Allow page table PA up to 35bit")
+Signed-off-by: Chengci.Xu <chengci.xu@mediatek.com>
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+v3: Sorry for a typo. Change from "if (!ret)" to "if (ret)".
 
-Best regards,
-baolu
+v2: Just move this out from mt8188 series. Nothing change.
+
+v1: https://lore.kernel.org/linux-mediatek/20230307080555.14399-3-yong.wu@mediatek.com/
+---
+ drivers/iommu/mtk_iommu.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index d5a4955910ff..6a00ce208dc2 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -1258,6 +1258,14 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 			return PTR_ERR(data->bclk);
+ 	}
+ 
++	if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN)) {
++		ret = dma_set_mask(dev, DMA_BIT_MASK(35));
++		if (ret) {
++			dev_err(dev, "Failed to set dma_mask 35.\n");
++			return ret;
++		}
++	}
++
+ 	pm_runtime_enable(dev);
+ 
+ 	if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM)) {
+-- 
+2.25.1
+
