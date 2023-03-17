@@ -1,81 +1,107 @@
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F851810
-	for <iommu@lists.linux.dev>; Fri, 17 Mar 2023 08:57:45 +0000 (UTC)
-X-UUID: c472231ec4a111edbd2e61cc88cc8f98-20230317
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=FXIRjztEzMzSx83OQvjQ8zFoDhjED/9EfeXJ/BDwRnA=;
-	b=c7bNRj+ZPgl3nxyd4kXHbOcr8G8kZFMs5N5ViLp0A4wMoNBRBhqoO28R6zQ0Z0n7GJyhJ1fn7gLUzOguHNbPMUbPAVjO+xVUyyA/i4S/iDNxYrBieZeOURNYFvAB/yG5BySgzgekMz17+wmdp1u2a9yoWJjfmPBaivO/ZemSQpE=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.21,REQID:826612dd-dcb8-4c07-bcb7-e4ec01689d44,IP:0,U
-	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-	release,TS:0
-X-CID-META: VersionHash:83295aa,CLOUDID:aa461cf6-ddba-41c3-91d9-10eeade8eac7,B
-	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
-	RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0
-X-CID-BVR: 0,NGT
-X-CID-BAS: 0,NGT,0,_
-X-UUID: c472231ec4a111edbd2e61cc88cc8f98-20230317
-Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw02.mediatek.com
-	(envelope-from <yong.wu@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 335145409; Fri, 17 Mar 2023 16:57:38 +0800
-Received: from mtkmbs13n2.mediatek.inc (172.21.101.108) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.25; Fri, 17 Mar 2023 16:57:37 +0800
-Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
- mtkmbs13n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.1118.25 via Frontend Transport; Fri, 17 Mar 2023 16:57:36 +0800
-From: Yong Wu <yong.wu@mediatek.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Rob Herring
-	<robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>
-CC: Robin Murphy <robin.murphy@arm.com>, Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>, Yong Wu <yong.wu@mediatek.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	<iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <mingyuan.ma@mediatek.com>,
-	<yf.wang@mediatek.com>, <jianjiao.zeng@mediatek.com>,
-	<chengci.xu@mediatek.com>
-Subject: [PATCH v9 7/7] MAINTAINERS: iommu/mediatek: Update the header file name
-Date: Fri, 17 Mar 2023 16:55:41 +0800
-Message-ID: <20230317085541.20447-8-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230317085541.20447-1-yong.wu@mediatek.com>
-References: <20230317085541.20447-1-yong.wu@mediatek.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A05C2810
+	for <iommu@lists.linux.dev>; Fri, 17 Mar 2023 08:59:22 +0000 (UTC)
+Received: by mail-ed1-f49.google.com with SMTP id eh3so17527643edb.11
+        for <iommu@lists.linux.dev>; Fri, 17 Mar 2023 01:59:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1679043561;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=BpkLCLMxsQQ5zA0IK7LMtaOGnKaPKAwAcMkZQbS+ecQ=;
+        b=pHbbCuGA73Mk/5ARt0wjvlbfuD2U2p8YzBghmxGyOdaN1JNoHewvpvgFn1ZBgKiz0X
+         9dLD2nTcp321vivUCuNFoOtFep8Y8qhtbfOWUfJ0QOgjI8jhg+ubkiTTkgvQHTXLyLdL
+         txqylu8tsHvYkw9YRgn6S2zhcDAAc+Gmp3kkxwc6XsHw3xR9jQrevpjlD9zNBhycviCW
+         DTqaQ7jwAUnLd9Ya7Q9AT2JOBqnOg3HFYC20kG8GV9Im5KhlLOBAa3GQLRrpuRdRcAYX
+         qjbJG6UgCroi8P8LZtsXaQpKWgzP7W+hyKY4euRp7N2+28vHYw6j8IAHA5buT9Zgo9On
+         J7Ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679043561;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=BpkLCLMxsQQ5zA0IK7LMtaOGnKaPKAwAcMkZQbS+ecQ=;
+        b=7KAqPAGYCb2IGIpDVrfvaMQzgM7OuTsAc2CSRKPBBn1Ve53ogPVLJS+fL3j26dpbux
+         czla8a5/+pijh7Hwic3enfitJaarlqsFGF61fIcSGwS2wNCjH5q/PWmmdb0bWf3CnxZi
+         2fMdwJFSigmihQWH5S2bJfk+/OclrQoj1eUj3fj0NjRpXSFCnsh1K9HFnWz+uB/APGz9
+         FW8SeLm0QtMOPO5Ixrodwe1a1yNrKieTAhwnS13giItrI1ltpl7YFynfxNL2W3jvUmic
+         nTLTVpmbAcjcZXxM7vg15J4it3aMgwCm/ey3lJ7R4KLPOiTWBzhR+7ZcFAfs1tj3Wvy0
+         2x6Q==
+X-Gm-Message-State: AO0yUKUqR07SwmB5A71uiDuxifflVLXHvzcqxpy1izUuFmwV2EHViCzq
+	CkfSn+3NV2MwGouFHB3r3IG/Jw==
+X-Google-Smtp-Source: AK7set9i+hpbTfIEJCzFJx6UJzlGdk6rfTOxfYznJbRKglHBbeQKiDgDqUCtziNFxDe/kvzbG7mqbA==
+X-Received: by 2002:a17:906:e0a:b0:92b:846d:8928 with SMTP id l10-20020a1709060e0a00b0092b846d8928mr12685839eji.65.1679043560906;
+        Fri, 17 Mar 2023 01:59:20 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:848a:1971:93e0:b465? ([2a02:810d:15c0:828:848a:1971:93e0:b465])
+        by smtp.gmail.com with ESMTPSA id k15-20020a50ce4f000000b004bef1187754sm747872edj.95.2023.03.17.01.59.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Mar 2023 01:59:20 -0700 (PDT)
+Message-ID: <265d30c5-93a7-7e60-32f2-ec15f91af5b9@linaro.org>
+Date: Fri, 17 Mar 2023 09:59:19 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-MTK: N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH v9 1/7] dt-bindings: mediatek: mt8188: Add binding for MM
+ & INFRA IOMMU
+Content-Language: en-US
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, mingyuan.ma@mediatek.com,
+ yf.wang@mediatek.com, jianjiao.zeng@mediatek.com, chengci.xu@mediatek.com
+References: <20230317085541.20447-1-yong.wu@mediatek.com>
+ <20230317085541.20447-2-yong.wu@mediatek.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230317085541.20447-2-yong.wu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-We add the prefix "mediatek," for the lastest ports header file name,
-Update the entry from "mt*" to "m*".
+On 17/03/2023 09:55, Yong Wu wrote:
+> From: "Chengci.Xu" <chengci.xu@mediatek.com>
+> 
+> Add descriptions for mt8188 IOMMU which also use ARM Short-Descriptor
+> translation table format.
+> 
+> In mt8188, there are two smi-common HW and IOMMU, one is for vdo(video
+> output), the other is for vpp(video processing pipe). They connects
+> with different smi-larbs, then some setting(larbid_remap) is different.
+> Differentiate them with the compatible string.
+> 
+> Something like this:
+> 
+>    IOMMU(VDO)          IOMMU(VPP)
+>       |                   |
+>  SMI_COMMON_VDO      SMI_COMMON_VPP
+>  ---------------     ----------------
+>   |     |    ...      |     |    ...
+> larb0 larb2  ...    larb1 larb3  ...
+> 
+> We also have an IOMMU that is for infra master like PCIe.
+> And infra master don't have the larb and ports.
+> 
+> Signed-off-by: Chengci.Xu <chengci.xu@mediatek.com>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> ---
+>  .../bindings/iommu/mediatek,iommu.yaml        |  12 +-
+>  .../memory/mediatek,mt8188-memory-port.h      | 489 ++++++++++++++++++
+>  2 files changed, 500 insertions(+), 1 deletion(-)
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
----
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 8d5bc223f305..cf4c867bfb8a 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -13056,7 +13056,7 @@ L:	linux-mediatek@lists.infradead.org (moderated for non-subscribers)
- S:	Supported
- F:	Documentation/devicetree/bindings/iommu/mediatek*
- F:	drivers/iommu/mtk_iommu*
--F:	include/dt-bindings/memory/mt*-port.h
-+F:	include/dt-bindings/memory/m*-port.h
- 
- MEDIATEK JPEG DRIVER
- M:	Bin Liu <bin.liu@mediatek.com>
--- 
-2.25.1
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+Best regards,
+Krzysztof
 
