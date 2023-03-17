@@ -1,60 +1,59 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2075.outbound.protection.outlook.com [40.107.223.75])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2066.outbound.protection.outlook.com [40.107.243.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E537D6AB6
-	for <iommu@lists.linux.dev>; Fri, 17 Mar 2023 14:16:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F12E6AB6
+	for <iommu@lists.linux.dev>; Fri, 17 Mar 2023 14:24:16 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nVP+BTqugZDMW4SnR9BGsi73X3zFrQD1RqT92GRH2byGZA1s7yWUWXv9bFHqqCh1xLyOgWG2CX1tLpawYdv0qiMGmI3WxUlGtdNtzgW4dlI5oeP55b63uLl7ix8+5nHOf7ZmNOypDq88mcTcfpC1Lli9Seeg8BtwqUZeqJDhuoCyriyZDFpR5qRWJ+GTkWqZQP8I13fAVckk2rMQXvuXOiAs6ro1LrWw2FklC1x4pJ523w6btmf4piEJZUL3c+T8hwxTdvqUXu12CGePEzZrAGTg7ijEHeKT1eg0b8a/RHsZE9sjvPIc6Ho2t68rSWQpsq5TbFnZiOsb+N+TCjHLdQ==
+ b=GL02CWKux8qgkPdy9wDLJYbpFse6iWUmn/gKLkjLCWeeKq1W5TMVA7+0iMD8+jXoYSxlVtJz470hwlQ383OfP0qQCnNPw0NLx/YXSIh7ve33e609aCKV/k6JvWNLFeixG8eutYX+bgEXXSyxbFTs6y1Ew2cV/TL1tEvp6iT4FEnZNgyOavzO+U02uq8it/KgdLkHzBlseGYtZ/R6DwR4YZWTbYFDrfaFDFIYPwGWCzq82D5g5ElfRZUFVSxJOoA9eD5cWhjoVrz0t6C/uOcXP6GwJGhtKEyTofYsl1v6h45NkcoCMXlHydWa+tHivitgM3WeLknCox0FoEIWnTmxUg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=M1ps6ZeCFVU6wQhaePDy/qA9wanHLSMtrVfaWydH8Ck=;
- b=KuV/NxEMciaxYBri+iCwAbUmBLgXxu8v4mldwVtC3FFT8j0BDkDEYcY3fSJwt/PcQsiwo+kIiycbcEI65M6c6RX7Omcyuz41yBPIHs+wY+hO6tmePWK8AOWXtcAjUz/df9H0xG0Hxh8K0PS+bu7b1aYFnuC8Buy23CT9WWKwK/Dbw9rnLiUbwMB4E4FOzYfASGEp+rOFJ0EV11GaU7jv8rUVGqMM/YXk226B2826vT0Z+LlJhl9ePtH525EALY4NYwA3w2/M2wlrnGB262mI4FIR8c7fGCZHFCG/q6gmNITuBHh3+BRshtpa67NeUh9erECbGEvLBjIhiE76qavfOg==
+ bh=NefcJvgfkP/vMcdZvRV9/tZyNyu5GhX7ODKoQjc4CVg=;
+ b=eErlqSIGhsco3rwKa24yeBsjCRLQeJBZrDA1UQekKxjSbYXulcOXgBILDifEvdlZ8w8g2mxbUhDqUYLYWtbXD95S2yIku3ol7MXBQKZT5gBODhIWj+PsBCTfnOJyXKEvkUL8cFxO0j+Qid05qE8kNDnpUQIcBRMCFndty87WHP87v+3pqc3a4u3t0MY2z9tIrErNyNwCw7NdrmqzIYC8h+Qb+pTfxrRWF5FXBtiApnyCHH5bfvHu3LdbUcGdlzG1Pkj9U8dqyJaN5ltk8jhfFKTbe3H4rAbDKRAKx6IshLTktgLYsLtfzMY6t/+JvuqMGEgv1PiuFaFAPLhtZtm54Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=M1ps6ZeCFVU6wQhaePDy/qA9wanHLSMtrVfaWydH8Ck=;
- b=Thl9fLATpGSSoBkB2jVy1XPxFkCVKKop65n6gzVJ5x+pI2wSqkQeUbwZto+mPX4+mfZWImoYDnlUvS/A12ZVnFxljGV5bft3XDXBaJfJUAG4NUsEqaqe5PwxcwW7YFUMMrfoCNdnlnYEMqNEDzjVeeo9EvAhLTPNArTnjwMuJSy50hYk1yKfvlLPKINnZ1bD/zm+G8DIHhk+Nhjwovj7NtV7tNIq0MYw7x3rrdi5+Xfp3v8Yj2g1tKBnEuYaMv4Q8Z/Weosm6NnHPpPeKePUFrgDZ7Nhl+lg0ShAU4WxCUZ9cOPLGZ3eVBXxHQr+Lf9z9dAkuFKGDnJVsCvlfYHOVA==
-Received: from DM6PR05CA0065.namprd05.prod.outlook.com (2603:10b6:5:335::34)
- by BY5PR12MB4130.namprd12.prod.outlook.com (2603:10b6:a03:20b::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.26; Fri, 17 Mar
- 2023 14:16:19 +0000
-Received: from DM6NAM11FT093.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:335:cafe::e4) by DM6PR05CA0065.outlook.office365.com
- (2603:10b6:5:335::34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.8 via Frontend
- Transport; Fri, 17 Mar 2023 14:16:19 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ bh=NefcJvgfkP/vMcdZvRV9/tZyNyu5GhX7ODKoQjc4CVg=;
+ b=CVfdQ8e7NjBGc5696+1ijmFcm5V6QsySkWCRIZ7vwXCKZKAgjtHBLdbnaxxilRIrQML8jPtBT26WtzhTDmaN/7iBj1qiDuJUSr/ALe3oKHNVmOeZbvxa98QXfVWtik7QfGmR7296mvsWlu2WwLvgXU58DyZrhoZ9Xya/d9WOuenQPd5zNo3wYr7PaX/ogK793cjFPYM0cdQFpqoP5I5nZ+woJNaWtKc4hqPuQwzlBAay2Q7rxPg55kYiKIrVOB2uDNrdURrosmGnxCZJiKFjz95yR8Szf+EiCZ2WlPCD9xnSPT5rEwawBLWcTk6VDrbgtYkCw2ysC7WRuTQfY7Jhew==
+Received: from DM6PR04CA0001.namprd04.prod.outlook.com (2603:10b6:5:334::6) by
+ CH2PR12MB4149.namprd12.prod.outlook.com (2603:10b6:610:7c::13) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6178.35; Fri, 17 Mar 2023 14:24:14 +0000
+Received: from DM6NAM11FT039.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:334:cafe::ba) by DM6PR04CA0001.outlook.office365.com
+ (2603:10b6:5:334::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.35 via Frontend
+ Transport; Fri, 17 Mar 2023 14:24:14 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- DM6NAM11FT093.mail.protection.outlook.com (10.13.172.235) with Microsoft SMTP
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ DM6NAM11FT039.mail.protection.outlook.com (10.13.172.83) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6199.16 via Frontend Transport; Fri, 17 Mar 2023 14:16:19 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ 15.20.6199.20 via Frontend Transport; Fri, 17 Mar 2023 14:24:14 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Fri, 17 Mar 2023
- 07:16:17 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.37; Fri, 17 Mar 2023 07:16:16 -0700
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.126.190.181)
+ 07:24:08 -0700
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Fri, 17 Mar
+ 2023 07:24:08 -0700
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.8)
  with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5 via Frontend
- Transport; Fri, 17 Mar 2023 07:16:15 -0700
-Date: Fri, 17 Mar 2023 07:16:14 -0700
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Fri, 17 Mar 2023 07:24:07 -0700
+Date: Fri, 17 Mar 2023 07:24:06 -0700
 From: Nicolin Chen <nicolinc@nvidia.com>
 To: "Tian, Kevin" <kevin.tian@intel.com>
-CC: Robin Murphy <robin.murphy@arm.com>, "jgg@nvidia.com" <jgg@nvidia.com>,
+CC: Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>,
 	"will@kernel.org" <will@kernel.org>, "eric.auger@redhat.com"
 	<eric.auger@redhat.com>, "baolu.lu@linux.intel.com"
 	<baolu.lu@linux.intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
@@ -66,11 +65,14 @@ CC: Robin Murphy <robin.murphy@arm.com>, "jgg@nvidia.com" <jgg@nvidia.com>,
 	<linux-kernel@vger.kernel.org>
 Subject: Re: [PATCH v1 14/14] iommu/arm-smmu-v3: Add
  arm_smmu_cache_invalidate_user
-Message-ID: <ZBR2LvtXM1c1lDNS@Asurada-Nvidia>
+Message-ID: <ZBR4BkVAgQeVEART@Asurada-Nvidia>
 References: <cover.1678348754.git.nicolinc@nvidia.com>
  <aa327f9ea61e5a4771c13e53639e33955b9acde3.1678348754.git.nicolinc@nvidia.com>
  <1467e666-1b6c-c285-3f79-f8e8b088718b@arm.com>
- <BN9PR11MB5276CC29BB979D6093CA91F48CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZAn7uC9UweiNdGkJ@nvidia.com>
+ <ZAqv87fjbdynVaHA@Asurada-Nvidia>
+ <ZAtYphmOuEqQ1BiC@nvidia.com>
+ <BN9PR11MB52768F4D3E21C5231C1A04D38CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -79,65 +81,74 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276CC29BB979D6093CA91F48CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <BN9PR11MB52768F4D3E21C5231C1A04D38CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT093:EE_|BY5PR12MB4130:EE_
-X-MS-Office365-Filtering-Correlation-Id: 28606912-4630-40d7-bce3-08db26f22db4
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT039:EE_|CH2PR12MB4149:EE_
+X-MS-Office365-Filtering-Correlation-Id: 05c00783-0d81-44b5-ae40-08db26f348db
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	oxNcet+HcTkJCWH6bopBmiruMioBBsHBDgHk6ZfFxDXAUYCQECvg41KId//ryPJ84AXAVOB4ScW+VR91BElIaJJRrWUkdJf6dlRbmeusDE6imxEQ94QD9Ri+bXgDQ1IS/BK/CwjMNDtlh2kVnHiKzEWa01o0uZQHPkk+sQArwI06OWPgxwptL2Wi8SAJo3f9C1/BY7izqbWtLNwOmC1NwNLernOaipnEfqIG5VnX0KHnU6lQEiGmU+uQl4ik84cFC+CIfqSrZya0H+cCprVFqsqJZHuc9LyYQEKuLgSZM6rauwrxQsxfY9fa9yWixcdnNojxmz8U5s92qtjwyetBx2EYz7XX5Q3A7+GMljwaP4yz7t/fH4MdTDZOgW7EZYlaKenZkQus+ccYEZmKr6s2ZVXdvoDFSO32giNL7t0L32N5a5KFGQhMUJuiWSbyJsA8k/Me/nRgH+G/5vpDbpxhvJfGe9W+QIk68zb1Gr3BovkCCwXBciBnub3xqF1o2tp94FvOTXDGkSVKOmBgDVK+dMIITX/cxngoqBYGCunzfH7/3vSfL3cmWPH9ubvkiZASzuqBU3TL9JXWPR22Q4MJyiCowrkfnHfm5lVuRYMQrpm0R0I2BckrmZcpzRBCMTCRRoIIKJGrSx4ZStneZnPxvgCVw7b3RQYgJX+Sjw9WqNEF1vaHrMMVUzg9nFNpteUk2xUMA5s0GWXChcq2uZBvhw==
+	YQtpSrQovBzL+aFgQvLCITH87p4RjFuQOyfXeEZo35g9oVeRJdWrh2M6+wzIUR5O2PpjSaNnXonzA2wV3JYSzb4DC5pW5BXKa+EGBPS9dOBsLUNlGCsVg7QzOLzgMGM0t5AuCz+XkycZwXUFjPBrc7Czjxm6PkmzRQ5/vx6Oe34OPEBKcVtvktA4fDnVCpwd0Z25dBofPxHy+bz8P/XwEM9IaTLqMf7JjGspTA94yRNZeaT0MfcAC0jag81o3Qr0Q7gUYp/dq8t7DqTCj+19h1603XcDIjSTw6PAWD8Y+Ak2RCMN8hR4LlkOiE1On1hPE7BinTbzMb6a0KoWiIY0XMfN4eRbQFifBuudGEXQtT5nrIBX3OZfGUIomKUA24qWI0RR2kMwibMknAIz3vz/xM8loJirTfRVwLKQ0UugbMj8cUFaAp2DgtkavrXhIJ4JBYurLbDHzfOHF7SAF1RSFTIyzIA52GFxb16kflXIef2psUsrSxL7feKR+sI/0TlVSGhZeVnJ02cp10z2YpAtI6oHYYexy8ivof1cTCgMgnq/cOOiyq/OXkSyjv3UBNYpcV8G76ize6qdI4pNjio1zQb0G5chp0ckRnyI0LTwO9puLnGtf0IoRjHV9VkClel3CT/XrDn2oXQCE1oYIIT6Rc+5atgugM8Ae/sPG0uQhEHFwmBZL80AMRY93zD8/KlbzYqCbOcYcxcb0QE7kH8lil/wh06Lya7HzmbCHWD9n4lI+M9LmBrzKKYcUgVGbtH0
 X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(376002)(39860400002)(136003)(346002)(396003)(451199018)(46966006)(36840700001)(356005)(82310400005)(33716001)(86362001)(478600001)(54906003)(8936002)(41300700001)(70586007)(36860700001)(7416002)(5660300002)(40480700001)(70206006)(55016003)(2906002)(316002)(6916009)(8676002)(4326008)(7636003)(47076005)(82740400003)(186003)(26005)(9686003)(83380400001)(426003)(336012);DIR:OUT;SFP:1101;
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(136003)(396003)(376002)(39860400002)(346002)(451199018)(36840700001)(40470700004)(46966006)(8936002)(7416002)(356005)(5660300002)(41300700001)(36860700001)(55016003)(86362001)(33716001)(82310400005)(40480700001)(40460700003)(82740400003)(2906002)(7636003)(26005)(478600001)(83380400001)(426003)(4326008)(47076005)(336012)(6916009)(70586007)(8676002)(70206006)(54906003)(66899018)(186003)(316002)(9686003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2023 14:16:19.2567
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2023 14:24:14.2759
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 28606912-4630-40d7-bce3-08db26f22db4
+X-MS-Exchange-CrossTenant-Network-Message-Id: 05c00783-0d81-44b5-ae40-08db26f348db
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT093.eop-nam11.prod.protection.outlook.com
+	DM6NAM11FT039.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4130
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4149
 
-On Fri, Mar 17, 2023 at 09:47:47AM +0000, Tian, Kevin wrote:
+On Fri, Mar 17, 2023 at 09:41:34AM +0000, Tian, Kevin wrote:
 > External email: Use caution opening links or attachments
 > 
 > 
-> > From: Robin Murphy <robin.murphy@arm.com>
-> > Sent: Thursday, March 9, 2023 10:49 PM
-> > > +   case CMDQ_OP_ATC_INV:
-> > > +           ssid = inv_info->ssid;
-> > > +           iova = inv_info->range.start;
-> > > +           size = inv_info->range.last - inv_info->range.start + 1;
-> > > +           break;
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > Sent: Saturday, March 11, 2023 12:20 AM
 > >
-> > Can we do any better than multiplying every single ATC_INV command, even
-> > for random bogus StreamIDs, into multiple commands across every physical
-> > device? In fact, I'm not entirely confident this isn't problematic, if
-> > the guest wishes to send invalidations for one device specifically while
-> > it's put some other device into a state where sending it a command would
-> > do something bad. At the very least, it's liable to be confusing if the
-> > guest sends a command for one StreamID but gets an error back for a
-> > different one.
+> > What I'm broadly thinking is if we have to make the infrastructure for
+> > VCMDQ HW accelerated invalidation then it is not a big step to also
+> > have the kernel SW path use the same infrastructure just with a CPU
+> > wake up instead of a MMIO poke.
+> >
+> > Ie we have a SW version of VCMDQ to speed up SMMUv3 cases without HW
+> > support.
 > >
 > 
-> Or do we need support this cmd at all?
+> I thought about this in VT-d context. Looks there are some difficulties.
 > 
-> For vt-d we always implicitly invalidate ATC following a iotlb invalidation
-> request from userspace. Then vIOMMU just treats it as a nop in the
-> virtual queue.
+> The most prominent one is that head/tail of the VT-d invalidation queue
+> are in MMIO registers. Handling it in kernel iommu driver suggests
+> reading virtual tail register and updating virtual head register. Kind of
+> moving some vIOMMU awareness into the kernel which, iirc, is not
+> a welcomed model.
+
+I had a similar question in another email:
+"Firstly, the consumer and producer indexes might need
+ to be synced between the host and kernel?"
+And Jason replied me with this:
+"No, qemu would handles this. The kernel would just read the command
+ entries it is told by qemu to read which qemu has already sorted out."
+
+Maybe there is no need of a concern for the head/tail readings?
+
+> vhost doesn't have this problem as its vring structure fully resides in
+> memory including ring tail/head. As long as kernel vhost driver understands
+> the structure and can send/receive notification to/from kvm then the
+> in-kernel acceleration works seamlessly.
 > 
-> IMHO a sane iommu driver should always invalidate both iotlb and atc
-> together. I'm not sure a valid usage where iotlb is invalidated while
-> atc is left with some stale mappings.
+> Not sure whether SMMU has similar obstacle as VT-d. But this is my
+> impression why vhost-iommu is preferred when talking about such
+> optimization before.
 
-vSMMU code in QEMU actually doesn't forward this command. So,
-I guess that you are right about this support here and we may
-just drop it.
+SMMU has a similar pair of head/tail pointers to the invalidation
+queue (consumer/producer indexes and command queue in SMMU term).
 
-Thanks!
+Thanks
 Nic
