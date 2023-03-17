@@ -1,101 +1,118 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA1507F1
-	for <iommu@lists.linux.dev>; Fri, 17 Mar 2023 07:25:42 +0000 (UTC)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32H4smuw028829;
-	Fri, 17 Mar 2023 07:25:20 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding;
- s=corp-2022-7-12; bh=wZD+pUOh1BgwEErZt87GvEPFPQJSCLghwUussCiTRtk=;
- b=FPbNdQSpS/lVlDdK1CaZ5tvBuppVzAYx+nAGGUaercijzOUpW4tUyFwBVtzK1qjdE0UN
- wtIAhriDJ7wgr80NwDmE2lnK9bTHgJtdvEPVlnOgd5dTe5yi+mXfoNxtrCQuySTjDkXv
- tlut17U9V+NcscRN6CjtIyAEUC+F5fdcW7iJv0/4dj9al/TlUVpWUuQg9NZfTC7RcOF0
- cPxiH96tY7YPzJ0Rsb0ezJXYK/JT+vR1viBxxvQpivSdUzAUT/FQftVj3E9JrU1+Xzil
- UwIGa9q2QPVwMDZqoD095fiU273Bi4F5OZhFjxIfR8q2v4X43KcWleTcaGRKLid9BWu8 7w== 
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3pbs29k73v-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 17 Mar 2023 07:25:20 +0000
-Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 32H7D3qU036944;
-	Fri, 17 Mar 2023 07:25:19 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3pbq9jn53j-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 17 Mar 2023 07:25:19 +0000
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32H7PIHi037919;
-	Fri, 17 Mar 2023 07:25:18 GMT
-Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.129.136.47])
-	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3pbq9jn538-1;
-	Fri, 17 Mar 2023 07:25:18 +0000
-From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-To: 
-Cc: error27@gmail.com, Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Heiko Stuebner <heiko@sntech.de>,
-        Marc Zyngier <maz@kernel.org>, Olof Johansson <olof@lixom.net>,
-        iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu: rockchip: Fix missing unwind goto in rk_iommu_probe()
-Date: Fri, 17 Mar 2023 00:25:15 -0700
-Message-Id: <20230317072515.2924468-1-harshit.m.mogalapalli@oracle.com>
-X-Mailer: git-send-email 2.39.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82C26370
+	for <iommu@lists.linux.dev>; Fri, 17 Mar 2023 08:32:34 +0000 (UTC)
+Received: by mail-ed1-f52.google.com with SMTP id er8so5633320edb.0
+        for <iommu@lists.linux.dev>; Fri, 17 Mar 2023 01:32:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1679041952;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=oDOcNIcbSN9Lk2htsV80EHwrNf4UOCNV6ZaL1McyWuk=;
+        b=Nb0YDCUjo8OyvolKZu7uS9pixhnVmAjS/JIK0BCtKNVk1/oMea0jrQd3l/lFz6bVCR
+         USIyJRSbW3jZp8FOUyQrA+revcu9mDP2Gj82GWbNeC8+Syck8Y8va4gbH2ni+Y80SYaB
+         wxZC/laPoSIONRF9xS3gye6DieykFm/d/QeR1Cw9Q3qSmG2znVuLWufS7iZlhuoVeqTM
+         xYrRKzIq1JBntBrTw73UYZQ7rSc2HusEYilpAYzIPc8CJjEpkul1g0ctguduBCb144kf
+         QzN71abPTQv/RaiIIdaIK2ySfGwINZfJzFD5FMzCKD/1k7mmENVlYtkB71ke8LSKmAc0
+         2DVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679041952;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=oDOcNIcbSN9Lk2htsV80EHwrNf4UOCNV6ZaL1McyWuk=;
+        b=UQl+ScRdwhmzOfip4PN946ETNWqM/zDH6wkk5WM5rh5k+23tdlQ6S1HRa7M5m/qHAj
+         c0eeT8ELKOgw/JeK7r0WuCHJh9J5tsdffUOMlpTIEtenu1z6BhFfv5VNEE69hL60qoGd
+         UPhv/Pa4g8Iq3lFu92GDBflUwsHTm9oDDkvnkHltotToc6U+LO9T2piK45grUwxH5AQ+
+         MzPJ6Q1RvoRtMC1NUeqzRrVRYmaIGcruCq/o3hSAft1o6v6ME53QqDQQEBieVgAYG8LT
+         W1xhH7Yn1MhhKhHFmYnB19COE1rH94UGbFTyl9aM4dfsjMqlkkF61Fjts0tvFC2gYcr/
+         IUGg==
+X-Gm-Message-State: AO0yUKUfOOgvQ+JIm97f+O3+KTDH0gNCW5A5AxRssgx3TxeLahWFqvy+
+	3x+xI1TbqCQ6ZEOsHkzaDe+7uA==
+X-Google-Smtp-Source: AK7set/64No4okniI9+o2EC5df5JYtg/Ur5By37PIJVSfElLEiA0wNITxxOCYNOCOgrpQmgmHOSDJg==
+X-Received: by 2002:a17:907:3fa6:b0:878:7189:a457 with SMTP id hr38-20020a1709073fa600b008787189a457mr16572865ejc.51.1679041952687;
+        Fri, 17 Mar 2023 01:32:32 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:848a:1971:93e0:b465? ([2a02:810d:15c0:828:848a:1971:93e0:b465])
+        by smtp.gmail.com with ESMTPSA id mj4-20020a170906af8400b008ca8b62cda6sm699999ejb.177.2023.03.17.01.32.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Mar 2023 01:32:32 -0700 (PDT)
+Message-ID: <0edf6829-3a23-7a75-a225-d69222ae2788@linaro.org>
+Date: Fri, 17 Mar 2023 09:32:31 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-17_04,2023-03-16_02,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 phishscore=0
- mlxlogscore=999 malwarescore=0 mlxscore=0 adultscore=0 bulkscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2303150002 definitions=main-2303170048
-X-Proofpoint-ORIG-GUID: lDSTuoJHxbUjUIk9TCVHlD7iwVYSBvf6
-X-Proofpoint-GUID: lDSTuoJHxbUjUIk9TCVHlD7iwVYSBvf6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH 1/2] dt-bindings: arm-smmu: Document SM61[12]5 GPU SMMU
+Content-Language: en-US
+To: Konrad Dybcio <konrad.dybcio@linaro.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org
+References: <20230315-topic-kamorta_adrsmmu-v1-0-d1c0dea90bd9@linaro.org>
+ <20230315-topic-kamorta_adrsmmu-v1-1-d1c0dea90bd9@linaro.org>
+ <f09e93e1-235a-ea0a-902d-4f41a8c90ee5@linaro.org>
+ <d260b390-f6f2-493a-071c-f88c36582881@linaro.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <d260b390-f6f2-493a-071c-f88c36582881@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Smatch reports:
-	drivers/iommu/rockchip-iommu.c:1306
-	rk_iommu_probe() warn: missing unwind goto?
+On 16/03/2023 22:59, Konrad Dybcio wrote:
+> 
+> 
+> On 16.03.2023 20:29, Krzysztof Kozlowski wrote:
+>> On 15/03/2023 11:52, Konrad Dybcio wrote:
+>>> Both of these SoCs have a Qualcomm MMU500 implementation of SMMU
+>>> in front of their GPUs that expect 3 clocks. Both of them also have
+>>> an APPS SMMU that expects no clocks. Remove qcom,sm61[12]5-smmu-500
+>>> from the "no clocks" list (intentionally 'breaking' the schema checks
+>>> of APPS SMMU, as now it *can* accept clocks - with the current
+>>> structure of this file it would have taken a wastefully-long time to
+>>> sort this out properly..) and add necessary yaml to describe the
+>>> clocks required by the GPU SMMUs.
+>>
+>>
+>>> +      properties:
+>>> +        compatible:
+>>> +          items:
+>>> +            - enum:
+>>> +                - qcom,sm6115-smmu-500
+>>> +                - qcom,sm6125-smmu-500
+>>> +            - const: qcom,adreno-smmu
+>>> +            - const: qcom,smmu-500
+>>> +            - const: arm,mmu-500
+>>
+>> If you drop the hunk later (from allOf:if), then what clocks do you
+>> expect for non-GPU SMMU?
+> Both 6115 and 6125 require no clocks under the APPS (non-GPU) SMMU.
+> However, the list below uses a `contains:` which means I'd have
+> to add a whole another hunk like
+> 
+> 	- items:
+>             - enum:
+>                 - qcom,sm6115-smmu-500
+>                 - qcom,sm6125-smmu-500
+>             - const: qcom,smmu-500
+>             - const: arm,mmu-500
+> 
+> and add another level of indentation to the previous one
+> 
+> I figured skipping that was less messy (I think we discussed this
+> once as well), but if you prefer to keep it strict, I can.
 
-Smatch detects that when (irq < 0) we are directly returning without
-doing the cleanup.
+Nah, ok, it's fine.
 
-Fix this by adding a pm_runtime_disable(dev), and using correct goto
-label 'err_remove_sysfs' instead of a direct return.
-
-Fixes: 1aa55ca9b14a ("iommu/rockchip: Move irq request past pm_runtime_enable")
-Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
----
-This is purely based on static analysis. Only compile tested.
----
- drivers/iommu/rockchip-iommu.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index f30db22ea5d7..0751f2e757fd 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -1302,8 +1302,11 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	for (i = 0; i < iommu->num_irq; i++) {
- 		int irq = platform_get_irq(pdev, i);
- 
--		if (irq < 0)
--			return irq;
-+		if (irq < 0) {
-+			pm_runtime_disable(dev);
-+			err = irq;
-+			goto err_remove_sysfs;
-+		}
- 
- 		err = devm_request_irq(iommu->dev, irq, rk_iommu_irq,
- 				       IRQF_SHARED, dev_name(dev), iommu);
--- 
-2.38.1
+Best regards,
+Krzysztof
 
