@@ -1,142 +1,189 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2058.outbound.protection.outlook.com [40.107.243.58])
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88C9E1FBF
-	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 16:12:30 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=doPIzMR4Ay+6vK2ADcWBPoewLyOfgysxJHfcgI8qKimHSs6+7BZPeLX49+MCApx14dxYXy8hmLTSQ1kPlSSdz6d6pr+htxDjYnDlF6tj6V5Fg9RCmkdFfDgr7afz+aatv6d6qJ/rrAvNzmfGePYQ7goHy7qui0hfoqxjRFzMKwncWZ5kUWlb5y082VIYZp4K4nIz6nuMFXBj872LJH5WPWg+EHAiAlWfXSZ8/W+MJ0Ehz76L4M+s/hon59WLt2YljETpAVOxDE+wuphDuvZrlNCpP+ExxyFcrB7keVFgD8qBFg7x0FS7eAH1Fvez1xTmgwhNud3S6yh+9T+AH7YMEw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=m9TCdkyU6yzDvfGChydrkm3wCCpAcFs7rwGl7GDHp38=;
- b=eDElH5Xovn5hzc12CJotKRag/pXS0hWHEm0gd5iV1A328wUM9GVixS+DvSpan2G9PCbvihSBqMV6iNJDGgasRTWiNhh/td3DszkCAFsGHr+JhsjwVSrzclnQ+5T7MJTp2XPW47mEBLOJuXv5yZX/nMCkit1Mu7RjuIfKVtOEEkAtykrzvvK4d1uvzHy6lUghOGTUuSvcS6dqIb6+uamU2MNb6rMjAP4leurn9WVBlC/PFBifI+9Jb3LGmuIZh0aDWAQZebxM6C4MOH5EJX/dUQsP/wnZwxpWbKausKvWb36YehVo5AiTB7gpHpqOYWFgXPXrw7ZlfATYGA+aoAKgtw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=m9TCdkyU6yzDvfGChydrkm3wCCpAcFs7rwGl7GDHp38=;
- b=a7smwq9FcIDuw3/bcurWDuP7hjzSOyJrqcDyhZTkICgnRpO6KEJuO2PIMScphTMGmMEyrCzrgaN/lbDmBmtm4lVQ/TUzWcPp16H0aNMFx+S3X26lIttANWp97ZyDcu4Hn70TgHxIoAdLzyOtj4pk1mgDcNJgcZxHRA1W+Thh0pQywyWDiwFXmIeN9nY3l027WvqqOfaiKzKNnoUlHQIJbfd8T/q+OunRXiRb6cH3WC2i1JNmu+xnam4HzONx1PNHqrzENSwPeC9Osb1ZF4x3ME1+v0OJMnJPLyJ92Tryrw5MFrS1Nrxb03cYmpplT3BnpEUjpe2qOmljIDV8IUpBDQ==
-Received: from MW4PR03CA0022.namprd03.prod.outlook.com (2603:10b6:303:8f::27)
- by IA0PR12MB7505.namprd12.prod.outlook.com (2603:10b6:208:443::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Mon, 20 Mar
- 2023 16:12:22 +0000
-Received: from CO1NAM11FT026.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8f:cafe::41) by MW4PR03CA0022.outlook.office365.com
- (2603:10b6:303:8f::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37 via Frontend
- Transport; Mon, 20 Mar 2023 16:12:22 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- CO1NAM11FT026.mail.protection.outlook.com (10.13.175.67) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6222.15 via Frontend Transport; Mon, 20 Mar 2023 16:12:22 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Mon, 20 Mar 2023
- 09:12:09 -0700
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Mon, 20 Mar
- 2023 09:12:08 -0700
-Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.9)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5 via Frontend
- Transport; Mon, 20 Mar 2023 09:12:08 -0700
-Date: Mon, 20 Mar 2023 09:12:06 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
-CC: Robin Murphy <robin.murphy@arm.com>, "will@kernel.org" <will@kernel.org>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>, "baolu.lu@linux.intel.com"
-	<baolu.lu@linux.intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "jean-philippe@linaro.org"
-	<jean-philippe@linaro.org>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 14/14] iommu/arm-smmu-v3: Add
- arm_smmu_cache_invalidate_user
-Message-ID: <ZBiF1hZVrp/aJRM6@Asurada-Nvidia>
-References: <cover.1678348754.git.nicolinc@nvidia.com>
- <aa327f9ea61e5a4771c13e53639e33955b9acde3.1678348754.git.nicolinc@nvidia.com>
- <1467e666-1b6c-c285-3f79-f8e8b088718b@arm.com>
- <ZAn7uC9UweiNdGkJ@nvidia.com>
- <ZAqv87fjbdynVaHA@Asurada-Nvidia>
- <ZAtYphmOuEqQ1BiC@nvidia.com>
- <BN9PR11MB52768F4D3E21C5231C1A04D38CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZBhYq8o4gqFZVb6k@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE34123C4
+	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 16:24:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679329484; x=1710865484;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=YkPKy6HrZ89gUO3WdmC9FV2zbtAO4V6xBqAXDdNHMg4=;
+  b=aSURlZ8ssUI/oMIV/oQjjYUX2A8u5/25sDkAJsx7Z4BoNtWs5gAm5Hdg
+   f2Bm3uR9cd/lC8eSDO6kCabeGVhNUpdFBIelsxhWX3lPb9I5ErlEumOpp
+   bR1rNKh72L/qRkPP3dHY6B82iczpT9vA3bR/El1EuHY5RlWCZ8ot7jiZ5
+   5rsh3On8pJDvVe6UyGaQe+Y6L9RsQBGzd2EclvtVsqsUsHIrsTXRmD0Ls
+   wPUvkH+BkAHm99dxfo1SlPbgdEtIDCIx8WWAa0Zr4uepjzLgXlpsILeS6
+   76gvl9HgKyPih++7H5JPU20P8QMSxgVpdHccT4A4Edi/q6dIhd9w+ksy7
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="337426872"
+X-IronPort-AV: E=Sophos;i="5.98,276,1673942400"; 
+   d="scan'208";a="337426872"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 09:24:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="855322397"
+X-IronPort-AV: E=Sophos;i="5.98,276,1673942400"; 
+   d="scan'208";a="855322397"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 09:24:43 -0700
+Date: Mon, 20 Mar 2023 09:28:42 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux.dev, dmaengine@vger.kernel.org, Joerg Roedel
+ <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+ <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, Fenghua Yu
+ <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>, Vinod Koul
+ <vkoul@kernel.org>, linux-kernel@vger.kernel.org,
+ jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v2 5/5] iommu/vt-d: Move PRI handling to IOPF feature
+ path
+Message-ID: <20230320092842.05287fb1@jacob-builder>
+In-Reply-To: <20230309025639.26109-6-baolu.lu@linux.intel.com>
+References: <20230309025639.26109-1-baolu.lu@linux.intel.com>
+	<20230309025639.26109-6-baolu.lu@linux.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ZBhYq8o4gqFZVb6k@nvidia.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT026:EE_|IA0PR12MB7505:EE_
-X-MS-Office365-Filtering-Correlation-Id: 954d5365-85c4-4383-23a6-08db295de332
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	qrYqHhhkm5iP+hpWAvauYf0BgQQ1FzjHitJE0yKpN9GnD7OwOTp7V01sLiDOGsfpQFDz12HYLclkuniCDtW25EGfXqsFVdG/dj716X154fYMDwb3Z9EJQadSB2V/REvIV408hKrKzfg5PHBRlbHWmZFCcXSS0Du6CN6bftHRHycJ1iiysZt7dc7TlmFAEJpnjb83XQcRfOCaa9quZk9xHbg5UNZlXVzmwXb+QLTKsIsLHFjl+VdekaFJlnL7CmUEhAfBX2CJZr2hMcbFfrBXlpWupw2MT3CIZm1r6VcfyXcD8gbdEo5EHypx7WMhTnFgmnJdvPVRFrppkdZ3nxl2F6EkPmGcUU1KDoibv1W6P1W3vubV8D3B083JBzI1wvhbWk5s2wXe45SQz9dhyRIR5b6mO7pxdLvNhKT9ZzU6gOYoYZqMEByHOOL3grYa8i74X1FMt9cNpWuG+tS25u/Yg1N7hH/tGpNz6PtzqwmWycVLhw5Hit/JQGa8MjUwUZOSH/gZGrpRhd+74TV0Yq8YB4Q8UMuF0N2VSYNK4xmJDlJ2zpsGv/XKn32PK9+d1WgdXu+/RAFo4aHSriaK5ZSl3YYFI0rhDEpIcvAXFZAqpY1vpsdzlXxlSm+4SxahHLzaH9l+HD93iCiEbmOAYKEzJIcnydc/MxHhi93YWfeUqefSOHHigQDVQyJLs5gU4wmpRwg5Dz7ke3DHnTEVLKMY+OWntF1MhEqMxbdRE9IMtV9qUuGex7EddPZPVnAr9bST
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(136003)(396003)(39860400002)(346002)(376002)(451199018)(46966006)(36840700001)(40470700004)(47076005)(82310400005)(336012)(7416002)(26005)(5660300002)(478600001)(316002)(6636002)(110136005)(54906003)(66899018)(426003)(356005)(186003)(33716001)(9686003)(86362001)(8676002)(4326008)(70586007)(70206006)(40480700001)(41300700001)(36860700001)(55016003)(8936002)(40460700003)(82740400003)(2906002)(7636003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Mar 2023 16:12:22.2531
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 954d5365-85c4-4383-23a6-08db295de332
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT026.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7505
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, Mar 20, 2023 at 09:59:23AM -0300, Jason Gunthorpe wrote:
-> On Fri, Mar 17, 2023 at 09:41:34AM +0000, Tian, Kevin wrote:
-> > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > Sent: Saturday, March 11, 2023 12:20 AM
-> > > 
-> > > What I'm broadly thinking is if we have to make the infrastructure for
-> > > VCMDQ HW accelerated invalidation then it is not a big step to also
-> > > have the kernel SW path use the same infrastructure just with a CPU
-> > > wake up instead of a MMIO poke.
-> > > 
-> > > Ie we have a SW version of VCMDQ to speed up SMMUv3 cases without HW
-> > > support.
-> > > 
-> > 
-> > I thought about this in VT-d context. Looks there are some difficulties.
-> > 
-> > The most prominent one is that head/tail of the VT-d invalidation queue
-> > are in MMIO registers. Handling it in kernel iommu driver suggests
-> > reading virtual tail register and updating virtual head register. Kind of 
-> > moving some vIOMMU awareness into the kernel which, iirc, is not
-> > a welcomed model.
+Hi BaoLu,
+
+On Thu,  9 Mar 2023 10:56:39 +0800, Lu Baolu <baolu.lu@linux.intel.com>
+wrote:
+
+> PRI is only used for IOPF. With this move, the PCI/PRI feature could be
+> controlled by the device driver through iommu_dev_enable/disable_feature()
+> interfaces.
+This move is good for DMA API PASID as well, it will not turn on PRI when
+enabling PASID, ATS cap.
+
+Reviewed-by: Jacob Pan <jacob.jun.pan@linux.intel.com> 
+
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  drivers/iommu/intel/iommu.c | 59 ++++++++++++++++++++++++-------------
+>  1 file changed, 39 insertions(+), 20 deletions(-)
 > 
-> qemu would trap the MMIO and generate an IOCTL with the written head
-> pointer. It isn't as efficient as having the kernel do the trap, but
-> does give batching.
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index fb64ab8358a9..4ed32bde4287 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -1415,11 +1415,6 @@ static void iommu_enable_pci_caps(struct
+> device_domain_info *info) if (info->pasid_supported &&
+> !pci_enable_pasid(pdev, info->pasid_supported & ~1)) info->pasid_enabled
+> = 1; 
+> -	if (info->pri_supported &&
+> -	    (info->pasid_enabled ? pci_prg_resp_pasid_required(pdev) :
+> 1)  &&
+> -	    !pci_reset_pri(pdev) && !pci_enable_pri(pdev, PRQ_DEPTH))
+> -		info->pri_enabled = 1;
+> -
+>  	if (info->ats_supported && pci_ats_page_aligned(pdev) &&
+>  	    !pci_enable_ats(pdev, VTD_PAGE_SHIFT)) {
+>  		info->ats_enabled = 1;
+> @@ -1442,11 +1437,6 @@ static void iommu_disable_pci_caps(struct
+> device_domain_info *info) domain_update_iotlb(info->domain);
+>  	}
+>  
+> -	if (info->pri_enabled) {
+> -		pci_disable_pri(pdev);
+> -		info->pri_enabled = 0;
+> -	}
+> -
+>  	if (info->pasid_enabled) {
+>  		pci_disable_pasid(pdev);
+>  		info->pasid_enabled = 0;
+> @@ -4664,23 +4654,48 @@ static int intel_iommu_enable_sva(struct device
+> *dev) 
+>  static int intel_iommu_enable_iopf(struct device *dev)
+>  {
+> +	struct pci_dev *pdev = dev_is_pci(dev) ? to_pci_dev(dev) : NULL;
+>  	struct device_domain_info *info = dev_iommu_priv_get(dev);
+>  	struct intel_iommu *iommu;
+>  	int ret;
+>  
+> -	if (!info || !info->ats_enabled || !info->pri_enabled)
+> +	if (!pdev || !info || !info->ats_enabled || !info->pri_supported)
+>  		return -ENODEV;
+> +
+> +	if (info->pri_enabled)
+> +		return -EBUSY;
+> +
+>  	iommu = info->iommu;
+>  	if (!iommu)
+>  		return -EINVAL;
+>  
+> +	/* PASID is required in PRG Response Message. */
+> +	if (info->pasid_enabled && !pci_prg_resp_pasid_required(pdev))
+> +		return -EINVAL;
+> +
+> +	ret = pci_reset_pri(pdev);
+> +	if (ret)
+> +		return ret;
+> +
+>  	ret = iopf_queue_add_device(iommu->iopf_queue, dev);
+>  	if (ret)
+>  		return ret;
+>  
+>  	ret = iommu_register_device_fault_handler(dev, iommu_queue_iopf,
+> dev); if (ret)
+> -		iopf_queue_remove_device(iommu->iopf_queue, dev);
+> +		goto iopf_remove_device;
+> +
+> +	ret = pci_enable_pri(pdev, PRQ_DEPTH);
+> +	if (ret)
+> +		goto iopf_unregister_handler;
+> +	info->pri_enabled = 1;
+> +
+> +	return 0;
+> +
+> +iopf_unregister_handler:
+> +	iommu_unregister_device_fault_handler(dev);
+> +iopf_remove_device:
+> +	iopf_queue_remove_device(iommu->iopf_queue, dev);
+>  
+>  	return ret;
+>  }
+> @@ -4689,17 +4704,21 @@ static int intel_iommu_disable_iopf(struct device
+> *dev) {
+>  	struct device_domain_info *info = dev_iommu_priv_get(dev);
+>  	struct intel_iommu *iommu = info->iommu;
+> -	int ret;
+>  
+> -	ret = iommu_unregister_device_fault_handler(dev);
+> -	if (ret)
+> -		return ret;
+> +	if (!info->pri_enabled)
+> +		return -EINVAL;
+>  
+> -	ret = iopf_queue_remove_device(iommu->iopf_queue, dev);
+> -	if (ret)
+> -		iommu_register_device_fault_handler(dev,
+> iommu_queue_iopf, dev);
+> +	pci_disable_pri(to_pci_dev(dev));
+> +	info->pri_enabled = 0;
+>  
+> -	return ret;
+> +	/*
+> +	 * With pri_enabled checked, unregistering fault handler and
+> +	 * removing device from iopf queue should never fail.
+> +	 */
+> +	iommu_unregister_device_fault_handler(dev);
+> +	iopf_queue_remove_device(iommu->iopf_queue, dev);
+> +
+> +	return 0;
+>  }
+>  
+>  static int
 
-Rephrasing that to put into a design: the IOCTL would pass a
-user pointer to the queue, the size of the queue, then a head
-pointer and a tail pointer? Then the kernel reads out all the
-commands between the head and the tail and handles all those
-invalidation commands only?
 
-Thanks
-Nic
+Thanks,
+
+Jacob
