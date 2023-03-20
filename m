@@ -1,32 +1,32 @@
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 037DB4C74
-	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 18:55:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D79A4C77
+	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 18:55:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679338526; x=1710874526;
+  t=1679338527; x=1710874527;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=EQdjWDWKokNf3osIh/i7zKmgzVK+4sLJSkv4CZDiQfg=;
-  b=WdCvAs13E0C1WKp7YL1goZ6ofwMkz0Efy3Nt4gddXhUw/qlyry2WzeA2
-   gnhYQvCs2RJUWoABfVY9XgKC3DkZrpdFatev9D9lCVRzjFToXH6XzQ9BX
-   IIRuew60GNV/1mfyyf5oW6Ihl9aqDg31kw2Le4rg9s7PB0wxRP3IeEDBK
-   4iswJQ059ldY3wEFLFRaySvAMShKHe8E1sdCCET1K8Yg0aY+cNFURZKWy
-   8eoBnaRGBpC8w1cnqJXX3HXYun9X5jnc3yUtMfVmjYbzdv9cuh0I8KorG
-   JCVEmrY+I24TfCwp2qJThSdhicTQ6oAkhhdTD8sdJBPJCU5u/V7L5Phku
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="366473707"
+  bh=g6ODc1OBwqx1SyTj5aegYGquyMUiMv2DDET2W6HykSE=;
+  b=VuxpdUKMUGqU/CTYB4D7BbGfZWLRwrvWHDj2RHgmcsl3wyrH1Y7lR35h
+   NpMJAJj+dqSo2Uu1prJDFFsF/EGAXYwThFtv/in8xOqV1Ml1j2YBy/j7r
+   ZIANYmktiA+ezo6vg6n7OmxA4P/dG2vhpKnzlONMXLvvpObrXXEXhBXQY
+   vJU8d5ry7UTiPsaVpYbKQGJA9rFC3PO1OCTyDxARiFUo9gTLoiC0sX6R5
+   UgQT6vpwRcMiMyG9IiZbH6sFhCRZcECodTevTE+HkzLKZHKJ1OJtQvTQv
+   STcHNdAcAQPzEt5XgcaVrQzOS5+3OuqDyJ13ixvY/2E7WwJdOKqRXCg9b
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="366473763"
 X-IronPort-AV: E=Sophos;i="5.98,276,1673942400"; 
-   d="scan'208";a="366473707"
+   d="scan'208";a="366473763"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 11:55:18 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 11:55:20 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="927076461"
+X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="927076474"
 X-IronPort-AV: E=Sophos;i="5.98,276,1673942400"; 
-   d="scan'208";a="927076461"
+   d="scan'208";a="927076474"
 Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.106])
-  by fmsmga006.fm.intel.com with ESMTP; 20 Mar 2023 11:55:15 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 20 Mar 2023 11:55:18 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: LKML <linux-kernel@vger.kernel.org>,
 	iommu@lists.linux.dev,
@@ -55,9 +55,9 @@ Cc: "Will Deacon" <will@kernel.org>,
 	Kirill Shutemov <kirill.shutemov@linux.intel.com>,
 	Tony Luck <tony.luck@intel.com>,
 	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v7 2/7] iommu/sva: Move PASID helpers to sva code
-Date: Mon, 20 Mar 2023 11:59:05 -0700
-Message-Id: <20230320185910.2643260-3-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v7 4/7] iommu/sva: Stop using ioasid_set for SVA
+Date: Mon, 20 Mar 2023 11:59:07 -0700
+Message-Id: <20230320185910.2643260-5-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230320185910.2643260-1-jacob.jun.pan@linux.intel.com>
 References: <20230320185910.2643260-1-jacob.jun.pan@linux.intel.com>
@@ -69,203 +69,118 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Preparing to remove IOASID infrastructure, PASID management will be
-under SVA code. Decouple mm code from IOASID.
+From: Jason Gunthorpe <jgg@nvidia.com>
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Instead SVA drivers can use a simple global IDA to allocate PASIDs for
+each mm_struct.
+
+Future work would be to allow drivers using the SVA APIs to reserve global
+PASIDs from this IDA for their internal use, eg with the DMA API PASID
+support.
+
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
-v7:
-	- use CONFIG_IOMMU_SVA around PASID helpers in fork.c, Fixes a
-	compile problem.
-v6:
-	- put helpers under iommu.h instead of iommu-helper.h
 v5:
-	- move definition of helpers to iommu code to be consistent with
-	  declarations. (Kevin)
-	- fix patch partitioning bug (Baolu)
+	- Put removing iommu_sva_find() to a separate patch (Kevin)
+	- Make pasid allocation range to be inclusive (Tina)
+	- Simplified return code handling (Baolu)
 v4:
-	- delete and open code mm_set_pasid
-	- keep mm_init_pasid() as inline for fork performance
+	- Keep GFP_ATOMIC flag for PASID allocation, will changed to
+	GFP_KERNEL in a separate patch.
 ---
- drivers/iommu/iommu-sva.c | 10 +++++++++-
- include/linux/ioasid.h    |  6 +-----
- include/linux/iommu.h     | 14 +++++++++++++-
- include/linux/sched/mm.h  | 26 --------------------------
- kernel/fork.c             |  5 +++++
- 5 files changed, 28 insertions(+), 33 deletions(-)
+ drivers/iommu/iommu-sva.c | 41 +++++++++++++--------------------------
+ drivers/iommu/iommu-sva.h |  2 --
+ 2 files changed, 14 insertions(+), 29 deletions(-)
 
 diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-index 24bf9b2b58aa..fcfdc80a3939 100644
+index 4f357ef14f04..48e8a15ddc9b 100644
 --- a/drivers/iommu/iommu-sva.c
 +++ b/drivers/iommu/iommu-sva.c
-@@ -44,7 +44,7 @@ int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max)
- 	if (!pasid_valid(pasid))
- 		ret = -ENOMEM;
- 	else
--		mm_pasid_set(mm, pasid);
-+		mm->pasid = pasid;
+@@ -9,47 +9,34 @@
+ #include "iommu-sva.h"
+ 
+ static DEFINE_MUTEX(iommu_sva_lock);
+-static DECLARE_IOASID_SET(iommu_sva_pasid);
++static DEFINE_IDA(iommu_global_pasid_ida);
+ 
+-/**
+- * iommu_sva_alloc_pasid - Allocate a PASID for the mm
+- * @mm: the mm
+- * @min: minimum PASID value (inclusive)
+- * @max: maximum PASID value (inclusive)
+- *
+- * Try to allocate a PASID for this mm, or take a reference to the existing one
+- * provided it fits within the [@min, @max] range. On success the PASID is
+- * available in mm->pasid and will be available for the lifetime of the mm.
+- *
+- * Returns 0 on success and < 0 on error.
+- */
+-int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max)
++/* Allocate a PASID for the mm within range (inclusive) */
++static int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max)
+ {
+ 	int ret = 0;
+-	ioasid_t pasid;
+ 
+-	if (min == INVALID_IOASID || max == INVALID_IOASID ||
++	if (!pasid_valid(min) || !pasid_valid(max) ||
+ 	    min == 0 || max < min)
+ 		return -EINVAL;
+ 
+ 	mutex_lock(&iommu_sva_lock);
+ 	/* Is a PASID already associated with this mm? */
+ 	if (pasid_valid(mm->pasid)) {
+-		if (mm->pasid < min || mm->pasid >= max)
++		if (mm->pasid < min || mm->pasid > max)
+ 			ret = -EOVERFLOW;
+ 		goto out;
+ 	}
+ 
+-	pasid = ioasid_alloc(&iommu_sva_pasid, min, max, mm);
+-	if (!pasid_valid(pasid))
+-		ret = -ENOMEM;
+-	else
+-		mm->pasid = pasid;
++	ret = ida_alloc_range(&iommu_global_pasid_ida, min, max, GFP_ATOMIC);
++	if (ret < 0)
++		goto out;
++	mm->pasid = ret;
++	ret = 0;
  out:
  	mutex_unlock(&iommu_sva_lock);
  	return ret;
-@@ -238,3 +238,11 @@ iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
- 
- 	return status;
  }
-+
-+void mm_pasid_drop(struct mm_struct *mm)
-+{
-+	if (pasid_valid(mm->pasid)) {
-+		ioasid_free(mm->pasid);
-+		mm->pasid = INVALID_IOASID;
-+	}
-+}
-diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-index af1c9d62e642..bdee937da907 100644
---- a/include/linux/ioasid.h
-+++ b/include/linux/ioasid.h
-@@ -4,8 +4,8 @@
+-EXPORT_SYMBOL_GPL(iommu_sva_alloc_pasid);
  
- #include <linux/types.h>
- #include <linux/errno.h>
-+#include <linux/iommu.h>
+ /**
+  * iommu_sva_bind_device() - Bind a process address space to a device
+@@ -221,8 +208,8 @@ iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
  
--#define INVALID_IOASID ((ioasid_t)-1)
- typedef unsigned int ioasid_t;
- typedef ioasid_t (*ioasid_alloc_fn_t)(ioasid_t min, ioasid_t max, void *data);
- typedef void (*ioasid_free_fn_t)(ioasid_t ioasid, void *data);
-@@ -40,10 +40,6 @@ void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
- int ioasid_register_allocator(struct ioasid_allocator_ops *allocator);
- void ioasid_unregister_allocator(struct ioasid_allocator_ops *allocator);
- int ioasid_set_data(ioasid_t ioasid, void *data);
--static inline bool pasid_valid(ioasid_t ioasid)
--{
--	return ioasid != INVALID_IOASID;
--}
- 
- #else /* !CONFIG_IOASID */
- static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 6595454d4f48..d3f81dc6e4dd 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -13,7 +13,6 @@
- #include <linux/errno.h>
- #include <linux/err.h>
- #include <linux/of.h>
--#include <linux/ioasid.h>
- #include <uapi/linux/iommu.h>
- 
- #define IOMMU_READ	(1 << 0)
-@@ -192,6 +191,8 @@ enum iommu_dev_features {
- };
- 
- #define IOMMU_PASID_INVALID	(-1U)
-+typedef unsigned int ioasid_t;
-+#define INVALID_IOASID ((ioasid_t)-1)
- 
- #ifdef CONFIG_IOMMU_API
- 
-@@ -1172,7 +1173,16 @@ static inline bool tegra_dev_iommu_get_stream_id(struct device *dev, u32 *stream
- 	return false;
- }
- 
-+static inline bool pasid_valid(ioasid_t ioasid)
-+{
-+	return ioasid != INVALID_IOASID;
-+}
- #ifdef CONFIG_IOMMU_SVA
-+static inline void mm_pasid_init(struct mm_struct *mm)
-+{
-+	mm->pasid = INVALID_IOASID;
-+}
-+void mm_pasid_drop(struct mm_struct *mm);
- struct iommu_sva *iommu_sva_bind_device(struct device *dev,
- 					struct mm_struct *mm);
- void iommu_sva_unbind_device(struct iommu_sva *handle);
-@@ -1192,6 +1202,8 @@ static inline u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+ void mm_pasid_drop(struct mm_struct *mm)
  {
- 	return IOMMU_PASID_INVALID;
- }
-+static inline void mm_pasid_init(struct mm_struct *mm) {}
-+static inline void mm_pasid_drop(struct mm_struct *mm) {}
- #endif /* CONFIG_IOMMU_SVA */
- 
- #endif /* __LINUX_IOMMU_H */
-diff --git a/include/linux/sched/mm.h b/include/linux/sched/mm.h
-index 2a243616f222..da9712a3ba73 100644
---- a/include/linux/sched/mm.h
-+++ b/include/linux/sched/mm.h
-@@ -8,7 +8,6 @@
- #include <linux/mm_types.h>
- #include <linux/gfp.h>
- #include <linux/sync_core.h>
--#include <linux/ioasid.h>
- 
- /*
-  * Routines for handling mm_structs
-@@ -451,29 +450,4 @@ static inline void membarrier_update_current_mm(struct mm_struct *next_mm)
- }
- #endif
- 
--#ifdef CONFIG_IOMMU_SVA
--static inline void mm_pasid_init(struct mm_struct *mm)
--{
--	mm->pasid = INVALID_IOASID;
--}
--
--/* Associate a PASID with an mm_struct: */
--static inline void mm_pasid_set(struct mm_struct *mm, u32 pasid)
--{
--	mm->pasid = pasid;
--}
--
--static inline void mm_pasid_drop(struct mm_struct *mm)
--{
 -	if (pasid_valid(mm->pasid)) {
 -		ioasid_free(mm->pasid);
 -		mm->pasid = INVALID_IOASID;
 -	}
--}
--#else
--static inline void mm_pasid_init(struct mm_struct *mm) {}
--static inline void mm_pasid_set(struct mm_struct *mm, u32 pasid) {}
--static inline void mm_pasid_drop(struct mm_struct *mm) {}
--#endif
++	if (likely(!pasid_valid(mm->pasid)))
++		return;
++
++	ida_free(&iommu_global_pasid_ida, mm->pasid);
+ }
+diff --git a/drivers/iommu/iommu-sva.h b/drivers/iommu/iommu-sva.h
+index 102eae1817a2..c22d0174ad61 100644
+--- a/drivers/iommu/iommu-sva.h
++++ b/drivers/iommu/iommu-sva.h
+@@ -8,8 +8,6 @@
+ #include <linux/ioasid.h>
+ #include <linux/mm_types.h>
+ 
+-int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max);
 -
- #endif /* _LINUX_SCHED_MM_H */
-diff --git a/kernel/fork.c b/kernel/fork.c
-index f68954d05e89..a53be375a2dd 100644
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -97,6 +97,7 @@
- #include <linux/io_uring.h>
- #include <linux/bpf.h>
- #include <linux/stackprotector.h>
-+#include <linux/iommu.h>
- 
- #include <asm/pgalloc.h>
- #include <linux/uaccess.h>
-@@ -794,7 +795,9 @@ void __mmdrop(struct mm_struct *mm)
- 	mmu_notifier_subscriptions_destroy(mm);
- 	check_mm(mm);
- 	put_user_ns(mm->user_ns);
-+#ifdef CONFIG_IOMMU_SVA	
- 	mm_pasid_drop(mm);
-+#endif
- 
- 	for (i = 0; i < NR_MM_COUNTERS; i++)
- 		percpu_counter_destroy(&mm->rss_stat[i]);
-@@ -1140,7 +1143,9 @@ static struct mm_struct *mm_init(struct mm_struct *mm, struct task_struct *p,
- 	mm_init_cpumask(mm);
- 	mm_init_aio(mm);
- 	mm_init_owner(mm, p);
-+#ifdef CONFIG_IOMMU_SVA	
- 	mm_pasid_init(mm);
-+#endif
- 	RCU_INIT_POINTER(mm->exe_file, NULL);
- 	mmu_notifier_subscriptions_init(mm);
- 	init_tlb_flush_pending(mm);
+ /* I/O Page fault */
+ struct device;
+ struct iommu_fault;
 -- 
 2.25.1
 
