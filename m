@@ -1,107 +1,166 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2042.outbound.protection.outlook.com [40.107.223.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8B681C32
-	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 15:56:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679327782; x=1710863782;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xZaJIJHTvzHqtYGzg9k2Q15U6VQTHZPoOgCjztFaFyA=;
-  b=UzMX2HysBPCJ6a4/OYpmeo2s0YEaz+sXHw/QwNIMsi6JnUKioSlW1gt+
-   VoHIOE8Kr34N/XKLb1Q0zttBBmPpHYBmHgvyfcU2QoSilZEcXa4AJ5gZ7
-   HXgz/7QizPl0jQVa9GipnGkMaWUvw4jseP+RkcOzdeJbqaQbK3qxloKVF
-   iRO6MdbxQwCdKccADJliGqANlpCriIDIOvvWL1SSuk3Qj/0qNJaK/NpmT
-   cby4o3PfwVBJ5qaUNbAGxgB4shSiIQMR5ikzXVXRG+klUf7iwYB7lWqoA
-   ZolDZpRWYxX6gP1QYSZOOj4H5hTWgtXWeecpSiVSHzav0Hu+srFwPCnWG
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="424974367"
-X-IronPort-AV: E=Sophos;i="5.98,276,1673942400"; 
-   d="scan'208";a="424974367"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 08:56:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="824531530"
-X-IronPort-AV: E=Sophos;i="5.98,276,1673942400"; 
-   d="scan'208";a="824531530"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 08:56:08 -0700
-Date: Mon, 20 Mar 2023 09:00:06 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux.dev, dmaengine@vger.kernel.org, Joerg Roedel
- <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
- <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, Fenghua Yu
- <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>, Vinod Koul
- <vkoul@kernel.org>, linux-kernel@vger.kernel.org,
- jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v2 2/5] iommu/vt-d: Allow SVA with device-specific IOPF
-Message-ID: <20230320090006.180efbed@jacob-builder>
-In-Reply-To: <20230309025639.26109-3-baolu.lu@linux.intel.com>
-References: <20230309025639.26109-1-baolu.lu@linux.intel.com>
-	<20230309025639.26109-3-baolu.lu@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D3F91C3B
+	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 15:56:23 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kPr6ZSijllRweXiL7dhmHS7nRmLpoDeSr2kSzO640Qi9PaFp07rqePpddkOooubtMqduz+VLJgsJUtcOW7bklDgmGkOQw9yUwvSJDUOveUQHJF+Mtkxjfbx28FVfYZ52d5jdPMiWxA9e41zOhXMHxBM2PhibmAIaz+rkJZKuZ9NHw6K/oHr+j9r3DqGUAO/AsDeCQK5/03CxCOJROtkLh5odTDUL4Ej+H+HEen1GBqCD5V8I8tCZA+fkvgYMlEJEYxHTwzDlgwgB4AnbtGLLONxOUWcvEa0ESN4xwCOnAY2j2f6iaZyz5yfkiD3oVq7jbG9bhxZaDvUDYuczcSru7A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RVAgmrLxxwhrqeRpcQZ8j/75hnqrSBthIOuBKUaQoRE=;
+ b=h6GQE3Im8Fk1uvcwU1CBreboGKceZBAWK9QiaEKQicRWlQ4Y6p7W9Vs+ICDy0dtcOOIhlcI0h2NyHi7WcAlGdxmgAqjCBv6gLWiLh6q+isO+LFsU/4AjpmFTUuLtoqnyU6UXCJC3QIDDcDs4Zs8IwHulxMw5EOCCOdvz6arsgXHFVyqIyC66DPX8T+fi066UI0ptQfP3oZhzmXXQk9J5SN3dKY6riW3RrQ4wRZnDG1nqc7ri4BTRf/ljKm+uoJPjYanEBT3ZJyRIvhFVgem+WC02RzeD0eXZ11vVNZkQP2lby2kfh7Czp1M38RjmJOIS2+4yujTJmERJuVDKXrUNVg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RVAgmrLxxwhrqeRpcQZ8j/75hnqrSBthIOuBKUaQoRE=;
+ b=sCxfRyqQ6wSQnzc8QFrnWJ5/pIVyu8mfMl0F3C4kcZ+uYzIaATh9+OBkb6c0wAHmfpPuqqsZ+i7mrfhxml03EFvDv+Os1RHUIjD081uINV8j5xhB8XYKE2h9zqnw6HEIC8/bGe/gvf4CDg90vFGZCdcbs6hNjgra0uwhM5x5pm5Eoc8EOGaVIYj9qmPeju0c5s14HstrQTAljDKXYcGgtYH5Hom3PN0EwmCuDyobyNIMrIX7VF7SIJylH3d5IaTria6ZkKWE5jCY9sQf2/znXEnotM0MRLFhiM1RjuMQLeiZ4k+FDp+athhLEi3ejuk0TMSjIETgwIZscd6LuDdsxA==
+Received: from BL1PR13CA0017.namprd13.prod.outlook.com (2603:10b6:208:256::22)
+ by DS0PR12MB7927.namprd12.prod.outlook.com (2603:10b6:8:147::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Mon, 20 Mar
+ 2023 15:56:21 +0000
+Received: from BL02EPF0000C407.namprd05.prod.outlook.com
+ (2603:10b6:208:256:cafe::cc) by BL1PR13CA0017.outlook.office365.com
+ (2603:10b6:208:256::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.15 via Frontend
+ Transport; Mon, 20 Mar 2023 15:56:19 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BL02EPF0000C407.mail.protection.outlook.com (10.167.241.9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6178.30 via Frontend Transport; Mon, 20 Mar 2023 15:56:17 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Mon, 20 Mar 2023
+ 08:56:03 -0700
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Mon, 20 Mar
+ 2023 08:56:02 -0700
+Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5 via Frontend
+ Transport; Mon, 20 Mar 2023 08:56:02 -0700
+Date: Mon, 20 Mar 2023 08:56:00 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Robin Murphy <robin.murphy@arm.com>, <will@kernel.org>,
+	<eric.auger@redhat.com>, <kevin.tian@intel.com>, <baolu.lu@linux.intel.com>,
+	<joro@8bytes.org>, <shameerali.kolothum.thodi@huawei.com>,
+	<jean-philippe@linaro.org>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 14/14] iommu/arm-smmu-v3: Add
+ arm_smmu_cache_invalidate_user
+Message-ID: <ZBiCEAqP1OU5EvoG@Asurada-Nvidia>
+References: <cover.1678348754.git.nicolinc@nvidia.com>
+ <aa327f9ea61e5a4771c13e53639e33955b9acde3.1678348754.git.nicolinc@nvidia.com>
+ <1467e666-1b6c-c285-3f79-f8e8b088718b@arm.com>
+ <ZAn7uC9UweiNdGkJ@nvidia.com>
+ <ZAqv87fjbdynVaHA@Asurada-Nvidia>
+ <ZAtYphmOuEqQ1BiC@nvidia.com>
+ <ZAxsgjuuG3ziqs9E@Asurada-Nvidia>
+ <ZBhZiCOQHAxEaamy@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ZBhZiCOQHAxEaamy@nvidia.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL02EPF0000C407:EE_|DS0PR12MB7927:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5327c643-cf01-46fc-2521-08db295ba477
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	3QdqrXAy/q3jGLMJbQuFzExl8XqKfy6R83HBTwWlHf2rn3p9bD00mEIx4FzYCopROQ7fYGipmGtrpHoSN+aoJO94vCSqWslZL3dtSlrtiphBAJirlRUWVtgN7tfxamQKnUk1zah5NIxk6jODX6ISm+lfpar9v5qzBxkolEC2HreN8o7ON22pe0ZUEqos0CZJmClEOxdacSHCaYqRvEy5NQrddRhLLg9ImDnGPJdxl4znl5obAiGu2QxOSxHgKIAz8RGX7fHqTn9BvlW7igo3n4YlicXtyODnOKWLBXSDUCnnbr1kvTCbDRXhR+v/+oy3LAKhYx+Es0X9udwbUbhnUNriO7TtfoxcEitk6G505/zoqx16mG0zfzGRJ5PGi/EyrrvOg2OyF3h2FmZk9WEVzvb/usboTP8AnzU1RWY7nY80O+jv6EZN1HKQrh9x28q9tTvBMZn/fmTQJt2Y/frX0aStYr56Cn/x7numlv1kVHMxa1J2MlfNYPszDn/xzhE3OH0mWXfOyojFD/ZnAbFGei3iqVnMKkdU0t0DlNM0MuGP7EYEK18H6p2g6mAeAMv02Q2ioHuZIIzmz5v6wnORAoBC7fVVYVYdgvpajoHuRyjYhv7D7gz5Xcg9w6GpXcrgHXUdws3W1JyT6/B/W7yO8u88GCBKW9+sdqkpSXMx4JwcTzoje2DImcrs9TDB0Ayw9tjiwhP5foQEqdrMXqFMzoomKRTLEk1ZDKIK926sl/EBpsXoiopoLuOBS79qkNBSj7r6it6SU4Xs2FRY0Ja0qjbv3DUXcqurhiz4l4wXWQ0OC8AMfe54SBg5/tNuiyNn
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(346002)(39860400002)(136003)(396003)(376002)(451199018)(46966006)(40470700004)(36840700001)(7636003)(82740400003)(86362001)(82310400005)(33716001)(40480700001)(55016003)(40460700003)(356005)(70206006)(70586007)(8676002)(186003)(6862004)(8936002)(4326008)(41300700001)(26005)(478600001)(9686003)(426003)(6636002)(54906003)(316002)(83380400001)(36860700001)(336012)(47076005)(2906002)(5660300002)(7416002)(473944003)(414714003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Mar 2023 15:56:17.8905
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5327c643-cf01-46fc-2521-08db295ba477
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL02EPF0000C407.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7927
 
-Hi BaoLu,
-
-On Thu,  9 Mar 2023 10:56:36 +0800, Lu Baolu <baolu.lu@linux.intel.com>
-wrote:
-
-> Currently enabling SVA requires IOPF support from the IOMMU and device
-> PCI PRI. However, some devices can handle IOPF by itself without ever
-> sending PCI page requests nor advertising PRI capability.
+On Mon, Mar 20, 2023 at 10:03:04AM -0300, Jason Gunthorpe wrote:
+> On Sat, Mar 11, 2023 at 03:56:50AM -0800, Nicolin Chen wrote:
 > 
-> Allow SVA support with IOPF handled either by IOMMU (PCI PRI) or device
-> driver (device-specific IOPF). As long as IOPF could be handled, SVA
-> should continue to work.
+> > I recall that one difficulty is to pass the vSID from the guest
+> > down to the host kernel driver and to link with the pSID. What I
+> > did previously for VCMDQ was to set the SID_MATCH register with
+> > iommu_group_id(group) and set the SID_REPLACE register with the
+> > pSID. Then hyper will use the iommu_group_id to search for the
+> > pair of the registers, and to set vSID. Perhaps we should think
+> > of something smarter.
 > 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  drivers/iommu/intel/iommu.c | 13 ++++++++++++-
->  1 file changed, 12 insertions(+), 1 deletion(-)
+> We need an ioctl for this, I think. To load a map of vSID to dev_id
+> into the driver. Kernel will convert dev_id to pSID. Driver will
+> program the map into HW.
+
+Can we just pass a vSID via the alloc ioctl like this?
+
+-----------------------------------------------------------
+@@ -429,7 +429,7 @@ struct iommu_hwpt_arm_smmuv3 {
+ #define IOMMU_SMMUV3_FLAG_VMID (1 << 1) /* vmid override */
+        __u64 flags;
+        __u32 s2vmid;
+-       __u32 __reserved;
++       __u32 sid;
+        __u64 s1ctxptr;
+        __u64 s1cdmax;
+        __u64 s1fmt;
+-----------------------------------------------------------
+
+An alloc is initiated by an SMMU_CMD_CFGI_STE command that has
+an SID filed anyway.
+
+> SW path will program the map into an xarray
+
+I found a tricky thing about SIDs in the SMMU driver when doing
+this experiment: the SMMU kernel driver mostly handles devices
+using struct arm_smmu_master. However, an arm_smmu_master might
+have a num_streams>1, meaning a device can have multiple SIDs.
+Though it seems that PCI devices might not be in this scope, a
+plain xarray might not work for other type of devices in a long
+run, if there'd be?
+
+> > > I suspect the answer to Robin's question on how to handle errors is
+> > > the most important deciding factor. If we have to capture and relay
+> > > actual HW errors back to userspace that really suggests we should do
+> > > something different than a synchronous ioctl.
+> > 
+> > A synchronous ioctl is to return some values other than defining
+> > cache_invalidate_user as void, like we are doing now? An fault
+> > injection pathway to report CERROR asynchronously is what we've
+> > been doing though -- even with Eric's previous VFIO solution.
 > 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 7c2f4bd33582..d2fcab9d8f61 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -4650,7 +4650,18 @@ static int intel_iommu_enable_sva(struct device
-> *dev) if (!(iommu->flags & VTD_FLAG_SVM_CAPABLE))
->  		return -ENODEV;
->  
-> -	if (!info->pasid_enabled || !info->pri_enabled ||
-> !info->ats_enabled)
-> +	if (!info->pasid_enabled)
-> +		return -EINVAL;
-> +
-> +	/*
-> +	 * Devices having device-specific I/O fault handling should not
-> +	 * support PCI/PRI.
-> +	 */
-> +	if (!info->pri_supported)
-> +		return 0;
-If you put this check at the very beginning, everything else should it be
-the same, right?
+> Where is this? How does it look?
 
-Still feel a little weird that, SVA is tied to PRI for PCI PRI but not for
-device specific IOPF.
+That's postponed with the PRI support, right? My use case does
+not need PRI actually, but a fault injection pathway to guests.
+This pathway should be able to take care of any CERROR (detected
+by a host interrupt) or something funky in cache_invalidate_user
+requests itself?
 
-> +	/* Devices supporting ATS/PRI should have it enabled. */
-> +	if (!info->pri_enabled || !info->ats_enabled)
->  		return -EINVAL;
->  
->  	ret = iopf_queue_add_device(iommu->iopf_queue, dev);
-
-
-Thanks,
-
-Jacob
+Thanks
+Nic
