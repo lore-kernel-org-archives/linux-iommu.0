@@ -1,112 +1,143 @@
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2060.outbound.protection.outlook.com [40.107.94.60])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 326287C
-	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 18:06:11 +0000 (UTC)
-Received: by mail-ed1-f45.google.com with SMTP id h8so50200543ede.8
-        for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 11:06:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1679335569;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=X51Q8hDC/IQxJug1cczWInk9U8e16wx3dU7fgiFAEVU=;
-        b=s4zbcOKPCoiqw9KRAGBSFZTaJyDewczivh7t8hPtYrCCNn8bqj0J0T2OqKKvvYB9Yj
-         sjh0W2oKI4G+eK05iX0on9cf9ERsEgAzAtxsMiSbKSiXG8AEeXYGrfj+/BBUEDNV5Cks
-         iIM9K3QIL6ZoIOsIbLETQ9fjlIgn8L3PLqVMlyW4bmbD1ByykROv2swPRVbDSfjM7tAm
-         yxsyeAcIt/mXzqN7vvzXDrGWbIx1xhatTOyeO5gTuwLiStGJIOC5aTzEndiMiFkFFfK3
-         NFAEIfclPmRhsNlGGeHRf4Y+XC+xAaDHACHQxat0cwf9qtx7onBavwhxCoz/pziy6/Rq
-         ceHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679335569;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=X51Q8hDC/IQxJug1cczWInk9U8e16wx3dU7fgiFAEVU=;
-        b=SdUves2dijKt5RodRKlOdYJaDz/QF6Q/SgrWXLvrDPqVjUy1HURgVck3xCJ2UZ2L52
-         vLzqZuwOxvAhxLnuCYSpvp855d9MrHVh1QIQRhtuqMCgksg0rPAwwOyKYzBoyvct/DV7
-         XobhGPlYMXHSSEKK0MGXwEm5uP8Y+ytpSuqiawlOCIQA3/Yt69qygar9N6HYRcpH9yWn
-         PHGbkIwDl3V4oIG75IqhzrfNc8jApAcHE20rOYL4V1lEN4p4m2HYjBdpDON4WvDhmg4a
-         2IeUobRgLtJaxhLodbrS03FafSPxvTTP4ctpkbIkP5iKrPCLc0WBA41cmkszwJ0a8sXw
-         SHNA==
-X-Gm-Message-State: AO0yUKUSm4bKDJt4U6x8hhgPerB5g2qo9pGQeo/tzV9uvJ31495ficrj
-	xtmRXCraHKHZKjyFpSejrWYOrw==
-X-Google-Smtp-Source: AK7set8tMwaO8piMMP4jhGMzPqLtV6anULnSbduxtDUNwOaGKChCb4uO9Q+3Akhnoo86JOA6tYtPRQ==
-X-Received: by 2002:a17:906:eec2:b0:935:4981:fd0b with SMTP id wu2-20020a170906eec200b009354981fd0bmr3016551ejb.55.1679335569395;
-        Mon, 20 Mar 2023 11:06:09 -0700 (PDT)
-Received: from localhost.localdomain (054592b0.skybroadband.com. [5.69.146.176])
-        by smtp.gmail.com with ESMTPSA id t14-20020a508d4e000000b004d8287c775fsm5213115edt.8.2023.03.20.11.06.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Mar 2023 11:06:09 -0700 (PDT)
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: eric.auger@redhat.com,
-	rafael@kernel.org
-Cc: lenb@kernel.org,
-	linux-acpi@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org,
-	helgaas@kernel.org,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [RESEND PATCH] ACPI: VIOT: Initialize the correct IOMMU fwspec
-Date: Mon, 20 Mar 2023 18:05:29 +0000
-Message-Id: <20230320180528.281755-1-jean-philippe@linaro.org>
-X-Mailer: git-send-email 2.39.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C1457C
+	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 18:07:17 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mPEuJ5V4a+qdKB9asudIM6vRBNCB67Pc9nO3fy5mhtUtwshSqBYWx9fhnj4EIUKDt2BcgbZGDBo9EpSvmwi3Ajtd+HphDSvqdAsGmz4xYYWltMxnlSv0U1j5bUEJ4rFjzcfDlJ69/N+1qlYI6YMlrkjtrqM+joKdkEagRcQRXeVeyasCbh/mcIn5hDiUZcmx7OW4D15ApYxDyKH51vPp02wZDY8G/DQqGTlvEL7OclzHAJ8Bo1kisKOatSgi375jtBePFBcPezUcET8hzNzZ3841j4zy+H0ORBtJx13Ntku8QgpRb7Cdv/2gk8j5MFNL7QhhNo6r4qwkpom0OJXHIw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=c5aLextkr8W0jj6WUCd7cVoha6y8ycvSx1TCotj+YGo=;
+ b=FcOpmVZJqkOg4y0fppZ+VXkGReWKwRyStUQC/lNGrIxss7sDDPxNEPxDSJZbskuTzNNSXco17fsQrjWm5HeBvrUt9mnAMfw4tN8M9YcoZv43GsR9nh1k0SPKgH7LOQ4qVkszOOOMVyWqIJKM7pcGSpRgkSrBZ5I9Oci/lAUksmoHI2KW3/Yb6UtWaVGSrBBimAZ83ThkixgvsA9vHBw6X7WGDXOCbas6mYuP60AWeSuC1pPojlNlvixBvVKb3RhwtRIU2d9ptZKzm/g8VA5C5GHl9vyKf3xGFMWkABgVrgnDk9AvjA+DZkIc9t4ajOVcr+V1VL3JSL3Mbi9MVNJhhg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=c5aLextkr8W0jj6WUCd7cVoha6y8ycvSx1TCotj+YGo=;
+ b=Q2aYA9Uq8FapyPp0Nq6i7A4fIKfax6Ikgx7WZXxip/057NfiK3mGSFGPLwq/zD6ptEgWVtAt2R3UW+N4GY2pWIcHc8aB4KURMM7zpCgHgrD22rKa6Yj9tGl858vG2CeoXkXnbDWufu3Fs7YJruwYSApo4Qbl18ym8Dgjf5mdiS/00Bai5R7bnKuo79HVQPBF4cIxYav8ys+COdW0t8KvnGHgEESmgnvSX8BXgL8h/VyhwFKnzomLKJsuhjOUejBwNvWV/zptGaEq15PsAu92qmqkVznBjWOVGxDUMGyrGPuVDsdUu5pK9v+AMXSUyvU0bGbfUX7px/+XfwQVFXjTNQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by BN9PR12MB5242.namprd12.prod.outlook.com (2603:10b6:408:11f::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Mon, 20 Mar
+ 2023 18:07:14 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::ef6d:fdf6:352f:efd1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::ef6d:fdf6:352f:efd1%3]) with mapi id 15.20.6178.037; Mon, 20 Mar 2023
+ 18:07:14 +0000
+Date: Mon, 20 Mar 2023 15:07:13 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, will@kernel.org,
+	eric.auger@redhat.com, kevin.tian@intel.com,
+	baolu.lu@linux.intel.com, joro@8bytes.org,
+	shameerali.kolothum.thodi@huawei.com, jean-philippe@linaro.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 14/14] iommu/arm-smmu-v3: Add
+ arm_smmu_cache_invalidate_user
+Message-ID: <ZBig0fN3l7LsUlQg@nvidia.com>
+References: <ZAx2K08L5TIm6r3y@Asurada-Nvidia>
+ <ab762cc6-5adf-2515-d9d2-d21d916eb6ad@arm.com>
+ <ZBJcS07G3mt7gjkA@Asurada-Nvidia>
+ <c753c2a8-024d-5bef-8987-96582084991e@arm.com>
+ <ZBOFcenanpRsGFzF@Asurada-Nvidia>
+ <ZBe3kxRXf+VbKy+m@Asurada-Nvidia>
+ <ZBhbmqprnux4q00i@nvidia.com>
+ <ZBh7hSX5hdW4vxwh@Asurada-Nvidia>
+ <ZBiDcYwxL7eV1EmQ@nvidia.com>
+ <ZBiLSJvtY5UKDJ5l@Asurada-Nvidia>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZBiLSJvtY5UKDJ5l@Asurada-Nvidia>
+X-ClientProxiedBy: BL0PR02CA0021.namprd02.prod.outlook.com
+ (2603:10b6:207:3c::34) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BN9PR12MB5242:EE_
+X-MS-Office365-Filtering-Correlation-Id: d811e816-08db-4a05-7ea4-08db296def32
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	9wujEk3/Xqs5QYLNevKBoujkAJunbfkNFCcODyLLsjoQN9yfnv+tiTjknAvJAj4JXggYXFmOFO8uBLpXj8hDCIcmlTi41mVAkQsSbY1oTQ8wQHnAC33dA82FU3d/QlIiGodnvhKPYsbmS8W2cCDF00rnwE6VR96ORhZZCuu2oP+Q2I5xyVmpQBqTv+2bxlc9Am3Jn6ycfVXHV/i4CTEg3DTVvkI1ropXkPToBbZiPVst7df2vg4FkcU+a9I12RHzcHIx+UjK76c2zQI86ztLzSyF/fSZ84vcAy5u1mJKMe3qPkp892FRJUaEH+FI4tiU4rUvD5nvVAAv/P/Sr8s3BPO2vw91pQ6C2saiAlUcMWjI1bx1o35k0YVFKL+ZhcD6doZlFR4Rg9wrjpd46dZgDS5DXJR2RvEjjWy6khEUcqraw/3k4tTRAHccfRWLvDjDNXuZTTL0OCzzlhb6kr02je2DEmgcHD8Am+zkhQLHy6zx+THLFYjex9Vaz2prOGF8QwVeH8wtyDA6HdE09paD5JTl/y2ZJ2jWWg/oSzygSDr0P7Qe97cd6H09l0Q1L9MmxaxZp1r0duGrHhSNIPH1Ea5V0ZjwqoWGBRtutCrkQnmRPYJ2uCI69l1XC65yFpaZ5tMpOGAcBM6uZ7LuxoVkgg==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(39860400002)(396003)(136003)(346002)(366004)(451199018)(38100700002)(6636002)(316002)(8676002)(4744005)(7416002)(37006003)(66946007)(5660300002)(66476007)(36756003)(66556008)(4326008)(8936002)(6862004)(41300700001)(478600001)(2906002)(86362001)(2616005)(6512007)(186003)(26005)(6506007)(6486002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?OxBTJlIeno4c6awe8+p8eiyzuUzw9/PUnSZUAiwRYcIr56ypHG/vcJ5IxdwV?=
+ =?us-ascii?Q?KuCp8F8FYvlYf2r1KSueurchD2orY7movGmBSgunAi0O/tcf3DtJ6ASxXHl7?=
+ =?us-ascii?Q?2Z5rl5a8WG+tV/GwlDwvKIldcJp2a5+XDW+PBq8a4MRdNEMtKqJHPHUCNuwz?=
+ =?us-ascii?Q?HPSez0RMo4GFet4IRABC1pG5yWWlebn3aiLriMUDbfUCqn+E4Z0a+O7DCfP3?=
+ =?us-ascii?Q?3s9EkT2vJbGVMc3GjQnwGpJd5XHk30KyrwGCErHCek1w3td3ZM7sqSpGpANq?=
+ =?us-ascii?Q?BDeJw8HZmLOKR3ZRonFXMnlnjEQ4hOctU8DcWOxjqYnrDvwZu635ECHtSc5Q?=
+ =?us-ascii?Q?53RWY1tHXbSHBH+L8V2yuE0KmTA+8o8IINz5cvmR2I1q14DzYulaXlkC28aO?=
+ =?us-ascii?Q?F7tmLbaEaNHhG9H6hu575WfZfwLUpc6qwu/EJu66SADxAPPwZvuYeHiPuHkY?=
+ =?us-ascii?Q?l1hUoU5rGS7AKqFb//1ytl96Vpar0Yq8FNcSUQAczsjOPVO9NvXaBgb8RMYF?=
+ =?us-ascii?Q?yKN8pXG2yf3DADy1Kn7i6yhRNsqL95Tln+uiNi46P4hLxzgeVjiHeh594m/V?=
+ =?us-ascii?Q?uiarcH0ycwWSokK04UeYh6ieGIIJAaX35nKFelPp8VqotDjQG5s+xaU1cvA8?=
+ =?us-ascii?Q?H20h2nxcFXP91i6wYo4at+hjNTLXU4J9EF6KTeloFT/2JbnM5+YoxgX8dacE?=
+ =?us-ascii?Q?+rwsTxThFEsuqNTWOowQcxKNRNW6+GVvwGbfK66B7WHBrQaZGrdlvhX1U4iv?=
+ =?us-ascii?Q?gTClcDpb3vSCoOwqF5jm21/6hdLtYnGYS5aBqXR7b0pWsZ659OL2dDEzF+T9?=
+ =?us-ascii?Q?Hkc7leCDSTeOo1+CqqCTnvZfB9UPfMXh6YF2If5Z+2glFyHb6pdhJmy/oDjx?=
+ =?us-ascii?Q?53jEjSq5YUMN1vnZj0wIolTUiDFdkoBdoXfJTq1LuBcw75pAd4HhNE9D4pPk?=
+ =?us-ascii?Q?sEysUeFYh63xBj6ZRWE74V+WHCv9olafuZSlOB+ODnGq2dEi4gj/6OqT5ySK?=
+ =?us-ascii?Q?MrsyqBGdIqWVA+WhQczQb5ifhiCiHwK+vkR9V3puTJy18z4NUsWNiyDsVnfd?=
+ =?us-ascii?Q?xAkLDINa63Hr/oz7FFNJbxQJlGNQHcIXDe9LrtCRLfoa6s9fDMZ5cLy1k+ry?=
+ =?us-ascii?Q?ky9WKwAN2WlmnebqL0L5nMYPj62SpxQZIBgbk8SJbQv7j+jqTHZgGdlbtLiM?=
+ =?us-ascii?Q?R4ts+hS9yOJeyIapUyEOg2+Xj654r+VYWoq9zYDvgoY1K48PmOunS3TyNz1+?=
+ =?us-ascii?Q?n0P/Bnx0P+k4LTYk4sG6noIwZMW45XJB5i77WD7buyIhKnKDLGBLtlZZvmR5?=
+ =?us-ascii?Q?kHxxh8y7F2VUec+veQOAILV0UemF2hBTGoDlKMAidoIqQQDDO4aO0r3MizQj?=
+ =?us-ascii?Q?QG9eaDQ2NjtqIINwa1zDIHfw4WkLSF4LgzqNpRcJvMLPFaabuxu62F7prDHJ?=
+ =?us-ascii?Q?fljz/kAg/kXBIsqytU11LsQHylhuUh4MJPC6x8KmmBsjW2d2f7nqpoVnWApP?=
+ =?us-ascii?Q?DfroF/UCqq0HqJ6b6G8ROSenDDgEGVQgIMwZxrHA9YQkVsmhIzcCaQKvP2AU?=
+ =?us-ascii?Q?DeCqbx2NdT/mOjTW1WybFZ7Q3cryMhRIC12efcTL?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d811e816-08db-4a05-7ea4-08db296def32
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Mar 2023 18:07:14.5857
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Aa1Y7NSqIv8n8vSQi9sFZlX/46riWkhnZZam06ZoUsHEDDzx3yzxBNfaFcfytM72
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5242
 
-When setting up DMA for a PCI device, we need to initialize its
-iommu_fwspec with all possible alias RIDs (such as PCI bridges). To do
-this we use pci_for_each_dma_alias() which calls
-viot_pci_dev_iommu_init(). This function incorrectly initializes the
-fwspec of the bridge instead of the device being configured. Fix it by
-passing the original device as context to pci_for_each_dma_alias().
+On Mon, Mar 20, 2023 at 09:35:20AM -0700, Nicolin Chen wrote:
 
-Fixes: 3cf485540e7b ("ACPI: Add driver for the VIOT table")
-Reported-by: Eric Auger <eric.auger@redhat.com>
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
----
-This fixes issue (1) reported here:
-https://lore.kernel.org/all/Y8qzOKm6kvhGWG1T@myrica/
+> > You need to know what devices the vSID is targetting ang issues
+> > invalidations only for those devices.
+> 
+> I agree with that, yet cannot think of a solution to achieve
+> that out of vSID. QEMU code by means of emulating a physical
+> SMMU only reads the commands from the queue, without knowing
+> which device (vSID) actually sent these commands.
 
-resend: Added linux-pci list
----
- drivers/acpi/viot.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Huh?
 
-diff --git a/drivers/acpi/viot.c b/drivers/acpi/viot.c
-index ed752cbbe636..c8025921c129 100644
---- a/drivers/acpi/viot.c
-+++ b/drivers/acpi/viot.c
-@@ -328,6 +328,7 @@ static int viot_pci_dev_iommu_init(struct pci_dev *pdev, u16 dev_id, void *data)
- {
- 	u32 epid;
- 	struct viot_endpoint *ep;
-+	struct device *aliased_dev = data;
- 	u32 domain_nr = pci_domain_nr(pdev->bus);
- 
- 	list_for_each_entry(ep, &viot_pci_ranges, list) {
-@@ -338,7 +339,7 @@ static int viot_pci_dev_iommu_init(struct pci_dev *pdev, u16 dev_id, void *data)
- 			epid = ((domain_nr - ep->segment_start) << 16) +
- 				dev_id - ep->bdf_start + ep->endpoint_id;
- 
--			return viot_dev_iommu_init(&pdev->dev, ep->viommu,
-+			return viot_dev_iommu_init(aliased_dev, ep->viommu,
- 						   epid);
- 		}
- 	}
-@@ -372,7 +373,7 @@ int viot_iommu_configure(struct device *dev)
- {
- 	if (dev_is_pci(dev))
- 		return pci_for_each_dma_alias(to_pci_dev(dev),
--					      viot_pci_dev_iommu_init, NULL);
-+					      viot_pci_dev_iommu_init, dev);
- 	else if (dev_is_platform(dev))
- 		return viot_mmio_dev_iommu_init(to_platform_device(dev));
- 	return -ENODEV;
--- 
-2.39.2
+CMD_ATC_INV has the SID
+
+Other commands have the ASID.
+
+You never need to cross an ASID to a SID or vice versa.
+
+If the guest is aware of ATS it will issue CMD_ATC_INV with vSIDs, and
+the hypervisor just needs to convert vSID to pSID.
+
+Otherwise vSID doesn't matter because it isn't used in the invalidation
+API and you are just handling ASIDs that only need the VM_ID scope
+applied.
+
+Jason
 
