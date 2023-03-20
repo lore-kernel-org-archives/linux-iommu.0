@@ -1,14 +1,14 @@
-Received: from frasgout12.his.huawei.com (frasgout12.his.huawei.com [14.137.139.154])
+Received: from frasgout11.his.huawei.com (frasgout11.his.huawei.com [14.137.139.23])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88FEB1861
-	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 12:48:08 +0000 (UTC)
-Received: from mail02.huawei.com (unknown [172.18.147.229])
-	by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4PgDLS17Q2z9xFrp
-	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 20:19:12 +0800 (CST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B81ED1861
+	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 12:48:14 +0000 (UTC)
+Received: from mail02.huawei.com (unknown [172.18.147.227])
+	by frasgout11.his.huawei.com (SkyGuard) with ESMTP id 4PgDMt0Cs3z9y4Sk
+	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 20:20:26 +0800 (CST)
 Received: from A2101119013HW2.china.huawei.com (unknown [10.48.148.162])
-	by APP2 (Coremail) with SMTP id GxC2BwBnOF9kURhkkqGyAQ--.46782S2;
-	Mon, 20 Mar 2023 13:28:33 +0100 (CET)
+	by APP2 (Coremail) with SMTP id GxC2BwBnOF9kURhkkqGyAQ--.46782S6;
+	Mon, 20 Mar 2023 13:29:08 +0100 (CET)
 From: Petr Tesarik <petrtesarik@huaweicloud.com>
 To: Jonathan Corbet <corbet@lwn.net>,
 	Christoph Hellwig <hch@lst.de>,
@@ -26,10 +26,12 @@ To: Jonathan Corbet <corbet@lwn.net>,
 	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS)
 Cc: Roberto Sassu <roberto.sassu@huawei.com>,
 	petr@tesarici.cz
-Subject: [RFC v1 0/4] Allow dynamic allocation of software IO TLB bounce buffers
-Date: Mon, 20 Mar 2023 13:28:12 +0100
-Message-Id: <cover.1679309810.git.petr.tesarik.ext@huawei.com>
+Subject: [RFC v1 4/4] swiotlb: Add an option to allow dynamic bounce buffers
+Date: Mon, 20 Mar 2023 13:28:16 +0100
+Message-Id: <e00c8c576b8ef2fa3cf867ab776cd136a519a835.1679309810.git.petr.tesarik.ext@huawei.com>
 X-Mailer: git-send-email 2.21.0.windows.1
+In-Reply-To: <cover.1679309810.git.petr.tesarik.ext@huawei.com>
+References: <cover.1679309810.git.petr.tesarik.ext@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,106 +39,147 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:GxC2BwBnOF9kURhkkqGyAQ--.46782S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxJw18WF1rGrW5XF4kXryxZrb_yoWrXr1DpF
-	Wakw15Zr1DtryxA3yxCw4xXas5Gws5Aay5GFZaqr1UZrW5GFnFvrnrtay5Xa9rGws7Xw1j
-	qryYvrn8CFyvvaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUvSb4IE77IF4wAFF20E14v26ryj6rWUM7CY07I20VC2zVCF04k2
-	6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
-	vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7Cj
-	xVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxV
-	AFwI0_Gr1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG
-	6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFV
-	Cjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7MxkF7I0E
-	w4C26cxK6c8Ij28IcwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s
-	026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_
-	GFv_WrylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20x
-	vEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280
-	aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43
-	ZEXa7IU8gyCJUUUUU==
+X-CM-TRANSID:GxC2BwBnOF9kURhkkqGyAQ--.46782S6
+X-Coremail-Antispam: 1UD129KBjvJXoWxWFyUXw4rKw1kZw1kJFWfuFg_yoWrZryUpr
+	y0va4YgFZ7JF18Z347Cw47GF1Fkan29ay3ZayFgryFyr98Xrn0qwnrtr4YqF1rt3y09F47
+	ZFyYvF4Ykr17t3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUPmb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
+	6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUAV
+	Cq3wA2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0
+	rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWUJVWUCwA2z4x0Y4vE2Ix0cI8IcVCY1x0267
+	AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxVAF
+	wI0_Gr1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I
+	80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCj
+	c4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7MxkF7I0Ew4
+	C26cxK6c8Ij28IcwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s02
+	6c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_GF
+	v_WrylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvE
+	c7CjxVAFwI0_Cr0_Gr1UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67
+	AKxVW8JVWxJwCI42IY6I8E87Iv6xkF7I0E14v26r4UJVWxJrUvcSsGvfC2KfnxnUUI43ZE
+	Xa7IU8gAw7UUUUU==
 X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
 X-CFilter-Loop: Reflected
 
 From: Petr Tesarik <petr.tesarik.ext@huawei.com>
 
-The goal of my work is to provide more flexibility in the sizing of
-SWIOTLB. This patch series is a request for comments from the wider
-community. The code is more of a crude hack than final solution.
+Dynamic allocation of bounce buffers may introduce regression for
+some workloads. The expected outcomes are bigger worst-case I/O
+latency reduced performance for some workloads. Unfortunately,
+real-world testing has been too unstable to draw any conclusion.
 
-I would appreciate suggestions for measuring the performance impact
-of changes in SWIOTLB. More info at the end of this cover letter.
+To stay on the safe side, make the feature disabled by default and
+let people turn it on with "swiotlb=dynamic" if needed. Since this
+option can be combined with "force", the parser must be modified to
+allow multiple options separated by commas.
 
-The software IO TLB was designed with these assumptions:
+A new bool field is added to struct io_tlb_mem to tell whether
+dynamic allocations are allowed. This field is always false for
+DMA restricted pools. It is also false for other software IO
+TLBs unless "swiotlb=dynamic" was specified.
 
-1. It would not be used much, especially on 64-bit systems.
-2. A small fixed memory area (64 MiB by default) is sufficient to
-   handle the few cases which require a bounce buffer.
-3. 64 MiB is little enough that it has no impact on the rest of the
-   system.
+Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
+---
+ .../admin-guide/kernel-parameters.txt         |  6 +++++-
+ include/linux/swiotlb.h                       |  3 ++-
+ kernel/dma/swiotlb.c                          | 19 ++++++++++++++-----
+ 3 files changed, 21 insertions(+), 7 deletions(-)
 
-First, if SEV is active, all DMA must be done through shared
-unencrypted pages, and SWIOTLB is used to make this happen without
-changing device drivers. The software IO TLB size is increased to
-6% of total memory in sev_setup_arch(), but that is more of an
-approximation. The actual requirements may vary depending on the
-amount of I/O and which drivers are used. These factors may not be
-know at boot time, i.e. when SWIOTLB is allocated.
-
-Second, on the Raspberry Pi 4, swiotlb is used by dma-buf for pages
-moved from the rendering GPU (v3d driver), which can access all
-memory, to the display output (vc4 driver), which is connected to a
-bus with an address limit of 1 GiB and no IOMMU. These buffers can
-be large (8 MiB with a FullHD monitor, 34 MiB with a 4K monitor)
-and cannot be even handled by current SWIOTLB, because they exceed
-the maximum segment size of 256 KiB.  Mapping failures can be
-easily reproduced with GNOME remote desktop on a Raspberry Pi 4.
-
-Third, other colleagues have noticed that they can reliably get rid
-of occasional OOM kills on an Arm embedded device by reducing the
-SWIOTLB size. This can be achieved with a kernel parameter, but
-determining the right value puts additional burden on pre-release
-testing, which could be avoided if SWIOTLB is allocated small and
-grows only when necessary.
-
-I have tried to measure the expected performance degradation so
-that I could reduce it and/or compare it to alternative approaches.
-I have performed all tests on an otherwise idle Raspberry Pi 4 with
-swiotlb=force (which, addmittedly, is a bit artificial). I quickly
-ran into trouble.
-
-I ran fio against an ext3 filesystem mounted from a UAS drive. To
-my surprise, forcing swiotlb (without my patches) *improved* IOPS
-and bandwidth for 4K and 64K blocks by 3 to 7 percent, and made no
-visible difference for 1M blocks. I also observed smaller minimum
-and average completion latencies, and even smaller maximum
-latencies for 4K blocks. However, when I ran the tests again later
-to verify some oddities, there was a performance drop. It appears
-that I/O, bandwidth and latencies reported by two consecutive fio
-runs may differ by as much as 10%, so the results are invalid.
-
-I tried to make a micro-benchmark on dma_map_page_attrs() using the
-bcc tool funclatency, but just loading the eBPF program was enough
-to change the behaviour of the system wildly.
-
-I wonder if anyone can give me advice on measuring SWIOTLB
-performance. I can see that AMD, IBM and Microsoft people have
-mentioned performance in their patches, but AFAICS without
-explaining how it was measured. Knowing a bit more would be much
-appreciated.
-
-Petr Tesarik (4):
-  dma-mapping: introduce the DMA_ATTR_MAY_SLEEP attribute
-  swiotlb: Move code around in preparation for dynamic bounce buffers
-  swiotlb: Allow dynamic allocation of bounce buffers
-  swiotlb: Add an option to allow dynamic bounce buffers
-
- .../admin-guide/kernel-parameters.txt         |   6 +-
- Documentation/core-api/dma-attributes.rst     |  10 +
- include/linux/dma-mapping.h                   |   6 +
- include/linux/swiotlb.h                       |  17 +-
- kernel/dma/swiotlb.c                          | 233 +++++++++++++++---
- 5 files changed, 241 insertions(+), 31 deletions(-)
-
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 6cfa6e3996cf..6240a463631b 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -6081,14 +6081,18 @@
+ 			Execution Facility on pSeries.
+ 
+ 	swiotlb=	[ARM,IA-64,PPC,MIPS,X86]
+-			Format: { <int> [,<int>] | force | noforce }
++			Format: { <int> [,<int>] [,option-list] | option-list }
+ 			<int> -- Number of I/O TLB slabs
+ 			<int> -- Second integer after comma. Number of swiotlb
+ 				 areas with their own lock. Will be rounded up
+ 				 to a power of 2.
++			<option-list> -- Comma-separated list of options.
++
++			Available options:
+ 			force -- force using of bounce buffers even if they
+ 			         wouldn't be automatically used by the kernel
+ 			noforce -- Never use bounce buffers (for debugging)
++			dynamic -- allow dynamic allocation of bounce buffers
+ 
+ 	switches=	[HW,M68k]
+ 
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index 0ef27d6491b9..628e25ad7db7 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -101,6 +101,7 @@ struct io_tlb_mem {
+ 	bool late_alloc;
+ 	bool force_bounce;
+ 	bool for_alloc;
++	bool allow_dyn;
+ 	unsigned int nareas;
+ 	unsigned int area_nslabs;
+ 	struct io_tlb_area *areas;
+@@ -123,7 +124,7 @@ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
+ 
+ 	return mem &&
+ 		(is_swiotlb_fixed(mem, paddr) ||
+-		 is_swiotlb_dyn(mem, paddr));
++		 (mem->allow_dyn && is_swiotlb_dyn(mem, paddr)));
+ }
+ 
+ static inline bool is_swiotlb_force_bounce(struct device *dev)
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index c6a0b8f2aa6f..3efaefebb6af 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -78,6 +78,7 @@ struct io_tlb_dyn_slot {
+ 
+ static bool swiotlb_force_bounce;
+ static bool swiotlb_force_disable;
++static bool swiotlb_dynamic;
+ 
+ struct io_tlb_mem io_tlb_default_mem;
+ 
+@@ -159,10 +160,17 @@ setup_io_tlb_npages(char *str)
+ 		swiotlb_adjust_nareas(simple_strtoul(str, &str, 0));
+ 	if (*str == ',')
+ 		++str;
+-	if (!strcmp(str, "force"))
+-		swiotlb_force_bounce = true;
+-	else if (!strcmp(str, "noforce"))
+-		swiotlb_force_disable = true;
++	while (str && *str) {
++		char *opt = strsep(&str, ",");
++		if (!strcmp(opt, "force"))
++			swiotlb_force_bounce = true;
++		else if (!strcmp(opt, "noforce"))
++			swiotlb_force_disable = true;
++		else if (!strcmp(opt, "dynamic"))
++			swiotlb_dynamic = true;
++		else
++			pr_warn("Invalid swiotlb option: %s", opt);
++	}
+ 
+ 	return 0;
+ }
+@@ -287,6 +295,7 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
+ 	mem->area_nslabs = nslabs / mem->nareas;
+ 
+ 	mem->force_bounce = swiotlb_force_bounce || (flags & SWIOTLB_FORCE);
++	mem->allow_dyn = swiotlb_dynamic;
+ 
+ 	for (i = 0; i < mem->nareas; i++) {
+ 		spin_lock_init(&mem->areas[i].lock);
+@@ -930,7 +939,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 	}
+ 
+ 	tlb_addr = (phys_addr_t)DMA_MAPPING_ERROR;
+-	if (!is_swiotlb_for_alloc(dev))
++	if (mem->allow_dyn)
+ 		tlb_addr = swiotlb_dyn_map(dev, orig_addr, alloc_size,
+ 					   alloc_align_mask, dir, attrs);
+ 	if (tlb_addr == (phys_addr_t)DMA_MAPPING_ERROR)
 -- 
 2.25.1
 
