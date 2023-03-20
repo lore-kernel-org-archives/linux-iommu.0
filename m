@@ -1,140 +1,115 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2057.outbound.protection.outlook.com [40.107.223.57])
+Received: from frasgout13.his.huawei.com (frasgout13.his.huawei.com [14.137.139.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CCA1E4F0
-	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 12:47:09 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Q1zfTnOJEBJlJBPNvmhqQZ+30/8LJStOoXGJ+jYAK0cD+MWqGDKlAYv5L1pn2ir+L/tkGdDkoBUwsfE975ZHKnyeTIOuxEoXAd2KJlXNO+faZ74c/3qnHL1i6eUqcLkoB5E6xuNaS+PzIKOS3smMmzCXYH82yGrClLGcX6nOfuaXKHBdEHttw1AuMOqxUhIXGu0WJznYzi5wnnGIXuN11pYHzEIRyfnszMPSswtAPkaxD2AvAVY4Q+/VQ3k7ZoLr0XtDDeCLGbZucbx90t87pHQbIsI2Zmw06i65w/enDSTX7dpW/HERA1zvYnFt/h3VzDub1X6fI5wkSpZ47M6ujA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=adpwqKhgHfQV2VjmstLGM6aYyKtitLuoqCoMdj1KJvM=;
- b=l8n/Bz9Qw0YmD9rbTm79cLDsEppecapMzwX8z5XiB7ODTlyCgF9nXtjGG8jVfXCB8JHJSJNQNm4sfuLFNPPqGiZFeDBEn5Ueuheu4Un/Sm7EnPHrZZf8FLmhrBQCaSKzjFDJCR8yXCYAgC/Y8doiu2JU0j09BdzGM7DHlRZvdp+V2uJDHrRw8SITjnSirVeJKABcqKGMSkXMznkIG5l1uLAtR0Wr+jmawlZr03tAdps7BfoJYfqj0edzR/Ce9+6vuKTkuPK9bD8xtPG4VCEWhCsklCILH5lZh5dMnbvr1SBzrn/eY07HCOfMdYLEpiCtNQF4mW5cvvcNIxktmmXnjQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=adpwqKhgHfQV2VjmstLGM6aYyKtitLuoqCoMdj1KJvM=;
- b=tw2oWcwIcyKROl0plBwCmtAfRgy2fqivtnrqn+o2T6Q997D9s0pD7FJALuX/bLbZWTlwyh8MULCyefbWLF5cg9ognO4g2KcXfFRglyvjlVQ2tYQyVZ24FcxAMowmV/2HXEmyFAewNNSGHIVlqS4HZ+U4gWoeeiuUVk0AGEfTsMdgxJudbspaAskwQMKlY48oPAcLSMAnluMtDMG2Qydd1qeHS5IryFkvN6UWlV471kayvTJ8qSbkC6AdCBP4/rNwiPxH6xCmKBm/ypdVsm3h7beWK54CFYk2dTkAYcJFOxVKW5tsvXq6Sqn6bqaP8dS6cqAEMpTs7fv4cq0lrRVlzw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DS0PR12MB7584.namprd12.prod.outlook.com (2603:10b6:8:13b::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Mon, 20 Mar
- 2023 12:47:07 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::ef6d:fdf6:352f:efd1]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::ef6d:fdf6:352f:efd1%3]) with mapi id 15.20.6178.037; Mon, 20 Mar 2023
- 12:47:07 +0000
-Date: Mon, 20 Mar 2023 09:47:06 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"cohuck@redhat.com" <cohuck@redhat.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
-	"peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com" <shameerali.kolothum.thodi@huawei.com>,
-	"lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH 04/12] iommufd: Pass parent hwpt and user_data to
- iommufd_hw_pagetable_alloc()
-Message-ID: <ZBhVyqEeAbnJJqNW@nvidia.com>
-References: <20230309080910.607396-1-yi.l.liu@intel.com>
- <20230309080910.607396-5-yi.l.liu@intel.com>
- <BN9PR11MB5276815B943E2232F158C0128CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276815B943E2232F158C0128CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: BL1P221CA0015.NAMP221.PROD.OUTLOOK.COM
- (2603:10b6:208:2c5::34) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C74AF1861
+	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 12:47:44 +0000 (UTC)
+Received: from mail02.huawei.com (unknown [172.18.147.229])
+	by frasgout13.his.huawei.com (SkyGuard) with ESMTP id 4PgDMP3lrfz9v7Zl
+	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 20:20:01 +0800 (CST)
+Received: from A2101119013HW2.china.huawei.com (unknown [10.48.148.162])
+	by APP2 (Coremail) with SMTP id GxC2BwBnOF9kURhkkqGyAQ--.46782S3;
+	Mon, 20 Mar 2023 13:28:42 +0100 (CET)
+From: Petr Tesarik <petrtesarik@huaweicloud.com>
+To: Jonathan Corbet <corbet@lwn.net>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Borislav Petkov <bp@suse.de>,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Kim Phillips <kim.phillips@amd.com>,
+	"Steven Rostedt (Google)" <rostedt@goodmis.org>,
+	linux-doc@vger.kernel.org (open list:DOCUMENTATION),
+	linux-kernel@vger.kernel.org (open list),
+	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS)
+Cc: Roberto Sassu <roberto.sassu@huawei.com>,
+	petr@tesarici.cz
+Subject: [RFC v1 1/4] dma-mapping: introduce the DMA_ATTR_MAY_SLEEP attribute
+Date: Mon, 20 Mar 2023 13:28:13 +0100
+Message-Id: <ea0646e0e63380bb8595fbac81c23aeca30feae9.1679309810.git.petr.tesarik.ext@huawei.com>
+X-Mailer: git-send-email 2.21.0.windows.1
+In-Reply-To: <cover.1679309810.git.petr.tesarik.ext@huawei.com>
+References: <cover.1679309810.git.petr.tesarik.ext@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DS0PR12MB7584:EE_
-X-MS-Office365-Filtering-Correlation-Id: b530ec7e-be6b-4e9e-2945-08db294136a7
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	qPb2Gwk6OZaeAznB0o1EbuT/6eplbwiu4/GTgl70eLgz+TU9C03xuZf29NoQRZJ57ozpnupv6M8svWnU05DSv9jHlV9RmWjQ4uBe9rQHmrt+dAtgW/x07sBI1zb23MPzfZx1A1YynVOvU9zW21JDYFXTFV7dz1gdPFv4PsYlXTU6HYX/oZ/jUakFKLLrOB6i5rU09lpYmrLY09LfWJcduUGQOfuFKMORrtG0HCXfuw0XEW3wOV5X+Npyqy2k3mKGax5xMibZfzVxuc9a8mcxBmYmd287rWpLcduOpAjqwon3oFQBMCZMXQd4aiWcr4QL3kE1xQb2UHM0cwzzEqQzar61DJEQo6v0AX1WaOF9cyTpT/zJyf+6Isb+7slFRSwkfP/a3lG6NIkTxx0514S4WapSqJeXHGe3AqO5opxv88WRhFjVw0whF5CyVL7Avn3bLzUb57HWUh5Dhp4VLxvxhIBewizihsXv1P+Zui98pXe02mOFLEnN8n8EAvIFj3x0kyztfaxf2onlO2f8oaZFDEwS+x6Jd2IeWZGgkaIcBjeW7eQVXCNccpXxbhLrNERsVFARz/RrqgJewpI61b+OBN5VCRX/UFGhwFRRd1fkBFtEzJLrWF6cgPonOdlIzTm0ARMRdnI40LPul5c+g9AVrQ==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(39860400002)(366004)(376002)(346002)(396003)(451199018)(2616005)(478600001)(86362001)(38100700002)(4326008)(66476007)(66556008)(8676002)(41300700001)(36756003)(66946007)(8936002)(2906002)(5660300002)(6916009)(4744005)(186003)(6506007)(26005)(7416002)(316002)(6512007)(6486002)(54906003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?isAP+HDZ1A20a0yX/ePyWv0oEXM0YRgTqppR/1Zkwd7BwSn6nhv+26az2N9V?=
- =?us-ascii?Q?bo6bOWVew4mWShq4cs4taazku9QrqEAqaX2ECopc4wAwbXiMAWg+mm3SWHx5?=
- =?us-ascii?Q?gQNmlZGl21ZrCPJBOjX8pxJxft1+MmBz4BqKAhfZXXn6alfdeWKQEBM4xu7K?=
- =?us-ascii?Q?rHihEpqA3h9GLsVmsvYg4hPzq2EI6nb1MaO7wdMCstFS3xaH9wujGNl5RMhd?=
- =?us-ascii?Q?raUtuVaWTMhzi3KdnFd+TNlMcDrn2Y+5MfI+iz+e662Vs+gkvYbYF6YxAS/2?=
- =?us-ascii?Q?HQBK6uCATpZnChn9vzfF7gOPspFXnxJrn/HOrBc76eJ1Wq/gY7vEkC8f+ysm?=
- =?us-ascii?Q?9e6E8TRnTZSlLfiHPyq3QObFxDhbPvuJFLqvXpwfVI0NmaZZHysG6eYof7Om?=
- =?us-ascii?Q?TXXg9prOgjeKVwaKb/QoAIkeVewFCxsje6IqmjMUuqP1vmc1e0ByAj+iAwYS?=
- =?us-ascii?Q?yU5tGmqXLwyG14JN4NN1Rihh9TjVu43GL8mP/nMTTbm/xORfgXcSJQgrOrP5?=
- =?us-ascii?Q?6GtFpk2wS32mUjzFfkT6XAxb4xUFKl4YLJrF1q6AJsWtAijuVmN4sHBQR7Si?=
- =?us-ascii?Q?AwRCFW/1N6mSbmbDm57MQAm5gE9F5a9aM0ngWVyA8xJOSlFt4IXHF6QxYclI?=
- =?us-ascii?Q?bH7XTZPqYwam3U7r2ZdCKl8/mOqrxBi2oKeEy7PPrvJmORilxaKn3d8wPFtm?=
- =?us-ascii?Q?6yPdX3wzS376GoolC3r/L1SrBM4PCspjJirmK7MFBHJ0czJIjnlYeJ6SVzwZ?=
- =?us-ascii?Q?uWZVX1yXmRqtpYRRlAbVKxOzsWp7Kzq6xf5/XB6e+dcRmtpUyOBRkRaTOa6l?=
- =?us-ascii?Q?NVMixr784k6RtfIBAlf9aWZ9MzTgcLph8OSlRbjVQDE6r0ZQWGoZUXUaIdC2?=
- =?us-ascii?Q?NiDmma3qxVqCHaNu7d+jC4wHeKtMlYwUa8gQcSgCzCHTrHJxRDqKzDlh8hOS?=
- =?us-ascii?Q?z+r4hf2YDps6X8EevxoEgNfK4mjtLH9h1uvT8yHFxJHsOspkeisI+6HpmvYs?=
- =?us-ascii?Q?nEjfZC/hmbX523WkLlu5AKaH9bQ0xbxQmVOWFLkq3iesoZS1DWYnqYm/7QzN?=
- =?us-ascii?Q?zQI6vwTis8mwu8IRG11YZlwG32k+0K7j2oZiLP1dMqPwRAmcOjFG7YlEVcJ6?=
- =?us-ascii?Q?phv5WMhPnIj3tLmyTq6LOUrfg5hEAxupk9OMWKxahMXjimFCo6aC4k/EPlcg?=
- =?us-ascii?Q?wZ1xygzrG0vGKJLpvWTZKvMher12wE78F4A/j+f1PpvyIdMdvnq00g2wLG5P?=
- =?us-ascii?Q?xpymdHYrddt3jSX4MORFiATPuNIa9/zh/idiQxNWjNWoseTYvoLNhO5bNXIZ?=
- =?us-ascii?Q?iczM/1hNVcSzFApQHzTDscSYJ7q1xJHaE8/dACMVAgu+01npfEg9SFeEoRiA?=
- =?us-ascii?Q?ygMHgEYByQqbCYmwMT8JW9oBohY94MRtg8HYJHUg79tEOpdNNFxDgZmu1nP8?=
- =?us-ascii?Q?bsRWldxm9YjNGAB6viLmV4jnrtkr2XZ3mWN8b3x+iCmlauIalRERpuj6FiPt?=
- =?us-ascii?Q?vFOHTgLWhZyAxjt69gtdvJGwFcqD/0thaSRlxQqs6plJKwkzGET9mFJaN3PC?=
- =?us-ascii?Q?1oYFodvQ1IkVA2PtXF0E1PMQxApZWbi20lWHCgza?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b530ec7e-be6b-4e9e-2945-08db294136a7
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Mar 2023 12:47:07.0844
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: C5U1HQx4eCyGeVW1AbYEWgWApPL18ZansoxrxYk1Hb7H11Ue+JF/AF8gnq4WNsw1
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7584
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:GxC2BwBnOF9kURhkkqGyAQ--.46782S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7ZF17ur1rWw1kKFyrJr1DJrb_yoW8Zw1Dp3
+	ZagFyfGr92gr1xCr1kGw1agF4UWa1ru345GF40vr1rZrW5A3Z29rs8Kr1Yq34DXryxCFWF
+	vrW29ry5Cryqy37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUPIb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
+	6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUGw
+	A2048vs2IY020Ec7CjxVAFwI0_Gr0_Xr1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxS
+	w2x7M28EF7xvwVC0I7IYx2IY67AKxVWUJVWUCwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxV
+	W8JVWxJwA2z4x0Y4vEx4A2jsIE14v26r4j6F4UM28EF7xvwVC2z280aVCY1x0267AKxVW8
+	Jr0_Cr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMc
+	Ij6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_
+	Jr0_Gr1lF7xvr2IYc2Ij64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc7CjxVAKzI0EY4
+	vE52x082I5MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8C
+	rVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVW8ZVWrXw
+	CIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x02
+	67AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr
+	0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8Jr0_Cr1UYxBIdaVFxhVjvjDU0xZFpf9x07jx
+	wIDUUUUU=
+X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
+X-CFilter-Loop: Reflected
 
-On Fri, Mar 17, 2023 at 10:23:54AM +0000, Tian, Kevin wrote:
-> > From: Liu, Yi L <yi.l.liu@intel.com>
-> > Sent: Thursday, March 9, 2023 4:09 PM
-> > 
-> > +	/* It must be either NESTED or UNMANAGED, depending on
-> > parent_domain */
-> > +	if ((parent_domain && hwpt->domain->type !=
-> > IOMMU_DOMAIN_NESTED) ||
-> > +	    (!parent_domain && hwpt->domain->type !=
-> > IOMMU_DOMAIN_UNMANAGED))
-> > +		goto out_abort;
-> > +
-> 
-> WARN_ON()
+From: Petr Tesarik <petr.tesarik.ext@huawei.com>
 
-Wouldn't that be userspace triggerable? It gets to pick the hwpt used.
+Introduce a DMA attribute to tell the DMA-mapping subsystem that
+the operation is allowed to sleep.
 
-Jason
+This patch merely adds the flag, which is not used for anything at
+the moment. It should be used by users who can sleep (e.g. dma-buf
+ioctls) to allow page reclaim and/or allocations from CMA.
+
+Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
+---
+ Documentation/core-api/dma-attributes.rst | 10 ++++++++++
+ include/linux/dma-mapping.h               |  6 ++++++
+ 2 files changed, 16 insertions(+)
+
+diff --git a/Documentation/core-api/dma-attributes.rst b/Documentation/core-api/dma-attributes.rst
+index 1887d92e8e92..6481ce2acf5d 100644
+--- a/Documentation/core-api/dma-attributes.rst
++++ b/Documentation/core-api/dma-attributes.rst
+@@ -130,3 +130,13 @@ accesses to DMA buffers in both privileged "supervisor" and unprivileged
+ subsystem that the buffer is fully accessible at the elevated privilege
+ level (and ideally inaccessible or at least read-only at the
+ lesser-privileged levels).
++
++DMA_ATTR_MAY_SLEEP
++------------------
++
++This tells the DMA-mapping subsystem that it is allowed to sleep. For example,
++if mapping needs a bounce buffer, software IO TLB may use CMA for the
++allocation if this flag is given.
++
++This attribute is not used for dma_alloc_* functions. Instead, the provided
++GFP flags are used to determine whether the allocation may sleep.
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 0ee20b764000..7a75c503ac38 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -61,6 +61,12 @@
+  */
+ #define DMA_ATTR_PRIVILEGED		(1UL << 9)
+ 
++/*
++ * DMA_ATTR_MAY_SLEEP: This tells the DMA-mapping subsystem that it is allowed
++ * to sleep.
++ */
++#define DMA_ATTR_MAY_SLEEP		(1UL << 10)
++
+ /*
+  * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
+  * be given to a device to use as a DMA source or target.  It is specific to a
+-- 
+2.25.1
+
