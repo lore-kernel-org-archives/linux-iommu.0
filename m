@@ -1,32 +1,32 @@
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A43244C6A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07E8A4C77
 	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 18:55:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679338522; x=1710874522;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=r8qGzQ7IOXx/2adul/921u6SEIBpB6UL3KX2Be1V0J0=;
-  b=Fn9ytZHfasR/dqPdiVziNC+2QLPlTaNluNERXlJMMdUD0N4SLbzKy9ir
-   WqtIXB/lZ9wvf91/xpYC0D1QS1KMT4id0LbBGL2poKIifMN2QOL+WmzDa
-   DCDaiXJICI8qh8LYt9A/+Oj1N3SWBrmHzsf4xuOClSDEZerX50kZIJdOn
-   ZJEhY9cmu6XiR9chb+M7n58tAKUxQyLzy2Ul/T8hKR4SCXbVBDasQSbXJ
-   f7C0+/DLC30wTgig2sHNIt9VcVKj3rrmywuO37TMQ9SDI/Yt/lJzLkeHE
-   oNaTWwAc+wQs4WhbkRRLpCFDW94E4303JhnPGqsbJMnl6xDNZnbQV2fNz
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="366473721"
+  t=1679338523; x=1710874523;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=VVMjsQ1HxJ3krLgi1Lg7Cpv+oN6wKxL1Z/KsE9PULTQ=;
+  b=XBruWgFV/PRfZC/82MPG5YUzmKzeGQeWIOpNBeJF2ndx9/dkENOIBBEK
+   jdk920w8XghDQeiF41pR9dG3xPEBlNQlUUzQ5O2tjcUK4t+8C5vuHP5c6
+   brDdAek3P3B0IEgNHJvyvb4cyxGIe0Mp/LKE+I4yGWdy9JBEOgPKBpYeq
+   80AdrXsLnzH/x3yVF5q24ahroun0ZnUSBmKtI4NfNkMrA0mF6qQENCYpU
+   Zp+HGZhHyaUccDjQzjf2tjGBfFeN6dPSSKPpjKbCyDK0su2JHswswFDxV
+   20P+nbRK6rYDIM2fQFNLK8vWUMZ/yw6FhH0p1Oj2AQ9+fG1wrv7GcmLkE
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="366473736"
 X-IronPort-AV: E=Sophos;i="5.98,276,1673942400"; 
-   d="scan'208";a="366473721"
+   d="scan'208";a="366473736"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 11:55:18 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="927076444"
+X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="927076465"
 X-IronPort-AV: E=Sophos;i="5.98,276,1673942400"; 
-   d="scan'208";a="927076444"
+   d="scan'208";a="927076465"
 Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.106])
-  by fmsmga006.fm.intel.com with ESMTP; 20 Mar 2023 11:55:12 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 20 Mar 2023 11:55:16 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: LKML <linux-kernel@vger.kernel.org>,
 	iommu@lists.linux.dev,
@@ -55,96 +55,75 @@ Cc: "Will Deacon" <will@kernel.org>,
 	Kirill Shutemov <kirill.shutemov@linux.intel.com>,
 	Tony Luck <tony.luck@intel.com>,
 	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v7 0/7] Remove VT-d virtual command interface and IOASID
-Date: Mon, 20 Mar 2023 11:59:03 -0700
-Message-Id: <20230320185910.2643260-1-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v7 3/7] iommu/sva: Remove PASID to mm lookup function
+Date: Mon, 20 Mar 2023 11:59:06 -0700
+Message-Id: <20230320185910.2643260-4-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230320185910.2643260-1-jacob.jun.pan@linux.intel.com>
+References: <20230320185910.2643260-1-jacob.jun.pan@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Hi all,
+There is no user of iommu_sva_find() function, remove it so that PASID
+allocator can be a simple IDA. Device drivers are expected to store
+and keep track of their own PASID metadata.
 
-This patch set removes unused VT-d virtual command interface followed by
-removal of the IOASID infrastructure.
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+---
+ drivers/iommu/iommu-sva.c | 20 --------------------
+ drivers/iommu/iommu-sva.h |  1 -
+ 2 files changed, 21 deletions(-)
 
-This has only been tested on x86 platforms, need help with testing on ARM
-SMMU and other architectures.
-
-
-Thanks,
-
-Jacob
-
-ChangeLog:
-v7:
- - use CONFIG_IOMMU_SVA around PASID helpers in fork.c, Fixes a
-   compile problem.
- - Fix extra space
-
-v6:
- - put pasid helpers under iommu.h instead of iommu-helper.h
- - add comments for pasid allocation function to clarify inclusive range
-
-v5:
- - rebased on v6.3-rc1
- - put removing iommu_sva_find() in a separate patch (Kevin)
- - move definition of helpers to iommu code to be consistent with
-   declarations. (Kevin)
- - misc fixes
-
-v4:
- - keep mm_pasid helpers inline as much as we can for fork performance
- - separate GFP_ATOMIC to GFP_KERNEL change for bisectability
-
-v3:
- - moved helper functions for PASID under SVA code, avoided circular inclusion
-   between mm.h and iommu.h
- - deleted makefiles
- - put rename under a different patch
-
-
-Jacob Pan (5):
-  iommu/vt-d: Remove virtual command interface
-  iommu/sva: Move PASID helpers to sva code
-  iommu/sva: Remove PASID to mm lookup function
-  iommu/sva: Use GFP_KERNEL for pasid allocation
-  iommu/ioasid: Rename INVALID_IOASID
-
-Jason Gunthorpe (2):
-  iommu/sva: Stop using ioasid_set for SVA
-  iommu: Remove ioasid infrastructure
-
- Documentation/x86/sva.rst       |   2 +-
- arch/x86/kernel/traps.c         |   5 +-
- drivers/dma/idxd/device.c       |   8 +-
- drivers/dma/idxd/idxd.h         |   2 +-
- drivers/dma/idxd/init.c         |   2 +-
- drivers/dma/idxd/irq.c          |   2 +-
- drivers/iommu/Kconfig           |   5 -
- drivers/iommu/Makefile          |   1 -
- drivers/iommu/intel/cap_audit.c |   2 -
- drivers/iommu/intel/dmar.c      |   6 +-
- drivers/iommu/intel/iommu.c     |  87 +------
- drivers/iommu/intel/iommu.h     |   3 -
- drivers/iommu/intel/svm.c       |   3 +-
- drivers/iommu/ioasid.c          | 422 --------------------------------
- drivers/iommu/iommu-sva.c       |  61 ++---
- drivers/iommu/iommu-sva.h       |   4 -
- include/linux/ioasid.h          |  83 -------
- include/linux/iommu.h           |  14 +-
- include/linux/sched/mm.h        |  26 --
- kernel/fork.c                   |   5 +
- mm/init-mm.c                    |   4 +-
- 21 files changed, 54 insertions(+), 693 deletions(-)
- delete mode 100644 drivers/iommu/ioasid.c
- delete mode 100644 include/linux/ioasid.h
-
+diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+index fcfdc80a3939..4f357ef14f04 100644
+--- a/drivers/iommu/iommu-sva.c
++++ b/drivers/iommu/iommu-sva.c
+@@ -51,26 +51,6 @@ int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max)
+ }
+ EXPORT_SYMBOL_GPL(iommu_sva_alloc_pasid);
+ 
+-/* ioasid_find getter() requires a void * argument */
+-static bool __mmget_not_zero(void *mm)
+-{
+-	return mmget_not_zero(mm);
+-}
+-
+-/**
+- * iommu_sva_find() - Find mm associated to the given PASID
+- * @pasid: Process Address Space ID assigned to the mm
+- *
+- * On success a reference to the mm is taken, and must be released with mmput().
+- *
+- * Returns the mm corresponding to this PASID, or an error if not found.
+- */
+-struct mm_struct *iommu_sva_find(ioasid_t pasid)
+-{
+-	return ioasid_find(&iommu_sva_pasid, pasid, __mmget_not_zero);
+-}
+-EXPORT_SYMBOL_GPL(iommu_sva_find);
+-
+ /**
+  * iommu_sva_bind_device() - Bind a process address space to a device
+  * @dev: the device
+diff --git a/drivers/iommu/iommu-sva.h b/drivers/iommu/iommu-sva.h
+index 7215a761b962..102eae1817a2 100644
+--- a/drivers/iommu/iommu-sva.h
++++ b/drivers/iommu/iommu-sva.h
+@@ -9,7 +9,6 @@
+ #include <linux/mm_types.h>
+ 
+ int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max);
+-struct mm_struct *iommu_sva_find(ioasid_t pasid);
+ 
+ /* I/O Page fault */
+ struct device;
 -- 
 2.25.1
 
