@@ -1,211 +1,185 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2082.outbound.protection.outlook.com [40.107.94.82])
+Received: from DM5PR00CU002.outbound.protection.outlook.com (mail-centralusazon11021027.outbound.protection.outlook.com [52.101.62.27])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8044F4C6A
-	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 18:45:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8D194C6A
+	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 18:50:14 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ah2+XfRHWwnF1nNo9BKzqJIv0/9l51axen+WEMI43TLvkrhWbqNSXHM5gZk97IhLJUxqirWLioRupDxQmd4wFQ/EFH3A+KueeDgVeGeSJJ+p08u87VfK9QldMIQlN2JXrpqMM+FCaWb2z+1tDsYBStd1e3M5z+9o/kMWw/ZH0kFrQuDbUxxLU2ma8xyXy+m3I8PGO6jGgufpexGSr7k2KnGi2qge8WRV9hl0QPVdJXJEMxhlxxKKh5eaYoMekiXL0t6cIL2AocYqKydjqeesYc/ArHp/CU7PPKTfoDO6thvOmzDzA0qWDemxwBqhin2Omb4m8OjHX2PEzJ/1iNdqmQ==
+ b=HuyADjDsFiRJiDS4e4Q6PHNScQVbSXmyuMgHH93VLSwgHB0EsOQElClbqq2KJwqi03XkPnSE/3zpoqGivSujFfxEKu0kMR43ejk+zjA3T+LB610FsEhtDc7pKDsmnVWMMTTmI4dQJOjTyNYgzpOYoqBCg3BVRXeq0DgiwHP6Umyu/yLaiLtXt7Txn+SfXG9EurRdNTw/1eDFqUf4/MNdPZ7ao9sjoo2CPb/TJRUhvgR6MEhcttEUUEiEBG/G0z/8x7BTsFadkofzUNT16AgnPrw/2RSJjGbPR1avpsruRUiLDK+wJ1mU+psUmUdN8XYs7hzaSl/JMsKYxMDoEszIfQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Q5lhSLOozcnRHQFOkrf3/sBQ73W5XhCKWLcdsEhsIjI=;
- b=kEqgcY4umPZCYeEzyYqspYhwoyJA5YmQULIRd1SES5OtlKXkedLfezS7mX1ArsxmUwuKM4tK/5zUqntM5ns7DUxS6FJNqifmzfvJqmJFZxQLnYF8aje4lzlPFU52SQ2nmoMDvNk36U0BKitfxnw1uqei1XCHM0ZbPSgbD0EJoKt4JqTxnSLWK4MC4cCKWCZQJwcbtIIMYTxEarrzJdwyxvikqmJ0sg+O3IXwrV/HKMfX4I9SJTatlFFN+chOlQJhLGFmCbWNwRqctpTkYq4rJFim7QicTmooYUxEDO1amq3DpRNcEfi63VlWllVXhgF9TtIpTvFtlx9hIPwBoi6V0w==
+ bh=1gZRTzVSlbHFnoNrGyrXo/+dPb70cMkkVwb5uYlUzZE=;
+ b=HcSKgVz4nFyzpkFYQiPbKri7HQc9Kpxe36iQX1kSVolUMXecBWV+0Uebi2/NAIgBmj2s/qaViXMrMogqiDOgju49WCy37dHCwu4u3o+R5sHqPNL0MR4oev/sGUw3BVqPz9syOFMsdz4LYlRKVD66x8dNfmF4hg3ZZT+wl8sebpUnqWzIK1OnrTTRs5ui8u/aL+cfO/tDEHonauTXKR9Ad/Pz8KFDLtTvWnVaULS4v+8+XeyMAYwGCu5pTw+iovnxN0yNWSxp8slvqiFnjXZzS8MiFM0DlgwtENduVsJJKecl13qnHy1nfz7Ixgq+4t7LEgqd6xOTChOgoahYr4mqzA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Q5lhSLOozcnRHQFOkrf3/sBQ73W5XhCKWLcdsEhsIjI=;
- b=anph0LSh+Hq85RKv0M9UXWP8PAZFMDI42TW4+gFxTzXDTC7o8Sy4ZfF7lUQNA2GCijvrMF5mUMbh56Ea9b5Cf/8PaUpbSMZzzgiLIAd6jHzsYIHuz8Nf1yyYJOCz/Mp1Eha06bAYFqWTyrrPFhX+tNMNT1/mELOHZZ/LlebToqtaI1J8B2BzvAo7D3G8zVY2dTqjaN8sqdMdwY+GW2L5Nbmzrlk4SIOWnVUgLlm3mHWBjJGetpL/iJIuLYloEKh/LdU/pfbTgVW1Uu03zlNFthqQymaxw/XCOivLudBSHxdIKrfoT1uz7Nb/MKtQjRJ0YqtqO1TRSPDqAfrtnOzdNw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DM4PR12MB5120.namprd12.prod.outlook.com (2603:10b6:5:393::13) with
+ bh=1gZRTzVSlbHFnoNrGyrXo/+dPb70cMkkVwb5uYlUzZE=;
+ b=RRSytm8wdo0d6yCbhhwOZSNdXTuvl7W8NZeqjRloGqYVDVdiMY8NA5TzAO+G1UibRuNuHSJ27u08qcmn/hZujYk87GMQYNO8UPYf7QZ0NLWjzMz+GmhQHI+W5pC96dLKjz0WmPq+kRnCF99IbEFejV3f1Flc4KOj2uLTJtylDjo=
+Received: from BYAPR21MB1688.namprd21.prod.outlook.com (2603:10b6:a02:bf::26)
+ by CH3PR21MB4039.namprd21.prod.outlook.com (2603:10b6:610:1a9::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Mon, 20 Mar
- 2023 18:45:57 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::ef6d:fdf6:352f:efd1]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::ef6d:fdf6:352f:efd1%3]) with mapi id 15.20.6178.037; Mon, 20 Mar 2023
- 18:45:57 +0000
-Date: Mon, 20 Mar 2023 15:45:54 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, will@kernel.org,
-	eric.auger@redhat.com, kevin.tian@intel.com,
-	baolu.lu@linux.intel.com, joro@8bytes.org,
-	shameerali.kolothum.thodi@huawei.com, jean-philippe@linaro.org,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 14/14] iommu/arm-smmu-v3: Add
- arm_smmu_cache_invalidate_user
-Message-ID: <ZBip4sbxUQo8RjGv@nvidia.com>
-References: <aa327f9ea61e5a4771c13e53639e33955b9acde3.1678348754.git.nicolinc@nvidia.com>
- <1467e666-1b6c-c285-3f79-f8e8b088718b@arm.com>
- <ZAn7uC9UweiNdGkJ@nvidia.com>
- <ZAqv87fjbdynVaHA@Asurada-Nvidia>
- <ZAtYphmOuEqQ1BiC@nvidia.com>
- <ZAxsgjuuG3ziqs9E@Asurada-Nvidia>
- <ZBhZiCOQHAxEaamy@nvidia.com>
- <ZBiCEAqP1OU5EvoG@Asurada-Nvidia>
- <ZBiEE+QLjPpxBjkQ@nvidia.com>
- <ZBiRAVROma5/Os2S@Asurada-Nvidia>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZBiRAVROma5/Os2S@Asurada-Nvidia>
-X-ClientProxiedBy: BL1PR13CA0353.namprd13.prod.outlook.com
- (2603:10b6:208:2c6::28) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.5; Mon, 20 Mar
+ 2023 18:50:02 +0000
+Received: from BYAPR21MB1688.namprd21.prod.outlook.com
+ ([fe80::acd0:6aec:7be2:719c]) by BYAPR21MB1688.namprd21.prod.outlook.com
+ ([fe80::acd0:6aec:7be2:719c%7]) with mapi id 15.20.6254.002; Mon, 20 Mar 2023
+ 18:50:06 +0000
+From: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+To: Borislav Petkov <bp@alien8.de>
+CC: "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>, "wei.liu@kernel.org"
+	<wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>, "luto@kernel.org"
+	<luto@kernel.org>, "peterz@infradead.org" <peterz@infradead.org>,
+	"davem@davemloft.net" <davem@davemloft.net>, "edumazet@google.com"
+	<edumazet@google.com>, "kuba@kernel.org" <kuba@kernel.org>,
+	"pabeni@redhat.com" <pabeni@redhat.com>, "lpieralisi@kernel.org"
+	<lpieralisi@kernel.org>, "robh@kernel.org" <robh@kernel.org>, "kw@linux.com"
+	<kw@linux.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "arnd@arndb.de"
+	<arnd@arndb.de>, "hch@lst.de" <hch@lst.de>, "m.szyprowski@samsung.com"
+	<m.szyprowski@samsung.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"thomas.lendacky@amd.com" <thomas.lendacky@amd.com>, "brijesh.singh@amd.com"
+	<brijesh.singh@amd.com>, "tglx@linutronix.de" <tglx@linutronix.de>,
+	"mingo@redhat.com" <mingo@redhat.com>, "dave.hansen@linux.intel.com"
+	<dave.hansen@linux.intel.com>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
+	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+	"sathyanarayanan.kuppuswamy@linux.intel.com"
+	<sathyanarayanan.kuppuswamy@linux.intel.com>, "ak@linux.intel.com"
+	<ak@linux.intel.com>, "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+	"dan.j.williams@intel.com" <dan.j.williams@intel.com>, "jane.chu@oracle.com"
+	<jane.chu@oracle.com>, "seanjc@google.com" <seanjc@google.com>,
+	"tony.luck@intel.com" <tony.luck@intel.com>, "x86@kernel.org"
+	<x86@kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-hyperv@vger.kernel.org"
+	<linux-hyperv@vger.kernel.org>, "netdev@vger.kernel.org"
+	<netdev@vger.kernel.org>, "linux-pci@vger.kernel.org"
+	<linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org"
+	<linux-arch@vger.kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: RE: [PATCH v6 06/13] x86/hyperv: Change vTOM handling to use standard
+ coco mechanisms
+Thread-Topic: [PATCH v6 06/13] x86/hyperv: Change vTOM handling to use
+ standard coco mechanisms
+Thread-Index: AQHZUjCyCpporLk3zkiXtyclH/4N+K8DmEQAgAAZtaCAAFnoAIAAAQEA
+Date: Mon, 20 Mar 2023 18:50:05 +0000
+Message-ID:
+ <BYAPR21MB1688DF161ACE142DEA721DA1D7809@BYAPR21MB1688.namprd21.prod.outlook.com>
+References: <1678329614-3482-1-git-send-email-mikelley@microsoft.com>
+ <1678329614-3482-7-git-send-email-mikelley@microsoft.com>
+ <20230320112258.GCZBhCEpNAIk0rUDnx@fat_crate.local>
+ <BYAPR21MB16880C855EDB5AD3AECA473DD7809@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <20230320181646.GAZBijDiAckZ9WOmhU@fat_crate.local>
+In-Reply-To: <20230320181646.GAZBijDiAckZ9WOmhU@fat_crate.local>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=5e65d818-196c-4bce-b0b3-5392a10c9611;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2023-03-20T18:20:21Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BYAPR21MB1688:EE_|CH3PR21MB4039:EE_
+x-ms-office365-filtering-correlation-id: 395c34c6-72c9-4452-fd17-08db2973ec02
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ aYAbpIe2ODiQsDmgEJv31e9FOAinnA3fWDMDrzVM0OrxShUNAv/kiUO3eFLjSDmu3ebALXG5+E+wxTC3ZLQWvxYBQ13LaSJUUw8ieIsTtd/7BzjhYa9soaNjBM/+ktM1ToZ4GTQwb05UiBjN9Vf39XEfkg3nRSkRmBkt+/ooM991FDPkeCFnbh3zYbYmOzLcIIruNgxTZ3iY38EWLCZnTC2d55SaRgUIfVi0FDw8rpVm8SMJ3IazqI5ca/IX9PDX08OhWmH+guXx5HwgEwxbJi0nJ25ThwKaKo0WXpo2f3p3b0i0QrygICZqyG1Ng9CkoscqE4vOrFa8/ifuMiD1ocYO9+OTYLQrCPC6iRqnVQVrCjHDsz1KyKXUt76XHVW+SZDovE/VpbWjP9av5tCMqokQXjBxfyJw3Z0d/TcksmjVOhZK5iOQpo8Mq86DJeeYA2+8CJV/LIfqc1mLA+3LrZTnK6AwWH2ZirXom/kH+7FWF4zsThj548R1bFotGFCr7JNyoP0Lg+Uf5kX4kB3hzfyctl30uZKTjX2dSX60CW40M4NYcntKDxEFKL5FH2l/lKbgqUoGnXnOipYz24i4zeymAi5YK1kG/D0jHh2x3mZ3hCTTT1j7yt58AEOEIEbeLF/FjDdibEkuHWG/qj2cCt5Cro2sUVbqYUeWl8Iag1bCKk4deiSoTCoeIi3zHw9MnM7BQJisYywg48ul9JfGvtX33hhLvcG/yq2r53xAa1/3b0nZ//RI4fXLu3WEvdTD
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1688.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(39860400002)(366004)(346002)(396003)(376002)(451199018)(33656002)(71200400001)(86362001)(38070700005)(38100700002)(82960400001)(82950400001)(7406005)(8936002)(52536014)(7416002)(5660300002)(122000001)(41300700001)(2906002)(8990500004)(4326008)(186003)(6506007)(66946007)(83380400001)(9686003)(26005)(316002)(55016003)(54906003)(10290500003)(66556008)(64756008)(8676002)(66446008)(6916009)(66476007)(478600001)(76116006)(7696005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?oyZqsZm6SYs4SKZk1uCBcv6ImwKRCSaQkkOuARabTbKNpku0lII3GWMiwhMZ?=
+ =?us-ascii?Q?TTb/XOrMS8vqxv+6KBx/r7XrmzKbULotkqTXV+qDKAKX0d0ZSJqxBlS3sOss?=
+ =?us-ascii?Q?ylOnDp+w799aYMOY5PSHePF0BRiGTkrN1Kvo2+9AXtToqj7tlBoDsUFBW2Xz?=
+ =?us-ascii?Q?KUodvVBYVghZmAyKKPytl5bgvIX0xURd1zqEUSELUDbOGLMBRVwm6AeFTVq5?=
+ =?us-ascii?Q?ZtGb/A38T0NeRHDeOO/XVnMhkCTDQwQwKrD9wAW4Kd6KZleKdJiogfQyCJ1l?=
+ =?us-ascii?Q?9+7voG74+emITNoupVRex6NdbMWX3RMX7oZRrHbrWcJRvKR/mfLOssF07xKm?=
+ =?us-ascii?Q?1eoZgjAIHyN9UWYnc1ENJfHD2cWVAHM8Ui4JgNBfV3LlzcUN8PM3bo4bYScq?=
+ =?us-ascii?Q?lKgVpOQkLhveR42G5adXlDUXy/rvDmolK3Y3WYfowbN2vLXXs58CeToTqY+Q?=
+ =?us-ascii?Q?kzXl9ciRU1aIHGAghjA4GBjZeI/nP+dC+qFoORKcEwk0izPIxWMwJKFvnnik?=
+ =?us-ascii?Q?A5aDb81+7Bd6jtyq5ANVzQPLJtjMeESKz6ighJQpV8GIbdocJNDkHt4W7qfV?=
+ =?us-ascii?Q?Q7EK9zlNw1Ryx0eVWNOON5LZn92dNnBEYzZFiq9tsCJuYL8Gcv8xq08YWgvf?=
+ =?us-ascii?Q?XmJr9qX7v3+h+6MY2MuHxh4fz0/AcGj1PxzRcABZS5enfJWFDITiUPePpYu3?=
+ =?us-ascii?Q?puiFuLFxrrGtKJR0o7mG+9od2cLA1B832qaqvlf2c4fivTM8VKJmUJ213ilk?=
+ =?us-ascii?Q?BzkPDHoE6GBTZRPzJmB46kCJSQvqoKme1a50FJ3NGjJzn6HnH853Rhn530R4?=
+ =?us-ascii?Q?rYANByypcWCZ1aHb67BenkkOFMqukMBRouuO40LmIq3wG0OibtcA9Pz0o7KI?=
+ =?us-ascii?Q?lA3dagAm3rNsQvY4xR4D+nbYgXJQVGt00WMgzXUAkDWJ5oMZK5blhte4pOwz?=
+ =?us-ascii?Q?ZZKJoBb6yxd8KfKFaoouVSj5qXJNOQYalF0tdm4ukhUj1tBGEBSeDCyo8fTI?=
+ =?us-ascii?Q?Ivyo7CkQE6IANVPW+CNSyYcNL0/I8rwRkry6mdKYxfOQz3cg7PoTwXA8/T36?=
+ =?us-ascii?Q?nogR/V1BGRlegT5Ek5j1b33+EuVQGtIdny26DSPBoFge8bYbNtKvG4D6Hq1V?=
+ =?us-ascii?Q?GxU/520SHLLFyEA4LJKt9cBq7lpI4B2Ofu3H44Gg1YzW0/GalgNw1jR3Xw4G?=
+ =?us-ascii?Q?24I0bpYRmCUUIvPJqn2NlMvQdYoKzNe2vKuZAmCN04Sz1xvXS5cFz594YEZm?=
+ =?us-ascii?Q?Us8DYKQCJ7H14x4b8YcFqPo5brP7G0m/jI6rkvlulz5+H72z+p8Cy/9w6o6z?=
+ =?us-ascii?Q?vzoR02bl74zvuUNvDyVNRthxnAB7wHCQBs6VEf+W7FC8r7KaZc/2nUKC6IJ1?=
+ =?us-ascii?Q?/LndEGkZw4BHL34IDdg0Nlcb5DTZbi1adkD0C9AOLI1liXkKOOiqQMwM1Z6g?=
+ =?us-ascii?Q?YPz9cH+y+qbYsLCbgVhfaCxTF7UtO3JD+trL6KBl5roqfC4atz0FRGbI7I/m?=
+ =?us-ascii?Q?Gyo1iE7dVB8ZXJP/1XszDpqDLq+fdTfZ2CfslPUx/3Uti6PV7Z6uSg38jHHy?=
+ =?us-ascii?Q?gCgVZBXM2BprV6XrG7l5+wnS4wqiyoNO95BUxx4+Gi2LwglJXuOMAa+9oj+z?=
+ =?us-ascii?Q?Iw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB5120:EE_
-X-MS-Office365-Filtering-Correlation-Id: b3407516-e550-40af-3fce-08db29735753
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	ka9t+VbTomlll6qJu120SULVIriAnVTOl2iSGEAfI6lRwA3DBB6rjiLe4Vr23BOuiLljsv/R8VUpqDY9LbJUX/SEzL+0i68QplO2P0WZf8z+e7iB5E01Djce+rO69zPySu+eE9UAYHpzXTCKoocvJ5kTg8Dw40ISriZqF4g9hV3LfDFeewehIGPrsyTNWBLwfh39eufsGyXideZIs6Yp7uS3T/Cwl2rtwInILG8bKozgtjRhOshFMcZcKMibAbFKmvFmKYmFghcJG/kCpE2iUwIu6WrjIe5wG6/ld2dvpryaXnDtXmzGB+a4xTa8nhnnWrmkP5gQIReA4Y713pWCKdlQ4kVh21HD4HenjM95Yo1iA4eSBBd64GdofeB13mNNq8W5e5SiramC8WQGNKB3x4jFtCtNKfH8z4mcSuLzGeg23oRijspwp+2GjEoU+XjGT67dgcTe+HmoXTkFIS65XowdYljlzj4smrqGaZqeUrssO1dq6B8OAJZZ2hfMyblrVLBlePfSC7VRyeCEstvSVy2olKMagwYukLSrwLiEz0L+ay8BOR1AO3tmLjdKhqffhC8H85f6GsIqr2DnEI1rpVjnn/guNW2KXf+7r7ljo16gXhLCS6aBWGTFTmTCRRxbW8DxByuKCOD6Od9uJmfKCtsjUfy7JGOdhz3LS+okyqDNM7v3qTpfjO+4sXcEE0GBpAxb7bsZJEkeeeadYy0JjyOBcb+tdKggVJoXBM+BtVg=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(346002)(376002)(136003)(366004)(39860400002)(451199018)(37006003)(316002)(478600001)(6636002)(66946007)(8676002)(66476007)(66556008)(6666004)(4326008)(6512007)(41300700001)(6506007)(26005)(6486002)(186003)(8936002)(6862004)(7416002)(2906002)(5660300002)(2616005)(83380400001)(36756003)(38100700002)(86362001)(414714003)(473944003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?i9yaPA7xbWTa/eKI0qEy3y+42JoACq+CZ8PzzLXTMDBfk/dMCw5cu5juGk2E?=
- =?us-ascii?Q?7b3rXBmRZ25+jukU3F0COOZjMJ6fLGSx0WXwf/a07rsY127CJmr9JYw3wpzw?=
- =?us-ascii?Q?4+4JIzNnMznYwqViVYg8dyJMtBl9XS33nh9Jh+RRFsMmYQSQj4y20YKQFB2c?=
- =?us-ascii?Q?FY6E4O0cE3boQJrQaVi9I/AAS+Z6yQjJWhoe5mTogOQJFlNBhTR9yuoxlitS?=
- =?us-ascii?Q?4Zo1EE/pByg1CcfdO1zXiWivdMuExlQtIZqmlJD/EgXxO+H2Ts+CfOWd6dLA?=
- =?us-ascii?Q?xnqKmSNRmz7zNt4GHCynBlwzKF0REt9dPx1o3gUoPCVR8jVszKmhPWbd1gmr?=
- =?us-ascii?Q?rZnur5HvGrbfjZk7gQO4XLlkw3cThTwuGXRMndfqbOmOWTXINylvYzVf6Sjj?=
- =?us-ascii?Q?Ww2DNWjcokWXedu3MZPSr9HvElr7l23gzAWsq/m90bc127bAqlF69Ii37u6N?=
- =?us-ascii?Q?G6Q9NNvd2rm/OULi3WUFPtbqOJtAnW1ki3pn2/k6ExyaO30kr75GPPZvk0uQ?=
- =?us-ascii?Q?YfP+ucLSAMDiLkvus8dO3IRas/wsrF6leEdcvx2frbFgQuqOjRgWg+Ha/5iK?=
- =?us-ascii?Q?rxRKQ05LPCTmWkLgkUrlpTZhRhsWfb2LbWyGDWlwcUscvSMeYw+nTLqukNpe?=
- =?us-ascii?Q?aB9SrAJ/BAgJHhKO5/vvmA2AcNpIXuOdKiCPRwk1ClTE/vmPDN5TV8whWY0j?=
- =?us-ascii?Q?xQJhtNPW6x0wVrO1J3yo1ioXKzPTvxjL+f8/cfkGBJZ5q7SqWeGhZX5ScPvp?=
- =?us-ascii?Q?Pdxp2qnxpaTkvnK9SgiY3kOLAyFw7PeCvkG9E4C7KgVjCF4sy7jnmGGknHV7?=
- =?us-ascii?Q?kx0xCUYW0dfl8+Fgc4IBBAY5v1Lxs39kvzubnXvtK617BmmI+8Hi5hUEoDzm?=
- =?us-ascii?Q?DlOP2U/dmw9iZSA5Hyan4LewEwn/evK6OLa74V0rVgI6OqKrlxqArTVlfcQ5?=
- =?us-ascii?Q?NP46ok+kuvsOOWK+xWlvBYS6fuN8JPHiIL4a+18gJLg7L4vZJf5X6BykvekF?=
- =?us-ascii?Q?yWUw023n8SaCj0uL+2LGhH24JjGMNSANGzk2y5T/nKMR4EPqSbD7S+Z7wHPx?=
- =?us-ascii?Q?Sl6FVV5vu8/4xkAIgUd+XURGZa+0mbJ8ZQaFfx53dyeaIE9zXaqRLfFOVVia?=
- =?us-ascii?Q?+EofqcCTMOsbl1KM/xWPWMhNbtbpOjChJpSw/Z976yfB/uQ2OTqRkB6xFRXF?=
- =?us-ascii?Q?6P7kUp0qaJFm/wz1JP6ozAHyAHwNmBCcL9Chfd7hYUsMovUh0G3nLvCj3Sxf?=
- =?us-ascii?Q?HTv+DEmEYF8CV0I1WtV4mHi6Sl2Vc0le0psmC7T1DlVvluhJgaU14LGM0Giz?=
- =?us-ascii?Q?rdYSjuZPY34HSSNzHpaKkTdeMalm3zQ6nOO5p1JLYbNwI5cbuHnbfwU2GSzg?=
- =?us-ascii?Q?43I9Hz/m3UNGUElAp87gt80FTbb6BZI5z1hP8u1LFk8c9n4+/g6pcXdSqdB2?=
- =?us-ascii?Q?dy63SbbdGUtf72EOVYbmlUaQWDRznwchM3/4pA8V8jUQ2HYpYfmYhwwI+b0n?=
- =?us-ascii?Q?f8Ali5YVpPjMX14OKN9R/Kx6fXYryGqrDm42bNWscQclsZgzr3N0Hr3hYcEl?=
- =?us-ascii?Q?M9t5IHxqzuH62fT5r6rdtui6eKr7E+vjqU8FXLXE?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b3407516-e550-40af-3fce-08db29735753
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-OriginatorOrg: microsoft.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Mar 2023 18:45:56.7679
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1688.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 395c34c6-72c9-4452-fd17-08db2973ec02
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Mar 2023 18:50:06.0108
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dwtgErf5/WSUdWS4gCKW2QknGtrd5nJM3TeozRbs7GlWhnUvFAm2+7GNOwAj/CTL
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5120
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: azWddMHBRnatfJGuUCMPdyOQHY9BO8u3OXFvmc6NRga/6hNZCIhH5fsdU7p1DWzcTCiksZg3vQLSQlMxuxXf0BOJWxzOCfegxRGHZrXm2B8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR21MB4039
 
-On Mon, Mar 20, 2023 at 09:59:45AM -0700, Nicolin Chen wrote:
-> On Mon, Mar 20, 2023 at 01:04:35PM -0300, Jason Gunthorpe wrote:
-> 
-> > > > We need an ioctl for this, I think. To load a map of vSID to dev_id
-> > > > into the driver. Kernel will convert dev_id to pSID. Driver will
-> > > > program the map into HW.
-> > > 
-> > > Can we just pass a vSID via the alloc ioctl like this?
-> > > 
-> > > -----------------------------------------------------------
-> > > @@ -429,7 +429,7 @@ struct iommu_hwpt_arm_smmuv3 {
-> > >  #define IOMMU_SMMUV3_FLAG_VMID (1 << 1) /* vmid override */
-> > >         __u64 flags;
-> > >         __u32 s2vmid;
-> > > -       __u32 __reserved;
-> > > +       __u32 sid;
-> > >         __u64 s1ctxptr;
-> > >         __u64 s1cdmax;
-> > >         __u64 s1fmt;
-> > > -----------------------------------------------------------
-> > > 
-> > > An alloc is initiated by an SMMU_CMD_CFGI_STE command that has
-> > > an SID filed anyway.
-> > 
-> > No, a HWPT is not a device or a SID. a HWPT is an ASID in the ARM
-> > model.
-> > 
-> > dev_id is the SID.
-> > 
-> > The cfgi_ste will carry the vSID which is mapped to a iommufd dev_id.
-> > 
-> > The kernel has to translate the vSID to the dev_id to the pSID to
-> > issue an ATC invalidation for the correct entity.
-> 
-> OK. This narrative makes sense. I think our solution (the entire
-> stack) here mixes these two terms between HWPT/ASID and STE/SID.
+From: Borislav Petkov <bp@alien8.de> Sent: Monday, March 20, 2023 11:17 AM
+>=20
+> On Mon, Mar 20, 2023 at 01:30:54PM +0000, Michael Kelley (LINUX) wrote:
+> > In a vTOM VM, CPUID leaf 0x8000001f is filtered so it does *not* return
+> > Bit 1 (SEV) as set.  Consequently, sme_enable() does not read MSR_AMD64=
+_SEV
+> > and does not populate sev_status.
+>=20
+> So how much of the hardware side of vTOM are you actually using besides
+> the actual encryption?
 
-HWPT is an "ASID/DID" on Intel and a CD table on SMMUv3
+vTOM mode in Linux is just turning on/off the vTOM bit in the PTE
+to create unencrypted or encrypted mappings, with encrypted being the
+default.  There's no other hardware dependency except CPUID leaf
+0x8000001f reporting that SEV is not enabled, and the GHCB protocol
+(if you want to call that "hardware") as mentioned below.
 
-> What QEMU does is trapping an SMMU_CMD_CFGI_STE command to send
-> the host an HWPT alloc ioctl. The former one is based on an SID
-> or a device, while the latter one is based on ASID.
-> 
-> So the correct way should be for QEMU to maintain an ASID-based
-> list, corresponding to the s1ctxptr from STEs, and only send an
-> alloc ioctl upon a new s1ctxptr/ASID. Meanwhile, at every trap
-> of SMMU_CMD_CFGI_STE, it calls a separate ioctl to tie a vSID to
-> a dev_id (and pSID accordingly).
+>=20
+> Virtual TOM MSR (C001_0135)? Anything else?
+>=20
+> AFAICT, you're passing the vTOM value from CPUID from the hypervisor so
+> I'm guessing that happens underneath in the hypervisor?
 
-It is not ASID, it just s1ctxptr's - de-duplicate them.
+Correct.  Linux in vTOM mode is not reading MSR 0xC0010135.  The
+PTE bit position of the vTOM bit is coming from Hyper-V (or the paravisor)
+via a synthetic MSR.  Presumably Hyper-V or the paravisor is reading
+the vTOM MSR, but I haven't reviewed that code.
 
-Do something about SMMUv3 not being able to interwork iommu_domains
-across instances
+>=20
+> I'd like to make sure there are no more "surprises" down the road...
+>=20
 
-> In another word, an SMMU_CMD_CFGI_STE should do a mandatory SID
-> ioctl and an optional HWPT alloc ioctl (only allocates a HWPT if
-> the s1ctxptr in the STE is new).
+The only other vTOM changes are for software protocols for communication
+between the guest and Hyper-V (or the paravisor).  Some hypercalls and
+synthetic MSR accesses need to bypass the paravisor and are handled
+with the GHCB protocol.  The Hyper-V and VMbus specific code in Linux
+handles those idiosyncrasies.  That code went into the 5.15 kernel and
+isn't modified by this patch set.
 
-No, there is no SID ioctl at the STE stage.
+The vTOM case is down to the bare minimum in the use of the hardware
+functionality, so it's unlikely anything else would turn up as being differ=
+ent.
 
-The vSID was decided by qemu before the VM booted. It created it when
-it built the vRID and the vPCI device. The vSID is tied to the vfio
-device FD.
-
-Somehow the VM knows the relationship between vSID and vPCI/vRID. IIRC
-this is passed in through ACPI from qemu.
-
-So vSID is an alais for the dev_id in iommfd language, and quemu
-always has a translation table for it.
-
-So CFGI_STE maps to allocating a de-duplicated HWPT for the CD table,
-and then a replace operation on the device FD represented by the vSID
-to change the pSTE to point to the HWPT.
-
-The HWPT is effectively the "shadow STE".
-
-> What could be a good prototype of the ioctl? Would it be a VFIO
-> device one or IOMMUFD one?
-
-If we load the vSID table it should be a iommufd one, linked to the
-ARM SMMUv3 driver and probably take in a pointer to an array of
-vSID/dev_id pairs. Maybe an add/remove type of operation.
-
-> > I would expect that if invalidation can fail that we have a way to
-> > signal that failure back to the guest.
-> 
-> That's plausible to me, and it could apply to a translation
-> fault too. So, should we add back the iommufd infrastructure
-> for the fault injection (without PRI), in v2?
-
-It would be nice if things were not so big, I don't think we need to
-tackle translation fault at this time, but we should be thinking about
-what invalidation cmd fault converts into.
-
-Jason
+Michael
