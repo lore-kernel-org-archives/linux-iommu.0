@@ -1,144 +1,136 @@
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2085.outbound.protection.outlook.com [40.107.96.85])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2044.outbound.protection.outlook.com [40.107.244.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 392FE1C03
-	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 15:05:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 255A41C32
+	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 15:28:23 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mDU43AvVjvELWStfCp+mmxYF8+I1QfQ+wCxqauAPRLWkt9mwV57LG3NJDyu5frloHiMlGFeocuVYSfD4EWMYqy97oL1hsZ841+gbD4by791ttxACfrzwk6TSYpu2P9lHQf6v/u5gIGOAfxUSl9K5RVsUZ0waPKSY2HzUAn4MF2Psk7IV/MDkR5S6YmKcYWg3wsxe13ut8Wfz/FTbH2dWLcSkbr650nuwIaxLB5zyflaZRBk6mS1vvaPKFCZfTeAAH9eNhBBxv7KArJudOpbglkQuFsM5DgenkHXZgFr1oaJ0uxRGiEFZvnu27SGtIOa7PEEuLmzLeIjXwe9ekECWfA==
+ b=l64i/T0W6l+anRPKZjBuTL/tXZqa0FkQvw4UfgxbElYmDxq/2/H0fZI1fOAB05L1Wl9UrCfEkWSkMkiJ8IsKPXnADNPc+IbjVTn0AzlQNrHxj1lKrR8+tdXbKWPKH6k6fDngPjKo03D4j3ovCiCFd0CEbE0vinvs8SeSJ6RfANyi/X7l2uI6HF4Fh71N5NFWgrpbOdsbIi3T7+zvkK9/ahkOqYWDdxLffHFUw+w5EXCWOy5qdZLpJOwkRaxJlVL9lMVVpL2Gju8GYsLbMt4PM5CdsLghfU7+BNB1/DAm0giszByLs63nmwmM744UbFDRWDwVoxxCCzutqPA5cL37Ng==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Ko+wGnIp6KY/6btqATjrGDfpF3PjtRt6sZZgmt+VMOU=;
- b=SEUVlUu9mDxJ09m5XJXINedpSEaC9tz32zespxO0gVjbXwP+1KsvWo24vhIJXNMQnEaBNCtt2XTpVqAQhWF/XAHEpZTNzhYmN9jmlaX2qYa8zZixWqS6bjMemluMAxKK8IgvOlU48TN5nb3uCl7rTT7ewezdKadqTKwJga9pGsjxJWKG8o4dKzn4BjKZLQyMER3CJfyQehieh05Y1V++wPvcYIliW9GqxdnzrHwaAmOpUSrUx08W2/mSX1bnogrAD4W5g9fLEphclW2PtvBIk7ySdPHBt1RzHhdypHx8FUVML5wxPPfmOjNBD8McJ9YYnFepWzdm6Oj3J5ryVmYaHQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
+ bh=mY6pcDLXFcLwOyXj6QmLGjLpta81kLlehxMD6uxguBU=;
+ b=ILopg9gFVp2YPrkMN7jLYQKWJ1JRKSACq3WHOQpJbbGHjXNpoESxvsNkIbHsA/i6Y9hqMOX0+F1UdDoRy4Gdtd8gTyk/mjep1LQLyfLqz1kzkrTyOfbTXpiQnRcNA/sSkjDGVZJFMreuGFXUvdjag1DP7yJFOQFq2Syc/e1s6iNnpgjXRYQhTIROiOXeoX52Bx8kc6F0BhTZwv0KQd3ESfw4wjGWBsJ78bIVfUqPzsbVbCO2WPm/nKotO/6LU9mwWPITSNn5a2UuwwQzG9pGSGhsWazsTM2+ZjOISUhEUX0zJ91XZ/hglm2yqZx9s2T+31SWagVzght+vvQaDVfmcg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ko+wGnIp6KY/6btqATjrGDfpF3PjtRt6sZZgmt+VMOU=;
- b=Q9usroKkJkWbU71YoePCI+Y5IuKyngkQ28ehlNs5MR0RTKtFT9Jt9vmg6KlAEstPNqofIo1NNcLZ/RouyL1CLEtER63AiRmYTfqSoFqzYTW1yQtHOHKuaBmuDA5lU5wDhZuBvR4L6Fc5mJiewnTyOEh+F5unxQjXc0P6+eE4g+UXmiHO45N9PqDVjkM5Pt5ZS/jyxtYnKwz2Ni+KaYDdXTEJ8N+dXMIrXGpEzsVT/v+YJVgA5GLoWEqCHfuVl/AQapbXfegAfGIxa9MZ0OiRV4gI5HysBxspbg236bcZnjfxcNhUWjhu/t4VgHujEjPv/Y4VgoLO6JCUBueUO0zfkQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by SJ2PR12MB7964.namprd12.prod.outlook.com (2603:10b6:a03:4cf::7) with
+ bh=mY6pcDLXFcLwOyXj6QmLGjLpta81kLlehxMD6uxguBU=;
+ b=l60jinrD3SOx0MMv94FH3kBR3P1DE0GntJpjUntRSJocLHbljXCc/9ahauAtVAdD6PL5PR7troo0ElzmuVVGnHI3thn8zwGCR7VPbeOMMM1qYhEmdqLi5eLLVu5Tg4hzJYaJy8RPlObYKTQ69wD8uZLAQ4s89K2FoK7jX/BhZjBWzfncITXTJhxEaRxzaZyr2PctvVUNtBtH6D/tYRF5PlBVznt1CSXfOB9KS6kx9G1h7pkQlUMu5/Q+gEJgFlN2VRI2Hat6rZHgDjPF2iAbt6HrMCCVEmXLpLUAk0COwesZfd+Tev8/c4rkNbmXYw3lj8mUfZAUEwNbQy4bADo2QA==
+Received: from DM6PR10CA0005.namprd10.prod.outlook.com (2603:10b6:5:60::18) by
+ PH7PR12MB7794.namprd12.prod.outlook.com (2603:10b6:510:276::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Mon, 20 Mar
- 2023 15:05:19 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::ef6d:fdf6:352f:efd1]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::ef6d:fdf6:352f:efd1%3]) with mapi id 15.20.6178.037; Mon, 20 Mar 2023
- 15:05:19 +0000
-Date: Mon, 20 Mar 2023 12:05:17 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Dave Hansen <dave.hansen@intel.com>,
-	Thomas Gleixner <tglx@linutronix.de>, X86 Kernel <x86@kernel.org>,
-	bp@alien8.de, "H. Peter Anvin" <hpa@zytor.com>,
-	Peter Zijlstra <peterz@infradead.org>, corbet@lwn.net,
-	vkoul@kernel.org, dmaengine@vger.kernel.org,
-	linux-doc@vger.kernel.org, Will Deacon <will@kernel.org>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Raj Ashok <ashok.raj@intel.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
-	"Yu, Fenghua" <fenghua.yu@intel.com>,
-	Dave Jiang <dave.jiang@intel.com>,
-	Kirill Shutemov <kirill.shutemov@linux.intel.com>,
-	Tony Luck <tony.luck@intel.com>
-Subject: Re: [PATCH v6 2/7] iommu/sva: Move PASID helpers to sva code
-Message-ID: <ZBh2LTrijOuTkOm9@nvidia.com>
-References: <20230313204158.1495067-1-jacob.jun.pan@linux.intel.com>
- <20230313204158.1495067-3-jacob.jun.pan@linux.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230313204158.1495067-3-jacob.jun.pan@linux.intel.com>
-X-ClientProxiedBy: BLAPR03CA0171.namprd03.prod.outlook.com
- (2603:10b6:208:32f::31) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+ 2023 15:28:20 +0000
+Received: from DM6NAM11FT082.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:60:cafe::87) by DM6PR10CA0005.outlook.office365.com
+ (2603:10b6:5:60::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37 via Frontend
+ Transport; Mon, 20 Mar 2023 15:28:15 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ DM6NAM11FT082.mail.protection.outlook.com (10.13.173.107) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6222.15 via Frontend Transport; Mon, 20 Mar 2023 15:28:19 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Mon, 20 Mar 2023
+ 08:28:08 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Mon, 20 Mar
+ 2023 08:28:08 -0700
+Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5 via Frontend
+ Transport; Mon, 20 Mar 2023 08:28:07 -0700
+Date: Mon, 20 Mar 2023 08:28:05 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Robin Murphy <robin.murphy@arm.com>, <will@kernel.org>,
+	<eric.auger@redhat.com>, <kevin.tian@intel.com>, <baolu.lu@linux.intel.com>,
+	<joro@8bytes.org>, <shameerali.kolothum.thodi@huawei.com>,
+	<jean-philippe@linaro.org>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 14/14] iommu/arm-smmu-v3: Add
+ arm_smmu_cache_invalidate_user
+Message-ID: <ZBh7hSX5hdW4vxwh@Asurada-Nvidia>
+References: <1467e666-1b6c-c285-3f79-f8e8b088718b@arm.com>
+ <ZAqpOQ+DDvEfq0Dg@Asurada-Nvidia>
+ <92fdb06f-e5b1-8534-fb0e-ad47b5be9e1d@arm.com>
+ <ZAx2K08L5TIm6r3y@Asurada-Nvidia>
+ <ab762cc6-5adf-2515-d9d2-d21d916eb6ad@arm.com>
+ <ZBJcS07G3mt7gjkA@Asurada-Nvidia>
+ <c753c2a8-024d-5bef-8987-96582084991e@arm.com>
+ <ZBOFcenanpRsGFzF@Asurada-Nvidia>
+ <ZBe3kxRXf+VbKy+m@Asurada-Nvidia>
+ <ZBhbmqprnux4q00i@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ZBhbmqprnux4q00i@nvidia.com>
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SJ2PR12MB7964:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6ca606b6-bd20-4db3-f1ac-08db29548525
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT082:EE_|PH7PR12MB7794:EE_
+X-MS-Office365-Filtering-Correlation-Id: fd61a141-e980-474b-2b7a-08db2957bc30
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	IKEImQHE4CZ+DM4QrPzAyc39xKr9dh2hX8Ree0CVNnncip4jB2JDF8X6F/4EIjtE8c6QGQbRvQkK9ZOmkUQd0v6NhWUi6YCv7p8JnE5ijzmPeZGlezBV2ug/ezh7aal+zodiiG1QDIIGKr0AScfdcyD/MxzUdQckuKyDrz6gdeE1oguNSv7nb+jerUFJFqF9mmyCfgiank3O2yarvlV5kJouifVmRC9ncKrmVVHptN+ooYE0AitV7NSaHvuldujLFV3OIAly9WEcNflx2swOqeBA9hC4pWUR6AbH36pnscLmhRVnhNs25+mip8C4gT7FP1iXbd4tzScZFYJP4lHsNj9pRQACxc3hNChmpt7kdavO6ObAbeudwhZ+uE/AuhPyxWP4Ygch+V30t+eeJAjOoliji6QRj+OjfbYzqFLUEKn/jMkmQJaIx4AhNABNTSW0IbAeU0xS3w/3eoiEvpCepE+dlBf0YQibUR8zGdGpnyyKOX3dTvFdg+tGwoSaXWwsEU4HGtNgm0A1iqD7gPxNbD+0/xoiJdwyLx7FUxvy+4MhNvsW+lTdkE2xQxuig4Y7ebnI4renDVs8m1Symdu6Kcz2IZAhVlnXPz65XU9KOK5N5J3p1pPp9wotOvBNNT+R
+	kdHorfnLGxZSHFcPnQzqtAvWCQsu+8zC2/q3x9ZKfJlLJtT35FgnDjO7X+TdOqIXJJ/gn3Pacpwyv/LmXpq9uBQle7mcxharPxul+5637f9hi0qtaKP4lUkpLgXSJDg+Bu3Vdro4SHin1fLjazrK4Z+NR4kGGR0oenQgkCS2ADrkamTXkmkN3YQ6UGXOs2/qSdEhDCRe4vwOg32QYhsgK+zEN1EQFr7PUYN3PajH21XSCM4OM62NQ05ybWjtjH6Hmt2PRIFBIiQkoZxUYYexecMuU68DIDDN5PiN0W8yBtT2LmVBltVkUaiGtRUTiaml2OAOB+2VgUT5BGWOMtDmkea7oSgvDIgKzfEmlQ7hbGR2U82ZY0nbLoILKjGrQm/13zo7nMXC3+6P21jlW4hHdk/1xnPDFoiEggD3fZuJ4HpV8Vaz4EkkWSnZhDQhgf4Vhf3+CrvjPGOQ5glbgR6boWYrM68BGbdG05xDX146Sfg/Wii1oT3UN9pssEAit+FkwkbrWF3DFouWm/Rr8Awrsxe6QtxKezbO5nOI8qDeEbEFvrQ69vbvZctOQaZFpQioH2UUkmFrPJq2R66XxcqZprO6PE/F5rbbwmY37E+oBfpEEo6eVZfj8yW+roS1f/766qXwUaUHnsdT0KDjUIabEXOcalpyjGqQaYwlWCstoNbBIfQbwloPHGCaTa+uvJdbn+uaw4SXNpdbsKTucok17VsnDblQ+FoMZsCCZMfCfFHcGz3LMrtdTGj1T72+HI8sFpCq6N11XQ5zIBcE5Oc06w==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(39860400002)(136003)(346002)(376002)(366004)(451199018)(41300700001)(8936002)(4744005)(2906002)(66556008)(5660300002)(4326008)(66946007)(66476007)(8676002)(6916009)(7416002)(316002)(86362001)(6486002)(54906003)(478600001)(36756003)(6506007)(6512007)(186003)(26005)(38100700002)(2616005)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?xhzGBjOyveYsJeYXqMdQldQ9Bnc1ffqd+hY6dcusKc8f0tIzAuqF54Pg4aj+?=
- =?us-ascii?Q?Y9VXutX/bFAfOXQqSGcvcVE5mo/fRcgK1isNAoGOrBnpJSAIReiQBBdRdJWl?=
- =?us-ascii?Q?La1gpncvrc+cFFNOo7nnSWzMOx4ksOKNDuqsaZCop0MKjS9+7cic0Od8iXqg?=
- =?us-ascii?Q?vL4e28XTYZ/Lvbxi7RH6gwCDzAqr7BNOCLwa/xV3qmOhZaK8DIykbudIiLpe?=
- =?us-ascii?Q?Y3IAMwpeK9HQ8v5VvNm+tvvDaPlxVR8y9Ciy0NuaZnM9cuI85iCAs/pmBW86?=
- =?us-ascii?Q?Ku3oMgAnL+gIRHjbMDozTxg1RxeuKjnTSjiLLk5mHFE4SKPtH2YtQdnLAGtm?=
- =?us-ascii?Q?mKNi1L+IFSQ7Q/rvTm5b/qXEazpOtYnkJf2YQo7WuCUYgG6I8opi45vWUfQF?=
- =?us-ascii?Q?IsixRKmsNZOtanEK9movNnMgiV37lOMerF3WLQJ7BgZrYYZtQXRCtp7dwtSm?=
- =?us-ascii?Q?BauEVjq810ouFk3ZpuSFDYyj3AFi9WJ35rip6CLkijLgTNiJhOJcfvTTg7wU?=
- =?us-ascii?Q?vp9wk3Xps95UM0zrRX6clQs+NbjT5alqqfzQZne1NmXgfU1LMapZ+6Ft69ve?=
- =?us-ascii?Q?2gboRaoMya+XfJrfehhiP/xs+fgmAsUoQLrdmdQqLnsTUiIlFLAYshaNmzsz?=
- =?us-ascii?Q?YDkNUkqdo5u5MlQHwzvaErKUB76AQevjvDVfRRLNQNDOobS3ILm7Xz370rcY?=
- =?us-ascii?Q?hB2f9rb9geu+RotTO8vg8q9ZzQ1M6mJWY2wmap5eFA6LtiXepE6nSDhGhusb?=
- =?us-ascii?Q?cPXKuWPv47cvV6l5GxyFYy0XHC4d7/twdBis0Lu8A3YkIbREJKwbI7CZ0119?=
- =?us-ascii?Q?bP2V9hZJHm1bRAbZIcvzAiqTa54XVfoEbuf8NAG9veiJSQGjzCc3b00wisZy?=
- =?us-ascii?Q?F5CB4o3P4nAhTr1hAAK1saOPO4TuoD+yTGTb6ir/f9ooi9v8FmN/RQIQgVNf?=
- =?us-ascii?Q?w80hzgBTkUAJGTtj+ktHk9DyJBSbqi8zoi/tf4QhKCSBG6EJhszLXiwY0v4p?=
- =?us-ascii?Q?VKrQ4QEQeyuOYpQn1jBtFyr3md6bhnA525nY+bJXH7eVx0zQfr8eWC+HdmOL?=
- =?us-ascii?Q?1x3419Xw6xm4inmzLTtlD/yFFd4IUsHzth/2Q4HwDChiU1j4XMX3a4JUgpJE?=
- =?us-ascii?Q?axkgxKABRKqBVQBpigTwg7jlds3dpDEKGbNE+gGK3yMitOrPHGavpjDSgf0V?=
- =?us-ascii?Q?nm4JJBVreKASVDbwBPfGOKRyHfuqlZ00xp9LQ+MPLNN0lJfK1wZVkcI+U4fg?=
- =?us-ascii?Q?fksNWDyeFA6ghI8vT7VLfWyLz7qAu04IcgaXJOay4yvSvLdo69NQgHHPB0YF?=
- =?us-ascii?Q?gSDhANsjGIXvUBsskQA/xTIBRwJbd6lZfxipzNXJ9gW1ywnNaCCqp+AlMTd+?=
- =?us-ascii?Q?b1UGsnatx0iB1JKG8VU9JgiZj3i7ZMHTQOIxvc/F+/8wk96EKYU348A3hLNj?=
- =?us-ascii?Q?eNA1D6TDYxncWHceCOM374MX363Y9MZHEpMJgjrG/JWGPUnjmwrSOJ0lp7G1?=
- =?us-ascii?Q?9J329p3gj++WFDPE/hcHgrbqbfT5dIE8Idwp2oAV8/7+MMsLnq3A66B+4MJQ?=
- =?us-ascii?Q?cIsM2NaWbr07W4YGQFsLwOfNqc7JYLWh8k7eeT0m?=
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(346002)(376002)(136003)(396003)(39860400002)(451199018)(46966006)(36840700001)(40470700004)(316002)(82310400005)(83380400001)(6636002)(426003)(47076005)(336012)(86362001)(356005)(7636003)(55016003)(36860700001)(70206006)(40460700003)(82740400003)(40480700001)(8676002)(41300700001)(70586007)(2906002)(4744005)(8936002)(6862004)(4326008)(5660300002)(186003)(26005)(7416002)(54906003)(9686003)(478600001)(33716001)(341764005);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6ca606b6-bd20-4db3-f1ac-08db29548525
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Mar 2023 15:05:19.2779
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Mar 2023 15:28:19.7661
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Network-Message-Id: fd61a141-e980-474b-2b7a-08db2957bc30
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mHrXLJncRj/FjAoILS1Q9tmYP9gN9JNGpTZRxncDag5PcITXIFQoLNTDY8DFPX6F
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB7964
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DM6NAM11FT082.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7794
 
-On Mon, Mar 13, 2023 at 01:41:53PM -0700, Jacob Pan wrote:
-> Preparing to remove IOASID infrastructure, PASID management will be
-> under SVA code. Decouple mm code from IOASID.
+On Mon, Mar 20, 2023 at 10:11:54AM -0300, Jason Gunthorpe wrote:
+> On Sun, Mar 19, 2023 at 06:32:03PM -0700, Nicolin Chen wrote:
 > 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> ---
-> v6:
-> 	- put helpers under iommu.h instead of iommu-helper.h
-> v5:
-> 	- move definition of helpers to iommu code to be consistent with
-> 	  declarations. (Kevin)
-> 	- fix patch partitioning bug (Baolu)
-> v4:
-> 	- delete and open code mm_set_pasid
-> 	- keep mm_init_pasid() as inline for fork performance
-> ---
->  drivers/iommu/iommu-sva.c | 10 +++++++++-
->  include/linux/ioasid.h    |  6 +-----
->  include/linux/iommu.h     | 14 +++++++++++++-
->  include/linux/sched/mm.h  | 26 --------------------------
->  kernel/fork.c             |  3 +++
->  5 files changed, 26 insertions(+), 33 deletions(-)
+> > +struct iommu_hwpt_invalidate_arm_smmuv3 {
+> > +       struct iommu_iova_range range;
+> 
+> what is this?
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Not used. A copy-n-paste mistake :(
 
-Jason
+> 
+> > +       __u64 cmd[2];
+> > +};
+> 
+> You still have to do something with the SID. We can't just allow any
+> un-validated SID value - the driver has to check the incoming SID
+> against allowed SIDs for this iommufd_ctx
+
+Hmm, that's something "missing" even in the current design.
+
+Yet, most of the TLBI commands don't hold an SID field. So,
+the hypervisor only trapping a queue write-pointer movement
+cannot get the exact vSID for a TLBI command. What our QEMU
+code currently does is simply broadcasting all the devices
+on the list of attaching devices to the vSMMU, which means
+that such an enforcement in the kernel would basically just
+allow any vSID (device) that's attached to the domain?
+
+Thanks
+Nic
