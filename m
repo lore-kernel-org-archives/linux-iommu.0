@@ -1,98 +1,70 @@
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AAA47C
-	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 18:16:57 +0000 (UTC)
-Received: from zn.tnic (p5de8e687.dip0.t-ipconnect.de [93.232.230.135])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 955551EC0531;
-	Mon, 20 Mar 2023 19:16:52 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-	t=1679336212;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-	bh=Su0jVvMlcA8VS9cp0F1QAxEGU0NJDxsY7JHrrw9jo40=;
-	b=joiMDXgbeJuLDkYQrkuw2mdaf4RdNU+LXTis9e0EN2JNuc0tQpyM6dOFBRL655TYKP8Bpx
-	TEf2daSlXJw9ifgiWxfuuSVJhbgOP9mVkwD/7SNsdyMev9W4YowMghg37YdPCzG1Bik5VS
-	zBYfAqODJeMNHIuharTIGHYKQZONm74=
-Date: Mon, 20 Mar 2023 19:16:46 +0100
-From: Borislav Petkov <bp@alien8.de>
-To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc: "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	"wei.liu@kernel.org" <wei.liu@kernel.org>,
-	Dexuan Cui <decui@microsoft.com>,
-	"luto@kernel.org" <luto@kernel.org>,
-	"peterz@infradead.org" <peterz@infradead.org>,
-	"davem@davemloft.net" <davem@davemloft.net>,
-	"edumazet@google.com" <edumazet@google.com>,
-	"kuba@kernel.org" <kuba@kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>,
-	"lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-	"robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-	"bhelgaas@google.com" <bhelgaas@google.com>,
-	"arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
-	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-	"brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-	"tglx@linutronix.de" <tglx@linutronix.de>,
-	"mingo@redhat.com" <mingo@redhat.com>,
-	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-	Tianyu Lan <Tianyu.Lan@microsoft.com>,
-	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-	"sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>,
-	"ak@linux.intel.com" <ak@linux.intel.com>,
-	"isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-	"dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-	"jane.chu@oracle.com" <jane.chu@oracle.com>,
-	"seanjc@google.com" <seanjc@google.com>,
-	"tony.luck@intel.com" <tony.luck@intel.com>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v6 06/13] x86/hyperv: Change vTOM handling to use
- standard coco mechanisms
-Message-ID: <20230320181646.GAZBijDiAckZ9WOmhU@fat_crate.local>
-References: <1678329614-3482-1-git-send-email-mikelley@microsoft.com>
- <1678329614-3482-7-git-send-email-mikelley@microsoft.com>
- <20230320112258.GCZBhCEpNAIk0rUDnx@fat_crate.local>
- <BYAPR21MB16880C855EDB5AD3AECA473DD7809@BYAPR21MB1688.namprd21.prod.outlook.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3935F7C
+	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 18:19:50 +0000 (UTC)
+Received: by mail-ed1-f49.google.com with SMTP id y4so50449560edo.2
+        for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 11:19:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1679336388;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=4yzAtbjstrZsUjwjpCw/bfjEIUoFPHmyawonL0u7Vnw=;
+        b=ANETRw6VcPN8s7WEVSeoInImC6YG854DnxRHzElZcb2lgYa+1x/0GtrJSycpnMLEsq
+         I1G05dTfuaFibZZ6PLiicxYrBEQ8+t6MdhDdgRmdpWgeK0XyalhSw7iXjR1mLE/w0oRy
+         MZyQ55cf/hxlrg8z8KNX/IHMqbCjMxRSrwqHgOyyQm0WLYhGpi5pc1t/Up2HaQTVGX2+
+         1E0jotyqpAoJCVWmhTaxZZNSkDJXwTBJLd95jnqalu3s6P6QwfLqBAFqDAr+ShX9K1p5
+         Li/5qhxgiLa75Sz/bYhWt6/Mg7giiYdktzdUYBBs6SEGcu/IJX6/NeKgAjoQPUwKl7Ag
+         x2KA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679336388;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4yzAtbjstrZsUjwjpCw/bfjEIUoFPHmyawonL0u7Vnw=;
+        b=JNLkYImqCCjgKO/mHxgIpUDxYWdHBi+uA4Gps3ovH9Pk/LPzcepNky8IqHHLBLcG9m
+         sZhnEAKIPDhHxTeNjO5tUK/abH4cPdqi7z5M8AjLFjSvl9dT6F3tVScJ8EALkVNMg0Sw
+         yHebiDBiEEcspbRY2ka7+bjbf9tMO40crBiweMYqT1RYSR4+yNVRZ/nKgqdM1BEYKuZw
+         Si9uu/x441dZk7rU/oLruNiLijXT8GyjxD26ju9PulOS1a5U7JSBBH4q7NeSHsqm/Fvv
+         OajNdn2/ssZ/oQUyy731C6vpeahGEw/gTsqMvOXYREX/XXpWsYhjkopXFVME/Vqig5Yo
+         rDUw==
+X-Gm-Message-State: AO0yUKVVhCEWxDt4ZGg1C993eieh36+GkjyQLPokCAr+3jsdlV/YOquA
+	PH7Lt3ELj89cVljknfnByduJLhvOd0Wo3Or9Dcg=
+X-Google-Smtp-Source: AK7set9xAfo43i63Uq0DS6R9gBuA0Ce77YCStFPMj2hTG6DUCRrm5bRlcvH59L6TzpbWGMa4pcLOJQ==
+X-Received: by 2002:a17:906:2b0a:b0:92f:efdc:610e with SMTP id a10-20020a1709062b0a00b0092fefdc610emr9657574ejg.66.1679336388438;
+        Mon, 20 Mar 2023 11:19:48 -0700 (PDT)
+Received: from myrica (054592b0.skybroadband.com. [5.69.146.176])
+        by smtp.gmail.com with ESMTPSA id b4-20020a17090630c400b0092b5384d6desm4722243ejb.153.2023.03.20.11.19.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Mar 2023 11:19:48 -0700 (PDT)
+Date: Mon, 20 Mar 2023 18:19:50 +0000
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: eric.auger@redhat.com, lenb@kernel.org, linux-acpi@vger.kernel.org,
+	iommu@lists.linux.dev, Linux PCI <linux-pci@vger.kernel.org>,
+	Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: [PATCH] ACPI: VIOT: Initialize the correct IOMMU fwspec
+Message-ID: <20230320181950.GA168730@myrica>
+References: <20230314164416.2219829-1-jean-philippe@linaro.org>
+ <CAJZ5v0jS_YAR8kwEVsi4XZ6Qd2Y1O2nMjaUSaj=NXLPMgw2O0g@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <BYAPR21MB16880C855EDB5AD3AECA473DD7809@BYAPR21MB1688.namprd21.prod.outlook.com>
+In-Reply-To: <CAJZ5v0jS_YAR8kwEVsi4XZ6Qd2Y1O2nMjaUSaj=NXLPMgw2O0g@mail.gmail.com>
 
-On Mon, Mar 20, 2023 at 01:30:54PM +0000, Michael Kelley (LINUX) wrote:
-> In a vTOM VM, CPUID leaf 0x8000001f is filtered so it does *not* return
-> Bit 1 (SEV) as set.  Consequently, sme_enable() does not read MSR_AMD64_SEV
-> and does not populate sev_status.
+On Mon, Mar 20, 2023 at 06:41:09PM +0100, Rafael J. Wysocki wrote:
+> This should have been posted with a CC to linux-pci really (now added).
+> 
+> I would recommend resending afresh with linux-pci in the CC list, so
+> that the people on it don't miss this.
 
-So how much of the hardware side of vTOM are you actually using besides
-the actual encryption?
+Sure, I resent it with the PCI list
+https://lore.kernel.org/linux-pci/20230320180528.281755-1-jean-philippe@linaro.org/
 
-Virtual TOM MSR (C001_0135)? Anything else?
-
-AFAICT, you're passing the vTOM value from CPUID from the hypervisor so
-I'm guessing that happens underneath in the hypervisor?
-
-I'd like to make sure there are no more "surprises" down the road...
-
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Thanks,
+Jean
