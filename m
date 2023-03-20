@@ -1,185 +1,254 @@
-Received: from DM5PR00CU002.outbound.protection.outlook.com (mail-centralusazon11021027.outbound.protection.outlook.com [52.101.62.27])
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8D194C6A
-	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 18:50:14 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HuyADjDsFiRJiDS4e4Q6PHNScQVbSXmyuMgHH93VLSwgHB0EsOQElClbqq2KJwqi03XkPnSE/3zpoqGivSujFfxEKu0kMR43ejk+zjA3T+LB610FsEhtDc7pKDsmnVWMMTTmI4dQJOjTyNYgzpOYoqBCg3BVRXeq0DgiwHP6Umyu/yLaiLtXt7Txn+SfXG9EurRdNTw/1eDFqUf4/MNdPZ7ao9sjoo2CPb/TJRUhvgR6MEhcttEUUEiEBG/G0z/8x7BTsFadkofzUNT16AgnPrw/2RSJjGbPR1avpsruRUiLDK+wJ1mU+psUmUdN8XYs7hzaSl/JMsKYxMDoEszIfQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1gZRTzVSlbHFnoNrGyrXo/+dPb70cMkkVwb5uYlUzZE=;
- b=HcSKgVz4nFyzpkFYQiPbKri7HQc9Kpxe36iQX1kSVolUMXecBWV+0Uebi2/NAIgBmj2s/qaViXMrMogqiDOgju49WCy37dHCwu4u3o+R5sHqPNL0MR4oev/sGUw3BVqPz9syOFMsdz4LYlRKVD66x8dNfmF4hg3ZZT+wl8sebpUnqWzIK1OnrTTRs5ui8u/aL+cfO/tDEHonauTXKR9Ad/Pz8KFDLtTvWnVaULS4v+8+XeyMAYwGCu5pTw+iovnxN0yNWSxp8slvqiFnjXZzS8MiFM0DlgwtENduVsJJKecl13qnHy1nfz7Ixgq+4t7LEgqd6xOTChOgoahYr4mqzA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1gZRTzVSlbHFnoNrGyrXo/+dPb70cMkkVwb5uYlUzZE=;
- b=RRSytm8wdo0d6yCbhhwOZSNdXTuvl7W8NZeqjRloGqYVDVdiMY8NA5TzAO+G1UibRuNuHSJ27u08qcmn/hZujYk87GMQYNO8UPYf7QZ0NLWjzMz+GmhQHI+W5pC96dLKjz0WmPq+kRnCF99IbEFejV3f1Flc4KOj2uLTJtylDjo=
-Received: from BYAPR21MB1688.namprd21.prod.outlook.com (2603:10b6:a02:bf::26)
- by CH3PR21MB4039.namprd21.prod.outlook.com (2603:10b6:610:1a9::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.5; Mon, 20 Mar
- 2023 18:50:02 +0000
-Received: from BYAPR21MB1688.namprd21.prod.outlook.com
- ([fe80::acd0:6aec:7be2:719c]) by BYAPR21MB1688.namprd21.prod.outlook.com
- ([fe80::acd0:6aec:7be2:719c%7]) with mapi id 15.20.6254.002; Mon, 20 Mar 2023
- 18:50:06 +0000
-From: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-To: Borislav Petkov <bp@alien8.de>
-CC: "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>, "wei.liu@kernel.org"
-	<wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>, "luto@kernel.org"
-	<luto@kernel.org>, "peterz@infradead.org" <peterz@infradead.org>,
-	"davem@davemloft.net" <davem@davemloft.net>, "edumazet@google.com"
-	<edumazet@google.com>, "kuba@kernel.org" <kuba@kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>, "lpieralisi@kernel.org"
-	<lpieralisi@kernel.org>, "robh@kernel.org" <robh@kernel.org>, "kw@linux.com"
-	<kw@linux.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "arnd@arndb.de"
-	<arnd@arndb.de>, "hch@lst.de" <hch@lst.de>, "m.szyprowski@samsung.com"
-	<m.szyprowski@samsung.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"thomas.lendacky@amd.com" <thomas.lendacky@amd.com>, "brijesh.singh@amd.com"
-	<brijesh.singh@amd.com>, "tglx@linutronix.de" <tglx@linutronix.de>,
-	"mingo@redhat.com" <mingo@redhat.com>, "dave.hansen@linux.intel.com"
-	<dave.hansen@linux.intel.com>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
-	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-	"sathyanarayanan.kuppuswamy@linux.intel.com"
-	<sathyanarayanan.kuppuswamy@linux.intel.com>, "ak@linux.intel.com"
-	<ak@linux.intel.com>, "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-	"dan.j.williams@intel.com" <dan.j.williams@intel.com>, "jane.chu@oracle.com"
-	<jane.chu@oracle.com>, "seanjc@google.com" <seanjc@google.com>,
-	"tony.luck@intel.com" <tony.luck@intel.com>, "x86@kernel.org"
-	<x86@kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-hyperv@vger.kernel.org"
-	<linux-hyperv@vger.kernel.org>, "netdev@vger.kernel.org"
-	<netdev@vger.kernel.org>, "linux-pci@vger.kernel.org"
-	<linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org"
-	<linux-arch@vger.kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: RE: [PATCH v6 06/13] x86/hyperv: Change vTOM handling to use standard
- coco mechanisms
-Thread-Topic: [PATCH v6 06/13] x86/hyperv: Change vTOM handling to use
- standard coco mechanisms
-Thread-Index: AQHZUjCyCpporLk3zkiXtyclH/4N+K8DmEQAgAAZtaCAAFnoAIAAAQEA
-Date: Mon, 20 Mar 2023 18:50:05 +0000
-Message-ID:
- <BYAPR21MB1688DF161ACE142DEA721DA1D7809@BYAPR21MB1688.namprd21.prod.outlook.com>
-References: <1678329614-3482-1-git-send-email-mikelley@microsoft.com>
- <1678329614-3482-7-git-send-email-mikelley@microsoft.com>
- <20230320112258.GCZBhCEpNAIk0rUDnx@fat_crate.local>
- <BYAPR21MB16880C855EDB5AD3AECA473DD7809@BYAPR21MB1688.namprd21.prod.outlook.com>
- <20230320181646.GAZBijDiAckZ9WOmhU@fat_crate.local>
-In-Reply-To: <20230320181646.GAZBijDiAckZ9WOmhU@fat_crate.local>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=5e65d818-196c-4bce-b0b3-5392a10c9611;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2023-03-20T18:20:21Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BYAPR21MB1688:EE_|CH3PR21MB4039:EE_
-x-ms-office365-filtering-correlation-id: 395c34c6-72c9-4452-fd17-08db2973ec02
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- aYAbpIe2ODiQsDmgEJv31e9FOAinnA3fWDMDrzVM0OrxShUNAv/kiUO3eFLjSDmu3ebALXG5+E+wxTC3ZLQWvxYBQ13LaSJUUw8ieIsTtd/7BzjhYa9soaNjBM/+ktM1ToZ4GTQwb05UiBjN9Vf39XEfkg3nRSkRmBkt+/ooM991FDPkeCFnbh3zYbYmOzLcIIruNgxTZ3iY38EWLCZnTC2d55SaRgUIfVi0FDw8rpVm8SMJ3IazqI5ca/IX9PDX08OhWmH+guXx5HwgEwxbJi0nJ25ThwKaKo0WXpo2f3p3b0i0QrygICZqyG1Ng9CkoscqE4vOrFa8/ifuMiD1ocYO9+OTYLQrCPC6iRqnVQVrCjHDsz1KyKXUt76XHVW+SZDovE/VpbWjP9av5tCMqokQXjBxfyJw3Z0d/TcksmjVOhZK5iOQpo8Mq86DJeeYA2+8CJV/LIfqc1mLA+3LrZTnK6AwWH2ZirXom/kH+7FWF4zsThj548R1bFotGFCr7JNyoP0Lg+Uf5kX4kB3hzfyctl30uZKTjX2dSX60CW40M4NYcntKDxEFKL5FH2l/lKbgqUoGnXnOipYz24i4zeymAi5YK1kG/D0jHh2x3mZ3hCTTT1j7yt58AEOEIEbeLF/FjDdibEkuHWG/qj2cCt5Cro2sUVbqYUeWl8Iag1bCKk4deiSoTCoeIi3zHw9MnM7BQJisYywg48ul9JfGvtX33hhLvcG/yq2r53xAa1/3b0nZ//RI4fXLu3WEvdTD
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1688.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(39860400002)(366004)(346002)(396003)(376002)(451199018)(33656002)(71200400001)(86362001)(38070700005)(38100700002)(82960400001)(82950400001)(7406005)(8936002)(52536014)(7416002)(5660300002)(122000001)(41300700001)(2906002)(8990500004)(4326008)(186003)(6506007)(66946007)(83380400001)(9686003)(26005)(316002)(55016003)(54906003)(10290500003)(66556008)(64756008)(8676002)(66446008)(6916009)(66476007)(478600001)(76116006)(7696005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?oyZqsZm6SYs4SKZk1uCBcv6ImwKRCSaQkkOuARabTbKNpku0lII3GWMiwhMZ?=
- =?us-ascii?Q?TTb/XOrMS8vqxv+6KBx/r7XrmzKbULotkqTXV+qDKAKX0d0ZSJqxBlS3sOss?=
- =?us-ascii?Q?ylOnDp+w799aYMOY5PSHePF0BRiGTkrN1Kvo2+9AXtToqj7tlBoDsUFBW2Xz?=
- =?us-ascii?Q?KUodvVBYVghZmAyKKPytl5bgvIX0xURd1zqEUSELUDbOGLMBRVwm6AeFTVq5?=
- =?us-ascii?Q?ZtGb/A38T0NeRHDeOO/XVnMhkCTDQwQwKrD9wAW4Kd6KZleKdJiogfQyCJ1l?=
- =?us-ascii?Q?9+7voG74+emITNoupVRex6NdbMWX3RMX7oZRrHbrWcJRvKR/mfLOssF07xKm?=
- =?us-ascii?Q?1eoZgjAIHyN9UWYnc1ENJfHD2cWVAHM8Ui4JgNBfV3LlzcUN8PM3bo4bYScq?=
- =?us-ascii?Q?lKgVpOQkLhveR42G5adXlDUXy/rvDmolK3Y3WYfowbN2vLXXs58CeToTqY+Q?=
- =?us-ascii?Q?kzXl9ciRU1aIHGAghjA4GBjZeI/nP+dC+qFoORKcEwk0izPIxWMwJKFvnnik?=
- =?us-ascii?Q?A5aDb81+7Bd6jtyq5ANVzQPLJtjMeESKz6ighJQpV8GIbdocJNDkHt4W7qfV?=
- =?us-ascii?Q?Q7EK9zlNw1Ryx0eVWNOON5LZn92dNnBEYzZFiq9tsCJuYL8Gcv8xq08YWgvf?=
- =?us-ascii?Q?XmJr9qX7v3+h+6MY2MuHxh4fz0/AcGj1PxzRcABZS5enfJWFDITiUPePpYu3?=
- =?us-ascii?Q?puiFuLFxrrGtKJR0o7mG+9od2cLA1B832qaqvlf2c4fivTM8VKJmUJ213ilk?=
- =?us-ascii?Q?BzkPDHoE6GBTZRPzJmB46kCJSQvqoKme1a50FJ3NGjJzn6HnH853Rhn530R4?=
- =?us-ascii?Q?rYANByypcWCZ1aHb67BenkkOFMqukMBRouuO40LmIq3wG0OibtcA9Pz0o7KI?=
- =?us-ascii?Q?lA3dagAm3rNsQvY4xR4D+nbYgXJQVGt00WMgzXUAkDWJ5oMZK5blhte4pOwz?=
- =?us-ascii?Q?ZZKJoBb6yxd8KfKFaoouVSj5qXJNOQYalF0tdm4ukhUj1tBGEBSeDCyo8fTI?=
- =?us-ascii?Q?Ivyo7CkQE6IANVPW+CNSyYcNL0/I8rwRkry6mdKYxfOQz3cg7PoTwXA8/T36?=
- =?us-ascii?Q?nogR/V1BGRlegT5Ek5j1b33+EuVQGtIdny26DSPBoFge8bYbNtKvG4D6Hq1V?=
- =?us-ascii?Q?GxU/520SHLLFyEA4LJKt9cBq7lpI4B2Ofu3H44Gg1YzW0/GalgNw1jR3Xw4G?=
- =?us-ascii?Q?24I0bpYRmCUUIvPJqn2NlMvQdYoKzNe2vKuZAmCN04Sz1xvXS5cFz594YEZm?=
- =?us-ascii?Q?Us8DYKQCJ7H14x4b8YcFqPo5brP7G0m/jI6rkvlulz5+H72z+p8Cy/9w6o6z?=
- =?us-ascii?Q?vzoR02bl74zvuUNvDyVNRthxnAB7wHCQBs6VEf+W7FC8r7KaZc/2nUKC6IJ1?=
- =?us-ascii?Q?/LndEGkZw4BHL34IDdg0Nlcb5DTZbi1adkD0C9AOLI1liXkKOOiqQMwM1Z6g?=
- =?us-ascii?Q?YPz9cH+y+qbYsLCbgVhfaCxTF7UtO3JD+trL6KBl5roqfC4atz0FRGbI7I/m?=
- =?us-ascii?Q?Gyo1iE7dVB8ZXJP/1XszDpqDLq+fdTfZ2CfslPUx/3Uti6PV7Z6uSg38jHHy?=
- =?us-ascii?Q?gCgVZBXM2BprV6XrG7l5+wnS4wqiyoNO95BUxx4+Gi2LwglJXuOMAa+9oj+z?=
- =?us-ascii?Q?Iw=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B61034C6A
+	for <iommu@lists.linux.dev>; Mon, 20 Mar 2023 18:55:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679338519; x=1710874519;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=o6N2Au2DvL8M7c0qc1w0ZGowkeZSbBghUKfA8/mNPTE=;
+  b=behQsmKUUx9JdvdTaA12RwjGRJi/9Hw3AfN4r3VTHAHAQhHAYKTmXZL6
+   Po/qU54vdd4IWBR9QD/P1bYX6PvxKRZc35UGOn7shZjUexFsJd8xzWuTt
+   Hzq2XISUPHt68Y6Lt1zTO6OaIUR3sgWQs/g/SGSYqJYrAs90P9D9g+PLo
+   hPq+N/1KXlGGBMpFqmy/vr1ZBRXx+UsthxAnDmyF2sKgt+M5EPkPz4eKv
+   zpJG6KD+eZJVRxLeMeSAGvrQZCzYpUoKrFPTNAQS9LOI7JE25JdZR1hud
+   HVRGJlKxW6W3MwkBXNvc5uf6zWfUI/WGhSAo5tvAyrMq4KNX1Wadq/cbs
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="366473695"
+X-IronPort-AV: E=Sophos;i="5.98,276,1673942400"; 
+   d="scan'208";a="366473695"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 11:55:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="927076451"
+X-IronPort-AV: E=Sophos;i="5.98,276,1673942400"; 
+   d="scan'208";a="927076451"
+Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.106])
+  by fmsmga006.fm.intel.com with ESMTP; 20 Mar 2023 11:55:13 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: LKML <linux-kernel@vger.kernel.org>,
+	iommu@lists.linux.dev,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	"Lu Baolu" <baolu.lu@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Jean-Philippe Brucker <jean-philippe@linaro.com>,
+	"Robin Murphy" <robin.murphy@arm.com>,
+	Dave Hansen <dave.hansen@intel.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	X86 Kernel <x86@kernel.org>,
+	bp@alien8.de,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	corbet@lwn.net,
+	vkoul@kernel.org,
+	dmaengine@vger.kernel.org,
+	linux-doc@vger.kernel.org
+Cc: "Will Deacon" <will@kernel.org>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Raj Ashok <ashok.raj@intel.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	Yi Liu <yi.l.liu@intel.com>,
+	"Yu, Fenghua" <fenghua.yu@intel.com>,
+	Dave Jiang <dave.jiang@intel.com>,
+	Kirill Shutemov <kirill.shutemov@linux.intel.com>,
+	Tony Luck <tony.luck@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v7 1/7] iommu/vt-d: Remove virtual command interface
+Date: Mon, 20 Mar 2023 11:59:04 -0700
+Message-Id: <20230320185910.2643260-2-jacob.jun.pan@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230320185910.2643260-1-jacob.jun.pan@linux.intel.com>
+References: <20230320185910.2643260-1-jacob.jun.pan@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1688.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 395c34c6-72c9-4452-fd17-08db2973ec02
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Mar 2023 18:50:06.0108
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: azWddMHBRnatfJGuUCMPdyOQHY9BO8u3OXFvmc6NRga/6hNZCIhH5fsdU7p1DWzcTCiksZg3vQLSQlMxuxXf0BOJWxzOCfegxRGHZrXm2B8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR21MB4039
+Content-Transfer-Encoding: 8bit
 
-From: Borislav Petkov <bp@alien8.de> Sent: Monday, March 20, 2023 11:17 AM
->=20
-> On Mon, Mar 20, 2023 at 01:30:54PM +0000, Michael Kelley (LINUX) wrote:
-> > In a vTOM VM, CPUID leaf 0x8000001f is filtered so it does *not* return
-> > Bit 1 (SEV) as set.  Consequently, sme_enable() does not read MSR_AMD64=
-_SEV
-> > and does not populate sev_status.
->=20
-> So how much of the hardware side of vTOM are you actually using besides
-> the actual encryption?
+Virtual command interface was introduced to allow using host PASIDs
+inside VMs. It is unused and abandoned due to architectural change.
 
-vTOM mode in Linux is just turning on/off the vTOM bit in the PTE
-to create unencrypted or encrypted mappings, with encrypted being the
-default.  There's no other hardware dependency except CPUID leaf
-0x8000001f reporting that SEV is not enabled, and the GHCB protocol
-(if you want to call that "hardware") as mentioned below.
+With this patch, we can safely remove this feature and the related helpers.
 
->=20
-> Virtual TOM MSR (C001_0135)? Anything else?
->=20
-> AFAICT, you're passing the vTOM value from CPUID from the hypervisor so
-> I'm guessing that happens underneath in the hypervisor?
+Link: https://lore.kernel.org/r/20230210230206.3160144-2-jacob.jun.pan@linux.intel.com
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/cap_audit.c |  2 -
+ drivers/iommu/intel/dmar.c      |  2 -
+ drivers/iommu/intel/iommu.c     | 85 ---------------------------------
+ drivers/iommu/intel/iommu.h     |  2 -
+ 4 files changed, 91 deletions(-)
 
-Correct.  Linux in vTOM mode is not reading MSR 0xC0010135.  The
-PTE bit position of the vTOM bit is coming from Hyper-V (or the paravisor)
-via a synthetic MSR.  Presumably Hyper-V or the paravisor is reading
-the vTOM MSR, but I haven't reviewed that code.
+diff --git a/drivers/iommu/intel/cap_audit.c b/drivers/iommu/intel/cap_audit.c
+index 806986696841..9862dc20b35e 100644
+--- a/drivers/iommu/intel/cap_audit.c
++++ b/drivers/iommu/intel/cap_audit.c
+@@ -54,7 +54,6 @@ static inline void check_dmar_capabilities(struct intel_iommu *a,
+ 	CHECK_FEATURE_MISMATCH(a, b, ecap, slts, ECAP_SLTS_MASK);
+ 	CHECK_FEATURE_MISMATCH(a, b, ecap, nwfs, ECAP_NWFS_MASK);
+ 	CHECK_FEATURE_MISMATCH(a, b, ecap, slads, ECAP_SLADS_MASK);
+-	CHECK_FEATURE_MISMATCH(a, b, ecap, vcs, ECAP_VCS_MASK);
+ 	CHECK_FEATURE_MISMATCH(a, b, ecap, smts, ECAP_SMTS_MASK);
+ 	CHECK_FEATURE_MISMATCH(a, b, ecap, pds, ECAP_PDS_MASK);
+ 	CHECK_FEATURE_MISMATCH(a, b, ecap, dit, ECAP_DIT_MASK);
+@@ -101,7 +100,6 @@ static int cap_audit_hotplug(struct intel_iommu *iommu, enum cap_audit_type type
+ 	CHECK_FEATURE_MISMATCH_HOTPLUG(iommu, ecap, slts, ECAP_SLTS_MASK);
+ 	CHECK_FEATURE_MISMATCH_HOTPLUG(iommu, ecap, nwfs, ECAP_NWFS_MASK);
+ 	CHECK_FEATURE_MISMATCH_HOTPLUG(iommu, ecap, slads, ECAP_SLADS_MASK);
+-	CHECK_FEATURE_MISMATCH_HOTPLUG(iommu, ecap, vcs, ECAP_VCS_MASK);
+ 	CHECK_FEATURE_MISMATCH_HOTPLUG(iommu, ecap, smts, ECAP_SMTS_MASK);
+ 	CHECK_FEATURE_MISMATCH_HOTPLUG(iommu, ecap, pds, ECAP_PDS_MASK);
+ 	CHECK_FEATURE_MISMATCH_HOTPLUG(iommu, ecap, dit, ECAP_DIT_MASK);
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index 6acfe879589c..0f348439ef0e 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -993,8 +993,6 @@ static int map_iommu(struct intel_iommu *iommu, struct dmar_drhd_unit *drhd)
+ 		warn_invalid_dmar(phys_addr, " returns all ones");
+ 		goto unmap;
+ 	}
+-	if (ecap_vcs(iommu->ecap))
+-		iommu->vccap = dmar_readq(iommu->reg + DMAR_VCCAP_REG);
+ 
+ 	/* the registers might be more than one page */
+ 	map_size = max_t(int, ecap_max_iotlb_offset(iommu->ecap),
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 7c2f4bd33582..21c14e00c852 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1722,9 +1722,6 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
+ 		if (ecap_prs(iommu->ecap))
+ 			intel_svm_finish_prq(iommu);
+ 	}
+-	if (vccap_pasid(iommu->vccap))
+-		ioasid_unregister_allocator(&iommu->pasid_allocator);
+-
+ #endif
+ }
+ 
+@@ -2797,85 +2794,6 @@ static int copy_translation_tables(struct intel_iommu *iommu)
+ 	return ret;
+ }
+ 
+-#ifdef CONFIG_INTEL_IOMMU_SVM
+-static ioasid_t intel_vcmd_ioasid_alloc(ioasid_t min, ioasid_t max, void *data)
+-{
+-	struct intel_iommu *iommu = data;
+-	ioasid_t ioasid;
+-
+-	if (!iommu)
+-		return INVALID_IOASID;
+-	/*
+-	 * VT-d virtual command interface always uses the full 20 bit
+-	 * PASID range. Host can partition guest PASID range based on
+-	 * policies but it is out of guest's control.
+-	 */
+-	if (min < PASID_MIN || max > intel_pasid_max_id)
+-		return INVALID_IOASID;
+-
+-	if (vcmd_alloc_pasid(iommu, &ioasid))
+-		return INVALID_IOASID;
+-
+-	return ioasid;
+-}
+-
+-static void intel_vcmd_ioasid_free(ioasid_t ioasid, void *data)
+-{
+-	struct intel_iommu *iommu = data;
+-
+-	if (!iommu)
+-		return;
+-	/*
+-	 * Sanity check the ioasid owner is done at upper layer, e.g. VFIO
+-	 * We can only free the PASID when all the devices are unbound.
+-	 */
+-	if (ioasid_find(NULL, ioasid, NULL)) {
+-		pr_alert("Cannot free active IOASID %d\n", ioasid);
+-		return;
+-	}
+-	vcmd_free_pasid(iommu, ioasid);
+-}
+-
+-static void register_pasid_allocator(struct intel_iommu *iommu)
+-{
+-	/*
+-	 * If we are running in the host, no need for custom allocator
+-	 * in that PASIDs are allocated from the host system-wide.
+-	 */
+-	if (!cap_caching_mode(iommu->cap))
+-		return;
+-
+-	if (!sm_supported(iommu)) {
+-		pr_warn("VT-d Scalable Mode not enabled, no PASID allocation\n");
+-		return;
+-	}
+-
+-	/*
+-	 * Register a custom PASID allocator if we are running in a guest,
+-	 * guest PASID must be obtained via virtual command interface.
+-	 * There can be multiple vIOMMUs in each guest but only one allocator
+-	 * is active. All vIOMMU allocators will eventually be calling the same
+-	 * host allocator.
+-	 */
+-	if (!vccap_pasid(iommu->vccap))
+-		return;
+-
+-	pr_info("Register custom PASID allocator\n");
+-	iommu->pasid_allocator.alloc = intel_vcmd_ioasid_alloc;
+-	iommu->pasid_allocator.free = intel_vcmd_ioasid_free;
+-	iommu->pasid_allocator.pdata = (void *)iommu;
+-	if (ioasid_register_allocator(&iommu->pasid_allocator)) {
+-		pr_warn("Custom PASID allocator failed, scalable mode disabled\n");
+-		/*
+-		 * Disable scalable mode on this IOMMU if there
+-		 * is no custom allocator. Mixing SM capable vIOMMU
+-		 * and non-SM vIOMMU are not supported.
+-		 */
+-		intel_iommu_sm = 0;
+-	}
+-}
+-#endif
+-
+ static int __init init_dmars(void)
+ {
+ 	struct dmar_drhd_unit *drhd;
+@@ -2964,9 +2882,6 @@ static int __init init_dmars(void)
+ 	 */
+ 	for_each_active_iommu(iommu, drhd) {
+ 		iommu_flush_write_buffer(iommu);
+-#ifdef CONFIG_INTEL_IOMMU_SVM
+-		register_pasid_allocator(iommu);
+-#endif
+ 		iommu_set_root_entry(iommu);
+ 	}
+ 
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index d6df3b865812..a2010fb120e2 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -198,7 +198,6 @@
+ #define ecap_flts(e)		(((e) >> 47) & 0x1)
+ #define ecap_slts(e)		(((e) >> 46) & 0x1)
+ #define ecap_slads(e)		(((e) >> 45) & 0x1)
+-#define ecap_vcs(e)		(((e) >> 44) & 0x1)
+ #define ecap_smts(e)		(((e) >> 43) & 0x1)
+ #define ecap_dit(e)		(((e) >> 41) & 0x1)
+ #define ecap_pds(e)		(((e) >> 42) & 0x1)
+@@ -676,7 +675,6 @@ struct intel_iommu {
+ 	unsigned char prq_name[16];    /* Name for PRQ interrupt */
+ 	unsigned long prq_seq_number;
+ 	struct completion prq_complete;
+-	struct ioasid_allocator_ops pasid_allocator; /* Custom allocator for PASIDs */
+ #endif
+ 	struct iopf_queue *iopf_queue;
+ 	unsigned char iopfq_name[16];
+-- 
+2.25.1
 
->=20
-> I'd like to make sure there are no more "surprises" down the road...
->=20
-
-The only other vTOM changes are for software protocols for communication
-between the guest and Hyper-V (or the paravisor).  Some hypercalls and
-synthetic MSR accesses need to bypass the paravisor and are handled
-with the GHCB protocol.  The Hyper-V and VMbus specific code in Linux
-handles those idiosyncrasies.  That code went into the 5.15 kernel and
-isn't modified by this patch set.
-
-The vTOM case is down to the bare minimum in the use of the hardware
-functionality, so it's unlikely anything else would turn up as being differ=
-ent.
-
-Michael
