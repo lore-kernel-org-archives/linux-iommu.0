@@ -1,53 +1,57 @@
-Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99DF18BE1
-	for <iommu@lists.linux.dev>; Tue, 21 Mar 2023 10:06:50 +0000 (UTC)
-Received: by mail-ed1-f52.google.com with SMTP id o12so57403631edb.9
-        for <iommu@lists.linux.dev>; Tue, 21 Mar 2023 03:06:50 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19FB98BE1
+	for <iommu@lists.linux.dev>; Tue, 21 Mar 2023 10:15:27 +0000 (UTC)
+Received: by mail-pl1-f170.google.com with SMTP id bc12so14868919plb.0
+        for <iommu@lists.linux.dev>; Tue, 21 Mar 2023 03:15:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1679393209;
+        d=linaro.org; s=google; t=1679393727;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=vobwVwu5vqkiJyoBOOEqCTxQqrEPYGoYHd5CB27XYWo=;
-        b=T5Z+6j/4fPCtg4TqEi+GQjaIUa7VbmzwSp0zC5rWcIkcRjVEisq/QayMPPmE4/uioN
-         884UiciCL+BgE7r3ssF0CGfXOlGVNESlj3AeP9EApbPk7C79pkSj5ptCpGKCsxnU2nnU
-         mYfs07u/WegROBK9fxzTONW9GiowEX5FgGCKmfmvG51+mmiV1omsKvWO5WtqM+t7s13T
-         cOqkzRozgulnMbbfDGtj3ZVGENh5UKSTRI7lBehYkrGqeCL6/QBJWQJvHGbwbmNdAUIc
-         D6lcUytgIrhh/Wj33re3Q3wLuW+kRHpJ1NBqeO+u+IEEo1AfQIeFPtHRJWdDngeFw0oE
-         bN+A==
+        bh=XYIEmKf52NYEWrNdpaXJ3v1W0hKF3ftprNKh3Wud+Dw=;
+        b=BmyyTr+3j2Vvujb32yH2EM+vbvlpatom5s2GPyNol5mKx1hZWtWwfJ5YxZPRtlO+wR
+         X3eajkA02HKDYXJiMVg0FxsQeS0JVBKMypwGmrRP53GjctYSxKVUCRkkQKsWf0vCPG6i
+         5ZekszoXrCkfj95X/4IZVYRng/YD2FvBmc7CD2F24kIE4dP4cS1cDOkki9jLBHLr86vH
+         bUE9oIDX+yCpW/gECTMAXV2gAwgpvPAffHoLQwqNvvCR0R2RTzPrkfK4snkEWAwgc0qm
+         5GRPy+3RxJ0qWe7U1W6V+H6Kcy2iRJc9XBL+XsqFqDRXsjOD7L/6trcCKyyugWbrYXEC
+         Pl2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679393209;
+        d=1e100.net; s=20210112; t=1679393727;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=vobwVwu5vqkiJyoBOOEqCTxQqrEPYGoYHd5CB27XYWo=;
-        b=eStTS427CVQGEPktPTUbQA9F7A50mLo4eJzH20Rh2TQsFPuyfyObDia2a3m7CfG7fy
-         OJAcfE+TgLZmTsd7HK8rI31j7aFh2Yi+Uz33urnMOYAtzUNcKyF/n7t3VFHwPRyabKr0
-         yDDGi9ytKb5awjYvclq5lwcL7jec9ULA7svGY/k+j9aAXwMWX2MP9Ude5iw8nv9oeygK
-         2ZSjnx0UKt0BAdGmwCeMwqx9RfSzWbS8qct5ukBZHBjvKklh/3mYd04t3CXHrreumcRz
-         US2JyUzWX9gjtPucQ5cB7rJZAiWRbi3N+lsH78nSZ3CS+U0Uw7PkAaaFpes8AszBREmY
-         8ZBg==
-X-Gm-Message-State: AO0yUKV3yF0W3A6Vz6eeld6/9d8o7xcI0ZdtYAXyEwUjH+WBJxszTFg0
-	dmlKm5CRk/oiV1UTksKdpueSHw==
-X-Google-Smtp-Source: AK7set+u3zDaizghMsvZtv651O10go/bFAsoEBHI8hxxpIo8D9WUCa6sPS18tBoxKb9KZdSgG6Z6SA==
-X-Received: by 2002:a05:6402:b3c:b0:4fa:315a:cb59 with SMTP id bo28-20020a0564020b3c00b004fa315acb59mr2412600edb.12.1679393208865;
-        Tue, 21 Mar 2023 03:06:48 -0700 (PDT)
-Received: from localhost.localdomain (054592b0.skybroadband.com. [5.69.146.176])
-        by smtp.gmail.com with ESMTPSA id s2-20020a056402520200b004bbb691a334sm6006505edd.2.2023.03.21.03.06.48
+        bh=XYIEmKf52NYEWrNdpaXJ3v1W0hKF3ftprNKh3Wud+Dw=;
+        b=QPsB1czUJnypFkPWBvASDrGoTGE+pKuqbB1Mknen6BPudhac2a8bqa0b0cu0OATbrZ
+         Nk8V0pkzixD1ha/k+ghoJqScOXaWiRHOItZ/Bx0EWbN0YoQGRxGbo5+qvbOPmlRD5Z8n
+         ILuoEU3LuA2YV7d5QGaUrFn0pdgWAhYo0GixJBKWQCKJmvTZfKzWzukzxT3F5cdGcoHl
+         GEEVDh34w4+TCTPacxeC7AYAWq5oR4HYqeZGTAZq5Tappj38BL/0Q2HVivsM83jhB2F8
+         b4wgR7C2Tl4+DddSxZ8YQEQkIOJhbiCjEAs4aXxCe+oaITN7FvyNEBCCfr+sHo7gn+0N
+         JbmQ==
+X-Gm-Message-State: AO0yUKUQSPKd3plzd6us/oftbV8MWRT5SMPlZSg0hdqnCkCmiKgKDtc8
+	Ce2ixKwIdusM6QZnyqsI5uZ9
+X-Google-Smtp-Source: AK7set8wT5e21KPeq70SJ2RVHMDL8pXfqoa+nAuyHbWCb/g80CXj+qROT4H42dOBTddU2G4mhbI32Q==
+X-Received: by 2002:a17:90b:4a43:b0:23f:e4b7:afb3 with SMTP id lb3-20020a17090b4a4300b0023fe4b7afb3mr2102902pjb.9.1679393727395;
+        Tue, 21 Mar 2023 03:15:27 -0700 (PDT)
+Received: from localhost.localdomain ([117.217.184.244])
+        by smtp.gmail.com with ESMTPSA id n20-20020a170902d0d400b0019eae717885sm8371936pln.107.2023.03.21.03.15.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Mar 2023 03:06:48 -0700 (PDT)
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+        Tue, 21 Mar 2023 03:15:27 -0700 (PDT)
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 To: will@kernel.org,
 	joro@8bytes.org
 Cc: robin.murphy@arm.com,
-	iommu@lists.linux.dev,
+	andersson@kernel.org,
+	johan+linaro@kernel.org,
+	steev@kali.org,
 	linux-arm-kernel@lists.infradead.org,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH] iommu/arm-smmu-v3: Explain why ATS stays disabled with bypass
-Date: Tue, 21 Mar 2023 10:06:00 +0000
-Message-Id: <20230321100559.341981-1-jean-philippe@linaro.org>
-X-Mailer: git-send-email 2.39.2
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH v4] iommu/arm-smmu-qcom: Limit the SMR groups to 128
+Date: Tue, 21 Mar 2023 14:43:32 +0530
+Message-Id: <20230321091332.18334-1-manivannan.sadhasivam@linaro.org>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,34 +60,73 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The SMMU does not support enabling ATS for a bypass stream. Add a comment.
+On some Qualcomm platforms, the hypervisor emulates more than 128 SMR
+(Stream Matching Register) groups. This doesn't conform to the ARM SMMU
+architecture specification which defines the range of 0-127. Moreover, the
+emulated groups don't exhibit the same behavior as the architecture
+supported ones.
 
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
----
-As promised here:
-https://lore.kernel.org/linux-iommu/Y9z3UG+wEBn4i3G2@myrica/
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+For instance, emulated groups will not detect the quirky behavior of some
+firmware versions intercepting writes to S2CR register, thus skipping the
+quirk implemented in the driver and causing boot crash.
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index f2425b0f0cd6..a8410c132f1e 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2447,6 +2447,13 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+So let's limit the groups to 128 and issue a notice to users in that case.
+
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+---
+
+Changes in v4:
+
+* Spun off the SMR limiting part into a separate patch
+* Dropped the quirk rework part as it is not really needed for now
+
+Changes in v3:
+
+* Limited num_mapping_groups to 128 as per ARM SMMU spec and removed the
+  check for 128 groups in qcom_smmu_bypass_quirk()
+* Reworded the commit message accordingly
+
+Changes in v2:
+
+* Limited the check to 128 groups as per ARM SMMU spec's NUMSMRG range
+* Moved the quirk handling to its own function
+* Collected review tag from Bjorn
+
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index d1b296b95c86..54f62d409619 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -268,12 +268,26 @@ static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
  
- 	master->domain = smmu_domain;
+ static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
+ {
+-	unsigned int last_s2cr = ARM_SMMU_GR0_S2CR(smmu->num_mapping_groups - 1);
+ 	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
++	unsigned int last_s2cr;
+ 	u32 reg;
+ 	u32 smr;
+ 	int i;
  
 +	/*
-+	 * The SMMU does not support enabling ATS with bypass. When the STE is
-+	 * in bypass (STE.Config[2:0] == 0b100), ATS Translation Requests and
-+	 * Translated transactions are denied as though ATS is disabled for the
-+	 * stream (STE.EATS == 0b00), causing F_BAD_ATS_TREQ and
-+	 * F_TRANSL_FORBIDDEN events (IHI0070Ea 5.2 Stream Table Entry).
++	 * Limit the number of stream matching groups to 128 as the ARM SMMU
++	 * architecture specification defines NUMSMRG (Number of Stream Mapping
++	 * Register Groups) in the range of 0-127, but some Qcom platforms
++	 * emulate more stream mapping groups. And those groups don't exhibit
++	 * the same behavior as the architecture supported ones.
 +	 */
- 	if (smmu_domain->stage != ARM_SMMU_DOMAIN_BYPASS)
- 		master->ats_enabled = arm_smmu_ats_supported(master);
- 
++	if (smmu->num_mapping_groups > 128) {
++		dev_notice(smmu->dev, "\tLimiting the stream matching groups to 128\n");
++		smmu->num_mapping_groups = 128;
++	}
++
++	last_s2cr = ARM_SMMU_GR0_S2CR(smmu->num_mapping_groups - 1);
++
+ 	/*
+ 	 * With some firmware versions writes to S2CR of type FAULT are
+ 	 * ignored, and writing BYPASS will end up written as FAULT in the
 -- 
-2.39.2
+2.25.1
 
