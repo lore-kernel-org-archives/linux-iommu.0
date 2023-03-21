@@ -1,65 +1,89 @@
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 686218BE1
-	for <iommu@lists.linux.dev>; Tue, 21 Mar 2023 09:45:06 +0000 (UTC)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
-	(No client certificate requested)
-	(Authenticated sender: kholk11)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id 104DE660304E;
-	Tue, 21 Mar 2023 09:45:04 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1679391904;
-	bh=MfgH9kI/J8HvDNSUKB+LMmh8WlnXibnNiOcRHaqZMCc=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=bFRiUS4NtMdANNGbzDib30N42GMhZFWGQyGSrZRz6YjOf0HZlMk983Fo8ObQfVhwZ
-	 ddvKPID7xVIG/7KNJY15q5tY79vO0OxcAtIQ1uEpQsEUyUtqIv1hcfVfWqAQDOXCTs
-	 XfFkRdL5m6s8Yo0yTnsBaSOS81n9bz3vcVkvwqy11RSeU6/BRb2FhYSanoJvJqpaJ0
-	 YdY0u7Kt5wJZO9KVISy4r4e4LoQAGDLfHtb+QH6/AsY8Px407pmpT0TYokl/XscoaR
-	 zJ6Z+Gu8F6EfGNGp+anhWbTkPqIpAym/Qwx7SwWzc4V1Dmt8s6U3+cHYKhJ4snd0p6
-	 1vrPC/PlTedTQ==
-Message-ID: <67cf8e99-609c-fb03-73a3-3801b73f88e5@collabora.com>
-Date: Tue, 21 Mar 2023 10:45:01 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99DF18BE1
+	for <iommu@lists.linux.dev>; Tue, 21 Mar 2023 10:06:50 +0000 (UTC)
+Received: by mail-ed1-f52.google.com with SMTP id o12so57403631edb.9
+        for <iommu@lists.linux.dev>; Tue, 21 Mar 2023 03:06:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1679393209;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=vobwVwu5vqkiJyoBOOEqCTxQqrEPYGoYHd5CB27XYWo=;
+        b=T5Z+6j/4fPCtg4TqEi+GQjaIUa7VbmzwSp0zC5rWcIkcRjVEisq/QayMPPmE4/uioN
+         884UiciCL+BgE7r3ssF0CGfXOlGVNESlj3AeP9EApbPk7C79pkSj5ptCpGKCsxnU2nnU
+         mYfs07u/WegROBK9fxzTONW9GiowEX5FgGCKmfmvG51+mmiV1omsKvWO5WtqM+t7s13T
+         cOqkzRozgulnMbbfDGtj3ZVGENh5UKSTRI7lBehYkrGqeCL6/QBJWQJvHGbwbmNdAUIc
+         D6lcUytgIrhh/Wj33re3Q3wLuW+kRHpJ1NBqeO+u+IEEo1AfQIeFPtHRJWdDngeFw0oE
+         bN+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679393209;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=vobwVwu5vqkiJyoBOOEqCTxQqrEPYGoYHd5CB27XYWo=;
+        b=eStTS427CVQGEPktPTUbQA9F7A50mLo4eJzH20Rh2TQsFPuyfyObDia2a3m7CfG7fy
+         OJAcfE+TgLZmTsd7HK8rI31j7aFh2Yi+Uz33urnMOYAtzUNcKyF/n7t3VFHwPRyabKr0
+         yDDGi9ytKb5awjYvclq5lwcL7jec9ULA7svGY/k+j9aAXwMWX2MP9Ude5iw8nv9oeygK
+         2ZSjnx0UKt0BAdGmwCeMwqx9RfSzWbS8qct5ukBZHBjvKklh/3mYd04t3CXHrreumcRz
+         US2JyUzWX9gjtPucQ5cB7rJZAiWRbi3N+lsH78nSZ3CS+U0Uw7PkAaaFpes8AszBREmY
+         8ZBg==
+X-Gm-Message-State: AO0yUKV3yF0W3A6Vz6eeld6/9d8o7xcI0ZdtYAXyEwUjH+WBJxszTFg0
+	dmlKm5CRk/oiV1UTksKdpueSHw==
+X-Google-Smtp-Source: AK7set+u3zDaizghMsvZtv651O10go/bFAsoEBHI8hxxpIo8D9WUCa6sPS18tBoxKb9KZdSgG6Z6SA==
+X-Received: by 2002:a05:6402:b3c:b0:4fa:315a:cb59 with SMTP id bo28-20020a0564020b3c00b004fa315acb59mr2412600edb.12.1679393208865;
+        Tue, 21 Mar 2023 03:06:48 -0700 (PDT)
+Received: from localhost.localdomain (054592b0.skybroadband.com. [5.69.146.176])
+        by smtp.gmail.com with ESMTPSA id s2-20020a056402520200b004bbb691a334sm6006505edd.2.2023.03.21.03.06.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Mar 2023 03:06:48 -0700 (PDT)
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: will@kernel.org,
+	joro@8bytes.org
+Cc: robin.murphy@arm.com,
+	iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: [PATCH] iommu/arm-smmu-v3: Explain why ATS stays disabled with bypass
+Date: Tue, 21 Mar 2023 10:06:00 +0000
+Message-Id: <20230321100559.341981-1-jean-philippe@linaro.org>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH 07/10] iommu/mtk: Convert to platform remove callback
- returning void
-Content-Language: en-US
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
- Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
- linux-mediatek@lists.infradead.org, kernel@pengutronix.de,
- linux-arm-kernel@lists.infradead.org
-References: <20230321084125.337021-1-u.kleine-koenig@pengutronix.de>
- <20230321084125.337021-8-u.kleine-koenig@pengutronix.de>
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20230321084125.337021-8-u.kleine-koenig@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-Il 21/03/23 09:41, Uwe Kleine-König ha scritto:
-> The .remove() callback for a platform driver returns an int which makes
-> many driver authors wrongly assume it's possible to do error handling by
-> returning an error code. However the value returned is (mostly) ignored
-> and this typically results in resource leaks. To improve here there is a
-> quest to make the remove callback return void. In the first step of this
-> quest all drivers are converted to .remove_new() which already returns
-> void.
-> 
-> Trivially convert this driver from always returning zero in the remove
-> callback to the void returning variant.
-> 
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+The SMMU does not support enabling ATS for a bypass stream. Add a comment.
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+---
+As promised here:
+https://lore.kernel.org/linux-iommu/Y9z3UG+wEBn4i3G2@myrica/
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index f2425b0f0cd6..a8410c132f1e 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2447,6 +2447,13 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 
+ 	master->domain = smmu_domain;
+ 
++	/*
++	 * The SMMU does not support enabling ATS with bypass. When the STE is
++	 * in bypass (STE.Config[2:0] == 0b100), ATS Translation Requests and
++	 * Translated transactions are denied as though ATS is disabled for the
++	 * stream (STE.EATS == 0b00), causing F_BAD_ATS_TREQ and
++	 * F_TRANSL_FORBIDDEN events (IHI0070Ea 5.2 Stream Table Entry).
++	 */
+ 	if (smmu_domain->stage != ARM_SMMU_DOMAIN_BYPASS)
+ 		master->ats_enabled = arm_smmu_ats_supported(master);
+ 
+-- 
+2.39.2
 
