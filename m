@@ -1,34 +1,32 @@
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [85.220.165.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE65F6FBF
-	for <iommu@lists.linux.dev>; Tue, 21 Mar 2023 08:41:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEEC76FC4
+	for <iommu@lists.linux.dev>; Tue, 21 Mar 2023 08:41:44 +0000 (UTC)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1peXYi-0001R1-Cx; Tue, 21 Mar 2023 09:41:32 +0100
+	id 1peXYg-0001RL-P0; Tue, 21 Mar 2023 09:41:30 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
 	by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1peXYf-005e9S-9R; Tue, 21 Mar 2023 09:41:29 +0100
+	id 1peXYf-005e9Y-J9; Tue, 21 Mar 2023 09:41:29 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
 	(envelope-from <ukl@pengutronix.de>)
-	id 1peXYe-006hGh-Gk; Tue, 21 Mar 2023 09:41:28 +0100
+	id 1peXYe-006hGp-UK; Tue, 21 Mar 2023 09:41:28 +0100
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Yong Wu <yong.wu@mediatek.com>,
-	Joerg Roedel <joro@8bytes.org>,
+To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
-	Matthias Brugger <matthias.bgg@gmail.com>
+	Orson Zhai <orsonzhai@gmail.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>
 Cc: Robin Murphy <robin.murphy@arm.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
 	iommu@lists.linux.dev,
-	linux-mediatek@lists.infradead.org,
-	kernel@pengutronix.de,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 08/10] iommu/mtk_iommu_v1: Convert to platform remove callback returning void
-Date: Tue, 21 Mar 2023 09:41:23 +0100
-Message-Id: <20230321084125.337021-9-u.kleine-koenig@pengutronix.de>
+	kernel@pengutronix.de
+Subject: [PATCH 10/10] iommu/sprd: Convert to platform remove callback returning void
+Date: Tue, 21 Mar 2023 09:41:25 +0100
+Message-Id: <20230321084125.337021-11-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230321084125.337021-1-u.kleine-koenig@pengutronix.de>
 References: <20230321084125.337021-1-u.kleine-koenig@pengutronix.de>
@@ -39,7 +37,7 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1871; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=bc1ivtReTOp/uOzDgtcAGj4TxntH44wGdZur6UUu7+Q=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkGW2upuVTHwXXFld/iH+pFBW7wSrwQsv7CDul3 0RfxLJLfSeJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZBltrgAKCRCPgPtYfRL+ ThbrCACs3l+Awc/bDwjnM3HaWbfvyX/oKUbXxxTuv2NhZ1WMbjxbQyize4vpjjm2fiYcwjxIRne my0NGdJRDHtBmWjVAWUIZmpj23+4Sw2SqrtnTOt/SPvRae5lIb0vakj+ONuEIe76sIzYTntgmPp 8dtTN7q15ejHpigkCgEl7PXFrKGr21H9nFZhope5CiPXEQy4/r83ALEkW4STp21r3n6LK2iM3xF iyapKGQk2I089qfRkAvio0spF1SM80fRcXdcNPttbObdTF4UIq+rXQM7lt3WgbOmj/CIBSsEg0d 2YilNfGik4jAm78uf2VddKYTe9nkTGNWrFswFDYqRmhjXvev
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1758; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=srz7jfx37dG4IR48VKUwFM7B7FWvzdOJFQJtpaY1fc8=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkGW2w32pzaPSpQacCzUB9JqZc5nbLGX3OyLLrz 5u8i9wkP8+JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZBltsAAKCRCPgPtYfRL+ Tj2xB/9LFKHs2UWltUMO+3gX3Uq3fGV1YFhdj39PKqB2vwYWGbosCjL8IAzXp6spx/lMpc/1XHB Qat+1VYVYs8L+FaDY4VZODG02K4QrPZj0UUbbEwyBOxnUVWx8UJwgW4k7YbEe0ok6oNFEXE2Zar R8YZuX70wKfcADDJ8xD0BTnUda6XdBOtHLp9CXXdy3SpYaeMnF4rrpOMn52KEQBkiN4vSzssPx2 hw9NShjcgrgLwmsCTGhtZEGdn/siWz84Ikok+g51mN9/DiYV7mu/7vZNgv8b95BiSfhF3pg2WFp 4xunqSkTX4AKDmZ7amIiojo6lZY2UvFFZM3rOm+TrLh4E4N0
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -60,39 +58,40 @@ callback to the void returning variant.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/iommu/mtk_iommu_v1.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/iommu/sprd-iommu.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 43e4c8f89e23..8a0a5e5d049f 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -703,7 +703,7 @@ static int mtk_iommu_v1_probe(struct platform_device *pdev)
+diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
+index ae94d74b73f4..907569e76d59 100644
+--- a/drivers/iommu/sprd-iommu.c
++++ b/drivers/iommu/sprd-iommu.c
+@@ -507,7 +507,7 @@ static int sprd_iommu_probe(struct platform_device *pdev)
  	return ret;
  }
  
--static int mtk_iommu_v1_remove(struct platform_device *pdev)
-+static void mtk_iommu_v1_remove(struct platform_device *pdev)
+-static int sprd_iommu_remove(struct platform_device *pdev)
++static void sprd_iommu_remove(struct platform_device *pdev)
  {
- 	struct mtk_iommu_v1_data *data = platform_get_drvdata(pdev);
+ 	struct sprd_iommu_device *sdev = platform_get_drvdata(pdev);
  
-@@ -713,7 +713,6 @@ static int mtk_iommu_v1_remove(struct platform_device *pdev)
- 	clk_disable_unprepare(data->bclk);
- 	devm_free_irq(&pdev->dev, data->irq, data);
- 	component_master_del(&pdev->dev, &mtk_iommu_v1_com_ops);
+@@ -519,8 +519,6 @@ static int sprd_iommu_remove(struct platform_device *pdev)
+ 	platform_set_drvdata(pdev, NULL);
+ 	iommu_device_sysfs_remove(&sdev->iommu);
+ 	iommu_device_unregister(&sdev->iommu);
+-
 -	return 0;
  }
  
- static int __maybe_unused mtk_iommu_v1_suspend(struct device *dev)
-@@ -752,7 +751,7 @@ static const struct dev_pm_ops mtk_iommu_v1_pm_ops = {
+ static struct platform_driver sprd_iommu_driver = {
+@@ -530,7 +528,7 @@ static struct platform_driver sprd_iommu_driver = {
+ 		.suppress_bind_attrs = true,
+ 	},
+ 	.probe	= sprd_iommu_probe,
+-	.remove	= sprd_iommu_remove,
++	.remove_new = sprd_iommu_remove,
+ };
+ module_platform_driver(sprd_iommu_driver);
  
- static struct platform_driver mtk_iommu_v1_driver = {
- 	.probe	= mtk_iommu_v1_probe,
--	.remove	= mtk_iommu_v1_remove,
-+	.remove_new = mtk_iommu_v1_remove,
- 	.driver	= {
- 		.name = "mtk-iommu-v1",
- 		.of_match_table = mtk_iommu_v1_of_ids,
 -- 
 2.39.2
 
