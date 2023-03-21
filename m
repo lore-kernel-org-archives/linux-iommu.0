@@ -1,57 +1,59 @@
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41E22C952
-	for <iommu@lists.linux.dev>; Tue, 21 Mar 2023 14:38:14 +0000 (UTC)
-Received: by mail-qt1-f182.google.com with SMTP id t19so3976686qta.12
-        for <iommu@lists.linux.dev>; Tue, 21 Mar 2023 07:38:13 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D07B2C952
+	for <iommu@lists.linux.dev>; Tue, 21 Mar 2023 14:41:21 +0000 (UTC)
+Received: by mail-qt1-f175.google.com with SMTP id bz27so6326740qtb.1
+        for <iommu@lists.linux.dev>; Tue, 21 Mar 2023 07:41:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1679409493;
+        d=ziepe.ca; s=google; t=1679409680;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=9DVlCgRoSZ9XdR+Dy6Lh3PgMM9vzKokhgsg4QRxt5Aw=;
-        b=Ii9vwY2OjmyAvNnxf+T08UQB+cF+jbbCZtE+3u0iN3aU/0+jauV4ZjMJebbSFttUPK
-         hUYsjvQ0kbH3NJZhESF3Tr2JFGUWH80Hd9GG9kJSplusYknJKi2MeLejFpoZG4Fws6j7
-         aYnqUk750Lm2vq5fA/R+jrxF8qvilvSThOZGCz/dsmgHeLlax1X4TErUYAbb5gK8Eexq
-         lC/ZHY1ZIvfZRi7wpzKm0MIMuKGlgcJUiVXuvKLMhGgi+jWlT40mrIl6Zj6B1XoLBuyF
-         aWBUOoty+Rxmw9HWXoMmA731Vj07RBjHP4lhxsZP/fxvbEr8xjH+MO4HXIzjTa0HSSMd
-         015g==
+        bh=VsESyQmPEYPtlv8Qtns7l7XM+vfyI6Pmh9fN7mCM7RU=;
+        b=eHkykCav8PIbZ8d6K8QZ6Rtx/B23qF8ynIK5Inpjk3UWanV0GOlFzWYcLMy6vRtM+l
+         dMp2FPdu5yNaVh+Xptj4CfUzs9jy8R/G/Tig8W8hLneo9HND9GxtWbJxTs0w9R+q5a1J
+         M0nMrReffPok/IOndWtu2Mi2tXtDrLdFYQPnsGG1wuZThYsOBDWOyHUaftXhSUD8eVYp
+         qhE0Pi7kIllt1i54g7KqTwHOLXRUFc1QQeKKPlPX0M73AykshOs2HNKN304sxRgWcT5h
+         BN3ElDhcRr+KmU9GgMdfFQKvzNyBNjHYpmFePFEj2dGTgx37Lb9rPwb8CJhwiYsswybM
+         ugNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679409493;
+        d=1e100.net; s=20210112; t=1679409680;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=9DVlCgRoSZ9XdR+Dy6Lh3PgMM9vzKokhgsg4QRxt5Aw=;
-        b=rUoqtvjTUkFvh8ExEKBzsFGiNioF6hlGqUwAuV00pp3nlLi4+cwuINC37CAKB62I3a
-         C+mRG2CvP/Gq6YvUWcYtWqlMXn/04D2m4VdcuTe9pZMb6wFR84KbWxetRvh/i26LEZUT
-         dPDtomtVr7UhzZ4W7WWAK7+FOkmRZFvSpb4oGkppDbjx/Grzn5x702DLNqXBws/sY9qz
-         Rk1bZzpCOVAxxXCMXf+5HqnF8tkVw9/4k5VtMi3byoG4I+nU5WjfpVBM35lsC5xiEd6B
-         alNUGJozDDC24+lojdzTaA9Yp072CvQbSKqPKF1F7jHX3bqbtHzSzzQ5MXAtksfYmz3Y
-         nKFQ==
-X-Gm-Message-State: AO0yUKVqM0wRDi/PREp3wcDFTyByWIhMTMxYbGP1zCiPgfKxo17WB4o2
-	0ZYkXbmg7c9injf/SDfF4HLnEg==
-X-Google-Smtp-Source: AK7set+5mApLIf05UV9lI1WrSUTLqjn2u3xMtQ0MG3GtGOXeh/M+a5iOeRv/Y1L8h+HxYiW3FbYnTQ==
-X-Received: by 2002:ac8:7d15:0:b0:3dc:ce21:6f87 with SMTP id g21-20020ac87d15000000b003dcce216f87mr191326qtb.11.1679409493048;
-        Tue, 21 Mar 2023 07:38:13 -0700 (PDT)
+        bh=VsESyQmPEYPtlv8Qtns7l7XM+vfyI6Pmh9fN7mCM7RU=;
+        b=WScIpqopUqa+kFTB1rFx29eITcfYRHukMsH4PahGFkj/mKVbywaOYZT6az2XHk0OWQ
+         zShBx/EB8Y2pc5xTwyGJzk15MDulj7fQdFVYfWRv6Ugt3Qeot5GuBJG+8p5EB8EwmzRb
+         gzJHVyYULX7Jcm7mH9KKIf70I+wxeuEcWi8k0vm8WHvBZLrH7GBoelnqsBXfkMTJ2aCR
+         /Z0wY2hUvjKtGb5rJ5RjlzVxUhUpDMq5SE8pxd/gNKPe7+g46oU/8mnW+CAMaNUA59gg
+         InMvazPR22r3OR1d2dU8khyLlXSNNb3vtVhF/U8HxMperO1HOxso7Q3Ieku44su003Y3
+         2dzQ==
+X-Gm-Message-State: AO0yUKW9TAVaDFPWuDZCb8EDIJDxwWATvgYMt2wcPAtf/ln8ZcRMOAB+
+	YL5/mQqqAeZe8KmJsgiGt0xMvQ==
+X-Google-Smtp-Source: AK7set+UzRDTVZ0qoylhnByM6ScHpCtlilLXdrBM9ohzsnMm3+w0gXwuni40utMRZ9ry2o6G/Ho9cw==
+X-Received: by 2002:a05:622a:2cc:b0:3bc:dd23:cbb2 with SMTP id a12-20020a05622a02cc00b003bcdd23cbb2mr5322002qtx.33.1679409680729;
+        Tue, 21 Mar 2023 07:41:20 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id z9-20020a376509000000b0074283b87a4esm2198697qkb.90.2023.03.21.07.38.12
+        by smtp.gmail.com with ESMTPSA id jr28-20020a05622a801c00b003bd0f0b26b0sm8257944qtb.77.2023.03.21.07.41.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Mar 2023 07:38:12 -0700 (PDT)
+        Tue, 21 Mar 2023 07:41:20 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1ped7r-000VWi-TM;
-	Tue, 21 Mar 2023 11:38:11 -0300
-Date: Tue, 21 Mar 2023 11:38:11 -0300
+	id 1pedAt-000VZN-Nm;
+	Tue, 21 Mar 2023 11:41:19 -0300
+Date: Tue, 21 Mar 2023 11:41:19 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Steven Price <steven.price@arm.com>
-Cc: Heiko Stuebner <heiko@sntech.de>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: iommu@lists.linux.dev, linux-samsung-soc@vger.kernel.org,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Alim Akhtar <alim.akhtar@samsung.com>,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH] iommu/rockchip: Add missing set_platform_dma_ops callback
-Message-ID: <ZBnBU9OU4iV6CV0W@ziepe.ca>
-References: <20230315164152.333251-1-steven.price@arm.com>
+Subject: Re: [PATCH v2] iommu/exynos: Fix set_platform_dma_ops() callback
+Message-ID: <ZBnCD7Xc9WCM55ub@ziepe.ca>
+References: <CGME20230315232523eucas1p2565ef5954e3b5b451803c6200c8bce32@eucas1p2.samsung.com>
+ <20230315232514.1046589-1-m.szyprowski@samsung.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -60,23 +62,31 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230315164152.333251-1-steven.price@arm.com>
+In-Reply-To: <20230315232514.1046589-1-m.szyprowski@samsung.com>
 
-On Wed, Mar 15, 2023 at 04:41:52PM +0000, Steven Price wrote:
-> Similar to exynos, we need a set_platform_dma_ops() callback for proper
-> operation on ARM 32 bit after recent changes in the IOMMU framework
-> (detach ops removal).
+On Thu, Mar 16, 2023 at 12:25:14AM +0100, Marek Szyprowski wrote:
+> There are some subtle differences between release_device() and
+> set_platform_dma_ops() callbacks, so separate those two callbacks. Device
+> links should be removed only in release_device(), because they were
+> created in probe_device() on purpose and they are needed for proper
+> Exynos IOMMU driver operation. While fixing this, remove the conditional
+> code as it is not really needed.
 > 
-> Fixes: c1fe9119ee70 ("iommu: Add set_platform_dma_ops callbacks")
-> Signed-off-by: Steven Price <steven.price@arm.com>
+> Reported-by: Jason Gunthorpe <jgg@ziepe.ca>
+> Fixes: 189d496b48b1 ("iommu/exynos: Add missing set_platform_dma_ops callback")
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 > ---
-> This fixes a splat I was seeing on a Firefly-RK3288, more details here:
-> https://lore.kernel.org/all/26a5d1b8-40b3-b1e4-bc85-740409c26838@arm.com/
+> v2:
+> - keep set_platform_dma_ops only on ARM 32bit
+> 
+> Some more background why set_platform_dma_ops is needed on ARM 32bit is
+> available here:
+> https://lore.kernel.org/all/9a12fcac-c347-5d81-acef-1124c50d0c37@arm.com/
+> ---
+>  drivers/iommu/exynos-iommu.c | 17 ++++++++++-------
+>  1 file changed, 10 insertions(+), 7 deletions(-)
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-
-Do you know what state the iommu is left in after
-rk_iommu_detach_device()? Ie is it blocking DMA or doing identity or
-something else?
+It seems OK, but do you know what state the device is left in after
+exynos_iommu_detach_device ? Ie is it blocking or identity?
 
 Jason
