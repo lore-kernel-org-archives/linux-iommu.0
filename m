@@ -1,134 +1,59 @@
-Received: from BN6PR00CU002.outbound.protection.outlook.com (mail-eastus2azon11021026.outbound.protection.outlook.com [52.101.57.26])
+Received: from todd.t-8ch.de (todd.t-8ch.de [159.69.126.157])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E610BA44
-	for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 21:54:01 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ro877nRlI67rCBPHrXMVECaY3Dn7KKwz31vMH6fiDhXqYysiu1Q62tPlphIQ9Zf+FPAp+zekXfHn/Dgdu+wllpaM7QTg0TdCgbo0JAU1N8P0xZP3R+L/mti0mG1skcuClqDt5ALBm4yfKoWKGBiCZWXBbxv/Ea2pMAT7i0Gq+MYUQ5p8mqd5PU9qAiMDsw1gOlRhP5SpO4NmTVtCvzv96aPg4CDUPprDdP/IiCyisrOJDdWXABEAN9weQvThx6IM12YfwpXK+42HOKyJ+GXrc9DF7JHkBSYhGWvTly/yxtun9aXtt7dwxOKABwPwUE5b+db9V3YGXOvbRTVyqQ2I/Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1Nx57JZUIKFE7zPRGD/9h8zVVYkOp9/CQXc6KyHtJtA=;
- b=LdAqj96dta3dLedvVflWT+ptb/FC8xgMOcsmDY6i0JFIxOXfF47ULISelh9soQYAkZbfMbomSLUHHp8ANT+qpQ1YQqTEZR2+9otF5KTUcFfwX5eUSNG+d5PnCP+q+8ecFopQFt4het+88FwR4oNL82kvYQ6GwONXoNIOY0fi3uo84xtve6l90WN3mE4u2XR8OMQYCwIrmBNSYIv7k1+53JykDd8Vx8dLiBlH43O1g8eyuoURZ3lMzqfgvY3BmT4Y2fOLO/JIjtIcgQop/MV+jWOe9b21KZ4gdedt6ex/G1sNfyoC8D17iUeHsGQCftzrOM6JMdayVSifquahqBibaQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1Nx57JZUIKFE7zPRGD/9h8zVVYkOp9/CQXc6KyHtJtA=;
- b=SXKIk3LnA08j33R0F74g1BGSNaT1TX9t7Iy0bqtsd7R8p6OAQuxBMGRHwBbegAha4tOYFx3PpF5EOIzm3nZeYgtegW/GhlcZeDDhCLh1qnbbdDlP6eQvgq63VpBi4ObVMW5+AaCTaaDFwsygwi/Lpvn/az+6UQGMjBcZ1tFe7HE=
-Received: from SA1PR21MB1335.namprd21.prod.outlook.com (2603:10b6:806:1f2::11)
- by MN2PR21MB1437.namprd21.prod.outlook.com (2603:10b6:208:208::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.4; Wed, 22 Mar
- 2023 21:53:58 +0000
-Received: from SA1PR21MB1335.namprd21.prod.outlook.com
- ([fe80::2e52:d6aa:9a99:500a]) by SA1PR21MB1335.namprd21.prod.outlook.com
- ([fe80::2e52:d6aa:9a99:500a%5]) with mapi id 15.20.6254.004; Wed, 22 Mar 2023
- 21:53:58 +0000
-From: Dexuan Cui <decui@microsoft.com>
-To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>, "hch@lst.de"
-	<hch@lst.de>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, Tianyu Lan
-	<Tianyu.Lan@microsoft.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 1/1] swiotlb: Track and report io_tlb_used high water mark
- in debugfs
-Thread-Topic: [PATCH 1/1] swiotlb: Track and report io_tlb_used high water
- mark in debugfs
-Thread-Index: AQHZSsqBAEWh9nqUUUmkQXhDk78K2q8Go2MAgABfLoCAAHbNkA==
-Date: Wed, 22 Mar 2023 21:53:58 +0000
-Message-ID:
- <SA1PR21MB13358B4721F407781725B1F3BF869@SA1PR21MB1335.namprd21.prod.outlook.com>
-References: <1677516106-85971-1-git-send-email-mikelley@microsoft.com>
- <SA1PR21MB1335022D514B2232953D43A9BF869@SA1PR21MB1335.namprd21.prod.outlook.com>
- <BYAPR21MB16887D69A1E3E2622E32224CD7869@BYAPR21MB1688.namprd21.prod.outlook.com>
-In-Reply-To:
- <BYAPR21MB16887D69A1E3E2622E32224CD7869@BYAPR21MB1688.namprd21.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=ac2d93b9-de41-41a3-a4f7-46e48cd0a71f;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2023-03-22T08:58:34Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SA1PR21MB1335:EE_|MN2PR21MB1437:EE_
-x-ms-office365-filtering-correlation-id: 60eab73b-ee89-46f4-49b5-08db2b1ff0a7
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- BZV3AsC6CnqK1ITxtV8CMzF4wDbMhM1D1vVjq6EFliMZj0smjPUnJNMi3ght2Q4kyvWSKVbN5u09NuBcSvkRVErJpD0uA+rjROHTah5WLMhH5hnWorf5EL5DU8HcmWdEQhZuhO7+atXTTEEZ8qjauxIDZD7JJ0CuLwdAm+yKHr4723DWi77eUtahMJigihKCKSLiwZzJZXFo1cRH0RM8+nji61cwT6aqZZnWIhSL0dnQaRe04YeC9GLxtSeZGrmUqluAxpPMJ3Ieq8pRGKYIdQs6xUNnD8eZowLjQBQkDO5ICDqooqXWKSaqd9SbloU8YXxDD2SQ4a7926PGifGQtFwAC1Z8+lo13fr9T63JyGwFIHq87Gsm7udLYI0RE7KvXiOTMbRAtjh+lfnu6iXUcbuR4RT28Wps24wL268+0Eyy1c8uSsQzdOXnKggIPAvSyqy2q13uEYRM6UNHh8aaZnNVCL55Q+Yw4CBgt4LNi6TK7j4MJkeOFn0nlyXwqzeLO2J5+ARVX3C7hySOJOeUakKZboJdBPnI1gCxzWHNzZPA8y6WBKrx+GAyBy3ThiwLwE6N6AlGUE8clASomH/7glEF6R8gMhYuRuTiEpAokuc/xkkF1OlhX0XEROIXhQpITZzzf8Jm1pH/rbKoD+yuLRg/lIWL7q+PkqRAypk05Wg=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR21MB1335.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(136003)(366004)(376002)(396003)(39860400002)(451199018)(55016003)(38100700002)(64756008)(86362001)(316002)(66556008)(186003)(9686003)(6506007)(26005)(71200400001)(83380400001)(5660300002)(4744005)(52536014)(8990500004)(8936002)(41300700001)(122000001)(7696005)(478600001)(10290500003)(82950400001)(110136005)(66446008)(66476007)(76116006)(2906002)(66946007)(8676002)(33656002)(82960400001)(38070700005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?RPj8jz3ExeQAPw1soXNMdNlqtFNT6xcxTHH151UtKTGbpcGTSIIZsiDWfy1u?=
- =?us-ascii?Q?SW2OfSm7DHY43Oau6x8uvCmV7wSpK9CGQGwUDOqAmuOMQfCaVLftgH03ur/U?=
- =?us-ascii?Q?p/3t4smJ4TDpEDOezc48NpafW13F9ea7/31e+vJRikfCb9clSFpQ10fct9rF?=
- =?us-ascii?Q?70rqrxHdCri1LPJ5GKpThtJPyEQzDk8hs7+lwFmjfwg8s9hX1PyRbCyZslsf?=
- =?us-ascii?Q?xtxvckURVjMCBZ2ZLlEmJITVK1RiqOxoBsT2corBEFAYQK1HrPmiEyXhmIkk?=
- =?us-ascii?Q?auAMqLBDTsviZA0LLzrzT4PRv7wjG+dhcX8y1h1F7oCgZDlprXXcCx7nPdWV?=
- =?us-ascii?Q?vnvLEQXuaODnPL7RcrqEqH5v2cbpzPmBNYcz7yLVhXkcbufpzKvbGw7y8OgF?=
- =?us-ascii?Q?Jrqg+RwMSpJGSR0N664WU2WONjdvLOxyddQh2WYW4747ybcrSN9cKXkKVQD/?=
- =?us-ascii?Q?uxL6seFWkZXqwPLk25pVLQPlGW5UeVeTWd05gkrFD5Rim6QWVvYJPQqigELb?=
- =?us-ascii?Q?yk/mO8DdkiWIjqpEmEzq/6GMCHSXhzzGigmQtx1eHevs4FuZcxLkEoie76Qw?=
- =?us-ascii?Q?y7nSp/GNr3yXJDwI7pyCXEz9/+rTytIow0YHg7wy3zXK0zl+Y7T3HdRQnZPk?=
- =?us-ascii?Q?K+RTpgUb8R88dD8qc0O7b/i5rW4fz36Ox96Gx9bGdkIaZGKwry7XycVB1uF2?=
- =?us-ascii?Q?fzXbvfsuI5FKYSzk0KFdDTxfQJ9oD8uZSQRRee8xHiFvuUj2z0s5MYYERRER?=
- =?us-ascii?Q?ojhPC/F4w2cUwTUYZ2qXLTXMlG9Bu5TISMQ87naYhtiq+OCIDQyQZDS0gJCv?=
- =?us-ascii?Q?xyA+x6FO+K0HJ2nKQncPe7BglJBDsArG7MdGWjaWALb3t7YEzmBEBsUaZ7iA?=
- =?us-ascii?Q?YbphOAxKaxKAq1vfigPJP6AYJYxduQl678btmjKhD7b1vuq/bIygknKcChtP?=
- =?us-ascii?Q?NosNDT3eAWOGDJvihxaU3MZNC86pWcyHgQ6xB9P40g97PMzH8Kqx9iAcfXfg?=
- =?us-ascii?Q?9WoJlTjgMXxUHO/Tfe2ebGa6zSeqN2g6K8NSyx1LPAudl4E66Lg/sk+w6NZE?=
- =?us-ascii?Q?Tvo0pGqW9e3HAPPJHRW7bJqzCrRS6UeRlD1k0FaJcKDbERy2R2RUpmrKVilv?=
- =?us-ascii?Q?RWhdVIMNjeKEz/UhDZpMGgdSlP76Sij9wpRr9QXggcbrc1oaMYFdV8n1gXla?=
- =?us-ascii?Q?UzAeAjBPKmeTRfSFsqsk2hcQdRVinOkAHWZptQ280FAIr0F2UtKO4+ju5fiO?=
- =?us-ascii?Q?ujs6Bs1aRsM6Woj/9W45bAdggMz6jrLA/clFO5gCRyC3MrkRTd0MJ12loB11?=
- =?us-ascii?Q?3BVADArp0k5sYiC90IeGG88zFoKSbfdgmDPdrVTomN+Z6XgtnIusNSNLzU2s?=
- =?us-ascii?Q?RhcuTlgExvWlTLYMZJCApvHiveUp2S/NNEm4RhfBSYR5meEGVlDPLsm2+dfL?=
- =?us-ascii?Q?3/GhFa6k2yCe8Mol+j6kA+bjysXMfFEZXpVkg0x0EaJQLXUHlRew8XOLALaV?=
- =?us-ascii?Q?k+C/QQ7yLZ/NjgAiaQvO3bSk+1fWk3XtFbGeT3uYUGQaBd/WETKUmQYGKXHA?=
- =?us-ascii?Q?cg3FpH6f6FOjSOkKjIcrknJhsWPVvu4Rjzd/wczy?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5098CBA44
+	for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 22:24:12 +0000 (UTC)
+Date: Wed, 22 Mar 2023 17:17:45 -0500 (EST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=t-8ch.de; s=mail;
+	t=1679523477; bh=1XSQgR6v3e90rBs5bY14hmQ5qe+38CfYiwDX/0EaKO0=;
+	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+	b=USHkYZAud3KB8uMQTgbwm10E5BipfZ3q7JnCDhziDI1YfTYm7nCQElsvLOqFlPClE
+	 dQY0yLPYGPTPAUTvIJBzspqut2cJvQQktrBQF+Jr2aPQ9CTWJl6sEmKK1ozafdnnln
+	 mPs7A48sY1SuxsiyiXRqAOdAvbqrMQatfWwgfHaU=
+From: =?UTF-8?Q?Thomas_Wei=C3=9Fschuh_?= <thomas@t-8ch.de>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: =?UTF-8?Q?Thomas_Wei=C3=9Fschuh?= <linux@weissschuh.net>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Message-ID: <038c1035-20fd-4054-984d-524c9a7f390d@t-8ch.de>
+In-Reply-To: <ZBsAjPxV8bu7jjEd@8bytes.org>
+References: <20230214-kobj_type-iommu-v1-1-e7392834b9d0@weissschuh.net> <ZBsAjPxV8bu7jjEd@8bytes.org>
+Subject: Re: [PATCH] iommu: make kobj_type structure constant
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR21MB1335.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 60eab73b-ee89-46f4-49b5-08db2b1ff0a7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Mar 2023 21:53:58.4250
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: tEnI+J8J8RmAbbLbg2YL+f4m919S3BPaZijcK5c/2D4PuewKaGf4BHjtS/2h7spHjkLAnzQHHk9wMcD94MEh7Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR21MB1437
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Correlation-ID: <038c1035-20fd-4054-984d-524c9a7f390d@t-8ch.de>
 
-> From: Michael Kelley (LINUX) <mikelley@microsoft.com>
-> Sent: Wednesday, March 22, 2023 7:39 AM
-> > >  ...
-> > > +	new_used =3D atomic_long_add_return(nslots, &total_used);
-> > > +	old_hiwater =3D atomic_long_read(&used_hiwater);
-> > > +	do {
-> > > +		if (new_used <=3D old_hiwater)
-> > > +			break;
-> > > +	} while (!atomic_long_try_cmpxchg(&used_hiwater, &old_hiwater,
-> new_used));
-> >
-> > Here 'old_hiwater' is not updated in the loop, which looks suspicious t=
-o me.
->=20
-> Actually, it *is* updated in the loop. The atomic_long_try_cmpxchg()
-> function updates old_hiwater to the current value if the exchange
-> fails.
+Hi Joerg,
 
-Yes, you're correct. Thanks for the explanation!
+
+Mar 22, 2023 08:20:14 Joerg Roedel <joro@8bytes.org>:
+
+> On Tue, Feb 14, 2023 at 03:25:53AM +0000, Thomas Wei=C3=9Fschuh wrote:
+>> Since commit ee6d3dd4ed48 ("driver core: make kobj_type constant.")
+>> the driver core allows the usage of const struct kobj_type.
+>>
+>> Take advantage of this to constify the structure definition to prevent
+>> modification at runtime.
+>>
+>> Signed-off-by: Thomas Wei=C3=9Fschuh <linux@weissschuh.net>
+>> ---
+>
+> Applied, thanks.
+
+Thanks!
+
+> Btw, b4 reported DKIM errors checking your patch submission. Can you
+> check the DKIM setup on you email domain, please?
+
+Should be fixed for some time.
+(After this patch, though)
+
+Thanks for the hint!
+
+Thomas
