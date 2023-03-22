@@ -1,221 +1,37 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA6391FB1
-	for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 06:49:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679467792; x=1711003792;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=5/QtRJNGbVy0gqEC5sJtBu3RE6LTB+TTy8zzoXdzsNA=;
-  b=YtPG9MeTu8t46wv4wJrQqSXA6SDKhO9V9yjOsVm/ILmBHgM1I2hYNOlu
-   ulHfTmfjJ3gFDKxWVLxVxEFDO/6bZV4Y7MPPaSf707mZX83cOQpNUzupo
-   Yz9775Ir1NNjpb0owfDawmPqe+VVNbhvEHKW83XkrnBvARbaEX4IG2Bnt
-   lMBftsHtquAaoqhMerBPRcQ+9V874O6QM0dowY2WdmIsDK9tGV+WQa68J
-   2PS/Rn9PQZoOu5ZfQMuDA5/pdyjpnQGyemzOdxLe0/msqr3PqhUvDsVAR
-   BuyzGrxp+F1s1MTD2qA1JPyax6nQcADzNONFV48Tzr/eBMJTwD/KyjWZV
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10656"; a="337866793"
-X-IronPort-AV: E=Sophos;i="5.98,281,1673942400"; 
-   d="scan'208";a="337866793"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2023 23:49:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10656"; a="659080461"
-X-IronPort-AV: E=Sophos;i="5.98,281,1673942400"; 
-   d="scan'208";a="659080461"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga006.jf.intel.com with ESMTP; 21 Mar 2023 23:49:49 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Jason Gunthorpe <jgg@nvidia.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 326CC1FB1
+	for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 08:05:25 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id E8B4567373; Wed, 22 Mar 2023 09:05:11 +0100 (CET)
+Date: Wed, 22 Mar 2023 09:05:11 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: Petr Tesarik <petrtesarik@huaweicloud.com>
+Cc: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Christoph Hellwig <hch@infradead.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Will Deacon <will@kernel.org>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v4 6/6] iommu: Cleanup iommu_change_dev_def_domain()
-Date: Wed, 22 Mar 2023 14:49:56 +0800
-Message-Id: <20230322064956.263419-7-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230322064956.263419-1-baolu.lu@linux.intel.com>
-References: <20230322064956.263419-1-baolu.lu@linux.intel.com>
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	Jianxiong Gao <jxgao@google.com>,
+	David Stevens <stevensd@chromium.org>,
+	Joerg Roedel <jroedel@suse.de>,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+	open list <linux-kernel@vger.kernel.org>,
+	Roberto Sassu <roberto.sassu@huawei.com>, petr@tesarici.cz
+Subject: Re: [PATCH v1 0/2] swiotlb: Cleanup and alignment fix
+Message-ID: <20230322080511.GA21440@lst.de>
+References: <cover.1679382779.git.petr.tesarik.ext@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1679382779.git.petr.tesarik.ext@huawei.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-As the singleton group limitation has been removed, cleanup the code
-in iommu_change_dev_def_domain() accordingly.
+Thanks,
 
-Documentation is also updated.
-
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/iommu/iommu.c                         | 83 +++++--------------
- .../ABI/testing/sysfs-kernel-iommu_groups     |  1 -
- 2 files changed, 21 insertions(+), 63 deletions(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index b780cdddf415..a38b9f279c5d 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2867,11 +2867,10 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
- EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
- 
- /*
-- * Changes the default domain of an iommu group that has *only* one device
-+ * Changes the default domain of an iommu group
-  *
-  * @group: The group for which the default domain should be changed
-- * @prev_dev: The device in the group (this is used to make sure that the device
-- *	 hasn't changed after the caller has called this function)
-+ * @dev: The first device in the group
-  * @type: The type of the new default domain that gets associated with the group
-  *
-  * Returns 0 on success and error code on failure
-@@ -2882,103 +2881,63 @@ EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
-  *    Please take a closer look if intended to use for other purposes.
-  */
- static int iommu_change_dev_def_domain(struct iommu_group *group,
--				       struct device *prev_dev, int type)
-+				       struct device *dev, int type)
- {
-+	struct __group_domain_type gtype = {NULL, 0};
- 	struct iommu_domain *prev_dom;
--	struct group_device *grp_dev;
--	int ret, dev_def_dom;
--	struct device *dev;
-+	int ret;
- 
- 	lockdep_assert_held(&group->mutex);
- 
--	if (group->default_domain != group->domain) {
--		dev_err_ratelimited(prev_dev, "Group not assigned to default domain\n");
--		ret = -EBUSY;
--		goto out;
--	}
--
--	/*
--	 * iommu group wasn't locked while acquiring device lock in
--	 * iommu_group_store_type(). So, make sure that the device count hasn't
--	 * changed while acquiring device lock.
--	 *
--	 * Changing default domain of an iommu group with two or more devices
--	 * isn't supported because there could be a potential deadlock. Consider
--	 * the following scenario. T1 is trying to acquire device locks of all
--	 * the devices in the group and before it could acquire all of them,
--	 * there could be another thread T2 (from different sub-system and use
--	 * case) that has already acquired some of the device locks and might be
--	 * waiting for T1 to release other device locks.
--	 */
--	if (iommu_group_device_count(group) != 1) {
--		dev_err_ratelimited(prev_dev, "Cannot change default domain: Group has more than one device\n");
--		ret = -EINVAL;
--		goto out;
--	}
--
--	/* Since group has only one device */
--	grp_dev = list_first_entry(&group->devices, struct group_device, list);
--	dev = grp_dev->dev;
--
--	if (prev_dev != dev) {
--		dev_err_ratelimited(prev_dev, "Cannot change default domain: Device has been changed\n");
--		ret = -EBUSY;
--		goto out;
--	}
--
- 	prev_dom = group->default_domain;
--	if (!prev_dom) {
--		ret = -EINVAL;
--		goto out;
--	}
--
--	dev_def_dom = iommu_get_def_domain_type(dev);
-+	__iommu_group_for_each_dev(group, &gtype,
-+				   probe_get_default_domain_type);
- 	if (!type) {
- 		/*
- 		 * If the user hasn't requested any specific type of domain and
- 		 * if the device supports both the domains, then default to the
- 		 * domain the device was booted with
- 		 */
--		type = dev_def_dom ? : iommu_def_domain_type;
--	} else if (dev_def_dom && type != dev_def_dom) {
--		dev_err_ratelimited(prev_dev, "Device cannot be in %s domain\n",
-+		type = gtype.type ? : iommu_def_domain_type;
-+	} else if (gtype.type && type != gtype.type) {
-+		dev_err_ratelimited(dev, "Device cannot be in %s domain\n",
- 				    iommu_domain_type_str(type));
--		ret = -EINVAL;
--		goto out;
-+		return -EINVAL;
- 	}
- 
- 	/*
- 	 * Switch to a new domain only if the requested domain type is different
- 	 * from the existing default domain type
- 	 */
--	if (prev_dom->type == type) {
--		ret = 0;
--		goto out;
--	}
-+	if (prev_dom->type == type)
-+		return 0;
-+
-+	group->default_domain = NULL;
-+	group->domain = NULL;
- 
- 	/* Sets group->default_domain to the newly allocated domain */
- 	ret = iommu_group_alloc_default_domain(dev->bus, group, type);
- 	if (ret)
--		goto out;
-+		goto restore_old_domain;
- 
--	ret = iommu_create_device_direct_mappings(group, dev);
-+	ret = iommu_group_create_direct_mappings(group);
- 	if (ret)
- 		goto free_new_domain;
- 
--	ret = __iommu_attach_device(group->default_domain, dev);
-+	ret = __iommu_attach_group(group->default_domain, group);
- 	if (ret)
- 		goto free_new_domain;
- 
--	group->domain = group->default_domain;
- 	iommu_domain_free(prev_dom);
- 
- 	return 0;
- 
- free_new_domain:
- 	iommu_domain_free(group->default_domain);
-+restore_old_domain:
- 	group->default_domain = prev_dom;
- 	group->domain = prev_dom;
--out:
-+
- 	return ret;
- }
- 
-diff --git a/Documentation/ABI/testing/sysfs-kernel-iommu_groups b/Documentation/ABI/testing/sysfs-kernel-iommu_groups
-index b15af6a5bc08..a42d4383d999 100644
---- a/Documentation/ABI/testing/sysfs-kernel-iommu_groups
-+++ b/Documentation/ABI/testing/sysfs-kernel-iommu_groups
-@@ -53,7 +53,6 @@ Description:	/sys/kernel/iommu_groups/<grp_id>/type shows the type of default
- 
- 		The default domain type of a group may be modified only when
- 
--		- The group has only one device.
- 		- The device in the group is not bound to any device driver.
- 		  So, the users must unbind the appropriate driver before
- 		  changing the default domain type.
--- 
-2.34.1
-
+I've applied this to the for-linus branch with minor cosmetic tweaks.
