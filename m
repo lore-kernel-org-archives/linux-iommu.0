@@ -1,56 +1,32 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 85D492566
+	for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 12:21:16 +0000 (UTC)
+Received: from 8bytes.org (p200300c27714bc0086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:7714:bc00:86ad:4f9d:2505:dd0d])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F22ED23CF
-	for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 10:23:56 +0000 (UTC)
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-3ed3080d17bso10755e9.0
-        for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 03:23:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1679480635;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=mcDRlGqb6Azx/x9zIxUH1xj8S/fV5DxJOLYKrwe15TU=;
-        b=b9wczk/RvzcvFUi12dsmCX/dOp168FNB/SofHTHB0xagYDW5bzYNCsxLv8oNlbpPrK
-         ZjD9DO5iSb2Vm2D/61rXC644sDbVjg56fHs/fY+0K8FEb2LHGQGJZH71ZLYSdF4K05a9
-         4cJVG7d4bcGG8TWLurN45B+JegyERpBhQP5uoNdcwXGJoAaE1ipCg+CE2HstLhaBcLoU
-         98rMKepuI+GZLDwDZSHRISsqO2IbuMWWiWyRhbSHS0+b1fQGgVC8Q4+FjaLviFbbA+uA
-         46S8lM2iCvIAQhazV4ySTlQcjLZ2x4XLbLG7zp9qFH3OUFyN9pd8Xq9taLn40wgOvBJh
-         ACNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679480635;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mcDRlGqb6Azx/x9zIxUH1xj8S/fV5DxJOLYKrwe15TU=;
-        b=z6R7LQIxn9GjBLpbUP6BfOX3ZTLLl4HCY+CIdqKq/RGQRJE525Nu+TOWVmn8x+QsLV
-         o3JRjvRYcCugW7kUmqTGVz7cp6Ppq1JMsgOmceo3E5h58TQfGZEg7F/iT+rreaYcw18y
-         JFWzrNasDAbiB950fL0/Og7KJlo/sq7RR2KXj3hkcyEl5NP7t0pURMJdzdipvDENDEuI
-         mATJGA/INUHDaW1TQK0bOTRlWAFelIEFh1tMVdZ6R+/BhSuRqcBOZx1+JR3ofJ6o4mV4
-         g7yLeZRsd2FPPlSRoepa2cse0fDPLGeK657SAr0Qv6Rx/MDqTK33nVWQNHxmVFPlLAUZ
-         PswQ==
-X-Gm-Message-State: AO0yUKUdRkJ39c/WkTqnKDbcuxsjyVDHGwJITj02NZFKHrTaXZ0ddbPL
-	+sLIcpPT69zVMq5C7squ45fwWg==
-X-Google-Smtp-Source: AK7set/RxnGBHvENZoN3y84D3iy9ZfTLiNg7s6OFbvMVV5PfOCNdV5jQnhbS+sVxArHm8nYHBg02hg==
-X-Received: by 2002:a05:600c:3d0c:b0:3df:f3cb:e8ce with SMTP id bh12-20020a05600c3d0c00b003dff3cbe8cemr108656wmb.7.1679480635095;
-        Wed, 22 Mar 2023 03:23:55 -0700 (PDT)
-Received: from google.com (44.232.78.34.bc.googleusercontent.com. [34.78.232.44])
-        by smtp.gmail.com with ESMTPSA id y16-20020a056000109000b002c56013c07fsm13394867wrw.109.2023.03.22.03.23.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Mar 2023 03:23:54 -0700 (PDT)
-Date: Wed, 22 Mar 2023 10:23:50 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: maz@kernel.org, catalin.marinas@arm.com, will@kernel.org,
-	joro@8bytes.org, robin.murphy@arm.com, james.morse@arm.com,
-	suzuki.poulose@arm.com, oliver.upton@linux.dev,
-	yuzenghui@huawei.com, dbrazdil@google.com, ryan.roberts@arm.com,
-	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev,
+	by mail.8bytes.org (Postfix) with ESMTPSA id 3AEBC242D42;
+	Wed, 22 Mar 2023 13:13:36 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1679487216;
+	bh=gCT3/GCid8ybEXIa86EV6OCmCov2osg5/Ckg0CtX+PA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=HCJ6g4L6pOXe8VkL7dufhOKQmtZ0mG6GnK7SGtj/J4pGhqEiX8xuGtHqqiBZ3MHSv
+	 S6F9SGZyAjkoAlNMH6l+ziB8f0RS4JiQhLJN2rQD/VwK1aBV5TvUIWtBkKOplw4vZd
+	 aVMvsRMsSKEd1aSv2IWjJjSLSCXdE1kdGGyQ3ymZBTQac7hadHjn+kSZb6ryVx9U2k
+	 EEyWussci8Qv+GuNRo/NYv6GI9RC6lroODKLTdttQ/KDK2JY3lK6RHR6rYRyt4KJjj
+	 kcsVHJbQXsHDn2RrGAk02veu82kwZqEnpSRdxesDgL52T25sV9ZWOMK4398CJTgdcU
+	 SNMWMZ7P2X14w==
+Date: Wed, 22 Mar 2023 13:13:34 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, rafael@kernel.org,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
 	iommu@lists.linux.dev
-Subject: Re: [RFC PATCH 39/45] iommu/arm-smmu-v3-kvm: Initialize page table
- configuration
-Message-ID: <ZBrXNjOiqHJAxLzw@google.com>
-References: <20230201125328.2186498-1-jean-philippe@linaro.org>
- <20230201125328.2186498-40-jean-philippe@linaro.org>
+Subject: Re: [PATCH 34/36] iommu: make the pointer to struct bus_type constant
+Message-ID: <ZBrw7ounuXyeUitT@8bytes.org>
+References: <20230313182918.1312597-1-gregkh@linuxfoundation.org>
+ <20230313182918.1312597-34-gregkh@linuxfoundation.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -59,87 +35,30 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230201125328.2186498-40-jean-philippe@linaro.org>
+In-Reply-To: <20230313182918.1312597-34-gregkh@linuxfoundation.org>
 
-Hi Jean,
-
-On Wed, Feb 01, 2023 at 12:53:23PM +0000, Jean-Philippe Brucker wrote:
-> Prepare the stage-2 I/O page table configuration that will be used by
-> the hypervisor driver.
+On Mon, Mar 13, 2023 at 07:29:16PM +0100, Greg Kroah-Hartman wrote:
+> A number of iommu functions take a struct bus_type * and never modify
+> the data passed in, so make them all const * as that is what the driver
+> core is expecting to have passed into as well.
 > 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> This is a step toward making all struct bus_type pointers constant in
+> the kernel.
+> 
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: iommu@lists.linux.dev
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > ---
->  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c   | 29 +++++++++++++++++++
->  1 file changed, 29 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
-> index 755c77bc0417..55489d56fb5b 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
-> @@ -16,6 +16,7 @@ struct host_arm_smmu_device {
->  	struct arm_smmu_device		smmu;
->  	pkvm_handle_t			id;
->  	u32				boot_gbpa;
-> +	unsigned int			pgd_order;
->  };
->  
->  #define smmu_to_host(_smmu) \
-> @@ -192,6 +193,7 @@ static int kvm_arm_smmu_probe(struct platform_device *pdev)
->  	size_t size;
->  	phys_addr_t ioaddr;
->  	struct resource *res;
-> +	struct io_pgtable_cfg cfg;
->  	struct arm_smmu_device *smmu;
->  	struct device *dev = &pdev->dev;
->  	struct host_arm_smmu_device *host_smmu;
-> @@ -233,6 +235,31 @@ static int kvm_arm_smmu_probe(struct platform_device *pdev)
->  	if (!kvm_arm_smmu_validate_features(smmu))
->  		return -ENODEV;
->  
-> +	/*
-> +	 * Stage-1 should be easy to support, though we do need to allocate a
-> +	 * context descriptor table.
-> +	 */
-> +	cfg = (struct io_pgtable_cfg) {
-> +		.fmt = ARM_64_LPAE_S2,
-> +		.pgsize_bitmap = smmu->pgsize_bitmap,
-> +		.ias = smmu->ias,
-> +		.oas = smmu->oas,
-> +		.coherent_walk = smmu->features & ARM_SMMU_FEAT_COHERENCY,
-> +	};
-> +
-> +	/*
-> +	 * Choose the page and address size. Compute the PGD size and number of
-> +	 * levels as well, so we know how much memory to pre-allocate.
-> +	 */
-> +	ret = io_pgtable_configure(&cfg, &size);
-size variable is overwritten here with pgd size, while used later on
-the assumption it still contains the SMMU MMIO size.
-This looks like it is not intended?
+> Note, this is a patch that is a prepatory cleanup as part of a larger
+> series of patches that is working on resolving some old driver core
+> design mistakes.  It will build and apply cleanly on top of 6.3-rc2 on
+> its own, but I'd prefer if I could take it through my driver-core tree
+> so that the driver core changes can be taken through there for 6.4-rc1.
 
+This will probably cause conflicts in linux-next, but anyway, those
+should be easy to resolve. So
 
-> +	if (ret)
-> +		return ret;
-> +
-> +	host_smmu->pgd_order = get_order(size);
-> +	smmu->pgsize_bitmap = cfg.pgsize_bitmap;
-> +	smmu->ias = cfg.ias;
-> +	smmu->oas = cfg.oas;
-> +
->  	ret = arm_smmu_init_one_queue(smmu, &smmu->cmdq.q, smmu->base,
->  				      ARM_SMMU_CMDQ_PROD, ARM_SMMU_CMDQ_CONS,
->  				      CMDQ_ENT_DWORDS, "cmdq");
-> @@ -253,6 +280,8 @@ static int kvm_arm_smmu_probe(struct platform_device *pdev)
->  	hyp_smmu->mmio_addr = ioaddr;
->  	hyp_smmu->mmio_size = size;
->  	hyp_smmu->features = smmu->features;
-> +	hyp_smmu->iommu.pgtable_cfg = cfg;
-> +
->  	kvm_arm_smmu_cur++;
->  
->  	return 0;
-> -- 
-> 2.39.0
-> 
-Thanks,
-Mostafa
+Acked-by: Joerg Roedel <jroedel@suse.de>
+
