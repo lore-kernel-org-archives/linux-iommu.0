@@ -1,139 +1,145 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B88E23AD
-	for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 10:04:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1679479494;
-	h=from:from:reply-to:reply-to:subject:subject:date:date:
-	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-	 content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=UlzXqLaiFJqutr/ifAilPZ+K+vBBAuY2KbY33ds/cHU=;
-	b=QuHYXuG1PoClu0Ec2gQNxWp1LFSbxz37snYBTgWBsDysLGluAK70bhGXRD5gYUVSPgIzwh
-	w+66xqAPpMJvGB8ZWrAwF+JWKdVxiw8NcZvdwR/KPgzyfp26VV+BgEXWCU1mc6HVm35U8y
-	2ORNo0hb2GTZzDzFRrjoQ08GgAm4MlQ=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-563-7S9vxbtQMPOQgZMzewmtvA-1; Wed, 22 Mar 2023 06:04:52 -0400
-X-MC-Unique: 7S9vxbtQMPOQgZMzewmtvA-1
-Received: by mail-qt1-f199.google.com with SMTP id t22-20020ac86a16000000b003bd1c0f74cfso10549017qtr.20
-        for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 03:04:52 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F22ED23CF
+	for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 10:23:56 +0000 (UTC)
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-3ed3080d17bso10755e9.0
+        for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 03:23:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1679480635;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=mcDRlGqb6Azx/x9zIxUH1xj8S/fV5DxJOLYKrwe15TU=;
+        b=b9wczk/RvzcvFUi12dsmCX/dOp168FNB/SofHTHB0xagYDW5bzYNCsxLv8oNlbpPrK
+         ZjD9DO5iSb2Vm2D/61rXC644sDbVjg56fHs/fY+0K8FEb2LHGQGJZH71ZLYSdF4K05a9
+         4cJVG7d4bcGG8TWLurN45B+JegyERpBhQP5uoNdcwXGJoAaE1ipCg+CE2HstLhaBcLoU
+         98rMKepuI+GZLDwDZSHRISsqO2IbuMWWiWyRhbSHS0+b1fQGgVC8Q4+FjaLviFbbA+uA
+         46S8lM2iCvIAQhazV4ySTlQcjLZ2x4XLbLG7zp9qFH3OUFyN9pd8Xq9taLn40wgOvBJh
+         ACNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679479492;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:reply-to:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=UlzXqLaiFJqutr/ifAilPZ+K+vBBAuY2KbY33ds/cHU=;
-        b=l8ltpxo7i6j3686+BJYbUr8jTa0BpcUNrGceZjGgWfTqni8iOt/lxQDOGJM735ubd4
-         u/09BpktKi1FOOmdEnAH/YX+n7Aq9W9Wn9VCdTkjPFg9HV6ZLmY2vNLhRwL25JnSGScK
-         cnrisY2cxyXeWZSOAW4La6gbF4MGV/oVOj1yBEFnwtp2cwF651Ai2i3CAdjMGQvZCJJc
-         94oebV3+zzfRRiKv2cOU1g6MsLw0/plO+UnjY1H7qeo1e+6UYSAl+Iak2uexrZfvDlTJ
-         ibfg2GmsScMimOxSQyn2XmV5rG44Nm8mIxNbRr/eKU284mj+TEePqvlS/x9X+SDjhd1l
-         2oxQ==
-X-Gm-Message-State: AO0yUKXRak60RCEGqWoJpfYhi77z+tgavRiMNSfifq4DavQ4bIsFNH9k
-	dCo2NwsHO1ot9WEIsJvC2mvz7J8itef3C7tKrKhq5G1LFHBS8uyieIXcGDMjdw+YgqTQeRRAQ92
-	UYPtYXUwmXHC9qGY=
-X-Received: by 2002:ac8:4e83:0:b0:3bb:88e2:7625 with SMTP id 3-20020ac84e83000000b003bb88e27625mr4875205qtp.24.1679479492326;
-        Wed, 22 Mar 2023 03:04:52 -0700 (PDT)
-X-Google-Smtp-Source: AK7set+MdvA2FH9NCy5hSRE5kdbgRKa8XU3K3oS6KEMykktU5okAu5JCYZ0efXr+GMZF3/gdAkmxJg==
-X-Received: by 2002:ac8:4e83:0:b0:3bb:88e2:7625 with SMTP id 3-20020ac84e83000000b003bb88e27625mr4875177qtp.24.1679479492048;
-        Wed, 22 Mar 2023 03:04:52 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874? ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
-        by smtp.gmail.com with ESMTPSA id w8-20020a05620a148800b0073bb0ef3a8esm11009302qkj.21.2023.03.22.03.04.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Mar 2023 03:04:51 -0700 (PDT)
-Message-ID: <1a227cc4-217b-01aa-ecee-9819160d9a44@redhat.com>
-Date: Wed, 22 Mar 2023 11:04:48 +0100
+        d=1e100.net; s=20210112; t=1679480635;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mcDRlGqb6Azx/x9zIxUH1xj8S/fV5DxJOLYKrwe15TU=;
+        b=z6R7LQIxn9GjBLpbUP6BfOX3ZTLLl4HCY+CIdqKq/RGQRJE525Nu+TOWVmn8x+QsLV
+         o3JRjvRYcCugW7kUmqTGVz7cp6Ppq1JMsgOmceo3E5h58TQfGZEg7F/iT+rreaYcw18y
+         JFWzrNasDAbiB950fL0/Og7KJlo/sq7RR2KXj3hkcyEl5NP7t0pURMJdzdipvDENDEuI
+         mATJGA/INUHDaW1TQK0bOTRlWAFelIEFh1tMVdZ6R+/BhSuRqcBOZx1+JR3ofJ6o4mV4
+         g7yLeZRsd2FPPlSRoepa2cse0fDPLGeK657SAr0Qv6Rx/MDqTK33nVWQNHxmVFPlLAUZ
+         PswQ==
+X-Gm-Message-State: AO0yUKUdRkJ39c/WkTqnKDbcuxsjyVDHGwJITj02NZFKHrTaXZ0ddbPL
+	+sLIcpPT69zVMq5C7squ45fwWg==
+X-Google-Smtp-Source: AK7set/RxnGBHvENZoN3y84D3iy9ZfTLiNg7s6OFbvMVV5PfOCNdV5jQnhbS+sVxArHm8nYHBg02hg==
+X-Received: by 2002:a05:600c:3d0c:b0:3df:f3cb:e8ce with SMTP id bh12-20020a05600c3d0c00b003dff3cbe8cemr108656wmb.7.1679480635095;
+        Wed, 22 Mar 2023 03:23:55 -0700 (PDT)
+Received: from google.com (44.232.78.34.bc.googleusercontent.com. [34.78.232.44])
+        by smtp.gmail.com with ESMTPSA id y16-20020a056000109000b002c56013c07fsm13394867wrw.109.2023.03.22.03.23.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Mar 2023 03:23:54 -0700 (PDT)
+Date: Wed, 22 Mar 2023 10:23:50 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: maz@kernel.org, catalin.marinas@arm.com, will@kernel.org,
+	joro@8bytes.org, robin.murphy@arm.com, james.morse@arm.com,
+	suzuki.poulose@arm.com, oliver.upton@linux.dev,
+	yuzenghui@huawei.com, dbrazdil@google.com, ryan.roberts@arm.com,
+	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev,
+	iommu@lists.linux.dev
+Subject: Re: [RFC PATCH 39/45] iommu/arm-smmu-v3-kvm: Initialize page table
+ configuration
+Message-ID: <ZBrXNjOiqHJAxLzw@google.com>
+References: <20230201125328.2186498-1-jean-philippe@linaro.org>
+ <20230201125328.2186498-40-jean-philippe@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Reply-To: eric.auger@redhat.com
-Subject: Re: [RESEND PATCH] ACPI: VIOT: Initialize the correct IOMMU fwspec
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>, rafael@kernel.org
-Cc: lenb@kernel.org, linux-acpi@vger.kernel.org, iommu@lists.linux.dev,
- linux-pci@vger.kernel.org, helgaas@kernel.org
-References: <20230320180528.281755-1-jean-philippe@linaro.org>
-From: Eric Auger <eric.auger@redhat.com>
-In-Reply-To: <20230320180528.281755-1-jean-philippe@linaro.org>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230201125328.2186498-40-jean-philippe@linaro.org>
 
 Hi Jean,
 
-On 3/20/23 19:05, Jean-Philippe Brucker wrote:
-> When setting up DMA for a PCI device, we need to initialize its
-> iommu_fwspec with all possible alias RIDs (such as PCI bridges). To do
-> this we use pci_for_each_dma_alias() which calls
-> viot_pci_dev_iommu_init(). This function incorrectly initializes the
-> fwspec of the bridge instead of the device being configured. Fix it by
-> passing the original device as context to pci_for_each_dma_alias().
->
-> Fixes: 3cf485540e7b ("ACPI: Add driver for the VIOT table")
-> Reported-by: Eric Auger <eric.auger@redhat.com>
+On Wed, Feb 01, 2023 at 12:53:23PM +0000, Jean-Philippe Brucker wrote:
+> Prepare the stage-2 I/O page table configuration that will be used by
+> the hypervisor driver.
+> 
 > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
-
-Tested-by: Eric Auger <eric.auger@redhat.com>
-
-With this patch the pcie-to-pci bridge is assigned an iommu group.
-The iommu group topology is not yet correct (ie. end points downstream
-to the pcie-to-pci bridge are put in a separate iommu group) however
-this is not related to that patch and not supposed to be fixed here
-(https://lore.kernel.org/all/4fead092-1058-198a-b430-3dee0fffcd51@arm.com/)
-
-Thanks
-
-Eric
-
 > ---
-> This fixes issue (1) reported here:
-> https://lore.kernel.org/all/Y8qzOKm6kvhGWG1T@myrica/
->
-> resend: Added linux-pci list
-> ---
->  drivers/acpi/viot.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/acpi/viot.c b/drivers/acpi/viot.c
-> index ed752cbbe636..c8025921c129 100644
-> --- a/drivers/acpi/viot.c
-> +++ b/drivers/acpi/viot.c
-> @@ -328,6 +328,7 @@ static int viot_pci_dev_iommu_init(struct pci_dev *pdev, u16 dev_id, void *data)
->  {
->  	u32 epid;
->  	struct viot_endpoint *ep;
-> +	struct device *aliased_dev = data;
->  	u32 domain_nr = pci_domain_nr(pdev->bus);
+>  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c   | 29 +++++++++++++++++++
+>  1 file changed, 29 insertions(+)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
+> index 755c77bc0417..55489d56fb5b 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
+> @@ -16,6 +16,7 @@ struct host_arm_smmu_device {
+>  	struct arm_smmu_device		smmu;
+>  	pkvm_handle_t			id;
+>  	u32				boot_gbpa;
+> +	unsigned int			pgd_order;
+>  };
 >  
->  	list_for_each_entry(ep, &viot_pci_ranges, list) {
-> @@ -338,7 +339,7 @@ static int viot_pci_dev_iommu_init(struct pci_dev *pdev, u16 dev_id, void *data)
->  			epid = ((domain_nr - ep->segment_start) << 16) +
->  				dev_id - ep->bdf_start + ep->endpoint_id;
+>  #define smmu_to_host(_smmu) \
+> @@ -192,6 +193,7 @@ static int kvm_arm_smmu_probe(struct platform_device *pdev)
+>  	size_t size;
+>  	phys_addr_t ioaddr;
+>  	struct resource *res;
+> +	struct io_pgtable_cfg cfg;
+>  	struct arm_smmu_device *smmu;
+>  	struct device *dev = &pdev->dev;
+>  	struct host_arm_smmu_device *host_smmu;
+> @@ -233,6 +235,31 @@ static int kvm_arm_smmu_probe(struct platform_device *pdev)
+>  	if (!kvm_arm_smmu_validate_features(smmu))
+>  		return -ENODEV;
 >  
-> -			return viot_dev_iommu_init(&pdev->dev, ep->viommu,
-> +			return viot_dev_iommu_init(aliased_dev, ep->viommu,
->  						   epid);
->  		}
->  	}
-> @@ -372,7 +373,7 @@ int viot_iommu_configure(struct device *dev)
->  {
->  	if (dev_is_pci(dev))
->  		return pci_for_each_dma_alias(to_pci_dev(dev),
-> -					      viot_pci_dev_iommu_init, NULL);
-> +					      viot_pci_dev_iommu_init, dev);
->  	else if (dev_is_platform(dev))
->  		return viot_mmio_dev_iommu_init(to_platform_device(dev));
->  	return -ENODEV;
+> +	/*
+> +	 * Stage-1 should be easy to support, though we do need to allocate a
+> +	 * context descriptor table.
+> +	 */
+> +	cfg = (struct io_pgtable_cfg) {
+> +		.fmt = ARM_64_LPAE_S2,
+> +		.pgsize_bitmap = smmu->pgsize_bitmap,
+> +		.ias = smmu->ias,
+> +		.oas = smmu->oas,
+> +		.coherent_walk = smmu->features & ARM_SMMU_FEAT_COHERENCY,
+> +	};
+> +
+> +	/*
+> +	 * Choose the page and address size. Compute the PGD size and number of
+> +	 * levels as well, so we know how much memory to pre-allocate.
+> +	 */
+> +	ret = io_pgtable_configure(&cfg, &size);
+size variable is overwritten here with pgd size, while used later on
+the assumption it still contains the SMMU MMIO size.
+This looks like it is not intended?
 
+
+> +	if (ret)
+> +		return ret;
+> +
+> +	host_smmu->pgd_order = get_order(size);
+> +	smmu->pgsize_bitmap = cfg.pgsize_bitmap;
+> +	smmu->ias = cfg.ias;
+> +	smmu->oas = cfg.oas;
+> +
+>  	ret = arm_smmu_init_one_queue(smmu, &smmu->cmdq.q, smmu->base,
+>  				      ARM_SMMU_CMDQ_PROD, ARM_SMMU_CMDQ_CONS,
+>  				      CMDQ_ENT_DWORDS, "cmdq");
+> @@ -253,6 +280,8 @@ static int kvm_arm_smmu_probe(struct platform_device *pdev)
+>  	hyp_smmu->mmio_addr = ioaddr;
+>  	hyp_smmu->mmio_size = size;
+>  	hyp_smmu->features = smmu->features;
+> +	hyp_smmu->iommu.pgtable_cfg = cfg;
+> +
+>  	kvm_arm_smmu_cur++;
+>  
+>  	return 0;
+> -- 
+> 2.39.0
+> 
+Thanks,
+Mostafa
