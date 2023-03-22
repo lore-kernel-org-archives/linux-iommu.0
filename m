@@ -1,155 +1,152 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2046.outbound.protection.outlook.com [40.107.244.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0919E8F58
-	for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 17:41:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1679506908;
-	h=from:from:reply-to:reply-to:subject:subject:date:date:
-	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-	 content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=R6GCfilh0cZKB8DQRhLDL4RZochnv+xVhcOUE0oDoD0=;
-	b=GKv5EXWhx1InC+JqVlzvIySHolPNgmvgmEIWvdXbF+NQFneG5SZ57z0gGfnfa3ncYH/Pfd
-	FtVnn1lK3ZmSgAzhrWPRQSV/bOauX0y2UDsHu3uz19SW8sDu2aHOG5Yhi6hLtpzDFZP3/u
-	JtNXiYnU7wuJRwHr93RzULa2jCDFGwo=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-643-TMcN1FV4OJ-qOVTqFVB4Xw-1; Wed, 22 Mar 2023 13:41:47 -0400
-X-MC-Unique: TMcN1FV4OJ-qOVTqFVB4Xw-1
-Received: by mail-qt1-f200.google.com with SMTP id t15-20020a05622a180f00b003e37dd114e3so4572847qtc.10
-        for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 10:41:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679506907;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:reply-to:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=R6GCfilh0cZKB8DQRhLDL4RZochnv+xVhcOUE0oDoD0=;
-        b=YAFgXSUFVizvOQnuevk9RrHpdbUE4yOTaxg04pyoWW061dgl0frFy5vTgoEf0pRt5V
-         Qw5yQNGUAaOWkeM3LZGSGDCzF0HiR5WZyzhZZqrIpsXtAghqUQasMRwCEk5E4SonD3oL
-         PENDRRcgTEeXBFO6ypPr894cM1In/epCxcwtyZaLWUG3Y5tcaSmcaAs/qzT8h15eY8Tb
-         hEtqnZ5fljKakSOFWJPgy/dzXDleVqS2MbC+XqV6eI3WLpa+OvO+f79/b6KOHIlLHnub
-         xPz6JhGrG31MqphxTh7tBo3taYGg8DGT0M3imKtp6/P1mtjwy6fegCPQfFplwcX6t4cp
-         8B2g==
-X-Gm-Message-State: AO0yUKU9Ja0B0yRhv6N5ZQ0SFx4uYirSVLN4NUkJu3N36Ah/SDRDJRRz
-	J7u5NGCBrL+BOdav+Rs5Iwpkf6xQeZDqBtofeN3/NUXyKtNihx96Cn8EpDFh/exgLe95HVI+Amr
-	FHW5UkOieOs0hUsg=
-X-Received: by 2002:a05:6214:d07:b0:5cc:e059:efa3 with SMTP id 7-20020a0562140d0700b005cce059efa3mr7054146qvh.23.1679506906941;
-        Wed, 22 Mar 2023 10:41:46 -0700 (PDT)
-X-Google-Smtp-Source: AK7set++hcwOGZwKk/07mSyw88ezcgv4USpopnCaUqdkAzomtduECxyPJGmLRRVrQqNYnB5Xmc40DQ==
-X-Received: by 2002:a05:6214:d07:b0:5cc:e059:efa3 with SMTP id 7-20020a0562140d0700b005cce059efa3mr7054121qvh.23.1679506906665;
-        Wed, 22 Mar 2023 10:41:46 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874? ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
-        by smtp.gmail.com with ESMTPSA id p17-20020a374211000000b007428e743508sm11708821qka.70.2023.03.22.10.41.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Mar 2023 10:41:46 -0700 (PDT)
-Message-ID: <bcab0150-bd42-8acf-f0ec-85ce19699a57@redhat.com>
-Date: Wed, 22 Mar 2023 18:41:42 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F5279476
+	for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 18:07:05 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hSS//oylg9gEZQ0XKUy/Z7LQhIItazC8Kqp/+LJMRjEadnUtvZLF8PcXjIB3VEVBJWDpDy0U12gAk5Hj4ivd4wGGqjHG22+C5lQLj1txo8ytt513P+QXwRT4hnsbK0qbb0SP2F3lpTWkpr+zvcP64WcN59z8j1NGWvnK2mu8PxU2Im7su+LIKXOdr9QNyB5TJu1wQN8YAty/00HHs46H+l+7xm6rkjdXNyU0W/E5uCzgnZVcx/ni/jFMRohDdYYje2pHtybuR7JALBz/Wp6iX0ZdqlK/5wPTMRL1O1nz3aoZrlThtcMV2T2lhFktg5yF3nycDsUGSAHe5LIpT5P4fw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=sOTb6mNaUws9k/YYz8sgYTKG7V4UtbhIeW2kOwJUOnM=;
+ b=aG6dV4iGtsvV4NAnXwfeJO/XXzb9iwdoH8af1aHo7c10ntCskwqWX5DsF+cxX4exQw6t6B+I73qVkiXzLW0jRwatrkIAgeIDpxzTsyvTdhMLawQAZeLRizVfbZYRxfQpjvR9nUmiibM0Gpr/+MeQMnJOxZrJIOtMnqk83KY3bZhya7zF2spKv27k73x9It42anDyziHUyTq/VvqIzteDkmodyqglMMsUl1ejM3d9yeFRA8GFd7Ty/2EjlkM1Dvu1jPAAFDGl0pEYeWd0xR3CLa2NifH1VdwbWoLP83bqVqlV+iZrbkoa7yf2VNloEWHMqyH+00cbD0BIy4kjYY/3cg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sOTb6mNaUws9k/YYz8sgYTKG7V4UtbhIeW2kOwJUOnM=;
+ b=S21AcRiSJAUe5dKRrV4VpBj0IM3ZSu13ZcxYL3cFO0g/hk14xW0c7xcEk65VHHdD21f3yn4NQCT1hcbzxnxL/ZWfiJzR9B+HChx3r97sBfuwP85Wr0PeBHTPidlYLDYAa72pDtkchJHvb/yVB/e3S5Qbs2HfdkSZINt3c7zwhOPQgb5/Yg3c9/5pKye2U3gDJat5YCFyHSqW6N7TC/8yzVQTEhXHWk6+6Uv0s0/ZS6vEXN7WepxWSdxP9a1crkXhnY8DxBgtLMMOFvVoIa9IIrAejCSSOzxun2IZHvlB03Iy9GTDf6W4vlWkH4tXm4FOnJnXmG9Dvo5gqrrSKje68g==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by CH3PR12MB8536.namprd12.prod.outlook.com (2603:10b6:610:15e::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Wed, 22 Mar
+ 2023 18:07:03 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::ef6d:fdf6:352f:efd1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::ef6d:fdf6:352f:efd1%3]) with mapi id 15.20.6178.037; Wed, 22 Mar 2023
+ 18:07:03 +0000
+Date: Wed, 22 Mar 2023 15:07:01 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Eric Auger <eric.auger@redhat.com>
+Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"will@kernel.org" <will@kernel.org>,
+	"kevin.tian@intel.com" <kevin.tian@intel.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 01/14] iommu: Add iommu_get_unmanaged_domain helper
+Message-ID: <ZBtDxXjtx/juyOXX@nvidia.com>
+References: <ZAtNrFAEHvmM4FOW@nvidia.com>
+ <f61ca5693d8845eba0a2139324e52d98@huawei.com>
+ <ZAtTNK1NbMJ4iyE0@nvidia.com>
+ <b9e850a91c494a5397a0ae154e9ef1da@huawei.com>
+ <ZAtY8S53//5P5egd@nvidia.com>
+ <ba7f4b9f81264832842a6c7486cb6dd7@huawei.com>
+ <ZAti8wy9wXwtIqLT@nvidia.com>
+ <b75259e4-94f8-2276-05f8-a0351ea110dd@redhat.com>
+ <ZBs0ifAVwWvOt2b5@nvidia.com>
+ <bcab0150-bd42-8acf-f0ec-85ce19699a57@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bcab0150-bd42-8acf-f0ec-85ce19699a57@redhat.com>
+X-ClientProxiedBy: MN2PR14CA0004.namprd14.prod.outlook.com
+ (2603:10b6:208:23e::9) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Reply-To: eric.auger@redhat.com
-Subject: Re: [PATCH v1 01/14] iommu: Add iommu_get_unmanaged_domain helper
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- Nicolin Chen <nicolinc@nvidia.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "will@kernel.org" <will@kernel.org>,
- "kevin.tian@intel.com" <kevin.tian@intel.com>,
- "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
- "joro@8bytes.org" <joro@8bytes.org>,
- "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <9b1077601cace998533129327f5e7ad946752d29.1678348754.git.nicolinc@nvidia.com>
- <eddde530-cd37-f493-7f0f-c97905f0de64@redhat.com>
- <ZAtNrFAEHvmM4FOW@nvidia.com> <f61ca5693d8845eba0a2139324e52d98@huawei.com>
- <ZAtTNK1NbMJ4iyE0@nvidia.com> <b9e850a91c494a5397a0ae154e9ef1da@huawei.com>
- <ZAtY8S53//5P5egd@nvidia.com> <ba7f4b9f81264832842a6c7486cb6dd7@huawei.com>
- <ZAti8wy9wXwtIqLT@nvidia.com>
- <b75259e4-94f8-2276-05f8-a0351ea110dd@redhat.com>
- <ZBs0ifAVwWvOt2b5@nvidia.com>
-From: Eric Auger <eric.auger@redhat.com>
-In-Reply-To: <ZBs0ifAVwWvOt2b5@nvidia.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CH3PR12MB8536:EE_
+X-MS-Office365-Filtering-Correlation-Id: 67ae1f0a-06cf-4836-7077-08db2b003d0e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	SbpF5VMloUzDkGtRSQRevI5raS6gRZ1IUEvJ+c3hQ9M650udhKu+W0qKBJvBl6T3MLmwnLrDqJgaWWhb90E66AU04Ja2eJGO0eMS9Um81NRKOxBiCq9TUA9AAGcKHlSauBFqPxKpIB88xqlyfZZGRns16HtNarwn98lzK6YbXGvr9/A8jphmbHbnpQw1kC0O7SxN1p4VSFzaQfxoJhQvEPfwA7Ffx3k7fcQc1O7hqik6dvd4gk77SdcIvXCP+0kwZBIiqeLXgXMN15TFO3cXRJvczpQ+g214B7mwl2Wi6RqyOSTlDKsjo1EgJYx6MqKQKGvyHkivqg5cKmmx7Y8YQPcbm1EzRyDpHvZz5nVdGHZlLtzgvv4p0WCMPBC/5JUvBya1DmIySa1l9Ng4+nIsGo2CjTg430EOyBaTZNvQjp4nx7sjBZ6GOcWzYWq7JIg5FzlvRiPvGY6cWuGondQKZAXYCACAL3jyj+eFIgy/PavVduH4j7/wzCUrQ/9+4I+eq83BD8pxlr1bTke2OEcXmFH8r1aykhByAfOMp2JkLF0jurcjKoNqgONf1lmqOjpgizcdA7SEBHwKP3cCAjI05ys6V3qVI+GmRKKiD1KcAR47l0BbV7V4vu0NTILOfTc4/FwpGJPGVeqX4zcHzhcggQ==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(136003)(396003)(346002)(366004)(39860400002)(451199018)(36756003)(8936002)(5660300002)(7416002)(2616005)(83380400001)(2906002)(316002)(6486002)(478600001)(54906003)(86362001)(26005)(6512007)(38100700002)(6506007)(41300700001)(66946007)(66556008)(66476007)(8676002)(6916009)(4326008)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?MGpJJxrg787qA6nXxWAoEED/O+DTNJzAkevvYhfUhfAOsvrlrBpaFvZ45ebM?=
+ =?us-ascii?Q?uPhcfKKfrrpS54HlxO8VaHVq2yykjtFae4NgHa5uftVvJXRFd13LazhU7vo6?=
+ =?us-ascii?Q?KZy+ox/NjE8LZFqLwqB00i2P9XAzI/ps1d6lzWFlmiEQuPw5urZyxNAPnNpL?=
+ =?us-ascii?Q?dAAAkmNFRp9rzP0stIIFOk8qRUT36Hz5MM971Zktdclv1mrWSlzC9sWb3IpT?=
+ =?us-ascii?Q?1hIOQ3bdK/L2rgWToaxXka4daLkEjpcEu4cZZZbNG63lmo3O1b9zOTYRBcOY?=
+ =?us-ascii?Q?DieSQ3Y0n075YHN2zmn7EjbhpH3doaO535GJSp4QHH95WzZPtvbGCWlQqx48?=
+ =?us-ascii?Q?NcjX9GvLnf0QO0HO4A+cmhJaTBUNwoZmyxjZPOdEHObVUsM+bD+WoZNM/7Gc?=
+ =?us-ascii?Q?q4W1LsCZgN8298Ho60AlRq3kNqcjGAUuS6jR4i8th/+d2/W6APKkyyLo+uc9?=
+ =?us-ascii?Q?p1biyaGfrAsWvROhpciKmoqPEKqIsxLfKmsVSzU68VsAnsxP8uOP2LcJlTt4?=
+ =?us-ascii?Q?RbFQmE9ZVYR2/Pf18eMI6U8oHhWbZW0Fi4W2oVwNJ/Zx8srOTc5ZR5JoM/Sk?=
+ =?us-ascii?Q?KX3G4WkzVND9RKYODfKjoDGEfsxDRxVAlfYxBCX1e5kOYbKHNWIBCRmFlLHH?=
+ =?us-ascii?Q?H/AZ4+MpFU1ktZR2rgLLDHxb61zw/L6ge5LvtQBIW8SMTJtZl9TqZ9GVcN0C?=
+ =?us-ascii?Q?ZlBfUTl7q9xB1gxyg2RoPrqa3dzazycFTdzZrk+A5lvsnVIV0o6kMTiDUOCZ?=
+ =?us-ascii?Q?uDVoAtUlCbcstzviFCjb3nRlnx8YMmQZjkez1UnnQNcTBJPm10KLD/XET75N?=
+ =?us-ascii?Q?m7HA9nv1hm3vxtg+n2+w19OVvDnTqSmi3eg5/Y86BsL+egvH4Zo2dhViBxuk?=
+ =?us-ascii?Q?GUvSDeF5vuN4l/RPOUSulouk2Dsf442bB59YDgSA3x3BJtCVJzvT0PDJN6IW?=
+ =?us-ascii?Q?oSsWOcms2ryfYxwDpE3PW8geUkg4kEfYksmeyBsanHeWOi7LGBS23EUl33ya?=
+ =?us-ascii?Q?jYVtA7tlhOFMlA9hiBN9De3Irqh5s2IrBJTdWLEkcG3ATCwNY+wBAK7PeCVf?=
+ =?us-ascii?Q?wGEBiUVGL7X2yhlUOmiDC2Nwh9ZL3Iju2ixU/UoGcvwGdismjsbTdE52Z/Yz?=
+ =?us-ascii?Q?RZ46wdncyUWtppSf66qPIRtKq0R8sOPamh4GBg5IwQEdQrlJdwJe3szSh+uD?=
+ =?us-ascii?Q?2YJA2g6Mu/p8GRNoMfomiymhTI7y4dhkuQWZnChxFp/aXrPTRxz7d7WDUAOg?=
+ =?us-ascii?Q?2ULtqJtNqWw1UOy80I72+v6wCpm5v2DmvVAmMFjoQ1pUzcN2MZr1Fkyz5yV3?=
+ =?us-ascii?Q?xh4FI1cEkXewvsPVETHTOk/DBclskLP3+forwkmMago3QVcf3XfXAexMmJxk?=
+ =?us-ascii?Q?8V8Q31+dIwVEdua+BRsd/QZgg5lJNBQcUJ8+XnMU7PiyNkOT8zooEifD7mD/?=
+ =?us-ascii?Q?GT1I+amWMWuHGT1rbk3y3v+m0etM6Vg5OJfz27oPoM9GhJ0pV2XNtf2kMUGS?=
+ =?us-ascii?Q?NPhJEpiw01hSecQAtBXeNN6dBlN9RNLVMouwhs9dyAbatZZpnm5siuIsTR9u?=
+ =?us-ascii?Q?lqGDW7BqY3pdvLhu6idTiPZoupMe57x9auUHXj6K?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 67ae1f0a-06cf-4836-7077-08db2b003d0e
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2023 18:07:02.9125
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: PwriWFwQoV0t2Rhw3hWbSDdBJS1ZsOEp0wbnQhvjPIjViBA5opWMbqk2u2Cf1zBT
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8536
 
-Hi Jason,
+On Wed, Mar 22, 2023 at 06:41:42PM +0100, Eric Auger wrote:
+> > I would say this spec language is overly broad. If the FW knows the
+> > reserved memory regions it creates are not sensitive to PCI layout
+> > then it should not be forced to set this flag.
+> 
+> But do we have any guarantee the bus numbers can't change. I thought the
+> guest was allowed to re-number at will? While further thinking at it,
+> all RID ID mappings should be affected by this concern, I mean not only
+> RID 2 RMRs? What do I miss?
 
-On 3/22/23 18:02, Jason Gunthorpe wrote:
-> On Wed, Mar 22, 2023 at 05:07:39PM +0100, Eric Auger wrote:
->
->>> It seems like Eric's issue is overly broad if we just want to block
->>> RID reassignment that doesn't impact MMIO layout.
->> IORT spec says
->>
->> "
->> If reserved memory regions are present, the OS must preserve PCIe
->> configuration performed by the boot
->> firmware. This preservation is required to ensure functional continuity
->> of the endpoints that are using the reserved
->> memory regions. Therefore, RMR nodes must be supported by the inclusion
->> of the PCI Firmware defined _DSM
->> for ignoring PCI boot configuration, Function 5, in the ACPI device
->> object of the PCIe host bridge in ACPI
->> namespace. The _DSM method should return a value of 0 to indicate that
->> the OS must honour the PCI
->> configuration that the firmware has done at boot time. See [PCIFW] for
->> more details on this _DSM method.
->> "
-> I would say this spec language is overly broad. If the FW knows the
-> reserved memory regions it creates are not sensitive to PCI layout
-> then it should not be forced to set this flag.
+Bus number changing is allowed, but qemu should not be sensitive to
+this.
 
-But do we have any guarantee the bus numbers can't change. I thought the
-guest was allowed to re-number at will? While further thinking at it,
-all RID ID mappings should be affected by this concern, I mean not only
-RID 2 RMRs? What do I miss?
->
->>> But, still, why do we care about this?
->>>
->>> The vIOMMU should virtualize the vSIDs right? So why does qemu give a
->>> vSID list to the guest anyhow? Shouldn't the guest use an algorithmic
->>> calculation from the vRID so that qemu can reverse it to the correct
->>> vPCI device and thus the correct vfio_device and then dev id in the
->>> iommu_domain?
->> I don't understand how this changes the above picture?
-> We are forced to use RMR because of the hacky GIC ITS stuff.
-well we are not obliged to use RMRs. My first revisions did not use it
-and created a non direct S1 mapping. This is just a commodity that
-simplifies the integration and was nicely suggested by jean.
->
-> ITS placement is not sensitive to PCI layout.
->
-> ITS is not sensitive to bus numbers/etc.
->
-> vSID to dev_id should also be taken care of by QEMU even if bus
-> numbers change and doesn't need to be fixed.
-agreed, hence the above question.
->
-> So let's have a reason why we need to do all this weird stuff beyond
-> the spec says so.
->
-> If there is no actual functional issue we should not restrict the
-> guest and provide RMR without the DSM method. Someone should go and
-> update the spec if this offends them :)
->
-> Jason
->
-Thanks
+qemu always knows the current guest assigned bus number for the vPCI,
+since it traps the bus number changes like anything else.
 
-Eric
+Thus when a STE is configured qemu has access to accurate data to
+convert the vSID to the vPCI and vfio_device. Even if the bus numbers
+change since boot.
 
+> > We are forced to use RMR because of the hacky GIC ITS stuff.
+> well we are not obliged to use RMRs. My first revisions did not use it
+> and created a non direct S1 mapping. This is just a commodity that
+> simplifies the integration and was nicely suggested by jean.
+
+I undertand it is ARM's architectural preference..
+
+Personally I would prefer the vGIC model include the ITS page itself
+and that the guest put the ITS page into the S1 mapping in the usual
+way. But we are a long way away from that..
+
+Jason
