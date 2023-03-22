@@ -1,30 +1,30 @@
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D57E7BA29
-	for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 20:04:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68569BA2E
+	for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 20:04:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679515456; x=1711051456;
+  t=1679515457; x=1711051457;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=VVMjsQ1HxJ3krLgi1Lg7Cpv+oN6wKxL1Z/KsE9PULTQ=;
-  b=StX3RpEox10IhAzFmy6F4GUKrbI8Z8jp3x/6QluThYGubF0ZFarDa/4Z
-   t6rRvxbsKa6S1lBJ6PzLn87aV84VfcqaPa8scXxVo0MGS0aSpQhrs8U/4
-   Ybrss8U8q/aMkhpJVnRujUQIQG+RqfF9VdeMAhQBc+CkR2PS5hlHjqMSw
-   EIaOuV47mJvyW1+yQlSSfE2bSEFKQbjMhMRnezncVWLmdJxuX8q8oVkwt
-   lO27pg2r+TqriirtOz61SQjgZRF3lFTAo4kVf1bR7/ZVv/91Ap+YwDCKi
-   lsejzFaQ3ZtlhkPkGFeHbn07cqzYKHhu6+/jWY6AcyjjUUJiSUJzGG3Y5
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10657"; a="339356818"
+  bh=5U1pqEnYI3Q80e7Obrp6GUJ1jNRTk8Hz1ySQDnWY03M=;
+  b=H1Ma15Ha1ymaykzWxEsyBu38BS74zijbIPp7Xanj9I1SRaDBGkpf4neB
+   ffRIobGiAsLPr6YVPiOQWL63JWTOHVe76jRs+3RWq36LWrVe/7E5oZiru
+   Cj58Mv9YO+tL2+eNj1EYhCK2gqsMmZ554G+ICbznfid0ivj5RfLsxlrJX
+   9FT2tZZRCXdkrjEKyXGjYMgqbQnBsB0OcPOXasiRPqRJyCwwnvzhBPxCC
+   mibHsTK3DJJm9hV2z1yrPuy5i98sX+t1zUsSPKZPjs5S8GAzWZDbuwJM/
+   jrrzULVp6aoTrqcB9q59nfY4fbYtH8wTwl8z8K6oSyKjC/+9gLkV4ZhMH
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10657"; a="339356841"
 X-IronPort-AV: E=Sophos;i="5.98,282,1673942400"; 
-   d="scan'208";a="339356818"
+   d="scan'208";a="339356841"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2023 13:04:05 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2023 13:04:06 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10657"; a="682039332"
+X-IronPort-AV: E=McAfee;i="6600,9927,10657"; a="682039344"
 X-IronPort-AV: E=Sophos;i="5.98,282,1673942400"; 
-   d="scan'208";a="682039332"
+   d="scan'208";a="682039344"
 Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.106])
   by orsmga002.jf.intel.com with ESMTP; 22 Mar 2023 13:04:05 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -55,9 +55,9 @@ Cc: "Will Deacon" <will@kernel.org>,
 	Kirill Shutemov <kirill.shutemov@linux.intel.com>,
 	Tony Luck <tony.luck@intel.com>,
 	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v8 3/7] iommu/sva: Remove PASID to mm lookup function
-Date: Wed, 22 Mar 2023 13:07:59 -0700
-Message-Id: <20230322200803.869130-4-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v8 5/7] iommu/sva: Use GFP_KERNEL for pasid allocation
+Date: Wed, 22 Mar 2023 13:08:01 -0700
+Message-Id: <20230322200803.869130-6-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230322200803.869130-1-jacob.jun.pan@linux.intel.com>
 References: <20230322200803.869130-1-jacob.jun.pan@linux.intel.com>
@@ -67,63 +67,35 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-There is no user of iommu_sva_find() function, remove it so that PASID
-allocator can be a simple IDA. Device drivers are expected to store
-and keep track of their own PASID metadata.
+We’re not using spinlock-protected IOASID allocation anymore, there’s
+no need for GFP_ATOMIC.
 
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
- drivers/iommu/iommu-sva.c | 20 --------------------
- drivers/iommu/iommu-sva.h |  1 -
- 2 files changed, 21 deletions(-)
+ drivers/iommu/iommu-sva.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-index fcfdc80a3939..4f357ef14f04 100644
+index 48e8a15ddc9b..c434b95dc8eb 100644
 --- a/drivers/iommu/iommu-sva.c
 +++ b/drivers/iommu/iommu-sva.c
-@@ -51,26 +51,6 @@ int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max)
- }
- EXPORT_SYMBOL_GPL(iommu_sva_alloc_pasid);
+@@ -28,8 +28,8 @@ static int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t ma
+ 		goto out;
+ 	}
  
--/* ioasid_find getter() requires a void * argument */
--static bool __mmget_not_zero(void *mm)
--{
--	return mmget_not_zero(mm);
--}
--
--/**
-- * iommu_sva_find() - Find mm associated to the given PASID
-- * @pasid: Process Address Space ID assigned to the mm
-- *
-- * On success a reference to the mm is taken, and must be released with mmput().
-- *
-- * Returns the mm corresponding to this PASID, or an error if not found.
-- */
--struct mm_struct *iommu_sva_find(ioasid_t pasid)
--{
--	return ioasid_find(&iommu_sva_pasid, pasid, __mmget_not_zero);
--}
--EXPORT_SYMBOL_GPL(iommu_sva_find);
--
- /**
-  * iommu_sva_bind_device() - Bind a process address space to a device
-  * @dev: the device
-diff --git a/drivers/iommu/iommu-sva.h b/drivers/iommu/iommu-sva.h
-index 7215a761b962..102eae1817a2 100644
---- a/drivers/iommu/iommu-sva.h
-+++ b/drivers/iommu/iommu-sva.h
-@@ -9,7 +9,6 @@
- #include <linux/mm_types.h>
- 
- int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max);
--struct mm_struct *iommu_sva_find(ioasid_t pasid);
- 
- /* I/O Page fault */
- struct device;
+-	ret = ida_alloc_range(&iommu_global_pasid_ida, min, max, GFP_ATOMIC);
+-	if (ret < 0)
++	ret = ida_alloc_range(&iommu_global_pasid_ida, min, max, GFP_KERNEL);
++	if (ret < min)
+ 		goto out;
+ 	mm->pasid = ret;
+ 	ret = 0;
 -- 
 2.25.1
 
