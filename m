@@ -1,181 +1,131 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2053.outbound.protection.outlook.com [40.107.223.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 523138F58
-	for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 17:28:41 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CGAsxMKmZhSg2hLBTX4DCGATm8ot5O6JkI8fl13GOWWMC0Sv/XqWFfW2uv2cgCoW3h+vMh9T6OYAbxvMt2iAtSecadhtL6S/ZOVDy6i2jT6PSG8S0qZ35Xi4Du82orxYzgXo7bVnIE3hGP7Do1XnR0Mv7TXvG8rLYoP2kTSbVewMLZ6WjbusC7/xpZuLyFqmkMk2+g0XWLb7OXPhtRArFkULboYrkQO3+zlBE0ItaHwWbxYh5T103Vug5NiJcJbd1EvgM2xDwVzgnAiGO783pwPUU5mHYDX1BKYB0HAxy7dkhCqKWCnUxUhnSgsZBr+4vNenkV7lCqexiMeFT8I7ZQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Di7FZrZ8+bLwRb+Nhw5JI3n+0BzB85SJ/Xg29RsuSyQ=;
- b=fCQrNl2OXdigelVSuWM3IrCzlO/CqyR+D5BP85mgleRrLbex9I5lfWVCYI16NTq3giC7rd9Hcg/NP/knaRo3t9uSP3QftAbnkcEAvjR0FEWNfpRtRBh8oXtZlFtzJsb836mUh4dm2ciTeWdBFVT3CvoQobhcQ6/21LLJSjrp009YCQuWodHTdDSuuOWcQ8eeH1ItY935CK532bzHrj1pItVuHnLJmYIM6ACZtPhsutHg4r9iQSALnS6UHnsCfL/jNVQIP/gm7jdrXiOI1AjTdr/++QRVyO4uiyJprSGvyuBLdk3FYqxW7e4znqVLC8Gu1GXlDdJOy0nfv1BIIt1gpg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Di7FZrZ8+bLwRb+Nhw5JI3n+0BzB85SJ/Xg29RsuSyQ=;
- b=c1IX4qOoDwpdGukZ2mdobPwPv/R5K9TDMMmMGch2pMRWJXPyAIauZ6D0LHOyIroUUy4NfKervmRDz/Y7ZDh8CHRkDD+qe69fn5eVK8Zzz3b1f/GsxcHeF5L9D9hMV1RMZoG2x8wd1YLMx9yq6ZyXU+u48bLZ6iKAihTDggbfmADzP9FwfiZpwrKLQUUXe3NHAhbhDSCyacmceryccZZUSntp3EaUPIhe/jA3joYINToD2sFKANSgIxlh6Ohry4WcbQwjAH/11IHFdcAhMiaG1kFl4JPFa1MI6O6YoVes9OpwL/NrBVBH3jazCnVawvRWXQy6qfjtwnxd9tPdMJSKVA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by CY8PR12MB7413.namprd12.prod.outlook.com (2603:10b6:930:5f::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Wed, 22 Mar
- 2023 17:28:39 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::ef6d:fdf6:352f:efd1]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::ef6d:fdf6:352f:efd1%3]) with mapi id 15.20.6178.037; Wed, 22 Mar 2023
- 17:28:39 +0000
-Date: Wed, 22 Mar 2023 14:28:38 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	"will@kernel.org" <will@kernel.org>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"shameerali.kolothum.thodi@huawei.com" <shameerali.kolothum.thodi@huawei.com>,
-	"jean-philippe@linaro.org" <jean-philippe@linaro.org>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 14/14] iommu/arm-smmu-v3: Add
- arm_smmu_cache_invalidate_user
-Message-ID: <ZBs6xlqMGYhLbI27@nvidia.com>
-References: <ZAtYphmOuEqQ1BiC@nvidia.com>
- <BN9PR11MB52768F4D3E21C5231C1A04D38CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZBhYq8o4gqFZVb6k@nvidia.com>
- <ZBiF1hZVrp/aJRM6@Asurada-Nvidia>
- <ZBifWkY2Lt/U1Z7R@nvidia.com>
- <BN9PR11MB5276E6E3FCA90582AA61BDDE8C819@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZBmZj2pscX0hx2kQ@nvidia.com>
- <ZBqjUeEjjtCclgLN@Asurada-Nvidia>
- <ZBr3/1NzY5VvJrJQ@nvidia.com>
- <ZBs2xaa7Ow1pnB3C@Asurada-Nvidia>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZBs2xaa7Ow1pnB3C@Asurada-Nvidia>
-X-ClientProxiedBy: MN2PR16CA0012.namprd16.prod.outlook.com
- (2603:10b6:208:134::25) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C86F8F58
+	for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 17:36:21 +0000 (UTC)
+Received: by mail-qt1-f179.google.com with SMTP id t9so23605897qtx.8
+        for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 10:36:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1679506581;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=mWbfKdnzylqruLkb669PxI2Ds25u6VYLIbbrabovtsY=;
+        b=PQJwj1HPzHv1dtC0s3LoMHBNrziJ3IVIJiiSj7ubk1Ssg4NpoJ16lj3aVjbzQKzGGX
+         XMvtY+X/emL9T9l07jeS5LSy+n1C6AQ4TI/c3g3fFpB4zyjl5w7QslGs7TvOO9N7YRDW
+         kKq1cJ4HDgAdkQ9UrrlfAU/u79UYRgjiOpTkBKtGNW29CXuv/cJFdTBRR+GURcZ5mQ+a
+         4Rrof8zPjg6cdzZmbRiIe35cfkSaVKcuRDD7ogzBdeh5H3KGTejCaXvDZuTnkjr6ahbY
+         368qtfEBHTUEs8FXhi5Ex9el+l8BdPR+fjWt+m+0uncVwnmkqa93zXp55EXw7foH0W/C
+         kvXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679506581;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mWbfKdnzylqruLkb669PxI2Ds25u6VYLIbbrabovtsY=;
+        b=HvKkHtqWmPkRzHOhKmHEgW+XU+l1V4QCbKfo+gPmb21otyPcS6NOEjQR8P5xoRvbiH
+         /KPIw+2ErGNuceekZN3WTTlVt2PpjboyQc7dLMj6nU3kPy3Egha1Xw41bpVBxcMTbRsy
+         +BBvNyQkVpunQPQAIBFVLb4AWQwAW4ROl0CMHuEm/ePD0ATZtfyG+Ah4Rhye8jqKFlxN
+         mqhey9rsF+VML/i5vFy36eTjn8UoSO1V9qievNQ6tynveSdaglPIchr+hJlbh17Qo56S
+         UbY+xC4mCvAOLGKIOYsncOdtmU9zP/SeAPRaTd7i9bzUZ23K3bD+AicymjOGFdFXrSAv
+         C54A==
+X-Gm-Message-State: AO0yUKVFo79vkKegH3m/wYug2RepBQfLMTzbHH4Kk9hiibnfOxh8QMfP
+	n50rdfwO2v/YGuEO7n0jmdSQLQ==
+X-Google-Smtp-Source: AK7set+1jTuQ5BkMw9ArPzCi/uxOuElPpNpMdi9teoMqfXrR/0DmTYHtW2bV7gjcoP3ib42QHmjm2w==
+X-Received: by 2002:a05:622a:1806:b0:3e3:791e:72d0 with SMTP id t6-20020a05622a180600b003e3791e72d0mr8033898qtc.19.1679506580800;
+        Wed, 22 Mar 2023 10:36:20 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
+        by smtp.gmail.com with ESMTPSA id g1-20020a37b601000000b00743592b4745sm11604976qkf.109.2023.03.22.10.36.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Mar 2023 10:36:20 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1pf2Nn-000yQO-Iz;
+	Wed, 22 Mar 2023 14:36:19 -0300
+Date: Wed, 22 Mar 2023 14:36:19 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Steven Price <steven.price@arm.com>
+Cc: Heiko Stuebner <heiko@sntech.de>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH] iommu/rockchip: Add missing set_platform_dma_ops callback
+Message-ID: <ZBs8k8nki/iqUiwE@ziepe.ca>
+References: <20230315164152.333251-1-steven.price@arm.com>
+ <ZBnBU9OU4iV6CV0W@ziepe.ca>
+ <85607806-b888-2d5e-67a4-e9d63ebd1976@arm.com>
+ <ZBr5e6tn1i7EE/16@ziepe.ca>
+ <a5b946f0-5be8-a656-a8d5-1cd75399f0c4@arm.com>
+ <ZBsb01emBJJMZIt0@ziepe.ca>
+ <bee3e168-3fc3-89e8-6b10-a830f052cf55@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CY8PR12MB7413:EE_
-X-MS-Office365-Filtering-Correlation-Id: e351e17d-6c39-4321-6379-08db2afadfd9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	DDzVuZ6Hgc0wXjiL2cScwnQzr93PB4iRhP/d135RBrXyNTHxNbv/3csTHVMCi8cVB3XQkvMScMgtwvC4lv3xwZU5XZIkC4T10Qi9AVDiMxOKB1uCU0Jfw5zdEsq+sdAkh12MUmsE1P+HUr/w5g4Aj779V1XPNC7BDC/dTriw8XzkC6AJ4wfsIiOiBJqM69Gn5UF5A7ib6BsCBoIpZgBVQWfWluMzAU2oh9HW8QVvs0Lo5gfv2oS5LCK5tytyTWtIYqfi4B/08Hjx6QdI+Rf/0CJUr+K87MCCcB3J+z398TLD0eYukIU2j3gL2MzGq94ODwz3ZIe0Mpw5wLSXDPm/YIsjswSrJrmBSTgMGL1dQjEs93pzDX5y9pZn+S5gvbQ+f/uWv0AB8TPAjJGBYZS6N8ZF5AGm6PsC2iftJCVV1hQT+rHGDy0wUtRiA4V+s4W1TTRcgCQZhpnciT+kcA4AsAGKKQozSZRxevfekFPacv/islHI0clJouNEnHHcS0jOXfEKQhoGo85T4vDc1YT9+80i0LD1d+xRgVl6Ruy7Vptuu7H2P+uNp3Pb0taqKsb+tnPsm9LoyXqZVKbWhyKYHAssOE2E3DlrknSujMrBPTJDmnzRTA6rV1S1OBrwenSEkYAAvfTwX4T99Gl8gY7N5w==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(39860400002)(136003)(376002)(396003)(346002)(451199018)(2616005)(86362001)(6506007)(6512007)(6486002)(5660300002)(26005)(478600001)(37006003)(316002)(54906003)(186003)(83380400001)(7416002)(66476007)(66556008)(36756003)(4326008)(6636002)(8676002)(41300700001)(6862004)(66946007)(8936002)(2906002)(38100700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?TpyKToyD2KMhXcOOW39zo565PYgRUwDct6nUcSav4oceDQvF9zMR8c7QXUob?=
- =?us-ascii?Q?fdFPP1riAKbw89MgPdIy7ra7ipXXNvPNNb0QdTbSXQZSIaOs2hbakqPWIzE8?=
- =?us-ascii?Q?BIZZTZZEWrfCzB62X9VKh8/JJ6+Pms9dnWJ2iw/yL9T/jGwlYVy0LqGOjpKM?=
- =?us-ascii?Q?pjstSEPhw81LYDYjnZXg8OsZHEn2lf2VPynKfp0ZiJKu+s/0lxJWLL4uwG/o?=
- =?us-ascii?Q?Tde7hsO7F+AIFtqKjbPj/X5HsApVtbaNL0BQRYvvFhrV6cYdb1bDh+BhdjJK?=
- =?us-ascii?Q?KsV9QnVfNDSfbWM/1eqljmrTtVe4t9r8LBfj6y1ZYXQBfbU3MPrEfbnXJoxe?=
- =?us-ascii?Q?lxtcRBAKZhYH2gFmapHNijCzgLAYvE0p5+P97LUXElF2VH1vTjcJYgEVjdlP?=
- =?us-ascii?Q?41Y1i7T878LqgJ4ilL+nQYgJ56xfZLx81frQdkBQh4Px5ZjZOD3sceSTVGLF?=
- =?us-ascii?Q?P+t0vb3uoCxRuGFlLJdKkc8sg+hDTccWEMjvpNKUlvJQzLRcZfgxcSo7qq6i?=
- =?us-ascii?Q?mwvFbvFAqKg1N1NMvrIaA+SfyqDJylFsJBVWhd3+T9NmfcZHgqXQHN18JXFU?=
- =?us-ascii?Q?7wq/6PGXpRVOl5RKJEjT2FE9y8OgunNmYiub4iPMarasM2gfqUHqVcMd2sEt?=
- =?us-ascii?Q?u8Arhurcdnb+iCqNKAHUbjG2jmvwKLobeJPMoYmfuZLL3JQBg8MJPJS9t8+p?=
- =?us-ascii?Q?cOJQBJdroqbPnhrXl23Hhjl71hxIipRqZIwZu4TD2siuNe//zaWQgWXKYDCW?=
- =?us-ascii?Q?AKY55r/5oxbDP93+2kcw2J2sThbnSwBt8lH5KADBCXQB3B2Tmayk2DzLIDLC?=
- =?us-ascii?Q?tnJZS0xk4EQu4FFKaOzpj80TCobkAnB/c/a2uzK4QENgRgysC0JERgYMDXFp?=
- =?us-ascii?Q?A4lj2I6exh/Y8SAw+7+j3MU8VJHr6GS8W1ZhZE/lG7KTOx1dplXzFwMofUXx?=
- =?us-ascii?Q?drQ+PLg/enzDfMSMkqg/4wvGNTfNOGmnP5OrAXOJdOaZV8/gjgigqNs1ncex?=
- =?us-ascii?Q?zScImYUgZwzKqtbnt4NOB5cBmXOm5PCRejJebtudPZMHn7Wy/7DIDwmQCcAj?=
- =?us-ascii?Q?06tCkkuwEcEoW/qGozk+kJsAlEjplgKnXtlTcsaJq0D8stenStuCBuvd2SYu?=
- =?us-ascii?Q?K5JWr1KtoRdqnEr9MF2aowLXr2KhW8gtZLzIoHLlxNxwVAQFcqngPgDPH14s?=
- =?us-ascii?Q?ji6tMXpls7Ezhqf+vLN1/xoLrhcQ9Ax+qOMGrJ5qil66//EIg15B5UhQdCqO?=
- =?us-ascii?Q?mYQWKktCqQutYZNK1mPlBUzRge9umz1pG1Botoi3FJFYe67VzCWkSpr04qR2?=
- =?us-ascii?Q?H1FDpJW5GRVVnUfJB4SmM53T1c3vLUya82GU4kCt7DdN8EyO0uEbquSFwtVm?=
- =?us-ascii?Q?njaF7NK+4vidAO/nEx1+s2649Sqx32NBuc0XZjjSrj+nUZ6lM5mioQDjZ12h?=
- =?us-ascii?Q?unLGWbyxFV6IVtLRK6erdTwC+xUtb6ZdmzAOoWPJZwcBeYXcI1DDOH6VMdyV?=
- =?us-ascii?Q?Jl34rhe5PNkEhzOvY1tLIfE6+CzIljSFTqI1BQvXJy9xA3gXdRV82QQWdxBz?=
- =?us-ascii?Q?jHU9itOpR3vtBO9MSWDym9t/wEnTb6h5Ei7DyvHg?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e351e17d-6c39-4321-6379-08db2afadfd9
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2023 17:28:39.0532
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lmdNunUB7GgnXe4WVuxR2PaQM6p/n+2A6yFvdkpB5IESwYrIpEesUToqLHhQuJut
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7413
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bee3e168-3fc3-89e8-6b10-a830f052cf55@arm.com>
 
-On Wed, Mar 22, 2023 at 10:11:33AM -0700, Nicolin Chen wrote:
-
-> > Yes, there are a few different ways to handle this and still preserve
-> > batching. It is part of the reason it would be hard to make the kernel
-> > natively parse the commandq
+On Wed, Mar 22, 2023 at 04:04:25PM +0000, Steven Price wrote:
+> On 22/03/2023 15:16, Jason Gunthorpe wrote:
+> > On Wed, Mar 22, 2023 at 03:08:41PM +0000, Steven Price wrote:
+> >> @@ -1035,8 +1055,9 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
+> >>  	if (iommu->domain == domain)
+> >>  		return 0;
+> >>  
+> >> -	if (iommu->domain)
+> >> -		rk_iommu_detach_device(iommu->domain, dev);
+> >> +	ret = rk_iommu_identity_attach(&rk_identity_domain, dev);
+> >> +	if (ret)
+> >> +		return ret;
+> > 
+> >>  
+> >>  	iommu->domain = domain;
+> >>  
+> >> @@ -1049,8 +1070,6 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
+> >>  		return 0;
+> >>  
+> >>  	ret = rk_iommu_enable(iommu);
+> >> -	if (ret)
+> >> -		rk_iommu_detach_device(iommu->domain, dev);
+> > 
+> > I think this still needs error handling, it should put it back to the
+> > identity domain and return an error code if it fails to attach to the
+> > requested domain.
 > 
-> Yea. I think the way I described above might be the cleanest,
-> since the host kernel would only handle all the leftover TLBI
-> commands? I am open for other better idea, if there's any.
+> What confused me here is that there's already a call to
+> rk_iommu_identity_attach() just above. But I can obviously add a...
 
-It seems best to have userspace take a first pass over the cmdq and
-then send what it didn't handle to the kernel
+I don't know this driver at all, but to me it looks like this is
+perhaps undoing a partially failed rk_iommu_enable() since it doesn't
+seem to enetirely fix itself. Ie it zeros the INT_MASK and DTE_ADDR
 
-> > On the other hand, we could add some more native kernel support for a
-> > SW emulated vCMDQ and that might be interesting for performance.
+Maybe it would be better to put that error cleanup direclty into
+enable and just move the iommu->domain assignment to after enable
+success.
+
+>        if (ret)
+>                rk_iommu_identity_attach(&rk_identity_domain, dev);
 > 
-> That's something I have thought about too. But it would feel
-> like changing the "hardware" of the VM, right? If the host
-> kernel enables nesting, then we'd have this extra queue for
-> TLBI commands. From the driver prospective, it would feels
-> like detecting an extra feature bit in the HW register, but
-> there's no such bit in the SMMU HW spec :)
+> ... in here. But I don't know how to handle an error from
+> rk_iommu_identity_attach() at this point. Does it need handling - is a
+> WARN_ON sufficient?
 
-You'd trigger it the same way vCMDQ triggers. It is basically SW
-emulated vCMDQ.
+WARN_ON should be fine, that is kind of hacky, it would be better to
+organize things so there is an identity attach function that cannot
+fail, ie pre-assumes all the validation is done alread.y
 
-> Yet, would you please elaborate how it impacts performance?
-> I can only see the benefit of isolation, from having a SW
-> emulated VCMDQ exclusively for TLBI commands v.s. having a
-> single CMDQ interlacing different commands, because both of
-> them requires trapping and some sort of dispatching.
+> 
+> > It should also initlaize iommu->domain to the identity domain when the
+> > iommu struct is allocated. The iommu->domain should never be
+> > NULL. identity domain means the IOMMU is turned off which was
+> > previously called "detached".
+> 
+> I presume you mean in rk_iommu_probe()?
 
-In theory would could make it work like virtio-iommu where the
-doorbell ring for the SW emulated vCMDQ is delivered directly to a
-kernel thread and chop a bunch of latency out of it.
-
-The issue is latency to complete invalidation as in a vSVA scenario
-the virtual process MM will block on IOMMU invlidation whenever it
-does any mm_struct maintenance. Ie you slow a vast set of
-operations. The less latency the better.
-
-> Btw, just to confirm my understanding, a use case having two
-> or more iommu_domains means an S2 iommu_domain replacement,
-> right? I.e. a running S2 iommu_domain gets replaced on the fly
-> by a different S2 iommu_domain holding a different VMID, while
-> the IOAS still has the previous mappings? When would that
-> actually happen in the real world?
-
-It doesn't have to be replace - what is needed is that evey vPCI
-device connected to the same SMMU instance be using the same S2 and
-thus the same VM_ID.
-
-IOW evey SID must be linked to the same VM_ID or invalidation commands
-will not be properly processed.
-
-qemu would have to have multiple SMMU instances according to S2
-domains, which is probably true anyhow since we need to know what
-physical SMMU instance to deliver the invalidation too anyhow.
+It would be best if it was setup at allocation time so in
+rk_iommu_of_xlate() before dev_iommu_priv_set()
 
 Jason
