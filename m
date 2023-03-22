@@ -1,57 +1,31 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 14B848839
+	for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 14:44:05 +0000 (UTC)
+Received: from 8bytes.org (p200300c27714bc0086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:7714:bc00:86ad:4f9d:2505:dd0d])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 192AD8BE2
-	for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 14:42:43 +0000 (UTC)
-Received: by mail-wm1-f45.google.com with SMTP id p34so6685524wms.3
-        for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 07:42:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1679496162;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=iclVlj0uRLLGWQO8Ig3rbocnokNbdehKEN39LMvr+XM=;
-        b=JPC+mMlQpMmMFu647oTbAgAK5ChkEldXnrX7wvPXNL+boH7AjnOjmYClon2Ppm+UoC
-         P4p+AhTWyqeuAC4S2nxtZ8q0JP9fCLJB0i/8uJjRjyIm3oiFf+UgWrdEgziEfPQOcgix
-         6FvjIE4eNMJ/5Vd3SB7kSM1RG+8nqoghdDQIAhEtCdiFPVQQy/0BMz5EzwanEhmmTVFR
-         3isrwC3inMonusGLefSMnljGDbFk9dchXoK+/WZEqgtelIxWhYANni8oK2vkGdLsTtZ1
-         HK30Z2zlEAhJa6Q/QYA4RLNpCZSkbGiE/pPdPQl1VWg86HUq964HKSlcARI9xS+WWF2t
-         yFig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679496162;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=iclVlj0uRLLGWQO8Ig3rbocnokNbdehKEN39LMvr+XM=;
-        b=EnBYfCQEW1TbgTncdO/JtfyyjRWoUW5FskA2UyhvIIASP++PChtW4YUkdaOJ0q3WeG
-         ZbkKnbgstX0Ge7WGTHQnDQl6Y6MA0hd4cWF0mqzm7xaxo8jz3abzXVQMFV20IcAHlb7+
-         eQnohCuwAgCkdGNP4bwMuDKwgQchWdeWyNOjxe8bXE6diI3NPxGYQzo19RrQemAqUhBB
-         dCPQQI21Rq6Fu9EmuW65NYqQdYJv7ewiCMdn9GmNMAPdp0op0Z6H00u3zuKfKTExixuG
-         qCE33DNUwpVfz6/MRVVJJtSisfsdJmLdI2exCG2Z1PS4z3gGkfNBYMVRgsqgTzkOLeL6
-         SL8Q==
-X-Gm-Message-State: AO0yUKX+LePOd4DzhUD6LY4yfswuowX9rbj6qngxyM8SP+4b2ePRUmSd
-	zFJ0yXe961j0pacSzw7flrdL/w==
-X-Google-Smtp-Source: AK7set+p+EwEu4H95hMdMAkUccdUvP0yEcTcBuLOgej4nfKPvES1tHXFSJqJv7OK63z4+i5uy57gJA==
-X-Received: by 2002:a7b:cb91:0:b0:3eb:3f2d:f237 with SMTP id m17-20020a7bcb91000000b003eb3f2df237mr5392769wmi.6.1679496162280;
-        Wed, 22 Mar 2023 07:42:42 -0700 (PDT)
-Received: from myrica (054592b0.skybroadband.com. [5.69.146.176])
-        by smtp.gmail.com with ESMTPSA id k22-20020a05600c0b5600b003ed2987690dsm16905891wmr.26.2023.03.22.07.42.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Mar 2023 07:42:41 -0700 (PDT)
-Date: Wed, 22 Mar 2023 14:42:43 +0000
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: maz@kernel.org, catalin.marinas@arm.com, will@kernel.org,
-	joro@8bytes.org, robin.murphy@arm.com, james.morse@arm.com,
-	suzuki.poulose@arm.com, oliver.upton@linux.dev,
-	yuzenghui@huawei.com, dbrazdil@google.com, ryan.roberts@arm.com,
-	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev,
-	iommu@lists.linux.dev
-Subject: Re: [RFC PATCH 39/45] iommu/arm-smmu-v3-kvm: Initialize page table
- configuration
-Message-ID: <20230322144243.GD594394@myrica>
-References: <20230201125328.2186498-1-jean-philippe@linaro.org>
- <20230201125328.2186498-40-jean-philippe@linaro.org>
- <ZBrXNjOiqHJAxLzw@google.com>
+	by mail.8bytes.org (Postfix) with ESMTPSA id DA85F242DBB;
+	Wed, 22 Mar 2023 15:44:04 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1679496244;
+	bh=H6kJBq0FNN9bKpkCuiBclf0MG6YRfFs/T6O+tZOdJl0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=nWI3u1g0e2DOH2cyowS1HWkSMsbPo0VcrFPcdIadToYm3ooqvOH8qJwzMvL+0XNfC
+	 vfmhhG2iMaXkrrtvr30q8SULPDknkUFjzIvhIrrQ6tCqLUlA4uKViL65m/63bqnxhr
+	 cssfPhg1aNNcxMe6KJ/NB4hUfqKu11LunRdj65M1FE5mXGZs6gnYHa/A25lqNNHA2b
+	 Y+x9qdwkwF4qzOcgCkJdqf5fRdpaRKbw/qrYdZFAR10ehWjubQF6gM2Oc1q0KNex7X
+	 QdKYYkUwdmKqOfsMviq5TyhRRFrniHCLUy0nXJnij+hg+6eeomEsmvh4WV46TJOBtj
+	 VUkb9lbE9Jyfw==
+Date: Wed, 22 Mar 2023 15:44:03 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, suravee.suthikulpanit@amd.com, aik@amd.com,
+	baolu.lu@linux.intel.com
+Subject: Re: [PATCH v2 0/2] Allocate IOMMU irq/page table using numa locality
+ info
+Message-ID: <ZBsUM9SQjgUKjNPe@8bytes.org>
+References: <20230321092348.6127-1-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -60,38 +34,19 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZBrXNjOiqHJAxLzw@google.com>
+In-Reply-To: <20230321092348.6127-1-vasant.hegde@amd.com>
 
-Hi Mostafa,
+On Tue, Mar 21, 2023 at 09:23:46AM +0000, Vasant Hegde wrote:
+> Vasant Hegde (2):
+>   iommu/amd: Allocate page table using numa locality info
+>   iommu/amd: Allocate IOMMU irqs using numa locality info
+> 
+>  drivers/iommu/amd/amd_iommu.h       |  8 ++++++++
+>  drivers/iommu/amd/amd_iommu_types.h |  1 +
+>  drivers/iommu/amd/init.c            |  3 ++-
+>  drivers/iommu/amd/io_pgtable.c      |  4 ++--
+>  drivers/iommu/amd/io_pgtable_v2.c   | 16 ++++++----------
+>  drivers/iommu/amd/iommu.c           |  6 ++++++
+>  6 files changed, 25 insertions(+), 13 deletions(-)
 
-On Wed, Mar 22, 2023 at 10:23:50AM +0000, Mostafa Saleh wrote:
-> > +	/*
-> > +	 * Stage-1 should be easy to support, though we do need to allocate a
-> > +	 * context descriptor table.
-> > +	 */
-> > +	cfg = (struct io_pgtable_cfg) {
-> > +		.fmt = ARM_64_LPAE_S2,
-> > +		.pgsize_bitmap = smmu->pgsize_bitmap,
-> > +		.ias = smmu->ias,
-> > +		.oas = smmu->oas,
-> > +		.coherent_walk = smmu->features & ARM_SMMU_FEAT_COHERENCY,
-> > +	};
-> > +
-> > +	/*
-> > +	 * Choose the page and address size. Compute the PGD size and number of
-> > +	 * levels as well, so we know how much memory to pre-allocate.
-
-(I also need to fix that comment, we're not getting the number of levels anymore)
-
-> > +	 */
-> > +	ret = io_pgtable_configure(&cfg, &size);
-> size variable is overwritten here with pgd size, while used later on
-> the assumption it still contains the SMMU MMIO size.
-> This looks like it is not intended?
-
-No it's a bug, thanks for spotting it. I'll try to update the pkvm/smmu
-branch today with the other issues you reported
-
-Thanks,
-Jean
-
+Applied, thanks Vasant.
