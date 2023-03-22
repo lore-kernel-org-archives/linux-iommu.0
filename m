@@ -1,34 +1,34 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2059.outbound.protection.outlook.com [40.107.243.59])
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2055.outbound.protection.outlook.com [40.107.101.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 547D07C
-	for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 05:15:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B059E184
+	for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 06:42:36 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZWWWUZqUSgHFTpGD+RlH8Yf3ThEPouZtdxCjYNSXiUrTI5wjWj3svuw6KEFAiT72dIxP+MBN3eYkWo9SnozllJYy6niX9ly9mJl26bnFsNRjtvL1dTMotFbojJTMNtPKpk93Lwkl448stAcqSXioLJRFPIo8yXSjcfr2aY5sNJ+aQanBlqQuGw+Q4ocFd9LuwBYMA+qUSfi2//SmpaFknkwcpaPF11l6nSA2QonKVch5hSX1MXZiIwRCfgMoUvFjNv0yISu70q5IGE8uHyNFfULFgRXWXZbxMz8pn7bdsBdJatJ1M4WQRZw677vMWBvMJl3l0pO4MyHV5yLYw1nydA==
+ b=Q87XCryhAIkKkAfh/h+kd8x9Vd0WHjKmzgWJTwVlxTNKpMbjGxof274lAmXzWNdH/EvlX2352N9Ke9d+yZ5bWDgTVZycCZjCaF5Bs8tZ7t3YA1r2usFDXgRTqkv/Vpf45QYVuhxFBQWZKtKas6qCF69cAuAzvV+ZACviCGW9+jRlK7YbRtcDYifriTxT+O7AhI+mYyZyDyxKNxVCX0i8W1Pb+OwJnZJ3QAcvQio48XslGpe2BT0addZzvYLfcmyy9rCoTKUxFPopnPGN6k47VuwkLvlRXtSJARGv+kGA2zbiXL7N+RGWSrnXv3tuyhjNJNxaA569/h1byYGMvZVduw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JEW7ofhRyooaA3NA0a5GceEEO0qTe08xtALupVaz3yo=;
- b=lb6x1eRdkvhq9iT+LOQHDtVcaddHvj44TcKVIjwlNuOlBtYwBpAi6mWYsiXma2/gPcYv5DDBaXEbXeavu89SONeAO1CCxACm+3yceJVfUO6hmE5DstSsFZBVo/kyq293XPVnZQt6FAx37rFJuJwpJthTnuMXd5aKGKPY4RBOPIAIE94AJxrd1RQFg80+Jq3JYadiL8TThE0UICvP81d6EzHrwsdZvuabEn7Ku/mAHE+jIpLhIrZjwi0wmk9oXbth2Hr+JVCcuyDzcyv3RSzlWKm7NjKcXey13uuo+7+uLbFvaezlUjSQNKKaS/wa0PrVQp3axZcn+ZpF+Nbloo+6rw==
+ bh=Ae+33puf+QEDDqMJ9sVIBPHY8M27opnwBKBF932/YZg=;
+ b=ix62n092D8SsAD8gSt1QVwuLXBTnYnNAcRtCHGf+GivVgunE8prXzlv/6ntyYgcN3y0yEuSQ52YkboIPa1DrzPPBJ15eBFV7OwBt0B6/JSIrAV18ByGbr3+IX/PTkxlTJX8Froaf64wsJbPq4MtdLIaBa2zml68/ZT1t+t0BPFJFObTHqPSSUzcey7w5fA2loUJpSRCv77VQCCzxAil5x5a9ogXphc3rJNCLiXMwV/+JX88eXJWBwrWi8uE72HzvEihXGxQM5DFxSiAdhaSX+FzXXcn9Z4EUvsFf2pRKfs12uK6e3+caQTbzS5drR4gW8kwPMW7ScuwxzS2z2oPhFA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
+ 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JEW7ofhRyooaA3NA0a5GceEEO0qTe08xtALupVaz3yo=;
- b=GtQc0IoujzYB87NT3A5cqZIWLoVpcmvoCicFXXwZT1qynMhBTQ/J/lcTGb7fBAytxy5ScglMzKLwgoWirIw1uB5CNs5kL5rByxRgYDyPkEAqE2lniJdQVlKxjLOjD+FHnUwwRGrozugvEgjfmQHKD8PmqwIVA/mALy8CVxNkwb+naaA0t1PKEW85y5i7PMMGb6AoMNb1QhHsPBFH5MqYkDFOXI0pwpK4PnBXubImjqP/7ntHy/YZZvWnDSFAZK/D24TuEha1j7zAzT0Rxwwa8GJxl+7Lp6wlW2kUO3pvQgY3dD1ln2A0xazkgmO1fU0p9AUx5+cf+wsS3iUOHOW4yw==
-Received: from BN9PR03CA0799.namprd03.prod.outlook.com (2603:10b6:408:13f::24)
- by PH0PR12MB7814.namprd12.prod.outlook.com (2603:10b6:510:288::15) with
+ bh=Ae+33puf+QEDDqMJ9sVIBPHY8M27opnwBKBF932/YZg=;
+ b=W5IZR21JaXNMUTCdzN3u1bWZ3/4BZaCc4o34du2DDh90XJtFQ6ivRmd1JT89FhX4x2CttIYb4/I9GY5EvXpvt6R3E9ih4VIitCxzaC43f7eR1CkECG1TEHkx8CUvZBsYfOM+UDwAadUD1J31oB9A7LNYt6qIndFOOrZTSWIVlmXO07e+nBy6LyNP5KM2J45CxbcX+8l9ypVFLc/AlRWe44N8cFUH0pt3ZqDmiNmMXMHvuf+EYCt3k1XxiRCgvHLrC2SkrFxXVvHkKfmYMGy1qwgSFW4bo1v6dsRbobCfdEj22YtglfLPv3q92+VSJkiuHGQk8w7BP7xKCmx4ii6+MQ==
+Received: from DM6PR13CA0068.namprd13.prod.outlook.com (2603:10b6:5:134::45)
+ by PH0PR12MB5418.namprd12.prod.outlook.com (2603:10b6:510:e5::19) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Wed, 22 Mar
- 2023 05:14:57 +0000
-Received: from BN8NAM11FT055.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:13f:cafe::a0) by BN9PR03CA0799.outlook.office365.com
- (2603:10b6:408:13f::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37 via Frontend
- Transport; Wed, 22 Mar 2023 05:14:57 +0000
+ 2023 06:42:33 +0000
+Received: from DM6NAM11FT108.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:134:cafe::17) by DM6PR13CA0068.outlook.office365.com
+ (2603:10b6:5:134::45) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.16 via Frontend
+ Transport; Wed, 22 Mar 2023 06:42:33 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -36,42 +36,46 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.117.161 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
 Received: from mail.nvidia.com (216.228.117.161) by
- BN8NAM11FT055.mail.protection.outlook.com (10.13.177.62) with Microsoft SMTP
+ DM6NAM11FT108.mail.protection.outlook.com (10.13.172.95) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6222.17 via Frontend Transport; Wed, 22 Mar 2023 05:14:57 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ 15.20.6222.17 via Frontend Transport; Wed, 22 Mar 2023 06:42:33 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
  (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 21 Mar 2023
- 22:14:47 -0700
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ 23:42:28 -0700
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Tue, 21 Mar
- 2023 22:14:46 -0700
-Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.10)
+ 2023 23:42:27 -0700
+Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.8)
  with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5 via Frontend
- Transport; Tue, 21 Mar 2023 22:14:45 -0700
-Date: Tue, 21 Mar 2023 22:14:44 -0700
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Tue, 21 Mar 2023 23:42:27 -0700
+Date: Tue, 21 Mar 2023 23:42:25 -0700
 From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Robin Murphy <robin.murphy@arm.com>, <will@kernel.org>,
-	<eric.auger@redhat.com>, <kevin.tian@intel.com>, <baolu.lu@linux.intel.com>,
-	<joro@8bytes.org>, <shameerali.kolothum.thodi@huawei.com>,
-	<jean-philippe@linaro.org>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
+CC: Robin Murphy <robin.murphy@arm.com>, "will@kernel.org" <will@kernel.org>,
+	"eric.auger@redhat.com" <eric.auger@redhat.com>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "jean-philippe@linaro.org"
+	<jean-philippe@linaro.org>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
 Subject: Re: [PATCH v1 14/14] iommu/arm-smmu-v3: Add
  arm_smmu_cache_invalidate_user
-Message-ID: <ZBqOxNuHWPuhNy5b@Asurada-Nvidia>
-References: <c753c2a8-024d-5bef-8987-96582084991e@arm.com>
- <ZBOFcenanpRsGFzF@Asurada-Nvidia>
- <ZBe3kxRXf+VbKy+m@Asurada-Nvidia>
- <ZBhbmqprnux4q00i@nvidia.com>
- <ZBh7hSX5hdW4vxwh@Asurada-Nvidia>
- <ZBiDcYwxL7eV1EmQ@nvidia.com>
- <ZBiLSJvtY5UKDJ5l@Asurada-Nvidia>
- <ZBig0fN3l7LsUlQg@nvidia.com>
- <ZBjGPI29BE/puciv@Asurada-Nvidia>
- <ZBjauQlH3TYbZQ7P@nvidia.com>
+Message-ID: <ZBqjUeEjjtCclgLN@Asurada-Nvidia>
+References: <1467e666-1b6c-c285-3f79-f8e8b088718b@arm.com>
+ <ZAn7uC9UweiNdGkJ@nvidia.com>
+ <ZAqv87fjbdynVaHA@Asurada-Nvidia>
+ <ZAtYphmOuEqQ1BiC@nvidia.com>
+ <BN9PR11MB52768F4D3E21C5231C1A04D38CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZBhYq8o4gqFZVb6k@nvidia.com>
+ <ZBiF1hZVrp/aJRM6@Asurada-Nvidia>
+ <ZBifWkY2Lt/U1Z7R@nvidia.com>
+ <BN9PR11MB5276E6E3FCA90582AA61BDDE8C819@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZBmZj2pscX0hx2kQ@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -80,87 +84,92 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <ZBjauQlH3TYbZQ7P@nvidia.com>
+In-Reply-To: <ZBmZj2pscX0hx2kQ@nvidia.com>
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT055:EE_|PH0PR12MB7814:EE_
-X-MS-Office365-Filtering-Correlation-Id: cca81a6e-0db7-449a-df2e-08db2a946109
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT108:EE_|PH0PR12MB5418:EE_
+X-MS-Office365-Filtering-Correlation-Id: c9c6ddf7-6ed8-4b19-78c6-08db2aa09dd8
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	47LXp5wegNDvbRBu83T5P7FxRahpW+C158uQYAw1UiisZqvfvZNAV9eeEiS1ie4d7htdC+kgSNPndLYjB2EjeEdIx0Zf0wIK+FvIXxDwVl/LIMyLdbq6RyzGGACuR6u6k+8tWAXBlK7t1kLHY6DMKo2Tu5SGNb/GqoVytMe1Ko0W7xOVCjEuSn5gS/pya4xRl1IiqP4NTaHK2eAGeE9nFe1S7QZ9PACSeRirJb4LEZ5h06WdVC0Bd2HDc+J0RY9yUdWUvjgiDODBCuJ/5YR/MZ2Fst+E07jM2Yy5dEM5/hf9KP9d3sH63QPgKJxPbUCGA3r2cn/aIamwxmqvRIRHiTIHO1b3t9Uddey7CQ0EQuNeGWdIq2MzqPMvF0c5PXQAC3j0qGBAXxI+uuz7VT1E8Rd8SnV8aDgAEc937N9LRUKtQcZdo8jYD53s5KhAiT8qFJmu60mO9IzgVZQ8XE3mCv/68fjltFr6/D8Js1jRi1tG304IfN+j4HKmtOjcOM2pxzyBY5i1yc4KygU7kY2sqfmEdP+MSVcfPi3CGbHq19LVUF49CDvHQ7Q+k7/a6HmrHpZUqr5u0XQeUfoPbg99MD5TP3/4mUL/j6xYFG5YMYpQ57zJ6jZksbw+47iL9mosHHsG9uFulzvoicDJ6HAkMoIya1ErP0XGVRE0OwL+PfG+wDH5ih1RRLFSWcG4UQ5YiFb6VZrf6rSE0bI8sTkcI6F4sVhnoWILO8RflxRNoZj+t+4/70ulFhhuvYVKErNH
+	oikaE4OyJP4ws89HwxUiEisx40OZTdw3pkfNagaOKbCUStj/aW735mpmrdfj85xMgnZ/AKy+bwhqbakdm757Pej2AR/JgWu2KM5X2xhTrxRlm09vc8y0pRa8lT5KUI2L/+5IHe8JumuIajhNL9EnAjLP+h/7hWoSeDbcYOHMOLjjOn20W9JXvbQyC9sP5KhfeYV1ndJsstmFhQxBsHU/qNukN2HM1ngpDYED6p8iysqOqKp4V/WIPN7Z4MRgHr7sWn9WHPm3yE4v/+8H216rPmtjrgZvIyVe4fgMUCJ1jaCDUDlzcFJDiEJ6xwpdS+SogAK8K+/l55+TX3sbeCM61ygzBp5TKTnX/XTmpF+0WvZ3UgVrLX4JocilPwV5k30RJnMGWYIcT+28Jp39J/0GgzxViYUqmzkUvURUrHAQBWd4LJ9+FSE4KkDnmqPEcnsbQO9qD6O/wjYO5x/QWMixbfTDuLrWC+Tw/ZABYmkzE53zPhlecbJwlOzb0wfbAhnrXFDdiFFx375HUYgJ5cdyv7xBr3K8pmMZMxNMfPuuo/0gsPTwi1V0tTncnTkSG3g9pFiFdYjUnX20+VPxP2QrnN48zMSViWf5XeGwZCm90ANLlRmYEJwR7BkWC877FS0PwEJl++52Rs7Z/tnbKCpKtQUm/ibXRWtSUhLf/sGoF+5zMxamh6j/ZeOh4fINedmsn2ZRNmGSgc6UrYwISbrK6hqXIyzYnr4ZoVJG+N/FTo1RQHVNcVR2SDkaRbDseDUO
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(396003)(39860400002)(376002)(136003)(346002)(451199018)(36840700001)(46966006)(40470700004)(47076005)(82740400003)(7636003)(186003)(41300700001)(6862004)(40480700001)(336012)(426003)(9686003)(2906002)(478600001)(55016003)(7416002)(8936002)(26005)(356005)(5660300002)(54906003)(6636002)(36860700001)(70206006)(316002)(70586007)(82310400005)(8676002)(83380400001)(86362001)(4326008)(40460700003)(33716001);DIR:OUT;SFP:1101;
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(346002)(136003)(396003)(376002)(39860400002)(451199018)(36840700001)(46966006)(40470700004)(4326008)(8676002)(41300700001)(82740400003)(2906002)(55016003)(7636003)(40480700001)(36860700001)(356005)(70586007)(8936002)(70206006)(5660300002)(86362001)(33716001)(26005)(426003)(47076005)(336012)(186003)(9686003)(40460700003)(7416002)(54906003)(82310400005)(83380400001)(110136005)(478600001)(6636002)(316002);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2023 05:14:57.2433
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2023 06:42:33.2994
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: cca81a6e-0db7-449a-df2e-08db2a946109
+X-MS-Exchange-CrossTenant-Network-Message-Id: c9c6ddf7-6ed8-4b19-78c6-08db2aa09dd8
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT055.eop-nam11.prod.protection.outlook.com
+	DM6NAM11FT108.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7814
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5418
 
-On Mon, Mar 20, 2023 at 07:14:17PM -0300, Jason Gunthorpe wrote:
-> On Mon, Mar 20, 2023 at 01:46:52PM -0700, Nicolin Chen wrote:
-> > On Mon, Mar 20, 2023 at 03:07:13PM -0300, Jason Gunthorpe wrote:
-> > > On Mon, Mar 20, 2023 at 09:35:20AM -0700, Nicolin Chen wrote:
-> > > 
-> > > > > You need to know what devices the vSID is targetting ang issues
-> > > > > invalidations only for those devices.
-> > > > 
-> > > > I agree with that, yet cannot think of a solution to achieve
-> > > > that out of vSID. QEMU code by means of emulating a physical
-> > > > SMMU only reads the commands from the queue, without knowing
-> > > > which device (vSID) actually sent these commands.
-> > > 
-> > > Huh?
-> > > 
-> > > CMD_ATC_INV has the SID
-> > > 
-> > > Other commands have the ASID.
-> > > 
-> > > You never need to cross an ASID to a SID or vice versa.
-> > > 
-> > > If the guest is aware of ATS it will issue CMD_ATC_INV with vSIDs, and
-> > > the hypervisor just needs to convert vSID to pSID.
-> > > 
-> > > Otherwise vSID doesn't matter because it isn't used in the invalidation
-> > > API and you are just handling ASIDs that only need the VM_ID scope
-> > > applied.
-> > 
-> > Yea, I was thinking of your point (at the top) how we could
-> > ensure if an invalidation is targeting a correct vSID. So,
-> > that narrative was only about CMD_ATC_INV...
-> > 
-> > Actually, we don't forward CMD_ATC_INV in QEMU. In another
-> > thread, Kevin also remarked whether we need to support that
-> > in the host or not. And I plan to drop CMD_ATC_INV from the
-> > list of cache_invalidate_user(), following his comments and
-> > the QEMU situation. Our uAPI, either forwarding the commands
-> > or a package of queue info, should be able to cover this in
-> > the future whenever we think it's required.
+On Tue, Mar 21, 2023 at 08:48:31AM -0300, Jason Gunthorpe wrote:
+> On Tue, Mar 21, 2023 at 08:34:00AM +0000, Tian, Kevin wrote:
 > 
-> Something has to generate CMD_ATC_INV.
->
-> How do you plan to generate this from the hypervisor based on ASID
-> invalidations?
->
-> The hypervisor doesn't know what ASIDs are connected to what SIDs to
-> generate the ATC?
+> > > > Rephrasing that to put into a design: the IOCTL would pass a
+> > > > user pointer to the queue, the size of the queue, then a head
+> > > > pointer and a tail pointer? Then the kernel reads out all the
+> > > > commands between the head and the tail and handles all those
+> > > > invalidation commands only?
+> > > 
+> > > Yes, that is one possible design
+> > 
+> > If we cannot have the short path in the kernel then I'm not sure the
+> > value of using native format and queue in the uAPI. Batching can
+> > be enabled over any format.
 > 
-> Intel is different, they know what devices the vDID is connected to,
-> so when they get a vDID invalidation they can elaborate it into a ATC
-> invalidation. ARM doesn't have that information.
+> SMMUv3 will have a hardware short path where the HW itself runs the
+> VM's command queue and does this logic.
+> 
+> So I like the symmetry of the SW path being close to that.
 
-I see. Perhaps vSMMU still needs to forward CMD_ATC_INV. And,
-as you suggested, it should go through a vSID sanity check by
-the host handler. We can find the corresponding pSID to check
-if the device is associated with the iommu_domain?
+A tricky thing here that I just realized:
+
+With VCMDQ, the guest will have two CMDQs. One is the vSMMU's
+CMDQ handling all non-TLBI commands like CMD_CFGI_STE via the
+invalidation IOCTL, and the other hardware accelerated VCMDQ
+handling all TLBI commands by the HW. In this setup, we will
+need a VCMDQ kernel driver to dispatch commands into the two
+different queues.
+
+Yet, it feels a bit different with this SW path exposing the
+entire SMMU CMDQ, since now theoretically non-TLBI and TLBI
+commands can be interlaced in one batch, so the hypervisor
+should go through the queue first to handle and delete all
+non-TLBI commands, and then forward the CMDQ to the host to
+run remaining TLBI commands, if there's any.
+
+> > Btw probably a dumb question. The current invalidation IOCTL is
+> > per hwpt. If picking a native format does it suggest making the IOCTL
+> > per iommufd given native format is per IOMMU and could carry
+> > scope bigger than a hwpt.
+> 
+> At least on SMMUv3 it depends on what happens with VMID.
+> 
+> If we can tie the VMID to the iommu_domain then the invalidation has
+> to flow through the iommu_domain to pick up the VMID.
+
+Yes. This is what we do now. An invalidation handler finds the
+corresponding S2 domain pointer to pick up the VMID. And it'd
+be safe, until the S2 domain gets replaced with another domain
+I think?
+
+> If the VMID is tied to the entire iommufd_ctx then it can flow
+> independently.
+
+One more thing about the VMID unification is that SMMU might
+have limitation on the VMID range:
+	smmu->vmid_bits = reg & IDR0_VMID16 ? 16 : 8;
+	...
+	vmid = arm_smmu_bitmap_alloc(smmu->vmid_map, smmu->vmid_bits);
+
+So, we'd likely need a CAP for that, to apply some limitation
+with the iommufd_ctx too?
 
 Thanks
 Nic
-
