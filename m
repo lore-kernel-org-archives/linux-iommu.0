@@ -1,59 +1,103 @@
-Received: from todd.t-8ch.de (todd.t-8ch.de [159.69.126.157])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mscreen.etri.re.kr (mscreen.etri.re.kr [129.254.9.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5098CBA44
-	for <iommu@lists.linux.dev>; Wed, 22 Mar 2023 22:24:12 +0000 (UTC)
-Date: Wed, 22 Mar 2023 17:17:45 -0500 (EST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=t-8ch.de; s=mail;
-	t=1679523477; bh=1XSQgR6v3e90rBs5bY14hmQ5qe+38CfYiwDX/0EaKO0=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-	b=USHkYZAud3KB8uMQTgbwm10E5BipfZ3q7JnCDhziDI1YfTYm7nCQElsvLOqFlPClE
-	 dQY0yLPYGPTPAUTvIJBzspqut2cJvQQktrBQF+Jr2aPQ9CTWJl6sEmKK1ozafdnnln
-	 mPs7A48sY1SuxsiyiXRqAOdAvbqrMQatfWwgfHaU=
-From: =?UTF-8?Q?Thomas_Wei=C3=9Fschuh_?= <thomas@t-8ch.de>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: =?UTF-8?Q?Thomas_Wei=C3=9Fschuh?= <linux@weissschuh.net>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Message-ID: <038c1035-20fd-4054-984d-524c9a7f390d@t-8ch.de>
-In-Reply-To: <ZBsAjPxV8bu7jjEd@8bytes.org>
-References: <20230214-kobj_type-iommu-v1-1-e7392834b9d0@weissschuh.net> <ZBsAjPxV8bu7jjEd@8bytes.org>
-Subject: Re: [PATCH] iommu: make kobj_type structure constant
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54F0E179
+	for <iommu@lists.linux.dev>; Thu, 23 Mar 2023 00:17:53 +0000 (UTC)
+Received: from unknown (HELO send001-relay.gov-dooray.com) (211.180.235.152)
+	by 129.254.9.16 with ESMTP; 23 Mar 2023 09:17:51 +0900
+X-Original-SENDERIP: 211.180.235.152
+X-Original-MAILFROM: syahn@etri.re.kr
+X-Original-RCPTTO: iommu@lists.linux.dev
+Received: from [10.162.225.103] (HELO send001.gov-dooray.com)
+ ([10.162.225.103]) by send001-relay.gov-dooray.com with SMTP id
+ 7cbd24a7641b9aae; Thu, 23 Mar 2023 09:17:50 +0900
+DKIM-Signature: a=rsa-sha256;
+ b=A3j69W1uXH90lxCUgYzUkWwUfItXpsQCnghUWCKPvSkgcMLg9U11EiX56vxlUn4Mopujn5ra88
+  4cRK8tBJg0a/kUgA0I9+gjbb79YwFWBsrM8mFNODLUSySXxR107L3HqVPi5bSjLTWsGfPr+XTjEp
+  UoTDTJuwf9dZ9hZggQ9cSgSZc4gGyUclChjmC7gI7YHYDSqmR8X9M4orbRoLrZF/YZJe2rvivUxU
+  ssO2e3enmMdFmYJ6d8kFd64MRxr7hD1taC1mvjaRt8BBZofywFNpvIvBtrFNx83ZZzq56cqF5aBl
+  LzNNfMcqo0o4Ll1/fRzGw9XLsQU8jJsUW+CImTaQ==;
+ c=relaxed/relaxed; s=selector; d=dooray.com; v=1;
+ bh=WPm22ZPYZPKjSjNYr5eCSVYk4CfGSGoRdPSpOZozaDw=;
+ h=From:To:Subject:Message-ID;
+Dooray-Meta-Signature: VQpPbsxhe0o1GnQk5uFQDhcv8Mghj5OfjryO9HIMQZtoehxBV0eT+
+  whDnJH282iM6s915o7W1VucUCd+W2Cmmzb1Yz6hTpO6WkJGj6mVBaiigzlMafiLUfPLuVCEGghQH
+  5NPGbdnN3zMaxJrZr1OEd56OYA/cqNYKP5xl5ud6oCN6+JiIIRBFyjc4j1mz1ptPnCvoXjotvFDn
+  GbIySDKju3yIkzCJwxf03+qXOsl4gig+kjelb3zJouvP7C4v1j5wtt8RyQtaVuGDvtxftNj9JOib
+  NOAm0L2LRNee5SoYiu0wO2ojka6fCjgGZLWuohg6RVgJr68i5gAPanEhgNYVgWzZhkPIz0jYs6ZW
+  c5QsKw=
+Received: from [10.162.224.207] (HELO 10.162.224.207) ([10.162.224.207]) by
+ send001.gov-dooray.com with SMTP id 7ca8fe00641b9aae; Thu, 23 Mar 2023
+ 09:17:50 +0900
+From: =?UTF-8?B?7JWI7Iug7JiB?= <syahn@etri.re.kr>
+Message-ID: <ql9x0mmevpvr.ql9x0mmi38ec.g1@dooray.com>
+Subject: [Question] Does Linux IOMMU subsystem support a device that have
+ mulitple master interfaces to multiple IOMMU devices?
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Correlation-ID: <038c1035-20fd-4054-984d-524c9a7f390d@t-8ch.de>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+X-Dsn-Request: true
+X-Dooray-Agent: mail-api
+X-Dooray-Mail-Id: 3499950812621691591
+Importance: Normal
+X-Priority: Normal
+X-MSMail-Priority: Normal
+X-Dooray-Attached: c3+LUOpPU/IB7Wl+oemm0lw5HiI/bJHHYClX72L8E3o=
+To: iommu@lists.linux.dev
+Date: Thu, 23 Mar 2023 09:17:49 +0900 (KST)
 
-Hi Joerg,
+SGVsbG8sIGFsbCBtZW1iZXJzIG9mIElPTU1VIG1haWxpbmcgbGlzdHMuIEknbSBTaGlueW91bmcg
+QWhuLgoKV2UgYXJlIGRldmVsb3BpbmcgYSBkZXZpY2UgdGhhdCBoYXMgc2V2ZXJhbCBBUk0gTU1V
+LTYwMChTTU1VKSBkZXZpY2VzLiBlYWNoIFNNTVUgZGV2aWNlIGlzIGNvbm5lY3RlZCB0byBtdWx0
+aXBsZSBtYXN0ZXJzLiBXZSB3YW50IHRvIHVzZSBJT01NVSBzdWJzeXN0ZW0gaW4gdGhlIExpbnV4
+IGtlcm5lbCB0byB1c2UgU01NVXMgb2Ygb3VyIGRldmljZSBpbnN0ZWFkIG9mIGRldmVsb3Bpbmcg
+YSBuZXcgZHJpdmVyIGN1c3RvbWl6ZWQgZm9yIG91ciBkZXZpY2UuCgpJIGZvdW5kIGEgdGV4dCBm
+cm9tIGh0dHBzOi8vd3d3Lmtlcm5lbC5vcmcvZG9jL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9i
+aW5kaW5ncy9pb21tdS9pb21tdS50eHQKCkRldmljZXMgdGhhdCBhY2Nlc3MgbWVtb3J5IHRocm91
+Z2ggYW4gSU9NTVUgYXJlIGNhbGxlZCBtYXN0ZXJzLiBBIGRldmljZSBjYW4gaGF2ZSBtdWx0aXBs
+ZSBtYXN0ZXIgaW50ZXJmYWNlcyAodG8gb25lIG9yIG1vcmUgSU9NTVUgZGV2aWNlcykuCgpGcm9t
+IHRoZSBhYm92ZSBjb21tZW50LCBJIHdhcyB3b25kZXJpbmcgaWYgdGhlIGZvbGxvd2luZyBkZXZp
+Y2UgdHJlZSBjb25maWd1cmF0aW9uIHdvcmtzIHdlbGwgd2l0aCBMaW51eCBrZXJuZWxzLiAKCkNh
+biBJT01NVSBzdWJzeXN0ZW0gY29kZXMgc3VwcG9ydCBvdXIgZGV2aWNlPwoKT3VyIGRldmljZSBo
+YXMgOCBTTU1VIGRldmljZXMgYW5kIGVhY2ggU01NVSBkZXZpY2UgaGFzIDggbWFzdGVycywgdG90
+YWxseSBvdXIgZGV2aWNlIGhhcyA2NCBtYXN0ZXIgaW50ZXJmYWNlcyB0byA4IElPTU1VIGRldmlj
+ZXMuIERldmljZSB0cmVlIGNvZGUgZXhhbXBsZToKCgktLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoJc21tdTAgewoKCQkjaW9tbXUtY2VsbHMgPSA8
+MT47CgoJfTsKCgkuCgoJLgoKCXNtbXU3IHsKCgkJLyogdGhlIHNwZWNpZmllciByZXByZXNlbnRz
+IHRoZSBJRCBvZiB0aGUgbWFzdGVyICovCgoJCSNpb21tdS1jZWxscyA9IDwxPjsKCgl9OwoKICAJ
+b3VyLWRldmljZUA1MDAwMDAwMCB7CgogIAkvKiBvdXIgZGV2aWNlIGhhcyBtYXN0ZXIgSURzIDB+
+NyBpbiB0aGUgU01NVTAsIDB+NyBpbiBTTU1VMSwgLi4gMH43IGluIFNNTVU3ICovCgogCSBpb21t
+dXMgPSA8Jnsvc21tdTB9IDA+LCA8Jnsvc21tdTB9IDE+LCA8Jnsvc21tdTB9IDI+LCAuLiAsIDwm
+ey9zbW11MH0gNz4sCgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IDwmey9zbW11MX0gMD4sIDwmey9zbW11MX0gMT4sIDwmey9zbW11MX0gMj4sIC4uICwgPCZ7L3Nt
+bXUxfSA3PiwKCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPCZ7
+L3NtbXUyfSAwPiwgPCZ7L3NtbXUyfSAxPiwgPCZ7L3NtbXUyfSAyPiwgLi4gLCA8Jnsvc21tdTJ9
+IDc+LAoKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8Jnsvc21t
+dTN9IDA+LCA8Jnsvc21tdTN9IDE+LCA8Jnsvc21tdTN9IDI+LCAuLiAsIDwmey9zbW11M30gNz4s
+CgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDwmey9zbW11NH0g
+MD4sIDwmey9zbW11NH0gMT4sIDwmey9zbW11NH0gMj4sIC4uICwgPCZ7L3NtbXU0fSA3PiwKCiAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPCZ7L3NtbXU1fSAwPiwg
+PCZ7L3NtbXU1fSAxPiwgPCZ7L3NtbXU1fSAyPiwgLi4gLCA8Jnsvc21tdTV9IDc+LAoKICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8Jnsvc21tdTZ9IDA+LCA8Jnsv
+c21tdTZ9IDE+LCA8Jnsvc21tdTZ9IDI+LCAuLiAsIDwmey9zbW11Nn0gNz4sCgogICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDwmey9zbW11N30gMD4sIDwmey9zbW11
+N30gMT4sIDwmey9zbW11N30gMj4sIC4uICwgPCZ7L3NtbXU3fSA3PjsKCiAJIH07CgoJLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCkFjdHVhbGx5
+LCB3ZSBob3BlIHRvIHVzZSBkbWFfbWFwX3NpbmdsZSBvciBkbWFfbWFwX3NnIHRvIGNvbmZpZ3Vy
+ZSA4IElPTU1VIGRldmljZXMgdG8gYWNjZXNzIGEgc2FtZSBwYWdlIHRhYmxlLgoKQW55IGNvbW1l
+bnRzIGFyZSB3ZWxjb21lLgoKVGhhbmtzIGluIGFkdmFuY2UuCgoKUmVnYXJkcy4KClNoaW55b3Vu
+ZwoKCuyViOyLoOyYgcKgQWhuIFNoaW4gWW91bmcK7J246rO17KeA64ql7Lu07ZOo7YyF7Jew6rWs
+7IaMIOy0iOyEseuKpey7tO2TqO2MheyXsOq1rOuzuOu2gArsiojtjbzsu7Ttk6jtjIXquLDsiKDs
+l7DqtazshLzthLDCoOq4sOyIoOy0neq0hCAvwqDssYXsnoTsl7Dqtazsm5AgLyBQaC5ELsKgCjM0
+MTI5IOuMgOyghOyLnCDsnKDshLHqtawg6rCA7KCV66GcIDIxOApUZWwgMDQyLTg2MC0xMjU2wqBN
+b2JpbGUgMDEwLTMzMDItMzE3M8KgCkVtYWlswqAgc3lhaG5AZXRyaS5yZS5rcsKgClB1YmxpY2F0
+aW9uIMKgaHR0cDovL2JpdC5seS8zanZBRG16Cg==
 
 
-Mar 22, 2023 08:20:14 Joerg Roedel <joro@8bytes.org>:
-
-> On Tue, Feb 14, 2023 at 03:25:53AM +0000, Thomas Wei=C3=9Fschuh wrote:
->> Since commit ee6d3dd4ed48 ("driver core: make kobj_type constant.")
->> the driver core allows the usage of const struct kobj_type.
->>
->> Take advantage of this to constify the structure definition to prevent
->> modification at runtime.
->>
->> Signed-off-by: Thomas Wei=C3=9Fschuh <linux@weissschuh.net>
->> ---
->
-> Applied, thanks.
-
-Thanks!
-
-> Btw, b4 reported DKIM errors checking your patch submission. Can you
-> check the DKIM setup on you email domain, please?
-
-Should be fixed for some time.
-(After this patch, though)
-
-Thanks for the hint!
-
-Thomas
