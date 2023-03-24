@@ -1,135 +1,111 @@
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 364625662
-	for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 13:31:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679664688; x=1711200688;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=/EaCGOcI70PVNsBUwHcXREhGFKrzM8ZBTlBxP/TaU2M=;
-  b=h9WqsM1RTqqv8ZrElv1LiwzA60ko7Q0IcIKyT/CYe036oVpZrjyKSFPc
-   eKJugoxZg0ShOfunl13e9rZvqeh7zvcMdRQSp6KRsE/2D9sICKHqtuyOK
-   tJ79SBP1gGnIM+/lDNHo1JJR/YU1WkekFv49nxRnv2TO9vX4Atb9i0s9f
-   9i0QCs+ZrgMZLy83rtvFezYzdAiOpqhBYZA5r6h3tlY4d/1/M7WGAdhpt
-   q8WBnP0CfYSQhf42OBa0UUEXYXYirZlxfeHrlENA32Mnqif0VWiah2r+X
-   S3jpvpNR7ocO90QTYlzT9Py1zc7lHUcT+mSnV/sM+QxhcW31kdTaCnMJn
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10659"; a="337279734"
-X-IronPort-AV: E=Sophos;i="5.98,288,1673942400"; 
-   d="scan'208";a="337279734"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2023 06:31:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10659"; a="1012247751"
-X-IronPort-AV: E=Sophos;i="5.98,288,1673942400"; 
-   d="scan'208";a="1012247751"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.215.177]) ([10.254.215.177])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2023 06:31:13 -0700
-Message-ID: <b5a4a200-e988-99b4-2efc-9dae3a1cb97a@linux.intel.com>
-Date: Fri, 24 Mar 2023 21:31:10 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF501210B
+	for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 14:31:57 +0000 (UTC)
+Received: by mail-yb1-f202.google.com with SMTP id m6-20020a056902118600b00aeb1e3dbd1bso1929667ybu.9
+        for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 07:31:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1679668316;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ty3wse5DF2ys6PoInqEvitG3vpIktmR+SFLR6U/ysFc=;
+        b=KrvNTV+VwvF0CjZfmGIp7CnP7o0W8sxb7gs0MBkMD8ZiGSZMvSNH59YtWyLSriVv75
+         cgruU2EOipD92w4i5Q7i03b7I3mEEtTpvjnmuHgVcjPgFvwTLCasowWJTqQSeHOE1A3K
+         bpwILXupYeXhBvnmhVCFcCP+hOJpt6upQXRXeUXeqEjzPoLo2VkyGeevEW1H/dL4f7sh
+         DrywnkrjwATzOEwagnfUwQOqQGEV9BqoDlFZrFUmrZFhPl7LAgczSqKx82m0ojVHCjTA
+         pDK4T7uH4fGDa70GCuwVREq1Gz3Ogn6KtVU+i7hkE0cZVMtxKhsGw0yx+0wPAMaHQSnY
+         vfFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679668316;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ty3wse5DF2ys6PoInqEvitG3vpIktmR+SFLR6U/ysFc=;
+        b=0Z7dfS+AbJk9LdFRcPIZJZNmCvsVgxxI/FwZjHryN33XWQQsHvGI4FagtRUuQxW9kz
+         AUX/gd7U5Zgm5aIP0nW9KeQM0hevcqIOB3JNFDhddhqVRLMARzvvItdLehdmskYoNcPX
+         LdkCJBGvMkDkf/3Jbs+AtFUFKkMwN4ynNknaESa/ILSBP/rnJonr9XSgsKYKGniUYYRp
+         O45FgZg/Ogh0vSl9pVUAC6hjMxNl1MRAcYUxDkxDY55gA/Of+XQlKydx64rWQlB7eq0O
+         +lplQBwLvjArEXcIhXIiokZ0fJ8e3uUoYQt1LtDvSR60Jc/hVrqyKQPDRokt05z4ZuC3
+         myPA==
+X-Gm-Message-State: AAQBX9eczRZewf3frVtmnJ4jLrCV+1zJcWhLUMmodT1V4eIjCMvsokMw
+	kT/ZG7SjQw5ZAlCH4hQ7AAacJg7IIWQ=
+X-Google-Smtp-Source: AKy350b/nn/R+ZOxHwMrUoKAuwzV0OlisAA4vPdStZV49dEt07t6trWRHl4OtpI5R6SD0zZLsf9Wf51b9fw=
+X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
+ (user=seanjc job=sendgmr) by 2002:a81:bd4d:0:b0:541:359c:103a with SMTP id
+ n13-20020a81bd4d000000b00541359c103amr1122172ywk.8.1679668316732; Fri, 24 Mar
+ 2023 07:31:56 -0700 (PDT)
+Date: Fri, 24 Mar 2023 07:31:55 -0700
+In-Reply-To: <655ac0f7-223b-9440-1bcb-e93af8915bfa@oracle.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Cc: baolu.lu@linux.intel.com, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH v2] iommu/rockchip: Add missing set_platform_dma_ops
- callback
-Content-Language: en-US
-To: Steven Price <steven.price@arm.com>, Heiko Stuebner <heiko@sntech.de>,
- Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@ziepe.ca>
-References: <20230324111127.221640-1-steven.price@arm.com>
- <8fda817c-98e7-1988-325d-52d09f3e61a8@linux.intel.com>
- <859ef16c-bf31-78f2-f3df-cf0ff9493b3c@arm.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <859ef16c-bf31-78f2-f3df-cf0ff9493b3c@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+References: <20230316200219.42673-1-joao.m.martins@oracle.com>
+ <20230316200219.42673-2-joao.m.martins@oracle.com> <ZBODjjANx6pkq5iq@google.com>
+ <655ac0f7-223b-9440-1bcb-e93af8915bfa@oracle.com>
+Message-ID: <ZB20W14VzVZZz+nI@google.com>
+Subject: Re: [PATCH v2 1/2] iommu/amd: Don't block updates to GATag if guest
+ mode is on
+From: Sean Christopherson <seanjc@google.com>
+To: Joao Martins <joao.m.martins@oracle.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Maxim Levitsky <mlevitsk@redhat.com>, Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, 
+	kvm@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
 
-On 2023/3/24 21:24, Steven Price wrote:
-> On 24/03/2023 13:16, Baolu Lu wrote:
->> On 2023/3/24 19:11, Steven Price wrote:
->>> Similar to exynos, we need a set_platform_dma_ops() callback for proper
->>> operation on ARM 32 bit after recent changes in the IOMMU framework
->>> (detach ops removal). But also the use of a NULL domain is confusing.
->>>
->>> Rework the code to have a singleton rk_identity_domain which is assigned
->>> to domain when using an identity mapping rather than "detaching". This
->>> makes the code easier to reason about.
->>>
->>> Signed-off-by: Steven Price<steven.price@arm.com>
->>> ---
->>> Changes since v1[1]:
->>>
->>>    * Reworked the code to avoid a NULL domain, instead a singleton
->>>      rk_identity_domain is used instead. The 'detach' language is no
->>>      longer used.
->>>
->>> [1]
->>> https://lore.kernel.org/r/20230315164152.333251-1-steven.price%40arm.com
->>>
->>>    drivers/iommu/rockchip-iommu.c | 50 ++++++++++++++++++++++++++--------
->>>    1 file changed, 39 insertions(+), 11 deletions(-)
->>>
->>> diff --git a/drivers/iommu/rockchip-iommu.c
->>> b/drivers/iommu/rockchip-iommu.c
->>> index f30db22ea5d7..437541004994 100644
->>> --- a/drivers/iommu/rockchip-iommu.c
->>> +++ b/drivers/iommu/rockchip-iommu.c
->>> @@ -124,6 +124,7 @@ struct rk_iommudata {
->>>      static struct device *dma_dev;
->>>    static const struct rk_iommu_ops *rk_ops;
->>> +static struct iommu_domain rk_identity_domain;
->>>      static inline void rk_table_flush(struct rk_iommu_domain *dom,
->>> dma_addr_t dma,
->>>                      unsigned int count)
->>> @@ -980,26 +981,27 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
->>>        return ret;
->>>    }
->>>    -static void rk_iommu_detach_device(struct iommu_domain *domain,
->>> -                   struct device *dev)
->>> +static int rk_iommu_identity_attach(struct iommu_domain
->>> *identity_domain,
->>> +                    struct device *dev)
->>>    {
->>>        struct rk_iommu *iommu;
->>> -    struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
->>> +    struct rk_iommu_domain *rk_domain;
->>>        unsigned long flags;
->>>        int ret;
->>>          /* Allow 'virtual devices' (eg drm) to detach from domain */
->>>        iommu = rk_iommu_from_dev(dev);
->>>        if (!iommu)
->>> -        return;
->>> +        return -ENODEV;
->>> +
->>> +    rk_domain = to_rk_domain(iommu->domain);
->>>          dev_dbg(dev, "Detaching from iommu domain\n");
->>>    -    /* iommu already detached */
->>> -    if (iommu->domain != domain)
->>> -        return;
->>> +    if (iommu->domain == identity_domain)
->>> +        return 0;
->>>    -    iommu->domain = NULL;
->>> +    iommu->domain = identity_domain;
->> Where did identity_domain come from? Is it rk_identity_domain?
-> It's a parameter of the function. In the case of the call in
-> rk_iommu_attach_device() then, yes, it's rk_identity_domain. But this
-> function is also the "attach_dev" callback of "rk_identity_ops".
+On Thu, Mar 16, 2023, Joao Martins wrote:
+> On 16/03/2023 21:01, Sean Christopherson wrote:
+> > Is there any harm in giving deactivate the same treatement?  If the worst case
+> > scenario is a few wasted cycles, having symmetric flows and eliminating benign
+> > bugs seems like a worthwhile tradeoff (assuming this is indeed a relatively slow
+> > path like I think it is).
+> > 
 > 
-> I'll admit this is cargo-culted from Jason's example:
+> I wanna say there's no harm, but initially I had such a patch, and on testing it
+> broke the classic interrupt remapping case but I didn't investigate further --
+> my suspicion is that the only case that should care is the updates (not the
+> actual deactivation of guest-mode).
+
+Ugh, I bet this is due to KVM invoking irq_set_vcpu_affinity() with garbage when
+AVIC is enabled, but KVM can't use a posted interrupt due to the how the IRQ is
+configured.  I vaguely recall a bug report about uninitialized data in "pi" being
+consumed, but I can't find it at the moment.
+
+	if (!get_pi_vcpu_info(kvm, e, &vcpu_info, &svm) && set &&
+		    kvm_vcpu_apicv_active(&svm->vcpu)) {
+
+		...
+
+	} else {
+			/* Use legacy mode in IRTE */
+			struct amd_iommu_pi_data pi;
+
+			/**
+			 * Here, pi is used to:
+			 * - Tell IOMMU to use legacy mode for this interrupt.
+			 * - Retrieve ga_tag of prior interrupt remapping data.
+			 */
+			pi.prev_ga_tag = 0;
+			pi.is_guest_mode = false;
+			ret = irq_set_vcpu_affinity(host_irq, &pi);
+	}
+
+
+> > Any chance you (or anyone) would want to create a follow-up series to rename and/or
+> > rework these flows to make it more obvious that the helpers handle updates as well
+> > as transitions between "guest mode" and "host mode"?  E.g. I can see KVM getting
+> > clever and skipping the "activation" when KVM knows AVIC is already active (though
+> > I can't tell for certain whether or not that would actually be problematic).
+> > 
 > 
-> https://lore.kernel.org/linux-iommu/ZBnef7g7GCxogPNz@ziepe.ca/
+> To be honest, I think the function naming is correct.
 
-Oh! I overlooked that. Thank you for the explanation.
+After looking more closely at the KVM code, I agree.  I was thinking KVM invoked
+the (de)activate helpers somewhat spuriously, but that's not actually the case,
+KVM just has a few less-than-perfect names due to conflicting requirements.
 
-Best regards,
-baolu
+Thanks!
