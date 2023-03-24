@@ -1,135 +1,125 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2081.outbound.protection.outlook.com [40.107.244.81])
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C2586FA1
-	for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 15:03:44 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MEjnVaQnSQ5YqoCLz6QVA75AwdDdwigMFhG6tD8ziInuqaXqI9HCXnYV88Oc+DJ8wGY6oxolLIaMWyOXFS4pczpOY9D+lbCFYOIiJdtj16VAOn7hl7lBUiXiWGbZe/Khg5qjEfGniWNIHgs6nljD7bNnDC1mAieJxQHkMFXYhNzs8vPlRpW0GvvPOZ0c7g3TeygA7PtOu1A+0+tNj7KhIvBwd9Tw2JN2rW7AOYsRJ0xo8LTMPPMAQeE9vaa9DNSFVhbC7s8YJKZGgWlPu6Blb3o0gwCY9dWaN2lCgsWG+OC1Doux9cDE3uy859lLNo9hzOYhmXldC44XvjhkypGr3A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=AiJFlQlpQWPPZE9OI2H23xlr4o8eGiw4V+0q5FINrm8=;
- b=Z3pM1IoEHxUDa/kyJUmltJCVoexDPuCDuMkEnCDLYgk1rbW3u/CnAbDWB3H2hUvIl9NIkxdT3BZUfl9oIj7Rcedn0vA3MrzwZlcpO73NOHgYbWrkZtdqQwnGhny2+79r9Aadms2+Skp96aTD+dXame/fANiIQ5cNCal3N5NFJWBnaENGP1NSsRkU4RBDUJUj7WzJ2kq/iUL/GKtbTygGh3ciQ4qIrSGBId4u0kKAhbtuewKuLjWBEIIaGQtrHJoEMm2DE20Hckcv06UjsIcFR+iDeM87aT/CVI/hEJYKn6Zx+hR2qJjcqjQjj73ruWx7oFErtsTdLiSKfM27CQEAlQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AiJFlQlpQWPPZE9OI2H23xlr4o8eGiw4V+0q5FINrm8=;
- b=p1GhlFJQlr+d32lOryrdBGP4tQBxjPuxeHlGIJ6fKWRB22Rbho8i7DZTrz26tKNOspOcfqZYClIMKTFWyj8KfBEki4vzVGkitxlcgbxbG6+P6MBHPo4Pm1SP8lEU1qejByou+zpt9KzMB1B0FcHHrEM0Jla4QKN1a6BubkTy8Bos0aXx95DiepOi5EJBQIok/1zZUI7OGNiHi3XQemMxNfZpivb8kWtNgTEJATZ2au2dSTO9F0zd/yEK3BaKxNVrOkZS992xznPWjJzGSjJpVzmGyM57yvFl/q4bhghPabyqj4kf/2oMOGEvtTtsXwMKisOR4Cc3AgwgMPe9Rp9MwA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DM6PR12MB5008.namprd12.prod.outlook.com (2603:10b6:5:1b7::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38; Fri, 24 Mar
- 2023 15:03:42 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::ef6d:fdf6:352f:efd1]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::ef6d:fdf6:352f:efd1%3]) with mapi id 15.20.6178.037; Fri, 24 Mar 2023
- 15:03:42 +0000
-Date: Fri, 24 Mar 2023 12:03:39 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>
-Subject: Re: [PATCH v3 12/17] iommufd: Add iommufd_device_replace()
-Message-ID: <ZB27y2WsrYr9KLFr@nvidia.com>
-References: <0-v3-61d41fd9e13e+1f5-iommufd_alloc_jgg@nvidia.com>
- <12-v3-61d41fd9e13e+1f5-iommufd_alloc_jgg@nvidia.com>
- <BN9PR11MB5276B73DF56654BEA4EA51AA8C879@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZBxioEDUtPMro+ew@nvidia.com>
- <BN9PR11MB5276B41014B2A28952B626B58C849@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276B41014B2A28952B626B58C849@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: SJ0PR03CA0015.namprd03.prod.outlook.com
- (2603:10b6:a03:33a::20) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 461186FA1
+	for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 15:11:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679670670; x=1711206670;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=03V1PFd1+R7lHpt8jj+NKucwctNhr0rR2OfBz81nxZo=;
+  b=dskhNIIHF6gtvoLXgrLY/Ekt5Lz84keFVmuO4FsF0hDpUnvtc0uo2HgC
+   /fWu+RCceWHXyKJSxZeqk5Su8J0W/nRYvVUNrUnsSJqojj6aZrCE9o7Wp
+   K+d0pOPFofoKGbifcQDJVKfNe0t5hPcWaNaR3sNj7wcHp7BiylHBzthlL
+   FaSW6hZjqz9+QM56TR8KUWbytX/iNdEZY+LgvUiTcR91SJDz7ibVapjkR
+   skEx7Ab6Qsy17BCUg5hdeJ+5WhzkmkMQs96eagFHwQFx1ujWD6MJ7mhNm
+   ikv1MojMWq5V/E+EJV/efsigs6y72z/WSGgml7JwlFAAEPUNfZ5F4VAQI
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10659"; a="320195659"
+X-IronPort-AV: E=Sophos;i="5.98,288,1673942400"; 
+   d="scan'208";a="320195659"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2023 08:11:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10659"; a="806702875"
+X-IronPort-AV: E=Sophos;i="5.98,288,1673942400"; 
+   d="scan'208";a="806702875"
+Received: from kanliang-dev.jf.intel.com ([10.165.154.102])
+  by orsmga004.jf.intel.com with ESMTP; 24 Mar 2023 08:11:09 -0700
+From: kan.liang@linux.intel.com
+To: joro@8bytes.org,
+	will@kernel.org,
+	baolu.lu@linux.intel.com,
+	dwmw2@infradead.org,
+	robin.murphy@arm.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: Kan Liang <kan.liang@linux.intel.com>
+Subject: [PATCH] iommu/vt-d: Fix a IOMMU perfmon warning when CPU hotplug
+Date: Fri, 24 Mar 2023 08:11:06 -0700
+Message-Id: <20230324151106.526132-1-kan.liang@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM6PR12MB5008:EE_
-X-MS-Office365-Filtering-Correlation-Id: df2fa76e-f77e-485a-b0f3-08db2c78f4e1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	dW/iPWUR70lJgW+b2yUtRFr20CtNEjy6/eZv8ZDghasULmx0o8/L1XA0PdY1Z/hBlbLFyz4xBRf4EeOsGGqVb7B8ISG3tHeROK3kaP5giIDiM7JJjGZz/351NUqV1zGQpqHCLSkD+09ENhvrx1RL/cf+uzmq1BHlxt0vb5ibObPJ1CHSWHDGxZW7XN+ct9iURNWQRuDkaWslhhoo0ytsh4n0UwOkuYNyOUJiHLTMfwoI9GwMcXn3lu407x1iBkfB7of2jJ91MQeXoYPFkQTkW7toJOGsWGFG63WVRgMjT++cwW+S8dgMZdO1WCACPL0fLjJP6y2DQB+JxEfW2+OKlQuwCNPzX8H/E4a37cJsnk9J9vFp8uhAyT1pT0RAP6mUTbYG4LDuB7wj0OCmnw44bXK2PWVZ/GprwTAeCXaefl+mQbRatDb2iyvDJ2AUwtX7JkSYTxOV2samBDDQ2gYOl8B6jCraEnI3VH7Ma739PASF479x8tDgJoHn13hiMw96PVxqvPf2uKATZ6Dz0HfAOu2ckKQU7lU5lLQiZQqwvo8BLLzb1wm2br88ltpiu6w5
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(39860400002)(136003)(366004)(396003)(346002)(451199018)(36756003)(8936002)(6916009)(4326008)(8676002)(86362001)(66476007)(41300700001)(66946007)(66556008)(6486002)(54906003)(316002)(478600001)(2906002)(5660300002)(4744005)(6666004)(6512007)(38100700002)(6506007)(26005)(186003)(2616005)(66899018);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?yeSAaSenr+9874yKCPJP6YYPWM/1orlmjyd6rxnLkJ1RHb50DQKm/Ihqw7Mr?=
- =?us-ascii?Q?oaAPqIRJkedcoWp0gatRR+nB4VWonNQvpw2hNrPH1j0zDSaG0rhDkHa4fWIu?=
- =?us-ascii?Q?+jOtA4JaGYo6AUefguqh7++uALkTIlr3LSNtrW1sjFg1yhRw50mkJ3GUbOIG?=
- =?us-ascii?Q?qVFtUXcTHURWKExpIleT2d4HzeB03MejNIW1W4VT7AzbiJ41kSZZ1LaLWyff?=
- =?us-ascii?Q?vftAzPUFguOwdGV9+PGufaaNTe3NQEK3NM9al4tfYf6CSzde4stJGD8/3n+r?=
- =?us-ascii?Q?u89PZHERvZPRHUb3gOUmasRgCa2Vks/byGiRf4h8MlbXVovyY+sW+Kq3H3Z7?=
- =?us-ascii?Q?cbinseuIUHAr1yA+dFojIj8BGmhC6Fy3UEPsPuU3X34psx33oOIWAoHJl88h?=
- =?us-ascii?Q?2/R2HqqKDInJkSF6bvYfmmxD0W8g06ChYfcrXqP2FgJsDI3XVPESz5nW1HcT?=
- =?us-ascii?Q?6/VLz4f/uMuGYEu04jWAkuk6Wcnkphh1mrTefg6fu5BSytN4p3AEEOuVTttF?=
- =?us-ascii?Q?zPIENhARxvACjQUD8SxVcoGRuxmhn43xrl+4lBSbt0thXtapYI6M7zv6/QK1?=
- =?us-ascii?Q?cwYQAVmib8BnGBXQfdOCEvzeOwvLPyeuO4dLuwZqOOcoB2+9tEn8UeYzRaah?=
- =?us-ascii?Q?eFfeU3KsUrUJ1k6mCqbxUYVI8zGOtpjQX8CM3QmsrwHLAzjrSsUzpoLqrAE/?=
- =?us-ascii?Q?FvNUFR7/bkO1zSAwoeGqjVci0GijLk/nWHOyTXgRP1Ag123DPRbPTtMsrVDw?=
- =?us-ascii?Q?cXe7ymwPXA0nbB6iAieI50fjbPv75QYn4RLsgS4Lym+B7UJJwh7YCFMhPAQq?=
- =?us-ascii?Q?Yt0eQIk2IcyuVQn1ZVVkeYPqlMfrtbAOFbRh9DgPEBKpFIVT9x2hV3lALaek?=
- =?us-ascii?Q?mq2lA07JCcwYGIuc1LSY83k82fpVFK2QU4cVnY5ivghlTnMHnwEx29Lu9xVI?=
- =?us-ascii?Q?4Eqh190hh47OzVgslC7d2LOkkxBHFSDetEJs9BxZIdjRlogr4szTusQ79G4G?=
- =?us-ascii?Q?2iT4sSjE+HgLS5US5uqIiizNl0eF03NWNr3fD1HcirFazPUhEc2MSxEpMuUs?=
- =?us-ascii?Q?CmNLNTE4d4baPPFxm2vke1aeOcr4NZgfP5hkOIX+QpUmusz0ytJY5rMgQl6l?=
- =?us-ascii?Q?5EaX72m8y7pDRdzNAhVFJ3t60glsZ3+qAu/+UPCPaN2UX8S4WQNK0k6HQ/IJ?=
- =?us-ascii?Q?6eDtHeyrIVA7YVQUUiWNfQbYO4cpgt+NSdIGto6N5w9igmHO3zrZ629fcSkE?=
- =?us-ascii?Q?h1r85fqTMNL01XE68vcTJblyILdKBRgjF8hk9ETr2esTugBF38ofJ0CckD4C?=
- =?us-ascii?Q?PmHLpTqjAbCMROFVMf9va6pQlAZzmN0IDbClQVFI8iarc/xP/1Yeg274pJOT?=
- =?us-ascii?Q?FzA3qZ+dZdJFIRRe7joGJT2ztIBVmKS6DnyTU39jn7NnXa3aIk+Qa681nUN2?=
- =?us-ascii?Q?JsgubQRJSg7G8TtYdnFwEWTrx8/GSbAwpPgPUN+X8URkHt2Pr9lEtGReYypI?=
- =?us-ascii?Q?YqfPeDdzYgakfmjOJf+Yf47eXlMLKtyJ3JC3DRkKUjorf14u2PpnDDC26vtZ?=
- =?us-ascii?Q?+E78S1Az4dx+vH9Xm6tqB+rFA3oZ29Jp0enQZD0J?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: df2fa76e-f77e-485a-b0f3-08db2c78f4e1
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2023 15:03:42.1217
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1r7iGd9v5vpYj16DMkrm+x62JCV9z/9W0sjRGjqKnDsyfhY1T04k/nYZlzV0Sk8b
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB5008
+Content-Transfer-Encoding: 8bit
 
-On Fri, Mar 24, 2023 at 01:42:58AM +0000, Tian, Kevin wrote:
+From: Kan Liang <kan.liang@linux.intel.com>
 
-> > > > +	/* Move the refcounts held by the device_list to the new hwpt */
-> > > > +	refcount_add(num_devices, &hwpt->obj.users);
-> > > > +	if (num_devices > 1)
-> > > > +		WARN_ON(refcount_sub_and_test(num_devices - 1,
-> > > > +					      &old_hwpt->obj.users));
-> > >
-> > > A comment is welcomed to match "caller must destroy old_hwpt".
-> > 
-> > ??
-> > 
-> 
-> It's not intuitive when moving the refcnt why we subtract num_devices
-> from the old_hwpt only when it's greater than 1. It's really about
-> the destroy must be done by the caller.
+A warning can be triggered when hotplug CPU 0.
+ $ echo 0 > /sys/devices/system/cpu/cpu0/online
 
+[11958.737635] ------------[ cut here ]------------
+[11958.742882] Voluntary context switch within RCU read-side critical
+section!
+[11958.742891] WARNING: CPU: 0 PID: 19 at kernel/rcu/tree_plugin.h:318
+rcu_note_context_switch+0x4f4/0x580
+[11958.860095] RIP: 0010:rcu_note_context_switch+0x4f4/0x580
+[11958.960360] Call Trace:
+[11958.963161]  <TASK>
+[11958.965565]  ? perf_event_update_userpage+0x104/0x150
+[11958.971293]  __schedule+0x8d/0x960
+[11958.975165]  ? perf_event_set_state.part.82+0x11/0x50
+[11958.980891]  schedule+0x44/0xb0
+[11958.984464]  schedule_timeout+0x226/0x310
+[11958.989017]  ? __perf_event_disable+0x64/0x1a0
+[11958.994054]  ? _raw_spin_unlock+0x14/0x30
+[11958.998605]  wait_for_completion+0x94/0x130
+[11959.003352]  __wait_rcu_gp+0x108/0x130
+[11959.007616]  synchronize_rcu+0x67/0x70
+[11959.011876]  ? invoke_rcu_core+0xb0/0xb0
+[11959.016333]  ? __bpf_trace_rcu_stall_warning+0x10/0x10
+[11959.022147]  perf_pmu_migrate_context+0x121/0x370
+[11959.027478]  iommu_pmu_cpu_offline+0x6a/0xa0
+[11959.032325]  ? iommu_pmu_del+0x1e0/0x1e0
+[11959.036782]  cpuhp_invoke_callback+0x129/0x510
+[11959.041825]  cpuhp_thread_fun+0x94/0x150
+[11959.046283]  smpboot_thread_fn+0x183/0x220
+[11959.050933]  ? sort_range+0x20/0x20
+[11959.054902]  kthread+0xe6/0x110
+[11959.058479]  ? kthread_complete_and_exit+0x20/0x20
+[11959.063911]  ret_from_fork+0x1f/0x30
+[11959.067982]  </TASK>
+[11959.070489] ---[ end trace 0000000000000000 ]---
 
-	/*
-	 * Move the refcounts held by the device_list to the new hwpt. Retain a
-	 * refcount for this thread as the caller will free it.
-	 */
+The synchronize_rcu() will be invoked in the perf_pmu_migrate_context(),
+when migrating a PMU to a new CPU. However, the current for_each_iommu()
+is within RCU read-side critical section.
 
+Use the dmar_global_lock to replace the RCU read lock when going through
+the drhd list.
 
-Jason
+Fixes: 46284c6ceb5e ("iommu/vt-d: Support cpumask for IOMMU perfmon")
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+---
+ drivers/iommu/intel/perfmon.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/intel/perfmon.c b/drivers/iommu/intel/perfmon.c
+index e17d9743a0d8..81c9554fb1dc 100644
+--- a/drivers/iommu/intel/perfmon.c
++++ b/drivers/iommu/intel/perfmon.c
+@@ -797,14 +797,14 @@ static int iommu_pmu_cpu_offline(unsigned int cpu)
+ 	else
+ 		target = -1;
+ 
+-	rcu_read_lock();
++	down_write(&dmar_global_lock);
+ 
+ 	for_each_iommu(iommu, drhd) {
+ 		if (!iommu->pmu)
+ 			continue;
+ 		perf_pmu_migrate_context(&iommu->pmu->pmu, cpu, target);
+ 	}
+-	rcu_read_unlock();
++	up_write(&dmar_global_lock);
+ 
+ 	return 0;
+ }
+-- 
+2.35.1
+
