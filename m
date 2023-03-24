@@ -1,112 +1,187 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2043.outbound.protection.outlook.com [40.107.243.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 060BFD2F7
-	for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 17:28:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679678922; x=1711214922;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Mcsu5T7NDXbU35tcwWViyIcGBa4XNa6+MDZfpZrvpaE=;
-  b=MvUvhVtq7ZtBFgXGB2y67AbkEVdAzvvbCpeIk50F8WzTnNYfO62j2XRh
-   WhgdgKUZSFdpgE/rPF3fA/ez6USbru7THet7ivLpZi1De1AjusVpa9fil
-   p5DIdk1x+3DI0D3tR5+LHjqG3lD1PnZTu6uhpSGPom0JycdI/h4rNgnxl
-   hvl5kV2in+3oXc8zqXQ8IcTuU851P1bLi0TnyJsNk7i+n9XZ0RZAHy8Br
-   KfqpeEz+aXgd0xRikQSV/4ZNhzvWHQq3RJZREmlYuDX8m7C7XP+IEOEmi
-   siJrI/vZlrbW3Kurw17C7YGSnXjC1gciHNBbxJtamdV2vZFVLOLOPdlui
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10659"; a="404758382"
-X-IronPort-AV: E=Sophos;i="5.98,288,1673942400"; 
-   d="scan'208";a="404758382"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2023 10:28:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10659"; a="793525414"
-X-IronPort-AV: E=Sophos;i="5.98,288,1673942400"; 
-   d="scan'208";a="793525414"
-Received: from bahessel-mobl.amr.corp.intel.com (HELO [10.209.94.88]) ([10.209.94.88])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2023 10:28:39 -0700
-Message-ID: <3224215f-4ac6-713b-9f88-0d68e0572126@linux.intel.com>
-Date: Fri, 24 Mar 2023 10:28:39 -0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBA00D2F7
+	for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 17:35:39 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IahTdNXSqwo7coEMWOlgEhBzTtipnblkFeH+A74Va/zOsvaZYEcg3FP4Qq3xWKnCBgKeBp+KCA9T6njasKw3jGUaq51GEo48d8RURXfo9Pw/yR0Yg0XjRJiVEqsyvm9MiJTE5uVyN45kKaCUt6w7v8FpJeS3JVCN9XT6le9sS/xj8HMwNr4HBxynDq7R7lGHjTgj7seAM3ymeaYo8OynFQmoTnF5jJX1V7fLIRDAFGKEDfzLyBCUKOWobyADmJ98bYiGPkvD2A6ZgX7cHubh6z78wXy4Z4yoDtma/R6vH/nayGISnCgg97exsdZwldyZYx4WB4xqWbKnA2MbQiH1RQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ng+STecmltNDc5W09XBbAUWaGF4r9zPy/Vf6PcQwUGY=;
+ b=mKoKUIk2YOvqOJuC5lmwxmjlWgnLw6GlUBcwxFTWgK8akI78STYzYNRkXpyaJpysJXieWfWbvMxJACIfoDaWXRHPVMBdPZkJ2usPwQPxD2g1uNVNsUm2tItOm8FMWDsbPp1xZRU7MVc2MG20aGf+vz8vII6m8+mzXFmh9sThfhRJJgBhQrkLwweSQsHNIR36viklnMSJErnpYj2m0f6F6/P/nzIFEkVWGDxq/gxBI/XObh3AUrHxeMQrrq4AxvKfgSm9JTBDf9EHpzkbKikKMhxduMlqH3QuSO8jc0YA04qh7H3SLkEvbRXpN2lvZi1BXQSzPuGzMvl4svZnN7dAlA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ng+STecmltNDc5W09XBbAUWaGF4r9zPy/Vf6PcQwUGY=;
+ b=d/YKhw5hfYgEhnplaN84NFWQK1zOKuDYgv2PFCzucL3qVx1gs5SkOmiNxL3qoAfeRy+28WJxvv3qXZZ4MlpoJyz/B5PHRxjXO9YPzNF6kbomhl/wFjZOiBS/h1WVcJyYteG0/EOfQkZpR6KRVkJXzhRIlCBwQZISvhbpPR7AKZRc4kLFmumpA3HlnlAJbw+I06NlVfq3GP8N/46tumVd6nXV48grE6G/HViVBVkg8CT1eRJ9eJRYYi4ezNsGuYxr+6vz+FSXTIVnhIitm4RWgCIHVhEKUMyyf+ruPIZvIU4jjQAPXOSKXA7JIIJlvmhQAFz0Bd8S71QlyP8/PJImZQ==
+Received: from CY8PR11CA0038.namprd11.prod.outlook.com (2603:10b6:930:4a::8)
+ by IA0PR12MB7532.namprd12.prod.outlook.com (2603:10b6:208:43e::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38; Fri, 24 Mar
+ 2023 17:35:37 +0000
+Received: from CY4PEPF0000C976.namprd02.prod.outlook.com
+ (2603:10b6:930:4a:cafe::a4) by CY8PR11CA0038.outlook.office365.com
+ (2603:10b6:930:4a::8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.40 via Frontend
+ Transport; Fri, 24 Mar 2023 17:35:36 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CY4PEPF0000C976.mail.protection.outlook.com (10.167.241.132) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6178.30 via Frontend Transport; Fri, 24 Mar 2023 17:35:36 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Fri, 24 Mar 2023
+ 10:35:24 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Fri, 24 Mar
+ 2023 10:35:24 -0700
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5 via Frontend
+ Transport; Fri, 24 Mar 2023 10:35:23 -0700
+Date: Fri, 24 Mar 2023 10:35:21 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
+CC: Robin Murphy <robin.murphy@arm.com>, "will@kernel.org" <will@kernel.org>,
+	"eric.auger@redhat.com" <eric.auger@redhat.com>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "jean-philippe@linaro.org"
+	<jean-philippe@linaro.org>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 14/14] iommu/arm-smmu-v3: Add
+ arm_smmu_cache_invalidate_user
+Message-ID: <ZB3fWVD/Addk70zY@Asurada-Nvidia>
+References: <ZAtYphmOuEqQ1BiC@nvidia.com>
+ <BN9PR11MB52768F4D3E21C5231C1A04D38CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZBhYq8o4gqFZVb6k@nvidia.com>
+ <ZBiF1hZVrp/aJRM6@Asurada-Nvidia>
+ <ZBifWkY2Lt/U1Z7R@nvidia.com>
+ <BN9PR11MB5276E6E3FCA90582AA61BDDE8C819@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZBmZj2pscX0hx2kQ@nvidia.com>
+ <ZBqjUeEjjtCclgLN@Asurada-Nvidia>
+ <BN9PR11MB527622D86AE048D3394C12A28C849@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZB26RWV53wYtc2L2@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.8.0
-Subject: Re: [PATCH v6 06/13] x86/hyperv: Change vTOM handling to use standard
- coco mechanisms
-Content-Language: en-US
-To: Dexuan Cui <decui@microsoft.com>, Borislav Petkov <bp@alien8.de>,
- "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc: "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
- Haiyang Zhang <haiyangz@microsoft.com>,
- "wei.liu@kernel.org" <wei.liu@kernel.org>, "luto@kernel.org"
- <luto@kernel.org>, "peterz@infradead.org" <peterz@infradead.org>,
- "davem@davemloft.net" <davem@davemloft.net>,
- "edumazet@google.com" <edumazet@google.com>,
- "kuba@kernel.org" <kuba@kernel.org>, "pabeni@redhat.com"
- <pabeni@redhat.com>, "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
- "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
- "bhelgaas@google.com" <bhelgaas@google.com>, "arnd@arndb.de"
- <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
- "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
- "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
- "tglx@linutronix.de" <tglx@linutronix.de>,
- "mingo@redhat.com" <mingo@redhat.com>,
- "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
- Tianyu Lan <Tianyu.Lan@microsoft.com>,
- "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
- "ak@linux.intel.com" <ak@linux.intel.com>,
- "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
- "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
- "jane.chu@oracle.com" <jane.chu@oracle.com>,
- "seanjc@google.com" <seanjc@google.com>,
- "tony.luck@intel.com" <tony.luck@intel.com>, "x86@kernel.org"
- <x86@kernel.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
- "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <1678329614-3482-1-git-send-email-mikelley@microsoft.com>
- <1678329614-3482-7-git-send-email-mikelley@microsoft.com>
- <20230320112258.GCZBhCEpNAIk0rUDnx@fat_crate.local>
- <BYAPR21MB16880C855EDB5AD3AECA473DD7809@BYAPR21MB1688.namprd21.prod.outlook.com>
- <20230320181646.GAZBijDiAckZ9WOmhU@fat_crate.local>
- <BYAPR21MB1688DF161ACE142DEA721DA1D7809@BYAPR21MB1688.namprd21.prod.outlook.com>
- <20230323134306.GEZBxXahNkFIx1vyzN@fat_crate.local>
- <20230324154856.GDZB3GaHG/3L0Q1x47@fat_crate.local>
- <SA1PR21MB1335023500AE3E7C8AE6F867BF849@SA1PR21MB1335.namprd21.prod.outlook.com>
-From: Sathyanarayanan Kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>
-In-Reply-To: <SA1PR21MB1335023500AE3E7C8AE6F867BF849@SA1PR21MB1335.namprd21.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ZB26RWV53wYtc2L2@nvidia.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000C976:EE_|IA0PR12MB7532:EE_
+X-MS-Office365-Filtering-Correlation-Id: c4982393-5aa3-4336-fc11-08db2c8e2db2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	up+Ej3Fop7BrsEDFxJFB8mQb9oKIFZJAzNGQOP3ZyU5ubIW1BPfqZil7Gpqw4bhp1yyq8Yfm6OYhbr1tPMySCPGzhyZLhr95May19i6wuehNKJtizXkoYLP9jlHOvrxReYsUDtaXYw2YPeWs9QYdco1Vuu1rleEjTPcTvjM8HeTo98+hfIboKU4kdoZoc4B+8ROEVmBIheRZqzIc6blHXtapv5AkWy/i0p5lyux1AtGBh2nR/wqEEogcB2mmb7LDnYOzN9ZaGjeEQy6p1emrQIfLfIovfgg6BC5SxcNbIA/LXeHISNNa18pSXM0XgajXMa2PdeB1w7OUPd6lQ2xXITTOCjMmjLU550AOR+SdqdZQghjgiZNO9I4eQjgerE6wrB3KiQXiVFNmg0lS+Js6z09b/acowg3t3BDfzZaos/J/45bnQNpr0v8xOztjlILIQpLmpDO/jofJLdR/REwLDbOuCelVF1GuvJQfN8kPGaF7+hT+12M1WCvUR2t6L2XKC2ogJ2YUhtp0EpftviBkCJQ9xYPIyq8hNXsooQ5/nvugQ0x6YZpxj4RZea5m7j6QaGOr7WRAY+Bwxl5qPkrcyEags7sw960UB1NOfSWc31FtJlLDyGWlBrYDcqD5d7uwC1M76DNKQbwWTzDAFEcM77oMRWFjp4BAdqIVzwefrofooO+SBSPrOEaYc0xDAvPCY7193LRTJ8TF7ZzYrhe1I2DmDYzSawQ72cYkIo/vzXbeQEyPUuWle2zWxuW0cR/h
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(376002)(39860400002)(346002)(451199021)(46966006)(36840700001)(40470700004)(4326008)(8676002)(54906003)(5660300002)(8936002)(7416002)(70206006)(70586007)(478600001)(2906002)(110136005)(316002)(7636003)(83380400001)(47076005)(426003)(6636002)(82310400005)(36860700001)(33716001)(55016003)(86362001)(186003)(40460700003)(41300700001)(40480700001)(9686003)(336012)(26005)(356005)(82740400003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2023 17:35:36.5177
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c4982393-5aa3-4336-fc11-08db2c8e2db2
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000C976.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7532
 
-Hi,
-
-On 3/24/23 10:10 AM, Dexuan Cui wrote:
->> From: Borislav Petkov <bp@alien8.de>
->> Sent: Friday, March 24, 2023 8:49 AM
->> ...
->> With first six applied:
->>
->> arch/x86/coco/core.c:123:7: error: use of undeclared identifier 'sev_status'
->>                 if (sev_status & MSR_AMD64_SNP_VTOM)
->>                     ^
+On Fri, Mar 24, 2023 at 11:57:09AM -0300, Jason Gunthorpe wrote:
+> On Fri, Mar 24, 2023 at 09:02:34AM +0000, Tian, Kevin wrote:
+> > > From: Nicolin Chen <nicolinc@nvidia.com>
+> > > Sent: Wednesday, March 22, 2023 2:42 PM
+> > > 
+> > > On Tue, Mar 21, 2023 at 08:48:31AM -0300, Jason Gunthorpe wrote:
+> > > > On Tue, Mar 21, 2023 at 08:34:00AM +0000, Tian, Kevin wrote:
+> > > >
+> > > > > > > Rephrasing that to put into a design: the IOCTL would pass a
+> > > > > > > user pointer to the queue, the size of the queue, then a head
+> > > > > > > pointer and a tail pointer? Then the kernel reads out all the
+> > > > > > > commands between the head and the tail and handles all those
+> > > > > > > invalidation commands only?
+> > > > > >
+> > > > > > Yes, that is one possible design
+> > > > >
+> > > > > If we cannot have the short path in the kernel then I'm not sure the
+> > > > > value of using native format and queue in the uAPI. Batching can
+> > > > > be enabled over any format.
+> > > >
+> > > > SMMUv3 will have a hardware short path where the HW itself runs the
+> > > > VM's command queue and does this logic.
+> > > >
+> > > > So I like the symmetry of the SW path being close to that.
+> > > 
+> > > A tricky thing here that I just realized:
+> > > 
+> > > With VCMDQ, the guest will have two CMDQs. One is the vSMMU's
+> > > CMDQ handling all non-TLBI commands like CMD_CFGI_STE via the
+> > > invalidation IOCTL, and the other hardware accelerated VCMDQ
+> > > handling all TLBI commands by the HW. In this setup, we will
+> > > need a VCMDQ kernel driver to dispatch commands into the two
+> > > different queues.
+> > > 
+> > 
+> > why doesn't hw generate a vm-exit for unsupported CMDs in VCMDQ
+> > and then let them emulated by vSMMU? such events should be rare
+> > once map/unmap are being conducted...
 > 
-> Your config doesn't define CONFIG_AMD_MEM_ENCRYPT:
-> # CONFIG_AMD_MEM_ENCRYPT is not set
+> IIRC vcmdq is defined to only process invalidations, so it would be a
+> driver error to send anything else. I think this is what Nicolin
+> means.  Most likely to use it the VM would have to see the nvidia acpi
+> extension and activate vcmdq in the VM.
+> 
+> If you suggest to overlay the main cmdq with the vcmdq and then don't
+> tell the guest about it.. Robin suggested something similar.
 
-If you have config dependency, I think you should fix it in the code or add
-Kconfig dependency.
+Yea, I remember that too, from the email that I received from
+Robin on Christmas Eve :)
 
--- 
-Sathyanarayanan Kuppuswamy
-Linux Kernel Developer
+Yet, I haven't got a chance to run some experiment with that.
+
+> This idea would be a half and half, the HW would run the queue and the
+> doorbell and generate error interrupts back to the hypervisor and tell
+> it that the queue is paused and ask it to fix the failed entry and
+> restart.
+>
+> I could see this as an interesting solution, but I don't know if this
+> HW can support it..
+
+It possibly can, since an unsupported command will trigger an
+Illegal Command interrupt, then the IRQ handler could read it
+out of the CMDQ. Again, I'd need to run some experiment, once
+this SMMU nesting series is settled down to certain level.
+
+One immediate thing about this solution is that we still need
+a multi-CMDQ support per SMMU instance, besides from a multi-
+SMMU instance support. This might be implemented as the ECMDQ
+I guess. But I am not sure if there is a ECMDQ HW available,
+so that we can add its support first, to fit VCMDQ into it.
+
+Overall, interesting topics! I'd like to carry on along the
+way of this series, hoping we can figure out something smart
+and solid to implement :)
+
+Thanks
+Nicolin
