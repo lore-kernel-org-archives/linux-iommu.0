@@ -1,111 +1,97 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1CA32525F
-	for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 11:17:36 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9776411FB;
-	Fri, 24 Mar 2023 04:18:20 -0700 (PDT)
-Received: from [10.1.28.32] (e122027.cambridge.arm.com [10.1.28.32])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EEF9D3F6C4;
-	Fri, 24 Mar 2023 04:17:33 -0700 (PDT)
-Message-ID: <80238e1b-15d7-23b7-b2a9-77078e64e056@arm.com>
-Date: Fri, 24 Mar 2023 11:17:32 +0000
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DC24525F
+	for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 12:02:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679659343; x=1711195343;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=tEg9Nbf7D8iSqWKP78j00E29FBsj6/xmQlqzwzykS7Q=;
+  b=Ld7YqzebQ8tj/UO6sUG3Koh5Vw406VM1Twe7SYsPXMltLemdXXeFbsb3
+   vUaTQ/Qd96xlz7Ikds3wFcIjbzCDCe4FHpZIdPHJJ1SXAYMog3mz8Y/r2
+   l5RgqcfDNfJQIoUKIiDbga9VQQTn0/+ddJxsJHubM13KWxDOXVmL07djO
+   wt/Visb0kCQ3zI5DscOqPQL9/xEi5oVBkMOAKGiafbDpccQ1cIkcjb0qL
+   LNajrnhbrnvu5g20vlukp1C/Z5TMAUWVX1uOUT+0m9RGhnnZyXhgvwUZ7
+   miw1C2Jn+p3XH7P4PNmAblO/qktqV9PBxeYmOzemDCFi/xaxfNuUkkjMf
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10658"; a="323634125"
+X-IronPort-AV: E=Sophos;i="5.98,287,1673942400"; 
+   d="scan'208";a="323634125"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2023 05:02:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10658"; a="682674688"
+X-IronPort-AV: E=Sophos;i="5.98,287,1673942400"; 
+   d="scan'208";a="682674688"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by orsmga002.jf.intel.com with ESMTP; 24 Mar 2023 05:02:20 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: iommu@lists.linux.dev,
+	dmaengine@vger.kernel.org
+Cc: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Fenghua Yu <fenghua.yu@intel.com>,
+	Dave Jiang <dave.jiang@intel.com>,
+	Vinod Koul <vkoul@kernel.org>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v3 0/6] iommu/vt-d: Refactor code for non-PRI IOPF
+Date: Fri, 24 Mar 2023 20:02:28 +0800
+Message-Id: <20230324120234.313643-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH] iommu/rockchip: Add missing set_platform_dma_ops callback
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Heiko Stuebner <heiko@sntech.de>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
- Lu Baolu <baolu.lu@linux.intel.com>
-References: <20230315164152.333251-1-steven.price@arm.com>
- <ZBnBU9OU4iV6CV0W@ziepe.ca> <85607806-b888-2d5e-67a4-e9d63ebd1976@arm.com>
- <ZBr5e6tn1i7EE/16@ziepe.ca> <a5b946f0-5be8-a656-a8d5-1cd75399f0c4@arm.com>
- <ZBsb01emBJJMZIt0@ziepe.ca> <bee3e168-3fc3-89e8-6b10-a830f052cf55@arm.com>
- <ZBs8k8nki/iqUiwE@ziepe.ca>
-Content-Language: en-GB
-From: Steven Price <steven.price@arm.com>
-In-Reply-To: <ZBs8k8nki/iqUiwE@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 22/03/2023 17:36, Jason Gunthorpe wrote:
-> On Wed, Mar 22, 2023 at 04:04:25PM +0000, Steven Price wrote:
->> On 22/03/2023 15:16, Jason Gunthorpe wrote:
->>> On Wed, Mar 22, 2023 at 03:08:41PM +0000, Steven Price wrote:
->>>> @@ -1035,8 +1055,9 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
->>>>  	if (iommu->domain == domain)
->>>>  		return 0;
->>>>  
->>>> -	if (iommu->domain)
->>>> -		rk_iommu_detach_device(iommu->domain, dev);
->>>> +	ret = rk_iommu_identity_attach(&rk_identity_domain, dev);
->>>> +	if (ret)
->>>> +		return ret;
->>>
->>>>  
->>>>  	iommu->domain = domain;
->>>>  
->>>> @@ -1049,8 +1070,6 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
->>>>  		return 0;
->>>>  
->>>>  	ret = rk_iommu_enable(iommu);
->>>> -	if (ret)
->>>> -		rk_iommu_detach_device(iommu->domain, dev);
->>>
->>> I think this still needs error handling, it should put it back to the
->>> identity domain and return an error code if it fails to attach to the
->>> requested domain.
->>
->> What confused me here is that there's already a call to
->> rk_iommu_identity_attach() just above. But I can obviously add a...
-> 
-> I don't know this driver at all, but to me it looks like this is
-> perhaps undoing a partially failed rk_iommu_enable() since it doesn't
-> seem to enetirely fix itself. Ie it zeros the INT_MASK and DTE_ADDR
-> 
-> Maybe it would be better to put that error cleanup direclty into
-> enable and just move the iommu->domain assignment to after enable
-> success.
+The existing SVA and IOPF implementation assumes that devices report I/O
+page faults via PCI PRI. This is not always true as some emerging
+devices are designed to handle the I/O page faults by themselves without
+ever sending PCI page requests nor advertising PRI capability.
 
-While I agree this would be better - I don't feel I understand the
-driver enough to have confidence in doing this. And I don't know how to
-trigger the error conditions to test this either.
+Refactor the SVA and IOPF code to allow SVA support with IOPF handled
+either by IOMMU (PCI PRI) or device driver (device-specific IOPF).
 
->>        if (ret)
->>                rk_iommu_identity_attach(&rk_identity_domain, dev);
->>
->> ... in here. But I don't know how to handle an error from
->> rk_iommu_identity_attach() at this point. Does it need handling - is a
->> WARN_ON sufficient?
-> 
-> WARN_ON should be fine, that is kind of hacky, it would be better to
-> organize things so there is an identity attach function that cannot
-> fail, ie pre-assumes all the validation is done alread.y
+This series is based on v6.3-rc1 and also available at github:
+https://github.com/LuBaolu/intel-iommu/commits/intel-iommu-refactor-iopf-v3
 
-As the code currently stands rk_iommu_identity_attach can fail for
-exactly one reason: if rk_iommu_from_dev() fails. And since that check
-is already done in rk_iommu_attach_device() this cannot fail (baring
-memory corruption etc). So I'll stick to WARN_ON for now.
+Change log:
+v3:
+ - Split removing unnecessary checks in iopf disabling path into a
+   separate patch.
+ - Add some in-line comments.
 
->>
->>> It should also initlaize iommu->domain to the identity domain when the
->>> iommu struct is allocated. The iommu->domain should never be
->>> NULL. identity domain means the IOMMU is turned off which was
->>> previously called "detached".
->>
->> I presume you mean in rk_iommu_probe()?
-> 
-> It would be best if it was setup at allocation time so in
-> rk_iommu_of_xlate() before dev_iommu_priv_set()
+v2:
+ - https://lore.kernel.org/linux-iommu/20230309025639.26109-1-baolu.lu@linux.intel.com/
+ - Separate a fix patch and merge it into v6. 3-rc1 [commit 60b1daa3b168
+   ("iommu/vt-d: Fix error handling in sva enable/disable paths")]
+ - Disallow device-specific IOPF is device advertising PRI capability;
+ - Add some extra patches to move all IOPF related code to the IOPF
+   enabling/disabling paths.
 
-I've already put an assignment in rk_iommu_of_xlate() just before
-dev_iommu_priv_set().
+v1: Initial post
+ - https://lore.kernel.org/linux-iommu/20230203084456.469641-1-baolu.lu@linux.intel.com/
 
-Steve
+Lu Baolu (6):
+  dmaengine: idxd: Add enable/disable device IOPF feature
+  iommu/vt-d: Allow SVA with device-specific IOPF
+  iommu/vt-d: Move iopf code from SVA to IOPF enabling path
+  iommu/vt-d: Move pfsid and ats_qdep calculation to device probe path
+  iommu/vt-d: Move PRI handling to IOPF feature path
+  iommu/vt-d: Remove unnecessary checks in iopf disabling path
+
+ drivers/dma/idxd/init.c     |  31 +++++++--
+ drivers/iommu/intel/iommu.c | 132 ++++++++++++++++++++++++------------
+ 2 files changed, 112 insertions(+), 51 deletions(-)
+
+-- 
+2.34.1
+
