@@ -1,292 +1,139 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2081.outbound.protection.outlook.com [40.107.220.81])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C21B27706
-	for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 20:59:38 +0000 (UTC)
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20230324205930euoutp0250c6b52af06f736cb8c2699a0d1c8e26~PdpVnylwh0540605406euoutp02E
-	for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 20:59:30 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20230324205930euoutp0250c6b52af06f736cb8c2699a0d1c8e26~PdpVnylwh0540605406euoutp02E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1679691570;
-	bh=Z+rngr3udrsV0hOU1t7gT3Mj6BOJD60BPXUfydxchX4=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=kQkxbYQz0BKM3WzHp2FCON1M9jYG0H8iVIliPY9mFsuPVvUXN+SjMVtYSJTMBkyG+
-	 4OYlV1EmmxfMhF5Xj68F15dG/m4Q1OWCYf8ylnjjCfvatWEwM5xLvwZOvCGKdiGNS9
-	 unghAtY9hOQ7+uj6wlhwflHG0CKp2aIx2XTeh9sg=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-	20230324205929eucas1p2b8ac1165602df41528c3032bbcc91a1b~PdpVQPudb1252212522eucas1p2T;
-	Fri, 24 Mar 2023 20:59:29 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-	eusmges3new.samsung.com (EUCPMTA) with SMTP id 27.C5.10014.13F0E146; Fri, 24
-	Mar 2023 20:59:29 +0000 (GMT)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20230324205928eucas1p1f0ec9e236a658948e64dac2a8ea16fc5~PdpUE_dDb2722027220eucas1p1g;
-	Fri, 24 Mar 2023 20:59:28 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-	20230324205928eusmtrp24c93f4073e72d6f461e24316c793afd6~PdpUEgQ4q1178411784eusmtrp2V;
-	Fri, 24 Mar 2023 20:59:28 +0000 (GMT)
-X-AuditID: cbfec7f5-ba1ff7000000271e-32-641e0f31ec6e
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-	eusmgms2.samsung.com (EUCPMTA) with SMTP id 78.22.09583.03F0E146; Fri, 24
-	Mar 2023 20:59:28 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20230324205927eusmtip10182cadbddb5400d6c7723831354f603~PdpThcw0K2714627146eusmtip1N;
-	Fri, 24 Mar 2023 20:59:27 +0000 (GMT)
-Message-ID: <3ca0c680-d651-a2af-978e-fcb4a2057dd0@samsung.com>
-Date: Fri, 24 Mar 2023 21:59:27 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D538527706
+	for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 21:01:33 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=W00PEedwruCYSg4WtiXJqnJ0hmuw2+LRvJIumS9ustF6RaGbxAz6+2ELVhUv2BnI6ay9+nBZcjwHp+kP5y06mNga5EpLman5NKHZ+1HIoikRgqRtGFGe9d9kP1D2iAquS0hmVh04lwXJT67C9pfbcGiOKr1aj01WLJOD3lZEuNtJaOV3Yk9QrQCd3hSc3EvXRmDJt1dVLgx9srDdaweMRWpvKG9kb/uD4uGP8jIYPQxnOGVM1rGvVOIPxzjr7yP0KJAXpQ2z3FIylSutP8MMPi8cWBEQexBI/roj4ImR49jLMnf7d3GSRHp1QtEAxAhIDpcBGYmmvKv7mct4EtNodw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=oRdODG7lJjz6w4++v66MMkBRIHA2y3jl9CRfS1OIf38=;
+ b=U1QIjpUTXxCnEYrGEOJuqonEl1IMvXk4g09BFNEGfI99uEzVwD/wXbInolWNwYhBf1mXZFnwC7oDIpW/hmCbewkHWTFlm6fMQfrAMBQfa1RiMxX1GXuWEa96MVT7roZw0nc+G7NAKqYYiv6H9hoQzFPjju+aR0ZJwvptiTAKPvw90x9a4w8DDfgDZGF/OeFaQdlrU1kgihXeh2DHeFZAYZNI05YfV88Y5VwVbtAu4SbUvb4ziYr8gM/tuq144N199We+0mYiE89c3+TKwZiktBIwHkJUgnPYbBhPZU9NIJyOZqE9izo4l0q1hXMHkP9YDOU62FvAHlZPj0wlVOcm5A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oRdODG7lJjz6w4++v66MMkBRIHA2y3jl9CRfS1OIf38=;
+ b=tJoWkNgBoXVPE9+MZ3f9uxIX899WtV9aJmU+2ANwponquGbYZqTbw5bYeXQp6CZGrsxlbuBW8KeyhEZV/E0JdCoRlwbOUehtlEcaQpZpCXTrSnAlbu46Lv/Zyh3LU61hjn3E6U54RplL1OXEt7ec5Y+tCHplhn/l8ysWRv1XwVN/bBVHJ057V/hbzBpQAInEYxh/Ms1YTViK96aeCC5wHQ3W6SYJCLJ2XebUvWKA7sh9qSwNXmGavTRHGxD66e9NITl8BnjawKgPgaI9UquVcpLmL11u/S61qLIm+InOEmsAKfyKVXMf26bb+U6Qy6zeLKHSz6RiaZ5p+c0aFiL1fQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by MN2PR12MB4343.namprd12.prod.outlook.com (2603:10b6:208:26f::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38; Fri, 24 Mar
+ 2023 21:01:31 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::ef6d:fdf6:352f:efd1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::ef6d:fdf6:352f:efd1%3]) with mapi id 15.20.6178.037; Fri, 24 Mar 2023
+ 21:01:31 +0000
+Date: Fri, 24 Mar 2023 18:01:28 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux.dev
+Subject: Re: lockdep splat with intel iommu
+Message-ID: <ZB4PqK6p64xuNxRn@nvidia.com>
+References: <Y1qOqBXgll9qa7Hm@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y1qOqBXgll9qa7Hm@nvidia.com>
+X-ClientProxiedBy: SJ0PR03CA0098.namprd03.prod.outlook.com
+ (2603:10b6:a03:333::13) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0)
-	Gecko/20100101 Thunderbird/102.9.0
-Subject: Re: [PATCH v2] iommu/exynos: Fix set_platform_dma_ops() callback
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: iommu@lists.linux.dev, linux-samsung-soc@vger.kernel.org, Joerg Roedel
-	<joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, Krzysztof Kozlowski
-	<krzysztof.kozlowski@linaro.org>, Alim Akhtar <alim.akhtar@samsung.com>, Lu
-	Baolu <baolu.lu@linux.intel.com>
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <ZBnef7g7GCxogPNz@ziepe.ca>
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrBKsWRmVeSWpSXmKPExsWy7djPc7qG/HIpBrP3KFk8mLeNzWLzxK1s
-	Fr++WFjMnHGC0aJz9gZ2i72vt7JbzDi/j8ni4IcnrBYtd0wdOD2eHJzH5LFm3hpGj02rOtk8
-	7lzbw+Yx72Sgx4vNMxk9+rasYvT4vEnOY+vn2ywBnFFcNimpOZllqUX6dglcGS9PPWQu2G1c
-	sf7pK+YGxieaXYycHBICJhJTH/9n62Lk4hASWMEo8eXgfxaQhJDAF0aJfWckIezPjBKPn0bD
-	NPxpuMME0bCcUaL5wEFWiKKPjBK3n4FN5RWwkzi2/CsbiM0ioCpx+vNNNoi4oMTJmU/AFogK
-	pEhMnLGBCcQWFvCU2HlsNTuIzSwgLnHryXywuIiAksS+XRPZQZYxC6xikvj7DaKBTcBQoutt
-	F9hQTgENifkHTjNCNMtLbH87hxmkQUKgnVNizdcvzBBnu0gs2bWaFcIWlnh1fAs7hC0j8X/n
-	fCaoBkaJBb/vQzkTGCUant9ihKiylrhz7hfQOg6gFZoS63fpQ4QdJW4/fM8MEpYQ4JO48VYQ
-	4gg+iUnbpkOFeSU62oQgqtUkZh1fB7f24IVLzBMYlWYhhcssJP/PQvLOLIS9CxhZVjGKp5YW
-	56anFhvnpZbrFSfmFpfmpesl5+duYgQmrtP/jn/dwbji1Ue9Q4xMHIyHGCU4mJVEeN+FyKYI
-	8aYkVlalFuXHF5XmpBYfYpTmYFES59W2PZksJJCeWJKanZpakFoEk2Xi4JRqYJIrX7zHS2Z5
-	4B7L1qtOHoaPJgeULDfMMrS0mMrWoC0ponuuav6BCzxtake69jmzM11fusjYd3nnpgcaEXts
-	f7XHlh2Rz+LL+ZKUOHk1xySek0cvpMwwy3S5eSrsRtqVVBulxRFzPRVVQ1223bDd+ly58byk
-	19LjiudO9baJ6p3rnJLq8jKVcQ6nx0GBV6n9rjlxV4R/rD4w+417k9872zPhXhO1+AS6TZUU
-	Fhncc/3Su0l/Yo3U/ioeA+/f6wOs3/63ufHRu2/ysVMNZ5KE267/NK+cqr2s3fTu2kUaQuuM
-	zU5bPYnWjrvC+Gb/Lt3ix+p+MfwdNep9h+w8Yyd/TL/BoLyZwWbxj11em1+0KrEUZyQaajEX
-	FScCAAfEZ6vLAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrLIsWRmVeSWpSXmKPExsVy+t/xu7oG/HIpBof/CFo8mLeNzWLzxK1s
-	Fr++WFjMnHGC0aJz9gZ2i72vt7JbzDi/j8ni4IcnrBYtd0wdOD2eHJzH5LFm3hpGj02rOtk8
-	7lzbw+Yx72Sgx4vNMxk9+rasYvT4vEnOY+vn2ywBnFF6NkX5pSWpChn5xSW2StGGFkZ6hpYW
-	ekYmlnqGxuaxVkamSvp2NimpOZllqUX6dgl6GS9PPWQu2G1csf7pK+YGxieaXYycHBICJhJ/
-	Gu4wdTFycQgJLGWUaL3SwA6RkJE4Oa2BFcIWlvhzrYsNoug9o8TWiR/AErwCdhLHln9lA7FZ
-	BFQlTn++yQYRF5Q4OfMJC4gtKpAiMXHpZbC4sICnxM5jq8EWMAuIS9x6Mp8JxBYRUJLYt2si
-	O8gCZoFVTBLTtndCbWthkjg1eRIzSBWbgKFE19susEmcAhoS8w+cZoSYZCbRtbULypaX2P52
-	DvMERqFZSA6ZhWThLCQts5C0LGBkWcUoklpanJueW2ykV5yYW1yal66XnJ+7iREYr9uO/dyy
-	g3Hlq496hxiZOBgPMUpwMCuJ8L4LkU0R4k1JrKxKLcqPLyrNSS0+xGgKDI2JzFKiyfnAhJFX
-	Em9oZmBqaGJmaWBqaWasJM7rWdCRKCSQnliSmp2aWpBaBNPHxMEp1cA0wS7PpfVZdXvkZhHz
-	u1dmNGnPYZ3X6h5R+6J1xboXH4NdotJlOeSP/VzL4/5pivAOxZppzyNjd29cxKDEsaLg60cG
-	E9uGC9Oi31tXV05Z5ijFstLXaHWCjAS/o6HA0bcTzFS+b71pUbFBeWIxx8GkRWmL7s8s0J5x
-	ZYesRYx0f/Z6vtkG1WwzrBYyLTr5Z9cMv1fvTXn6pv6teidyIYp1w9x61ken7scHLpky+0aX
-	bZOdVpr8jowpjezhf9o5svcoSp05rtjyXFjq3/fcD7M9FqwLu2k3bybj/k9OvK9E71eKODdH
-	xk8QZODoLpQRfyF3bfFjocN2r/5opKgfCLA5Y3TnYpus/tuL3X3FhROVWIozEg21mIuKEwEt
-	YtJtYAMAAA==
-X-CMS-MailID: 20230324205928eucas1p1f0ec9e236a658948e64dac2a8ea16fc5
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20230315232523eucas1p2565ef5954e3b5b451803c6200c8bce32
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20230315232523eucas1p2565ef5954e3b5b451803c6200c8bce32
-References: <CGME20230315232523eucas1p2565ef5954e3b5b451803c6200c8bce32@eucas1p2.samsung.com>
-	<20230315232514.1046589-1-m.szyprowski@samsung.com>
-	<ZBnCD7Xc9WCM55ub@ziepe.ca>
-	<da174ce4-b922-21d0-62da-b69798a51371@samsung.com>
-	<ZBnef7g7GCxogPNz@ziepe.ca>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MN2PR12MB4343:EE_
+X-MS-Office365-Filtering-Correlation-Id: 17933af4-8dc8-4e5c-d31c-08db2caaf181
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	aSQlk0YrhtcmcZar4L31VdNdvd3kcG3Aoa0j/kdl7DIcy0vbhG5oqFyAqsy8CptQOwoY5lPNzrPTJfy1xt4BN8pD3y603s+XYkPsFzfsIQh6ql0YNcdnrLQ1TFLgl11QNYBzD6NEhCEWUm+hNqoSq4srNyFphDLbGfQxTvrH9gH57Nhjbgj2YuPuUy6V9pP8GyB7rtBxrA8lShDBPmmqN0Kla2fjD+KYwjXOOm0LpGu7T80lgZbvPU10XTFV9l/Rh3MQimilUmwrV9khsuMFQnjfCmsXESqFM3SU8XNZU6YxFKCuAREwZKyaS8Nfpzdzg4Eukgvvnzah2HS2CQ9fWgmp4w1DrywHxw5+n/FH93szdFjEZ0gUUsCHF9di1CXtX8rxJdgbLhuDRhLeuwGBFO+fn0+mt8jW6BF5tHRfvbnCvpKwRGuKWlSL3ow6Eiaah/isjnKmNzZ6QBG2cO40PjQOh+iHptQ6ELE2W2bTEQDhksaT9IEMz2WJSLe9V92/3cqzGwbSPfYI7x8kHd+SfjJPt7ZQZGe5j3zkxprTmIyfZb8ETaFoNu8ojV79e8Kj
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(376002)(396003)(366004)(346002)(136003)(451199021)(2616005)(26005)(186003)(6512007)(478600001)(66476007)(6666004)(66556008)(66946007)(86362001)(83380400001)(8936002)(6506007)(41300700001)(5660300002)(6486002)(110136005)(2906002)(38100700002)(36756003)(316002)(4326008)(8676002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?+ve+2ZcdU1px9uuySyTYmU74EsxcytfuPF6V1VX3YEt/WRD7PuuZs6Uv9v5W?=
+ =?us-ascii?Q?4CQsDXaezYawspgbEiCSmie+xTr32+jmCAnejyoeWG2vTX7o7nHtOEkoP2vm?=
+ =?us-ascii?Q?S42N3RGJroH8FiY5Wv9hZe1TgCsKq+SAfcFTOka3BaoQBaVjddQSKG1r/B8y?=
+ =?us-ascii?Q?P3xthNv/3ZjQpMFspgD+XmuaatOp/uRzIbfoG22ryjEMNGhX/+3rNOYFFFmA?=
+ =?us-ascii?Q?ZXKC6g65cvSqHk6ovg31vMmJ9RQQ4YZul6aM8qtwA3a5uvy16YL3Ksix68Lk?=
+ =?us-ascii?Q?HN+So2f8fTjEtzuastOtTFAGnKeKfJ616KM06TlkYMDBwIuEGWlurEsb3jm7?=
+ =?us-ascii?Q?iw/8R34HoFm4RTRlF0vCzw+ASdnY6S3YbUZYez8kF3jAzRWQjr60iNT48jXW?=
+ =?us-ascii?Q?ZOd8lXgoW6BkhM6VXyCt2XRcv41jntBapwZZuLPjh7GAYFSTNt1apw/Nn1bi?=
+ =?us-ascii?Q?5HP7hAQeh8OpAcvvUpfm73InmgVMl9PT+1AFhjmMrihNJrJQrasOmdPdNW69?=
+ =?us-ascii?Q?uqgcFZLVn6NwlLuDd35AIV4bFWTGY8kQoW4hWrqLwJrMGJJtgGSfIsC3J4Xj?=
+ =?us-ascii?Q?L5Aq2MEKW9IGZB8OoZSu3PSF5jJM0SuyFENAY9dqe/JphU03DZpsv3LX7Fv8?=
+ =?us-ascii?Q?gZHRj43/zhTDvIjsSmmUAQC88yF7/82lvsywNkeBF3BF0uE442LA6Ox38lxl?=
+ =?us-ascii?Q?U1iVOP3NaG8/+ox4rN2/dP06UwghrmTKBAM1a74GXja0Co8LCyJuRSo934Gq?=
+ =?us-ascii?Q?o7OkXNF+dMrk9sSVtNk9yCjh5Ie0KF6HzmsGCSee89VcAXBkrU1ofUsUu34K?=
+ =?us-ascii?Q?uQBojDwjGsCzNzF81exw27dcNWEDJldDlPnGCWNGJD/WU0VC30eU6Y6RthbB?=
+ =?us-ascii?Q?ye/DrZ5+D5bvxe3J3ni4dURLHPNcsAFzBo7DwMTrjOrBuG3kA+MyFodYVHfr?=
+ =?us-ascii?Q?yAfms7G0oIBd7laLZukTeZtpz2cv1wZ/yW4M8cU3QNvcattvR+DDNJtYTWcH?=
+ =?us-ascii?Q?n7s4x0DDwny/zzYoTgwc6zJcWxUu/rAXIeVA4svWckgFdLEfhCwoJoHSy268?=
+ =?us-ascii?Q?ikJRD2RCHSSaZYLntPjPvtQi5EZlN9jc2dze882l535pFtqXneIJd98QtRBJ?=
+ =?us-ascii?Q?U9PsrnzQZMuuw54jNWrmqsquHrw/sBmacBmI2PVKcq04ug2ZsXwo+js5LYV2?=
+ =?us-ascii?Q?c4RplzVz7ou4WWokQxvy8w7561HArYduNKzMjzGwqq6AnL95ycoWdWe9HWNL?=
+ =?us-ascii?Q?BmWBWUhyTsn3ioF3Zm5tLuGJERuJ2b9Wi4z3VGqUjiL/qA+n+wlIiougHgHT?=
+ =?us-ascii?Q?t70tbedlneWNQ6GMvVZatWTKfgVJr0kPlbN0dIrw4a6QbZjKAj5zL3ce4QE1?=
+ =?us-ascii?Q?k7a1zKaPKzD4vzuf89QGHcAQQ1MM5lerxEj7rni5LLZdpeWL2cZAc9+R8JCh?=
+ =?us-ascii?Q?C8QIFDZZgjQjCRM5H7a6fQS2D0hdxZqJefxnzDKjVGgW+ZmybkKt0K0Skcsm?=
+ =?us-ascii?Q?WvsvT8DAYQ7clnRdGYCKyE4S2fio3kyvCmHEnVkYTGRtD3qEnof85UQnGCKc?=
+ =?us-ascii?Q?X7q7DqmkyqtTXmYb1qNVhJ8R9hMWVUFx//k9sH8K?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 17933af4-8dc8-4e5c-d31c-08db2caaf181
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2023 21:01:31.2343
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: FAXoWmYwF6qoJ4rYs5RUp19yGZ+Sodatqgn1ewTPsm8i7WjlGLoNQGTFNSEYvImJ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4343
 
-Hi Jason,
+On Thu, Oct 27, 2022 at 10:59:04AM -0300, Jason Gunthorpe wrote:
+> I'm seeing this at every boot, on v6.1-rc2
+> 
+> I've just realized it means lockdep is turned off for the actual
+> testing I want to do. Very annoying
+> 
+> Lu, is there a solution yet? I saw some patches for a different
+> lockdep splat but not this one.
+> 
+> [    0.604492] ======================================================
+> [    0.604838] WARNING: possible circular locking dependency detected
+> [    0.605221] 6.1.0-rc2+ #24 Not tainted
+> [    0.605432] ------------------------------------------------------
+> [    0.605734] swapper/0/1 is trying to acquire lock:
+> [    0.605985] ffff8880069ab8a0 (&md->mutex){+.+.}-{3:3}, at: msi_get_virq+0x99/0x150
+> [    0.606281] 
+> [    0.606281] but task is already holding lock:
+> [    0.606281] ffffffff82676890 (cpu_hotplug_lock){++++}-{0:0}, at: init_vqs+0x6db/0x940
+> [    0.606281] 
+> [    0.606281] which lock already depends on the new lock.
 
-On 21.03.2023 17:42, Jason Gunthorpe wrote:
-> On Tue, Mar 21, 2023 at 04:43:42PM +0100, Marek Szyprowski wrote:
->> On 21.03.2023 15:41, Jason Gunthorpe wrote:
->>> On Thu, Mar 16, 2023 at 12:25:14AM +0100, Marek Szyprowski wrote:
->>>> There are some subtle differences between release_device() and
->>>> set_platform_dma_ops() callbacks, so separate those two callbacks. Device
->>>> links should be removed only in release_device(), because they were
->>>> created in probe_device() on purpose and they are needed for proper
->>>> Exynos IOMMU driver operation. While fixing this, remove the conditional
->>>> code as it is not really needed.
->>>>
->>>> Reported-by: Jason Gunthorpe <jgg@ziepe.ca>
->>>> Fixes: 189d496b48b1 ("iommu/exynos: Add missing set_platform_dma_ops callback")
->>>> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
->>>> ---
->>>> v2:
->>>> - keep set_platform_dma_ops only on ARM 32bit
->>>>
->>>> Some more background why set_platform_dma_ops is needed on ARM 32bit is
->>>> available here:
->>>> https://lore.kernel.org/all/9a12fcac-c347-5d81-acef-1124c50d0c37@arm.com/
->>>> ---
->>>>    drivers/iommu/exynos-iommu.c | 17 ++++++++++-------
->>>>    1 file changed, 10 insertions(+), 7 deletions(-)
->>> It seems OK, but do you know what state the device is left in after
->>> exynos_iommu_detach_device ? Ie is it blocking or identity?
->> identity
-> Can you do this cleanup like this instead?
+Lu, did you ever figure this out? It still happens.
 
-Frankly speaking I would like to have a minimal fix (like my $subject 
-patch) applied to v6.3-rcX ASAP and then apply this identity domain 
-support on top of than for -next (6.4). I've checked and your proposed 
-patch works fine in my case, so You can send it as formal patch.
+It is because dmar_global_lock is held while calling
+iommu_device_register() and also held during
+intel_irq_remapping_alloc()
 
-Joerg: is that okay for you?
+iommu_device_register() eventually obtains the cpu_hotplug_lock to
+setup the DMA API
 
+intel_irq_remapping_alloc() is called by drivers under the
+cpu_hotplug_lock to setup their interrupts
 
-> Jason
->
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index 483aaaeb6daeac..2c2b5cba191459 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
-> @@ -24,6 +24,7 @@
->   
->   typedef u32 sysmmu_iova_t;
->   typedef u32 sysmmu_pte_t;
-> +static struct iommu_domain exynos_identity_domain;
->   
->   /* We do not consider super section mapping (16MB) */
->   #define SECT_ORDER 20
-> @@ -900,6 +901,9 @@ static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
->   	dma_addr_t handle;
->   	int i;
->   
-> +	if (type == IOMMU_DOMAIN_IDENTITY)
-> +		return &exynos_identity_domain;
-> +
->   	/* Check if correct PTE offsets are initialized */
->   	BUG_ON(PG_ENT_SHIFT < 0 || !dma_dev);
->   
-> @@ -988,17 +992,22 @@ static void exynos_iommu_domain_free(struct iommu_domain *iommu_domain)
->   	kfree(domain);
->   }
->   
-> -static void exynos_iommu_detach_device(struct iommu_domain *iommu_domain,
-> -				    struct device *dev)
-> +static int exynos_iommu_identity_attach(struct iommu_domain *identity_domain,
-> +					struct device *dev)
->   {
-> -	struct exynos_iommu_domain *domain = to_exynos_domain(iommu_domain);
->   	struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
-> -	phys_addr_t pagetable = virt_to_phys(domain->pgtable);
-> +	struct exynos_iommu_domain *domain;
-> +	phys_addr_t pagetable;
->   	struct sysmmu_drvdata *data, *next;
->   	unsigned long flags;
->   
-> -	if (!has_sysmmu(dev) || owner->domain != iommu_domain)
-> -		return;
-> +	if (!owner)
-> +		return -ENODEV;
-> +	if (owner->domain == identity_domain)
-> +		return 0;
-> +
-> +	domain = to_exynos_domain(owner->domain);
-> +	pagetable = virt_to_phys(domain->pgtable);
->   
->   	mutex_lock(&owner->rpm_lock);
->   
-> @@ -1017,15 +1026,32 @@ static void exynos_iommu_detach_device(struct iommu_domain *iommu_domain,
->   		list_del_init(&data->domain_node);
->   		spin_unlock(&data->lock);
->   	}
-> -	owner->domain = NULL;
-> +	owner->domain = identity_domain;
->   	spin_unlock_irqrestore(&domain->lock, flags);
->   
->   	mutex_unlock(&owner->rpm_lock);
->   
->   	dev_dbg(dev, "%s: Detached IOMMU with pgtable %pa\n", __func__,
->   		&pagetable);
-> +	return 0;
->   }
->   
-> +static struct iommu_domain_ops exynos_identity_ops = {
-> +	.attach_dev = exynos_iommu_identity_attach,
-> +};
-> +
-> +static struct iommu_domain exynos_identity_domain = {
-> +	.type = IOMMU_DOMAIN_IDENTITY,
-> +	.ops = &exynos_identity_ops,
-> +};
-> +
-> +#ifdef CONFIG_ARM
-> +static void exynos_iommu_set_platform_dma(struct device *dev)
-> +{
-> +	WARN_ON(exynos_iommu_identity_attach(&exynos_identity_domain, dev));
-> +}
-> +#endif
-> +
->   static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
->   				   struct device *dev)
->   {
-> @@ -1034,12 +1060,11 @@ static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
->   	struct sysmmu_drvdata *data;
->   	phys_addr_t pagetable = virt_to_phys(domain->pgtable);
->   	unsigned long flags;
-> +	int err;
->   
-> -	if (!has_sysmmu(dev))
-> -		return -ENODEV;
-> -
-> -	if (owner->domain)
-> -		exynos_iommu_detach_device(owner->domain, dev);
-> +	err = exynos_iommu_identity_attach(&exynos_identity_domain, dev);
-> +	if (err)
-> +		return err;
->   
->   	mutex_lock(&owner->rpm_lock);
->   
-> @@ -1420,18 +1445,7 @@ static void exynos_iommu_release_device(struct device *dev)
->   	struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
->   	struct sysmmu_drvdata *data;
->   
-> -	if (owner->domain) {
-> -		struct iommu_group *group = iommu_group_get(dev);
-> -
-> -		if (group) {
-> -#ifndef CONFIG_ARM
-> -			WARN_ON(owner->domain !=
-> -				iommu_group_default_domain(group));
-> -#endif
-> -			exynos_iommu_detach_device(owner->domain, dev);
-> -			iommu_group_put(group);
-> -		}
-> -	}
-> +	WARN_ON(exynos_iommu_identity_attach(&exynos_identity_domain, dev));
->   
->   	list_for_each_entry(data, &owner->controllers, owner_node)
->   		device_link_del(data->link);
-> @@ -1462,6 +1476,7 @@ static int exynos_iommu_of_xlate(struct device *dev,
->   
->   		INIT_LIST_HEAD(&owner->controllers);
->   		mutex_init(&owner->rpm_lock);
-> +		owner->domain = &exynos_identity_domain;
->   		dev_iommu_priv_set(dev, owner);
->   	}
->   
-> @@ -1479,7 +1494,7 @@ static const struct iommu_ops exynos_iommu_ops = {
->   	.domain_alloc = exynos_iommu_domain_alloc,
->   	.device_group = generic_device_group,
->   #ifdef CONFIG_ARM
-> -	.set_platform_dma_ops = exynos_iommu_release_device,
-> +	.set_platform_dma_ops = exynos_iommu_set_platform_dma,
->   #endif
->   	.probe_device = exynos_iommu_probe_device,
->   	.release_device = exynos_iommu_release_device,
->
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+To fix it you cannot use the same lock in both places
 
+Jason
