@@ -1,202 +1,174 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2065.outbound.protection.outlook.com [40.107.223.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 578E06FA1
-	for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 14:48:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9C33C433A1;
-	Fri, 24 Mar 2023 14:48:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1679669304;
-	bh=uIDuJfqse5TrCvE+0X2CUu9fuJ7qZ+uiMca4t+ghwyk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=NdkKTv/fUNBuums3xr8SjuRRw+Xn4h1rDo6/OUZr0RcNgIUSWjhSrP7NdYUhgaMgJ
-	 CvjVy4C2T5DTtD7ZeG7ktMhxsHRTRLGH6ENIuSowuc0aTL4DZbSamGRCJxdCDMZsFo
-	 W+sP2ef0yOQVzAOaDxZCOaQe1rPPfDjIzronhDE76/PbbTEU1PB7fWgr4S4xq5KOb1
-	 a2BQhs5dqOUGQE8cCsmlSYmwH964Jrmf8U5jtD2qXIoAtG7W+bsbcGucrNRGEiglCw
-	 4giFx/IQlGBPc2K8cWEulZ6bPgZdSCKSP3N/z2cVMejOlExF2LU67esn/tZIp2UT4F
-	 ldXnMsEvMYSJA==
-Date: Fri, 24 Mar 2023 15:48:09 +0100
-From: Lorenzo Pieralisi <lpieralisi@kernel.org>
-To: Michael Kelley <mikelley@microsoft.com>
-Cc: hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
-	wei.liu@kernel.org, decui@microsoft.com, luto@kernel.org,
-	peterz@infradead.org, davem@davemloft.net, edumazet@google.com,
-	kuba@kernel.org, pabeni@redhat.com, robh@kernel.org, kw@linux.com,
-	bhelgaas@google.com, arnd@arndb.de, hch@lst.de,
-	m.szyprowski@samsung.com, robin.murphy@arm.com,
-	thomas.lendacky@amd.com, brijesh.singh@amd.com, tglx@linutronix.de,
-	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-	Tianyu.Lan@microsoft.com, kirill.shutemov@linux.intel.com,
-	sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
-	isaku.yamahata@intel.com, dan.j.williams@intel.com,
-	jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com,
-	x86@kernel.org, linux-kernel@vger.kernel.org,
-	linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH v6 12/13] PCI: hv: Add hypercalls to read/write MMIO space
-Message-ID: <ZB24Kdu6WMGYH1L7@lpieralisi>
-References: <1678329614-3482-1-git-send-email-mikelley@microsoft.com>
- <1678329614-3482-13-git-send-email-mikelley@microsoft.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 604176FA1
+	for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 14:57:15 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VckeSvEnyvrYW940c66zD6WvzBLmjy18MVbPWTIWO0tVsbsX7GmvUkRxGYW9OWpSw4RaeJihnbatIHp4t7gPNdRaujXzLg/tqjROa2mChlWwpWTg5OgLwhngZm79NqC9x5albGt0Mri5lCo4AyuCj9lMp75UVwyZkU/HYrj1iJMyGSnJghd2mjMjWDrCwEjrS9NzhVm+in/dKhzyhNjH+2CrylHUksypDuv6iddfjVdKTGG19lzTaMkfe8LQ0nzDJj9QK1HP3l/Duw5wLvjAsVDKbPN71oVthMUpmvFmJKX7MwWGgt+mmQRS6NYAT15JW6rYUbRSTuC1yvWe0B/+tQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QnP6EJV7+nArb1p78Gs57m3JaocZxF7e/jxXzQ+shNw=;
+ b=XYGWP8SICWQgSgTGpD41nQ6FTGUesTrRap5q++QCh2omUhUchYyfSjWTplIXP9ueHAvoUwxlhLWviMpIN0NmlaFPFzOlE19mxBT3ZftAud/bOPSpzd2Kt9owlJGKaxM2JerczaLADNmmBqlu4giwh5BA+353/gCi6u0FPsnW0I5fck9deMS2rhE2ijaqwTVfr3gz5X9brWJHaKzPjUZfeLwylrxBPKFMVqHCF9Bp1wqSy1cRoKoHQbIMbTyDKaUtuACMQuGt+3Rws3vYYsFbIxKS8TcnJLsuhOu6bgtsTH97W4hurQZk6NEr5DjYdyqts7dRaLu+YcNdrjmZRUmbAw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QnP6EJV7+nArb1p78Gs57m3JaocZxF7e/jxXzQ+shNw=;
+ b=PZTRd2ES1C9oXQqrJc1qEfpWk6u5FjGCLLXZdbIpYFsZtYfz4DwpR8U8j5XvFfrw6H8SXz5QpmFEYOqqtopoEg39wxk6w2wxDH/A9AFBpOhuuEJthYvzZXhemA9tutCjWrHoewY2snhrziXJAr3z0rlCUUSrUakT72I2S9AjUETkUqHonlM372PqJyRruxsebaz4SdY94fdzguebCIXCGnMCONG2VVOH76QgzMrsDnw2xmEkgdlnexyfNp4RCGYnKaKD8GOb4GI9sgM0sNg2NIH7PyW+EA19LJM4S7JChHtEm7BNMcF9+T0KtekkjeHUEojnbJTEKBBPGdHNiUL1Ug==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DS0PR12MB6464.namprd12.prod.outlook.com (2603:10b6:8:c4::5) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6156.27; Fri, 24 Mar 2023 14:57:13 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::ef6d:fdf6:352f:efd1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::ef6d:fdf6:352f:efd1%3]) with mapi id 15.20.6178.037; Fri, 24 Mar 2023
+ 14:57:13 +0000
+Date: Fri, 24 Mar 2023 11:57:09 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, Robin Murphy <robin.murphy@arm.com>,
+	"will@kernel.org" <will@kernel.org>,
+	"eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"shameerali.kolothum.thodi@huawei.com" <shameerali.kolothum.thodi@huawei.com>,
+	"jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 14/14] iommu/arm-smmu-v3: Add
+ arm_smmu_cache_invalidate_user
+Message-ID: <ZB26RWV53wYtc2L2@nvidia.com>
+References: <ZAqv87fjbdynVaHA@Asurada-Nvidia>
+ <ZAtYphmOuEqQ1BiC@nvidia.com>
+ <BN9PR11MB52768F4D3E21C5231C1A04D38CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZBhYq8o4gqFZVb6k@nvidia.com>
+ <ZBiF1hZVrp/aJRM6@Asurada-Nvidia>
+ <ZBifWkY2Lt/U1Z7R@nvidia.com>
+ <BN9PR11MB5276E6E3FCA90582AA61BDDE8C819@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZBmZj2pscX0hx2kQ@nvidia.com>
+ <ZBqjUeEjjtCclgLN@Asurada-Nvidia>
+ <BN9PR11MB527622D86AE048D3394C12A28C849@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB527622D86AE048D3394C12A28C849@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-ClientProxiedBy: SJ0PR03CA0207.namprd03.prod.outlook.com
+ (2603:10b6:a03:2ef::32) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1678329614-3482-13-git-send-email-mikelley@microsoft.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DS0PR12MB6464:EE_
+X-MS-Office365-Filtering-Correlation-Id: f409679b-441f-45bc-1aad-08db2c780cde
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	9EUtnEp95/tgFAKFrTkPG2hm0/cgDA4fhn/XZib71cJG2RDZSPrkWPnqlEZ8Qja5Gn1AXKqAb408KQfQIiaTj8RGFTpQjX/QWO/0i32WEcWKtsWcAaIQ/uIbeJssdN0TYcdkaYgoAce2yvOvJ5l1zQRgChdwEaevNuHzSHnfyTAix2u7OJcWvFPxf/hhgYrLtKFmlMtP4NziSDeGPcvSlhFmL1tG8z7qjgpY2C91RL2zphZn4GqSjK2vBU9mCNh4fabbt1dua8MqQfeGNVkenQuSdG4fTOnc0G76sJUQvywGY4+V5RPxPOY3hVwGVKhM7mnlcNWnCTa5bqCYkucpCEnYH8+vVV6CyrDSxZKuOQUW4kRgLZ8iniqqCyaXBfHY1H4ZgWLSOZ/9Ldm5lk4DwbceJB/muNv68WBVBi89YTIdmLgyBtvFccenW9WDC3OqZ7sIrTjdnK0ZWh55nZ+fFcIABh79FZFpNVLvedY7PocT//16ddOEO+BLPf1OGD7J+PL8B6ZDSjm6o24fyHpDj4qHBRezexA49LY4J2bupyegIbmjp7EWIWtX1nOdQRiw
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(136003)(376002)(39860400002)(396003)(366004)(451199018)(5660300002)(66946007)(4326008)(8676002)(7416002)(41300700001)(8936002)(66556008)(316002)(54906003)(478600001)(6916009)(2906002)(6486002)(26005)(6512007)(6506007)(6666004)(83380400001)(66476007)(2616005)(36756003)(186003)(86362001)(38100700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?sETZEzhFUo5qOGl1eVsOPceP1bsriXMawZyi/kDJn1qJMUwV6dJdFNxapVVr?=
+ =?us-ascii?Q?N1ITa9DmrFEeE6bZ2M4/hPvUy+0cuGKZaUuiLxyAeYhTknycJmScDMv/G7s5?=
+ =?us-ascii?Q?3+WKGR1CcuHf5EpWi0OAZq1X6vromD+avzohO2rrMA8+R6Q/HHxJsbHQTdZX?=
+ =?us-ascii?Q?03V/errFIlAEukmV98TXh/rK7w7O0Y7Euc9plB6g58MghXJ9rPZ85m6jpDyN?=
+ =?us-ascii?Q?6O5Ck1+RvgJr0ad0vOtIyukpegh6sqeL1Z3epq+D3eyxW1pxstJH1S9xmYtq?=
+ =?us-ascii?Q?PiRDv5HOxpTc6ylvRu+YCcQ4HqZu3DZhtHk9//IuyLbHUBnq2JdPCJYBPtqE?=
+ =?us-ascii?Q?JkUHgCgZsobb5K531v1VSzpCYgd3qXucPD9zPVthL1eVNeyTqj08EPDokOqz?=
+ =?us-ascii?Q?X+9EmIX1YWl0mZQV4ump9i/jFx6TPcwK2MUQrYTwliXHrAMz07Nosn6QArBp?=
+ =?us-ascii?Q?bjo+AQm0143IwBGcmG7ulM/CfTDWVSzHpuEPosmvvto+lXMPOOqvH1/fI0Bo?=
+ =?us-ascii?Q?tb11BrWDy4zEK8ljKur5yyHq32xmLcOTmfu8XS7Kbhgo/V+C4J/eWVchmi7l?=
+ =?us-ascii?Q?usHeYy0v+IXH7gwTHM0gbYuiyRDC4d1TPmWMxk1LMFH9IPeALafXNSZXwJhV?=
+ =?us-ascii?Q?cX4b9jOvXGKd2wYlaV9zp/lms3VK2d/hmHigMqb+1yEYFMnr7S7xAxuBy++/?=
+ =?us-ascii?Q?vQrfifjDqav4i09M35kxJZr76lDYju9wFxKY8gYrNGBRZBzjimWDkUl3y7GC?=
+ =?us-ascii?Q?iLiJmBbJdiPdxbRntzVcASR7ielf0wrcR5cJ9QjTJLGiAm4jb+YKyDjPCcua?=
+ =?us-ascii?Q?78USBEavxDHaHLkSTTM4SFyZ599+jcaQKKW+4a9oGceEP8axjhf7Cc28DOPq?=
+ =?us-ascii?Q?HbD4C4Ypw9heevF1kEJl7OmaABV6elSLlSHOmyQXaXqvQ19FzzWuSvLOZ7Px?=
+ =?us-ascii?Q?rs0F5BmUXpI8jk4EB80RRqoXG7sUmMcJInhsLMz4mnB9+KvM8syLEVIoJdap?=
+ =?us-ascii?Q?yNZIkmuIIMvZhS30J+TfnowxrqQkTJfNj6LbqSpXcQdRSDcFEeCnjmY/wGvs?=
+ =?us-ascii?Q?n2tMXaPqdPGlZitpRObftYg0isoWAqyo0ee1EkJNrKstFhSMOyRJIXxgFjV5?=
+ =?us-ascii?Q?yqlo2uGYD4tnZYRtYcKWwW3MXnbn70hVSYC1u92h5TI1W464pOTyUNBphvBh?=
+ =?us-ascii?Q?xE2AO9nOXvEnEM9eIR77pTpsHgbIx2Dgiy3mK2VgKoKLmHS1AOFpCCWymyDg?=
+ =?us-ascii?Q?gWnq3i+GaCvDhZ9lKqjNZoRKPQWBHMkWqxSUbMrBQaaLbd6vO7ps1aNFmOBm?=
+ =?us-ascii?Q?9YvvB/q5k2RxOSyh7pbMB3vQLmf7xWtj5u0CCrKL01PtFq3g2xX98Eo5DACx?=
+ =?us-ascii?Q?gKdpWvN44te++CpCg6xYnhhnd1liiMKmJPdA48HMWAU/Rsao91DfSf7gZR8t?=
+ =?us-ascii?Q?qpazQuE4OJkTpWB7f3XkWBZv40b7u6EC7SJz7xTabD76ASKkP6yY62wXWouP?=
+ =?us-ascii?Q?nUhL7LOWLeE8Gnl0dwDIl6g0rsC6nli61i/P+LEfHVDME+D+f7MIvPPvjGxZ?=
+ =?us-ascii?Q?EHlV+az51rA0E2lzarDxufDK44wBYkvTXHH/r92B?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f409679b-441f-45bc-1aad-08db2c780cde
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2023 14:57:13.2417
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: y0rsnVtzl6nnxEXiDFmJ/YtNHcgyVvF7zgpSHjPRBGk1W9/0CMMqKsp1rbPqo40w
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB6464
 
-On Wed, Mar 08, 2023 at 06:40:13PM -0800, Michael Kelley wrote:
-> To support PCI pass-thru devices in Confidential VMs, Hyper-V
-> has added hypercalls to read and write MMIO space. Add the
-> appropriate definitions to hyperv-tlfs.h and implement
-> functions to make the hypercalls.
+On Fri, Mar 24, 2023 at 09:02:34AM +0000, Tian, Kevin wrote:
+> > From: Nicolin Chen <nicolinc@nvidia.com>
+> > Sent: Wednesday, March 22, 2023 2:42 PM
+> > 
+> > On Tue, Mar 21, 2023 at 08:48:31AM -0300, Jason Gunthorpe wrote:
+> > > On Tue, Mar 21, 2023 at 08:34:00AM +0000, Tian, Kevin wrote:
+> > >
+> > > > > > Rephrasing that to put into a design: the IOCTL would pass a
+> > > > > > user pointer to the queue, the size of the queue, then a head
+> > > > > > pointer and a tail pointer? Then the kernel reads out all the
+> > > > > > commands between the head and the tail and handles all those
+> > > > > > invalidation commands only?
+> > > > >
+> > > > > Yes, that is one possible design
+> > > >
+> > > > If we cannot have the short path in the kernel then I'm not sure the
+> > > > value of using native format and queue in the uAPI. Batching can
+> > > > be enabled over any format.
+> > >
+> > > SMMUv3 will have a hardware short path where the HW itself runs the
+> > > VM's command queue and does this logic.
+> > >
+> > > So I like the symmetry of the SW path being close to that.
+> > 
+> > A tricky thing here that I just realized:
+> > 
+> > With VCMDQ, the guest will have two CMDQs. One is the vSMMU's
+> > CMDQ handling all non-TLBI commands like CMD_CFGI_STE via the
+> > invalidation IOCTL, and the other hardware accelerated VCMDQ
+> > handling all TLBI commands by the HW. In this setup, we will
+> > need a VCMDQ kernel driver to dispatch commands into the two
+> > different queues.
+> > 
 > 
-> Co-developed-by: Dexuan Cui <decui@microsoft.com>
-> Signed-off-by: Dexuan Cui <decui@microsoft.com>
-> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
-> Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
-> ---
->  arch/x86/include/asm/hyperv-tlfs.h  |  3 ++
->  drivers/pci/controller/pci-hyperv.c | 64 +++++++++++++++++++++++++++++++++++++
->  include/asm-generic/hyperv-tlfs.h   | 22 +++++++++++++
->  3 files changed, 89 insertions(+)
+> why doesn't hw generate a vm-exit for unsupported CMDs in VCMDQ
+> and then let them emulated by vSMMU? such events should be rare
+> once map/unmap are being conducted...
 
-Nit: I'd squash this in with the patch where the calls are used,
-don't think this patch is bisectable as it stands (maybe you
-split them for review purposes, apologies if so).
+IIRC vcmdq is defined to only process invalidations, so it would be a
+driver error to send anything else. I think this is what Nicolin
+means.  Most likely to use it the VM would have to see the nvidia acpi
+extension and activate vcmdq in the VM.
 
-Lorenzo
+If you suggest to overlay the main cmdq with the vcmdq and then don't
+tell the guest about it.. Robin suggested something similar.
 
-> diff --git a/arch/x86/include/asm/hyperv-tlfs.h b/arch/x86/include/asm/hyperv-tlfs.h
-> index 0b73a80..b4fb75b 100644
-> --- a/arch/x86/include/asm/hyperv-tlfs.h
-> +++ b/arch/x86/include/asm/hyperv-tlfs.h
-> @@ -122,6 +122,9 @@
->  /* Recommend using enlightened VMCS */
->  #define HV_X64_ENLIGHTENED_VMCS_RECOMMENDED		BIT(14)
->  
-> +/* Use hypercalls for MMIO config space access */
-> +#define HV_X64_USE_MMIO_HYPERCALLS			BIT(21)
-> +
->  /*
->   * CPU management features identification.
->   * These are HYPERV_CPUID_CPU_MANAGEMENT_FEATURES.EAX bits.
-> diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
-> index f33370b..d78a419 100644
-> --- a/drivers/pci/controller/pci-hyperv.c
-> +++ b/drivers/pci/controller/pci-hyperv.c
-> @@ -1041,6 +1041,70 @@ static int wslot_to_devfn(u32 wslot)
->  	return PCI_DEVFN(slot_no.bits.dev, slot_no.bits.func);
->  }
->  
-> +static void hv_pci_read_mmio(struct device *dev, phys_addr_t gpa, int size, u32 *val)
-> +{
-> +	struct hv_mmio_read_input *in;
-> +	struct hv_mmio_read_output *out;
-> +	u64 ret;
-> +
-> +	/*
-> +	 * Must be called with interrupts disabled so it is safe
-> +	 * to use the per-cpu input argument page.  Use it for
-> +	 * both input and output.
-> +	 */
-> +	in = *this_cpu_ptr(hyperv_pcpu_input_arg);
-> +	out = *this_cpu_ptr(hyperv_pcpu_input_arg) + sizeof(*in);
-> +	in->gpa = gpa;
-> +	in->size = size;
-> +
-> +	ret = hv_do_hypercall(HVCALL_MMIO_READ, in, out);
-> +	if (hv_result_success(ret)) {
-> +		switch (size) {
-> +		case 1:
-> +			*val = *(u8 *)(out->data);
-> +			break;
-> +		case 2:
-> +			*val = *(u16 *)(out->data);
-> +			break;
-> +		default:
-> +			*val = *(u32 *)(out->data);
-> +			break;
-> +		}
-> +	} else
-> +		dev_err(dev, "MMIO read hypercall error %llx addr %llx size %d\n",
-> +				ret, gpa, size);
-> +}
-> +
-> +static void hv_pci_write_mmio(struct device *dev, phys_addr_t gpa, int size, u32 val)
-> +{
-> +	struct hv_mmio_write_input *in;
-> +	u64 ret;
-> +
-> +	/*
-> +	 * Must be called with interrupts disabled so it is safe
-> +	 * to use the per-cpu input argument memory.
-> +	 */
-> +	in = *this_cpu_ptr(hyperv_pcpu_input_arg);
-> +	in->gpa = gpa;
-> +	in->size = size;
-> +	switch (size) {
-> +	case 1:
-> +		*(u8 *)(in->data) = val;
-> +		break;
-> +	case 2:
-> +		*(u16 *)(in->data) = val;
-> +		break;
-> +	default:
-> +		*(u32 *)(in->data) = val;
-> +		break;
-> +	}
-> +
-> +	ret = hv_do_hypercall(HVCALL_MMIO_WRITE, in, NULL);
-> +	if (!hv_result_success(ret))
-> +		dev_err(dev, "MMIO write hypercall error %llx addr %llx size %d\n",
-> +				ret, gpa, size);
-> +}
-> +
->  /*
->   * PCI Configuration Space for these root PCI buses is implemented as a pair
->   * of pages in memory-mapped I/O space.  Writing to the first page chooses
-> diff --git a/include/asm-generic/hyperv-tlfs.h b/include/asm-generic/hyperv-tlfs.h
-> index b870983..ea406e9 100644
-> --- a/include/asm-generic/hyperv-tlfs.h
-> +++ b/include/asm-generic/hyperv-tlfs.h
-> @@ -168,6 +168,8 @@ struct ms_hyperv_tsc_page {
->  #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_SPACE 0x00af
->  #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_LIST 0x00b0
->  #define HVCALL_MODIFY_SPARSE_GPA_PAGE_HOST_VISIBILITY 0x00db
-> +#define HVCALL_MMIO_READ			0x0106
-> +#define HVCALL_MMIO_WRITE			0x0107
->  
->  /* Extended hypercalls */
->  #define HV_EXT_CALL_QUERY_CAPABILITIES		0x8001
-> @@ -796,4 +798,24 @@ struct hv_memory_hint {
->  	union hv_gpa_page_range ranges[];
->  } __packed;
->  
-> +/* Data structures for HVCALL_MMIO_READ and HVCALL_MMIO_WRITE */
-> +#define HV_HYPERCALL_MMIO_MAX_DATA_LENGTH 64
-> +
-> +struct hv_mmio_read_input {
-> +	u64 gpa;
-> +	u32 size;
-> +	u32 reserved;
-> +} __packed;
-> +
-> +struct hv_mmio_read_output {
-> +	u8 data[HV_HYPERCALL_MMIO_MAX_DATA_LENGTH];
-> +} __packed;
-> +
-> +struct hv_mmio_write_input {
-> +	u64 gpa;
-> +	u32 size;
-> +	u32 reserved;
-> +	u8 data[HV_HYPERCALL_MMIO_MAX_DATA_LENGTH];
-> +} __packed;
-> +
->  #endif
-> -- 
-> 1.8.3.1
-> 
+This idea would be a half and half, the HW would run the queue and the
+doorbell and generate error interrupts back to the hypervisor and tell
+it that the queue is paused and ask it to fix the failed entry and
+restart.
+
+I could see this as an interesting solution, but I don't know if this
+HW can support it..
+
+Jason
