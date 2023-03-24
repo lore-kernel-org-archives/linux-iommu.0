@@ -1,53 +1,53 @@
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06EA76FA1
-	for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 15:28:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB9326FDF
+	for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 15:33:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1679671712;
+	s=mimecast20190719; t=1679672017;
 	h=from:from:reply-to:reply-to:subject:subject:date:date:
 	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
 	 content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=Kh4apJjF008Ebwd6BpQPfSf9Xv4AqfjyXizFPG3+0WY=;
-	b=YrjH2B6BYhFn1fpIj0NPeARfvNJE8d/udsyO7JvHbg9ZlpdEbtTBp1oGR7hWqYCGLahHs4
-	9jjmZAw1biNuQrlSov3gNlg8EUfSkvgr+GbKFu1rp5KRJqFnz/9W1caeE0BzTnT6RLAopf
-	DyyTDmQnyEtcuj2N2zOON8HA/7cQSx4=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=fkXS0sIoRMAJHcWNzF7ISYz3rQWswPiQdvAtQdj1fbU=;
+	b=Ui0N4jX8UJESGlImfE6ntC05NIjpGJTR05yuqMo+a7huWrv0oa5Dyo57F0vZ/nG8cEJq4V
+	E/RpGdtuWQGcqZazmkvgnpsYPgEDzj9gHUvePxd1RvRitsttPGEcmW59Zc9nRPOJcxq5C9
+	GPQa97uDlGdYOOx4VmlXPTTO3ECj8Vg=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-609-1CN7c6E9PN-XhNHGOyXhcw-1; Fri, 24 Mar 2023 11:28:31 -0400
-X-MC-Unique: 1CN7c6E9PN-XhNHGOyXhcw-1
-Received: by mail-qv1-f72.google.com with SMTP id g6-20020ad45426000000b005a33510e95aso1171267qvt.16
-        for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 08:28:31 -0700 (PDT)
+ us-mta-593-wyxZMKQgNQKrV42mkWy7og-1; Fri, 24 Mar 2023 11:33:36 -0400
+X-MC-Unique: wyxZMKQgNQKrV42mkWy7og-1
+Received: by mail-qk1-f197.google.com with SMTP id 187-20020a3707c4000000b007468d9a30faso933030qkh.23
+        for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 08:33:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679671711;
+        d=1e100.net; s=20210112; t=1679672016;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:reply-to:user-agent:mime-version:date
          :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=Kh4apJjF008Ebwd6BpQPfSf9Xv4AqfjyXizFPG3+0WY=;
-        b=MT+eNnnsqYPAeCmaHPNhGyhxU3K4nEB1daSaEMt2wGElC/33IB3v/oWFMR6kKIZie0
-         oI/jTVUxXZFzVnb7novrkE+l2Zy08Ph8IGeAcLYf03R6mJv3wMwl0IziDq1KpbDo+Fx9
-         FcIPMPNZn/b7SPqpNqeoV7iT1STykL1zeunti1XRbsmqEOFRB/5HAVJYafIYKUf0aONI
-         ZB9QEyFtDBV5EdDi2YUfxvjId7zgaLsW+L6yH7f0yg+YHx/iWqhdp2fwCRr/KEZqrv74
-         AdO0ijQMIJFhW00WQ3aDiBU00g8Tw+7UJWmGPx+e0nQ5b30HOHW3GOCMVSf7oNpRAGJW
-         0/4w==
-X-Gm-Message-State: AO0yUKVlZ+kgC0NHla5j6u6T5zlmaZEL9YMJo5GgELFX/8aizdntj+KX
-	VsTDRySXwN9xgMH6w7/SOhanQrVnEpb9iuMv+shklt3JQzTjvhkPrsUnqv4eLgUpK94wsKGSW+F
-	J9y5Az/qHZ0oA5o8=
-X-Received: by 2002:ac8:5b87:0:b0:3b9:bc8c:c214 with SMTP id a7-20020ac85b87000000b003b9bc8cc214mr15962666qta.31.1679671710903;
-        Fri, 24 Mar 2023 08:28:30 -0700 (PDT)
-X-Google-Smtp-Source: AK7set/aZhTIagXr86hQGcOM0/obUyvWdZrsHbQkbzWyxnPA96NfrvjCypZ6MbXRS7MTV48Tt/mrmg==
-X-Received: by 2002:ac8:5b87:0:b0:3b9:bc8c:c214 with SMTP id a7-20020ac85b87000000b003b9bc8cc214mr15962640qta.31.1679671710626;
-        Fri, 24 Mar 2023 08:28:30 -0700 (PDT)
+        bh=fkXS0sIoRMAJHcWNzF7ISYz3rQWswPiQdvAtQdj1fbU=;
+        b=6CRG3hHLhAt5w/OrZnJGB0XlRKbNO9GIFXOPv6qxol4BT8KavWg61T6QRY/6EJPQy0
+         RUFFR/TOSgcKXJoduUy0vLhcKsEOW/FoR9sewov6Ygz0UhQ7cRqLEB+q0kZwEuYwyqi8
+         kU2a2ZQwrl9zEdI+ivVF2KIj9cQ6lOWPaHv+04N52p2MY0dLoC50Gk+D7gR8VxAX2FJh
+         wSeU/Cl1noHb9BYfXi84J6yZ+Yx+zavz5hJidI+rgCDqP8lGWhiX9HoEU2O+qFIssoMo
+         pDq9PFS44HJTcVCRbir9Acx7xXZJV7KfEezXoFisw2mH1Cd+P40bOQ91manaR82SENdn
+         s+5g==
+X-Gm-Message-State: AO0yUKWSiihZsn6cY6Iu5Gm5NOsasB0q1xbTIJYmHyKNz6/OU12ONNHi
+	BpWH0QCiZJJK5gN1gP079YdHNUuh0AnQi3cps2YkY/qHXf774g8XMTOE4Jc8REuv7ZB9HK3AzlO
+	uuY63nbYfqcRcTsE=
+X-Received: by 2002:a05:622a:211:b0:3e2:6d40:d28d with SMTP id b17-20020a05622a021100b003e26d40d28dmr6006140qtx.17.1679672015932;
+        Fri, 24 Mar 2023 08:33:35 -0700 (PDT)
+X-Google-Smtp-Source: AK7set9R4M6MUUqT4kpW6ZMWOhUuWCwAWASEY7K3cndQ4s1uFOvfXIP5vYAUUOe00Q3K0NwOaNoL8A==
+X-Received: by 2002:a05:622a:211:b0:3e2:6d40:d28d with SMTP id b17-20020a05622a021100b003e26d40d28dmr6006101qtx.17.1679672015522;
+        Fri, 24 Mar 2023 08:33:35 -0700 (PDT)
 Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874? ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
-        by smtp.gmail.com with ESMTPSA id 11-20020a37060b000000b0071d0f1d01easm8220902qkg.57.2023.03.24.08.28.28
+        by smtp.gmail.com with ESMTPSA id r80-20020a374453000000b007465ee178a3sm13066130qka.96.2023.03.24.08.33.32
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Mar 2023 08:28:30 -0700 (PDT)
-Message-ID: <857004e1-6ab1-f825-7796-9c0b557e7cc8@redhat.com>
-Date: Fri, 24 Mar 2023 16:28:26 +0100
+        Fri, 24 Mar 2023 08:33:34 -0700 (PDT)
+Message-ID: <9700988d-ae86-06f7-33e6-f079722b63ff@redhat.com>
+Date: Fri, 24 Mar 2023 16:33:31 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -75,7 +75,7 @@ Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-Hi Nicolin,
+
 
 On 3/9/23 11:53, Nicolin Chen wrote:
 > The arm_smmu_domain_alloc_user callback function is used for userspace to
@@ -145,6 +145,13 @@ On 3/9/23 11:53, Nicolin Chen wrote:
 > +static struct iommu_domain *
 > +__arm_smmu_domain_alloc(unsigned type,
 > +			struct arm_smmu_domain *s2,
+I think you should rather introduce s2 param in "iommu/arm-smmu-v3:
+Support IOMMU_DOMAIN_NESTED type of allocations" because it is not use
+at all in this patch nor really explained in the commit msg
+
+Thanks
+
+Eric
 > +			struct arm_smmu_master *master,
 > +			const struct iommu_hwpt_arm_smmuv3 *user_cfg)
 > +{
@@ -172,8 +179,6 @@ On 3/9/23 11:53, Nicolin Chen wrote:
 > +
 > +	domain->type = type;
 > +	domain->ops = arm_smmu_ops.default_domain_ops;
-Compared to the original code, that's something new. Please can you
-explain why this is added in this patch?
 > +
 > +	mutex_init(&smmu_domain->init_mutex);
 > +	INIT_LIST_HEAD(&smmu_domain->devices);
@@ -204,7 +209,6 @@ explain why this is added in this patch?
 > +	const struct iommu_hwpt_arm_smmuv3 *user_cfg = user_data;
 > +	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
 > +	unsigned type = IOMMU_DOMAIN_UNMANAGED;
-is there any guarantee that master is non null? Don't we want to check?
 > +
 > +	return __arm_smmu_domain_alloc(type, NULL, master, user_cfg);
 > +}
@@ -217,7 +221,4 @@ is there any guarantee that master is non null? Don't we want to check?
 >  	.get_unmanaged_domain	= arm_smmu_get_unmanaged_domain,
 >  	.probe_device		= arm_smmu_probe_device,
 >  	.release_device		= arm_smmu_release_device,
-Thanks
-
-Eric
 
