@@ -1,105 +1,179 @@
-Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC2EF3C24
-	for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 09:19:13 +0000 (UTC)
-Received: by mail-qk1-f173.google.com with SMTP id n137so282382qka.2
-        for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 02:19:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1679649552;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=9OHshIzwpPdXZ+ETy9dUvKhjE3q/i6W2U6caqQqg2vc=;
-        b=FjQN6twGo/NqWd7Wm0Nch5D5xsG1UHvaYdZaykMkwha0axL7eCAUqWOeDY1879bqfJ
-         XAC9UH2REM4lz68ovQVzlO5RXn5hU9gXtdkZpi/++44xaPw72RjC1c/jbNT0oh5x7jZq
-         CkX6qjjzNR2uNYvbjW4Wx3kbhEx1sLSwuNnlPescKBvKOA32xqaTQr9DEc/xzCNh0rdn
-         zROZxmyvnVUrBFF4pHEi+TfJTOZLjuJrRWlpdwijH+pFu9YejOXHMW1rBa7So4gOKnwH
-         4J/oMGpjqR+SOiY2Vt2B4uHg0UJLIEsrcmgBjUWdkz+uOYCGk5pXHekE8tMr3imnsYG+
-         JeAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679649552;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=9OHshIzwpPdXZ+ETy9dUvKhjE3q/i6W2U6caqQqg2vc=;
-        b=ikYZXmnmN46zm6V6LeHBzV7xziiuaoLEeTclGiVn8J7F35xKsEUUiPyV2ZWe7ILXvk
-         whEFUBYZ4UCnch8mwOPMl5xoB8y1wM78rtKCHGObJOwFeGew8v/1uLEd7mxNpIcpGf/h
-         3zniuaPJ7RJdHyfKzt+ExMnLDB8qZrfTMv9pKcFnXOLCkSNx0uNNyyPDIS1uL9Cwc5hQ
-         Q/zJ/mUoGu/IyMrYq3qhuRZliCLh7XeoR3EcPDT63KSPAPBnSzk/Ot+71Da6P3ccGkHe
-         z0HFySbkJgygZXKqdUJFFLv8gOB4rjZulI4qIYvS9rLu9htASaHlHNoRHsu5fYG45XYI
-         8aZg==
-X-Gm-Message-State: AO0yUKV2lNl21GrBWEchmMfCWbvgaVTfs1Lu7HM+NdrOhakre2WnH1KY
-	j4MUyJZAY9Iqm0PqNlERboD9AoGhWmUDCrI7hr140A==
-X-Google-Smtp-Source: AK7set9w68YfA5Q07QLKo/YvN8tFY/m3v7BikiK3Ew2LpnIRXtQNw580HfkqzKMh/TLZz25g3dVQOEATO59Oe2KPLSE=
-X-Received: by 2002:a05:620a:c91:b0:746:9016:1eb0 with SMTP id
- q17-20020a05620a0c9100b0074690161eb0mr482190qki.2.1679649552380; Fri, 24 Mar
- 2023 02:19:12 -0700 (PDT)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 52571525F
+	for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 11:11:35 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BC58E11FB;
+	Fri, 24 Mar 2023 04:12:18 -0700 (PDT)
+Received: from e112269-lin.cambridge.arm.com (e112269-lin.cambridge.arm.com [10.1.194.34])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5D5AD3F6C4;
+	Fri, 24 Mar 2023 04:11:33 -0700 (PDT)
+From: Steven Price <steven.price@arm.com>
+To: Heiko Stuebner <heiko@sntech.de>,
+	Joerg Roedel <joro@8bytes.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Steven Price <steven.price@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-rockchip@lists.infradead.org
+Subject: [PATCH v2] iommu/rockchip: Add missing set_platform_dma_ops callback
+Date: Fri, 24 Mar 2023 11:11:27 +0000
+Message-Id: <20230324111127.221640-1-steven.price@arm.com>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: Michael Shavit <mshavit@google.com>
-Date: Fri, 24 Mar 2023 17:18:36 +0800
-Message-ID: <CAKHBV24u9b-=cJCF=Kt=3B4hynOyNr6gmi0F6zpO6b1mHc0Z7g@mail.gmail.com>
-Subject: [Design] iommu/arm-smmu-v3: Implementing set_dev_pasid for other
- domain types
-To: jean-philippe@linaro.org, Will Deacon <willdeacon@google.com>, robin.murphy@arm.com
-Cc: Daniel Mentz <danielmentz@google.com>, John Scheible <johnscheible@google.com>, 
-	Mostafa Saleh <smostafa@google.com>, linux-arm-kernel@lists.infradead.org, 
-	iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-Hi Jean-Philippe, all
+Similar to exynos, we need a set_platform_dma_ops() callback for proper
+operation on ARM 32 bit after recent changes in the IOMMU framework
+(detach ops removal). But also the use of a NULL domain is confusing.
 
-We=E2=80=99d like to use the new iommu_attach_device_pasid API to control
-mappings on a per SSID basis. To that end, we=E2=80=99ve started investigat=
-ing
-how to implement the set_dev_pasid callback in the arm-smmu-v3.c
-driver for domain types other than SVA.
+Rework the code to have a singleton rk_identity_domain which is assigned
+to domain when using an identity mapping rather than "detaching". This
+makes the code easier to reason about.
 
-As noted in your smmuv3 aux-domain patch, the arm_smmu_domain
-represents not only =E2=80=9Cthe non-PASID address space but also (at least
-for SMMUv3) the whole device context, PASID tables etc.=E2=80=9D Multiple S=
-VA
-iommu_domains reach into a shared arm_smmu_domain to write their CDs
-into a shared CD table.
-Is moving to a model where each arm_smmu_master holds this previously
-shared device context instead of the arm_smmu_domain a bad idea?
+Signed-off-by: Steven Price <steven.price@arm.com>
+---
+Changes since v1[1]:
 
-This would allow a pretty straightforward implementation of
-set_dev_pasid for other domain types:
-    * Attaching a domain with PASID to a device doesn=E2=80=99t have to
-piggyback on any other domain=E2=80=99s CD table. The domain=E2=80=99s CD c=
-an directly
-be written into the master=E2=80=99s CD table.
-    * A domain attached with PASID is no different than one attached
-without PASID, attach_dev becomes attach_dev_with_pasid(0).
+ * Reworked the code to avoid a NULL domain, instead a singleton
+   rk_identity_domain is used instead. The 'detach' language is no
+   longer used.
 
-At a high-level:
-   1. The arm_smmu_domain would still own the arm_smmu_ctx_desc struct
-that describes that domain (translation table, etc)
-   2. Each arm_smmu_master would now own its own s1_cfg struct (and CD
-table). Attaching a domain to a device would write the CD into that
-device=E2=80=99s CD table instead of the previously shared CD table.
+[1] https://lore.kernel.org/r/20230315164152.333251-1-steven.price%40arm.com
 
-From an implementation POV there=E2=80=99s a few other changes and
-book-keeping that become required to handle edge-cases (e.g. We need
-to find all the CD entries that a domain is written to when the SVA
-driver tries to update a domain=E2=80=99s ASID value). Right now I=E2=80=99=
-m more
-concerned about whether this idea is sane at a design level.
+ drivers/iommu/rockchip-iommu.c | 50 ++++++++++++++++++++++++++--------
+ 1 file changed, 39 insertions(+), 11 deletions(-)
 
-As a first order consequence, when multiple devices share a domain:
-    1. We=E2=80=99ll use more memory than we would have before.
-    2. The SMMU will perform dma to distinct CD tables to find the
-page table; however the page table itself would still be shared.
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index f30db22ea5d7..437541004994 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -124,6 +124,7 @@ struct rk_iommudata {
+ 
+ static struct device *dma_dev;
+ static const struct rk_iommu_ops *rk_ops;
++static struct iommu_domain rk_identity_domain;
+ 
+ static inline void rk_table_flush(struct rk_iommu_domain *dom, dma_addr_t dma,
+ 				  unsigned int count)
+@@ -980,26 +981,27 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
+ 	return ret;
+ }
+ 
+-static void rk_iommu_detach_device(struct iommu_domain *domain,
+-				   struct device *dev)
++static int rk_iommu_identity_attach(struct iommu_domain *identity_domain,
++				    struct device *dev)
+ {
+ 	struct rk_iommu *iommu;
+-	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
++	struct rk_iommu_domain *rk_domain;
+ 	unsigned long flags;
+ 	int ret;
+ 
+ 	/* Allow 'virtual devices' (eg drm) to detach from domain */
+ 	iommu = rk_iommu_from_dev(dev);
+ 	if (!iommu)
+-		return;
++		return -ENODEV;
++
++	rk_domain = to_rk_domain(iommu->domain);
+ 
+ 	dev_dbg(dev, "Detaching from iommu domain\n");
+ 
+-	/* iommu already detached */
+-	if (iommu->domain != domain)
+-		return;
++	if (iommu->domain == identity_domain)
++		return 0;
+ 
+-	iommu->domain = NULL;
++	iommu->domain = identity_domain;
+ 
+ 	spin_lock_irqsave(&rk_domain->iommus_lock, flags);
+ 	list_del_init(&iommu->node);
+@@ -1011,7 +1013,25 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
+ 		rk_iommu_disable(iommu);
+ 		pm_runtime_put(iommu->dev);
+ 	}
++
++	return 0;
++}
++
++static struct iommu_domain_ops rk_identity_ops = {
++	.attach_dev = rk_iommu_identity_attach,
++};
++
++static struct iommu_domain rk_identity_domain = {
++	.type = IOMMU_DOMAIN_IDENTITY,
++	.ops = &rk_identity_ops,
++};
++
++#ifdef CONFIG_ARM
++static void rk_iommu_set_platform_dma(struct device *dev)
++{
++	WARN_ON(rk_iommu_identity_attach(&rk_identity_domain, dev));
+ }
++#endif
+ 
+ static int rk_iommu_attach_device(struct iommu_domain *domain,
+ 		struct device *dev)
+@@ -1035,8 +1055,9 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
+ 	if (iommu->domain == domain)
+ 		return 0;
+ 
+-	if (iommu->domain)
+-		rk_iommu_detach_device(iommu->domain, dev);
++	ret = rk_iommu_identity_attach(&rk_identity_domain, dev);
++	if (ret)
++		return ret;
+ 
+ 	iommu->domain = domain;
+ 
+@@ -1050,7 +1071,7 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
+ 
+ 	ret = rk_iommu_enable(iommu);
+ 	if (ret)
+-		rk_iommu_detach_device(iommu->domain, dev);
++		WARN_ON(rk_iommu_identity_attach(&rk_identity_domain, dev));
+ 
+ 	pm_runtime_put(iommu->dev);
+ 
+@@ -1061,6 +1082,9 @@ static struct iommu_domain *rk_iommu_domain_alloc(unsigned type)
+ {
+ 	struct rk_iommu_domain *rk_domain;
+ 
++	if (type == IOMMU_DOMAIN_IDENTITY)
++		return &rk_identity_domain;
++
+ 	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
+ 		return NULL;
+ 
+@@ -1176,6 +1200,7 @@ static int rk_iommu_of_xlate(struct device *dev,
+ 	iommu_dev = of_find_device_by_node(args->np);
+ 
+ 	data->iommu = platform_get_drvdata(iommu_dev);
++	data->iommu->domain = &rk_identity_domain;
+ 	dev_iommu_priv_set(dev, data);
+ 
+ 	platform_device_put(iommu_dev);
+@@ -1188,6 +1213,9 @@ static const struct iommu_ops rk_iommu_ops = {
+ 	.probe_device = rk_iommu_probe_device,
+ 	.release_device = rk_iommu_release_device,
+ 	.device_group = rk_iommu_device_group,
++#ifdef CONFIG_ARM
++	.set_platform_dma_ops = rk_iommu_set_platform_dma,
++#endif
+ 	.pgsize_bitmap = RK_IOMMU_PGSIZE_BITMAP,
+ 	.of_xlate = rk_iommu_of_xlate,
+ 	.default_domain_ops = &(const struct iommu_domain_ops) {
+-- 
+2.39.2
 
-Is that acceptable considering some users might not need the
-set_dev_pasid support this is geared towards?
-Are there other consequences we've overlooked?
-
-Thanks,
-Michael
