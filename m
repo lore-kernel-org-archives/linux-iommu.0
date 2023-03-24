@@ -1,143 +1,126 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAA2E2F4A
-	for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 12:31:24 +0000 (UTC)
-Received: by mail-wm1-f51.google.com with SMTP id n19so1080887wms.0
-        for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 05:31:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1679661083;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=FRSlnjBXAFAkH3Rb4PIA41wJvk7P0elOCwz/1LKKqEg=;
-        b=G7jyOr/AErIu94dqZb4FfTC1eZrJa3DmGE78uAXJkZvlZ2n7+x2vuJgT0EIRILEuUf
-         2bD1UrlWYzp98PM5qRACW26b7CweefXiFp5r2FSyx5nXw5v14rEbCYaAGnkjeYUSdqiW
-         ry32IFcyh72cLcCvL2VjhklgaSUvATWNABTcvD5qXglqWE+USkRphvY5NM+lz4q42atO
-         LNjO+PnP06su17E9q2nWVy7zMaG7qv6lf3xT367SMUbb/EJIf90rFZYDOTMHikV+nkas
-         l2L46THCfMo4f2oreRvZr5xJiXHJOTa/m1zJvepZyQ+csc8mm7Txdx/7pxmsp04+PlMs
-         ij6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679661083;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=FRSlnjBXAFAkH3Rb4PIA41wJvk7P0elOCwz/1LKKqEg=;
-        b=K49a4RehDNKu410PWTDCicG20ejTQkKjMqxIHgvxK2Oolm42q8hbuZMP/NqDURaAkM
-         MPWgzQXe1ALwWb5N7ABQklN/E1V3NAEYKyj/01qu8q+X4bNKKS03+isWrKtt4rvMOxPv
-         fOBGDcMBqOB+cFVUcBZaYCZzGTLnm0hPkXpzXavBVOd+RWVSG2OM2NBQ96fte6Y17cJf
-         Ha/C6ZSg6IzZ74/ttu0gnKz6XkowcDrW+yyDeqPlrxnKtZMEpn2iiAqxNYiVMjLQPTPk
-         hO8IU6cndRIEgXjVpWv1Mb/G30IN+WcM9JsdwF4aAdX6SeQjkUqX9DdMlDHejrT1flXM
-         hSOg==
-X-Gm-Message-State: AO0yUKWfQe1Z0bhrVIQNjjpDNcf31pqFBJ/+s1Xeb4k15u+ETSQkEP/d
-	rzL6LeNvx6dlAfSEdnhbqn5THw==
-X-Google-Smtp-Source: AK7set84IO2/BEEtf1NkSpZJyWXkJ80D8tn/mnF4pxyD9X5FGpL8p4NKQAsdmb0duOvbHUTZ0ehEUw==
-X-Received: by 2002:a7b:ce0a:0:b0:3ed:237f:3da with SMTP id m10-20020a7bce0a000000b003ed237f03damr2483050wmc.22.1679661082936;
-        Fri, 24 Mar 2023 05:31:22 -0700 (PDT)
-Received: from myrica (054592b0.skybroadband.com. [5.69.146.176])
-        by smtp.gmail.com with ESMTPSA id n6-20020a7bcbc6000000b003ed243222adsm4695985wmi.42.2023.03.24.05.31.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Mar 2023 05:31:22 -0700 (PDT)
-Date: Fri, 24 Mar 2023 12:31:25 +0000
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Michael Shavit <mshavit@google.com>
-Cc: Will Deacon <willdeacon@google.com>, robin.murphy@arm.com,
-	Daniel Mentz <danielmentz@google.com>,
-	John Scheible <johnscheible@google.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
-Subject: Re: [Design] iommu/arm-smmu-v3: Implementing set_dev_pasid for other
- domain types
-Message-ID: <20230324123125.GA1061401@myrica>
-References: <CAKHBV24u9b-=cJCF=Kt=3B4hynOyNr6gmi0F6zpO6b1mHc0Z7g@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BEA95662
+	for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 13:16:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679663794; x=1711199794;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=GDZg2mRuA1og/+FYECT/suAKTGeLw7ZZtMrYY5CS7do=;
+  b=QiMTro6vUi1LIHY7ChQsefMAu+in2j61Ih1mi6mQTlZmzyKVywn3YJBL
+   jJM6SmqrD0BlOwixfXgSLBXvdkThF40/MVMgflnqzK+lb7v2xWEyGo9fy
+   iP62RvwoZ+MqMoxVbR1u0nrMTN9/zw9XS9n0eKh3CHPiaa86WCcvJt7Of
+   G4dqHCFKaEr4xRDXmHJClwb77pUmm+6WhweVatIDZJjyw6ohFXULW4qiU
+   ZQxflAiXQ1sPo6J5Ff5KLWyt253yNPOF4LViYqN0MwlMZFvVuwEJcGtTT
+   72ck2QajNrFwGifTPzvxCEYh/OSaX+CjGYy3XhWMsZkFEYz3b6eSIZ9DY
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10659"; a="339800371"
+X-IronPort-AV: E=Sophos;i="5.98,288,1673942400"; 
+   d="scan'208";a="339800371"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2023 06:16:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10659"; a="928657058"
+X-IronPort-AV: E=Sophos;i="5.98,288,1673942400"; 
+   d="scan'208";a="928657058"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.215.177]) ([10.254.215.177])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2023 06:16:26 -0700
+Message-ID: <8fda817c-98e7-1988-325d-52d09f3e61a8@linux.intel.com>
+Date: Fri, 24 Mar 2023 21:16:24 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAKHBV24u9b-=cJCF=Kt=3B4hynOyNr6gmi0F6zpO6b1mHc0Z7g@mail.gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Cc: baolu.lu@linux.intel.com, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-rockchip@lists.infradead.org
+Subject: Re: [PATCH v2] iommu/rockchip: Add missing set_platform_dma_ops
+ callback
+To: Steven Price <steven.price@arm.com>, Heiko Stuebner <heiko@sntech.de>,
+ Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@ziepe.ca>
+References: <20230324111127.221640-1-steven.price@arm.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20230324111127.221640-1-steven.price@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Michael,
-
-On Fri, Mar 24, 2023 at 05:18:36PM +0800, Michael Shavit wrote:
-> Hi Jean-Philippe, all
+On 2023/3/24 19:11, Steven Price wrote:
+> Similar to exynos, we need a set_platform_dma_ops() callback for proper
+> operation on ARM 32 bit after recent changes in the IOMMU framework
+> (detach ops removal). But also the use of a NULL domain is confusing.
 > 
-> We’d like to use the new iommu_attach_device_pasid API to control
-> mappings on a per SSID basis. To that end, we’ve started investigating
-> how to implement the set_dev_pasid callback in the arm-smmu-v3.c
-> driver for domain types other than SVA.
+> Rework the code to have a singleton rk_identity_domain which is assigned
+> to domain when using an identity mapping rather than "detaching". This
+> makes the code easier to reason about.
 > 
-> As noted in your smmuv3 aux-domain patch, the arm_smmu_domain
-> represents not only “the non-PASID address space but also (at least
-> for SMMUv3) the whole device context, PASID tables etc.” Multiple SVA
-> iommu_domains reach into a shared arm_smmu_domain to write their CDs
-> into a shared CD table.
-> Is moving to a model where each arm_smmu_master holds this previously
-> shared device context instead of the arm_smmu_domain a bad idea?
+> Signed-off-by: Steven Price <steven.price@arm.com>
+> ---
+> Changes since v1[1]:
 > 
-> This would allow a pretty straightforward implementation of
-> set_dev_pasid for other domain types:
->     * Attaching a domain with PASID to a device doesn’t have to
-> piggyback on any other domain’s CD table. The domain’s CD can directly
-> be written into the master’s CD table.
->     * A domain attached with PASID is no different than one attached
-> without PASID, attach_dev becomes attach_dev_with_pasid(0).
+>   * Reworked the code to avoid a NULL domain, instead a singleton
+>     rk_identity_domain is used instead. The 'detach' language is no
+>     longer used.
 > 
-> At a high-level:
->    1. The arm_smmu_domain would still own the arm_smmu_ctx_desc struct
-> that describes that domain (translation table, etc)
->    2. Each arm_smmu_master would now own its own s1_cfg struct (and CD
-> table). Attaching a domain to a device would write the CD into that
-> device’s CD table instead of the previously shared CD table.
+> [1] https://lore.kernel.org/r/20230315164152.333251-1-steven.price%40arm.com
 > 
-> From an implementation POV there’s a few other changes and
-> book-keeping that become required to handle edge-cases (e.g. We need
-> to find all the CD entries that a domain is written to when the SVA
-> driver tries to update a domain’s ASID value). Right now I’m more
-> concerned about whether this idea is sane at a design level.
+>   drivers/iommu/rockchip-iommu.c | 50 ++++++++++++++++++++++++++--------
+>   1 file changed, 39 insertions(+), 11 deletions(-)
 > 
-> As a first order consequence, when multiple devices share a domain:
->     1. We’ll use more memory than we would have before.
+> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+> index f30db22ea5d7..437541004994 100644
+> --- a/drivers/iommu/rockchip-iommu.c
+> +++ b/drivers/iommu/rockchip-iommu.c
+> @@ -124,6 +124,7 @@ struct rk_iommudata {
+>   
+>   static struct device *dma_dev;
+>   static const struct rk_iommu_ops *rk_ops;
+> +static struct iommu_domain rk_identity_domain;
+>   
+>   static inline void rk_table_flush(struct rk_iommu_domain *dom, dma_addr_t dma,
+>   				  unsigned int count)
+> @@ -980,26 +981,27 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
+>   	return ret;
+>   }
+>   
+> -static void rk_iommu_detach_device(struct iommu_domain *domain,
+> -				   struct device *dev)
+> +static int rk_iommu_identity_attach(struct iommu_domain *identity_domain,
+> +				    struct device *dev)
+>   {
+>   	struct rk_iommu *iommu;
+> -	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
+> +	struct rk_iommu_domain *rk_domain;
+>   	unsigned long flags;
+>   	int ret;
+>   
+>   	/* Allow 'virtual devices' (eg drm) to detach from domain */
+>   	iommu = rk_iommu_from_dev(dev);
+>   	if (!iommu)
+> -		return;
+> +		return -ENODEV;
+> +
+> +	rk_domain = to_rk_domain(iommu->domain);
+>   
+>   	dev_dbg(dev, "Detaching from iommu domain\n");
+>   
+> -	/* iommu already detached */
+> -	if (iommu->domain != domain)
+> -		return;
+> +	if (iommu->domain == identity_domain)
+> +		return 0;
+>   
+> -	iommu->domain = NULL;
+> +	iommu->domain = identity_domain;
 
-I wonder if we could save some memory by reducing the allocation size for
-single-entry context tables: it looks like dma_direct_alloc() gives us a
-full page at the moment even though we only need 64 bytes per CD
-(and S1ContextPtr alignment is 64B).
+Where did identity_domain come from? Is it rk_identity_domain?
 
->     2. The SMMU will perform dma to distinct CD tables to find the
-> page table; however the page table itself would still be shared.
-
-Yes, I'd expect this to be negligible since an SMMU would cache the CD
-
-> 
-> Is that acceptable considering some users might not need the
-> set_dev_pasid support this is geared towards?
-
-That does sound like a nice cleanup. When I last looked at this years ago,
-there were two cases that shared a CD table between devices:
-
-(a) IOMMU groups, where devices cannot be isolated from each others by the
-    IOMMU. Those are probably not going away anytime soon, but they aren't
-    desirable. The normal case is one device per group.
-
-(b) Devices assigned to the same VM without a viommu, using the same VFIO
-    container. QEMU used stage-1 even though stage-2, which doesn't
-    require a CD table, was available with VFIO_TYPE1_NESTING_IOMMU.
-
-    I don't know what the plan is for IOMMUFD, maybe using stage-2 would
-    be the right direction for new users.
-
-For anything else I think we're already allocating separate smmu_domains
-for each endpoint, each with their own CD table.
-
-Thanks,
-Jean
-
-> Are there other consequences we've overlooked?
-> 
-> Thanks,
-> Michael
+Best regards,
+baolu
