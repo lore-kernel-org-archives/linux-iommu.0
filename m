@@ -1,89 +1,94 @@
-Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF98D631
-	for <iommu@lists.linux.dev>; Sat, 25 Mar 2023 05:42:59 +0000 (UTC)
-Received: by mail-qt1-f181.google.com with SMTP id n14so3472644qta.10
-        for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 22:42:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1679722978;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3byBldZMX6xbfG7sUM+dVzUuY7QBX3hRaMSItcVS8x0=;
-        b=o+Y+NmsMhBx5QbyhIDsTsaSV3oupra1EaE1h742VyERrxACn31ZtbjP77DDjFq8unu
-         o2hXVhDDsNuLO/AFJ9RGvbUtYLEvWzsO1/LXOdy2JTGEfLAaaY2+K38L1GxnXJ4OME1F
-         LoS8EGCLXJaCz3wkG56mdKqgGnkxBkyFb8lQng2Kxu6C7U30GKa73vCOHdoq/ZIRfIiG
-         8wajGsV+UzWKZ/CCNUWyijQzWNHxdYsmY/6NK6WbjGUvk4QVsAWBPgYIqUuidP1bM7R/
-         de+pIxywnxIgLU4XL3Vjap75XFa0w7XDcUjKoQB/B6fHiUms7lRQDwzrOtok8reT8MZh
-         nIWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679722978;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=3byBldZMX6xbfG7sUM+dVzUuY7QBX3hRaMSItcVS8x0=;
-        b=234D009E6kOh6+VlPRE0vsD1ylxwunI4a7hE4hW1DvMuV4RctCMYehyp3miuyuM6uS
-         aZU6AGqI0SWiBh2Tmyo9EME3Hcy9YmVFgMHh3Gw/a3jWRdd447DvZtUzVagH+8LOiewV
-         ztjs/d+8VuX7fkuh9RpZBZ3ycXBIqkrCp8t8jGN20KygjyueeElKxf79NgL7bG11Wmei
-         7/5H+vnr2ED5hl5tQliEvFlqkwqVl9UlGLP8zJyFHJuKVEteQAY/FOUAT0wqQdwYmewi
-         BGy0pTmO5M4F6xSCWx8xdYHDdfrlyerH5w3GsTfY6Gm2xSezjTtemu+wyZ6tOgZi6C6S
-         FbJg==
-X-Gm-Message-State: AO0yUKUk1swnHjTf1gKcwzOhn4NoKowofuN8ksnYAUqYMOUxvX62WZu3
-	9xX/d5MDHoFAqtg04qzABlYfVhicRhYz+U6WJuMo+A==
-X-Google-Smtp-Source: AK7set/cxmqpEIN+LcB1MuLZGruxQkZPbC9oAtc3fsM9N0sexWgcqe+2aOfpnp340YqdUlwIfPyAjodQho8Ce1pRdR4=
-X-Received: by 2002:ac8:5ac5:0:b0:3e0:c7f7:cbce with SMTP id
- d5-20020ac85ac5000000b003e0c7f7cbcemr1854994qtd.9.1679722978542; Fri, 24 Mar
- 2023 22:42:58 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D10261843
+	for <iommu@lists.linux.dev>; Sat, 25 Mar 2023 08:49:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679734161; x=1711270161;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=7aQXTTzueKz4/LOrOT32vlGTw133AUd3lzycbtcUIsM=;
+  b=aQjvkCm8yKfWqeWEyya3454oEF6izyl9GWuextXfPTylmpT2r3egrq4f
+   AGbaVPSzIVBY/3Oi5bSwxKLi8nkaS/cvHCzgTIZS2xaT3tTYraQDUrzCk
+   Fvbo7OsxNxV4g0TTPhm4DQ2F59HPvBB/vobMdbz9OJERMSaGTd+8s6TSd
+   L3ZenA6D8Vj1GlDoGpnuhCT6YXnxBJNgsgHWM5yqcSRnmygT+r29rUFRJ
+   W3rkjVGrWE+H59A3wESoGMVmlRCbSe+XTs5YbRpHJ0ZxLAK4xeCuRRL46
+   a2srjAEqg8CgyFNw7Ofc1SSxmE0W2HQrLnDhWpxWW4gQ0QzBHjEzzezK7
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10659"; a="319604353"
+X-IronPort-AV: E=Sophos;i="5.98,290,1673942400"; 
+   d="scan'208";a="319604353"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2023 01:49:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10659"; a="747440379"
+X-IronPort-AV: E=Sophos;i="5.98,290,1673942400"; 
+   d="scan'208";a="747440379"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
+  by fmsmga008.fm.intel.com with ESMTP; 25 Mar 2023 01:49:19 -0700
+Message-ID: <da219415-d899-51da-6479-c13ae3616a12@linux.intel.com>
+Date: Sat, 25 Mar 2023 16:49:41 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAKHBV24u9b-=cJCF=Kt=3B4hynOyNr6gmi0F6zpO6b1mHc0Z7g@mail.gmail.com>
- <20230324123125.GA1061401@myrica>
-In-Reply-To: <20230324123125.GA1061401@myrica>
-From: Michael Shavit <mshavit@google.com>
-Date: Sat, 25 Mar 2023 13:42:22 +0800
-Message-ID: <CAKHBV25_hJU3xgSt3=xt7LgoF=15=jwo9A_8z9A5yi7-CZk2Cw@mail.gmail.com>
-Subject: Re: [Design] iommu/arm-smmu-v3: Implementing set_dev_pasid for other
- domain types
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: Will Deacon <willdeacon@google.com>, robin.murphy@arm.com, 
-	Daniel Mentz <danielmentz@google.com>, John Scheible <johnscheible@google.com>, 
-	Mostafa Saleh <smostafa@google.com>, linux-arm-kernel@lists.infradead.org, 
-	iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev
+Subject: Re: lockdep splat with intel iommu
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Kevin Tian <kevin.tian@intel.com>, Robin Murphy <robin.murphy@arm.com>
+References: <Y1qOqBXgll9qa7Hm@nvidia.com> <ZB4PqK6p64xuNxRn@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <ZB4PqK6p64xuNxRn@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Mar 24, 2023 at 8:31=E2=80=AFPM Jean-Philippe Brucker
-<jean-philippe@linaro.org> wrote:
+On 3/25/23 5:01 AM, Jason Gunthorpe wrote:
+> On Thu, Oct 27, 2022 at 10:59:04AM -0300, Jason Gunthorpe wrote:
+>> I'm seeing this at every boot, on v6.1-rc2
+>>
+>> I've just realized it means lockdep is turned off for the actual
+>> testing I want to do. Very annoying
+>>
+>> Lu, is there a solution yet? I saw some patches for a different
+>> lockdep splat but not this one.
+>>
+>> [    0.604492] ======================================================
+>> [    0.604838] WARNING: possible circular locking dependency detected
+>> [    0.605221] 6.1.0-rc2+ #24 Not tainted
+>> [    0.605432] ------------------------------------------------------
+>> [    0.605734] swapper/0/1 is trying to acquire lock:
+>> [    0.605985] ffff8880069ab8a0 (&md->mutex){+.+.}-{3:3}, at: msi_get_virq+0x99/0x150
+>> [    0.606281]
+>> [    0.606281] but task is already holding lock:
+>> [    0.606281] ffffffff82676890 (cpu_hotplug_lock){++++}-{0:0}, at: init_vqs+0x6db/0x940
+>> [    0.606281]
+>> [    0.606281] which lock already depends on the new lock.
+> 
+> Lu, did you ever figure this out? It still happens.
+> 
+> It is because dmar_global_lock is held while calling
+> iommu_device_register() and also held during
+> intel_irq_remapping_alloc()
+> 
+> iommu_device_register() eventually obtains the cpu_hotplug_lock to
+> setup the DMA API
+> 
+> intel_irq_remapping_alloc() is called by drivers under the
+> cpu_hotplug_lock to setup their interrupts
+> 
+> To fix it you cannot use the same lock in both places
 
-> > As a first order consequence, when multiple devices share a domain:
-> >     1. We=E2=80=99ll use more memory than we would have before.
->
-> I wonder if we could save some memory by reducing the allocation size for
-> single-entry context tables: it looks like dma_direct_alloc() gives us a
-> full page at the moment even though we only need 64 bytes per CD
-> (and S1ContextPtr alignment is 64B).
+I have a patch posted here.
 
-Oh interesting, I can give that a try. I'm guessing you mean by
-allocating from a pool when a master with ssid=3D1 needs to allocate its
-cd table?
+https://lore.kernel.org/r/20230314051836.23817-1-baolu.lu@linux.intel.com
 
-> >     2. The SMMU will perform dma to distinct CD tables to find the
-> > page table; however the page table itself would still be shared.
->
-> Yes, I'd expect this to be negligible since an SMMU would cache the CD
->
-> >
-> > Is that acceptable considering some users might not need the
-> > set_dev_pasid support this is geared towards?
->
-> That does sound like a nice cleanup. When I last looked at this years ago=
-,
-> there were two cases that shared a CD table between devices:
+It may also fix this warning?
 
-Awesome, thanks for the feedback Jean. I'll start drafting-up a patch
-series over the next few weeks then.
+Best regards,
+baolu
