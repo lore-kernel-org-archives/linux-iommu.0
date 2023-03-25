@@ -1,94 +1,84 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D10261843
-	for <iommu@lists.linux.dev>; Sat, 25 Mar 2023 08:49:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679734161; x=1711270161;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=7aQXTTzueKz4/LOrOT32vlGTw133AUd3lzycbtcUIsM=;
-  b=aQjvkCm8yKfWqeWEyya3454oEF6izyl9GWuextXfPTylmpT2r3egrq4f
-   AGbaVPSzIVBY/3Oi5bSwxKLi8nkaS/cvHCzgTIZS2xaT3tTYraQDUrzCk
-   Fvbo7OsxNxV4g0TTPhm4DQ2F59HPvBB/vobMdbz9OJERMSaGTd+8s6TSd
-   L3ZenA6D8Vj1GlDoGpnuhCT6YXnxBJNgsgHWM5yqcSRnmygT+r29rUFRJ
-   W3rkjVGrWE+H59A3wESoGMVmlRCbSe+XTs5YbRpHJ0ZxLAK4xeCuRRL46
-   a2srjAEqg8CgyFNw7Ofc1SSxmE0W2HQrLnDhWpxWW4gQ0QzBHjEzzezK7
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10659"; a="319604353"
-X-IronPort-AV: E=Sophos;i="5.98,290,1673942400"; 
-   d="scan'208";a="319604353"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2023 01:49:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10659"; a="747440379"
-X-IronPort-AV: E=Sophos;i="5.98,290,1673942400"; 
-   d="scan'208";a="747440379"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by fmsmga008.fm.intel.com with ESMTP; 25 Mar 2023 01:49:19 -0700
-Message-ID: <da219415-d899-51da-6479-c13ae3616a12@linux.intel.com>
-Date: Sat, 25 Mar 2023 16:49:41 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 255C620EE
+	for <iommu@lists.linux.dev>; Sat, 25 Mar 2023 11:08:08 +0000 (UTC)
+Received: by mail-ed1-f53.google.com with SMTP id h8so17315285ede.8
+        for <iommu@lists.linux.dev>; Sat, 25 Mar 2023 04:08:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679742486;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=2XoXtByKh4UOZY04ttKfG8wCst6NLl0jJEghljzhdfk=;
+        b=IEXMfmb9swizo0XNpd06KviT6M9g+vLRiVoOXMWKRNd8j2dzefDIaXkpzRucL9Loov
+         b+tz39NKvbJErPQ6lUD7hEA0Yd78X4mPY7N44k75VFIizHqjRrwwJ35vkDxhmrM+p55W
+         T4IZMvQSAkhpLXTQbsW/bXy/p7Laf21h2e7Cu2Tgm++yr4WxzBSfjdvilDZqJWFK2cCi
+         Aa6ITeJDdpjmG8KTGXCa90WBJw/nQxTZyaWj+ADmCW+sKaJWAY0igmT+Pfk8KlgnMqR9
+         SerTQOUqK4CizeTHHGctjhKvfhmTROetto4HkkGlV9Z41omJXbEBqNKijmOlfdhi8sbx
+         S72Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679742486;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=2XoXtByKh4UOZY04ttKfG8wCst6NLl0jJEghljzhdfk=;
+        b=khaejbBl7TQHdNXCTAP6o+zal7zaftLzt5YweuUnljaK/MvhiasqJE0QiEvtsqk9vw
+         /P19Ce5xvWVDHt9gGJE3fAz/BKFN4g/LLoJCIX/C7wuaJPaW/f49cJf46PEPltUh9Umt
+         1iiwdnFjDQoblnaY6Yn9rBVWqonYUu82rC6XgFVbi0iSmdyPWu+0lCadqSKtqITD47vP
+         EoLLGTHMrfuIQ0fJD5iie9fbcT3eGC2Kf5LcFx/eJWOMgEhT1YJJr/nicn0zDgIFAdES
+         q87girCCapKiJ4sYwq1mbPOxKx+dNaxGZYun21ebZ4qO+dDguvf1YVrmr7tjCnCgrcSm
+         esLg==
+X-Gm-Message-State: AAQBX9flJcBcJ+eickoMw19iMZzSE8hzCEQvRUBRp7mQbZ/SyVTFB/B3
+	038by3qiI+7Xgld3/TL+WEA=
+X-Google-Smtp-Source: AKy350blMy+1lSMZfdLLVnHMMW+4npnrGgrb4s+FBpAEMxX72hJtPuTS6wqpGrPl8qCVLeTm6BR8TQ==
+X-Received: by 2002:a05:6402:10d7:b0:4fd:2675:3783 with SMTP id p23-20020a05640210d700b004fd26753783mr6216664edu.1.1679742486271;
+        Sat, 25 Mar 2023 04:08:06 -0700 (PDT)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id b44-20020a509f2f000000b004c09527d62dsm12077001edf.30.2023.03.25.04.08.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Mar 2023 04:08:05 -0700 (PDT)
+Date: Sat, 25 Mar 2023 14:07:52 +0300
+From: Dan Carpenter <error27@gmail.com>
+To: Yong Wu <yong.wu@mediatek.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	"Chengci.Xu" <chengci.xu@mediatek.com>, iommu@lists.linux.dev,
+	linux-mediatek@lists.infradead.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH] iommu/mediatek: fix a reversed test in probe
+Message-ID: <88c83ce7-5d1a-44a8-b9bf-0d01cfea24db@kili.mountain>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev
-Subject: Re: lockdep splat with intel iommu
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Kevin Tian <kevin.tian@intel.com>, Robin Murphy <robin.murphy@arm.com>
-References: <Y1qOqBXgll9qa7Hm@nvidia.com> <ZB4PqK6p64xuNxRn@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ZB4PqK6p64xuNxRn@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
 
-On 3/25/23 5:01 AM, Jason Gunthorpe wrote:
-> On Thu, Oct 27, 2022 at 10:59:04AM -0300, Jason Gunthorpe wrote:
->> I'm seeing this at every boot, on v6.1-rc2
->>
->> I've just realized it means lockdep is turned off for the actual
->> testing I want to do. Very annoying
->>
->> Lu, is there a solution yet? I saw some patches for a different
->> lockdep splat but not this one.
->>
->> [    0.604492] ======================================================
->> [    0.604838] WARNING: possible circular locking dependency detected
->> [    0.605221] 6.1.0-rc2+ #24 Not tainted
->> [    0.605432] ------------------------------------------------------
->> [    0.605734] swapper/0/1 is trying to acquire lock:
->> [    0.605985] ffff8880069ab8a0 (&md->mutex){+.+.}-{3:3}, at: msi_get_virq+0x99/0x150
->> [    0.606281]
->> [    0.606281] but task is already holding lock:
->> [    0.606281] ffffffff82676890 (cpu_hotplug_lock){++++}-{0:0}, at: init_vqs+0x6db/0x940
->> [    0.606281]
->> [    0.606281] which lock already depends on the new lock.
-> 
-> Lu, did you ever figure this out? It still happens.
-> 
-> It is because dmar_global_lock is held while calling
-> iommu_device_register() and also held during
-> intel_irq_remapping_alloc()
-> 
-> iommu_device_register() eventually obtains the cpu_hotplug_lock to
-> setup the DMA API
-> 
-> intel_irq_remapping_alloc() is called by drivers under the
-> cpu_hotplug_lock to setup their interrupts
-> 
-> To fix it you cannot use the same lock in both places
+The dma_set_mask() function returns negative error codes on failure but
+this code is testing for zero instead.
 
-I have a patch posted here.
+Fixes: f4b49c7c5e67 ("iommu/mediatek: Set dma_mask for PGTABLE_PA_35_EN")
+Signed-off-by: Dan Carpenter <error27@gmail.com>
+---
+ drivers/iommu/mtk_iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-https://lore.kernel.org/r/20230314051836.23817-1-baolu.lu@linux.intel.com
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 1a75b4382a92..6a00ce208dc2 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -1260,7 +1260,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 
+ 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN)) {
+ 		ret = dma_set_mask(dev, DMA_BIT_MASK(35));
+-		if (!ret) {
++		if (ret) {
+ 			dev_err(dev, "Failed to set dma_mask 35.\n");
+ 			return ret;
+ 		}
+-- 
+2.39.1
 
-It may also fix this warning?
-
-Best regards,
-baolu
