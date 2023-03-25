@@ -1,112 +1,217 @@
-Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com [209.85.215.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from DM5PR00CU002.outbound.protection.outlook.com (mail-centralusazon11021017.outbound.protection.outlook.com [52.101.62.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF88127706
-	for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 21:06:27 +0000 (UTC)
-Received: by mail-pg1-f170.google.com with SMTP id z18so1831515pgj.13
-        for <iommu@lists.linux.dev>; Fri, 24 Mar 2023 14:06:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1679691987;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=U3jMFsLqE2caCT6wyf0tOHuQrRREBiql26buc6N3dwU=;
-        b=NaOd/bOhXevXn7BU0AUSWcGzTiaQEgTZiLBckE8aRILv8H0EEgFK88JTMY9uSsryCz
-         YwhV3WKJhRFOek1S17jHA+xGLCLf9Fjd8c8Zs1VZtHhMzG0fONO1LtFEkk6OP/NAhtUU
-         s6c9D329VX15XjdmvPqDK/MdQciz2KiLP/ys/YFbYl1uy6y9wkZLSdq7dgzEibGFTVLW
-         zzc9Yj52EFXno+ZaB30Qw2+2/devPSSf05rQR42LhFX1yB5EN3L0ABuGevGsIanj2FD7
-         hqKhjyndjFQ+0xO+5TT/i4xJ3e0LMNR8vWOIbxQmlA+D3M78smUdfaRw0FemVN7G8wgt
-         jR4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679691987;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=U3jMFsLqE2caCT6wyf0tOHuQrRREBiql26buc6N3dwU=;
-        b=VVhlzs2kKOKAqPhdZ+sLV7qhZd769RtScK0jacMV6iukimqwTqaFbYH+Jza+YTdV90
-         N5EHo86KFs3TWgY2HI5tlN4ux5ubXNtksh1XDxJ9OdQTQilm3sZRTdTuZ/Y7Ou2of5Pd
-         KD1H1xEppvFlsw4YqM1i2GVCWKE4QWsALhyqEIf+Qjr+JM31VC0WjL9CMDXhwKePDNTy
-         Fl1wSJsgeLKdcBWcCI1EtnLGc3uB9m/OsHMK7PDj0pOWuOCdsdNgc/1qL89ZyEod5rlD
-         IHUfCYL8XzLEFYEkD54vkpqeVDWLUMSbFLwFd/nK9d10C93HvfbM1hkYR0ZTTlk72tDJ
-         Kd9Q==
-X-Gm-Message-State: AAQBX9dJZ91s6VBZBuyiR8fLCxv+43/gk3MnBUU91bupY1MMHComWJVi
-	MqUEZLO2i5kEavZLJcX76PC5yw==
-X-Google-Smtp-Source: AKy350a6Q05PHHwil+uUiCQcOPxMiVdbh3fzjkp59m9vWFn4bqqjx/c81Ya9jcJ0FKSHJxi/R49bOQ==
-X-Received: by 2002:a62:1dd6:0:b0:625:efa4:4c01 with SMTP id d205-20020a621dd6000000b00625efa44c01mr4631218pfd.3.1679691986997;
-        Fri, 24 Mar 2023 14:06:26 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id 8-20020aa79208000000b0062a3fb2a75csm4769735pfo.65.2023.03.24.14.06.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Mar 2023 14:06:26 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1pfocC-002SD2-PC;
-	Fri, 24 Mar 2023 18:06:24 -0300
-Date: Fri, 24 Mar 2023 18:06:24 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: iommu@lists.linux.dev, linux-samsung-soc@vger.kernel.org,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Alim Akhtar <alim.akhtar@samsung.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v2] iommu/exynos: Fix set_platform_dma_ops() callback
-Message-ID: <ZB4Q0BFzNfz5du04@ziepe.ca>
-References: <CGME20230315232523eucas1p2565ef5954e3b5b451803c6200c8bce32@eucas1p2.samsung.com>
- <20230315232514.1046589-1-m.szyprowski@samsung.com>
- <ZBnCD7Xc9WCM55ub@ziepe.ca>
- <da174ce4-b922-21d0-62da-b69798a51371@samsung.com>
- <ZBnef7g7GCxogPNz@ziepe.ca>
- <3ca0c680-d651-a2af-978e-fcb4a2057dd0@samsung.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F5F27F
+	for <iommu@lists.linux.dev>; Sat, 25 Mar 2023 00:04:33 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Y6FPTq15irbtAb7JNecQtZGazpDMMBBa+sXhS4S7ApJ6mRz7FA62I5hsjP3CjOcEv35gDPv3EjW5lgdksu7QGJvqjumGMgKSJv0wu4pdLnb1xbXH6vCRoyZiL152EU8W6KXAv7oiEKON4y7XACpcc83ItZx8E8aaglAoW8YBKLgByNoFwJsiO6Ba2zxE2QPJNVpSuXam43oc0HB+Yx5lq/RCQJf54IY6GeHNmzS8T8TAbQQukH5bi6SLsCM6tMlyR7Nxk27qBecBWn5G+NQiN7GJlHVW6e1iBisgSmFWVLidSs2XuNDpFcAhu/AN4eRsjTHc3CMdyZq+S0LaKraWdA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jfci8pp1Hfgw5vSwglBoG0x2UKZCerRWF6iM0BjwaLk=;
+ b=OfbphJr/u39egSYHlRw3iiiRB4xs8fy75ZgUPLETUUZX5+Qeg810s5O4L6owwM+jq6n9UElh+1vaJZVScGCBtukOo3cLbe0IcBntFdugkSQVz9qLwGPh1LVlmW0N/3rXuSvQXWrrUheE1SGHdKSc4HXojuuLD/U3dxy4MZycmFOiFdTf/8XmJn0pXzknUGCox6VZeeSuiBGf5Kv1zr21HX3yWk3O2ooglN2e4Fwoadrlr2T+qG6K0hqjk8v/wiogRG6OCflRyyarZJt/ijlqD2UE0jJtco3r6mo5A1aA0aD95pESyY3cvSdXkdVQLPMavLcClLjWrwhBWeItBGB1gQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jfci8pp1Hfgw5vSwglBoG0x2UKZCerRWF6iM0BjwaLk=;
+ b=a1WzO8JD5kdo+tXXk6kI2obA6xaz69gc6982cLvKhITguWpBjX/ASvT6ux7vvo/P1RINzk9/BQAu8k1VQrKxxPbeaROA28Kq2zHJe38LBM+mc3GVpz4XycLXvcjKXfN58TGY4ifWnzkvGOu4mPdqZl5PCH9TwotetNnmk0W6NSQ=
+Received: from BYAPR21MB1688.namprd21.prod.outlook.com (2603:10b6:a02:bf::26)
+ by CH2PR21MB1384.namprd21.prod.outlook.com (2603:10b6:610:8c::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.9; Sat, 25 Mar
+ 2023 00:04:30 +0000
+Received: from BYAPR21MB1688.namprd21.prod.outlook.com
+ ([fe80::acd0:6aec:7be2:719c]) by BYAPR21MB1688.namprd21.prod.outlook.com
+ ([fe80::acd0:6aec:7be2:719c%7]) with mapi id 15.20.6254.007; Sat, 25 Mar 2023
+ 00:04:29 +0000
+From: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>, Borislav Petkov
+	<bp@alien8.de>
+CC: "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>, "wei.liu@kernel.org"
+	<wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>, "luto@kernel.org"
+	<luto@kernel.org>, "peterz@infradead.org" <peterz@infradead.org>,
+	"davem@davemloft.net" <davem@davemloft.net>, "edumazet@google.com"
+	<edumazet@google.com>, "kuba@kernel.org" <kuba@kernel.org>,
+	"pabeni@redhat.com" <pabeni@redhat.com>, "lpieralisi@kernel.org"
+	<lpieralisi@kernel.org>, "robh@kernel.org" <robh@kernel.org>, "kw@linux.com"
+	<kw@linux.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "arnd@arndb.de"
+	<arnd@arndb.de>, "hch@lst.de" <hch@lst.de>, "m.szyprowski@samsung.com"
+	<m.szyprowski@samsung.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"thomas.lendacky@amd.com" <thomas.lendacky@amd.com>, "brijesh.singh@amd.com"
+	<brijesh.singh@amd.com>, "tglx@linutronix.de" <tglx@linutronix.de>,
+	"mingo@redhat.com" <mingo@redhat.com>, "dave.hansen@linux.intel.com"
+	<dave.hansen@linux.intel.com>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
+	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+	"sathyanarayanan.kuppuswamy@linux.intel.com"
+	<sathyanarayanan.kuppuswamy@linux.intel.com>, "ak@linux.intel.com"
+	<ak@linux.intel.com>, "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+	"dan.j.williams@intel.com" <dan.j.williams@intel.com>, "jane.chu@oracle.com"
+	<jane.chu@oracle.com>, "seanjc@google.com" <seanjc@google.com>,
+	"tony.luck@intel.com" <tony.luck@intel.com>, "x86@kernel.org"
+	<x86@kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-hyperv@vger.kernel.org"
+	<linux-hyperv@vger.kernel.org>, "netdev@vger.kernel.org"
+	<netdev@vger.kernel.org>, "linux-pci@vger.kernel.org"
+	<linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org"
+	<linux-arch@vger.kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: RE: [PATCH v6 06/13] x86/hyperv: Change vTOM handling to use standard
+ coco mechanisms
+Thread-Topic: [PATCH v6 06/13] x86/hyperv: Change vTOM handling to use
+ standard coco mechanisms
+Thread-Index:
+ AQHZUjCyCpporLk3zkiXtyclH/4N+K8DmEQAgAAZtaCAAFnoAIAAAQEAgARphwCAAbV9AIAANy4ggABRbhA=
+Date: Sat, 25 Mar 2023 00:04:28 +0000
+Message-ID:
+ <BYAPR21MB1688B457CDC6B6B405FDD099D7859@BYAPR21MB1688.namprd21.prod.outlook.com>
+References: <1678329614-3482-1-git-send-email-mikelley@microsoft.com>
+ <1678329614-3482-7-git-send-email-mikelley@microsoft.com>
+ <20230320112258.GCZBhCEpNAIk0rUDnx@fat_crate.local>
+ <BYAPR21MB16880C855EDB5AD3AECA473DD7809@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <20230320181646.GAZBijDiAckZ9WOmhU@fat_crate.local>
+ <BYAPR21MB1688DF161ACE142DEA721DA1D7809@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <20230323134306.GEZBxXahNkFIx1vyzN@fat_crate.local>
+ <20230324154856.GDZB3GaHG/3L0Q1x47@fat_crate.local>
+ <BYAPR21MB16886692DF02269DE1D0C4A5D7849@BYAPR21MB1688.namprd21.prod.outlook.com>
+In-Reply-To:
+ <BYAPR21MB16886692DF02269DE1D0C4A5D7849@BYAPR21MB1688.namprd21.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=ef61c53a-5ae8-40e5-8d3f-b3f53d1eeaa2;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2023-03-24T19:06:25Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BYAPR21MB1688:EE_|CH2PR21MB1384:EE_
+x-ms-office365-filtering-correlation-id: 3134f1fd-28aa-419e-3a31-08db2cc480cb
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ yWBcxYXukNqBEvyrtJyG1npqtwOZdfdrQLJgQs43Kxf5eXDZ01fGLsH89h5yPdrBefvFkT+UzkENJpE0MgZuGaKtJNi6DB3iiYDTNvTCQI0BG7dfb5y7g/XBp4hM/1uTQU2QIAhoMZPD1qc/bgG9A1D755lW0hb7Fkh2ttMLojYx7BAPCU5I5rWuPJm39JyO3XkGBgVV7dZVx8DzX1ngsuLpKtTdHmjnEczZc65Pqr2S5X1w1s40hE8gD+mnmwPzvhTMRctEavSZjRR0FGDd25TQ2/OBlY/iwsn3zeKtDcfy7XP0wwnv7ZardNg+WBuAOaCwbX0GvvQq5W8sHu/hLdYnkvS7SiZmRxGSjNFyf9l980uTuuSsEMRYzekwsu0NXMQEnfVzyn61uyZRk65rzvk0Ld8yKYoCQZcCl/U2LoBgsHFJ85u1noDzhEuaD4N+y6oJbktEC6BGYQoBWkNW508TxQ8mcLuS69JZUTtLzBM4H9xB0KDqEIo8Rq4TXHB5zD2soM8t6RiSTZwxY54yCuQ7tx7oZwkXrZYVuKtmdW4VkT3YiOre1q5GHXQyXe9h0QQfk+6OmMoYFWFbqH8CkjSScpLg8nguqlH5slO+GS15DzzS6g/+n9Y4OTxsVCSh0gR6q/rrdNnIjh00hIN1aENaO54WFokY6LDGSoToeU4=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:cs;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1688.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(136003)(366004)(39860400002)(346002)(451199021)(66476007)(33656002)(8676002)(66946007)(4326008)(41300700001)(86362001)(186003)(5660300002)(76116006)(8936002)(26005)(122000001)(10290500003)(6506007)(38070700005)(9686003)(55016003)(316002)(110136005)(2906002)(8990500004)(66446008)(38100700002)(52536014)(83380400001)(71200400001)(7416002)(7406005)(7696005)(82950400001)(478600001)(64756008)(66556008)(54906003)(82960400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?wg+4rG8Ll2rSY+wtqnYg9hiou8jpSMhSBHffsUJPKpSRpRhl2FY0uYbBww7s?=
+ =?us-ascii?Q?u5v+kE42qTdTTsxXbK6kQ+xTDiAOAf2CkNAQgZ6qw5zk/5NEf9vhwnSqzV/1?=
+ =?us-ascii?Q?1CVLOqXKCiOSRSlSI/xnfvmE6jzQhK5UwubRUiy5RFiLLPo1kJ9Tby0CmXG/?=
+ =?us-ascii?Q?BD0hZKGtSrqeRvyIDMnODZSTyvzDgBY+EQUI4Wlp1I5jMiShHVN19EoPtH7W?=
+ =?us-ascii?Q?q/SZJ+uaKO5VWXlKRww8/NKxICLbrOEj31/lJUBKYDNr4lcedowO4iTEOQsg?=
+ =?us-ascii?Q?z3pWXUkrvOqxBeyPf+Lnbhb/ncGl+f9B/bO6XDdn7juWizEaDYvlmFzQ8kYz?=
+ =?us-ascii?Q?xR4EdeJXQLTDG7aodM6Zz3UHvJjKswTtn9NmCzXLzf8/qes/cPx0r8TVnBId?=
+ =?us-ascii?Q?tq4tRYpOQowhZOlJIhUBcrEBQ/TXm+swR/eCZPH43j/ApjWvqbL2WXfZAwuo?=
+ =?us-ascii?Q?jNfiOpvgR868gcmLhHjrDrpM3hTjeiyxHysUZ2d1cs+0Hdre+le/LDTNsj3p?=
+ =?us-ascii?Q?cEudHUXODt82hndcubl4SAcfQrvQGz2fRZnzxfKz0kBVwDvV72aiTuaquJTd?=
+ =?us-ascii?Q?v2iPbm/TCRGgHMrOnx2AlN/gJ90V/MyiklBvz4GxepB6rbdTT43uXf7yqtEG?=
+ =?us-ascii?Q?Yg4F2JQ+bUyuuGHWFQLzzSzazE+gSv6PG5OZJss3CeEu8riAjVw4kTSfdSBc?=
+ =?us-ascii?Q?ThUAAziCoh+CQJMaDAMImfX/3bl5qMeUBwZxtPek2fH/INJJ3QaMmsbygPaw?=
+ =?us-ascii?Q?i8S81+WOfCgPJVsonYDhDbCIdZ+w1shbOzbonyEb/FmFPOIhu958KROnLyki?=
+ =?us-ascii?Q?dSsukNEEhBkWypLuvn73EFs4eqIFbWNsADdA5Ka3j+azR/gEIPRBJbiwUBSa?=
+ =?us-ascii?Q?59c6YBQLkHKnB7pXBfpAYR+1uYbeIr74/s4+n5qmqhiJvd6KF1Jpgd0F00Yn?=
+ =?us-ascii?Q?v8/pfo5V+Cf0lpCdvLR0UcmgBvl/NuCwCioMkHsfR1uGmDZiZ019JWE9Aa+t?=
+ =?us-ascii?Q?p77p1QlzoGtAbwP3jm0Ou4HNGu+0C/b98mpjUUD69/bWP7dHYe+MeZNeH5cM?=
+ =?us-ascii?Q?Xt/yjU8przdJoLsViTF1eB6M5FpHlnKLIdH6idIRbrzrh2aufEM1uKN23aaH?=
+ =?us-ascii?Q?ePuxYHzybYcZ0/Gx0oXsK95Vfv1L4lDBF29LbzLoL4wsl46KPpb8dHZ6MPkl?=
+ =?us-ascii?Q?ciHbY0k0vsvSDutwdFd7Ojb7qmWxQnHdWeuYOCiYGoEYxb9ra9N2/WW5nt0v?=
+ =?us-ascii?Q?6Qq0WbvazuRdlbM2eQEY4BIg20DAQys1FAf+R/pobhGZWY/z5YtvA8Ogz419?=
+ =?us-ascii?Q?5aqmJNKrIMCA6XlvvNmT9EiQc8h5bpW+Lk6TrK1qZcz+QEvp6rgkVl3GSp2O?=
+ =?us-ascii?Q?ysPvB+Nt9K3jHIpurS+aCvxRSbESDybmzAj3NRnjwLiICpcwXVuRzcxngtZG?=
+ =?us-ascii?Q?oh9ku/2QCVc3999LC6DBG0x8/YuCftKwMjVX8HCPBankvFhrpP28RYsAsrXr?=
+ =?us-ascii?Q?HhW8fbwB9rk3SwPIhUGP9ekiCF/Nc/WXMZPvp4Lz+RLe5frMrngJAm/RRQrq?=
+ =?us-ascii?Q?Kuw6xR7azwbKDHP1vVOIV3ou/lcz2U6QP/DZpfpO2eulXq92nCAcj2notbsP?=
+ =?us-ascii?Q?tA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3ca0c680-d651-a2af-978e-fcb4a2057dd0@samsung.com>
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1688.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3134f1fd-28aa-419e-3a31-08db2cc480cb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Mar 2023 00:04:28.8882
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: b3Az3CjHWBHegYBzPSsXbm1Pq+8/GTPhEmiKj2dTnXaSsik2NVfWpIAj3Xek5G9KiWjOWY+4GmdbFEg73GV1NVDZ99g8KCs21/YDsxYaX/s=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR21MB1384
 
-On Fri, Mar 24, 2023 at 09:59:27PM +0100, Marek Szyprowski wrote:
-> Hi Jason,
-> 
-> On 21.03.2023 17:42, Jason Gunthorpe wrote:
-> > On Tue, Mar 21, 2023 at 04:43:42PM +0100, Marek Szyprowski wrote:
-> >> On 21.03.2023 15:41, Jason Gunthorpe wrote:
-> >>> On Thu, Mar 16, 2023 at 12:25:14AM +0100, Marek Szyprowski wrote:
-> >>>> There are some subtle differences between release_device() and
-> >>>> set_platform_dma_ops() callbacks, so separate those two callbacks. Device
-> >>>> links should be removed only in release_device(), because they were
-> >>>> created in probe_device() on purpose and they are needed for proper
-> >>>> Exynos IOMMU driver operation. While fixing this, remove the conditional
-> >>>> code as it is not really needed.
-> >>>>
-> >>>> Reported-by: Jason Gunthorpe <jgg@ziepe.ca>
-> >>>> Fixes: 189d496b48b1 ("iommu/exynos: Add missing set_platform_dma_ops callback")
-> >>>> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> >>>> ---
-> >>>> v2:
-> >>>> - keep set_platform_dma_ops only on ARM 32bit
-> >>>>
-> >>>> Some more background why set_platform_dma_ops is needed on ARM 32bit is
-> >>>> available here:
-> >>>> https://lore.kernel.org/all/9a12fcac-c347-5d81-acef-1124c50d0c37@arm.com/
-> >>>> ---
-> >>>>    drivers/iommu/exynos-iommu.c | 17 ++++++++++-------
-> >>>>    1 file changed, 10 insertions(+), 7 deletions(-)
-> >>> It seems OK, but do you know what state the device is left in after
-> >>> exynos_iommu_detach_device ? Ie is it blocking or identity?
-> >> identity
-> > Can you do this cleanup like this instead?
-> 
-> Frankly speaking I would like to have a minimal fix (like my $subject 
-> patch) applied to v6.3-rcX ASAP and then apply this identity domain 
-> support on top of than for -next (6.4). I've checked and your proposed 
-> patch works fine in my case, so You can send it as formal patch.
+From: Michael Kelley (LINUX) <mikelley@microsoft.com>
+>=20
+> From: Borislav Petkov <bp@alien8.de> Sent: Friday, March 24, 2023 8:49 AM
+> >
+> > On Thu, Mar 23, 2023 at 02:43:06PM +0100, Borislav Petkov wrote:
+> > > Ok, lemme queue 1-2,4-6 as previously mentioned.
+> >
+> > With first six applied:
+> >
+> > arch/x86/coco/core.c:123:7: error: use of undeclared identifier 'sev_st=
+atus'
+> >                 if (sev_status & MSR_AMD64_SNP_VTOM)
+> >                     ^
+> > arch/x86/coco/core.c:139:7: error: use of undeclared identifier 'sev_st=
+atus'
+> >                 if (sev_status & MSR_AMD64_SNP_VTOM)
+> >                     ^
+> > 2 errors generated.
+> > make[3]: *** [scripts/Makefile.build:252: arch/x86/coco/core.o] Error 1
+> > make[2]: *** [scripts/Makefile.build:494: arch/x86/coco] Error 2
+> > make[1]: *** [scripts/Makefile.build:494: arch/x86] Error 2
+> > make[1]: *** Waiting for unfinished jobs....
+> > make: *** [Makefile:2025: .] Error 2
+> >
+> > compiler is:
+> >
+> > Debian clang version 14.0.6-2
+> > Target: x86_64-pc-linux-gnu
+> > Thread model: posix
+> > InstalledDir: /usr/bin
+> >
+> > .config is attached.
+> >
+>=20
+> OK, I see what went wrong.  I had tested with CONFIG_AMD_MEM_ENCRYPT=3Dn
+> and didn't see any compile problems.  It turns out in my test, arch/x86/c=
+oco/core.c
+> wasn't built at all because I did not also have TDX configured, so I didn=
+'t see
+> any errors.  But with CONFIG_INTEL_TDX_GUEST=3Dy, coco/core.c gets built,=
+ and
+> the error with undefined sev_status pops out.
+>=20
+> The straightforward fix is somewhat ugly.  That's to put #ifdef
+> CONFIG_AMD_MEM_ENCRYPT around the entire CC_VENDOR_AMD
+> case in cc_mkenc() and in cc_mkdec().  Or put it just around the test of
+> sev_status.
+>=20
+> Perhaps a cleaner way would be to have a "vendor_subtype" variable
+> declared in arch/x86/coco/core.c and tested instead of sev_status.
+> That subtype variable would be set from hv_vtom_init(), maybe via
+> a separate accessor function.  But didn't I recently see a patch that
+> makes the existing "vendor" variable no longer static?   In that case
+> just setting vendor_subtype without the accessor function may be
+> OK.
+>=20
+> What's your preference Boris?  I can spin a v7 of the patch series
+> that fixes this, and that squashes the last two patches of the series
+> per Lorenz Pieralisi's comments.
+>=20
 
-I thought this was a cosmetic fix, do you have an actual bug here? If
-so we should split it as you say, but you should describe the actual
-bug in the commit message.
+Actually, a pretty clean approach is to #define sev_status 0ULL in
+the #else /* !CONFIG_AMD_MEM_ENCRYPT */ half of
+arch/x86/include/asm/mem_encrypt.h.   That's where the existing
+extern statement is, and  sme_me_mask is already handled that way.
 
-Jason
+I'll respin the patch set with that approach.
+
+Michael
