@@ -1,136 +1,113 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2063.outbound.protection.outlook.com [40.107.243.63])
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96BF07468
-	for <iommu@lists.linux.dev>; Mon, 27 Mar 2023 20:05:58 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lPbZlOwViDFxSE0i/9Alb5exw69CSEj3WYMIfG5MrUgDEmObOpRxHOIus3kwL1iqqG96rFpSUTBcJActgAiIEjUu/68efUccQ/C82fRXeKpsFfHHhHEDflXBrkbtUlHtEuc2PLegwvCZACZOUW5sm+l4MZVhI381dvm5JwyP/se2+uuViREOlNsODkHSapde2l+S3eIwvySPYoQvovjmZWIrYaOWKrjVFmP4H6lqSxGg4fd2N2H/jCwK0RkAKR5YYvzSnfA2ffjD8Uk+KRs4vdPcSLMqFKIm40iJEuYefQPhnLmi5bRfkRt1p/vWVOu1zumPQCCzAHtuQhhmCip0+w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QkP+th3r/HpIBBj4CKhCpozn+AvXJWvTcnxdQyvi5BA=;
- b=ayz2lQuI5xrQ/qdp1TGqSIqKMlUiY1aUw1mn4at+SF/zxfdkiZSdQ0yPwzI9lKuNgjOqcr6ALO3SY4o3M+NfwV7yvrI0oEkCmabygTHNpz6qQ76t2/246heVfnqh6gfs4WZl1tQgoVcuyaA7guHh4LiQAzRQ3Mx0bmq7nsetLIPRk+7I6KegUaTKn90eQdhS08CJb7RtToLvHy9x6nH+Av5e6JlRL3aoskHhDsAb3+HE5j1XnTsloEWn9ZLAcsZh8AnaxT9eECEGAvm4cn60g55FRJfs5otwkHbVZ5i4dPMn2BK7t5bpJgXHiM00zlXUHdN7WrjiaJiBb1v6DvALHg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QkP+th3r/HpIBBj4CKhCpozn+AvXJWvTcnxdQyvi5BA=;
- b=EETFX3tpQGW/GM2y8nzH3bCUbDsDFgTTaQsPFWCPzyMi3sp1tNgpa+SZIH2Evcu/5RqCQrVmEMPCj+Rio2Ab7jxL/L9aw8ExzK1UAtO+jCZxMtwFDTUTyJFj0FD4qJBRdNqG5GwhwvZs7GTi2lM08reA42xleDBNELermIoxPTFrAMqzEoWLXTk8SyMn4+yhu3iS82LtJ6lXg5orn9pPFRRPIzUfy9zev27QSL8HfcSySV/S+VMmOPsqAUJeO5yI+mkJusFnTk23fkn8VfG4OuBsUR4+HEwKEGCTChOIqOsarS0MgDeRJEW44XVTlA6W2+Ynt4Xx06B/EXUjUFvHgA==
-Received: from DM6PR02CA0130.namprd02.prod.outlook.com (2603:10b6:5:1b4::32)
- by IA1PR12MB7735.namprd12.prod.outlook.com (2603:10b6:208:421::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.41; Mon, 27 Mar
- 2023 20:05:56 +0000
-Received: from DS1PEPF0000E646.namprd02.prod.outlook.com
- (2603:10b6:5:1b4:cafe::38) by DM6PR02CA0130.outlook.office365.com
- (2603:10b6:5:1b4::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.43 via Frontend
- Transport; Mon, 27 Mar 2023 20:05:56 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- DS1PEPF0000E646.mail.protection.outlook.com (10.167.18.36) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6178.30 via Frontend Transport; Mon, 27 Mar 2023 20:05:56 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Mon, 27 Mar 2023
- 13:05:41 -0700
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Mon, 27 Mar
- 2023 13:05:40 -0700
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.10)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5 via Frontend
- Transport; Mon, 27 Mar 2023 13:05:40 -0700
-Date: Mon, 27 Mar 2023 13:05:39 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <iommu@lists.linux.dev>, Kevin Tian <kevin.tian@intel.com>,
-	<linux-kselftest@vger.kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>,
-	<kvm@vger.kernel.org>, Yi Liu <yi.l.liu@intel.com>
-Subject: Re: [PATCH v4 00/17] Add iommufd physical device operations for
- replace and alloc hwpt
-Message-ID: <ZCH3E+VnJilogZfi@Asurada-Nvidia>
-References: <0-v4-9cd79ad52ee8+13f5-iommufd_alloc_jgg@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7002B2596
+	for <iommu@lists.linux.dev>; Mon, 27 Mar 2023 23:17:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679959058; x=1711495058;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=KkXAum0ih9g0sRekV8u6QaT0HhDiaD3XBnOPlV66GzA=;
+  b=fMQULEukIMV9/68K0Ug26SXu/EOImIe/G0SkNX6dlN/S1nzXEXbN+x/r
+   682DJN8jmWuG9llT1a7ET4vvR5K3KGNr/RNwsaH3llBu8pUBSR3/o7lSO
+   d7Y0mLrqPIXoVyrjlJS7y5h3CVbjGsPZcvJGWi3Jijs3qFdBhdBHUSJDX
+   4eQRA952aW/mWGqG+odCopIt+ldEPqFmPW9rnoIsMhOIz3/LuxClwcs9P
+   SNjNwaEPF4xGNTVzRUHYu5d9js6QHmTcMD6gI+bCVx36JfX3pSYullOfF
+   CprYrlknWfMKHVLq4nT4t7VRTVEu9uZomej9z7Qi3srYhmL+c9r4/BoXP
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10662"; a="320817284"
+X-IronPort-AV: E=Sophos;i="5.98,295,1673942400"; 
+   d="scan'208";a="320817284"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2023 16:17:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10662"; a="686144706"
+X-IronPort-AV: E=Sophos;i="5.98,295,1673942400"; 
+   d="scan'208";a="686144706"
+Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.106])
+  by fmsmga007.fm.intel.com with ESMTP; 27 Mar 2023 16:17:36 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: LKML <linux-kernel@vger.kernel.org>,
+	iommu@lists.linux.dev,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	"Lu Baolu" <baolu.lu@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	dmaengine@vger.kernel.org,
+	vkoul@kernel.org
+Cc: "Robin Murphy" <robin.murphy@arm.com>,
+	"Will Deacon" <will@kernel.org>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Raj Ashok <ashok.raj@intel.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	Yi Liu <yi.l.liu@intel.com>,
+	"Yu, Fenghua" <fenghua.yu@intel.com>,
+	Dave Jiang <dave.jiang@intel.com>,
+	Tony Luck <tony.luck@intel.com>,
+	"Zanussi, Tom" <tom.zanussi@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v2 0/8] Re-enable IDXD kernel workqueue under DMA API
+Date: Mon, 27 Mar 2023 16:21:30 -0700
+Message-Id: <20230327232138.1490712-1-jacob.jun.pan@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <0-v4-9cd79ad52ee8+13f5-iommufd_alloc_jgg@nvidia.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF0000E646:EE_|IA1PR12MB7735:EE_
-X-MS-Office365-Filtering-Correlation-Id: 32e61d64-3d02-4180-c9ab-08db2efead15
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	XGaIPjRmX3/o+ZMHwFWTxuAifaw/xMGMtI+e1o1NRNIvpZDgst5p/1tAlHKqPe6JJ9ox9eGi0XCnNGveqxeXC3X/vnRR6obssC/zAsoiquppt4XtuS09h8l9t/Nys3AcNrWCEjbSzG//mkdwaIEvYPXmyXsAlKoJI3aI+uXlBK9Kf2VRpSerqIpV0ftugdzOrPuheS3WQe+Q+8WMQMf/BWrzgpr3Mcf71oqnWHUC/Nm1cM4T5GB7Xc01pphHCE1XFBtEv9EV5vVI1EAirpoPpMqdsH6kZz9OTbS8jl4vm74UOXr1HCGzhZQgM0m2BK82zNawDTLCpsUhISvDmr9OyA7omCKgkez8xUbtKSFw/HP6XNMXG45Pcya6OZzvoNuoYujVDhGuVqMCr7CykuCPXj9jTLs9x1xeDvVNUofZdSy9aQF5OeKsK3Pf2Rdye+6iTccTTGzF/mzMP4hb14D+XKpgwvokVDR5bs5zCNDWl5YcszmaClZVUclKDiUOXu29vUMbLqj8IJbVYE1wf4GDNfD9FzB+BfKcWJK9fIpB3dsSgl/0o1d8CsqQ2UD4pvXc+sZ2OoBVdzfc0s09DJjtKKz3MYHkfMg0YryGmdQdeyghJVjrdosnb4jSpkH5fmcWTYFZNMuxBiC/WQJBoLmPDI7UpnChiVXvbhCp/KJxg06UiE7jbQ9Ai2n68yw44PAC2aSWj+WVJYHxamk738DY/mo/34wVFa4Rw/jq93bW+plTK4fI4dRbs9zpx6zXKrFzCqWNrJLDaBRQYrvy67CbkvKQP2b+xvMaWeIT8oU30dXz+LBxajFnJUlytEeWew0aPO/21aEZ4CzKV6gC97Un40heKY7aGA2CaQ5AxlbsIjg=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(136003)(39860400002)(376002)(346002)(396003)(451199021)(46966006)(36840700001)(40470700004)(33716001)(47076005)(426003)(86362001)(83380400001)(82310400005)(26005)(2906002)(9686003)(966005)(316002)(478600001)(54906003)(6636002)(55016003)(356005)(40480700001)(36860700001)(186003)(40460700003)(336012)(8676002)(4326008)(70206006)(5660300002)(7636003)(8936002)(70586007)(82740400003)(6862004)(41300700001)(67856001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Mar 2023 20:05:56.2108
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 32e61d64-3d02-4180-c9ab-08db2efead15
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DS1PEPF0000E646.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB7735
+Content-Transfer-Encoding: 8bit
 
-On Mon, Mar 27, 2023 at 03:37:54PM -0300, Jason Gunthorpe wrote:
-> This is the basic functionality for iommufd to support
-> iommufd_device_replace() and IOMMU_HWPT_ALLOC for physical devices.
-> 
-> iommufd_device_replace() allows changing the HWPT associated with the
-> device to a new IOAS or HWPT. Replace does this in way that failure leaves
-> things unchanged, and utilizes the iommu iommu_group_replace_domain() API
-> to allow the iommu driver to perform an optional non-disruptive change.
-> 
-> IOMMU_HWPT_ALLOC allows HWPTs to be explicitly allocated by the user and
-> used by attach or replace. At this point it isn't very useful since the
-> HWPT is the same as the automatically managed HWPT from the IOAS. However
-> a following series will allow userspace to customize the created HWPT.
-> 
-> The implementation is complicated because we have to introduce some
-> per-iommu_group memory in iommufd and redo how we think about multi-device
-> groups to be more explicit. This solves all the locking problems in the
-> prior attempts.
-> 
-> This series is infrastructure work for the following series which:
->  - Add replace for attach
->  - Expose replace through VFIO APIs
->  - Implement driver parameters for HWPT creation (nesting)
-> 
-> Once review of this is complete I will keep it on a side branch and
-> accumulate the following series when they are ready so we can have a
-> stable base and make more incremental progress. When we have all the parts
-> together to get a full implementation it can go to Linus.
-> 
-> This is on github: https://github.com/jgunthorpe/linux/commits/iommufd_hwpt
-> 
-> v4:
->  - Refine comments and commit messages
->  - Move the group lock into iommufd_hw_pagetable_attach()
->  - Fix error unwind in iommufd_device_do_replace()
+Hi all,
 
-This runs well with iommufd selftest on x86 and QEMU sanity on
-ARM64, applying nesting series on top of this and cdev series:
-https://github.com/nicolinc/iommufd/commits/wip/iommufd_nesting-03272023
+IDXD kernel work queues were disabled due to the flawed use of kernel VA
+and SVA API.
+Link: https://lore.kernel.org/linux-iommu/20210511194726.GP1002214@nvidia.com/
 
-Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+The solution is to enable it under DMA API where IDXD shared workqueue users
+can use ENQCMDS to submit work on buffers mapped by DMA API.
+
+This patchset adds support for attaching PASID to the device's default
+domain and the ability to reserve global PASIDs from SVA APIs. We can then
+re-enable the kernel work queues and use them under DMA API.
+
+This depends on the IOASID removal series.
+https://lore.kernel.org/linux-iommu/20230301235646.2692846-1-jacob.jun.pan@linux.intel.com/T/#t
+
+Thanks,
+
+---
+Changelog:
+v2:
+	- refactored device PASID attach domain ops based on Baolu's early patch
+	- addressed TLB flush gap
+	- explicitly reserve RID_PASID from SVA PASID number space
+	- get dma domain directly, avoid checking domain types
+
+Jacob
+
+Jacob Pan (8):
+  iommu/vt-d: Use non-privileged mode for all PASIDs
+  iommu/vt-d: Remove PASID supervisor request support
+  iommu/sva: Support reservation of global SVA PASIDs
+  iommu/vt-d: Reserve RID_PASID from global SVA PASID space
+  iommu/vt-d: Make device pasid attachment explicit
+  iommu/vt-d: Implement set_dev_pasid domain op
+  iommu: Export iommu_get_dma_domain
+  dmaengine/idxd: Re-enable kernel workqueue under DMA API
+
+ drivers/dma/idxd/device.c   |  30 +-----
+ drivers/dma/idxd/init.c     |  51 +++++++++-
+ drivers/dma/idxd/sysfs.c    |   7 --
+ drivers/iommu/intel/iommu.c | 188 ++++++++++++++++++++++++++++--------
+ drivers/iommu/intel/iommu.h |   8 ++
+ drivers/iommu/intel/pasid.c |  43 ---------
+ drivers/iommu/intel/pasid.h |   7 --
+ drivers/iommu/iommu-sva.c   |  33 +++++++
+ drivers/iommu/iommu.c       |   1 +
+ include/linux/iommu.h       |  19 ++++
+ 10 files changed, 261 insertions(+), 126 deletions(-)
+
+-- 
+2.25.1
+
