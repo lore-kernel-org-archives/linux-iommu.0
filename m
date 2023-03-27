@@ -1,32 +1,32 @@
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7002B2596
-	for <iommu@lists.linux.dev>; Mon, 27 Mar 2023 23:17:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A71A29A9
+	for <iommu@lists.linux.dev>; Mon, 27 Mar 2023 23:17:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679959058; x=1711495058;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=KkXAum0ih9g0sRekV8u6QaT0HhDiaD3XBnOPlV66GzA=;
-  b=fMQULEukIMV9/68K0Ug26SXu/EOImIe/G0SkNX6dlN/S1nzXEXbN+x/r
-   682DJN8jmWuG9llT1a7ET4vvR5K3KGNr/RNwsaH3llBu8pUBSR3/o7lSO
-   d7Y0mLrqPIXoVyrjlJS7y5h3CVbjGsPZcvJGWi3Jijs3qFdBhdBHUSJDX
-   4eQRA952aW/mWGqG+odCopIt+ldEPqFmPW9rnoIsMhOIz3/LuxClwcs9P
-   SNjNwaEPF4xGNTVzRUHYu5d9js6QHmTcMD6gI+bCVx36JfX3pSYullOfF
-   CprYrlknWfMKHVLq4nT4t7VRTVEu9uZomej9z7Qi3srYhmL+c9r4/BoXP
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10662"; a="320817284"
+  t=1679959059; x=1711495059;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=HlcZA4KeerUzEWCR/cSspUC1VQcP8r9snsO4hSuDpJo=;
+  b=Xur6Lf0j6rRdJcd6PYfp1s73JDn/UFKaodYnocNmxLMxU27EeCA3msJm
+   hnRlnXBM6GY/prDDqxgvdBHsPtrKSEPWywrhMemgMgzFBPCZOz/nYG0os
+   5oiSzn17FXkfbjFwOpVlAxl+gSeMIzGwWJn6fJ8q+pvuxdrrWxlqluimw
+   RJQ3vdgrmgGxQjMpGnDQqNHKr/tUrWRRqeJgFu1pB6VKsAtG7LtDbKX9a
+   1fW8uKkC29msm7GbPKhUcb4Mbhkrw8jAeNQx+bHLlLkRH4Bs0+bZjrypx
+   LeV2mRw1+GhvXHTFJml4sVGcYA9PxuO2aXYgUEEpLkIoThyQhiBxbf2jO
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10662"; a="320817294"
 X-IronPort-AV: E=Sophos;i="5.98,295,1673942400"; 
-   d="scan'208";a="320817284"
+   d="scan'208";a="320817294"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
   by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2023 16:17:37 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10662"; a="686144706"
+X-IronPort-AV: E=McAfee;i="6600,9927,10662"; a="686144711"
 X-IronPort-AV: E=Sophos;i="5.98,295,1673942400"; 
-   d="scan'208";a="686144706"
+   d="scan'208";a="686144711"
 Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.106])
-  by fmsmga007.fm.intel.com with ESMTP; 27 Mar 2023 16:17:36 -0700
+  by fmsmga007.fm.intel.com with ESMTP; 27 Mar 2023 16:17:37 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: LKML <linux-kernel@vger.kernel.org>,
 	iommu@lists.linux.dev,
@@ -46,10 +46,12 @@ Cc: "Robin Murphy" <robin.murphy@arm.com>,
 	Tony Luck <tony.luck@intel.com>,
 	"Zanussi, Tom" <tom.zanussi@intel.com>,
 	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v2 0/8] Re-enable IDXD kernel workqueue under DMA API
-Date: Mon, 27 Mar 2023 16:21:30 -0700
-Message-Id: <20230327232138.1490712-1-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v2 1/8] iommu/vt-d: Use non-privileged mode for all PASIDs
+Date: Mon, 27 Mar 2023 16:21:31 -0700
+Message-Id: <20230327232138.1490712-2-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230327232138.1490712-1-jacob.jun.pan@linux.intel.com>
+References: <20230327232138.1490712-1-jacob.jun.pan@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,56 +60,33 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi all,
+Supervisor Request Enable (SRE) bit in a PASID entry is for permission
+checking on DMA requests. When SRE = 0, DMA with supervisor privilege
+will be blocked. However, for in-kernel DMA this is not necessary in that
+we are targeting kernel memory anyway. There's no need to differentiate
+user and kernel for in-kernel DMA.
 
-IDXD kernel work queues were disabled due to the flawed use of kernel VA
-and SVA API.
-Link: https://lore.kernel.org/linux-iommu/20210511194726.GP1002214@nvidia.com/
+Let's use non-privileged (user) permission for all PASIDs used in kernel,
+it will be consistent with DMA without PASID (RID_PASID) as well.
 
-The solution is to enable it under DMA API where IDXD shared workqueue users
-can use ENQCMDS to submit work on buffers mapped by DMA API.
-
-This patchset adds support for attaching PASID to the device's default
-domain and the ability to reserve global PASIDs from SVA APIs. We can then
-re-enable the kernel work queues and use them under DMA API.
-
-This depends on the IOASID removal series.
-https://lore.kernel.org/linux-iommu/20230301235646.2692846-1-jacob.jun.pan@linux.intel.com/T/#t
-
-Thanks,
-
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
-Changelog:
-v2:
-	- refactored device PASID attach domain ops based on Baolu's early patch
-	- addressed TLB flush gap
-	- explicitly reserve RID_PASID from SVA PASID number space
-	- get dma domain directly, avoid checking domain types
+ drivers/iommu/intel/iommu.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-Jacob
-
-Jacob Pan (8):
-  iommu/vt-d: Use non-privileged mode for all PASIDs
-  iommu/vt-d: Remove PASID supervisor request support
-  iommu/sva: Support reservation of global SVA PASIDs
-  iommu/vt-d: Reserve RID_PASID from global SVA PASID space
-  iommu/vt-d: Make device pasid attachment explicit
-  iommu/vt-d: Implement set_dev_pasid domain op
-  iommu: Export iommu_get_dma_domain
-  dmaengine/idxd: Re-enable kernel workqueue under DMA API
-
- drivers/dma/idxd/device.c   |  30 +-----
- drivers/dma/idxd/init.c     |  51 +++++++++-
- drivers/dma/idxd/sysfs.c    |   7 --
- drivers/iommu/intel/iommu.c | 188 ++++++++++++++++++++++++++++--------
- drivers/iommu/intel/iommu.h |   8 ++
- drivers/iommu/intel/pasid.c |  43 ---------
- drivers/iommu/intel/pasid.h |   7 --
- drivers/iommu/iommu-sva.c   |  33 +++++++
- drivers/iommu/iommu.c       |   1 +
- include/linux/iommu.h       |  19 ++++
- 10 files changed, 261 insertions(+), 126 deletions(-)
-
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 0768dcae90fd..9f737ef55463 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -2338,8 +2338,6 @@ static int domain_setup_first_level(struct intel_iommu *iommu,
+ 	if (level != 4 && level != 5)
+ 		return -EINVAL;
+ 
+-	if (pasid != PASID_RID2PASID)
+-		flags |= PASID_FLAG_SUPERVISOR_MODE;
+ 	if (level == 5)
+ 		flags |= PASID_FLAG_FL5LP;
+ 
 -- 
 2.25.1
 
