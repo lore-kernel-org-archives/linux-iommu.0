@@ -1,75 +1,111 @@
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+Received: from metanate.com (dougal.metanate.com [90.155.101.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 863EA2102
-	for <iommu@lists.linux.dev>; Mon, 27 Mar 2023 13:13:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679922795; x=1711458795;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=w8rgy9mcJpK8NOnPbbrloY7Pu/LqKtIL9MDTbxKuZFs=;
-  b=F3C6Nde1A2K0OZoWGgFMPdgvgrRAQuv8SpXZGWJf19gC5S6mkM7rHWki
-   8OH9A7iak4EjL/4vQTc0QCqIwgSF8AokMJIAOv9q6tloSpH0t1yXcyjyP
-   OgT2ymzY+MIRSUZdZqcXpnBOEFaqOrB4KdnaNEiV9IVZbiwDrIVWDJUH7
-   8vtY5P+R0pQbjwzxFVer6PQpDEUujEeGp4WYJg9BkoZ7PkKggvXab5nTR
-   ildaupTERx5mT+QbL3j2kxnGG/X2uFU3S0AaVN/kDUE8FVCKVhc8NESf3
-   QA3o97N6qLanSTXwafBp8XXXrRKwZe+pODADw3TGJLEyXy7wVxW6wUngJ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10661"; a="340284321"
-X-IronPort-AV: E=Sophos;i="5.98,294,1673942400"; 
-   d="scan'208";a="340284321"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2023 06:13:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10661"; a="827033186"
-X-IronPort-AV: E=Sophos;i="5.98,294,1673942400"; 
-   d="scan'208";a="827033186"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.213.166]) ([10.254.213.166])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2023 06:13:12 -0700
-Message-ID: <ad57d47e-3f54-0e63-5cef-d786dab5535c@linux.intel.com>
-Date: Mon, 27 Mar 2023 21:13:10 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAD9E33C0
+	for <iommu@lists.linux.dev>; Mon, 27 Mar 2023 14:51:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=metanate.com; s=stronger; h=In-Reply-To:Content-Type:References:Message-ID:
+	Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:Content-ID:
+	Content-Description; bh=TQEVb06h33yxhmY3vu7gB3cHE9jPWdXlacdCPPkILAc=; b=IwhJp
+	YsIGR9unG81YdDeSnR/hdUO6PGgiMyenAT4ayTFuFiZR5n8fDLQ6iRze6QZR9WL2/eenMWYXV20le
+	V+nIYlDCY3SuwUb+qszBvqR2wLHP2/HeRUQDF28DtnChs7upds7rIoWfzoQFX9I8Eq1bzWarXRGgV
+	tBVJ5luBiyukT2IMGQOIffFfHd4qlfJzmdgHUstZlgu+/vLz4BH3W8wUzy2hDzw3dSJmCfZGaw+Nc
+	FZnJ2uTLCIMgXHpg2kLO8D9SvQgLRRoPicS5D127FQodRFfVfLfcpQojf4jp8VH8h+D2AVeyzSEyP
+	duZxbP19lR4hhQf7awKT3mZVmOHVQ==;
+Received: from [81.174.171.191] (helo=donbot)
+	by email.metanate.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.95)
+	(envelope-from <john@metanate.com>)
+	id 1pgnw8-00031z-WD;
+	Mon, 27 Mar 2023 15:35:06 +0100
+Date: Mon, 27 Mar 2023 15:35:04 +0100
+From: John Keeping <john@metanate.com>
+To: Steven Price <steven.price@arm.com>
+Cc: Heiko Stuebner <heiko@sntech.de>, Joerg Roedel <joro@8bytes.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-rockchip@lists.infradead.org
+Subject: Re: [PATCH v2] iommu/rockchip: Add missing set_platform_dma_ops
+ callback
+Message-ID: <ZCGpmHUWyZVaeIIx@donbot>
+References: <20230324111127.221640-1-steven.price@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/vt-d: Remove unnecessary locking in
- intel_irq_remapping_alloc()
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20230314051836.23817-1-baolu.lu@linux.intel.com>
- <ZCGJn3QWhQl4F1dI@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ZCGJn3QWhQl4F1dI@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230324111127.221640-1-steven.price@arm.com>
+X-Authenticated: YES
 
-On 2023/3/27 20:18, Jason Gunthorpe wrote:
-> On Tue, Mar 14, 2023 at 01:18:36PM +0800, Lu Baolu wrote:
->> The global rwsem dmar_global_lock was introduced by commit 3a5670e8ac932
->> ("iommu/vt-d: Introduce a rwsem to protect global data structures"). It
->> is used to protect DMAR related global data from DMAR hotplug operations.
->>
->> Using dmar_global_lock in intel_irq_remapping_alloc() is unnecessary as
->> the DMAR global data structures are not touched there. Remove it to avoid
->> below lockdep warning.
+On Fri, Mar 24, 2023 at 11:11:27AM +0000, Steven Price wrote:
+> Similar to exynos, we need a set_platform_dma_ops() callback for proper
+> operation on ARM 32 bit after recent changes in the IOMMU framework
+> (detach ops removal). But also the use of a NULL domain is confusing.
 > 
-> Tested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Rework the code to have a singleton rk_identity_domain which is assigned
+> to domain when using an identity mapping rather than "detaching". This
+> makes the code easier to reason about.
 > 
-> Solves my splat too
+> Signed-off-by: Steven Price <steven.price@arm.com>
+> ---
+> Changes since v1[1]:
 > 
-> Let's send this to -rc please
+>  * Reworked the code to avoid a NULL domain, instead a singleton
+>    rk_identity_domain is used instead. The 'detach' language is no
+>    longer used.
+> 
+> [1] https://lore.kernel.org/r/20230315164152.333251-1-steven.price%40arm.com
+> 
+>  drivers/iommu/rockchip-iommu.c | 50 ++++++++++++++++++++++++++--------
+>  1 file changed, 39 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+> index f30db22ea5d7..437541004994 100644
+> --- a/drivers/iommu/rockchip-iommu.c
+> +++ b/drivers/iommu/rockchip-iommu.c
+[snip]
+> +static struct iommu_domain rk_identity_domain = {
+> +	.type = IOMMU_DOMAIN_IDENTITY,
+> +	.ops = &rk_identity_ops,
+> +};
+> +
+> +#ifdef CONFIG_ARM
 
-Thank you for the testing. I will queue it for Joerg this week.
+Is this #ifdef needed?  I can't see anything ARM-specific about this
+function or .set_platform_dma_ops.
 
-Best regards,
-baolu
+> +static void rk_iommu_set_platform_dma(struct device *dev)
+> +{
+> +	WARN_ON(rk_iommu_identity_attach(&rk_identity_domain, dev));
+>  }
+> +#endif
 
+Not shown in the patch are the pm_runtime hooks.  Do they need to
+change like this?
+
+ static int __maybe_unused rk_iommu_suspend(struct device *dev)
+ {
+ 	struct rk_iommu *iommu = dev_get_drvdata(dev);
+ 
+-	if (!iommu->domain)
++	if (iommu->domain == &rk_identity_domain)
+ 		return 0;
+ 
+ 	rk_iommu_disable(iommu);
+ 	return 0;
+ }
+ 
+ static int __maybe_unused rk_iommu_resume(struct device *dev)
+ {
+ 	struct rk_iommu *iommu = dev_get_drvdata(dev);
+ 
+-	if (!iommu->domain)
++	if (iommu->domain == &rk_identity_domain)
+ 		return 0;
+ 
+ 	return rk_iommu_enable(iommu);
+ }
