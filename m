@@ -1,34 +1,34 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70847A44
-	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 04:58:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6280DA44
+	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 05:10:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679979530; x=1711515530;
+  t=1679980257; x=1711516257;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=DGZ3DU5x+skg2D1FkomJpeBqU8MpbJx454vv+r3PcfA=;
-  b=gOXt3IRWuLllBiJhgFFxyu63RhpEthy4Ibq/RDVkpURc4jAO5reVbn8k
-   MD5UZLBhQpKSvPNg5ICoGmpIkcdDxWdZEi8yPhZAgW7b4WqHs1ELIVOR1
-   84mCVzu08Q0z1rsBGkB9H8TDI7QItgxMELofj8tVKJLMRRNqsh35jLnO9
-   ySg/LswKMip1Q12u/Upz6w1ofXZy9eFj2sRZilMGPE3S+AGfEzCwlUIv5
-   TLWcSA3HF+6ivsiFhOh/cUcS7OfYgFJAmUVk6Eds/KO+4IxP9pGTnATH5
-   fQtVBB94zvbEfLZ25CN81hpkjBayPMm4+fs68wgnTIrtxRGTj85NnFZVq
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10662"; a="339195210"
+  bh=Un8dKs5y4eyj3uC1NIu/eO1SaITBeaVWV+VT0Cb7HVs=;
+  b=bpgPwBmRBnp7Cd34fDnL6kmLmuwTfD6mlRKS+Q9w6H1D6qBYnkch6UeI
+   GZxGD4MzQr3cDBqGl3vQSjr7oAGq01aPp3ptVYOEp1oMlTGHE7Hq+xhpd
+   QU+RzdTaxb7BLsZ6DfAPnIRrvmk1jl1z2vpON1Gza0L81igriOSzDfuJ5
+   7on7naAXGSEt2YMvWaFxmNpnc7upI7J0Krf9v8t1vg2XnsAXuimWaDcN6
+   76+vbdCnlLwrSMsXhN3Tn7+dCJkppyaP9XOZS4jJbzvmqlthKY2wLGBhg
+   vyoN+RaMj2QVNRBvt5hc9LB26Mq6WjopsX03Yvcg+PDoOE8TAbIXysBnC
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10662"; a="426737317"
 X-IronPort-AV: E=Sophos;i="5.98,296,1673942400"; 
-   d="scan'208";a="339195210"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2023 21:58:49 -0700
+   d="scan'208";a="426737317"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2023 22:10:56 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10662"; a="714117523"
+X-IronPort-AV: E=McAfee;i="6600,9927,10662"; a="929721831"
 X-IronPort-AV: E=Sophos;i="5.98,296,1673942400"; 
-   d="scan'208";a="714117523"
+   d="scan'208";a="929721831"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by orsmga008.jf.intel.com with ESMTP; 27 Mar 2023 21:58:43 -0700
-Message-ID: <5577d93a-d892-95b2-807c-8e1b414fa300@linux.intel.com>
-Date: Tue, 28 Mar 2023 12:59:04 +0800
+  by fmsmga006.fm.intel.com with ESMTP; 27 Mar 2023 22:10:52 -0700
+Message-ID: <e1e23af3-b627-ac5d-64d0-9547ed982dc4@linux.intel.com>
+Date: Tue, 28 Mar 2023 13:11:12 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -43,27 +43,127 @@ Cc: baolu.lu@linux.intel.com, Robin Murphy <robin.murphy@arm.com>,
  Yi Liu <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>,
  Dave Jiang <dave.jiang@intel.com>, Tony Luck <tony.luck@intel.com>,
  "Zanussi, Tom" <tom.zanussi@intel.com>
-Subject: Re: [PATCH v2 2/8] iommu/vt-d: Remove PASID supervisor request
- support
+Subject: Re: [PATCH v2 3/8] iommu/sva: Support reservation of global SVA
+ PASIDs
 Content-Language: en-US
 To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
  LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
  Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
  dmaengine@vger.kernel.org, vkoul@kernel.org
 References: <20230327232138.1490712-1-jacob.jun.pan@linux.intel.com>
- <20230327232138.1490712-3-jacob.jun.pan@linux.intel.com>
+ <20230327232138.1490712-4-jacob.jun.pan@linux.intel.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230327232138.1490712-3-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <20230327232138.1490712-4-jacob.jun.pan@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 3/28/23 7:21 AM, Jacob Pan wrote:
-> There's no more usage,  remove PASID supervisor support.
+> Devices that use Intel ENQCMD to submit work must use global PASIDs in
+> that the PASID are stored in a per CPU MSR. When such device need to
+> submit work for in-kernel DMA with PASID, it must allocate PASIDs from
+> the same global number space to avoid conflict.
 > 
-> Suggested-by: Lu Baolu<baolu.lu@linux.intel.com>
-> Signed-off-by: Jacob Pan<jacob.jun.pan@linux.intel.com>
+> This patch introduces IOMMU SVA APIs to reserve and release global PASIDs.
+> It is expected that device drivers will use the allocated PASIDs to attach
+> to appropriate IOMMU domains for use.
+> 
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>   drivers/iommu/iommu-sva.c | 33 +++++++++++++++++++++++++++++++++
+>   include/linux/iommu.h     | 14 ++++++++++++++
+>   2 files changed, 47 insertions(+)
+> 
+> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+> index c434b95dc8eb..84b9de84b3e0 100644
+> --- a/drivers/iommu/iommu-sva.c
+> +++ b/drivers/iommu/iommu-sva.c
+> @@ -148,6 +148,39 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
+>   
+> +/**
+> + * @brief
+> + *	Reserve a PASID from the SVA global number space.
+> + *
+> + * @param min starting range, inclusive
+> + * @param max ending range, inclusive
+> + * @return The reserved PASID on success or IOMMU_PASID_INVALID on failure.
+> + */
+> +ioasid_t iommu_sva_reserve_pasid(ioasid_t min, ioasid_t max)
+> +{
+> +	int ret;
+> +
+> +	if (!pasid_valid(min) || !pasid_valid(max) ||
+> +	    min == 0 || max < min)
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+I still think we should make "min == 0" a valid case. The ARM/AMD/Intel
+drivers should reserve PASID 0 for special usage with this interface.
+
+Probably we should also make "min == max" a valid case. Both @min and
+@max are inclusive.
+
+> +		return IOMMU_PASID_INVALID;
+> +
+> +	ret = ida_alloc_range(&iommu_global_pasid_ida, min, max, GFP_KERNEL);
+> +	if (ret < 0)
+> +		return IOMMU_PASID_INVALID;
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_sva_reserve_pasid);
+> +
+> +void iommu_sva_release_pasid(ioasid_t pasid)
+> +{
+> +	if (!pasid_valid(pasid))
+
+The caller should never release an invalid pasid. So perhaps,
+
+	if (WARN_ON(!pasid_valid(pasid)))
+		return;
+
+to discover bugs during development.
+
+> +		return;
+> +
+> +	ida_free(&iommu_global_pasid_ida, pasid);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_sva_release_pasid);
+> +
+>   /*
+>    * I/O page fault handler for SVA
+>    */
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 54f535ff9868..0471089dc1d0 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -1187,6 +1187,9 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev,
+>   					struct mm_struct *mm);
+>   void iommu_sva_unbind_device(struct iommu_sva *handle);
+>   u32 iommu_sva_get_pasid(struct iommu_sva *handle);
+> +ioasid_t iommu_sva_reserve_pasid(ioasid_t min, ioasid_t max);
+> +void iommu_sva_release_pasid(ioasid_t pasid);
+> +
+>   #else
+>   static inline struct iommu_sva *
+>   iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
+> @@ -1202,6 +1205,17 @@ static inline u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+>   {
+>   	return IOMMU_PASID_INVALID;
+>   }
+> +
+> +static inline ioasid_t iommu_sva_reserve_pasid(ioasid_t min, ioasid_t max)
+> +{
+> +	return IOMMU_PASID_INVALID;
+> +}
+> +
+> +static inline void iommu_sva_release_pasid(ioasid_t pasid)
+> +{
+> +
+> +}
+> +
+>   static inline void mm_pasid_init(struct mm_struct *mm) {}
+>   static inline void mm_pasid_drop(struct mm_struct *mm) {}
+>   #endif /* CONFIG_IOMMU_SVA */
 
 Best regards,
 baolu
