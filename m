@@ -1,140 +1,185 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A715F8BEB
-	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 15:07:43 +0000 (UTC)
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 3D8A9162E7F;
-	Tue, 28 Mar 2023 17:07:40 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1680016060; bh=+/3nvo1yYXim8zKDDEGS5Ln3cTmFtDCEk+Ab9n7rpdA=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=hJdGEF4sm5cpMC96PhA7CJdP7X4/E2TDIlbCRhbxzRSrN7aeY+0D6JFo5YseQbKMc
-	 c9QmAA7jyYGyo7QK+uvFpNH4J4xnuDt+KEOkTjiPwoJuqkeKreOK+27iV1dd9w2ydF
-	 /A0DgOf70+M6yhkIDp3jEHqw/1UelXANFOwpsRxQ/DDe440of55Dy/NrzDvtGIMNYL
-	 PzIDxwkAA6sidCbdxDDTMfdH+PfVAnh5xuyT0NkkqsuukcblNvHP1TxCK/AUh+OqPm
-	 Z9uk4pFt3dYEvHsVbvCFwxY/wKq+Ohbk9Ga7toFWjHOXWTizA9EallH57bdHWszCaz
-	 U7fbsGkU79MSQ==
-Date: Tue, 28 Mar 2023 17:07:39 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc: Christoph Hellwig <hch@infradead.org>, "hch@lst.de" <hch@lst.de>,
- "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>, Dexuan Cui
- <decui@microsoft.com>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/1] swiotlb: Track and report io_tlb_used high water
- mark in debugfs
-Message-ID: <20230328170739.10e33345@meshulam.tesarici.cz>
-In-Reply-To: <BYAPR21MB1688983A72B114BBC3AA1DE2D7889@BYAPR21MB1688.namprd21.prod.outlook.com>
-References: <1679766790-24629-1-git-send-email-mikelley@microsoft.com>
-	<ZCJEAx/G0x6zokPF@infradead.org>
-	<BYAPR21MB1688852ED49499249368D939D7889@BYAPR21MB1688.namprd21.prod.outlook.com>
-	<20230328155017.5636393b@meshulam.tesarici.cz>
-	<BYAPR21MB1688983A72B114BBC3AA1DE2D7889@BYAPR21MB1688.namprd21.prod.outlook.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.35; x86_64-suse-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 871718BE0
+	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 15:17:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680016629; x=1711552629;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=FfJ1TINuQuVPs7UZIOzocUmQ5lVfAYUGiyzWGlomdoo=;
+  b=VWvb6OXVZLTLZeA2n2i/aVyfQNE8qnrdK7XLBYXY6yfuH/rcGBSxBGPH
+   nIof772zYQPeI65RuKnBCSwD9KiqXAdSQgvQT4P+6eXXkSrn5htcua981
+   SzswthPYPgeP3x0a8tYl2T1FiD9NedkAhDvxEtFdt7RMWRuDJL5u4SlGC
+   pG9v7TW/MnTgp9QjhE/ZCku5bm1w6BbO1PxQikCBpAOKa2OiZAQt4pFmC
+   7YkFd5g51RGmkCcqVBDXUfKSzSwrcpOVSHAcRnqfBJJ31RHVNnqDLxBcc
+   JmG2zprFS1Bmohv041IPLdVQAn5cLxAjOu9Dw6/WUlL3tLunVdHNJkAYM
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="368356435"
+X-IronPort-AV: E=Sophos;i="5.98,297,1673942400"; 
+   d="scan'208";a="368356435"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 08:17:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="748430713"
+X-IronPort-AV: E=Sophos;i="5.98,297,1673942400"; 
+   d="scan'208";a="748430713"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 08:17:08 -0700
+Date: Tue, 28 Mar 2023 08:21:10 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Jason
+ Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ dmaengine@vger.kernel.org, vkoul@kernel.org, Robin Murphy
+ <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, David Woodhouse
+ <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>, "Yu, Fenghua"
+ <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>, Tony Luck
+ <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
+ jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v2 3/8] iommu/sva: Support reservation of global SVA
+ PASIDs
+Message-ID: <20230328082110.2b49f5de@jacob-builder>
+In-Reply-To: <e1e23af3-b627-ac5d-64d0-9547ed982dc4@linux.intel.com>
+References: <20230327232138.1490712-1-jacob.jun.pan@linux.intel.com>
+	<20230327232138.1490712-4-jacob.jun.pan@linux.intel.com>
+	<e1e23af3-b627-ac5d-64d0-9547ed982dc4@linux.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, 28 Mar 2023 14:29:03 +0000
-"Michael Kelley (LINUX)" <mikelley@microsoft.com> wrote:
+Hi Baolu,
 
-> From: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> Sent: Tuesday, March 28, =
-2023 6:50 AM
-> >=20
-> > On Tue, 28 Mar 2023 13:12:13 +0000
-> > "Michael Kelley (LINUX)" <mikelley@microsoft.com> wrote:
-> >  =20
-> > > From: Christoph Hellwig <hch@infradead.org> Sent: Monday, March 27, 2=
-023 6:34 =20
-> > PM =20
-> > > >
-> > > > On Sat, Mar 25, 2023 at 10:53:10AM -0700, Michael Kelley wrote: =20
-> > > > > @@ -659,6 +663,14 @@ static int swiotlb_do_find_slots(struct devi=
-ce *dev, int =20
-> > > > area_index, =20
-> > > > >   area->index =3D wrap_area_index(mem, index + nslots);
-> > > > >   area->used +=3D nslots;
-> > > > >   spin_unlock_irqrestore(&area->lock, flags);
-> > > > > +
-> > > > > + new_used =3D atomic_long_add_return(nslots, &total_used);
-> > > > > + old_hiwater =3D atomic_long_read(&used_hiwater);
-> > > > > + do {
-> > > > > +         if (new_used <=3D old_hiwater)
-> > > > > +                 break;
-> > > > > + } while (!atomic_long_try_cmpxchg(&used_hiwater, &old_hiwater, =
-new_used));
-> > > > > +
-> > > > >   return slot_index; =20
-> > > >
-> > > > Hmm, so we're right in the swiotlb hot path here and add two new gl=
-obal
-> > > > atomics? =20
->[...]
-> > For my purposes, it does not have to be 100% accurate. I don't really
-> > mind if it is off by a few slots because of a race window, so we could
-> > (for instance):
-> >=20
-> > - update a local variable and set the atomic after the loop,
-> > - or make it a per-cpu to reduce CPU cache bouncing,
-> > - or just about anything that is less heavy-weight than an atomic
-> >   CMPXCHG in the inner loop of a slot search.
-> >  =20
->=20
-> Perhaps I'm missing your point, but there's no loop here.  The atomic
-> add is done once per successful slot allocation.  If swiotlb_do_find_slot=
-s()
-> doesn't find any slots for the current area, it exits at the "not_found" =
-label
-> and the atomic add isn't done.
+On Tue, 28 Mar 2023 13:11:12 +0800, Baolu Lu <baolu.lu@linux.intel.com>
+wrote:
 
-My bad. I read the patch too quickly and thought that the update was
-done for each searched area. I stay corrected here.
+> On 3/28/23 7:21 AM, Jacob Pan wrote:
+> > Devices that use Intel ENQCMD to submit work must use global PASIDs in
+> > that the PASID are stored in a per CPU MSR. When such device need to
+> > submit work for in-kernel DMA with PASID, it must allocate PASIDs from
+> > the same global number space to avoid conflict.
+> > 
+> > This patch introduces IOMMU SVA APIs to reserve and release global
+> > PASIDs. It is expected that device drivers will use the allocated
+> > PASIDs to attach to appropriate IOMMU domains for use.
+> > 
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > ---
+> >   drivers/iommu/iommu-sva.c | 33 +++++++++++++++++++++++++++++++++
+> >   include/linux/iommu.h     | 14 ++++++++++++++
+> >   2 files changed, 47 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+> > index c434b95dc8eb..84b9de84b3e0 100644
+> > --- a/drivers/iommu/iommu-sva.c
+> > +++ b/drivers/iommu/iommu-sva.c
+> > @@ -148,6 +148,39 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+> >   }
+> >   EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
+> >   
+> > +/**
+> > + * @brief
+> > + *	Reserve a PASID from the SVA global number space.
+> > + *
+> > + * @param min starting range, inclusive
+> > + * @param max ending range, inclusive
+> > + * @return The reserved PASID on success or IOMMU_PASID_INVALID on
+> > failure.
+> > + */
+> > +ioasid_t iommu_sva_reserve_pasid(ioasid_t min, ioasid_t max)
+> > +{
+> > +	int ret;
+> > +
+> > +	if (!pasid_valid(min) || !pasid_valid(max) ||
+> > +	    min == 0 || max < min)  
+> 
+> I still think we should make "min == 0" a valid case. The ARM/AMD/Intel
+> drivers should reserve PASID 0 for special usage with this interface.
+> 
+> Probably we should also make "min == max" a valid case. Both @min and
+> @max are inclusive.
+I agreed, 0 should not be special.
 
->[...]
-> I thought about tracking the high water mark on a per-CPU basis or
-> per-area basis, but I don't think the resulting data is useful.  Adding up
-> the individual high water marks likely significantly over-estimates the
-> true high water mark.   Is there a clever way to make this useful that I'm
-> not thinking about?
+> 
+> > +		return IOMMU_PASID_INVALID;
+> > +
+> > +	ret = ida_alloc_range(&iommu_global_pasid_ida, min, max,
+> > GFP_KERNEL);
+> > +	if (ret < 0)
+> > +		return IOMMU_PASID_INVALID;
+> > +
+> > +	return ret;
+> > +}
+> > +EXPORT_SYMBOL_GPL(iommu_sva_reserve_pasid);
+> > +
+> > +void iommu_sva_release_pasid(ioasid_t pasid)
+> > +{
+> > +	if (!pasid_valid(pasid))  
+> 
+> The caller should never release an invalid pasid. So perhaps,
+> 
+> 	if (WARN_ON(!pasid_valid(pasid)))
+> 		return;
+> 
+good point!
 
-No, not that I'm aware of. Min/max cannot be easily split.
+> to discover bugs during development.
+> 
+> > +		return;
+> > +
+> > +	ida_free(&iommu_global_pasid_ida, pasid);
+> > +}
+> > +EXPORT_SYMBOL_GPL(iommu_sva_release_pasid);
+> > +
+> >   /*
+> >    * I/O page fault handler for SVA
+> >    */
+> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > index 54f535ff9868..0471089dc1d0 100644
+> > --- a/include/linux/iommu.h
+> > +++ b/include/linux/iommu.h
+> > @@ -1187,6 +1187,9 @@ struct iommu_sva *iommu_sva_bind_device(struct
+> > device *dev, struct mm_struct *mm);
+> >   void iommu_sva_unbind_device(struct iommu_sva *handle);
+> >   u32 iommu_sva_get_pasid(struct iommu_sva *handle);
+> > +ioasid_t iommu_sva_reserve_pasid(ioasid_t min, ioasid_t max);
+> > +void iommu_sva_release_pasid(ioasid_t pasid);
+> > +
+> >   #else
+> >   static inline struct iommu_sva *
+> >   iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
+> > @@ -1202,6 +1205,17 @@ static inline u32 iommu_sva_get_pasid(struct
+> > iommu_sva *handle) {
+> >   	return IOMMU_PASID_INVALID;
+> >   }
+> > +
+> > +static inline ioasid_t iommu_sva_reserve_pasid(ioasid_t min, ioasid_t
+> > max) +{
+> > +	return IOMMU_PASID_INVALID;
+> > +}
+> > +
+> > +static inline void iommu_sva_release_pasid(ioasid_t pasid)
+> > +{
+> > +
+> > +}
+> > +
+> >   static inline void mm_pasid_init(struct mm_struct *mm) {}
+> >   static inline void mm_pasid_drop(struct mm_struct *mm) {}
+> >   #endif /* CONFIG_IOMMU_SVA */  
+> 
+> Best regards,
+> baolu
 
->[...]
-> Regarding your other email about non-default io_tlb_mem instances,
-> my patch just extends what is already reported in debugfs, which
-> is only for the default io_tlb_mem.   The non-default instances seemed
-> to me to be fairly niche cases that weren't worth the additional
-> complexity, but maybe I'm wrong about that.
 
-What I mean is that the values currently reported in debugfs only refer
-to io_tlb_default_mem. Since restricted DMA pools also use
-swiotlb_find_slots() and swiotlb_release_slots(), the global counters
-now get updated both for io_tlb_default_mem and all restricted DMA
-pools.
+Thanks,
 
-In short, this hunk is a change in behaviour:
-
- static int io_tlb_used_get(void *data, u64 *val)
- {
--	*val =3D mem_used(&io_tlb_default_mem);
-+	*val =3D (u64)atomic_long_read(&total_used);
- 	return 0;
- }
-
-Before the change, it shows the number of used slots in the default
-SWIOTLB, after the change it shows the total number of used slots in
-the SWIOTLB and all restricted DMA pools.
-
-Petr T
+Jacob
