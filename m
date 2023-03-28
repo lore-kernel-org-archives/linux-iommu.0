@@ -1,45 +1,60 @@
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EA9CAD30
-	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 18:20:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680027633; x=1711563633;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ehl2l/YXzABPoP55K0efsJ5+hepRqDPbrMR4yAeoFdE=;
-  b=GxUTy6UCjnYbhAWUdpZLI2a7ITbjc3oLMrSNCCrlXyOWZmZcZPIURHxD
-   cm/m3DR7rFRJdjz/Knu9ZPsRL6h6C0RRgxma1PxG/DX5OwJ9CIWLmpwcp
-   DoV7hm6mbONg8Y7nsEj2OwTGYJzL4V6HysLhSfzWpiOokzg8h/L7bBCXD
-   Im+dRjboOsmBOimhZ10Ypnd8jFfNShFQBRV3pYv8qpEWVsf4QGBaMg7ka
-   z8ABUMXbXtMDrGLklp1XvycpEC4WkKl78U+zttANfS2whrbi8KHe7Quj+
-   tAVT6AI70C79GUw8IL8eKPRxgI5+RaPfUvV0D/oi35tXNf+aXUZu81gVm
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="321055068"
-X-IronPort-AV: E=Sophos;i="5.98,297,1673942400"; 
-   d="scan'208";a="321055068"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 11:20:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="716570304"
-X-IronPort-AV: E=Sophos;i="5.98,297,1673942400"; 
-   d="scan'208";a="716570304"
-Received: from kanliang-dev.jf.intel.com ([10.165.154.102])
-  by orsmga001.jf.intel.com with ESMTP; 28 Mar 2023 11:20:32 -0700
-From: kan.liang@linux.intel.com
-To: joro@8bytes.org,
-	will@kernel.org,
-	baolu.lu@linux.intel.com,
-	dwmw2@infradead.org,
-	robin.murphy@arm.com,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63C1D8473
+	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 19:36:42 +0000 (UTC)
+Received: by mail-wm1-f43.google.com with SMTP id l15-20020a05600c4f0f00b003ef6d684102so4809815wmq.3
+        for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 12:36:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112; t=1680032200;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=YE2Vnaye8C509j8FwD0OaC9nnswGjGn4NUoIiKMJiP8=;
+        b=qwbUcIr3/UeX50WRU3XfNCXSmhh2PU7r4m//e/13KH10OtpNf7xJTAjOquBlrGVCnm
+         d8Y3VRBI+44Z0VpH48v0IZ778L7gcG3j4s1nOqSyIXTvam7Te4Qfi/ur2wTRxol/NBC1
+         h/OHZup9DTz0iUlecgLNB9x/GnSOC9B8OhVqvC0USVGIdA/3mvLmAiW5TqhXeja8YEKZ
+         9kZ3ZRxGr9OMjGeOk/Qp8R93pLl6EVOhrFJmzMZ8S/cQXgvRDpiB0W9nwVJd+5DYcD/j
+         bJrTf/oaws1AYXf6rIoGY8esmPuuNL7xvcKyZLk29V97VRGejiHefV0FwKe1YF9BnsLq
+         6WcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680032200;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=YE2Vnaye8C509j8FwD0OaC9nnswGjGn4NUoIiKMJiP8=;
+        b=4bs9S4WmgFy5ig6TzIOQmueLy2S2xukiFK7+6+NWfJfwRJM7TxS/maZE0LpkzWp+yu
+         FMy920xvF1HVKX6Lq3Vwf7LHYyDEXAJOtz+xguhT7kVTM68erK77V6X9DiURmALZqQlM
+         a6VBdFIG4UsFgcr79BGnXJF++Rt2TZDuvzosG/aLmTm5GpC2yIZO22WebaPkFHRd9jTn
+         GKyqPDbrIYiInaE6JJT1qbLV9/bwi2LJVPeRt1nRvJ8i3Gzj+OwEJfYcydECQ+olV2kS
+         AlEuLL5hxJtroUAdepj6P07qJDwYxKyEf92JoD9m/XZd8qI4yyeIGGPLxMOkK1UdbB2k
+         RUgg==
+X-Gm-Message-State: AAQBX9fjRscNA8yRaZo3GAq5xxZBbx1Ft2+9OxHLXBNuVucjUfEqQLzN
+	t4Kp9SMbmcj36ANC28pJ3gEbAw==
+X-Google-Smtp-Source: AKy350boJJcBVCWVLp5b2Cr7dfBLOUvoCy2Pa/aTv1zwX4d02xsQudFx8XlHHpP7oPMqK6j/XByzWg==
+X-Received: by 2002:a1c:7215:0:b0:3ef:d8c6:4bc0 with SMTP id n21-20020a1c7215000000b003efd8c64bc0mr9977wmc.40.1680032200501;
+        Tue, 28 Mar 2023 12:36:40 -0700 (PDT)
+Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:7b39:552d:b2f1:d7e8])
+        by smtp.gmail.com with ESMTPSA id g23-20020a7bc4d7000000b003eb5ce1b734sm18060544wmk.7.2023.03.28.12.36.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Mar 2023 12:36:40 -0700 (PDT)
+From: Bartosz Golaszewski <brgl@bgdev.pl>
+To: Andy Gross <agross@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc: linux-arm-msm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-clk@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Cc: Kan Liang <kan.liang@linux.intel.com>
-Subject: [PATCH V2] iommu/vt-d: Fix a IOMMU perfmon warning when CPU hotplug
-Date: Tue, 28 Mar 2023 11:20:28 -0700
-Message-Id: <20230328182028.1366416-1-kan.liang@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Subject: [PATCH 0/7] arm64: dts: qcom: sa8775p: add more IOMMUs
+Date: Tue, 28 Mar 2023 21:36:25 +0200
+Message-Id: <20230328193632.226095-1-brgl@bgdev.pl>
+X-Mailer: git-send-email 2.37.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,206 +63,35 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Kan Liang <kan.liang@linux.intel.com>
+From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-A warning can be triggered when hotplug CPU 0.
-$ echo 0 > /sys/devices/system/cpu/cpu0/online
+Add the GPU and PCIe IOMMUs for sa8775p platforms as well as the required
+GPU clock controller driver.
 
-[11958.737635] ------------[ cut here ]------------
-[11958.742882] Voluntary context switch within RCU read-side critical
-section!
-[11958.742891] WARNING: CPU: 0 PID: 19 at kernel/rcu/tree_plugin.h:318
-rcu_note_context_switch+0x4f4/0x580
-[11958.860095] RIP: 0010:rcu_note_context_switch+0x4f4/0x580
-[11958.960360] Call Trace:
-[11958.963161]  <TASK>
-[11958.965565]  ? perf_event_update_userpage+0x104/0x150
-[11958.971293]  __schedule+0x8d/0x960
-[11958.975165]  ? perf_event_set_state.part.82+0x11/0x50
-[11958.980891]  schedule+0x44/0xb0
-[11958.984464]  schedule_timeout+0x226/0x310
-[11958.989017]  ? __perf_event_disable+0x64/0x1a0
-[11958.994054]  ? _raw_spin_unlock+0x14/0x30
-[11958.998605]  wait_for_completion+0x94/0x130
-[11959.003352]  __wait_rcu_gp+0x108/0x130
-[11959.007616]  synchronize_rcu+0x67/0x70
-[11959.011876]  ? invoke_rcu_core+0xb0/0xb0
-[11959.016333]  ? __bpf_trace_rcu_stall_warning+0x10/0x10
-[11959.022147]  perf_pmu_migrate_context+0x121/0x370
-[11959.027478]  iommu_pmu_cpu_offline+0x6a/0xa0
-[11959.032325]  ? iommu_pmu_del+0x1e0/0x1e0
-[11959.036782]  cpuhp_invoke_callback+0x129/0x510
-[11959.041825]  cpuhp_thread_fun+0x94/0x150
-[11959.046283]  smpboot_thread_fn+0x183/0x220
-[11959.050933]  ? sort_range+0x20/0x20
-[11959.054902]  kthread+0xe6/0x110
-[11959.058479]  ? kthread_complete_and_exit+0x20/0x20
-[11959.063911]  ret_from_fork+0x1f/0x30
-[11959.067982]  </TASK>
-[11959.070489] ---[ end trace 0000000000000000 ]---
+Bartosz Golaszewski (6):
+  dt-bindings: clock: qcom: describe the GPUCC clock for SA8775P
+  arm64: defconfig: enable the SA8775P GPUCC driver
+  dt-bindings: iommu: arm,smmu: enable clocks for sa8775p
+  arm64: dts: qcom: sa8775p: add the pcie smmu node
+  arm64: dts: qcom: sa8775p: add the GPU clock controller node
+  arm64: dts: qcom: sa8775p: add the GPU IOMMU node
 
-The synchronize_rcu() will be invoked in the perf_pmu_migrate_context(),
-when migrating a PMU to a new CPU. However, the current for_each_iommu()
-is within RCU read-side critical section.
+Shazad Hussain (1):
+  clk: qcom: add the GPUCC driver for sa8775p
 
-Two methods were considered to fix the issue.
-- Use the dmar_global_lock to replace the RCU read lock when going
-  through the drhd list. But it triggers a lockdep warning.
-- Use the cpuhp_setup_state_multi() to set up a dedicated state for each
-  IOMMU PMU. The lock can be avoided.
+ .../bindings/clock/qcom,sa8775p-gpucc.yaml    |  61 ++
+ .../devicetree/bindings/iommu/arm,smmu.yaml   |   1 -
+ arch/arm64/boot/dts/qcom/sa8775p.dtsi         | 115 ++++
+ arch/arm64/configs/defconfig                  |   1 +
+ drivers/clk/qcom/Kconfig                      |   8 +
+ drivers/clk/qcom/Makefile                     |   1 +
+ drivers/clk/qcom/gpucc-sa8775p.c              | 633 ++++++++++++++++++
+ .../dt-bindings/clock/qcom,sa8775p-gpucc.h    |  50 ++
+ 8 files changed, 869 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/clock/qcom,sa8775p-gpucc.yaml
+ create mode 100644 drivers/clk/qcom/gpucc-sa8775p.c
+ create mode 100644 include/dt-bindings/clock/qcom,sa8775p-gpucc.h
 
-The latter method is implemented in this patch. Since each IOMMU PMU has
-a dedicated state, add cpuhp_node and cpu in struct iommu_pmu to track
-the state. The state can be dynamically allocated now. Remove the
-CPUHP_AP_PERF_X86_IOMMU_PERF_ONLINE.
-
-Fixes: 46284c6ceb5e ("iommu/vt-d: Support cpumask for IOMMU perfmon")
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
----
- drivers/iommu/intel/iommu.h   |  2 ++
- drivers/iommu/intel/perfmon.c | 68 ++++++++++++++++++++++-------------
- include/linux/cpuhotplug.h    |  1 -
- 3 files changed, 46 insertions(+), 25 deletions(-)
-
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index d6df3b865812..694ab9b7d3e9 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -641,6 +641,8 @@ struct iommu_pmu {
- 	DECLARE_BITMAP(used_mask, IOMMU_PMU_IDX_MAX);
- 	struct perf_event	*event_list[IOMMU_PMU_IDX_MAX];
- 	unsigned char		irq_name[16];
-+	struct hlist_node	cpuhp_node;
-+	int			cpu;
- };
- 
- #define IOMMU_IRQ_ID_OFFSET_PRQ		(DMAR_UNITS_SUPPORTED)
-diff --git a/drivers/iommu/intel/perfmon.c b/drivers/iommu/intel/perfmon.c
-index e17d9743a0d8..e27bc954e866 100644
---- a/drivers/iommu/intel/perfmon.c
-+++ b/drivers/iommu/intel/perfmon.c
-@@ -773,19 +773,34 @@ static void iommu_pmu_unset_interrupt(struct intel_iommu *iommu)
- 	iommu->perf_irq = 0;
- }
- 
--static int iommu_pmu_cpu_online(unsigned int cpu)
-+static int iommu_pmu_cpu_online(unsigned int cpu, struct hlist_node *node)
- {
-+	struct iommu_pmu *iommu_pmu = hlist_entry_safe(node, typeof(*iommu_pmu), cpuhp_node);
-+
- 	if (cpumask_empty(&iommu_pmu_cpu_mask))
- 		cpumask_set_cpu(cpu, &iommu_pmu_cpu_mask);
- 
-+	if (cpumask_test_cpu(cpu, &iommu_pmu_cpu_mask))
-+		iommu_pmu->cpu = cpu;
-+
- 	return 0;
- }
- 
--static int iommu_pmu_cpu_offline(unsigned int cpu)
-+static int iommu_pmu_cpu_offline(unsigned int cpu, struct hlist_node *node)
- {
--	struct dmar_drhd_unit *drhd;
--	struct intel_iommu *iommu;
--	int target;
-+	struct iommu_pmu *iommu_pmu = hlist_entry_safe(node, typeof(*iommu_pmu), cpuhp_node);
-+	int target = cpumask_first(&iommu_pmu_cpu_mask);
-+
-+	/*
-+	 * The iommu_pmu_cpu_mask has been updated when offline the CPU
-+	 * for the first iommu_pmu. Migrate the other iommu_pmu to the
-+	 * new target.
-+	 */
-+	if ((target < nr_cpu_ids) && (target != iommu_pmu->cpu)) {
-+		perf_pmu_migrate_context(&iommu_pmu->pmu, cpu, target);
-+		iommu_pmu->cpu = target;
-+		return 0;
-+	}
- 
- 	if (!cpumask_test_and_clear_cpu(cpu, &iommu_pmu_cpu_mask))
- 		return 0;
-@@ -795,45 +810,50 @@ static int iommu_pmu_cpu_offline(unsigned int cpu)
- 	if (target < nr_cpu_ids)
- 		cpumask_set_cpu(target, &iommu_pmu_cpu_mask);
- 	else
--		target = -1;
-+		return 0;
- 
--	rcu_read_lock();
--
--	for_each_iommu(iommu, drhd) {
--		if (!iommu->pmu)
--			continue;
--		perf_pmu_migrate_context(&iommu->pmu->pmu, cpu, target);
--	}
--	rcu_read_unlock();
-+	perf_pmu_migrate_context(&iommu_pmu->pmu, cpu, target);
-+	iommu_pmu->cpu = target;
- 
- 	return 0;
- }
- 
- static int nr_iommu_pmu;
-+static enum cpuhp_state iommu_cpuhp_slot;
- 
- static int iommu_pmu_cpuhp_setup(struct iommu_pmu *iommu_pmu)
- {
- 	int ret;
- 
--	if (nr_iommu_pmu++)
--		return 0;
-+	if (!nr_iommu_pmu) {
-+		ret = cpuhp_setup_state_multi(CPUHP_AP_ONLINE_DYN,
-+					      "driver/iommu/intel/perfmon:online",
-+					      iommu_pmu_cpu_online,
-+					      iommu_pmu_cpu_offline);
-+		if (ret < 0)
-+			return ret;
-+		iommu_cpuhp_slot = ret;
-+	}
- 
--	ret = cpuhp_setup_state(CPUHP_AP_PERF_X86_IOMMU_PERF_ONLINE,
--				"driver/iommu/intel/perfmon:online",
--				iommu_pmu_cpu_online,
--				iommu_pmu_cpu_offline);
--	if (ret)
--		nr_iommu_pmu = 0;
-+	ret = cpuhp_state_add_instance(iommu_cpuhp_slot, &iommu_pmu->cpuhp_node);
-+	if (ret) {
-+		if (!nr_iommu_pmu)
-+			cpuhp_remove_multi_state(iommu_cpuhp_slot);
-+		return ret;
-+	}
-+	nr_iommu_pmu++;
- 
--	return ret;
-+	return 0;
- }
- 
- static void iommu_pmu_cpuhp_free(struct iommu_pmu *iommu_pmu)
- {
-+	cpuhp_state_remove_instance(iommu_cpuhp_slot, &iommu_pmu->cpuhp_node);
-+
- 	if (--nr_iommu_pmu)
- 		return;
- 
--	cpuhp_remove_state(CPUHP_AP_PERF_X86_IOMMU_PERF_ONLINE);
-+	cpuhp_remove_multi_state(iommu_cpuhp_slot);
- }
- 
- void iommu_pmu_register(struct intel_iommu *iommu)
-diff --git a/include/linux/cpuhotplug.h b/include/linux/cpuhotplug.h
-index c6fab004104a..5b2f8147d1ae 100644
---- a/include/linux/cpuhotplug.h
-+++ b/include/linux/cpuhotplug.h
-@@ -218,7 +218,6 @@ enum cpuhp_state {
- 	CPUHP_AP_PERF_X86_CQM_ONLINE,
- 	CPUHP_AP_PERF_X86_CSTATE_ONLINE,
- 	CPUHP_AP_PERF_X86_IDXD_ONLINE,
--	CPUHP_AP_PERF_X86_IOMMU_PERF_ONLINE,
- 	CPUHP_AP_PERF_S390_CF_ONLINE,
- 	CPUHP_AP_PERF_S390_SF_ONLINE,
- 	CPUHP_AP_PERF_ARM_CCI_ONLINE,
 -- 
-2.35.1
+2.37.2
 
