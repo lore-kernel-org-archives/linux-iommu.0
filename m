@@ -1,164 +1,189 @@
-Received: from frasgout11.his.huawei.com (frasgout11.his.huawei.com [14.137.139.23])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2055.outbound.protection.outlook.com [40.107.92.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3536EBB
-	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 07:55:10 +0000 (UTC)
-Received: from mail02.huawei.com (unknown [172.18.147.228])
-	by frasgout11.his.huawei.com (SkyGuard) with ESMTP id 4Pm1vX3DfMz9v7Hd
-	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 15:46:00 +0800 (CST)
-Received: from [10.48.131.174] (unknown [10.48.131.174])
-	by APP2 (Coremail) with SMTP id GxC2BwAX510+nSJk3K7UAQ--.16527S2;
-	Tue, 28 Mar 2023 08:54:49 +0100 (CET)
-Message-ID: <4268fa4e-4f0f-a2f6-a2a5-5b78ca4a073d@huaweicloud.com>
-Date: Tue, 28 Mar 2023 09:54:35 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AF2B187D
+	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 09:07:13 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=l+9swpkDxLbQpwhfJHd8G+/dlQss2HVRcl7Mlh5lKXZO3pBJQizCbEYYqB39oOCkfNn32I3zcNHaOupA6bvF3JH0GqK3Nf0I+wEwFGPdCnCoEjON4SG8CMFYE1EOBklwSeb1nePORR4WklniJVe3Y5ncZRmbQt3pfWOkZB5kGMy1ZmfXInkrluJ1TgJfdUgdBAVK7R/c/pAjIlUqECsRrlmm4KOPhtAugTDu0jHST0Pl0wG8uML7sBUT/XLLr5tHk0ILr/2hQ7xFXr8v7wq4coWk4skJ8fWQrPnFYP0hpW7dW6kBPlO3ARflRba9v/g5oZ/mn6sIUNXaSbeggfjUUg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Lv7S8OHpHlPJ9INNpWqFrZHw+cW4+mGqUsyd319hqkA=;
+ b=UgVOExJFdGcqwOtG72Psrx5oKr8Uryt5zhL6p2Mn3bZjJ+U+1V0QP5tGlvHSsIjiFsFlTWfX7uhZnorwMgaPxz9RbkafNFbqtEHFO8WBfl0qKA8Y8rJd1mUFH9iwnVQuU/cnibHv7fsEmgVUdqHn51MgzDjs28RYsuNd9gWNle4HRa6v+9yZwu7eLaLD+2XWBt6l36eyOiW3Q0xfl4jx2Jr5HUQ2VPfZWGbz/9Rgwu3wxAVq6VxMMbUnznzAtYdZlynCURxj0vVrZuYcvU9/kY4XLMYVunPrLrb99rb7pVjNy1LrNEpfPwGN6EJkhQMmu0Skxay1n8La9tJJCLRvlA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Lv7S8OHpHlPJ9INNpWqFrZHw+cW4+mGqUsyd319hqkA=;
+ b=4b+eom9wsp5G5ezT9y9DfdbcSkyhtKNIcpmmwvS+hKui50at7Jmu+ICTkB28LvlZu7BBBC1OCY39U7rVxEiK3Q0Nry1DASvf0vzvWPFOL9gqw1fC4ZXU+oCNBn9r6WdYQYotP5ffy9UdY47BTWdEdDw5EzyOtMwKDK7g5QcJWGI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM6PR12MB2843.namprd12.prod.outlook.com (2603:10b6:5:48::24) by
+ SA1PR12MB7246.namprd12.prod.outlook.com (2603:10b6:806:2bc::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.32; Tue, 28 Mar
+ 2023 09:07:10 +0000
+Received: from DM6PR12MB2843.namprd12.prod.outlook.com
+ ([fe80::1185:1d60:8b6e:89d3]) by DM6PR12MB2843.namprd12.prod.outlook.com
+ ([fe80::1185:1d60:8b6e:89d3%7]) with mapi id 15.20.6178.037; Tue, 28 Mar 2023
+ 09:07:10 +0000
+Message-ID: <63e71a7c-3767-dd00-7744-8a12663ad814@amd.com>
+Date: Tue, 28 Mar 2023 20:07:01 +1100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.7.2
+Subject: Re: [PATCH v2 1/2] iommu/amd: Don't block updates to GATag if guest
+ mode is on
+Content-Language: en-US
+To: Joao Martins <joao.m.martins@oracle.com>, iommu@lists.linux.dev
+Cc: Joerg Roedel <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Maxim Levitsky <mlevitsk@redhat.com>,
+ Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, kvm@vger.kernel.org
+References: <20230316200219.42673-1-joao.m.martins@oracle.com>
+ <20230316200219.42673-2-joao.m.martins@oracle.com>
+From: Alexey Kardashevskiy <aik@amd.com>
+In-Reply-To: <20230316200219.42673-2-joao.m.martins@oracle.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SY6PR01CA0058.ausprd01.prod.outlook.com
+ (2603:10c6:10:ea::9) To DM6PR12MB2843.namprd12.prod.outlook.com
+ (2603:10b6:5:48::24)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [RFC v1 3/4] swiotlb: Allow dynamic allocation of bounce buffers
-Content-Language: en-US
-To: Christoph Hellwig <hch@lst.de>
-Cc: Jonathan Corbet <corbet@lwn.net>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, Borislav Petkov <bp@suse.de>,
- "Paul E. McKenney" <paulmck@kernel.org>,
- Andrew Morton <akpm@linux-foundation.org>,
- Randy Dunlap <rdunlap@infradead.org>,
- Damien Le Moal <damien.lemoal@opensource.wdc.com>,
- Kim Phillips <kim.phillips@amd.com>,
- "Steven Rostedt (Google)" <rostedt@goodmis.org>,
- "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
- open list <linux-kernel@vger.kernel.org>,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
- Roberto Sassu <roberto.sassu@huawei.com>, petr@tesarici.cz,
- Alexander Graf <graf@amazon.com>
-References: <cover.1679309810.git.petr.tesarik.ext@huawei.com>
- <0334a54332ab75312c9de825548b616439dcc9f5.1679309810.git.petr.tesarik.ext@huawei.com>
- <20230328040724.GB25506@lst.de>
-From: Petr Tesarik <petrtesarik@huaweicloud.com>
-In-Reply-To: <20230328040724.GB25506@lst.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID:GxC2BwAX510+nSJk3K7UAQ--.16527S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxZr4DWFy8ZFWxAFWDZryftFb_yoWrtF1kpF
-	WfKw4YvrWDJr1Iyry8Cw18W3W0ywsxAFy5GrySgr1avw45WryF9F1SkFW5Wa9rCwn3Xw1j
-	qr4Yvw4kAas8Ja7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUvIb4IE77IF4wAFF20E14v26ryj6rWUM7CY07I20VC2zVCF04k2
-	6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
-	vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7Cj
-	xVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxV
-	AFwI0_Gr0_Gr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40E
-	x7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x
-	0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc7I2V7IY0VAS
-	07AlzVAYIcxG8wCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c
-	02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_GFv_
-	WrylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7
-	CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE
-	14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf
-	9x07UZ18PUUUUU=
-X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
-X-CFilter-Loop: Reflected
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR12MB2843:EE_|SA1PR12MB7246:EE_
+X-MS-Office365-Filtering-Correlation-Id: 16882b85-85e8-45fd-8120-08db2f6bd000
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	E0izkMTRc3ufSn9wdQz96Xw/A5F6CLrcKYDgcH8ouPDJ7o53gxqeOyAaObl4DDQLDYL7zzAPQyjh0V0saLb0RsR+hnAI0iO8ahXYEREyVcMw0XPohfc8L4oxsJqLHZewaS1B4aZaxDuur1Rs89hAGs1yILuon0lrTKOEJVRhRlxGlR5ihXZE1uP+2FVj6I4lXtwgBmzDf2n1ZhxtN8aCs5wTc4ReWnevDqcA5e7Or4r3VN+mCDAbCyW++PgQtJZFeP9bb8T7op4UE4P5o3s18BQLq06L8o2SW6QHJV+jWBT/Cu22yQXABQtcCXX0V4MSLkwQBCYlqVoN5E+VrPKHKGqPO2JLkH+HcAs1WbI0t4Vge4NoDq4l0TzM3bxNjj1oTSL8VnO3aQaFyeYWDHmn/56FVUEddOoojZJCN1lwqiKq9LxpxSin5IcAH36I5sutZsTNR/gL+316rPxax2Ic/xLaiJSoOA3iznstuLthGODz/+yGUFqesAAVIETmKSZ12JUPRxW0TNdmZFHOSQyRSj2ERlvzhr5Z9BCkROw1S9eQdSuWeKvrUVHD6sKqLXKyKnzd8NFOM+cc2bENa7TvfUFg01yonVqxkSg6rUY/oAi9BY3gSGRA3gVK6uCwf2FY12zZcwopkgs9dFTPj7dLYA==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB2843.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(346002)(366004)(376002)(39860400002)(451199021)(31686004)(31696002)(36756003)(2906002)(15650500001)(478600001)(6666004)(6486002)(2616005)(83380400001)(54906003)(38100700002)(53546011)(6512007)(66946007)(4326008)(6506007)(316002)(8676002)(66556008)(66476007)(5660300002)(26005)(186003)(8936002)(41300700001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?cUNNNlk5MDV2R2V1em9UTVRvUjdkRUw1VzFTYTZwWWRhWGFiSTZzOG9QUFB3?=
+ =?utf-8?B?Yng0WTlZTVRYdGJxNUlGZ2RWZWRjMkZka056WFdYQUtHSDdBSVROSW5JN3Rk?=
+ =?utf-8?B?RGpCdkE5QWcwSmduV1FRZ0dQbFl5TjI3aVBEZUVRamV2b3orWEtkUWU0d3ow?=
+ =?utf-8?B?NmZBNjhzb1ZaQzd1c2s0bVlEdklkTWRpd09BWnRnY2lGRDdGcytNV3NkL1Ro?=
+ =?utf-8?B?dTB2WU5lRWZSbHNQeDQxa28vNlZrSEdDaXFpTE9iWlZ6UzUraDFyZ0hwS0Fu?=
+ =?utf-8?B?N2lpd1dvZWRSNG15dy9HQ0VCcDUwZ0RhTGgyTW9ZUEpaQVQvNGFwdDE2WS9P?=
+ =?utf-8?B?RHdMd1BDZ2FYS1g3alM0eU5jZ1NFYmV5MlpEV2hvYTR5YjZmZGJobEZ6bXFT?=
+ =?utf-8?B?bnhuS0RSUzd3Sm9LckxHMHJsbUM5STFTejBoT2FNRVljd0NrUGN2QWVYb3M3?=
+ =?utf-8?B?THROeDMzTS9OYnV5dGNPSlh5eE0yaU52aHlBTm5HUCtCelZ2cFZBaEMwdlVX?=
+ =?utf-8?B?U1RGMm82ak9VRmVmWjBHT080MnEzNVRlUmhyNjVzVWU4S3VhbTJZR0pjUm9C?=
+ =?utf-8?B?RUl0WWQwejN1elgxUklvN29jdEpibURNR1NNNnRMc3F3aXBRaW41S2VzaVUy?=
+ =?utf-8?B?VC9TQlE2aGN5citzREdqY3JkWkpFUkhtUG8zaFBiR09NbXFWQXJqWkVVckZk?=
+ =?utf-8?B?MXVUcFRCWVhVY2JaQTBvRXNBOEljOTVRWEpNeVpkQkNqTzBPdzlzR1RWZ3U1?=
+ =?utf-8?B?SXIvck5WSzRyZWd3WmhBTCtoRWZJOXlNVkp4VEtndUlvalJteENJeHZ0M0NY?=
+ =?utf-8?B?MEpqaGtVRldtUThZMmw1ZHllUkhiMzFZWWNjSEJpbC90YjFyRlJvYk1WbnFw?=
+ =?utf-8?B?WHcyZkw4Z2NidnQ0ZjlLNzU3VDZ4NVkyWEdRZ01RVGRxRjQ2eHgyWHdtcXJt?=
+ =?utf-8?B?M1ZyMTEwVk9NVmRva202RitwZ0xlM3pOak54U1RmeUR1UXFDOTIrZit4c3lk?=
+ =?utf-8?B?MHZIOUNFSHN6YWtKY3YzRGtZSW1oNUY0eEx1dHJsdEJXanhYbC9UTEtqVVJl?=
+ =?utf-8?B?bjczemJUVW96ZWJZa0pYZnRQS1NBUXRlR245K1d4eFEyQ0VYeEVhd1VJbGpj?=
+ =?utf-8?B?b3JoZWZHUVo3ck52QjE3S0NEUUxadFdDRmU1UndKcFhBQU9DandxV2JWVWk2?=
+ =?utf-8?B?LzZxdk1tT09BZ0ZMUEVWN1VmR29BRkN0MWt6QnFwSlhKUzNxZTltY2N3STQ3?=
+ =?utf-8?B?b1ordFJVZkxFeGNPRFRvSkV5MFNKUUQreVpuWTN4ZVhZZDRxczVTODFtWjFI?=
+ =?utf-8?B?bUJGOGV2V1BWc3llLzhZWlYxNVR0VUJQNTVxOURuN2xDNjFTakNxZ01pWHlz?=
+ =?utf-8?B?UkRFRi9YUGJBUDVvLzFEMHZMdUVWbnV0K0o3U2dTQitOSTFiejdXQjZ0djIv?=
+ =?utf-8?B?eVFYL2dkNVR0cVRGZWlxTGdkeU1EL0VoN1dBR0x1UEwwVzVMKzZNbCsvbWZV?=
+ =?utf-8?B?ZkJkdkNJRHppK05EcnJwTEduMVZ0ZkVzS1JIMVl1TFowd1JhbTNwbzFoR2h3?=
+ =?utf-8?B?Q2l1NkpSVkVNSVFOb3NDdzVQWHBuU1MvTm14R1ZPQkl6VkVweUZQaEt4bE5s?=
+ =?utf-8?B?MzRlMFZ5V3llbVZiV01YbDl1RjVkR24yNjhrYlgwa0E2NHRBeTF3cyt4VHVv?=
+ =?utf-8?B?Yis0eE9iSXJhK0Q3N2xsVGJQazlyOXNEZGpydWo2enRILzhEaTk2bEJveGx4?=
+ =?utf-8?B?SWlhanRWT2M3Z09aOThiOFA0V0pudXpBaWtpMGVZam85MVF1c0pZTk1zd25h?=
+ =?utf-8?B?K2pta3lsRWs0bFFTZFNQR1I5Tk5Ib1lTallMN2F3RFFKTVpUWVlKWGdkaFk5?=
+ =?utf-8?B?VFBYTGJUYkVuNVgrV2YwbU8vbW9ZNEdpQmlzdkJQZ3lqaTAxZUUyVzdCQ2I1?=
+ =?utf-8?B?aUV1QUZPSElmT2Nsc09YeTVBdk9aeHloTHhHUGFTaWwyY1I1T0F5bWI2eHd3?=
+ =?utf-8?B?TmZZN3pQeXZodkdjTDhoVHh3L3R0UEFCbi9iaE9lajJkV3BZYkJJOHpSZHlD?=
+ =?utf-8?B?dGg4OFpCbTR2cW9LYzYzLzBpaUdnSTFEWVp6U2ZUc3dZVUhNRGNnK1ZyR1lX?=
+ =?utf-8?Q?acaJm4gXd+DjQhUKWEfS8UWyV?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 16882b85-85e8-45fd-8120-08db2f6bd000
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB2843.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Mar 2023 09:07:10.4194
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: FoiQZcE+7GjdhfgwSOkBIkAbKS6Dloi4glpvzzObb7Xwgqr9MzgvOV96cwGNN2Hf473FIIELGEaOIw5/Ff7/Zg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7246
 
-On 3/28/2023 6:07 AM, Christoph Hellwig wrote:
-> [adding Alex as he has been interested in this in the past]
+On 17/3/23 07:02, Joao Martins wrote:
+> On KVM GSI routing table updates, specially those where they have vIOMMUs
+> with interrupt remapping enabled (to boot >255vcpus setups without relying
+> on KVM_FEATURE_MSI_EXT_DEST_ID), a VMM may update the backing VF MSIs
+> with a new VCPU affinity.
 > 
-> On Mon, Mar 20, 2023 at 01:28:15PM +0100, Petr Tesarik wrote:
->> Second, on the Raspberry Pi 4, swiotlb is used by dma-buf for pages
->> moved from the rendering GPU (v3d driver), which can access all
->> memory, to the display output (vc4 driver), which is connected to a
->> bus with an address limit of 1 GiB and no IOMMU. These buffers can
->> be large (several megabytes) and cannot be handled by SWIOTLB,
->> because they exceed maximum segment size of 256 KiB. Such mapping
->> failures can be easily reproduced on a Raspberry Pi4: Starting
->> GNOME remote desktop results in a flood of kernel messages like
->> these:
+> On AMD with AVIC enabled, the new vcpu affinity info is updated via:
+> 	avic_pi_update_irte()
+> 		irq_set_vcpu_affinity()
+> 			amd_ir_set_vcpu_affinity()
+> 				amd_iommu_{de}activate_guest_mode()
 > 
-> Shouldn't we make sure dma-buf allocates the buffers for the most
-> restricted devices, and more importantly does something like a dma
-> coherent allocation instead of a dynamic mapping of random memory?
+> Where the IRTE[GATag] is updated with the new vcpu affinity. The GATag
+> contains VM ID and VCPU ID, and is used by IOMMU hardware to signal KVM
+> (via GALog) when interrupt cannot be delivered due to vCPU is in
+> blocking state.
 > 
-> While a larger swiotlb works around this I don't think this fixes the root
-> cause.
+> The issue is that amd_iommu_activate_guest_mode() will essentially
+> only change IRTE fields on transitions from non-guest-mode to guest-mode
+> and otherwise returns *with no changes to IRTE* on already configured
+> guest-mode interrupts. To the guest this means that the VF interrupts
+> remain affined to the first vCPU they were first configured,and guest
+> will be unable to either VF interrupts and receive messages like this
+> from spuruious interrupts (e.g. from waking the wrong vCPU in GALog):
 
-I tend to agree here. However, it's the DMABUF design itself that causes
-some trouble. The buffer is allocated by the v3d driver, which does not
-have the restriction, so the DMA API typically allocates an address
-somewhere near the 4G boundary. Userspace then exports the buffer, sends
-it to another process as a file descriptor and imports it into the vc4
-driver, which requires DMA below 1G. In the beginning, v3d had no idea
-that the buffer would be exported to userspace, much less that it would
-be later imported into vc4.
+The "either" above sounds like there should be a verb which it is not, 
+or is it? (my english skills are meh). I kinda get the idea anyway (I hope).
 
-Anyway, I suspected that the buffers need not be imported into the vc4
-driver (also hinted by Eric Anholt in a 2018 blog post [1]), and it
-seems I was right. I encountered the issue with Ubuntu 22.10; I
-installed latest openSUSE Tumbleweed yesterday, and I was not able to
-reproduce the issue there, most likely because the Mesa drivers have
-been fixed meanwhile. This makes the specific case of the Raspberry Pi 4
-drivers moot. The issue may still affect other combinations of drivers,
-but I don't have any other real-world example ATM.
+btw s/spuruious/spurious/, says my vim. Thanks,
 
-[1] https://anholt.github.io/twivc4/2018/02/12/twiv/
-
->> 1. The value is limited to ULONG_MAX, which is too little both for
->>    physical addresses (e.g. x86 PAE or 32-bit ARM LPAE) and DMA
->>    addresses (e.g. Xen guests on 32-bit ARM).
->>
->> 2. Since buffers are currently allocated with page granularity, a
->>    PFN can be used instead. However, some values are reserved by
->>    the maple tree implementation. Liam suggests to use
->>    xa_mk_value() in that case, but that reduces the usable range by
->>    half. Luckily, 31 bits are still enough to hold a PFN on all
->>    32-bit platforms.
->>
->> 3. Software IO TLB is used from interrupt context. The maple tree
->>    implementation is not IRQ-safe (MT_FLAGS_LOCK_IRQ does nothing
->>    AFAICS). Instead, I use an external lock, spin_lock_irqsave() and
->>    spin_unlock_irqrestore().
->>
->> Note that bounce buffers are never allocated dynamically if the
->> software IO TLB is in fact a DMA restricted pool, which is intended
->> to be stay in its designated location in physical memory.
 > 
-> I'm a little worried about all that because it causes quite a bit
-> of overhead even for callers that don't end up going into the
-> dynamic range or do not use swiotlb at all.  I don't really have a
-> good answer here except for the usual avoid bounce buffering whenever
-> you can that might not always be easy to do.
-
-I'm also worried about all this overhead. OTOH I was not able to confirm
-it, because the difference between two successive fio test runs on an
-unmodified kernel was bigger than the difference between a vanilla and a
-patched kernel, except the maximum completion latency, which OTOH
-affected less than 0.01% of all requests.
-
-BTW my testing also suggests that the streaming DMA API is quite
-inefficient, because UAS performance _improved_ with swiotlb=force.
-Sure, this should probably be addressed in the UAS and/or xHCI driver,
-but what I mean is that moving away from swiotlb may even cause
-performance regressions, which is counter-intuitive. At least I would
-_not_ have expected it.
-
->> +	gfp = (attrs & DMA_ATTR_MAY_SLEEP) ? GFP_KERNEL : GFP_NOWAIT;
->> +	slot = kmalloc(sizeof(*slot), gfp | __GFP_NOWARN);
->> +	if (!slot)
->> +		goto err;
->> +
->> +	slot->orig_addr = orig_addr;
->> +	slot->alloc_size = alloc_size;
->> +	slot->page = dma_direct_alloc_pages(dev, PAGE_ALIGN(alloc_size),
->> +					    &slot->dma_addr, dir,
->> +					    gfp | __GFP_NOWARN);
->> +	if (!slot->page)
->> +		goto err_free_slot;
+> [  167.759472] __common_interrupt: 3.34 No irq handler for vector
+> [  230.680927] mlx5_core 0000:00:02.0: mlx5_cmd_eq_recover:247:(pid
+> 3122): Recovered 1 EQEs on cmd_eq
+> [  230.681799] mlx5_core 0000:00:02.0:
+> wait_func_handle_exec_timeout:1113:(pid 3122): cmd[0]: CREATE_CQ(0x400)
+> recovered after timeout
+> [  230.683266] __common_interrupt: 3.34 No irq handler for vector
 > 
-> Without GFP_NOIO allocations this will deadlock eventually.
+> Given the fact that amd_ir_set_vcpu_affinity() uses
+> amd_iommu_activate_guest_mode() underneath it essentially means that VCPU
+> affinity changes of IRTEs are nops. Fix it by dropping the check for
+> guest-mode at amd_iommu_activate_guest_mode(). Same thing is applicable to
+> amd_iommu_deactivate_guest_mode() although, even if the IRTE doesn't change
+> underlying DestID on the host, the VFIO IRQ handler will still be able to
+> poke at the right guest-vCPU.
+> 
+> Fixes: b9c6ff94e43a ("iommu/amd: Re-factor guest virtual APIC (de-)activation code")
+> Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
+> Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> ---
+>   drivers/iommu/amd/iommu.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index 5a505ba5467e..bf3ebc9d6cde 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -3485,7 +3485,7 @@ int amd_iommu_activate_guest_mode(void *data)
+>   	u64 valid;
+>   
+>   	if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir) ||
+> -	    !entry || entry->lo.fields_vapic.guest_mode)
+> +	    !entry)
+>   		return 0;
+>   
+>   	valid = entry->lo.fields_vapic.valid;
 
-Ah, that would affect the non-sleeping case (GFP_KERNEL), right?
-
-Petr T
+-- 
+Alexey
 
