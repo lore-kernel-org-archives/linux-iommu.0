@@ -1,183 +1,164 @@
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+Received: from frasgout11.his.huawei.com (frasgout11.his.huawei.com [14.137.139.23])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7D46ED6
-	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 07:53:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679989981; x=1711525981;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=MMLJ55nzbDuYefjagbKEQ5r4d7wFCEcRJ+uhTX5nBh4=;
-  b=WVJNj1E7HQYT82h1jDaXsGvgHR1K86v64G65ywk+0N8wWjpd1Nw9RMXQ
-   KSOZfUuSoDkoLYagctGeIWLfNGIQhp49wnD8h09pcGFE4IfbbDFvLvIna
-   yP63+Yp/GNAvL1JJjUYM12DyYFD0/zvxXW6slx9hmgmhHaJw0MDiaX9gt
-   sr+F9GSde5+A8LB+D72EPvcoQ8129R3tGLvN4odwRM2PHVemHT53pBgVY
-   NbXek3Psz3oE0dEp0oTbbhOCH65XA31u7jmqygEhkF6Qjxw1tsxIB12mb
-   fKDGRNPZHtUzSqLAciM0Jw8QVkZ5jP+2aHXcah/3jQN4/LDQMxQeX7PR2
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10662"; a="320898930"
-X-IronPort-AV: E=Sophos;i="5.98,296,1673942400"; 
-   d="scan'208";a="320898930"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 00:52:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10662"; a="807771906"
-X-IronPort-AV: E=Sophos;i="5.98,296,1673942400"; 
-   d="scan'208";a="807771906"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga004.jf.intel.com with ESMTP; 28 Mar 2023 00:52:36 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Tue, 28 Mar 2023 00:52:31 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Tue, 28 Mar 2023 00:52:31 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21 via Frontend Transport; Tue, 28 Mar 2023 00:52:31 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.100)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.21; Tue, 28 Mar 2023 00:52:30 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GcqMcyqDI4SXFZbZz7+WVcBS9Vt7j4xWjHHaSFnipPnN5V/IM5ovE4QoHKsHudhidrXSycBEfq7J7I/IO/aEIdCu6DNfU8AzGSXkH6F/eUXS1qODifEEXuXfgLyOtOqgwjic/XZXXcX6IjYKHRUXl9VwYuFmfGcIDD03SxhaIqcbBSt8r6Z6GHJlkNRtOriacu3QfsXDv5FSilrReXhqSaDOGQ7GnL1y5iwGMXYc/EQmpOie4Y6zIFv9abhdM1l4p1clHqbh+jhDubt2qBZenERmG5g5t845h4W0gBmwviyOzb+v/+fA5at0tDjDaea8KyPFefsKm2SEYvwXnJ8ldA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MMLJ55nzbDuYefjagbKEQ5r4d7wFCEcRJ+uhTX5nBh4=;
- b=WDKu5bXMgW+xc87YBjSJ/KF8wtQK7Miif2Y4Tq6Y7JU7QXGHwX0FWVknobOO/sH4bu3OZtoh6lYi1i7WKuYKkYXshIFuEEW/0qcn1vLvQ7IPuX6sorGBOzhvf6vUGgBQDow1nfCpqw2SHt7WyEpQmQjy2WHXVIj9RyZFRK+EZFMmfrL81/12cY/gkQOmrU1gwrvuP9jDIZOoQyuASY51DygCpkuM3OGPq/LH1yclJRROjSyqLH3ueiwNcQIHnciGoYJq2ZGUwPxQLt9w9yhZWh5Yf5Pz1RTVFSqmv7j+J76DO37oWWT+Kt7jXtzyTtFJ/eDdr2YfG//jhXbh31PTfQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by IA1PR11MB8197.namprd11.prod.outlook.com (2603:10b6:208:446::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Tue, 28 Mar
- 2023 07:52:24 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::73e9:b405:2cae:9174]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::73e9:b405:2cae:9174%7]) with mapi id 15.20.6222.033; Tue, 28 Mar 2023
- 07:52:24 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>, Jacob Pan
-	<jacob.jun.pan@linux.intel.com>, LKML <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, Jason Gunthorpe
-	<jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>, "dmaengine@vger.kernel.org"
-	<dmaengine@vger.kernel.org>, "vkoul@kernel.org" <vkoul@kernel.org>
-CC: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, "David
- Woodhouse" <dwmw2@infradead.org>, "Raj, Ashok" <ashok.raj@intel.com>, "Liu,
- Yi L" <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>, "Jiang,
- Dave" <dave.jiang@intel.com>, "Luck, Tony" <tony.luck@intel.com>, "Zanussi,
- Tom" <tom.zanussi@intel.com>
-Subject: RE: [PATCH v2 7/8] iommu: Export iommu_get_dma_domain
-Thread-Topic: [PATCH v2 7/8] iommu: Export iommu_get_dma_domain
-Thread-Index: AQHZYQJZ/uTBrv6VnUyqe8oLESWJ1K8PtDuAgAAdlnA=
-Date: Tue, 28 Mar 2023 07:52:23 +0000
-Message-ID: <BN9PR11MB527623AC2CE25EDA10FF81548C889@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20230327232138.1490712-1-jacob.jun.pan@linux.intel.com>
- <20230327232138.1490712-8-jacob.jun.pan@linux.intel.com>
- <e7d53d04-6b7f-05a4-3077-42470c6d2823@linux.intel.com>
-In-Reply-To: <e7d53d04-6b7f-05a4-3077-42470c6d2823@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|IA1PR11MB8197:EE_
-x-ms-office365-filtering-correlation-id: 08096a5f-b408-4717-5388-08db2f615e06
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 0YO0lSSvNbYvInfTFxiQWDDuNCZ2EKLddXFgVKfdmUC8meev75QuROAITLnQtTH4jPMjc36sVMD7YanlucJwDF5IVT+MOk+DD4XUIYLawf10ESYGBK3xIm0XCdDuaEdF55pSi//ugcXaSwbyW0yv+G+8eILhN5hvfrr1qfTpmGfXlSTRtTlNxnJX0vygOlJiHFcRh59p315O66f9QVEYQQ9Cy6Uoi4IjKcl5YuBBngEIuxrRaBfj081P2D/Me2gX5XGpCFgOSe+ug3YpbB4cOvRMAy6GwLlVwpKzUHEzhoi3jh7K5CkHlXsDXv+adT/qiqsm0uUyEcJDSPEnQ5rz5diB4oVsmr94Vzg6VZ3JdOTaJXsuJ1a2Xazt/5i6UPavq3EMCDs/PA5db7kXcx08ARWUan0GHCl3Hp+G6UF5IRm5g5mXa7XtHHfQv3zRxzTos3ujEeOpQ1wcR3WexJ0KFwzz3zdL5dyA5aOUBWu13rcjokZfcaloPLGD1TGKyE8JAA15CFFy342/u2/5rke6hKCb9Hk8X54imhGGTgTA5iNziI+EpkOZdkr/6mADY3XnRVwXkdP+7At7638VMxmE35U0sX2eM6q4w/b6Zz6Cmi+peGqWVHgB4JWly5wjyDcz
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(396003)(376002)(346002)(366004)(136003)(451199021)(8676002)(55016003)(316002)(38100700002)(66446008)(38070700005)(41300700001)(82960400001)(66946007)(54906003)(122000001)(2906002)(7416002)(5660300002)(76116006)(6506007)(7696005)(71200400001)(52536014)(4326008)(53546011)(33656002)(64756008)(66556008)(86362001)(110136005)(26005)(8936002)(9686003)(66476007)(186003)(478600001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?ZndSYlJmODlXdTVkeGRvN1JRYVlXeHdibDY0czliaTFxbE5Vald0dm9aTGVU?=
- =?utf-8?B?bFFiNzg0V0lseVk3MmZJWjhmU290d2FMV3VvTEN4S04vWEFBd09lQnRwd2tN?=
- =?utf-8?B?SEdCZjRBemJvSUdSNkt0Z2orZEJmL1JOSlhNY24rdUpDTVpnRVQ1SVBrQmR6?=
- =?utf-8?B?VzlNUFNuL2hUNlREVTZDbFUxR0JGWTdZZXJkdWVCNDRob01qSkxMS0d0c0dM?=
- =?utf-8?B?YkUzbXlLaUc5WVVjd2llTzFwVkFFODFCaDdDZmlwbm15cTdXc2d4UnREWUxl?=
- =?utf-8?B?czVLNmtNczY4Ty9xK05zUjdXdnhMTWNscUlnZloyMzVoM0t2L1czeUdxMmxp?=
- =?utf-8?B?WmdiZUlhNW1WQmlWcEIzbk1Ia2FwYzZlVnAzNS8xTjNOQjJXVFVUbTZRVk9K?=
- =?utf-8?B?aTlYK28xOWk1T1V1Zkh6OWp6K3NuS0pwZVJEUVdBK0d4M2pNdElsVk9nR2FZ?=
- =?utf-8?B?S0haNDhmOWN0NXdLTVFiNGpnVjdveWxPeUJGSU10MGRVbWpJWktpL01DT0JF?=
- =?utf-8?B?alhZdWJtZ0svMUQvbWVacFpjNWJ2YlpUWHlNU0tmWkVlNXNtQXE5OGN2TFZq?=
- =?utf-8?B?MVg4L1lCbkRVUmJaOWFXSGh0QUhTUGM5MFlIKzNuZHBWakxuU2xFb28xYzk3?=
- =?utf-8?B?VmZWakd3UDFmNEVSY0JmTVJEc0ptYWZWaWZMdURaY2pXMWNqdXhzdjhWL3Qx?=
- =?utf-8?B?ZVk5UzRrMUdTYWc1ZEY3cjB3WTNXdFU0bDNmeldLWU4vWmV3Rm15bXJSOEhY?=
- =?utf-8?B?eVBWT3RWajhOTFprTmZUbjN3b0hKN2NQaVBWY1Y4ZUlQTmJ4NU1CbytyVWh6?=
- =?utf-8?B?MUp4Mzl4bUhLNXdGdy8rclAraFo1ZC84UEthOE1lN2xoZUk3M0hMYndJVUQx?=
- =?utf-8?B?T0IrRmU1elNYOTI5TzZlbVh0NTc3Nk5NVTl4ckVKSTZKeE9XTTFQSEJ3OFdp?=
- =?utf-8?B?cmdhbXcrc0ZtQmdCREptR3RoblBZYzNrL1hWQzJoK0lqZlhuWFd3S05YZVZV?=
- =?utf-8?B?Y3BoZ2FnL2MvamRjR1FQSG5UUVA5dy94RnplVWZyYlNVM08ySmZqT1lFelFI?=
- =?utf-8?B?Nlo0ZzJYMHJpWUFuY2c4Q2JBZmZvMFJBMmJoYXIyWi9VanJNcWhIWko1ekJj?=
- =?utf-8?B?cVcxYW1ITmhGeUFjbEkwMEVFUEJOYTczU3lLWUlyck4wK09mQjdhL3BkNGJS?=
- =?utf-8?B?TUg4MmdabkIwMXpmTDNpWkV6cWhrTWdQTGhxeDhQaXYvWDhMTXMvWW0xbGd3?=
- =?utf-8?B?YXJsa3FvR0pGRzdGMHhmUFlsVytYOUtGWlY4YkdrRm94eExMRzFYU1c1NFdn?=
- =?utf-8?B?MnJETFBwRUszWHZQVnc1S1hLNjVmNGo3cVpMMk5FYTQyZFZVbTZNdTFJejVF?=
- =?utf-8?B?bmZsYkRMZFFQQ2xZa1l1eTZFRTZuWkFSajdteDhxNTVXTkgyRzBoYUk3WUFu?=
- =?utf-8?B?NFRYNHQxVkRSUy9LV2tqZktSaUpGdXZuQXZJQ0Vtb1M0VUlYbytqc0tCc1Nj?=
- =?utf-8?B?WWVIa3ZFNjZHQlE2WFl6TDRLcG9nYk4zV2pQMTN1SisxUEVVbnhhZ0pxUEgy?=
- =?utf-8?B?Q3liWFJPZTVieG8wZnhmK1hheHVHSjF6bzk0RUpTeGNCQWRGdFJQY3AyejUv?=
- =?utf-8?B?UGJ2d285Wit3Nis1N0RsZENYVW5iRDF2UjNwNUxJTnBpSjBiUlQxYTlneisv?=
- =?utf-8?B?ekZFQlVoYjhUUnBsVDQ3MzdrK1N3WG5PaHJKWE5DZGo5c2oweDFxdzRKQVpE?=
- =?utf-8?B?RjdkQVlSZjFyV0l5SkJ1Q3FMRlgxamQyVWJweXFqYTB1L21BbDJVaVByS2w0?=
- =?utf-8?B?TmpKWTNPTS9tRE1jNldYdEkwQVJHV1I4QWhWMW1EVzRWR0JSRnMxSlAyZ1Zi?=
- =?utf-8?B?dHN0Y3k1RkJTTmhwcVFBb0VJWlZiOFZZN0luUU5md2pXSVhiYTVzMzdYeDBS?=
- =?utf-8?B?cDBJaUlpWnJRRVNrZWNGMXB3U0srQTQ3K2granFuM1ZxZ1RkMnY0VkM5KzlJ?=
- =?utf-8?B?QkdXM0U0NVRVU0Zhc0lVWjRyUEtrSnZsVURKRUtiMlpUZGF1QVByL1FQTzJx?=
- =?utf-8?B?RGNGMlRtVVBpenhhcUFvbGZIcE5jZXU5N1gzSlhzWUxUTHhuM2JTaEF2YU4v?=
- =?utf-8?Q?YbDOScRCrBNTbRqtvrjKez+n5?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3536EBB
+	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 07:55:10 +0000 (UTC)
+Received: from mail02.huawei.com (unknown [172.18.147.228])
+	by frasgout11.his.huawei.com (SkyGuard) with ESMTP id 4Pm1vX3DfMz9v7Hd
+	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 15:46:00 +0800 (CST)
+Received: from [10.48.131.174] (unknown [10.48.131.174])
+	by APP2 (Coremail) with SMTP id GxC2BwAX510+nSJk3K7UAQ--.16527S2;
+	Tue, 28 Mar 2023 08:54:49 +0100 (CET)
+Message-ID: <4268fa4e-4f0f-a2f6-a2a5-5b78ca4a073d@huaweicloud.com>
+Date: Tue, 28 Mar 2023 09:54:35 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 08096a5f-b408-4717-5388-08db2f615e06
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Mar 2023 07:52:23.8756
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: AV5coM7Mvzo8cq11ldtWFWvEqYyMbAMy3k/vrPsU93cOvWNwhWgYayxmACARGc4woIt1RNah2TZSPs1i7qwswQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB8197
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [RFC v1 3/4] swiotlb: Allow dynamic allocation of bounce buffers
+Content-Language: en-US
+To: Christoph Hellwig <hch@lst.de>
+Cc: Jonathan Corbet <corbet@lwn.net>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, Borislav Petkov <bp@suse.de>,
+ "Paul E. McKenney" <paulmck@kernel.org>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Randy Dunlap <rdunlap@infradead.org>,
+ Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+ Kim Phillips <kim.phillips@amd.com>,
+ "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+ "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+ open list <linux-kernel@vger.kernel.org>,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+ Roberto Sassu <roberto.sassu@huawei.com>, petr@tesarici.cz,
+ Alexander Graf <graf@amazon.com>
+References: <cover.1679309810.git.petr.tesarik.ext@huawei.com>
+ <0334a54332ab75312c9de825548b616439dcc9f5.1679309810.git.petr.tesarik.ext@huawei.com>
+ <20230328040724.GB25506@lst.de>
+From: Petr Tesarik <petrtesarik@huaweicloud.com>
+In-Reply-To: <20230328040724.GB25506@lst.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID:GxC2BwAX510+nSJk3K7UAQ--.16527S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxZr4DWFy8ZFWxAFWDZryftFb_yoWrtF1kpF
+	WfKw4YvrWDJr1Iyry8Cw18W3W0ywsxAFy5GrySgr1avw45WryF9F1SkFW5Wa9rCwn3Xw1j
+	qr4Yvw4kAas8Ja7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUvIb4IE77IF4wAFF20E14v26ryj6rWUM7CY07I20VC2zVCF04k2
+	6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
+	vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7Cj
+	xVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxV
+	AFwI0_Gr0_Gr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40E
+	x7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x
+	0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc7I2V7IY0VAS
+	07AlzVAYIcxG8wCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c
+	02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_GFv_
+	WrylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7
+	CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE
+	14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf
+	9x07UZ18PUUUUU=
+X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
+X-CFilter-Loop: Reflected
 
-PiBGcm9tOiBCYW9sdSBMdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiBTZW50OiBUdWVz
-ZGF5LCBNYXJjaCAyOCwgMjAyMyAyOjA0IFBNDQo+IA0KPiBPbiAzLzI4LzIzIDc6MjEgQU0sIEph
-Y29iIFBhbiB3cm90ZToNCj4gPiBEZXZpY2VzIHRoYXQgdXNlIEVOUUNNRFMgdG8gc3VibWl0IHdv
-cmsgbmVlZHMgdG8gcmV0cmlldmUgaXRzIERNQQ0KPiA+IGRvbWFpbi4gSXQgY2FuIHRoZW4gYXR0
-YWNoIFBBU0lEIHRvIHRoZSBETUEgZG9tYWluIGZvciBzaGFyZWQgbWFwcGluZw0KPiA+ICh3aXRo
-IFJJRCkgZXN0YWJsaXNoZWQgYnkgRE1BIEFQSS4NCj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IEph
-Y29iIFBhbjxqYWNvYi5qdW4ucGFuQGxpbnV4LmludGVsLmNvbT4NCj4gPiAtLS0NCj4gPiAgIGRy
-aXZlcnMvaW9tbXUvaW9tbXUuYyB8IDEgKw0KPiA+ICAgaW5jbHVkZS9saW51eC9pb21tdS5oIHwg
-NSArKysrKw0KPiA+ICAgMiBmaWxlcyBjaGFuZ2VkLCA2IGluc2VydGlvbnMoKykNCj4gPg0KPiA+
-IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2lvbW11LmMgYi9kcml2ZXJzL2lvbW11L2lvbW11
-LmMNCj4gPiBpbmRleCAxMGRiNjgwYWNhZWQuLmM1MWQzNDNhNzVkMiAxMDA2NDQNCj4gPiAtLS0g
-YS9kcml2ZXJzL2lvbW11L2lvbW11LmMNCj4gPiArKysgYi9kcml2ZXJzL2lvbW11L2lvbW11LmMN
-Cj4gPiBAQCAtMjExOCw2ICsyMTE4LDcgQEAgc3RydWN0IGlvbW11X2RvbWFpbg0KPiAqaW9tbXVf
-Z2V0X2RtYV9kb21haW4oc3RydWN0IGRldmljZSAqZGV2KQ0KPiA+ICAgew0KPiA+ICAgCXJldHVy
-biBkZXYtPmlvbW11X2dyb3VwLT5kZWZhdWx0X2RvbWFpbjsNCj4gPiAgIH0NCj4gPiArRVhQT1JU
-X1NZTUJPTF9HUEwoaW9tbXVfZ2V0X2RtYV9kb21haW4pOw0KPiANCj4gRGlyZWN0bHkgZXhwb3J0
-aW5nIHRoaXMgZnVuY3Rpb24gZm9yIGV4dGVybmFsIHVzZSBzZWVtcyB1bnNhZmUuIElmIHRoZQ0K
-PiBjYWxsZXIgaXMgdGhlIGtlcm5lbCBkcml2ZXIgZm9yIHRoaXMgZGV2aWNlLCBpdCdzIGZpbmUg
-YmVjYXVzZSBkZWZhdWx0DQo+IGRvbWFpbiByZW1haW5zIHVuY2hhbmdlZCBkdXJpbmcgdGhlIGxp
-ZmUgY3ljbGUgb2YgdGhlIGRyaXZlci4gT3RoZXJ3aXNlLA0KPiB1c2luZyB0aGlzIGZ1bmN0aW9u
-IG1heSBjYXVzZSBVQUYuIEtlZXAgaW4gbWluZCB0aGF0IGdyb3VwJ3MgZGVmYXVsdA0KPiBkb21h
-aW4gY291bGQgYmUgY2hhbmdlZCB0aHJvdWdoIHN5c2ZzLg0KPiANCj4gSG93ZXZlciwgaW9tbXVf
-Z2V0X2RvbWFpbl9mb3JfZGV2KCkgaGFzIGFscmVhZHkgZG9uZSBzbyBhbmQgaGFzIGJlZW4NCj4g
-ZXhwb3J0ZWQuIE1heWJlIEknbSB3b3JyaWVkIHRvbyBtdWNoLiA6LSkNCj4gDQoNCkFncmVlLiBU
-aGUga2VybmVsIGRyaXZlciBtYW5hZ2luZyB0aGUgZGV2aWNlIHdhbnRzIHRvIGdldCB0aGUgY3Vy
-cmVudCANCmRvbWFpbiBvZiB0aGUgZGV2aWNlIHRoZW4gaW9tbXVfZ2V0X2RvbWFpbl9mb3JfZGV2
-KCkgaXMgdGhlIHJpZ2h0DQppbnRlcmZhY2UuIEl0IGtub3dzIHRoZSBkb21haW4gaXMgdGhlIGRt
-YSBkb21haW4uDQo=
+On 3/28/2023 6:07 AM, Christoph Hellwig wrote:
+> [adding Alex as he has been interested in this in the past]
+> 
+> On Mon, Mar 20, 2023 at 01:28:15PM +0100, Petr Tesarik wrote:
+>> Second, on the Raspberry Pi 4, swiotlb is used by dma-buf for pages
+>> moved from the rendering GPU (v3d driver), which can access all
+>> memory, to the display output (vc4 driver), which is connected to a
+>> bus with an address limit of 1 GiB and no IOMMU. These buffers can
+>> be large (several megabytes) and cannot be handled by SWIOTLB,
+>> because they exceed maximum segment size of 256 KiB. Such mapping
+>> failures can be easily reproduced on a Raspberry Pi4: Starting
+>> GNOME remote desktop results in a flood of kernel messages like
+>> these:
+> 
+> Shouldn't we make sure dma-buf allocates the buffers for the most
+> restricted devices, and more importantly does something like a dma
+> coherent allocation instead of a dynamic mapping of random memory?
+> 
+> While a larger swiotlb works around this I don't think this fixes the root
+> cause.
+
+I tend to agree here. However, it's the DMABUF design itself that causes
+some trouble. The buffer is allocated by the v3d driver, which does not
+have the restriction, so the DMA API typically allocates an address
+somewhere near the 4G boundary. Userspace then exports the buffer, sends
+it to another process as a file descriptor and imports it into the vc4
+driver, which requires DMA below 1G. In the beginning, v3d had no idea
+that the buffer would be exported to userspace, much less that it would
+be later imported into vc4.
+
+Anyway, I suspected that the buffers need not be imported into the vc4
+driver (also hinted by Eric Anholt in a 2018 blog post [1]), and it
+seems I was right. I encountered the issue with Ubuntu 22.10; I
+installed latest openSUSE Tumbleweed yesterday, and I was not able to
+reproduce the issue there, most likely because the Mesa drivers have
+been fixed meanwhile. This makes the specific case of the Raspberry Pi 4
+drivers moot. The issue may still affect other combinations of drivers,
+but I don't have any other real-world example ATM.
+
+[1] https://anholt.github.io/twivc4/2018/02/12/twiv/
+
+>> 1. The value is limited to ULONG_MAX, which is too little both for
+>>    physical addresses (e.g. x86 PAE or 32-bit ARM LPAE) and DMA
+>>    addresses (e.g. Xen guests on 32-bit ARM).
+>>
+>> 2. Since buffers are currently allocated with page granularity, a
+>>    PFN can be used instead. However, some values are reserved by
+>>    the maple tree implementation. Liam suggests to use
+>>    xa_mk_value() in that case, but that reduces the usable range by
+>>    half. Luckily, 31 bits are still enough to hold a PFN on all
+>>    32-bit platforms.
+>>
+>> 3. Software IO TLB is used from interrupt context. The maple tree
+>>    implementation is not IRQ-safe (MT_FLAGS_LOCK_IRQ does nothing
+>>    AFAICS). Instead, I use an external lock, spin_lock_irqsave() and
+>>    spin_unlock_irqrestore().
+>>
+>> Note that bounce buffers are never allocated dynamically if the
+>> software IO TLB is in fact a DMA restricted pool, which is intended
+>> to be stay in its designated location in physical memory.
+> 
+> I'm a little worried about all that because it causes quite a bit
+> of overhead even for callers that don't end up going into the
+> dynamic range or do not use swiotlb at all.  I don't really have a
+> good answer here except for the usual avoid bounce buffering whenever
+> you can that might not always be easy to do.
+
+I'm also worried about all this overhead. OTOH I was not able to confirm
+it, because the difference between two successive fio test runs on an
+unmodified kernel was bigger than the difference between a vanilla and a
+patched kernel, except the maximum completion latency, which OTOH
+affected less than 0.01% of all requests.
+
+BTW my testing also suggests that the streaming DMA API is quite
+inefficient, because UAS performance _improved_ with swiotlb=force.
+Sure, this should probably be addressed in the UAS and/or xHCI driver,
+but what I mean is that moving away from swiotlb may even cause
+performance regressions, which is counter-intuitive. At least I would
+_not_ have expected it.
+
+>> +	gfp = (attrs & DMA_ATTR_MAY_SLEEP) ? GFP_KERNEL : GFP_NOWAIT;
+>> +	slot = kmalloc(sizeof(*slot), gfp | __GFP_NOWARN);
+>> +	if (!slot)
+>> +		goto err;
+>> +
+>> +	slot->orig_addr = orig_addr;
+>> +	slot->alloc_size = alloc_size;
+>> +	slot->page = dma_direct_alloc_pages(dev, PAGE_ALIGN(alloc_size),
+>> +					    &slot->dma_addr, dir,
+>> +					    gfp | __GFP_NOWARN);
+>> +	if (!slot->page)
+>> +		goto err_free_slot;
+> 
+> Without GFP_NOIO allocations this will deadlock eventually.
+
+Ah, that would affect the non-sleeping case (GFP_KERNEL), right?
+
+Petr T
+
