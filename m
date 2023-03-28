@@ -1,53 +1,52 @@
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B5A02F2A
-	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 20:35:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 008962F2A
+	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 20:47:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680035726; x=1711571726;
+  t=1680036478; x=1711572478;
   h=date:from:to:cc:subject:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=JwzUa3WrFrFqZeBAjs/FmiYkt2mKxkOcX0p1HF8/DO4=;
-  b=JsLakXjCqb/wLlj0jcZKbATExeLPaumGkKx/0fGXlQb1lBJa1e/wYCWj
-   xhWe05YGz4ZIHOgvaSdoPm7Ukc9UaIXYQb2JQ/VaVgf91vwtFclCkponm
-   HnZdIqWb1JJ2EFfBokbvN+OoCjQmzczmgbVqWZ4uOl4TzTMATdQChVBSr
-   4FhoDyKkj0fXjPUQ3mDeTQ6+RZ+5BpMAB5tYWs14PaRU9j8QEhQiXLCB7
-   cfOkjEdLStLijARg0XMhXfoVRV0zz9iklGEuqJ6T7krYJ+qL77vaN+Ah5
-   c/axkvUCxosvottyuV0+G1nm3yq/p8SPZ7n+tQQbEYlxmjUmSnzk90lrU
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="340706735"
+  bh=IrBf2jxsIsqUqVNuSjNZZnkzHVlM3YG0iaidUQD274k=;
+  b=RPeevk5KtmUBNtPg5lZMLqI/rbeEXHsYn+nn/g1hBdIkRlOu9EArdV6o
+   XRecXq4xVdzCGRsGpNU1EcGONRKgkdxMRZ9t2fe9C6NcHKXHb7ZH1cMfb
+   k1WMFGfq/hy/CdnmuuVM557UFPKaEGCMdUMczm1INQTzATwQyULYNJiy1
+   6foM8OgLGy3rdxJoMLeFbMbHOvNsoPf3zoXKaKBuGjHtpLY3i66LgFYXj
+   iPvWz7txy3YmzbjxLXsqiMRLSLYUz0Ow2BV8a/VUPEBDIwqVcxIxQI4Ii
+   2iIC8E7Y8Hvlrh7NlT4DbYy3PNdRlcNjoVRLs2zKr/IZaLC3TQo1hAl9E
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="329147439"
 X-IronPort-AV: E=Sophos;i="5.98,297,1673942400"; 
-   d="scan'208";a="340706735"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 13:35:24 -0700
+   d="scan'208";a="329147439"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 13:47:58 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="794953437"
+X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="1013712586"
 X-IronPort-AV: E=Sophos;i="5.98,297,1673942400"; 
-   d="scan'208";a="794953437"
+   d="scan'208";a="1013712586"
 Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 13:35:24 -0700
-Date: Tue, 28 Mar 2023 13:39:26 -0700
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 13:47:57 -0700
+Date: Tue, 28 Mar 2023 13:52:00 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, LKML
- <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel
- <joro@8bytes.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
- "vkoul@kernel.org" <vkoul@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Will Deacon <will@kernel.org>, "David Woodhouse" <dwmw2@infradead.org>,
- "Raj, Ashok" <ashok.raj@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Yu,
- Fenghua" <fenghua.yu@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>,
- "Luck, Tony" <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Jason
+ Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ dmaengine@vger.kernel.org, vkoul@kernel.org, Robin Murphy
+ <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, David Woodhouse
+ <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>, "Yu, Fenghua"
+ <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>, Tony Luck
+ <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
  jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v2 5/8] iommu/vt-d: Make device pasid attachment
- explicit
-Message-ID: <20230328133926.6f6c2ed2@jacob-builder>
-In-Reply-To: <BN9PR11MB5276BCF726D0B813046479A18C889@BN9PR11MB5276.namprd11.prod.outlook.com>
+Subject: Re: [PATCH v2 4/8] iommu/vt-d: Reserve RID_PASID from global SVA
+ PASID space
+Message-ID: <20230328135200.139f280a@jacob-builder>
+In-Reply-To: <20230328092919.372f0545@jacob-builder>
 References: <20230327232138.1490712-1-jacob.jun.pan@linux.intel.com>
-	<20230327232138.1490712-6-jacob.jun.pan@linux.intel.com>
-	<71b60cc2-4ab0-3777-6bc9-3a6a4174f743@linux.intel.com>
-	<BN9PR11MB5276BCF726D0B813046479A18C889@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20230327232138.1490712-5-jacob.jun.pan@linux.intel.com>
+	<41d31adf-577e-431c-c400-2708885400c1@linux.intel.com>
+	<20230328092919.372f0545@jacob-builder>
 Organization: OTC
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
@@ -56,85 +55,28 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Kevin,
+Hi Baolu,
 
-On Tue, 28 Mar 2023 07:44:52 +0000, "Tian, Kevin" <kevin.tian@intel.com>
-wrote:
+On Tue, 28 Mar 2023 09:29:19 -0700, Jacob Pan
+<jacob.jun.pan@linux.intel.com> wrote:
 
-> > From: Baolu Lu <baolu.lu@linux.intel.com>
-> > Sent: Tuesday, March 28, 2023 1:49 PM
-> >=20
-> > On 3/28/23 7:21 AM, Jacob Pan wrote: =20
-> > > diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-> > > index 65b15be72878..b6c26f25d1ba 100644
-> > > --- a/drivers/iommu/intel/iommu.h
-> > > +++ b/drivers/iommu/intel/iommu.h
-> > > @@ -595,6 +595,7 @@ struct dmar_domain {
-> > >
-> > >   	spinlock_t lock;		/* Protect device tracking
-> > > lists */ struct list_head devices;	/* all devices' list */
-> > > +	struct list_head dev_pasids;	/* all attached pasids */
-> > >
-> > >   	struct dma_pte	*pgd;		/* virtual
-> > > address */ int		gaw;		/* max guest
-> > > address width */ @@ -708,6 +709,7 @@ struct device_domain_info {
-> > >   	u8 ats_supported:1;
-> > >   	u8 ats_enabled:1;
-> > >   	u8 dtlb_extra_inval:1;	/* Quirk for devices need
-> > > extra flush */
-> > > +	u8 dev_attached:1;	/* Device context activated */
-> > >   	u8 ats_qdep;
-> > >   	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
-> > >   	struct intel_iommu *iommu; /* IOMMU used by this device */
-> > > @@ -715,6 +717,12 @@ struct device_domain_info {
-> > >   	struct pasid_table *pasid_table; /* pasid table */
-> > >   };
-> > >
-> > > +struct device_pasid_info {
-> > > +	struct list_head link_domain;	/* link to domain
-> > > siblings */
-> > > +	struct device *dev;		/* physical device
-> > > derived from */
-> > > +	ioasid_t pasid;			/* PASID on physical
-> > > device */ +}; =20
-> >=20
-> > The dev_pasids list seems to be duplicate with iommu_group::pasid_array.
-> >=20
-> > The pasid_array is de facto per-device as the PCI subsystem requires ACS
-> > to be enabled on the upstream path to the root port.
-> >=20
-> > pci_enable_pasid():
-> > 385         if (!pci_acs_path_enabled(pdev, NULL, PCI_ACS_RR |
-> > PCI_ACS_UF)) 386                 return -EINVAL;
-> >=20
-> > For such PCI topology, pci_device_group() always assigns an exclusive
-> > iommu group (a.k.a. singleton group).
-> >=20
-> > So, how about moving the pasid_array from struct iommu_group to struct
-> > dev_iommu? With this refactoring, the individual iommu driver has no
-> > need to create their own pasid array or list.
-> >=20
-> > Instead of using iommu_group::mutex, perhaps the pasid_array needs its
-> > own lock in struct dev_iommu after moving.
-> >  =20
->=20
-> What you suggested is a right thing and more friendly to pasid attach
-> in iommufd [1].
->=20
-> but dev_pasids list here is a different thing. It tracks which [device,
-> pasid] is attached to the domain. w/o this information you'll have to
-> walk the pasid_array of every attached device under the domain and search
-> for every pasid entry pointing to the said domain. It's very inefficient.=
-=20
->=20
-> of course if this can be done more generally it'd be nice.=F0=9F=98=8A
->=20
-> [1] https://lore.kernel.org/linux-iommu/ZAjbDxSzxYPqSCjo@nvidia.com/
-Yes, it would be nice as the next step. But so far only ENQCMDS usages may
-not justify.
+> > > On VT-d platforms, RID_PASID is used for DMA request without PASID. We
+> > > should not treat RID_PASID special instead let it be allocated from
+> > > the global SVA PASID number space.    
+> > 
+> > It's same to AMD and ARM SMMUv3, right? They also need an explicit
+> > reservation of PASID 0.
+> >   
+> yes, all IOMMU drivers need to do that. I will give it a try but might
+> need help to place the call.
+It might be simpler to just let SVA code allocate from 1 up instead of 0
+(as is in the current code). Global PASID allocator would still allow the
+full range from 0 to max. Then there is no change to architectures that
+don't support non-zero RID_PASID. For VT-d, it would still work in the
+future when we have nonzero RID_PASID. is that reasonable?
 
 Thanks,
 
