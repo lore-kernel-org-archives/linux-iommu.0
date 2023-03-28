@@ -1,52 +1,52 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 008962F2A
-	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 20:47:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C5DC2772D
+	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 21:36:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680036478; x=1711572478;
+  t=1680039416; x=1711575416;
   h=date:from:to:cc:subject:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=IrBf2jxsIsqUqVNuSjNZZnkzHVlM3YG0iaidUQD274k=;
-  b=RPeevk5KtmUBNtPg5lZMLqI/rbeEXHsYn+nn/g1hBdIkRlOu9EArdV6o
-   XRecXq4xVdzCGRsGpNU1EcGONRKgkdxMRZ9t2fe9C6NcHKXHb7ZH1cMfb
-   k1WMFGfq/hy/CdnmuuVM557UFPKaEGCMdUMczm1INQTzATwQyULYNJiy1
-   6foM8OgLGy3rdxJoMLeFbMbHOvNsoPf3zoXKaKBuGjHtpLY3i66LgFYXj
-   iPvWz7txy3YmzbjxLXsqiMRLSLYUz0Ow2BV8a/VUPEBDIwqVcxIxQI4Ii
-   2iIC8E7Y8Hvlrh7NlT4DbYy3PNdRlcNjoVRLs2zKr/IZaLC3TQo1hAl9E
+  bh=lRUDa9QZQb0fXRVcvHKDEfHg8a2PZVa5X7ucZyjCT30=;
+  b=Z+dtVwNP4mFnIWP6WhNN23LsHkxdihkHjHsjHXJwZ/TOZgNcyL7rxGFA
+   n1+2MN0ASbKDguIk9LdeVpNhw5ggI4hq2xmA1Xxm2fv2bwtN9aIqaNeKw
+   4lXlMIhOSO1fdAUKw2uc4q5WQ4qJmKfN+styqGcAJKRJJBE4heZMpD0i4
+   srMf3sTlnJ3VKD5BcDoUfyECIBR0dvkdgpM4rs4R5SFfphoXZPLzYDfYx
+   EWLElmvPwluyPumGY8WywYitLIAIUthti8UgiEGr0yhvL3LAUQfAy5YCz
+   fikeNYYYR6QxkRCUAIe/WaMdp0+z2Y5s6/C4OU6MA9Oc2eioU0KwEtVFR
    g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="329147439"
+X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="403313680"
 X-IronPort-AV: E=Sophos;i="5.98,297,1673942400"; 
-   d="scan'208";a="329147439"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 13:47:58 -0700
+   d="scan'208";a="403313680"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 14:36:55 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="1013712586"
+X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="748539872"
 X-IronPort-AV: E=Sophos;i="5.98,297,1673942400"; 
-   d="scan'208";a="1013712586"
+   d="scan'208";a="748539872"
 Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 13:47:57 -0700
-Date: Tue, 28 Mar 2023 13:52:00 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 14:36:54 -0700
+Date: Tue, 28 Mar 2023 14:40:57 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Jason
- Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- dmaengine@vger.kernel.org, vkoul@kernel.org, Robin Murphy
- <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, David Woodhouse
- <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin"
- <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>, "Yu, Fenghua"
- <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>, Tony Luck
- <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
- jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v2 4/8] iommu/vt-d: Reserve RID_PASID from global SVA
- PASID space
-Message-ID: <20230328135200.139f280a@jacob-builder>
-In-Reply-To: <20230328092919.372f0545@jacob-builder>
-References: <20230327232138.1490712-1-jacob.jun.pan@linux.intel.com>
-	<20230327232138.1490712-5-jacob.jun.pan@linux.intel.com>
-	<41d31adf-577e-431c-c400-2708885400c1@linux.intel.com>
-	<20230328092919.372f0545@jacob-builder>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Lu Baolu
+ <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Jean-Philippe
+ Brucker <jean-philippe@linaro.com>, Robin Murphy <robin.murphy@arm.com>,
+ Dave Hansen <dave.hansen@intel.com>, Thomas Gleixner <tglx@linutronix.de>,
+ X86 Kernel <x86@kernel.org>, bp@alien8.de, "H. Peter Anvin"
+ <hpa@zytor.com>, Peter Zijlstra <peterz@infradead.org>, corbet@lwn.net,
+ vkoul@kernel.org, dmaengine@vger.kernel.org, linux-doc@vger.kernel.org,
+ Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Raj
+ Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
+ <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>, Dave Jiang
+ <dave.jiang@intel.com>, Kirill Shutemov <kirill.shutemov@linux.intel.com>,
+ Tony Luck <tony.luck@intel.com>, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v8 0/7] Remove VT-d virtual command interface and IOASID
+Message-ID: <20230328144057.73ce8565@jacob-builder>
+In-Reply-To: <ZBxl3FgN/m2Qus7V@nvidia.com>
+References: <20230322200803.869130-1-jacob.jun.pan@linux.intel.com>
+	<ZBxl3FgN/m2Qus7V@nvidia.com>
 Organization: OTC
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
@@ -58,25 +58,44 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-Hi Baolu,
+Hi Joerg et al,
 
-On Tue, 28 Mar 2023 09:29:19 -0700, Jacob Pan
-<jacob.jun.pan@linux.intel.com> wrote:
+Just wondering if there are any other comments? Should i spin another
+version to include Reviewed-by tags from Kevin?
 
-> > > On VT-d platforms, RID_PASID is used for DMA request without PASID. We
-> > > should not treat RID_PASID special instead let it be allocated from
-> > > the global SVA PASID number space.    
+I have a patchset below depends on this one.
+
+https://lore.kernel.org/linux-iommu/20230327232138.1490712-1-jacob.jun.pan@linux.intel.com/T/#t
+
+Thank you everyone,
+
+Jacob
+
+On Thu, 23 Mar 2023 11:44:44 -0300, Jason Gunthorpe <jgg@nvidia.com> wrote:
+
+> On Wed, Mar 22, 2023 at 01:07:56PM -0700, Jacob Pan wrote:
+> > Hi all,
 > > 
-> > It's same to AMD and ARM SMMUv3, right? They also need an explicit
-> > reservation of PASID 0.
-> >   
-> yes, all IOMMU drivers need to do that. I will give it a try but might
-> need help to place the call.
-It might be simpler to just let SVA code allocate from 1 up instead of 0
-(as is in the current code). Global PASID allocator would still allow the
-full range from 0 to max. Then there is no change to architectures that
-don't support non-zero RID_PASID. For VT-d, it would still work in the
-future when we have nonzero RID_PASID. is that reasonable?
+> > This patch set removes unused VT-d virtual command interface followed by
+> > removal of the IOASID infrastructure.
+> > 
+> > This has only been tested on x86 platforms, need help with testing on
+> > ARM SMMU and other architectures.
+> > 
+> > 
+> > Thanks,
+> > 
+> > Jacob
+> > 
+> > ChangeLog:
+> > v8:
+> >  - remove #ifdef CONFIG_IOMMU_SVA since we have dummy inline functions.
+> >  - fixed a compile bug that affects bisectability  
+> 
+> I think this looks OK now, thanks
+> 
+> Jason
+
 
 Thanks,
 
