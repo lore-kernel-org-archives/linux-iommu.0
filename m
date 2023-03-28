@@ -1,112 +1,142 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB661EBB
-	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 06:33:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1679985196;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:mime-version:mime-version:content-type:content-type;
-	bh=q07QYa8jqlXV7LzxVNmZ0meSFMFXzUOL6F+BJeKO9po=;
-	b=KTNEqRHnh7BxXB2xMEneEgOHymtOkf1Is5g1mZ7D2lKp/9aC88zEma5xK6O4AvX2SN+Kf5
-	SMwpQeAvl1VZ+8AwR65d6UsdSkp3hXhvnhe0iHNIoKSc1P+vY0GoslfeP0qU+09ALfnNLc
-	n/+7vsbNHdzHf614aB5EvtcFHifnA2A=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-359-ELrRxD2XNlOu2eY9sXybkw-1; Tue, 28 Mar 2023 02:33:15 -0400
-X-MC-Unique: ELrRxD2XNlOu2eY9sXybkw-1
-Received: by mail-qt1-f200.google.com with SMTP id x5-20020a05622a000500b003e259c363f9so7509437qtw.22
-        for <iommu@lists.linux.dev>; Mon, 27 Mar 2023 23:33:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679985194;
-        h=content-disposition:mime-version:message-id:subject:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=q07QYa8jqlXV7LzxVNmZ0meSFMFXzUOL6F+BJeKO9po=;
-        b=DQ7SVzWlVK6Smzb9jdgQKB0rUC/TXTvLDGXC7zRPcVHCeeCnnfS5Hl/3rpp4/5yV7B
-         PI/WHoR8CIlExYs/nD47qpPTga/Jdzkn7uBpa2rzy8NYoN6zEItTNLoWKqbysj2ZQKlt
-         LVQ1IoGW7tz3vHAn80xjA+MWGLHibsrgexr4YTTOXjmSPGLL/SPA4fhRjuHd2QHybHTu
-         P/LF1zv4Rtj4zN51S64AJqFDOcr46GHNw6BotG+s3322L94Mu73ayimPFP7XnILoDnGJ
-         BBOy/hTsQPeKNQrGToyfDLJ0oVb455srrTvmu4VLUeSY4JbbusGZWBYMfZEgd4oryRcQ
-         yOcA==
-X-Gm-Message-State: AAQBX9fo7QsqfWlYtysgdJTxxl6sd5ACbxjd4vhFi7nMvxvrxaD6/dnI
-	FGyAIT9Nv/ilkMDFZXNc7u4F/RhD11Ku4WPgnMc4e4Ez57GAqsq6aB3RRmad36xg6dxLLbMDewM
-	UaUORYgh17dawd3PSTzHe+po=
-X-Received: by 2002:a05:622a:1355:b0:3e4:f04b:dc5c with SMTP id w21-20020a05622a135500b003e4f04bdc5cmr3016516qtk.41.1679985194327;
-        Mon, 27 Mar 2023 23:33:14 -0700 (PDT)
-X-Google-Smtp-Source: AKy350a+rWGGTY2mFekqcUySZNWppC/DS66byMXswuk5hRIdnPlhMXLgM1IpzmeiCD1bL1MjA+xFuw==
-X-Received: by 2002:a05:622a:1355:b0:3e4:f04b:dc5c with SMTP id w21-20020a05622a135500b003e4f04bdc5cmr3016498qtk.41.1679985194069;
-        Mon, 27 Mar 2023 23:33:14 -0700 (PDT)
-Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id q6-20020a37f706000000b0074235386738sm4060093qkj.37.2023.03.27.23.33.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Mar 2023 23:33:13 -0700 (PDT)
-Date: Mon, 27 Mar 2023 23:33:12 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Vasant Hegde <vasant.hegde@amd.com>, 
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev
-Subject: AMD v2 page tables
-Message-ID: <bfugskdi4oawsiqobmarhifwh2iy55av6unl2yuvbjyludy7cn@lw3pgvhuk52a>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CF24EBB
+	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 07:13:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazon201209;
+  t=1679987639; x=1711523639;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:mime-version:
+   content-transfer-encoding;
+  bh=cs515H+pAY5a8BjNWqt1o2h2IfKbYZ5CffOpLSxnAZU=;
+  b=LgFrmR6E+lck5soCo2CpA0FdWgr3oY5g0bb0JC/o9F8cxcmZqAbYXsIf
+   s6WpXBD3YxUvdox/FTwi6IxLf45gKQXkqb8bLpR3cGf+WDi3W2Rcl0Rdr
+   97NUMCOJbsaW+ErDtCzdubZOXeVwBX4/rt4zOuThLSIzjgLnEJvhHlkk/
+   s=;
+X-IronPort-AV: E=Sophos;i="5.98,296,1673913600"; 
+   d="scan'208";a="198148107"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-3e1fab07.us-east-1.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 07:13:56 +0000
+Received: from EX19D012EUA002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+	by email-inbound-relay-iad-1e-m6i4x-3e1fab07.us-east-1.amazon.com (Postfix) with ESMTPS id 8D44780C82;
+	Tue, 28 Mar 2023 07:13:53 +0000 (UTC)
+Received: from EX19D030EUC003.ant.amazon.com (10.252.61.173) by
+ EX19D012EUA002.ant.amazon.com (10.252.50.32) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Tue, 28 Mar 2023 07:13:53 +0000
+Received: from EX19D030EUC004.ant.amazon.com (10.252.61.164) by
+ EX19D030EUC003.ant.amazon.com (10.252.61.173) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.26;
+ Tue, 28 Mar 2023 07:13:52 +0000
+Received: from EX19D030EUC004.ant.amazon.com ([fe80::f98a:db18:b0eb:477]) by
+ EX19D030EUC004.ant.amazon.com ([fe80::f98a:db18:b0eb:477%3]) with mapi id
+ 15.02.1118.026; Tue, 28 Mar 2023 07:13:52 +0000
+From: "Krcka, Tomas" <krckatom@amazon.de>
+To: Will Deacon <will@kernel.org>
+CC: "Krcka, Tomas" <krckatom@amazon.de>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Lu Baolu <baolu.lu@linux.intel.com>, "Shameer
+ Kolothum" <shameerali.kolothum.thodi@huawei.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Fix event queue overflow
+ acknowledgment
+Thread-Topic: [PATCH] iommu/arm-smmu-v3: Fix event queue overflow
+ acknowledgment
+Thread-Index: AQHZYUTaFwYdqW+H5UaPJVsYwN0JvQ==
+Date: Tue, 28 Mar 2023 07:13:52 +0000
+Message-ID: <8845FA6A-45F1-4090-B4A2-C0C28F709095@amazon.com>
+References: <20230308092048.71390-1-krckatom@amazon.de>
+ <20230327121234.GA31342@willie-the-truck>
+In-Reply-To: <20230327121234.GA31342@willie-the-truck>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.1.212.24]
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <DC8E623EC41C2C43AD633B3F532E78AE@amazon.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I was looking at this the other day, and by chance booted it up on a
-system with a megaraid_sas controller in it. So it had an IVMD block
-for the scratchpad or whatever it is they do. During probing
-iommu_create_device_direct_mappings() gets called, and pgsize_bitmap
-for the iommu_domain is set to the V1 bitmap because that is the
-amd_iommu_ops default. So iommu_pgsize() uses that to figure out what
-page size to use for the mapping. Then when it gets into the amd
-mapping code it checks that page size against the io_pgtable_cfg
-pgsize_bitmap, which is set to the V2 bitmap, sees that it isn't
-a supported page size, and bails out of iommu_v2_map_pages().
 
-The following worked, but I'm not sure it is the right answer.
+> On 27. Mar 2023, at 14:12, Will Deacon <will@kernel.org> wrote:
+> =
 
-Regards,
-Jerry
+> =
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 5a505ba5467e..040199ac8546 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2048,6 +2048,8 @@ static int protection_domain_init_v2(struct protection_domain *domain)
- 
- 	domain->flags |= PD_GIOV_MASK;
- 
-+	domain->domain.pgsize_bitmap = AMD_IOMMU_PGSIZES_V2;
-+
- 	if (domain_enable_v2(domain, 1)) {
- 		domain_id_free(domain->id);
- 		return -ENOMEM;
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 10db680acaed..e70e5cbec8cc 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1964,8 +1964,13 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
- 		return NULL;
- 
- 	domain->type = type;
--	/* Assume all sizes by default; the driver may override this later */
--	domain->pgsize_bitmap = bus->iommu_ops->pgsize_bitmap;
-+	/*
-+	 * Assume all sizes by default if not already set;
-+	 * the driver may override this later
-+	 */
-+	if (!domain->pgsize_bitmap)
-+		domain->pgsize_bitmap = bus->iommu_ops->pgsize_bitmap;
-+
- 	if (!domain->ops)
- 		domain->ops = bus->iommu_ops->default_domain_ops;
- 
--- 
-2.38.1
+> On Wed, Mar 08, 2023 at 09:20:47AM +0000, Tomas Krcka wrote:
+>> When an overflow occurs in the event queue, the SMMU toggles overflow
+>> flag OVFLG in the PROD register.
+>> The evtq thread is supposed to acknowledge the overflow flag by toggling
+>> flag OVACKFLG in the CONS register, otherwise the overflow condition is
+>> still active (OVFLG !=3D OVACKFLG).
+>> =
+
+>> Currently the acknowledge register is toggled after clearing the event
+>> queue but is never propagated to the hardware. It would be done next
+>> time when executing evtq thread.
+>> =
+
+>> The SMMU still adds elements to the queue when the overflow condition is
+>> active but any subsequent overflow information after clearing the event
+>> queue will be lost.
+>> =
+
+>> This change keeps the SMMU in sync as it's expected by design.
+>> =
+
+>> Signed-off-by: Tomas Krcka <krckatom@amazon.de>
+>> Suggested-by: KarimAllah Ahmed <karahmed@amazon.de>
+>> ---
+>> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 1 +
+>> 1 file changed, 1 insertion(+)
+>> =
+
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu=
+/arm/arm-smmu-v3/arm-smmu-v3.c
+>> index f2425b0f0cd6..acc1ff5ff69b 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> @@ -1579,6 +1579,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, v=
+oid *dev)
+>>      /* Sync our overflow flag, as we believe we're up to speed */
+>>      llq->cons =3D Q_OVF(llq->prod) | Q_WRP(llq, llq->cons) |
+>>                  Q_IDX(llq, llq->cons);
+>> +     queue_sync_cons_out(q);
+>>      return IRQ_HANDLED;
+>> }
+> =
+
+> I think I probably did mean to have something like this, but can we
+> only do the actual h/w update if overflow has occurred? Otherwise I think
+> we're pointlessly writing back the same value most of the time.
+> =
+
+> Will
+
+Yes, we can, but then same applies for the priq as well, there we also writ=
+e back
+every time.
+
+Tomas
+
+
+
+Amazon Development Center Germany GmbH
+Krausenstr. 38
+10117 Berlin
+Geschaeftsfuehrung: Christian Schlaeger, Jonathan Weiss
+Eingetragen am Amtsgericht Charlottenburg unter HRB 149173 B
+Sitz: Berlin
+Ust-ID: DE 289 237 879
+
+
 
