@@ -1,43 +1,43 @@
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D659DAD53
-	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 19:36:46 +0000 (UTC)
-Received: by mail-wr1-f45.google.com with SMTP id h17so13344424wrt.8
-        for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 12:36:46 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04689AD59
+	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 19:36:47 +0000 (UTC)
+Received: by mail-wm1-f54.google.com with SMTP id q7-20020a05600c46c700b003ef6e809574so4952804wmo.4
+        for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 12:36:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112; t=1680032205;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112; t=1680032206;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=II92TSP623ZsHMmNH1N53jKIrTirkMn1oZIUlYAm+4I=;
-        b=UnBiVK6YghsHl07XrmVA7iw9ojH5dODe2FfxWjWLyqPnoJBGNIU3tc5LHJ3eJbanTj
-         7dugiriAO+w7cF0OVry1r3E1hmnlWGmeRpE9XGMXXthVvuWMIk5xBY2uC0YiTmQomv+R
-         e7iPeUndPAjKlUWvIgkOKH4aCrNMsZ0Mtst6UPx8DKbOoz2x4s9myH08n/NILU/oz0mL
-         t4cLcYRGU1JZqxZy90nDNquYyZNIqsoCNC4HKyHWNMAuiRaA8CDlzPE+ngv05KKeC9T+
-         sTDgrZ/295ZUYBj4R8+xg97VJQYV85XyrQ/Tx5HHqd7SNe0G8Lfralzt28aRMMd4JJIQ
-         4MZA==
+        bh=tXyJ56MXTgaGuaRJ30aQZ32hSfK274M12CnrDdVzkv0=;
+        b=7/ds7V0h2S7otrMbbA+WRdoPc9dImUqHRtmje+FNFsl9xyx9EEbO7F6HDPQCIW8WwV
+         JbmVJQ8SdGzxzuQbXVQcBJK3BW9aV2zP6ujODZez8NY/9GloaYqmSXhF2r4dptAO9KgS
+         sNXxr3lOn+gzuQUffD4qmT8I1IcpJGUsKu0Tqu/TacoI2TRS4pE3jPViB3eozKjC8C1W
+         yQ5jworz1MIfE+ckBqhkXMr4Ab9vymTkBVXnmPpqWilyKMIkNe/XC/Z+QI88ghg1qrLN
+         jmgGYn89SgZ6YEFa7w3E99kyzWWonxDnNn3Z5aUppiWgm5sIP+kyYbWp1wsgIDoVuomQ
+         nIWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680032205;
+        d=1e100.net; s=20210112; t=1680032206;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=II92TSP623ZsHMmNH1N53jKIrTirkMn1oZIUlYAm+4I=;
-        b=i9QWqsVVbAhcs2J2Qz2huP9+nBHbORz2gS9SPuqZfGMZeRZf2ISmEMPcoXjyNkpVjX
-         RtZjY07/p0t6MLSgbBbJOVP2om7F2z4LJ9wUDXgq9nWeyvhRpE3hg0dK0Z23HQpQnNe5
-         ZhRm4+UQ5JZoRJf//HFtNLXY0NY2zNUNJbkSKzH1hjlAMek0H1DEZlhn0cH6UzeAkraP
-         wd68hYURbfC7+DoFPFlIMCA167AVabeiH6sqFhepl6qFFXUOMnHkQh7ztAyw3TpTAMYU
-         t5dqbpkSPOSB7/BJ0xI0X7GUFEQLNtNBZh/oA9NwBWf3i/e03sPX6cBk3pngm5hGofvT
-         jl/A==
-X-Gm-Message-State: AAQBX9fiHcT4hzvkWzeB55YXJa60BNnNRX35crurXpT/OGKYUxvTVZLO
-	zC8eJQyq1ZhH1WjsqcODWRfNXA==
-X-Google-Smtp-Source: AKy350bXzku4wzIl4NfIK5nnFFMfXZalChqSzoJjak0wdI+0zym8rUOEJnnzJDdLv/O+FcLh/nBjBg==
-X-Received: by 2002:adf:e70c:0:b0:2ce:9f35:59c7 with SMTP id c12-20020adfe70c000000b002ce9f3559c7mr12069185wrm.45.1680032205100;
-        Tue, 28 Mar 2023 12:36:45 -0700 (PDT)
+        bh=tXyJ56MXTgaGuaRJ30aQZ32hSfK274M12CnrDdVzkv0=;
+        b=PeBfumK9LHmvO7ATjGlY9zKQcuMPmkQ01N2XHmrBfONog+EucoXUt7PbQLQR09uUyl
+         7MzIDZeFDiVEmJfWHq17SyeAhFtpqYZpv//gsvsG14ugTmoRyV5BLWHnQMROxoueb95z
+         vCpD0uzesuobknbQJsvYPvYQ09S0o+T6qwywkHs6+CoN3FBTgxxPggkjJusp/66Eipn0
+         8T6zmwMHkZTFab/FoLK2atmjNuxBeD2HqP1PUEq6urEe4+je2WLManYUQgg/13vlV4fa
+         Hp/Uj9vlK0hvg0CfWAPlJBiZJApKDhJmEf24Lujxgi/iV0L9Zg4LqfFhPv02vsrg+uOb
+         ptEw==
+X-Gm-Message-State: AO0yUKVAalzqVdJAonLI9cE4zHGk1TX9n1N82lC6I9d6nr6SvyHlB0fH
+	cN+nkNk8DmMYD9rtMfVhpnIbx2oN7+7kPXubNlw=
+X-Google-Smtp-Source: AK7set+9RumftxwVPieikWYJ/01dioKPsGwlkf5uBvJY7YPqr0n+6S9w+IiXnKmIGiAW+r20P998GQ==
+X-Received: by 2002:a7b:c04a:0:b0:3ee:6161:7d98 with SMTP id u10-20020a7bc04a000000b003ee61617d98mr13903002wmc.16.1680032206330;
+        Tue, 28 Mar 2023 12:36:46 -0700 (PDT)
 Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:7b39:552d:b2f1:d7e8])
-        by smtp.gmail.com with ESMTPSA id g23-20020a7bc4d7000000b003eb5ce1b734sm18060544wmk.7.2023.03.28.12.36.44
+        by smtp.gmail.com with ESMTPSA id g23-20020a7bc4d7000000b003eb5ce1b734sm18060544wmk.7.2023.03.28.12.36.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Mar 2023 12:36:44 -0700 (PDT)
+        Tue, 28 Mar 2023 12:36:45 -0700 (PDT)
 From: Bartosz Golaszewski <brgl@bgdev.pl>
 To: Andy Gross <agross@kernel.org>,
 	Bjorn Andersson <andersson@kernel.org>,
@@ -51,13 +51,10 @@ Cc: linux-arm-msm@vger.kernel.org,
 	linux-clk@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev,
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 4/7] dt-bindings: iommu: arm,smmu: enable clocks for sa8775p
-Date: Tue, 28 Mar 2023 21:36:29 +0200
-Message-Id: <20230328193632.226095-5-brgl@bgdev.pl>
+	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Subject: [PATCH 5/7] arm64: dts: qcom: sa8775p: add the pcie smmu node
+Date: Tue, 28 Mar 2023 21:36:30 +0200
+Message-Id: <20230328193632.226095-6-brgl@bgdev.pl>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230328193632.226095-1-brgl@bgdev.pl>
 References: <20230328193632.226095-1-brgl@bgdev.pl>
@@ -71,29 +68,98 @@ Content-Transfer-Encoding: 8bit
 
 From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-The KGSL iommu will require the clocks property to be set. Enable it for
-sa8775p in the bindings.
+Add the PCIe SMMU node for sa8775p platforms.
 
-Cc: Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>
 Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 ---
- Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 -
- 1 file changed, 1 deletion(-)
+ arch/arm64/boot/dts/qcom/sa8775p.dtsi | 74 +++++++++++++++++++++++++++
+ 1 file changed, 74 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-index 807cb511fe18..74d5164ed1e8 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-@@ -375,7 +375,6 @@ allOf:
-               - nvidia,smmu-500
-               - qcom,qcm2290-smmu-500
-               - qcom,qdu1000-smmu-500
--              - qcom,sa8775p-smmu-500
-               - qcom,sc7180-smmu-500
-               - qcom,sc8180x-smmu-500
-               - qcom,sc8280xp-smmu-500
+diff --git a/arch/arm64/boot/dts/qcom/sa8775p.dtsi b/arch/arm64/boot/dts/qcom/sa8775p.dtsi
+index 2343df7e0ea4..9ab630c7d81b 100644
+--- a/arch/arm64/boot/dts/qcom/sa8775p.dtsi
++++ b/arch/arm64/boot/dts/qcom/sa8775p.dtsi
+@@ -809,6 +809,80 @@ apps_smmu: iommu@15000000 {
+ 				     <GIC_SPI 891 IRQ_TYPE_LEVEL_HIGH>;
+ 		};
+ 
++		pcie_smmu: iommu@15200000 {
++			compatible = "qcom,sa8775p-smmu-500", "qcom,smmu-500", "arm,mmu-500";
++			reg = <0x0 0x15200000 0x0 0x800000>;
++			#iommu-cells = <2>;
++			#global-interrupts = <2>;
++
++			interrupts = <GIC_SPI 920 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 921 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 925 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 926 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 927 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 928 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 950 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 951 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 952 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 953 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 954 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 955 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 956 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 957 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 958 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 885 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 886 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 887 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 888 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 820 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 822 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 823 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 310 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 446 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 447 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 452 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 840 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 841 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 842 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 843 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 844 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 845 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 846 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 847 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 848 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 849 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 802 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 803 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 804 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 805 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 806 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 807 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 808 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 809 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 810 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 811 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 812 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 813 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 814 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 836 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 837 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 838 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 839 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 854 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 855 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 856 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 790 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 791 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 792 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 793 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 794 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 795 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 796 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 639 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 640 IRQ_TYPE_LEVEL_HIGH>;
++		};
++
+ 		intc: interrupt-controller@17a00000 {
+ 			compatible = "arm,gic-v3";
+ 			reg = <0x0 0x17a00000 0x0 0x10000>,     /* GICD */
 -- 
 2.37.2
 
