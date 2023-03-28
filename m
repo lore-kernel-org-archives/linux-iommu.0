@@ -1,122 +1,129 @@
-Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D52628BE0
-	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 15:20:56 +0000 (UTC)
-Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-54196bfcd5fso121137947b3.4
-        for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 08:20:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1680016856;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=5BDyXdwLNDkkL1EG1Vlg4E16wOafaNr02fD8vdba9Dk=;
-        b=RbKYy2noIQch80Msv5bqAn0EyQhd27bVKyUSI0EMZX8IuPWMo+mLVJKHSwqUfD5zMt
-         1S1fMEbHqh8a+fnJiferohyaGfiQ6WbTT2eMABg4attHMptZRuReJHL4lQdFgejv4vtM
-         s16zpjwXOQRsJ+YLsCocF7ZPAaq6tfdZ0Utq8NEh0JSnAfU1lch1kOy6Gb+T4vZK8OrP
-         j9izUYQxl9+jkwjEN+kCtsyZG+WnWn3bD5Uij8BqKyGQzOX6LsAfBmQUtIuzDz5IKQ4N
-         mj4ac674SwliP4++uxcrQMgQoUpTHfFDNqsYBozygFtoY0n9v2QBxuKjBdL7arM545og
-         Uw0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680016856;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=5BDyXdwLNDkkL1EG1Vlg4E16wOafaNr02fD8vdba9Dk=;
-        b=Eb96qrpbUhCQr+zlih2CVtp3lPselEkJkYqbSl3tjpugf1mfWbJQssjCRMrxZ1Chpv
-         Lb+ecYfSdDFHTtElgZ64rr9Nu0g/mqIX+wkMpNhZezf6TIO2hy/6vKXJNAlEXIB3rFUK
-         j6rKHw9ZopEx6QotpAP8nHBSwEFIcSXS6okUzaO+eP10/z7vVXoD0oSI0EKlTxjCjumu
-         MsP/u+ArALlkG39DpHauYAdOF7z5VL2Kc9lYwZ80JzC1EE6omIYZtSfKPWwVuuwiPTuX
-         cZnSHjL/90rZkROKTmn8cFIOxPIFqOlOksV3kgm7WEuzR923/jYuRMMO7PHS0x+tTdYH
-         8wBQ==
-X-Gm-Message-State: AAQBX9f5epNbmKkWDHWI0yY8oEjY43Z9+F0Pyw2HXbm+GSxQMSEbW1a5
-	KdlkcjBan172nek0FxsuB/W8H5F9TLQ=
-X-Google-Smtp-Source: AKy350Y8HtUvudF/HEaI9/VQYB1jeEz2Bcg1zL2sdiujAx+T2SuW0eY/9HbiCKVqy3WNPHtE3AE9PjyBVew=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a05:6902:10c3:b0:b75:9519:dbcd with SMTP id
- w3-20020a05690210c300b00b759519dbcdmr10605629ybu.12.1680016855844; Tue, 28
- Mar 2023 08:20:55 -0700 (PDT)
-Date: Tue, 28 Mar 2023 08:20:49 -0700
-In-Reply-To: <cde77b1f-e612-2a9e-e437-8892f7f1fde9@oracle.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E9FF8BE0
+	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 15:27:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680017229; x=1711553229;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=9pUw4qfwnuIM9w2+fwl4/XvGsd+TBbX0140QHxhWmfQ=;
+  b=mhqFed2VZtqPTwU03C/Grf0aGn4sYSVJFUbhwNHJ/if35BrWoOwx3OCl
+   AKETTW5GM6z1RCTDuVyzuYdIUO0jjDwIdQlkkHoN5HHf8aDjqCxeQlJy+
+   zo3bXF1UOwRmKTkBMEQnLTrfpLpp+U6UhhlQHehTyaTzFib9mPmzNaod5
+   MkbkH3ECewXfZZ8O2iLnl4F0Rhxmf+bTVR64WSAz9ZIulClp3v1EvAWT1
+   sSne0XEuUF+y8Ft6jAB9Q0HLsM0O25l25rbGAeHsX2mjTAJVHFNXo8G6o
+   hGBeR/+XHfbffKx5dFTfmM9zBkDJ+80Zt+BIe+k/ZQrJMGaaILj+JxHE7
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="426869781"
+X-IronPort-AV: E=Sophos;i="5.98,297,1673942400"; 
+   d="scan'208";a="426869781"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 08:27:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="683944706"
+X-IronPort-AV: E=Sophos;i="5.98,297,1673942400"; 
+   d="scan'208";a="683944706"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 08:27:07 -0700
+Date: Tue, 28 Mar 2023 08:31:10 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@nvidia.com>, Lu Baolu
+ <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "vkoul@kernel.org"
+ <vkoul@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon
+ <will@kernel.org>, "David Woodhouse" <dwmw2@infradead.org>, "Raj, Ashok"
+ <ashok.raj@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Yu, Fenghua"
+ <fenghua.yu@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Luck, Tony"
+ <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
+ jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v2 3/8] iommu/sva: Support reservation of global SVA
+ PASIDs
+Message-ID: <20230328083110.294a327c@jacob-builder>
+In-Reply-To: <BN9PR11MB527652D88D15437F52FCE8268C889@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20230327232138.1490712-1-jacob.jun.pan@linux.intel.com>
+	<20230327232138.1490712-4-jacob.jun.pan@linux.intel.com>
+	<BN9PR11MB527652D88D15437F52FCE8268C889@BN9PR11MB5276.namprd11.prod.outlook.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20230316200219.42673-1-joao.m.martins@oracle.com>
- <20230316200219.42673-2-joao.m.martins@oracle.com> <ZBODjjANx6pkq5iq@google.com>
- <655ac0f7-223b-9440-1bcb-e93af8915bfa@oracle.com> <ZB20W14VzVZZz+nI@google.com>
- <cde77b1f-e612-2a9e-e437-8892f7f1fde9@oracle.com>
-Message-ID: <ZCMF0ReWqG0Q7Zna@google.com>
-Subject: Re: [PATCH v2 1/2] iommu/amd: Don't block updates to GATag if guest
- mode is on
-From: Sean Christopherson <seanjc@google.com>
-To: Joao Martins <joao.m.martins@oracle.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Maxim Levitsky <mlevitsk@redhat.com>, Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, 
-	kvm@vger.kernel.org
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Mar 28, 2023, Joao Martins wrote:
-> [I was out sick, hence the delay]
-> 
-> On 24/03/2023 14:31, Sean Christopherson wrote:
-> > On Thu, Mar 16, 2023, Joao Martins wrote:
-> >> On 16/03/2023 21:01, Sean Christopherson wrote:
-> >>> Is there any harm in giving deactivate the same treatement?  If the worst case
-> >>> scenario is a few wasted cycles, having symmetric flows and eliminating benign
-> >>> bugs seems like a worthwhile tradeoff (assuming this is indeed a relatively slow
-> >>> path like I think it is).
-> >>>
-> >>
-> >> I wanna say there's no harm, but initially I had such a patch, and on testing it
-> >> broke the classic interrupt remapping case but I didn't investigate further --
-> >> my suspicion is that the only case that should care is the updates (not the
-> >> actual deactivation of guest-mode).
-> > 
-> > Ugh, I bet this is due to KVM invoking irq_set_vcpu_affinity() with garbage when
-> > AVIC is enabled, but KVM can't use a posted interrupt due to the how the IRQ is
-> > configured.  I vaguely recall a bug report about uninitialized data in "pi" being
-> > consumed, but I can't find it at the moment.
-> > 
-> > 	if (!get_pi_vcpu_info(kvm, e, &vcpu_info, &svm) && set &&
-> > 		    kvm_vcpu_apicv_active(&svm->vcpu)) {
-> > 
-> > 		...
-> > 
-> > 	} else {
-> > 			/* Use legacy mode in IRTE */
-> > 			struct amd_iommu_pi_data pi;
-> > 
-> > 			/**
-> > 			 * Here, pi is used to:
-> > 			 * - Tell IOMMU to use legacy mode for this interrupt.
-> > 			 * - Retrieve ga_tag of prior interrupt remapping data.
-> > 			 */
-> > 			pi.prev_ga_tag = 0;
-> > 			pi.is_guest_mode = false;
-> > 			ret = irq_set_vcpu_affinity(host_irq, &pi);
-> > 	}
-> > 
-> > 
-> 
-> I recall one instance of the 'garbage pi data' issue but this was due to
-> prev_ga_tag not being initialized (see commit f6426ab9c957).
+Hi Kevin,
 
-Yep, that's the one I was trying to recall.
+On Tue, 28 Mar 2023 07:35:43 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+wrote:
 
-> As far as I understand, AMD implementation on irq_vcpu_set_affinity will
-> write back to caller the following fields of pi:
+> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Sent: Tuesday, March 28, 2023 7:22 AM
+> > 
+> > +/**
+> > + * @brief
+> > + *	Reserve a PASID from the SVA global number space.
+> > + *
+> > + * @param min starting range, inclusive
+> > + * @param max ending range, inclusive
+> > + * @return The reserved PASID on success or IOMMU_PASID_INVALID on
+> > failure.
+> > + */
+> > +ioasid_t iommu_sva_reserve_pasid(ioasid_t min, ioasid_t max)
+> > +{
+> > +	int ret;
+> > +
+> > +	if (!pasid_valid(min) || !pasid_valid(max) ||
+> > +	    min == 0 || max < min)
+> > +		return IOMMU_PASID_INVALID;
+> > +
+> > +	ret = ida_alloc_range(&iommu_global_pasid_ida, min, max,
+> > GFP_KERNEL);
+> > +	if (ret < 0)
+> > +		return IOMMU_PASID_INVALID;
+> > +
+> > +	return ret;
+> > +}
+> > +EXPORT_SYMBOL_GPL(iommu_sva_reserve_pasid);
+> > +  
 > 
-> - prev_ga_tag
-> - ir_data
-> - guest_mode (sometimes when it is unsupported or disabled by the host via cmdline)
+> Look at this function. There is no single word about sva except
+> in the function name.
 > 
-> On legacy interrupt remap path (no iommu avic) the IRQ update just uses irq data
-> mostly. It's the avic path that uses more things (vcpu_data, ga_tag, base,
-> ga_root_ptr, ga_vector), but all of which are initialized by KVM properly already.
+> sva is just one user of global pasids.
+> 
+> when a driver supports sva it has to always use global pasids even
+> for non-sva usages like dma pasid.
+> 
+> but this doesn't mean that we should build the API around sva.
+> 
+> it's really about global pasids.
+> 
+> let's just call it clearly as iommu_alloc_global_pasid(min, max).
+> 
+> Then we can define a wrapper iommu_reserve_global_pasid(pasid)
+> as iommu_alloc_global_pasid(pasid, pasid).
+> 
+> for PASID#0 driver calls iommu_reserve_global_pasid(0).
+> 
+> for dma pasid driver calls iommu_alloc_global_pasid() to get a random
+> one instead of reserving pasid#1.
+> 
+> this would be future proof when the same driver starts to allocate
+> more pasids for other usages e..g siov.
+I don't have strong preference here. Jason and others?
 
-Ya, on my Nth read through, I don't see any issues with KVM's behavior.  I was
-thinking that KVM's "pi" could bleed into amd_iommu_deactivate_guest_mode(), but
-I had just gotten turned around by the many "data" variables.  Bummer.
+For the DMA vs. SVA use cases, these APIs are used to carve out PASIDs from
+the SVA space. Let it be the entire global space or a subset, we don't care.
+We just don't want conflicts with SVA. e.g. if the SVA space shrank in the
+future, this still works.
+
+Thanks,
+
+Jacob
