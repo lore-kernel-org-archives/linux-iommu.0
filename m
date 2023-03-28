@@ -1,53 +1,55 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E273433D9
-	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 13:13:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 20588749D
+	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 13:18:51 +0000 (UTC)
 Received: from 8bytes.org (p200300c27714bc0086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:7714:bc00:86ad:4f9d:2505:dd0d])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id E1528243320;
-	Tue, 28 Mar 2023 15:13:58 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id ADE4B243E72;
+	Tue, 28 Mar 2023 15:18:50 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1680009239;
-	bh=siVvYTCQb0ZSa9thXjSJwXr3U3XCeqEfC9Xp+vXUmBU=;
+	s=default; t=1680009530;
+	bh=DLtnJXx6M4haUdmi86w6QqevTK44QpcnHRXpjyULjLg=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=UoUs0ZbMCV++pSZwoOHyya0Ceb6ZFRWrm84QzYVZLDMaOuG1wmDpX6m7GR9n+jlAg
-	 6HAISvLJHQYWRusrZ0gyUHPMdB6guGI9yNd1oh0BZX18UE3GwQkgMm961ximZv6m1i
-	 kZWehK4xif5GTKsvdR1+Wnhz1sdUge+hfycyf2PE25DgUvsqEoBPAWbptJoleduBaf
-	 4DO7bnoxgmsoBSqv8l4EP2hWTT9/VK9ukrvRNLJmj3aOgIdDcX1fn2yJnW9OjgqRIU
-	 RBqLFW+nlGAjSpt//fqLcGfi4p6Bo9hAVltBZCPoKRq0/J6tTQMrWWTz6CX97z9Vt4
-	 I2RUEI0xakbew==
-Date: Tue, 28 Mar 2023 15:13:57 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Chunyan Zhang <zhang.lyra@gmail.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev, Baolu Lu <baolu.lu@linux.intel.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	LKML <linux-kernel@vger.kernel.org>,
-	Chunyan Zhang <chunyan.zhang@unisoc.com>
-Subject: Re: [PATCH V3 0/2] Add reattaching support and fix memory leak issue
-Message-ID: <ZCLoFSRnzl/xLo9L@8bytes.org>
-References: <20230313075017.668204-1-chunyan.zhang@unisoc.com>
- <CAAfSe-tg7JwakdCcoLn3Ws_164HcsT21pWHkjjw0Qqwy8PWkhQ@mail.gmail.com>
- <ZCFNRfpUHbaGBvJb@8bytes.org>
- <CAAfSe-stDTabua1EMQBF-xp_=zyn6yzrRR9VFmzyQ6jwzufMfA@mail.gmail.com>
+	b=2/LVvTDcJoy5hFvrgO7kUZ86PI5STEdCre33Tk1y1CtjX4K9ERu9dqm08D28uw/N0
+	 rWnKYxFxbAO2EWfzNToaV9c6vtIf6NGyk8O9sm3zLbo8KCpbLDRoDGSHs7J/x4G7ts
+	 5d5VWwUWg+jgAnnBOv4CMsedAs7FNJ4UIycClbgoqQLL3dhwG737khgCWk2k/DTSHv
+	 XW+lDt6soYXS6EvQjXIpdPjnnNBfwgnd3Tpe59KD3ag7e4XrO/KVazUQZDSpG83NjV
+	 8Qm7LA1jPU1wtrA2s7RxdiFOBkQH8/qraafre1AQNO/yEM1MHGLRLXpnY3E3OhmQYQ
+	 D4uhTSvDPD2xg==
+Date: Tue, 28 Mar 2023 15:18:49 +0200
+From: "joro@8bytes.org" <joro@8bytes.org>
+To: Yong Wu =?utf-8?B?KOWQtOWLhyk=?= <Yong.Wu@mediatek.com>
+Cc: "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Jianjiao Zeng =?utf-8?B?KOabvuWBpeWnoyk=?= <Jianjiao.Zeng@mediatek.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	Chengci Xu =?utf-8?B?KOiuuOaJv+i1kCk=?= <Chengci.Xu@mediatek.com>,
+	YF Wang =?utf-8?B?KOeOi+S6kemjnik=?= <YF.Wang@mediatek.com>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"krzysztof.kozlowski+dt@linaro.org" <krzysztof.kozlowski+dt@linaro.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+	"angelogioacchino.delregno@collabora.com" <angelogioacchino.delregno@collabora.com>,
+	"will@kernel.org" <will@kernel.org>
+Subject: Re: [PATCH v2] iommu/mediatek: Set dma_mask for PGTABLE_PA_35_EN
+Message-ID: <ZCLpOWK90pnNNYxj@8bytes.org>
+References: <20230316064251.7346-1-yong.wu@mediatek.com>
+ <ZBsRlgJIaQieIbzU@8bytes.org>
+ <5555473c3f3a49656d8e62479aa2c0b9d6d8d7e1.camel@mediatek.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAAfSe-stDTabua1EMQBF-xp_=zyn6yzrRR9VFmzyQ6jwzufMfA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <5555473c3f3a49656d8e62479aa2c0b9d6d8d7e1.camel@mediatek.com>
 
-On Tue, Mar 28, 2023 at 10:57:30AM +0800, Chunyan Zhang wrote:
-> Have sent it to you.
+On Thu, Mar 23, 2023 at 11:32:38AM +0000, Yong Wu (吴勇) wrote:
+> Thanks very much for the applying. I'm sorry I had a typo in this
+> version. Is it possible to use v3 instead?
 
-I see, can you please re-send the patch-set to me from a properly
-configures email domain?
-
-Regards,
-
-	Joerg
+Done. Thanks for the heads-up.
