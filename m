@@ -1,149 +1,138 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2043.outbound.protection.outlook.com [40.107.92.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD953882B
-	for <iommu@lists.linux.dev>; Wed, 29 Mar 2023 21:45:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1680126333;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=lXHz4bzMg4iWUG5B7slBefzvXR6XUmGmK2zNQpGdaVY=;
-	b=FRhR7Jb+JzFmaxCyU73PYxYc90O8iamWw4myXbckYs+rdDm7D+Zv/IHhwm5NXDIOZB/6uU
-	kkpJfp9JRBqHMDsnfG3BaL0TAppdf4FugN2hiWO5Ts6xi2ukiUP6r6BBuspsPb4dGqjFSt
-	gaOCYI8dOFhO27DGlujFvL1zduXFxBA=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-619-zlfqfSiTNnS6BVKqBHMCMQ-1; Wed, 29 Mar 2023 17:45:29 -0400
-X-MC-Unique: zlfqfSiTNnS6BVKqBHMCMQ-1
-Received: by mail-qt1-f197.google.com with SMTP id m7-20020a05622a118700b003e4e203bc30so8734755qtk.7
-        for <iommu@lists.linux.dev>; Wed, 29 Mar 2023 14:45:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680126329;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lXHz4bzMg4iWUG5B7slBefzvXR6XUmGmK2zNQpGdaVY=;
-        b=VGWEsKyWfg5ZQ/5SaBboN7u6MHeDbZtz70cmPJLJYo7S5Y3iFMYHJnwikrJk7k5+IQ
-         GrOi4dwzFPycpRllrXJaW72zI4E3rHJAI6m5tWbnIGmOsqIiDPeiWfx4dkP5FQgBsNgm
-         wCgGTKYshiMt/NoK8ureO2nwFNpgRV/CBVOz21SWzWgvtoUbnnPbBol2y4KV0Is9fBZA
-         H1uf5Kn0xbckeFmcYl7w0f8cjyqcy6fTjeNhkCsa6B8cBkDueiw+CJ69LMrLq+B5clim
-         73/Wo9F1hNGDbRk6niDwOKOnhQE18G7dnqYG/RVGKb0xzv2p4Wlg90jGZgKurel2A/y2
-         wdGg==
-X-Gm-Message-State: AAQBX9fezscU9q82tVysqbNj+Que2cmEVtzlbt7XvsCrT5GvizW28zGv
-	sDEETaojk+K05r8wfQ+wl3PY+rLgL1XpJ5oQR6OPSXEpgygid5MLMJ0fR2rcXqep6+XIXelZsqk
-	hnbBrA/K7whFGxYE=
-X-Received: by 2002:a05:6214:d62:b0:5bd:14f9:650d with SMTP id 2-20020a0562140d6200b005bd14f9650dmr38886236qvs.36.1680126328884;
-        Wed, 29 Mar 2023 14:45:28 -0700 (PDT)
-X-Google-Smtp-Source: AKy350aXpUk7Ahea0RsCDHilKgsMiNK6MkJ17b/YCavFdWrxMeMIWUmS9AOXV0Ct+MbDYKgIhr9e1w==
-X-Received: by 2002:a05:6214:d62:b0:5bd:14f9:650d with SMTP id 2-20020a0562140d6200b005bd14f9650dmr38886207qvs.36.1680126328605;
-        Wed, 29 Mar 2023 14:45:28 -0700 (PDT)
-Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id g11-20020ad457ab000000b005dd8b9345c2sm4968709qvx.90.2023.03.29.14.45.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Mar 2023 14:45:28 -0700 (PDT)
-Date: Wed, 29 Mar 2023 14:45:26 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Vasant Hegde <vasant.hegde@amd.com>, 
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-Subject: Re: Reserved Memory Regions (was: AMD v2 page tables)
-Message-ID: <ikavmqdtuwuajzzyg6teyhsowvv5wbqcidaz4rituuzdm2uore@ried6bsjdxsx>
-References: <bfugskdi4oawsiqobmarhifwh2iy55av6unl2yuvbjyludy7cn@lw3pgvhuk52a>
- <6zanf6rxogeyaiavva2e5z2b3vdjod4bzyddy2o73xpuhf3lym@zwag664axipl>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0132CAD30
+	for <iommu@lists.linux.dev>; Wed, 29 Mar 2023 23:35:48 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RryMmsWV6gdfMUGBW1LU2DeOt2tTZClsw0b6GS6z3DdNKV4o2bQwhPEooMVuLMlBBUhzvPmfjW1yA2qvPSGcpc8qqLHj7DQJQ/C61vNJGzyWpSGW4c4qSl7O5lVVIYJZL0JSQN/axBtSDgMJwnuUOGi4dbKFIegCroGfXjypFSQnc3dPDAQWqhGXG6UbHlqKzplbqqhSKGqVtGhmsrN05T9vlowV8n3yvan3mrCcRkFQt0DySuAhSWlF112mKEqN/hNRVfFFkdqq84l+Gg3r/1+otoYXPS7WUU14GwXydvRnDtTvcma5gSRPGDKHZhwsFu2y2+i6GNlW4hNefqJwhQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=23kyaiAUao+zuPQ+f9aPdnrW3jppzJsPaz2AriRAV6Q=;
+ b=ThNhp4f/BuG6HJSfFBQiKbjpgQcIUnAq+X+e9FA4baeGEojjptRTsTsKZjF0vgsVg5fRB4WU+bX8wQJmkr+HU6WF/GDexEqT+SCtQvzCey/Lwv1FUqh/o52hmsd/MnpT6h4yD+tnPyf2/YaGtXov5L000v50L6ByQiF5ybsjJkdjmwWEH771CjNy9Q9yk+xf0LZzZmSQcLNSz03LrIZYJ0k/TRkDKtA81hyHHh8pGNzI9Yf1x6iUfGvnScSk6NqGYGw5vsDr7CmBCdqXTsChqznxo6d9QoXkNMbvUeboKxR+5QL1f3LlbZ5mZN0C/anXNEyjhpQYUBr0uoEn1D1ZIg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=23kyaiAUao+zuPQ+f9aPdnrW3jppzJsPaz2AriRAV6Q=;
+ b=MVJbcE2T83Zwb4AtSeqvnpQ8xK2gsnur6F2B0hQ9DiSrhiBQtET06V6MBgedIUlLJn83Ob4yWM0e3DdS2idKxg0UFKr6OJZGdWloaJ9HCyuA43E4HpwiqE1GXxt4h/fUchHla8iizJQGwzxt99XLt74z9weUR9LhwrgNyDYPIyosBD4/3REs51slQumtrTyUdlFrFAVlRL0C0e+vLG6iCfANcuDBQ/3JB0wGyz9VOX44r30pvx8Enst5UBmUoe0eE/GJKf1/GgAXxHEiQIZtycZKYjeYvNtjNNv0GQOqHaIoKp82HQdAz4LEoBI1yUUcWPCdUbni3LFIVw4by5ezrA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DM6PR12MB4515.namprd12.prod.outlook.com (2603:10b6:5:2a1::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.35; Wed, 29 Mar
+ 2023 23:35:46 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::ef6d:fdf6:352f:efd1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::ef6d:fdf6:352f:efd1%3]) with mapi id 15.20.6178.037; Wed, 29 Mar 2023
+ 23:35:46 +0000
+Date: Wed, 29 Mar 2023 20:35:45 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
+	linux-kselftest@vger.kernel.org
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, kvm@vger.kernel.org,
+	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH v4 00/17] Add iommufd physical device operations for
+ replace and alloc hwpt
+Message-ID: <ZCTLUTHiYzexhFPE@nvidia.com>
+References: <0-v4-9cd79ad52ee8+13f5-iommufd_alloc_jgg@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0-v4-9cd79ad52ee8+13f5-iommufd_alloc_jgg@nvidia.com>
+X-ClientProxiedBy: BL0PR05CA0023.namprd05.prod.outlook.com
+ (2603:10b6:208:91::33) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <6zanf6rxogeyaiavva2e5z2b3vdjod4bzyddy2o73xpuhf3lym@zwag664axipl>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM6PR12MB4515:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2a27b432-34b0-41fa-00d1-08db30ae51e8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	mFvU1rmxlTqCu15ESUhj6g2zXMqSNc9OKo1nz3V1q9i5vBQUPe2yZEeRdHQZwmSQ8IcOQdj8UnfeBSbWgE4XHmK1IPMJm1+n44GUMPQnygiwvpfyJsJlYkyy7f5JKRDyvpkY0xxFuw5wxZgmifMIBwQ1MH3IG0o30gyqHJKfiOOzDyM5Il7C2q0U9sYzGkfkZ9AoP8FByWRIh1PtKsDQD5OjwtQdJnosH+z45P05McK9CRqqMY/ak0wufUfZ/TnVZJrz2UcWsvBk/GtKqKDtrfYnCSp69kmfSmddRYmPCgbFyBGXqWjg2/5F+SX6D9wSEiqXG+Sje/tiNbjj4dbNetpeNTfU6AxMp7ogxCAcp5+RvjW3MioXD7s5DAKzFix7PCVGaWRvhjs6O6yzrlhvgIYno2Y4xJr8RuM5mPKgI92VEVXQRoxxXSzJBbuJ6dFUvl7sSrA/KwGnllUXHQlcx7TYOfcv/A1OOLkoaUaAEADIMsuC6bIqtxYOfpatxgKHPWzvi9uOwfS/M/bogCL5iVIsnK51D2eQIxSieNFa4NBwbR6H2cIDOiYlt3Kh0GXz
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(39860400002)(346002)(366004)(376002)(136003)(451199021)(83380400001)(8676002)(4326008)(36756003)(5660300002)(86362001)(41300700001)(8936002)(38100700002)(6486002)(6512007)(6506007)(26005)(316002)(478600001)(2906002)(2616005)(66946007)(54906003)(66476007)(66556008)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?1dpk7JsgLfpUAwfnE8hUzlcOgYGeUlUIoxAMvNy8kUxQZ7lvPgLuJ4+tH9Yi?=
+ =?us-ascii?Q?0hPnKWyElJb0xxJPKcyTr/botGV/RZbE5Sa4/8G3LA+LoOv9i/+4GIAWKb0I?=
+ =?us-ascii?Q?uM4W7Mub0jQ+VwnqNfcqsHZHjh6OawItwUib52n3qfsUPrjjN5hxHpFN/6FJ?=
+ =?us-ascii?Q?HhCwQ66ml0j+iSQdeBmg/WMhZBKZ1Cvpe2MR/D4iPdm9PxlrD4oydHLQORo2?=
+ =?us-ascii?Q?ObzCfm2GYmhjpcyhYJKmngM1SSF5zuuuCx3CsBYcJlwAv7aYIPnnOPB2p2Bz?=
+ =?us-ascii?Q?MN1P7qpM/REvtNJuJLhW+N3CQvEho8uLPX6fWhTZZzJmdsiQoybsm8gbO81x?=
+ =?us-ascii?Q?BSeGdeVMVVmbM5HEJxQnntDPMRkM4wmZX8+R3AtfYJSyKfEry16/escyRkDc?=
+ =?us-ascii?Q?gnInHYlGRgd1RaNqUbyvHoISZiWHMjZ5wP+0sCThWL71u2AObvAoGcxyG0CM?=
+ =?us-ascii?Q?Vcp9DZcvQgbimuLXFo9+oTxtkOxsGi6XbhDQjGRh49osEYKD8cTI6gWEN3EK?=
+ =?us-ascii?Q?sHlsXovvqkzpQrL5xw//aSFqJrpvq3wWvAa9ycIuFjZQYcYbpp/lEZCXvpWF?=
+ =?us-ascii?Q?tqsAe32r8x449euQJNbKSAxTndw4om/DG7Rp8ON6LDSezF9J9f50w2sYAZif?=
+ =?us-ascii?Q?mJwi2w8toho6ySNKUySnLkKueF8BqZkBY/BFAKcaiwzqTzoAqvN3OwBwAMXA?=
+ =?us-ascii?Q?liquXF+0lcCEFqqY3BGoCr6WbyiYbAe7BVk51G12wZM2ebSriYwcEHf9RzYt?=
+ =?us-ascii?Q?rpSN2coyYRdKsXKWKxCpNyPp2EKn5f0iH+x0ieQIJsEjT6MmOi79aThQvk3O?=
+ =?us-ascii?Q?fnAMzsnQ1Y2dkkhxkyJHj7qndBxdNHRzD+uLVMawHRJYy2cVMce7fLLpXYLu?=
+ =?us-ascii?Q?/IPAFD9V3DND9TmBSoRQZCYawhR6K64Xdg8BAOx6EvfUqyN24fmXo/YIhbQz?=
+ =?us-ascii?Q?LR3G/Apd7sft+kXlN/6NJXfQSQQRjG6CmGyevRgNbpPABUDHlXe2eqEWsMPf?=
+ =?us-ascii?Q?Wp3PmtHEpeR8Q+SjwCqD5xWgY2HJ95r+2l6TMg17lcSDJCk1kKTiTRn5iEv2?=
+ =?us-ascii?Q?Lcm0CF5GQrg1H3ylE6o0/gKaj8sokjwUkovMkmNEVuKPiLHIJD/35gE9vSbn?=
+ =?us-ascii?Q?6OXo8dwIa8tGOqX7sPjTK6uCEPQUHLt4VfERddDqx5G0U2D8L+RzF9gOgt8G?=
+ =?us-ascii?Q?BTCx+aQfljnT2RODw0EcDxdeOfvEJNaEyskLa/p5QqDJoRkch/fJkzCaaI/5?=
+ =?us-ascii?Q?xueJA0ABjwzneqsOipayLqg+rnoZrz3XHi4cHkgcfvQXCuXxajgbJy5mFbqk?=
+ =?us-ascii?Q?Zb5GvOtmb31AUqvNBMEaglCy6cGOwAvk6GpS4XIQ2iSnSb/T1FEMIjKKrJkY?=
+ =?us-ascii?Q?zlUNPAiUDqwNcJ8lkH9A2vWWPiAvaWDqCuyNRg0iJx2tlrEfSx0vWFDDt3Cm?=
+ =?us-ascii?Q?GNWNWFjdgZH0MQyQBkzsjYsxSv47E/btYeV6EMk8Yg/vUHIOnDwE+XTHOS5T?=
+ =?us-ascii?Q?YXp2VS8uHH4Y/imOrto1hyfzquMDeOn4ilxg38Vv4ngrJAl33UycqgXL/DqR?=
+ =?us-ascii?Q?CXtAPJaqAn4yLzKjqK/zk8IiAuFCbldIM85fxpz3?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2a27b432-34b0-41fa-00d1-08db30ae51e8
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Mar 2023 23:35:46.1533
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: t1lKAVsf2dDHtiHQwSVT6reustUaDY5GMOu//mzldZoPThLiyG7MHJfSMAFTcy14
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4515
 
-On Wed, Mar 29, 2023 at 01:48:23PM -0700, Jerry Snitselaar wrote:
-> On Mon, Mar 27, 2023 at 11:33:12PM -0700, Jerry Snitselaar wrote:
-> > I was looking at this the other day, and by chance booted it up on a
-> > system with a megaraid_sas controller in it. So it had an IVMD block
-> > for the scratchpad or whatever it is they do. During probing
-> > iommu_create_device_direct_mappings() gets called, and pgsize_bitmap
-> > for the iommu_domain is set to the V1 bitmap because that is the
-> > amd_iommu_ops default. So iommu_pgsize() uses that to figure out what
-> > page size to use for the mapping. Then when it gets into the amd
-> > mapping code it checks that page size against the io_pgtable_cfg
-> > pgsize_bitmap, which is set to the V2 bitmap, sees that it isn't
-> > a supported page size, and bails out of iommu_v2_map_pages().
-> > 
-> > The following worked, but I'm not sure it is the right answer.
-> > 
-> > Regards,
-> > Jerry
-> > 
-> > diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> > index 5a505ba5467e..040199ac8546 100644
-> > --- a/drivers/iommu/amd/iommu.c
-> > +++ b/drivers/iommu/amd/iommu.c
-> > @@ -2048,6 +2048,8 @@ static int protection_domain_init_v2(struct protection_domain *domain)
-> >  
-> >  	domain->flags |= PD_GIOV_MASK;
-> >  
-> > +	domain->domain.pgsize_bitmap = AMD_IOMMU_PGSIZES_V2;
-> > +
-> >  	if (domain_enable_v2(domain, 1)) {
-> >  		domain_id_free(domain->id);
-> >  		return -ENOMEM;
-> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > index 10db680acaed..e70e5cbec8cc 100644
-> > --- a/drivers/iommu/iommu.c
-> > +++ b/drivers/iommu/iommu.c
-> > @@ -1964,8 +1964,13 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
-> >  		return NULL;
-> >  
-> >  	domain->type = type;
-> > -	/* Assume all sizes by default; the driver may override this later */
-> > -	domain->pgsize_bitmap = bus->iommu_ops->pgsize_bitmap;
-> > +	/*
-> > +	 * Assume all sizes by default if not already set;
-> > +	 * the driver may override this later
-> > +	 */
-> > +	if (!domain->pgsize_bitmap)
-> > +		domain->pgsize_bitmap = bus->iommu_ops->pgsize_bitmap;
-> > +
-> >  	if (!domain->ops)
-> >  		domain->ops = bus->iommu_ops->default_domain_ops;
-> >  
-> > -- 
-> > 2.38.1
-> > 
+On Mon, Mar 27, 2023 at 03:37:54PM -0300, Jason Gunthorpe wrote:
+> This is the basic functionality for iommufd to support
+> iommufd_device_replace() and IOMMU_HWPT_ALLOC for physical devices.
 > 
-> Hi Will and Robin,
+> iommufd_device_replace() allows changing the HWPT associated with the
+> device to a new IOAS or HWPT. Replace does this in way that failure leaves
+> things unchanged, and utilizes the iommu iommu_group_replace_domain() API
+> to allow the iommu driver to perform an optional non-disruptive change.
 > 
-> Is this a potential issue for arm with the recent RMR changes, and the default page size bitmap being -1UL?
-> Where I ran into this for the AMD code was in the loop in bus_iommu_probe():
+> IOMMU_HWPT_ALLOC allows HWPTs to be explicitly allocated by the user and
+> used by attach or replace. At this point it isn't very useful since the
+> HWPT is the same as the automatically managed HWPT from the IOAS. However
+> a following series will allow userspace to customize the created HWPT.
 > 
-> 		/* Try to allocate default domain */
-> 		probe_alloc_default_domain(bus, group);
+> The implementation is complicated because we have to introduce some
+> per-iommu_group memory in iommufd and redo how we think about multi-device
+> groups to be more explicit. This solves all the locking problems in the
+> prior attempts.
 > 
-> 		if (!group->default_domain) {
-> 			mutex_unlock(&group->mutex);
-> 			continue;
-> 		}
+> This series is infrastructure work for the following series which:
+>  - Add replace for attach
+>  - Expose replace through VFIO APIs
+>  - Implement driver parameters for HWPT creation (nesting)
 > 
-> 		iommu_group_create_direct_mappings(group);
-> 
-> 		ret = __iommu_group_dma_first_attach(group);
-> 
-> 
-> 
-> IIUC, arm will set the domain bitmap with the attach after the call to iommu_group_create_direct_mappings()?
-> 
+> Once review of this is complete I will keep it on a side branch and
+> accumulate the following series when they are ready so we can have a
+> stable base and make more incremental progress. When we have all the parts
+> together to get a full implementation it can go to Linus.
 
-Ah, I see that the default gets set during the probe of the smmu, and avoids this.
+I think this is reviewed now, so I've put it on a side branch
+"wip/for-nesting" until we get enough to have the replace series
 
-> Regards,
-> Jerry
-> 
-
+Thanks,
+Jason
