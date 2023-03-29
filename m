@@ -1,102 +1,76 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C5DC2772D
-	for <iommu@lists.linux.dev>; Tue, 28 Mar 2023 21:36:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680039416; x=1711575416;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=lRUDa9QZQb0fXRVcvHKDEfHg8a2PZVa5X7ucZyjCT30=;
-  b=Z+dtVwNP4mFnIWP6WhNN23LsHkxdihkHjHsjHXJwZ/TOZgNcyL7rxGFA
-   n1+2MN0ASbKDguIk9LdeVpNhw5ggI4hq2xmA1Xxm2fv2bwtN9aIqaNeKw
-   4lXlMIhOSO1fdAUKw2uc4q5WQ4qJmKfN+styqGcAJKRJJBE4heZMpD0i4
-   srMf3sTlnJ3VKD5BcDoUfyECIBR0dvkdgpM4rs4R5SFfphoXZPLzYDfYx
-   EWLElmvPwluyPumGY8WywYitLIAIUthti8UgiEGr0yhvL3LAUQfAy5YCz
-   fikeNYYYR6QxkRCUAIe/WaMdp0+z2Y5s6/C4OU6MA9Oc2eioU0KwEtVFR
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="403313680"
-X-IronPort-AV: E=Sophos;i="5.98,297,1673942400"; 
-   d="scan'208";a="403313680"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 14:36:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="748539872"
-X-IronPort-AV: E=Sophos;i="5.98,297,1673942400"; 
-   d="scan'208";a="748539872"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 14:36:54 -0700
-Date: Tue, 28 Mar 2023 14:40:57 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Lu Baolu
- <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Jean-Philippe
- Brucker <jean-philippe@linaro.com>, Robin Murphy <robin.murphy@arm.com>,
- Dave Hansen <dave.hansen@intel.com>, Thomas Gleixner <tglx@linutronix.de>,
- X86 Kernel <x86@kernel.org>, bp@alien8.de, "H. Peter Anvin"
- <hpa@zytor.com>, Peter Zijlstra <peterz@infradead.org>, corbet@lwn.net,
- vkoul@kernel.org, dmaengine@vger.kernel.org, linux-doc@vger.kernel.org,
- Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Raj
- Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
- <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>, Dave Jiang
- <dave.jiang@intel.com>, Kirill Shutemov <kirill.shutemov@linux.intel.com>,
- Tony Luck <tony.luck@intel.com>, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v8 0/7] Remove VT-d virtual command interface and IOASID
-Message-ID: <20230328144057.73ce8565@jacob-builder>
-In-Reply-To: <ZBxl3FgN/m2Qus7V@nvidia.com>
-References: <20230322200803.869130-1-jacob.jun.pan@linux.intel.com>
-	<ZBxl3FgN/m2Qus7V@nvidia.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 527577B
+	for <iommu@lists.linux.dev>; Wed, 29 Mar 2023 02:15:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 135A3C433EF;
+	Wed, 29 Mar 2023 02:15:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1680056111;
+	bh=mmaj+tYf3L24Jfgcy+JEgm6ISFS2CI7kguFMstQHqE0=;
+	h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+	b=IJmMIO3UosSjTvoqQNhEdIbe5ssCUtGU4td0tz1/bOyMjMkGF4+VtXT9Rg9baFN8R
+	 7UHWQMknV+asmp4bajLNihXMn5zkg6SgwUlydPvkIVeOEClE6reA3IeILvmCIDmDlo
+	 zNxUkh65Nh1vBz6WTDIFJtAqRfzWNEUaLiemmyAS307GZxwv/1YZryiUcE2NCQIqfL
+	 saL+Cb+UBjurcPY/t21Pkfv1K2FFM/qP5QUqmo4XnuL1Q1u6H3fg0SJMmO+2BfXBSi
+	 w6URsWeq3UwyBw3Cou37UJv+rU8pzLffLSbvLLEa/KPDktg2IHlGdavBOFISNU0Ske
+	 sA/yItP0fV8Aw==
+Message-ID: <72286603300630b890705c99b42f05a4.sboyd@kernel.org>
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20230328193632.226095-3-brgl@bgdev.pl>
+References: <20230328193632.226095-1-brgl@bgdev.pl> <20230328193632.226095-3-brgl@bgdev.pl>
+Subject: Re: [PATCH 2/7] clk: qcom: add the GPUCC driver for sa8775p
+From: Stephen Boyd <sboyd@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, Shazad Hussain <quic_shazhuss@quicinc.com>, Michael Turquette <mturquette@baylibre.com>, Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+To: Andy Gross <agross@kernel.org>, Bartosz Golaszewski <brgl@bgdev.pl>, Bjorn Andersson <andersson@kernel.org>, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Konrad Dybcio <konrad.dybcio@linaro.org>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Rob Herring <robh+dt@kernel.org>
+Date: Tue, 28 Mar 2023 19:15:08 -0700
+User-Agent: alot/0.10
 
-Hi Joerg et al,
+Quoting Bartosz Golaszewski (2023-03-28 12:36:27)
+> diff --git a/drivers/clk/qcom/Kconfig b/drivers/clk/qcom/Kconfig
+> index 449bc8314d21..5e1919738aeb 100644
+> --- a/drivers/clk/qcom/Kconfig
+> +++ b/drivers/clk/qcom/Kconfig
+> @@ -437,6 +437,14 @@ config SA_GCC_8775P
+>           Say Y if you want to use peripheral devices such as UART, SPI,
+>           I2C, USB, UFS, SDCC, etc.
+> =20
+> +config SA_GPUCC_8775P
+> +       tristate "SA8775P Graphics clock controller"
+> +       select SA_GCC_8775P
 
-Just wondering if there are any other comments? Should i spin another
-version to include Reviewed-by tags from Kevin?
+Should select QCOM_GDSC as well.
 
-I have a patchset below depends on this one.
+> +       help
+> +         Support for the graphics clock controller on SA8775P devices.
+> +         Say Y if you want to support graphics controller devices and
+> +         functionality such as 3D graphics.
+> +
+>  config SC_GCC_7180
+>         tristate "SC7180 Global Clock Controller"
+>         select QCOM_GDSC
+> diff --git a/drivers/clk/qcom/gpucc-sa8775p.c b/drivers/clk/qcom/gpucc-sa=
+8775p.c
+> new file mode 100644
+> index 000000000000..46d73bd0199b
+> --- /dev/null
+> +++ b/drivers/clk/qcom/gpucc-sa8775p.c
+> @@ -0,0 +1,633 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (c) 2021-2022, Qualcomm Innovation Center, Inc. All rights =
+reserved.
+> + * Copyright (c) 2023, Linaro Limited
+> + */
+> +
+> +#include <linux/clk.h>
 
-https://lore.kernel.org/linux-iommu/20230327232138.1490712-1-jacob.jun.pan@linux.intel.com/T/#t
-
-Thank you everyone,
-
-Jacob
-
-On Thu, 23 Mar 2023 11:44:44 -0300, Jason Gunthorpe <jgg@nvidia.com> wrote:
-
-> On Wed, Mar 22, 2023 at 01:07:56PM -0700, Jacob Pan wrote:
-> > Hi all,
-> > 
-> > This patch set removes unused VT-d virtual command interface followed by
-> > removal of the IOASID infrastructure.
-> > 
-> > This has only been tested on x86 platforms, need help with testing on
-> > ARM SMMU and other architectures.
-> > 
-> > 
-> > Thanks,
-> > 
-> > Jacob
-> > 
-> > ChangeLog:
-> > v8:
-> >  - remove #ifdef CONFIG_IOMMU_SVA since we have dummy inline functions.
-> >  - fixed a compile bug that affects bisectability  
-> 
-> I think this looks OK now, thanks
-> 
-> Jason
-
-
-Thanks,
-
-Jacob
+Is this include used? If not, remove it as this is a clk provider and
+not a clk consumer.
