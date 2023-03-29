@@ -1,34 +1,34 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CBF22582
-	for <iommu@lists.linux.dev>; Wed, 29 Mar 2023 13:51:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 147882582
+	for <iommu@lists.linux.dev>; Wed, 29 Mar 2023 13:54:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680097880; x=1711633880;
+  t=1680098064; x=1711634064;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=AExHvrw0V7PC8KzqoXRL0VYvffyZHdQPRSiqWCChjoQ=;
-  b=ih6j7Gp2qKJeWsHtkg7oGhVDu6uf/O49r87fa1H/72JWUQsLAfcbpw1e
-   J85TQg/bn2Xc5BUnRe0W62Vo5DKlJv/H2JQ9RFXpd2yAuFgsPGW6APCZI
-   +GCIzy2ELijcVQnExo3QUf/i8ZtvSNXS8/1ZTd5unnMI/7cMBGzGdiRzf
-   IDJFkDbaQJNWXM3r930Z67BkJDyVpea42a/6E5Oe8n2g2Eu4kiVTPZfCi
-   UJkPceCxkTQ73vtgAwQil/9ZJHlEylfmO4U5sNwRdGPbMCuh7cWxqQFDD
-   Gbmq1ebF/bs9AVVloti5Afg56j/SE92zhB+goZgXRy+ylCeSTKw8j+kPT
+  bh=kJU0gl9NmSnDcPetJBwG5dSajnFbHqFvFDWP07InU6Q=;
+  b=kNBo/YF8uAjIBAh12dSpbbk9I1PKM17Rp8f3QKc2jxHnhQf+vK/i5vKO
+   /1WBffCFWHWzCrURlfJZtgsxczdIWQHsSEIPSu/dYp7jfbmdAHqVrBjCo
+   Rlo5lHLDyBhwmtPsQXQaiVEKiO/wM+d0NFzdDuVM1I/GA0jX4pnGTlLX6
+   t6TgseedDJMBWgHJa4dKGFrXcST+En4O7FvjqcL5WR+E+D+Cdg+8OBspb
+   8tNS9L2xZ0WRVon3FHiy01pz8KbGq/X/ycwl6bIbl3MUnEl+jxPzoMlIV
+   eKmMOApA4pzn/9Mp/LMpAZhZ2G0uiK+NZM8LEc2xYTPSXbA4r0qfxsEn3
    g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10664"; a="405823506"
+X-IronPort-AV: E=McAfee;i="6600,9927,10664"; a="340901544"
 X-IronPort-AV: E=Sophos;i="5.98,300,1673942400"; 
-   d="scan'208";a="405823506"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2023 06:51:20 -0700
+   d="scan'208";a="340901544"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2023 06:54:23 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10664"; a="684268881"
+X-IronPort-AV: E=McAfee;i="6600,9927,10664"; a="827901879"
 X-IronPort-AV: E=Sophos;i="5.98,300,1673942400"; 
-   d="scan'208";a="684268881"
+   d="scan'208";a="827901879"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.214.217]) ([10.254.214.217])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2023 06:51:18 -0700
-Message-ID: <0df5511e-6d10-5d68-073d-d8c41056fde6@linux.intel.com>
-Date: Wed, 29 Mar 2023 21:51:16 +0800
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2023 06:54:21 -0700
+Message-ID: <b69e622b-505c-39fd-a5d1-2bc9ee84929c@linux.intel.com>
+Date: Wed, 29 Mar 2023 21:54:19 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,46 +37,85 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.0
-Cc: baolu.lu@linux.intel.com, "Ma, Yongwei" <yongwei.ma@intel.com>
-Subject: Re: [PATCH 1/4] iommu/vt-d: Fix null pointer access in
- invalidate_range callback
+Cc: baolu.lu@linux.intel.com
+Subject: Re: [PATCH V2] iommu/vt-d: Fix a IOMMU perfmon warning when CPU
+ hotplug
 Content-Language: en-US
-To: "Zhang, Tina" <tina.zhang@intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <20230329124654.2698853-1-tina.zhang@intel.com>
- <20230329124654.2698853-2-tina.zhang@intel.com>
- <534e6556-40e8-82f7-b3f6-0d0ad67616c0@linux.intel.com>
- <MW5PR11MB588152CDCD93B26592B7F99C89899@MW5PR11MB5881.namprd11.prod.outlook.com>
+To: "Liang, Kan" <kan.liang@linux.intel.com>, joro@8bytes.org,
+ will@kernel.org, dwmw2@infradead.org, robin.murphy@arm.com,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20230328182028.1366416-1-kan.liang@linux.intel.com>
+ <0b0e6fd6-b775-cdd0-c3c0-dc20056e07d2@linux.intel.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <MW5PR11MB588152CDCD93B26592B7F99C89899@MW5PR11MB5881.namprd11.prod.outlook.com>
+In-Reply-To: <0b0e6fd6-b775-cdd0-c3c0-dc20056e07d2@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/3/29 21:40, Zhang, Tina wrote:
->> -----Original Message-----
->> From: Baolu Lu<baolu.lu@linux.intel.com>
->> Sent: Wednesday, March 29, 2023 9:31 PM
->> To: Zhang, Tina<tina.zhang@intel.com>;iommu@lists.linux.dev
->> Cc:baolu.lu@linux.intel.com; Ma, Yongwei<yongwei.ma@intel.com>
->> Subject: Re: [PATCH 1/4] iommu/vt-d: Fix null pointer access in invalidate_range
->> callback
+On 2023/3/29 21:12, Liang, Kan wrote:
+> 
+> On 2023-03-28 2:20 p.m.,kan.liang@linux.intel.com  wrote:
+>> From: Kan Liang<kan.liang@linux.intel.com>
 >>
->> On 2023/3/29 20:46, Tina Zhang wrote:
->>> Add the missing check to avoid null pointer dereference.
->>>
->>> The patch fixes below issue reported by klocwork tool:
->>> Pointer 'info' returned from call to function 'dev_iommu_priv_get'
->>> at line 180 may be NULL and may be dereferenced at line 186.
->>>
->>> This patch can fix a potential null pointer dereference issue of
->>> releasing a device working in svm mode.
->> The svm logic guarantees that __flush_svm_range_dev() only be called after
->> iommu_sva_bind_device() and before iommu_sva_unbind_device(). Thus @info
->> should never be NULL. There's no need to add this check.
-> Yes, if the order can be ensured, no need to worry about the null pointer. How about hot-plugging devices? Can we keep the order all the time? Otherwise, it seems adding a null check makes sense.
+>> A warning can be triggered when hotplug CPU 0.
+>> $ echo 0 > /sys/devices/system/cpu/cpu0/online
+>>
+>> [11958.737635] ------------[ cut here ]------------
+>> [11958.742882] Voluntary context switch within RCU read-side critical
+>> section!
+>> [11958.742891] WARNING: CPU: 0 PID: 19 at kernel/rcu/tree_plugin.h:318
+>> rcu_note_context_switch+0x4f4/0x580
+>> [11958.860095] RIP: 0010:rcu_note_context_switch+0x4f4/0x580
+>> [11958.960360] Call Trace:
+>> [11958.963161]  <TASK>
+>> [11958.965565]  ? perf_event_update_userpage+0x104/0x150
+>> [11958.971293]  __schedule+0x8d/0x960
+>> [11958.975165]  ? perf_event_set_state.part.82+0x11/0x50
+>> [11958.980891]  schedule+0x44/0xb0
+>> [11958.984464]  schedule_timeout+0x226/0x310
+>> [11958.989017]  ? __perf_event_disable+0x64/0x1a0
+>> [11958.994054]  ? _raw_spin_unlock+0x14/0x30
+>> [11958.998605]  wait_for_completion+0x94/0x130
+>> [11959.003352]  __wait_rcu_gp+0x108/0x130
+>> [11959.007616]  synchronize_rcu+0x67/0x70
+>> [11959.011876]  ? invoke_rcu_core+0xb0/0xb0
+>> [11959.016333]  ? __bpf_trace_rcu_stall_warning+0x10/0x10
+>> [11959.022147]  perf_pmu_migrate_context+0x121/0x370
+>> [11959.027478]  iommu_pmu_cpu_offline+0x6a/0xa0
+>> [11959.032325]  ? iommu_pmu_del+0x1e0/0x1e0
+>> [11959.036782]  cpuhp_invoke_callback+0x129/0x510
+>> [11959.041825]  cpuhp_thread_fun+0x94/0x150
+>> [11959.046283]  smpboot_thread_fn+0x183/0x220
+>> [11959.050933]  ? sort_range+0x20/0x20
+>> [11959.054902]  kthread+0xe6/0x110
+>> [11959.058479]  ? kthread_complete_and_exit+0x20/0x20
+>> [11959.063911]  ret_from_fork+0x1f/0x30
+>> [11959.067982]  </TASK>
+>> [11959.070489] ---[ end trace 0000000000000000 ]---
+>>
+>> The synchronize_rcu() will be invoked in the perf_pmu_migrate_context(),
+>> when migrating a PMU to a new CPU. However, the current for_each_iommu()
+>> is within RCU read-side critical section.
+>>
+>> Two methods were considered to fix the issue.
+>> - Use the dmar_global_lock to replace the RCU read lock when going
+>>    through the drhd list. But it triggers a lockdep warning.
+>> - Use the cpuhp_setup_state_multi() to set up a dedicated state for each
+>>    IOMMU PMU. The lock can be avoided.
+>>
+>> The latter method is implemented in this patch. Since each IOMMU PMU has
+>> a dedicated state, add cpuhp_node and cpu in struct iommu_pmu to track
+>> the state. The state can be dynamically allocated now. Remove the
+>> CPUHP_AP_PERF_X86_IOMMU_PERF_ONLINE.
+>>
+>> Fixes: 46284c6ceb5e ("iommu/vt-d: Support cpumask for IOMMU perfmon")
+> Forgot to add a tag. If the patch looks good, please add the below tag
+> when you pull the patch.
+> 
+> Reported-by: Ammy Yi<ammy.yi@intel.com>
 
-Removing a device always happens after driver unbinding. The driver
-should unbind sva in its release path.
+Sure. Patch has been queued after my test.
+
+https://lore.kernel.org/linux-iommu/20230329134721.469447-1-baolu.lu@linux.intel.com/
 
 Best regards,
 baolu
