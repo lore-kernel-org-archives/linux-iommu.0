@@ -1,139 +1,97 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2050.outbound.protection.outlook.com [40.107.237.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com [209.85.208.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55D621861
-	for <iommu@lists.linux.dev>; Wed, 29 Mar 2023 08:20:20 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nUpGYNvlAytYLcOHEDTMaLvr9aRuVfgdfPbgyC3C5QdBVsRWt28yJXgaaAAb+6NaEFyfnH94d/4dYyKLGqPeBizlmCS+grr8b9voEM6AM+GmJwLYIVrVimNzCNpTGNjfZ5XUMRPcqF4D/fgTPO+t97E2/NltvE2+3TQ/uItlTugdPDG3KSaMZNnw3ZX1bdPYm1LqdBHljwR0qteokbaACVH2x06zVPfDgnj3p7Z/8Ru9dJRz/+zpJxcBLm5WG5DsxT/x6lHB8n+454bwlkFHMjPVRGddgv6pHnbbVnR/Kr8L7AJXIDSnQdYeB9WxJUXmpGgQT5sWPpiqrqGJwZKfEQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5cN6WH3vjhQyLGR5OfyqxZrpxwkalNGRBMjxs3SLDRc=;
- b=iGd1371FtHXq0mjcXha9NXJhYIMLNa7ZPWCBgm+us2pnxPSrEyN3FTHyGjp/+BjhJvuILLVqTCMCbNi6Q94N7PHoJyCzEX/46dvW2Wd3u82Foxfa3gnPZeTS7zoU/6YDKVpz5OZAyYnIg44M3FbAnDhpajrRQyz6nloOh/vL2R+uHH7P3s4hoxtaXJwNWOH5o8l3sryEGGNY1dZH3O6jZuZTXWqOXMyn5F4CmDv5qY/11ilnU5qifDziZaQtuSqiuYSUm+wudb2G88CfdoFbH+aJ7pG4hJtQ998ocD6S/iBLghG6HKzJSAoLuzn9SA8C0f/Fdg79cFIOJi7ON8q7zA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5cN6WH3vjhQyLGR5OfyqxZrpxwkalNGRBMjxs3SLDRc=;
- b=F0OGb3MCxxPPjmt3tlNibQuH7f6dS0zsAR4BeFtP5twDs5qeFLJBThA/id1ID4uIssjb6al6QNkTtzWK8Xh6opQbfcRq4ixT34ogP9Z5XjKo4IZBYYQaSPuVMgIpbjYxdDpS7FdyGAjVE6Ocy4E8Fa0MjCt+7B921+tfl+orv/w=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7SPRMB0009.namprd12.prod.outlook.com (2603:10b6:8:87::10) by
- IA1PR12MB6042.namprd12.prod.outlook.com (2603:10b6:208:3d6::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38; Wed, 29 Mar
- 2023 08:20:17 +0000
-Received: from DS7SPRMB0009.namprd12.prod.outlook.com
- ([fe80::57de:d785:91de:d205]) by DS7SPRMB0009.namprd12.prod.outlook.com
- ([fe80::57de:d785:91de:d205%5]) with mapi id 15.20.6178.041; Wed, 29 Mar 2023
- 08:20:17 +0000
-Message-ID: <ca056666-08df-7733-a7e6-70047ec2cbb6@amd.com>
-Date: Wed, 29 Mar 2023 13:50:02 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 4/8] iommu/vt-d: Reserve RID_PASID from global SVA
- PASID space
-Content-Language: en-US
-To: Baolu Lu <baolu.lu@linux.intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
- Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- dmaengine@vger.kernel.org, vkoul@kernel.org
-Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
- David Woodhouse <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>,
- "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
- "Yu, Fenghua" <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Tony Luck <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>
-References: <20230327232138.1490712-1-jacob.jun.pan@linux.intel.com>
- <20230327232138.1490712-5-jacob.jun.pan@linux.intel.com>
- <41d31adf-577e-431c-c400-2708885400c1@linux.intel.com>
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <41d31adf-577e-431c-c400-2708885400c1@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN3PR01CA0012.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:95::21) To DS7SPRMB0009.namprd12.prod.outlook.com
- (2603:10b6:8:87::10)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25782A2C
+	for <iommu@lists.linux.dev>; Wed, 29 Mar 2023 08:30:05 +0000 (UTC)
+Received: by mail-lj1-f180.google.com with SMTP id 20so15279002lju.0
+        for <iommu@lists.linux.dev>; Wed, 29 Mar 2023 01:30:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1680078603;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=/EcWROde/fSgB7fPEne2rQ8lUn+CutePNUDujtYA7t0=;
+        b=gL+HFX+UhfxR+hU55ZY21NJKH/JpKaqPvyepmPKZTsgNgUk665G+FybMJpJ7b2UsYU
+         73hEhQOcimb5SzcSUzVLxA2u9Gf/6m+M6cVvbtNLv4gVPEBLZjxMytOvnIY2jwtWh1dv
+         Io0teIfK6CnYj033dYLkwjrrdOmj+e4LxvzC94FM+zEU7IQGQ4apAOrYMQ/hdYy3ZEoY
+         KeKCrqKSNyfPsI+5/GC+u4NqwT6a6fqnkbhK1UhhqqaQZsWuJpVvj9FrBAqH7pL6LTy/
+         mIt8vXuccLZLCbdRRnlZgQvWeSRxQPKvAmXU5LbqBBFOnNciY2/z3Cw5c1o1QeKJCufn
+         mxsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680078603;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=/EcWROde/fSgB7fPEne2rQ8lUn+CutePNUDujtYA7t0=;
+        b=iCz+vwEX4KafEKrrow1iU9++c570D+0Xgu134LMDUxC0VtjDBacwq8eOj/D1LEBvqt
+         6bcZMmcOipi/RvnSxPUcI1XvLWKvk6/HjINXONdi8Ru5c3mugpl/tfkRO4ZKj16MGP4J
+         A+w1O9a+kmhRCJSAUgMtO8qX7eIEsRnodwOVyNsuWbbQCdwddDx1IrOJY2pSM+jKkcm6
+         Q/m5cNkvD4bAUrpb+xLWMQigH2BC9+3nUw9QniM6q2UNUMfTIX5ZEq1ChsUSXFBykO5s
+         eUYpM1vI2ancZH5GkAVDOVF9G8aaEuxsCC22daLEirUbo8olLvxo2ECxqL35ilXtxS4G
+         QGTg==
+X-Gm-Message-State: AAQBX9egEUpUJIC0XvzotZT/noPEtTTfCEu4BuWmlX6Gs/cJMHKdazUw
+	dB0KJFaPs/vMdDxua9c1B5CSKA==
+X-Google-Smtp-Source: AKy350bWalFraWgsfObpbZdx1IhK3P7b5bpTIysDLckqLJGKrj+nH2qcQbBQfYQI+c7C4OLAM80NWA==
+X-Received: by 2002:a05:651c:213:b0:298:6a47:bec6 with SMTP id y19-20020a05651c021300b002986a47bec6mr6274246ljn.35.1680078603212;
+        Wed, 29 Mar 2023 01:30:03 -0700 (PDT)
+Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id c1-20020a2e6801000000b002a421ac8629sm2005273lja.49.2023.03.29.01.30.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Mar 2023 01:30:02 -0700 (PDT)
+Message-ID: <cb058c66-7a66-0c3e-4f76-a24b3ecd1767@linaro.org>
+Date: Wed, 29 Mar 2023 10:30:01 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7SPRMB0009:EE_|IA1PR12MB6042:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2747a8c8-637f-4b30-6971-08db302e6d54
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	fkp4Mq1eNhXJuqEchVZIZqn9v7WP60rROGb9PXtdQ89ANCHEOlA1cetjIibHVzJywbefOpArboH/+U4mwP6NXAmigNqiHRi5nJ3cjSYtaInO+8Kk0cDjuKSI2Lr30AhaFJYMnyPmvMFwzuNJadYgxEUIqLwT9MNOewxE6f2Dg+ykj8Rh6UEuztQu7C2zjlJ+kgicw0vjjbqj222Vt+a0hygIejnUA7Jfv46BSNFad1kvLE7s/10IbVRhRAEmkoclhOVJ4Twziykva8AxjnCkjhwFodrxyn7MXAEKMthVi7nfLmtR/Ek2RXZgwICI1JmJILG2zvwTh+XAp5QuYQNWd+fzL46EcupfWS+HG2B23CcrpvIOBYdfUArnkbnM0/kJuUj8U0ZyJ4YhXLhnWPa2+txCgefUauy2795AwDafqyD/IDPpR4jvsbdd8MjQZC8RU5kln81zx4rnuW9wJwsJoMur38GKGTIS8rNyXMaFHpfnS6vWeZh/pwfMOodcL5srB4wyiqM4y1mbsWJ1df1WPBwEq3WC93Am9HD0YMd/I+kTlcGfivDCo6ydRxAUEtzYXvfj4lfrARZPrYujxT8/iT0cnvk3v9mgtL3TO1OuQQpgw3JtLVAXkR++1oIficG7x+uf9ZkkeU8Wkey+RmXlzQ==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7SPRMB0009.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(366004)(376002)(39860400002)(346002)(451199021)(66556008)(66476007)(54906003)(6512007)(4744005)(5660300002)(31686004)(66946007)(7416002)(8676002)(6666004)(41300700001)(2906002)(53546011)(44832011)(2616005)(4326008)(38100700002)(6486002)(36756003)(31696002)(186003)(478600001)(83380400001)(26005)(6506007)(316002)(110136005)(8936002)(86362001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Mm1xcHJjUzE1cFdMeTQxQUFkR0h0NlFnTkxxT21mWXNmMU9ENGVLRmQyWEFY?=
- =?utf-8?B?a3BlZzVHQ0JVOGY0NjJ6WWtPS1l0YThHYnBwaVhPMnRLQjVYeFNqbks0V2VQ?=
- =?utf-8?B?b2FXTjRCWXJwVzdNaW1hVnMwTEZyQjVDcWFpVjc5SUo5dDROb09pTnk5c1Ja?=
- =?utf-8?B?Sm0yRCtYRjFXTVRBWGdyY0FLUTdZMUxMbnczZWd2d3lwemZXbVRmQUIxR1Fz?=
- =?utf-8?B?QmFTWW9xeVFDZjRYc3VXZVBuYXM3NjFiNS9Vb0hYVlIwYThPbjlpMVV6MVM5?=
- =?utf-8?B?YWdldzVEYWhLZENCYU8rY0FYQ3dhbEhvTFpraWlyS00yK3hTYVR4cnR3NXls?=
- =?utf-8?B?bnV6VTR6Uk5aU0dJWnJjWkx6cnRQMmc4ajREK2RTQmVqQkdvQU1XcWxDMkRQ?=
- =?utf-8?B?VG9qazEvZmVnQ2M1ZFJtZTZRLzJ6aWJNL0lnRlp3bkNrSmI3RmdNZEVQRGdS?=
- =?utf-8?B?d2x6UDNyRkh6WUxhN0thMFZ0UlhIMDRoZ093V0hBbjRpYnUxNVFVY1diWFQv?=
- =?utf-8?B?THJEOVdQTWJDdHl4cFE1dVNiZVJhaUFkVXV5WUlPSDU4ZUdpSndYVktmUEcw?=
- =?utf-8?B?Q1k2Z2xDOFFtRDlSUFdEZUVwcEU3ZGx1K2tWc3BrdWlid3RXSWVUQmtyNCti?=
- =?utf-8?B?V1BudHg0VllYdkg1TXNETFVGMUVpTmZuQnR6Zlh2WlhCc1pkUWpubnptWTZx?=
- =?utf-8?B?Uk03ajF3dmVDZWFKQmFqcFNWN2ZPRS95MzJrdUFTWXRHSTRaVHlKVnlHN1lW?=
- =?utf-8?B?TllmTDlhZXYvR2xkTmhTbjlTMjN6OFRiMjg4ME9KNkFsTkJqeUtVSzZZRmNY?=
- =?utf-8?B?bUIrbGZNNmJmQmlkUHJjbEZyMk4vejczMVhQUDd0eCtkTVNRN096dWF4T3BZ?=
- =?utf-8?B?eHRBRHg5dFBEeVNUbEtOUDJoMTRYQnVSTVIwZ2haRmRTU09pZ0U5Zm0rMFB1?=
- =?utf-8?B?aGxVeEZnWjZad3BBeXpIS1hhWndtRW4xOVM4T1ByeEhvSmxiUkhxUFdaZHFE?=
- =?utf-8?B?Qjc0cDZDY3puNUw4KzNnTGcvR2huOThXVVBkeTVRalk4NjJOeTJtUGRJaGJI?=
- =?utf-8?B?WmFGaEIxdks2aG1KdVVWU2piRHU3THNSamVxRW9YR2RqbVRPZTcxVWVEYnR2?=
- =?utf-8?B?cXFaMkhOMjFCYjUvTkZxZkhYWWV5OXA3QTFHeklDeDhmMnhDcW12MzlsK3dS?=
- =?utf-8?B?TGJOQjVhYytHYndCbUg3SEs2aFhKSGt3cUlOcmN4WURzcXE2Y09HT2pQb2tt?=
- =?utf-8?B?bitKV2VOaDNNSVF0VWVEd2JBK1JKYVBXbDRLWnovbmxEK1h5K21uenJ1eGgx?=
- =?utf-8?B?amdmTnlLbVVMbnMwaSt6em91S0x0VVZTdWU1OTZVaGU1bzAycmQ1bWkvdHgx?=
- =?utf-8?B?OGtrcVRRZDE3NVZMSThNeStYL1JIc3NHbXU5eEdpUTdUa254ODU1WEV2WDhq?=
- =?utf-8?B?b0JWeDVNZGlYMGJuZ0ppeDMwZEYyU3Y0STNTeUxoL3QrQytyeFBNSnhQVEdH?=
- =?utf-8?B?RWQ2RFRJakdYSTRHVkd3NEFUQjV1QnlTUW51U1Y2UTZidkwxMjhldnYrMjZN?=
- =?utf-8?B?eW9ManltZnRpd0N3NmlrVTBQRXh3QVBJbGswSTNhbnRSUzNzRkVLRjJndVNs?=
- =?utf-8?B?WXRyT1VnN0FCZ0RYa2Z1SkR5UkNSSFpGc0syTVRIN0dxOWpQcGhSL2Q4RlZs?=
- =?utf-8?B?MnducWliY3ZSRlR6UXdtN2JORlBON0J3ZHV5Y0J0VkFyZ2hRN0Y5OU5vY2Nh?=
- =?utf-8?B?UGVLVFBEZm4vQUYyK0dxQW03R0g0azJFYlltWnV6MS9tRzM0OHRiaHQ5blBU?=
- =?utf-8?B?OTV6Ym5OQ3dGeVpjc3JVdlBybFY3d01BTHNMLzlSTkpvanFiSXlYOTZDUUk0?=
- =?utf-8?B?OGl2d1cwbkM2ZjB5RkJiOU9tK0ZlaThxQThnbVdKYjB3SlEyL1gyeXRxOWkx?=
- =?utf-8?B?QWl6U1VtV3JMRmxrVEE3Q3hFb2R0aS96bDErN1BJNnZPMEtncGhJWUhYUFE3?=
- =?utf-8?B?bDZLT1g3QmJLengrWjZsUmNTMXlCT1VFMVVab21FajJBSk13STU3OUI1M3p0?=
- =?utf-8?B?UzZjUUpxMTlBYnZPQVV3ZS8yaG55OFN0eTRpYjJnNm1yZDJxcEVkQWJjcmN5?=
- =?utf-8?Q?lzq6WU02h1CMXhtjUv55yLWWx?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2747a8c8-637f-4b30-6971-08db302e6d54
-X-MS-Exchange-CrossTenant-AuthSource: DS7SPRMB0009.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Mar 2023 08:20:16.7864
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5teV2hYhlqEP5dUY9KWpOlhEOhhemXjsky9RNfUHoF+X37sazsUJLon79YZpKX0ZhaVVxkLIMCm86s176ZKcow==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6042
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH 1/7] dt-bindings: clock: qcom: describe the GPUCC clock
+ for SA8775P
+Content-Language: en-US
+To: Bartosz Golaszewski <brgl@bgdev.pl>, Andy Gross <agross@kernel.org>,
+ Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konrad.dybcio@linaro.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
+ Stephen Boyd <sboyd@kernel.org>, Michael Turquette <mturquette@baylibre.com>
+References: <20230328193632.226095-1-brgl@bgdev.pl>
+ <20230328193632.226095-2-brgl@bgdev.pl>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230328193632.226095-2-brgl@bgdev.pl>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On 3/28/2023 10:50 AM, Baolu Lu wrote:
-> On 3/28/23 7:21 AM, Jacob Pan wrote:
->> On VT-d platforms, RID_PASID is used for DMA request without PASID. We
->> should not treat RID_PASID special instead let it be allocated from the
->> global SVA PASID number space.
+On 28/03/2023 21:36, Bartosz Golaszewski wrote:
+> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 > 
-> It's same to AMD and ARM SMMUv3, right? They also need an explicit
-> reservation of PASID 0.
+> Add bindings for the Qualcomm Graphics Clock control module present on
+> sa8775p platforms.
+> 
+> Cc: Stephen Boyd <sboyd@kernel.org>
+> Cc: Michael Turquette <mturquette@baylibre.com>
 
-Yes for AMD driver. (Requests from the I/O device without a PASID are treated as
-if they have PASID of 0).
+Please drop the autogenerated scripts/get_maintainer.pl CC-entries from
+commit msg. There is no single need to store automated output of
+get_maintainers.pl in the git log. It can be easily re-created at any
+given time, thus its presence in the git history is redundant and
+obfuscates the log.
+
+If you need it for your own patch management purposes, keep it under the
+--- separator.
+
+> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
 
--Vasant
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
+
+Best regards,
+Krzysztof
 
