@@ -1,142 +1,165 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA9E1A23
-	for <iommu@lists.linux.dev>; Wed, 29 Mar 2023 12:34:36 +0000 (UTC)
-Received: by mail-wm1-f50.google.com with SMTP id t17-20020a05600c451100b003edc906aeeaso1956394wmo.1
-        for <iommu@lists.linux.dev>; Wed, 29 Mar 2023 05:34:36 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C30C5AFE1
+	for <iommu@lists.linux.dev>; Wed, 29 Mar 2023 12:36:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680093275;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=7k3Pknpt+FEvPFnkTWZnOtAOiCcWdoby7FCUyoCPirk=;
-        b=eSTGarnH/zmuvSNqMiK+j3gUub4rdGlUmgMXGMZSB22aaAjp3aVRN/rirW64CE1pw7
-         LmSkOZTkhgJ8KuBU4Q55udhOd6+/1Ifum5Z8t+uFsbHueg5TsR9ggN30Bl4DdelXSpZA
-         LfKP/JNmNGkLwOokH+4tvwlvCXd6kVjDaVTBfJ+8FA2FjVZrclXbUVSFxmvkui2fZ5lT
-         EI2iefa6zWJbr3TgvdTOT5U/bVnmAnNFE4VvD7YOPsiAMnjvN2tGweJnxGVPD2XJ5qxj
-         rVonai3gldWgqeFtq3fbqj8AYIg8uiMtokiW7E/Y4QR6hmS9yaZTkGlZu1ZT6TkhGbcX
-         Fo+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680093275;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=7k3Pknpt+FEvPFnkTWZnOtAOiCcWdoby7FCUyoCPirk=;
-        b=OO+HVX+xcRMRdLEzpnTX+doxeexnujd67UrcSCiLj3a5wzhNeCtymYR8JFXY0bkWv+
-         5W/FfVpd8Cb/Bbj8RFa8s/s34HwOAUJltUiNl0fHY9t6AN41yDP/gbGHbRdpBXipORLX
-         HXbA+Octn+/IcmXx0SZ9+WSDD0hWGPnrgnTE2L9TuYVgfcPEuXAxF27BS/Ul+zHZ+KVo
-         Zi78gHBd85xo5csWbDDQ+hRqXC4GS/BPe+nlNiieoKAQRmi54GPJgKqH/N5iLK7DYZgl
-         ZH+TasX7ScQVY7qdvORf4q1SInE4CrH5FMFAdw0+DXbZ3AE25a17gvCNd4O9B9WOEIM2
-         ByPg==
-X-Gm-Message-State: AO0yUKWMfyqtqHTfDoSt/iRF/3FEKPzIbocMSWqUaB4v4Of27uucMSF2
-	v6txJwsZBgJRMEvhvxgPYvY=
-X-Google-Smtp-Source: AK7set9CwcmF1pMBPEcBJD7EKQVp+E6VRC0xGZObxJ2FH27ScUsoi1HLiTGPjJXd0Fet7MkW06Qd1Q==
-X-Received: by 2002:a05:600c:21d8:b0:3ed:2b49:eefc with SMTP id x24-20020a05600c21d800b003ed2b49eefcmr15666798wmj.3.1680093274790;
-        Wed, 29 Mar 2023 05:34:34 -0700 (PDT)
-Received: from dev-dsk-krckatom-1b-7b393aa4.eu-west-1.amazon.com (54-240-197-231.amazon.com. [54.240.197.231])
-        by smtp.gmail.com with ESMTPSA id b39-20020a05600c4aa700b003ed29189777sm2167726wmp.47.2023.03.29.05.34.34
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 29 Mar 2023 05:34:34 -0700 (PDT)
-From: tomas.krcka@gmail.com
-To: will@kernel.org
-Cc: Tomas Krcka <krckatom@amazon.de>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu/arm-smmu-v3: Acknowledge pri/event queue overflow if any
-Date: Wed, 29 Mar 2023 12:34:19 +0000
-Message-Id: <20230329123420.34641-1-tomas.krcka@gmail.com>
-X-Mailer: git-send-email 2.39.2
+  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazon201209;
+  t=1680093395; x=1711629395;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:mime-version:
+   content-transfer-encoding;
+  bh=9BIVQAV7qt8Ug8zbs5YPptmgYpUt2pDKa6KaSVzh8Lo=;
+  b=a9038OSkNjt2qA4a+dva/dEyJjc5lAa/96U0RXkxx4Az5ZUpHrVmLpRl
+   Kx8LjCD81FXKlFfdvs5ZKm5flcWPE61sFVean7AzqAuO0CHNYWXcN88j7
+   N5R47ekTCwHgttdCZBmwJ/19IaOu3YifZEw/Ni9b7IQbtWyspWmZuyRlM
+   4=;
+X-IronPort-AV: E=Sophos;i="5.98,300,1673913600"; 
+   d="scan'208";a="1117495953"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-fad5e78e.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2023 12:36:28 +0000
+Received: from EX19D020EUA004.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+	by email-inbound-relay-pdx-2c-m6i4x-fad5e78e.us-west-2.amazon.com (Postfix) with ESMTPS id 2FBF7A02EB;
+	Wed, 29 Mar 2023 12:36:28 +0000 (UTC)
+Received: from EX19D030EUC004.ant.amazon.com (10.252.61.164) by
+ EX19D020EUA004.ant.amazon.com (10.252.50.56) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Wed, 29 Mar 2023 12:36:27 +0000
+Received: from EX19D030EUC004.ant.amazon.com (10.252.61.164) by
+ EX19D030EUC004.ant.amazon.com (10.252.61.164) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.26;
+ Wed, 29 Mar 2023 12:36:26 +0000
+Received: from EX19D030EUC004.ant.amazon.com ([fe80::f98a:db18:b0eb:477]) by
+ EX19D030EUC004.ant.amazon.com ([fe80::f98a:db18:b0eb:477%3]) with mapi id
+ 15.02.1118.026; Wed, 29 Mar 2023 12:36:26 +0000
+From: "Krcka, Tomas" <krckatom@amazon.de>
+To: Will Deacon <will@kernel.org>
+CC: "Krcka, Tomas" <krckatom@amazon.de>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Lu Baolu <baolu.lu@linux.intel.com>, "Shameer
+ Kolothum" <shameerali.kolothum.thodi@huawei.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Fix event queue overflow
+ acknowledgment
+Thread-Topic: [PATCH] iommu/arm-smmu-v3: Fix event queue overflow
+ acknowledgment
+Thread-Index: AQHZYjsUJTyLbHuMvUep4ekJH0WoLQ==
+Date: Wed, 29 Mar 2023 12:36:26 +0000
+Message-ID: <BD6629C9-7E59-43B1-BE58-F6799E0FBC5E@amazon.com>
+References: <20230308092048.71390-1-krckatom@amazon.de>
+ <20230327121234.GA31342@willie-the-truck>
+ <8845FA6A-45F1-4090-B4A2-C0C28F709095@amazon.com>
+ <20230328115613.GB1159@willie-the-truck>
+In-Reply-To: <20230328115613.GB1159@willie-the-truck>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.1.213.23]
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <C71BB1ED14D3C5439E0FD0B680DF4439@amazon.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 
-From: Tomas Krcka <krckatom@amazon.de>
 
-When an overflow occurs in the PRI queue, the SMMU toggles the overflow
-flag in the PROD register. To exit the overflow condition, the PRI thread
-is supposed to acknowledge it by toggling this flag in the CONS register.
-Unacknowledged overflow causes the queue to stop adding anything new.
 
-Currently, the priq thread always writes the CONS register back to the
-SMMU after clearing the queue.
+> On 28. Mar 2023, at 13:56, Will Deacon <will@kernel.org> wrote:
+> =
 
-The writeback is not necessary if the OVFLG in the PROD register has not
-been changed, no overflow has occured.
+> =
 
-This commit checks the difference of the overflow flag between CONS and
-PROD register. If it's different, toggles the OVACKFLG flag in the CONS
-register and write it to the SMMU.
+> On Tue, Mar 28, 2023 at 07:13:52AM +0000, Krcka, Tomas wrote:
+>> =
 
-The situation is similar for the event queue.
-The acknowledge register is also toggled after clearing the event
-queue but never propagated to the hardware. This would only be done the
-next time when executing evtq thread.
+>>> On 27. Mar 2023, at 14:12, Will Deacon <will@kernel.org> wrote:
+>>> =
 
-Unacknowledged event queue overflow doesn't affect the event
-queue, because the SMMU still adds elements to that queue when the
-overflow condition is active.
-But it feel nicer to keep SMMU in sync when possible, so use the same
-way here as well.
+>>> =
 
-Signed-off-by: Tomas Krcka <krckatom@amazon.de>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 19 ++++++++++++++-----
- 1 file changed, 14 insertions(+), 5 deletions(-)
+>>> On Wed, Mar 08, 2023 at 09:20:47AM +0000, Tomas Krcka wrote:
+>>>> When an overflow occurs in the event queue, the SMMU toggles overflow
+>>>> flag OVFLG in the PROD register.
+>>>> The evtq thread is supposed to acknowledge the overflow flag by toggli=
+ng
+>>>> flag OVACKFLG in the CONS register, otherwise the overflow condition is
+>>>> still active (OVFLG !=3D OVACKFLG).
+>>>> =
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index f2425b0f0cd6..7614739ea2c1 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -152,6 +152,18 @@ static void queue_inc_cons(struct arm_smmu_ll_queue *q)
- 	q->cons = Q_OVF(q->cons) | Q_WRP(q, cons) | Q_IDX(q, cons);
- }
- 
-+static void queue_sync_cons_ovf(struct arm_smmu_queue *q)
-+{
-+	struct arm_smmu_ll_queue *llq = &q->llq;
-+
-+	if (likely(Q_OVF(llq->prod) == Q_OVF(llq->cons)))
-+		return;
-+
-+	llq->cons = Q_OVF(llq->prod) | Q_WRP(llq, llq->cons) |
-+		      Q_IDX(llq, llq->cons);
-+	queue_sync_cons_out(q);
-+}
-+
- static int queue_sync_prod_in(struct arm_smmu_queue *q)
- {
- 	u32 prod;
-@@ -1577,8 +1589,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
- 	} while (!queue_empty(llq));
- 
- 	/* Sync our overflow flag, as we believe we're up to speed */
--	llq->cons = Q_OVF(llq->prod) | Q_WRP(llq, llq->cons) |
--		    Q_IDX(llq, llq->cons);
-+	queue_sync_cons_ovf(q);
- 	return IRQ_HANDLED;
- }
- 
-@@ -1636,9 +1647,7 @@ static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
- 	} while (!queue_empty(llq));
- 
- 	/* Sync our overflow flag, as we believe we're up to speed */
--	llq->cons = Q_OVF(llq->prod) | Q_WRP(llq, llq->cons) |
--		      Q_IDX(llq, llq->cons);
--	queue_sync_cons_out(q);
-+	queue_sync_cons_ovf(q);
- 	return IRQ_HANDLED;
- }
- 
--- 
-2.39.2
+>>>> Currently the acknowledge register is toggled after clearing the event
+>>>> queue but is never propagated to the hardware. It would be done next
+>>>> time when executing evtq thread.
+>>>> =
+
+>>>> The SMMU still adds elements to the queue when the overflow condition =
+is
+>>>> active but any subsequent overflow information after clearing the event
+>>>> queue will be lost.
+>>>> =
+
+>>>> This change keeps the SMMU in sync as it's expected by design.
+>>>> =
+
+>>>> Signed-off-by: Tomas Krcka <krckatom@amazon.de>
+>>>> Suggested-by: KarimAllah Ahmed <karahmed@amazon.de>
+>>>> ---
+>>>> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 1 +
+>>>> 1 file changed, 1 insertion(+)
+>>>> =
+
+>>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iom=
+mu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>>> index f2425b0f0cd6..acc1ff5ff69b 100644
+>>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>>> @@ -1579,6 +1579,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq,=
+ void *dev)
+>>>>     /* Sync our overflow flag, as we believe we're up to speed */
+>>>>     llq->cons =3D Q_OVF(llq->prod) | Q_WRP(llq, llq->cons) |
+>>>>                 Q_IDX(llq, llq->cons);
+>>>> +     queue_sync_cons_out(q);
+>>>>     return IRQ_HANDLED;
+>>>> }
+>>> =
+
+>>> I think I probably did mean to have something like this, but can we
+>>> only do the actual h/w update if overflow has occurred? Otherwise I thi=
+nk
+>>> we're pointlessly writing back the same value most of the time.
+>>> =
+
+>>> Will
+>> =
+
+>> Yes, we can, but then same applies for the priq as well, there we also w=
+rite back
+>> every time.
+> =
+
+> Sure, feel free to update both.
+> =
+
+
+OK, I sent it as new patch: https://lore.kernel.org/lkml/20230329123420.346=
+41-1-tomas.krcka@gmail.com
+
+
+
+
+
+Amazon Development Center Germany GmbH
+Krausenstr. 38
+10117 Berlin
+Geschaeftsfuehrung: Christian Schlaeger, Jonathan Weiss
+Eingetragen am Amtsgericht Charlottenburg unter HRB 149173 B
+Sitz: Berlin
+Ust-ID: DE 289 237 879
+
+
 
