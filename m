@@ -1,86 +1,169 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 380CC8835;
-	Thu, 30 Mar 2023 15:54:34 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BC9C72F4;
-	Thu, 30 Mar 2023 08:55:17 -0700 (PDT)
-Received: from [10.57.54.254] (unknown [10.57.54.254])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A0ACF3F6C4;
-	Thu, 30 Mar 2023 08:54:31 -0700 (PDT)
-Message-ID: <6f0e39a3-3a46-f9e3-614e-e6e3c88b59ab@arm.com>
-Date: Thu, 30 Mar 2023 16:54:27 +0100
+Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CFEC8835
+	for <iommu@lists.linux.dev>; Thu, 30 Mar 2023 16:12:02 +0000 (UTC)
+Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-54184571389so363270387b3.4
+        for <iommu@lists.linux.dev>; Thu, 30 Mar 2023 09:12:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680192721;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1ASMwRAXSxQ56uzRQV9rpj0YNrKR/hLF/lFweUlSAcY=;
+        b=GeUrQrmlmFTtlXpuyxVuPpfhWtJlWHeKUtUFcI48bhPcvQX2BzK0jkbqSSbDboRX5W
+         aexTfC8J9DmqvEgC24OFNL5h4ZGjGD+UteF/NhjNI7WOmmis+K5Vyf45tVRur/5D/Ozu
+         QK1K8UI3nleNziy4fVhPeSjXeO2JFs1OchtC9haSqfuHSA+T9p8ifr5be8F7zMG0c9ep
+         YscSX+Q+0FWZ+wD+LEOgCNN4qt6F/RCMgtVbU5kb1YaRQVJolxqIka8XZr97fZtWpyxU
+         3tmMMckQayS7qsSSBHW+9u8uy3liukcqkYieOt/+669+HHq4eSZi8icZxpO3yzBnGKq0
+         FaKw==
+X-Gm-Message-State: AAQBX9em04JJsuknvjodx2SL0w7kNdfCGjtKzzfQDpecEK99i+k8uieF
+	vGTBIc2EalEOSlKzpdEWPgbSTQf9bR4YiaE7
+X-Google-Smtp-Source: AKy350bckPXowusi8floZvEUGfCP4AHHR13qbjC06w9vNPvhT79OFDW7Y6OFmhEa4/kjfMp+q0oshQ==
+X-Received: by 2002:a0d:dd0a:0:b0:545:64b3:3941 with SMTP id g10-20020a0ddd0a000000b0054564b33941mr24199549ywe.26.1680192720960;
+        Thu, 30 Mar 2023 09:12:00 -0700 (PDT)
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com. [209.85.128.175])
+        by smtp.gmail.com with ESMTPSA id df15-20020a05690c0f8f00b00545a08184absm3571733ywb.59.2023.03.30.09.11.59
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Mar 2023 09:12:00 -0700 (PDT)
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-536af432ee5so364075517b3.0
+        for <iommu@lists.linux.dev>; Thu, 30 Mar 2023 09:11:59 -0700 (PDT)
+X-Received: by 2002:a81:b65f:0:b0:545:611c:8d19 with SMTP id
+ h31-20020a81b65f000000b00545611c8d19mr12055261ywk.4.1680192719618; Thu, 30
+ Mar 2023 09:11:59 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-Subject: Re: [PATCH v2 08/14] iommu: Make iommu_group_do_dma_first_attach()
- work with owned groups
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, llvm@lists.linux.dev,
- Nathan Chancellor <nathan@kernel.org>,
- Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
- Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
- Nicolin Chen <nicolinc@nvidia.com>
-References: <8-v2-cd32667d2ba6+70bd1-iommu_err_unwind_jgg@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <8-v2-cd32667d2ba6+70bd1-iommu_err_unwind_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20230330060105.29460-1-rdunlap@infradead.org> <e1b6f12a-899b-4985-8725-556bcb5d0991@spud>
+ <CAMuHMdW2r1f7C_BdXn9BnDktLwHjBA_0Kvq6OeLJ1sZ7azhqkg@mail.gmail.com> <b712f5c8-9486-8e4a-63cd-6b176572244f@infradead.org>
+In-Reply-To: <b712f5c8-9486-8e4a-63cd-6b176572244f@infradead.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Thu, 30 Mar 2023 18:11:47 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdX_=T9EB=rE_p9XO2-MtaV3jNkX76_PxYd9wi17NhaYHQ@mail.gmail.com>
+Message-ID: <CAMuHMdX_=T9EB=rE_p9XO2-MtaV3jNkX76_PxYd9wi17NhaYHQ@mail.gmail.com>
+Subject: Re: [PATCH] iommu: PGTABLE_LPAE is also for RISCV
+To: Randy Dunlap <rdunlap@infradead.org>
+Cc: Conor Dooley <conor.dooley@microchip.com>, linux-kernel@vger.kernel.org, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	iommu@lists.linux.dev, Conor Dooley <conor@kernel.org>, linux-riscv@lists.infradead.org, 
+	geert+renesas@glider.be
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2023-03-30 00:40, Jason Gunthorpe wrote:
-> If the group is already owned then defered attach should not be done and
-> the device should be directly connected to the correct domain.
-> 
-> Owned means that some driver is already bound to devices in the group and
-> is operating the group possibly without DMA API support. In this case
-> there would be no way to correct the mismatched domain.
+Hi Randy,
 
-How much do we really care about supporting device hotplug while using 
-VFIO in a kdump kernel? Surely if anything ever deserved a "don't do 
-that"...
+On Thu, Mar 30, 2023 at 5:48=E2=80=AFPM Randy Dunlap <rdunlap@infradead.org=
+> wrote:
+> On 3/30/23 00:31, Geert Uytterhoeven wrote:
+> > On Thu, Mar 30, 2023 at 8:25=E2=80=AFAM Conor Dooley <conor.dooley@micr=
+ochip.com> wrote:
+> >> On Wed, Mar 29, 2023 at 11:01:05PM -0700, Randy Dunlap wrote:
+> >>> On riscv64, linux-next-20233030 (and for several days earlier),
+> >>> there is a kconfig warning:
+> >>>
+> >>> WARNING: unmet direct dependencies detected for IOMMU_IO_PGTABLE_LPAE
+> >>>   Depends on [n]: IOMMU_SUPPORT [=3Dy] && (ARM || ARM64 || COMPILE_TE=
+ST [=3Dn]) && !GENERIC_ATOMIC64 [=3Dn]
+> >>>   Selected by [y]:
+> >>>   - IPMMU_VMSA [=3Dy] && IOMMU_SUPPORT [=3Dy] && (ARCH_RENESAS [=3Dy]=
+ || COMPILE_TEST [=3Dn]) && !GENERIC_ATOMIC64 [=3Dn]
+> >>>
+> >>> and build errors:
+> >>>
+> >>> riscv64-linux-ld: drivers/iommu/io-pgtable-arm.o: in function `.L140'=
+:
+> >>> io-pgtable-arm.c:(.init.text+0x1e8): undefined reference to `alloc_io=
+_pgtable_ops'
+> >>> riscv64-linux-ld: drivers/iommu/io-pgtable-arm.o: in function `.L168'=
+:
+> >>> io-pgtable-arm.c:(.init.text+0xab0): undefined reference to `free_io_=
+pgtable_ops'
+> >>> riscv64-linux-ld: drivers/iommu/ipmmu-vmsa.o: in function `.L140':
+> >>> ipmmu-vmsa.c:(.text+0xbc4): undefined reference to `free_io_pgtable_o=
+ps'
+> >>> riscv64-linux-ld: drivers/iommu/ipmmu-vmsa.o: in function `.L0 ':
+> >>> ipmmu-vmsa.c:(.text+0x145e): undefined reference to `alloc_io_pgtable=
+_ops'
+> >>>
+> >>> Add RISCV as an allowed ARCH dependency to fix these problems.
+> >>>
+> >>> Fixes: d286a58bc8f4 ("iommu: Tidy up io-pgtable dependencies")
+> >>> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> >>> Cc: Joerg Roedel <joro@8bytes.org>
+> >>> Cc: Will Deacon <will@kernel.org>
+> >>> Cc: Robin Murphy <robin.murphy@arm.com>
+> >>> Cc: iommu@lists.linux.dev
+> >>> Cc: Conor Dooley <conor@kernel.org>
+> >>> Cc: linux-riscv@lists.infradead.org
+> >>> ---
+> >>>  drivers/iommu/Kconfig |    2 +-
+> >>>  1 file changed, 1 insertion(+), 1 deletion(-)
+> >>>
+> >>> diff -- a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> >>> --- a/drivers/iommu/Kconfig
+> >>> +++ b/drivers/iommu/Kconfig
+> >>> @@ -32,7 +32,7 @@ config IOMMU_IO_PGTABLE
+> >>>  config IOMMU_IO_PGTABLE_LPAE
+> >>>       bool "ARMv7/v8 Long Descriptor Format"
+> >>
+> >> I'm probably missing something here, but why would we want to enable
+> >> "ARMv7/v8 Long Descriptor Format" on RISC-V?
+> >
+> > Indeed, we should not enable it, unless compile-testing.
+> >
+> >> Would it not be better to make the Renesas depend on, rather than
+> >> select the option? It does seem highly arch specific, and I feel like
+> >> Geert previously mentioned that the RZ/Five (their RISC-V offering)
+> >> didn't use it.
+> >
+> > I think the IPMMU_VMSA dependency should gain
+> >
+> >         depends on ARM || ARM64 || COMPILE_TEST
+>
+> so like this?
+> Or did you mean to drop the ARCH_RENESAS part also?
+>
+>
+>  config IPMMU_VMSA
+>         bool "Renesas VMSA-compatible IPMMU"
+> -       depends on ARCH_RENESAS || COMPILE_TEST
+> +       depends on ARCH_RENESAS || ARM || ARM64 || COMPILE_TEST
 
-In fact I struggle to imagine how it would even be possible for a device 
-which *was* present and active when the previous kernel crashed, and 
-thus needs deferred attach, to somehow evade bus_iommu_probe() in the 
-kdump kernel until after the rest of its group has managed to get as far 
-as binding a driver to claim ownership :/
+No, you want "depends on (ARCH_RENESAS && (ARM || ARM64)) || COMPILE_TEST",
+which is a bit hard to read.
 
-And even if someone did manage to achieve all of this, is it really 
-beneficial to let this device start spamming IOMMU faults and/or 
-potentially corrupting whatever the kdump kernel *is* trying to do in 
-said owned domain, on the offchance that the user might eventually bind 
-it to VFIO (or whatever) as well and expect it to then work? TBH I'd say 
-that banishing it to roam free in deferred-attach limbo, peacefully 
-grazing the wastelands of dead-kernel memory and failing to support any 
-non-DMA-API funny business, is the preferable option.
+Hence I really meant adding that line, i.e.:
 
-Thanks,
-Robin.
+     config IPMMU_VMSA
+           bool "Renesas VMSA-compatible IPMMU"
+           depends on ARCH_RENESAS || COMPILE_TEST
+    +      depends on ARM || ARM64 || COMPILE_TEST
 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->   drivers/iommu/iommu.c | 5 +++--
->   1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index c68cf551d05dc4..6fe8bc78db2016 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -411,8 +411,9 @@ static bool iommu_is_attach_deferred(struct device *dev)
->   
->   static int iommu_group_do_dma_first_attach(struct iommu_group *group, struct device *dev)
->   {
-> -	return __iommu_device_set_domain(group, dev, group->domain,
-> -					 IOMMU_SET_DOMAIN_WITH_DEFERRED);
-> +	return __iommu_device_set_domain(
-> +		group, dev, group->domain,
-> +		group->owner ? 0 : IOMMU_SET_DOMAIN_WITH_DEFERRED);
->   }
->   
->   int iommu_probe_device(struct device *dev)
+>
+> The failing config file has ARCH_RENESAS=3Dy.  After the change above, I =
+still get:
+>
+> WARNING: unmet direct dependencies detected for IOMMU_IO_PGTABLE_LPAE
+>   Depends on [n]: IOMMU_SUPPORT [=3Dy] && (ARM || ARM64 || COMPILE_TEST [=
+=3Dn]) && !GENERIC_ATOMIC64 [=3Dn]
+>   Selected by [y]:
+>   - IPMMU_VMSA [=3Dy] && IOMMU_SUPPORT [=3Dy] && (ARCH_RENESAS [=3Dy] || =
+ARM || ARM64 || COMPILE_TEST [=3Dn]) && !GENERIC_ATOMIC64 [=3Dn]
+--=20
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
