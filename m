@@ -1,47 +1,58 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EFA61105
-	for <iommu@lists.linux.dev>; Thu, 30 Mar 2023 01:14:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B56DDC433EF;
-	Thu, 30 Mar 2023 01:14:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1680138849;
-	bh=FFWdFB2zI6gVwnEprnMCPpcJkq040yxf+K1pV1kS8y0=;
-	h=Date:From:To:Cc:Subject:From;
-	b=tbsjd8YmKRFVJzHSLXUv5UFhpKKrDJArVE+bxCIkfED6Ol1+L5kWKhkToD0PWR3Cm
-	 dhfkjHXwp6LtSGs81ieODh/eZYW7vxjYQL3QzBTG3COitoi95Yjk7uSaUYfR3F5sv9
-	 74UJ1CyoWxd2ClQ8EtUGP+NXs4No7J3jVzHF1ArhJjNFAgSjJggN4P4x3i3w91L8z2
-	 puvamb1UVtIwq7T5N3EH/xL7w4fS4ChwIfRxuKlfnH/bpJTICJhf3GrRF7TPAjrGQe
-	 NW4O6gnErYCOaY+R5cmuES42Gw0J+2SD7q9qIQ8N2nkHkoTl6gIvVNM7xUzuDXaMOk
-	 Qhf9fIQLspAaw==
-Date: Wed, 29 Mar 2023 18:14:07 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit
- <suravee.suthikulpanit@amd.com>
-Cc: iommu@lists.linux.dev, "netdev@vger.kernel.org"
- <netdev@vger.kernel.org>, Willem de Bruijn <willemb@google.com>, Saeed
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E00410E3
+	for <iommu@lists.linux.dev>; Thu, 30 Mar 2023 02:37:01 +0000 (UTC)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.56])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Pn6sm5PTvzSqZH;
+	Thu, 30 Mar 2023 10:33:16 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Thu, 30 Mar
+ 2023 10:36:53 +0800
+Subject: Re: AMD IOMMU problem after NIC uses multi-page allocation
+To: Jakub Kicinski <kuba@kernel.org>, Joerg Roedel <joro@8bytes.org>, Suravee
+ Suthikulpanit <suravee.suthikulpanit@amd.com>
+CC: <iommu@lists.linux.dev>, "netdev@vger.kernel.org"
+	<netdev@vger.kernel.org>, Willem de Bruijn <willemb@google.com>, Saeed
  Mahameed <saeed@kernel.org>
-Subject: AMD IOMMU problem after NIC uses multi-page allocation
-Message-ID: <20230329181407.3eed7378@kernel.org>
+References: <20230329181407.3eed7378@kernel.org>
+From: Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <5b669c86-773d-a46e-4925-03281f10ef12@huawei.com>
+Date: Thu, 30 Mar 2023 10:36:53 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20230329181407.3eed7378@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 
-Hi Joerg, Suravee,
+On 2023/3/30 9:14, Jakub Kicinski wrote:
+> Hi Joerg, Suravee,
+> 
+> I see an odd NIC behavior with AMD IOMMU in lazy mode (on 5.19).
+> 
+> The NIC allocates a buffer for Rx packets which is MTU rounded up 
+> to page size. If I run it with 1500B MTU or 9000 MTU everything is
+> fine, slight but manageable perf hit.
+> 
+> But if I flip the MTU to 9k, run some traffic and then go back to 1.5k 
+> - 70%+ of CPU cycles are spent in alloc_iova (and children).
+> 
+> Does this ring any bells?
 
-I see an odd NIC behavior with AMD IOMMU in lazy mode (on 5.19).
+My bell points to below info, not sure if it will help?
+https://lore.kernel.org/linux-iommu/20190815121104.29140-3-thunder.leizhen@huawei.com/
 
-The NIC allocates a buffer for Rx packets which is MTU rounded up 
-to page size. If I run it with 1500B MTU or 9000 MTU everything is
-fine, slight but manageable perf hit.
-
-But if I flip the MTU to 9k, run some traffic and then go back to 1.5k 
-- 70%+ of CPU cycles are spent in alloc_iova (and children).
-
-Does this ring any bells?
+> .
+> 
