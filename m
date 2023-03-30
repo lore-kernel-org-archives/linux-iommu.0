@@ -1,70 +1,80 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E59F1C05;
-	Thu, 30 Mar 2023 06:45:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680158744; x=1711694744;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=UD6xKhK18vCA1GM5zVFX4AuWTlEus36ykX89c8krd+8=;
-  b=draopZMEnbA7u9dMFatniilejEh5XoTjTfO4dtFa+9YcTXRivfwLaug5
-   hobzW+j6bIPWgAMP1pOz+pLQ153RLFgdpyMj6uGcMzas1MdnhfyX1vApt
-   Yu4QZ5Y9K8s+BKPLEdLdnvjSbDS2QEGEpV/P6bqlR03sim00cq3DLKeXw
-   0xqD0x0y4/hiVDoelcM6XU4h0C2MsNHYXMxCoj2MfDBgRpYgwp1zIXKGf
-   VUjOGcUAkMW5K5ILjkDHVsl0bpNSp5eFTEho4HabCwPftRPaq7L4IGP1K
-   bACUnJG6Tqwi6O92YNWLPxv/KS9qXfaBEPb/y2T/DKwepb9fEHwSpwWdx
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10664"; a="320736745"
-X-IronPort-AV: E=Sophos;i="5.98,303,1673942400"; 
-   d="scan'208";a="320736745"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2023 23:45:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10664"; a="808516064"
-X-IronPort-AV: E=Sophos;i="5.98,303,1673942400"; 
-   d="scan'208";a="808516064"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by orsmga004.jf.intel.com with ESMTP; 29 Mar 2023 23:45:40 -0700
-Message-ID: <0c1c42ee-240f-d1a7-416f-4d9b6040f32a@linux.intel.com>
-Date: Thu, 30 Mar 2023 14:45:56 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E7D61C05
+	for <iommu@lists.linux.dev>; Thu, 30 Mar 2023 06:51:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1E47C433D2;
+	Thu, 30 Mar 2023 06:51:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1680159098;
+	bh=j6ptaomqz4Mdy0IN85hUag5DDxk1uEmIEhcTkQd3Xys=;
+	h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
+	b=MajGdklLDY8+LZCCBsM1CcaWT0H/yjs9hH51dXgUE+YNRf2KrS11/ZiH2b68X8EK6
+	 QdAcnOeR6/YqoHVl0jT+ZiFTB7+pUOHCo9mrP1+bZqlzeorvNBtpfMtz2aaBF36RWk
+	 UAC1pmWjgXOclfT+AgZLxQk8r3tOKS/z8uCfK0wjHdXVzUlQpyqXJxAQe/cbS0wIDG
+	 UcCA0Rq8inZSXizvZrKP77BjD8PYpIO7H5k2Eu3qGJtWqwc1YMq2WLWk5hp96GrSjQ
+	 fp44ksxqurnAfzB+whmNhaxQzy/W0IDiEe9PIwz5VHlr0T41zO7QdRkIMFUFUusB+w
+	 IuSvAToRWByKw==
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+	by mailauth.nyi.internal (Postfix) with ESMTP id A277127C0054;
+	Thu, 30 Mar 2023 02:51:36 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute6.internal (MEProxy); Thu, 30 Mar 2023 02:51:36 -0400
+X-ME-Sender: <xms:dzElZEL8Bm0HqH6sOs-iLOYZZfRMxtzYMHzy1EN_nZnMZTehE9LV5w>
+    <xme:dzElZELQasNNd2NCsWQRDwlAquzCRmmJlYKzoM3I2XcN3ISW013TydHXMbNahPYLb
+    whdkJH4i23XnflVpnc>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvdehjedguddufecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdet
+    rhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugeskhgvrhhnvghlrdhorhhgqeenucggtf
+    frrghtthgvrhhnpedvveeigfetudegveeiledvgfevuedvgfetgeefieeijeejffeggeeh
+    udegtdevheenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
+    hmpegrrhhnugdomhgvshhmthhprghuthhhphgvrhhsohhnrghlihhthidquddvkeehudej
+    tddvgedqvdekjedttddvieegqdgrrhhnugeppehkvghrnhgvlhdrohhrghesrghrnhgusg
+    druggv
+X-ME-Proxy: <xmx:dzElZEtQzlt6ahGAhDKMFiW52PlxemMgENpz_a2Wa1ssSsJbO3DdXg>
+    <xmx:dzElZBb-AsdUcc5j8_m3EMWHQXXe7aVaJgFVQftolGVTml-949zZrw>
+    <xmx:dzElZLa3Gfn_WtK08Nbtmmwty0EkDUnuO6brsYWT9g9aWXYfXSU_hA>
+    <xmx:eDElZP7uEITwfXKzwc6maWyBCH9sPgogCJP7sHodEhqPdFUzp_wvrQ>
+Feedback-ID: i36794607:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id 4E094B60086; Thu, 30 Mar 2023 02:51:35 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-238-g746678b8b6-fm-20230329.001-g746678b8
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
- Nicolin Chen <nicolinc@nvidia.com>
-Subject: Re: [PATCH v2 08/14] iommu: Make iommu_group_do_dma_first_attach()
- work with owned groups
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, llvm@lists.linux.dev,
- Nathan Chancellor <nathan@kernel.org>,
- Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Tom Rix <trix@redhat.com>,
- Will Deacon <will@kernel.org>
-References: <8-v2-cd32667d2ba6+70bd1-iommu_err_unwind_jgg@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <8-v2-cd32667d2ba6+70bd1-iommu_err_unwind_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+Message-Id: <5db9b27a-90df-4916-90da-4e8daeebf9e3@app.fastmail.com>
+In-Reply-To: <ZCTOxOGDPoJoZDNW@infradead.org>
+References: <20230329071405.1568021-1-geert+renesas@glider.be>
+ <ZCTOxOGDPoJoZDNW@infradead.org>
+Date: Thu, 30 Mar 2023 08:51:15 +0200
+From: "Arnd Bergmann" <arnd@kernel.org>
+To: "Christoph Hellwig" <hch@infradead.org>,
+ "Geert Uytterhoeven" <geert+renesas@glider.be>
+Cc: "Desnes Nunes" <desnesn@redhat.com>, "Christoph Hellwig" <hch@lst.de>,
+ "Marek Szyprowski" <m.szyprowski@samsung.com>,
+ "Robin Murphy" <robin.murphy@arm.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, "kernel test robot" <lkp@intel.com>,
+ noreply@ellerman.id.au
+Subject: Re: [PATCH -next] dma-debug: Use %pa to format phys_addr_t
+Content-Type: text/plain
 
-On 3/30/23 7:40 AM, Jason Gunthorpe wrote:
-> If the group is already owned then defered attach should not be done and
-> the device should be directly connected to the correct domain.
-> 
-> Owned means that some driver is already bound to devices in the group and
-> is operating the group possibly without DMA API support. In this case
-> there would be no way to correct the mismatched domain.
-> 
-> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+On Thu, Mar 30, 2023, at 01:50, Christoph Hellwig wrote:
+> I've applied this as it is the first fix I got into my mailbox for it.
+>
+> Arnd sent one a little later, which uses %pap instead of %pa, which
+> confused me a bit.  The documentation seems to allow both without
+> any recommendation which one to use, which confuses me even further.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Indeed, I wasn't aware of this either, apparently aaf07621b8bb
+("vsprintf: add %pad extension for dma_addr_t use") introduced the
+%pap form at the same time as %pad but made it the same as the already
+existing %pa. I also see that the %pa form is a lot more common than
+%pap, so it's probably better to go with %pa for new users anyway.
 
-Best regards,
-baolu
+    Arnd
