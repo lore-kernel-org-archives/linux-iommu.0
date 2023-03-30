@@ -1,85 +1,75 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8276229B0
-	for <iommu@lists.linux.dev>; Thu, 30 Mar 2023 16:34:29 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 11E892F4;
-	Thu, 30 Mar 2023 09:35:13 -0700 (PDT)
-Received: from [10.57.54.254] (unknown [10.57.54.254])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9B4883F6C4;
-	Thu, 30 Mar 2023 09:34:27 -0700 (PDT)
-Message-ID: <2529dd93-2cb2-6ed8-20c0-c424e6613717@arm.com>
-Date: Thu, 30 Mar 2023 17:34:21 +0100
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09DB929B0
+	for <iommu@lists.linux.dev>; Thu, 30 Mar 2023 16:49:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+	bh=3pZEcPlTyiawu/gIbP6AxJHelAk/ImhwRolvPWk6aX0=; b=LP0tZ3E0kla/9xtBkx6eXAZQie
+	g+T9NtEIF9djDsXIlLGKh9JHr9KOihxBGoT5vIMLOqmBuH8QOqfGOVXM/khXZM0iG+pU9k2ra1Lk+
+	zLws0/cT4i93hZ7om1eDLu4zZdGve71qY6zO1kG2mxjYACJ7PpKrms5TiDY1YVlvmkRxGn8ne8iXA
+	zNMM7aZISYMUZp5CI9dc5tn59tLzTJAHxTpXPNhP0/BBXpgEcmf25nGHl7iCUj22Z87J59dkPwDUE
+	0AuQlFX7HZ/0BrhBytQXVPNGtqRPTUoRZsdhMk1DfqqGWoeTlf2pvmfDA+sfjhspdKq2DJIIlOkMO
+	+Kst5xXQ==;
+Received: from [71.59.149.187] (helo=[10.0.0.152])
+	by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+	id 1phvSb-004Wz9-1I;
+	Thu, 30 Mar 2023 16:49:13 +0000
+Message-ID: <833203b0-aee5-eb23-afb4-ff71a3024258@infradead.org>
+Date: Thu, 30 Mar 2023 09:49:12 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
 Subject: Re: [PATCH] iommu: PGTABLE_LPAE is also for RISCV
-Content-Language: en-GB
-To: Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  iommu@lists.linux.dev, Conor Dooley <conor@kernel.org>,
  linux-riscv@lists.infradead.org
 References: <20230330060105.29460-1-rdunlap@infradead.org>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230330060105.29460-1-rdunlap@infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+ <2529dd93-2cb2-6ed8-20c0-c424e6613717@arm.com>
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <2529dd93-2cb2-6ed8-20c0-c424e6613717@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On 2023-03-30 07:01, Randy Dunlap wrote:
-> On riscv64, linux-next-20233030 (and for several days earlier),
-> there is a kconfig warning:
-> 
-> WARNING: unmet direct dependencies detected for IOMMU_IO_PGTABLE_LPAE
->    Depends on [n]: IOMMU_SUPPORT [=y] && (ARM || ARM64 || COMPILE_TEST [=n]) && !GENERIC_ATOMIC64 [=n]
->    Selected by [y]:
->    - IPMMU_VMSA [=y] && IOMMU_SUPPORT [=y] && (ARCH_RENESAS [=y] || COMPILE_TEST [=n]) && !GENERIC_ATOMIC64 [=n]
-> 
-> and build errors:
-> 
-> riscv64-linux-ld: drivers/iommu/io-pgtable-arm.o: in function `.L140':
-> io-pgtable-arm.c:(.init.text+0x1e8): undefined reference to `alloc_io_pgtable_ops'
-> riscv64-linux-ld: drivers/iommu/io-pgtable-arm.o: in function `.L168':
-> io-pgtable-arm.c:(.init.text+0xab0): undefined reference to `free_io_pgtable_ops'
-> riscv64-linux-ld: drivers/iommu/ipmmu-vmsa.o: in function `.L140':
-> ipmmu-vmsa.c:(.text+0xbc4): undefined reference to `free_io_pgtable_ops'
-> riscv64-linux-ld: drivers/iommu/ipmmu-vmsa.o: in function `.L0 ':
-> ipmmu-vmsa.c:(.text+0x145e): undefined reference to `alloc_io_pgtable_ops'
-> 
-> Add RISCV as an allowed ARCH dependency to fix these problems.
-> 
-> Fixes: d286a58bc8f4 ("iommu: Tidy up io-pgtable dependencies")
 
-BTW that doesn't look like the right fix target - this presumably dates 
-back as far as when ARCH_RENESAS was added to RISCV, such that it was 
-possible to start selecting IPMMU_VMSA without COMPILE_TEST?
 
-Thanks,
-Robin.
-
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: iommu@lists.linux.dev
-> Cc: Conor Dooley <conor@kernel.org>
-> Cc: linux-riscv@lists.infradead.org
-> ---
->   drivers/iommu/Kconfig |    2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+On 3/30/23 09:34, Robin Murphy wrote:
+> On 2023-03-30 07:01, Randy Dunlap wrote:
+>> On riscv64, linux-next-20233030 (and for several days earlier),
+>> there is a kconfig warning:
+>>
+>> WARNING: unmet direct dependencies detected for IOMMU_IO_PGTABLE_LPAE
+>>    Depends on [n]: IOMMU_SUPPORT [=y] && (ARM || ARM64 || COMPILE_TEST [=n]) && !GENERIC_ATOMIC64 [=n]
+>>    Selected by [y]:
+>>    - IPMMU_VMSA [=y] && IOMMU_SUPPORT [=y] && (ARCH_RENESAS [=y] || COMPILE_TEST [=n]) && !GENERIC_ATOMIC64 [=n]
+>>
+>> and build errors:
+>>
+>> riscv64-linux-ld: drivers/iommu/io-pgtable-arm.o: in function `.L140':
+>> io-pgtable-arm.c:(.init.text+0x1e8): undefined reference to `alloc_io_pgtable_ops'
+>> riscv64-linux-ld: drivers/iommu/io-pgtable-arm.o: in function `.L168':
+>> io-pgtable-arm.c:(.init.text+0xab0): undefined reference to `free_io_pgtable_ops'
+>> riscv64-linux-ld: drivers/iommu/ipmmu-vmsa.o: in function `.L140':
+>> ipmmu-vmsa.c:(.text+0xbc4): undefined reference to `free_io_pgtable_ops'
+>> riscv64-linux-ld: drivers/iommu/ipmmu-vmsa.o: in function `.L0 ':
+>> ipmmu-vmsa.c:(.text+0x145e): undefined reference to `alloc_io_pgtable_ops'
+>>
+>> Add RISCV as an allowed ARCH dependency to fix these problems.
+>>
+>> Fixes: d286a58bc8f4 ("iommu: Tidy up io-pgtable dependencies")
 > 
-> diff -- a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -32,7 +32,7 @@ config IOMMU_IO_PGTABLE
->   config IOMMU_IO_PGTABLE_LPAE
->   	bool "ARMv7/v8 Long Descriptor Format"
->   	select IOMMU_IO_PGTABLE
-> -	depends on ARM || ARM64 || COMPILE_TEST
-> +	depends on ARM || ARM64 || RISCV || COMPILE_TEST
->   	depends on !GENERIC_ATOMIC64	# for cmpxchg64()
->   	help
->   	  Enable support for the ARM long descriptor pagetable format.
+> BTW that doesn't look like the right fix target - this presumably dates back as far as when ARCH_RENESAS was added to RISCV, such that it was possible to start selecting IPMMU_VMSA without COMPILE_TEST?
+
+OK, I can go with that. Thanks for your help.
+
+-- 
+~Randy
