@@ -1,85 +1,65 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEB63C2D7
-	for <iommu@lists.linux.dev>; Thu, 30 Mar 2023 06:01:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-	Content-ID:Content-Description:In-Reply-To:References;
-	bh=7zxKJM+hffyzY8/mnbPlZjh2fBXL9zN4AP03zResViY=; b=c11kkHW1gkFJ1DDyT7B7Lq4ggE
-	elct902Q3wmKH6ivTqzkxq1kIRLCVebdk+0lefqrqgPmmW3OzkXwLG40UAqboNlENMi1KCODtF3P0
-	Shr/S+4CazLK+B/7ftHazEpioiTtuZ4wZzTuAS3H1LX5bi5IXJKZBGo1UV2XNDDizxS4aEGYRBtkM
-	VYRm3K/RrsZnMJGQ27wEp3eC6jZ4VZpi6x9vDzdFvopfIFx9cmQ7l2+iXo68Y9fYYB1Yqe8ma2PlK
-	6A0qUx+04xqOAOWLKKlcuPDySZHbhkmKgIE//glpNni26064xWleSL1/4DMSse8O8JLXg+DFSHVh5
-	/UrfNPYQ==;
-Received: from [2601:1c2:980:9ec0::2764] (helo=bombadil.infradead.org)
-	by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-	id 1phlLQ-002hoJ-0x;
-	Thu, 30 Mar 2023 06:01:08 +0000
-From: Randy Dunlap <rdunlap@infradead.org>
-To: linux-kernel@vger.kernel.org
-Cc: Randy Dunlap <rdunlap@infradead.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev,
-	Conor Dooley <conor@kernel.org>,
-	linux-riscv@lists.infradead.org
-Subject: [PATCH] iommu: PGTABLE_LPAE is also for RISCV
-Date: Wed, 29 Mar 2023 23:01:05 -0700
-Message-Id: <20230330060105.29460-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.40.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8AAC185D;
+	Thu, 30 Mar 2023 06:22:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680157345; x=1711693345;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=mm9fLdmkAZnHHfC+nSJjtz1gaO9rbdpUZOXZFTChUwo=;
+  b=DPqUL9heXiiwJxVMLfwo9F2Ef/pcR1ibpu8bNw6C45LGPJJAo0cXp3QT
+   qD28bkUkCzDYu3OwXmZ7yV57JKEFPwETfelDCTv3nYqGzhNIu1RmDJNPV
+   suTB+Xz65+JbLJTIFVvEQMVtNAAepfji5/0SrL0SAZ6rCyqmum41hML77
+   guOXpQ1nbruYvnOQtM7KCajyhactz5TGsj+uu9VGHmKjkUkYwi19SSX9v
+   dbMKhkr9mxvFCxcBs2OMBpaEEPqBZkKccXvViZ98LVtydiWdNenT+hzcz
+   V7qFDAryuV6zLsMjBgZurzGeXIouC8B6RgktDB313FkjuNGfNZK7QFgs2
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10664"; a="403731236"
+X-IronPort-AV: E=Sophos;i="5.98,303,1673942400"; 
+   d="scan'208";a="403731236"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2023 23:22:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10664"; a="714877768"
+X-IronPort-AV: E=Sophos;i="5.98,303,1673942400"; 
+   d="scan'208";a="714877768"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
+  by orsmga008.jf.intel.com with ESMTP; 29 Mar 2023 23:22:21 -0700
+Message-ID: <44ffff8d-9e4b-0a5a-694b-26edd46d5c5c@linux.intel.com>
+Date: Thu, 30 Mar 2023 14:22:38 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
+ Nicolin Chen <nicolinc@nvidia.com>
+Subject: Re: [PATCH v2 01/14] iommu: Replace iommu_group_device_count() with
+ list_count_nodes()
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, llvm@lists.linux.dev,
+ Nathan Chancellor <nathan@kernel.org>,
+ Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Tom Rix <trix@redhat.com>,
+ Will Deacon <will@kernel.org>
+References: <1-v2-cd32667d2ba6+70bd1-iommu_err_unwind_jgg@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <1-v2-cd32667d2ba6+70bd1-iommu_err_unwind_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On riscv64, linux-next-20233030 (and for several days earlier),
-there is a kconfig warning:
+On 3/30/23 7:40 AM, Jason Gunthorpe wrote:
+> No reason to wrapper a standard function, just call the library directly.
+> 
+> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
 
-WARNING: unmet direct dependencies detected for IOMMU_IO_PGTABLE_LPAE
-  Depends on [n]: IOMMU_SUPPORT [=y] && (ARM || ARM64 || COMPILE_TEST [=n]) && !GENERIC_ATOMIC64 [=n]
-  Selected by [y]:
-  - IPMMU_VMSA [=y] && IOMMU_SUPPORT [=y] && (ARCH_RENESAS [=y] || COMPILE_TEST [=n]) && !GENERIC_ATOMIC64 [=n]
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-and build errors:
-
-riscv64-linux-ld: drivers/iommu/io-pgtable-arm.o: in function `.L140':
-io-pgtable-arm.c:(.init.text+0x1e8): undefined reference to `alloc_io_pgtable_ops'
-riscv64-linux-ld: drivers/iommu/io-pgtable-arm.o: in function `.L168':
-io-pgtable-arm.c:(.init.text+0xab0): undefined reference to `free_io_pgtable_ops'
-riscv64-linux-ld: drivers/iommu/ipmmu-vmsa.o: in function `.L140':
-ipmmu-vmsa.c:(.text+0xbc4): undefined reference to `free_io_pgtable_ops'
-riscv64-linux-ld: drivers/iommu/ipmmu-vmsa.o: in function `.L0 ':
-ipmmu-vmsa.c:(.text+0x145e): undefined reference to `alloc_io_pgtable_ops'
-
-Add RISCV as an allowed ARCH dependency to fix these problems.
-
-Fixes: d286a58bc8f4 ("iommu: Tidy up io-pgtable dependencies")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev
-Cc: Conor Dooley <conor@kernel.org>
-Cc: linux-riscv@lists.infradead.org
----
- drivers/iommu/Kconfig |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff -- a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -32,7 +32,7 @@ config IOMMU_IO_PGTABLE
- config IOMMU_IO_PGTABLE_LPAE
- 	bool "ARMv7/v8 Long Descriptor Format"
- 	select IOMMU_IO_PGTABLE
--	depends on ARM || ARM64 || COMPILE_TEST
-+	depends on ARM || ARM64 || RISCV || COMPILE_TEST
- 	depends on !GENERIC_ATOMIC64	# for cmpxchg64()
- 	help
- 	  Enable support for the ARM long descriptor pagetable format.
+Best regards,
+baolu
