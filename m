@@ -1,66 +1,84 @@
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A8BD1FC4;
-	Thu, 30 Mar 2023 12:45:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680180333; x=1711716333;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=aABDzXs1bbGmAjh5kX353PzoweJ6hhUk3tT8mRFmXAM=;
-  b=BgmYMRhndoBwIvPQFv6+dN7btLpq293cf/7msaDP35QKhLGmn7AOeCGb
-   DwWIHPqfu02DvPfDJIX4yYINjZRUgDNSAqYwSMqF3AAyQuk/erGvWlUzQ
-   NmxPoSzJxku77mm4jawo2biD92JTQ0yUB7w/wUWBLMAJIP0hgLahR0Gy5
-   uJfACGVfWddokuGnaqTSUGix9XmX+5q/7WeUQgn+x0Hau/GpPsuL2H0nA
-   dl1JTFzIe3IVUb+FN2J+ARC33ejsekUEK0EfzxUgWbHW46NjT4zixAmG9
-   LFwuMW8l2/RvgO09yNEX33LZRLvMxFPz1tYSUTMt8OuEiLOHESH+lczqB
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10665"; a="338655378"
-X-IronPort-AV: E=Sophos;i="5.98,303,1673942400"; 
-   d="scan'208";a="338655378"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2023 05:45:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10665"; a="753985721"
-X-IronPort-AV: E=Sophos;i="5.98,303,1673942400"; 
-   d="scan'208";a="753985721"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.30.251]) ([10.255.30.251])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2023 05:45:04 -0700
-Message-ID: <76c782f4-7c18-4dc1-8a70-9517fdb1506f@linux.intel.com>
-Date: Thu, 30 Mar 2023 20:45:02 +0800
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4D3E51FC4
+	for <iommu@lists.linux.dev>; Thu, 30 Mar 2023 13:04:29 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E146C2F4;
+	Thu, 30 Mar 2023 06:05:12 -0700 (PDT)
+Received: from [10.57.54.254] (unknown [10.57.54.254])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 53D613F663;
+	Thu, 30 Mar 2023 06:04:27 -0700 (PDT)
+Message-ID: <202ea27f-aa79-66b6-0c80-ba0459eef5bd@arm.com>
+Date: Thu, 30 Mar 2023 14:04:22 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
- Nicolin Chen <nicolinc@nvidia.com>
-Subject: Re: [PATCH v2 14/14] iommu: Tidy the control flow in
- iommu_group_store_type()
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, llvm@lists.linux.dev,
- Nathan Chancellor <nathan@kernel.org>,
- Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Tom Rix <trix@redhat.com>,
- Will Deacon <will@kernel.org>
-References: <14-v2-cd32667d2ba6+70bd1-iommu_err_unwind_jgg@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <14-v2-cd32667d2ba6+70bd1-iommu_err_unwind_jgg@nvidia.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: AMD IOMMU problem after NIC uses multi-page allocation
+Content-Language: en-GB
+To: Joerg Roedel <joro@8bytes.org>, Jakub Kicinski <kuba@kernel.org>,
+ Vasant Hegde <vasant.hegde@amd.com>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ iommu@lists.linux.dev, "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ Willem de Bruijn <willemb@google.com>, Saeed Mahameed <saeed@kernel.org>
+References: <20230329181407.3eed7378@kernel.org> <ZCU9KZMlGMWb2ezZ@8bytes.org>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <ZCU9KZMlGMWb2ezZ@8bytes.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/3/30 7:40, Jason Gunthorpe wrote:
-> Use a normal "goto unwind" instead of trying to be clever with checking
-> !ret and manually managing the unlock.
+On 2023-03-30 08:41, Joerg Roedel wrote:
+> Also adding Vasant and Robin.
 > 
-> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+> Vasant, Robin, any idea?
+> 
+> On Wed, Mar 29, 2023 at 06:14:07PM -0700, Jakub Kicinski wrote:
+>> Hi Joerg, Suravee,
+>>
+>> I see an odd NIC behavior with AMD IOMMU in lazy mode (on 5.19).
+>>
+>> The NIC allocates a buffer for Rx packets which is MTU rounded up
+>> to page size. If I run it with 1500B MTU or 9000 MTU everything is
+>> fine, slight but manageable perf hit.
+>>
+>> But if I flip the MTU to 9k, run some traffic and then go back to 1.5k
+>> - 70%+ of CPU cycles are spent in alloc_iova (and children).
+>>
+>> Does this ring any bells?
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+There is that old issue already mentioned where there seems to be some 
+interplay between the IOVA caching and the lazy flush queue, which we 
+never really managed to get to the bottom of. IIRC my hunch was that 
+with a sufficiently large number of CPUs, fq_flush_timeout() overwhelms 
+the rcache depot and gets into a pathological state where it then 
+continually thrashes the IOVA rbtree in a fight with the caching system.
 
-Best regards,
-baolu
+Another (simpler) possibility which comes to mind is if the 9K MTU 
+(which I guess means 16KB IOVA allocations) puts you up against the 
+threshold of available 32-bit IOVA space - if you keep using the 16K 
+entries then you'll mostly be recycling them out of the IOVA caches, 
+which is nice and fast. However once you switch back to 1500 so needing 
+2KB IOVAs, you've now got a load of IOVA space hogged by all the 16KB 
+entries that are now hanging around in caches, which could push you into 
+the case where the optimistic 32-bit allocation starts to fail (but 
+because it *can* fall back to a 64-bit allocation, it's not going to 
+purge those unused 16KB entries to free up more 32-bit space). If the 
+32-bit space then *stays* full, alloc_iova should stay in fail-fast 
+mode, but if some 2KB allocations were below 32 bits and eventually get 
+freed back to the tree, then subsequent attempts are liable to spend 
+ages doing doing their best to scrape up all the available 32-bit space 
+until it's definitely full again. For that case, [1] should help.
+
+Even in the second case, though, I think hitting the rbtree much at all 
+still implies that the caches might not be well-matched to the 
+workload's map/unmap pattern, and maybe scaling up the depot size could 
+still be the biggest win.
+
+Thanks,
+Robin.
+
+[1] 
+https://lore.kernel.org/linux-iommu/e9abc601b00e26fd15a583fcd55f2a8227903077.1674061620.git.robin.murphy@arm.com/
