@@ -1,133 +1,145 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 845151C05
-	for <iommu@lists.linux.dev>; Thu, 30 Mar 2023 06:26:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3F161C05;
+	Thu, 30 Mar 2023 06:42:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1680157608; x=1711693608;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=5EGj2XhAyY9wzau/N0SV9k/j+g1O3v8mLGQWAMN9hys=;
-  b=nuRDGPv9h50EFxg9Y8cQjNbiq638mY6IRcGg8bXvZugkVhc8zW8isdPF
-   CDEFVXUOUBlYT7ktL4GJkrEoB2o026y5MVOrlZVhper9MQcjnZRAjKUBA
-   ylIyClAsu/Pa/bRRZOb7mPgPP/JFVjIIwUvsrknIiGavfYu2RX1pm+iIb
-   mUtQmkcC70rUWzquKAKap7YomQQ47o+56rrT75OEs8sA5l9XBS5ckE8T1
-   UFgt6Tgnke/hCp4ci80LpfdS/47G/v+qMt96LKWwPgMIYVDi+grGrxlZa
-   n6acbDgKkwzWubdv7DVYvwBK8wZ94KImphhLLNey6y/G/HG36TogtCw4P
-   A==;
-X-IronPort-AV: E=Sophos;i="5.98,303,1673938800"; 
-   d="asc'?scan'208";a="218638271"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Mar 2023 23:25:38 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Wed, 29 Mar 2023 23:25:38 -0700
-Received: from wendy (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21 via Frontend
- Transport; Wed, 29 Mar 2023 23:25:37 -0700
-Date: Thu, 30 Mar 2023 07:25:23 +0100
-From: Conor Dooley <conor.dooley@microchip.com>
-To: Randy Dunlap <rdunlap@infradead.org>
-CC: <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, Will
- Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	<iommu@lists.linux.dev>, Conor Dooley <conor@kernel.org>,
-	<linux-riscv@lists.infradead.org>, <geert+renesas@glider.be>
-Subject: Re: [PATCH] iommu: PGTABLE_LPAE is also for RISCV
-Message-ID: <e1b6f12a-899b-4985-8725-556bcb5d0991@spud>
-References: <20230330060105.29460-1-rdunlap@infradead.org>
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680158528; x=1711694528;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=gn+qFcyVhmhsUaueh9YWCs/Iyn5ar9YHFrSAcq0taU4=;
+  b=ceNqXDjMoCocbD7qaeGEWrYpyYywMtZmWzajvqrT9kSGLAMorYhqOm5M
+   94aiqzaOOWqJHwkN6S7Om9AQgAdwJqp65liXfpk5/xD9jg+3ipA1nHdox
+   k4i9rXxBdr0/ZVBxYpjKBflOBT/nN7jG60FdbE1Tc6dxheARJX6KdgsED
+   X2F8GqMSdu2sq1+k8FMsw7fqdWDocmtjvw00T9OST6tMYwN9fKdJLoBH2
+   r1yWEK3NgXvfHef8WzlRf5DBIoLMnfwRQkQl+YuQxN6r2jgTjEdgS4KA4
+   aSzbqkpIWD66QFuEhzvKmZ/e4gEF9qVikmYXTPRKkXimswSUPS17I5ZgA
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10664"; a="339807291"
+X-IronPort-AV: E=Sophos;i="5.98,303,1673942400"; 
+   d="scan'208";a="339807291"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2023 23:42:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10664"; a="634758620"
+X-IronPort-AV: E=Sophos;i="5.98,303,1673942400"; 
+   d="scan'208";a="634758620"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
+  by orsmga003.jf.intel.com with ESMTP; 29 Mar 2023 23:42:03 -0700
+Message-ID: <5a249f94-7742-a2c8-2eff-88821783a6f2@linux.intel.com>
+Date: Thu, 30 Mar 2023 14:42:20 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="voV2wf9Drw69lJ6G"
-Content-Disposition: inline
-In-Reply-To: <20230330060105.29460-1-rdunlap@infradead.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
+ Nicolin Chen <nicolinc@nvidia.com>
+Subject: Re: [PATCH v2 07/14] iommu: Make iommu_group_do_dma_first_attach()
+ simpler
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, llvm@lists.linux.dev,
+ Nathan Chancellor <nathan@kernel.org>,
+ Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Tom Rix <trix@redhat.com>,
+ Will Deacon <will@kernel.org>
+References: <7-v2-cd32667d2ba6+70bd1-iommu_err_unwind_jgg@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <7-v2-cd32667d2ba6+70bd1-iommu_err_unwind_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
---voV2wf9Drw69lJ6G
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hey Randy,
-
-On Wed, Mar 29, 2023 at 11:01:05PM -0700, Randy Dunlap wrote:
-> On riscv64, linux-next-20233030 (and for several days earlier),
-> there is a kconfig warning:
->=20
-> WARNING: unmet direct dependencies detected for IOMMU_IO_PGTABLE_LPAE
->   Depends on [n]: IOMMU_SUPPORT [=3Dy] && (ARM || ARM64 || COMPILE_TEST [=
-=3Dn]) && !GENERIC_ATOMIC64 [=3Dn]
->   Selected by [y]:
->   - IPMMU_VMSA [=3Dy] && IOMMU_SUPPORT [=3Dy] && (ARCH_RENESAS [=3Dy] || =
-COMPILE_TEST [=3Dn]) && !GENERIC_ATOMIC64 [=3Dn]
->=20
-> and build errors:
->=20
-> riscv64-linux-ld: drivers/iommu/io-pgtable-arm.o: in function `.L140':
-> io-pgtable-arm.c:(.init.text+0x1e8): undefined reference to `alloc_io_pgt=
-able_ops'
-> riscv64-linux-ld: drivers/iommu/io-pgtable-arm.o: in function `.L168':
-> io-pgtable-arm.c:(.init.text+0xab0): undefined reference to `free_io_pgta=
-ble_ops'
-> riscv64-linux-ld: drivers/iommu/ipmmu-vmsa.o: in function `.L140':
-> ipmmu-vmsa.c:(.text+0xbc4): undefined reference to `free_io_pgtable_ops'
-> riscv64-linux-ld: drivers/iommu/ipmmu-vmsa.o: in function `.L0 ':
-> ipmmu-vmsa.c:(.text+0x145e): undefined reference to `alloc_io_pgtable_ops'
->=20
-> Add RISCV as an allowed ARCH dependency to fix these problems.
->=20
-> Fixes: d286a58bc8f4 ("iommu: Tidy up io-pgtable dependencies")
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: iommu@lists.linux.dev
-> Cc: Conor Dooley <conor@kernel.org>
-> Cc: linux-riscv@lists.infradead.org
+On 3/30/23 7:40 AM, Jason Gunthorpe wrote:
+> It should always attach to the current group->domain, so don't take in a
+> domain parameter. Use the __iommu_device_set_domain() common code to
+> handle the attach.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > ---
->  drivers/iommu/Kconfig |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff -- a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -32,7 +32,7 @@ config IOMMU_IO_PGTABLE
->  config IOMMU_IO_PGTABLE_LPAE
->  	bool "ARMv7/v8 Long Descriptor Format"
+>   drivers/iommu/iommu.c | 22 +++++++++-------------
+>   1 file changed, 9 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index af3af752c255e4..c68cf551d05dc4 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -105,6 +105,10 @@ enum {
+>   	IOMMU_SET_DOMAIN_WITH_DEFERRED = 1 << 1,
+>   };
+>   
+> +static int __iommu_device_set_domain(struct iommu_group *group,
+> +				     struct device *dev,
+> +				     struct iommu_domain *new_domain,
+> +				     unsigned int flags);
+>   static int __iommu_group_set_domain_internal(struct iommu_group *group,
+>   					     struct iommu_domain *new_domain,
+>   					     unsigned int flags);
+> @@ -405,18 +409,10 @@ static bool iommu_is_attach_deferred(struct device *dev)
+>   	return false;
+>   }
+>   
+> -static int iommu_group_do_dma_first_attach(struct device *dev, void *data)
+> +static int iommu_group_do_dma_first_attach(struct iommu_group *group, struct device *dev)
+>   {
+> -	struct iommu_domain *domain = data;
+> -
+> -	lockdep_assert_held(&dev->iommu_group->mutex);
+> -
+> -	if (iommu_is_attach_deferred(dev)) {
+> -		dev->iommu->attach_deferred = 1;
+> -		return 0;
+> -	}
+> -
+> -	return __iommu_attach_device(domain, dev);
+> +	return __iommu_device_set_domain(group, dev, group->domain,
+> +					 IOMMU_SET_DOMAIN_WITH_DEFERRED);
 
-I'm probably missing something here, but why would we want to enable
-"ARMv7/v8 Long Descriptor Format" on RISC-V?
-Would it not be better to make the Renesas depend on, rather than
-select the option? It does seem highly arch specific, and I feel like
-Geert previously mentioned that the RZ/Five (their RISC-V offering)
-didn't use it.
+Just out of curiosity, why is this group->domain instead of
+group->default_domain?
 
-Cheers,
-Conor.
+>   }
+>   
+>   int iommu_probe_device(struct device *dev)
+> @@ -449,7 +445,7 @@ int iommu_probe_device(struct device *dev)
+>   	 * attach the default domain.
+>   	 */
+>   	if (group->default_domain && !group->owner) {
+> -		ret = iommu_group_do_dma_first_attach(dev, group->default_domain);
+> +		ret = iommu_group_do_dma_first_attach(group, dev);
+>   		if (ret) {
+>   			mutex_unlock(&group->mutex);
+>   			iommu_group_put(group);
+> @@ -1117,7 +1113,7 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+>   	mutex_lock(&group->mutex);
+>   	list_add_tail(&device->list, &group->devices);
+>   	if (group->domain)
+> -		ret = iommu_group_do_dma_first_attach(dev, group->domain);
+> +		ret = iommu_group_do_dma_first_attach(group, dev);
 
->  	select IOMMU_IO_PGTABLE
-> -	depends on ARM || ARM64 || COMPILE_TEST
-> +	depends on ARM || ARM64 || RISCV || COMPILE_TEST
->  	depends on !GENERIC_ATOMIC64	# for cmpxchg64()
->  	help
->  	  Enable support for the ARM long descriptor pagetable format.
->=20
+I am wondering whether we need to do dma first attach here.
 
---voV2wf9Drw69lJ6G
-Content-Type: application/pgp-signature; name="signature.asc"
+iommu_group_add_device() is called from
 
------BEGIN PGP SIGNATURE-----
+1) drivers/vfio/group.c
+    The deferred attachment is only used for kdump. In the kdump capture
+    kernel, vfio should not be used. Or not?
 
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZCUrRAAKCRB4tDGHoIJi
-0mUOAQC/6NyhN5R0KrNSLvgjSttTTgoOT7Q7tk3qW1ws7ymJKAD/RCBEsz++6L3M
-0m6tx3tTnLt6jB6secRd7TkULa4UGwo=
-=UDBy
------END PGP SIGNATURE-----
+2) arch/powerpc/kernel/iommu.c
+    Is powerpc iommu implementation compatible with the generic IOMMU
+    framework and provide a is_attach_deferred op? If not, no need for
+    dma first attach either.
 
---voV2wf9Drw69lJ6G--
+If above are true, perhaps we could simply call
+__iommu_group_set_domain() here?
+
+>   	mutex_unlock(&group->mutex);
+>   	if (ret)
+>   		goto err_put_group;
+
+Best regards,
+baolu
