@@ -1,62 +1,162 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9542F1FAD;
-	Thu, 30 Mar 2023 12:18:54 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id ECBE42F4;
-	Thu, 30 Mar 2023 05:19:37 -0700 (PDT)
-Received: from [10.57.54.254] (unknown [10.57.54.254])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A06793F73F;
-	Thu, 30 Mar 2023 05:18:52 -0700 (PDT)
-Message-ID: <01c50370-002d-5e18-3edc-81c9527aedc9@arm.com>
-Date: Thu, 30 Mar 2023 13:18:45 +0100
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA4691FC4;
+	Thu, 30 Mar 2023 12:37:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680179842; x=1711715842;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=I6TJBmfgiBSLmwXpaNHuZX6/PYxkvp2UnalP2N81xSc=;
+  b=P9Nk3LuEuXu6MCLwh6VJr6GIodh8/Y9p1tWBMFySSrKx3zhHjuJAQ2SC
+   mcOzAdWriFe/jszh2A/VhWT0mx5yFqwOGk6ja/H4mIeGcXVLyyVZTFOjP
+   aJNSBOX9MpzGTu71qYo8lDQdZWgICdknjnNe+uC2ILBOfRa8Bq9xFn1Ci
+   rrlnkIisvHhWXBsO+/lTJfIdVYZ7hHsqd/4Wu/r5tjwnZFDbrNE86FZKZ
+   pYbDarq+T+MChtOcyLzxknqn+XhVku9zBPbVfA5nYeChbSQOo8PjoTDR+
+   crfJteQ9qrpvktdrgu5vm+5UTQ57cmqGxtgQ9c/hFt3qlGrHIuRmcgUEd
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10664"; a="338653191"
+X-IronPort-AV: E=Sophos;i="5.98,303,1673942400"; 
+   d="scan'208";a="338653191"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2023 05:37:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10664"; a="753984513"
+X-IronPort-AV: E=Sophos;i="5.98,303,1673942400"; 
+   d="scan'208";a="753984513"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.30.251]) ([10.255.30.251])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2023 05:37:18 -0700
+Message-ID: <19197c52-139e-c3c5-2771-42323d38c045@linux.intel.com>
+Date: Thu, 30 Mar 2023 20:37:16 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-Subject: Re: [regression] Bug 217218 - Trying to boot Linux version 6-2.2
- kernel with Marvell SATA controller 88SE9235
-Content-Language: en-GB
-To: Christoph Hellwig <hch@lst.de>,
- Linux regressions mailing list <regressions@lists.linux.dev>
-Cc: LKML <linux-kernel@vger.kernel.org>, Linux PCI
- <linux-pci@vger.kernel.org>, iommu@lists.linux.dev, baolu.lu@linux.intel.com
-References: <a79ea7f5-6a41-a6c9-cfec-ba01aa2a3cfa@leemhuis.info>
- <20230328012231.GB21977@lst.de>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230328012231.GB21977@lst.de>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
+ Nicolin Chen <nicolinc@nvidia.com>
+Subject: Re: [PATCH v2 12/14] iommu: Consolidate the default_domain setup to
+ one function
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, llvm@lists.linux.dev,
+ Nathan Chancellor <nathan@kernel.org>,
+ Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Tom Rix <trix@redhat.com>,
+ Will Deacon <will@kernel.org>
+References: <12-v2-cd32667d2ba6+70bd1-iommu_err_unwind_jgg@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <12-v2-cd32667d2ba6+70bd1-iommu_err_unwind_jgg@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023-03-28 02:22, Christoph Hellwig wrote:
-> 
-> I finally found some real time to look into this:
-> 
-> On Tue, Mar 21, 2023 at 02:52:00PM +0100, Linux regression tracking (Thorsten Leemhuis) wrote:
->>> The man errors I am getting are
->>>
->>> dmar_fault 8 callbacks suppressed
->>> DMAR : DRHD: handling fault status req 2
->>> DMAR : [DMA Write NO_PASID] Request device [07.00.1] fault addr
->>> 0xfffe0000 [fault reason 0x82] Present bit in contect entry is clear
-> 
-> This clearly indicates that my original idea about the AMD gart was
-> completely bonkers, as we're obviously on an Intel platform.
-> 
-> And this indicates that the device is trying to do a DMA write to
-> something that isn't IOMMU mapped.  Getting this from an initialization
-> change (commit 78013eaadf6 (x86: remove the IOMMU table infrastructure")
-> feels very strange to me.
-> 
-> Can you maybe post the full dmesg?  I wonder if there is interesting
-> initialization error in here.
+On 2023/3/30 7:40, Jason Gunthorpe wrote:
+> +/**
+> + * iommu_setup_default_domain - Set the default_domain for the group
+> + * @group: Group to change
+> + * @target_type: Domain type to set as the default_domain
+> + *
+> + * Allocate a default domain and set it as the current domain on the group. If
+> + * the group already has a default domain it will be changed to the target_type.
+> + * When target_type is 0 the default domain is selected based on driver and
+> + * system preferences.
+> + */
+> +static int iommu_setup_default_domain(struct iommu_group *group,
+> +				      int target_type)
+> +{
+> +	struct group_device *gdev;
+> +	struct iommu_domain *dom;
+> +	struct bus_type *bus =
+> +		list_first_entry(&group->devices, struct group_device, list)
+> +			->dev->bus;
+> +	int ret;
+> +
+> +	lockdep_assert_held(&group->mutex);
+> +
+> +	target_type = iommu_get_default_domain_type(group, target_type);
+> +	if (target_type < 0)
+> +		return -EINVAL;
+> +
+> +	if (group->default_domain && group->default_domain->type == target_type)
+> +		return 0;
+> +
+> +	dom = __iommu_domain_alloc(bus, target_type);
+> +	if (!dom && target_type != IOMMU_DOMAIN_DMA) {
+> +		dom = __iommu_domain_alloc(bus, IOMMU_DOMAIN_DMA);
+> +		if (dom)
+> +			pr_warn("Failed to allocate default IOMMU domain of type %u for group %s - Falling back to IOMMU_DOMAIN_DMA",
+> +				target_type, group->name);
+> +	}
 
-FWIW "Marvell SATA" instantly makes me suspect the phantom function 
-quirk. What *should* happen is the IOMMU driver sees the PCI DMA aliases 
-correctly and sets up context entries for both 07.00.0 and 07.00.1, but 
-it looks like that may be what's gone awry.
+The background of the code above is that some ARM IOMMU drivers only
+support DMA mapping domain and do not support identity domain.
+Therefore, during boot, if the allocation of identity domain fails, a
+DMA mapping domain is used instead.
 
-Robin.
+However, this does not apply to use cases that change the default domain
+through sysfs. In such cases, it seems that we should directly return
+failure (-ENODEV) and tell the user that the iommu driver does not
+support identity domain.
+
+> +
+> +	/*
+> +	 * There are still some drivers which don't support default domains, so
+> +	 * we ignore the failure and leave group->default_domain NULL.
+> +	 *
+> +	 * We assume that the iommu driver starts up the device in
+> +	 * 'set_platform_dma_ops' mode if it does not support default domains.
+> +	 */
+> +	if (!dom) {
+> +		ret = 0;
+> +		goto out_set;
+> +	}
+
+Should we call set_platform_dma_ops here? The existing default domain
+(if exists) will be freed below. But the iommu driver doesn't know about
+this. It probably will create a UAF case?
+
+> +
+> +	ret = __iommu_group_set_domain_internal(group, dom,
+> +						IOMMU_SET_DOMAIN_WITH_DEFERRED);
+> +	if (ret) {
+> +		/*
+> +		 * An attach_dev failure may result in some devices being left
+> +		 * attached to dom. This is not cleaned up until release_device
+> +		 * is called. Thus we can't always free dom on failure, we have
+> +		 * no choice but to stick the broken domain into
+> +		 * group->default_domain to defer the free and try to continue.
+> +		 */
+> +		if (list_count_nodes(&group->devices) > 1)
+> +			goto out_set;
+> +
+> +		iommu_domain_free(dom);
+> +		dom = NULL;
+> +		goto out_set;
+> +	}
+> +
+> +	/* The domain must be attached before we can establish any mappings */
+> +	for_each_group_device(group, gdev)
+> +		iommu_create_device_direct_mappings(dom, gdev->dev);
+
+It's better to move creating direct mappings before setting the domain
+to the group devices.
+
+The VT-d platforms allow the firmware to access the memory regions
+defined in RMRR ACPI table. If we set an empty domain to the device
+while the firmware DMA accesses the RMRR memory, it might result in
+spurious DMA faults.
+
+> +
+> +out_set:
+> +	if (group->default_domain)
+> +		iommu_domain_free(group->default_domain);
+> +	group->default_domain = dom;
+> +	return ret;
+> +}
+
+Best regards,
+baolu
