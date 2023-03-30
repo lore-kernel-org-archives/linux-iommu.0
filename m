@@ -1,245 +1,158 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66B139442
-	for <iommu@lists.linux.dev>; Thu, 30 Mar 2023 18:14:11 +0000 (UTC)
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-3ee6c339cceso132075e9.0
-        for <iommu@lists.linux.dev>; Thu, 30 Mar 2023 11:14:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1680200049;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=rGdF3JRnHGbDQc345mQenBOBG4qzOhE/u5QBXOUj5ig=;
-        b=GsAYwQKWXUBM7ONZAMjigQwgFkfLmvkWhlArLy3zsccR9nm1dirhrdhrU7jNm5oba4
-         1P4ZUrZxMe+/YHIi43OgFPlYkUUQOlJEkFlEFTeuFcE3QQ0Lc8L6Ya3RQm8BSNSSiafp
-         YgWcm7O3IkURKjSAalDJV9wH+g4z7slrOPA9fyOsYGqe3LYxPwNZu3MaJCUN4hEg0iA9
-         S/2uoDX/zPsQInisy+7emtLRGr8Ws+HU0lWt3VzEkHQzkexk+TVLTwohklptoRaJRv+x
-         mwwCwXYXlNkGx7lDMqd/CcMKTRxtHosL5C3940VivnYTHKVDMkuSfCBSi5z+ou8lGIyU
-         1WlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680200049;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rGdF3JRnHGbDQc345mQenBOBG4qzOhE/u5QBXOUj5ig=;
-        b=aey3I9Hb0g57XgLrp9jvzioKWI5iAYSCOoGZv6HtS75bIA7ySusNnRdb3NDh3ey6IQ
-         8XH3LC7MXKr4pxIH9fnSDUqOAa8o0Lb2hTAU80jDwI/53Ycai+9tHwYmIVx0e2aJPDIW
-         GXkiiOdDjZLbLoiF7MkJJEuV7JchtK5p1wrSRxLtpRRVsohpoLiuOPRsaZhabmSvmNfa
-         HVAUnGkjNS13VxvVJ2hHtCk81wp/DfPPUyX72I2qyYBfhh+BqMswGArSrlDE088k5NRM
-         qaSTTAGPkZirLGFYuq7WxDYsxHkXNU+DxzchhjixeI0YHSyd8hj/PbI1uMbcjVErF+N7
-         6GxQ==
-X-Gm-Message-State: AAQBX9c3BbOtnfun7wgOjTfKdFRYrNwq5YJAg/xmNQ6mR8ptsSXOSVIN
-	wiqJB5x69et2vr7yEtxFvqM4hg==
-X-Google-Smtp-Source: AKy350YBB9EBZyyusB1KlCOpD0hE4u7DO745J0Db6gb3oPKdmYCEE0hMkOZRupaFkgYZqkjpEa5vTw==
-X-Received: by 2002:a05:600c:3b83:b0:3ed:e6da:ffcd with SMTP id n3-20020a05600c3b8300b003ede6daffcdmr10317wms.7.1680200049482;
-        Thu, 30 Mar 2023 11:14:09 -0700 (PDT)
-Received: from google.com (44.232.78.34.bc.googleusercontent.com. [34.78.232.44])
-        by smtp.gmail.com with ESMTPSA id p2-20020a05600c204200b003ed2c0a0f37sm6586732wmg.35.2023.03.30.11.14.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Mar 2023 11:14:08 -0700 (PDT)
-Date: Thu, 30 Mar 2023 18:14:04 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: maz@kernel.org, catalin.marinas@arm.com, will@kernel.org,
-	joro@8bytes.org, robin.murphy@arm.com, james.morse@arm.com,
-	suzuki.poulose@arm.com, oliver.upton@linux.dev,
-	yuzenghui@huawei.com, dbrazdil@google.com, ryan.roberts@arm.com,
-	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev,
-	iommu@lists.linux.dev
-Subject: Re: [RFC PATCH 20/45] KVM: arm64: iommu: Add map() and unmap()
- operations
-Message-ID: <ZCXRbF0dP7oHT+hl@google.com>
-References: <20230201125328.2186498-1-jean-philippe@linaro.org>
- <20230201125328.2186498-21-jean-philippe@linaro.org>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0A8568C09;
+	Thu, 30 Mar 2023 18:24:09 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 53C3C2F4;
+	Thu, 30 Mar 2023 11:24:47 -0700 (PDT)
+Received: from [10.57.54.254] (unknown [10.57.54.254])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2D3F33F663;
+	Thu, 30 Mar 2023 11:24:01 -0700 (PDT)
+Message-ID: <5966bdf2-2a1a-2970-9f18-784b88f2f687@arm.com>
+Date: Thu, 30 Mar 2023 19:23:56 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230201125328.2186498-21-jean-philippe@linaro.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: [PATCH v2 12/14] iommu: Consolidate the default_domain setup to
+ one function
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>, Baolu Lu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
+ Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
+ Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>,
+ Kevin Tian <kevin.tian@intel.com>, Nicolin Chen <nicolinc@nvidia.com>
+References: <12-v2-cd32667d2ba6+70bd1-iommu_err_unwind_jgg@nvidia.com>
+ <19197c52-139e-c3c5-2771-42323d38c045@linux.intel.com>
+ <ZCWsdjM/21IPvjKi@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <ZCWsdjM/21IPvjKi@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Jean,
-
-On Wed, Feb 01, 2023 at 12:53:04PM +0000, Jean-Philippe Brucker wrote:
-> Handle map() and unmap() hypercalls by calling the io-pgtable library.
+On 2023-03-30 16:36, Jason Gunthorpe wrote:
+> On Thu, Mar 30, 2023 at 08:37:16PM +0800, Baolu Lu wrote:
+>> On 2023/3/30 7:40, Jason Gunthorpe wrote:
+>>> +/**
+>>> + * iommu_setup_default_domain - Set the default_domain for the group
+>>> + * @group: Group to change
+>>> + * @target_type: Domain type to set as the default_domain
+>>> + *
+>>> + * Allocate a default domain and set it as the current domain on the group. If
+>>> + * the group already has a default domain it will be changed to the target_type.
+>>> + * When target_type is 0 the default domain is selected based on driver and
+>>> + * system preferences.
+>>> + */
+>>> +static int iommu_setup_default_domain(struct iommu_group *group,
+>>> +				      int target_type)
+>>> +{
+>>> +	struct group_device *gdev;
+>>> +	struct iommu_domain *dom;
+>>> +	struct bus_type *bus =
+>>> +		list_first_entry(&group->devices, struct group_device, list)
+>>> +			->dev->bus;
+>>> +	int ret;
+>>> +
+>>> +	lockdep_assert_held(&group->mutex);
+>>> +
+>>> +	target_type = iommu_get_default_domain_type(group, target_type);
+>>> +	if (target_type < 0)
+>>> +		return -EINVAL;
+>>> +
+>>> +	if (group->default_domain && group->default_domain->type == target_type)
+>>> +		return 0;
+>>> +
+>>> +	dom = __iommu_domain_alloc(bus, target_type);
+>>> +	if (!dom && target_type != IOMMU_DOMAIN_DMA) {
+>>> +		dom = __iommu_domain_alloc(bus, IOMMU_DOMAIN_DMA);
+>>> +		if (dom)
+>>> +			pr_warn("Failed to allocate default IOMMU domain of type %u for group %s - Falling back to IOMMU_DOMAIN_DMA",
+>>> +				target_type, group->name);
+>>> +	}
+>>
+>> The background of the code above is that some ARM IOMMU drivers only
+>> support DMA mapping domain and do not support identity domain.
+>> Therefore, during boot, if the allocation of identity domain fails, a
+>> DMA mapping domain is used instead.
 > 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> ---
->  arch/arm64/kvm/hyp/nvhe/iommu/iommu.c | 144 ++++++++++++++++++++++++++
->  1 file changed, 144 insertions(+)
+> Er, this is doing two things then because it also allows DMA_FQ to
+> degrade to just DMA..
+
+Same thing really; generally the point is that any of the more "special" 
+default domain types set with the broad brush of Kconfig or command-line 
+can cleanly fall back to the basic type wherever it turns out that 
+there's a less-capable driver (or, eventually, IOMMU instance) present.
+
+> I changed it like this:
 > 
-> diff --git a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-> index 7404ea77ed9f..0550e7bdf179 100644
-> --- a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-> +++ b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-> @@ -183,6 +183,150 @@ int kvm_iommu_detach_dev(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
->  	return ret;
->  }
->  
-> +static int __kvm_iommu_unmap_pages(struct io_pgtable *iopt, unsigned long iova,
-> +				   size_t pgsize, size_t pgcount)
-> +{
-> +	int ret;
-> +	size_t unmapped;
-> +	phys_addr_t paddr;
-> +	size_t total_unmapped = 0;
-> +	size_t size = pgsize * pgcount;
-> +
-> +	while (total_unmapped < size) {
-> +		paddr = iopt_iova_to_phys(iopt, iova);
-> +		if (paddr == 0)
-> +			return -EINVAL;
-> +
-> +		/*
-> +		 * One page/block at a time, because the range provided may not
-> +		 * be physically contiguous, and we need to unshare all physical
-> +		 * pages.
-> +		 */
-> +		unmapped = iopt_unmap_pages(iopt, iova, pgsize, 1, NULL);
-> +		if (!unmapped)
-> +			return -EINVAL;
-> +
-> +		ret = __pkvm_host_unshare_dma(paddr, pgsize);
-> +		if (ret)
-> +			return ret;
-> +
-> +		iova += unmapped;
-> +		pgcount -= unmapped / pgsize;
-> +		total_unmapped += unmapped;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +#define IOMMU_PROT_MASK (IOMMU_READ | IOMMU_WRITE | IOMMU_CACHE |\
-> +			 IOMMU_NOEXEC | IOMMU_MMIO)
-> +
-> +int kvm_iommu_map_pages(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
-> +			unsigned long iova, phys_addr_t paddr, size_t pgsize,
-> +			size_t pgcount, int prot)
-> +{
-> +	size_t size;
-> +	size_t granule;
-> +	int ret = -EINVAL;
-> +	size_t mapped = 0;
-> +	struct io_pgtable iopt;
-> +	struct kvm_hyp_iommu *iommu;
-> +	size_t pgcount_orig = pgcount;
-> +	unsigned long iova_orig = iova;
-> +	struct kvm_hyp_iommu_domain *domain;
-> +
-> +	if (prot & ~IOMMU_PROT_MASK)
-> +		return -EINVAL;
-> +
-> +	if (__builtin_mul_overflow(pgsize, pgcount, &size) ||
-> +	    iova + size < iova || paddr + size < paddr)
-> +		return -EOVERFLOW;
-> +
-> +	hyp_spin_lock(&iommu_lock);
-> +
-> +	domain = handle_to_domain(iommu_id, domain_id, &iommu);
-> +	if (!domain)
-> +		goto err_unlock;
-> +
-> +	granule = 1 << __ffs(iommu->pgtable->cfg.pgsize_bitmap);
-> +	if (!IS_ALIGNED(iova | paddr | pgsize, granule))
-> +		goto err_unlock;
-> +
-> +	ret = __pkvm_host_share_dma(paddr, size, !(prot & IOMMU_MMIO));
-> +	if (ret)
-> +		goto err_unlock;
-> +
-> +	iopt = domain_to_iopt(iommu, domain, domain_id);
-> +	while (pgcount) {
-> +		ret = iopt_map_pages(&iopt, iova, paddr, pgsize, pgcount, prot,
-> +				     0, &mapped);
-> +		WARN_ON(!IS_ALIGNED(mapped, pgsize));
-> +		pgcount -= mapped / pgsize;
-> +		if (ret)
-> +			goto err_unmap;
-> +		iova += mapped;
-> +		paddr += mapped;
-> +	}
-> +
-> +	hyp_spin_unlock(&iommu_lock);
-> +	return 0;
-> +
-> +err_unmap:
-> +	__kvm_iommu_unmap_pages(&iopt, iova_orig, pgsize, pgcount_orig - pgcount);
-On error here, this unmaps (and unshares) only pages that has been
-mapped.
-But all pages where shared with IOMMU before (via
-__pkvm_host_share_dma) and this corrupts the other pages state as
-they are marked as shared while they are not.
+> 	dom = __iommu_domain_alloc(bus, req_type);
+> 	if (!dom && !target_type &&
+> 	    (req_type == IOMMU_DOMAIN_IDENTITY ||
+> 	     req_type == IOMMU_DOMAIN_DMA_FQ)) {
+> 		dom = __iommu_domain_alloc(bus, IOMMU_DOMAIN_DMA);
+> 
+> So the auto selection only happens if the target_type is not automatic.
 
-I see we can add a "bool unshare" arg to __kvm_iommu_unmap_pages which
-will be called with false on error from here after calling
-__pkvm_host_unshare_dma for the whole range.
+You mean "is automatic"? I'm missing how target_type and req_type are 
+related here, but the general principle should be that if we have 
+derived the type from iommu_def_domain_type, because we had nothing more 
+specific from either a sysfs request or iommu_get_def_domain_type(), 
+then a !IOMMU_DOMAIN_DMA failure can retry with IOMMU_DOMAIN_DMA. 
+Otherwise any failure should be final.
 
-And set to true from kvm_iommu_unmap_pages.
-
-> +err_unlock:
-> +	hyp_spin_unlock(&iommu_lock);
-> +	return ret;
-> +}
-> +
-> +int kvm_iommu_unmap_pages(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
-> +			  unsigned long iova, size_t pgsize, size_t pgcount)
-> +{
-> +	size_t size;
-> +	size_t granule;
-> +	int ret = -EINVAL;
-> +	struct io_pgtable iopt;
-> +	struct kvm_hyp_iommu *iommu;
-> +	struct kvm_hyp_iommu_domain *domain;
-> +
-> +	if (__builtin_mul_overflow(pgsize, pgcount, &size) ||
-> +	    iova + size < iova)
-> +		return -EOVERFLOW;
-> +
-> +	hyp_spin_lock(&iommu_lock);
-> +	domain = handle_to_domain(iommu_id, domain_id, &iommu);
-> +	if (!domain)
-> +		goto out_unlock;
-> +
-> +	granule = 1 << __ffs(iommu->pgtable->cfg.pgsize_bitmap);
-> +	if (!IS_ALIGNED(iova | pgsize, granule))
-> +		goto out_unlock;
-> +
-> +	iopt = domain_to_iopt(iommu, domain, domain_id);
-> +	ret = __kvm_iommu_unmap_pages(&iopt, iova, pgsize, pgcount);
-> +out_unlock:
-> +	hyp_spin_unlock(&iommu_lock);
-> +	return ret;
-> +}
-> +
-> +phys_addr_t kvm_iommu_iova_to_phys(pkvm_handle_t iommu_id,
-> +				   pkvm_handle_t domain_id, unsigned long iova)
-> +{
-> +	phys_addr_t phys = 0;
-> +	struct io_pgtable iopt;
-> +	struct kvm_hyp_iommu *iommu;
-> +	struct kvm_hyp_iommu_domain *domain;
-> +
-> +	hyp_spin_lock(&iommu_lock);
-> +	domain = handle_to_domain(iommu_id, domain_id, &iommu);
-> +	if (domain) {
-> +		iopt = domain_to_iopt(iommu, domain, domain_id);
-> +
-> +		phys = iopt_iova_to_phys(&iopt, iova);
-> +	}
-> +	hyp_spin_unlock(&iommu_lock);
-> +	return phys;
-> +}
-> +
->  int kvm_iommu_init_device(struct kvm_hyp_iommu *iommu)
->  {
->  	void *domains;
-> -- 
-> 2.39.0
+Strictly that's not quite what the current code does, since 
+iommu_alloc_default_domain() is losing the iommu_get_def_domain_type() 
+vs. iommu_def_domain_type distinction, but in the former case a driver's 
+.def_domain_type should definitely not be returning a type which that 
+driver doesn't support, thus allocation failure would only really 
+represent unexpected OOM conditions, where the retry would likely fail 
+as well, and the whole system is probably dying anyway. If we're 
+refactoring the whole lot, though, we may as well make it logically 
+consistent.
 
 Thanks,
-Mostafa
+Robin.
+
+>> However, this does not apply to use cases that change the default domain
+>> through sysfs. In such cases, it seems that we should directly return
+>> failure (-ENODEV) and tell the user that the iommu driver does not
+>> support identity domain.
+> 
+> And with the fix below it will return ENODEV rather than autoselect DMA.
+> 
+>>> +	/*
+>>> +	 * There are still some drivers which don't support default domains, so
+>>> +	 * we ignore the failure and leave group->default_domain NULL.
+>>> +	 *
+>>> +	 * We assume that the iommu driver starts up the device in
+>>> +	 * 'set_platform_dma_ops' mode if it does not support default domains.
+>>> +	 */
+>>> +	if (!dom) {
+>>> +		ret = 0;
+>>> +		goto out_set;
+>>> +	}
+>>
+>> Should we call set_platform_dma_ops here?
+> 
+> It could be done and should be harmless, but the driver is supposed to
+> start up in that mode so don't need to explicitly enter it when
+> plugging the device.. I kept things as-is
+> 
+>> The existing default domain
+>> (if exists) will be freed below. But the iommu driver doesn't know about
+>> this. It probably will create a UAF case?
+> 
+> This is a bug:
+> 
+> 	if (!dom) {
+> 		/* Once in default_domain mode we never leave */
+> 		if (group->default_domain)
+> 			return -ENODEV;
+> 
+> So default_domain is either NULL forever or set to something forever.
+> 
+> Jason
