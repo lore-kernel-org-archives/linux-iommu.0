@@ -1,58 +1,113 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EDF101C31
-	for <iommu@lists.linux.dev>; Thu, 30 Mar 2023 07:41:36 +0000 (UTC)
-Received: from 8bytes.org (p5b006afb.dip0.t-ipconnect.de [91.0.106.251])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 311C0243C43;
-	Thu, 30 Mar 2023 09:41:30 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1680162090;
-	bh=U2dhbk+MyoG6YPxg5I8ip0UprpdXdWKYB2+fAQ+jVQo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Sqeq0MoTGwR/eEPXKGYcOifZM9/bVfenzz6EO605vjSNphVGp1oTsO6fcgB+87ZQB
-	 XTgst9C2x20Ahc/OVqNo6SmanWmP81ltxX3qYRjxo7tYNV0QLThOqtn+SbZmy6ZXPf
-	 J6pliFw+MsHLEUHxUj+tU+dMyYSwZrtK0J5odGFAy93vhyihC/LCGGhc1ZjJV+Jblc
-	 wwzDsmJAl3myJuqSnSrWU6Ftlp2PZUGfWE7VMs7u1uUDCwD/1VAw794NY4zLPDXu63
-	 RGYO6vZKbIVHv9ADiD8PoiKs92+nM6HmTq3a6TGaxRtUvFqz+M0aUMj8o8wSwAGvpY
-	 Psh8mmRGCdpTw==
-Date: Thu, 30 Mar 2023 09:41:29 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Jakub Kicinski <kuba@kernel.org>, Vasant Hegde <vasant.hegde@amd.com>,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	iommu@lists.linux.dev,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	Willem de Bruijn <willemb@google.com>,
-	Saeed Mahameed <saeed@kernel.org>
-Subject: Re: AMD IOMMU problem after NIC uses multi-page allocation
-Message-ID: <ZCU9KZMlGMWb2ezZ@8bytes.org>
-References: <20230329181407.3eed7378@kernel.org>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B7690C2F4
+	for <iommu@lists.linux.dev>; Thu, 30 Mar 2023 10:43:37 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 185102F4;
+	Thu, 30 Mar 2023 03:44:21 -0700 (PDT)
+Received: from [10.57.54.254] (unknown [10.57.54.254])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 419A43F663;
+	Thu, 30 Mar 2023 03:43:35 -0700 (PDT)
+Message-ID: <068c45ae-dd60-7ab6-ee08-64f95a85f510@arm.com>
+Date: Thu, 30 Mar 2023 11:43:29 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230329181407.3eed7378@kernel.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: [PATCH] iommu: PGTABLE_LPAE is also for RISCV
+Content-Language: en-GB
+To: Geert Uytterhoeven <geert@linux-m68k.org>,
+ Conor Dooley <conor.dooley@microchip.com>
+Cc: Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ iommu@lists.linux.dev, Conor Dooley <conor@kernel.org>,
+ linux-riscv@lists.infradead.org, geert+renesas@glider.be
+References: <20230330060105.29460-1-rdunlap@infradead.org>
+ <e1b6f12a-899b-4985-8725-556bcb5d0991@spud>
+ <CAMuHMdW2r1f7C_BdXn9BnDktLwHjBA_0Kvq6OeLJ1sZ7azhqkg@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <CAMuHMdW2r1f7C_BdXn9BnDktLwHjBA_0Kvq6OeLJ1sZ7azhqkg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Also adding Vasant and Robin.
+On 2023-03-30 08:31, Geert Uytterhoeven wrote:
+> Hi Conor,
+> 
+> On Thu, Mar 30, 2023 at 8:25 AM Conor Dooley <conor.dooley@microchip.com> wrote:
+>> On Wed, Mar 29, 2023 at 11:01:05PM -0700, Randy Dunlap wrote:
+>>> On riscv64, linux-next-20233030 (and for several days earlier),
+>>> there is a kconfig warning:
+>>>
+>>> WARNING: unmet direct dependencies detected for IOMMU_IO_PGTABLE_LPAE
+>>>    Depends on [n]: IOMMU_SUPPORT [=y] && (ARM || ARM64 || COMPILE_TEST [=n]) && !GENERIC_ATOMIC64 [=n]
+>>>    Selected by [y]:
+>>>    - IPMMU_VMSA [=y] && IOMMU_SUPPORT [=y] && (ARCH_RENESAS [=y] || COMPILE_TEST [=n]) && !GENERIC_ATOMIC64 [=n]
+>>>
+>>> and build errors:
+>>>
+>>> riscv64-linux-ld: drivers/iommu/io-pgtable-arm.o: in function `.L140':
+>>> io-pgtable-arm.c:(.init.text+0x1e8): undefined reference to `alloc_io_pgtable_ops'
+>>> riscv64-linux-ld: drivers/iommu/io-pgtable-arm.o: in function `.L168':
+>>> io-pgtable-arm.c:(.init.text+0xab0): undefined reference to `free_io_pgtable_ops'
+>>> riscv64-linux-ld: drivers/iommu/ipmmu-vmsa.o: in function `.L140':
+>>> ipmmu-vmsa.c:(.text+0xbc4): undefined reference to `free_io_pgtable_ops'
+>>> riscv64-linux-ld: drivers/iommu/ipmmu-vmsa.o: in function `.L0 ':
+>>> ipmmu-vmsa.c:(.text+0x145e): undefined reference to `alloc_io_pgtable_ops'
+>>>
+>>> Add RISCV as an allowed ARCH dependency to fix these problems.
+>>>
+>>> Fixes: d286a58bc8f4 ("iommu: Tidy up io-pgtable dependencies")
+>>> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+>>> Cc: Joerg Roedel <joro@8bytes.org>
+>>> Cc: Will Deacon <will@kernel.org>
+>>> Cc: Robin Murphy <robin.murphy@arm.com>
+>>> Cc: iommu@lists.linux.dev
+>>> Cc: Conor Dooley <conor@kernel.org>
+>>> Cc: linux-riscv@lists.infradead.org
+>>> ---
+>>>   drivers/iommu/Kconfig |    2 +-
+>>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff -- a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+>>> --- a/drivers/iommu/Kconfig
+>>> +++ b/drivers/iommu/Kconfig
+>>> @@ -32,7 +32,7 @@ config IOMMU_IO_PGTABLE
+>>>   config IOMMU_IO_PGTABLE_LPAE
+>>>        bool "ARMv7/v8 Long Descriptor Format"
+>>
+>> I'm probably missing something here, but why would we want to enable
+>> "ARMv7/v8 Long Descriptor Format" on RISC-V?
+> 
+> Indeed, we should not enable it, unless compile-testing.
+> 
+>> Would it not be better to make the Renesas depend on, rather than
+>> select the option? It does seem highly arch specific, and I feel like
+>> Geert previously mentioned that the RZ/Five (their RISC-V offering)
+>> didn't use it.
+> 
+> I think the IPMMU_VMSA dependency should gain
+> 
+>          depends on ARM || ARM64 || COMPILE_TEST
 
-Vasant, Robin, any idea?
+Indeed, I thought we'd settled on something like that in the previous 
+thread(s) on ARCH_RENESAS vs. RV32, but I guess nobody got round to 
+actually respininng the patch (possibly since my refactoring here ended 
+up papering over the immediate RV32 issue).
 
-On Wed, Mar 29, 2023 at 06:14:07PM -0700, Jakub Kicinski wrote:
-> Hi Joerg, Suravee,
+Cheers,
+Robin.
+
+>>>        select IOMMU_IO_PGTABLE
+>>> -     depends on ARM || ARM64 || COMPILE_TEST
+>>> +     depends on ARM || ARM64 || RISCV || COMPILE_TEST
+>>>        depends on !GENERIC_ATOMIC64    # for cmpxchg64()
+>>>        help
+>>>          Enable support for the ARM long descriptor pagetable format.
 > 
-> I see an odd NIC behavior with AMD IOMMU in lazy mode (on 5.19).
+> Gr{oetje,eeting}s,
 > 
-> The NIC allocates a buffer for Rx packets which is MTU rounded up 
-> to page size. If I run it with 1500B MTU or 9000 MTU everything is
-> fine, slight but manageable perf hit.
+>                          Geert
 > 
-> But if I flip the MTU to 9k, run some traffic and then go back to 1.5k 
-> - 70%+ of CPU cycles are spent in alloc_iova (and children).
-> 
-> Does this ring any bells?
