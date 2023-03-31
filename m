@@ -1,39 +1,57 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2069.outbound.protection.outlook.com [40.107.93.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 127161864
-	for <iommu@lists.linux.dev>; Fri, 31 Mar 2023 04:54:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680238482; x=1711774482;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=fd75vsjSJy6EbCzI5Lu++FGJSnhh9YekoxFeV38EkyE=;
-  b=chSjMmAAgbLtMo9XE5dImtLE/JqZY1jUnLr6PX90Mi9YT3ncYge4doHk
-   gy1OAuN6nrTB0rxY56ZEt+Bqn44F1W7+ZHmiYp9rPB4hdSFIPfANTjc8b
-   2eai/7ivXrI4p4jijNrjtaiRv3ci0xXMaN8BmffjjM/Welt5+RZg9+CXh
-   fFVEHVusqmBdqBFY20szfDpnnJrIfWVn7XcWR6cSMMu5NHrx3A18DtQJb
-   /Z+HLwN7FbZ2x0/OUdC/X9otJDmRHQLjkQYKlrQ4UbkcwJk2CCtTjXzJm
-   eebkbxpiBB0zNnmaUfImmvEwlEMJkoEJORhYOKZ1zdVGiDvSDYclabo8M
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10665"; a="427635889"
-X-IronPort-AV: E=Sophos;i="5.98,306,1673942400"; 
-   d="scan'208";a="427635889"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2023 21:54:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10665"; a="749475185"
-X-IronPort-AV: E=Sophos;i="5.98,306,1673942400"; 
-   d="scan'208";a="749475185"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga008.fm.intel.com with ESMTP; 30 Mar 2023 21:54:40 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: iommu@lists.linux.dev
-Cc: linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH] iommu/vt-d: Remove extern from function prototypes
-Date: Fri, 31 Mar 2023 12:54:52 +0800
-Message-Id: <20230331045452.500265-1-baolu.lu@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67F841FAA
+	for <iommu@lists.linux.dev>; Fri, 31 Mar 2023 06:17:34 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nH3J3x5sAdpK2l0og0A9MWVK2rrfyAkPAYfgCjTkOEk62whPd62XSKJxDPNyQJmX++/3gY8FNDHjywS9eLjFOEUXdBXINbJksOyOyBpSeZAotl74pD8k/VG8CqwW9rBpUj7+lAsAl3ISkUWcTdWYasvZ626WZRL34FkiS9yul6YsEjgzHuYuGt1MZX9EfQfaDRRfGjyVXKEzznd61yevMzxwxCAUYr0DCy0v7RtcDcskV6xTHoRj0zsmRYGC8kyR0pIoal+gz6Hm4LErdYdHc/65o3jbthW55x0WUoI5RjaxtZregxOqNtLO1R6pGDQ3Nc71TuO/GPDUfUeZzpVQ/g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HTumQ94zy5n7K+ARcPVX3vdkWwOi78e6NIqjW3uWvc4=;
+ b=WkIujhK1SoH0AdwcMi9KrUFo7ctV329wT89dj382F6lpVdnjYCb2uncdC0NZgaVxOFI1Owrz6a61MAFKkaaHyZxvJig1OyXFjwdO2fTf2cYlxNBnYGbAiIkT/+4adFZ7IzSYZk0+AFnQ9ar56B2uYZsX1RZkFtOoz7645Y0airlvphV/qQAGyM1UMuXGVCNrfHlsuAeHK2NBgSbshMp+YGXYKAo+/3L4mfx+LxM/iHXox0pcdv7nirfe5JhnM+D33glADr1UOepDTiUG9DIdfVn9Ns78ZGiRAx7dfBeFCDpRhB0++BOp03zKCOrfyE81vCjwl1PKuEG5bW4YFtpGnw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HTumQ94zy5n7K+ARcPVX3vdkWwOi78e6NIqjW3uWvc4=;
+ b=cwbYoVVDDUzE2I538pD8vrIpmc8K90eyS5o0XBBZv6H1fe+hWWvbnGESVWeA7C2DCyvpRsHcRvMDgIKBNIEB/Msiaq61Pi6FyxbYAYHwdAQlZ1uSPbP5biYLhZmLsZ/D7mP4666QMgS2vvf3f8Jil9hNSJS0iX+bam5IOAPwO18=
+Received: from DM6PR13CA0010.namprd13.prod.outlook.com (2603:10b6:5:bc::23) by
+ PH0PR12MB7930.namprd12.prod.outlook.com (2603:10b6:510:283::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6254.22; Fri, 31 Mar 2023 06:17:32 +0000
+Received: from DM6NAM11FT097.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:bc:cafe::3d) by DM6PR13CA0010.outlook.office365.com
+ (2603:10b6:5:bc::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.20 via Frontend
+ Transport; Fri, 31 Mar 2023 06:17:31 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT097.mail.protection.outlook.com (10.13.172.72) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6254.22 via Frontend Transport; Fri, 31 Mar 2023 06:17:31 +0000
+Received: from ruby-95fdhost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 31 Mar
+ 2023 01:17:30 -0500
+From: Kishon Vijay Abraham I <kvijayab@amd.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Robin
+ Murphy" <robin.murphy@arm.com>
+CC: Kishon Vijay Abraham I <kvijayab@amd.com>, Vasant Hegde
+	<vasant.hegde@amd.com>, Suravee Suthikulpanit
+	<suravee.suthikulpanit@amd.com>, Santosh Shukla <santosh.shukla@amd.com>,
+	"Nikunj A . Dadhania" <nikunj@amd.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>
+Subject: [PATCH] iommu/amd: Fix "Guest Virtual APIC Table Root Pointer" configuration in IRTE
+Date: Fri, 31 Mar 2023 06:17:23 +0000
+Message-ID: <20230331061723.10337-1-kvijayab@amd.com>
 X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -42,84 +60,68 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT097:EE_|PH0PR12MB7930:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9bbebe90-0f95-4785-50a5-08db31af9c72
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	rnURR0OiBAZT+gPqujWEHh8yKRkgH3iy0QSvZZD+oB8DNQJIbIjsIMSvVocaV6gWqVYZ9Eea1SZTMSGCPr8sH/yZ5bpMZ4m0uwxWpFml+JU8hz0yQBOTcp8wR4COHg5z7ctU2sV/SynauwTdQvWsAm1dVwzErRSutDIKIWZh8ILJ8wL0iwd08lRDaiC06L5feWuwmm2mHMKJhM4llmQlGsTmav18/M2KCWmlfgMhNt/NnVWAI4poXxJqh5U0bZWGXk8qKSsoW35ce/mvevYbpmqpBxF4UXk8Ue7PQ9O3WZRx5OPI97B/SBtJXaoT1AbX7rYQTHv5OFJ9TA/O/AJqgpBJ+sH8gZplBKKuudQHR2jWx15bK3tFDhLhH7TIqE4UnXlrPh1UF5vItNmliQJVb7Y5Qq+ejWwthGV2pPlxkNZ/sfu4XVvSE6WPsQpg6vecmkKSx2DVPNOgmTjoyFydWgSNQzba9XO/Q2wZchIqMn3L7KKUsw0NU2d+WmlYwAY97qhjNneX5CQLyTtV2pIi8F3Omb2J4Tq+8tuvAPtnWWa20f6RGqjdZ7jZq/i2ZqLsueMN0vWQUEqFjYVvEAH0cOHnrbKwzIJw7/mUdw8tU40UoUPGpRxq6lkb2H9k7j8VKHdnypgMOVYnrWbowEv0adutjEAmVVEGVug5MD9O7GLDAS9sFaSdZbiggyg5QlwZqB/aUDSYa8oNQeyMjdVS6ZwFXZf6ePi0ca2Jm9ahXjg=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(376002)(346002)(39860400002)(451199021)(36840700001)(46966006)(40470700004)(47076005)(426003)(336012)(81166007)(40460700003)(4326008)(70586007)(356005)(5660300002)(8936002)(82740400003)(82310400005)(40480700001)(41300700001)(70206006)(8676002)(36756003)(83380400001)(54906003)(26005)(2616005)(36860700001)(1076003)(6666004)(2906002)(110136005)(316002)(186003)(478600001)(16526019)(7696005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2023 06:17:31.5894
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9bbebe90-0f95-4785-50a5-08db31af9c72
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DM6NAM11FT097.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7930
 
-The kernel coding style does not require 'extern' in function prototypes
-in .h files, so remove them from drivers/iommu/intel/iommu.h as they are
-not needed.
+commit b9c6ff94e43a ("iommu/amd: Re-factor guest virtual APIC
+(de-)activation code") while refactoring guest virtual APIC
+activation/de-activation code, stored information for activate/de-activate
+in "struct amd_ir_data". It used 32-bit integer data type for storing the
+"Guest Virtual APIC Table Root Pointer" (ga_root_ptr), though the
+"ga_root_ptr" is actually a 40-bit field in IRTE (Interrupt Remapping
+Table Entry).
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+This causes interrupts from PCIe devices to not reach the guest in the case
+of PCIe passthrough with SME (Secure Memory Encryption) enabled as _SME_
+bit in the "ga_root_ptr" is lost before writing it to the IRTE.
+
+Fix it by using 64-bit data type for storing the "ga_root_ptr".
+
+Fixes: b9c6ff94e43a ("iommu/amd: Re-factor guest virtual APIC (de-)activation code")
+Cc: stable@vger.kernel.org # v5.4+
+Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Signed-off-by: Kishon Vijay Abraham I <kvijayab@amd.com>
 ---
- drivers/iommu/intel/iommu.h | 36 ++++++++++++++++++------------------
- 1 file changed, 18 insertions(+), 18 deletions(-)
+ drivers/iommu/amd/amd_iommu_types.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index d6df3b865812..f843493dc4f2 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -796,18 +796,18 @@ static inline bool context_present(struct context_entry *context)
- 	return (context->lo & 1);
- }
+diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+index 3d684190b4d5..990614b8a1fe 100644
+--- a/drivers/iommu/amd/amd_iommu_types.h
++++ b/drivers/iommu/amd/amd_iommu_types.h
+@@ -1001,7 +1001,7 @@ struct amd_ir_data {
+ 	 */
+ 	struct irq_cfg *cfg;
+ 	int ga_vector;
+-	int ga_root_ptr;
++	u64 ga_root_ptr;
+ 	int ga_tag;
+ };
  
--extern struct dmar_drhd_unit * dmar_find_matched_drhd_unit(struct pci_dev *dev);
--
--extern int dmar_enable_qi(struct intel_iommu *iommu);
--extern void dmar_disable_qi(struct intel_iommu *iommu);
--extern int dmar_reenable_qi(struct intel_iommu *iommu);
--extern void qi_global_iec(struct intel_iommu *iommu);
--
--extern void qi_flush_context(struct intel_iommu *iommu, u16 did, u16 sid,
--			     u8 fm, u64 type);
--extern void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
--			  unsigned int size_order, u64 type);
--extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
-+struct dmar_drhd_unit *dmar_find_matched_drhd_unit(struct pci_dev *dev);
-+
-+int dmar_enable_qi(struct intel_iommu *iommu);
-+void dmar_disable_qi(struct intel_iommu *iommu);
-+int dmar_reenable_qi(struct intel_iommu *iommu);
-+void qi_global_iec(struct intel_iommu *iommu);
-+
-+void qi_flush_context(struct intel_iommu *iommu, u16 did,
-+		      u16 sid, u8 fm, u64 type);
-+void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
-+		    unsigned int size_order, u64 type);
-+void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
- 			u16 qdep, u64 addr, unsigned mask);
- 
- void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u32 pasid, u64 addr,
-@@ -830,7 +830,7 @@ int qi_submit_sync(struct intel_iommu *iommu, struct qi_desc *desc,
-  */
- #define QI_OPT_WAIT_DRAIN		BIT(0)
- 
--extern int dmar_ir_support(void);
-+int dmar_ir_support(void);
- 
- void *alloc_pgtable_page(int node, gfp_t gfp);
- void free_pgtable_page(void *vaddr);
-@@ -838,9 +838,9 @@ void iommu_flush_write_buffer(struct intel_iommu *iommu);
- struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn);
- 
- #ifdef CONFIG_INTEL_IOMMU_SVM
--extern void intel_svm_check(struct intel_iommu *iommu);
--extern int intel_svm_enable_prq(struct intel_iommu *iommu);
--extern int intel_svm_finish_prq(struct intel_iommu *iommu);
-+void intel_svm_check(struct intel_iommu *iommu);
-+int intel_svm_enable_prq(struct intel_iommu *iommu);
-+int intel_svm_finish_prq(struct intel_iommu *iommu);
- int intel_svm_page_response(struct device *dev, struct iommu_fault_event *evt,
- 			    struct iommu_page_response *msg);
- struct iommu_domain *intel_svm_domain_alloc(void);
-@@ -887,8 +887,8 @@ extern const struct iommu_ops intel_iommu_ops;
- 
- #ifdef CONFIG_INTEL_IOMMU
- extern int intel_iommu_sm;
--extern int iommu_calculate_agaw(struct intel_iommu *iommu);
--extern int iommu_calculate_max_sagaw(struct intel_iommu *iommu);
-+int iommu_calculate_agaw(struct intel_iommu *iommu);
-+int iommu_calculate_max_sagaw(struct intel_iommu *iommu);
- int ecmd_submit_sync(struct intel_iommu *iommu, u8 ecmd, u64 oa, u64 ob);
- 
- static inline bool ecmd_has_pmu_essential(struct intel_iommu *iommu)
 -- 
 2.34.1
 
