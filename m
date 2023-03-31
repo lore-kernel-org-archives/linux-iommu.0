@@ -1,206 +1,80 @@
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from sonic310-12.consmr.mail.ir2.yahoo.com (sonic310-12.consmr.mail.ir2.yahoo.com [77.238.177.33])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13BAF10E7
-	for <iommu@lists.linux.dev>; Fri, 31 Mar 2023 00:44:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680223457; x=1711759457;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=dcvxqTymGDOVolKQ0Nyw4N06WVrtIYu7wPRInlxezfk=;
-  b=hmqD9aV9L9xl4SrMbMQcoc3t98Zo80UqlFqOJjEfVkqo0iJYkBJTgyqI
-   OMFi4AgnEi+cRDS3M5LxWHZxm1Nd5CE6qwTzt+lJqNoc/dohFqLRBubyr
-   UEZZU2bqh3GeO/z5NQw7+bHQeeOT64354zfTvElWA+i9uDb2SdUyNuz8V
-   ipQdbAqpHX3FrJsWN0skIO3gDiNhQHRj83niCdHg8DHcFKrAFpeXOzeVw
-   lAuuTFnKu7CADblQtGM5Q4m8K75Es5ODqusf/MYm9cCXxARI6IQolrRoV
-   ipPejvbnie8s4V5yxwJbX7qohkU5EjwuTTiXNh030ZItLoKI7M5PZfxC4
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10665"; a="321706743"
-X-IronPort-AV: E=Sophos;i="5.98,306,1673942400"; 
-   d="scan'208";a="321706743"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2023 17:44:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10665"; a="662231831"
-X-IronPort-AV: E=Sophos;i="5.98,306,1673942400"; 
-   d="scan'208";a="662231831"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga006.jf.intel.com with ESMTP; 30 Mar 2023 17:44:15 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Thu, 30 Mar 2023 17:44:15 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Thu, 30 Mar 2023 17:44:14 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21 via Frontend Transport; Thu, 30 Mar 2023 17:44:14 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.21; Thu, 30 Mar 2023 17:44:14 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=H5+6RWAJSIe/MFo2aDkz9qeJJFKT9AAeGwh5fIrjkcXblMtTel1B+wylpHfHZ5AYyn9uVCg8hnIIMQKwSj78TvqJrYy06EyvICkJF7+1ED1B0iBy0CQEAeZ8LaLXphSwguWORm6vyziplfe3qwn8nuEDnE/OYY3wIgBqmEPnVYzjdxwyKEid2bgExF/Kmy0L8efDnkg5exS/2qjhng5Er4LRK2061U5EtM4PYDyGHHlf83moFd4YW9137fRmSIYm/qbsht82WAseYO5byJwTuLLyDgdxOnancDV/zbejJrvvb0o1xs6tK+Acp4lHJhKg/TEpQYpqCGfDPHWGOCM9DA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jbC2QZmdqR3IdB6GLYSsi4ox4vfxGyUM0tgZyISXWBw=;
- b=Tq1ZjvGTttt3J12drdk/Gh+uDpbii4fZ2uGJN6IpvOMBt/3ysO+NUZY4OnS3gq1Ta30EIQGWiJgVGIQuQmOPTzkODyycZtsKsoPNu21w3NCyhbudz6xxr/2Sbfc+4TuXGljDul4hzl0I/RaOrxYxqlMp8LguB5yEyM9y7JhTIWwjQgLNBBxuYWZAh+h43ucgVUUTnE5fvaUVnW5szz4neoCFtsauOWWoRPfADVJKEpDD8PqrpkMUKkUXphXoqgZO5iqoBGcQsOpymnVwaDDjic67X5pWdV8sGhwmKCLUbjbOpqI5y05UOd+Xlp1BazU9/kvPhKpcAhTaLtcY4R2Rkw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from IA1PR11MB6097.namprd11.prod.outlook.com (2603:10b6:208:3d7::17)
- by IA1PR11MB6540.namprd11.prod.outlook.com (2603:10b6:208:3a0::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.20; Fri, 31 Mar
- 2023 00:44:07 +0000
-Received: from IA1PR11MB6097.namprd11.prod.outlook.com
- ([fe80::4381:c78f:bb87:3a37]) by IA1PR11MB6097.namprd11.prod.outlook.com
- ([fe80::4381:c78f:bb87:3a37%3]) with mapi id 15.20.6222.034; Fri, 31 Mar 2023
- 00:44:07 +0000
-Message-ID: <c4ff442d-706d-bb00-84af-c991454a37de@intel.com>
-Date: Thu, 30 Mar 2023 17:44:27 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH v2 08/16] iommu: define and export
- iommu_access_remote_vm()
-Content-Language: en-US
-To: Christoph Hellwig <hch@infradead.org>
-CC: Baolu Lu <baolu.lu@linux.intel.com>, Vinod Koul <vkoul@kernel.org>, "Dave
- Jiang" <dave.jiang@intel.com>, <dmaengine@vger.kernel.org>, linux-kernel
-	<linux-kernel@vger.kernel.org>, Alistair Popple <apopple@nvidia.com>, "Joerg
- Roedel" <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, Lorenzo Stoakes <lstoakes@gmail.com>,
-	<iommu@lists.linux.dev>
-References: <20230306163138.587484-1-fenghua.yu@intel.com>
- <20230306163138.587484-9-fenghua.yu@intel.com>
- <f7b0cbef-3d7d-e5aa-1971-fe230d0c80e1@linux.intel.com>
- <932aebd3-c655-3266-1acb-e41e8cbfb771@intel.com>
- <ZBhhEK1V+u2oV2Ll@infradead.org>
-From: Fenghua Yu <fenghua.yu@intel.com>
-In-Reply-To: <ZBhhEK1V+u2oV2Ll@infradead.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR13CA0160.namprd13.prod.outlook.com
- (2603:10b6:a03:2c7::15) To IA1PR11MB6097.namprd11.prod.outlook.com
- (2603:10b6:208:3d7::17)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B05F15AC
+	for <iommu@lists.linux.dev>; Fri, 31 Mar 2023 02:20:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.co.uk; s=s2048; t=1680229248; bh=OtAg8B4DwN5lQoEG5b07DBHDw6ITOm/exrOo8aIF1og=; h=Date:To:Cc:References:Subject:From:In-Reply-To:From:Subject:Reply-To; b=AVVNrk2PQyZJdPnSUMoqv20CEBhkoUtsOTQRBQhwq/qInGHI8pN8NpQpXIGCBVDmJErUnZOlw521e3vyrgHOZhlTs6z+83HeDYzn5+HaNwd1qXW0jMhG8rqgaaGwLPDIeB+G5w3XaGBf2CxSRMbqtfkRrHOUxY9RMRY61eyzQnehe+OumvA44ekyh+LREyo64B13X3hbPq73NtMAiHH15K+F60or5GsJm5HdP7cTTLyXzbcRT6u9xPYEuX3o2xeQZx8SdBunyTwjRKHjD13WwU6BpCTtlHHax6DDhml7sD0E1zD7XGdCLj1tnI7+wsurqd0J03FFtsoAx7xk+4OYcw==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1680229248; bh=Vg021lpTr7tRKOCRW0aEi7BvTJzyT4kPAj9DdMX1hsu=; h=X-Sonic-MF:Date:To:Subject:From:From:Subject; b=iXcR4l0i2oQBu4nbvI5PuRK0n1p7MGkDjgNU2bKS7wT34VtCcw1WbYQw/7RzzmqYuybLoe4YWXG4n0oFkKUcxByTSPQGox2O6vDr6fBq38S8kx6+7lhEnnvAyCr1jNEpOoPHrUZWOx3w671Ab/Euxjv0GwSN+hBpmdd7aA1yJO0qHN0FbiOyc0jKJWjOeg8cSeu0OGHHJgNQeGAHscYz7aE86z5p6KeL03peLzO7gDHSNQkSrbJER15fvh1yn/hCHfm9/T7ofTr/9zJ6WHk5Ehn5PRMM8ZNtLxAcJx6piluro3JW+8rtNu63QYb4EabKAsLa41+w63EHK89hin4ioA==
+X-YMail-OSG: 2cvO3RcVM1m6RWYq96e8WZidOP5ApKZppPa8Tmw69h0x_6d8zNiVkbPNgfcunk5
+ itwVrez6RgGai2DzTWaj7en75urgnAXnb3ukjBXDEJ6ammIlZzBjKlzEeqCA8M6NB5oxjlFiBMYd
+ rxklbSvPwHu398h5upbvEfttrdvFxgRmHr2KFveoUe6y0iimB3X0DrKvtVZBk.XnR2Y4FnKeA4Oo
+ W7wLqBGufu4EhvPjNaaL0deufsGtdv4CSQ5S6e9X4BeX1bLXn1TphlQ7srOVbfBFU56g7oX2A8OR
+ zAwI4KEoX2RHGvrzGAAJ9AxUU4ZENWLVs2u7UW1WswR0hiATVgsUWiq_N7b5n7w_irip0NfPENzW
+ h1G_axngL7TCYejuN79kYLA5wqKf9vj7G7EjO34Ltcg79mXfIDCtb4zEJyNghRHlQDn925oqTWQk
+ oQ34KlLqnYjil9ljkWkdtkbcY1vRE3b5hpqv7cL2.f93gF14JFbY1tlIJk0onkV4_N00rp.RXWhM
+ kEotQ0LYqdvhAX2Bh6rCz7QcrK9FAzVO7w2y.57CTIHRz1izqKq5UF0xifkV4wr9Vh4mC2glHMSo
+ HlGBZPzNMqtOKlH_DjXPKvQLGPW8facW57s9a0nfCCyD9yvRr7gxZDSOzyh_F_eiM9Y1U4WW9gtA
+ qfN_UQPeBtlRqZgI1B8NATap24ViwVj8p0xtbEIDa5R2PRZHWrnENlokwjxND13_OjZ3b4smtej_
+ B6f8TmC9YBKqxCl0NQntc2_qshrO2MwgiwVNyTHQGf26JC9OaZUYo7d4dxgxmfT2SjuJwClEg3ef
+ jfNdaADKF_hQBnJ_J6CmebDXBHGKkOTIc9HQ.mQpYl40J9EMIiycIvXQ_xr_SCRwEkLrT822R_KT
+ iLfUzWf8FDgcX9AaROvlMxpD40MwDpNiaXPWMlnY71UvQBuzDRt5YQAKaBqDT8M3Tz5u69Gcukzt
+ _pSTFFRnbFfx89FDmTGkglqaqpRmuX9hdt5u9e7I5POTTYRPmGh.7f7EiIEEPFGMO8WYz0V_anjX
+ PcgNj6O.w2X264tvQEW6Eu3MsslZ_rxPAdVGKVYQcF8qO44eV3V63OE.IIzo9rL91wgd.D6b_1vB
+ 7gtwHErcSZgchP2_u3nFWvIKcTNhGL0DXVIlfw3j6XFr9Ix8toHPGtVz5K1xh4NUP4DPDpPngFZS
+ noGRaepyMf6sRf7LoxpVFC6sSVnmpyvvEBIIVbtG0bMnnYVwdOBIayVKPhv9vndOMXbQf9f3_ABP
+ rXP2hRXTqYjIuSVnb2ut_q6YOH0okGgxWhtP9FG43mTfb41TXLSX_wf9X3JQUR_AvrqZ6_5a4jGF
+ VHsfm1Td20EuJEb1jwiMkDm1eyzJZYOsNxLPtWHPp.ol.ESd4sgwXVEPtdjFk4Aq2mBtZXA1sZfi
+ SzP2VrofmgexeshvUfYrBgVyAGhLRr.w3cI0BDAPRcuZsxcVGDqqQXgR4R9IJF5vRHKONIbO4ohN
+ 54m39.Pd5XuuHxD_jsVDVPKknTZ2Xy7ZBbmiTaMHYT9QC.wrgSAoWScAB_sBvtk4pQiTfabs2tlE
+ mRcN740aN8RbMOY1kF.N6MDfOKLIEsgPRJs6OjOH8lNksrjUmXK4QS1VV26AGc6X3I6uf9U3SAGj
+ QW7IVPZp1fo7p3zwMX4XwUOM_HHGRD7XHkNTmmRBt4Ck_lG6iZ.jNoPhHgCTltB5FlZyMb44r_WF
+ iIfHVXwD_PpJ1VXNsxhPdr.BCJEp87VVKF.QGN4twrCAsAUpMqihd1ncp6TV1zsZ2ALgOEDSwN2G
+ XFMvrJfyB2btFvz.Mr2sZiUH6_j.8XufMPEmyhxJzO5P1x2Xqm.5CeE1dsgPcXt91Z51NKsAeg11
+ DmP40k04dxVjPj4yLSUQfN2WievU52UI4aq3H2A3q2f0ohBUO8Jc.UGx87Lihzz7MEwy9EgQON0A
+ cOTT5jxIQP4RwKsz_2Le6LR53E_PolKEEiQPAEqHV.FGhHCDks12CrcSDPsfGn1UWDo.WSE1zqtl
+ O00Jqfx5bBZZWpsQdaMN_wpEe4Db9BWZnVG5fFuyFJFHIGTr8LRef4YtDvGTVlvQ4L5XsBNMy_Pv
+ vUetTSrJOgLNHNC9.i2Ov0MRfhWbC_vTogbny0sj6Ddo3ahqkUitHbVH90qgrEEH_1PI8D_nHwSL
+ w_75XLiA6359sikYXjpPmGU8L1lytlt6kAEc4NKDUgYgwV2vAo04sZOYRmH.Pe4r14jwJc8_lYuu
+ SZw2NuxHiVXcAo7_wXIZveaQbhizSKoELTQlI9ExK6T4gCUod3CH_EDgNlToKHvwMJnepzd5cKaf
+ zJpClyg--
+X-Sonic-MF: <jason_a69@yahoo.co.uk>
+X-Sonic-ID: ba2b5d49-9ed3-40eb-a4bf-a5e2eda8ad5b
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic310.consmr.mail.ir2.yahoo.com with HTTP; Fri, 31 Mar 2023 02:20:48 +0000
+Received: by hermes--production-sg3-6d6fb994f6-5v57h (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID bfd3261e7617c2d1e3df9e32aff4593d;
+          Fri, 31 Mar 2023 02:20:42 +0000 (UTC)
+Message-ID: <04a94830-f626-2cd7-d220-7ba3025a409c@yahoo.co.uk>
+Date: Fri, 31 Mar 2023 10:20:37 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: IA1PR11MB6097:EE_|IA1PR11MB6540:EE_
-X-MS-Office365-Filtering-Correlation-Id: cec9f87a-44ef-4542-d2fb-08db31810901
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fMhAN0t3ZdbHI8BXoDnbsrq8pdD/LPhQNAc3Sma4syxBsA20TSSkauvopEBUigLFh6TfBOlCwEn+FW0D8j7gR2Bl4ZL4Gk4nQfb7ed2XY48s/NVWc0jAVqYaeOU2O0yTO3N6Mi5Y2PlY71dgA5t5COaXS36WH35D2om+Gil3hVoe6LVXjjZmQDlqLxcmcNWBQHqXJHwnv6uNvowrQPY6yLMbXXCKuFfUPhcd2KpxaknmyIVgCrPhXocnMAqYSDxtrnO6GTrBbzW/JASxl+TXo2Qgo8HWGuVQbeXoDyCoGFR+EZqjzFK9+/3lOzyNC3tKo4Saf9MevG1psYprsqHlvWgHg+J1wqUfTGXJgtmoRoGZDbeqPV7PuKBJpdfFuqPty3+KqQ7YOUtTy4TEocNxqIQqpOiNvE/ltbQep65aXKn0jwK6DCdW3PGOgzDso1y55ve88nE4rNlhByyIVmlJvVx2hrx7pBmwbihH0w/U4nUjc0yC1izB8jEJE6IXPm3WGSg/aWgMHESoMe+xS4ogMcGS0n0+boKPa7nugxa3kE832UiwHpRK0B38+QoM3y4h55+a5iM7u9V4rI1dzTI2M9SnC/p9m5KITujPz8bqm6thyjQi+gqUqbbRLi7/JSxqoJBVoKOyWcuo5/z01kmV3Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR11MB6097.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(396003)(346002)(376002)(366004)(136003)(39860400002)(451199021)(31696002)(86362001)(36756003)(83380400001)(41300700001)(4326008)(8676002)(316002)(66946007)(66556008)(6486002)(966005)(6916009)(66476007)(54906003)(7416002)(478600001)(2906002)(8936002)(38100700002)(5660300002)(82960400001)(44832011)(26005)(6666004)(53546011)(2616005)(6512007)(6506007)(186003)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cVFCSHY1eElDdGpnUExGdkpQeXRuYm4yL2xVM29xZjQrTTM2cWRmY3l3MFI3?=
- =?utf-8?B?N1ZKaDFVS1M4a0xPSjNKREErK0czYVlidVUyeEZNQlZzMENBdDVzcFc0dWkz?=
- =?utf-8?B?WXVlWFdEd2JDZWxyanU0bU9oRXUyb1l2RHlOblNaRzZHTVQ2VTJlRUNqNzRZ?=
- =?utf-8?B?V2t0Q25HblcyV21PcGdPYm9Za1JUSlJ6WjJJS0R5OTNoRThIUGE4MGpEM1d2?=
- =?utf-8?B?TUxWdm5LREQ3MkRac3ViazFHbm12dFFwME51VjNlN3RjQWd5dlFKZzMzdndh?=
- =?utf-8?B?TFd0VG9aQk92SmJTOWVTT1I5RzFnRnJKb1pCTkZrUTVQMk5rL1BRTVRwY0FD?=
- =?utf-8?B?eU5nR2dWWUFYVWtqNmFDbEtvQUFKMDBpcEVRZ2FZVWlQL2RTR3poMXM1eWxa?=
- =?utf-8?B?SEFrS0ZFeVVLZlVOMjA4SS9rdDBaNEN4c3FCY1htOW8zVEVOSjJZaEUwb0pP?=
- =?utf-8?B?UTJrcTRKY2JZdWZRZTM0SlMzTHZ0S3VZWUZjQStrcFFXcm5yeXVVNnYzR01U?=
- =?utf-8?B?QUhSejlFZGtsS0FWM3VhYmlpdFdabmM1ZnkwdkZrbm9Bbit2YXQybktSZUFL?=
- =?utf-8?B?WXFlRzVWQ1BTSzFHY2VRN1ZHS2JXS3NNdm5GdUtDbjZhaSsrSTBnd1o1aUd2?=
- =?utf-8?B?bHdxTnRCQjkvcGZlQkVYckQrOCtuaEFvcjhpNlNoSzl5ejQzcVp5VEhvcW9a?=
- =?utf-8?B?aXQyNDJKUFdJaUxseUNaMjNPRG1kOWhjUnNPUXhMcGRIYVE2Ujh6N1RVa0tv?=
- =?utf-8?B?STNGSnp1L2ZDS1BxMFgxWUorUXlPTFlIUFpjOWpJREtmOFVDQmdiNU1PSU4x?=
- =?utf-8?B?Yk4rQ0IyU0gwbFQvNFBpOUM1UXhzaklpS2lHeG9KZkxpUmVacGFFNU92K2hu?=
- =?utf-8?B?bHIvRHB4dFNoSXJrUnc1d2hhOVorSVJNSERadkNNZlJOeEl2NlpDcm5oYmdw?=
- =?utf-8?B?RC9XcVhiSU84dEhZcWhmaHV0OFlPRzRmWXRUaWdlRU5oODc3cnhqTHpOeTNV?=
- =?utf-8?B?YVpnYnpLWVo1R3IxdmNzVW0wRUc2d2lTZFJoYWZLZXpHcDNPZkN4Z1VjN3M3?=
- =?utf-8?B?MDdUbnZmZUtXeTVUbERGRTVnL3o1bTE4aHQ1OGdUMTQ1OGExa1REaUVVcGRn?=
- =?utf-8?B?MHcxeUxLdHdOd1hsZ2tobnpydi9nb1RGcGk2OEFTZWtJdUcxb2x3aUxJaWlv?=
- =?utf-8?B?REpJbWQ5RzRJWHNvNGJhRStFeTF4SmEzcm9SdENSR3FyQ09xWHI5dUpMUEdC?=
- =?utf-8?B?dmNGQmR5a3VSUFhFNVNsa1dUT0xSbVFHdzhTMzNweWplWTBRRDdlanhFOExt?=
- =?utf-8?B?OUVYK3RYditoNENZVVZFd2dTdzFqNEtpd3B5b09HYVZ6Vnc4VkJEMzJxS0Nl?=
- =?utf-8?B?bkVQY1dvdFpxTzkrQXZUbTcyWDE2OXdyT2VtcDJJMkJlU2QxWnBiQUR0R3g5?=
- =?utf-8?B?RjlkRUlydkxubW01cTJiQmVyU3hncGtWemhQS1VPK1BSSUYydGtNTE4yRzJw?=
- =?utf-8?B?WlVYY1F0U0ZvdUhrcnhhU21YQmRQYzl5UlRGdFRDQ1VCckVUbFhRc29yZFhI?=
- =?utf-8?B?Q1JpWVRzK1Y4MFRvUFpibU5qTUdra3A5NUNGTDdDejErN0FBM3k1UWlsV2Vr?=
- =?utf-8?B?VXk5aHV4Qys4VnRLVzNteXZHaFhWSVJyVEE2YmxsOHdiZXJxamczQ3NKT1Rw?=
- =?utf-8?B?dVNoS2Y2OUx5enNVSVlNajRPZjNSdzRvZkR4eFZqR2dzRlExdmxJMy9WOHF6?=
- =?utf-8?B?Q1h0SE9HTjZBN0ZuNGpHdjc0U3pBcGpiZnEybDM2V3RwSzJmRy9UWENxd0xF?=
- =?utf-8?B?TW85Nm91VFFzK1djaWJXMUVrcXc5Z2gvRXpLSkt5NHphQ1hwdVYwYStSR1R2?=
- =?utf-8?B?VTl1UVU5REI4RjhYM2gwYzJLeTFXYTgxTUYvWVd3eVFsTlpGMjlES052MHZo?=
- =?utf-8?B?bFYvVGVDR3BUQXBQVS84RWlLcXQvQTFtd2dWSUVJY2dxR2V1YkJSUWNzejJY?=
- =?utf-8?B?OWJIUDdnRnE3YXJ1TE5kUnFZWVBveS9aeEppTzBTZHl3dmhNcTZUT1NKZE41?=
- =?utf-8?B?MFhrWkNEelBCOGVIZm5KclRIODd4SU1rbGhjeEJRYVo0bzM0NkFiM0NmekYz?=
- =?utf-8?Q?hf3iS/S9Gtfo9cpXh7CjX9MUh?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: cec9f87a-44ef-4542-d2fb-08db31810901
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR11MB6097.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2023 00:44:07.6757
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wAhp+eW+KQPsymVFZyv2j/e0V3HP7v72qPzG/N9jtbzazGVlhAJExWPdxQm2I2Zql8f5P/3lum0jjGbf829W/w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB6540
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+To: robin.murphy@arm.com
+Cc: baolu.lu@linux.intel.com, hch@lst.de, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+ regressions@lists.linux.dev
+References: <01c50370-002d-5e18-3edc-81c9527aedc9@arm.com>
+Subject: Re: [regression] Bug 217218 - Trying to boot Linux version 6-2.2
+ kernel with Marvell SATA controller 88SE9235
+Content-Language: en-GB
+From: Jason Adriaanse <jason_a69@yahoo.co.uk>
+In-Reply-To: <01c50370-002d-5e18-3edc-81c9527aedc9@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Mailer: WebService/1.1.21365 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
 
-Hi, Christoph,
+Hi Christoph and Robin,
 
-On 3/20/23 06:35, Christoph Hellwig wrote:
-> On Tue, Mar 07, 2023 at 09:55:28AM -0800, Fenghua Yu wrote:
->>>
->>> I don't quite follow here. Isn't I/O page fault already supported?
->>
->> The following patch 9 in this series explains in details why IDXD device
->> cannot use page fault to write to user memory: https://lore.kernel.org/dmaengine/20230306163138.587484-10-fenghua.yu@intel.com/
->>
->> "DSA supports page fault handling through PRS. However, the DMA engine
->> that's processing the descriptor is blocked until the PRS response is
->> received. Other workqueues sharing the engine are also blocked.
->> Page fault handing by the driver with PRS disabled can be used to
->> mitigate the stalling.
->>
->> With PRS disabled while ATS remain enabled, DSA handles page faults on
->> a completion record by reporting an event in the event log. In this
->> instance, the descriptor is completed and the event log contains the
->> completion record address and the contents of the completion record."
-> 
-> This seems like a completely broken I/O model, and I don't think Linux
-> should support this model when it requires operations like
-> access_remote_vm.
+Christoph - I would like to send you more dmesg information but as my 
+boot device cannot be detected that information is not being written to 
+disk. Is there any way to specifically write boot debug information to 
+say a USB device with some kernel parameters?
 
-This patch set have two parts:
-1. Basic event log support and PRS disabling knob.
-2. Completion record page fault fixup part. The current patch is the 
-major patch in this part. It tries to fix up completion record page 
-fault from user space.
+Alternatively, I could boot from a USB device.
 
-Since the fix up in part 2 is debatable and part 1 can be sent out 
-independently, how about we send out the parts separately?
+Jason
 
-In the new part 1, simply warn on completion record page fault and don't 
-try to fix it up. Usually a process executes ENQCMD instruction and then 
-keeps polling completion record periodically. So the completion record 
-will be likely backed by page and won't generate page fault. If page 
-fault is really an issue, sysadmin can enable PRS (which is enabled by 
-default anyway) and let PRS to handle page fault.
 
-Then in the next step, we will send out a new part 2 to eliminate 
-completion record page fault. One proposal is to mmap() kernel allocated 
-completion record area. So there won't be completion record page fault 
-and fix up(no access_remote_vm() of course).
-
-Is this OK for you?
-
-Thank you very much for your comment!
-
--Fenghua
