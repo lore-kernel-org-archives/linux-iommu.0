@@ -1,54 +1,121 @@
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 965BE8F54
-	for <iommu@lists.linux.dev>; Fri, 31 Mar 2023 22:22:51 +0000 (UTC)
-Received: from ip4d1634d3.dynamic.kabel-deutschland.de ([77.22.52.211] helo=diego.localnet)
-	by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <heiko@sntech.de>)
-	id 1piMcK-0006Di-Gz; Fri, 31 Mar 2023 23:49:04 +0200
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To: Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@ziepe.ca>,
- Steven Price <steven.price@arm.com>
-Cc: Steven Price <steven.price@arm.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-rockchip@lists.infradead.org, John Keeping <john@metanate.com>
-Subject:
- Re: [PATCH v4] iommu/rockchip: Add missing set_platform_dma_ops callback
-Date: Fri, 31 Mar 2023 23:49:03 +0200
-Message-ID: <2077066.bB369e8A3T@diego>
-In-Reply-To: <20230331095154.2671129-1-steven.price@arm.com>
-References: <20230331095154.2671129-1-steven.price@arm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EFD27E0
+	for <iommu@lists.linux.dev>; Fri, 31 Mar 2023 23:07:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680304053; x=1711840053;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=DnaRmj+QiMWJCcTf2AJsdp5uoJ6bEGi3YKrWISZOyzI=;
+  b=Og74AqYffJVqGW4ToNfwET3v1Jbz7TizZ8CW4sf1JtE1rX5eFKNCuwkN
+   QTg85dGgfFuFviAyYXBp3NdZLIy1Fpv5m2CTD8LuI9vwmv8cjwOXQyxnV
+   ct9A/N7HRkd5ObmvIyt3dABHwb0IdkzUhW5bf1LFOnDmn3EJZH5zZ+ej/
+   e49bW5OwLrZRoCumv1kCWPtZJvnqTMyUi7pSqwZQSOQVJYnqiW2ayP2yt
+   YQhE6PeIKOTL7tUxu1RofbZ1VNVtZK8ricKPSt4b15rooSV5yMAfI7yFA
+   C0VSdq7bDztoTMLtf0dHPT1nRVBdjI4SNywEr7KanMXyaN2L+kYggCmDM
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10666"; a="343245116"
+X-IronPort-AV: E=Sophos;i="5.98,307,1673942400"; 
+   d="scan'208";a="343245116"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2023 16:07:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10666"; a="717888334"
+X-IronPort-AV: E=Sophos;i="5.98,307,1673942400"; 
+   d="scan'208";a="717888334"
+Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.106])
+  by orsmga001.jf.intel.com with ESMTP; 31 Mar 2023 16:07:32 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: LKML <linux-kernel@vger.kernel.org>,
+	iommu@lists.linux.dev,
+	"Robin Murphy" <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	"Lu Baolu" <baolu.lu@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	dmaengine@vger.kernel.org,
+	vkoul@kernel.org
+Cc: "Will Deacon" <will@kernel.org>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Raj Ashok <ashok.raj@intel.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	Yi Liu <yi.l.liu@intel.com>,
+	"Yu, Fenghua" <fenghua.yu@intel.com>,
+	Dave Jiang <dave.jiang@intel.com>,
+	Tony Luck <tony.luck@intel.com>,
+	"Zanussi, Tom" <tom.zanussi@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v3 0/7] Re-enable IDXD kernel workqueue under DMA API
+Date: Fri, 31 Mar 2023 16:11:30 -0700
+Message-Id: <20230331231137.1947675-1-jacob.jun.pan@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8bit
 
-Am Freitag, 31. M=E4rz 2023, 11:51:54 CEST schrieb Steven Price:
-> Similar to exynos, we need a set_platform_dma_ops() callback for proper
-> operation on ARM 32 bit after recent changes in the IOMMU framework
-> (detach ops removal). But also the use of a NULL domain is confusing.
->=20
-> Rework the code to add support for IOMMU_DOMAIN_IDENTITY and a singleton
-> rk_identity_domain which is assigned to domain when using an identity
-> mapping rather than "detaching". This makes the code easier to reason abo=
-ut.
->=20
-> Signed-off-by: Steven Price <steven.price@arm.com>
+Hi all,
 
-My knowledge of IOMMU magic is not that deep. Nevertheless I do believe
-to mostly understand the change and the splats on my rk3288-pinky are gone
-now with this patch:
+IDXD kernel work queues were disabled due to the flawed use of kernel VA
+and SVA API.
+Link: https://lore.kernel.org/linux-iommu/20210511194726.GP1002214@nvidia.com/
 
-Acked-by: Heiko Stuebner <heiko@sntech.de>
-Tested-by: Heiko Stuebner <heiko@sntech.de>
+The solution is to enable it under DMA API where IDXD shared workqueue users
+can use ENQCMDS to submit work on buffers mapped by DMA API.
+
+This patchset adds support for attaching PASID to the device's default
+domain and the ability to reserve global PASIDs from SVA APIs. We can then
+re-enable the kernel work queues and use them under DMA API.
+
+This depends on the IOASID removal series.
+https://lore.kernel.org/all/ZCaUBJvUMsJyD7EW@8bytes.org/
 
 
+Thanks,
 
+Jacob
+
+---
+Changelog:
+v3:
+	- moved global PASID allocation API from SVA to IOMMU (Kevin)
+	- remove #ifdef around global PASID reservation during boot (Baolu)
+	- remove restriction on PASID 0 allocation (Baolu)
+	- fix a bug in sysfs domain change when attaching devices
+	- clear idxd user interrupt enable bit after disabling device( Fenghua)
+v2:
+	- refactored device PASID attach domain ops based on Baolu's early patch
+	- addressed TLB flush gap
+	- explicitly reserve RID_PASID from SVA PASID number space
+	- get dma domain directly, avoid checking domain types
+
+
+
+Jacob Pan (7):
+  iommu/vt-d: Use non-privileged mode for all PASIDs
+  iommu/vt-d: Remove PASID supervisor request support
+  iommu/sva: Support allocation of global PASIDs outside SVA
+  iommu/vt-d: Reserve RID_PASID from global PASID space
+  iommu/vt-d: Make device pasid attachment explicit
+  iommu/vt-d: Implement set_dev_pasid domain op
+  dmaengine/idxd: Re-enable kernel workqueue under DMA API
+
+ drivers/dma/idxd/device.c   |  30 +-----
+ drivers/dma/idxd/init.c     |  56 ++++++++++-
+ drivers/dma/idxd/sysfs.c    |   7 --
+ drivers/iommu/intel/iommu.c | 180 +++++++++++++++++++++++++++++-------
+ drivers/iommu/intel/iommu.h |   8 ++
+ drivers/iommu/intel/pasid.c |  43 ---------
+ drivers/iommu/intel/pasid.h |   7 --
+ drivers/iommu/iommu-sva.c   |  10 +-
+ drivers/iommu/iommu.c       |  33 +++++++
+ include/linux/iommu.h       |  10 ++
+ 10 files changed, 257 insertions(+), 127 deletions(-)
+
+-- 
+2.25.1
 
