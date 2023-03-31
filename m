@@ -1,127 +1,176 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2069.outbound.protection.outlook.com [40.107.93.69])
+Received: from mail-40131.protonmail.ch (mail-40131.protonmail.ch [185.70.40.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67F841FAA
-	for <iommu@lists.linux.dev>; Fri, 31 Mar 2023 06:17:34 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nH3J3x5sAdpK2l0og0A9MWVK2rrfyAkPAYfgCjTkOEk62whPd62XSKJxDPNyQJmX++/3gY8FNDHjywS9eLjFOEUXdBXINbJksOyOyBpSeZAotl74pD8k/VG8CqwW9rBpUj7+lAsAl3ISkUWcTdWYasvZ626WZRL34FkiS9yul6YsEjgzHuYuGt1MZX9EfQfaDRRfGjyVXKEzznd61yevMzxwxCAUYr0DCy0v7RtcDcskV6xTHoRj0zsmRYGC8kyR0pIoal+gz6Hm4LErdYdHc/65o3jbthW55x0WUoI5RjaxtZregxOqNtLO1R6pGDQ3Nc71TuO/GPDUfUeZzpVQ/g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HTumQ94zy5n7K+ARcPVX3vdkWwOi78e6NIqjW3uWvc4=;
- b=WkIujhK1SoH0AdwcMi9KrUFo7ctV329wT89dj382F6lpVdnjYCb2uncdC0NZgaVxOFI1Owrz6a61MAFKkaaHyZxvJig1OyXFjwdO2fTf2cYlxNBnYGbAiIkT/+4adFZ7IzSYZk0+AFnQ9ar56B2uYZsX1RZkFtOoz7645Y0airlvphV/qQAGyM1UMuXGVCNrfHlsuAeHK2NBgSbshMp+YGXYKAo+/3L4mfx+LxM/iHXox0pcdv7nirfe5JhnM+D33glADr1UOepDTiUG9DIdfVn9Ns78ZGiRAx7dfBeFCDpRhB0++BOp03zKCOrfyE81vCjwl1PKuEG5bW4YFtpGnw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HTumQ94zy5n7K+ARcPVX3vdkWwOi78e6NIqjW3uWvc4=;
- b=cwbYoVVDDUzE2I538pD8vrIpmc8K90eyS5o0XBBZv6H1fe+hWWvbnGESVWeA7C2DCyvpRsHcRvMDgIKBNIEB/Msiaq61Pi6FyxbYAYHwdAQlZ1uSPbP5biYLhZmLsZ/D7mP4666QMgS2vvf3f8Jil9hNSJS0iX+bam5IOAPwO18=
-Received: from DM6PR13CA0010.namprd13.prod.outlook.com (2603:10b6:5:bc::23) by
- PH0PR12MB7930.namprd12.prod.outlook.com (2603:10b6:510:283::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6254.22; Fri, 31 Mar 2023 06:17:32 +0000
-Received: from DM6NAM11FT097.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:bc:cafe::3d) by DM6PR13CA0010.outlook.office365.com
- (2603:10b6:5:bc::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.20 via Frontend
- Transport; Fri, 31 Mar 2023 06:17:31 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT097.mail.protection.outlook.com (10.13.172.72) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6254.22 via Frontend Transport; Fri, 31 Mar 2023 06:17:31 +0000
-Received: from ruby-95fdhost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 31 Mar
- 2023 01:17:30 -0500
-From: Kishon Vijay Abraham I <kvijayab@amd.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Robin
- Murphy" <robin.murphy@arm.com>
-CC: Kishon Vijay Abraham I <kvijayab@amd.com>, Vasant Hegde
-	<vasant.hegde@amd.com>, Suravee Suthikulpanit
-	<suravee.suthikulpanit@amd.com>, Santosh Shukla <santosh.shukla@amd.com>,
-	"Nikunj A . Dadhania" <nikunj@amd.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>
-Subject: [PATCH] iommu/amd: Fix "Guest Virtual APIC Table Root Pointer" configuration in IRTE
-Date: Fri, 31 Mar 2023 06:17:23 +0000
-Message-ID: <20230331061723.10337-1-kvijayab@amd.com>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BEE81FB1
+	for <iommu@lists.linux.dev>; Fri, 31 Mar 2023 07:26:36 +0000 (UTC)
+Date: Fri, 31 Mar 2023 07:26:09 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=proton.me;
+	s=protonmail; t=1680247588; x=1680506788;
+	bh=uVwhpYDZIIdj+265twvljuSYRqJy0izgHprDWPhFAdk=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+	 Message-ID:BIMI-Selector;
+	b=hw6VZAVNB4YexoRNxps4VHNqNH/PrhjbJFt6BrwyKOapdfq698yksDCDKevKNSRpB
+	 yUNI98DJav/sC2Oqw1nb9rpJqKiL0gZHNDUevqGD6eAJuZEjbqmIteuVn0KW2pW5u0
+	 Za1bxHpkPNek/QDWs95QZO0nEp/9l1T568xgiiWdT4wEdXtXWDnwJcUgGnPNtXkprZ
+	 lhhMzJTj9Eq8FAq5jahb3oUc8nhnbZYLAwSbYoVfVYTDb97ad6o+IQuYXa989ueAlz
+	 dwHtt2ndeX67oFAy/KkJPHDVejIM9Ui28A/rvlu5mP586ro49OANNWPxlh99C+6oUc
+	 xMuUCzefuj0hA==
+To: Petr Tesarik <petrtesarik@huaweicloud.com>
+From: Juerg Haefliger <juergh@proton.me>
+Cc: Christoph Hellwig <hch@lst.de>, Jonathan Corbet <corbet@lwn.net>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Borislav Petkov <bp@suse.de>, "Paul E. McKenney" <paulmck@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Randy Dunlap <rdunlap@infradead.org>, Damien Le Moal <damien.lemoal@opensource.wdc.com>, Kim Phillips <kim.phillips@amd.com>, "Steven Rostedt (Google)" <rostedt@goodmis.org>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>, Roberto Sassu <roberto.sassu@huawei.com>, petr@tesarici.cz, Alexander Graf <graf@amazon.com>
+Subject: Re: [RFC v1 3/4] swiotlb: Allow dynamic allocation of bounce buffers
+Message-ID: <20230331092553.677e9649@smeagol>
+In-Reply-To: <4268fa4e-4f0f-a2f6-a2a5-5b78ca4a073d@huaweicloud.com>
+References: <4268fa4e-4f0f-a2f6-a2a5-5b78ca4a073d@huaweicloud.com>
+Feedback-ID: 45149698:user:proton
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT097:EE_|PH0PR12MB7930:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9bbebe90-0f95-4785-50a5-08db31af9c72
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	rnURR0OiBAZT+gPqujWEHh8yKRkgH3iy0QSvZZD+oB8DNQJIbIjsIMSvVocaV6gWqVYZ9Eea1SZTMSGCPr8sH/yZ5bpMZ4m0uwxWpFml+JU8hz0yQBOTcp8wR4COHg5z7ctU2sV/SynauwTdQvWsAm1dVwzErRSutDIKIWZh8ILJ8wL0iwd08lRDaiC06L5feWuwmm2mHMKJhM4llmQlGsTmav18/M2KCWmlfgMhNt/NnVWAI4poXxJqh5U0bZWGXk8qKSsoW35ce/mvevYbpmqpBxF4UXk8Ue7PQ9O3WZRx5OPI97B/SBtJXaoT1AbX7rYQTHv5OFJ9TA/O/AJqgpBJ+sH8gZplBKKuudQHR2jWx15bK3tFDhLhH7TIqE4UnXlrPh1UF5vItNmliQJVb7Y5Qq+ejWwthGV2pPlxkNZ/sfu4XVvSE6WPsQpg6vecmkKSx2DVPNOgmTjoyFydWgSNQzba9XO/Q2wZchIqMn3L7KKUsw0NU2d+WmlYwAY97qhjNneX5CQLyTtV2pIi8F3Omb2J4Tq+8tuvAPtnWWa20f6RGqjdZ7jZq/i2ZqLsueMN0vWQUEqFjYVvEAH0cOHnrbKwzIJw7/mUdw8tU40UoUPGpRxq6lkb2H9k7j8VKHdnypgMOVYnrWbowEv0adutjEAmVVEGVug5MD9O7GLDAS9sFaSdZbiggyg5QlwZqB/aUDSYa8oNQeyMjdVS6ZwFXZf6ePi0ca2Jm9ahXjg=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(376002)(346002)(39860400002)(451199021)(36840700001)(46966006)(40470700004)(47076005)(426003)(336012)(81166007)(40460700003)(4326008)(70586007)(356005)(5660300002)(8936002)(82740400003)(82310400005)(40480700001)(41300700001)(70206006)(8676002)(36756003)(83380400001)(54906003)(26005)(2616005)(36860700001)(1076003)(6666004)(2906002)(110136005)(316002)(186003)(478600001)(16526019)(7696005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2023 06:17:31.5894
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9bbebe90-0f95-4785-50a5-08db31af9c72
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT097.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7930
+Content-Type: multipart/mixed;
+ boundary="b1_RX1JEplCPdOoZLmijgm2vZMNZS7zoj4VjnqCNmqCo"
 
-commit b9c6ff94e43a ("iommu/amd: Re-factor guest virtual APIC
-(de-)activation code") while refactoring guest virtual APIC
-activation/de-activation code, stored information for activate/de-activate
-in "struct amd_ir_data". It used 32-bit integer data type for storing the
-"Guest Virtual APIC Table Root Pointer" (ga_root_ptr), though the
-"ga_root_ptr" is actually a 40-bit field in IRTE (Interrupt Remapping
-Table Entry).
+This is a multi-part message in MIME format.
 
-This causes interrupts from PCIe devices to not reach the guest in the case
-of PCIe passthrough with SME (Secure Memory Encryption) enabled as _SME_
-bit in the "ga_root_ptr" is lost before writing it to the IRTE.
+--b1_RX1JEplCPdOoZLmijgm2vZMNZS7zoj4VjnqCNmqCo
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Fix it by using 64-bit data type for storing the "ga_root_ptr".
+On Tue, 28 Mar 2023 09:54:35 +0200
+Petr Tesarik <petrtesarik@huaweicloud.com> wrote:
 
-Fixes: b9c6ff94e43a ("iommu/amd: Re-factor guest virtual APIC (de-)activation code")
-Cc: stable@vger.kernel.org # v5.4+
-Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Signed-off-by: Kishon Vijay Abraham I <kvijayab@amd.com>
----
- drivers/iommu/amd/amd_iommu_types.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> On 3/28/2023 6:07 AM, Christoph Hellwig wrote:
+> > [adding Alex as he has been interested in this in the past]
+> >
+> > On Mon, Mar 20, 2023 at 01:28:15PM +0100, Petr Tesarik wrote:
+> >> Second, on the Raspberry Pi 4, swiotlb is used by dma-buf for pages
+> >> moved from the rendering GPU (v3d driver), which can access all
+> >> memory, to the display output (vc4 driver), which is connected to a
+> >> bus with an address limit of 1 GiB and no IOMMU. These buffers can
+> >> be large (several megabytes) and cannot be handled by SWIOTLB,
+> >> because they exceed maximum segment size of 256 KiB. Such mapping
+> >> failures can be easily reproduced on a Raspberry Pi4: Starting
+> >> GNOME remote desktop results in a flood of kernel messages like
+> >> these:
+> >
+> > Shouldn't we make sure dma-buf allocates the buffers for the most
+> > restricted devices, and more importantly does something like a dma
+> > coherent allocation instead of a dynamic mapping of random memory?
+> >
+> > While a larger swiotlb works around this I don't think this fixes the r=
+oot
+> > cause.
+>
+> I tend to agree here. However, it's the DMABUF design itself that causes
+> some trouble. The buffer is allocated by the v3d driver, which does not
+> have the restriction, so the DMA API typically allocates an address
+> somewhere near the 4G boundary. Userspace then exports the buffer, sends
+> it to another process as a file descriptor and imports it into the vc4
+> driver, which requires DMA below 1G. In the beginning, v3d had no idea
+> that the buffer would be exported to userspace, much less that it would
+> be later imported into vc4.
+>
+> Anyway, I suspected that the buffers need not be imported into the vc4
+> driver (also hinted by Eric Anholt in a 2018 blog post [1]), and it
+> seems I was right. I encountered the issue with Ubuntu 22.10; I
+> installed latest openSUSE Tumbleweed yesterday, and I was not able to
+> reproduce the issue there, most likely because the Mesa drivers have
+> been fixed meanwhile. This makes the specific case of the Raspberry Pi 4
+> drivers moot. The issue may still affect other combinations of drivers,
+> but I don't have any other real-world example ATM.
 
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 3d684190b4d5..990614b8a1fe 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -1001,7 +1001,7 @@ struct amd_ir_data {
- 	 */
- 	struct irq_cfg *cfg;
- 	int ga_vector;
--	int ga_root_ptr;
-+	u64 ga_root_ptr;
- 	int ga_tag;
- };
- 
--- 
-2.34.1
+I'm only seeing this problem with Wayland, no issue when switching Ubuntu t=
+o
+X. It seems Tumbleweed is using X by default.
+
+...Juerg
+
+
+> [1] https://anholt.github.io/twivc4/2018/02/12/twiv/
+>
+> >> 1. The value is limited to ULONG_MAX, which is too little both for
+> >>    physical addresses (e.g. x86 PAE or 32-bit ARM LPAE) and DMA
+> >>    addresses (e.g. Xen guests on 32-bit ARM).
+> >>
+> >> 2. Since buffers are currently allocated with page granularity, a
+> >>    PFN can be used instead. However, some values are reserved by
+> >>    the maple tree implementation. Liam suggests to use
+> >>    xa_mk_value() in that case, but that reduces the usable range by
+> >>    half. Luckily, 31 bits are still enough to hold a PFN on all
+> >>    32-bit platforms.
+> >>
+> >> 3. Software IO TLB is used from interrupt context. The maple tree
+> >>    implementation is not IRQ-safe (MT_FLAGS_LOCK_IRQ does nothing
+> >>    AFAICS). Instead, I use an external lock, spin_lock_irqsave() and
+> >>    spin_unlock_irqrestore().
+> >>
+> >> Note that bounce buffers are never allocated dynamically if the
+> >> software IO TLB is in fact a DMA restricted pool, which is intended
+> >> to be stay in its designated location in physical memory.
+> >
+> > I'm a little worried about all that because it causes quite a bit
+> > of overhead even for callers that don't end up going into the
+> > dynamic range or do not use swiotlb at all.  I don't really have a
+> > good answer here except for the usual avoid bounce buffering whenever
+> > you can that might not always be easy to do.
+>
+> I'm also worried about all this overhead. OTOH I was not able to confirm
+> it, because the difference between two successive fio test runs on an
+> unmodified kernel was bigger than the difference between a vanilla and a
+> patched kernel, except the maximum completion latency, which OTOH
+> affected less than 0.01% of all requests.
+>
+> BTW my testing also suggests that the streaming DMA API is quite
+> inefficient, because UAS performance _improved_ with swiotlb=3Dforce.
+> Sure, this should probably be addressed in the UAS and/or xHCI driver,
+> but what I mean is that moving away from swiotlb may even cause
+> performance regressions, which is counter-intuitive. At least I would
+> _not_ have expected it.
+>
+> >> +=09gfp =3D (attrs & DMA_ATTR_MAY_SLEEP) ? GFP_KERNEL : GFP_NOWAIT;
+> >> +=09slot =3D kmalloc(sizeof(*slot), gfp | __GFP_NOWARN);
+> >> +=09if (!slot)
+> >> +=09=09goto err;
+> >> +
+> >> +=09slot->orig_addr =3D orig_addr;
+> >> +=09slot->alloc_size =3D alloc_size;
+> >> +=09slot->page =3D dma_direct_alloc_pages(dev, PAGE_ALIGN(alloc_size),
+> >> +=09=09=09=09=09    &slot->dma_addr, dir,
+> >> +=09=09=09=09=09    gfp | __GFP_NOWARN);
+> >> +=09if (!slot->page)
+> >> +=09=09goto err_free_slot;
+> >
+> > Without GFP_NOIO allocations this will deadlock eventually.
+>
+> Ah, that would affect the non-sleeping case (GFP_KERNEL), right?
+>
+> Petr T
+>
+
+
+--b1_RX1JEplCPdOoZLmijgm2vZMNZS7zoj4VjnqCNmqCo
+Content-Type: application/pgp-signature; name=attachment.sig
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename=attachment.sig
+
+LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0NCg0KaVFJekJBRUJDZ0FkRmlFRWhaZlU5Nkl1
+cHJ2aUxkZUxEOU9MQ1F1bVFyY0ZBbVFtaXdFQUNna1FEOU9MQ1F1bQ0KUXJkR2dBLy9icjU5YUxH
+S3hSSC9vOC9nUzdnMlVQb1NkVVdZUHg1MjdMTWJ5NkorQnZXY2I4aEo0dTJZNTJrTQ0KcUlBQkRJ
+RHpZaU13K1FkZExBUjlWMzY1WGNBYWtxU2JoZi9iUThDS1FKOG90OHBJWDNqd2laY3p3akloMVJC
+Rw0Kc2hmdW1FWFRNTVJsQkZUSGxubFRrd1dtdnNrS2xkVHlPeWNML1c5aERITW0zSm92U0VBQzB6
+YlVrZ0YyekIxOA0KZ1gwT0dGd0x1MEZ4VGlJcCtEeE9BREFORXpyeGtTeEwzRU9jUndrWHZzbkJw
+Tzl1T0U2bVdZQmZQdWY0aGQ0Zw0KN3dKL0VvR2hTdVNRNzBON29MS1NDK1g4K1NCS1R5WURYeE03
+RTNENnRUaUY4RkQ5K3RkQ3UxMVBjbmV4SGdPWA0KaVhSazNZcGtQMUFnQ0gxWnJ1ZmVJaXRpMEJD
+Y3gzUlhPNU5JQTFlVU55Sjc4eldzaVpPakxaZnBlRWJiTzg1Wg0KNURsWDNIdFN1M2RMVXFOQURW
+SUJzY3BZeWNKazBuWHZXcVlRM3AySDlPbmN5TmszdEdZK0ZBOGNhNUhlU0hyTg0KVWpnSklXTGpR
+SGprZWg1ekE2a2VQOC9uSDUvYlRTQmtYQVFFT2F4anlUa2pnZnBvQXlaZXFsdEc4ZGVwSkkybg0K
+VDh3YlBBTHczMzNCVy8xUGtCeUJJMTRCWGxpWlUrQkxNU2labVpKek9CUUlGeE92ZWZmSG5pc2sx
+akVOcUlGeQ0KMXo5a2NLc1gvYUx1WWhSeVhyQmc1QllIa0szOVJFdW5rSVJTd1hIN2JvZ0pnZ2xx
+KzMycTEvaXUwMWFxQ0pWbA0KMXpLa1BuUjBETStneTVpMHZMZ00yM29vM0sxQ21sb1h3UkhPOUpw
+dGRTMFoyMDByMW5FPQ0KPTlMNlgNCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQ0K
+
+--b1_RX1JEplCPdOoZLmijgm2vZMNZS7zoj4VjnqCNmqCo--
 
