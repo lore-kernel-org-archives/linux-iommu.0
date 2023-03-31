@@ -1,34 +1,34 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76F6A15C6
-	for <iommu@lists.linux.dev>; Fri, 31 Mar 2023 03:25:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E12F15C6
+	for <iommu@lists.linux.dev>; Fri, 31 Mar 2023 03:27:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680233117; x=1711769117;
+  t=1680233245; x=1711769245;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=8TnRlIXjE2KdNSmhj7IX8P8JxUT2nkmGg69j0bKXYhw=;
-  b=VInlU2yCVjJiX0pASYwoCke5BkCX/BcC4MO0O+tFEN77gey/sVjHAIR0
-   qtUKLQU0eQvFwAnL2JaEuuGRQVTAsctX/J7xLW5omDhf3WA1WoM95j42Q
-   yC1slZE2WiunLb5WTqxsYVerZp0Xa1fGZoiLxTqR/V4h3ODGBHZKHTfAX
-   BtEYsjI1v3wHya5V/RiFm7oGWIJs+IKwrCelNZVki+pPWTHcOgnQ5Z3uh
-   bQ9TvkI9kJgLRC+cVnjnuX0w2djPSqdYFEGaq8iz2Cbc27KMYYE0zte/u
-   tos4XVLXlgDORT5E9j8oY+abSPU4hnd+k3lwU5uESsuInPYu0hRTmJdVv
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10665"; a="406348232"
+  bh=Fcx8FyvHsYPvovBDCbTWifOO8wc9SaAyk43k8G86Opg=;
+  b=oFmDDu4cUYsTrrMFkmYzlM8mUiYxidSX0wL44i4rYZ35GwOknfHVfcK0
+   MwGcq2Y1tikngmm6p8GZWcBOdFkkhafglzdvgDKrrUcJbN3MwSY7OpGyB
+   nUZw9tpZ4+luo0xbfHFm46ycO9QJiujigz/X+vn/pJM2/k8bO2QcQEvdw
+   Isb9LFb3rHBS3snH9ifQeC5bvs3Vsq9Lzs3zDysxEbtBTCVGjnvn2VisK
+   6PEUbrKCwfkJmq8Abf+TBbO/tjS604g7FrfzVBqIszPINDqcAw5mzvqol
+   jmjeHdMp6W5EYAc0y+rbRZt9goI/hDR2MBZPBNU0E6diDmL9KbrDoxkXB
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10665"; a="320995366"
 X-IronPort-AV: E=Sophos;i="5.98,306,1673942400"; 
-   d="scan'208";a="406348232"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2023 20:25:04 -0700
+   d="scan'208";a="320995366"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2023 20:27:23 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10665"; a="1014675211"
+X-IronPort-AV: E=McAfee;i="6600,9927,10665"; a="717558043"
 X-IronPort-AV: E=Sophos;i="5.98,306,1673942400"; 
-   d="scan'208";a="1014675211"
+   d="scan'208";a="717558043"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by fmsmga005.fm.intel.com with ESMTP; 30 Mar 2023 20:25:03 -0700
-Message-ID: <3ac862db-297b-068b-743d-18730ac3002b@linux.intel.com>
-Date: Fri, 31 Mar 2023 11:25:19 +0800
+  by orsmga001.jf.intel.com with ESMTP; 30 Mar 2023 20:27:22 -0700
+Message-ID: <74239dba-34c7-e565-a293-16e022523f4c@linux.intel.com>
+Date: Fri, 31 Mar 2023 11:27:38 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -38,66 +38,45 @@ MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
 Cc: baolu.lu@linux.intel.com
-Subject: Re: [PATCH v2 4/7] iommu/vt-d: Remove BUG_ON when domain->pgd is NULL
+Subject: Re: [PATCH v2 7/7] iommu/vt-d: Remove BUG_ON in
+ dmar_insert_dev_scope()
 Content-Language: en-US
 To: Tina Zhang <tina.zhang@intel.com>, iommu@lists.linux.dev
 References: <20230331024236.2716001-1-tina.zhang@intel.com>
- <20230331024236.2716001-5-tina.zhang@intel.com>
+ <20230331024236.2716001-8-tina.zhang@intel.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230331024236.2716001-5-tina.zhang@intel.com>
+In-Reply-To: <20230331024236.2716001-8-tina.zhang@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 3/31/23 10:42 AM, Tina Zhang wrote:
-> When performing domain_context_mapping or searching dma-pte of a pfn,
-> with invalid domain page table directory address, which is unexpected,
-> shouldn't crash kernel. Therefore, using if() instead of BUG_ON.
+> The dmar_insert_dev_scope() could fail if any unexpected condition is
+> encountered. However, in this situation, the kernel should attempt
+> recovery and proceed with execution. Remove BUG_ON with WARN_ON, so that
+> kernel can avoid being crashed when an unexpected condition occurs.
 > 
 > Signed-off-by: Tina Zhang <tina.zhang@intel.com>
 > ---
->   drivers/iommu/intel/iommu.c | 10 ++++------
->   1 file changed, 4 insertions(+), 6 deletions(-)
+>   drivers/iommu/intel/dmar.c | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index de7fe7dcbc5c..e1881d48c2aa 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -915,10 +915,7 @@ static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
->   	int level = agaw_to_level(domain->agaw);
->   	int offset;
->   
-> -	BUG_ON(!domain->pgd);
-> -
-> -	if (!domain_pfn_supported(domain, pfn))
-> -		/* Address beyond IOMMU's addressing capabilities. */
-> +	if (unlikely(!domain->pgd || !domain_pfn_supported(domain, pfn)))
->   		return NULL;
->   
->   	parent = domain->pgd;
-> @@ -1927,6 +1924,9 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
->   	struct context_entry *context;
->   	int ret;
->   
-> +	if (unlikely(!domain->pgd))
-> +		return -EINVAL;
-> +
->   	WARN_ON(did == 0);
->   
->   	if (hw_pass_through && domain_type_is_si(domain))
-> @@ -1935,8 +1935,6 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
->   	pr_debug("Set context mapping for %02x:%02x.%d\n",
->   		bus, PCI_SLOT(devfn), PCI_FUNC(devfn));
->   
-> -	BUG_ON(!domain->pgd);
-> -
->   	spin_lock(&iommu->lock);
->   	ret = -ENOMEM;
->   	context = iommu_context_addr(iommu, bus, devfn, 1);
+> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+> index 9684c96247f8..7eceee081235 100644
+> --- a/drivers/iommu/intel/dmar.c
+> +++ b/drivers/iommu/intel/dmar.c
+> @@ -262,7 +262,8 @@ int dmar_insert_dev_scope(struct dmar_pci_notify_info *info,
+>   						   get_device(dev));
+>   				return 1;
+>   			}
+> -		BUG_ON(i >= devices_cnt);
+> +		if (WARN_ON(i >= devices_cnt))
+> +			return -EINVAL;
 
-I'd suggest to remove all checks for domain->pgd.
+You have returned an error number. Do you still need a WARN_ON()?
 
-If a domain has map/unmap ops, it should always have its own page table
-(a.k.a. domain->pgd). Hence the domain->pgd check is unnecessary.
+>   	}
+>   
+>   	return 0;
 
 Best regards,
 baolu
