@@ -1,39 +1,39 @@
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31CB715C6
-	for <iommu@lists.linux.dev>; Fri, 31 Mar 2023 03:14:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4398A15C0
+	for <iommu@lists.linux.dev>; Fri, 31 Mar 2023 03:14:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680232455; x=1711768455;
+  t=1680232456; x=1711768456;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=/caAYn9v+lM3DuSYoZaXs3trhDZuCDPC1n99gqV7Chk=;
-  b=QjUtmXsEW7kmQvOOkOZbtw2J71/8DQdUEpzPyTNwJ6SQhvsGFmy0W2ys
-   OvZKEQ85v9zTH5d+Wtuhr5TB48vLRgmOVDq4+iO9W79E3lfnd1B4CUcZ7
-   JTZEntLXsJTCYdT6Z/kT0TekRWRRkxItJ1Ucof/lvQwCPywgsv+N6H10L
-   F8zB2CbZ8meqlpc1uTN/s5EtMqqenN/GSzjlG1HWZbxlh4o3hvvAnQ6TT
-   NXiWtLw/LNj/wWZWNNRp8f3dbQdiRLiYaV+gZFMig7v7wPlqC6bYXETqy
-   dQnP+FtwB+Nh9AmtSkd4IF8F42b8FMnuqKeOxfWBl/6c4OWyzUP2Q0GXj
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10665"; a="342991737"
+  bh=3xw2GkG6IOgdCgKgk65V4Tspg+W1DfAYzv2aSk9/y6M=;
+  b=XVTjKeWo1lX8rkaFY2Rl+Foi9poVhQkLMwbZH54n+FjjQ8udkVCRYpqV
+   rSuf5JdcQjBgDXp9hBlEjO84yzxq5RlrCjBJB9ygj/7vFin5b/tP2Iovs
+   vOUu3wiy+YHkf2M3G+B6DM9HmSrUOU7nfDS38qd5YyZAyQpLsskS1kddz
+   WEE9RyuZcIsK/1NxlS8doUrlYV4OIEEie5qjdjRt4GA22PCEs9WXvKaMZ
+   8o2gLzHibeApkL4XcooIdekTBB4bwJ1PM/PCPm3fpUtQfnsESZYRIAeaH
+   KcJ9uJDkhZTCP3TEdIRbJlC0ER147szfHDswZCmav7rO3Igz0yWp2MVJF
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10665"; a="342991741"
 X-IronPort-AV: E=Sophos;i="5.98,306,1673942400"; 
-   d="scan'208";a="342991737"
+   d="scan'208";a="342991741"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2023 20:14:05 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10665"; a="635144761"
+X-IronPort-AV: E=McAfee;i="6600,9927,10665"; a="635144771"
 X-IronPort-AV: E=Sophos;i="5.98,306,1673942400"; 
-   d="scan'208";a="635144761"
+   d="scan'208";a="635144771"
 Received: from test.bj.intel.com ([10.238.158.71])
-  by orsmga003.jf.intel.com with ESMTP; 30 Mar 2023 20:13:54 -0700
+  by orsmga003.jf.intel.com with ESMTP; 30 Mar 2023 20:13:56 -0700
 From: Tina Zhang <tina.zhang@intel.com>
 To: iommu@lists.linux.dev
 Cc: Lu Baolu <baolu.lu@linux.intel.com>,
 	Tina Zhang <tina.zhang@intel.com>
-Subject: [PATCH v2 5/7] iommu/vt-d: Remove BUG_ON in map/unmap()
-Date: Thu, 30 Mar 2023 22:42:34 -0400
-Message-Id: <20230331024236.2716001-6-tina.zhang@intel.com>
+Subject: [PATCH v2 6/7] iommu/vt-d: Remove a useless BUG_ON(dev->is_virtfn)
+Date: Thu, 30 Mar 2023 22:42:35 -0400
+Message-Id: <20230331024236.2716001-7-tina.zhang@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230331024236.2716001-1-tina.zhang@intel.com>
 References: <20230331024236.2716001-1-tina.zhang@intel.com>
@@ -45,40 +45,28 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Domain map/unmap with invalid parameters shouldn't crash the kernel.
-Therefore, using if() replaces the BUG_ON.
+When dmar_alloc_pci_notify_info() is being invoked, the invoker has
+ensured the dev->is_virtfn is false. So, remove the useless BUG_ON in
+dmar_alloc_pci_notify_info().
 
 Signed-off-by: Tina Zhang <tina.zhang@intel.com>
 ---
- drivers/iommu/intel/iommu.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/iommu/intel/dmar.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index e1881d48c2aa..61166b6b992d 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -2186,7 +2186,8 @@ __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
- 	phys_addr_t pteval;
- 	u64 attr;
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index 01d0ca0019f2..9684c96247f8 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -127,8 +127,6 @@ dmar_alloc_pci_notify_info(struct pci_dev *dev, unsigned long event)
+ 	struct pci_dev *tmp;
+ 	struct dmar_pci_notify_info *info;
  
--	BUG_ON(!domain_pfn_supported(domain, iov_pfn + nr_pages - 1));
-+	if (unlikely(!domain_pfn_supported(domain, iov_pfn + nr_pages - 1)))
-+		return -EINVAL;
- 
- 	if ((prot & (DMA_PTE_READ|DMA_PTE_WRITE)) == 0)
- 		return -EINVAL;
-@@ -4343,8 +4344,9 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
- 
- 	/* Cope with horrid API which requires us to unmap more than the
- 	   size argument if it happens to be a large-page mapping. */
--	BUG_ON(!pfn_to_dma_pte(dmar_domain, iova >> VTD_PAGE_SHIFT, &level,
--			       GFP_ATOMIC));
-+	if (unlikely(!pfn_to_dma_pte(dmar_domain, iova >> VTD_PAGE_SHIFT,
-+					 &level, GFP_ATOMIC)))
-+		return 0;
- 
- 	if (size < VTD_PAGE_SIZE << level_to_offset_bits(level))
- 		size = VTD_PAGE_SIZE << level_to_offset_bits(level);
+-	BUG_ON(dev->is_virtfn);
+-
+ 	/*
+ 	 * Ignore devices that have a domain number higher than what can
+ 	 * be looked up in DMAR, e.g. VMD subdevices with domain 0x10000
 -- 
 2.34.1
 
