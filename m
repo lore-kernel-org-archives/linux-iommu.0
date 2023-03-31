@@ -1,128 +1,94 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F62115C6
-	for <iommu@lists.linux.dev>; Fri, 31 Mar 2023 03:31:57 +0000 (UTC)
-Received: by mail-pl1-f171.google.com with SMTP id n14so4179784plc.8
-        for <iommu@lists.linux.dev>; Thu, 30 Mar 2023 20:31:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680233517;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Z+9ZPtRrjL6zYn8USHZp7DIBp0J7SJ4SjTl0hBaFZwU=;
-        b=DCa6KQxGG6AzMQVouFVFhw+hOgFCcmaF1zjXTSBVZFn3cRWwVJMldaTcDG/bcHarIn
-         wKN527uYemylzJGjuDKerFk0a1H1DxfYo0pWhoAM2XeqMrO/zWP7A4j2eKcsklyP5nYO
-         6iLv41misbE4Ld549/Mpg0xZ0xvDmWDPHdldwhJ0tKWt8eZteEbQaixaP83kHwVdThhX
-         FNYYiN/01zrYghz6igEjQwEA47ScJQf/uEjLsppkLDXuoWrkLBkMYRStm7guSPHSL0Ve
-         WKhcgrWCVPP4yZOltI4ItQJGBVwY39oGinS+lAAVzuVw6H1dj8B8hbE1qmAghoPRhWgZ
-         aFCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680233517;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Z+9ZPtRrjL6zYn8USHZp7DIBp0J7SJ4SjTl0hBaFZwU=;
-        b=klWWUUYF6vvlTIfSVJ2FyN+RoD9B+qDrAtkFLtnrC7IGptwrYpJhil+pnA/aT/Ya9K
-         pCkK2LPdLeX6WWlYrJdUESxehunOaaUEigvfqfY+D+Tm+wUWzxtYn1q+PQKb57Lg8QGc
-         Y+AOneSDCk5s1SsOA+bGpgytjqraty7lRZU7S6KgzLpzI2bDeKA6bIb0T1t5mn3UGCmZ
-         LPt2AEElsBgMZWmNn54trlyxtznCjsp61avoUS94sISw7MYTl0kEp5eVm4ADWl7XBcWV
-         1Fa/p4lew6kL9jWYcjVC5Z1T2pk06z+WrnU8Vn2W+q4A88GYkkW9ZOdoI3COi6dyLway
-         8/tQ==
-X-Gm-Message-State: AAQBX9dVaet0PiRKbQRM8Qc7RIaVbHtlwJVUPfgCXv5/SsEmzu2Mabk1
-	wYNsZW7cPVK/Y4SuHNlWvGY=
-X-Google-Smtp-Source: AKy350YKL1xfmb6bn3n7spfcte0bMvhxDHTazP/SFUMAnfe0dfrEdD/Hy8m6gTAtym+NDyPM1lg3XQ==
-X-Received: by 2002:a17:90b:33cc:b0:237:40a5:7cb9 with SMTP id lk12-20020a17090b33cc00b0023740a57cb9mr28369711pjb.5.1680233517522;
-        Thu, 30 Mar 2023 20:31:57 -0700 (PDT)
-Received: from ubt.spreadtrum.com ([138.113.14.245])
-        by smtp.gmail.com with ESMTPSA id p4-20020a170902eac400b001a239325f1csm449128pld.100.2023.03.30.20.31.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Mar 2023 20:31:57 -0700 (PDT)
-From: Chunyan Zhang <zhang.lyra@gmail.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	Chunyan Zhang <chunyan.zhang@unisoc.com>,
-	LKML <linux-kernel@vger.kernel.org>
-Subject: [RESEND PATCH V3 2/2] iommu: sprd: Add support for reattaching an existing domain
-Date: Fri, 31 Mar 2023 11:31:24 +0800
-Message-Id: <20230331033124.864691-3-zhang.lyra@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230331033124.864691-1-zhang.lyra@gmail.com>
-References: <20230331033124.864691-1-zhang.lyra@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 583A8C2DB
+	for <iommu@lists.linux.dev>; Fri, 31 Mar 2023 04:06:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A59BDC433D2;
+	Fri, 31 Mar 2023 04:06:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1680235567;
+	bh=oJJPBUQtZ6qjq1hLhHt7y8VVYL3gLwLxf2hB3DNtqEY=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=mwDzGyZvpjpG9V9zFhtyckaezZ6ECQrJgs6XtYMam9YJjTiKigEtLCC03yZs5hsdN
+	 UHrJhsUwbfLJz63JMG6g1EuBrL6zp+7mDeoWOnMX2BItM2g1pH+T6I7iAxshKbfUcB
+	 4DqIYQP4GMRaFfEY++cJX4IERFOArXWvR2CQxSVbZW+N4Cx3pt5aFJPBMAQGAzYM37
+	 xwMO9G+ThPxiPB3hHimHR2586AcfBItrq5ze4qyYSoZC+fQEeMU94EyR7gHXT7TVGi
+	 TDPp7XPaudUoGnWCYPMRwka8JmBwX1C0jl4zecUT25FprRUkGI1/v8nPc79SJl8+80
+	 i2c6RTPZPvebg==
+Date: Thu, 30 Mar 2023 21:06:05 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Vasant Hegde <vasant.hegde@amd.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ iommu@lists.linux.dev, "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ Willem de Bruijn <willemb@google.com>, Saeed Mahameed <saeed@kernel.org>
+Subject: Re: AMD IOMMU problem after NIC uses multi-page allocation
+Message-ID: <20230330210605.02406324@kernel.org>
+In-Reply-To: <76c7e508-c7ca-e2d9-5915-545b394623ae@arm.com>
+References: <20230329181407.3eed7378@kernel.org>
+	<ZCU9KZMlGMWb2ezZ@8bytes.org>
+	<202ea27f-aa79-66b6-0c80-ba0459eef5bd@arm.com>
+	<76c7e508-c7ca-e2d9-5915-545b394623ae@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-From: Chunyan Zhang <chunyan.zhang@unisoc.com>
+On Thu, 30 Mar 2023 14:10:09 +0100 Robin Murphy wrote:
+> > There is that old issue already mentioned where there seems to be some 
+> > interplay between the IOVA caching and the lazy flush queue, which we 
+> > never really managed to get to the bottom of. IIRC my hunch was that 
+> > with a sufficiently large number of CPUs, fq_flush_timeout() overwhelms 
+> > the rcache depot and gets into a pathological state where it then 
+> > continually thrashes the IOVA rbtree in a fight with the caching system.
+> > 
+> > Another (simpler) possibility which comes to mind is if the 9K MTU 
+> > (which I guess means 16KB IOVA allocations) puts you up against the 
+> > threshold of available 32-bit IOVA space - if you keep using the 16K 
+> > entries then you'll mostly be recycling them out of the IOVA caches, 
+> > which is nice and fast. However once you switch back to 1500 so needing 
+> > 2KB IOVAs, you've now got a load of IOVA space hogged by all the 16KB 
+> > entries that are now hanging around in caches, which could push you into 
+> > the case where the optimistic 32-bit allocation starts to fail (but 
+> > because it *can* fall back to a 64-bit allocation, it's not going to 
+> > purge those unused 16KB entries to free up more 32-bit space). If the 
+> > 32-bit space then *stays* full, alloc_iova should stay in fail-fast 
+> > mode, but if some 2KB allocations were below 32 bits and eventually get 
+> > freed back to the tree, then subsequent attempts are liable to spend 
+> > ages doing doing their best to scrape up all the available 32-bit space 
+> > until it's definitely full again. For that case, [1] should help.  
+> 
+> ...where by "2KB" I obviously mean 4KB, since apparently in remembering 
+> that the caches round up to powers of two I managed to forget that 
+> that's still in units of IOVA pages, derp.
+> 
+> Robin.
+> 
+> > 
+> > Even in the second case, though, I think hitting the rbtree much at all 
+> > still implies that the caches might not be well-matched to the 
+> > workload's map/unmap pattern, and maybe scaling up the depot size could 
+> > still be the biggest win.
+> > 
+> > Thanks,
+> > Robin.
+> > 
+> > [1] 
+> > https://lore.kernel.org/linux-iommu/e9abc601b00e26fd15a583fcd55f2a8227903077.1674061620.git.robin.murphy@arm.com/
 
-This IOMMU driver should allow a domain to be attached more than once.
+Alright, can confirm! :) 
+That patch on top of Linus's tree fixes the issue for me!
 
-If IOMMU is reattaching to the same domain which is attached, there's
-nothing to be done.
+Noob question about large systems, if you indulge me - I run into this
+after enabling the IOMMU driver to get large (255+ thread) AMD machines
+to work. Is there a general dependency on IOMMU for such x86 systems or
+the tie between IOMMU and x2apic is AMD-specific? Or I'm completely
+confused?
 
-If reattching to a previously-used domain, do not alloc DMA buffer
-again which stores address mapping table to avoid memory leak.
-
-Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
----
- drivers/iommu/sprd-iommu.c | 25 +++++++++++++++++++------
- 1 file changed, 19 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
-index 7df1f730c778..3513b2b108bf 100644
---- a/drivers/iommu/sprd-iommu.c
-+++ b/drivers/iommu/sprd-iommu.c
-@@ -62,6 +62,7 @@ enum sprd_iommu_version {
-  * @eb: gate clock which controls IOMMU access
-  */
- struct sprd_iommu_device {
-+	struct sprd_iommu_domain	*dom;
- 	enum sprd_iommu_version	ver;
- 	u32			*prot_page_va;
- 	dma_addr_t		prot_page_pa;
-@@ -252,15 +253,27 @@ static int sprd_iommu_attach_device(struct iommu_domain *domain,
- 	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
- 	size_t pgt_size = sprd_iommu_pgt_size(domain);
- 
--	if (dom->sdev)
--		return -EINVAL;
-+	/* The device is attached to this domain */
-+	if (sdev->dom == dom)
-+		return 0;
- 
--	dom->pgt_va = dma_alloc_coherent(sdev->dev, pgt_size, &dom->pgt_pa, GFP_KERNEL);
--	if (!dom->pgt_va)
--		return -ENOMEM;
-+	/* The first time that domain is attaching to a device */
-+	if (!dom->pgt_va) {
-+		dom->pgt_va = dma_alloc_coherent(sdev->dev, pgt_size, &dom->pgt_pa, GFP_KERNEL);
-+		if (!dom->pgt_va)
-+			return -ENOMEM;
-+
-+		dom->sdev = sdev;
-+	}
- 
--	dom->sdev = sdev;
-+	sdev->dom = dom;
- 
-+	/*
-+	 * One sprd IOMMU serves one client device only, disabled it before
-+	 * configure mapping table to avoid access conflict in case other
-+	 * mapping table is stored in.
-+	 */
-+	sprd_iommu_hw_en(sdev, false);
- 	sprd_iommu_first_ppn(dom);
- 	sprd_iommu_first_vpn(dom);
- 	sprd_iommu_vpn_range(dom);
--- 
-2.25.1
-
+I couldn't find anything in the kernel docs and I'm trying to wrap my
+head around getting the kernel to work the same across a heterogeneous*
+fleet of machines (* in terms of vendor and CPU count).
