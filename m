@@ -1,82 +1,84 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E12F15C6
-	for <iommu@lists.linux.dev>; Fri, 31 Mar 2023 03:27:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680233245; x=1711769245;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Fcx8FyvHsYPvovBDCbTWifOO8wc9SaAyk43k8G86Opg=;
-  b=oFmDDu4cUYsTrrMFkmYzlM8mUiYxidSX0wL44i4rYZ35GwOknfHVfcK0
-   MwGcq2Y1tikngmm6p8GZWcBOdFkkhafglzdvgDKrrUcJbN3MwSY7OpGyB
-   nUZw9tpZ4+luo0xbfHFm46ycO9QJiujigz/X+vn/pJM2/k8bO2QcQEvdw
-   Isb9LFb3rHBS3snH9ifQeC5bvs3Vsq9Lzs3zDysxEbtBTCVGjnvn2VisK
-   6PEUbrKCwfkJmq8Abf+TBbO/tjS604g7FrfzVBqIszPINDqcAw5mzvqol
-   jmjeHdMp6W5EYAc0y+rbRZt9goI/hDR2MBZPBNU0E6diDmL9KbrDoxkXB
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10665"; a="320995366"
-X-IronPort-AV: E=Sophos;i="5.98,306,1673942400"; 
-   d="scan'208";a="320995366"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2023 20:27:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10665"; a="717558043"
-X-IronPort-AV: E=Sophos;i="5.98,306,1673942400"; 
-   d="scan'208";a="717558043"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by orsmga001.jf.intel.com with ESMTP; 30 Mar 2023 20:27:22 -0700
-Message-ID: <74239dba-34c7-e565-a293-16e022523f4c@linux.intel.com>
-Date: Fri, 31 Mar 2023 11:27:38 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E727C15C6
+	for <iommu@lists.linux.dev>; Fri, 31 Mar 2023 03:31:42 +0000 (UTC)
+Received: by mail-pj1-f41.google.com with SMTP id d13so19206744pjh.0
+        for <iommu@lists.linux.dev>; Thu, 30 Mar 2023 20:31:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680233502;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=f0dyJHBuK5UpoDUR2HtwiB0N1zgJU2RE6kdVXBTWcZE=;
+        b=jND5ce5JWkxV0kSqsZnPmOZC5F+jlDguHcuLWv0PtRKqc0xvdyrkCYfdLOd5wLTf0I
+         4f6QOAAEBkUWLxLk+ubfelg6JyUSlWmeVhl6P0hkLnBnoiXbC21BxjBNErX2WoZFzXjI
+         mMPx5i1TgomZRiLJhti472rzFjRjMs78zQo6DboaN4OZaWclZRlviF+5fFQ9N7tbYYOq
+         ZH0rf/Z1+ifs+NYKnKWRoX9AxH4gTrFeCjxMI7Z6q/SOLbig8zWOec041Yq0O6odTKiT
+         jsRK931W+lbOKHwIhflL7hc003WbXxxJ6TytRSXi2ehFRSZ0oPVx48mb4EjT/GUp5+69
+         OXUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680233502;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=f0dyJHBuK5UpoDUR2HtwiB0N1zgJU2RE6kdVXBTWcZE=;
+        b=NJPjiuUExwLM5LsVQu+vfVbKrp1lWcR/ZQz3D0qFDsakpgjhmQ5BF2cbv6xfOQEtP2
+         BxLvvPK6oImM/2n4xUGsknxv2OuQaL8eWZTYS6/PfPiSyJrwVFv4ow9qxDXtUWIaCAfg
+         XpToYSoMVZNDsjk2+XjCDJFj06iqhN28CFH4JzTQa/DUpLod0c/C9MuPTSyVTE1hOKMm
+         dECXZMAON+KcaQKUGv5ipGLC81iEcHvj0W5AMsOSIBHjF7IBcjEczW3Rh1IyYAVtOkw1
+         i/gcKDjOc5y7Xacoc//QDLVQQBn4dpnTymApwEdU/BQyH0Mdpcsl3AM5lRXzhY1G89g0
+         nV9g==
+X-Gm-Message-State: AAQBX9fmArOgLdSXotl1Sbrd82yze8+HyoTpJf7gKIWpkg3Jza8ipCdS
+	a494GHF+XloSFIMHnPXK8hE=
+X-Google-Smtp-Source: AKy350ao0UIaY49NAnVjHbGTq092/pCn7iKgFwIfciJ3fEwDzuOpFLcRz9RQuZFES1aQXmBM0kqbMQ==
+X-Received: by 2002:a17:903:32c7:b0:199:4be8:be48 with SMTP id i7-20020a17090332c700b001994be8be48mr9694702plr.19.1680233502317;
+        Thu, 30 Mar 2023 20:31:42 -0700 (PDT)
+Received: from ubt.spreadtrum.com ([138.113.14.245])
+        by smtp.gmail.com with ESMTPSA id p4-20020a170902eac400b001a239325f1csm449128pld.100.2023.03.30.20.31.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Mar 2023 20:31:41 -0700 (PDT)
+From: Chunyan Zhang <zhang.lyra@gmail.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>,
+	Chunyan Zhang <chunyan.zhang@unisoc.com>,
+	LKML <linux-kernel@vger.kernel.org>
+Subject: [RESEND PATCH V3 0/2] Add reattaching support and fix memory leak issue
+Date: Fri, 31 Mar 2023 11:31:22 +0800
+Message-Id: <20230331033124.864691-1-zhang.lyra@gmail.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Cc: baolu.lu@linux.intel.com
-Subject: Re: [PATCH v2 7/7] iommu/vt-d: Remove BUG_ON in
- dmar_insert_dev_scope()
-Content-Language: en-US
-To: Tina Zhang <tina.zhang@intel.com>, iommu@lists.linux.dev
-References: <20230331024236.2716001-1-tina.zhang@intel.com>
- <20230331024236.2716001-8-tina.zhang@intel.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230331024236.2716001-8-tina.zhang@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 3/31/23 10:42 AM, Tina Zhang wrote:
-> The dmar_insert_dev_scope() could fail if any unexpected condition is
-> encountered. However, in this situation, the kernel should attempt
-> recovery and proceed with execution. Remove BUG_ON with WARN_ON, so that
-> kernel can avoid being crashed when an unexpected condition occurs.
-> 
-> Signed-off-by: Tina Zhang <tina.zhang@intel.com>
-> ---
->   drivers/iommu/intel/dmar.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-> index 9684c96247f8..7eceee081235 100644
-> --- a/drivers/iommu/intel/dmar.c
-> +++ b/drivers/iommu/intel/dmar.c
-> @@ -262,7 +262,8 @@ int dmar_insert_dev_scope(struct dmar_pci_notify_info *info,
->   						   get_device(dev));
->   				return 1;
->   			}
-> -		BUG_ON(i >= devices_cnt);
-> +		if (WARN_ON(i >= devices_cnt))
-> +			return -EINVAL;
+From: Chunyan Zhang <chunyan.zhang@unisoc.com>
 
-You have returned an error number. Do you still need a WARN_ON()?
+V3:
+* Split into two patches;
+* Added support reattching an existing domain;
+* Release DMA buffer only when domain freed.
 
->   	}
->   
->   	return 0;
+V2: https://lkml.org/lkml/2023/3/7/1717
+* Added some comment in sprd_iommu_attach_device() for the reason
+  of calling sprd_iommu_cleanup().
 
-Best regards,
-baolu
+V1: https://lkml.org/lkml/2023/2/10/198
+
+Chunyan Zhang (2):
+  iommu: sprd: release dma buffer to avoid memory leak
+  iommu: sprd: Add support for reattaching an existing domain
+
+ drivers/iommu/sprd-iommu.c | 54 +++++++++++++++++++++++++++++---------
+ 1 file changed, 41 insertions(+), 13 deletions(-)
+
+-- 
+2.25.1
+
