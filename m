@@ -1,117 +1,53 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30AC83232
-	for <iommu@lists.linux.dev>; Sat,  1 Apr 2023 13:48:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680356923; x=1711892923;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=9MCRDrcqTn5jIv/7IOOmvCRTNHP2x/Uu3rpz7+Ba/Gg=;
-  b=PDgTTIPYcl/yDsI0RpXo8mxRoWy3PAF39Hpu43EyzLBkCQcC6ae8zruh
-   Gymo2u386SX1bzyCYcH9DHKzspJ2rE6R+no//f+7qnYOSBdtXpTR5uqes
-   V0HbnSPrOqkDFQ5xCKq9QUuPuUQ89/Yh9PvB8kKR7qY0gdkkQ8MZVwbj5
-   nk7rQwJhJ26gXbG4D80Mb5DO/7MHwisNbw0981HMJKvALRfem7AbmCFm8
-   RRoZW6jAlZUfbSqNyc4qH4Zb9mR9733hNMxJGK/yxyslNGqsb9hh5d0xu
-   zhdcVJxQP/4IIvlLU32gDo4zctPMpNh7tZdZc/UhwOXfjeOq6svVDekp3
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10667"; a="344199205"
-X-IronPort-AV: E=Sophos;i="5.98,310,1673942400"; 
-   d="scan'208";a="344199205"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2023 06:48:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10667"; a="796461044"
-X-IronPort-AV: E=Sophos;i="5.98,310,1673942400"; 
-   d="scan'208";a="796461044"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.211.241]) ([10.254.211.241])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2023 06:48:38 -0700
-Message-ID: <a63e70cc-8890-bb99-3326-0b19e81ea92e@linux.intel.com>
-Date: Sat, 1 Apr 2023 21:48:36 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC47E2CA4
+	for <iommu@lists.linux.dev>; Sat,  1 Apr 2023 16:43:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 67CCDC433EF;
+	Sat,  1 Apr 2023 16:43:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1680367380;
+	bh=bK71Tf9aGjYkLqtP+4eWub+sZl4Z+ULqWbbOI2/Z0fU=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=thYDK3Tk9y9QRsz+MjV8wo0jiaBtHiHDSmkQPcG1/B0nllkS+VjCI+tAlNYyKBvmP
+	 YqR4apiyT8oob4aTfWZM1HWBJd8ozvwEB6CmUXMu5i0qA5BDYhZwstcd/XyHIt71mJ
+	 Q5XLU2d0QsczDVSsRyjZJA18DKxzWyvBp3ATy0gRCCMV0vD7k9IC7hFZAAazBP4jO4
+	 2LC+R6qp++ZxEioXO093HLRN2s0+FlFvoKtpv1EiQcJfB6De0GsMgUwQUfmcC77JOY
+	 FbcQIaLxBm4RBP6TISZNqLm4ewKGVCcNBy0ZIK3aa6IQdxrdOss/ZwDKVzsz7uXfB3
+	 d/DFskkyciAug==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 54A94C43157;
+	Sat,  1 Apr 2023 16:43:00 +0000 (UTC)
+Subject: Re: [git pull] IOMMU Fixes for Linux v6.3-rc4
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <ZCgrfX7DoO9puGmY@8bytes.org>
+References: <ZCgrfX7DoO9puGmY@8bytes.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <ZCgrfX7DoO9puGmY@8bytes.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-6.3-rc4
+X-PR-Tracked-Commit-Id: 16812c96550c30a8d5743167ef4e462d6fbe7472
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 92367fdf3b699e97acb4d5fbf7159f5c458b2b30
+Message-Id: <168036738034.24776.121645524690964319.pr-tracker-bot@kernel.org>
+Date: Sat, 01 Apr 2023 16:43:00 +0000
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-Cc: baolu.lu@linux.intel.com, Will Deacon <will@kernel.org>,
- David Woodhouse <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>,
- "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
- "Yu, Fenghua" <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Tony Luck <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>
-Subject: Re: [PATCH v3 6/7] iommu/vt-d: Implement set_dev_pasid domain op
-Content-Language: en-US
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
- Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
- Joerg Roedel <joro@8bytes.org>, dmaengine@vger.kernel.org, vkoul@kernel.org
-References: <20230331231137.1947675-1-jacob.jun.pan@linux.intel.com>
- <20230331231137.1947675-7-jacob.jun.pan@linux.intel.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230331231137.1947675-7-jacob.jun.pan@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
 
-On 2023/4/1 7:11, Jacob Pan wrote:
-> Devices that use ENQCMDS to submit work on buffers mapped by DMA API
-> must attach a PASID to the default domain of the device. In preparation
-> for this use case, this patch implements set_dev_pasid() for the
-> default_domain_ops.
-> 
-> If the device context has not been set up prior to this call, this will
-> set up the device context in addition to PASID attachment.
-> 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> ---
->   drivers/iommu/intel/iommu.c | 21 +++++++++++++++++++++
->   1 file changed, 21 insertions(+)
-> 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 52b9d0d3a02c..1ad9c5a4bd8f 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -4784,6 +4784,26 @@ static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
->   	domain_detach_iommu(dmar_domain, info->iommu);
->   }
->   
-> +static int intel_iommu_attach_device_pasid(struct iommu_domain *domain,
-> +					   struct device *dev, ioasid_t pasid)
-> +{
-> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
-> +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-> +	struct intel_iommu *iommu = info->iommu;
-> +	int ret;
-> +
-> +	if (!pasid_supported(iommu))
-> +		return -ENODEV;
+The pull request you sent on Sat, 1 Apr 2023 15:02:53 +0200:
 
-As the domain ID will be set to the pasid entry, need to get a refcount
-of the domain ID. Call domain_attach_iommu() here, and release it after
-the pasid entry is torn down.
+> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-6.3-rc4
 
-> +	ret = prepare_domain_attach_device(domain, dev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return dmar_domain_attach_device_pasid(dmar_domain, dev, pasid);
-> +}
-> +
-> +
-> +
->   const struct iommu_ops intel_iommu_ops = {
->   	.capable		= intel_iommu_capable,
->   	.domain_alloc		= intel_iommu_domain_alloc,
-> @@ -4803,6 +4823,7 @@ const struct iommu_ops intel_iommu_ops = {
->   #endif
->   	.default_domain_ops = &(const struct iommu_domain_ops) {
->   		.attach_dev		= intel_iommu_attach_device,
-> +		.set_dev_pasid          = intel_iommu_attach_device_pasid,
->   		.map_pages		= intel_iommu_map_pages,
->   		.unmap_pages		= intel_iommu_unmap_pages,
->   		.iotlb_sync_map		= intel_iommu_iotlb_sync_map,
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/92367fdf3b699e97acb4d5fbf7159f5c458b2b30
 
-Best regards,
-baolu
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
