@@ -1,169 +1,121 @@
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3771F3232
+	for <iommu@lists.linux.dev>; Sat,  1 Apr 2023 13:03:02 +0000 (UTC)
+Received: from 8bytes.org (p200300c27714bc0086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:7714:bc00:86ad:4f9d:2505:dd0d])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8A22259B
-	for <iommu@lists.linux.dev>; Sat,  1 Apr 2023 09:15:47 +0000 (UTC)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-	by mailout.nyi.internal (Postfix) with ESMTP id D4D1C5C0215;
-	Sat,  1 Apr 2023 05:15:46 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Sat, 01 Apr 2023 05:15:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
-	cc:cc:content-transfer-encoding:content-type:date:date:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:sender:subject:subject:to:to; s=fm3; t=1680340546; x=
-	1680426946; bh=hcnHw+44/BST0LlazN+bGPEtcTMQwb2S8vINX4/AFbM=; b=B
-	tjfwkOCgUBddKw0AfFN9aSDCGtJ7cj6iPzmn9lNGjgaMMuN2p0D1voxnc0b+D0t1
-	WSiLn6iLpMaHZL9npSONbVslZKur2IP/nHqDCz1MrLWnCa3fhjwkp3dDacdFwUdF
-	O5R1AdhTwBel7MRg0GuwuXCrVBB5VEO8ICxl2wvVbQzHDhvPemaP7sQI/wEKMhN7
-	pYMQt0OWrOGaVEGMOQgzPhW002om69/yLvNYTPwqlEZ1UqUEiVVPLsS9Y42s1Mbx
-	fMEBdeL9qaLdH6C45x+5kDiCS2AsIB3f6ebNnq6jzfA4z3bMrffYPnk9mDTVHqt+
-	GlJXIe8DxGkTlA5H+8W/A==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:date:date:feedback-id:feedback-id:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1680340546; x=
-	1680426946; bh=hcnHw+44/BST0LlazN+bGPEtcTMQwb2S8vINX4/AFbM=; b=R
-	O5MclV+8iYZGEjTibnyUUa6zqcv/oOriD0wfapql6pJXDi33Z+FTOdEkg2RfemmH
-	nf+BcjZLGWjZLyz0cQolPfXYoc86OC7UpeSMQNTd3A/qhOlbI5WMZWZNyy73PoS0
-	ob5+F7+ag7xUC/b8Vqdx4GrjcSsZe1jaL9Q1jadu158xshYBoJQbAfYnaBfsn76C
-	7Na7uwtKsJw6EQ6KNULJwiUfQslSJOV2wTSC1dPXbvHBEZxdfLwTeuvm98X+aK1c
-	DDMY0TUlKFR89L8p4akclzvJJ4vmbj4gqGDhqrr9U68YpNsYJ2Zc0njLUJYnbnE3
-	Frz+qUvEF8vQaCEnVXUTg==
-X-ME-Sender: <xms:QvYnZAlpxqfkAovtGi8vJp7TdPRGJROs_Ow-GtC6wgMJGiQGpR_XZg>
-    <xme:QvYnZP3qGpwF1nMYL8ZRyZMJhxoh70gWmuf-rejHsAE_dl64t6RUz2THMUtPqpbiZ
-    Pl41H5m12kTZ4HZqqI>
-X-ME-Received: <xmr:QvYnZOqzMaXzslXPmkFsO1qkKJW9Wfn8odWcGKeSXmmWt0nLQwuTLteS2b41OqwaiDomnnbovFk>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvdeifedgudegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvvefufffkofgjfhgggfestdekredtredttdenucfhrhhomheplfhirgig
-    uhhnucgjrghnghcuoehjihgrgihunhdrhigrnhhgsehflhihghhorghtrdgtohhmqeenuc
-    ggtffrrghtthgvrhhnpeefledufeehgedvuedvvdegkefgvddttedtleeiiefhgeetudeg
-    kefhvdfhjeeftdenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
-    hrohhmpehjihgrgihunhdrhigrnhhgsehflhihghhorghtrdgtohhm
-X-ME-Proxy: <xmx:QvYnZMlCaQp3a1PCwGyfqDgmremxuc5qFh-hTSjz7myxEs_Ux5aNww>
-    <xmx:QvYnZO3JYRwyCFR-LDNXEYy7ejg5p9BvVdUK3x79vIZutxwv-Dt-FA>
-    <xmx:QvYnZDuEcB6TvrFL6xsB4PqMBGFOcoQi8tuVZUZ5vmZG2LCvN37yTw>
-    <xmx:QvYnZIMRkcNwlrv90KaiAIkK7O43n5TNPAH1LirkYSx8ePtSjkEQXw>
-Feedback-ID: ifd894703:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
- 1 Apr 2023 05:15:44 -0400 (EDT)
-From: Jiaxun Yang <jiaxun.yang@flygoat.com>
-To: iommu@lists.linux.dev
-Cc: linux-mips@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org,
-	tsbogend@alpha.franken.de,
-	mpe@ellerman.id.au,
-	paul.walmsley@sifive.com,
-	palmer@dabbelt.com,
-	robh+dt@kernel.org,
-	hch@lst.de,
-	m.szyprowski@samsung.com,
-	robin.murphy@arm.com,
-	linux-riscv@lists.infradead.org,
-	devicetree@vger.kernel.org,
-	Jiaxun Yang <jiaxun.yang@flygoat.com>,
-	Rob Herring <robh@kernel.org>
-Subject: [PATCH v4 3/3] of: address: Always use dma_default_coherent for default coherency
-Date: Sat,  1 Apr 2023 10:15:31 +0100
-Message-Id: <20230401091531.47412-4-jiaxun.yang@flygoat.com>
-X-Mailer: git-send-email 2.39.2 (Apple Git-143)
-In-Reply-To: <20230401091531.47412-1-jiaxun.yang@flygoat.com>
-References: <20230401091531.47412-1-jiaxun.yang@flygoat.com>
+	by mail.8bytes.org (Postfix) with ESMTPSA id C2F01245407;
+	Sat,  1 Apr 2023 15:02:54 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1680354174;
+	bh=ivLCR7G42mOBHbyzSVSeaGBW1vJ1pQzIUjyUrNLx6HU=;
+	h=Date:From:To:Cc:Subject:From;
+	b=bc4WRjtn7yMT7g/GeeY+l0pgDBKsWK8a5n7Dz/KkY3D4ZEyqtOkplNdh4KUmHa2jx
+	 U3U+aCr+eIXVT4WIVIlZvXMuUbTX18DW+7lK/i4pH8Glx1jAsibof0nfdO7Kr2PjCV
+	 yGcwuzHYcC4wTCmXUoKCL7av8QkPgDX8t/mCZIfvXNvJLf1yr8TmLoKJi9Rkb7wvvq
+	 2UndONTiz8k9WDhZaVVJGIMPfoaw4SB2w8Tb+uIzoiIJd5zAcyeYC/WQrm1mUchXHL
+	 LiHtKtLdbRwNvL/Arci+ZrWFHeh3S8Cv2tXZ7c5KtMT8QjJsT4feUhzBqOJPYKet7j
+	 hIQPNTCenw+9g==
+Date: Sat, 1 Apr 2023 15:02:53 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: [git pull] IOMMU Fixes for Linux v6.3-rc4
+Message-ID: <ZCgrfX7DoO9puGmY@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="+gelX+8wR+xGJNeO"
+Content-Disposition: inline
 
-As for now all arches have dma_default_coherent reflecting default
-DMA coherency for of devices, so there is no need to have a standalone
-config option.
 
-Signed-off-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
----
-v3: Squash setting ARCH_DMA_DEFAULT_COHERENT into this patch.
----
- arch/powerpc/Kconfig | 2 +-
- arch/riscv/Kconfig   | 2 +-
- drivers/of/Kconfig   | 4 ----
- drivers/of/address.c | 2 +-
- 4 files changed, 3 insertions(+), 7 deletions(-)
+--+gelX+8wR+xGJNeO
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index 26725cdef2be..6777f6158bdd 100644
---- a/arch/powerpc/Kconfig
-+++ b/arch/powerpc/Kconfig
-@@ -113,6 +113,7 @@ config PPC
- 	#
- 	select ARCH_32BIT_OFF_T if PPC32
- 	select ARCH_DISABLE_KASAN_INLINE	if PPC_RADIX_MMU
-+	select ARCH_DMA_DEFAULT_COHERENT	if !NOT_COHERENT_CACHE
- 	select ARCH_ENABLE_MEMORY_HOTPLUG
- 	select ARCH_ENABLE_MEMORY_HOTREMOVE
- 	select ARCH_HAS_COPY_MC			if PPC64
-@@ -273,7 +274,6 @@ config PPC
- 	select NEED_PER_CPU_PAGE_FIRST_CHUNK	if PPC64
- 	select NEED_SG_DMA_LENGTH
- 	select OF
--	select OF_DMA_DEFAULT_COHERENT		if !NOT_COHERENT_CACHE
- 	select OF_EARLY_FLATTREE
- 	select OLD_SIGACTION			if PPC32
- 	select OLD_SIGSUSPEND
-diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-index 3fb099bfa232..5a28e36b1ef1 100644
---- a/arch/riscv/Kconfig
-+++ b/arch/riscv/Kconfig
-@@ -12,6 +12,7 @@ config 32BIT
- 
- config RISCV
- 	def_bool y
-+	select ARCH_DMA_DEFAULT_COHERENT
- 	select ARCH_ENABLE_HUGEPAGE_MIGRATION if HUGETLB_PAGE && MIGRATION
- 	select ARCH_ENABLE_SPLIT_PMD_PTLOCK if PGTABLE_LEVELS > 2
- 	select ARCH_ENABLE_THP_MIGRATION if TRANSPARENT_HUGEPAGE
-@@ -122,7 +123,6 @@ config RISCV
- 	select MODULES_USE_ELF_RELA if MODULES
- 	select MODULE_SECTIONS if MODULES
- 	select OF
--	select OF_DMA_DEFAULT_COHERENT
- 	select OF_EARLY_FLATTREE
- 	select OF_IRQ
- 	select PCI_DOMAINS_GENERIC if PCI
-diff --git a/drivers/of/Kconfig b/drivers/of/Kconfig
-index 644386833a7b..e40f10bf2ba4 100644
---- a/drivers/of/Kconfig
-+++ b/drivers/of/Kconfig
-@@ -102,8 +102,4 @@ config OF_OVERLAY
- config OF_NUMA
- 	bool
- 
--config OF_DMA_DEFAULT_COHERENT
--	# arches should select this if DMA is coherent by default for OF devices
--	bool
--
- endif # OF
-diff --git a/drivers/of/address.c b/drivers/of/address.c
-index 4c0b169ef9bf..23ade4919853 100644
---- a/drivers/of/address.c
-+++ b/drivers/of/address.c
-@@ -1103,7 +1103,7 @@ phys_addr_t __init of_dma_get_max_cpu_address(struct device_node *np)
- bool of_dma_is_coherent(struct device_node *np)
- {
- 	struct device_node *node;
--	bool is_coherent = IS_ENABLED(CONFIG_OF_DMA_DEFAULT_COHERENT);
-+	bool is_coherent = dma_default_coherent;
- 
- 	node = of_node_get(np);
- 
--- 
-2.39.2 (Apple Git-143)
+Hi Linus,
 
+The following changes since commit e8d018dd0257f744ca50a729e3d042cf2ec9da65:
+
+  Linux 6.3-rc3 (2023-03-19 13:27:55 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-6.3-rc4
+
+for you to fetch changes up to 16812c96550c30a8d5743167ef4e462d6fbe7472:
+
+  iommu/vt-d: Fix an IOMMU perfmon warning when CPU hotplug (2023-03-31 10:06:16 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v6.3-rc4
+
+Including:
+
+	- Maintainer update for S390 IOMMU driver
+
+	- A fix for the set_platform_dma_ops() call-back in the
+	  Exynos IOMMU driver
+
+	- Intel VT-d fixes from Lu Baolu:
+	  - Fix a lockdep splat
+	  - Fix a supplement of the specification
+	  - Fix a warning in perfmon code
+
+----------------------------------------------------------------
+Kan Liang (1):
+      iommu/vt-d: Fix an IOMMU perfmon warning when CPU hotplug
+
+Lu Baolu (2):
+      iommu/vt-d: Remove unnecessary locking in intel_irq_remapping_alloc()
+      iommu/vt-d: Allow zero SAGAW if second-stage not supported
+
+Marek Szyprowski (1):
+      iommu/exynos: Fix set_platform_dma_ops() callback
+
+Niklas Schnelle (1):
+      MAINTAINERS: Update s390-iommu driver maintainer information
+
+ MAINTAINERS                         |  3 +-
+ drivers/iommu/exynos-iommu.c        | 17 ++++++----
+ drivers/iommu/intel/dmar.c          |  3 +-
+ drivers/iommu/intel/iommu.h         |  2 ++
+ drivers/iommu/intel/irq_remapping.c |  6 ----
+ drivers/iommu/intel/perfmon.c       | 68 ++++++++++++++++++++++++-------------
+ include/linux/cpuhotplug.h          |  1 -
+ 7 files changed, 60 insertions(+), 40 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--+gelX+8wR+xGJNeO
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmQoK30ACgkQK/BELZcB
+GuP7vhAAsS/pWWeNqE+/kqgFDuwUo4dvATUse5hCfHnLf7KNVYfsCXFte6kC2EyN
+YeQiKXRDGz5QLm8XmmqeZSqdjc73OtYXvxPhbd7+9UQjutri+SAj+3ntJPP4LXcO
+iFE5nHuTA02Ir/oGE4E2LOTeK75i8HJdR4vaQpbpcrvvF7i32p0MrYpl424dq7BV
+icXsJ0Cy8iVLaIyTCOyWkFFMcd0L/pBMFZelHc/MJeZuFgULcp1jFhRdvflT4ctR
+vNtl9qZtplWE6Vs9lJOSGHUrkdfnY1Uy1JoTUr+F0lS6QVQ6JyIYPPfz65x24XiK
+2WajiHTP53r4RCZSXSXvfA2kfIr4AvferaUC1KUv3mP2A5dQH2uPVBiNmnzW2DwO
+MgOThEzJcegyRz2ZTPraQEl/cqUqrILaLUdVnz5pR/2I8V3iB4PlH0X1j7vdgWhu
+5t0u6FWtISWiWu7mPQLqwIrSsh3jEpEc/mceLqey1N/ms7lMZiuU2biMM7rdep16
+ZiXIxM7ojGzWGPQ6o63nvRQ8VFc30/aR8NEhN0SKCPM+lVMgoVUY+Nt4/he8e21U
+HpB+yxUuPA2qo38iIjKZn5GZvWl6VyAJNXLAN4HYIQVk6fAXlClGObc+Pkj03+0T
+6/odNocDJ0NeLSVWTmuduw5IETe84Hx6CeyRG+Wog+ngi+BzXYg=
+=KIvi
+-----END PGP SIGNATURE-----
+
+--+gelX+8wR+xGJNeO--
