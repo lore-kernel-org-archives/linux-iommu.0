@@ -1,173 +1,132 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-io1-f78.google.com (mail-io1-f78.google.com [209.85.166.78])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DC9A9472
-	for <iommu@lists.linux.dev>; Fri, 31 Mar 2023 23:31:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680305476; x=1711841476;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=eqPP138TaK57c1S9Lo+rZ6AhgwF9ukTPzloRCJ8xmkk=;
-  b=cowDegOEOPSfatW5XQ1DDiZFbtgTCM60d0m2csbLvlL+c3Rfu/mxL4W8
-   zOaYrLyyGILRUulzac5OiVjvh9i6l/edC2Mb7atrYIIaG8IlRjYZnBBqK
-   bWWYjoPOzTkgS71A3IqBupNGP3DV5WUl+2VyBp2laPmBDwyzvEb/t2Mdi
-   eWYUk/4R9hZRKKkZXahV8jAOKdi53KOQPHvXa3T3v1cHv4MQaptMgxxCU
-   h2IRJdrJbM4LOKlEScTDgggvCBaRGCnkLFjRyN+1xX4BKeWaNfv0UMhb1
-   hhSIn6YerD6V6Z69SSbCeo7yWODQbIxwNc2tg8/vc9dPucAZPP3hdDr1Y
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10666"; a="427855862"
-X-IronPort-AV: E=Sophos;i="5.98,307,1673942400"; 
-   d="scan'208";a="427855862"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2023 16:31:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10666"; a="931351334"
-X-IronPort-AV: E=Sophos;i="5.98,307,1673942400"; 
-   d="scan'208";a="931351334"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga006.fm.intel.com with ESMTP; 31 Mar 2023 16:31:15 -0700
-Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Fri, 31 Mar 2023 16:31:15 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21 via Frontend Transport; Fri, 31 Mar 2023 16:31:15 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.177)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.21; Fri, 31 Mar 2023 16:31:15 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=abTxpz0eyg5yD/4yPhUjhJLdileD7YwPZbBU7ptiFGan/s72lBp0angLpWOgKYEbOY2V3XF15ypHLmdB1XkW61heJgmpNcP2cDwGR+cUhZUNfGGjg9vPNcCXUTy05nAnegg5YcRcFhHuI+LlcCg49GmsOZz3/HsCznIWChxi3Mz+8OnlmyxlQMpOH4PoM/Xrg5q3d8whSD5hku+g10vBLHjtajEa0axrk7H5c5sbimfQFa9B9RbgYVH0h4hG/nGVJI2UfdwlNt6XV6Ph5L6As8MeTkpeoOJLDNDareof9hmJa+8Y7vzuoqLpuQgnybbSTlt6/06Klds2l/nRsI9e9A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=eqPP138TaK57c1S9Lo+rZ6AhgwF9ukTPzloRCJ8xmkk=;
- b=A3URgPE7HjooY+rWMwjIocH82XVZsbSvH2GZ0PQbI45tOwn/u8oJ9CuWb7Xd+ZIBwp9XipQSKGbxmVWHrKOIh973Z+Id+OD8ZiubeYf+B1zOub+NyXziGfrw9kFm3Th0DHPsddUhTWky/xRFfxJCe6ltlCeXDu/RqD2TEzkwUkDboOA1JppcBzWTt+FEu2L0axZzP1cJ47IibmZa0WO9WuDrVHgj3O/kuyoBapfMNJsSTvhgJrCVZvmkz8anSzdsSwxx/bBIq9mF7aVV9fkAg/oxdF+FR0ZVlTpEqwPeWP3qiRzk0CG9uKvkA0wzu551QZYtObYC732+tYxSvjBZAw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from IA1PR11MB6097.namprd11.prod.outlook.com (2603:10b6:208:3d7::17)
- by IA1PR11MB8199.namprd11.prod.outlook.com (2603:10b6:208:455::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.33; Fri, 31 Mar
- 2023 23:31:13 +0000
-Received: from IA1PR11MB6097.namprd11.prod.outlook.com
- ([fe80::4381:c78f:bb87:3a37]) by IA1PR11MB6097.namprd11.prod.outlook.com
- ([fe80::4381:c78f:bb87:3a37%3]) with mapi id 15.20.6254.024; Fri, 31 Mar 2023
- 23:31:13 +0000
-From: "Yu, Fenghua" <fenghua.yu@intel.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>, LKML
-	<linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe
-	<jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel
-	<joro@8bytes.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
-	"vkoul@kernel.org" <vkoul@kernel.org>
-CC: Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
-	"Raj, Ashok" <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>,
-	"Luck, Tony" <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>
-Subject: RE: [PATCH v3 7/7] dmaengine/idxd: Re-enable kernel workqueue under
- DMA API
-Thread-Topic: [PATCH v3 7/7] dmaengine/idxd: Re-enable kernel workqueue under
- DMA API
-Thread-Index: AQHZZCWaCgY3Jdq93USwu66veGT73K8ViPzg
-Date: Fri, 31 Mar 2023 23:31:13 +0000
-Message-ID: <IA1PR11MB609783D2D1159E4AA6F6099E9B8F9@IA1PR11MB6097.namprd11.prod.outlook.com>
-References: <20230331231137.1947675-1-jacob.jun.pan@linux.intel.com>
- <20230331231137.1947675-8-jacob.jun.pan@linux.intel.com>
-In-Reply-To: <20230331231137.1947675-8-jacob.jun.pan@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: IA1PR11MB6097:EE_|IA1PR11MB8199:EE_
-x-ms-office365-filtering-correlation-id: 821ce288-63db-4368-5ef6-08db32400427
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: yuQMqe1te91UNKHEyem6WlPuWbCVfAA2xV03boAWkmKZw2emIPK1YE33HORo/q4NJ5WfCSZNdotX45smMxJqn9uBTu63cHtvbZqbHA9SehbAa6DVnv3JOC61WwYbDyNtPKS+6F25fal2uhI5xoFSKlUBrLw6b+BV+p+7pfU3Kf32drKKyRceeg0QEAtYfyOm0flwrsr9jTCYCaB0f0Z0+6S/w8ZAI//185WagjahG2w23gJUY9EM5yZ+cVpI/AKaesa8IyJm5Ep0AfmwdhJ9eKE1qSt+S9OqOWDPpHvYdEXLunm5FV2RBLVz/lb4ByIrMeit//+wm3l/6EDMXT/xBHCeBksW7TFQvGnjLI2B/lftHe7WsWCneqUD49yPQ5Y5Iagzcbot1NptC8X/2l3LyNTc0xz0H5scvsZc3ZFN0vVVKSx8ZAhFtwkmqo9MtxDqBX54Tqv0QlQ61Zj66pbldHTKWPC3yIIiUBifHkFqtFkO0Rjr6tl0HQqoMpA/PgtbZrP9Rfgeyzegc1pVOU6lCzBxFwSyrJrPRg1gIehJ00u+uRlZlKELlX1CvdqP4Kyfv782Aeg1/5kM4FlSbLh3TVI3kC+GCTDIq5On4SfLfn4=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR11MB6097.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(366004)(396003)(376002)(346002)(136003)(451199021)(7696005)(54906003)(122000001)(66946007)(110136005)(71200400001)(478600001)(316002)(41300700001)(52536014)(66476007)(38100700002)(4326008)(5660300002)(82960400001)(4744005)(7416002)(8936002)(83380400001)(2906002)(38070700005)(66446008)(86362001)(66556008)(8676002)(33656002)(64756008)(9686003)(76116006)(26005)(6506007)(186003)(55016003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?lq0RjKYu4Fc5QPLEPaCP/hms2EDyNBbuSrusCg4NWs3oykVQ8Rhh/Nmx8KDh?=
- =?us-ascii?Q?6wkLvYrUbd20zQJaJ96yzOZIIVKC2H1t8pMGg3BTV4wb/CzVdLvcalR/rCr6?=
- =?us-ascii?Q?ggKhxryvf5OpLnhjA785E4N6/UmGcskzg7bCh14oEziRcUiDtmmi9+1cJ0/7?=
- =?us-ascii?Q?uT+mABVY6oMBmgnSVTBHP2rI8B9ZDmC8zsp81MAfOiAWHHLBKBijFIbQPL5g?=
- =?us-ascii?Q?t6qLznvED3mTV7h0X7TA7rhbTnRQkmpaxhFGbnJHVSIsQnF0T54QTYp7QFxg?=
- =?us-ascii?Q?aRmee0r2WykOxsk0DcomDo9D8eFD4UJ/m0sJhWI/YSmB8BH6SoA2o4xNniR5?=
- =?us-ascii?Q?c26x4zs/LDgzmxI1Et35+LMbNHvRRg3eheIyuz/mVpVcp1IDcW/UU/PDOwsB?=
- =?us-ascii?Q?HRGvsvIcB+3FQteEhJHwjhzrpZMh0ar8TuxL13yjBk7zYYHJohc4kMKOoXHi?=
- =?us-ascii?Q?YtPf8yUTwRnLVZfKWIG8pq9DBzrOFg7I6Gf8GNXcjjoVjZuaf47ubhBDZEd+?=
- =?us-ascii?Q?WT8UcfjK1RRsNWIB7cTH9P86+ftwa6yobfmQ7uwxUkDNZMMo6BPfQF0XyLZW?=
- =?us-ascii?Q?2XAS6LSDkzDjaGCQ6htw897FhJjXxncCBt/th7KEQCEmiAPB4o184ZOfcY+F?=
- =?us-ascii?Q?wtrlC4h/FpoFc1BBwlH4hGwbXoVaxFQenJiS4AmHlFslBxx0Vz27NO2skZ11?=
- =?us-ascii?Q?raZMNmWR5TLzjqdp9YCRvxo0wmrPW3lCUR5neyVbF2z3D6SmKQwISy4fI4OV?=
- =?us-ascii?Q?8NmtWo7T2TnKGXVK9PJUT0oynHtOuJ4F9o/5SFfpg3mJsb5oqjymeRAfRUnL?=
- =?us-ascii?Q?Xudn+LzYOS1PKWQ1XJYIYbsfZ1MP7UrNzXsLcND58rcuj5o7MBvaQo91W+1z?=
- =?us-ascii?Q?s1RzAS4TnFcXUABA74IZhndITcgIQSvkpjAJ2DmPN9WnllkHW5sVMzdVgdsc?=
- =?us-ascii?Q?6rNnXjV07UTT1Nfi7B5MpfCTD7JsapAlsdMs1LLODkC0guPXKB00Os22L1F/?=
- =?us-ascii?Q?u6FicD+feicycFxwVDJ6jjmKoaM6jnChqIxCLoYne59Lr16J5IYkvW4LVjJu?=
- =?us-ascii?Q?L4BZQHum52kX1ssL0MmYZkVXDx7dQC5BEGcFSNqQUnWC1RVtWfT7zvOm32td?=
- =?us-ascii?Q?boFDNT/V7OLJvHbN3z6i996LIe6TzTla/BnSppSiGGg1VQVu2uw2GxQGzikA?=
- =?us-ascii?Q?KLFi3x74kHQniHFikxbtRLlMI5oIg4eZQljE/BuyPgTv3GRnIeoNAGsuf2Vj?=
- =?us-ascii?Q?y8sM4/WRxYpZjaMc3OdcO415a1g/YfpNEPOiM9d3COndx25GhVspKf9fBbKE?=
- =?us-ascii?Q?SQjTSwFaeiy0HQVQEhDkXyAw3Dh/wLRPnqKYE0HI8YFRegOBV8ldjOVfSUy0?=
- =?us-ascii?Q?L59KAu4xCIJ3m1hghCmRFy/O4zok/RjRy+42HvD76uuB1ltKNXnU8CLrAiit?=
- =?us-ascii?Q?p/vvXTIBgwU8ZWKLODxu24onDg95TWRKC9FkbQQZT+DlSQPLuraohf9fjZ17?=
- =?us-ascii?Q?0chsXwBa9ywQS8GKJlu9v7eh5XUFPuKaIIBjiQha/3uzMbtTNgslEJYlAzse?=
- =?us-ascii?Q?eqhaSltDvTAlIrWZBpT7tXKfBjpRMfoNTKvdsbl9?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C0D717C7
+	for <iommu@lists.linux.dev>; Sat,  1 Apr 2023 03:36:54 +0000 (UTC)
+Received: by mail-io1-f78.google.com with SMTP id v126-20020a6bac84000000b007587234a54cso14472913ioe.6
+        for <iommu@lists.linux.dev>; Fri, 31 Mar 2023 20:36:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680320213; x=1682912213;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=hwOffVYvisJdV2o5GWhDpDI8kgqhn1tf7ofiQZHvtvs=;
+        b=KOwlGRwVO1ltSjne0GSpZiqC2peALgeoAipsjPWoythqVVlYazvTHO5h9d02qnDKG8
+         YsAAbKXYVYpeqF4C3zjmhFkvwF21NyWSRlPq6SMMXR2b5CR28IEWEpKj648N3lTri6qo
+         W+nzDZf5amxDCfLQ3HbmwezjBI2JL8Qr9uXoy6jeoefldrvPe2xWM4wUi6r77Ah5Q51V
+         enNSjc6sZqwxtSZWhO+sFQO+E+URC8pAr3FNPpj/Z52qSugNhEngJTREdDlM0+s6/Nhg
+         yKwQe4ggXJ8+r61a36hg6nQ9ZxwC0SSc964mOZGBXovHORrEVr/M6TvAB97qxhDFm/TZ
+         5nXQ==
+X-Gm-Message-State: AAQBX9e41jWc4cF33d9ZJmBoh7WSQKC1xNA2lCDrq90VaMwlzN62aKUJ
+	5zoMfCc7SUgdCqEgyYiVXIExlrCBuA7BhFVEqwIlHmgnW3jk
+X-Google-Smtp-Source: AKy350YNU4INQYRerQ4SAMHbfPVmSpn+4PFSXOtC3QFQju8X6kMwNC1FmOUNLmpgZCBd6ccSDjlhDWYB9Cb9n6RlCjuAjrW73aUN
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR11MB6097.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 821ce288-63db-4368-5ef6-08db32400427
-X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Mar 2023 23:31:13.1433
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 0l7SGDPsfILozzLJrsFjwbJDVZt7GvbWyhANoxZI8KaCZpRCFokltiWUghlzufNFb8uWDt8hhVRzRjaE1X/KYw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB8199
-X-OriginatorOrg: intel.com
+X-Received: by 2002:a05:6638:4392:b0:40b:2922:8a14 with SMTP id
+ bo18-20020a056638439200b0040b29228a14mr615346jab.0.1680320213440; Fri, 31 Mar
+ 2023 20:36:53 -0700 (PDT)
+Date: Fri, 31 Mar 2023 20:36:53 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000006e66d605f83e09bc@google.com>
+Subject: [syzbot] [iommu?] WARNING in iommufd_hw_pagetable_detach
+From: syzbot <syzbot+3b81771e32dd5b2f9931@syzkaller.appspotmail.com>
+To: baolu.lu@linux.intel.com, iommu@lists.linux.dev, jgg@nvidia.com, 
+	jgg@ziepe.ca, joro@8bytes.org, kevin.tian@intel.com, 
+	linux-kernel@vger.kernel.org, nicolinc@nvidia.com, robin.murphy@arm.com, 
+	syzkaller-bugs@googlegroups.com, will@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Hi, Jacob,
+Hello,
 
-> Kernel workqueues were disabled due to flawed use of kernel VA and SVA AP=
-I.
-> Now That we have the support for attaching PASID to the device's default
+syzbot found the following issue on:
 
-s/That/that/
+HEAD commit:    4b0f4525dc4f Add linux-next specific files for 20230331
+git tree:       linux-next
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=1540ac7dc80000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=85cc4b935a1f7194
+dashboard link: https://syzkaller.appspot.com/bug?extid=3b81771e32dd5b2f9931
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12120eb9c80000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10ec200dc80000
 
-> domain and the ability to reserve global PASIDs from SVA APIs, we can re-=
-enable
-> the kernel work queues and use them under DMA API.
->=20
-> We also use non-privileged access for in-kernel DMA to be consistent with=
- the
-> IOMMU settings. Consequently, interrupt for user privilege is enabled for=
- work
-> completion IRQs.
->=20
-> Link:https://lore.kernel.org/linux-
-> iommu/20210511194726.GP1002214@nvidia.com/
-> Reviewed-by: Dave Jiang <dave.jiang@intel.com>
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/8d06bb015df3/disk-4b0f4525.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/6a1c1ebf3724/vmlinux-4b0f4525.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/4bb2b8d6cd7d/bzImage-4b0f4525.xz
 
-Other than the typo,
+The issue was bisected to:
 
-Reviewed-by: Fenghua Yu <fenghua.yu@intel.com>
+commit 9d05029acd4e4c0a85e412bf955dfc5526b9a6c1
+Author: Jason Gunthorpe <jgg@nvidia.com>
+Date:   Mon Mar 27 18:37:57 2023 +0000
 
-Thanks.
+    iommufd: Replace the hwpt->devices list with iommufd_group
 
--Fenghua
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13dbbb71c80000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=103bbb71c80000
+console output: https://syzkaller.appspot.com/x/log.txt?x=17dbbb71c80000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+3b81771e32dd5b2f9931@syzkaller.appspotmail.com
+Fixes: 9d05029acd4e ("iommufd: Replace the hwpt->devices list with iommufd_group")
+
+iommufd_mock iommufd_mock0: Adding to iommu group 0
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 5081 at drivers/iommu/iommufd/device.c:344 iommufd_hw_pagetable_detach+0x2cb/0x480 drivers/iommu/iommufd/device.c:344
+Modules linked in:
+CPU: 0 PID: 5081 Comm: syz-executor226 Not tainted 6.3.0-rc4-next-20230331-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/02/2023
+RIP: 0010:iommufd_hw_pagetable_detach+0x2cb/0x480 drivers/iommu/iommufd/device.c:344
+Code: f2 fc 49 8d 7d 70 be ff ff ff ff e8 cf 2f 76 05 31 ff 41 89 c5 89 c6 e8 63 6d f2 fc 45 85 ed 0f 85 ee fd ff ff e8 35 71 f2 fc <0f> 0b e9 e2 fd ff ff e8 29 71 f2 fc 49 8d bd a0 00 00 00 48 b8 00
+RSP: 0018:ffffc90003b0fb30 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffff88801676da00 RCX: 0000000000000000
+RDX: ffff8880279c8000 RSI: ffffffff8490a01b RDI: 0000000000000005
+RBP: ffff88801676dab0 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: ffff88801676dc00
+R13: 0000000000000000 R14: 0000000000000001 R15: ffff88801676dcc0
+FS:  0000555555fa9300(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020000188 CR3: 000000002ba93000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ iommufd_hw_pagetable_alloc+0x646/0x800 drivers/iommu/iommufd/hw_pagetable.c:114
+ iommufd_device_auto_get_domain drivers/iommu/iommufd/device.c:500 [inline]
+ iommufd_device_change_pt+0x570/0xb30 drivers/iommu/iommufd/device.c:553
+ iommufd_device_attach+0x27/0xd0 drivers/iommu/iommufd/device.c:591
+ iommufd_test_mock_domain drivers/iommu/iommufd/selftest.c:439 [inline]
+ iommufd_test+0x81c/0x2ef0 drivers/iommu/iommufd/selftest.c:987
+ iommufd_fops_ioctl+0x317/0x4b0 drivers/iommu/iommufd/main.c:351
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:870 [inline]
+ __se_sys_ioctl fs/ioctl.c:856 [inline]
+ __x64_sys_ioctl+0x197/0x210 fs/ioctl.c:856
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f6a1d59bc89
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffe55301508 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f6a1d59bc89
+RDX: 00000000200000c0 RSI: 0000000000003ba0 RDI: 0000000000000003
+RBP: 00007f6a1d55fe30 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f6a1d55fec0
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
