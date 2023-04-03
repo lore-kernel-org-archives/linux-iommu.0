@@ -1,86 +1,104 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D2296FDF
-	for <iommu@lists.linux.dev>; Mon,  3 Apr 2023 16:57:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680541056; x=1712077056;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=7UYdKObsD+8SbBqsCmRC+KpRgQ2bEtZdumWSJIQRY/Y=;
-  b=VU0QUSlIQgRYbiHTbLJ4BhR+CZr5EVKjgmBq1dfaOLKv4XAL3y8pIOek
-   SDppBvF0rzoJo4M0+00GWb4OVZOVk5sHuTCBEDAJA1eKivlu2l9fbq736
-   G+7T5am1IVc2/ZZRAU5bhEmf4sQwu3TEHIfwHn887RLvGg3FaZ++mmIgE
-   KPuwttluG8fmdJHang+hYk2MIACf7hlNCy65HofuHx9FSC1cEB6wtdgw/
-   P+6qrP3R52myEaThvA94vXMXXgH6u6IUtdL1iM6PL2YcEDYWJFL3A+16x
-   ZjmVl2PPqmtpjcZI5Yu7Lb1VHKuOlolrvUDx3uB+M217qnGiOMHOOM5U3
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="428244433"
-X-IronPort-AV: E=Sophos;i="5.98,315,1673942400"; 
-   d="scan'208";a="428244433"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2023 09:57:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="663271365"
-X-IronPort-AV: E=Sophos;i="5.98,315,1673942400"; 
-   d="scan'208";a="663271365"
-Received: from djiang5-mobl3.amr.corp.intel.com (HELO [10.213.181.144]) ([10.213.181.144])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2023 09:57:34 -0700
-Message-ID: <cea7d7ff-bf03-eb7d-a836-b51b9addef5b@intel.com>
-Date: Mon, 3 Apr 2023 09:57:33 -0700
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C0D757487
+	for <iommu@lists.linux.dev>; Mon,  3 Apr 2023 19:15:09 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 52C36D75;
+	Mon,  3 Apr 2023 12:15:53 -0700 (PDT)
+Received: from [10.57.56.209] (unknown [10.57.56.209])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 73F3A3F73F;
+	Mon,  3 Apr 2023 12:15:07 -0700 (PDT)
+Message-ID: <ea6fba01-b483-94e6-8c84-d096dcb64b5a@arm.com>
+Date: Mon, 3 Apr 2023 20:15:03 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.9.0
-Subject: Re: [PATCH v3 1/6] dmaengine: idxd: Add enable/disable device IOPF
- feature
-Content-Language: en-US
-To: Baolu Lu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev,
- dmaengine@vger.kernel.org
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Fenghua Yu <fenghua.yu@intel.com>, Vinod Koul <vkoul@kernel.org>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>, linux-kernel@vger.kernel.org
-References: <20230324120234.313643-1-baolu.lu@linux.intel.com>
- <20230324120234.313643-2-baolu.lu@linux.intel.com>
- <f6445aed-bf35-7245-3d52-336ebe11a866@linux.intel.com>
-From: Dave Jiang <dave.jiang@intel.com>
-In-Reply-To: <f6445aed-bf35-7245-3d52-336ebe11a866@linux.intel.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: Cache Invalidation Solution for Nested IOMMU
+Content-Language: en-GB
+To: Nicolin Chen <nicolinc@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>
+Cc: kevin.tian@intel.com, yi.l.liu@intel.com, eric.auger@redhat.com,
+ baolu.lu@linux.intel.com, shameerali.kolothum.thodi@huawei.com,
+ jean-philippe@linaro.org, iommu@lists.linux.dev
+References: <ZCoe3+1q5ZLJsmeC@Asurada-Nvidia> <ZCrd1wphkCp8uFt0@nvidia.com>
+ <ZCrn8PPPyEJ/VqFU@Asurada-Nvidia>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <ZCrn8PPPyEJ/VqFU@Asurada-Nvidia>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-
-
-On 4/2/23 10:49 PM, Baolu Lu wrote:
-> On 3/24/23 8:02 PM, Lu Baolu wrote:
->> The iommu subsystem requires IOMMU_DEV_FEAT_IOPF must be enabled before
->> and disabled after IOMMU_DEV_FEAT_SVA, if device's I/O page faults rely
->> on the IOMMU. Add explicit IOMMU_DEV_FEAT_IOPF enabling/disabling in this
->> driver.
+On 2023-04-03 15:51, Nicolin Chen wrote:
+> On Mon, Apr 03, 2023 at 11:08:23AM -0300, Jason Gunthorpe wrote:
+>> On Sun, Apr 02, 2023 at 05:33:35PM -0700, Nicolin Chen wrote:
+>>> The first version is simply to individually forward the entire
+>>> command. This can save a few CPU cycles from packing/unpacking
+>>> invalidation fields of the commands via a data structure, v.s.
+>>> the structure in v1[2].
 >>
->> At present, missing IOPF enabling/disabling doesn't cause any real issue,
->> because the IOMMU driver places the IOPF enabling/disabling in the path
->> of SVA feature handling. But this may change.
+>> The kernel must validate the SID for the ATS invalidations, we can't
+>> just blindly pass it through.
+> 
+> Yes. I didn't go further with the first version, yet leaving a
+> line of comments in the handler: we'd need set/unset_rid_user,
+> to validate the SID field of INV_ATC commands, as we discussed.
+> 
+>> And this simple path needs an explanation how errors are properly
+>> handled, eg by making execution synchronous, or someone guaranteeing
+>> that errors are impossible.
+> 
+> Yes. Both versions here execute in a synchronous fashion. The
+> error code will be returned in the cache_invalidate_user data
+> structure.
+> 
+>>> Then I added a new mmap interface to share kernel page(s) from the
+>>> Driver, to allow QEMU to write all TLBI commands as a single batch.
+>>> Then it can initiate the batch invalidation via another synchronous
+>>> hypercall.
 >>
->> Reviewed-by: Dave Jiang<dave.jiang@intel.com>
->> Reviewed-by: Fenghua Yu<fenghua.yu@intel.com>
->> Reviewed-by: Kevin Tian<kevin.tian@intel.com>
->> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+>> I don't think a mmap is really needed for simple batching, just
+>> passing a larger buffer to ioctl is probably good enough
 > 
-> Hi Dave and Fenghua,
+> It wouldn't be a must, yet can omit a copy_from_user() at each
+> hypercall? And it also eases VCMDQ a bit.
 > 
-> The following iommu patches depends on this one. Can I route it to
-> Linus through the iommu tree?
-
-Hi Baolu, you'll need an ack from Vinod, who is the dmaengine subsystem 
-maintainer. I have no objections.
-
-
+>> If a SW side is built it should mirror the HW vCMDQ path, not be
+>> different.
 > 
-> Best regards,
-> baolu
+> The host kernel has the host queue, while the hypervisor fills
+> in a guest TLBI queue. Switching between two queues at one SMMU
+> CMDQ (HW) requires a very complicated locking mechanism, v.s.
+> inserting the batch to the existing host queue. And it probably
+> doesn't have a big perf improvement by doing that?
+> 
+> If SMMU has ECMDQ, it'd allocate a free CMDQ upon availability,
+> calling arm_smmu_init_one_queue() and mmapping q->base, then it
+> can execute the guest TLBI queue directly, passing that q ptr.
+
+FWIW I don't think that should be visible in a userspace interface. When 
+the VMM is just requesting some invalidations in order to emulate some 
+commands, it's up to the SMMU driver, or at best between the driver and 
+and IOMMUFD, to decide exactly how those requests get executed as 
+physical commands - that should not make any difference to the requester 
+other than how quickly the requests are processed.
+
+AFAICS this interface can't look like the proper hardware vCMDQ path, 
+because the whole point of that will be to configure it in advance, map 
+the queue controls directly into the guest, and avoid trapping 
+invalidations to the VMM at all. This invalidation request interface is 
+a large part of precisely what that path is intended to bypass. I don't 
+see much benefit in supporting an additional slightly-accelerated slow 
+path where the host avoids a tiny bit of housekeeping by maintaining a 
+real vCMDQ *on behalf of* the guest and forwarding trapped commands into 
+it instead of just processing them normally as host commands. Or, 
+conversely, emulating a vCMDQ *in* the host kernel, in a way which still 
+requires traps to bounce through the VMM and back - that just seems 
+objectively worse than keeping all the emulation together in one place 
+(however, I would concur that a "vhost-style" emulation, using all the 
+same interfaces for configuration and error/irq/etc. reporting as the 
+real hardware would, might be viable if performance really demands it).
+
+Thanks,
+Robin.
