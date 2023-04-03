@@ -1,82 +1,102 @@
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 850153205
-	for <iommu@lists.linux.dev>; Mon,  3 Apr 2023 20:41:29 +0000 (UTC)
-Received: by mail-ot1-f53.google.com with SMTP id x8-20020a9d3788000000b0069f922cd5ceso16330391otb.12
-        for <iommu@lists.linux.dev>; Mon, 03 Apr 2023 13:41:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680554488;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=z9C/3hBrTR7K2nHN4gC1rv1X/TFSh2EbFRlM3X5whh8=;
-        b=HpiavjE7301uoZjtKHmfZXdD/pxRutwC4Hu519054idDtyzM0BIvcq3FHCOjmwv5VQ
-         FcO/aDYqkTJe3TMxv+oe96TvKyWo/knM8YR1vrVVdPBBzUr0jgmp7S0sMRYbbbObr3h/
-         V0/jws+hyrf/0UPjHT1isRLJ3Gwv31pe4/L/BsQ3vKOFDw4FPgWvNLk75iSawLCqvlDf
-         My9bKj4IhMl/g99EKC8rpOzHx/zXbaUNt3Hyc0a1S+E2KbMDj56OV+RErGA1AeyzwadT
-         He2Dsl7LrPJA+MwRVPduvAw27KfkG6QJsfOUufJuUvZCY14iMfYaWbwlYe2wHRW9Exzb
-         apYw==
-X-Gm-Message-State: AAQBX9efEiDcLWHlm7jd1+5RFJRMRnzlqgIydmSCmayg00paPYX4EHRe
-	ntzQPxyxVwxT6LB2ySnnQ/+p53j1Lg==
-X-Google-Smtp-Source: AKy350bLaMZm4zgOYFd0dWu6aGZldut/svNiHGH7Kc2jWFeeDzQmIG9nsGYpwa5jcpaQGkCUr2yC+Q==
-X-Received: by 2002:a05:6830:571:b0:6a1:2a17:16f2 with SMTP id f17-20020a056830057100b006a12a1716f2mr8533665otc.1.1680554488633;
-        Mon, 03 Apr 2023 13:41:28 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id z1-20020a9d7a41000000b006a144b97e73sm4629237otm.74.2023.04.03.13.41.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Apr 2023 13:41:28 -0700 (PDT)
-Received: (nullmailer pid 1710521 invoked by uid 1000);
-	Mon, 03 Apr 2023 20:41:27 -0000
-Date: Mon, 3 Apr 2023 15:41:27 -0500
-From: Rob Herring <robh@kernel.org>
-To: Bartosz Golaszewski <brgl@bgdev.pl>
-Cc: Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konrad.dybcio@linaro.org>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, Bartosz Golaszewski <bartosz.golaszewski@linaro.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 4/7] dt-bindings: iommu: arm,smmu: enable clocks for
- sa8775p
-Message-ID: <20230403204127.GA1708388-robh@kernel.org>
-References: <20230328193632.226095-1-brgl@bgdev.pl>
- <20230328193632.226095-5-brgl@bgdev.pl>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 919383205
+	for <iommu@lists.linux.dev>; Mon,  3 Apr 2023 20:50:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680555059; x=1712091059;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=QCUoLVw47iTtBsFQi2zXYE8LF9BtmZtRq5ow7vbWoH0=;
+  b=hWHpnHv8sFvoRLgwtZcZNd2aI10pVnQOp6A6xAfB/2CWEuDbvp1hFrYc
+   wiyy+2w/AG/Kb8tuGHJB52reOe7ozy3O6/Z3zJOS683t/w8rS7pzhTfCm
+   gxPqb4Cc8MFHeDdFQQLnYu3NoVs2ZwIaXPJnaf/L2cmhpenZ4507qZQTe
+   fmw4Cvbov0197IebBdCCVHmF9XDNfSb7hv8cGKSKGdIdugiJ8KgzNC6BM
+   Vp47TQEKQk81+K71exCyVvaQF8DNUSlNzSvTbYXhdmebDB/MywNbcV9RV
+   tro7WWZLIMwaOX1V8IMzMgGRMlHqsBmDvyh3UDssgI0x3WGtSdazB6K4V
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="321672227"
+X-IronPort-AV: E=Sophos;i="5.98,315,1673942400"; 
+   d="scan'208";a="321672227"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2023 13:50:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="688633632"
+X-IronPort-AV: E=Sophos;i="5.98,315,1673942400"; 
+   d="scan'208";a="688633632"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2023 13:50:58 -0700
+Date: Mon, 3 Apr 2023 13:55:04 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Robin Murphy
+ <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel
+ <joro@8bytes.org>, dmaengine@vger.kernel.org, vkoul@kernel.org, Will Deacon
+ <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Raj Ashok
+ <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
+ <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>, Dave Jiang
+ <dave.jiang@intel.com>, Tony Luck <tony.luck@intel.com>, "Zanussi, Tom"
+ <tom.zanussi@intel.com>, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v3 3/7] iommu/sva: Support allocation of global PASIDs
+ outside SVA
+Message-ID: <20230403135504.2bd89822@jacob-builder>
+In-Reply-To: <81fddd3e-bf6c-966a-b44b-b8a7c9c00591@linux.intel.com>
+References: <20230331231137.1947675-1-jacob.jun.pan@linux.intel.com>
+	<20230331231137.1947675-4-jacob.jun.pan@linux.intel.com>
+	<81fddd3e-bf6c-966a-b44b-b8a7c9c00591@linux.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230328193632.226095-5-brgl@bgdev.pl>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Mar 28, 2023 at 09:36:29PM +0200, Bartosz Golaszewski wrote:
-> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> 
-> The KGSL iommu will require the clocks property to be set. Enable it for
+Hi Baolu,
 
-Isn't KGSL the name for QCom's adreno vendor driver? What does that have 
-to do with bindings?
+On Sat, 1 Apr 2023 21:28:02 +0800, Baolu Lu <baolu.lu@linux.intel.com>
+wrote:
 
-> sa8775p in the bindings.
+> On 2023/4/1 7:11, Jacob Pan wrote:
+> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > index 54f535ff9868..f70478a11a5f 100644
+> > --- a/include/linux/iommu.h
+> > +++ b/include/linux/iommu.h
+> > @@ -1187,6 +1187,9 @@ struct iommu_sva *iommu_sva_bind_device(struct
+> > device *dev, struct mm_struct *mm);
+> >   void iommu_sva_unbind_device(struct iommu_sva *handle);
+> >   u32 iommu_sva_get_pasid(struct iommu_sva *handle);
+> > +ioasid_t iommu_alloc_global_pasid(ioasid_t min, ioasid_t max);
+> > +void iommu_free_global_pasid(ioasid_t pasid);
+> > +
+> >   #else
+> >   static inline struct iommu_sva *
+> >   iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
+> > @@ -1202,6 +1205,13 @@ static inline u32 iommu_sva_get_pasid(struct
+> > iommu_sva *handle) {
+> >   	return IOMMU_PASID_INVALID;
+> >   }
+> > +
+> > +static inline ioasid_t iommu_alloc_global_pasid(ioasid_t min, ioasid_t
+> > max) +{
+> > +	return IOMMU_PASID_INVALID;
+> > +}
+> > +
+> > +static inline void iommu_free_global_pasid(ioasid_t pasid) {}
+> >   static inline void mm_pasid_init(struct mm_struct *mm) {}
+> >   static inline void mm_pasid_drop(struct mm_struct *mm) {}
+> >   #endif /* CONFIG_IOMMU_SVA */  
 > 
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> ---
->  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> index 807cb511fe18..74d5164ed1e8 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> @@ -375,7 +375,6 @@ allOf:
->                - nvidia,smmu-500
->                - qcom,qcm2290-smmu-500
->                - qcom,qdu1000-smmu-500
-> -              - qcom,sa8775p-smmu-500
->                - qcom,sc7180-smmu-500
->                - qcom,sc8180x-smmu-500
->                - qcom,sc8280xp-smmu-500
-> -- 
-> 2.37.2
-> 
+> I don't think the function prototypes of
+> iommu_[alloc|free]_global_pasid() should be impacted by
+> CONFIG_IOMMU_SVA. Or I may overlooked something?
+you're right, the scope is beyond SVA now. It should be under
+CONFIG_IOMMU_API, i think.
+
+Thanks,
+
+Jacob
