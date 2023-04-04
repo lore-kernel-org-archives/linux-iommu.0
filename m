@@ -1,77 +1,119 @@
-Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2047.outbound.protection.outlook.com [40.107.244.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDD947C
-	for <iommu@lists.linux.dev>; Tue,  4 Apr 2023 11:57:34 +0000 (UTC)
-Received: by mail-pj1-f49.google.com with SMTP id fy10-20020a17090b020a00b0023b4bcf0727so33713981pjb.0
-        for <iommu@lists.linux.dev>; Tue, 04 Apr 2023 04:57:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1680609454;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7CTwFcHS/8yOZBWKFlMTZaPkkZCliD1k8JEi+Gd6s3c=;
-        b=C1tDZMEihkEQL+ZSeKLYJQFSsL0mNqr8WR2abugowOfpazV3XDbvl1tiEu4ve5LQQ8
-         CAVfecYY6QmtqG8HHPmrFjiWNmD3BgrcTxXx7dWfZWkp3PISrAcNI45XQElB7LOMrTlx
-         JSHpWcDR9PZ88n8Kv9dD2gOxzoKKStHqLD2NQU64aKDtcGp3noU8/Fg/6p8eh8HN2Rw9
-         GHJ+cdKP6BcvmDMrDGrF76dlBaTp/tHunp5I3SkOLqjO930f0P8z8wqciDCt6RAh2wML
-         DZZm7p1N7Y4I+aJ/T821M2gsk6eizSMtRebFtcPVDNoz0TGOWFv2jdGQQdCiLufIxN3+
-         2ePw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680609454;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7CTwFcHS/8yOZBWKFlMTZaPkkZCliD1k8JEi+Gd6s3c=;
-        b=uQQqv4yRjtAbE24/0klRpgz3e/Mh5R/1ZY9lttXmeBgFPlHWONTQVRMOKPVZNQW5LI
-         1NedtVbyD4hywH6EgeFJyPzdWsRZBWwxQqOARh6qc23zwJ1Ri/5K+soO3MWxGwN0mUSw
-         dVKU/Jsm67rlwV4g4JmZwvtHfA0uxoz9gOUutvSbaNU+BFq7QWNY+IydLEhGJ20XslRj
-         SX4oH+WDcR2FVeCgW+JH6icy/XSxmpxaoHIzL9zM1PTRo3ni59S0EO7dsPhWwzesK8sU
-         gQh2LJjCzvYICAPRbzZYc/Hb3Dnz3IKGaJsZ5Q6ctOkQ6Hmot7bJEX9LLXqKSWA1iyeB
-         NX/g==
-X-Gm-Message-State: AAQBX9eGKrEvc4ZrvbiLvT2uOVmLG9Pib0HQDVxUwn3r90urcvZu5+93
-	TgBwGdpj7MsZcIax3wi9Cwsy2w==
-X-Google-Smtp-Source: AKy350aD0ufDEk6dm7Sf4cDwh2C8kxgP0F4iRIpac8/dPOMgE7oTDjcBAONiRvEN+BQFuLKLu7saVg==
-X-Received: by 2002:a17:902:e2d3:b0:1a2:1922:985b with SMTP id l19-20020a170902e2d300b001a21922985bmr2001300plc.59.1680609453932;
-        Tue, 04 Apr 2023 04:57:33 -0700 (PDT)
-Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id q18-20020a170902b11200b001a216d44440sm8218246plr.200.2023.04.04.04.57.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Apr 2023 04:57:33 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1pjfI3-006WXe-J0;
-	Tue, 04 Apr 2023 08:57:31 -0300
-Date: Tue, 4 Apr 2023 08:57:31 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Tom Rix <trix@redhat.com>
-Cc: kevin.tian@intel.com, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommufd/selftest: set varaiable mock_iommu_device
- storage-class-specifier to static
-Message-ID: <ZCwQqzrg6EL7tgdM@ziepe.ca>
-References: <20230404002317.1912530-1-trix@redhat.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D3936AB8
+	for <iommu@lists.linux.dev>; Tue,  4 Apr 2023 13:02:02 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SqreCIhLNs24voB4epP4tjwpa9Iod14hxzdq53zIRTT+yCyIZ2MP3xCTvAOD7hLKdKdVbWcr0ve7q2sivTp+lAXFjc1mSAIaFnjuFhSD8FjBgwgR6ybm10rzG0vF1fO5hICweL2BGlsC/mb16FKqBiss6Ng3HtTWIVLHIc/pFudPXonc8TSf/u976bpj2QX/K/VG0PQcw24ClXXObX+0ff2DogzdVtzFKDb3v9so1w3Q9FImLAoN9iA0UuaMP3AeyC1WWb9CVGpCUQQwVQmOHzv1C2QQTQZ57Y2Tm46cg9saoadKjAJemCSFGyrBO8JevZSdE9firP2cASRgsPcNIg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=VLRncIDVUshJCkRKwqFkn7rQNoLETCVF8RKZraxGXoU=;
+ b=U15Qz/+NDuDe8CC84lGkVKMvBh+Y0tBzmBL7iKincFf3fw21y+HsEdtVpYSZtwh3tbxJMp6OVqn/QSJdDU009cWNjKFkft8rjwy3H2wkZoRsFGkck+QO1LlHcqrlurMXDEbMyFTYDuGoa8KVDEbuhPp6A5poTje+3TPskMFaYAciv7qEJl4x9iMwL6KekbL47I2oqvXCDDLWD/3/3JpkoGbSdgnkpTo8RBXyIHoAwwPdSiZURjLZNIE9UNcDopknj2Xz+4RzKlBYpRVZuRkWg+SitOZ7yC9G9taitxpH7jN82mQMULKVqlGRuQgDqe7i1Zw0TBWRa49Qik3BoKLBMg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VLRncIDVUshJCkRKwqFkn7rQNoLETCVF8RKZraxGXoU=;
+ b=MO9/fKvMFlM8rt4FLmOB7WhYo5+KUPQjUad65IxBfley8ZYmrNDFcffvivD9Vapli8WnQTltFEoIpao+cz24TX1JoqadO+c9PY+bwEQ882tdEJWo43AGR4q/EuHQUAZsNJ1t+12ks5H1/kcHsvD2UuZF1a3tq9Gb1io5iLS0MMcQmyu+oKp6bzQgbgdelRy5A18te1xiXmEP59ZaGG3Y4utDboJDKFYSCK1KfkVZOwBTtWyewsj9z3bCADdqJT/izXH8o7hKj+b6i3/IqG6IHDN1iI1xkbzD5JjF7aVMkcL5C1U5ggGVx05elTl0tHLyExOE+CdqNAcFzKEDjZDjGg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by PH7PR12MB6836.namprd12.prod.outlook.com (2603:10b6:510:1b6::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.33; Tue, 4 Apr
+ 2023 13:01:57 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::6045:ad97:10b7:62a2]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::6045:ad97:10b7:62a2%6]) with mapi id 15.20.6254.035; Tue, 4 Apr 2023
+ 13:01:57 +0000
+Date: Tue, 4 Apr 2023 10:01:55 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Pengfei Xu <pengfei.xu@intel.com>
+Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
+	linux-kselftest@vger.kernel.org,
+	Lixiao Yang <lixiao.yang@intel.com>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
+	heng.su@intel.com, lkp@intel.com
+Subject: Re: [PATCH 3/4] iommufd: Do not corrupt the pfn list when doing
+ batch carry
+Message-ID: <ZCwfwwA4s/6Eorfm@nvidia.com>
+References: <0-v1-ceab6a4d7d7a+94-iommufd_syz_jgg@nvidia.com>
+ <3-v1-ceab6a4d7d7a+94-iommufd_syz_jgg@nvidia.com>
+ <ZCfPTfmYA7SvNd+a@xpf.sh.intel.com>
+ <ZCp6IOS0UtUE8z9o@xpf.sh.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZCp6IOS0UtUE8z9o@xpf.sh.intel.com>
+X-ClientProxiedBy: BL1PR13CA0001.namprd13.prod.outlook.com
+ (2603:10b6:208:256::6) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230404002317.1912530-1-trix@redhat.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|PH7PR12MB6836:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4936995d-7417-47c2-03d7-08db350cc5a0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	YWRUz81RqE5bds4cwbVtveHzgwuH9PhkSvbu35cgdmiwUjpoOPVp+GsvfR/inup4+vu0hepG1Yvpup5jEnADmYhG02y8QSoJvOzomXM80/2Gd7Aev9+1vhRWRJJpepu7NQv8c3PjArjXYAaB7E/urN4Tg/BdCxLXSpbJI4hFI6ZFq1N+d0Z3NRSwJXGJjpWT/C3sSWhKXW9WqDUer71LMOjd8qvovtIFs7AXP6IUT9RYrj69+iAsEF43Rv/YJOtEw5zhsdXJ38jx7P5M4E6faOB4tjrZeYMOlmhAONNAes5AXV4Ef/NR0prUINqgDozYV9kxo6gII4tWjf7KJMPK6N7G+StBDKAaAGY4oKfJgKdcmi10czLXehtycu3HUnI6rLJ05RXWHnqqkVc8g24AEhGlGptcI7jahQppWMlMwzfRPOXOfZduXgIEyT+uDAjM1zHIGfcRjCMcrbdyZRrfEFZX/hmHEB+Z4njMSijag8XPDRQ3+xg1LxOwfg8qCb10EZKfGVfQ0QurxUhoJxIczlatj4RCCFJRPY8gmJsy3vljadAZR98lrh3OyiWGVEy2
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(396003)(346002)(39860400002)(136003)(366004)(451199021)(6916009)(8676002)(4326008)(66946007)(66556008)(316002)(86362001)(66476007)(2906002)(41300700001)(54906003)(478600001)(36756003)(38100700002)(6486002)(8936002)(2616005)(5660300002)(6512007)(186003)(558084003)(26005)(6506007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?jJNwk2zamytT1ZAPMhTmHaz+snJ2/SUb57gLebV3+b1AE4pMbubNABBEDYm/?=
+ =?us-ascii?Q?L+kv1UUww8kJSF5oSgwoZXA/eGNOGgBOh0DlpqEH1sIMow/bY9TAk0xCvVWT?=
+ =?us-ascii?Q?1hNYjkXI7TKZ/YbCY3tZ4qSmkg7V2QajttCdNcGWzJRDgZIpyrYpoGsxnw6F?=
+ =?us-ascii?Q?jjleU8K/xTlPnWxzBWV6ARw9IK0VH5TlDTcoBZLNPjBOG/6NDRgyesc/2Msc?=
+ =?us-ascii?Q?a+tW9q5b7nq0oJEsFKU9zir0lp34Vl+h5JgaCgnvr8jflkpiVRobAhZRn4i5?=
+ =?us-ascii?Q?ngPNrwPQkexzAudhD4RNpApX1O60mFsLs7+PfOd6HNHzE5ueIkgyfphGJHUX?=
+ =?us-ascii?Q?kjIACCaP6EgmdvL2uU3AcpqnDmXNKg6pvgXtCEtXNUL15zcrnG1lU58cDkcE?=
+ =?us-ascii?Q?XYN6z8nZ1qpedzFwcfnyqRcr+3ayQJeUtMJk04XfMz0humZS6zbWNmTmc13F?=
+ =?us-ascii?Q?7Kff3Xv/XElkiT3uUcv1D529cBl1hvl8rU/AocQ2ICLtgiVxx4SM8rEaLe8H?=
+ =?us-ascii?Q?ajGZpeUn6B5/yicIOe1MKched0wJ1ac0hQXZwEPEaKlf/x5/U3QOCli/6/sH?=
+ =?us-ascii?Q?PppJM61++yQ/pLoHw8xo8iUt5d9s3BSO3MFOKC+fd+l8+a4iULc+1abQUp85?=
+ =?us-ascii?Q?1gFig542pyBjA0k/oztlgZHD9MbtyOytS2228v05559cQHxlQwgtvMsxbe90?=
+ =?us-ascii?Q?ZAKuGsGp63yHrcraEF+etsaEiZ+Y+YbP8dFwACELKtkxBqlBRERkPlQnvRpo?=
+ =?us-ascii?Q?5FK4pZZZ37PO4MdnoyOA6oxB5rars16vZ5JG47UdANWIzn6aXbyChvvpksOR?=
+ =?us-ascii?Q?l0o1jmgOk7SXBeC/UdZz7z5scVyayVksPLg7YtuDPERjTPUytVF/hOl2rE9H?=
+ =?us-ascii?Q?t+9p/4n9dOz+uldJVa1F1tkWNyhSq/EdgaYe0NZOBVdrn8Wz7e0Mdx2HNTuM?=
+ =?us-ascii?Q?sDTkH6tphjfjK8TegmaGXACb1Qt81oo+dulRsd4LkF+dcYVZWaEGr4WJkYbS?=
+ =?us-ascii?Q?H1a0vrP3MJuBRJMkrU0JcCBuodimEMpOyq4UNVLPLon/s8V00zvJmv6syaAX?=
+ =?us-ascii?Q?XlN7LKVb4NCjtG5Q4MEGvUK+TZlbzeq+5cGE10Rt9BR8yh50cHkoQd2e7n4p?=
+ =?us-ascii?Q?LgVAdGTNvprIASWpFTp0bwvs1GMMeIXj1/3X8HotjVOQvMJJfPm6Aj5Ryan1?=
+ =?us-ascii?Q?v1GjvMA7NW8BWG5nkl8lxXbXKtYhm6ctTt83GaZerGad3d1bHvs4GxiPVEsB?=
+ =?us-ascii?Q?CsYIZ0DS6ZG+3VuHZV74ImhZ8NQuzRYVA7iW1PFIuHekXpsduVFiR+JO5VJX?=
+ =?us-ascii?Q?QgUtdgbjvrY8KdOjCHVtz8O2JRFp4fSVGfB14xrfxbwNi5E7n/P29wf2ZHL2?=
+ =?us-ascii?Q?uI+dlpqOZUDoLoO2BIb1A73EYNYU4RFcTouh4GiVIrwuUMGWcNWuWzZM/BBC?=
+ =?us-ascii?Q?NmCc9hVgGYtMOSdAwKle35F+/7DTo6dKztcxZCoJhXsHXOPiTP2aXqXyPlOA?=
+ =?us-ascii?Q?XnWWGTgc1YRRWx9vTlAnNx8T08iv+ZcJoD5TubU7x7YW+Hm2tjycLa1OWK2x?=
+ =?us-ascii?Q?Mh9ePAXKZo2eFkpJvCxP5qhRHiNnREfPgigvL571?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4936995d-7417-47c2-03d7-08db350cc5a0
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2023 13:01:57.6059
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: JmuAj1Y15ITLV06C9A+TS5L5rVVHP/RY89xv7gZOgUtV9njztMBTXeUeqwXoDnpH
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6836
 
-On Mon, Apr 03, 2023 at 08:23:17PM -0400, Tom Rix wrote:
-> smatch reports
-> drivers/iommu/iommufd/selftest.c:295:21: warning: symbol
->   'mock_iommu_device' was not declared. Should it be static?
+On Mon, Apr 03, 2023 at 03:02:56PM +0800, Pengfei Xu wrote:
+> Hi Jason,
 > 
-> This variable is only used in one file so it should be static.
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> ---
->  drivers/iommu/iommufd/selftest.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>   Could you add "Tested-by" tag from me?
 
-Thanks, I applied this
+Yes, I did, in future you can respond to the cover letter with that
+tag and the tools will pick it up
 
 Jason
