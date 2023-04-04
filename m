@@ -1,92 +1,77 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 147CD7C;
-	Tue,  4 Apr 2023 11:29:59 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F23E5C14;
-	Tue,  4 Apr 2023 04:30:37 -0700 (PDT)
-Received: from [10.57.54.55] (unknown [10.57.54.55])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AE22A3F6C4;
-	Tue,  4 Apr 2023 04:29:51 -0700 (PDT)
-Message-ID: <ed3bbe38-6c70-d6c5-dd97-2eddc2f944ec@arm.com>
-Date: Tue, 4 Apr 2023 12:29:47 +0100
+Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDD947C
+	for <iommu@lists.linux.dev>; Tue,  4 Apr 2023 11:57:34 +0000 (UTC)
+Received: by mail-pj1-f49.google.com with SMTP id fy10-20020a17090b020a00b0023b4bcf0727so33713981pjb.0
+        for <iommu@lists.linux.dev>; Tue, 04 Apr 2023 04:57:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1680609454;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=7CTwFcHS/8yOZBWKFlMTZaPkkZCliD1k8JEi+Gd6s3c=;
+        b=C1tDZMEihkEQL+ZSeKLYJQFSsL0mNqr8WR2abugowOfpazV3XDbvl1tiEu4ve5LQQ8
+         CAVfecYY6QmtqG8HHPmrFjiWNmD3BgrcTxXx7dWfZWkp3PISrAcNI45XQElB7LOMrTlx
+         JSHpWcDR9PZ88n8Kv9dD2gOxzoKKStHqLD2NQU64aKDtcGp3noU8/Fg/6p8eh8HN2Rw9
+         GHJ+cdKP6BcvmDMrDGrF76dlBaTp/tHunp5I3SkOLqjO930f0P8z8wqciDCt6RAh2wML
+         DZZm7p1N7Y4I+aJ/T821M2gsk6eizSMtRebFtcPVDNoz0TGOWFv2jdGQQdCiLufIxN3+
+         2ePw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680609454;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7CTwFcHS/8yOZBWKFlMTZaPkkZCliD1k8JEi+Gd6s3c=;
+        b=uQQqv4yRjtAbE24/0klRpgz3e/Mh5R/1ZY9lttXmeBgFPlHWONTQVRMOKPVZNQW5LI
+         1NedtVbyD4hywH6EgeFJyPzdWsRZBWwxQqOARh6qc23zwJ1Ri/5K+soO3MWxGwN0mUSw
+         dVKU/Jsm67rlwV4g4JmZwvtHfA0uxoz9gOUutvSbaNU+BFq7QWNY+IydLEhGJ20XslRj
+         SX4oH+WDcR2FVeCgW+JH6icy/XSxmpxaoHIzL9zM1PTRo3ni59S0EO7dsPhWwzesK8sU
+         gQh2LJjCzvYICAPRbzZYc/Hb3Dnz3IKGaJsZ5Q6ctOkQ6Hmot7bJEX9LLXqKSWA1iyeB
+         NX/g==
+X-Gm-Message-State: AAQBX9eGKrEvc4ZrvbiLvT2uOVmLG9Pib0HQDVxUwn3r90urcvZu5+93
+	TgBwGdpj7MsZcIax3wi9Cwsy2w==
+X-Google-Smtp-Source: AKy350aD0ufDEk6dm7Sf4cDwh2C8kxgP0F4iRIpac8/dPOMgE7oTDjcBAONiRvEN+BQFuLKLu7saVg==
+X-Received: by 2002:a17:902:e2d3:b0:1a2:1922:985b with SMTP id l19-20020a170902e2d300b001a21922985bmr2001300plc.59.1680609453932;
+        Tue, 04 Apr 2023 04:57:33 -0700 (PDT)
+Received: from ziepe.ca ([206.223.160.26])
+        by smtp.gmail.com with ESMTPSA id q18-20020a170902b11200b001a216d44440sm8218246plr.200.2023.04.04.04.57.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Apr 2023 04:57:33 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1pjfI3-006WXe-J0;
+	Tue, 04 Apr 2023 08:57:31 -0300
+Date: Tue, 4 Apr 2023 08:57:31 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Tom Rix <trix@redhat.com>
+Cc: kevin.tian@intel.com, joro@8bytes.org, will@kernel.org,
+	robin.murphy@arm.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommufd/selftest: set varaiable mock_iommu_device
+ storage-class-specifier to static
+Message-ID: <ZCwQqzrg6EL7tgdM@ziepe.ca>
+References: <20230404002317.1912530-1-trix@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-Subject: Re: [PATCH v2 12/14] iommu: Consolidate the default_domain setup to
- one function
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, llvm@lists.linux.dev,
- Nathan Chancellor <nathan@kernel.org>,
- Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
- Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>,
- Kevin Tian <kevin.tian@intel.com>, Nicolin Chen <nicolinc@nvidia.com>
-References: <12-v2-cd32667d2ba6+70bd1-iommu_err_unwind_jgg@nvidia.com>
- <19197c52-139e-c3c5-2771-42323d38c045@linux.intel.com>
- <559f8b71-6636-b4b8-27c4-bd0764baa741@arm.com> <ZCWgdiT12RixU7wU@nvidia.com>
- <ZCWtzjHIYWq6/zvg@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ZCWtzjHIYWq6/zvg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230404002317.1912530-1-trix@redhat.com>
 
-On 2023-03-30 16:42, Jason Gunthorpe wrote:
-> On Thu, Mar 30, 2023 at 11:45:10AM -0300, Jason Gunthorpe wrote:
+On Mon, Apr 03, 2023 at 08:23:17PM -0400, Tom Rix wrote:
+> smatch reports
+> drivers/iommu/iommufd/selftest.c:295:21: warning: symbol
+>   'mock_iommu_device' was not declared. Should it be static?
 > 
->> IIRC the existing code had both orderings :( I'll add a note about
->> this justification
-> 
-> Robin, would this be helpful in the short term for ARM?
+> This variable is only used in one file so it should be static.
+> Signed-off-by: Tom Rix <trix@redhat.com>
+> ---
+>  drivers/iommu/iommufd/selftest.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Yeah, something along these lines seems like the neatest compromise for now.
+Thanks, I applied this
 
-Cheers,
-Robin.
-
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index c31c5d6f913194..39c923e71e625a 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1778,6 +1778,7 @@ static int iommu_setup_default_domain(struct iommu_group *group,
->   	struct bus_type *bus =
->   		list_first_entry(&group->devices, struct group_device, list)
->   			->dev->bus;
-> +	bool direct_failed;
->   	int req_type;
->   	int ret;
->   
-> @@ -1824,8 +1825,10 @@ static int iommu_setup_default_domain(struct iommu_group *group,
->   	 * mapped before their device is attached, in order to guarantee
->   	 * continuity with any FW activity
->   	 */
-> +	direct_failed = false;
->   	for_each_group_device(group, gdev)
-> -		iommu_create_device_direct_mappings(dom, gdev->dev);
-> +		if (iommu_create_device_direct_mappings(dom, gdev->dev))
-> +			direct_failed = true;
->   
->   	ret = __iommu_group_set_domain_internal(group, dom,
->   						IOMMU_SET_DOMAIN_WITH_DEFERRED);
-> @@ -1845,6 +1848,16 @@ static int iommu_setup_default_domain(struct iommu_group *group,
->   		goto out_set;
->   	}
->   
-> +	/*
-> +	 * Driver's are supposed to allow mappings to be installed in a domain
-> +	 * before device attachment, but some don't. Hack around this defect by
-> +	 * trying again after.
-> +	 */
-> +	if (direct_failed) {
-> +		for_each_group_device(group, gdev)
-> +			iommu_create_device_direct_mappings(dom, gdev->dev);
-> +	}
-> +
->   out_set:
->   	if (group->default_domain)
->   		iommu_domain_free(group->default_domain);
+Jason
