@@ -1,155 +1,118 @@
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2073.outbound.protection.outlook.com [40.107.101.73])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FD5E648
-	for <iommu@lists.linux.dev>; Tue,  4 Apr 2023 05:51:26 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ztw+xjZN5xPHXwt4GiOwDsZsKfLbEWBPh/yM81tv2o/a/lhRA53SWqmt6q1z2AbVKmFNelOHUSNYCvL3lHdwQAWy2yMVbnogLJreT6yi2CMssn9TDrrB75zW3UyTRtnsPU3QDqnCHH+3IvdRqzREQ31nSxTnLdZN/qO78oOfz9gXgH/LNeIgOHPcNpi9qeIz2neliVfn6OU636SE72voeXOnPpY71uV/acFLe4rNXiMT+0fB3p9Z7ezs6oNZ/Vvg0lrZuOXyAOcIazMUEuSyGH0JvtIMAY8qD+Fpa6yPHrc7v2sYtvCrzog3CILfb1vuB8G6YNeleRO5cIDhtBL/Vg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Z2BRzw1VbGAflp8lTBwuOTxOGvL6oK8JVyy994TwfJ0=;
- b=L0qAs5N8rpeyrehCr2IWab1bqI9SelMIef1D2qxhmWk0QUjYOWN+Zxk2R9ITmMEQmhntyZ/WEELlFAUeQ5shfTdDgK3pKvIq/bJsWDTcUZzMdtiSCTG2YkIdTk8LJKBvStcoIK2M/DPh2nRlfpBliS4injNRRH388vCDNLCduQrfxnUtyFRjIQC1LEdsXcsSCqO2dYBXhJA2mM/2Kwi20J/W6Ows83RciSVf2OA8Idm593HlloiVpm6pXk6piE0yrNnkqzr2rjAygVVEeQXJoLu/XTpkkGWHcjgkBiNFiCNmIRWlaSq4pdwzIJ987cYg9SfRxu2L884vB02kztdM3Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Z2BRzw1VbGAflp8lTBwuOTxOGvL6oK8JVyy994TwfJ0=;
- b=yD+IfqPktZrJLCpXTuD7R4rZiJda5MDUKxIhFhd88D2UK1GQmsTmJhkoanIg+hu5gKcqqToaLxMOyQKVX30+qnpC2FFaOvbxjXJyKBzLOtx7NLMUdoz3kS/qAfut0yWjC9eLVCy1gFSuqmOTvD/ay57S7+XuCQcWzYQMPNUBCPs=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BL1PR12MB5827.namprd12.prod.outlook.com (2603:10b6:208:396::19)
- by LV2PR12MB6014.namprd12.prod.outlook.com (2603:10b6:408:170::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.33; Tue, 4 Apr
- 2023 05:51:23 +0000
-Received: from BL1PR12MB5827.namprd12.prod.outlook.com
- ([fe80::3f99:52bd:6b66:d22f]) by BL1PR12MB5827.namprd12.prod.outlook.com
- ([fe80::3f99:52bd:6b66:d22f%4]) with mapi id 15.20.6254.026; Tue, 4 Apr 2023
- 05:51:23 +0000
-Message-ID: <748f1939-a5b5-25e5-8b45-e0ec89a39d6f@amd.com>
-Date: Tue, 4 Apr 2023 11:21:10 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101
- Thunderbird/96.0
-Subject: Re: [PATCH] iommu/amd: Fix "Guest Virtual APIC Table Root Pointer"
- configuration in IRTE
-Content-Language: en-US
-To: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>,
- Kishon Vijay Abraham I <kvijayab@amd.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AC2F7F3
+	for <iommu@lists.linux.dev>; Tue,  4 Apr 2023 07:27:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1680593269;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=/5C/yOSwsdBflA8qC2A6ywwjDfEDFy/JAgkrHH95HtM=;
+	b=f7c5MIFPo6HS9IyAdyHn0Oa+AYS6MD+oVO7+IRd8kd5pP5Zh9THOuj6u6qb61ETmWSnlmW
+	OrKNaoqXqlwUie41Za2WvH6/3Gw6sCiPQcb//8GGQyT+TlI5tZK5uGw+Otj+EQpPY/vmS0
+	g5DqMQnlVj/8luaIowJ8+106Nms0Z/4=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-155-VhQV1HVlNiqg9xFomLDR7w-1; Tue, 04 Apr 2023 03:27:46 -0400
+X-MC-Unique: VhQV1HVlNiqg9xFomLDR7w-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7EC733C1014A;
+	Tue,  4 Apr 2023 07:27:45 +0000 (UTC)
+Received: from cantor.redhat.com (unknown [10.2.16.124])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 6F68A440BC;
+	Tue,  4 Apr 2023 07:27:44 +0000 (UTC)
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
 Cc: Vasant Hegde <vasant.hegde@amd.com>,
- Santosh Shukla <santosh.shukla@amd.com>, "Nikunj A . Dadhania"
- <nikunj@amd.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- joao.m.martins@oracle.com, boris.ostrovsky@oracle.com,
- alejandro.j.jimenez@oracle.com
-References: <20230331061723.10337-1-kvijayab@amd.com>
- <575ef405-9d43-b99c-cae7-f88cfd6063e2@amd.com>
-From: Kishon VijayAbraham I <kvijayab@amd.com>
-In-Reply-To: <575ef405-9d43-b99c-cae7-f88cfd6063e2@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN3PR01CA0016.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:95::18) To BL1PR12MB5827.namprd12.prod.outlook.com
- (2603:10b6:208:396::19)
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH] iommu: amd: Set page size bitmap during V2 domain allocation
+Date: Tue,  4 Apr 2023 00:27:42 -0700
+Message-Id: <20230404072742.1895252-1-jsnitsel@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5827:EE_|LV2PR12MB6014:EE_
-X-MS-Office365-Filtering-Correlation-Id: e8ea7e0a-86d7-43cc-4477-08db34d09f2b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	FiFTOtBsXPGWrf53G/RtZEl5hKx3713kDsXPMVQLnUgb7s/RPHiH8dqf+44zTLQ4aIYIQQReUWd6g0q61fg3iuh/c4/3aYuuasp8dQ0iyd4u5EnlxLBJEO1aNOw/bGiZqvbTcEjKZj1QrWUgA26ekfqkdrSZYwlF27gL3RPmLmfnxueD8HAVIkg86a2kB2hZu9j1bUym2dMluENM1FyN5ZUnTkkaFJXDcX/1fZs7hFPH0llNNCtD8FsAet6eE9AGrMlOd/HCyNpaIwYX0f4PtJq+65UcdXBnGKk+9dugVpAYgzdCAx0FmbEhvN7AlsP/X/7UAW5DBvr7n0Pij47bbJqaFbJA+Bg0VuubLj0VBTO5GdWgvKAxB60OwmpcVqlvF3CaFmmUt2Vcn6gy79aSCJAkI8NV1cUT3NBkYgfYkLQlE+atHM1HQrrK0a6A21GW4GqUZWUrU0sA0uQWqKQuJXLBiS4AcvxVNVx3pFEyWufoKHMeCXfv21SQH+T+ALV5KxUDwVThEFxZ2hsc42heRKAk0vVqtq7QzLdkJ7WfwVLL4j27ElCtvRn4DKmarQdIf33HnAJ1jIEzCLeTT8b3QbkMKNi/FZKtfGtP7Y5RcZG5F9QaZkrjrEcHEQJTguzHeEdQ/VFhyT0//yZ6ajLlqA==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5827.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(376002)(396003)(136003)(366004)(39860400002)(451199021)(31686004)(186003)(26005)(6666004)(53546011)(5660300002)(8936002)(2906002)(31696002)(6512007)(54906003)(66556008)(66946007)(4326008)(110136005)(316002)(6506007)(2616005)(83380400001)(41300700001)(478600001)(8676002)(38100700002)(36756003)(6486002)(66476007)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?VmpJdXNmeVFjZGRDSkJBVVZjSldLSFhBbW9lTWhJS2M0cGZ5eDFVVDhJdWFI?=
- =?utf-8?B?QWl1djI0WXMrSDFiaUQyUkczNlRCaEdYTzhIM1lsMlBmTWUzcUtvUU94ZXRs?=
- =?utf-8?B?Uk1sU3ZvOWdUT3VzQ1FOVVhFS1NoTXB4aUl3ZUxoWG91OTZJcTFYSGFxUWFW?=
- =?utf-8?B?dEw1NWR3MjJ3Vjg5V0NBV0JyaXk4dlZsT0Vkc1BMQTRSWVdiTTBRWG5tSUtN?=
- =?utf-8?B?YnFtWkFJSVN6cUYrQ3FtVThLWWhHOUx6VlJoMnBUczN1ZWJKWU1tdXpERGND?=
- =?utf-8?B?M0sxQUEreHAyeStRVXpib2hzRlZGZDRTc09NelN5amdyc1ZFaGlXNUQ3eWFY?=
- =?utf-8?B?ZXo2ZVZaT3NlSnl2SzJqdS9LYTd2ZlRHbzJGTnZTUjdRRFNHMUtxbittWDB2?=
- =?utf-8?B?TkZVQ3lXRkJaN0NXbExTS2VCZlI3bGg3NTFkSUtCTlFqQk9VRFc0RWhQVXdu?=
- =?utf-8?B?TU0yejdGMjE0eisrbktlOXI5d3FpdlhhSHNTWEd1bXFGcGhZT1pvUHR4Z2gw?=
- =?utf-8?B?dWtpTzl3STZjYU5vRXltYUdRbTJxMXBDWEhtdmxNVm5NcUxlNDVQU2Jjbkh2?=
- =?utf-8?B?VFRaWkFsWllPbW1GbW9NMXhlV1VuK3lQdmRXS3E5SG1oeTJDQ012OXpjT2Z5?=
- =?utf-8?B?blpuTzBLSC9NTEhxeHZwbWNWOTBNcWdLcWdEWFBnS2JVZG5rVXhaQ29SZUZB?=
- =?utf-8?B?WFBJMUdDdlJuSnpLN1B5VmtrUjA1T2hXMzdkeDhlZnQrdjJLNklDMll6ZHlN?=
- =?utf-8?B?REVoOE5BcWgrUmRSdjdpMEhaUVZjSi8zcjRJZGJlTGdRVm5Zeks0enZva0Na?=
- =?utf-8?B?T3U4VUpraVM5TVBJNjRhMGRFOURWeFl2MVdSQ2xSQ2VaUkh2VUVWcUZoT2p2?=
- =?utf-8?B?TVYvN0daYlBDd0l5b0hDQW4vWjZpY0hMZUtHTDkzZHZMRUY3bGJuOVA2QVN6?=
- =?utf-8?B?dmlpN2VkS3pWS0VGcnRIU0gvME9aK05wMXdsYVVjOThGTjBQaEpiMS8xNDBF?=
- =?utf-8?B?d1d0SUgyK1ZZZEdvb29XU0kyb2MwSmtVNHdmN1NFcVl3akVMdDhydWFBS2R1?=
- =?utf-8?B?WDFyOHQ0TnlWejMycFZQOEduRVp5TUJ2ZlVCVk9qbnBQbTFsZXhQZnI0Y1g5?=
- =?utf-8?B?ODR6NmhPZUszZXgyTGE1ZTFoOS9ISHdtbWUrMXRIWUMxQ3Y5bEdxK3FmS3Vs?=
- =?utf-8?B?WGt6UGQ2UnVVNS9Hd3piV3FGOExqYjY0UERSY05TajNhUjZVWHI5d1VEMXVx?=
- =?utf-8?B?WmQ1WEhoYnQrWlpLcjZpSmlyekZtWWhQTDNpUFZjVkZya214UmpsNzIyaVc0?=
- =?utf-8?B?cGY2YkxzVzdIbE1BMEVWNU15cTZvK2NlZUFSNms3ME45WnFwcTdmZXFhWWh0?=
- =?utf-8?B?NlZNbS94dEJ5eTEyQm9mWm1MRzgwRkE3WmU1b2tIcGFlTGU5VENTNERqOTh2?=
- =?utf-8?B?TUwxc2NVK0xQcjNObWVnOXFEcW80cUNjZmU5TjZsbEhVUEhkRkd3d1U1VEtV?=
- =?utf-8?B?M2x5Y3UwU1VuSzhRU2FRWVRDQVUrUEtIeFRCT3pnWmVvMEFnMTlQWFFTaVM4?=
- =?utf-8?B?S2s3WkhLT2NrZ0tzODhsY2Vod0lDL0hLV1VleDhtTGZPeDVUSWJ0dW1UTTZP?=
- =?utf-8?B?bnRQMnI3MCtwMHlWaEJHWDcxNUFQMWZ5NjhnMTRMcTNnT2dtVEs1R2JDNFpy?=
- =?utf-8?B?QUEvTHJuRjhNR1JDQXlHbk9wWmJWeEhzLzNIeTdKeTR1T1hLUXcyQWVCYXJK?=
- =?utf-8?B?RDFGSXpWN2NQRFhmMGRseGRNYUVqTDNPdkZNVENybFkyZ2dobHJ4d3hBMGxQ?=
- =?utf-8?B?dUpjOHY5WCttZjFxNkM5MXdNUW9DSWowZ3VnT3pFaW9DVUtHN1VJbDMwazJh?=
- =?utf-8?B?aUxjYnBEaURtRTAwU0lhTE5adVMrSDVsanFIMlZWRFNlKzdabGNxNlg5MWhF?=
- =?utf-8?B?aDJtZG1wVXdvRzBrYWQ4eXN6eDk1OWxkUy8zbkUwVkNuR0IxS09ubC9IUGRz?=
- =?utf-8?B?d1JxZXllYXJYM0NFWndwL2xicTBUTjQzTTVLSW5naEo0TnBFVTd3SEFOekQw?=
- =?utf-8?B?eXUreER5YjNneWYzeVc2TDJCRVB6c1lLVkNJZitUdEF1SlJBeDk0WmtiTVlL?=
- =?utf-8?Q?Ikq2J5caxhDQRrwNmUTFbY1HR?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e8ea7e0a-86d7-43cc-4477-08db34d09f2b
-X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5827.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2023 05:51:23.4513
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rjqq4z9VVZZm5yOXAiEi91FqJKXjcqqn7gQJ5YimaKtzerbsoG1387IvR7nCkP+9vYOE6E578c0/DVIqDQB3bg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB6014
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
 
-Hi Suravee,
+With the addition of the V2 page table support, the domain page size
+bitmap needs to be set prior to iommu core setting up direct mappings
+for reserved regions. When reserved regions are mapped, if this is not
+done, it will be looking at the V1 page size bitmap when determining
+the page size to use in iommu_pgsize(). When it gets into the actual
+amd mapping code, a check of see if the page size is supported can
+fail, because at that point it is checking it against the V2 page size
+bitmap which only supports 4K, 2M, and 1G.
 
-On 4/3/2023 9:59 AM, Suthikulpanit, Suravee wrote:
-> Kishon,
-> 
-> On 3/31/2023 1:17 PM, Kishon Vijay Abraham I wrote:
->> commit b9c6ff94e43a ("iommu/amd: Re-factor guest virtual APIC
->> (de-)activation code") while refactoring guest virtual APIC
->> activation/de-activation code, stored information for 
->> activate/de-activate
->> in "struct amd_ir_data". It used 32-bit integer data type for storing the
->> "Guest Virtual APIC Table Root Pointer" (ga_root_ptr), though the
->> "ga_root_ptr" is actually a 40-bit field in IRTE (Interrupt Remapping
->> Table Entry).
->>
->> This causes interrupts from PCIe devices to not reach the guest in the 
->> case
->> of PCIe passthrough with SME (Secure Memory Encryption) enabled as _SME_
->> bit in the "ga_root_ptr" is lost before writing it to the IRTE.
->>
->> Fix it by using 64-bit data type for storing the "ga_root_ptr".
->>
->> Fixes: b9c6ff94e43a ("iommu/amd: Re-factor guest virtual APIC 
->> (de-)activation code")
->> Cc: stable@vger.kernel.org # v5.4+
->> Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
->> Signed-off-by: Kishon Vijay Abraham I <kvijayab@amd.com>
-> 
-> Please also add
-> Reported-by: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
+Add a check to __iommu_domain_alloc() to not override the
+bitmap if it was already set by the iommu ops domain_alloc() code path.
 
-sure, will add it in v2 of this patch.
+Cc: Vasant Hegde <vasant.hegde@amd.com>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Joerg Roedel <joro@8bytes.org>
+Fixes: 4db6c41f0946 ("iommu/amd: Add support for using AMD IOMMU v2 page table for DMA-API")
+Signed-off-by: Jerry Snitselaar <jsnitsel@redhat.com>
+---
+ drivers/iommu/amd/iommu.c | 6 ++----
+ drivers/iommu/iommu.c     | 9 +++++++--
+ 2 files changed, 9 insertions(+), 6 deletions(-)
 
-Regards,
-Kishon
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 5a505ba5467e..167da5b1a5e3 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -1666,10 +1666,6 @@ static void do_attach(struct iommu_dev_data *dev_data,
+ 	domain->dev_iommu[iommu->index] += 1;
+ 	domain->dev_cnt                 += 1;
+ 
+-	/* Override supported page sizes */
+-	if (domain->flags & PD_GIOV_MASK)
+-		domain->domain.pgsize_bitmap = AMD_IOMMU_PGSIZES_V2;
+-
+ 	/* Update device table */
+ 	set_dte_entry(iommu, dev_data->devid, domain,
+ 		      ats, dev_data->iommu_v2);
+@@ -2048,6 +2044,8 @@ static int protection_domain_init_v2(struct protection_domain *domain)
+ 
+ 	domain->flags |= PD_GIOV_MASK;
+ 
++	domain->domain.pgsize_bitmap = AMD_IOMMU_PGSIZES_V2;
++
+ 	if (domain_enable_v2(domain, 1)) {
+ 		domain_id_free(domain->id);
+ 		return -ENOMEM;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 10db680acaed..256a38371120 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1964,8 +1964,13 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+ 		return NULL;
+ 
+ 	domain->type = type;
+-	/* Assume all sizes by default; the driver may override this later */
+-	domain->pgsize_bitmap = bus->iommu_ops->pgsize_bitmap;
++	/*
++	 * If not already set, assume all sizes by default; the driver
++	 * may override this later
++	 */
++	if (!domain->pgsize_bitmap)
++		domain->pgsize_bitmap = bus->iommu_ops->pgsize_bitmap;
++
+ 	if (!domain->ops)
+ 		domain->ops = bus->iommu_ops->default_domain_ops;
+ 
+-- 
+2.38.1
+
