@@ -1,142 +1,141 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2047.outbound.protection.outlook.com [40.107.93.47])
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93BDD63AE
-	for <iommu@lists.linux.dev>; Wed,  5 Apr 2023 15:34:55 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BWnk6aAdcflei9m6ihRBbr/nTGKC0NQZxMcdq8Spr76gt9Ld9AUowIZYc3XQnazpAl0awpC/Lf92cQ9JqM1Jk0aadUXDzEUUEthLo4/1Rq67LHGwhvAJgzVwiLTDOQfDmSmh3p1V9C4OYJpM2cvkQHAidx4Nx5+aaNxU8kx5B2HEDwTnYVZlhpLPUyiFr17PYzQ2h9T1dLbBzcSPtjdi9sJuQ60jddt8EtHgT2bHsf/3xUuZe+bILTt/+LcycasxKEpy4g3T0QMgK62ch7pDBeuMaSgEbk9BFrPMi5QmRdY8lxbGdknE5t8V/CL52l9RST1IBcm92QFI57G5MGBlBw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oqoriWWPefpEcCopb0qrRNXkxGjaobaPrbr1ciIwuRw=;
- b=OHcct6Nec3TIo/ZET9js/RxmgS6uTdj15msMV3F823o4pWFroTlPIZOkicb5TLBfky7lhqJVTVxFv5X1l6H/qR03S7Seh0WZ2p3yKrGWfbETkrqJuY53Z1+l5iePfLRCoVUodG9DIIzDvSoUseNslsch92V1uUKecGn1oLHiy+yQ1C4fFxxbwj8fhZDRUXMhOz7KQJtcdYULoDqqzRHKe5IwxsmgkHI5MF8uEt1m3Ams9QgfPz31VVU4I4SBZKjlpwIhVqNW+3tC/SMFEzebihdu7ROvcNfyGNTwQe2RoSFg8aLo+HWl6V/fDqD4Nb/zgEseqAy3okFkLreBARaP8A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oqoriWWPefpEcCopb0qrRNXkxGjaobaPrbr1ciIwuRw=;
- b=MG8zpT+A9RMu7pv79YdTfWEXL+hFJDjMGVaPc0I1RHHBmOCN9GbmF8Q50CkR4ydD31RCoG1TiK+Mh/lyvRUp7tg2C4oWjHef2e9FTjnRU+G83UD1orrizY8jDtR5i49w1iRC4OTJZLeX/nKEjqO7Yd8OOUB8s+2PbYnzk0QVttyvqGhFg8N5KyZncAd56t7PY+Jy3143ShGEEPjHMmg0Dt9YLSMW6CB8Q2+VIekZ4BtSf8rV5X9U7jCyE4nDozVRQmFDF4te4xVYgq1GmDYd8ECRmSqlVQONn6d1eJ+FbDdTxVaRKl5N8q+nsBxTMiWI0EuvQ3nOtzfDmAzLAzANpA==
-Received: from DM4PR12MB7694.namprd12.prod.outlook.com (2603:10b6:8:102::6) by
- SJ0PR12MB5675.namprd12.prod.outlook.com (2603:10b6:a03:42d::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.30; Wed, 5 Apr
- 2023 15:34:52 +0000
-Received: from BN9PR03CA0070.namprd03.prod.outlook.com (2603:10b6:408:fc::15)
- by DM4PR12MB7694.namprd12.prod.outlook.com (2603:10b6:8:102::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.33; Wed, 5 Apr
- 2023 15:34:50 +0000
-Received: from BN8NAM11FT056.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:fc:cafe::f3) by BN9PR03CA0070.outlook.office365.com
- (2603:10b6:408:fc::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.35 via Frontend
- Transport; Wed, 5 Apr 2023 15:34:50 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- BN8NAM11FT056.mail.protection.outlook.com (10.13.177.26) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6277.30 via Frontend Transport; Wed, 5 Apr 2023 15:34:50 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 5 Apr 2023
- 08:34:38 -0700
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.37; Wed, 5 Apr 2023 08:34:37 -0700
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Wed, 5 Apr 2023 08:34:37 -0700
-Date: Wed, 5 Apr 2023 08:34:36 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Robin Murphy <robin.murphy@arm.com>, <kevin.tian@intel.com>,
-	<yi.l.liu@intel.com>, <eric.auger@redhat.com>, <baolu.lu@linux.intel.com>,
-	<shameerali.kolothum.thodi@huawei.com>, <jean-philippe@linaro.org>,
-	<iommu@lists.linux.dev>
-Subject: Re: Cache Invalidation Solution for Nested IOMMU
-Message-ID: <ZC2VDO8pX5oVFs+2@Asurada-Nvidia>
-References: <ZCoe3+1q5ZLJsmeC@Asurada-Nvidia>
- <ZCrd1wphkCp8uFt0@nvidia.com>
- <ZCrn8PPPyEJ/VqFU@Asurada-Nvidia>
- <ea6fba01-b483-94e6-8c84-d096dcb64b5a@arm.com>
- <ZCtpAYn76u499p6G@Asurada-Nvidia>
- <ZCxOMSvR+6rYbIfy@nvidia.com>
- <ZC0LFM9hxF9wY76w@Asurada-Nvidia>
- <ZC1dlENobD4wlZCv@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB5D37461
+	for <iommu@lists.linux.dev>; Wed,  5 Apr 2023 15:40:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680709241; x=1712245241;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=nl2OUQ7BdrvxDP7SzGL7J/lTrhswqlssdfXHqoQ7T2Y=;
+  b=fdVE9lRv6Zfeqd7aOoHoHKJT9w6d8+rDW9f7jEaNg3ABCQM9piT5S9lX
+   Qi0ATqBW3rrVqv0kTThmuY1/VxJgFVQ9bOdJK/Y8WFmdyqjkeZN2YnVmk
+   0+T2JATzjbpzLbrGCkb9jjW3okT/xVIm/CE5PWNDlzSvQDb/vUsZWCiGs
+   SN83fIXo4oEfY8QFnFbDSAyUn80kzo5/muMOUd/2RkayqM5UWtqP1FfcV
+   iAWVQdLDbiWQ4+hpevOlfwLaepsjleDcrKIbRix1zbc9Y96oXhO8dgybV
+   2wazDOYXIciODHkYJeqferLX1dx4bMqPmGn6oDiEGCBaIhwDV27BoaBcZ
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="341211064"
+X-IronPort-AV: E=Sophos;i="5.98,321,1673942400"; 
+   d="scan'208";a="341211064"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 08:40:41 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="664067673"
+X-IronPort-AV: E=Sophos;i="5.98,321,1673942400"; 
+   d="scan'208";a="664067673"
+Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.106])
+  by orsmga006.jf.intel.com with ESMTP; 05 Apr 2023 08:40:40 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: LKML <linux-kernel@vger.kernel.org>,
+	iommu@lists.linux.dev,
+	"Lu Baolu" <baolu.lu@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>
+Cc: "Robin Murphy" <robin.murphy@arm.com>,
+	"Will Deacon" <will@kernel.org>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Raj Ashok <ashok.raj@intel.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	Yi Liu <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	stable@vger.kernel.org,
+	Sukumar Ghorai <sukumar.ghorai@intel.com>
+Subject: [PATCH v3] iommu/vt-d: Fix PASID directory pointer coherency
+Date: Wed,  5 Apr 2023 08:44:47 -0700
+Message-Id: <20230405154447.2436308-1-jacob.jun.pan@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ZC1dlENobD4wlZCv@nvidia.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic:
-	BN8NAM11FT056:EE_|DM4PR12MB7694:EE_|SJ0PR12MB5675:EE_
-X-MS-Office365-Filtering-Correlation-Id: e6c96f9f-75d4-4ffd-adaa-08db35eb4b7f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	vAKHqxFirLqyv32XcuwlAzCvzlbpODxwlv+cNImziRJNIdG9k/dDmd7vq/YPCIRz/5Yrhrtz+sgJ+/9nq37cnwRckd8fDQR1oIvYqGKiTXr5acyi9XPBp2VWckbp3GIBHbk/8eELCt/KD7CTQXIE6xXjy00EOuUbUKoVT7YKlFijpB3EChgCOKyk+njRpkbdYHpv/b+ddJlmE7BnQfYROqhNNsykrdR3nZTOEWGfv7NzNanz5sSUGWqmpjZA9ypcg828jDekO7dO3GGIM1idTn33mRUcB2DNipzPQpVJT+UT0UxLsa6AOYCFeNyTBehkD+FWa5dct6D01eugCsQH+PKtIhwyv0jq7iewmRjJojDnpkQQ4xNuQtvpF55jPr/RX4z96kFqiv0ZkBD22Ax+JfX5ZaRXUcJnBHki3pHf91hUSAQIIM6V4qYf1QULKSbBnFLFea2Kmwxwz+rnIh35fEd2lWBXxfTa680hQfX9Aro0R8LXlLnkXlKJYQ0mSHAoaesqf13W4tTIh4FKCGGQjRvo3DV0tDLBBOKbcYT4oiKz/Vx21LNeH3+lqesp9ejOQrr3DSj2QJ6E4yudnoowo52W2f/3yvt5iZ+g7bUN+gO3wfn/55YjOO1xSWWGtsNJZ4sVs18O90jCTqjYLPTUiEuQG1NE+BVvdByO0RN4kURFodT0XebugAKBbo4ilLqEYGgg9yzfAPLZubedHHSk5Exr/PbsJ8HML5Pb+J0GUuPPHr0SbxQGz+DlZDIvy/SNQ6/F+zpq4obftIqQpg5zmA==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(346002)(376002)(396003)(136003)(451199021)(40470700004)(36840700001)(46966006)(55016003)(40480700001)(40460700003)(70206006)(54906003)(478600001)(36860700001)(6636002)(70586007)(356005)(4326008)(82740400003)(6862004)(316002)(8936002)(5660300002)(7636003)(41300700001)(47076005)(186003)(336012)(426003)(8676002)(26005)(9686003)(86362001)(2906002)(33716001)(82310400005)(67856001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2023 15:34:50.1271
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e6c96f9f-75d4-4ffd-adaa-08db35eb4b7f
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT056.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB5675
+Content-Transfer-Encoding: 8bit
 
-On Wed, Apr 05, 2023 at 08:37:56AM -0300, Jason Gunthorpe wrote:
-> On Tue, Apr 04, 2023 at 10:45:56PM -0700, Nicolin Chen wrote:
-> > On Tue, Apr 04, 2023 at 01:20:01PM -0300, Jason Gunthorpe wrote:
-> > > On Mon, Apr 03, 2023 at 05:02:09PM -0700, Nicolin Chen wrote:
-> > > 
-> > > > My preference is to have a mmap'd page, so the interface can
-> > > > be reused later by VCMDQ too. Performance-wise, it should be
-> > > > good enough, since it does batching, IMHO.
-> > > 
-> > > You can't reuse mmaping the queue page with vcmdq, so it doesn't seem
-> > > meaningful to me.
-> > > 
-> > > There should be no mmap on the SW path. If you need a half step
-> > > between an ioctl as a batch and a full vhost-like queue scheme then
-> > > using iouring with pre-registered memory would be appropriate.
-> > 
-> > I've changed to a non-mmap approach that the host kernel reads
-> > the guest queue directly and inserts all invalidation commands
-> > into the host queue.
-> > 
-> > The qsz could be as large as 128 x 64K pages. So, there has to
-> > be a big array of pages getting pinned in the handler.
-> > 
-> > (The handler still needs a pathway to report errors. I will add
-> >  tomorrow.)
-> > 
-> > Does the implementation below look fine in general?
-> 
-> In general get_user_pages() is really slow compared to copy_from_user
+On platforms that do not support IOMMU Extended capability bit 0
+Page-walk Coherency, CPU caches are not snooped when IOMMU is accessing
+any translation structures. IOMMU access goes only directly to
+memory. Intel IOMMU code was missing a flush for the PASID table
+directory that resulted in the unrecoverable fault as shown below.
 
-Will change to using copy_from_user().
+This patch adds clflush calls whenever allocating and updating
+a PASID table directory to ensure cache coherency.
 
-Thanks!
-Nic
+On the reverse direction, there's no need to clflush the PASID directory
+pointer when we deactivate a context entry in that IOMMU hardware will
+not see the old PASID directory pointer after we clear the context entry.
+PASID directory entries are also never freed once allocated.
+
+[    0.555386] DMAR: DRHD: handling fault status reg 3
+[    0.555805] DMAR: [DMA Read NO_PASID] Request device [00:0d.2] fault addr 0x1026a4000 [fault reason 0x51] SM: Present bit in Directory Entry is clear
+[    0.556348] DMAR: Dump dmar1 table entries for IOVA 0x1026a4000
+[    0.556348] DMAR: scalable mode root entry: hi 0x0000000102448001, low 0x0000000101b3e001
+[    0.556348] DMAR: context entry: hi 0x0000000000000000, low 0x0000000101b4d401
+[    0.556348] DMAR: pasid dir entry: 0x0000000101b4e001
+[    0.556348] DMAR: pasid table entry[0]: 0x0000000000000109
+[    0.556348] DMAR: pasid table entry[1]: 0x0000000000000001
+[    0.556348] DMAR: pasid table entry[2]: 0x0000000000000000
+[    0.556348] DMAR: pasid table entry[3]: 0x0000000000000000
+[    0.556348] DMAR: pasid table entry[4]: 0x0000000000000000
+[    0.556348] DMAR: pasid table entry[5]: 0x0000000000000000
+[    0.556348] DMAR: pasid table entry[6]: 0x0000000000000000
+[    0.556348] DMAR: pasid table entry[7]: 0x0000000000000000
+[    0.556348] DMAR: PTE not present at level 4
+
+Cc: <stable@vger.kernel.org>
+Fixes: 0bbeb01a4faf ("iommu/vt-d: Manage scalalble mode PASID tables")
+Reported-by: Sukumar Ghorai <sukumar.ghorai@intel.com>
+Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+---
+v3: Add clflush after PASID directory allocation to prevent malicious
+device attack with unauthorized PASIDs. Also flush all the PASID entries
+after directory updates. (Baolu)
+v2: Add clflush to PASID directory update case (Baolu, Kevin review)
+---
+ drivers/iommu/intel/iommu.c | 2 ++
+ drivers/iommu/intel/pasid.c | 7 +++++++
+ 2 files changed, 9 insertions(+)
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 59df7e42fd53..161342e7149d 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1976,6 +1976,8 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+ 		pds = context_get_sm_pds(table);
+ 		context->lo = (u64)virt_to_phys(table->table) |
+ 				context_pdts(pds);
++		if (!ecap_coherent(iommu->ecap))
++			clflush_cache_range(table->table, sizeof(u64));
+ 
+ 		/* Setup the RID_PASID field: */
+ 		context_set_sm_rid2pasid(context, PASID_RID2PASID);
+diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+index fb3c7020028d..979f796175b1 100644
+--- a/drivers/iommu/intel/pasid.c
++++ b/drivers/iommu/intel/pasid.c
+@@ -128,6 +128,9 @@ int intel_pasid_alloc_table(struct device *dev)
+ 	pasid_table->max_pasid = 1 << (order + PAGE_SHIFT + 3);
+ 	info->pasid_table = pasid_table;
+ 
++	if (!ecap_coherent(info->iommu->ecap))
++		clflush_cache_range(pasid_table->table, size);
++
+ 	return 0;
+ }
+ 
+@@ -215,6 +218,10 @@ static struct pasid_entry *intel_pasid_get_entry(struct device *dev, u32 pasid)
+ 			free_pgtable_page(entries);
+ 			goto retry;
+ 		}
++		if (!ecap_coherent(info->iommu->ecap)) {
++			clflush_cache_range(entries, VTD_PAGE_SIZE);
++			clflush_cache_range(&dir[dir_index].val, sizeof(*dir));
++		}
+ 	}
+ 
+ 	return &entries[index];
+-- 
+2.25.1
+
