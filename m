@@ -1,147 +1,89 @@
-Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2BC6ECA
-	for <iommu@lists.linux.dev>; Thu,  6 Apr 2023 08:13:36 +0000 (UTC)
-Received: by mail-ed1-f43.google.com with SMTP id t10so147192986edd.12
-        for <iommu@lists.linux.dev>; Thu, 06 Apr 2023 01:13:36 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E96A91872
+	for <iommu@lists.linux.dev>; Thu,  6 Apr 2023 08:55:36 +0000 (UTC)
+Received: by mail-wr1-f41.google.com with SMTP id l12so38728522wrm.10
+        for <iommu@lists.linux.dev>; Thu, 06 Apr 2023 01:55:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680768815;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lu1ZIi7tBRHWfqxhCGVkyOO/jfdqs/J/p+pYOITBDkU=;
-        b=ZsSbhJJ3pKekXGH3l1kAv86u9/s8jGrtjbPMAcs/BEyLEXHZMzE0rtLj9YohhlHY5Z
-         F53XyvF8tiFcmLhi5c82QMmvn7AhGiLh/LmvM4vR4JgeQs+i4e8kXDvQp/pjelPyTCGL
-         R70lzADyRmjduvx89W327EjXOudBurv1gy/tDrijgDZEu+FqpyIpUUODwkbv9jKt/PHG
-         SXhWEL6+1j+oCOtoWHgkhFlK+LHW5ot53HB5b+M/APYoChQ8vuKAzeyrL0gelsOyeoxj
-         8QfsrhzA8EdQGWh6gXZzkKnpJ8UB4VsBvQupIzu+h8a0JsmYT8dAlfTdXMhXBCGD8GrN
-         G+pg==
+        d=gmail.com; s=20210112; t=1680771335; x=1683363335;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=B7txVTxf4VgSRpVhYeEkO74+1AKmp0Ykpq11aY2byhk=;
+        b=pfSmWPO3N8Z/GMBw8IydKi0iku0P+O92dK5LhpN58P47xOQXIptsOGaSs9neEUJKqg
+         BOvkLDw9p0MMvadI/+5TNgKRLp1tMpJQoAQNULZd87C2us2gw0HoU91U9glatgdoji3x
+         9TlRNAkRVec20j2pmoLrXk8B8fORaTh0t9LkFk0HpJO8X0YYQuYZ6++KCgGKC5/ENzHB
+         jP13FmuPYy5bKSMyPj3juqOfmunMPAp3tr72ssJtkpw7cLlCw4orS56fatTW07UQMsME
+         //l9E1BODxBE9qw/CfFDEFqCLgEwcwiWBC5hT0gyIkdTxnY9PjfsRnDIBYaqZHD8d4N4
+         6wNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680768815;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=lu1ZIi7tBRHWfqxhCGVkyOO/jfdqs/J/p+pYOITBDkU=;
-        b=cCjvT9YsS7utf8MyOwnzv8JS3MH3rYS3D46cVW3WsBGYzlGxuUNHxQdjgOlHCNZJgV
-         llWLqmNbD3hWPcjLxz6fU7p1P7iTGnNP8T3pLPgpa/maDqCR4NMmzCr4krSX0R4PKkJo
-         PK+EcWvlyNY2a99m46Y1TxCD9gMXBaGeDiZpay+MymZTKq2iL3Zdp27KCryikL3pMOQh
-         AzT/HUHnsTYYLBEdjphPswWEesE9J0vLjwTHABCQCjp1gtxVM3HDcfp0XYR/sXbQTaaA
-         9sI0Mr8SG/ww50OfXwCD92jugCkGIeEU5PQU/GVFcvg2IqvMGVukDCda0VqI9V+tbJVu
-         ohiA==
-X-Gm-Message-State: AAQBX9dpeJGF6MfJbEsm/gQAIrx/W5CBVzNC8BjkHSnStbFPSTIQBZtk
-	DYesCc1cEPgvAmCgommyF676nZEL+tOCAoe83CY=
-X-Google-Smtp-Source: AKy350blbuwNZejN6L/nUpeEwCHeQxxdE8X6OS0Ll1ser07oYVVQatoB0SiGSLUgyWopUY6f6TUg0bPKIo9QxXrzPI8=
-X-Received: by 2002:a17:906:1619:b0:878:4a24:1a5c with SMTP id
- m25-20020a170906161900b008784a241a5cmr2824172ejd.6.1680768814664; Thu, 06 Apr
- 2023 01:13:34 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1680771335; x=1683363335;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=B7txVTxf4VgSRpVhYeEkO74+1AKmp0Ykpq11aY2byhk=;
+        b=XDJhsDH2eoG1v9YT2ycywjysxkK/LO1E4+bQg2N+4dJeO/7gbuL8oODviBUKc7MCsz
+         jbxfKMcme+b/xecb7qwsDUMXN11oPNWH8jjitA2Fw0sdP1WMuvFU/gd1NVRNIevYOfTw
+         fBOi99hXzJx7i7Mf09wCfpBjr2/t9/TjZxOtxtLXxHiklXnnjMrLnDFU3dGFi9znwIwj
+         EufBk5FD5oboCbjII2S7pnXX1s7pdBrZ4iultuSALfKs6a4Hfi32oNt3mTpR6FYHdv6f
+         0crm6ROyUIM4m99GEa7j4gDjzYhwBmObzXlVscJr10BUwzxv8JG5V19OoCHtk4P5A9ZY
+         uoXg==
+X-Gm-Message-State: AAQBX9fgycYc75GceDxHSmjIK9CYbBDIKhrwv/hCSHRzOA7ijSZrv7dT
+	x4iG7MQqSBJHE1RNTihurpM=
+X-Google-Smtp-Source: AKy350Z/yqy0Ka8rHZ160xapJkbWkSFSsDNx8JryjDJ7M1zdz/g42+5DgPJhbaWIUQAq5RLttaL6jA==
+X-Received: by 2002:adf:ef03:0:b0:2e4:ff71:1c8e with SMTP id e3-20020adfef03000000b002e4ff711c8emr5681057wro.68.1680771335087;
+        Thu, 06 Apr 2023 01:55:35 -0700 (PDT)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id b5-20020adfde05000000b002d78a96cf5fsm1147318wrm.70.2023.04.06.01.55.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Apr 2023 01:55:34 -0700 (PDT)
+Date: Thu, 6 Apr 2023 11:55:31 +0300
+From: Dan Carpenter <error27@gmail.com>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	iommu@lists.linux.dev, kernel-janitors@vger.kernel.org
+Subject: [PATCH] iommu/sva: fix signedness bug in iommu_sva_alloc_pasid()
+Message-ID: <6b32095d-7491-4ebb-a850-12e96209eaaf@kili.mountain>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230329123420.34641-1-tomas.krcka@gmail.com>
-In-Reply-To: <20230329123420.34641-1-tomas.krcka@gmail.com>
-From: Tomas Krcka <tomas.krcka@gmail.com>
-Date: Thu, 6 Apr 2023 10:13:23 +0200
-Message-ID: <CAOtnYZPfy3AuB-B2O_VCFy9Amt18PRCg+7f2tvKKYMrwZThtdg@mail.gmail.com>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Acknowledge pri/event queue overflow
- if any
-To: will@kernel.org
-Cc: Tomas Krcka <krckatom@amazon.de>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
 
-Am Mi., 29. M=C3=A4rz 2023 um 14:34 Uhr schrieb <tomas.krcka@gmail.com>:
->
-> From: Tomas Krcka <krckatom@amazon.de>
->
-> When an overflow occurs in the PRI queue, the SMMU toggles the overflow
-> flag in the PROD register. To exit the overflow condition, the PRI thread
-> is supposed to acknowledge it by toggling this flag in the CONS register.
-> Unacknowledged overflow causes the queue to stop adding anything new.
->
-> Currently, the priq thread always writes the CONS register back to the
-> SMMU after clearing the queue.
->
-> The writeback is not necessary if the OVFLG in the PROD register has not
-> been changed, no overflow has occured.
->
-> This commit checks the difference of the overflow flag between CONS and
-> PROD register. If it's different, toggles the OVACKFLG flag in the CONS
-> register and write it to the SMMU.
->
-> The situation is similar for the event queue.
-> The acknowledge register is also toggled after clearing the event
-> queue but never propagated to the hardware. This would only be done the
-> next time when executing evtq thread.
->
-> Unacknowledged event queue overflow doesn't affect the event
-> queue, because the SMMU still adds elements to that queue when the
-> overflow condition is active.
-> But it feel nicer to keep SMMU in sync when possible, so use the same
-> way here as well.
->
-> Signed-off-by: Tomas Krcka <krckatom@amazon.de>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 19 ++++++++++++++-----
->  1 file changed, 14 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/=
-arm/arm-smmu-v3/arm-smmu-v3.c
-> index f2425b0f0cd6..7614739ea2c1 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -152,6 +152,18 @@ static void queue_inc_cons(struct arm_smmu_ll_queue =
-*q)
->         q->cons =3D Q_OVF(q->cons) | Q_WRP(q, cons) | Q_IDX(q, cons);
->  }
->
-> +static void queue_sync_cons_ovf(struct arm_smmu_queue *q)
-> +{
-> +       struct arm_smmu_ll_queue *llq =3D &q->llq;
-> +
-> +       if (likely(Q_OVF(llq->prod) =3D=3D Q_OVF(llq->cons)))
-> +               return;
-> +
-> +       llq->cons =3D Q_OVF(llq->prod) | Q_WRP(llq, llq->cons) |
-> +                     Q_IDX(llq, llq->cons);
-> +       queue_sync_cons_out(q);
-> +}
-> +
->  static int queue_sync_prod_in(struct arm_smmu_queue *q)
->  {
->         u32 prod;
-> @@ -1577,8 +1589,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, vo=
-id *dev)
->         } while (!queue_empty(llq));
->
->         /* Sync our overflow flag, as we believe we're up to speed */
-> -       llq->cons =3D Q_OVF(llq->prod) | Q_WRP(llq, llq->cons) |
-> -                   Q_IDX(llq, llq->cons);
-> +       queue_sync_cons_ovf(q);
->         return IRQ_HANDLED;
->  }
->
-> @@ -1636,9 +1647,7 @@ static irqreturn_t arm_smmu_priq_thread(int irq, vo=
-id *dev)
->         } while (!queue_empty(llq));
->
->         /* Sync our overflow flag, as we believe we're up to speed */
-> -       llq->cons =3D Q_OVF(llq->prod) | Q_WRP(llq, llq->cons) |
-> -                     Q_IDX(llq, llq->cons);
-> -       queue_sync_cons_out(q);
-> +       queue_sync_cons_ovf(q);
->         return IRQ_HANDLED;
->  }
->
-> --
-> 2.39.2
->
+The ida_alloc_range() function returns negative error codes on error.
+On success it returns values in the min to max range (inclusive).  It
+never returns more then INT_MAX even if "max" is higher.  It never
+returns values in the 0 to (min - 1) range.
 
-ping for this patch ...
+The bug is that "min" is an unsigned int so negative error codes will
+be promoted to high positive values errors treated as success.
+
+Fixes: 1a14bf0fc7ed ("iommu/sva: Use GFP_KERNEL for pasid allocation")
+Signed-off-by: Dan Carpenter <error27@gmail.com>
+---
+ drivers/iommu/iommu-sva.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+index c4ab3c457fbc..6e4f1ba1c148 100644
+--- a/drivers/iommu/iommu-sva.c
++++ b/drivers/iommu/iommu-sva.c
+@@ -33,8 +33,9 @@ static int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t ma
+ 	}
+ 
+ 	ret = ida_alloc_range(&iommu_global_pasid_ida, min, max, GFP_KERNEL);
+-	if (ret < min)
++	if (ret < 0)
+ 		goto out;
++
+ 	mm->pasid = ret;
+ 	ret = 0;
+ out:
+-- 
+2.39.1
+
