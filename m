@@ -1,43 +1,43 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1598FAFC2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE03CAFC6
 	for <iommu@lists.linux.dev>; Thu,  6 Apr 2023 20:07:56 +0000 (UTC)
-Received: by mail-wr1-f51.google.com with SMTP id h17so40638553wrt.8
-        for <iommu@lists.linux.dev>; Thu, 06 Apr 2023 13:07:55 -0700 (PDT)
+Received: by mail-wr1-f45.google.com with SMTP id r11so40639796wrr.12
+        for <iommu@lists.linux.dev>; Thu, 06 Apr 2023 13:07:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112; t=1680811674;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112; t=1680811676;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=m52Fvcr35MflUMHJTsLpmYtRZScsn7h+EREVPBWogx0=;
-        b=FtP0/eW7E1kTl+x7xopru+dzz4dGbL19ET6V852K4bydrN4OVov2baH8oQ2bxfW1ou
-         A2a39Zix/GM6gMJnX3LlTU5gFFKaQI5/oAEsLTJRp2Gc2h0KhP5oiePvszdIyU0WWDNF
-         axa61RPGGTix+oVcDM+4+9skVyk2fCbYP07Smr+3mqwFk/ZsjM4BXHia2r7Clwf30bv6
-         ASbVp9SpcFg4FNN4LLy0uZKoxtCN+GtEA2y/mZMsdl+Pl/qkQ7fm8IIrKFJsnTQ7BH/W
-         I9G/QNaeY2ErIRzIBkxX3bK126H16Mi/6wLdimXnO6EECDY9RW3mFmDMCpeQ4tc+NOCW
-         1Dow==
+        bh=X/qILjo31dKZRnx2BX/LkX4PumS7avDA/rk4boexQqw=;
+        b=mWXFvaBTMes2+5FGcHrA86JEiUqUUTA8C1NMuHGOQ/4j5VwacWsbgogLhiFPWMNS1U
+         qZHmMk6g1RmkM1MUB073AuluNGMHZSoA9v+FLJ2ZIIU100uQ8XWCHn6quje58KDTIvjk
+         EDfkqbwnZ634sNQEunfyQNJUNH8otZS1hJEgdjQlxlAZv6f5Q9qdk9cZv1yLhjWoTj5C
+         BxzHiqa6Wc1eOb11bJUqHP1HkZ0/7fIFWvhdjILp5xuZ0M5ihwPWcdcQ96+NSx4nU+MH
+         oPZ0W/VhZJSPkp/0L/H36Acg3v2JNzMCFyXbjeLvDjooL3LUZ7lvmfX4g7/3diXHxv+x
+         3Njg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680811674;
+        d=1e100.net; s=20210112; t=1680811676;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=m52Fvcr35MflUMHJTsLpmYtRZScsn7h+EREVPBWogx0=;
-        b=djGaBNmYIR7wpkUFLx9+jMcb0bny6M+S9xqQ98HO9vcPg2LmojPDNRPuzqBe43gWoY
-         Nt3uuL6AZzxRyeDPqJekyLCal6sNUtJhMv4inROTAryqvNfRVkX4KKeQxf1M1uo6n3kQ
-         pI9iJLatk/nS5MgofpX/vtcPHMmq/5b/vnQqMOldS/u4s1YgyGtJssJDVu5QudcPDt6I
-         1zQ5IZBC/yK8yyR0XuutQ/s63AFKgdM3ba90QgTc35UH7j6SdCaBIOFto07TxBf0I/6b
-         RWvYxY2CFwgTkd9Z+hcb4t9LXZg/LEPclViqKBYkgnbqv2a2ngjNKTXMd8fKOtaVbrq+
-         zxxA==
-X-Gm-Message-State: AAQBX9fPmV3oyWjYwdCeEqnVifBMkV1yvBjLREXzGh57X5NLmcjV5B1e
-	UOHuWVqDWSJsDi9Gm4zzMBHgpg==
-X-Google-Smtp-Source: AKy350aE3QvSbgAyL1jPQ/oye/qNMJsQBTxvNUiD8mdV9ti66FilDN16i33EOIAXyrZasngdBRMRWQ==
-X-Received: by 2002:a5d:5103:0:b0:2d3:fba4:e61d with SMTP id s3-20020a5d5103000000b002d3fba4e61dmr4436015wrt.12.1680811674335;
-        Thu, 06 Apr 2023 13:07:54 -0700 (PDT)
+        bh=X/qILjo31dKZRnx2BX/LkX4PumS7avDA/rk4boexQqw=;
+        b=oBXF98bY+3p/EyuYxoZoQIi8tA3OvO5zh8n+5QKecsV2zX1GK+6qyR7D6YhWEd3JZY
+         /objRHQH2MQMtFvdwGNxs1MdgZrgdcVcpenYj4N4XOubqrbw4l+AQR9zq0Lh8mMhANL5
+         iRxgbnPIZq8GElXVIxM1HT6SirFrFGZ73Bx/DhxyuoM3FP0GkuoMgvQrvDRQPM6GBbut
+         qHOQs0ZswZdpwMtup0BCzoOjRKdzDi27txFPhmpacgb2G7HABt2V50EKK/pBYUgJ7qL9
+         M5VIBqmucZaGGmTy52NR+TYrLgj/wGz4ZlDT9RSBG5oVE3P3tT9PF+hM+80WtdUuqPoW
+         MRjg==
+X-Gm-Message-State: AAQBX9dVPn43oxcLGb+rGiv0/5BGYb8jfb6d/y+2Nu23t0+LX5G7nzoQ
+	WNPVOLI6bkRmCiNe5hFo20wQdg==
+X-Google-Smtp-Source: AKy350beFouznKsGY5cO6VPMl+btQGI5bQmEMBut1bMbkKXE41VbY78i9lJQNg9ULlpIJIn036ehbw==
+X-Received: by 2002:adf:e74d:0:b0:2ce:a85d:5319 with SMTP id c13-20020adfe74d000000b002cea85d5319mr7927093wrn.39.1680811676506;
+        Thu, 06 Apr 2023 13:07:56 -0700 (PDT)
 Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:4793:cb9a:340b:2f72])
-        by smtp.gmail.com with ESMTPSA id c11-20020adfe74b000000b002d89e113691sm2560506wrn.52.2023.04.06.13.07.53
+        by smtp.gmail.com with ESMTPSA id c11-20020adfe74b000000b002d89e113691sm2560506wrn.52.2023.04.06.13.07.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Apr 2023 13:07:53 -0700 (PDT)
+        Thu, 06 Apr 2023 13:07:56 -0700 (PDT)
 From: Bartosz Golaszewski <brgl@bgdev.pl>
 To: Bjorn Andersson <andersson@kernel.org>,
 	Andy Gross <agross@kernel.org>,
@@ -58,9 +58,9 @@ Cc: linux-arm-msm@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev,
 	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Subject: [PATCH v2 5/7] arm64: dts: qcom: sa8775p: add the pcie smmu node
-Date: Thu,  6 Apr 2023 22:07:21 +0200
-Message-Id: <20230406200723.552644-6-brgl@bgdev.pl>
+Subject: [PATCH v2 7/7] arm64: dts: qcom: sa8775p: add the GPU IOMMU node
+Date: Thu,  6 Apr 2023 22:07:23 +0200
+Message-Id: <20230406200723.552644-8-brgl@bgdev.pl>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230406200723.552644-1-brgl@bgdev.pl>
 References: <20230406200723.552644-1-brgl@bgdev.pl>
@@ -74,99 +74,67 @@ Content-Transfer-Encoding: 8bit
 
 From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-Add the PCIe SMMU node for sa8775p platforms.
+Add the GPU IOMMU for sa8775p-based platforms.
 
 Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 ---
- arch/arm64/boot/dts/qcom/sa8775p.dtsi | 74 +++++++++++++++++++++++++++
- 1 file changed, 74 insertions(+)
+ arch/arm64/boot/dts/qcom/sa8775p.dtsi | 36 +++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/qcom/sa8775p.dtsi b/arch/arm64/boot/dts/qcom/sa8775p.dtsi
-index 2343df7e0ea4..9ab630c7d81b 100644
+index f799cb5abb87..f46c1a73abdb 100644
 --- a/arch/arm64/boot/dts/qcom/sa8775p.dtsi
 +++ b/arch/arm64/boot/dts/qcom/sa8775p.dtsi
-@@ -809,6 +809,80 @@ apps_smmu: iommu@15000000 {
- 				     <GIC_SPI 891 IRQ_TYPE_LEVEL_HIGH>;
+@@ -7,6 +7,7 @@
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
+ #include <dt-bindings/clock/qcom,rpmh.h>
+ #include <dt-bindings/clock/qcom,sa8775p-gcc.h>
++#include <dt-bindings/clock/qcom,sa8775p-gpucc.h>
+ #include <dt-bindings/interconnect/qcom,sa8775p-rpmh.h>
+ #include <dt-bindings/power/qcom-rpmpd.h>
+ #include <dt-bindings/soc/qcom,rpmh-rsc.h>
+@@ -605,6 +606,41 @@ gpucc: clock-controller@3d90000 {
+ 			#power-domain-cells = <1>;
  		};
  
-+		pcie_smmu: iommu@15200000 {
++		kgsl_smmu: iommu@3da0000 {
 +			compatible = "qcom,sa8775p-smmu-500", "qcom,smmu-500", "arm,mmu-500";
-+			reg = <0x0 0x15200000 0x0 0x800000>;
++			reg = <0x0 0x03da0000 0x0 0x20000>;
 +			#iommu-cells = <2>;
 +			#global-interrupts = <2>;
-+
-+			interrupts = <GIC_SPI 920 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 921 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 925 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 926 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 927 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 928 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 950 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 951 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 952 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 953 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 954 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 955 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 956 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 957 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 958 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 885 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 886 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 887 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 888 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 820 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 822 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 823 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 310 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 446 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 447 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 452 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 840 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 841 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 842 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 843 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 844 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 845 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 846 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 847 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 848 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 849 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 802 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 803 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 804 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 805 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 806 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 807 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 808 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 809 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 810 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 811 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 812 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 813 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 814 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 836 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 837 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 838 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 839 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 854 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 855 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 856 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 790 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 791 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 792 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 793 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 794 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 795 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 796 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 639 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 640 IRQ_TYPE_LEVEL_HIGH>;
++			dma-coherent;
++			power-domains = <&gpucc GPU_CC_CX_GDSC>;
++			clocks = <&gcc GCC_GPU_MEMNOC_GFX_CLK>,
++				 <&gcc GCC_GPU_SNOC_DVM_GFX_CLK>,
++				 <&gpucc GPU_CC_AHB_CLK>,
++				 <&gpucc GPU_CC_HLOS1_VOTE_GPU_SMMU_CLK>,
++				 <&gpucc GPU_CC_CX_GMU_CLK>,
++				 <&gpucc GPU_CC_HUB_CX_INT_CLK>,
++				 <&gpucc GPU_CC_HUB_AON_CLK>;
++			clock-names = "gcc_gpu_memnoc_gfx_clk",
++				      "gcc_gpu_snoc_dvm_gfx_clk",
++				      "gpu_cc_ahb_clk",
++				      "gpu_cc_hlos1_vote_gpu_smmu_clk",
++				      "gpu_cc_cx_gmu_clk",
++				      "gpu_cc_hub_cx_int_clk",
++				      "gpu_cc_hub_aon_clk";
++			interrupts = <GIC_SPI 673 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 674 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 678 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 679 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 680 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 681 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 682 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 683 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 684 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 685 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 686 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 687 IRQ_TYPE_LEVEL_HIGH>;
 +		};
 +
- 		intc: interrupt-controller@17a00000 {
- 			compatible = "arm,gic-v3";
- 			reg = <0x0 0x17a00000 0x0 0x10000>,     /* GICD */
+ 		pdc: interrupt-controller@b220000 {
+ 			compatible = "qcom,sa8775p-pdc", "qcom,pdc";
+ 			reg = <0x0 0x0b220000 0x0 0x30000>,
 -- 
 2.37.2
 
