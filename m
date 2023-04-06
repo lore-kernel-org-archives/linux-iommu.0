@@ -1,137 +1,210 @@
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2042.outbound.protection.outlook.com [40.107.100.42])
+Received: from mail-40133.protonmail.ch (mail-40133.protonmail.ch [185.70.40.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3306F3214
-	for <iommu@lists.linux.dev>; Thu,  6 Apr 2023 11:40:14 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JWJ/tvgX80dyA3K5XOFF4ABL38tBO1EJ8Wd56L3Eu8PjD2vqx0DHqbLAFGKjYF5bfeLfTyKgs7HPXGh3ujvhkKZwJIDx4u6fpzCvkSWLumJhS+KFiBpJEGDPVzTMY+Jl97EuXFHfVZZrq076AzWY7Ops+0VleLoi77aAp7nmQrczWe7LCpDocp7voT61iY701cHz+LZdGqlHF2rXfhPI/vihOwy640ZGXbUkMSlIAXmEOYH/zdnIzjuIXS/PGWNGt4vmsaHUABkceO6AVBhF3SjISeuFESUQj0vCkbLoAH85acXR4SOq6ooU2gES7pwJoejf64UjV1M98PQObQMhuA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vdkeLYDaUhnZ19u918uPvo52Y0d4mgQwQD6nCraeMlg=;
- b=L+hjMtfza8AqitOMex5lUwv5c+0i7vu3AarIbfeFY1IygG4wqIR2GOh1zYInaRJS746AGi88Z74kyM3I7kXdTNkBKtHRZU4Wex2msYqZSE8sdKTE8ddbCk9vOz3Z3Db3aD0mvD+QY6fBEIGt6p0S4xUri87WIp3AGgdP0disj2BqZmHXXvAytvruzj7G6rxjBSjkqmoKLJPY4XGAvwe+QhtH6CeVHDsyyCQJBAmi0NOi2dQkfNT6SDjUoCp4cqHoHyLHtEyNdT7AyDNEl/h7AG4I91QgOy61W/QLpZE3hL2ZqnLDJjbtsBbXaStuVK8ehqSND2BhOr+rtwpzkEQdOQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vdkeLYDaUhnZ19u918uPvo52Y0d4mgQwQD6nCraeMlg=;
- b=kosgrkIRwIrWW8CyFv6omY9ML5DbuhrBhEZ1miPDZedBaZupst3VySiMa5L7VNEGL4J51ZC118esa1YBM4wEozZCzqu9Qw7H4WASqn2ja1S1f+3We947UuL39YLxs1MfW8dz7esVNfRKgtPTMGZ6TVSeytqfFy8TwIOg5FQ4sQU7NqAp6BZ4TlfLqP8nfrZNKZgWu/gfrZabl0OuhdJadi5B1A3UIjk36CdNCkcRmUUJ+j3JuEWwqDeP1DCxGAgwGBsZGF9O/aj9zjyXBdAYU2NtXeY3iTif+iCo0y3HZabOsRIwHUYYR80bdomUL9OXjz9Qg6hxggjN1QIsubk3+w==
-Received: from SJ2PR12MB8064.namprd12.prod.outlook.com (2603:10b6:a03:4cc::17)
- by PH0PR12MB5631.namprd12.prod.outlook.com (2603:10b6:510:144::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.35; Thu, 6 Apr
- 2023 11:40:09 +0000
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by SJ2PR12MB8064.namprd12.prod.outlook.com (2603:10b6:a03:4cc::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.35; Thu, 6 Apr
- 2023 11:40:06 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::6045:ad97:10b7:62a2]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::6045:ad97:10b7:62a2%6]) with mapi id 15.20.6254.035; Thu, 6 Apr 2023
- 11:40:05 +0000
-Date: Thu, 6 Apr 2023 08:40:04 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Zhangfei Gao <zhangfei.gao@linaro.org>
-Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	"kevin.tian@intel.com" <kevin.tian@intel.com>,
-	"yi.l.liu@intel.com" <yi.l.liu@intel.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"jean-philippe@linaro.org" <jean-philippe@linaro.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	qianweili <qianweili@huawei.com>
-Subject: Re: Cache Invalidation Solution for Nested IOMMU
-Message-ID: <ZC6vlI7onlUgBidX@nvidia.com>
-References: <ZCoe3+1q5ZLJsmeC@Asurada-Nvidia>
- <ZCrd1wphkCp8uFt0@nvidia.com>
- <ZCrn8PPPyEJ/VqFU@Asurada-Nvidia>
- <ea6fba01-b483-94e6-8c84-d096dcb64b5a@arm.com>
- <ZCtpAYn76u499p6G@Asurada-Nvidia>
- <ZCxOMSvR+6rYbIfy@nvidia.com>
- <a3bbd5422897475d8bcd4c110c3722ec@huawei.com>
- <CABQgh9G_Xa6h7ujRJkCogp02N87OAugBTEuXyccQREw28VfZCQ@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CABQgh9G_Xa6h7ujRJkCogp02N87OAugBTEuXyccQREw28VfZCQ@mail.gmail.com>
-X-ClientProxiedBy: BL0PR01CA0013.prod.exchangelabs.com (2603:10b6:208:71::26)
- To LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD63F3214
+	for <iommu@lists.linux.dev>; Thu,  6 Apr 2023 11:45:06 +0000 (UTC)
+Date: Thu, 06 Apr 2023 11:44:55 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=proton.me;
+	s=protonmail; t=1680781504; x=1681040704;
+	bh=jDCBj8lshorW4gdkd4kJjUH+4/q9Xfg6ywnJShCYQyw=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+	 Message-ID:BIMI-Selector;
+	b=dZ9KpKqjZpp5ekB8Hwx8+atH3RXHtHtb8jmwcgcxXYUdxq3S5rnRvb6cG4JLo2Gnm
+	 EN1w+HfX+LY6vfSUh5jAQujFu1YzwnJkbqNXXgDur99xiTx631qZQejUg/yV/ZmNkf
+	 +pps5DwM7jmDLZKedntQZACZjQ1UWk8ng/xtOMgGlOdDmUxlLgqC4EJImgFKO4Ao2e
+	 um4qiqDRJvzu3RT5NbJly5Q/Qw0c2pc1tiEoW5dOgY22o7C74Jr4Rkfz5wnhgBHTdn
+	 SGYczFCacdgmFxBo+8mYgdxk87TFwM24WQ8lRnRXwcC2eJXRQ7Cu986BlW9+QxNrb5
+	 QWf7kSBD4vN2Q==
+To: =?utf-8?Q?Petr_Tesa=C5=99=C3=ADk?= <petr@tesarici.cz>
+From: Juerg Haefliger <juergh@proton.me>
+Cc: Petr Tesarik <petrtesarik@huaweicloud.com>, Christoph Hellwig <hch@lst.de>, Jonathan Corbet <corbet@lwn.net>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Borislav Petkov <bp@suse.de>, "Paul E. McKenney" <paulmck@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Randy Dunlap <rdunlap@infradead.org>, Damien Le Moal <damien.lemoal@opensource.wdc.com>, Kim Phillips <kim.phillips@amd.com>, "Steven Rostedt (Google)" <rostedt@goodmis.org>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>, Roberto Sassu <roberto.sassu@huawei.com>, Alexander Graf <graf@amazon.com>
+Subject: Re: [RFC v1 3/4] swiotlb: Allow dynamic allocation of bounce buffers
+Message-ID: <20230406134440.72959135@gollum>
+In-Reply-To: <20230331110043.7b1ddfa3@meshulam.tesarici.cz>
+References: <4268fa4e-4f0f-a2f6-a2a5-5b78ca4a073d@huaweicloud.com> <20230331092553.677e9649@smeagol> <20230331110043.7b1ddfa3@meshulam.tesarici.cz>
+Feedback-ID: 45149698:user:proton
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic:
-	LV2PR12MB5869:EE_|SJ2PR12MB8064:EE_|PH0PR12MB5631:EE_
-X-MS-Office365-Filtering-Correlation-Id: 47a6df86-fc55-41f5-363b-08db3693aad9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	gDjYNxL10ZU/DOgGDY/d1F3+xRyV0/LKHoVh/z4Eh24eg19vIQFcVux1cMig9khQgfWAoRPbKAvWWZScydwXaOGvUngZFrHX3GawW7mxjzQPJ0UuU9dGz0Zqw5S+qPp1U/VfaG4HbGTnQcps53aVz533SPBzNdW3ygjGVHMzNc/AkzA61wnq0gzTf1FtBBg962gNRxiqMz/knWlqUFk+0pBaKn9gKIcBEEgItH1sdWtt9XSeyeKdqfpecJ2oM1m3DKaG9+5ynwOLKXDkr6gOkGrvj9LY5ghEgAF2Oq6QBirB4kZNJ4KCxTnPf6iPNz1hDiL354ovTgGuQQm4teG652braKfPMYXpXVH6mwbs4alSVf1Y64kSMMtxhtm4Ow7JPSnYPjyxyi4fwgDYzJHAtCEPef8HLsjqQ7n/2W9y42x7/d56wr5Lp5ohQRbGHhBCs7aFMRB0knBRA6V5968sVzwGUfunVVnlLKf7D9COkPfGEBuCBsgiuyu47whpvvL2J3FufPiA+Rr3zYP2Wc+oeK5yqOdvJLG9qNrSw3asTfiLq52oSfhezvqXGf0N3ayf
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR12MB8064.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(376002)(39860400002)(136003)(366004)(396003)(451199021)(36756003)(6506007)(6486002)(26005)(6512007)(478600001)(2616005)(54906003)(186003)(316002)(2906002)(86362001)(38100700002)(7416002)(8936002)(5660300002)(41300700001)(66946007)(66556008)(4326008)(8676002)(66476007)(6916009)(4744005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?ynch7ypYcwyUH5g4VUyRhKm4EMru/qOypUcXboEHfoKBGuL78+AOgXeqRY+H?=
- =?us-ascii?Q?Ba/H9AP31df0hhvc2veuB8fpy6phZRoXLB35P7bGq3Dfwkxd5rWqYhv+SNj2?=
- =?us-ascii?Q?WD2Zmudkc+4lgpUgw6vzp68vuL68fmYy0Zn4eIQUHJ/wIyS/Nq9/DZH3h/Ez?=
- =?us-ascii?Q?b7Pj+xsXVFlKe+jVh0oJ7pMjZPk1CSLxx4+o4h4/xUAvAipU6lCTCAlH+yBf?=
- =?us-ascii?Q?43zbn9MMsxhwIE8b4bKYjCkCCvg256TyCT4Q6xZvmbBdsbhKsqaypyF/1eqT?=
- =?us-ascii?Q?6tRwDgJ3b7YnRThEwFPVKK472alZpp18Ms80DvjbQrEGPxIPCCUkWTu8p1Yr?=
- =?us-ascii?Q?WANv4e/eOCnSZ0hpvhZ2bZN5GWXUA1jHfWGuynri2R4XALKvTFkQFWpHhl9F?=
- =?us-ascii?Q?pOm4hot5SLBG3AMUVfxE5pG7X5IkyzaPecfcFuBOvY5ePwjBFBb2Dhy9aywQ?=
- =?us-ascii?Q?R7GHDyRwZl6g3uB7mp2hHE/xq0NYqzHMLtzj01mc051I97LECkE+5r99wlwT?=
- =?us-ascii?Q?xtCxNH1nsE7ksxpPMV+eQ4XZsME1vKwRyN66G/Zu0xNsSiTTkjrfEXAIjtCo?=
- =?us-ascii?Q?y7iW1hD4D8PcqJaqXvRbm91/3OIo/Z3oQuwOJI1IADLELVvb77f2C2LEdxS5?=
- =?us-ascii?Q?b0ZVIqfOZMj3yosaneFIR0dMLhtvGS3v7VTgw5muewcqYZYuBzC8peqIAPwh?=
- =?us-ascii?Q?f1LIIGB4xyBhmS3xOjy/fuYNulBh8DcPn6bZn2GQIJnoOYsrLzRuDQNqiAoa?=
- =?us-ascii?Q?DDJt0vWsT79BS+vLhz583LxvwH/oNKthQ0ngf9xUnd0DfG1uD3jA+yikb6i6?=
- =?us-ascii?Q?ShV44k4DFf8/Z9BqsIRJ9cftaZrwvhyUbh+t5WE23g2JbdbzQwHLWSh6YKBZ?=
- =?us-ascii?Q?nLoiSs8Hft7kREiS8EtrmQFWzhrUaGjW6hoqKHvt6Ec49ovCkMRqSj7+SbjX?=
- =?us-ascii?Q?c1hK4urCK/vw37ElIW8vtXENRkDRjrPaw59h+WC75gDvnXO0r+4Oxyisxx3u?=
- =?us-ascii?Q?m4YKWQQDhDWMYVAa2jyWA4xr6bBzxIObmmNDDyt2VcRKcNDoZgDdn6zm2pau?=
- =?us-ascii?Q?j1zOGNvo8X8CL5UjpnjrWUe0VDZYX4q7ljgZex3zIaSChwx50+qRB6YQgSZW?=
- =?us-ascii?Q?3dzuzaSeys/e2dtNBMXaIpOvxSKDMLbG8bnnOjh2zXtISbeKQJJw4SNoLNZd?=
- =?us-ascii?Q?ZjC29X+WWBL6Dtz6jrcX7w108sC8qZb773J6cTUsQgisiwxpGSBML3Wl4YEP?=
- =?us-ascii?Q?kXWnO+j8/XFAHp4AGh4mjy7GJHI9PpIy8A7hvzLMnu9KMsZApcQwN7K/HPO9?=
- =?us-ascii?Q?aoL/K3x98z9jeE5BziMeLFroZun05w0kGNIJguRZp0bGefbFEGAxzqpbBjE7?=
- =?us-ascii?Q?tX7XXsFGSoRE1VqfURmKtJYwm3e6jn3+6Cv8Tg5ivyP5B8lNaMJztDPboBkL?=
- =?us-ascii?Q?hxGfdxdEZmEwLvtbqbeiswzDskvL9gJTTWlCOqA8XB44ai+g0KE5QnnvSAdq?=
- =?us-ascii?Q?tUJkcYrUuiaZd4UJE05dQcUozzI3rX2TpzBOjYMB2GmZBHMYde9UZ/LUdNbg?=
- =?us-ascii?Q?oBwk/zM0ef7Ye+Cm2lgVMREcN0xyRHxyDQQDhYJI?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 47a6df86-fc55-41f5-363b-08db3693aad9
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2023 11:40:05.8902
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: c2xQBqwUiIciCHAcsJFUtBjMZHwafj+x6a9UVhHSi7uEYdsXTqihcSYkUcAh2W+3
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5631
+Content-Type: multipart/mixed;
+ boundary="b1_ayphHOVkQ7156P23PkrcwNhMKb9WleLOMbnybo3AJ1Q"
 
-On Thu, Apr 06, 2023 at 02:23:17PM +0800, Zhangfei Gao wrote:
+This is a multi-part message in MIME format.
 
-> We are using ioctl method now.
-> From the testing, the TLB miss impacts performance a lot, so we use
-> huge page method.
-> After using huge page method, guest can achieve comparable performance
-> with host.
+--b1_ayphHOVkQ7156P23PkrcwNhMKb9WleLOMbnybo3AJ1Q
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Looks like these tests are not stressing the MM, just measuring pure
-BW of the DMA, so they don't get into the invalidation regime..
+On Fri, 31 Mar 2023 11:00:43 +0200
+Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> wrote:
 
-You need to measure a more real application that is actually using the
-MM (eg alloc/free memory, fork, etc) while it operates and turn on SVA.
+> Hi Juerg,
+>
+> On Fri, 31 Mar 2023 07:26:09 +0000
+> Juerg Haefliger <juergh@proton.me> wrote:
+>
+> > On Tue, 28 Mar 2023 09:54:35 +0200
+> > Petr Tesarik <petrtesarik@huaweicloud.com> wrote:
+> >
+> >[...]
+> > > Anyway, I suspected that the buffers need not be imported into the vc=
+4
+> > > driver (also hinted by Eric Anholt in a 2018 blog post [1]), and it
+> > > seems I was right. I encountered the issue with Ubuntu 22.10; I
+> > > installed latest openSUSE Tumbleweed yesterday, and I was not able to
+> > > reproduce the issue there, most likely because the Mesa drivers have
+> > > been fixed meanwhile. This makes the specific case of the Raspberry P=
+i 4
+> > > drivers moot. The issue may still affect other combinations of driver=
+s,
+> > > but I don't have any other real-world example ATM.
+> >
+> > I'm only seeing this problem with Wayland, no issue when switching Ubun=
+tu to
+> > X. It seems Tumbleweed is using X by default.
+>
+> I know; I was the team lead of SUSE low-level graphics engineers until
+> end of last year... I have just double-checked, but this output of
+> wayland-info in the GNOME session accessed over RDP is quite convincing:
 
-Jason
+It sure is but how did you get that?? For me it's:
+$ wayland-info
+failed to create display: No such file or directory
+
+And from strace:
+connect(3, {sa_family=3DAF_UNIX, sun_path=3D"/run/user/1000/wayland-0"}, 27=
+) =3D -1 ENOENT (No such file or directory)
+
+Which is kind of expected when running X, no?
+$ ps -ef | grep -iP 'xorg|wayland'
+opensuse  1377  1375  0 09:13 tty2     00:00:16 /usr/bin/Xorg.bin vt2 -disp=
+layfd 3 -auth /run/user/1000/gdm/Xauthority -nolisten tcp -background none =
+-noreset -keeptty -novtswitch -verbose 3
+
+What am I missing?
+
+...Juerg
+
+
+
+> interface: 'wl_compositor',                              version:  5, nam=
+e:  1
+> interface: 'wl_shm',                                     version:  1, nam=
+e:  2
+>         formats (fourcc):
+>         0x48344258 =3D 'XB4H'
+>         0x48344241 =3D 'AB4H'
+>         0x48345258 =3D 'XR4H'
+>         0x48345241 =3D 'AR4H'
+>         0x30334258 =3D 'XB30'
+>         0x30334241 =3D 'AB30'
+>         0x30335258 =3D 'XR30'
+>         0x30335241 =3D 'AR30'
+>         0x36314752 =3D 'RG16'
+>         0x34324258 =3D 'XB24'
+>         0x34324241 =3D 'AB24'
+>                  1 =3D 'XR24'
+>                  0 =3D 'AR24'
+> interface: 'wl_output',                                  version:  3, nam=
+e:  3
+>         x: 0, y: 0, scale: 1,
+>         physical_width: 430 mm, physical_height: 270 mm,
+>         make: 'FUS', model: 'P20W-5 ECO',
+>         subpixel_orientation: unknown, output_transform: normal,
+>         mode:
+>                 width: 1680 px, height: 1050 px, refresh: 59.954 Hz,
+>                 flags: current preferred
+> interface: 'zxdg_output_manager_v1',                     version:  3, nam=
+e:  4
+>         xdg_output_v1
+>                 output: 3
+>                 name: 'HDMI-1'
+>                 description: 'Fujitsu Siemens Computers GmbH 20"'
+>                 logical_x: 0, logical_y: 0
+>                 logical_width: 1680, logical_height: 1050
+> interface: 'wl_data_device_manager',                     version:  3, nam=
+e:  5
+> interface: 'zwp_primary_selection_device_manager_v1',    version:  1, nam=
+e:  6
+> interface: 'wl_subcompositor',                           version:  1, nam=
+e:  7
+> interface: 'xdg_wm_base',                                version:  4, nam=
+e:  8
+> interface: 'gtk_shell1',                                 version:  5, nam=
+e:  9
+> interface: 'wp_viewporter',                              version:  1, nam=
+e: 10
+> interface: 'zwp_pointer_gestures_v1',                    version:  3, nam=
+e: 11
+> interface: 'zwp_tablet_manager_v2',                      version:  1, nam=
+e: 12
+> interface: 'wl_seat',                                    version:  8, nam=
+e: 13
+>         name: seat0
+>         capabilities: pointer keyboard
+>         keyboard repeat rate: 33
+>         keyboard repeat delay: 500
+> interface: 'zwp_relative_pointer_manager_v1',            version:  1, nam=
+e: 14
+> interface: 'zwp_pointer_constraints_v1',                 version:  1, nam=
+e: 15
+> interface: 'zxdg_exporter_v1',                           version:  1, nam=
+e: 16
+> interface: 'zxdg_importer_v1',                           version:  1, nam=
+e: 17
+> interface: 'zwp_linux_dmabuf_v1',                        version:  3, nam=
+e: 18
+>         formats (fourcc) and modifiers (names):
+>         0x48344258 =3D 'XB4H'; 0x00ffffffffffffff =3D INVALID
+>         0x48344241 =3D 'AB4H'; 0x00ffffffffffffff =3D INVALID
+>         0x36314752 =3D 'RG16'; 0x00ffffffffffffff =3D INVALID
+>         0x30334258 =3D 'XB30'; 0x00ffffffffffffff =3D INVALID
+>         0x30335258 =3D 'XR30'; 0x00ffffffffffffff =3D INVALID
+>         0x30334241 =3D 'AB30'; 0x00ffffffffffffff =3D INVALID
+>         0x30335241 =3D 'AR30'; 0x00ffffffffffffff =3D INVALID
+>         0x34324258 =3D 'XB24'; 0x00ffffffffffffff =3D INVALID
+>         0x34325258 =3D 'XR24'; 0x00ffffffffffffff =3D INVALID
+>         0x34324241 =3D 'AB24'; 0x00ffffffffffffff =3D INVALID
+>         0x34325241 =3D 'AR24'; 0x00ffffffffffffff =3D INVALID
+> interface: 'wp_single_pixel_buffer_manager_v1',          version:  1, nam=
+e: 19
+> interface: 'zwp_keyboard_shortcuts_inhibit_manager_v1',  version:  1, nam=
+e: 20
+> interface: 'zwp_text_input_manager_v3',                  version:  1, nam=
+e: 21
+> interface: 'wp_presentation',                            version:  1, nam=
+e: 22
+>         presentation clock id: 1 (CLOCK_MONOTONIC)
+> interface: 'xdg_activation_v1',                          version:  1, nam=
+e: 23
+>
+> Petr T
+
+
+--b1_ayphHOVkQ7156P23PkrcwNhMKb9WleLOMbnybo3AJ1Q
+Content-Type: application/pgp-signature; name=attachment.sig
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename=attachment.sig
+
+LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0NCg0KaVFJekJBRUJDZ0FkRmlFRWhaZlU5Nkl1
+cHJ2aUxkZUxEOU9MQ1F1bVFyY0ZBbVF1c0tnQUNna1FEOU9MQ1F1bQ0KUXJlM3l3LytNd1BWaE5Y
+MjB0T3NzcW1vQnVwWFphMElzZGtpc0k4WnBIN2VrTHMveXZtZlRPRnRSQURqdVFndQ0Kdmg3RHEx
+N3RieGdyb0FLRU9ydjNuT2s4RVplWkZlZ2NTK0k3TnVhYVpEQUJhV0ZOQ1NjSlp0TkYrRUt4L2xX
+Tw0KdDluaEFRajVHK1JUZ2RrUmVla1A3aEpHeFVJRmhtWVpQM00zTVdwaFFqMTJLSnJTWWpYREhB
+akJMNDRFYnh5aQ0Kbi9vTEplRld6TUJBUWh4K0JDTlpqY1dHRlZGUnVOdlJhZE5EbXlrVFB5eWVw
+WTlUdWV5TWc1TGJXcHZLM2p3bw0KM25hOHRwd2U4T0UvbHlvSHBmVVVSWVQ3UjFMeWtMNkR0N3B4
+c25hQUJ6QkJqalZiLzhHVkdFYUFybU1BdCtWcw0Kd2FmTEhLUjlTM2ROT1FJUVBJNmFwUmZhZEF4
+QzBzNDBNQTdJOStvMFQxV25KUzdVdS9xVi9DODFVdHlZelpIaw0KYnFHbUIyQ0FCNS85cmVZTTVm
+WXorNVdROTFSSnVMeWlqV3krTG9iOGlYMVMxWnJla005V01ocXpxZzFhQXgzSA0KTGdIYUd5WkZG
+citBTUZ2MUN1czA2WFBKQVI1aWF3dU5OaTJwYWNEMXJacXhzSTd2QTk4R0ZzNjNFN3NjSjhMRg0K
+NVljS0pVRGppeDR2U2s4NjdIUGJPQ3BLVWZ1dzNjMi9weG5Oc0Q0L0FDQ2Z1QnFnSzRqV1E1L08x
+Qksxa0pqag0KdUp1SEhjVU5ydWRPcE05U3lrblZ6TXlZeUcrWDhUbW1RT1dkR0xoQlRKbUtxejB0
+WldtMkZlKzdLS3U4MWtkMA0KY05vS1E0akpQN2k0NkJicWxnQ0phU2hiamNKY2U1SmFTSWJ1OWp1
+WDVDZU9qSDI1Mkc4PQ0KPXhrdmYNCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQ0K
+
+--b1_ayphHOVkQ7156P23PkrcwNhMKb9WleLOMbnybo3AJ1Q--
+
