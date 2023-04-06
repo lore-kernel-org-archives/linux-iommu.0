@@ -1,171 +1,223 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EED0E7E6
-	for <iommu@lists.linux.dev>; Thu,  6 Apr 2023 04:52:10 +0000 (UTC)
-Received: by linux.microsoft.com (Postfix, from userid 1131)
-	id 88284210DEFC; Wed,  5 Apr 2023 21:52:04 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 88284210DEFC
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1680756724;
-	bh=mdW5uItNtDtJNCgm+oI/5HO2zGI9+DE/FTkk+TWdNw0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=rZSIGp3aFHSy/LkqaHbMeb+lvu332Pe0GbceJCQHppGXx5ByltR5byJQoDZjeDcxN
-	 PRuTDtTB5Ex8gCKqzqqNZwUuXWi1SGHtZW/HYbS5qbpa1W7qgJ45my6iDznDBBE2KF
-	 IonL4kHtP1THeXLQbxfFK1qj74n1EHnV3/2+0ojM=
-Date: Wed, 5 Apr 2023 21:52:04 -0700
-From: Kelsey Steele <kelseysteele@linux.microsoft.com>
-To: Petr Tesa????k <petr@tesarici.cz>
-Cc: Dexuan Cui <decui@microsoft.com>,
-	Dexuan-Linux Cui <dexuan.linux@gmail.com>,
-	Petr Tesarik <petrtesarik@huaweicloud.com>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	Jianxiong Gao <jxgao@google.com>,
-	David Stevens <stevensd@chromium.org>,
-	Joerg Roedel <jroedel@suse.de>,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-	open list <linux-kernel@vger.kernel.org>,
-	Roberto Sassu <roberto.sassu@huawei.com>,
-	"Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-	Tianyu Lan <Tianyu.Lan@microsoft.com>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
-Subject: Re: [PATCH v1 2/2] swiotlb: Fix slot alignment checks
-Message-ID: <20230406045204.GA20027@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
-References: <cover.1679382779.git.petr.tesarik.ext@huawei.com>
- <c90887e4d75344abe219cc5e12f7c6dab980cfce.1679382779.git.petr.tesarik.ext@huawei.com>
- <CAA42JLa1y9jJ7BgQvXeUYQh-K2mDNHd2BYZ4iZUz33r5zY7oAQ@mail.gmail.com>
- <CO1PR21MB13320305E02BA121623213DABF939@CO1PR21MB1332.namprd21.prod.outlook.com>
- <20230405064019.6258ebb3@meshulam.tesarici.cz>
- <SA1PR21MB1335C5F774195F2C3431BF93BF909@SA1PR21MB1335.namprd21.prod.outlook.com>
- <20230405072801.05bb94ef@meshulam.tesarici.cz>
- <20230405075034.3c36bb77@meshulam.tesarici.cz>
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2087.outbound.protection.outlook.com [40.107.92.87])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA7C8A29
+	for <iommu@lists.linux.dev>; Thu,  6 Apr 2023 06:12:43 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IfWZxM4xEox+aXqJdoUYAARvfEc995spORcUJjroa66wRwswRPI6oNdYNtm2yYm/SB6fRlNUKA3LQNBJbHqwhaxjna6OyVhemxnsjB8w9/4lKjqLsFinXMEXrJsEmYnapTinE5HNjlRHe4xkCsB9TX6tlTGe6IupGE7NJO5Db1Rh1Szku4XZYB421aqtTr/15s7qY7oYJhpcY04Udi8D3JVJ9TkNxRiGPUuQ8fHFpLNEryD6e9r5zHFm51mtqu0JBqhCBJtxAzo0tfueVHHMDZTUPqFHRFLPI2hLjRcnUF7FW6rGcCLeMsG79kEFlKTOTlIRw622SkzFbx09i+r6Jg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=NKNfCgm0qeQv7OgraaeGmnuee0XB4JXhDGvY39mbPQw=;
+ b=HrBTRQ0yvvw5d+usZ3NgEqWToCqgrnsfctukxOkjEMwlnTX/PcRyHYLnUCj2ozM64/fK61pSl8x4CLaGzdW2IioZVcMPG2OS9VTh5Fz5Om30idSl7OYyZ+K2Onyc/SRuj6wf4V8T3779PIL+xyC1rIyO0ulyR51rSHAnY1u4H5WHKufZ6ci5Alcxt/h+igfUPjq2q/LNCXUaSEE13RcM0TzC7JPQGC6u2lkaETFBjRmIBpnLp6Lc9X2fhFYDQy4szWaOghxThg7p6xVwF26CgXInCA8Ttn1kLvqUfbKd3ChdBBzLWm6SvtbU/K5TVe0Tg9O19AiJ5yX8buNkOQko6A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NKNfCgm0qeQv7OgraaeGmnuee0XB4JXhDGvY39mbPQw=;
+ b=i/UMB/THHzG4z1PAS8cFEGIvOQQh2OEWyvx6RsSWAmmihsKrh7l1s8cc9ZxWNQ5YXUz1DjAJWb4/QlUMHwIv6jV7rlQByz4hLqfRdS8whJOz+rJG1xUaU+y2/GHEeex+Oixee2EOXRHwyerbrf/d7z3ai6WgEzRYqmspSkBfB1c=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7SPRMB0009.namprd12.prod.outlook.com (2603:10b6:8:87::10) by
+ PH0PR12MB8029.namprd12.prod.outlook.com (2603:10b6:510:26c::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6254.35; Thu, 6 Apr 2023 06:12:40 +0000
+Received: from DS7SPRMB0009.namprd12.prod.outlook.com
+ ([fe80::57de:d785:91de:d205]) by DS7SPRMB0009.namprd12.prod.outlook.com
+ ([fe80::57de:d785:91de:d205%8]) with mapi id 15.20.6254.035; Thu, 6 Apr 2023
+ 06:12:40 +0000
+Message-ID: <d34c7fca-1510-4565-3c23-4923174a66eb@amd.com>
+Date: Thu, 6 Apr 2023 11:42:25 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] iommu: amd: Set page size bitmap during V2 domain
+ allocation
+Content-Language: en-US
+To: Jerry Snitselaar <jsnitsel@redhat.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+ Joerg Roedel <joro@8bytes.org>
+References: <20230404072742.1895252-1-jsnitsel@redhat.com>
+ <k6cz5w66mfse7ztgtfy6ux4bjasg64dhbjnliybybcvmoywrs3@gehaolzeh3ph>
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <k6cz5w66mfse7ztgtfy6ux4bjasg64dhbjnliybybcvmoywrs3@gehaolzeh3ph>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN2PR01CA0124.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:6::9) To DS7SPRMB0009.namprd12.prod.outlook.com
+ (2603:10b6:8:87::10)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230405075034.3c36bb77@meshulam.tesarici.cz>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7SPRMB0009:EE_|PH0PR12MB8029:EE_
+X-MS-Office365-Filtering-Correlation-Id: c446253a-8dec-485e-1063-08db3665ed0a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	cuOl/FLbwrxpUdev3XckCuTBdpqRIfsMTq24TNISyHENp4zsZT3WTIJNS5/NyxVGC1OmOzyc+abLpKetCW5pu6UggUiE2LKeqbqt2xEmQkhvAlaxpCzDkpxyB+go9LqVyzA8Svtcs3O0ggrX1Pf3WNy58s36Ew7dP9QYxtZewug9dkkR9gkQ6FZBlGPSdvjCy3w3W+76TGClKrpAySjOOpPxtSmlU7aSF1Ejuuom/Ztx/mQbCH6mNk+CoeGopUz5GYk03/OMU5OLT0mp6/orhSOINshq88sY2t02rxKTZ3Qw9DyYbObwfAEwEd+Pn2PVNjWTiS1GCzpdVuNg5qhIVMUQKdSV1WWnI1Z+LaQk4MYFri2q7RjsiFnyvLjXfUiecWfNbfEXzXEgGdPoqPlt1f6K8cWH4XfMfBvibwiuavJQIUShG+SQQ9Y0UWJCFWG4xgvspldZJqP7xHED00AW3lK4iqdBYwSd5g14FW07u4PKe4apT3mxhxcS2HV/YagXVkDMsDRgQeHCgOJChcydpV2D/svUG4+jaijaVHYR+6cmdaEpB1kTDO7Gl3Xf71lCc8IJghl7iuite1atXT4fXAtB30rJXgE6Ad+SNqVdgP1ZMklOK/L0CRatRyauVDib+HpLfL0hGx72mEZ9hWHizA==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7SPRMB0009.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(346002)(39860400002)(366004)(376002)(451199021)(31696002)(6666004)(6486002)(36756003)(83380400001)(2616005)(38100700002)(86362001)(6506007)(6512007)(53546011)(26005)(186003)(66946007)(44832011)(66476007)(66556008)(8676002)(54906003)(316002)(5660300002)(4326008)(2906002)(41300700001)(8936002)(31686004)(66899021)(478600001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?Y1FmS1A0MFkwWW4zcWxjMGsxUGpvbnR4SThhSk4yRURsV0hBNnhFMWMwM3VS?=
+ =?utf-8?B?L2NsMUZTWjFyNkQybS95RTB0WkZwTlFsZElaWXlxOE9QbW9jRDlCcWRlTHZT?=
+ =?utf-8?B?M1dNWFRCS3F3ajVCUnFpQnB1ajJlQXhvUit2WnFadGhlUG5PNVFqN21QZjR1?=
+ =?utf-8?B?SGhYK1pUdlBONmNQNEhlL1NmK0pDQVV0blBSZlduK1J0SkxGUzdRV1IvUlV3?=
+ =?utf-8?B?VTZ6N1JaVmZZYWxobDJwRHV2YWkzbTJMUUxOWlczSHJORWZ4QXBaSHBpanVD?=
+ =?utf-8?B?Y2UvTndNc3BoK1FkbTdaamFSSHBzSjlyRStDY21DdnhJY3VMcVVvM3dtWElo?=
+ =?utf-8?B?eEd4NldubTdpSE5OaG0rRisxaXJlb1gwVWVkdUFxamJKQjdSMFBuK2Q3RnR2?=
+ =?utf-8?B?SUw5anN3dTJsa1RTc0d5dTcrOGdTNmVXSW9JZW45SElGWlhRZjJuckRRcUhX?=
+ =?utf-8?B?MVlKUUJVS0ZaYkpEbmJvV0J3cktYRTFTWjRVNTg4aFJIQzdoM2FSY25Ca1JB?=
+ =?utf-8?B?S2dPeEplTWpldnczK3RGZXk0V3BxcnZWT2pqc2RYbThFbWs0R0pHZUgvWFBo?=
+ =?utf-8?B?TUZiaVY2M01XMm9NSm9YbnpSOGp1aE1YK3FVU0pmYmlCa0ozaFJtekYva2tK?=
+ =?utf-8?B?djk5VzRyYXJiSFBGZmlkNWdoQVZaVXdQQzhiNERaMDd5T2xWUndCUklPUktR?=
+ =?utf-8?B?cUl3dms5S1pHdThONVpOVWhwVjRkZVdDYi9IK3E2bjhPWnZWQlFQM2NQOTl5?=
+ =?utf-8?B?OXdlTTh1VUtFcEp1eVQ3OHcrMWZVbTBkSEdDalRVWi9pcVdqaUJqYUdWYzJ2?=
+ =?utf-8?B?c3pJYThaVHJtTCtKRWxYMGhNSlNxMHl4QWlLcWRzY2xzK3h1Rm1LdWp4UXlr?=
+ =?utf-8?B?UkRoQ0N5MGUwb2xNNDlrUzFGOUY0cWR5RThqNjd5dEJsN28yaGllMm1wMkRy?=
+ =?utf-8?B?SmltOEhTLzJpV09zMkw5dkVjbE54TnFrYzV1QnZsVzlBYVdSUXZ6Yks5TTNP?=
+ =?utf-8?B?Y2NrQVEyeUt6WkQxbjIvSG5MVG5KVVJmeEpmVlNSZkhmRUZlTEtnQjBYOElY?=
+ =?utf-8?B?N29qMlhxYVBqQjY5T25ZU3lwQjBaeS9YNHJmYmcwYlBITFVmRi9GczFLVms5?=
+ =?utf-8?B?aTdZZ2NZVlhHY01sUkJ6b0gzZ050M1dIYTZxd09mU05USDZUSlh3ZHNQb1pF?=
+ =?utf-8?B?dzc1MWdic3o3VHlRSC9HTVZqeVM2cjZ3WWIwczhUQUtsSkNNNmlPMkFINnhx?=
+ =?utf-8?B?M3RlS3I1S1laQXJkNE9qYkhjNGVmd3ZYUTl1eDNGVmFhbytkSWVMQ1BLd2RW?=
+ =?utf-8?B?L2hmV2tIay9aY2tvZ2hUVmR0S2UyRWxKSnFCZDRTTVNYWEUrd3Ard213aUdE?=
+ =?utf-8?B?alFGWHVac2lNOEdIcXhxOGZKY2tXTkVMUnprN2tNeCtkS1BRMlJvQTBmN0ow?=
+ =?utf-8?B?R2I3eGFMQ1JocFozWmxMYnU3NUlKdnp3bG1qbCtHVTVSSWgzMmd2OWFRTngz?=
+ =?utf-8?B?NjNjSlR3SkM0TW9yR0w4QUlobC9Hd20rT3VZclcxNnNwaVJxbVhqN2xlU0ZV?=
+ =?utf-8?B?VkpwYkx0WjJVazk3ZXl0T2lCczkyMXFPOFp1UEgxWGxna1J4OGdraUFJNG51?=
+ =?utf-8?B?NlBDeTZUNGxqN2I4clF5NGxNTFAydTRvZVV1ZUx0YW5PV1RhSmNDZElQblRO?=
+ =?utf-8?B?TkJsN2FPcXVhZjREOTByUGRFSVpGV0dPczVUV2xEbnQxOE5taXpvZGg3em5T?=
+ =?utf-8?B?WVcyM01PeXZDTVlSaXppNkpvYk1JMGY4bnRkRnMydDdPY0RLa2FwdjJYeEM4?=
+ =?utf-8?B?VFJZY1JaM29wbWsvN3lJS1p3S2NCZEpXV25acDdVUkhja2pqNDdMakZFbmlh?=
+ =?utf-8?B?a3c1d3NBMGJpN3o4UDd6VHorZUg5ZEF3ZnVQTHRGcDN4KzZCTXZ1MC8zODBu?=
+ =?utf-8?B?VkZyaWlMZHNyYXlYQXJPaUhwSkJyVGZQUURKK1RkdUtheXdJRmhwL0dHSEJm?=
+ =?utf-8?B?cGN4Y1ROTU11cG00Vi9uVlNDcDlzdVJUeDc5NTBJTVpHcGdKeFU4OVBaUDN5?=
+ =?utf-8?B?dWM4aDk3cFdCbnZ5czVHYTFpQWUzL3djNWM5Ky9hUktWUjVNaS9lOE5VamVr?=
+ =?utf-8?Q?iEGu8wlhfKoMqVI6cjE2tsakR?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c446253a-8dec-485e-1063-08db3665ed0a
+X-MS-Exchange-CrossTenant-AuthSource: DS7SPRMB0009.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2023 06:12:40.3118
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: hR+xH+kdzzrDT6l8fZ8dHx+nh4FegruHkwQoLC3atgihf+b4L8+JDoWOKlpM8flDm0TfZRoF3h/mibY6BpwlDQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB8029
 
-On Wed, Apr 05, 2023 at 07:50:34AM +0200, Petr Tesa????k wrote:
-> On Wed, 5 Apr 2023 07:32:06 +0200
-> Petr Tesa????k <petr@tesarici.cz> wrote:
+Jerry,
+
+On 4/4/2023 9:58 PM, Jerry Snitselaar wrote:
+> On Tue, Apr 04, 2023 at 12:27:42AM -0700, Jerry Snitselaar wrote:
+>> With the addition of the V2 page table support, the domain page size
+>> bitmap needs to be set prior to iommu core setting up direct mappings
+>> for reserved regions. When reserved regions are mapped, if this is not
+>> done, it will be looking at the V1 page size bitmap when determining
+>> the page size to use in iommu_pgsize(). When it gets into the actual
+>> amd mapping code, a check of see if the page size is supported can
+>> fail, because at that point it is checking it against the V2 page size
+>> bitmap which only supports 4K, 2M, and 1G.
+>>
+>> Add a check to __iommu_domain_alloc() to not override the
+>> bitmap if it was already set by the iommu ops domain_alloc() code path.
+>>
+>> Cc: Vasant Hegde <vasant.hegde@amd.com>
+>> Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+>> Cc: Robin Murphy <robin.murphy@arm.com>
+>> Cc: Will Deacon <will@kernel.org>
+>> Cc: Joerg Roedel <joro@8bytes.org>
+>> Fixes: 4db6c41f0946 ("iommu/amd: Add support for using AMD IOMMU v2 page table for DMA-API")
+>> Signed-off-by: Jerry Snitselaar <jsnitsel@redhat.com>
 > 
-> > On Wed, 5 Apr 2023 05:11:42 +0000
-> > Dexuan Cui <decui@microsoft.com> wrote:
-> > 
-> > > > From: Petr Tesa????k <petr@tesarici.cz>
-> > > > Sent: Tuesday, April 4, 2023 9:40 PM    
-> > > > > > ...
-> > > > > > Hi Petr, this patch has gone into the mainline:
-> > > > > > 0eee5ae10256 ("swiotlb: fix slot alignment checks")
-> > > > > >
-> > > > > > Somehow it breaks Linux VMs on Hyper-V: a regular VM with
-> > > > > > swiotlb=force or a confidential VM (which uses swiotlb) fails to boot.
-> > > > > > If I revert this patch, everything works fine.  
-> > > > >
-> > > > > The log is pasted below. Looks like the SCSI driver hv_storvsc fails to
-> > > > > detect the disk capacity:    
-> > > > 
-> > > > The first thing I can imagine is that there are in fact no (free) slots
-> > > > in the SWIOTLB which match the alignment constraints, so the map
-> > > > operation fails. However, this would result in a "swiotlb buffer is
-> > > > full" message in the log, and I can see no such message in the log
-> > > > excerpt you have posted.
-> > > > 
-> > > > Please, can you check if there are any "swiotlb" messages preceding the
-> > > > first error message?
-> > > > 
-> > > > Petr T    
-> > > 
-> > > There is no "swiotlb buffer is full" error.
-> > > 
-> > > The hv_storvsc driver (drivers/scsi/storvsc_drv.c) calls scsi_dma_map(),
-> > > which doesn't return -ENOMEM when the failure happens.  
-> > 
-> > I see...
-> > 
-> > Argh, you're right. This is a braino. The alignment mask is in fact an
-> > INVERTED mask, i.e. it masks off bits that are not relevant for the
-> > alignment. The more strict alignment needed the more bits must be set,
-> > so the individual alignment constraints must be combined with an OR
-> > instead of an AND.
-> > 
-> > Can you apply the following change and check if it fixes the issue?
 > 
-> Actually, this will not work either. The mask is used to mask off both
-> high address bits and low address bits (below swiotlb slot granularity).
 > 
-> What should help is this:
->
-
-Hi Petr, 
-
-The suggested fix on this patch boots for me and initially looks ok,
-though when I start to use git commands I get flooded with "swiotlb
-buffer is full" messages and my session becomes unusable. This is on WSL
-which uses Hyper-V.
-
-I noticed today these same warnings appear when I build kernels while
-running a 6.1 kernel (i.e. 6.1.21). I couldn't reproduce these messages
-on a 5.15 kernel and before applying this patch, I've only been able to
-get the "swiotlb buffer is full" messages to appear during the kernel
-builds and there's a slight delay caused.. I haven't had a chance to bisect
-yet to find out more. Should a working version of this patch help to
-resolve the warnings vs adding more or should I be looking elsewhere? I
-included a small chunk of my log below.
-
-Please let me know if there's anything else I can supply to help out. I
-appreciate your time and help!
-
--Kelsey
-
-
-[  123.951630] hv_storvsc fd1d2cbd-ce7c-535c-966b-eb5f811c95f0: swiotlb
-buffer is full (sz: 65536 bytes), total 32768 (slots), used 0 (slots)
-[  128.451717] swiotlb_tbl_map_single: 74 callbacks suppressed
-[  128.451723] hv_storvsc fd1d2cbd-ce7c-535c-966b-eb5f811c95f0: swiotlb
-buffer is full (sz: 65536 bytes), total 32768 (slots), used 0 (slots)
-[  128.511736] hv_storvsc fd1d2cbd-ce7c-535c-966b-eb5f811c95f0: swiotlb
-buffer is full (sz: 65536 bytes), total 32768 (slots), used 0 (slots)
-[  128.571704] hv_storvsc fd1d2cbd-ce7c-535c-966b-eb5f811c95f0: swiotlb
-buffer is full (sz: 65536 bytes), total 32768 (slots), used 0 (slots)
-[  128.631713] hv_storvsc fd1d2cbd-ce7c-535c-966b-eb5f811c95f0: swiotlb
-buffer is full (sz: 65536 bytes), total 32768 (slots), used 0 (slots)
-[  128.691625] hv_storvsc fd1d2cbd-ce7c-535c-966b-eb5f811c95f0: swiotlb
-buffer is full (sz: 65536 bytes), total 32768 (slots), used 0 (slots)
-
-
- 
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 5b919ef832b6..c924e53d679e 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -622,8 +622,7 @@ static int swiotlb_do_find_slots(struct device *dev, int area_index,
->  	dma_addr_t tbl_dma_addr =
->  		phys_to_dma_unencrypted(dev, mem->start) & boundary_mask;
->  	unsigned long max_slots = get_max_slots(boundary_mask);
-> -	unsigned int iotlb_align_mask =
-> -		dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);
-> +	unsigned int iotlb_align_mask;
->  	unsigned int nslots = nr_slots(alloc_size), stride;
->  	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
->  	unsigned int index, slots_checked, count = 0, i;
-> @@ -639,8 +638,9 @@ static int swiotlb_do_find_slots(struct device *dev, int area_index,
->  	 * allocations.
->  	 */
->  	if (alloc_size >= PAGE_SIZE)
-> -		iotlb_align_mask &= PAGE_MASK;
-> -	iotlb_align_mask &= alloc_align_mask;
-> +		iotlb_align_mask |= ~PAGE_MASK;
-> +	iotlb_align_mask |= alloc_align_mask | dma_get_min_align_mask(dev);
-> +	iotlb_align_mask &= ~(IO_TLB_SIZE - 1);
->  
->  	/*
->  	 * For mappings with an alignment requirement don't bother looping to
+> I'm still not sure this is the best solution. Feels odd with adding a
+> check to core code to handle something one of the drivers has
+> done. Another thought was something like arm does, with amd_iommu_ops
+> dropping the const and setting the default page size bitmap in
+> iommu_init_pci(), but I think that would still require adding
+> something in the protection domain/init code to deal with it forcing
+> v1, so it would still require a check in the core code.
 > 
-> Petr T
+
+I am not familiar with how arm paging works. But in AMD case we decide the page
+table during protection domain allocation. Also we can have different page size
+for different domains. (like one domain in v1 and another in v2 page mode).
+
+> Would adding an op make more sense, with a generic op doing what the
+> core code currently does for setting the default? Or am I overthinking
+> this?
+
+IMO adding another ops is not required. I think current fix is good enough.
+Thanks for debugging/fixing this issue.
+
+Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+
+
+-Vasant
+
+> 
+> snits
+> 
+>> ---
+>>  drivers/iommu/amd/iommu.c | 6 ++----
+>>  drivers/iommu/iommu.c     | 9 +++++++--
+>>  2 files changed, 9 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+>> index 5a505ba5467e..167da5b1a5e3 100644
+>> --- a/drivers/iommu/amd/iommu.c
+>> +++ b/drivers/iommu/amd/iommu.c
+>> @@ -1666,10 +1666,6 @@ static void do_attach(struct iommu_dev_data *dev_data,
+>>  	domain->dev_iommu[iommu->index] += 1;
+>>  	domain->dev_cnt                 += 1;
+>>  
+>> -	/* Override supported page sizes */
+>> -	if (domain->flags & PD_GIOV_MASK)
+>> -		domain->domain.pgsize_bitmap = AMD_IOMMU_PGSIZES_V2;
+>> -
+>>  	/* Update device table */
+>>  	set_dte_entry(iommu, dev_data->devid, domain,
+>>  		      ats, dev_data->iommu_v2);
+>> @@ -2048,6 +2044,8 @@ static int protection_domain_init_v2(struct protection_domain *domain)
+>>  
+>>  	domain->flags |= PD_GIOV_MASK;
+>>  
+>> +	domain->domain.pgsize_bitmap = AMD_IOMMU_PGSIZES_V2;
+>> +
+>>  	if (domain_enable_v2(domain, 1)) {
+>>  		domain_id_free(domain->id);
+>>  		return -ENOMEM;
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 10db680acaed..256a38371120 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -1964,8 +1964,13 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+>>  		return NULL;
+>>  
+>>  	domain->type = type;
+>> -	/* Assume all sizes by default; the driver may override this later */
+>> -	domain->pgsize_bitmap = bus->iommu_ops->pgsize_bitmap;
+>> +	/*
+>> +	 * If not already set, assume all sizes by default; the driver
+>> +	 * may override this later
+>> +	 */
+>> +	if (!domain->pgsize_bitmap)
+>> +		domain->pgsize_bitmap = bus->iommu_ops->pgsize_bitmap;
+>> +
+>>  	if (!domain->ops)
+>>  		domain->ops = bus->iommu_ops->default_domain_ops;
+>>  
+>> -- 
+>> 2.38.1
+>>
+> 
