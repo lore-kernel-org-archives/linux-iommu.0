@@ -1,90 +1,149 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B9F8A320B;
-	Thu,  6 Apr 2023 16:38:10 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1E844153B;
-	Thu,  6 Apr 2023 09:38:54 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B1DBD3F6C4;
-	Thu,  6 Apr 2023 09:38:01 -0700 (PDT)
-Message-ID: <db92f18c-e2ed-78d0-db7e-83d8ee8a4dce@arm.com>
-Date: Thu, 6 Apr 2023 17:37:57 +0100
+Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 820EAAD29
+	for <iommu@lists.linux.dev>; Thu,  6 Apr 2023 18:07:47 +0000 (UTC)
+Received: by mail-ej1-f51.google.com with SMTP id l17so3436118ejp.8
+        for <iommu@lists.linux.dev>; Thu, 06 Apr 2023 11:07:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1680804465;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=1weO9qyyCQy8+b4IcRBkB70UCGhmywO6NJQrtwS0SGI=;
+        b=Q39KSHVK0vW4i5Ni8OS1x1qezXczm35jO/kx/LP48M/yhIJzxCsjlEkGkpPsBZrkdu
+         6KzuKgQrC6cGI46YZBIvBAz05m7Byijj31TWFGRrOGmJZg6AS/nfYc8j5wRnkZB+ixHT
+         lFFMw0oOfjoYDKfQEkE3xHvbtU5dqfFqKLULKu4HhJ4Y1SJJBemueE8xAzsPtrAliZuW
+         jkl0cYlfZSsnFzcXtZlOKWEkGOFlToS+hK+aVsnF/4Xv9xceCGGPgIPHlvMy0gTdqZih
+         VZqacRRlgRvOeOeMTeCDyD/H4o9AHH2XYkdqqmn72aS0I5JxZWlPt/G67JdARodtQVq6
+         uVIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680804465;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=1weO9qyyCQy8+b4IcRBkB70UCGhmywO6NJQrtwS0SGI=;
+        b=ZV14qeKxwPHRS9+izx1V86f6sfKvMVJJkGUSl/+zOGBIyedwc9nvUfHd0mGTNKWaV1
+         7iZ69EDRGxFP/KrQyCsIKTjNAUsB3PBDFgi4nK/bu6T8oljNutMUt5fvc3XO2PdTiSmC
+         BEVxASvLMdvVm0V5r8iBRnzQ+ToPvEd3YN4MwVFF8ttw1fmUrIjIiRCwP9u6dFBjsnJL
+         CrpZ33awOnPwZx95SjSicwQcLe7qZvuEipevmsueQxKehRtR7O5R+uoqNtEDKtmua5yz
+         TKbqe6wHCms0XoIXQkH1MfgsmRXX3QE0dWBGG0vFPmFIwNP9RmWF/fD/KW3f71FOA7og
+         T/vA==
+X-Gm-Message-State: AAQBX9et8rtHIs/z9OuyVtxlTyySqd5Wnve/0RkU1MTK5aw0NGKVBp6R
+	5r1Xl4yQKwg0Wf/G4k/jm+IWyA==
+X-Google-Smtp-Source: AKy350aHt9yU8Ez/wQQLBkXXBqBOR8IO147QPcgI9LDFf7/LZvdMbuHrlfbxBzBf2DPp21fb0ciawA==
+X-Received: by 2002:a17:906:f897:b0:8b1:7eba:de5 with SMTP id lg23-20020a170906f89700b008b17eba0de5mr6211680ejb.10.1680804465711;
+        Thu, 06 Apr 2023 11:07:45 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:49e6:bb8c:a05b:c4ed? ([2a02:810d:15c0:828:49e6:bb8c:a05b:c4ed])
+        by smtp.gmail.com with ESMTPSA id r7-20020a50c007000000b005021d210899sm1022641edb.23.2023.04.06.11.07.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 Apr 2023 11:07:45 -0700 (PDT)
+Message-ID: <cc5ee0e5-5cc7-bf80-68cc-2d38b1118c6d@linaro.org>
+Date: Thu, 6 Apr 2023 20:07:44 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.0
-Subject: Re: [PATCH v3 08/17] iommu: Make iommu_group_do_dma_first_attach()
- work with owned groups
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, llvm@lists.linux.dev,
- Nathan Chancellor <nathan@kernel.org>,
- Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
- Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
- Nicolin Chen <nicolinc@nvidia.com>
-References: <8-v3-e89a9bb522f5+8c87-iommu_err_unwind_jgg@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <8-v3-e89a9bb522f5+8c87-iommu_err_unwind_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: [PATCH v2] dt-bindings: iommu: Convert QCOM IOMMU to YAML
+Content-Language: en-US
+To: Konrad Dybcio <konrad.dybcio@linaro.org>, Andy Gross <agross@kernel.org>,
+ Bjorn Andersson <andersson@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+ linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20230406-topic-qciommu-v2-1-b8547622b2a4@linaro.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230406-topic-qciommu-v2-1-b8547622b2a4@linaro.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 06/04/2023 12:38 am, Jason Gunthorpe wrote:
-> If the group is already owned then defered attach should not be done and
-> the device should be directly connected to the correct domain.
+On 06/04/2023 13:58, Konrad Dybcio wrote:
+> Convert the Qualcomm IOMMU bindings to YAML.
 > 
-> Owned means that some driver is already bound to devices in the group and
-> is operating the group possibly without DMA API support. In this case
-> there would be no way to correct the mismatched domain.
-
-Looking more closely at the current code, it seems we just skip any 
-attach at all in this case. Thus although there can be technically be a 
-mismatch (physically, the device will be either partly or fully assigned 
-to the current domain if it is grouped by ID aliasing, or in limbo if it 
-is grouped for ACS reasons), it *should* be corrected whenever the 
-current owner next detaches its domain. This shouldn't actually be a 
-problem in the usual case, since the new device generally won't do 
-anything if the existing ownership prevents its driver from binding.
-
-I don't have a particularly strong opinion on changing this behaviour, 
-but I guess what's nagging me is that we could do a better job of 
-calling out that it *is* a behaviour change, and its implications. 
-Namely that they are slightly better if the device binds to the same 
-owner, in that it could rely use the current domain straight off without 
-the risk of being in ACS limbo, but also slightly worse in that if the 
-attach fails for any reason, it will now trash aliased RIDs of devices 
-that *were* working OK. It also means that the device could bind to any 
-*other* driver with driver_managed_dma and have a much better guarantee 
-of having access to the other owner's domain, with all the pitfalls 
-therein, but that's only a strengthening of a pre-existing problem :)
-
-Thanks,
-Robin.
-
-> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 > ---
->   drivers/iommu/iommu.c | 5 +++--
->   1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index c68cf551d05dc4..6fe8bc78db2016 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -411,8 +411,9 @@ static bool iommu_is_attach_deferred(struct device *dev)
->   
->   static int iommu_group_do_dma_first_attach(struct iommu_group *group, struct device *dev)
->   {
-> -	return __iommu_device_set_domain(group, dev, group->domain,
-> -					 IOMMU_SET_DOMAIN_WITH_DEFERRED);
-> +	return __iommu_device_set_domain(
-> +		group, dev, group->domain,
-> +		group->owner ? 0 : IOMMU_SET_DOMAIN_WITH_DEFERRED);
->   }
->   
->   int iommu_probe_device(struct device *dev)
+> v1 -> v2:
+
+Thank you for your patch. There is something to discuss/improve.
+
+> +
+> +patternProperties:
+> +  "^iommu-ctx@[0-9a-f]+$":
+> +    type: object
+
+On this level:
+additionalProperties: false
+
+> +    properties:
+> +      compatible:
+> +        enum:
+> +          - qcom,msm-iommu-v1-ns
+> +          - qcom,msm-iommu-v1-sec
+> +
+> +      interrupts:
+> +        maxItems: 1
+> +
+> +      reg:
+> +        maxItems: 1
+
+On this level:
+    required:
+      - compatible
+      - interrupts
+      - reg
+
+> +
+> +required:
+> +  - compatible
+> +  - clocks
+> +  - clock-names
+> +  - ranges
+> +  - '#address-cells'
+> +  - '#size-cells'
+> +  - '#iommu-cells'
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/clock/qcom,gcc-msm8916.h>
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +
+> +    apps_iommu: iommu@1e20000 {
+> +      compatible = "qcom,msm8916-iommu", "qcom,msm-iommu-v1";
+> +      reg = <0x01ef0000 0x3000>;
+> +      clocks = <&gcc GCC_SMMU_CFG_CLK>,
+> +               <&gcc GCC_APSS_TCU_CLK>;
+> +      clock-names = "iface", "bus";
+> +      qcom,iommu-secure-id = <17>;
+> +      #address-cells = <1>;
+> +      #size-cells = <1>;
+> +      #iommu-cells = <1>;
+> +      ranges = <0 0x01e20000 0x40000>;
+> +
+> +      /* mdp_0: */
+> +      iommu-ctx@4000 {
+> +        compatible = "qcom,msm-iommu-v1-ns";
+> +        reg = <0x4000 0x1000>;
+> +        interrupts = <GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>;
+> +      };
+> +    };
+> +
+> +    mdp: mdp@1a01000 {
+> +      reg = <0x01a01000 0x1000>;
+> +      iommus = <&apps_iommu 4>;
+
+Drop mdp node. Consumers should not be in provider bindings.
+
+
+
+Best regards,
+Krzysztof
+
