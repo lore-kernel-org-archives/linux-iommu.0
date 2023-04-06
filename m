@@ -1,68 +1,114 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1C168F67
-	for <iommu@lists.linux.dev>; Thu,  6 Apr 2023 15:52:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F38C9C433D2;
-	Thu,  6 Apr 2023 15:52:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1680796328;
-	bh=itjRrPUnDLptTgKtwsB/VQxf8oaTux6pNX6hwyv2EBw=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=mKbmkicE3z3ODudPsYwp2nShnp9UnisWHum6Iq4po8rfguoppnJZxvxl3sIyKpwWD
-	 wAld0A4Mi2FwbQU2scz7rs0rR5+Xnw/rEhwP6FCoC4auB5t+P+csOBePm+c86l/1Xc
-	 4BjrEeNkeL5+FVT0j9KC7Mk+O3/rgdgvu2c8zFiljgyS1D1ngw6kV2uM8+EaezMtwE
-	 UbPbsxXboeGQlpk/e76QQgKq2hJ30Ru9ENdl0Zuju6oJKxuZhZn6qfKXojVYC+tJrX
-	 dFd0tg7flwNoe9n80vwCSKPeWdOxG68TZzWkOvaXKrWe94jCF/kWuuspKI9nA9YOOC
-	 ZbIr9iTv2cA8g==
-From: Will Deacon <will@kernel.org>
-To: tomas.krcka@gmail.com
-Cc: catalin.marinas@arm.com,
-	kernel-team@android.com,
-	Will Deacon <will@kernel.org>,
-	Tomas Krcka <krckatom@amazon.de>,
-	linux-kernel@vger.kernel.org,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Acknowledge pri/event queue overflow if any
-Date: Thu,  6 Apr 2023 16:51:52 +0100
-Message-Id: <168018870548.1679607.17364698825564495778.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20230329123420.34641-1-tomas.krcka@gmail.com>
-References: <20230329123420.34641-1-tomas.krcka@gmail.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E1DC18F53;
+	Thu,  6 Apr 2023 15:58:33 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 70A1A169E;
+	Thu,  6 Apr 2023 08:59:17 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 195823F6C4;
+	Thu,  6 Apr 2023 08:58:29 -0700 (PDT)
+Message-ID: <b1cb0567-5c60-22ce-220d-65302b9f36ad@arm.com>
+Date: Thu, 6 Apr 2023 16:58:27 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH v3 06/17] iommu: Replace __iommu_group_dma_first_attach()
+ with set_domain
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, llvm@lists.linux.dev,
+ Nathan Chancellor <nathan@kernel.org>,
+ Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
+ Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
+ Nicolin Chen <nicolinc@nvidia.com>
+References: <6-v3-e89a9bb522f5+8c87-iommu_err_unwind_jgg@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <6-v3-e89a9bb522f5+8c87-iommu_err_unwind_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, 29 Mar 2023 12:34:19 +0000, tomas.krcka@gmail.com wrote:
-> From: Tomas Krcka <krckatom@amazon.de>
+On 06/04/2023 12:38 am, Jason Gunthorpe wrote:
+> Prepare for removing the group->domain set from
+> iommu_group_alloc_default_domain() by calling
+> __iommu_group_set_domain_internal() to set the group->domain.
 > 
-> When an overflow occurs in the PRI queue, the SMMU toggles the overflow
-> flag in the PROD register. To exit the overflow condition, the PRI thread
-> is supposed to acknowledge it by toggling this flag in the CONS register.
-> Unacknowledged overflow causes the queue to stop adding anything new.
+> Add IOMMU_SET_DOMAIN_WITH_DEFERRED to allow it to do the attach_deferred
+> logic.
+
+This is way overcomplicated; if we evaluate iommu_is_attach_deferred() 
+earlier in the probe_device path, then the rest of the handling at the 
+point of attach should simply reduce to:
+
+	if (dev->iommu->attach_deferred && iommu_is_dma_domain(domain))
+		return 0;
+
+No magical flags required, and especially not the confusing thing with 
+group-owner because the thing that still says it's for attaching the 
+default domain now might also be attaching a non-default domain.
+
+Thanks,
+Robin.
+
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>   drivers/iommu/iommu.c | 18 +++++++++++-------
+>   1 file changed, 11 insertions(+), 7 deletions(-)
 > 
-> [...]
-
-Applied to will (for-joerg/arm-smmu/updates), thanks!
-
-[1/1] iommu/arm-smmu-v3: Acknowledge pri/event queue overflow if any
-      https://git.kernel.org/will/c/67ea0b7ce418
-
-Cheers,
--- 
-Will
-
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index cd75d7405a3051..af3af752c255e4 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -102,6 +102,7 @@ static int __iommu_attach_group(struct iommu_domain *domain,
+>   
+>   enum {
+>   	IOMMU_SET_DOMAIN_MUST_SUCCEED = 1 << 0,
+> +	IOMMU_SET_DOMAIN_WITH_DEFERRED = 1 << 1,
+>   };
+>   
+>   static int __iommu_group_set_domain_internal(struct iommu_group *group,
+> @@ -1855,12 +1856,6 @@ static void probe_alloc_default_domain(struct bus_type *bus,
+>   
+>   }
+>   
+> -static int __iommu_group_dma_first_attach(struct iommu_group *group)
+> -{
+> -	return __iommu_group_for_each_dev(group, group->default_domain,
+> -					  iommu_group_do_dma_first_attach);
+> -}
+> -
+>   static int iommu_group_do_probe_finalize(struct device *dev, void *data)
+>   {
+>   	const struct iommu_ops *ops = dev_iommu_ops(dev);
+> @@ -1923,7 +1918,10 @@ int bus_iommu_probe(struct bus_type *bus)
+>   
+>   		iommu_group_create_direct_mappings(group);
+>   
+> -		ret = __iommu_group_dma_first_attach(group);
+> +		group->domain = NULL;
+> +		ret = __iommu_group_set_domain_internal(
+> +			group, group->default_domain,
+> +			IOMMU_SET_DOMAIN_WITH_DEFERRED);
+>   
+>   		mutex_unlock(&group->mutex);
+>   
+> @@ -2218,6 +2216,12 @@ static int __iommu_device_set_domain(struct iommu_group *group,
+>   {
+>   	int ret;
+>   
+> +	if ((flags & IOMMU_SET_DOMAIN_WITH_DEFERRED) &&
+> +	    iommu_is_attach_deferred(dev)) {
+> +		dev->iommu->attach_deferred = 1;
+> +		return 0;
+> +	}
+> +
+>   	ret = __iommu_attach_device(new_domain, dev);
+>   	if (ret) {
+>   		/*
