@@ -1,223 +1,113 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2087.outbound.protection.outlook.com [40.107.92.87])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA7C8A29
-	for <iommu@lists.linux.dev>; Thu,  6 Apr 2023 06:12:43 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IfWZxM4xEox+aXqJdoUYAARvfEc995spORcUJjroa66wRwswRPI6oNdYNtm2yYm/SB6fRlNUKA3LQNBJbHqwhaxjna6OyVhemxnsjB8w9/4lKjqLsFinXMEXrJsEmYnapTinE5HNjlRHe4xkCsB9TX6tlTGe6IupGE7NJO5Db1Rh1Szku4XZYB421aqtTr/15s7qY7oYJhpcY04Udi8D3JVJ9TkNxRiGPUuQ8fHFpLNEryD6e9r5zHFm51mtqu0JBqhCBJtxAzo0tfueVHHMDZTUPqFHRFLPI2hLjRcnUF7FW6rGcCLeMsG79kEFlKTOTlIRw622SkzFbx09i+r6Jg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NKNfCgm0qeQv7OgraaeGmnuee0XB4JXhDGvY39mbPQw=;
- b=HrBTRQ0yvvw5d+usZ3NgEqWToCqgrnsfctukxOkjEMwlnTX/PcRyHYLnUCj2ozM64/fK61pSl8x4CLaGzdW2IioZVcMPG2OS9VTh5Fz5Om30idSl7OYyZ+K2Onyc/SRuj6wf4V8T3779PIL+xyC1rIyO0ulyR51rSHAnY1u4H5WHKufZ6ci5Alcxt/h+igfUPjq2q/LNCXUaSEE13RcM0TzC7JPQGC6u2lkaETFBjRmIBpnLp6Lc9X2fhFYDQy4szWaOghxThg7p6xVwF26CgXInCA8Ttn1kLvqUfbKd3ChdBBzLWm6SvtbU/K5TVe0Tg9O19AiJ5yX8buNkOQko6A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NKNfCgm0qeQv7OgraaeGmnuee0XB4JXhDGvY39mbPQw=;
- b=i/UMB/THHzG4z1PAS8cFEGIvOQQh2OEWyvx6RsSWAmmihsKrh7l1s8cc9ZxWNQ5YXUz1DjAJWb4/QlUMHwIv6jV7rlQByz4hLqfRdS8whJOz+rJG1xUaU+y2/GHEeex+Oixee2EOXRHwyerbrf/d7z3ai6WgEzRYqmspSkBfB1c=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7SPRMB0009.namprd12.prod.outlook.com (2603:10b6:8:87::10) by
- PH0PR12MB8029.namprd12.prod.outlook.com (2603:10b6:510:26c::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6254.35; Thu, 6 Apr 2023 06:12:40 +0000
-Received: from DS7SPRMB0009.namprd12.prod.outlook.com
- ([fe80::57de:d785:91de:d205]) by DS7SPRMB0009.namprd12.prod.outlook.com
- ([fe80::57de:d785:91de:d205%8]) with mapi id 15.20.6254.035; Thu, 6 Apr 2023
- 06:12:40 +0000
-Message-ID: <d34c7fca-1510-4565-3c23-4923174a66eb@amd.com>
-Date: Thu, 6 Apr 2023 11:42:25 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] iommu: amd: Set page size bitmap during V2 domain
- allocation
-Content-Language: en-US
-To: Jerry Snitselaar <jsnitsel@redhat.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
- Joerg Roedel <joro@8bytes.org>
-References: <20230404072742.1895252-1-jsnitsel@redhat.com>
- <k6cz5w66mfse7ztgtfy6ux4bjasg64dhbjnliybybcvmoywrs3@gehaolzeh3ph>
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <k6cz5w66mfse7ztgtfy6ux4bjasg64dhbjnliybybcvmoywrs3@gehaolzeh3ph>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN2PR01CA0124.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:6::9) To DS7SPRMB0009.namprd12.prod.outlook.com
- (2603:10b6:8:87::10)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9D4DA29
+	for <iommu@lists.linux.dev>; Thu,  6 Apr 2023 06:23:29 +0000 (UTC)
+Received: by mail-qt1-f172.google.com with SMTP id x17so15146208qtv.7
+        for <iommu@lists.linux.dev>; Wed, 05 Apr 2023 23:23:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1680762208;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=WLfPdHhEmpnTRLSZFpVmB7w8tvZr0eV5OBeSk/h6cZo=;
+        b=Wrjpx4/InWSH1rXxlkFn7/hLkiei4tBXGvEQhUOc68z0zM5bPba/Iolfl1UrbzSD3+
+         rQ20FM0QXwDTkGezJKskXJl9TYjoNqgAc/I6hfzTHP5JhDa9TxnuO1IjaGHRmUK2w0mp
+         YX9UcTaGGT4WIbLJsRNV74gR3bMviEipXEaFExpXofvJNYWl343sl3/OI3VkIng5igwu
+         I7mUjnSBVeohzHVbIm7Ohxsp2pTtqBPBSyX6dMTo2Pp/RNlauwwM8bIwIuvHq3aLrb2e
+         BOHcDwPlGryCN56Hd4KRj3R18Vlkb4kZ5GFZftDpuhjACviJ6z0ZV9K2gsvOhfXk07gM
+         IDBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680762208;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=WLfPdHhEmpnTRLSZFpVmB7w8tvZr0eV5OBeSk/h6cZo=;
+        b=MYs9toxiXCuejz+i+FE4R+ZyVNX2AxsVPg6qBseW2GuJ/WoUxJBR/VJz1Y8NEzfl2/
+         4NF+/kcL2SdFXsisE2D+rNTeCh6dBaZl0uKFgD1/eSkOa6lEdLaEpiGgd99XmzgH8ftf
+         Gd7mvwKEC/6b4rkyR+tckSgJd4S46x4YqaDXtdUt0drK0208zA09Tsp45Cp0euIU9Wnl
+         V6toqwRB+w2ZQH80ypt2A7Ca4LzCoKG/BxD5K8DzaH9FhEkN/SGMJOEe9fLIJ+e1PGQe
+         GgJePUC6htCcgvtb24kZsQjqM3yD9I0IUiiiG/Mx/XzjQLi6SnoMGQppeyDKQ4O9568w
+         7Mgw==
+X-Gm-Message-State: AAQBX9eqO1qnCnng9gKCdP8ui1mszxae1m+JU0p4eIf02MQ0yZRcf8yS
+	y9xqjE7uAt04ZE5hhVwdMuv8H8PNtTCwctHsaL9WfA==
+X-Google-Smtp-Source: AKy350ZEiRM94OBAjqWsIQYygM7ZXTU1+vy1bngs3DszBwDy0kY1b9kaeghIr9m2P9xnWV6MdlE6zotHIzpIstBdRDk=
+X-Received: by 2002:a05:622a:1892:b0:3d9:556b:10dd with SMTP id
+ v18-20020a05622a189200b003d9556b10ddmr2171669qtc.11.1680762208541; Wed, 05
+ Apr 2023 23:23:28 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7SPRMB0009:EE_|PH0PR12MB8029:EE_
-X-MS-Office365-Filtering-Correlation-Id: c446253a-8dec-485e-1063-08db3665ed0a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	cuOl/FLbwrxpUdev3XckCuTBdpqRIfsMTq24TNISyHENp4zsZT3WTIJNS5/NyxVGC1OmOzyc+abLpKetCW5pu6UggUiE2LKeqbqt2xEmQkhvAlaxpCzDkpxyB+go9LqVyzA8Svtcs3O0ggrX1Pf3WNy58s36Ew7dP9QYxtZewug9dkkR9gkQ6FZBlGPSdvjCy3w3W+76TGClKrpAySjOOpPxtSmlU7aSF1Ejuuom/Ztx/mQbCH6mNk+CoeGopUz5GYk03/OMU5OLT0mp6/orhSOINshq88sY2t02rxKTZ3Qw9DyYbObwfAEwEd+Pn2PVNjWTiS1GCzpdVuNg5qhIVMUQKdSV1WWnI1Z+LaQk4MYFri2q7RjsiFnyvLjXfUiecWfNbfEXzXEgGdPoqPlt1f6K8cWH4XfMfBvibwiuavJQIUShG+SQQ9Y0UWJCFWG4xgvspldZJqP7xHED00AW3lK4iqdBYwSd5g14FW07u4PKe4apT3mxhxcS2HV/YagXVkDMsDRgQeHCgOJChcydpV2D/svUG4+jaijaVHYR+6cmdaEpB1kTDO7Gl3Xf71lCc8IJghl7iuite1atXT4fXAtB30rJXgE6Ad+SNqVdgP1ZMklOK/L0CRatRyauVDib+HpLfL0hGx72mEZ9hWHizA==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7SPRMB0009.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(346002)(39860400002)(366004)(376002)(451199021)(31696002)(6666004)(6486002)(36756003)(83380400001)(2616005)(38100700002)(86362001)(6506007)(6512007)(53546011)(26005)(186003)(66946007)(44832011)(66476007)(66556008)(8676002)(54906003)(316002)(5660300002)(4326008)(2906002)(41300700001)(8936002)(31686004)(66899021)(478600001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Y1FmS1A0MFkwWW4zcWxjMGsxUGpvbnR4SThhSk4yRURsV0hBNnhFMWMwM3VS?=
- =?utf-8?B?L2NsMUZTWjFyNkQybS95RTB0WkZwTlFsZElaWXlxOE9QbW9jRDlCcWRlTHZT?=
- =?utf-8?B?M1dNWFRCS3F3ajVCUnFpQnB1ajJlQXhvUit2WnFadGhlUG5PNVFqN21QZjR1?=
- =?utf-8?B?SGhYK1pUdlBONmNQNEhlL1NmK0pDQVV0blBSZlduK1J0SkxGUzdRV1IvUlV3?=
- =?utf-8?B?VTZ6N1JaVmZZYWxobDJwRHV2YWkzbTJMUUxOWlczSHJORWZ4QXBaSHBpanVD?=
- =?utf-8?B?Y2UvTndNc3BoK1FkbTdaamFSSHBzSjlyRStDY21DdnhJY3VMcVVvM3dtWElo?=
- =?utf-8?B?eEd4NldubTdpSE5OaG0rRisxaXJlb1gwVWVkdUFxamJKQjdSMFBuK2Q3RnR2?=
- =?utf-8?B?SUw5anN3dTJsa1RTc0d5dTcrOGdTNmVXSW9JZW45SElGWlhRZjJuckRRcUhX?=
- =?utf-8?B?MVlKUUJVS0ZaYkpEbmJvV0J3cktYRTFTWjRVNTg4aFJIQzdoM2FSY25Ca1JB?=
- =?utf-8?B?S2dPeEplTWpldnczK3RGZXk0V3BxcnZWT2pqc2RYbThFbWs0R0pHZUgvWFBo?=
- =?utf-8?B?TUZiaVY2M01XMm9NSm9YbnpSOGp1aE1YK3FVU0pmYmlCa0ozaFJtekYva2tK?=
- =?utf-8?B?djk5VzRyYXJiSFBGZmlkNWdoQVZaVXdQQzhiNERaMDd5T2xWUndCUklPUktR?=
- =?utf-8?B?cUl3dms5S1pHdThONVpOVWhwVjRkZVdDYi9IK3E2bjhPWnZWQlFQM2NQOTl5?=
- =?utf-8?B?OXdlTTh1VUtFcEp1eVQ3OHcrMWZVbTBkSEdDalRVWi9pcVdqaUJqYUdWYzJ2?=
- =?utf-8?B?c3pJYThaVHJtTCtKRWxYMGhNSlNxMHl4QWlLcWRzY2xzK3h1Rm1LdWp4UXlr?=
- =?utf-8?B?UkRoQ0N5MGUwb2xNNDlrUzFGOUY0cWR5RThqNjd5dEJsN28yaGllMm1wMkRy?=
- =?utf-8?B?SmltOEhTLzJpV09zMkw5dkVjbE54TnFrYzV1QnZsVzlBYVdSUXZ6Yks5TTNP?=
- =?utf-8?B?Y2NrQVEyeUt6WkQxbjIvSG5MVG5KVVJmeEpmVlNSZkhmRUZlTEtnQjBYOElY?=
- =?utf-8?B?N29qMlhxYVBqQjY5T25ZU3lwQjBaeS9YNHJmYmcwYlBITFVmRi9GczFLVms5?=
- =?utf-8?B?aTdZZ2NZVlhHY01sUkJ6b0gzZ050M1dIYTZxd09mU05USDZUSlh3ZHNQb1pF?=
- =?utf-8?B?dzc1MWdic3o3VHlRSC9HTVZqeVM2cjZ3WWIwczhUQUtsSkNNNmlPMkFINnhx?=
- =?utf-8?B?M3RlS3I1S1laQXJkNE9qYkhjNGVmd3ZYUTl1eDNGVmFhbytkSWVMQ1BLd2RW?=
- =?utf-8?B?L2hmV2tIay9aY2tvZ2hUVmR0S2UyRWxKSnFCZDRTTVNYWEUrd3Ard213aUdE?=
- =?utf-8?B?alFGWHVac2lNOEdIcXhxOGZKY2tXTkVMUnprN2tNeCtkS1BRMlJvQTBmN0ow?=
- =?utf-8?B?R2I3eGFMQ1JocFozWmxMYnU3NUlKdnp3bG1qbCtHVTVSSWgzMmd2OWFRTngz?=
- =?utf-8?B?NjNjSlR3SkM0TW9yR0w4QUlobC9Hd20rT3VZclcxNnNwaVJxbVhqN2xlU0ZV?=
- =?utf-8?B?VkpwYkx0WjJVazk3ZXl0T2lCczkyMXFPOFp1UEgxWGxna1J4OGdraUFJNG51?=
- =?utf-8?B?NlBDeTZUNGxqN2I4clF5NGxNTFAydTRvZVV1ZUx0YW5PV1RhSmNDZElQblRO?=
- =?utf-8?B?TkJsN2FPcXVhZjREOTByUGRFSVpGV0dPczVUV2xEbnQxOE5taXpvZGg3em5T?=
- =?utf-8?B?WVcyM01PeXZDTVlSaXppNkpvYk1JMGY4bnRkRnMydDdPY0RLa2FwdjJYeEM4?=
- =?utf-8?B?VFJZY1JaM29wbWsvN3lJS1p3S2NCZEpXV25acDdVUkhja2pqNDdMakZFbmlh?=
- =?utf-8?B?a3c1d3NBMGJpN3o4UDd6VHorZUg5ZEF3ZnVQTHRGcDN4KzZCTXZ1MC8zODBu?=
- =?utf-8?B?VkZyaWlMZHNyYXlYQXJPaUhwSkJyVGZQUURKK1RkdUtheXdJRmhwL0dHSEJm?=
- =?utf-8?B?cGN4Y1ROTU11cG00Vi9uVlNDcDlzdVJUeDc5NTBJTVpHcGdKeFU4OVBaUDN5?=
- =?utf-8?B?dWM4aDk3cFdCbnZ5czVHYTFpQWUzL3djNWM5Ky9hUktWUjVNaS9lOE5VamVr?=
- =?utf-8?Q?iEGu8wlhfKoMqVI6cjE2tsakR?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c446253a-8dec-485e-1063-08db3665ed0a
-X-MS-Exchange-CrossTenant-AuthSource: DS7SPRMB0009.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2023 06:12:40.3118
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hR+xH+kdzzrDT6l8fZ8dHx+nh4FegruHkwQoLC3atgihf+b4L8+JDoWOKlpM8flDm0TfZRoF3h/mibY6BpwlDQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB8029
+References: <ZCoe3+1q5ZLJsmeC@Asurada-Nvidia> <ZCrd1wphkCp8uFt0@nvidia.com>
+ <ZCrn8PPPyEJ/VqFU@Asurada-Nvidia> <ea6fba01-b483-94e6-8c84-d096dcb64b5a@arm.com>
+ <ZCtpAYn76u499p6G@Asurada-Nvidia> <ZCxOMSvR+6rYbIfy@nvidia.com> <a3bbd5422897475d8bcd4c110c3722ec@huawei.com>
+In-Reply-To: <a3bbd5422897475d8bcd4c110c3722ec@huawei.com>
+From: Zhangfei Gao <zhangfei.gao@linaro.org>
+Date: Thu, 6 Apr 2023 14:23:17 +0800
+Message-ID: <CABQgh9G_Xa6h7ujRJkCogp02N87OAugBTEuXyccQREw28VfZCQ@mail.gmail.com>
+Subject: Re: Cache Invalidation Solution for Nested IOMMU
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Nicolin Chen <nicolinc@nvidia.com>, 
+	Robin Murphy <robin.murphy@arm.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>, 
+	"yi.l.liu@intel.com" <yi.l.liu@intel.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, 
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, 
+	"jean-philippe@linaro.org" <jean-philippe@linaro.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
+	qianweili <qianweili@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
 
-Jerry,
+On Wed, 5 Apr 2023 at 00:50, Shameerali Kolothum Thodi
+<shameerali.kolothum.thodi@huawei.com> wrote:
+>
+>
+>
+> > -----Original Message-----
+> > From: Jason Gunthorpe [mailto:jgg@nvidia.com]
+> > Sent: 04 April 2023 17:20
+> > To: Nicolin Chen <nicolinc@nvidia.com>
+> > Cc: Robin Murphy <robin.murphy@arm.com>; kevin.tian@intel.com;
+> > yi.l.liu@intel.com; eric.auger@redhat.com; baolu.lu@linux.intel.com;
+> > Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>;
+> > jean-philippe@linaro.org; iommu@lists.linux.dev
+> > Subject: Re: Cache Invalidation Solution for Nested IOMMU
+> >
+> > On Mon, Apr 03, 2023 at 05:02:09PM -0700, Nicolin Chen wrote:
+> >
+> > > My preference is to have a mmap'd page, so the interface can
+> > > be reused later by VCMDQ too. Performance-wise, it should be
+> > > good enough, since it does batching, IMHO.
+> >
+> > You can't reuse mmaping the queue page with vcmdq, so it doesn't seem
+> > meaningful to me.
+> >
+> > There should be no mmap on the SW path. If you need a half step
+> > between an ioctl as a batch and a full vhost-like queue scheme then
+> > using iouring with pre-registered memory would be appropriate.
+> >
+> > I feel like this is a topic Shameerali should share some insight with
+> > since the Huawei implementation will rely on this SW path.
+>
+> So far the tests we have done are mainly using IOCTL method without
+> batching and I don't have any numbers to compare against the batched
+> method yet.
+>
+> [+Zhangfei]
+>
+> Zhangfei, do you think we can run some UADK/vSVA tests with different
+> Invalidation solutions discussed here and compare?
 
-On 4/4/2023 9:58 PM, Jerry Snitselaar wrote:
-> On Tue, Apr 04, 2023 at 12:27:42AM -0700, Jerry Snitselaar wrote:
->> With the addition of the V2 page table support, the domain page size
->> bitmap needs to be set prior to iommu core setting up direct mappings
->> for reserved regions. When reserved regions are mapped, if this is not
->> done, it will be looking at the V1 page size bitmap when determining
->> the page size to use in iommu_pgsize(). When it gets into the actual
->> amd mapping code, a check of see if the page size is supported can
->> fail, because at that point it is checking it against the V2 page size
->> bitmap which only supports 4K, 2M, and 1G.
->>
->> Add a check to __iommu_domain_alloc() to not override the
->> bitmap if it was already set by the iommu ops domain_alloc() code path.
->>
->> Cc: Vasant Hegde <vasant.hegde@amd.com>
->> Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
->> Cc: Robin Murphy <robin.murphy@arm.com>
->> Cc: Will Deacon <will@kernel.org>
->> Cc: Joerg Roedel <joro@8bytes.org>
->> Fixes: 4db6c41f0946 ("iommu/amd: Add support for using AMD IOMMU v2 page table for DMA-API")
->> Signed-off-by: Jerry Snitselaar <jsnitsel@redhat.com>
-> 
-> 
-> 
-> I'm still not sure this is the best solution. Feels odd with adding a
-> check to core code to handle something one of the drivers has
-> done. Another thought was something like arm does, with amd_iommu_ops
-> dropping the const and setting the default page size bitmap in
-> iommu_init_pci(), but I think that would still require adding
-> something in the protection domain/init code to deal with it forcing
-> v1, so it would still require a check in the core code.
-> 
+Hi, Nicolin
 
-I am not familiar with how arm paging works. But in AMD case we decide the page
-table during protection domain allocation. Also we can have different page size
-for different domains. (like one domain in v1 and another in v2 page mode).
+Do you have mmap branch for kernel and Qemu?
 
-> Would adding an op make more sense, with a generic op doing what the
-> core code currently does for setting the default? Or am I overthinking
-> this?
+We are using ioctl method now.
+From the testing, the TLB miss impacts performance a lot, so we use
+huge page method.
+After using huge page method, guest can achieve comparable performance
+with host.
 
-IMO adding another ops is not required. I think current fix is good enough.
-Thanks for debugging/fixing this issue.
+More details:
+https://docs.qq.com/doc/DRXlpQmpTSlBZTGZZ
 
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
-
-
--Vasant
-
-> 
-> snits
-> 
->> ---
->>  drivers/iommu/amd/iommu.c | 6 ++----
->>  drivers/iommu/iommu.c     | 9 +++++++--
->>  2 files changed, 9 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
->> index 5a505ba5467e..167da5b1a5e3 100644
->> --- a/drivers/iommu/amd/iommu.c
->> +++ b/drivers/iommu/amd/iommu.c
->> @@ -1666,10 +1666,6 @@ static void do_attach(struct iommu_dev_data *dev_data,
->>  	domain->dev_iommu[iommu->index] += 1;
->>  	domain->dev_cnt                 += 1;
->>  
->> -	/* Override supported page sizes */
->> -	if (domain->flags & PD_GIOV_MASK)
->> -		domain->domain.pgsize_bitmap = AMD_IOMMU_PGSIZES_V2;
->> -
->>  	/* Update device table */
->>  	set_dte_entry(iommu, dev_data->devid, domain,
->>  		      ats, dev_data->iommu_v2);
->> @@ -2048,6 +2044,8 @@ static int protection_domain_init_v2(struct protection_domain *domain)
->>  
->>  	domain->flags |= PD_GIOV_MASK;
->>  
->> +	domain->domain.pgsize_bitmap = AMD_IOMMU_PGSIZES_V2;
->> +
->>  	if (domain_enable_v2(domain, 1)) {
->>  		domain_id_free(domain->id);
->>  		return -ENOMEM;
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 10db680acaed..256a38371120 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -1964,8 +1964,13 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
->>  		return NULL;
->>  
->>  	domain->type = type;
->> -	/* Assume all sizes by default; the driver may override this later */
->> -	domain->pgsize_bitmap = bus->iommu_ops->pgsize_bitmap;
->> +	/*
->> +	 * If not already set, assume all sizes by default; the driver
->> +	 * may override this later
->> +	 */
->> +	if (!domain->pgsize_bitmap)
->> +		domain->pgsize_bitmap = bus->iommu_ops->pgsize_bitmap;
->> +
->>  	if (!domain->ops)
->>  		domain->ops = bus->iommu_ops->default_domain_ops;
->>  
->> -- 
->> 2.38.1
->>
-> 
+Thanks
