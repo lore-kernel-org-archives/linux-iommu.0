@@ -1,69 +1,138 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1F9A63BC
-	for <iommu@lists.linux.dev>; Thu,  6 Apr 2023 13:04:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680786294; x=1712322294;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=4m7lbwkH0xe8YoItCdZMQ65J4/rvO42XX0WYtA2Hflw=;
-  b=FzXgnkTJZUXOiQzKKZeFPewmKxmwVJm5k9IAxzebNgFw2+Bb8bn6p+F1
-   YtoWrCi8FPHHrMXBemWOUjX2AfgQMiS1oi7UcIKA+995tL/hUprBckNuV
-   LQDkg4/gO4egqn79TPgwI9SBJ8z8jP24SfNZyq+ES4y+1JtckA4jBKghI
-   BE0uzIsNIpwTnTtIRce3O6hyQGVowGV0ceZJQ5brcC/P8OdLEcoVi3Ja8
-   0LAtE/A5hFU/lqQAbCVIu0QV+6xRtu0D031nn/v4iA217k0cJmCPMve4y
-   +6yh4/SbeaSYKWx9kBG+GWdevQfIu1SilOig3BfIwcX3HuISus5rjNinT
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="405524076"
-X-IronPort-AV: E=Sophos;i="5.98,323,1673942400"; 
-   d="scan'208";a="405524076"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2023 05:48:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="687115398"
-X-IronPort-AV: E=Sophos;i="5.98,323,1673942400"; 
-   d="scan'208";a="687115398"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.31.177]) ([10.255.31.177])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2023 05:48:03 -0700
-Message-ID: <ac9ad124-8cfc-e0af-bf7c-5cbbee48a695@linux.intel.com>
-Date: Thu, 6 Apr 2023 20:48:00 +0800
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AEB2563BC
+	for <iommu@lists.linux.dev>; Thu,  6 Apr 2023 13:08:13 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0348916F8;
+	Thu,  6 Apr 2023 06:08:55 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E33B63F73F;
+	Thu,  6 Apr 2023 06:08:09 -0700 (PDT)
+Message-ID: <342f729a-c48e-3cc2-d639-3cdb0ebb3e83@arm.com>
+Date: Thu, 6 Apr 2023 14:08:05 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-Cc: baolu.lu@linux.intel.com, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, iommu@lists.linux.dev,
- kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] iommu/sva: fix signedness bug in iommu_sva_alloc_pasid()
-Content-Language: en-US
-To: Dan Carpenter <error27@gmail.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <6b32095d-7491-4ebb-a850-12e96209eaaf@kili.mountain>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <6b32095d-7491-4ebb-a850-12e96209eaaf@kili.mountain>
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH] iommu: amd: Set page size bitmap during V2 domain
+ allocation
+Content-Language: en-GB
+To: Jerry Snitselaar <jsnitsel@redhat.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev
+Cc: Vasant Hegde <vasant.hegde@amd.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>
+References: <20230404072742.1895252-1-jsnitsel@redhat.com>
+ <k6cz5w66mfse7ztgtfy6ux4bjasg64dhbjnliybybcvmoywrs3@gehaolzeh3ph>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <k6cz5w66mfse7ztgtfy6ux4bjasg64dhbjnliybybcvmoywrs3@gehaolzeh3ph>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/4/6 16:55, Dan Carpenter wrote:
-> The ida_alloc_range() function returns negative error codes on error.
-> On success it returns values in the min to max range (inclusive).  It
-> never returns more then INT_MAX even if "max" is higher.  It never
-> returns values in the 0 to (min - 1) range.
+On 04/04/2023 5:28 pm, Jerry Snitselaar wrote:
+> On Tue, Apr 04, 2023 at 12:27:42AM -0700, Jerry Snitselaar wrote:
+>> With the addition of the V2 page table support, the domain page size
+>> bitmap needs to be set prior to iommu core setting up direct mappings
+>> for reserved regions. When reserved regions are mapped, if this is not
+>> done, it will be looking at the V1 page size bitmap when determining
+>> the page size to use in iommu_pgsize(). When it gets into the actual
+>> amd mapping code, a check of see if the page size is supported can
+>> fail, because at that point it is checking it against the V2 page size
+>> bitmap which only supports 4K, 2M, and 1G.
+>>
+>> Add a check to __iommu_domain_alloc() to not override the
+>> bitmap if it was already set by the iommu ops domain_alloc() code path.
+>>
+>> Cc: Vasant Hegde <vasant.hegde@amd.com>
+>> Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+>> Cc: Robin Murphy <robin.murphy@arm.com>
+>> Cc: Will Deacon <will@kernel.org>
+>> Cc: Joerg Roedel <joro@8bytes.org>
+>> Fixes: 4db6c41f0946 ("iommu/amd: Add support for using AMD IOMMU v2 page table for DMA-API")
+>> Signed-off-by: Jerry Snitselaar <jsnitsel@redhat.com>
 > 
-> The bug is that "min" is an unsigned int so negative error codes will
-> be promoted to high positive values errors treated as success.
 > 
-> Fixes: 1a14bf0fc7ed ("iommu/sva: Use GFP_KERNEL for pasid allocation")
-> Signed-off-by: Dan Carpenter<error27@gmail.com>
+> 
+> I'm still not sure this is the best solution. Feels odd with adding a
+> check to core code to handle something one of the drivers has
+> done. Another thought was something like arm does, with amd_iommu_ops
+> dropping the const and setting the default page size bitmap in
+> iommu_init_pci(), but I think that would still require adding
+> something in the protection domain/init code to deal with it forcing
+> v1, so it would still require a check in the core code.
+> 
+> Would adding an op make more sense, with a generic op doing what the
+> core code currently does for setting the default? Or am I overthinking
+> this?
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+I think this is fine as-is. TBH it's probably high time 
+ops->pgsize_bitmap finished going away entirely - as the Arm SMMU bodges 
+prove, it's no longer a good fit for the multi-instance model which 
+we've evolved, and for the sake of only this one assignment now, it 
+really doesn't seem worthwhile any more. Since I'm still reworking 
+domain_alloc, and already have plans to clean up the horrible 
+default_domain_ops thing (honestly, what possessed me to think that was 
+a good idea at the time!?), I can throw pgsize_bitmap in there as well.
 
-Best regards,
-baolu
+Cheers,
+Robin.
+
+> 
+> snits
+> 
+>> ---
+>>   drivers/iommu/amd/iommu.c | 6 ++----
+>>   drivers/iommu/iommu.c     | 9 +++++++--
+>>   2 files changed, 9 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+>> index 5a505ba5467e..167da5b1a5e3 100644
+>> --- a/drivers/iommu/amd/iommu.c
+>> +++ b/drivers/iommu/amd/iommu.c
+>> @@ -1666,10 +1666,6 @@ static void do_attach(struct iommu_dev_data *dev_data,
+>>   	domain->dev_iommu[iommu->index] += 1;
+>>   	domain->dev_cnt                 += 1;
+>>   
+>> -	/* Override supported page sizes */
+>> -	if (domain->flags & PD_GIOV_MASK)
+>> -		domain->domain.pgsize_bitmap = AMD_IOMMU_PGSIZES_V2;
+>> -
+>>   	/* Update device table */
+>>   	set_dte_entry(iommu, dev_data->devid, domain,
+>>   		      ats, dev_data->iommu_v2);
+>> @@ -2048,6 +2044,8 @@ static int protection_domain_init_v2(struct protection_domain *domain)
+>>   
+>>   	domain->flags |= PD_GIOV_MASK;
+>>   
+>> +	domain->domain.pgsize_bitmap = AMD_IOMMU_PGSIZES_V2;
+>> +
+>>   	if (domain_enable_v2(domain, 1)) {
+>>   		domain_id_free(domain->id);
+>>   		return -ENOMEM;
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 10db680acaed..256a38371120 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -1964,8 +1964,13 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+>>   		return NULL;
+>>   
+>>   	domain->type = type;
+>> -	/* Assume all sizes by default; the driver may override this later */
+>> -	domain->pgsize_bitmap = bus->iommu_ops->pgsize_bitmap;
+>> +	/*
+>> +	 * If not already set, assume all sizes by default; the driver
+>> +	 * may override this later
+>> +	 */
+>> +	if (!domain->pgsize_bitmap)
+>> +		domain->pgsize_bitmap = bus->iommu_ops->pgsize_bitmap;
+>> +
+>>   	if (!domain->ops)
+>>   		domain->ops = bus->iommu_ops->default_domain_ops;
+>>   
+>> -- 
+>> 2.38.1
+>>
+> 
