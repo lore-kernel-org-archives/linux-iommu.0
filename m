@@ -1,89 +1,113 @@
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+Received: from mail-vs1-f43.google.com (mail-vs1-f43.google.com [209.85.217.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E96A91872
-	for <iommu@lists.linux.dev>; Thu,  6 Apr 2023 08:55:36 +0000 (UTC)
-Received: by mail-wr1-f41.google.com with SMTP id l12so38728522wrm.10
-        for <iommu@lists.linux.dev>; Thu, 06 Apr 2023 01:55:36 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7F492F38
+	for <iommu@lists.linux.dev>; Thu,  6 Apr 2023 11:20:45 +0000 (UTC)
+Received: by mail-vs1-f43.google.com with SMTP id dg15so22463546vsb.13
+        for <iommu@lists.linux.dev>; Thu, 06 Apr 2023 04:20:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680771335; x=1683363335;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=B7txVTxf4VgSRpVhYeEkO74+1AKmp0Ykpq11aY2byhk=;
-        b=pfSmWPO3N8Z/GMBw8IydKi0iku0P+O92dK5LhpN58P47xOQXIptsOGaSs9neEUJKqg
-         BOvkLDw9p0MMvadI/+5TNgKRLp1tMpJQoAQNULZd87C2us2gw0HoU91U9glatgdoji3x
-         9TlRNAkRVec20j2pmoLrXk8B8fORaTh0t9LkFk0HpJO8X0YYQuYZ6++KCgGKC5/ENzHB
-         jP13FmuPYy5bKSMyPj3juqOfmunMPAp3tr72ssJtkpw7cLlCw4orS56fatTW07UQMsME
-         //l9E1BODxBE9qw/CfFDEFqCLgEwcwiWBC5hT0gyIkdTxnY9PjfsRnDIBYaqZHD8d4N4
-         6wNg==
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112; t=1680780044;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1Ne77xaqbtLGoxF/3ZhDrpD5vvfWoYyoJmdpcIYFNEQ=;
+        b=k6I0+4BXskzhRAwmd43QNMVzFMrPVNOkbwwXevTPqhk0D8YtPACw3R0r5oUZIcMPVv
+         Y5BUW4ArX1KppvMqptjnxTQn8Eg44+0ZQbizMDjOHAqI9XfPy9ky1Y5/sUTSgx9/3FRG
+         GR5QFc6MPGSsDoUOxRB5gBdVgCLmVxbo9cbOTuympKKj/3m64qK3GAZCfrJM9pQXJcku
+         pvfwlQ1j6C33FTc8uKtsSlENf9ePLJrXjcA1JInY3DAKtB/WJMRZSF/W23COOL1TWHxe
+         TSC2bb+7xWVyX3JOmd+CRHjYYjZg/2CHUVzK5aidd/2lKi4HS6aRnEedqroKaBR6YcFQ
+         KZ2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680771335; x=1683363335;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=B7txVTxf4VgSRpVhYeEkO74+1AKmp0Ykpq11aY2byhk=;
-        b=XDJhsDH2eoG1v9YT2ycywjysxkK/LO1E4+bQg2N+4dJeO/7gbuL8oODviBUKc7MCsz
-         jbxfKMcme+b/xecb7qwsDUMXN11oPNWH8jjitA2Fw0sdP1WMuvFU/gd1NVRNIevYOfTw
-         fBOi99hXzJx7i7Mf09wCfpBjr2/t9/TjZxOtxtLXxHiklXnnjMrLnDFU3dGFi9znwIwj
-         EufBk5FD5oboCbjII2S7pnXX1s7pdBrZ4iultuSALfKs6a4Hfi32oNt3mTpR6FYHdv6f
-         0crm6ROyUIM4m99GEa7j4gDjzYhwBmObzXlVscJr10BUwzxv8JG5V19OoCHtk4P5A9ZY
-         uoXg==
-X-Gm-Message-State: AAQBX9fgycYc75GceDxHSmjIK9CYbBDIKhrwv/hCSHRzOA7ijSZrv7dT
-	x4iG7MQqSBJHE1RNTihurpM=
-X-Google-Smtp-Source: AKy350Z/yqy0Ka8rHZ160xapJkbWkSFSsDNx8JryjDJ7M1zdz/g42+5DgPJhbaWIUQAq5RLttaL6jA==
-X-Received: by 2002:adf:ef03:0:b0:2e4:ff71:1c8e with SMTP id e3-20020adfef03000000b002e4ff711c8emr5681057wro.68.1680771335087;
-        Thu, 06 Apr 2023 01:55:35 -0700 (PDT)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id b5-20020adfde05000000b002d78a96cf5fsm1147318wrm.70.2023.04.06.01.55.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Apr 2023 01:55:34 -0700 (PDT)
-Date: Thu, 6 Apr 2023 11:55:31 +0300
-From: Dan Carpenter <error27@gmail.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	iommu@lists.linux.dev, kernel-janitors@vger.kernel.org
-Subject: [PATCH] iommu/sva: fix signedness bug in iommu_sva_alloc_pasid()
-Message-ID: <6b32095d-7491-4ebb-a850-12e96209eaaf@kili.mountain>
+        d=1e100.net; s=20210112; t=1680780044;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1Ne77xaqbtLGoxF/3ZhDrpD5vvfWoYyoJmdpcIYFNEQ=;
+        b=fhBlD0mMDmsN1bZO0XVJsRTj0xCvfkv76vcGGd7skQXTzsC1CuRHfubbXac2/RlPCI
+         FMGOM2VYpO4/yl1ygdTdJgnoYC8mcGkiHIjhL0DB6brUikYmtLDgGTXxb2ItdFt5MZ3b
+         1C83r5thlsp9XXkiXk1mdWPF4MTMb+HVKQ53uxIrFslXpiyF8CHi/RWEP+XlSivN0FQY
+         4y98UyCT5TGd2N0xWcn5KE4zKY5ZkXpbkdsnSGw0c6kKsrmexsE0sh1xpdXnOk/hxV0j
+         0rqufJDe0sBoaK1+YEr+TYyjkNdqc7exfyOF0H2GOFEfTz92uI4bdA4sLgDiJ6YUKXa6
+         ocNg==
+X-Gm-Message-State: AAQBX9d4BeOBCyNhSl62RdGjUHjuHEuXHbZ+utWKlpGnnTJElQzd/0xA
+	o1ud7qf9iK6IejARRXO369OlvtCjS9gaghTeOWOayQ==
+X-Google-Smtp-Source: AKy350bXUnbyNurB9zPd2ZQDGbD2zJLY7NQCuR5Vz4KL/7JSPzMrGSkVI2JVi1D35K2mHZB5WX3gQMWRx9D513knC9w=
+X-Received: by 2002:a67:c19a:0:b0:426:b051:1c4 with SMTP id
+ h26-20020a67c19a000000b00426b05101c4mr7770691vsj.0.1680780044683; Thu, 06 Apr
+ 2023 04:20:44 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
+References: <20230328193632.226095-1-brgl@bgdev.pl> <20230328193632.226095-3-brgl@bgdev.pl>
+ <72286603300630b890705c99b42f05a4.sboyd@kernel.org>
+In-Reply-To: <72286603300630b890705c99b42f05a4.sboyd@kernel.org>
+From: Bartosz Golaszewski <brgl@bgdev.pl>
+Date: Thu, 6 Apr 2023 13:20:33 +0200
+Message-ID: <CAMRc=McM1DfCoMmuUYcChFFBG=H1PgZFAWcuxnQsdhRdYrT+yA@mail.gmail.com>
+Subject: Re: [PATCH 2/7] clk: qcom: add the GPUCC driver for sa8775p
+To: Stephen Boyd <sboyd@kernel.org>
+Cc: Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Konrad Dybcio <konrad.dybcio@linaro.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Rob Herring <robh+dt@kernel.org>, 
+	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+	Shazad Hussain <quic_shazhuss@quicinc.com>, Michael Turquette <mturquette@baylibre.com>, 
+	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The ida_alloc_range() function returns negative error codes on error.
-On success it returns values in the min to max range (inclusive).  It
-never returns more then INT_MAX even if "max" is higher.  It never
-returns values in the 0 to (min - 1) range.
+On Wed, Mar 29, 2023 at 4:15=E2=80=AFAM Stephen Boyd <sboyd@kernel.org> wro=
+te:
+>
+> Quoting Bartosz Golaszewski (2023-03-28 12:36:27)
+> > diff --git a/drivers/clk/qcom/Kconfig b/drivers/clk/qcom/Kconfig
+> > index 449bc8314d21..5e1919738aeb 100644
+> > --- a/drivers/clk/qcom/Kconfig
+> > +++ b/drivers/clk/qcom/Kconfig
+> > @@ -437,6 +437,14 @@ config SA_GCC_8775P
+> >           Say Y if you want to use peripheral devices such as UART, SPI=
+,
+> >           I2C, USB, UFS, SDCC, etc.
+> >
+> > +config SA_GPUCC_8775P
+> > +       tristate "SA8775P Graphics clock controller"
+> > +       select SA_GCC_8775P
+>
+> Should select QCOM_GDSC as well.
+>
 
-The bug is that "min" is an unsigned int so negative error codes will
-be promoted to high positive values errors treated as success.
+Why if it's already selected indirectly by SA_GCC_8775P? Other GPUCCs
+in here don't select it either.
 
-Fixes: 1a14bf0fc7ed ("iommu/sva: Use GFP_KERNEL for pasid allocation")
-Signed-off-by: Dan Carpenter <error27@gmail.com>
----
- drivers/iommu/iommu-sva.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Bart
 
-diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-index c4ab3c457fbc..6e4f1ba1c148 100644
---- a/drivers/iommu/iommu-sva.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -33,8 +33,9 @@ static int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t ma
- 	}
- 
- 	ret = ida_alloc_range(&iommu_global_pasid_ida, min, max, GFP_KERNEL);
--	if (ret < min)
-+	if (ret < 0)
- 		goto out;
-+
- 	mm->pasid = ret;
- 	ret = 0;
- out:
--- 
-2.39.1
-
+> > +       help
+> > +         Support for the graphics clock controller on SA8775P devices.
+> > +         Say Y if you want to support graphics controller devices and
+> > +         functionality such as 3D graphics.
+> > +
+> >  config SC_GCC_7180
+> >         tristate "SC7180 Global Clock Controller"
+> >         select QCOM_GDSC
+> > diff --git a/drivers/clk/qcom/gpucc-sa8775p.c b/drivers/clk/qcom/gpucc-=
+sa8775p.c
+> > new file mode 100644
+> > index 000000000000..46d73bd0199b
+> > --- /dev/null
+> > +++ b/drivers/clk/qcom/gpucc-sa8775p.c
+> > @@ -0,0 +1,633 @@
+> > +// SPDX-License-Identifier: GPL-2.0-only
+> > +/*
+> > + * Copyright (c) 2021-2022, Qualcomm Innovation Center, Inc. All right=
+s reserved.
+> > + * Copyright (c) 2023, Linaro Limited
+> > + */
+> > +
+> > +#include <linux/clk.h>
+>
+> Is this include used? If not, remove it as this is a clk provider and
+> not a clk consumer.
