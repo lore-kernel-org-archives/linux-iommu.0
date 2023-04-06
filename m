@@ -1,100 +1,34 @@
-Received: from frasgout12.his.huawei.com (frasgout12.his.huawei.com [14.137.139.154])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B16879F9
-	for <iommu@lists.linux.dev>; Thu,  6 Apr 2023 14:53:38 +0000 (UTC)
-Received: from mail02.huawei.com (unknown [172.18.147.227])
-	by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4PskLx5GTYz9xFmX
-	for <iommu@lists.linux.dev>; Thu,  6 Apr 2023 22:26:01 +0800 (CST)
-Received: from A2101119013HW2.china.huawei.com (unknown [10.48.151.63])
-	by APP2 (Coremail) with SMTP id GxC2BwDnizLG2C5kZfv8AQ--.49S2;
-	Thu, 06 Apr 2023 15:36:00 +0100 (CET)
-From: Petr Tesarik <petrtesarik@huaweicloud.com>
-To: Christoph Hellwig <hch@lst.de>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41EA18801
+	for <iommu@lists.linux.dev>; Thu,  6 Apr 2023 14:55:40 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 9EA816732A; Thu,  6 Apr 2023 16:49:21 +0200 (CEST)
+Date: Thu, 6 Apr 2023 16:49:21 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Petr Tesarik <petrtesarik@huaweicloud.com>
+Cc: Christoph Hellwig <hch@lst.de>,
 	Marek Szyprowski <m.szyprowski@samsung.com>,
 	Robin Murphy <robin.murphy@arm.com>,
 	Petr Tesarik <petr.tesarik.ext@huawei.com>,
-	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
-	linux-kernel@vger.kernel.org (open list)
-Cc: Roberto Sassu <roberto.sassu@huawei.com>,
-	petr@tesarici.cz
-Subject: [PATCH v1] swiotlb: fix a braino in the alignment check fix
-Date: Thu,  6 Apr 2023 16:35:39 +0200
-Message-Id: <20230406143539.25-1-petrtesarik@huaweicloud.com>
-X-Mailer: git-send-email 2.25.1
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+	open list <linux-kernel@vger.kernel.org>,
+	Roberto Sassu <roberto.sassu@huawei.com>, petr@tesarici.cz
+Subject: Re: [PATCH v1] swiotlb: fix a braino in the alignment check fix
+Message-ID: <20230406144921.GA11444@lst.de>
+References: <20230406143539.25-1-petrtesarik@huaweicloud.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:GxC2BwDnizLG2C5kZfv8AQ--.49S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7KF43CF17Wr43Cw47Jr17Awb_yoW8tF13pF
-	1xJF4ktFWUtr10qa42k3s8XFy0g34DKw17GrZIg34YgryDJF1DWr9F9ry2gryF9F4fGFy3
-	uasI9rWjvFy7J3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUkjb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k2
-	6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
-	vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7Cj
-	xVAFwI0_Jr0_Gr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxV
-	AFwI0_Gr0_Gr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40E
-	x7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x
-	0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lc7CjxVAKzI0EY4vE52x082I5MxAIw28IcxkI
-	7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxV
-	Cjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY
-	6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6x
-	AIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv
-	6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x07je9a9UUUUU=
-X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230406143539.25-1-petrtesarik@huaweicloud.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-From: Petr Tesarik <petr.tesarik.ext@huawei.com>
+Thanks,
 
-The alignment mask in swiotlb_do_find_slots() masks off the high
-bits which are not relevant for the alignment, so multiple
-requirements are combined with a bitwise OR rather than AND.
-In plain English, the stricter the alignment, the more bits must
-be set in iotlb_align_mask.
-
-Confusion may arise from the fact that the same variable is also
-used to mask off the offset within a swiotlb slot, which is
-achieved with a bitwise AND.
-
-Fixes: 0eee5ae10256 ("swiotlb: fix slot alignment checks")
-Reported-by: Dexuan Cui <decui@microsoft.com>
-Link: https://lore.kernel.org/all/CAA42JLa1y9jJ7BgQvXeUYQh-K2mDNHd2BYZ4iZUz33r5zY7oAQ@mail.gmail.com/
-Reported-by: Kelsey Steele <kelseysteele@linux.microsoft.com>
-Link: https://lore.kernel.org/all/20230405003549.GA21326@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net/
-Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
-Tested-by: Dexuan Cui <decui@microsoft.com>
----
- kernel/dma/swiotlb.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 5b919ef832b6..dac42a2ad588 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -623,7 +623,7 @@ static int swiotlb_do_find_slots(struct device *dev, int area_index,
- 		phys_to_dma_unencrypted(dev, mem->start) & boundary_mask;
- 	unsigned long max_slots = get_max_slots(boundary_mask);
- 	unsigned int iotlb_align_mask =
--		dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);
-+		dma_get_min_align_mask(dev) | alloc_align_mask;
- 	unsigned int nslots = nr_slots(alloc_size), stride;
- 	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
- 	unsigned int index, slots_checked, count = 0, i;
-@@ -639,8 +639,8 @@ static int swiotlb_do_find_slots(struct device *dev, int area_index,
- 	 * allocations.
- 	 */
- 	if (alloc_size >= PAGE_SIZE)
--		iotlb_align_mask &= PAGE_MASK;
--	iotlb_align_mask &= alloc_align_mask;
-+		iotlb_align_mask |= ~PAGE_MASK;
-+	iotlb_align_mask &= ~(IO_TLB_SIZE - 1);
- 
- 	/*
- 	 * For mappings with an alignment requirement don't bother looping to
--- 
-2.25.1
-
+applied to the dma-mapping tree for 6.3.
