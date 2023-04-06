@@ -1,34 +1,34 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 683CF7E9
-	for <iommu@lists.linux.dev>; Thu,  6 Apr 2023 02:49:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60AE1A21;
+	Thu,  6 Apr 2023 03:14:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680749385; x=1712285385;
+  t=1680750859; x=1712286859;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=wNLHlYy6uV4G115SGXQXDrIz1CoHj/OQl8UlKp5dXLs=;
-  b=lEkqMSbTxooxglfJ8+0E9V84q+3C0Ip3/mHcIleCPVEq1kGlwX6ZYV70
-   joo9cZ//RiAtYOd1jI4kJmB6Cl+exBGaIpL+OGBqg77ou4gYWb0B4p65+
-   XN0ba6s+4n4bdzG2p3aVKwRfzYHB5xoPugzkqIeOSEb9pZ4ODAukqPqDV
-   SjPPVk9byVNhICDkMEeP1QOqqYUouIwy5bbzPheL92tGSpqjAaqOJFglq
-   +9gOIZnRrEyL9zffeXbDnvtsSj4M0YP0jM9kVxOvBD2Xxn0hitmBHltdI
-   MqovND55rnh3paZvVzNX8jZ1VeqjI4TDMkC3ckLknTeY8R+bpjflIMe3f
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="370457044"
+  bh=/8hOr+s6VmkPEvRsneynDTKSnVSIpXgL8+RNoA3j9Qs=;
+  b=S9w3wKj1ipdw7jTdwEVB881zohWqHCVykw1t8Wif8pvNuI5g8Nh/bTAY
+   +77kZEu0l2f5tT/BGMtqu/WFU+NTGu+3JqGEfAVgIvVhC638EGxxqTA9k
+   fp/8HlQXkU9xvxR2gvz/eeWiZTtPBI7m3zSgQ1xQf3WNjF2aqF2ZivUh6
+   Piw3YktNYVpU5+wwNe+4vmHcZQoc4ezxYNAPDiw8YaB6yV8FqVvWd++yu
+   GQ/zKjFnjdvkd+hKTeiaw3XA/ZHNcJk+Oxc9SE4impYlU+LVhuD9rnoTl
+   2Q/heVQrVfQ0mBBf4D2cHBSOb55uzLtPw1yEYxI8YMjwnwRBRvB9twUSK
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="322275861"
 X-IronPort-AV: E=Sophos;i="5.98,322,1673942400"; 
-   d="scan'208";a="370457044"
+   d="scan'208";a="322275861"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 19:49:44 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 20:14:18 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="1016701974"
+X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="1016707552"
 X-IronPort-AV: E=Sophos;i="5.98,322,1673942400"; 
-   d="scan'208";a="1016701974"
+   d="scan'208";a="1016707552"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by fmsmga005.fm.intel.com with ESMTP; 05 Apr 2023 19:49:40 -0700
-Message-ID: <7312331a-71a1-deea-6d17-bd6d968e87d4@linux.intel.com>
-Date: Thu, 6 Apr 2023 10:49:50 +0800
+  by fmsmga005.fm.intel.com with ESMTP; 05 Apr 2023 20:14:15 -0700
+Message-ID: <fd676ef4-4f43-8d0b-1a46-3ca92010d151@linux.intel.com>
+Date: Thu, 6 Apr 2023 11:14:25 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,64 +37,36 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.0
-Cc: baolu.lu@linux.intel.com, LKML <linux-kernel@vger.kernel.org>,
- iommu@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, dmaengine@vger.kernel.org, vkoul@kernel.org,
- Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
- Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- Yi Liu <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>,
- Dave Jiang <dave.jiang@intel.com>, Tony Luck <tony.luck@intel.com>,
- "Zanussi, Tom" <tom.zanussi@intel.com>
-Subject: Re: [PATCH v3 7/7] dmaengine/idxd: Re-enable kernel workqueue under
- DMA API
+Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
+ Nicolin Chen <nicolinc@nvidia.com>
+Subject: Re: [PATCH v3 10/17] iommu: Do iommu_group_create_direct_mappings()
+ before attach
 Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <20230331231137.1947675-1-jacob.jun.pan@linux.intel.com>
- <20230331231137.1947675-8-jacob.jun.pan@linux.intel.com>
- <ZC1mUKH/03QhkcR9@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, llvm@lists.linux.dev,
+ Nathan Chancellor <nathan@kernel.org>,
+ Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Tom Rix <trix@redhat.com>,
+ Will Deacon <will@kernel.org>
+References: <10-v3-e89a9bb522f5+8c87-iommu_err_unwind_jgg@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ZC1mUKH/03QhkcR9@nvidia.com>
+In-Reply-To: <10-v3-e89a9bb522f5+8c87-iommu_err_unwind_jgg@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 4/5/23 8:15 PM, Jason Gunthorpe wrote:
-> On Fri, Mar 31, 2023 at 04:11:37PM -0700, Jacob Pan wrote:
->>   static void idxd_disable_system_pasid(struct idxd_device *idxd)
->>   {
->> +	struct pci_dev *pdev = idxd->pdev;
->> +	struct device *dev = &pdev->dev;
->> +	struct iommu_domain *domain;
->> +	union gencfg_reg gencfg;
->> +
->> +	domain = iommu_get_domain_for_dev(dev);
->> +	if (!domain || domain->type == IOMMU_DOMAIN_BLOCKED)
->> +		return;
->> +
->> +	iommu_detach_device_pasid(domain, dev, idxd->pasid);
-> This sequence is kinda weird, we shouldn't pass in domain to
-> detach_device_pasid, IMHO. We already know the domain because we store
-> it in an xarray, it just creates weirdness if the user passes in the
-> wrong domain.
+On 4/6/23 7:38 AM, Jason Gunthorpe wrote:
+> The iommu_probe_device() path calls iommu_create_device_direct_mappings()
+> after attaching the device.
+> 
+> IOMMU_RESV_DIRECT maps need to be continually in place, so if a hotplugged
+> device has new ranges the should have been mapped into the default domain
+> before it is attached.
+> 
+> Move the iommu_create_device_direct_mappings() call up.
+> 
+> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
 
-The initial idea was that the driver has a domain and it wants to attach
-the domain to a pasid of the device. During attaching, iommu core will
-save the domain in its xarray.
-
-After use, driver want to detach the domain from the pasid by calling
-iommu_detach_device_pasid(). The iommu core will compare the input
-domain and the one it saved. A warning will be triggered if they are
-different.
-
-	WARN_ON(xa_erase(&group->pasid_array, pasid) != domain);
-
-Logically speaking, @domain for detach_device_pasid is unnecessary,
-because the pasid array is essentially per-device (as we discussed
-before. the pci_enable_pasid() ensures this), although it is currently
-placed in the group structure. In that case, the driver can and should
-own everything about the pasid and domain. The roles of the iommu core
-and the individual driver are only to handle requests of installing or
-withdrawing a domain on/from a device's pasid.
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
 Best regards,
 baolu
