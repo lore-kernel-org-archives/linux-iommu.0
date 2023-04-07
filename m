@@ -1,61 +1,99 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A254E7B
-	for <iommu@lists.linux.dev>; Fri,  7 Apr 2023 06:00:59 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id A9BE168C4E; Fri,  7 Apr 2023 08:00:49 +0200 (CEST)
-Date: Fri, 7 Apr 2023 08:00:47 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Petr Tesarik <petrtesarik@huaweicloud.com>
-Cc: Jonathan Corbet <corbet@lwn.net>, Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, Borislav Petkov <bp@suse.de>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-	Kim Phillips <kim.phillips@amd.com>,
-	"Steven Rostedt (Google)" <rostedt@goodmis.org>,
-	"open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-	open list <linux-kernel@vger.kernel.org>,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-	Roberto Sassu <roberto.sassu@huawei.com>, petr@tesarici.cz
-Subject: Re: [RFC v1 0/4] Allow dynamic allocation of software IO TLB
- bounce buffers
-Message-ID: <20230407060047.GE6803@lst.de>
-References: <cover.1679309810.git.petr.tesarik.ext@huawei.com> <630334b5-05d0-0152-7c2c-79174703f0ed@huaweicloud.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48FB223C4
+	for <iommu@lists.linux.dev>; Fri,  7 Apr 2023 10:16:04 +0000 (UTC)
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 4239D14B818;
+	Fri,  7 Apr 2023 12:15:56 +0200 (CEST)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
+	t=1680862556; bh=PaIGonr5JMM+Z9od4ricOA/7Hr3fGMxSQp5ApjSQwqw=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=DNqwBXXvCxQ8a7C2kJ5An/Ucg5U5OkUQ3Utahbqx2rhCY7B/Gw1j8zQS7oQO2PK4d
+	 OEOwIAQ+FoFE86ayjF16PfihXWG0zgOB4Onzs+jpTaLweXTG8jddQXY/W643jq8Ak3
+	 I6a/GBljeXX9H4JaINyEH9bxopBJdZZIQIMCSiw6OVk380au26T+8G9Nu4vfvnkCG/
+	 mxxDVVk5BljTm5rG82UshnUop9DV1ul8cVmZEDZkHYtvfmAAC93V0v2fRynBvT5HdQ
+	 MUCbpjgK/DaCkGrhD0k1y6u2xPBQbtVEZ/U/pRv0lVJLHos/u+rX3rhngO1X99kyVg
+	 M/NJ8vibVVIdw==
+Date: Fri, 7 Apr 2023 12:15:55 +0200
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Petr Tesarik <petrtesarik@huaweicloud.com>, Jonathan Corbet
+ <corbet@lwn.net>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
+ <robin.murphy@arm.com>, Borislav Petkov <bp@suse.de>, "Paul E. McKenney"
+ <paulmck@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Randy
+ Dunlap <rdunlap@infradead.org>, Damien Le Moal
+ <damien.lemoal@opensource.wdc.com>, Kim Phillips <kim.phillips@amd.com>,
+ "Steven Rostedt (Google)" <rostedt@goodmis.org>, "open list:DOCUMENTATION"
+ <linux-doc@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>, Roberto Sassu
+ <roberto.sassu@huawei.com>, Alexander Graf <graf@amazon.com>
+Subject: Re: [RFC v1 3/4] swiotlb: Allow dynamic allocation of bounce
+ buffers
+Message-ID: <20230407121555.4290a011@meshulam.tesarici.cz>
+In-Reply-To: <20230407055704.GD6803@lst.de>
+References: <cover.1679309810.git.petr.tesarik.ext@huawei.com>
+	<0334a54332ab75312c9de825548b616439dcc9f5.1679309810.git.petr.tesarik.ext@huawei.com>
+	<20230328040724.GB25506@lst.de>
+	<4268fa4e-4f0f-a2f6-a2a5-5b78ca4a073d@huaweicloud.com>
+	<8cf7c515-9ce6-a2ed-0643-972aa3eba2fb@huaweicloud.com>
+	<20230407055704.GD6803@lst.de>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <630334b5-05d0-0152-7c2c-79174703f0ed@huaweicloud.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, Mar 27, 2023 at 01:06:34PM +0200, Petr Tesarik wrote:
-> B. Allocate a very big SWIOTLB, but allow to use it for normal
-> allocations (similar to the CMA approach). The advantage is that there
-> is only one table, pushing performance impact down to almost zero. The
-> main challenge is migrating pages to/from the SWIOTLB. Existing CMA code
-> cannot be reused, because CMA cannot be used from atomic contexts,
-> unlike SWIOTLB.
+On Fri, 7 Apr 2023 07:57:04 +0200
+Christoph Hellwig <hch@lst.de> wrote:
 
-That actually sounds very interesting, although I'd go futher and
-figure out if we:
+> On Tue, Mar 28, 2023 at 02:43:03PM +0200, Petr Tesarik wrote:
+> > Oh, wait! I can do at least something for devices which do not use
+> > swiotlb at all.
+> > 
+> > If a device does not use bounce buffers, it cannot pass an address
+> > that belongs to the swiotlb. Consequently, the potentially
+> > expensive check can be skipped. This avoids the dynamic lookup
+> > penalty for devices which do not need the swiotlb.
+> > 
+> > Note that the counter always remains zero if dma_io_tlb_mem is
+> > NULL, so the NULL check is not required.  
+> 
+> Hmm, that's yet another atomic for each map/unmap, and bloats
+> struct device.
 
- a) could get away to only allow the CMA allocation for sleeping contexts,
-    if we have enough sleeping context to matter
- b) check with the CMA maintainers if it is feasible and acceptable
-    to them to extent CMA for irq allocations.
+I'm not sure how bad it is to bloat struct device. It is already quite
+large, e.g. in my x86 build it is 768 bytes (exact size depends on
+config options), and nobody seems to be concerned...
 
-That being said, I think cases like dma-buf sharing really need to
-be addressed at a higher level instead of basically double allocating
-these long-term memory allocations.
+Regarding the atomic operations, I am currently testing a slightly
+different approach, which merely sets a flag if there are any
+dynamically allocated bounce buffers. The atomic check changes to
+smp_load_acquire(), and the atomic inc/dec to smp_store_release()
+only if the flag changes. That said, if I hammer this path with heavy
+parallel I/O, I can still see some performance cost for devices that
+use swiotlb, but at least devices that do not need such bounce buffers
+seem to be unaffected then.
 
-I'd also really love to hear some feedback from the various confidential
-computing implementors, as that seems to be ther big driving force for
-swiotlb currently.
+> (Btw, in case anyone is interested, we really need to get started
+> on moving the dma fields out of struct device into a sub-struct
+> only allocated for DMA capable busses)
+
+I like this idea. In fact, my WIP topic branch now moves the swiotlb
+fields into a separate struct, but I can surely go further and move all
+DMA-related fields. I doubt it is worth to allocate it separately,
+though. We are talking about replacing some 100 bytes (in the worst
+case) with a pointer to a dynamically allocated struct, but the
+dynamic allocator adds some overhead. I believe it pays off only if the
+vast majority of struct device instances do not need these DMA fields,
+but is that really the case?
+
+Petr T
