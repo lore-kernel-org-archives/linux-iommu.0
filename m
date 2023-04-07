@@ -1,46 +1,23 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8FB06EBC
-	for <iommu@lists.linux.dev>; Fri,  7 Apr 2023 04:13:06 +0000 (UTC)
-Received: by linux.microsoft.com (Postfix, from userid 1131)
-	id E53BD20B83F9; Thu,  6 Apr 2023 21:13:04 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E53BD20B83F9
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1680840784;
-	bh=S7cYlRUmpxutG5DWPkMCJGfQpuc+T1LziF0NxcTNJKE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=cl4TcWnkFl4En1BraZZAgTsJnwTM25vRyZGkrb+vgteeLKExFITar9is2gKdzWEYq
-	 acy/LCOnTA6uuLw3xdB7l0Puz3wpIhGNn2+kKoAK9iJ1D5rUiHdCscw9eklAtnMQKi
-	 qIMrNJJxyE58hiASuZgy1Xa1FfetFaHxAqACY7CE=
-Date: Thu, 6 Apr 2023 21:13:04 -0700
-From: Kelsey Steele <kelseysteele@linux.microsoft.com>
-To: Petr Tesarik <petrtesarik@huaweicloud.com>
-Cc: Petr Tesa????k <petr@tesarici.cz>, Dexuan Cui <decui@microsoft.com>,
-	Dexuan-Linux Cui <dexuan.linux@gmail.com>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	Jianxiong Gao <jxgao@google.com>,
-	David Stevens <stevensd@chromium.org>,
-	Joerg Roedel <jroedel@suse.de>,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-	open list <linux-kernel@vger.kernel.org>,
-	Roberto Sassu <roberto.sassu@huawei.com>,
-	"Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-	Tianyu Lan <Tianyu.Lan@microsoft.com>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
-Subject: Re: [PATCH v1 2/2] swiotlb: Fix slot alignment checks
-Message-ID: <20230407041304.GA28729@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
-References: <cover.1679382779.git.petr.tesarik.ext@huawei.com>
- <c90887e4d75344abe219cc5e12f7c6dab980cfce.1679382779.git.petr.tesarik.ext@huawei.com>
- <CAA42JLa1y9jJ7BgQvXeUYQh-K2mDNHd2BYZ4iZUz33r5zY7oAQ@mail.gmail.com>
- <CO1PR21MB13320305E02BA121623213DABF939@CO1PR21MB1332.namprd21.prod.outlook.com>
- <20230405064019.6258ebb3@meshulam.tesarici.cz>
- <SA1PR21MB1335C5F774195F2C3431BF93BF909@SA1PR21MB1335.namprd21.prod.outlook.com>
- <20230405072801.05bb94ef@meshulam.tesarici.cz>
- <20230405075034.3c36bb77@meshulam.tesarici.cz>
- <20230406045204.GA20027@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
- <15d9dab3-379b-c62c-dd52-a810abe6985d@huaweicloud.com>
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4549E7B
+	for <iommu@lists.linux.dev>; Fri,  7 Apr 2023 05:39:07 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 6EF7967373; Fri,  7 Apr 2023 07:39:02 +0200 (CEST)
+Date: Fri, 7 Apr 2023 07:39:02 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Jiaxun Yang <jiaxun.yang@flygoat.com>
+Cc: iommu@lists.linux.dev, linux-mips@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	tsbogend@alpha.franken.de, mpe@ellerman.id.au,
+	paul.walmsley@sifive.com, palmer@dabbelt.com, robh+dt@kernel.org,
+	hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
+	linux-riscv@lists.infradead.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 0/3] Use dma_default_coherent for devicetree default
+ coherency
+Message-ID: <20230407053902.GA6636@lst.de>
+References: <20230401091531.47412-1-jiaxun.yang@flygoat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,87 +26,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <15d9dab3-379b-c62c-dd52-a810abe6985d@huaweicloud.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <20230401091531.47412-1-jiaxun.yang@flygoat.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Thu, Apr 06, 2023 at 04:42:00PM +0200, Petr Tesarik wrote:
-> Hi Kelsey,
-> 
-> On 4/6/2023 6:52 AM, Kelsey Steele wrote:
-> > On Wed, Apr 05, 2023 at 07:50:34AM +0200, Petr Tesa????k wrote:
-> >> On Wed, 5 Apr 2023 07:32:06 +0200
-> >> Petr Tesa????k <petr@tesarici.cz> wrote:
-> >>
-> >>> On Wed, 5 Apr 2023 05:11:42 +0000
-> >>> Dexuan Cui <decui@microsoft.com> wrote:
-> >>>
-> >>>>> From: Petr Tesa????k <petr@tesarici.cz>
-> >>>>> Sent: Tuesday, April 4, 2023 9:40 PM    
-> >>>>>>> ...
-> >>>>>>> Hi Petr, this patch has gone into the mainline:
-> >>>>>>> 0eee5ae10256 ("swiotlb: fix slot alignment checks")
-> >>>>>>>
-> >>>>>>> Somehow it breaks Linux VMs on Hyper-V: a regular VM with
-> >>>>>>> swiotlb=force or a confidential VM (which uses swiotlb) fails to boot.
-> >>>>>>> If I revert this patch, everything works fine.  
-> >>>>>>
-> >>>>>> The log is pasted below. Looks like the SCSI driver hv_storvsc fails to
-> >>>>>> detect the disk capacity:    
-> >>>>>
-> >>>>> The first thing I can imagine is that there are in fact no (free) slots
-> >>>>> in the SWIOTLB which match the alignment constraints, so the map
-> >>>>> operation fails. However, this would result in a "swiotlb buffer is
-> >>>>> full" message in the log, and I can see no such message in the log
-> >>>>> excerpt you have posted.
-> >>>>>
-> >>>>> Please, can you check if there are any "swiotlb" messages preceding the
-> >>>>> first error message?
-> >>>>>
-> >>>>> Petr T    
-> >>>>
-> >>>> There is no "swiotlb buffer is full" error.
-> >>>>
-> >>>> The hv_storvsc driver (drivers/scsi/storvsc_drv.c) calls scsi_dma_map(),
-> >>>> which doesn't return -ENOMEM when the failure happens.  
-> >>>
-> >>> I see...
-> >>>
-> >>> Argh, you're right. This is a braino. The alignment mask is in fact an
-> >>> INVERTED mask, i.e. it masks off bits that are not relevant for the
-> >>> alignment. The more strict alignment needed the more bits must be set,
-> >>> so the individual alignment constraints must be combined with an OR
-> >>> instead of an AND.
-> >>>
-> >>> Can you apply the following change and check if it fixes the issue?
-> >>
-> >> Actually, this will not work either. The mask is used to mask off both
-> >> high address bits and low address bits (below swiotlb slot granularity).
-> >>
-> >> What should help is this:
-> >>
-> > 
-> > Hi Petr, 
-> > 
-> > The suggested fix on this patch boots for me and initially looks ok,
-> > though when I start to use git commands I get flooded with "swiotlb
-> > buffer is full" messages and my session becomes unusable. This is on WSL
-> > which uses Hyper-V.
-> 
-> Roberto noticed that my initial quick fix left iotlb_align_mask
-> uninitialized. As a result, high address bits are set randomly, and if
-> they do not match actual swiotlb addresses, allocations may fail with
-> "swiotlb buffer is full". I fixed it in the patch that I have just posted.
-> 
-> HTH
-> Petr T
+Thanks,
 
-I pulled the patches from dma-mapping after your fix got applied and
-everything appears ok and goes back to the way it was; so no other
-errors to report. :) Unfortunately still getting the "swiotlb buffer is
-full" messages during kernel builds, though that was happening before
-your patches hit.
-
-Thanks so much, Petr!
-
-Cheers, 
-Kelsey. 
+applied to the dma-mapping tree for 6.4.
