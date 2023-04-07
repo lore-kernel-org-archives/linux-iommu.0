@@ -1,46 +1,35 @@
 Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA0247B
-	for <iommu@lists.linux.dev>; Fri,  7 Apr 2023 10:46:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFDA97B
+	for <iommu@lists.linux.dev>; Fri,  7 Apr 2023 10:55:38 +0000 (UTC)
 Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 1092814C886;
-	Fri,  7 Apr 2023 12:46:28 +0200 (CEST)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id A361B14B53E;
+	Fri,  7 Apr 2023 12:55:36 +0200 (CEST)
 Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1680864389; bh=fwSxeONAMiIQulvFLbEmRpW+yUKJFrnFHkYYi44Vd7I=;
+	t=1680864936; bh=U8kPN4Yj0CIndWrR4OoPEKQkLAq9ITd7QDh5nTQuHtI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=4sM1CUkjmwVelOaTnEWeo9CIORmocDgOnSm0PWyS3bTKcFjrsk3FFguLF/n3mLz/E
-	 3FoHV2DRuDICL7NYBgu8Ix0LvbyLUqJSmLyuyzj4H4Yy/7NQggJSL/YZLshclFDVkD
-	 P/4Jsb3ODIIc5bGUkHW2zYV644QtsGrzxmoKsn47ROm6bnfneRTtQU6TkIT0+OjH0z
-	 mzU6gVssjml8+15sN8QdeXwlMSr5YdeVfyNGqE0lvJWrnBAjwt4C3qk2Txo3w7ZqNh
-	 p5l2MT4qljaJSVYjPre2Ly1hog7j6GZDOapB+X486jTBzpSQlUK/VVPBrITo2W44fW
-	 sxVsi3ES64ziQ==
-Date: Fri, 7 Apr 2023 12:46:27 +0200
+	b=wlWRwK7E//70YUYlOiwmvCLQ+JUVE6Fecr684ItS5b31MS7o3Fk8ZHf53PJTKqdcC
+	 CuG+OubZdMklUrQKPzOGGQj0pkv954uO/GphHHlEwMpYIIsBzLcUWWPisoI16u8WI6
+	 jesicsj6oI5VzUsprC2gRHMF3ISVM+UzaoPfIfQZeA6P8CvzXZnp2CEDA9N+Ksm0BI
+	 dOCN8Tc7wTBjvpw94EqBmH13XRq+8TMlmYfmhCPeW+CpCOEJ+mvMdJyJpIJV1Vch0M
+	 fgSS+T2G0mSrEsi0sESZ37tLnaapUrabxcXQzdMQL5GlO4p6hI+8traPSm7KU/wY3l
+	 5jpj9hPwuBhOA==
+Date: Fri, 7 Apr 2023 12:55:35 +0200
 From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Petr Tesarik <petrtesarik@huaweicloud.com>, Jonathan Corbet
- <corbet@lwn.net>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
- <robin.murphy@arm.com>, Borislav Petkov <bp@suse.de>, "Paul E. McKenney"
- <paulmck@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Randy
- Dunlap <rdunlap@infradead.org>, Damien Le Moal
- <damien.lemoal@opensource.wdc.com>, Kim Phillips <kim.phillips@amd.com>,
- "Steven Rostedt (Google)" <rostedt@goodmis.org>, "open list:DOCUMENTATION"
- <linux-doc@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>, Roberto Sassu
- <roberto.sassu@huawei.com>, Alexander Graf <graf@amazon.com>
-Subject: Re: [RFC v1 3/4] swiotlb: Allow dynamic allocation of bounce
- buffers
-Message-ID: <20230407124627.74528415@meshulam.tesarici.cz>
-In-Reply-To: <20230407055548.GC6803@lst.de>
-References: <cover.1679309810.git.petr.tesarik.ext@huawei.com>
-	<0334a54332ab75312c9de825548b616439dcc9f5.1679309810.git.petr.tesarik.ext@huawei.com>
-	<20230328040724.GB25506@lst.de>
-	<4268fa4e-4f0f-a2f6-a2a5-5b78ca4a073d@huaweicloud.com>
-	<20230407055548.GC6803@lst.de>
+To: Michael Kelley <mikelley@microsoft.com>
+Cc: hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
+ decui@microsoft.com, tiala@microsoft.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/1] swiotlb: Track and report io_tlb_used high water
+ mark in debugfs
+Message-ID: <20230407125535.476350d4@meshulam.tesarici.cz>
+In-Reply-To: <1680324300-124563-1-git-send-email-mikelley@microsoft.com>
+References: <1680324300-124563-1-git-send-email-mikelley@microsoft.com>
 X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -51,66 +40,83 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 7 Apr 2023 07:55:48 +0200
-Christoph Hellwig <hch@lst.de> wrote:
+On Fri, 31 Mar 2023 21:45:00 -0700
+Michael Kelley <mikelley@microsoft.com> wrote:
 
-> On Tue, Mar 28, 2023 at 09:54:35AM +0200, Petr Tesarik wrote:
-> > I tend to agree here. However, it's the DMABUF design itself that causes
-> > some trouble. The buffer is allocated by the v3d driver, which does not
-> > have the restriction, so the DMA API typically allocates an address
-> > somewhere near the 4G boundary. Userspace then exports the buffer, sends
-> > it to another process as a file descriptor and imports it into the vc4
-> > driver, which requires DMA below 1G. In the beginning, v3d had no idea
-> > that the buffer would be exported to userspace, much less that it would
-> > be later imported into vc4.  
+> swiotlb currently reports the total number of slabs and the instantaneous
+> in-use slabs in debugfs. But with increased usage of swiotlb for all I/O
+> in Confidential Computing (coco) VMs, it has become difficult to know
+> how much memory to allocate for swiotlb bounce buffers, either via the
+> automatic algorithm in the kernel or by specifying a value on the
+> kernel boot line. The current automatic algorithm generously allocates
+> swiotlb bounce buffer memory, and may be wasting significant memory in
+> many use cases.
 > 
-> Then we need to either:
+> To support better understanding of swiotlb usage, add tracking of the
+> the high water mark usage of the default swiotlb bounce buffer memory
+> pool. Report the high water mark in debugfs along with the other swiotlb
+> metrics.  Allow the high water mark to be reset to zero at runtime by
+> writing to it.
 > 
->  a) figure out a way to communicate these addressing limitations
-
-AFAICS this would require a complete overhaul of the dma-buf userspace
-API so that intended imports are communicated at export time. In other
-words, it would be quite intrusive. Not my preferrence.
-
->  b) find a way to migrate a buffer into other memory, similar to
->     how page migration works for page cache
-
-Let me express the idea in my own words to make sure I get it right.
-When a DMA buffer is imported, but before it is ultimately pinned in
-memory, the importing device driver checks whether the buffer meets its
-DMA constraints. If not, it calls a function provided by the exporting
-device driver to migrate the buffer. This makes sense, but:
-
-  1) The operation must be implemented in the exporting driver; this
-     will take some time.
-
-  2) In theory, there may be no overlap between the exporting device
-     and the importing device. OTOH I'm not aware of any real-world
-     example, so we can probably return a suitable error code, and
-     that's it.
-
-Anyway, I have already written in another reply that my original use
-case is moot, because a more recent distribution can do the job without
-using dma-buf, so it has been fixed in user space, be it in GNOME,
-pipewire, or Mesa (I don't really have to know).
-
-At this point I would go with the assumption that large buffers
-allocated by media subsystems will not hit swiotlb. Consequently, I
-don't plan to spend more time on this branch of the story.
-
-> > BTW my testing also suggests that the streaming DMA API is quite
-> > inefficient, because UAS performance _improved_ with swiotlb=force.
-> > Sure, this should probably be addressed in the UAS and/or xHCI driver,
-> > but what I mean is that moving away from swiotlb may even cause
-> > performance regressions, which is counter-intuitive. At least I would
-> > _not_ have expected it.  
+> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+> ---
+> Changes in v3:
+> * Do high water mark accounting only when CONFIG_DEBUG_FS=y. As
+>   as a result, add back the mem_used() function for the "swiotlb
+>   buffer is full" error message. [Christoph -- I didn't hear back
+>   whether this approach addresses your concern about one additional
+>   atomic operation when slots are allocated and again when freed. I've
+>   gone ahead with this new version, and we can obviously have further
+>   discussion.]
 > 
-> That is indeed very odd.  Are you running with a very slow iommu
-> driver there?   Or what is the actual use case there in general?
+> * Remove unnecessary u64 casts. [Christoph Hellwig]
+> 
+> * Track slot usage and the high water mark only for io_tlb_default_mem.
+>   Previous versions incorrectly included per-device pools. [Petr Tesarik]
+> 
+> Changes in v2:
+> * Only reset the high water mark to zero when the specified new value
+>   is zero, to prevent confusion about the ability to reset to some
+>   other value [Dexuan Cui]
+> 
+>  kernel/dma/swiotlb.c | 41 ++++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 40 insertions(+), 1 deletion(-)
+> 
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index d3d6be0..6587a3d 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -76,6 +76,9 @@ struct io_tlb_slot {
+>  static unsigned long default_nslabs = IO_TLB_DEFAULT_SIZE >> IO_TLB_SHIFT;
+>  static unsigned long default_nareas;
+>  
+> +static atomic_long_t total_used = ATOMIC_LONG_INIT(0);
+> +static atomic_long_t used_hiwater = ATOMIC_LONG_INIT(0);
+> +
+>  /**
+>   * struct io_tlb_area - IO TLB memory area descriptor
+>   *
+> @@ -594,6 +597,7 @@ static int swiotlb_do_find_slots(struct device *dev, int area_index,
+>  	unsigned long flags;
+>  	unsigned int slot_base;
+>  	unsigned int slot_index;
+> +	unsigned long old_hiwater, new_used;
+>  
+>  	BUG_ON(!nslots);
+>  	BUG_ON(area_index >= mem->nareas);
+> @@ -663,6 +667,17 @@ static int swiotlb_do_find_slots(struct device *dev, int area_index,
+>  		area->index = 0;
+>  	area->used += nslots;
+>  	spin_unlock_irqrestore(&area->lock, flags);
+> +
+> +	if (IS_ENABLED(CONFIG_DEBUG_FS) && mem == &io_tlb_default_mem) {
 
-This was on a Raspberry Pi 4, which does not have any IOMMU. IOW it
-looks like copying data around can be faster than sending it straight
-to the device. When I have some more time, I must investigate what is
-really happening there, because it does not make any sense to me.
+Yes, this works fine now, but why are total_used and used_hiwater
+global variables? If you make them fields in struct io_tlb_mem
+(possibly guarded with #ifdef CONFIG_DEBUG_FS), you can get rid of the
+check. Of course, in instances other than io_tlb_default_mem these
+fields would not be exported to userspace through debugfs, but if really
+needed, I can at least find them in a crash dump (or read them through
+/proc/kcore).
 
 Petr T
