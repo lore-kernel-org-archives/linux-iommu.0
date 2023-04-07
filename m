@@ -1,25 +1,25 @@
 Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48FB223C4
-	for <iommu@lists.linux.dev>; Fri,  7 Apr 2023 10:16:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA0247B
+	for <iommu@lists.linux.dev>; Fri,  7 Apr 2023 10:46:31 +0000 (UTC)
 Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 4239D14B818;
-	Fri,  7 Apr 2023 12:15:56 +0200 (CEST)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 1092814C886;
+	Fri,  7 Apr 2023 12:46:28 +0200 (CEST)
 Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1680862556; bh=PaIGonr5JMM+Z9od4ricOA/7Hr3fGMxSQp5ApjSQwqw=;
+	t=1680864389; bh=fwSxeONAMiIQulvFLbEmRpW+yUKJFrnFHkYYi44Vd7I=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=DNqwBXXvCxQ8a7C2kJ5An/Ucg5U5OkUQ3Utahbqx2rhCY7B/Gw1j8zQS7oQO2PK4d
-	 OEOwIAQ+FoFE86ayjF16PfihXWG0zgOB4Onzs+jpTaLweXTG8jddQXY/W643jq8Ak3
-	 I6a/GBljeXX9H4JaINyEH9bxopBJdZZIQIMCSiw6OVk380au26T+8G9Nu4vfvnkCG/
-	 mxxDVVk5BljTm5rG82UshnUop9DV1ul8cVmZEDZkHYtvfmAAC93V0v2fRynBvT5HdQ
-	 MUCbpjgK/DaCkGrhD0k1y6u2xPBQbtVEZ/U/pRv0lVJLHos/u+rX3rhngO1X99kyVg
-	 M/NJ8vibVVIdw==
-Date: Fri, 7 Apr 2023 12:15:55 +0200
+	b=4sM1CUkjmwVelOaTnEWeo9CIORmocDgOnSm0PWyS3bTKcFjrsk3FFguLF/n3mLz/E
+	 3FoHV2DRuDICL7NYBgu8Ix0LvbyLUqJSmLyuyzj4H4Yy/7NQggJSL/YZLshclFDVkD
+	 P/4Jsb3ODIIc5bGUkHW2zYV644QtsGrzxmoKsn47ROm6bnfneRTtQU6TkIT0+OjH0z
+	 mzU6gVssjml8+15sN8QdeXwlMSr5YdeVfyNGqE0lvJWrnBAjwt4C3qk2Txo3w7ZqNh
+	 p5l2MT4qljaJSVYjPre2Ly1hog7j6GZDOapB+X486jTBzpSQlUK/VVPBrITo2W44fW
+	 sxVsi3ES64ziQ==
+Date: Fri, 7 Apr 2023 12:46:27 +0200
 From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
 To: Christoph Hellwig <hch@lst.de>
 Cc: Petr Tesarik <petrtesarik@huaweicloud.com>, Jonathan Corbet
@@ -34,14 +34,13 @@ Cc: Petr Tesarik <petrtesarik@huaweicloud.com>, Jonathan Corbet
  <roberto.sassu@huawei.com>, Alexander Graf <graf@amazon.com>
 Subject: Re: [RFC v1 3/4] swiotlb: Allow dynamic allocation of bounce
  buffers
-Message-ID: <20230407121555.4290a011@meshulam.tesarici.cz>
-In-Reply-To: <20230407055704.GD6803@lst.de>
+Message-ID: <20230407124627.74528415@meshulam.tesarici.cz>
+In-Reply-To: <20230407055548.GC6803@lst.de>
 References: <cover.1679309810.git.petr.tesarik.ext@huawei.com>
 	<0334a54332ab75312c9de825548b616439dcc9f5.1679309810.git.petr.tesarik.ext@huawei.com>
 	<20230328040724.GB25506@lst.de>
 	<4268fa4e-4f0f-a2f6-a2a5-5b78ca4a073d@huaweicloud.com>
-	<8cf7c515-9ce6-a2ed-0643-972aa3eba2fb@huaweicloud.com>
-	<20230407055704.GD6803@lst.de>
+	<20230407055548.GC6803@lst.de>
 X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -52,48 +51,66 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 7 Apr 2023 07:57:04 +0200
+On Fri, 7 Apr 2023 07:55:48 +0200
 Christoph Hellwig <hch@lst.de> wrote:
 
-> On Tue, Mar 28, 2023 at 02:43:03PM +0200, Petr Tesarik wrote:
-> > Oh, wait! I can do at least something for devices which do not use
-> > swiotlb at all.
-> > 
-> > If a device does not use bounce buffers, it cannot pass an address
-> > that belongs to the swiotlb. Consequently, the potentially
-> > expensive check can be skipped. This avoids the dynamic lookup
-> > penalty for devices which do not need the swiotlb.
-> > 
-> > Note that the counter always remains zero if dma_io_tlb_mem is
-> > NULL, so the NULL check is not required.  
+> On Tue, Mar 28, 2023 at 09:54:35AM +0200, Petr Tesarik wrote:
+> > I tend to agree here. However, it's the DMABUF design itself that causes
+> > some trouble. The buffer is allocated by the v3d driver, which does not
+> > have the restriction, so the DMA API typically allocates an address
+> > somewhere near the 4G boundary. Userspace then exports the buffer, sends
+> > it to another process as a file descriptor and imports it into the vc4
+> > driver, which requires DMA below 1G. In the beginning, v3d had no idea
+> > that the buffer would be exported to userspace, much less that it would
+> > be later imported into vc4.  
 > 
-> Hmm, that's yet another atomic for each map/unmap, and bloats
-> struct device.
+> Then we need to either:
+> 
+>  a) figure out a way to communicate these addressing limitations
 
-I'm not sure how bad it is to bloat struct device. It is already quite
-large, e.g. in my x86 build it is 768 bytes (exact size depends on
-config options), and nobody seems to be concerned...
+AFAICS this would require a complete overhaul of the dma-buf userspace
+API so that intended imports are communicated at export time. In other
+words, it would be quite intrusive. Not my preferrence.
 
-Regarding the atomic operations, I am currently testing a slightly
-different approach, which merely sets a flag if there are any
-dynamically allocated bounce buffers. The atomic check changes to
-smp_load_acquire(), and the atomic inc/dec to smp_store_release()
-only if the flag changes. That said, if I hammer this path with heavy
-parallel I/O, I can still see some performance cost for devices that
-use swiotlb, but at least devices that do not need such bounce buffers
-seem to be unaffected then.
+>  b) find a way to migrate a buffer into other memory, similar to
+>     how page migration works for page cache
 
-> (Btw, in case anyone is interested, we really need to get started
-> on moving the dma fields out of struct device into a sub-struct
-> only allocated for DMA capable busses)
+Let me express the idea in my own words to make sure I get it right.
+When a DMA buffer is imported, but before it is ultimately pinned in
+memory, the importing device driver checks whether the buffer meets its
+DMA constraints. If not, it calls a function provided by the exporting
+device driver to migrate the buffer. This makes sense, but:
 
-I like this idea. In fact, my WIP topic branch now moves the swiotlb
-fields into a separate struct, but I can surely go further and move all
-DMA-related fields. I doubt it is worth to allocate it separately,
-though. We are talking about replacing some 100 bytes (in the worst
-case) with a pointer to a dynamically allocated struct, but the
-dynamic allocator adds some overhead. I believe it pays off only if the
-vast majority of struct device instances do not need these DMA fields,
-but is that really the case?
+  1) The operation must be implemented in the exporting driver; this
+     will take some time.
+
+  2) In theory, there may be no overlap between the exporting device
+     and the importing device. OTOH I'm not aware of any real-world
+     example, so we can probably return a suitable error code, and
+     that's it.
+
+Anyway, I have already written in another reply that my original use
+case is moot, because a more recent distribution can do the job without
+using dma-buf, so it has been fixed in user space, be it in GNOME,
+pipewire, or Mesa (I don't really have to know).
+
+At this point I would go with the assumption that large buffers
+allocated by media subsystems will not hit swiotlb. Consequently, I
+don't plan to spend more time on this branch of the story.
+
+> > BTW my testing also suggests that the streaming DMA API is quite
+> > inefficient, because UAS performance _improved_ with swiotlb=force.
+> > Sure, this should probably be addressed in the UAS and/or xHCI driver,
+> > but what I mean is that moving away from swiotlb may even cause
+> > performance regressions, which is counter-intuitive. At least I would
+> > _not_ have expected it.  
+> 
+> That is indeed very odd.  Are you running with a very slow iommu
+> driver there?   Or what is the actual use case there in general?
+
+This was on a Raspberry Pi 4, which does not have any IOMMU. IOW it
+looks like copying data around can be faster than sending it straight
+to the device. When I have some more time, I must investigate what is
+really happening there, because it does not make any sense to me.
 
 Petr T
