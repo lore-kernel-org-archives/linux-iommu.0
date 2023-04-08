@@ -1,58 +1,53 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEB01C2D7
-	for <iommu@lists.linux.dev>; Sat,  8 Apr 2023 06:06:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Type:MIME-Version:Message-ID:
-	Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-	Content-Description:In-Reply-To:References;
-	bh=FSAuJyqLlRwLojcGY0uJ8g8ZAyrKXEp/l8FpS90Rmtg=; b=hU0+Q7xC4qo6vMPcF8mrLKUPxZ
-	ilXBjTbB/ObSoD+Qy8a7vC+EWpKNal6d9ELdL8heFFs5Ua8nxmMpelA4BFBjpRxE9smGptudDfFEm
-	KlMCPY05zj9+gcFWRbARYwgJ5He2Wm113gok5v/wB3AhILSjVPkPOGRtzdiljB0MSbYVkoGiQDYqh
-	odxfMxsSZvGFaEcOvZ/CDpmJWEUOXZkukHG9b/Y7y6wIaG+Hd7RtkaZo+j4k6lKKgfGjtRpahpYnx
-	kYpmg2hokhu6pYYfgC32t9XtUqcgfW8PWKEuijXFf6mt46ijGvB8tZWPRept2Bpkty7jbNRoZwZ2G
-	y22tOgPg==;
-Received: from 213-225-8-166.nat.highway.a1.net ([213.225.8.166] helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-	id 1pl1i3-00Bo2E-2k;
-	Sat, 08 Apr 2023 06:06:00 +0000
-Date: Sat, 8 Apr 2023 08:05:56 +0200
-From: Christoph Hellwig <hch@infradead.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: [GIT PULL] dma-mapping fixes for Linux 6.3
-Message-ID: <ZDEERJRl1jrw2kQn@infradead.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 442B22F44
+	for <iommu@lists.linux.dev>; Sat,  8 Apr 2023 19:01:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E07B5C4339B;
+	Sat,  8 Apr 2023 19:01:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1680980470;
+	bh=lHhMzvY2hG1A2HWWzlW2b890+Tu5YuZzm1Z+CDR+OoM=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=tGRBz8YKspIUpyzjFJMYdZuNvCebkJ4uMO9xsdkd2iPn79zvSU9fjGVLoJP7chyrp
+	 j5q7DDRSkn3yn5WxDB3vsWfTovI94vttfnSnz8RKGa9qHUAw9siC4+ZUNUekHqRLjX
+	 jJHosr0Mvy6+OzAMpsW0vgIRJMupikbX+tlzfnqK0SYsykjtycFW5+LrpKLSc7fOfo
+	 8He5FrODpH1UynEE/SkndU4vy7Y2t6FN9ArvNzdFcFSgcGmvCMbKtS+fVv9d8PKkRE
+	 8uIQQfhoUwdO+uyMWS0is0zsXoMqjNVN9pkBSwC1FoNqEWFPGTHTwUeD55rUyXmrpg
+	 Px/BFgEgy6hSg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D0047C4167B;
+	Sat,  8 Apr 2023 19:01:10 +0000 (UTC)
+Subject: Re: [GIT PULL] dma-mapping fixes for Linux 6.3
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <ZDEERJRl1jrw2kQn@infradead.org>
+References: <ZDEERJRl1jrw2kQn@infradead.org>
+X-PR-Tracked-List-Id: <iommu.lists.linux.dev>
+X-PR-Tracked-Message-Id: <ZDEERJRl1jrw2kQn@infradead.org>
+X-PR-Tracked-Remote: git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.3-2023-04-08
+X-PR-Tracked-Commit-Id: bbb73a103fbbed6f63cb738d3783261c4241b4b2
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 973ad544f04a5eff3435fd36e02392c5afeafc0f
+Message-Id: <168098047084.1995.4863005389013524611.pr-tracker-bot@kernel.org>
+Date: Sat, 08 Apr 2023 19:01:10 +0000
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-The following changes since commit 0eee5ae1025699ea93d44fdb6ef2365505082103:
+The pull request you sent on Sat, 8 Apr 2023 08:05:56 +0200:
 
-  swiotlb: fix slot alignment checks (2023-03-22 09:03:17 +0100)
+> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.3-2023-04-08
 
-are available in the Git repository at:
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/973ad544f04a5eff3435fd36e02392c5afeafc0f
 
-  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.3-2023-04-08
+Thank you!
 
-for you to fetch changes up to bbb73a103fbbed6f63cb738d3783261c4241b4b2:
-
-  swiotlb: fix a braino in the alignment check fix (2023-04-06 16:45:12 +0200)
-
-----------------------------------------------------------------
-dma-mapping fix for Linux 6.3
-
- - fix a braino in the swiotlb alignment check fix (Petr Tesarik)
-
-----------------------------------------------------------------
-Petr Tesarik (1):
-      swiotlb: fix a braino in the alignment check fix
-
- kernel/dma/swiotlb.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
