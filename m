@@ -1,89 +1,60 @@
-Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD9893C04
-	for <iommu@lists.linux.dev>; Mon, 10 Apr 2023 15:30:35 +0000 (UTC)
-Received: by mail-ej1-f48.google.com with SMTP id ud9so13106504ejc.7
-        for <iommu@lists.linux.dev>; Mon, 10 Apr 2023 08:30:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1681140634;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Itkfx/SKWmTgvLKHAD1AdOCobJxj9e9oDbXIhOz5Grk=;
-        b=Soklrh6KjQhWPbFfaBnFO5reP5hGWsaazUyTUoMePLaBh/KHj/BM2NMXEUvbGQzM4Y
-         mul5E1svfxf+7g85Kpf5DWc2ug5mnF9wTntDKgl37P4tfS5PC09gC6M3drJmNHiYA+ek
-         nLHQD77Gk4Ge4LusG7Wgg2layKERLzNbdfpW1C7s8DUpRcl1zTzN1Dzc9XLopAytsyPH
-         y6QT2mDvRSuWNkCwnqpFvNY/PgknOVasHcfZzTLUdnta+zOrMBZ3vjctjVJGMkMjHKx0
-         isGhGs2gB4rZFbUuNDKJIsO+LzlBLU9CCjciSE+lbJAwfwk5uT8YZb37Zf9m8CNZZWXK
-         CEcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681140634;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Itkfx/SKWmTgvLKHAD1AdOCobJxj9e9oDbXIhOz5Grk=;
-        b=i+A0dxoZjDpDzbQwqSRJOLV5l3Xu9+jzb0hXWIwYCKUlXgZxnEsurC+NJDBhvYbh30
-         Z/ohytYM5CJuUQzFst+trQF0Bpavp0tsRAeTocxt4vY0gKTOkJom2SnmdMTsCnPKx2n3
-         QwwXSGJLU9wmOpmLOku/zhJ4LkiOiTR7VSEXvxJwhb0tg/7ilGV0VZeoub1o3Z/SAbGz
-         onOuzUuPuiEPHFv70V/MCogdE2jvuTp+2XRq3B3c49KHYbLjoq3chqqz1Gno6GCaxp7H
-         dAGBWHRyzugrrYpABb1H11tWj0I1z+E85Uv3Ck/NT92X/+vv61T9RzYOxXRMa0N02uwo
-         7lkQ==
-X-Gm-Message-State: AAQBX9fPRvSgNkOOJQFHRNG9jALdiQmoiPCfHhoMzzh/OF2t6GmXGRW6
-	CjH7ar0JM1tSqcW6FaVaDLUyvA==
-X-Google-Smtp-Source: AKy350YOl6LmnKef1jR9aqU4sERFWWSnDuFwHk4cC7wGrdApNE4eG/tOeHTBsxeVq5DBEqq0wJL0AA==
-X-Received: by 2002:a17:907:a395:b0:94a:6e08:fec5 with SMTP id se21-20020a170907a39500b0094a6e08fec5mr4377644ejc.29.1681140633994;
-        Mon, 10 Apr 2023 08:30:33 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:eacd:ffa4:1df7:3870? ([2a02:810d:15c0:828:eacd:ffa4:1df7:3870])
-        by smtp.gmail.com with ESMTPSA id s27-20020a1709060c1b00b009475bd8f441sm5168414ejf.60.2023.04.10.08.30.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 Apr 2023 08:30:33 -0700 (PDT)
-Message-ID: <92f8fa5c-7753-865a-83a3-2a53c2c3a8f6@linaro.org>
-Date: Mon, 10 Apr 2023 17:30:31 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B56E5524C
+	for <iommu@lists.linux.dev>; Mon, 10 Apr 2023 19:09:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B3B1C433EF;
+	Mon, 10 Apr 2023 19:09:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1681153773;
+	bh=6AM3IaSISpi2UJXkc2lWWcX+1778WF33N4cnk40E1co=;
+	h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+	b=APr9zLvB/hh3+87BtMdUNx3eVQRO9c+qp/4UX7vboA4/APxZW/a9tR9DAeAzPl8jL
+	 TmckCAQ8j71bQxFTOFAClgd3J9mKG3EXOQGtEPMUrVSLs5+ilsbTPo51Mh/P+CEzNo
+	 v0Fc7dW7BcQQi814hq9MI7DlDpaeBrNrRKyphlMlE2+yqXB+oR4Kmp0GYtxUD+M3LU
+	 ciMdrJwSVwHmvgunvcJh8hovFPDkLtCwl7CLx+b5Pu4tq+OaRbzPkouw/3OJozzmT2
+	 QdULEzivBcPN+tcbcD3lW12chUvGOFjzqo7BNsRyZfzc/gIAKt2lPafAXYFa/IRSJz
+	 7Kgv0RbOfApvA==
+Message-ID: <c8847456a3a30b31bb3b3aa3c32a5a8b.sboyd@kernel.org>
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH v2 4/7] dt-bindings: iommu: arm,smmu: enable clocks for
- sa8775p
-Content-Language: en-US
-To: Bartosz Golaszewski <brgl@bgdev.pl>,
- Bjorn Andersson <andersson@kernel.org>, Andy Gross <agross@kernel.org>,
- Konrad Dybcio <konrad.dybcio@linaro.org>,
- Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
- <sboyd@kernel.org>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>,
- Arnd Bergmann <arnd@arndb.de>
-Cc: linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-References: <20230406200723.552644-1-brgl@bgdev.pl>
- <20230406200723.552644-5-brgl@bgdev.pl>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230406200723.552644-5-brgl@bgdev.pl>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAMRc=McM1DfCoMmuUYcChFFBG=H1PgZFAWcuxnQsdhRdYrT+yA@mail.gmail.com>
+References: <20230328193632.226095-1-brgl@bgdev.pl> <20230328193632.226095-3-brgl@bgdev.pl> <72286603300630b890705c99b42f05a4.sboyd@kernel.org> <CAMRc=McM1DfCoMmuUYcChFFBG=H1PgZFAWcuxnQsdhRdYrT+yA@mail.gmail.com>
+Subject: Re: [PATCH 2/7] clk: qcom: add the GPUCC driver for sa8775p
+From: Stephen Boyd <sboyd@kernel.org>
+Cc: Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Konrad Dybcio <konrad.dybcio@linaro.org>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Rob Herring <robh+dt@kernel.org>, linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, Shazad Hussain <quic_shazhuss@quicinc.com>, Michael Turquette <mturquette@baylibre.com>, Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+To: Bartosz Golaszewski <brgl@bgdev.pl>
+Date: Mon, 10 Apr 2023 12:09:31 -0700
+User-Agent: alot/0.10
 
-On 06/04/2023 22:07, Bartosz Golaszewski wrote:
-> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> 
-> The KGSL iommu will require the clocks property to be set. Enable it for
-> sa8775p in the bindings.
-> 
-> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> ---
->  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 5 +++--
+Quoting Bartosz Golaszewski (2023-04-06 04:20:33)
+> On Wed, Mar 29, 2023 at 4:15=E2=80=AFAM Stephen Boyd <sboyd@kernel.org> w=
+rote:
+> >
+> > Quoting Bartosz Golaszewski (2023-03-28 12:36:27)
+> > > diff --git a/drivers/clk/qcom/Kconfig b/drivers/clk/qcom/Kconfig
+> > > index 449bc8314d21..5e1919738aeb 100644
+> > > --- a/drivers/clk/qcom/Kconfig
+> > > +++ b/drivers/clk/qcom/Kconfig
+> > > @@ -437,6 +437,14 @@ config SA_GCC_8775P
+> > >           Say Y if you want to use peripheral devices such as UART, S=
+PI,
+> > >           I2C, USB, UFS, SDCC, etc.
+> > >
+> > > +config SA_GPUCC_8775P
+> > > +       tristate "SA8775P Graphics clock controller"
+> > > +       select SA_GCC_8775P
+> >
+> > Should select QCOM_GDSC as well.
+> >
+>=20
+> Why if it's already selected indirectly by SA_GCC_8775P? Other GPUCCs
+> in here don't select it either.
 
-
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-Best regards,
-Krzysztof
-
+For completeness.
