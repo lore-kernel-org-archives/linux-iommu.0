@@ -1,27 +1,27 @@
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02F9253B7
-	for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 10:12:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD52C53B7
+	for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 10:13:08 +0000 (UTC)
 Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
 	(No client certificate requested)
 	(Authenticated sender: kholk11)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id D541E66031AD;
-	Tue, 11 Apr 2023 11:12:48 +0100 (BST)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id 79EBE66031AD;
+	Tue, 11 Apr 2023 11:13:05 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1681207970;
-	bh=7bO4tViZQRTa3LySl3BcqbAkLa3ojxPZnEzjThu0RLs=;
+	s=mail; t=1681207987;
+	bh=1H3KWce7lVaN7lBiBpl5nSiFSWCqXnPRyAtBaYBLFVc=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=FV2jGoHZihXjn6OIA74MTm+LasrHy12N3+RKBJU5fyY1gXq/qDPetg8oYb5KHFq0P
-	 eMHTpS9zXJ5mJ6X4Rsln83dO3l8WG9aMw2BHv59+QPhIYUTNtWVebVx7WFoRBNLk4F
-	 Etj8Ba26wO1TrxaPc/60/yL1S22nzqliWYrTXIugnNsDDMsN4hd4xtabeRjVBD8QNq
-	 tJQS4YEuVSP13KHkR7uMoQmkPwA6BGKPPZygJF6SJgZg53GkNcYHcqiOaz0HuBGJK5
-	 0Hd8mvxc86OpZuBhiIU7suV6BoyHVYvbSA5gzfUZHCs1EFl2O0FgV1rAQ89SVREuXp
-	 yD1LWR3HAGzig==
-Message-ID: <fb349fa3-b6c3-90c7-65c6-e5614d007ac8@collabora.com>
-Date: Tue, 11 Apr 2023 12:12:45 +0200
+	b=hZTzeZYDKZ3ZldqIgqJCufl0SAwJbxmonCeW8hVZljq4bHLXLMSlQfdJuWwPJvf7h
+	 x/oRocUfJSEoozC6q7Fa/viYWxoj8OXyL3eq1luHMJJzXMimUDj+oHs5pCOLoF8zQK
+	 a0L2VijRN6dXRTs7FPd3OvdmsnGyS+/pxA0GT0Lwy9A9iwKJ9xRPBbJgeS/15AKuIZ
+	 r3D0NlyDvpUYbn8fQZNOMANb/xcs5MPT80GDfoP/n8iB28g982rToCB6IqVtQt8zf/
+	 GwFuyCbdmVXGoW7gFDuewEXA0jrVBA+ndGyhdSVQ4/5Y2g0CrBVhDYuGf6HfE5UdTV
+	 6CiAIEiXkCALQ==
+Message-ID: <9ea6f6f4-5ebf-e9b6-37bc-b8d018b1b25c@collabora.com>
+Date: Tue, 11 Apr 2023 12:13:03 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -30,7 +30,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.1
-Subject: Re: [PATCH v7 10/14] media: mtk-jpegdec: Remove the setting for
+Subject: Re: [PATCH v7 11/14] media: mediatek: vcodec: Remove the setting for
  dma_mask
 Content-Language: en-US
 To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
@@ -46,11 +46,13 @@ Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Yunfei Dong <yunfei.dong@mediatek.com>,
  kyrie wu <kyrie.wu@mediatek.corp-partner.google.com>,
  chengci.xu@mediatek.com, youlin.pei@mediatek.com, anan.sun@mediatek.com,
- Bin Liu <bin.liu@mediatek.com>, kyrie wu <kyrie.wu@mediatek.com>
+ Tiffany Lin <tiffany.lin@mediatek.com>,
+ Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+ irui wang <irui.wang@mediatek.com>
 References: <20230411093144.2690-1-yong.wu@mediatek.com>
- <20230411093144.2690-11-yong.wu@mediatek.com>
+ <20230411093144.2690-12-yong.wu@mediatek.com>
 From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20230411093144.2690-11-yong.wu@mediatek.com>
+In-Reply-To: <20230411093144.2690-12-yong.wu@mediatek.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
@@ -58,12 +60,14 @@ Il 11/04/23 11:31, Yong Wu ha scritto:
 > In order to simplify the masters to set their respective dma masks, MTK
 > IOMMU helps to centralize the processing. Because all the dma ranges is
 > set in IOMMU, IOMMU knows well the dma mask requirements of masters. After
-> this patch, the masters code does not need care
+> this patch, the masters(codec here) code does not need care
 > dma-ranges/dma_mask related information.
 > 
-> Cc: Bin Liu <bin.liu@mediatek.com>
+> Cc: Tiffany Lin <tiffany.lin@mediatek.com>
+> Cc: Andrew-CT Chen <andrew-ct.chen@mediatek.com>
+> Cc: Yunfei Dong <yunfei.dong@mediatek.com>
 > Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-> Cc: kyrie wu <kyrie.wu@mediatek.com>
+> Cc: irui wang <irui.wang@mediatek.com>
 > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
