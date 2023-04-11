@@ -1,141 +1,184 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2084.outbound.protection.outlook.com [40.107.237.84])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C95A09457
-	for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 19:03:10 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TURmxyjs4ecx1R2aNsWHscwZ0qOw/p4toaAF1TjUxvZ/TdY+jBoYJj9193kWXjkWrZlj0DE17BBG4XPzch1bDJ9T9DptE42k/JO+JQ82kBHStBtqdrCLuDM/ZCaqU5cvbbaJ0Joh38v+w6vbH3H6ElqHt0FH+ycxRYTKNZfYczRnddG4/Dye1Dqh1SiO1Yk1fYdJcLwgD7jtxa1L41MKC1zG7W89L2pjbSMAoioBHJrkAt/FB0+VFiu6cMhWWMb7rXV1D8LWYinVGQ/+4JQzuXBIgH+rW558RD7kmWOdd1dIuP8/y2zEeBXQpGhp3Y/tQf7bHWmeFU69mSLGZQ5Gfg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZcKoUZfQPC04b+bci1i17/gjEcIYPhd6hU0l6NJCpDY=;
- b=deLNLp2CKP6GCYk4Tzvb50nUbdX+qQbKiFO+hwBijnqvDSCc3WwIwDFTda6Ixoo534y/I+ssEXlikql01mr19naJX3kF9vpd3tXv5XkrR5q14l1F2qTLQ494HOxKc6mTXGNd0r5MsGA5GUkQs1QgP2eW+eopSoA6p1Mjg2m2KXaPC2oR7r8GywdhAYn99GY+q/t9NZ44CwB3bHq0qLrUjwcMGy0V+NA+CgGr3feC0uV2+rWuiAWNMQRrur1w6/ZBD4R1U9cEWqbWwGUnp5+1loCD8J32PMKfJg8mEAIZTi+x8bucxPIgpxcq5kyD1mcyWz2fo17BeoicBZJJYDqSAg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=linaro.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZcKoUZfQPC04b+bci1i17/gjEcIYPhd6hU0l6NJCpDY=;
- b=G59oLwXYBOoQF6+FbuLvDgFqRH40xoqPuHXnk0W0YPkPe5Tu6Rt2KiV+1WlYCSHUoABQSLdMe3MbGdMi4wc1GDXIZcUJtRIx9x6xOwIlhkEh19u5WVYY2ZfJgRrlegYlOe4KGpCOTKrC0/6vL/POqRDhkGrr1apdbga9dpjh6O/5ftYBPgIlxEJuuZenjkQRhRLfbf7GH8wRXwNXbPraxd42dqt+v8sw58D4TAQX9P84ksJ9CwLww9zfhpZ7Xqjor/co1c5vqqm2sXkYiFepyTHjKH4YQ7Mo5TN+c1yI6Qj95k8wI5DPC7ECPwFmeBXttAaCHfcKnBYujpmkcb6eVg==
-Received: from DM4PR12MB7647.namprd12.prod.outlook.com (2603:10b6:8:105::6) by
- MN2PR12MB4319.namprd12.prod.outlook.com (2603:10b6:208:1dc::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.38; Tue, 11 Apr
- 2023 19:03:08 +0000
-Received: from BN8PR07CA0026.namprd07.prod.outlook.com (2603:10b6:408:ac::39)
- by DM4PR12MB7647.namprd12.prod.outlook.com (2603:10b6:8:105::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.36; Tue, 11 Apr
- 2023 19:03:07 +0000
-Received: from BN8NAM11FT017.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:ac:cafe::99) by BN8PR07CA0026.outlook.office365.com
- (2603:10b6:408:ac::39) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.40 via Frontend
- Transport; Tue, 11 Apr 2023 19:03:07 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- BN8NAM11FT017.mail.protection.outlook.com (10.13.177.93) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6298.29 via Frontend Transport; Tue, 11 Apr 2023 19:03:06 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 11 Apr 2023
- 12:03:01 -0700
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.37; Tue, 11 Apr 2023 12:03:01 -0700
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Tue, 11 Apr 2023 12:03:00 -0700
-Date: Tue, 11 Apr 2023 12:02:59 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Jean-Philippe Brucker <jean-philippe@linaro.org>, Zhangfei Gao
-	<zhangfei.gao@linaro.org>, Shameerali Kolothum Thodi
-	<shameerali.kolothum.thodi@huawei.com>, Robin Murphy <robin.murphy@arm.com>,
-	"kevin.tian@intel.com" <kevin.tian@intel.com>, "yi.l.liu@intel.com"
-	<yi.l.liu@intel.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, qianweili
-	<qianweili@huawei.com>
-Subject: Re: Cache Invalidation Solution for Nested IOMMU
-Message-ID: <ZDWu4wTKvFpnaliY@Asurada-Nvidia>
-References: <ZCtpAYn76u499p6G@Asurada-Nvidia>
- <ZCxOMSvR+6rYbIfy@nvidia.com>
- <a3bbd5422897475d8bcd4c110c3722ec@huawei.com>
- <CABQgh9G_Xa6h7ujRJkCogp02N87OAugBTEuXyccQREw28VfZCQ@mail.gmail.com>
- <ZC6vlI7onlUgBidX@nvidia.com>
- <ZDNhiVZN9zNLGjcj@Asurada-Nvidia>
- <20230411090740.GC2040385@myrica>
- <ZDVLL6qcTxfIMT5g@nvidia.com>
- <ZDWpXqR9tpSzq/t/@Asurada-Nvidia>
- <ZDWpw894UhnTBm1k@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2C009457
+	for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 19:50:49 +0000 (UTC)
+Received: by mail-lf1-f49.google.com with SMTP id a23so12371007lfk.4
+        for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 12:50:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1681242648;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=yOaG+PaHenUckG/HmcCcVyiFAGvfVYsjP1gKXvLt2sQ=;
+        b=J0q5NPXG+H8BAby7O6g2YcHLXCo4+0dRypQpWSlXYUf+22+ThYj80nRh2c8dF1kJML
+         IUa0sk0CdVDCwCUwM3S/6+gTywNXhZC/4AwMpUmlHvRq5oPuPgDYBdVtlinYO3yzCGVn
+         x9XpoURBuY/TWj5m22OI30xpNyADp6YqQCRN/dHpSbTO4m81KLIFTcUyuw4mQZ6b6kmU
+         b0O6+rbhEiOOcFRCwK90/mcG1eGnNpNudTmjtASHmMj+CQozJbHSdF0z6OZdJpjAMiqe
+         LxmhynN6wwyo6HiW8+5PoEyg74eUy6t5F88TaRf31eSIgtCg5EERBaplLTAKffnhViYn
+         52nw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681242648;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=yOaG+PaHenUckG/HmcCcVyiFAGvfVYsjP1gKXvLt2sQ=;
+        b=Mf3oE2Ohgbb5q+xOMCE8gkbRtXCDF3O3gLc2G8fA4XLwxxHzao4G13UKIOR+dZRxaE
+         jDH5ww/RIFcALUfg+gZP/0w3VOlRoUkxQYDzqwdWJ5i5HHkpms63iZO+D68YjbtENWD4
+         HGXRETeEHjFepdZKRdfBiR5+G+uwBpO0CvVgbmBpFH3SEqMhH6f1AUiBOnxTrMKDjzRy
+         qn8UrsKzLBGwkFVp5UjaXtOSZclmkfV/ylQUdzAluG+uJqTQx5Uf0tegTazAarYeKF/R
+         InemyB9D2lSQnTRMLNB+HgaoxRZm0xWBnu8rXgNQ1vTDfrGbbjTnif6tCkgSVyVuqAnT
+         Y0uA==
+X-Gm-Message-State: AAQBX9fUd1o5aAXQSMBaJRe3y/SsS4WKFBV0x0dxgdsd6Bg48AySUonq
+	nTrM4FHqGXHCVRnBkTD2kNlNeA==
+X-Google-Smtp-Source: AKy350aYtghLr2w5tKRLDF4OjwB0D514YZIPVY+ttfl5WYaiNDwkx4YnlL0vMDYjUsFepxoQsC4mCw==
+X-Received: by 2002:a05:6512:3b2a:b0:4d8:86c1:477d with SMTP id f42-20020a0565123b2a00b004d886c1477dmr98465lfv.18.1681242647825;
+        Tue, 11 Apr 2023 12:50:47 -0700 (PDT)
+Received: from [192.168.1.101] (abxj23.neoplus.adsl.tpnet.pl. [83.9.3.23])
+        by smtp.gmail.com with ESMTPSA id b7-20020ac24107000000b004e9b307d2c8sm2656277lfi.238.2023.04.11.12.50.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Apr 2023 12:50:47 -0700 (PDT)
+Message-ID: <923fb538-a28a-2172-569f-b58349157d49@linaro.org>
+Date: Tue, 11 Apr 2023 21:50:44 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ZDWpw894UhnTBm1k@nvidia.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic:
-	BN8NAM11FT017:EE_|DM4PR12MB7647:EE_|MN2PR12MB4319:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2deb4389-af27-4a9d-5437-08db3abf62ae
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	uX1VUL4GO6humDWfovpAm1qqTQc0tZdi/pejnUaS8ZFjoRV4xuErHgKlPJgZkT9Ojki+uSFpgTyLiJCUTqrkkkfe7Yy8JuWBkR9qbwa7QyxxmczRN9q0+UPjH6JJ29Lc/GpjvFOu8SSQEaieXD+lRRmd8A+iIjvfH/y+HbvJBz3oCHgqvpwxu5KG4u0GBqcIFTXmy88Refg/hhFiBHHf2oC549ESrRxCCDD2CV04eWo3P2djLjBkVoSUWSh/q2NTVw1GYEYp9GvXtr5iWzd87RIMarxoyKmuEEOQun+mDsNrY0bLYNU5bzo9n/zAM0/y8ho6IoEgIVLc/kkf+cvU/n4zTT6I2ILmgLezKnTCXPZuPe/AqKZk2oNHngLo/0A5JI6P01AoZMqlj5QoGnN7cwab/xWDV7EkEWw1yoUKd/gopCbDH0R4X2et9A8i34YNz9Kc+zRVzwLKsAxahjq7NDQ4626QZCwdV6OWuK/bJcsilXn3CTcWt4WnMc7zwQJ2j8Ukmy1pSkVVa0/OE0VPSxPudZOClG8T66gzheklC7zJhIWzlgmB1zdc6NLtilsvPJQosknRfwo7quYV0AlrFXa6SCUI7pjd0up1oxb2UA3IZi0XgoeelhHmrVenyaUtbitxkcMlpnmxhkm2kYtbvAIyMrbhFx69Hcf9n5fbh5wFWF3AWHwbHjqm+LqQCYEoVVuna19Zji6gGxedCZPbskdxqdXCmuTHVCVcC+leWbOtOcZgIGsMdsERh7Za9egcpFLUblG/E2fV3xWk3/QO+WMC/MRaNkQTVrZfrlOhpZo=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(136003)(39860400002)(346002)(396003)(376002)(451199021)(36840700001)(40470700004)(46966006)(7416002)(36860700001)(40480700001)(86362001)(356005)(7636003)(55016003)(5660300002)(426003)(336012)(47076005)(83380400001)(2906002)(6636002)(54906003)(186003)(478600001)(34070700002)(40460700003)(9686003)(26005)(82310400005)(4326008)(70586007)(70206006)(8936002)(8676002)(6862004)(33716001)(41300700001)(316002)(82740400003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2023 19:03:06.9938
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2deb4389-af27-4a9d-5437-08db3abf62ae
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT017.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4319
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: [PATCH v3 7/7] arm64: dts: qcom: sa8775p: add the GPU IOMMU node
+Content-Language: en-US
+To: Bartosz Golaszewski <brgl@bgdev.pl>
+Cc: Bjorn Andersson <andersson@kernel.org>, Andy Gross <agross@kernel.org>,
+ Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
+ <sboyd@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>,
+ Arnd Bergmann <arnd@arndb.de>, linux-arm-msm@vger.kernel.org,
+ linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+References: <20230411125910.401075-1-brgl@bgdev.pl>
+ <20230411125910.401075-8-brgl@bgdev.pl>
+ <6c75d434-bb5d-278f-a125-d096fd6b387d@linaro.org>
+ <CAMRc=MdLckYzUjDQzbNUaaviuABEDXcs0ctW6+-3fZiCbvfYQA@mail.gmail.com>
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+In-Reply-To: <CAMRc=MdLckYzUjDQzbNUaaviuABEDXcs0ctW6+-3fZiCbvfYQA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Tue, Apr 11, 2023 at 03:41:07PM -0300, Jason Gunthorpe wrote:
 
-> > > > > > > We are using ioctl method now.
-> > > > > > > From the testing, the TLB miss impacts performance a lot, so we use
-> > > > > > > huge page method.
-> > > > > > > After using huge page method, guest can achieve comparable performance
-> > > > > > > with host.
-> > > > > > 
-> > > > > > Looks like these tests are not stressing the MM, just measuring pure
-> > > > > > BW of the DMA, so they don't get into the invalidation regime..
-> > > > > > 
-> > > > > > You need to measure a more real application that is actually using the
-> > > > > > MM (eg alloc/free memory, fork, etc) while it operates and turn on SVA.
 
-> > > I'm not talking about kernel dma_map/unmap, I'm talking about MM
-> > > activities like mmap and munmap that become slower once SVA is enabled
-> > 
-> > Is it about mmap/munmap() calls or accessing mmap'd memory?
+On 11.04.2023 16:41, Bartosz Golaszewski wrote:
+> On Tue, Apr 11, 2023 at 3:16 PM Konrad Dybcio <konrad.dybcio@linaro.org> wrote:
+>>
+>>
+>>
+>> On 11.04.2023 14:59, Bartosz Golaszewski wrote:
+>>> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+>>>
+>>> Add the Adreno GPU IOMMU for sa8775p-based platforms.
+>>>
+>>> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+>>> ---
+>>>  arch/arm64/boot/dts/qcom/sa8775p.dtsi | 37 +++++++++++++++++++++++++++
+>>>  1 file changed, 37 insertions(+)
+>>>
+>>> diff --git a/arch/arm64/boot/dts/qcom/sa8775p.dtsi b/arch/arm64/boot/dts/qcom/sa8775p.dtsi
+>>> index 191b510b5a1a..11f3d80dd869 100644
+>>> --- a/arch/arm64/boot/dts/qcom/sa8775p.dtsi
+>>> +++ b/arch/arm64/boot/dts/qcom/sa8775p.dtsi
+>>> @@ -7,6 +7,7 @@
+>>>  #include <dt-bindings/interrupt-controller/arm-gic.h>
+>>>  #include <dt-bindings/clock/qcom,rpmh.h>
+>>>  #include <dt-bindings/clock/qcom,sa8775p-gcc.h>
+>>> +#include <dt-bindings/clock/qcom,sa8775p-gpucc.h>
+>>>  #include <dt-bindings/interconnect/qcom,sa8775p-rpmh.h>
+>>>  #include <dt-bindings/power/qcom-rpmpd.h>
+>>>  #include <dt-bindings/soc/qcom,rpmh-rsc.h>
+>>> @@ -605,6 +606,42 @@ gpucc: clock-controller@3d90000 {
+>>>                       #power-domain-cells = <1>;
+>>>               };
+>>>
+>>> +             adreno_smmu: iommu@3da0000 {
+>>> +                     compatible = "qcom,sa8775p-smmu-500", "qcom,adreno-smmu",
+>>> +                                  "arm,mmu-500";
+>> Err.. does it even boot like this? You dropped the qcom,smmu-500 compatible
+>> which means it's getting bound to the generic SMMU driver (without
+>> QC quirks). If that was a mistake, you should have had all 4
+>>
+>> "qcom,sa8775p-smmu-500", qcom,adreno-smmu, "qcom,smmu-500", "arm,mmu-500"
+>>
+>> Without falling into the qc-specific codepaths, the Adreno compat does
+>> nothing.
+>>
 > 
-> I mean literally userspace mmap() calls to change the mm_struct.
+> I did that initially, then noticed dtbs_check fails because the
+> existing adreno GPUs implementing "arm,smmu-500" expect three
+> compatibles like in this commit. I did that and the driver still
+> probed the same so I assumed all's good. You're right of course, the
+> adreno impl is not being assigned without "qcom,smmu-500". Are the
+> bindings wrong in this case and should it be something like the
+> following?
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> index d966dc65ce10..cd1b052a7242 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> @@ -84,6 +84,7 @@ properties:
+>                - qcom,sm8150-smmu-500
+>                - qcom,sm8250-smmu-500
+>            - const: qcom,adreno-smmu
+> +          - const: qcom,smmu-500
+>            - const: arm,mmu-500
+>        - description: Qcom Adreno GPUs implementing "arm,smmu-v2"
+>          items:
+> 
+> Bartosz
+Check
 
-Hmm, it sounds like a different perf factor? Otherwise, I still
-don't understand how it impacts our decision of choosing between
-mmap'd queue page and doing copy_from_user().
+https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/commit/?h=for-joerg/arm-smmu/bindings&id=5c3686616b1840b3143b227eb58fb1c1621d204e
 
-Thanks
-Nicolin
+Konrad
+> 
+>> Konrad
+>>> +                     reg = <0x0 0x03da0000 0x0 0x20000>;
+>>> +                     #iommu-cells = <2>;
+>>> +                     #global-interrupts = <2>;
+>>> +                     dma-coherent;
+>>> +                     power-domains = <&gpucc GPU_CC_CX_GDSC>;
+>>> +                     clocks = <&gcc GCC_GPU_MEMNOC_GFX_CLK>,
+>>> +                              <&gcc GCC_GPU_SNOC_DVM_GFX_CLK>,
+>>> +                              <&gpucc GPU_CC_AHB_CLK>,
+>>> +                              <&gpucc GPU_CC_HLOS1_VOTE_GPU_SMMU_CLK>,
+>>> +                              <&gpucc GPU_CC_CX_GMU_CLK>,
+>>> +                              <&gpucc GPU_CC_HUB_CX_INT_CLK>,
+>>> +                              <&gpucc GPU_CC_HUB_AON_CLK>;
+>>> +                     clock-names = "gcc_gpu_memnoc_gfx_clk",
+>>> +                                   "gcc_gpu_snoc_dvm_gfx_clk",
+>>> +                                   "gpu_cc_ahb_clk",
+>>> +                                   "gpu_cc_hlos1_vote_gpu_smmu_clk",
+>>> +                                   "gpu_cc_cx_gmu_clk",
+>>> +                                   "gpu_cc_hub_cx_int_clk",
+>>> +                                   "gpu_cc_hub_aon_clk";
+>>> +                     interrupts = <GIC_SPI 673 IRQ_TYPE_LEVEL_HIGH>,
+>>> +                                  <GIC_SPI 674 IRQ_TYPE_LEVEL_HIGH>,
+>>> +                                  <GIC_SPI 678 IRQ_TYPE_LEVEL_HIGH>,
+>>> +                                  <GIC_SPI 679 IRQ_TYPE_LEVEL_HIGH>,
+>>> +                                  <GIC_SPI 680 IRQ_TYPE_LEVEL_HIGH>,
+>>> +                                  <GIC_SPI 681 IRQ_TYPE_LEVEL_HIGH>,
+>>> +                                  <GIC_SPI 682 IRQ_TYPE_LEVEL_HIGH>,
+>>> +                                  <GIC_SPI 683 IRQ_TYPE_LEVEL_HIGH>,
+>>> +                                  <GIC_SPI 684 IRQ_TYPE_LEVEL_HIGH>,
+>>> +                                  <GIC_SPI 685 IRQ_TYPE_LEVEL_HIGH>,
+>>> +                                  <GIC_SPI 686 IRQ_TYPE_LEVEL_HIGH>,
+>>> +                                  <GIC_SPI 687 IRQ_TYPE_LEVEL_HIGH>;
+>>> +             };
+>>> +
+>>>               pdc: interrupt-controller@b220000 {
+>>>                       compatible = "qcom,sa8775p-pdc", "qcom,pdc";
+>>>                       reg = <0x0 0x0b220000 0x0 0x30000>,
