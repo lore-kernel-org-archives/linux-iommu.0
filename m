@@ -1,32 +1,32 @@
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D88D23A5
-	for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 06:48:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 769C423A3
+	for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 06:48:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681195700; x=1712731700;
+  t=1681195699; x=1712731699;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=svE7EgjquyhwRZbom4QiBGJ7Mxb0NsfSfLHDW+HF/GA=;
-  b=K9Dj4m7M4qNwNymbgJBqzamgLuXDe1tWx/a4o1VWcDuQ/9LmjYVZPwDT
-   7gHhUk7aOWXt1uuceL9oO/p1NDAGE3dgEjfuu+sPmRR+SoH+ECwkxjJvj
-   gjzYB8iS41SQIkLGA5t+hZc7GVq6qFx8kwZ74rCrr5oif/5AqisgHvx0u
-   0g1mf4lGA0aepKgAMrWDTuMvO38lXrcYMsqPyZDC2RB7OFTCWWXDh1Ip0
-   rLDq+sRof1+LOPCp86quKROYxFfVq1FPSY3bRCv8P36NcV9A21UiaDnDV
-   rX3lYp+BewIARzjqijjDYi42U8ZEziZ2abe2K91DX2m4oIp3m6tdymXyW
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10676"; a="341028523"
+  bh=rMHo8yYSBVXvdzGdpugvYObeZKKcdE/cMZKOA3T4vNU=;
+  b=arKqTP64Ab4WSodsY3NLU101WHjA93eb9a9I3x3C759YlKJGAnc96i3F
+   wpI8pzKVAIokWEEzTK8skV8kcncQ8/4ZdLr9QPAh7u9nSvYK2vMSH0Cjk
+   7eTL+7LfhT7iKXif0d02CeTJBF3rTQ9M6O8DBry6mFJyhLODBTfagdJxm
+   ebzCojWbLFGjk6oDa7lUoZWawP3d73QWNiHVH2SPsG/nTTz9FSRnuBehN
+   2KTatAd5EKN9VqcpzsQGsGaLUCQCMKvlx3oG5hS+mTdigAlO1ah0OwnMr
+   Khezqvcsv5IIfaQJFB3GJIT1LQtGuty68UjYt8EEEHvAC/f6X4K3cA3ez
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10676"; a="341028505"
 X-IronPort-AV: E=Sophos;i="5.98,336,1673942400"; 
-   d="scan'208";a="341028523"
+   d="scan'208";a="341028505"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2023 23:48:20 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2023 23:48:15 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10676"; a="1018256558"
+X-IronPort-AV: E=McAfee;i="6600,9927,10676"; a="1018256541"
 X-IronPort-AV: E=Sophos;i="5.98,336,1673942400"; 
-   d="scan'208";a="1018256558"
+   d="scan'208";a="1018256541"
 Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by fmsmga005.fm.intel.com with ESMTP; 10 Apr 2023 23:48:18 -0700
+  by fmsmga005.fm.intel.com with ESMTP; 10 Apr 2023 23:48:13 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: Vinod Koul <vkoul@kernel.org>,
@@ -35,9 +35,9 @@ Cc: Vinod Koul <vkoul@kernel.org>,
 	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 04/17] iommu/vt-d: Move pfsid and ats_qdep calculation to device probe path
-Date: Tue, 11 Apr 2023 14:48:02 +0800
-Message-Id: <20230411064815.31456-5-baolu.lu@linux.intel.com>
+Subject: [PATCH 02/17] iommu/vt-d: Allow SVA with device-specific IOPF
+Date: Tue, 11 Apr 2023 14:48:00 +0800
+Message-Id: <20230411064815.31456-3-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230411064815.31456-1-baolu.lu@linux.intel.com>
 References: <20230411064815.31456-1-baolu.lu@linux.intel.com>
@@ -49,67 +49,48 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-They should be part of the per-device iommu private data initialization.
+Currently enabling SVA requires IOPF support from the IOMMU and device
+PCI PRI. However, some devices can handle IOPF by itself without ever
+sending PCI page requests nor advertising PRI capability.
 
-Reviewed-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Allow SVA support with IOPF handled either by IOMMU (PCI PRI) or device
+driver (device-specific IOPF). As long as IOPF could be handled, SVA
+should continue to work.
+
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Link: https://lore.kernel.org/r/20230324120234.313643-5-baolu.lu@linux.intel.com
+Link: https://lore.kernel.org/r/20230324120234.313643-3-baolu.lu@linux.intel.com
 ---
- drivers/iommu/intel/iommu.c | 26 +++++++++++---------------
- 1 file changed, 11 insertions(+), 15 deletions(-)
+ drivers/iommu/intel/iommu.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index a6f07c74da2d..6d77b4072fdd 100644
+index 7c2f4bd33582..caf664448ee9 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -1406,20 +1406,6 @@ static void iommu_enable_pci_caps(struct device_domain_info *info)
- 		return;
+@@ -4650,7 +4650,21 @@ static int intel_iommu_enable_sva(struct device *dev)
+ 	if (!(iommu->flags & VTD_FLAG_SVM_CAPABLE))
+ 		return -ENODEV;
  
- 	pdev = to_pci_dev(info->dev);
--	/* For IOMMU that supports device IOTLB throttling (DIT), we assign
--	 * PFSID to the invalidation desc of a VF such that IOMMU HW can gauge
--	 * queue depth at PF level. If DIT is not set, PFSID will be treated as
--	 * reserved, which should be set to 0.
--	 */
--	if (!ecap_dit(info->iommu->ecap))
--		info->pfsid = 0;
--	else {
--		struct pci_dev *pf_pdev;
--
--		/* pdev will be returned if device is not a vf */
--		pf_pdev = pci_physfn(pdev);
--		info->pfsid = pci_dev_id(pf_pdev);
--	}
- 
- 	/* The PCIe spec, in its wisdom, declares that the behaviour of
- 	   the device if you enable PASID support after ATS support is
-@@ -1438,7 +1424,6 @@ static void iommu_enable_pci_caps(struct device_domain_info *info)
- 	    !pci_enable_ats(pdev, VTD_PAGE_SHIFT)) {
- 		info->ats_enabled = 1;
- 		domain_update_iotlb(info->domain);
--		info->ats_qdep = pci_ats_queue_depth(pdev);
- 	}
- }
- 
-@@ -4521,6 +4506,17 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
- 		    dmar_ats_supported(pdev, iommu)) {
- 			info->ats_supported = 1;
- 			info->dtlb_extra_inval = dev_needs_extra_dtlb_flush(pdev);
+-	if (!info->pasid_enabled || !info->pri_enabled || !info->ats_enabled)
++	if (!info->pasid_enabled || !info->ats_enabled)
++		return -EINVAL;
 +
-+			/*
-+			 * For IOMMU that supports device IOTLB throttling
-+			 * (DIT), we assign PFSID to the invalidation desc
-+			 * of a VF such that IOMMU HW can gauge queue depth
-+			 * at PF level. If DIT is not set, PFSID will be
-+			 * treated as reserved, which should be set to 0.
-+			 */
-+			if (ecap_dit(iommu->ecap))
-+				info->pfsid = pci_dev_id(pci_physfn(pdev));
-+			info->ats_qdep = pci_ats_queue_depth(pdev);
- 		}
- 		if (sm_supported(iommu)) {
- 			if (pasid_supported(iommu)) {
++	/*
++	 * Devices having device-specific I/O fault handling should not
++	 * support PCI/PRI. The IOMMU side has no means to check the
++	 * capability of device-specific IOPF.  Therefore, IOMMU can only
++	 * default that if the device driver enables SVA on a non-PRI
++	 * device, it will handle IOPF in its own way.
++	 */
++	if (!info->pri_supported)
++		return 0;
++
++	/* Devices supporting PRI should have it enabled. */
++	if (!info->pri_enabled)
+ 		return -EINVAL;
+ 
+ 	ret = iopf_queue_add_device(iommu->iopf_queue, dev);
 -- 
 2.34.1
 
