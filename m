@@ -1,66 +1,249 @@
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f42.google.com (mail-ua1-f42.google.com [209.85.222.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A57253B7
-	for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 10:13:22 +0000 (UTC)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
-	(No client certificate requested)
-	(Authenticated sender: kholk11)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id 7BCCC66031AD;
-	Tue, 11 Apr 2023 11:13:19 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1681208000;
-	bh=H0bLhwmxJ3hfxq2cNw35YIq7xvlSowfBxBWvLLl7KxY=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=MQRpBPV4eSPWPJDxxo4hOC8lJfK7U2Gva6HAK8zfzSIzpyNgsiTuwAxLiNr6ZHrZa
-	 tfNlGyd5PbPnKje6sfMwqZd1XQTnjcrgb+1AoK8szw1gpTZkpSTay+iT3dNC05mtpg
-	 OdFJuQmxRYK7tBPAWs6hgyBNcsJ4rWruFYSLrxn9/XN2VH0Ttp88LbGht9ts0lAYVa
-	 ZMwPwjChFGRc3ABfoqZlzDA89+1LNVQHXEyWcv5QjDoSBXHavL356lBytEVd3jcNxO
-	 8q0VQJLIsYEfFeyjBFMZ0Uyj1KWaC9FZsygkBxsqMAO+E2Ry1ZBGIxRyOr+V3DHtir
-	 dtppndF9pmLPQ==
-Message-ID: <5697b1ba-262d-34d9-b853-a6c959fc29fd@collabora.com>
-Date: Tue, 11 Apr 2023 12:13:17 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69FB82F29
+	for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 11:50:41 +0000 (UTC)
+Received: by mail-ua1-f42.google.com with SMTP id ba16so5374928uab.4
+        for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 04:50:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112; t=1681213840;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6ABpILrsve0qKJe1rMKA0UqVkX+F1EsDxDxKGNDuqxY=;
+        b=KVatqVw52IhcfqXAGvQ6AjlQ/yo8uGrRN9sI3RW602XortnUT2neEdIsKww/J3pESI
+         q8VyhEI9l83LXxWinWmRr2Dx1rwUD+CP60tV4liiCOxXohXH8BKmR34+FG7Crskv7VfT
+         g0Br2FHi6ZEibqFxCokZ7e/WzFa25EuCF7XjU8DhOUGz2Ph1oRQ4SfJIIq2/ughG0yWu
+         syNKBSbZ8oJFgvETJXmEIuanWIcayd4ojVs2bXyfHs2mXGaWTl2KvVLF7YK8Xv2V64xc
+         GhoGH4ZmPPueePCpALN0ihgV5WxrHR7/8xz15A7FhAKBvTLPChGltfHBwlobxsKZQOzo
+         /AOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681213840;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=6ABpILrsve0qKJe1rMKA0UqVkX+F1EsDxDxKGNDuqxY=;
+        b=68S7i2V3YrTHLM+TRgdH7wySbAjD4GlNWzOcQkxB3a7qZtOMzNjxjDw2pg3GcJ0MWm
+         O5pUn6SGYmwuxez32GUBVTeTKqgb+wz2k7DWPjyGMxmq50dS25wGuxfVVdPjQKTbqnIm
+         ARBOplwC7+w0IDo+wm2Eq8WvYRrV0UwIbFjDEVL1rM2N7bG3F7n2N5JzHj09j7zSEHY3
+         y3DoFZlbfgIXZbQR2RWByxHtF8taIix1sNaucmbliNhneQyQJTZUtWAVOMViPT4QqFzz
+         HFI3BiykR/BPYJS358bv7Et1eyrMmmkcE4eCH5QKo3p/UsoHpdIvsAd8F4iEEo+n3nbk
+         YsWw==
+X-Gm-Message-State: AAQBX9cnNgNmqOxIMar7DmMC4S0FeHMtw/eNVxiyrbSH7/+1pO+rE7xF
+	GEVTwcazUmxKxFFktagE4e4KDInrGORmFoN4d2gn6g==
+X-Google-Smtp-Source: AKy350ag+4vkSjC293eEA+Ezldj6pBfYQecQW+ykIdx4osj27F89whguE2mB4gHKphxIOhL2WeYzVkfq7A9AKhhY7TY=
+X-Received: by 2002:a9f:3014:0:b0:68a:6c1e:1aab with SMTP id
+ h20-20020a9f3014000000b0068a6c1e1aabmr8693102uab.2.1681213840148; Tue, 11 Apr
+ 2023 04:50:40 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-Subject: Re: [PATCH v7 09/14] iommu/mediatek: Set dma_mask for the master
- devices
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh+dt@kernel.org>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Hans Verkuil <hverkuil@xs4all.nl>, nfraprado@collabora.com,
- linux-media@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- mingyuan.ma@mediatek.com, yf.wang@mediatek.com, jianjiao.zeng@mediatek.com,
- Yunfei Dong <yunfei.dong@mediatek.com>,
- kyrie wu <kyrie.wu@mediatek.corp-partner.google.com>,
- chengci.xu@mediatek.com, youlin.pei@mediatek.com, anan.sun@mediatek.com
-References: <20230411093144.2690-1-yong.wu@mediatek.com>
- <20230411093144.2690-10-yong.wu@mediatek.com>
-Content-Language: en-US
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20230411093144.2690-10-yong.wu@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20230406200723.552644-1-brgl@bgdev.pl> <20230406200723.552644-6-brgl@bgdev.pl>
+ <20230410201145.6e2qsl5gtwh7n3k7@echanude>
+In-Reply-To: <20230410201145.6e2qsl5gtwh7n3k7@echanude>
+From: Bartosz Golaszewski <brgl@bgdev.pl>
+Date: Tue, 11 Apr 2023 13:50:29 +0200
+Message-ID: <CAMRc=MdSTqO0bW1=_it43K_pn7EuBWRPvBF29N1gdqsh3TpAcg@mail.gmail.com>
+Subject: Re: [PATCH v2 5/7] arm64: dts: qcom: sa8775p: add the pcie smmu node
+To: Eric Chanudet <echanude@redhat.com>, Shazad Hussain <quic_shazhuss@quicinc.com>
+Cc: Bjorn Andersson <andersson@kernel.org>, Andy Gross <agross@kernel.org>, 
+	Konrad Dybcio <konrad.dybcio@linaro.org>, Michael Turquette <mturquette@baylibre.com>, 
+	Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+	Catalin Marinas <catalin.marinas@arm.com>, Arnd Bergmann <arnd@arndb.de>, linux-arm-msm@vger.kernel.org, 
+	linux-clk@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	iommu@lists.linux.dev, Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Il 11/04/23 11:31, Yong Wu ha scritto:
-> MediaTek iommu arranges dma ranges for all the masters, this patch is to
-> help them set dma mask. This is to avoid each master setting their own
-> mask, but also to avoid a real issue, such as JPEG uses
-> "mediatek,mtk-jpgenc" for 2701/8183/8186/8188, then JPEG could ignore its
-> different dma_mask in different SoC to achieve common code.
-> 
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+On Mon, Apr 10, 2023 at 10:11=E2=80=AFPM Eric Chanudet <echanude@redhat.com=
+> wrote:
+>
+> On Thu, Apr 06, 2023 at 10:07:21PM +0200, Bartosz Golaszewski wrote:
+> > From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+> >
+> > Add the PCIe SMMU node for sa8775p platforms.
+> >
+> > Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+> > Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> > ---
+> >  arch/arm64/boot/dts/qcom/sa8775p.dtsi | 74 +++++++++++++++++++++++++++
+> >  1 file changed, 74 insertions(+)
+> >
+> > diff --git a/arch/arm64/boot/dts/qcom/sa8775p.dtsi b/arch/arm64/boot/dt=
+s/qcom/sa8775p.dtsi
+> > index 2343df7e0ea4..9ab630c7d81b 100644
+> > --- a/arch/arm64/boot/dts/qcom/sa8775p.dtsi
+> > +++ b/arch/arm64/boot/dts/qcom/sa8775p.dtsi
+> > @@ -809,6 +809,80 @@ apps_smmu: iommu@15000000 {
+> >                                    <GIC_SPI 891 IRQ_TYPE_LEVEL_HIGH>;
+> >               };
+> >
+> > +             pcie_smmu: iommu@15200000 {
+> > +                     compatible =3D "qcom,sa8775p-smmu-500", "qcom,smm=
+u-500", "arm,mmu-500";
+> > +                     reg =3D <0x0 0x15200000 0x0 0x800000>;
+>
+> Testing on the board, applying on next-20230406:
+> [    1.041869] arm-smmu 15200000.iommu: SMMU address space size (0x80000)=
+ differs from mapped region size (0x800000)!
+>
+> In the downstream sources, the size is 0x80000[1].
+>
+> On reboot, I also get a synchronous abort, but the second line, from the
+> following output on the serial, could indicate the hypervisor is behind
+> it:
+>
+> [   26.906206] arm-smmu 15200000.iommu: disabling translation
+> 3      33.244434 Injecting instruction/data abort to VM 3, original ESR_E=
+L2 =3D 0x93800047, fault VA =3D 0xffff80000a380000, fault IPA =3D 0x1520000=
+0, ELR_EL2 =3D 0xffffd064f70c9de8
+> [   26.942083] Internal error: synchronous external abort: 00000000960000=
+10 [#1] PREEMPT SMP
+> [   26.948506] Modules linked in: nvmem_qcom_spmi_sdam qcom_pon spi_geni_=
+qcom nvmem_reboot_mode crct10dif_ce i2c_qcom_geni phy_qcom_qmp_ufs gpucc_sa=
+8775p ufs_qcom socinfo fuse ipv6
+> [   26.966702] CPU: 3 PID: 1 Comm: systemd-shutdow Not tainted 6.3.0-rc5-=
+next-20230406-00019-g9d08a3c17f54-dirty #134
+> [   26.977315] Hardware name: Qualcomm SA8775P Ride (DT)
+> [   26.982505] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYP=
+E=3D--)
+> [   26.989651] pc : arm_smmu_device_shutdown+0x88/0x1d8
+> [   26.994773] lr : arm_smmu_device_shutdown+0x70/0x1d8
+> [   26.999875] sp : ffff80000805bbf0
+> [   27.003283] x29: ffff80000805bbf0 x28: ffff0e69400a0000 x27: 000000000=
+0000000
+> [   27.010608] x26: ffffd064f8130f38 x25: 0000000000000001 x24: ffffd064f=
+8eac028
+> [   27.017932] x23: ffff0e6940eeb490 x22: ffffd064f8f24f80 x21: ffff0e694=
+0eeb410
+> [   27.025254] x20: ffff0e6940808c80 x19: ffff0e6940eeb410 x18: 000000000=
+0000006
+> [   27.032579] x17: 0000000000000001 x16: 0000000000000014 x15: ffff80000=
+805b5c0
+> [   27.039903] x14: 0000000000000000 x13: ffffd064f8ac19a8 x12: 000000000=
+0000606
+> [   27.047226] x11: 0000000000000202 x10: ffffd064f8b199a8 x9 : ffffd064f=
+8ac19a8
+> [   27.054549] x8 : 00000000ffffefff x7 : ffffd064f8b199a8 x6 : 80000000f=
+ffff000
+> [   27.061872] x5 : 000000000000bff4 x4 : 0000000000000000 x3 : 000000000=
+0000000
+> [   27.069195] x2 : 0000000000000000 x1 : ffff80000a380000 x0 : 000000000=
+0000001
+> [   27.076520] Call trace:
+> [   27.079041]  arm_smmu_device_shutdown+0x88/0x1d8
+> [   27.083787]  platform_shutdown+0x24/0x34
+> [   27.087825]  device_shutdown+0x150/0x258
+> [   27.091859]  kernel_restart+0x40/0xc0
+> [   27.095632]  __do_sys_reboot+0x1f0/0x274
+> [   27.099664]  __arm64_sys_reboot+0x24/0x30
+> [   27.103786]  invoke_syscall+0x48/0x114
+> [   27.107644]  el0_svc_common+0x40/0xf4
+> [   27.111410]  do_el0_svc+0x3c/0x9c
+> [   27.114822]  el0_svc+0x2c/0x84
+> [   27.117969]  el0t_64_sync_handler+0xf4/0x120
+> [   27.122357]  el0t_64_sync+0x190/0x194
+> [   27.126126] Code: f9400404 b50008e4 f9400681 52800020 (b9000020)
+> [   27.132385] ---[ end trace 0000000000000000 ]---
+>
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Adding Shazad
 
+Eric: This is supposedly gone in the latest meta but I thought you're
+already on the most recent release?
+
+Shazad, what version exactly should Eric test this on?
+
+Bart
+
+> [1] https://git.codelinaro.org/clo/la/kernel/ark-5.14/-/blob/ES2/arch/arm=
+64/boot/dts/qcom/lemans.dtsi#L3498
+>
+> > +                     #iommu-cells =3D <2>;
+> > +                     #global-interrupts =3D <2>;
+> > +
+> > +                     interrupts =3D <GIC_SPI 920 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 921 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 925 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 926 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 927 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 928 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 950 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 951 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 952 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 953 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 954 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 955 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 956 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 957 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 958 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 885 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 886 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 887 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 888 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 820 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 822 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 823 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 310 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 446 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 447 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 452 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 840 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 841 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 842 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 843 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 844 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 845 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 846 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 847 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 848 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 849 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 802 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 803 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 804 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 805 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 806 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 807 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 808 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 809 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 810 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 811 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 812 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 813 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 814 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 836 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 837 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 838 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 839 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 854 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 855 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 856 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 790 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 791 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 792 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 793 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 794 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 795 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 796 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 639 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH>,
+> > +                                  <GIC_SPI 640 IRQ_TYPE_LEVEL_HIGH>;
+> > +             };
+> > +
+> >               intc: interrupt-controller@17a00000 {
+> >                       compatible =3D "arm,gic-v3";
+> >                       reg =3D <0x0 0x17a00000 0x0 0x10000>,     /* GICD=
+ */
+> > --
+> > 2.37.2
+> >
+>
+> --
+> Eric Chanudet
+>
