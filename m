@@ -1,43 +1,43 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE93315A5
-	for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 12:59:21 +0000 (UTC)
-Received: by mail-wm1-f53.google.com with SMTP id he11-20020a05600c540b00b003ef6d684102so2311858wmb.3
-        for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 05:59:21 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 248C68C08
+	for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 12:59:23 +0000 (UTC)
+Received: by mail-wm1-f45.google.com with SMTP id he13so9486053wmb.2
+        for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 05:59:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112; t=1681217960;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112; t=1681217961;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=2RxXk1daPTunKtbomjZDgpJNAfBR2cR6YhtK/lfK/SI=;
-        b=jkNhgbAqj8TzggObBJHle31q6oTTOf6YNouhVEYNpiAFkPPJUDhi13yN2zkBMTkbCb
-         Jd5LL4XnPSRxsSDR69wQwpMJgD4zo34dsiqtuEAPt4NiF2NT8t/t7DCs99RsrV+B6dS6
-         5XiY/o/CZc+jl2jpa03WzBu9VUtl5mHZTBkr2+XDyGBBUdMDrxh8TWrj+MjV5qD6VCxA
-         XbQaYuCghyZbRe+1pp9Zjjh2rkBoR2uj7oMsy3rtP21ly1JHx3AbPkhmLGsIinwE6795
-         Oozk32Misl05fmnPFUTsf3I1UAbdm/7vd8B8DNMN5DXqVFhGJ4vh6P5BmQZnX4a9AP3W
-         h0ng==
+        bh=h5SvLGWiNz4qmlRx78+7Ty5fH+kaR1oDoC8UPKZhMno=;
+        b=D/9uWMyGk1Hrj+4toN4XStrE8KQKPdXCs1L8wJLAHIIYSv8bWwKpaiXQWgOxKzpsza
+         Eb6qrR7gyKM7gdceNdyi36w0lcrlkUXfM/GTW+57U5c/sYDtGFnDei4eV8UyR3FUyBdE
+         Bsyvk3AoMODLaeR1Dmjbg6+FAqfZH2stDgfZaVJBU8DcWabCsMbYevxGaVyrGwXsTHxr
+         W2hBEZ9lvssrTFnR4pi5nym46WbNcSOAjbixq+SFxPdXMI6N06DiztlF+H/6+BSjraT0
+         8sJAfVnTjMq7zyhgCx4xSfMXm8XW49KVq7tTKO6Fcu5nzEuzaZfqbuJrva+slA2f4dMc
+         JStw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681217960;
+        d=1e100.net; s=20210112; t=1681217961;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=2RxXk1daPTunKtbomjZDgpJNAfBR2cR6YhtK/lfK/SI=;
-        b=BE/8MeAdnPVKtAksfk7Xx9F+D3ia8CWgTCpuguCV0el7ISShUYS34L0mA9NATi7E5k
-         up210qQ81sjfg/LxdbnFRvpQ4XAfdBOA6tx8DwhZBpmCtSrgby9pmuvXK3qgaKC9hFFz
-         ccDGjVHlZw0z1srKDaCZmRACfrwcuM2zkRjQCDPegyVTL+r6UW2HGFBDYHiKsaBmSmFd
-         AXhApvfV8YKn9ZmJqptO1+VwK8hhyGLqCtMSQQi9oGrNaLQmWwbwH9iPnc9Sn67Na0DQ
-         D1d7tGhYj2LSzH+XOF+fLhQ9ubPEkpl2t8y+Pc3zTZpFNTy3dUcO4FRBC7mVOZ8xFLzh
-         qLLw==
-X-Gm-Message-State: AAQBX9dNc5kYD4BjMuMxWvBC3sLobaagXT9z/W4uaCy3yIsP2mhJnjhi
-	otOaLdTevGJ5e3wXlTNiRJrZnA==
-X-Google-Smtp-Source: AKy350YjbZY7jeWKHHTUtlE+U08TBjTTL9TQeEw/gUMD0lhQNwkuZRGNiz34nBSlMwOKYeudFtovUA==
-X-Received: by 2002:a05:600c:4e44:b0:3ed:de03:7f0a with SMTP id e4-20020a05600c4e4400b003edde037f0amr9427917wmq.10.1681217960343;
-        Tue, 11 Apr 2023 05:59:20 -0700 (PDT)
+        bh=h5SvLGWiNz4qmlRx78+7Ty5fH+kaR1oDoC8UPKZhMno=;
+        b=jN3qkvoXTpC1afwos2c/aZ0B5N0kxaRisZaN/LbaB2uSeA+/XedmNwpmJ8ASh7qjuq
+         HkVZNhbhZIMl0Tdhqeu5gjGWHO+SO3ROSbSjluL9lhmxg+nJ1pmkidJYpx3o6QJPd4IC
+         VEHMUN7lO0RwyYKvSxUbCmIFaPy6pU5UE8TVVy0kSXJmo08PaP85rmyJeuR2tNkfM7iC
+         e6cPi+Gex4aSUleLxW+S2CdqDC6wZjjgzaosaoMW4T2AnxFbRC7iSHWXPWF+xIbLlzvA
+         crmBRaNGbl+RNL2J7D7DpSFqyT3WHBiwHbnK2zgtVByhDMrOnTairgNM6zPRd1BYGgpB
+         F+XQ==
+X-Gm-Message-State: AAQBX9efS9UqiLazKyem09Ozm21Zg7RPeqyCNbUB6I0Y+MIxib40bESW
+	YkU/v+b/jLqzphup2DjjPFHE1Q==
+X-Google-Smtp-Source: AKy350bBD2bgvD4lyvkS8LWoDViy8rkoWZiSH6bPVKfr7CifLxmGkc8oIQN02kxSR+VYq1YUYtM15g==
+X-Received: by 2002:a05:600c:2214:b0:3eb:2e1e:beae with SMTP id z20-20020a05600c221400b003eb2e1ebeaemr6773198wml.25.1681217961408;
+        Tue, 11 Apr 2023 05:59:21 -0700 (PDT)
 Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:a099:fc1d:c99a:bfc3])
-        by smtp.gmail.com with ESMTPSA id e24-20020a05600c219800b003eae73f0fc1sm16944591wme.18.2023.04.11.05.59.19
+        by smtp.gmail.com with ESMTPSA id e24-20020a05600c219800b003eae73f0fc1sm16944591wme.18.2023.04.11.05.59.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Apr 2023 05:59:19 -0700 (PDT)
+        Tue, 11 Apr 2023 05:59:21 -0700 (PDT)
 From: Bartosz Golaszewski <brgl@bgdev.pl>
 To: Bjorn Andersson <andersson@kernel.org>,
 	Andy Gross <agross@kernel.org>,
@@ -58,9 +58,9 @@ Cc: linux-arm-msm@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev,
 	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Subject: [PATCH v3 5/7] arm64: dts: qcom: sa8775p: add the GPU clock controller node
-Date: Tue, 11 Apr 2023 14:59:08 +0200
-Message-Id: <20230411125910.401075-6-brgl@bgdev.pl>
+Subject: [PATCH v3 6/7] dt-bindings: iommu: arm,smmu: enable clocks for sa8775p Adreno SMMU
+Date: Tue, 11 Apr 2023 14:59:09 +0200
+Message-Id: <20230411125910.401075-7-brgl@bgdev.pl>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230411125910.401075-1-brgl@bgdev.pl>
 References: <20230411125910.401075-1-brgl@bgdev.pl>
@@ -74,39 +74,45 @@ Content-Transfer-Encoding: 8bit
 
 From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-Add the GPUCC node for sa8775p platforms.
+The GPU SMMU will require the clocks property to be set so put the
+relevant compatible into the adreno if-then block.
 
 Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 ---
- arch/arm64/boot/dts/qcom/sa8775p.dtsi | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sa8775p.dtsi b/arch/arm64/boot/dts/qcom/sa8775p.dtsi
-index a23175352a20..191b510b5a1a 100644
---- a/arch/arm64/boot/dts/qcom/sa8775p.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sa8775p.dtsi
-@@ -591,6 +591,20 @@ tcsr_mutex: hwlock@1f40000 {
- 			#hwlock-cells = <1>;
- 		};
- 
-+		gpucc: clock-controller@3d90000 {
-+			compatible = "qcom,sa8775p-gpucc";
-+			reg = <0x0 0x03d90000 0x0 0xa000>;
-+			clocks = <&rpmhcc RPMH_CXO_CLK>,
-+				 <&gcc GCC_GPU_GPLL0_CLK_SRC>,
-+				 <&gcc GCC_GPU_GPLL0_DIV_CLK_SRC>;
-+			clock-names = "bi_tcxo",
-+				      "gcc_gpu_gpll0_clk_src",
-+				      "gcc_gpu_gpll0_div_clk_src";
-+			#clock-cells = <1>;
-+			#reset-cells = <1>;
-+			#power-domain-cells = <1>;
-+		};
-+
- 		pdc: interrupt-controller@b220000 {
- 			compatible = "qcom,sa8775p-pdc", "qcom,pdc";
- 			reg = <0x0 0x0b220000 0x0 0x30000>,
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+index 807cb511fe18..d966dc65ce10 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+@@ -79,6 +79,7 @@ properties:
+       - description: Qcom Adreno GPUs implementing "arm,smmu-500"
+         items:
+           - enum:
++              - qcom,sa8775p-smmu-500
+               - qcom,sc7280-smmu-500
+               - qcom,sm8150-smmu-500
+               - qcom,sm8250-smmu-500
+@@ -317,7 +318,9 @@ allOf:
+       properties:
+         compatible:
+           contains:
+-            const: qcom,sc7280-smmu-500
++            enum:
++              - qcom,sa8775p-smmu-500
++              - qcom,sc7280-smmu-500
+     then:
+       properties:
+         clock-names:
+@@ -375,7 +378,6 @@ allOf:
+               - nvidia,smmu-500
+               - qcom,qcm2290-smmu-500
+               - qcom,qdu1000-smmu-500
+-              - qcom,sa8775p-smmu-500
+               - qcom,sc7180-smmu-500
+               - qcom,sc8180x-smmu-500
+               - qcom,sc8280xp-smmu-500
 -- 
 2.37.2
 
