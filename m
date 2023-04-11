@@ -1,155 +1,119 @@
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2048.outbound.protection.outlook.com [40.107.212.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A4982F29
-	for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 11:57:46 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lbuH/TfICtJwoZjhC59APaQF2NwN3EnoeCgd0M87v8Uw8z32zCVm4HhpiOwG/7K81mk2dYC5AVecUPD63bnVpa4uJbRGFA6t5LwOkw77zrdI/zKZWKmXkl0wc7MJnXvAPnyvaY9qgSkcFy+/TPSQN7e2CVF8a688MOegl7oZM1EFAkyIBLoKFLR01WszOiNoU4OwKmlaaAFL1816SY83AG0IUN+2puSpcP+WTlEi7/PSIrdQRDlEmr7H4GA8B48aewOJpkVxFIqT7K8tC0BddKlYncVR2FiUkWzksKdE0IBYuIqeWxEt7frncUpVYBVVg49CoUmzNlWGvj4IzIuvRg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=b+7SSPR2VAkQ9ZPmLeXgn1DyMvpPUyT7SUwgI5pi3ZQ=;
- b=V3zTFoCvAC+slWEv08C1KmvE/3gT655EWhpI7DuEzMXtjZ+/Opx3kuwoxtULkTz60At5arwJdhcCfQSKiRBzTlL1WoME8ZtrTWWu7LAUkRgtRE9vHGrZFg6JOUy4ZhBQGJRmRzqQ+S+FK/AO1RCgs89LbWrMcfO2OOo13GeusyMw3KKzI7HkCZGW/8ap8pBKprGata6sQ/yy/fLk2+EE837Qz6tbUPGFYri2jc+s6C0BmGwLi0WYiSqmnFabkGgKVGKe5n5UqJwPySmesAKoCv/8nxlHDBpzyrpukKGEh+iFfPox0hEmsc6atSN8QrU4xAMDZ0iWI8kLcdLe+LziQA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=b+7SSPR2VAkQ9ZPmLeXgn1DyMvpPUyT7SUwgI5pi3ZQ=;
- b=GHSvEquj8/4xeaTWuzcHW38qdnvMBFSxa9FifZ6IAPWwJW0BnHmoV9Xi6Yfd4SiGcTGmArWSbTUF1ES3kIdzwm7mebwHuB2R75edD/jkRq60IlJJ04goXHj4s4RormnMgyh8rR7e1dw1yb/n3oW4aqpPhSfhxnAerQsiTeeVv5S2jo0rqKogGELzRGN64RO1Lj/JTNgy904YZ/Mcq6ci/9lchMUwRzwvv1b0HhEqmWAfNeaYedluyxipWp+98Z/iUMxQH7kgNdzQXI5obbNl+o7eX7XWXTuF9IbpjfLfSOR8yGcoP5+TTkBHyVSycMbpNMo2G20HYkQ9XkJJVo65VA==
-Received: from DM6PR12MB4926.namprd12.prod.outlook.com (2603:10b6:5:1bb::15)
- by CH2PR12MB4325.namprd12.prod.outlook.com (2603:10b6:610:a9::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.36; Tue, 11 Apr
- 2023 11:57:42 +0000
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DM6PR12MB4926.namprd12.prod.outlook.com (2603:10b6:5:1bb::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.35; Tue, 11 Apr
- 2023 11:57:38 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::6045:ad97:10b7:62a2]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::6045:ad97:10b7:62a2%9]) with mapi id 15.20.6277.038; Tue, 11 Apr 2023
- 11:57:38 +0000
-Date: Tue, 11 Apr 2023 08:57:35 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: Nicolin Chen <nicolinc@nvidia.com>,
-	Zhangfei Gao <zhangfei.gao@linaro.org>,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EA2215A5
+	for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 12:59:16 +0000 (UTC)
+Received: by mail-wm1-f54.google.com with SMTP id gw11-20020a05600c850b00b003f07d305b32so5336155wmb.4
+        for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 05:59:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112; t=1681217954;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=gVuMmsSUuik77Ijx/8EU9TNPivGbNCZ9khKZD4i9/BM=;
+        b=ZNuwfNHT1p/L4mQ0ZKMicW8hWuIsz23tQW+92LtMGchp7cQfdHi55p/378Z65ZNORl
+         5wA/raAbIQ+z7XxlNbE65524TZQE9Z7dvQO/hs7lHAunBYZlFFMxcS2O2WUpETnnO9UH
+         oW7yjNgm8VW/3XEBEEriKW4GSpvJzu+VxGvT+I3t9yMlDKn7wOAKBanGiWijKhshS8yw
+         du040ueDH5DdkeR1iCqcuXOtzN2i5OE/oNryHRwqzcCdi4dUNYJbF+lYwe8gZ7o9vZ50
+         iL7ilCvX306s+8CeSaQxzTH4TfcmyD2iP70nIj51mqqbIIgk0FiCtKfiaVB/NeRc66HP
+         RWrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681217954;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=gVuMmsSUuik77Ijx/8EU9TNPivGbNCZ9khKZD4i9/BM=;
+        b=1BJFJRKgxbSXXay9x1bWBK8z4cZtoe6HR2GIwBr+n14jKdrWlq7sxs0bp2aqfFhs9t
+         mHdc+iI0843wAiYgJbMta4Np6vfMMmDcgOReJ9FHKjYesODt1ik4A+lSy6eynabh6nf7
+         JqNoYZP0RJ8rMYXgAJU7Zr2TxXqfA1wYtpsO2MIP9aTspJf2vKxsHDoekVQhpA3k7+Fx
+         ZEi3aMe2y38kWG6XVuww5Ii8URNxfCf/qcJnc02pP8E0coLi26eGPs3Wz+mNC5H1b8VX
+         oRPf4VkanMoxaau68+jemMSl6IV2/lKt61YlbWC98JGWPNNHj69GnACyKPTzgskhk8hD
+         IzuQ==
+X-Gm-Message-State: AAQBX9djURfC4qcHIHLFxEon81VMSsLIK8uo/62IO+iy/VeGbUvkARoM
+	VU5M1gaMuSWuXJrwv3/q+wPvAw==
+X-Google-Smtp-Source: AKy350ZFwGmF0uWrr2tG/BrpiE90COQA60InF2b3iXCaBkZ98ODQnmuu5K1WHIogyJwqSY4ZJbpkTQ==
+X-Received: by 2002:a7b:ca54:0:b0:3eb:39c3:8844 with SMTP id m20-20020a7bca54000000b003eb39c38844mr9829158wml.12.1681217954605;
+        Tue, 11 Apr 2023 05:59:14 -0700 (PDT)
+Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:a099:fc1d:c99a:bfc3])
+        by smtp.gmail.com with ESMTPSA id e24-20020a05600c219800b003eae73f0fc1sm16944591wme.18.2023.04.11.05.59.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Apr 2023 05:59:14 -0700 (PDT)
+From: Bartosz Golaszewski <brgl@bgdev.pl>
+To: Bjorn Andersson <andersson@kernel.org>,
+	Andy Gross <agross@kernel.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	"kevin.tian@intel.com" <kevin.tian@intel.com>,
-	"yi.l.liu@intel.com" <yi.l.liu@intel.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	qianweili <qianweili@huawei.com>
-Subject: Re: Cache Invalidation Solution for Nested IOMMU
-Message-ID: <ZDVLL6qcTxfIMT5g@nvidia.com>
-References: <ZCrd1wphkCp8uFt0@nvidia.com>
- <ZCrn8PPPyEJ/VqFU@Asurada-Nvidia>
- <ea6fba01-b483-94e6-8c84-d096dcb64b5a@arm.com>
- <ZCtpAYn76u499p6G@Asurada-Nvidia>
- <ZCxOMSvR+6rYbIfy@nvidia.com>
- <a3bbd5422897475d8bcd4c110c3722ec@huawei.com>
- <CABQgh9G_Xa6h7ujRJkCogp02N87OAugBTEuXyccQREw28VfZCQ@mail.gmail.com>
- <ZC6vlI7onlUgBidX@nvidia.com>
- <ZDNhiVZN9zNLGjcj@Asurada-Nvidia>
- <20230411090740.GC2040385@myrica>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230411090740.GC2040385@myrica>
-X-ClientProxiedBy: CH0PR03CA0321.namprd03.prod.outlook.com
- (2603:10b6:610:118::17) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	Joerg Roedel <joro@8bytes.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Arnd Bergmann <arnd@arndb.de>
+Cc: linux-arm-msm@vger.kernel.org,
+	linux-clk@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Subject: [PATCH v3 0/7] arm64: dts: qcom: sa8775p: add more IOMMUs
+Date: Tue, 11 Apr 2023 14:59:03 +0200
+Message-Id: <20230411125910.401075-1-brgl@bgdev.pl>
+X-Mailer: git-send-email 2.37.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic:
-	LV2PR12MB5869:EE_|DM6PR12MB4926:EE_|CH2PR12MB4325:EE_
-X-MS-Office365-Filtering-Correlation-Id: 34ef10d6-f804-431e-623b-08db3a83f217
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	iY0Hw9q/MxPr2thTIM6lv8lFgrhZlSR1VvNITp9/lDMQDDQ9CzoTZybgadWC1PZ5PInMHPnBxZ1QmVpHU4ZdQ+pkcosgbFobOg86whNWj7F7ApWea1LgXH14NgRW8Jsl9lBr2q2R0hd16Xy+1E6cRyqkr3aTZEntdqjSfa/v9T4AbATuJQiiusND4AVKXnS0cMjaD8elYHu8pv2Fdn1OYJJQwh0g8U6AztSkrLUA5DhXwwsKrrwnkfjf2bxzvBeOc0bPWgg04iOPJnRqH/ICAwhbsBQmStKRwmEPr27Zx1OJBY9+HzbSkV3WQOBVbNv8v+vuw1Zw8dmYCw4nQg9JbOnPvQ/IJ9Z6IBid6oMh5KoOYwePRSSNf9ZuRmyQiFLsbmVhzczbsH78npW3/c0M8AesyAlgHztXgnYzxQcngfyCxT+NBRHusjbGdbNsaAghz1Zcp6rbvMx8IjkR9F7CBCTtdBIYi9Xc6RxzhkGbZCo1MXwkRbd/vsjHtVrWsv+8QaAibywRyLAtUkWV6OfN4yNWF4EfmAzj5F0dWo2MK+8=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4926.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(366004)(396003)(39860400002)(136003)(346002)(451199021)(8936002)(6666004)(7416002)(6486002)(966005)(5660300002)(6916009)(86362001)(4326008)(8676002)(66556008)(66476007)(66946007)(478600001)(38100700002)(316002)(54906003)(2906002)(6506007)(6512007)(186003)(2616005)(41300700001)(36756003)(26005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?iYEGYdbKg5HYn8zJEAaNZX/jpLYIaz9nL8PIjnQ+BbVPMFIPh1CKbDY9IyVZ?=
- =?us-ascii?Q?DWXwUbZxKouMv2ofrbFjul65qC/90O19rmhlcsnafztHl0p5jRsTbwXCAuWj?=
- =?us-ascii?Q?cJiM85YoegJUyVzXXPfpoPXXAKYLq5XbKs8O9Sh5l2ZWKxUwDyjfXCPKkepp?=
- =?us-ascii?Q?AHzr8+Nn1MGw7wniPBWXsaFX/C5EAvs8g6J93B124Do9abAeoPU4duITwLMg?=
- =?us-ascii?Q?6yNDdBTorojgKiTOaEv6x9POijatTSB0YZY4GYEVRYjfkrEyd6DrfOTzAbl2?=
- =?us-ascii?Q?npE3NTC1e3KWUaopxnpkTz12vDh0cjCDj0w7MV/lTdfYqhSczjceEg37H798?=
- =?us-ascii?Q?TtZAvzwBUh/PZ/bLquqk2wuMIGPbPBv4r2MhYJKHWp0BSz2WsjRW8luq046e?=
- =?us-ascii?Q?GXo0k26OpeZ9yiUt/6rKpz3pBuKhG+wVyjMlbVMOxWWeDwWK31TxFi5fdA7D?=
- =?us-ascii?Q?yCd1r++dTt8ngyx0pWlsuXpk4OVQ3HYBkN5l9zLrjTesNtg839La/fG2/ut0?=
- =?us-ascii?Q?ErlbLFPQHRuheWUf+i0/khtBj+UJd6kpNEhzTLl8jSq+vSTlLmygxlEo+E1o?=
- =?us-ascii?Q?n6tEyEnxoIuwShYBdb4SSL5WoVV4SKMWaN3ffxu5qw0D0jSL5aWVwunPHLtm?=
- =?us-ascii?Q?spXYcuHxNd4muktXk7bH0j8VVNS7ZnYLa/PQOT1AsgGdqtMPJS7n/YhJYVL4?=
- =?us-ascii?Q?eps0FSzw99OBh5ijGJbkOwggwH6tLt0+inHoIbRA+mlrEGB9rUZvujDRNFuc?=
- =?us-ascii?Q?kRpScfDXXYFhLScWyE82307YhEhtaoTDmQen2XezqxWkuysjBb1f6VktO/DU?=
- =?us-ascii?Q?79H62pzfmuAEFLGYhlEBK2YXaL/gMKgHwwwwB+hOOXS1y0rPCJdYMEgHtOBy?=
- =?us-ascii?Q?mWjbJ2TgwK6/SPTZgHet5C6OR2vPj+rTqI3Sh/0DZsfdAUh3uU9+RagxEYWA?=
- =?us-ascii?Q?fy8hpoutR3B7LBTht8FjjCLKZL9CG4MLSI3GMLHUlHVekjs6KS+/C+WyHTbR?=
- =?us-ascii?Q?oTmZQ57eTkQDpsSk2K4d+eDiAjP+ZeAkLlBYVRORSNyj3PXPNSRfy3Q48nYn?=
- =?us-ascii?Q?nnqm0WveF2rE/oihqmHxmPFtD15oPZnT2UTBFPxpFYtkwcMHnt7sSvSiVwWm?=
- =?us-ascii?Q?31Rpa7E9YWZ02gOigkQM3Un+iYOQZFEU7n006qoYJcLy8yAeE1hlWJgPjygj?=
- =?us-ascii?Q?dNxHmEGeJyWi3S/0ZnC5+C0Oyc7wBDm/RXlh3Qn6q2InJaVMQdJxGjc88GNW?=
- =?us-ascii?Q?/cvubywzcJa4TO7uxCq0SzHATuHop2rlgYnB/e9532Gk1BDoWcs5f+qyQDUf?=
- =?us-ascii?Q?u8yiQZ3rtR1gTdRqFcQ/BJh7XSAFRFHtIqfA810N9W9wvScIX01hljpMgj3k?=
- =?us-ascii?Q?CsY8a8Xpjs0YTCzORKLSo8Cip63kZdDqF3HrS2ACLiUsNFt9krM06VHT/YPb?=
- =?us-ascii?Q?5qPf7FH1Gz3EN+qCrQBurDJz5CqagEyI8i8rw2141sF778fSxLzsLBYaVY/s?=
- =?us-ascii?Q?97G/2KsxuVLGvLftVPmZ3BGqKKWrSmuSIeNZ7mkInF6Qep5ifDRUG4ZzVeI8?=
- =?us-ascii?Q?fbh9tq45S4FJqF2QUpzJNnkhLvmZ/qobKBxXNX79?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 34ef10d6-f804-431e-623b-08db3a83f217
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2023 11:57:38.2098
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cxjVhRF+wopBWRxKOsVcJbyfkq8ytTeocqZwCxhhOeIwRPZ+XtjZITIlZHxK0Qkx
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4325
+Content-Transfer-Encoding: 8bit
 
-On Tue, Apr 11, 2023 at 10:07:40AM +0100, Jean-Philippe Brucker wrote:
-> On Sun, Apr 09, 2023 at 06:08:25PM -0700, Nicolin Chen wrote:
-> > On Thu, Apr 06, 2023 at 08:40:04AM -0300, Jason Gunthorpe wrote:
-> > > On Thu, Apr 06, 2023 at 02:23:17PM +0800, Zhangfei Gao wrote:
-> > > 
-> > > > We are using ioctl method now.
-> > > > From the testing, the TLB miss impacts performance a lot, so we use
-> > > > huge page method.
-> > > > After using huge page method, guest can achieve comparable performance
-> > > > with host.
-> > > 
-> > > Looks like these tests are not stressing the MM, just measuring pure
-> > > BW of the DMA, so they don't get into the invalidation regime..
-> > > 
-> > > You need to measure a more real application that is actually using the
-> > > MM (eg alloc/free memory, fork, etc) while it operates and turn on SVA.
-> > 
-> > Would an iommu map/unmap benchmark test be useful here?
-> 
-> You can reuse and improve dma_map_benchmark, already upstream. It supports
-> multi-threads and reports stddev. For some comparisons the report
-> resolution (.1 us) is insufficient and needs to be increased, but for
-> comparing guest performance it might be alright.
-> 
-> https://lore.kernel.org/linux-iommu/20201102080646.2180-2-song.bao.hua@hisilicon.com/
+From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-I'm not talking about kernel dma_map/unmap, I'm talking about MM
-activities like mmap and munmap that become slower once SVA is enabled
+Add the GPU and PCIe IOMMUs for sa8775p platforms as well as the required
+GPU clock controller driver.
 
-Jason
+NOTE: I didn't pick up Krzysztof's tag for patch 4/7 as the patch changed
+significantly.
+
+v2 -> v3:
+- select QCOM_GDSC in Kconfig for the GPUCC module
+- the GPU SMMU is actually an adreno SMMU so describe it as such and
+  fix the DT
+- fix the mapped memory size for the PCIe SMMU
+
+v1 -> v2:
+- remove unused include in the GPUCC driver
+- remove unused clock from the GPUCC driver and make it compatible
+  with the generic QCom GPUCC bindings
+- put the new defconfig option in the right place (as per savedefconfig)
+  and make the GPUCC driver a module rather than built-in
+- describe the smmu clocks for sa8775p in dt-bindings
+
+Bartosz Golaszewski (6):
+  dt-bindings: clock: qcom: describe the GPUCC clock for SA8775P
+  arm64: defconfig: enable the SA8775P GPUCC driver
+  arm64: dts: qcom: sa8775p: add the pcie smmu node
+  arm64: dts: qcom: sa8775p: add the GPU clock controller node
+  dt-bindings: iommu: arm,smmu: enable clocks for sa8775p Adreno SMMU
+  arm64: dts: qcom: sa8775p: add the GPU IOMMU node
+
+Shazad Hussain (1):
+  clk: qcom: add the GPUCC driver for sa8775p
+
+ .../devicetree/bindings/clock/qcom,gpucc.yaml |   2 +
+ .../devicetree/bindings/iommu/arm,smmu.yaml   |   6 +-
+ arch/arm64/boot/dts/qcom/sa8775p.dtsi         | 125 ++++
+ arch/arm64/configs/defconfig                  |   1 +
+ drivers/clk/qcom/Kconfig                      |   9 +
+ drivers/clk/qcom/Makefile                     |   1 +
+ drivers/clk/qcom/gpucc-sa8775p.c              | 625 ++++++++++++++++++
+ .../dt-bindings/clock/qcom,sa8775p-gpucc.h    |  50 ++
+ 8 files changed, 817 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/clk/qcom/gpucc-sa8775p.c
+ create mode 100644 include/dt-bindings/clock/qcom,sa8775p-gpucc.h
+
+-- 
+2.37.2
+
