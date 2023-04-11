@@ -1,129 +1,71 @@
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E6AB53B7
-	for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 09:47:20 +0000 (UTC)
-X-UUID: bacae360d84b11edb6b9f13eb10bd0fe-20230411
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=mT6zoSr+t/iCCp0pVyrrFXyfIgwNSVzrgEpFp7/K0K4=;
-	b=p1kfKTM91wnf6JvxSkAd/lInT36yXrs6JIdnWPHuxiJPTQmmV8vezzOZ+Rjto08t7O2lTETH+evUd8Md7ztXySyB8WtvL4BcyAceoB7mnktZ1f7CAlnUJAWiYkRXwXyqh/a9gQvzc/+JAn/fC38Exg1p5I/bA39rc+trgNa7LJo=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.22,REQID:d6fc6903-c02e-4df0-9658-2f54b3e457b1,IP:0,U
-	RL:0,TC:0,Content:-25,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Release_Ham,ACTI
-	ON:release,TS:70
-X-CID-INFO: VERSION:1.1.22,REQID:d6fc6903-c02e-4df0-9658-2f54b3e457b1,IP:0,URL
-	:0,TC:0,Content:-25,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Spam_GS981B3D,ACTI
-	ON:quarantine,TS:70
-X-CID-META: VersionHash:120426c,CLOUDID:1e62ae83-cd9c-45f5-8134-710979e3df0e,B
-	ulkID:230411173208T2HU8R5K,BulkQuantity:0,Recheck:0,SF:38|29|28|17|19|48,T
-	C:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
-	,OSI:0,OSA:0,AV:0
-X-CID-BVR: 0
-X-CID-BAS: 0,_,0,_
-X-UUID: bacae360d84b11edb6b9f13eb10bd0fe-20230411
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-	(envelope-from <yong.wu@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 998718804; Tue, 11 Apr 2023 17:32:08 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
- mtkmbs13n2.mediatek.inc (172.21.101.108) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.25; Tue, 11 Apr 2023 17:32:07 +0800
-Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.1118.25 via Frontend Transport; Tue, 11 Apr 2023 17:32:06 +0800
-From: Yong Wu <yong.wu@mediatek.com>
-To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh+dt@kernel.org>
-CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Hans Verkuil
-	<hverkuil@xs4all.nl>, <nfraprado@collabora.com>,
-	<linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-mediatek@lists.infradead.org>,
-	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>, AngeloGioacchino Del
- Regno <angelogioacchino.delregno@collabora.com>, <mingyuan.ma@mediatek.com>,
-	<yf.wang@mediatek.com>, <jianjiao.zeng@mediatek.com>, Yunfei Dong
-	<yunfei.dong@mediatek.com>, kyrie wu
-	<kyrie.wu@mediatek.corp-partner.google.com>, <chengci.xu@mediatek.com>,
-	<youlin.pei@mediatek.com>, <anan.sun@mediatek.com>, Yong Wu
-	<yong.wu@mediatek.com>, Tiffany Lin <tiffany.lin@mediatek.com>, Andrew-CT
- Chen <andrew-ct.chen@mediatek.com>, Rob Herring <robh@kernel.org>, Hans
- Verkuil <hverkuil-cisco@xs4all.nl>
-Subject: [PATCH v7 01/14] dt-bindings: media: mediatek,vcodec: Remove dma-ranges property
-Date: Tue, 11 Apr 2023 17:31:31 +0800
-Message-ID: <20230411093144.2690-2-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230411093144.2690-1-yong.wu@mediatek.com>
-References: <20230411093144.2690-1-yong.wu@mediatek.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02F9253B7
+	for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 10:12:51 +0000 (UTC)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
+	(No client certificate requested)
+	(Authenticated sender: kholk11)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id D541E66031AD;
+	Tue, 11 Apr 2023 11:12:48 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1681207970;
+	bh=7bO4tViZQRTa3LySl3BcqbAkLa3ojxPZnEzjThu0RLs=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=FV2jGoHZihXjn6OIA74MTm+LasrHy12N3+RKBJU5fyY1gXq/qDPetg8oYb5KHFq0P
+	 eMHTpS9zXJ5mJ6X4Rsln83dO3l8WG9aMw2BHv59+QPhIYUTNtWVebVx7WFoRBNLk4F
+	 Etj8Ba26wO1TrxaPc/60/yL1S22nzqliWYrTXIugnNsDDMsN4hd4xtabeRjVBD8QNq
+	 tJQS4YEuVSP13KHkR7uMoQmkPwA6BGKPPZygJF6SJgZg53GkNcYHcqiOaz0HuBGJK5
+	 0Hd8mvxc86OpZuBhiIU7suV6BoyHVYvbSA5gzfUZHCs1EFl2O0FgV1rAQ89SVREuXp
+	 yD1LWR3HAGzig==
+Message-ID: <fb349fa3-b6c3-90c7-65c6-e5614d007ac8@collabora.com>
+Date: Tue, 11 Apr 2023 12:12:45 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-MTK: N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: [PATCH v7 10/14] media: mtk-jpegdec: Remove the setting for
+ dma_mask
+Content-Language: en-US
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh+dt@kernel.org>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Hans Verkuil <hverkuil@xs4all.nl>, nfraprado@collabora.com,
+ linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ mingyuan.ma@mediatek.com, yf.wang@mediatek.com, jianjiao.zeng@mediatek.com,
+ Yunfei Dong <yunfei.dong@mediatek.com>,
+ kyrie wu <kyrie.wu@mediatek.corp-partner.google.com>,
+ chengci.xu@mediatek.com, youlin.pei@mediatek.com, anan.sun@mediatek.com,
+ Bin Liu <bin.liu@mediatek.com>, kyrie wu <kyrie.wu@mediatek.com>
+References: <20230411093144.2690-1-yong.wu@mediatek.com>
+ <20230411093144.2690-11-yong.wu@mediatek.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20230411093144.2690-11-yong.wu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-After commit f1ad5338a4d5 ("of: Fix "dma-ranges" handling for bus
-controllers"), the dma-ranges of the leaf node doesn't work. Remove
-it for vcodec here.
+Il 11/04/23 11:31, Yong Wu ha scritto:
+> In order to simplify the masters to set their respective dma masks, MTK
+> IOMMU helps to centralize the processing. Because all the dma ranges is
+> set in IOMMU, IOMMU knows well the dma mask requirements of masters. After
+> this patch, the masters code does not need care
+> dma-ranges/dma_mask related information.
+> 
+> Cc: Bin Liu <bin.liu@mediatek.com>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: kyrie wu <kyrie.wu@mediatek.com>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 
-For mediatek,vcodec-decoder.yaml and mediatek,vcodec-encoder.yaml,
-this property is in the leaf node, it is invalid as the above comment.
-
-Currently there is only mt8195 VENC node has this property in upstream.
-Indeed, VENC is affected, but it is not a fatal issue. Originally it
-expects its iova range locate at 4GB-8GB. However after that commit, its
-expectation doesn't come true, it will fall back to 0-4GB iova and also
-could work well.
-
-Cc: Tiffany Lin <tiffany.lin@mediatek.com>
-Cc: Andrew-CT Chen <andrew-ct.chen@mediatek.com>
-Cc: Yunfei Dong <yunfei.dong@mediatek.com>
-Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Acked-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
----
- .../devicetree/bindings/media/mediatek,vcodec-decoder.yaml   | 5 -----
- .../devicetree/bindings/media/mediatek,vcodec-encoder.yaml   | 5 -----
- 2 files changed, 10 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/media/mediatek,vcodec-decoder.yaml b/Documentation/devicetree/bindings/media/mediatek,vcodec-decoder.yaml
-index aa55ca65d6ed..fad59b486d5d 100644
---- a/Documentation/devicetree/bindings/media/mediatek,vcodec-decoder.yaml
-+++ b/Documentation/devicetree/bindings/media/mediatek,vcodec-decoder.yaml
-@@ -56,11 +56,6 @@ properties:
-       List of the hardware port in respective IOMMU block for current Socs.
-       Refer to bindings/iommu/mediatek,iommu.yaml.
- 
--  dma-ranges:
--    maxItems: 1
--    description: |
--      Describes the physical address space of IOMMU maps to memory.
--
-   mediatek,vpu:
-     $ref: /schemas/types.yaml#/definitions/phandle
-     description:
-diff --git a/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml b/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
-index 0f2ea8d9a10c..a2051b31fa29 100644
---- a/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
-+++ b/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
-@@ -49,11 +49,6 @@ properties:
-       List of the hardware port in respective IOMMU block for current Socs.
-       Refer to bindings/iommu/mediatek,iommu.yaml.
- 
--  dma-ranges:
--    maxItems: 1
--    description: |
--      Describes the physical address space of IOMMU maps to memory.
--
-   mediatek,vpu:
-     $ref: /schemas/types.yaml#/definitions/phandle
-     description:
--- 
-2.25.1
 
