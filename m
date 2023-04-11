@@ -1,265 +1,162 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 458683212
-	for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 16:35:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1681230933;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=IbtBPHSuNg+l9dd12JhHU9qMR/3P53aSjvaTRVqWAQ8=;
-	b=LZZSfwEJa1G1db0gsj3BPH/yU+nYO6SIeiTTr0vl5JRXEY+YWY3ylnqrEfA8n3rGLduCa3
-	MAdAy/6dbCU6qyeSHBUhDYR0kASxEb6gm1XdDokBiMlcBZHn+ksvpCLwwnLhgzt2NByNW/
-	vHtEUHKpm9qCmm4X41SVEngBcHK+nPI=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-417-dFI2DtzMN7KReB9fsomRuQ-1; Tue, 11 Apr 2023 12:35:32 -0400
-X-MC-Unique: dFI2DtzMN7KReB9fsomRuQ-1
-Received: by mail-qt1-f198.google.com with SMTP id v24-20020a05622a189800b003e0e27bbc2eso6799366qtc.8
-        for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 09:35:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681230931;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=IbtBPHSuNg+l9dd12JhHU9qMR/3P53aSjvaTRVqWAQ8=;
-        b=tPKG9sp0XJnK3nqXrf2jxvEZminA1+xkkAzNUvk6H6j6RdSSKHj1bFQLPL3f96Ot9F
-         JW3fS7pQCvGpnSpmobzSMn1ik4A6lNoWWD5MlLpHNFRXhrARkO4ymKwI8xMzJwS5Lgza
-         9FvGqnQEX/aq5H1gYJcMqr5FDBeIZNzT1JFGPMGCF7zjNT7wayFUEsk3n12MgSbxSEfl
-         LUnyC4e4A/G4wqv00ORMhJgvYWZ7woX+u/m0Xxb8/yjgRnx63bhv7EK78Ri6B7tuUSG6
-         P+K3Ots/k3c2+jhtWAKb/GJUYhqY3muSV94ldpKc9y97/yRUgAKKo1Cm2CVstxCvi2L5
-         XlXA==
-X-Gm-Message-State: AAQBX9cWnTuH0PFCctDeM75e6FPaIm2pwn4wkvutc6Qr2cm6IYM8+Le4
-	0sttXx7kNcMncOZL1kHTJVb54dOrQGuJkMQIqeKd35/fA6bLwzUoB42DiAkoDXV7hbXTSTOqXwd
-	ICa01ZzQ14Yl0T3M=
-X-Received: by 2002:a05:6214:2a89:b0:5c7:640:8997 with SMTP id jr9-20020a0562142a8900b005c706408997mr3573769qvb.51.1681230931529;
-        Tue, 11 Apr 2023 09:35:31 -0700 (PDT)
-X-Google-Smtp-Source: AKy350bz1KQkDBTysgmiRm14e0+NS6PAvNiFxR+tz4hZ7NOPxEDAPL3RlewV0I8v19gSu2uwEYzMtg==
-X-Received: by 2002:a05:6214:2a89:b0:5c7:640:8997 with SMTP id jr9-20020a0562142a8900b005c706408997mr3573740qvb.51.1681230931179;
-        Tue, 11 Apr 2023 09:35:31 -0700 (PDT)
-Received: from localhost (pool-71-184-142-128.bstnma.fios.verizon.net. [71.184.142.128])
-        by smtp.gmail.com with ESMTPSA id cz10-20020a056214088a00b005e8d802ce32sm2964371qvb.143.2023.04.11.09.35.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Apr 2023 09:35:30 -0700 (PDT)
-Date: Tue, 11 Apr 2023 12:35:33 -0400
-From: Eric Chanudet <echanude@redhat.com>
-To: Shazad Hussain <quic_shazhuss@quicinc.com>
-Cc: Bartosz Golaszewski <brgl@bgdev.pl>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Andy Gross <agross@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Arnd Bergmann <arnd@arndb.de>, linux-arm-msm@vger.kernel.org,
-	linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
-	Parikshit Pareek <quic_ppareek@quicinc.com>
-Subject: Re: [PATCH v2 5/7] arm64: dts: qcom: sa8775p: add the pcie smmu node
-Message-ID: <20230411163533.wyhzu4cfqecxjsmv@echanude>
-References: <20230406200723.552644-1-brgl@bgdev.pl>
- <20230406200723.552644-6-brgl@bgdev.pl>
- <20230410201145.6e2qsl5gtwh7n3k7@echanude>
- <CAMRc=MdSTqO0bW1=_it43K_pn7EuBWRPvBF29N1gdqsh3TpAcg@mail.gmail.com>
- <24804682-6ead-03b1-8b21-3ac413187c4a@quicinc.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DE483212
+	for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 16:43:23 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=P3POoeJEhRXWJKdNbeLbeWQw2GDrsSTf34O/eHNz3yRdGXHSeXlKeor5tEw8E5ZK3FQ8s/UReXcRaGYqHqAtp4uD4qiOYUN13pUdj2cXHP2OV213oJ0NrFuupw2mx9nvXmhw9CuZ3adqSawy4U5DsxazjEQkUlLypZgO7RgHOm+VMJnaop/rzAcJRzDmNXaqzp27Uwl3wNcpeS1OckXIbs6K60TkH+QRq7FS/b44GPxmu7eEezOFrFUrkRlJCBhuRHzBpc+LIEt8URCrry1unXkzd7Ras0t7HhoWnmyeOO3LX850ZwZDHTAf969r+myXvVUek2Ick4ktmXoyOf+5/w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1CNS2HSmgh3e1COJZn4Kj1NyOKZJ52hw9Q0p1GlmnsY=;
+ b=B7Ynt0p9B4uNk2UA7vCpiRWPyRvi6nUgcVCNixhEkg7vZMRbP1PfRTMTSa2CTh0M4BS/wJwMLisbta2v+LSiEBCI7UekotJUjkZmXS9+haF/3CXtDz/d3QBaFuxgJHl9hF+PpHCFGzEKPAGSdB+6w2T3Kc6dQpjOHJ81RbpwDxVd5l8NgoH2LRLRGBLI2COSZ3bPLHWqB70wageUjgMrqk04o0nXCpq81jrJoygcafAyGQpBd2Ssk4M5/rJ7dDxCuK5FM/Q3M4WxALRAi+eXh7dmqJvyqhfuOcn3BjYZTr9dzcz/SUkRfPG57+WQZabePQnfsHNAUmSvJieEXFF/gQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1CNS2HSmgh3e1COJZn4Kj1NyOKZJ52hw9Q0p1GlmnsY=;
+ b=XPcRT3V9I69Lm8G/nXWwrrSo+JN2spH7GwU9xQ6/GzeTF3+zUOly7HqDT49j0QJxEZwktvIJRhiReoa3SKBx23ClfdQmxnBgq3IMp4v0D3r+fMOxxqg3kW4pHw1YsdU0NNBskTefcbE0EA0hIt6IutjgNmK/SBubTuXOeeYJ2UazArB/dfi+FM2/pjim5HGAcXPS4Awre7ax0YedpNNcmPz9Q5W4Crnjh86lPjkn5OUBfztroYUQ6jnyF12cSsvrwtdbAs1523nSs2eTdbXltgN0GkKxQfQrNfxWcXNyszlbE5lQPmii3az9vM9bB9lMaEP9kVA8IidBO8hFlk9LJw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by BL3PR12MB6596.namprd12.prod.outlook.com (2603:10b6:208:38f::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.36; Tue, 11 Apr
+ 2023 16:43:21 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::6045:ad97:10b7:62a2]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::6045:ad97:10b7:62a2%9]) with mapi id 15.20.6277.038; Tue, 11 Apr 2023
+ 16:43:21 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: iommu@lists.linux.dev,
+	linux-kselftest@vger.kernel.org
+Cc: Lu Baolu <baolu.lu@linux.intel.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	kvm@vger.kernel.org,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Yi Liu <yi.l.liu@intel.com>
+Subject: [PATCH v5 13/17] iommufd: Make destroy_rwsem use a lock class per object type
+Date: Tue, 11 Apr 2023 13:43:14 -0300
+Message-Id: <13-v5-6716da355392+c5-iommufd_alloc_jgg@nvidia.com>
+In-Reply-To: <0-v5-6716da355392+c5-iommufd_alloc_jgg@nvidia.com>
+References:
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BYAPR07CA0041.namprd07.prod.outlook.com
+ (2603:10b6:a03:60::18) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <24804682-6ead-03b1-8b21-3ac413187c4a@quicinc.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BL3PR12MB6596:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9c88baa4-27a7-415a-71b7-08db3aabdc5b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	xtyReyKaAd7/tS3//vG2AfbPDS7WK75xisrbaaQzWq4o9uVJNXY7bPP7PS/YzJI9w0AUNrtljp/8DnmSHTHC8sBqA7jRwIshU3eMLcqVhbQk0kNDMGe6g1//JZsE4+rThay4g8gs/5h/gI8KgDXx0ZvEewCSh4o5cXBpaKNr5+9fOR5/u8xUvy9KspM1JzIKXNYkW39tE5RDtQxLJk2UlXSLoVU3gYZyRz1JHfWLE7s1j+b4ht0M5S4aD14OjBe1Ak/ULOx/90AkOHvT+LggyvGcg8HTXCEwKiXPBKsoMxJGG/lZbQddLv2nSfvomayFlwdPP7XBe4NlJUEhx1LGFX4AOEO/LccUExGaDL4ZGNpN8mfcFahUKK7jJOnbE5KCg+BgUOZfg9Kn7yPRWv0jwnKAC9TV8dfKIy8heHFr2XPXd0YdikGHMi89bZCNIHqg8IszFr869uh/6QAdpcp8le02hVIqcAUFq56nimC75jk+1QrkEZSldYwm3n8mXTB/Dk303VWr9e9kV4qryZ6AnKW9wFl92Wo3FR/DmOnIJ210zSnTaL9fYfQ2i6ijXbOu
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(346002)(136003)(396003)(366004)(376002)(451199021)(2906002)(86362001)(36756003)(6486002)(6666004)(2616005)(83380400001)(186003)(6506007)(26005)(6512007)(478600001)(66556008)(66476007)(66946007)(4326008)(316002)(8936002)(41300700001)(38100700002)(8676002)(5660300002)(54906003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?sBbn2VKsFqHaSOvUXTluWOEWyZl8bjjBeDraG6gx/eNo+0qBHo9bAKVCm29u?=
+ =?us-ascii?Q?pt7oo7pO5LUMNX/rLee3IPOhbOKyzVScYvmahw/7ZixmdmqdWtLpjqI+0PYc?=
+ =?us-ascii?Q?KxvrXpJwPAa1NxhqUu8YVA4b0JCR6K/bNrK8zpyC4YihPknQPKJewVnP8Jd/?=
+ =?us-ascii?Q?CiXsfAb7JYR0QPzkmrxNvJKlLVzuTbkCU4EqutVUozbonOwlfGEQFraICplX?=
+ =?us-ascii?Q?w0dIQQFqC0e2FeCq5gvmbVa3ooHplwPf0pP/nt3qeWaGwER4qD7actwICQsz?=
+ =?us-ascii?Q?/CI+JFCTEjthcLZtd/1JlQvyoQ6T6DY7PehJyp/gj+8kTDmMHrN1WH/mW2nU?=
+ =?us-ascii?Q?ygE/o2dQZiQKP1Z+H8T7Rz6SWvc2zH3yRY4R6JG1EXTsD7xyi8W4W7KaUWcn?=
+ =?us-ascii?Q?Qsk9kDos0hIUyIobdfMisgLqSeUL6dxRe9NwtsPMjTSK1iz/Pnm93YpMp5mp?=
+ =?us-ascii?Q?C3bEy2NYNxdHNGjWu4yxpbvN9neRAB9H58Fecy1x95EFUMQuiIeFwAdAyH9A?=
+ =?us-ascii?Q?kAAZMijLto5jpYQWMj19WL/MbjQZykWToC0J7lNglyxbimGmWFLWXi6SeeoN?=
+ =?us-ascii?Q?BhWfjk7B/iV0ItRDgiTqtOXOX/ONO0DW6O/1MDjeJhvpbrBLosG/ojhgksiH?=
+ =?us-ascii?Q?Z7kqo49Km3L6wr44QhR42460hwZ0n/FJt7Vn7QxlcUNW8ZsU/T7IP5WeM2T0?=
+ =?us-ascii?Q?wQfljie4lyGxNjT801wLiZsKz860CEmkCZQoPHH9yU61b5U+sziiCrvIONSl?=
+ =?us-ascii?Q?IAyEUaNlGxBCxqjl3sg/UYqSif4+DrJCd0qPr9PZ9p2VBMFct5VPZ2v/1hQz?=
+ =?us-ascii?Q?ojP9XWP/ejVARBZzYYok0xRZ1wvRMnFJyY9sIJfT7wRxqruKEUJ0oaNcj/nw?=
+ =?us-ascii?Q?vSB1YYvEQxXc4o8vMwKoPmv53/PzPBiv/ysKXdwol6OJU6NmG6xj2KlplZrw?=
+ =?us-ascii?Q?/LLGpfNl30BWHOqkh1coIDG4IQlvhECi2VABQHjkQjLLzrglBX0m+OLys8/H?=
+ =?us-ascii?Q?EcsudyOll8JDoCUdn761lWkTkZh606jOFSpqg50cToGWJA1doYGKVCYGfTJX?=
+ =?us-ascii?Q?/C1qS8UB9hIg1IUsIsstVgQn+oo5UkCcIUxN2vBegFm7E9YPnn0/PBZmJL5m?=
+ =?us-ascii?Q?FS6OeMp4eFqoZq01Lib6WP6pFTOv39SRa0g2u5+zjkg1ZF4M4TnHINCic+u3?=
+ =?us-ascii?Q?kNTzK08psmTBggPfeohTuFXhuY9fSIuUTvW0E8YS+HGp16H9W9mlOVMQh8rs?=
+ =?us-ascii?Q?bCszSmMZ3/001gwRuCOI6KAwZC9vTwrZHTqDHPeTTkTbBr63wRwexLeFt4s7?=
+ =?us-ascii?Q?uTMhFLm5Wq2xTvHLa799rjczF1Si9CJ5AluzJIhA85eUx+kWWCpk6T/uEG+Y?=
+ =?us-ascii?Q?ZQDGpAMj7K814X8y9U+Q2IAaWLnT9TCIwIDc1c1uAJS+Xjch8m3Vy6bSQMC9?=
+ =?us-ascii?Q?R3yPkfBC1rDsxoPS2zxidbQ/j+UMcqvJiagEqJxM5lVVa4uh68lz5WkeKGYi?=
+ =?us-ascii?Q?dKjjCj8tRD+NQfYri7FtG1wQ2qh0kYdmuB7WoySkfwn/pylzt6SHDkQfpHmW?=
+ =?us-ascii?Q?RG9hx0HnMV+rsvcgFyyezFRPCvcqS4BqTP+ItsJZ?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9c88baa4-27a7-415a-71b7-08db3aabdc5b
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2023 16:43:21.5578
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: xGIj1sOV6Co6NYhHhZf+ctE5HwKXowjfViNn5XLn50NZ/7A2dvwId+W6D4nA0f4Y
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR12MB6596
 
-On Tue, Apr 11, 2023 at 09:53:53PM +0530, Shazad Hussain wrote:
-> On 4/11/2023 5:20 PM, Bartosz Golaszewski wrote:
-> > On Mon, Apr 10, 2023 at 10:11 PM Eric Chanudet <echanude@redhat.com> wrote:
-> > > 
-> > > On Thu, Apr 06, 2023 at 10:07:21PM +0200, Bartosz Golaszewski wrote:
-> > > > From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> > > > 
-> > > > Add the PCIe SMMU node for sa8775p platforms.
-> > > > 
-> > > > Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> > > > Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> > > > ---
-> > > >   arch/arm64/boot/dts/qcom/sa8775p.dtsi | 74 +++++++++++++++++++++++++++
-> > > >   1 file changed, 74 insertions(+)
-> > > > 
-> > > > diff --git a/arch/arm64/boot/dts/qcom/sa8775p.dtsi b/arch/arm64/boot/dts/qcom/sa8775p.dtsi
-> > > > index 2343df7e0ea4..9ab630c7d81b 100644
-> > > > --- a/arch/arm64/boot/dts/qcom/sa8775p.dtsi
-> > > > +++ b/arch/arm64/boot/dts/qcom/sa8775p.dtsi
-> > > > @@ -809,6 +809,80 @@ apps_smmu: iommu@15000000 {
-> > > >                                     <GIC_SPI 891 IRQ_TYPE_LEVEL_HIGH>;
-> > > >                };
-> > > > 
-> > > > +             pcie_smmu: iommu@15200000 {
-> > > > +                     compatible = "qcom,sa8775p-smmu-500", "qcom,smmu-500", "arm,mmu-500";
-> > > > +                     reg = <0x0 0x15200000 0x0 0x800000>;
-> > > 
-> > > Testing on the board, applying on next-20230406:
-> > > [    1.041869] arm-smmu 15200000.iommu: SMMU address space size (0x80000) differs from mapped region size (0x800000)!
-> > > 
-> > > In the downstream sources, the size is 0x80000[1].
-> > > 
-> > > On reboot, I also get a synchronous abort, but the second line, from the
-> > > following output on the serial, could indicate the hypervisor is behind
-> > > it:
-> > > 
-> > > [   26.906206] arm-smmu 15200000.iommu: disabling translation
-> > > 3      33.244434 Injecting instruction/data abort to VM 3, original ESR_EL2 = 0x93800047, fault VA = 0xffff80000a380000, fault IPA = 0x15200000, ELR_EL2 = 0xffffd064f70c9de8
-> > > [   26.942083] Internal error: synchronous external abort: 0000000096000010 [#1] PREEMPT SMP
-> > > [   26.948506] Modules linked in: nvmem_qcom_spmi_sdam qcom_pon spi_geni_qcom nvmem_reboot_mode crct10dif_ce i2c_qcom_geni phy_qcom_qmp_ufs gpucc_sa8775p ufs_qcom socinfo fuse ipv6
-> > > [   26.966702] CPU: 3 PID: 1 Comm: systemd-shutdow Not tainted 6.3.0-rc5-next-20230406-00019-g9d08a3c17f54-dirty #134
-> > > [   26.977315] Hardware name: Qualcomm SA8775P Ride (DT)
-> > > [   26.982505] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> > > [   26.989651] pc : arm_smmu_device_shutdown+0x88/0x1d8
-> > > [   26.994773] lr : arm_smmu_device_shutdown+0x70/0x1d8
-> > > [   26.999875] sp : ffff80000805bbf0
-> > > [   27.003283] x29: ffff80000805bbf0 x28: ffff0e69400a0000 x27: 0000000000000000
-> > > [   27.010608] x26: ffffd064f8130f38 x25: 0000000000000001 x24: ffffd064f8eac028
-> > > [   27.017932] x23: ffff0e6940eeb490 x22: ffffd064f8f24f80 x21: ffff0e6940eeb410
-> > > [   27.025254] x20: ffff0e6940808c80 x19: ffff0e6940eeb410 x18: 0000000000000006
-> > > [   27.032579] x17: 0000000000000001 x16: 0000000000000014 x15: ffff80000805b5c0
-> > > [   27.039903] x14: 0000000000000000 x13: ffffd064f8ac19a8 x12: 0000000000000606
-> > > [   27.047226] x11: 0000000000000202 x10: ffffd064f8b199a8 x9 : ffffd064f8ac19a8
-> > > [   27.054549] x8 : 00000000ffffefff x7 : ffffd064f8b199a8 x6 : 80000000fffff000
-> > > [   27.061872] x5 : 000000000000bff4 x4 : 0000000000000000 x3 : 0000000000000000
-> > > [   27.069195] x2 : 0000000000000000 x1 : ffff80000a380000 x0 : 0000000000000001
-> > > [   27.076520] Call trace:
-> > > [   27.079041]  arm_smmu_device_shutdown+0x88/0x1d8
-> > > [   27.083787]  platform_shutdown+0x24/0x34
-> > > [   27.087825]  device_shutdown+0x150/0x258
-> > > [   27.091859]  kernel_restart+0x40/0xc0
-> > > [   27.095632]  __do_sys_reboot+0x1f0/0x274
-> > > [   27.099664]  __arm64_sys_reboot+0x24/0x30
-> > > [   27.103786]  invoke_syscall+0x48/0x114
-> > > [   27.107644]  el0_svc_common+0x40/0xf4
-> > > [   27.111410]  do_el0_svc+0x3c/0x9c
-> > > [   27.114822]  el0_svc+0x2c/0x84
-> > > [   27.117969]  el0t_64_sync_handler+0xf4/0x120
-> > > [   27.122357]  el0t_64_sync+0x190/0x194
-> > > [   27.126126] Code: f9400404 b50008e4 f9400681 52800020 (b9000020)
-> > > [   27.132385] ---[ end trace 0000000000000000 ]---
-> > > 
-> > 
-> > Adding Shazad
-> > 
-> > Eric: This is supposedly gone in the latest meta but I thought you're
-> > already on the most recent release?
-> > 
-> > Shazad, what version exactly should Eric test this on?
-> > 
-> > Bart
-> > 
-> 
-> Hi Bart, We should use r00004.1 to verify this. Adding Parikshit to
-> confirm on the same.
+The selftest invokes things like replace under the object lock of its
+idev which protects the idev in a similar way to a real user.
+Unfortunately this triggers lockdep. A lock class per type will solve the
+problem.
 
-I do not have a system with that version flashed on yet. The one I had
-must have been on r00003.4. I'll redo the test on an upgraded system.
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/iommu/iommufd/iommufd_private.h |  1 +
+ drivers/iommu/iommufd/main.c            | 11 ++++++++++-
+ 2 files changed, 11 insertions(+), 1 deletion(-)
 
-> 
-> -Shazad
-> 
-> > > [1] https://git.codelinaro.org/clo/la/kernel/ark-5.14/-/blob/ES2/arch/arm64/boot/dts/qcom/lemans.dtsi#L3498
-> > > 
-> > > > +                     #iommu-cells = <2>;
-> > > > +                     #global-interrupts = <2>;
-> > > > +
-> > > > +                     interrupts = <GIC_SPI 920 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 921 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 925 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 926 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 927 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 928 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 950 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 951 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 952 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 953 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 954 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 955 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 956 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 957 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 958 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 885 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 886 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 887 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 888 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 820 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 822 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 823 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 310 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 446 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 447 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 452 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 840 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 841 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 842 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 843 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 844 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 845 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 846 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 847 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 848 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 849 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 802 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 803 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 804 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 805 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 806 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 807 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 808 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 809 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 810 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 811 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 812 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 813 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 814 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 836 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 837 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 838 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 839 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 854 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 855 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 856 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 790 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 791 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 792 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 793 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 794 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 795 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 796 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 639 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH>,
-> > > > +                                  <GIC_SPI 640 IRQ_TYPE_LEVEL_HIGH>;
-> > > > +             };
-> > > > +
-> > > >                intc: interrupt-controller@17a00000 {
-> > > >                        compatible = "arm,gic-v3";
-> > > >                        reg = <0x0 0x17a00000 0x0 0x10000>,     /* GICD */
-> > > > --
-> > > > 2.37.2
-> > > > 
-> > > 
-> > > --
-> > > Eric Chanudet
-> > > 
-> 
-
+diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+index 471a3fdff1e0b6..f80b012e1bc200 100644
+--- a/drivers/iommu/iommufd/iommufd_private.h
++++ b/drivers/iommu/iommufd/iommufd_private.h
+@@ -119,6 +119,7 @@ enum iommufd_object_type {
+ #ifdef CONFIG_IOMMUFD_TEST
+ 	IOMMUFD_OBJ_SELFTEST,
+ #endif
++	IOMMUFD_OBJ_MAX,
+ };
+ 
+ /* Base struct for all objects with a userspace ID handle. */
+diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
+index 8597f2fb88da3a..9cba592d0482e7 100644
+--- a/drivers/iommu/iommufd/main.c
++++ b/drivers/iommu/iommufd/main.c
+@@ -32,6 +32,7 @@ struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
+ 					     size_t size,
+ 					     enum iommufd_object_type type)
+ {
++	static struct lock_class_key obj_keys[IOMMUFD_OBJ_MAX];
+ 	struct iommufd_object *obj;
+ 	int rc;
+ 
+@@ -39,7 +40,15 @@ struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
+ 	if (!obj)
+ 		return ERR_PTR(-ENOMEM);
+ 	obj->type = type;
+-	init_rwsem(&obj->destroy_rwsem);
++	/*
++	 * In most cases the destroy_rwsem is obtained with try so it doesn't
++	 * interact with lockdep, however on destroy we have to sleep. This
++	 * means if we have to destroy an object while holding a get on another
++	 * object it triggers lockdep. Using one locking class per object type
++	 * is a simple and reasonable way to avoid this.
++	 */
++	__init_rwsem(&obj->destroy_rwsem, "iommufd_object::destroy_rwsem",
++		     &obj_keys[type]);
+ 	refcount_set(&obj->users, 1);
+ 
+ 	/*
 -- 
-Eric Chanudet
+2.40.0
 
