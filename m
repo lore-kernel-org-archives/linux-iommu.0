@@ -1,34 +1,34 @@
 Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DE483212
-	for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 16:43:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F14593212
+	for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 16:43:25 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=P3POoeJEhRXWJKdNbeLbeWQw2GDrsSTf34O/eHNz3yRdGXHSeXlKeor5tEw8E5ZK3FQ8s/UReXcRaGYqHqAtp4uD4qiOYUN13pUdj2cXHP2OV213oJ0NrFuupw2mx9nvXmhw9CuZ3adqSawy4U5DsxazjEQkUlLypZgO7RgHOm+VMJnaop/rzAcJRzDmNXaqzp27Uwl3wNcpeS1OckXIbs6K60TkH+QRq7FS/b44GPxmu7eEezOFrFUrkRlJCBhuRHzBpc+LIEt8URCrry1unXkzd7Ras0t7HhoWnmyeOO3LX850ZwZDHTAf969r+myXvVUek2Ick4ktmXoyOf+5/w==
+ b=J9Lj8uCruHkD9CgSkeCQXtCw4bCgszVillP95YFkwV0VX60KuYlqJ57g1vfrAy4giKfvtQGlx3fBNAznGrY4KDgkVIz/m/qujf924untYbvxwpO84LJ36KWps9ZGms7tWq3BUx35Qg2D+cSDMks38PAfB5tpBej6Q9YvabbPoHaQEvyO4mkkkL/rc4eYwl0ll58HB4YpRNxu5O3Rt4amrZvTQEf6G5Fz+F6Yicfmt/MBOS8uUJG1bxs15LbnuiJlucl8W/tt09tLab1Qzkb0+NC+bGDGOO86/gm5L/iE4pNQ318bZpY5MaNRFRfkuSVruxUhjkBpwp2Ju4JkhrHWAg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1CNS2HSmgh3e1COJZn4Kj1NyOKZJ52hw9Q0p1GlmnsY=;
- b=B7Ynt0p9B4uNk2UA7vCpiRWPyRvi6nUgcVCNixhEkg7vZMRbP1PfRTMTSa2CTh0M4BS/wJwMLisbta2v+LSiEBCI7UekotJUjkZmXS9+haF/3CXtDz/d3QBaFuxgJHl9hF+PpHCFGzEKPAGSdB+6w2T3Kc6dQpjOHJ81RbpwDxVd5l8NgoH2LRLRGBLI2COSZ3bPLHWqB70wageUjgMrqk04o0nXCpq81jrJoygcafAyGQpBd2Ssk4M5/rJ7dDxCuK5FM/Q3M4WxALRAi+eXh7dmqJvyqhfuOcn3BjYZTr9dzcz/SUkRfPG57+WQZabePQnfsHNAUmSvJieEXFF/gQ==
+ bh=YKjugjFWk+NnRMEu//zOrspSb5+B3eyWSMVIVoXMZug=;
+ b=CvJy/ErX8UWE55wpKf8YBvhrV3w4aCPm1Q+4W1mKX8EuYQH3spP9hKtI3oyE2S1S5zZtoXB0TQMORaHMsZh2Q7Nx/QTKZmpRtVsePc1Z234etgnf6QwZF+ekdUkCgeMLURg7j6NIS1sR3MPB5pAnxGw2tGSo4qrzXFmutjU/7g75dpRxG1vE6PD7vjtzjh4VTc8Xhr98Ab6pmvFDw3CWIlUmrBbqvVMPE2bdqA5N/M+mtF/ucPuzwyw9CbNSFlNuVCSbnfUSCwVo2o/r+/xNrKQX/1BQzBHgKzXM6CwP5C3+31exuBouWKpQJ9LSlSHtjh9M2E75E/L1Nn6motmcGw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1CNS2HSmgh3e1COJZn4Kj1NyOKZJ52hw9Q0p1GlmnsY=;
- b=XPcRT3V9I69Lm8G/nXWwrrSo+JN2spH7GwU9xQ6/GzeTF3+zUOly7HqDT49j0QJxEZwktvIJRhiReoa3SKBx23ClfdQmxnBgq3IMp4v0D3r+fMOxxqg3kW4pHw1YsdU0NNBskTefcbE0EA0hIt6IutjgNmK/SBubTuXOeeYJ2UazArB/dfi+FM2/pjim5HGAcXPS4Awre7ax0YedpNNcmPz9Q5W4Crnjh86lPjkn5OUBfztroYUQ6jnyF12cSsvrwtdbAs1523nSs2eTdbXltgN0GkKxQfQrNfxWcXNyszlbE5lQPmii3az9vM9bB9lMaEP9kVA8IidBO8hFlk9LJw==
+ bh=YKjugjFWk+NnRMEu//zOrspSb5+B3eyWSMVIVoXMZug=;
+ b=pgUczT0YoNOQJOqzNT+2BasVsS7evDLPDOGcHqBbTK5LhPojHfytYBIanun2u8usOzRLnRA8o+hww/wkDMKM9rizHbS+JntC/g2sMsDuTsQfEaXl3pWjfzvh5EO81QEymMnWUr7mTlStRAZHBUEwyZsnmwKa05Tw325tx/K1Z4gwxPSaVZ/wa3HDnK4tIdDnC/DdW63mDyA9z6ixmh7VZ0GrJzlAhIz2KrPB+sRPsjhUBa9OF+qBpu2QlyHVJvSyzv29RtIRylKp+5FKqzYtU1CHDjMkgCw7rNcK/SC+liReeBI0Vvvq+3AYeh2YPGDs47jedpHflY79R8F32JXxhA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
  by BL3PR12MB6596.namprd12.prod.outlook.com (2603:10b6:208:38f::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.36; Tue, 11 Apr
- 2023 16:43:21 +0000
+ 2023 16:43:22 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::6045:ad97:10b7:62a2]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::6045:ad97:10b7:62a2%9]) with mapi id 15.20.6277.038; Tue, 11 Apr 2023
- 16:43:21 +0000
+ 16:43:22 +0000
 From: Jason Gunthorpe <jgg@nvidia.com>
 To: iommu@lists.linux.dev,
 	linux-kselftest@vger.kernel.org
@@ -37,15 +37,15 @@ Cc: Lu Baolu <baolu.lu@linux.intel.com>,
 	kvm@vger.kernel.org,
 	Nicolin Chen <nicolinc@nvidia.com>,
 	Yi Liu <yi.l.liu@intel.com>
-Subject: [PATCH v5 13/17] iommufd: Make destroy_rwsem use a lock class per object type
-Date: Tue, 11 Apr 2023 13:43:14 -0300
-Message-Id: <13-v5-6716da355392+c5-iommufd_alloc_jgg@nvidia.com>
+Subject: [PATCH v5 06/17] iommufd: Use the iommufd_group to avoid duplicate MSI setup
+Date: Tue, 11 Apr 2023 13:43:07 -0300
+Message-Id: <6-v5-6716da355392+c5-iommufd_alloc_jgg@nvidia.com>
 In-Reply-To: <0-v5-6716da355392+c5-iommufd_alloc_jgg@nvidia.com>
 References:
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: BYAPR07CA0041.namprd07.prod.outlook.com
- (2603:10b6:a03:60::18) To LV2PR12MB5869.namprd12.prod.outlook.com
+X-ClientProxiedBy: BYAPR06CA0008.namprd06.prod.outlook.com
+ (2603:10b6:a03:d4::21) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -55,108 +55,91 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BL3PR12MB6596:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9c88baa4-27a7-415a-71b7-08db3aabdc5b
+X-MS-Office365-Filtering-Correlation-Id: 40dca913-a6fb-4fa9-71b7-08db3aabdc5b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	xtyReyKaAd7/tS3//vG2AfbPDS7WK75xisrbaaQzWq4o9uVJNXY7bPP7PS/YzJI9w0AUNrtljp/8DnmSHTHC8sBqA7jRwIshU3eMLcqVhbQk0kNDMGe6g1//JZsE4+rThay4g8gs/5h/gI8KgDXx0ZvEewCSh4o5cXBpaKNr5+9fOR5/u8xUvy9KspM1JzIKXNYkW39tE5RDtQxLJk2UlXSLoVU3gYZyRz1JHfWLE7s1j+b4ht0M5S4aD14OjBe1Ak/ULOx/90AkOHvT+LggyvGcg8HTXCEwKiXPBKsoMxJGG/lZbQddLv2nSfvomayFlwdPP7XBe4NlJUEhx1LGFX4AOEO/LccUExGaDL4ZGNpN8mfcFahUKK7jJOnbE5KCg+BgUOZfg9Kn7yPRWv0jwnKAC9TV8dfKIy8heHFr2XPXd0YdikGHMi89bZCNIHqg8IszFr869uh/6QAdpcp8le02hVIqcAUFq56nimC75jk+1QrkEZSldYwm3n8mXTB/Dk303VWr9e9kV4qryZ6AnKW9wFl92Wo3FR/DmOnIJ210zSnTaL9fYfQ2i6ijXbOu
+	XgojiSt2K5/y7ourEWtwLQpqPMTM2ztljIAFXNY0qDD6sVhQr1beWA3LOV+CsMBa+6hdjfq7qnOtd5mvH4oK7MJ0PgjsqG22xsljfP+iAGkVlA91X7l097gekZhw83bq5+UwIZhp/DZDAM4X/tLgSecrDCcwLAke6ZTBQ5sU4T8O4qzltfOIY1VzGnGcYHz5BL9CWDl5wX9GBpiJDw5TSt/YnU0ZHJYDVsPxDP6wLfGGBFoRjKzhJqcEIEY5HDc96yZ5/4numzWRm+jnyTQhk0s9WgwGXyutJKk4b8DNjtkYl75lo06Uf/K6GKmI0/235eTVCkVCxg7chOBREqcGIMr8uNN8zBHt276c6iF42YxAo+TvX6SLR1jw2o9EAKJcN0P84n8qGezXguC4uZHrQpfYjRoXlKeZlXFRxwpX5Sm2FWNHdy4ytEl12nGWovZDGuF960w3+jUcUgN7vHQrP8fpshmhNjGHkXyJ9zenKgwLPHmbEB4/TFInpsDYvlRT+qa2w2nA6GVF5MqiAQfi9lr1e6MZAc5u4qO1FV618jpPCRtime3cgHZdYdC6RlnLAELIglzk1lToIspA3CZD2B8LdfQE0PSGlLoaVmApYrc=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(346002)(136003)(396003)(366004)(376002)(451199021)(2906002)(86362001)(36756003)(6486002)(6666004)(2616005)(83380400001)(186003)(6506007)(26005)(6512007)(478600001)(66556008)(66476007)(66946007)(4326008)(316002)(8936002)(41300700001)(38100700002)(8676002)(5660300002)(54906003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(346002)(136003)(396003)(366004)(376002)(451199021)(2906002)(86362001)(36756003)(6486002)(6666004)(2616005)(83380400001)(186003)(6506007)(26005)(6512007)(478600001)(66556008)(66476007)(66946007)(4326008)(316002)(8936002)(41300700001)(38100700002)(8676002)(5660300002)(54906003)(4216001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?sBbn2VKsFqHaSOvUXTluWOEWyZl8bjjBeDraG6gx/eNo+0qBHo9bAKVCm29u?=
- =?us-ascii?Q?pt7oo7pO5LUMNX/rLee3IPOhbOKyzVScYvmahw/7ZixmdmqdWtLpjqI+0PYc?=
- =?us-ascii?Q?KxvrXpJwPAa1NxhqUu8YVA4b0JCR6K/bNrK8zpyC4YihPknQPKJewVnP8Jd/?=
- =?us-ascii?Q?CiXsfAb7JYR0QPzkmrxNvJKlLVzuTbkCU4EqutVUozbonOwlfGEQFraICplX?=
- =?us-ascii?Q?w0dIQQFqC0e2FeCq5gvmbVa3ooHplwPf0pP/nt3qeWaGwER4qD7actwICQsz?=
- =?us-ascii?Q?/CI+JFCTEjthcLZtd/1JlQvyoQ6T6DY7PehJyp/gj+8kTDmMHrN1WH/mW2nU?=
- =?us-ascii?Q?ygE/o2dQZiQKP1Z+H8T7Rz6SWvc2zH3yRY4R6JG1EXTsD7xyi8W4W7KaUWcn?=
- =?us-ascii?Q?Qsk9kDos0hIUyIobdfMisgLqSeUL6dxRe9NwtsPMjTSK1iz/Pnm93YpMp5mp?=
- =?us-ascii?Q?C3bEy2NYNxdHNGjWu4yxpbvN9neRAB9H58Fecy1x95EFUMQuiIeFwAdAyH9A?=
- =?us-ascii?Q?kAAZMijLto5jpYQWMj19WL/MbjQZykWToC0J7lNglyxbimGmWFLWXi6SeeoN?=
- =?us-ascii?Q?BhWfjk7B/iV0ItRDgiTqtOXOX/ONO0DW6O/1MDjeJhvpbrBLosG/ojhgksiH?=
- =?us-ascii?Q?Z7kqo49Km3L6wr44QhR42460hwZ0n/FJt7Vn7QxlcUNW8ZsU/T7IP5WeM2T0?=
- =?us-ascii?Q?wQfljie4lyGxNjT801wLiZsKz860CEmkCZQoPHH9yU61b5U+sziiCrvIONSl?=
- =?us-ascii?Q?IAyEUaNlGxBCxqjl3sg/UYqSif4+DrJCd0qPr9PZ9p2VBMFct5VPZ2v/1hQz?=
- =?us-ascii?Q?ojP9XWP/ejVARBZzYYok0xRZ1wvRMnFJyY9sIJfT7wRxqruKEUJ0oaNcj/nw?=
- =?us-ascii?Q?vSB1YYvEQxXc4o8vMwKoPmv53/PzPBiv/ysKXdwol6OJU6NmG6xj2KlplZrw?=
- =?us-ascii?Q?/LLGpfNl30BWHOqkh1coIDG4IQlvhECi2VABQHjkQjLLzrglBX0m+OLys8/H?=
- =?us-ascii?Q?EcsudyOll8JDoCUdn761lWkTkZh606jOFSpqg50cToGWJA1doYGKVCYGfTJX?=
- =?us-ascii?Q?/C1qS8UB9hIg1IUsIsstVgQn+oo5UkCcIUxN2vBegFm7E9YPnn0/PBZmJL5m?=
- =?us-ascii?Q?FS6OeMp4eFqoZq01Lib6WP6pFTOv39SRa0g2u5+zjkg1ZF4M4TnHINCic+u3?=
- =?us-ascii?Q?kNTzK08psmTBggPfeohTuFXhuY9fSIuUTvW0E8YS+HGp16H9W9mlOVMQh8rs?=
- =?us-ascii?Q?bCszSmMZ3/001gwRuCOI6KAwZC9vTwrZHTqDHPeTTkTbBr63wRwexLeFt4s7?=
- =?us-ascii?Q?uTMhFLm5Wq2xTvHLa799rjczF1Si9CJ5AluzJIhA85eUx+kWWCpk6T/uEG+Y?=
- =?us-ascii?Q?ZQDGpAMj7K814X8y9U+Q2IAaWLnT9TCIwIDc1c1uAJS+Xjch8m3Vy6bSQMC9?=
- =?us-ascii?Q?R3yPkfBC1rDsxoPS2zxidbQ/j+UMcqvJiagEqJxM5lVVa4uh68lz5WkeKGYi?=
- =?us-ascii?Q?dKjjCj8tRD+NQfYri7FtG1wQ2qh0kYdmuB7WoySkfwn/pylzt6SHDkQfpHmW?=
- =?us-ascii?Q?RG9hx0HnMV+rsvcgFyyezFRPCvcqS4BqTP+ItsJZ?=
+	=?us-ascii?Q?7MD/m+yJ13jjrraXZbGoDeARikLWgJ3OFUlQva2B2wD1WeCnGPgfmOTyIsFS?=
+ =?us-ascii?Q?x7J/vSuryb/DkeEztpbONtGLgB1Y+Cv2bookCyu4caXafScXSJ2UEB8Np2Pq?=
+ =?us-ascii?Q?qgeD++8LrgMGMMEm6zocmGi8lhXahHKcc9rbG7NWUiZAREfF4yTtX4qRJ3wW?=
+ =?us-ascii?Q?/X4N3HibPtAuDKk4Ne0lGE2Z6AjrTNKUOq6sJJ//ykLXSwNgBeubiZJPt74q?=
+ =?us-ascii?Q?0EHS9OaJEQ1OiuwOKW53SceQgmVEexBgwGGZJQAImKpFugHvjToCD6WbSyzg?=
+ =?us-ascii?Q?aPpmIGksIrFwqScsZVrIEPqmuro+YWoiXJGT4Mxyilq47EM8UUf727Pp9RMx?=
+ =?us-ascii?Q?7Y4CmpRAAPq5cKmBjFf1lcZrwyDVRPClY3qlL1lTc+rU+/6vQWK2B0MifSBX?=
+ =?us-ascii?Q?1k6sFCS3SW0U4Vhz+mX/onvcnjelPKQhY78D0XoDRKuiDeq1aX7DpEvt9Z6k?=
+ =?us-ascii?Q?jwF3usfCbk5GgDeytxvTOPmUmOWePLF3z+UXVcggp8taO14H79oVKsW/RjxE?=
+ =?us-ascii?Q?D9UYOko5CXCry6CkNzcbmPHzsOlhx6e/Dw2w/RoFiV9TgceMRBbTuufxR6k2?=
+ =?us-ascii?Q?JkO/WrkDmhDvBLKTxdYcqYA5ZQV6ZMpD6xv2UQsIMOebEac+5VKSkaAOUizh?=
+ =?us-ascii?Q?wPylsTFev5sSXvlScImh0ZX05jMwsX6VPIyGGv7bC2HRjG3AZIOq3yAk6ghx?=
+ =?us-ascii?Q?J3WVABuCgpg5bFlXoM3tqgzMyxhv6Sf0M6Imw+3hx4is3oe550cDMdwPRfdA?=
+ =?us-ascii?Q?fQ9hE7khIbwBGQ49HyqA9q7gGXrs+8qjV9vmLJwFMGk/b813N19zYyM/RKCm?=
+ =?us-ascii?Q?kXS9zimTWwIF98jNq53Sjoezl3P0gtr7tmfiRXbRE9ZmrcPvlakUdp50N1em?=
+ =?us-ascii?Q?wZNUCCp+dUMexCkrYwabqOQi3f/mT7aemEulfcixARGUcV5egfQTn1B7IwpC?=
+ =?us-ascii?Q?7IDMt+IZ9TZRi7OcQmvLRWljWv2NHSgEWzUwpFmV8E723G2W5Rj3Ua9tPRWH?=
+ =?us-ascii?Q?gZx67TK5As6YZbzQ9jmi2cf3myMiF1v2dqstUzH0e2pHkF4xfVIVviRWHO68?=
+ =?us-ascii?Q?MxkhRGDN6VCjewpuzUbjCF7A+5/RV6leo8rcGebZ+w1h2w/v9Bgg3FnUoPwR?=
+ =?us-ascii?Q?OAtATVaOzGzSTgVLaRHvLblLXNtouascFXcfhVEG5RakGBT715SbaLoTeN7B?=
+ =?us-ascii?Q?MPjsawyrg5RVbmQmtFm6dUBn4S3KVYjpf61Rzwtf1I52Yt3PfKjtRgvXXf+U?=
+ =?us-ascii?Q?2l5K0J6tW+PmEMiKYNPsBnpkTidXu/06jhEPdP1HHyXf5Z8sUo0/qsk+b6G6?=
+ =?us-ascii?Q?FZ8+QpLJgHf5AVkWEKdTfO6dH7wcgPRGWc+WzIYjPSoK7sFft9uxId20mT2p?=
+ =?us-ascii?Q?WigFoBwxXc1XHw+6YLJuuCpuGvTZaxep8z3nz4loiLDy93b1hbtT58k+ZAtT?=
+ =?us-ascii?Q?Z4czsJy6/qRdPq5XoYs7DsMmNc14MUxz4SLZvIOtV/Edw87NsZmKKFxVjNZp?=
+ =?us-ascii?Q?6MCdDp2+Cj2KaNLy07JoaTg7KUcgHHE6dcieo0omNtkKfZ2+zO4XHHO95Aia?=
+ =?us-ascii?Q?ZOGt96fnOpm+yHIOMKSx6oLzQx52KWW/X4juiiWu?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9c88baa4-27a7-415a-71b7-08db3aabdc5b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 40dca913-a6fb-4fa9-71b7-08db3aabdc5b
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2023 16:43:21.5578
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2023 16:43:21.5910
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xGIj1sOV6Co6NYhHhZf+ctE5HwKXowjfViNn5XLn50NZ/7A2dvwId+W6D4nA0f4Y
+X-MS-Exchange-CrossTenant-UserPrincipalName: HGd2tqN5yO+E7de7tAlnyK1HHpRwOKDxogctmUeTdUuwWOPphpIFOnNZVGxjH4fj
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR12MB6596
 
-The selftest invokes things like replace under the object lock of its
-idev which protects the idev in a similar way to a real user.
-Unfortunately this triggers lockdep. A lock class per type will solve the
-problem.
+This only needs to be done once per group, not once per device. The once
+per device was a way to make the device list work. Since we are abandoning
+this we can optimize things a bit.
 
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- drivers/iommu/iommufd/iommufd_private.h |  1 +
- drivers/iommu/iommufd/main.c            | 11 ++++++++++-
- 2 files changed, 11 insertions(+), 1 deletion(-)
+ drivers/iommu/iommufd/device.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 471a3fdff1e0b6..f80b012e1bc200 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -119,6 +119,7 @@ enum iommufd_object_type {
- #ifdef CONFIG_IOMMUFD_TEST
- 	IOMMUFD_OBJ_SELFTEST,
- #endif
-+	IOMMUFD_OBJ_MAX,
- };
+diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+index d2bcea7d9da815..b02f98dc02c284 100644
+--- a/drivers/iommu/iommufd/device.c
++++ b/drivers/iommu/iommufd/device.c
+@@ -315,10 +315,6 @@ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
+ 	if (rc)
+ 		return rc;
  
- /* Base struct for all objects with a userspace ID handle. */
-diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-index 8597f2fb88da3a..9cba592d0482e7 100644
---- a/drivers/iommu/iommufd/main.c
-+++ b/drivers/iommu/iommufd/main.c
-@@ -32,6 +32,7 @@ struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
- 					     size_t size,
- 					     enum iommufd_object_type type)
- {
-+	static struct lock_class_key obj_keys[IOMMUFD_OBJ_MAX];
- 	struct iommufd_object *obj;
- 	int rc;
- 
-@@ -39,7 +40,15 @@ struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
- 	if (!obj)
- 		return ERR_PTR(-ENOMEM);
- 	obj->type = type;
--	init_rwsem(&obj->destroy_rwsem);
-+	/*
-+	 * In most cases the destroy_rwsem is obtained with try so it doesn't
-+	 * interact with lockdep, however on destroy we have to sleep. This
-+	 * means if we have to destroy an object while holding a get on another
-+	 * object it triggers lockdep. Using one locking class per object type
-+	 * is a simple and reasonable way to avoid this.
-+	 */
-+	__init_rwsem(&obj->destroy_rwsem, "iommufd_object::destroy_rwsem",
-+		     &obj_keys[type]);
- 	refcount_set(&obj->users, 1);
- 
+-	rc = iommufd_device_setup_msi(idev, hwpt, sw_msi_start);
+-	if (rc)
+-		goto err_unresv;
+-
  	/*
+ 	 * Only attach to the group once for the first device that is in the
+ 	 * group. All the other devices will follow this attachment. The user
+@@ -327,6 +323,10 @@ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
+ 	 * attachment.
+ 	 */
+ 	if (list_empty(&idev->igroup->device_list)) {
++		rc = iommufd_device_setup_msi(idev, hwpt, sw_msi_start);
++		if (rc)
++			goto err_unresv;
++
+ 		rc = iommu_attach_group(hwpt->domain, idev->igroup->group);
+ 		if (rc)
+ 			goto err_unresv;
 -- 
 2.40.0
 
