@@ -1,102 +1,170 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 705385388
-	for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 09:07:41 +0000 (UTC)
-Received: by mail-wm1-f53.google.com with SMTP id q5so4059424wmo.4
-        for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 02:07:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1681204059; x=1683796059;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=sYI9Zq6eTHiCpiII3rmn8bX2XJ3UVLEAX1yejf9YQWU=;
-        b=LmOUzduy+Kctn47PPBlggBOzDtIH8pKkG8r9ChNJvastIHuXQj0GuYo/n1QSZJOZuD
-         VaObkLCi9jSef+wf124/d4UD26tJN/uzV+auT6ZxfSI4bQha63jgJFTVQRRwjBRNwu4r
-         Ysnl/6CCQ+mLe+loXJN2onnHRNFPgvMNrXehBQ7UVM+G2f3He0z9EJUyOdgKf4pQZC1L
-         +XiSztstdAWlBVgdwKHkTeIHLls7CruxPrZsNhi3wZgnLDg47hqVsR+630PE+9i0nOPU
-         vG/46A7gp1GSU/kw64TtU66HVwpseCnYJHlqOYZEtQWwxj18cW4oFE7ARyb88wFuD41f
-         zqbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681204059; x=1683796059;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=sYI9Zq6eTHiCpiII3rmn8bX2XJ3UVLEAX1yejf9YQWU=;
-        b=e+aFIKhYrscM5/bet/edcmqX+SiuAc4C4LYyI1Nvm97rtOtFrDWqVS0XWYf1IlY3lS
-         h1taxuvt+ODEfFXH8fMpWEPNi2qzUgHJiRPD2MYPGXXAJ69cQ0Uws6t8DaKC5XJMd9F7
-         PiFy3YWqM09UfKUovDgNSp7vvzp2iIET9NoAy1R9eHxrbNTCTZgqasBLNb49AdeM8Opv
-         JSkVeD1JQYvKnf/Ny/iDlpaOSad32ymxb0XADGxfbfzKZXeHWfuAwCK2CTY3tMsKCYGy
-         adiCBh/pbthKlmsPsDtGcWbtMVDJgz6AjR6EFwB8fsAEZo/HM2ZuYebEIRNOxOQk5Py7
-         PP1Q==
-X-Gm-Message-State: AAQBX9euI8FuJD+EMy03viFlTDNskBa0nA1lqEhyBGkUCD2bXjIo0Pgh
-	F93e0304Be9UNo6kjOXTHJGDwg==
-X-Google-Smtp-Source: AKy350aAXsucwvImGm5Ggg9tAmK8IGxd7xbmHlUwyry2cgmUFBeY7fNC8CCNhSQ5xCigXw7SlYN4yw==
-X-Received: by 2002:a05:600c:214:b0:3ea:ecc2:daab with SMTP id 20-20020a05600c021400b003eaecc2daabmr10107686wmi.3.1681204059530;
-        Tue, 11 Apr 2023 02:07:39 -0700 (PDT)
-Received: from myrica (054592b0.skybroadband.com. [5.69.146.176])
-        by smtp.gmail.com with ESMTPSA id p15-20020a1c740f000000b003edc11c2ecbsm16423137wmc.4.2023.04.11.02.07.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Apr 2023 02:07:39 -0700 (PDT)
-Date: Tue, 11 Apr 2023 10:07:40 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Zhangfei Gao <zhangfei.gao@linaro.org>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	"kevin.tian@intel.com" <kevin.tian@intel.com>,
-	"yi.l.liu@intel.com" <yi.l.liu@intel.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	qianweili <qianweili@huawei.com>
-Subject: Re: Cache Invalidation Solution for Nested IOMMU
-Message-ID: <20230411090740.GC2040385@myrica>
-References: <ZCoe3+1q5ZLJsmeC@Asurada-Nvidia>
- <ZCrd1wphkCp8uFt0@nvidia.com>
- <ZCrn8PPPyEJ/VqFU@Asurada-Nvidia>
- <ea6fba01-b483-94e6-8c84-d096dcb64b5a@arm.com>
- <ZCtpAYn76u499p6G@Asurada-Nvidia>
- <ZCxOMSvR+6rYbIfy@nvidia.com>
- <a3bbd5422897475d8bcd4c110c3722ec@huawei.com>
- <CABQgh9G_Xa6h7ujRJkCogp02N87OAugBTEuXyccQREw28VfZCQ@mail.gmail.com>
- <ZC6vlI7onlUgBidX@nvidia.com>
- <ZDNhiVZN9zNLGjcj@Asurada-Nvidia>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 250CC5388
+	for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 09:32:26 +0000 (UTC)
+X-UUID: c35b5744d84b11eda9a90f0bb45854f4-20230411
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=sVX80DfFg2daBLzlRJDcb0JyO44mTDPu7coLHRXXZFQ=;
+	b=qwS1e8LyW9Wh/eHFudrKK9hwAVASz3Lv/2FEcD0ZAVKaxJIW5kg2A3LicBsOFmISYE/YCugO57H4HwaHtYRb9JOcupI8PodRDRxwpzTsdvaupih5tBMSMrCpqCQ/b//JlhRj+SohHwrQVONRlAqfuGkIPGh/9m/HYH7yFfR5nBw=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.22,REQID:7369dcce-ec45-4f45-a2cc-90f392f11a00,IP:0,U
+	RL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION
+	:release,TS:-5
+X-CID-META: VersionHash:120426c,CLOUDID:4c64ae83-cd9c-45f5-8134-710979e3df0e,B
+	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
+	RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0
+X-CID-BVR: 0
+X-CID-BAS: 0,_,0,_
+X-UUID: c35b5744d84b11eda9a90f0bb45854f4-20230411
+Received: from mtkmbs13n2.mediatek.inc [(172.21.101.108)] by mailgw01.mediatek.com
+	(envelope-from <yong.wu@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 1566683259; Tue, 11 Apr 2023 17:32:23 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
+ mtkmbs13n2.mediatek.inc (172.21.101.108) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.25; Tue, 11 Apr 2023 17:32:21 +0800
+Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.1118.25 via Frontend Transport; Tue, 11 Apr 2023 17:32:20 +0800
+From: Yong Wu <yong.wu@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh+dt@kernel.org>
+CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Hans Verkuil
+	<hverkuil@xs4all.nl>, <nfraprado@collabora.com>,
+	<linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-mediatek@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>, AngeloGioacchino Del
+ Regno <angelogioacchino.delregno@collabora.com>, <mingyuan.ma@mediatek.com>,
+	<yf.wang@mediatek.com>, <jianjiao.zeng@mediatek.com>, Yunfei Dong
+	<yunfei.dong@mediatek.com>, kyrie wu
+	<kyrie.wu@mediatek.corp-partner.google.com>, <chengci.xu@mediatek.com>,
+	<youlin.pei@mediatek.com>, <anan.sun@mediatek.com>, Yong Wu
+	<yong.wu@mediatek.com>, Bin Liu <bin.liu@mediatek.com>, Xia Jiang
+	<xia.jiang@mediatek.com>, Rob Herring <robh@kernel.org>, Hans Verkuil
+	<hverkuil-cisco@xs4all.nl>
+Subject: [PATCH v7 02/14] dt-bindings: media: mediatek,jpeg: Remove dma-ranges property
+Date: Tue, 11 Apr 2023 17:31:32 +0800
+Message-ID: <20230411093144.2690-3-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230411093144.2690-1-yong.wu@mediatek.com>
+References: <20230411093144.2690-1-yong.wu@mediatek.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZDNhiVZN9zNLGjcj@Asurada-Nvidia>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK: N
 
-On Sun, Apr 09, 2023 at 06:08:25PM -0700, Nicolin Chen wrote:
-> On Thu, Apr 06, 2023 at 08:40:04AM -0300, Jason Gunthorpe wrote:
-> > On Thu, Apr 06, 2023 at 02:23:17PM +0800, Zhangfei Gao wrote:
-> > 
-> > > We are using ioctl method now.
-> > > From the testing, the TLB miss impacts performance a lot, so we use
-> > > huge page method.
-> > > After using huge page method, guest can achieve comparable performance
-> > > with host.
-> > 
-> > Looks like these tests are not stressing the MM, just measuring pure
-> > BW of the DMA, so they don't get into the invalidation regime..
-> > 
-> > You need to measure a more real application that is actually using the
-> > MM (eg alloc/free memory, fork, etc) while it operates and turn on SVA.
-> 
-> Would an iommu map/unmap benchmark test be useful here?
+After commit f1ad5338a4d5 ("of: Fix "dma-ranges" handling for bus
+controllers"), the dma-ranges of the leaf node doesn't work. Remove
+it for jpeg here.
 
-You can reuse and improve dma_map_benchmark, already upstream. It supports
-multi-threads and reports stddev. For some comparisons the report
-resolution (.1 us) is insufficient and needs to be increased, but for
-comparing guest performance it might be alright.
+Currently there is only mt8195 jpeg node has this property in upstream,
+and it already uses parent-child node, this property did work. But instead,
+MediaTek iommu will control the masters' iova ranges by the master's
+larb/port id internally, then this property is unnecessary.
 
-https://lore.kernel.org/linux-iommu/20201102080646.2180-2-song.bao.hua@hisilicon.com/
+Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Bin Liu <bin.liu@mediatek.com>
+Cc: kyrie wu <kyrie.wu@mediatek.corp-partner.google.com>
+Cc: Xia Jiang <xia.jiang@mediatek.com>
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+---
+ .../devicetree/bindings/media/mediatek,mt8195-jpegdec.yaml | 7 -------
+ .../devicetree/bindings/media/mediatek,mt8195-jpegenc.yaml | 7 -------
+ .../devicetree/bindings/media/mediatek-jpeg-encoder.yaml   | 5 -----
+ 3 files changed, 19 deletions(-)
 
-Thanks,
-Jean
+diff --git a/Documentation/devicetree/bindings/media/mediatek,mt8195-jpegdec.yaml b/Documentation/devicetree/bindings/media/mediatek,mt8195-jpegdec.yaml
+index 71595c013dbb..e5448c60e3eb 100644
+--- a/Documentation/devicetree/bindings/media/mediatek,mt8195-jpegdec.yaml
++++ b/Documentation/devicetree/bindings/media/mediatek,mt8195-jpegdec.yaml
+@@ -26,11 +26,6 @@ properties:
+       Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml for details.
+       Ports are according to the HW.
+ 
+-  dma-ranges:
+-    maxItems: 1
+-    description: |
+-      Describes the physical address space of IOMMU maps to memory.
+-
+   "#address-cells":
+     const: 2
+ 
+@@ -89,7 +84,6 @@ required:
+   - compatible
+   - power-domains
+   - iommus
+-  - dma-ranges
+   - ranges
+ 
+ additionalProperties: false
+@@ -115,7 +109,6 @@ examples:
+                      <&iommu_vpp M4U_PORT_L19_JPGDEC_BSDMA1>,
+                      <&iommu_vpp M4U_PORT_L19_JPGDEC_BUFF_OFFSET1>,
+                      <&iommu_vpp M4U_PORT_L19_JPGDEC_BUFF_OFFSET0>;
+-            dma-ranges = <0x1 0x0 0x0 0x40000000 0x0 0xfff00000>;
+             #address-cells = <2>;
+             #size-cells = <2>;
+             ranges;
+diff --git a/Documentation/devicetree/bindings/media/mediatek,mt8195-jpegenc.yaml b/Documentation/devicetree/bindings/media/mediatek,mt8195-jpegenc.yaml
+index 95990539f7c0..596186497b68 100644
+--- a/Documentation/devicetree/bindings/media/mediatek,mt8195-jpegenc.yaml
++++ b/Documentation/devicetree/bindings/media/mediatek,mt8195-jpegenc.yaml
+@@ -26,11 +26,6 @@ properties:
+       Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml for details.
+       Ports are according to the HW.
+ 
+-  dma-ranges:
+-    maxItems: 1
+-    description: |
+-      Describes the physical address space of IOMMU maps to memory.
+-
+   "#address-cells":
+     const: 2
+ 
+@@ -89,7 +84,6 @@ required:
+   - compatible
+   - power-domains
+   - iommus
+-  - dma-ranges
+   - ranges
+ 
+ additionalProperties: false
+@@ -113,7 +107,6 @@ examples:
+                      <&iommu_vpp M4U_PORT_L20_JPGENC_C_RDMA>,
+                      <&iommu_vpp M4U_PORT_L20_JPGENC_Q_TABLE>,
+                      <&iommu_vpp M4U_PORT_L20_JPGENC_BSDMA>;
+-            dma-ranges = <0x1 0x0 0x0 0x40000000 0x0 0xfff00000>;
+             #address-cells = <2>;
+             #size-cells = <2>;
+             ranges;
+diff --git a/Documentation/devicetree/bindings/media/mediatek-jpeg-encoder.yaml b/Documentation/devicetree/bindings/media/mediatek-jpeg-encoder.yaml
+index c8412e8ab353..37800e1908cc 100644
+--- a/Documentation/devicetree/bindings/media/mediatek-jpeg-encoder.yaml
++++ b/Documentation/devicetree/bindings/media/mediatek-jpeg-encoder.yaml
+@@ -44,11 +44,6 @@ properties:
+       Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml for details.
+       Ports are according to the HW.
+ 
+-  dma-ranges:
+-    maxItems: 1
+-    description: |
+-      Describes the physical address space of IOMMU maps to memory.
+-
+ required:
+   - compatible
+   - reg
+-- 
+2.25.1
 
