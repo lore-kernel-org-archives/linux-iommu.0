@@ -1,34 +1,34 @@
 Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B10DE3212
-	for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 16:43:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84FCB3212
+	for <iommu@lists.linux.dev>; Tue, 11 Apr 2023 16:43:34 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PqOIFYQNJK+3tEtwpfx63GGMAi2iJ1fj02wWdxbVvPt+j6V9GgA2L+eapcuW/MZybpknFyouhWHyjMYpMWYWMWilFZpJYKi94q+IlnGKUobKPaewFgj+9seiHJdW2zGmBaWbLPRwtZFe6EAO/c0LCrVZZHYcbYSszO3q+KFUBSWdGXHzM8qZaR4FOk0zH2jmBlRQ/dwGbEbcKBEVFXMyfOmb/FBr0+rwhOmIV+MtEh+Pm+zpomXzjgBnHIaa6FCJuqQqW6hBXwuZdbSh6ilUJBrGf8dJL1iAOuc3rhAACvCejfO2FwohJ171yLFsqHpp84pFSojCtHkSqianq2+emw==
+ b=i7o4pb0DIREuOIBFUJpayfIB/rC0ID8Pt6O9DwsfVp++dwJ4lyytMtib3dkz4HVrH+TqGx9Nfh6KRRZDmM7iVdnSyHwmE20YeZkLbXAhpK6O+5hVnSQPFIn4nHa2Tso0p32mvxFh5RawnFt3gvdRomemgalwc0CN07N4kvzEa0bQRDhfIW8d9QSVGA+4UiSBGkuyF267CLPSVcmtKTQggPhUHrE9+BhoFnyZcUfzWgpX3gCeFzm2hfhz3gWv5Qe+mXnCeCA8E+OcP3m3ra2TJNTTClVq6erxKymda7jpb1xRVeUPfkDCXY1DMGDDm+H6FNrUK7pu7Wqho+irYDuWMA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VMFQ5E4y7XFpx0TNpN5drsychS1gbvFhFrR/KXAmAZM=;
- b=SG8Nh62OzhwmfFuI6v36uxDHUUCi0HibFgLyQ/aL6YOhJMqVRjumjbLIk0Cvdvl3SF8bKJKlmtd2jc4gDgcBxq+cl0xlj6ami7m74V4u6vpgbr0R4qDxbaiVPG4xrZVLjNJ5YlR7sypabUwGpfIev3SRjh946BTiq0utEMYVE4DbXdRHAXJO5ni/bbgiSi68YY4PBuiIJCSMsSySDMKWdIVQVteKQfpIbvuFZxpnVz+zufHpcu1i9EysZzKB18njhS2WJikqOY5GNBs/vymZ+B0buCgu/xSf+eWrdM0zNURMmJpBp98uP50nWvVEALtwjhl2nW4Bx6An4GLozyAq4A==
+ bh=RFhH+VMaXLDWwRmCU+TbUC9YfLiad4RolEiHONxioxs=;
+ b=Croa5QGThs6PZRxpp3Mh8bwlm+uU0lpfXzNyBIDAZwNRPNPMWo0YAefPbUN1mhgO4QlRErTMRGcQIbb584KuKDaJM6tVGjr8NR3KLEl7CQ8zsZRWrX1MU+4Q2/i3/GufDkeZNuAnswz4Ju7HB6KOBCyoMxTKi1cJWHHHiGEn0bn95+knNKbEM3JwL5jxh6076wC+mviuLRJYZfeWuQHhup54z6lfAcw/jyGQLoAaQibiaMeZYyDPuXM94WhaSxynMmlhcJMTwZdBJ5aQJGjg0X+RdHQIGu2Ts9Pp/vEJdkJaG00ZpPpiat+A6zk0iGXbakH17rFiPATfA3hvCRP+Yw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VMFQ5E4y7XFpx0TNpN5drsychS1gbvFhFrR/KXAmAZM=;
- b=Y7Hperd20uMsTPyhAhYieXHCT6DO33BNJN8SZuZbvYLlpw5cfBZiRkafkAPeJiR/KrQQ/KLilxD7GubejxeM1KA6k7hOTSvKhRTRPznHqTsn2w00Zm80jaHh3v97q5l+R87XEGWq8RBZVwx5FusxyzrMiEycyED1gnsw9S0qzHj3TMyWelU5wwsiK6p5Cz4gZ+iQM/114RGSOu7+Tu3NxA7wpnkPh4Ecw6lXGGvX/1tvsba2pT39ysUuQiBMR3fZh1y8J/ggyoIEWtAWkZzjDUR6mUxNw4JXrX6u5q5oQPZhuZgFSxjYcYowIr2DFVB8LYCNFi28cO5a5UWtw0ALcw==
+ bh=RFhH+VMaXLDWwRmCU+TbUC9YfLiad4RolEiHONxioxs=;
+ b=XhZgpf3Ta8bg3zkK3Zzkwf7Y7EsOnpVcMUAfN9pnP2ALk1cI6Ij74jNcEjn7cbRXEzlBDwIFpud6hj1m8qKlRtpZukqviDu9eTnaNH85b7G5KJxpECgNIQAslmrtJTkWIniXkurEfbsMZfX5mFA+qx37kq2cepFNhiPS3r6X9K825ZdbA6qdLu6CBRZAR0zs7oSEfZcJPck39Cm/8d+j5pTx+NlZtAZrC9UdY/Sq3zygkham1XcWNmaNOPg+RZ5j3A8nUUhX84LIwoWsts2wpHxd2cQbkXlWX4anEA8M5xHFdRcWqfQf8TGeio3s+Mt+75XhEZuxV3xvwespsnQDsQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
  by BL3PR12MB6596.namprd12.prod.outlook.com (2603:10b6:208:38f::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.36; Tue, 11 Apr
- 2023 16:43:23 +0000
+ 2023 16:43:24 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::6045:ad97:10b7:62a2]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::6045:ad97:10b7:62a2%9]) with mapi id 15.20.6277.038; Tue, 11 Apr 2023
- 16:43:23 +0000
+ 16:43:24 +0000
 From: Jason Gunthorpe <jgg@nvidia.com>
 To: iommu@lists.linux.dev,
 	linux-kselftest@vger.kernel.org
@@ -37,15 +37,15 @@ Cc: Lu Baolu <baolu.lu@linux.intel.com>,
 	kvm@vger.kernel.org,
 	Nicolin Chen <nicolinc@nvidia.com>,
 	Yi Liu <yi.l.liu@intel.com>
-Subject: [PATCH v5 03/17] iommufd: Replace the hwpt->devices list with iommufd_group
-Date: Tue, 11 Apr 2023 13:43:04 -0300
-Message-Id: <3-v5-6716da355392+c5-iommufd_alloc_jgg@nvidia.com>
+Subject: [PATCH v5 11/17] iommu: Introduce a new iommu_group_replace_domain() API
+Date: Tue, 11 Apr 2023 13:43:12 -0300
+Message-Id: <11-v5-6716da355392+c5-iommufd_alloc_jgg@nvidia.com>
 In-Reply-To: <0-v5-6716da355392+c5-iommufd_alloc_jgg@nvidia.com>
 References:
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: SJ0PR03CA0097.namprd03.prod.outlook.com
- (2603:10b6:a03:333::12) To LV2PR12MB5869.namprd12.prod.outlook.com
+X-ClientProxiedBy: BYAPR06CA0011.namprd06.prod.outlook.com
+ (2603:10b6:a03:d4::24) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -55,389 +55,160 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BL3PR12MB6596:EE_
-X-MS-Office365-Filtering-Correlation-Id: 786e2856-3244-4bc4-a448-08db3aabdcb3
+X-MS-Office365-Filtering-Correlation-Id: d8190818-4855-451c-6cd1-08db3aabde3b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	oV/jLNSwcxMkqi7j1Gr+UbRMbeJtRK6CGs3h10rnSC+0Om9kXtM6rdza4h5lBS8Mz/2Pyvpm8BwLcInU4lYgHctPmJkSecsw0BqjOphi7Aa3DEhqi8walXdgidUSs/RINM+P6RcKhwsp3GMXqWJM8SBNaBLy2T8dfhpApwa0miaG7d60o05OW7GcLaIO68FVfQ0cvnEyq/1tS3vOODwgyXtTQdP9m3R5sbOO3BUlPbQ+ClMiU7ZlaabsU3cKAEquzoImBAEFstjNbprVfhZiRiLLOyTb/E0FXTsnytkFslwaePRTRBjHjmZaBkGVPkSQLwitv/TmsIvcrobPmhAXCDLvC3v9KBGzlE18jG7j+TJpOm6OI4Z3KQUbxrZylOoZi8lbZ8Gg6t9EnQpG4Sm8qdGn1ocSv+3be6gKopAXxYcyPU8Vkg9vm4dOrkKjms1BQQIdAaHw2a+k7+LwX/Zpi7z2xuac+bBvZRw2QvGr1Eqe/KhV3VODP27wgvs54dEmZUmSUnNsWDtOUWdvkeI/Q15FzGPj1E0uehH0uNAkGccZbMLE2KOHWpBvDhvS8RjiQYIG8W4glFd7CwXVqyWet7Oc142ysYJVRyyQZDyZ7Y8=
+	M/y5hUeR61qNQDGrdmblI5q+zcvpetl/9sylGSRjx2nlxZs/uUO4yTxRK8MkY0ZBUHQj8fFzifD/zwtuBM/JwfqnqMnY5+OCuzzsOxeTck53rb0OuaUcS1c0M66cejePtqPK4W/w1OtIbtTDPVGjgD7xggKzRLjIbz0S8nhcoIgiUld0+qckYi6CvVNIfUD2rzH/Of3k/tr86JjMknLX2OZSIOjUExk9ZjlElhxItfbVmDIjaL4/dPKdW054wziaVZMFy4YeOetg5gzPChbIo3/FHnxazrKOWa2pFV6Hu8JjU+wo/L6wg35xuLGQuncX6cABscZp9Lu51hTXPYafYBDvVDjVRLMxWvoWbunkDw6nI640/uFHCfzwqlxsiYRiZptcKK4wWY/q3DKFCQtaBoS+k+Xvw9FBcyXmm7NaR2fCqDMayE3RWArTvQaEjTqBTTUBr+YL0xegcbEI6DSj+bY6f54WXNcZLZjvZp7gPNt91ZzFb1RQYaGLZ4S2N0d2jc5EU4kYwxqEQo9XQxfmrZ1miiVJdmyK4fm4D5VHvA5/bqpsrRTDr3mO4leWybLs
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(346002)(136003)(396003)(366004)(376002)(451199021)(2906002)(86362001)(36756003)(30864003)(6486002)(6666004)(2616005)(83380400001)(186003)(6506007)(26005)(6512007)(478600001)(66556008)(66476007)(66946007)(4326008)(316002)(8936002)(41300700001)(38100700002)(8676002)(5660300002)(54906003)(4216001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(346002)(136003)(396003)(366004)(376002)(451199021)(2906002)(86362001)(36756003)(6486002)(6666004)(2616005)(83380400001)(186003)(6506007)(26005)(6512007)(478600001)(66556008)(66476007)(66946007)(4326008)(316002)(8936002)(41300700001)(38100700002)(8676002)(5660300002)(54906003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?4+m5W1FcxsQXIXoa1z4pmuSm80js9PJXHNPNJ4uvRE8K5CL7bC+JfZns+LV0?=
- =?us-ascii?Q?UWPUlmRMQE8QUpyKvMkvyCC4CYLP38QKEIezCgH2RWOC2TzY9gbUN4IHL+GW?=
- =?us-ascii?Q?QzU1AE5PdIh10fVMD/UhzSusVLNuTNWCEc9Y3pamxw45NpatIQZNY+Jo63bC?=
- =?us-ascii?Q?yDK7tNUobaa/hlbEq8h66oTwGBHOB+0PvcgvlYkJl5b90NKRGCgZxUdlYMJU?=
- =?us-ascii?Q?48/3K1xTfY0L6p6oImvYkFroTK7MqMCk8nBiLlviCAzwg6IUqTOaig/4yhEv?=
- =?us-ascii?Q?QNi01QkBOQcIGKEV3anWWlLFFDQf8Cc2GNtBWHF3oiFjrWh2l2UkuSMfYQOM?=
- =?us-ascii?Q?wMn+WLeZCHNE4zKIHZe1FUjbnjmRG2My3hS1xNfMuMpmF/KP8BCfRV9a2yIj?=
- =?us-ascii?Q?g7S5hOzH72GeaObvIaj+ED72h917TvxBjDxH+2ALLuSKE+tG8vkrEjnduDsS?=
- =?us-ascii?Q?yKyHMJciPPOSV95HBPMppzPEdEAhe5zgXneFmi7iBJCXaE8HJjZ+YO8NqtJ0?=
- =?us-ascii?Q?4XArjDSFEZ8Sru6teh/eiHk3daO2hdWZqySsorcCAV3wsOHIZhssZuZiHkY3?=
- =?us-ascii?Q?aX2M0J3OVVeJo9JvxhNfsXHpPnK8O80s1Xf8VD+2seIDDEJnn9GF1RpLjX4U?=
- =?us-ascii?Q?3/ECWmdX9Wj1subv2y3MfeJRxjklUceel3gypQc3IFCN2+mgFRxMSH9hNAq7?=
- =?us-ascii?Q?4f/t/ufLEfUwNVbj/bE8MFVniaDN+9DKUiNebtxvgN5b0a5hBZ/KlFqc5jCY?=
- =?us-ascii?Q?F2aPlR7JPDfDNqo1EREveGkwn5d9R6O2znwDEGapavN0VR5k44XW7X8s++vm?=
- =?us-ascii?Q?b6YYwCTYU4aAa3IhbaOck5O6sVchSB1fQseREuQiDt1wSu1OWs4cvm9iK4Ld?=
- =?us-ascii?Q?Ch52TMDc/u9bolsKKh3KQDqgzPTElNiINs2aVhh6Hcfk16yVUXTF6+pnDOqN?=
- =?us-ascii?Q?Yflwzd0ScIaxBtRA4BJVVNF7iCGgSKKeDUgi2cz60uaNM3lNMCKjyaugcIge?=
- =?us-ascii?Q?xvYfY2saY2hlAwNbN3hJHHTI36lpWeWL8Am5nDSwVmwiNqg97ajVXPT81U/v?=
- =?us-ascii?Q?YQVpQunj78joN1H0zSvIdhpzd5CBnAsx7wwT5mKUzyVGYub7W8smTWlS9rCE?=
- =?us-ascii?Q?MvZwakrT5U5YW7UW+cQR16Q0vGBXoG9lJzGzxNFKSQPXUsE1cQBtPqFEW+84?=
- =?us-ascii?Q?fS5uq7bfbMmm3Wqo/NJXHvoCsXIDoCw1oSFmOyF/ao/3aC5gJXQRl818yB31?=
- =?us-ascii?Q?V6GVZuwxSjzKb+zhri90I90oqqhP8acnVIfeMPoNmKg1vbr+HTl+hf7iJ6Ad?=
- =?us-ascii?Q?0PmWp/h55cm0emvFN5E9yhS4ld8lhNga73mEGtF3dreXw4Qxe/ExPFk+nh6b?=
- =?us-ascii?Q?D63P8fxzJFpXwQfeWK9EGSJbmfxbxol60dCmx6/+FAFjwKn3SMJvbgltk077?=
- =?us-ascii?Q?HOBYYDqAeQ1/Y/jFLUbnXfsuTkZpX6GKmqoHJck4OmGOjt2KlGTfK0aoA4XW?=
- =?us-ascii?Q?bGW+CddzKShJI4l+V8oBr6GKV6xCBTyGb2gvRKLgaeuTCh/a5EdRmjtlvKKU?=
- =?us-ascii?Q?v3LIt8DjW2uT343a38w+ISISDzl/fxGQqVu0YrYb?=
+	=?us-ascii?Q?0QVQNGd2eGRLV2+ITGB8NHtUPi9HDyzLl6AYGmtRad5RUMI1tDtmbGIU1Nvn?=
+ =?us-ascii?Q?T3+9wiUBISvsWliXdptqu7Z1Fm6zivTUiR/7eZo10xDlEZXJ2Brb9JoKUaIa?=
+ =?us-ascii?Q?+S/bXVuIQC73fHfDQDaJYNvxEyC1U/SqvHntIXwsv9CRNQ9kAGVqQTw3X/1C?=
+ =?us-ascii?Q?Bi4rf9t2xDzfHgCX6YrkZT1BDmfnss7xblD8XPWfR69E1UFiv7uhMqTlr4QH?=
+ =?us-ascii?Q?wGsbqig/V7M6/s5jvaURoSx6P8+hKyA+xgkTglIi2qxtkBz8yHa+lJRe1/Xr?=
+ =?us-ascii?Q?UZhqwVVAKNLmBHk4HS4m4YQEkYuwtuE0EvL3/JB1qeFhB8x2zs0496XD8yE9?=
+ =?us-ascii?Q?YK4CcNnbcikATgybQZC4/hlkxEy/b1OtZK5TlEGUn65Sgpa1PheSgvud7TKj?=
+ =?us-ascii?Q?gdGmPtu/ELiG5JHAQLuNpOuCiF0VW0VPQS4cHp8tEMkPpMieokn1saFMR8ZT?=
+ =?us-ascii?Q?RQbutlWy9iTysn3fnGLBRcbrsTWPAHx70v33nShIGQFjUgtZUlwcjTGG+fW9?=
+ =?us-ascii?Q?zMpI/+2QuvdRNF6gxVVdOdkjJIhibq88HAfEUC1+HozC1sJI+zyhtVx0Ladt?=
+ =?us-ascii?Q?fYb/lX+cXkQRMJEunGNUjtlSPcGOOwMy0xuBeydXVYr1gWLp5d2L4OTVb5qB?=
+ =?us-ascii?Q?ijE14y0Sg2R0rQjby+XdK4QHOUfbNENw4quouxOPKmK8HY83GnZzihA0/0df?=
+ =?us-ascii?Q?8QfVIXpZaYMVwgmUwxR3gWgqtvgaLCg+27mV9gkNC537lx9QlXDJ5cie4qlX?=
+ =?us-ascii?Q?IaEtItmP8fmm4beZzTEKiYcg90TemPLjwnkA6GblhtSyFceRDUWfMTu5ALxh?=
+ =?us-ascii?Q?GtAmI+g3P5hiw+19AI/5ZMgNiikkIuYpY9rqRbeH/g8tkS8ibOIOI2T8kCM+?=
+ =?us-ascii?Q?n6TVkz9lf3C3uZ1PWsu9/9j7SaBHkaMqTFgQ/29WxA2yxNFP8R3ajQmC+sSR?=
+ =?us-ascii?Q?lxX3bxvJuZ9DfpkV3Xv7082ejXk6tSopbnps0PBGZzhGu8f9J3jLH/8OgEnk?=
+ =?us-ascii?Q?dCUEV9UxspJlGtfkrcwYjSUfGVS+EPjMosc5JT+W6FxWPdP6lZY1KVRRWgiJ?=
+ =?us-ascii?Q?W1VoDY+RRQD5IGIL3DRPNjVQcDMJOlSqhkTFltMX/5n92RMV7FYJzhezrCM/?=
+ =?us-ascii?Q?eYFHIWJG6l6rAAL981wsgqyZuxLwD4Po6Q3Z69PHRl24Ht5SBkf7yXYCkqYZ?=
+ =?us-ascii?Q?cgJN15wa9sqW1dbo2ErCRYXtEAa3zX85ti4rG4IjYIsQnDxHlNDBld2c64Je?=
+ =?us-ascii?Q?h/BSOTZ45pwch4kI+a/HPQEFNPgTsNDKI6c16U18sNWrBryXlEmKXpsS101S?=
+ =?us-ascii?Q?/QlLaE3dycqfi9IMcOAjlRCjz/p3GMUY13wxPpfGRhu7AlIcDTAsH9Fbklr7?=
+ =?us-ascii?Q?91hmdF3q1ULrbIMMQkwl8ZLTDbIarem9qzuAFIX7TX6LqvXvlVgxuVYIQ+Lb?=
+ =?us-ascii?Q?2WXW8AysQ6EK5auCBQdLWl7HCYdQeDsqboPwYkzr+1f9TokqrRMjdEYoCKFT?=
+ =?us-ascii?Q?Pw4WotUVrfTCBB9Zaf9ADdc5MUlS9Z0zFKjvWFJqu6QKuCsh1CrJRFqp6S8h?=
+ =?us-ascii?Q?/JUgJvbWmlQOXpBVp7JvDWQh+T9FVhaVcnwoPOi5?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 786e2856-3244-4bc4-a448-08db3aabdcb3
+X-MS-Exchange-CrossTenant-Network-Message-Id: d8190818-4855-451c-6cd1-08db3aabde3b
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2023 16:43:22.2641
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2023 16:43:24.6776
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jLporIcboHvjvBDN+6UD16wCMy9BcMkkSpyFt1KQs46hm6ozW8G48c62rJr7myHJ
+X-MS-Exchange-CrossTenant-UserPrincipalName: OE+ID1B3GCskiDjkk8y16bhyLXwvgnUkPHUAJh3ZeVefbgc63Kf+KmPKYu7FliyO
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR12MB6596
 
-The devices list was used as a simple way to avoid having per-group
-information. Now that this seems to be unavoidable, just commit to
-per-group information fully and remove the devices list from the HWPT.
+From: Nicolin Chen <nicolinc@nvidia.com>
 
-The iommufd_group stores the currently assigned HWPT for the entire group
-and we can manage the per-device attach/detach with a list in the
-iommufd_group.
+qemu has a need to replace the translations associated with a domain
+when the guest does large-scale operations like switching between an
+IDENTITY domain and, say, dma-iommu.c.
 
-For destruction the flow is organized to make the following patches
-easier, the actual call to iommufd_object_destroy_user() is done at the
-top of the call chain without holding any locks. The HWPT to be destroyed
-is returned out from the locked region to make this possible. Later
-patches create locking that requires this.
+Currently, it does this by replacing all the mappings in a single
+domain, but this is very inefficient and means that domains have to be
+per-device rather than per-translation.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Provide a high-level API to allow replacements of one domain with
+another. This is similar to a detach/attach cycle except it doesn't
+force the group to go to the blocking domain in-between.
+
+By removing this forced blocking domain the iommu driver has the
+opportunity to implement a non-disruptive replacement of the domain to the
+greatest extent its hardware allows. This allows the qemu emulation of the
+vIOMMU to be more complete, as real hardware often has a non-distruptive
+replacement capability.
+
+It could be possible to address this by simply removing the protection
+from the iommu_attach_group(), but it is not so clear if that is safe for
+the few users. Thus, add a new API to serve this new purpose.
+
+All drivers are already required to support changing between active
+UNMANAGED domains when using their attach_dev ops.
+
+This API is expected to be used only by IOMMUFD, so add to the iommu-priv
+header and mark it as IOMMUFD_INTERNAL.
+
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- drivers/iommu/iommufd/device.c          | 79 ++++++++++++-------------
- drivers/iommu/iommufd/hw_pagetable.c    | 23 +++----
- drivers/iommu/iommufd/iommufd_private.h | 13 ++--
- 3 files changed, 52 insertions(+), 63 deletions(-)
+ drivers/iommu/iommu-priv.h | 10 ++++++++++
+ drivers/iommu/iommu.c      | 30 ++++++++++++++++++++++++++++++
+ 2 files changed, 40 insertions(+)
+ create mode 100644 drivers/iommu/iommu-priv.h
 
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 3fd623208c691f..366df246d4d1f6 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -20,9 +20,12 @@ static void iommufd_group_release(struct kref *kref)
- 	struct iommufd_group *igroup =
- 		container_of(kref, struct iommufd_group, ref);
- 
-+	WARN_ON(igroup->hwpt || !list_empty(&igroup->device_list));
+diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
+new file mode 100644
+index 00000000000000..7c8011bfd15374
+--- /dev/null
++++ b/drivers/iommu/iommu-priv.h
+@@ -0,0 +1,10 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++#ifndef __LINUX_IOMMU_PRIV_H
++#define __LINUX_IOMMU_PRIV_H
 +
- 	xa_cmpxchg(&igroup->ictx->groups, iommu_group_id(igroup->group), igroup,
- 		   NULL, GFP_KERNEL);
- 	iommu_group_put(igroup->group);
-+	mutex_destroy(&igroup->lock);
- 	kfree(igroup);
- }
- 
-@@ -83,6 +86,8 @@ static struct iommufd_group *iommufd_get_group(struct iommufd_ctx *ictx,
- 	}
- 
- 	kref_init(&new_igroup->ref);
-+	mutex_init(&new_igroup->lock);
-+	INIT_LIST_HEAD(&new_igroup->device_list);
- 	/* group reference moves into new_igroup */
- 	new_igroup->group = group;
- 
-@@ -277,28 +282,15 @@ static int iommufd_device_setup_msi(struct iommufd_device *idev,
- 	return 0;
- }
- 
--static bool iommufd_hw_pagetable_has_group(struct iommufd_hw_pagetable *hwpt,
--					   struct iommufd_group *igroup)
--{
--	struct iommufd_device *cur_dev;
--
--	lockdep_assert_held(&hwpt->devices_lock);
--
--	list_for_each_entry(cur_dev, &hwpt->devices, devices_item)
--		if (cur_dev->igroup->group == igroup->group)
--			return true;
--	return false;
--}
--
- int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
- 				struct iommufd_device *idev)
- {
- 	phys_addr_t sw_msi_start = PHYS_ADDR_MAX;
- 	int rc;
- 
--	lockdep_assert_held(&hwpt->devices_lock);
-+	lockdep_assert_held(&idev->igroup->lock);
- 
--	if (WARN_ON(idev->hwpt))
-+	if (idev->igroup->hwpt != NULL && idev->igroup->hwpt != hwpt)
- 		return -EINVAL;
- 
- 	/*
-@@ -313,7 +305,7 @@ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
- 				hwpt->domain->ops->enforce_cache_coherency(
- 					hwpt->domain);
- 		if (!hwpt->enforce_cache_coherency) {
--			WARN_ON(list_empty(&hwpt->devices));
-+			WARN_ON(list_empty(&idev->igroup->device_list));
- 			return -EINVAL;
- 		}
- 	}
-@@ -329,26 +321,41 @@ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
- 		goto err_unresv;
- 
- 	/*
--	 * FIXME: Hack around missing a device-centric iommu api, only attach to
--	 * the group once for the first device that is in the group.
-+	 * Only attach to the group once for the first device that is in the
-+	 * group. All the other devices will follow this attachment. The user
-+	 * should attach every device individually to the hwpt as the per-device
-+	 * reserved regions are only updated during individual device
-+	 * attachment.
- 	 */
--	if (!iommufd_hw_pagetable_has_group(hwpt, idev->igroup)) {
-+	if (list_empty(&idev->igroup->device_list)) {
- 		rc = iommu_attach_group(hwpt->domain, idev->igroup->group);
- 		if (rc)
- 			goto err_unresv;
-+		idev->igroup->hwpt = hwpt;
- 	}
-+	refcount_inc(&hwpt->obj.users);
-+	list_add_tail(&idev->group_item, &idev->igroup->device_list);
- 	return 0;
- err_unresv:
- 	iopt_remove_reserved_iova(&hwpt->ioas->iopt, idev->dev);
- 	return rc;
- }
- 
--void iommufd_hw_pagetable_detach(struct iommufd_hw_pagetable *hwpt,
--				 struct iommufd_device *idev)
-+struct iommufd_hw_pagetable *
-+iommufd_hw_pagetable_detach(struct iommufd_device *idev)
- {
--	if (!iommufd_hw_pagetable_has_group(hwpt, idev->igroup))
-+	struct iommufd_hw_pagetable *hwpt = idev->igroup->hwpt;
++#include <linux/iommu.h>
 +
-+	lockdep_assert_held(&idev->igroup->lock);
++int iommu_group_replace_domain(struct iommu_group *group,
++			       struct iommu_domain *new_domain);
 +
-+	list_del(&idev->group_item);
-+	if (list_empty(&idev->igroup->device_list)) {
- 		iommu_detach_group(hwpt->domain, idev->igroup->group);
-+		idev->igroup->hwpt = NULL;
-+	}
- 	iopt_remove_reserved_iova(&hwpt->ioas->iopt, idev->dev);
-+	/* Caller must destroy hwpt */
-+	return hwpt;
++#endif /* __LINUX_IOMMU_PRIV_H */
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 76969904b93af4..91a948a76db5ee 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -33,6 +33,7 @@
+ #include <linux/msi.h>
+ 
+ #include "dma-iommu.h"
++#include "iommu-priv.h"
+ 
+ #include "iommu-sva.h"
+ 
+@@ -2191,6 +2192,35 @@ int iommu_attach_group(struct iommu_domain *domain, struct iommu_group *group)
  }
+ EXPORT_SYMBOL_GPL(iommu_attach_group);
  
- static int iommufd_device_do_attach(struct iommufd_device *idev,
-@@ -356,16 +363,9 @@ static int iommufd_device_do_attach(struct iommufd_device *idev,
++/**
++ * iommu_group_replace_domain - replace the domain that a group is attached to
++ * @new_domain: new IOMMU domain to replace with
++ * @group: IOMMU group that will be attached to the new domain
++ *
++ * This API allows the group to switch domains without being forced to go to
++ * the blocking domain in-between.
++ *
++ * If the currently attached domain is a core domain (e.g. a default_domain),
++ * it will act just like the iommu_attach_group().
++ */
++int iommu_group_replace_domain(struct iommu_group *group,
++			       struct iommu_domain *new_domain)
++{
++	int ret;
++
++	if (!new_domain)
++		return -EINVAL;
++
++	mutex_lock(&group->mutex);
++	ret = __iommu_group_set_domain(group, new_domain);
++	if (ret)
++		__iommu_group_for_each_dev(group, group->domain,
++					   iommu_group_do_attach_device);
++	mutex_unlock(&group->mutex);
++	return ret;
++}
++EXPORT_SYMBOL_NS_GPL(iommu_group_replace_domain, IOMMUFD_INTERNAL);
++
+ static int iommu_group_do_set_platform_dma(struct device *dev, void *data)
  {
- 	int rc;
- 
--	mutex_lock(&hwpt->devices_lock);
-+	mutex_lock(&idev->igroup->lock);
- 	rc = iommufd_hw_pagetable_attach(hwpt, idev);
--	if (rc)
--		goto out_unlock;
--
--	idev->hwpt = hwpt;
--	refcount_inc(&hwpt->obj.users);
--	list_add(&idev->devices_item, &hwpt->devices);
--out_unlock:
--	mutex_unlock(&hwpt->devices_lock);
-+	mutex_unlock(&idev->igroup->lock);
- 	return rc;
- }
- 
-@@ -375,7 +375,7 @@ static int iommufd_device_do_attach(struct iommufd_device *idev,
-  * Automatic domain selection will never pick a manually created domain.
-  */
- static int iommufd_device_auto_get_domain(struct iommufd_device *idev,
--					  struct iommufd_ioas *ioas)
-+					  struct iommufd_ioas *ioas, u32 *pt_id)
- {
- 	struct iommufd_hw_pagetable *hwpt;
- 	int rc;
-@@ -402,6 +402,7 @@ static int iommufd_device_auto_get_domain(struct iommufd_device *idev,
- 		 */
- 		if (rc == -EINVAL)
- 			continue;
-+		*pt_id = hwpt->obj.id;
- 		goto out_unlock;
- 	}
- 
-@@ -411,6 +412,7 @@ static int iommufd_device_auto_get_domain(struct iommufd_device *idev,
- 		goto out_unlock;
- 	}
- 	hwpt->auto_domain = true;
-+	*pt_id = hwpt->obj.id;
- 
- 	mutex_unlock(&ioas->mutex);
- 	iommufd_object_finalize(idev->ictx, &hwpt->obj);
-@@ -455,7 +457,7 @@ int iommufd_device_attach(struct iommufd_device *idev, u32 *pt_id)
- 		struct iommufd_ioas *ioas =
- 			container_of(pt_obj, struct iommufd_ioas, obj);
- 
--		rc = iommufd_device_auto_get_domain(idev, ioas);
-+		rc = iommufd_device_auto_get_domain(idev, ioas, pt_id);
- 		if (rc)
- 			goto out_put_pt_obj;
- 		break;
-@@ -466,7 +468,6 @@ int iommufd_device_attach(struct iommufd_device *idev, u32 *pt_id)
- 	}
- 
- 	refcount_inc(&idev->obj.users);
--	*pt_id = idev->hwpt->obj.id;
- 	rc = 0;
- 
- out_put_pt_obj:
-@@ -484,13 +485,11 @@ EXPORT_SYMBOL_NS_GPL(iommufd_device_attach, IOMMUFD);
-  */
- void iommufd_device_detach(struct iommufd_device *idev)
- {
--	struct iommufd_hw_pagetable *hwpt = idev->hwpt;
-+	struct iommufd_hw_pagetable *hwpt;
- 
--	mutex_lock(&hwpt->devices_lock);
--	list_del(&idev->devices_item);
--	idev->hwpt = NULL;
--	iommufd_hw_pagetable_detach(hwpt, idev);
--	mutex_unlock(&hwpt->devices_lock);
-+	mutex_lock(&idev->igroup->lock);
-+	hwpt = iommufd_hw_pagetable_detach(idev);
-+	mutex_unlock(&idev->igroup->lock);
- 
- 	if (hwpt->auto_domain)
- 		iommufd_object_destroy_user(idev->ictx, &hwpt->obj);
-diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
-index 6cdb6749d359f3..566eba0cd9b917 100644
---- a/drivers/iommu/iommufd/hw_pagetable.c
-+++ b/drivers/iommu/iommufd/hw_pagetable.c
-@@ -11,8 +11,6 @@ void iommufd_hw_pagetable_destroy(struct iommufd_object *obj)
- 	struct iommufd_hw_pagetable *hwpt =
- 		container_of(obj, struct iommufd_hw_pagetable, obj);
- 
--	WARN_ON(!list_empty(&hwpt->devices));
--
- 	if (!list_empty(&hwpt->hwpt_item)) {
- 		mutex_lock(&hwpt->ioas->mutex);
- 		list_del(&hwpt->hwpt_item);
-@@ -25,7 +23,6 @@ void iommufd_hw_pagetable_destroy(struct iommufd_object *obj)
- 		iommu_domain_free(hwpt->domain);
- 
- 	refcount_dec(&hwpt->ioas->obj.users);
--	mutex_destroy(&hwpt->devices_lock);
- }
- 
- /**
-@@ -52,9 +49,7 @@ iommufd_hw_pagetable_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
- 	if (IS_ERR(hwpt))
- 		return hwpt;
- 
--	INIT_LIST_HEAD(&hwpt->devices);
- 	INIT_LIST_HEAD(&hwpt->hwpt_item);
--	mutex_init(&hwpt->devices_lock);
- 	/* Pairs with iommufd_hw_pagetable_destroy() */
- 	refcount_inc(&ioas->obj.users);
- 	hwpt->ioas = ioas;
-@@ -65,13 +60,16 @@ iommufd_hw_pagetable_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
- 		goto out_abort;
- 	}
- 
--	mutex_lock(&hwpt->devices_lock);
-+	mutex_lock(&idev->igroup->lock);
- 
- 	/*
- 	 * immediate_attach exists only to accommodate iommu drivers that cannot
- 	 * directly allocate a domain. These drivers do not finish creating the
- 	 * domain until attach is completed. Thus we must have this call
- 	 * sequence. Once those drivers are fixed this should be removed.
-+	 *
-+	 * Note we hold the igroup->lock here which prevents any other thread
-+	 * from observing igroup->hwpt until we finish setting it up.
- 	 */
- 	if (immediate_attach) {
- 		rc = iommufd_hw_pagetable_attach(hwpt, idev);
-@@ -84,21 +82,14 @@ iommufd_hw_pagetable_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
- 		goto out_detach;
- 	list_add_tail(&hwpt->hwpt_item, &hwpt->ioas->hwpt_list);
- 
--	if (immediate_attach) {
--		/* See iommufd_device_do_attach() */
--		refcount_inc(&hwpt->obj.users);
--		idev->hwpt = hwpt;
--		list_add(&idev->devices_item, &hwpt->devices);
--	}
--
--	mutex_unlock(&hwpt->devices_lock);
-+	mutex_unlock(&idev->igroup->lock);
- 	return hwpt;
- 
- out_detach:
- 	if (immediate_attach)
--		iommufd_hw_pagetable_detach(hwpt, idev);
-+		iommufd_hw_pagetable_detach(idev);
- out_unlock:
--	mutex_unlock(&hwpt->devices_lock);
-+	mutex_unlock(&idev->igroup->lock);
- out_abort:
- 	iommufd_object_abort_and_destroy(ictx, &hwpt->obj);
- 	return ERR_PTR(rc);
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 2544f10dae9aef..2ff192777f27d3 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -250,8 +250,6 @@ struct iommufd_hw_pagetable {
- 	bool msi_cookie : 1;
- 	/* Head at iommufd_ioas::hwpt_list */
- 	struct list_head hwpt_item;
--	struct mutex devices_lock;
--	struct list_head devices;
- };
- 
- struct iommufd_hw_pagetable *
-@@ -259,14 +257,17 @@ iommufd_hw_pagetable_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
- 			   struct iommufd_device *idev, bool immediate_attach);
- int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
- 				struct iommufd_device *idev);
--void iommufd_hw_pagetable_detach(struct iommufd_hw_pagetable *hwpt,
--				 struct iommufd_device *idev);
-+struct iommufd_hw_pagetable *
-+iommufd_hw_pagetable_detach(struct iommufd_device *idev);
- void iommufd_hw_pagetable_destroy(struct iommufd_object *obj);
- 
- struct iommufd_group {
- 	struct kref ref;
-+	struct mutex lock;
- 	struct iommufd_ctx *ictx;
- 	struct iommu_group *group;
-+	struct iommufd_hw_pagetable *hwpt;
-+	struct list_head device_list;
- };
- 
- /*
-@@ -278,9 +279,7 @@ struct iommufd_device {
- 	struct iommufd_object obj;
- 	struct iommufd_ctx *ictx;
- 	struct iommufd_group *igroup;
--	struct iommufd_hw_pagetable *hwpt;
--	/* Head at iommufd_hw_pagetable::devices */
--	struct list_head devices_item;
-+	struct list_head group_item;
- 	/* always the physical device */
- 	struct device *dev;
- 	bool enforce_cache_coherency;
+ 	const struct iommu_ops *ops = dev_iommu_ops(dev);
 -- 
 2.40.0
 
