@@ -1,76 +1,79 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B4BAE5698
-	for <iommu@lists.linux.dev>; Wed, 12 Apr 2023 14:19:59 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 308C4D75;
-	Wed, 12 Apr 2023 07:20:38 -0700 (PDT)
-Received: from [10.57.55.240] (unknown [10.57.55.240])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0DB9F3F587;
-	Wed, 12 Apr 2023 07:19:52 -0700 (PDT)
-Message-ID: <f92ff425-04d8-6201-dd1e-5be96a599bc6@arm.com>
-Date: Wed, 12 Apr 2023 15:19:48 +0100
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 418863205
+	for <iommu@lists.linux.dev>; Wed, 12 Apr 2023 14:34:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44D9DC433EF;
+	Wed, 12 Apr 2023 14:34:15 +0000 (UTC)
+Message-ID: <f74031f0-3c88-e3b4-0fa1-b406aacb11fd@xs4all.nl>
+Date: Wed, 12 Apr 2023 16:34:13 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-Subject: Re: [PATCH] iommu: Make iommu_release_device() static
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-References: <0-v1-c3da18124d2d+56-rm_iommu_release_jgg@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <0-v1-c3da18124d2d+56-rm_iommu_release_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v7 10/14] media: mtk-jpegdec: Remove the setting for
+ dma_mask
+Content-Language: en-US
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh+dt@kernel.org>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ nfraprado@collabora.com, linux-media@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ mingyuan.ma@mediatek.com, yf.wang@mediatek.com, jianjiao.zeng@mediatek.com,
+ Yunfei Dong <yunfei.dong@mediatek.com>,
+ kyrie wu <kyrie.wu@mediatek.corp-partner.google.com>,
+ chengci.xu@mediatek.com, youlin.pei@mediatek.com, anan.sun@mediatek.com,
+ Bin Liu <bin.liu@mediatek.com>, kyrie wu <kyrie.wu@mediatek.com>
+References: <20230411093144.2690-1-yong.wu@mediatek.com>
+ <20230411093144.2690-11-yong.wu@mediatek.com>
+From: Hans Verkuil <hverkuil@xs4all.nl>
+In-Reply-To: <20230411093144.2690-11-yong.wu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 2023-04-12 15:10, Jason Gunthorpe wrote:
-> This is not called outside the core code, and indeed cannot be called
-> correctly outside the bus notifier. Make it static.
+On 11/04/2023 11:31, Yong Wu wrote:
+> In order to simplify the masters to set their respective dma masks, MTK
+> IOMMU helps to centralize the processing. Because all the dma ranges is
+> set in IOMMU, IOMMU knows well the dma mask requirements of masters. After
+> this patch, the masters code does not need care
+> dma-ranges/dma_mask related information.
+> 
+> Cc: Bin Liu <bin.liu@mediatek.com>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: kyrie wu <kyrie.wu@mediatek.com>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Acked-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Regards,
+
+	Hans
+
 > ---
->   drivers/iommu/iommu.c | 3 ++-
->   include/linux/iommu.h | 1 -
->   2 files changed, 2 insertions(+), 2 deletions(-)
+>  drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c | 3 ---
+>  1 file changed, 3 deletions(-)
 > 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 7abee83610b6c9..435fc902df1984 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -87,6 +87,7 @@ static const char * const iommu_group_resv_type_string[] = {
->   
->   static int iommu_bus_notifier(struct notifier_block *nb,
->   			      unsigned long action, void *data);
-> +static void iommu_release_device(struct device *dev);
->   static int iommu_alloc_default_domain(struct iommu_group *group,
->   				      struct device *dev);
->   static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
-> @@ -493,7 +494,7 @@ static void __iommu_group_release_device(struct iommu_group *group,
->   	kobject_put(group->devices_kobj);
->   }
->   
-> -void iommu_release_device(struct device *dev)
-> +static void iommu_release_device(struct device *dev)
->   {
->   	struct iommu_group *group = dev->iommu_group;
->   	struct group_device *device;
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 54f535ff9868af..c892e06f8357ee 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -699,7 +699,6 @@ static inline void dev_iommu_priv_set(struct device *dev, void *priv)
->   }
->   
->   int iommu_probe_device(struct device *dev);
-> -void iommu_release_device(struct device *dev);
->   
->   int iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features f);
->   int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features f);
-> 
-> base-commit: 43a31380ed6e16ad08675de5e68b5e4d05cf8716
+> diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
+> index 969516a940ba..9b96d2436311 100644
+> --- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
+> +++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
+> @@ -1757,9 +1757,6 @@ static int mtk_jpeg_probe(struct platform_device *pdev)
+>  	jpeg->vdev->device_caps = V4L2_CAP_STREAMING |
+>  				  V4L2_CAP_VIDEO_M2M_MPLANE;
+>  
+> -	if (of_get_property(pdev->dev.of_node, "dma-ranges", NULL))
+> -		dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(34));
+> -
+>  	ret = video_register_device(jpeg->vdev, VFL_TYPE_VIDEO, -1);
+>  	if (ret) {
+>  		v4l2_err(&jpeg->v4l2_dev, "Failed to register video device\n");
+
