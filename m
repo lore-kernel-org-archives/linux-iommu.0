@@ -1,34 +1,34 @@
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2083.outbound.protection.outlook.com [40.107.96.83])
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2048.outbound.protection.outlook.com [40.107.96.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADFF75671;
-	Wed, 12 Apr 2023 13:51:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 729D45683;
+	Wed, 12 Apr 2023 13:51:57 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PEuqyPpXQiZmlcfKUCPV+FpZCMgjfFQyOB5VgLtJqwY6z9f4qXgCdYmr4P8EquunbQit7imhmIfwR1XOqJUoT5HaqnC5W5Eq/OsCKSC5uis6Ja1E8onNRU+6xmbmmAhBoimMvJSE3V87OcbojFWFRpeBfyV4Gz1+mCSWOxn0sZ0IOsQ9aBX5QQ5v9BNJDCRhgnYMc3ZlFVDGnzN0IwH2LxsgQBjeOvi8YOtgcQnmWXXO+J8669P+kB+OMmSo3k66/OJkQ5ZSlC9bgGsUlCGWmgsRfFw0FQ/Y3T/iqDf5ipAuxqzhy2XB/KuHafVc/wxMnZjPg0YIZh0MNqGI5H/5jA==
+ b=asd9FoPTHmSDcxanFiFUzR+XOQKwh3ugevoLJ9bHCkRVQep4e2AyS8ecFpWBVWBi5TgiF5hlYs7WXl+fWUrHxkf/fTXif22u8y6KFyGs2ZJQKGhTvlIf8v5jYXWbC+h4Ao045+65UZwEhsA6nSoVHf/0myNtXSDMdv3pRFaTQKBetEsiLcPFjgVG5r0jQe7y8piuKZdUAZWGd3pUAB9YgPS9VVkATJ19yQwZBWjiMVeQ7FXj3GWOcJTn606mszNvOFOnvSWbTKsy9WKd116W/rPz03Nb6xwMm6L/n//CNeQiEuH4g/z+HU0PGUQTFtVh5FDd5sXrOnhau4zuhjDHVQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uxiM8/NBo8pf4lLBLNcZY5DJl9fXmVi7qLh66WwVPWI=;
- b=h1fi43Ktw1WDtFUEQeR7L+jkspWLgT87sj0OMljPmQLhvja+4MC/vJsH+fXwM4jqrOVlCaFND5+Medjaz85VK+gBoNR00zbC5koFdIOwQYG0CO+JUEW56sQU2pViltKEtqc/X8paKRRk9nKGvfct4EVk26mjWhH/EkJ3y0LTAHltWbnNU1o7mhEmzCArowquUU/h89sv9lgYcd158+of+IZ2/r/Y6j5emubKWYbnY/uObDrIF88Imf1gAMvLlMWwBJ/DiGwZci+N+lle8QzQZ6OWbutV/TRlL2UhINnPlE1XQVKUlyHoyuMXb36FfE7o9Urip+I6a0McVxGp27E54Q==
+ bh=cOXsj6OplUp/CAUPgksZe4ZOf6GpRziZqLG91oxFnS0=;
+ b=Rl2FeorfyF9mF10jmWJEO0CNqbHMBCyKxx067bnGXOwHj9MCHmrLNdx2QZekY6RCAmFjtWnIaseXNijD5bJJ+IfUeXjjADk8I7MNolY/7sammkkE5ZLfRLMD3C9VBMlaS/L6Psb/QxWpm57k9CIhzjGcKo3U0NH7/lGPLQKu61/2SEPLawrtxnvcRlv0doYscF4CC3qyMG/V33Cs70bAwRkovsW1JJMGuWJw+MbGNtysggiFim4F+rB/osaz0+Ke9waQdwGWwXDUXYbby5Whv7RqbDuv6yQujCqGxYX7ZCsmt344ww/NxdoeNcTRCWEwWggxDP1Wi4+jGn8aWqBf9g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uxiM8/NBo8pf4lLBLNcZY5DJl9fXmVi7qLh66WwVPWI=;
- b=e3Ee1Y8slEzd5Lw9b9B9M4ddGhRiY1m0PwBqxtL6a2o4ONsgZWTt+GWC90vlOaPQVtoDUFwEmHOibth3Psk/hwYUS+9MGtqrz6NtFOE3PyfXWh1Kn1ZsxY3CrB+q7doGCgBO7x3ZPjedTweaYl+SzaCcRSsj36829y6n+5/botAeGTfXcMIDUOji/o4wpD4rNbFyXSMR2SUyiqIk8VAYEnmC5Vq03tB5rT12hkSwm9a3lcvUUAbrA2oMaTFieaFTY2NNU4QQVgAzHb8wU0ol8bBsv89hvX1zIxFYuX7FuNC5ot8VDKG+wdDGwFlA1N8ePalJ/O9pb//f9ZzrYXpbvQ==
+ bh=cOXsj6OplUp/CAUPgksZe4ZOf6GpRziZqLG91oxFnS0=;
+ b=X6NUUrxceAboGOlPIKy6uJLFP9T5U+Ki2c9htmRHpcV1FaU5zMuXEZ5w56B80VBX0jyBuNNXX9Hq5DyOgpFqmHl+h87o62V052fOdcvKSVXn2UC6aT17HLLHW3OgejMNRMcZdslXT1UVc7Tas2NGmyZmxZvoCQHVoug5HkHpki0T9j0+z9QeXaC9iBs8KWbOZRgzxaLf5pLxHWqq97+7Hhg7LiH72hTLzteKzCac1q/AXsTlDcaiFlCWuCqwKMyHGds2/bfi7LZNnooMFl3qbEmKZ+10RLuaTC3rF+e9Q3o3OPAEQC6KXQiq4I807/kW63WeT6bZTd/FP2IDk7Izkg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DS0PR12MB7946.namprd12.prod.outlook.com (2603:10b6:8:151::13) with
+ by SN7PR12MB6957.namprd12.prod.outlook.com (2603:10b6:806:263::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.35; Wed, 12 Apr
- 2023 13:51:54 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.34; Wed, 12 Apr
+ 2023 13:51:51 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::6045:ad97:10b7:62a2]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::6045:ad97:10b7:62a2%9]) with mapi id 15.20.6277.038; Wed, 12 Apr 2023
- 13:51:54 +0000
+ 13:51:51 +0000
 From: Jason Gunthorpe <jgg@nvidia.com>
 To: iommu@lists.linux.dev,
 	Joerg Roedel <joro@8bytes.org>,
@@ -42,15 +42,13 @@ To: iommu@lists.linux.dev,
 Cc: Lu Baolu <baolu.lu@linux.intel.com>,
 	Kevin Tian <kevin.tian@intel.com>,
 	Nicolin Chen <nicolinc@nvidia.com>
-Subject: [PATCH v4 03/17] iommu: Make __iommu_group_set_domain() handle error unwind
-Date: Wed, 12 Apr 2023 10:51:33 -0300
-Message-Id: <3-v4-79d0c229580a+650-iommu_err_unwind_jgg@nvidia.com>
-In-Reply-To: <0-v4-79d0c229580a+650-iommu_err_unwind_jgg@nvidia.com>
-References:
+Subject: [PATCH v4 00/17] Consolidate the error handling around device attachment
+Date: Wed, 12 Apr 2023 10:51:30 -0300
+Message-Id: <0-v4-79d0c229580a+650-iommu_err_unwind_jgg@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: MN2PR19CA0059.namprd19.prod.outlook.com
- (2603:10b6:208:19b::36) To LV2PR12MB5869.namprd12.prod.outlook.com
+X-ClientProxiedBy: BL0PR02CA0042.namprd02.prod.outlook.com
+ (2603:10b6:207:3d::19) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,303 +57,158 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DS0PR12MB7946:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8898baa0-3c8c-4123-821e-08db3b5d1004
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SN7PR12MB6957:EE_
+X-MS-Office365-Filtering-Correlation-Id: eb9586cf-1c25-4c2e-8ef3-08db3b5d0fc1
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	F0I7O0CnqFoqIKqVFVh98x+UPK/NWMFa/ejKzeU57K/V8N0pswFJhgkihyQNMvb9XMWzDrsPVp/9Fue//Kh6A0YbuuXfj65adWSrMDUs77K9VL1sgIGEKeffNgkG1oqwsPGK7zUfwsbXaXjUqkVaQkmw9Tyq3eEtBBlR1sxEA9pjGLErAX6vB8UuUkhe5Hqx5NTJWZ+MTT6MyjdjodVKTiXRA42u+jnnWyfh5MZ82OCqRbkDufFXaMYe2tU1JdP3cbfws9r03FS/2Dg2p/9UgFLAoyYDPxVRGYp79GAHe6eflfildbP0SXDqJnqPv6YEViUA50aer2ELhmrMQ3cIIQ+OroV8gpAEjrW1HSS7xrhDC5i9JEV+iA1AFDjzQRKY4fOxTnznbJbvzLMaWKKtMMO8TE0jXKyXy4QYqcFQt3c6XupnROJSwXnfHqsTZKzAgWx7wKUyqPTs71ahspZ2AskuO19j+4hefgduujODy5lFWisPuxWS0kzyQfu1kyXAz4Iy65FeF2RIvjlHOPmLRz5yQLgu2rWryqKnxp0TLJqgs4OSFBB/swejpQA9T3dd8c7Rm/j8UnH1Hi81ICjRtlwzj9xleERMrH98kW7K2o0=
+	kDA4+xOB8vqRjRvgfLI3pTLKRf9gfef+mmX1+l3oBiVxnV9SmmjxyAk0rpqP0EpCMWiD0I+vK/DzJ60u3/ujD68gHrDEDEI7C9j/Gmg2ZqOKqbypkWGLRyv2TSUf/hDnYApQAt9An/XpoTzWw/6zzf+MsUeCfKN5NLPGSOzaxr4QLnQwS/yWa2MWYk2mUkkwdRClRsVQBlZoeFwgVX7xGI+eTBbxhJvUow5FJno4PIWI7QcZmd9oxUazH/kkSrA1IlhqkChEiOqvDowTa0gv0lKDKNRKtEhs94bhFPc3CuP29lpHfBUr1Whm8K38pKHJRBQMyb83t7yrknstLDK0tJesVO0Ojc6EUjlYBT/ynxNwrxaZWq3bhHz4gVCoisHfiI1Q4CBvcNJOzZv3TXObDtRcUBHCl9PLsP57gOAehxtDUQ4SyAk8lr91JLk+CcW6s33EY0wH4wTRU3IhbQu9+Tx8hBDSengVRgZyRkZYgK2jy9wUSy88Pw0m2MTYAPSizjvnbL/Zw9K+ZcpWOALiNRV9uVGe4bWjeV0qiq1nhXnt5bsutS3Vs3oEtQjktjxGzwesQfHaExZ2CoOS74kWO8UWyxnqllqPneZrxlxmRWzkrMs8jNwPxX2UheGpTrQ26jQBDKm+Lh7s4e1fngiiEA==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(376002)(39860400002)(366004)(136003)(451199021)(478600001)(110136005)(26005)(6506007)(186003)(5660300002)(54906003)(316002)(2906002)(66946007)(4326008)(107886003)(6666004)(66476007)(6486002)(8676002)(7416002)(41300700001)(8936002)(66556008)(83380400001)(6512007)(36756003)(2616005)(38100700002)(86362001)(66899021)(4216001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(366004)(39860400002)(346002)(376002)(136003)(451199021)(966005)(6486002)(4326008)(66476007)(54906003)(66946007)(66556008)(316002)(110136005)(6666004)(5660300002)(478600001)(41300700001)(8676002)(8936002)(7416002)(2906002)(86362001)(36756003)(2616005)(26005)(107886003)(83380400001)(38100700002)(6506007)(6512007)(186003)(4216001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?bbgX/aabvJPTv5zfhVvG0T+6GxGfkcMcLTs1+yhBwtd0gcNLrZeHNgfvuG1a?=
- =?us-ascii?Q?sOcck5fr7P+7ilyKZXIHjs8VMTP4FJJAmTS/DR8deiBUis+OEuC07KDLy+Zv?=
- =?us-ascii?Q?QX7bYLu9eCD1yEJEJaRdpmNO/C7NJwIQQQ2TK1fZp357nQ8gkTrEIBqqPqgQ?=
- =?us-ascii?Q?fL2Nmh+DxB1iVmp4GKNNRFe2KZslJ0Zqs746XUiTEgCAieKBpqsZyU30N7+e?=
- =?us-ascii?Q?0gCrvAaW+tObFMVzbcLk3WvcqNOl3Qrl5txA9+F+0Fmd1HMeqF1l7iCI1iZh?=
- =?us-ascii?Q?+42DeMtK15VlP6eFquJ/z/wocW94Pk3LCjmGnWYB7ZQvvck3NjM5Ya6v1yaM?=
- =?us-ascii?Q?crDWHutvEFeHNd0Bx/vfRMEEd9+PHEQtpwoG8+aNBgguEACwsC8FbsiC3bKa?=
- =?us-ascii?Q?8IaJYkU4/+7s7DUoktH01cTJFCVc5KCkrcuqSrkYAj56/DTSkQcTJ1W4MUOj?=
- =?us-ascii?Q?e2vQT27hfPBFwWYQQrD+Xkyyswjl10hQJ+EuNhowNOI8vTPc/DwDHHjv7BGu?=
- =?us-ascii?Q?PavWf5Uy/qEpk3IrU+958tg56ki/Qmr+3iklzzWbDcrRVlLnxKv/ZNoh1DHF?=
- =?us-ascii?Q?c1x6SSPRZk4EbHrKnb0/MPIxsiIbXUYPOX4+Vg0ZgAwvDnJNjIbxVkmEQGZC?=
- =?us-ascii?Q?+uTsCeNXW4TKlo6sUhUPViwy/NCP8iyOgkQO/SoFaNVyUUsFXjEgFlFDkJUF?=
- =?us-ascii?Q?IvXxLYei+LWDit23iK5rgFuB5AL9kXnwkhr3ohccITdefUkMIrbwNOWHXzxs?=
- =?us-ascii?Q?gY6BIypBoD7vUNKd6GSZ75L/pG54VzbMmF8CQLWD6mQcznb+aV4mVkELAkti?=
- =?us-ascii?Q?pLBGsekhcd47OoI09dB4sJ2cuL7EzLGgV5Ckhg1heL0a2Z6ElFVOcIeS5xxA?=
- =?us-ascii?Q?jRukH0tD+8nezyPnKmLU53QvWvODsvXvm+N0KPx29I+1dp8nIRejhmWZwdxr?=
- =?us-ascii?Q?xeorhMn1hDYPzXcjIHXUnO35Oo6j8NBfYmblL+JdLNT3UkE7/MiJnYht+I0j?=
- =?us-ascii?Q?Lh2NNNCet8LN9nBfcGtHSanDAZrbNKxeIj9j1KYSsNjbeRdMkfh9/1dXAwtY?=
- =?us-ascii?Q?3of97E15X7vjAIEYHUhw+IpS7ccuxpwizN0Im0Lfv6/Y05bkrbalNWDKYJ+j?=
- =?us-ascii?Q?U6CGo6CXdgsFEHbnwaVY1iTkIJ7gcQQoQXDVSAe4lVLYgIvB3CgjUUU8RE+I?=
- =?us-ascii?Q?kjfjFDPbMEk5c6M7jbdG5BKk/kjVxS15Etb+dZgHWJzXlGviDonBQVr20UOX?=
- =?us-ascii?Q?8JQWg/aU19EXvdusjlW4pvmeXjpo+qZSO4ZsNX5YkZ3s0h7+HL0TmuSxKnGk?=
- =?us-ascii?Q?1rk/vKL8WbeULsusRucATMdj5fWV2QRj5iYsv9KbHOCPUYSzDC1U3QzR/E0J?=
- =?us-ascii?Q?/hCyTttV0Dv4VSuxdkra39fbqgjEwm26lJ3zLXvFppfSL6ulh9WJIS3ppLMF?=
- =?us-ascii?Q?errDt7BpseMBb+ip1A5g5uo466dXn/dnvCiaBaT/933qtKAnqIz9VcOyUuPl?=
- =?us-ascii?Q?T2PSrhHIR4VRPPEiKPCD1pgSAiygYlS2IBO0ag320T2scM1es9etEiIwDuie?=
- =?us-ascii?Q?QukPgNUrP9ozbB/3dFOFGopjTscu/aTqKGMr8rWi?=
+	=?us-ascii?Q?fYlesHJE3wPIbQJ1LYrUnP5WCEOXPfB+5sQtEtmbR1YcktV4cD5iX1x32V/K?=
+ =?us-ascii?Q?J9XKH7Mv0ROtaFo9IqNaup9en8rE9wRI9priCRXQvkD8H6BFKhX+KSPxVyR3?=
+ =?us-ascii?Q?0GN9KuL7rIj7r7u7/bvIqgtJtFHwEEgpNY9RThXeJvjoQu5VVoYPRNGXXgJu?=
+ =?us-ascii?Q?qmmL/jKZG35OGCzPdp7Gvnqlwnu2erj+ppzYOx0J5rRZV26/8HtZ+pu3RBA5?=
+ =?us-ascii?Q?PH4prBZqTTmrWtODTwzSd2yMPVrN87XiTBluV937yUabtrEAKmJmsH6wJyRI?=
+ =?us-ascii?Q?4xZYaCgQ7r308APEPG6NdUGR/io3SsGI/pnHWGDnePI55sGL2VE64wuOc2TC?=
+ =?us-ascii?Q?396AaV12mEAwDgsKYOgtqsm700sI3vC4i/KaIiXrUDg0C7HvQgP3IMW5Xd2P?=
+ =?us-ascii?Q?iCUNCB6Irq0cR/0HjqOMcKDzD2IXgj0DY+FnDKo2QSUBwdOl+c1bkF37aym6?=
+ =?us-ascii?Q?r07BNDk09ERsTRXhyflo2ds/3Q22hK1NzHjCV+HfNw7vWp+zOLWk/2Gw28P0?=
+ =?us-ascii?Q?P1iBwMtRNC0CsoZmG1Ri2tq8sWL/Zc1JtOd4/piZUsrn5j5VQW5ylPjQPEW4?=
+ =?us-ascii?Q?++6/qzUw0Q/faau4z+xuAFPauDRSwZc4MEPNaW0SYTt8H/ACFWMwNwTF05vT?=
+ =?us-ascii?Q?Tw4pyA+zU/WZ7C03W1NTgPmQqtqkWKLJ5nY7EGHCzam/4QkM+i5L5AeMPZmY?=
+ =?us-ascii?Q?1Y4wTVt4hXiCT6enNszTEygAz+/cXqqgyENByaygMG0D1mnjlGEzcAqEBi+B?=
+ =?us-ascii?Q?7mPZKY4VxasKMMOXGTVV90OvSs9VJzI6N0EGGu/vUmccyjrjfsV9Tfr6I4oG?=
+ =?us-ascii?Q?5C9yY6q2GdvwagwUR/Ib/dIlBgGJMimAMMM0vrcs2umja8VyxHiaz3fb5Kpn?=
+ =?us-ascii?Q?9Jr5fUd+XdjJtcpBuMs2ApfrCaVYS9QFTtVQ2UH7DoVRQEYiGqS75pUatxv7?=
+ =?us-ascii?Q?GAue+RA2p88vi/mohlESrayDNE10fYsfCoFZGstMk3lDlGhn9MvAJXX2kL2R?=
+ =?us-ascii?Q?GBg2vK8oqJ6tMmlcG0SEDxxIiEb6P+G7vlNrxUQis52vc5xcOw/nkx4OeQtI?=
+ =?us-ascii?Q?OuCY4A3eg1hB3J7tzKwNs/ao/97dJfqaG4fcFcw5MX4PG2PKyjIJxvPQf2OA?=
+ =?us-ascii?Q?xmD+wcsaxpigiLSrjCCXYnTsJDq7yo8R8PrqFqruCQtj5aYMRLFazd3KxMRV?=
+ =?us-ascii?Q?1E5WqZJ+s3FOZ6NpvI6DXpXTO6KkC7K5ytEjTmZRfLKMrothy5mnF5zGqF1d?=
+ =?us-ascii?Q?0Y+2WHzX8lbQ+sIvXZZt8g4LBAhSCgOfhxdQzhSGe/A9ukv9HR/k1+OH1qF9?=
+ =?us-ascii?Q?fDk0rbKKQwbXSNYwKl/Ml/sMxfO5p0hmKHEsNZC5EqqJkWSy43V0Ko5T1BhH?=
+ =?us-ascii?Q?u8DFaeYx3S0v0M4okkzRNLwvDYChszCsvBK6f0cbAqHBhRMxiecVwYgui7s2?=
+ =?us-ascii?Q?u0rEx1hE6RXZ2fwieDDxV4RwPZd7pmLsDoAgZd8/DJLRxVUgp0y7HZgI5rr6?=
+ =?us-ascii?Q?v2iOTib4GUh0WR2DVEG2dPp0IDKdMR11pBPokZXhvKQamBPDVad70Jw2YAkl?=
+ =?us-ascii?Q?AgRk8Abzco/kNU3aqdqNmDCty7+f/jkPAAQSEt7N?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8898baa0-3c8c-4123-821e-08db3b5d1004
+X-MS-Exchange-CrossTenant-Network-Message-Id: eb9586cf-1c25-4c2e-8ef3-08db3b5d0fc1
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2023 13:51:49.0941
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2023 13:51:48.6335
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0wy2aoKBLJwiarACEHEW0RMNaNJP+r1QAahLhIPRWruYv/5Jw/ggtSk/h91uWCsJ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7946
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1RdS+XF6T4PT3fWLKwIaRcgvdGOZ/4N7g6xA2D6sB6hVyXzuwUWrjgv28ESoi15I
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6957
 
-Let's try to have a consistent and clear strategy for error handling
-during domain attach failures.
+Device attachment has a bunch of different flows open coded in different
+ways throughout the code.
 
-There are two broad categories, the first is callers doing destruction and
-trying to set the domain back to a previously good domain. These cases
-cannot handle failure during destruction flows and must succeed, or at
-least avoid a UAF on the current group->domain which is likely about to be
-freed.
+One of the things that became apparently recently is that error handling
+is important and we do need to consistently treat errors during attach and
+have some strategy to unwind back to a safe state.
 
-Many of the drivers are well behaved here and will not hit the WARN_ON's
-or a UAF, but some are doing hypercalls/etc that can fail unpredictably
-and don't meet the expectations.
+Implement a single algorithm for this in one function. It will call each
+device's attach, if it fails it will try to go back to the prior domain or
+as a contingency against a UAF crash try to go to a blocking domain.
 
-The second case is attaching a domain for the first time in a failable
-context, failure should restore the attachment back to group->domain using
-the above unfailable operation.
+As part of this we consolidate how the default domain is created and
+attached as well into one place with a consistent flow.
 
-Have __iommu_group_set_domain_internal() execute a common algorithm that
-tries to achieve this, and in the worst case, would leave a device
-"detached" or assigned to a global blocking domain. This relies on some
-existing common driver behaviors where attach failure will also do detatch
-and true IOMMU_DOMAIN_BLOCK implementations that are not allowed to ever
-fail.
+The new worker functions are called __iommu_device_set_domain() and
+__iommu_group_set_domain_internal(), each has sensible error handling
+internally. At the end __iommu_group_set_domain_internal() is the only
+function that stores to group->domain, and must be called to change this
+value.
 
-Name the first case with __iommu_group_set_domain_nofail() to make it
-clear.
+Some flags tell the intent of the caller, if the caller cannot accept a
+failure, or if the caller is a first attach and wants to do the deferred
+logic.
 
-Pull all the error handling and WARN_ON generation into
-__iommu_group_set_domain_internal().
+Several of the confusing workflows where we store things in group->domain
+or group->default_domain before they are fully setup are removed.
 
-Avoid the obfuscating use of __iommu_group_for_each_dev() and be more
-careful about what should happen during failures by only touching devices
-we've already touched.
+This has a followup series that does a similar de-duplication to the probe
+path:
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/iommu/iommu.c | 137 ++++++++++++++++++++++++++++++++++--------
- 1 file changed, 112 insertions(+), 25 deletions(-)
+https://github.com/jgunthorpe/linux/commits/iommu_err_unwind
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 501257bd02fc3c..ae396c1d075862 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -99,8 +99,26 @@ static int __iommu_attach_device(struct iommu_domain *domain,
- 				 struct device *dev);
- static int __iommu_attach_group(struct iommu_domain *domain,
- 				struct iommu_group *group);
-+
-+enum {
-+	IOMMU_SET_DOMAIN_MUST_SUCCEED = 1 << 0,
-+};
-+
-+static int __iommu_group_set_domain_internal(struct iommu_group *group,
-+					     struct iommu_domain *new_domain,
-+					     unsigned int flags);
- static int __iommu_group_set_domain(struct iommu_group *group,
--				    struct iommu_domain *new_domain);
-+				    struct iommu_domain *new_domain)
-+{
-+	return __iommu_group_set_domain_internal(group, new_domain, 0);
-+}
-+static void __iommu_group_set_domain_nofail(struct iommu_group *group,
-+					    struct iommu_domain *new_domain)
-+{
-+	WARN_ON(__iommu_group_set_domain_internal(
-+		group, new_domain, IOMMU_SET_DOMAIN_MUST_SUCCEED));
-+}
-+
- static int iommu_create_device_direct_mappings(struct iommu_group *group,
- 					       struct device *dev);
- static struct iommu_group *iommu_group_get_for_dev(struct device *dev);
-@@ -2040,15 +2058,13 @@ EXPORT_SYMBOL_GPL(iommu_domain_free);
- static void __iommu_group_set_core_domain(struct iommu_group *group)
- {
- 	struct iommu_domain *new_domain;
--	int ret;
- 
- 	if (group->owner)
- 		new_domain = group->blocking_domain;
- 	else
- 		new_domain = group->default_domain;
- 
--	ret = __iommu_group_set_domain(group, new_domain);
--	WARN(ret, "iommu driver failed to attach the default/blocking domain");
-+	__iommu_group_set_domain_nofail(group, new_domain);
- }
- 
- static int __iommu_attach_device(struct iommu_domain *domain,
-@@ -2233,21 +2249,55 @@ int iommu_attach_group(struct iommu_domain *domain, struct iommu_group *group)
- }
- EXPORT_SYMBOL_GPL(iommu_attach_group);
- 
--static int iommu_group_do_set_platform_dma(struct device *dev, void *data)
-+static int __iommu_device_set_domain(struct iommu_group *group,
-+				     struct device *dev,
-+				     struct iommu_domain *new_domain,
-+				     unsigned int flags)
- {
--	const struct iommu_ops *ops = dev_iommu_ops(dev);
--
--	if (!WARN_ON(!ops->set_platform_dma_ops))
--		ops->set_platform_dma_ops(dev);
-+	int ret;
- 
-+	ret = __iommu_attach_device(new_domain, dev);
-+	if (ret) {
-+		/*
-+		 * If we have a blocking domain then try to attach that in hopes
-+		 * of avoiding a UAF. Modern drivers should implement blocking
-+		 * domains as global statics that cannot fail.
-+		 */
-+		if ((flags & IOMMU_SET_DOMAIN_MUST_SUCCEED) &&
-+		    group->blocking_domain &&
-+		    group->blocking_domain != new_domain)
-+			__iommu_attach_device(group->blocking_domain, dev);
-+		return ret;
-+	}
- 	return 0;
- }
- 
--static int __iommu_group_set_domain(struct iommu_group *group,
--				    struct iommu_domain *new_domain)
-+/*
-+ * If 0 is returned the group's domain is new_domain. If an error is returned
-+ * then the group's domain will be set back to the existing domain unless
-+ * IOMMU_SET_DOMAIN_MUST_SUCCEED, otherwise an error is returned and the group's
-+ * domains is left inconsistent. This is a driver bug to fail attach with a
-+ * previously good domain. We try to avoid a kernel UAF because of this.
-+ *
-+ * IOMMU groups are really the natural working unit of the IOMMU, but the IOMMU
-+ * API works on domains and devices.  Bridge that gap by iterating over the
-+ * devices in a group.  Ideally we'd have a single device which represents the
-+ * requestor ID of the group, but we also allow IOMMU drivers to create policy
-+ * defined minimum sets, where the physical hardware may be able to distiguish
-+ * members, but we wish to group them at a higher level (ex. untrusted
-+ * multi-function PCI devices).  Thus we attach each device.
-+ */
-+static int __iommu_group_set_domain_internal(struct iommu_group *group,
-+					     struct iommu_domain *new_domain,
-+					     unsigned int flags)
- {
-+	struct group_device *last_gdev;
-+	struct group_device *gdev;
-+	int result;
- 	int ret;
- 
-+	lockdep_assert_held(&group->mutex);
-+
- 	if (group->domain == new_domain)
- 		return 0;
- 
-@@ -2257,8 +2307,12 @@ static int __iommu_group_set_domain(struct iommu_group *group,
- 	 * platform specific behavior.
- 	 */
- 	if (!new_domain) {
--		__iommu_group_for_each_dev(group, NULL,
--					   iommu_group_do_set_platform_dma);
-+		for_each_group_device(group, gdev) {
-+			const struct iommu_ops *ops = dev_iommu_ops(gdev->dev);
-+
-+			if (!WARN_ON(!ops->set_platform_dma_ops))
-+				ops->set_platform_dma_ops(gdev->dev);
-+		}
- 		group->domain = NULL;
- 		return 0;
- 	}
-@@ -2268,16 +2322,52 @@ static int __iommu_group_set_domain(struct iommu_group *group,
- 	 * domain. This switch does not have to be atomic and DMA can be
- 	 * discarded during the transition. DMA must only be able to access
- 	 * either new_domain or group->domain, never something else.
--	 *
--	 * Note that this is called in error unwind paths, attaching to a
--	 * domain that has already been attached cannot fail.
- 	 */
--	ret = __iommu_group_for_each_dev(group, new_domain,
--					 iommu_group_do_attach_device);
--	if (ret)
--		return ret;
-+	result = 0;
-+	for_each_group_device(group, gdev) {
-+		ret = __iommu_device_set_domain(group, gdev->dev, new_domain,
-+						flags);
-+		if (ret) {
-+			result = ret;
-+			/*
-+			 * Keep trying the other devices in the group. If a
-+			 * driver fails attach to an otherwise good domain, and
-+			 * does not support blocking domains, it should at least
-+			 * drop its reference on the current domain so we don't
-+			 * UAF.
-+			 */
-+			if (flags & IOMMU_SET_DOMAIN_MUST_SUCCEED)
-+				continue;
-+			goto err_revert;
-+		}
-+	}
- 	group->domain = new_domain;
--	return 0;
-+	return result;
-+
-+err_revert:
-+	/*
-+	 * This is called in error unwind paths. A well behaved driver should
-+	 * always allow us to attach to a domain that was already attached.
-+	 */
-+	last_gdev = gdev;
-+	for_each_group_device(group, gdev) {
-+		const struct iommu_ops *ops = dev_iommu_ops(gdev->dev);
-+
-+		/*
-+		 * If set_platform_dma_ops is not present a NULL domain can
-+		 * happen only for first probe, in which case we leave
-+		 * group->domain as NULL and let release clean everything up.
-+		 */
-+		if (group->domain)
-+			WARN_ON(__iommu_device_set_domain(
-+				group, gdev->dev, group->domain,
-+				IOMMU_SET_DOMAIN_MUST_SUCCEED));
-+		else if (ops->set_platform_dma_ops)
-+			ops->set_platform_dma_ops(gdev->dev);
-+		if (gdev == last_gdev)
-+			break;
-+	}
-+	return ret;
- }
- 
- void iommu_detach_group(struct iommu_domain *domain, struct iommu_group *group)
-@@ -3194,16 +3284,13 @@ EXPORT_SYMBOL_GPL(iommu_device_claim_dma_owner);
- 
- static void __iommu_release_dma_ownership(struct iommu_group *group)
- {
--	int ret;
--
- 	if (WARN_ON(!group->owner_cnt || !group->owner ||
- 		    !xa_empty(&group->pasid_array)))
- 		return;
- 
- 	group->owner_cnt = 0;
- 	group->owner = NULL;
--	ret = __iommu_group_set_domain(group, group->default_domain);
--	WARN(ret, "iommu driver failed to attach the default domain");
-+	__iommu_group_set_domain_nofail(group, group->default_domain);
- }
- 
- /**
+v4:
+ - Update comments and commit messages
+ - New patch "Remove iommu_group_do_dma_first_attach() from iommu_group_add_device()"
+ - Redo "Replace __iommu_group_dma_first_attach() with set_domain"
+   to avoid the flag
+ - Drop "Make iommu_group_do_dma_first_attach() work with owned groups"
+   since the fix happens implicitly now
+ - Use __iommu_group_set_domain() instead of
+   __iommu_group_set_domain_internal() in most places
+ - Make sure iommu_create_device_direct_mappings() is always called to
+   update the default domain, even if the current attached domain is not
+   the default domain
+ - Make the error case for inconsistent iommu_get_def_domain_type()'s
+   always use iommu_def_domain_type
+ - Handle errrors for the first default domain attach more cleanly
+v3: https://lore.kernel.org/r/0-v3-e89a9bb522f5+8c87-iommu_err_unwind_jgg@nvidia.com
+ - New patch to do iommu_group_create_direct_mappings() before
+   attach on the hotplug path based on Lu and Robin's remarks
+ - Fix to return 0 if the group has conflicting default domain types like
+   the original code
+ - Put iommu_group_create_direct_mappings() before attach in setup_domains
+ - Split up the alloc changes from the setup_domain patch to their own
+   patch, implement Robin's point about how the iommu_def_domain_type should
+   work
+ - New patch to optionally do iommu_group_create_direct_mappings() after
+   attach
+ - Reword the setup_domain patch's commit message
+v2: https://lore.kernel.org/r/0-v2-cd32667d2ba6+70bd1-iommu_err_unwind_jgg@nvidia.com
+ - New patch to remove iommu_group_device_count()
+ - New patch to add a for_each helper: for_each_group_device()
+ - Rebase on Joerg's tree
+ - IOMMU_SET_DOMAIN_MUST_SUCCEED instead of true
+ - Split patch to fix owned groups during first attach
+ - Change iommu_create_device_direct_mappings to accept a domain not a
+   group
+ - Significantly revise the "iommu: Consolidate the default_domain setup to
+   one function" patch to de-duplicate the domain type calculation logic
+   too
+ - New patch to clean the flow inside iommu_group_store_type()
+v1: https://lore.kernel.org/r/0-v1-20507a7e6b7e+2d6-iommu_err_unwind_jgg@nvidia.com
+
+Jason Gunthorpe (17):
+  iommu: Replace iommu_group_device_count() with list_count_nodes()
+  iommu: Add for_each_group_device()
+  iommu: Make __iommu_group_set_domain() handle error unwind
+  iommu: Use __iommu_group_set_domain() for __iommu_attach_group()
+  iommu: Use __iommu_group_set_domain() in iommu_change_dev_def_domain()
+  iommu: Replace __iommu_group_dma_first_attach() with set_domain
+  iommu: Remove iommu_group_do_dma_first_attach() from
+    iommu_group_add_device()
+  iommu: Replace iommu_group_do_dma_first_attach with
+    __iommu_device_set_domain
+  iommu: Fix iommu_probe_device() to attach the right domain
+  iommu: Do iommu_group_create_direct_mappings() before attach
+  iommu: Remove the assignment of group->domain during default domain
+    alloc
+  iommu: Consolidate the code to calculate the target default domain
+    type
+  iommu: Revise iommu_group_alloc_default_domain()
+  iommu: Consolidate the default_domain setup to one function
+  iommu: Allow IOMMU_RESV_DIRECT to work on ARM
+  iommu: Remove __iommu_group_for_each_dev()
+  iommu: Tidy the control flow in iommu_group_store_type()
+
+ .clang-format         |   1 +
+ drivers/iommu/iommu.c | 669 +++++++++++++++++++++---------------------
+ 2 files changed, 331 insertions(+), 339 deletions(-)
+
+
+base-commit: 3578e36f238ef81a1967e849e0a3106c9dd37e68
 -- 
 2.40.0
 
