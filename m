@@ -1,81 +1,131 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CF0AE7C
-	for <iommu@lists.linux.dev>; Fri, 14 Apr 2023 17:46:10 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 80FB44B3;
-	Fri, 14 Apr 2023 10:46:48 -0700 (PDT)
-Received: from [10.1.31.28] (010265703453.arm.com [10.1.31.28])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C585F3F587;
-	Fri, 14 Apr 2023 10:46:02 -0700 (PDT)
-Message-ID: <cef7bb32-a302-2220-68a6-726b45f91769@arm.com>
-Date: Fri, 14 Apr 2023 18:45:57 +0100
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 848CB7C
+	for <iommu@lists.linux.dev>; Fri, 14 Apr 2023 18:11:04 +0000 (UTC)
+Received: from skinsburskii.localdomain (c-67-170-100-148.hsd1.wa.comcast.net [67.170.100.148])
+	by linux.microsoft.com (Postfix) with ESMTPSA id A7DD22179262;
+	Fri, 14 Apr 2023 11:05:24 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A7DD22179262
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1681495525;
+	bh=7TWgMCwTIchIJki1b6WkkqtvzdzihOoHkeu7FSM1cGI=;
+	h=Subject:From:Cc:Date:From;
+	b=kUZBbC0uf3JACWAKeVn2KDZBX2MgO5n+huVUR6gkRASjspJ7VNiMfNiXiHHYYs1Zy
+	 EGSXjjOSSJZ0b4sO/4obctT6uobJVkW/KqXeIj6LaTtZT5wDsQh6cQUnTnDLVDcmc/
+	 pDL7zSwAuj2iilCHVOMaFVk/2vxjX7aC7+nqYyuI=
+Subject: [PATCH] x86/hyperv: Fix IRQ effective cpu discovery for the
+ interrupts unmasking
+From: Stanislav Kinsburskii <skinsburskii@linux.microsoft.com>
+Cc: Stanislav Kinsburskii <stanislav.kinsburskii@gmail.com>,
+ "K. Y. Srinivasan" <kys@microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
+ Dexuan Cui <decui@microsoft.com>, Thomas Gleixner <tglx@linutronix.de>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+ "H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev
+Date: Wed, 12 Apr 2023 13:29:20 -0700
+Message-ID: 
+ <168133133232.4448.8053082360972165835.stgit@skinsburskii.localdomain>
+User-Agent: StGit/0.19
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH v4] iommu: Optimise PCI SAC address trick
-Content-Language: en-GB
-To: Joerg Roedel <joro@8bytes.org>
-Cc: will@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- Linus Torvalds <torvalds@linux-foundation.org>,
- Jakub Kicinski <kuba@kernel.org>, John Garry <john.g.garry@oracle.com>
-References: <b8502b115b915d2a3fabde367e099e39106686c8.1681392791.git.robin.murphy@arm.com>
- <ZDk83vpIarQ9jWa7@8bytes.org>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ZDk83vpIarQ9jWa7@8bytes.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 
-On 2023-04-14 12:45, Joerg Roedel wrote:
-> Hi Robin,
-> 
-> On Thu, Apr 13, 2023 at 02:40:25PM +0100, Robin Murphy wrote:
->> Per the reasoning in commit 4bf7fda4dce2 ("iommu/dma: Add config for
->> PCI SAC address trick") and its subsequent revert, this mechanism no
->> longer serves its original purpose, but now only works around broken
->> hardware/drivers in a way that is unfortunately too impactful to remove.
->>
->> This does not, however, prevent us from solving the performance impact
->> which that workaround has on large-scale systems that don't need it.
->> Once the 32-bit IOVA space fills up and a workload starts allocating and
->> freeing on both sides of the boundary, the opportunistic SAC allocation
->> can then end up spending significant time hunting down scattered
->> fragments of free 32-bit space, or just reestablishing max32_alloc_size.
->> This can easily be exacerbated by a change in allocation pattern, such
->> as by changing the network MTU, which can increase pressure on the
->> 32-bit space by leaving a large quantity of cached IOVAs which are now
->> the wrong size to be recycled, but also won't be freed since the
->> non-opportunistic allocations can still be satisfied from the whole
->> 64-bit space without triggering the reclaim path.
->>
->> However, in the context of a workaround where smaller DMA addresses
->> aren't simply a preference but a necessity, if we get to that point at
->> all then in fact it's already the endgame. The nature of the allocator
->> is currently such that the first IOVA we give to a device after the
->> 32-bit space runs out will be the highest possible address for that
->> device, ever. If that works, then great, we know we can optimise for
->> speed by always allocating from the full range. And if it doesn't, then
->> the worst has already happened and any brokenness is now showing, so
->> there's little point in continuing to try to hide it.
->>
->> To that end, implement a flag to refine the SAC business into a
->> per-device policy that can automatically get itself out of the way if
->> and when it stops being useful.
-> 
-> Thanks for working on this, I think this is good to go. But given the
-> issues we had with last attempt I'd like to have this in linux-next for
-> a few weeks before sending it upstream. Therefore I will defer this
-> patch and merge it early in the next cycle.
+As of today, the existent code uses conjunction of IRQ affinity mask and cpu
+online mask to find the cpu id to map an interrupt to.
+I looks like the intention was to make sure that and IRQ won't be mapped to an
+offline CPU.
 
-Sounds good - I'm considerably more confident in this approach, but 
-although it should not be able to break any scenario which wasn't 
-already broken, it could potentially still make such a breakage more 
-noticeable. Thus in all honesty I'd feel happiest giving it a full cycle 
-of -next coverage as well.
+Although it works correctly today, there are two problems with it:
+1. IRQ affinity mask already consists only of online cpus, thus matching it
+to the mask on online cpus is redundant.
+2. cpumask_first_and() can return nr_cpu_ids in case of IRQ affinity
+containing offline cpus in future, and in this case current implementation
+will likely lead to kernel crash in hv_map_interrupt due to an attempt to use
+invalid cpu id for getting vp set.
 
-Cheers,
-Robin.
+This patch fixes this logic by taking the first bit from the affinity
+mask as the cpu to map the IRQ to.
+It also adds a paranoia WARN_ON_ONCE for the case when the affinity mask
+contains offline cpus.
+
+Signed-off-by: Stanislav Kinsburskii <stanislav.kinsburskii@gmail.com>
+CC: "K. Y. Srinivasan" <kys@microsoft.com>
+CC: Haiyang Zhang <haiyangz@microsoft.com>
+CC: Wei Liu <wei.liu@kernel.org>
+CC: Dexuan Cui <decui@microsoft.com>
+CC: Thomas Gleixner <tglx@linutronix.de>
+CC: Ingo Molnar <mingo@redhat.com>
+CC: Borislav Petkov <bp@alien8.de>
+CC: Dave Hansen <dave.hansen@linux.intel.com>
+CC: x86@kernel.org
+CC: "H. Peter Anvin" <hpa@zytor.com>
+CC: Joerg Roedel <joro@8bytes.org>
+CC: Will Deacon <will@kernel.org>
+CC: Robin Murphy <robin.murphy@arm.com>
+CC: linux-hyperv@vger.kernel.org
+CC: linux-kernel@vger.kernel.org
+CC: iommu@lists.linux.dev
+---
+ arch/x86/hyperv/irqdomain.c  |    7 ++++---
+ drivers/iommu/hyperv-iommu.c |    7 ++++---
+ 2 files changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/arch/x86/hyperv/irqdomain.c b/arch/x86/hyperv/irqdomain.c
+index 42c70d28ef27..759774b5ab2f 100644
+--- a/arch/x86/hyperv/irqdomain.c
++++ b/arch/x86/hyperv/irqdomain.c
+@@ -192,7 +192,6 @@ static void hv_irq_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+ 	struct pci_dev *dev;
+ 	struct hv_interrupt_entry out_entry, *stored_entry;
+ 	struct irq_cfg *cfg = irqd_cfg(data);
+-	const cpumask_t *affinity;
+ 	int cpu;
+ 	u64 status;
+ 
+@@ -204,8 +203,10 @@ static void hv_irq_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+ 		return;
+ 	}
+ 
+-	affinity = irq_data_get_effective_affinity_mask(data);
+-	cpu = cpumask_first_and(affinity, cpu_online_mask);
++	cpu = cpumask_first(irq_data_get_effective_affinity_mask(data));
++
++	/* Paranoia check: the cpu must be online */
++	WARN_ON_ONCE(!cpumask_test_cpu(cpu, cpu_online_mask));
+ 
+ 	if (data->chip_data) {
+ 		/*
+diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
+index 8302db7f783e..632e9c123bbf 100644
+--- a/drivers/iommu/hyperv-iommu.c
++++ b/drivers/iommu/hyperv-iommu.c
+@@ -197,15 +197,16 @@ hyperv_root_ir_compose_msi_msg(struct irq_data *irq_data, struct msi_msg *msg)
+ 	u32 vector;
+ 	struct irq_cfg *cfg;
+ 	int ioapic_id;
+-	const struct cpumask *affinity;
+ 	int cpu;
+ 	struct hv_interrupt_entry entry;
+ 	struct hyperv_root_ir_data *data = irq_data->chip_data;
+ 	struct IO_APIC_route_entry e;
+ 
+ 	cfg = irqd_cfg(irq_data);
+-	affinity = irq_data_get_effective_affinity_mask(irq_data);
+-	cpu = cpumask_first_and(affinity, cpu_online_mask);
++	cpu = cpumask_first(irq_data_get_effective_affinity_mask(irq_data));
++
++	/* Paranoia check: the cpu must be online */
++	WARN_ON_ONCE(!cpumask_test_cpu(cpu, cpu_online_mask));
+ 
+ 	vector = cfg->vector;
+ 	ioapic_id = data->ioapic_id;
+
+
