@@ -1,119 +1,73 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EE3C3205
-	for <iommu@lists.linux.dev>; Wed, 12 Apr 2023 14:35:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3B94C433EF;
-	Wed, 12 Apr 2023 14:35:46 +0000 (UTC)
-Message-ID: <2c3105d4-2e60-e77a-df5d-e2a7e37c6f4a@xs4all.nl>
-Date: Wed, 12 Apr 2023 16:35:45 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 057473205
+	for <iommu@lists.linux.dev>; Wed, 12 Apr 2023 14:36:20 +0000 (UTC)
+Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-1878504c22aso440797fac.8
+        for <iommu@lists.linux.dev>; Wed, 12 Apr 2023 07:36:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681310180; x=1683902180;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ZnuVW5Vp/+EHlp3UdQMcKQ8pXzh4inb4O6e6LBWQKfA=;
+        b=L0wbw5DOXVtAU/80Z657toDLwKVMkQsUPVx+DdLwKBVFG/ct8p/dfGDiY8E57pMGPK
+         8pbRF8MQoyz9PbtbclGTxV+gvwaC2k4fd59VWsTcfKsKfFmz67nmZ8gBS1EYKvvjR8Hc
+         JVCaF5yys/6qvbpELaBU/zQD7FjbWkLMIoMPNflwE8blYesFzYzSqY/OGbpowLrQ0Rlw
+         zJPHGk5C47onApOZwQLmUyUgjcjgboGaxkVAqeOKTQyt6ynZzu7tISO5j1+Z+asRdT1P
+         udamVe03ZJQo+5vZbCfVjLUXPd/ZLrrZ5Y5puCOVSdzWCz1nXKir3NSMDGD5uYr/vGhv
+         G/gg==
+X-Gm-Message-State: AAQBX9eaXok6V74hd25YL1ww7iPp2VNBjofcYBRHUt5MSvO++KXpXAp7
+	4XUnGYuxFdpMBUnRDjRYlg==
+X-Google-Smtp-Source: AKy350Yrb4lQU2MjSsBsCSaX0JiNW9MIuuGctZGj/LJOLA9/nYNk7N26TsBKUAGKiWf9TDUJUEj+Sg==
+X-Received: by 2002:a05:6870:51f:b0:17b:1214:5fd7 with SMTP id j31-20020a056870051f00b0017b12145fd7mr10030861oao.17.1681310179916;
+        Wed, 12 Apr 2023 07:36:19 -0700 (PDT)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id g4-20020a056870d20400b0018045663fc5sm6230397oac.48.2023.04.12.07.36.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Apr 2023 07:36:19 -0700 (PDT)
+Received: (nullmailer pid 2328230 invoked by uid 1000);
+	Wed, 12 Apr 2023 14:36:18 -0000
+Date: Wed, 12 Apr 2023 09:36:18 -0500
+From: Rob Herring <robh@kernel.org>
+To: Konrad Dybcio <konrad.dybcio@linaro.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>, linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Andy Gross <agross@kernel.org>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev, Bjorn Andersson <andersson@kernel.org>
+Subject: Re: [PATCH v3] dt-bindings: iommu: Convert QCOM IOMMU to YAML
+Message-ID: <168131017435.2328084.7641188921075798677.robh@kernel.org>
+References: <20230406-topic-qciommu-v3-1-aa0e4f018191@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v7 00/14] Adjust the dma-ranges for MTK IOMMU
-Content-Language: en-US
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh+dt@kernel.org>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- nfraprado@collabora.com, linux-media@vger.kernel.org,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- mingyuan.ma@mediatek.com, yf.wang@mediatek.com, jianjiao.zeng@mediatek.com,
- Yunfei Dong <yunfei.dong@mediatek.com>,
- kyrie wu <kyrie.wu@mediatek.corp-partner.google.com>,
- chengci.xu@mediatek.com, youlin.pei@mediatek.com, anan.sun@mediatek.com
-References: <20230411093144.2690-1-yong.wu@mediatek.com>
-From: Hans Verkuil <hverkuil@xs4all.nl>
-In-Reply-To: <20230411093144.2690-1-yong.wu@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230406-topic-qciommu-v3-1-aa0e4f018191@linaro.org>
 
-On 11/04/2023 11:31, Yong Wu wrote:
-> After commit f1ad5338a4d5 ("of: Fix "dma-ranges" handling for bus
-> controllers"), the dma-ranges is not allowed for dts leaf node.
-> but we still would like to separate the different masters into
-> different iova regions. Thus we adjust the internal flow, separate
-> the 16GB iova range by the master HW larbid/portid and add the
-> dma-ranges property in the parent "soc" node. This also could avoid
-> the users forget/abuse the iova regions.
-> 
-> The commit f1ad5338a4d5 did affect the mt8195 venc, But it is not
-> a fatal issue, it could also work well at 0-4GB iova. thus I don't
-> add "Fixes:" tag.
-> 
-> In this series, I add functions for mt8192/mt8195/mt8186, mt8188 will
-> be in its special patchset. and the previous mt8173/mt8183...support
-> 0-4GB only, no need this function.
 
-I've Acked patches 10 and 11 as well. I assume this series will be merged
-through the iommu subsystem? If not, and I need to take the media patches,
-then please let me know!
+On Thu, 06 Apr 2023 20:47:28 +0200, Konrad Dybcio wrote:
+> Convert the Qualcomm IOMMU bindings to YAML.
+> 
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> ---
+> v2 -> v3:
+> - Add additionalProperties:false & required for ctx subnodes
+> - Drop the IOMMU consumer device from the DT example
+> 
+> v2: https://lore.kernel.org/r/20230406-topic-qciommu-v2-1-b8547622b2a4@linaro.org
+> 
+> v1 -> v2:
+> - Include missing header
+> - pad the addresses to 8 hex digits
+> - add 'reg' to the mdp device
+> 
+> v1: https://lore.kernel.org/r/20230406-topic-qciommu-v1-1-03f17717a447@linaro.org
+> ---
+>  .../devicetree/bindings/iommu/qcom,iommu.txt       | 122 ---------------------
+>  .../devicetree/bindings/iommu/qcom,iommu.yaml      | 113 +++++++++++++++++++
+>  2 files changed, 113 insertions(+), 122 deletions(-)
+> 
 
-Regards,
-
-	Hans
-
-> 
-> Change note:
-> v7: Remove the change about mediatek,vcodec-subdev-decoder.yaml since
->     this was merged at:
->     https://lore.kernel.org/all/98c48690-631d-1086-9b7c-004c61cc8dbb@xs4all.nl/
-> 
-> v6: https://lore.kernel.org/linux-mediatek/20230403091337.26745-1-yong.wu@mediatek.com/
->    Add three patches for set dma-mask for iommu master devices.
-> 
-> v5: Nothing change. Just rebase on v6.3-rc1.
-> 
-> v4: https://lore.kernel.org/linux-mediatek/20230215062544.8677-1-yong.wu@mediatek.com/
->     Improve the comment in the code from AngeloGioacchino.
-> 
-> v3: https://lore.kernel.org/linux-mediatek/20230214031114.926-1-yong.wu@mediatek.com/
->    Add a new patch only for comment more in the code.
-> 
-> v2: https://lore.kernel.org/linux-mediatek/20230208053643.28249-1-yong.wu@mediatek.com/
->    a) Base on next-20230206 since mt8195 jpeg node is applied which affect
->       this patch.
->    b) Reword the commit message [1/10][2/10] to explain effect.
-> 
-> v1: https://lore.kernel.org/linux-mediatek/20230113060133.9394-1-yong.wu@mediatek.com/
->    Base on v6.2-rc3.
-> 
-> Yong Wu (14):
->   dt-bindings: media: mediatek,vcodec: Remove dma-ranges property
->   dt-bindings: media: mediatek,jpeg: Remove dma-ranges property
->   iommu/mediatek: Improve comment for the current region/bank
->   iommu/mediatek: Get regionid from larb/port id
->   iommu/mediatek: mt8192: Add iova_region_larb_msk
->   iommu/mediatek: mt8195: Add iova_region_larb_msk
->   iommu/mediatek: mt8186: Add iova_region_larb_msk
->   iommu/mediatek: Add a gap for the iova regions
->   iommu/mediatek: Set dma_mask for the master devices
->   media: mtk-jpegdec: Remove the setting for dma_mask
->   media: mediatek: vcodec: Remove the setting for dma_mask
->   arm64: dts: mt8195: Remove the unnecessary dma-ranges
->   arm64: dts: mt8195: Add dma-ranges for the parent "soc" node
->   arm64: dts: mt8186: Add dma-ranges for the parent "soc" node
-> 
->  .../media/mediatek,mt8195-jpegdec.yaml        |   7 -
->  .../media/mediatek,mt8195-jpegenc.yaml        |   7 -
->  .../media/mediatek,vcodec-decoder.yaml        |   5 -
->  .../media/mediatek,vcodec-encoder.yaml        |   5 -
->  .../bindings/media/mediatek-jpeg-encoder.yaml |   5 -
->  arch/arm64/boot/dts/mediatek/mt8186.dtsi      |   1 +
->  arch/arm64/boot/dts/mediatek/mt8195.dtsi      |   4 +-
->  drivers/iommu/mtk_iommu.c                     | 145 ++++++++++++++----
->  .../platform/mediatek/jpeg/mtk_jpeg_core.c    |   3 -
->  .../mediatek/vcodec/mtk_vcodec_dec_drv.c      |   8 -
->  .../mediatek/vcodec/mtk_vcodec_enc_drv.c      |   3 -
->  11 files changed, 117 insertions(+), 76 deletions(-)
-> 
+Applied, thanks!
 
