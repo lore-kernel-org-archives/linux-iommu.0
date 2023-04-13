@@ -1,32 +1,32 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8048E62F
-	for <iommu@lists.linux.dev>; Thu, 13 Apr 2023 04:06:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0DB763E
+	for <iommu@lists.linux.dev>; Thu, 13 Apr 2023 04:06:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681358808; x=1712894808;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=rMHo8yYSBVXvdzGdpugvYObeZKKcdE/cMZKOA3T4vNU=;
-  b=TiB2xdO/59MGPxxW+IIvYDZZAlJAgiE9qtG7sVXEwmpp5rQI73VnnwSC
-   1t57xhgWAOs7cn5K7h0f7eIDazrS2XywubqG7b/U0Qf9SeP6HASTG7e3x
-   ZtXcubuNXuXPCmWnu5ynFjXjtRLBSx+ECkkvNs89tBLgzp+7eDu30dlZp
-   IyEEH3znnQykle675V1lBheMWYbb/ynt184M4UOWTJw7HGo6HQdqcgcf7
-   opt/OoiU89vgY7rGlCGjkpr5ssEkpKnNi4J3+lrK4r4Apu5PSjRe/fDfv
-   7MiHqDOCZGYlwqDJ3QGEruE5aZ4e784HC2bWtf+N/YkrJ3yfwN7CKWyAW
+  t=1681358809; x=1712894809;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=s73Dwcw/j+M9Z+7wT2sD+XtVqUA+ffONLeb/NudPzz8=;
+  b=d+4kjgeGPGvy8vBtOvmv81A5cC/KCjjYfsgF2vJLtpuD+HGqxCP4kQZB
+   J+4cXYYigavGphlElDM+zPdrMNvBLzTX/gP28xroDVOYN52a+vQxMqWOb
+   reRdqI6eeS5SwBEaT3TMYptGSnQ4+c7qvYzEUTDKuPUieDmM7VoHkp17K
+   hxLdQyTcW6ZTLg/VV/gi6GQnZNlzR+c05bgf45z3c2sKQjHl4XcQu4mI7
+   5vXloRfuQf/iTto/EdAqPBpQRyT5WZlsJv4RhHvZN4hsllzDzcp4E3xnS
+   cbvzE3WxiivtctVtCvZ/nvD9mMaTnz8F+OokV22HEEZi4vS7QLDkfjUsn
    Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="332786511"
+X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="323702320"
 X-IronPort-AV: E=Sophos;i="5.98,339,1673942400"; 
-   d="scan'208";a="332786511"
+   d="scan'208";a="323702320"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2023 21:06:47 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2023 21:06:44 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="935360969"
+X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="935360955"
 X-IronPort-AV: E=Sophos;i="5.98,339,1673942400"; 
-   d="scan'208";a="935360969"
+   d="scan'208";a="935360955"
 Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by fmsmga006.fm.intel.com with ESMTP; 12 Apr 2023 21:06:45 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 12 Apr 2023 21:06:42 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: Tina Zhang <tina.zhang@intel.com>,
@@ -34,12 +34,10 @@ Cc: Tina Zhang <tina.zhang@intel.com>,
 	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 02/17] iommu/vt-d: Allow SVA with device-specific IOPF
-Date: Thu, 13 Apr 2023 12:06:30 +0800
-Message-Id: <20230413040645.46157-3-baolu.lu@linux.intel.com>
+Subject: [PATCH v2 00/17] [PULL REQUEST] Intel IOMMU updates for Linux v6.4
+Date: Thu, 13 Apr 2023 12:06:28 +0800
+Message-Id: <20230413040645.46157-1-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230413040645.46157-1-baolu.lu@linux.intel.com>
-References: <20230413040645.46157-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,48 +46,68 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Currently enabling SVA requires IOPF support from the IOMMU and device
-PCI PRI. However, some devices can handle IOPF by itself without ever
-sending PCI page requests nor advertising PRI capability.
+Hi Joerg,
 
-Allow SVA support with IOPF handled either by IOMMU (PCI PRI) or device
-driver (device-specific IOPF). As long as IOPF could be handled, SVA
-should continue to work.
+This includes patches queued for v6.4. They are:
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Link: https://lore.kernel.org/r/20230324120234.313643-3-baolu.lu@linux.intel.com
----
- drivers/iommu/intel/iommu.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+ - Allow the VT-d driver to support non-PRI IOPF
+ - Remove PASID supervisor request support
+ - Various small and misc cleanups
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 7c2f4bd33582..caf664448ee9 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4650,7 +4650,21 @@ static int intel_iommu_enable_sva(struct device *dev)
- 	if (!(iommu->flags & VTD_FLAG_SVM_CAPABLE))
- 		return -ENODEV;
- 
--	if (!info->pasid_enabled || !info->pri_enabled || !info->ats_enabled)
-+	if (!info->pasid_enabled || !info->ats_enabled)
-+		return -EINVAL;
-+
-+	/*
-+	 * Devices having device-specific I/O fault handling should not
-+	 * support PCI/PRI. The IOMMU side has no means to check the
-+	 * capability of device-specific IOPF.  Therefore, IOMMU can only
-+	 * default that if the device driver enables SVA on a non-PRI
-+	 * device, it will handle IOPF in its own way.
-+	 */
-+	if (!info->pri_supported)
-+		return 0;
-+
-+	/* Devices supporting PRI should have it enabled. */
-+	if (!info->pri_enabled)
- 		return -EINVAL;
- 
- 	ret = iopf_queue_add_device(iommu->iopf_queue, dev);
+This series also includes an idxd patch to avoid driver regression after
+changes in the IOMMU driver. It has been reviewed and acked by the
+maintainers.
+
+The whole series is based on v6.3-rc6 and also available at:
+https://github.com/LuBaolu/intel-iommu/commits/vtd-update-for-v6.4
+
+Please pull them for x86/vt-d branch.
+
+Best regards,
+Baolu
+
+Change log:
+ - v2:
+   - Avoid using "fix" wording in the commit message of a cleanup patch,
+     no functional change. [David Laight]
+   - Add Acked-by from Vinod Koul to the idxd patch.
+
+ - v1: https://lore.kernel.org/linux-iommu/20230411064815.31456-1-baolu.lu@linux.intel.com/
+
+Christophe JAILLET (1):
+  iommu/vt-d: Do not use GFP_ATOMIC when not needed
+
+Jacob Pan (2):
+  iommu/vt-d: Use non-privileged mode for all PASIDs
+  iommu/vt-d: Remove PASID supervisor request support
+
+Lu Baolu (7):
+  dmaengine: idxd: Add enable/disable device IOPF feature
+  iommu/vt-d: Allow SVA with device-specific IOPF
+  iommu/vt-d: Move iopf code from SVA to IOPF enabling path
+  iommu/vt-d: Move pfsid and ats_qdep calculation to device probe path
+  iommu/vt-d: Move PRI handling to IOPF feature path
+  iommu/vt-d: Remove unnecessary checks in iopf disabling path
+  iommu/vt-d: Remove extern from function prototypes
+
+Tina Zhang (7):
+  iommu/vt-d: Make size of operands same in bitwise operations
+  iommu/vt-d: Remove BUG_ON on checking valid pfn range
+  iommu/vt-d: Remove BUG_ON in handling iotlb cache invalidation
+  iommu/vt-d: Remove BUG_ON when domain->pgd is NULL
+  iommu/vt-d: Remove BUG_ON in map/unmap()
+  iommu/vt-d: Remove a useless BUG_ON(dev->is_virtfn)
+  iommu/vt-d: Remove BUG_ON in dmar_insert_dev_scope()
+
+ drivers/iommu/intel/iommu.h         |  36 +++---
+ drivers/iommu/intel/pasid.h         |   7 --
+ drivers/dma/idxd/init.c             |  31 ++++-
+ drivers/iommu/intel/dmar.c          |   7 +-
+ drivers/iommu/intel/iommu.c         | 173 +++++++++++++++++-----------
+ drivers/iommu/intel/irq_remapping.c |   2 +-
+ drivers/iommu/intel/pasid.c         |  43 -------
+ 7 files changed, 155 insertions(+), 144 deletions(-)
+
 -- 
 2.34.1
 
