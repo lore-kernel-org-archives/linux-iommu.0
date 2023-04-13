@@ -1,31 +1,33 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E1F3133CC
-	for <iommu@lists.linux.dev>; Thu, 13 Apr 2023 10:01:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 834FE33CC
+	for <iommu@lists.linux.dev>; Thu, 13 Apr 2023 10:06:19 +0000 (UTC)
 Received: from 8bytes.org (p200300c27714bc0086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:7714:bc00:86ad:4f9d:2505:dd0d])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 4528F242D84;
-	Thu, 13 Apr 2023 12:01:42 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 57B5D242D84;
+	Thu, 13 Apr 2023 12:06:18 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1681380103;
-	bh=YIak5Ldwe/BQilh0WkfdYryog/OSRH+LRu60YHJ+tEs=;
+	s=default; t=1681380378;
+	bh=4gThnfpsRqzwASHZ1HgYwpGgnzDNTnscEc/9wsZnTcc=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=8u7cNWzkEM9x44hyALL5DgvudKz18EWanw3czcYdVmfsHb+39iLlXSpcheFsYkYSA
-	 Hpiu5a/IL18EJw8xbx3gHzzg/7uxkMVRbr8x53DTq5DCHgTFuKAWjiMteM0Y4s+ud1
-	 69M5VGnuN+VSs1sY+Knk2NuAFPk6RfDlzIWzgnD6qaz/tnlAyFwKErx6DFgz5Dg59l
-	 Oq7OOJpRt1jV3nif07c7wA0M4j7+mLUvMM2h4kbTspNKvUhmiwsyB62EANd9+Ht65G
-	 6eWomZpBMsKXakjzwh/COCE5xEum3ALZVaxSId2hkgvIdO7y+Vl3shFpUBM8DKh0hL
-	 hwi6JVX79W0pQ==
-Date: Thu, 13 Apr 2023 12:01:40 +0200
+	b=rS4CpcSGtqIoISkWPV9IMCAAxxpTcZRGGcID1l/cwQPy04xYA+jAcnXTaBzK0yHMa
+	 /TjIH42K/MNxHZ/4fmvdPgu9yeXmA4duGqrfLdxb9H6b/z6gXEemnS3uOhDKdUT0f7
+	 K9sezEAd8G+gDuV+qBnXwQr3U3Hpw8ZRMU7Da+Rpdwm3LZA2tiitYdhFbLLTzmxbGk
+	 mKCccaHP3hjXpiZAg9fe5/XiT7cTTjp7ZpPwQrxcJJ0fOnwmolSYaGPe1FCq1o1VMn
+	 hBGc5WOOS8nKrySbq7+YPQYfoQGHOGmyLNf072c6F+fFO8eJvx9V8t1J9zvhL8mCnd
+	 nmbpZ1qsUeZuw==
+Date: Thu, 13 Apr 2023 12:06:17 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Will Deacon <will@kernel.org>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com,
-	kernel-team@android.com
-Subject: Re: [GIT PULL] iommu/arm-smmu: Updates for 6.4
-Message-ID: <ZDfTBOoBrxxnMWAS@8bytes.org>
-References: <20230411142600.GA22971@willie-the-truck>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Tina Zhang <tina.zhang@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 00/17] [PULL REQUEST] Intel IOMMU updates for Linux
+ v6.4
+Message-ID: <ZDfUGa2qikAlA9rN@8bytes.org>
+References: <20230413040645.46157-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -34,9 +36,25 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230411142600.GA22971@willie-the-truck>
+In-Reply-To: <20230413040645.46157-1-baolu.lu@linux.intel.com>
 
-On Tue, Apr 11, 2023 at 03:26:01PM +0100, Will Deacon wrote:
->   git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git tags/arm-smmu-updates
+On Thu, Apr 13, 2023 at 12:06:28PM +0800, Lu Baolu wrote:
+> Lu Baolu (7):
+>   dmaengine: idxd: Add enable/disable device IOPF feature
+>   iommu/vt-d: Allow SVA with device-specific IOPF
+>   iommu/vt-d: Move iopf code from SVA to IOPF enabling path
+>   iommu/vt-d: Move pfsid and ats_qdep calculation to device probe path
+>   iommu/vt-d: Move PRI handling to IOPF feature path
+>   iommu/vt-d: Remove unnecessary checks in iopf disabling path
+>   iommu/vt-d: Remove extern from function prototypes
+> 
+> Tina Zhang (7):
+>   iommu/vt-d: Make size of operands same in bitwise operations
+>   iommu/vt-d: Remove BUG_ON on checking valid pfn range
+>   iommu/vt-d: Remove BUG_ON in handling iotlb cache invalidation
+>   iommu/vt-d: Remove BUG_ON when domain->pgd is NULL
+>   iommu/vt-d: Remove BUG_ON in map/unmap()
+>   iommu/vt-d: Remove a useless BUG_ON(dev->is_virtfn)
+>   iommu/vt-d: Remove BUG_ON in dmar_insert_dev_scope()
 
-Pulled, thanks Will.
+Applied, thanks.
