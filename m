@@ -1,78 +1,71 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 816502C9C
-	for <iommu@lists.linux.dev>; Thu, 13 Apr 2023 10:45:05 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 42948C14;
-	Thu, 13 Apr 2023 03:45:49 -0700 (PDT)
-Received: from [10.57.20.214] (unknown [10.57.20.214])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A5E2E3F6C4;
-	Thu, 13 Apr 2023 03:45:03 -0700 (PDT)
-Message-ID: <08c9f2a2-b2fc-2574-e10a-b6dbd0caedb0@arm.com>
-Date: Thu, 13 Apr 2023 11:44:56 +0100
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E84F2C9C
+	for <iommu@lists.linux.dev>; Thu, 13 Apr 2023 11:09:50 +0000 (UTC)
+Received: from frapeml500002.china.huawei.com (unknown [172.18.147.201])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PxxcV34P2z6J6xl;
+	Thu, 13 Apr 2023 19:07:22 +0800 (CST)
+Received: from [10.81.209.180] (10.81.209.180) by
+ frapeml500002.china.huawei.com (7.182.85.205) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Thu, 13 Apr 2023 13:09:47 +0200
+Message-ID: <f9aec7fa-4b7a-65a3-c060-6c69298fc73b@huawei.com>
+Date: Thu, 13 Apr 2023 13:09:46 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-Subject: Re: [PATCH v3] iommu: Optimise PCI SAC address trick
-To: John Garry <john.g.garry@oracle.com>, joro@8bytes.org
-Cc: will@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- Linus Torvalds <torvalds@linux-foundation.org>, kuba@kernel.org
-References: <e9abc601b00e26fd15a583fcd55f2a8227903077.1674061620.git.robin.murphy@arm.com>
- <40141c33-243c-5da6-fbea-3122e47c7808@oracle.com>
- <02eebcda-f60e-f8ed-7057-cf293d15a173@oracle.com>
-Content-Language: en-GB
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <02eebcda-f60e-f8ed-7057-cf293d15a173@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [RFC v1 3/4] swiotlb: Allow dynamic allocation of bounce buffers
+Content-Language: en-US
+To: Christoph Hellwig <hch@lst.de>
+CC: Jonathan Corbet <corbet@lwn.net>, Marek Szyprowski
+	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Borislav
+ Petkov <bp@suse.de>, "Paul E. McKenney" <paulmck@kernel.org>, Andrew Morton
+	<akpm@linux-foundation.org>, Randy Dunlap <rdunlap@infradead.org>, Damien Le
+ Moal <damien.lemoal@opensource.wdc.com>, Kim Phillips <kim.phillips@amd.com>,
+	"Steven Rostedt (Google)" <rostedt@goodmis.org>, "open list:DOCUMENTATION"
+	<linux-doc@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, "open
+ list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>, Roberto Sassu
+	<roberto.sassu@huawei.com>, Alexander Graf <graf@amazon.com>
+References: <cover.1679309810.git.petr.tesarik.ext@huawei.com>
+ <0334a54332ab75312c9de825548b616439dcc9f5.1679309810.git.petr.tesarik.ext@huawei.com>
+ <20230328040724.GB25506@lst.de>
+ <4268fa4e-4f0f-a2f6-a2a5-5b78ca4a073d@huaweicloud.com>
+ <8cf7c515-9ce6-a2ed-0643-972aa3eba2fb@huaweicloud.com>
+ <20230407055704.GD6803@lst.de> <20230407121555.4290a011@meshulam.tesarici.cz>
+From: Petr Tesarik <petr.tesarik.ext@huawei.com>
+In-Reply-To: <20230407121555.4290a011@meshulam.tesarici.cz>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.81.209.180]
+X-ClientProxiedBy: frapeml500008.china.huawei.com (7.182.85.71) To
+ frapeml500002.china.huawei.com (7.182.85.205)
+X-CFilter-Loop: Reflected
 
-On 2023-04-13 11:16, John Garry wrote:
-> On 20/01/2023 11:33, John Garry wrote:
->> On 18/01/2023 17:26, Robin Murphy wrote:
->>> Per the reasoning in commit 4bf7fda4dce2 ("iommu/dma: Add config for
->>> PCI SAC address trick") and its subsequent revert, this mechanism no
->>> longer serves its original purpose, but now only works around broken
->>> hardware/drivers in a way that is unfortunately too impactful to remove.
->>>
->>> This does not, however prevent us from solving the performance impact
->>> which the workaround imposes on large-scale systems that don't need it.
->>> That is felt once the 32-bit IOVA space fills up and we keep
->>> unsuccessfully trying to allocate from it. However, if we get to that
->>> point then in fact it's already the endgame. The nature of the allocator
->>> is such that the first IOVA we give to a device after the 32-bit space
->>> runs out will be the highest possible address for that device, ever.
->>> If that works, then great, we can be pretty sure it's safe to optimise
->>> for speed by always allocating from the full range. And if it doesn't,
->>> then the worst has already happened and any brokenness is now showing,
->>> so there's no point continuing to try to hide it.
->>>
->>> To that end, implement a flag to refine this into a per-device policy
->>> that can automatically get itself out of the way if and when it stops
->>> being useful.
->>>
->>> CC: John Garry <john.garry@huawei.com>
->>> CC: Linus Torvalds <torvalds@linux-foundation.org>
->>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->>> ---
->>>
->>> v3: Expand the flag name, add a print with inline commentary for good
->>>      measure, and refactor the code flow even more (too many ifs and
->>>      indents...) such that I didn't presume to carry forward John's R-b.
->>
->> I like the new changes, so feel free to add:
->>
->> Reviewed-by: John Garry <john.g.garry@oracle.com>
+On 4/7/2023 12:15 PM, Petr Tesařík wrote:
+> On Fri, 7 Apr 2023 07:57:04 +0200
+> Christoph Hellwig <hch@lst.de> wrote:
+>[...]>> (Btw, in case anyone is interested, we really need to get started
+>> on moving the dma fields out of struct device into a sub-struct
+>> only allocated for DMA capable busses)
 > 
-> Is there any chance that this can be picked up?
-> 
-> I also saw that it fixed an issue for Jakub (cc'ed) recently.
+> I like this idea. In fact, my WIP topic branch now moves the swiotlb
+> fields into a separate struct, but I can surely go further and move all
+> DMA-related fields.
 
-Oh, thanks for the reminder - IIRC this wants a minor rebase now, let me 
-double-check and send a v4 that applies cleanly...
+I have looked into this now, and it looks like a nice cleanup. The
+challenge is to get these patches reviewed by all affected maintainers,
+and it would be blocking my work on dynamically allocated bounce buffers.
 
-Cheers,
-Robin.
+How about moving only some fields initially (coherent override, cma and
+swiotlb)? These few are not used outside kernel/dma, but at least the
+swiotlb part makes my patches easier to follow. I can move the rest as
+soon as the dynamic patch series is merged.
+
+Petr Tesarik
+
