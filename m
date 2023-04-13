@@ -1,152 +1,161 @@
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2127.outbound.protection.outlook.com [40.107.95.127])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D89A87E
-	for <iommu@lists.linux.dev>; Thu, 13 Apr 2023 15:37:49 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HEopUxHnE/SGgTuN/amksYgSFVjw44WD6ZZ4RYjMUkKESU3tWbm+uUZR3joRrX/lgdxDlC27TiIItETDrSKIcIPmK9xn7mgTglJh34BJluvybYGVZLguKTrDCjz5TmXSL8fnoWhzAwcSC8waPSGnBD5YRAmTnpr+Dfn2YPuzyn5do9QZgBOlkyKzdbtP6f0+DZRYrlYMLcGC2YVAipLGJrzWo6fAHGq/oI4CObTQyEOQzZ2wvkSx25l+3mqzS0q2dekxqZV98cKu2vbZTVXyxY4TjetQMrWThPiSYwYEnq/hiojFqUw+4hsBSDti16Neb1JTutsnTWW27f9DoPk7dw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Ocsd/IN8GNMvve5CUvo167Wvq3ubhozqn9frtxv+5h8=;
- b=nSpNFmee7ZEZlo8YbmkGK2KsgBvbyX5t0YKLd964kDF0sb1eNB2jdaZOnnUbZNhUB/Tg5/UZ9L87soOndaLB8SmH0hls5XD4ZfMHYl0OLlfjZVfL3JNfifQYe6jkujgYfkbGziUPW4sdH6/SKAjv/duMxlGQTaO07i7lox5FBGbPjaQe/ddmIoQNckUhGXazYrNl3z3t3D6b5f62IYCsDUVUpb5eF+B/TUQJHXVoGRrtWlk7MTRT+MG0vjwTGOgiLuo4zgY9FrswRJ4jpWrYHkimy2/4iKjlZfaOfNPEG+LTdQZ6ak8xIW+Ecrhzugg8zqw0+zeyLqkSICjrkgQ7+A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ocsd/IN8GNMvve5CUvo167Wvq3ubhozqn9frtxv+5h8=;
- b=HXfeYrvp/EsB4d0cnOLcNXQVvlCPBvDSbX/BPWXb38PCdUi+oTv88D2+g0jFj4upZc2rtlyvZLdGHRBBvfk/d5YNtf+XFu2Dd5rRyHB1O6mtLyvlT4KGfboOcY3oRgV0XQ7/ppPzj9fePliCzMV4KzZaeGWnSWH2mJ5U8IzxYro=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-Received: from DM6PR21MB1370.namprd21.prod.outlook.com (2603:10b6:5:16b::28)
- by SA0PR21MB1931.namprd21.prod.outlook.com (2603:10b6:806:e3::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.6; Thu, 13 Apr
- 2023 15:37:47 +0000
-Received: from DM6PR21MB1370.namprd21.prod.outlook.com
- ([fe80::b7e9:4da1:3c23:35f]) by DM6PR21MB1370.namprd21.prod.outlook.com
- ([fe80::b7e9:4da1:3c23:35f%3]) with mapi id 15.20.6319.006; Thu, 13 Apr 2023
- 15:37:47 +0000
-From: Michael Kelley <mikelley@microsoft.com>
-To: hch@lst.de,
-	m.szyprowski@samsung.com,
-	robin.murphy@arm.com,
-	decui@microsoft.com,
-	tiala@microsoft.com,
-	petr.tesarik.ext@huawei.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Cc: mikelley@microsoft.com
-Subject: [PATCH 1/1] swiotlb: Fix debugfs reporting of reserved memory pools
-Date: Thu, 13 Apr 2023 08:37:30 -0700
-Message-Id: <1681400250-2032-1-git-send-email-mikelley@microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
-Content-Type: text/plain
-X-ClientProxiedBy: MW4PR04CA0167.namprd04.prod.outlook.com
- (2603:10b6:303:85::22) To DM6PR21MB1370.namprd21.prod.outlook.com
- (2603:10b6:5:16b::28)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C66EE626;
+	Thu, 13 Apr 2023 16:47:28 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 548EBD75;
+	Thu, 13 Apr 2023 09:48:06 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 652733F6C4;
+	Thu, 13 Apr 2023 09:47:20 -0700 (PDT)
+Message-ID: <eb151466-1357-846a-a365-1517508fea1c@arm.com>
+Date: Thu, 13 Apr 2023 17:47:14 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR21MB1370:EE_|SA0PR21MB1931:EE_
-X-MS-Office365-Filtering-Correlation-Id: 84daeb2a-f8e0-4030-204e-08db3c350806
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	vdKnkBmsuhioj+lvpEBSPFW5uMHLlZ13hKKIUVqjb3s/fPBkr4elq9SFuFRItcb3gKx7uLXqv5M6C8RvzZKAwfSE8f/OIEFVsB3Fc8lsFu6Qlwu9JdDWJqbDP/mvAm1CLFHTSz8Y5o08Sn/mi0UffxmoLDcpd93rp2fudNFOZyDqYLL3h0jkVA6UwSu8Ktv1eZlTyqqEVj7+Gh6SpRyzsENiNl8qIc7FsYKTg4YOI4wW0LkAAcXDboPyiijKolFdlU+frAbFm6IkiiaR/c1ECEh6lAOoiUABQYUIk9gJgrGoGtc7+YA9FQHWHBtPPpq3OLX3IuS0GNG0zb9Ywp/0psJpNYbE3mbQ9l2Q2mNaedPViEBtzjvNL+2+ZeqQlo5jw5Wg9jSi6Rkgd+i+Bt9MYhkkDyOCMSS1oRSPtM+APk+Dbk7GeAYO+2E+/y0rouDqnzHuEr15KRb1ucJrL1lXMmmPwN0k996zHiV4WfkV0DcaBaZjdBA3JYWTPFhBAv/+TSGc4cFq30LxYQrVJlTPYJCiRNGdxxThhcbz8raajwTmuxNMhV73nbbdFuGmUuGQ/yzAhW6+OcIgJgASo5xyNsNLjDSbwi0uP0V9rCl7+wTq9kLeUH4um0XuwwxF/DFlF2teISUynGhYuigc/ctHdq0a8kOXXcmpYzsmfJ4eSVk=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1370.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(346002)(396003)(136003)(39860400002)(376002)(451199021)(26005)(6512007)(6506007)(186003)(107886003)(10290500003)(478600001)(316002)(786003)(36756003)(6486002)(52116002)(5660300002)(8936002)(2906002)(82960400001)(4326008)(8676002)(82950400001)(86362001)(66476007)(66556008)(66946007)(38350700002)(38100700002)(41300700001)(6666004)(83380400001)(2616005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?yWUEKSJWsdnAYrlLQs7FzkFjTQaEHozdzZ80siunm0Hx5MHtW51sUmrXnFz3?=
- =?us-ascii?Q?yL4avra9uku6IDXIwp38gksWLLJS15tdtdiRrIN+JwP8QFrxDzFFe9HGh7eL?=
- =?us-ascii?Q?7Ah02kFMwCec4XLSQ1/KdcOMVHfmu2CyCwXpzCj6E9vB8kNY4HiCWr/TuXcE?=
- =?us-ascii?Q?UY0azGPQNCf91wdmR2xBWQNtR87Imvo3uPxDJG2oKIq7bJR2dESXnEaPDB6k?=
- =?us-ascii?Q?Hm+FKboLM9t7pwkNqp1a/J0fI4vzUROBIJyu9VlDOcb71aNkuP0pfCFePFXi?=
- =?us-ascii?Q?VxbHLHRIg4qzUqmq6QRZxS/FGrrUt1LB3ep9c136JEMHXiQ/lj3r5AUlgnAi?=
- =?us-ascii?Q?EKeeT7xUJxNBZvBp+4fSM4pLHUIb2XDixV2EqU5j6oqis12r6HCBzkKZFo+S?=
- =?us-ascii?Q?oKZtZm2ZcLAcP4xwCzeWbOsxrzWHNwuzbnYntYQfDZZNhc+asACWbsqr7NcZ?=
- =?us-ascii?Q?arkoUgm1y5FUnUOiJlbPq68IXTPwlyInTlzBJ5ojqYc0rt87BVu3ls7nvbYT?=
- =?us-ascii?Q?u+cdq4I3u24ygnyBtP6l0QjzThLzZg1l2sylZydAghIhPpAhd29Bt9/jPSwK?=
- =?us-ascii?Q?Tyl2IpHyW8qyACFH8N0aEujB3qjyrSRpo6eewMhBa0CLgEF3I+j9Zk+QJkg9?=
- =?us-ascii?Q?a7I8iSqUwgATY1jz/jcqJ3cuSzO8UhBikY4RKldxc+4jcR3nyIUEEwn6XxGm?=
- =?us-ascii?Q?P21+9QkGMbRatk5IOJCoTVW9RqzBzHgZ3fDkhmLIiEgX96YxdBkyN/vE62XF?=
- =?us-ascii?Q?15JPmaPJqPuzDjfgWMC6OQjLaqPxNen5qT2SZjSOx7GbAn2v0GLN3eK1nX+k?=
- =?us-ascii?Q?OvKKPfEBKlFFUaCgZIRJXxGHjx17fvV339eJf0k3WnpG11d7aRe+TNupR42R?=
- =?us-ascii?Q?qwtilQH4wKUAEL8bi6mi0V7rxzQ03xnw73QD44SblguNliVX65adGVoaZHRy?=
- =?us-ascii?Q?3w5uDSAPMUfh5+H1PGqW49uPPiQaqFfHj7d3nGuyon1oQyn9sqYV5oBdX9Y4?=
- =?us-ascii?Q?f9viw5muZ36AlIRcRUcA5kTfjd1uiukExrpD9V4uY8WOdYkGquVKdYzhwT5b?=
- =?us-ascii?Q?Gws2VF7FxGtG0ysv+mGpptUAjEhGglHOVFSZmXVpggCmvzUANmc5qhkZNvza?=
- =?us-ascii?Q?CPlSx6Nnyunt0N+qnfh7MGI7qS4leYr4cPutRJHNK2Cf/LaLyxIEeQM0y+wU?=
- =?us-ascii?Q?nZAKr6rWNhyYF++NVsaf4igNKozba7tAkbOlSIQd0uYXnRqfr2IvXagz1hwg?=
- =?us-ascii?Q?yJkmebP5n5CKTi98N/QulgVPsqlCfeCrZyR9rkcEV3HJQTBKxf9RU2bUdqKD?=
- =?us-ascii?Q?jswENhs9ImoB7smz4971Z1yXai17fMZ6s0OD38XaC/tyt/yZDTouDupwAj3E?=
- =?us-ascii?Q?hoOm+CEY2M778UMWDGGaChTSpgM3tCVFvlaVt8HC4FJ5n+MSMoBbrTLqwC38?=
- =?us-ascii?Q?RtIJxtAGiH+bCgmVsuiWvpnxzvUVf0Gyr+f9n0VXupugkYzfkgfSHijQQRq7?=
- =?us-ascii?Q?tr+2vNE7HuB5bSYSqKmWSQmFIrQ2eQDrRJKl1yxgw5ps6aFR03ReR82/u0p1?=
- =?us-ascii?Q?yzPmRM6eRro9MCW4fWEYoOa1cjpAujjPQN+jR7IVi9P5YIPmDMz0hm55T/tc?=
- =?us-ascii?Q?6g=3D=3D?=
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 84daeb2a-f8e0-4030-204e-08db3c350806
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1370.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2023 15:37:47.0364
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 81SHjuFhSlYtyj0oivzKZWoTMokb54C/MVYUOUgg0StHwL7rZLBNSNIupbJEwq+4AO+K+80hzTjcngl9RJ/gYw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR21MB1931
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH v3 03/17] iommu: Make __iommu_group_set_domain() handle
+ error unwind
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
+ Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
+ Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
+ Nicolin Chen <nicolinc@nvidia.com>
+References: <3-v3-e89a9bb522f5+8c87-iommu_err_unwind_jgg@nvidia.com>
+ <26039535-5f78-74f1-7864-978ad6c2810d@arm.com> <ZC8Y7g99aAQURbtj@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <ZC8Y7g99aAQURbtj@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-For io_tlb_nslabs, the debugfs code reports the correct value for a
-specific reserved memory pool.  But for io_tlb_used, the value reported
-is always for the default pool, not the specific reserved pool. Fix this.
+On 06/04/2023 8:09 pm, Jason Gunthorpe wrote:
+> On Thu, Apr 06, 2023 at 07:08:59PM +0100, Robin Murphy wrote:
+> 
+>>> +		if (ret) {
+>>> +			result = ret;
+>>> +			/*
+>>> +			 * Keep trying the other devices in the group. If a
+>>> +			 * driver fails attach to an otherwise good domain, and
+>>> +			 * does not support blocking domains, it should at least
+>>> +			 * drop its reference on the current domain so we don't
+>>> +			 * UAF.
+>>> +			 */
+>>> +			if (flags & IOMMU_SET_DOMAIN_MUST_SUCCEED)
+>>> +				continue;
+>>
+>> I know it's called out above, but my brain truly can't cope with a flag
+>> named "MUST_SUCCEED" which actually means "can fail, but you can't reason
+>> about the state after failure". As before, I think the actual flag itself
+>> can go away, but the behaviour itself will still be no nicer for being
+>> implicit :/
+> 
+> What I saw is that a bunch of drivers tend to implement attach_dev
+> with first some kind of detach, which often cannot fail, and then can
+> fail the new attach.
+> 
+> So, this is intended to go along with that design pattern. We call
+> every device's attach and hope that the outcome is either to release
+> the current iommu_domain or to attach to the new one.
 
-Fixes: 5c850d31880e ("swiotlb: fix passing local variable to debugfs_create_ulong()")
-Signed-off-by: Michael Kelley <mikelley@microsoft.com>
----
+It's that design pattern which is most of the problem, though. It's a 
+left-over from the old pre-default-domain era (quite literally, in most 
+cases, where drivers were just minimally bodged to simulate the previous 
+core call of ops->detach_dev). In the modern 
+always-attached-to-something paradigm, drivers should absolutely be able 
+to figure out if an attach will fail *before* they throw away any 
+existing device state.
 
-I don't have a way to test this directly with OF reserved memory, but I
-cobbled together a hack to call rmem_swiotlb_device_init() multiple times
-for different size reserved pools. I verified that reserved pool debugfs entries
-are created as expected and that the value of io_tlb_used is *not* the value
-from the default pool.
+If we reach the point of adding core code that only serves to help 
+drivers emulate the new API using the old API because we'd rather 
+undermine the new API design than fix the drivers, then frankly that 
+seems like an argument for just reverting back to the old API.
 
- kernel/dma/swiotlb.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Partial failure at the group level - i.e. one device's attach call 
+failing after previous ones have succeeded and leaving the group as a 
+whole in an inconsistent state - is a separate issue dating all the way 
+back to day 1 of groups. I don't disagree with questioning the current 
+implicit assumption that that just shouldn't ever happen, but it touches 
+on different aspects of driver design than the above.
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index dac42a2..db43de82 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -930,7 +930,9 @@ bool is_swiotlb_active(struct device *dev)
- 
- static int io_tlb_used_get(void *data, u64 *val)
- {
--	*val = mem_used(&io_tlb_default_mem);
-+	struct io_tlb_mem *mem = data;
-+
-+	*val = mem_used(mem);
- 	return 0;
- }
- DEFINE_DEBUGFS_ATTRIBUTE(fops_io_tlb_used, io_tlb_used_get, NULL, "%llu\n");
-@@ -943,7 +945,7 @@ static void swiotlb_create_debugfs_files(struct io_tlb_mem *mem,
- 		return;
- 
- 	debugfs_create_ulong("io_tlb_nslabs", 0400, mem->debugfs, &mem->nslabs);
--	debugfs_create_file("io_tlb_used", 0400, mem->debugfs, NULL,
-+	debugfs_create_file("io_tlb_used", 0400, mem->debugfs, mem,
- 			&fops_io_tlb_used);
- }
- 
--- 
-1.8.3.1
+> If a driver doesn't follow this pattern then we'll UAF.
+> 
+> The primary purpose of the MUST_SUCCEED flag is to prevent the code
+> from trying to go back to the old domain. This really should only
+> depend on the caller's context and ability to handle errors, so I
+> don't see what would make it implicit?
 
+It could be implicit *because* it's contextual; the domain types already 
+carry as much information as the flag would. Attaching to a non-core 
+(unmanaged or SVA) domain type is the one case where core code has clear 
+reason to unwind if an attach fails mid-group. The initial attach to a 
+core domain from nothing in probe_device could be allowed to fail, but 
+there there's clearly nothing to unwind, and leaving the device in limbo 
+seems OK. Attaching from non-core to core should represent a repeat of 
+something which previously succeeded for the given device+domain 
+combination, so whether we permit that to fail-to-limbo or mandate that 
+drivers must be able to repeat a previous success mostly depends on what 
+we think is a reasonable expectation of how to design a driver (I think 
+it comes down to whether anyone really needs any domain-specific 
+allocations that have to belong to devices rather than the domain 
+itself, and cannot otherwise be preserved over a detach/reattach cycle). 
+Finally, core to core transitions via sysfs can probably be their own 
+special case depending on what falls out of the others.
+
+> We definitely do not want to attach back the old domain if we are
+> about to unconditionally free it.
+> 
+>> TBH I still think the responsibility should be on the drivers to handle
+>> rollback of their internal per-device state if returning failure from an
+>> .attach_dev call.
+> 
+> It helps the driver stay consistent, but I don't think it helps the
+> core code too much.
+> 
+> With the two patches to add the rodata IDENTITY domain to drivers I
+> think we should go in that direction.
+> 
+> Lets have an "ops->emergency_domain" that is something the driver can
+> always attach. Ideally it will be the BLOCKING domain, but IDENTITY
+> could work too.
+> 
+> When this function gets into trouble it will put the entire group on
+> 'emergency_domain' and things will be safe, no UAF.
+> 
+> This seems pretty simple for drivers since the attach_dev can just
+> leave behind whatever state is convenient, so long as their
+> emergency_domain cannot fail.
+> 
+>> But what would be really really really good, now that .detach_dev has
+>> truly gone, is to pass *both* "to" and "from" domains to .attach_dev (and a
+>> "from" domain to .release_device), so that drivers don't have to squirrel
+>> away all these internal references to their own notions of "current" domains
+>> which are the root of this whole class of horrid UAF and consistency
+>> bugs.
+> 
+> Usually the IOMMU HW will be touching the IOPTEs via DMA enclosed by
+> the iommu_domain, so even if we could remove the iommu_domain pointers
+> from the drivers it still retains the HW programming to the
+> memory. Freeing the domain will still UAF.
+> 
+> Refcounts would be another way to address the UAF, then we can leak
+> the iommu_domain if things go bad. I think this is more complex on drivers.
+
+Ah, we're thinking of different notions of UAF - I just mean drivers 
+dereferencing stale pointers in software. If software leaves the 
+hardware pointing at the the wrong thing, then it's already not going to 
+work as expected from then on, regardless of whether that 
+descriptor/pagetable/whatever is subsequently freed or not, so as far as 
+I'm concerned there isn't much meaningful functional difference between 
+"broken" and "much more badly broken". Obviously it does matter more 
+from an overall kernel safety/stability viewpoint, but that's only a 
+concern for when we can't get the API-level functional correctness right 
+in the first place.
+
+Thanks,
+Robin.
