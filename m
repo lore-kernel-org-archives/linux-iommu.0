@@ -1,32 +1,32 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14F0C648
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EEA562F
 	for <iommu@lists.linux.dev>; Thu, 13 Apr 2023 04:06:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1681358813; x=1712894813;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=zGpEfMgloBsWMUOjxE9fyxNifshGPev/lcFUTQ3YvYY=;
-  b=jgUhg5ggWOmI+TMIKGAb8h6C1HH8IkbjOnMvgGjwABH80EWzpjYBWy+t
-   O5xFVSdXTvxCYt4xiISU3TWa883tTr+apfZB7lJLZkiQ7zLqGHEH+CtzS
-   Kq97mUDfg4TmHBKVPD08RjL7RjprFgTTUIvaxlrpmT+ATd9ceHK7TxKfu
-   VEDwdJPrgh/YC7edgxJVpNEIfks2yrMVQCtoqI5vQzxKA7UC0Tts1M/V1
-   IXSynZyK3DEPgkKICN4iOqaVZEO1rJuwa7p6nYsPMCB7R5i1rUS/5hylK
-   VBtZ/3YXAbz9oriAsjfnIgWexyIjWzSIT/uTVHDB3DForCt5mpFrg4bq2
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="332786553"
+  bh=UfvO6KWRpB3fInOz1odZU3ajkyQZJiVnPHFd0TJPDQ4=;
+  b=l57rlOs4lRXdO8U3cFcRXOpN3juonVwGIYlnaqQochJOL0cfNxK/qesi
+   lmwbTbgmuFtDAffyN399FPFUUiFf6K3LCStyl6praJgpDe5WeDYTVgnJQ
+   aFf12M08OKQ877p1CTPCL+NYZAsZb/TeU1gd/0IHaG3s5loA3V4a8Gfc4
+   To+aM1L7jwlwqAvA10ZieEsLLA/eyBjUX+IYZMoNzyD+PFbp4SXwYtFSQ
+   JMZUng2TxL1VV99+jGZhK6neAR30ltSAT5Rsl5lxVYC5Pv+KpJsR4N7Rh
+   +6WgV2SxvgPk6u1dZ1igUv8c84CB6bCWrLqMybRZceZCwMSoVOw2k+gcy
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="323702326"
 X-IronPort-AV: E=Sophos;i="5.98,339,1673942400"; 
-   d="scan'208";a="332786553"
+   d="scan'208";a="323702326"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2023 21:06:52 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2023 21:06:49 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="935360996"
+X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="935360963"
 X-IronPort-AV: E=Sophos;i="5.98,339,1673942400"; 
-   d="scan'208";a="935360996"
+   d="scan'208";a="935360963"
 Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by fmsmga006.fm.intel.com with ESMTP; 12 Apr 2023 21:06:50 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 12 Apr 2023 21:06:43 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: Tina Zhang <tina.zhang@intel.com>,
@@ -34,9 +34,9 @@ Cc: Tina Zhang <tina.zhang@intel.com>,
 	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 05/17] iommu/vt-d: Move PRI handling to IOPF feature path
-Date: Thu, 13 Apr 2023 12:06:33 +0800
-Message-Id: <20230413040645.46157-6-baolu.lu@linux.intel.com>
+Subject: [PATCH v2 01/17] dmaengine: idxd: Add enable/disable device IOPF feature
+Date: Thu, 13 Apr 2023 12:06:29 +0800
+Message-Id: <20230413040645.46157-2-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230413040645.46157-1-baolu.lu@linux.intel.com>
 References: <20230413040645.46157-1-baolu.lu@linux.intel.com>
@@ -48,118 +48,99 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-PRI is only used for IOPF. With this move, the PCI/PRI feature could be
-controlled by the device driver through iommu_dev_enable/disable_feature()
-interfaces.
+The iommu subsystem requires IOMMU_DEV_FEAT_IOPF must be enabled before
+and disabled after IOMMU_DEV_FEAT_SVA, if device's I/O page faults rely
+on the IOMMU. Add explicit IOMMU_DEV_FEAT_IOPF enabling/disabling in this
+driver.
 
-Reviewed-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+At present, missing IOPF enabling/disabling doesn't cause any real issue,
+because the IOMMU driver places the IOPF enabling/disabling in the path
+of SVA feature handling. But this may change.
+
+Reviewed-by: Dave Jiang <dave.jiang@intel.com>
+Reviewed-by: Fenghua Yu <fenghua.yu@intel.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Acked-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Link: https://lore.kernel.org/r/20230324120234.313643-6-baolu.lu@linux.intel.com
+Link: https://lore.kernel.org/r/20230324120234.313643-2-baolu.lu@linux.intel.com
 ---
- drivers/iommu/intel/iommu.c | 53 ++++++++++++++++++++++++++++---------
- 1 file changed, 41 insertions(+), 12 deletions(-)
+ drivers/dma/idxd/init.c | 31 +++++++++++++++++++++++++------
+ 1 file changed, 25 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 6d77b4072fdd..cd3a3c4b5e64 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -1415,11 +1415,6 @@ static void iommu_enable_pci_caps(struct device_domain_info *info)
- 	if (info->pasid_supported && !pci_enable_pasid(pdev, info->pasid_supported & ~1))
- 		info->pasid_enabled = 1;
+diff --git a/drivers/dma/idxd/init.c b/drivers/dma/idxd/init.c
+index 640d3048368e..09ef62aa0635 100644
+--- a/drivers/dma/idxd/init.c
++++ b/drivers/dma/idxd/init.c
+@@ -516,6 +516,27 @@ static void idxd_disable_system_pasid(struct idxd_device *idxd)
+ 	idxd->sva = NULL;
+ }
  
--	if (info->pri_supported &&
--	    (info->pasid_enabled ? pci_prg_resp_pasid_required(pdev) : 1)  &&
--	    !pci_reset_pri(pdev) && !pci_enable_pri(pdev, PRQ_DEPTH))
--		info->pri_enabled = 1;
--
- 	if (info->ats_supported && pci_ats_page_aligned(pdev) &&
- 	    !pci_enable_ats(pdev, VTD_PAGE_SHIFT)) {
- 		info->ats_enabled = 1;
-@@ -1442,11 +1437,6 @@ static void iommu_disable_pci_caps(struct device_domain_info *info)
- 		domain_update_iotlb(info->domain);
- 	}
- 
--	if (info->pri_enabled) {
--		pci_disable_pri(pdev);
--		info->pri_enabled = 0;
--	}
--
- 	if (info->pasid_enabled) {
- 		pci_disable_pasid(pdev);
- 		info->pasid_enabled = 0;
-@@ -4667,23 +4657,48 @@ static int intel_iommu_enable_sva(struct device *dev)
- 
- static int intel_iommu_enable_iopf(struct device *dev)
- {
-+	struct pci_dev *pdev = dev_is_pci(dev) ? to_pci_dev(dev) : NULL;
- 	struct device_domain_info *info = dev_iommu_priv_get(dev);
- 	struct intel_iommu *iommu;
- 	int ret;
- 
--	if (!info || !info->ats_enabled || !info->pri_enabled)
-+	if (!pdev || !info || !info->ats_enabled || !info->pri_supported)
- 		return -ENODEV;
++static int idxd_enable_sva(struct pci_dev *pdev)
++{
++	int ret;
 +
-+	if (info->pri_enabled)
-+		return -EBUSY;
-+
- 	iommu = info->iommu;
- 	if (!iommu)
- 		return -EINVAL;
- 
-+	/* PASID is required in PRG Response Message. */
-+	if (info->pasid_enabled && !pci_prg_resp_pasid_required(pdev))
-+		return -EINVAL;
-+
-+	ret = pci_reset_pri(pdev);
++	ret = iommu_dev_enable_feature(&pdev->dev, IOMMU_DEV_FEAT_IOPF);
 +	if (ret)
 +		return ret;
 +
- 	ret = iopf_queue_add_device(iommu->iopf_queue, dev);
- 	if (ret)
- 		return ret;
- 
- 	ret = iommu_register_device_fault_handler(dev, iommu_queue_iopf, dev);
- 	if (ret)
--		iopf_queue_remove_device(iommu->iopf_queue, dev);
-+		goto iopf_remove_device;
-+
-+	ret = pci_enable_pri(pdev, PRQ_DEPTH);
++	ret = iommu_dev_enable_feature(&pdev->dev, IOMMU_DEV_FEAT_SVA);
 +	if (ret)
-+		goto iopf_unregister_handler;
-+	info->pri_enabled = 1;
++		iommu_dev_disable_feature(&pdev->dev, IOMMU_DEV_FEAT_IOPF);
 +
-+	return 0;
++	return ret;
++}
 +
-+iopf_unregister_handler:
-+	iommu_unregister_device_fault_handler(dev);
-+iopf_remove_device:
-+	iopf_queue_remove_device(iommu->iopf_queue, dev);
++static void idxd_disable_sva(struct pci_dev *pdev)
++{
++	iommu_dev_disable_feature(&pdev->dev, IOMMU_DEV_FEAT_SVA);
++	iommu_dev_disable_feature(&pdev->dev, IOMMU_DEV_FEAT_IOPF);
++}
++
+ static int idxd_probe(struct idxd_device *idxd)
+ {
+ 	struct pci_dev *pdev = idxd->pdev;
+@@ -530,7 +551,7 @@ static int idxd_probe(struct idxd_device *idxd)
+ 	dev_dbg(dev, "IDXD reset complete\n");
  
- 	return ret;
+ 	if (IS_ENABLED(CONFIG_INTEL_IDXD_SVM) && sva) {
+-		if (iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA)) {
++		if (idxd_enable_sva(pdev)) {
+ 			dev_warn(dev, "Unable to turn on user SVA feature.\n");
+ 		} else {
+ 			set_bit(IDXD_FLAG_USER_PASID_ENABLED, &idxd->flags);
+@@ -578,21 +599,19 @@ static int idxd_probe(struct idxd_device *idxd)
+ 	if (device_pasid_enabled(idxd))
+ 		idxd_disable_system_pasid(idxd);
+ 	if (device_user_pasid_enabled(idxd))
+-		iommu_dev_disable_feature(dev, IOMMU_DEV_FEAT_SVA);
++		idxd_disable_sva(pdev);
+ 	return rc;
  }
-@@ -4694,6 +4709,20 @@ static int intel_iommu_disable_iopf(struct device *dev)
- 	struct intel_iommu *iommu = info->iommu;
- 	int ret;
  
-+	if (!info->pri_enabled)
-+		return -EINVAL;
-+
-+	/*
-+	 * PCIe spec states that by clearing PRI enable bit, the Page
-+	 * Request Interface will not issue new page requests, but has
-+	 * outstanding page requests that have been transmitted or are
-+	 * queued for transmission. This is supposed to be called after
-+	 * the device driver has stopped DMA, all PASIDs have been
-+	 * unbound and the outstanding PRQs have been drained.
-+	 */
-+	pci_disable_pri(to_pci_dev(dev));
-+	info->pri_enabled = 0;
-+
- 	ret = iommu_unregister_device_fault_handler(dev);
- 	if (ret)
- 		return ret;
+ static void idxd_cleanup(struct idxd_device *idxd)
+ {
+-	struct device *dev = &idxd->pdev->dev;
+-
+ 	perfmon_pmu_remove(idxd);
+ 	idxd_cleanup_interrupts(idxd);
+ 	idxd_cleanup_internals(idxd);
+ 	if (device_pasid_enabled(idxd))
+ 		idxd_disable_system_pasid(idxd);
+ 	if (device_user_pasid_enabled(idxd))
+-		iommu_dev_disable_feature(dev, IOMMU_DEV_FEAT_SVA);
++		idxd_disable_sva(idxd->pdev);
+ }
+ 
+ static int idxd_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+@@ -710,7 +729,7 @@ static void idxd_remove(struct pci_dev *pdev)
+ 	pci_free_irq_vectors(pdev);
+ 	pci_iounmap(pdev, idxd->reg_base);
+ 	if (device_user_pasid_enabled(idxd))
+-		iommu_dev_disable_feature(&pdev->dev, IOMMU_DEV_FEAT_SVA);
++		idxd_disable_sva(pdev);
+ 	pci_disable_device(pdev);
+ 	destroy_workqueue(idxd->wq);
+ 	perfmon_pmu_remove(idxd);
 -- 
 2.34.1
 
