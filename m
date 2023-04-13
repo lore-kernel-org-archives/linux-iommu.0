@@ -1,184 +1,78 @@
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2074.outbound.protection.outlook.com [40.107.100.74])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36CA42C9C
-	for <iommu@lists.linux.dev>; Thu, 13 Apr 2023 10:41:48 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=V0beGAR2XmXQkRofWud5hpIENvCX7Yzs6r2LEVmVPLJd6EFn6LneJcUYjPoHeiQCerzglNjdLejOEkcqhN6Co/QN/UFjP4ioyMp7j+x4Um/P0XxCHjVf7C7Z4tWhJ5HvtDh29RtdQ6FGDSFSbm0zJge5PXXDTHUp3zS+Dtm1pX1Wvjmyj2U6z2nGvWqG1RcMDPoQextQjkaUJFWnaDEx8+GADzNsM8K4yI9W7feHXqZRMESlIlrWnghL2UCsPN1Zoe5ad5IXIsjpU4vIniVbaoFw46Bz6yeCXTTcQe3IX+gn6N/2T+wK2VT9fX45TFuqV9M7qkPNkOqxlOD1D7u07w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ax42REMgIkOVFRFQpgkkergkbKUinOfmetEVWQg7pjE=;
- b=V8y4kE1hMEnjQVNMVa7BL2pbtAOO2hHrCyS8iaWNp5IIgzUG0RzOT+EmaYJKriZaxYlYpOBjjtchjrpsL18FKPrVFwdn+jfApIFlB4fZsy6UsnsaUVIBgVDisrzSSa2iAVWSoTqg8mBoqlfM7rvhvy2A20LF9sLcgS8DCVR08+3I1PmmZ+jca+BoVKn1++mmJ6kwuYjBu4bDoUm/6rPR9NzptDTZn+s5xcQui4kX4wyl9tILjSvnGtbPQo/3DOx9EagG2sHoDcFnZeWDIgxdPpks7R9NbI5HGcCe3ag+fKAga14oGA4XeT2s1uE7U6UcV6tEmD9IL5dEc8Liul97Hw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ax42REMgIkOVFRFQpgkkergkbKUinOfmetEVWQg7pjE=;
- b=jin/hSywvdEmAuyO/d8jdiuAfZiKQ3Tdw9WR0OeQnNDEd5SaMZjEPFytUkMNhlH9WXNPJ5O2ABIXbaNvVfBzm2qYmq/FCop2e4PR/xl2N+a0ss7EO0e1lLfq4VfyHXkPbYiKrYo6jjUMHSBfmQ9TIk0cGgoE5dslV7QGE/WwOgY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
- DM8PR12MB5399.namprd12.prod.outlook.com (2603:10b6:8:34::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6298.30; Thu, 13 Apr 2023 10:41:45 +0000
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::e959:436c:d41f:f9cd]) by DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::e959:436c:d41f:f9cd%2]) with mapi id 15.20.6298.030; Thu, 13 Apr 2023
- 10:41:45 +0000
-Message-ID: <8ab48beb-2ec7-9b76-5511-b48e87580826@amd.com>
-Date: Thu, 13 Apr 2023 17:41:35 +0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v2 2/2] iommu/amd: Handle GALog overflows
-Content-Language: en-US
-To: Joao Martins <joao.m.martins@oracle.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Vasant Hegde <vasant.hegde@amd.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Maxim Levitsky <mlevitsk@redhat.com>,
- Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, kvm@vger.kernel.org,
- iommu@lists.linux.dev
-References: <20230316200219.42673-1-joao.m.martins@oracle.com>
- <20230316200219.42673-3-joao.m.martins@oracle.com>
- <b5d1b9c3-7c7b-861f-a538-f87485e60916@amd.com>
- <0677881c-f801-075c-7af5-efa7471c6e4e@oracle.com>
-From: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
-In-Reply-To: <0677881c-f801-075c-7af5-efa7471c6e4e@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SG2PR02CA0030.apcprd02.prod.outlook.com
- (2603:1096:3:18::18) To DM8PR12MB5445.namprd12.prod.outlook.com
- (2603:10b6:8:24::7)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 816502C9C
+	for <iommu@lists.linux.dev>; Thu, 13 Apr 2023 10:45:05 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 42948C14;
+	Thu, 13 Apr 2023 03:45:49 -0700 (PDT)
+Received: from [10.57.20.214] (unknown [10.57.20.214])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A5E2E3F6C4;
+	Thu, 13 Apr 2023 03:45:03 -0700 (PDT)
+Message-ID: <08c9f2a2-b2fc-2574-e10a-b6dbd0caedb0@arm.com>
+Date: Thu, 13 Apr 2023 11:44:56 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM8PR12MB5445:EE_|DM8PR12MB5399:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3dc9afc7-82ee-4b8a-ddaa-08db3c0bad44
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	SY97sFhW9QwDm+RMcIvKox2U0nJR2P1ZSkl1IfAABP8W+e4+TLTrBuem41aF7dgtJe2Bmtc0QBLS9x6xN6n43iDVQMOx+TWJMHSRZFKPx8YiuiLLy+TEOnmD1qMwKYe8Q8aIkbiG3QHQpKiz4sxLssWbbZ9vRtq7oExbe6l2xbC99pyaFFA9OWAEWbw4TPxeC3q6PhBMWqdT8BIgl+ILEnBgCCQTTOkP4ZMXyuhIB/abQrvCdd+ukDzu+ZUgxwopjkajVJ7dWKR2M550gisbtYTJt1yibrzvuodVJVwYfusxBIm1uozdC7uvAX3kWK58/r8sLku3zkPMU3V8pbq/6VWRsA4C0i3uoTK74sFAFmQNLjRVMHd4c3F5TDAfYAIsPj70OrBOvdFA2Bo311hI7d3K9lqngErWI77OxfjTytXFXqRYe+NhVLg98/LVCKWDzsH1tWjB/sPgxf2Oc6VIanTYa4chaswem+/Ydp22VHzBEf4wvdUY/6wQxofrApMtrMrx33S77qAGQ5IIec7Gj4NzV29kWf/F/GFI4w2iPN1ppUhdzcrTeKFCcwy6mkXZEgAc9MVXjexNAPs5x9K/2Tr6V7HeYwy12BsBQabe+uoc99TR73zTgVIY60szkC/EOkSz4SpbL1t4oJJnTudi4g==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5445.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(396003)(346002)(136003)(39860400002)(376002)(451199021)(2906002)(31686004)(8676002)(8936002)(5660300002)(478600001)(6666004)(41300700001)(316002)(66946007)(36756003)(66476007)(83380400001)(66556008)(54906003)(4326008)(186003)(6916009)(31696002)(6486002)(38100700002)(86362001)(26005)(6506007)(53546011)(6512007)(2616005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?RGxEL2RuUC9laXFmelUxN1hNSVB5SzBsTWhYK0ZnTmY0dytsem9XKzZKS0xP?=
- =?utf-8?B?VFZKV2NBZUZxNFExMnlXT3l4clpqSkc2VDJ0Q1NSWnpUWDZJYmJTRWtZRTBV?=
- =?utf-8?B?MG5La0NyR2xpbk1IVVJFVzZleXJkR0dFVlRZMldiS3FGUndRazFPaFdpTExL?=
- =?utf-8?B?LzU4WkUxanYxUUdmZm5KS0lFWndkcFh4bDZwNUlvczcrd2ozOGZVd2lOVTFW?=
- =?utf-8?B?aC9PSkdKS29sODh4MU1FelJvNzhrVC8vbVlpUmplaXAwM3lZZktYZWJDRWkr?=
- =?utf-8?B?WnUwZUtkQ2JPcWxCWVJ2bEtRRXlGenVpOUNFSW1GTVY0RmRxRVZ5TG9rTjYy?=
- =?utf-8?B?Tnk3VUw5UG5CeHBiVVVpQ3ZncUdJdHFqV2I4SzVCa29ISm1yWDRSdVd0QWxr?=
- =?utf-8?B?RHVOMG1pTlQxSmxEOWt3Q3FTV0lCeVRIa1dyYm43TW13RkwzV2hiU0ptekNB?=
- =?utf-8?B?RnY1UmUwRUg1UVdvUU9Tb1ZnazB1UEoydjdPd1g5R2FtejNQcnlpbnBUWGFO?=
- =?utf-8?B?aEFUbm5EM2pYNmVFSEJENmF1T2tqSEpNL3BHK1dtelN3d3NXWFppK3kxQkVR?=
- =?utf-8?B?ODkzOWpwa1FrdG1TV0RGd3Bmc09tcHo1eFM5eDVNV2VoWnQ0ZURTckNCbXJ0?=
- =?utf-8?B?SW13a3R4RGlSeHhPZHBKT2lmdDFRTG8xNHkzNHNtanRqeDNydlp0Sm1nNGNu?=
- =?utf-8?B?a2lNVGZJeDgrM2pzeUltL3pNOCsweW4zSkxMZTZsWmFTcFFlemp4ZzkxOEIy?=
- =?utf-8?B?Ry9iWC9CY29KbzY5enhpRTFBdmZOQjRTOWh6Q3ROQndmVTY4bGdUYzVrZE9E?=
- =?utf-8?B?aWFKcjdGS2x2dmZieVVEMytFSTFBeWxsQlVrYk82aCsvSjdWT2VnOGdCYTh4?=
- =?utf-8?B?ajdwWGxVeUNYdHBRa3Vsd1hzc2JoZXg4RzBxMmtoazVFV3pNcmNKNUJvcENk?=
- =?utf-8?B?UW1xZDlhVVY1U3ZIM1ZCNkhoZGNGQXJuVFdzL0cwdVArT2lJZHZ6OUhmOGtO?=
- =?utf-8?B?LzIyNjA3UDUzbXlKTk9PMm5uOHpZSDlvUVY4ZjVIQ1BheFFhL3BxNUpheWJP?=
- =?utf-8?B?ajN2RktQMkNwakExaHpweUFsVTdBV0J0dy9ocDNFQ2lmakZxNVFvRVdNQ0pK?=
- =?utf-8?B?a1lSTktoRUpsUjl0UncwWk1ZTHVrWW44U1FtY1NpUkJ0TkVLcENEMm1zUGdm?=
- =?utf-8?B?YnVPak9LbWRVcEduL1hhWTd1TnV2b0ZReUFrSUhKUm00dWQ2NlZkdkVSTlhH?=
- =?utf-8?B?ZUxZOWxISFNLRWpBRVNIZUNOMEU0MUJWYlZFeHZzSkVZOU14ZUZrb2ZvMVBV?=
- =?utf-8?B?RG95a1FyNVdkcWpnMGlOL0pnVGRqUHcvSEpWR2J6bU9vOGZjbXZyUW1CSmVM?=
- =?utf-8?B?cUNITzJmWjJOcHFGUVBGOWV4eU9SQlpCRkp3bDdJendQVmNscE4yNUVkY3U3?=
- =?utf-8?B?OWxhVVpDbWh0Sjl3Wi9FdVJXdTAxUHJhS0Z4RHdDd3JMRmw1ZlFNcmErRXRU?=
- =?utf-8?B?ZytTSnFsTUxIeXZDN05YTGI2dlZIckJUdFhiMEVSc25pbjBoQ0JqU2I1MVZt?=
- =?utf-8?B?aUVVMjVlZHVwNEFoNHgxUVFtdTZwczVTU00xZUplSGdYMmtxems4RnBHRGhh?=
- =?utf-8?B?RldrVVk2bmViUjJpU0NPOHNKYks1cEIyeWJadjFyVDFWelBoSlNoUG9xWWs1?=
- =?utf-8?B?NE5wa1FtT3JESnlLNUdLcVNJM2hvd0JlS3RJN0M3U0Z2dzRoT29TSGw4all3?=
- =?utf-8?B?Ym1FN2N0NjJuR1hzQ1psYzA3OFdmVk9yYmx2Nm43elpqUXpHRW1yMHZlL1B2?=
- =?utf-8?B?Y3RTRUd4bUFCbkFsTDE2TDJQaFF1YzA5RkJKUjAvV0dJdzB2eXhLTm5USEhH?=
- =?utf-8?B?eTlVdmhIOTRYQXg3OGI3KzBmOWpKNDk5VHFQZytQQ2FmSldJSWNNTHk1Y3o5?=
- =?utf-8?B?eENnNFlLbEl3dm4zV0tqeUJFM2ZGbnQ4Rk1tZnN2TmFzdUhhR0xqYjBSdkZU?=
- =?utf-8?B?ZWt4MHZmM25iejZlWHlZQTRRMHMzVnhLM1owVFpOcVplVTB2SUZvMmZhcWsy?=
- =?utf-8?B?aHJvam90TVB1UWtDN0h3QUZTVTZjdWlKUHdLMW9BcllJMDZQWVB5T0ptcENK?=
- =?utf-8?Q?WcSglUTe0NDuXsML8+P/vdbe+?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3dc9afc7-82ee-4b8a-ddaa-08db3c0bad44
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2023 10:41:45.5723
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mYlr34cxSzZYTv6u0LXUmvWxJVIVxm/wTWQ0WvRHgOc1LeXGfFUH0FzYxnUKNaIdvYnD6tItSqH9PPQCRvzT3w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR12MB5399
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: [PATCH v3] iommu: Optimise PCI SAC address trick
+To: John Garry <john.g.garry@oracle.com>, joro@8bytes.org
+Cc: will@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Linus Torvalds <torvalds@linux-foundation.org>, kuba@kernel.org
+References: <e9abc601b00e26fd15a583fcd55f2a8227903077.1674061620.git.robin.murphy@arm.com>
+ <40141c33-243c-5da6-fbea-3122e47c7808@oracle.com>
+ <02eebcda-f60e-f8ed-7057-cf293d15a173@oracle.com>
+Content-Language: en-GB
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <02eebcda-f60e-f8ed-7057-cf293d15a173@oracle.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-
-
-On 4/13/2023 5:30 PM, Joao Martins wrote:
-> On 13/04/2023 11:24, Suthikulpanit, Suravee wrote:
->> On 3/17/2023 3:02 AM, Joao Martins wrote:
->>> GALog exists to propagate interrupts into all vCPUs in the system when
->>> interrupts are marked as non running (e.g. when vCPUs aren't running). A
->>> GALog overflow happens when there's in no space in the log to record the
->>> GATag of the interrupt. So when the GALOverflow condition happens, the
->>> GALog queue is processed and the GALog is restarted, as the IOMMU
->>> manual indicates in section "2.7.4 Guest Virtual APIC Log Restart
->>> Procedure":
+On 2023-04-13 11:16, John Garry wrote:
+> On 20/01/2023 11:33, John Garry wrote:
+>> On 18/01/2023 17:26, Robin Murphy wrote:
+>>> Per the reasoning in commit 4bf7fda4dce2 ("iommu/dma: Add config for
+>>> PCI SAC address trick") and its subsequent revert, this mechanism no
+>>> longer serves its original purpose, but now only works around broken
+>>> hardware/drivers in a way that is unfortunately too impactful to remove.
 >>>
->>> | * Wait until MMIO Offset 2020h[GALogRun]=0b so that all request
->>> |   entries are completed as circumstances allow. GALogRun must be 0b to
->>> |   modify the guest virtual APIC log registers safely.
->>> | * Write MMIO Offset 0018h[GALogEn]=0b.
->>> | * As necessary, change the following values (e.g., to relocate or
->>> | resize the guest virtual APIC event log):
->>> |   - the Guest Virtual APIC Log Base Address Register
->>> |      [MMIO Offset 00E0h],
->>> |   - the Guest Virtual APIC Log Head Pointer Register
->>> |      [MMIO Offset 2040h][GALogHead], and
->>> |   - the Guest Virtual APIC Log Tail Pointer Register
->>> |      [MMIO Offset 2048h][GALogTail].
->>> | * Write MMIO Offset 2020h[GALOverflow] = 1b to clear the bit (W1C).
->>> | * Write MMIO Offset 0018h[GALogEn] = 1b, and either set
->>> |   MMIO Offset 0018h[GAIntEn] to enable the GA log interrupt or clear
->>> |   the bit to disable it.
+>>> This does not, however prevent us from solving the performance impact
+>>> which the workaround imposes on large-scale systems that don't need it.
+>>> That is felt once the 32-bit IOVA space fills up and we keep
+>>> unsuccessfully trying to allocate from it. However, if we get to that
+>>> point then in fact it's already the endgame. The nature of the allocator
+>>> is such that the first IOVA we give to a device after the 32-bit space
+>>> runs out will be the highest possible address for that device, ever.
+>>> If that works, then great, we can be pretty sure it's safe to optimise
+>>> for speed by always allocating from the full range. And if it doesn't,
+>>> then the worst has already happened and any brokenness is now showing,
+>>> so there's no point continuing to try to hide it.
 >>>
->>> Failing to handle the GALog overflow means that none of the VFs (in any
->>> guest) will work with IOMMU AVIC forcing the user to power cycle the
->>> host. When handling the event it resumes the GALog without resizing
->>> much like how it is done in the event handler overflow. The
->>> [MMIO Offset 2020h][GALOverflow] bit might be set in status register
->>> without the [MMIO Offset 2020h][GAInt] bit, so when deciding to poll
->>> for GA events (to clear space in the galog), also check the overflow
->>> bit.
+>>> To that end, implement a flag to refine this into a per-device policy
+>>> that can automatically get itself out of the way if and when it stops
+>>> being useful.
 >>>
->>> [suravee: Check for GAOverflow without GAInt, toggle CONTROL_GAINT_EN]
->> According to the AMD IOMMU spec,
+>>> CC: John Garry <john.garry@huawei.com>
+>>> CC: Linus Torvalds <torvalds@linux-foundation.org>
+>>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>>> ---
+>>>
+>>> v3: Expand the flag name, add a print with inline commentary for good
+>>>      measure, and refactor the code flow even more (too many ifs and
+>>>      indents...) such that I didn't presume to carry forward John's R-b.
 >>
->> * The GAInt is set when the virtual interrupt request is written to the GALog
->> and the IOMMU hardware generates an interrupt when GAInt changes from 0 to 1.
+>> I like the new changes, so feel free to add:
 >>
->> * The GAOverflow bit is set when a new guest virtual APIC event is to be written
->> to the GALog and there is no usable entry in the GALog, causing the new event
->> information to be discarded. No interrupt is generated when GALOverflow is
->> changed from 0b to 1b.
->>
->> So, whenever the IOMMU driver detects GALogOverflow, it should also ensure to
->> process any existing entries in the GALog.
->>
-> ... And I am doing all that aren't I?
+>> Reviewed-by: John Garry <john.g.garry@oracle.com>
+> 
+> Is there any chance that this can be picked up?
+> 
+> I also saw that it fixed an issue for Jakub (cc'ed) recently.
 
-Correct. I am just following up to clarify details on the GAOverflow and 
-GAInt.
+Oh, thanks for the reminder - IIRC this wants a minor rebase now, let me 
+double-check and send a v4 that applies cleanly...
 
-
-> Or do you want me edit the commit message to quote these two bullet points from
-> the IOMMU manual?
-
-No need since this is already documented in the spec.
-
-Thanks,
-Suravee
+Cheers,
+Robin.
