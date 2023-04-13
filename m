@@ -1,149 +1,87 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2041.outbound.protection.outlook.com [40.107.220.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98C92361
-	for <iommu@lists.linux.dev>; Thu, 13 Apr 2023 00:44:21 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cDoGSgRVR/j/Zsh6xQ3JTieL/rQMfhSHDqIiLV3Nn0sBDrIioLRhnUGjJ4spjnZcishjYFybhPC7qOE6eVia6BzR7x1Q/JrcJxhBFRdGf4v092AtEkOTJM5BQ+GqJiwkBspsaZC9BNepJPzltstCAQY/bdX2xJxGRMd7arXPHhyegf6SYXVTqNQBAKWsaaItT0WJRScCy0f4W2Qx7g/EkU/0PsEaMkyUviGDfY0doAMc9il/BM67+lIvT48EnLZiOgWQUxBr8e6slK/tqAshhKSRgWaFr2pKlcWkIqlE4BVuUOlZvYGsLg/YEPJyFSV7Ydy2k4dLJNAVbapLbvUuXw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=u5+QbFpL11Xn2I62XMHg/vTuszL/RtJp1LIcbkB13EQ=;
- b=K0gUIelAv5X0FFpNzFuBS05Nsn+/gKeFQeF0l/5Ey8qIYtliqbwmUPzwF4L1XrtiJOhu4YWNkApSLeNaRuCBlMjJum021JmdQGgdiubMCn/kczVB2MD04h11wBPGTi4a4JH5Uera6W6+bJ0mwsHlmZZ7mXC7Gw8oevRaDoBputkkDLsq+wA45cUd+rh3NYL7P7jxHk1HuzyBIFqoGGDL+Evbca5ETIqyFlZXvB0sPFloabklclWVsaPOSZrVR4qV9/3kP7ssL5Q73N4KG9FrIvVKhPTGTdCKS73uw3cV1Mh+QKk9fjSlzJaL6AX5sNt6LrnVFpCg2km+OcJu+1EItw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=u5+QbFpL11Xn2I62XMHg/vTuszL/RtJp1LIcbkB13EQ=;
- b=Vkmh9PDcLLj5+q1NVUwwraJqU1mgrrXViFgreJHLkOs3Ii8vQFldpOeSbaHqllTxL9vCd8Egx6vU7cEqto0k0GheLtt/2pJzuIcO+/n1Zc1K/Ckw4FwjN/kakRERBnKiUFIvf3eIvKl919hrLJmqMSQSXlzhXLRp2HlQS2hD78oZ76iRuzPs4/Rp2Hfd3fBBjI222GtP++kjeJpRBS1zFeSU+l0qadKnpMiWVhD5QuK3sJqSCXZvdrhq6rdYcqduNTKkQwrM7O4pl5C2u2RniGys3wY/Flz/7PnVWPdpVjThBEtIif8nDp0SbWmQqmDKNbdyeaSusTwIJ+WFVK3XrQ==
-Received: from DS7PR05CA0030.namprd05.prod.outlook.com (2603:10b6:5:3b9::35)
- by MW6PR12MB8949.namprd12.prod.outlook.com (2603:10b6:303:248::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.35; Thu, 13 Apr
- 2023 00:44:19 +0000
-Received: from DM6NAM11FT042.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3b9:cafe::2e) by DS7PR05CA0030.outlook.office365.com
- (2603:10b6:5:3b9::35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.30 via Frontend
- Transport; Thu, 13 Apr 2023 00:44:19 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DM6NAM11FT042.mail.protection.outlook.com (10.13.173.165) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6298.31 via Frontend Transport; Thu, 13 Apr 2023 00:44:19 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 12 Apr 2023
- 17:44:06 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Wed, 12 Apr
- 2023 17:44:06 -0700
-Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Wed, 12 Apr 2023 17:44:05 -0700
-Date: Wed, 12 Apr 2023 17:44:04 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Yi Liu <yi.l.liu@intel.com>, <joro@8bytes.org>,
-	<alex.williamson@redhat.com>, <kevin.tian@intel.com>, <robin.murphy@arm.com>,
-	<baolu.lu@linux.intel.com>, <cohuck@redhat.com>, <eric.auger@redhat.com>,
-	<kvm@vger.kernel.org>, <mjrosato@linux.ibm.com>,
-	<chao.p.peng@linux.intel.com>, <yi.y.sun@linux.intel.com>,
-	<peterx@redhat.com>, <jasowang@redhat.com>,
-	<shameerali.kolothum.thodi@huawei.com>, <lulu@redhat.com>,
-	<suravee.suthikulpanit@amd.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH 01/12] iommu: Add new iommu op to create domains owned by
- userspace
-Message-ID: <ZDdQVEksXbeilBoo@Asurada-Nvidia>
-References: <20230309080910.607396-1-yi.l.liu@intel.com>
- <20230309080910.607396-2-yi.l.liu@intel.com>
- <ZAqAJgoQ3f0L2Gfo@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37691361
+	for <iommu@lists.linux.dev>; Thu, 13 Apr 2023 01:05:31 +0000 (UTC)
+Received: by mail-wm1-f41.google.com with SMTP id eo6-20020a05600c82c600b003ee5157346cso9093659wmb.1
+        for <iommu@lists.linux.dev>; Wed, 12 Apr 2023 18:05:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681347929; x=1683939929;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7UkmFhtjxWacnMCiO0oQv3pNqPctVfrO7QeMfZUAp/o=;
+        b=h053+8+gaqrmustSs75Lkl4ufz9p0xLI279tuLc243b8TPHxP3BnuCxYZ43o4jxqjn
+         s96o+hAV52mllfyoA3aqCUasTGSag1Kzey7KdwM4tc+c+vCPuzqEOr5Wrj/aLzeg/1cN
+         8wl+oxt99ajRYYOdyHEOx58Ipx98Rq9ef+pG0kduFzS1A++aCOnFL14/S8n6HVU0yA+S
+         68dL/bnqT84sDEBPBqW2f03AwgKBtPiz/oR7xLSpJAes48w4BepSB3cgjIaqjImx8zFP
+         mamu8KvtnU1DMineUMxOE/CHPIB4bX2t3B6qhkz8ByPKSCNprYiOEu+Wj//+0DoSNMz+
+         gfmA==
+X-Gm-Message-State: AAQBX9ekN3YGmwhy3n1+yF43uEk+xYt3ES9CFkICm2oRXii6sl2R2j9M
+	8JJvPsIuAHBQw4hzTdUuYUA=
+X-Google-Smtp-Source: AKy350bDDKhpd8MexEw/4tmaBStYzgn6bVDTaN7FSwiN/JqKxJOEBlxdeUeD/HykCmrarjBMVB1+fw==
+X-Received: by 2002:a1c:7701:0:b0:3f0:80cf:f2d5 with SMTP id t1-20020a1c7701000000b003f080cff2d5mr48283wmi.11.1681347929308;
+        Wed, 12 Apr 2023 18:05:29 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id p8-20020a05600c468800b003f09563445asm4128817wmo.0.2023.04.12.18.05.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Apr 2023 18:05:28 -0700 (PDT)
+Date: Thu, 13 Apr 2023 01:05:24 +0000
+From: Wei Liu <wei.liu@kernel.org>
+To: Michael Kelley <mikelley@microsoft.com>
+Cc: hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
+	wei.liu@kernel.org, decui@microsoft.com, luto@kernel.org,
+	peterz@infradead.org, davem@davemloft.net, edumazet@google.com,
+	kuba@kernel.org, pabeni@redhat.com, lpieralisi@kernel.org,
+	robh@kernel.org, kw@linux.com, bhelgaas@google.com, arnd@arndb.de,
+	hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
+	thomas.lendacky@amd.com, brijesh.singh@amd.com, tglx@linutronix.de,
+	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+	Tianyu.Lan@microsoft.com, kirill.shutemov@linux.intel.com,
+	sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
+	isaku.yamahata@intel.com, dan.j.williams@intel.com,
+	jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com,
+	x86@kernel.org, linux-kernel@vger.kernel.org,
+	linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: Re: [PATCH v7 00/12] Add PCI pass-thru support to Hyper-V
+ Confidential VMs
+Message-ID: <ZDdVVJ2P+sJaUgtV@liuwe-devbox-debian-v2>
+References: <1679838727-87310-1-git-send-email-mikelley@microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZAqAJgoQ3f0L2Gfo@nvidia.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT042:EE_|MW6PR12MB8949:EE_
-X-MS-Office365-Filtering-Correlation-Id: 64ba65ba-8f36-4a8d-0ac6-08db3bb83776
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	+h//9CmEUZ+hlGs+SqnjWzSY6PMvgK7mPX/0qmbkbIPp+DWnsP08xKWVqdBZ3q7nQw4+wNYLvKTMmw18+KorkkyHLLqHLKYYasFrFUUc82bd2V/zaW8V4n7YmRuXz5kJsVQzntCSn5O8p/yMXtfwqo/kAYPaYXuApcSBqlsqCdhhZ0swJDRQpCSjjkfaGzOI3NrLZLCLNbdKbvLp891iDnTOzRw2JTXQDWIJZDF4ByjfdzsN0o74InflSJlrKOv92i4j07BvdydPyddjr74MOr/KjTwPEW7VGBSR00JN/bNH+/8iCqER/IvjgkSJW7IH4YZ/3GrOChxXHhtkDxfnsJs8KFvc/HpCwzz+z9aXhE0AwhMDGjCl72V6dP9IqHUiF38fk+UOgJ7kdLP9Et7l18MBLmIbvZ0K0uqAMMiN+go32MGQqDYrz62NsclhKiQnx/thmIMgkYnRr2lKgAAbzTDgEs+yQ8XeQ4ILeOE4iCXPkf2xeEoJerjQdcSPUVFq6OKVGVhbdUCL06D/NyUQGSAkUNB2R8W87OAxYcXiiX3eGmMVlYv/lCFLviZaGOKQtJTd/+neCBowCKsyEdb009JX1r1gcAN7cd424B8w6Ehf4ZoDdSqYxfOq75c1PgpHl8v8dxH3GDlB1a6troGlmfiGeG6MuZ9BK+ZgXx8tLtXJY1yx9a1czpjIosAMOJVlDG7mYiiziKBsrWRVr84Z1ZrQb94lKfvzAyuomJCxxKDn9vLS2KzeBZmPtSZ2kUnEALKcDL27AMzipkWZAmHCbHkU6xlK7hjxHwuHaXD5x3c=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(346002)(136003)(396003)(39860400002)(376002)(451199021)(46966006)(40470700004)(36840700001)(86362001)(316002)(41300700001)(6636002)(54906003)(70206006)(4326008)(70586007)(478600001)(8676002)(5660300002)(40480700001)(8936002)(6862004)(82310400005)(36860700001)(33716001)(55016003)(2906002)(7636003)(7416002)(34020700004)(82740400003)(356005)(186003)(83380400001)(9686003)(26005)(336012)(426003)(47076005)(40460700003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2023 00:44:19.2311
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 64ba65ba-8f36-4a8d-0ac6-08db3bb83776
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT042.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB8949
+In-Reply-To: <1679838727-87310-1-git-send-email-mikelley@microsoft.com>
 
-Hi Jason,
-
-On Thu, Mar 09, 2023 at 08:56:06PM -0400, Jason Gunthorpe wrote:
-> On Thu, Mar 09, 2023 at 12:08:59AM -0800, Yi Liu wrote:
-> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> > index 3ef84ee359d2..a269bc62a31c 100644
-> > --- a/include/linux/iommu.h
-> > +++ b/include/linux/iommu.h
-> > @@ -229,6 +229,7 @@ struct iommu_iotlb_gather {
-> >   *           after use. Return the data buffer if success, or ERR_PTR on
-> >   *           failure.
-> >   * @domain_alloc: allocate iommu domain
-> > + * @domain_alloc_user: allocate user iommu domain
-> >   * @probe_device: Add device to iommu driver handling
-> >   * @release_device: Remove device from iommu driver handling
-> >   * @probe_finalize: Do final setup work after the device is added to an IOMMU
-> > @@ -266,6 +267,9 @@ struct iommu_ops {
-> >  
-> >  	/* Domain allocation and freeing by the iommu driver */
-> >  	struct iommu_domain *(*domain_alloc)(unsigned iommu_domain_type);
-> > +	struct iommu_domain *(*domain_alloc_user)(struct device *dev,
-> > +						  struct iommu_domain *parent,
-> > +						  const void *user_data);
+On Sun, Mar 26, 2023 at 06:51:55AM -0700, Michael Kelley wrote:
+[...]
 > 
-> Since the kernel does the copy from user and manages the zero fill
-> compat maybe this user_data have a union like Robin suggested.
-> 
-> But yes, this is the idea.
-> 
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Michael Kelley (12):
+>   x86/ioremap: Add hypervisor callback for private MMIO mapping in coco VM
+>   x86/hyperv: Reorder code to facilitate future work
+>   Drivers: hv: Explicitly request decrypted in vmap_pfn() calls
+>   x86/mm: Handle decryption/re-encryption of bss_decrypted consistently
+>   init: Call mem_encrypt_init() after Hyper-V hypercall init is done
+>   x86/hyperv: Change vTOM handling to use standard coco mechanisms
+>   swiotlb: Remove bounce buffer remapping for Hyper-V
+>   Drivers: hv: vmbus: Remove second mapping of VMBus monitor pages
+>   Drivers: hv: vmbus: Remove second way of mapping ring buffers
+>   hv_netvsc: Remove second mapping of send and recv buffers
+>   Drivers: hv: Don't remap addresses that are above shared_gpa_boundary
+>   PCI: hv: Enable PCI pass-thru devices in Confidential VMs
 
-We pass in a read-only data to this ->domain_alloc_user() while
-it also returns NULL on failure, matching ->domain_alloc(). So,
-there seems to be no error feedback pathway from the driver to
-user space.
+I merged the first 6 from tip/x86/sev and then the rest directly to
+hyperv-next.
 
-Robin remarked in the SMMU series that an STE configuration can
-fail. So, a proper error feedback is required for this callback
-too.
+The hv_netvsc patch did not apply cleanly, but that was easy to fix.
 
-To return a driver/HW specific error, I think we could define a
-"u8 out_error" in the user_data structure. So, we probably need
-a non-const pass-in here. What do you think?
+Please check hyperv-next is what you expected.
 
-Thanks
-Nic
+Thanks,
+Wei.
