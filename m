@@ -1,81 +1,80 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E11B763E
-	for <iommu@lists.linux.dev>; Thu, 13 Apr 2023 04:07:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A5AC62F
+	for <iommu@lists.linux.dev>; Thu, 13 Apr 2023 04:12:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681358833; x=1712894833;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=fGa6nb2+nmNFRDt+vgd1O06FQw1KI1Dbhhp5ECOkeNE=;
-  b=m/l4SloRW02cg0IHjvYjHDRsYzbCoY76LH7oiEC9oQmbAqYAszTVGjtq
-   xGd4gqsJt/A38Btl0nYTW/tIMCoRj79Bc5MSD2qsvfOiakifuSdvXFZs/
-   oJTcWVSWbuHx+6/5If/EuZ0Ika/AWqHFkaWPG5ECbdzJ/zGpdiWAflSS9
-   vlUQPZ/8n6R8SeLhvAZneaXI29MUH4QknJA+g0X/QzUrz8E3PyszW/ESO
-   Bx+ODtUgnAqeYJpREgtyqP5GM2BXcKksx9mV7olgxeqdmnwFGW5Re0hfY
-   seLRFwrSdQK4fwMvUGKIjAiCxh2qjp1fVNIcFzn/t2+6ITHu8UrSohbSN
+  t=1681359169; x=1712895169;
+  h=message-id:date:mime-version:cc:subject:from:to:
+   references:in-reply-to:content-transfer-encoding;
+  bh=Qx1roPB9NVHKquwWhlDSEPgRlas4fd/F7m3pwsubR+4=;
+  b=aqQguHsJEDw0gBKPy2bVUq2NtNHyN3V+aJzuB6zQCbDaxSB9mfFwJADa
+   Q/b4LVwkkSNdFPFQzesqGZHdydIc4m1ai0DZTvHk0SjCsQ8tpgI1Q9HS4
+   RyCVe4hAmZWTGyxrnFf6V8GfZ4+2xENe0Au/o3n+unvXtHjoW3w3v1YhT
+   YR8CRmSvTCSEiw+qTykzeveIXQ/xJoCqR0F7wzSopaevE9Auy4IU1twIJ
+   spAZWsM6ax/ne8ZJq3houdx1LJeyYwkrX61ywRVEIH387IOgZHjEWAqn9
+   +UOohUA1MA36dbmsGGsMfHJu+yTC5MPdLTpmYa3SgJC8AJEJi9YTxCsV4
    g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="332786678"
+X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="345872341"
 X-IronPort-AV: E=Sophos;i="5.98,339,1673942400"; 
-   d="scan'208";a="332786678"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2023 21:07:13 -0700
+   d="scan'208";a="345872341"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2023 21:12:17 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="935361128"
+X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="753808034"
 X-IronPort-AV: E=Sophos;i="5.98,339,1673942400"; 
-   d="scan'208";a="935361128"
-Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by fmsmga006.fm.intel.com with ESMTP; 12 Apr 2023 21:07:11 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Tina Zhang <tina.zhang@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 17/17] iommu/vt-d: Remove BUG_ON in dmar_insert_dev_scope()
-Date: Thu, 13 Apr 2023 12:06:45 +0800
-Message-Id: <20230413040645.46157-18-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230413040645.46157-1-baolu.lu@linux.intel.com>
-References: <20230413040645.46157-1-baolu.lu@linux.intel.com>
+   d="scan'208";a="753808034"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by fmsmga008.fm.intel.com with ESMTP; 12 Apr 2023 21:12:15 -0700
+Message-ID: <aab4ab9b-1e5b-6ad8-385e-46f0240a23cf@linux.intel.com>
+Date: Thu, 13 Apr 2023 12:12:19 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Cc: Vinod Koul <vkoul@kernel.org>, Tina Zhang <tina.zhang@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ Christophe JAILLET <christophe.jaillet@wanadoo.fr>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 00/17] [PULL REQUEST] Intel IOMMU updates for Linux v6.4
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>
+References: <20230411064815.31456-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20230411064815.31456-1-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Tina Zhang <tina.zhang@intel.com>
+On 4/11/23 2:47 PM, Lu Baolu wrote:
+> Hi Joerg,
+> 
+> This includes patches queued for v6.4. They are:
+> 
+>   - Allow the VT-d driver to support non-PRI IOPF
+>   - Remove PASID supervisor request support
+>   - Various small and misc cleanups
+> 
+> This series also includes an idxd patch to avoid driver regression after
+> changes in the IOMMU driver. It has been reviewed by the driver's
+> maintainers. Please feel free to let me know if it's inappropriate to
+> route it through the iommu tree.
+> 
+> The whole series is based on v6.3-rc6 and also available at:
+> https://github.com/LuBaolu/intel-iommu/commits/vtd-update-for-v6.4
+> 
+> Please pull them for x86/vt-d branch.
 
-The dmar_insert_dev_scope() could fail if any unexpected condition is
-encountered. However, in this situation, the kernel should attempt
-recovery and proceed with execution. Remove BUG_ON with WARN_ON, so that
-kernel can avoid being crashed when an unexpected condition occurs.
+Hi Joerg,
 
-Signed-off-by: Tina Zhang <tina.zhang@intel.com>
-Link: https://lore.kernel.org/r/20230406065944.2773296-8-tina.zhang@intel.com
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/dmar.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+I just sent a v2 for this pull request. I addressed David's comments
+there.
 
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 9346c6e7ebae..e35be3786bde 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -262,7 +262,8 @@ int dmar_insert_dev_scope(struct dmar_pci_notify_info *info,
- 						   get_device(dev));
- 				return 1;
- 			}
--		BUG_ON(i >= devices_cnt);
-+		if (WARN_ON(i >= devices_cnt))
-+			return -EINVAL;
- 	}
- 
- 	return 0;
--- 
-2.34.1
+https://lore.kernel.org/linux-iommu/20230413040645.46157-1-baolu.lu@linux.intel.com/
 
+Best regards,
+baolu
