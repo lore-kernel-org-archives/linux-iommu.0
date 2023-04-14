@@ -1,56 +1,64 @@
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD25D6ADC
-	for <iommu@lists.linux.dev>; Fri, 14 Apr 2023 21:29:35 +0000 (UTC)
-Received: by mail-qt1-f182.google.com with SMTP id w14so5393474qtv.13
-        for <iommu@lists.linux.dev>; Fri, 14 Apr 2023 14:29:35 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E758630
+	for <iommu@lists.linux.dev>; Fri, 14 Apr 2023 23:27:33 +0000 (UTC)
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-2f7c281a015so65194f8f.1
+        for <iommu@lists.linux.dev>; Fri, 14 Apr 2023 16:27:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681507774; x=1684099774;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=dKVxcyUlMFW5qdzkCgP4h7TpGF92heFD4RUEkUjHDYc=;
-        b=j4n/kmRKuDKT+obuHiLipX05S2HzKakpxDZQgkWd3EFv9xdlPYwpbIhiNt58T3Mlba
-         HOjrJ5hq4gKwyrHy121KhkhWUMAOn6AwDdidA1uIul5dASMPShhqZJ7Li4dxd7pUEBsd
-         0pJh30AMNyYodHbfev74oIiFbhIK+6iJjDtcGvxCexyouvFxKvroXDjZ8/iX3r2azz/2
-         o5zmbPxJsxDAciTq1krABmSAiGGMm5aReiaDgnNYWp0rqAw5GJV4rri72x9+gwJPYTYL
-         Hk1u6pcLqNpDA1M9MPOGIzG5I34wgwZ+MxHAhhf0RA/2g6GZfCHrub7VDs5uNazN050G
-         b0qA==
+        d=gmail.com; s=20221208; t=1681514852; x=1684106852;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1VJscWXDoV805lUglV9Lx4G4y0RL2KQ+qVhOtcQn4So=;
+        b=TQhDiOv0KwrX1cl+HMRY/m9AlRUvTYmjRVKkUqK7mY3kxSUGxZiTt8OYrLUmUeyCKW
+         oAUQJOGgCStHEvZfAYU02YzPBy26VHk1lJviLsUEA6XAPswuM4D05Dp+mfBQIJ+XfaX7
+         1QujcskdwR8bLgjh1lu+JhFW63rvse6gXWwLjCkbo7iYN74NDaNkhM7Lie2u9dYw/jOj
+         lG4gRmfBXpDCu/JYCZVyYhoUuPl+LjI+gbL/TJWPjqP7lOVKGKftL3cndCs5fGFAXuyW
+         WjyPGFoN1jOK6Qkr4qiCPERBiYVC40Ip8Nxzn7FSB+NU4/YlO4xATw65tFgRiSl2He4f
+         PI5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681507774; x=1684099774;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=dKVxcyUlMFW5qdzkCgP4h7TpGF92heFD4RUEkUjHDYc=;
-        b=Mxt96cxf3q/zZl8mDdnsOaGc9WfZxod0fM7fso641Aai7rSKHkRPW3mvexqmc0+Z7k
-         UEWCuFASXfZ9uz0NlvxkCYKC60GhlEHW1S11tPDVYdOkOBeqpkrvWHAzeB8hlhZwClQH
-         cI1cPM6sQNk3j//WpeZ8WCyQpcmkRI1veuCzCMKeWyNfMmnQu6KmuSSDeTEBwC9QBLHR
-         79VQ1Lpp1GF62krGX9GemccRy3BRufMbThrYH8pERHGzbIRx2VXMTOBTwTapVBZXdRj2
-         gzJha1Ublpv0yHqePV/VPLNffA3spf2p+DVA6XrRVzv6BIVSPxsjHZwz9MIb+bVQRGDy
-         moNw==
-X-Gm-Message-State: AAQBX9f8MYCYsvJzn9b1LohTGP2b2NTbAzoXfqBiFWcZeN1H9SPNfbrD
-	FFRKv8p6ifaoUqxRHPjUztY=
-X-Google-Smtp-Source: AKy350aoKyhZqFDur3tbtlzp/oTUUSYYsZQMEWgY1N3s/2EjXGTnTtrXzohSthSKNWkRzYAJvOl0yA==
-X-Received: by 2002:a05:622a:19a7:b0:3ec:46e9:bc4b with SMTP id u39-20020a05622a19a700b003ec46e9bc4bmr3633173qtc.29.1681507774449;
-        Fri, 14 Apr 2023 14:29:34 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id bm38-20020a05620a19a600b007422eee8058sm1487244qkb.125.2023.04.14.14.29.32
+        d=1e100.net; s=20221208; t=1681514852; x=1684106852;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1VJscWXDoV805lUglV9Lx4G4y0RL2KQ+qVhOtcQn4So=;
+        b=lwEXKZomg2QZv80zCKMZFYKD8SEuBv6qvfAFEy8ToO7U+jteZxJgczKtwMJZpKFh2f
+         swkgicSFqiypWkhhEhQjuPTqlFdpQpli6/tPZ1fxFG3XOGgVJjTh3t8bVpdfz8Xm7j0Y
+         MbI5eUacQfEkqxYIkEM4bOOL383Hpd0CPFfggSd/mDzZ5PrqVSEGR+KzRYhYxR7/lfxM
+         sXANE/asqN8UiELyQxbUekgWoO3RFixeByXpZKAvCukEERi1C3XbCOEZwXA1e+UONbFL
+         PFYj3MSzx2qHexf/WrD8JVBCrmUr7sBmFqUTz2/tdA8jokC1Gxe+QJAdMmPs7mjGwjL8
+         TM8Q==
+X-Gm-Message-State: AAQBX9eFYzLDXMniYx8XgLI8mc0Hbi5XMEjUyra+P/1VjJjloRRztBkY
+	olXNrzV64+K5feeIDQk5oAk=
+X-Google-Smtp-Source: AKy350btVgvfuTZx4LLwP2D/aSmexxkQWIDKHhEHiIOChilrQmlVnxBaZQKRLjJJ40FW9Avxwpik5Q==
+X-Received: by 2002:adf:e506:0:b0:2ef:9837:6b2b with SMTP id j6-20020adfe506000000b002ef98376b2bmr255643wrm.21.1681514851612;
+        Fri, 14 Apr 2023 16:27:31 -0700 (PDT)
+Received: from lucifer.home (host86-156-84-164.range86-156.btcentralplus.com. [86.156.84.164])
+        by smtp.googlemail.com with ESMTPSA id s9-20020a5d6a89000000b002cf1c435afcsm4550694wru.11.2023.04.14.16.27.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Apr 2023 14:29:33 -0700 (PDT)
-From: Florian Fainelli <f.fainelli@gmail.com>
-To: linux-kernel@vger.kernel.org
-Cc: Doug Berger <opendmb@gmail.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
+        Fri, 14 Apr 2023 16:27:30 -0700 (PDT)
+From: Lorenzo Stoakes <lstoakes@gmail.com>
+To: linux-mm@kvack.org,
+	linux-kernel@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
+	iommu@lists.linux.dev
+Cc: Matthew Wilcox <willy@infradead.org>,
+	David Hildenbrand <david@redhat.com>,
+	kvm@vger.kernel.org,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Claire Chang <tientzu@chromium.org>,
-	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS)
-Subject: [PATCH] swiotlb: Relocate PageHighMem test away from rmem_swiotlb_setup
-Date: Fri, 14 Apr 2023 14:29:25 -0700
-Message-Id: <20230414212926.2336072-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	Alex Williamson <alex.williamson@redhat.com>,
+	Lorenzo Stoakes <lstoakes@gmail.com>
+Subject: [PATCH 2/7] mm/gup: remove unused vmas parameter from pin_user_pages_remote()
+Date: Sat, 15 Apr 2023 00:27:23 +0100
+Message-Id: <c75291e4afe968824b89831cbd341f8b54ce28a4.1681508038.git.lstoakes@gmail.com>
+X-Mailer: git-send-email 2.40.0
+In-Reply-To: <cover.1681508038.git.lstoakes@gmail.com>
+References: <cover.1681508038.git.lstoakes@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -59,59 +67,111 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Doug Berger <opendmb@gmail.com>
+No invocation of pin_user_pages_remote() uses the vmas parameter, so remove
+it. This forms part of a larger patch set eliminating the use of the vmas
+parameters altogether.
 
-The reservedmem_of_init_fn's are invoked very early at boot before the
-memory zones have even been defined. This makes it inappropriate to test
-whether the page corresponding to a PFN is in ZONE_HIGHMEM from within
-one.
-
-Removing the check allows an ARM 32-bit kernel with SPARSEMEM enabled to
-boot properly since otherwise we would be de-referencing an
-uninitialized sparsemem map to perform pfn_to_page() check.
-
-The arm64 architecture happens to work (and also has no high memory) but
-other 32-bit architectures could also be having similar issues.
-
-While it would be nice to provide early feedback about a reserved DMA
-pool residing in highmem, it is not possible to do that until the first
-time we try to use it, which is where the check is moved to.
-
-Fixes: 0b84e4f8b793 ("swiotlb: Add restricted DMA pool initialization")
-Signed-off-by: Doug Berger <opendmb@gmail.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Lorenzo Stoakes <lstoakes@gmail.com>
 ---
- kernel/dma/swiotlb.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/iommu/iommufd/pages.c   | 4 ++--
+ drivers/vfio/vfio_iommu_type1.c | 2 +-
+ include/linux/mm.h              | 2 +-
+ mm/gup.c                        | 8 +++-----
+ mm/process_vm_access.c          | 2 +-
+ 5 files changed, 8 insertions(+), 10 deletions(-)
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index dac42a2ad588..2bb9e3b02380 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -998,6 +998,11 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
- 	/* Set Per-device io tlb area to one */
- 	unsigned int nareas = 1;
+diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
+index f8d92c9bb65b..9d55a2188a64 100644
+--- a/drivers/iommu/iommufd/pages.c
++++ b/drivers/iommu/iommufd/pages.c
+@@ -786,7 +786,7 @@ static int pfn_reader_user_pin(struct pfn_reader_user *user,
+ 			user->locked = 1;
+ 		}
+ 		rc = pin_user_pages_remote(pages->source_mm, uptr, npages,
+-					   user->gup_flags, user->upages, NULL,
++					   user->gup_flags, user->upages,
+ 					   &user->locked);
+ 	}
+ 	if (rc <= 0) {
+@@ -1787,7 +1787,7 @@ static int iopt_pages_rw_page(struct iopt_pages *pages, unsigned long index,
+ 	rc = pin_user_pages_remote(
+ 		pages->source_mm, (uintptr_t)(pages->uptr + index * PAGE_SIZE),
+ 		1, (flags & IOMMUFD_ACCESS_RW_WRITE) ? FOLL_WRITE : 0, &page,
+-		NULL, NULL);
++		NULL);
+ 	mmap_read_unlock(pages->source_mm);
+ 	if (rc != 1) {
+ 		if (WARN_ON(rc >= 0))
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index 493c31de0edb..e6dc8fec3ed5 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -562,7 +562,7 @@ static int vaddr_get_pfns(struct mm_struct *mm, unsigned long vaddr,
  
-+	if (PageHighMem(pfn_to_page(PHYS_PFN(rmem->base)))) {
-+		dev_err(dev, "Restricted DMA pool must be accessible within the linear mapping.");
-+		return -EINVAL;
-+	}
-+
- 	/*
- 	 * Since multiple devices can share the same pool, the private data,
- 	 * io_tlb_mem struct, will be initialized by the first device attached
-@@ -1059,11 +1064,6 @@ static int __init rmem_swiotlb_setup(struct reserved_mem *rmem)
- 	    of_get_flat_dt_prop(node, "no-map", NULL))
- 		return -EINVAL;
+ 	mmap_read_lock(mm);
+ 	ret = pin_user_pages_remote(mm, vaddr, npages, flags | FOLL_LONGTERM,
+-				    pages, NULL, NULL);
++				    pages, NULL);
+ 	if (ret > 0) {
+ 		int i;
  
--	if (PageHighMem(pfn_to_page(PHYS_PFN(rmem->base)))) {
--		pr_err("Restricted DMA pool must be accessible within the linear mapping.");
--		return -EINVAL;
--	}
--
- 	rmem->ops = &rmem_swiotlb_ops;
- 	pr_info("Reserved memory: created restricted DMA pool at %pa, size %ld MiB\n",
- 		&rmem->base, (unsigned long)rmem->size / SZ_1M);
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index faeed36c2d04..513d5fab02f1 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2378,7 +2378,7 @@ long get_user_pages_remote(struct mm_struct *mm,
+ long pin_user_pages_remote(struct mm_struct *mm,
+ 			   unsigned long start, unsigned long nr_pages,
+ 			   unsigned int gup_flags, struct page **pages,
+-			   struct vm_area_struct **vmas, int *locked);
++			   int *locked);
+ long get_user_pages(unsigned long start, unsigned long nr_pages,
+ 		    unsigned int gup_flags, struct page **pages);
+ long pin_user_pages(unsigned long start, unsigned long nr_pages,
+diff --git a/mm/gup.c b/mm/gup.c
+index 7e454d6b157e..931c805bc32b 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -3093,8 +3093,6 @@ EXPORT_SYMBOL_GPL(pin_user_pages_fast);
+  * @gup_flags:	flags modifying lookup behaviour
+  * @pages:	array that receives pointers to the pages pinned.
+  *		Should be at least nr_pages long.
+- * @vmas:	array of pointers to vmas corresponding to each page.
+- *		Or NULL if the caller does not require them.
+  * @locked:	pointer to lock flag indicating whether lock is held and
+  *		subsequently whether VM_FAULT_RETRY functionality can be
+  *		utilised. Lock must initially be held.
+@@ -3109,14 +3107,14 @@ EXPORT_SYMBOL_GPL(pin_user_pages_fast);
+ long pin_user_pages_remote(struct mm_struct *mm,
+ 			   unsigned long start, unsigned long nr_pages,
+ 			   unsigned int gup_flags, struct page **pages,
+-			   struct vm_area_struct **vmas, int *locked)
++			   int *locked)
+ {
+ 	int local_locked = 1;
+ 
+-	if (!is_valid_gup_args(pages, vmas, locked, &gup_flags,
++	if (!is_valid_gup_args(pages, NULL, locked, &gup_flags,
+ 			       FOLL_PIN | FOLL_TOUCH | FOLL_REMOTE))
+ 		return 0;
+-	return __gup_longterm_locked(mm, start, nr_pages, pages, vmas,
++	return __gup_longterm_locked(mm, start, nr_pages, pages, NULL,
+ 				     locked ? locked : &local_locked,
+ 				     gup_flags);
+ }
+diff --git a/mm/process_vm_access.c b/mm/process_vm_access.c
+index 78dfaf9e8990..0523edab03a6 100644
+--- a/mm/process_vm_access.c
++++ b/mm/process_vm_access.c
+@@ -104,7 +104,7 @@ static int process_vm_rw_single_vec(unsigned long addr,
+ 		mmap_read_lock(mm);
+ 		pinned_pages = pin_user_pages_remote(mm, pa, pinned_pages,
+ 						     flags, process_pages,
+-						     NULL, &locked);
++						     &locked);
+ 		if (locked)
+ 			mmap_read_unlock(mm);
+ 		if (pinned_pages <= 0)
 -- 
-2.34.1
+2.40.0
 
