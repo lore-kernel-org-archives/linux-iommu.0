@@ -1,204 +1,116 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2059.outbound.protection.outlook.com [40.107.93.59])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 841081392
-	for <iommu@lists.linux.dev>; Fri, 14 Apr 2023 13:31:40 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PDDLAszfJ/cB5L9SlIoT418A9/2SICpjt8FD+2T21rM0YKpJz/nRk7V/rZA725c8XAUeqhY3TmfnchbVch0PH1XcyHd82nVYRUm45FZOHHpPA4Aw3oKrSaBgwdbFiC1pGaoQxceawJbu51NWcrvSR+gnxzEAyqMsLKDjgGz+auT2gWWyoHqlvDHAyGk6Mx1xEWk2QaPZiuMApKzkxoqRs4/c81Gv18J7L6JAF0QXL7+SlYCqUoUTUMCy9okADiZCb3FBSBObqgV/eIwbRYBmkcbDmwUOW8RgTd8psVKhPCMD1a2KWTV42WXAljbqAHbYxsiWuRQ/aKab8CdApEahYg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Wx6WdcHyKAC435IxagxzbsVgCmaW2Skl7tv9+q3hvY0=;
- b=cegDyyS6w9fXhBlm6IIvy8+/DahgMVdgBtfN80Gfs+OMXa8+fBhN5MxuA7siIyB9XNji8bh9klQsaggOZzma/YH1TtSFg0ltzMyR/fMod24RqyVTRyuAzdFwIzpcFnS82u8HCwlo+wyyvC6w5lxjmK9ZtlYZAmEYIuHDoDYuOzJfX9ziUj8+NQXNGNg4rlJctjcvr+jy74loUskEEClJYORMtFaTZUl1/uziSa9qW+FAGA//n/R44PBpdLZvesq9JAWV81C9FR94i0mKLlUx1Bt4PaAPfCPPKikRnE8LIVEpOppisf9IQ9/e4KduyA8I12T+u7YuyCpeldHp6NGg0A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Wx6WdcHyKAC435IxagxzbsVgCmaW2Skl7tv9+q3hvY0=;
- b=N8RTPHJHXC0kxSEUkKJADV6MDRtk5LUDRmh0fWIRjsqV1CV9dB73/L0jT4nyibowqHQIAg2MboQ+uZAyH41r87jboLlCeIlG4jDYIDymgOR4f3tsp6xy7wI9nDoEUFlUjTpDu25dbBCOHuDxT9NvW+0X5riHIibFriSvH2yCUon2xWzFY86H5qOu6UH821M+h5rdXoxX7FMtuweNmTwZmdH/pxn8gUVL6UkMUGdPkDHI/OJ78KfH0iYOdX7EvPxkockK2kkXgmIErag1apH960K99WXZS9DEvcrOS6cFgCL8Fgvpt6knshD2R9HSzH8iJ1ModGMQUQQwo7tm6rDylQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by MN0PR12MB6248.namprd12.prod.outlook.com (2603:10b6:208:3c0::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.30; Fri, 14 Apr
- 2023 13:31:38 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::6045:ad97:10b7:62a2]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::6045:ad97:10b7:62a2%9]) with mapi id 15.20.6298.030; Fri, 14 Apr 2023
- 13:31:37 +0000
-Date: Fri, 14 Apr 2023 10:31:33 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>
-Subject: Re: [PATCH v3 03/17] iommufd: Replace the hwpt->devices list with
- iommufd_group
-Message-ID: <ZDlVtcwhV2G8ZKao@nvidia.com>
-References: <0-v3-61d41fd9e13e+1f5-iommufd_alloc_jgg@nvidia.com>
- <3-v3-61d41fd9e13e+1f5-iommufd_alloc_jgg@nvidia.com>
- <BN9PR11MB5276E42B629C3E5AF019B6748C879@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZDVvLbSN2TR1Er1c@nvidia.com>
- <BN9PR11MB527661A29A11AE1E7FC655018C9B9@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZDaTY6OX8oR5w0uV@nvidia.com>
- <BN9PR11MB52762841AAA04A24F76A743C8C989@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB52762841AAA04A24F76A743C8C989@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: SJ0PR05CA0010.namprd05.prod.outlook.com
- (2603:10b6:a03:33b::15) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4AB223DA
+	for <iommu@lists.linux.dev>; Fri, 14 Apr 2023 15:12:02 +0000 (UTC)
+Received: by mail-wm1-f51.google.com with SMTP id hg25-20020a05600c539900b003f05a99a841so17910706wmb.3
+        for <iommu@lists.linux.dev>; Fri, 14 Apr 2023 08:12:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1681485121; x=1684077121;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=fGndh23ci0NG/qxJMvZcia5Fbbz6IQHdr0UISxwOqvc=;
+        b=sHOIntrxl6oK5QB4mGnSAK4orpW3A+vpY0JVxMNpcCRPoBMhQkFB2h121qwblj0sK7
+         Fqeco22GrFRtTYFiEyT8BopH4T9fy+/nDcMgmBbTk7vSu9J8i44z61te8oUSwRr3bXl3
+         D3qElxC5xoSZ6HIPlFgg5RHJdkN9sxqwhnUcqzJKlOo3DwnLK1f0LiSv8CZiJaCCWGw9
+         5RgpBqLdCmuqh9O/YnT0k/ZOJGm2kOKFS+hkMs0vavZrjc53ZKPbbtgpAv237MVJ9V4G
+         +WSQIwSnhsdRuG8Pee8KGctF8045xwFUL3Z0Qz9fDnA/6Lvhu47jmmE9ozBTTKxC48Kg
+         WFSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681485121; x=1684077121;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=fGndh23ci0NG/qxJMvZcia5Fbbz6IQHdr0UISxwOqvc=;
+        b=czGOGpXuFZCPI8zi6b+wQmQticEmBnMig8i2XaNLepZof8qkFxDogixbia3VNMtZI0
+         NJ44OdtfQxyoBoVi/O84cBqJ+2COvkqR3jeuk1YSgolz+lbLrqvWqOXL+N2PNfSj64Up
+         Clc5vrhc+VwbWABC9zE0HtyE9HWT17B3kzwjWkVBwp4P9It1PNUtbl1t0M5w8M+6FJ5g
+         RF63NMh2XEeAnFzldY6AUnDct2YdC51N53USbn8mkgshs6wLe8frwv9H+WUko6U3pELp
+         JV8mIg8mgaFDjgJTfJ6wcJCZgN+XqHJWzp+O+DhZuhCMB0LpvaYslkRoDIv3A5Llgcin
+         nUNA==
+X-Gm-Message-State: AAQBX9cV9nbQb1VRDjHZDHS2HAW3XGL6wjykl0iM0t7IBBJExhjfWItQ
+	uDoYtlbGMbT720Hxp0VklGn8GA==
+X-Google-Smtp-Source: AKy350bO3qOiPJ+Vk7/7iHsWjVOfKH4KpjFVsU11XW/qvxNENhKYYADSOXszgx5+KvjxYLnNqQHe+Q==
+X-Received: by 2002:a1c:6a05:0:b0:3ee:42fd:7768 with SMTP id f5-20020a1c6a05000000b003ee42fd7768mr4573637wmc.1.1681485121054;
+        Fri, 14 Apr 2023 08:12:01 -0700 (PDT)
+Received: from localhost.localdomain (054592b0.skybroadband.com. [5.69.146.176])
+        by smtp.gmail.com with ESMTPSA id iz11-20020a05600c554b00b003f09aaf547asm10217839wmb.1.2023.04.14.08.12.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Apr 2023 08:12:00 -0700 (PDT)
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: joro@8bytes.org,
+	will@kernel.org
+Cc: robin.murphy@arm.com,
+	eric.auger@redhat.com,
+	virtualization@lists.linux-foundation.org,
+	iommu@lists.linux.dev,
+	akihiko.odaki@daynix.com,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: [PATCH] iommu/virtio: Detach domain on endpoint release
+Date: Fri, 14 Apr 2023 16:07:45 +0100
+Message-Id: <20230414150744.562456-1-jean-philippe@linaro.org>
+X-Mailer: git-send-email 2.40.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MN0PR12MB6248:EE_
-X-MS-Office365-Filtering-Correlation-Id: f81d13ba-2890-4997-8d01-08db3cec92c8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	RHBohgjtVJUoFQcBHJgKzFGualNr2lH68XazZKQjVbWn+D0L1ubMitpYWauLGfbLOZoykhLm/t0da+hmoXAMRmOkYwFYMpB6FS2fduEVmX1/66/3vOzgD3MTDrJTHSlo5t5Tlisi8E1t1hclgKFsiVoNig05kzSJXBJPexJf17YGb97X2uD1OS/tZZLnolu98aOzyShXnVwmU3nkFEKPos6QkfwRIbI7y46vAXdoZaiOjywrG4ZSUrqn02jJzXE41KKspGRFSEgK6eQ5RYp2V0XyTl+juymwLp2mkcjZkdF/fPDwvnU0BnaJ6gmI4Zf2yxdDT5/nZBHJoon+syyVrnMfyVde9YWLnJVJ4jiJSmysmgM5/x1UvTAK4/7aSdS98vnAkEOY+/bWCd1Zdxm9VWZKn1lD6USNsJXqE1H5WRrOqW/W6Ut3OjcxJ34ZsaVvuBhQMAIqd/egcQkj3LAFbh7UCDfgarht8aMOLD89p5SYNBI5Cf7O1g+ky25sazEa1Q4YsHzCYioYP3NOyM08aFomGUNPx9Wg2oagpYWPsu0oWdUmAmDSA6msRUuV9fTIMqskdi6yZTVT9/h0IbtGG0msu9dXbvs4zKv3GbAPJ9w=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(39860400002)(376002)(136003)(366004)(451199021)(26005)(66476007)(66556008)(36756003)(6506007)(6512007)(2906002)(6666004)(83380400001)(966005)(6486002)(2616005)(186003)(66946007)(6916009)(4326008)(54906003)(86362001)(5660300002)(8676002)(38100700002)(8936002)(316002)(478600001)(41300700001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?Tr9JQQVD/D12Q6toTxPyAwq9WbUVyeHODx6KIqSHIJ5zl5YQiizYtmeVuq1n?=
- =?us-ascii?Q?tU1P2GuTTpNLzy0cJF12eUdp3IXdzPXdCPNnWi8fW8rrVbrLvkjHEZQTDdKe?=
- =?us-ascii?Q?i63wqM4ba9jnVel8akTLziUvLaeWJeiFWlK/0UK21TiCwp2ZevJVFN6RETcG?=
- =?us-ascii?Q?FPbTgJjV/6SdOfgX1NNP97ouwqEZu3kzhgT9gsOoy70a3KGQu+7D/AdIlsaB?=
- =?us-ascii?Q?3nhtMXLi9+F+/6HL5TLjrjT1ZxJnyF6ppI1HabSDshPnHQ1qaKPPvH7hTirW?=
- =?us-ascii?Q?b9bs3QRoYQsPEPWkKtgopyquArqo+bfmVq8S+m+g4zkvzkZc7050i5027D5g?=
- =?us-ascii?Q?5bzVmOykKblhQRyWIAPOXOU9i+5YHpYnaDsG2kdoKbkFao5f1GWUsgqRwHuy?=
- =?us-ascii?Q?7VxO+lvio5vlVdcqEEkKTvRnlKvClbRgKB7OA/RJjlx1pLh7l7aWl7zRsSci?=
- =?us-ascii?Q?WzpKIFSc7Vo+mNnkuwoUbmv0nD0JLvTB7MvV7p7kFanWt4kbv02c98OIUbRz?=
- =?us-ascii?Q?xV4JPh761w+B45iq30xtCLFc9ohPfj7cpV+hsAaO2zap0kFvimVXCaeTU+06?=
- =?us-ascii?Q?uO4IjW51o7Fj65lB1kV0lp/ZcYDBGcVwJ9U2uxZB9D1Y7TYlru9EoN9Vzjcu?=
- =?us-ascii?Q?zkL06tMmL2sbUl/y7Jvn/MS4P+83g2Z6JVMw2t18gpImQpj52vH4yp1qe6BT?=
- =?us-ascii?Q?0CuofI5sFx/Tp/N2xHbRywRkoY1+a4bgytgUNFVpFuYyqM11ijbAhgd9Dx1n?=
- =?us-ascii?Q?VKvAF8rGaV7Ou+z9FqsX5RmK8loqKxXPF1+M79dqoDB9/w+nGtb8WZAZ1DEf?=
- =?us-ascii?Q?OGKCvSPPqAqQ7i6/CtcZzl+9XFNYFrEsQXuvXkNJdjW4Bf5GDdxyCXZTt6/q?=
- =?us-ascii?Q?/kkWShWJySHX2fFx6eI/kB54SvW5XL2kirDATAbTxnJvOWr7yB3txH6awVuX?=
- =?us-ascii?Q?IyT2Qt6SnUJwDKWwujb+88nvglgPnAuv7MOvvVx/kjey5zpRGcUAxkJX/yBe?=
- =?us-ascii?Q?gtWdqaQuI6IC+q5BEj9FXdRkqvU8rtmmO8MpjnAXPtZpsJItUbJvPqq9Njd0?=
- =?us-ascii?Q?oKerSJUuNfg40oLDJ9sIYb8vfpIOhoQ11+10UY5TD7ILso5KttizTU3NiIAm?=
- =?us-ascii?Q?ZYmJljCMs4xRv+TTfWY76FBHoX9pI2Dl0Q0K/dz/nKMAWVy6Hngq4U5LCGCC?=
- =?us-ascii?Q?UMF0YN6uv/1WYmI407Zst/1ktPoT/Ph6YjBO6Q1dNfeA0KP21sJCStOdYzyA?=
- =?us-ascii?Q?/jDpCruHeuGBGN2jwU5Al6rRGBYVCKLUi6IXylRGrjI7BuMEviF4hFuYBUt6?=
- =?us-ascii?Q?aLaeh6JCkDq9pehIqvqsCTmPixfE5ESu2Zffn9mEf4FdVAA2Jw4e1TMj7IUf?=
- =?us-ascii?Q?QH9oULC+x22ttW5I3Ehlrp7jFnCU+VnSG71XQQNDb9d1GDjyAVWx0qldCaOJ?=
- =?us-ascii?Q?rw4XykorEn+tfG7wDH0urEE+8U9ZAizii/kkCkJ03cte+e6ja8e5sqaIqwda?=
- =?us-ascii?Q?O8sm8JAXxaaRyGkikg9TMwYWPyPVTTO5FcoKSGJJJv4Z1LDQZTrABG/EPtRc?=
- =?us-ascii?Q?ZzS58zoMsMXZHKeaX7/X8WWNDcboTK4VykMopHpF?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f81d13ba-2890-4997-8d01-08db3cec92c8
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2023 13:31:37.6931
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2pjojLzTEivc6J3RdlWrgqcV8xkmbTjKEZr6eMmy5yvmeE35KHhCx13X/IcpIGJr
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6248
+Content-Transfer-Encoding: 8bit
 
-On Thu, Apr 13, 2023 at 02:52:54AM +0000, Tian, Kevin wrote:
-> > From: Jason Gunthorpe <jgg@nvidia.com>
-> > Sent: Wednesday, April 12, 2023 7:18 PM
-> > 
-> > On Wed, Apr 12, 2023 at 08:27:36AM +0000, Tian, Kevin wrote:
-> > > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > > Sent: Tuesday, April 11, 2023 10:31 PM
-> > > >
-> > > > On Thu, Mar 23, 2023 at 07:21:42AM +0000, Tian, Kevin wrote:
-> > > >
-> > > > > If no oversight then we can directly put the lock in
-> > > > > iommufd_hw_pagetable_attach/detach() which can also simplify a bit
-> > on
-> > > > > its callers in device.c.
-> > > >
-> > > > So, I did this, and syzkaller explains why this can't be done:
-> > > >
-> > > > https://lore.kernel.org/r/0000000000006e66d605f83e09bc@google.com
-> > > >
-> > > > We can't allow the hwpt to be discovered by a parallel
-> > > > iommufd_hw_pagetable_attach() until it is done being setup, otherwise
-> > > > if we fail to set it up we can't destroy the hwpt.
-> > > >
-> > > > 	if (immediate_attach) {
-> > > > 		rc = iommufd_hw_pagetable_attach(hwpt, idev);
-> > > > 		if (rc)
-> > > > 			goto out_abort;
-> > > > 	}
-> > > >
-> > > > 	rc = iopt_table_add_domain(&hwpt->ioas->iopt, hwpt->domain);
-> > > > 	if (rc)
-> > > > 		goto out_detach;
-> > > > 	list_add_tail(&hwpt->hwpt_item, &hwpt->ioas->hwpt_list);
-> > > > 	return hwpt;
-> > > >
-> > > > out_detach:
-> > > > 	if (immediate_attach)
-> > > > 		iommufd_hw_pagetable_detach(idev);
-> > > > out_abort:
-> > > > 	iommufd_object_abort_and_destroy(ictx, &hwpt->obj);
-> > > >
-> > > > As some other idev could be pointing at it too now.
-> > >
-> > > How could this happen before this object is finalized? iirc you pointed to
-> > > me this fact in previous discussion.
-> > 
-> > It only is unavailable through the xarray, but we've added it to at
-> > least one internal list on the group already, it is kind of sketchy to
-> > work like this, it should all be atomic..
-> > 
-> 
-> which internal list? group has a list for attached devices but regarding
-> to hwpt it's stored in a single field igroup->hwpt.
+When an endpoint is released, for example a PCIe VF is disabled or a
+function hot-unplugged, it should be detached from its domain. Send a
+DETACH request.
 
-It is added to 
+Fixes: edcd69ab9a32 ("iommu: Add virtio-iommu driver")
+Reported-by: Akihiko Odaki <akihiko.odaki@daynix.com>
+Link: https://lore.kernel.org/all/15bf1b00-3aa0-973a-3a86-3fa5c4d41d2c@daynix.com/
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+---
+ drivers/iommu/virtio-iommu.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-	list_add_tail(&hwpt->hwpt_item, &hwpt->ioas->hwpt_list);
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 5b8fe9bfa9a5..3d3d4462359e 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -788,6 +788,28 @@ static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 	return 0;
+ }
+ 
++static void viommu_detach_dev(struct viommu_endpoint *vdev)
++{
++	int i;
++	struct virtio_iommu_req_detach req;
++	struct viommu_domain *vdomain = vdev->vdomain;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(vdev->dev);
++
++	if (!vdomain)
++		return;
++
++	req = (struct virtio_iommu_req_detach) {
++		.head.type	= VIRTIO_IOMMU_T_DETACH,
++		.domain		= cpu_to_le32(vdomain->id),
++	};
++
++	for (i = 0; i < fwspec->num_ids; i++) {
++		req.endpoint = cpu_to_le32(fwspec->ids[i]);
++		WARN_ON(viommu_send_req_sync(vdev->viommu, &req, sizeof(req)));
++	}
++	vdev->vdomain = NULL;
++}
++
+ static int viommu_map_pages(struct iommu_domain *domain, unsigned long iova,
+ 			    phys_addr_t paddr, size_t pgsize, size_t pgcount,
+ 			    int prot, gfp_t gfp, size_t *mapped)
+@@ -990,6 +1012,7 @@ static void viommu_release_device(struct device *dev)
+ {
+ 	struct viommu_endpoint *vdev = dev_iommu_priv_get(dev);
+ 
++	viommu_detach_dev(vdev);
+ 	iommu_put_resv_regions(dev, &vdev->resv_regions);
+ 	kfree(vdev);
+ }
+-- 
+2.40.0
 
-Which can be observed from
-
-	mutex_lock(&ioas->mutex);
-	list_for_each_entry(hwpt, &ioas->hwpt_list, hwpt_item) {
-		if (!hwpt->auto_domain)
-			continue;
-
-		if (!iommufd_lock_obj(&hwpt->obj))
-			continue;
-
-If iommufd_lock_obj() has happened then
-iommufd_object_abort_and_destroy() is in trouble.
-
-Thus we need to hold the ioas->mutex right up until we know we can't
-call iommufd_object_abort_and_destroy(), or lift out the hwpt list_add
-
-This could maybe also be fixed by holding the destroy_rw_sem right up
-until finalize. Though, I think I looked at this once and decided
-against it for some reason..
-
-> btw removing this lock in this file also makes it easier to support siov
-> device which doesn't have group. We can have internal group attach
-> and pasid attach wrappers within device.c and leave igroup->lock held
-> in the group attach path.
-
-Yeah, I expect this will need more work when we get to PASID support
-
-Most likely the resolution will be something like PASID domains can't
-be used as PF/VF domains because they don't have the right reserved
-regions, so they shouldn't be in the hwpt_list at all, so we can use a
-more relaxed locking.
-
-Jason
