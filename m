@@ -1,82 +1,204 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A25F07C
-	for <iommu@lists.linux.dev>; Fri, 14 Apr 2023 11:45:36 +0000 (UTC)
-Received: from 8bytes.org (p200300c27714bc0086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:7714:bc00:86ad:4f9d:2505:dd0d])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2059.outbound.protection.outlook.com [40.107.93.59])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 4A29E242CE1;
-	Fri, 14 Apr 2023 13:45:35 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1681472735;
-	bh=Rbco+sFb8PjqXEyjlEsE2vSIHvetlKyP+am8t7R90Kk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Gt2PMMyvzwLBhIzu/JznWfYR2sYWbtDLncg5hr7L1SviqwT4MsBXniSQMBKJRL/jr
-	 if4sRAlSmlCXBe8WbtUpQfMGOxGoDDDEOu7PzI6wo75W+jw/U7VWdV0z3FDl0MrXO8
-	 JnTlAyxx93mAdTmezsBH7PanWyE4HDr1aVLE0e5Z2hV4+jZmhSuUza83Hdk9Unfxaz
-	 uHAbB2c39xfgEZtYEzR7w0zBZmn6kf0TKUUE9xYplpnrN7Cw7NpZyy9wPg13PHi3bm
-	 LJnH7tY0vdXshZ33QNsT5EisERWbo/uT2ObYgpRorRgR1Ew7+DNTkbTsNQlxMyXVig
-	 3HLi6ssps8RsQ==
-Date: Fri, 14 Apr 2023 13:45:34 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: will@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	Jakub Kicinski <kuba@kernel.org>,
-	John Garry <john.g.garry@oracle.com>
-Subject: Re: [PATCH v4] iommu: Optimise PCI SAC address trick
-Message-ID: <ZDk83vpIarQ9jWa7@8bytes.org>
-References: <b8502b115b915d2a3fabde367e099e39106686c8.1681392791.git.robin.murphy@arm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 841081392
+	for <iommu@lists.linux.dev>; Fri, 14 Apr 2023 13:31:40 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PDDLAszfJ/cB5L9SlIoT418A9/2SICpjt8FD+2T21rM0YKpJz/nRk7V/rZA725c8XAUeqhY3TmfnchbVch0PH1XcyHd82nVYRUm45FZOHHpPA4Aw3oKrSaBgwdbFiC1pGaoQxceawJbu51NWcrvSR+gnxzEAyqMsLKDjgGz+auT2gWWyoHqlvDHAyGk6Mx1xEWk2QaPZiuMApKzkxoqRs4/c81Gv18J7L6JAF0QXL7+SlYCqUoUTUMCy9okADiZCb3FBSBObqgV/eIwbRYBmkcbDmwUOW8RgTd8psVKhPCMD1a2KWTV42WXAljbqAHbYxsiWuRQ/aKab8CdApEahYg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Wx6WdcHyKAC435IxagxzbsVgCmaW2Skl7tv9+q3hvY0=;
+ b=cegDyyS6w9fXhBlm6IIvy8+/DahgMVdgBtfN80Gfs+OMXa8+fBhN5MxuA7siIyB9XNji8bh9klQsaggOZzma/YH1TtSFg0ltzMyR/fMod24RqyVTRyuAzdFwIzpcFnS82u8HCwlo+wyyvC6w5lxjmK9ZtlYZAmEYIuHDoDYuOzJfX9ziUj8+NQXNGNg4rlJctjcvr+jy74loUskEEClJYORMtFaTZUl1/uziSa9qW+FAGA//n/R44PBpdLZvesq9JAWV81C9FR94i0mKLlUx1Bt4PaAPfCPPKikRnE8LIVEpOppisf9IQ9/e4KduyA8I12T+u7YuyCpeldHp6NGg0A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Wx6WdcHyKAC435IxagxzbsVgCmaW2Skl7tv9+q3hvY0=;
+ b=N8RTPHJHXC0kxSEUkKJADV6MDRtk5LUDRmh0fWIRjsqV1CV9dB73/L0jT4nyibowqHQIAg2MboQ+uZAyH41r87jboLlCeIlG4jDYIDymgOR4f3tsp6xy7wI9nDoEUFlUjTpDu25dbBCOHuDxT9NvW+0X5riHIibFriSvH2yCUon2xWzFY86H5qOu6UH821M+h5rdXoxX7FMtuweNmTwZmdH/pxn8gUVL6UkMUGdPkDHI/OJ78KfH0iYOdX7EvPxkockK2kkXgmIErag1apH960K99WXZS9DEvcrOS6cFgCL8Fgvpt6knshD2R9HSzH8iJ1ModGMQUQQwo7tm6rDylQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by MN0PR12MB6248.namprd12.prod.outlook.com (2603:10b6:208:3c0::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.30; Fri, 14 Apr
+ 2023 13:31:38 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::6045:ad97:10b7:62a2]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::6045:ad97:10b7:62a2%9]) with mapi id 15.20.6298.030; Fri, 14 Apr 2023
+ 13:31:37 +0000
+Date: Fri, 14 Apr 2023 10:31:33 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	"Liu, Yi L" <yi.l.liu@intel.com>
+Subject: Re: [PATCH v3 03/17] iommufd: Replace the hwpt->devices list with
+ iommufd_group
+Message-ID: <ZDlVtcwhV2G8ZKao@nvidia.com>
+References: <0-v3-61d41fd9e13e+1f5-iommufd_alloc_jgg@nvidia.com>
+ <3-v3-61d41fd9e13e+1f5-iommufd_alloc_jgg@nvidia.com>
+ <BN9PR11MB5276E42B629C3E5AF019B6748C879@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZDVvLbSN2TR1Er1c@nvidia.com>
+ <BN9PR11MB527661A29A11AE1E7FC655018C9B9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZDaTY6OX8oR5w0uV@nvidia.com>
+ <BN9PR11MB52762841AAA04A24F76A743C8C989@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB52762841AAA04A24F76A743C8C989@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-ClientProxiedBy: SJ0PR05CA0010.namprd05.prod.outlook.com
+ (2603:10b6:a03:33b::15) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b8502b115b915d2a3fabde367e099e39106686c8.1681392791.git.robin.murphy@arm.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MN0PR12MB6248:EE_
+X-MS-Office365-Filtering-Correlation-Id: f81d13ba-2890-4997-8d01-08db3cec92c8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	RHBohgjtVJUoFQcBHJgKzFGualNr2lH68XazZKQjVbWn+D0L1ubMitpYWauLGfbLOZoykhLm/t0da+hmoXAMRmOkYwFYMpB6FS2fduEVmX1/66/3vOzgD3MTDrJTHSlo5t5Tlisi8E1t1hclgKFsiVoNig05kzSJXBJPexJf17YGb97X2uD1OS/tZZLnolu98aOzyShXnVwmU3nkFEKPos6QkfwRIbI7y46vAXdoZaiOjywrG4ZSUrqn02jJzXE41KKspGRFSEgK6eQ5RYp2V0XyTl+juymwLp2mkcjZkdF/fPDwvnU0BnaJ6gmI4Zf2yxdDT5/nZBHJoon+syyVrnMfyVde9YWLnJVJ4jiJSmysmgM5/x1UvTAK4/7aSdS98vnAkEOY+/bWCd1Zdxm9VWZKn1lD6USNsJXqE1H5WRrOqW/W6Ut3OjcxJ34ZsaVvuBhQMAIqd/egcQkj3LAFbh7UCDfgarht8aMOLD89p5SYNBI5Cf7O1g+ky25sazEa1Q4YsHzCYioYP3NOyM08aFomGUNPx9Wg2oagpYWPsu0oWdUmAmDSA6msRUuV9fTIMqskdi6yZTVT9/h0IbtGG0msu9dXbvs4zKv3GbAPJ9w=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(39860400002)(376002)(136003)(366004)(451199021)(26005)(66476007)(66556008)(36756003)(6506007)(6512007)(2906002)(6666004)(83380400001)(966005)(6486002)(2616005)(186003)(66946007)(6916009)(4326008)(54906003)(86362001)(5660300002)(8676002)(38100700002)(8936002)(316002)(478600001)(41300700001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?Tr9JQQVD/D12Q6toTxPyAwq9WbUVyeHODx6KIqSHIJ5zl5YQiizYtmeVuq1n?=
+ =?us-ascii?Q?tU1P2GuTTpNLzy0cJF12eUdp3IXdzPXdCPNnWi8fW8rrVbrLvkjHEZQTDdKe?=
+ =?us-ascii?Q?i63wqM4ba9jnVel8akTLziUvLaeWJeiFWlK/0UK21TiCwp2ZevJVFN6RETcG?=
+ =?us-ascii?Q?FPbTgJjV/6SdOfgX1NNP97ouwqEZu3kzhgT9gsOoy70a3KGQu+7D/AdIlsaB?=
+ =?us-ascii?Q?3nhtMXLi9+F+/6HL5TLjrjT1ZxJnyF6ppI1HabSDshPnHQ1qaKPPvH7hTirW?=
+ =?us-ascii?Q?b9bs3QRoYQsPEPWkKtgopyquArqo+bfmVq8S+m+g4zkvzkZc7050i5027D5g?=
+ =?us-ascii?Q?5bzVmOykKblhQRyWIAPOXOU9i+5YHpYnaDsG2kdoKbkFao5f1GWUsgqRwHuy?=
+ =?us-ascii?Q?7VxO+lvio5vlVdcqEEkKTvRnlKvClbRgKB7OA/RJjlx1pLh7l7aWl7zRsSci?=
+ =?us-ascii?Q?WzpKIFSc7Vo+mNnkuwoUbmv0nD0JLvTB7MvV7p7kFanWt4kbv02c98OIUbRz?=
+ =?us-ascii?Q?xV4JPh761w+B45iq30xtCLFc9ohPfj7cpV+hsAaO2zap0kFvimVXCaeTU+06?=
+ =?us-ascii?Q?uO4IjW51o7Fj65lB1kV0lp/ZcYDBGcVwJ9U2uxZB9D1Y7TYlru9EoN9Vzjcu?=
+ =?us-ascii?Q?zkL06tMmL2sbUl/y7Jvn/MS4P+83g2Z6JVMw2t18gpImQpj52vH4yp1qe6BT?=
+ =?us-ascii?Q?0CuofI5sFx/Tp/N2xHbRywRkoY1+a4bgytgUNFVpFuYyqM11ijbAhgd9Dx1n?=
+ =?us-ascii?Q?VKvAF8rGaV7Ou+z9FqsX5RmK8loqKxXPF1+M79dqoDB9/w+nGtb8WZAZ1DEf?=
+ =?us-ascii?Q?OGKCvSPPqAqQ7i6/CtcZzl+9XFNYFrEsQXuvXkNJdjW4Bf5GDdxyCXZTt6/q?=
+ =?us-ascii?Q?/kkWShWJySHX2fFx6eI/kB54SvW5XL2kirDATAbTxnJvOWr7yB3txH6awVuX?=
+ =?us-ascii?Q?IyT2Qt6SnUJwDKWwujb+88nvglgPnAuv7MOvvVx/kjey5zpRGcUAxkJX/yBe?=
+ =?us-ascii?Q?gtWdqaQuI6IC+q5BEj9FXdRkqvU8rtmmO8MpjnAXPtZpsJItUbJvPqq9Njd0?=
+ =?us-ascii?Q?oKerSJUuNfg40oLDJ9sIYb8vfpIOhoQ11+10UY5TD7ILso5KttizTU3NiIAm?=
+ =?us-ascii?Q?ZYmJljCMs4xRv+TTfWY76FBHoX9pI2Dl0Q0K/dz/nKMAWVy6Hngq4U5LCGCC?=
+ =?us-ascii?Q?UMF0YN6uv/1WYmI407Zst/1ktPoT/Ph6YjBO6Q1dNfeA0KP21sJCStOdYzyA?=
+ =?us-ascii?Q?/jDpCruHeuGBGN2jwU5Al6rRGBYVCKLUi6IXylRGrjI7BuMEviF4hFuYBUt6?=
+ =?us-ascii?Q?aLaeh6JCkDq9pehIqvqsCTmPixfE5ESu2Zffn9mEf4FdVAA2Jw4e1TMj7IUf?=
+ =?us-ascii?Q?QH9oULC+x22ttW5I3Ehlrp7jFnCU+VnSG71XQQNDb9d1GDjyAVWx0qldCaOJ?=
+ =?us-ascii?Q?rw4XykorEn+tfG7wDH0urEE+8U9ZAizii/kkCkJ03cte+e6ja8e5sqaIqwda?=
+ =?us-ascii?Q?O8sm8JAXxaaRyGkikg9TMwYWPyPVTTO5FcoKSGJJJv4Z1LDQZTrABG/EPtRc?=
+ =?us-ascii?Q?ZzS58zoMsMXZHKeaX7/X8WWNDcboTK4VykMopHpF?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f81d13ba-2890-4997-8d01-08db3cec92c8
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2023 13:31:37.6931
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2pjojLzTEivc6J3RdlWrgqcV8xkmbTjKEZr6eMmy5yvmeE35KHhCx13X/IcpIGJr
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6248
 
-Hi Robin,
-
-On Thu, Apr 13, 2023 at 02:40:25PM +0100, Robin Murphy wrote:
-> Per the reasoning in commit 4bf7fda4dce2 ("iommu/dma: Add config for
-> PCI SAC address trick") and its subsequent revert, this mechanism no
-> longer serves its original purpose, but now only works around broken
-> hardware/drivers in a way that is unfortunately too impactful to remove.
+On Thu, Apr 13, 2023 at 02:52:54AM +0000, Tian, Kevin wrote:
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > Sent: Wednesday, April 12, 2023 7:18 PM
+> > 
+> > On Wed, Apr 12, 2023 at 08:27:36AM +0000, Tian, Kevin wrote:
+> > > > From: Jason Gunthorpe <jgg@nvidia.com>
+> > > > Sent: Tuesday, April 11, 2023 10:31 PM
+> > > >
+> > > > On Thu, Mar 23, 2023 at 07:21:42AM +0000, Tian, Kevin wrote:
+> > > >
+> > > > > If no oversight then we can directly put the lock in
+> > > > > iommufd_hw_pagetable_attach/detach() which can also simplify a bit
+> > on
+> > > > > its callers in device.c.
+> > > >
+> > > > So, I did this, and syzkaller explains why this can't be done:
+> > > >
+> > > > https://lore.kernel.org/r/0000000000006e66d605f83e09bc@google.com
+> > > >
+> > > > We can't allow the hwpt to be discovered by a parallel
+> > > > iommufd_hw_pagetable_attach() until it is done being setup, otherwise
+> > > > if we fail to set it up we can't destroy the hwpt.
+> > > >
+> > > > 	if (immediate_attach) {
+> > > > 		rc = iommufd_hw_pagetable_attach(hwpt, idev);
+> > > > 		if (rc)
+> > > > 			goto out_abort;
+> > > > 	}
+> > > >
+> > > > 	rc = iopt_table_add_domain(&hwpt->ioas->iopt, hwpt->domain);
+> > > > 	if (rc)
+> > > > 		goto out_detach;
+> > > > 	list_add_tail(&hwpt->hwpt_item, &hwpt->ioas->hwpt_list);
+> > > > 	return hwpt;
+> > > >
+> > > > out_detach:
+> > > > 	if (immediate_attach)
+> > > > 		iommufd_hw_pagetable_detach(idev);
+> > > > out_abort:
+> > > > 	iommufd_object_abort_and_destroy(ictx, &hwpt->obj);
+> > > >
+> > > > As some other idev could be pointing at it too now.
+> > >
+> > > How could this happen before this object is finalized? iirc you pointed to
+> > > me this fact in previous discussion.
+> > 
+> > It only is unavailable through the xarray, but we've added it to at
+> > least one internal list on the group already, it is kind of sketchy to
+> > work like this, it should all be atomic..
+> > 
 > 
-> This does not, however, prevent us from solving the performance impact
-> which that workaround has on large-scale systems that don't need it.
-> Once the 32-bit IOVA space fills up and a workload starts allocating and
-> freeing on both sides of the boundary, the opportunistic SAC allocation
-> can then end up spending significant time hunting down scattered
-> fragments of free 32-bit space, or just reestablishing max32_alloc_size.
-> This can easily be exacerbated by a change in allocation pattern, such
-> as by changing the network MTU, which can increase pressure on the
-> 32-bit space by leaving a large quantity of cached IOVAs which are now
-> the wrong size to be recycled, but also won't be freed since the
-> non-opportunistic allocations can still be satisfied from the whole
-> 64-bit space without triggering the reclaim path.
-> 
-> However, in the context of a workaround where smaller DMA addresses
-> aren't simply a preference but a necessity, if we get to that point at
-> all then in fact it's already the endgame. The nature of the allocator
-> is currently such that the first IOVA we give to a device after the
-> 32-bit space runs out will be the highest possible address for that
-> device, ever. If that works, then great, we know we can optimise for
-> speed by always allocating from the full range. And if it doesn't, then
-> the worst has already happened and any brokenness is now showing, so
-> there's little point in continuing to try to hide it.
-> 
-> To that end, implement a flag to refine the SAC business into a
-> per-device policy that can automatically get itself out of the way if
-> and when it stops being useful.
+> which internal list? group has a list for attached devices but regarding
+> to hwpt it's stored in a single field igroup->hwpt.
 
-Thanks for working on this, I think this is good to go. But given the
-issues we had with last attempt I'd like to have this in linux-next for
-a few weeks before sending it upstream. Therefore I will defer this
-patch and merge it early in the next cycle.
+It is added to 
 
-Regards,
+	list_add_tail(&hwpt->hwpt_item, &hwpt->ioas->hwpt_list);
 
-	Joerg
+Which can be observed from
+
+	mutex_lock(&ioas->mutex);
+	list_for_each_entry(hwpt, &ioas->hwpt_list, hwpt_item) {
+		if (!hwpt->auto_domain)
+			continue;
+
+		if (!iommufd_lock_obj(&hwpt->obj))
+			continue;
+
+If iommufd_lock_obj() has happened then
+iommufd_object_abort_and_destroy() is in trouble.
+
+Thus we need to hold the ioas->mutex right up until we know we can't
+call iommufd_object_abort_and_destroy(), or lift out the hwpt list_add
+
+This could maybe also be fixed by holding the destroy_rw_sem right up
+until finalize. Though, I think I looked at this once and decided
+against it for some reason..
+
+> btw removing this lock in this file also makes it easier to support siov
+> device which doesn't have group. We can have internal group attach
+> and pasid attach wrappers within device.c and leave igroup->lock held
+> in the group attach path.
+
+Yeah, I expect this will need more work when we get to PASID support
+
+Most likely the resolution will be something like PASID domains can't
+be used as PF/VF domains because they don't have the right reserved
+regions, so they shouldn't be in the hwpt_list at all, so we can use a
+more relaxed locking.
+
+Jason
