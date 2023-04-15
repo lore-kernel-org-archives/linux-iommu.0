@@ -1,43 +1,43 @@
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E758630
-	for <iommu@lists.linux.dev>; Fri, 14 Apr 2023 23:27:33 +0000 (UTC)
-Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-2f7c281a015so65194f8f.1
-        for <iommu@lists.linux.dev>; Fri, 14 Apr 2023 16:27:33 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5160CA21
+	for <iommu@lists.linux.dev>; Sat, 15 Apr 2023 09:08:36 +0000 (UTC)
+Received: by mail-wm1-f52.google.com with SMTP id gw13so11452149wmb.3
+        for <iommu@lists.linux.dev>; Sat, 15 Apr 2023 02:08:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681514852; x=1684106852;
+        d=gmail.com; s=20221208; t=1681549714; x=1684141714;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=1VJscWXDoV805lUglV9Lx4G4y0RL2KQ+qVhOtcQn4So=;
-        b=TQhDiOv0KwrX1cl+HMRY/m9AlRUvTYmjRVKkUqK7mY3kxSUGxZiTt8OYrLUmUeyCKW
-         oAUQJOGgCStHEvZfAYU02YzPBy26VHk1lJviLsUEA6XAPswuM4D05Dp+mfBQIJ+XfaX7
-         1QujcskdwR8bLgjh1lu+JhFW63rvse6gXWwLjCkbo7iYN74NDaNkhM7Lie2u9dYw/jOj
-         lG4gRmfBXpDCu/JYCZVyYhoUuPl+LjI+gbL/TJWPjqP7lOVKGKftL3cndCs5fGFAXuyW
-         WjyPGFoN1jOK6Qkr4qiCPERBiYVC40Ip8Nxzn7FSB+NU4/YlO4xATw65tFgRiSl2He4f
-         PI5Q==
+        bh=J+LSahXs7vXHVGQn1uT2igLaiQzqbh9LfXfVKe7mEnQ=;
+        b=aaBU96KigAuWjJFM596TLA0njsd4CcaEKGbQ3wHULm3FUlHtgzTCyGDhowFPT++iSW
+         MSDxV70HUFBewCPLHdXGdlAdNSFZ2QHM4BuZOWLhabEOa8OpeehQN57s3BUDDoK9spkH
+         t/mC67DAUUPnUuCCmjpDHqOJqjNQHzchn32p+RLHbm5+G7bJCo/+D0U1ld+EKsUxpDJa
+         o7ONzkpaOxHVYQ3KPloV+uHoEgKwIYqbmEdFiaDoeHgpPNWMEIHsijRd5LrD6JizDysX
+         5fIbBUnSZCIIAaDbh76y0cBT0g5/VD/RlillTzQSP9llXM+nuh/teQkLE5uP1eqzvY9B
+         FB2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681514852; x=1684106852;
+        d=1e100.net; s=20221208; t=1681549714; x=1684141714;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=1VJscWXDoV805lUglV9Lx4G4y0RL2KQ+qVhOtcQn4So=;
-        b=lwEXKZomg2QZv80zCKMZFYKD8SEuBv6qvfAFEy8ToO7U+jteZxJgczKtwMJZpKFh2f
-         swkgicSFqiypWkhhEhQjuPTqlFdpQpli6/tPZ1fxFG3XOGgVJjTh3t8bVpdfz8Xm7j0Y
-         MbI5eUacQfEkqxYIkEM4bOOL383Hpd0CPFfggSd/mDzZ5PrqVSEGR+KzRYhYxR7/lfxM
-         sXANE/asqN8UiELyQxbUekgWoO3RFixeByXpZKAvCukEERi1C3XbCOEZwXA1e+UONbFL
-         PFYj3MSzx2qHexf/WrD8JVBCrmUr7sBmFqUTz2/tdA8jokC1Gxe+QJAdMmPs7mjGwjL8
-         TM8Q==
-X-Gm-Message-State: AAQBX9eFYzLDXMniYx8XgLI8mc0Hbi5XMEjUyra+P/1VjJjloRRztBkY
-	olXNrzV64+K5feeIDQk5oAk=
-X-Google-Smtp-Source: AKy350btVgvfuTZx4LLwP2D/aSmexxkQWIDKHhEHiIOChilrQmlVnxBaZQKRLjJJ40FW9Avxwpik5Q==
-X-Received: by 2002:adf:e506:0:b0:2ef:9837:6b2b with SMTP id j6-20020adfe506000000b002ef98376b2bmr255643wrm.21.1681514851612;
-        Fri, 14 Apr 2023 16:27:31 -0700 (PDT)
-Received: from lucifer.home (host86-156-84-164.range86-156.btcentralplus.com. [86.156.84.164])
-        by smtp.googlemail.com with ESMTPSA id s9-20020a5d6a89000000b002cf1c435afcsm4550694wru.11.2023.04.14.16.27.30
+        bh=J+LSahXs7vXHVGQn1uT2igLaiQzqbh9LfXfVKe7mEnQ=;
+        b=iipq5dBtGPNi8xWk/CLeAYxb7nrViDf81CmbOmUNLor3RpTSd/vfQDDvbX38TaM61g
+         V/v0lrL+0J75B4j2Si2tWBThqLqxDWYDMWBjdkpvm51Dy5/wNcMslQUGeFj6Vtlj9k+M
+         Ju1/FqMlaZ7imdme0oWXJDxaiSzAl/eM0n6cIm38vECogRj6aDLpy8fxyGcUUaQ4d0ue
+         Ot+fSC1aByEim3V8kxQz6R695rVO1eRVCTflz+JUJfE3TmhaChwW8hCAVRQzJigMVQaK
+         jgGm0e8SQySmITOTqk3a4LjdL5O0wU1ztfdyPadQ1r0bDtbn3BCo6DDjEvrdai5jtZFC
+         ShOQ==
+X-Gm-Message-State: AAQBX9cNLRNTTOzgj3NscsKHrGIhLeEjetftm96yGGWaVV7ObzhDTYrT
+	lBXZ6wPTAYyBzKIqzOAGogQ=
+X-Google-Smtp-Source: AKy350Z6MMpxVfEBhLeercWBNyCumV7NKYzKXFdNExcPGCyibd1J697CX7f/NrQ0Ho74DWqlh8A3kg==
+X-Received: by 2002:a7b:ce8c:0:b0:3f0:b194:4912 with SMTP id q12-20020a7bce8c000000b003f0b1944912mr3243201wmj.19.1681549714401;
+        Sat, 15 Apr 2023 02:08:34 -0700 (PDT)
+Received: from lucifer.home ([2a00:23c5:dc8c:8701:1663:9a35:5a7b:1d76])
+        by smtp.googlemail.com with ESMTPSA id g8-20020a05600c310800b003eddc6aa5fasm9876591wmo.39.2023.04.15.02.08.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Apr 2023 16:27:30 -0700 (PDT)
+        Sat, 15 Apr 2023 02:08:33 -0700 (PDT)
 From: Lorenzo Stoakes <lstoakes@gmail.com>
 To: linux-mm@kvack.org,
 	linux-kernel@vger.kernel.org,
@@ -53,12 +53,12 @@ Cc: Matthew Wilcox <willy@infradead.org>,
 	Robin Murphy <robin.murphy@arm.com>,
 	Alex Williamson <alex.williamson@redhat.com>,
 	Lorenzo Stoakes <lstoakes@gmail.com>
-Subject: [PATCH 2/7] mm/gup: remove unused vmas parameter from pin_user_pages_remote()
-Date: Sat, 15 Apr 2023 00:27:23 +0100
-Message-Id: <c75291e4afe968824b89831cbd341f8b54ce28a4.1681508038.git.lstoakes@gmail.com>
+Subject: [PATCH v2 2/7] mm/gup: remove unused vmas parameter from pin_user_pages_remote()
+Date: Sat, 15 Apr 2023 10:08:30 +0100
+Message-Id: <cd18cc4e30c9ac67aa0ea83ca9449ddee54a86df.1681547405.git.lstoakes@gmail.com>
 X-Mailer: git-send-email 2.40.0
-In-Reply-To: <cover.1681508038.git.lstoakes@gmail.com>
-References: <cover.1681508038.git.lstoakes@gmail.com>
+In-Reply-To: <cover.1681547405.git.lstoakes@gmail.com>
+References: <cover.1681547405.git.lstoakes@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -116,7 +116,7 @@ index 493c31de0edb..e6dc8fec3ed5 100644
  		int i;
  
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index faeed36c2d04..513d5fab02f1 100644
+index b14cc4972d0b..ec9875c59f6d 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -2378,7 +2378,7 @@ long get_user_pages_remote(struct mm_struct *mm,
