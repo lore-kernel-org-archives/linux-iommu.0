@@ -1,27 +1,52 @@
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E3121C16
-	for <iommu@lists.linux.dev>; Mon, 17 Apr 2023 09:04:08 +0000 (UTC)
-Received: from [IPV6:2001:b07:2ed:14ed:c5f8:7372:f042:90a2] (unknown [IPv6:2001:b07:2ed:14ed:c5f8:7372:f042:90a2])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
-	(No client certificate requested)
-	(Authenticated sender: kholk11)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id E3B4D660309E;
-	Mon, 17 Apr 2023 10:04:05 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1681722246;
-	bh=mmJ0iBDdFxaw1hgC1BUonlQRRJ5YNpa5yzZ59XFkdY8=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=IsIwscG9vpQo5g+as2A2VwbuhAaeS91T4rhpvpyRoj2MkE2mMlHPtOGRchRFwTYag
-	 3ceHD3BmX3DEoTJ82clCEpWyIXff/9tithcoLlIaZy5/rNSj87pZJq5JzO5Pb5AhTj
-	 kDAK7HBB8WNgtWZ6OVxQX1wyJzfR37on8hxp26HGo/G829OwQtVwfBsRQcd6zcaX4S
-	 A+8Nw31pUGorLY9CqImD55kLocvlD8biBVvPOeU5k2exJVrNqTrcU2vZXNSt7dU+wV
-	 09lJONJies1zQAdacjTtkyry8qv42vEEoaAJmBgKTl6N1hb5234TLC4gz67+XalLyu
-	 cptzz1sD80BQg==
-Message-ID: <b645c058-9f51-034b-0e81-94c8d69469c1@collabora.com>
-Date: Mon, 17 Apr 2023 11:04:03 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5E3D3201
+	for <iommu@lists.linux.dev>; Mon, 17 Apr 2023 10:55:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1681728951;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=1wWR6LdExfwjEsSRDi6jXKipEXf+Q0zIDWbRNdZy7RQ=;
+	b=LA7zYhjDS/oQF9/rcDrkkGntGnW+ebwCriv90C318xtI/qdBAgW48yfFHvMaNsJa0cXmKw
+	VuFtSvKwg10Ms/xsUD3mVzfhViwl4tQ3AVKvtGiNKC+S90cjOY3FA2+6pBZrEoDbOILuCW
+	PLrob+WU0Y7cjc7zVx21XkJ7fRoTmDw=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-636-w1iL8snXPr61fSPaLOvPWA-1; Mon, 17 Apr 2023 06:55:50 -0400
+X-MC-Unique: w1iL8snXPr61fSPaLOvPWA-1
+Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-3f080f46fb1so5539475e9.0
+        for <iommu@lists.linux.dev>; Mon, 17 Apr 2023 03:55:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681728949; x=1684320949;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=1wWR6LdExfwjEsSRDi6jXKipEXf+Q0zIDWbRNdZy7RQ=;
+        b=jHJHPnLZwCNSqfte0YKKGqxY0yaDrLIcvPvTnRygLY1bY8tpeH/Kv1jhVHf+OtiLK2
+         Dl9cUAaI+0dHknCWUSIBbl39o3w0J28WWo0DSf7RdtRCunEbTIDARtEJBVV9+Z1ZBKUk
+         NPft7X0SiPgbRDfn0qCuAoE5pr+3on3L2MNACF7J6/DYozanK7V6T7qQyOjGjJXd/ETE
+         fRN5WTPMXYupj1j3wlhrKYoBFKh5QS7atmb1Wfn254MX8lghLMd+nuf1tAChRGZs8qWU
+         6yPyDfsaBZYgkVDsV5PznryeKMveXWfg7F/13t89/bOqQD5Oh2SnK79K0fOFEFvd3NEM
+         TTjQ==
+X-Gm-Message-State: AAQBX9dzFeHe5vXkz10TigP8VM3SKcxiw6UdCHs17QMcekrTAfh4opZ5
+	Tz8RXFSfg8RdQ5nJtqooKeeZYFuyPxMSR46Aj9vxMY+vHqc2EFaKNbVZLCEnkXk10qvT7QjIB9d
+	3Z4J6s5EOB5yuJ3U=
+X-Received: by 2002:a5d:564a:0:b0:2ee:fc1b:b7ba with SMTP id j10-20020a5d564a000000b002eefc1bb7bamr5554694wrw.39.1681728949288;
+        Mon, 17 Apr 2023 03:55:49 -0700 (PDT)
+X-Google-Smtp-Source: AKy350b4mqRWHxHUhRiKtx3CxYgUioujgL380Qdaxi7z1qv8uqaf0xsSOnV1ktQrpGXmyp9r8e6DcA==
+X-Received: by 2002:a5d:564a:0:b0:2ee:fc1b:b7ba with SMTP id j10-20020a5d564a000000b002eefc1bb7bamr5554664wrw.39.1681728948942;
+        Mon, 17 Apr 2023 03:55:48 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c700:fc00:db07:68a9:6af5:ecdf? (p200300cbc700fc00db0768a96af5ecdf.dip0.t-ipconnect.de. [2003:cb:c700:fc00:db07:68a9:6af5:ecdf])
+        by smtp.gmail.com with ESMTPSA id c22-20020a05600c0ad600b003f16fc33fbesm5319894wmr.17.2023.04.17.03.55.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Apr 2023 03:55:48 -0700 (PDT)
+Message-ID: <887ad211-b63e-5f04-9a55-66027a8dc1cc@redhat.com>
+Date: Mon, 17 Apr 2023 12:55:47 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -30,52 +55,39 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.1
-Subject: Re: [PATCH v10 7/7] MAINTAINERS: iommu/mediatek: Update the header
- file name
+Subject: Re: [PATCH v3 2/7] mm/gup: remove unused vmas parameter from
+ pin_user_pages_remote()
+To: Lorenzo Stoakes <lstoakes@gmail.com>, linux-mm@kvack.org,
+ linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
+ iommu@lists.linux.dev
+Cc: Matthew Wilcox <willy@infradead.org>, kvm@vger.kernel.org,
+ Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Alex Williamson <alex.williamson@redhat.com>
+References: <cover.1681558407.git.lstoakes@gmail.com>
+ <59022490ef05da7310e6abd7f42df933bebdda2a.1681558407.git.lstoakes@gmail.com>
+From: David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <59022490ef05da7310e6abd7f42df933bebdda2a.1681558407.git.lstoakes@gmail.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Content-Language: en-US
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Rob Herring <robh+dt@kernel.org>,
- Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Robin Murphy <robin.murphy@arm.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, mingyuan.ma@mediatek.com,
- yf.wang@mediatek.com, jianjiao.zeng@mediatek.com, chengci.xu@mediatek.com
-References: <20230417073606.25729-1-yong.wu@mediatek.com>
- <20230417073606.25729-8-yong.wu@mediatek.com>
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20230417073606.25729-8-yong.wu@mediatek.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Il 17/04/23 09:36, Yong Wu ha scritto:
-> We add the prefix "mediatek," for the lastest ports header file name,
-> For example, include/dt-bindings/memory/mediatek,mt8188-memory-port.h.
-> Update the entry from "mt*" to "m*".
+On 15.04.23 14:09, Lorenzo Stoakes wrote:
+> No invocation of pin_user_pages_remote() uses the vmas parameter, so remove
+> it. This forms part of a larger patch set eliminating the use of the vmas
+> parameters altogether.
 > 
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> Signed-off-by: Lorenzo Stoakes <lstoakes@gmail.com>
 > ---
->   MAINTAINERS | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index d8ebab595b2a..833d32c356ef 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -13056,7 +13056,7 @@ L:	linux-mediatek@lists.infradead.org (moderated for non-subscribers)
->   S:	Supported
->   F:	Documentation/devicetree/bindings/iommu/mediatek*
->   F:	drivers/iommu/mtk_iommu*
-> -F:	include/dt-bindings/memory/mt*-port.h
-> +F:	include/dt-bindings/memory/m*-port.h
 
-Stuff that's not MediaTek specific which filename starts by m and ends for -port.h
-is really unlikely, but we can prevent future issues.
+Acked-by: David Hildenbrand <david@redhat.com>
 
-Perhaps the best idea here would be to keep the mt*-port.h and add a new file entry
-with mediatek,mt*-port.h.
+-- 
+Thanks,
 
-Regards,
-Angelo
+David / dhildenb
 
