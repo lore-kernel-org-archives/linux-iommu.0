@@ -1,163 +1,169 @@
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2070.outbound.protection.outlook.com [40.107.212.70])
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C28F8C2D1
-	for <iommu@lists.linux.dev>; Mon, 17 Apr 2023 05:04:59 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Hg1U51GNzzcjCmngbzprMbfJxA63Ol76bMG2v3YqT3xXphQEOApp4/zamTdVfuV05RFmpwrGfbX63ywbsbEc1W3S471v/3wTQJDcvgOZeAOAbVZ9ynd90dwJ/2oEL1pgWQIEWXJQ5PE0q22AA1V4Fc1Ax8B3mzg8bK/ApTnd4PGYvnB3qYyBj9ffJY20P0l6tCH6tXs+SuPDXYdzYsFUjNZkSLJjhoRg6iSopa+ZstT8ypRnjzMMUn7+DApmHr1p6IEDYjDVZ24rXz8H3Us1eaEiKPG17r4YHWb18xoKuEWjf5UU2MjWGR0WjmfxIOUH/2nIXXrHmwrzSuYXHMa8Hg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IG2ZrUI+KQF/FfciJwImMKwblFcOMRxNe/qbhe7iBTI=;
- b=NpX9PKgj6F12p/FXVxRgIIaQ0dLVwCnkHywOpigzRHTqT1xS1SzwA/zAftGRk12Ysac4WQB3/ChORYQjSAFOGOLGEIZoSUFtvfY8f4CLVLnSS4GaqlmCEKUVmrRbZgqaKEG/Fjct93vJDkYmZJ0uL37o8IytJPiCgvUfquY6XtohFhYgaHRRKPkbnwB7ymcYuS1g9AW1uYt20aKBaz8btLeUJn8QRvaEr2bPbHlTtNfXK0WTdyU9cb+hbqsHEOILe1MADJuH4VqvdvDHXg8S+eRDTqp8fLmv0UAdCouqWScggEQewcpOzn/l4Cn2oLqjUgyKNT/mcjq12eTXAfXiyg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IG2ZrUI+KQF/FfciJwImMKwblFcOMRxNe/qbhe7iBTI=;
- b=iQGolIeOQPgXGhmOOmxoLI3VbzLHOVQCmz6IzSCP3MfRVR2PLlW3gfundbq2rL6PZWvEmUb6PvkjZs5omYevcJnbwabWgXthv8ZHZl/uemMsCKEiKzPUxQSmoMqaHYkhYKqCVQIm3HnrxvAt8u4ui8V59eiVnFeztG9EXcDI2BA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7SPRMB0009.namprd12.prod.outlook.com (2603:10b6:8:87::10) by
- SJ0PR12MB7474.namprd12.prod.outlook.com (2603:10b6:a03:48d::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6298.45; Mon, 17 Apr 2023 05:04:55 +0000
-Received: from DS7SPRMB0009.namprd12.prod.outlook.com
- ([fe80::5047:70da:1240:8d0d]) by DS7SPRMB0009.namprd12.prod.outlook.com
- ([fe80::5047:70da:1240:8d0d%5]) with mapi id 15.20.6298.030; Mon, 17 Apr 2023
- 05:04:54 +0000
-Message-ID: <c1e7de02-66dd-fde3-ec44-5493c82ccacc@amd.com>
-Date: Mon, 17 Apr 2023 10:34:39 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 2/2] iommu/amd: Handle GALog overflows
-Content-Language: en-US
-To: Joao Martins <joao.m.martins@oracle.com>, iommu@lists.linux.dev
-Cc: Joerg Roedel <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Maxim Levitsky <mlevitsk@redhat.com>,
- Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, kvm@vger.kernel.org
-References: <20230316200219.42673-1-joao.m.martins@oracle.com>
- <20230316200219.42673-3-joao.m.martins@oracle.com>
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20230316200219.42673-3-joao.m.martins@oracle.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN3PR01CA0142.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:bf::20) To DS7SPRMB0009.namprd12.prod.outlook.com
- (2603:10b6:8:87::10)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAEB21848
+	for <iommu@lists.linux.dev>; Mon, 17 Apr 2023 07:36:23 +0000 (UTC)
+X-UUID: 87f254c2dcf211edb6b9f13eb10bd0fe-20230417
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=WSGsGsyZmAAWE39HbT7EAIDHhqghH7oH+F9PicR6RAE=;
+	b=OUAR/DcwqrYj7gBePI3X4WeRYcvK/PBlCTlvZqXZ/fv77DWDEeSS0OWqH2Z/JeyUoF5rENdJ0jQTlFkCsJiVHGtiNCPlhjpvBRdRmItkQEHr7sQ8F0XXz+KUqCI3sXhV5w/m0g7soeW1gvqzyEZxOyHQulY4pmNYy693wK0bP80=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.22,REQID:5dfb19fe-78e0-4213-ae9f-17074e0353de,IP:0,U
+	RL:0,TC:0,Content:-25,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Release_Ham,ACTI
+	ON:release,TS:70
+X-CID-INFO: VERSION:1.1.22,REQID:5dfb19fe-78e0-4213-ae9f-17074e0353de,IP:0,URL
+	:0,TC:0,Content:-25,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Spam_GS981B3D,ACTI
+	ON:quarantine,TS:70
+X-CID-META: VersionHash:120426c,CLOUDID:00854c84-cd9c-45f5-8134-710979e3df0e,B
+	ulkID:230417153614MLNXS07L,BulkQuantity:0,Recheck:0,SF:28|17|19|48|38|29,T
+	C:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+	,OSI:0,OSA:0,AV:0
+X-CID-BVR: 0
+X-CID-BAS: 0,_,0,_
+X-UUID: 87f254c2dcf211edb6b9f13eb10bd0fe-20230417
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+	(envelope-from <yong.wu@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 613524037; Mon, 17 Apr 2023 15:36:13 +0800
+Received: from mtkmbs13n2.mediatek.inc (172.21.101.108) by
+ mtkmbs13n1.mediatek.inc (172.21.101.193) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.25; Mon, 17 Apr 2023 15:36:12 +0800
+Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
+ mtkmbs13n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.1118.25 via Frontend Transport; Mon, 17 Apr 2023 15:36:11 +0800
+From: Yong Wu <yong.wu@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Rob Herring
+	<robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>
+CC: Robin Murphy <robin.murphy@arm.com>, Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>, Yong Wu <yong.wu@mediatek.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	<iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <mingyuan.ma@mediatek.com>,
+	<yf.wang@mediatek.com>, <jianjiao.zeng@mediatek.com>,
+	<chengci.xu@mediatek.com>
+Subject: [PATCH v10 0/7] MT8188 IOMMU SUPPORT
+Date: Mon, 17 Apr 2023 15:35:59 +0800
+Message-ID: <20230417073606.25729-1-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7SPRMB0009:EE_|SJ0PR12MB7474:EE_
-X-MS-Office365-Filtering-Correlation-Id: 911e3103-0a9a-4697-29ce-08db3f0147b0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	zBX+kDDcnJ9faJQy8SXZ8F62cv93fXiBe7Ae8suNIwXLKK1qFTzc4UuSAgh7QOXAWuhiLDlX5MKY9Z0QO2XOAzGbYfyQNCIAQHiRUcPfV/EN7rVPExTf+xmOzI+7cMyNgfe2GC2M86VJt6zH9YvJsiiEgfC8U77Kogee+vsEELMGCy41xoKoXlXHXWD3QYnf4XE7fzz1n763PA1LhAZ0RFjpKqBypRRIUzMe2oQSGjo57phD8oNS8wlqh81ZdmOmFjudTSL+S1dxVRqLHEOwKXXJFAEEWv+tCz8Cu89zG1wFGk9nvfTGAJcuoLwo5RtOC2P3XBWRwD+HQrOp1rZP5UsGccbqm12lR/B7goB2CYmYZqc8kLQDmummpMuwzDJAdYtN2NtvyBB/ZrbPKtwnaUNjq4KPeikCvV675zP9qw8hScmlH/boFx6xwf+DJ/6aIxRpoef9tdciEkUECqHTWcUEf3auHOxkvusYNpYuFbrUh0mBuwf2zAEdkosEF+Mh7PRAJM2m9tWhdoJQWD5d7sxeSVips9uPP5t697I8xHfZdNQJNJN1fZRvGYcdRdlaFX35eiF+yav46q6Q+USE9c4hmYqP4fTMxGR2R8C/SR079y/kMrFExlPUi/4sasZtoFRvEJ5xIMT6/PESO/iTkw==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7SPRMB0009.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(396003)(376002)(136003)(346002)(451199021)(54906003)(31686004)(6486002)(6666004)(478600001)(41300700001)(316002)(83380400001)(4326008)(66556008)(2616005)(186003)(53546011)(6512007)(6506007)(26005)(66946007)(66476007)(5660300002)(44832011)(2906002)(8936002)(8676002)(38100700002)(86362001)(31696002)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?eUk2WjZ0OEJlWWJLRFIzYmEwTHg1ODdGMncwQnkzMFEvV00yS1NNOWlPOGhj?=
- =?utf-8?B?SUhBdE5yeFVaWkhTeWdycnB5T0h4ZnptU0N1MytJVXlyQWtnWGdvYUpOUlha?=
- =?utf-8?B?OVlmUDc0bkxDZ3NaZjBaZCt6Mk0ySHhPdUp1WEZCVmp6M0ZyUzBtSXd5cUdh?=
- =?utf-8?B?c0d1bkZVRkdXYS9OZzA0SzR1NUs5MzY0M1JaUk9MR0FuSnZLb0NYK3pBVFps?=
- =?utf-8?B?OCtFbmdTRW9lbGZEQTliSEMrUEtLVUVNTFhVNmZ0dVNCQmNBejVaMHZsZWxJ?=
- =?utf-8?B?cCtvS0I1UHF6RFZKd01VM0dBZmh2QkhuemZhS2hoSFpqL2pobE9GU1ZFNGlL?=
- =?utf-8?B?bXhrUHFSQXlyTTJhRDZxTklkU2tIMnZxKzRxeUVNR0paVW9kMVR0Nzhla0hP?=
- =?utf-8?B?OFgzN0orbjdWOUh0MTAwTmhKZmE4R0VnTlNLUkdZVGlyRThaN0hLMDFnQStV?=
- =?utf-8?B?MitNM1FCZTJybE9LUElJc0R0T2M0dU9BdmpNN091Z1BXQjF5Z0h0RGpCN1Iy?=
- =?utf-8?B?QVZOVStydzlpNW9iYWJCYUszYVR3VHo4SWd3RU1rUmJqeEJxNW9GUytLR2N4?=
- =?utf-8?B?MVNCN28veklDRytJWUZwZC94TWR3SWZQSmVZcjlrTmVqbDF5ZGc4RDNsYzRu?=
- =?utf-8?B?b1ZmYnA4OVFHTUQ4cmkrVmdSWnBoTkFoVXl0RGgvcGs1c0dWOEhmMC9NbER2?=
- =?utf-8?B?SmxnUXdGSGl1RWw3S3ZvNVBTeHNtMjFhRE5RVDlvS0MzMThGQjQyUktUM09O?=
- =?utf-8?B?OGMrOFUwUlpENkc1VlM5Zk41RXkyN2x4czFyMHRheHM2MzRiSEMzU0F1N2dT?=
- =?utf-8?B?YWZobWg0N1RVM2pRb294RHdoalVVUU41ZW1OMWsvaFZvd1VnL1BKT084UVhk?=
- =?utf-8?B?YVdVVmNxeFRaRlNMYVVPeEUyR1NjVkt5WWI0MUd6ZThCQmkwRERjMUZEOXVh?=
- =?utf-8?B?V1FudCsvcStoenpSZVBqYnFGeUplMjVXUkVHZFpTQlhNcmpVT3JxMXNJQ0lP?=
- =?utf-8?B?VzhCSWdEcFdhY1Z4aklTcHVlZ1k5Q29BZ011S1Z2WlduSGkvRVl3cHFOSkJw?=
- =?utf-8?B?b0dmd1o4Nmt6RWtXVktVaGs2ZVlUdXl2dEVMU2dwNGk2T0lma3F1Yk5BeWdF?=
- =?utf-8?B?WWY5VkRhUTRTNUNyL2t0QVVvT3hRZHl1cXZKaEQyWG1za0N3QUFBT29BTzhY?=
- =?utf-8?B?QXM0bDJLMEw3SEh6NkRKRUg1d2xzYjVJcG13MHk3ZElCTkJQWWFHMUVrdUtY?=
- =?utf-8?B?SHlzazNYeXIyM1Bjd1hPZnRSZUNqMzJ2MFNHejhNNGZ6SE5jWGE5dGNseW4x?=
- =?utf-8?B?YlhZcTJNcEp6QXhpK1FuQXAvbmRIV3RLS3BwekNUdWI3MCtJNTZKaHNKREJ3?=
- =?utf-8?B?a05RYlJkMjQ0K0hHeVpUUDhYS1BIQTdnT1kxcUxVTXo2RS9iZEVDRDhGN3hK?=
- =?utf-8?B?Qjh4SmV0NXJ5SkptUHcwYStoanZPN3F4ZTRXcVFta0dhK0t5MExxUWZzdHhn?=
- =?utf-8?B?aXVTOEo3bGZkR3JCeUZFdUtlWW40OWFuOGhTREQwV1FvZE9NMXdHQ2NYbGZC?=
- =?utf-8?B?czh2RjRYVld0amx5Um9MQ1Z3NUlQc0l2OFo5a1hmTVFTcGQ2N2FVczN3b1JS?=
- =?utf-8?B?UVdsYzZ5b05tbFhaNGM4Q3JlQXJuTktJcFZVU3V3dHpkUVRZb1dYZmIyTnRX?=
- =?utf-8?B?bGVVOHNmaGlpU1BFYnRNbjFYaVR6aUtUT2dBZndtUGtQMXVMb3FqSUF6MGxU?=
- =?utf-8?B?NXRja1hGNFVrRzVScmhNUnFnTnF4NWMycjlhc3FrbS9TeUMyMWFoM3hQNU5K?=
- =?utf-8?B?MmxxMmdIZ2ZvNTFKTHhWWEVTOWdqNERESkxFOG5adjRZWGZzTmRBekcwam5a?=
- =?utf-8?B?LyswS25RSHlNdG5QeVVGVzB0bHBVWWFHaTJWWjhuWTc4em1RV0p5NU95Y0kr?=
- =?utf-8?B?R3VDS1Mray9STEtDeVptNmlyRDVxa2FIWUZQMnNFOG9HV3dSYnNVRnZ5Z09k?=
- =?utf-8?B?Q0Y3ZTVqSmxSRXpKeTFIMnpzeHB2MGd1a1pBQzQ5VjNUcTBIQ3hQVmxnVWlX?=
- =?utf-8?B?NXRaZnZ0MTUrdWN1eUcwdXRGaytIOURKUzRZMGF5SDZWYitjNUlZNUtqSStI?=
- =?utf-8?Q?O/5CDtxu9m29yu+3G4GGTecQs?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 911e3103-0a9a-4697-29ce-08db3f0147b0
-X-MS-Exchange-CrossTenant-AuthSource: DS7SPRMB0009.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Apr 2023 05:04:53.7589
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: X6cZQdeZoHLIQJ8xufhrqOHm8dUzbA5KkSfJGr68WIYOI80ml2WB1jq/u5VbFznPoAL4CGC7QtPYKwxT+YN7GA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB7474
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK: N
 
-On 3/17/2023 1:32 AM, Joao Martins wrote:
-> GALog exists to propagate interrupts into all vCPUs in the system when
-> interrupts are marked as non running (e.g. when vCPUs aren't running). A
-> GALog overflow happens when there's in no space in the log to record the
-> GATag of the interrupt. So when the GALOverflow condition happens, the
-> GALog queue is processed and the GALog is restarted, as the IOMMU
-> manual indicates in section "2.7.4 Guest Virtual APIC Log Restart
-> Procedure":
-> 
-> | * Wait until MMIO Offset 2020h[GALogRun]=0b so that all request
-> |   entries are completed as circumstances allow. GALogRun must be 0b to
-> |   modify the guest virtual APIC log registers safely.
-> | * Write MMIO Offset 0018h[GALogEn]=0b.
-> | * As necessary, change the following values (e.g., to relocate or
-> | resize the guest virtual APIC event log):
-> |   - the Guest Virtual APIC Log Base Address Register
-> |      [MMIO Offset 00E0h],
-> |   - the Guest Virtual APIC Log Head Pointer Register
-> |      [MMIO Offset 2040h][GALogHead], and
-> |   - the Guest Virtual APIC Log Tail Pointer Register
-> |      [MMIO Offset 2048h][GALogTail].
-> | * Write MMIO Offset 2020h[GALOverflow] = 1b to clear the bit (W1C).
-> | * Write MMIO Offset 0018h[GALogEn] = 1b, and either set
-> |   MMIO Offset 0018h[GAIntEn] to enable the GA log interrupt or clear
-> |   the bit to disable it.
-> 
-> Failing to handle the GALog overflow means that none of the VFs (in any
-> guest) will work with IOMMU AVIC forcing the user to power cycle the
-> host. When handling the event it resumes the GALog without resizing
-> much like how it is done in the event handler overflow. The
-> [MMIO Offset 2020h][GALOverflow] bit might be set in status register
-> without the [MMIO Offset 2020h][GAInt] bit, so when deciding to poll
-> for GA events (to clear space in the galog), also check the overflow
-> bit.
-> 
-> [suravee: Check for GAOverflow without GAInt, toggle CONTROL_GAINT_EN]
-> Co-developed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
+MT8188 have 3 IOMMU HWs. 2 IOMMU HW is for multimedia, and 1 IOMMU HW
+is for infra-master, like PCIe.
 
-Patch looks good to me.
+About the 2 MM IOMMU HW, the connection could be something like this:
 
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+        IOMMU(VDO)          IOMMU(VPP)
+           |                   |
+      SMI_COMMON(VDO)      SMI_COMMON(VPP)
+      ---------------     ----------------
+      |      |   ...      |      |     ...
+    larb0 larb2  ...    larb1 larb3    ...
 
--Vasant
+INFRA IOMMU does not have SMI, the master connects to IOMMU directly.
+
+Although multiple banks supported in MT8188, we only use one of them,
+which means PCIe is put in bank0 of INFRA IOMMU.
+
+So we have two pgtable for MT8188, specifically, these two MM IOMMU HW
+share a pgtable while INFRA IOMMU HW use a independent pgtable.
+
+Another change is that we add some SMC command for INFRA master to 
+enable/disable INFRA IOMMU in ATF considering security concerns.
+
+We also adjust the flow of mtk_iommu_config to reduce indention.
+
+Change in v10:
+  - Add a Fixes tag for [2/7].
+  - Rebase on mtk-iommu-dma-range-v7:
+    https://lore.kernel.org/linux-mediatek/20230411093144.2690-1-yong.wu@mediatek.com/
+
+change since v9:
+  https://lore.kernel.org/linux-mediatek/20230317085541.20447-1-yong.wu@mediatek.com/
+  - Move the patch about setting set_dma_mask out from this patchset.
+  - Add a MAINTAINER patch since the header file was added a prefix "mediatek,"
+
+change since v8:
+    https://lore.kernel.org/linux-mediatek/20230307080555.14399-1-yong.wu@mediatek.com/
+  - Base on v6.3-rc1 and mtk-iommu-dma-range-v5:
+    https://lore.kernel.org/linux-mediatek/20230307023507.13306-1-yong.wu@mediatek.com/
+  - Add a new patch set_dma_mask about since mt8188 support the PA of pgtable 35bits.
+
+changes since v7:
+    https://lore.kernel.org/linux-mediatek/20230216053322.11596-1-yong.wu@mediatek.com/
+  - Base on mtk-iommu-dma-range-v4:
+    https://lore.kernel.org/linux-mediatek/20230215062544.8677-1-yong.wu@mediatek.com/
+  - Add a new patch for two IOMMU share pagetable issue.
+  - Add a new patch for adding iova_region_larb_msk for mt8188.
+  - Add the comment in the dt-binding header file about larb index.
+    This is for readable when updating the iova_region_larb_msk.
+    
+    Since there is something wrong for chengci's mail account when sending
+    to devicetree mail list, we don't know why. I help send this patchset.
+    https://lore.kernel.org/linux-mediatek/5a916595-12ee-92e6-d380-84146dd75218@linaro.org/
+
+changes since v6:
+    https://lore.kernel.org/linux-mediatek/20221223101439.494-1-chengci.xu@mediatek.com/
+  - base on tag: next-20221220.
+  - update commit message of patch[2/4].
+
+changes since v5:
+  - base on tag: next-20221205.
+  - add flag PGTABLE_PA_35_EN for all IOMMU in MT8188.
+  - modify the type of "portid_msk" from "u32" to "unsigned long".
+
+changes since v4:
+  - base on tag: next-20221018.
+  - add patch[2/4] to reduce indention by adjust mtk_iommu_config flow.
+
+changes since v3:
+  - base on tag: next-20220916.
+  - use license "GPL-2.0-only OR BSD-2-Clause" in bingings head file.
+  - drop redundant "portid" assignment when configure infra master.
+  - reduce indentation by using "else if" when config infra master.
+  - update probe flow about "pericfg" for CFG_IFA_MASTER_IN_ATF.
+  - drop unused "pericfg_comp_str" in mt8188_data_infra.
+  - drop words like "This commit/patch".
+
+changes since v2:
+  - base on tag: next-20220831.
+  - rename "mt8188-memory-port.h" to "mediatek,mt8188-memory-port.h".
+  - use dual-license in "mediatek,mt8188-memory-port.h"
+  - remove unnecessary "()" when define SMI_LARB_ID
+
+changes since v1:
+  - base on tag: next-20220803.
+  - adds MT8188 IOMMU support.
+
+Chengci.Xu (5):
+  dt-bindings: mediatek: mt8188: Add binding for MM & INFRA IOMMU
+  iommu/mediatek: Fix two IOMMU share pagetable issue
+  iommu/mediatek: Adjust mtk_iommu_config flow
+  iommu/mediatek: Add enable IOMMU SMC command for INFRA masters
+  iommu/mediatek: Add MT8188 IOMMU Support
+
+Yong Wu (2):
+  iommu/mediatek: mt8188: Add iova_region_larb_msk
+  MAINTAINERS: iommu/mediatek: Update the header file name
+
+ .../bindings/iommu/mediatek,iommu.yaml        |  12 +-
+ MAINTAINERS                                   |   2 +-
+ drivers/iommu/mtk_iommu.c                     | 151 ++++--
+ .../memory/mediatek,mt8188-memory-port.h      | 489 ++++++++++++++++++
+ include/soc/mediatek/smi.h                    |   1 +
+ 5 files changed, 622 insertions(+), 33 deletions(-)
+ create mode 100644 include/dt-bindings/memory/mediatek,mt8188-memory-port.h
+
+-- 
+2.18.0
 
 
