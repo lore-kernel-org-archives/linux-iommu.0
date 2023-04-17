@@ -1,107 +1,226 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D364D848E
-	for <iommu@lists.linux.dev>; Mon, 17 Apr 2023 16:45:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681749921; x=1713285921;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=mejMMiNRr2sdE/HkEC1Fb36Btw2PJ43aaguwXoKkpZo=;
-  b=JMSCSx47KBmAR56jqhazXIuEFLvCftJ7Jr3e7ZsIR0tb6awXNERevdz0
-   yhJj+eYUMnsqrIMgVQnnaDJbdXv2QRMksyu2X+Fl/dqi9DeRxkSRbGrE5
-   GZh0mcQFPj/OUrO3fW+VmZG3GeRDQktHSc04pMoMqvpmzzFG4DqFlgpB6
-   Lf40MmVsy9O37b83Cn07lLKAiQENOgUMgEEaqDcsfmbi8snELitQdDAu1
-   DRcFRGUmsycb8IEBjb5QY7rUMI6n3JEA48N1f/iVflDxouo6tSMDzVun6
-   CtNZuY9RaBS+lWkFON/mpzKsdyDQRydTAL2hKKxrzenaaMNuigmOYU9ul
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10683"; a="347685915"
-X-IronPort-AV: E=Sophos;i="5.99,204,1677571200"; 
-   d="scan'208";a="347685915"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2023 09:42:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10683"; a="640989218"
-X-IronPort-AV: E=Sophos;i="5.99,204,1677571200"; 
-   d="scan'208";a="640989218"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2023 09:42:16 -0700
-Date: Mon, 17 Apr 2023 09:46:29 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, LKML
- <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Robin Murphy <robin.murphy@arm.com>, Jason
- Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "vkoul@kernel.org"
- <vkoul@kernel.org>, Will Deacon <will@kernel.org>, David Woodhouse
- <dwmw2@infradead.org>, "Raj, Ashok" <ashok.raj@intel.com>, "Liu, Yi L"
- <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>, "Jiang, Dave"
- <dave.jiang@intel.com>, "Luck, Tony" <tony.luck@intel.com>, "Zanussi, Tom"
- <tom.zanussi@intel.com>, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v4 3/7] iommu: Support allocation of global PASIDs
- outside SVA
-Message-ID: <20230417094629.59fcfde6@jacob-builder>
-In-Reply-To: <5882ee52-9657-250d-0474-13edffa7b6b9@linux.intel.com>
-References: <20230407180554.2784285-1-jacob.jun.pan@linux.intel.com>
-	<20230407180554.2784285-4-jacob.jun.pan@linux.intel.com>
-	<BN9PR11MB5276D09F18BA65AD074777948C9A9@BN9PR11MB5276.namprd11.prod.outlook.com>
-	<5882ee52-9657-250d-0474-13edffa7b6b9@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D46B8BF1
+	for <iommu@lists.linux.dev>; Mon, 17 Apr 2023 19:59:49 +0000 (UTC)
+Received: by mail-pl1-f176.google.com with SMTP id w11so27073548plp.13
+        for <iommu@lists.linux.dev>; Mon, 17 Apr 2023 12:59:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1681761589; x=1684353589;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=phtw730Z1oAu+dFt847+KyYIBXIePeo4uDtmDchStzE=;
+        b=TLAsAz+hMtLXec8QY1C2WsIM8VDQFspPSCbSJMVu2rVYwOiLU0KvEWfDP4CBBRw0gr
+         bRNo3KJJUZXtUeIGlqCJV9TzBl7pYcte95+yWVoc6nsxtbJ5WsSUAsm38oyb/FeU8AgF
+         GHTYs3NDb0JhHvKai/TwBNa8k6eM1TqUOUif+ey0ZcIVh5FuyHrjG3Ahilh8ydsBvXOd
+         76jmncwIUT93XLkUZQiwDBd/srfa6iivy309KkBSxa/5Cu0g077Fa5JEzajp5BBomjSp
+         7LCqynGuLGlQydI7UVc9Zz+TwuFTQsxmN7MI5y28/6i1OumMtCeXp8nrtFR+0UlK2HgH
+         Rbtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681761589; x=1684353589;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=phtw730Z1oAu+dFt847+KyYIBXIePeo4uDtmDchStzE=;
+        b=Lba6ZVTGKKpNLKjq+9+WsVEAIfgMemPyItzCQvtxwZRk4AeYtZ58a7M/RIDc/enw+h
+         OIcCHmuhk91UFKUVzub9vuQpx0sM2Iyh2Q1mWwvoNPliIiJH7Z+NI+goSZqrVtQE5gUX
+         4U5zPIOewhMoiGQ0vf5eC7755L9J+KfRoNoq75dBvCkrWr/eLKfEBR23R8c7N7h1bPFb
+         +/p4QKDHyIdEDooHBOgR1JBZeD4NxZlBIETh5i5fre8D2+Aiy7W+5KlrUAREYHIPdrzQ
+         lB2pdWPzUrOSWDkTdA4Ijg9onyxDQsFUXBWMXJosWhoYwSneV/sWjEtREJt3Q20DpCg5
+         j9pA==
+X-Gm-Message-State: AAQBX9eNJga9pXfckw1T5yzdg9eJzEzH1614HV60b72LNIWePv4d4OeG
+	TpmHOO5QFToVUeyLuXbNX1MXzg==
+X-Google-Smtp-Source: AKy350ZOIVs0PXqCX3v2o9m6GdrpUCcVieJDD3O0SmT6MDiPWIyFGHmWHgQbBGKGTvc5v1eLblXv7w==
+X-Received: by 2002:a17:902:ce10:b0:1a6:cb66:681f with SMTP id k16-20020a170902ce1000b001a6cb66681fmr74865plg.46.1681761589427;
+        Mon, 17 Apr 2023 12:59:49 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
+        by smtp.gmail.com with ESMTPSA id q24-20020a170902b11800b0019e8915b1b5sm8037811plr.105.2023.04.17.12.59.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Apr 2023 12:59:48 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1poV0s-00BlVY-9h;
+	Mon, 17 Apr 2023 16:59:46 -0300
+Date: Mon, 17 Apr 2023 16:59:46 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: linux-mm@kvack.org
+Cc: lsf-pc@lists.linuxfoundation.org, linux-mm@kvack.org,
+	iommu@lists.linux.dev, linux-rdma@vger.kernel.org,
+	Matthew Wilcox <willy@infradead.org>,
+	Christoph Hellwig <hch@lst.de>,
+	Joao Martins <joao.m.martins@oracle.com>,
+	John Hubbard <jhubbard@nvidia.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Ming Lei <ming.lei@redhat.com>, linux-block@vger.kernel.org,
+	netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	nvdimm@lists.linux.dev, "T.J. Mercier" <tjmercier@google.com>,
+	Zhu Yanjun <yanjun.zhu@linux.dev>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Mike Rapoport <rppt@kernel.org>,
+	Bart Van Assche <bvanassche@acm.org>,
+	Chaitanya Kulkarni <chaitanyak@nvidia.com>
+Subject: Re: [LSF/MM/BPF proposal]: Physr discussion
+Message-ID: <ZD2lMvprVxu23BXZ@ziepe.ca>
+References: <Y8v+qVZ8OmodOCQ9@nvidia.com>
+ <CABdmKX3kJZKsOQSi=4+RE8D3AF=-823B9WV11sC4WH67hjzqSQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CABdmKX3kJZKsOQSi=4+RE8D3AF=-823B9WV11sC4WH67hjzqSQ@mail.gmail.com>
 
-Hi Baolu,
+On Tue, Feb 28, 2023 at 12:59:41PM -0800, T.J. Mercier wrote:
+> On Sat, Jan 21, 2023 at 7:03 AM Jason Gunthorpe <jgg@nvidia.com> wrote:
+> >
+> > I would like to have a session at LSF to talk about Matthew's
+> > physr discussion starter:
+> >
+> >  https://lore.kernel.org/linux-mm/YdyKWeU0HTv8m7wD@casper.infradead.org/
+> >
+> > I have become interested in this with some immediacy because of
+> > IOMMUFD and this other discussion with Christoph:
+> >
+> >  https://lore.kernel.org/kvm/4-v2-472615b3877e+28f7-vfio_dma_buf_jgg@nvidia.com/
+> >
+> > Which results in, more or less, we have no way to do P2P DMA
+> > operations without struct page - and from the RDMA side solving this
+> > well at the DMA API means advancing at least some part of the physr
+> > idea.
 
-On Wed, 12 Apr 2023 09:37:48 +0800, Baolu Lu <baolu.lu@linux.intel.com>
-wrote:
+[..]
 
-> On 4/11/23 4:02 PM, Tian, Kevin wrote:
-> >> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> >> Sent: Saturday, April 8, 2023 2:06 AM
-> >> @@ -28,8 +26,8 @@ static int iommu_sva_alloc_pasid(struct mm_struct
-> >> *mm, ioasid_t min, ioasid_t ma
-> >>   		goto out;
-> >>   	}
-> >>
-> >> -	ret = ida_alloc_range(&iommu_global_pasid_ida, min, max,
-> >> GFP_KERNEL);
-> >> -	if (ret < min)
-> >> +	ret = iommu_alloc_global_pasid(min, max);  
-> > 
-> > I wonder whether this can take a device pointer so
-> > dev->iommu->max_pasids is enforced inside the alloc function.  
-> 
-> Agreed. Instead of using the open code, it looks better to have a helper
-> like dev_iommu_max_pasids().
-yes, probably export dev_iommu_get_max_pasids(dev)?
+I got fairly far along this and had to put it aside for some other
+tasks, but here is what I came up with so far:
 
-But if I understood Kevin correctly, he's also suggesting that the
-interface should be changed to iommu_alloc_global_pasid(dev), my concern is
-that how do we use this function to reserve RID_PASID which is not specific
-to a device?
+https://github.com/jgunthorpe/linux/commits/rlist
 
-> 
-> > 
-> > and do we even need the min/max parameters? With special pasids reserved
-> > then what driver needs is just to get a free pasid from the global
-> > space within dev->iommu->max_pasids constraint...
-> > 
-> > iommu_sva_alloc_pasid() can be reworked to avoid min/max by taking a
-> > device pointer too.  
-> 
-> Best regards,
-> baolu
+      PCI/P2PDMA: Do not store bus_off in the pci_p2pdma_map_state
+      PCI/P2PDMA: Split out the information about the providing device from pgmap
+      PCI/P2PDMA: Move the DMA API helpers to p2pdma_provider
+      lib/rlist: Introduce range list
+      lib/rlist: Introduce rlist cpu range iterator
+      PCI/P2PDMA: Store the p2pdma_provider structs in an xarray
+      lib/rlist: Introduce rlist_dma
+      dma: Add DMA direct support for rlist mapping
+      dma: Generic rlist dma_map_ops
+      dma: Add DMA API support for mapping a rlist_cpu to a rlist_dma
+      iommu/dma: Implement native rlist dma_map_ops
+      dma: Use generic_dma.*_rlist in simple dma_map_ops implementations
+      dma: Use generic_dma.*_rlist when map_sg just does map_page for n=1
+      dma: Use generic_dma.*_rlist when iommu_area_alloc() is used
+      dma/dummy: Add rlist
+      s390/dma: Use generic_dma.*_rlist
+      mm/gup: Create a wrapper for pin_user_pages to return a rlist
+      dmabuf: WIP DMABUF exports the backing memory through rcpu
+      RDMA/mlx5: Use rdma_umem_for_each_dma_block()
+      RMDA/mlx: Use rdma_umem_for_each_dma_block() instead of sg_dma_address
+      RDMA/mlx5: Use the length of the MR not the umem
+      RDMA/umem: Add ib_umem_length() instead of open coding
+      RDMA: Add IB DMA API wrappers for rlist
+      RDMA: Switch ib_umem to rlist
+      cover-letter: RFC Create an alternative to scatterlist in the DMA API
 
+It is huge and scary. It is not quite nice enough to post but should
+be an interesting starting point for LSF/MM. At least it broadly shows
+all the touching required and why this is such a nasty problem.
 
-Thanks,
+The draft cover letter explaining what the series does:
 
-Jacob
+    cover-letter: RFC Create an alternative to scatterlist in the DMA API
+    
+    This was kicked off by Matthew with his phyr idea from this thread:
+    
+    https://lore.kernel.org/linux-mm/YdyKWeU0HTv8m7wD@casper.infradead.org/
+    
+    Hwoevr, I have become interested in this with some immediacy because of
+    IOMMUFD and this other discussion with Christoph:
+    
+    https://lore.kernel.org/kvm/4-v2-472615b3877e+28f7-vfio_dma_buf_jgg@nvidia.com/
+    
+    Which results in, more or less, we have no way to do P2P DMA operations
+    without struct page. This becomes complicated when we touch RDMA which
+    highly relies on scatterlist for its internal implementations, so being
+    unable to use scatterlist to store only dma_addr_t's means RDMA needs a
+    complete scatterlist replacement that can.
+    
+    So - my objective is to enable to DMA API to "DMA map" something that is
+    not a scatterlist, may or may not contain struct pages, but can still
+    contain P2P DMA physical addresses. With this tool, transform the RDMA
+    subystem to use the new DMA API and then go into DMABUF and stop creating
+    scatterlists without any CPU pages. From that point we could implement
+    DMABUF in VFIO (as above) and use the DMABUF to feed the MMIO pages into
+    IOMMUFD to restore the PCI P2P support in VMs withotu creating the
+    follow_pte security problem that VFIO has.
+    
+    After going through the thread again, and making some sketches, I've come
+    up with this suggestion as a path forward, explored very roughly in this
+    RFC:
+    
+    1) Create something I've called a 'range list CPU iterator'. This is an
+       API that abstractly iterates over CPU physical memory ranges. It
+       has useful helpers to iterate over things in 'struct page/folio *',
+       physical ranges, copy to/from, and so on
+    
+       It has the necessary extra bits beyond the physr sketch to support P2P
+       in the DMA API based on what was done for the pgmap based stuff. ie we
+       need to know the provider of the non-struct page memory to get the
+       struct device to compute the p2p distance and compute the pci_offset.
+    
+       The immediate idea is this is an iterator, not a data structure. So it
+       can iterate over different kinds of storage. This frees us from having
+       to immediatly consolidate all the different storage schemes in the
+       kernel and lets that work happen over time.
+    
+       I imagine we would want to have this work with struct page * (for GUP)
+       and bio_vec (for storage/net) and something else for the "kitchen sink"
+       with DMABUF/etc. We may also want to allow it to wrapper scatterlist to
+       provide for a more gradual code migration.
+    
+       Things are organized so sometime in the future this could collapse down
+       into something that is not a multi-storage iterator, but perhaps just
+       a single storage type that everyone is happy with.
+    
+       In the mean time we can use the API to progress all the other related
+       infrastructure.
+    
+       Fundamentally this tries to avoid the scatterlist mistake of leaking
+       too much of the storage implementation detail to the user.
+    
+    2) Create a general storage called the "range list". This is intended to
+       be a general catch-all like scatterlist is, and it is optimized
+       towards page list users, so it is quite good for what RDMA wants.
+    
+    3) Create a "range list DMA iterator" which is the dma_addr_t version of
+       #1. This needs to have all the goodies to break up the ranges into
+       things HW would like, such as page lists, or restricted scatter/gather
+       records.
+    
+       I've been able to draft several optimizations in the DMA mapping path
+       that should help offset some of the CPU cost of the more abstracted
+       iterators:
+    
+           - DMA direct can directly re-use the CPU list with no iteration or
+             memory allocation.
+    
+           - The IOMMU path can do only one iteration by pre-recording if the
+             CPU list was all page aligned when it was created
+    
+    The following patches go deeper into my thinking, present fairly complete
+    drafts of what things could look like, and more broadly explores the whole
+    idea.
+    
+    At the end of the series we have
+     - rlist, rlist_cpu, rlist_dma implementations
+     - An rlist implementation for every dma_map_ops
+     - Good rlist implementations for DMA direct and dma-iommu.c
+     - A pin_user_pages() wrapper
+     - RDMA umem converted and compiling with some RDMA drivers
+     - Compile tested only :)
+    
+    It is a huge amount of work, I'd like to get a sense of what people think
+    before going more deepely into a more final tested implementation. I know
+    this is not quite what Matthew and Christoph have talked about.
