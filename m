@@ -1,52 +1,50 @@
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A98918460
-	for <iommu@lists.linux.dev>; Mon, 17 Apr 2023 16:03:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCF2C10FF
+	for <iommu@lists.linux.dev>; Mon, 17 Apr 2023 16:32:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681747387; x=1713283387;
+  t=1681749166; x=1713285166;
   h=date:from:to:cc:subject:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=7tLU5hrc39P7zYp6lZlpanLIEtDU8xZ/pBPxVlbteKA=;
-  b=Vaf46s0MzgPsKvpGVBMpwOsxZXnO+OuN9BcHudNx7w8nKkqz9jc2G82k
-   rKopUpCEB4jKnRzskqQ72YyTwrM20Y/tegvsjgjoZCYQArL6AElda3iNj
-   SjVKJmzYbfaqQXAxVqLVjxLsPVB8/7Vdu/qCmJUaS03pcCu+j2K8wHlgE
-   UNIWl0gaXCnZ8Ai/p3qqkyXzu+nkr75jQm7+7/WzMJE7tA8CVWHM7zJXx
-   B9QEfjv6ai75T2Y3vBy9Iu0o6o0Erludwob6yOSRwd73qazB0MTKKJpxK
-   NTASDkgQpT+Br1MLotv6zMCpHVgU88Qo6jKqcQe5ViBmUWNpy5Dek5oGW
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10683"; a="344927321"
+  bh=84P+ue7q6gbeMc23HNjLrNIJ593kLc/rbC2QengU/0w=;
+  b=I8BTeAfuoa1UWOKrlAiWUdnve0Kx2dDoejx955Z450R6Y40g9VoHTamU
+   ndAL+afjMXnnnEOO9Ly+54aLqhL69po1WsXhQlegwgtIrd18PJ+BYXQuv
+   TkviWwj2za4jLS6MXUIOWoK2/RmDMnatKtcc/h22mp1IOztO1Wx8vfzDx
+   R0MGjZ/pN8fxE0G9LjwBxUaqGH06hidtcCqmkdDk3SRzmf3PBpK8HQ2d0
+   LEaxloOtoPBH6GOdhkAmXGcNsCboTNlF8zbGmyey3FWG6EXmuGqSaw09j
+   6QFQdTVmkEJBcgJigF9naFt2A+j2MmC8PTGI3P/hLzAwOrIpu52mys5LG
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10683"; a="347680877"
 X-IronPort-AV: E=Sophos;i="5.99,204,1677571200"; 
-   d="scan'208";a="344927321"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2023 09:02:55 -0700
+   d="scan'208";a="347680877"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2023 09:32:46 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10683"; a="802172627"
+X-IronPort-AV: E=McAfee;i="6600,9927,10683"; a="640987912"
 X-IronPort-AV: E=Sophos;i="5.99,204,1677571200"; 
-   d="scan'208";a="802172627"
+   d="scan'208";a="640987912"
 Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2023 09:02:52 -0700
-Date: Mon, 17 Apr 2023 09:07:06 -0700
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2023 09:32:46 -0700
+Date: Mon, 17 Apr 2023 09:36:59 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Robin Murphy <robin.murphy@arm.com>, Jason
- Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg
- Roedel <joro@8bytes.org>, "dmaengine@vger.kernel.org"
- <dmaengine@vger.kernel.org>, "vkoul@kernel.org" <vkoul@kernel.org>, Will
- Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>, "Raj,
- Ashok" <ashok.raj@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Yu,
- Fenghua" <fenghua.yu@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>,
- "Luck, Tony" <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
- jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v4 3/7] iommu: Support allocation of global PASIDs
- outside SVA
-Message-ID: <20230417090706.3ac5f858@jacob-builder>
-In-Reply-To: <BN9PR11MB5276D09F18BA65AD074777948C9A9@BN9PR11MB5276.namprd11.prod.outlook.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Robin Murphy
+ <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel
+ <joro@8bytes.org>, dmaengine@vger.kernel.org, vkoul@kernel.org, Will Deacon
+ <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Raj Ashok
+ <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
+ <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>, Dave Jiang
+ <dave.jiang@intel.com>, Tony Luck <tony.luck@intel.com>, "Zanussi, Tom"
+ <tom.zanussi@intel.com>, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v4 4/7] iommu/vt-d: Reserve RID_PASID from global PASID
+ space
+Message-ID: <20230417093659.653d81e9@jacob-builder>
+In-Reply-To: <c8373d68-9f15-e9a5-d19f-c050f23ac85d@linux.intel.com>
 References: <20230407180554.2784285-1-jacob.jun.pan@linux.intel.com>
-	<20230407180554.2784285-4-jacob.jun.pan@linux.intel.com>
-	<BN9PR11MB5276D09F18BA65AD074777948C9A9@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20230407180554.2784285-5-jacob.jun.pan@linux.intel.com>
+	<c8373d68-9f15-e9a5-d19f-c050f23ac85d@linux.intel.com>
 Organization: OTC
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
@@ -58,38 +56,47 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-Hi Kevin,
+Hi Baolu,
 
-On Tue, 11 Apr 2023 08:02:55 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+On Mon, 10 Apr 2023 09:59:45 +0800, Baolu Lu <baolu.lu@linux.intel.com>
 wrote:
 
-> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Sent: Saturday, April 8, 2023 2:06 AM
-> > @@ -28,8 +26,8 @@ static int iommu_sva_alloc_pasid(struct mm_struct
-> > *mm, ioasid_t min, ioasid_t ma
-> >  		goto out;
-> >  	}
+> On 4/8/23 2:05 AM, Jacob Pan wrote:
+> > On VT-d platforms, RID_PASID is used for DMA request without PASID. We
+> > should not treat RID_PASID special instead let it be allocated from the
+> > global PASID number space. Non-zero value can be used in RID_PASID on
+> > Intel VT-d.
 > > 
-> > -	ret = ida_alloc_range(&iommu_global_pasid_ida, min, max,
-> > GFP_KERNEL);
-> > -	if (ret < min)
-> > +	ret = iommu_alloc_global_pasid(min, max);  
+> > For ARM, AMD and others that_always_  use 0 as RID_PASID, there is no
+> > impact in that SVA PASID allocation base is 1.
+> > 
+> > With this change, devices do both DMA with PASID and SVA will not worry
+> > about conflicts when it comes to allocating PASIDs for in-kernel DMA.
+> > 
+> > Signed-off-by: Jacob Pan<jacob.jun.pan@linux.intel.com>
+> > ---
+> >   drivers/iommu/intel/iommu.c | 4 ++++
+> >   1 file changed, 4 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> > index 9f737ef55463..cbb2670f88ca 100644
+> > --- a/drivers/iommu/intel/iommu.c
+> > +++ b/drivers/iommu/intel/iommu.c
+> > @@ -3956,6 +3956,10 @@ int __init intel_iommu_init(void)
+> >   
+> >   	intel_iommu_enabled = 1;
+> >   
+> > +	/* Reserved RID_PASID from the global namespace for legacy DMA
+> > */
+> > +	WARN_ON(iommu_alloc_global_pasid(PASID_RID2PASID,
+> > PASID_RID2PASID) !=
+> > +		PASID_RID2PASID);  
 > 
-> I wonder whether this can take a device pointer so dev->iommu->max_pasids
-> is enforced inside the alloc function.
+> How about moving above line up a bit? For example, at least before
+> iommu_device_register(). This is the starting point where device drivers
+> may want global PASIDs.
 > 
-> and do we even need the min/max parameters? With special pasids reserved
-> then what driver needs is just to get a free pasid from the global space
-> within dev->iommu->max_pasids constraint...
-> 
-> iommu_sva_alloc_pasid() can be reworked to avoid min/max by taking a 
-> device pointer too.
-I think that will work too albeit a philosophical change. It probably
-should be called iommu_alloc_dev_global_pasid(dev).
-
-But I feel the current approach is more flexible in that device drivers
-can control the range if for some reason it does not want go max_pasid.
-
+makes sense will do.
 
 Thanks,
 
