@@ -1,263 +1,385 @@
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60870AFE6
-	for <iommu@lists.linux.dev>; Tue, 18 Apr 2023 18:50:26 +0000 (UTC)
-Received: from pps.filterd (m0333521.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33IExLrT023722;
-	Tue, 18 Apr 2023 18:50:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2023-03-30;
- bh=w41QWvKlRXSeJ1c2741ngBApovqpBoBmpN3GTJ4e6eI=;
- b=mcW3DNOFZ/8qFDk5qhU5OR3NcjnCSkA8N1bSUUhqsSRBdS/qPbzrAul6yptPR6287O+q
- xw23r4WP363AWnSMy3458T/kS3H06CvQEaw6LGi8kctMfKroZQuYtVhcYrcdLzDAynG3
- PySE1znWZQQI81YkhyKlhPARkk9P3+mdxmBY3dlXqKl1OL6C7LL760dQSkIQqihYtsnN
- LxvEEgoPOu7pFiZiGg1hIie+NpefL71bawHnmB7BPMyyTPqD2O/2alyolukUTwhsX2Ow
- sJ4KuuvWEFpgCChdJBJJV4i9DeTE+dDOBgPah1ytccX24BgSQQ/3pkuXi3hRygY0v8DG rQ== 
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3pyjuc6jss-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 18 Apr 2023 18:50:14 +0000
-Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 33IIhsor011415;
-	Tue, 18 Apr 2023 18:50:13 GMT
-Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2169.outbound.protection.outlook.com [104.47.58.169])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3pyjc5nq54-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 18 Apr 2023 18:50:13 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eMy4xaogtiY3IkklU6dJRVy5FCKKNJbE/iTso9CxCQgTnG0YvHjKYgGNG9Gr+0/dk4hV1Y/fssql0LUES5c6QB7Gl+tNoQPcRbzDfWCDqZimzCbwfF1UxCmN7kShPvWgP7vUwatni2H8ns8lmYYt9itsWCfXxS/ulYHpkmM77uNVNI0zcsGZrDZ0XSvOMqnJ2P5rGnjgVkWDY6fPSPFcc74lVgpg/7+xqwl9+ke71tgzZnngdOzzmN50+68TEuQ8SwS7LUSZJqYqiAOP8sVbWpyMfq7HhJvF8ySimhyONjqCltF+mviERo0YvBIi2mrLWveCpp5AxBzSV3AJAUC/fA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=w41QWvKlRXSeJ1c2741ngBApovqpBoBmpN3GTJ4e6eI=;
- b=h5QbuU9xBWngqQydnjndtm6bfQoob+n0aV079YDT1+MIJ4ZyfMn7lcfkGOeT0oc0p8CHo3RRAgAGI+Z+Q6tNkeoAFS0GmT9zp2mJ/90plVbBVpjb0k9/DWaguR5UIkiodYG/TriwCNBJF3kGN1w9A8zgmilv2H0VGA9lkkA/BnkixB9qZn6nQNP3ltDablV/J6HmYsGsXljBqB+iJoHsklAz+b/LtIarrbElfZZXom8WrqVdQ/5j7V3rqyBJUyMrB4ktiFHWABhcWzBAVxBFEQaAnLSEILsgLwgzWNwnk4NEdnic1Ct2AWEz/OGG2x/fmNDynylxXbpkrFj/BxAmJg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=w41QWvKlRXSeJ1c2741ngBApovqpBoBmpN3GTJ4e6eI=;
- b=IH5aXGL8mQ2BAsYYWK5PxX/7fIx6IiQTtjquiZ4TTVF9RuzTpcZFX7qh8fa5bB3b4qHWV5l3XmkT/5Dtv8aNyEjruXp/VybvgsQVm+aLc8bz19ZZS4wQicgI6JHWeZcZOQ9Hc9xrC8/6j3TnzqKgnof6aYsOv+ZYB2mLuUroww0=
-Received: from DM6PR10MB4313.namprd10.prod.outlook.com (2603:10b6:5:212::20)
- by IA1PR10MB6685.namprd10.prod.outlook.com (2603:10b6:208:41b::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.45; Tue, 18 Apr
- 2023 18:50:11 +0000
-Received: from DM6PR10MB4313.namprd10.prod.outlook.com
- ([fe80::8456:ba59:80ec:d804]) by DM6PR10MB4313.namprd10.prod.outlook.com
- ([fe80::8456:ba59:80ec:d804%6]) with mapi id 15.20.6298.045; Tue, 18 Apr 2023
- 18:50:11 +0000
-Message-ID: <8404e7ef-d929-bd39-a10d-f4053cc4bd3e@oracle.com>
-Date: Tue, 18 Apr 2023 19:50:06 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH v4] iommu: Optimise PCI SAC address trick
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Vasant Hegde <vasant.hegde@amd.com>, Robin Murphy <robin.murphy@arm.com>,
-        joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-References: <b8502b115b915d2a3fabde367e099e39106686c8.1681392791.git.robin.murphy@arm.com>
- <21e49cd7-ee15-5ebd-7805-37d5f347635f@amd.com>
- <6b14b2a0-cf1c-fbfb-5028-d7a6974ef39f@oracle.com>
- <CAHk-=whogEk1UJfU3E7aW18PDYRbdAzXta5J0ECg=CB5=sCe7g@mail.gmail.com>
-Content-Language: en-US
-From: John Garry <john.g.garry@oracle.com>
-Organization: Oracle Corporation
-In-Reply-To: <CAHk-=whogEk1UJfU3E7aW18PDYRbdAzXta5J0ECg=CB5=sCe7g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P123CA0382.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:18f::9) To DM6PR10MB4313.namprd10.prod.outlook.com
- (2603:10b6:5:212::20)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFAB6C94A
+	for <iommu@lists.linux.dev>; Tue, 18 Apr 2023 21:28:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1681853321; x=1713389321;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ytu1jBKyFn8ZVXTAxlUC15ozn0Sj0b3bIeS0+OOfiXo=;
+  b=gU+KTipZGnETg29nOJYdZHIfpOpVR7CbK54ph0uE8EtMm8ROtd15QIl2
+   Jp+FCHilCIyFh97bPaDsJNhYt111mJXULTkbQZ2Ax+rIYl9wqhNNUnIZH
+   00Swj0IYvUUOZ0zWVZo0DtNejBQ/HAG2U/pcmVW69qVWG4igq2jPCYKJR
+   N2LSE2n4S0KTy4cj9Jqvioakx3vi0Oq8gBe0MDySTJ/rv2RaCV6jErblr
+   x5TYTocNOEn73xPT+5BfAo/x+k3+EikV7YZSe+fWdAdWyQWx+B9iANG2s
+   FkUN+AMo6+V4yOsP9ZbBOygXfGLFyn0lxPg77FToWEbBN/ufIS7ZfXxoM
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10684"; a="325624724"
+X-IronPort-AV: E=Sophos;i="5.99,207,1677571200"; 
+   d="scan'208";a="325624724"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2023 14:28:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10684"; a="780633869"
+X-IronPort-AV: E=Sophos;i="5.99,207,1677571200"; 
+   d="scan'208";a="780633869"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2023 14:28:40 -0700
+Date: Tue, 18 Apr 2023 14:32:54 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Robin Murphy
+ <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel
+ <joro@8bytes.org>, dmaengine@vger.kernel.org, vkoul@kernel.org, Will Deacon
+ <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Raj Ashok
+ <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
+ <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>, Dave Jiang
+ <dave.jiang@intel.com>, Tony Luck <tony.luck@intel.com>, "Zanussi, Tom"
+ <tom.zanussi@intel.com>, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v4 5/7] iommu/vt-d: Make device pasid attachment
+ explicit
+Message-ID: <20230418143254.064933d8@jacob-builder>
+In-Reply-To: <54591e4f-682b-cd4e-ee6b-9c9395d9c526@linux.intel.com>
+References: <20230407180554.2784285-1-jacob.jun.pan@linux.intel.com>
+	<20230407180554.2784285-6-jacob.jun.pan@linux.intel.com>
+	<54591e4f-682b-cd4e-ee6b-9c9395d9c526@linux.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR10MB4313:EE_|IA1PR10MB6685:EE_
-X-MS-Office365-Filtering-Correlation-Id: db3968fc-4555-418f-aa45-08db403dbce3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 
-	RTgXGIB1Q8TGL+eKOCOkAreiyic5a7/rIXzqzmD9Mo4Tz/OIBEw8F9bWfOfcZPwMr3emB4PESLNkCRm6hv0eOysL2dMCmlXOpOFpY8xuwxkbLQS7OAjchn6eDY4TDIQiV91Zz8ggT13Z3s2lcy3v062OTYwF0SyBsa0zD0xjc5CBM7scC2XqNNWMn2irqCLthMcSjM4UiQpVuFRE9KTZSZ+fV6ACLdLnpL+DnpKzjltFYQIFeV4Tvz2N0jM+4aT3vCbkDFwiHz58v94tRzsU2Ya1QrRQWoTWG0xAE9gobKH+kJSEwt43uudRttNr0QceLARxJr+sK/G8UUYDwdRX4trrnFbDtTGr7cfztocnoFtiQPNnZm7z+Gy11Yc7pS5mbpowvr4TQIrDp5Pd3f1RDaZ905/qcdwJ1of+axgPcpfcSlCHHm5P04rPbCQwjdUQdjwPc1XE/jlqLpG4P51tqQtbjnxLeGgJQacSotAwrIo4gT2wSLXUulcKujquUHMk2z/LlCUsG9AiMBvbAz2kO0wysuOFkYOl7S9Xk9NT1NLRCfhVw0rmrP8d9Bn/dUTtbhFpq9tbV8WGl8nL7CzcsOi5NTOP0aE9Q0TYAOLQ8I4rg/SVPfLkusuEtFzHNFE3IytRnVR577VEJnNEzKoZFw==
-X-Forefront-Antispam-Report: 
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR10MB4313.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(396003)(366004)(39860400002)(136003)(346002)(376002)(451199021)(26005)(186003)(6512007)(53546011)(41300700001)(6506007)(54906003)(86362001)(83380400001)(2616005)(4326008)(6916009)(31696002)(316002)(66946007)(66476007)(66556008)(36916002)(2906002)(8676002)(8936002)(6486002)(6666004)(31686004)(38100700002)(36756003)(5660300002)(478600001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: 
-	=?utf-8?B?SHRITThIMFBJMG1pcFkrYjlWMWdWMG9NTVQraEhkL29ic2g1Q1VmVUQ1NmE1?=
- =?utf-8?B?Z3ptaVRjSVkvcmh6NjBYdHU4K096R0k3TFoyamlUa2gwckNmRlhMUGVNdDFt?=
- =?utf-8?B?WkFJZ3FUQ0gvNlhvT3FCRCt5aG5zRmYrS29ZMWtvcDQzRFpPaFJsYUlDRWJW?=
- =?utf-8?B?NTV4c3d1ZSttOGtRZFUyYlZzZ1lqd2NRcEN6ekpsL3lsTEg0VDIvNS81Nksz?=
- =?utf-8?B?WjZpeUtPMFVTcHNOOExwUVYyUXBJVU1TTVlHZ3lweTFtOWRLSk9JQkl1OWg2?=
- =?utf-8?B?THRmd25jR0lCTEhmN0U0U2hoKzQ5TnJoZEtTeFhqcGs1TU9DQTNqUWZGS1lY?=
- =?utf-8?B?TWtWZ29aWVBuZlQveXE3dnF3OHl6bzFZeDVLRGZoaDU2SW9Zb3dxR05Yd1pp?=
- =?utf-8?B?aThtRnZieDZIazhLWFRlbVkrV2lzWnJ0bHZYeEY2MElqM09lQkgrbnpxMmlW?=
- =?utf-8?B?TWVlSjA2QmdYVWNzTkpScGZaRHZOdkU4RDAxQXdMd2VnR01KQlQzdGx1YjlJ?=
- =?utf-8?B?Sms5aU14WER1b2lGYktpa0pqNm5zS2JwNGUybTlVN3VsZmwvOWd0Z1FXWDh6?=
- =?utf-8?B?TGRKNkU1MVVlSHJKTllLRVdLT0RFekw5cDVxTjJvUU1wb2Q0YlZPVXFMYkxB?=
- =?utf-8?B?Z0lqWHpsWWJoMzNGWGs1VmRPZ0xWa2NKZ2J2Vi9wRWtLNXJRM0ZPVUY2MDIv?=
- =?utf-8?B?Y1d6ekM3VnNTRnlza0Y0K0h5aHdWSEdxanBFdlRQRXBYZXE4NmJrK1U1bGR0?=
- =?utf-8?B?WGoxRDVZdmovdmtkWlNQcDArNFRhYUJiR3hWY1RGUGJ0VXNYVjVNOVdpQmNF?=
- =?utf-8?B?T3Y4STdiN0FzK2Rja2dXK0QyUE4valVNOXdJTSt1ZVl1NDFBMGhLdmVmUFo5?=
- =?utf-8?B?Rm9qalhuTURpUHhxWUMvOHpsbm9UK0FOcVpIeFN5djRJVGJFdDNBTHRXNE1v?=
- =?utf-8?B?SXk2UytuT3cvUWJiczEwdGdUZXczc0daK05mR1c4V1JNbCtMbUJpelBPYVIz?=
- =?utf-8?B?WUFQR1dURVlGRzd5aURYV0Mwcks5YStLTEswaEdnN2NKYTN6OTZPbEpYcy9Z?=
- =?utf-8?B?NTk2Z2ZHb2I2ZHhzVHNPcVpKZGJXYmEycEZ2NHd0ZUhYK2hNTkRGRlJ2c0dv?=
- =?utf-8?B?MnRUUVoyWSsraW5LWitWWnQyR204b0RVeVV2QmphVDl1TEQyUVdQbDF1NjR3?=
- =?utf-8?B?SUFLQXFkajJ0NUZMaE1mZUhDUWp1N0QrZzB6U28wS211R1NXUElMRTFGdWVH?=
- =?utf-8?B?WnArUGN3U0NiYThITi82aWNJSnVGY1lnRWxBbzJ4N2N4bWdVVGt3MGg5c1JJ?=
- =?utf-8?B?aWJzNVUvM2xOL2dBK0QrRDd4b0ZEL3c2elBXS2FQQ0pVWmM5TkllYi9ra3Vy?=
- =?utf-8?B?SmpJRXFxZ2N1aGxqNEdDYjcwZ041N3AzcHAzWXRWTUxMbk9jak9PNFc3N3li?=
- =?utf-8?B?N21QNW84UnVkYW54T2tKbXUzcWdKcGVNRGwwM2s5ZlVSamVrZFl0d1F0aThY?=
- =?utf-8?B?d2JNVjVkWFhaV1ZySUZVVC9TWXE2MG9QWmF5d3IwcUJNdTZabDJVbHVYbE16?=
- =?utf-8?B?bGptOE00UXIyMHFlV3A4cEZZTUZBdXdhcG5lZFN4N1F3dnVGQUd6czB1NTRv?=
- =?utf-8?B?eS80aHllY1BpZ0FTbFl5V3RMVUNhNnpBS1NvYkJnZmpOUEVva05uQ2ZaTGVp?=
- =?utf-8?B?YTdWcU9CcWlKRXRSaDM0K2JBd0U3NEhoSzR1MjlSa1BUNTNMMmhLYVlXM2Jm?=
- =?utf-8?B?OEs0KzRhSlpRd0pEQTl0RG4xWExLRTNEWWdrTlN4UTZybVc1MXZwbW9SVWRO?=
- =?utf-8?B?Nml0SUkwaTRhTk9OeGlLMi8vOWRNOE50SWRjUHlMOGY0eEJrYWlXSDNZd2sy?=
- =?utf-8?B?Sml6a3NCRmJ4bml0eldEMXVwdUNuUldpOHg2d0hQUUttWTJHVFUrR05iL0gz?=
- =?utf-8?B?YWlhb0Q1R2F0U3h4b1c2N3BjaHVBMUVCbkRPYjVGU3EydkdNcGQyZ01UV2dh?=
- =?utf-8?B?UEdreWxyNmlDNlZlTDBOT3VPQzQwRVhkZUE0OXJiVW9JTXBLam4waU5rWUVq?=
- =?utf-8?B?WDZwQ1NHb0tqd0hVNUwxVHBZZ1Q4NU9XcW9JTjdudEUzcWYzdFIvNmJiNHJR?=
- =?utf-8?Q?dMK/pIOuBbyXvMT+yK+xAmpXC?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
-	=?utf-8?B?aW91TmhmdkJrNzljZ2pxMy9hNEtzcm9LTmJ3d1BnUDlPeW5rUmJBVHNkSXZ1?=
- =?utf-8?B?YkY2YXBCZmlrT09TaUZ0TEdJTHBTTEtYdVh2Mlk3ZXE3OUZYZk1OdWpLUlVl?=
- =?utf-8?B?bkxhSFVGYmtEMmp2U3VIdDU2QlBEY2MvME1DNEpqWUhwNE9EbVczQW5mMWZ4?=
- =?utf-8?B?M2NSd3hUcjRWUjBic3cwdmVNR2FxYWoyMTlGajJXazhDUmRuVWhleGxlRU5v?=
- =?utf-8?B?QVFWSDFWaU5wdVBocWVONWtjMVZRSW1PQXI1STRGa2VTdnV6Y2xOQ25yV2xH?=
- =?utf-8?B?LzBYZk1aNXlGb0RtdGduVTdBKzVzdFFESFNyNTc0K2hQTkw3ZXBrTHlSaFBB?=
- =?utf-8?B?OWlJaWE5ejQwODlOTm14eWltS1hsK1pWYnoxZkw5TDlHWFBEejRwUjBBZVYw?=
- =?utf-8?B?RXcvZHFLekVBcWVrT2ErY2NNeXg5N3EwOHFwaXZKd09HcEV5MXJkUUl3cHRa?=
- =?utf-8?B?YjZBRnlvZ3J3Sm9sZmxvWnRzdmZkN1IzTVhHdSt4VDQ3NmRJZWhHRm9zUjYx?=
- =?utf-8?B?cFpzaFdtd1FQUXc3d2pseVMyYXM3SFlTK3VzeEtad21yZzBBZWdsY0NCMDRr?=
- =?utf-8?B?TmR0VDJudkFpb1k5elc3Zmt4Kzl5bDJvZkhoMmRIUE5SN3hYQXI2MVRTRWpl?=
- =?utf-8?B?c2xVV3g2QnhjbUZxM01HdzFsdWNYSzVqUk9GNGZZQ3lXNUlXZjRteWljS2xL?=
- =?utf-8?B?bnBGT2p5QkUzejNqTnUzNXh2bDVzQkV3Ry9lOWJoc2pwUEFVdnprMFNzREMz?=
- =?utf-8?B?dFdvWXp5V0hEVU5yay9hY2RTNkoxdGk4cGRXK3lrWmE0di83OWFqVTBJN2lL?=
- =?utf-8?B?cjE4Z3N6cm9zQ2V2WlZMeVUrUm5TN0JHRXBvZTBwbWJhcHowU3lRTTNONFNy?=
- =?utf-8?B?UEw3eEc3R1dLZDZQeUdLejhWd3FYdjcxdFhGWXZMYTdyZDI3ZG5Qem44bFg0?=
- =?utf-8?B?Q1VkSFY2WksvOTVsZGhBT3VWY0d2dDM1MkFWdnczaW1iVTdpd1E4WDg0WDFy?=
- =?utf-8?B?T2cwUU5xQkYzNU93S3FVSlozbU9WSXNUTGlaRmZwZGo4THB5TlBXdXc4YVJx?=
- =?utf-8?B?Yy92ZFVremNMZUlCK1BmSzd0NkhMMFFHeGhBTTBPMisvb0V4bEsrUGFTSUFN?=
- =?utf-8?B?bnhFSTZHbGYybFIrU00rSFJ0SWN5UXZNZkJVTk9EKzFnbDVnbnoyQ2xFT1lI?=
- =?utf-8?B?UTZwNk1rQnNuTHpsZWVoSmVoY092dUI3a2JtTWtFUzlPTHgxU2xhb1BYMEZ0?=
- =?utf-8?B?TFNiM0t4WGkzaGtvT0VFVGI0b2srNXQ0bEkrVEJnUVpsQVhwUT09?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: db3968fc-4555-418f-aa45-08db403dbce3
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR10MB4313.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Apr 2023 18:50:11.1691
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tpA5wDkn7DXoQoBeyT+GmM+Uo+3vnEq6gxv6dEirq8VTGrTGiubNDJ7B+tyuNsPsysYLmUeKDUrd7LIo/ssVeA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR10MB6685
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-04-18_13,2023-04-18_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 spamscore=0
- adultscore=0 malwarescore=0 bulkscore=0 suspectscore=0 mlxscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2303200000 definitions=main-2304180154
-X-Proofpoint-GUID: zortFuBcc3GSrBmQ7fU8Hf6UgwxlQLJR
-X-Proofpoint-ORIG-GUID: zortFuBcc3GSrBmQ7fU8Hf6UgwxlQLJR
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 18/04/2023 18:36, Linus Torvalds wrote:
->> JFYI, Since you are using NVMe, you could also alternatively try
->> something like which I did for some SCSI storage controller drivers to
->> limit the request_queue max_sectors soft limit, like:
-> That patch is not only whitespace-damaged, it's randomly missing one
-> '+' character
+Hi Baolu,
 
-My copy and paste error
+On Mon, 10 Apr 2023 10:46:02 +0800, Baolu Lu <baolu.lu@linux.intel.com>
+wrote:
 
-> so it makes no sense even ignoring the whitespace
-> problems._and_  it has a nonsensical cast to 'unsigned int' which
-> makes that 'min()' possibly do crazy and invalid things (ie imagine
-> dma_opt_mapping_size() returning 4GB).
+> On 4/8/23 2:05 AM, Jacob Pan wrote:
+> > @@ -2429,10 +2475,11 @@ static int __init si_domain_init(int hw)
+> >   	return 0;
+> >   }
+> >   
+> > -static int dmar_domain_attach_device(struct dmar_domain *domain,
+> > -				     struct device *dev)
+> > +static int dmar_domain_attach_device_pasid(struct dmar_domain *domain,
+> > +				     struct device *dev, ioasid_t
+> > pasid) {
+> >   	struct device_domain_info *info = dev_iommu_priv_get(dev);
+> > +	struct device_pasid_info *dev_pasid;
+> >   	struct intel_iommu *iommu;
+> >   	unsigned long flags;
+> >   	u8 bus, devfn;
+> > @@ -2442,43 +2489,57 @@ static int dmar_domain_attach_device(struct
+> > dmar_domain *domain, if (!iommu)
+> >   		return -ENODEV;
+> >   
+> > +	dev_pasid = kzalloc(sizeof(*dev_pasid), GFP_KERNEL);
+> > +	if (!dev_pasid)
+> > +		return -ENOMEM;
+> > +
+> >   	ret = domain_attach_iommu(domain, iommu);
+> >   	if (ret)
+> > -		return ret;
+> > +		goto exit_free;
+> > +
+> >   	info->domain = domain;
+> > +	dev_pasid->pasid = pasid;
+> > +	dev_pasid->dev = dev;
+> >   	spin_lock_irqsave(&domain->lock, flags);
+> > -	list_add(&info->link, &domain->devices);
+> > +	if (!info->dev_attached)
+> > +		list_add(&info->link, &domain->devices);
+> > +
+> > +	list_add(&dev_pasid->link_domain, &domain->dev_pasids);
+> >   	spin_unlock_irqrestore(&domain->lock, flags);
+> >   
+> >   	/* PASID table is mandatory for a PCI device in scalable
+> > mode. */ if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev)) {
+> >   		/* Setup the PASID entry for requests without PASID:
+> > */ if (hw_pass_through && domain_type_is_si(domain))
+> > -			ret = intel_pasid_setup_pass_through(iommu,
+> > domain,
+> > -					dev, PASID_RID2PASID);
+> > +			ret = intel_pasid_setup_pass_through(iommu,
+> > domain, dev, pasid); else if (domain->use_first_level)
+> > -			ret = domain_setup_first_level(iommu, domain,
+> > dev,
+> > -					PASID_RID2PASID);
+> > +			ret = domain_setup_first_level(iommu, domain,
+> > dev, pasid); else
+> > -			ret = intel_pasid_setup_second_level(iommu,
+> > domain,
+> > -					dev, PASID_RID2PASID);
+> > +			ret = intel_pasid_setup_second_level(iommu,
+> > domain, dev, pasid); if (ret) {
+> > -			dev_err(dev, "Setup RID2PASID failed\n");
+> > +			dev_err(dev, "Setup PASID %d failed\n", pasid);
+> >   			device_block_translation(dev);
+> > -			return ret;
+> > +			goto exit_free;
+> >   		}
+> >   	}
+> > +	/* device context already activated,  we are done */
+> > +	if (info->dev_attached)
+> > +		goto exit;
+> >   
+> >   	ret = domain_context_mapping(domain, dev);
+> >   	if (ret) {
+> >   		dev_err(dev, "Domain context map failed\n");
+> >   		device_block_translation(dev);
+> > -		return ret;
+> > +		goto exit_free;
+> >   	}
+> >   
+> >   	iommu_enable_pci_caps(info);
+> > -
+> > +	info->dev_attached = 1;
+> > +exit:
+> >   	return 0;
+> > +exit_free:
+> > +	kfree(dev_pasid);
+> > +	return ret;
+> >   }
+> >   
+> >   static bool device_has_rmrr(struct device *dev)
+> > @@ -4029,8 +4090,7 @@ static void device_block_translation(struct
+> > device *dev) iommu_disable_pci_caps(info);
+> >   	if (!dev_is_real_dma_subdevice(dev)) {
+> >   		if (sm_supported(iommu))
+> > -			intel_pasid_tear_down_entry(iommu, dev,
+> > -						    PASID_RID2PASID,
+> > false);
+> > +
+> > intel_iommu_detach_device_pasid(&info->domain->domain, dev,
+> > PASID_RID2PASID); else domain_context_clear(info);
+> >   	}
+> > @@ -4040,6 +4100,7 @@ static void device_block_translation(struct
+> > device *dev) 
+> >   	spin_lock_irqsave(&info->domain->lock, flags);
+> >   	list_del(&info->link);
+> > +	info->dev_attached = 0;
+> >   	spin_unlock_irqrestore(&info->domain->lock, flags);
+> >   
+> >   	domain_detach_iommu(info->domain, iommu);
+> > @@ -4186,7 +4247,7 @@ static int intel_iommu_attach_device(struct
+> > iommu_domain *domain, if (ret)
+> >   		return ret;
+> >   
+> > -	return dmar_domain_attach_device(to_dmar_domain(domain), dev);
+> > +	return dmar_domain_attach_device_pasid(to_dmar_domain(domain),
+> > dev, PASID_RID2PASID); }  
 > 
-> You can't cast things to the smaller size just to get rid of a
-> warning, for chrissake!
+> For VT-d driver, attach_dev and attach_dev_pasid have different
+> meanings. Merging them into one helper may lead to confusion. What do
+> you think of the following code? The dmar_domain_attach_device_pasid()
+> helper could be reused for attach_dev_pasid path.
+Per our previous discussion
+https://lore.kernel.org/lkml/ZAY4zd4OlgSz+puZ@nvidia.com/
+We wanted to remove the ordering dependency between attaching device and
+device_pasid. i.e. making the two equal at IOMMU API level.
 
-Yeah, sorry, I was just trying to show a very quick demo of how this can 
-actually be done.
+So from that perspective, attach_dev_pasid will include attach_dev if the
+device has not been attached. i.e.
 
-Indeed, I could have mentioned that it would actually have been easier 
-to test by feeding a lower limit into /sys/block/<dev>/queue/max_sectors_kb
+attach_dev includes set up device context and RID_PASID
+attach_dev_pasid also include set up device context and another PASID.
 
+No ordering requirement.
+
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 7c2f4bd33582..09ae62bc3724 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -2434,6 +2434,40 @@ static int __init si_domain_init(int hw)
+>   	return 0;
+>   }
 > 
-> In fact, even without the cast, it seems entirely broken, since the
-> fallback for dma_opt_mapping_size() is to return 0 (admittedly_that_
-> case only happens with HAS_DMA=n).
+> +
+> +static int dmar_domain_attach_device_pasid(struct dmar_domain *domain,
+> +					   struct intel_iommu *iommu,
+> +					   struct device *dev, ioasid_t
+> pasid) +{
+> +	struct device_pasid_info *dev_pasid;
+> +	unsigned long flags;
+> +	int ret;
+> +
+> +	dev_pasid = kzalloc(sizeof(*dev_pasid), GFP_KERNEL);
+> +	if (!dev_pasid)
+> +		return -ENOMEM;
+> +
+> +	if (hw_pass_through && domain_type_is_si(domain))
+> +		ret = intel_pasid_setup_pass_through(iommu, domain, dev,
+> pasid);
+> +	else if (domain->use_first_level)
+> +		ret = domain_setup_first_level(iommu, domain, dev,
+> pasid);
+> +	else
+> +		ret = intel_pasid_setup_second_level(iommu, domain, dev,
+> pasid); +
+> +	if (ret) {
+> +		kfree(dev_pasid);
+> +		return ret;
+> +	}
+> +
+> +	dev_pasid->pasid = pasid;
+> +	dev_pasid->dev = dev;
+> +	spin_lock_irqsave(&domain->lock, flags);
+> +	list_add(&dev_pasid->link_domain, &domain->dev_pasids);
+> +	spin_unlock_irqrestore(&domain->lock, flags);
+> +
+> +	return 0;
+> +}
+> +
+>   static int dmar_domain_attach_device(struct dmar_domain *domain,
+>   				     struct device *dev)
+>   {
+> @@ -2458,15 +2492,8 @@ static int dmar_domain_attach_device(struct 
+> dmar_domain *domain,
+>   	/* PASID table is mandatory for a PCI device in scalable mode.
+> */ if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev)) {
+>   		/* Setup the PASID entry for requests without PASID: */
+> -		if (hw_pass_through && domain_type_is_si(domain))
+> -			ret = intel_pasid_setup_pass_through(iommu,
+> domain,
+> -					dev, PASID_RID2PASID);
+> -		else if (domain->use_first_level)
+> -			ret = domain_setup_first_level(iommu, domain,
+> dev,
+> -					PASID_RID2PASID);
+> -		else
+> -			ret = intel_pasid_setup_second_level(iommu,
+> domain,
+> -					dev, PASID_RID2PASID);
+> +		ret = dmar_domain_attach_device_pasid(domain, iommu, dev,
+> +						      PASID_RID2PASID);
+>   		if (ret) {
+>   			dev_err(dev, "Setup RID2PASID failed\n");
+>   			device_block_translation(dev);
 > 
-> Finally, doing this inside the
+> >   
+> >   static int intel_iommu_map(struct iommu_domain *domain,
+> > @@ -4675,26 +4736,52 @@ static void intel_iommu_iotlb_sync_map(struct
+> > iommu_domain *domain, __mapping_notify_one(info->iommu, dmar_domain,
+> > pfn, pages); }
+> >   
+> > -static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t
+> > pasid) +static void intel_iommu_detach_device_pasid(struct iommu_domain
+> > *domain,
+> > +					    struct device *dev,
+> > ioasid_t pasid) {
+> > -	struct intel_iommu *iommu = device_to_iommu(dev, NULL, NULL);
+> > -	struct iommu_domain *domain;
+> > +	struct device_domain_info *info = dev_iommu_priv_get(dev);
+> > +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+> > +	struct device_pasid_info *i, *dev_pasid = NULL;
+> > +	struct intel_iommu *iommu = info->iommu;
+> > +	unsigned long flags;
+> >   
+> > -	/* Domain type specific cleanup: */
+> > -	domain = iommu_get_domain_for_dev_pasid(dev, pasid, 0);
+> > -	if (domain) {
+> > -		switch (domain->type) {
+> > -		case IOMMU_DOMAIN_SVA:
+> > -			intel_svm_remove_dev_pasid(dev, pasid);
+> > -			break;
+> > -		default:
+> > -			/* should never reach here */
+> > -			WARN_ON(1);
+> > +	spin_lock_irqsave(&dmar_domain->lock, flags);
+> > +	list_for_each_entry(i, &dmar_domain->dev_pasids, link_domain) {
+> > +		if (i->dev == dev && i->pasid == pasid) {
+> > +			list_del(&i->link_domain);
+> > +			dev_pasid = i;
+> >   			break;
+> >   		}
+> >   	}
+> > +	spin_unlock_irqrestore(&dmar_domain->lock, flags);
+> > +	if (WARN_ON(!dev_pasid))
+> > +		return;
+> > +
+> > +	/* PASID entry already cleared during SVA unbind */
+> > +	if (domain->type != IOMMU_DOMAIN_SVA)
+> > +		intel_pasid_tear_down_entry(iommu, dev, pasid, false);
+> > +
+> > +	kfree(dev_pasid);
+> > +}
+> > +
+> > +static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t
+> > pasid) +{
+> > +	struct device_domain_info *info = dev_iommu_priv_get(dev);
+> > +	struct dmar_domain *dmar_domain;
+> > +	struct iommu_domain *domain;
+> > +
+> > +	domain = iommu_get_domain_for_dev_pasid(dev, pasid, 0);
+> > +	dmar_domain = to_dmar_domain(domain);
+> > +
+> > +	/*
+> > +	 * SVA Domain type specific cleanup: Not ideal but not until
+> > we have
+> > +	 * IOPF capable domain specific ops, we need this special case.
+> > +	 */
+> > +	if (domain->type == IOMMU_DOMAIN_SVA)
+> > +		return intel_svm_remove_dev_pasid(dev, pasid);
+> >   
+> > -	intel_pasid_tear_down_entry(iommu, dev, pasid, false);
+> > +	intel_iommu_detach_device_pasid(domain, dev, pasid);
+> > +	domain_detach_iommu(dmar_domain, info->iommu);
+> >   }  
 > 
->          if (ctrl->max_hw_sectors) {
+> The remove_dev_pasid path need to change only after attach_dev_pasid op
+> is added, right? If so, we should move such change into the next patch.
+yes, you are right, will do.
 
-I think that this would be set for PCI NVMe controllers, which we were 
-interested in here. But, indeed, I could check for a better place to set 
-this.
-
+> >   
+> >   const struct iommu_ops intel_iommu_ops = {
+> > diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+> > index 65b15be72878..b6c26f25d1ba 100644
+> > --- a/drivers/iommu/intel/iommu.h
+> > +++ b/drivers/iommu/intel/iommu.h
+> > @@ -595,6 +595,7 @@ struct dmar_domain {
+> >   
+> >   	spinlock_t lock;		/* Protect device tracking
+> > lists */ struct list_head devices;	/* all devices' list */
+> > +	struct list_head dev_pasids;	/* all attached pasids */
+> >   
+> >   	struct dma_pte	*pgd;		/* virtual address
+> > */ int		gaw;		/* max guest address width */
+> > @@ -708,6 +709,7 @@ struct device_domain_info {
+> >   	u8 ats_supported:1;
+> >   	u8 ats_enabled:1;
+> >   	u8 dtlb_extra_inval:1;	/* Quirk for devices need extra
+> > flush */
+> > +	u8 dev_attached:1;	/* Device context activated */
+> >   	u8 ats_qdep;
+> >   	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
+> >   	struct intel_iommu *iommu; /* IOMMU used by this device */
+> > @@ -715,6 +717,12 @@ struct device_domain_info {
+> >   	struct pasid_table *pasid_table; /* pasid table */
+> >   };
+> >   
+> > +struct device_pasid_info {
+> > +	struct list_head link_domain;	/* link to domain
+> > siblings */
+> > +	struct device *dev;		/* physical device derived
+> > from */
+> > +	ioasid_t pasid;			/* PASID on physical
+> > device */ +};
+> > +
+> >   static inline void __iommu_flush_cache(
+> >   	struct intel_iommu *iommu, void *addr, int size)
+> >   {  
 > 
-> conditional seems entirely wrong, since any dma mapping limits would
-> be entirely independent of any driver maximum hw size, and in fact
-> *easier*  to hit if the block device itself doesn't have any max
-> limits.
-> 
-> So please burn that patch in the darkest pits of hell and let's try to
-> forget it ever existed. Ok?
+> Best regards,
+> baolu
 
-Sure
-
-> 
-> Also, shouldn't any possible dma mapping size affect not
-> 'max_sectors', but 'max_segment_size'? At least the docs imply that
-> dma_opt_mapping_size() is about the max size of a_single_  mapping,
-> not of the whole thing?
-
-It's meant to apply to total mapping length and not a single segment, so 
-then the doc would be misleading.
-
-> 
-> Anyway, if this is actually an issue, to the point that it's now being
-> discussed for a_second_  block driver subsystem, then shouldn't the
-> queue handling just do this all automatically, instead of adding
-> random crap to random block driver architectures?
-
-Other storage controllers may enjoy better performance with very large 
-DMA mappings (whose total length exceed the IOVA caching limit), so it 
-was too risky to apply a performance-related change of this nature 
-across the board when that API was introduced.
-
-So far it had only been a single controller where we were actually 
-seeing the issue of alloc'ing IOVAs giving very (very) poor performance.
-
-However, as far as I am aware, there was nothing special about that 
-controller, apart from the fact that it was often creating requests 
-whose length exceeded that IOVA caching limit, and it also filling the 
-32b IOVA space quickly - that may be because the system had lots of CPUs.
-
-Since there are now reports of poor performance in other storage 
-controllers and also in networking adapters, I can only assume that 
-people are testing more often with IOMMU-enabled systems with lots of 
-CPUs. Having said that, I would still be cautious of applying that limit 
-everywhere.
-
-> 
-> And no, I don't know this code, so maybe I'm entirely missing
-> something, but that patch just raised my hackles enough that I had to
-> say something.
-
-Sure.
 
 Thanks,
-John
+
+Jacob
