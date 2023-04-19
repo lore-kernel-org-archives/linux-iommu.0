@@ -1,14 +1,14 @@
-Received: from frasgout13.his.huawei.com (frasgout13.his.huawei.com [14.137.139.46])
+Received: from frasgout11.his.huawei.com (frasgout11.his.huawei.com [14.137.139.23])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77FA33236
-	for <iommu@lists.linux.dev>; Wed, 19 Apr 2023 10:23:17 +0000 (UTC)
-Received: from mail02.huawei.com (unknown [172.18.147.229])
-	by frasgout13.his.huawei.com (SkyGuard) with ESMTP id 4Q1bnN4nzwz9v7ZN
-	for <iommu@lists.linux.dev>; Wed, 19 Apr 2023 17:57:44 +0800 (CST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D91573236
+	for <iommu@lists.linux.dev>; Wed, 19 Apr 2023 10:23:47 +0000 (UTC)
+Received: from mail02.huawei.com (unknown [172.18.147.227])
+	by frasgout11.his.huawei.com (SkyGuard) with ESMTP id 4Q1bl80y1vz9v7gY
+	for <iommu@lists.linux.dev>; Wed, 19 Apr 2023 17:55:48 +0800 (CST)
 Received: from A2101119013HW2.china.huawei.com (unknown [10.45.152.239])
-	by APP1 (Coremail) with SMTP id LxC2BwAXi_aYvD9k7TY6Ag--.1944S9;
-	Wed, 19 Apr 2023 11:06:42 +0100 (CET)
+	by APP1 (Coremail) with SMTP id LxC2BwAXi_aYvD9k7TY6Ag--.1944S3;
+	Wed, 19 Apr 2023 11:04:48 +0100 (CET)
 From: Petr Tesarik <petrtesarik@huaweicloud.com>
 To: Jonathan Corbet <corbet@lwn.net>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -47,9 +47,9 @@ To: Jonathan Corbet <corbet@lwn.net>,
 Cc: Roberto Sassu <roberto.sassu@huawei.com>,
 	Kefeng Wang <wangkefeng.wang@huawei.com>,
 	petr@tesarici.cz
-Subject: [PATCH v2 7/7] swiotlb: per-device flag if there are dynamically allocated buffers
-Date: Wed, 19 Apr 2023 12:03:59 +0200
-Message-Id: <08ec2c2baa9a24d2eae5d5107868fd6df0f7dd1c.1681898595.git.petr.tesarik.ext@huawei.com>
+Subject: [PATCH v2 1/7] swiotlb: Use a helper to initialize swiotlb fields in struct device
+Date: Wed, 19 Apr 2023 12:03:53 +0200
+Message-Id: <a8b23fa7304512af33897edfdae97bea8a97c39d.1681898595.git.petr.tesarik.ext@huawei.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1681898595.git.petr.tesarik.ext@huawei.com>
 References: <cover.1681898595.git.petr.tesarik.ext@huawei.com>
@@ -60,107 +60,84 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:LxC2BwAXi_aYvD9k7TY6Ag--.1944S9
-X-Coremail-Antispam: 1UD129KBjvJXoWxWr1UWr47Jw1kZw4UKF48Zwb_yoW5uFW3pF
-	y8uF98KF4qqFykZ3sF9w47uF47uw4q93y3CrWFgr1Fkry5X34rWF4kCry2y34rJr409F4x
-	XryjvrWrAF17Ww7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUmEb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
-	6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUAV
-	Cq3wA2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0
-	rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW8JVW5JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267
-	AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E
-	14v26r4UJVWxJr1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrV
-	C2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE
-	7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACI402YVCY1x02628vn2kIc2xKxwCY1x0262
-	kKe7AKxVWUtVW8ZwCY1x0264kExVAvwVAq07x20xyl42xK82IYc2Ij64vIr41l4I8I3I0E
-	4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGV
-	WUWwC2zVAF1VAY17CE14v26rWY6r4UJwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v2
-	6r1I6r4UMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UMIIF0xvE42xK8VAvwI8IcI
-	k0rVWUJVWUCwCI42IY6I8E87Iv67AKxVW8JVWxJwCI42IY6I8E87Iv6xkF7I0E14v26r4U
-	JVWxJrUvcSsGvfC2KfnxnUUI43ZEXa7IU8yxR3UUUUU==
+X-CM-TRANSID:LxC2BwAXi_aYvD9k7TY6Ag--.1944S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7Ww4DuF1Utry5Cry7Jw1xuFg_yoW8ZrWUpF
+	97Aay5KFW2gFZ7CrW7C3s7JF1fKan7Ca4xCrya9wn5CFnxJF9xJFyDJrW5Arn5Jr409F4f
+	JFySvry5CF17Aw7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUmmb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
+	6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUGw
+	A2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxS
+	w2x7M28EF7xvwVC0I7IYx2IY67AKxVWUJVWUCwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxV
+	WxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_
+	Gr1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ew
+	Av7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY
+	6r1j6r4UM4x0Y48IcxkI7VAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7MxkF7I0En4kS14
+	v26r1q6r43MxkF7I0Ew4C26cxK6c8Ij28IcwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE
+	7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI
+	8E67AF67kF1VAFwI0_Wrv_Gr1UMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_
+	JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26F4j6r4UJwCI42IY6xAIw20EY4v20xvaj40_Jr
+	0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8Jr0_Cr1U
+	YxBIdaVFxhVjvjDU0xZFpf9x07j50eQUUUUU=
 X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
 X-CFilter-Loop: Reflected
 
 From: Petr Tesarik <petr.tesarik.ext@huawei.com>
 
-Do not walk the list of dynamically allocated bounce buffers if the
-list is empty. This avoids taking dma_io_tlb_dyn_lock for devices
-which do not use any dynamically allocated bounce buffers.
-
-When unmapping the last dynamically allocated bounce buffer, the
-flag is set to false as soon as possible to allow skipping the
-spinlock even before the list itself is updated.
+Move swiotlb initialization code to swiotlb.h. This change also
+allows to provide a stub implementation if swiotlb is not
+configured, getting rid of an #ifdef in driver core.
 
 Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
 ---
- include/linux/device.h  | 4 ++++
- include/linux/swiotlb.h | 6 +++++-
- kernel/dma/swiotlb.c    | 6 ++++++
- 3 files changed, 15 insertions(+), 1 deletion(-)
+ drivers/base/core.c     |  4 +---
+ include/linux/swiotlb.h | 12 ++++++++++++
+ 2 files changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/device.h b/include/linux/device.h
-index e12d6092bb9c..131b6db7fb3f 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -511,6 +511,9 @@ struct device_physical_location {
-  * @dma_io_tlb_dyn_slots:
-  *		Dynamically allocated bounce buffers for this device.
-  *		Not for driver use.
-+ * @dma_io_tlb_have_dyn:
-+ *		Does this device have any dynamically allocated bounce
-+ *		buffers? Not for driver use.
-  * @archdata:	For arch-specific additions.
-  * @of_node:	Associated device tree node.
-  * @fwnode:	Associated device node supplied by platform firmware.
-@@ -618,6 +621,7 @@ struct device {
- 	struct io_tlb_mem *dma_io_tlb_mem;
- 	spinlock_t dma_io_tlb_dyn_lock;
- 	struct list_head dma_io_tlb_dyn_slots;
-+	bool dma_io_tlb_have_dyn;
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index 6878dfcbf0d6..a5dc7c673102 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -3060,9 +3060,7 @@ void device_initialize(struct device *dev)
+     defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
+ 	dev->dma_coherent = dma_default_coherent;
  #endif
- 	/* arch specific additions */
- 	struct dev_archdata	archdata;
+-#ifdef CONFIG_SWIOTLB
+-	dev->dma_io_tlb_mem = &io_tlb_default_mem;
+-#endif
++	swiotlb_dev_init(dev);
+ }
+ EXPORT_SYMBOL_GPL(device_initialize);
+ 
 diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index e614aa0f4f64..9ca4812b5977 100644
+index bcef10e20ea4..b65b7330f7e5 100644
 --- a/include/linux/swiotlb.h
 +++ b/include/linux/swiotlb.h
-@@ -143,7 +143,11 @@ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
- 
- 	return mem &&
- 		(is_swiotlb_fixed(mem, paddr) ||
--		 (mem->allow_dyn && is_swiotlb_dyn(dev, paddr)));
-+		 /* Pairs with smp_store_release() in swiotlb_dyn_map()
-+		  * and swiotlb_dyn_unmap().
-+		  */
-+		 (smp_load_acquire(&dev->dma_io_tlb_have_dyn) &&
-+		  is_swiotlb_dyn(dev, paddr)));
+@@ -119,6 +119,15 @@ static inline bool is_swiotlb_force_bounce(struct device *dev)
+ 	return mem && mem->force_bounce;
  }
  
- static inline bool is_swiotlb_force_bounce(struct device *dev)
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 4899fb0e4331..9b4faed7ef8f 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -685,6 +685,9 @@ static phys_addr_t swiotlb_dyn_map(struct device *dev, phys_addr_t orig_addr,
- 
- 	spin_lock_irqsave(&dev->dma_io_tlb_dyn_lock, flags);
- 	list_add(&slot->node, &dev->dma_io_tlb_dyn_slots);
-+	if (!dev->dma_io_tlb_have_dyn)
-+		/* Pairs with smp_load_acquire() in is_swiotlb_buffer() */
-+		smp_store_release(&dev->dma_io_tlb_have_dyn, true);
- 	spin_unlock_irqrestore(&dev->dma_io_tlb_dyn_lock, flags);
- 
- 	return page_to_phys(slot->page);
-@@ -711,6 +714,9 @@ static void swiotlb_dyn_unmap(struct device *dev, phys_addr_t tlb_addr,
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&dev->dma_io_tlb_dyn_lock, flags);
-+	if (list_is_singular(&dev->dma_io_tlb_dyn_slots))
-+		/* Pairs with smp_load_acquire() in is_swiotlb_buffer() */
-+		smp_store_release(&dev->dma_io_tlb_have_dyn, false);
- 	slot = lookup_dyn_slot_locked(dev, tlb_addr);
- 	list_del(&slot->node);
- 	spin_unlock_irqrestore(&dev->dma_io_tlb_dyn_lock, flags);
++/**
++ * swiotlb_dev_init() - initialize swiotlb fields in &struct device
++ * @dev: device to be initialized
++ */
++static inline void swiotlb_dev_init(struct device *dev)
++{
++	dev->dma_io_tlb_mem = &io_tlb_default_mem;
++}
++
+ void swiotlb_init(bool addressing_limited, unsigned int flags);
+ void __init swiotlb_exit(void);
+ size_t swiotlb_max_mapping_size(struct device *dev);
+@@ -128,6 +137,9 @@ void __init swiotlb_adjust_size(unsigned long size);
+ static inline void swiotlb_init(bool addressing_limited, unsigned int flags)
+ {
+ }
++static inline void swiotlb_dev_init(struct device *dev)
++{
++}
+ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
+ {
+ 	return false;
 -- 
 2.25.1
 
