@@ -1,122 +1,306 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+Received: from frasgout11.his.huawei.com (frasgout11.his.huawei.com [14.137.139.23])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AEC715CD
-	for <iommu@lists.linux.dev>; Wed, 19 Apr 2023 02:40:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681872055; x=1713408055;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=s1n4TUCaTvsj1tO3ERxhVhLwpHBq/J7NSZHIspGt7hw=;
-  b=IYcenWdnvPvuQxCssSMeKkgLeF9hXGsvFO8Ho7MI0N0ePrF2rgrfjATE
-   3mHd35a98dRRGbpBHon0cZz1oQik7ikpNbxQ++3kI75KQ8e4zzWqjhQeb
-   LX+en91HSaPH8EVHeDv6oObk88ddNF3LMOMnVfJjL8gfk2KJKVJrOBXev
-   0pcuFg4e8Bmpb7+c2RxQyfs+1o1VglM0Wu/mTjdWxvX+RcLaltusbmmDn
-   Xff6Dag9kBUMt51WNe5PwIwUY4lpjBpLQZQZMUDwp/CDunewLR4eqgal6
-   20YdO3G/3PmUBtDQ+hAaZT81zh7TTh7mIruxveL9HUp0V+zrMtBHdg1ld
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10684"; a="373214547"
-X-IronPort-AV: E=Sophos;i="5.99,208,1677571200"; 
-   d="scan'208";a="373214547"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2023 19:40:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10684"; a="780703605"
-X-IronPort-AV: E=Sophos;i="5.99,208,1677571200"; 
-   d="scan'208";a="780703605"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by FMSMGA003.fm.intel.com with ESMTP; 18 Apr 2023 19:40:50 -0700
-Message-ID: <7e182125-f5ab-3201-e69d-b6c96eeede01@linux.intel.com>
-Date: Wed, 19 Apr 2023 10:40:46 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E88912F52
+	for <iommu@lists.linux.dev>; Wed, 19 Apr 2023 10:05:41 +0000 (UTC)
+Received: from mail02.huawei.com (unknown [172.18.147.229])
+	by frasgout11.his.huawei.com (SkyGuard) with ESMTP id 4Q1blW1QhNz9v7GZ
+	for <iommu@lists.linux.dev>; Wed, 19 Apr 2023 17:56:07 +0800 (CST)
+Received: from A2101119013HW2.china.huawei.com (unknown [10.45.152.239])
+	by APP1 (Coremail) with SMTP id LxC2BwAXi_aYvD9k7TY6Ag--.1944S4;
+	Wed, 19 Apr 2023 11:05:07 +0100 (CET)
+From: Petr Tesarik <petrtesarik@huaweicloud.com>
+To: Jonathan Corbet <corbet@lwn.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Airlie <airlied@gmail.com>,
+	Daniel Vetter <daniel@ffwll.ch>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Borislav Petkov <bp@suse.de>,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Zhen Lei <thunder.leizhen@huawei.com>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Kim Phillips <kim.phillips@amd.com>,
+	"Steven Rostedt (Google)" <rostedt@goodmis.org>,
+	Muchun Song <muchun.song@linux.dev>,
+	Ondrej Zary <linux@zary.sk>,
+	"Jason A. Donenfeld" <Jason@zx2c4.com>,
+	Petr Tesarik <petr.tesarik.ext@huawei.com>,
+	Hans de Goede <hdegoede@redhat.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Kees Cook <keescook@chromium.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Won Chung <wonchung@google.com>,
+	linux-doc@vger.kernel.org (open list:DOCUMENTATION),
+	linux-kernel@vger.kernel.org (open list),
+	dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
+	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS)
+Cc: Roberto Sassu <roberto.sassu@huawei.com>,
+	Kefeng Wang <wangkefeng.wang@huawei.com>,
+	petr@tesarici.cz
+Subject: [PATCH v2 2/7] swiotlb: Move code around in preparation for dynamic bounce buffers
+Date: Wed, 19 Apr 2023 12:03:54 +0200
+Message-Id: <2954d90769bb926271c22553ef57ec805fea7865.1681898595.git.petr.tesarik.ext@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1681898595.git.petr.tesarik.ext@huawei.com>
+References: <cover.1681898595.git.petr.tesarik.ext@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Cc: baolu.lu@linux.intel.com, "Tian, Kevin" <kevin.tian@intel.com>,
- LKML <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
- Joerg Roedel <joro@8bytes.org>,
- "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
- "vkoul@kernel.org" <vkoul@kernel.org>, Will Deacon <will@kernel.org>,
- David Woodhouse <dwmw2@infradead.org>, "Raj, Ashok" <ashok.raj@intel.com>,
- "Liu, Yi L" <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>,
- "Jiang, Dave" <dave.jiang@intel.com>, "Luck, Tony" <tony.luck@intel.com>,
- "Zanussi, Tom" <tom.zanussi@intel.com>
-Subject: Re: [PATCH v4 3/7] iommu: Support allocation of global PASIDs outside
- SVA
-Content-Language: en-US
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <20230407180554.2784285-1-jacob.jun.pan@linux.intel.com>
- <20230407180554.2784285-4-jacob.jun.pan@linux.intel.com>
- <BN9PR11MB5276D09F18BA65AD074777948C9A9@BN9PR11MB5276.namprd11.prod.outlook.com>
- <5882ee52-9657-250d-0474-13edffa7b6b9@linux.intel.com>
- <20230417094629.59fcfde6@jacob-builder>
- <a1a82bc0-9a7a-5363-cda8-a0226eff0073@linux.intel.com>
- <20230418160450.4ea7fb7d@jacob-builder>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230418160450.4ea7fb7d@jacob-builder>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:LxC2BwAXi_aYvD9k7TY6Ag--.1944S4
+X-Coremail-Antispam: 1UD129KBjvJXoW3JryUur45Aw47Kw4fKF4kZwb_yoW3uFW8pF
+	1ft3WrtFsxJF1xC397uw48JF1Fkw1kG343Caya9ryF9Fy3Xrn0vFZ8CrW5WayFvFWv9F4U
+	Xr98uF4rKF47Jr7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUmGb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
+	6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUXw
+	A2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxS
+	w2x7M28EF7xvwVC0I7IYx2IY67AKxVWUJVWUCwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxV
+	W8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E14v2
+	6r4UJVWxJr1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2
+	WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkE
+	bVWUJVW8JwACjcxG0xvY0x0EwIxGrwACI402YVCY1x02628vn2kIc2xKxwCY1x0262kKe7
+	AKxVWUtVW8ZwCY1x0264kExVAvwVAq07x20xyl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC
+	6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWw
+	C2zVAF1VAY17CE14v26rWY6r4UJwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j
+	6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UMIIF0xvE42xK8VAvwI8IcIk0rV
+	WUJVWUCwCI42IY6I8E87Iv67AKxVW8JVWxJwCI42IY6I8E87Iv6xkF7I0E14v26r4UJVWx
+	JrUvcSsGvfC2KfnxnUUI43ZEXa7IU8go7tUUUUU==
+X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
+X-CFilter-Loop: Reflected
 
-On 4/19/23 7:04 AM, Jacob Pan wrote:
-> On Tue, 18 Apr 2023 10:06:12 +0800, Baolu Lu<baolu.lu@linux.intel.com>
-> wrote:
-> 
->> On 4/18/23 12:46 AM, Jacob Pan wrote:
->>> On Wed, 12 Apr 2023 09:37:48 +0800, Baolu Lu<baolu.lu@linux.intel.com>
->>> wrote:
->>>    
->>>> On 4/11/23 4:02 PM, Tian, Kevin wrote:
->>>>>> From: Jacob Pan<jacob.jun.pan@linux.intel.com>
->>>>>> Sent: Saturday, April 8, 2023 2:06 AM
->>>>>> @@ -28,8 +26,8 @@ static int iommu_sva_alloc_pasid(struct mm_struct
->>>>>> *mm, ioasid_t min, ioasid_t ma
->>>>>>     		goto out;
->>>>>>     	}
->>>>>>
->>>>>> -	ret = ida_alloc_range(&iommu_global_pasid_ida, min, max,
->>>>>> GFP_KERNEL);
->>>>>> -	if (ret < min)
->>>>>> +	ret = iommu_alloc_global_pasid(min, max);
->>>>> I wonder whether this can take a device pointer so
->>>>> dev->iommu->max_pasids is enforced inside the alloc function.
->>>> Agreed. Instead of using the open code, it looks better to have a
->>>> helper like dev_iommu_max_pasids().
->>> yes, probably export dev_iommu_get_max_pasids(dev)?
->>>
->>> But if I understood Kevin correctly, he's also suggesting that the
->>> interface should be changed to iommu_alloc_global_pasid(dev), my
->>> concern is that how do we use this function to reserve RID_PASID which
->>> is not specific to a device?
->> Probably we can introduce a counterpart dev->iommu->min_pasids, so that
->> there's no need to reserve the RID_PASID. At present, we can set it to 1
->> in the core as ARM/AMD/Intel all treat PASID 0 as a special pasid.
->>
->> In the future, if VT-d supports using arbitrary number as RID_PASID for
->> any specific device, we can call iommu_alloc_global_pasid() for that
->> device.
->>
->> The device drivers don't know and don't need to know the range of viable
->> PASIDs, so the @min, @max parameters seem to be unreasonable.
-> Sure, that is reasonable. Another question is whether global PASID
-> allocation is always for a single device, if not I prefer to keep the
-> current iommu_alloc_global_pasid() and add a wrapper
-> iommu_alloc_global_pasid_dev(dev) to extract the @min, @max. OK?
+From: Petr Tesarik <petr.tesarik.ext@huawei.com>
 
-No problem from the code perspective. But we only need one API.
+To prepare for the introduction of dynamically allocated bounce
+buffers, separate out common code and code which handles non-dynamic
+(aka fixed) bounce buffers.
 
-We can now add the kAPI that we really need. In this series, the idxd
-driver wants to allocate a global PASID for its kernel dma with pasid
-purpose. So, iommu_alloc_global_pasid_dev() seems to be sufficient.
+No functional change, but this commit should make the addition of
+dynamic allocations easier to review.
 
-If, in the future, we will have a need to provide global pasid
-allocation other than device drivers, we can easily add the variants.
+Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
+---
+ include/linux/swiotlb.h |  31 ++++++++++-
+ kernel/dma/swiotlb.c    | 110 +++++++++++++++++++++++++++++++++-------
+ 2 files changed, 122 insertions(+), 19 deletions(-)
 
-Best regards,
-baolu
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index b65b7330f7e5..a0bb6b30b17c 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -105,11 +105,40 @@ struct io_tlb_mem {
+ };
+ extern struct io_tlb_mem io_tlb_default_mem;
+ 
++/**
++ * is_swiotlb_fixed() - check if a physical address belongs to a swiotlb slot
++ * @mem:	relevant swiotlb pool
++ * @paddr:	physical address within the DMA buffer
++ *
++ * Check if @paddr points into a fixed bounce buffer slot.
++ * This check should be as fast as possible.
++ *
++ * Return:
++ * * %true if @paddr points into a @mem fixed slot
++ * * %false otherwise
++ */
++static inline bool is_swiotlb_fixed(struct io_tlb_mem *mem, phys_addr_t paddr)
++{
++	return paddr >= mem->start && paddr < mem->end;
++}
++
++/**
++ * is_swiotlb_buffer() - check if a physical address is allocated from the
++ *                       swiotlb pool
++ * @dev:	device which has mapped the buffer
++ * @paddr:	physical address within the DMA buffer
++ *
++ * Check if @paddr points into a bounce buffer.
++ *
++ * Return:
++ * * %true if @paddr points into a bounce buffer
++ * * %false otherwise
++ */
+ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
+ {
+ 	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
+ 
+-	return mem && paddr >= mem->start && paddr < mem->end;
++	return mem && is_swiotlb_fixed(mem, paddr);
+ }
+ 
+ static inline bool is_swiotlb_force_bounce(struct device *dev)
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index dac42a2ad588..2f09a4ed4215 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -78,6 +78,10 @@ phys_addr_t swiotlb_unencrypted_base;
+ static unsigned long default_nslabs = IO_TLB_DEFAULT_SIZE >> IO_TLB_SHIFT;
+ static unsigned long default_nareas;
+ 
++static void swiotlb_copy(struct device *dev, phys_addr_t orig_addr,
++		unsigned char *vaddr, size_t size, size_t alloc_size,
++		unsigned int tlb_offset, enum dma_data_direction dir);
++
+ /**
+  * struct io_tlb_area - IO TLB memory area descriptor
+  *
+@@ -523,7 +527,6 @@ static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size
+ 	int index = (tlb_addr - mem->start) >> IO_TLB_SHIFT;
+ 	phys_addr_t orig_addr = mem->slots[index].orig_addr;
+ 	size_t alloc_size = mem->slots[index].alloc_size;
+-	unsigned long pfn = PFN_DOWN(orig_addr);
+ 	unsigned char *vaddr = mem->vaddr + tlb_addr - mem->start;
+ 	unsigned int tlb_offset, orig_addr_offset;
+ 
+@@ -540,6 +543,34 @@ static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size
+ 	}
+ 
+ 	tlb_offset -= orig_addr_offset;
++	swiotlb_copy(dev, orig_addr, vaddr, size, alloc_size, tlb_offset, dir);
++}
++
++/**
++ * swiotlb_copy() - copy swiotlb buffer content, checking for overflows.
++ * @dev:	device which has mapped the bounce buffer
++ * @orig_addr:	physical address of the original buffer
++ * @vaddr:	virtual address inside the bounce buffer
++ * @size:	number of bytes to copy
++ * @alloc_size:	total allocated size of the bounce buffer
++ * @tlb_offset:	offset within the bounce buffer
++ * @dir:	direction of the data transfer
++ *
++ * If @dir is %DMA_TO_DEVICE, copy data from the original buffer to the
++ * bounce buffer, otherwise copy from the bounce buffer to the original
++ * buffer.
++ *
++ * The original buffer may be in high memory; that's why @orig_addr is
++ * a physical address. Note that this is the address of the beginning
++ * of the bounce buffer. Copying starts at offset @tlb_offset. This is
++ * needed to check accesses beyond the allocated size.
++ */
++static void swiotlb_copy(struct device *dev, phys_addr_t orig_addr,
++		unsigned char *vaddr, size_t size, size_t alloc_size,
++		unsigned int tlb_offset, enum dma_data_direction dir)
++{
++	unsigned long pfn = PFN_DOWN(orig_addr);
++
+ 	if (tlb_offset > alloc_size) {
+ 		dev_WARN_ONCE(dev, 1,
+ 			"Buffer overflow detected. Allocation size: %zu. Mapping size: %zu+%u.\n",
+@@ -734,15 +765,65 @@ static unsigned long mem_used(struct io_tlb_mem *mem)
+ 	return used;
+ }
+ 
++/**
++ * swiotlb_fixed_map() - allocate a bounce buffer from fixed slots
++ * @dev:	device which maps the buffer
++ * @orig_addr:	address of the original buffer
++ * @alloc_size:	total size of the original buffer
++ * @alloc_align_mask:
++ *		required physical alignment of the I/O buffer
++ * @attrs:	optional DMA attributes for the map operation
++ *
++ * Search for a suitable slot or sequence of slots and initialize them
++ * for use with the original buffer.
++ *
++ * Return: Physical address of the bounce buffer, or %DMA_MAPPING_ERROR.
++ */
++static phys_addr_t swiotlb_fixed_map(struct device *dev, phys_addr_t orig_addr,
++			size_t alloc_size, unsigned int alloc_align_mask,
++			unsigned long attrs)
++{
++	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
++	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
++	int index = swiotlb_find_slots(dev, orig_addr,
++				       alloc_size + offset, alloc_align_mask);
++	unsigned int i;
++
++	if (index == -1)
++		return (phys_addr_t)DMA_MAPPING_ERROR;
++
++	/*
++	 * Save away the mapping from the original address to the DMA address.
++	 * This is needed when we sync the memory.  Then we sync the buffer if
++	 * needed.
++	 */
++	for (i = 0; i < nr_slots(alloc_size + offset); i++)
++		mem->slots[index + i].orig_addr = slot_addr(orig_addr, i);
++	return slot_addr(mem->start, index) + offset;
++}
++
++/**
++ * swiotlb_tbl_map_single() - map DMA buffer to a bounce buffer
++ * @dev:	device which maps the buffer
++ * @orig_addr:	address of the original buffer
++ * @mapping_size: size of the original buffer to be synced now
++ * @alloc_size:	total size of the original buffer
++ * @alloc_align_mask:
++ *		required physical alignment of the I/O buffer
++ * @dir:	direction of the data transfer
++ * @attrs:	optional DMA attributes for the map operation
++ *
++ * Create a mapping of the DMA buffer into a bounce buffer and copy the
++ * original data.
++ *
++ * Return: Physical address of the bounce buffer, or %DMA_MAPPING_ERROR.
++ */
+ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 		size_t mapping_size, size_t alloc_size,
+ 		unsigned int alloc_align_mask, enum dma_data_direction dir,
+ 		unsigned long attrs)
+ {
+ 	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
+-	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
+-	unsigned int i;
+-	int index;
+ 	phys_addr_t tlb_addr;
+ 
+ 	if (!mem || !mem->nslabs) {
+@@ -760,24 +841,17 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 		return (phys_addr_t)DMA_MAPPING_ERROR;
+ 	}
+ 
+-	index = swiotlb_find_slots(dev, orig_addr,
+-				   alloc_size + offset, alloc_align_mask);
+-	if (index == -1) {
++	tlb_addr = swiotlb_fixed_map(dev, orig_addr, alloc_size,
++				     alloc_align_mask, attrs);
++
++	if (tlb_addr == (phys_addr_t)DMA_MAPPING_ERROR) {
+ 		if (!(attrs & DMA_ATTR_NO_WARN))
+ 			dev_warn_ratelimited(dev,
+-	"swiotlb buffer is full (sz: %zd bytes), total %lu (slots), used %lu (slots)\n",
+-				 alloc_size, mem->nslabs, mem_used(mem));
+-		return (phys_addr_t)DMA_MAPPING_ERROR;
++				"swiotlb buffer is full (sz: %zd bytes), total %lu (slots), used %lu (slots)\n",
++				alloc_size, mem->nslabs, mem_used(mem));
++		return tlb_addr;
+ 	}
+ 
+-	/*
+-	 * Save away the mapping from the original address to the DMA address.
+-	 * This is needed when we sync the memory.  Then we sync the buffer if
+-	 * needed.
+-	 */
+-	for (i = 0; i < nr_slots(alloc_size + offset); i++)
+-		mem->slots[index + i].orig_addr = slot_addr(orig_addr, i);
+-	tlb_addr = slot_addr(mem->start, index) + offset;
+ 	/*
+ 	 * When dir == DMA_FROM_DEVICE we could omit the copy from the orig
+ 	 * to the tlb buffer, if we knew for sure the device will
+-- 
+2.25.1
+
