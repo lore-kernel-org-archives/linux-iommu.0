@@ -1,151 +1,77 @@
-Received: from frasgout12.his.huawei.com (frasgout12.his.huawei.com [14.137.139.154])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB02A3236
-	for <iommu@lists.linux.dev>; Wed, 19 Apr 2023 10:23:59 +0000 (UTC)
-Received: from mail02.huawei.com (unknown [172.18.147.229])
-	by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4Q1bjh5RGtz9xFn1
-	for <iommu@lists.linux.dev>; Wed, 19 Apr 2023 17:54:32 +0800 (CST)
-Received: from A2101119013HW2.china.huawei.com (unknown [10.45.152.239])
-	by APP1 (Coremail) with SMTP id LxC2BwAXi_aYvD9k7TY6Ag--.1944S2;
-	Wed, 19 Apr 2023 11:04:29 +0100 (CET)
-From: Petr Tesarik <petrtesarik@huaweicloud.com>
-To: Jonathan Corbet <corbet@lwn.net>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 349C279DE
+	for <iommu@lists.linux.dev>; Wed, 19 Apr 2023 16:06:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46F4AC4339B;
+	Wed, 19 Apr 2023 16:06:07 +0000 (UTC)
+Date: Wed, 19 Apr 2023 17:06:04 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Isaac Manjarres <isaacmanjarres@google.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>,
+	Arnd Bergmann <arnd@arndb.de>, Christoph Hellwig <hch@lst.de>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Ard Biesheuvel <ardb@kernel.org>,
+	Saravana Kannan <saravanak@google.com>,
+	Alasdair Kergon <agk@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Joerg Roedel <joro@8bytes.org>, Mark Brown <broonie@kernel.org>,
+	Mike Snitzer <snitzer@kernel.org>,
 	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Airlie <airlied@gmail.com>,
-	Daniel Vetter <daniel@ffwll.ch>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Borislav Petkov <bp@suse.de>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>,
-	Zhen Lei <thunder.leizhen@huawei.com>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-	Kim Phillips <kim.phillips@amd.com>,
-	"Steven Rostedt (Google)" <rostedt@goodmis.org>,
-	Muchun Song <muchun.song@linux.dev>,
-	Ondrej Zary <linux@zary.sk>,
-	"Jason A. Donenfeld" <Jason@zx2c4.com>,
-	Petr Tesarik <petr.tesarik.ext@huawei.com>,
-	Hans de Goede <hdegoede@redhat.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Kees Cook <keescook@chromium.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Won Chung <wonchung@google.com>,
-	linux-doc@vger.kernel.org (open list:DOCUMENTATION),
-	linux-kernel@vger.kernel.org (open list),
-	dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
-	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS)
-Cc: Roberto Sassu <roberto.sassu@huawei.com>,
-	Kefeng Wang <wangkefeng.wang@huawei.com>,
-	petr@tesarici.cz
-Subject: [PATCH v2 0/7] Allow dynamic allocation of software IO TLB bounce buffers
-Date: Wed, 19 Apr 2023 12:03:52 +0200
-Message-Id: <cover.1681898595.git.petr.tesarik.ext@huawei.com>
-X-Mailer: git-send-email 2.25.1
+	Robin Murphy <robin.murphy@arm.com>, linux-mm@kvack.org,
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	Petr Tesarik <petrtesarik@huaweicloud.com>
+Subject: Re: [PATCH v3 00/13] mm, dma, arm64: Reduce ARCH_KMALLOC_MINALIGN to
+ 8
+Message-ID: <ZEARbKMfMS8KdkhJ@arm.com>
+References: <20221106220143.2129263-1-catalin.marinas@arm.com>
+ <ZBNiN9CR2F/fvUTh@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:LxC2BwAXi_aYvD9k7TY6Ag--.1944S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxJw18WF1rGrW5WFyrCry5CFg_yoW5Ww15pF
-	Wak34jvrn8tryxu3yxCr4xWa4rGan5ZFW7Ga9Yvwn5ZrW5urn2vw12yrW3J3s8Gr4fXF4Y
-	qF1qvr15CFyrur7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUvlb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
-	6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
-	vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7Cj
-	xVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I
-	0E14v26r4UJVWxJr1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8C
-	rVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4
-	IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACI402YVCY1x02628vn2kIc2xKxwCY1x02
-	64kExVAvwVAq07x20xyl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2
-	IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v2
-	6rWY6r4UJwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI
-	8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2
-	z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8Jr0_Cr1UYxBIdaVFxhVjvj
-	DU0xZFpf9x07jeKZXUUUUU=
-X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZBNiN9CR2F/fvUTh@google.com>
 
-From: Petr Tesarik <petr.tesarik.ext@huawei.com>
+On Thu, Mar 16, 2023 at 11:38:47AM -0700, Isaac Manjarres wrote:
+> On Sun, Nov 06, 2022 at 10:01:30PM +0000, Catalin Marinas wrote:
+> > Patches 7-12 change some ARCH_KMALLOC_MINALIGN uses to
+> > ARCH_DMA_MINALIGN. The crypto changes have been rejected by Herbert
+> > previously but I still included them here until the crypto code is
+> > refactored.
+> 
+> Herbert merged the changes to the crypto code that were required to be
+> able to safely lower the minimum alignment for kmalloc in [1].
 
-The goal of my work is to provide more flexibility in the sizing of
-SWIOTLB.
+Yes, I saw this.
 
-The software IO TLB was designed with these assumptions:
+> Given this, I don't think there's anything blocking this series from
+> being merged. The requirement for SWIOTLB to get to the minimum
+> kmalloc alignment down to 8 bytes shouldn't prevent this series from
+> being merged, as the amount of memory that is allocated for SWIOTLB
+> can be configured through the commandline to minimize the impact of
+> having SWIOTLB memory. Additionally, even if no SWIOTLB is present,
+> this series still offers memory savings on a lot of ARM64 platforms
+> by using the cache line size as the minimum alignment for kmalloc.
 
-1. It would not be used much, especially on 64-bit systems.
-2. A small fixed memory area (64 MiB by default) is sufficient to
-   handle the few cases which require a bounce buffer.
-3. 64 MiB is little enough that it has no impact on the rest of the
-   system.
+Actually, there's some progress on the swiotlb front to allow dynamic
+allocation. I haven't reviewed the series yet (I wasn't aware of it
+until v2) but at a quick look, it limits the dynamic allocation to
+bouncing buffers of at least a page size. Maybe this can be later
+improved for buffers below ARCH_DMA_MINALIGN.
 
-First, if SEV is active, all DMA must be done through shared
-unencrypted pages, and SWIOTLB is used to make this happen without
-changing device drivers. The software IO TLB size is increased to
-6% of total memory in sev_setup_arch(), but that is more of an
-approximation. The actual requirements may vary depending on the
-amount of I/O and which drivers are used. These factors may not be
-know at boot time, i.e. when SWIOTLB is allocated.
+https://lore.kernel.org/r/cover.1681898595.git.petr.tesarik.ext@huawei.com
 
-Second, other colleagues have noticed that they can reliably get
-rid of occasional OOM kills on an Arm embedded device by reducing
-the SWIOTLB size. This can be achieved with a kernel parameter, but
-determining the right value puts additional burden on pre-release
-testing, which could be avoided if SWIOTLB is allocated small and
-grows only when necessary.
+> Can you please rebase this series so that it can be merged?
 
-Changes from v1-devel-v7:
-- Add comments to acquire/release barriers
-- Fix whitespace issues reported by checkpatch.pl
-
-Changes from v1-devel-v6:
-- Provide long description of functions
-- Fix kernel-doc (Returns: to Return:)
-- Rename __lookup_dyn_slot() to lookup_dyn_slot_locked()
-
-Changes from RFC:
-- Track dynamic buffers per device instead of per swiotlb
-- Use a linked list instead of a maple tree
-- Move initialization of swiotlb fields of struct device to a
-  helper function
-- Rename __lookup_dyn_slot() to lookup_dyn_slot_locked()
-- Introduce per-device flag if dynamic buffers are in use
-- Add one more user of DMA_ATTR_MAY_SLEEP
-- Add kernel-doc comments for new (and some old) code
-- Properly escape '*' in dma-attributes.rst
-
-Petr Tesarik (7):
-  swiotlb: Use a helper to initialize swiotlb fields in struct device
-  swiotlb: Move code around in preparation for dynamic bounce buffers
-  dma-mapping: introduce the DMA_ATTR_MAY_SLEEP attribute
-  swiotlb: Dynamically allocated bounce buffers
-  swiotlb: Add a boot option to enable dynamic bounce buffers
-  drm: Use DMA_ATTR_MAY_SLEEP from process context
-  swiotlb: per-device flag if there are dynamically allocated buffers
-
- .../admin-guide/kernel-parameters.txt         |   6 +-
- Documentation/core-api/dma-attributes.rst     |  10 +
- drivers/base/core.c                           |   4 +-
- drivers/gpu/drm/drm_gem_shmem_helper.c        |   2 +-
- drivers/gpu/drm/drm_prime.c                   |   2 +-
- include/linux/device.h                        |  12 +
- include/linux/dma-mapping.h                   |   6 +
- include/linux/swiotlb.h                       |  54 ++-
- kernel/dma/swiotlb.c                          | 382 ++++++++++++++++--
- 9 files changed, 443 insertions(+), 35 deletions(-)
+I rebased it locally but the last stumbling block is sorting out the
+iommu bouncing. I was hoping Robin Murphy can lend a hand but he's been
+busy with other bits. I'll repost the series at 6.4-rc1.
 
 -- 
-2.25.1
-
+Catalin
