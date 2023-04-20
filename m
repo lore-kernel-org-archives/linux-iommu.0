@@ -1,34 +1,34 @@
 Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CE558F61
-	for <iommu@lists.linux.dev>; Thu, 20 Apr 2023 18:51:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CAFB8F68
+	for <iommu@lists.linux.dev>; Thu, 20 Apr 2023 18:51:54 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kMTLhMsMndJ5UBeysqYYSlE0PsXWW5gTT+EyiehzcdIAffMx2WgHezQ3RDmNnAzFjw3yfRQDGjk5YxY818Bf/cmSFJ3u1agi/t24H/4exUl3CQwi/OQOZurEFILtAxX1dP5vgK6xfoLLfv6yuktAQ/PYJpApn3gWCkn0kNjUyaXSVgkb6pP1V8VIijqG8p6iqz1Phb9dZumPeF+BGwe9/XvmMJwu+yNhVwa2leQ81fF++DLqbPahfAvw46prw7wdPtjoJHJtB/fTqm1hbxT6BlKWiVh7aYzE55K5TRl9Q/hT9zlrdk3pT2/ZM0jFSZT9/KBtYWAz6Apx99Y+y8Ftug==
+ b=aFgP3N9UBgvdKGAdfWvK+igH/3sv+EMSvWneJaiyzQCRTetgp73IPNSSuNLHqB6cokQypofpMCeAopPyaYYUoVtbjSqmw/4lTi5xKLSTy8UIEohDnOhg5d91Idk2AEmPjSYrVD0M9CBlzCY5Kzaj6siTXY15dQdKNfTosjc2lw/OyWLJy/QGDQGFuF2vmqgOpdkV4KTNx5GEW0Zu95Gsj+16svY1VkgXNpAWBY4ilv1Xrag3RugGqKlxzmitD/QKixngulg39+qcs2SwRJf5yjymnYTA06nHC8mCPvEH1aP3bVi/TyZE3BjkuPpr9VmCWd/1f7mufBndZKIOVHcLlA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PotPaQfPH4+45IYRwWk4PvOt5jfLt720n3UICRNI6Uc=;
- b=NCGApNXxwqS2INjhOl7Ct7tLab/aTXCiKWZe8TWoLjq8Chxsyb2eEYU9pywjlJ7I+f3NFjgJYP+BuOrd5vzOGgVo1nIdtlRo1FKzdrvq9YAtbW9FzcgcRxmvTznuG5rhdbc7LfySShv/HGIoUjTrQJ1k+U2jfBTP60xioUTI81TcvdDp/EzZU4lWauuunY3rKaNyETD83W5SnYTV9PBsc8w4rTBdyEAjjgXOeA7HaoDQlaFgyySyKMXjcaTR5y2L+vxESRNgibnpgR1EnVu+JRmylVFszQnWv8eQu93gDY1cTIdy8vrxAFo/p2ccWMPkIKBNwESKILLzDZyaGd4WXw==
+ bh=7LrdpKynyvC2fkflYtlVdZXliUnXP3yg4qYyvtVteIY=;
+ b=TGrBN40+fIZ97unBvQ+c3ZtvwHZwXQ+7GTeSnAA5uEVq3AZYnGwhJI+Yn/Y7D0sKSa9XiqbNjFbHSZ5lOSjne0F9k5FUxAkMvocXLI2nHJBoQjlxiXcSduRQyiPuJ6B9e3P1DQ8oXef8fhewNHKHjPP58JfPgnJeFyTIrC9Ao2uXX68N8GoynZruqUeyFM7HJ8+BL4BRhxMb9CPPpWt88W27l7sp2khaqkFBD2IzY2Q0RuGfTIYTu5Xk9xnVPF/quCazWc+VrpyZglve4wvScxh/XY4p5Krs6nJTNaAduVFHmYSbzgc86Sq7k/PKuPOqeM5kJWQVWnCt8kPcHa42KQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PotPaQfPH4+45IYRwWk4PvOt5jfLt720n3UICRNI6Uc=;
- b=JrZhBSlojtgSxfaHCaO54tvC+XTcNtaq91BjXziqflzw9GA5gMkNejeUwKaDRUMNFruxKkLXAlwzGfhJ2LFTQNv7ZfIGEobPoGlXXy0SQBLOfG8DR7OWYp6BUKRwXRRzmQRsch2Hnyd1tOBIohymbxQRLNLaJ8BlUYfGijWKlNokRJRpplUDD9q9tJu8PiOperlbnu7rA+End9kRIz6jtPMoiDaq04q6nzjQQ19wTV8wbreiq3ZNcN7s1bh9tFjMAw5pSoI5gRk09ot8GYsACBZpdLiKyTPZ3IKVY95doEyMSJiWHzz13ayVWTNfNilGaPt3YXdQreCXO46P7LqXUA==
+ bh=7LrdpKynyvC2fkflYtlVdZXliUnXP3yg4qYyvtVteIY=;
+ b=foLRGjHUfEG7DLAUSt+7piEigep7qnRiSu7Xfgr9xwKfZ0S4URErCpi83mYZPL6lirl8bR8c5WgEfQyOyMhc8q2HURwp3x9wW1rTiqIBKLoVmTy1CmVPiaF8Ogl7FVE+mZ2gSF+9FJSV/ruOgqdhoL9QCB0QWmkUTCQKT6fTk5QyhWN6ODtedHLWK383ZavxmEY+pR7r+OhZT5vEGoN9rSLR7uv5xkFgOdnv7BCvFILZcWfjiV2pPOh/K9jwvMGrNNb3nPX65/xjqFf3YHocdqArB2IduthZXYYyCbAN6tDdVFInvm06ypMc+lOYpRH6OwhYTyj0QWVez7onf6ntBA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
  by MW3PR12MB4553.namprd12.prod.outlook.com (2603:10b6:303:2c::19) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.22; Thu, 20 Apr
- 2023 18:51:44 +0000
+ 2023 18:51:45 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6319.020; Thu, 20 Apr 2023
- 18:51:44 +0000
+ 18:51:45 +0000
 From: Jason Gunthorpe <jgg@nvidia.com>
 To: iommu@lists.linux.dev,
 	linux-kselftest@vger.kernel.org
@@ -39,15 +39,15 @@ Cc: Lu Baolu <baolu.lu@linux.intel.com>,
 	Matthew Rosato <mjrosato@linux.ibm.com>,
 	Nicolin Chen <nicolinc@nvidia.com>,
 	Yi Liu <yi.l.liu@intel.com>
-Subject: [PATCH v6 05/19] iommufd: Keep track of each device's reserved regions instead of groups
-Date: Thu, 20 Apr 2023 15:51:20 -0300
-Message-Id: <5-v6-fdb604df649a+369-iommufd_alloc_jgg@nvidia.com>
+Subject: [PATCH v6 09/19] iommufd: Add enforced_cache_coherency to iommufd_hw_pagetable_alloc()
+Date: Thu, 20 Apr 2023 15:51:24 -0300
+Message-Id: <9-v6-fdb604df649a+369-iommufd_alloc_jgg@nvidia.com>
 In-Reply-To: <0-v6-fdb604df649a+369-iommufd_alloc_jgg@nvidia.com>
 References:
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: BL0PR03CA0009.namprd03.prod.outlook.com
- (2603:10b6:208:2d::22) To LV2PR12MB5869.namprd12.prod.outlook.com
+X-ClientProxiedBy: BLAPR03CA0104.namprd03.prod.outlook.com
+ (2603:10b6:208:32a::19) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -57,174 +57,160 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MW3PR12MB4553:EE_
-X-MS-Office365-Filtering-Correlation-Id: a0d2774a-1bad-4600-3128-08db41d0457d
+X-MS-Office365-Filtering-Correlation-Id: 15ac0831-d738-49eb-906b-08db41d0459e
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	ApZKffhTx0UoWfnCM4T/OQXMwLs1Lvc8UqREuXSvEnpD/ZOivlJruAc5fBpDi5totLUfQNr4eI6f2TYVSvewP0TFL4TsM6MNeIPyzBZq/J6B8Li10zR/JXTxouJnGlcRq06HprUxHrEdl22cKT79/rbLjbefFtgiqGJQsXXW6mmV6592vsfR7l7V7HriR3DYd8jgizXQ2DZ6yt1gUp6L9Fj2X+TdzE9dagAR17n3jj2ffIhIBhSYYBh61t6fkXqV6hB5wy4mgIhDd5MpNGXOXvC7LBlm+yDTTN3LJd75J8eARfhu3pj4AuXW1AqY7CmD804PQj1BfMxZyL0Bk56H4trnZpTQ676f/bxXsiDuzr5dNuOTy+wiWpO80QVte0GNd1IRsm65kihGQvycx3cEYPCCaCWHObbbeSRezG/SXyTFNecYiso3YCTkF9jdJZ/d89KpTf67/TmPiOiJHaa2vMiCYwOqXTbcSeOyLHnYWGr3zeL1Ue2mRBZrZDJCVndicjezXntvlrbI5iQeDev+rL9IjMoUrg+3ufllBLIyI/o5HmarLPragknhTSeKeJ3EiDoy+ZNyk2jnVtTSJ0jZTATz/W5Y1Dl+iRGdoLUEUDg=
+	Xr1eA1sZpgMQJjt50uF+FRlMapAO7G/cXdL6GeFz+eQH8w8r6TwiaRhPrmHQtel8x6nc58LfmhfVVheWjWazOtQYu0Y7oATxG1poYTxaxOm07AFY5q9aa7EQ8napm5p6YL7hPepvpIJto1eJgsXDUNL8uzb7Ni6Sm1l2ma0pUFLNIyAQvTxlSYqio4wdBZB9GuaRO9r23z2Xw36KbidEhcZjrdh0uW/nUC24kqwKVh04nurTV//rkCg+ff3VREj1X2KBM1bg5U9UqGDM+eCwxUyKM67g5wde8uUmRJd24AgZQUdKWtnVemZ/H1uicFj4e/uSpS6oqTJvLbuvxOHEvTaT7TVGSdhO4BBON5U3JU89mHiaRsyzrb+QCIQCJ9HHpBOlkfweLR+HV6OfQDyowkGVIh5zPmTmj99Bnzvcfz+e0e3cCOQvziq6vxlBKdyPcWbv1YXmbVK/FJbCygQmFs/aTg8HplvBbGyExjq7XFSHU0I375s7cXxpE9LXt9zUJhI9/e7FxuAdAY1+FqnMsLetBUsW5AV7UJGTw4Zr5Q4ZPKPUJfbFpS2mD3MgMJUnWiZ8q3o2cotATxKUhS5SXhL1Bk7l4PoguU7US/D5hFo=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(396003)(39860400002)(346002)(376002)(136003)(451199021)(54906003)(4326008)(316002)(66946007)(66556008)(66476007)(478600001)(6666004)(6486002)(5660300002)(8936002)(41300700001)(8676002)(2906002)(86362001)(36756003)(38100700002)(2616005)(6512007)(186003)(6506007)(26005)(83380400001)(66899021)(4216001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(396003)(39860400002)(346002)(376002)(136003)(451199021)(54906003)(4326008)(316002)(66946007)(66556008)(66476007)(478600001)(6666004)(6486002)(5660300002)(8936002)(41300700001)(8676002)(2906002)(86362001)(36756003)(38100700002)(2616005)(6512007)(186003)(6506007)(26005)(83380400001)(4216001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?Cr6PPZVV7aRwlk7LZW63TWLq0QycZFsmqQTxM63rfHdasaJh2TPCKpZnt09g?=
- =?us-ascii?Q?eG+qxy3tvZJURwguLl99H55evP2iL9+vD/GqXrfJmOg3zf4RdK0NNTDNDa3t?=
- =?us-ascii?Q?9isR0RBAhlC0r00dgfs2vPmLkx9bRymqSWa32gvgovOxavrFBCXlTyS2o/cW?=
- =?us-ascii?Q?+goOM+bg99jtqrSGAWh858t8VO+ppDKd6o4IFTN8Q+bMIcHZPDskdenck5cV?=
- =?us-ascii?Q?pUPhZiex0WuMtP5C4xT3Ma1AiodEbGw875trYbpLvJv3h/WEPASKnj3rd05r?=
- =?us-ascii?Q?+qlLDalvSYxynDXlew/fJhqWNRcL2f1rfuVI95vmzSWPTCElZtop9O8gMvCE?=
- =?us-ascii?Q?Bn8qZOwhPmLciWuS3fdn1B+mV5x7sEr4ILTl5QK8psm2wLtSqH20LiHmK2MR?=
- =?us-ascii?Q?RFjx1dDOJfEMbVgw373qMA4DmJ6ttaXwzJp1cAwHcYOkrnrDK964foHpa4Cn?=
- =?us-ascii?Q?FQHMLF25TNDbcRl7OibGFdrLzGPd2QfXQF0SK4s/wq7pCf4z5eq4dtvSaM5U?=
- =?us-ascii?Q?jXzq/4t6ar6KTHbQ4aL480GtSbJKBY48yxAEBmR/toOgCc8BIPE8HNmEpLvL?=
- =?us-ascii?Q?b2s0zLAi2gHnFB/Qbc/ZDgx89ETxHQep1BhdkRA8UXc2SsBMimfhnV8EV4W0?=
- =?us-ascii?Q?vbjwn9u3AKCJmhptBkE/BLIa9nGxlflPeOxRAXBnGi9gz5UnZ+IOOKPeK4Yg?=
- =?us-ascii?Q?M6/F5M3AJ1DkTVeE3ngdTwLPGvBt0dNZPZkXTZ/f6MGBp9uhDQyIa92Khlhn?=
- =?us-ascii?Q?sPSBSfwVQn8OAX5yo+a4KiP6i8XJSsIKqToCEtxIy88ILHBKdTh4BW9Z+bb9?=
- =?us-ascii?Q?Z+udoZEn3D7+pcWR1+j+qsubGM33kKlcXWwuWPmA450CZVLa9GKj8htlwPvY?=
- =?us-ascii?Q?+TMfkY74cBHYzI4UtdbqFuKkSoVO+nEs1WT7NJ0h+9OgqXIhl6dZucJJ7Uoz?=
- =?us-ascii?Q?sH6XBGiabTR5Xy22j6IBLEs9O2RNXogc4Mr57eeHGvY/UlvqJcmlVhR3bkze?=
- =?us-ascii?Q?jRHSeqnKvGEu4rdnGPiXteSJW4T/uGcOKQaq1jsSPj2H3wCIOXvJZxN7yDuC?=
- =?us-ascii?Q?Pg6bNZCGU9enoCObNUxDxiOgVXL+iZchjsJz5DXo0kJU82+yO83vYmqz+ouj?=
- =?us-ascii?Q?hW2ViVOrs0C15scFheKXUXUJWwuxkdMFZML6k2/slTcoOiFeiA7ZYEGmc+IM?=
- =?us-ascii?Q?to5eCj2n0OpHbUXiJSd0CkaHnPiwykoAkLJgBs5d3DtcCGxQG1AvDfcHWEPu?=
- =?us-ascii?Q?6w2XbTZI1dWPC9X/AzgxZkiEQulS04LF/k/KzMNfWOpQzNwI36iCmi8f46+R?=
- =?us-ascii?Q?Vhi0t517arn8A8IHxlu/+I/V01BZV9XDBCI7nmcR8tJs9ltSUC8t2MXP7tfQ?=
- =?us-ascii?Q?pHiQwenCE2Fl27K6sAtg5PbXFjhrve41QiJCX5RR14yr1Z+aBc8eb1HzPJYQ?=
- =?us-ascii?Q?3o1TRnd2oV5WiFpjlSetYglsYEvAKtUfMMQj8niAlkwZg9DFRed0ubWf+1sT?=
- =?us-ascii?Q?RbgG0BKl4paUaG7+tvwROwUPidEtxeKCEgx5bpqn5lc/NooFKqFJuSP02Phv?=
- =?us-ascii?Q?Z0vJV205yJSHEzIWUIp3AW4OdsZgqyy36bUF76oC?=
+	=?us-ascii?Q?+ulUdkm1QcbOq0Bz2yNnqoE3YZ/K04uodB86Wg1GlNQmXEQ/lUBd+DGUmEll?=
+ =?us-ascii?Q?G1IvqO/1z9UI9rp8K5h+HzVxzy/4S+EOlzMDRRftmnLp5IggWTVKKMvIbkLi?=
+ =?us-ascii?Q?9KBh7IyzFO755h31uiM7yCacslWTPlMuCgDTCOT51f1MSkRbbV6fH72yukUA?=
+ =?us-ascii?Q?0ZUbWlMp5SCkU4V6G9+2TerTSr4sjYVs8NEE3iD4iP8y4oHeZtB4J/ukrmIh?=
+ =?us-ascii?Q?WKBQ1JvF5hKPnCP1X6/IPvrUJBKN3uwa7hr5r2F3gZExIXOTyIsyUDhrkbhw?=
+ =?us-ascii?Q?YgQyqxvCGvz2o3dXu5CW+N4iLlIhkH5xX7vtML6oMk8qB9mpAi0mm6aPh/ad?=
+ =?us-ascii?Q?DSZNORTt7ej/aLTRTHeJWHNo/YsxYLZYPUSJxrBY96B5YMLsiU12Cu7b0XuP?=
+ =?us-ascii?Q?ttVf3aDabzrzX1gQ0WjBP2Fe1n+Azo8tSirUtrdoiP1Wdg30C0XDvjN1qnxD?=
+ =?us-ascii?Q?/pD0DkwxRcjq1RnDC2e5PebwYeXCcniR2FqHlRW6B6elPcHVFV6NUPgqlbhw?=
+ =?us-ascii?Q?FmbZzNQzlcxyo/fhp/j8J3ZtbqkGqt5EeLfswvXg6Bt+ygofkwDPnyhkYEIv?=
+ =?us-ascii?Q?6UUIoekvlF8PADUb1Zytb59oomtn9aTvVaRX7+FtY4lbwNu0HOjP3iQNKdF7?=
+ =?us-ascii?Q?hSfh5tRGQhoyHcjFCoJufMtjUqWUGfLmKZ303PxYOeHgRkC91bB5GICMcJ8i?=
+ =?us-ascii?Q?DjArieeOuleogSfnXkIEoEZL8O0t7gemr+YRrFKg9DRezmI5MbCP9SlowS0l?=
+ =?us-ascii?Q?uyBggEs7T0jw1yDKri7tQtY6S7qRnoLhd7GPOKRPbKAKITD7Ou516KTnU+gr?=
+ =?us-ascii?Q?KF4mqO8zVeasYU5GGbOwxCPtGnrp59Ookn17BYI1KYgX2GjWt4iezLyszZle?=
+ =?us-ascii?Q?c/CDpwzzi8yyXQaLDNSvC2KvipYRYfK2urXpEkxVzkj6u47KSmjN3CwFPh/0?=
+ =?us-ascii?Q?jFZhOTpkLRfW5s51QSuLZFhUkGA0fMLbBxdINaQkLivCMFOTcyvCm/FPSnZ9?=
+ =?us-ascii?Q?byINkIrqAOYbaBM/XwxCHW9aYQjOhp0P6mMu4z50xbNA0lpgKPQfPeI0wif3?=
+ =?us-ascii?Q?bNVt0D8WkVy1RGDN9Xhhbw1NtI/RFuuVTPyew4YLkvxtISwHlgR4tFwE5ipc?=
+ =?us-ascii?Q?rlAZTQXF9b2Fl9RJpqFkWDCcwIiDMY1dPgXxHwPLlT3TUJn+Lxf63gx3Ui9O?=
+ =?us-ascii?Q?nwbtSZgOAzWrfSI1VIt54TE7B7Zn0s9+dOqTaPplfpuMdeCHNOEi7MM1rhzZ?=
+ =?us-ascii?Q?A9VTugHZhrfA4vxHo5x9PeXugGehUa1UCZgEDIApC/AO1AfuT+Umx7eciz2E?=
+ =?us-ascii?Q?HiXkf2aVCe8BQnIv7EjRAHfd24nNYra8QjygWMkoZvnKM5v26X7QYbbKGTRY?=
+ =?us-ascii?Q?JPx9TL8fncS86XX44T02MRIfVbYMFpNz+upSEOGZyqFKccmG8d27js4yCuvD?=
+ =?us-ascii?Q?RftRMejlSNQD0ZqFtL3z8HX8VxbeaX7zr1bQBqPFAHlSRmhgibhWHGpNV3Zc?=
+ =?us-ascii?Q?Nw6kIgjG1Jn+mGFNAdKrw0cputFsYGrefBIFx5ajJc2Z/ZRqVcmIj2X7CPrh?=
+ =?us-ascii?Q?S5o5QKK9sUMzM960qi9Fe5Xr48rqjJefA5i7HrSH?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a0d2774a-1bad-4600-3128-08db41d0457d
+X-MS-Exchange-CrossTenant-Network-Message-Id: 15ac0831-d738-49eb-906b-08db41d0459e
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2023 18:51:37.9184
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2023 18:51:38.1663
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Bq6MfbWUEf2zaRk6wpDidk/nIiWv2rP7TpIaWGEFCX+CyqGtx4FMrT+4M4WFHPGV
+X-MS-Exchange-CrossTenant-UserPrincipalName: UQb241LLnLDUc1IG7oDO3V0GA8tYLRHzDJGiG609XbxpACVaEmEXLaOvPdlQNd0S
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4553
 
-The driver facing API in the iommu core makes the reserved regions
-per-device. An algorithm in the core code consolidates the regions of all
-the devices in a group to return the group view.
+Logically the HWPT should have the coherency set properly for the device
+that it is being created for when it is created.
 
-To allow for devices to be hotplugged into the group iommufd would re-load
-the entire group's reserved regions for each device, just in case they
-changed.
+This was happening implicitly if the immediate_attach was set because
+iommufd_hw_pagetable_attach() does it as the first thing.
 
-Further iommufd already has to deal with duplicated/overlapping reserved
-regions as it must union all the groups together.
+Do it unconditionally so !immediate_attach works properly.
 
-Thus simplify all of this to just use the device reserved regions
-interface directly from the iommu driver.
-
-Suggested-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- drivers/iommu/iommufd/device.c          |  5 ++---
- drivers/iommu/iommufd/io_pagetable.c    | 27 ++++++++++---------------
- drivers/iommu/iommufd/iommufd_private.h |  7 +++----
- 3 files changed, 16 insertions(+), 23 deletions(-)
+ drivers/iommu/iommufd/device.c          | 19 ++++-------------
+ drivers/iommu/iommufd/hw_pagetable.c    | 27 +++++++++++++++++++++++++
+ drivers/iommu/iommufd/iommufd_private.h |  1 +
+ 3 files changed, 32 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 33f9ab2dc5f4ae..6836089e62eea4 100644
+index ca9776432c56e8..782b4fd76f31eb 100644
 --- a/drivers/iommu/iommufd/device.c
 +++ b/drivers/iommu/iommufd/device.c
-@@ -313,9 +313,8 @@ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
- 		}
- 	}
- 
--	rc = iopt_table_enforce_group_resv_regions(&hwpt->ioas->iopt, idev->dev,
--						   idev->igroup->group,
--						   &sw_msi_start);
-+	rc = iopt_table_enforce_dev_resv_regions(
-+		&hwpt->ioas->iopt, idev->dev, &sw_msi_start);
- 	if (rc)
+@@ -295,22 +295,11 @@ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
  		goto err_unlock;
- 
-diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
-index e0ae72b9e67f86..f842768b2e250b 100644
---- a/drivers/iommu/iommufd/io_pagetable.c
-+++ b/drivers/iommu/iommufd/io_pagetable.c
-@@ -1161,25 +1161,22 @@ void iopt_remove_access(struct io_pagetable *iopt,
- 	up_write(&iopt->domains_rwsem);
- }
- 
--/* Narrow the valid_iova_itree to include reserved ranges from a group. */
--int iopt_table_enforce_group_resv_regions(struct io_pagetable *iopt,
--					  struct device *device,
--					  struct iommu_group *group,
--					  phys_addr_t *sw_msi_start)
-+/* Narrow the valid_iova_itree to include reserved ranges from a device. */
-+int iopt_table_enforce_dev_resv_regions(struct io_pagetable *iopt,
-+					struct device *dev,
-+					phys_addr_t *sw_msi_start)
- {
- 	struct iommu_resv_region *resv;
--	struct iommu_resv_region *tmp;
--	LIST_HEAD(group_resv_regions);
-+	LIST_HEAD(resv_regions);
- 	unsigned int num_hw_msi = 0;
- 	unsigned int num_sw_msi = 0;
- 	int rc;
- 
- 	down_write(&iopt->iova_rwsem);
--	rc = iommu_get_group_resv_regions(group, &group_resv_regions);
--	if (rc)
--		goto out_unlock;
-+	/* FIXME: drivers allocate memory but there is no failure propogated */
-+	iommu_get_resv_regions(dev, &resv_regions);
- 
--	list_for_each_entry(resv, &group_resv_regions, list) {
-+	list_for_each_entry(resv, &resv_regions, list) {
- 		if (resv->type == IOMMU_RESV_DIRECT_RELAXABLE)
- 			continue;
- 
-@@ -1191,7 +1188,7 @@ int iopt_table_enforce_group_resv_regions(struct io_pagetable *iopt,
- 		}
- 
- 		rc = iopt_reserve_iova(iopt, resv->start,
--				       resv->length - 1 + resv->start, device);
-+				       resv->length - 1 + resv->start, dev);
- 		if (rc)
- 			goto out_reserved;
  	}
-@@ -1206,11 +1203,9 @@ int iopt_table_enforce_group_resv_regions(struct io_pagetable *iopt,
- 	goto out_free_resv;
  
- out_reserved:
--	__iopt_remove_reserved_iova(iopt, device);
-+	__iopt_remove_reserved_iova(iopt, dev);
- out_free_resv:
--	list_for_each_entry_safe(resv, tmp, &group_resv_regions, list)
--		kfree(resv);
--out_unlock:
-+	iommu_put_resv_regions(dev, &resv_regions);
- 	up_write(&iopt->iova_rwsem);
- 	return rc;
+-	/*
+-	 * Try to upgrade the domain we have, it is an iommu driver bug to
+-	 * report IOMMU_CAP_ENFORCE_CACHE_COHERENCY but fail
+-	 * enforce_cache_coherency when there are no devices attached to the
+-	 * domain.
+-	 */
+-	if (idev->enforce_cache_coherency && !hwpt->enforce_cache_coherency) {
+-		if (hwpt->domain->ops->enforce_cache_coherency)
+-			hwpt->enforce_cache_coherency =
+-				hwpt->domain->ops->enforce_cache_coherency(
+-					hwpt->domain);
+-		if (!hwpt->enforce_cache_coherency) {
+-			WARN_ON(list_empty(&idev->igroup->device_list));
+-			rc = -EINVAL;
++	/* Try to upgrade the domain we have */
++	if (idev->enforce_cache_coherency) {
++		rc = iommufd_hw_pagetable_enforce_cc(hwpt);
++		if (rc)
+ 			goto err_unlock;
+-		}
+ 	}
+ 
+ 	rc = iopt_table_enforce_dev_resv_regions(&hwpt->ioas->iopt, idev->dev,
+diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
+index bdb76cdb1dc347..e0699d7f4c64af 100644
+--- a/drivers/iommu/iommufd/hw_pagetable.c
++++ b/drivers/iommu/iommufd/hw_pagetable.c
+@@ -25,6 +25,20 @@ void iommufd_hw_pagetable_destroy(struct iommufd_object *obj)
+ 	refcount_dec(&hwpt->ioas->obj.users);
  }
+ 
++int iommufd_hw_pagetable_enforce_cc(struct iommufd_hw_pagetable *hwpt)
++{
++	if (hwpt->enforce_cache_coherency)
++		return 0;
++
++	if (hwpt->domain->ops->enforce_cache_coherency)
++		hwpt->enforce_cache_coherency =
++			hwpt->domain->ops->enforce_cache_coherency(
++				hwpt->domain);
++	if (!hwpt->enforce_cache_coherency)
++		return -EINVAL;
++	return 0;
++}
++
+ /**
+  * iommufd_hw_pagetable_alloc() - Get an iommu_domain for a device
+  * @ictx: iommufd context
+@@ -60,6 +74,19 @@ iommufd_hw_pagetable_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+ 		goto out_abort;
+ 	}
+ 
++	/*
++	 * Set the coherency mode before we do iopt_table_add_domain() as some
++	 * iommus have a per-PTE bit that controls it and need to decide before
++	 * doing any maps. It is an iommu driver bug to report
++	 * IOMMU_CAP_ENFORCE_CACHE_COHERENCY but fail enforce_cache_coherency on
++	 * a new domain.
++	 */
++	if (idev->enforce_cache_coherency) {
++		rc = iommufd_hw_pagetable_enforce_cc(hwpt);
++		if (WARN_ON(rc))
++			goto out_abort;
++	}
++
+ 	/*
+ 	 * immediate_attach exists only to accommodate iommu drivers that cannot
+ 	 * directly allocate a domain. These drivers do not finish creating the
 diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 2ff192777f27d3..22863759c3bfb0 100644
+index 8bf053f4d4a9ce..471a3fdff1e0b6 100644
 --- a/drivers/iommu/iommufd/iommufd_private.h
 +++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -76,10 +76,9 @@ int iopt_table_add_domain(struct io_pagetable *iopt,
- 			  struct iommu_domain *domain);
- void iopt_table_remove_domain(struct io_pagetable *iopt,
- 			      struct iommu_domain *domain);
--int iopt_table_enforce_group_resv_regions(struct io_pagetable *iopt,
--					  struct device *device,
--					  struct iommu_group *group,
--					  phys_addr_t *sw_msi_start);
-+int iopt_table_enforce_dev_resv_regions(struct io_pagetable *iopt,
-+					struct device *dev,
-+					phys_addr_t *sw_msi_start);
- int iopt_set_allow_iova(struct io_pagetable *iopt,
- 			struct rb_root_cached *allowed_iova);
- int iopt_reserve_iova(struct io_pagetable *iopt, unsigned long start,
+@@ -254,6 +254,7 @@ struct iommufd_hw_pagetable {
+ struct iommufd_hw_pagetable *
+ iommufd_hw_pagetable_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+ 			   struct iommufd_device *idev, bool immediate_attach);
++int iommufd_hw_pagetable_enforce_cc(struct iommufd_hw_pagetable *hwpt);
+ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
+ 				struct iommufd_device *idev);
+ struct iommufd_hw_pagetable *
 -- 
 2.40.0
 
