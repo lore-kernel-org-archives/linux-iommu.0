@@ -1,77 +1,68 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from frasgout13.his.huawei.com (frasgout13.his.huawei.com [14.137.139.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57173539D
-	for <iommu@lists.linux.dev>; Thu, 20 Apr 2023 09:52:11 +0000 (UTC)
-Received: from frapeml500002.china.huawei.com (unknown [172.18.147.200])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Q2Cb10mrTz67LmL;
-	Thu, 20 Apr 2023 17:50:53 +0800 (CST)
-Received: from [10.81.207.102] (10.81.207.102) by
- frapeml500002.china.huawei.com (7.182.85.205) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Thu, 20 Apr 2023 11:52:01 +0200
-Message-ID: <66a67d9e-70ce-9e2c-3b23-2d49447c4f24@huawei.com>
-Date: Thu, 20 Apr 2023 11:52:00 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99711539D
+	for <iommu@lists.linux.dev>; Thu, 20 Apr 2023 09:59:20 +0000 (UTC)
+Received: from mail02.huawei.com (unknown [172.18.147.228])
+	by frasgout13.his.huawei.com (SkyGuard) with ESMTP id 4Q2CYk5XhVz9xyMv
+	for <iommu@lists.linux.dev>; Thu, 20 Apr 2023 17:49:46 +0800 (CST)
+Received: from A2101119013HW2.china.huawei.com (unknown [10.81.207.102])
+	by APP2 (Coremail) with SMTP id GxC2BwDXhj3oDEFkH7g7Ag--.1836S2;
+	Thu, 20 Apr 2023 10:59:11 +0100 (CET)
+From: Petr Tesarik <petrtesarik@huaweicloud.com>
+To: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
+	linux-kernel@vger.kernel.org (open list)
+Cc: Roberto Sassu <roberto.sassu@huawei.com>,
+	petr@tesarici.cz
+Subject: [PATCH v1 0/1] swiotlb: Clean up unused code if !CONFIG_DEBUG_FS
+Date: Thu, 20 Apr 2023 11:58:57 +0200
+Message-Id: <cover.1681984708.git.petr.tesarik.ext@huawei.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH v3 00/13] mm, dma, arm64: Reduce ARCH_KMALLOC_MINALIGN to
- 8
-To: Catalin Marinas <catalin.marinas@arm.com>, Isaac Manjarres
-	<isaacmanjarres@google.com>
-CC: Linus Torvalds <torvalds@linux-foundation.org>, Arnd Bergmann
-	<arnd@arndb.de>, Christoph Hellwig <hch@lst.de>, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, Will Deacon <will@kernel.org>, Marc Zyngier
-	<maz@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Herbert Xu
-	<herbert@gondor.apana.org.au>, Ard Biesheuvel <ardb@kernel.org>, Saravana
- Kannan <saravanak@google.com>, Alasdair Kergon <agk@redhat.com>, Daniel
- Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>, Mark Brown
-	<broonie@kernel.org>, Mike Snitzer <snitzer@kernel.org>, "Rafael J. Wysocki"
-	<rafael@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	<linux-mm@kvack.org>, <iommu@lists.linux.dev>,
-	<linux-arm-kernel@lists.infradead.org>
-References: <20221106220143.2129263-1-catalin.marinas@arm.com>
- <ZBNiN9CR2F/fvUTh@google.com> <ZEARbKMfMS8KdkhJ@arm.com>
-Content-Language: en-US
-From: Petr Tesarik <petr.tesarik.ext@huawei.com>
-In-Reply-To: <ZEARbKMfMS8KdkhJ@arm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.81.207.102]
-X-ClientProxiedBy: frapeml500004.china.huawei.com (7.182.85.22) To
- frapeml500002.china.huawei.com (7.182.85.205)
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:GxC2BwDXhj3oDEFkH7g7Ag--.1836S2
+X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+	VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUYf7kC6x804xWl14x267AKxVW8JVW5JwAF
+	c2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII
+	0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xv
+	wVC0I7IYx2IY6xkF7I0E14v26F4j6r4UJwA2z4x0Y4vEx4A2jsIE14v26r4j6F4UM28EF7
+	xvwVC2z280aVCY1x0267AKxVW8Jr0_Cr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8C
+	rVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxV
+	WUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lc7CjxVAKzI0EY4vE
+	52x082I5MxAIw28IcxkI7VAKI48JMxAqzxv26xkF7I0En4kS14v26r1q6r43MxC20s026x
+	CaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_
+	JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r
+	1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_
+	Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JV
+	W8JrUvcSsGvfC2KfnxnUUI43ZEXa7IU8O_-PUUUUU==
+X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
 X-CFilter-Loop: Reflected
 
-On 4/19/2023 6:06 PM, Catalin Marinas wrote:
-> On Thu, Mar 16, 2023 at 11:38:47AM -0700, Isaac Manjarres wrote:
->[...]>> Given this, I don't think there's anything blocking this series from
->> being merged. The requirement for SWIOTLB to get to the minimum
->> kmalloc alignment down to 8 bytes shouldn't prevent this series from
->> being merged, as the amount of memory that is allocated for SWIOTLB
->> can be configured through the commandline to minimize the impact of
->> having SWIOTLB memory. Additionally, even if no SWIOTLB is present,
->> this series still offers memory savings on a lot of ARM64 platforms
->> by using the cache line size as the minimum alignment for kmalloc.
-> 
-> Actually, there's some progress on the swiotlb front to allow dynamic
-> allocation. I haven't reviewed the series yet (I wasn't aware of it
-> until v2) but at a quick look, it limits the dynamic allocation to
-> bouncing buffers of at least a page size. Maybe this can be later
-> improved for buffers below ARCH_DMA_MINALIGN.
+From: Petr Tesarik <petr.tesarik.ext@huawei.com>
 
-Indeed. My patch allocates dynamic bounce buffers with
-dma_direct_alloc_pages() to keep things simple for now, but there is no
-real reason against allocating less than a page with another suitable
-allocator.
+While verifying that the swiotlb high water marks are never used
+if CONFIG_DEBUG_FS is unset, I guarded the corresponding fields
+in strut io_tlb_mem with an #ifdef, but then I ran into a build
+failure. This patch tries to clean up the optional debugfs code
+in swiotlb.
 
-However, I'd be interested what the use case is, so I can assess the
-performance impact, which depends on workload, and FYI it may not even
-be negative. ;-)
+The patch should be applied to the dma-mapping for-next tree.
 
-Petr Tesarik
+Petr Tesarik (1):
+  swiotlb: Omit total_used and used_hiwater if !CONFIG_DEBUG_FS
+
+ include/linux/swiotlb.h |  2 ++
+ kernel/dma/swiotlb.c    | 15 ++++++++++++---
+ 2 files changed, 14 insertions(+), 3 deletions(-)
+
+-- 
+2.25.1
 
