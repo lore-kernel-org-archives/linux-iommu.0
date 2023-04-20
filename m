@@ -1,130 +1,75 @@
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB7F933EC
-	for <iommu@lists.linux.dev>; Wed, 19 Apr 2023 21:01:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681938102; x=1713474102;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=EvOLRYWpsS17t0KvfH81CLjKKuyPpgtISPNLbl3a8+o=;
-  b=MS6cqjvlmibA84IXMR5vfsaiwfr3lR+2LtHKFGOjlWY8sUklCxU2INJu
-   3hj/bEAzvoWdNi37zl+E9v0fG1SIj8nk5w0+cnnau5U/+qDAVjDDMNqna
-   y4BCyuyQmwJgk3X9pSa4OmC1O86gT9I7KtMwWKKXbdZHHwsANCO/eKoNw
-   0EaN6yHTNuxIZMsjYWp/hyWYo5qNUvDUz2/swixiellb93TTXYo2uJh6g
-   8LCobAesb4Aq6hU9CfMGit9VSoBf1ZyGZqZkMTZ7dmSSq2b8JhKfMI3F9
-   K0DwBHftxotk5VGNtIoApPIMZcXDa5xXmZ55kGgB0k8rLEFMQNSuIGz/Y
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10685"; a="343040857"
-X-IronPort-AV: E=Sophos;i="5.99,210,1677571200"; 
-   d="scan'208";a="343040857"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2023 14:01:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10685"; a="803048939"
-X-IronPort-AV: E=Sophos;i="5.99,210,1677571200"; 
-   d="scan'208";a="803048939"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2023 14:01:40 -0700
-Date: Wed, 19 Apr 2023 14:05:54 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, LKML
- <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Robin Murphy <robin.murphy@arm.com>, Jason
- Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "vkoul@kernel.org"
- <vkoul@kernel.org>, Will Deacon <will@kernel.org>, David Woodhouse
- <dwmw2@infradead.org>, "Raj, Ashok" <ashok.raj@intel.com>, "Liu, Yi L"
- <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>, "Jiang, Dave"
- <dave.jiang@intel.com>, "Luck, Tony" <tony.luck@intel.com>, "Zanussi, Tom"
- <tom.zanussi@intel.com>, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v4 3/7] iommu: Support allocation of global PASIDs
- outside SVA
-Message-ID: <20230419140554.66578c1e@jacob-builder>
-In-Reply-To: <7e182125-f5ab-3201-e69d-b6c96eeede01@linux.intel.com>
-References: <20230407180554.2784285-1-jacob.jun.pan@linux.intel.com>
-	<20230407180554.2784285-4-jacob.jun.pan@linux.intel.com>
-	<BN9PR11MB5276D09F18BA65AD074777948C9A9@BN9PR11MB5276.namprd11.prod.outlook.com>
-	<5882ee52-9657-250d-0474-13edffa7b6b9@linux.intel.com>
-	<20230417094629.59fcfde6@jacob-builder>
-	<a1a82bc0-9a7a-5363-cda8-a0226eff0073@linux.intel.com>
-	<20230418160450.4ea7fb7d@jacob-builder>
-	<7e182125-f5ab-3201-e69d-b6c96eeede01@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 385ED17C9
+	for <iommu@lists.linux.dev>; Thu, 20 Apr 2023 01:20:59 +0000 (UTC)
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-1a68f2345c5so5174715ad.2
+        for <iommu@lists.linux.dev>; Wed, 19 Apr 2023 18:20:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=daynix-com.20221208.gappssmtp.com; s=20221208; t=1681953658; x=1684545658;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=4G5iWqKHJxSwy7otSWqpSuJ4dkrcHpp9DjCuFqdPcQY=;
+        b=KWU6Wr7W5q3DKWLLWNmK6ZyKqVd2rPC0hnoYICe2t+1X8DY0H9nUFkR2viDWBr58RX
+         EFvIL2sJdung7OVxMyhsJqZnFWsOEjY9Sr4yIj8artWZiyGfhqNbPApHePStm9l9ApGQ
+         cvorrbMkpR5pUnKpftJHpZQSSEsD8HqeldV+6Htjw1U+7qpbky9YZhextzkwY+jZNsJW
+         x0pk5dybTVlomkWojCBaDtIQkVeYaBwq82VVY0tAt2RO/L05DzsAChurxgmXgYlqY686
+         UdDQAr3/m/Qg518urdcsP5bAig9chfg28QbRUSaJ75ps5AxXi0kUBn5RutJ4T0CPTwSB
+         ptYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681953658; x=1684545658;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=4G5iWqKHJxSwy7otSWqpSuJ4dkrcHpp9DjCuFqdPcQY=;
+        b=jf0IYrlOUC8eZGgf2+s6mtLjLGYboy8xVrNwsWTYAngmFvUu9TND5nwJ+x+W9Q4819
+         ZsWXbn4UfzQBH0y/IzIcf6t3jzp0L2aWofl6Gxoi6nNR/AXws7v9je+X3/rlxrmhuFbW
+         g6ZNZl6y6mRvZ3CVlmZIKm3yu9BYz8b6kX6Yuq01751xYdTy/3cdEum7DUU4ZbcQPwXJ
+         ovRDlS5223WKqi7+F2OrAUO0hAeKfk9Y2kpkbnyh8ypphgLXdWXNeU3rcvj2mEQPqAKT
+         d+mte43hGqku1Zx1xoKi/oYquvwYfvk0McsPRTBYFWLojxdcdLGPLZxZTIjU4k2LjPlG
+         glFQ==
+X-Gm-Message-State: AAQBX9e7bs2FOs0vVwKlzE3ajLrucYEochoor5Ki3a61mPF1x2nY6JlY
+	/O2j+xQexqPM7GciUyZwd2t4xw==
+X-Google-Smtp-Source: AKy350ZJIwb6ogd/xuutAw2a7aGiiUiBrw7rALqHxk96YbsZ7SlYDNQaxrgnH+xpiVJuGH8p4QQ9VA==
+X-Received: by 2002:a17:902:d48f:b0:1a9:2cbd:d24b with SMTP id c15-20020a170902d48f00b001a92cbdd24bmr1036074plg.50.1681953658588;
+        Wed, 19 Apr 2023 18:20:58 -0700 (PDT)
+Received: from [10.213.103.179] ([157.82.194.11])
+        by smtp.gmail.com with ESMTPSA id d1-20020a170902728100b001a6b02659c0sm75066pll.159.2023.04.19.18.20.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Apr 2023 18:20:58 -0700 (PDT)
+Message-ID: <c59f4a01-16fd-0ab0-622e-614b253059a5@daynix.com>
+Date: Thu, 20 Apr 2023 10:20:55 +0900
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH] iommu/virtio: Detach domain on endpoint release
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>, joro@8bytes.org,
+ will@kernel.org
+Cc: robin.murphy@arm.com, eric.auger@redhat.com,
+ virtualization@lists.linux-foundation.org, iommu@lists.linux.dev
+References: <20230414150744.562456-1-jean-philippe@linaro.org>
+Content-Language: en-US
+From: Akihiko Odaki <akihiko.odaki@daynix.com>
+In-Reply-To: <20230414150744.562456-1-jean-philippe@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Hi Baolu,
-
-On Wed, 19 Apr 2023 10:40:46 +0800, Baolu Lu <baolu.lu@linux.intel.com>
-wrote:
-
-> On 4/19/23 7:04 AM, Jacob Pan wrote:
-> > On Tue, 18 Apr 2023 10:06:12 +0800, Baolu Lu<baolu.lu@linux.intel.com>
-> > wrote:
-> >   
-> >> On 4/18/23 12:46 AM, Jacob Pan wrote:  
-> >>> On Wed, 12 Apr 2023 09:37:48 +0800, Baolu Lu<baolu.lu@linux.intel.com>
-> >>> wrote:
-> >>>      
-> >>>> On 4/11/23 4:02 PM, Tian, Kevin wrote:  
-> >>>>>> From: Jacob Pan<jacob.jun.pan@linux.intel.com>
-> >>>>>> Sent: Saturday, April 8, 2023 2:06 AM
-> >>>>>> @@ -28,8 +26,8 @@ static int iommu_sva_alloc_pasid(struct mm_struct
-> >>>>>> *mm, ioasid_t min, ioasid_t ma
-> >>>>>>     		goto out;
-> >>>>>>     	}
-> >>>>>>
-> >>>>>> -	ret = ida_alloc_range(&iommu_global_pasid_ida, min, max,
-> >>>>>> GFP_KERNEL);
-> >>>>>> -	if (ret < min)
-> >>>>>> +	ret = iommu_alloc_global_pasid(min, max);  
-> >>>>> I wonder whether this can take a device pointer so
-> >>>>> dev->iommu->max_pasids is enforced inside the alloc function.  
-> >>>> Agreed. Instead of using the open code, it looks better to have a
-> >>>> helper like dev_iommu_max_pasids().  
-> >>> yes, probably export dev_iommu_get_max_pasids(dev)?
-> >>>
-> >>> But if I understood Kevin correctly, he's also suggesting that the
-> >>> interface should be changed to iommu_alloc_global_pasid(dev), my
-> >>> concern is that how do we use this function to reserve RID_PASID which
-> >>> is not specific to a device?  
-> >> Probably we can introduce a counterpart dev->iommu->min_pasids, so that
-> >> there's no need to reserve the RID_PASID. At present, we can set it to
-> >> 1 in the core as ARM/AMD/Intel all treat PASID 0 as a special pasid.
-> >>
-> >> In the future, if VT-d supports using arbitrary number as RID_PASID for
-> >> any specific device, we can call iommu_alloc_global_pasid() for that
-> >> device.
-> >>
-> >> The device drivers don't know and don't need to know the range of
-> >> viable PASIDs, so the @min, @max parameters seem to be unreasonable.  
-> > Sure, that is reasonable. Another question is whether global PASID
-> > allocation is always for a single device, if not I prefer to keep the
-> > current iommu_alloc_global_pasid() and add a wrapper
-> > iommu_alloc_global_pasid_dev(dev) to extract the @min, @max. OK?  
+On 2023/04/15 0:07, Jean-Philippe Brucker wrote:
+> When an endpoint is released, for example a PCIe VF is disabled or a
+> function hot-unplugged, it should be detached from its domain. Send a
+> DETACH request.
 > 
-> No problem from the code perspective. But we only need one API.
-> 
-> We can now add the kAPI that we really need. In this series, the idxd
-> driver wants to allocate a global PASID for its kernel dma with pasid
-> purpose. So, iommu_alloc_global_pasid_dev() seems to be sufficient.
-> 
-> If, in the future, we will have a need to provide global pasid
-> allocation other than device drivers, we can easily add the variants.
-> 
-sounds good, I will only add iommu_alloc_global_pasid_dev(dev). let the
-core code set @min, @max for devices.
+> Fixes: edcd69ab9a32 ("iommu: Add virtio-iommu driver")
+> Reported-by: Akihiko Odaki <akihiko.odaki@daynix.com>
+> Link: https://lore.kernel.org/all/15bf1b00-3aa0-973a-3a86-3fa5c4d41d2c@daynix.com/
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-Thanks,
+Thanks for the prompt fix. This indeed fixed my workload.
 
-Jacob
+Tested-by: Akihiko Odaki <akihiko.odaki@daynix.com>
