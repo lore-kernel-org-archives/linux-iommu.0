@@ -1,168 +1,137 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2040.outbound.protection.outlook.com [40.107.92.40])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58A3128F5
-	for <iommu@lists.linux.dev>; Thu, 20 Apr 2023 14:49:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1682002150;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=EUb3YvO/wIrjR5ODzmimb+GAFSaZ6gkz0JLMjhCNuXo=;
-	b=EX8+Kc0HCjEcLB7RrmNrxk3ynrWRhzthTM/hz+1FYByGTLMuPgXM9hNyCPJ0wb91XjJ0Ts
-	RjqUZua8Yyg2dpaIN8l7S1G1I2TlaIYMLYE1GMokUcqmp882LXUJ9smgcWcT928VPJn0fP
-	SnDVvJubsLgJL9rsTCYuySzkqcG2Zwo=
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
- [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-515-iY2bdFDjOs-RW__jkodB2g-1; Thu, 20 Apr 2023 10:49:09 -0400
-X-MC-Unique: iY2bdFDjOs-RW__jkodB2g-1
-Received: by mail-il1-f197.google.com with SMTP id e9e14a558f8ab-32ab192a7b3so6189175ab.1
-        for <iommu@lists.linux.dev>; Thu, 20 Apr 2023 07:49:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682002148; x=1684594148;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=EUb3YvO/wIrjR5ODzmimb+GAFSaZ6gkz0JLMjhCNuXo=;
-        b=TwBWtu5t69+4rsuM3DA8h+7lK7ueMYGuY8WdTSsRDdouESzhltCTO8LFxMdZb0ZsG6
-         /Dg7osFfXuuAJovcpo4zRMfSHaGK9+JhyTstkr17c+0569cKwPZVYrtLVy8CJ0V39Zzm
-         7uwXEutjezXw6ix83EbLeWQ1cMaOj/5vzzBx4LJKtFeuVF+q+HF3E8U3cOIx7+jisV12
-         /csPmInX1it5eIWmcTOtE9RCC+iFMoHoSjRHQ7+DYyblJadkp5qmRDA28WecOCfmNWUs
-         FHsnXXo/SnV/ehDKDfOmx+UdA+RE9wxrOqoa1xTriHHv0G7RDvbon5o2kXGPQnTXTm3L
-         mAiw==
-X-Gm-Message-State: AAQBX9dqN5uNoZ6AUbq9Ul/F/mNcGgTBlbzZ3XPHSOEJEAOpjxrxbs+Z
-	FXq5bVK53sxJ6fGxFJV2ea6XP2FzE54F/drvqhRaA/8Sej896Un7GucmUFIj8yhekTkBoO+K3Bb
-	LYgZM+W/yh+j3774=
-X-Received: by 2002:a92:a30a:0:b0:32b:6433:668f with SMTP id a10-20020a92a30a000000b0032b6433668fmr1405433ili.4.1682002148443;
-        Thu, 20 Apr 2023 07:49:08 -0700 (PDT)
-X-Google-Smtp-Source: AKy350ZM4/NPXZvDqlpTo2XPVjWlGmQ+vov+dMQ64Rg338eTxD/JAqaVGnP8msaPqebeE2XRFKNAHA==
-X-Received: by 2002:a92:a30a:0:b0:32b:6433:668f with SMTP id a10-20020a92a30a000000b0032b6433668fmr1405423ili.4.1682002148139;
-        Thu, 20 Apr 2023 07:49:08 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id 127-20020a021185000000b0040fb5d5429fsm537563jaf.131.2023.04.20.07.49.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Apr 2023 07:49:07 -0700 (PDT)
-Date: Thu, 20 Apr 2023 08:49:06 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, "kvm@vger.kernel.org"
- <kvm@vger.kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: RMRR device on non-Intel platform
-Message-ID: <20230420084906.2e4cce42.alex.williamson@redhat.com>
-In-Reply-To: <6cce1c5d-ab50-41c4-6e62-661bc369d860@arm.com>
-References: <BN9PR11MB5276E84229B5BD952D78E9598C639@BN9PR11MB5276.namprd11.prod.outlook.com>
-	<20230420081539.6bf301ad.alex.williamson@redhat.com>
-	<6cce1c5d-ab50-41c4-6e62-661bc369d860@arm.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.35; x86_64-redhat-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5310E28F5;
+	Thu, 20 Apr 2023 14:59:56 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ebKi9ySmB6Ufzzc9I66tvsRmEvufqiTvlWDmciZo+Ks/GRL2XTy+AXzqJkxQvhL4YNQ0PvMYkwDwzgPYLDtHtpnyAP/gah+6UKutQyP9SZf6NouTlJztJ12iRhuI6myThK8IUGZhhfmcSHLahAzqp2ZHKCu4vsy+Y87QjAKcNt2um0qW5Cyrup4EzXWTrmW3YmVHGvFpFDPfpx0/D4cxb8wbEUx1uL+SXRD3w0p1zHWuJoiSdoDAzMNFKXaXG/E1X5p+zIpdfEEcwrQbPncxaWbOf3dG8XAdiaMIav78H612BPJ9l/beDi2A0PdQBr3a+stcNstXmMqnJeNUrizIJw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=juYG+7WgJd8rvCJHWlmnLDhqujFlJCakYkGBgSkQOWo=;
+ b=hvwYw68OYzUINq7daJOFd9nHJMSC4bXjc5qIfhpQ/kgTz6MD9v7Hy6FEdtpNge6hgO7pKRg8xroPZSh+/qYpU32ErMn+9Che9hUKErHiXwyYK8ak7Anqhvrm18PhgvSAjqDeyh3Ic6f1Ytk9drTMAWHdDA6nTywUP6tXGt0felBiYF2PBLVsEiS+/LfxzuT4GZS+ahCS+IusPr/gFKePyybnL/JWB/3zlYazkcr16HZ7zdc+bkSSJJTbNDCxQV5N8x6JuQ6iWt/r5Q1I/IBtqHMOKMzRGKq83QIzGTJqP/a08eUu0oRduH/DFByNnZkwofWoBNlT4sdpqd0EL+T0dw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=juYG+7WgJd8rvCJHWlmnLDhqujFlJCakYkGBgSkQOWo=;
+ b=iPsHNfb3bdU5a1it5Lsq/G1nxO4X07mE1nfdlGBD77HyZimjudl3+xy1ChRIOYSSyjXwg8O0NDyNEIT158Vfqm0B2UPZYJOSSQ4rbJV283ANCS7Lwp2Oyp8g0vbuYfa2BSCSklsaktEFWyb49bLS+44qQiuCABzQi8t3+GzHnvr0POtZHzD0uqjR2Oa6VzsfCeA2mbRsaYvVmhOjAintK507lOIcz6738OyYntOfZHhMbQTg4OmA7oR9t2qY5JkU3IjQT8dgzzaXjUks9LouZb8qG/WA9YIML9zSxeAeR6jp7mppEe/poNcfSCjf1iyfvahdZp1TK0kbmDdGv1jjZQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DS7PR12MB6333.namprd12.prod.outlook.com (2603:10b6:8:96::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.45; Thu, 20 Apr
+ 2023 14:59:53 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6319.020; Thu, 20 Apr 2023
+ 14:59:53 +0000
+Date: Thu, 20 Apr 2023 10:01:09 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Joerg Roedel <joro@8bytes.org>,
+	"llvm@lists.linux.dev" <llvm@lists.linux.dev>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <ndesaulniers@google.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, "Rix, Tom" <trix@redhat.com>,
+	Will Deacon <will@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>
+Subject: Re: [PATCH v4 16/17] iommu: Remove __iommu_group_for_each_dev()
+Message-ID: <ZEE3lQOfQPE6mDk8@nvidia.com>
+References: <0-v4-79d0c229580a+650-iommu_err_unwind_jgg@nvidia.com>
+ <16-v4-79d0c229580a+650-iommu_err_unwind_jgg@nvidia.com>
+ <BL1PR11MB5271BBE89526DA4E3DBEEF2F8C639@BL1PR11MB5271.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BL1PR11MB5271BBE89526DA4E3DBEEF2F8C639@BL1PR11MB5271.namprd11.prod.outlook.com>
+X-ClientProxiedBy: MN2PR03CA0009.namprd03.prod.outlook.com
+ (2603:10b6:208:23a::14) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DS7PR12MB6333:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5cc35003-776b-4acb-4f21-08db41afe57b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	7MG37Lvm40e1EZenxF9sQj0BGK0Ye0mJSQ1eYDKFJ7FhhRI7iwAV7doKMiqqACyGNrxojJgLlyM8Fg0tATmBpgMrUd3VOwPu9HI8PYkZxx5DDBx0FnWEVxBWwZMx+5xBElQverGAEbTAIMeiFB3ty8sVykwjI/g6b8qNbOUdcPHlovde8S8DMqWvN4AtVu1uot6lQN/2e1QpluBnueqjLFfblzASDyqGF4b+OyR9zmEISgTnZwbSZ3hHm+lriVlhvEo1IBYqJw1B1r89g1Q0s/6zvg/i+GCilT/GiZdO2pdoo5FEx07v7+sVf4IwL17l0EPgyz9yekGm3/iJBQavJ2IAZz9n8Rcd+kGs8+uIz4LaHIIJskqNVg1qnGnCFKOIvt8Ylp3CkaEuIjPiwTweSjpifVSVcsBRQQuy6zSTA9CUoaHJv4Cdm7okOIo8DkWGX1pK9cyrL7KWHpeCU9irr8VicVfhf63s3RcYFz25FGhvrFU7ohj/CDe2A3vOf2vuYG5znmaDIgZToBJqLFXUa5xFX2GeQiBz4N0bxTZiifsd0eI1n2Eons6ra4llC650
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(396003)(136003)(346002)(39860400002)(366004)(451199021)(36756003)(4326008)(54906003)(6916009)(316002)(66556008)(66476007)(66946007)(41300700001)(6486002)(478600001)(6666004)(5660300002)(8676002)(8936002)(4744005)(7416002)(2906002)(86362001)(38100700002)(2616005)(6506007)(107886003)(26005)(83380400001)(186003)(6512007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?ngBB1fO/ltak5evqhR2AQge97I/6hFRjMMDM/OGGGjoTDAsXRLRyPbFR+rse?=
+ =?us-ascii?Q?LFC89N0XtMH4zt683eZOISPD+f10MxCUEdPSzWz7EXTXyU3zUiBB82PFdEWm?=
+ =?us-ascii?Q?kl8XPXnRQMnRK1Yg4DTWKk2O3DsqBjmEEGZWODmaR7fYbsOfKFW/HTBVoyhF?=
+ =?us-ascii?Q?buWBsQJhb4pcFhSewqc0QL6r5GYqtZT7IiN6KYFLxBTCUlw1K3yj2JKwL1g6?=
+ =?us-ascii?Q?fEMRgZszXemfK2bubjzR2qYx7jXIhEtQNPHs/IHHA/XmlOvISa63mmcoclEO?=
+ =?us-ascii?Q?mKoaY42QRLZzOz0ckuE9dcwyLnPFPDHjBzWI9V3J+Z0RCILQ7crAkQjR+DQG?=
+ =?us-ascii?Q?TRSKHl6VaHfI8bQUPWQwYWKKq0rywoDqU5rDXdcAwL31kr2+v8UCUHXuZACk?=
+ =?us-ascii?Q?zlZj5k00+Opm7IyKZ0gFrCp09G7cTu/7QCWxxB+q744jB4wfji3bcmnLHUrn?=
+ =?us-ascii?Q?VilhsFlGuG8vhZApu3C5lWD0542j8Wc/dOmkA9qphsXLrRA2R3zTjgi3reDX?=
+ =?us-ascii?Q?XaGf5Mh1srFnYACyPRHvUo/WvvIK7Iu4ZE7+nxMjhWzHEy5MnbWbBTV9Qsan?=
+ =?us-ascii?Q?XF/rYcitP1GjUmzvGOMdr9uQENZjJ0laL69B7XorE7nPdMofiIUJ9GNw0ULY?=
+ =?us-ascii?Q?yBLuE5O7cHiOn9FQOmoBs7AlRFVWTYz9KVWUofCrta1y/8zVVzE8kqQsJvL4?=
+ =?us-ascii?Q?Oze31S89EiKbYmw4RyjTitvB8sQyi1c9tNyM+1woyz3hycj4IEWXJrLIMXHc?=
+ =?us-ascii?Q?TSCqspSDpX20qzh8p+uGqOpOR47jxzzKjqv/Fk8i/NMvRlKHgfG2MI6/O7sr?=
+ =?us-ascii?Q?S9Xzgv8nq2ewa3tn3jKXaoN4BF+GEFZgEpC3BUEpzsbDwqeQLKAi3yIzSYKn?=
+ =?us-ascii?Q?XFqPUJ+2Ges3ya63uOzv3sQHGkymSYx1+aaTSpTNwmIUxwYZhFvWO5bvFdvb?=
+ =?us-ascii?Q?0bB1bQoqvPQzgHGM60HuD1U28GBvG3u6GgepkPsa8YFGDia+ChD6wBIZfAQ2?=
+ =?us-ascii?Q?cCeXOQTQALiDyaebm1DFR8i6UlIz+KdBFnhZ5ZQyL70ZIOh+HgugGhOoXEVp?=
+ =?us-ascii?Q?8B2+xa6G0EMZJa/kzLTWyP47gIJb+DgRWadcsHlJaltbCpXcleGNm1Ocezfb?=
+ =?us-ascii?Q?Uf2PMzKDHQr3AXOUeLpazj4LdCa3kuR/oAdbKhLztbBA4CAZkYZ2QLH5gJGe?=
+ =?us-ascii?Q?hlzFZo6MhPpcpbDEa7L0Ah5CcWsmty8lRCFQgFKc9GIZLIbSuRi+S8XvFQVg?=
+ =?us-ascii?Q?MHwbQRmClkRwPXeq95Ukl5TXcww49KzXSsSL5tZ2AIBtDYWULCt6TkVdfBKz?=
+ =?us-ascii?Q?S6R9ZMMcSR+Za4qO6XS9YBEjurYPC97g+bVSX6a0hKJnpBw7UnwNBF65Z8o6?=
+ =?us-ascii?Q?zxkxA8iyzE9NFXEsDirwCYUw6a70HCKsdhYK390Pn/Kbp+26iWKC8E2OGJN4?=
+ =?us-ascii?Q?lJdzz2Lg4n66f1TOiZ22waMM0Z8yUnD7H3h9lUpSSVjScH/iXSjfO8hQ9Ss4?=
+ =?us-ascii?Q?sgvwU3q4otAuEIKe9wr+HuvZLfqPfH82IJXq82Wk/dv9QCxYHsWcg0H68ckI?=
+ =?us-ascii?Q?B9bC/FR0ZD1LegOMnjCGJBixU6nbNWPB9FgWHZc/?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5cc35003-776b-4acb-4f21-08db41afe57b
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2023 14:59:53.0012
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Fp35MVQcHdRthWcgxwgG9GJ/tcisUm9MLWyUAly348b3LxGu586TdnB9GdjuGrFB
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6333
 
-On Thu, 20 Apr 2023 15:19:55 +0100
-Robin Murphy <robin.murphy@arm.com> wrote:
-
-> On 2023-04-20 15:15, Alex Williamson wrote:
-> > On Thu, 20 Apr 2023 06:52:01 +0000
-> > "Tian, Kevin" <kevin.tian@intel.com> wrote:
-> >   
-> >> Hi, Alex,
-> >>
-> >> Happen to see that we may have inconsistent policy about RMRR devices cross
-> >> different vendors.
-> >>
-> >> Previously only Intel supports RMRR. Now both AMD/ARM have similar thing,
-> >> AMD IVMD and ARM RMR.  
+On Thu, Apr 20, 2023 at 08:06:17AM +0000, Tian, Kevin wrote:
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > Sent: Wednesday, April 12, 2023 9:52 PM
 > > 
-> > Any similar requirement imposed by system firmware that the operating
-> > system must perpetually maintain a specific IOVA mapping for the device
-> > should impose similar restrictions as we've implemented for VT-d
-> > RMMR[1].  Thanks,  
+> > @@ -1858,7 +1843,15 @@ int bus_iommu_probe(struct bus_type *bus)
+> >  			return ret;
+> >  		}
+> >  		mutex_unlock(&group->mutex);
+> > -		__iommu_group_dma_finalize(group);
+> > +
+> > +		/*
+> > +		 * Mis-locked because the ops->probe_finalize() call-back of
 > 
-> Hmm, does that mean that vfio_iommu_resv_exclude() going to the trouble 
-> of punching out all the reserved region holes isn't really needed?
+> I guess this comment is trying to explain why the following code is
+> executed out of lock. In that case it reads clearer to me to start
+> with "Avoid mis-lock ..." and put it before mutex_unlock().
 
-While "Reserved Memory Region Reporting", might suggest that the ranges
-are simply excluded, RMRR actually require that specific mappings are
-maintained for ongoing, side-band activity, which is not compatible
-with the ideas that userspace owns the IOVA address space for the
-device or separation of host vs userspace control of the device.  Such
-mappings suggest things like system health monitoring where the
-influence of a user-owned device can easily extend to a system-wide
-scope if the user it able to manipulate the device to deny that
-interaction or report bad data.
+Iit is not avoiding anything, this is deliberately locked wrong.
 
-If these ARM and AMD tables impose similar requirements, we should
-really be restricting devices encumbered by such requirements from
-userspace access as well.  Thanks,
+We are iterating over for_each_group_device() without holding the
+required group->mutex and hope&pray nothing bad happens. We do this
+because of some bad ARM32 driver implementations of
+ops->probe_finalize that recurse into the lock.
 
-Alex
-
-> > [1]https://access.redhat.com/sites/default/files/attachments/rmrr-wp1.pdf
-> >   
-> >> RMRR identity mapping was considered unsafe (except for USB/GPU) for
-> >> device assignment:
-> >>
-> >> /*
-> >>   * There are a couple cases where we need to restrict the functionality of
-> >>   * devices associated with RMRRs.  The first is when evaluating a device for
-> >>   * identity mapping because problems exist when devices are moved in and out
-> >>   * of domains and their respective RMRR information is lost.  This means that
-> >>   * a device with associated RMRRs will never be in a "passthrough" domain.
-> >>   * The second is use of the device through the IOMMU API.  This interface
-> >>   * expects to have full control of the IOVA space for the device.  We cannot
-> >>   * satisfy both the requirement that RMRR access is maintained and have an
-> >>   * unencumbered IOVA space.  We also have no ability to quiesce the device's
-> >>   * use of the RMRR space or even inform the IOMMU API user of the restriction.
-> >>   * We therefore prevent devices associated with an RMRR from participating in
-> >>   * the IOMMU API, which eliminates them from device assignment.
-> >>   *
-> >>   * In both cases, devices which have relaxable RMRRs are not concerned by this
-> >>   * restriction. See device_rmrr_is_relaxable comment.
-> >>   */
-> >> static bool device_is_rmrr_locked(struct device *dev)
-> >> {
-> >> 	if (!device_has_rmrr(dev))
-> >> 		return false;
-> >>
-> >> 	if (device_rmrr_is_relaxable(dev))
-> >> 		return false;
-> >>
-> >> 	return true;
-> >> }
-> >>
-> >> Then non-relaxable RMRR device is rejected when doing attach:
-> >>
-> >> static int intel_iommu_attach_device(struct iommu_domain *domain,
-> >>                                       struct device *dev)
-> >> {
-> >> 	struct device_domain_info *info = dev_iommu_priv_get(dev);
-> >> 	int ret;
-> >>
-> >> 	if (domain->type == IOMMU_DOMAIN_UNMANAGED &&
-> >> 	    device_is_rmrr_locked(dev)) {
-> >> 		dev_warn(dev, "Device is ineligible for IOMMU domain attach due to platform RMRR requirement.  Contact your platform vendor.\n");
-> >> 		return -EPERM;
-> >> 	}
-> >> 	...
-> >> }
-> >>
-> >> But I didn't find the same check in AMD/ARM driver at a glance.
-> >>
-> >> Did I overlook some arch difference which makes RMRR device safe in
-> >> those platforms or is it a gap to be fixed?
-> >>
-> >> Thanks
-> >> Kevin
-> >>  
-> >   
-> 
-
+Thanks,
+Jason
