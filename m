@@ -1,119 +1,120 @@
-Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC23F946F
-	for <iommu@lists.linux.dev>; Thu, 20 Apr 2023 23:06:43 +0000 (UTC)
-Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-2a8a6602171so9504461fa.0
-        for <iommu@lists.linux.dev>; Thu, 20 Apr 2023 16:06:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1682032002; x=1684624002;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=VRh02ehzyoEGyY6i274n9E5kMLeidpEP/WyJpL8/txg=;
-        b=o7pJh+V3DXABmhqqjUT2GIRj4YzEXjjsNIhqO9PWJtLbJ6OqCTNODz2Zj3Y5XnVi0M
-         c23bz9hig8SpV9Dafj/O1iy3aT/dTX0xTgRr8LMX4C3bz6AxdW9NoweNgLtbL1SSTJXA
-         s6kS2pvkmI2ffyW3fZOFb/6Ubz7n6Gzugu/1FYoADCIURseNUg/RTtabJ8s6iI7i7v65
-         pyQQbXZ/5jZOT/dC5X1hdLCfTN4rX5p7QBSgNamnm3/jd7CUfZY5ke2vMnTrov34Nktw
-         avlT9N0A2ghIcyPO/IAu2f85+7wUJuvoCCR3iTOMHCl2EfpFjqXtOQfvkFKtXJrEiTaK
-         zj2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682032002; x=1684624002;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=VRh02ehzyoEGyY6i274n9E5kMLeidpEP/WyJpL8/txg=;
-        b=MYQdSpuhqady1iRbST3EBdvKj2C1WfL7mnEfPLlJZCY+OtFqV9qwva+RJAUihiLOwU
-         cyQ57guIeRhhvDm4L7CKsMwfVOjrFyc+mzCComusUGRd8zwVdgHbqeVQF+LvWeYTQnAx
-         Fw9qr8wEnG+7Y/BF6HlwKsNnYHQfkr2UbuhvIbM+2vVlFBXcHVUToynS/+fBlZqUtDAe
-         Zxf9Y4YbIgtkM9VNDcTohdOHfJNNzvy/OITg8hbuTYKU4Eg4Ei30gOrNUqAh7tuZDhJ/
-         GiQCzG5vPOxSIJh1RKRB2wLNzz2gw5yb50XH5zVuVFERa8bjP1dVcC9tCZqkBQRKe3X/
-         XrbA==
-X-Gm-Message-State: AAQBX9fpzbkLsXPKWtRc6MkT9zPS/8oYvmJG2A0lnhundHeKL1CbJqTq
-	H01PV9HN32Qa7ULzsVf9HPjgXw==
-X-Google-Smtp-Source: AKy350Zq1ZNhlNj99Jgmj7Jd7rtWn0FVrNeuvn9rsoQRNxoUsAMADZcAou5pslRf8Kz+PdunXzJxqg==
-X-Received: by 2002:a2e:8508:0:b0:2a8:a916:6b1c with SMTP id j8-20020a2e8508000000b002a8a9166b1cmr114673lji.4.1682032001972;
-        Thu, 20 Apr 2023 16:06:41 -0700 (PDT)
-Received: from [192.168.1.101] (abyj144.neoplus.adsl.tpnet.pl. [83.9.29.144])
-        by smtp.gmail.com with ESMTPSA id y24-20020ac255b8000000b004cb41b43c25sm350956lfg.197.2023.04.20.16.06.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Apr 2023 16:06:41 -0700 (PDT)
-Message-ID: <f71427ee-afca-549b-37c4-a09dcbedf979@linaro.org>
-Date: Fri, 21 Apr 2023 01:06:39 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F58237A
+	for <iommu@lists.linux.dev>; Fri, 21 Apr 2023 01:35:59 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iru6hbU9kr3im5USVvNm1rSESl1j7pRlmcqRXhjiGgMSz+bU/SIcWp/cwtgsaCjDzUUBY06X69fk0/vmC+Kyz7NZJ+lEfdbCKGOpdVBHgdcYjoZz3BQ8FNLHAqOYl21PovineaESo30z2qxrifCidEHFksLZVLpcXqbeIW6nqThImf7TCwLZne0aAp5wjYz90Dm6cVeTjUBSgXmi13GSGZTFQFN6hc13ZOkHTtJg2XnlaPg/xoDcXYHzNDZiEfRnfz/luYypET8wGPuj0psX7b5cH3r6w95LYFjCV9cJktx8gjtTXai9cARhRLjW3DToJQqsg1ZMGMfCZiTebMj3Bg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=PfZJqFWw9/uwiIdmsjLKa+wo5tVtrhATB3hUKHDYGTQ=;
+ b=YtaYyZpF+uNfvzqvhwOVqXXzkmuvnNnMmuPGTgXOuuFjUvjwDSiyaR1a2Zb3xBHn6HUQ5LPBWeh5WXxc2m+G/xHsjHGDP4tV15WRN46uTJTdQ5ubLkOA6CP8XJ2e5oBee7g8X+bTFt1VHrRCISY6nSFD+R7q2QGvYVxC8e9eOrbJYapDu+EHVTwqAdHYSP0911KBIJAXvhDySFFKlcLpozYeh60hjLQRXDe9xbnZOKFdlXvsmvOg8nrzwuhETjCKdHtfbDlidclDq3vB7kwfhoCuS15a/2tdMkSZxm1rTQ8w+aHRn2qQse1JHqMuw1NWpYh47Cj8UfOpaA+P6KtCoA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PfZJqFWw9/uwiIdmsjLKa+wo5tVtrhATB3hUKHDYGTQ=;
+ b=tq4oQQoYCf7BaCXZ8/Reze54x6RS3m3XtNWd+kwMc45pb0jDvKSq7T7n0ZaPxQ41Vw6MRAMGtjIPhwNPJR2LHxrlj1pRAQK9iVb60/q1LNn05etqYbroUAiavVWvAmH08AgQGj4FVS/TdtM07v21ll8TaDTd84Tp5wR42fRhbsTyWepgyvvoZ8nZ+QLAsbFpXs7Syb+Ib38H7rfx9ANLSdpsIv0t7K0MwFh0Uld0JzayY6uZVHFEyKLZW2n/PcdrPu7VTqqigr28JQyM55a6oDZyprWjUdS5l46LvqMHpakTwtomd40h6APRsMD7+L+h3EKqEpwd1vwNFRnHVD1itQ==
+Received: from MW3PR06CA0025.namprd06.prod.outlook.com (2603:10b6:303:2a::30)
+ by IA1PR12MB7615.namprd12.prod.outlook.com (2603:10b6:208:428::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.22; Fri, 21 Apr
+ 2023 01:35:56 +0000
+Received: from CO1NAM11FT027.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:2a:cafe::32) by MW3PR06CA0025.outlook.office365.com
+ (2603:10b6:303:2a::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.25 via Frontend
+ Transport; Fri, 21 Apr 2023 01:35:56 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ CO1NAM11FT027.mail.protection.outlook.com (10.13.174.224) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6298.51 via Frontend Transport; Fri, 21 Apr 2023 01:35:56 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 20 Apr 2023
+ 18:35:56 -0700
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.37; Thu, 20 Apr 2023 18:35:55 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Thu, 20 Apr 2023 18:35:55 -0700
+Date: Thu, 20 Apr 2023 18:35:53 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <iommu@lists.linux.dev>, <linux-kselftest@vger.kernel.org>, Lu Baolu
+	<baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
+	<kvm@vger.kernel.org>, Lixiao Yang <lixiao.yang@intel.com>, Matthew Rosato
+	<mjrosato@linux.ibm.com>, Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH v6 00/19] Add iommufd physical device operations for
+ replace and alloc hwpt
+Message-ID: <ZEHoeelUkDEWNtZk@Asurada-Nvidia>
+References: <0-v6-fdb604df649a+369-iommufd_alloc_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-Subject: Re: [PATCH v2 10/13] drm/msm: mdss: Add SM6375 support
-Content-Language: en-US
-To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
- Rob Clark <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
- Sean Paul <sean@poorly.run>, David Airlie <airlied@gmail.com>,
- Daniel Vetter <daniel@ffwll.ch>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Krishna Manikandan <quic_mkrishn@quicinc.com>, Will Deacon
- <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>,
- linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
- freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev
-References: <20230411-topic-straitlagoon_mdss-v2-0-5def73f50980@linaro.org>
- <20230411-topic-straitlagoon_mdss-v2-10-5def73f50980@linaro.org>
- <26832d5c-f55c-1dd0-947a-0278bcbf08de@linaro.org>
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <26832d5c-f55c-1dd0-947a-0278bcbf08de@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <0-v6-fdb604df649a+369-iommufd_alloc_jgg@nvidia.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT027:EE_|IA1PR12MB7615:EE_
+X-MS-Office365-Filtering-Correlation-Id: b53a7aa9-dd8f-4a23-7147-08db4208c0da
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	gooza2JVe4lNI4175c4c4Obv0ZU0oci9oZY/IcDzLF8J3iHLsssyCnvuHtDBtqiaSPh7JD5G4JPodoKBNrZdJK+q2WiHC6OyVXy9eBpYtfDpaJXY1pws/2eEDn3uD0XMODM69Tzh/CitU2WiVTq7ISjMrtQgOJ2SVyCcY1ZtaIVcSRPprrLLbJniVTmUginORWwCvQbXQQmgIktKDqtz5FLszbouNxtlC7bjvbysCj6FxsuwmdR++s9fFTlWzfJtfXlkyDN4hyuLdmRbUExIXDBD21MDGbxA37GjdyPzqwIw0lQ196QDRzkKbB+VTt7Ljw9SE5s2VuAYx6aXze76k2iXcsD2iqkLibAWGpgiTrmXQ/5QrZcAc2OPWeHWGUDrfRiHOZ65UVRzdAO7Wp9iI1lOBSKkcU7ziW3Jy+VRpDqXeQHDKH+Vh5FOBVqODLUfYQrGGmEdqliCKDO44HpE2sGiX8gy7GqYD8sl/wzsbZwE6ukM8tVdyPXVM0WudnU12L8gdnht0XA4k5BxXQOoEkQhZ5RJ1JATIBUcKkrqpYu12R1QAxKmVzpu8ziJ05OV9iwcIbZ/ND6gLeYeg+r+dEWX5DtMGHpUTLHMuIX1fgeSDO4E5PJq97/2O8nrZGhbVX8mvBKvsbMcmpZLp+tHhK/csKY0N8bNMfAVL4ukOmplbErvr2klQM0/Yx1v9YoXL8cNXV4GAKHpmNQJ4bIwtgT4PfptI0LjWNuQZmOogfjIjPowfWLR6hg5LPrbrmEXxyxtmr0+0GPklm15Qyyb9+g2jB2DLBoya5QA+zABp++jwYuxTvTNMFidNiYBuYJs0TILlWXQnGMG/l714/+5o+WHnu5OXosiJPpfVrOcl2o=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(346002)(376002)(39860400002)(451199021)(40470700004)(46966006)(36840700001)(34020700004)(6636002)(54906003)(83380400001)(478600001)(36860700001)(47076005)(40480700001)(55016003)(26005)(9686003)(966005)(316002)(356005)(4326008)(186003)(336012)(426003)(70206006)(82740400003)(70586007)(5660300002)(8936002)(2906002)(6862004)(8676002)(40460700003)(7636003)(41300700001)(86362001)(33716001)(82310400005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Apr 2023 01:35:56.4832
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b53a7aa9-dd8f-4a23-7147-08db4208c0da
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1NAM11FT027.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB7615
 
+On Thu, Apr 20, 2023 at 03:51:15PM -0300, Jason Gunthorpe wrote:
 
-
-On 21.04.2023 00:50, Dmitry Baryshkov wrote:
-> On 21/04/2023 01:31, Konrad Dybcio wrote:
->> Add support for MDSS on SM6375.
->>
->> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
->> ---
->>   drivers/gpu/drm/msm/msm_mdss.c | 10 ++++++++++
->>   1 file changed, 10 insertions(+)
->>
->> diff --git a/drivers/gpu/drm/msm/msm_mdss.c b/drivers/gpu/drm/msm/msm_mdss.c
->> index 4e3a5f0c303c..f2470ce699f7 100644
->> --- a/drivers/gpu/drm/msm/msm_mdss.c
->> +++ b/drivers/gpu/drm/msm/msm_mdss.c
->> @@ -546,6 +546,15 @@ static const struct msm_mdss_data sm6350_data = {
->>       .highest_bank_bit = 1,
->>   };
->>   +static const struct msm_mdss_data sm6375_data = {
->> +    .ubwc_version = UBWC_2_0,
->> +    .ubwc_dec_version = UBWC_2_0,
->> +    .ubwc_swizzle = 6,
->> +    .ubwc_static = 0x1e,
->> +    /* Possibly 0 for LPDDR3 */
->> +    .highest_bank_bit = 1,
->> +};
+> This is on github: https://github.com/jgunthorpe/linux/commits/iommufd_hwpt
 > 
-> Nit: we can use sm6350 data here, can't we?
-Nice catch!
+> v6:
+>  - Go back to the v4 locking arragnment with now both the attach/detach
+>    igroup->locks inside the functions, Kevin says he needs this for a
+>    followup series. This still fixes the syzkaller bug
+>  - Fix two more error unwind locking bugs where
+>    iommufd_object_abort_and_destroy(hwpt) would deadlock or be mislocked.
+>    Make sure fail_nth will catch these mistakes
+>  - Add a patch allowing objects to have different abort than destroy
+>    function, it allows hwpt abort to require the caller to continue
+>    to hold the lock and enforces this with lockdep.
 
-Konrad
-> 
->> +
->>   static const struct msm_mdss_data sm8150_data = {
->>       .ubwc_version = UBWC_3_0,
->>       .ubwc_dec_version = UBWC_3_0,
->> @@ -580,6 +589,7 @@ static const struct of_device_id mdss_dt_match[] = {
->>       { .compatible = "qcom,sc8280xp-mdss", .data = &sc8280xp_data },
->>       { .compatible = "qcom,sm6115-mdss", .data = &sm6115_data },
->>       { .compatible = "qcom,sm6350-mdss", .data = &sm6350_data },
->> +    { .compatible = "qcom,sm6375-mdss", .data = &sm6375_data },
->>       { .compatible = "qcom,sm8150-mdss", .data = &sm8150_data },
->>       { .compatible = "qcom,sm8250-mdss", .data = &sm8250_data },
->>       { .compatible = "qcom,sm8350-mdss", .data = &sm8250_data },
->>
-> 
+Tested this series + cdev v9 + replace series + nesting (SMMUv3):
+https://github.com/nicolinc/iommufd/commits/wip/iommufd_nesting-04202023-nic
+
+I only have one device per group, so can't cover the igroup part.
+Yet, the sanity covers hwpt replacements of a kernel-manage hwpt
+from/to an ioas (auto hwpt) and a user-managed hwpt.
+
+Thanks
+Nic
