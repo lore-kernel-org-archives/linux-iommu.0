@@ -1,107 +1,183 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B28315670
-	for <iommu@lists.linux.dev>; Fri, 21 Apr 2023 15:09:39 +0000 (UTC)
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 6014B15EEDB;
-	Fri, 21 Apr 2023 17:09:36 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1682089776; bh=BWdF8z+Q4fHskCMdX9OlN7iuNNB0swY4xAF8ICY1DyI=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=4WKHAoTZ1XkQpR4HDx+niy1Xp297GkNpDbpU02kcMSoqrBRoCq8rG/OISPpMuJxuy
-	 q5RKezTTYGpdkIEKkgR39K8Aq9G16B+P5b1+S7+TpVNnArPkjEewCEUwVyeb0ohWOi
-	 lzdp8loaooCtfN67mU3OiWoi8hHTiKKxBtAyNQgF+4iVLFZn23l6ZkQ6/3IUd0dFk2
-	 hiHlki0XcnRaCFkxbRqGKOGuxlMQsLKZEejcd4m3zxFAx2MsGROJVLRSxFGE8HQeST
-	 TbISxT3HqlwcMMqxXnkRQSX7jUCZ/RRdUGcuKSw0zbbtmX+Ua12CM95aRbes3PgYMi
-	 nLjBQpYggDqJA==
-Date: Fri, 21 Apr 2023 17:09:34 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Christoph Hellwig <hch@lst.de>, Petr Tesarik
- <petrtesarik@huaweicloud.com>, Jonathan Corbet <corbet@lwn.net>, Marek
- Szyprowski <m.szyprowski@samsung.com>, Borislav Petkov <bp@suse.de>, "Paul
- E. McKenney" <paulmck@kernel.org>, Andrew Morton
- <akpm@linux-foundation.org>, Randy Dunlap <rdunlap@infradead.org>, Damien
- Le Moal <damien.lemoal@opensource.wdc.com>, Kim Phillips
- <kim.phillips@amd.com>, "Steven Rostedt (Google)" <rostedt@goodmis.org>,
- "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, open list
- <linux-kernel@vger.kernel.org>, "open list:DMA MAPPING HELPERS"
- <iommu@lists.linux.dev>, Roberto Sassu <roberto.sassu@huawei.com>,
- Alexander Graf <graf@amazon.com>
-Subject: Re: [RFC v1 3/4] swiotlb: Allow dynamic allocation of bounce
- buffers
-Message-ID: <20230421170934.185a03a0@meshulam.tesarici.cz>
-In-Reply-To: <4bd8ce51-5874-0aa3-bc82-fec0cee9b8f1@arm.com>
-References: <cover.1679309810.git.petr.tesarik.ext@huawei.com>
-	<0334a54332ab75312c9de825548b616439dcc9f5.1679309810.git.petr.tesarik.ext@huawei.com>
-	<20230328040724.GB25506@lst.de>
-	<4268fa4e-4f0f-a2f6-a2a5-5b78ca4a073d@huaweicloud.com>
-	<8cf7c515-9ce6-a2ed-0643-972aa3eba2fb@huaweicloud.com>
-	<20230407055704.GD6803@lst.de>
-	<20230407121555.4290a011@meshulam.tesarici.cz>
-	<20230421150349.35966e0b@meshulam.tesarici.cz>
-	<4bd8ce51-5874-0aa3-bc82-fec0cee9b8f1@arm.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-suse-linux-gnu)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1D0D05689
+	for <iommu@lists.linux.dev>; Fri, 21 Apr 2023 17:22:51 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2259212FC;
+	Fri, 21 Apr 2023 10:23:29 -0700 (PDT)
+Received: from [10.57.23.51] (unknown [10.57.23.51])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 67B723F6C4;
+	Fri, 21 Apr 2023 10:22:44 -0700 (PDT)
+Message-ID: <fe7e20e5-9729-248d-ee03-c8b444a1b7c0@arm.com>
+Date: Fri, 21 Apr 2023 18:22:37 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: RMRR device on non-Intel platform
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+ "Tian, Kevin" <kevin.tian@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+References: <BN9PR11MB5276E84229B5BD952D78E9598C639@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20230420081539.6bf301ad.alex.williamson@redhat.com>
+ <6cce1c5d-ab50-41c4-6e62-661bc369d860@arm.com>
+ <20230420084906.2e4cce42.alex.williamson@redhat.com>
+ <fd324213-8d77-cb67-1c52-01cd0997a92c@arm.com>
+ <20230420154933.1a79de4e.alex.williamson@redhat.com>
+ <ZEJ73s/2M4Rd5r/X@nvidia.com> <0aa4a107-57d0-6e5b-46e5-86dbe5b3087f@arm.com>
+ <ZEKFdJ6yXoyFiHY+@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <ZEKFdJ6yXoyFiHY+@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Robin,
+On 2023-04-21 13:45, Jason Gunthorpe wrote:
+> On Fri, Apr 21, 2023 at 01:29:46PM +0100, Robin Murphy wrote:
+> 
+>> Can you clarify why something other than IOMMU_RESV_SW_MSI would be
+>> needed?
+> 
+> We need iommufd to setup a 1:1 map for the reserved space.
+> 
+> So, of the reserved spaces we have these:
+> 
+> 	/* Memory regions which must be mapped 1:1 at all times */
+> 	IOMMU_RESV_DIRECT,
+> 
+>             Block iommufd
+> 
+> 	/*
+> 	 * Memory regions which are advertised to be 1:1 but are
+> 	 * commonly considered relaxable in some conditions,
+> 	 * for instance in device assignment use case (USB, Graphics)
+> 	 */
+> 	IOMMU_RESV_DIRECT_RELAXABLE,
+> 
+>             iommufd ignores this one
+> 
+> 	/* Arbitrary "never map this or give it to a device" address ranges */
+> 	IOMMU_RESV_RESERVED,
+> 
+> 	   iommufd prevents using this IOVA range
+> 
+> 	/* Hardware MSI region (untranslated) */
+> 	IOMMU_RESV_MSI,
+> 
+> 	   iommufd treats this the same as IOMMU_RESV_RESERVED
+> 
+> 	/* Software-managed MSI translation window */
+> 	IOMMU_RESV_SW_MSI,
+> 
+> 	   iommufd treats this the same as IOMMU_RESV_RESERVED, also
+> 	   it passes the start to iommu_get_msi_cookie() which
+> 	   eventually maps something, but not 1:1.
+> 
+> I don't think it is a compatible change for IOMMU_RESV_SW_MSI to also
+> mean 1:1 map?
 
-On Fri, 21 Apr 2023 15:58:18 +0100
-Robin Murphy <robin.murphy@arm.com> wrote:
+Bleh, my bad, the nested MSI stuff is right on the limit of the amount 
+of horribleness I can hold in my head at once even at the best of times, 
+let alone when my head is still half-full of PMUs.
 
-> On 2023-04-21 14:03, Petr Tesa=C5=99=C3=ADk wrote:
->[...]
-> > Here my question: What did you want for DMA fields?
-> >=20
-> > A. Only grouping those fields in their own struct?
-> > B. Or move the definition to another include file (cf. MAINTAINERS)?
-> > C. Or store a pointer in struct device? =20
->=20
-> dev->dma_parms is already this, and IIRC still has some very old=20
-> comments somewhere about consolidating the other DMA-related fields in=20
-> there.
+I think a slightly more considered and slightly less wrong version of 
+that idea is to mark it as IOMMU_RESV_MSI, and special-case 
+direct-mapping those on Arm (I believe it would technically be benign to 
+do on x86 too, but might annoy people with its pointlessness). However...
 
-Thank you for the hint! I have actually seen dma_parms, but since it
-can be NULL and was initialized from various drivers, it did not occur
-to me that NULL simply means not DMA-capable.
+> On baremetal we have no idea what the platform put under that
+> hardcoded address?
+> 
+> On VM we don't use the iommu_get_msi_cookie() flow because the GIC in
+> the VM pretends it doesn't have an ITS page?  (did I get that right?)
 
-This is really helpful.
+No, that can't be right - PCIe devices have to support MSI or MSI-X, and 
+many of them won't support INTx at all, so if the guest wants to use 
+interrupts in general it must surely need to believe it has some kind of 
+MSI controller, which for practical purposes in this context means an 
+ITS. That was the next thing I started wondering after the above - if 
+the aim is to direct-map the host's SW_MSI region to effectively pass 
+through the S2 MSI cookie, but you have the same Linux SMMU driver in 
+the guest, isn't that guest driver still going to add a conflicting 
+SW_MSI region for the same IOVA and confuse things?
 
-Petr T
+Ideally for nesting, the VMM would just tell us the IPA of where it's 
+going to claim the given device's associated MSI doorbell is, we map 
+that to the real underlying address at S2, then the guest can use its S1 
+cookie as normal if it wants to, and the host doesn't have to rewrite 
+addresses either way. The set_dev_data thing starts to look tempting for 
+this too... Given that the nesting usage model inherently constrains the 
+VMM's options for emulating the IOMMU, would it be unreasonable to make 
+our lives a lot easier with some similar constraints around interrupts, 
+and just not attempt to support the full gamut of "emulate any kind of 
+IRQ with any other kind of IRQ" irqfd hilarity?
 
-> > Since you mentioned "allocated", it sounds like you want to achieve C,
-> > but:
-> >=20
-> > 1. Is it worth the extra dereference for every use?
-> > 2. How should the struct be allocated? Presumably not with kmalloc() in
-> >     device_initialize(), because I don't know how to determine if a
-> >     device is DMA capable this low in the call stack. So, should it be
-> >     allocated together with the containing structure? AFAICS this would
-> >     mean changing nearly all device drivers... =20
->=20
-> The bus code knows whether it's a DMA-capable bus or not, and as such=20
-> should already be providing a .dma_configure method and/or performing=20
-> some initialisation of DMA fields. Many of the ones that would need to=20
-> are already providing dma_parms, in fact.
->=20
-> Thanks,
-> Robin.
->=20
-> >=20
-> > As you can see, I need some more guidance from you before I can start
-> > working on this. ;-)
-> >=20
-> > Petr T =20
+>> MSI regions already represent "safe" direct mappings, either as an inherent
+>> property of the hardware, or with an actual mapping maintained by software.
+>> Also RELAXABLE is meant to imply that it is only needed until a driver takes
+>> over the device, which at face value doesn't make much sense for interrupts.
+> 
+> I used "relxable" to suggest it is safe for userspace.
 
+I know, but the subtlety is the reason *why* it's safe for userspace. 
+Namely that a VFIO driver has bound and reset (or at least taken control 
+of) the device, and thus it is assumed to no longer be doing whatever 
+the boot firmware left it doing, therefore the reserved region is 
+assumed to no longer be relevant, and from then on the requirement to 
+preserve it can be relaxed.
+
+>> We'll still need to set this when the default domain type is identity too -
+>> see the diff I posted (the other parts below I merely implied).
+> 
+> Right, I missed that!
+> 
+> I suggest like this to avoid the double loop:
+> 
+> @@ -1037,9 +1037,6 @@ static int iommu_create_device_direct_mappings(struct iom>
+>          unsigned long pg_size;
+>          int ret = 0;
+>   
+> -       if (!iommu_is_dma_domain(domain))
+> -               return 0;
+> -
+>          BUG_ON(!domain->pgsize_bitmap);
+>   
+>          pg_size = 1UL << __ffs(domain->pgsize_bitmap);
+
+But then you realise that you also need to juggle this around since 
+identity domains aren't required to have a valid pgsize_bitmap either, 
+give up on the idea and go straight to writing a dedicated loop as the 
+clearer and tidier option because hey this is hardly a fast path anyway. 
+At least, you do if you're me :)
+
+Cheers,
+Robin.
+
+> @@ -1052,13 +1049,18 @@ static int iommu_create_device_direct_mappings(struct i>
+>                  dma_addr_t start, end, addr;
+>                  size_t map_size = 0;
+>   
+> -               start = ALIGN(entry->start, pg_size);
+> -               end   = ALIGN(entry->start + entry->length, pg_size);
+> -
+>                  if (entry->type != IOMMU_RESV_DIRECT &&
+>                      entry->type != IOMMU_RESV_DIRECT_RELAXABLE)
+>                          continue;
+>   
+> +               if (entry->type == IOMMU_RESV_DIRECT)
+> +                       dev->iommu->requires_direct = 1;
+> +
+> +               if (!iommu_is_dma_domain(domain))
+> +                       continue;
+> +
+> +               start = ALIGN(entry->start, pg_size);
+> +               end   = ALIGN(entry->start + entry->length, pg_size);
+>                  for (addr = start; addr <= end; addr += pg_size) {
+>                          phys_addr_t phys_addr;
+> 
+> Jason
