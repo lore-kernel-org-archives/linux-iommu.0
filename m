@@ -1,248 +1,220 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 05E6E28E2
-	for <iommu@lists.linux.dev>; Fri, 21 Apr 2023 11:34:42 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CAFE01480;
-	Fri, 21 Apr 2023 04:35:25 -0700 (PDT)
-Received: from [10.57.23.51] (unknown [10.57.23.51])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 18ADE3F587;
-	Fri, 21 Apr 2023 04:34:39 -0700 (PDT)
-Message-ID: <b2725362-aede-44dd-76ce-39482511ec94@arm.com>
-Date: Fri, 21 Apr 2023 12:34:35 +0100
-Precedence: bulk
-X-Mailing-List: iommu@lists.linux.dev
-List-Id: <iommu.lists.linux.dev>
-List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
-List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FC6F2F43
+	for <iommu@lists.linux.dev>; Fri, 21 Apr 2023 12:04:51 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QcRoM1nPVIiKv5573wAxVoJ68keEHVAHPA9btTnt1MTyk2rYr+pSCY/9HTNGqOjHhbygUJGp17hgbCb18ewk1Dt9vHmlr2klEjNyErO5zsUOmj1Yn8gavyn4VEkSNmje3lHWElk27JR6B5QeGeKBZQu/qZoowijIEyGcaouKU3sExqK7j68h6UeUMu4FyDktyoX0g80huzNixaD/yPuyq26Qr+n4N2M9xmJTnCLOKVZIlIzHtQbYq7POcpaWOwupG//je+aYOr/n80chzr4QM7aTjnijlneGeU34yxDEBC6NULcGMiNxPLOkmR/xWC6SqynO8yvd4XB1/j7o7YVAmg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=BN1mAeVG99qv56c3ucjCfOjWqXLWhIXNO89RHcaxaOc=;
+ b=ZEz59jvnN5aOQy4QijSdl+X+U/oUmeS2ADcVZD/i+X7ERR4S4TecE0TFgtsT8hbNzG0i4i4lx/n/yOQ/b9m8hYVslWG+6178gnmTsjsVhqfgjQ/QRFRquV2OaF+NveNF4fNoCuOHsyZiMlRMBRUssVV2SKwF8WW+XhJF/kswers9nvc2AsGW29cFBPL+oVfSE7THR7fejuO/xao0SUmwfsd/FKOuoSKnHMV08Fo271BnTBOAXro8KjBm8BDL0lh6AyLaXzjc+ZNRSS8zndeTJYvn60E1GZ0JsQysahzFnWgCoY8NnTRim0ECWN3QhxVYuovYdz27lj5IfL5ny5xmvg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BN1mAeVG99qv56c3ucjCfOjWqXLWhIXNO89RHcaxaOc=;
+ b=JgV2eov6meyZZqHxvNPfEu8D1FHcW+JdDPtz0C3MatuiXQyXk08k9rxfK1402V5Odzv3xT2VG7GOWZLYMdPO3IVPRiucSTZDPcwKBIrQ+Kd2NkhBNUmCsIoum0lsZ/F5UMeE+5IHhPEYosP2/IUVA3I+lL9JaUn7CKED1n5RGLhWv/t8k656QcOeUnfZxJjRCbIDz+iZGnwH7on4frynlezatLUK3m4nPhUnbn+DMaqd7LTskcLNkY9ogL9n/WQwyERm3QQHlDruyKcGWwvgVv5MDtzZEn3+9ncGaNH7qSbgXaR4SyAtZpAu+rqrG3OdJA7YXL98TKBY+q2mUaH5ww==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by PH7PR12MB8825.namprd12.prod.outlook.com (2603:10b6:510:26a::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.22; Fri, 21 Apr
+ 2023 12:04:48 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6319.020; Fri, 21 Apr 2023
+ 12:04:48 +0000
+Date: Fri, 21 Apr 2023 09:04:46 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
 Subject: Re: RMRR device on non-Intel platform
-Content-Language: en-GB
-To: "Tian, Kevin" <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>
-Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- Jason Gunthorpe <jgg@nvidia.com>, "Lu, Baolu" <baolu.lu@intel.com>
+Message-ID: <ZEJ73s/2M4Rd5r/X@nvidia.com>
 References: <BN9PR11MB5276E84229B5BD952D78E9598C639@BN9PR11MB5276.namprd11.prod.outlook.com>
  <20230420081539.6bf301ad.alex.williamson@redhat.com>
  <6cce1c5d-ab50-41c4-6e62-661bc369d860@arm.com>
  <20230420084906.2e4cce42.alex.williamson@redhat.com>
  <fd324213-8d77-cb67-1c52-01cd0997a92c@arm.com>
  <20230420154933.1a79de4e.alex.williamson@redhat.com>
- <BN9PR11MB52760FCB2D35D08723BE3F2A8C609@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <BN9PR11MB52760FCB2D35D08723BE3F2A8C609@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230420154933.1a79de4e.alex.williamson@redhat.com>
+X-ClientProxiedBy: MN2PR04CA0008.namprd04.prod.outlook.com
+ (2603:10b6:208:d4::21) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
+Precedence: bulk
+X-Mailing-List: iommu@lists.linux.dev
+List-Id: <iommu.lists.linux.dev>
+List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
+List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|PH7PR12MB8825:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4e2d9226-f635-41b1-f0ae-08db42609aab
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	WpQVBEYPb8bGmQhHbI2MgDBrREInKZBZTgcNXW3WKZ4HiG+4Ia8Jp/vQWjGYVM3R+o0+Xchob9poXOZKYvXoNXxMsX1Sg6Q0FfJByvYFfJ6JRv4AjlQ8yLgkkkdf+p5SOosG86y2Kkf9mv8/Hs4f9ury9klaSZykKpGFUFL2vMdQa5nlpiVGeTkWvgys+Avg5/fcuMsO42pEWqWUbzCM9ODFiJYzoHOQvUn+/eCIUgsopWdIbwJ5FxZQjet1hmLl54A2V3Ex6GVSg08KUTl0IAW1rd5sVBxIQYNy7AgNlyKk+Qhj2g6WmX6U/jR6FvM63OBtQvV3Wy5LaLAlChOS2LVrlQg9z5Xqx5zNHsFkIb7HxUXPtW2gGA4fxy9/OZXjW7ziXlz574Oks7kBUc0gF7EMoMFqh3owaJZgDOIEtxaZzHkl4Xn1JEJ8wZB5C+LDyzwnya2fQd0YOrSR062DjjdHh/2QhsqRF2P+WLSS/8BKpocrG4kia3EzhnLeT8YOFYFpvbBvCt+0tn65xhF5r6hWzOlAWWS2iVzOtKz49XHBFQziAlecZLNzJJkqSGl1
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(39860400002)(346002)(136003)(396003)(366004)(451199021)(66899021)(6916009)(316002)(66476007)(54906003)(66946007)(66556008)(4326008)(6512007)(6506007)(26005)(186003)(38100700002)(2616005)(83380400001)(41300700001)(8676002)(5660300002)(8936002)(478600001)(6486002)(86362001)(36756003)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?9KUzU48C31TAz1hh+DDXhRrRBW7ap3eHwfLkVwwDmb/jw29G1uKNiFVD6ZRZ?=
+ =?us-ascii?Q?sLvtWKdtFY1Jptjxd3aCfyu84mT06HnFpC+yByTfZaxrHg/YIDBRTd5e2tA0?=
+ =?us-ascii?Q?feGXyknBWl4txT7sWCfoyP0WUYj0uw0joL8TimrrU82jZFkdgMzqOzk15AN5?=
+ =?us-ascii?Q?H+3nwVgs4wyJC3ya2nRIGf/6RDGZ2LJjW3JB162bO0cRdZA0SzIXjlUwLmhv?=
+ =?us-ascii?Q?8o7rtQJNRRen6vU9IsIM1vJ+cA0SdZmOsi0WCWiKpPaQccTD26mhkOZtMX/+?=
+ =?us-ascii?Q?JWHUlykJOQzjB1RnS1aviqxfBd1YckXBxi4u3NwcPwCDY2Ex4V77OFbF398u?=
+ =?us-ascii?Q?AuBFXFUiU0+0aRhcEM5sWIKod0YS4vA31unc0Dxw/FIvPc4N4qZM2foiaTD/?=
+ =?us-ascii?Q?NjvURdxnDchXvz1+enk0aFzRpqm7MuOSy+NFs94fiPFIH4q5WgL2tgN4pkJT?=
+ =?us-ascii?Q?gyeKAJAS1CtK4fLOAmhJuIuJKO2HQFWIoAU8jXp9E/nIQ6ERppsx6NAcQgwU?=
+ =?us-ascii?Q?esJCswBalyWDoE4UY9C+/Wv1RblFUqnOLj/UiLQpvd8X0h+NefWGAspgJzeI?=
+ =?us-ascii?Q?VByqjJrAmRbtgJkvmpeUtoRYdAODWoGqqBMiEUqGQi8ywoK5b4scEGtOFG3a?=
+ =?us-ascii?Q?Pf/4UCR0Rw5AnDAmoRoFmgS5RvJnqU6p3Xd6KCe7NYafHLt55G1nFfAVzrlZ?=
+ =?us-ascii?Q?EVtOwUM5msBBzIi3Is/N8SiJxlVndP6cD51N/S+d4xPwmHOlKNP1Z5xbFCsa?=
+ =?us-ascii?Q?5zJ0BYi2sxF37OHWtJIRTFj6L+laalgcHoV08+VU87z/E8gHwzob/8xdDTSe?=
+ =?us-ascii?Q?YPIuKazjahYcpE1usarGdTYPVAgcN2QOgr7QC5O8O2lymdHolyamzYFg2vUe?=
+ =?us-ascii?Q?m90rGnKFxVWhuwcVS8o3iyDuCJwYq3RtwkGbxHSz2Q99CBGXskJDUvuDOY6O?=
+ =?us-ascii?Q?19LhytZ1GamLLuO83K94Sy/Ld4bC8kCPQeBOUH1QMsSpcIfsWpNbeRPz8hUH?=
+ =?us-ascii?Q?FF57w5u7eh72yNaxQRx3xXgNZt/lLtN/ys1SgstkpK2INKmCTJQMn/xdrSNU?=
+ =?us-ascii?Q?PL0jQURc6eHkcFsq9EoSF+OgimVYqfWclZKo/4G4RBKNi2ip9Ejcn1GlZ+DL?=
+ =?us-ascii?Q?rvAW7TfVXsQtB9xN+6Y4rwmeIN9aEobMWfu/piUB4FI28RB05CdOJ6vTBP3l?=
+ =?us-ascii?Q?WxqjNBpzGB2vSsBX8mcet3pWS8YuYc5f0thZyqCxvpQNh2zhZA2Bd4av7xdG?=
+ =?us-ascii?Q?ox9/W/UbEznoKrUTAeQxkUX8QoqtASeTj4ZFL4YFgwf9I/iRIfOmitfqo73V?=
+ =?us-ascii?Q?FM0cYhn5PjMpO2ct+3gXi/tgeH4SgqkppxAjkSGzCymD8Y5m1AiyS31p05IU?=
+ =?us-ascii?Q?5wuJYEJTNTNA7v2H5D3d67TVlv2n3e/xcoGk5jgsxLDUtyfFpvV/XFLLmCgr?=
+ =?us-ascii?Q?cWKkXZLIPAHMpTP0IoIA+sEkmJfqBy4Qb3w7jFQnSbBUNPLfOapd0NR6V8Zf?=
+ =?us-ascii?Q?bFZUdph5qz9PNMD/3iJSzik7kXMvYeA+9Uh/PWqaJFaJWKl2fDnEkjE9IDWb?=
+ =?us-ascii?Q?sLQKcyWNe50zZUPR1rD+/0mAGEsNBpsLlqZnja1p?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4e2d9226-f635-41b1-f0ae-08db42609aab
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Apr 2023 12:04:48.4025
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1Hs7sG6o1gpu7SN+QZ7ESlBbRcUCucCvo30Y3dyiyYG9XabcHgh1RDmrCHCHRW5n
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB8825
 
-On 2023-04-21 05:10, Tian, Kevin wrote:
->> From: Alex Williamson <alex.williamson@redhat.com>
->> Sent: Friday, April 21, 2023 5:50 AM
+On Thu, Apr 20, 2023 at 03:49:33PM -0600, Alex Williamson wrote:
+> > If we think this policy deserves to go beyond VFIO and userspace, and 
+> > it's reasonable that such devices should never be allowed to attach to 
+> > any other kind of kernel-owned unmanaged domain either, then we can 
+> > still trivially enforce that in core IOMMU code. I really see no need 
+> > for it to be in drivers at all.
+> 
+> It seems like a reasonable choice to me that any mixing of unmanaged
+> domains with IOMMU_RESV_DIRECT could be restricted globally.  Do we
+> even have infrastructure for a driver to honor the necessary mapping
+> requirements?
 
-[ 2-in-1 reply since I'm lazy... ]
+What we discussed about the definition of IOMMU_RESV_DIRECT was that
+an identity map needs to be present at all times. This is what is
+documented at least:
 
->> On Thu, 20 Apr 2023 17:55:22 +0100
->> Robin Murphy <robin.murphy@arm.com> wrote:
->>
->>> On 20/04/2023 3:49 pm, Alex Williamson wrote:
->>>> On Thu, 20 Apr 2023 15:19:55 +0100
->>>> Robin Murphy <robin.murphy@arm.com> wrote:
->>>>
->>>>> On 2023-04-20 15:15, Alex Williamson wrote:
->>>>>> On Thu, 20 Apr 2023 06:52:01 +0000
->>>>>> "Tian, Kevin" <kevin.tian@intel.com> wrote:
->>>>>>
->>>>>>> Hi, Alex,
->>>>>>>
->>>>>>> Happen to see that we may have inconsistent policy about RMRR
->> devices cross
->>>>>>> different vendors.
->>>>>>>
->>>>>>> Previously only Intel supports RMRR. Now both AMD/ARM have
->> similar thing,
->>>>>>> AMD IVMD and ARM RMR.
->>>>>>
->>>>>> Any similar requirement imposed by system firmware that the
->> operating
->>>>>> system must perpetually maintain a specific IOVA mapping for the
->> device
->>>>>> should impose similar restrictions as we've implemented for VT-d
->>>>>> RMMR[1].  Thanks,
->>>>>
->>>>> Hmm, does that mean that vfio_iommu_resv_exclude() going to the
->> trouble
->>>>> of punching out all the reserved region holes isn't really needed?
->>>>
->>>> While "Reserved Memory Region Reporting", might suggest that the
->> ranges
->>>> are simply excluded, RMRR actually require that specific mappings are
->>>> maintained for ongoing, side-band activity, which is not compatible
->>>> with the ideas that userspace owns the IOVA address space for the
->>>> device or separation of host vs userspace control of the device.  Such
->>>> mappings suggest things like system health monitoring where the
->>>> influence of a user-owned device can easily extend to a system-wide
->>>> scope if the user it able to manipulate the device to deny that
->>>> interaction or report bad data.
->>>>
->>>> If these ARM and AMD tables impose similar requirements, we should
->>>> really be restricting devices encumbered by such requirements from
->>>> userspace access as well.  Thanks,
->>>
->>> Indeed the primary use-case behind Arm's RMRs was certain devices like
->>> big complex RAID controllers which have already been started by UEFI
->>> firmware at boot and have live in-memory data which needs to be
->> preserved.
->>>
->>> However, my point was more that if it's a VFIO policy that any device
->>> with an IOMMU_RESV_DIRECT reservation is not suitable for userspace
->>> assignment, then vfio_iommu_type1_attach_group() already has
->> everything
->>> it would need to robustly enforce that policy itself. It seems silly to
->>> me for it to expect the IOMMU driver to fail the attach, then go ahead
->>> and dutifully punch out direct regions if it happened not to. A couple
->>> of obvious trivial tweaks and there could be no dependency on driver
->>> behaviour at all, other than correctly reporting resv_regions to begin with.
->>>
->>> If we think this policy deserves to go beyond VFIO and userspace, and
->>> it's reasonable that such devices should never be allowed to attach to
->>> any other kind of kernel-owned unmanaged domain either, then we can
->>> still trivially enforce that in core IOMMU code. I really see no need
->>> for it to be in drivers at all.
->>
->> It seems like a reasonable choice to me that any mixing of unmanaged
->> domains with IOMMU_RESV_DIRECT could be restricted globally.  Do we
->> even have infrastructure for a driver to honor the necessary mapping
->> requirements?
+	/* Memory regions which must be mapped 1:1 at all times */
+	IOMMU_RESV_DIRECT,
 
-In principle a driver that knew what it was doing could call 
-iommu_group_get_resv_regions() and map them into its own domain before 
-attaching. Since nothing upstream *is* actually doing that, though, I'd 
-have no real objection to restricting this at the API level as the 
-safest approach, then coming back to consider exceptional cases if and 
-when anybody does really have one.
+Notably, this also means the device can never be attached to a
+blocking domain. I would also think that drivers asking for this
+should ideally implement the "atomic replace" we discussed already to
+change between identity and unmanaged without disturbing the FW doing
+DMA to these addresses..
 
->> It looks pretty easy to do as well, something like this (untested):
->>
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 10db680acaed..521f9a731ce9 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -2012,11 +2012,29 @@ static void
->> __iommu_group_set_core_domain(struct iommu_group *group)
->>   static int __iommu_attach_device(struct iommu_domain *domain,
->>   				 struct device *dev)
->>   {
->> -	int ret;
->> +	int ret = 0;
->>
->>   	if (unlikely(domain->ops->attach_dev == NULL))
->>   		return -ENODEV;
->>
->> +	if (domain->type == IOMMU_DOMAIN_UNMANAGED) {
->> +		struct iommu_resv_region *region;
->> +		LIST_HEAD(resv_regions);
->> +
->> +		iommu_get_resv_regions(dev, &resv_regions);
->> +		list_for_each_entry(region, &resv_regions, list) {
->> +			if (region->type == IOMMU_RESV_DIRECT) {
->> +				ret = -EPERM;
->> +				break;
->> +			}
->> +		}
->> +		iommu_put_resv_regions(dev, &resv_regions);
->> +		if (ret) {
->> +			dev_warn(dev, "Device may not be used with an
->> unmanaged IOMMU domain due to reserved direct mapping
->> requirement.\n");
->> +			return ret;
->> +		}
->> +	}
->> +
->>   	ret = domain->ops->attach_dev(domain, dev);
->>   	if (ret)
->>   		return ret;
->>
->> Restrictions in either type1 or iommufd would be pretty trivial as well,
->> but centralizing it in core IOMMU code would do a better job of covering
->> all use cases.
+I was looking at this when we talked about it earlier and we don't
+follow that guideline today for vfio/iommufd.
 
-Indeed, I was thinking that either way, since we usually process the 
-reserved regions at probe time anyway, it only needs a slight shuffle to 
-cache this as a flag that both core code and/or users can easily refer 
-to (so VFIO and IOMMUFD could still identify unsuitable devices long 
-before having to go as far as the attach failing). Something like:
+Since taking ownership immediately switches to a blocking domain
+restricting the use of blocking also restricts ownership thus vfio and
+iommufd will be prevented.
+
+Other places using unmanaged domains must follow the
+iommu_get_resv_regions() and setup IOMMU_RESV_DIRECT - we should not
+restrict them in the core code.
+
+It also slightly changes my prior remarks to Robin about error domain
+attach handling, since blocking domains are not available for these
+devices the "error state" for such a device should be the identity
+domain to preserve FW access.
+
+Also, we have a functional gap, ARM would really like a
+IOMMU_RESV_DIRECT_RELAXABLE_SAFE which would have iommufd/vfio install
+the 1:1 map and allow the device to be used. This is necessary for the
+GIC ITS page hack to support MSI since we should enable VFIO inside a
+VM. It is always safe for hostile VFIO userspace to DMA to the ITS
+page.
+
+So, after my domain error handling series, the core fix is pretty
+simple and universal. We should also remove all the redundant code in
+drivers - drivers should report the regions each devices needs
+properly and leave enforcement to the core code.. Lu/Kevin do you want
+to take this?
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 265d34e9cbcb..53d3daef7a7b 100644
+index 19f8d28ff1323c..c15eb5e0ba761d 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -935,19 +935,20 @@ static int 
-iommu_create_device_direct_mappings(struct iommu_group *group,
-  {
-  	struct iommu_domain *domain = group->default_domain;
-  	struct iommu_resv_region *entry;
--	struct list_head mappings;
-+	LIST_HEAD(mappings);
-  	unsigned long pg_size;
-  	int ret = 0;
-
-+	iommu_get_resv_regions(dev, &mappings);
-+	list_for_each_entry(entry, &mappings, list)
+@@ -1059,6 +1059,9 @@ static int iommu_create_device_direct_mappings(struct iommu_domain *domain,
+ 		    entry->type != IOMMU_RESV_DIRECT_RELAXABLE)
+ 			continue;
+ 
 +		if (entry->type == IOMMU_RESV_DIRECT)
-+			dev->iommu->has_resv_direct = true;
++			dev->iommu->requires_direct = 1;
 +
-  	if (!domain || !iommu_is_dma_domain(domain))
--		return 0;
-+		goto out;
-
-  	BUG_ON(!domain->pgsize_bitmap);
--
-  	pg_size = 1UL << __ffs(domain->pgsize_bitmap);
--	INIT_LIST_HEAD(&mappings);
--
--	iommu_get_resv_regions(dev, &mappings);
-
-  	/* We need to consider overlapping regions for different devices */
-  	list_for_each_entry(entry, &mappings, list) {
-
->>
->> This effectively makes the VT-d code further down the same path
->> redundant, so no new restrictions there.
->>
->> What sort of fall-out should we expect on ARM or AMD?  This was a pretty
->> painful restriction to add on Intel.  Thanks,
-
-I can't speak for AMD, but I wouldn't imagine any noticeable fallout for 
-Arm. RMRs are still relatively new, and the devices that I've heard 
-about seem highly unlikely to ever want to be assigned to userspace 
-directly (they may well provide virtual functions or sub-devices that 
-absolutely *would* be used with VFIO, but the "host" device owning the 
-RMRs would not be).
-
->>
-> 
-> What about device_rmrr_is_relaxable()? Leave it in specific driver or
-> consolidate to be generic?
-
-That's where the generic information already comes from, since it 
-provides the region type in intel_iommu_get_resv_regions() - the 
-existing resv_region abstraction *is* the consolidation. AFAICS it would 
-be needlessly painful to start trying to directly process bits of DMAR 
-or IRVS outside their respective drivers. It's only 
-device_is_rmrr_locked() which would become redundant here.
-
-> intel-iommu sets RELAXABLE for USB and GPU assuming their RMRR region
-> is not used post boot.
-> 
-> Presumably same policy can be applied to AMD too.
-> 
-> ARM RMR reports an explicit flag (ACPI_IORT_RMR_REMAP_PERMITTED) to
-> mark out whether a RMR region is relaxable. I'm not sure whether USB/GPU
-> is already covered.
-
-Arm systems have no legacy of needing to offer compatibility with a PC 
-BIOS from the 1990s, so PS/2 or VGA emulation is a non-issue for us ;)
-
-Thanks,
-Robin.
+ 		for (addr = start; addr <= end; addr += pg_size) {
+ 			phys_addr_t phys_addr;
+ 
+@@ -2210,6 +2213,22 @@ static int __iommu_device_set_domain(struct iommu_group *group,
+ {
+ 	int ret;
+ 
++	/*
++	 * If the driver has requested IOMMU_RESV_DIRECT then we cannot allow
++	 * the blocking domain to be attached as it does not contain the
++	 * required 1:1 mapping. This test effectively exclusive the device from
++	 * being used with iommu_group_claim_dma_owner() which will block vfio
++	 * and iommufd as well.
++	 */
++	if (dev->iommu->requires_direct &&
++	    (new_domain->type == IOMMU_DOMAIN_BLOCKED ||
++	     new_domain == group->blocking_domain)) {
++		dev_warn(
++			dev,
++			"Firmware has requested this device have a 1:1 IOMMU mapping, rejecting configuring the device without a 1:1 mapping. Contact your platform vendor.");
++		return -EINVAL;
++	}
++
+ 	if (dev->iommu->attach_deferred) {
+ 		if (new_domain == group->default_domain)
+ 			return 0;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 3ad14437487638..7729a07923faa6 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -407,6 +407,7 @@ struct iommu_fault_param {
+  * @priv:	 IOMMU Driver private data
+  * @max_pasids:  number of PASIDs this device can consume
+  * @attach_deferred: the dma domain attachment is deferred
++ * @requires_direct: The driver requested IOMMU_RESV_DIRECT
+  *
+  * TODO: migrate other per device data pointers under iommu_dev_data, e.g.
+  *	struct iommu_group	*iommu_group;
+@@ -420,6 +421,7 @@ struct dev_iommu {
+ 	void				*priv;
+ 	u32				max_pasids;
+ 	u32				attach_deferred:1;
++	u32				requires_direct:1;
+ };
+ 
+ int iommu_device_register(struct iommu_device *iommu,
