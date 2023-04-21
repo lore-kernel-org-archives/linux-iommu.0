@@ -1,152 +1,69 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4D1A17C2
-	for <iommu@lists.linux.dev>; Fri, 21 Apr 2023 06:28:12 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ezhMOR6aGdvGsH2dqTRrEC+tGNutYitAVhYH2Si6+Y2ZG4+Q0TYrOKXWovEIsFaloU8ue/5d0Uyi+Zu5NviGA25u4OtBNFt/IPc8O20sqRse8xoremMSfKxci9abKAkJa76xZAtw6XqW6nYrc4S6BOPUF02YcU6MtCxU2nByvG0I3EAwKNhYMK/V6gfuvy1ocVS3SRShhEIfC8bOdAf3t6pEx87gXPVqTxCwWLXPcGk3Ugd/+LxqCfS9e2KoqX/z1Tnv76CyMW6seQF42J1AVG6w0Ne3u8+1W4Tqp/iLbPDLh0uA/Qy6AVakdJt2pGIxp108E6PA5vdgsRhQb4ImIA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=q5jQKZ4J6OC06VUjdaR9kztWro/dStS35oK1yyzES0Q=;
- b=at6jO6CcMIA4whOF5yPQffQrWDAdIVz9owsJRpYEBoERA4yJv1i6sve+qGot/aMEuz1UY9xnIh9cB+UyU99E5u2pqr6V26DWOEoPdMntp5BTHFrFh6aLbhu2xsCNJfe0Ga4Ko7c7UDC4HWLW8yg4hbHl6p6O4ofWFwznEuV1O+YE9FU4rxZBjyGwm4h2DiBXDBz9tWjeLcnx4hjFzxOvLCjw6DT0UWS1DIj1IM+vSiGPZzd+ompmLMK1yDXAbhUq1oOtyyC0xnVOugkSlpNnDhg/+85VQ8HcdpVKuPpwHD+l1sml7gc5pXECisc+d0IqnRfQECrMXO/Yyej89jExoA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=q5jQKZ4J6OC06VUjdaR9kztWro/dStS35oK1yyzES0Q=;
- b=eWzMWni2xB9xaE6lG4WXr+l2Prc6NJJzaRgsyNbEalm/YrEWkoYpMyl43xKqu9iueVB0oV4tZDp6KutprNdW1WeZNt3+bPmkOasm93/AZdZo9Bs07qD1puTWq+VoUp1JHfoCaxCZyira0OZRHS7iZ6lEN6THNZSEhaHmxU6w4/0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from IA1PR12MB6043.namprd12.prod.outlook.com (2603:10b6:208:3d5::20)
- by MW4PR12MB7468.namprd12.prod.outlook.com (2603:10b6:303:212::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.22; Fri, 21 Apr
- 2023 06:28:09 +0000
-Received: from IA1PR12MB6043.namprd12.prod.outlook.com
- ([fe80::ba93:7430:35d:284]) by IA1PR12MB6043.namprd12.prod.outlook.com
- ([fe80::ba93:7430:35d:284%6]) with mapi id 15.20.6319.020; Fri, 21 Apr 2023
- 06:28:09 +0000
-Message-ID: <d85e993d-5474-3222-62a9-4489b33d94a0@amd.com>
-Date: Fri, 21 Apr 2023 11:57:57 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] iommu: amd: Use page mode macros in fetch_pte
-Content-Language: en-US
-To: Jerry Snitselaar <jsnitsel@redhat.com>, iommu@lists.linux.dev
-Cc: linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
- Will Deacon <will@kernel.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Joerg Roedel <joro@8bytes.org>
-References: <20230420080718.523132-1-jsnitsel@redhat.com>
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20230420080718.523132-1-jsnitsel@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN3PR01CA0035.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:97::14) To IA1PR12MB6043.namprd12.prod.outlook.com
- (2603:10b6:208:3d5::20)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A0DA17F8
+	for <iommu@lists.linux.dev>; Fri, 21 Apr 2023 07:27:15 +0000 (UTC)
+Received: from dggpemm500006.china.huawei.com (unknown [172.30.72.55])
+	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Q2mJs40vYzsSv8;
+	Fri, 21 Apr 2023 15:25:33 +0800 (CST)
+Received: from thunder-town.china.huawei.com (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Fri, 21 Apr 2023 15:27:05 +0800
+From: Zhen Lei <thunder.leizhen@huawei.com>
+To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Will
+ Deacon <will@kernel.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>
+CC: Zhen Lei <thunder.leizhen@huawei.com>
+Subject: [PATCH v2] iommu/iova: Optimize iova_magazine_alloc()
+Date: Fri, 21 Apr 2023 15:24:21 +0800
+Message-ID: <20230421072422.869-1-thunder.leizhen@huawei.com>
+X-Mailer: git-send-email 2.37.3.windows.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: IA1PR12MB6043:EE_|MW4PR12MB7468:EE_
-X-MS-Office365-Filtering-Correlation-Id: 95f52e0c-e39d-424d-9c4b-08db42319344
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	snxg13d+S//EubTAUGrDrRwasXBDElNLduNGCkz2fh7AllRdBDH1uHJRL/7Pzdj417sOLUSmPNHwiNKtKoRI9wj1We2Yvw2+JKE47yRTzfFbyF+DLEL+Wf9Q+RRsMNH1OsY+RbmVgdnR7oE8yOsb4aY6b0MQrLOtfiJWKyGQEuRLmWlcOyyMfxrzYFpgzf0m+aIOW8LPNu/y7gZKaOxhpw6ntTi7BFiayG2MbMGkPkH8NEngfSBqIxNX3H0slXjoxsivfeFDNabnzBzZj9LF1l7TnMJ7WFuST3HdClb9/1CyqcZQNjMalEymZez2xAJ60SvzZlj93mf9SALu1VtZglVEtVtVSpXyNKGDi9sPbQFo7Sa4HWRwG9tDgYzdjXg1bRKQp7TswGu+JKMISfBgrDHg1Fv5IkBbGjmtCKJZHTYouSJDqT9jv/sqsca8o8j98pMgiczvHfPBXGKpX0g+D+bwwtp+uWBHjXmOGIWp6hB1q1093I8qPd1LeSLngRqgtrD190lbvu/u9TzGntaaKJbJxVM+Tshq/5/WEwMz3xkvPrcyeE94fK936wQSlueaanq8/6cc6JxG2t8BwqspDNsgLVwciixhSBzpqCMG4YOI2dbf9sIqyd0M3LTVibzctDIlK/8djBAJK2idh2rPSg==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB6043.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(136003)(39860400002)(346002)(366004)(396003)(451199021)(4326008)(316002)(478600001)(66946007)(66476007)(66556008)(54906003)(5660300002)(8936002)(38100700002)(8676002)(41300700001)(186003)(53546011)(83380400001)(2616005)(6486002)(6666004)(6512007)(6506007)(26005)(86362001)(31696002)(2906002)(36756003)(31686004)(44832011)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?NGQxU3ozbWQ2UXlQLy82SFdSd1QvT2RzL3M0QnR0NlptTzRSVXE4MUlKOTVa?=
- =?utf-8?B?RzhIbk90dGpwR2phTmtWdjJyUm5sSk0yQ2UrNVlNS1lFcnd2MHFwWGcxNDRQ?=
- =?utf-8?B?aDJkaVRVb1NWZWIzNlpxNG9VeWpYTDJsVXg2ckF0U2M4dnpSUWZ4eVVrR0dz?=
- =?utf-8?B?SXhYbUlPczRYcGwxMkYrZHByMjRzQlg1ZjdVUEpUT3NESE13eVBpMDExOWYr?=
- =?utf-8?B?VWRrSVFzd0V3ald4MnJyVkx1QUpWNTJldGpyekJUbXdvRkg5N0ROcEMxUmVI?=
- =?utf-8?B?b05uUGlIaXFmZ0JNZWt3SVVPcW1VSFAySzkrUVFCeXg5TXZDOW96dWl1Rmt1?=
- =?utf-8?B?cXJrQmlRdlI4Wjk4enp0MExmdGc0NEI3dHZzclpKRVU4OWFKblB1YWVmOS9h?=
- =?utf-8?B?bkdRT3ozUDFha3hnQUt0c0x1ZFVsdlgxQVhJdG43U1BDZHBBaUdBT25CcnYz?=
- =?utf-8?B?M2M2elkvMEIxeUxBb1hrc0t4QjdCRHpJTk5zNDlmdUlaZEZqMjlOdVZoL2wv?=
- =?utf-8?B?ajRxbHVKdlQ5VEJMWnErVDM4OU9EeXVCcDEwZDViSDRTemdmUUZUVjZVeE1S?=
- =?utf-8?B?aytxejIzZjZzVUtjQStPVnZxVDR4aEFiZkVNM1hJbyt1UVk3Y3ZDWi9BWDVt?=
- =?utf-8?B?TWdWcTBBRG5jM29vT2d2RllrWEpMc3VCcWpFbVo1emtEQzVkbStXdG9jMXBU?=
- =?utf-8?B?QU5pKzNiMmtuNXFnbGdLTnVwemtOemNSQzVRclBFM1lBc1VycmE4RDlPNlBh?=
- =?utf-8?B?TWRLZjRoWmRqR3d3QkhtdkR3RGdMRnBYUWF2am4zQ3ZMKzhhSjNzV3NJVXNP?=
- =?utf-8?B?ZUpiclRPRmpWTHQwV003bEovV25aT0NWL3RpWmt6WXN4WW9JZFpoOEpJVit6?=
- =?utf-8?B?U3pCajhpSmxIZ0FLaUVpdXBVcHU2ZUswUG03bGhyblFuQytjR08xczNENUkz?=
- =?utf-8?B?MkY0S1VsK0FtN25BZ2V1dlZRZHRXM24wQ0hwNDhjYlFuYUU0d2NpK0tFUlI2?=
- =?utf-8?B?WHhuZkw1dzR2OTRaRjZxaVFHb2hzSEVIS3hXdU1ETUM3YmpaeGNXNTBRajkw?=
- =?utf-8?B?Njh1VWJ6aXN4MmI1cndmKy85Unl3SStIeWVadUN6OEsyVHRVVEZIUmlnSS9S?=
- =?utf-8?B?MmFURWVOYXZyYVFKcy93N245S2NCMWp0UEFkQXR1VDdRV29RYTJpaU5uczBZ?=
- =?utf-8?B?T3JKUS9HRHV5a01jUHhwVEE0V0FxUzRVZ0VzUnRscFgvNVErYkcwVWk2S3FK?=
- =?utf-8?B?RW01ODRZaXdZUk1LcFNyZGxXdERxeTByZzBwb3N6OWdjeVNIdmNENERqMlJs?=
- =?utf-8?B?eUt5d2pBOTExOTQydU5WSitQYnNNT0tKVDNsUHN6S2R2SUhRbnBBaFpJb0lB?=
- =?utf-8?B?TmVzZHU0eXUreDRDLzd0bStZN0pHSmNTbGhkNFBYRDZpaDFWaktQbUtJUmRG?=
- =?utf-8?B?bUhTMG1FZjBxamlZWk1VUkxTTk56N1A1dDZ5V09aTjhhSFF4WUV1c3JDQUlX?=
- =?utf-8?B?QkpYQ2lFWEJUSWsyVmZpM2VjREtSeGkrT1BqelNKU1BuMUV5S3BEeXdVRnpj?=
- =?utf-8?B?TlNiSE5kWXVmU1JvVTZ3RFZZZnRqTTdXWW9oY0JtdisxcUo4WW1IZUVVUmxh?=
- =?utf-8?B?cStxWXg0SXhlVkNPQmM1eGpoaXpNRVhRQ1ZaTVdIZ2dCcW9wODA4NFVKcEli?=
- =?utf-8?B?dUdvRVljRFJ6YlVWMGhNMnBOYytBZkRaUlZqMlpqSjhzSkdZYmlacEVHTC9y?=
- =?utf-8?B?V0JFZHpjTWlTNWNDL1ZpR3lpMjkxVTJZbTVnTlY4enRwNUpXeVU3YWJQMUl1?=
- =?utf-8?B?azE3ZW1EUnpRN0J4SGZhREpTVDhiZDdxSWgwL2IvQzFCeElQaEVJRG9aR090?=
- =?utf-8?B?TnRGS2FpZXFuaVlxT2NXM0ZZUGYxUVFpM1REdC9SRkwrYkJxR1VmbGtoUk1E?=
- =?utf-8?B?Z1QvTmhoME1LbU9WaUhSazdIb0JIT2ppVjU2T3BPdmFJbjRsUkZtNFgrbGZV?=
- =?utf-8?B?dklDUDBhZVNMVndjTm1TY2ZEYlRYUDRhbHYrY1crSlpkK2xka0FNVTMwRXZO?=
- =?utf-8?B?Ymp3eU1OQ0M3UjFXa1VuaU14K01ib0o1US9qeHNZNWUzbnh6UFhtdFJaZlRS?=
- =?utf-8?Q?JhgPoUreNNJ1QcbKzp0+G4RAf?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 95f52e0c-e39d-424d-9c4b-08db42319344
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB6043.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Apr 2023 06:28:09.7466
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tCKRPYD2i4USaJTqBf0loTFwkgeiY9AvymDC9AbNZZ/sRoGkmTQdqYTp4FEUDtNfKN+52YjRY1XaHT0mcarG/g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7468
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 
-On 4/20/2023 1:37 PM, Jerry Snitselaar wrote:
-> Use the page mode macros instead of magic numbers in fetch_pte.
-> 
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Signed-off-by: Jerry Snitselaar <jsnitsel@redhat.com>
+Only the member 'size' needs to be initialized to 0. Clearing the array
+pfns[], which is about 1 KiB in size, not only wastes time, but also
+causes cache pollution.
 
-Thanks for the fix.
+Acked-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+---
+ drivers/iommu/iova.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+v1 --> v2:
+Change sizeof(struct iova_magazine) to sizeof(*mag).
 
--Vasant
-
-
-
-> ---
->  drivers/iommu/amd/io_pgtable.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd/io_pgtable.c b/drivers/iommu/amd/io_pgtable.c
-> index ace0e9b8b913..61a99d715b23 100644
-> --- a/drivers/iommu/amd/io_pgtable.c
-> +++ b/drivers/iommu/amd/io_pgtable.c
-> @@ -310,8 +310,8 @@ static u64 *fetch_pte(struct amd_io_pgtable *pgtable,
->  			return NULL;
->  
->  		/* Large PTE */
-> -		if (PM_PTE_LEVEL(*pte) == 7 ||
-> -		    PM_PTE_LEVEL(*pte) == 0)
-> +		if (PM_PTE_LEVEL(*pte) == PAGE_MODE_7_LEVEL ||
-> +		    PM_PTE_LEVEL(*pte) == PAGE_MODE_NONE)
->  			break;
->  
->  		/* No level skipping support yet */
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index fe452ce466429a7..10b964600948c7f 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -647,7 +647,13 @@ struct iova_rcache {
+ 
+ static struct iova_magazine *iova_magazine_alloc(gfp_t flags)
+ {
+-	return kzalloc(sizeof(struct iova_magazine), flags);
++	struct iova_magazine *mag;
++
++	mag = kmalloc(sizeof(*mag), flags);
++	if (mag)
++		mag->size = 0;
++
++	return mag;
+ }
+ 
+ static void iova_magazine_free(struct iova_magazine *mag)
+-- 
+2.25.1
 
