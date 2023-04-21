@@ -1,206 +1,194 @@
-Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2068.outbound.protection.outlook.com [40.107.243.68])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97BEF20EE
-	for <iommu@lists.linux.dev>; Fri, 21 Apr 2023 08:08:51 +0000 (UTC)
-Received: by mail-pf1-f182.google.com with SMTP id d2e1a72fcca58-63b51fd2972so1654055b3a.3
-        for <iommu@lists.linux.dev>; Fri, 21 Apr 2023 01:08:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682064531; x=1684656531;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=nzB2tRHUMpY4/jWB4OcD6fcV69kfby6bK1LT2yyBg70=;
-        b=g9kfim8d+Vk0mQnBvIOH4ImhS4V+c+JFV4XsRodLvmi576g3CWkjVBQhiGve+JGO2W
-         ciCAzsUNG6deM3sUmB/IDi4J/OXFFlxbV5xXsg7zLhoZIE98++44wg9UQERwzuAUL+TW
-         B39puxyPpjQn2Vi5j5bG6sTYfvF0kGSXTTX/J/WS0rDlz0iN6EOE3ep7dQqIdyWPG3xY
-         frCXhqUOSHuwedCyAjnB0jumW6e4zHKAmD3+KxpdaXXClaiQWZmVQ+ckXRVDNSX5iKWU
-         7wL0K4yqLUV8EYdhWs4yY/xjMIZAj+BdP2avNaal+Fsw6zl1wDdNqWHDfpS0xfLE/v04
-         WpNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682064531; x=1684656531;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=nzB2tRHUMpY4/jWB4OcD6fcV69kfby6bK1LT2yyBg70=;
-        b=S37mpprlXG4Fo7RmfAVfoYIzZLqC/Ug3CSG7pib7+OD3qPk0tmR9PvNERXQt+nVE6X
-         aS7vRh4oOpB7HFDgyekHvRI01qSpnjMR6aWG2EQ7SfN1WgqMXgZGqbGs5zbBy34LIrtq
-         raA+7JuM+I+UDT3Xa3GdmLUvhmR1lU1S28SELdsKIksPUbPRjOQIZ1vJoQ1GZt/+vTIF
-         DGcDDwJvM2vvIXMtt8hbEwozc20+b21s7LujDq7v9O0S2PWjW9PHc9SsQAFn1VBqarDd
-         uEpkXc3r0EKTxUfJmJpJg1Y/B1bxjvf2rRagHV7WTDcA/LCrcPx497Fmrya07OyYJzza
-         cm4A==
-X-Gm-Message-State: AAQBX9eW6OSjTo5oj5IrYzLOdMHZ4YvaG6nifS9y7ivJJH3D0kAON+JH
-	7ak0uTX5JVLmrItw0PY9Zro=
-X-Google-Smtp-Source: AKy350YGRd1wzVogkJKU8OrquqXB6g+GXFM2plXr4/0HV+QHcdO7zKGrsiRb3HrK+iYKL1k9vhhJtw==
-X-Received: by 2002:a05:6a00:2e8b:b0:63c:6485:d5e5 with SMTP id fd11-20020a056a002e8b00b0063c6485d5e5mr5501907pfb.22.1682064530738;
-        Fri, 21 Apr 2023 01:08:50 -0700 (PDT)
-Received: from AHUANG12-3ZHH9X.lenovo.com (220-143-221-73.dynamic-ip.hinet.net. [220.143.221.73])
-        by smtp.gmail.com with ESMTPSA id c139-20020a621c91000000b005d6999eec90sm2416817pfc.120.2023.04.21.01.08.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Apr 2023 01:08:50 -0700 (PDT)
-From: Adrian Huang <adrianhuang0701@gmail.com>
-To: linux-nvme@lists.infradead.org
-Cc: Keith Busch <kbusch@kernel.org>,
-	Jens Axboe <axboe@fb.com>,
-	Christoph Hellwig <hch@lst.de>,
-	Sagi Grimberg <sagi@grimberg.me>,
-	iommu@lists.linux.dev,
-	Adrian Huang <adrianhuang0701@gmail.com>,
-	Jiwei Sun <sunjw10@lenovo.com>,
-	Adrian Huang <ahuang12@lenovo.com>
-Subject: [PATCH v2 1/1] nvme-pci: clamp max_hw_sectors based on DMA optimized limitation
-Date: Fri, 21 Apr 2023 16:08:00 +0800
-Message-Id: <20230421080800.18837-1-adrianhuang0701@gmail.com>
-X-Mailer: git-send-email 2.25.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C34220EE
+	for <iommu@lists.linux.dev>; Fri, 21 Apr 2023 08:20:30 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Gnr7mVIq/GVsMMlIh8YGHe3VEchhio9NtN0OaRow2p73uxINve6Q2w89maHqqc8oF390EIeTZdKmy9MictrkhvLTu48B2XLfyZiQD2zvHJCoapP1gOySmltK1loFVTdoZS5aW6HUVddtfEg9u7UjTuSwuheM0yTzdcAlV1lt3mJ0guq4mdsrJPnWC8tuIZQosTETV1rDqj1jNFJsRbFyQPR7LqUPrfbYtS78nhD58PnU/C2f/XiDQlSPhdwDkUJ4xuKOq2GX4+/yCuqyv93abjH7WoDVd07itbVDLAgcWKxJqKx1iuE556ISfaHsWtoc5VTT0X0f9tSuowg4k50EAQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JWQWxUDWpFX9Z46EKQrJqcY8B/G36WRGl5KDUyq0ALg=;
+ b=NZlG1fbjScjRZMfk3nupd14GNlp1+x92TfPBWgElyrZwci+0glHC1rdPVXkH4xJEg+Haor9yB9C8FFD6qh6zgTw6/QECgGxkJRVrUUjqRhomUv4e2zQn0oeEJbmjqtQAJ+tMYfcUy9w23WIkNbMVDi2RVT5z+bE7dwqP6suQuYTl2l1NKCLhz9w2vAM9cznBBSGXZB6UORvrLw0GumlhvPdvk+z7VPfWRxwWucwVYHCGWo2jCObd0MjTK/k3bRbXhLmKhO/rQPYWjA3c7b4wdLH26WyLeTSgUT9bKU1Q8lNSJxhrS+jXMO6qYcG9Nr+Uig5+xydlEj9nfsPbmYhIgw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JWQWxUDWpFX9Z46EKQrJqcY8B/G36WRGl5KDUyq0ALg=;
+ b=umQwaOmW5H39iQJQxZPZfPuBLFf4lUuN+bPrO1cuKWBpBCyus05G7vIs6ShGC4GzFVtNE98BKC5A74IecnEi38NZKVrA7mOEAtIXYCPG42frge+IprL9XagxSBUnjM8raqzyIT2jneuYORvzHD32SQB3PECAvxQoLa39fi//m2evl130yq15ck55w6p2Yy9g8s6IKq0BcxSIm/fH9CyjPV5/L5VJKblU3T7X9NHn32MwPswu5ZCl4wD5sib007irVYIHbabYpP0Q44SDYu7BepexFKQYN7P4cvFJ0rfQztDsXIvl4tTaEFSFbf/BPTs1Tyrg7lDB15Lm2AZz1GOLtw==
+Received: from DM6PR06CA0024.namprd06.prod.outlook.com (2603:10b6:5:120::37)
+ by SA1PR12MB8842.namprd12.prod.outlook.com (2603:10b6:806:378::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.22; Fri, 21 Apr
+ 2023 08:20:27 +0000
+Received: from DM6NAM11FT089.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:120:cafe::28) by DM6PR06CA0024.outlook.office365.com
+ (2603:10b6:5:120::37) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.25 via Frontend
+ Transport; Fri, 21 Apr 2023 08:20:27 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ DM6NAM11FT089.mail.protection.outlook.com (10.13.173.82) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6319.27 via Frontend Transport; Fri, 21 Apr 2023 08:20:27 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Fri, 21 Apr 2023
+ 01:20:15 -0700
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.37; Fri, 21 Apr 2023 01:20:15 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com
+ (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Fri, 21 Apr 2023 01:20:14 -0700
+Date: Fri, 21 Apr 2023 01:20:13 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+CC: "jgg@nvidia.com" <jgg@nvidia.com>, "alex.williamson@redhat.com"
+	<alex.williamson@redhat.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"eric.auger@redhat.com" <eric.auger@redhat.com>, "Liu, Yi L"
+	<yi.l.liu@intel.com>, "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"will@kernel.org" <will@kernel.org>, "joro@8bytes.org" <joro@8bytes.org>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "jean-philippe@linaro.org"
+	<jean-philippe@linaro.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH RFC v2 0/3] Add set_dev_data and unset_dev_data support
+Message-ID: <ZEJHPb1E1/eI8V6A@Asurada-Nvidia>
+References: <cover.1681976394.git.nicolinc@nvidia.com>
+ <BN9PR11MB52764ED59905104D3A5A68C08C609@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZEI+LBkEeNZdJyTB@Asurada-Nvidia>
+ <BN9PR11MB5276C39E256CD4B922435E1C8C609@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZEJBldGXBNGEy9tV@Asurada-Nvidia>
+ <BN9PR11MB527693075725A13DB9EE18678C609@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB527693075725A13DB9EE18678C609@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT089:EE_|SA1PR12MB8842:EE_
+X-MS-Office365-Filtering-Correlation-Id: 771a14c9-70a0-480e-8a46-08db42414393
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	Hb6onrmqm1U+Aff5xa0G/2CzIpHJVsmh5EuPf9q5J4zLlNsvSK2WVSJ8o7crWrz5YzL6+j6X027XnqXEONyqC7n2embTwa6UTVGPRpR0/ZgY9hCNBOl+wxjtC/J5g0ScSsuH9tT6p0UHtD2xKD4Sw60yLwS4w9iwndzNmosEalwlg3869upF+/DKbQ0Gz0VjNgbHo1sS0l2HxfunUtCCUfOBNIopTwnHrHte2QvOxS5e12DsSIp1lk04fnfRfEW6L27SFgW4EoLftveFJTd2045fkGsSlmlKrzIm9OELJ5nirjy27U9a2Sqgae/r3d+bUklCcUlcpSEuI7/wddL1UOepQ/pOvBK/SBHV7rjaKZzIhGnRsW7WHYp6eCZwutkArPrVzjcErrJOY0bwH1nR4AjkIEsyCwfUtEedwZcTROG+FhMuEB+ge8u5mPi2625hzXlgG4Ypt6sHjFg1nZvz0PaoopkxPraHhNDpFB5E0AWqxcosPQgKh2+3oWJTA6kjJK31+TGduPnJpD4wC6ZyWhp8GRGbNIvPzWzxDXv4botpMOSwQf+b47+JRPumE22InmMDFsCZTuUTBudDv8y3ty6W+2xXfJF5NAzrBR9XjFIZ7rkAomoXkJUSc95HAZpZpSKnZ0eDb7YZuWpGu08b9x2yhiFTwtkPWHKNdj6vhO25TrWsneClwLBeorijZ4CTG91L5a34KUCmY/RVVSSbq8OciYLId9JUIwZSsKQ67NZa6/uc/4IEY4Kjx/7UpRrilwUJzNInwFuc3FA8zLQ08oUEhvu3U+UtASrB40RSXsieJsGWqTF2bmbt1ki+zmB4f/wju8tiA9gG/mfOxII+Gp3Cto4l7O31eOYAWZeiot8=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(376002)(346002)(39860400002)(451199021)(36840700001)(46966006)(40470700004)(40460700003)(2906002)(8936002)(8676002)(356005)(7636003)(7416002)(86362001)(5660300002)(82310400005)(33716001)(41300700001)(40480700001)(55016003)(26005)(9686003)(966005)(54906003)(34020700004)(36860700001)(478600001)(83380400001)(47076005)(426003)(336012)(186003)(82740400003)(316002)(70586007)(70206006)(4326008)(6916009);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Apr 2023 08:20:27.5857
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 771a14c9-70a0-480e-8a46-08db42414393
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DM6NAM11FT089.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8842
 
-From: Adrian Huang <ahuang12@lenovo.com>
+On Fri, Apr 21, 2023 at 08:07:19AM +0000, Tian, Kevin wrote:
+> External email: Use caution opening links or attachments
+> 
+> 
+> > From: Nicolin Chen <nicolinc@nvidia.com>
+> > Sent: Friday, April 21, 2023 3:56 PM
+> >
+> > On Fri, Apr 21, 2023 at 07:47:13AM +0000, Tian, Kevin wrote:
+> >
+> > > > It is in the commit message of the cover-letter though:
+> > > >
+> > https://github.com/nicolinc/iommufd/commit/5e17d270bfca2a5e3e7401d4b
+> > > > f58ae53eb7a8a55
+> > > > --------------------------------------------------------
+> > > > Changelog
+> > > > v2:
+> > > >  * Integrated the uAPI into VFIO_DEVICE_BIND_IOMMUFD call
+> > > >  * Renamed the previous set_rid_user to set_dev_data, to decouple from
+> > > >    the PCI regime.
+> > > > v1:
+> > > >  https://lore.kernel.org/all/cover.1680762112.git.nicolinc@nvidia.com/
+> > > > --------------------------------------------------------
+> > > >
+> > > > > Could you add some words why changing from passing the information
+> > > > > in an iommufd ioctl to bind_iommufd? My gut-feeling leans toward
+> > > > > the latter option...
+> > > >
+> > > > Yea. Jason told me to decouple it from PCI. And merge it into
+> > > > a general uAPI. So I picked the BIND ioctl.
+> > > >
+> > >
+> > > 'decouple it from PCI' is kind of covered by renaming set_rid
+> > > to set_data. but I didn't get why this has to be merged with another
+> > > uAPI. Once iommufd_device is created we could have separate
+> > > ioctls to poke its attributes individually. What'd be broken if this
+> > > is not done at BIND time?
+> >
+> > Oh, sorry. He didn't literally told me to merge, but commented
+> > "make sense" at my proposal of reusing BIND. So, I don't think
+> > adding to the BIND is a must here.
+> >
+> > The BIND is done in vfio_realize() where the RID (dev_data) is
+> > available also. And the new uAPI in my v1 actually gets called
+> > near the BIND. So, I feel we may just do it once? I am open to
+> > a better idea.
+> >
+> 
+> IMHO if this can be done within iommufd then that should be
+> the choice. vfio doesn't need to know this data at all and doing
+> so means vdpa or a 3rd driver also needs to implement similar
+> logic in their uAPI...
 
-When running the fio test on a 448-core AMD server + a NVME disk,
-a soft lockup or a hard lockup call trace is shown:
+Reusing the VFIO ioctl is because the device is a VFIO device.
+But doing it within iommufd could save us a lot of efforts, as
+you said.
 
-[soft lockup]
-watchdog: BUG: soft lockup - CPU#126 stuck for 23s! [swapper/126:0]
-RIP: 0010:_raw_spin_unlock_irqrestore+0x21/0x50
-...
-Call Trace:
- <IRQ>
- fq_flush_timeout+0x7d/0xd0
- ? __pfx_fq_flush_timeout+0x10/0x10
- call_timer_fn+0x2e/0x150
- run_timer_softirq+0x48a/0x560
- ? __pfx_fq_flush_timeout+0x10/0x10
- ? clockevents_program_event+0xaf/0x130
- __do_softirq+0xf1/0x335
- irq_exit_rcu+0x9f/0xd0
- sysvec_apic_timer_interrupt+0xb4/0xd0
- </IRQ>
- <TASK>
- asm_sysvec_apic_timer_interrupt+0x1f/0x30
-...
+So...
 
-Obvisouly, fq_flush_timeout spends over 20 seconds. Here is ftrace log:
-
-               |  fq_flush_timeout() {
-               |    fq_ring_free() {
-               |      put_pages_list() {
-   0.170 us    |        free_unref_page_list();
-   0.810 us    |      }
-               |      free_iova_fast() {
-               |        free_iova() {
- * 85622.66 us |          _raw_spin_lock_irqsave();
-   2.860 us    |          remove_iova();
-   0.600 us    |          _raw_spin_unlock_irqrestore();
-   0.470 us    |          lock_info_report();
-   2.420 us    |          free_iova_mem.part.0();
- * 85638.27 us |        }
- * 85638.84 us |      }
-               |      put_pages_list() {
-   0.230 us    |        free_unref_page_list();
-   0.470 us    |      }
-   ...            ...
- $ 31017069 us |  }
-
-Most of cores are under lock contention for acquiring iova_rbtree_lock due
-to the iova flush queue mechanism.
-
-[hard lockup]
-NMI watchdog: Watchdog detected hard LOCKUP on cpu 351
-RIP: 0010:native_queued_spin_lock_slowpath+0x2d8/0x330
-
-Call Trace:
- <IRQ>
- _raw_spin_lock_irqsave+0x4f/0x60
- free_iova+0x27/0xd0
- free_iova_fast+0x4d/0x1d0
- fq_ring_free+0x9b/0x150
- iommu_dma_free_iova+0xb4/0x2e0
- __iommu_dma_unmap+0x10b/0x140
- iommu_dma_unmap_sg+0x90/0x110
- dma_unmap_sg_attrs+0x4a/0x50
- nvme_unmap_data+0x5d/0x120 [nvme]
- nvme_pci_complete_batch+0x77/0xc0 [nvme]
- nvme_irq+0x2ee/0x350 [nvme]
- ? __pfx_nvme_pci_complete_batch+0x10/0x10 [nvme]
- __handle_irq_event_percpu+0x53/0x1a0
- handle_irq_event_percpu+0x19/0x60
- handle_irq_event+0x3d/0x60
- handle_edge_irq+0xb3/0x210
- __common_interrupt+0x7f/0x150
- common_interrupt+0xc5/0xf0
- </IRQ>
- <TASK>
- asm_common_interrupt+0x2b/0x40
-...
-
-ftrace shows fq_ring_free spends over 10 seconds [1]. Again, most of
-cores are under lock contention for acquiring iova_rbtree_lock due
-to the iova flush queue mechanism.
-
-[Root Cause]
-The root cause is that the max_hw_sectors_kb of nvme disk (mdts=10)
-is 4096kb, which streaming DMA mappings cannot benefit from the
-scalable IOVA mechanism introduced by the commit 9257b4a206fc
-("iommu/iova: introduce per-cpu caching to iova allocation") if
-the length is greater than 128kb.
-
-To fix the lock contention issue, clamp max_hw_sectors based on
-DMA optimized limitation in order to leverage scalable IOVA mechanism.
-
-Note: The issue does not happen with another NVME disk (mdts = 5
-and max_hw_sectors_kb = 128)
-
-[1] https://gist.github.com/AdrianHuang/bf8ec7338204837631fbdaed25d19cc4
-
-Suggested-by: Keith Busch <kbusch@kernel.org> 
-Reported-and-tested-by: Jiwei Sun <sunjw10@lenovo.com>
-Signed-off-by: Adrian Huang <ahuang12@lenovo.com>
----
-Changes since v1:
-  - Clamp max_hw_sectors at lower level driver code per Keith's suggestion
-
- drivers/nvme/host/pci.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index 282d808400c5..fa351c56d690 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -2914,6 +2914,12 @@ static struct nvme_dev *nvme_pci_alloc_dev(struct pci_dev *pdev,
- 	struct nvme_dev *dev;
- 	int ret = -ENOMEM;
- 
-+	/*
-+	 * Limit the max command size to prevent iod->sg allocations going
-+	 * over a single page.
-+	 */
-+	size_t max_bytes = NVME_MAX_KB_SZ * 1024;
++/**
++ * struct iommufd_device_set_data - ioctl(IOMMU_DEVICE_SET_DATA)
++ * @size: sizeof(struct iommufd_device_set_data)
++ * @dev_id: The device to set a device data
++ * @data_uptr: User pointer of the device user data.
++ * @data_len: Length of the device user data.
++ */
++struct iommufd_device_set_data {
++	__u32 size;
++	__u32 dev_id;
++	__aligned_u64   data_uptr;
++	__u32 data_len;
++};
++#define IOMMU_DEVICE_SET_DATA _IO(IOMMUFD_TYPE, IOMMUFD_CMD_DEVICE_SET_DATA)
 +
- 	if (node == NUMA_NO_NODE)
- 		set_dev_node(&pdev->dev, first_memory_node);
- 
-@@ -2955,12 +2961,10 @@ static struct nvme_dev *nvme_pci_alloc_dev(struct pci_dev *pdev,
- 	dma_set_min_align_mask(&pdev->dev, NVME_CTRL_PAGE_SIZE - 1);
- 	dma_set_max_seg_size(&pdev->dev, 0xffffffff);
- 
--	/*
--	 * Limit the max command size to prevent iod->sg allocations going
--	 * over a single page.
--	 */
--	dev->ctrl.max_hw_sectors = min_t(u32,
--		NVME_MAX_KB_SZ << 1, dma_max_mapping_size(&pdev->dev) >> 9);
-+	max_bytes = min(max_bytes, dma_max_mapping_size(&pdev->dev));
-+	max_bytes = min_not_zero(max_bytes, dma_opt_mapping_size(&pdev->dev));
-+	dev->ctrl.max_hw_sectors = max_bytes >> 9;
-+
- 	dev->ctrl.max_segments = NVME_MAX_SEGS;
- 
- 	/*
--- 
-2.34.1
++/**
++ * struct iommufd_device_unset_data - ioctl(IOMMU_DEVICE_UNSET_DATA)
++ * @size: sizeof(struct iommufd_device_unset_data)
++ * @dev_id: The device to unset its device data
++ */
++struct iommufd_device_unset_data {
++	__u32 size;
++	__u32 dev_id;
++};
++#define IOMMU_DEVICE_UNSET_DATA _IO(IOMMUFD_TYPE, IOMMUFD_CMD_DEVICE_UNSET_DATA)
 
+Maybe just like this?
+
+Thanks
+Nic
