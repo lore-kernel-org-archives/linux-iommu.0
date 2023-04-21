@@ -1,198 +1,206 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49FB020EE
-	for <iommu@lists.linux.dev>; Fri, 21 Apr 2023 08:08:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1682064516; x=1713600516;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=srj2mJhIwr2Mxk2afVp/OFH55pACnk+AejnQXKaRrTo=;
-  b=Rm72SJvNsOAGCsaNIZkCFisoTsArfciS/8IKEWsV1gGzEHOuebIl4U5N
-   R8ihyU7dIR5y5B8spfsX8CiprxgFHPUY1uNuoLbb2CyPWPCtCNZH9asvo
-   /xfZ7BNpJWCLI3Q3Wl9xSoahq+3xlE8/wNV+A6F+31jil43B22nrgFYMc
-   BtgdwcVwArHyUnvgEE5cBOSifTplPp2oNWRsAFAg1AmljGFVSF5ZbuI41
-   Uak6VVu0Uhn7eMN0P+tLsOa2t2NHcUd7+vSHngS/1VUdrHmYt+Dr8q9Bk
-   Wd8UvAxZ+wmhPtoqjxTCNyj21Nbkf90RAtaJJ99qVciCQOKZ9O86E/AO+
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10686"; a="325542739"
-X-IronPort-AV: E=Sophos;i="5.99,214,1677571200"; 
-   d="scan'208";a="325542739"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2023 01:08:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10686"; a="816343885"
-X-IronPort-AV: E=Sophos;i="5.99,214,1677571200"; 
-   d="scan'208";a="816343885"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orsmga004.jf.intel.com with ESMTP; 21 Apr 2023 01:08:35 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Fri, 21 Apr 2023 01:08:34 -0700
-Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Fri, 21 Apr 2023 01:08:34 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Fri, 21 Apr 2023 01:08:34 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.168)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Fri, 21 Apr 2023 01:08:34 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MBZDAEsCLQjYXsbX3NZ00NUBO2bCoLXRq9yemPDul2m5fGXinTL9ZTk0xhr4xvDdbtAdPtP4vieYB1TSLn1OZEqAkcYSO2B+XvAcLWDsaAx+Mppjxewo5uKYxlluxaB+U4reBZofMqSLUCmpF1736lJ2c3QYSKvmnaJp7VWjyTT9DRcwdLbsiB7dR1uQGUealU2uFfIn49ct1gbPXN77Ke3U42IFHUiTTk9C50pltP+jM5Z8aYtAi5t5EEd3n1jYkm1/yCYFnguikJTY8yuCXIkZKWzgNvtF19qxOLCqBBhc5LbTaPivTRWX2he99Uwl+T4C/pYPyZ0IEna5b0bdyw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9Ljxv73v88fOl72NwgdNhCKX1LVM14bJP1CtcLSvugU=;
- b=Pyme3qsj0IDTyZDO1mepEVXRGSOIX5XUlCU3zd9SIlW+e/4hOMR8R1+MJYyO/OC7ls6xL+M+UGU6m0z6PH33TroNnZvMMPG7xkzgWp1xz06AM7gfvdAm3XFqbmCZnC1BYjd9zG3jesDv4xHiT+VdAHIp6PnmFEpb14Fzv9OWpI3YRN7Gkfj7u3tTepqxBGUMkMu8ba9B2qm3+8ypHmXRnjRbdWx8xIs4iBIexlg3B87Q3ddgwEsLJH3Z3GM6YiXdJq8ymVKwvgZ9jZMCvYadDS2lJEg0q2m3gI4pW7RPEg2xewzXwFte46pzhVyW4rHr7YaOESXV+soOOQpUtl7GPA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by DS0PR11MB7901.namprd11.prod.outlook.com (2603:10b6:8:f4::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.22; Fri, 21 Apr
- 2023 08:07:21 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::73e9:b405:2cae:9174]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::73e9:b405:2cae:9174%6]) with mapi id 15.20.6319.022; Fri, 21 Apr 2023
- 08:07:20 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-CC: "jgg@nvidia.com" <jgg@nvidia.com>, "alex.williamson@redhat.com"
-	<alex.williamson@redhat.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>, "Liu, Yi L"
-	<yi.l.liu@intel.com>, "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"will@kernel.org" <will@kernel.org>, "joro@8bytes.org" <joro@8bytes.org>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "jean-philippe@linaro.org"
-	<jean-philippe@linaro.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH RFC v2 0/3] Add set_dev_data and unset_dev_data support
-Thread-Topic: [PATCH RFC v2 0/3] Add set_dev_data and unset_dev_data support
-Thread-Index: AQHZc1yE16W9aY59DEuzMbzD2OIpT681YFcwgAACUQCAAADWIIAAAzuAgAACDyA=
-Date: Fri, 21 Apr 2023 08:07:19 +0000
-Message-ID: <BN9PR11MB527693075725A13DB9EE18678C609@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <cover.1681976394.git.nicolinc@nvidia.com>
- <BN9PR11MB52764ED59905104D3A5A68C08C609@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZEI+LBkEeNZdJyTB@Asurada-Nvidia>
- <BN9PR11MB5276C39E256CD4B922435E1C8C609@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZEJBldGXBNGEy9tV@Asurada-Nvidia>
-In-Reply-To: <ZEJBldGXBNGEy9tV@Asurada-Nvidia>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|DS0PR11MB7901:EE_
-x-ms-office365-filtering-correlation-id: feb861c9-4589-4e7a-2ba9-08db423f6e0e
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: SvW8mVGSHxH2Zzvg+VkqNxeCQRk8y7mhThMabFQelElbCHrijKkiL8QicxGfPrHefWx8HYn0kz356CIPrWyK/BUVHLWnSqpRXwQyXMaQ2xMyEVseFlul+B3/MsVvIHgE1neLbib8LxkzqgOeyupcTIOGsF4D+YHgwKw3O3UvKzfR8fphECfxocG7uX60u+eIEmG6B1iMYcEvVJyW5lWkCqXzYKlovTnmQ9qj+RQ6oXaiALnPCukp3+p4J9oaSfLEXwhMLZHLKUZPEUuW/gIpmgFZA5GcPZ7oXoe8R9dB+gGWT7eg66sjVVfYmvi552r9kSYA0j9CHQqhbOYE05POR5CQYlh/eJP3fjvcWlMoMcXNpnFDbN6DMo1HiMNqUumnN9b9T5JJyCT0yp3c5rIuXQzM+oVik+KiUrrryJKMaQuXNgHrUIdUeAQepDLUip47rGn21VPvCZ+uQdxG1nPRF9AUR3WQSYaivy/+zGWROB61UG9o+wjO1QC1bSZfuxS023l0eonBxzhIUwD4tFaWY8SuTR6g6nLv2u/irxXsTXzwPeBcuzWayocfnASGpDuBgw6/HeDHIJ8YqdvvoNYTw8kpXj2qeRggr9Co2Sq8KYF1H9EPfqJSIEuh+rdI1QlDWrBSKjL+eeiZq4g4n/T3Hg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(39860400002)(396003)(376002)(346002)(366004)(451199021)(38100700002)(55016003)(26005)(122000001)(6506007)(82960400001)(186003)(38070700005)(9686003)(83380400001)(8936002)(52536014)(8676002)(2906002)(5660300002)(33656002)(86362001)(54906003)(66946007)(41300700001)(71200400001)(7696005)(66556008)(478600001)(66446008)(4326008)(6916009)(76116006)(966005)(64756008)(66476007)(316002)(7416002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Gh00vXbR+WICx+AwQ/ClnYGQVHPpeQL7uNcU6tSFbTyXxzXlG4ScMDo6KLCS?=
- =?us-ascii?Q?kkCAS38DI/SC8x9ecZhwvjzvctq5JT9INHLk9yrLnvK8g7HlC4ZFIEgFYW4n?=
- =?us-ascii?Q?09NulEp+bs2rQ1/pYtuP3wNyuSnS09BTfN23xCkvnRKzLX1/UqR5uFgNGFof?=
- =?us-ascii?Q?kVbDolnoTdZ4uvaPWl6qZdJJaqO4T5hdf4+kgp+ddO6SnOvKtB1Ep6GHnUWe?=
- =?us-ascii?Q?yL2OgPlOh0yqaHpwZVH2WaU1FtBBYAEVsOUmEEMGdtCqyt3FbjBlYyYFjSud?=
- =?us-ascii?Q?A5TeImrGs0XchiwJasU2G+WaLceHVPqvz5e/HEuTNIRqNXHJr6Y8n4DKuoDW?=
- =?us-ascii?Q?VnutDl0zox+dqIpr0Y4FowwBXY3a6cRKZ0V4jYJgB4gQrrfb9YwUEJs5WHux?=
- =?us-ascii?Q?B7yNsuXuXDUqQyGjpVaHKu8+t9fnAiB5KAr7phSYh6h5YMb5k9W6B0cfxdz5?=
- =?us-ascii?Q?GjLebtQ4sPmNAymNJXNYjPvGp2UchqXormiDd61ra7fhrWbrFZzSuW2bcfdD?=
- =?us-ascii?Q?iMjQT8zeVsDHQGBjlnYWwjb3Q7FTdx/+mYypkgD7aF/vNnzASQRYBi4Gvfaf?=
- =?us-ascii?Q?VWVBdpHSGEnsAypREcTmY5ic5g7NUpC/CP7vwDqMe8F7/CS5OVlvRouDsNH9?=
- =?us-ascii?Q?tDNh4yw+7FwgrPHXClWlcCnHMQg1uvZA3TfVto67bIfmkfSZi4Aypv5QExyg?=
- =?us-ascii?Q?EM4VKydWAmWR884JEJxRLb10x6vC8zdVYgenktWiiSAIcrey5tiuVN/wmfwM?=
- =?us-ascii?Q?ZR2gCD62Ln1PM/AwvWXO8m0y/qlJEYw4bMh0kEGW+iohdWJ4cOzApPCqGYMa?=
- =?us-ascii?Q?Sj+jiAtTP/vF603L6fZyoR2a2dq4xNcaGAGsj0/Xzcp4iQ1G6/sLP2X4kjmN?=
- =?us-ascii?Q?g46KeUqOIRQS5yfTP54mnAyNFOPLKQiMoTz13NLMGEuTKqBNj4JnI1AOug3d?=
- =?us-ascii?Q?hXFA7rzOZTEYyUjTyy/pcSQNcxcPu9ocXI5xdig3xZz/BcQ7iRNjATS7XTnA?=
- =?us-ascii?Q?J/tZRIhNe5LVUhScRXluXb2niQQlR0+c3/fpSoikbK4NwQCDOLk6ecD51hbe?=
- =?us-ascii?Q?k7zd1euOC72aIMxFa/z8nsMXBLynFZG9eMYkkr6oByvz+CwUjLWWvv0+jXtL?=
- =?us-ascii?Q?oFAW2aYWcqhr0tTcbaiV0fktDO2WD7/cKIwoOy3jzuLRumFtyAHTPDzHlhxj?=
- =?us-ascii?Q?78JrOkjRWq8mE1FJhk+wCyU23SMQM0PL7AIOf9yqfBuxHVTl8IMhDDLux+Ou?=
- =?us-ascii?Q?P1cSyWbwrlZXKQm4zhmXeqFU9DDVVfWZwOIEgZmzyz5Ozc5gSMuRtH+LRona?=
- =?us-ascii?Q?F04GWqFRQzv1TK0eTWkDNtU3HyIsKBk+NlhQxe48ivOPeMU6i2RYJo10wQZD?=
- =?us-ascii?Q?U0vXDEsFt72+EpZ2yFGRhE55HaQacYoys+ZB812gkBSlxqiIHivHc5g/M4s5?=
- =?us-ascii?Q?QODmkDoadkTkYYN2V3fDE4ZkyQhfWK+Hm6NHQVXw9jPXL6WmLlSPi1994ZwF?=
- =?us-ascii?Q?efXJ5N1BpzXBzyBTcmPUGgm3Flj5H8iPOKhcNd0wEo9BStyzuzW/eok8J/qx?=
- =?us-ascii?Q?hep7pCnEdqbvNMtwHG8x37QWnqKfIjCycRvHJ67z?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97BEF20EE
+	for <iommu@lists.linux.dev>; Fri, 21 Apr 2023 08:08:51 +0000 (UTC)
+Received: by mail-pf1-f182.google.com with SMTP id d2e1a72fcca58-63b51fd2972so1654055b3a.3
+        for <iommu@lists.linux.dev>; Fri, 21 Apr 2023 01:08:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682064531; x=1684656531;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=nzB2tRHUMpY4/jWB4OcD6fcV69kfby6bK1LT2yyBg70=;
+        b=g9kfim8d+Vk0mQnBvIOH4ImhS4V+c+JFV4XsRodLvmi576g3CWkjVBQhiGve+JGO2W
+         ciCAzsUNG6deM3sUmB/IDi4J/OXFFlxbV5xXsg7zLhoZIE98++44wg9UQERwzuAUL+TW
+         B39puxyPpjQn2Vi5j5bG6sTYfvF0kGSXTTX/J/WS0rDlz0iN6EOE3ep7dQqIdyWPG3xY
+         frCXhqUOSHuwedCyAjnB0jumW6e4zHKAmD3+KxpdaXXClaiQWZmVQ+ckXRVDNSX5iKWU
+         7wL0K4yqLUV8EYdhWs4yY/xjMIZAj+BdP2avNaal+Fsw6zl1wDdNqWHDfpS0xfLE/v04
+         WpNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682064531; x=1684656531;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=nzB2tRHUMpY4/jWB4OcD6fcV69kfby6bK1LT2yyBg70=;
+        b=S37mpprlXG4Fo7RmfAVfoYIzZLqC/Ug3CSG7pib7+OD3qPk0tmR9PvNERXQt+nVE6X
+         aS7vRh4oOpB7HFDgyekHvRI01qSpnjMR6aWG2EQ7SfN1WgqMXgZGqbGs5zbBy34LIrtq
+         raA+7JuM+I+UDT3Xa3GdmLUvhmR1lU1S28SELdsKIksPUbPRjOQIZ1vJoQ1GZt/+vTIF
+         DGcDDwJvM2vvIXMtt8hbEwozc20+b21s7LujDq7v9O0S2PWjW9PHc9SsQAFn1VBqarDd
+         uEpkXc3r0EKTxUfJmJpJg1Y/B1bxjvf2rRagHV7WTDcA/LCrcPx497Fmrya07OyYJzza
+         cm4A==
+X-Gm-Message-State: AAQBX9eW6OSjTo5oj5IrYzLOdMHZ4YvaG6nifS9y7ivJJH3D0kAON+JH
+	7ak0uTX5JVLmrItw0PY9Zro=
+X-Google-Smtp-Source: AKy350YGRd1wzVogkJKU8OrquqXB6g+GXFM2plXr4/0HV+QHcdO7zKGrsiRb3HrK+iYKL1k9vhhJtw==
+X-Received: by 2002:a05:6a00:2e8b:b0:63c:6485:d5e5 with SMTP id fd11-20020a056a002e8b00b0063c6485d5e5mr5501907pfb.22.1682064530738;
+        Fri, 21 Apr 2023 01:08:50 -0700 (PDT)
+Received: from AHUANG12-3ZHH9X.lenovo.com (220-143-221-73.dynamic-ip.hinet.net. [220.143.221.73])
+        by smtp.gmail.com with ESMTPSA id c139-20020a621c91000000b005d6999eec90sm2416817pfc.120.2023.04.21.01.08.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Apr 2023 01:08:50 -0700 (PDT)
+From: Adrian Huang <adrianhuang0701@gmail.com>
+To: linux-nvme@lists.infradead.org
+Cc: Keith Busch <kbusch@kernel.org>,
+	Jens Axboe <axboe@fb.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Sagi Grimberg <sagi@grimberg.me>,
+	iommu@lists.linux.dev,
+	Adrian Huang <adrianhuang0701@gmail.com>,
+	Jiwei Sun <sunjw10@lenovo.com>,
+	Adrian Huang <ahuang12@lenovo.com>
+Subject: [PATCH v2 1/1] nvme-pci: clamp max_hw_sectors based on DMA optimized limitation
+Date: Fri, 21 Apr 2023 16:08:00 +0800
+Message-Id: <20230421080800.18837-1-adrianhuang0701@gmail.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: feb861c9-4589-4e7a-2ba9-08db423f6e0e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Apr 2023 08:07:19.9611
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 0nGHjnIiU2d7riqlGho0LAaS4t2x6jFE/vMLuNfDU3iICMIb9YogvfOImO/hR5DbuWR0XpCUefxeeMTf2d9SCw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB7901
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: 8bit
 
-> From: Nicolin Chen <nicolinc@nvidia.com>
-> Sent: Friday, April 21, 2023 3:56 PM
->=20
-> On Fri, Apr 21, 2023 at 07:47:13AM +0000, Tian, Kevin wrote:
->=20
-> > > It is in the commit message of the cover-letter though:
-> > >
-> https://github.com/nicolinc/iommufd/commit/5e17d270bfca2a5e3e7401d4b
-> > > f58ae53eb7a8a55
-> > > --------------------------------------------------------
-> > > Changelog
-> > > v2:
-> > >  * Integrated the uAPI into VFIO_DEVICE_BIND_IOMMUFD call
-> > >  * Renamed the previous set_rid_user to set_dev_data, to decouple fro=
-m
-> > >    the PCI regime.
-> > > v1:
-> > >  https://lore.kernel.org/all/cover.1680762112.git.nicolinc@nvidia.com=
-/
-> > > --------------------------------------------------------
-> > >
-> > > > Could you add some words why changing from passing the information
-> > > > in an iommufd ioctl to bind_iommufd? My gut-feeling leans toward
-> > > > the latter option...
-> > >
-> > > Yea. Jason told me to decouple it from PCI. And merge it into
-> > > a general uAPI. So I picked the BIND ioctl.
-> > >
-> >
-> > 'decouple it from PCI' is kind of covered by renaming set_rid
-> > to set_data. but I didn't get why this has to be merged with another
-> > uAPI. Once iommufd_device is created we could have separate
-> > ioctls to poke its attributes individually. What'd be broken if this
-> > is not done at BIND time?
->=20
-> Oh, sorry. He didn't literally told me to merge, but commented
-> "make sense" at my proposal of reusing BIND. So, I don't think
-> adding to the BIND is a must here.
->=20
-> The BIND is done in vfio_realize() where the RID (dev_data) is
-> available also. And the new uAPI in my v1 actually gets called
-> near the BIND. So, I feel we may just do it once? I am open to
-> a better idea.
->=20
+From: Adrian Huang <ahuang12@lenovo.com>
 
-IMHO if this can be done within iommufd then that should be
-the choice. vfio doesn't need to know this data at all and doing
-so means vdpa or a 3rd driver also needs to implement similar=20
-logic in their uAPI...
+When running the fio test on a 448-core AMD server + a NVME disk,
+a soft lockup or a hard lockup call trace is shown:
+
+[soft lockup]
+watchdog: BUG: soft lockup - CPU#126 stuck for 23s! [swapper/126:0]
+RIP: 0010:_raw_spin_unlock_irqrestore+0x21/0x50
+...
+Call Trace:
+ <IRQ>
+ fq_flush_timeout+0x7d/0xd0
+ ? __pfx_fq_flush_timeout+0x10/0x10
+ call_timer_fn+0x2e/0x150
+ run_timer_softirq+0x48a/0x560
+ ? __pfx_fq_flush_timeout+0x10/0x10
+ ? clockevents_program_event+0xaf/0x130
+ __do_softirq+0xf1/0x335
+ irq_exit_rcu+0x9f/0xd0
+ sysvec_apic_timer_interrupt+0xb4/0xd0
+ </IRQ>
+ <TASK>
+ asm_sysvec_apic_timer_interrupt+0x1f/0x30
+...
+
+Obvisouly, fq_flush_timeout spends over 20 seconds. Here is ftrace log:
+
+               |  fq_flush_timeout() {
+               |    fq_ring_free() {
+               |      put_pages_list() {
+   0.170 us    |        free_unref_page_list();
+   0.810 us    |      }
+               |      free_iova_fast() {
+               |        free_iova() {
+ * 85622.66 us |          _raw_spin_lock_irqsave();
+   2.860 us    |          remove_iova();
+   0.600 us    |          _raw_spin_unlock_irqrestore();
+   0.470 us    |          lock_info_report();
+   2.420 us    |          free_iova_mem.part.0();
+ * 85638.27 us |        }
+ * 85638.84 us |      }
+               |      put_pages_list() {
+   0.230 us    |        free_unref_page_list();
+   0.470 us    |      }
+   ...            ...
+ $ 31017069 us |  }
+
+Most of cores are under lock contention for acquiring iova_rbtree_lock due
+to the iova flush queue mechanism.
+
+[hard lockup]
+NMI watchdog: Watchdog detected hard LOCKUP on cpu 351
+RIP: 0010:native_queued_spin_lock_slowpath+0x2d8/0x330
+
+Call Trace:
+ <IRQ>
+ _raw_spin_lock_irqsave+0x4f/0x60
+ free_iova+0x27/0xd0
+ free_iova_fast+0x4d/0x1d0
+ fq_ring_free+0x9b/0x150
+ iommu_dma_free_iova+0xb4/0x2e0
+ __iommu_dma_unmap+0x10b/0x140
+ iommu_dma_unmap_sg+0x90/0x110
+ dma_unmap_sg_attrs+0x4a/0x50
+ nvme_unmap_data+0x5d/0x120 [nvme]
+ nvme_pci_complete_batch+0x77/0xc0 [nvme]
+ nvme_irq+0x2ee/0x350 [nvme]
+ ? __pfx_nvme_pci_complete_batch+0x10/0x10 [nvme]
+ __handle_irq_event_percpu+0x53/0x1a0
+ handle_irq_event_percpu+0x19/0x60
+ handle_irq_event+0x3d/0x60
+ handle_edge_irq+0xb3/0x210
+ __common_interrupt+0x7f/0x150
+ common_interrupt+0xc5/0xf0
+ </IRQ>
+ <TASK>
+ asm_common_interrupt+0x2b/0x40
+...
+
+ftrace shows fq_ring_free spends over 10 seconds [1]. Again, most of
+cores are under lock contention for acquiring iova_rbtree_lock due
+to the iova flush queue mechanism.
+
+[Root Cause]
+The root cause is that the max_hw_sectors_kb of nvme disk (mdts=10)
+is 4096kb, which streaming DMA mappings cannot benefit from the
+scalable IOVA mechanism introduced by the commit 9257b4a206fc
+("iommu/iova: introduce per-cpu caching to iova allocation") if
+the length is greater than 128kb.
+
+To fix the lock contention issue, clamp max_hw_sectors based on
+DMA optimized limitation in order to leverage scalable IOVA mechanism.
+
+Note: The issue does not happen with another NVME disk (mdts = 5
+and max_hw_sectors_kb = 128)
+
+[1] https://gist.github.com/AdrianHuang/bf8ec7338204837631fbdaed25d19cc4
+
+Suggested-by: Keith Busch <kbusch@kernel.org> 
+Reported-and-tested-by: Jiwei Sun <sunjw10@lenovo.com>
+Signed-off-by: Adrian Huang <ahuang12@lenovo.com>
+---
+Changes since v1:
+  - Clamp max_hw_sectors at lower level driver code per Keith's suggestion
+
+ drivers/nvme/host/pci.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 282d808400c5..fa351c56d690 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -2914,6 +2914,12 @@ static struct nvme_dev *nvme_pci_alloc_dev(struct pci_dev *pdev,
+ 	struct nvme_dev *dev;
+ 	int ret = -ENOMEM;
+ 
++	/*
++	 * Limit the max command size to prevent iod->sg allocations going
++	 * over a single page.
++	 */
++	size_t max_bytes = NVME_MAX_KB_SZ * 1024;
++
+ 	if (node == NUMA_NO_NODE)
+ 		set_dev_node(&pdev->dev, first_memory_node);
+ 
+@@ -2955,12 +2961,10 @@ static struct nvme_dev *nvme_pci_alloc_dev(struct pci_dev *pdev,
+ 	dma_set_min_align_mask(&pdev->dev, NVME_CTRL_PAGE_SIZE - 1);
+ 	dma_set_max_seg_size(&pdev->dev, 0xffffffff);
+ 
+-	/*
+-	 * Limit the max command size to prevent iod->sg allocations going
+-	 * over a single page.
+-	 */
+-	dev->ctrl.max_hw_sectors = min_t(u32,
+-		NVME_MAX_KB_SZ << 1, dma_max_mapping_size(&pdev->dev) >> 9);
++	max_bytes = min(max_bytes, dma_max_mapping_size(&pdev->dev));
++	max_bytes = min_not_zero(max_bytes, dma_opt_mapping_size(&pdev->dev));
++	dev->ctrl.max_hw_sectors = max_bytes >> 9;
++
+ 	dev->ctrl.max_segments = NVME_MAX_SEGS;
+ 
+ 	/*
+-- 
+2.34.1
+
