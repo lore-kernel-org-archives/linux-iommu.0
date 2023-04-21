@@ -1,88 +1,115 @@
-Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B860433C7
-	for <iommu@lists.linux.dev>; Fri, 21 Apr 2023 12:56:22 +0000 (UTC)
-Received: by mail-ot1-f45.google.com with SMTP id 46e09a7af769-6a5f765d595so1499731a34.0
-        for <iommu@lists.linux.dev>; Fri, 21 Apr 2023 05:56:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682081782; x=1684673782;
-        h=date:subject:message-id:references:in-reply-to:cc:to:from
-         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=+A06kpmrD5z/vN43BJmKhUaZZmJWsA7CwJDf7K7zAkg=;
-        b=HrM41tx9kg1I5ojdWeTeaExCMsUfSZPbfJaGqf+BN78SGflYtf6PXktDpCXbUm0dio
-         MPJ9VpLDYr1Cn628ODENYSqGWhjvY0Y28GAjYSbZmPVXU8F7BMtRK9wNE1Er8F3QaNNi
-         2w0EBPuSzsCjjR+ohO5MnIILzikVjlOAVEwGr75k/COds8L9zRyMIaD8zN2e39IlKIpg
-         nXEs4Z/GfS4AeEd9ps7R8kBPppGI3zi7cJ2kU3QzhyeXzqvizP80FBr//ZfjJxCsDwht
-         oQs0kr6tat/nCZr2tGyDKwmxjwomVG3KXQSGzo+51mjCcK5ZQsby+JVmGhm0TMdohz5M
-         4geg==
-X-Gm-Message-State: AAQBX9eJzWhb/MLI3Mm6iB+Xy2GeOYMf6CbvRPhBzJlRkjme4mR/j4GA
-	2ud0FRffbKA1/ZZwZCRn9A==
-X-Google-Smtp-Source: AKy350aR7331j/a1WuGroFxPO7pFFI40xAUAXj+w2kzgIRYKHNCE27a26aL7XWes9HeOhxO4qs997w==
-X-Received: by 2002:a9d:7658:0:b0:6a6:1a1a:93cc with SMTP id o24-20020a9d7658000000b006a61a1a93ccmr2408172otl.20.1682081781702;
-        Fri, 21 Apr 2023 05:56:21 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id o21-20020a9d7655000000b006a30260ccfdsm1764043otl.11.2023.04.21.05.56.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Apr 2023 05:56:21 -0700 (PDT)
-Received: (nullmailer pid 936705 invoked by uid 1000);
-	Fri, 21 Apr 2023 12:56:18 -0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 995FC33C7
+	for <iommu@lists.linux.dev>; Fri, 21 Apr 2023 13:04:00 +0000 (UTC)
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 74AB015F397;
+	Fri, 21 Apr 2023 15:03:51 +0200 (CEST)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
+	t=1682082231; bh=sGBRvJGV7WV4NbrM0zicd1I0kijHaIpvCeCXTkGH27E=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=x12krQEYJpaSr6cDmf7P+YQo8RV/NgldpWlH2k3pQHvLiJ3Vk5Y52NY7izNb+AuCa
+	 8kmzq8cizHOKF4Mn9A/GGsVE9n/U1dXxJ+thnkfdsM37A/jJBUv/4skZlGJNlVuvJe
+	 vE9piS1JUuCdMNPfZTW35WD0rJ9UqP3cCSKs5jMmnS4yy+XkGvQ9Bb0vIxrmT5TkrR
+	 zl+BPyJSI8gtULfPfxaRgyGk9dGtlkdbat0VVy8mOmWKXCl65CBtQpW4vQ8elSOhox
+	 4jO5UgefdhAAzz/uxTRgr3gF3zdmRpeZsXC6newwGo0VCvaM11Z+YlX5O2ZRR/GTzj
+	 PYDwZAr8lgHIg==
+Date: Fri, 21 Apr 2023 15:03:49 +0200
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Petr Tesarik <petrtesarik@huaweicloud.com>, Jonathan Corbet
+ <corbet@lwn.net>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
+ <robin.murphy@arm.com>, Borislav Petkov <bp@suse.de>, "Paul E. McKenney"
+ <paulmck@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Randy
+ Dunlap <rdunlap@infradead.org>, Damien Le Moal
+ <damien.lemoal@opensource.wdc.com>, Kim Phillips <kim.phillips@amd.com>,
+ "Steven Rostedt (Google)" <rostedt@goodmis.org>, "open list:DOCUMENTATION"
+ <linux-doc@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>, Roberto Sassu
+ <roberto.sassu@huawei.com>, Alexander Graf <graf@amazon.com>
+Subject: Re: [RFC v1 3/4] swiotlb: Allow dynamic allocation of bounce
+ buffers
+Message-ID: <20230421150349.35966e0b@meshulam.tesarici.cz>
+In-Reply-To: <20230407121555.4290a011@meshulam.tesarici.cz>
+References: <cover.1679309810.git.petr.tesarik.ext@huawei.com>
+	<0334a54332ab75312c9de825548b616439dcc9f5.1679309810.git.petr.tesarik.ext@huawei.com>
+	<20230328040724.GB25506@lst.de>
+	<4268fa4e-4f0f-a2f6-a2a5-5b78ca4a073d@huaweicloud.com>
+	<8cf7c515-9ce6-a2ed-0643-972aa3eba2fb@huaweicloud.com>
+	<20230407055704.GD6803@lst.de>
+	<20230407121555.4290a011@meshulam.tesarici.cz>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: Rob Herring <robh@kernel.org>
-To: Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Rob Herring <robh+dt@kernel.org>, Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev, freedreno@lists.freedesktop.org, Krishna Manikandan <quic_mkrishn@quicinc.com>, devicetree@vger.kernel.org, David Airlie <airlied@gmail.com>, dri-devel@lists.freedesktop.org, Marijn Suijten <marijn.suijten@somainline.org>, linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org, Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <20230411-topic-straitlagoon_mdss-v2-6-5def73f50980@linaro.org>
-References: <20230411-topic-straitlagoon_mdss-v2-0-5def73f50980@linaro.org>
- <20230411-topic-straitlagoon_mdss-v2-6-5def73f50980@linaro.org>
-Message-Id: <168208107915.922496.9974189012078616834.robh@kernel.org>
-Subject: Re: [PATCH v2 06/13] dt-bindings: display/msm: Add SM6375 MDSS
-Date: Fri, 21 Apr 2023 07:56:18 -0500
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
+Hi Christoph!
 
-On Fri, 21 Apr 2023 00:31:15 +0200, Konrad Dybcio wrote:
-> Document the SM6375 MDSS.
-> 
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> ---
->  .../bindings/display/msm/qcom,sm6375-mdss.yaml     | 216 +++++++++++++++++++++
->  1 file changed, 216 insertions(+)
-> 
+I'd like to follow up on this sub-thread:
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+On Fri, 7 Apr 2023 12:15:55 +0200
+Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> wroe:
 
-yamllint warnings/errors:
+> On Fri, 7 Apr 2023 07:57:04 +0200
+> Christoph Hellwig <hch@lst.de> wrote:
+>[...]
+> > (Btw, in case anyone is interested, we really need to get started
+> > on moving the dma fields out of struct device into a sub-struct
+> > only allocated for DMA capable busses) =20
+>=20
+> I like this idea. In fact, my WIP topic branch now moves the swiotlb
+> fields into a separate struct,
 
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/qcom,sm6375-mdss.example.dtb: dsi@5e94000: compatible: 'oneOf' conditional failed, one must be fixed:
-	'qcom,sm6375-dsi-ctrl' is not one of ['qcom,apq8064-dsi-ctrl', 'qcom,msm8916-dsi-ctrl', 'qcom,msm8953-dsi-ctrl', 'qcom,msm8974-dsi-ctrl', 'qcom,msm8996-dsi-ctrl', 'qcom,msm8998-dsi-ctrl', 'qcom,qcm2290-dsi-ctrl', 'qcom,sc7180-dsi-ctrl', 'qcom,sc7280-dsi-ctrl', 'qcom,sdm660-dsi-ctrl', 'qcom,sdm845-dsi-ctrl', 'qcom,sm8150-dsi-ctrl', 'qcom,sm8250-dsi-ctrl', 'qcom,sm8350-dsi-ctrl', 'qcom,sm8450-dsi-ctrl', 'qcom,sm8550-dsi-ctrl']
-	'qcom,sm6375-dsi-ctrl' is not one of ['dsi-ctrl-6g-qcm2290']
-	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/dsi-controller-main.yaml
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/qcom,sm6375-mdss.example.dtb: dsi@5e94000: Unevaluated properties are not allowed ('compatible' was unexpected)
-	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/dsi-controller-main.yaml
+As you have noticed, I have removed that commit again in v2.
 
-doc reference errors (make refcheckdocs):
+The reason is that I'm not sure about the intended goal. I have looked
+around for examples of moving fields out of struct device and found
+different approaches:
 
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230411-topic-straitlagoon_mdss-v2-6-5def73f50980@linaro.org
+A. struct dev_msi_info
+   The MSI fields are merely grouped in a separate struct, which is
+   defined in device.h and embedded in struct device. I don't see much
+   benefit.
 
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
+B. struct dev_pm_info
+   This struct is also embedded in struct device, but it is defined in
+   <linux/pm.h>, which is mentioned in MAINTAINERS. The benefit is that
+   further changes are reviewed by this maintainer. The downside is
+   that device.h includes pm.h.
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
+C. struct dev_pin_info
+   This struct is merely declared in device.h and defined
+   pinctrl/devinfo.h (which is not included). Only a pointer to this
+   struct is stored in struct device. Of course, the pointer must be
+   initialized (and released) somehow.
 
-pip3 install dtschema --upgrade
+Here my question: What did you want for DMA fields?
 
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
+A. Only grouping those fields in their own struct?
+B. Or move the definition to another include file (cf. MAINTAINERS)?
+C. Or store a pointer in struct device?
 
+Since you mentioned "allocated", it sounds like you want to achieve C,
+but:
+
+1. Is it worth the extra dereference for every use?
+2. How should the struct be allocated? Presumably not with kmalloc() in
+   device_initialize(), because I don't know how to determine if a
+   device is DMA capable this low in the call stack. So, should it be
+   allocated together with the containing structure? AFAICS this would
+   mean changing nearly all device drivers...
+
+As you can see, I need some more guidance from you before I can start
+working on this. ;-)
+
+Petr T
