@@ -1,207 +1,88 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2080.outbound.protection.outlook.com [40.107.223.80])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39B7F2F27
-	for <iommu@lists.linux.dev>; Fri, 21 Apr 2023 12:45:44 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=C3jcNVlqwsHBgU0wa1jBtzOoo9P8UFOb9qN/AACDz158kM6yumWitGc525HfgJZqDEboNuzVrd7B6qThNSr48Q6VdX8iHqlTgiO9T0Xz8LT4ildZ3uKaqleYYnSHKihhLIt0sBBIfB3t6l9EBlhSlZmDK+9g5LKOmKP/NCeMUiZ22jKqMy53iMdn7ZUlDqiuAoHlE8wNoXl6aGuay7X0Kzmg83gndNlNt3UAlwhVYofYv4pPTB8zP08oydqmtRG59bJHp5vyJMVs5VWZzlF5UXkoyRNLd0SwItp9V/ATNRsiPnzTpzSET13obKdC77SMQVwpPRGV8qFkF9EmsePV3A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oOok4VxGRkz5bol4C0fW6Hq/oKlUA9GLEHcEMUCGKY0=;
- b=RrvRix+lr8FJfpY/8RSm0iNuSKvJEEbjk4d69ZP6OfsKv9bWVtxIFG7E+TbArvlRgCUCMJDq0WYaIE1PCQmI9tF4Msqd+loAI34vh3NHWcWbfpglKD1NaXoorHPf2gIP+jPxSJQkkCA/9rhmbws0kiIJMtxUCqm1+U2HodQ7ilhg5ZO93dN864849dTdSTziXa+O0bqOJBMRJNGtsDXwe7i7gWMKRg1uSoTO8KDCiR24XOsEkoDswHz03JJOwYJwWlz9sA+49ciQ/3jAiIEjtt6cbK1EhqlA+/OllmscxXK/igB0yfSKspZag+0UABnAFbT/znubYHERZr07rBkevg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oOok4VxGRkz5bol4C0fW6Hq/oKlUA9GLEHcEMUCGKY0=;
- b=sQX2M/Rbu4Npu0kbHPf8RhUAwokbfwBtkIzw9X48y1IIKcVBd348ixVVkqB7PUO7QGA1m7PuxN5p2m+RaZU56QVXGe4tZkllSlIBzJZsRNBmHdfKs/PqvQhb7ijyi9zE1rROoggmmWA23cq8N9s1GtPP1fE6MK+8sZ6rXPVO1cBpJKP2Q1U4eEw/dfFQJyiJWLgq6pVYrLdfUiNpy5d8VQH3j0Uk5k0+JCyWq5Bn4WQjP9JT/xx92jdji9jK5+bV+tfR/lwMTjy/GQDQrSViPmnM/B8G7ZI0iRZgeZtymAh1fLfR0uQK8AvEfjL7ojpjGPEvRnMRCZcSdhNnm3QW2w==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by SJ0PR12MB5504.namprd12.prod.outlook.com (2603:10b6:a03:3ad::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.22; Fri, 21 Apr
- 2023 12:45:42 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6319.020; Fri, 21 Apr 2023
- 12:45:41 +0000
-Date: Fri, 21 Apr 2023 09:45:40 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: RMRR device on non-Intel platform
-Message-ID: <ZEKFdJ6yXoyFiHY+@nvidia.com>
-References: <BN9PR11MB5276E84229B5BD952D78E9598C639@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20230420081539.6bf301ad.alex.williamson@redhat.com>
- <6cce1c5d-ab50-41c4-6e62-661bc369d860@arm.com>
- <20230420084906.2e4cce42.alex.williamson@redhat.com>
- <fd324213-8d77-cb67-1c52-01cd0997a92c@arm.com>
- <20230420154933.1a79de4e.alex.williamson@redhat.com>
- <ZEJ73s/2M4Rd5r/X@nvidia.com>
- <0aa4a107-57d0-6e5b-46e5-86dbe5b3087f@arm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0aa4a107-57d0-6e5b-46e5-86dbe5b3087f@arm.com>
-X-ClientProxiedBy: MN2PR08CA0023.namprd08.prod.outlook.com
- (2603:10b6:208:239::28) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E09F2F27
+	for <iommu@lists.linux.dev>; Fri, 21 Apr 2023 12:56:21 +0000 (UTC)
+Received: by mail-ot1-f53.google.com with SMTP id 46e09a7af769-6a5f03551fdso1667201a34.0
+        for <iommu@lists.linux.dev>; Fri, 21 Apr 2023 05:56:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682081780; x=1684673780;
+        h=date:subject:message-id:references:in-reply-to:cc:to:from
+         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=8iHqSMwo/rp53MUqa385NdmlLYpp8taR9HcafwH8WBg=;
+        b=Vf+hgMceoZub79PiBrSnPg4xBvweBqDfTp8gqt4LRqpGGcU4gxuwUdeNNo7JXqHbkA
+         DMoAvGHyXkymTgrmAGCQgvU3Gycu34ro+mwSiA8OMmkxEV7Jv9WTLcVdjkjzj09wbp/c
+         38By97nkmUzPNEkU5OMCbFno7Jms/d7nZt9+e9fWOWpFEplPhfJ+83FDkpxPyVoBNe6B
+         2wNkh/Om/nA8ozfUOX3g/ixGg1odZ0uYPU9pdIcxHdsjHYCdXTv1knDdFptZOnBCIL+1
+         UxBAWZkc8FFFGrDRQMI/VHjjcTrIYk5X+tvBk8G709UreMtuMgdpnhrLJRHPUkWyUQR1
+         Ybfw==
+X-Gm-Message-State: AAQBX9c3zpeniq5/6GOfiCTxayUUQ83dkPLs75MPpE2NNSwoyqvYY4bG
+	12KITREMCseY8NOwo46xFA==
+X-Google-Smtp-Source: AKy350aomGuxUTztWOPXI+gVl1MEgcB2Ww3EEurAtTYT7QWYKij3fQcsX+CIjfRPUgtasssGom9CvA==
+X-Received: by 2002:a05:6830:1e79:b0:6a5:ff72:4fea with SMTP id m25-20020a0568301e7900b006a5ff724feamr2740190otr.29.1682081780049;
+        Fri, 21 Apr 2023 05:56:20 -0700 (PDT)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id l4-20020a0568301d6400b0069fa883c738sm1742364oti.35.2023.04.21.05.56.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Apr 2023 05:56:19 -0700 (PDT)
+Received: (nullmailer pid 936702 invoked by uid 1000);
+	Fri, 21 Apr 2023 12:56:18 -0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SJ0PR12MB5504:EE_
-X-MS-Office365-Filtering-Correlation-Id: ff855301-8bde-4e70-e227-08db426650df
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	ztZWRGAxBzOfoKBujX/r8KXbhLuzvap7zo99GEGhLOMWggP0p0YdKX2f3jVF0tu0fcdQIX9ItZ1H43gMgeEViMLiDuX9I3eh06s0O/rztKDFnzO8a8wxdh3VBCgwXwisWHkv2pJV7Jf3bgUBm5b3jWvvWi+uhn9/iW26cpOHWTqNbIRcBOgmCHNtUw0iSIq9JICCCFcjNBOQ50kqMRM7JHkAFX50TJMhQ9k31y3FdtvQZFv8TF1A6MBkYLrluP3OiLsuBoa2NHaFj7zkfJKT5I4lI7VVJDfQ29xGOBjqEk6afExrAR3inGAyl/G9nPI/t6xu4Yi+Pm3b/YMELWMpkzhy1iX78Z1DAk5wO05lmsn7O8QIh2VN7ltn/YEiWHj3k5VGHVWhHoRwha6wfBkB7uWOnaYYlPktHEojwuq2uw1Iq6MO9Nh/whbrb3ZRg0vuPN5rmZzGYNkC0EWnkAIKaiPwz1CR3je3JWXQLv4/Jghc8cIx4QACM4HUX0kYLGte0UiEWVEW3I8cjXlDqPznuBZVogIlYuT91SsE6LLZ3+MHclbiiJhRLppjNXY3fiZ7
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(366004)(396003)(136003)(39860400002)(346002)(451199021)(54906003)(83380400001)(478600001)(2616005)(6506007)(6486002)(6512007)(26005)(66476007)(6916009)(66556008)(41300700001)(66946007)(4326008)(316002)(186003)(5660300002)(38100700002)(8676002)(2906002)(8936002)(86362001)(36756003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?OnWAG3GsKbaGGSlmKA+e9NR/mYGl4XdyaHATy/LaFewGQ+gPHbxlggvqlKnY?=
- =?us-ascii?Q?Eugazop8pCS0W6x4xY0VPxLTSDPJghGLS9DojUcDxDGOWObqwXohDaRqVCJJ?=
- =?us-ascii?Q?qxrTxfnI/+i6iZ0c/ropiq1ayIn7L86DEqgfKNTt451dOY5ZgguLl7O+Pm15?=
- =?us-ascii?Q?zVEPmjIMZyVjc83Vc2YbvcMdhh69RX0n6/dfEInBWCODboFnCaSqNmcb4mKX?=
- =?us-ascii?Q?aj3PlGsRtkqzxlvmq037g+Nkz5slyIO3wwIOqyFTNguK4RUDKpp15SO1IzFh?=
- =?us-ascii?Q?Qzs0CO5ZzAcOIeX+xYe/TMXVpUZ9XnI3I9+0higeNLNwQKizqKnB67vu0CNV?=
- =?us-ascii?Q?ovGArjfYhFYQAj0rhtCHFAwctatZhRs4E28tsF853JXJdFsS9oMK1ufIzqZh?=
- =?us-ascii?Q?ByMtVlVd4nl5hZGtOpZOPD0HrX2WSPNaQcQf4wWyUrYkvTfNcS045N1ArUnA?=
- =?us-ascii?Q?CAdj8jtLNYan9chlyURYyrjvK9K4+HmHbicDJA6idxX8apc+IuQsGEbx6ep7?=
- =?us-ascii?Q?XFpUKnfZSiDrqoG9+ZwG4Hh1OTeaNnsTQliML5dxoDShaACq/G4hfXTxjxzZ?=
- =?us-ascii?Q?U7rFdqtcydratPku4tcEBxB1c3+rzhvYoK7mHmm1nm4s0DzuyTQ+/w7ObIjQ?=
- =?us-ascii?Q?/ze7EP+QW5QkaousxL5zJDngqqUQ/FQLFLPsK5vMEA7xSnpSCLmsctFyfuXO?=
- =?us-ascii?Q?tMXYb6eF09YnKxctlc4Xqx+ryocrWZp4hGeM2W19FCg9J4HSkjxqnWuZHeZK?=
- =?us-ascii?Q?DylkY45H/KNYL5P4lCtbzpGTBUbLXwpljIku0uOAach1tgn3w8NXQnEqx0xs?=
- =?us-ascii?Q?YMG/JwgZ4zxDIk5cidyEgNJhq+29YZRbwFSaRD/wdUuM5e8NpFa2aa6omGut?=
- =?us-ascii?Q?DjSx82ANg6Bi2caeXaf33gvkJLde8qRf22//EwKBL+OSg23aYrqahW8w0nnk?=
- =?us-ascii?Q?XW3RRp3Vp+zXzZ8cyJI0bCcG/dGmoq21GMs/yE5m2u+TdTxdIzOSpBBYjrCk?=
- =?us-ascii?Q?mnI8EpHznP/ISfLO0Wq4uGx+X3AMUE+QPwDu0pLdk6uTWJypI6nejJmnvhwn?=
- =?us-ascii?Q?Y4P1sd1kZMNIgW1gx44L/udPQ8iuOPhQncb3Bnnl2kqc2NfrZay2ibUWVzrO?=
- =?us-ascii?Q?uspziWWCBm6pFXYOU3qZm1YCHgNVdeW5jQGLvL0zQr5YK7tDLTEW56XOlhvH?=
- =?us-ascii?Q?MjPiskm5V9xU4uQtGmMiRTSdV5BoBcKIWY8Q4aqwxggccWdnRrSzo9GGeT0B?=
- =?us-ascii?Q?dLz5kdSup6U6ZFivd1sX/kw29kvBYSFnWsLPl4mQJutpZfb5HRvUs0DDe3g8?=
- =?us-ascii?Q?rNm9BwtSvKbPLFjpL1mmrG/KLblpztO1jBl3obGWbkPD5zD3tNyvwKs9r2Lw?=
- =?us-ascii?Q?42PRWQYM61NRI6ILCZooyJ9KeqFwjj6GFJZpD17b4X8KRupgC0ZSYbnYVza5?=
- =?us-ascii?Q?4P/0KOrKmyCYrzeJZ8RN6gN4d0wjN5pKBNnxqv7BQR4hFR+PFLZrn4YC6MEm?=
- =?us-ascii?Q?3X/HJqcfDQ63kzL61thqr0lwpIRVIQ3eVq43f/HHde/GsoTWXW51ritO1tXS?=
- =?us-ascii?Q?RoJ3wO3Nq1iJ4s5VgsGZauqNpZ7Lg1Yi1yXQ0M2+?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ff855301-8bde-4e70-e227-08db426650df
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Apr 2023 12:45:41.6011
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VJbtAUrRqqa5+NCV6L0DwjMZ3Y9z/iOPxsGsHvk78dBzmJ4E1YPwi3fmObHiGASz
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB5504
+From: Rob Herring <robh@kernel.org>
+To: Konrad Dybcio <konrad.dybcio@linaro.org>
+Cc: linux-arm-kernel@lists.infradead.org, dri-devel@lists.freedesktop.org, Abhinav Kumar <quic_abhinavk@quicinc.com>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, linux-arm-msm@vger.kernel.org, Will Deacon <will@kernel.org>, Rob Herring <robh+dt@kernel.org>, David Airlie <airlied@gmail.com>, Marijn Suijten <marijn.suijten@somainline.org>, devicetree@vger.kernel.org, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>, Sean Paul <sean@poorly.run>, Rob Clark <robdclark@gmail.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, Krishna Manikandan <quic_mkrishn@quicinc.com>, linux-kernel@vger.kernel.org, freedreno@lists.freedesktop.org
+In-Reply-To: <20230411-topic-straitlagoon_mdss-v2-4-5def73f50980@linaro.org>
+References: <20230411-topic-straitlagoon_mdss-v2-0-5def73f50980@linaro.org>
+ <20230411-topic-straitlagoon_mdss-v2-4-5def73f50980@linaro.org>
+Message-Id: <168208107852.922456.2603583984839094907.robh@kernel.org>
+Subject: Re: [PATCH v2 04/13] dt-bindings: display/msm: Add SM6350 MDSS
+Date: Fri, 21 Apr 2023 07:56:18 -0500
 
-On Fri, Apr 21, 2023 at 01:29:46PM +0100, Robin Murphy wrote:
 
-> Can you clarify why something other than IOMMU_RESV_SW_MSI would be
-> needed?
+On Fri, 21 Apr 2023 00:31:13 +0200, Konrad Dybcio wrote:
+> Document the SM6350 MDSS.
+> 
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> ---
+>  .../bindings/display/msm/qcom,sm6350-mdss.yaml     | 214 +++++++++++++++++++++
+>  1 file changed, 214 insertions(+)
+> 
 
-We need iommufd to setup a 1:1 map for the reserved space.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-So, of the reserved spaces we have these:
+yamllint warnings/errors:
 
-	/* Memory regions which must be mapped 1:1 at all times */
-	IOMMU_RESV_DIRECT,
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/qcom,sm6350-mdss.example.dtb: dsi@ae94000: compatible: 'oneOf' conditional failed, one must be fixed:
+	'qcom,sm6350-dsi-ctrl' is not one of ['qcom,apq8064-dsi-ctrl', 'qcom,msm8916-dsi-ctrl', 'qcom,msm8953-dsi-ctrl', 'qcom,msm8974-dsi-ctrl', 'qcom,msm8996-dsi-ctrl', 'qcom,msm8998-dsi-ctrl', 'qcom,qcm2290-dsi-ctrl', 'qcom,sc7180-dsi-ctrl', 'qcom,sc7280-dsi-ctrl', 'qcom,sdm660-dsi-ctrl', 'qcom,sdm845-dsi-ctrl', 'qcom,sm8150-dsi-ctrl', 'qcom,sm8250-dsi-ctrl', 'qcom,sm8350-dsi-ctrl', 'qcom,sm8450-dsi-ctrl', 'qcom,sm8550-dsi-ctrl']
+	'qcom,sm6350-dsi-ctrl' is not one of ['dsi-ctrl-6g-qcm2290']
+	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/dsi-controller-main.yaml
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/qcom,sm6350-mdss.example.dtb: dsi@ae94000: Unevaluated properties are not allowed ('compatible' was unexpected)
+	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/dsi-controller-main.yaml
 
-           Block iommufd
+doc reference errors (make refcheckdocs):
 
-	/*
-	 * Memory regions which are advertised to be 1:1 but are
-	 * commonly considered relaxable in some conditions,
-	 * for instance in device assignment use case (USB, Graphics)
-	 */
-	IOMMU_RESV_DIRECT_RELAXABLE,
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230411-topic-straitlagoon_mdss-v2-4-5def73f50980@linaro.org
 
-           iommufd ignores this one
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
 
-	/* Arbitrary "never map this or give it to a device" address ranges */
-	IOMMU_RESV_RESERVED,
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
 
-	   iommufd prevents using this IOVA range
+pip3 install dtschema --upgrade
 
-	/* Hardware MSI region (untranslated) */
-	IOMMU_RESV_MSI,
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
 
-	   iommufd treats this the same as IOMMU_RESV_RESERVED
-
-	/* Software-managed MSI translation window */
-	IOMMU_RESV_SW_MSI,
-
-	   iommufd treats this the same as IOMMU_RESV_RESERVED, also
-	   it passes the start to iommu_get_msi_cookie() which
-	   eventually maps something, but not 1:1.
-
-I don't think it is a compatible change for IOMMU_RESV_SW_MSI to also
-mean 1:1 map?
-
-On baremetal we have no idea what the platform put under that
-hardcoded address?
-
-On VM we don't use the iommu_get_msi_cookie() flow because the GIC in
-the VM pretends it doesn't have an ITS page?  (did I get that right?)
-
-> MSI regions already represent "safe" direct mappings, either as an inherent
-> property of the hardware, or with an actual mapping maintained by software.
-> Also RELAXABLE is meant to imply that it is only needed until a driver takes
-> over the device, which at face value doesn't make much sense for interrupts.
-
-I used "relxable" to suggest it is safe for userspace.
-
-> We'll still need to set this when the default domain type is identity too -
-> see the diff I posted (the other parts below I merely implied).
-
-Right, I missed that!
-
-I suggest like this to avoid the double loop:
-
-@@ -1037,9 +1037,6 @@ static int iommu_create_device_direct_mappings(struct iom>
-        unsigned long pg_size;
-        int ret = 0;
- 
--       if (!iommu_is_dma_domain(domain))
--               return 0;
--
-        BUG_ON(!domain->pgsize_bitmap);
- 
-        pg_size = 1UL << __ffs(domain->pgsize_bitmap);
-@@ -1052,13 +1049,18 @@ static int iommu_create_device_direct_mappings(struct i>
-                dma_addr_t start, end, addr;
-                size_t map_size = 0;
- 
--               start = ALIGN(entry->start, pg_size);
--               end   = ALIGN(entry->start + entry->length, pg_size);
--
-                if (entry->type != IOMMU_RESV_DIRECT &&
-                    entry->type != IOMMU_RESV_DIRECT_RELAXABLE)
-                        continue;
- 
-+               if (entry->type == IOMMU_RESV_DIRECT)
-+                       dev->iommu->requires_direct = 1;
-+
-+               if (!iommu_is_dma_domain(domain))
-+                       continue;
-+
-+               start = ALIGN(entry->start, pg_size);
-+               end   = ALIGN(entry->start + entry->length, pg_size);
-                for (addr = start; addr <= end; addr += pg_size) {
-                        phys_addr_t phys_addr;
-
-Jason
