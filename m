@@ -1,169 +1,79 @@
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2068.outbound.protection.outlook.com [40.107.96.68])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from sonic312-27.consmr.mail.ir2.yahoo.com (sonic312-27.consmr.mail.ir2.yahoo.com [77.238.178.98])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A73225689
-	for <iommu@lists.linux.dev>; Fri, 21 Apr 2023 18:19:37 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Sjxw0uOF+AfsXhtAn27cYU0UPGMSr1KgN7/8wYGuxF+9yneSoXXiFYO7F686uPM7M6FlIZHGhZYrqgTdiprUmX9/DuhiJFzMMpP+p+KD1Zfaaqv8IRk2eLhyh7Rd5baqfTo7b+Rj6MkWVOgRLmV1braZBqZO55jzWjbnWIYIGgsI9mTUJi3gKHazanBzDgG/FEUWUE3+7eQh8yG3PrCO2isdPCi9maXyUUcb1sesxHa0FH8vZMU6LFALqnSlXSeY5qMmobsLOsNFV7aLffJAopIDoRzorjz/kARlLrjpA/nhTSoweGQ1odc8deuI9fUKYd3KcmAv3a0IGTSekwbYKw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Y+ZpcL1q4SwHovqsKcprIkzuyA/YAw/or75QEK2nbMA=;
- b=F3bA0W4kagMf/61fXSrS+uBoj1zgV3B8K8YWvKO7pTM4YMFah2iDOTy9jk6jt5tQhyeBFInaP1Rz8ZWCiUXnYQsHxW8t5YzRk3QkfdP3NgbdmN/RoLjMtWJtigdudLGXVoYrwl5u4wj0A3BqUuB5nVOVTwHmT9qs4bXhUdQef6tGOeVrhdGIFR88DFUH97B962xSDuDbV27DIAS+70rsZjcMdQkWghjXlMwY8ShDEzT3NPnv89A8CGHuiPIsUZCFyCX/YiIb6KPNx3R+Fup4Z/oYPxIVa5x4v/XOTdTbMT9wVJWXrJgfipQOTuqFfSlGOwRivwT+Dtb0YutywNToWw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Y+ZpcL1q4SwHovqsKcprIkzuyA/YAw/or75QEK2nbMA=;
- b=MCLYtZeqIoq61fL1myLJGn/TKttW/t6FkkeXHVa9d5NKAtHoNe6SFQ6FiUhII/2Kq5tk28QHwUp6YzcDYTk7oFKDL5jW8Lv5+TYGtXb2CHJON5ySb8NYUain2yxOA74Fp+ec6zkfeoxk2Kbskdki2hORqX3FuVDofkuscioGdXNpkexl+kYs0H7UryXcpgOgn+GRKbZz8IQD5egsexOF+Lqu2eCJ0DXyvZ2KdBbZ+X5usUTFYQD3HLAb2P8nPJSX87G+FSsz3wLyjWpcHrCbAgvvq8Fqi2MfwlVDSZ/BqSzLgyWROmAO+QEgSeP0AuW8cQ3CBXOEx+6GzHwqQTJ7jA==
-Received: from MW4PR03CA0278.namprd03.prod.outlook.com (2603:10b6:303:b5::13)
- by DM4PR12MB7718.namprd12.prod.outlook.com (2603:10b6:8:102::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.22; Fri, 21 Apr
- 2023 18:19:34 +0000
-Received: from CO1NAM11FT053.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:b5:cafe::e2) by MW4PR03CA0278.outlook.office365.com
- (2603:10b6:303:b5::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.23 via Frontend
- Transport; Fri, 21 Apr 2023 18:19:34 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- CO1NAM11FT053.mail.protection.outlook.com (10.13.175.63) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6319.26 via Frontend Transport; Fri, 21 Apr 2023 18:19:34 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Fri, 21 Apr 2023
- 11:19:23 -0700
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Fri, 21 Apr
- 2023 11:19:23 -0700
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.9)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Fri, 21 Apr 2023 11:19:22 -0700
-Date: Fri, 21 Apr 2023 11:19:20 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: "Tian, Kevin" <kevin.tian@intel.com>, "alex.williamson@redhat.com"
-	<alex.williamson@redhat.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>, "Liu, Yi L"
-	<yi.l.liu@intel.com>, "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"will@kernel.org" <will@kernel.org>, "joro@8bytes.org" <joro@8bytes.org>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "jean-philippe@linaro.org"
-	<jean-philippe@linaro.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH RFC v2 0/3] Add set_dev_data and unset_dev_data support
-Message-ID: <ZELTqCK4lcAkf/ti@Asurada-Nvidia>
-References: <cover.1681976394.git.nicolinc@nvidia.com>
- <BN9PR11MB52764ED59905104D3A5A68C08C609@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZEI+LBkEeNZdJyTB@Asurada-Nvidia>
- <BN9PR11MB5276C39E256CD4B922435E1C8C609@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZEJBldGXBNGEy9tV@Asurada-Nvidia>
- <BN9PR11MB527693075725A13DB9EE18678C609@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZEJHPb1E1/eI8V6A@Asurada-Nvidia>
- <ZEKLDzU8C2niNyOw@nvidia.com>
- <ZELJ0uv4gGCPrDfX@Asurada-Nvidia>
- <ZELPCTOEgU8XlhFh@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75AED7F
+	for <iommu@lists.linux.dev>; Sat, 22 Apr 2023 06:25:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.co.uk; s=s2048; t=1682144747; bh=midj+Kfp9FmDq5AxarKzhgc0MJBSorgL4IFJ6LlsTEQ=; h=Date:To:Cc:References:Subject:From:In-Reply-To:From:Subject:Reply-To; b=l53ZCn5k8JlGUDQOiPdzXTN6TnZF1KBtbO96K5PeTmI3gZm5osNdelwK1GqCX5YvKyTuoqvwLph8dllCWK9+ZHgrkZfuhuVGMEfbBOaZevHzTz0D7sZYa9XXVFMoZ17sN4BLJotLNc4fKAQ57RTvTmCj6H6v3vbMuzHjLc1NVEDVxdIEYLL4SBmOnHZVU77682GG7VaPWGJMEmCwydcYoJI+RdYuH1UAuMyP6+EsaksA9qvOdSzu1zsNUbiJbiDpsm96IZdnWxszsS213feD+zbXjZ6y/y5Nnmjhj3kk15AqilODeQx6gA/1AqB66FXERyxyidjg8aRJw3BifocmxA==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1682144747; bh=2KipPvC/isW/pnsIZcg1VP+I7LrAlqtyYXd3TukdKlt=; h=X-Sonic-MF:Date:To:Subject:From:From:Subject; b=mHZXIroNlQvQbe6e2nL1Ixvpve8Qk8rk9HFVqnX1tdjVZsWcXFlHJdLLPLZ6YO917k1x9a6+hxlmKdXbfEEx60E4GACY9Is7mPJGWroZeXUUgOUzTmCJG6XuvajnHL4idzeZ5L5flajsr8ZNa37rkMk2GpXp0/BpPh6LsGUhVGHsLHC9Ea3rqZnSDzgCm9NR3wAVxc3jTv967aRDe0BQyxtdzQwgk1BSHk+tMF/MkoiwBVkTUGAk6oZUxznVJoVFqa5cvQQeSgbI7DImmASvh3PuEUJsDE6Bg6Z0kcLKNVmQEqKOVsQkI3BG/6wK3JjCylSU32U3XrFxgtg88DZCrg==
+X-YMail-OSG: k5mK02QVM1kzGbm5BlUo_W_g6Doo0SQ8gkV136bsr4Fj3Vjwwi0tEfZI2oGvmGb
+ aH1hidDqF2q4LM9WgUdkXdKy91jAz.sAGxdk5SYlMFHiOIh8beOROOH0qvXZ4wSEOg.sLbwNH4D2
+ i1TBQJ4eVLfAFOcb72Uze9a8c9JIaYTG04RnIyg9o0zu7Map1CLSE05l76m19XrMgBb8g.50p7BN
+ rv4qwvbcujTuvY94oysW0SUz1qHuCdyBnk4uQrFh54ZME7ANBBC4BkdSYfLfPvmBDjXCcy2cr38f
+ L1QUge8E3oseXlPtmFqK12V2CZnObFeregCo1G0SjzB6FBEYnS8RAyI8D.6nDRUb5YIlYlhLbDBz
+ VZUSdFYAkRdcDKZO_aKTvEoYVoxWRteplDbBhy2X4NHSiP0pIcoS7d0kgKQ3En4rG847sY.UiWpQ
+ 9zghSsn4BvyGnFEhfLEkf3bz_sXvG9_fgo8EvBe8MOTOSo0b4xgeZEDLrKs.bl0RF9XOONLWbzKF
+ jI8TdrV10C8VwM.cNSLiYXn2rJj36BI_W.muLd.JXcl.r8.GeBgjsj4VCcRSKc8dO8pM.bz70ETw
+ Fwbatpt64qyk1v6zDlmuG31c.oO3TtVzN5ieNChlIWvwDwxQG1zOuWHgjljfpHjGdalblAZvLoKY
+ iSP5n.F9KfHMBMZVGWcPEUlJgFgZhQkaUG2Sx8VvD_iVDkvk4066.h2X1oIWCG2kEaS_nFdoj.td
+ yRPVYzaKfUhrHGxTEVXD3K8jl2ZmfP2nto4A_CvBAV89yosPK5D.91PxZMIt92unv.IhvxopHiiq
+ 7QAaJ2E5b5cqTmblTazdBv9iL8WtO_8qjYHNrCfDEHJLFrId5H788Gu0F1rQ4z3oT_3FcvXhh2cd
+ RHhVhyLNDur2ORAfFwyS0GmhbhlOaPU0z9rNTnDRFQya5.pHYx29FMDj_98P_zyqRqtFPoG5UhXU
+ 29fky1nM7kR9ZNN2vWrEXHlw12GkZnld.YR1dZNiE57SNHZrnHcTej8fi3nB1aY6uNWHu4m0c6B7
+ qMLe0_X5YF7rcJp6fxaq7bjgBFMNGZnroCptKswzmbO9IwE3lR7_Y_x.kz2IyU0.vwCkZ7cltOTL
+ qoN.IXvAv3ib42z1y4Pk47Kwabl8wDQBbZjgP6boTlMyOe_APs6DiPpTv5tXMqiiY639NzepC.Y9
+ UhULp1WoHh5jzK5gvLKBE6L5ODnatXF3UfIRML6BZ5nK9lCZadoKXPoOd5J3XD6oNGiQepfZwVNf
+ Mz0yXJka1EmDSQ80U74YIieZFUqWEEpuD1Y.jXRpat2v10QWyVp8DbWCOocsJo2si0g6lwaiLF7M
+ f3KbR2vngYPFBSR5bGptO8PMKeg_j7cnt3hQIYgTtmiSJwFth.J1bJFwDxxjeeqsivHYaGxWmJXo
+ q08s.7G.QCLzlScYoBTBDqKA5dIUsTH1RqXDdsHWuyZXfPITXFu5R9sIRvmwUUpMTm6fJ2uV6x0f
+ hUK0LE9H0VcSIa.GCLARokBhIbP_IHIb6JWQFFuZ.RijQS6ved2y7ihiML9zqo7xjLqdYUVNgR65
+ QWeKiuUCCDBz.wzSG.0VVwxzdDxqfJiFCbN2wxyoXydQngNifG0w0LHuq4ZLooW0Cb.jkCg.j_md
+ d7q8E6euY4F8dfZCsarSMBQaIolZ2xvWY4Yv6YywUoLHiv9yRXltQ6fcPu6ufpXD9NgHg_2uRxFx
+ g3dr.oqUzPtanZlDX3lH7_SHkBL6Cw71KRB4ebl6TQrODqiV_hQg.J4a8.0h2fwX3PbQU4wH75i2
+ c6rDlOE15_Wu4UI38MmY9AbzCmki7NA_fUaxUnZkYqsQhh64_YMNBmro3Tn2Izfjv_Pv3kD6t8hF
+ LPhpfDd1GC_IbJcm2xLAm0CWustZAJJDYnSF9NjxxV51p1jCFoMynbhCtQbayhlD6exxIflJAgv6
+ 8mWvRnilpbTGnOWyUq2MZue0m1Je1l4xl1cmUIOheK0gQOwVP5z579CXD4cqV3hXEVbVXkFVJPr9
+ UwrYjJjlMk8pvcEydXFkmFanoHumQFjSLMoAcA434FGBI8QZ_XnZUziMBEuUd3QfbFi4_r.7yP0y
+ migsy4vntj9BzKOM3NSjvd8BhhuK8oHXeWPY6WU83egrvMqHD4LEMXpMiHuS6jy4ZFHWzzY46UdL
+ Gsr37lRG14pb3DeD_6kvAywGCApl4OTMC3bg25DNc_ptvJW.cNuXkJHMGEz.OeYbYsu2TCIBOmrx
+ sewEg000ZlSm3ZYf_5UYMoRwqCYlaHYH3cmc1lr5OVbBYX.aEC69eVWuN6Ygz8mAzt1AmYjM.W_G
+ z5PTfSOX6
+X-Sonic-MF: <jason_a69@yahoo.co.uk>
+X-Sonic-ID: 2221c130-951c-442b-8f24-1cf1de7e99c0
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic312.consmr.mail.ir2.yahoo.com with HTTP; Sat, 22 Apr 2023 06:25:47 +0000
+Received: by hermes--production-sg3-6d6fb994f6-2fxf8 (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 35524fb850072bd71f5439af80185d30;
+          Sat, 22 Apr 2023 06:25:39 +0000 (UTC)
+Message-ID: <fc9f4cef-9426-c9d2-3c2c-3ce12fe5f6c3@yahoo.co.uk>
+Date: Sat, 22 Apr 2023 14:25:31 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ZELPCTOEgU8XlhFh@nvidia.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT053:EE_|DM4PR12MB7718:EE_
-X-MS-Office365-Filtering-Correlation-Id: f7706c83-19c5-4eb0-bdbe-08db4294f55f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	RmQaQC0csxwRRgTd4QyCIkHS5H37RSmfTSYrX0iWOBE4gMiqzfT6Uqnl2Up4NB1ZInTb4lTzZSCClBFBMcWwZcxZTAXeL4kH9ENagHJRlodrK8x3vwfvT2+UhzF87SPYlJvPVxdvYvWGwEQChn/KkfoJFOLI+pzToKmwG73ekbaqCvAtNa02tJDgyNhmw9hcSOn4sKL/u4Q9khzxZr5MII3LUQd9sAwd0QXPDiqp8WXsrjS4uN9SvqZdL5s+uAZtpU1Cw5FHzeUOis29Kwa1P9Mw957bqFgJPr6q6HlGIOqwSHDjcMMXO9xMVWrYDKYwV+c9JSa/p7H/lCFrhCjNx/mbM8vHZ3bN8Ur+ksyl6R3qj+79FKdVnBvdzOVIR20O2M+nW2qo5cJouSl3BxTNRz/fVnv7lpHhYVUKtPcnFYD55qScm9BocKJAkN1dCywOoZE1xjpkzyTyxXnolkzt7spshjyX1boakYuyDMdfLWc3M1PMBMuFGeTZ7EcHpJpv1P/AQWcWPG4RQU5kJQVKsF/DjhwpY3jU5EVEPAvGDROXqi510EcQrcFxKxLSLrVnfcqgBDCSQRxO51lZZIm9gsc5G3xkUlDzt7UNBQ9YdWYC53NMJ9TTevnDU/PBU3PyykZIIf49a8ZrZfJ64qV797BvhZuyIZOvVIELQuh+RQ8Gc0GiSVUUZn51donnA5C/EVi+mCUNevUCJNLgOygytN2jcqsFC97peWnLgU/Hpfptpqfg0AvnnXKgc3k4CKQ+RBEhewUFljRXBHA7vSLtA+GnFr4EOI1qpXcWUgJe/RMP0fOFd7cVx1JJAZF0axjL
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(346002)(39860400002)(136003)(451199021)(40470700004)(36840700001)(46966006)(40460700003)(2906002)(8936002)(8676002)(6862004)(7636003)(7416002)(86362001)(356005)(5660300002)(82310400005)(33716001)(41300700001)(40480700001)(55016003)(9686003)(26005)(54906003)(6636002)(34020700004)(36860700001)(478600001)(47076005)(83380400001)(426003)(82740400003)(336012)(186003)(316002)(70586007)(4326008)(70206006)(21314003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Apr 2023 18:19:34.1405
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f7706c83-19c5-4eb0-bdbe-08db4294f55f
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT053.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB7718
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+To: hch@lst.de
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev, jason_a69@yahoo.co.uk,
+ linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+ regressions@lists.linux.dev, robin.murphy@arm.com
+References: <20230416065503.GB6410@lst.de>
+Subject: Re: [regression] Bug 217218 - Trying to boot Linux version 6-2.2
+ kernel with Marvell SATA controller 88SE9235
+Content-Language: en-GB
+From: Jason Adriaanse <jason_a69@yahoo.co.uk>
+In-Reply-To: <20230416065503.GB6410@lst.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Mailer: WebService/1.1.21365 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
 
-On Fri, Apr 21, 2023 at 02:59:37PM -0300, Jason Gunthorpe wrote:
-> On Fri, Apr 21, 2023 at 10:37:22AM -0700, Nicolin Chen wrote:
-> 
-> > How about the following piece? Needs a test with QEMU though..
-> > 
-> > static const size_t iommufd_device_data_size[] = {
-> > 	[IOMMU_HW_INFO_TYPE_NONE] = 0,
-> > 	[IOMMU_HW_INFO_TYPE_INTEL_VTD] = 0,
-> > 	[IOMMU_HW_INFO_TYPE_ARM_SMMUV3] =
-> > 		sizeof(struct iommu_device_data_arm_smmuv3),
-> > };
-> 
-> If we need more than one of these things we'll need a better
-> solution..
+Hi Christoph,
 
-How about adding ops->device_data_size to store the value?
+Sorry for my late reply, I have been on the road.
 
-And, since we have a few size arrays in hw_pagetable.c too,
-perhaps a new structure in ops packing all these sizes can
-clean up a bit things too? For example,
+So, if I boot with
+intel_iommu=off
+Then the server boots fine..although that is not a solution because I 
+need Intel iommu for virtualisation.
 
-static struct iommu_user_data_size arm_smmu_user_data_size = {
-	.device_data_size = sizeof(iommu_device_data_arm_smmuv3),
-	.hwpt_alloc_data_size = sizeof(iommu_hwpt_alloc_arm_smmuv3),
-	.hwpt_invalidate_data_size = sizeof(iommu_hwpt_invalidate_arm_smmuv3),
-}
+Also, I build all my kernels with CONFIG_INTEL_IOMMU=y
 
-The hwpt_xxx_data_size might be in form of arrays for multi-
-HWPT_TYPE support.
-
-> > 	rc = ops->set_dev_data_user(idev->dev, data);
-> 
-> Where will the iommu driver store the vsid to sid xarray from these
-> arguments?
-
-The ARM structure packs a vsid. For example:
-
-static int arm_smmu_set_data(struct device *dev, const void *user_data)
-{
-	const struct iommufd_device_data_arm_smmuv3 *data = user_data;
-	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-	struct arm_smmu_stream *stream = &master->streams[0];
-	struct arm_smmu_device *smmu = master->smmu;
-	u32 sid_user = data->sid;
-	int ret = 0;
-
-	if (!sid_user)
-		return -EINVAL;
-
-	ret = xa_alloc(&smmu->streams_user, &sid_user, stream,
-			XA_LIMIT(sid_user, sid_user), GFP_KERNEL_ACCOUNT);
-	if (ret)
-		return ret;
-	stream->id_user = sid_user;
-	return 0;
-}
-
-Thanks
-Nic
