@@ -1,34 +1,34 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E4067C
-	for <iommu@lists.linux.dev>; Mon, 24 Apr 2023 02:44:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 527667C
+	for <iommu@lists.linux.dev>; Mon, 24 Apr 2023 02:50:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1682304264; x=1713840264;
+  t=1682304651; x=1713840651;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=k27B1ipAQkQd60Tjqvyx1KKy9XwjNqmqc36Yae9K9/s=;
-  b=EkItXaVSlE03uEUQ5Sd9O+kr7iCsrMNkkp6vSvX705uIxXzpadeO4d/W
-   F4MIDs6cxkbrXHpW2f7fQ+fW26ZriEnjdktMCNDgCx7JtbzdkUg2ycC9J
-   BFinUgYXIfxqqQQshQ3Nj6PH4eIpADLOIbxnqTzLN9oNv+HJbYJOdQhpv
-   xNn9rtAZcxfqL1V8q82az55Bha5YIils4wDAwCv48b9N7l7JcetOSXfYV
-   4mkh8VRBI1etFZ550tMKHXC/QO9A72S0pbPBFxvere0Fk+IhU9PFG5/TF
-   LMxl3VBwd5/VRiwCvQ++3emEXpCjkTJekmLt56JGsOS9XwS4lwm+OpcLz
+  bh=GOMTZaSoUp256Vix08jhKCvQRsm1uFL2LGJQqar2An0=;
+  b=JD9UzfxC4dXiSobFfO3muMIsLROnjC+bRXd+Kcd6ozk0SrVu0w4FntyI
+   hPlTSXMVM52Bz1ldKPExrinNI1+Ob3GCnU2RXvITghVSqhJkmylfDrN9+
+   qtCPQkgRvFrCU+4rI+HbzlJjbjdsHyJT99seayK5aDBVsptTEgm8rlPJb
+   QkgBSKk4bxGNWkstmMboSiwWxAPKUhSCaE7Ryq3c9ytYtDPEECmr8pPLL
+   jkSiT+Yt4eDGzXqLyaITrILiKx/r4SplsGQJhfXo96rOClCGw7elsZ2Yh
+   xDzJRIdsKgmc9jfFSp2aFblmIt7qfR1dExn2xz7W3CAr6lXbTIFRPzqVf
    w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10689"; a="325947970"
+X-IronPort-AV: E=McAfee;i="6600,9927,10689"; a="348255079"
 X-IronPort-AV: E=Sophos;i="5.99,221,1677571200"; 
-   d="scan'208";a="325947970"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2023 19:44:23 -0700
+   d="scan'208";a="348255079"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2023 19:50:50 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10689"; a="686615186"
+X-IronPort-AV: E=McAfee;i="6600,9927,10689"; a="723426123"
 X-IronPort-AV: E=Sophos;i="5.99,221,1677571200"; 
-   d="scan'208";a="686615186"
+   d="scan'208";a="723426123"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orsmga007.jf.intel.com with ESMTP; 23 Apr 2023 19:44:16 -0700
-Message-ID: <17342260-0795-9636-8408-0ca0d6c50403@linux.intel.com>
-Date: Mon, 24 Apr 2023 10:44:08 +0800
+  by orsmga008.jf.intel.com with ESMTP; 23 Apr 2023 19:50:48 -0700
+Message-ID: <b845fc36-5167-1aa7-25cf-35bb5d578087@linux.intel.com>
+Date: Mon, 24 Apr 2023 10:50:40 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,54 +37,40 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.0
-Cc: baolu.lu@linux.intel.com, robin.murphy@arm.com, eric.auger@redhat.com,
- yi.l.liu@intel.com, will@kernel.org, joro@8bytes.org,
- shameerali.kolothum.thodi@huawei.com, jean-philippe@linaro.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC v3 2/4] iommufd: Add IOMMUFD_CMD_DEVICE_SET_DATA and
- IOMMUFD_CMD_DEVICE_UNSET_DATA
-To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com, kevin.tian@intel.com
-References: <cover.1682234302.git.nicolinc@nvidia.com>
- <08604f9f4835d5a6b0d2d75de69722194abf7747.1682234302.git.nicolinc@nvidia.com>
+Cc: baolu.lu@linux.intel.com, Robin Murphy <robin.murphy@arm.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: RMRR device on non-Intel platform
 Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Alex Williamson <alex.williamson@redhat.com>
+References: <BN9PR11MB5276E84229B5BD952D78E9598C639@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20230420081539.6bf301ad.alex.williamson@redhat.com>
+ <6cce1c5d-ab50-41c4-6e62-661bc369d860@arm.com>
+ <20230420084906.2e4cce42.alex.williamson@redhat.com>
+ <fd324213-8d77-cb67-1c52-01cd0997a92c@arm.com>
+ <20230420154933.1a79de4e.alex.williamson@redhat.com>
+ <ZEJ73s/2M4Rd5r/X@nvidia.com>
+ <BN9PR11MB5276723C89B46201F471F7E78C669@BN9PR11MB5276.namprd11.prod.outlook.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <08604f9f4835d5a6b0d2d75de69722194abf7747.1682234302.git.nicolinc@nvidia.com>
+In-Reply-To: <BN9PR11MB5276723C89B46201F471F7E78C669@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 4/23/23 3:40 PM, Nicolin Chen wrote:
-> Add a new pair of ioctls to allow user space to set and unset its iommu-
-> specific device data for a passthrough device that's behind the iommu.
+On 4/23/23 4:24 PM, Tian, Kevin wrote:
+>> From: Jason Gunthorpe <jgg@nvidia.com>
+>> Sent: Friday, April 21, 2023 8:05 PM
+>>
+>> So, after my domain error handling series, the core fix is pretty
+>> simple and universal. We should also remove all the redundant code in
+>> drivers - drivers should report the regions each devices needs
+>> properly and leave enforcement to the core code.. Lu/Kevin do you want
+>> to take this?
+>>
 > 
-> On platforms with SMMUv3, this new uAPIs will be used to forward a user
-> space virtual Stream ID of a passthrough device to link to its physical
-> Stream ID and log into a lookup table, in order for the host kernel to
-> later run sanity on ATC invalidation requests from the user space, with
-> ATC_INV commands that have SID fields (virtual Stream IDs).
-> 
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->   drivers/iommu/iommufd/device.c          | 81 +++++++++++++++++++++++++
->   drivers/iommu/iommufd/iommufd_private.h |  3 +
->   drivers/iommu/iommufd/main.c            |  4 ++
->   include/uapi/linux/iommufd.h            | 32 ++++++++++
->   4 files changed, 120 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-> index c649a3403797..9480cd36a8bd 100644
-> --- a/drivers/iommu/iommufd/device.c
-> +++ b/drivers/iommu/iommufd/device.c
-> @@ -136,6 +136,8 @@ void iommufd_device_destroy(struct iommufd_object *obj)
->   	struct iommufd_device *idev =
->   		container_of(obj, struct iommufd_device, obj);
->   
-> +	if (WARN_ON(idev->has_user_data))
-> +		dev_iommu_ops(idev->dev)->unset_dev_user_data(idev->dev);
+> this direction looks good to me.
 
-Do you really need this WARN_ON()? The user space application can easily
-trigger this kernel WARN() by setting the user data and forgetting to
-unset it.
+Looks good to me too. I will take this work after Jason's series lands.
 
 Best regards,
 baolu
