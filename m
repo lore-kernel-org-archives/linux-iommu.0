@@ -1,74 +1,41 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 92B4E2108;
-	Mon, 24 Apr 2023 14:07:26 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EF52AD75;
-	Mon, 24 Apr 2023 07:08:09 -0700 (PDT)
-Received: from [10.57.21.60] (unknown [10.57.21.60])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E5DC93F64C;
-	Mon, 24 Apr 2023 07:07:24 -0700 (PDT)
-Message-ID: <07ee0cf7-a5c2-f87a-d627-8dd8fb082345@arm.com>
-Date: Mon, 24 Apr 2023 15:07:20 +0100
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39A127E9
+	for <iommu@lists.linux.dev>; Mon, 24 Apr 2023 16:37:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D466C433D2;
+	Mon, 24 Apr 2023 16:37:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1682354261;
+	bh=f0tQJ3C9w8njZRPMSk5toxWyDDKhAtvSqcBeGFZA8O0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=HLna5VHw30LjdqRGKVJdHLEdhCNwr113Y7C/AeJVJmVqqFC5gFnEawbOWfb7ZLlTj
+	 0clQgbJDgAHYt0n98jEQDaUwnBG3urPNXAWShmBERJNfwa6pUy1AOrcg2Ng+bIAlvG
+	 rNhwgDKMLquXbm97QM1ehFpTf8C2fqE0iz8iNQUJYaB86lVPz2KLjpytMjzG12HDmV
+	 gCUMB73e0pg0IbZrwWwDBV6fy7BByWuhEA4cwNm8XaK9q6QKxCDbW51pMa3iBcE3t3
+	 B56aLfd9kcsec5GBmPGvDu524PeozK8YwUKnKFC6gLqOggHYV35cEN8ZD2I/cdjXzv
+	 bK0fJRUAkIQ2A==
+Date: Mon, 24 Apr 2023 10:37:39 -0600
+From: Keith Busch <kbusch@kernel.org>
+To: Adrian Huang <adrianhuang0701@gmail.com>
+Cc: linux-nvme@lists.infradead.org, Jens Axboe <axboe@fb.com>,
+	Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
+	iommu@lists.linux.dev, Jiwei Sun <sunjw10@lenovo.com>,
+	Adrian Huang <ahuang12@lenovo.com>
+Subject: Re: [PATCH v2 1/1] nvme-pci: clamp max_hw_sectors based on DMA
+ optimized limitation
+Message-ID: <ZEawUwOBMkibGybW@kbusch-mbp.dhcp.thefacebook.com>
+References: <20230421080800.18837-1-adrianhuang0701@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [regression] Bug 217218 - Trying to boot Linux version 6-2.2
- kernel with Marvell SATA controller 88SE9235
-Content-Language: en-GB
-To: Jason Adriaanse <jason_a69@yahoo.co.uk>, hch@lst.de
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
- regressions@lists.linux.dev
-References: <20230416065503.GB6410@lst.de>
- <fc9f4cef-9426-c9d2-3c2c-3ce12fe5f6c3@yahoo.co.uk>
- <5f37b0b0-6cb5-b210-a894-d1e91976126e@arm.com>
- <2a699a99-545c-1324-e052-7d2f41fed1ae@yahoo.co.uk>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <2a699a99-545c-1324-e052-7d2f41fed1ae@yahoo.co.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230421080800.18837-1-adrianhuang0701@gmail.com>
 
-On 2023-04-24 14:44, Jason Adriaanse wrote:
-> I took out "iommu=soft" and the server failed to boot, so yes it does 
-> break.
-> 
-> The first error was
-> ata7.00: Failed to IDENTIFY (INIT_DEV_PARAMS failed , err_mask=0x80)
+Looks good to me.
 
-OK, great, that confirms the underlying issue existed all along, so the 
-regression is only a change in who wins a fight between certain 
-conflicting command-line arguments, which is arguably not so critical.
-
-The rest of the evidence points to 88SE9235 wanting the same phantom 
-function quirk as most other Marvell controllers, since although it's 
-apparently been half-fixed such that DMA for two of the ports is being 
-correctly emitted from function 0 - given that you say two of the disks 
-*are* detected OK - the other two are still claiming to be function 1 
-after all.
-
-Thanks,
-Robin.
-
-> On 24/04/2023 21:20, Robin Murphy wrote:
->> On 2023-04-22 07:25, Jason Adriaanse wrote:
->>> Hi Christoph,
->>>
->>> Sorry for my late reply, I have been on the road.
->>>
->>> So, if I boot with
->>> intel_iommu=off
->>> Then the server boots fine..although that is not a solution because I 
->>> need Intel iommu for virtualisation.
->>>
->>> Also, I build all my kernels with CONFIG_INTEL_IOMMU=y
->>>
->>
->> If you boot 5.15 *without* the "iommu=soft" argument, just 
->> "intel_iommu=on", does that also break?
->>
->> Robin.
+Reviewed-by: Keith Busch <kbusch@kernel.org>
