@@ -1,39 +1,39 @@
-Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
+Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com [209.85.160.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5CBF3C0A
-	for <iommu@lists.linux.dev>; Tue, 25 Apr 2023 16:53:12 +0000 (UTC)
-Received: by mail-oi1-f169.google.com with SMTP id 5614622812f47-38bed577755so2237925b6e.0
-        for <iommu@lists.linux.dev>; Tue, 25 Apr 2023 09:53:12 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12A1D3C0A
+	for <iommu@lists.linux.dev>; Tue, 25 Apr 2023 17:03:22 +0000 (UTC)
+Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-18665c1776dso4474251fac.2
+        for <iommu@lists.linux.dev>; Tue, 25 Apr 2023 10:03:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682441592; x=1685033592;
+        d=1e100.net; s=20221208; t=1682442202; x=1685034202;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=xsSaFPoEnp1cGsorTT7ZaH8aG8h2ymJ3AbL8g9oAX2c=;
-        b=YmUJn0TAfNcVgtMGoIMKHabZJDPTH9muu4O4UhcUdNMxomfxUwWEUpubs0BAqB4PLJ
-         QZ9blAfYZmgLnMnz8C+FFJ5InSGdguP0I3aB4V+PjtHFvsQgRtvtG7w9EbB7jM39BvY2
-         7KpRBpRX6SPH9pVdd7UonBRB+gYW4E7Fd2pxNFPpWS+vXeKfq7HFV7P9SM/OyolJgQHG
-         sPdJC6Avn6comKXOl2Jza744GRM4i9F/LLKZCsHTqg+5HwpXyGzfHWK8GWS7Iw1t/JHk
-         CtCQ5HE2nBG6ESiafPRxXV1dtCIA8kCnFn+H/Q5/NBC6ADSmAsaS4TbskRuSTEaOiTTL
-         5zRw==
-X-Gm-Message-State: AAQBX9ez+I1gWh3ml3bZL0dxVZQs7vOqDjNfSvwIzDdahu+AxmnJaOi/
-	rOaUcLKTCN4OZ3j4tkgREw==
-X-Google-Smtp-Source: AKy350bfrDTwQxvMUyap3y3hJHSKG/gULg481X3pOZQCJmRNZ5VYkfUL4Idx8sx5O25r4MyufQ1RvQ==
-X-Received: by 2002:a05:6808:1392:b0:387:14b7:f8e7 with SMTP id c18-20020a056808139200b0038714b7f8e7mr10106662oiw.38.1682441591645;
-        Tue, 25 Apr 2023 09:53:11 -0700 (PDT)
+        bh=+ZDfXI7hMbqGi7E82l8vWt9jneZ/T4Uui2TLcBQz+KM=;
+        b=L5O5oJwt+SpxJ404w0ra1JOPuWLFAOeGYyW1rgLwgA4olPwG636jBqCfptiW+i4KI+
+         xro5WTk6tBUoH25MVq9kp1VwNaQ8PAKwr4xT+ZKa4p1a5VDiyzNk6VnHY3557oeGxTqb
+         1CAZbRgTc2SOaTR2FrshanGRZLSVqII7WTEhQXVCCu/Qa5HmNUAiyrKOZ2gB1BKBGmi8
+         J58nvVjt6jXHPkHxAZO5YkbEvLxhhtJHx0rqfVe5gIPa/PVzgOS7jRy3QMnzJuoCl0CE
+         GT9J/OXuHSfExBzqeREJz54pJeeqFDmeGjXo+Ebv2D4fB3B4t1jJmYAcPtfS8mwacvHQ
+         dMOg==
+X-Gm-Message-State: AAQBX9falDxCwE8AO0Jkk/mbfboF4Zj8ruXen6y339+X+Ng8lqW6vJ2C
+	NMvLhL6KZhzGPHYC22uWfw==
+X-Google-Smtp-Source: AKy350Yul7/EEVvrMD/ABdCsLr9ode6pBn2tmtKnE0Rjjz8gJcwSoneSAZlS17HOt1THyFiTOOIaeQ==
+X-Received: by 2002:a05:6870:63a4:b0:17e:6eaa:945f with SMTP id t36-20020a05687063a400b0017e6eaa945fmr12199364oap.8.1682442201994;
+        Tue, 25 Apr 2023 10:03:21 -0700 (PDT)
 Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id z9-20020a056808048900b0038dd5bf922bsm5772958oid.22.2023.04.25.09.53.10
+        by smtp.gmail.com with ESMTPSA id b1-20020a056870b24100b0018045663fc5sm5678632oam.48.2023.04.25.10.03.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Apr 2023 09:53:11 -0700 (PDT)
-Received: (nullmailer pid 1931342 invoked by uid 1000);
-	Tue, 25 Apr 2023 16:53:10 -0000
-Date: Tue, 25 Apr 2023 11:53:10 -0500
+        Tue, 25 Apr 2023 10:03:21 -0700 (PDT)
+Received: (nullmailer pid 1948453 invoked by uid 1000);
+	Tue, 25 Apr 2023 17:03:20 -0000
+Date: Tue, 25 Apr 2023 12:03:20 -0500
 From: Rob Herring <robh@kernel.org>
 To: Konrad Dybcio <konrad.dybcio@linaro.org>
 Cc: Rob Clark <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>, David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Krishna Manikandan <quic_mkrishn@quicinc.com>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Marijn Suijten <marijn.suijten@somainline.org>, linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
 Subject: Re: [PATCH v2 03/13] dt-bindings: display/msm: Add SM6350 DPU
-Message-ID: <20230425165310.GA1928942-robh@kernel.org>
+Message-ID: <20230425170320.GA1931576-robh@kernel.org>
 References: <20230411-topic-straitlagoon_mdss-v2-0-5def73f50980@linaro.org>
  <20230411-topic-straitlagoon_mdss-v2-3-5def73f50980@linaro.org>
 Precedence: bulk
@@ -82,9 +82,42 @@ On Fri, Apr 21, 2023 at 12:31:12AM +0200, Konrad Dybcio wrote:
 > +    items:
 > +      - description: Address offset and size for mdp register set
 > +      - description: Address offset and size for vbif register set
+> +
+> +  reg-names:
+> +    items:
+> +      - const: mdp
+> +      - const: vbif
+> +
+> +  clocks:
+> +    items:
+> +      - description: Display axi clock
+> +      - description: Display ahb clock
+> +      - description: Display rot clock
+> +      - description: Display lut clock
+> +      - description: Display core clock
+> +      - description: Display vsync clock
+> +
+> +  clock-names:
+> +    items:
+> +      - const: bus
+> +      - const: iface
+> +      - const: rot
+> +      - const: lut
+> +      - const: core
+> +      - const: vsync
 
-Drop 'Address offset and size for '
+Is there some reason the clocks are in different order? They appear to 
+be the same minus the 'throttle' clock. Is there really no 'throttle' 
+clock? Maybe this platform just tied it to one of the same clocks in the 
+above?
 
-With that,
+I really hate the mess that is clocks. We have the same or related 
+blocks with just totally different names and order. The result is 
+if/then schemas or separate schemas like this. Neither option is great, 
+but at least the if/then schemas provides some motivation to not have 
+pointless variations like this. </rant>
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+As it seems the only difference between these 2 bindings is 1 extra 
+clock, can't they be shared?
+
+Rob
