@@ -1,88 +1,96 @@
-Received: from mail-yw1-f202.google.com (mail-yw1-f202.google.com [209.85.128.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A35C9C2CC
-	for <iommu@lists.linux.dev>; Wed, 26 Apr 2023 20:33:00 +0000 (UTC)
-Received: by mail-yw1-f202.google.com with SMTP id 00721157ae682-5560116959fso68051747b3.1
-        for <iommu@lists.linux.dev>; Wed, 26 Apr 2023 13:33:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1682541179; x=1685133179;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=MsgPsrUA7pZr2poVzmEsLw5CPMy5beCZQnaEI4bsMpM=;
-        b=7ktCRMMXoavpPo+oNTHeDKKUE2nqiLnaUL0Jez61kvhTdEzPAgY8c1dYCLPFVJtNRi
-         o1DulXO9gD+Xp0GRoZUnkFK0T7HZ/WfLMpHP3P54mLE7Zmh7a7IjFshrDUqbWrHPC4UY
-         cYKUojkhCq07wF45ihjARmMr2sp+yrq/CgxnZsU9rBoHVGmbia8wHhq+W7NxaIbTxd7T
-         ARNxmVD2aVEJm4OQJG3ycIGd/vDp965VXtQPCWTR/5urg1B6JByEbdsUctVLFB906sri
-         RZofaQPIYN0eZo9ETpL5eBauFErEy5zTs/eji8Edo2r/ykhhSUtXqr8tKcAAa5p6yEcK
-         Cl5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682541179; x=1685133179;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=MsgPsrUA7pZr2poVzmEsLw5CPMy5beCZQnaEI4bsMpM=;
-        b=TxkJYPCsGYBuSBRsPYKZ0nGJUnXjcq4iUPUW4ZXopJAbI5ELELluF61pWigoJ3NseW
-         XD3oivVO0hFzFD64YW5dnLDjb7pSco5k23VyN1SZKhOjON+gNceYCiMazgNgMtV6biyA
-         1ACGFcnaj/0U48mlXU8wt2E8HFVO1zqSkI5FGbX+JEeP2f25vvKrTaJvgQtCyqa7p1Bm
-         jsmYhka+ZnbXH2NQnoHCHXQyMMNf8oPEfuhHshl07pHgUPNKcfGRzv2C7nYVy5QDzXlj
-         a3/C+Ax0817k3VYVh6mR1dMqQnk0Hek9zj3Bs8qIgxBAuHiqfykGbCPQ1Gu6MlyxLdZJ
-         K6RA==
-X-Gm-Message-State: AAQBX9cyD+RL1DyGGSmmLjOuUHw8WB+upHlx1YyKszmLUxAhuaegEDsv
-	ftfscVfw6lGPLRQ8UkuBc2arpyT0VSY=
-X-Google-Smtp-Source: AKy350aDwcz+0RCf2miA99jakkRJFi3cWpYYZ10pS+QEGUbpo1c7VFj4UdHoxewp/Jy2APK3HEbhinMt4+s=
-X-Received: from pandoh.svl.corp.google.com ([2620:15c:2c5:11:cf46:dfd0:d5c4:864c])
- (user=pandoh job=sendgmr) by 2002:a81:450c:0:b0:545:883a:544d with SMTP id
- s12-20020a81450c000000b00545883a544dmr10795000ywa.9.1682541179541; Wed, 26
- Apr 2023 13:32:59 -0700 (PDT)
-Date: Wed, 26 Apr 2023 13:32:56 -0700
+Received: from smtp.smtpout.orange.fr (smtp-25.smtpout.orange.fr [80.12.242.25])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 110F5C2CC
+	for <iommu@lists.linux.dev>; Wed, 26 Apr 2023 20:33:18 +0000 (UTC)
+Received: from pop-os.home ([86.243.2.178])
+	by smtp.orange.fr with ESMTPA
+	id rlLzpN8gYFuuVrlLzpchLA; Wed, 26 Apr 2023 22:03:05 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
+	s=t20230301; t=1682539385;
+	bh=fL3qIG/GDz0C+Fjp2zZoc/yr7ihwk/lufVhQHBEWF/w=;
+	h=From:To:Cc:Subject:Date;
+	b=S1ordQppoBepkwZ6IrQWXizCESx+DZQYHJ5zfnEcuY1RAug/mq3IyXyMlS7zN0ybj
+	 mZUGklz8nU6NGeus1nAPpRzBAjM/J91uGGwrudzKRqTLn2/egj2MEDqBz2nDroQUqy
+	 4M95H14y2HZ3xgHaYoMf08B5MDLcYz20SxFfbgqZrrHxI0Ntpy64XKcDtfYIY/kbjE
+	 as8orXJtIxarUoI36RW7BAacOgxuHuXG0FCy9V+nFZslWtY4CA9cpxDZ2dEVPzRMdB
+	 GmElCeQfHWK2pLpjB3TAepQa1QpnVzA7koM+VzhH9w8yfRMxzJ4VVGGTvb8TepEcRd
+	 mBrkIXTmbXUew==
+X-ME-Helo: pop-os.home
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Wed, 26 Apr 2023 22:03:05 +0200
+X-ME-IP: 86.243.2.178
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>
+Cc: linux-kernel@vger.kernel.org,
+	kernel-janitors@vger.kernel.org,
+	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+	iommu@lists.linux.dev
+Subject: [PATCH] iommu: Use list_count_nodes()
+Date: Wed, 26 Apr 2023 22:03:02 +0200
+Message-Id: <c4fdffbe6c12c615f79e23e9337cc452f869c8cc.1682539352.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.40.1.495.gc816e09b53d-goog
-Message-ID: <20230426203256.237116-1-pandoh@google.com>
-Subject: [PATCH] iommu/amd: Fix domain flush size when syncing iotlb
-From: Jon Pan-Doh <pandoh@google.com>
-To: Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Nadav Amit <namit@vmware.com>, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	Jon Pan-Doh <pandoh@google.com>, Sudheer Dantuluri <dantuluris@google.com>, 
-	Gary Zibrat <gzibrat@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-When running on an AMD vIOMMU, we observed multiple invalidations (of
-decreasing power of 2 aligned sizes) when unmapping a single page.
+iommu_group_device_count() really looks the same as list_count_nodes(), so
+use the latter instead of hand writing it.
 
-Domain flush takes gather bounds (end-start) as size param. However,
-gather->end is defined as the last inclusive address (start + size - 1).
-This leads to an off by 1 error.
+One uses list_for_each_entry() and the other list_for_each(), but they
+both count the number of nodes in the list.
 
-With this patch, verified that 1 invalidation occurs when unmapping a
-single page.
-
-Fixes: a270be1b3fdf ("iommu/amd: Use only natural aligned flushes in a VM")
-Signed-off-by: Jon Pan-Doh <pandoh@google.com>
-Tested-by: Sudheer Dantuluri <dantuluris@google.com>
-Suggested-by: Gary Zibrat <gzibrat@google.com>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
- drivers/iommu/amd/iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Un-tested
+---
+ drivers/iommu/iommu.c | 15 ++-------------
+ 1 file changed, 2 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 5a505ba5467e..da45b1ab042d 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2378,7 +2378,7 @@ static void amd_iommu_iotlb_sync(struct iommu_domain *domain,
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&dom->lock, flags);
--	domain_flush_pages(dom, gather->start, gather->end - gather->start, 1);
-+	domain_flush_pages(dom, gather->start, gather->end - gather->start + 1, 1);
- 	amd_iommu_domain_flush_complete(dom);
- 	spin_unlock_irqrestore(&dom->lock, flags);
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 91573efd9488..47f0a709380e 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1126,17 +1126,6 @@ void iommu_group_remove_device(struct device *dev)
  }
+ EXPORT_SYMBOL_GPL(iommu_group_remove_device);
+ 
+-static int iommu_group_device_count(struct iommu_group *group)
+-{
+-	struct group_device *entry;
+-	int ret = 0;
+-
+-	list_for_each_entry(entry, &group->devices, list)
+-		ret++;
+-
+-	return ret;
+-}
+-
+ static int __iommu_group_for_each_dev(struct iommu_group *group, void *data,
+ 				      int (*fn)(struct device *, void *))
+ {
+@@ -2083,7 +2072,7 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
+ 	 */
+ 	mutex_lock(&group->mutex);
+ 	ret = -EINVAL;
+-	if (iommu_group_device_count(group) != 1)
++	if (list_count_nodes(&group->devices) != 1)
+ 		goto out_unlock;
+ 
+ 	ret = __iommu_attach_group(domain, group);
+@@ -2114,7 +2103,7 @@ void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
+ 
+ 	mutex_lock(&group->mutex);
+ 	if (WARN_ON(domain != group->domain) ||
+-	    WARN_ON(iommu_group_device_count(group) != 1))
++	    WARN_ON(list_count_nodes(&group->devices) != 1))
+ 		goto out_unlock;
+ 	__iommu_group_set_core_domain(group);
+ 
 -- 
-2.40.0.634.g4ca3ef3211-goog
+2.34.1
 
