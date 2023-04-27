@@ -1,239 +1,229 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2079.outbound.protection.outlook.com [40.107.223.79])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FEA12CA9;
-	Wed, 26 Apr 2023 23:48:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1682552898; x=1714088898;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=MuJt2sOu7iU9LApNyFJJYW4iudvM5G7MjSZFYjZtt90=;
-  b=k+7yK1QrdIKhHpPZbXxV3Q16I90W9OZ8WsiGp8jTK8ysg4eerYaod7bf
-   s9U66LORStApviii4AA6+IJKWiINbEAQu8AYXH2SAeSu004ue053jUg9X
-   U9n5UI2JUuoI0jvdjBfu6dykiS1StaK7M9k+Tz/yQHtNDqppnOZ8jh7Di
-   mbcKhPF2oTka3+xNE/5QHgwhokwenG2IxhICqHmP5aIHIKGydggGliEva
-   VyCYecqI7jKGegcwmlD8gT2pLK3AC9g6aApXuwMKD3R4g4njBuOvcG88/
-   u1D9/eiPVr0H6waAAHG25qVa+lVljUz7lODfTFfA7MGd0h+A+8wJiVbJU
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10692"; a="326877840"
-X-IronPort-AV: E=Sophos;i="5.99,229,1677571200"; 
-   d="scan'208";a="326877840"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2023 16:48:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10692"; a="688154163"
-X-IronPort-AV: E=Sophos;i="5.99,229,1677571200"; 
-   d="scan'208";a="688154163"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by orsmga007.jf.intel.com with ESMTP; 26 Apr 2023 16:48:11 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Wed, 26 Apr 2023 16:48:11 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Wed, 26 Apr 2023 16:48:11 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Wed, 26 Apr 2023 16:48:11 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.172)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Wed, 26 Apr 2023 16:48:10 -0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55D21EC3
+	for <iommu@lists.linux.dev>; Thu, 27 Apr 2023 00:43:49 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=L9t0LYmIsAV5865kCCIPTfLLT6ufacn3wOJHsE6+aEkAXy85MqsQJit+0wmD5w0y2/uRHgaWaUO/uPxNg7I03j2b8blygoxUTrGAoi5+HUo5aQmLqsw7/Ck0dEWW7YyfzH4020XHYwotSNjE1/vY8oMFnOhVkZe+1MeaNNKK1j04yW8+w8pFuTZA6M8KQc7pDmb83kVOj1TbXChbr3QSJyO4iJTHNK9rv5mmahvE0Q9rCf12GSJoA8Hr6JKYzWXO/sFNq+rr+rtztTdL9dXc0iYyGFOo3+IJjKydsUKLaKTyKxx/b7T2w9DdGuIIilRMstUDZhQkz4mXHEVPU2zQhw==
+ b=Plc2DlUMYCIzJEIFLWiZg8ryCbYpxN49wYTpxw5a7CUEgH68Wp/1oXE5u4ueLh8m3my9uC8T/4yBjOFiq3M7EMuO4SqoSWQkSd7ElAXDvDv5JdvCggfB/2OcqVX2kO9KQjfes2w2Su/y1oENhcsFvso0GJh1wxG+CPMBF4zNTB5mA0zeugdNomd9ytI7bB475D9Zb10c6p8G5W5331+fIMXOL93itxv5gwF2RVzQEVYGUY4zj3kBzDuMrUESoPKFlsMsIeBvITWk4cHjNaZUOwArUHAL1aWSBqt9WGco2VBWIgaMYh7abpa6ySgQ88sqYxZyFgWz8HjMMkNnxcUIzg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=emII+GWJyhB8I/Rm4/V6AEXTjw3EDd1X5CPnFSQz/TQ=;
- b=ffQzwbkr4aX8VdE8grs7vEb71nq2EQ0+B7TOX0w7Uju7muGtStAfml8qKwCqQHiSgnlCkoYLFRyqxsZEvnOMm3FhzU1A3J4uDrh172zVfY6GhvxMIHL+kh6nvsbaKnScUs/Dro+mAznkQPnQYQ5ZQWxZD972Y7UqHdCTHtnfQrnb4JfeNVQnMtOoKY1grAmPZ1JMWKHVlXg7BxbIyTOtUhcdxRmJZwCug+yYysd9ArMys0gRrQJ8nXF2AtqFMm+fsTrWxhaxOTFC1SW4wab20vsuostKzCyZYOWqhPSlvUF+68WNTsR9AVW4wrZWULE/sNDSESJHDLL2iDvIEeXPhw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by CY8PR11MB7313.namprd11.prod.outlook.com (2603:10b6:930:9c::20) with
+ bh=hSjizp/Y9mOyMtA/ozXFLW08QoBG2o5uZBtMW+ZBCX0=;
+ b=kbbZWoz26sm3Ay7c+JG/VmaRt4697ivjJoxeY593jzTjoLPmuod3/n3hWnES/0CGDmu5m1Jk8Mrl8YvIUR0x3V01mIqBAMOx4gEW3UcKIUzLROpyn4hra3reO0Ki/8tPQBcsllggWowXOEHmN7R/MSlX+fK39R65vDAaCX5gTkhb3vq032bK10E7C4ZGBOruvfNds98m55iDg4CbfMOx9KN73Y1aEfSlFAOFoZHUEzG5+aBi+e7bIoG6zslVS38CpHPJ/uo41TB8J3TOkfTe6dc4eNTtggWpDtk4ewghR2jKE2gDiRJF92u20YysP8sVGVBcwWqAIaCF7V2l3ndu4w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hSjizp/Y9mOyMtA/ozXFLW08QoBG2o5uZBtMW+ZBCX0=;
+ b=MaZckVbpTdxuDH9AkKTEsAPW/FmkaFw8AQa8WLHW/PFcVl4LNcoZZF04FQAcGduPYrb9eAGpaSYKLEPIRjwLj994mvHNe4hRvrub5aMC6Zv7lnDOfBckrasJy6YMk+SVi7Yf5GbW9UzLiuWSrkasagGZgcSaEpTl0bi92kISAR521FlPkB9KjdB/CB4esD/p6SHhfpzbScodN+LqvCO8UEH07Rb8Pi7LNVI5HMJKk64rvTWlaO89fy9clYFTOAMLp22uU0+JPT060SBGJLEFvnifr5WV+0zJChP932E5lkE15e0aM7wpPe50jhwFsTfnI1/Msz7EYyt6pY46a7z6og==
+Received: from DM6PR03CA0053.namprd03.prod.outlook.com (2603:10b6:5:100::30)
+ by DM6PR12MB5518.namprd12.prod.outlook.com (2603:10b6:5:1b9::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.21; Wed, 26 Apr
- 2023 23:48:09 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::73e9:b405:2cae:9174]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::73e9:b405:2cae:9174%6]) with mapi id 15.20.6340.022; Wed, 26 Apr 2023
- 23:48:09 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.21; Thu, 27 Apr
+ 2023 00:43:47 +0000
+Received: from DS1PEPF0000E64E.namprd02.prod.outlook.com
+ (2603:10b6:5:100:cafe::c9) by DM6PR03CA0053.outlook.office365.com
+ (2603:10b6:5:100::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.20 via Frontend
+ Transport; Thu, 27 Apr 2023 00:43:46 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ DS1PEPF0000E64E.mail.protection.outlook.com (10.167.18.4) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6340.16 via Frontend Transport; Thu, 27 Apr 2023 00:43:46 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 26 Apr 2023
+ 17:43:43 -0700
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.37; Wed, 26 Apr 2023 17:43:43 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Wed, 26 Apr 2023 17:43:42 -0700
+Date: Wed, 26 Apr 2023 17:43:41 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Baolu Lu <baolu.lu@linux.intel.com>
 CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Joerg Roedel
-	<joro@8bytes.org>, "llvm@lists.linux.dev" <llvm@lists.linux.dev>, "Nathan
- Chancellor" <nathan@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>,
-	Miguel Ojeda <ojeda@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Rix,
- Tom" <trix@redhat.com>, Will Deacon <will@kernel.org>, Lu Baolu
-	<baolu.lu@linux.intel.com>, Nicolin Chen <nicolinc@nvidia.com>
-Subject: RE: [PATCH v4 15/17] iommu: Allow IOMMU_RESV_DIRECT to work on ARM
-Thread-Topic: [PATCH v4 15/17] iommu: Allow IOMMU_RESV_DIRECT to work on ARM
-Thread-Index: AQHZbUX4yKLfAStH5k+1RBDy7PmNI68z4XzwgAnMIoCAAKrfUA==
-Date: Wed, 26 Apr 2023 23:48:09 +0000
-Message-ID: <BN9PR11MB52769E61C67F9C612AEB24798C659@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <0-v4-79d0c229580a+650-iommu_err_unwind_jgg@nvidia.com>
- <15-v4-79d0c229580a+650-iommu_err_unwind_jgg@nvidia.com>
- <BL1PR11MB527165BEE507FED5D3D57A928C639@BL1PR11MB5271.namprd11.prod.outlook.com>
- <ZEko0xQzArFvR82J@nvidia.com>
-In-Reply-To: <ZEko0xQzArFvR82J@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|CY8PR11MB7313:EE_
-x-ms-office365-filtering-correlation-id: 983fc2b4-d0ee-4799-41de-08db46b0b073
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ue4KN+VAE0B/AOSY9tNCAwqmTEaxGWa44oZ5ZEzZboGUKpr2JCv1VmabpdH321L+tJNdRGHKExL7lclqHfecNPYaulgGQ7ROlR34wU6qe4Mr04P5Tvx/5dbYbRwLcqU0zr/pbo4+W9mQoj6bbRByBHM1VUaPgXyQXOXKx21Ej2rgibrJOpguDSUwtkCNTegbyzYSolVzAhwQBOcilu+rtGUGfHJMyVftBak0tDPmseWA5Bknpcc5A2RIBGGxuYafrdbSaArnOYGAH4bpMjX8lo4j1qpYBSsvM3JE+mJvWovJQiPtkYafggnmdDzpUDUWNTrXXJIgSj62Lq9226u7bQNCmVZi8B7iTDn98mGtmeIyLnRi2Wup3fUKR9hOzbiMkE6MXOtfv8CrGLaNpaFnsizOxdEPRatpwLA7sK27zsovnVE1qjefgYzV4rFVTZ5yxZb7bcFAGUuhGrMnjJ/zPy0fmH+ljFraFfoPaZ/5GWE9770dpLSUufFG4Yu/9p2GXbmLFaXm05MsRny7AYLjvQ9++6eOGVGe7RUQnE1Ap2HdaKDUATFs1/aEoshEJFQ7ZqquPJ+tTe7MvOfrf8zw7G+wUunfHqXiL4W1YxcY/HjNWyyOTfN9CZIs+4O53MoM
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(366004)(376002)(136003)(39860400002)(396003)(346002)(451199021)(9686003)(6506007)(26005)(186003)(478600001)(54906003)(33656002)(5660300002)(8676002)(7416002)(7696005)(71200400001)(8936002)(52536014)(38070700005)(41300700001)(2906002)(66476007)(64756008)(66446008)(86362001)(82960400001)(38100700002)(316002)(76116006)(4326008)(66946007)(66556008)(122000001)(55016003)(6916009)(83380400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?qKH84LoeZp8z1Rw6eyiHqWCzyBX2w4ZTxZdF2KWn4hHAuyc5dXrCfmW3kqZa?=
- =?us-ascii?Q?+l2Fr65XKwagHLpCEHVAzOMhMMFkhK+a0/wMwTfp4EJ0Y+Aunp1CBITNUtsf?=
- =?us-ascii?Q?5714GbkWhhbykv3oubQ2GqC9HiDd6si4VJdhFdKuS0Ro8qQLapxjQuP3Q0nJ?=
- =?us-ascii?Q?6R8IUnkbSKJPbvkZctFT2FWkfbN3zPt4oyWiinjbbDxCYMO7jIUVGtpqbhvt?=
- =?us-ascii?Q?mwSxFrQ0zK1liaALwlcE+5pVAtPkcVuXnW7y0FgTXCl3vhTLsy2MMObperDc?=
- =?us-ascii?Q?ljaUdTuj0XlE/zaOKri+fvGBdWmvJ8rRBmatFPM6yXEmqGOJW15isTiGnEOb?=
- =?us-ascii?Q?IPqheUu/6eHuhT3SvXKbkPlrD+FugWl4JM1XD+UKc4INQSJrxmd0KcA3wqFY?=
- =?us-ascii?Q?+8KRYimEeY0T1vmX1/i7KFG8edLdPolGjNlH2Sw+V3zG6ZewiB28/C9ZAdTb?=
- =?us-ascii?Q?EvJwnGkswmolRER1zm+/FLgZ0bmGgJmoaqpLqVjMNHfAjJe1foSVv7Pp+EFa?=
- =?us-ascii?Q?KmYhnDaRwokhwtNku8fv0PvDIdcv8ijUfSBP7IedAkkv+t4uNZtKuA1Sa0cX?=
- =?us-ascii?Q?wEUVyy0bWq4cAroKp196nnKDvy4djEqPaUmw6QoHLEyhOal4S3fR6FXdWa/K?=
- =?us-ascii?Q?zBXUei9GHDIqVSYY8tDeIH+30OxHrB5pP7ezqQJI6uayplMx8ozNRV17n/DY?=
- =?us-ascii?Q?RxhDueNf9vLhcz9kbMZSgMI1Uh2yXWar+CkgZaGKyLEKh1YeUKSsspiPejpu?=
- =?us-ascii?Q?hRDtttxSWLbQE9FiP7GNpc+XBmoSbc2cXHw7H/Y4KDhOvSF6I3VVLv4mEzrW?=
- =?us-ascii?Q?0zOpfXbqRN9xnh8VJWLvNyq0z+0fS6EzkMD/SQDIq2o2UmHSxduNYRpmTzqb?=
- =?us-ascii?Q?uwrlBI+MtNwcceHS6md9c0emM2n94ulANBi0eXXfvXUqYS7nz+Wrb+/kZzBE?=
- =?us-ascii?Q?pphloZU60J5j3uNpopUADp//dfN7Rs3JfsOL2gqPyhZwvbzy9kxc0W95HKku?=
- =?us-ascii?Q?jGJF9QJzdvr4ti/+U0MB26bGjUkNZGAORGtxWbcuMkkeRL5eKQGgoUWGGVV5?=
- =?us-ascii?Q?xe76sYe1OXliAObZB5Q8wFfX+d99+v5iTk8R23LpfYIV9F+qcIUtS564fXrK?=
- =?us-ascii?Q?4J4v6zsVyYLKGgYK5X0x4yL7pMy3g7TZm4w9zRWfcrCVN4i22zw3NqbUKlpc?=
- =?us-ascii?Q?ZDaxMem33aIYm/YX1+NGubeuAa8H2j3okyH553Zym/DbLQia/PSyJbiDDM3g?=
- =?us-ascii?Q?0in6ZY9EVYFoaa5mK6SF2ZeTcJvXcXpcdmgDKZf3agi0aDWrIjwZsvtUWk5m?=
- =?us-ascii?Q?6js78iut1pwajhOMuhETxf7lEdvh8BoHU7cTQWgBHFUSQ1F109xkEMiYcd+g?=
- =?us-ascii?Q?uofq0loSWaWMAHwk+0V8re3X+8unhRiZaq32sM4JrX3h22tHTLnZwdUauPZu?=
- =?us-ascii?Q?lN5l3TKhVoopLenitZ8naTtIWaPQgH3+Ni6SUJSDULDnkIObDbqJVjZKoy+O?=
- =?us-ascii?Q?s0O9Y4hIIjTErA0iEp+Ri8fvG8TlHnwcMGG81w3A0C7L65ocBCm1Eug6Vtym?=
- =?us-ascii?Q?qluPbH3QZ4c6c0jnOM8YCKufTFEDqmhWFrxLlxew?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	<joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+	<robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iommu/vt-d: Remove unnecessary locking in
+ intel_irq_remapping_alloc()
+Message-ID: <ZEnFPYvNzF8WFgqO@Asurada-Nvidia>
+References: <20230314051836.23817-1-baolu.lu@linux.intel.com>
+ <ZCGJn3QWhQl4F1dI@nvidia.com>
+ <ad57d47e-3f54-0e63-5cef-d786dab5535c@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 983fc2b4-d0ee-4799-41de-08db46b0b073
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Apr 2023 23:48:09.1536
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ad57d47e-3f54-0e63-5cef-d786dab5535c@linux.intel.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS1PEPF0000E64E:EE_|DM6PR12MB5518:EE_
+X-MS-Office365-Filtering-Correlation-Id: 82f366fa-b03b-4ea0-4c3a-08db46b87580
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	eSNt/LFvFkNL12Fdw1c6CT6WdlsXLJxvOY4qElpuQ7qrS7UCHBFu8fazpNxiZdq0vh5HGaEUaWVkphUVrv3xNEkOgmNaIiiXDOdF+EGJg84gbWyZrQH6XypUp0WrYC6fMQmKoKeaPeSI4WOPjtAi2BcwJIobDiLQFCmVigqFXC1AMlbVJm0L9+U7zIECiCdDU0LL9qWg4MgpqhJliZWGx+hNCWe/X6yFe3NP6L5SSJj9tEIMsNYNM0KHpStNdz1MGWqKuz7Syh/I2WrXE64lWvUVdoraggALVIoq9Vb0nqgJCHSfQYal+fAbMm5FZMZ5xqvy0KU6vk0CoApQDqw2hjllBhRaFAZMyE/V0Pl4Bzc1jtbi7IGHsOHtoVsKT4WhnjzkEnVRlCVM0cH3ZWtslugU3n47SM6qGl9LO4yxHxcJpLiq0uzCbl41S8KbSpg1WalQONHYVWvOcULJZSxcT2Y0/7PbR3sLQAr0VdL7KDBgGWO6Sl1ZZL9cFMsiLnnV657avQnzO4A+K0YIll9qypClPfVMMGdS7zgmmKnKJ3XYpUX8sFNCiv3pd9P/wAWt32/mkBNa30pHg0JpmfRK3jQJUdeA0675x6Y42bySfOBt/vvIg7v5OFfXJAwuh7e9PeTKyxiOaowWs4oJu8SWKdKDIbzvinF4E/9WU1/MiYJcOShXbB7MrsWnv51R8vnJRXqnld9xTH7qtt+Rldtbmkjz6O+5/2ZKW03OwG55ARJj2/18RPA0t+W/fo99yob+
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(396003)(39860400002)(136003)(451199021)(46966006)(36840700001)(40470700004)(47076005)(86362001)(82310400005)(33716001)(2906002)(40460700003)(55016003)(40480700001)(36860700001)(45080400002)(186003)(53546011)(83380400001)(426003)(336012)(26005)(9686003)(966005)(70586007)(70206006)(478600001)(4326008)(110136005)(54906003)(356005)(316002)(7636003)(5660300002)(41300700001)(82740400003)(8676002)(8936002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Apr 2023 00:43:46.0920
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: X/T+3emiTwrFPC1O4ZNPkb5nkTjKmobzsrYtD9fl3mh3iJzrgAzVEjI6CoqWQLRRcMS3mvPmive6OXRzBO9jVQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB7313
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 82f366fa-b03b-4ea0-4c3a-08db46b87580
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS1PEPF0000E64E.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB5518
 
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Wednesday, April 26, 2023 9:36 PM
->=20
-> On Thu, Apr 20, 2023 at 08:00:28AM +0000, Tian, Kevin wrote:
-> > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > Sent: Wednesday, April 12, 2023 9:52 PM
-> > >
-> > > @@ -2918,6 +2922,17 @@ static int
-> iommu_setup_default_domain(struct
-> > > iommu_group *group,
-> > >  		}
-> > >  	}
-> > >
-> > > +	/*
-> > > +	 * Drivers are supposed to allow mappings to be installed in a
-> > > domain
-> > > +	 * before device attachment, but some don't. Hack around this defec=
-t
-> > > by
-> > > +	 * trying again after attaching. If this happens it means the devic=
-e
-> > > +	 * will not continuously have the IOMMU_RESV_DIRECT map.
-> > > +	 */
-> > > +	if (direct_failed) {
-> > > +		for_each_group_device(group, gdev)
-> > > +			iommu_create_device_direct_mappings(dom, gdev-
-> > > >dev);
-> > > +	}
-> > > +
+Hi Baolu/Jason,
+
+On Mon, Mar 27, 2023 at 06:13:10AM -0700, Baolu Lu wrote:
+> On 2023/3/27 20:18, Jason Gunthorpe wrote:
+> > On Tue, Mar 14, 2023 at 01:18:36PM +0800, Lu Baolu wrote:
+> >> The global rwsem dmar_global_lock was introduced by commit 3a5670e8ac932
+> >> ("iommu/vt-d: Introduce a rwsem to protect global data structures"). It
+> >> is used to protect DMAR related global data from DMAR hotplug operations.
+> >>
+> >> Using dmar_global_lock in intel_irq_remapping_alloc() is unnecessary as
+> >> the DMAR global data structures are not touched there. Remove it to avoid
+> >> below lockdep warning.
 > >
-> > Throw out a warning so user knows that the continuity might be broken
-> > here?
->=20
-> I suppose we should also fail the whole function if we hit failures
-> here?
+> > Tested-by: Jason Gunthorpe <jgg@nvidia.com>
+> >
+> > Solves my splat too
+> >
+> > Let's send this to -rc please
+> 
+> Thank you for the testing. I will queue it for Joerg this week.
 
-agree
+I found a couple of kernel warnings switching from v6.3-rc4
+to v6.3-rc5. Git-bisect is pointing at this commit.
 
->=20
-> So like this:
->=20
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index f44e2c21e9d05e..7a3b249601ea49 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -2873,8 +2873,12 @@ static int iommu_setup_default_domain(struct
-> iommu_group *group,
->  	 */
->  	direct_failed =3D false;
->  	for_each_group_device(group, gdev) {
-> -		if (iommu_create_device_direct_mappings(dom, gdev->dev))
-> +		if (iommu_create_device_direct_mappings(dom, gdev->dev))
-> {
->  			direct_failed =3D true;
-> +			dev_warn_once(
-> +				gdev->dev->iommu->iommu_dev->dev,
-> +				"IOMMU driver was not able to establish FW
-> requested direct mapping.");
-> +		}
->  	}
->=20
->  	/* We must set default_domain early for
-> __iommu_device_set_domain */
-> @@ -2906,10 +2910,20 @@ static int iommu_setup_default_domain(struct
-> iommu_group *group,
->  	 * will not continuously have the IOMMU_RESV_DIRECT map.
->  	 */
->  	if (direct_failed) {
-> -		for_each_group_device(group, gdev)
-> -			iommu_create_device_direct_mappings(dom, gdev-
-> >dev);
-> +		for_each_group_device(group, gdev) {
-> +			ret =3D iommu_create_device_direct_mappings(dom,
-> gdev->dev);
-> +			if (ret)
-> +				goto err_restore;
-> +		}
->  	}
->=20
-> +err_restore:
-> +	if (old_dom) {
-> +		__iommu_group_set_domain_internal(
-> +			group, old_dom,
-> IOMMU_SET_DOMAIN_MUST_SUCCEED);
-> +		iommu_domain_free(dom);
-> +		old_dom =3D NULL;
-> +	}
->  out_free:
->  	if (old_dom)
->  		iommu_domain_free(old_dom);
->=20
-> Thanks,
-> Jason
+My test environment is MKT enabling irq_remap:
+https://github.com/Mellanox/mkt
+CONFIG_IOMMUFD=m
+CONFIG_IOMMUFD_VFIO_CONTAINER=y
+CONFIG_IOMMUFD_TEST=y
+CONFIG_IRQ_REMAP=y
+
+Any idea?
+
+Thanks
+Nicolin
+
+Attaching WARNINGs:
+[   19.680725] ------------[ cut here ]------------
+[   19.681083] WARNING: CPU: 0 PID: 561 at include/linux/mmap_lock.h:161 track_pfn_remap+0xf5/0x100
+[   19.681356] Modules linked in: vfio_pci vfio_pci_core irqbypass vfio iommufd mlx5_ib ib_uverbs ib_core mlx5_core
+[   19.681654] CPU: 0 PID: 561 Comm: python3 Not tainted 6.3.0-rc6+ #1080
+[   19.681808] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+[   19.682108] RIP: 0010:track_pfn_remap+0xf5/0x100
+[   19.682270] Code: 5e 5d c3 48 89 f2 31 c9 4c 89 c6 4c 89 e7 e8 42 fc ff ff e9 54 ff ff ff 48 8d b8 88 01 00 00 31 f6 e8 5f 97 76 00 85 c0 75 be <0f> 0b eb ba 0f 1f 80 00 00 00 00 80 3d 71 72 ef 00 00 74 01 c3 55
+[   19.682678] RSP: 0000:ffffc900014b7ce8 EFLAGS: 00010246
+[   19.682805] RAX: 0000000000000000 RBX: 0000000002000000 RCX: 0000000000000000
+[   19.682984] RDX: 0000000000000000 RSI: ffff888104a709c8 RDI: ffff888108756150
+[   19.683214] RBP: ffffc900014b7d08 R08: 0000000000000001 R09: 0000000000000003
+[   19.683464] R10: 000000000e6a4a47 R11: 00000000620892b1 R12: 00000000fc000000
+[   19.683663] R13: ffffc900014b7d20 R14: ffff888106a35100 R15: 0000000002000000
+[   19.683843] FS:  00007fa8aa4edb80(0000) GS:ffff8881ba400000(0000) knlGS:0000000000000000
+[   19.684054] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   19.684223] CR2: 00007fa8a748f004 CR3: 000000010673b005 CR4: 00000000003706b0
+[   19.684414] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[   19.684632] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[   19.684817] Call Trace:
+[   19.684893]  <TASK>
+[   19.684967]  remap_pfn_range+0x3e/0xa0
+[   19.685084]  vfio_pci_mmap_fault+0x8a/0x160 [vfio_pci_core]
+[   19.685253]  __do_fault+0x30/0xa0
+[   19.685368]  __handle_mm_fault+0xe08/0x1ff0
+[   19.685520]  ? find_held_lock+0x31/0x80
+[   19.685655]  ? mt_find+0x15d/0x400
+[   19.685759]  ? lock_release+0xbc/0x240
+[   19.685862]  handle_mm_fault+0xa8/0x170
+[   19.685963]  ? find_vma+0x3c/0x70
+[   19.686066]  exc_page_fault+0x1e6/0x7b0
+[   19.686167]  asm_exc_page_fault+0x27/0x30
+[   19.686271] RIP: 0033:0x7fa8a986bfd5
+[   19.686373] Code: ef 41 89 c4 e8 dc 70 fc ff 45 85 e4 0f 85 a0 0e 00 00 48 89 df e8 3b ce ff ff 48 85 c0 0f 84 eb 0d 00 00 48 8b ab e8 02 00 00 <8b> 45 04 0f c8 c1 e8 10 83 f8 05 0f 85 b0 0b 00 00 8b 45 14 ba 01
+[   19.686773] RSP: 002b:00007ffc2392ab30 EFLAGS: 00010206
+[   19.686931] RAX: 0000559646201590 RBX: 0000559646471a50 RCX: 0000559646471d00
+[   19.687132] RDX: 0000559646471d00 RSI: 0000000000003b71 RDI: 0000000000000003
+[   19.687377] RBP: 00007fa8a748f000 R08: 00000000fedfffff R09: 0000000000000000
+[   19.687563] R10: 0000000000000022 R11: 0000000000000246 R12: 0000559646470904
+[   19.687744] R13: 00007ffc2392ab70 R14: 0000000000000002 R15: 0000559646470934
+[   19.687943]  </TASK>
+[   19.688016] irq event stamp: 655597
+[   19.688114] hardirqs last  enabled at (655605): [<ffffffff810c9683>] __up_console_sem+0x53/0x60
+[   19.688340] hardirqs last disabled at (655612): [<ffffffff810c9668>] __up_console_sem+0x38/0x60
+[   19.688554] softirqs last  enabled at (655148): [<ffffffff81064e79>] irq_exit_rcu+0x69/0x90
+[   19.688733] softirqs last disabled at (655143): [<ffffffff81064e79>] irq_exit_rcu+0x69/0x90
+[   19.688915] ---[ end trace 0000000000000000 ]---
+[   19.689076] ------------[ cut here ]------------
+[   19.689197] WARNING: CPU: 0 PID: 561 at include/linux/mmap_lock.h:161 remap_pfn_range_notrack+0x40f/0x4f0
+[   19.689440] Modules linked in: vfio_pci vfio_pci_core irqbypass vfio iommufd mlx5_ib ib_uverbs ib_core mlx5_core
+[   19.689691] CPU: 0 PID: 561 Comm: python3 Tainted: G        W          6.3.0-rc6+ #1080
+[   19.689867] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+[   19.690109] RIP: 0010:remap_pfn_range_notrack+0x40f/0x4f0
+[   19.690234] Code: 39 eb 0f 85 d9 fc ff ff 31 c0 eb 5e 48 8b 45 a8 31 f6 4c 89 45 d0 48 8d b8 88 01 00 00 e8 89 bc 5a 00 4c 8b 45 d0 85 c0 75 02 <0f> 0b 48 8b 43 20 e9 5e fc ff ff 48 8b 7d a8 48 89 c6 48 89 c3 e8
+[   19.690628] RSP: 0000:ffffc900014b7c68 EFLAGS: 00010246
+[   19.690750] RAX: 0000000000000000 RBX: ffff888106a35100 RCX: 0000000000000000
+[   19.690914] RDX: 0000000000000000 RSI: ffff888104a709c8 RDI: ffff888108756150
+[   19.691074] RBP: ffffc900014b7d08 R08: 00007fa8a948f000 R09: 0000000000000003
+[   19.691274] R10: 000000000e6a4a47 R11: 00000000620892b1 R12: 00000000000fc000
+[   19.691469] R13: 00007fa8a748f000 R14: 00007fa8a748f000 R15: 8000000000000037
+[   19.691647] FS:  00007fa8aa4edb80(0000) GS:ffff8881ba400000(0000) knlGS:0000000000000000
+[   19.691830] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   19.691980] CR2: 00007fa8a748f004 CR3: 000000010673b005 CR4: 00000000003706b0
+[   19.692159] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[   19.692336] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[   19.692538] Call Trace:
+[   19.692592]  <TASK>
+[   19.692647]  ? track_pfn_remap+0xf7/0x100
+[   19.692745]  remap_pfn_range+0x57/0xa0
+[   19.692845]  vfio_pci_mmap_fault+0x8a/0x160 [vfio_pci_core]
+[   19.692991]  __do_fault+0x30/0xa0
+[   19.693089]  __handle_mm_fault+0xe08/0x1ff0
+[   19.693186]  ? find_held_lock+0x31/0x80
+[   19.693291]  ? mt_find+0x15d/0x400
+[   19.693391]  ? lock_release+0xbc/0x240
+[   19.693491]  handle_mm_fault+0xa8/0x170
+[   19.693587]  ? find_vma+0x3c/0x70
+[   19.693685]  exc_page_fault+0x1e6/0x7b0
+[   19.693782]  asm_exc_page_fault+0x27/0x30
+[   19.693880] RIP: 0033:0x7fa8a986bfd5
+[   19.693961] Code: ef 41 89 c4 e8 dc 70 fc ff 45 85 e4 0f 85 a0 0e 00 00 48 89 df e8 3b ce ff ff 48 85 c0 0f 84 eb 0d 00 00 48 8b ab e8 02 00 00 <8b> 45 04 0f c8 c1 e8 10 83 f8 05 0f 85 b0 0b 00 00 8b 45 14 ba 01
+[   19.694342] RSP: 002b:00007ffc2392ab30 EFLAGS: 00010206
+[   19.694466] RAX: 0000559646201590 RBX: 0000559646471a50 RCX: 0000559646471d00
+[   19.694619] RDX: 0000559646471d00 RSI: 0000000000003b71 RDI: 0000000000000003
+[   19.694778] RBP: 00007fa8a748f000 R08: 00000000fedfffff R09: 0000000000000000
+[   19.694934] R10: 0000000000000022 R11: 0000000000000246 R12: 0000559646470904
+[   19.695092] R13: 00007ffc2392ab70 R14: 0000000000000002 R15: 0000559646470934
+[   19.695302]  </TASK>
+[   19.695373] irq event stamp: 656049
+[   19.695452] hardirqs last  enabled at (656057): [<ffffffff810c9683>] __up_console_sem+0x53/0x60
+[   19.695657] hardirqs last disabled at (656064): [<ffffffff810c9668>] __up_console_sem+0x38/0x60
+[   19.695883] softirqs last  enabled at (655148): [<ffffffff81064e79>] irq_exit_rcu+0x69/0x90
+[   19.696061] softirqs last disabled at (655143): [<ffffffff81064e79>] irq_exit_rcu+0x69/0x90
+[   19.696240] ---[ end trace 0000000000000000 ]---
 
