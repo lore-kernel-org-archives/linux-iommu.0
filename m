@@ -1,139 +1,134 @@
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2062.outbound.protection.outlook.com [40.107.96.62])
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B55623D5
-	for <iommu@lists.linux.dev>; Thu, 27 Apr 2023 17:25:13 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gDbI01bhlMbeebvobEI27pa29nXKMzgJ9RRHfbCGBmVZniw8b9F/TyjXhd8Y6kBb3lct2HB3pLsEOatrt7Fxie0VTsUd6MG96HP6d6XJJKjIOZ5mJw5ouQaNJCqYeVqZnnzxi3Dj48Chm3ONiXf859KMK8POnMkL1b48jn2VIa+yHNW9jENpPKZYfKhwWzSWQZG7VSrAEqxVKiKVVNDP0d8Up1jeZrjOduK77qcf23VF8l/NnU5SUZlQUUymJGGmu/WgiKfp4NOk+KJ3KjDkn44WdU9/g2swLUBBjtPHNKzqT+qLwWgPnU/QRbm7OFxe2R42qH616PhqcRnNuM29pQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=D6HTymKgOASTuCDp+oKy2k6w0exLMl0CinXtf246PGI=;
- b=PdPgf5zvmizp+dBwpmgDPoGqnqwf8twabA48hy5XD2YjY9tPeqW//9RW5DnAv1kPN6aUZ98lIPWFXNRj5Abb4cqnyWuBhzoTaLGzwQ5mla2ha95PFlN8GVmIw0NEdyi7QowFZtaDRdAWvxLbnphITRLpj4Os4el2iweo6LxA9DkN/8srnr6DGpm2KazUO1nbO8HH/tfW/4IoAOqndryJ/1tkBhhkL7ePzAdSXvBfOBSWRqcH5F9Dmg4OsFpD7VFQxyVVZpwm23DF9HP/FU8ffjd77gNrU2cmnWJdx3kB4e5c3pCQwys+AAAVASt6BkI78q49j5mECnZ/hoa/1QnYtA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=D6HTymKgOASTuCDp+oKy2k6w0exLMl0CinXtf246PGI=;
- b=licHemh/ZOW4joNxEcPeFe7XocraEDTSB/JSKjCyuMhhhd6t8ScuBE/OUudEHd0Cunty2/lu39VkpB/Op7GuQOFtzCsKfN7DjchRmePTWBBn8PP1z5h77xaMEop6Bebx1ACHgOP5IlbTY4xtYs/OK+VKiO1n8AOtNIXenhADt+hIO1yOW6/iKNLesPkkmd8sydr1Z5HwAbUyxhOg6O18JAdwLlD7TC19DQ1X1Xa+exjePOZa6lRUKb4nzJjh0SEsA54LS4EE9fDWGT+jbHxhE9cRE5ntJWF7Mjd7h4Bluesrna8iBrUQrQRJS77PdMPfdTQEW2eqY6IsmXccyGM8wg==
-Received: from MW4PR04CA0113.namprd04.prod.outlook.com (2603:10b6:303:83::28)
- by SA3PR12MB8809.namprd12.prod.outlook.com (2603:10b6:806:31f::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.22; Thu, 27 Apr
- 2023 17:25:10 +0000
-Received: from CO1NAM11FT040.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:83:cafe::fc) by MW4PR04CA0113.outlook.office365.com
- (2603:10b6:303:83::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.22 via Frontend
- Transport; Thu, 27 Apr 2023 17:25:10 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- CO1NAM11FT040.mail.protection.outlook.com (10.13.174.140) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6340.22 via Frontend Transport; Thu, 27 Apr 2023 17:25:09 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 27 Apr 2023
- 10:24:59 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Thu, 27 Apr
- 2023 10:24:59 -0700
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Thu, 27 Apr 2023 10:24:58 -0700
-Date: Thu, 27 Apr 2023 10:24:57 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>
-CC: Baolu Lu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, Joerg Roedel
-	<joro@8bytes.org>, Will Deacon <will@kernel.org>, Kevin Tian
-	<kevin.tian@intel.com>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iommu/vt-d: Remove unnecessary locking in
- intel_irq_remapping_alloc()
-Message-ID: <ZEqvs/QVyoD5G8/t@Asurada-Nvidia>
-References: <20230314051836.23817-1-baolu.lu@linux.intel.com>
- <ZCGJn3QWhQl4F1dI@nvidia.com>
- <ad57d47e-3f54-0e63-5cef-d786dab5535c@linux.intel.com>
- <ZEnFPYvNzF8WFgqO@Asurada-Nvidia>
- <09e4ce6e-0341-8590-b933-795ee28326a3@linux.intel.com>
- <ZEnt+qyN5EJIzCRf@Asurada-Nvidia>
- <d89938b0-191f-8037-70c1-4f054b527c42@arm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CFE523D5
+	for <iommu@lists.linux.dev>; Thu, 27 Apr 2023 17:45:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1682617521; x=1714153521;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=sL1Oogrx9xSZdLUnJG5ws6JoMbQTO9hqS3tsfFCI38U=;
+  b=UwEImCoa0/Gi6LOCz6SeD1pb5ujIdyhBVu6NHPJrwUOpTGkXwsaDA+9I
+   fI6q+cDwJYno3oPoSn8UsWZ48cFTmheXSk4ZZJnsaVz8pXoIBEEAaAmgM
+   LrA9v5CzMdKOhlVzUIcXxcUJwNMVv6GpwUB3tit384cuJZRvhTQxSFrGg
+   Vt5fptj2S+OFoUuCDaa00lGi6mX8Fe7uTLCljRbn902kYMo1UnLUKdHhc
+   kQDlvpqyAmG2oUvxXY4Nk8ArMZWoG9rt17Iijxv7dcy9noJ7+XDg7HmGC
+   T6G4iBRfplX4OvmvCVxB1lgC3G2plme+T9uatjcHSg7tWAyGAZPAXBUNM
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10693"; a="350398695"
+X-IronPort-AV: E=Sophos;i="5.99,232,1677571200"; 
+   d="scan'208";a="350398695"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2023 10:45:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10693"; a="1024219686"
+X-IronPort-AV: E=Sophos;i="5.99,232,1677571200"; 
+   d="scan'208";a="1024219686"
+Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.106])
+  by fmsmga005.fm.intel.com with ESMTP; 27 Apr 2023 10:45:19 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: LKML <linux-kernel@vger.kernel.org>,
+	iommu@lists.linux.dev,
+	"Robin Murphy" <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	"Lu Baolu" <baolu.lu@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	dmaengine@vger.kernel.org,
+	vkoul@kernel.org
+Cc: "Will Deacon" <will@kernel.org>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Raj Ashok <ashok.raj@intel.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	Yi Liu <yi.l.liu@intel.com>,
+	"Yu, Fenghua" <fenghua.yu@intel.com>,
+	Dave Jiang <dave.jiang@intel.com>,
+	Tony Luck <tony.luck@intel.com>,
+	"Zanussi, Tom" <tom.zanussi@intel.com>,
+	narayan.ranganathan@intel.com,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v5 0/7] Re-enable IDXD kernel workqueue under DMA API
+Date: Thu, 27 Apr 2023 10:49:30 -0700
+Message-Id: <20230427174937.471668-1-jacob.jun.pan@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <d89938b0-191f-8037-70c1-4f054b527c42@arm.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT040:EE_|SA3PR12MB8809:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7f97d654-90f4-438c-29e1-08db47445a3e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	mkk8EYOEcDO855qUZs5deNM7Xa5JwlvxxukfdLi9XAPAEVxe3G58FZTo1SsCIujak0DTte9YgyluKebshv272TombnoGasiDIY20TQrGjw37Nuc5OC5WNTlRZ+kFKpJ3kcANOz4j/Nzq6+i4WscmihP5ltn8ax8vH9K2hI00btvQtwwVpSKvqxBzIhbKbsUvPDiPimOoBDFOKBw3KRlYI+ASMieYXd4PYkhCRmby4gz75SN3zAFLFTZ8M5lfNPnWwpexqEplAHneaNYAk+fG34mU434e6xT29nysZmnkctUWTfdKVOm/a41CoJfW43kC3jhRae+6Vgh6Act+obKa9YnIKo7NFhVmtKJHWyQGi/JWwkWkqzDI5M17trYHcK831deHCA58z/LvN40u5hPmhr8XchYc4l0tou0KMoEKrKmkEQ0PUYsDcNjyZVcNZU5fkfsUcSLFi2axVU5Q09Y4CP3fGWqF0+8j26Xv06H0a3sk/hQXqIBSExH6J1EFUgQkMQGsj2VM0t3RVDBVvwL2VF/7VPemcxwoqAT4AqoLybSIi+wjvhtzcN3tzfrw+mCfKeOOYcQwfqkxLWLHW57UH76IFOvLUmfw0mI4GCg1aOwJcDNX1xBb7uHs6KzvLtu6PEqxe9Wtyr36xZoCRcnXgZZ1pexPynMeJjZ2kDBJmeq8zDNX2ohXKKHLHdEkaNMpEnCuwDJj+6Xvp8SN0W94xfluX6qTiwwcgVWwufSJq7A=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(39860400002)(346002)(376002)(136003)(451199021)(46966006)(40470700004)(36840700001)(86362001)(53546011)(41300700001)(26005)(9686003)(2906002)(47076005)(55016003)(5660300002)(8676002)(40480700001)(8936002)(336012)(426003)(40460700003)(34020700004)(478600001)(33716001)(83380400001)(7636003)(356005)(54906003)(186003)(82740400003)(36860700001)(82310400005)(6916009)(4326008)(316002)(70206006)(70586007);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Apr 2023 17:25:09.9491
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7f97d654-90f4-438c-29e1-08db47445a3e
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT040.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB8809
+Content-Transfer-Encoding: 8bit
 
-On Thu, Apr 27, 2023 at 10:35:11AM +0100, Robin Murphy wrote:
-> On 2023-04-27 04:37, Nicolin Chen wrote:
-> > On Thu, Apr 27, 2023 at 11:20:40AM +0800, Baolu Lu wrote:
-> > 
-> > > > Attaching WARNINGs:
-> > > > [   19.680725] ------------[ cut here ]------------
-> > > > [   19.681083] WARNING: CPU: 0 PID: 561 at include/linux/mmap_lock.h:161 track_pfn_remap+0xf5/0x100
-> > 
-> > > > [   19.684817] Call Trace:
-> > > > [   19.684893]  <TASK>
-> > > > [   19.684967]  remap_pfn_range+0x3e/0xa0
-> > > > [   19.685084]  vfio_pci_mmap_fault+0x8a/0x160 [vfio_pci_core]
-> > 
-> > > I took a quick look. It seems that above warnings are irrelevant to this
-> > > commit. Can you please simply revert this commit and check whether there
-> > > are any changes?
-> > 
-> > I tried on top of the v6.3-rc5 tag. The warnings were triggered
-> > constantly. And reverting the commit fixes it:
-> > nicolinc@Asurada-Nvidia:~/work/mkt/images/nicolinc/src/kernel$ git log --oneline -2
-> > cb3dc9b2417e (HEAD -> v6.3-rc5) Revert "iommu/vt-d: Remove unnecessary locking in intel_irq_remapping_alloc()"
-> > 7e364e56293b (tag: v6.3-rc5, jgg/linus) Linux 6.3-rc5
-> > 
-> > I don't think the commit is the causation yet there seems to be
-> > a strong correlation here...
-> 
-> The correlation is probably that you're now getting to see a genuine
-> warning from lockdep_assert_held(), since intel-iommu is no longer
-> causing debug_locks to be turned off earlier.
+Hi all,
 
-Hmm, looks like so. The mmap_lock is held with a read permission,
-in arch/x86/mm/fault.c file, v.s. the expectation of a write one
-by remap_pfn_range().
+IDXD kernel work queues were disabled due to the flawed use of kernel VA
+and SVA API.
+Link: https://lore.kernel.org/linux-iommu/20210511194726.GP1002214@nvidia.com/
 
-Thanks
-Nicolin
+The solution is to enable it under DMA API where IDXD shared workqueue users
+can use ENQCMDS to submit work on buffers mapped by DMA API.
+
+This patchset adds support for attaching PASID to the device's default
+domain and the ability to allocate global PASIDs from IOMMU APIs. We can then
+re-enable the kernel work queues and use them under DMA API.
+
+This depends on the IOASID removal series. (merged)
+https://lore.kernel.org/all/ZCaUBJvUMsJyD7EW@8bytes.org/
+
+
+Thanks,
+
+Jacob
+
+---
+Changelog:
+v5:
+	- exclude two patches related to supervisor mode, taken by VT-d
+	maintainer Baolu.
+	- move PASID range check into allocation API so that device drivers
+	  only need to pass in struct device*. (Kevin)
+	- factor out helper functions in device-domain attach (Baolu)
+	- make explicit use of RID_PASID across architectures
+v4:
+	- move dummy functions outside ifdef CONFIG_IOMMU_SVA (Baolu)
+	- dropped domain type check while disabling idxd system PASID (Baolu)
+
+v3:
+	- moved global PASID allocation API from SVA to IOMMU (Kevin)
+	- remove #ifdef around global PASID reservation during boot (Baolu)
+	- remove restriction on PASID 0 allocation (Baolu)
+	- fix a bug in sysfs domain change when attaching devices
+	- clear idxd user interrupt enable bit after disabling device( Fenghua)
+v2:
+	- refactored device PASID attach domain ops based on Baolu's early patch
+	- addressed TLB flush gap
+	- explicitly reserve RID_PASID from SVA PASID number space
+	- get dma domain directly, avoid checking domain types
+
+
+Jacob Pan (6):
+  iommu: Generalize default PCIe requester ID PASID
+  iommu/sva: Explicitly exclude RID_PASID from SVA
+  iommu: Move global PASID allocation from SVA to core
+  iommu/vt-d: Prepare PASID attachment beyond RID_PASID
+  iommu/vt-d: Implement set_dev_pasid domain op
+  dmaengine/idxd: Re-enable kernel workqueue under DMA API
+
+Lu Baolu (1):
+  iommu/vt-d: Factoring out PASID set up helper function
+
+ drivers/dma/idxd/device.c   |  30 +----
+ drivers/dma/idxd/init.c     |  60 ++++++++-
+ drivers/dma/idxd/sysfs.c    |   7 --
+ drivers/iommu/intel/iommu.c | 240 +++++++++++++++++++++++++++++-------
+ drivers/iommu/intel/iommu.h |   8 ++
+ drivers/iommu/intel/pasid.c |   2 +-
+ drivers/iommu/intel/pasid.h |   1 -
+ drivers/iommu/iommu-sva.c   |  25 +---
+ drivers/iommu/iommu.c       |  24 ++++
+ include/linux/iommu.h       |  10 ++
+ 10 files changed, 305 insertions(+), 102 deletions(-)
+
+-- 
+2.25.1
+
