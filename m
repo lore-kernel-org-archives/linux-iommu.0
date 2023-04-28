@@ -1,55 +1,56 @@
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2063.outbound.protection.outlook.com [40.107.100.63])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2058.outbound.protection.outlook.com [40.107.94.58])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17BB817D8
-	for <iommu@lists.linux.dev>; Fri, 28 Apr 2023 05:24:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D101317D8
+	for <iommu@lists.linux.dev>; Fri, 28 Apr 2023 05:45:11 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZRWhJiAZ3SxKsSiQfz21RbYyrXBhLo03S7hJ0k6B6NaPLXKFsNqvJKGZftAPDqGY5t2E2W2jQkE0RcWfrTqARqOWS/cSHLOXUUZQnpEV+Ewzl9sVX+lt34n44CICuOXxBn0LexzYXBXJn0lq1Cro4mKjFeA7sNCQQro6L+sI+rbUIsfxL+tBuHWZjHRKlvPr5Z9pwtTYTHLHdoVj0/TzQ3Rt+3JC6BEnQPPzHRa8T4DNhdLzTCLNt8bHtOu9CRFcUdRimXDHH9xjKrp7JO8dUXuKRZx6Gki28zLecM2F4Bc+0yZwj53nYZYkOgfHGKTZT/sF5vXpQK1dIOHyi33IWw==
+ b=mQO1lJWh/e//F77SJYPHDp2YjTk8OL8hw9XxBX4os/rILqGNALxD1kGc8nDcxTxgQms/bjXUY/qPvJU72axci8DsHAK3G1tP5MgTtsYtQwNaE2u16hfY/9S+wVOQKmemFGAfbXNOaNgf7A/coUM8m+Hm9JCpGT/fxew6quNozJS9EUDg270qQVGizgfEKRQs1+yYV3cJYE/Wj8ywoZuEX5kaqNXj8G5YVcPjZZCWR++B+duDHhTM1Uc4INIxZoURXqYX3sJMZlhCOwxslwoepFoMvUeWCzVapAgN+FPKbTE/NF7119V1A6OCumsaLe6KdRueOWd9coiY+TgZiqzPzg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Wh6qbqUJ0OnefeBCiydCKNWDUMBq09HYRjnbro61TAo=;
- b=eD4DQM+2xtxdAhHwxdhB7tUJ29JDNrCjrn0MeVjyjD4pTzlS0S8uXa7nyaLSLZTfMXApND3LZm7xBFkGKjBWeeb0VytczfBXSm8roUqcznOziHe1X0oafn3D2jb9r6fWRLVKe0DgtvQcMtnBq3a74Ax8ODL08B1LrCKy5wtYqEYUq/4MQzk0U1MK4kUDbRB/VTIPQYAvSXm8/OnDHE3zpy3rVOdEJP7urqu8bws6ODvvncH6iRMYL+SkgP1WxVMdf91y6mu1XWNPFMVMB361PxBKawX44VxPuDceMFD25WHDfnWq5aTvA6UyYBEm41uH1kT5S7/KLhqGSDFN6DPovQ==
+ bh=bLi87/kpyxIuj0cWJ0hooEwMTl68Z0/A/IWvt5zVRqY=;
+ b=Zu20ZuRmNxxbYs49VUvBoovtgEJD64xasyrufDZaThDlm6icIRIVF8IoXJX1STD8qFecfjOluYv+M5F0FNk+lsI2tQ6UEkXa2FcUKBqV4iaoBevLQIkJQpbQOvF2jXzj7BHTpl2WdnBxFwfJ9Q4bsafIAX9vHQJ1sT1sr2psMZvcGCn4bz5r5Sv3RM5llHOjWkrV81QgWqqsbfZxSshJKuQU5qq4yi9f97iG4mvTEMSjnxiDCwlCHQhvc5xfn0GUd+uwNrOAdw3DjyXHn1FXh2ZA1IoxEqFZ6/61zU3IOw6uQtyqDfIjF++RpHcJEhpZW4nXPtXwvwpCyADUnDPpnA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Wh6qbqUJ0OnefeBCiydCKNWDUMBq09HYRjnbro61TAo=;
- b=WiN2oWtbyGZ4XQXLWHHS7O+3HZGW6s7RJB3jYo1WEoTV4x+Y0LnqhOLutMYIZQwwHYHoUVGwVb8eOm9Vz8xXrLLpjuENHhkZIk4bcAH4OC9R5bBq5bVOqlOaRZxiSWCYKOHkTINm2tk8uOJmGOyNY1PVU29cGYHYuUPpp6QFF8Q=
+ bh=bLi87/kpyxIuj0cWJ0hooEwMTl68Z0/A/IWvt5zVRqY=;
+ b=TJSiKf/u5wnQ8a8frWtFLEJfd0rEArZ3f16bNwQUYHMQMv5h89EEJJatcTMiuvj9RJBQmi0m7YcRujCo35rS1zejHNH7fZwvnZHjweQtLpQo3WUBdH9u5AUrO3ioO9uCemKMPQgFWXmY9s8NBMkfp+eWSK4wEYezHjD3moxs5AY=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=amd.com;
 Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- SA1PR12MB5616.namprd12.prod.outlook.com (2603:10b6:806:22a::11) with
+ CH3PR12MB7572.namprd12.prod.outlook.com (2603:10b6:610:144::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.33; Fri, 28 Apr
- 2023 05:24:21 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.22; Fri, 28 Apr
+ 2023 05:45:09 +0000
 Received: from DS7PR12MB6048.namprd12.prod.outlook.com
  ([fe80::1891:71ee:fde7:4e1]) by DS7PR12MB6048.namprd12.prod.outlook.com
  ([fe80::1891:71ee:fde7:4e1%7]) with mapi id 15.20.6340.023; Fri, 28 Apr 2023
- 05:24:21 +0000
-Message-ID: <7aed7aac-160c-d58d-428c-d20acf23da2d@amd.com>
-Date: Fri, 28 Apr 2023 10:54:06 +0530
+ 05:45:09 +0000
+Message-ID: <21f69b43-a1e7-6c84-a360-dae410bedb3f@amd.com>
+Date: Fri, 28 Apr 2023 11:14:54 +0530
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [PATCH for-rc] iommu/amd: Add missing domain type checks
+Subject: Re: [PATCH] iommu: Avoid softlockup and rcu stall in
+ fq_flush_timeout().
 Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Joerg Roedel <jroedel@suse.de>, Kevin Tian <kevin.tian@intel.com>,
- Tony Zhu <tony.zhu@intel.com>, Yi Liu <yi.l.liu@intel.com>,
- Zhangfei Gao <zhangfei.gao@linaro.org>
-References: <0-v1-2ac37b893728+da-amd_check_types_jgg@nvidia.com>
 From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <0-v1-2ac37b893728+da-amd_check_types_jgg@nvidia.com>
+To: Jerry Snitselaar <jsnitsel@redhat.com>,
+ Peng Zhang <zhangpeng.00@bytedance.com>, Robin Murphy
+ <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>
+Cc: will@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Li Bin <huawei.libin@huawei.com>, Xie XiuQi <xiexiuqi@huawei.com>,
+ Yang Yingliang <yangyingliang@huawei.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+References: <20230216071148.2060-1-zhangpeng.00@bytedance.com>
+ <edvxk47ok5dhlif5mhntrazzg57vxpcwqncjtr4n3ts2zvp6ib@o6qvqfmvxmlt>
+ <7bede423-690c-4f6a-9c23-def4ad08344e@amd.com>
+In-Reply-To: <7bede423-690c-4f6a-9c23-def4ad08344e@amd.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN3PR01CA0118.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:96::19) To DS7PR12MB6048.namprd12.prod.outlook.com
+X-ClientProxiedBy: PN2PR01CA0228.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:eb::16) To DS7PR12MB6048.namprd12.prod.outlook.com
  (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -58,84 +59,252 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|SA1PR12MB5616:EE_
-X-MS-Office365-Filtering-Correlation-Id: b4671716-d000-4097-63a4-08db47a8d239
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|CH3PR12MB7572:EE_
+X-MS-Office365-Filtering-Correlation-Id: 85f14720-78a1-41ed-385d-08db47abb9eb
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	zfovrxIbqyaulxIn4gAiomppLZ4+5PFTz6ggI/QZ6+68nE2aJWygiBXOBiRXFkliPlHmxFo5Yt7lxCO7j2beq7W2345jS+mqjAzAgQFC6VMrgHG71vN2CvjblU0ao7cUT6kvIFeKBO5/+ZsuvyTBsbrDcw3JAcVrvj+b99hDpEfVmLqf4O0de4QDCH7Qvpc6Kjy87JjhaiDZ/zpHssAh8Mavk4KpGRQbQgXS49a+NJoYGj6mZEKc/QDwH6+e5Z47K8CNl3oxsxTYUwrHMZGQYt6/cMxcqH6T28JR6oxCZ+CePEnDYDDcLapYSw4dGwZy63QH7Aa3Do4paWzZh7dtdJpUz3dmFpAKjJPIqiywGlHuujJWSTHC7lbqmVRJfX0OXr6dIetxEIaxN/a/tmajnTSQEhJzwyIZY3ygYWcPNZwDzRSULNsV9Q8M19YV8uL8hDZP9tummC9CMdSLZ4t9XXO6DnkVHYTmm1IDHnTpePEvC0zsFs9bLU+8MnwQlVikr4lCFez5Cfd1j0fcx7v8e0PP1+j7jxa6wiKmiZ+qVmlhKlaxzDlBUdkMqInf+4gGOuPzcCCN5EANc8v2WimoyTvo03jjlttKFTvEeme9M+odOEtbqSnWypPn22zlEH2AgkOH+B0VAq94oIYG7I7aqA==
+	dg75KHmNcpBF5mxTodWZBOk6oa1H2d8la00WMysH0fZdsFXbFkUEiduacLGwpmmNTCH2gMit+ZtOHW7wvnJCTDTeunMHKn4R6b0cW51740bdYgOhEfiVhbixIXyxb6le4qrJkLSnCDVaviXpejOUfRE8o+EEEnYk+SOi9qh0Lc7bNLrCuOWneabEiHu9TEJ4WcwOkXULsUR9zLhw8Gxa4XKkAD7G+1fpzGL+m/0VfI2Z5dQvu6XNtFDIP2DypVPtLpNYcQQgsNFm1aDAj3+zyA39U7EAlZG9czhfd/P3ha2J/6npDpAu+DQgB4cqtMa+0A4Y6YS2Z63P0BZBw1mT9H9VrdppSwOL+wreVIm68Nr12SCA33tDBrQG6jx9ppxLsTKzsl/wUoExW7rH80s/tPIOIEP+MJrZGIrnlU1wIt6eB7Y/rJs5YtFLfZrzPnhXkCbZIjVhYLZu/aUMxVcVGIMoajggh0WoVZrx7yzGXK4vzJi+A7UW6+vOaS6eytOmC07k8Mgz40bCKy0yNkW/NrolmAfTccCL0jZe7lG7xPmkP09/H42k3LM8wb4srrntxoKpi2z0bnaKTE76rlh+GusV3QGq8fonB3K9J2NtBp6cjh1PzEUQEFICoxlBD+/tn+r9pYCw5s4k67M6tu9vCA==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(366004)(346002)(136003)(396003)(376002)(451199021)(316002)(2906002)(4326008)(4744005)(66946007)(44832011)(66476007)(66556008)(7416002)(8936002)(8676002)(41300700001)(36756003)(31696002)(86362001)(26005)(53546011)(6512007)(186003)(38100700002)(478600001)(5660300002)(6666004)(6486002)(31686004)(83380400001)(2616005)(6506007)(110136005)(54906003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(346002)(376002)(366004)(39860400002)(451199021)(86362001)(53546011)(41300700001)(26005)(66899021)(6506007)(6512007)(31696002)(2906002)(5660300002)(8676002)(8936002)(36756003)(44832011)(7416002)(83380400001)(38100700002)(54906003)(478600001)(6486002)(186003)(110136005)(6666004)(31686004)(45080400002)(66476007)(66556008)(4326008)(316002)(66946007)(2616005)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WW5kQm9qTzJvR1dEQndWZU4xcWROZldiMS9zS3pONVJscDkxZHhvcUxiTUZE?=
- =?utf-8?B?YUtoaGN3RE1tZ0xReDM3U2FjTEd2SHB3dVVUUGR1YW9EUjJTWlkrZk9WRy9G?=
- =?utf-8?B?c0ZWT0FFOHk1QUY0UU5ZeFBFcGZGMDBLaDBsbEhUTmpXYXh6SFk0dm1NZ1pj?=
- =?utf-8?B?ZFZiMFFsVDVUbWN1VHdUUHZoVG9rb1ZYRjFOR2N5YnhsWXIwT1ZwR3lsS3lr?=
- =?utf-8?B?QUVBZ2ZmRXc1UkVocEwrYmdmeFNhL0MzaGVXTW9CUnlLQVFFQmFoNVNiRExU?=
- =?utf-8?B?YVlFaExQbTQ2TTVEMFllUjdPejd1dnlyelB5M3hTMWVqVWVvQzZmTktjaUly?=
- =?utf-8?B?emRtT0dNS1FTOUNPc1VnMFphSXhxUWg5RmhraFd2V2Ntb1hQU3lhdFc3Q1RP?=
- =?utf-8?B?bnJsZUpvK1h6b1hCdkFCbWYyeDR3aUd3ZExTWDV2enE1ZXdBUVREYmdnQ2NP?=
- =?utf-8?B?Tk4wNkJNT2VVQ0o5QlBrUXdzbS9tR3BGRkUwaldSaFNOREZIUGUvam96d29u?=
- =?utf-8?B?bUJIL09sUnE5UmtXUGoxSi9XYTJOOUJmTDBTbjhFWEx5d1BxcXEyNjJUQ3Na?=
- =?utf-8?B?OVRQbzFMNUU1ZWorNmV5aDZybldIZG1mSXV4Z2ZMUGF6ZVFMdDRJdWo0L3J4?=
- =?utf-8?B?WUhZdnhlRWEvQlI5akV6dVpyYUE4R1hHY2hUblpkU1RSaDgrTXRLbHFRY2Yw?=
- =?utf-8?B?UEZPZ08ycWdJUUVSVGdTanRvelJBbld0WmQ3WXRyNnZSNFEzakJlTFBweWtk?=
- =?utf-8?B?WS9jQmdSOTFVQm5LbUYwVlhreUFwbUw5MGhNMVZjaFhHQnY0d1QyU1FXcisw?=
- =?utf-8?B?U3FGWGR1Y2pyTWRzbmdQVERBVkUyMUxVeGIyNHpzSVljUkM2WTdBQ0JHY3dh?=
- =?utf-8?B?MVpiaTVhMk5LTlBSeEFqY2NreE5PMThYSytWbTRjaTlhQ0tIZUZBTFlQcjEr?=
- =?utf-8?B?Vk51NWY5czZMUmZVZHFFQTc5bWFTdWFMSDVwL2tSLy9naWtHcTFkSkpGek8x?=
- =?utf-8?B?TDZWWlpReFp0Mm85d0ZjUnVwNG16WEsxSzVWNXp6UzhqeXY5Q1ppR2NNWHdN?=
- =?utf-8?B?Yit2bkRqdzZPQ2R2SWIvbFQ2bllWMmYvY1l2WHNCZGlZYTVrSnNFOXp2M1k4?=
- =?utf-8?B?bWZsZ2dnT2hDb043TENrTVNKUjV1MjRmWGlJZGNhNHUreEN5ZmJwTGRwZU5n?=
- =?utf-8?B?b1EreHdaeDMvcWpFdFpUdGpETUs1RHJKVzkzS2NnaGNLMmtYTHRjVTlNbEVI?=
- =?utf-8?B?MnM5UDRrTEgzTlZ0VWhkM2dBZ2VzM1FCV3VMQW1RUFEvSGNqS3JTRkRCTTBj?=
- =?utf-8?B?SmpmcW1OZnJSMzU3Zm1vRktidjBVQzBxenR4cG5QQ0tDb2d0WU4wUmU4eDlu?=
- =?utf-8?B?aGM5N21lYThtNWJxQ3JTR0FpSUxPVXJwN0RGS3Y3M2xYdFJuME9HNlJXbzF2?=
- =?utf-8?B?REx4RkZXQk04QzA2eFJvMEF2amNyNnhkdU4zRHdkRXh0UGZjcGVOMnpqcEZi?=
- =?utf-8?B?OUZWVnlYbWhHQ3l2QmNGaStyZzVDTFc1ZC82Q0FHcWt0RStVTjkyYUhXL2Rq?=
- =?utf-8?B?cExvMmszQ0hDazhaQUVZSERjY2ZxSTQ2MlNTcU5qRGNaMm5WM3FOZENXLzdQ?=
- =?utf-8?B?TExQYllpR2ZtNXA3bDUrRXV5aCtzZzJscDlDWEpKZlE1MFFKY3dBZGh5bFNz?=
- =?utf-8?B?TkdKbFJNd2t4T0djaEJ0NVhtU0lkUzcwYU5PblJzWVJIQWlqbmp0Vk1wcTRs?=
- =?utf-8?B?ajJtMmwvYjRHZlkzWmFrVm5FdmhCOWYxL0t4L3ZNVis5ME45eHpnWVoxK25i?=
- =?utf-8?B?SmJFdThCb0xCRXJkVE4xNU1lUVMrK2h0TW45RGxzcDlJZVk1aENXVjNJY1RM?=
- =?utf-8?B?SHNVZVhwbnl3ZkhHTUV4ZVRpVCtJNXF3a2FKeHFKbGJuS0ZOM0RJd1VxYVU4?=
- =?utf-8?B?QzhQOFdzU1oxd1FGSnplczF6QzBFVXlaUHNxUUY2Q0ZFY3Q0OTNmbVJRTjBy?=
- =?utf-8?B?Q1NhMFNPNW9VdEhJYlB1TklJRjMrVk01VUtMMEd2dHV0ekZ0VTluTmY2TmpQ?=
- =?utf-8?B?Z2kwMWV6U2FMQVUzbVBtRE1CS3ovb3o0cXkwR3phOUV5U092K1RMaTVOT0hV?=
- =?utf-8?Q?RYWdmmq8NqUNgqn5HdlkyDd/m?=
+	=?utf-8?B?ZHkydnlEWkdXQktNcGlOQ1l5ZGEyYUZTY0Q3bUN1ak9FSEl2b2wxK1lKTWNJ?=
+ =?utf-8?B?TGRzN2ZybU45OWlmUDFwU3FOUmoycnUzUmpXMzZyZWUydXBBa1NmZEp4NWxE?=
+ =?utf-8?B?N21OYWJDdS8vYmtLUVFQVzh3NlpKaStQOHVFcU1RbXQ3aTNwV0FVeEM1ZHE1?=
+ =?utf-8?B?My91WVUySnN4UnZDcW1Nb1NuTE9welV0Nk5ZdVJTNlZlTkdTcDBOUkdWcXVO?=
+ =?utf-8?B?ZjBValJTeFdBZll3SlRNSk05eUVya082V1RuSWg0Q0svQ3diSGRISktuc1c2?=
+ =?utf-8?B?dE4yQk5oNUFCWU5xd2JSc0NwUDl2MnRpYzhkaTdwZUVMWmxFdXdESDBNSnVi?=
+ =?utf-8?B?VU9HWlo3LzFpVXhsMERXTXdsTlI3WW4zVDVEUVB2dFBKNW00R2drSE9uWVFO?=
+ =?utf-8?B?N1FBSkluOE5JbkJrVmhHWDd2Z3JJYVZSMlM2YjMzUmJ0V04yU25MM0Fock1L?=
+ =?utf-8?B?TUFlc25jWkhmRDl5OC9WdzJYdWppUVgwQVpXbVdWZEwrdE5Qa2s4bWlWWGtH?=
+ =?utf-8?B?am40RmJjZFl4SDRDL2s0V3JDcmhZdVFxeHF0WlFlenZNd2N1MWxkQmU3ODcx?=
+ =?utf-8?B?WGhIbnJFWXRMMzJNdDc2ZGl1VjBGMzZDbktLU2F2N05zZWl5cTNjQVRpNXVj?=
+ =?utf-8?B?RnhPK3dDNjdzSFVCaUppM3diN2t3aHd4ai8xM3B4cTVQODkvNnBpQmdTV0FV?=
+ =?utf-8?B?RDRQdWRsdnB0MXkrUjR3L2RaTjF3b1hXZXlxaXFmbkRIaE1EeENGcWdzc1kz?=
+ =?utf-8?B?VmdCMXZ2cnNEVTgxZVZJWjExUmNGYlJhYVlJK1dCRTlqeXZGUDcyQzVjVGxo?=
+ =?utf-8?B?UGdHeVVNQzRlMFcxNC9qcU96bzRrcjF6QTNFZlB6OUZKdjU1MC8wVnBZSW5B?=
+ =?utf-8?B?MnJROVQzSzdLbkxPUkVYOUwvQTIwaXRDTUNPNStCNlNXWG1YSmlJOTY2clRB?=
+ =?utf-8?B?ZUhwLzREdlhPcDlDR1o3Y1dWMVArQ0xwaStiSVE1RzR6WHJLeERiK1lNelVl?=
+ =?utf-8?B?UU54Q3JIUkFReFNZQXZBdjJFR1R2U243cEdJQWZRNFJ5SHlYZDA2VUxlQlRS?=
+ =?utf-8?B?aHJyL09rYnN0VzdmY1FWK1BqNzZmeGxiVmJFQkkwZ1p3VkdzYlNtMkFUYUhz?=
+ =?utf-8?B?cU5MYWM4dk43eGcxNUZZMXB1eXJEQUFqM2UrYWJQRzU0TE1wc0plR01XdWV4?=
+ =?utf-8?B?MW1TRXdFS3hjUU56VktzU2lJRmpVOVhIclY2UEt2QW00N2Rud1QzenlTdVhW?=
+ =?utf-8?B?cEozWHdnam5qNW5FdVNRQUNFTW43N3FHTzlzQUJMUlp3MGJlTS9BTm9IUE1s?=
+ =?utf-8?B?WEZxZ2xvSWE2anJRZUxMQ284SkRhWmE1VHBJczMyQ1dCYU5uMFNiNm9vbXhv?=
+ =?utf-8?B?dCtCUTVHNExtcjk5b25IUDJKSzNQOVY1L3dvYlhVR2lxZFd6dWkwYWF1RTRL?=
+ =?utf-8?B?elRWSDBoVHB1UnNxcTJ1WmZvU3dLb2VhdUZNZGpqdEF1b2VTRlRMSkpkbXpP?=
+ =?utf-8?B?VGwyMnhiTG05cGZBV3RjSHAvZlhOOGhWc0hWcVJaUXVwQWZBaUlRSXcybHpu?=
+ =?utf-8?B?MzYxZ08yNms1VjFRUHM1R2JCUXRwSENLajc3dmJSaVZlSEgwa2ozZDdhdllG?=
+ =?utf-8?B?Z244eXNjTG1zd0Y1OE1mOWFQV1R1M29HV0hDdDh3NVZpREkyaEhpUUVya2Jv?=
+ =?utf-8?B?aWVDdW54UDNscXRwRmpKK1ErVEtRL3FyWlJFMUNuclpFa0kxK0xrNVhRem5o?=
+ =?utf-8?B?aHJOdG16bHBia1VmcWtQWjdJd2pUTnFpNGdnNWZJV1ZFbGVjekVNOU03blpU?=
+ =?utf-8?B?alpENzF2WFMvY0J0dU9XT0FNRjdQeTZUdkJrUUhDU3JQUFNtdkkzZjJzRSt1?=
+ =?utf-8?B?RDczQ1lBUk9SdnEraG1oWGZvVUFmaFNyM0dUOC9oMzlUMnp0SjczaVQyWUIz?=
+ =?utf-8?B?NVJ3eTByK1RmeGwwblp4cHp2QWV6bnIwZXhMV0hZN0kxQ0c0a1ZXTWtkMHUv?=
+ =?utf-8?B?eDJuMmwzWVpWRUEvRHZ0SndBck1sZ0wvK1A0dUVxNnkvL3FwU1lhZDhVNnp5?=
+ =?utf-8?B?djNvZ1h2WVd2K0RCUDZjWEJTcXBFem93bUJMS1VMbW5QT0lKb0ZHd0w4bTM3?=
+ =?utf-8?Q?fOU+EaZDYasXPWsMu5L30XEBl?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b4671716-d000-4097-63a4-08db47a8d239
+X-MS-Exchange-CrossTenant-Network-Message-Id: 85f14720-78a1-41ed-385d-08db47abb9eb
 X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2023 05:24:21.3632
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2023 05:45:08.9342
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4JCdRzA/lM/Hg+K2mA89S7ONXwuy23MitgLaAEwp10EBxfkZEeNs+zhBHz38EYK1AhqQERvJulJSCWV1aSvMIQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB5616
+X-MS-Exchange-CrossTenant-UserPrincipalName: hkOWhb1SrF2gZqpad/uDsKjKTY6ObLimhE1VbGsYhaVXU/KZ/m/2/YwYmCYSAEbYXbshR11ifQP6Azoin8RbpQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB7572
 
-On 4/26/2023 12:34 AM, Jason Gunthorpe wrote:
-> Drivers are supposed to list the domain types they support in their
-> domain_alloc() ops so when we add new domain types, like BLOCKING or SVA,
-> they don't start breaking.
-> 
-> This ended up providing an empty UNMANAGED domain when the core code asked
-> for a BLOCKING domain, which happens to be the fallback for drivers that
-> don't support it, but this is completely wrong for SVA.
-> 
-> Check for the DMA types AMD supports and reject every other kind.
-> 
-> Fixes: 136467962e49 ("iommu: Add IOMMU SVA domain support")
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Hello Robin, Joerg,
 
-
-Thanks! Patch looks good to me.
-
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+Ping. Any suggestion on below proposal (schedule work on each CPU to free iova)?
 
 -Vasant
 
 
+
+On 4/18/2023 4:11 PM, Vasant Hegde wrote:
+> Hi All,
+> 
+> 
+> On 4/11/2023 3:52 AM, Jerry Snitselaar wrote:
+>> On Thu, Feb 16, 2023 at 03:11:48PM +0800, Peng Zhang wrote:
+>>> There is softlockup under fio pressure test with smmu enabled:
+>>> watchdog: BUG: soft lockup - CPU#81 stuck for 22s!  [swapper/81:0]
+>>> ...
+>>> Call trace:
+>>>  fq_flush_timeout+0xc0/0x110
+>>>  call_timer_fn+0x34/0x178
+>>>  expire_timers+0xec/0x158
+>>>  run_timer_softirq+0xc0/0x1f8
+>>>  __do_softirq+0x120/0x324
+>>>  irq_exit+0x11c/0x140
+>>>  __handle_domain_irq+0x6c/0xc0
+>>>  gic_handle_irq+0x6c/0x170
+>>>  el1_irq+0xb8/0x140
+>>>  arch_cpu_idle+0x38/0x1c0
+>>>  default_idle_call+0x24/0x44
+>>>  do_idle+0x1f4/0x2d8
+>>>  cpu_startup_entry+0x2c/0x30
+>>>  secondary_start_kernel+0x17c/0x1c8
+>>>
+>>> Rcu stall may also be triggered:
+>>>
+>>> rcu: INFO: rcu_sched self-detected stall on CPU
+>>> NMI backtrace for cpu 21
+>>> CPU: 21 PID: 118 Comm: ksoftirqd/21
+>>> ...
+>>> Call trace:
+>>>  fq_flush_timeout+0x6d/0x90
+>>>  ? fq_ring_free+0xc0/0xc0
+>>>  call_timer_fn+0x2b/0x120
+>>>  run_timer_softirq+0x1a6/0x420
+>>>  ? finish_task_switch+0x80/0x280
+>>>  __do_softirq+0xda/0x2da
+>>>  ? sort_range+0x20/0x20
+>>>  run_ksoftirqd+0x26/0x40
+>>>  smpboot_thread_fn+0xb8/0x150
+>>>  kthread+0x110/0x130
+>>>  ? __kthread_cancel_work+0x40/0x40
+>>>  ret_from_fork+0x1f/0x30
+>>>
+>>> This is because the timer callback fq_flush_timeout may run more than
+>>> 10ms, and timer may be processed continuously in the softirq so trigger
+>>> softlockup and rcu stall. We can use work to deal with fq_ring_free for
+>>> each cpu which may take long time, that to avoid triggering softlockup
+>>> and rcu stall.
+>>>
+>>> This patch is modified from the patch[1] of openEuler.
+>>>
+>>
+>> Hi Robin,
+>>
+>> I was looking at something similar to this recently were in this case
+>> they were beating the heck out the system with the hazard io stress
+>> test, and someone else with some medusa test tool. In one case they
+>> had them force a dump on the soft lockup. On the 384 core genoa, 90
+>> cores were spinning the iovad rb tree lock for one domain, 1 had it,
+>> and the poor flush queue timer handler was having to fight everyone
+>> for the lock. I'm not sure what would be considered a realistic workload
+>> compared to these stressors, but could this be an issue over time as
+>> systems continue to get more cores since the timer handler potentially
+>> grabs and releases the iova domain rb tree lock for each cpu? The only
+>> cases I know of are using io stressors, so I don't know how big a deal
+>> it is.
+>>
+>> I think soft lockups could still be produced with this patch, since
+>> there would still be the lock contention.
+> 
+> Right. We hit this issue when running stress-ng on 384 CPU system having NVMe
+> disk. I have tried this patch. This improved the situation. But we still hit
+> soft lockup after an hour or so.
+> 
+> Backtrace with this patch:
+> 
+>  4551.470797] watchdog: BUG: soft lockup - CPU#328 stuck for 30s!
+> [kworker/328:1:2710]
+> [ 4551.479441] Modules linked in: nvme_fabrics(E) intel_rapl_msr(E)
+> intel_rapl_common(E) amd64_edac(E) edac_mce_amd(E) kvm_amd(E) kvm(E)
+> crct10dif_pclmul(E) ghash_clmulni_intel(E) sha512_ssse3(E) aesni_intel(E)
+> crypto_simd(E) cryptd(E) rapl(E) wmi_bmof(E) binfmt_misc(E) ipmi_ssif(E)
+> nls_iso8859_1(E) ast(E) drm_shmem_helper(E) drm_kms_helper(E) i2c_algo_bit(E)
+> syscopyarea(E) sysfillrect(E) sysimgblt(E) acpi_ipmi(E) ccp(E) k10temp(E)
+> ipmi_si(E) ipmi_devintf(E) ipmi_msghandler(E) mac_hid(E) sch_fq_codel(E) msr(E)
+> parport_pc(E) ppdev(E) lp(E) parport(E) ramoops(E) reed_solomon(E) pstore_blk(E)
+> pstore_zone(E) efi_pstore(E) drm(E) ip_tables(E) x_tables(E) autofs4(E)
+> crc32_pclmul(E) nvme(E) ahci(E) xhci_pci(E) tg3(E) nvme_core(E) libahci(E)
+> i2c_piix4(E) xhci_pci_renesas(E) wmi(E)
+> [ 4551.479475] CPU: 328 PID: 2710 Comm: kworker/328:1 Kdump: loaded Tainted: G
+>           E      6.2.9schd_work+ #1
+> [ 4551.479477] Hardware name: AMD Corporation Genoa, BIOS RTI 03/20/2023
+> [ 4551.479479] Workqueue: events free_iova_work_func
+> [ 4551.479484] RIP: 0010:_raw_spin_unlock_irqrestore+0x21/0x60
+> [ 4551.479488] Code: 90 90 90 90 90 90 90 90 90 0f 1f 44 00 00 55 49 89 f0 48 89
+> e5 c6 07 00 0f 1f 00 41 f7 c0 00 02 00 00 74 06 fb 0f 1f 44 00 00 <65> ff 0d 50
+> f8 fc 7d 74 13 5d 31 c0 89 c2 89 c1 89 c6 89 c7 41 89
+> [ 4551.479489] RSP: 0018:ffa0000092e07e30 EFLAGS: 00000206
+> [ 4551.479491] RAX: 0000000000000000 RBX: 00000000000000f2 RCX: 0000000000000000
+> [ 4551.479492] RDX: 0000000000000000 RSI: 0000000000000282 RDI: ffd1ff3cf82be060
+> [ 4551.479492] RBP: ffa0000092e07e30 R08: 0000000000000282 R09: 0000000000000000
+> [ 4551.479493] R10: 0000000000000000 R11: 0000000000000000 R12: ff1100010d2af6d0
+> [ 4551.479493] R13: ffd1ff3cf82be060 R14: ffd1ff3cf82bb858 R15: 0000000000000282
+> [ 4551.479494] FS:  0000000000000000(0000) GS:ff11018056200000(0000)
+> knlGS:0000000000000000
+> [ 4551.479495] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [ 4551.479496] CR2: 00007ffd392f5f28 CR3: 0000000152f06004 CR4: 0000000000771ee0
+> [ 4551.479497] PKRU: 55555554
+> [ 4551.479497] Call Trace:
+> [ 4551.479498]  <TASK>
+> [ 4551.479502]  free_iova_work_func+0x6a/0xc0
+> [ 4551.479505]  process_one_work+0x21f/0x440
+> [ 4551.479507]  worker_thread+0x50/0x3f0
+> [ 4551.479509]  ? __pfx_worker_thread+0x10/0x10
+> [ 4551.479510]  kthread+0xee/0x120
+> [ 4551.479513]  ? __pfx_kthread+0x10/0x10
+> [ 4551.479514]  ret_from_fork+0x2c/0x50
+> [ 4551.479518]  </TASK>
+> 
+> I did slight modification on top of this patch (schedule work on each CPU) and
+> it worked for me.
+> 
+> @Robin, Joerg,
+>   Does something like below (schedule work on each CPU to free iova
+>  (fq_ring_free()) is acceptable?
+> 
+> -Vasant
+> 
+> 
+> ------
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 7aed15e53f10..eb52814e67e5 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -157,10 +157,12 @@ static void fq_flush_iotlb(struct iommu_dma_cookie *cookie)
+>  static void fq_flush_timeout(struct timer_list *t)
+>  {
+>  	struct iommu_dma_cookie *cookie = from_timer(cookie, t, fq_timer);
+> +	int cpu;
+> 
+>  	atomic_set(&cookie->fq_timer_on, 0);
+>  	fq_flush_iotlb(cookie);
+> -	schedule_work(&cookie->free_iova_work);
+> +	for_each_possible_cpu(cpu)
+> +		schedule_work_on(cpu, &cookie->free_iova_work);
+>  }
+> 
+>  static void queue_iova(struct iommu_dma_cookie *cookie,
+> @@ -235,17 +237,15 @@ static void free_iova_work_func(struct work_struct *work)
+>  {
+>  	struct iommu_dma_cookie *cookie;
+>  	int cpu;
+> +	unsigned long flags;
+> +	struct iova_fq *fq;
+> 
+>  	cookie = container_of(work, struct iommu_dma_cookie, free_iova_work);
+> -	for_each_possible_cpu(cpu) {
+> -		unsigned long flags;
+> -		struct iova_fq *fq;
+> +	fq = this_cpu_ptr(cookie->fq);
+> 
+> -		fq = per_cpu_ptr(cookie->fq, cpu);
+> -		spin_lock_irqsave(&fq->lock, flags);
+> -		fq_ring_free(cookie, fq);
+> -		spin_unlock_irqrestore(&fq->lock, flags);
+> -	}
+> +	spin_lock_irqsave(&fq->lock, flags);
+> +	fq_ring_free(cookie, fq);
+> +	spin_unlock_irqrestore(&fq->lock, flags);
+>  }
+> 
+>  /* sysfs updates are serialised by the mutex of the group owning @domain */
+> 
+> ---------
+> 
+> 
+> 
+> 
+> 
