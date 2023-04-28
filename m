@@ -1,164 +1,279 @@
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5308028ED
-	for <iommu@lists.linux.dev>; Fri, 28 Apr 2023 09:48:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1682675283; x=1714211283;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=bYCgDRb4VZ+Dp5+7mh9XMIweJDkhuIcZxz8vRSccsmU=;
-  b=ITNo7beyOvgGzWv8+4Ap2lzeO49Y2TWxLvaEq7x5dn/ypUFTBzMecsIA
-   slAxSU4rgPt+7+sNez7QKVAcyaRV3J2OMWJalJutc9w5dZ+ZJluHWhAv3
-   KCo3BJgYBwgaExuDyDlPHWPMsAU7r0OAEXBKhfw4MbCs0C/f7fNi213Ad
-   IEGHpMROYTKQSnsmwERponU8Y2yfImmgBHDuApPeJDuZifFSS/jmAv0bF
-   9utbUwpflVVket4Jw2FYeqjp+LG5Re4RNevFK0s9ShVgp3wVXiLxJCmcI
-   Wq1BJQxdPQRyT5o4YlYYp+n1NQQnGJIpdMX18E1T9Iqs84M2fsQzYcgwD
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10693"; a="328036618"
-X-IronPort-AV: E=Sophos;i="5.99,234,1677571200"; 
-   d="scan'208";a="328036618"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2023 02:47:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10693"; a="764222586"
-X-IronPort-AV: E=Sophos;i="5.99,234,1677571200"; 
-   d="scan'208";a="764222586"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmsmga004.fm.intel.com with ESMTP; 28 Apr 2023 02:47:48 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Fri, 28 Apr 2023 02:47:48 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Fri, 28 Apr 2023 02:47:48 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Fri, 28 Apr 2023 02:47:48 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.175)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Fri, 28 Apr 2023 02:47:47 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=diaTFJhmX4jELLj7LLXTC4Ciiv3qppsjyrbyfkKe8fixIT31QHux15H8zyDdFarYl5QPI6tsRMiIXRophzRNpJLVyOzmAkaUpo8npqcpHhcslKQgGXOOxVOWwlAnR9m0BTXitfStwkZf/PVe61nD8NNNH/u/OHuwTolSx9HfvJP8DGVQyyqiNLdmO7iqJQwy7pgOAG+nOY7FJl6t4w/vCWHKap7MvtAIWKRnC6B8iLl1S4ApK/pSs0QDOiymbykVGkcBGX5fvY3bJoyBInnOm+X9pLHc8V44rjyz38E9IVYL2B+fYVfDyuqjQwyxMFPTZJ/vy5dvfs4z+x/Zszt3yQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uKSYc/7Bs4chqClmOaxlGtu3fPT5p3ow2ZyVDWuWa8U=;
- b=NXapSkqcoIPphIZqrVx9EEgmvZUEl2VHED3f9siEB3x/XZLLmCGwCHXZnIWLHl8jAtnmgbFKmxGdF7FhUKdvKjL4Uc+rOukDvMfmoRYyF0LvWlf+V0dStX9Br9sgh/DIWXA+13ysiR2MIPsfgFVWgXrQcxqMimi3lHenHxTsrP3HXKLOuexZkQ3vsaJAspNLQNopLg3v1Pme7Id/Ls+s1DzqxzhtAMm2jprFfowaMesfoJtWO2J9BVU9EDvkjJII10y0x8qUjgl2wqDjvucoPgEQsgrJ3V+Sb+XblJaGA1ybxAig3UxOCfwNZYlK3LZjqURGM9BBtp9wZ1USpc5+lg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by SN7PR11MB7018.namprd11.prod.outlook.com (2603:10b6:806:2ad::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.24; Fri, 28 Apr
- 2023 09:47:46 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::73e9:b405:2cae:9174]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::73e9:b405:2cae:9174%6]) with mapi id 15.20.6340.022; Fri, 28 Apr 2023
- 09:47:45 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>, LKML
-	<linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe
-	<jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel
-	<joro@8bytes.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
-	"vkoul@kernel.org" <vkoul@kernel.org>
-CC: Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
-	"Raj, Ashok" <ashok.raj@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Yu,
- Fenghua" <fenghua.yu@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Luck,
- Tony" <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
-	"Ranganathan, Narayan" <narayan.ranganathan@intel.com>
-Subject: RE: [PATCH v5 4/7] iommu/vt-d: Factoring out PASID set up helper
- function
-Thread-Topic: [PATCH v5 4/7] iommu/vt-d: Factoring out PASID set up helper
- function
-Thread-Index: AQHZeTAdQSnrcG3HMkmo3hSxYxRHBq9AekBg
-Date: Fri, 28 Apr 2023 09:47:45 +0000
-Message-ID: <BN9PR11MB5276726E67301703BD10833B8C6B9@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20230427174937.471668-1-jacob.jun.pan@linux.intel.com>
- <20230427174937.471668-5-jacob.jun.pan@linux.intel.com>
-In-Reply-To: <20230427174937.471668-5-jacob.jun.pan@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|SN7PR11MB7018:EE_
-x-ms-office365-filtering-correlation-id: b0ca26fd-63c4-4971-143a-08db47cd9e86
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: mSe8R2enaGBhw6IWrce2MVbZ4X64re7fumgamlDnTlzcmo63MFppbSKalYTGFu4nvIu+6UY2VUBDBy3qALjnMvGBSAS0ja7WxprqAgSXLEfaWyZG2t5f1mlyEOLQ9f3QzhSkngQLq0y7ZxCXfozd5KZt1tk0s2NOZyo9RMYQ+OtRPeq9x1vus7sPThd7JaOkfDODvVoe/88bfzMoJCbqPCuzC3yN+plTYbyxJ33/ip7WTtGoR2on2tAV2iQ2fo5/gdFxkNKUGKYMB0Q7hG/Phx96qaMgPa/ELkUfunmco8NDVoAHc1aNHhbcYmsf5iFdb3RtctSSX3KMBVS1sFtE80Ss3YwRcX/Ym955dW8ctmZVMChqQxUSBJCN5Z2DAkR01grjie+73iBJAnJsdxTyhETdaWEN2xniJtkobotrmjjuicsAfH4Q5uQP/2aOcx7PCFLNfEywIE/wcCaRuEsgWb/2ve2LvpDxzvaaOhhI88WTJX54bvKpqoR45UTAmrV2a4rh7uI/qEYRqfqvfwQkQVk/jW/U0T6UBHQ67ioVSa4RWwJ7CLZl5VGKE4ZE2bSZcjVay1/TJy+sM6Nem+BgjFyK2pvfwjKEL8yHj35PezE3nk/lYhTIpYgdkQbA/R0i
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(376002)(366004)(396003)(136003)(346002)(39860400002)(451199021)(64756008)(86362001)(66476007)(66446008)(76116006)(66556008)(66946007)(4326008)(122000001)(478600001)(82960400001)(7696005)(33656002)(71200400001)(55016003)(186003)(38100700002)(9686003)(6506007)(26005)(54906003)(110136005)(8676002)(8936002)(41300700001)(5660300002)(38070700005)(7416002)(52536014)(4744005)(316002)(2906002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?IFF9egeMLhi/1Jt4XjSnuHk2uD1F9KsnhhcgRAkBP2jshK76srL1M/RcNVnt?=
- =?us-ascii?Q?7eCKQhkChqwtQIWXtpFcAkj5CdVh2EmXWt1/yyfOIDJlg1W2o9PIRyMzt8mu?=
- =?us-ascii?Q?zkWbiB3IFaEEogrH1AZuozdmvnYeznyt2WoqiADN2C+pcMBNK2FLSnDnsNey?=
- =?us-ascii?Q?VCZvHEWN55TzpnJLltcVO5Nj3JoFlqs9yS19TkFgYHmp7d3dUQdUEHdTi/lM?=
- =?us-ascii?Q?a4B97w+/QrEGcWpCZIGBg2Mt4qQwVWTv/tll9X/O3x+FBSZkDQ4lvPnaKGiq?=
- =?us-ascii?Q?lh7UaZicq/EsYzAJ4xuD8eCax1ix5RU6f5KIvzdXU6A04amRu/jDNvb474pY?=
- =?us-ascii?Q?BwfoBbBiedTngH7kN3652UxqkLvqgIaqzem8k2hGabgCgZoDR7dtlNEIzzsG?=
- =?us-ascii?Q?aeDGGeqjZW4sJcIFwCUjlfzNi+CXR0z3DwlNDuznh+rLOarU3xTaMWdIcgI2?=
- =?us-ascii?Q?+2NbE+jIuRdFXNhStsNyBZxS15rChnQR9pLxfc3BeReZBBTvpgkAYRsY5Prl?=
- =?us-ascii?Q?MGzmuFv39nh6Qs7E5s1SX3tpZp8imwu/lIMhbSVO2t+fBSvR72HyUFRuFXIf?=
- =?us-ascii?Q?fcPUlkDamsMZfSjGcBeHz2AFYbYkhu/5aXuOFxqYKYuxeNmrabBtPF1NhxuS?=
- =?us-ascii?Q?jmW2Ce+hpE5p/uDNTe47koLNMOiVMScGxjA8GUv32VB3XljEXhjrKGjmNkB2?=
- =?us-ascii?Q?wq2FEimwh7fKogulY9V/+D5xnEqexsnlF6XGvDEZXjNz/NVPIpxTu1jne6Bk?=
- =?us-ascii?Q?5DfQvcd6DF7zJ0Of7xzHzqj3x8qntUoTeceQCcgcfTPTilA0ceC3jKSl0o2d?=
- =?us-ascii?Q?0HiCh2+ob63IA7C07CkydtYlQoXIsAPmLUrYgONBDV7HqL3KHoAq1OD3jxFg?=
- =?us-ascii?Q?ivHiyrDbLaJWOrGlu/BgRp5scFGYzv4ntqWrvdyY9JnHoEeI3C1/ouiTOfd+?=
- =?us-ascii?Q?mlpNueRepHWa7pA77K9M9uNlc7Yn84qipXIiMD104dd9JJbASf4QYqoVBApW?=
- =?us-ascii?Q?NkOrS6obK6Jkos5fbuJQxenovU2bfn0b7Tlm2bhY2sdwe7kaoG+4Ntwj8sTL?=
- =?us-ascii?Q?ThDCMYwkxlStIBWCQKKje6xiFzZX74sTODfyrb4ATKyORsJyqgsPHHiEAOu8?=
- =?us-ascii?Q?kHNnpXACDi+ZsYK4gLceV2LiJrFn8Qk4dRO7WYgvpGEK7syBsuLfS9QpQjT+?=
- =?us-ascii?Q?wd/2FoKJ87PcD94nz2iKczswN1jParQelK/XJCFCmNVxh8bcFbAexuvVDC5x?=
- =?us-ascii?Q?yhHzsiAnHT9Ttqbb3fWCARwEiqjcuyHkOVXANF2r7oMfwnrjMwbLdBvDEa/0?=
- =?us-ascii?Q?4wspQKOkilHM71buYNvv0kXrJylp/elCkb5rzPvkN0hAcfBO+u4TbHIWS+OH?=
- =?us-ascii?Q?GGHiOhpYYTZpUtO1fg91sbK/ds19/nO9RKpClW9/kHQA8jt/wmhNJjp9+1u8?=
- =?us-ascii?Q?gqZLynAInac0SOa4n4fMip4kMwEzQIlFtRSDLWjU8J/X9k/FQNEadQSOoBhy?=
- =?us-ascii?Q?kHFA7ETO65yjZQNHOH1ss3JivC7VQSIKzwRBAfSUmeg0JaUJstupJXEImIwn?=
- =?us-ascii?Q?fdQORscI2re2MuJxn6UN9ISHrq1Ylg8LFwJ/L5tY?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3259B2F36
+	for <iommu@lists.linux.dev>; Fri, 28 Apr 2023 12:24:51 +0000 (UTC)
+Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-956ff2399b1so1782073066b.3
+        for <iommu@lists.linux.dev>; Fri, 28 Apr 2023 05:24:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1682684689; x=1685276689;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Q3bSao3dIZoa2P7axrw3LC5ax3R0t4aXyUSCE/k2fx0=;
+        b=hNoVP1s2EzPBTmSV7px5DfkOZBqeNBXHMNN2cqR9fS17u3XRJg3pbzdUCwEHVxyLOA
+         +Gy2BR4VLzzuLUrNyeDsuDYCIohyASa/0eD94XO5vnVOwT/DK3d5q0wPYWPu/HfHtLd8
+         bZmRyhe7h9AnA4GgnLhwEsU0jPS2N4KtwCuPjI3MsF9bWvM6agYp+wzpLbk/9rsTeo9/
+         stVLxwIAhj+xCNHp2/mWNi/2JcHiTCQvMXTD5FcCkOesCyH+bpDI7Q2vmnCsMrGA9Bk1
+         3TNe3N8nPgX9ORJJc2O+OmY6fqtdkFKNoEPhUDBWOo68c2xtFJRnQXkuwrtI/JQ3JcgZ
+         m8tQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682684689; x=1685276689;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Q3bSao3dIZoa2P7axrw3LC5ax3R0t4aXyUSCE/k2fx0=;
+        b=R3Uh46Q+S0zeeemlPx/fKiMp3kOTXeD8sxKtn1VK0pS3xQ/hkuJwLf//GOycVlU0if
+         AlZSIFBNchD8qhkEAZvccRO6bfOKBuxWIADZ0C9JI6zg+Zy+nzhZwoW2FzvQvWYg4AT0
+         gssTvHzsfZe0k9ZHneM5mAWgOKqk5034aX2LIZTdMZeDaMVnUB16yjXrL2WsGVUg0iH4
+         dD52F8XlTeTzaXHQb3JD3EL0bortBpmj9YDKfwlO0+KSSxEMZQeapt+Ck0jyCmaknZIg
+         dknGKQz1/dUXbdmC2ahf7yFqYCecbHSIsZKIihN0crzPeLfKA2ysBF5ITA82U8ae0UsS
+         qDIg==
+X-Gm-Message-State: AC+VfDybHazz9UKO0Ku0I+cJBo8aQjn/xTg9uGeQFeZxyl3+ZQhH26AH
+	ZayzByXmq1QZGV09E0/sKg+pfQ==
+X-Google-Smtp-Source: ACHHUZ77IOZK63RmVT8TpDfpoFZAJAjx69P/jqEggrfGcqWpRilr9vvnEpGwCjb2+M/FqeNTEFkqmw==
+X-Received: by 2002:a17:906:5d09:b0:94e:ea07:4b87 with SMTP id g9-20020a1709065d0900b0094eea074b87mr4788932ejt.27.1682684689278;
+        Fri, 28 Apr 2023 05:24:49 -0700 (PDT)
+Received: from [172.23.4.26] ([31.221.30.162])
+        by smtp.gmail.com with ESMTPSA id my17-20020a1709065a5100b0095728081944sm9873225ejc.146.2023.04.28.05.24.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 28 Apr 2023 05:24:48 -0700 (PDT)
+Message-ID: <7b67a1cb-0c3e-22be-a104-c10407dad5a7@linaro.org>
+Date: Fri, 28 Apr 2023 13:24:47 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b0ca26fd-63c4-4971-143a-08db47cd9e86
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Apr 2023 09:47:45.6003
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: TVo9LOYy80UgAB9yNZIL20lZgLE777jkBKPns0dqIe2yK6wyFtQRbEEmbeLJLM4WD01c8vF85y0aVCHZMX+sYQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB7018
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH v2 07/13] drm/msm/dpu: Add SM6350 support
+Content-Language: en-US
+To: Marijn Suijten <marijn.suijten@somainline.org>
+Cc: Rob Clark <robdclark@gmail.com>, Abhinav Kumar
+ <quic_abhinavk@quicinc.com>, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+ Sean Paul <sean@poorly.run>, David Airlie <airlied@gmail.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Krishna Manikandan <quic_mkrishn@quicinc.com>, Will Deacon
+ <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>, linux-arm-msm@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ Konrad Dybcio <konrad.dybcio@somainline.org>
+References: <20230411-topic-straitlagoon_mdss-v2-0-5def73f50980@linaro.org>
+ <20230411-topic-straitlagoon_mdss-v2-7-5def73f50980@linaro.org>
+ <k25jg7cez2kimpxr4ztbdzjr2adq6a2vjknyvfe5frxujtogfg@vhfdyt45unv6>
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+In-Reply-To: <k25jg7cez2kimpxr4ztbdzjr2adq6a2vjknyvfe5frxujtogfg@vhfdyt45unv6>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Sent: Friday, April 28, 2023 1:50 AM
->=20
->=20
-> +static int dmar_domain_attach_device_pasid(struct dmar_domain *domain,
-> +					   struct intel_iommu *iommu,
-> +					   struct device *dev, ioasid_t pasid)
-> +{
-> +	int ret;
-> +
-> +	/* PASID table is mandatory for a PCI device in scalable mode. */
-> +	if (!sm_supported(iommu) && dev_is_real_dma_subdevice(dev))
-> +		return -EOPNOTSUPP;
+[...]
 
-"&&" should be "||"
 
+>> +
+>> +static const struct dpu_caps sm6350_dpu_caps = {
+>> +	.max_mixer_width = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
+>> +	.max_mixer_blendstages = 0x7,
+>> +	.qseed_type = DPU_SSPP_SCALER_QSEED4,
+> I thought it was QSEED3LITE, but doesn't really matter as both are
+> handled similarly.  It'll anyway change when I resubmit:
+>
+> https://lore.kernel.org/linux-arm-msm/20230215-sspp-scaler-version-v1-0-416b1500b85b@somainline.org/T/#u
+>
+> which should hardcode the register value directly, making this field
+> superfluous.
+
+Okay, so I'll just resubmit as-is, I suppose?
+
+[...]
+
+
+>> +static const struct dpu_lm_cfg sm6350_lm[] = {
+>> +	LM_BLK("lm_0", LM_0, 0x44000, MIXER_SDM845_MASK,
+>> +		&sc7180_lm_sblk, PINGPONG_0, LM_1, DSPP_0),
+>> +	LM_BLK("lm_1", LM_1, 0x45000, MIXER_SDM845_MASK,
+>> +		&sc7180_lm_sblk, PINGPONG_1, LM_0, 0),
+> These two entries are indented with two tabs and have one character too
+> many to align with the opening parenthesis on the previous line.  Can we
+> please settle on a single style, as this commit mostly uses tabs+spaces
+> to align with the opening parenthesis?
+>
+> Dmitry vouched for `cino=(0` (when in unclosed parenthesis, align next
+> line with zero extra characters to the opening parenthesis), but I find
+> double tabs more convenient as it doesn't require reindenting when
+> changing the name of the macro (which happened too often in my INTF TE
+> series).
+
+sure, let's go with that Dmitry suggested!
+
+Konrad
+
+>
+>> +};
+>> +
+>> +static const struct dpu_dspp_cfg sm6350_dspp[] = {
+>> +	DSPP_BLK("dspp_0", DSPP_0, 0x54000, DSPP_SC7180_MASK,
+>> +		 &sm8150_dspp_sblk),
+>> +};
+>> +
+>> +static struct dpu_pingpong_cfg sm6350_pp[] = {
+>> +	PP_BLK("pingpong_0", PINGPONG_0, 0x70000, PINGPONG_SM8150_MASK, 0, sdm845_pp_sblk,
+>> +	       DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 8),
+>> +	       -1),
+>> +	PP_BLK("pingpong_1", PINGPONG_1, 0x70800, PINGPONG_SM8150_MASK, 0, sdm845_pp_sblk,
+>> +	       DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 9),
+>> +	       -1),
+> Glad to see no TE2 here, we just removed it from all of DPU >= 5.0.0
+> instead of >= 7.0.0 in [1] as downstream DTS turned out to be wrong.
+>
+> [1]: https://lore.kernel.org/linux-arm-msm/20230411-dpu-intf-te-v4-2-27ce1a5ab5c6@somainline.org/
+>
+> - Marijn
+>
+>> +};
+>> +
+>> +static const struct dpu_intf_cfg sm6350_intf[] = {
+>> +	INTF_BLK("intf_0", INTF_0, 0x6a000, 0x2c0, INTF_DP, 0, 35, INTF_SC7180_MASK,
+>> +		 DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 24),
+>> +		 DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 25)),
+>> +	INTF_BLK_DSI_TE("intf_1", INTF_1, 0x6a800, 0x2c0, INTF_DSI, 0, 35, INTF_SC7180_MASK,
+>> +			DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 26),
+>> +			DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 27),
+>> +			DPU_IRQ_IDX(MDP_INTF1_TEAR_INTR, 2)),
+>> +};
+>> +
+>> +static const struct dpu_vbif_cfg sm6350_vbif[] = {
+>> +	{
+>> +	.name = "vbif_0", .id = VBIF_RT,
+>> +	.base = 0, .len = 0x1044,
+>> +	.features = BIT(DPU_VBIF_QOS_REMAP),
+>> +	.xin_halt_timeout = 0x4000,
+>> +	.qos_rt_tbl = {
+>> +		.npriority_lvl = ARRAY_SIZE(sdm845_rt_pri_lvl),
+>> +		.priority_lvl = sdm845_rt_pri_lvl,
+>> +	},
+>> +	.qos_nrt_tbl = {
+>> +		.npriority_lvl = ARRAY_SIZE(sdm845_nrt_pri_lvl),
+>> +		.priority_lvl = sdm845_nrt_pri_lvl,
+>> +	},
+>> +	.memtype_count = 14,
+>> +	.memtype = {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
+>> +	},
+>> +};
+>> +
+>> +static const struct dpu_qos_lut_entry sm6350_qos_linear_macrotile[] = {
+>> +	{.fl = 0, .lut = 0x0011223344556677 },
+>> +	{.fl = 0, .lut = 0x0011223445566777 },
+>> +};
+>> +
+>> +static const struct dpu_perf_cfg sm6350_perf_data = {
+>> +	.max_bw_low = 4200000,
+>> +	.max_bw_high = 5100000,
+>> +	.min_core_ib = 2500000,
+>> +	.min_llcc_ib = 0,
+>> +	.min_dram_ib = 1600000,
+>> +	.min_prefill_lines = 35,
+>> +	/* TODO: confirm danger_lut_tbl */
+>> +	.danger_lut_tbl = {0xffff, 0xffff, 0x0, 0x0, 0xffff},
+>> +	.qos_lut_tbl = {
+>> +		{.nentry = ARRAY_SIZE(sm6350_qos_linear_macrotile),
+>> +		.entries = sm6350_qos_linear_macrotile
+>> +		},
+>> +		{.nentry = ARRAY_SIZE(sm6350_qos_linear_macrotile),
+>> +		.entries = sm6350_qos_linear_macrotile
+>> +		},
+>> +		{.nentry = ARRAY_SIZE(sc7180_qos_nrt),
+>> +		.entries = sc7180_qos_nrt
+>> +		},
+>> +	},
+>> +	.cdp_cfg = {
+>> +		{.rd_enable = 1, .wr_enable = 1},
+>> +		{.rd_enable = 1, .wr_enable = 0}
+>> +	},
+>> +	.clk_inefficiency_factor = 105,
+>> +	.bw_inefficiency_factor = 120,
+>> +};
+>> +
+>> +const struct dpu_mdss_cfg dpu_sm6350_cfg = {
+>> +	.caps = &sm6350_dpu_caps,
+>> +	.ubwc = &sm6350_ubwc_cfg,
+>> +	.mdp_count = ARRAY_SIZE(sm6350_mdp),
+>> +	.mdp = sm6350_mdp,
+>> +	.ctl_count = ARRAY_SIZE(sm6350_ctl),
+>> +	.ctl = sm6350_ctl,
+>> +	.sspp_count = ARRAY_SIZE(sm6350_sspp),
+>> +	.sspp = sm6350_sspp,
+>> +	.mixer_count = ARRAY_SIZE(sm6350_lm),
+>> +	.mixer = sm6350_lm,
+>> +	.dspp_count = ARRAY_SIZE(sm6350_dspp),
+>> +	.dspp = sm6350_dspp,
+>> +	.pingpong_count = ARRAY_SIZE(sm6350_pp),
+>> +	.pingpong = sm6350_pp,
+>> +	.intf_count = ARRAY_SIZE(sm6350_intf),
+>> +	.intf = sm6350_intf,
+>> +	.vbif_count = ARRAY_SIZE(sm6350_vbif),
+>> +	.vbif = sm6350_vbif,
+>> +	.reg_dma_count = 1,
+>> +	.dma_cfg = &sm8250_regdma,
+>> +	.perf = &sm6350_perf_data,
+>> +	.mdss_irqs = BIT(MDP_SSPP_TOP0_INTR) | \
+>> +		     BIT(MDP_SSPP_TOP0_INTR2) | \
+>> +		     BIT(MDP_SSPP_TOP0_HIST_INTR) | \
+>> +		     BIT(MDP_INTF0_INTR) | \
+>> +		     BIT(MDP_INTF1_INTR)
+>> +};
+>> +
+>> +#endif
+>> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+>> index db558a9ae36e..52750b592b36 100644
+>> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+>> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+>> @@ -806,6 +806,7 @@ static const struct dpu_qos_lut_entry sc7180_qos_nrt[] = {
+>>  #include "catalog/dpu_6_0_sm8250.h"
+>>  #include "catalog/dpu_6_2_sc7180.h"
+>>  #include "catalog/dpu_6_3_sm6115.h"
+>> +#include "catalog/dpu_6_4_sm6350.h"
+>>  #include "catalog/dpu_6_5_qcm2290.h"
+>>  
+>>  #include "catalog/dpu_7_0_sm8350.h"
+>> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
+>> index 756bff1d2185..f9611bd75e02 100644
+>> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
+>> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
+>> @@ -320,6 +320,8 @@ enum dpu_qos_lut_usage {
+>>  	DPU_QOS_LUT_USAGE_LINEAR,
+>>  	DPU_QOS_LUT_USAGE_MACROTILE,
+>>  	DPU_QOS_LUT_USAGE_NRT,
+>> +	DPU_QOS_LUT_USAGE_CWB,
+>> +	DPU_QOS_LUT_USAGE_MACROTILE_QSEED,
+>>  	DPU_QOS_LUT_USAGE_MAX,
+>>  };
+>>  
+>> @@ -880,6 +882,7 @@ extern const struct dpu_mdss_cfg dpu_sc8180x_cfg;
+>>  extern const struct dpu_mdss_cfg dpu_sm8250_cfg;
+>>  extern const struct dpu_mdss_cfg dpu_sc7180_cfg;
+>>  extern const struct dpu_mdss_cfg dpu_sm6115_cfg;
+>> +extern const struct dpu_mdss_cfg dpu_sm6350_cfg;
+>>  extern const struct dpu_mdss_cfg dpu_qcm2290_cfg;
+>>  extern const struct dpu_mdss_cfg dpu_sm8350_cfg;
+>>  extern const struct dpu_mdss_cfg dpu_sc7280_cfg;
+>> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+>> index 0e7a68714e9e..46be7ad8d615 100644
+>> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+>> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+>> @@ -1286,6 +1286,7 @@ static const struct of_device_id dpu_dt_match[] = {
+>>  	{ .compatible = "qcom,sc8180x-dpu", .data = &dpu_sc8180x_cfg, },
+>>  	{ .compatible = "qcom,sc8280xp-dpu", .data = &dpu_sc8280xp_cfg, },
+>>  	{ .compatible = "qcom,sm6115-dpu", .data = &dpu_sm6115_cfg, },
+>> +	{ .compatible = "qcom,sm6350-dpu", .data = &dpu_sm6350_cfg, },
+>>  	{ .compatible = "qcom,sm8150-dpu", .data = &dpu_sm8150_cfg, },
+>>  	{ .compatible = "qcom,sm8250-dpu", .data = &dpu_sm8250_cfg, },
+>>  	{ .compatible = "qcom,sm8350-dpu", .data = &dpu_sm8350_cfg, },
+>>
+>> -- 
+>> 2.40.0
+>>
