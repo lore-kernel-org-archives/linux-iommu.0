@@ -1,53 +1,141 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 160033C10
-	for <iommu@lists.linux.dev>; Sun, 30 Apr 2023 20:08:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B2E4FC433EF;
-	Sun, 30 Apr 2023 20:08:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1682885290;
-	bh=1r1D2D0Bq6g0xjD9HH4VPtVZQyARYm8kIxHx2+58W5A=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=OThqrb2lPnh8oiFucr+ZQjkNGWZadxPuTTIZYNKk0GBgGkkP6FwBgJs2ULGGZA4gA
-	 iTZdxqLNsEpP/OuXq40oekGJ8qlWmS7jQ2BnJ2o43kodde721M8soLltf79FvApksW
-	 h5JAg2ukXDCKgMNq0BnQ0DbM6eKL7AsLiMmlmTdDMB8EC01yqFgmU4QzrJpMO4lLCT
-	 RHee9HcDGc9e+h5BKYbwbOytX5yJ7okwEEkFojmYpdC8WdevQ278hTMxUWwzcpt7jx
-	 bWpCfacAA9YEOXNWyALcbhw/1M0yKiWFEYWy4OSUfSsURxVJ70gJmAIWenyh4STWNi
-	 V5e9yevT9yJhw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A367BE5FFC9;
-	Sun, 30 Apr 2023 20:08:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E08D823AE
+	for <iommu@lists.linux.dev>; Sun, 30 Apr 2023 23:06:32 +0000 (UTC)
+Received: by mail-qk1-f179.google.com with SMTP id af79cd13be357-74e4f839ae4so80836385a.0
+        for <iommu@lists.linux.dev>; Sun, 30 Apr 2023 16:06:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1682895991; x=1685487991;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=8Psay3iWMJhmxHkZAg5Iuol6oj90ri2pdTt2YuZmWUE=;
+        b=n3H6nqEHaqJne+lMWDC0WazrrjZKvmjwaYoQAJtpanf6mj6GHbj1dlXBHBaDdRJ+VJ
+         sv7ABRjeVJaqylOzt45cK/IIUNW3mZClbmkW29YYN8dkoDJFikicRRqifcTXLvgdAP9I
+         9Aksh8PYtpqGxA8F7/EEEOfpB6+1wdI0k/MwDx2UAOft1Q/qoqTVMv2BpEyDWEYGudFd
+         Yf0K7EVCzbc2LnQNbHrulIeS/0IwOSNTkjedU4nS7B7KlWo++xnQ/sMFm6Bkz3VB7g2C
+         l9KDF/fzGBQKKIi00h422ACQLJjY1qneZG0zqlOtnxIXUiZFxyc6LWGYB1wHbkPqYZG+
+         KejQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682895991; x=1685487991;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=8Psay3iWMJhmxHkZAg5Iuol6oj90ri2pdTt2YuZmWUE=;
+        b=CCNFQ+d2O9QiK0N2f0faWX/DF1HLPnmVgqcdRmtKvoLHrcEM99k1IsHPnyAx1U6qLr
+         R3pQwn+bXxZpjzPjIJrsKfWglYl6v4BF4VeUamCSOHObtKcOlL4GQW6hmmCfIlmAi1WE
+         v+7nxEXj00GeGqhwAQ+yFeFsQ9q8cBE8kb0kQT8uYCR7yK0JGmwo9u+KkeywzfpewozB
+         C7FVu+Tv563lw7PMKsNfD4nf9fQzpK0r67mNipk2F2JKqizOjit6i8BtLs3WwKxVCmft
+         +BaJdn20Cm5fbQXwUMV48i0f0mu1Tz0e+ZgPj8Ezz7Lv4IXdwPzG9TLmSGSPwTWN4iXT
+         ui4g==
+X-Gm-Message-State: AC+VfDzInMS02TsC1gUUPIhZLPT/ErRm/6hKn3nemL+rHRjGnteGu1r5
+	G7PpeTAAggyHO+sZ426Hlevy/g==
+X-Google-Smtp-Source: ACHHUZ7N8wIq7sna6v8mheeplG6fRtbWccoLeo3L3czcxGeQmS0itVhx8sZeyiIb+7kZSatIlT1rTg==
+X-Received: by 2002:ad4:5967:0:b0:56f:37a:4561 with SMTP id eq7-20020ad45967000000b0056f037a4561mr15383256qvb.34.1682895991597;
+        Sun, 30 Apr 2023 16:06:31 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
+        by smtp.gmail.com with ESMTPSA id x14-20020a0cda0e000000b006166a48357asm3485820qvj.60.2023.04.30.16.06.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 30 Apr 2023 16:06:31 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1ptG7i-005eii-Ev;
+	Sun, 30 Apr 2023 20:06:30 -0300
+Date: Sun, 30 Apr 2023 20:06:30 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
 Subject: Re: [git pull] IOMMU Updates for Linux v6.4
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <ZE5NR5Ml8I2/Ze0f@8bytes.org>
+Message-ID: <ZE70doFi8X3KgfrV@ziepe.ca>
 References: <ZE5NR5Ml8I2/Ze0f@8bytes.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <ZE5NR5Ml8I2/Ze0f@8bytes.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git pull-test
-X-PR-Tracked-Commit-Id: e51b4198396cd715b140c0e8b259680429ff0cfb
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 58390c8ce1bddb6c623f62e7ed36383e7fa5c02f
-Message-Id: <168288529065.32747.7019505821134712516.pr-tracker-bot@kernel.org>
-Date: Sun, 30 Apr 2023 20:08:10 +0000
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+ <CAHk-=wiriLmq6OgLLF9seANqCJqjCrgUC384zcJUFtv3xJgVkQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHk-=wiriLmq6OgLLF9seANqCJqjCrgUC384zcJUFtv3xJgVkQ@mail.gmail.com>
 
-The pull request you sent on Sun, 30 Apr 2023 13:13:11 +0200:
+On Sun, Apr 30, 2023 at 01:07:45PM -0700, Linus Torvalds wrote:
+> On Sun, Apr 30, 2023 at 4:13 AM Joerg Roedel <joro@8bytes.org> wrote:
+> >
+> > this pull-request is somewhat messier than usual because it has a lot of
+> > conflicts with your tree. I resolved them in a test-merge and sorted it out
+> > for you to compare your solution to mine (mine is also mostly similar to
+> > the one in linux-next).
+> 
+> Your resolution is different from mine.
+> 
+> Some of it is just white-space differences etc, but some of it is meaningful.
+> 
+> For example, you have
+> 
+>                 if (mm->pasid < min || mm->pasid >= max)
+> 
+> in your iommu_sva_alloc_pasid(), which seems to have undone the change
+> in commit 4e14176ab13f ("iommu/sva: Stop using ioasid_set for SVA"),
+> which changed it to check for
+> 
+>            .. mm->pasid > max)
+> 
+> instead (which seems also consistent with what ida_alloc_range() does:
+> 'max' is inclusive).
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git pull-test
+Yes, that is what the new function comment says it should do, and the
+only caller is:
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/58390c8ce1bddb6c623f62e7ed36383e7fa5c02f
+drivers/iommu/iommu-sva.c:      ret = iommu_sva_alloc_pasid(mm, 1, max_pasids - 1);
 
-Thank you!
+Which looks inclusive also
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+> You also seem to have kept the deleted <linux/ioasid.h> header file.
+
+Should be deleted
+ 
+> I'm also a bit unsure about what the intent with mm_valid_pasid() is.
+> In commit cd3891158a77 ("iommu/sva: Move PASID helpers to sva code")
+> that helper (under the previous name) got moved to a different header
+> file, but in the process it also got done unconditionally as
+
+I think the whole thing was originally a micro-optimization to remove
+this if statement from some mm paths..
+
+> But in your merge, you ended up splitting it into two versions again.
+> 
+> I don't think that's technically the "right" merge (it basically
+> changes things wrt the two branches), but I do think it's nicer.
+
+It is closer to the intent, I think
+
+> Finally, I'm not happy with the Kconfig situation here. Commit
+> 99b5726b4423 ("iommu: Remove ioasid infrastructure") removed
+> CONFIG_IOASID, but left the
+> 
+>         select IOASID
+ 
+> in the 'config INTEL_IOMMU' Kconfig case. I removed that as dead, but
+> now we have that
+> 
+>         select IOMMU_SVA
+
+We've had this longstanding confusion in the iommu layer that SVA and
+PASID are one and the same thing, we are slowly reorganizing it.. For
+now it is fine for IOMMU_SVA to cover the PASID allocator as the only
+drivers that support PASID also support SVA.
+
+Arguably the design is backwards and IOMMU_SVA should be user
+selectable and it should turn off the SVA code entirely including the
+driver code.
+
+> Somebody should double-check my result, in other words.
+
+I didn't notice anything wrong, I'm sure Lu and Yi will test it!
+
+Thanks,
+Jason
