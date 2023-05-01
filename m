@@ -1,40 +1,40 @@
-Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
+Received: from mail-yw1-f202.google.com (mail-yw1-f202.google.com [209.85.128.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E8716139
-	for <iommu@lists.linux.dev>; Mon,  1 May 2023 16:56:35 +0000 (UTC)
-Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-64115e69e1eso23348156b3a.0
-        for <iommu@lists.linux.dev>; Mon, 01 May 2023 09:56:35 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FB2E6139
+	for <iommu@lists.linux.dev>; Mon,  1 May 2023 16:56:38 +0000 (UTC)
+Received: by mail-yw1-f202.google.com with SMTP id 00721157ae682-559fb5bed89so20702967b3.0
+        for <iommu@lists.linux.dev>; Mon, 01 May 2023 09:56:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1682960195; x=1685552195;
+        d=google.com; s=20221208; t=1682960197; x=1685552197;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=uHz3gIMQ14LMAlJH3BHlupoStZ8/+BrUL09pT+1nDVs=;
-        b=cL9ulyr1TZmloHcY9ZAQt2916/Hy8kFnLfCTiFsQOyXG21mKZDk2kVsVGS3swW/o9A
-         lmsPI4V+ni8bJ2cDmSOvMhTe7jiZncm+a+dX+h32N0c6xUNbGxEO59xGx2raskwk+yE+
-         EY40N2q/B5lxnqf+wqKkKUxKcIxmFMWDeQ/MPMZ5UoklVL3SBusyJB6cuGrGjrAev2jt
-         I6daIpOCKx+oNZEO+zjvrtYAnmo4PPKmPdsrXndRo+l1Ieu4A+pt+fjUYtVugs+1Ncqh
-         keNiqCygIJKFaCxV1denDbSpt/uk9T3I2i0PdEP0vYROV8UgAo/d+Ogm15HjT6dg+WeL
-         DFBQ==
+        bh=6mzPQystPbLbDwPdw2fPo41K7qknlkieEKK3sweddW8=;
+        b=48U8jHG63mdA66+jSc2MsTTE/SQi8BR+RKY6JNGvzt9XyZfx935vfOLln6IV1D1nZA
+         TDOiQ/WUR049cZ5YJ1Q2SXSzODz7LrWrQUYaviS+GqGgkaK3yK5eLgyzf9e3cLjtYX0E
+         QEA8ptoQ0G50fmCmay29a1/AGKziq1anSqyI04k35PIYMGlvV6wz4iKeKGJ75o0JVkmO
+         ON7F5nilmKInR+kNfyJ2/HvMFyxBUo4zG20TTbLKq7fKcUY3NShJQ1fHpbVtH1cQdhj8
+         PGEM3ZzK108E7+nu3T246tg/tKyPHMfi0CFtYYsesaQA8cqlaVTRPDBW+c2GnGCMueBG
+         1wCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682960195; x=1685552195;
+        d=1e100.net; s=20221208; t=1682960197; x=1685552197;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=uHz3gIMQ14LMAlJH3BHlupoStZ8/+BrUL09pT+1nDVs=;
-        b=P5Vl1wV6s2863/j9bVaxTStPXIAOF53itOIDeESRCpJiRd3xiaim7NcpNoD9xzMwax
-         fRKwVmjI8siVQsGu40Tte5Ig3oF/vGSAwSzsepdGCVH79RwQRmA+3PK50qvukbxHRvZE
-         ajIAqfYxDPuXQ1hbMBFC0lNCiNyeoEnJY7HQhrgrQBLCqzMARU89J020JEFIZEZnmsCh
-         hDDmAmcWF3DPLF7sxCdouAakARvq+vEmEXXfrbJXjqBfT3SIq4YPLU/0PdwHWYNycGtu
-         R4IfGAxor5PwTnEbjG48yfRqWrM61V99FMf1LJsAUgK7vLOP2jb6MR6D/h2n5JKeC0OU
-         SxJg==
-X-Gm-Message-State: AC+VfDzhp9o7fMv/Mgir/7mueszViyQFNzEwa1ZubB+dneqfNiFhchaW
-	v5Le6JCdy2818jEowey4iBeTWs/oF+I=
-X-Google-Smtp-Source: ACHHUZ7qtjt6xJv0/W6KanE/G1kJWq4JffXkn4YmB84VAxkpL2X6o57PZ5XdLwRiQeUXxZyrcuCDjEjhXCs=
+        bh=6mzPQystPbLbDwPdw2fPo41K7qknlkieEKK3sweddW8=;
+        b=cYbIfwwpVeTUr/Wu2NT+Gven4C+8arrFCEL2AurYU85oOlLLtoPd52F5yTca8EgWeT
+         pAOn0yUfuF237pFPFXmR5eMI3f1SHcJCrdS/LaSNiya4mFOpVIf9ocEsiqe2r1khV844
+         u16MxuneVoLmvb0QS0c/CclRDcHRRalPZybgEJGg50dVowYHaHh4AgmHX6HMSWYqhiLo
+         ngjt63tbFfqr15BxUGxVWmL5G/zo8x/xT7s7RkPV8Nt0QkHIIIqx3B1SiVywGc/Urucy
+         8NQX3PXJxoluE5VzvFPAG8brXnixfhMdhvaqtimYwHAQtYlVKLfsfjPRpff4Y9RzmHSI
+         kFkg==
+X-Gm-Message-State: AC+VfDy5iI7tLhWZBKVK1Q0cdftZs1InI7WB9Hfe12cC1PvC7zk2F/8g
+	jp7D9stF36XAQann86bA0ykl82lGMyY=
+X-Google-Smtp-Source: ACHHUZ4jj2W0kDCYmm99zoZd05S+xWh4GtcVfBuyUeKMJ0WYF9RUn/+Qut27GKgsUVS6rbo/+wwQvYcbMjY=
 X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:201:6d24:3efd:facc:7ac4])
- (user=surenb job=sendgmr) by 2002:a17:90a:5105:b0:244:9620:c114 with SMTP id
- t5-20020a17090a510500b002449620c114mr3673305pjh.1.1682960194723; Mon, 01 May
- 2023 09:56:34 -0700 (PDT)
-Date: Mon,  1 May 2023 09:54:48 -0700
+ (user=surenb job=sendgmr) by 2002:a81:e902:0:b0:541:61aa:9e60 with SMTP id
+ d2-20020a81e902000000b0054161aa9e60mr9069879ywm.6.1682960197340; Mon, 01 May
+ 2023 09:56:37 -0700 (PDT)
+Date: Mon,  1 May 2023 09:54:49 -0700
 In-Reply-To: <20230501165450.15352-1-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -44,8 +44,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20230501165450.15352-1-surenb@google.com>
 X-Mailer: git-send-email 2.40.1.495.gc816e09b53d-goog
-Message-ID: <20230501165450.15352-39-surenb@google.com>
-Subject: [PATCH 38/40] codetag: debug: mark codetags for reserved pages as empty
+Message-ID: <20230501165450.15352-40-surenb@google.com>
+Subject: [PATCH 39/40] codetag: debug: introduce OBJEXTS_ALLOC_FAIL to mark
+ failed slab_ext allocations
 From: Suren Baghdasaryan <surenb@google.com>
 To: akpm@linux-foundation.org
 Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
@@ -74,42 +75,88 @@ Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz,
 	cgroups@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-To avoid debug warnings while freeing reserved pages which were not
-allocated with usual allocators, mark their codetags as empty before
-freeing.
-Maybe we can annotate reserved pages correctly and avoid this?
+If slabobj_ext vector allocation for a slab object fails and later on it
+succeeds for another object in the same slab, the slabobj_ext for the
+original object will be NULL and will be flagged in case when
+CONFIG_MEM_ALLOC_PROFILING_DEBUG is enabled.
+Mark failed slabobj_ext vector allocations using a new objext_flags flag
+stored in the lower bits of slab->obj_exts. When new allocation succeeds
+it marks all tag references in the same slabobj_ext vector as empty to
+avoid warnings implemented by CONFIG_MEM_ALLOC_PROFILING_DEBUG checks.
 
 Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 ---
- include/linux/mm.h | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ include/linux/memcontrol.h |  4 +++-
+ mm/slab_common.c           | 27 +++++++++++++++++++++++++--
+ 2 files changed, 28 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 27ce77080c79..f5969cb85879 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -5,6 +5,7 @@
- #include <linux/errno.h>
- #include <linux/mmdebug.h>
- #include <linux/gfp.h>
-+#include <linux/pgalloc_tag.h>
- #include <linux/bug.h>
- #include <linux/list.h>
- #include <linux/mmzone.h>
-@@ -2920,6 +2921,13 @@ extern void reserve_bootmem_region(phys_addr_t start, phys_addr_t end);
- /* Free the reserved page into the buddy system, so it gets managed. */
- static inline void free_reserved_page(struct page *page)
+diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+index c7f21b15b540..3eb8975c1462 100644
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -356,8 +356,10 @@ enum page_memcg_data_flags {
+ #endif /* CONFIG_MEMCG */
+ 
+ enum objext_flags {
++	/* slabobj_ext vector failed to allocate */
++	OBJEXTS_ALLOC_FAIL = __FIRST_OBJEXT_FLAG,
+ 	/* the next bit after the last actual flag */
+-	__NR_OBJEXTS_FLAGS  = __FIRST_OBJEXT_FLAG,
++	__NR_OBJEXTS_FLAGS  = (__FIRST_OBJEXT_FLAG << 1),
+ };
+ 
+ #define OBJEXTS_FLAGS_MASK (__NR_OBJEXTS_FLAGS - 1)
+diff --git a/mm/slab_common.c b/mm/slab_common.c
+index 89265f825c43..5b7e096b70a5 100644
+--- a/mm/slab_common.c
++++ b/mm/slab_common.c
+@@ -217,21 +217,44 @@ int alloc_slab_obj_exts(struct slab *slab, struct kmem_cache *s,
  {
-+	union codetag_ref *ref;
-+
-+	ref = get_page_tag_ref(page);
-+	if (ref) {
-+		set_codetag_empty(ref);
-+		put_page_tag_ref(ref);
+ 	unsigned int objects = objs_per_slab(s, slab);
+ 	unsigned long obj_exts;
+-	void *vec;
++	struct slabobj_ext *vec;
+ 
+ 	gfp &= ~OBJCGS_CLEAR_MASK;
+ 	/* Prevent recursive extension vector allocation */
+ 	gfp |= __GFP_NO_OBJ_EXT;
+ 	vec = kcalloc_node(objects, sizeof(struct slabobj_ext), gfp,
+ 			   slab_nid(slab));
+-	if (!vec)
++	if (!vec) {
++#ifdef CONFIG_MEM_ALLOC_PROFILING_DEBUG
++		if (new_slab) {
++			/* Mark vectors which failed to allocate */
++			slab->obj_exts = OBJEXTS_ALLOC_FAIL;
++#ifdef CONFIG_MEMCG
++			slab->obj_exts |= MEMCG_DATA_OBJEXTS;
++#endif
++		}
++#endif
+ 		return -ENOMEM;
 +	}
- 	ClearPageReserved(page);
- 	init_page_count(page);
- 	__free_page(page);
+ 
+ 	obj_exts = (unsigned long)vec;
+ #ifdef CONFIG_MEMCG
+ 	obj_exts |= MEMCG_DATA_OBJEXTS;
+ #endif
+ 	if (new_slab) {
++#ifdef CONFIG_MEM_ALLOC_PROFILING_DEBUG
++		/*
++		 * If vector previously failed to allocate then we have live
++		 * objects with no tag reference. Mark all references in this
++		 * vector as empty to avoid warnings later on.
++		 */
++		if (slab->obj_exts & OBJEXTS_ALLOC_FAIL) {
++			unsigned int i;
++
++			for (i = 0; i < objects; i++)
++				set_codetag_empty(&vec[i].ref);
++		}
++#endif
+ 		/*
+ 		 * If the slab is brand new and nobody can yet access its
+ 		 * obj_exts, no synchronization is required and obj_exts can
 -- 
 2.40.1.495.gc816e09b53d-goog
 
