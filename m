@@ -1,42 +1,40 @@
-Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
+Received: from mail-pg1-f201.google.com (mail-pg1-f201.google.com [209.85.215.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AFB129CA
-	for <iommu@lists.linux.dev>; Mon,  1 May 2023 16:55:10 +0000 (UTC)
-Received: by mail-pj1-f73.google.com with SMTP id 98e67ed59e1d1-2473661358eso2716199a91.1
-        for <iommu@lists.linux.dev>; Mon, 01 May 2023 09:55:10 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6DCE3C05
+	for <iommu@lists.linux.dev>; Mon,  1 May 2023 16:55:12 +0000 (UTC)
+Received: by mail-pg1-f201.google.com with SMTP id 41be03b00d2f7-52855ba7539so1413419a12.3
+        for <iommu@lists.linux.dev>; Mon, 01 May 2023 09:55:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1682960110; x=1685552110;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:references
-         :mime-version:in-reply-to:date:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=tgVoyGNNM2CEwgGlnNhwRO5zW+BCSfKlhykn/JkHIoY=;
-        b=2YKjiLNW+kfuA2PzlgEprNmYD56U2DvqAYUQT3SxKi2Wkcms/FURL1MvVV4lKJqj8O
-         6/Ns7jrOtbP8ic5/FVYS4laNGQMz7H1sQUQlCcm/XRw/h77Gbtg2COyXGd2xvroS0fJn
-         qwWPXD+NTjhYN8F2PIhFlV9xM7/YRbLeL8oWUbHvCo0bmT2YG7Au7XFXE7JF9tMEE+O2
-         Razpx64/yqsX3p0ZTAuL1qwvem7fqbeaFnGoyPVJo12mzY/mv/yC7mdLiyEupHVMtu6T
-         xYmQq3px4UJy+E+76my+C+5ib12oMdQjlgTcOmFRh/w96xFVezYHyxkBpY3bPmKf/8tt
-         YK/Q==
+        d=google.com; s=20221208; t=1682960112; x=1685552112;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=OgbhlQnm6N3CIqx+6EXURMMvow4S1KQvuNCpohSnl08=;
+        b=ym8bWqOddRKLLCHNc+7Y2IQs+szb6DlXVMA8aGLldE3slVUGdWc6AeUaj2cctynpb7
+         /42bu00/rNI9NmOjux118bETqQ9xSRBpI0DlCMlMXfD5dyA5fGqmz9wEGRomBF9wE3qi
+         RRE1kSFRttrNPJ5gUqGivtomoZ/CkHpvdtT+8kMIwh52/Lg8aqiW8D9XXtWx1rDhFoLd
+         bIJ0Jt1xQTF7bUEViJLE2KzQyVYsdDW/+ihFxINfhU+/Rq1Q5G2PY50HQQ7ppVzde88x
+         xSaqGzF/rOMvs2lVTYEukIGUCSWj1ys72INhoG28un8pv0+7d++N9bkCwOHBDc2Mepzd
+         xe8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682960110; x=1685552110;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:references
-         :mime-version:in-reply-to:date:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=tgVoyGNNM2CEwgGlnNhwRO5zW+BCSfKlhykn/JkHIoY=;
-        b=jERTtOp7g2MaUkaE/IIOZF7/HLTy4GH2peBZ9foQWi37OaErvMh0CKXyhA7hBiRPJo
-         f1cfmUFJizG9S8T/vTmKyyVMlKcb+QUyx1+mEnvW25sZxAkEAzlMmHyAmfz4buOWYN3G
-         ju6bMMAQJWxiWT6Zr8S4lk6e1hiK8kKu0/zOrFIKgFxzTXu5LLytdl6elHc0By2S5UQQ
-         y1fLMCVS91VbzKrYrn0sCn1JcRz1FBipZo+mtcIoDBIf975CDOtHk4yJsQifMsqSv7hs
-         s+kaUAtR+YAqGjYk1hl1xNQliFpz7SoHA9MtTNJcTRqT+V374srwTFf8YV38T3d19+9l
-         Le/A==
-X-Gm-Message-State: AC+VfDyHDGTNrzCX81f9O63s5Qu7cBKm3qMVj9u07uoCDxJ0SpJYA+Jp
-	8+ihu+kt/626e2UH8T9ZLTXTztUjkes=
-X-Google-Smtp-Source: ACHHUZ4eBSTFzzY/h621MY7B4DCDMh7rr4Q0GpDOy2/h5VKYZfljnAlN4rMUCg0PfIpVagexBlmQ2RgWd74=
+        d=1e100.net; s=20221208; t=1682960112; x=1685552112;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=OgbhlQnm6N3CIqx+6EXURMMvow4S1KQvuNCpohSnl08=;
+        b=Itf+hzOzMQXch1D4cVDeCi7p2qkpTXCjjmT+zZ62dntMCcwzc7N5Vw0xRoDxnDFNbF
+         a2n5wObBA5x86kaeyQk+CbHue9pCwHafUj2nGVRA5pHqLM/oBm7OhU/Ggcru5lYnqNBz
+         bGJ4sXEdjMnJ43n514QLHoqIK8w6nCX+iyUH+pkIQCvAH7SJS8M12uPRdnlEIpD23L02
+         4tYcJyo/dV7awwId8BArUrvdgcp7cp4t5zVLPGiCX2VGwQ70/yAgig5EvHTralTUevdd
+         i3LZXnzSBwthwvBvzS5KEsPpsPUBjfN7efbpPDSnumevFKdDxKPTzYYhhu7ytTExkJmu
+         iXZQ==
+X-Gm-Message-State: AC+VfDzoRhl4LoYfNLk0qDgo5lOD/gZ/N1b/hJf4EGqnPZt8KluEBBtf
+	1svSZsxdoNHxfbC3KE01vLz+djr+WMU=
+X-Google-Smtp-Source: ACHHUZ5b/dFHDo+PuE3NWONWxlaUnbiu4qgjE2QFFJKcdOrghbUOD/toAldYYzf7QRUKjILKXa170Oj8yTI=
 X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:201:6d24:3efd:facc:7ac4])
- (user=surenb job=sendgmr) by 2002:a17:90a:390d:b0:246:66d6:f24e with SMTP id
- y13-20020a17090a390d00b0024666d6f24emr3850182pjb.2.1682960109840; Mon, 01 May
- 2023 09:55:09 -0700 (PDT)
-Date: Mon,  1 May 2023 09:54:11 -0700
+ (user=surenb job=sendgmr) by 2002:a63:24f:0:b0:520:60ac:fb30 with SMTP id
+ 76-20020a63024f000000b0052060acfb30mr3551005pgc.1.1682960112196; Mon, 01 May
+ 2023 09:55:12 -0700 (PDT)
+Date: Mon,  1 May 2023 09:54:12 -0700
 In-Reply-To: <20230501165450.15352-1-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -46,8 +44,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20230501165450.15352-1-surenb@google.com>
 X-Mailer: git-send-email 2.40.1.495.gc816e09b53d-goog
-Message-ID: <20230501165450.15352-2-surenb@google.com>
-Subject: [PATCH 01/40] lib/string_helpers: Drop space in string_get_size's output
+Message-ID: <20230501165450.15352-3-surenb@google.com>
+Subject: [PATCH 02/40] scripts/kallysms: Always include __start and __stop symbols
 From: Suren Baghdasaryan <surenb@google.com>
 To: akpm@linux-foundation.org
 Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
@@ -73,53 +71,52 @@ Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz,
 	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
 	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
 	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org, Andy Shevchenko <andy@kernel.org>, 
-	Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, 
-	Paul Mackerras <paulus@samba.org>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, 
-	"=?UTF-8?q?Noralf=20Tr=C3=B8nnes?=" <noralf@tronnes.org>
+	cgroups@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
 From: Kent Overstreet <kent.overstreet@linux.dev>
 
-Previously, string_get_size() outputted a space between the number and
-the units, i.e.
-  9.88 MiB
-
-This changes it to
-  9.88MiB
-
-which allows it to be parsed correctly by the 'sort -h' command.
+These symbols are used to denote section boundaries: by always including
+them we can unify loading sections from modules with loading built-in
+sections, which leads to some significant cleanup.
 
 Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
 Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-Cc: Andy Shevchenko <andy@kernel.org>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Paul Mackerras <paulus@samba.org>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Cc: "Noralf Tr=C3=B8nnes" <noralf@tronnes.org>
-Cc: Jens Axboe <axboe@kernel.dk>
 ---
- lib/string_helpers.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ scripts/kallsyms.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/lib/string_helpers.c b/lib/string_helpers.c
-index 230020a2e076..593b29fece32 100644
---- a/lib/string_helpers.c
-+++ b/lib/string_helpers.c
-@@ -126,8 +126,7 @@ void string_get_size(u64 size, u64 blk_size, const enum=
- string_size_units units,
- 	else
- 		unit =3D units_str[units][i];
-=20
--	snprintf(buf, len, "%u%s %s", (u32)size,
--		 tmp, unit);
-+	snprintf(buf, len, "%u%s%s", (u32)size, tmp, unit);
+diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
+index 0d2db41177b2..7b7dbeb5bd6e 100644
+--- a/scripts/kallsyms.c
++++ b/scripts/kallsyms.c
+@@ -203,6 +203,11 @@ static int symbol_in_range(const struct sym_entry *s,
+ 	return 0;
  }
- EXPORT_SYMBOL(string_get_size);
-=20
---=20
+ 
++static bool string_starts_with(const char *s, const char *prefix)
++{
++	return strncmp(s, prefix, strlen(prefix)) == 0;
++}
++
+ static int symbol_valid(const struct sym_entry *s)
+ {
+ 	const char *name = sym_name(s);
+@@ -210,6 +215,14 @@ static int symbol_valid(const struct sym_entry *s)
+ 	/* if --all-symbols is not specified, then symbols outside the text
+ 	 * and inittext sections are discarded */
+ 	if (!all_symbols) {
++		/*
++		 * Symbols starting with __start and __stop are used to denote
++		 * section boundaries, and should always be included:
++		 */
++		if (string_starts_with(name, "__start_") ||
++		    string_starts_with(name, "__stop_"))
++			return 1;
++
+ 		if (symbol_in_range(s, text_ranges,
+ 				    ARRAY_SIZE(text_ranges)) == 0)
+ 			return 0;
+-- 
 2.40.1.495.gc816e09b53d-goog
 
