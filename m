@@ -1,82 +1,304 @@
-Received: from out-33.mta1.migadu.com (out-33.mta1.migadu.com [95.215.58.33])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2050.outbound.protection.outlook.com [40.107.94.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94889567B
-	for <iommu@lists.linux.dev>; Mon,  1 May 2023 17:47:20 +0000 (UTC)
-Date: Mon, 1 May 2023 10:47:01 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1682963238;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=pCOJ4TIX11zw2jBaDOP97T7hx/pG0LP03OwHceiD+AE=;
-	b=DiqG+Df4D+DZsn0wO9LjwkV/mLuZ3abtM/u+Nuamt3enIlxM0dOl/zDiGUemCbI1ba6Ge7
-	UFxA8r7ovThZ0bL+PW2tO2CTjinF1Mnn4ax/lyq+OVwg8tX+hPdBw7CohOYds+psfqGMqa
-	jFVVfskQ2Ze12DnahYd6juPiFkLzBag=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Roman Gushchin <roman.gushchin@linux.dev>
-To: Suren Baghdasaryan <surenb@google.com>
-Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
-	vbabka@suse.cz, hannes@cmpxchg.org, mgorman@suse.de,
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
-	corbet@lwn.net, void@manifault.com, peterz@infradead.org,
-	juri.lelli@redhat.com, ldufour@linux.ibm.com,
-	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
-	x86@kernel.org, peterx@redhat.com, david@redhat.com,
-	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
-	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
-	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
-	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
-	keescook@chromium.org, ndesaulniers@google.com,
-	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
-	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
-	elver@google.com, dvyukov@google.com, shakeelb@google.com,
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
-	cgroups@vger.kernel.org
-Subject: Re: [PATCH 00/40] Memory allocation profiling
-Message-ID: <ZE/7FZbd31qIzrOc@P9FQF9L96D>
-References: <20230501165450.15352-1-surenb@google.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBF0B567B;
+	Mon,  1 May 2023 18:03:08 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bj7iNq1zF4TRA9dS3y+ZFQqTd4bb/SbIXKI0OcLsov+JlEoxu5eY1aaJ8A3YdtGP4ZvT9i6iTkUX2xMatf7FV58njjehpUPf2Eh2f7c2QYu3MJLwjRDEDCxKNVAh7nris6aSVAQ0J4ui9jRev3Cx8keWfExqxZ1IXTXp0R5N4PpjzncWk59fqHt2Cfxe7YTnt3ofVvqXlAi+hdmWFfEdzms9Rj4bQpWyqK0XMdp4S5m8FUAEvYkUvmLGFWQ5uz+bJqNtXsVvBHQbQGB3mZduOAlw62sqCdIhQLFczEHtHAt1Ve6NcNCsbtearbXP2eKqbCWy/PZa70diHyPdi9qiaA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yDoVdY+Pc9qumyxpzzNFuOZNqlnuBuVFdJ69BZSqGVo=;
+ b=Srhry845uo4rPZ0Ek+Q5k+SLJf/pLC5CX/pX7mCGT13Zf5znRXpJT9xTuERc91L1Vxnv+tvof2ffZ+R0NicK5eUZoZMkDhdXxfQO4YVT94GCqCBPB4mIrF/sKskQywcydTsvx/2Ogdf8xYERbFolI0Y4KWlzGFiOXiUdtjWy7+1TKSKI3/LTBcIZ8yAugtTKojKHSd15b+g5xErF0tbwLF8btR62YKxlmzf0RK4qqHtQ991xNTr1IK+FMl8pkazX1NCDFZFRRo4p1IzxBHhm2x+xTlLrQ+bLa079ne97r6YLA2XmPxXckH7+oRpL6o1B3p+FaArGhnirCd6johoR2w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yDoVdY+Pc9qumyxpzzNFuOZNqlnuBuVFdJ69BZSqGVo=;
+ b=LAoImtAb3uT8ZSaVzIDIZLmPRErEYwU8/vV2XVDw/o6Fud+TZB1BRNGy+FWXCCnDlVut54rauWLcIuVcudEzmnNLgiMg2FClQpoiReP/LAf+ProgDbDZfiOMrPxHCp7oCcPVRURKB2Pq482VUtPr8Fi7dQSWCScflq4lA72mtcKwBvw59ueF+tzAzhKr6v5FhBDEnNWzC7tA/9kvaFhOKwUDl4iOZ88MLcrB43GF0l2gPTLHmmqi+O111XV2txqFedj82AtKtGY/NdUt7/Gv24eKBdp1Cip/beaA66Fi3EUN31shLH/1tGIoaBhsJ7l1ByHRnbQR85FMADWIPyZMFQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by IA1PR12MB6457.namprd12.prod.outlook.com (2603:10b6:208:3ab::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.30; Mon, 1 May
+ 2023 18:03:06 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6340.030; Mon, 1 May 2023
+ 18:03:05 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Andy Gross <agross@kernel.org>,
+	Alim Akhtar <alim.akhtar@samsung.com>,
+	Bjorn Andersson <andersson@kernel.org>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Stuebner <heiko@sntech.de>,
+	iommu@lists.linux.dev,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-arm-msm@vger.kernel.org,
+	linux-mediatek@lists.infradead.org,
+	linux-rockchip@lists.infradead.org,
+	linux-s390@vger.kernel.org,
+	linux-samsung-soc@vger.kernel.org,
+	linux-sunxi@lists.linux.dev,
+	linux-tegra@vger.kernel.org,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Rob Clark <robdclark@gmail.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Krishna Reddy <vdumpa@nvidia.com>,
+	Chen-Yu Tsai <wens@csie.org>,
+	Will Deacon <will@kernel.org>,
+	Yong Wu <yong.wu@mediatek.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Steven Price <steven.price@arm.com>
+Subject: [PATCH 06/20] iommu/exynos: Implement an IDENTITY domain
+Date: Mon,  1 May 2023 15:02:50 -0300
+Message-Id: <6-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
+In-Reply-To: <0-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
+References:
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MN2PR06CA0023.namprd06.prod.outlook.com
+ (2603:10b6:208:23d::28) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230501165450.15352-1-surenb@google.com>
-X-Migadu-Flow: FLOW_OUT
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|IA1PR12MB6457:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4615b5b2-cb88-4ae9-7bc7-08db4a6e5027
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	eJ/Osi5xuOZZEpntF1O6pH+LsLx3Aefnm3P2JgDQU+eBcQ9ru1mRTaWY6OfaN8ykNSJRZRzScrb9NMA888QzIwLa2+jiamnSEZrH1cRvYA4P2jmN7q3JdmrEs3hhzXq203h+Q2iV/z5INQCpY/Nc8aMNQQwFn0bHDVPt1I+LCYjOcXkpiJr8273oalKCkkpAUPVjaYCq+BwVefHfwJ+++GwcxDU30gVJxzeL7BH7q1k45A7NG1mEVsvbfaB0GA0gZ51QCftNSOgw4i8lMnEASiS7+vnjW9DaHlbyfjg7O1vHKZXG7/JppqILJpqCPLZ9vxWACDh7c52oNmA5Wu1xh4ukb0nO4GUbTTOTEkI9KLiHboaI1bW4zp5MstMT6UP0/UNPiabBZOruSUwocBqtlpZNKtAaSVtb4s6fymmDnOgYO+QIidWvlO1nCb4aEW8MIWkHHeX0KquUlZkNP8/jdCNSdUUMqNSbHHLlZLURsowYiiX72U9AlSSjf7POeZUlQ5f3cv2e7x1C89vtIhQO6POKfZp83Bh0ChVCSppvo0BijoAfCE4QPGtoT7K1RCH2w0sS3dbLL605csL/PNT/6US2KKz8kmKaE8dgd+9VaVMecLRMjV9nOGAJko3KLJXQ
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(39860400002)(366004)(346002)(136003)(376002)(451199021)(6506007)(186003)(6486002)(26005)(83380400001)(2616005)(4326008)(5660300002)(316002)(66476007)(66556008)(66946007)(6512007)(41300700001)(8676002)(8936002)(7406005)(54906003)(478600001)(6666004)(2906002)(110136005)(36756003)(7416002)(86362001)(38100700002)(921005)(4216001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?7ZUXCtwX/2iBuJ0V+BAJxISHlfwsdWMnhI5UA78r+RIDtN5cmMckqSfQqhfi?=
+ =?us-ascii?Q?qvSF9RXvv4e8M/0vLvpTgmB2soX7LTrbYQXftFj+ytCW0NvOm9QGOhEhEcEd?=
+ =?us-ascii?Q?rQylWFCd+U+BM1UGYnRXCb06pDGAL/P3Kb+1Ty8o8ICT2cwMz826nDnoc1in?=
+ =?us-ascii?Q?XuU/bQhA4N0CX/OfqlglBBCbD/aBvKUXOHsT9wVZl1NgR5/B+AYOpca9vfNZ?=
+ =?us-ascii?Q?epYnXM/G2K3atwXgYZPG1kVaOti4Vi0ezMnDmVwK+6e2HPtOeYzQMTnnf986?=
+ =?us-ascii?Q?ZQHrT0lw7H6i9CKZaMFHOLozjdKEHjdHfX0V5RGpovw0Ff5PKhlcJ00L8T+O?=
+ =?us-ascii?Q?wyM0BiAwzJY1/E0PFzqyRHFDgsOTAGKGQQPrlnrU5RINEmLlxVgd+NAQO/LJ?=
+ =?us-ascii?Q?YMgmx6Ng1QbLN6Wl24Csl2FNDqdBsc+KLcctGLR7V47/Bafyo7OvtZxIqKXu?=
+ =?us-ascii?Q?hVyftExYGHIAyg8/VZ6a/pvqJUp/AW/U4c26zCw7FGB5hySIorqHkf/oQwiq?=
+ =?us-ascii?Q?XoXbENMcVem+dYLGlVRBxg76KCo+hOvV2rv0yrn7eBexi73ZK2r9qNL2Z034?=
+ =?us-ascii?Q?+NMk6IklCBLRb80QiQf3vCabU5CtqXf7v5FHWb14MfmQuo99luguJbFAB528?=
+ =?us-ascii?Q?nkm4xorRThPWpRbKO83t3o7tF+GP0pwG03FE232GK65Q15SKGEKeNaWZkuMb?=
+ =?us-ascii?Q?kxG7USzpVRU0B8L/0BvIvU2dtgLxiObn70tSw/nfTGefIwf59UkpfDIpACyp?=
+ =?us-ascii?Q?aDjqHvfqh+tsZ+6hkYJZJgOxBJHJXDFzh/1Nty8KLmbFdL0jzixyQ5Gb2V+d?=
+ =?us-ascii?Q?hwRhk4BAUBhvbfYUkXkMLkhxaITg4SqIvTGSKXUK1XXI406z47yPjmwBQq+i?=
+ =?us-ascii?Q?8ksBF7Bi8AWkxAUcqz/+2qDvQBzmZoErwhMdwew1g79Gwvj6wBjSCATP9eLi?=
+ =?us-ascii?Q?k00FwDWEHhz2qLF2VaBqnrpalOxpjzmfFpV5GLozhLpj/8CBwoWm2l7tINDA?=
+ =?us-ascii?Q?rMg8tkEc8s3lMHhWise0/901jcRb6Dau1eRJ+mJ7aZLzTYb2vnadjlsI+5BH?=
+ =?us-ascii?Q?ZkI5c+WTLUCKuckprjfTmg5zJjKXPA12i3k7tz+93dEOFyHQnGqjb+4WXgL3?=
+ =?us-ascii?Q?heoapUtg6sxPHKsOFZ9uOAKsGRBl6sHS/XJNuuokeI8gMidTdT9HCk7uMxaQ?=
+ =?us-ascii?Q?JFydx6mASvgGyOL47rO5D0wbXF0zZaa7qCwCWCI5YvHPb8XefblRXEvf8o/2?=
+ =?us-ascii?Q?16yoAqwiHrtpwjgcdMGJUng7Rm7fjUiyHmpI0FHkO8Hh9QU19nPzQy5spvOc?=
+ =?us-ascii?Q?iQRLnm6QtddFL1Hb3psVogVNkErCoearoqVnkZli6mGZ8AfyVX4OZ6ZuKbXH?=
+ =?us-ascii?Q?YSKyy/+y93qNSBBlQ1cs3RxeOj/nzNMimhYBhX42Z7LlBj/hueMaKUKJI+n8?=
+ =?us-ascii?Q?WwQmydbrZ7BD868gu9f6UVjQCkCqVt6r8J/LRhsM5fBse1xjctnuG98F1ulR?=
+ =?us-ascii?Q?k4aarwOT6SN66HWcCpzubQ5p5uHuTRl4aSitGt8fI6RyKxRhw7wkZYuCSsCE?=
+ =?us-ascii?Q?PPHs4sDH5ztCovBC143CMnxZseTF5XoKjPAnD5pQ?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4615b5b2-cb88-4ae9-7bc7-08db4a6e5027
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 May 2023 18:03:05.6881
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: xLpIQerFkLDXEfBUcT+yR/O4njgalSuMAVHAw1eHK7iUSIu+rS1+ktjP6t28u1cn
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6457
 
-On Mon, May 01, 2023 at 09:54:10AM -0700, Suren Baghdasaryan wrote:
-> Performance overhead:
-> To evaluate performance we implemented an in-kernel test executing
-> multiple get_free_page/free_page and kmalloc/kfree calls with allocation
-> sizes growing from 8 to 240 bytes with CPU frequency set to max and CPU
-> affinity set to a specific CPU to minimize the noise. Below is performance
-> comparison between the baseline kernel, profiling when enabled, profiling
-> when disabled (nomem_profiling=y) and (for comparison purposes) baseline
-> with CONFIG_MEMCG_KMEM enabled and allocations using __GFP_ACCOUNT:
-> 
-> 			kmalloc			pgalloc
-> Baseline (6.3-rc7)	9.200s			31.050s
-> profiling disabled	9.800 (+6.52%)		32.600 (+4.99%)
-> profiling enabled	12.500 (+35.87%)	39.010 (+25.60%)
-> memcg_kmem enabled	41.400 (+350.00%)	70.600 (+127.38%)
+What exynos calls exynos_iommu_detach_device is actually putting the iommu
+into identity mode.
 
-Hm, this makes me think we have a regression with memcg_kmem in one of
-the recent releases. When I measured it a couple of years ago, the overhead
-was definitely within 100%.
+Move to the new core support for ARM_DMA_USE_IOMMU by defining
+ops->identity_domain.
 
-Do you understand what makes the your profiling drastically faster than kmem?
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/iommu/exynos-iommu.c | 64 ++++++++++++++++++------------------
+ 1 file changed, 32 insertions(+), 32 deletions(-)
 
-Thanks!
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index c275fe71c4db32..6ff7901103948a 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -24,6 +24,7 @@
+ 
+ typedef u32 sysmmu_iova_t;
+ typedef u32 sysmmu_pte_t;
++static struct iommu_domain exynos_identity_domain;
+ 
+ /* We do not consider super section mapping (16MB) */
+ #define SECT_ORDER 20
+@@ -829,7 +830,7 @@ static int __maybe_unused exynos_sysmmu_suspend(struct device *dev)
+ 		struct exynos_iommu_owner *owner = dev_iommu_priv_get(master);
+ 
+ 		mutex_lock(&owner->rpm_lock);
+-		if (data->domain) {
++		if (&data->domain->domain != &exynos_identity_domain) {
+ 			dev_dbg(data->sysmmu, "saving state\n");
+ 			__sysmmu_disable(data);
+ 		}
+@@ -847,7 +848,7 @@ static int __maybe_unused exynos_sysmmu_resume(struct device *dev)
+ 		struct exynos_iommu_owner *owner = dev_iommu_priv_get(master);
+ 
+ 		mutex_lock(&owner->rpm_lock);
+-		if (data->domain) {
++		if (&data->domain->domain != &exynos_identity_domain) {
+ 			dev_dbg(data->sysmmu, "restoring state\n");
+ 			__sysmmu_enable(data);
+ 		}
+@@ -980,17 +981,22 @@ static void exynos_iommu_domain_free(struct iommu_domain *iommu_domain)
+ 	kfree(domain);
+ }
+ 
+-static void exynos_iommu_detach_device(struct iommu_domain *iommu_domain,
+-				    struct device *dev)
++static int exynos_iommu_identity_attach(struct iommu_domain *identity_domain,
++					struct device *dev)
+ {
+-	struct exynos_iommu_domain *domain = to_exynos_domain(iommu_domain);
+ 	struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
+-	phys_addr_t pagetable = virt_to_phys(domain->pgtable);
++	struct exynos_iommu_domain *domain;
++	phys_addr_t pagetable;
+ 	struct sysmmu_drvdata *data, *next;
+ 	unsigned long flags;
+ 
+-	if (!has_sysmmu(dev) || owner->domain != iommu_domain)
+-		return;
++	if (!owner)
++		return -ENODEV;
++	if (owner->domain == identity_domain)
++		return 0;
++
++	domain = to_exynos_domain(owner->domain);
++	pagetable = virt_to_phys(domain->pgtable);
+ 
+ 	mutex_lock(&owner->rpm_lock);
+ 
+@@ -1009,15 +1015,25 @@ static void exynos_iommu_detach_device(struct iommu_domain *iommu_domain,
+ 		list_del_init(&data->domain_node);
+ 		spin_unlock(&data->lock);
+ 	}
+-	owner->domain = NULL;
++	owner->domain = identity_domain;
+ 	spin_unlock_irqrestore(&domain->lock, flags);
+ 
+ 	mutex_unlock(&owner->rpm_lock);
+ 
+ 	dev_dbg(dev, "%s: Detached IOMMU with pgtable %pa\n", __func__,
+ 		&pagetable);
++	return 0;
+ }
+ 
++static struct iommu_domain_ops exynos_identity_ops = {
++	.attach_dev = exynos_iommu_identity_attach,
++};
++
++static struct iommu_domain exynos_identity_domain = {
++	.type = IOMMU_DOMAIN_IDENTITY,
++	.ops = &exynos_identity_ops,
++};
++
+ static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
+ 				   struct device *dev)
+ {
+@@ -1026,12 +1042,11 @@ static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
+ 	struct sysmmu_drvdata *data;
+ 	phys_addr_t pagetable = virt_to_phys(domain->pgtable);
+ 	unsigned long flags;
++	int err;
+ 
+-	if (!has_sysmmu(dev))
+-		return -ENODEV;
+-
+-	if (owner->domain)
+-		exynos_iommu_detach_device(owner->domain, dev);
++	err = exynos_iommu_identity_attach(&exynos_identity_domain, dev);
++	if (err)
++		return err;
+ 
+ 	mutex_lock(&owner->rpm_lock);
+ 
+@@ -1407,26 +1422,12 @@ static struct iommu_device *exynos_iommu_probe_device(struct device *dev)
+ 	return &data->iommu;
+ }
+ 
+-static void exynos_iommu_set_platform_dma(struct device *dev)
+-{
+-	struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
+-
+-	if (owner->domain) {
+-		struct iommu_group *group = iommu_group_get(dev);
+-
+-		if (group) {
+-			exynos_iommu_detach_device(owner->domain, dev);
+-			iommu_group_put(group);
+-		}
+-	}
+-}
+-
+ static void exynos_iommu_release_device(struct device *dev)
+ {
+ 	struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
+ 	struct sysmmu_drvdata *data;
+ 
+-	exynos_iommu_set_platform_dma(dev);
++	WARN_ON(exynos_iommu_identity_attach(&exynos_identity_domain, dev));
+ 
+ 	list_for_each_entry(data, &owner->controllers, owner_node)
+ 		device_link_del(data->link);
+@@ -1457,6 +1458,7 @@ static int exynos_iommu_of_xlate(struct device *dev,
+ 
+ 		INIT_LIST_HEAD(&owner->controllers);
+ 		mutex_init(&owner->rpm_lock);
++		owner->domain = &exynos_identity_domain;
+ 		dev_iommu_priv_set(dev, owner);
+ 	}
+ 
+@@ -1471,11 +1473,9 @@ static int exynos_iommu_of_xlate(struct device *dev,
+ }
+ 
+ static const struct iommu_ops exynos_iommu_ops = {
++	.identity_domain = &exynos_identity_domain,
+ 	.domain_alloc = exynos_iommu_domain_alloc,
+ 	.device_group = generic_device_group,
+-#ifdef CONFIG_ARM
+-	.set_platform_dma_ops = exynos_iommu_set_platform_dma,
+-#endif
+ 	.probe_device = exynos_iommu_probe_device,
+ 	.release_device = exynos_iommu_release_device,
+ 	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
+-- 
+2.40.0
+
