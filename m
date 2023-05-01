@@ -1,40 +1,40 @@
-Received: from mail-yw1-f202.google.com (mail-yw1-f202.google.com [209.85.128.202])
+Received: from mail-yb1-f201.google.com (mail-yb1-f201.google.com [209.85.219.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D493333C9
-	for <iommu@lists.linux.dev>; Mon,  1 May 2023 16:55:22 +0000 (UTC)
-Received: by mail-yw1-f202.google.com with SMTP id 00721157ae682-559ceb9eaa3so45204707b3.2
-        for <iommu@lists.linux.dev>; Mon, 01 May 2023 09:55:22 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 121B533C9
+	for <iommu@lists.linux.dev>; Mon,  1 May 2023 16:55:25 +0000 (UTC)
+Received: by mail-yb1-f201.google.com with SMTP id 3f1490d57ef6-b9a8023ccf1so5355340276.2
+        for <iommu@lists.linux.dev>; Mon, 01 May 2023 09:55:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1682960122; x=1685552122;
+        d=google.com; s=20221208; t=1682960124; x=1685552124;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=AsvePdIIpK1hSWiMR4JNg9vJpL7RbQEpCCaVPwkxl+U=;
-        b=FUEHKTcj/6Oaa/jf/hG74LwWnPzMzDXETDPC/OZPn9YmdSr3Je1dLjqI5qQFH1sW3q
-         Bq/alOSo7JqKEqD9rgKcyUF43rVJZUIyQmx1G3PllnLeg5Yg39a7Bnek6w/Qmd8uXbJK
-         EsGaYT+egztrqXkT7lGAkap+Gl5GwKP4LRCOjo5ZnVALaZHiuOt5sB/2YrOa8QMVBMrC
-         FKm9pwPXa7lut/5XYzJLVlhPqGzsdKvhEJFlIIbig8wN8WeEjVJtPWgEipfIbTn79FXC
-         wbTQc/DXAGa8hfnAWPDItUw4SLFFckirBkUuGFld0u0/pGt++nX/qQJEblW72Hij4gvi
-         rVdg==
+        bh=O9K7OqGn67XevhyLqxW8/t3YPJ+QYtYh9lmzl+bkJrg=;
+        b=uyQWn2HtrGHHQPYjCaEXS71WFvIKKSc7//EwH6w5zT7RuLTJsJvg4Siy51jlaOTMsf
+         DmzxgGzQqK6buMAxRdIZF5co25tsVldyDbaF7rOabJEbLpi4XheA+l5VWP2IJDBlEIui
+         J3jFl+rVymLiKhaaXfPqFSO8pBqa31LbX5CWrS5Wner2pA7Sqr1hkvfcI6t4MxiQZt9K
+         qhkEpMVbiHPNZp9IQ6O2D9+a8gKMVQ/1Gtf9GajnR6izUu8XnftHHBs+v4IcA0SDdYNk
+         NO/g09kaGZENLPill52iLrjrZMs4uUM92aRcipfW+xL+/5JdYb7kKitjTzDH4s2JKlli
+         slTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682960122; x=1685552122;
+        d=1e100.net; s=20221208; t=1682960124; x=1685552124;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=AsvePdIIpK1hSWiMR4JNg9vJpL7RbQEpCCaVPwkxl+U=;
-        b=Vg3x9xmfv5VjDdz77OvCUerxQIwyQRXXufBOR0Yv1V99poxwyFMk64zGV0qAiIQ/F7
-         /qpC3GxirxUV21EQk0Ju1ObsxGxsYMEV18kmwve0aS1EUNcPi3QPRNTgGdDZRHcRurDq
-         ys3wkTVj0caBYfqY7XsJf3nnimAHqtA9TLwf7liofPUAwXLZCFMnqh4OY2ncvmI8ALIC
-         NKq+BuOSFFEdUO2OIkhXckSnI/PKioxR1f3r0+13j//QQVadhLqUaGQr53Ef3p3VCaOS
-         qACpsdNdpY3FkUwTSDGHf5cRn9hiuepwlGVQUd8O+PiaNOqbcej1F7Vs0np/5PJLaTj6
-         nLGg==
-X-Gm-Message-State: AC+VfDy3dcsR8SePG3KAXh4D61iwqBW5N/YDBIExq+zeZ+BT0aEEyuMV
-	be6TVSWPWmVSupNPhjqDmB0e01nQYqA=
-X-Google-Smtp-Source: ACHHUZ7mSCpHViXCMYRNn7XHcAK4o9x0dQPzloUUcJZHS6W4xj2tbrDIYHMzSCEPzYlJGL4NreMIfcOP/Ik=
+        bh=O9K7OqGn67XevhyLqxW8/t3YPJ+QYtYh9lmzl+bkJrg=;
+        b=kE9QGqihyGqM475EPgHXNSK+ISfa6BRQBYRPDqt3jwwhcdP178rWbzjccw94tIM0gJ
+         NlDzfrmphMeeilUrIDFm8H8hiI/ySqfWWmxYfIv677/M/qWelbUH7Lp0lPhEdusY0eCW
+         lsK4V2aVU+S+SGk0nfItHQXg1EnG0Onslfo+jrKHFUVSz71BqkyBKlNRVHdtveS1MuoN
+         WKtEiZdv9Ftil1VTzUpBl+oqo2b4K8fnlLHUyfuluZmx1LpTqV+iYo0j8rizLim/mAk8
+         cJsue7YbM4dK78W//W1stp4EB2+dD2GdjGIDpeKM3jHXgIt4UmgI0f4SMLkOodMoJfqN
+         Y5RQ==
+X-Gm-Message-State: AC+VfDyReMQhZNOwSHcn+ib+ozPc8ChsE737t7vqKXEqbxH4GYx5EFSJ
+	rRasyGCtkRLnbiNC1gKEEoWu383Yqao=
+X-Google-Smtp-Source: ACHHUZ6licAmCYMGFmFEgxRhjJBE3vK82JOqHF+xQXe/hB6jcq2RRjEzB8Dg4J2EO+jXUyt83MZ91zsgyn0=
 X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:201:6d24:3efd:facc:7ac4])
- (user=surenb job=sendgmr) by 2002:a81:7653:0:b0:54f:a60c:12eb with SMTP id
- j19-20020a817653000000b0054fa60c12ebmr8139444ywk.1.1682960121808; Mon, 01 May
- 2023 09:55:21 -0700 (PDT)
-Date: Mon,  1 May 2023 09:54:16 -0700
+ (user=surenb job=sendgmr) by 2002:a05:6902:100e:b0:b8f:47c4:58ed with SMTP id
+ w14-20020a056902100e00b00b8f47c458edmr8682966ybt.9.1682960124020; Mon, 01 May
+ 2023 09:55:24 -0700 (PDT)
+Date: Mon,  1 May 2023 09:54:17 -0700
 In-Reply-To: <20230501165450.15352-1-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -44,8 +44,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20230501165450.15352-1-surenb@google.com>
 X-Mailer: git-send-email 2.40.1.495.gc816e09b53d-goog
-Message-ID: <20230501165450.15352-7-surenb@google.com>
-Subject: [PATCH 06/40] lib/string.c: strsep_no_empty()
+Message-ID: <20230501165450.15352-8-surenb@google.com>
+Subject: [PATCH 07/40] Lazy percpu counters
 From: Suren Baghdasaryan <surenb@google.com>
 To: akpm@linux-foundation.org
 Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
@@ -76,58 +76,289 @@ Content-Type: text/plain; charset="UTF-8"
 
 From: Kent Overstreet <kent.overstreet@linux.dev>
 
-This adds a new helper which is like strsep, except that it skips empty
-tokens.
+This patch adds lib/lazy-percpu-counter.c, which implements counters
+that start out as atomics, but lazily switch to percpu mode if the
+update rate crosses some threshold (arbitrarily set at 256 per second).
 
 Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
 Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 ---
- include/linux/string.h |  1 +
- lib/string.c           | 19 +++++++++++++++++++
- 2 files changed, 20 insertions(+)
+ include/linux/lazy-percpu-counter.h | 102 ++++++++++++++++++++++
+ lib/Kconfig                         |   3 +
+ lib/Makefile                        |   2 +
+ lib/lazy-percpu-counter.c           | 127 ++++++++++++++++++++++++++++
+ 4 files changed, 234 insertions(+)
+ create mode 100644 include/linux/lazy-percpu-counter.h
+ create mode 100644 lib/lazy-percpu-counter.c
 
-diff --git a/include/linux/string.h b/include/linux/string.h
-index c062c581a98b..6cd5451c262c 100644
---- a/include/linux/string.h
-+++ b/include/linux/string.h
-@@ -96,6 +96,7 @@ extern char * strpbrk(const char *,const char *);
- #ifndef __HAVE_ARCH_STRSEP
- extern char * strsep(char **,const char *);
- #endif
-+extern char *strsep_no_empty(char **, const char *);
- #ifndef __HAVE_ARCH_STRSPN
- extern __kernel_size_t strspn(const char *,const char *);
- #endif
-diff --git a/lib/string.c b/lib/string.c
-index 3d55ef890106..dd4914baf45a 100644
---- a/lib/string.c
-+++ b/lib/string.c
-@@ -520,6 +520,25 @@ char *strsep(char **s, const char *ct)
- EXPORT_SYMBOL(strsep);
- #endif
- 
-+/**
-+ * strsep_no_empt - Split a string into tokens, but don't return empty tokens
-+ * @s: The string to be searched
-+ * @ct: The characters to search for
+diff --git a/include/linux/lazy-percpu-counter.h b/include/linux/lazy-percpu-counter.h
+new file mode 100644
+index 000000000000..45ca9e2ce58b
+--- /dev/null
++++ b/include/linux/lazy-percpu-counter.h
+@@ -0,0 +1,102 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Lazy percpu counters:
++ * (C) 2022 Kent Overstreet
 + *
-+ * strsep() updates @s to point after the token, ready for the next call.
++ * Lazy percpu counters start out in atomic mode, then switch to percpu mode if
++ * the update rate crosses some threshold.
++ *
++ * This means we don't have to decide between low memory overhead atomic
++ * counters and higher performance percpu counters - we can have our cake and
++ * eat it, too!
++ *
++ * Internally we use an atomic64_t, where the low bit indicates whether we're in
++ * percpu mode, and the high 8 bits are a secondary counter that's incremented
++ * when the counter is modified - meaning 55 bits of precision are available for
++ * the counter itself.
 + */
-+char *strsep_no_empty(char **s, const char *ct)
++
++#ifndef _LINUX_LAZY_PERCPU_COUNTER_H
++#define _LINUX_LAZY_PERCPU_COUNTER_H
++
++#include <linux/atomic.h>
++#include <asm/percpu.h>
++
++struct lazy_percpu_counter {
++	atomic64_t			v;
++	unsigned long			last_wrap;
++};
++
++void lazy_percpu_counter_exit(struct lazy_percpu_counter *c);
++void lazy_percpu_counter_add_slowpath(struct lazy_percpu_counter *c, s64 i);
++void lazy_percpu_counter_add_slowpath_noupgrade(struct lazy_percpu_counter *c, s64 i);
++s64 lazy_percpu_counter_read(struct lazy_percpu_counter *c);
++
++/*
++ * We use the high bits of the atomic counter for a secondary counter, which is
++ * incremented every time the counter is touched. When the secondary counter
++ * wraps, we check the time the counter last wrapped, and if it was recent
++ * enough that means the update frequency has crossed our threshold and we
++ * switch to percpu mode:
++ */
++#define COUNTER_MOD_BITS		8
++#define COUNTER_MOD_MASK		~(~0ULL >> COUNTER_MOD_BITS)
++#define COUNTER_MOD_BITS_START		(64 - COUNTER_MOD_BITS)
++
++/*
++ * We use the low bit of the counter to indicate whether we're in atomic mode
++ * (low bit clear), or percpu mode (low bit set, counter is a pointer to actual
++ * percpu counters:
++ */
++#define COUNTER_IS_PCPU_BIT		1
++
++static inline u64 __percpu *lazy_percpu_counter_is_pcpu(u64 v)
 +{
-+	char *ret;
++	if (!(v & COUNTER_IS_PCPU_BIT))
++		return NULL;
++
++	v ^= COUNTER_IS_PCPU_BIT;
++	return (u64 __percpu *)(unsigned long)v;
++}
++
++/**
++ * lazy_percpu_counter_add: Add a value to a lazy_percpu_counter
++ *
++ * @c: counter to modify
++ * @i: value to add
++ */
++static inline void lazy_percpu_counter_add(struct lazy_percpu_counter *c, s64 i)
++{
++	u64 v = atomic64_read(&c->v);
++	u64 __percpu *pcpu_v = lazy_percpu_counter_is_pcpu(v);
++
++	if (likely(pcpu_v))
++		this_cpu_add(*pcpu_v, i);
++	else
++		lazy_percpu_counter_add_slowpath(c, i);
++}
++
++/**
++ * lazy_percpu_counter_add_noupgrade: Add a value to a lazy_percpu_counter,
++ * without upgrading to percpu mode
++ *
++ * @c: counter to modify
++ * @i: value to add
++ */
++static inline void lazy_percpu_counter_add_noupgrade(struct lazy_percpu_counter *c, s64 i)
++{
++	u64 v = atomic64_read(&c->v);
++	u64 __percpu *pcpu_v = lazy_percpu_counter_is_pcpu(v);
++
++	if (likely(pcpu_v))
++		this_cpu_add(*pcpu_v, i);
++	else
++		lazy_percpu_counter_add_slowpath_noupgrade(c, i);
++}
++
++static inline void lazy_percpu_counter_sub(struct lazy_percpu_counter *c, s64 i)
++{
++	lazy_percpu_counter_add(c, -i);
++}
++
++#endif /* _LINUX_LAZY_PERCPU_COUNTER_H */
+diff --git a/lib/Kconfig b/lib/Kconfig
+index 5c2da561c516..7380292a8fcd 100644
+--- a/lib/Kconfig
++++ b/lib/Kconfig
+@@ -505,6 +505,9 @@ config ASSOCIATIVE_ARRAY
+ 
+ 	  for more information.
+ 
++config LAZY_PERCPU_COUNTER
++	bool
++
+ config HAS_IOMEM
+ 	bool
+ 	depends on !NO_IOMEM
+diff --git a/lib/Makefile b/lib/Makefile
+index 876fcdeae34e..293a0858a3f8 100644
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -164,6 +164,8 @@ obj-$(CONFIG_DEBUG_PREEMPT) += smp_processor_id.o
+ obj-$(CONFIG_DEBUG_LIST) += list_debug.o
+ obj-$(CONFIG_DEBUG_OBJECTS) += debugobjects.o
+ 
++obj-$(CONFIG_LAZY_PERCPU_COUNTER) += lazy-percpu-counter.o
++
+ obj-$(CONFIG_BITREVERSE) += bitrev.o
+ obj-$(CONFIG_LINEAR_RANGES) += linear_ranges.o
+ obj-$(CONFIG_PACKING)	+= packing.o
+diff --git a/lib/lazy-percpu-counter.c b/lib/lazy-percpu-counter.c
+new file mode 100644
+index 000000000000..4f4e32c2dc09
+--- /dev/null
++++ b/lib/lazy-percpu-counter.c
+@@ -0,0 +1,127 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++#include <linux/atomic.h>
++#include <linux/gfp.h>
++#include <linux/jiffies.h>
++#include <linux/lazy-percpu-counter.h>
++#include <linux/percpu.h>
++
++static inline s64 lazy_percpu_counter_atomic_val(s64 v)
++{
++	/* Ensure output is sign extended properly: */
++	return (v << COUNTER_MOD_BITS) >>
++		(COUNTER_MOD_BITS + COUNTER_IS_PCPU_BIT);
++}
++
++static void lazy_percpu_counter_switch_to_pcpu(struct lazy_percpu_counter *c)
++{
++	u64 __percpu *pcpu_v = alloc_percpu_gfp(u64, GFP_ATOMIC|__GFP_NOWARN);
++	u64 old, new, v;
++
++	if (!pcpu_v)
++		return;
++
++	preempt_disable();
++	v = atomic64_read(&c->v);
++	do {
++		if (lazy_percpu_counter_is_pcpu(v)) {
++			free_percpu(pcpu_v);
++			return;
++		}
++
++		old = v;
++		new = (unsigned long)pcpu_v | 1;
++
++		*this_cpu_ptr(pcpu_v) = lazy_percpu_counter_atomic_val(v);
++	} while ((v = atomic64_cmpxchg(&c->v, old, new)) != old);
++	preempt_enable();
++}
++
++/**
++ * lazy_percpu_counter_exit: Free resources associated with a
++ * lazy_percpu_counter
++ *
++ * @c: counter to exit
++ */
++void lazy_percpu_counter_exit(struct lazy_percpu_counter *c)
++{
++	free_percpu(lazy_percpu_counter_is_pcpu(atomic64_read(&c->v)));
++}
++EXPORT_SYMBOL_GPL(lazy_percpu_counter_exit);
++
++/**
++ * lazy_percpu_counter_read: Read current value of a lazy_percpu_counter
++ *
++ * @c: counter to read
++ */
++s64 lazy_percpu_counter_read(struct lazy_percpu_counter *c)
++{
++	s64 v = atomic64_read(&c->v);
++	u64 __percpu *pcpu_v = lazy_percpu_counter_is_pcpu(v);
++
++	if (pcpu_v) {
++		int cpu;
++
++		v = 0;
++		for_each_possible_cpu(cpu)
++			v += *per_cpu_ptr(pcpu_v, cpu);
++	} else {
++		v = lazy_percpu_counter_atomic_val(v);
++	}
++
++	return v;
++}
++EXPORT_SYMBOL_GPL(lazy_percpu_counter_read);
++
++void lazy_percpu_counter_add_slowpath(struct lazy_percpu_counter *c, s64 i)
++{
++	u64 atomic_i;
++	u64 old, v = atomic64_read(&c->v);
++	u64 __percpu *pcpu_v;
++
++	atomic_i  = i << COUNTER_IS_PCPU_BIT;
++	atomic_i &= ~COUNTER_MOD_MASK;
++	atomic_i |= 1ULL << COUNTER_MOD_BITS_START;
 +
 +	do {
-+		ret = strsep(s, ct);
-+	} while (ret && !*ret);
++		pcpu_v = lazy_percpu_counter_is_pcpu(v);
++		if (pcpu_v) {
++			this_cpu_add(*pcpu_v, i);
++			return;
++		}
 +
-+	return ret;
++		old = v;
++	} while ((v = atomic64_cmpxchg(&c->v, old, old + atomic_i)) != old);
++
++	if (unlikely(!(v & COUNTER_MOD_MASK))) {
++		unsigned long now = jiffies;
++
++		if (c->last_wrap &&
++		    unlikely(time_after(c->last_wrap + HZ, now)))
++			lazy_percpu_counter_switch_to_pcpu(c);
++		else
++			c->last_wrap = now;
++	}
 +}
-+EXPORT_SYMBOL_GPL(strsep_no_empty);
++EXPORT_SYMBOL(lazy_percpu_counter_add_slowpath);
 +
- #ifndef __HAVE_ARCH_MEMSET
- /**
-  * memset - Fill a region of memory with the given value
++void lazy_percpu_counter_add_slowpath_noupgrade(struct lazy_percpu_counter *c, s64 i)
++{
++	u64 atomic_i;
++	u64 old, v = atomic64_read(&c->v);
++	u64 __percpu *pcpu_v;
++
++	atomic_i  = i << COUNTER_IS_PCPU_BIT;
++	atomic_i &= ~COUNTER_MOD_MASK;
++
++	do {
++		pcpu_v = lazy_percpu_counter_is_pcpu(v);
++		if (pcpu_v) {
++			this_cpu_add(*pcpu_v, i);
++			return;
++		}
++
++		old = v;
++	} while ((v = atomic64_cmpxchg(&c->v, old, old + atomic_i)) != old);
++}
++EXPORT_SYMBOL(lazy_percpu_counter_add_slowpath_noupgrade);
 -- 
 2.40.1.495.gc816e09b53d-goog
 
