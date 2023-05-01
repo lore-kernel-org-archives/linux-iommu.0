@@ -1,126 +1,313 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2079.outbound.protection.outlook.com [40.107.102.79])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE53728F3
-	for <iommu@lists.linux.dev>; Mon,  1 May 2023 15:25:25 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LO87UQmqo9U3fmTG5ekVORbii10rvrPB54PwjxJ1wdd2PLpU9CoqFM2X1GmQICG//qv21ASFKkY0fVVMZe9Du3AvQ88M50Rm2VxbRgtell1CJ0nM5qlI2NEcxJ8Hy4UpO3c5Yk9Qj3Eb9EVzE8A/xMiFHqq+PWTmEKiN9/qbkMHJVLw155oZVWYInri5jkPGmi/8gcFP2ImeCE90y2J/fA0dnavi7ptxG/DbRzzdVaouJApLFJaLNvzhMGl2idVyj4WSy9JNEEf5UdUDKt4zCJnWihJwftnafwzENXsiAKEMzBrpX3PNCi1N6iNYKSz00nkhN7dJ2VAcDlpdCPEnGw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jBgvh9abnYiVx6D/VZDAGW8wU/bpFqZuwglm2ljc8/s=;
- b=COVZuESLmlEn9sKV/zTQJGaM1AsSw0DQXvZaH7lGWXusdrM6630sqlRB99ILPSj2gOyszGLzaaK4pAPtQN1fdkC8LOJFEqMb5vyf/V2v1ci6IuVvqw/GLdEMQoaAyOhqxJKR8eozxZjFdEjI/5/N/3o6MPOowUOjlVObjNH3RTPLXW+c/xFRSEp6GLlQSOH+6r712U0IT9A2fFGUDe1pn/m4t/0N/rFMhyyEoaaG1qAfHQmFo/3dCAMASpvct7YrX1uBl1tpZp52tImsVGRvXAvOldK10Ge/J9CGqZSkLHOmclygv1iAPuT7srn/Lkhh8JDnB6E1rtpjzPDcEKaARQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jBgvh9abnYiVx6D/VZDAGW8wU/bpFqZuwglm2ljc8/s=;
- b=LYB2y+ssmv/zlFuoQaSo6j4SnO/FsJdWFJnajrPcoivIZPCEqZjA56W3px17sYJCHvlSPaRLarZYkDicaVpdsxaHM/+9sf9X1YLczlxfK4l3W5XUln84R9UoEUuG4J1+7aTW+HeBL1Sm3lpql7JyxgiTR9rV08QJcmGbyyusGZgbpae4/NFW6Wj7yWwCKCiYKLiaPBg7/N0myy10SnQKGt627V2lx/Kc5ilQKHf5IpFGg0EAKBztN+p9opnKRxG3xSNwy7M5d2Mh8w8sgbC8UmgQcrv4fWCbTkH8i7EOwSwFA/5B57w1PrnzAUlgWcPePrwT5nWyWAOrP4AmWNjDRg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DM4PR12MB6278.namprd12.prod.outlook.com (2603:10b6:8:a4::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.30; Mon, 1 May
- 2023 15:25:22 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6340.030; Mon, 1 May 2023
- 15:25:22 +0000
-Date: Mon, 1 May 2023 12:25:20 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Eric Farman <farman@linux.ibm.com>
-Cc: Alexander Gordeev <agordeev@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, linux-s390@vger.kernel.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, Will Deacon <will@kernel.org>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Anthony Krowiak <akrowiak@linux.ibm.com>,
-	"Jason J. Herne" <jjherne@linux.ibm.com>
-Subject: Re: [PATCH] iommu/s390: Get rid of S390_CCW_IOMMU
-Message-ID: <ZE/Z4GWFKCS8z610@nvidia.com>
-References: <0-v1-11a50d289ac9+b6-rm_iommu_ccw_jgg@nvidia.com>
- <07a891513e1083eab901af4dfa630bd60f93479d.camel@linux.ibm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <07a891513e1083eab901af4dfa630bd60f93479d.camel@linux.ibm.com>
-X-ClientProxiedBy: MN2PR22CA0015.namprd22.prod.outlook.com
- (2603:10b6:208:238::20) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1527129CA
+	for <iommu@lists.linux.dev>; Mon,  1 May 2023 16:55:08 +0000 (UTC)
+Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-64115ef7234so23366177b3a.1
+        for <iommu@lists.linux.dev>; Mon, 01 May 2023 09:55:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1682960107; x=1685552107;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=rhc7v9a1uLQqVXD+LsRhZoVqkW3m5tSXn3Qy4JSVLy4=;
+        b=IEVlqTozWZGbWgkZmckzilH6j94QhJZoZIuPp60mSUj0QVW0m+a9iMmfCAF4iEpfZD
+         fEVgO/+vOkTtFhBvoHwlDMAL3hxDH/zLipyU3ktDF8+bB/itGjow8f+dbDn1CDMFDOyk
+         cTiZv7/V3hTMTCajMzvTdbVUzBNML97dt0BYpiR6UOH9nLt1/l6QL7QOhPtZ51dB47eW
+         B6R13UEA02ZiLSfNlDL/QxOcvfA6sC1wmjwPXFvrSUoT7FHGOeimYmfVTl3MVQzN5BdG
+         VU1/9ubcznfSn4RmyJ2/Vw+B4mgfyn6L75+s8Kx83oYGWWn0RADQAOUF0mZI8SYEht0a
+         Cq7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682960107; x=1685552107;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=rhc7v9a1uLQqVXD+LsRhZoVqkW3m5tSXn3Qy4JSVLy4=;
+        b=VT+vt0l1LigUGq6oPkHGrp+wbggkMg/Y393ErrgrTa6tITqZ8wEeFwRln8Z0HU1E81
+         DvSU4q8H1a3bHAWNlkPWfXUGcRm9N2BYsattVvZ2XE44yYqI5J+bd4DdE2PtoUMvkLZ2
+         fOwiBFWsUQWLpfkNJ2YfarmTgriUGhnfuVmfn3CAdboLnSeGUg+QMEVb+iHooGfgGpon
+         AmXHLd4ViqWhlJ9ugoF1KnVT0ztXfVcCvs0P4uz0htWgN2NyEKL1WdB2uckRoHlT3f/j
+         qXd3nF5CTrPO+s/HSxWwgJgU+E5hZp8dNwZKGyRMkMpABmDYQAFk3laPpnIgf9T0G1cM
+         E+/Q==
+X-Gm-Message-State: AC+VfDxnaIfS1+sdfo7sIrOMZAFkVABsKXApsB+9vhnPIFRH3/QAdT4t
+	Q5bGT6rHs9VYRJPIjaigWxNWJ6Tzs0I=
+X-Google-Smtp-Source: ACHHUZ6OakK5ykfjI7g/XFPKZctBmJFHvRmjYwR+8Wqoyqozn1GzMukL7GyiGGvuJ1tUip8XahXNRwTm5dA=
+X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:201:6d24:3efd:facc:7ac4])
+ (user=surenb job=sendgmr) by 2002:a17:902:ec8a:b0:1a4:f550:de0b with SMTP id
+ x10-20020a170902ec8a00b001a4f550de0bmr6525014plg.4.1682960107332; Mon, 01 May
+ 2023 09:55:07 -0700 (PDT)
+Date: Mon,  1 May 2023 09:54:10 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB6278:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2be74dd9-5483-4dc7-42ce-08db4a5847be
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	ckdxF7bvQFWWmY8xZwjQ4vnLTRqeLmnaOWXA1WE5u7EVjhuUJR9T702dNKNU+exlD7fwLxeasRJgwFFZJF6T/P2awqGkO9STQJw7Z2aDr1F7xcCzZbEu8BHbeC4AMG3bxA6YfNScwIrfPnEwgfdbuuA/irGxpauvAfFg6y0A5I9H22asDn2hfu6137EIGgwvWYBlyhhhsD2Dv7ow2yibopBGjxHxP5xsjyrNsZyFEZT3FIKAde0YKw09ATRQjyvOwgdtIT+O1/DHyVwTfJRRqiE1i/ps8XoIIfg/32PgYl+1a97lNZPXSWI5tiTuk99MBN7msCWQrCO0oHyaCRGyK36I8tgJKXlJtiPsfCw/1ytjQaEc2YmRY/rfKNI9y5Qw2Ojl04npMG+vfVDEQ6wl1D4gwGWIxb9bTi1l/67m4YPvrnqvAMT9HwX4q2u9ZG4oPvBklqdqQX9hGVjgjUu5yXKNl0pN6ds2jZQv5Jt4uypXFjS7FkqCQ2TZ1Rr1kKhyno61/pRl7ACac08b1VKYJ8y1Y0HH40UX3Adt9dxhgXIxZ7ZPtDi8WRwrUyTavHrr0MDFl8vQ/E+tYygbdIEsOkj9fEJDXDxLpekuvCK5nOk=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(366004)(136003)(346002)(376002)(451199021)(5660300002)(8936002)(7416002)(41300700001)(316002)(36756003)(86362001)(4744005)(2906002)(38100700002)(8676002)(83380400001)(186003)(2616005)(478600001)(6486002)(6512007)(26005)(6506007)(4326008)(54906003)(6916009)(66476007)(66556008)(66946007)(26583001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?6/MK4IahtTnXPEMSjZjghO9v+qQ4vnDGFZt0uhUEAIwkklCCyLdJY1Ag1Mna?=
- =?us-ascii?Q?lAPFkX4UYdqCEVLhHC6zvHQ+JJJyWwHPwDvDIcKoHRUNpF+m8ARbGN7dpxsC?=
- =?us-ascii?Q?hK2Stvks/cIqzTBkiixef5ulFXJMy7wYEn/22z9mOfmquq94ueA4CCNf9KOS?=
- =?us-ascii?Q?AZGvZ5UEh878cfwj1SRnjGUx3D7yb6bgzlMwKulEtux6PcNdd+cQxKs37mKO?=
- =?us-ascii?Q?c0eM7qFBvfaK/bUyD9zCpjNm2BU5SzOBLGMwFbBAfQcFcKMADjMN24T5Gloc?=
- =?us-ascii?Q?owzus3QzdctuBicIZjHZ/3B6OPYZ3VjfsWT5pfXLWEZAYP7P0dlWAspKFPJF?=
- =?us-ascii?Q?zOfh4b6gsc0U+bFWSNcYC+a3uFjaDYheEaHEvgRMxfQJOU09/V7E6WUlPMni?=
- =?us-ascii?Q?xIvRjERbSNjRibuPPMoOoa/t49gPpXo4XuYll3HzVLiTFkfZ2kUmGao57N6c?=
- =?us-ascii?Q?OsNrFbJlhDpwrPNmUUvwu0qRZlqoEhfw3h4VXEhhd69bYI6BaoI2CUGlxsmC?=
- =?us-ascii?Q?lH1FAp/gA97DPTXHHXLlXeS0YeqhJA8fuUZR1drXkDnPpABXPxKxgisLrOrP?=
- =?us-ascii?Q?Yqq+hTVC4Ani88cN9Yw5I516LCVX6juyQtwrISm7ut9sppo13Ge/pVpcvRyc?=
- =?us-ascii?Q?uKekeHgoB2isV5R5qRxMLQDNIHgFCnTGe32d6NnTQ7yDtHFkM8xu0yX7m9I8?=
- =?us-ascii?Q?MiSTljtKYevh3qTN+mZhQyZv2kJHS2KUwOSuRNyweZ1OSjsm9QuZBvWdducW?=
- =?us-ascii?Q?vZwsT0Xn6ZDz6zqJj4YSZb6vpEPhmqWXurBnWbrrDPT3aJi4JuBJ1OgLCaDA?=
- =?us-ascii?Q?piaUwq2Tkt4a3RnT0/a+qgSNmPhWEdtV+ca+Cs/69i3VVMD/Zu18UDzQROqi?=
- =?us-ascii?Q?WyUVymmiMcfpQD+lCrsh0ro3N7Yt+oiS/Zq+2WYkhbD3SXJYPeIemJO1e+JD?=
- =?us-ascii?Q?u/Op89OhrOKW0lKTiI4RuIcGnaA6J5HFnWRUxQKuB32IsOqxefJLswgzVxDi?=
- =?us-ascii?Q?pqeccr8FaiynxHl2tx2lXoIn+ubrk70ZLmvCswaauA9toYB4gvRrHUKnoOFU?=
- =?us-ascii?Q?Z2BHuTCvwmoUCF9lForG6pvH/3ra/27RIgbqflXcYVAe1/NEYwWF0bJDRHcf?=
- =?us-ascii?Q?ZewVB3b4uiriNy+6FAclOUVeNM7XH7BdssnYOdAUffvh3s668cC/JPA18cm7?=
- =?us-ascii?Q?b18Z5thapRq9+gCRb/a23RqCJNpzCuGwmiGFHGISuveYkhlCuNNM/TW9QwDt?=
- =?us-ascii?Q?dAzex5pMqJ2ibM+7HmWXaiJ7a4bzQ/Iy3fXwXmUUB4pBCa7PXcgrBV9TfUv4?=
- =?us-ascii?Q?SHCwwaaUeNevr2m9OdTA0oOly9nTj2VrMzHvXcot3tSYBaqSiXMNqsHTsmT1?=
- =?us-ascii?Q?+E66rDSasHpHuk1wkZBRJCfaTHoHu3NopKAlXWJQe406GdV+FolKf/uprWi6?=
- =?us-ascii?Q?uZQnVWovk0AbsI2N8HimFnTgaq+dzQWx4gHy+kmNvBH6evK43/CUwv1tRCGH?=
- =?us-ascii?Q?NjPUlb46vmvu3eT9amhgzdO4Kit4yeGsEzvoF2zD7JIZuTUsIlsn2pjvVrdc?=
- =?us-ascii?Q?jTfGK6CW+J2agGHMopMyVAKBiL3xeCSmfUHFop9W?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2be74dd9-5483-4dc7-42ce-08db4a5847be
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 May 2023 15:25:22.5777
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4d238iMVd8A92yyWD5O54M630fToRLe5y49aDh5/+GaIvQ4Sjqq27cjBfx3NpA8P
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6278
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.40.1.495.gc816e09b53d-goog
+Message-ID: <20230501165450.15352-1-surenb@google.com>
+Subject: [PATCH 00/40] Memory allocation profiling
+From: Suren Baghdasaryan <surenb@google.com>
+To: akpm@linux-foundation.org
+Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
+	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
+	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
+	corbet@lwn.net, void@manifault.com, peterz@infradead.org, 
+	juri.lelli@redhat.com, ldufour@linux.ibm.com, catalin.marinas@arm.com, 
+	will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
+	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
+	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
+	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
+	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
+	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
+	ndesaulniers@google.com, gregkh@linuxfoundation.org, ebiggers@google.com, 
+	ytcoode@gmail.com, vincent.guittot@linaro.org, dietmar.eggemann@arm.com, 
+	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com, 
+	vschneid@redhat.com, cl@linux.com, penberg@kernel.org, iamjoonsoo.kim@lge.com, 
+	42.hyeyoo@gmail.com, glider@google.com, elver@google.com, dvyukov@google.com, 
+	shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com, 
+	rientjes@google.com, minchan@google.com, kaleshsingh@google.com, 
+	surenb@google.com, kernel-team@android.com, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
+	cgroups@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, May 01, 2023 at 11:06:51AM -0400, Eric Farman wrote:
+Memory allocation profiling infrastructure provides a low overhead
+mechanism to make all kernel allocations in the system visible. It can be
+used to monitor memory usage, track memory hotspots, detect memory leaks,
+identify memory regressions.
 
-> > which
-> > required some mess like this to ensure IOMMU_API was turned on.
-> > 
-> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> 
-> What of S390_AP_IOMMU? Seems to have been borrowed from the _CCW hunks
-> being removed here, and is now equally redundant (though I have not
-> tried).
+To keep the overhead to the minimum, we record only allocation sizes for
+every allocation in the codebase. With that information, if users are
+interested in more detailed context for a specific allocation, they can
+enable in-depth context tracking, which includes capturing the pid, tgid,
+task name, allocation size, timestamp and call stack for every allocation
+at the specified code location.
 
-I didn't notice that one, I will fix it too
+The data is exposed to the user space via a read-only debugfs file called
+allocations. Usage example:
 
-Thanks,
-Jason
+$ sort -hr /sys/kernel/debug/allocations|head
+  153MiB     8599 mm/slub.c:1826 module:slub func:alloc_slab_page
+ 6.08MiB      49 mm/slab_common.c:950 module:slab_common func:_kmalloc_order
+ 5.09MiB     6335 mm/memcontrol.c:2814 module:memcontrol func:alloc_slab_obj_exts
+ 4.54MiB      78 mm/page_alloc.c:5777 module:page_alloc func:alloc_pages_exact
+ 1.32MiB      338 include/asm-generic/pgalloc.h:63 module:pgtable func:__pte_alloc_one
+ 1.16MiB      603 fs/xfs/xfs_log_priv.h:700 module:xfs func:xlog_kvmalloc
+ 1.00MiB      256 mm/swap_cgroup.c:48 module:swap_cgroup func:swap_cgroup_prepare
+  734KiB     5380 fs/xfs/kmem.c:20 module:xfs func:kmem_alloc
+  640KiB      160 kernel/rcu/tree.c:3184 module:tree func:fill_page_cache_func
+  640KiB      160 drivers/char/virtio_console.c:452 module:virtio_console func:alloc_buf
+
+For allocation context capture, a new debugfs file called allocations.ctx
+is used to select which code location should capture allocation context
+and to read captured context information. Usage example:
+
+$ cd /sys/kernel/debug/
+$ echo "file include/asm-generic/pgalloc.h line 63 enable" > allocations.ctx
+$ cat allocations.ctx
+  920KiB      230 include/asm-generic/pgalloc.h:63 module:pgtable func:__pte_alloc_one
+    size: 4096
+    pid: 1474
+    tgid: 1474
+    comm: bash
+    ts: 175332940994
+    call stack:
+         pte_alloc_one+0xfe/0x130
+         __pte_alloc+0x22/0xb0
+         copy_page_range+0x842/0x1640
+         dup_mm+0x42d/0x580
+         copy_process+0xfb1/0x1ac0
+         kernel_clone+0x92/0x3e0
+         __do_sys_clone+0x66/0x90
+         do_syscall_64+0x38/0x90
+         entry_SYSCALL_64_after_hwframe+0x63/0xcd
+...
+
+Implementation utilizes a more generic concept of code tagging, introduced
+as part of this patchset. Code tag is a structure identifying a specific
+location in the source code which is generated at compile time and can be
+embedded in an application-specific structure. A number of applications
+for code tagging have been presented in the original RFC [1].
+Code tagging uses the old trick of "define a special elf section for
+objects of a given type so that we can iterate over them at runtime" and
+creates a proper library for it. 
+
+To profile memory allocations, we instrument page, slab and percpu
+allocators to record total memory allocated in the associated code tag at
+every allocation in the codebase. Every time an allocation is performed by
+an instrumented allocator, the code tag at that location increments its
+counter by allocation size. Every time the memory is freed the counter is
+decremented. To decrement the counter upon freeing, allocated object needs
+a reference to its code tag. Page allocators use page_ext to record this
+reference while slab allocators use memcg_data (renamed into more generic
+slabobj_ext) of the slab page.
+
+Module allocations are accounted the same way as other kernel allocations.
+Module loading and unloading is supported. If a module is unloaded while
+one or more of its allocations is still not freed (rather rare condition),
+its data section will be kept in memory to allow later code tag
+referencing when the allocation is freed later on.
+
+As part of this series we introduce several kernel configs:
+CODE_TAGGING - to enable code tagging framework
+CONFIG_MEM_ALLOC_PROFILING - to enable memory allocation profiling
+CONFIG_MEM_ALLOC_PROFILING_DEBUG - to enable memory allocation profiling
+validation
+Note: CONFIG_MEM_ALLOC_PROFILING enables CONFIG_PAGE_EXTENSION to store
+code tag reference in the page_ext object. 
+
+nomem_profiling kernel command-line parameter is also provided to disable
+the functionality and avoid the performance overhead.
+Performance overhead:
+To evaluate performance we implemented an in-kernel test executing
+multiple get_free_page/free_page and kmalloc/kfree calls with allocation
+sizes growing from 8 to 240 bytes with CPU frequency set to max and CPU
+affinity set to a specific CPU to minimize the noise. Below is performance
+comparison between the baseline kernel, profiling when enabled, profiling
+when disabled (nomem_profiling=y) and (for comparison purposes) baseline
+with CONFIG_MEMCG_KMEM enabled and allocations using __GFP_ACCOUNT:
+
+			kmalloc			pgalloc
+Baseline (6.3-rc7)	9.200s			31.050s
+profiling disabled	9.800 (+6.52%)		32.600 (+4.99%)
+profiling enabled	12.500 (+35.87%)	39.010 (+25.60%)
+memcg_kmem enabled	41.400 (+350.00%)	70.600 (+127.38%)
+
+[1] https://lore.kernel.org/all/20220830214919.53220-1-surenb@google.com/
+
+Kent Overstreet (15):
+  lib/string_helpers: Drop space in string_get_size's output
+  scripts/kallysms: Always include __start and __stop symbols
+  fs: Convert alloc_inode_sb() to a macro
+  nodemask: Split out include/linux/nodemask_types.h
+  prandom: Remove unused include
+  lib/string.c: strsep_no_empty()
+  Lazy percpu counters
+  lib: code tagging query helper functions
+  mm/slub: Mark slab_free_freelist_hook() __always_inline
+  mempool: Hook up to memory allocation profiling
+  timekeeping: Fix a circular include dependency
+  mm: percpu: Introduce pcpuobj_ext
+  mm: percpu: Add codetag reference into pcpuobj_ext
+  arm64: Fix circular header dependency
+  MAINTAINERS: Add entries for code tagging and memory allocation
+    profiling
+
+Suren Baghdasaryan (25):
+  mm: introduce slabobj_ext to support slab object extensions
+  mm: introduce __GFP_NO_OBJ_EXT flag to selectively prevent slabobj_ext
+    creation
+  mm/slab: introduce SLAB_NO_OBJ_EXT to avoid obj_ext creation
+  mm: prevent slabobj_ext allocations for slabobj_ext and kmem_cache
+    objects
+  slab: objext: introduce objext_flags as extension to
+    page_memcg_data_flags
+  lib: code tagging framework
+  lib: code tagging module support
+  lib: prevent module unloading if memory is not freed
+  lib: add allocation tagging support for memory allocation profiling
+  lib: introduce support for page allocation tagging
+  change alloc_pages name in dma_map_ops to avoid name conflicts
+  mm: enable page allocation tagging
+  mm/page_ext: enable early_page_ext when
+    CONFIG_MEM_ALLOC_PROFILING_DEBUG=y
+  mm: create new codetag references during page splitting
+  lib: add codetag reference into slabobj_ext
+  mm/slab: add allocation accounting into slab allocation and free paths
+  mm/slab: enable slab allocation tagging for kmalloc and friends
+  mm: percpu: enable per-cpu allocation tagging
+  move stack capture functionality into a separate function for reuse
+  lib: code tagging context capture support
+  lib: implement context capture support for tagged allocations
+  lib: add memory allocations report in show_mem()
+  codetag: debug: skip objext checking when it's for objext itself
+  codetag: debug: mark codetags for reserved pages as empty
+  codetag: debug: introduce OBJEXTS_ALLOC_FAIL to mark failed slab_ext
+    allocations
+
+ .../admin-guide/kernel-parameters.txt         |   2 +
+ MAINTAINERS                                   |  22 +
+ arch/arm64/include/asm/spectre.h              |   4 +-
+ arch/x86/kernel/amd_gart_64.c                 |   2 +-
+ drivers/iommu/dma-iommu.c                     |   2 +-
+ drivers/xen/grant-dma-ops.c                   |   2 +-
+ drivers/xen/swiotlb-xen.c                     |   2 +-
+ include/asm-generic/codetag.lds.h             |  14 +
+ include/asm-generic/vmlinux.lds.h             |   3 +
+ include/linux/alloc_tag.h                     | 161 ++++++
+ include/linux/codetag.h                       | 159 ++++++
+ include/linux/codetag_ctx.h                   |  48 ++
+ include/linux/dma-map-ops.h                   |   2 +-
+ include/linux/fs.h                            |   6 +-
+ include/linux/gfp.h                           | 123 ++--
+ include/linux/gfp_types.h                     |  12 +-
+ include/linux/hrtimer.h                       |   2 +-
+ include/linux/lazy-percpu-counter.h           | 102 ++++
+ include/linux/memcontrol.h                    |  56 +-
+ include/linux/mempool.h                       |  73 ++-
+ include/linux/mm.h                            |   8 +
+ include/linux/mm_types.h                      |   4 +-
+ include/linux/nodemask.h                      |   2 +-
+ include/linux/nodemask_types.h                |   9 +
+ include/linux/page_ext.h                      |   1 -
+ include/linux/pagemap.h                       |   9 +-
+ include/linux/percpu.h                        |  19 +-
+ include/linux/pgalloc_tag.h                   |  95 ++++
+ include/linux/prandom.h                       |   1 -
+ include/linux/sched.h                         |  32 +-
+ include/linux/slab.h                          | 182 +++---
+ include/linux/slab_def.h                      |   2 +-
+ include/linux/slub_def.h                      |   4 +-
+ include/linux/stackdepot.h                    |  16 +
+ include/linux/string.h                        |   1 +
+ include/linux/time_namespace.h                |   2 +
+ init/Kconfig                                  |   4 +
+ kernel/dma/mapping.c                          |   4 +-
+ kernel/module/main.c                          |  25 +-
+ lib/Kconfig                                   |   3 +
+ lib/Kconfig.debug                             |  26 +
+ lib/Makefile                                  |   5 +
+ lib/alloc_tag.c                               | 464 +++++++++++++++
+ lib/codetag.c                                 | 529 ++++++++++++++++++
+ lib/lazy-percpu-counter.c                     | 127 +++++
+ lib/show_mem.c                                |  15 +
+ lib/stackdepot.c                              |  68 +++
+ lib/string.c                                  |  19 +
+ lib/string_helpers.c                          |   3 +-
+ mm/compaction.c                               |   9 +-
+ mm/filemap.c                                  |   6 +-
+ mm/huge_memory.c                              |   2 +
+ mm/kfence/core.c                              |  14 +-
+ mm/kfence/kfence.h                            |   4 +-
+ mm/memcontrol.c                               |  56 +-
+ mm/mempolicy.c                                |  30 +-
+ mm/mempool.c                                  |  28 +-
+ mm/mm_init.c                                  |   1 +
+ mm/page_alloc.c                               |  75 ++-
+ mm/page_ext.c                                 |  21 +-
+ mm/page_owner.c                               |  54 +-
+ mm/percpu-internal.h                          |  26 +-
+ mm/percpu.c                                   | 122 ++--
+ mm/slab.c                                     |  22 +-
+ mm/slab.h                                     | 224 ++++++--
+ mm/slab_common.c                              |  95 +++-
+ mm/slub.c                                     |  24 +-
+ mm/util.c                                     |  10 +-
+ scripts/kallsyms.c                            |  13 +
+ scripts/module.lds.S                          |   7 +
+ 70 files changed, 2765 insertions(+), 554 deletions(-)
+ create mode 100644 include/asm-generic/codetag.lds.h
+ create mode 100644 include/linux/alloc_tag.h
+ create mode 100644 include/linux/codetag.h
+ create mode 100644 include/linux/codetag_ctx.h
+ create mode 100644 include/linux/lazy-percpu-counter.h
+ create mode 100644 include/linux/nodemask_types.h
+ create mode 100644 include/linux/pgalloc_tag.h
+ create mode 100644 lib/alloc_tag.c
+ create mode 100644 lib/codetag.c
+ create mode 100644 lib/lazy-percpu-counter.c
+
+-- 
+2.40.1.495.gc816e09b53d-goog
+
