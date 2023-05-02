@@ -1,141 +1,180 @@
-Received: from bedivere.hansenpartnership.com (bedivere.hansenpartnership.com [96.44.175.130])
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A615210E4
-	for <iommu@lists.linux.dev>; Tue,  2 May 2023 11:43:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-	d=hansenpartnership.com; s=20151216; t=1683027787;
-	bh=VIXlwaAodrWp8Vhxz+WDa3KoUpXUVVhKJac+yTw3JPY=;
-	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
-	b=Jhl+sztrOwEDjtwmne5HQU6aXLKSFxkGsV+GqvMXCULQnVptmMOy46lcJn8TJD2nV
-	 Cz4FiICRD0fpyV2EVDrJ/+oCA0F64UjfFbcIL0QFb5f/iutLKwDLAAC08nsVf2C0sW
-	 PW2yXp5dIH6OPPlm4jB3q1u314n26v1FRt3YM0EM=
-Received: from localhost (localhost [127.0.0.1])
-	by bedivere.hansenpartnership.com (Postfix) with ESMTP id 5D7531285DD9;
-	Tue,  2 May 2023 07:43:07 -0400 (EDT)
-Received: from bedivere.hansenpartnership.com ([127.0.0.1])
- by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavis, port 10024)
- with ESMTP id WKKGlZO_O65L; Tue,  2 May 2023 07:43:07 -0400 (EDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-	d=hansenpartnership.com; s=20151216; t=1683027787;
-	bh=VIXlwaAodrWp8Vhxz+WDa3KoUpXUVVhKJac+yTw3JPY=;
-	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
-	b=Jhl+sztrOwEDjtwmne5HQU6aXLKSFxkGsV+GqvMXCULQnVptmMOy46lcJn8TJD2nV
-	 Cz4FiICRD0fpyV2EVDrJ/+oCA0F64UjfFbcIL0QFb5f/iutLKwDLAAC08nsVf2C0sW
-	 PW2yXp5dIH6OPPlm4jB3q1u314n26v1FRt3YM0EM=
-Received: from [IPv6:2601:5c4:4302:c21::a774] (unknown [IPv6:2601:5c4:4302:c21::a774])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 32CE21285C64;
-	Tue,  2 May 2023 07:43:01 -0400 (EDT)
-Message-ID: <2f5ebe8a9ce8471906a85ef092c1e50cfd7ddecd.camel@HansenPartnership.com>
-Subject: Re: [PATCH 01/40] lib/string_helpers: Drop space in
- string_get_size's output
-From: James Bottomley <James.Bottomley@HansenPartnership.com>
-To: Kent Overstreet <kent.overstreet@linux.dev>
-Cc: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org, 
- mhocko@suse.com, vbabka@suse.cz, hannes@cmpxchg.org,
- roman.gushchin@linux.dev,  mgorman@suse.de, willy@infradead.org,
- liam.howlett@oracle.com, corbet@lwn.net,  void@manifault.com,
- peterz@infradead.org, juri.lelli@redhat.com,  ldufour@linux.ibm.com,
- catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, 
- tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
- x86@kernel.org,  peterx@redhat.com, david@redhat.com, axboe@kernel.dk,
- mcgrof@kernel.org,  masahiroy@kernel.org, nathan@kernel.org,
- dennis@kernel.org, tj@kernel.org,  muchun.song@linux.dev, rppt@kernel.org,
- paulmck@kernel.org,  pasha.tatashin@soleen.com, yosryahmed@google.com,
- yuzhao@google.com,  dhowells@redhat.com, hughd@google.com,
- andreyknvl@gmail.com, keescook@chromium.org,  ndesaulniers@google.com,
- gregkh@linuxfoundation.org, ebiggers@google.com,  ytcoode@gmail.com,
- vincent.guittot@linaro.org, dietmar.eggemann@arm.com,  rostedt@goodmis.org,
- bsegall@google.com, bristot@redhat.com, vschneid@redhat.com,  cl@linux.com,
- penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, 
- glider@google.com, elver@google.com, dvyukov@google.com,
- shakeelb@google.com,  songmuchun@bytedance.com, jbaron@akamai.com,
- rientjes@google.com,  minchan@google.com, kaleshsingh@google.com,
- kernel-team@android.com,  linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
- linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
- linux-mm@kvack.org,  linux-modules@vger.kernel.org,
- kasan-dev@googlegroups.com,  cgroups@vger.kernel.org, Andy Shevchenko
- <andy@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin
- Herrenschmidt <benh@kernel.crashing.org>,  Paul Mackerras
- <paulus@samba.org>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang
- <jasowang@redhat.com>,  Noralf =?ISO-8859-1?Q?Tr=EF=BF=BDnnes?=
- <noralf@tronnes.org>
-Date: Tue, 02 May 2023 07:42:59 -0400
-In-Reply-To: <ZFCA2FF+9MI8LI5i@moria.home.lan>
-References: <20230501165450.15352-1-surenb@google.com>
-	 <20230501165450.15352-2-surenb@google.com>
-	 <ouuidemyregstrijempvhv357ggp4tgnv6cijhasnungsovokm@jkgvyuyw2fti>
-	 <ZFAUj+Q+hP7cWs4w@moria.home.lan>
-	 <b6b472b65b76e95bb4c7fc7eac1ee296fdbb64fd.camel@HansenPartnership.com>
-	 <ZFCA2FF+9MI8LI5i@moria.home.lan>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 754207E
+	for <iommu@lists.linux.dev>; Tue,  2 May 2023 12:34:36 +0000 (UTC)
+Received: from frapeml500002.china.huawei.com (unknown [172.18.147.207])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Q9f8p2tH7z6J6nt;
+	Tue,  2 May 2023 20:12:26 +0800 (CST)
+Received: from [10.45.146.102] (10.45.146.102) by
+ frapeml500002.china.huawei.com (7.182.85.205) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Tue, 2 May 2023 14:15:52 +0200
+Message-ID: <e05b416d-a298-cf71-0c04-a1fe6b993bf7@huawei.com>
+Date: Tue, 2 May 2023 14:15:49 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH v2 0/7] Allow dynamic allocation of software IO TLB bounce
+ buffers
+Content-Language: en-US
+To: Mike Lothian <mike@fireburn.co.uk>, =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?=
+	<petr@tesarici.cz>
+CC: Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard
+	<mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, David Airlie
+	<airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, Christoph Hellwig
+	<hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
+	<robin.murphy@arm.com>, Borislav Petkov <bp@suse.de>, "Paul E. McKenney"
+	<paulmck@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon
+	<will@kernel.org>, Zhen Lei <thunder.leizhen@huawei.com>, Randy Dunlap
+	<rdunlap@infradead.org>, Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Kim Phillips <kim.phillips@amd.com>, "Steven Rostedt (Google)"
+	<rostedt@goodmis.org>, Muchun Song <muchun.song@linux.dev>, Ondrej Zary
+	<linux@zary.sk>, "Jason A. Donenfeld" <Jason@zx2c4.com>, Petr Tesarik
+	<petr.tesarik.ext@huawei.com>, Hans de Goede <hdegoede@redhat.com>, Dan
+ Williams <dan.j.williams@intel.com>, Andy Shevchenko
+	<andriy.shevchenko@linux.intel.com>, Kees Cook <keescook@chromium.org>,
+	Thomas Gleixner <tglx@linutronix.de>, Won Chung <wonchung@google.com>, "open
+ list:DOCUMENTATION" <linux-doc@vger.kernel.org>, open list
+	<linux-kernel@vger.kernel.org>, "open list:DRM DRIVERS"
+	<dri-devel@lists.freedesktop.org>, "open list:DMA MAPPING HELPERS"
+	<iommu@lists.linux.dev>, Kefeng Wang <wangkefeng.wang@huawei.com>, Roberto
+ Sassu <roberto.sassu@huawei.com>
+References: <cover.1681898595.git.petr.tesarik.ext@huawei.com>
+ <CAHbf0-HwQhFsYW8cp0t9660877b9tTxZBego7VSfx0ayAwKePQ@mail.gmail.com>
+ <20230428110735.4348511d@meshulam.tesarici.cz>
+ <CAHbf0-HnctoNN3AQoCeCfd-d7ppKBhWJHD+EbfmbfeTkbS1jqg@mail.gmail.com>
+From: Petr Tesarik <petr.tesarik.ext@huawei.com>
+In-Reply-To: <CAHbf0-HnctoNN3AQoCeCfd-d7ppKBhWJHD+EbfmbfeTkbS1jqg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.45.146.102]
+X-ClientProxiedBy: frapeml500008.china.huawei.com (7.182.85.71) To
+ frapeml500002.china.huawei.com (7.182.85.205)
+X-CFilter-Loop: Reflected
 
-On Mon, 2023-05-01 at 23:17 -0400, Kent Overstreet wrote:
-> On Mon, May 01, 2023 at 10:22:18PM -0400, James Bottomley wrote:
-> > It is not used just for debug.  It's used all over the kernel for
-> > printing out device sizes.  The output mostly goes to the kernel
-> > print buffer, so it's anyone's guess as to what, if any, tools are
-> > parsing it, but the concern about breaking log parsers seems to be
-> > a valid one.
+Hi Mike,
+
+On 5/1/2023 12:29 PM, Mike Lothian wrote:
+> Hi
 > 
-> Ok, there is sd_print_capacity() - but who in their right mind would
-> be trying to scrape device sizes, in human readable units,
-
-If you bother to google "kernel log parser", you'll discover it's quite
-an active area which supports a load of company business models.
-
->  from log messages when it's available in sysfs/procfs (actually, is
-> it in sysfs? if not, that's an oversight) in more reasonable units?
-
-It's not in sysfs, no.  As aren't a lot of things, which is why log
-parsing for system monitoring is big business.
-
-> Correct me if I'm wrong, but I've yet to hear about kernel log
-> messages being consider a stable interface, and this seems a bit out
-> there.
-
-It might not be listed as stable, but when it's known there's a large
-ecosystem out there consuming it we shouldn't break it just because you
-feel like it.  You should have a good reason and the break should be
-unavoidable.  I wanted my output in a particular form so I thought I'd
-change everyone else's output as well isn't a good reason and it only
-costs a couple of lines to avoid.
-
-> But, you did write the code :)
+> I've not had any issues since using this, but I imagine most people
+> won't know how to set swiotlb=dynamic if they start seeing this (when
+> it lands)
 > 
-> > > If someone raises a specific objection we'll do something
-> > > different, otherwise I think standardizing on what userspace
-> > > tooling already parses is a good idea.
-> > 
-> > If you want to omit the space, why not simply add your own
-> > variant?  A string_get_size_nospace() which would use most of the
-> > body of this one as a helper function but give its own snprintf
-> > format string at the end.  It's only a couple of lines longer as a
-> > patch and has the bonus that it definitely wouldn't break anything
-> > by altering an existing output.
+> Any clue as to why this broke last cycle?
+
+IIRC the kernel messages indicate high swiotlb utilization. The most
+likely cause is that either the wifi driver is using more DMA buffers at
+once, or another device driver is now using swiotlb; it could also be a
+driver for a device that was previously not supported.
+
+If you're adventurous, you can use ftrace to capture the backtraces of
+swiotlb_tbl_map_single. This would reveal the other driver. Debugging
+increased DMA buffer usage by your wifi driver may be more difficult,
+because that's a dynamic process, which may change dramatically if you
+add some sort of tracing into the picture... As always, YMMV.
+
+Petr T
+
+> Mike
 > 
-> I'm happy to do that - I just wanted to post this version first to
-> see if we can avoid the fragmentation and do a bit of standardizing
-> with how everything else seems to do that.
-
-What fragmentation?  To do this properly you move the whole of the
-current function to a helper which takes a format sting, say with a
-double underscore prefix, then the existing function and what you want
-become one line additions calling the helper with their specific format
-string.  There's no fragmentation of the base function at all.
-
-James
-
+> On Fri, 28 Apr 2023 at 10:07, Petr Tesařík <petr@tesarici.cz> wrote:
+>>
+>> On Fri, 28 Apr 2023 09:53:38 +0100
+>> Mike Lothian <mike@fireburn.co.uk> wrote:
+>>
+>>> On Wed, 19 Apr 2023 at 11:05, Petr Tesarik <petrtesarik@huaweicloud.com> wrote:
+>>>>
+>>>> From: Petr Tesarik <petr.tesarik.ext@huawei.com>
+>>>>
+>>>> The goal of my work is to provide more flexibility in the sizing of
+>>>> SWIOTLB.
+>>>>
+>>>> The software IO TLB was designed with these assumptions:
+>>>>
+>>>> 1. It would not be used much, especially on 64-bit systems.
+>>>> 2. A small fixed memory area (64 MiB by default) is sufficient to
+>>>>    handle the few cases which require a bounce buffer.
+>>>> 3. 64 MiB is little enough that it has no impact on the rest of the
+>>>>    system.
+>>>>
+>>>> First, if SEV is active, all DMA must be done through shared
+>>>> unencrypted pages, and SWIOTLB is used to make this happen without
+>>>> changing device drivers. The software IO TLB size is increased to
+>>>> 6% of total memory in sev_setup_arch(), but that is more of an
+>>>> approximation. The actual requirements may vary depending on the
+>>>> amount of I/O and which drivers are used. These factors may not be
+>>>> know at boot time, i.e. when SWIOTLB is allocated.
+>>>>
+>>>> Second, other colleagues have noticed that they can reliably get
+>>>> rid of occasional OOM kills on an Arm embedded device by reducing
+>>>> the SWIOTLB size. This can be achieved with a kernel parameter, but
+>>>> determining the right value puts additional burden on pre-release
+>>>> testing, which could be avoided if SWIOTLB is allocated small and
+>>>> grows only when necessary.
+>>>>
+>>>> Changes from v1-devel-v7:
+>>>> - Add comments to acquire/release barriers
+>>>> - Fix whitespace issues reported by checkpatch.pl
+>>>>
+>>>> Changes from v1-devel-v6:
+>>>> - Provide long description of functions
+>>>> - Fix kernel-doc (Returns: to Return:)
+>>>> - Rename __lookup_dyn_slot() to lookup_dyn_slot_locked()
+>>>>
+>>>> Changes from RFC:
+>>>> - Track dynamic buffers per device instead of per swiotlb
+>>>> - Use a linked list instead of a maple tree
+>>>> - Move initialization of swiotlb fields of struct device to a
+>>>>   helper function
+>>>> - Rename __lookup_dyn_slot() to lookup_dyn_slot_locked()
+>>>> - Introduce per-device flag if dynamic buffers are in use
+>>>> - Add one more user of DMA_ATTR_MAY_SLEEP
+>>>> - Add kernel-doc comments for new (and some old) code
+>>>> - Properly escape '*' in dma-attributes.rst
+>>>>
+>>>> Petr Tesarik (7):
+>>>>   swiotlb: Use a helper to initialize swiotlb fields in struct device
+>>>>   swiotlb: Move code around in preparation for dynamic bounce buffers
+>>>>   dma-mapping: introduce the DMA_ATTR_MAY_SLEEP attribute
+>>>>   swiotlb: Dynamically allocated bounce buffers
+>>>>   swiotlb: Add a boot option to enable dynamic bounce buffers
+>>>>   drm: Use DMA_ATTR_MAY_SLEEP from process context
+>>>>   swiotlb: per-device flag if there are dynamically allocated buffers
+>>>>
+>>>>  .../admin-guide/kernel-parameters.txt         |   6 +-
+>>>>  Documentation/core-api/dma-attributes.rst     |  10 +
+>>>>  drivers/base/core.c                           |   4 +-
+>>>>  drivers/gpu/drm/drm_gem_shmem_helper.c        |   2 +-
+>>>>  drivers/gpu/drm/drm_prime.c                   |   2 +-
+>>>>  include/linux/device.h                        |  12 +
+>>>>  include/linux/dma-mapping.h                   |   6 +
+>>>>  include/linux/swiotlb.h                       |  54 ++-
+>>>>  kernel/dma/swiotlb.c                          | 382 ++++++++++++++++--
+>>>>  9 files changed, 443 insertions(+), 35 deletions(-)
+>>>>
+>>>> --
+>>>> 2.25.1
+>>>>
+>>>
+>>> Hi
+>>>
+>>> Is this a potential fix for
+>>> https://bugzilla.kernel.org/show_bug.cgi?id=217310 where I'm manually
+>>> setting bigger buffers to keep my wifi working?
+>>
+>> Yes. With these patches applied, your system should run just fine with
+>> swiotlb=dynamic. However, keep in mind that this implementation adds a
+>> bit of overhead. In short, it trades a bit of performance for not
+>> having to figure out the optimal swiotlb size at boot time.
+>>
+>> Petr T
 
