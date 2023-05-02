@@ -1,130 +1,202 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBAAF7E
-	for <iommu@lists.linux.dev>; Tue,  2 May 2023 12:50:20 +0000 (UTC)
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 11C1F14D391;
-	Tue,  2 May 2023 14:50:16 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1683031817; bh=7Jx1V6HXo4qXXJ5gzNb9WgNbQl2iBAjQx92+mbN9mcI=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=LdYat1pxvtqHcsyEsr0xSmJ80I9UQQAdwuWNsIlmRhcDv+RP+JqFNQRT+nYc9G7uP
-	 dXPpgO79Zyo5DI2T6iRH+RieaWMoILvCo+t0ga1IpmjPazX2dudxt9IHa/Q1eVW8Rh
-	 npJAxuinpIG3jaAdl3urTCU5KvJB8xckJUgufKO4oRJxNsCTGApQSCpiehfAf9XW2g
-	 55qZn04dxosxPP6JwtR/XcAxhlpiWK6SFfOBMCcvmnxf+hMduxm0neIM19D6X3o7mp
-	 /hFiYxv9D35v34aGYGGZPSYkcyumwUEB7pS25ZX4SffsQ4FOhXKIFk8+GhJJd8+bil
-	 9cEFx4TVmGUMg==
-Date: Tue, 2 May 2023 14:50:14 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Suren Baghdasaryan <surenb@google.com>
-Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
- vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev,
- mgorman@suse.de, dave@stgolabs.net, willy@infradead.org,
- liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com,
- peterz@infradead.org, juri.lelli@redhat.com, ldufour@linux.ibm.com,
- catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
- tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
- x86@kernel.org, peterx@redhat.com, david@redhat.com, axboe@kernel.dk,
- mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org,
- dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org,
- paulmck@kernel.org, pasha.tatashin@soleen.com, yosryahmed@google.com,
- yuzhao@google.com, dhowells@redhat.com, hughd@google.com,
- andreyknvl@gmail.com, keescook@chromium.org, ndesaulniers@google.com,
- gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
- vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org,
- bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com,
- penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com,
- glider@google.com, elver@google.com, dvyukov@google.com,
- shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com,
- rientjes@google.com, minchan@google.com, kaleshsingh@google.com,
- kernel-team@android.com, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
- linux-mm@kvack.org, linux-modules@vger.kernel.org,
- kasan-dev@googlegroups.com, cgroups@vger.kernel.org
-Subject: Re: [PATCH 09/40] mm: introduce __GFP_NO_OBJ_EXT flag to
- selectively prevent slabobj_ext creation
-Message-ID: <20230502145014.24b28e64@meshulam.tesarici.cz>
-In-Reply-To: <20230501165450.15352-10-surenb@google.com>
-References: <20230501165450.15352-1-surenb@google.com>
-	<20230501165450.15352-10-surenb@google.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-suse-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39A1964C;
+	Tue,  2 May 2023 14:53:47 +0000 (UTC)
+Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 342ErN65031685;
+	Tue, 2 May 2023 14:53:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=A9PzCa1lY9nUR20Q3fDAZA1RsBEr5LdyYZXsjJQssc8=;
+ b=itWJdKMD0Vb1kIguS2uvvFOOLyK9gL3u+2PzJEPocTOIRjyJRVVEm0u5BgKPrNWHt78+
+ 9JZR5LqNUnWgKyagrJRVwRXl45H59PXlaUDtqaj2PFPMUZp3hMgAJvwvJTTuAsM4Gytp
+ /bYtg7X+0tpvaSlRv4DO35XyuHtzCCy109LAtVqLIJkKtEuZTUSISou1oFEFbWv8V/ay
+ Qiu1BETXlt//c8thokXeJy3C8PX+m/VFcDBVgQ7213tir+ncGT95DRwKuq7owvQ/K9oZ
+ 1M6av8FikOWDloi7BlO2KaLxC5a+yU6baB8o1Bh50Gzz33k+hXMOa6DZnkhGcKbDghgq sQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qb4h3rbve-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 02 May 2023 14:53:25 +0000
+Received: from m0353729.ppops.net (m0353729.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 342Egimo031178;
+	Tue, 2 May 2023 14:52:56 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qb4h3rbpg-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 02 May 2023 14:52:56 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+	by ppma04ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 341LC9Fa005173;
+	Tue, 2 May 2023 14:52:38 GMT
+Received: from smtprelay07.fra02v.mail.ibm.com ([9.218.2.229])
+	by ppma04ams.nl.ibm.com (PPS) with ESMTPS id 3q8tv6snm7-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 02 May 2023 14:52:38 +0000
+Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
+	by smtprelay07.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 342EqZPw54460742
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 2 May 2023 14:52:35 GMT
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id F3F742004E;
+	Tue,  2 May 2023 14:52:34 +0000 (GMT)
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id D981B2004D;
+	Tue,  2 May 2023 14:52:32 +0000 (GMT)
+Received: from [9.171.18.35] (unknown [9.171.18.35])
+	by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Tue,  2 May 2023 14:52:32 +0000 (GMT)
+Message-ID: <b9b6a50724b4f1ac2b98e518a8b9a820a912850f.camel@linux.ibm.com>
+Subject: Re: [PATCH 20/20] iommu: Convert remaining simple drivers to
+ domain_alloc_paging()
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
+        Alim
+ Akhtar <alim.akhtar@samsung.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Gerald Schaefer
+ <gerald.schaefer@linux.ibm.com>,
+        Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonathan
+ Hunter <jonathanh@nvidia.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Konrad
+ Dybcio <konrad.dybcio@linaro.org>,
+        Krzysztof Kozlowski
+ <krzysztof.kozlowski@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org,
+        linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Matthew Rosato
+ <mjrosato@linux.ibm.com>,
+        Orson Zhai <orsonzhai@gmail.com>, Rob Clark
+ <robdclark@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Samuel Holland
+ <samuel@sholland.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Krishna
+ Reddy <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
+        Will Deacon
+ <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+        Chunyan Zhang
+ <zhang.lyra@gmail.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
+        Nicolin Chen <nicolinc@nvidia.com>,
+        Steven Price <steven.price@arm.com>
+Date: Tue, 02 May 2023 16:52:32 +0200
+In-Reply-To: <20-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
+References: <20-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.48.1 (3.48.1-1.fc38) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: T6YFZPN53T-8NBr50MiQVf0_hbdxvlIx
+X-Proofpoint-ORIG-GUID: edimN0IzfVknfN6LBbnWL53jz6o5saRq
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-05-02_09,2023-04-27_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ clxscore=1011 impostorscore=0 mlxlogscore=999 lowpriorityscore=0
+ bulkscore=0 malwarescore=0 spamscore=0 phishscore=0 suspectscore=0
+ mlxscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2303200000 definitions=main-2305020124
 
-On Mon,  1 May 2023 09:54:19 -0700
-Suren Baghdasaryan <surenb@google.com> wrote:
-
-> Introduce __GFP_NO_OBJ_EXT flag in order to prevent recursive allocations
-> when allocating slabobj_ext on a slab.
-> 
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+On Mon, 2023-05-01 at 15:03 -0300, Jason Gunthorpe wrote:
+> These drivers don't support IOMMU_DOMAIN_DMA, so this commit effectively
+> allows them to support that mode.
+>=20
+> The prior work to require default_domains makes this safe because every
+> one of these drivers is either compilation incompatible with dma-iommu.c,
+> or already establishing a default_domain. In both cases alloc_domain()
+> will never be called with IOMMU_DOMAIN_DMA for these drivers so it is saf=
+e
+> to drop the test.
+>=20
+> Removing these tests clarifies that the domain allocation path is only
+> about the functionality of a paging domain and has nothing to do with
+> policy of how the paging domain is used for UNMANAGED/DMA/DMA_FQ.
+>=20
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > ---
->  include/linux/gfp_types.h | 12 ++++++++++--
->  1 file changed, 10 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/linux/gfp_types.h b/include/linux/gfp_types.h
-> index 6583a58670c5..aab1959130f9 100644
-> --- a/include/linux/gfp_types.h
-> +++ b/include/linux/gfp_types.h
-> @@ -53,8 +53,13 @@ typedef unsigned int __bitwise gfp_t;
->  #define ___GFP_SKIP_ZERO	0
->  #define ___GFP_SKIP_KASAN	0
->  #endif
-> +#ifdef CONFIG_SLAB_OBJ_EXT
-> +#define ___GFP_NO_OBJ_EXT       0x4000000u
-> +#else
-> +#define ___GFP_NO_OBJ_EXT       0
-> +#endif
->  #ifdef CONFIG_LOCKDEP
-> -#define ___GFP_NOLOCKDEP	0x4000000u
-> +#define ___GFP_NOLOCKDEP	0x8000000u
+>  drivers/iommu/fsl_pamu_domain.c | 7 ++-----
+>  drivers/iommu/msm_iommu.c       | 7 ++-----
+>  drivers/iommu/mtk_iommu_v1.c    | 7 ++-----
+>  drivers/iommu/omap-iommu.c      | 7 ++-----
+>  drivers/iommu/s390-iommu.c      | 7 ++-----
+>  drivers/iommu/tegra-gart.c      | 7 ++-----
+>  6 files changed, 12 insertions(+), 30 deletions(-)
+>=20
+>=20
+---8<---
+> -static struct iommu_domain *s390_domain_alloc(unsigned domain_type)
+> +static struct iommu_domain *s390_domain_alloc_paging(struct device *dev)
+>  {
+>  	struct s390_domain *s390_domain;
+> =20
+> -	if (domain_type !=3D IOMMU_DOMAIN_UNMANAGED)
+> -		return NULL;
+> -
+>  	s390_domain =3D kzalloc(sizeof(*s390_domain), GFP_KERNEL);
+>  	if (!s390_domain)
+>  		return NULL;
+> @@ -447,7 +444,7 @@ void zpci_destroy_iommu(struct zpci_dev *zdev)
+>  static const struct iommu_ops s390_iommu_ops =3D {
+>  	.default_domain =3D &s390_iommu_platform_domain,
+>  	.capable =3D s390_iommu_capable,
+> -	.domain_alloc =3D s390_domain_alloc,
+> +	.domain_alloc_paging =3D s390_domain_alloc_paging,
 
-So now we have two flags that depend on config options, but the first
-one is always allocated in fact. I wonder if you could use an enum to
-let the compiler allocate bits. Something similar to what Muchun Song
-did with section flags.
+Leaving .domain_alloc unset here leads to an OOPs with your GitHub
+branch (iommu_mandatory_default) when I try to use vfio-pci for KVM
+pass-through via the following call chain:
 
-See commit ed7802dd48f7a507213cbb95bb4c6f1fe134eb5d for reference.
+...
+vfio_group_fops_unl_ioctl()
+   vfio_group_ioctl_set_container()
+      vfio_container_attach_group()
+         iommu_group_claim_dma_owner()
+            __iommu_take_dma_ownership()
+               __iommu_group_alloc_blocking_domain()
+               __iommu_domain_alloc(=E2=80=A6, IOMMU_DOMAIN_BLOCKED)
 
->  #else
->  #define ___GFP_NOLOCKDEP	0
->  #endif
-> @@ -99,12 +104,15 @@ typedef unsigned int __bitwise gfp_t;
->   * node with no fallbacks or placement policy enforcements.
->   *
->   * %__GFP_ACCOUNT causes the allocation to be accounted to kmemcg.
-> + *
-> + * %__GFP_NO_OBJ_EXT causes slab allocation to have no object
-> extension. */
->  #define __GFP_RECLAIMABLE ((__force gfp_t)___GFP_RECLAIMABLE)
->  #define __GFP_WRITE	((__force gfp_t)___GFP_WRITE)
->  #define __GFP_HARDWALL   ((__force gfp_t)___GFP_HARDWALL)
->  #define __GFP_THISNODE	((__force gfp_t)___GFP_THISNODE)
->  #define __GFP_ACCOUNT	((__force gfp_t)___GFP_ACCOUNT)
-> +#define __GFP_NO_OBJ_EXT   ((__force gfp_t)___GFP_NO_OBJ_EXT)
->  
->  /**
->   * DOC: Watermark modifiers
-> @@ -249,7 +257,7 @@ typedef unsigned int __bitwise gfp_t;
->  #define __GFP_NOLOCKDEP ((__force gfp_t)___GFP_NOLOCKDEP)
->  
->  /* Room for N __GFP_FOO bits */
-> -#define __GFP_BITS_SHIFT (26 + IS_ENABLED(CONFIG_LOCKDEP))
-> +#define __GFP_BITS_SHIFT (27 + IS_ENABLED(CONFIG_LOCKDEP))
+The problem is that in __iommu_domain_alloc() a call to bus->iommu_ops-
+>domain_alloc() is attempted for IOMMU_DOMAIN_BLCOKED even if the
+function pointer is unset.
 
-If the above suggestion is implemented, this could be changed to
-something like __GFP_LAST_BIT (the enum's last identifier).
+So I tried with the obvious fix:
 
-Petr T
+@@ -1947,7 +1948,7 @@ static struct iommu_domain *__iommu_domain_alloc(stru=
+ct bus_type *bus,
+        if ((type =3D=3D IOMMU_DOMAIN_UNMANAGED || type =3D=3D IOMMU_DOMAIN=
+_DMA) &&
+            bus->iommu_ops->domain_alloc_paging)
+                domain =3D bus->iommu_ops->domain_alloc_paging(dev);
+-       else
++       else if (bus->iommu_ops->domain_alloc)
+                domain =3D bus->iommu_ops->domain_alloc(type);
+        if (!domain)
+                return NULL;
+
+This then uses the fallback of an empty IOMMU_DOMAIN_UNMANAGED and I
+get a working device in the guest. Also tried hot unplug where the
+device is taken over by the host again. I think with my DMA API
+conversion patches we can support blocking domains properly but for a
+temporary solution the above may be acceptable.
+
+>  	.probe_device =3D s390_iommu_probe_device,
+>  	.release_device =3D s390_iommu_release_device,
+>  	.device_group =3D generic_device_group,
+
