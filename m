@@ -1,180 +1,109 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 754207E
-	for <iommu@lists.linux.dev>; Tue,  2 May 2023 12:34:36 +0000 (UTC)
-Received: from frapeml500002.china.huawei.com (unknown [172.18.147.207])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Q9f8p2tH7z6J6nt;
-	Tue,  2 May 2023 20:12:26 +0800 (CST)
-Received: from [10.45.146.102] (10.45.146.102) by
- frapeml500002.china.huawei.com (7.182.85.205) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Tue, 2 May 2023 14:15:52 +0200
-Message-ID: <e05b416d-a298-cf71-0c04-a1fe6b993bf7@huawei.com>
-Date: Tue, 2 May 2023 14:15:49 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDB0D7E
+	for <iommu@lists.linux.dev>; Tue,  2 May 2023 12:35:41 +0000 (UTC)
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 0369514C1AA;
+	Tue,  2 May 2023 14:35:32 +0200 (CEST)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
+	t=1683030933; bh=20jqHRbdtEj8ppcmNyyd7rJFAO2W2GN7oe2dWzqRVvA=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=pvJgyuySDoLJG+kmwFC037D7WTQlrRk1f6tAP/S5DF4yRvNHQRW7/ahkCIvO3leti
+	 5pobEX0K/+x571RACLufXczVdwrcYtazeu1Un/KOB0R9qIQe+mbom2Tj1dGjq/4TLv
+	 dMPoj1HfCNA3A6O+iuXmXP2dOAaZTi2u5PLNFZA8btd9bxu/eJtNxHjRyjED7MKRCT
+	 TvmcQpmwIA0/Fl5ghTvDBzGW7yklDbxwUOtz8JQeVZryBJk3NhMCMDl5Vz+TXpCoch
+	 0RTOINsN038OoKKSythJat+YPJ8wlE0LZVvUegvmuhW+eFACY68/wfeoQtRtWKJXkt
+	 1DtPmRcDAWu7Q==
+Date: Tue, 2 May 2023 14:35:30 +0200
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
+ vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev,
+ mgorman@suse.de, dave@stgolabs.net, willy@infradead.org,
+ liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com,
+ peterz@infradead.org, juri.lelli@redhat.com, ldufour@linux.ibm.com,
+ catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+ tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
+ x86@kernel.org, peterx@redhat.com, david@redhat.com, axboe@kernel.dk,
+ mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org,
+ dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org,
+ paulmck@kernel.org, pasha.tatashin@soleen.com, yosryahmed@google.com,
+ yuzhao@google.com, dhowells@redhat.com, hughd@google.com,
+ andreyknvl@gmail.com, keescook@chromium.org, ndesaulniers@google.com,
+ gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
+ vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org,
+ bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com,
+ penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com,
+ glider@google.com, elver@google.com, dvyukov@google.com,
+ shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com,
+ rientjes@google.com, minchan@google.com, kaleshsingh@google.com,
+ kernel-team@android.com, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ linux-mm@kvack.org, linux-modules@vger.kernel.org,
+ kasan-dev@googlegroups.com, cgroups@vger.kernel.org, Alexander Viro
+ <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH 03/40] fs: Convert alloc_inode_sb() to a macro
+Message-ID: <20230502143530.1586e287@meshulam.tesarici.cz>
+In-Reply-To: <20230501165450.15352-4-surenb@google.com>
+References: <20230501165450.15352-1-surenb@google.com>
+	<20230501165450.15352-4-surenb@google.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH v2 0/7] Allow dynamic allocation of software IO TLB bounce
- buffers
-Content-Language: en-US
-To: Mike Lothian <mike@fireburn.co.uk>, =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?=
-	<petr@tesarici.cz>
-CC: Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard
-	<mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, David Airlie
-	<airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, Christoph Hellwig
-	<hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
-	<robin.murphy@arm.com>, Borislav Petkov <bp@suse.de>, "Paul E. McKenney"
-	<paulmck@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon
-	<will@kernel.org>, Zhen Lei <thunder.leizhen@huawei.com>, Randy Dunlap
-	<rdunlap@infradead.org>, Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-	Kim Phillips <kim.phillips@amd.com>, "Steven Rostedt (Google)"
-	<rostedt@goodmis.org>, Muchun Song <muchun.song@linux.dev>, Ondrej Zary
-	<linux@zary.sk>, "Jason A. Donenfeld" <Jason@zx2c4.com>, Petr Tesarik
-	<petr.tesarik.ext@huawei.com>, Hans de Goede <hdegoede@redhat.com>, Dan
- Williams <dan.j.williams@intel.com>, Andy Shevchenko
-	<andriy.shevchenko@linux.intel.com>, Kees Cook <keescook@chromium.org>,
-	Thomas Gleixner <tglx@linutronix.de>, Won Chung <wonchung@google.com>, "open
- list:DOCUMENTATION" <linux-doc@vger.kernel.org>, open list
-	<linux-kernel@vger.kernel.org>, "open list:DRM DRIVERS"
-	<dri-devel@lists.freedesktop.org>, "open list:DMA MAPPING HELPERS"
-	<iommu@lists.linux.dev>, Kefeng Wang <wangkefeng.wang@huawei.com>, Roberto
- Sassu <roberto.sassu@huawei.com>
-References: <cover.1681898595.git.petr.tesarik.ext@huawei.com>
- <CAHbf0-HwQhFsYW8cp0t9660877b9tTxZBego7VSfx0ayAwKePQ@mail.gmail.com>
- <20230428110735.4348511d@meshulam.tesarici.cz>
- <CAHbf0-HnctoNN3AQoCeCfd-d7ppKBhWJHD+EbfmbfeTkbS1jqg@mail.gmail.com>
-From: Petr Tesarik <petr.tesarik.ext@huawei.com>
-In-Reply-To: <CAHbf0-HnctoNN3AQoCeCfd-d7ppKBhWJHD+EbfmbfeTkbS1jqg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.45.146.102]
-X-ClientProxiedBy: frapeml500008.china.huawei.com (7.182.85.71) To
- frapeml500002.china.huawei.com (7.182.85.205)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Mike,
+On Mon,  1 May 2023 09:54:13 -0700
+Suren Baghdasaryan <surenb@google.com> wrote:
 
-On 5/1/2023 12:29 PM, Mike Lothian wrote:
-> Hi
+> From: Kent Overstreet <kent.overstreet@linux.dev>
 > 
-> I've not had any issues since using this, but I imagine most people
-> won't know how to set swiotlb=dynamic if they start seeing this (when
-> it lands)
+> We're introducing alloc tagging, which tracks memory allocations by
+> callsite. Converting alloc_inode_sb() to a macro means allocations will
+> be tracked by its caller, which is a bit more useful.
 > 
-> Any clue as to why this broke last cycle?
+> Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
+> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> Cc: Alexander Viro <viro@zeniv.linux.org.uk>
+> ---
+>  include/linux/fs.h | 6 +-----
+>  1 file changed, 1 insertion(+), 5 deletions(-)
+> 
+> diff --git a/include/linux/fs.h b/include/linux/fs.h
+> index 21a981680856..4905ce14db0b 100644
+> --- a/include/linux/fs.h
+> +++ b/include/linux/fs.h
+> @@ -2699,11 +2699,7 @@ int setattr_should_drop_sgid(struct mnt_idmap *idmap,
+>   * This must be used for allocating filesystems specific inodes to set
+>   * up the inode reclaim context correctly.
+>   */
+> -static inline void *
+> -alloc_inode_sb(struct super_block *sb, struct kmem_cache *cache, gfp_t gfp)
+> -{
+> -	return kmem_cache_alloc_lru(cache, &sb->s_inode_lru, gfp);
+> -}
+> +#define alloc_inode_sb(_sb, _cache, _gfp) kmem_cache_alloc_lru(_cache, &_sb->s_inode_lru, _gfp)
 
-IIRC the kernel messages indicate high swiotlb utilization. The most
-likely cause is that either the wifi driver is using more DMA buffers at
-once, or another device driver is now using swiotlb; it could also be a
-driver for a device that was previously not supported.
+Honestly, I don't like this change. In general, pre-processor macros
+are ugly and error-prone.
 
-If you're adventurous, you can use ftrace to capture the backtraces of
-swiotlb_tbl_map_single. This would reveal the other driver. Debugging
-increased DMA buffer usage by your wifi driver may be more difficult,
-because that's a dynamic process, which may change dramatically if you
-add some sort of tracing into the picture... As always, YMMV.
+Besides, it works for you only because __kmem_cache_alloc_lru() is
+declared __always_inline (unless CONFIG_SLUB_TINY is defined, but then
+you probably don't want the tracking either). In any case, it's going
+to be difficult for people to understand why and how this works.
 
+If the actual caller of alloc_inode_sb() is needed, I'd rather add it
+as a parameter and pass down _RET_IP_ explicitly here.
+
+Just my two cents,
 Petr T
-
-> Mike
-> 
-> On Fri, 28 Apr 2023 at 10:07, Petr Tesařík <petr@tesarici.cz> wrote:
->>
->> On Fri, 28 Apr 2023 09:53:38 +0100
->> Mike Lothian <mike@fireburn.co.uk> wrote:
->>
->>> On Wed, 19 Apr 2023 at 11:05, Petr Tesarik <petrtesarik@huaweicloud.com> wrote:
->>>>
->>>> From: Petr Tesarik <petr.tesarik.ext@huawei.com>
->>>>
->>>> The goal of my work is to provide more flexibility in the sizing of
->>>> SWIOTLB.
->>>>
->>>> The software IO TLB was designed with these assumptions:
->>>>
->>>> 1. It would not be used much, especially on 64-bit systems.
->>>> 2. A small fixed memory area (64 MiB by default) is sufficient to
->>>>    handle the few cases which require a bounce buffer.
->>>> 3. 64 MiB is little enough that it has no impact on the rest of the
->>>>    system.
->>>>
->>>> First, if SEV is active, all DMA must be done through shared
->>>> unencrypted pages, and SWIOTLB is used to make this happen without
->>>> changing device drivers. The software IO TLB size is increased to
->>>> 6% of total memory in sev_setup_arch(), but that is more of an
->>>> approximation. The actual requirements may vary depending on the
->>>> amount of I/O and which drivers are used. These factors may not be
->>>> know at boot time, i.e. when SWIOTLB is allocated.
->>>>
->>>> Second, other colleagues have noticed that they can reliably get
->>>> rid of occasional OOM kills on an Arm embedded device by reducing
->>>> the SWIOTLB size. This can be achieved with a kernel parameter, but
->>>> determining the right value puts additional burden on pre-release
->>>> testing, which could be avoided if SWIOTLB is allocated small and
->>>> grows only when necessary.
->>>>
->>>> Changes from v1-devel-v7:
->>>> - Add comments to acquire/release barriers
->>>> - Fix whitespace issues reported by checkpatch.pl
->>>>
->>>> Changes from v1-devel-v6:
->>>> - Provide long description of functions
->>>> - Fix kernel-doc (Returns: to Return:)
->>>> - Rename __lookup_dyn_slot() to lookup_dyn_slot_locked()
->>>>
->>>> Changes from RFC:
->>>> - Track dynamic buffers per device instead of per swiotlb
->>>> - Use a linked list instead of a maple tree
->>>> - Move initialization of swiotlb fields of struct device to a
->>>>   helper function
->>>> - Rename __lookup_dyn_slot() to lookup_dyn_slot_locked()
->>>> - Introduce per-device flag if dynamic buffers are in use
->>>> - Add one more user of DMA_ATTR_MAY_SLEEP
->>>> - Add kernel-doc comments for new (and some old) code
->>>> - Properly escape '*' in dma-attributes.rst
->>>>
->>>> Petr Tesarik (7):
->>>>   swiotlb: Use a helper to initialize swiotlb fields in struct device
->>>>   swiotlb: Move code around in preparation for dynamic bounce buffers
->>>>   dma-mapping: introduce the DMA_ATTR_MAY_SLEEP attribute
->>>>   swiotlb: Dynamically allocated bounce buffers
->>>>   swiotlb: Add a boot option to enable dynamic bounce buffers
->>>>   drm: Use DMA_ATTR_MAY_SLEEP from process context
->>>>   swiotlb: per-device flag if there are dynamically allocated buffers
->>>>
->>>>  .../admin-guide/kernel-parameters.txt         |   6 +-
->>>>  Documentation/core-api/dma-attributes.rst     |  10 +
->>>>  drivers/base/core.c                           |   4 +-
->>>>  drivers/gpu/drm/drm_gem_shmem_helper.c        |   2 +-
->>>>  drivers/gpu/drm/drm_prime.c                   |   2 +-
->>>>  include/linux/device.h                        |  12 +
->>>>  include/linux/dma-mapping.h                   |   6 +
->>>>  include/linux/swiotlb.h                       |  54 ++-
->>>>  kernel/dma/swiotlb.c                          | 382 ++++++++++++++++--
->>>>  9 files changed, 443 insertions(+), 35 deletions(-)
->>>>
->>>> --
->>>> 2.25.1
->>>>
->>>
->>> Hi
->>>
->>> Is this a potential fix for
->>> https://bugzilla.kernel.org/show_bug.cgi?id=217310 where I'm manually
->>> setting bigger buffers to keep my wifi working?
->>
->> Yes. With these patches applied, your system should run just fine with
->> swiotlb=dynamic. However, keep in mind that this implementation adds a
->> bit of overhead. In short, it trades a bit of performance for not
->> having to figure out the optimal swiotlb size at boot time.
->>
->> Petr T
-
