@@ -1,149 +1,158 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com [209.85.219.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EE5D8F62;
-	Tue,  2 May 2023 18:16:48 +0000 (UTC)
-Received: from pps.filterd (m0353723.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 342IEdEv012302;
-	Tue, 2 May 2023 18:16:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=+n8liBN5L0dwaVKtdnjrH6nlYtbK4M0ezTsHBz+OcQw=;
- b=sn4AceGT3vDGiHGn22xFeXMbzYcsOPv9cXhDyTYrfiwFszyCB3H+AB8wQVpH485ZZ/Uj
- dJ2cvznYQ7mAdQCdz9fuR0ODuAdr2LWcbSv6EGUgiKX3FNMtg8vllKBBTPBeG+1dUkHz
- cP4HGKL5XB2JOyfZtaIn/+S1h4fgRJ7YdJy2hzV5PjFNYgNcYRgwKVf27tgVI+fdhRH9
- Ifqv4TWQEPfQq1DWsnQZ3ozYodu/xjf0Tymgasn4aIdQ3H+2nLMOkFtoO4bmDudVi+/0
- CFivFI+0Hf5eAfLPNvqgKj4nvGd4W+SxayXz7Bht2trqFeqehwoI+6Xj10/GLnaeSm+N qA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qb7mb01r7-17
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 02 May 2023 18:16:13 +0000
-Received: from m0353723.ppops.net (m0353723.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 342I2dPJ019051;
-	Tue, 2 May 2023 18:03:11 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qb6qv1frk-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 02 May 2023 18:03:11 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-	by ppma04ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 34246qx7021338;
-	Tue, 2 May 2023 18:02:41 GMT
-Received: from smtprelay05.fra02v.mail.ibm.com ([9.218.2.225])
-	by ppma04ams.nl.ibm.com (PPS) with ESMTPS id 3q8tv6sr6y-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 02 May 2023 18:02:41 +0000
-Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
-	by smtprelay05.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 342I2cI939715088
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 2 May 2023 18:02:38 GMT
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 12A6920043;
-	Tue,  2 May 2023 18:02:38 +0000 (GMT)
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 2341420040;
-	Tue,  2 May 2023 18:02:36 +0000 (GMT)
-Received: from [9.171.18.35] (unknown [9.171.18.35])
-	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Tue,  2 May 2023 18:02:36 +0000 (GMT)
-Message-ID: <aec2895379f426ac7c01c6d5952666975b8e1710.camel@linux.ibm.com>
-Subject: Re: [PATCH 20/20] iommu: Convert remaining simple drivers to
- domain_alloc_paging()
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Andy Gross <agross@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>,
-        Bjorn Andersson <andersson@kernel.org>,
-        AngeloGioacchino Del Regno
- <angelogioacchino.delregno@collabora.com>,
-        Baolin Wang
- <baolin.wang@linux.alibaba.com>,
-        Gerald Schaefer
- <gerald.schaefer@linux.ibm.com>,
-        Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonathan
- Hunter <jonathanh@nvidia.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Konrad
- Dybcio <konrad.dybcio@linaro.org>,
-        Krzysztof Kozlowski
- <krzysztof.kozlowski@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org,
-        linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Matthew Rosato
- <mjrosato@linux.ibm.com>,
-        Orson Zhai <orsonzhai@gmail.com>, Rob Clark
- <robdclark@gmail.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Samuel Holland
- <samuel@sholland.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Krishna
- Reddy <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
-        Will Deacon
- <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
-        Chunyan Zhang
- <zhang.lyra@gmail.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Kevin Tian
- <kevin.tian@intel.com>, Nicolin Chen <nicolinc@nvidia.com>,
-        Steven Price
- <steven.price@arm.com>
-Date: Tue, 02 May 2023 20:02:35 +0200
-In-Reply-To: <ZFErVOr8RDoeZ2tq@nvidia.com>
-References: <20-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
-	 <b9b6a50724b4f1ac2b98e518a8b9a820a912850f.camel@linux.ibm.com>
-	 <ZFErVOr8RDoeZ2tq@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.48.1 (3.48.1-1.fc38) 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACBC833E8
+	for <iommu@lists.linux.dev>; Tue,  2 May 2023 18:33:27 +0000 (UTC)
+Received: by mail-yb1-f179.google.com with SMTP id 3f1490d57ef6-b99f0a0052fso5863993276.3
+        for <iommu@lists.linux.dev>; Tue, 02 May 2023 11:33:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1683052406; x=1685644406;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1HVL3xDTGrQVKytv3307oE4wI2qXt6O5pXdSbfIsmfw=;
+        b=1qOKHMcI8DulkSfoRMvX8Pr+Zk5uyPKcuzTjDblLNP1XefPQJkSAxIcSan4hxrkYmM
+         mijXYJDbwYfBriku1yo2jZFFkuGOQV27nGEoociEa+x4EBkt6xdc8TTdBr8ExPJqJxj3
+         I+cfPJCKCtCybq2dUPwiVCF4ankuJVJJAVwM7AetAdBoRpl61AdRNAdTS18dObY9arIk
+         e9qSsTvg8C0oNmcsYUHHNiUOhvlpSnEvLmwlJBc13gXCsXeR7WXU4bYyLgUPMLC/5oWj
+         1vsg/b1NFVc8TUatQihkDpPMckBOmQMwujeGiTah+4Xw72cOHRDooXz8s6AG9qHHNqgj
+         yg7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683052406; x=1685644406;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1HVL3xDTGrQVKytv3307oE4wI2qXt6O5pXdSbfIsmfw=;
+        b=BLjBWjpaNM95iTnIfYj+8gJopbSG2Fo9o+zQE+F8OQyqy9Ue9XKLQOIYSP/hBMeQqu
+         k939ADkoQxezPLXES9l/P5IMy3ssnsrrYk/ij9yw2NYQwfQ04cllCnD9YtASVjORcERP
+         AxmT4Z26gx+P6BNN44hFa+R/Zeb39PfpfaHnAMr+CJNTOa8mA5Cn1kj290iHwYSoto0l
+         ilpmq29BxL3AA0pNxseKabiPf0736Ya1yyIDCF06wM+11jH1scustJdrEHJZHO063h8m
+         G9mLFyajm/wyFx2ZJcprxYGH/EB3yzjMOL1Vobm5GbdUIUf7xtndNfnRS+HVQHmG46V2
+         fbRw==
+X-Gm-Message-State: AC+VfDzTlpc9UOcL4yz56EslimxE4fmilJmMTiS/3b9AhvMRBP5IUWt6
+	ZkA3Bnwaehlg/ZngZd21v0a3qYNLHQTSQSjue/45MA==
+X-Google-Smtp-Source: ACHHUZ4Ewf11C+rTiwahBlNL1qKIj3O23xR+7SsYrPD/20BDq48yN50kv92ybg7MVXiIqETdHq5IqlKzhO8SvqkLc+8=
+X-Received: by 2002:a25:4115:0:b0:b9e:9159:6a0c with SMTP id
+ o21-20020a254115000000b00b9e91596a0cmr1235704yba.6.1683052406321; Tue, 02 May
+ 2023 11:33:26 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: slkEV7990viVZeo3EoiAzvk_x4KeFq9l
-X-Proofpoint-ORIG-GUID: cZ5QXiUnqxQL3lGAYvCQF1nCj-zW_0d9
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-05-02_10,2023-04-27_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
- adultscore=0 spamscore=0 bulkscore=0 mlxscore=0 priorityscore=1501
- phishscore=0 mlxlogscore=527 impostorscore=0 suspectscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2303200000 definitions=main-2305020156
+References: <20230501165450.15352-1-surenb@google.com> <20230501165450.15352-10-surenb@google.com>
+ <20230502145014.24b28e64@meshulam.tesarici.cz>
+In-Reply-To: <20230502145014.24b28e64@meshulam.tesarici.cz>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Tue, 2 May 2023 11:33:15 -0700
+Message-ID: <CAJuCfpGA9SMwyQ44XHRHHVf32MPu4o6wy1Q6H=AfJy61Ez-06Q@mail.gmail.com>
+Subject: Re: [PATCH 09/40] mm: introduce __GFP_NO_OBJ_EXT flag to selectively
+ prevent slabobj_ext creation
+To: =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
+	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
+	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
+	corbet@lwn.net, void@manifault.com, peterz@infradead.org, 
+	juri.lelli@redhat.com, ldufour@linux.ibm.com, catalin.marinas@arm.com, 
+	will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
+	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
+	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
+	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
+	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
+	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
+	ndesaulniers@google.com, gregkh@linuxfoundation.org, ebiggers@google.com, 
+	ytcoode@gmail.com, vincent.guittot@linaro.org, dietmar.eggemann@arm.com, 
+	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com, 
+	vschneid@redhat.com, cl@linux.com, penberg@kernel.org, iamjoonsoo.kim@lge.com, 
+	42.hyeyoo@gmail.com, glider@google.com, elver@google.com, dvyukov@google.com, 
+	shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com, 
+	rientjes@google.com, minchan@google.com, kaleshsingh@google.com, 
+	kernel-team@android.com, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
+	cgroups@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 2023-05-02 at 12:25 -0300, Jason Gunthorpe wrote:
-> On Tue, May 02, 2023 at 04:52:32PM +0200, Niklas Schnelle wrote:
-> > @@ -1947,7 +1948,7 @@ static struct iommu_domain *__iommu_domain_alloc(=
-struct bus_type *bus,
-> >         if ((type =3D=3D IOMMU_DOMAIN_UNMANAGED || type =3D=3D IOMMU_DO=
-MAIN_DMA) &&
-> >             bus->iommu_ops->domain_alloc_paging)
-> >                 domain =3D bus->iommu_ops->domain_alloc_paging(dev);
-> > -       else
-> > +       else if (bus->iommu_ops->domain_alloc)
-> >                 domain =3D bus->iommu_ops->domain_alloc(type);
-> >         if (!domain)
-> >                 return NULL;
->=20
-> Agh, yes, it should fail, this is right, I'll fold it in, thanks
->=20
-> > This then uses the fallback of an empty IOMMU_DOMAIN_UNMANAGED and I
-> > get a working device in the guest. Also tried hot unplug where the
-> > device is taken over by the host again.
->=20
-> Great, thanks, I'll add your tested-by for the s390 drivers.
+On Tue, May 2, 2023 at 5:50=E2=80=AFAM Petr Tesa=C5=99=C3=ADk <petr@tesaric=
+i.cz> wrote:
+>
+> On Mon,  1 May 2023 09:54:19 -0700
+> Suren Baghdasaryan <surenb@google.com> wrote:
+>
+> > Introduce __GFP_NO_OBJ_EXT flag in order to prevent recursive allocatio=
+ns
+> > when allocating slabobj_ext on a slab.
+> >
+> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> > ---
+> >  include/linux/gfp_types.h | 12 ++++++++++--
+> >  1 file changed, 10 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/include/linux/gfp_types.h b/include/linux/gfp_types.h
+> > index 6583a58670c5..aab1959130f9 100644
+> > --- a/include/linux/gfp_types.h
+> > +++ b/include/linux/gfp_types.h
+> > @@ -53,8 +53,13 @@ typedef unsigned int __bitwise gfp_t;
+> >  #define ___GFP_SKIP_ZERO     0
+> >  #define ___GFP_SKIP_KASAN    0
+> >  #endif
+> > +#ifdef CONFIG_SLAB_OBJ_EXT
+> > +#define ___GFP_NO_OBJ_EXT       0x4000000u
+> > +#else
+> > +#define ___GFP_NO_OBJ_EXT       0
+> > +#endif
+> >  #ifdef CONFIG_LOCKDEP
+> > -#define ___GFP_NOLOCKDEP     0x4000000u
+> > +#define ___GFP_NOLOCKDEP     0x8000000u
+>
+> So now we have two flags that depend on config options, but the first
+> one is always allocated in fact. I wonder if you could use an enum to
+> let the compiler allocate bits. Something similar to what Muchun Song
+> did with section flags.
+>
+> See commit ed7802dd48f7a507213cbb95bb4c6f1fe134eb5d for reference.
 
-Yes and with the above change feel free to add my for this patch and
-see my other reply for the s390 specific change.
+Thanks for the reference. I'll take a closer look and will try to clean it =
+up.
 
-Acked-by: Niklas Schnelle <schnelle@linux.ibm.com> # s390
+>
+> >  #else
+> >  #define ___GFP_NOLOCKDEP     0
+> >  #endif
+> > @@ -99,12 +104,15 @@ typedef unsigned int __bitwise gfp_t;
+> >   * node with no fallbacks or placement policy enforcements.
+> >   *
+> >   * %__GFP_ACCOUNT causes the allocation to be accounted to kmemcg.
+> > + *
+> > + * %__GFP_NO_OBJ_EXT causes slab allocation to have no object
+> > extension. */
+> >  #define __GFP_RECLAIMABLE ((__force gfp_t)___GFP_RECLAIMABLE)
+> >  #define __GFP_WRITE  ((__force gfp_t)___GFP_WRITE)
+> >  #define __GFP_HARDWALL   ((__force gfp_t)___GFP_HARDWALL)
+> >  #define __GFP_THISNODE       ((__force gfp_t)___GFP_THISNODE)
+> >  #define __GFP_ACCOUNT        ((__force gfp_t)___GFP_ACCOUNT)
+> > +#define __GFP_NO_OBJ_EXT   ((__force gfp_t)___GFP_NO_OBJ_EXT)
+> >
+> >  /**
+> >   * DOC: Watermark modifiers
+> > @@ -249,7 +257,7 @@ typedef unsigned int __bitwise gfp_t;
+> >  #define __GFP_NOLOCKDEP ((__force gfp_t)___GFP_NOLOCKDEP)
+> >
+> >  /* Room for N __GFP_FOO bits */
+> > -#define __GFP_BITS_SHIFT (26 + IS_ENABLED(CONFIG_LOCKDEP))
+> > +#define __GFP_BITS_SHIFT (27 + IS_ENABLED(CONFIG_LOCKDEP))
+>
+> If the above suggestion is implemented, this could be changed to
+> something like __GFP_LAST_BIT (the enum's last identifier).
 
-(I've recently been added as additional S390 IOMMU (PCI) maintainer)
+Ack.
+
+Thanks for reviewing!
+Suren.
+
+>
+> Petr T
