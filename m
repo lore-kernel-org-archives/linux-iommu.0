@@ -1,114 +1,193 @@
-Received: from mail-pf1-f175.google.com (mail-pf1-f175.google.com [209.85.210.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8507F33EA
-	for <iommu@lists.linux.dev>; Tue,  2 May 2023 16:09:56 +0000 (UTC)
-Received: by mail-pf1-f175.google.com with SMTP id d2e1a72fcca58-63d2ba63dddso3060487b3a.2
-        for <iommu@lists.linux.dev>; Tue, 02 May 2023 09:09:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683043796; x=1685635796;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ptDvwkDRf8ObhvSOwyQg6eM98sWTyAdcBLxunDzT4/Q=;
-        b=I6jeZ/ilRu61CJGPkewQd5ckji494RXSK4tjlfW3RUXCQ8fq2cPtxBUZ4IwVTiKp5u
-         RcJe1BZ93BAbM5DeocsTP0z9dWVkl9adzMWVPRpP6nV75tiDGgx0hV3uDh+Qa+uIFP0n
-         bujCL8XD94uXAfUoJztpdJpmQB62wgVAewun/uB/wvS7swiWMcerxg9zK9TTTcu1l11r
-         ttYr7JDdhpY3BKEjFiikj2kLFkWliECUiWUliIG186N2p0bvp9dOwS01uL2R9sodve0U
-         hL4CRQ60epCQfDo5saLCijjO5Tbw66zCc1E5I6itAYcqSOekRhB2+fSf5prqTGoxq4Qs
-         d0bg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683043796; x=1685635796;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ptDvwkDRf8ObhvSOwyQg6eM98sWTyAdcBLxunDzT4/Q=;
-        b=Xo+OZdl+9HPdnmCYVrBb4kuJisZTQHzM2RfXtLYBTRcyxfLS7dc0bWIzzvNzhy0Qh5
-         3p013AY2XYa67PGvIJ3bPmaNy5Wb9XLeanQRLqBwgoSdlJOPfRgqVWoPxO9LYhaw9xi1
-         WV8QQuWJVfjbw3xRnKKxFABV6ScB/HsvLXNIW9zw5YLgAQk5NhrPzpDCeRGC2a44PA3n
-         52nkWGvMw84y8cOwVcGS29dfK5oVklSiLIVN1IM3eSQVxciPvjWP9dq1VE+lP4DC90/7
-         zuwO1EfWqwe2Q+0JKteO8oiwbXrhZbpbJDqVAckq/ruKOVJE4qobmq6sOe+k8KLiNrVy
-         kh4g==
-X-Gm-Message-State: AC+VfDzmbjd95mSmd2LdeU5ptVPJd6REQR9xU44H8DVC3YEqmPeF+u44
-	xjw9v7o/+CB82aDWPy3oaMg=
-X-Google-Smtp-Source: ACHHUZ7/SR/EIzNLSBaIwWXnGdWH+wPk46JqjklNVRkl5EW8iNrCmxqTVwJA1Knq91jeiLVCwsg4Bg==
-X-Received: by 2002:a17:90a:3906:b0:24e:12f4:b74f with SMTP id y6-20020a17090a390600b0024e12f4b74fmr5249153pjb.20.1683043795714;
-        Tue, 02 May 2023 09:09:55 -0700 (PDT)
-Received: from localhost ([2a00:79e1:abd:4a00:61b:48ed:72ab:435b])
-        by smtp.gmail.com with ESMTPSA id 9-20020a17090a0f0900b0024c1f1cdf98sm8120109pjy.13.2023.05.02.09.09.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 May 2023 09:09:55 -0700 (PDT)
-From: Rob Clark <robdclark@gmail.com>
-To: dri-devel@lists.freedesktop.org,
-	iommu@lists.linux-foundation.org
-Cc: freedreno@lists.freedesktop.org,
-	linux-arm-msm@vger.kernel.org,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Rob Clark <robdclark@chromium.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Bjorn Andersson <quic_bjorande@quicinc.com>,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	linux-arm-kernel@lists.infradead.org (moderated list:ARM SMMU DRIVERS),
-	iommu@lists.linux.dev (open list:IOMMU SUBSYSTEM),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 1/2] iommu/arm-smmu-qcom: Fix missing adreno_smmu's
-Date: Tue,  2 May 2023 09:09:47 -0700
-Message-Id: <20230502160950.1758826-1-robdclark@gmail.com>
-X-Mailer: git-send-email 2.39.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDE831C01;
+	Tue,  2 May 2023 17:58:34 +0000 (UTC)
+Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 342Hp0jb024052;
+	Tue, 2 May 2023 17:58:02 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=621oHKV9Q4q3NojmG6Twv6Ayhy6gzgsdLbpEBdHVwnE=;
+ b=RGpeH+7Spx3pccPx3n9bfSCmCQ+mcHv5kqAStsFG5zdqKnoxzqdfzAYTXWtk7be8McxO
+ UQZuX9SdrxLl4NUmNPHgm2ATGbTPfhEeyO8DKSUDZGo4EImBN22KsuO0WHFJ46vyRokR
+ bbTDbNhF/pUUMxSGHgNw44E0ePh1akr2G+6uuv1pCAda2hsSJ4YXw6Xd78xwcodys9fZ
+ cOZOMmIm/8Or3YW9LyCcwLkMBEIYOtUKXeQSO95k4p/+1LlweFTK7vOpCGGfKV7Y6z1O
+ UWy0X6TlofXlAYbHPAVuNxcyR4OlOppaJW1xxxrHkNLWvUdNl+4KcVNxf0ngQkigltly 6Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qb79g85he-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 02 May 2023 17:58:01 +0000
+Received: from m0353729.ppops.net (m0353729.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 342Hs8Hv032494;
+	Tue, 2 May 2023 17:58:00 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qb79g85g0-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 02 May 2023 17:57:59 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+	by ppma04ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 341LC9Kf005173;
+	Tue, 2 May 2023 17:57:56 GMT
+Received: from smtprelay02.fra02v.mail.ibm.com ([9.218.2.226])
+	by ppma04ams.nl.ibm.com (PPS) with ESMTPS id 3q8tv6sr55-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 02 May 2023 17:57:56 +0000
+Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
+	by smtprelay02.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 342HvqTe6816504
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 2 May 2023 17:57:52 GMT
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id AC9B320043;
+	Tue,  2 May 2023 17:57:52 +0000 (GMT)
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id E163420040;
+	Tue,  2 May 2023 17:57:50 +0000 (GMT)
+Received: from [9.171.18.35] (unknown [9.171.18.35])
+	by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Tue,  2 May 2023 17:57:50 +0000 (GMT)
+Message-ID: <619e2ae66038da313b68c0f5d16e97984aebe5e6.camel@linux.ibm.com>
+Subject: Re: [PATCH 03/20] iommu/s390: Replace set_platform_dma_ops() with
+ IOMMU_DOMAIN_PLATFORM
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
+        Alim
+ Akhtar <alim.akhtar@samsung.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Gerald Schaefer
+ <gerald.schaefer@linux.ibm.com>,
+        Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonathan
+ Hunter <jonathanh@nvidia.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Konrad
+ Dybcio <konrad.dybcio@linaro.org>,
+        Krzysztof Kozlowski
+ <krzysztof.kozlowski@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org,
+        linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Matthew Rosato
+ <mjrosato@linux.ibm.com>,
+        Orson Zhai <orsonzhai@gmail.com>, Rob Clark
+ <robdclark@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Samuel Holland
+ <samuel@sholland.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Krishna
+ Reddy <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
+        Will Deacon
+ <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+        Chunyan Zhang
+ <zhang.lyra@gmail.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
+        Nicolin Chen <nicolinc@nvidia.com>,
+        Steven Price <steven.price@arm.com>
+Date: Tue, 02 May 2023 19:57:50 +0200
+In-Reply-To: <3-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
+References: <3-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.48.1 (3.48.1-1.fc38) 
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: _cF4FTDgqHBuVmSLzSX027-cXWersI4c
+X-Proofpoint-ORIG-GUID: 9v3VgFcH_fMov5DWIp_KQp1O0YfHLmEi
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-05-02_10,2023-04-27_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 malwarescore=0
+ clxscore=1015 mlxlogscore=999 impostorscore=0 spamscore=0 mlxscore=0
+ bulkscore=0 lowpriorityscore=0 adultscore=0 phishscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2303200000 definitions=main-2305020151
 
-From: Rob Clark <robdclark@chromium.org>
+On Mon, 2023-05-01 at 15:02 -0300, Jason Gunthorpe wrote:
+> This is temporary until the S390 dma-iommu.c conversion is merged.
 
-When the special handling of qcom,adreno-smmu was moved into
-qcom_smmu_create(), it was overlooked that we didn't have all the
-required entries in qcom_smmu_impl_of_match.  So we stopped getting
-adreno_smmu_priv on sc7180, breaking per-process pgtables.
+For anyone wanting to accelerate the conversion. Comments, testing and
+reviews for the current version of my dma-iommu.c conversion patches is
+welcome and the single flush queue thing might even give others
+(virtio-iommu?) performance benefits:
+https://lore.kernel.org/linux-iommu/20230310-dma_iommu-v8-0-2347dfbed7af@li=
+nux.ibm.com/
 
-Fixes: 30b912a03d91 ("iommu/arm-smmu-qcom: Move the qcom,adreno-smmu check into qcom_smmu_create")
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 5 +++++
- 1 file changed, 5 insertions(+)
+>=20
+> s390 is actually moving the dma_ops over to platform control.
+>=20
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/s390-iommu.c | 21 +++++++++++++++++++--
+>  1 file changed, 19 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+> index fbf59a8db29b11..f0c867c57a5b9b 100644
+> --- a/drivers/iommu/s390-iommu.c
+> +++ b/drivers/iommu/s390-iommu.c
+> @@ -142,14 +142,31 @@ static int s390_iommu_attach_device(struct iommu_do=
+main *domain,
+>  	return 0;
+>  }
+>=20=20
+> -static void s390_iommu_set_platform_dma(struct device *dev)
+> +/*
+> + * Switch control over the IOMMU to S390's internal dma_api ops
+> + */
+> +static int s390_iommu_platform_attach(struct iommu_domain *platform_doma=
+in,
+> +				      struct device *dev)
+>  {
+>  	struct zpci_dev *zdev =3D to_zpci_dev(dev);
+>=20=20
+> +	if (!zdev->s390_domain)
+> +		return 0;
+> +
+>  	__s390_iommu_detach_device(zdev);
+>  	zpci_dma_init_device(zdev);
+> +	return 0;
+>  }
+>=20=20
+> +static struct iommu_domain_ops s390_iommu_platform_ops =3D {
+> +	.attach_dev =3D s390_iommu_platform_attach,
+> +};
+> +
+> +static struct iommu_domain s390_iommu_platform_domain =3D {
+> +	.type =3D IOMMU_DOMAIN_PLATFORM,
+> +	.ops =3D &s390_iommu_platform_ops,
+> +};
+> +
+>  static void s390_iommu_get_resv_regions(struct device *dev,
+>  					struct list_head *list)
+>  {
+> @@ -428,12 +445,12 @@ void zpci_destroy_iommu(struct zpci_dev *zdev)
+>  }
+>=20=20
+>  static const struct iommu_ops s390_iommu_ops =3D {
+> +	.default_domain =3D &s390_iommu_platform_domain,
+>  	.capable =3D s390_iommu_capable,
+>  	.domain_alloc =3D s390_domain_alloc,
+>  	.probe_device =3D s390_iommu_probe_device,
+>  	.release_device =3D s390_iommu_release_device,
+>  	.device_group =3D generic_device_group,
+> -	.set_platform_dma_ops =3D s390_iommu_set_platform_dma,
+>  	.pgsize_bitmap =3D SZ_4K,
+>  	.get_resv_regions =3D s390_iommu_get_resv_regions,
+>  	.default_domain_ops =3D &(const struct iommu_domain_ops) {
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index d1b296b95c86..88c89424485b 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -512,20 +512,25 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
- 	{ .compatible = "qcom,sm6115-smmu-500", .data = &qcom_smmu_500_impl0_data},
- 	{ .compatible = "qcom,sm6125-smmu-500", .data = &qcom_smmu_500_impl0_data },
- 	{ .compatible = "qcom,sm6350-smmu-v2", .data = &qcom_smmu_v2_data },
- 	{ .compatible = "qcom,sm6350-smmu-500", .data = &qcom_smmu_500_impl0_data },
- 	{ .compatible = "qcom,sm6375-smmu-500", .data = &qcom_smmu_500_impl0_data },
- 	{ .compatible = "qcom,sm8150-smmu-500", .data = &qcom_smmu_500_impl0_data },
- 	{ .compatible = "qcom,sm8250-smmu-500", .data = &qcom_smmu_500_impl0_data },
- 	{ .compatible = "qcom,sm8350-smmu-500", .data = &qcom_smmu_500_impl0_data },
- 	{ .compatible = "qcom,sm8450-smmu-500", .data = &qcom_smmu_500_impl0_data },
- 	{ .compatible = "qcom,smmu-500", .data = &qcom_smmu_500_impl0_data },
-+	/*
-+	 * Should come after the qcom,smmu-500 fallback so smmu-500 variants of
-+	 * adreno-smmu get qcom_adreno_smmu_500_impl:
-+	 */
-+	{ .compatible = "qcom,adreno-smmu", .data = &qcom_smmu_v2_data },
- 	{ }
- };
- 
- #ifdef CONFIG_ACPI
- static struct acpi_platform_list qcom_acpi_platlist[] = {
- 	{ "LENOVO", "CB-01   ", 0x8180, ACPI_SIG_IORT, equal, "QCOM SMMU" },
- 	{ "QCOM  ", "QCOMEDK2", 0x8180, ACPI_SIG_IORT, equal, "QCOM SMMU" },
- 	{ }
- };
- #endif
--- 
-2.39.2
+Looks good to me and I think semantically this is a good use of an
+IOMMU domain type.
 
+Reviewed-by: Niklas Schnelle <schnelle@linux.ibm.com>
