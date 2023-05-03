@@ -1,21 +1,47 @@
-Received: from out-60.mta0.migadu.com (out-60.mta0.migadu.com [91.218.175.60])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C792DF41
-	for <iommu@lists.linux.dev>; Wed,  3 May 2023 18:57:00 +0000 (UTC)
-Date: Wed, 3 May 2023 14:56:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1683140217;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=kvDb7bxJfzE9KfjpQKTTQijQZOsAXNXH2iadfpJ44Yc=;
-	b=h1g4T3QhYib2nBdpUAXTn+2qQD9ejDw6IFQM/FKbwPTcpONEOGJug9IN/JkcPzWXJb7WMP
-	26usKy4n6B80sjCITIgILHgS1JbDUF0CHEgjPjZCLkcCdcNgTyG39f1X0AAT4O4tYbSzBt
-	CqImMwnUyz+b+HgDx7XUNM9L7g1vdag=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Kent Overstreet <kent.overstreet@linux.dev>
-To: Tejun Heo <tj@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AE21DF41
+	for <iommu@lists.linux.dev>; Wed,  3 May 2023 18:58:54 +0000 (UTC)
+Received: by mail-pf1-f179.google.com with SMTP id d2e1a72fcca58-64115e652eeso7268288b3a.0
+        for <iommu@lists.linux.dev>; Wed, 03 May 2023 11:58:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1683140334; x=1685732334;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=vMlAqtjRc2HuzX77sJKufpwTYm/Gq3h8+fD7OUvgqfE=;
+        b=AAvxk54YlMnkI7FdWDgkmXppZ5N5YVAtZzB/uFzgetK350E1VsosLNsIn+t9yAmlyz
+         Mpf/EdDThAl6AdsQ4NqZZ4WQmsihQ4PIOjP2ktSZnRqbu/hpU+fSBV+6Seq32dABAuoB
+         fgBMvXiDGIWraIMuHQyLJ8k8C2Rfu3BrjRS/alNIzOPn/3Xdw2WUHmjkDBEutrfMrPpb
+         QTijZH34gDsEJTP9EXOMMbAzxdlErf6OrxB7h8VV2kzs6tN2Aq3j/W560a3R8Pg4/lCz
+         FYHP8xcU1EYp/9E+JwiaUk9zf6GvPs+LS2bU4OlgAsosubDIcUNZjh57x1aZiOnb8NOJ
+         sALg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683140334; x=1685732334;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=vMlAqtjRc2HuzX77sJKufpwTYm/Gq3h8+fD7OUvgqfE=;
+        b=QPCdgbVFxl5BYjEuz7WFP4OHKVieQQTeh/kNDaS3A1WAj245Uw23pKGXuFAvXRSBK9
+         i53yf6FDBqfHciHPX0frI+7SxtFCFSQpUH7Cedj9mAF8K4/eSog+AKOvikd/kGuLCP3A
+         SNlNA8+LLAAUk61xWv64PCCUk7dkYF0c5+IdBmlht/e9fpgAAdXw552MccuR/+c3N76U
+         IOMO9urZtT3opn8Zzg0+a8LELBNXn2QBumizDgv0x93j4q0+SLn2DdZe4PZ47LiaD7wl
+         pAGJu/Dvw+xMU5aphwwBgmDiiyDOFYJNwALzhX5PTSxEQ6qn7i74sEQaHLFFmZq4BAn8
+         MLfw==
+X-Gm-Message-State: AC+VfDw/kDm7h80ZooxPzBg9I2ZxeaktKHr30i5HnLtSyiI59uxfl/50
+	lUlFBrTjyrHaQmzJxnPdY3c=
+X-Google-Smtp-Source: ACHHUZ5EimlJXBnB410AOZJFF9uhR8Bd9zCcSVKDkw9w+jAPlVTHtCrOZFWDZSswiUq3A461o3c8YA==
+X-Received: by 2002:a17:903:2345:b0:1a9:6a10:70e9 with SMTP id c5-20020a170903234500b001a96a1070e9mr878641plh.33.1683140333441;
+        Wed, 03 May 2023 11:58:53 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::5:6454])
+        by smtp.gmail.com with ESMTPSA id 11-20020a170902e9cb00b001aaf92130afsm5726253plk.116.2023.05.03.11.58.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 May 2023 11:58:53 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date: Wed, 3 May 2023 08:58:51 -1000
+From: Tejun Heo <tj@kernel.org>
+To: Kent Overstreet <kent.overstreet@linux.dev>
 Cc: Johannes Weiner <hannes@cmpxchg.org>, Michal Hocko <mhocko@suse.com>,
 	Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org,
 	vbabka@suse.cz, roman.gushchin@linux.dev, mgorman@suse.de,
@@ -46,7 +72,7 @@ Cc: Johannes Weiner <hannes@cmpxchg.org>, Michal Hocko <mhocko@suse.com>,
 	Alexei Starovoitov <ast@kernel.org>,
 	Andrii Nakryiko <andrii@kernel.org>
 Subject: Re: [PATCH 00/40] Memory allocation profiling
-Message-ID: <ZFKubD/lq7oB4svV@moria.home.lan>
+Message-ID: <ZFKu6zWA00AzArMF@slm.duckdns.org>
 References: <20230501165450.15352-1-surenb@google.com>
  <ZFIMaflxeHS3uR/A@dhcp22.suse.cz>
  <ZFIOfb6/jHwLqg6M@moria.home.lan>
@@ -56,6 +82,7 @@ References: <20230501165450.15352-1-surenb@google.com>
  <20230503180726.GA196054@cmpxchg.org>
  <ZFKlrP7nLn93iIRf@slm.duckdns.org>
  <ZFKqh5Dh93UULdse@slm.duckdns.org>
+ <ZFKubD/lq7oB4svV@moria.home.lan>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,23 +91,27 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZFKqh5Dh93UULdse@slm.duckdns.org>
-X-Migadu-Flow: FLOW_OUT
+In-Reply-To: <ZFKubD/lq7oB4svV@moria.home.lan>
 
-On Wed, May 03, 2023 at 08:40:07AM -1000, Tejun Heo wrote:
-> > Yeah, easy / default visibility argument does make sense to me.
+On Wed, May 03, 2023 at 02:56:44PM -0400, Kent Overstreet wrote:
+> On Wed, May 03, 2023 at 08:40:07AM -1000, Tejun Heo wrote:
+> > > Yeah, easy / default visibility argument does make sense to me.
+> > 
+> > So, a bit of addition here. If this is the thrust, the debugfs part seems
+> > rather redundant, right? That's trivially obtainable with tracing / bpf and
+> > in a more flexible and performant manner. Also, are we happy with recording
+> > just single depth for persistent tracking?
 > 
-> So, a bit of addition here. If this is the thrust, the debugfs part seems
-> rather redundant, right? That's trivially obtainable with tracing / bpf and
-> in a more flexible and performant manner. Also, are we happy with recording
-> just single depth for persistent tracking?
+> Not sure what you're envisioning?
+> 
+> I'd consider the debugfs interface pretty integral; it's much more
+> discoverable for users, and it's hardly any code out of the whole
+> patchset.
 
-Not sure what you're envisioning?
+You can do the same thing with a bpftrace one liner tho. That's rather
+difficult to beat.
 
-I'd consider the debugfs interface pretty integral; it's much more
-discoverable for users, and it's hardly any code out of the whole
-patchset.
+Thanks.
 
-Single depth was discussed previously. It's what makes it cheap enough
-to be always-on (saving stack traces is expensive!), and I find the
-output much more usable than e.g. page owner.
+-- 
+tejun
