@@ -1,101 +1,93 @@
-Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com [209.85.128.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABB9AD30C
-	for <iommu@lists.linux.dev>; Wed,  3 May 2023 15:24:32 +0000 (UTC)
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-55b7630a736so16342407b3.1
-        for <iommu@lists.linux.dev>; Wed, 03 May 2023 08:24:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1683127471; x=1685719471;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3u3xUQKsQtY5MjJU7KWdFVlKdUwGfS6WMFqIdWoJCIo=;
-        b=unFkvF+6wudO45usQ0U6AfJIfqhGP+H5/IVYvEVNkvB69qXh+JOZzYWL6W8iypwR8u
-         WXtxZSQf4t68zEHXsPc28NiwHPUvvwS/M344xQ3tBObhdP7U9FItGEykPkPqu+eEbFFp
-         okusA4UwcrZWf8Z51Zm29/RE04pDrtNIp/vD2aJp+XpBdU2UkRkKKny9uq/isdNkl+oO
-         Skjuy9Oo1eMbcdvkjUdB3P7K+oZHaS/9IHtfkJQayp0An2kmfxp7oACjbZtN8XRdwT2w
-         lxjzvHFT+zOFmdZqKIHE6BDxnTC8QY7tAueSdS/QBzC33/doZv3G/USW3EuK7WLdlbGW
-         qF+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683127471; x=1685719471;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=3u3xUQKsQtY5MjJU7KWdFVlKdUwGfS6WMFqIdWoJCIo=;
-        b=jIkvk0IirA/M1aD1te1VZBq/BG/WWDO+z3UZ5q67++lUhWX3kvzObL90d3/g8VQIsb
-         oGHEHCyEk8KUuc+xZXIHLSviAJBUsgqsG2p3P/IlVy+zSNzRMH52V7IIIoD1UtvwLsqF
-         9SKly/Xq+SQZBoeFnCMl3E0R0X5chrOLpCg1Excnm61aghS9g9cbggNphLlg3B6IAgmM
-         D/eoB+jGo+jopNN+Cqzb/5RHAdTtZtx6lo815gKkro8igelJb0x/+UwhLm0dcLhR2hbh
-         PCgoKKbMOaRWBW8cuQK+YiUpHnhG3KpXkuoMQ4EXytvEze3oxAPlduAL0rTG9sbbEnLM
-         g61Q==
-X-Gm-Message-State: AC+VfDxN5a2Z8fL8AFr2PI7NxG0sCAL4f+6mSLq27+BUiDXlT7BbceLL
-	MR/YfDvcUKt5olfnYS20rVfZAgGskoC7Ziu7+PXsBw==
-X-Google-Smtp-Source: ACHHUZ4QRO+chfCfz5/jv+a2xol9xihN+1wt+nUNWo6jdaruLvTBoFlz5eyhSEYcB7ZOQZ60IsdoPkHuL2yRnd5FS3c=
-X-Received: by 2002:a0d:e296:0:b0:55a:4109:7f5a with SMTP id
- l144-20020a0de296000000b0055a41097f5amr11315408ywe.12.1683127470672; Wed, 03
- May 2023 08:24:30 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84C3FD30C
+	for <iommu@lists.linux.dev>; Wed,  3 May 2023 15:26:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1683127605; x=1714663605;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=JW32feYIw7XcNCp0X+HS3CFsBn68Px3L2hSYcXUbWmk=;
+  b=PT6Tf3+ASWtq19/6hMEa+jPQ0ZVD0jARTYMjwUKenjA7A/kU7l6vFLZE
+   9t53840o7oJXHlK4Ut64rUdq/LFDOaR1NG4yvaXryaV7MfnoUb7CkUbKp
+   NCn6LNbt6HG3fR+Nt9YzZiNe4rwxx0KffSFgAwzgc4wshHmr0EDuuMNvI
+   XM8jPeWbslJBLoHwPxmiV8sqV0CumCWvZCKV43eBEmaOy4f9vaVYSLGx1
+   XuPtZf8AXWtK2Nb1+EqLqSbVcQfHtdh6rrGRHPHIg2lbvZlrgf1tWAW/O
+   Mf/23L+lao3oyVGzsIwRiUOtCJpkpio9tUIp99X6lo8fJKwFhyX7dWPRb
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10699"; a="347502729"
+X-IronPort-AV: E=Sophos;i="5.99,247,1677571200"; 
+   d="scan'208";a="347502729"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2023 08:26:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10699"; a="766174780"
+X-IronPort-AV: E=Sophos;i="5.99,247,1677571200"; 
+   d="scan'208";a="766174780"
+Received: from hrizk-mobl.amr.corp.intel.com (HELO [10.212.127.167]) ([10.212.127.167])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2023 08:26:41 -0700
+Message-ID: <b8ab89e6-0456-969d-ed31-fa64be0a0fd0@intel.com>
+Date: Wed, 3 May 2023 08:26:40 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230501165450.15352-1-surenb@google.com> <20230501165450.15352-36-surenb@google.com>
- <ZFIPmnrSIdJ5yusM@dhcp22.suse.cz>
-In-Reply-To: <ZFIPmnrSIdJ5yusM@dhcp22.suse.cz>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Wed, 3 May 2023 08:24:19 -0700
-Message-ID: <CAJuCfpGsvWupMbasqvwcMYsOOPxTQqi1ed5+=vyu-yoPQwwybg@mail.gmail.com>
-Subject: Re: [PATCH 35/40] lib: implement context capture support for tagged allocations
-To: Michal Hocko <mhocko@suse.com>
-Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, vbabka@suse.cz, 
-	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
-	corbet@lwn.net, void@manifault.com, peterz@infradead.org, 
-	juri.lelli@redhat.com, ldufour@linux.ibm.com, catalin.marinas@arm.com, 
-	will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
-	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
-	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
-	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
-	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
-	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
-	ndesaulniers@google.com, gregkh@linuxfoundation.org, ebiggers@google.com, 
-	ytcoode@gmail.com, vincent.guittot@linaro.org, dietmar.eggemann@arm.com, 
-	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com, 
-	vschneid@redhat.com, cl@linux.com, penberg@kernel.org, iamjoonsoo.kim@lge.com, 
-	42.hyeyoo@gmail.com, glider@google.com, elver@google.com, dvyukov@google.com, 
-	shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com, 
-	rientjes@google.com, minchan@google.com, kaleshsingh@google.com, 
-	kernel-team@android.com, linux-doc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH 34/40] lib: code tagging context capture support
+Content-Language: en-US
+To: Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, vbabka@suse.cz,
+ hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de,
+ dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
+ corbet@lwn.net, void@manifault.com, peterz@infradead.org,
+ juri.lelli@redhat.com, ldufour@linux.ibm.com, catalin.marinas@arm.com,
+ will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
+ dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
+ david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
+ nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev,
+ rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com,
+ yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com,
+ hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org,
+ ndesaulniers@google.com, gregkh@linuxfoundation.org, ebiggers@google.com,
+ ytcoode@gmail.com, vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+ rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+ vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+ iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+ elver@google.com, dvyukov@google.com, shakeelb@google.com,
+ songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
+ minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+ linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
+ cgroups@vger.kernel.org
+References: <20230501165450.15352-1-surenb@google.com>
+ <20230501165450.15352-35-surenb@google.com> <ZFIO3tXCbmTn53uv@dhcp22.suse.cz>
+ <CAJuCfpHrZ4kWYFPvA3W9J+CmNMuOtGa_ZMXE9fOmKsPQeNt2tg@mail.gmail.com>
+From: Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <CAJuCfpHrZ4kWYFPvA3W9J+CmNMuOtGa_ZMXE9fOmKsPQeNt2tg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Wed, May 3, 2023 at 12:39=E2=80=AFAM Michal Hocko <mhocko@suse.com> wrot=
-e:
->
-> On Mon 01-05-23 09:54:45, Suren Baghdasaryan wrote:
-> [...]
-> > +struct codetag_ctx *alloc_tag_create_ctx(struct alloc_tag *tag, size_t=
- size)
-> > +{
-> > +     struct alloc_call_ctx *ac_ctx;
-> > +
-> > +     /* TODO: use a dedicated kmem_cache */
-> > +     ac_ctx =3D kmalloc(sizeof(struct alloc_call_ctx), GFP_KERNEL);
->
-> You cannot really use GFP_KERNEL here. This is post_alloc_hook path and
-> that has its own gfp context.
+On 5/3/23 08:18, Suren Baghdasaryan wrote:
+>>> +static inline void rem_ctx(struct codetag_ctx *ctx,
+>>> +                        void (*free_ctx)(struct kref *refcount))
+>>> +{
+>>> +     struct codetag_with_ctx *ctc = ctx->ctc;
+>>> +
+>>> +     spin_lock(&ctc->ctx_lock);
+>> This could deadlock when allocator is called from the IRQ context.
+> I see. spin_lock_irqsave() then?
 
-I missed that. Would it be appropriate to use the gfp_flags parameter
-of post_alloc_hook() here?
+Yes.  But, even better, please turn on lockdep when you are testing.  It
+will find these for you.  If you're on x86, we have a set of handy-dandy
+debug options that you can add to an existing config with:
 
+	make x86_debug.config
 
-> --
-> Michal Hocko
-> SUSE Labs
+That said, I'm as concerned as everyone else that this is all "new" code
+and doesn't lean on existing tracing or things like PAGE_OWNER enough.
