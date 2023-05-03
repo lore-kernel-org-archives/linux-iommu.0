@@ -1,185 +1,129 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+Received: from out-57.mta1.migadu.com (out-57.mta1.migadu.com [95.215.58.57])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA6C410E8
-	for <iommu@lists.linux.dev>; Wed,  3 May 2023 06:50:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683096601; x=1714632601;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=iJ7gTbn3TGY2uVMAp3p07OP4QzdNfi6IggKfglIPbfg=;
-  b=LwrkvPYYppdkoz+Sd3epQJYdpSti3FJ5raer+iCR2JeqlT2AWaJIiWQ4
-   jHH5jvPAWC2Yf15vt2XeiJvnLSrWcmVS8OzQ29pO8mN9dXB+6Jzfw/uLs
-   lslWhONaTP0keL40on2XwpDwSjk7h0QKEMi9TKv2pzw36Dy956Jw4t4eO
-   BO/CSDdBfD1Bq5sFiTNgG9yqeYDVVhrejtwNs/exS+pEImaN069xGNNEh
-   UlmHHDlvNaAOq48mdGw43OJE6Oj0AdLJq7goKSE+f4O8w3/QoVqG+hLva
-   +UL+Fn5zX0tZVX6gfc6fCRS8ARedGiBg/Os4gSD9HHlDppusfgmfNXsAO
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10698"; a="414038483"
-X-IronPort-AV: E=Sophos;i="5.99,246,1677571200"; 
-   d="scan'208";a="414038483"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2023 23:50:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10698"; a="696453731"
-X-IronPort-AV: E=Sophos;i="5.99,246,1677571200"; 
-   d="scan'208";a="696453731"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orsmga002.jf.intel.com with ESMTP; 02 May 2023 23:49:56 -0700
-Message-ID: <75bdf30c-d38f-ef95-7618-91ebf35ea297@linux.intel.com>
-Date: Wed, 3 May 2023 14:49:36 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13469EA3
+	for <iommu@lists.linux.dev>; Wed,  3 May 2023 07:13:13 +0000 (UTC)
+Date: Wed, 3 May 2023 03:12:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1683097991;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Sa4OTZB5b+skGudhSwhmk32TbWUPA01HpPa43R3XypE=;
+	b=houGGarhoR27PbchhA+QNGA0saxVkWBHqqLXWwcgql8ghPJpiqqLxuMJIsQYxFnIsotmiT
+	R5cEBBWaIeU7VnAYAflrCrppJkt964UNglx6jVLEs7TCm33He/1Trw4Kd39bUM2JjWBSVm
+	eV4n8fttF9Y1FM+uRWMMQaDs/kiMrwM=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Kent Overstreet <kent.overstreet@linux.dev>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: James Bottomley <James.Bottomley@hansenpartnership.com>,
+	Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org,
+	mhocko@suse.com, vbabka@suse.cz, hannes@cmpxchg.org,
+	roman.gushchin@linux.dev, mgorman@suse.de, willy@infradead.org,
+	liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com,
+	peterz@infradead.org, juri.lelli@redhat.com, ldufour@linux.ibm.com,
+	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
+	x86@kernel.org, peterx@redhat.com, david@redhat.com,
+	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
+	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
+	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
+	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
+	keescook@chromium.org, ndesaulniers@google.com,
+	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
+	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+	elver@google.com, dvyukov@google.com, shakeelb@google.com,
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
+	cgroups@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+	Paul Mackerras <paulus@samba.org>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Jason Wang <jasowang@redhat.com>,
+	Noralf =?utf-8?B?VHLDr8K/wr1ubmVz?= <noralf@tronnes.org>
+Subject: Re: [PATCH 01/40] lib/string_helpers: Drop space in
+ string_get_size's output
+Message-ID: <ZFIJeSv9xn9qnMzg@moria.home.lan>
+References: <20230501165450.15352-2-surenb@google.com>
+ <ouuidemyregstrijempvhv357ggp4tgnv6cijhasnungsovokm@jkgvyuyw2fti>
+ <ZFAUj+Q+hP7cWs4w@moria.home.lan>
+ <b6b472b65b76e95bb4c7fc7eac1ee296fdbb64fd.camel@HansenPartnership.com>
+ <ZFCA2FF+9MI8LI5i@moria.home.lan>
+ <CAHp75VdK2bgU8P+-np7ScVWTEpLrz+muG-R15SXm=ETXnjaiZg@mail.gmail.com>
+ <ZFCsAZFMhPWIQIpk@moria.home.lan>
+ <CAHp75VdvRshCthpFOjtmajVgCS_8YoJBGbLVukPwU+t79Jgmww@mail.gmail.com>
+ <ZFHB2ATrPIsjObm/@moria.home.lan>
+ <CAHp75VdH07gTYCPvp2FRjnWn17BxpJCcFBbFPpjpGxBt1B158A@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Cc: baolu.lu@linux.intel.com, Will Deacon <will@kernel.org>,
- David Woodhouse <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>,
- "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
- "Yu, Fenghua" <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Tony Luck <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
- narayan.ranganathan@intel.com
-Subject: Re: [PATCH v5 5/7] iommu/vt-d: Prepare PASID attachment beyond
- RID_PASID
-Content-Language: en-US
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
- Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
- Joerg Roedel <joro@8bytes.org>, dmaengine@vger.kernel.org, vkoul@kernel.org
-References: <20230427174937.471668-1-jacob.jun.pan@linux.intel.com>
- <20230427174937.471668-6-jacob.jun.pan@linux.intel.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230427174937.471668-6-jacob.jun.pan@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHp75VdH07gTYCPvp2FRjnWn17BxpJCcFBbFPpjpGxBt1B158A@mail.gmail.com>
+X-Migadu-Flow: FLOW_OUT
 
-On 4/28/23 1:49 AM, Jacob Pan wrote:
-> @@ -2433,12 +2477,17 @@ static int dmar_domain_attach_device_pasid(struct dmar_domain *domain,
->   					   struct intel_iommu *iommu,
->   					   struct device *dev, ioasid_t pasid)
->   {
-> +	struct device_pasid_info *dev_pasid;
-> +	unsigned long flags;
->   	int ret;
->   
-> -	/* PASID table is mandatory for a PCI device in scalable mode. */
->   	if (!sm_supported(iommu) && dev_is_real_dma_subdevice(dev))
->   		return -EOPNOTSUPP;
->   
-> +	dev_pasid = kzalloc(sizeof(*dev_pasid), GFP_KERNEL);
-> +	if (!dev_pasid)
-> +		return -ENOMEM;
-> +
->   	if (hw_pass_through && domain_type_is_si(domain))
->   		ret = intel_pasid_setup_pass_through(iommu, domain, dev, pasid);
->   	else if (domain->use_first_level)
-> @@ -2446,6 +2495,17 @@ static int dmar_domain_attach_device_pasid(struct dmar_domain *domain,
->   	else
->   		ret = intel_pasid_setup_second_level(iommu, domain, dev, pasid);
->   
-> +	if (ret) {
-> +		kfree(dev_pasid);
-> +		return ret;
-> +	}
-> +
-> +	dev_pasid->pasid = pasid;
-> +	dev_pasid->dev = dev;
-> +	spin_lock_irqsave(&domain->lock, flags);
-> +	list_add(&dev_pasid->link_domain, &domain->dev_pasids);
-> +	spin_unlock_irqrestore(&domain->lock, flags);
-> +
->   	return 0;
->   }
->   
-> @@ -2467,16 +2527,13 @@ static int dmar_domain_attach_device(struct dmar_domain *domain,
->   		return ret;
->   	info->domain = domain;
->   	spin_lock_irqsave(&domain->lock, flags);
-> +	if (info->dev_attached) {
-> +		spin_unlock_irqrestore(&domain->lock, flags);
-> +		return 0;
-> +	}
->   	list_add(&info->link, &domain->devices);
->   	spin_unlock_irqrestore(&domain->lock, flags);
->   
-> -	ret = dmar_domain_attach_device_pasid(domain, iommu, dev,
-> -					      IOMMU_DEF_RID_PASID);
-> -	if (ret) {
-> -		dev_err(dev, "Setup RID2PASID failed\n");
-> -		device_block_translation(dev);
-> -	}
-> -
->   	ret = domain_context_mapping(domain, dev);
->   	if (ret) {
->   		dev_err(dev, "Domain context map failed\n");
-> @@ -2485,8 +2542,9 @@ static int dmar_domain_attach_device(struct dmar_domain *domain,
->   	}
->   
->   	iommu_enable_pci_caps(info);
-> +	info->dev_attached = 1;
->   
-> -	return 0;
-> +	return ret;
->   }
->   
->   static bool device_has_rmrr(struct device *dev)
-> @@ -4044,6 +4102,7 @@ static void device_block_translation(struct device *dev)
->   
->   	spin_lock_irqsave(&info->domain->lock, flags);
->   	list_del(&info->link);
-> +	info->dev_attached = 0;
->   	spin_unlock_irqrestore(&info->domain->lock, flags);
->   
->   	domain_detach_iommu(info->domain, iommu);
-> @@ -4175,8 +4234,15 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
->   				     struct device *dev)
->   {
->   	struct device_domain_info *info = dev_iommu_priv_get(dev);
-> +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-> +	struct intel_iommu *iommu;
-> +	u8 bus, devfn;
->   	int ret;
->   
-> +	iommu = device_to_iommu(dev, &bus, &devfn);
-> +	if (!iommu)
-> +		return -ENODEV;
-> +
->   	if (domain->type == IOMMU_DOMAIN_UNMANAGED &&
->   	    device_is_rmrr_locked(dev)) {
->   		dev_warn(dev, "Device is ineligible for IOMMU domain attach due to platform RMRR requirement.  Contact your platform vendor.\n");
-> @@ -4190,7 +4256,23 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
->   	if (ret)
->   		return ret;
->   
-> -	return dmar_domain_attach_device(to_dmar_domain(domain), dev);
-> +	ret = dmar_domain_attach_device(to_dmar_domain(domain), dev);
-> +	if (ret) {
-> +		dev_err(dev, "Attach device failed\n");
-> +		return ret;
-> +	}
-> +
-> +	/* PASID table is mandatory for a PCI device in scalable mode. */
-> +	if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev)) {
-> +		/* Setup the PASID entry for requests without PASID: */
-> +		ret = dmar_domain_attach_device_pasid(dmar_domain, iommu, dev,
-> +						      IOMMU_DEF_RID_PASID);
-> +		if (ret) {
-> +			dev_err(dev, "Setup RID2PASID failed\n");
-> +			device_block_translation(dev);
-> +		}
-> +	}
-> +	return ret;
->   }
->   
->   static int intel_iommu_map(struct iommu_domain *domain,
+On Wed, May 03, 2023 at 09:30:11AM +0300, Andy Shevchenko wrote:
+> On Wed, May 3, 2023 at 5:07 AM Kent Overstreet
+> <kent.overstreet@linux.dev> wrote:
+> > On Tue, May 02, 2023 at 06:19:27PM +0300, Andy Shevchenko wrote:
+> > > On Tue, May 2, 2023 at 9:22 AM Kent Overstreet
+> > > <kent.overstreet@linux.dev> wrote:
+> > > > On Tue, May 02, 2023 at 08:33:57AM +0300, Andy Shevchenko wrote:
+> > > > > Actually instead of producing zillions of variants, do a %p extension
+> > > > > to the printf() and that's it. We have, for example, %pt with T and
+> > > > > with space to follow users that want one or the other variant. Same
+> > > > > can be done with string_get_size().
+> > > >
+> > > > God no.
+> > >
+> > > Any elaboration what's wrong with that?
+> >
+> > I'm really not a fan of %p extensions in general (they are what people
+> > reach for because we can't standardize on a common string output API),
+> 
+> The whole story behind, for example, %pt is to _standardize_ the
+> output of the same stanza in the kernel.
 
-I am not following why do you need to change the attach_device path in
-this patch. Perhaps you want to make sure that context entry for the
-device is configured before attach_device_pasid?
+Wtf does this have to do with the rest of the discussion? The %p thing
+seems like a total non sequitar and a distraction.
 
-Best regards,
-baolu
+I'm not getting involved with that. All I'm interested in is fixing the
+memory allocation profiling output to make it more usable.
+
+> > but when we'd be passing it bare integers the lack of type safety would
+> > be a particularly big footgun.
+> 
+> There is no difference to any other place in the kernel where we can
+> shoot into our foot.
+
+Yeah, no, absolutely not. Passing different size integers to
+string_get_size() is fine; passing pointers to different size integers
+to a %p extension will explode and the compiler won't be able to warn.
+
+> 
+> > > God no for zillion APIs for almost the same. Today you want space,
+> > > tomorrow some other (special) delimiter.
+> >
+> > No, I just want to delete the space and output numbers the same way
+> > everyone else does. And if we are stuck with two string_get_size()
+> > functions, %p extensions in no way improve the situation.
+> 
+> I think it's exactly for the opposite, i.e. standardize that output
+> once and for all.
+
+So, are you dropping your NACK then, so we can standardize the kernel on
+the way everything else does it?
