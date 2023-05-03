@@ -1,257 +1,207 @@
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com [209.85.219.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86F3FD521;
-	Wed,  3 May 2023 14:43:58 +0000 (UTC)
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-50bcb229adaso5731685a12.2;
-        Wed, 03 May 2023 07:43:58 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7602D518
+	for <iommu@lists.linux.dev>; Wed,  3 May 2023 15:09:41 +0000 (UTC)
+Received: by mail-yb1-f179.google.com with SMTP id 3f1490d57ef6-b9a6869dd3cso7682598276.2
+        for <iommu@lists.linux.dev>; Wed, 03 May 2023 08:09:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683125037; x=1685717037;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+        d=google.com; s=20221208; t=1683126580; x=1685718580;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=YD5yiiH8lBdQsuc2FhY28EjAz9S4ScvskXPOKO+HOF0=;
-        b=BpVngYxQivy/XYyW+9EKjJlje9aNIDv72TfZqyRSMsD6UqDZq3629aCFIKMtMntnSK
-         3A0eabHU/498jjmBj1k6CAvZiWEctoQVCcQmdE4Y90sabW3bNVflocQY/yUuNnM2aJ06
-         eLtICAGFaytQGUDTGRbLz3Rvsj73ZDZb9qx0OBbBG1iBCl/rMbjIczEYlOskGjpAcprD
-         xIVegHVTaQjjR01uehTjsEr1l8Ii5MJ0pbHg3+EkZDYEMKYCIPjygV8pA1LLzSFsoSnj
-         aH940XK+coZOmgbi0xEn3TXiVcWWYQZLaIeLQpI5bkBax2/D8osVHILQXD1xO7z5vFbb
-         6o6A==
+        bh=njkpY9V26txLi7xPErO/sERUlWcV1pHNyq5uOqiF2eY=;
+        b=VExKdzK5WEHsMwlEvyXIbTAR60TSGl0weEuYF33kbqADYhPEKMB5BFVn748WX7nHdJ
+         1ZlyCGGXJGu0YiWNCyZl5XyfyFi2tpLKda0+fB339jPRw/X0v46Au/FFd5+OD8pJxpRY
+         +KkUzelDcKShio3avgpuSPMVkLeLPhlOjJQMnrVxm4Zf0u/pZ6cnJgNCbvz6qY3fWGrt
+         1Vm4vafoXe+OM0WR4hPTdkalQ5gy1bMCwNEAd6xNhQ1f8Ie8DIosbbc/QS5C38of78Fb
+         mqBoNYXzOBoZSmrx1Vo6JKftamzpTKOZAz7AVyV44cWc+5yFoj7tdjzyxk27OuKklV1Q
+         3kgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683125037; x=1685717037;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20221208; t=1683126580; x=1685718580;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=YD5yiiH8lBdQsuc2FhY28EjAz9S4ScvskXPOKO+HOF0=;
-        b=RuTLeTQ/F0MdG4mNuZCdrOkXPtXFAWwUvORIVAbJgfxH+6JNNNHay//V+SxDB6Naro
-         NVEv012CpDRHPbdXPaVULzSV1erZ9f/vq9DRoNEwetgIa18JyQGwkY/QeRLEEhBnH8Sy
-         t7CEFhwHUaHcXPh/F/9dGTCi2oW+5XnmBMHqqpwtdfsE7MFfXLQMCGXWvbhYeQI5pSlL
-         mgcN/hj9YSLWwg9EU/yk4lIAMXBQrpEvyXK4EpqH1uTRbB9ayPCFgVM0o3gNq7Oa+5Au
-         kumjKl5/FYfFGr3XeelHZE2SpBsC8evzq+JcA+/5qcgq63o0wrPRdxxR5pDP0fWZI6TH
-         NY2Q==
-X-Gm-Message-State: AC+VfDwe8d/Ym4krDDqahKkYNupW/Y8gwhnv8dPjgSggWKZ40tmE5aGo
-	5daAPv6Dvrc58tGfL5ReE5g=
-X-Google-Smtp-Source: ACHHUZ5WJoxOyWTGN4A9/lSdbP7f4gsHndWXSq8WzQbC9D9SdtSML4JV44DrwZ3GjsiS7QI/QvYX5w==
-X-Received: by 2002:a17:907:3684:b0:94e:547b:6301 with SMTP id bi4-20020a170907368400b0094e547b6301mr3242470ejc.8.1683125036374;
-        Wed, 03 May 2023 07:43:56 -0700 (PDT)
-Received: from orome (p200300e41f053a00f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f05:3a00:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id k9-20020a170906054900b00923f05b2931sm17338188eja.118.2023.05.03.07.43.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 May 2023 07:43:55 -0700 (PDT)
-Date: Wed, 3 May 2023 16:43:53 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Andy Gross <agross@kernel.org>,
-	Alim Akhtar <alim.akhtar@samsung.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-	linux-mediatek@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
-	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
-	linux-tegra@vger.kernel.org,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Orson Zhai <orsonzhai@gmail.com>, Rob Clark <robdclark@gmail.com>,
-	Samuel Holland <samuel@sholland.org>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Krishna Reddy <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
-	Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Steven Price <steven.price@arm.com>,
-	Dmitry Osipenko <digetx@gmail.com>
-Subject: Re: [PATCH 02/20] iommu/terga-gart: Replace set_platform_dma_ops()
- with IOMMU_DOMAIN_PLATFORM
-Message-ID: <ZFJzKQcKNFHdIWqy@orome>
-References: <2-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
- <1db712d2-9e33-4183-2766-34e32f170507@arm.com>
- <ZFI/D6mnLKYpdIqx@nvidia.com>
- <1a995f30-31fe-354f-ddfe-e944fa36e7a0@arm.com>
- <ZFJlZ03lswl9uHD0@nvidia.com>
+        bh=njkpY9V26txLi7xPErO/sERUlWcV1pHNyq5uOqiF2eY=;
+        b=imHhTa2z4OS2HhWHvPh0npGyixpQqfFfsXTBwWnkTidkLePrrh7UeY7sjebjSrp+US
+         5m/ARyLwhK5lZW9uBQNVhhsPpvADMRLCX8g9qstW1qu8GAWir4MKrdJCClCL33VmniRz
+         1sV6AQ9r6CcBy3zOKr9MPxaLjYvf0Djb3BRZX2fX3hdxfBOk+zGeOm/fGNxm8RxRo2+w
+         zcwj/1qwqvQGY4nnnfsHvMnJa9KWFiL5Hgo2Sl9F3/rZJfO8BQwpvmHbSMVLjpsoftqK
+         CV+lsjE9u3VqLXT04L7Y+S4iXCsQ4CZ7fF0sRqd1yC2G9FWwCR+BadsCpj9A+V+euvmG
+         2Dmg==
+X-Gm-Message-State: AC+VfDz2SFSQ/Qm0YWzPx7sTNbphiSl6aI80i2csAVD3JuJEJHqWPqa0
+	XVTIaudvMdbxoGXnFTBQszUYSQOH8r7aGfrciI+wYg==
+X-Google-Smtp-Source: ACHHUZ7hchC+rRk961tvHRqEu26jTqqMGmIvsUJgIGP7Wi8Xmqgc6hTnmpP8bu8bBbAHqpv8p0ou1nAieiF4VLsALvc=
+X-Received: by 2002:a25:dc4a:0:b0:b9f:1992:112e with SMTP id
+ y71-20020a25dc4a000000b00b9f1992112emr4038060ybe.9.1683126580275; Wed, 03 May
+ 2023 08:09:40 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="xQZEb6e6qgBHbQbj"
-Content-Disposition: inline
-In-Reply-To: <ZFJlZ03lswl9uHD0@nvidia.com>
-User-Agent: Mutt/2.2.10 (2023-03-25)
-
-
---xQZEb6e6qgBHbQbj
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20230501165450.15352-1-surenb@google.com> <ZFIMaflxeHS3uR/A@dhcp22.suse.cz>
+In-Reply-To: <ZFIMaflxeHS3uR/A@dhcp22.suse.cz>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Wed, 3 May 2023 08:09:28 -0700
+Message-ID: <CAJuCfpHxbYFxDENYFfnggh1D8ot4s493PQX0C7kD-JLvixC-Vg@mail.gmail.com>
+Subject: Re: [PATCH 00/40] Memory allocation profiling
+To: Michal Hocko <mhocko@suse.com>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, vbabka@suse.cz, 
+	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
+	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
+	corbet@lwn.net, void@manifault.com, peterz@infradead.org, 
+	juri.lelli@redhat.com, ldufour@linux.ibm.com, catalin.marinas@arm.com, 
+	will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
+	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
+	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
+	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
+	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
+	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
+	ndesaulniers@google.com, gregkh@linuxfoundation.org, ebiggers@google.com, 
+	ytcoode@gmail.com, vincent.guittot@linaro.org, dietmar.eggemann@arm.com, 
+	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com, 
+	vschneid@redhat.com, cl@linux.com, penberg@kernel.org, iamjoonsoo.kim@lge.com, 
+	42.hyeyoo@gmail.com, glider@google.com, elver@google.com, dvyukov@google.com, 
+	shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com, 
+	rientjes@google.com, minchan@google.com, kaleshsingh@google.com, 
+	kernel-team@android.com, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
+	cgroups@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, May 03, 2023 at 10:45:11AM -0300, Jason Gunthorpe wrote:
-> On Wed, May 03, 2023 at 01:01:34PM +0100, Robin Murphy wrote:
-> > On 2023-05-03 12:01, Jason Gunthorpe wrote:
-> > > On Wed, May 03, 2023 at 10:17:29AM +0100, Robin Murphy wrote:
-> > > > On 2023-05-01 19:02, Jason Gunthorpe wrote:
-> > > > > tegra-gart seems to be kind of wonky since from the start its 'de=
-tach_dev'
-> > > > > op doesn't actually touch hardware. It is supposed to empty the G=
-ART of
-> > > > > all translations loaded into it.
-> > > >=20
-> > > > No, detach should never tear down translations - what if other devi=
-ces are
-> > > > still using the domain?
-> > >=20
-> > > ?? All other drivers do this.
-> >=20
-> > The only driver I'm aware of which effectively tore down mappings by fr=
-eeing
-> > its pagetable on detach was sprd-iommu, and that was recently fixed on
-> > account of it being clearly wrong.
->=20
-> By "Teardown" I mean deconfigure the HW.
->=20
-> This driver is odd because it doesn't store a page table in the
-> iommu_domain, it keeps it in the GART registers so it can't actually
-> detach/attach fully correctly. :(
->=20
-> > Yes, I'm not disputing that we expect detach to remove that device's
-> > *access* to the IOVA (which is what GART can't do...), but it should
-> > absolutely not destroy the IOVA mapping itself. Follow that sequence wi=
-th
-> > iommu_attach_device(dom, dev) again and the caller can expect to be abl=
-e to
-> > continue using the same translation.
->=20
-> Yes
-> =20
-> > > If the HW is multi-device then it is supposed to have groups.
-> >=20
-> > Groups are in fact the most practical example: set up a VFIO domain, at=
-tach
-> > two groups to it, map some IOVAs, detach one of the groups, keep using =
-the
-> > other. If the detach carried an implicit iommu_unmap() there would be
-> > fireworks.
->=20
-> Yes, I'm not saying an unmap, I used the word teardown to mean remove
-> the HW parts. This gart function doesn't touch the HW at all, that
-> cannot be correct.
->=20
-> It should have an xarray in the iommu_domain and on detach it should
-> purge the GART registers and on attach it should load the xarray into
-> the GART registers. We are also technically expecting drivers to
-> support map prior to attach, eg for the direct map reserved region
-> setup.
->=20
-> > > Oh yuk, that is not an UNMANAGED domain either as we now assume empty
-> > > UNMANAGED domains are blocking in the core...
-> >=20
-> > They are, in the sense that accesses within the aperture won't go
-> > anywhere.
->=20
-> That is not the definition of BLOCKING we came up with.. It is every
-> IOVA is blocked and the device is safe to hand to VFIO. It can't be just
-> blocking a subset of the IOVA.
->=20
-> > It might help if domain->geometry.force_aperture was meaningful, because
-> > it's never been clear whether it was supposed to reflect a hardware
-> > capability (in which case it should be false for GART) or be an instruc=
-tion
-> > to the user of the domain (wherein it's a bit pointless that everyone a=
-lways
-> > sets it).
->=20
-> force_aperture looks pointless now. Only two drivers don't set it -
-> mtk_v1 and sprd.
->=20
-> The only real reader is dma-iommu.c and mtk_v1 doesn't use that.
->=20
-> So the only possible user is sprd.
->=20
-> The only thing it does is cause dma-iommu.c in ARM64 to use the
-> dma-ranges from OF instead of the domain aperture. sprd has no
-> dma-ranges in arch/arm64/boot/dts/sprd.
->=20
-> Further, sprd hard fails any map attempt outside the aperture, so it
-> looks like a bug if the OF somehow chooses a wider aperture as
-> dma-iommu.c will start failing maps.
+On Wed, May 3, 2023 at 12:25=E2=80=AFAM Michal Hocko <mhocko@suse.com> wrot=
+e:
+>
+> On Mon 01-05-23 09:54:10, Suren Baghdasaryan wrote:
+> > Memory allocation profiling infrastructure provides a low overhead
+> > mechanism to make all kernel allocations in the system visible. It can =
+be
+> > used to monitor memory usage, track memory hotspots, detect memory leak=
+s,
+> > identify memory regressions.
+> >
+> > To keep the overhead to the minimum, we record only allocation sizes fo=
+r
+> > every allocation in the codebase. With that information, if users are
+> > interested in more detailed context for a specific allocation, they can
+> > enable in-depth context tracking, which includes capturing the pid, tgi=
+d,
+> > task name, allocation size, timestamp and call stack for every allocati=
+on
+> > at the specified code location.
+> [...]
+> > Implementation utilizes a more generic concept of code tagging, introdu=
+ced
+> > as part of this patchset. Code tag is a structure identifying a specifi=
+c
+> > location in the source code which is generated at compile time and can =
+be
+> > embedded in an application-specific structure. A number of applications
+> > for code tagging have been presented in the original RFC [1].
+> > Code tagging uses the old trick of "define a special elf section for
+> > objects of a given type so that we can iterate over them at runtime" an=
+d
+> > creates a proper library for it.
+> >
+> > To profile memory allocations, we instrument page, slab and percpu
+> > allocators to record total memory allocated in the associated code tag =
+at
+> > every allocation in the codebase. Every time an allocation is performed=
+ by
+> > an instrumented allocator, the code tag at that location increments its
+> > counter by allocation size. Every time the memory is freed the counter =
+is
+> > decremented. To decrement the counter upon freeing, allocated object ne=
+eds
+> > a reference to its code tag. Page allocators use page_ext to record thi=
+s
+> > reference while slab allocators use memcg_data (renamed into more gener=
+ic
+> > slabobj_ext) of the slab page.
+> [...]
+> > [1] https://lore.kernel.org/all/20220830214919.53220-1-surenb@google.co=
+m/
+> [...]
+> >  70 files changed, 2765 insertions(+), 554 deletions(-)
+>
+> Sorry for cutting the cover considerably but I believe I have quoted the
+> most important/interesting parts here. The approach is not fundamentally
+> different from the previous version [1] and there was a significant
+> discussion around this approach. The cover letter doesn't summarize nor
+> deal with concerns expressed previous AFAICS. So let me bring those up
+> back.
 
-That all sounds odd. of_dma_configure_id() already sets up the DMA mask
-based on dma-ranges and the DMA API uses that to restrict what IOVA any
-buffers can get mapped to for a given device.
+Thanks for summarizing!
 
-Drivers can obviously still narrow down the DMA mask further if they
-have any specific needs. On Tegra, for example, we use this to enforce
-bus-level DMA masks. The Ethernet controller for instance might support
-40 bit addresses, but the memory bus has a quirk where bit 39 is used
-for extra "swizzling", so we have to restrict DMA masks to 39 bits for
-all devices, regardless of what the drivers claim.
+> At least those I find the most important:
+> - This is a big change and it adds a significant maintenance burden
+>   because each allocation entry point needs to be handled specifically.
+>   The cost will grow with the intended coverage especially there when
+>   allocation is hidden in a library code.
 
-> Thus, I propose we just remove the whole thing. All drivers must set
-> an aperture and the aperture is the pure HW capability to map an
-> IOPTE at that address. ie it reflects the design of the page table
-> itself and nothing else.
+Do you mean with more allocations in the codebase more codetags will
+be generated? Is that the concern? Or maybe as you commented in
+another patch that context capturing feature does not limit how many
+stacks will be captured?
 
-Yeah, that sounds reasonable. If the aperture represents what the IOMMU
-supports. Together with each device's DMA mask we should have everything
-we need.
+> - It has been brought up that this is duplicating functionality already
+>   available via existing tracing infrastructure. You should make it very
+>   clear why that is not suitable for the job
 
->=20
-> Probably OF dma-ranges should be reflected in the pre-device reserved
-> ranges?
->=20
-> This is great, I was starting to look at this part wishing the OF path
-> wasn't different, and this is a clear way forward :)
->=20
-> For GART, I'm tempted to give GART a blocking domain and just have its
-> attach always fail - this is enough to block VFIO. Keep the weirdness
-> in one place.. Or ignore it since I doubt anyone is actually using
-> this now.
+I experimented with using tracing with _RET_IP_ to implement this
+accounting. The major issue is the _RET_IP_ to codetag lookup runtime
+overhead which is orders of magnitude higher than proposed code
+tagging approach. With code tagging proposal, that link is resolved at
+compile time. Since we want this mechanism deployed in production, we
+want to keep the overhead to the absolute minimum.
+You asked me before how much overhead would be tolerable and the
+answer will always be "as small as possible". This is especially true
+for slab allocators which are ridiculously fast and regressing them
+would be very noticable (due to the frequent use).
 
-For Tegra GART I think there's indeed no use-cases at the moment. Dmitry
-had at one point tried to make use of it because it can be helpful on
-some of the older devices that were very memory-constrained. That
-support never made it upstream because it required significant changes
-in various places, if I recall correctly. For anything with a decent
-enough amount of RAM, CMA is usually a better option.
+There is another issue, which I think can be solved in a smart way but
+will either affect performance or would require more memory. With the
+tracing approach we don't know beforehand how many individual
+allocation sites exist, so we have to allocate code tags (or similar
+structures for counting) at runtime vs compile time. We can be smart
+about it and allocate in batches or even preallocate more than we need
+beforehand but, as I said, it will require some kind of compromise.
 
-This has occasionally come up in the past and I seem to remember that it
-had once been proposed to simply remove tegra-gart and there had been no
-objections. Adding Dmitry, if he doesn't have objections to remaving it,
-neither do I.
+I understand that code tagging creates additional maintenance burdens
+but I hope it also produces enough benefits that people will want
+this. The cost is also hopefully amortized when additional
+applications like the ones we presented in RFC [1] are built using the
+same framework.
 
-Thierry
+> - We already have page_owner infrastructure that provides allocation
+>   tracking data. Why it cannot be used/extended?
 
---xQZEb6e6qgBHbQbj
-Content-Type: application/pgp-signature; name="signature.asc"
+1. The overhead.
+2. Covers only page allocators.
 
------BEGIN PGP SIGNATURE-----
+I didn't think about extending the page_owner approach to slab
+allocators but I suspect it would not be trivial. I don't see
+attaching an owner to every slab object to be a scalable solution. The
+overhead would again be of concern here.
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmRScyYACgkQ3SOs138+
-s6EX8BAAtAoTtMd/zUCfTPSLJoFlCb9irVxChthfIopCBi8kWuCUVdgIcfVQgcGY
-BI0/zkB/gc5Mq/AhGAFyaGsktUAM7HOBtQ70EBiguP6HpJETiADAv/y+IJi74J2E
-2gbSmyuT12xEy1h9lb5AHnxFBQuvauMRacyNXH7gusOQ89U2OmZA/Q4371Swq8Fq
-RkODrJvFQDXdRdHT1g6OsJDmK09GAmWvzn1h6hUdlfDBwE0i4VI+84jh3Qo4Aq8T
-zULABDHeQs0znWOWBouIOEdP/5w6BgBi+qr/G/t3dSSDB3/BEqSCyBZVP+lZFLgm
-lo6kC0LXJfDXMTSqCS8MC/21xIgdvVF4nGe0Ej/ydn6f1RnxSmnyU7tEyLle8h1I
-fW2QQjLg1a/T1wUWDoNd+I66ovQVqEsKhYLRQrDlRbJLHcEj+xBRnEGlk6QShVPl
-eSN/75008q6MS0+Y7La/jGHAVyafbG3cXaBBsDokjaObRGJqtadoyRCs5neTfxJp
-d2jeqvkDbpkKr/pY0KrwFMOOD4sulARAfYylF39Agpiq0Ua1DYxZdJipWVp/LSvE
-eDxBfgrMduV5IplOxCVDzyk++AsjO3YhcrJ0SuS7zfn1fN1SeD4a79x6yq6YvmXh
-Gsb0GU1wuQmTk+v0ZPmXhTM30poxyUtxHUsMlvOfgloocyzN3m8=
-=fUXH
------END PGP SIGNATURE-----
+I should point out that there was one important technical concern
+about lack of a kill switch for this feature, which was an issue for
+distributions that can't disable the CONFIG flag. In this series we
+addressed that concern.
 
---xQZEb6e6qgBHbQbj--
+[1] https://lore.kernel.org/all/20220830214919.53220-1-surenb@google.com/
+
+Thanks,
+Suren.
+
+>
+> Thanks!
+> --
+> Michal Hocko
+> SUSE Labs
