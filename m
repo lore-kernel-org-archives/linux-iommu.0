@@ -1,115 +1,72 @@
-Received: from out-58.mta0.migadu.com (out-58.mta0.migadu.com [91.218.175.58])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A806ED2F7
-	for <iommu@lists.linux.dev>; Wed,  3 May 2023 16:03:25 +0000 (UTC)
-Date: Wed, 3 May 2023 12:03:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1683129803;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=MZ0TWwv0Mpu9IjWcxRCWjJEEQ++kpZPmKK/VcTJkl7k=;
-	b=FpGctQbM8W0rfqOGZOmSKFnYLpxrclq3L7E+rrXnS/9nXRbb9R5M7EzAN6wvhioCICdsHM
-	WM800GTR3zcYRzwg97hBrpkz/9ZsEWI3RL80N/2zwrpf92rM0McRD43/F36Q+ZHI2sCc0L
-	g2qQO4EQowCmjkSmuSEX+YK+w94lB2M=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Kent Overstreet <kent.overstreet@linux.dev>
-To: Lorenzo Stoakes <lstoakes@gmail.com>
-Cc: James Bottomley <James.Bottomley@hansenpartnership.com>,
-	Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>,
-	Michal Hocko <mhocko@suse.com>,
-	Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org,
-	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev,
-	mgorman@suse.de, dave@stgolabs.net, willy@infradead.org,
-	liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com,
-	peterz@infradead.org, juri.lelli@redhat.com, ldufour@linux.ibm.com,
-	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
-	x86@kernel.org, peterx@redhat.com, david@redhat.com,
-	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
-	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
-	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
-	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
-	keescook@chromium.org, ndesaulniers@google.com,
-	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
-	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
-	elver@google.com, dvyukov@google.com, shakeelb@google.com,
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
-	cgroups@vger.kernel.org
-Subject: Re: [PATCH 00/40] Memory allocation profiling
-Message-ID: <ZFKFv6F3pRtnAWSS@moria.home.lan>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA9ABD30C
+	for <iommu@lists.linux.dev>; Wed,  3 May 2023 16:25:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5712FC433EF;
+	Wed,  3 May 2023 16:25:31 +0000 (UTC)
+Date: Wed, 3 May 2023 12:25:29 -0400
+From: Steven Rostedt <rostedt@goodmis.org>
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
+ vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev,
+ mgorman@suse.de, dave@stgolabs.net, willy@infradead.org,
+ liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com,
+ peterz@infradead.org, juri.lelli@redhat.com, ldufour@linux.ibm.com,
+ catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+ tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
+ x86@kernel.org, peterx@redhat.com, david@redhat.com, axboe@kernel.dk,
+ mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org,
+ dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org,
+ paulmck@kernel.org, pasha.tatashin@soleen.com, yosryahmed@google.com,
+ yuzhao@google.com, dhowells@redhat.com, hughd@google.com,
+ andreyknvl@gmail.com, keescook@chromium.org, ndesaulniers@google.com,
+ gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
+ vincent.guittot@linaro.org, dietmar.eggemann@arm.com, bsegall@google.com,
+ bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+ iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+ elver@google.com, dvyukov@google.com, shakeelb@google.com,
+ songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
+ minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+ linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
+ cgroups@vger.kernel.org
+Subject: Re: [PATCH 19/40] change alloc_pages name in dma_map_ops to avoid
+ name conflicts
+Message-ID: <20230503122529.44ef2d56@gandalf.local.home>
+In-Reply-To: <20230501165450.15352-20-surenb@google.com>
 References: <20230501165450.15352-1-surenb@google.com>
- <ZFIMaflxeHS3uR/A@dhcp22.suse.cz>
- <ZFIOfb6/jHwLqg6M@moria.home.lan>
- <ZFISlX+mSx4QJDK6@dhcp22.suse.cz>
- <20230503115051.30b8a97f@meshulam.tesarici.cz>
- <ZFIv+30UH7+ySCZr@moria.home.lan>
- <25a1ea786712df5111d7d1db42490624ac63651e.camel@HansenPartnership.com>
- <ZFJ9hlQ3ZIU1XYCY@moria.home.lan>
- <f57b77b0-74da-41a3-a3bc-969ded4e0410@lucifer.local>
+	<20230501165450.15352-20-surenb@google.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f57b77b0-74da-41a3-a3bc-969ded4e0410@lucifer.local>
-X-Migadu-Flow: FLOW_OUT
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, May 03, 2023 at 04:37:36PM +0100, Lorenzo Stoakes wrote:
-> As an outside observer, I can assure you that absolutely came across as a
-> personal attack, and the precise kind that puts people off from
-> contributing. I should know as a hobbyist contributor myself.
-> 
-> > If I was mistaken I do apologize, but lately I've run across quite a lot
-> > of people offering review feedback to patches I post that turn out to
-> > have 0 or 10 patches in the kernel, and - to be blunt - a pattern of
-> > offering feedback in strong language with a presumption of experience
-> > that takes a lot to respond to adequately on a technical basis.
-> >
-> 
-> I, who may very well not merit being considered a contributor of
-> significant merit in your view, have had such 'drive-by' commentary on some
-> of my patches by precisely this type of person, and at no time felt the
-> need to question whether they were a true Scotsman or not. It's simply not
-> productive.
-> 
-> > I don't think a suggestion to spend a bit more time reading code instead
-> > of speculating is out of order! We could all, put more effort into how
-> > we offer review feedback.
-> 
-> It's the means by which you say it that counts for everything. If you feel
-> the technical comments might not be merited on a deeper level, perhaps ask
-> a broader question, or even don't respond at all? There are other means
-> available.
-> 
-> It's remarkable the impact comments like the one you made can have on
-> contributors, certainly those of us who are not maintainers and are
-> naturally plagued with imposter syndrome, so I would ask you on a human
-> level to try to be a little more considerate.
-> 
-> By all means address technical issues as robustly as you feel appropriate,
-> that is after all the purpose of code review, but just take a step back and
-> perhaps find the 'cuddlier' side of yourself when not addressing technical
-> things :)
+On Mon,  1 May 2023 09:54:29 -0700
+Suren Baghdasaryan <surenb@google.com> wrote:
 
-Thanks for your reply, it's level headed and appreciated.
+> After redefining alloc_pages, all uses of that name are being replaced.
+> Change the conflicting names to prevent preprocessor from replacing them
+> when it's not intended.
 
-But I personally value directness, and I see quite a few people in this
-thread going all out on the tone policing - but look, without the
-directness the confusion (that Petr is not actually a new contributor)
-never would've been cleared up.
+Note, every change log should have enough information in it to know why it
+is being done. This says what the patch does, but does not fully explain
+"why". It should never be assumed that one must read other patches to get
+the context. A year from now, investigating git history, this may be the
+only thing someone sees for why this change occurred.
 
-Food for thought, perhaps?
+The "why" above is simply "prevent preprocessor from replacing them
+when it's not intended". What does that mean?
+
+-- Steve
+
+
+> 
+> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
