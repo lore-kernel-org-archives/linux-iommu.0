@@ -1,128 +1,186 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F35D2111E
-	for <iommu@lists.linux.dev>; Wed,  3 May 2023 07:25:31 +0000 (UTC)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 41461223BB;
-	Wed,  3 May 2023 07:25:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1683098730; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=JWB7/k68Y9sA1GCsD2EpPdE47UaCuB2lkBwAJ+0gleQ=;
-	b=u+3Vi8PDtD1nO4vnIaCnVOnGVWxCooEKxlih7nwzwBoIABaUsMZNalVX3UFdT8KyULNZpI
-	1iiWSQzVJsauYg7cw5OcJnQ0BnNF6UIzF03uSFM+FZE2F5K6J9/dawzlxNATjEUvVZFh6I
-	cw6AIimCL2WPRicPuZ7gocwKQRBYpGY=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1A7741331F;
-	Wed,  3 May 2023 07:25:30 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-	by imap2.suse-dmz.suse.de with ESMTPSA
-	id Rjr6BWoMUmQBTQAAMHmgww
-	(envelope-from <mhocko@suse.com>); Wed, 03 May 2023 07:25:30 +0000
-Date: Wed, 3 May 2023 09:25:29 +0200
-From: Michal Hocko <mhocko@suse.com>
-To: Suren Baghdasaryan <surenb@google.com>
-Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, vbabka@suse.cz,
-	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de,
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
-	corbet@lwn.net, void@manifault.com, peterz@infradead.org,
-	juri.lelli@redhat.com, ldufour@linux.ibm.com,
-	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
-	x86@kernel.org, peterx@redhat.com, david@redhat.com,
-	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
-	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
-	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
-	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
-	keescook@chromium.org, ndesaulniers@google.com,
-	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
-	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
-	elver@google.com, dvyukov@google.com, shakeelb@google.com,
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
-	cgroups@vger.kernel.org
-Subject: Re: [PATCH 00/40] Memory allocation profiling
-Message-ID: <ZFIMaflxeHS3uR/A@dhcp22.suse.cz>
-References: <20230501165450.15352-1-surenb@google.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEED846B2
+	for <iommu@lists.linux.dev>; Wed,  3 May 2023 07:28:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1683098906; x=1714634906;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=d4DKNUU0DxmVCnkiG4xMBRIAG1ZX8L1Ijj7vjG7BGh8=;
+  b=IRVBuTKlKy0KO0q52RvEcloegc3AuwycleNFXn2bX215hKl2Qnhv6HIt
+   0+a7y8P+0wDVHoywHLXGtJWFDAO2sodagIy4UHQM+a04BG4EtHACEM5Fr
+   BcZ5/1Mxbuy1UtOXH2/yiVQKSZBgjcOTIitM/pPL2gAyQdaHTBYgd9yRn
+   t82S7i45kKw8gvxdL1Wq8d+L2bDd8ahzewmZppBhb/B94Iy3hSC7vGSib
+   2rqu1ch1sIzwXINj8SDmyugET9yFxQRPH7ZH8eIu3fIiJsuAeHh8nswGT
+   xJofPu4NyuHs1vfE3gc+z/bEf0pcoZKzZyT2qY+XLLqlbG5bqN0M+58/6
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10698"; a="328217445"
+X-IronPort-AV: E=Sophos;i="5.99,246,1677571200"; 
+   d="scan'208";a="328217445"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2023 00:26:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10698"; a="785981533"
+X-IronPort-AV: E=Sophos;i="5.99,246,1677571200"; 
+   d="scan'208";a="785981533"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by FMSMGA003.fm.intel.com with ESMTP; 03 May 2023 00:26:20 -0700
+Message-ID: <76c98e62-1cac-2ab6-7721-08ec2c1fceb8@linux.intel.com>
+Date: Wed, 3 May 2023 15:26:00 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230501165450.15352-1-surenb@google.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Cc: baolu.lu@linux.intel.com, Will Deacon <will@kernel.org>,
+ David Woodhouse <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>,
+ "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+ "Yu, Fenghua" <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Tony Luck <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
+ narayan.ranganathan@intel.com
+Subject: Re: [PATCH v5 6/7] iommu/vt-d: Implement set_dev_pasid domain op
+Content-Language: en-US
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
+ Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Joerg Roedel <joro@8bytes.org>, dmaengine@vger.kernel.org, vkoul@kernel.org
+References: <20230427174937.471668-1-jacob.jun.pan@linux.intel.com>
+ <20230427174937.471668-7-jacob.jun.pan@linux.intel.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20230427174937.471668-7-jacob.jun.pan@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon 01-05-23 09:54:10, Suren Baghdasaryan wrote:
-> Memory allocation profiling infrastructure provides a low overhead
-> mechanism to make all kernel allocations in the system visible. It can be
-> used to monitor memory usage, track memory hotspots, detect memory leaks,
-> identify memory regressions.
+On 4/28/23 1:49 AM, Jacob Pan wrote:
+> Devices that use ENQCMDS to submit work on buffers mapped by DMA API
+> must attach a PASID to the default domain of the device. In preparation
+> for this use case, this patch implements set_dev_pasid() for the
+> default_domain_ops.
 > 
-> To keep the overhead to the minimum, we record only allocation sizes for
-> every allocation in the codebase. With that information, if users are
-> interested in more detailed context for a specific allocation, they can
-> enable in-depth context tracking, which includes capturing the pid, tgid,
-> task name, allocation size, timestamp and call stack for every allocation
-> at the specified code location.
-[...]
-> Implementation utilizes a more generic concept of code tagging, introduced
-> as part of this patchset. Code tag is a structure identifying a specific
-> location in the source code which is generated at compile time and can be
-> embedded in an application-specific structure. A number of applications
-> for code tagging have been presented in the original RFC [1].
-> Code tagging uses the old trick of "define a special elf section for
-> objects of a given type so that we can iterate over them at runtime" and
-> creates a proper library for it. 
+> If the device context has not been set up prior to this call, this will
+> set up the device context in addition to PASID attachment.
 > 
-> To profile memory allocations, we instrument page, slab and percpu
-> allocators to record total memory allocated in the associated code tag at
-> every allocation in the codebase. Every time an allocation is performed by
-> an instrumented allocator, the code tag at that location increments its
-> counter by allocation size. Every time the memory is freed the counter is
-> decremented. To decrement the counter upon freeing, allocated object needs
-> a reference to its code tag. Page allocators use page_ext to record this
-> reference while slab allocators use memcg_data (renamed into more generic
-> slabobj_ext) of the slab page.
-[...]
-> [1] https://lore.kernel.org/all/20220830214919.53220-1-surenb@google.com/
-[...]
->  70 files changed, 2765 insertions(+), 554 deletions(-)
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>   drivers/iommu/intel/iommu.c | 92 ++++++++++++++++++++++++++++++-------
+>   1 file changed, 76 insertions(+), 16 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 388453a7415e..f9d6c31cdc8e 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -278,6 +278,8 @@ static LIST_HEAD(dmar_satc_units);
+>   	list_for_each_entry(rmrr, &dmar_rmrr_units, list)
+>   
+>   static void device_block_translation(struct device *dev);
+> +static void intel_iommu_detach_device_pasid(struct iommu_domain *domain,
+> +					    struct device *dev, ioasid_t pasid);
+>   static void intel_iommu_domain_free(struct iommu_domain *domain);
+>   
+>   int dmar_disabled = !IS_ENABLED(CONFIG_INTEL_IOMMU_DEFAULT_ON);
+> @@ -4091,8 +4093,7 @@ static void device_block_translation(struct device *dev)
+>   	iommu_disable_pci_caps(info);
+>   	if (!dev_is_real_dma_subdevice(dev)) {
+>   		if (sm_supported(iommu))
+> -			intel_pasid_tear_down_entry(iommu, dev,
+> -						    IOMMU_DEF_RID_PASID, false);
+> +			intel_iommu_detach_device_pasid(&info->domain->domain, dev, IOMMU_DEF_RID_PASID);
 
-Sorry for cutting the cover considerably but I believe I have quoted the
-most important/interesting parts here. The approach is not fundamentally
-different from the previous version [1] and there was a significant
-discussion around this approach. The cover letter doesn't summarize nor
-deal with concerns expressed previous AFAICS. So let me bring those up
-back. At least those I find the most important:
-- This is a big change and it adds a significant maintenance burden
-  because each allocation entry point needs to be handled specifically.
-  The cost will grow with the intended coverage especially there when
-  allocation is hidden in a library code.
-- It has been brought up that this is duplicating functionality already
-  available via existing tracing infrastructure. You should make it very
-  clear why that is not suitable for the job
-- We already have page_owner infrastructure that provides allocation
-  tracking data. Why it cannot be used/extended?
+device_block_translation() is called when switch RID's domain or release
+the device. I assume that we don't need to touch this path when we add
+the attach_dev_pasid support.
 
-Thanks!
--- 
-Michal Hocko
-SUSE Labs
+Blocking DMA translation through RID/PASID should be done in
+remove_dev_pasid path.
+
+Or, I overlooked anything?
+
+[...]
+
+>   
+> +static int intel_iommu_attach_device_pasid(struct iommu_domain *domain,
+> +					   struct device *dev, ioasid_t pasid)
+> +{
+> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
+> +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+> +	struct intel_iommu *iommu = info->iommu;
+> +	int ret;
+> +
+> +	if (!pasid_supported(iommu))
+> +		return -ENODEV;
+> +
+> +	ret = prepare_domain_attach_device(domain, dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/*
+> +	 * Most likely the device context has already been set up, will only
+> +	 * take a domain ID reference. Otherwise, device context will be set
+> +	 * up here.
+
+The "otherwise" case is only default domain deferred attaching case,
+right?
+
+When the device driver starts to call attach_dev_pasid api, it means
+that the bus and device DMA configuration have been done. We could do
+the deferred default domain attaching now. So, perhaps we should add
+below code in the core:
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index f1dcfa3f1a1b..633b5ca53606 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -3296,6 +3296,12 @@ int iommu_attach_device_pasid(struct iommu_domain 
+*domain,
+         if (!group)
+                 return -ENODEV;
+
++       ret = iommu_deferred_attach(dev, group->default_domain);
++       if (ret) {
++               iommu_group_put(group);
++               return ret;
++       }
++
+         mutex_lock(&group->mutex);
+         curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, 
+GFP_KERNEL);
+         if (curr) {
+
+Perhaps need to call iommu_deferred_attach() inside the group->mutex
+critical region?
+
+> +	 * The upper layer APIs make no assumption about the ordering between
+> +	 * device attachment and the PASID attachment.
+> +	 */
+> +	ret = dmar_domain_attach_device(to_dmar_domain(domain), dev);
+
+Calling attach_device on the attach_dev_pasid path is not right.
+
+> +	if (ret) {
+> +		dev_err(dev, "Attach device failed\n");
+> +		return ret;
+> +	}
+> +	return dmar_domain_attach_device_pasid(dmar_domain, iommu, dev, pasid);
+> +}
+> +
+> +
+> +
+>   const struct iommu_ops intel_iommu_ops = {
+>   	.capable		= intel_iommu_capable,
+>   	.domain_alloc		= intel_iommu_domain_alloc,
+> @@ -4802,6 +4861,7 @@ const struct iommu_ops intel_iommu_ops = {
+>   #endif
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+>   		.attach_dev		= intel_iommu_attach_device,
+> +		.set_dev_pasid          = intel_iommu_attach_device_pasid,
+>   		.map_pages		= intel_iommu_map_pages,
+>   		.unmap_pages		= intel_iommu_unmap_pages,
+>   		.iotlb_sync_map		= intel_iommu_iotlb_sync_map,
+
+Best regards,
+baolu
