@@ -1,109 +1,115 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8C8163C27;
-	Wed,  3 May 2023 15:54:40 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0212E2F4;
-	Wed,  3 May 2023 08:55:24 -0700 (PDT)
-Received: from [10.57.82.232] (unknown [10.57.82.232])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A7AC53F67D;
-	Wed,  3 May 2023 08:54:33 -0700 (PDT)
-Message-ID: <e73c6192-8fd5-042d-ce03-095b336270ee@arm.com>
-Date: Wed, 3 May 2023 16:54:28 +0100
+Received: from out-58.mta0.migadu.com (out-58.mta0.migadu.com [91.218.175.58])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A806ED2F7
+	for <iommu@lists.linux.dev>; Wed,  3 May 2023 16:03:25 +0000 (UTC)
+Date: Wed, 3 May 2023 12:03:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1683129803;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=MZ0TWwv0Mpu9IjWcxRCWjJEEQ++kpZPmKK/VcTJkl7k=;
+	b=FpGctQbM8W0rfqOGZOmSKFnYLpxrclq3L7E+rrXnS/9nXRbb9R5M7EzAN6wvhioCICdsHM
+	WM800GTR3zcYRzwg97hBrpkz/9ZsEWI3RL80N/2zwrpf92rM0McRD43/F36Q+ZHI2sCc0L
+	g2qQO4EQowCmjkSmuSEX+YK+w94lB2M=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Kent Overstreet <kent.overstreet@linux.dev>
+To: Lorenzo Stoakes <lstoakes@gmail.com>
+Cc: James Bottomley <James.Bottomley@hansenpartnership.com>,
+	Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>,
+	Michal Hocko <mhocko@suse.com>,
+	Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org,
+	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev,
+	mgorman@suse.de, dave@stgolabs.net, willy@infradead.org,
+	liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com,
+	peterz@infradead.org, juri.lelli@redhat.com, ldufour@linux.ibm.com,
+	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
+	x86@kernel.org, peterx@redhat.com, david@redhat.com,
+	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
+	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
+	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
+	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
+	keescook@chromium.org, ndesaulniers@google.com,
+	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
+	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+	elver@google.com, dvyukov@google.com, shakeelb@google.com,
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
+	cgroups@vger.kernel.org
+Subject: Re: [PATCH 00/40] Memory allocation profiling
+Message-ID: <ZFKFv6F3pRtnAWSS@moria.home.lan>
+References: <20230501165450.15352-1-surenb@google.com>
+ <ZFIMaflxeHS3uR/A@dhcp22.suse.cz>
+ <ZFIOfb6/jHwLqg6M@moria.home.lan>
+ <ZFISlX+mSx4QJDK6@dhcp22.suse.cz>
+ <20230503115051.30b8a97f@meshulam.tesarici.cz>
+ <ZFIv+30UH7+ySCZr@moria.home.lan>
+ <25a1ea786712df5111d7d1db42490624ac63651e.camel@HansenPartnership.com>
+ <ZFJ9hlQ3ZIU1XYCY@moria.home.lan>
+ <f57b77b0-74da-41a3-a3bc-969ded4e0410@lucifer.local>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.10.1
-Subject: Re: [PATCH 16/20] iommu/sun50i: Add an IOMMU_IDENTITIY_DOMAIN
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
- Alim Akhtar <alim.akhtar@samsung.com>, Bjorn Andersson
- <andersson@kernel.org>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
- Jernej Skrabec <jernej.skrabec@gmail.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Konrad Dybcio <konrad.dybcio@linaro.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
- linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
- linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>, Orson Zhai <orsonzhai@gmail.com>,
- Rob Clark <robdclark@gmail.com>, Samuel Holland <samuel@sholland.org>,
- Niklas Schnelle <schnelle@linux.ibm.com>,
- Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy
- <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
- Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
- Chunyan Zhang <zhang.lyra@gmail.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
- Nicolin Chen <nicolinc@nvidia.com>, Steven Price <steven.price@arm.com>
-References: <16-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <16-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f57b77b0-74da-41a3-a3bc-969ded4e0410@lucifer.local>
+X-Migadu-Flow: FLOW_OUT
 
-
-On 2023-05-01 19:03, Jason Gunthorpe wrote:
-> This brings back the ops->detach_dev() code that commit
-> 1b932ceddd19 ("iommu: Remove detach_dev callbacks") deleted and turns it
-> into an IDENTITY domain.
+On Wed, May 03, 2023 at 04:37:36PM +0100, Lorenzo Stoakes wrote:
+> As an outside observer, I can assure you that absolutely came across as a
+> personal attack, and the precise kind that puts people off from
+> contributing. I should know as a hobbyist contributor myself.
 > 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->   drivers/iommu/sun50i-iommu.c | 21 +++++++++++++++++++++
->   1 file changed, 21 insertions(+)
+> > If I was mistaken I do apologize, but lately I've run across quite a lot
+> > of people offering review feedback to patches I post that turn out to
+> > have 0 or 10 patches in the kernel, and - to be blunt - a pattern of
+> > offering feedback in strong language with a presumption of experience
+> > that takes a lot to respond to adequately on a technical basis.
+> >
 > 
-> diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
-> index 74c5cb93e90027..15fd62d360778f 100644
-> --- a/drivers/iommu/sun50i-iommu.c
-> +++ b/drivers/iommu/sun50i-iommu.c
-> @@ -772,6 +772,26 @@ static void sun50i_iommu_detach_device(struct iommu_domain *domain,
->   		sun50i_iommu_detach_domain(iommu, sun50i_domain);
->   }
->   
-> +static int sun50i_iommu_identity_attach(struct iommu_domain *identity_domain,
-> +					struct device *dev)
-> +{
-> +	struct sun50i_iommu *iommu = dev_iommu_priv_get(dev);
-> +
-> +	if (iommu->domain == identity_domain || !iommu->domain)
+> I, who may very well not merit being considered a contributor of
+> significant merit in your view, have had such 'drive-by' commentary on some
+> of my patches by precisely this type of person, and at no time felt the
+> need to question whether they were a true Scotsman or not. It's simply not
+> productive.
+> 
+> > I don't think a suggestion to spend a bit more time reading code instead
+> > of speculating is out of order! We could all, put more effort into how
+> > we offer review feedback.
+> 
+> It's the means by which you say it that counts for everything. If you feel
+> the technical comments might not be merited on a deeper level, perhaps ask
+> a broader question, or even don't respond at all? There are other means
+> available.
+> 
+> It's remarkable the impact comments like the one you made can have on
+> contributors, certainly those of us who are not maintainers and are
+> naturally plagued with imposter syndrome, so I would ask you on a human
+> level to try to be a little more considerate.
+> 
+> By all means address technical issues as robustly as you feel appropriate,
+> that is after all the purpose of code review, but just take a step back and
+> perhaps find the 'cuddlier' side of yourself when not addressing technical
+> things :)
 
-I don't think that first condition could ever be true.
+Thanks for your reply, it's level headed and appreciated.
 
-Thanks,
-Robin.
+But I personally value directness, and I see quite a few people in this
+thread going all out on the tone policing - but look, without the
+directness the confusion (that Petr is not actually a new contributor)
+never would've been cleared up.
 
-> +		return 0;
-> +	sun50i_iommu_detach_device(iommu->domain, dev);
-> +	return 0;
-> +}
-> +
-> +static struct iommu_domain_ops sun50i_iommu_identity_ops = {
-> +	.attach_dev = sun50i_iommu_identity_attach,
-> +};
-> +
-> +static struct iommu_domain sun50i_iommu_identity_domain = {
-> +	.type = IOMMU_DOMAIN_IDENTITY,
-> +	.ops = &sun50i_iommu_identity_ops,
-> +};
-> +
->   static int sun50i_iommu_attach_device(struct iommu_domain *domain,
->   				      struct device *dev)
->   {
-> @@ -827,6 +847,7 @@ static int sun50i_iommu_of_xlate(struct device *dev,
->   }
->   
->   static const struct iommu_ops sun50i_iommu_ops = {
-> +	.identity_domain = &sun50i_iommu_identity_domain,
->   	.pgsize_bitmap	= SZ_4K,
->   	.device_group	= sun50i_iommu_device_group,
->   	.domain_alloc	= sun50i_iommu_domain_alloc,
+Food for thought, perhaps?
