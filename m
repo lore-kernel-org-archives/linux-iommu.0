@@ -1,122 +1,109 @@
-Received: from bedivere.hansenpartnership.com (bedivere.hansenpartnership.com [96.44.175.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 088DED523
-	for <iommu@lists.linux.dev>; Wed,  3 May 2023 15:49:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-	d=hansenpartnership.com; s=20151216; t=1683128971;
-	bh=aZHv4qLewpPoN2a7Dp1hmQ518n6knm526HL7tro2+QQ=;
-	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
-	b=RuzgPwW7Excw6pez9bbQH1LgK0+PrOgDucE8mX352a/WgEFXdVcyXswKLkwHVN4FK
-	 NRRB6IArfDLzoJ2Y5xkv3PNA1E6ef4irPxZ/JjdOQrfSM2D4MyBH3rpgG/WnwCUFYL
-	 KRr071rSZhNhJKS7IDpjG6MPN5NNicYHXLH+D7mM=
-Received: from localhost (localhost [127.0.0.1])
-	by bedivere.hansenpartnership.com (Postfix) with ESMTP id 18E6D1281F1E;
-	Wed,  3 May 2023 11:49:31 -0400 (EDT)
-Received: from bedivere.hansenpartnership.com ([127.0.0.1])
- by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavis, port 10024)
- with ESMTP id GaG0-VEABDNr; Wed,  3 May 2023 11:49:30 -0400 (EDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-	d=hansenpartnership.com; s=20151216; t=1683128970;
-	bh=aZHv4qLewpPoN2a7Dp1hmQ518n6knm526HL7tro2+QQ=;
-	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
-	b=q0tL2VdkMVextXF7i8wLij4wc+Rv8eXjweyKXiHti73zJxCRaSCu25jteEhbnxI6v
-	 yK9rK8oceeU4P+nNqywZMzxEdAYo1SWnGfe4NiTdtA5ocsYJMypoTDNv+p+Qwjz8wz
-	 oLVM+AAJEgGOGX5BoVd44tXyBl3Vu996X/awzutg=
-Received: from lingrow.int.hansenpartnership.com (unknown [IPv6:2601:5c4:4302:c21::a774])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 5B7F812805C5;
-	Wed,  3 May 2023 11:49:25 -0400 (EDT)
-Message-ID: <d01388d01b93071ac9ad04452ff4ff29d85e90f1.camel@HansenPartnership.com>
-Subject: Re: [PATCH 00/40] Memory allocation profiling
-From: James Bottomley <James.Bottomley@HansenPartnership.com>
-To: Kent Overstreet <kent.overstreet@linux.dev>
-Cc: Petr =?UTF-8?Q?Tesa=C5=99=C3=ADk?= <petr@tesarici.cz>, Michal Hocko
- <mhocko@suse.com>, Suren Baghdasaryan <surenb@google.com>, 
- akpm@linux-foundation.org, vbabka@suse.cz, hannes@cmpxchg.org, 
- roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net,
- willy@infradead.org,  liam.howlett@oracle.com, corbet@lwn.net,
- void@manifault.com, peterz@infradead.org,  juri.lelli@redhat.com,
- ldufour@linux.ibm.com, catalin.marinas@arm.com,  will@kernel.org,
- arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
- dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
- david@redhat.com,  axboe@kernel.dk, mcgrof@kernel.org,
- masahiroy@kernel.org, nathan@kernel.org,  dennis@kernel.org, tj@kernel.org,
- muchun.song@linux.dev, rppt@kernel.org,  paulmck@kernel.org,
- pasha.tatashin@soleen.com, yosryahmed@google.com,  yuzhao@google.com,
- dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com, 
- keescook@chromium.org, ndesaulniers@google.com, gregkh@linuxfoundation.org,
-  ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
- dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
- bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
- iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
- elver@google.com,  dvyukov@google.com, shakeelb@google.com,
- songmuchun@bytedance.com,  jbaron@akamai.com, rientjes@google.com,
- minchan@google.com, kaleshsingh@google.com,  kernel-team@android.com,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
- iommu@lists.linux.dev, linux-arch@vger.kernel.org,
- linux-fsdevel@vger.kernel.org,  linux-mm@kvack.org,
- linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
- cgroups@vger.kernel.org
-Date: Wed, 03 May 2023 11:49:23 -0400
-In-Reply-To: <ZFJ9hlQ3ZIU1XYCY@moria.home.lan>
-References: <20230501165450.15352-1-surenb@google.com>
-	 <ZFIMaflxeHS3uR/A@dhcp22.suse.cz> <ZFIOfb6/jHwLqg6M@moria.home.lan>
-	 <ZFISlX+mSx4QJDK6@dhcp22.suse.cz>
-	 <20230503115051.30b8a97f@meshulam.tesarici.cz>
-	 <ZFIv+30UH7+ySCZr@moria.home.lan>
-	 <25a1ea786712df5111d7d1db42490624ac63651e.camel@HansenPartnership.com>
-	 <ZFJ9hlQ3ZIU1XYCY@moria.home.lan>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8C8163C27;
+	Wed,  3 May 2023 15:54:40 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0212E2F4;
+	Wed,  3 May 2023 08:55:24 -0700 (PDT)
+Received: from [10.57.82.232] (unknown [10.57.82.232])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A7AC53F67D;
+	Wed,  3 May 2023 08:54:33 -0700 (PDT)
+Message-ID: <e73c6192-8fd5-042d-ce03-095b336270ee@arm.com>
+Date: Wed, 3 May 2023 16:54:28 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH 16/20] iommu/sun50i: Add an IOMMU_IDENTITIY_DOMAIN
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
+ Alim Akhtar <alim.akhtar@samsung.com>, Bjorn Andersson
+ <andersson@kernel.org>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Baolin Wang <baolin.wang@linux.alibaba.com>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Konrad Dybcio <konrad.dybcio@linaro.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+ linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org,
+ linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+ linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Matthew Rosato <mjrosato@linux.ibm.com>, Orson Zhai <orsonzhai@gmail.com>,
+ Rob Clark <robdclark@gmail.com>, Samuel Holland <samuel@sholland.org>,
+ Niklas Schnelle <schnelle@linux.ibm.com>,
+ Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy
+ <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
+ Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+ Chunyan Zhang <zhang.lyra@gmail.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, Steven Price <steven.price@arm.com>
+References: <16-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <16-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, 2023-05-03 at 11:28 -0400, Kent Overstreet wrote:
-> On Wed, May 03, 2023 at 08:33:48AM -0400, James Bottomley wrote:
-> > On Wed, 2023-05-03 at 05:57 -0400, Kent Overstreet wrote:
-> > > On Wed, May 03, 2023 at 11:50:51AM +0200, Petr Tesařík wrote:
-> > > > If anyone ever wants to use this code tagging framework for
-> > > > something else, they will also have to convert relevant
-> > > > functions to macros, slowly changing the kernel to a minefield
-> > > > where local identifiers, struct, union and enum tags, field
-> > > > names and labels must avoid name conflict with a tagged
-> > > > function. For now, I have to remember that alloc_pages is
-> > > > forbidden, but the list may grow.
-> > > 
-> > > Also, since you're not actually a kernel contributor yet...
-> > 
-> > You have an amazing talent for being wrong.  But even if you were
-> > actually right about this, it would be an ad hominem personal
-> > attack on a new contributor which crosses the line into
-> > unacceptable behaviour on the list and runs counter to our code of
-> > conduct.
+
+On 2023-05-01 19:03, Jason Gunthorpe wrote:
+> This brings back the ops->detach_dev() code that commit
+> 1b932ceddd19 ("iommu: Remove detach_dev callbacks") deleted and turns it
+> into an IDENTITY domain.
 > 
-> ...Err, what? That was intended _in no way_ as a personal attack.
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>   drivers/iommu/sun50i-iommu.c | 21 +++++++++++++++++++++
+>   1 file changed, 21 insertions(+)
+> 
+> diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
+> index 74c5cb93e90027..15fd62d360778f 100644
+> --- a/drivers/iommu/sun50i-iommu.c
+> +++ b/drivers/iommu/sun50i-iommu.c
+> @@ -772,6 +772,26 @@ static void sun50i_iommu_detach_device(struct iommu_domain *domain,
+>   		sun50i_iommu_detach_domain(iommu, sun50i_domain);
+>   }
+>   
+> +static int sun50i_iommu_identity_attach(struct iommu_domain *identity_domain,
+> +					struct device *dev)
+> +{
+> +	struct sun50i_iommu *iommu = dev_iommu_priv_get(dev);
+> +
+> +	if (iommu->domain == identity_domain || !iommu->domain)
 
-Your reply went on to say "If you're going to comment, please do the
-necessary work to make sure you're saying something that makes sense."
-That is a personal attack belittling the person involved and holding
-them up for general contempt on the mailing list.  This is exactly how
-we should *not* treat newcomers.
+I don't think that first condition could ever be true.
 
-> If I was mistaken I do apologize, but lately I've run across quite a
-> lot of people offering review feedback to patches I post that turn
-> out to have 0 or 10 patches in the kernel, and - to be blunt - a
-> pattern of offering feedback in strong language with a presumption of
-> experience that takes a lot to respond to adequately on a technical
-> basis.
+Thanks,
+Robin.
 
-A synopsis of the feedback is that using macros to attach trace tags
-pollutes the global function namespace of the kernel.  That's a valid
-observation and merits a technical not a personal response.
-
-James
-
+> +		return 0;
+> +	sun50i_iommu_detach_device(iommu->domain, dev);
+> +	return 0;
+> +}
+> +
+> +static struct iommu_domain_ops sun50i_iommu_identity_ops = {
+> +	.attach_dev = sun50i_iommu_identity_attach,
+> +};
+> +
+> +static struct iommu_domain sun50i_iommu_identity_domain = {
+> +	.type = IOMMU_DOMAIN_IDENTITY,
+> +	.ops = &sun50i_iommu_identity_ops,
+> +};
+> +
+>   static int sun50i_iommu_attach_device(struct iommu_domain *domain,
+>   				      struct device *dev)
+>   {
+> @@ -827,6 +847,7 @@ static int sun50i_iommu_of_xlate(struct device *dev,
+>   }
+>   
+>   static const struct iommu_ops sun50i_iommu_ops = {
+> +	.identity_domain = &sun50i_iommu_identity_domain,
+>   	.pgsize_bitmap	= SZ_4K,
+>   	.device_group	= sun50i_iommu_device_group,
+>   	.domain_alloc	= sun50i_iommu_domain_alloc,
