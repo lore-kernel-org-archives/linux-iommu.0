@@ -1,256 +1,165 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2073.outbound.protection.outlook.com [40.107.96.73])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00BA429A8
-	for <iommu@lists.linux.dev>; Wed,  3 May 2023 16:35:52 +0000 (UTC)
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-1aad6f2be8eso47510015ad.3
-        for <iommu@lists.linux.dev>; Wed, 03 May 2023 09:35:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683131752; x=1685723752;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=W/389qplif+CNkXxtQ/HgIFDi4dycC02/rtil8xXRXc=;
-        b=Z4Cs5R4/s1pDP2FSeVmU9xT76qMP3wouwY1Ps65fLeCYqjQMaYVvejB0JItUP+T4RT
-         nWx4lT9WzEfq5aY3guO9R76KVrFDtaYaUEQ25Elo5NPmaZMniCMb9/o9TulI0KS66Wcc
-         YYCLdO6ngyzuKE+06qHF3wji8nd2xQW3m1k3e5rdxhRItiF1X5TFu+t0PF7PfWXTDJOq
-         vmBjGIGV1qcWBiu9R9ccyJNV/Zfw+WN6u7iyvNY1trl87oBHYSdkRTgtdNd6mx7MobO6
-         19aTGTAzKUXos+LOcg5oYQLOH1Cb1ebcesa6IZ5JP32gGVOeFxZhN7B5M0PhCbOvncdK
-         9/Vg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683131752; x=1685723752;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=W/389qplif+CNkXxtQ/HgIFDi4dycC02/rtil8xXRXc=;
-        b=fwICNWZpnLa+HtnP80RTLJnXtrwZNtje+SNO2QffAoXK+Gtse67BmZsa8p+MRqPFIN
-         ZfzfnwznRsyzhPdqcQ/C3rXQklaEcXXf1rDw68eMHpRcpogyd8sdHXxP1YqTCv+5uNoM
-         EvdzsiHf5NGkz0rjdZn2z0V8AAIBjHoxtMm6Hx66jEemAdFz/tjYajI78+pc5AppIdc2
-         1Vg2O/7n34GWVr3fA2qwudBnV3Ok/dUF2ydYxtO8OsqpfuGCh4NymnlwhLBjNpgnC2nu
-         jN/+KQQK5u/qvfJnyFXspvWB2CBXg610O9ir4XJ0LezyQpR3n99JTu7eKiyoxPzTPJLe
-         U02g==
-X-Gm-Message-State: AC+VfDwIPNIFb2+DYbnzVXNeDginlQaUicTxOwg4zvmvQUK/jcm3tfhc
-	KLcIedGK/uUacTWBRrco2dw=
-X-Google-Smtp-Source: ACHHUZ7oH0uCOdfhzFzAfAEqMGAC0lMcQXIsRmBhYh8cE2yZXFGKpt64wEgV0/NPP4dhRRVPYCfDvA==
-X-Received: by 2002:a17:902:82c3:b0:1a9:1b4:9fd5 with SMTP id u3-20020a17090282c300b001a901b49fd5mr589673plz.68.1683131751882;
-        Wed, 03 May 2023 09:35:51 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:6454])
-        by smtp.gmail.com with ESMTPSA id b5-20020a170902a9c500b001a4fa2f7a23sm21823336plr.274.2023.05.03.09.35.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 May 2023 09:35:51 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date: Wed, 3 May 2023 06:35:49 -1000
-From: Tejun Heo <tj@kernel.org>
-To: Kent Overstreet <kent.overstreet@linux.dev>
-Cc: Michal Hocko <mhocko@suse.com>, Suren Baghdasaryan <surenb@google.com>,
-	akpm@linux-foundation.org, vbabka@suse.cz, hannes@cmpxchg.org,
-	roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net,
-	willy@infradead.org, liam.howlett@oracle.com, corbet@lwn.net,
-	void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com,
-	ldufour@linux.ibm.com, catalin.marinas@arm.com, will@kernel.org,
-	arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
-	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
-	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org,
-	masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org,
-	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
-	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
-	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
-	keescook@chromium.org, ndesaulniers@google.com,
-	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
-	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
-	elver@google.com, dvyukov@google.com, shakeelb@google.com,
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
-	cgroups@vger.kernel.org
-Subject: Re: [PATCH 00/40] Memory allocation profiling
-Message-ID: <ZFKNZZwC8EUbOLMv@slm.duckdns.org>
-References: <20230501165450.15352-1-surenb@google.com>
- <ZFIMaflxeHS3uR/A@dhcp22.suse.cz>
- <ZFIOfb6/jHwLqg6M@moria.home.lan>
- <ZFISlX+mSx4QJDK6@dhcp22.suse.cz>
- <ZFIVtB8JyKk0ddA5@moria.home.lan>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F4EE29A8;
+	Wed,  3 May 2023 16:49:29 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ip+h/TdUG6D3Ivqp4EbLH92ORPDAszOuL4DM6xyJXWTqwORfVpfKdhTRgi0eAlK8p/JrBoQKUsWje21RywgC8mnT0oBYmz2VA9QmsKvNCd7KuQVN1EhI31/fZ78Ute1JeUg03jwhnYZc6Fh4smaAaV+W40TkBXqDCa40QyPd0sgrHIrc02szqQY58p2vn29Un7RAhMOuYEtyHLJxWZ4lNSKc8qxz4msKZG7dr1XVM3AxhocVvo8CZdFvkLYmyBf5JvQC30YslncBjkWFypx/mitXGN8qcbkSCjoyUWZFD46o08PONote8tU9dJpa2bKz0IwrzOlFzjlYxSlO+JpeHA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=06YZqPwZh9w/sxPTWqiyu4T81+pqU91SX+dNxgVEE+Q=;
+ b=MpDCRFfr1wwguKbeK/0vSvsfGXtJ5YDJDta3ufq+UCExldbu3Iue53h3FCNiEF1K9zGKVxgqLgHP17iYuDjSz6ziybS/kOJ0FNUdWT1yWpujOLk3bF23ayczITlLehihVqZ+WT7s9Dx+sr6GgR36J+fYt7GKFywkUtGHzhPesiilRmnC4ipc4tzTO6pd1oBUoJAxq1k5DctiHeJgtVBBmUmHuILqYpyGX3gNRw/wx61LAB4JdUqR33xLPB17Cu0a4URKkg7mTaryEo8sv6xv77MrCkAZzqJsaHrCLcVcG3hfaYPmIDWTWCBSB3gmCDYhvabcVClK9Hq11pZwMR08+w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=06YZqPwZh9w/sxPTWqiyu4T81+pqU91SX+dNxgVEE+Q=;
+ b=mkQaRNYMXTlOkuLQcUZB5+DnbKfyZSq+CYF9TbZM9HHEJWHihJ4iQNuMvd9fPU4a/KgmRRWksTgwkfXy1hbIt9/OUPk7B6Ha0J4RVe4L1QybPGoHy+F9bVFtAAdhnNSmKxISCnAt1ul3ndIQ94scIkgcIuyvcnTyOtzzRJVqPALIeQm0bw2TGKFPBqHYQAzryTPkccWpiAgAB7zh0u9CFyXR9fbSNKnhdMp8fOVJGueyhms07T1VmN8R/3W/351m3SHOANw5QeWzqEISKctVQaQ1NwKZj0HRtb71/aK8QiaC9Lbj43AT0gbHdHeEV9lDcfbRHkTyQEV4dW1aHfFJog==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by CH0PR12MB5283.namprd12.prod.outlook.com (2603:10b6:610:d6::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.22; Wed, 3 May
+ 2023 16:49:24 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6363.022; Wed, 3 May 2023
+ 16:49:24 +0000
+Date: Wed, 3 May 2023 13:49:17 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Andy Gross <agross@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>,
+	Bjorn Andersson <andersson@kernel.org>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+	linux-mediatek@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
+	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
+	linux-tegra@vger.kernel.org,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Orson Zhai <orsonzhai@gmail.com>, Rob Clark <robdclark@gmail.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Krishna Reddy <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
+	Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Steven Price <steven.price@arm.com>
+Subject: Re: [PATCH 16/20] iommu/sun50i: Add an IOMMU_IDENTITIY_DOMAIN
+Message-ID: <ZFKQjcvUv96qQAVQ@nvidia.com>
+References: <16-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
+ <e73c6192-8fd5-042d-ce03-095b336270ee@arm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e73c6192-8fd5-042d-ce03-095b336270ee@arm.com>
+X-ClientProxiedBy: BLAPR03CA0135.namprd03.prod.outlook.com
+ (2603:10b6:208:32e::20) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZFIVtB8JyKk0ddA5@moria.home.lan>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CH0PR12MB5283:EE_
+X-MS-Office365-Filtering-Correlation-Id: c14fd38d-07cf-4cc8-e78a-08db4bf659af
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	wQKiRvz3fkdNwCDJYD0SB8eonEMqfUUdfRQ5hQnLBk2NPFPvZFuUAZ5mviNA13CqNgGw2yARRbuf5723PNfZ0Hy4o4XceTDjgDVCCOJ39yKgjfDFRXOq1a+zRiFCtlIxW6tPVJrYXwoBHo++MuFnaUajDtB/22C8f9jF94TyvOdTO8y3aA/od5mBmq+8OwV06frz8n0+UnQbERCP/wMgpK2DBT1QhKfUEqXrVqyKSsHhG909ddWD41rANB/XtXJ7599WYZ8kNgGFrkjj/XQpzCOT8FbGgwIcNsi6aREx8pSu5cZNzXoM3v2UhFtnOZG3ieHg/xEmy/P61YhuMfiAKS+uzghqlHiLFvjS059kBADmRTOaMnj2S/nL0lh3L4x9gPPYBoXoJ5+MShmcMxtUFl619Lx2oPG+rA4kNq0X8s/+xvgkQ64fMZNCnGZ2oBD9/MEMBZiu1AtdnLxjjFF9+PM+W+4L/H2vstinPAfkpZvGV3K32QhzaSkzeLMBqmaK+zfZbaj5sxKMlzQJQRcAYP2FrBUnep9vaHecdGb2CfpPmFknPRsCHH/Yzpa7hOUh
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(366004)(376002)(39860400002)(136003)(451199021)(2906002)(38100700002)(83380400001)(2616005)(26005)(6506007)(6512007)(53546011)(186003)(36756003)(8676002)(8936002)(5660300002)(7406005)(7416002)(6666004)(478600001)(316002)(4326008)(6916009)(54906003)(6486002)(86362001)(41300700001)(66476007)(66556008)(66946007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?OM4FfATwOgCSFRTU2R7crcbgcKtZPp/gnq/vPH3OpAg6M3iaY6bbbxkTZRAC?=
+ =?us-ascii?Q?yA9ZO1ra1r0w4LbDnvbNnHyirrT3k6+4vZmTjpnyxCoz+kcqJlXOa4KDIACj?=
+ =?us-ascii?Q?wL6Md8QTivpcIBH/iMSby6hdwW2vj/RV7lnVCIZOr+l76KBh5/KiyWW7fAz6?=
+ =?us-ascii?Q?8ifBHZITBqalWpHQrHxaDguKbur6iXB5l3OxlSlpUi7ZWsdKNJfkUkXaB0B9?=
+ =?us-ascii?Q?Rfs6hErkkPVyHg0UHoENo2f5ZT5v3ieIjCCKPkLGASl1fKC1XA5JAhvU2oRm?=
+ =?us-ascii?Q?gxYVLaKtR9/hEeEpWFEkvp+RLQrcDwX1Rg4/SXhvOkV7kpAs+yp5u8v1yEhO?=
+ =?us-ascii?Q?c6mDBFxunKQlweomAQudLW0WqjYPGzed+sCSumoxRVcCfsXbttEoUli1HsKG?=
+ =?us-ascii?Q?EHWfX/6swq3XEk2h7fvbBA3ftb6oMbCt3ib9CzVeTd2/ZfNk1GZt/YwK8flg?=
+ =?us-ascii?Q?ih1kFkyb/Eos9giagfe2Bjhon6OQHyMC3ByyTUFiRbFFjk0paSAsC8kqFmYJ?=
+ =?us-ascii?Q?ZIx6jp3yBF4wOJlZyJc6nFYuXB6XwfeONBThZVe4Kxguj1dQawOUUjri0Kuu?=
+ =?us-ascii?Q?kvKl49AwJomSvNyX6HfpuyfPoGhGapm1uAQT3d9o/sin5h490qSbLbA61OSy?=
+ =?us-ascii?Q?tNk93xwt+ZY69Lb/oXOEosiFJY5zKr8SlY8txMi1RYry2snXT28yKdi27qvj?=
+ =?us-ascii?Q?4hr3eIgkETzvvrZNYSN4ubl0jG6YjBXhOHgUKxqSYMDzHVw40BE3OvOANaeJ?=
+ =?us-ascii?Q?nQKgAieGXdm4r3U+wajLSnxfYID/CR475ZfN6Rx6Sg7f2FOTEOKxWqkZrhNe?=
+ =?us-ascii?Q?rSicZbJh6LW3hIwIfyR5X39zlneqDD2yUbj6GdAv0ysuVDFIjPGQaVka0B8W?=
+ =?us-ascii?Q?bVNVZFBdwWw3FvmEay8MF6Ob+BY5yBqhyzoBFKSwESuZ0NkwjRKzC0jFalbj?=
+ =?us-ascii?Q?zNsqo6Av+v4oPWX/xOx1NxotXkGfx/GQvSBJbB0DsOKE4/PEGyVF3EYjV9dz?=
+ =?us-ascii?Q?rd9Ff04Nr8UX0QJjFlRSOimFCb34K6HUUQ4DgqrF/ihVwzHc8g6h8dosaqTb?=
+ =?us-ascii?Q?t5UBBS8kJpiJTYABjBAZ8BN3OFS0qCY5pOnwc5Re578WO/Vu9UqLyNfiRjzo?=
+ =?us-ascii?Q?YoOUleYErTz73X5mNrmFbZH9HXUXKnMgglkn2QFlbC3rpioDgVmGqODd1aC+?=
+ =?us-ascii?Q?niEXtg25eRbyUqo08/FFi8fzlBc9GNInscedZVSH39jCRJCf7x+6lVq3NSbB?=
+ =?us-ascii?Q?kcgtJ9t1uCNIqHuslBjAZ+2sesGCHE0PnR8Narcpjp8Z4/XP1/nkk3U+Jl21?=
+ =?us-ascii?Q?Wy7Mx/lwZy58ZZyGppc3qILtEhrH42tfbowiw0L0iaHgI03kppOGIkYcY7Ut?=
+ =?us-ascii?Q?HWT/7lMUdqwFIfQ5o5rALxnXoGwCZDcQhN3kp/x6wc8NMbdMDn+wObki7pEf?=
+ =?us-ascii?Q?dsr6ZRxPAjHcxwTpJvTn9qX8LIQU2fUoAq1zmHLjAdneZvKEfoU8+sAg27QK?=
+ =?us-ascii?Q?kgcsGLbx5gdzqXUIAVLJRXYND4Q+BK2n55iwPUNM6ZClJbvfKrqbl3sxlhAg?=
+ =?us-ascii?Q?pGF87j0qhOqXYfx+yjrZBHFR16dMo2+8lUnneGGF?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c14fd38d-07cf-4cc8-e78a-08db4bf659af
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 May 2023 16:49:24.3351
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: e5Awei0QxYT9i6oBCAz6o8dyrBDUCZPBlPFyI5TH4zjqGZwIX9HrGqI8pC0qc6qD
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5283
 
-Hello, Kent.
+On Wed, May 03, 2023 at 04:54:28PM +0100, Robin Murphy wrote:
+> 
+> On 2023-05-01 19:03, Jason Gunthorpe wrote:
+> > This brings back the ops->detach_dev() code that commit
+> > 1b932ceddd19 ("iommu: Remove detach_dev callbacks") deleted and turns it
+> > into an IDENTITY domain.
+> > 
+> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> > ---
+> >   drivers/iommu/sun50i-iommu.c | 21 +++++++++++++++++++++
+> >   1 file changed, 21 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
+> > index 74c5cb93e90027..15fd62d360778f 100644
+> > --- a/drivers/iommu/sun50i-iommu.c
+> > +++ b/drivers/iommu/sun50i-iommu.c
+> > @@ -772,6 +772,26 @@ static void sun50i_iommu_detach_device(struct iommu_domain *domain,
+> >   		sun50i_iommu_detach_domain(iommu, sun50i_domain);
+> >   }
+> > +static int sun50i_iommu_identity_attach(struct iommu_domain *identity_domain,
+> > +					struct device *dev)
+> > +{
+> > +	struct sun50i_iommu *iommu = dev_iommu_priv_get(dev);
+> > +
+> > +	if (iommu->domain == identity_domain || !iommu->domain)
+> 
+> I don't think that first condition could ever be true.
 
-On Wed, May 03, 2023 at 04:05:08AM -0400, Kent Overstreet wrote:
-> No, we're still waiting on the tracing people to _demonstrate_, not
-> claim, that this is at all possible in a comparable way with tracing. 
+Oh yes, this needs more work.. I folded sun50i_iommu_detach_device()
+into sun50i_iommu_identity_attach() and made iommu->domain be set to
+identity immediately after allocation. Now it can't be NULL
 
-So, we (meta) happen to do stuff like this all the time in the fleet to hunt
-down tricky persistent problems like memory leaks, ref leaks, what-have-you.
-In recent kernels, with kprobe and BPF, our ability to debug these sorts of
-problems has improved a great deal. Below, I'm attaching a bcc script I used
-to hunt down, IIRC, a double vfree. It's not exactly for a leak but leaks
-can follow the same pattern.
-
-There are of course some pros and cons to this approach:
-
-Pros:
-
-* The framework doesn't really have any runtime overhead, so we can have it
-  deployed in the entire fleet and debug wherever problem is.
-
-* It's fully flexible and programmable which enables non-trivial filtering
-  and summarizing to be done inside kernel w/ BPF as necessary, which is
-  pretty handy for tracking high frequency events.
-
-* BPF is pretty performant. Dedicated built-in kernel code can do better of
-  course but BPF's jit compiled code & its data structures are fast enough.
-  I don't remember any time this was a problem.
-
-Cons:
-
-* BPF has some learning curve. Also the fact that what it provides is a wide
-  open field rather than something scoped out for a specific problem can
-  make it seem a bit daunting at the beginning.
-
-* Because tracking starts when the script starts running, it doesn't know
-  anything which has happened upto that point, so you gotta pay attention to
-  handling e.g. handling frees which don't match allocs. It's kinda annoying
-  but not a huge problem usually. There are ways to build in BPF progs into
-  the kernel and load it early but I haven't experiemnted with it yet
-  personally.
-
-I'm not necessarily against adding dedicated memory debugging mechanism but
-do wonder whether the extra benefits would be enough to justify the code and
-maintenance overhead.
-
-Oh, a bit of delta but for anyone who's more interested in debugging
-problems like this, while I tend to go for bcc
-(https://github.com/iovisor/bcc) for this sort of problems. Others prefer to
-write against libbpf directly or use bpftrace
-(https://github.com/iovisor/bpftrace).
-
-Thanks.
-
-#!/usr/bin/env bcc-py
-
-import bcc
-import time
-import datetime
-import argparse
-import os
-import sys
-import errno
-
-description = """
-Record vmalloc/vfrees and trigger on unmatched vfree
-"""
-
-bpf_source = """
-#include <uapi/linux/ptrace.h>
-#include <linux/vmalloc.h>
-
-struct vmalloc_rec {
-	unsigned long		ptr;
-	int			last_alloc_stkid;
-	int			last_free_stkid;
-	int			this_stkid;
-	bool			allocated;
-};
-
-BPF_STACK_TRACE(stacks, 8192);
-BPF_HASH(vmallocs, unsigned long, struct vmalloc_rec, 131072);
-BPF_ARRAY(dup_free, struct vmalloc_rec, 1);
-
-int kpret_vmalloc_node_range(struct pt_regs *ctx)
-{
-        unsigned long ptr = PT_REGS_RC(ctx);
-	uint32_t zkey = 0;
-	struct vmalloc_rec rec_init = { };
-	struct vmalloc_rec *rec;
-	int stkid;
-
-	if (!ptr)
-		return 0;
-
-	stkid = stacks.get_stackid(ctx, 0);
-
-        rec_init.ptr = ptr;
-        rec_init.last_alloc_stkid = -1;
-        rec_init.last_free_stkid = -1;
-        rec_init.this_stkid = -1;
-
-	rec = vmallocs.lookup_or_init(&ptr, &rec_init);
-	rec->allocated = true;
-	rec->last_alloc_stkid = stkid;
-	return 0;
-}
-
-int kp_vfree(struct pt_regs *ctx, const void *addr)
-{
-	unsigned long ptr = (unsigned long)addr;
-	uint32_t zkey = 0;
-	struct vmalloc_rec rec_init = { };
-	struct vmalloc_rec *rec;
-	int stkid;
-
-	stkid = stacks.get_stackid(ctx, 0);
-
-        rec_init.ptr = ptr;
-        rec_init.last_alloc_stkid = -1;
-        rec_init.last_free_stkid = -1;
-        rec_init.this_stkid = -1;
-
-	rec = vmallocs.lookup_or_init(&ptr, &rec_init);
-	if (!rec->allocated && rec->last_alloc_stkid >= 0) {
-		rec->this_stkid = stkid;
-		dup_free.update(&zkey, rec);
-	}
-
-	rec->allocated = false;
-	rec->last_free_stkid = stkid;
-        return 0;
-}
-"""
-
-bpf = bcc.BPF(text=bpf_source)
-bpf.attach_kretprobe(event="__vmalloc_node_range", fn_name="kpret_vmalloc_node_range");
-bpf.attach_kprobe(event="vfree", fn_name="kp_vfree");
-bpf.attach_kprobe(event="vfree_atomic", fn_name="kp_vfree");
-
-stacks = bpf["stacks"]
-vmallocs = bpf["vmallocs"]
-dup_free = bpf["dup_free"]
-last_dup_free_ptr = dup_free[0].ptr
-
-def print_stack(stkid):
-    for addr in stacks.walk(stkid):
-        sym = bpf.ksym(addr)
-        print('  {}'.format(sym))
-
-def print_dup(dup):
-    print('allocated={} ptr={}'.format(dup.allocated, hex(dup.ptr)))
-    if (dup.last_alloc_stkid >= 0):
-        print('last_alloc_stack: ')
-        print_stack(dup.last_alloc_stkid)
-    if (dup.last_free_stkid >= 0):
-        print('last_free_stack: ')
-        print_stack(dup.last_free_stkid)
-    if (dup.this_stkid >= 0):
-        print('this_stack: ')
-        print_stack(dup.this_stkid)
-
-while True:
-    time.sleep(1)
-    
-    if dup_free[0].ptr != last_dup_free_ptr:
-        print('\nDUP_FREE:')
-        print_dup(dup_free[0])
-        last_dup_free_ptr = dup_free[0].ptr
+Thanks
+Jason
