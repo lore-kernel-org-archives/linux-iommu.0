@@ -1,45 +1,45 @@
-Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
+Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AE21DF41
-	for <iommu@lists.linux.dev>; Wed,  3 May 2023 18:58:54 +0000 (UTC)
-Received: by mail-pf1-f179.google.com with SMTP id d2e1a72fcca58-64115e652eeso7268288b3a.0
-        for <iommu@lists.linux.dev>; Wed, 03 May 2023 11:58:54 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5E1CDF43
+	for <iommu@lists.linux.dev>; Wed,  3 May 2023 19:09:40 +0000 (UTC)
+Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-1a516fb6523so54293535ad.3
+        for <iommu@lists.linux.dev>; Wed, 03 May 2023 12:09:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683140334; x=1685732334;
+        d=gmail.com; s=20221208; t=1683140980; x=1685732980;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=vMlAqtjRc2HuzX77sJKufpwTYm/Gq3h8+fD7OUvgqfE=;
-        b=AAvxk54YlMnkI7FdWDgkmXppZ5N5YVAtZzB/uFzgetK350E1VsosLNsIn+t9yAmlyz
-         Mpf/EdDThAl6AdsQ4NqZZ4WQmsihQ4PIOjP2ktSZnRqbu/hpU+fSBV+6Seq32dABAuoB
-         fgBMvXiDGIWraIMuHQyLJ8k8C2Rfu3BrjRS/alNIzOPn/3Xdw2WUHmjkDBEutrfMrPpb
-         QTijZH34gDsEJTP9EXOMMbAzxdlErf6OrxB7h8VV2kzs6tN2Aq3j/W560a3R8Pg4/lCz
-         FYHP8xcU1EYp/9E+JwiaUk9zf6GvPs+LS2bU4OlgAsosubDIcUNZjh57x1aZiOnb8NOJ
-         sALg==
+        bh=m2prCTdjzaiRiaqQtudLpWKutHCUVL/OSWsxsk3W0H0=;
+        b=DgGf/RDPAqWGHut8/ffMPgzzhFJ9XYYSPgLBeni/aHHvM33hoTyZ2z1/iWZrJfEq83
+         XC8cOYLwo2w4awuIxnl0cMADE/m0XmY+wPpkMbjZhRe/h0OTU4R7JHORw6cp3ebvPJPs
+         fVMtj4scXOewOp4pOg6Y+bLDbTCONtNkC6uKe3XQm4/tjkELGZ7bx+BlGycvwgcMZTg3
+         diw26d57mAXbzMIEL2R9owFYzXiYqv54fGxd86cbz1pWBKa8UI2AhEJ1f1/yiknBF/PK
+         kJgW8kCwMV9OQVIdn/sPBvqc9vOmLsLdyI/c/vfOx43vpU0ufO13PA0zEYN9tJjBA8qt
+         Rc3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683140334; x=1685732334;
+        d=1e100.net; s=20221208; t=1683140980; x=1685732980;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=vMlAqtjRc2HuzX77sJKufpwTYm/Gq3h8+fD7OUvgqfE=;
-        b=QPCdgbVFxl5BYjEuz7WFP4OHKVieQQTeh/kNDaS3A1WAj245Uw23pKGXuFAvXRSBK9
-         i53yf6FDBqfHciHPX0frI+7SxtFCFSQpUH7Cedj9mAF8K4/eSog+AKOvikd/kGuLCP3A
-         SNlNA8+LLAAUk61xWv64PCCUk7dkYF0c5+IdBmlht/e9fpgAAdXw552MccuR/+c3N76U
-         IOMO9urZtT3opn8Zzg0+a8LELBNXn2QBumizDgv0x93j4q0+SLn2DdZe4PZ47LiaD7wl
-         pAGJu/Dvw+xMU5aphwwBgmDiiyDOFYJNwALzhX5PTSxEQ6qn7i74sEQaHLFFmZq4BAn8
-         MLfw==
-X-Gm-Message-State: AC+VfDw/kDm7h80ZooxPzBg9I2ZxeaktKHr30i5HnLtSyiI59uxfl/50
-	lUlFBrTjyrHaQmzJxnPdY3c=
-X-Google-Smtp-Source: ACHHUZ5EimlJXBnB410AOZJFF9uhR8Bd9zCcSVKDkw9w+jAPlVTHtCrOZFWDZSswiUq3A461o3c8YA==
-X-Received: by 2002:a17:903:2345:b0:1a9:6a10:70e9 with SMTP id c5-20020a170903234500b001a96a1070e9mr878641plh.33.1683140333441;
-        Wed, 03 May 2023 11:58:53 -0700 (PDT)
+        bh=m2prCTdjzaiRiaqQtudLpWKutHCUVL/OSWsxsk3W0H0=;
+        b=ViIfgA+UnBu3dofaen6uNkCTUAmNAmMEgz9QYOa6ypUsL1o4SsJhNlb4lYBHb+Vqpt
+         FjTimf/P4wJBRF2qaFoa9J0wUsGv3TDo4ffrZABEgRiJOQCA4qJYGVTgx9RH5DA5P9yM
+         4JzdojzIz5lJC2Lg1x2dJx9stT0uLcVPlH+a+/JQzU2WJGlnPiKnKu2x88MApT4Oim69
+         ogjqF8/IgVOYJBDE0oZNJLys9Gh9mldq/sY/G0/t1UNvSHLVgs4lkUVYeiAJ84o9rltE
+         jPuN8/Ug31dueE8gRKNS9ErDx1CRJWOUxrsATBRD/uAhzXmoMgNqw5HWZn0+J+BbA3nu
+         j5gQ==
+X-Gm-Message-State: AC+VfDzwBBVArSOb7vnGx4iTFdNKOY6it9r/Wk9+7waXPP01fCTY0866
+	wCJL+egfw4Kcos9B1fOMUT8=
+X-Google-Smtp-Source: ACHHUZ6YDYrRsQdW8TjDTlSuUDEQ8ByWIKmmy8KfjMdCubXv22qMvWwsp2IFNMqrmPGjqUc8LtNL9Q==
+X-Received: by 2002:a17:902:8d8a:b0:1ab:5b0:6f16 with SMTP id v10-20020a1709028d8a00b001ab05b06f16mr1059467plo.43.1683140979705;
+        Wed, 03 May 2023 12:09:39 -0700 (PDT)
 Received: from localhost ([2620:10d:c090:400::5:6454])
-        by smtp.gmail.com with ESMTPSA id 11-20020a170902e9cb00b001aaf92130afsm5726253plk.116.2023.05.03.11.58.52
+        by smtp.gmail.com with ESMTPSA id 12-20020a170902c24c00b001a69d1bc32csm21999335plg.238.2023.05.03.12.09.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 May 2023 11:58:53 -0700 (PDT)
+        Wed, 03 May 2023 12:09:39 -0700 (PDT)
 Sender: Tejun Heo <htejun@gmail.com>
-Date: Wed, 3 May 2023 08:58:51 -1000
+Date: Wed, 3 May 2023 09:09:37 -1000
 From: Tejun Heo <tj@kernel.org>
 To: Kent Overstreet <kent.overstreet@linux.dev>
 Cc: Johannes Weiner <hannes@cmpxchg.org>, Michal Hocko <mhocko@suse.com>,
@@ -72,9 +72,8 @@ Cc: Johannes Weiner <hannes@cmpxchg.org>, Michal Hocko <mhocko@suse.com>,
 	Alexei Starovoitov <ast@kernel.org>,
 	Andrii Nakryiko <andrii@kernel.org>
 Subject: Re: [PATCH 00/40] Memory allocation profiling
-Message-ID: <ZFKu6zWA00AzArMF@slm.duckdns.org>
-References: <20230501165450.15352-1-surenb@google.com>
- <ZFIMaflxeHS3uR/A@dhcp22.suse.cz>
+Message-ID: <ZFKxcfqkUQ60zBB_@slm.duckdns.org>
+References: <ZFIMaflxeHS3uR/A@dhcp22.suse.cz>
  <ZFIOfb6/jHwLqg6M@moria.home.lan>
  <ZFISlX+mSx4QJDK6@dhcp22.suse.cz>
  <ZFIVtB8JyKk0ddA5@moria.home.lan>
@@ -83,6 +82,7 @@ References: <20230501165450.15352-1-surenb@google.com>
  <ZFKlrP7nLn93iIRf@slm.duckdns.org>
  <ZFKqh5Dh93UULdse@slm.duckdns.org>
  <ZFKubD/lq7oB4svV@moria.home.lan>
+ <ZFKu6zWA00AzArMF@slm.duckdns.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -91,25 +91,29 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZFKubD/lq7oB4svV@moria.home.lan>
+In-Reply-To: <ZFKu6zWA00AzArMF@slm.duckdns.org>
 
-On Wed, May 03, 2023 at 02:56:44PM -0400, Kent Overstreet wrote:
-> On Wed, May 03, 2023 at 08:40:07AM -1000, Tejun Heo wrote:
-> > > Yeah, easy / default visibility argument does make sense to me.
+On Wed, May 03, 2023 at 08:58:51AM -1000, Tejun Heo wrote:
+> On Wed, May 03, 2023 at 02:56:44PM -0400, Kent Overstreet wrote:
+> > On Wed, May 03, 2023 at 08:40:07AM -1000, Tejun Heo wrote:
+> > > > Yeah, easy / default visibility argument does make sense to me.
+> > > 
+> > > So, a bit of addition here. If this is the thrust, the debugfs part seems
+> > > rather redundant, right? That's trivially obtainable with tracing / bpf and
+> > > in a more flexible and performant manner. Also, are we happy with recording
+> > > just single depth for persistent tracking?
 > > 
-> > So, a bit of addition here. If this is the thrust, the debugfs part seems
-> > rather redundant, right? That's trivially obtainable with tracing / bpf and
-> > in a more flexible and performant manner. Also, are we happy with recording
-> > just single depth for persistent tracking?
+> > Not sure what you're envisioning?
+> > 
+> > I'd consider the debugfs interface pretty integral; it's much more
+> > discoverable for users, and it's hardly any code out of the whole
+> > patchset.
 > 
-> Not sure what you're envisioning?
-> 
-> I'd consider the debugfs interface pretty integral; it's much more
-> discoverable for users, and it's hardly any code out of the whole
-> patchset.
+> You can do the same thing with a bpftrace one liner tho. That's rather
+> difficult to beat.
 
-You can do the same thing with a bpftrace one liner tho. That's rather
-difficult to beat.
+Ah, shit, I'm an idiot. Sorry. I thought allocations was under /proc and
+allocations.ctx under debugfs. I meant allocations.ctx is redundant.
 
 Thanks.
 
