@@ -1,88 +1,151 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 824A34A12
-	for <iommu@lists.linux.dev>; Wed,  3 May 2023 10:26:32 +0000 (UTC)
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id D9EB814F410;
-	Wed,  3 May 2023 12:26:28 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1683109589; bh=9W2wun4Zj44NWzwdlLkMFEunLnmomS6UpnHu7fqlUvw=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=RY1nRufpXdiSJQ6rfVk/v4uXA2nZbsCbrGxRIhqVdNwr8SIfDdtDY4wpCe25wFasl
-	 w1BqEtqFdb98ncldz5L5BfdQOK+IXjg4m5WZXUipUraWgQ4LLS5Gz4bTdhA7osONxZ
-	 brJ4ucZmtLQyFnfvdAZ/2DlN8eiuApZyh0ThEGxdVpqahbsNeXkBtQm8i8/xxb5K96
-	 Lr9b6WGCJuYJeJTYx3TLMB66ZuisUQiGZ+/TINACO6wao1Sy5Fcc7O7Q9nQonYabtj
-	 9YchQQBbTEKrFokXu+MNG5CEj9cmbPrhJUEj7whSRU/w3oH5u/ir9+J7QPH/q3iyEo
-	 YhK1QSLkJNUkg==
-Date: Wed, 3 May 2023 12:26:27 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Kent Overstreet <kent.overstreet@linux.dev>
-Cc: Michal Hocko <mhocko@suse.com>, Suren Baghdasaryan <surenb@google.com>,
- akpm@linux-foundation.org, vbabka@suse.cz, hannes@cmpxchg.org,
- roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net,
- willy@infradead.org, liam.howlett@oracle.com, corbet@lwn.net,
- void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com,
- ldufour@linux.ibm.com, catalin.marinas@arm.com, will@kernel.org,
- arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
- dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
- david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
- nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev,
- rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com,
- yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com,
- hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org,
- ndesaulniers@google.com, gregkh@linuxfoundation.org, ebiggers@google.com,
- ytcoode@gmail.com, vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
- rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
- vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
- iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
- elver@google.com, dvyukov@google.com, shakeelb@google.com,
- songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
- minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, linux-arch@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
- linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
- cgroups@vger.kernel.org
-Subject: Re: [PATCH 00/40] Memory allocation profiling
-Message-ID: <20230503122627.594ac4d9@meshulam.tesarici.cz>
-In-Reply-To: <ZFIv+30UH7+ySCZr@moria.home.lan>
-References: <20230501165450.15352-1-surenb@google.com>
-	<ZFIMaflxeHS3uR/A@dhcp22.suse.cz>
-	<ZFIOfb6/jHwLqg6M@moria.home.lan>
-	<ZFISlX+mSx4QJDK6@dhcp22.suse.cz>
-	<20230503115051.30b8a97f@meshulam.tesarici.cz>
-	<ZFIv+30UH7+ySCZr@moria.home.lan>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-suse-linux-gnu)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D30D71870;
+	Wed,  3 May 2023 10:58:10 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E71872F4;
+	Wed,  3 May 2023 03:58:53 -0700 (PDT)
+Received: from [10.57.82.232] (unknown [10.57.82.232])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 499853F67D;
+	Wed,  3 May 2023 03:58:04 -0700 (PDT)
+Message-ID: <32aa1228-3eb9-340a-41e7-88fdd7c0a5ac@arm.com>
+Date: Wed, 3 May 2023 11:57:59 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH 04/20] iommu/fsl_pamu: Replace set_platform_dma_ops() with
+ IOMMU_DOMAIN_PLATFORM
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
+ Alim Akhtar <alim.akhtar@samsung.com>, Bjorn Andersson
+ <andersson@kernel.org>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Baolin Wang <baolin.wang@linux.alibaba.com>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Konrad Dybcio <konrad.dybcio@linaro.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+ linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org,
+ linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+ linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Matthew Rosato <mjrosato@linux.ibm.com>, Orson Zhai <orsonzhai@gmail.com>,
+ Rob Clark <robdclark@gmail.com>, Samuel Holland <samuel@sholland.org>,
+ Niklas Schnelle <schnelle@linux.ibm.com>,
+ Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy
+ <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
+ Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+ Chunyan Zhang <zhang.lyra@gmail.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, Steven Price <steven.price@arm.com>
+References: <4-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <4-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, 3 May 2023 05:57:15 -0400
-Kent Overstreet <kent.overstreet@linux.dev> wrote:
+On 2023-05-01 19:02, Jason Gunthorpe wrote:
+> It is not clear what this is actually doing, most likely this is IDENTITY
+> behavior, but I think there is a chance it is BLOCKING given how the PAMU
+> stuff is oddly used.
 
-> On Wed, May 03, 2023 at 11:50:51AM +0200, Petr Tesa=C5=99=C3=ADk wrote:
-> > If anyone ever wants to use this code tagging framework for something
-> > else, they will also have to convert relevant functions to macros,
-> > slowly changing the kernel to a minefield where local identifiers,
-> > struct, union and enum tags, field names and labels must avoid name
-> > conflict with a tagged function. For now, I have to remember that
-> > alloc_pages is forbidden, but the list may grow. =20
->=20
-> Also, since you're not actually a kernel contributor yet...
+Logically it has to be identity, since there are no DMA ops interacting 
+with this driver (it's not the TCE IOMMU of 
+arch/powerpc/kernel/iommu.c), so any device using a kernel driver rather 
+than VFIO must be using dma-direct and thus require an identity mapping.
 
-I see, I've been around only since 2007...
+At this point I finally got sufficiently fed up of this driver always 
+being the mystery weirdo and tracked down an old QorIQ reference manual, 
+and now I have about half an hours' worth of understanding of how the 
+PAMU actually works.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?=
-id=3D2a97468024fb5b6eccee2a67a7796485c829343a
+Based on that, what setup_liodns() is doing is indeed setting up 
+identity for everything initially. It also becomes apparent that it's 
+never supported giving a PCI device back to its regular driver after 
+using vfio-pci, since an attach/detach cycle will then leave the PPAACE 
+invalid and thus DMA blocked. Oh well, that's been broken for 10 years; 
+nobody cares. Call it an identity domain and move on.
 
-Petr T
+Thanks,
+Robin.
+
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>   drivers/iommu/fsl_pamu_domain.c | 29 ++++++++++++++++++++++++++---
+>   1 file changed, 26 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+> index bce37229709965..4c65f1adfe7511 100644
+> --- a/drivers/iommu/fsl_pamu_domain.c
+> +++ b/drivers/iommu/fsl_pamu_domain.c
+> @@ -283,15 +283,28 @@ static int fsl_pamu_attach_device(struct iommu_domain *domain,
+>   	return ret;
+>   }
+>   
+> -static void fsl_pamu_set_platform_dma(struct device *dev)
+> +/*
+> + * FIXME: This seems to turn off the iommu HW but it is not obvious what state
+> + * it leaves the HW in. This is probably really a BLOCKING or IDENTITY domain.
+> + * For now this ensures that the old detach_dev behavior functions about the
+> + * same as it always did, and we turn off the IOMMU whenever the UNMANAGED
+> + * domain is detached.
+> + */
+> +static int fsl_pamu_platform_attach(struct iommu_domain *platform_domain,
+> +				    struct device *dev)
+>   {
+>   	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+> -	struct fsl_dma_domain *dma_domain = to_fsl_dma_domain(domain);
+> +	struct fsl_dma_domain *dma_domain;
+>   	const u32 *prop;
+>   	int len;
+>   	struct pci_dev *pdev = NULL;
+>   	struct pci_controller *pci_ctl;
+>   
+> +	if (domain == platform_domain || !domain)
+> +		return 0;
+> +
+> +	dma_domain = to_fsl_dma_domain(domain);
+> +
+>   	/*
+>   	 * Use LIODN of the PCI controller while detaching a
+>   	 * PCI device.
+> @@ -312,8 +325,18 @@ static void fsl_pamu_set_platform_dma(struct device *dev)
+>   		detach_device(dev, dma_domain);
+>   	else
+>   		pr_debug("missing fsl,liodn property at %pOF\n", dev->of_node);
+> +	return 0;
+>   }
+>   
+> +static struct iommu_domain_ops fsl_pamu_platform_ops = {
+> +	.attach_dev = fsl_pamu_platform_attach,
+> +};
+> +
+> +static struct iommu_domain fsl_pamu_platform_domain = {
+> +	.type = IOMMU_DOMAIN_PLATFORM,
+> +	.ops = &fsl_pamu_platform_ops,
+> +};
+> +
+>   /* Set the domain stash attribute */
+>   int fsl_pamu_configure_l1_stash(struct iommu_domain *domain, u32 cpu)
+>   {
+> @@ -448,11 +471,11 @@ static struct iommu_device *fsl_pamu_probe_device(struct device *dev)
+>   }
+>   
+>   static const struct iommu_ops fsl_pamu_ops = {
+> +	.default_domain = &fsl_pamu_platform_domain,
+>   	.capable	= fsl_pamu_capable,
+>   	.domain_alloc	= fsl_pamu_domain_alloc,
+>   	.probe_device	= fsl_pamu_probe_device,
+>   	.device_group   = fsl_pamu_device_group,
+> -	.set_platform_dma_ops = fsl_pamu_set_platform_dma,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+>   		.attach_dev	= fsl_pamu_attach_device,
+>   		.iova_to_phys	= fsl_pamu_iova_to_phys,
