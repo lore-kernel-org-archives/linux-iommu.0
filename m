@@ -1,85 +1,189 @@
-Received: from out-32.mta0.migadu.com (out-32.mta0.migadu.com [91.218.175.32])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A058DED2
-	for <iommu@lists.linux.dev>; Wed,  3 May 2023 09:16:23 +0000 (UTC)
-Date: Wed, 3 May 2023 05:16:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1683105381;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=rDmvTxexy8RqBi9izHKM2Pvx/4yBq3qFG2lSYNPsBT0=;
-	b=CZumf72dPJ1qH8xFSFAWfH2+dXOak2G1yTsA8nv0bYuE4oPM7TMmMVD+dijSmOYCt9jGej
-	eRtBiEVDWH076+0dytH4VQQ3JsIDjhMo6U2gN1jE3Ah9YxsC/70CEkqsp3kuNQocsoFAvC
-	0apNXIZWn4tk15eGwOrg2Nw+gUx7tIQ=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Kent Overstreet <kent.overstreet@linux.dev>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: James Bottomley <James.Bottomley@hansenpartnership.com>,
-	Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org,
-	mhocko@suse.com, vbabka@suse.cz, hannes@cmpxchg.org,
-	roman.gushchin@linux.dev, mgorman@suse.de, willy@infradead.org,
-	liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com,
-	peterz@infradead.org, juri.lelli@redhat.com, ldufour@linux.ibm.com,
-	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
-	x86@kernel.org, peterx@redhat.com, david@redhat.com,
-	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
-	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
-	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
-	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
-	keescook@chromium.org, ndesaulniers@google.com,
-	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
-	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
-	elver@google.com, dvyukov@google.com, shakeelb@google.com,
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
-	cgroups@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-	Paul Mackerras <paulus@samba.org>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Jason Wang <jasowang@redhat.com>,
-	Noralf =?utf-8?B?VHLDr8K/wr1ubmVz?= <noralf@tronnes.org>
-Subject: Re: [PATCH 01/40] lib/string_helpers: Drop space in
- string_get_size's output
-Message-ID: <ZFImWLvv0ILJ+V2F@moria.home.lan>
-References: <ZFAUj+Q+hP7cWs4w@moria.home.lan>
- <b6b472b65b76e95bb4c7fc7eac1ee296fdbb64fd.camel@HansenPartnership.com>
- <ZFCA2FF+9MI8LI5i@moria.home.lan>
- <CAHp75VdK2bgU8P+-np7ScVWTEpLrz+muG-R15SXm=ETXnjaiZg@mail.gmail.com>
- <ZFCsAZFMhPWIQIpk@moria.home.lan>
- <CAHp75VdvRshCthpFOjtmajVgCS_8YoJBGbLVukPwU+t79Jgmww@mail.gmail.com>
- <ZFHB2ATrPIsjObm/@moria.home.lan>
- <CAHp75VdH07gTYCPvp2FRjnWn17BxpJCcFBbFPpjpGxBt1B158A@mail.gmail.com>
- <ZFIJeSv9xn9qnMzg@moria.home.lan>
- <CAHp75Vd_VMOh1zxJvr0KqhxYBXAU1X+Ax7YA1sJ0G_abEpn-Dg@mail.gmail.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8B1EEED2;
+	Wed,  3 May 2023 09:17:46 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 006112F4;
+	Wed,  3 May 2023 02:18:24 -0700 (PDT)
+Received: from [10.57.82.232] (unknown [10.57.82.232])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 539BE3F67D;
+	Wed,  3 May 2023 02:17:34 -0700 (PDT)
+Message-ID: <1db712d2-9e33-4183-2766-34e32f170507@arm.com>
+Date: Wed, 3 May 2023 10:17:29 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75Vd_VMOh1zxJvr0KqhxYBXAU1X+Ax7YA1sJ0G_abEpn-Dg@mail.gmail.com>
-X-Migadu-Flow: FLOW_OUT
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH 02/20] iommu/terga-gart: Replace set_platform_dma_ops()
+ with IOMMU_DOMAIN_PLATFORM
+To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
+ Alim Akhtar <alim.akhtar@samsung.com>, Bjorn Andersson
+ <andersson@kernel.org>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Baolin Wang <baolin.wang@linux.alibaba.com>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Konrad Dybcio <konrad.dybcio@linaro.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+ linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org,
+ linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+ linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Matthew Rosato <mjrosato@linux.ibm.com>, Orson Zhai <orsonzhai@gmail.com>,
+ Rob Clark <robdclark@gmail.com>, Samuel Holland <samuel@sholland.org>,
+ Niklas Schnelle <schnelle@linux.ibm.com>,
+ Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy
+ <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
+ Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+ Chunyan Zhang <zhang.lyra@gmail.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, Steven Price <steven.price@arm.com>
+References: <2-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
+Content-Language: en-GB
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <2-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, May 03, 2023 at 12:12:12PM +0300, Andy Shevchenko wrote:
-> > So, are you dropping your NACK then, so we can standardize the kernel on
-> > the way everything else does it?
-> 
-> No, you are breaking existing users. The NAK stays.
-> The whole discussion after that is to make the way on how users can
-> utilize your format and existing format without multiplying APIs.
+On 2023-05-01 19:02, Jason Gunthorpe wrote:
+> tegra-gart seems to be kind of wonky since from the start its 'detach_dev'
+> op doesn't actually touch hardware. It is supposed to empty the GART of
+> all translations loaded into it.
 
-Dave seems to think we shouldn't be, and I'm in agreement.
+No, detach should never tear down translations - what if other devices 
+are still using the domain?
+
+> Call this weirdness PLATFORM which keeps the basic original
+> ops->detach_dev() semantic alive without needing much special core code
+> support. I'm guessing it really ends up in a BLOCKING configuration, but
+> without any forced cleanup it is unsafe.
+
+The GART translation aperture is in physical address space, so the truth 
+is that all devices have access to it at the same time as having access 
+to the rest of physical address space. Attach/detach here really are 
+only bookkeeping for which domain currently owns the aperture.
+
+FWIW I wrote up this patch a while ago, not sure if it needs rebasing 
+again...
+
+Thanks,
+Robin.
+
+----->8-----
+Subject: [PATCH] iommu/tegra-gart: Add default identity domain support
+
+The nature of a GART means that supporting identity domains is as easy
+as doing nothing, so bring the Tegra driver into the modern world of
+default domains with a trivial implementation. Identity domains are
+allowed to exist alongside any explicit domain for the translation
+aperture, since they both simply represent regions of the physical
+address space with no isolation from each other. As such we'll continue
+to do the "wrong" thing with groups to allow that to work, since the
+notion of isolation that groups represent is counterproductive to the
+GART's established usage model.
+
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+  drivers/iommu/tegra-gart.c | 39 +++++++++++++++++++-------------------
+  1 file changed, 19 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+index c4136eec1f97..07aa7ea6a306 100644
+--- a/drivers/iommu/tegra-gart.c
++++ b/drivers/iommu/tegra-gart.c
+@@ -111,7 +111,13 @@ static int gart_iommu_attach_dev(struct 
+iommu_domain *domain,
+
+  	spin_lock(&gart->dom_lock);
+
+-	if (gart->active_domain && gart->active_domain != domain) {
++	if (domain->type == IOMMU_DOMAIN_IDENTITY) {
++		if (dev_iommu_priv_get(dev)) {
++			dev_iommu_priv_set(dev, NULL);
++			if (--gart->active_devices == 0)
++				gart->active_domain = NULL;
++		}
++	} else if (gart->active_domain && gart->active_domain != domain) {
+  		ret = -EINVAL;
+  	} else if (dev_iommu_priv_get(dev) != domain) {
+  		dev_iommu_priv_set(dev, domain);
+@@ -124,28 +130,15 @@ static int gart_iommu_attach_dev(struct 
+iommu_domain *domain,
+  	return ret;
+  }
+
+-static void gart_iommu_set_platform_dma(struct device *dev)
+-{
+-	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+-	struct gart_device *gart = gart_handle;
+-
+-	spin_lock(&gart->dom_lock);
+-
+-	if (dev_iommu_priv_get(dev) == domain) {
+-		dev_iommu_priv_set(dev, NULL);
+-
+-		if (--gart->active_devices == 0)
+-			gart->active_domain = NULL;
+-	}
+-
+-	spin_unlock(&gart->dom_lock);
+-}
+-
+  static struct iommu_domain *gart_iommu_domain_alloc(struct device *dev,
+  						    unsigned type)
+  {
++	static struct iommu_domain identity;
+  	struct iommu_domain *domain;
+
++	if (type == IOMMU_DOMAIN_IDENTITY)
++		return &identity;
++
+  	if (type != IOMMU_DOMAIN_UNMANAGED)
+  		return NULL;
+
+@@ -162,7 +155,8 @@ static struct iommu_domain 
+*gart_iommu_domain_alloc(struct device *dev,
+  static void gart_iommu_domain_free(struct iommu_domain *domain)
+  {
+  	WARN_ON(gart_handle->active_domain == domain);
+-	kfree(domain);
++	if (domain->type != IOMMU_DOMAIN_IDENTITY)
++		kfree(domain);
+  }
+
+  static inline int __gart_iommu_map(struct gart_device *gart, unsigned 
+long iova,
+@@ -247,6 +241,11 @@ static struct iommu_device 
+*gart_iommu_probe_device(struct device *dev)
+  	return &gart_handle->iommu;
+  }
+
++static int gart_iommu_def_domain_type(struct device *dev)
++{
++	return IOMMU_DOMAIN_IDENTITY;
++}
++
+  static int gart_iommu_of_xlate(struct device *dev,
+  			       struct of_phandle_args *args)
+  {
+@@ -271,9 +270,9 @@ static const struct iommu_ops gart_iommu_ops = {
+  	.domain_alloc	= gart_iommu_domain_alloc,
+  	.probe_device	= gart_iommu_probe_device,
+  	.device_group	= generic_device_group,
+-	.set_platform_dma_ops = gart_iommu_set_platform_dma,
+  	.pgsize_bitmap	= GART_IOMMU_PGSIZES,
+  	.of_xlate	= gart_iommu_of_xlate,
++	.def_domain_type = gart_iommu_def_domain_type,
+  	.default_domain_ops = &(const struct iommu_domain_ops) {
+  		.attach_dev	= gart_iommu_attach_dev,
+  		.map		= gart_iommu_map,
+-- 
+2.39.2.101.g768bb238c484.dirty
+
