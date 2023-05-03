@@ -1,161 +1,243 @@
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B50B0D30C
-	for <iommu@lists.linux.dev>; Wed,  3 May 2023 15:31:45 +0000 (UTC)
-Received: from kwepemm600010.china.huawei.com (unknown [172.30.72.56])
-	by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4QBL3n35LZz18KVY;
-	Wed,  3 May 2023 23:10:29 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- kwepemm600010.china.huawei.com (7.193.23.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Wed, 3 May 2023 23:14:30 +0800
-Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
- lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.023;
- Wed, 3 May 2023 16:14:28 +0100
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Zhangfei Gao <zhangfei.gao@linaro.org>, Nicolin Chen <nicolinc@nvidia.com>
-CC: Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>,
-	"kevin.tian@intel.com" <kevin.tian@intel.com>, "yi.l.liu@intel.com"
-	<yi.l.liu@intel.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"jean-philippe@linaro.org" <jean-philippe@linaro.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, qianweili
-	<qianweili@huawei.com>
-Subject: RE: Cache Invalidation Solution for Nested IOMMU
-Thread-Topic: Cache Invalidation Solution for Nested IOMMU
-Thread-Index: AQHZZcP9AmBGSPvPIkC4mL7SORjVE68ZjzWAgAAMCQCAAEmlgIAAUDeAgAERN4CAABdCsIACZq6AgABYggCABZjYgIADQHcAgCHciBA=
-Date: Wed, 3 May 2023 15:14:28 +0000
-Message-ID: <0d41efe6b0a844878eadccddc2e12679@huawei.com>
-References: <ZCoe3+1q5ZLJsmeC@Asurada-Nvidia> <ZCrd1wphkCp8uFt0@nvidia.com>
- <ZCrn8PPPyEJ/VqFU@Asurada-Nvidia>
- <ea6fba01-b483-94e6-8c84-d096dcb64b5a@arm.com>
- <ZCtpAYn76u499p6G@Asurada-Nvidia> <ZCxOMSvR+6rYbIfy@nvidia.com>
- <a3bbd5422897475d8bcd4c110c3722ec@huawei.com>
- <CABQgh9G_Xa6h7ujRJkCogp02N87OAugBTEuXyccQREw28VfZCQ@mail.gmail.com>
- <ZC6vlI7onlUgBidX@nvidia.com> <ZDNhiVZN9zNLGjcj@Asurada-Nvidia>
- <CABQgh9HLNp-cSp+KhVcgyuVioQochJcG_NyhNcDP0DF1SWs_PQ@mail.gmail.com>
-In-Reply-To: <CABQgh9HLNp-cSp+KhVcgyuVioQochJcG_NyhNcDP0DF1SWs_PQ@mail.gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-originating-ip: [10.202.227.178]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C7A86D30C;
+	Wed,  3 May 2023 15:31:49 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 287FE2F4;
+	Wed,  3 May 2023 08:32:33 -0700 (PDT)
+Received: from [10.57.82.232] (unknown [10.57.82.232])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4E3243F5A1;
+	Wed,  3 May 2023 08:31:43 -0700 (PDT)
+Message-ID: <aaddd64b-6935-f84a-5fda-28011c717051@arm.com>
+Date: Wed, 3 May 2023 16:31:39 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH 06/20] iommu/exynos: Implement an IDENTITY domain
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
+ Alim Akhtar <alim.akhtar@samsung.com>, Bjorn Andersson
+ <andersson@kernel.org>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Baolin Wang <baolin.wang@linux.alibaba.com>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Konrad Dybcio <konrad.dybcio@linaro.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+ linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org,
+ linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+ linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Matthew Rosato <mjrosato@linux.ibm.com>, Orson Zhai <orsonzhai@gmail.com>,
+ Rob Clark <robdclark@gmail.com>, Samuel Holland <samuel@sholland.org>,
+ Niklas Schnelle <schnelle@linux.ibm.com>,
+ Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy
+ <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
+ Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+ Chunyan Zhang <zhang.lyra@gmail.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, Steven Price <steven.price@arm.com>
+References: <6-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <6-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogWmhhbmdmZWkgR2FvIFtt
-YWlsdG86emhhbmdmZWkuZ2FvQGxpbmFyby5vcmddDQo+IFNlbnQ6IDEyIEFwcmlsIDIwMjMgMDM6
-NDgNCj4gVG86IE5pY29saW4gQ2hlbiA8bmljb2xpbmNAbnZpZGlhLmNvbT4NCj4gQ2M6IEphc29u
-IEd1bnRob3JwZSA8amdnQG52aWRpYS5jb20+OyBTaGFtZWVyYWxpIEtvbG90aHVtIFRob2RpDQo+
-IDxzaGFtZWVyYWxpLmtvbG90aHVtLnRob2RpQGh1YXdlaS5jb20+OyBSb2JpbiBNdXJwaHkNCj4g
-PHJvYmluLm11cnBoeUBhcm0uY29tPjsga2V2aW4udGlhbkBpbnRlbC5jb207IHlpLmwubGl1QGlu
-dGVsLmNvbTsNCj4gZXJpYy5hdWdlckByZWRoYXQuY29tOyBiYW9sdS5sdUBsaW51eC5pbnRlbC5j
-b207IGplYW4tcGhpbGlwcGVAbGluYXJvLm9yZzsNCj4gaW9tbXVAbGlzdHMubGludXguZGV2OyBx
-aWFud2VpbGkgPHFpYW53ZWlsaUBodWF3ZWkuY29tPg0KPiBTdWJqZWN0OiBSZTogQ2FjaGUgSW52
-YWxpZGF0aW9uIFNvbHV0aW9uIGZvciBOZXN0ZWQgSU9NTVUNCj4gDQo+IEhpLCBOaWNvbGluDQo+
-IA0KPiBPbiBNb24sIDEwIEFwciAyMDIzIGF0IDA5OjA4LCBOaWNvbGluIENoZW4gPG5pY29saW5j
-QG52aWRpYS5jb20+IHdyb3RlOg0KPiA+DQo+ID4gT24gVGh1LCBBcHIgMDYsIDIwMjMgYXQgMDg6
-NDA6MDRBTSAtMDMwMCwgSmFzb24gR3VudGhvcnBlIHdyb3RlOg0KPiA+ID4gT24gVGh1LCBBcHIg
-MDYsIDIwMjMgYXQgMDI6MjM6MTdQTSArMDgwMCwgWmhhbmdmZWkgR2FvIHdyb3RlOg0KPiA+ID4N
-Cj4gPiA+ID4gV2UgYXJlIHVzaW5nIGlvY3RsIG1ldGhvZCBub3cuDQo+ID4gPiA+IEZyb20gdGhl
-IHRlc3RpbmcsIHRoZSBUTEIgbWlzcyBpbXBhY3RzIHBlcmZvcm1hbmNlIGEgbG90LCBzbyB3ZQ0K
-PiA+ID4gPiB1c2UgaHVnZSBwYWdlIG1ldGhvZC4NCj4gPiA+ID4gQWZ0ZXIgdXNpbmcgaHVnZSBw
-YWdlIG1ldGhvZCwgZ3Vlc3QgY2FuIGFjaGlldmUgY29tcGFyYWJsZQ0KPiA+ID4gPiBwZXJmb3Jt
-YW5jZSB3aXRoIGhvc3QuDQo+ID4gPg0KPiA+ID4gTG9va3MgbGlrZSB0aGVzZSB0ZXN0cyBhcmUg
-bm90IHN0cmVzc2luZyB0aGUgTU0sIGp1c3QgbWVhc3VyaW5nIHB1cmUNCj4gPiA+IEJXIG9mIHRo
-ZSBETUEsIHNvIHRoZXkgZG9uJ3QgZ2V0IGludG8gdGhlIGludmFsaWRhdGlvbiByZWdpbWUuLg0K
-PiA+ID4NCj4gPiA+IFlvdSBuZWVkIHRvIG1lYXN1cmUgYSBtb3JlIHJlYWwgYXBwbGljYXRpb24g
-dGhhdCBpcyBhY3R1YWxseSB1c2luZw0KPiA+ID4gdGhlIE1NIChlZyBhbGxvYy9mcmVlIG1lbW9y
-eSwgZm9yaywgZXRjKSB3aGlsZSBpdCBvcGVyYXRlcyBhbmQgdHVybiBvbg0KPiBTVkEuDQo+ID4N
-Cj4gPiBXb3VsZCBhbiBpb21tdSBtYXAvdW5tYXAgYmVuY2htYXJrIHRlc3QgYmUgdXNlZnVsIGhl
-cmU/DQo+ID4NCj4gPiBJIGFkZGVkIGEgdGVzdCBwcm9ncmFtIHRvIG1lYXN1cmUgbWFwL3VubWFw
-IHRpbWVzIHdpdGggYSBzZXQgb2YNCj4gPiBkaWZmZXJlbnQgc2l6ZWQgYnVmZmVyczoNCj4gPg0K
-PiBodHRwczovL2dpdGh1Yi5jb20vbmljb2xpbmMvaW9tbXVmZC9jb21taXQvM2ViNDE3ZjJjYWUw
-MjM0Y2M4MDFjNmFkDQo+IDc0ZA0KPiA+IGUyYWZiMGRkYmRmODQgKEFsc28gdGhpbmtpbmcgYWJv
-dXQgc2VuZGluZyB0aGlzIHdpdGggYSBSRkMgc2VyaWVzKQ0KPiA+DQo+ID4gQFpoYW5nZmVpLA0K
-PiA+IEluIGNhc2UgdGhhdCB0aGlzIGNvdWxkIGJlIHVzZWZ1bCwgeW91IGNhbiBwdWxsIHRoZXNl
-IHR3byBicmFuY2hlcyBmb3INCj4gPiBwZXJmIG1lYXN1cmVtZW50IHdpdGggYW5kIHdpdGhvdXQg
-bW1hcDoNCj4gPiAjIEtlcm5lbA0KPiA+DQo+IGh0dHBzOi8vZ2l0aHViLmNvbS9uaWNvbGluYy9p
-b21tdWZkL2NvbW1pdHMvd2lwL2lvbW11ZmRfbmVzdGluZy1tbWENCj4gcC0wDQo+ID4gNDA4MjAy
-Mw0KPiA+ICMgUUVNVQ0KPiA+DQo+IGh0dHBzOi8vZ2l0aHViLmNvbS9uaWNvbGluYy9xZW11L2Nv
-bW1pdHMvd2lwL2lvbW11ZmRfbmVzdGluZy1tbWFwLTANCj4gNDA3DQo+ID4gMjAyMw0KPiA+DQo+
-ID4gVG8gdGVzdCB3aXRob3V0IG1tYXAsIHNpbXBseSByZXZlcnQgdGhlIGZvbGxvd2luZyBjb21t
-aXRzOg0KPiA+ICMgS2VybmVsDQo+ID4gZ2l0IHJldmVydCBlY2Y2MDJhM2M4NDgwYmE3Y2UyYzdl
-NzdjMmQxNWNhODczZGJmMmU0DQo+ID4gIyBRRU1VDQo+ID4gZ2l0IHJldmVydCBjNzI2YzAxNGRl
-NzA5OThmMTRiODc0MWE2YTk2ZTE4YTJhN2JjZDBmDQo+ID4NCj4gPiBBbmQsIHlvdSBjYW4gZ2V0
-IHRoZSB0ZXN0IHNjcmlwdCBpbiB0aGUgYnJhbmNoOg0KPiA+ICAgdG9vbHMvdGVzdGluZy9zZWxm
-dGVzdHMvaW9tbXUvaW9tbXVfYmVuY2htYXJrLnNoDQo+ID4NCj4gPg0KPiA+IE9uIG15IGVtdWxh
-dGlvbiBlbnZpcm9ubWVudCAodmVyeSBzbG93KSwgd2l0aCBtbWFwLCBJIHNlZQ0KPiA+IGltcHJv
-dmVtZW50cy4gSSdsbCBhbHNvIHRyeSBzZXR0aW5nIHVwIGEgdGVzdCBzdWl0ZSBvbiBhIHByb3Bl
-ciBIVw0KPiA+IHRoaXMgd2Vlay4NCj4gPg0KPiANCj4gU3RpbGwgZGVidWdnaW5nIHRoZSBtbWFw
-IG1ldGhvZCBoZXJlLA0KPiANCj4gU3RhdHVzIDQuMTINCj4gDQo+IDEuICBpb2N0bCBtZXRob2Qg
-d29ya3MsIGJhc2VkIG9uIGlvbW11ZmQNCj4gDQo+IHBlcmZvcm1hbmNlIHNhbWUgYXMgYmVmb3Jl
-LCBpZS42LjINCj4gDQo+IFVzaW5nIGh1Z2UgcGFnZSBtZXRob2QgZm9yIGd1ZXN0LCBndWVzdCBh
-cHAgY2FuIGdldCBjb21wYXJhYmxlDQo+IHBlcmZvcm1hbmNlIGFzIGhvc3QNCj4gDQo+IChUaGUg
-YnJhbmNoZXMgYXJlIHByb3ZpZGVkIGJ5IFNoYW1lZXIpDQo+IGh0dHBzOi8vZ2l0aHViLmNvbS9n
-YW96aGFuZ2ZlaS9saW51eC1rZXJuZWwtdWFkay90cmVlL3ByaXZhdGUtaW9tbXVmZF9uZQ0KPiBz
-dGluZy0wMzI3MjAyMy02LjMtcmM0LWFybQ0KPiBodHRwczovL2dpdGh1Yi5jb20vZ2Fvemhhbmdm
-ZWkvcWVtdS90cmVlL3ByaXZhdGUtdjcuMi4wLWlvbW11ZmQtbmVzdGluZw0KPiAtYXJtDQo+IA0K
-PiANCj4gMi4gIG1tYXAgbWV0aG9kIHN0aWxsIGluIGRlYnVnLA0KPiAocGF0Y2ggcG9ydGluZyBt
-YXkgaGF2ZSBpc3N1ZXMsIG5lZWQgdG8gcG9ydCBwYXRjaGVzIHRvIHRoZSB3b3JraW5nIHZlcnNp
-b24sDQo+IGluIGNoZWNrKQ0KPiANCj4gcWVtdToNCj4gDQo+IGh0dHBzOi8vZ2l0aHViLmNvbS9n
-YW96aGFuZ2ZlaS9saW51eC1rZXJuZWwtdWFkay90cmVlL2lvbW11ZmRfbmVzdGluZy1tDQo+IG1h
-cC0wNDA4MjAyMw0KPiANCj4gaHR0cHM6Ly9naXRodWIuY29tL2dhb3poYW5nZmVpL3FlbXUvdHJl
-ZS9wcml2YXRlLXY3LjIuMC1pb21tdWZkLW5lc3RpbmcNCj4gLWFybS1tbWFwDQoNCkhpIFpoYW5n
-ZmVpLA0KDQpJIGhhZCBhIGdvIHdpdGggeW91ciBhYm92ZSBicmFuY2hlcy4gVGhlIGlzc3VlIGJl
-bG93IHNlZW1zIHRvIGhhcHBlbiBvbmx5DQp3aGVuIHlvdSBhc3NpZ24gbXVsdGlwbGUgZGV2aWNl
-cyB0byBHdWVzdC4gSXQgbG9va3MgbGlrZSB3aGVuIHlvdSBoYXZlIG11bHRpcGxlIGRldmljZXMN
-CmF0dGFjaGVkIHRvIEd1ZXN0LCB0aGUgaG9zdCBrZXJuZWwgcmVjZWl2ZXMgaW52YWxpZCBHdWVz
-dCBjbWQoMHgwKSBhbmQgZW5kcyB1cCBpc3N1aW5nDQp0aGF0IHRvIEhXIHRyaWdnZXJpbmcgdGhl
-IGJlbG93IGVycm9ycy4gDQoNCkZvciBub3csIGNvdWxkIHlvdSBwbGVhc2UgdHJ5IHdpdGgganVz
-dCBvbmUgZGV2aWNlPyBBdCBsZWFzdCBpbiBteSBzZXR1cCBpdCBkaWRu4oCZdCB0cmlnZ2VyDQp0
-aGUgYmVsb3cgd2l0aCBqdXN0IG9uZSBkZXYuDQoNCkFsc28gYXMgSmFzb24gcG9pbnRlZCBvdXQs
-IEkgdGhpbmsgd2UgbWlnaHQgbmVlZCB0byBydW4gYW4gYXBwbGljYXRpb24gdGhhdCBhY3R1YWxs
-eQ0KaGl0cyB0aGUgbW0gaW52YWxpZGF0aW9uIHBhdGggaW4gR3Vlc3Qga2VybmVsKGFybV9zbW11
-X21tX2ludmFsaWRhdGVfcmFuZ2UoKSkuDQpXaXRoIHRlc3Rfc3ZhX3BlcmYgSSBjb3VsZG4ndCBz
-ZWUgbXVjaCBvZiB0aGF0IGhhcHBlbmluZyBkdXJpbmcgdGhlIHRlc3QgcnVuLg0KDQpBbHNvIGFu
-b3RoZXIgcG9pbnQgaXMgb25jZSB3ZSBoYXZlIEJUTSBlbmFibGVkIHdlIG1pZ2h0IG5vdCBoYXZl
-IHRoZXNlIG1tDQppbnZhbGlkYXRpb25zIHJlYWNoaW5nIHRoZSBob3N0IGtlcm5lbC4gDQoNClRo
-YW5rcywNClNoYW1lZXIgDQo+IA0KPiBoaXNpIHNlYyBpbml0IEt1bnBlbmc5MjAhDQo+IA0KPiBx
-ZW11LXN5c3RlbS1hYXJjaDY0OiBJT01NVV9IV1BUX0lOVkFMSURBVEUgZmFpbGVkOiBObyBzdWNo
-IGRldmljZQ0KPiANCj4gcWVtdS1zeXN0ZW0tYWFyY2g2NDogLS0tLS0tLS1zbW11djNfaW52YWxp
-ZGF0ZV9jYWNoZV9tbWFwOiBmYWlsZWQgdG8NCj4gaW52YWxpZGF0ZSBUTEI6IHByb2Q9MTVmYSB2
-cyBjb25zPTEwMDA3MDkNCj4gDQo+IHFlbXUtc3lzdGVtLWFhcmNoNjQ6IElPTU1VX0hXUFRfSU5W
-QUxJREFURSBmYWlsZWQ6IE5vIHN1Y2ggZGV2aWNlDQo+IA0KPiBxZW11LXN5c3RlbS1hYXJjaDY0
-OiAtLS0tLS0tLXNtbXV2M19pbnZhbGlkYXRlX2NhY2hlX21tYXA6IGZhaWxlZCB0bw0KPiBpbnZh
-bGlkYXRlIFRMQjogcHJvZD05YmIgdnMgY29ucz0xMDAwNzA5DQo+IA0KPiBxZW11LXN5c3RlbS1h
-YXJjaDY0OiBJT01NVV9IV1BUX0lOVkFMSURBVEUgZmFpbGVkOiBDb25uZWN0aW9uIHRpbWVkDQo+
-IG91dA0KPiANCj4gcWVtdS1zeXN0ZW0tYWFyY2g2NDogLS0tLS0tLS1zbW11djNfaW52YWxpZGF0
-ZV9jYWNoZV9tbWFwOiBmYWlsZWQgdG8NCj4gaW52YWxpZGF0ZSBUTEI6IHByb2Q9NGMwIHZzIGNv
-bnM9NGMwDQo+IA0KPiBxZW11LXN5c3RlbS1hYXJjaDY0OiBJT01NVV9IV1BUX0lOVkFMSURBVEUg
-ZmFpbGVkOiBObyBzdWNoIGRldmljZQ0KPiANCj4gcWVtdS1zeXN0ZW0tYWFyY2g2NDogLS0tLS0t
-LS1zbW11djNfaW52YWxpZGF0ZV9jYWNoZV9tbWFwOiBmYWlsZWQgdG8NCj4gaW52YWxpZGF0ZSBU
-TEI6IHByb2Q9ZjdhIHZzIGNvbnM9MTAwMDcwOQ0KPiANCj4gcWVtdS1zeXN0ZW0tYWFyY2g2NDog
-SU9NTVVfSFdQVF9JTlZBTElEQVRFIGZhaWxlZDogTm8gc3VjaCBkZXZpY2UNCj4gDQo+IHFlbXUt
-c3lzdGVtLWFhcmNoNjQ6IC0tLS0tLS0tc21tdXYzX2ludmFsaWRhdGVfY2FjaGVfbW1hcDogZmFp
-bGVkIHRvDQo+IGludmFsaWRhdGUgVExCOiBwcm9kPTgxZCB2cyBjb25zPTEwMDA3MDkNCj4gDQo+
-IGhvc3Q6DQo+IA0KPiBbMjE4Ljk4NjMxOV0gYXJtLXNtbXUtdjMgYXJtLXNtbXUtdjMuMy5hdXRv
-OiB1bmV4cGVjdGVkIGdsb2JhbCBlcnJvcg0KPiByZXBvcnRlZCAoMHgwMDAwMDAwMSksIHRoaXMg
-Y291bGQgYmUgc2VyaW91cw0KPiANCj4gWzIxOC45OTY0NjRdIGFybS1zbW11LXYzIGFybS1zbW11
-LXYzLjMuYXV0bzogQ01EUSBlcnJvciAoY29ucw0KPiAweDAxMDA0ODA1KTogSWxsZWdhbCBjb21t
-YW5kDQo+IA0KPiBbMjE5LjAwNDYwNl0gYXJtLXNtbXUtdjMgYXJtLXNtbXUtdjMuMy5hdXRvOiBz
-a2lwcGluZyBjb21tYW5kIGluDQo+IGVycm9yIHN0YXRlOg0KPiANCj4gWzIxOS4wMTE2MjJdIGFy
-bS1zbW11LXYzIGFybS1zbW11LXYzLjMuYXV0bzoweDAwNjAwMDAyMDIxMTA2ODcNCj4gDQo+IFsy
-MTkuMDE3NTE1XSBhcm0tc21tdS12MyBhcm0tc21tdS12My4zLmF1dG86MHgwMDAwMDAwMDAwMDAw
-MDAwDQo+IA0KPiBbMjE5LjAyMzQyMl0gYXJtLXNtbXUtdjMgYXJtLXNtbXUtdjMuMy5hdXRvOiB1
-bmV4cGVjdGVkIGdsb2JhbCBlcnJvcg0KPiByZXBvcnRlZCAoMHgwMDAwMDAwMSksIHRoaXMgY291
-bGQgYmUgc2VyaW91cw0KPiANCj4gWzIxOS4wMzM1NTBdIGFybS1zbW11LXYzIGFybS1zbW11LXYz
-LjMuYXV0bzogQ01EUSBlcnJvciAoY29ucw0KPiAweDAxMDA0ODA2KTogSWxsZWdhbCBjb21tYW5k
-DQo+IA0KPiBbMjE5LjA0MTY5Ml0gYXJtLXNtbXUtdjMgYXJtLXNtbXUtdjMuMy5hdXRvOiBza2lw
-cGluZyBjb21tYW5kIGluDQo+IGVycm9yIHN0YXRlOg0KPiANCj4gWzIxOS4wNDg3MDddIGFybS1z
-bW11LXYzIGFybS1zbW11LXYzLjMuYXV0bzoweDAwMDAwMDAwMDAwMDAwMDANCj4gDQo+IFsyMTku
-MDU0NjAwXWFybS1zbW11LXYzIGFybS1zbW11LXYzLjMuYXV0bzoweDAwMDAwMDAwMDAwMDAwMDAN
-Cg==
+On 2023-05-01 19:02, Jason Gunthorpe wrote:
+> What exynos calls exynos_iommu_detach_device is actually putting the iommu
+> into identity mode.
+> 
+> Move to the new core support for ARM_DMA_USE_IOMMU by defining
+> ops->identity_domain.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>   drivers/iommu/exynos-iommu.c | 64 ++++++++++++++++++------------------
+>   1 file changed, 32 insertions(+), 32 deletions(-)
+> 
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index c275fe71c4db32..6ff7901103948a 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -24,6 +24,7 @@
+>   
+>   typedef u32 sysmmu_iova_t;
+>   typedef u32 sysmmu_pte_t;
+> +static struct iommu_domain exynos_identity_domain;
+>   
+>   /* We do not consider super section mapping (16MB) */
+>   #define SECT_ORDER 20
+> @@ -829,7 +830,7 @@ static int __maybe_unused exynos_sysmmu_suspend(struct device *dev)
+>   		struct exynos_iommu_owner *owner = dev_iommu_priv_get(master);
+>   
+>   		mutex_lock(&owner->rpm_lock);
+> -		if (data->domain) {
+> +		if (&data->domain->domain != &exynos_identity_domain) {
+>   			dev_dbg(data->sysmmu, "saving state\n");
+>   			__sysmmu_disable(data);
+>   		}
+> @@ -847,7 +848,7 @@ static int __maybe_unused exynos_sysmmu_resume(struct device *dev)
+>   		struct exynos_iommu_owner *owner = dev_iommu_priv_get(master);
+>   
+>   		mutex_lock(&owner->rpm_lock);
+> -		if (data->domain) {
+> +		if (&data->domain->domain != &exynos_identity_domain) {
+>   			dev_dbg(data->sysmmu, "restoring state\n");
+>   			__sysmmu_enable(data);
+>   		}
+> @@ -980,17 +981,22 @@ static void exynos_iommu_domain_free(struct iommu_domain *iommu_domain)
+>   	kfree(domain);
+>   }
+>   
+> -static void exynos_iommu_detach_device(struct iommu_domain *iommu_domain,
+> -				    struct device *dev)
+> +static int exynos_iommu_identity_attach(struct iommu_domain *identity_domain,
+> +					struct device *dev)
+>   {
+> -	struct exynos_iommu_domain *domain = to_exynos_domain(iommu_domain);
+>   	struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
+> -	phys_addr_t pagetable = virt_to_phys(domain->pgtable);
+> +	struct exynos_iommu_domain *domain;
+> +	phys_addr_t pagetable;
+>   	struct sysmmu_drvdata *data, *next;
+>   	unsigned long flags;
+>   
+> -	if (!has_sysmmu(dev) || owner->domain != iommu_domain)
+> -		return;
+> +	if (!owner)
+> +		return -ENODEV;
+
+That can't be true - devices can't be attached without having already 
+dereferenced their group, which means they've been through probe_device 
+successfully.
+
+> +	if (owner->domain == identity_domain)
+> +		return 0;
+> +
+> +	domain = to_exynos_domain(owner->domain);
+> +	pagetable = virt_to_phys(domain->pgtable);
+
+Identity domains by definition shouldn't have a pagetable? I don't think 
+virt_to_phys(NULL) can be assumed to be valid or safe in general.
+
+>   
+>   	mutex_lock(&owner->rpm_lock);
+>   
+> @@ -1009,15 +1015,25 @@ static void exynos_iommu_detach_device(struct iommu_domain *iommu_domain,
+>   		list_del_init(&data->domain_node);
+>   		spin_unlock(&data->lock);
+>   	}
+
+This iterates the whole domain->clients list, which may include other 
+devices from other groups belonging to other IOMMU instances. I think 
+that's technically an issue already given that we support cross-instance 
+domain attach here, which the DRM drivers rely on. I can't quite work 
+out off-hand if this is liable to make it any worse or not :/
+
+> -	owner->domain = NULL;
+> +	owner->domain = identity_domain;
+>   	spin_unlock_irqrestore(&domain->lock, flags);
+>   
+>   	mutex_unlock(&owner->rpm_lock);
+>   
+>   	dev_dbg(dev, "%s: Detached IOMMU with pgtable %pa\n", __func__,
+
+This no longer makes much sense.
+
+>   		&pagetable);
+> +	return 0;
+>   }
+>   
+> +static struct iommu_domain_ops exynos_identity_ops = {
+> +	.attach_dev = exynos_iommu_identity_attach,
+> +};
+> +
+> +static struct iommu_domain exynos_identity_domain = {
+> +	.type = IOMMU_DOMAIN_IDENTITY,
+> +	.ops = &exynos_identity_ops,
+> +};
+> +
+>   static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
+>   				   struct device *dev)
+>   {
+> @@ -1026,12 +1042,11 @@ static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
+>   	struct sysmmu_drvdata *data;
+>   	phys_addr_t pagetable = virt_to_phys(domain->pgtable);
+>   	unsigned long flags;
+> +	int err;
+>   
+> -	if (!has_sysmmu(dev))
+> -		return -ENODEV;
+> -
+> -	if (owner->domain)
+> -		exynos_iommu_detach_device(owner->domain, dev);
+> +	err = exynos_iommu_identity_attach(&exynos_identity_domain, dev);
+> +	if (err)
+> +		return err;
+>   
+>   	mutex_lock(&owner->rpm_lock);
+>   
+> @@ -1407,26 +1422,12 @@ static struct iommu_device *exynos_iommu_probe_device(struct device *dev)
+>   	return &data->iommu;
+>   }
+>   
+> -static void exynos_iommu_set_platform_dma(struct device *dev)
+> -{
+> -	struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
+> -
+> -	if (owner->domain) {
+> -		struct iommu_group *group = iommu_group_get(dev);
+> -
+> -		if (group) {
+> -			exynos_iommu_detach_device(owner->domain, dev);
+> -			iommu_group_put(group);
+> -		}
+> -	}
+> -}
+> -
+>   static void exynos_iommu_release_device(struct device *dev)
+>   {
+>   	struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
+>   	struct sysmmu_drvdata *data;
+>   
+> -	exynos_iommu_set_platform_dma(dev);
+> +	WARN_ON(exynos_iommu_identity_attach(&exynos_identity_domain, dev));
+>   
+>   	list_for_each_entry(data, &owner->controllers, owner_node)
+>   		device_link_del(data->link);
+> @@ -1457,6 +1458,7 @@ static int exynos_iommu_of_xlate(struct device *dev,
+>   
+>   		INIT_LIST_HEAD(&owner->controllers);
+>   		mutex_init(&owner->rpm_lock);
+> +		owner->domain = &exynos_identity_domain;
+
+I think strictly this would be more of a probe_device thing than an 
+of_xlate thing, but it's not super-important.
+
+Thanks,
+Robin.
+
+>   		dev_iommu_priv_set(dev, owner);
+>   	}
+>   
+> @@ -1471,11 +1473,9 @@ static int exynos_iommu_of_xlate(struct device *dev,
+>   }
+>   
+>   static const struct iommu_ops exynos_iommu_ops = {
+> +	.identity_domain = &exynos_identity_domain,
+>   	.domain_alloc = exynos_iommu_domain_alloc,
+>   	.device_group = generic_device_group,
+> -#ifdef CONFIG_ARM
+> -	.set_platform_dma_ops = exynos_iommu_set_platform_dma,
+> -#endif
+>   	.probe_device = exynos_iommu_probe_device,
+>   	.release_device = exynos_iommu_release_device,
+>   	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
