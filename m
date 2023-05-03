@@ -1,243 +1,151 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C7A86D30C;
-	Wed,  3 May 2023 15:31:49 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 287FE2F4;
-	Wed,  3 May 2023 08:32:33 -0700 (PDT)
-Received: from [10.57.82.232] (unknown [10.57.82.232])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4E3243F5A1;
-	Wed,  3 May 2023 08:31:43 -0700 (PDT)
-Message-ID: <aaddd64b-6935-f84a-5fda-28011c717051@arm.com>
-Date: Wed, 3 May 2023 16:31:39 +0100
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1978D2F7
+	for <iommu@lists.linux.dev>; Wed,  3 May 2023 15:37:39 +0000 (UTC)
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-3f1cfed93e2so53546575e9.3
+        for <iommu@lists.linux.dev>; Wed, 03 May 2023 08:37:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1683128258; x=1685720258;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=5JJFuEPTE4BVU5/m4SDNq/0rwYCFngwHyNb8+sMGpbk=;
+        b=f1ldkmb3XFaeE9giB5HgYpoxWExCQUXmfJ4wPY5lgSi5xTmbfBbONoep0z2W98W7Wt
+         /V12EC2x93BkTv2q6xbvQ5zU+Qj35ndmiPtJoysgGPxWqIFgPDklGDxZY0MFJXHqzU2U
+         V2xuyKyNq4q4r33oeksriXiB9EltdqXuI7t6CBkmVMxFAVk+5DZUTgEeuHOF8vdiYANJ
+         CRBTNnFN6Q7laO5i1m5aBAuVRqvOb9ukpBUnG9MLtiPrq5D66aiqS1DbvznoNo4BfjZg
+         U4AWHBJkmfkvfjVN3kAvMFidmy7t8a1i7JhTxDZ6WGETZCPlC/7CYZHOWGJC4EFs80nc
+         3NfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683128258; x=1685720258;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=5JJFuEPTE4BVU5/m4SDNq/0rwYCFngwHyNb8+sMGpbk=;
+        b=Wwyg+6EJEkrXD31GplBgfS5Zi63z2Qv7+X10cBhO42GyXlYszXQKBDklbIo3Pwys/B
+         /GpWbIMl4AxtFw4uGktxfDxu7lLbdTR4BhLFssLoHet3m2fYMJLvSEsN0KCVwg9WIymu
+         U+Xoak+7lE88xt6PAaJtalGr6jMTiAj51BRRbqPZ93CPMuSSfuHf7kla3nNTj85HJkgu
+         Q2TVwJJOfPFkNfhER9Uss0p+36MXjOLLxXhxXW4IL0lWjuwOFuJkv/mDTE6ZD3WFIMz2
+         1DGeRqtXWNOORzCmlz8TYXeg/i003hhLIW+n0MCtbklwX3cTiNWfzjoDx04pI8z2GUSt
+         AVNA==
+X-Gm-Message-State: AC+VfDx206L0YR2TeAxTmfpKIOd+8i9xKgfOcU/i76T+8ZWtJ8S4xOzI
+	CrHF3+kr3sH5NRX+dzv8xIY=
+X-Google-Smtp-Source: ACHHUZ45eo37jRhdELP3diMtYKEIHQFfdiD2toTSX9stBBpCuutuuzk1Z4vng0abDtctAvKSjY/BNQ==
+X-Received: by 2002:a1c:7710:0:b0:3f3:2b37:dd34 with SMTP id t16-20020a1c7710000000b003f32b37dd34mr11146391wmi.9.1683128257631;
+        Wed, 03 May 2023 08:37:37 -0700 (PDT)
+Received: from localhost (host86-156-84-164.range86-156.btcentralplus.com. [86.156.84.164])
+        by smtp.gmail.com with ESMTPSA id l2-20020a1ced02000000b003f19b3d89e9sm2234347wmh.33.2023.05.03.08.37.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 May 2023 08:37:36 -0700 (PDT)
+Date: Wed, 3 May 2023 16:37:36 +0100
+From: Lorenzo Stoakes <lstoakes@gmail.com>
+To: Kent Overstreet <kent.overstreet@linux.dev>
+Cc: James Bottomley <James.Bottomley@hansenpartnership.com>,
+	Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>,
+	Michal Hocko <mhocko@suse.com>,
+	Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org,
+	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev,
+	mgorman@suse.de, dave@stgolabs.net, willy@infradead.org,
+	liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com,
+	peterz@infradead.org, juri.lelli@redhat.com, ldufour@linux.ibm.com,
+	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
+	x86@kernel.org, peterx@redhat.com, david@redhat.com,
+	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
+	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
+	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
+	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
+	keescook@chromium.org, ndesaulniers@google.com,
+	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
+	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+	elver@google.com, dvyukov@google.com, shakeelb@google.com,
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
+	cgroups@vger.kernel.org
+Subject: Re: [PATCH 00/40] Memory allocation profiling
+Message-ID: <f57b77b0-74da-41a3-a3bc-969ded4e0410@lucifer.local>
+References: <20230501165450.15352-1-surenb@google.com>
+ <ZFIMaflxeHS3uR/A@dhcp22.suse.cz>
+ <ZFIOfb6/jHwLqg6M@moria.home.lan>
+ <ZFISlX+mSx4QJDK6@dhcp22.suse.cz>
+ <20230503115051.30b8a97f@meshulam.tesarici.cz>
+ <ZFIv+30UH7+ySCZr@moria.home.lan>
+ <25a1ea786712df5111d7d1db42490624ac63651e.camel@HansenPartnership.com>
+ <ZFJ9hlQ3ZIU1XYCY@moria.home.lan>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.10.1
-Subject: Re: [PATCH 06/20] iommu/exynos: Implement an IDENTITY domain
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
- Alim Akhtar <alim.akhtar@samsung.com>, Bjorn Andersson
- <andersson@kernel.org>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
- Jernej Skrabec <jernej.skrabec@gmail.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Konrad Dybcio <konrad.dybcio@linaro.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
- linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
- linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>, Orson Zhai <orsonzhai@gmail.com>,
- Rob Clark <robdclark@gmail.com>, Samuel Holland <samuel@sholland.org>,
- Niklas Schnelle <schnelle@linux.ibm.com>,
- Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy
- <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
- Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
- Chunyan Zhang <zhang.lyra@gmail.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
- Nicolin Chen <nicolinc@nvidia.com>, Steven Price <steven.price@arm.com>
-References: <6-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <6-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ZFJ9hlQ3ZIU1XYCY@moria.home.lan>
 
-On 2023-05-01 19:02, Jason Gunthorpe wrote:
-> What exynos calls exynos_iommu_detach_device is actually putting the iommu
-> into identity mode.
-> 
-> Move to the new core support for ARM_DMA_USE_IOMMU by defining
-> ops->identity_domain.
-> 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->   drivers/iommu/exynos-iommu.c | 64 ++++++++++++++++++------------------
->   1 file changed, 32 insertions(+), 32 deletions(-)
-> 
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index c275fe71c4db32..6ff7901103948a 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
-> @@ -24,6 +24,7 @@
->   
->   typedef u32 sysmmu_iova_t;
->   typedef u32 sysmmu_pte_t;
-> +static struct iommu_domain exynos_identity_domain;
->   
->   /* We do not consider super section mapping (16MB) */
->   #define SECT_ORDER 20
-> @@ -829,7 +830,7 @@ static int __maybe_unused exynos_sysmmu_suspend(struct device *dev)
->   		struct exynos_iommu_owner *owner = dev_iommu_priv_get(master);
->   
->   		mutex_lock(&owner->rpm_lock);
-> -		if (data->domain) {
-> +		if (&data->domain->domain != &exynos_identity_domain) {
->   			dev_dbg(data->sysmmu, "saving state\n");
->   			__sysmmu_disable(data);
->   		}
-> @@ -847,7 +848,7 @@ static int __maybe_unused exynos_sysmmu_resume(struct device *dev)
->   		struct exynos_iommu_owner *owner = dev_iommu_priv_get(master);
->   
->   		mutex_lock(&owner->rpm_lock);
-> -		if (data->domain) {
-> +		if (&data->domain->domain != &exynos_identity_domain) {
->   			dev_dbg(data->sysmmu, "restoring state\n");
->   			__sysmmu_enable(data);
->   		}
-> @@ -980,17 +981,22 @@ static void exynos_iommu_domain_free(struct iommu_domain *iommu_domain)
->   	kfree(domain);
->   }
->   
-> -static void exynos_iommu_detach_device(struct iommu_domain *iommu_domain,
-> -				    struct device *dev)
-> +static int exynos_iommu_identity_attach(struct iommu_domain *identity_domain,
-> +					struct device *dev)
->   {
-> -	struct exynos_iommu_domain *domain = to_exynos_domain(iommu_domain);
->   	struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
-> -	phys_addr_t pagetable = virt_to_phys(domain->pgtable);
-> +	struct exynos_iommu_domain *domain;
-> +	phys_addr_t pagetable;
->   	struct sysmmu_drvdata *data, *next;
->   	unsigned long flags;
->   
-> -	if (!has_sysmmu(dev) || owner->domain != iommu_domain)
-> -		return;
-> +	if (!owner)
-> +		return -ENODEV;
+On Wed, May 03, 2023 at 11:28:06AM -0400, Kent Overstreet wrote:
+> On Wed, May 03, 2023 at 08:33:48AM -0400, James Bottomley wrote:
+> > On Wed, 2023-05-03 at 05:57 -0400, Kent Overstreet wrote:
+> > > On Wed, May 03, 2023 at 11:50:51AM +0200, Petr Tesařík wrote:
+> > > > If anyone ever wants to use this code tagging framework for
+> > > > something
+> > > > else, they will also have to convert relevant functions to macros,
+> > > > slowly changing the kernel to a minefield where local identifiers,
+> > > > struct, union and enum tags, field names and labels must avoid name
+> > > > conflict with a tagged function. For now, I have to remember that
+> > > > alloc_pages is forbidden, but the list may grow.
+> > >
+> > > Also, since you're not actually a kernel contributor yet...
+> >
+> > You have an amazing talent for being wrong.  But even if you were
+> > actually right about this, it would be an ad hominem personal attack on
+> > a new contributor which crosses the line into unacceptable behaviour on
+> > the list and runs counter to our code of conduct.
+>
+> ...Err, what? That was intended _in no way_ as a personal attack.
+>
 
-That can't be true - devices can't be attached without having already 
-dereferenced their group, which means they've been through probe_device 
-successfully.
+As an outside observer, I can assure you that absolutely came across as a
+personal attack, and the precise kind that puts people off from
+contributing. I should know as a hobbyist contributor myself.
 
-> +	if (owner->domain == identity_domain)
-> +		return 0;
-> +
-> +	domain = to_exynos_domain(owner->domain);
-> +	pagetable = virt_to_phys(domain->pgtable);
+> If I was mistaken I do apologize, but lately I've run across quite a lot
+> of people offering review feedback to patches I post that turn out to
+> have 0 or 10 patches in the kernel, and - to be blunt - a pattern of
+> offering feedback in strong language with a presumption of experience
+> that takes a lot to respond to adequately on a technical basis.
+>
 
-Identity domains by definition shouldn't have a pagetable? I don't think 
-virt_to_phys(NULL) can be assumed to be valid or safe in general.
+I, who may very well not merit being considered a contributor of
+significant merit in your view, have had such 'drive-by' commentary on some
+of my patches by precisely this type of person, and at no time felt the
+need to question whether they were a true Scotsman or not. It's simply not
+productive.
 
->   
->   	mutex_lock(&owner->rpm_lock);
->   
-> @@ -1009,15 +1015,25 @@ static void exynos_iommu_detach_device(struct iommu_domain *iommu_domain,
->   		list_del_init(&data->domain_node);
->   		spin_unlock(&data->lock);
->   	}
+> I don't think a suggestion to spend a bit more time reading code instead
+> of speculating is out of order! We could all, put more effort into how
+> we offer review feedback.
 
-This iterates the whole domain->clients list, which may include other 
-devices from other groups belonging to other IOMMU instances. I think 
-that's technically an issue already given that we support cross-instance 
-domain attach here, which the DRM drivers rely on. I can't quite work 
-out off-hand if this is liable to make it any worse or not :/
+It's the means by which you say it that counts for everything. If you feel
+the technical comments might not be merited on a deeper level, perhaps ask
+a broader question, or even don't respond at all? There are other means
+available.
 
-> -	owner->domain = NULL;
-> +	owner->domain = identity_domain;
->   	spin_unlock_irqrestore(&domain->lock, flags);
->   
->   	mutex_unlock(&owner->rpm_lock);
->   
->   	dev_dbg(dev, "%s: Detached IOMMU with pgtable %pa\n", __func__,
+It's remarkable the impact comments like the one you made can have on
+contributors, certainly those of us who are not maintainers and are
+naturally plagued with imposter syndrome, so I would ask you on a human
+level to try to be a little more considerate.
 
-This no longer makes much sense.
-
->   		&pagetable);
-> +	return 0;
->   }
->   
-> +static struct iommu_domain_ops exynos_identity_ops = {
-> +	.attach_dev = exynos_iommu_identity_attach,
-> +};
-> +
-> +static struct iommu_domain exynos_identity_domain = {
-> +	.type = IOMMU_DOMAIN_IDENTITY,
-> +	.ops = &exynos_identity_ops,
-> +};
-> +
->   static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
->   				   struct device *dev)
->   {
-> @@ -1026,12 +1042,11 @@ static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
->   	struct sysmmu_drvdata *data;
->   	phys_addr_t pagetable = virt_to_phys(domain->pgtable);
->   	unsigned long flags;
-> +	int err;
->   
-> -	if (!has_sysmmu(dev))
-> -		return -ENODEV;
-> -
-> -	if (owner->domain)
-> -		exynos_iommu_detach_device(owner->domain, dev);
-> +	err = exynos_iommu_identity_attach(&exynos_identity_domain, dev);
-> +	if (err)
-> +		return err;
->   
->   	mutex_lock(&owner->rpm_lock);
->   
-> @@ -1407,26 +1422,12 @@ static struct iommu_device *exynos_iommu_probe_device(struct device *dev)
->   	return &data->iommu;
->   }
->   
-> -static void exynos_iommu_set_platform_dma(struct device *dev)
-> -{
-> -	struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
-> -
-> -	if (owner->domain) {
-> -		struct iommu_group *group = iommu_group_get(dev);
-> -
-> -		if (group) {
-> -			exynos_iommu_detach_device(owner->domain, dev);
-> -			iommu_group_put(group);
-> -		}
-> -	}
-> -}
-> -
->   static void exynos_iommu_release_device(struct device *dev)
->   {
->   	struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
->   	struct sysmmu_drvdata *data;
->   
-> -	exynos_iommu_set_platform_dma(dev);
-> +	WARN_ON(exynos_iommu_identity_attach(&exynos_identity_domain, dev));
->   
->   	list_for_each_entry(data, &owner->controllers, owner_node)
->   		device_link_del(data->link);
-> @@ -1457,6 +1458,7 @@ static int exynos_iommu_of_xlate(struct device *dev,
->   
->   		INIT_LIST_HEAD(&owner->controllers);
->   		mutex_init(&owner->rpm_lock);
-> +		owner->domain = &exynos_identity_domain;
-
-I think strictly this would be more of a probe_device thing than an 
-of_xlate thing, but it's not super-important.
-
-Thanks,
-Robin.
-
->   		dev_iommu_priv_set(dev, owner);
->   	}
->   
-> @@ -1471,11 +1473,9 @@ static int exynos_iommu_of_xlate(struct device *dev,
->   }
->   
->   static const struct iommu_ops exynos_iommu_ops = {
-> +	.identity_domain = &exynos_identity_domain,
->   	.domain_alloc = exynos_iommu_domain_alloc,
->   	.device_group = generic_device_group,
-> -#ifdef CONFIG_ARM
-> -	.set_platform_dma_ops = exynos_iommu_set_platform_dma,
-> -#endif
->   	.probe_device = exynos_iommu_probe_device,
->   	.release_device = exynos_iommu_release_device,
->   	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
+By all means address technical issues as robustly as you feel appropriate,
+that is after all the purpose of code review, but just take a step back and
+perhaps find the 'cuddlier' side of yourself when not addressing technical
+things :)
