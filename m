@@ -1,119 +1,150 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 145F7D50F;
-	Wed,  3 May 2023 12:02:18 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0EA0F2F4;
-	Wed,  3 May 2023 05:03:02 -0700 (PDT)
-Received: from [10.57.82.232] (unknown [10.57.82.232])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 671F23F5A1;
-	Wed,  3 May 2023 05:02:12 -0700 (PDT)
-Message-ID: <1a995f30-31fe-354f-ddfe-e944fa36e7a0@arm.com>
-Date: Wed, 3 May 2023 13:01:34 +0100
+Received: from bedivere.hansenpartnership.com (bedivere.hansenpartnership.com [96.44.175.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A657FBA55
+	for <iommu@lists.linux.dev>; Wed,  3 May 2023 12:15:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+	d=hansenpartnership.com; s=20151216; t=1683116150;
+	bh=VDKmAp+D+K8DEGYmTk7RY6tTKuk1qCgpkelWg/ywlAg=;
+	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
+	b=PlkG5v+bL2k1SR6S+xTcurYCQMY1gqlm0glsK3Tehy9JLi4tipUL2h0fY91Ww/VO3
+	 xDO5VLDNlSvr1ssHxu7B/uhx43c8VdCE70ZP8rGdKM8n07MK0plgjoj7x5eBJNKiLf
+	 ZQX0hxl/XubtAQyr+oR+xbN/Fjm9fwU7RWvy5GrI=
+Received: from localhost (localhost [127.0.0.1])
+	by bedivere.hansenpartnership.com (Postfix) with ESMTP id 3409C1285CEE;
+	Wed,  3 May 2023 08:15:50 -0400 (EDT)
+Received: from bedivere.hansenpartnership.com ([127.0.0.1])
+ by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavis, port 10024)
+ with ESMTP id TVvOwDLNFpHO; Wed,  3 May 2023 08:15:50 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+	d=hansenpartnership.com; s=20151216; t=1683116149;
+	bh=VDKmAp+D+K8DEGYmTk7RY6tTKuk1qCgpkelWg/ywlAg=;
+	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
+	b=J6HQpG+VrJ9szCbazPDOCSIgT+5ut4XwqZK3Dc0MdxaQliyHK3p1NrakhT8ZMCjIK
+	 DNU+c0q6UaQjTZWPcZArAplMwU8UXy5bNs7sVcjLlrCYF64EO/PeWZtKPIX4uqlfWh
+	 7xj+nhVGXEVTMTaNQqx/bgBI26AK0f9jPuO3roXU=
+Received: from lingrow.int.hansenpartnership.com (unknown [IPv6:2601:5c4:4302:c21::c14])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 15CC91281819;
+	Wed,  3 May 2023 08:15:44 -0400 (EDT)
+Message-ID: <8f3ab2a3091d7e2d1c3f593a335b03f3dcbebc89.camel@HansenPartnership.com>
+Subject: Re: [PATCH 01/40] lib/string_helpers: Drop space in
+ string_get_size's output
+From: James Bottomley <James.Bottomley@HansenPartnership.com>
+To: Dave Chinner <david@fromorbit.com>
+Cc: Kent Overstreet <kent.overstreet@linux.dev>, Suren Baghdasaryan
+ <surenb@google.com>, akpm@linux-foundation.org, mhocko@suse.com,
+ vbabka@suse.cz,  hannes@cmpxchg.org, roman.gushchin@linux.dev,
+ mgorman@suse.de, willy@infradead.org,  liam.howlett@oracle.com,
+ corbet@lwn.net, void@manifault.com, peterz@infradead.org, 
+ juri.lelli@redhat.com, ldufour@linux.ibm.com, catalin.marinas@arm.com, 
+ will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
+ dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
+ david@redhat.com,  axboe@kernel.dk, mcgrof@kernel.org,
+ masahiroy@kernel.org, nathan@kernel.org,  dennis@kernel.org, tj@kernel.org,
+ muchun.song@linux.dev, rppt@kernel.org,  paulmck@kernel.org,
+ pasha.tatashin@soleen.com, yosryahmed@google.com,  yuzhao@google.com,
+ dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com, 
+ keescook@chromium.org, ndesaulniers@google.com, gregkh@linuxfoundation.org,
+  ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
+ dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
+ bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
+ iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+ elver@google.com,  dvyukov@google.com, shakeelb@google.com,
+ songmuchun@bytedance.com,  jbaron@akamai.com, rientjes@google.com,
+ minchan@google.com, kaleshsingh@google.com,  kernel-team@android.com,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org,  linux-mm@kvack.org,
+ linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
+ cgroups@vger.kernel.org, Andy Shevchenko <andy@kernel.org>, Michael
+ Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt
+ <benh@kernel.crashing.org>,  Paul Mackerras <paulus@samba.org>, "Michael S.
+ Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,  Noralf
+ =?ISO-8859-1?Q?Tr=EF=BF=BDnnes?= <noralf@tronnes.org>
+Date: Wed, 03 May 2023 08:15:42 -0400
+In-Reply-To: <20230502225016.GJ2155823@dread.disaster.area>
+References: <20230501165450.15352-1-surenb@google.com>
+	 <20230501165450.15352-2-surenb@google.com>
+	 <ouuidemyregstrijempvhv357ggp4tgnv6cijhasnungsovokm@jkgvyuyw2fti>
+	 <ZFAUj+Q+hP7cWs4w@moria.home.lan>
+	 <b6b472b65b76e95bb4c7fc7eac1ee296fdbb64fd.camel@HansenPartnership.com>
+	 <ZFCA2FF+9MI8LI5i@moria.home.lan>
+	 <2f5ebe8a9ce8471906a85ef092c1e50cfd7ddecd.camel@HansenPartnership.com>
+	 <20230502225016.GJ2155823@dread.disaster.area>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.10.1
-Subject: Re: [PATCH 02/20] iommu/terga-gart: Replace set_platform_dma_ops()
- with IOMMU_DOMAIN_PLATFORM
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Andy Gross <agross@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>,
- Bjorn Andersson <andersson@kernel.org>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
- Jernej Skrabec <jernej.skrabec@gmail.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Konrad Dybcio <konrad.dybcio@linaro.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
- linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
- linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>, Orson Zhai <orsonzhai@gmail.com>,
- Rob Clark <robdclark@gmail.com>, Samuel Holland <samuel@sholland.org>,
- Niklas Schnelle <schnelle@linux.ibm.com>,
- Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy
- <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
- Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
- Chunyan Zhang <zhang.lyra@gmail.com>, Lu Baolu <baolu.lu@linux.intel.com>,
- Kevin Tian <kevin.tian@intel.com>, Nicolin Chen <nicolinc@nvidia.com>,
- Steven Price <steven.price@arm.com>
-References: <2-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
- <1db712d2-9e33-4183-2766-34e32f170507@arm.com> <ZFI/D6mnLKYpdIqx@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ZFI/D6mnLKYpdIqx@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2023-05-03 12:01, Jason Gunthorpe wrote:
-> On Wed, May 03, 2023 at 10:17:29AM +0100, Robin Murphy wrote:
->> On 2023-05-01 19:02, Jason Gunthorpe wrote:
->>> tegra-gart seems to be kind of wonky since from the start its 'detach_dev'
->>> op doesn't actually touch hardware. It is supposed to empty the GART of
->>> all translations loaded into it.
->>
->> No, detach should never tear down translations - what if other devices are
->> still using the domain?
+On Wed, 2023-05-03 at 08:50 +1000, Dave Chinner wrote:
+> On Tue, May 02, 2023 at 07:42:59AM -0400, James Bottomley wrote:
+> > On Mon, 2023-05-01 at 23:17 -0400, Kent Overstreet wrote:
+> > > On Mon, May 01, 2023 at 10:22:18PM -0400, James Bottomley wrote:
+> > > > It is not used just for debug.  It's used all over the kernel
+> > > > for printing out device sizes.  The output mostly goes to the
+> > > > kernel print buffer, so it's anyone's guess as to what, if any,
+> > > > tools are parsing it, but the concern about breaking log
+> > > > parsers seems to be a valid one.
+> > > 
+> > > Ok, there is sd_print_capacity() - but who in their right mind
+> > > would be trying to scrape device sizes, in human readable units,
+> > 
+> > If you bother to google "kernel log parser", you'll discover it's
+> > quite an active area which supports a load of company business
+> > models.
 > 
-> ?? All other drivers do this.
+> That doesn't mean log messages are unchangable ABI. Indeed, we had
+> the whole "printk_index_emit()" addition recently to create
+> an external index of printk message formats for such applications to
+> use. [*]
 
-The only driver I'm aware of which effectively tore down mappings by 
-freeing its pagetable on detach was sprd-iommu, and that was recently 
-fixed on account of it being clearly wrong.
-
-Remember that the GART registers here are literally just its pagetable, 
-nothing more.
-
-> The core contract is that this sequence:
+I didn't say they were.
 > 
->     dom = iommu_domain_alloc()
->     iommu_attach_device(dom, dev)
->     iommu_map(dom,...)
->     iommu_detach_device(dom, dev)
+> > >  from log messages when it's available in sysfs/procfs (actually,
+> > > is it in sysfs? if not, that's an oversight) in more reasonable
+> > > units?
+> > 
+> > It's not in sysfs, no.  As aren't a lot of things, which is why log
+> > parsing for system monitoring is big business.
 > 
-> Will not continue to have the IOVA mapped to the device. We rely on
-> this for various error paths.
-
-Yes, I'm not disputing that we expect detach to remove that device's 
-*access* to the IOVA (which is what GART can't do...), but it should 
-absolutely not destroy the IOVA mapping itself. Follow that sequence 
-with iommu_attach_device(dom, dev) again and the caller can expect to be 
-able to continue using the same translation.
-
-> If the HW is multi-device then it is supposed to have groups.
-
-Groups are in fact the most practical example: set up a VFIO domain, 
-attach two groups to it, map some IOVAs, detach one of the groups, keep 
-using the other. If the detach carried an implicit iommu_unmap() there 
-would be fireworks.
-
->>> Call this weirdness PLATFORM which keeps the basic original
->>> ops->detach_dev() semantic alive without needing much special core code
->>> support. I'm guessing it really ends up in a BLOCKING configuration, but
->>> without any forced cleanup it is unsafe.
->>
->> The GART translation aperture is in physical address space, so the truth is
->> that all devices have access to it at the same time as having access to the
->> rest of physical address space. Attach/detach here really are only
->> bookkeeping for which domain currently owns the aperture.
+> And that big business is why printk_index_emit() exists to allow
+> them to easily determine how log messages change format and come and
+> go across different kernel versions.
 > 
-> Oh yuk, that is not an UNMANAGED domain either as we now assume empty
-> UNMANAGED domains are blocking in the core...
+> > > Correct me if I'm wrong, but I've yet to hear about kernel log
+> > > messages being consider a stable interface, and this seems a bit
+> > > out there.
+> > 
+> > It might not be listed as stable, but when it's known there's a
+> > large ecosystem out there consuming it we shouldn't break it just
+> > because you feel like it.
+> 
+> But we've solved this problem already, yes?
 
-They are, in the sense that accesses within the aperture won't go 
-anywhere. It might help if domain->geometry.force_aperture was 
-meaningful, because it's never been clear whether it was supposed to 
-reflect a hardware capability (in which case it should be false for 
-GART) or be an instruction to the user of the domain (wherein it's a bit 
-pointless that everyone always sets it).
+Well, yes; since it's a simple bit of extra thought and a couple of
+lines addition not to afflict everyone with the change, that's the
+simplest course.  It also gets us out of arguing about whether the
+space reads better and is SI consistent.
 
-Thanks,
-Robin.
+> If the userspace applications are not using the kernel printk format
+> index to detect such changes between kernel version, then they
+> should be. This makes trivial issues like whether we have a space or
+> not between units is completely irrelevant because the entry in the
+> printk format index for the log output we emit will match whatever
+> is output by the kernel....
+
+Just because we have better tools to fix a problem when it happens
+doesn't mean we should actively cause the problem when its easily
+avoidable.  In the same way we shouldn't drive less carefully just
+because cars are built safer today.
+
+James
+
