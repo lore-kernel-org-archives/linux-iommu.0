@@ -1,53 +1,53 @@
-Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
+Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com [209.85.128.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F693D518
-	for <iommu@lists.linux.dev>; Wed,  3 May 2023 15:18:53 +0000 (UTC)
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-55a5a830238so34332987b3.3
-        for <iommu@lists.linux.dev>; Wed, 03 May 2023 08:18:53 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABB9AD30C
+	for <iommu@lists.linux.dev>; Wed,  3 May 2023 15:24:32 +0000 (UTC)
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-55b7630a736so16342407b3.1
+        for <iommu@lists.linux.dev>; Wed, 03 May 2023 08:24:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1683127132; x=1685719132;
+        d=google.com; s=20221208; t=1683127471; x=1685719471;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=i4wxKwRBUKexs/Rpj6bBCWyCDPYyPPHlLlNupBtzYaw=;
-        b=uY9LZ4++hkvUyhbn5c4syfgYI214i342bZOqq7w3PZ5UnX1WOR8kP1Dd5DgdTFpHBZ
-         YFrejpNwEwyVtgjJ2h7DJZZwM3wlarwFrdmlWF4/IbYdcLzhZu9eWfASeY3cBcMIJeWN
-         TmMwBt2giD3P+L/dV8xN4DWdOteVRuLxU576D+QIIYn5IEbMmRqCsDy6wH6RisaS2En+
-         77gau1VuW9LbpE+De59atSjH+/wZB+Rihg2dpbAxr/rgo94K50BySclFMG/5QR1qXpJU
-         YHFq9FmHNI3H6tgkwrY1pQTOJWYJg3qmXEmnIBPxV25YxcUtyGvErDZS2P4I8lHhi3Z5
-         NkBA==
+        bh=3u3xUQKsQtY5MjJU7KWdFVlKdUwGfS6WMFqIdWoJCIo=;
+        b=unFkvF+6wudO45usQ0U6AfJIfqhGP+H5/IVYvEVNkvB69qXh+JOZzYWL6W8iypwR8u
+         WXtxZSQf4t68zEHXsPc28NiwHPUvvwS/M344xQ3tBObhdP7U9FItGEykPkPqu+eEbFFp
+         okusA4UwcrZWf8Z51Zm29/RE04pDrtNIp/vD2aJp+XpBdU2UkRkKKny9uq/isdNkl+oO
+         Skjuy9Oo1eMbcdvkjUdB3P7K+oZHaS/9IHtfkJQayp0An2kmfxp7oACjbZtN8XRdwT2w
+         lxjzvHFT+zOFmdZqKIHE6BDxnTC8QY7tAueSdS/QBzC33/doZv3G/USW3EuK7WLdlbGW
+         qF+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683127132; x=1685719132;
+        d=1e100.net; s=20221208; t=1683127471; x=1685719471;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=i4wxKwRBUKexs/Rpj6bBCWyCDPYyPPHlLlNupBtzYaw=;
-        b=Z8GWWPIjg+kpujEheJ+nWLijw9Z/pyhCs5zLx7tb27hT7P+CkRAqFC9eunFFHVIfIt
-         YwU0yQluDW6AoDKtPc6ZyDyCUFxi9gk5jyWKvrqsyUrt6dwjL8unQQLnbxfeQYw8BlpS
-         iLRd9VdkXWCVFBHc2TmiFtiysN1c4ovD9B8ZiA/v1s9KKjgyDjOLWKbEnYrOcUbg8GJ+
-         QbjrKME19R2zFOQdbZeVHXcPjgkAV4f5gamLOVJ2f+a1Gzk48CovsR0fq3BaGua/fsI0
-         IoieYhjlVEU1mT45q6vaj6mEEFNEa+Ktlogn4hn4pSrJvGIZC3JsQK1W5DvSA9yGhXEC
-         sGcA==
-X-Gm-Message-State: AC+VfDwBmxFGhekx7dNiuL2ukrMPLda5L04MpOeI9/hGXpGRa3/KH6Ar
-	OI+FxSQ/idXvf0F/pFLpFEgKRm4hMskc6ZC4G+MUkw==
-X-Google-Smtp-Source: ACHHUZ4K+d9eu2MhiXikUKkPbraytc5q+SB8DjlC4OAFlU81ddI4JrxvOKqNrFRbhuXyiN7N0776W6I4xeufDIeaumw=
-X-Received: by 2002:a25:6844:0:b0:b9d:90d1:6301 with SMTP id
- d65-20020a256844000000b00b9d90d16301mr17445969ybc.47.1683127131990; Wed, 03
- May 2023 08:18:51 -0700 (PDT)
+        bh=3u3xUQKsQtY5MjJU7KWdFVlKdUwGfS6WMFqIdWoJCIo=;
+        b=jIkvk0IirA/M1aD1te1VZBq/BG/WWDO+z3UZ5q67++lUhWX3kvzObL90d3/g8VQIsb
+         oGHEHCyEk8KUuc+xZXIHLSviAJBUsgqsG2p3P/IlVy+zSNzRMH52V7IIIoD1UtvwLsqF
+         9SKly/Xq+SQZBoeFnCMl3E0R0X5chrOLpCg1Excnm61aghS9g9cbggNphLlg3B6IAgmM
+         D/eoB+jGo+jopNN+Cqzb/5RHAdTtZtx6lo815gKkro8igelJb0x/+UwhLm0dcLhR2hbh
+         PCgoKKbMOaRWBW8cuQK+YiUpHnhG3KpXkuoMQ4EXytvEze3oxAPlduAL0rTG9sbbEnLM
+         g61Q==
+X-Gm-Message-State: AC+VfDxN5a2Z8fL8AFr2PI7NxG0sCAL4f+6mSLq27+BUiDXlT7BbceLL
+	MR/YfDvcUKt5olfnYS20rVfZAgGskoC7Ziu7+PXsBw==
+X-Google-Smtp-Source: ACHHUZ4QRO+chfCfz5/jv+a2xol9xihN+1wt+nUNWo6jdaruLvTBoFlz5eyhSEYcB7ZOQZ60IsdoPkHuL2yRnd5FS3c=
+X-Received: by 2002:a0d:e296:0:b0:55a:4109:7f5a with SMTP id
+ l144-20020a0de296000000b0055a41097f5amr11315408ywe.12.1683127470672; Wed, 03
+ May 2023 08:24:30 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230501165450.15352-1-surenb@google.com> <20230501165450.15352-35-surenb@google.com>
- <ZFIO3tXCbmTn53uv@dhcp22.suse.cz>
-In-Reply-To: <ZFIO3tXCbmTn53uv@dhcp22.suse.cz>
+References: <20230501165450.15352-1-surenb@google.com> <20230501165450.15352-36-surenb@google.com>
+ <ZFIPmnrSIdJ5yusM@dhcp22.suse.cz>
+In-Reply-To: <ZFIPmnrSIdJ5yusM@dhcp22.suse.cz>
 From: Suren Baghdasaryan <surenb@google.com>
-Date: Wed, 3 May 2023 08:18:39 -0700
-Message-ID: <CAJuCfpHrZ4kWYFPvA3W9J+CmNMuOtGa_ZMXE9fOmKsPQeNt2tg@mail.gmail.com>
-Subject: Re: [PATCH 34/40] lib: code tagging context capture support
+Date: Wed, 3 May 2023 08:24:19 -0700
+Message-ID: <CAJuCfpGsvWupMbasqvwcMYsOOPxTQqi1ed5+=vyu-yoPQwwybg@mail.gmail.com>
+Subject: Re: [PATCH 35/40] lib: implement context capture support for tagged allocations
 To: Michal Hocko <mhocko@suse.com>
 Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, vbabka@suse.cz, 
 	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
@@ -76,53 +76,26 @@ Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, vbabka@suse.cz,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, May 3, 2023 at 12:36=E2=80=AFAM Michal Hocko <mhocko@suse.com> wrot=
+On Wed, May 3, 2023 at 12:39=E2=80=AFAM Michal Hocko <mhocko@suse.com> wrot=
 e:
 >
-> On Mon 01-05-23 09:54:44, Suren Baghdasaryan wrote:
+> On Mon 01-05-23 09:54:45, Suren Baghdasaryan wrote:
 > [...]
-> > +static inline void add_ctx(struct codetag_ctx *ctx,
-> > +                        struct codetag_with_ctx *ctc)
+> > +struct codetag_ctx *alloc_tag_create_ctx(struct alloc_tag *tag, size_t=
+ size)
 > > +{
-> > +     kref_init(&ctx->refcount);
-> > +     spin_lock(&ctc->ctx_lock);
-> > +     ctx->flags =3D CTC_FLAG_CTX_PTR;
-> > +     ctx->ctc =3D ctc;
-> > +     list_add_tail(&ctx->node, &ctc->ctx_head);
-> > +     spin_unlock(&ctc->ctx_lock);
->
-> AFAIU every single tracked allocation will get its own codetag_ctx.
-> There is no aggregation per allocation site or anything else. This looks
-> like a scalability and a memory overhead red flag to me.
-
-True. The allocations here would not be limited. We could introduce a
-global limit to the amount of memory that we can use to store contexts
-and maybe reuse the oldest entry (in LRU fashion) when we hit that
-limit?
-
->
-> > +}
+> > +     struct alloc_call_ctx *ac_ctx;
 > > +
-> > +static inline void rem_ctx(struct codetag_ctx *ctx,
-> > +                        void (*free_ctx)(struct kref *refcount))
-> > +{
-> > +     struct codetag_with_ctx *ctc =3D ctx->ctc;
-> > +
-> > +     spin_lock(&ctc->ctx_lock);
+> > +     /* TODO: use a dedicated kmem_cache */
+> > +     ac_ctx =3D kmalloc(sizeof(struct alloc_call_ctx), GFP_KERNEL);
 >
-> This could deadlock when allocator is called from the IRQ context.
+> You cannot really use GFP_KERNEL here. This is post_alloc_hook path and
+> that has its own gfp context.
 
-I see. spin_lock_irqsave() then?
+I missed that. Would it be appropriate to use the gfp_flags parameter
+of post_alloc_hook() here?
 
-Thanks for the feedback!
-Suren.
 
->
-> > +     /* ctx might have been removed while we were using it */
-> > +     if (!list_empty(&ctx->node))
-> > +             list_del_init(&ctx->node);
-> > +     spin_unlock(&ctc->ctx_lock);
-> > +     kref_put(&ctx->refcount, free_ctx);
 > --
 > Michal Hocko
 > SUSE Labs
