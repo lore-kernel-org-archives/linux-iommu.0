@@ -1,139 +1,145 @@
-Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com [209.85.219.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5B477C
-	for <iommu@lists.linux.dev>; Thu,  4 May 2023 03:33:41 +0000 (UTC)
-Received: by mail-yb1-f180.google.com with SMTP id 3f1490d57ef6-b9a6869dd3cso33595276.2
-        for <iommu@lists.linux.dev>; Wed, 03 May 2023 20:33:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1683171221; x=1685763221;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ezowVIfZ+j5q5fnHBXFJgjQgqAlO13MfPXw7qEM899U=;
-        b=lL+P1HWGx+y87/s7tJ3yJEOlJ9xZakfyxCZ/vj2vLDVlNBtKFp5TryG8cJdaJpBcY3
-         guIC/GIEBTyQZrHE6ZNHiQ86VI1OapFezm0uE0T+1OK+K4KYYfBBjtbLybxs4JzubUJ/
-         YHIYmrIrkP5sV/C/lw2aAB2KyoF9ze882p2X7gtWbJ7Ck0EEAHwV0AOp5iYiKP9dpnkl
-         JG4AkClQv8a9C8JNwybz3M08XO+E4JFF6RNOKRacmV8gTFgw1n0DajrnRmLfrbF5RGNA
-         oAFHvA1e8eD3Al3/gqVbjERe8sD7tl0wTSvmn2cJLhru0NU5xErhL5P5WdguSe6A94ip
-         wwkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683171221; x=1685763221;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ezowVIfZ+j5q5fnHBXFJgjQgqAlO13MfPXw7qEM899U=;
-        b=P3/vTaXq4rMIJ4QwYOAcQOQDnRB8n1U5+Mu9q48CpYF81lOj54Lg3/hBbUow1fsEo5
-         oPTllVEtTViMaShdK7b1lT3GrxH56zLAmzyKUIHN/EU7F4EEwZgDiBKb1luVxm6r8ir9
-         FmVpzw/iaBMjihtCjZA+U0pZW2ZkLDh4zaeO1Xe3mKkf1YY+FucshpCi8yJrsw9G4G7z
-         sHXrfl3jx5p5i8dRX6U1mA0W/WHn8qd0qxi9w63OWX2apLweNrJOOwy3U6EzvyYLpMpA
-         lCRrooN2sZXs+CNo0eAYgQLaVCdRaaaAvv1CVNDGbGjsI9YeZaZEfSPL5z1PbfyidY0X
-         Vw5Q==
-X-Gm-Message-State: AC+VfDwLerZIXPQ8FkoZOISpIbgaNsDHi4CI/xmLAET1umvnJVj8U/s/
-	5vDUEFZvjDWgLwD1BZn8q3F/pz+Icw8sFz6zsp6A0w==
-X-Google-Smtp-Source: ACHHUZ45mGN+GR4nSu7Wa2mDPuzxUEEU0oecLdcE3XKkTt3qYSjVz+G7V7TA1b9va9C/DDvQwmfyGTeJUntbFTp86oM=
-X-Received: by 2002:a25:b55:0:b0:ba1:8b5a:581e with SMTP id
- 82-20020a250b55000000b00ba18b5a581emr1541686ybl.17.1683171220475; Wed, 03 May
- 2023 20:33:40 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C81804A2A
+	for <iommu@lists.linux.dev>; Thu,  4 May 2023 08:00:13 +0000 (UTC)
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id C0CB514F3D5;
+	Thu,  4 May 2023 10:00:03 +0200 (CEST)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
+	t=1683187204; bh=14yIEEd7A8I6Tu7lFvLcP+c0d1kvUNzGycGQrBMqaec=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=i7U3c2nW7tDZIQt+x9yz3m1gnOLRMA9C6yJT6Lzxj+dxqDistyX+bd+0n320wEwJP
+	 mG2SyfCNE02FKthsBOaBd1l8X2sl7oLvrB/qCQMI9TdxqtZ39wha4fpP0ZE3+zeKkK
+	 k0trzdHlCZJa68SOs/TaUtBngoBADHokTtRxc0S9tbNJ2CGCzrCU1Scif9VY4vZMaG
+	 4N0HqGKW74zhhnlGRus1U5tjOoHSH8T2YLQCYURrBpLx1c6/Vj9FoN6/WcaiorzJev
+	 vQPIWwTXe3QxIxMc/r7IVrjtPa9xgEwraQ4rTZJf6649purGXb5q61XhugqznFqKR8
+	 fSbA318uN2Nlg==
+Date: Thu, 4 May 2023 10:00:02 +0200
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: Tejun Heo <tj@kernel.org>, Kent Overstreet <kent.overstreet@linux.dev>,
+ Johannes Weiner <hannes@cmpxchg.org>, Michal Hocko <mhocko@suse.com>,
+ akpm@linux-foundation.org, vbabka@suse.cz, roman.gushchin@linux.dev,
+ mgorman@suse.de, dave@stgolabs.net, willy@infradead.org,
+ liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com,
+ peterz@infradead.org, juri.lelli@redhat.com, ldufour@linux.ibm.com,
+ catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+ tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
+ x86@kernel.org, peterx@redhat.com, david@redhat.com, axboe@kernel.dk,
+ mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org,
+ dennis@kernel.org, muchun.song@linux.dev, rppt@kernel.org,
+ paulmck@kernel.org, pasha.tatashin@soleen.com, yosryahmed@google.com,
+ yuzhao@google.com, dhowells@redhat.com, hughd@google.com,
+ andreyknvl@gmail.com, keescook@chromium.org, ndesaulniers@google.com,
+ gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
+ vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org,
+ bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com,
+ penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com,
+ glider@google.com, elver@google.com, dvyukov@google.com,
+ shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com,
+ rientjes@google.com, minchan@google.com, kaleshsingh@google.com,
+ kernel-team@android.com, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ linux-mm@kvack.org, linux-modules@vger.kernel.org,
+ kasan-dev@googlegroups.com, cgroups@vger.kernel.org, Alexei Starovoitov
+ <ast@kernel.org>, Andrii Nakryiko <andrii@kernel.org>
+Subject: Re: [PATCH 00/40] Memory allocation profiling
+Message-ID: <20230504100002.3d410939@meshulam.tesarici.cz>
+In-Reply-To: <CAJuCfpE4YD_BumqFf2-NC8KS9D+kq0s_o4gRyWAH-WK4SgqUbA@mail.gmail.com>
+References: <ZFIVtB8JyKk0ddA5@moria.home.lan>
+	<ZFKNZZwC8EUbOLMv@slm.duckdns.org>
+	<20230503180726.GA196054@cmpxchg.org>
+	<ZFKlrP7nLn93iIRf@slm.duckdns.org>
+	<ZFKqh5Dh93UULdse@slm.duckdns.org>
+	<ZFKubD/lq7oB4svV@moria.home.lan>
+	<ZFKu6zWA00AzArMF@slm.duckdns.org>
+	<ZFKxcfqkUQ60zBB_@slm.duckdns.org>
+	<CAJuCfpEPkCJZO2svT-GfmpJ+V-jSLyFDKM_atnqPVRBKtzgtnQ@mail.gmail.com>
+	<ZFK6pwOelIlhV8Bm@slm.duckdns.org>
+	<ZFK9XMSzOBxIFOHm@slm.duckdns.org>
+	<CAJuCfpE4YD_BumqFf2-NC8KS9D+kq0s_o4gRyWAH-WK4SgqUbA@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230503180726.GA196054@cmpxchg.org> <ZFKlrP7nLn93iIRf@slm.duckdns.org>
- <ZFKqh5Dh93UULdse@slm.duckdns.org> <ZFKubD/lq7oB4svV@moria.home.lan>
- <ZFKu6zWA00AzArMF@slm.duckdns.org> <ZFKxcfqkUQ60zBB_@slm.duckdns.org>
- <CAJuCfpEPkCJZO2svT-GfmpJ+V-jSLyFDKM_atnqPVRBKtzgtnQ@mail.gmail.com>
- <ZFK6pwOelIlhV8Bm@slm.duckdns.org> <ZFK9XMSzOBxIFOHm@slm.duckdns.org>
- <CAJuCfpE4YD_BumqFf2-NC8KS9D+kq0s_o4gRyWAH-WK4SgqUbA@mail.gmail.com> <ZFMXmj9ZhSe5wyaS@slm.duckdns.org>
-In-Reply-To: <ZFMXmj9ZhSe5wyaS@slm.duckdns.org>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Wed, 3 May 2023 20:33:28 -0700
-Message-ID: <CAJuCfpGmc==xztXgiM+UUA5GGhxstB2r=yTjNUwSshaj5FpBFw@mail.gmail.com>
-Subject: Re: [PATCH 00/40] Memory allocation profiling
-To: Tejun Heo <tj@kernel.org>
-Cc: Kent Overstreet <kent.overstreet@linux.dev>, Johannes Weiner <hannes@cmpxchg.org>, 
-	Michal Hocko <mhocko@suse.com>, akpm@linux-foundation.org, vbabka@suse.cz, 
-	roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net, 
-	willy@infradead.org, liam.howlett@oracle.com, corbet@lwn.net, 
-	void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com, 
-	ldufour@linux.ibm.com, catalin.marinas@arm.com, will@kernel.org, 
-	arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
-	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
-	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
-	nathan@kernel.org, dennis@kernel.org, muchun.song@linux.dev, rppt@kernel.org, 
-	paulmck@kernel.org, pasha.tatashin@soleen.com, yosryahmed@google.com, 
-	yuzhao@google.com, dhowells@redhat.com, hughd@google.com, 
-	andreyknvl@gmail.com, keescook@chromium.org, ndesaulniers@google.com, 
-	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com, 
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org, 
-	bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com, 
-	penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, 
-	glider@google.com, elver@google.com, dvyukov@google.com, shakeelb@google.com, 
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>, 
-	Andrii Nakryiko <andrii@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, May 3, 2023 at 7:25=E2=80=AFPM Tejun Heo <tj@kernel.org> wrote:
->
-> Hello,
->
-> On Wed, May 03, 2023 at 01:14:57PM -0700, Suren Baghdasaryan wrote:
-> > On Wed, May 3, 2023 at 1:00=E2=80=AFPM Tejun Heo <tj@kernel.org> wrote:
-> > > Another related question. So, the reason for macro'ing stuff is neede=
-d is
-> > > because you want to print the line directly from kernel, right?
-> >
-> > The main reason is because we want to inject a code tag at the
-> > location of the call. If we have a code tag injected at every
-> > allocation call, then finding the allocation counter (code tag) to
-> > operate takes no time.
-> >
-> > > Is that
-> > > really necessary? Values from __builtin_return_address() can easily b=
-e
-> > > printed out as function+offset from kernel which already gives most o=
-f the
-> > > necessary information for triaging and mapping that back to source li=
-ne from
-> > > userspace isn't difficult. Wouldn't using __builtin_return_address() =
-make
-> > > the whole thing a lot simpler?
-> >
-> > If we do that we have to associate that address with the allocation
-> > counter at runtime on the first allocation and look it up on all
-> > following allocations. That introduces the overhead which we are
-> > trying to avoid by using macros.
->
-> I see. I'm a bit skeptical about the performance angle given that the hot
-> path can be probably made really cheap even with lookups. In most cases,
-> it's just gonna be an extra pointer deref and a few more arithmetics. Tha=
-t
-> can show up in microbenchmarks but it's not gonna be much. The benefit of
-> going that route would be the tracking thing being mostly self contained.
+On Wed, 3 May 2023 13:14:57 -0700
+Suren Baghdasaryan <surenb@google.com> wrote:
 
-I'm in the process of rerunning the tests to compare the overhead on
-the latest kernel but I don't expect that to be cheap compared to
-kmalloc().
+> On Wed, May 3, 2023 at 1:00=E2=80=AFPM Tejun Heo <tj@kernel.org> wrote:
+> >
+> > Hello,
+> >
+> > On Wed, May 03, 2023 at 09:48:55AM -1000, Tejun Heo wrote: =20
+> > > > If so, that's the idea behind the context capture feature so that we
+> > > > can enable it on specific allocations only after we determine there=
+ is
+> > > > something interesting there. So, with low-cost persistent tracking =
+we
+> > > > can determine the suspects and then pay some more to investigate th=
+ose
+> > > > suspects in more detail. =20
+> > >
+> > > Yeah, I was wondering whether it'd be useful to have that configurabl=
+e so
+> > > that it'd be possible for a user to say "I'm okay with the cost, plea=
+se
+> > > track more context per allocation". Given that tracking the immediate=
+ caller
+> > > is already a huge improvement and narrowing it down from there using
+> > > existing tools shouldn't be that difficult, I don't think this is a b=
+locker
+> > > in any way. It just bothers me a bit that the code is structured so t=
+hat
+> > > source line is the main abstraction. =20
+> >
+> > Another related question. So, the reason for macro'ing stuff is needed =
+is
+> > because you want to print the line directly from kernel, right? =20
+>=20
+> The main reason is because we want to inject a code tag at the
+> location of the call. If we have a code tag injected at every
+> allocation call, then finding the allocation counter (code tag) to
+> operate takes no time.
 
->
-> That said, it's nice to not have to worry about allocating tracking slots
-> and managing hash table, so no strong opinion.
->
-> Thanks.
->
-> --
-> tejun
->
-> --
-> To unsubscribe from this group and stop receiving emails from it, send an=
- email to kernel-team+unsubscribe@android.com.
->
+Another consequence is that each source code location gets its own tag.
+The compiler can no longer apply common subexpression elimination
+(because the tag is different). I have some doubts that there are any
+places where CSE could be applied to allocation calls, but in general,
+this is one more difference to using _RET_IP_.
+
+Petr T
+
+> > Is that
+> > really necessary? Values from __builtin_return_address() can easily be
+> > printed out as function+offset from kernel which already gives most of =
+the
+> > necessary information for triaging and mapping that back to source line=
+ from
+> > userspace isn't difficult. Wouldn't using __builtin_return_address() ma=
+ke
+> > the whole thing a lot simpler? =20
+>=20
+> If we do that we have to associate that address with the allocation
+> counter at runtime on the first allocation and look it up on all
+> following allocations. That introduces the overhead which we are
+> trying to avoid by using macros.
+>=20
+> >
+> > Thanks.
+> >
+> > --
+> > tejun =20
+>=20
+
