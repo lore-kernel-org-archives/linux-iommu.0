@@ -1,209 +1,149 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93C95A2D
-	for <iommu@lists.linux.dev>; Thu,  4 May 2023 09:07:26 +0000 (UTC)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 9956B33923;
-	Thu,  4 May 2023 09:07:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1683191243; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=+qJXmRqw+FfGzaNlkZLDu9Le9CEnkyHeMqv8Le5oQts=;
-	b=ANDPuuGSLrqGeihHM91AJqPDxRdii3XkVbscUjditUheMtvnk8aFBqZLYzfGOSm4Wpep5y
-	MN0JxYMPYvRX9Ro+qxZW6USNL5DsbvnuexjUyhsNUQ1F8AiMfWl8V+BA7+Nj2/Wdmi4sGz
-	dYzHf3+YdyqXWoFquZFW6OeAMIcZ5Gc=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6EB8613444;
-	Thu,  4 May 2023 09:07:23 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-	by imap2.suse-dmz.suse.de with ESMTPSA
-	id zaOgGst1U2SVTAAAMHmgww
-	(envelope-from <mhocko@suse.com>); Thu, 04 May 2023 09:07:23 +0000
-Date: Thu, 4 May 2023 11:07:22 +0200
-From: Michal Hocko <mhocko@suse.com>
-To: Suren Baghdasaryan <surenb@google.com>
-Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, vbabka@suse.cz,
-	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de,
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
-	corbet@lwn.net, void@manifault.com, peterz@infradead.org,
-	juri.lelli@redhat.com, ldufour@linux.ibm.com,
-	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
-	x86@kernel.org, peterx@redhat.com, david@redhat.com,
-	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
-	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
-	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
-	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
-	keescook@chromium.org, ndesaulniers@google.com,
-	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
-	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
-	elver@google.com, dvyukov@google.com, shakeelb@google.com,
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
-	cgroups@vger.kernel.org
-Subject: Re: [PATCH 00/40] Memory allocation profiling
-Message-ID: <ZFN1yswCd9wRgYPR@dhcp22.suse.cz>
-References: <20230501165450.15352-1-surenb@google.com>
- <ZFIMaflxeHS3uR/A@dhcp22.suse.cz>
- <CAJuCfpHxbYFxDENYFfnggh1D8ot4s493PQX0C7kD-JLvixC-Vg@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 610077E;
+	Thu,  4 May 2023 12:36:23 +0000 (UTC)
+Received: from pps.filterd (m0353725.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 344CDEqL015451;
+	Thu, 4 May 2023 12:35:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=q2PvZHUwer6rMG6toGyLr95dqW+DnVRKmiyTx3c68+Y=;
+ b=sxfTjOdlX3wqQ9krPqdrVomkr6khN2uJ/s2eLCiVkCeZVQJhqQMrphYh1ZZQpvIZZ/hC
+ vw/zgFaEO0xYyfMl0nGJhtYQcIHkkBe+j1ZMiRMBlisAUE30nllji+LE+XrvZAL17FnH
+ z8X1Z99aZ9/FqJQkob3dWlAbCBMdp/WKI+DVRQJKGHuh1D36Bv8UaL8v5J1yuPfmGe2b
+ ilo1zSuaOtt4/iTJrGiuLJ6j0Ju+KKpRb9aAuNW06132hi9ctpHxORoz9sdA2zV6Lb9h
+ wCy4Ou4pzHQ5z3kN5v3k/8RPQbRwg/FLYgh0qGLxMQkdzk51UNlpu/iO+TOwzXZOx4IX RQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qcch2gqvj-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 04 May 2023 12:35:45 +0000
+Received: from m0353725.ppops.net (m0353725.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 344CE1rN017491;
+	Thu, 4 May 2023 12:35:44 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qcch2gqt5-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 04 May 2023 12:35:43 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+	by ppma04fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 344BUdx1014482;
+	Thu, 4 May 2023 12:35:41 GMT
+Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
+	by ppma04fra.de.ibm.com (PPS) with ESMTPS id 3q8tv6jbw3-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 04 May 2023 12:35:41 +0000
+Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
+	by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 344CZbr724183136
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 4 May 2023 12:35:37 GMT
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id BB9412004B;
+	Thu,  4 May 2023 12:35:37 +0000 (GMT)
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 7CD912004E;
+	Thu,  4 May 2023 12:35:35 +0000 (GMT)
+Received: from [9.171.37.17] (unknown [9.171.37.17])
+	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Thu,  4 May 2023 12:35:35 +0000 (GMT)
+Message-ID: <c643db828f441009a5281127122a967c7fcc7149.camel@linux.ibm.com>
+Subject: Re: [PATCH 18/20] iommu: Add ops->domain_alloc_paging()
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>
+Cc: Andy Gross <agross@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        AngeloGioacchino Del Regno
+ <angelogioacchino.delregno@collabora.com>,
+        Baolin Wang
+ <baolin.wang@linux.alibaba.com>,
+        Gerald Schaefer
+ <gerald.schaefer@linux.ibm.com>,
+        Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonathan
+ Hunter <jonathanh@nvidia.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Konrad
+ Dybcio <konrad.dybcio@linaro.org>,
+        Krzysztof Kozlowski
+ <krzysztof.kozlowski@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org,
+        linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Matthew Rosato
+ <mjrosato@linux.ibm.com>,
+        Orson Zhai <orsonzhai@gmail.com>, Rob Clark
+ <robdclark@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thierry
+ Reding <thierry.reding@gmail.com>,
+        Krishna Reddy <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
+        Will Deacon <will@kernel.org>, Yong Wu
+ <yong.wu@mediatek.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Lu Baolu
+ <baolu.lu@linux.intel.com>,
+        Kevin Tian <kevin.tian@intel.com>, Nicolin
+ Chen <nicolinc@nvidia.com>,
+        Steven Price <steven.price@arm.com>
+Date: Thu, 04 May 2023 14:35:35 +0200
+In-Reply-To: <ZFK3dfb4bFiJjw9M@nvidia.com>
+References: <18-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
+	 <fa8c5e95-b8c8-f4c0-63a0-d3176718d304@arm.com>
+	 <ZFK3dfb4bFiJjw9M@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.48.1 (3.48.1-1.fc38) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAJuCfpHxbYFxDENYFfnggh1D8ot4s493PQX0C7kD-JLvixC-Vg@mail.gmail.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: RHz75bdl2Pt54-aJ4GvL9Jz7zu-lykuH
+X-Proofpoint-ORIG-GUID: puUOpJOkp33KbhZgqlXMSTptSoQn4Vcg
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-05-04_08,2023-05-04_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
+ suspectscore=0 priorityscore=1501 spamscore=0 clxscore=1015 phishscore=0
+ bulkscore=0 mlxscore=0 malwarescore=0 impostorscore=0 adultscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2303200000 definitions=main-2305040103
 
-On Wed 03-05-23 08:09:28, Suren Baghdasaryan wrote:
-> On Wed, May 3, 2023 at 12:25 AM Michal Hocko <mhocko@suse.com> wrote:
-[...]
-> Thanks for summarizing!
-> 
-> > At least those I find the most important:
-> > - This is a big change and it adds a significant maintenance burden
-> >   because each allocation entry point needs to be handled specifically.
-> >   The cost will grow with the intended coverage especially there when
-> >   allocation is hidden in a library code.
-> 
-> Do you mean with more allocations in the codebase more codetags will
-> be generated? Is that the concern?
+On Wed, 2023-05-03 at 16:35 -0300, Jason Gunthorpe wrote:
+> On Wed, May 03, 2023 at 06:17:58PM +0100, Robin Murphy wrote:
+> > On 2023-05-01 19:03, Jason Gunthorpe wrote:
+> > >=20
+---8<---
+>=20
+> > > @@ -1940,7 +1944,11 @@ static struct iommu_domain *__iommu_domain_all=
+oc(struct bus_type *bus,
+> > >   	if (type =3D=3D IOMMU_DOMAIN_IDENTITY && bus->iommu_ops->identity_=
+domain)
+> > >   		return bus->iommu_ops->identity_domain;
+> > > -	domain =3D bus->iommu_ops->domain_alloc(type);
+> > > +	if ((type =3D=3D IOMMU_DOMAIN_UNMANAGED || type =3D=3D IOMMU_DOMAIN=
+_DMA) &&
+> >=20
+> > Logically, "type & __IOMMU_DOMAIN_PAGING", otherwise we're already miss=
+ing
+> > IOMMU_DOMAIN_DMA_FQ. Except maybe that's deliberate?=20
+>=20
+> It is deliberate for now, if it included FQ it would cause a bunch of
+> ARM64 drivers to switch to lazy mode. I'll add a comment.
+>=20
+> I have drafted a followup series that removes all the
+> DMA/DMA_FQ/UNMANAGED checks from the remaining 6 drivers. I did this
+> by adding an op flag 'prefer to use FQ' and made the core code drive
+> the FQ decision from ops.
 
-No. I am mostly concerned about the _maintenance_ overhead. For the
-bare tracking (without profiling and thus stack traces) only those
-allocations that are directly inlined into the consumer are really
-of any use. That increases the code impact of the tracing because any
-relevant allocation location has to go through the micro surgery. 
+Ah that sounds like it could fit very well with s390's need for an even
+lazier flush mode to handle the virtualized IOMMU with slow IOTLB flush
+case aka _SQ / single flush queue mode. When you have anything ready
+give me a ping and I can rework my DMA conversion on top of this.
 
-e.g. is it really interesting to know that there is a likely memory
-leak in seq_file proper doing and allocation? No as it is the specific
-implementation using seq_file that is leaking most likely. There are
-other examples like that See?
-
-> Or maybe as you commented in
-> another patch that context capturing feature does not limit how many
-> stacks will be captured?
-
-That is a memory overhead which can be really huge and it would be nice
-to be more explicit about that in the cover letter. It is a downside for
-sure but not something that has a code maintenance impact and it is an
-opt-in so it can be enabled only when necessary.
-
-Quite honestly, though, the more I look into context capturing part it
-seems to me that there is much more to be reconsidered there and if you
-really want to move forward with the code tagging part then you should
-drop that for now. It would make the whole series smaller and easier to
-digest.
-
-> > - It has been brought up that this is duplicating functionality already
-> >   available via existing tracing infrastructure. You should make it very
-> >   clear why that is not suitable for the job
-> 
-> I experimented with using tracing with _RET_IP_ to implement this
-> accounting. The major issue is the _RET_IP_ to codetag lookup runtime
-> overhead which is orders of magnitude higher than proposed code
-> tagging approach. With code tagging proposal, that link is resolved at
-> compile time. Since we want this mechanism deployed in production, we
-> want to keep the overhead to the absolute minimum.
-> You asked me before how much overhead would be tolerable and the
-> answer will always be "as small as possible". This is especially true
-> for slab allocators which are ridiculously fast and regressing them
-> would be very noticable (due to the frequent use).
-
-It would have been more convincing if you had some numbers at hands.
-E.g. this is a typical workload we are dealing with. With the compile
-time tags we are able to learn this with that much of cost. With a dynamic
-tracing we are able to learn this much with that cost. See? As small as
-possible is a rather vague term that different people will have a very
-different idea about.
-
-> There is another issue, which I think can be solved in a smart way but
-> will either affect performance or would require more memory. With the
-> tracing approach we don't know beforehand how many individual
-> allocation sites exist, so we have to allocate code tags (or similar
-> structures for counting) at runtime vs compile time. We can be smart
-> about it and allocate in batches or even preallocate more than we need
-> beforehand but, as I said, it will require some kind of compromise.
-
-I have tried our usual distribution config (only vmlinux without modules
-so the real impact will be larger as we build a lot of stuff into
-modules) just to get an idea:
-   text    data     bss     dec     hex filename
-28755345        17040322        19845124        65640791        3e99957 vmlinux.before
-28867168        17571838        19386372        65825378        3ec6a62 vmlinux.after
-
-Less than 1% for text 3% for data.  This is not all that terrible
-for an initial submission and a more dynamic approach could be added
-later. E.g. with a smaller pre-allocated hash table that could be
-expanded lazily. Anyway not something I would be losing sleep over. This
-can always be improved later on.
-
-> I understand that code tagging creates additional maintenance burdens
-> but I hope it also produces enough benefits that people will want
-> this. The cost is also hopefully amortized when additional
-> applications like the ones we presented in RFC [1] are built using the
-> same framework.
-
-TBH I am much more concerned about the maintenance burden on the MM side
-than the actual code tagging itslef which is much more self contained. I
-haven't seen other potential applications of the same infrastructure and
-maybe the code impact would be much smaller than in the MM proper. Our
-allocator API is really hairy and convoluted.
-
-> > - We already have page_owner infrastructure that provides allocation
-> >   tracking data. Why it cannot be used/extended?
-> 
-> 1. The overhead.
-
-Do you have any numbers?
-
-> 2. Covers only page allocators.
-
-Yes this sucks.
-> 
-> I didn't think about extending the page_owner approach to slab
-> allocators but I suspect it would not be trivial. I don't see
-> attaching an owner to every slab object to be a scalable solution. The
-> overhead would again be of concern here.
-
-This would have been a nice argument to mention in the changelog so that
-we know that you have considered that option at least. Why should I (as
-a reviewer) wild guess that?
-
-> I should point out that there was one important technical concern
-> about lack of a kill switch for this feature, which was an issue for
-> distributions that can't disable the CONFIG flag. In this series we
-> addressed that concern.
-
-Thanks, that is certainly appreciated. I haven't looked deeper into that
-part but from the cover letter I have understood that CONFIG_MEM_ALLOC_PROFILING
-implies unconditional page_ext and therefore the memory overhead
-assosiated with that. There seems to be a killswitch nomem_profiling but
-from a quick look it doesn't seem to disable page_ext allocations. I
-might be missing something there of course. Having a highlevel
-describtion for that would be really nice as well.
-
-> [1] https://lore.kernel.org/all/20220830214919.53220-1-surenb@google.com/
-
--- 
-Michal Hocko
-SUSE Labs
