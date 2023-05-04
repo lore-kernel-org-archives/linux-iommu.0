@@ -1,134 +1,81 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 82070156FC
-	for <iommu@lists.linux.dev>; Thu,  4 May 2023 21:11:09 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 220EF12FC;
-	Thu,  4 May 2023 14:11:47 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id EDD3B3F67D;
-	Thu,  4 May 2023 14:11:01 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org,
-	jgg@nvidia.com
-Cc: will@kernel.org,
-	schnelle@linux.ibm.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] iommu: Use flush queue capability
-Date: Thu,  4 May 2023 22:10:56 +0100
-Message-Id: <1c552d99e8ba452bdac48209fa74c0bdd52fd9d9.1683233867.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
-In-Reply-To: <cover.1683233867.git.robin.murphy@arm.com>
-References: <cover.1683233867.git.robin.murphy@arm.com>
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B48A156C7
+	for <iommu@lists.linux.dev>; Thu,  4 May 2023 21:22:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1683235332; x=1714771332;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=yoXBNYJ/UPota7gNEgZ5BSyK4zH3Zyhjtbi1BVTh/7U=;
+  b=XdzcH32A1kZXyg/+XfaueGdqR6OqvZ0qsWyWHFHdEhExpfa4UjSUyKgZ
+   Rr85DWO5hLok9BcX9YOqxOq+WfbQ+Z9O5d3rqEdVbTf7QjE4iPfEbC5c9
+   xuS9eTwfNaBR2PzKFcidudgw/7nvOyoWEXzEvyytg35P45qWO1K3/hO1g
+   mqH5Vo++CXWFakyK7SxBPAjLx+7oxcx+eUKQkckTX9WdTa6iFJH5KSn3+
+   tOORcAR2XnoFs0b2CgYHqw0Ngg/eIcKQm3FNJU2u/zmo56BLfK6Yuiiw9
+   PLSQ15kSeRonr8yS4V4ltkBxe40Nx4/DJPb311guiRvV6yOgQOG65oVlo
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10700"; a="435378033"
+X-IronPort-AV: E=Sophos;i="5.99,250,1677571200"; 
+   d="scan'208";a="435378033"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2023 14:22:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10700"; a="762115908"
+X-IronPort-AV: E=Sophos;i="5.99,250,1677571200"; 
+   d="scan'208";a="762115908"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2023 14:22:10 -0700
+Date: Thu, 4 May 2023 14:26:33 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Robin Murphy
+ <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel
+ <joro@8bytes.org>, dmaengine@vger.kernel.org, vkoul@kernel.org, Will Deacon
+ <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Raj Ashok
+ <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
+ <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>, Dave Jiang
+ <dave.jiang@intel.com>, Tony Luck <tony.luck@intel.com>, "Zanussi, Tom"
+ <tom.zanussi@intel.com>, narayan.ranganathan@intel.com,
+ jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v5 3/7] iommu: Move global PASID allocation from SVA to
+ core
+Message-ID: <20230504142633.1a7e78ae@jacob-builder>
+In-Reply-To: <db3be8a2-6520-9652-6bee-dbceb320cfc2@linux.intel.com>
+References: <20230427174937.471668-1-jacob.jun.pan@linux.intel.com>
+	<20230427174937.471668-4-jacob.jun.pan@linux.intel.com>
+	<db3be8a2-6520-9652-6bee-dbceb320cfc2@linux.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-It remains really handy to have distinct DMA domain types within core
-code for the sake of default domain policy selection, but we can now
-hide that detail from drivers by using the new capability instead.
+Hi Baolu,
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+On Wed, 3 May 2023 14:32:15 +0800, Baolu Lu <baolu.lu@linux.intel.com>
+wrote:
 
----
+> On 4/28/23 1:49 AM, Jacob Pan wrote:
+> > +ioasid_t iommu_alloc_global_pasid_dev(struct device *dev)
+> > +{
+> > +	int ret;
+> > +	ioasid_t max;
+> > +
+> > +	max = dev_iommu_get_max_pasids(dev);  
+> 
+> Perhaps you can use dev->iommu->max_pasids. It's static, so no need to
+> recalculate it.
+> 
+sounds good!
 
-Note that IOMMU_DOMAIN_ALLOC_FLAGS would go away again with the
-proposed domain_alloc_paging() interface design.
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 1 -
- drivers/iommu/arm/arm-smmu/arm-smmu.c       | 3 +--
- drivers/iommu/dma-iommu.c                   | 3 ++-
- drivers/iommu/intel/iommu.c                 | 1 -
- drivers/iommu/iommu.c                       | 3 ++-
- include/linux/iommu.h                       | 1 +
- 6 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 6d65a7e81df4..1ed9c4ed5db9 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2024,7 +2024,6 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
- 
- 	if (type != IOMMU_DOMAIN_UNMANAGED &&
- 	    type != IOMMU_DOMAIN_DMA &&
--	    type != IOMMU_DOMAIN_DMA_FQ &&
- 	    type != IOMMU_DOMAIN_IDENTITY)
- 		return NULL;
- 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 7f4ee365912c..a86acd76c1df 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -856,8 +856,7 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
- 	struct arm_smmu_domain *smmu_domain;
- 
- 	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_IDENTITY) {
--		if (using_legacy_binding ||
--		    (type != IOMMU_DOMAIN_DMA && type != IOMMU_DOMAIN_DMA_FQ))
-+		if (using_legacy_binding || type != IOMMU_DOMAIN_DMA)
- 			return NULL;
- 	}
- 	/*
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 7a9f0b0bddbd..c4bdd2587daf 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -586,7 +586,8 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
- 		goto done_unlock;
- 
- 	/* If the FQ fails we can simply fall back to strict mode */
--	if (domain->type == IOMMU_DOMAIN_DMA_FQ && iommu_dma_init_fq(domain))
-+	if (domain->type == IOMMU_DOMAIN_DMA_FQ &&
-+	    (!device_iommu_capable(dev, IOMMU_CAP_DEFERRED_FLUSH) || iommu_dma_init_fq(domain)))
- 		domain->type = IOMMU_DOMAIN_DMA;
- 
- 	ret = iova_reserve_iommu_regions(dev, domain);
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index ff923298f8ed..8096273b034c 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4064,7 +4064,6 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
- 	case IOMMU_DOMAIN_BLOCKED:
- 		return &blocking_domain;
- 	case IOMMU_DOMAIN_DMA:
--	case IOMMU_DOMAIN_DMA_FQ:
- 	case IOMMU_DOMAIN_UNMANAGED:
- 		dmar_domain = alloc_domain(type);
- 		if (!dmar_domain) {
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index f1dcfa3f1a1b..7078bf4a8ec8 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1980,11 +1980,12 @@ static struct iommu_domain *__iommu_domain_alloc(const struct bus_type *bus,
- 						 unsigned type)
- {
- 	struct iommu_domain *domain;
-+	unsigned int alloc_type = type & IOMMU_DOMAIN_ALLOC_FLAGS;
- 
- 	if (bus == NULL || bus->iommu_ops == NULL)
- 		return NULL;
- 
--	domain = bus->iommu_ops->domain_alloc(type);
-+	domain = bus->iommu_ops->domain_alloc(alloc_type);
- 	if (!domain)
- 		return NULL;
- 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 1b7180d6edae..d31642596675 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -65,6 +65,7 @@ struct iommu_domain_geometry {
- 
- #define __IOMMU_DOMAIN_SVA	(1U << 4)  /* Shared process address space */
- 
-+#define IOMMU_DOMAIN_ALLOC_FLAGS ~__IOMMU_DOMAIN_DMA_FQ
- /*
-  * This are the possible domain-types
-  *
--- 
-2.39.2.101.g768bb238c484.dirty
+Thanks,
 
+Jacob
