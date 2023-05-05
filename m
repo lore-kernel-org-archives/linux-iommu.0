@@ -1,63 +1,95 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 926D77E
-	for <iommu@lists.linux.dev>; Fri,  5 May 2023 02:08:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683252496; x=1714788496;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=mQQCDIZ9Afq+L3IFvslYxX++tsL66MbVRQZOEH3wFKE=;
-  b=E4orQoeWmvogs89kRTF+QShrdRgqKikoOIEDMCT4eSeahvt+/q+ddr0f
-   Z6zUdDoDkAkc3G7pj4fHGS44ZtRHc+WoTE3870OgI7HaJT3dS8ZiRghWh
-   66WevbnvUDNXaRW8siI3Syyix6veQEq9jxgLBfEJ9ROwGJ4lan1hI1+6Q
-   H72SxUczCchmXCpVGjJpxYTbG8+/KJQ7Cr1TT4wK8SGczyiFqFHrltcPT
-   nnxJpnuPxZRQU7XInMGgH+E5ELraK4lKhvweL3GVLPFybOap4KTcSCeUH
-   0wucg7qMMXsAclvCggkJLdYTVjJS2yEq0qVsDP032bLRxUH1Q2De17m4s
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10700"; a="414637368"
-X-IronPort-AV: E=Sophos;i="5.99,250,1677571200"; 
-   d="scan'208";a="414637368"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2023 19:08:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10700"; a="762220576"
-X-IronPort-AV: E=Sophos;i="5.99,250,1677571200"; 
-   d="scan'208";a="762220576"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmsmga008.fm.intel.com with ESMTP; 04 May 2023 19:08:13 -0700
-Message-ID: <025d1e25-9f4a-a54b-ac99-b46f032169c0@linux.intel.com>
-Date: Fri, 5 May 2023 10:07:51 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16D9EEDE
+	for <iommu@lists.linux.dev>; Fri,  5 May 2023 02:55:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1683255301;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=cjYsetGrBM63KihX4CFzxpJKx/AEwalSZhpNQfLiHHI=;
+	b=UBarOmyGeFiiwGYp3KWzflb/hjYPynGNWl7+MRpdSbek36z7sN8kw9ReYrmdRfQDwIr4eN
+	YEfDJRnYBimPEHCbU5MOGGK5PsdVZfetL7I0iI4EXW4kDhY6sEDbizVA7dMfS+ur7MAIqK
+	1BvsZAVIYKy/15fhSLIuyussgJR3rF8=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-616-4l36wkf1P1ehbgxrPWtpWA-1; Thu, 04 May 2023 22:55:00 -0400
+X-MC-Unique: 4l36wkf1P1ehbgxrPWtpWA-1
+Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-75131c05344so1007160085a.1
+        for <iommu@lists.linux.dev>; Thu, 04 May 2023 19:55:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683255300; x=1685847300;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cjYsetGrBM63KihX4CFzxpJKx/AEwalSZhpNQfLiHHI=;
+        b=iGAz9TYRjSDO2HDyzRKDWa+/MoBAbm10fV1ESgYwdPjQ6yXdqQsqcYq1Er0hJGhrLR
+         HQwHYsy3Amhy7YDXv37j3V76LTj4zSyapmzF4DuuUTJEqPsn8mK4fxMzjHWTAs+2uzVT
+         6J84zeAC/lnLMUay9oPSiOpZQd6AGJDRJXA3eve+O7a5QfZJEJb3+l0GIbBo+bMxyRc2
+         CevxsMIh7amo+nF3eM0Nsi/V0p0JJ48B+3OOcRC63DhRwyvzYIKxd1de3/NGlyKxAQF4
+         xHLrnKWwsyQpAQxuFeWk5PmqZkWRper1Rt+ONbMMUQQOQOQ3o9WFpouYjsmWhHwZWK4E
+         FJTg==
+X-Gm-Message-State: AC+VfDzIhDnwY454Mzmkvton+WxAcR0F+/9VvRGbWbFvkrbgEz1HofHa
+	ybfyzu83Agxb2aEHHEYiWfQaFqegCMoJ06OJwiPmmQFMr7C8e8BlkOGrtgxgSUVq6b8ii2z+wGY
+	ZEdplsD/7+Rm/Z/E=
+X-Received: by 2002:a05:622a:409:b0:3e8:e986:b20a with SMTP id n9-20020a05622a040900b003e8e986b20amr9397767qtx.16.1683255299969;
+        Thu, 04 May 2023 19:54:59 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ7L0Ig8yDCWu38q+AtSaJhk9cd5e+dZXKeZcxELnYEzOlnIFTyqh+dBVg8LWeBBdmN88tPaWg==
+X-Received: by 2002:a05:622a:409:b0:3e8:e986:b20a with SMTP id n9-20020a05622a040900b003e8e986b20amr9397756qtx.16.1683255299748;
+        Thu, 04 May 2023 19:54:59 -0700 (PDT)
+Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
+        by smtp.gmail.com with ESMTPSA id o16-20020a05620a15d000b0074a1d2a17c8sm282513qkm.29.2023.05.04.19.54.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 May 2023 19:54:59 -0700 (PDT)
+Date: Thu, 4 May 2023 19:54:44 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, jgg@nvidia.com, will@kernel.org, 
+	schnelle@linux.ibm.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] iommu: Make flush queues a proper capability
+Message-ID: <ol6xsnchb5od2br6qor6mdm3b6jedtwlbivfvx46dwx5bwm56w@ub47yn62g4ch>
+References: <cover.1683233867.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Cc: baolu.lu@linux.intel.com, will@kernel.org, schnelle@linux.ibm.com,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] iommu: Add a capability for flush queue support
-Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, jgg@nvidia.com
-References: <cover.1683233867.git.robin.murphy@arm.com>
- <f0086a93dbccb92622e1ace775846d81c1c4b174.1683233867.git.robin.murphy@arm.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <f0086a93dbccb92622e1ace775846d81c1c4b174.1683233867.git.robin.murphy@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <cover.1683233867.git.robin.murphy@arm.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 5/5/23 5:10 AM, Robin Murphy wrote:
-> Passing a special type to domain_alloc to indirectly query whether flush
-> queues are a worthwhile optimisation with the given driver is a bit
-> clunky, and looking increasingly anachronistic. Let's put that into an
-> explicit capability instead.
+On Thu, May 04, 2023 at 10:10:54PM +0100, Robin Murphy wrote:
+> Hi all,
 > 
-> Signed-off-by: Robin Murphy<robin.murphy@arm.com>
+> Since it came up in discussion on the default domain series, it seemed
+> pertinent to dig this idea up, whcih I started a while ago, and finish
+> it off.
+> 
+> Cheers,
+> Robin.
+> 
+> 
+> Robin Murphy (2):
+>   iommu: Add a capability for flush queue support
+>   iommu: Use flush queue capability
+> 
+>  drivers/iommu/amd/iommu.c                   | 2 ++
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
+>  drivers/iommu/arm/arm-smmu/arm-smmu.c       | 4 ++--
+>  drivers/iommu/dma-iommu.c                   | 3 ++-
+>  drivers/iommu/intel/iommu.c                 | 2 +-
+>  drivers/iommu/iommu.c                       | 3 ++-
+>  include/linux/iommu.h                       | 6 ++++++
+>  7 files changed, 16 insertions(+), 6 deletions(-)
+> 
+> -- 
+> 2.39.2.101.g768bb238c484.dirty
+> 
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
 
-Best regards,
-baolu
