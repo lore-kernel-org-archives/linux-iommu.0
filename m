@@ -1,125 +1,151 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com [209.85.208.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8C22C2FD
-	for <iommu@lists.linux.dev>; Fri,  5 May 2023 20:27:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683318469; x=1714854469;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=attubp1Y5SHGM2s6fxrjpGYDxEhvZVo+MggS/87KNmo=;
-  b=FjfUhCedrxP784QCxeBwELgUqjkrkjiTXXIpmTxbPQxcRUxASnJzioAW
-   AK2IxM9ZBKl0hL4hKlTS/Dmwe1sK6YT5ZvV7b4OajTU4AIPQTVOXKMG9E
-   RNb5rHCwEGEsJMtUGP5+Rtodtns/aVJry9gEMIB4e6OC9XMRBBghQ8SiR
-   NLDtCTsk+LmbwxfmMRtWET3AjGowDXExA9W3TLodzfvONpkUaJude1F/Z
-   L0K1TE1v31uVxjugQggm74PIg1KohgPtWeli5VHOMjXhIoo1NExM8IYSB
-   6zVzhD6BQXwSCWh05IW4mVR2Wsp6qB6BsoAQJM2J1fDAvjg3PRWM7aYfX
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10701"; a="338495576"
-X-IronPort-AV: E=Sophos;i="5.99,253,1677571200"; 
-   d="scan'208";a="338495576"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2023 13:27:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10701"; a="767259577"
-X-IronPort-AV: E=Sophos;i="5.99,253,1677571200"; 
-   d="scan'208";a="767259577"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2023 13:27:39 -0700
-Date: Fri, 5 May 2023 13:32:02 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Robin Murphy
- <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel
- <joro@8bytes.org>, dmaengine@vger.kernel.org, vkoul@kernel.org, Will Deacon
- <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Raj Ashok
- <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
- <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>, Dave Jiang
- <dave.jiang@intel.com>, Tony Luck <tony.luck@intel.com>, "Zanussi, Tom"
- <tom.zanussi@intel.com>, narayan.ranganathan@intel.com,
- jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v5 6/7] iommu/vt-d: Implement set_dev_pasid domain op
-Message-ID: <20230505133202.094bf8be@jacob-builder>
-In-Reply-To: <35ceffc2-e306-6215-e90a-43548f6feca6@linux.intel.com>
-References: <20230427174937.471668-1-jacob.jun.pan@linux.intel.com>
-	<20230427174937.471668-7-jacob.jun.pan@linux.intel.com>
-	<76c98e62-1cac-2ab6-7721-08ec2c1fceb8@linux.intel.com>
-	<20230504160334.496085db@jacob-builder>
-	<35ceffc2-e306-6215-e90a-43548f6feca6@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A87AAD2E1
+	for <iommu@lists.linux.dev>; Fri,  5 May 2023 21:40:43 +0000 (UTC)
+Received: by mail-lj1-f170.google.com with SMTP id 38308e7fff4ca-2ac88d9edf3so13776261fa.0
+        for <iommu@lists.linux.dev>; Fri, 05 May 2023 14:40:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1683322841; x=1685914841;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Xgq4BXfKeKLv3cDGmb7IeDG4pt5ybSWl/i2fKHbBPpM=;
+        b=Gmv4tN6ScJzsVWwKziGjwl5q9qYoB4WK8WiQYELEQj8rP/IzriK8KD7dYggzLHZp9y
+         n/fciDOIF5ph6Y7jMM2TukdMRq0R9e9EpsEz2CSsNkvqNKRgmtsjYZkATS/LGK+uYH+k
+         bP3pTJ7puWjDtpjxEVNbv/f1VIFHa+1wkYs9olS4Mksxp3qGZddkKcHmE35kzQD2M9R4
+         RMVefC6vmZZZXBFH4/4Ay8eFVzLGV8cBsmNBi6N63bXnEHvdPevcKYD6pxyeUambuhdJ
+         TyrbPMPNZf7Yuv6L+R1FKiw9ZCoer9jkjKXSch+NmC5v2CJPuTGeKIxGVQ+M3ak745U9
+         IsyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683322841; x=1685914841;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Xgq4BXfKeKLv3cDGmb7IeDG4pt5ybSWl/i2fKHbBPpM=;
+        b=X7WXc0iNB3DMYzWCfjYkeDvWjtp8oU7gL5qnwXxs+OApCFdBXEvXgQiOQ8fsOLXRUY
+         7ZqsOx9jLh1pkwx3YcLC91h91I+o3lWWBVSgEsx30uCfSymSGLjf0NBu2lyrsOGztMRE
+         SdQIfeM4jDm7kzot3Y1RpsvBPbLjCguzyrAdcNw8gAgowxeC29Ymq76KLe1ZcfcDTc+t
+         jmKmHDUI07V7biaB/t5nOhLLeultlJGK7B6fHBP8rkrzu8X8aqjsbkHNUSlEgo9Rn8df
+         XgpOd5u52wsioKCwTpHBdMuI9CEc2ShdjaZE+BjhcZiV4+G5cBx3W+rExXsT26WslAfc
+         t6Jw==
+X-Gm-Message-State: AC+VfDyYQ2lL/rjKfc+UjNSVHCjxlgBqpNAlDnecdt3CBLjxnwXLjNoT
+	MYkQ8DjBhuOEJ6UPjJxX4kcAiXctwyGaJ+nhjzo=
+X-Google-Smtp-Source: ACHHUZ5lafVh+OXGg5yoPYS+glhKVF2vEXnm3h0v0h6ZaQX1H2uaNlYRSi/QoqtwrLjB+a0amr6wrg==
+X-Received: by 2002:a2e:9610:0:b0:2ac:7f7e:8c76 with SMTP id v16-20020a2e9610000000b002ac7f7e8c76mr913093ljh.41.1683322841335;
+        Fri, 05 May 2023 14:40:41 -0700 (PDT)
+Received: from [192.168.1.101] (abyl248.neoplus.adsl.tpnet.pl. [83.9.31.248])
+        by smtp.gmail.com with ESMTPSA id n12-20020a2e720c000000b002a776dbc277sm126453ljc.124.2023.05.05.14.40.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 May 2023 14:40:40 -0700 (PDT)
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+Subject: [PATCH v3 00/12] SM63(50|75) DPU support
+Date: Fri, 05 May 2023 23:40:26 +0200
+Message-Id: <20230411-topic-straitlagoon_mdss-v3-0-9837d6b3516d@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAMp3VWQC/42Nyw6CMBQFf4V0bU1pKaIr/8MQU/qAm2BLbivRE
+ P7dwsqdLuckZ2Yh0SLYSC7FQtDOECH4DOJQED0o31sKJjPhjAtWlSVNYQJNY0IFaVR9CP7+MDH
+ SxolKK22k5TXJ705FSztUXg/575/jmMcJrYPXnru1mQeIKeB7r898W3+HZk4ZFbXTZc7VnMvrC
+ F5hOAbst/B/AmmsOwkn2blh34J2XdcPpFkQYxUBAAA=
+To: Rob Clark <robdclark@gmail.com>, 
+ Abhinav Kumar <quic_abhinavk@quicinc.com>, 
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>, 
+ David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
+ Rob Herring <robh+dt@kernel.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
+ Krishna Manikandan <quic_mkrishn@quicinc.com>, 
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Joerg Roedel <joro@8bytes.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>, 
+ linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+ freedreno@lists.freedesktop.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ iommu@lists.linux.dev, Konrad Dybcio <konrad.dybcio@linaro.org>, 
+ Rob Herring <robh@kernel.org>, Konrad Dybcio <konrad.dybcio@somainline.org>
+X-Mailer: b4 0.12.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1683322839; l=3176;
+ i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
+ bh=iP0fGBX0lPBisMmLt9TXs5S6v+yRcMBOFrgMz4fdS3w=;
+ b=gzOSQ+etI0dI/TirDAdjlA/piQyw6w9fPUvPI7BGqVq+fIwZ8xT6YTMsKvfI4UsnQPtGu8EpB
+ irp9kShpwSlBPKNjYA5Nrp0cGj7+Twb/DPr+xHEHPN4iHYy2CeP27/7
+X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
+ pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
 
-Hi Baolu,
+v2 -> v3:
+- Don't duplicate qcm2290_lm_sblk
+- Use DEFAULT_DPU_LINE_WIDTH defines
+- Fix up sspp clk assignments for sm6350
+- Add 6350-6375-common QoS data straight to the common file
+  instead of moving it around after adding it
+- Fix up iommu compatible order before adding new entries
+- Reuse sm6350 msm_mdss_data for sm6375
+- INTF_SC7180_MASK -> INTF_SC7280_MASK (enable HCTL) on 6375
+- use double tabs in catalog headers
+- remove one unused entry in 6350 dpu_qos_lut_entry
+- add missing tear IRQs, drop INTF0 irq on 6375
+- don't overduplicate DPU bindings, reuse 7180
+- Pick up tags
+- Rebase on INTF_TE v4 and next-20230504
 
-On Fri, 5 May 2023 10:58:38 +0800, Baolu Lu <baolu.lu@linux.intel.com>
-wrote:
+Depends on:
+- https://lore.kernel.org/linux-arm-msm/20230411-dpu-intf-te-v4-0-27ce1a5ab5c6@somainline.org/
 
-> On 5/5/23 7:03 AM, Jacob Pan wrote:
-> >>> +static int intel_iommu_attach_device_pasid(struct iommu_domain
-> >>> *domain,
-> >>> +					   struct device *dev,
-> >>> ioasid_t pasid) +{
-> >>> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
-> >>> +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-> >>> +	struct intel_iommu *iommu = info->iommu;
-> >>> +	int ret;
-> >>> +
-> >>> +	if (!pasid_supported(iommu))
-> >>> +		return -ENODEV;
-> >>> +
-> >>> +	ret = prepare_domain_attach_device(domain, dev);
-> >>> +	if (ret)
-> >>> +		return ret;
-> >>> +
-> >>> +	/*
-> >>> +	 * Most likely the device context has already been set up,
-> >>> will only
-> >>> +	 * take a domain ID reference. Otherwise, device context will
-> >>> be set
-> >>> +	 * up here.  
-> >> The "otherwise" case is only default domain deferred attaching case,
-> >> right?  
-> > it might be the only case so far, but my intention is to be general.
-> > i.e. no ordering requirements. I believe it is more future proof in case
-> > device_attach_pasid called before device_attach.  
-> 
-> Let's put aside deferred attach and talk about it later.
-> 
-> The device's context entry is configured when the default domain is
-> being attached to the device. And, the default domain attaching is in
-> the iommu probe_device path. It always happens before set_device_pasid
-> which is designed to be called by the device driver. So the real
-> situation is that when the device driver calls set_device_pasid, the
-> context entry should already have been configured.
-> 
-> Then let's pick up the deferred attach case. It is a workaround for
-> kdump (Documentation/admin-guide/kdump/kdump.rst). I don't think PASID
-> feature is functionally required by any kdump capture kernel as its
-> main purpose is to dump the memory of a panic kernel.
-> 
-> In summary, it seems to be reasonable for the vt-d driver to return
-> -EBUSY when a device's context was copied. The idxd driver should
-> continue to work without kernel DMA with PASID support.
-> 
-> 	if (context_copied(iommu, bus, devfn))
-> 		return -EBUSY;
-> 
-> Make things general is always good, but this doesn't mean that we need
-> to make the code complex to support cases that do not exist or are not
-> used. Thoughts?
-> 
-Good point, it is better not put dead code in. Let me also document this
-behavior for future change that may affect the ordering requirement.
+v2: https://lore.kernel.org/r/20230411-topic-straitlagoon_mdss-v2-0-5def73f50980@linaro.org
 
-Thanks,
+v1 -> v2:
+- Rebase on the DPU catalog rework and INTF_TE
+- Fix QSEED(3L/4) discrepancies
+- Fixed DMA/cursor discrepancies for 6350
+- No deduplication, that's gonna be handled in catalogrework 2:
+  "the return of the catalogrework"
+- Split MDSS & DPU binding additions
+- Drop "Allow variable SSPP/INTF_BLK size", that got in w/ the rework
+- Split MDSS and DPU additions
+- Pick up Rob's acks
 
-Jacob
+Depends on (and based on): https://lore.kernel.org/linux-arm-msm/20230411-dpu-intf-te-v2-0-ef76c877eb97@somainline.org/T/#t
+
+v1: https://lore.kernel.org/linux-arm-msm/20230211122656.1479141-1-konrad.dybcio@linaro.org/
+
+Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+---
+Konrad Dybcio (12):
+      dt-bindings: display/msm: dsi-controller-main: Add SM6350
+      dt-bindings: display/msm: dsi-controller-main: Add SM6375
+      dt-bindings: display/msm: sc7180-dpu: Describe SM6350 and SM6375
+      dt-bindings: display/msm: Add SM6350 MDSS
+      dt-bindings: display/msm: Add SM6375 MDSS
+      drm/msm/dpu: Add SM6350 support
+      drm/msm: mdss: Add SM6350 support
+      drm/msm/dpu: Add SM6375 support
+      drm/msm: mdss: Add SM6375 support
+      iommu/arm-smmu-qcom: Sort the compatible list alphabetically
+      iommu/arm-smmu-qcom: Add SM6375 DPU compatible
+      iommu/arm-smmu-qcom: Add SM6350 DPU compatible
+
+ .../bindings/display/msm/dsi-controller-main.yaml  |   4 +
+ .../bindings/display/msm/qcom,sc7180-dpu.yaml      |  23 ++-
+ .../bindings/display/msm/qcom,sm6350-mdss.yaml     | 214 ++++++++++++++++++++
+ .../bindings/display/msm/qcom,sm6375-mdss.yaml     | 216 +++++++++++++++++++++
+ .../gpu/drm/msm/disp/dpu1/catalog/dpu_6_4_sm6350.h | 187 ++++++++++++++++++
+ .../gpu/drm/msm/disp/dpu1/catalog/dpu_6_9_sm6375.h | 152 +++++++++++++++
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c     |   6 +
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h     |   4 +
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c            |   2 +
+ drivers/gpu/drm/msm/msm_mdss.c                     |  10 +
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |   6 +-
+ 11 files changed, 821 insertions(+), 3 deletions(-)
+---
+base-commit: 0d71ecbdb3913e04dcf7f4de0929970cfb4376cb
+change-id: 20230411-topic-straitlagoon_mdss-8f34cacd5e26
+
+Best regards,
+-- 
+Konrad Dybcio <konrad.dybcio@linaro.org>
+
