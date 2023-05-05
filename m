@@ -1,95 +1,115 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16D9EEDE
-	for <iommu@lists.linux.dev>; Fri,  5 May 2023 02:55:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1683255301;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=cjYsetGrBM63KihX4CFzxpJKx/AEwalSZhpNQfLiHHI=;
-	b=UBarOmyGeFiiwGYp3KWzflb/hjYPynGNWl7+MRpdSbek36z7sN8kw9ReYrmdRfQDwIr4eN
-	YEfDJRnYBimPEHCbU5MOGGK5PsdVZfetL7I0iI4EXW4kDhY6sEDbizVA7dMfS+ur7MAIqK
-	1BvsZAVIYKy/15fhSLIuyussgJR3rF8=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-616-4l36wkf1P1ehbgxrPWtpWA-1; Thu, 04 May 2023 22:55:00 -0400
-X-MC-Unique: 4l36wkf1P1ehbgxrPWtpWA-1
-Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-75131c05344so1007160085a.1
-        for <iommu@lists.linux.dev>; Thu, 04 May 2023 19:55:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683255300; x=1685847300;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cjYsetGrBM63KihX4CFzxpJKx/AEwalSZhpNQfLiHHI=;
-        b=iGAz9TYRjSDO2HDyzRKDWa+/MoBAbm10fV1ESgYwdPjQ6yXdqQsqcYq1Er0hJGhrLR
-         HQwHYsy3Amhy7YDXv37j3V76LTj4zSyapmzF4DuuUTJEqPsn8mK4fxMzjHWTAs+2uzVT
-         6J84zeAC/lnLMUay9oPSiOpZQd6AGJDRJXA3eve+O7a5QfZJEJb3+l0GIbBo+bMxyRc2
-         CevxsMIh7amo+nF3eM0Nsi/V0p0JJ48B+3OOcRC63DhRwyvzYIKxd1de3/NGlyKxAQF4
-         xHLrnKWwsyQpAQxuFeWk5PmqZkWRper1Rt+ONbMMUQQOQOQ3o9WFpouYjsmWhHwZWK4E
-         FJTg==
-X-Gm-Message-State: AC+VfDzIhDnwY454Mzmkvton+WxAcR0F+/9VvRGbWbFvkrbgEz1HofHa
-	ybfyzu83Agxb2aEHHEYiWfQaFqegCMoJ06OJwiPmmQFMr7C8e8BlkOGrtgxgSUVq6b8ii2z+wGY
-	ZEdplsD/7+Rm/Z/E=
-X-Received: by 2002:a05:622a:409:b0:3e8:e986:b20a with SMTP id n9-20020a05622a040900b003e8e986b20amr9397767qtx.16.1683255299969;
-        Thu, 04 May 2023 19:54:59 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ7L0Ig8yDCWu38q+AtSaJhk9cd5e+dZXKeZcxELnYEzOlnIFTyqh+dBVg8LWeBBdmN88tPaWg==
-X-Received: by 2002:a05:622a:409:b0:3e8:e986:b20a with SMTP id n9-20020a05622a040900b003e8e986b20amr9397756qtx.16.1683255299748;
-        Thu, 04 May 2023 19:54:59 -0700 (PDT)
-Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id o16-20020a05620a15d000b0074a1d2a17c8sm282513qkm.29.2023.05.04.19.54.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 May 2023 19:54:59 -0700 (PDT)
-Date: Thu, 4 May 2023 19:54:44 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, jgg@nvidia.com, will@kernel.org, 
-	schnelle@linux.ibm.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/2] iommu: Make flush queues a proper capability
-Message-ID: <ol6xsnchb5od2br6qor6mdm3b6jedtwlbivfvx46dwx5bwm56w@ub47yn62g4ch>
-References: <cover.1683233867.git.robin.murphy@arm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FFAF1376
+	for <iommu@lists.linux.dev>; Fri,  5 May 2023 02:59:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1683255562; x=1714791562;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=+6Ksxw8NnDuZ6E01rOeUZM6j9Ahu/Zzr4rk7clJ2PuI=;
+  b=AdE4CWcrvIPjNl8xWsuASTyZFFNTEQM+s+Moit9kPo1gMjwGaGeCL6CG
+   ne8DZWNJyz/V7/pfk+ph1l5bIjB8009rQbWX1QxlYnWBPcbvp3dX3lhst
+   ys1stFybDUC2fLbu3xf9FMHrfpWlwQDEx1soVU4bO9/zGmXLjjrLO1rpN
+   FXqbllxDBCOKNCWhkchnxTNHxxxH8GFk53kcX5obYJNOdW4/Q02rwVE1Y
+   CZNmCbUnfREl5DMf7OAPXPoxups8O1XXGVYKRtOslL6AiqjyndQgRL+zA
+   lhyVJPTXVLP/bwGROQG2Q95U4b2sf77oZ5TwSZcfdYHG/A1w2Gdy2ni/f
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10700"; a="347935665"
+X-IronPort-AV: E=Sophos;i="5.99,250,1677571200"; 
+   d="scan'208";a="347935665"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2023 19:59:06 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10700"; a="762232080"
+X-IronPort-AV: E=Sophos;i="5.99,250,1677571200"; 
+   d="scan'208";a="762232080"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by fmsmga008.fm.intel.com with ESMTP; 04 May 2023 19:59:00 -0700
+Message-ID: <35ceffc2-e306-6215-e90a-43548f6feca6@linux.intel.com>
+Date: Fri, 5 May 2023 10:58:38 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <cover.1683233867.git.robin.murphy@arm.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Cc: baolu.lu@linux.intel.com, LKML <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ dmaengine@vger.kernel.org, vkoul@kernel.org, Will Deacon <will@kernel.org>,
+ David Woodhouse <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>,
+ "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+ "Yu, Fenghua" <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Tony Luck <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
+ narayan.ranganathan@intel.com
+Subject: Re: [PATCH v5 6/7] iommu/vt-d: Implement set_dev_pasid domain op
+Content-Language: en-US
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+References: <20230427174937.471668-1-jacob.jun.pan@linux.intel.com>
+ <20230427174937.471668-7-jacob.jun.pan@linux.intel.com>
+ <76c98e62-1cac-2ab6-7721-08ec2c1fceb8@linux.intel.com>
+ <20230504160334.496085db@jacob-builder>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20230504160334.496085db@jacob-builder>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, May 04, 2023 at 10:10:54PM +0100, Robin Murphy wrote:
-> Hi all,
-> 
-> Since it came up in discussion on the default domain series, it seemed
-> pertinent to dig this idea up, whcih I started a while ago, and finish
-> it off.
-> 
-> Cheers,
-> Robin.
-> 
-> 
-> Robin Murphy (2):
->   iommu: Add a capability for flush queue support
->   iommu: Use flush queue capability
-> 
->  drivers/iommu/amd/iommu.c                   | 2 ++
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
->  drivers/iommu/arm/arm-smmu/arm-smmu.c       | 4 ++--
->  drivers/iommu/dma-iommu.c                   | 3 ++-
->  drivers/iommu/intel/iommu.c                 | 2 +-
->  drivers/iommu/iommu.c                       | 3 ++-
->  include/linux/iommu.h                       | 6 ++++++
->  7 files changed, 16 insertions(+), 6 deletions(-)
-> 
-> -- 
-> 2.39.2.101.g768bb238c484.dirty
-> 
+On 5/5/23 7:03 AM, Jacob Pan wrote:
+>>> +static int intel_iommu_attach_device_pasid(struct iommu_domain *domain,
+>>> +					   struct device *dev,
+>>> ioasid_t pasid) +{
+>>> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
+>>> +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+>>> +	struct intel_iommu *iommu = info->iommu;
+>>> +	int ret;
+>>> +
+>>> +	if (!pasid_supported(iommu))
+>>> +		return -ENODEV;
+>>> +
+>>> +	ret = prepare_domain_attach_device(domain, dev);
+>>> +	if (ret)
+>>> +		return ret;
+>>> +
+>>> +	/*
+>>> +	 * Most likely the device context has already been set up,
+>>> will only
+>>> +	 * take a domain ID reference. Otherwise, device context will
+>>> be set
+>>> +	 * up here.
+>> The "otherwise" case is only default domain deferred attaching case,
+>> right?
+> it might be the only case so far, but my intention is to be general. i.e.
+> no ordering requirements. I believe it is more future proof in case
+> device_attach_pasid called before device_attach.
 
-Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
+Let's put aside deferred attach and talk about it later.
 
+The device's context entry is configured when the default domain is
+being attached to the device. And, the default domain attaching is in
+the iommu probe_device path. It always happens before set_device_pasid
+which is designed to be called by the device driver. So the real
+situation is that when the device driver calls set_device_pasid, the
+context entry should already have been configured.
+
+Then let's pick up the deferred attach case. It is a workaround for
+kdump (Documentation/admin-guide/kdump/kdump.rst). I don't think PASID
+feature is functionally required by any kdump capture kernel as its
+main purpose is to dump the memory of a panic kernel.
+
+In summary, it seems to be reasonable for the vt-d driver to return
+-EBUSY when a device's context was copied. The idxd driver should
+continue to work without kernel DMA with PASID support.
+
+	if (context_copied(iommu, bus, devfn))
+		return -EBUSY;
+
+Make things general is always good, but this doesn't mean that we need
+to make the code complex to support cases that do not exist or are not
+used. Thoughts?
+
+Best regards,
+baolu
