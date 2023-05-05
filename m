@@ -1,47 +1,47 @@
-Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
+Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BDB1C8FB
-	for <iommu@lists.linux.dev>; Fri,  5 May 2023 21:40:45 +0000 (UTC)
-Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-2ac785015d7so25913441fa.1
-        for <iommu@lists.linux.dev>; Fri, 05 May 2023 14:40:45 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EC12C8FB
+	for <iommu@lists.linux.dev>; Fri,  5 May 2023 21:40:47 +0000 (UTC)
+Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-2ac7f53ae44so25711301fa.2
+        for <iommu@lists.linux.dev>; Fri, 05 May 2023 14:40:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1683322843; x=1685914843;
+        d=linaro.org; s=google; t=1683322845; x=1685914845;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=H1+Xx964Do5+Dd75p0npXtM1tzzF2n1YUbY/5ffcryg=;
-        b=mGExL8SrQ5XCe3yqvDTrnGVkTIhBUhG8YPsyQ1/e/44Q3cEhZJ1/08XjzeuiRUyQD6
-         M7LB6Ez57o3AzvLFjeyAWMJALzYXdNP5M+2jminPeixrUPikkepbM+Bm56WqlLmrBYfw
-         xKPWLHO6S0mh/OQ30sBadObt6s1ZrWJldEJ5AiUbHKsECbbpI1IdFDU+3k8vdctN9mBE
-         SG9OPTHzZjUZY+VcadBG3WVZvfW0b26y9XZhml/nM1KrjY7pd5EcHbn90zlgmvZQEHKY
-         QnGsUU3nMC72ua2pgZZ2l2gEKdrQfbjYoR+3X7r9uojNgEerTz0gxTkVc2hX0l8wKsfl
-         Sd6w==
+        bh=Olp/PVXIJr8fEMjOP3fCHDkSYD0xJnBud5aoQtWwMD4=;
+        b=bcyb7PU+mB0xuZcC98A3z4xrQTA4cCO9fBd6WOSZ4BXU+qSJ1uguBXdCQkKkfa1qOG
+         tz29LlHe+jDhfBGEkFjUPX0kG/zMnGQdZaUbfQGKVC24x4niiJcGNPPWgl7i8TZEGNgy
+         zKaTUKwGCrCIiCDNEutlCwoHmLJVBCSeUhO+emE5U24E0omFmV1YfVxmBKvL5bsPsNb/
+         CvU5JYSMOwJrZmG3cpVKwpR/DwiFu6t/cGXEaeJzn/dSt0Glh6iKohWshJo9Q21rz8DN
+         vmzfXNbcmz8axbxYCWdVpFDXPsbEUSf3l2CUlGgX6r3WJ1n0PqpnxZs7iJ2vu3RlcxlH
+         j+5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683322843; x=1685914843;
+        d=1e100.net; s=20221208; t=1683322845; x=1685914845;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=H1+Xx964Do5+Dd75p0npXtM1tzzF2n1YUbY/5ffcryg=;
-        b=BaN6Cj59GJMGQ0yJ86JZzGdkc96qmRMySDxqVdXsCn6UIgIoZZ5BP/RcVJlGhIwjcm
-         39uMF4tO420DLqRvwKSJBuc9cykjmHvzGzYJOOs16T0G7GIBcTbH4WtgEi0nv0Fnf28f
-         uHy0QSDZx6H7Dphm+sCu7xXwKTWYaR1nIHaGQKgw42ydZskL3oQF7ivDlnk4Hs6Ny5hX
-         taoNW8314kCaUI/0FVk5yPlD5Li4uIUlD1oY3Joo3ySGMr8B5Lzh1oWj8eaowiEAQaZO
-         ynhCYoTfE4aQziQEMn3nRI5wCYukMSBQEZBlCNRLn929JUnq4+mzi28wGw0u7WCpY6qf
-         FQnA==
-X-Gm-Message-State: AC+VfDwmPlMKM1+UDKHwd3uPHMRUIGY8jz97Fj3bV8qcu6tfr45kAhDf
-	1PcSEP9gatKABmXh2ndNKbN5gC0urm1vDX9tqUE=
-X-Google-Smtp-Source: ACHHUZ7dbutd62hVffBmQka6SJs8tp9PNCSqis8xhLAT3IIrAmJco8X7JFwSYcMQzrd1Segejocbug==
-X-Received: by 2002:a2e:9202:0:b0:2ac:7a77:1d4e with SMTP id k2-20020a2e9202000000b002ac7a771d4emr790219ljg.24.1683322843242;
-        Fri, 05 May 2023 14:40:43 -0700 (PDT)
+        bh=Olp/PVXIJr8fEMjOP3fCHDkSYD0xJnBud5aoQtWwMD4=;
+        b=MPNwqUgD6Z8HMZJm9rWmhH0NlLaJGm0h/YKsqn1CR71tyq/LhQFYulv0b4/GOYdbac
+         UhsnHgWoyabrASIn6NHlKdvaR6AmVxmi4Zq3aV2Xj565ONkt0c3vI4K/1rcuSz4WyE02
+         duFQUDvFZDxFMo5dLZt88bjHeiKngXfbnZYE8W/lasTpaLpBebCntXyGIITSse0lmF4N
+         Ot0oJckzCXHLFJc/4ESdW84wX4saCRLANpViOcBT9HbksWddt54BLZqd8yAFzRiCRbXw
+         gG9lDBaAEK0coh+KU7YU4BBXabQsPxlUdUY/fBRD+eJOX6ejiXgeDagZmVkua/A5rcNW
+         JT3w==
+X-Gm-Message-State: AC+VfDzALr6JRTIt9mh8KzM7udvuLAjtS3LMq7+49noM/EgRssOnCjS8
+	/7skKNjZ4NStEanYvVgRh+e+t13ItGBUOQ4tkTY=
+X-Google-Smtp-Source: ACHHUZ4gXaB+RYZgmcooayAAK8tmsa/H8nYRTCwojYzNiGeovBEiytzLG1KPmci+aNtG4Z3ZdQlYPQ==
+X-Received: by 2002:a2e:8815:0:b0:2a8:bf35:3b7 with SMTP id x21-20020a2e8815000000b002a8bf3503b7mr821445ljh.32.1683322845019;
+        Fri, 05 May 2023 14:40:45 -0700 (PDT)
 Received: from [192.168.1.101] (abyl248.neoplus.adsl.tpnet.pl. [83.9.31.248])
-        by smtp.gmail.com with ESMTPSA id n12-20020a2e720c000000b002a776dbc277sm126453ljc.124.2023.05.05.14.40.41
+        by smtp.gmail.com with ESMTPSA id n12-20020a2e720c000000b002a776dbc277sm126453ljc.124.2023.05.05.14.40.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 May 2023 14:40:42 -0700 (PDT)
+        Fri, 05 May 2023 14:40:44 -0700 (PDT)
 From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Date: Fri, 05 May 2023 23:40:27 +0200
-Subject: [PATCH v3 01/12] dt-bindings: display/msm: dsi-controller-main:
- Add SM6350
+Date: Fri, 05 May 2023 23:40:28 +0200
+Subject: [PATCH v3 02/12] dt-bindings: display/msm: dsi-controller-main:
+ Add SM6375
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,7 +50,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230411-topic-straitlagoon_mdss-v3-1-9837d6b3516d@linaro.org>
+Message-Id: <20230411-topic-straitlagoon_mdss-v3-2-9837d6b3516d@linaro.org>
 References: <20230411-topic-straitlagoon_mdss-v3-0-9837d6b3516d@linaro.org>
 In-Reply-To: <20230411-topic-straitlagoon_mdss-v3-0-9837d6b3516d@linaro.org>
 To: Rob Clark <robdclark@gmail.com>, 
@@ -69,15 +69,15 @@ Cc: Marijn Suijten <marijn.suijten@somainline.org>,
  iommu@lists.linux.dev, Konrad Dybcio <konrad.dybcio@linaro.org>, 
  Rob Herring <robh@kernel.org>
 X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1683322839; l=1129;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1683322839; l=1145;
  i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
- bh=+O75/n498bCPQBt/QSpDKi1r6jFyvKeD8W9H7IyUIm4=;
- b=H5Kkgj24gPlGZUMzlH7o48hrPaPJDKbNQlfIh6lS7Er20KgpF2LUCpCvwkInzjXJDZ0bDJ9aS
- 6QteD0gUYBmCf9xOsDUgvrXBc64n/3AF6qfnUgjhKnmSXHBb+EfyOrm
+ bh=VsWoYP7GHCgHOv33piyXwEtJ6/KtKH5SJYQ2EDUVEdo=;
+ b=+3R0ILIrXzT82PWwbsl52w/wP4I53hpnomknSN5Kg5vAI7isrjcQm4SRnGPHieDAD+1Jm6gke
+ 4m7bCcjT25dAP6HBg9UzJaX/QBj7wkbo8MX8s82R3DQp7aHegBP1CeB
 X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
  pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
 
-Add the DSI host found on SM6350.
+Add the DSI host found on SM6375.
 
 Acked-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
@@ -86,22 +86,22 @@ Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
  1 file changed, 2 insertions(+)
 
 diff --git a/Documentation/devicetree/bindings/display/msm/dsi-controller-main.yaml b/Documentation/devicetree/bindings/display/msm/dsi-controller-main.yaml
-index e6c1ebfe8a32..6f367a1fabf8 100644
+index 6f367a1fabf8..f7dc05a65420 100644
 --- a/Documentation/devicetree/bindings/display/msm/dsi-controller-main.yaml
 +++ b/Documentation/devicetree/bindings/display/msm/dsi-controller-main.yaml
-@@ -26,6 +26,7 @@ properties:
-               - qcom,sdm660-dsi-ctrl
+@@ -27,6 +27,7 @@ properties:
                - qcom,sdm845-dsi-ctrl
                - qcom,sm6115-dsi-ctrl
-+              - qcom,sm6350-dsi-ctrl
+               - qcom,sm6350-dsi-ctrl
++              - qcom,sm6375-dsi-ctrl
                - qcom,sm8150-dsi-ctrl
                - qcom,sm8250-dsi-ctrl
                - qcom,sm8350-dsi-ctrl
-@@ -285,6 +286,7 @@ allOf:
-           contains:
+@@ -354,6 +355,7 @@ allOf:
              enum:
-               - qcom,msm8998-dsi-ctrl
-+              - qcom,sm6350-dsi-ctrl
+               - qcom,sdm845-dsi-ctrl
+               - qcom,sm6115-dsi-ctrl
++              - qcom,sm6375-dsi-ctrl
      then:
        properties:
          clocks:
