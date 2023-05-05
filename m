@@ -1,89 +1,95 @@
-Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54F29C12D
-	for <iommu@lists.linux.dev>; Fri,  5 May 2023 19:57:20 +0000 (UTC)
-Received: by mail-qv1-f53.google.com with SMTP id 6a1803df08f44-5eefa0a5561so20769586d6.1
-        for <iommu@lists.linux.dev>; Fri, 05 May 2023 12:57:20 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA187C2E4
+	for <iommu@lists.linux.dev>; Fri,  5 May 2023 20:10:50 +0000 (UTC)
+Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-50bc075d6b2so4272317a12.0
+        for <iommu@lists.linux.dev>; Fri, 05 May 2023 13:10:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1683316639; x=1685908639;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=POvTlQbEzCWW2Njq7iBjNxT18B85moRuPNvLyNphYMY=;
-        b=T5nyzq3ryihprOf82+jQ3sSYlMpJj5mtupUwQ2g8QMp4HPDjlzkkh7cPRixr7jYUfL
-         AcNvQ0Etx7JZivbpwuY+ugStC3ErjISqbSNZqwAaiDF4qa9CQQt7BFGeQNqRSHLo565W
-         /hZ1+w6VH6Osqs1haWWfT4pm+LQm4unnkI7KhB0+ATPIHktSXZBZMnIlSSG+8rj+0cDA
-         YInfuzm66UOZY7ixGUrMmhWAHnKK48Y536/dARJzHbaR7s24SHqQRRIVRfL1CEKqlfl2
-         uWbNnaUkhVX/lMMqUfjpXFmSJaM7T9HvxvNkFVOXwwQ8We71s8hpHN2hvnVCW/Qa29Lv
-         zm5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683316639; x=1685908639;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=linux-foundation.org; s=google; t=1683317449; x=1685909449;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=POvTlQbEzCWW2Njq7iBjNxT18B85moRuPNvLyNphYMY=;
-        b=hzLZsL+UeW8Ly893yqE9jR86i1EJxBGNcaYbwKmGoH7AHXzTZm+kY+y5lkve8/L6Vx
-         tk+qTfOx25wfSAdnMhbxPyGV6OCj+6SRrWGhT86ZhfADCxCQgwv+UEwmPp46RrNDMVva
-         lVSKa/9MOiwg7FoF4txUdaiFaJa/rIbzxq+khhgUQDO8WgWKW9j/J7/iF+q2D6Nj0bAx
-         vqyreIkT8EU5TeoEXBc4zH1eBYGJv6yiG0AVa+q3bmSS9BkrpX+3VypMcZh5UO8O5PN4
-         uIjUDWebYkvsao9tZW7WqgxaIikfV7hjKkQAMTAQhvlQUfbNHngvz0x5YMXee52Cpcej
-         S26w==
-X-Gm-Message-State: AC+VfDwMfwmdmMZaJ7aDudkdCu7cGRVdzxNWOBSaPnAlbW0gqxJKBhHM
-	2YgPJ/e4ELvtSf1iykv/odOqSg==
-X-Google-Smtp-Source: ACHHUZ7f0Oym14/DB4YMB0Ga7UaYZTSWmGXuEer43pra4vLwldZQUx6PVhrJLB1LiaCWyPFWTvDk0A==
-X-Received: by 2002:ad4:5be5:0:b0:621:1de:4024 with SMTP id k5-20020ad45be5000000b0062101de4024mr3026536qvc.43.1683316639152;
-        Fri, 05 May 2023 12:57:19 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id b27-20020a0cb3db000000b005e750d07153sm817130qvf.135.2023.05.05.12.57.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 May 2023 12:57:18 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1pv1YL-007zVQ-R9;
-	Fri, 05 May 2023 16:57:17 -0300
-Date: Fri, 5 May 2023 16:57:17 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Linus Torvalds <torvalds@linux-foundation.org>,
-	Kevin Tian <kevin.tian@intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: Re: [git pull] IOMMU Updates for Linux v6.4
-Message-ID: <ZFVfncB76TrB+c4K@ziepe.ca>
-References: <ZE5NR5Ml8I2/Ze0f@8bytes.org>
- <CAHk-=wiriLmq6OgLLF9seANqCJqjCrgUC384zcJUFtv3xJgVkQ@mail.gmail.com>
- <ZFUMja5MpRPWCRXw@8bytes.org>
- <CAHk-=wjW4CzM9YZqwB3jU9mt7FKdctLWAbOcBQAwJ0_2eRmP=g@mail.gmail.com>
+        bh=Ntx9kUf7coInpGr8/n+akUF1hqzZ8aZiwMO9QZmnpQA=;
+        b=UiTt2cXGgNc4ozOmAct2VvdRD/943At/akt3JQrDQQ0Y92EZH5OlYDeN0SG+b6vPNJ
+         c52mRmyAfPlRbgejI+ogXfkrIhgPiAofkV+qaIbrW30CZNjLjVZG9Abm8pMG1FK6RUoJ
+         7ZV/W4z4PBErA4w8v+c7NGRNmqabvX6TOh+wU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683317449; x=1685909449;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Ntx9kUf7coInpGr8/n+akUF1hqzZ8aZiwMO9QZmnpQA=;
+        b=A4EGTPOFSswf58Q3ARSSVG8GqiO+L576ERjIXyKx5veMf7ozM9C4jS7gy9q3e0ESQY
+         ljONuHDC21GDGKa3vwBFu+FCMWz8b0noBmRziRoZpvTRwi9btxIKATywW47ruY8H0nu+
+         3UbDVRFS3V2OHsNZJ9SbN/TGRYCot78fmseTm1MPSzL8z4TvsBcqZOIDMGQAF0MhRyLG
+         Vwd6ul4YiURuUC16x6szDU06cOXB6zxgYKPnl/H1Ygc9JkhoS821fq7togkEIO030vg2
+         NvKdoMzoGYJSDIW4iX7oLdYaz+TZ2ZM3NIP0p5wP4RVOaZTxdDScDKlodIhAucr/jqfJ
+         uofQ==
+X-Gm-Message-State: AC+VfDzeWa7N4jVvltZaFJFUZqZ4YoF6xVU4+daUKR91Su5viA7TlalC
+	7ZO8wrWKTmG/caobWkk3vxxVzZFWms4oF5oqkunFZQ==
+X-Google-Smtp-Source: ACHHUZ5eUkTpbvsLh2TkVlVGxVzsCCZOKcTEuYTNQeLZlWa82d7SwL+z/9ytr+GhWx7BXg8hetJm5g==
+X-Received: by 2002:a05:6402:788:b0:50b:c665:55ea with SMTP id d8-20020a056402078800b0050bc66555eamr2093066edy.3.1683317448739;
+        Fri, 05 May 2023 13:10:48 -0700 (PDT)
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com. [209.85.218.46])
+        by smtp.gmail.com with ESMTPSA id j2-20020aa7c402000000b00501c96564b5sm3227168edq.93.2023.05.05.13.10.48
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 05 May 2023 13:10:48 -0700 (PDT)
+Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-95f4c5cb755so392379266b.0
+        for <iommu@lists.linux.dev>; Fri, 05 May 2023 13:10:48 -0700 (PDT)
+X-Received: by 2002:a17:907:7e9c:b0:94e:afa6:299f with SMTP id
+ qb28-20020a1709077e9c00b0094eafa6299fmr2387046ejc.22.1683317447827; Fri, 05
+ May 2023 13:10:47 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wjW4CzM9YZqwB3jU9mt7FKdctLWAbOcBQAwJ0_2eRmP=g@mail.gmail.com>
+References: <ZE5NR5Ml8I2/Ze0f@8bytes.org> <CAHk-=wiriLmq6OgLLF9seANqCJqjCrgUC384zcJUFtv3xJgVkQ@mail.gmail.com>
+ <ZFUMja5MpRPWCRXw@8bytes.org> <CAHk-=wjW4CzM9YZqwB3jU9mt7FKdctLWAbOcBQAwJ0_2eRmP=g@mail.gmail.com>
+ <ZFVfncB76TrB+c4K@ziepe.ca>
+In-Reply-To: <ZFVfncB76TrB+c4K@ziepe.ca>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Fri, 5 May 2023 13:10:30 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjvonKjgyY1-Mc9POg1euT68wX3Z5+wqBckN+_j=pOaAw@mail.gmail.com>
+Message-ID: <CAHk-=wjvonKjgyY1-Mc9POg1euT68wX3Z5+wqBckN+_j=pOaAw@mail.gmail.com>
+Subject: Re: [git pull] IOMMU Updates for Linux v6.4
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 05, 2023 at 11:03:46AM -0700, Linus Torvalds wrote:
+On Fri, May 5, 2023 at 12:57=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca> wrot=
+e:
+>
+> At least with the current situation CONFIG_INTEL_ENQCMD might be an
+> appropriate name, split out from the IOMMU kconfig and put in arch
+> kconfig?
 
-> That config option rename in particular I find to just be bad. We now
-> have some code that is *very* central, to the point where we have a
-> field for it in the 'struct mm_struct', and special callback for
-> fork() and exit(), and then the config option is called something
-> completely incomprehensible like 'IOMMU_SVA'?
+That would at least somewhat clarify the use. I find IOMMU_SVA to be a
+particularly opaque name.
 
-The purpose of this field is to enable the new Intel ENQCMD
-instruction that requries the arch code to put the processes PASID
-value into some MSR and keep it there across context switches. See
-commit fa6af69f38d3 ("x86/traps: Demand-populate PASID MSR via #GP")
+Admittedly I probably find it opaque because I come at it as somebody
+much more familiar with the MM side, not from the IOMMU side (and the
+_other_ conditional fields there make sense from that standpoint), but
+even so I think it would be good to clarify.
 
-ENQCMD is used when the IOMMU page table points directly at the CPU
-page table (Shared Virtual Addressing) and supports some simple
-stateless "PCI" devices that Intel has designed.
+Of course, making clear it's architecture-specific would also be an
+argument for having an actual architecture-specific part of 'struct
+mm_struct' (the same way we have 'struct thread_info' in task_struct),
+but with only one single field I suspect that's just not worth it.
 
-At least with the current situation CONFIG_INTEL_ENQCMD might be an
-appropriate name, split out from the IOMMU kconfig and put in arch
-kconfig?
+And who knows - maybe other architectures will pick something like this up?
 
-Ideally we wouldn't need this on today's ARM systems, for instance.
+But yes, it might be good to really pin down what the rules are. Right
+now IOMMU_SVA has *no* real help-text (there's a comment saying "#
+Shared Virtual Addressing"), and is also enabled by ARM_SMMU_V3_SVA,
+which apparently doesn't actually want pasid support at all.
 
-Jason
+I dunno. I don't think this is a huge deal, but it did cause some
+confusion during the merge.
+
+                 Linus
