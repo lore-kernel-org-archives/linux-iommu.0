@@ -1,53 +1,63 @@
-Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0B7C7E
-	for <iommu@lists.linux.dev>; Fri,  5 May 2023 01:43:35 +0000 (UTC)
-Received: by mail-pj1-f53.google.com with SMTP id 98e67ed59e1d1-24e16918323so898520a91.2
-        for <iommu@lists.linux.dev>; Thu, 04 May 2023 18:43:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1683251015; x=1685843015;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=H7hypnUIygICP+cjWknZimHYa1WmNJLmE2RPntTriZE=;
-        b=SRSJR08bxAHAMdoZW4MZSe7iK6mrvIUWXj+xImkjInDeC+BKT5rulIeJRpprEA2A/P
-         2wR4vDTEY/NcegpyBO388QGVn2G8aPEfOqdRijuytR9ctglQYCNn0SxDqGCGopDqqSXo
-         hfW1BrVWN7aLwmkQjg9Vv+Tp0SFiGAK5EPSCjILMU2AHJqn8YB3qQm+FD1ZoLeQxImCB
-         5V+YFmLL1Zs79Wm3ey664ZAd32AgVN8nXQQnXHNM889C0okh23bmeP5qaqOwv5wr/Vo9
-         zDPRyCTYFG0G6WXU5KpHLb3XUMOXw4NjQHDNmXaZB0BALFk/ywV9inewGSuuLCDq2tQH
-         erqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683251015; x=1685843015;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=H7hypnUIygICP+cjWknZimHYa1WmNJLmE2RPntTriZE=;
-        b=EKRwQE9PbuL1mToK6XYqgsJB3nF+8UbUhxWzvL89u+dI6n4hN5hPG2U4ZajExOWNef
-         mLOMAY135xyzcfxC5Cz7eJJzUOItoowhZmtpeQLwrpskAl7dF7NBs3Ja1VdlQidZYL+6
-         IBqp4hiEZFCNSYjSDT72L99eIx+AaeH7Hrl4b4yMQi/a1e1oBNNkynrHoNmik3L/6tDh
-         jvl9Bsyq83OcZC8zjskJut0IHgQ75YazgQH7RDe5Keg06YwhwxF+z61a4Pzt/P6Jl/DU
-         8EyicfNpb1Q1P0SZGqeC1Y2Aaz6kHWxMmURSVpVuaewtOFwr0oV5/tsfIcL4WTYklbD6
-         4DAA==
-X-Gm-Message-State: AC+VfDzX3mfywMYEJk6cXuH/b8utusHjddKuq0C9zLr0LKywfkwLrBOl
-	zgp8trPETv1W1ENgwcb8nKSQaUzYkEiFfkIgC+RQ1C7KqIVDvsVUM4MavMaS
-X-Google-Smtp-Source: ACHHUZ4nn6CR7WvpwK2l3gX182OnFajAMv+Tvqu7NWUIZsz4N5QzlPEFmq4YJyzU6CckTRIsxWKcgbDLhrRwAXYlJiI=
-X-Received: by 2002:a17:90b:380e:b0:249:748b:a232 with SMTP id
- mq14-20020a17090b380e00b00249748ba232mr3836196pjb.25.1683251014942; Thu, 04
- May 2023 18:43:34 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 926D77E
+	for <iommu@lists.linux.dev>; Fri,  5 May 2023 02:08:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1683252496; x=1714788496;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=mQQCDIZ9Afq+L3IFvslYxX++tsL66MbVRQZOEH3wFKE=;
+  b=E4orQoeWmvogs89kRTF+QShrdRgqKikoOIEDMCT4eSeahvt+/q+ddr0f
+   Z6zUdDoDkAkc3G7pj4fHGS44ZtRHc+WoTE3870OgI7HaJT3dS8ZiRghWh
+   66WevbnvUDNXaRW8siI3Syyix6veQEq9jxgLBfEJ9ROwGJ4lan1hI1+6Q
+   H72SxUczCchmXCpVGjJpxYTbG8+/KJQ7Cr1TT4wK8SGczyiFqFHrltcPT
+   nnxJpnuPxZRQU7XInMGgH+E5ELraK4lKhvweL3GVLPFybOap4KTcSCeUH
+   0wucg7qMMXsAclvCggkJLdYTVjJS2yEq0qVsDP032bLRxUH1Q2De17m4s
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10700"; a="414637368"
+X-IronPort-AV: E=Sophos;i="5.99,250,1677571200"; 
+   d="scan'208";a="414637368"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2023 19:08:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10700"; a="762220576"
+X-IronPort-AV: E=Sophos;i="5.99,250,1677571200"; 
+   d="scan'208";a="762220576"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by fmsmga008.fm.intel.com with ESMTP; 04 May 2023 19:08:13 -0700
+Message-ID: <025d1e25-9f4a-a54b-ac99-b46f032169c0@linux.intel.com>
+Date: Fri, 5 May 2023 10:07:51 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: Jon Pan-Doh <pandoh@google.com>
-Date: Thu, 4 May 2023 18:43:24 -0700
-Message-ID: <CAMC_AXUHD=-zRxL-AogoDQTSz31SfmQ7u_eX3J5PVbXy4P86GA@mail.gmail.com>
-Subject: Re: [PATCH] iommu/amd: Fix domain flush size when syncing iotlb
-To: Jon Pan-Doh <pandoh@google.com>
-Cc: Sudheer Dantuluri <dantuluris@google.com>, Gary Zibrat <gzibrat@google.com>, iommu@lists.linux.dev, 
-	joro@8bytes.org, linux-kernel@vger.kernel.org, namit@vmware.com, 
-	robin.murphy@arm.com, 
-	"Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>, will@kernel.org, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Cc: baolu.lu@linux.intel.com, will@kernel.org, schnelle@linux.ibm.com,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] iommu: Add a capability for flush queue support
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, jgg@nvidia.com
+References: <cover.1683233867.git.robin.murphy@arm.com>
+ <f0086a93dbccb92622e1ace775846d81c1c4b174.1683233867.git.robin.murphy@arm.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <f0086a93dbccb92622e1ace775846d81c1c4b174.1683233867.git.robin.murphy@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Cc'ing stable@vger.kernel.org per Nadav's suggestion.
+On 5/5/23 5:10 AM, Robin Murphy wrote:
+> Passing a special type to domain_alloc to indirectly query whether flush
+> queues are a worthwhile optimisation with the given driver is a bit
+> clunky, and looking increasingly anachronistic. Let's put that into an
+> explicit capability instead.
+> 
+> Signed-off-by: Robin Murphy<robin.murphy@arm.com>
+
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+
+Best regards,
+baolu
