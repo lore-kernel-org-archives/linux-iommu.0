@@ -1,168 +1,50 @@
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0D2211FB3
+	for <iommu@lists.linux.dev>; Fri,  5 May 2023 14:03:00 +0000 (UTC)
+Received: from 8bytes.org (p5b006afb.dip0.t-ipconnect.de [91.0.106.251])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36C8D33D8
-	for <iommu@lists.linux.dev>; Fri,  5 May 2023 12:38:14 +0000 (UTC)
-Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-4f00c33c3d6so2000709e87.2
-        for <iommu@lists.linux.dev>; Fri, 05 May 2023 05:38:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1683290292; x=1685882292;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=yplmN4cjcMjpz7yzL0GhEZF8x3n7FeMV/awLTpA1Cds=;
-        b=n+PCrxjHUW0iFTpnRlAN+eLhhGWqBvzuhiThIKBoygAfxiDUU+LH53XkQvLLeoTfS6
-         bqfQFUQP0SoeF1DHMmjXuUC6NQBJuT1auu3P5Y8z5nRm3YB6tB/s99I1e4zlHaHsgILv
-         IgjKdwFBmJKQ9Kpwv3f7IAGiwVh6ykYmZutvqca/tZPhwsVX7jEbCtgEPoX11bfnfgSf
-         HHjl3+0JLKKsXnhWZ0NCUN+zCwdnJ+PfkAHy7UhGZpvtuP355tmBx+wP2nw/5h0xCh7/
-         C/9/TiZvwWfpQFeAs4ZlV4rKrn2sgiSd+bldhNBWVxRPF/KtWRAiS3tCaqbG2uWmALcl
-         airw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683290292; x=1685882292;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=yplmN4cjcMjpz7yzL0GhEZF8x3n7FeMV/awLTpA1Cds=;
-        b=B0ygLwkDFJIl7OB/P7BIPucm2Ct1QxvDY6zaPt95Uo64ZGv7mPYQBmBdgbcdxVYZBq
-         e6n/zq76HexWqGL3d7yz1sRJxKZQiUK9USTYkytuAWxydxXlTAwFG+lj6mSj8AUD3ceD
-         ze/T6Ltp6CraBtmp1kDVB0WKj3rvDXTi5pmV4bEJvfke0UGwhxA+Q5ksA2DCqi884Hdv
-         8byAJ+mBVN5Td83d1lvV3GAMgzUuzuH8n43EB/H7WQ0NYJ1bDW9jJCrvZIieAY20bpsu
-         +hrBRfToiOFhzuuiDAkGoHLIRkgtl16lO+oX0WIfyLOgPQVTxZrIS87sKpE6blzFfkL9
-         ywGQ==
-X-Gm-Message-State: AC+VfDxjHrBcxU+gIz+efkX0oAkM9UHu+CbuCbf6X66ZWXQ0wl0GQHdz
-	14/utz1Z6fLkDR/9d5iHCaGxDQ==
-X-Google-Smtp-Source: ACHHUZ6z59O8tplENC2bhQXd/JQWSp6AWPiroQfHmJwWkxLtJstvOyAq5du4f7CXb+84rHWoJ6jtOw==
-X-Received: by 2002:a19:f502:0:b0:4f1:43b3:90bf with SMTP id j2-20020a19f502000000b004f143b390bfmr429933lfb.41.1683290292180;
-        Fri, 05 May 2023 05:38:12 -0700 (PDT)
-Received: from [192.168.1.101] (abyl248.neoplus.adsl.tpnet.pl. [83.9.31.248])
-        by smtp.gmail.com with ESMTPSA id z23-20020a19f717000000b004f142eac23fsm273394lfe.114.2023.05.05.05.38.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 May 2023 05:38:11 -0700 (PDT)
-Message-ID: <61a1441c-a948-bf89-a44f-a94c3956c41d@linaro.org>
-Date: Fri, 5 May 2023 14:38:09 +0200
+	by mail.8bytes.org (Postfix) with ESMTPSA id 433C42468FF;
+	Fri,  5 May 2023 16:02:54 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1683295374;
+	bh=Tkvn0TT1/p5mQrYzhfVH1AvgtScimuSQ1GpFVP+ruFk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=rBo3F8XeAw2w910wadAemnbY4gdJvJze0TJfI0aekScvDPjg9Wbrx0zNil03dFFJA
+	 OFsdy+1Li2va+G5vTPZ+Nv0EmvHtdFXAyrSh8lZryP/iiLbVSEkF5BgbnAzFn39Tko
+	 VGMuvo7yahVqq6iDPdOSAP34QKvhJRN78+odzu7L7dOdvIuHEkVXR7hH7adaUghDog
+	 QKHILAaG2qT7TMVXmG6W4WrL2+yLvKlOPr6LuH/5Uz/50oWDrJRI3yfCwnuU84xy40
+	 mgwqec4X/K8y/9H123I+PbljM1jL2J9FhdzlOJB0YYjPrmiRdOzqsRF47rRudOAzCh
+	 2EuAuUza2qW5w==
+Date: Fri, 5 May 2023 16:02:53 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Will Deacon <will@kernel.org>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Subject: Re: [git pull] IOMMU Updates for Linux v6.4
+Message-ID: <ZFUMja5MpRPWCRXw@8bytes.org>
+References: <ZE5NR5Ml8I2/Ze0f@8bytes.org>
+ <CAHk-=wiriLmq6OgLLF9seANqCJqjCrgUC384zcJUFtv3xJgVkQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.1
-Subject: Re: [PATCH v2 03/13] dt-bindings: display/msm: Add SM6350 DPU
-To: Rob Herring <robh@kernel.org>
-Cc: Rob Clark <robdclark@gmail.com>, Abhinav Kumar
- <quic_abhinavk@quicinc.com>, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
- Sean Paul <sean@poorly.run>, David Airlie <airlied@gmail.com>,
- Daniel Vetter <daniel@ffwll.ch>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Krishna Manikandan <quic_mkrishn@quicinc.com>, Will Deacon
- <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>,
- Marijn Suijten <marijn.suijten@somainline.org>,
- linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
- freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev
-References: <20230411-topic-straitlagoon_mdss-v2-0-5def73f50980@linaro.org>
- <20230411-topic-straitlagoon_mdss-v2-3-5def73f50980@linaro.org>
- <20230425170320.GA1931576-robh@kernel.org>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <20230425170320.GA1931576-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wiriLmq6OgLLF9seANqCJqjCrgUC384zcJUFtv3xJgVkQ@mail.gmail.com>
 
+Hi Linus,
 
+On Sun, Apr 30, 2023 at 01:07:45PM -0700, Linus Torvalds wrote:
+> Anyway, I'm not super-happy with how this all turned out. The example
+> merge seems to be wrong, and the Kconfig situation is confusing.
 
-On 25.04.2023 19:03, Rob Herring wrote:
-> On Fri, Apr 21, 2023 at 12:31:12AM +0200, Konrad Dybcio wrote:
->> Document the SM6350 DPU.
->>
->> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
->> ---
->>  .../bindings/display/msm/qcom,sm6350-dpu.yaml      | 94 ++++++++++++++++++++++
->>  1 file changed, 94 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/display/msm/qcom,sm6350-dpu.yaml b/Documentation/devicetree/bindings/display/msm/qcom,sm6350-dpu.yaml
->> new file mode 100644
->> index 000000000000..979fcf81afc9
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/display/msm/qcom,sm6350-dpu.yaml
->> @@ -0,0 +1,94 @@
->> +# SPDX-License-Identifier: GPL-2.0-only or BSD-2-Clause
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/display/msm/qcom,sm6350-dpu.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Qualcomm Display DPU dt properties for SM6350 target
->> +
->> +maintainers:
->> +  - Konrad Dybcio <konrad.dybcio@linaro.org>
->> +
->> +$ref: /schemas/display/msm/dpu-common.yaml#
->> +
->> +properties:
->> +  compatible:
->> +    items:
->> +      - const: qcom,sm6350-dpu
->> +
->> +  reg:
->> +    items:
->> +      - description: Address offset and size for mdp register set
->> +      - description: Address offset and size for vbif register set
->> +
->> +  reg-names:
->> +    items:
->> +      - const: mdp
->> +      - const: vbif
->> +
->> +  clocks:
->> +    items:
->> +      - description: Display axi clock
->> +      - description: Display ahb clock
->> +      - description: Display rot clock
->> +      - description: Display lut clock
->> +      - description: Display core clock
->> +      - description: Display vsync clock
->> +
->> +  clock-names:
->> +    items:
->> +      - const: bus
->> +      - const: iface
->> +      - const: rot
->> +      - const: lut
->> +      - const: core
->> +      - const: vsync
-> 
-> Is there some reason the clocks are in different order?
-Nope, I'll sort this out
+You are right, looks like I missed some context when doing my example
+merge, sorry for that. I will take more care next time.
 
-They appear to 
-> be the same minus the 'throttle' clock. Is there really no 'throttle' 
-> clock?
-Looks like GCC_DISP_THROTTLE_AXI_CLK does exist on sm6350 as well, no
-idea how/if it's used though.. Perhaps I can just remove it from sm6375
-and if it turns out necessary we can reintroduce it another day.
+Regards,
 
-Maybe this platform just tied it to one of the same clocks in the 
-> above?
-Unlikely, most likely it's for some dire deep power saving stuff that
-does not seem to be used/exposed, even on the bsp kernel
-
-> 
-> I really hate the mess that is clocks. We have the same or related 
-> blocks with just totally different names and order. The result is 
-> if/then schemas or separate schemas like this. Neither option is great, 
-> but at least the if/then schemas provides some motivation to not have 
-> pointless variations like this. </rant>
-It's a totally valid rant..
-
-> 
-> As it seems the only difference between these 2 bindings is 1 extra 
-> clock, can't they be shared?
-Sounds like a plan!
-
-Konrad
-> 
-> Rob
+	Joerg
