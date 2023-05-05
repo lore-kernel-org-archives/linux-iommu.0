@@ -1,71 +1,55 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE644538B
-	for <iommu@lists.linux.dev>; Fri,  5 May 2023 08:40:21 +0000 (UTC)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id DC8F022A20;
-	Fri,  5 May 2023 08:40:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1683276019; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=/0NvfINDngaX81zK/8XuAzfIOyZoSgVhu9auLhp95+8=;
-	b=N7Hh14VsXyzhdip98WZKHL6vi++Ot45f7xe1XG1LXAkD8DEJNNJwpr4HSGIxEz/MZq1bfG
-	KUwErWXXaSTBD69btoSMDYsSKukSj3gDTrJzJv4JPQtavr86N6hSjezAAulivmJwR+mrLN
-	xGzDPAbAKNp+pIZ7BzXA3dFlbRMDVYo=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id AB98313488;
-	Fri,  5 May 2023 08:40:19 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-	by imap2.suse-dmz.suse.de with ESMTPSA
-	id VIvmKfPAVGSkQwAAMHmgww
-	(envelope-from <mhocko@suse.com>); Fri, 05 May 2023 08:40:19 +0000
-Date: Fri, 5 May 2023 10:40:19 +0200
-From: Michal Hocko <mhocko@suse.com>
-To: Suren Baghdasaryan <surenb@google.com>
-Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, vbabka@suse.cz,
-	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de,
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
-	corbet@lwn.net, void@manifault.com, peterz@infradead.org,
-	juri.lelli@redhat.com, ldufour@linux.ibm.com,
-	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
-	x86@kernel.org, peterx@redhat.com, david@redhat.com,
-	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
-	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
-	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
-	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
-	keescook@chromium.org, ndesaulniers@google.com,
-	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
-	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
-	elver@google.com, dvyukov@google.com, shakeelb@google.com,
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
-	cgroups@vger.kernel.org
-Subject: Re: [PATCH 35/40] lib: implement context capture support for tagged
- allocations
-Message-ID: <ZFTA8xVzxWc345Ug@dhcp22.suse.cz>
-References: <20230501165450.15352-1-surenb@google.com>
- <20230501165450.15352-36-surenb@google.com>
- <ZFIPmnrSIdJ5yusM@dhcp22.suse.cz>
- <CAJuCfpGsvWupMbasqvwcMYsOOPxTQqi1ed5+=vyu-yoPQwwybg@mail.gmail.com>
- <ZFNoVfb+1W4NAh74@dhcp22.suse.cz>
- <CAJuCfpGUtw6cbjLsksGJKATZfTV0FEYRXwXT0pZV83XqQydBgg@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77A70156C6
+	for <iommu@lists.linux.dev>; Fri,  5 May 2023 11:55:54 +0000 (UTC)
+Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-75178b082a5so72851385a.1
+        for <iommu@lists.linux.dev>; Fri, 05 May 2023 04:55:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1683287753; x=1685879753;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=szBFeTXcgnKYLfPLuIFAzxMkaRZs5CSgukFz3sIyjig=;
+        b=LO4Ii7MgCvK/t2TPTAL8KiO7PhbSdsIaoZBbJ+xhyOrIVLxwoIqJGJl5w84X8jdPJB
+         oBM33DX3maempOGCvb++YQQp83kdRUnThnhIhMezWs2bNfIuq01iEtQiJJThfkwsnSpB
+         gYvHP8r8dKLUX7vW0rps/C6tckT4Z4XlObmjZMDjDLFw7CH6YD/2n9/vDPl3Z42p7/Sf
+         uF1PpAoBMdequAialZvyW42PhHv2Io94OGsWEz/M/TOxiRkAWkVcUTVz8s1eS2/pXOJe
+         whvvzSfjVCDxGMgVUt/kIQI+tG89B1Mcp4N7PfR0G/LowFqxKc1rmkQEq8FJ5fnetdcV
+         qMqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683287753; x=1685879753;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=szBFeTXcgnKYLfPLuIFAzxMkaRZs5CSgukFz3sIyjig=;
+        b=Gybv18glPEsTG59IstUYp/FxsvY7U/NJ2aCDGV+JBJj7FbKpL5ehmyY+5UbOMAhUnX
+         K27ePyrKQIg6EuOOYxga1CmJIA2P0jxBDJPrEqR1/5Kfjrv446Iwdi+ETzKUvHy9kZ0l
+         56eqZucdk50Yq/WF7OXktImXbvDHkEq8tGzw3BjUaerPKi5C9J5cpe53uYmeHLACkjXo
+         j74NhsRE1QJR3VWDtzLBIuzsgqokW+CibFaviqeFEUACMFuGsO3VCk69R+nqkTIixUZ/
+         Q4DOktctG9EdunmrXIa75VIfftDdYRBxlbSR37t0H59dI5nkRPCE6NX9c3k0nD6bOx66
+         zwyQ==
+X-Gm-Message-State: AC+VfDw1ng03P9uFXtfwpIGYX9Ti5G/aTX7ndH4CyG4q+eiFYacJawNK
+	SUJR4LVfmSnVoQugErFEKV97hQ==
+X-Google-Smtp-Source: ACHHUZ45H4WDO9Ldo40z/BRMFJTWhg3fJeKIgwJk54ONxr1FMldx7OBn6Rs+XtGWqe+LV1CcStgXOQ==
+X-Received: by 2002:a05:622a:15d5:b0:3f1:f8fa:11cd with SMTP id d21-20020a05622a15d500b003f1f8fa11cdmr1799671qty.49.1683287753192;
+        Fri, 05 May 2023 04:55:53 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
+        by smtp.gmail.com with ESMTPSA id fa4-20020a05622a4cc400b003ef311b39d7sm513354qtb.96.2023.05.05.04.55.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 May 2023 04:55:52 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1puu2R-007s7x-Nb;
+	Fri, 05 May 2023 08:55:51 -0300
+Date: Fri, 5 May 2023 08:55:51 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: ye.xingchen@zte.com.cn
+Cc: kevin.tian@intel.com, joro@8bytes.org, will@kernel.org,
+	robin.murphy@arm.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommufd/selftest: Use fdget() and fdput()
+Message-ID: <ZFTux7dKpV5zrQwc@ziepe.ca>
+References: <202305051412396252364@zte.com.cn>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -74,35 +58,38 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAJuCfpGUtw6cbjLsksGJKATZfTV0FEYRXwXT0pZV83XqQydBgg@mail.gmail.com>
+In-Reply-To: <202305051412396252364@zte.com.cn>
 
-On Thu 04-05-23 09:22:07, Suren Baghdasaryan wrote:
-[...]
-> > But even then I really detest an additional allocation from this context
-> > for every single allocation request. There GFP_NOWAIT allocation for
-> > steckdepot but that is at least cached and generally not allocating.
-> > This will allocate for every single allocation.
+On Fri, May 05, 2023 at 02:12:39PM +0800, ye.xingchen@zte.com.cn wrote:
+> From: Ye Xingchen <ye.xingchen@zte.com.cn>
 > 
-> A small correction here. alloc_tag_create_ctx() is used only for
-> allocations which we requested to capture the context. So, this last
-> sentence is true for allocations we specifically marked to capture the
-> context, not in general.
-
-Ohh, right. I have misunderstood that part. Slightly better, still
-potentially a scalability issue because hard to debug memory leaks
-usually use a generic caches (for kmalloc). So this might be still a lot
-of objects to track.
-
-> > There must be a better way.
+> convert the fget()/fput() uses to fdget()/fdput().
 > 
-> Yeah, agree, it would be good to avoid allocations in this path. Any
-> specific ideas on how to improve this? Pooling/caching perhaps? I
-> think kmem_cache does some of that already but maybe something else?
+> Signed-off-by: Ye Xingchen <ye.xingchen@zte.com.cn>
+> ---
+>  drivers/iommu/iommufd/selftest.c | 11 +++++------
+>  1 file changed, 5 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
+> index 74c2076105d4..d3512fa673a5 100644
+> --- a/drivers/iommu/iommufd/selftest.c
+> +++ b/drivers/iommu/iommufd/selftest.c
+> @@ -583,17 +583,16 @@ static const struct file_operations iommfd_test_staccess_fops;
+> 
+>  static struct selftest_access *iommufd_access_get(int fd)
+>  {
+> -	struct file *file;
+> +	struct fd f = fdget(fd);
+> 
+> -	file = fget(fd);
+> -	if (!file)
+> +	if (!f.file)
+>  		return ERR_PTR(-EBADFD);
 
-The best I can come up with is a preallocated hash table to store
-references to stack depots with some additional data associated. The
-memory overhead could be still quite big but the hash tables could be
-resized lazily.
--- 
-Michal Hocko
-SUSE Labs
+Why are you doing these conversions? This is wrong, fdget has to be
+paired with fdput(), since the struct fd doesn't leave the stack frame
+it cannot be correct.
+
+I see your other patches have the same problem.
+
+Jason
