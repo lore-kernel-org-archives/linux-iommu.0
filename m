@@ -1,76 +1,78 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+Received: from mta17.hihonor.com (mta17.hihonor.com [8.141.223.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C3547E
-	for <iommu@lists.linux.dev>; Sat,  6 May 2023 04:04:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683345878; x=1714881878;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ed3akQEIL1crzDxXFl10Zc/WGefAeiNqKCh0SoU+1S0=;
-  b=eMQF3fEOw49H5TLm+e4M/ZqcVReoQfcGCwPbQaLoSMFg2akvkgkgtfDS
-   pYQZT+sNSdH50zoEeD1OUtQWrXvklOARch63fsXCs3MApmg3qHdECl6Oz
-   1XO1vWeNmae1bW8mcrNBaxtFPFYK/v+RresynL3FoCCFXml4JP4APRbQ5
-   sqi2k7HxKuLqMvQaFSKmOMD1NhrqCqUjYdqK1H3aKhJXunj6TflfPRN/u
-   0cc6xpspsySwvQPtuq3qVgYedP2U+WUft4hfbcr3mPyeOVJ/o1d25YMT8
-   cSvpSLzgmtwXMzctElS5Rm48gGxxqWdCr/Kb8FMppBM06+T+c1QsdgwXq
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10701"; a="338547824"
-X-IronPort-AV: E=Sophos;i="5.99,254,1677571200"; 
-   d="scan'208";a="338547824"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2023 21:04:37 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10701"; a="697829696"
-X-IronPort-AV: E=Sophos;i="5.99,254,1677571200"; 
-   d="scan'208";a="697829696"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2023 21:04:37 -0700
-Date: Fri, 5 May 2023 21:09:00 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Joerg Roedel
- <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- jacob.jun.pan@linux.intel.com
-Subject: Re: [git pull] IOMMU Updates for Linux v6.4
-Message-ID: <20230505210900.0764fa83@jacob-builder>
-In-Reply-To: <ZE70doFi8X3KgfrV@ziepe.ca>
-References: <ZE5NR5Ml8I2/Ze0f@8bytes.org>
-	<CAHk-=wiriLmq6OgLLF9seANqCJqjCrgUC384zcJUFtv3xJgVkQ@mail.gmail.com>
-	<ZE70doFi8X3KgfrV@ziepe.ca>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FC1D15B9
+	for <iommu@lists.linux.dev>; Sat,  6 May 2023 07:40:00 +0000 (UTC)
+Received: from a003.hihonor.com (unknown [10.68.18.8])
+	by mta17.hihonor.com (SkyGuard) with ESMTPS id 4QCzlj45PyzCrrZ;
+	Sat,  6 May 2023 15:32:17 +0800 (CST)
+Received: from a007.hihonor.com (10.68.22.31) by a003.hihonor.com (10.68.18.8)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.21; Sat, 6 May
+ 2023 15:33:34 +0800
+Received: from a007.hihonor.com ([fe80::fc39:c25:3c0f:a4e7]) by
+ a007.hihonor.com ([fe80::fc39:c25:3c0f:a4e7%10]) with mapi id 15.02.1118.021;
+ Sat, 6 May 2023 15:33:34 +0800
+From: gaoxu 00016977 <gaoxu2@hihonor.com>
+To: "hch@lst.de" <hch@lst.de>, "m.szyprowski@samsung.com"
+	<m.szyprowski@samsung.com>
+CC: "robin.murphy@arm.com" <robin.murphy@arm.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "surenb@google.com" <surenb@google.com>,
+	yipengxiang 00013268 <yipengxiang@hihonor.com>, wangbintian 00013160
+	<bintian.wang@hihonor.com>, hanfeng 00012985 <feng.han@hihonor.com>
+Subject: [PATCH] dma-remap: Use kvmalloc_array/kvfree for larger dma memory
+ remap
+Thread-Topic: [PATCH] dma-remap: Use kvmalloc_array/kvfree for larger dma
+ memory remap
+Thread-Index: Adl/7N1/zhRx438JTrqVRawCg6p65Q==
+Date: Sat, 6 May 2023 07:33:33 +0000
+Message-ID: <18448ae569e24dfd84e811081ede376f@hihonor.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-originating-ip: [10.164.11.140]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 
-Hi Jason,
+If dma_direct_alloc() alloc memory in size of 64MB, the inner function
+dma_common_contiguous_remap() will allocate 128KB memory by invoking=20
+the function kmalloc_array(). and the kmalloc_array seems to fail to try to
+allocate 128KB mem. work around by doing kvmalloc_array instead.
 
-On Sun, 30 Apr 2023 20:06:30 -0300, Jason Gunthorpe <jgg@ziepe.ca> wrote:
+Signed-off-by: Gao Xu <gaoxu2@hihonor.com>
+---
+ kernel/dma/remap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> We've had this longstanding confusion in the iommu layer that SVA and
-> PASID are one and the same thing, we are slowly reorganizing it.. For
-> now it is fine for IOMMU_SVA to cover the PASID allocator as the only
-> drivers that support PASID also support SVA.
-> 
-> Arguably the design is backwards and IOMMU_SVA should be user
-> selectable and it should turn off the SVA code entirely including the
-> driver code.
-> 
-> > Somebody should double-check my result, in other words.  
-> 
-> I didn't notice anything wrong, I'm sure Lu and Yi will test it!
-FWIW, I did a quick test with SVA ENQCMD on an Intel Data Streaming
-Accelerator (DSA) shared work queue, seems to work fine. Code looks good to
-me too.
+diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c index b45266680..27596=
+f3b4 100644
+--- a/kernel/dma/remap.c
++++ b/kernel/dma/remap.c
+@@ -43,13 +43,13 @@ void *dma_common_contiguous_remap(struct page *page, si=
+ze_t size,
+ 	void *vaddr;
+ 	int i;
+=20
+-	pages =3D kmalloc_array(count, sizeof(struct page *), GFP_KERNEL);
++	pages =3D kvmalloc_array(count, sizeof(struct page *), GFP_KERNEL);
+ 	if (!pages)
+ 		return NULL;
+ 	for (i =3D 0; i < count; i++)
+ 		pages[i] =3D nth_page(page, i);
+ 	vaddr =3D vmap(pages, count, VM_DMA_COHERENT, prot);
+-	kfree(pages);
++	kvfree(pages);
+=20
+ 	return vaddr;
+ }
+--
+2.17.1
 
-Thanks,
-
-Jacob
