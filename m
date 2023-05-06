@@ -1,202 +1,99 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8417A92A;
-	Sat,  6 May 2023 15:40:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683387626; x=1714923626;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8bmvEMZXEd/jqIv4QtaFnZW5u2NmJk4Cjd5qGZv4oTU=;
-  b=Lnjan3az0np5U8/s2f5TrBbFCC6VMY1UbSllE28BIm1kbZX05MkXPb2B
-   Du/2lljAwoto88Yws+baQpW22AeNq48QpRmMd1KC4beWFcnTs0UVze97F
-   XMhW2qeTE1rD8w4IMCrZmuBWb75Vfzt2AxzwEz1KG37cuGXf/uoPLWnU8
-   tD/QM/nniZ7LqH3wZz+Nnfv1A9ADzY0gfqXPuRSjoCE0aUyGgw1dar4/R
-   SxrqiTXA7RpIr/6rP5rB4j03TyET3Y8Cx2xr5wuAP39wFDBWYzWgylTnb
-   zTooetA8cJ9Tvlr6ON39IJyD1d4fvBzIQLlrQxnkXegyln3Vm1TNcpXHt
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10702"; a="333824901"
-X-IronPort-AV: E=Sophos;i="5.99,255,1677571200"; 
-   d="scan'208";a="333824901"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2023 08:40:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10702"; a="730746346"
-X-IronPort-AV: E=Sophos;i="5.99,255,1677571200"; 
-   d="scan'208";a="730746346"
-Received: from lkp-server01.sh.intel.com (HELO dea6d5a4f140) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 06 May 2023 08:40:19 -0700
-Received: from kbuild by dea6d5a4f140 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1pvK1C-0000NB-1b;
-	Sat, 06 May 2023 15:40:18 +0000
-Date: Sat, 6 May 2023 23:39:35 +0800
-From: kernel test robot <lkp@intel.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: oe-kbuild-all@lists.linux.dev, Will Deacon <will@kernel.org>,
-	Raj Ashok <ashok.raj@intel.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
-	"Yu, Fenghua" <fenghua.yu@intel.com>, torvalds@linux-foundation.org,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH] iommu: Add Kconfig help text for IOMMU_SVA
-Message-ID: <202305062339.d6Rnj38E-lkp@intel.com>
-References: <20230506133134.1492395-1-jacob.jun.pan@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1006E259C
+	for <iommu@lists.linux.dev>; Sat,  6 May 2023 15:43:28 +0000 (UTC)
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-965a68abfd4so550880066b.2
+        for <iommu@lists.linux.dev>; Sat, 06 May 2023 08:43:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google; t=1683387807; x=1685979807;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4K3NrRKSl6ilP3fnwAsx1m0nufJ3hRrCfj2tW9kJ2I4=;
+        b=DT/UBCdZcGLy77JEJK1IxwS4Lv5Cz+QZKRq6ZIH7htdhcGgr24zh8dfD1YAGiAQUSL
+         yK4pzXaLN2azYKa1KF4ZI0uYyLFSODMITlLXN8D/GbfHpgVfJ/o+Tq5MoX4Wl0UYQLFY
+         kobjejyfUVPq65+eGuGOPxHCnHJmmGm/xQXlk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683387807; x=1685979807;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=4K3NrRKSl6ilP3fnwAsx1m0nufJ3hRrCfj2tW9kJ2I4=;
+        b=Dw4rlRUlPWvix79NMAZXkQxP2B3q/fkx7Q47Rs1+drg2LDZc3t1vsb7tPfcmkS2Efz
+         SdMfl1UZ3zgKu6ApWhpH2WC44utlkz9FlGRQChhXbpgH2oEARPYXQLQ1RK8qXbjosjTv
+         0FfFJABIl+eKccj/Lj5uzv2F6mmd4GPZynxLrOXK9CFYj394JCIGkDiLU5OC2tqNxtm7
+         YJnACLaxVrG9HeLXezbiJeMGKEYHK5w17Yg34rgIbIZBcHb44BPqvjX+2YF1yFKannn/
+         x50MyHchPBlP2BakyEVinUm1hj2/dWrkxh4UkhLc3XWRToz1FbObLYGq3HowV0CXCBS6
+         cVpw==
+X-Gm-Message-State: AC+VfDzicS8BYiWgppZ+7dv8g8twYR0WBvdmD3bLECXDqe9UI+/UzxOF
+	lhCsgmSZsRBpwgRKkv7sAnHVXv46lMwNivBWG+Q8LA==
+X-Google-Smtp-Source: ACHHUZ5VefoFueCkd8bW+z/UFFLMH4Mp7V/nocF9vq12SAmLLwZLsiolbFXSIyr1qSbzGDtSH66E4Q==
+X-Received: by 2002:a17:906:eeca:b0:965:d17b:292 with SMTP id wu10-20020a170906eeca00b00965d17b0292mr3855579ejb.60.1683387807019;
+        Sat, 06 May 2023 08:43:27 -0700 (PDT)
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com. [209.85.208.49])
+        by smtp.gmail.com with ESMTPSA id nr1-20020a1709068b8100b00966069b78absm1245899ejc.192.2023.05.06.08.43.25
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 06 May 2023 08:43:25 -0700 (PDT)
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-50be0d835aaso5277760a12.3
+        for <iommu@lists.linux.dev>; Sat, 06 May 2023 08:43:25 -0700 (PDT)
+X-Received: by 2002:a17:907:74c:b0:953:37eb:7727 with SMTP id
+ xc12-20020a170907074c00b0095337eb7727mr4516381ejb.43.1683387805125; Sat, 06
+ May 2023 08:43:25 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20230506133134.1492395-1-jacob.jun.pan@linux.intel.com>
 In-Reply-To: <20230506133134.1492395-1-jacob.jun.pan@linux.intel.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Sat, 6 May 2023 08:43:08 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgUiAtiszwseM1p2fCJ+sC4XWQ+YN4TanFhUgvUqjr9Xw@mail.gmail.com>
+Message-ID: <CAHk-=wgUiAtiszwseM1p2fCJ+sC4XWQ+YN4TanFhUgvUqjr9Xw@mail.gmail.com>
+Subject: Re: [PATCH] iommu: Add Kconfig help text for IOMMU_SVA
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, 
+	Jason Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Joerg Roedel <joro@8bytes.org>, Jean-Philippe Brucker <jean-philippe@linaro.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Raj Ashok <ashok.raj@intel.com>, 
+	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>, 
+	"Yu, Fenghua" <fenghua.yu@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Jacob,
+On Sat, May 6, 2023 at 6:27=E2=80=AFAM Jacob Pan <jacob.jun.pan@linux.intel=
+.com> wrote:
+>
+> Shared Virtual Addressing (SVA) is not immediately intuitive to people
+> who work outside IOMMU subsystem, add some explanation to make it less
+> opaque.
 
-kernel test robot noticed the following build warnings:
+So the patch has at least two problems.
 
-[auto build test WARNING on next-20230505]
-[also build test WARNING on linus/master]
-[cannot apply to joro-iommu/next v6.3 v6.3-rc7 v6.3-rc6 v6.3]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+The first is that you corrupted the SPDX line.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Jacob-Pan/iommu-Add-Kconfig-help-text-for-IOMMU_SVA/20230506-212836
-base:   next-20230505
-patch link:    https://lore.kernel.org/r/20230506133134.1492395-1-jacob.jun.pan%40linux.intel.com
-patch subject: [PATCH] iommu: Add Kconfig help text for IOMMU_SVA
-config: sparc-defconfig (https://download.01.org/0day-ci/archive/20230506/202305062339.d6Rnj38E-lkp@intel.com/config)
-compiler: sparc-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/7a9fdfc3792c64278f1950f3880278b989749944
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Jacob-Pan/iommu-Add-Kconfig-help-text-for-IOMMU_SVA/20230506-212836
-        git checkout 7a9fdfc3792c64278f1950f3880278b989749944
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc SHELL=/bin/bash drivers/iommu/
+But the second is that the change from
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202305062339.d6Rnj38E-lkp@intel.com/
+-       bool
++       bool "Shared Virtual Addressing"
 
-All warnings (new ones prefixed by >>):
+means that now Kconfig *asks* about this thing, which was never the
+intent. The other Kconfig options that need it all do a
 
-   In file included from arch/sparc/include/asm/mmu_context_32.h:7,
-                    from arch/sparc/include/asm/mmu_context.h:7,
-                    from include/linux/mmu_context.h:5,
-                    from drivers/iommu/iommu-sva.c:5:
-   include/asm-generic/mm_hooks.h:10:40: warning: 'struct mm_struct' declared inside parameter list will not be visible outside of this definition or declaration
-      10 | static inline int arch_dup_mmap(struct mm_struct *oldmm,
-         |                                        ^~~~~~~~~
-   include/asm-generic/mm_hooks.h:16:42: warning: 'struct mm_struct' declared inside parameter list will not be visible outside of this definition or declaration
-      16 | static inline void arch_exit_mmap(struct mm_struct *mm)
-         |                                          ^~~~~~~~~
-   include/asm-generic/mm_hooks.h:20:38: warning: 'struct mm_struct' declared inside parameter list will not be visible outside of this definition or declaration
-      20 | static inline void arch_unmap(struct mm_struct *mm,
-         |                                      ^~~~~~~~~
-   include/asm-generic/mm_hooks.h:25:15: error: unknown type name 'bool'
-      25 | static inline bool arch_vma_access_permitted(struct vm_area_struct *vma,
-         |               ^~~~
-   include/asm-generic/mm_hooks.h:26:17: error: unknown type name 'bool'
-      26 |                 bool write, bool execute, bool foreign)
-         |                 ^~~~
-   include/asm-generic/mm_hooks.h:1:1: note: 'bool' is defined in header '<stdbool.h>'; did you forget to '#include <stdbool.h>'?
-     +++ |+#include <stdbool.h>
-       1 | /* SPDX-License-Identifier: GPL-2.0 */
-   include/asm-generic/mm_hooks.h:26:29: error: unknown type name 'bool'
-      26 |                 bool write, bool execute, bool foreign)
-         |                             ^~~~
-   include/asm-generic/mm_hooks.h:26:29: note: 'bool' is defined in header '<stdbool.h>'; did you forget to '#include <stdbool.h>'?
-   include/asm-generic/mm_hooks.h:26:43: error: unknown type name 'bool'
-      26 |                 bool write, bool execute, bool foreign)
-         |                                           ^~~~
-   include/asm-generic/mm_hooks.h:26:43: note: 'bool' is defined in header '<stdbool.h>'; did you forget to '#include <stdbool.h>'?
->> arch/sparc/include/asm/mmu_context_32.h:13:54: warning: 'struct mm_struct' declared inside parameter list will not be visible outside of this definition or declaration
-      13 | int init_new_context(struct task_struct *tsk, struct mm_struct *mm);
-         |                                                      ^~~~~~~~~
->> arch/sparc/include/asm/mmu_context_32.h:13:29: warning: 'struct task_struct' declared inside parameter list will not be visible outside of this definition or declaration
-      13 | int init_new_context(struct task_struct *tsk, struct mm_struct *mm);
-         |                             ^~~~~~~~~~~
-   arch/sparc/include/asm/mmu_context_32.h:21:29: warning: 'struct mm_struct' declared inside parameter list will not be visible outside of this definition or declaration
-      21 | void destroy_context(struct mm_struct *mm);
-         |                             ^~~~~~~~~
-   arch/sparc/include/asm/mmu_context_32.h:25:23: warning: 'struct task_struct' declared inside parameter list will not be visible outside of this definition or declaration
-      25 |                struct task_struct *tsk);
-         |                       ^~~~~~~~~~~
-   arch/sparc/include/asm/mmu_context_32.h:24:23: warning: 'struct mm_struct' declared inside parameter list will not be visible outside of this definition or declaration
-      24 | void switch_mm(struct mm_struct *old_mm, struct mm_struct *mm,
-         |                       ^~~~~~~~~
-   In file included from arch/sparc/include/asm/mmu.h:7,
-                    from include/linux/mmu_context.h:6:
-   arch/sparc/include/asm/mmu_32.h:9:8: error: unknown type name 'ctxd_t'
-       9 | extern ctxd_t *srmmu_ctx_table_phys;
-         |        ^~~~~~
-   include/linux/mmu_context.h:39:15: error: unknown type name 'bool'
-      39 | static inline bool arch_pgtable_dma_compat(struct mm_struct *mm)
-         |               ^~~~
-   include/linux/mmu_context.h: In function 'arch_pgtable_dma_compat':
-   include/linux/mmu_context.h:41:16: error: 'true' undeclared (first use in this function)
-      41 |         return true;
-         |                ^~~~
-   include/linux/mmu_context.h:7:1: note: 'true' is defined in header '<stdbool.h>'; did you forget to '#include <stdbool.h>'?
-       6 | #include <asm/mmu.h>
-     +++ |+#include <stdbool.h>
-       7 | 
-   include/linux/mmu_context.h:41:16: note: each undeclared identifier is reported only once for each function it appears in
-      41 |         return true;
-         |                ^~~~
-   drivers/iommu/iommu-sva.c: In function 'iommu_sva_bind_device':
-   drivers/iommu/iommu-sva.c:69:32: error: invalid use of undefined type 'struct dev_iommu'
-      69 |         max_pasids = dev->iommu->max_pasids;
-         |                                ^~
-   drivers/iommu/iommu-sva.c:78:32: error: invalid application of 'sizeof' to incomplete type 'struct iommu_sva'
-      78 |         handle = kzalloc(sizeof(*handle), GFP_KERNEL);
-         |                                ^
-   drivers/iommu/iommu-sva.c:109:15: error: invalid use of undefined type 'struct iommu_sva'
-     109 |         handle->dev = dev;
-         |               ^~
-   drivers/iommu/iommu-sva.c:110:15: error: invalid use of undefined type 'struct iommu_sva'
-     110 |         handle->domain = domain;
-         |               ^~
-   drivers/iommu/iommu-sva.c: In function 'iommu_sva_unbind_device':
-   drivers/iommu/iommu-sva.c:134:45: error: invalid use of undefined type 'struct iommu_sva'
-     134 |         struct iommu_domain *domain = handle->domain;
-         |                                             ^~
-   drivers/iommu/iommu-sva.c:136:36: error: invalid use of undefined type 'struct iommu_sva'
-     136 |         struct device *dev = handle->dev;
-         |                                    ^~
-   drivers/iommu/iommu-sva.c: In function 'iommu_sva_get_pasid':
-   drivers/iommu/iommu-sva.c:150:45: error: invalid use of undefined type 'struct iommu_sva'
-     150 |         struct iommu_domain *domain = handle->domain;
-         |                                             ^~
-   include/linux/mmu_context.h: In function 'arch_pgtable_dma_compat':
-   include/linux/mmu_context.h:42:1: error: control reaches end of non-void function [-Werror=return-type]
-      42 | }
-         | ^
-   cc1: some warnings being treated as errors
+        select IOMMU_SVA
 
+to get it picked.
 
-vim +13 arch/sparc/include/asm/mmu_context_32.h
+I suspect that's why it then causes errors - because now the test
+robot can enable the option even in situations where it makes no sense
+and doesn't work.
 
-f5e706ad886b6a include/asm-sparc/mmu_context_32.h      Sam Ravnborg    2008-07-17   8  
-b585e8551b352c arch/sparc/include/asm/mmu_context_32.h Sam Ravnborg    2012-07-26   9  /* Initialize a new mmu context.  This is invoked when a new
-f5e706ad886b6a include/asm-sparc/mmu_context_32.h      Sam Ravnborg    2008-07-17  10   * address space instance (unique or shared) is instantiated.
-f5e706ad886b6a include/asm-sparc/mmu_context_32.h      Sam Ravnborg    2008-07-17  11   */
-ca0f34b575ade0 arch/sparc/include/asm/mmu_context_32.h Nicholas Piggin 2020-09-02  12  #define init_new_context init_new_context
-b585e8551b352c arch/sparc/include/asm/mmu_context_32.h Sam Ravnborg    2012-07-26 @13  int init_new_context(struct task_struct *tsk, struct mm_struct *mm);
-f5e706ad886b6a include/asm-sparc/mmu_context_32.h      Sam Ravnborg    2008-07-17  14  
+So no, it's not that the option needs a help entry that can be queried
+at Kconfig time. It's that the option needs a name that makes sense
+and isn't some random jumble of letters that is only understandable to
+people who already know exactly what it is.
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+               Linus
