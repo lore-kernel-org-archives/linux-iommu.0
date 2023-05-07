@@ -1,114 +1,289 @@
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 184FA3239
-	for <iommu@lists.linux.dev>; Sun,  7 May 2023 18:52:39 +0000 (UTC)
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-965a68abfd4so708433466b.2
-        for <iommu@lists.linux.dev>; Sun, 07 May 2023 11:52:39 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E89F73239
+	for <iommu@lists.linux.dev>; Sun,  7 May 2023 20:02:50 +0000 (UTC)
+Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-2ac806f4fccso43151911fa.1
+        for <iommu@lists.linux.dev>; Sun, 07 May 2023 13:02:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1683485558; x=1686077558;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=CsECona4C2RMdk3QW+3sdWBFtOEdxVYIeVifcSTdEsg=;
-        b=EZTfzpc90ra/8sGz05lyuRTbj6Ft5a3wEPBKVZ9wyrLyIM5xiAyrkgs2S1Vs6kl7jz
-         sBofRyWiXqcalrjhYAjwqPLUcPsHf20iblx++0yj7HCaICajroi8H5VKd9aP8zyoxn2d
-         /hiMNk0SXEL8jHAJJEs+m+yQtUulaqVDWvfW0=
+        d=linaro.org; s=google; t=1683489769; x=1686081769;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=PQhq52xRNYtqts2gsugzLIYd5kNgCRwD8Uhl0jHSj+g=;
+        b=NspMOV3cTCQenr2aybm6qV23DvGXZf4IfJft3qSmCItVDv4jCc1pYxl1tkkMfnLP64
+         MKxVD+1F4b3v+jXlsx3RwGMEJX2WDjzWhXr6XteIKF6spuXHQwLX744APPo9REfv3+oA
+         NhkuNENtYhPAtQarSgVkQ4G1mS5b1ujnPFAB1limZdzMYQs4ppN1/lpkqmKz4R5oPui+
+         8GeAJISRKBlqZ/ZOhhjsTgVddKRUVjMH1zuH6/Ol0xTXC8XnuVqTw3gIVqyQTGh+bz4E
+         LvORw2q5PLqkhXXa3fCOAO3Ns6E4W52RhYwRRwjc4fIb2XY0arsAkpkbK/F1nEQ6/Zps
+         U9qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683485558; x=1686077558;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=CsECona4C2RMdk3QW+3sdWBFtOEdxVYIeVifcSTdEsg=;
-        b=Gh7y1NnYcpx0ssrgK+V2gxSQSwHEb6VlHVyfHTyfjH+Q/AJbACeyqdhG98W6BN70W0
-         GbTgX8tqcmrRKiKBU61l6XJiVYjvJNQPnJRsYZoKmMzVRot8N2SOycUqUvJuGSQA+aYX
-         OvfO3z03fUjnkzagM90iQWjExg1+e29aYlnJRN/HUJ9oXmCWZayZcPFQq+XqjyiJk6cF
-         zp0vlzrZTQXZ1rHj7fJLgWigTQ75cCxTwSQco5rvPfof186qfmk/PvIA3++QyfX7aEbq
-         EEM+sGY3NrKAhDnkqjBaKt4Bv8iOPdSt4iNShkt7adYbg6u4u/msyt8RWStzcyAQhxFl
-         N8LQ==
-X-Gm-Message-State: AC+VfDw/i387TkMt2PtQNuA5pvhLslLaJTucTjT2uFRL22cHEW7U8sPg
-	sabfOy0dw05qLrTdLUkV2h/9nQuh1wZGJDV/aUrtNQ==
-X-Google-Smtp-Source: ACHHUZ7XqXgl7X0u4L+Mc/N5OmtkrCjmDNnC8WW/9hplOU4C4sfnis8CoGaZsNbjymjdvWaoyIBP+w==
-X-Received: by 2002:a17:907:7b9b:b0:957:db05:a35d with SMTP id ne27-20020a1709077b9b00b00957db05a35dmr8681202ejc.48.1683485557979;
-        Sun, 07 May 2023 11:52:37 -0700 (PDT)
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com. [209.85.218.43])
-        by smtp.gmail.com with ESMTPSA id ci17-20020a170907267100b00965cfc209d5sm3953189ejc.8.2023.05.07.11.52.35
-        for <iommu@lists.linux.dev>
+        d=1e100.net; s=20221208; t=1683489769; x=1686081769;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=PQhq52xRNYtqts2gsugzLIYd5kNgCRwD8Uhl0jHSj+g=;
+        b=gcWyN2TzmvBA1Rpf5brnuJ4Hik7FYLvgmwwW6HhmN0WhXraweqITd9v0eOglEej4Gd
+         pt34290/EO7uQwjWVPOKOoSyOBOdRBvIRb2JZWDzHBwtGukBjTT7ylSttcSNWlJdlG8n
+         geZk6jcRPSNSZ7G0gf4LZXLUlU0Zj25mIBMCYohjaWRm3me2mkWKtTOrifKidMHS62ld
+         utKAtTS0YEpjqQZ5reYKuhSqBInpjWWm7JqKTzzepgwUnRhbBBi7kyOyrGTOp2GO38l5
+         RGKEHGdMQ05+kvmz/snuObVcGJzv82POJAmz0AjIn4aUDeEzdZiPT3uwEyRNPaOT6boc
+         98Cw==
+X-Gm-Message-State: AC+VfDxWKYd+xEovjEDG9hN/NDLMjeqMGb961ztNcj9TYQ8aH9iPLe+b
+	1oRJLOmgS8hdjeIs81eoOK6pEA==
+X-Google-Smtp-Source: ACHHUZ4co2LDTbe1bUzcD/qXHDSNHJPI4fyZBebjAIOEP453SE+RtJkIZBsDphZfONR0a+q+nP9CMw==
+X-Received: by 2002:a2e:9818:0:b0:2a7:b0b4:4fa with SMTP id a24-20020a2e9818000000b002a7b0b404famr2255627ljj.12.1683489768828;
+        Sun, 07 May 2023 13:02:48 -0700 (PDT)
+Received: from ?IPV6:2001:14ba:a0db:1f00::8a5? (dzdqv0yyyyyyyyyyybcwt-3.rev.dnainternet.fi. [2001:14ba:a0db:1f00::8a5])
+        by smtp.gmail.com with ESMTPSA id v24-20020a2e9918000000b002aa39dd9ad3sm919263lji.125.2023.05.07.13.02.47
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 07 May 2023 11:52:36 -0700 (PDT)
-Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-956ff2399b1so706740466b.3
-        for <iommu@lists.linux.dev>; Sun, 07 May 2023 11:52:35 -0700 (PDT)
-X-Received: by 2002:a17:907:7da7:b0:94f:764e:e311 with SMTP id
- oz39-20020a1709077da700b0094f764ee311mr6746310ejc.16.1683485555608; Sun, 07
- May 2023 11:52:35 -0700 (PDT)
+        Sun, 07 May 2023 13:02:48 -0700 (PDT)
+Message-ID: <4216540c-75b2-c08b-0147-d86632b493c0@linaro.org>
+Date: Sun, 7 May 2023 23:02:47 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230506133134.1492395-1-jacob.jun.pan@linux.intel.com>
- <CAHk-=wgUiAtiszwseM1p2fCJ+sC4XWQ+YN4TanFhUgvUqjr9Xw@mail.gmail.com> <20230506150741.2e3d2dcc@jacob-builder>
-In-Reply-To: <20230506150741.2e3d2dcc@jacob-builder>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Sun, 7 May 2023 11:52:18 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjmOAQnqJF-pW=fzMXb_Rk_J_Oi4ESBLmVPhxwBK4xfGg@mail.gmail.com>
-Message-ID: <CAHk-=wjmOAQnqJF-pW=fzMXb_Rk_J_Oi4ESBLmVPhxwBK4xfGg@mail.gmail.com>
-Subject: Re: [PATCH] iommu: Add Kconfig help text for IOMMU_SVA
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, 
-	Jason Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	Joerg Roedel <joro@8bytes.org>, Jean-Philippe Brucker <jean-philippe@linaro.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Raj Ashok <ashok.raj@intel.com>, 
-	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>, 
-	"Yu, Fenghua" <fenghua.yu@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH v3 08/12] drm/msm/dpu: Add SM6375 support
+Content-Language: en-GB
+To: Konrad Dybcio <konrad.dybcio@linaro.org>, Rob Clark
+ <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
+ Sean Paul <sean@poorly.run>, David Airlie <airlied@gmail.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Krishna Manikandan <quic_mkrishn@quicinc.com>, Will Deacon
+ <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+ linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev
+References: <20230411-topic-straitlagoon_mdss-v3-0-9837d6b3516d@linaro.org>
+ <20230411-topic-straitlagoon_mdss-v3-8-9837d6b3516d@linaro.org>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20230411-topic-straitlagoon_mdss-v3-8-9837d6b3516d@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Sat, May 6, 2023 at 3:03=E2=80=AFPM Jacob Pan <jacob.jun.pan@linux.intel=
-.com> wrote:
->
-> Right, how about IOMMU_SHARING_CPU_PGTABLE?
+On 06/05/2023 00:40, Konrad Dybcio wrote:
+> Add basic SM6375 support to the DPU1 driver to enable display output.
+> 
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> ---
+>   .../gpu/drm/msm/disp/dpu1/catalog/dpu_6_9_sm6375.h | 152 +++++++++++++++++++++
+>   drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c     |   1 +
+>   drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h     |   1 +
+>   drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c            |   1 +
+>   4 files changed, 155 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_9_sm6375.h b/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_9_sm6375.h
+> new file mode 100644
+> index 000000000000..c7f303b0557e
+> --- /dev/null
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_9_sm6375.h
+> @@ -0,0 +1,152 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/*
+> + * Copyright (c) 2022. Qualcomm Innovation Center, Inc. All rights reserved.
+> + * Copyright (c) 2015-2018, 2020 The Linux Foundation. All rights reserved.
+> + * Copyright (c) 2023, Linaro Limited
+> + */
+> +
+> +#ifndef _DPU_6_9_SM6375_H
+> +#define _DPU_6_9_SM6375_H
+> +
+> +static const struct dpu_caps sm6375_dpu_caps = {
+> +	.max_mixer_width = DEFAULT_DPU_LINE_WIDTH,
+> +	.max_mixer_blendstages = 0x4,
+> +	.qseed_type = DPU_SSPP_SCALER_QSEED4,
+> +	.has_dim_layer = true,
+> +	.has_idle_pc = true,
+> +	.max_linewidth = 2160,
+> +	.pixel_ram_size = DEFAULT_PIXEL_RAM_SIZE,
+> +};
+> +
+> +static const struct dpu_ubwc_cfg sm6375_ubwc_cfg = {
+> +	.ubwc_version = DPU_HW_UBWC_VER_20,
+> +	.ubwc_swizzle = 6,
+> +	.highest_bank_bit = 1,
+> +};
+> +
+> +static const struct dpu_mdp_cfg sm6375_mdp[] = {
+> +	{
+> +	.name = "top_0", .id = MDP_TOP,
+> +	.base = 0x0, .len = 0x494,
+> +	.features = 0,
+> +	.clk_ctrls[DPU_CLK_CTRL_VIG0] = { .reg_off = 0x2ac, .bit_off = 0 },
+> +	.clk_ctrls[DPU_CLK_CTRL_DMA0] = { .reg_off = 0x2ac, .bit_off = 8 },
+> +	},
+> +};
+> +
+> +static const struct dpu_ctl_cfg sm6375_ctl[] = {
+> +	{
+> +	.name = "ctl_0", .id = CTL_0,
+> +	.base = 0x1000, .len = 0x1dc,
+> +	.features = BIT(DPU_CTL_ACTIVE_CFG),
+> +	.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 9),
+> +	},
+> +};
+> +
+> +static const struct dpu_sspp_cfg sm6375_sspp[] = {
+> +	SSPP_BLK("sspp_0", SSPP_VIG0, 0x4000, 0x1f8, VIG_SC7180_MASK,
+> +		sm6115_vig_sblk_0, 0, SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG0),
+> +	SSPP_BLK("sspp_8", SSPP_DMA0, 0x24000, 0x1f8, DMA_SDM845_MASK,
+> +		sdm845_dma_sblk_0, 1, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA0),
+> +};
+> +
+> +static const struct dpu_lm_cfg sm6375_lm[] = {
+> +	LM_BLK("lm_0", LM_0, 0x44000, MIXER_QCM2290_MASK,
+> +		&qcm2290_lm_sblk, PINGPONG_0, 0, DSPP_0),
+> +};
+> +
+> +static const struct dpu_dspp_cfg sm6375_dspp[] = {
+> +	DSPP_BLK("dspp_0", DSPP_0, 0x54000, DSPP_SC7180_MASK,
+> +		&sm8150_dspp_sblk),
+> +};
+> +
+> +static const struct dpu_pingpong_cfg sm6375_pp[] = {
+> +	PP_BLK("pingpong_0", PINGPONG_0, 0x70000, PINGPONG_SM8150_MASK, 0, sdm845_pp_sblk,
+> +		DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 8),
+> +		-1),
+> +};
+> +
+> +static const struct dpu_intf_cfg sm6375_intf[] = {
+> +	INTF_BLK("intf_0", INTF_0, 0x00000, 0x2c0, INTF_NONE, 0, 0, 0, 0, 0),
+> +	INTF_BLK_DSI_TE("intf_1", INTF_1, 0x6a800, 0x2c0, INTF_DSI, 0, 24, INTF_SC7280_MASK,
 
-I think from a VM / process angle, I'd actually prefer calling the
-"pasid" part just that: IOMMU_PASID.
+If I understand correctly, all 5.x and 6.x DPU also have 
+HCTL/DATA_ACTIVE/etc. registers. (I do not know about the sdm845, if it 
+has that reg or not). So a proper fix would be to add DPU_DATA_HCTL_EN 
+to sc7180 mask rather than upgrading sm6375 to use sc7280 mask.
 
-The VM code certainly understands about address space IDs, even if
-people have called them different things: normal people called them
-ASID's long ago, then Intel at some pointed decided that "PCID" made
-sense as a name (narrator: "no it didn't"), and then you got that
-combined "PASID" thing.
+> +		DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 26),
+> +		DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 27),
+> +		DPU_IRQ_IDX(MDP_INTF1_TEAR_INTR, 2)),
+> +};
+> +
+> +static const struct dpu_vbif_cfg sm6375_vbif[] = {
+> +	{
+> +	.name = "vbif_0", .id = VBIF_RT,
+> +	.base = 0, .len = 0x2008,
+> +	.features = BIT(DPU_VBIF_QOS_REMAP),
+> +	.xin_halt_timeout = 0x4000,
+> +	.qos_rp_remap_size = 0x40,
+> +	.qos_rt_tbl = {
+> +		.npriority_lvl = ARRAY_SIZE(sdm845_rt_pri_lvl),
+> +		.priority_lvl = sdm845_rt_pri_lvl,
+> +		},
+> +	.qos_nrt_tbl = {
+> +		.npriority_lvl = ARRAY_SIZE(sdm845_nrt_pri_lvl),
+> +		.priority_lvl = sdm845_nrt_pri_lvl,
+> +		},
+> +	.memtype_count = 14,
+> +	.memtype = {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
+> +	},
+> +};
+> +
+> +static const struct dpu_perf_cfg sm6375_perf_data = {
+> +	.max_bw_low = 5200000,
+> +	.max_bw_high = 6200000,
+> +	.min_core_ib = 2500000,
+> +	.min_llcc_ib = 0, /* No LLCC on this SoC */
+> +	.min_dram_ib = 1600000,
+> +	.min_prefill_lines = 24,
+> +	/* TODO: confirm danger_lut_tbl */
+> +	.danger_lut_tbl = {0xffff, 0xffff, 0x0, 0x0, 0xffff},
+> +	.qos_lut_tbl = {
+> +		{.nentry = ARRAY_SIZE(sm6350_qos_linear_macrotile),
+> +		.entries = sm6350_qos_linear_macrotile
+> +		},
+> +		{.nentry = ARRAY_SIZE(sm6350_qos_linear_macrotile),
+> +		.entries = sm6350_qos_linear_macrotile
+> +		},
+> +		{.nentry = ARRAY_SIZE(sc7180_qos_nrt),
+> +		.entries = sc7180_qos_nrt
+> +		},
+> +	},
+> +	.cdp_cfg = {
+> +		{.rd_enable = 1, .wr_enable = 1},
+> +		{.rd_enable = 1, .wr_enable = 0}
+> +	},
+> +	.clk_inefficiency_factor = 105,
+> +	.bw_inefficiency_factor = 120,
+> +};
+> +
+> +const struct dpu_mdss_cfg dpu_sm6375_cfg = {
+> +	.caps = &sm6375_dpu_caps,
+> +	.ubwc = &sm6375_ubwc_cfg,
+> +	.mdp_count = ARRAY_SIZE(sm6375_mdp),
+> +	.mdp = sm6375_mdp,
+> +	.ctl_count = ARRAY_SIZE(sm6375_ctl),
+> +	.ctl = sm6375_ctl,
+> +	.sspp_count = ARRAY_SIZE(sm6375_sspp),
+> +	.sspp = sm6375_sspp,
+> +	.mixer_count = ARRAY_SIZE(sm6375_lm),
+> +	.mixer = sm6375_lm,
+> +	.dspp_count = ARRAY_SIZE(sm6375_dspp),
+> +	.dspp = sm6375_dspp,
+> +	.pingpong_count = ARRAY_SIZE(sm6375_pp),
+> +	.pingpong = sm6375_pp,
+> +	.intf_count = ARRAY_SIZE(sm6375_intf),
+> +	.intf = sm6375_intf,
+> +	.vbif_count = ARRAY_SIZE(sm6375_vbif),
+> +	.vbif = sm6375_vbif,
+> +	.perf = &sm6375_perf_data,
+> +	.mdss_irqs = BIT(MDP_SSPP_TOP0_INTR) | \
+> +		     BIT(MDP_SSPP_TOP0_INTR2) | \
+> +		     BIT(MDP_SSPP_TOP0_HIST_INTR) | \
+> +		     BIT(MDP_INTF1_INTR) | \
+> +		     BIT(MDP_INTF1_TEAR_INTR),
+> +};
+> +
+> +#endif
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+> index 5ef1dffc27dc..7577572a5ef4 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+> @@ -809,6 +809,7 @@ static const struct dpu_qos_lut_entry sc7180_qos_nrt[] = {
+>   #include "catalog/dpu_6_3_sm6115.h"
+>   #include "catalog/dpu_6_4_sm6350.h"
+>   #include "catalog/dpu_6_5_qcm2290.h"
+> +#include "catalog/dpu_6_9_sm6375.h"
+>   
+>   #include "catalog/dpu_7_0_sm8350.h"
+>   #include "catalog/dpu_7_2_sc7280.h"
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
+> index 56af77353b1e..96a8ec02b5b8 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
+> @@ -884,6 +884,7 @@ extern const struct dpu_mdss_cfg dpu_sc7180_cfg;
+>   extern const struct dpu_mdss_cfg dpu_sm6115_cfg;
+>   extern const struct dpu_mdss_cfg dpu_sm6350_cfg;
+>   extern const struct dpu_mdss_cfg dpu_qcm2290_cfg;
+> +extern const struct dpu_mdss_cfg dpu_sm6375_cfg;
+>   extern const struct dpu_mdss_cfg dpu_sm8350_cfg;
+>   extern const struct dpu_mdss_cfg dpu_sc7280_cfg;
+>   extern const struct dpu_mdss_cfg dpu_sc8280xp_cfg;
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+> index 46be7ad8d615..980c3c8f8269 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+> @@ -1287,6 +1287,7 @@ static const struct of_device_id dpu_dt_match[] = {
+>   	{ .compatible = "qcom,sc8280xp-dpu", .data = &dpu_sc8280xp_cfg, },
+>   	{ .compatible = "qcom,sm6115-dpu", .data = &dpu_sm6115_cfg, },
+>   	{ .compatible = "qcom,sm6350-dpu", .data = &dpu_sm6350_cfg, },
+> +	{ .compatible = "qcom,sm6375-dpu", .data = &dpu_sm6375_cfg, },
+>   	{ .compatible = "qcom,sm8150-dpu", .data = &dpu_sm8150_cfg, },
+>   	{ .compatible = "qcom,sm8250-dpu", .data = &dpu_sm8250_cfg, },
+>   	{ .compatible = "qcom,sm8350-dpu", .data = &dpu_sm8350_cfg, },
+> 
 
-Now, it may be that this then goes hand-in-hand with other IOMMU code
-that isn't *about* PASID itself, but that depends on PASID's being
-present, and so I'd just expect IOMMU_PASID to be one of those options
-that are selected by other options.
+-- 
+With best wishes
+Dmitry
 
-So maybe there is some part of IOMMU_SVA that is not about PASID
-itself, but I really think that the PASID code itself should just have
-that CONFIG_PASID around it.
-
-End result: from a legibility standpoint, I think it could be as
-simple as having that
-
-    config IOMMU_SVA
-
-option have a "select IOMMU_PASID".
-
-Then make the VM/process PASID code depend on that. Maybe the "struct
-device *" stuff makes more sense under CONFIG_IOMMU_SVA, ie things
-like iopf_queue_add_device() and friends.
-
-How does that sound? Maybe those two options then always end up going
-together, but even if that is the case, I think from a VM/process
-standpoint it makes a lot more sense to simply have a "PASID enabled"
-option. It's much more understandable in that context, while something
-like "IOMMU_SVA" really is just a random jumble of letters to a VM
-person.
-
-And while the individual words in IOMMU_SHARING_CPU_PGTABLE all make
-sense, it's not clear what the combination means, and why it should
-have anything to do with then having an address space identifier for
-it.
-
-                  Linus
