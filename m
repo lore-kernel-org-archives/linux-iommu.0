@@ -1,103 +1,166 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 212BD846B
-	for <iommu@lists.linux.dev>; Sat,  6 May 2023 22:03:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683410599; x=1714946599;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=85db/Q4ojopDoG5xswhFXtX+yoZa0a8Q5iJRo2143F0=;
-  b=DdRYCNJIOGAR6gcM/H52fH19FOVhCoael/78xFA1RiLr9a6qsh2FGOpk
-   v++pzFkG+1FVkNdwSNQWDLVrrA8YaIndpA5MJkYI83nbiMu6qVB7zJxHh
-   dlMz4NWurdN8lqrz1IY1cEhStNnIT5+Y8XDY0bm1XYSGAhrSZ4RXOAe3Z
-   Rq1Q6BvewHUr0/UgzdJWT1WZr2x3s6uZkj7V0hVDdyYhMoPe18pTTMxwX
-   5ASkUDgpG30gew63F5N4GCZHAa0ytaOMXt0uW21xNk8IvY4x9v1nM8IFs
-   AjVMK0lnmMS58fc/ocE57txtR8/+yJz1s5Aw8+yUYpRBikGHPgNcZ0gIX
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10702"; a="377506827"
-X-IronPort-AV: E=Sophos;i="5.99,255,1677571200"; 
-   d="scan'208";a="377506827"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2023 15:03:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10702"; a="698019248"
-X-IronPort-AV: E=Sophos;i="5.99,255,1677571200"; 
-   d="scan'208";a="698019248"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2023 15:03:17 -0700
-Date: Sat, 6 May 2023 15:07:41 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Jason
- Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg
- Roedel <joro@8bytes.org>, Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Raj
- Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
- <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>,
- jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH] iommu: Add Kconfig help text for IOMMU_SVA
-Message-ID: <20230506150741.2e3d2dcc@jacob-builder>
-In-Reply-To: <CAHk-=wgUiAtiszwseM1p2fCJ+sC4XWQ+YN4TanFhUgvUqjr9Xw@mail.gmail.com>
-References: <20230506133134.1492395-1-jacob.jun.pan@linux.intel.com>
-	<CAHk-=wgUiAtiszwseM1p2fCJ+sC4XWQ+YN4TanFhUgvUqjr9Xw@mail.gmail.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21AFC1C04
+	for <iommu@lists.linux.dev>; Sun,  7 May 2023 08:14:41 +0000 (UTC)
+Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-50c8d87c775so3608789a12.3
+        for <iommu@lists.linux.dev>; Sun, 07 May 2023 01:14:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1683447279; x=1686039279;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=BxVB0qLFtd7CR9jihrYp0GNvnYgnGOXU77sZFAD78Ko=;
+        b=lQ8wbMLMxVi1VNeZmvEyGYzKpbgaxtJnY28HvxU+BEBpZ8FeBnSDRICXtW3enFRIZA
+         pr/+2Dbc42LGRxoVvPzwJ5MB2NCNxi6pnP6yDOw5nkjObjBpevlnW9dKBoPn/K1SXCNT
+         pkhW5N+8wz+VhFeGfFiIIRLNp+7qS/lEHO9IdaIr/LJt5W3vVc/ac9xyDy6bHIbnAhwP
+         LPOExGfZozKbRdkDhUGQScJcMXCnWvVSJKZIfus1RCMuOw9jTFa5bLdAwgZ0XGBmXNHJ
+         7Po5KPeAc60TPxTfQhevXE2pqJwaxwip5zQNhfxwMTO9LZDKT9D1zxUgiob69Al82Kcc
+         JqLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683447279; x=1686039279;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=BxVB0qLFtd7CR9jihrYp0GNvnYgnGOXU77sZFAD78Ko=;
+        b=XHwyNQ6CFhMP6tRmMVfvJ2HdDZzHDXsqU9NMNToeBMmdpwx9/3W5Z0nU0Beua6WHh4
+         jk9Halmg5XaOecMyDUOK5n6o3y3d15LyhUacZ4/GT29CfjoeUBwst1/ZmsqpA3BhH8eZ
+         ktUvrv86ciY+6eZRn4msO3QJAJJBMvVlQK6bYY1Y9HDlcGa3XXil+DFNyL42Q9OifUu2
+         a1xTHFR4fcE2KCoVvSHK2AwDU3mYrZVXM0/+B+VsTGROnZaSVqyek5NTroHQV/mkVZaA
+         Lx1d89GVjOzoQD5M353BUa1OFcie6aPeVYOY3t9ya+iWkSZbmcv3x0FW4JHxCg52gL2P
+         0/Jg==
+X-Gm-Message-State: AC+VfDzSDJqGHtFgXg2kXfR5kbjXCAOCyghgEkEL4Z2c0ZBxllJnwetk
+	vDVxPnolLuguSW98SrJg21l9YA==
+X-Google-Smtp-Source: ACHHUZ6ylY1jyYRHzSyEND1iTejr0FcmzoLeOjgWmgkYfOXU4kIRdEKQmFEebU76i+rY1fPhrd2i9Q==
+X-Received: by 2002:a17:907:9444:b0:966:5730:c3fe with SMTP id dl4-20020a170907944400b009665730c3femr377381ejc.52.1683447279207;
+        Sun, 07 May 2023 01:14:39 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:183b:950f:b4d5:135a? ([2a02:810d:15c0:828:183b:950f:b4d5:135a])
+        by smtp.gmail.com with ESMTPSA id h13-20020a1709070b0d00b0094efdfe60dcsm3287860ejl.206.2023.05.07.01.14.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 07 May 2023 01:14:38 -0700 (PDT)
+Message-ID: <31147c6d-e77a-8abd-0b55-73ead2385bb9@linaro.org>
+Date: Sun, 7 May 2023 10:14:37 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH v3 03/12] dt-bindings: display/msm: sc7180-dpu: Describe
+ SM6350 and SM6375
+Content-Language: en-US
+To: Konrad Dybcio <konrad.dybcio@linaro.org>, Rob Clark
+ <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>,
+ David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Krishna Manikandan <quic_mkrishn@quicinc.com>, Will Deacon
+ <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+ linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev
+References: <20230411-topic-straitlagoon_mdss-v3-0-9837d6b3516d@linaro.org>
+ <20230411-topic-straitlagoon_mdss-v3-3-9837d6b3516d@linaro.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230411-topic-straitlagoon_mdss-v3-3-9837d6b3516d@linaro.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 
-Hi Linus,
+On 05/05/2023 23:40, Konrad Dybcio wrote:
+> SC7180, SM6350 and SM6375 use a rather similar hw setup for DPU, with
+> the main exception being that the last one requires an additional
+> throttle clock.
+> 
+> It is not well understood yet, but failing to toggle it on makes the
+> display hardware stall and not output any frames.
+> 
+> Document SM6350 and SM6375 DPU.
+> 
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> ---
+>  .../bindings/display/msm/qcom,sc7180-dpu.yaml      | 23 +++++++++++++++++++++-
+>  1 file changed, 22 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/display/msm/qcom,sc7180-dpu.yaml b/Documentation/devicetree/bindings/display/msm/qcom,sc7180-dpu.yaml
+> index 1fb8321d9ee8..630b11480496 100644
+> --- a/Documentation/devicetree/bindings/display/msm/qcom,sc7180-dpu.yaml
+> +++ b/Documentation/devicetree/bindings/display/msm/qcom,sc7180-dpu.yaml
+> @@ -13,7 +13,10 @@ $ref: /schemas/display/msm/dpu-common.yaml#
+>  
+>  properties:
+>    compatible:
+> -    const: qcom,sc7180-dpu
+> +    enum:
+> +      - qcom,sc7180-dpu
+> +      - qcom,sm6350-dpu
+> +      - qcom,sm6375-dpu
+>  
+>    reg:
+>      items:
+> @@ -26,6 +29,7 @@ properties:
+>        - const: vbif
+>  
+>    clocks:
+> +    minItems: 6
+>      items:
+>        - description: Display hf axi clock
+>        - description: Display ahb clock
+> @@ -33,8 +37,10 @@ properties:
+>        - description: Display lut clock
+>        - description: Display core clock
+>        - description: Display vsync clock
+> +      - description: Display core throttle clock
+>  
+>    clock-names:
+> +    minItems: 6
+>      items:
+>        - const: bus
+>        - const: iface
+> @@ -42,6 +48,7 @@ properties:
+>        - const: lut
+>        - const: core
+>        - const: vsync
+> +      - const: throttle
+>  
+>  required:
+>    - compatible
+> @@ -52,6 +59,20 @@ required:
+>  
+>  unevaluatedProperties: false
+>  
+> +allOf:
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          const: qcom,sm6375-dpu
 
-On Sat, 6 May 2023 08:43:08 -0700, Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
+And the two other variants? Is the clock valid there or not? If not
+really, then you should have else: with maxItems: 6.
 
-> On Sat, May 6, 2023 at 6:27=E2=80=AFAM Jacob Pan <jacob.jun.pan@linux.int=
-el.com>
-> wrote:
-> >
-> > Shared Virtual Addressing (SVA) is not immediately intuitive to people
-> > who work outside IOMMU subsystem, add some explanation to make it less
-> > opaque. =20
->=20
-> So the patch has at least two problems.
->=20
-> The first is that you corrupted the SPDX line.
->=20
-Sorry, my mistake. Will not try sending patches before fully waking up.
+> +
+> +    then:
+> +      properties:
+> +        clocks:
+> +          minItems: 7
+> +
+> +        clock-names:
+> +          minItems: 7
 
-> But the second is that the change from
->=20
-> -       bool
-> +       bool "Shared Virtual Addressing"
->=20
-> means that now Kconfig *asks* about this thing, which was never the
-> intent. The other Kconfig options that need it all do a
->=20
->         select IOMMU_SVA
->=20
-> to get it picked.
->=20
-> I suspect that's why it then causes errors - because now the test
-> robot can enable the option even in situations where it makes no sense
-> and doesn't work.
->=20
-> So no, it's not that the option needs a help entry that can be queried
-> at Kconfig time. It's that the option needs a name that makes sense
-> and isn't some random jumble of letters that is only understandable to
-> people who already know exactly what it is.
-Right, how about IOMMU_SHARING_CPU_PGTABLE?
+If there is going new version - put allOf: before
+unevaluatedProperties:. Otherwise it is fine.
 
-Since this is more of a one-sided relationship where IOMMU walks CPU page
-tables.
+> +
+>  examples:
+>    - |
+>      #include <dt-bindings/clock/qcom,dispcc-sc7180.h>
+> 
 
+Best regards,
+Krzysztof
 
-Thanks,
-
-Jacob
