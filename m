@@ -1,129 +1,114 @@
-Received: from out-47.mta0.migadu.com (out-47.mta0.migadu.com [91.218.175.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E9E75243
-	for <iommu@lists.linux.dev>; Sun,  7 May 2023 17:21:11 +0000 (UTC)
-Date: Sun, 7 May 2023 13:20:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1683480068;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=hurdbnJwUJqK07Lm+4BMc/GcG+c58gJSfQAtVR+cBkY=;
-	b=t9HPg37zepSR1RnzhSUKFRxBUu28FVu1Yi23jFUki7ZMbwLSC/NiT3n7wFBZNUFaL6UoyB
-	zJPC7zS/i2KkcdGtaRgLAJgrWe5jboQdCOvInvXLMeR4wfr6JjMe/ufK6pDB5akkqqXdTQ
-	ldiDYd0e9CxSI40mvUKNrcXC5Ki5rqQ=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Kent Overstreet <kent.overstreet@linux.dev>
-To: Michal Hocko <mhocko@suse.com>
-Cc: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org,
-	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev,
-	mgorman@suse.de, dave@stgolabs.net, willy@infradead.org,
-	liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com,
-	peterz@infradead.org, juri.lelli@redhat.com, ldufour@linux.ibm.com,
-	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
-	x86@kernel.org, peterx@redhat.com, david@redhat.com,
-	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
-	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
-	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
-	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
-	keescook@chromium.org, ndesaulniers@google.com,
-	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
-	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
-	elver@google.com, dvyukov@google.com, shakeelb@google.com,
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
-	cgroups@vger.kernel.org
-Subject: Re: [PATCH 00/40] Memory allocation profiling
-Message-ID: <ZFfd99w9vFTftB8D@moria.home.lan>
-References: <20230501165450.15352-1-surenb@google.com>
- <ZFIMaflxeHS3uR/A@dhcp22.suse.cz>
- <CAJuCfpHxbYFxDENYFfnggh1D8ot4s493PQX0C7kD-JLvixC-Vg@mail.gmail.com>
- <ZFN1yswCd9wRgYPR@dhcp22.suse.cz>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 184FA3239
+	for <iommu@lists.linux.dev>; Sun,  7 May 2023 18:52:39 +0000 (UTC)
+Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-965a68abfd4so708433466b.2
+        for <iommu@lists.linux.dev>; Sun, 07 May 2023 11:52:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google; t=1683485558; x=1686077558;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=CsECona4C2RMdk3QW+3sdWBFtOEdxVYIeVifcSTdEsg=;
+        b=EZTfzpc90ra/8sGz05lyuRTbj6Ft5a3wEPBKVZ9wyrLyIM5xiAyrkgs2S1Vs6kl7jz
+         sBofRyWiXqcalrjhYAjwqPLUcPsHf20iblx++0yj7HCaICajroi8H5VKd9aP8zyoxn2d
+         /hiMNk0SXEL8jHAJJEs+m+yQtUulaqVDWvfW0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683485558; x=1686077558;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=CsECona4C2RMdk3QW+3sdWBFtOEdxVYIeVifcSTdEsg=;
+        b=Gh7y1NnYcpx0ssrgK+V2gxSQSwHEb6VlHVyfHTyfjH+Q/AJbACeyqdhG98W6BN70W0
+         GbTgX8tqcmrRKiKBU61l6XJiVYjvJNQPnJRsYZoKmMzVRot8N2SOycUqUvJuGSQA+aYX
+         OvfO3z03fUjnkzagM90iQWjExg1+e29aYlnJRN/HUJ9oXmCWZayZcPFQq+XqjyiJk6cF
+         zp0vlzrZTQXZ1rHj7fJLgWigTQ75cCxTwSQco5rvPfof186qfmk/PvIA3++QyfX7aEbq
+         EEM+sGY3NrKAhDnkqjBaKt4Bv8iOPdSt4iNShkt7adYbg6u4u/msyt8RWStzcyAQhxFl
+         N8LQ==
+X-Gm-Message-State: AC+VfDw/i387TkMt2PtQNuA5pvhLslLaJTucTjT2uFRL22cHEW7U8sPg
+	sabfOy0dw05qLrTdLUkV2h/9nQuh1wZGJDV/aUrtNQ==
+X-Google-Smtp-Source: ACHHUZ7XqXgl7X0u4L+Mc/N5OmtkrCjmDNnC8WW/9hplOU4C4sfnis8CoGaZsNbjymjdvWaoyIBP+w==
+X-Received: by 2002:a17:907:7b9b:b0:957:db05:a35d with SMTP id ne27-20020a1709077b9b00b00957db05a35dmr8681202ejc.48.1683485557979;
+        Sun, 07 May 2023 11:52:37 -0700 (PDT)
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com. [209.85.218.43])
+        by smtp.gmail.com with ESMTPSA id ci17-20020a170907267100b00965cfc209d5sm3953189ejc.8.2023.05.07.11.52.35
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 07 May 2023 11:52:36 -0700 (PDT)
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-956ff2399b1so706740466b.3
+        for <iommu@lists.linux.dev>; Sun, 07 May 2023 11:52:35 -0700 (PDT)
+X-Received: by 2002:a17:907:7da7:b0:94f:764e:e311 with SMTP id
+ oz39-20020a1709077da700b0094f764ee311mr6746310ejc.16.1683485555608; Sun, 07
+ May 2023 11:52:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZFN1yswCd9wRgYPR@dhcp22.suse.cz>
-X-Migadu-Flow: FLOW_OUT
+References: <20230506133134.1492395-1-jacob.jun.pan@linux.intel.com>
+ <CAHk-=wgUiAtiszwseM1p2fCJ+sC4XWQ+YN4TanFhUgvUqjr9Xw@mail.gmail.com> <20230506150741.2e3d2dcc@jacob-builder>
+In-Reply-To: <20230506150741.2e3d2dcc@jacob-builder>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Sun, 7 May 2023 11:52:18 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjmOAQnqJF-pW=fzMXb_Rk_J_Oi4ESBLmVPhxwBK4xfGg@mail.gmail.com>
+Message-ID: <CAHk-=wjmOAQnqJF-pW=fzMXb_Rk_J_Oi4ESBLmVPhxwBK4xfGg@mail.gmail.com>
+Subject: Re: [PATCH] iommu: Add Kconfig help text for IOMMU_SVA
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, 
+	Jason Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Joerg Roedel <joro@8bytes.org>, Jean-Philippe Brucker <jean-philippe@linaro.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Raj Ashok <ashok.raj@intel.com>, 
+	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>, 
+	"Yu, Fenghua" <fenghua.yu@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, May 04, 2023 at 11:07:22AM +0200, Michal Hocko wrote:
-> No. I am mostly concerned about the _maintenance_ overhead. For the
-> bare tracking (without profiling and thus stack traces) only those
-> allocations that are directly inlined into the consumer are really
-> of any use. That increases the code impact of the tracing because any
-> relevant allocation location has to go through the micro surgery. 
-> 
-> e.g. is it really interesting to know that there is a likely memory
-> leak in seq_file proper doing and allocation? No as it is the specific
-> implementation using seq_file that is leaking most likely. There are
-> other examples like that See?
+On Sat, May 6, 2023 at 3:03=E2=80=AFPM Jacob Pan <jacob.jun.pan@linux.intel=
+.com> wrote:
+>
+> Right, how about IOMMU_SHARING_CPU_PGTABLE?
 
-So this is a rather strange usage of "maintenance overhead" :)
+I think from a VM / process angle, I'd actually prefer calling the
+"pasid" part just that: IOMMU_PASID.
 
-But it's something we thought of. If we had to plumb around a _RET_IP_
-parameter, or a codetag pointer, it would be a hassle annotating the
-correct callsite.
+The VM code certainly understands about address space IDs, even if
+people have called them different things: normal people called them
+ASID's long ago, then Intel at some pointed decided that "PCID" made
+sense as a name (narrator: "no it didn't"), and then you got that
+combined "PASID" thing.
 
-Instead, alloc_hooks() wraps a memory allocation function and stashes a
-pointer to a codetag in task_struct for use by the core slub/buddy
-allocator code.
+Now, it may be that this then goes hand-in-hand with other IOMMU code
+that isn't *about* PASID itself, but that depends on PASID's being
+present, and so I'd just expect IOMMU_PASID to be one of those options
+that are selected by other options.
 
-That means that in your example, to move tracking to a given seq_file
-function, we just:
- - hook the seq_file function with alloc_hooks
- - change the seq_file function to call non-hooked memory allocation
-   functions.
+So maybe there is some part of IOMMU_SVA that is not about PASID
+itself, but I really think that the PASID code itself should just have
+that CONFIG_PASID around it.
 
-> It would have been more convincing if you had some numbers at hands.
-> E.g. this is a typical workload we are dealing with. With the compile
-> time tags we are able to learn this with that much of cost. With a dynamic
-> tracing we are able to learn this much with that cost. See? As small as
-> possible is a rather vague term that different people will have a very
-> different idea about.
+End result: from a legibility standpoint, I think it could be as
+simple as having that
 
-Engineers don't prototype and benchmark everything as a matter of
-course, we're expected to have the rough equivealent of a CS education
-and an understanding of big O notation, cache architecture, etc.
+    config IOMMU_SVA
 
-The slub fast path is _really_ fast - double word non locked cmpxchg.
-That's what we're trying to compete with. Adding a big globally
-accessible hash table is going to tank performance compared to that.
+option have a "select IOMMU_PASID".
 
-I believe the numbers we already posted speak for themselves. We're
-considerably faster than memcg, fast enough to run in production.
+Then make the VM/process PASID code depend on that. Maybe the "struct
+device *" stuff makes more sense under CONFIG_IOMMU_SVA, ie things
+like iopf_queue_add_device() and friends.
 
-I'm not going to be switching to a design that significantly regresses
-performance, sorry :)
+How does that sound? Maybe those two options then always end up going
+together, but even if that is the case, I think from a VM/process
+standpoint it makes a lot more sense to simply have a "PASID enabled"
+option. It's much more understandable in that context, while something
+like "IOMMU_SVA" really is just a random jumble of letters to a VM
+person.
 
-> TBH I am much more concerned about the maintenance burden on the MM side
-> than the actual code tagging itslef which is much more self contained. I
-> haven't seen other potential applications of the same infrastructure and
-> maybe the code impact would be much smaller than in the MM proper. Our
-> allocator API is really hairy and convoluted.
+And while the individual words in IOMMU_SHARING_CPU_PGTABLE all make
+sense, it's not clear what the combination means, and why it should
+have anything to do with then having an address space identifier for
+it.
 
-You keep saying "maintenance burden", but this is a criticism that can
-be directed at _any_ patchset that adds new code; it's generally
-understood that that is the accepted cost for new functionality.
-
-If you have specific concerns where you think we did something that
-makes the code harder to maintain, _please point them out in the
-appropriate patch_. I don't think you'll find too much - the
-instrumentation in the allocators simply generalizes what memcg was
-already doing, and the hooks themselves are a bit boilerplaty but hardly
-the sort of thing people will be tripping over later.
-
-TL;DR - put up or shut up :)
+                  Linus
