@@ -1,299 +1,165 @@
-Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
+Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B621C168C1
-	for <iommu@lists.linux.dev>; Mon,  8 May 2023 10:19:51 +0000 (UTC)
-Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-4eed764a10cso4772068e87.0
-        for <iommu@lists.linux.dev>; Mon, 08 May 2023 03:19:51 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C18301361
+	for <iommu@lists.linux.dev>; Mon,  8 May 2023 14:29:00 +0000 (UTC)
+Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-6439b410679so2651076b3a.0
+        for <iommu@lists.linux.dev>; Mon, 08 May 2023 07:29:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1683541189; x=1686133189;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=fx4GgDu8Dkg44mO4d5IPpyj3XYjpmsEYd11wgXVHt5o=;
-        b=OLuaf/mGJREw4AD+ni/OW6EhhL913vhZTEdLbuUfydNI2qeUnnGkTaWTJH3Q8ABNna
-         EAJTof0fSxxwYRUS69JPiOnjOcJU0cVT+YLoWvXOnaSQYsPsGwjEqGms750QSxmyfJcz
-         qACLT76XMHOYd1PBXORZbJNKqpFaxD0jRKcMgvatiwzlyXlDhr6Odd7HORjSl6Ch2mz3
-         N4gnqz4VquFYEuPp+kgGGf0Lto+go1gLe9IjVPcdgWom1osbnGZRIuRSGsioNjrgDvLJ
-         RksgIUS7NKBQh3ot5+IOqhHDZsfaOIPVUpb754xzt1bE+P+ZmdKFZxc8TZ6l2vaP5rqj
-         iCiw==
+        d=ventanamicro.com; s=google; t=1683556140; x=1686148140;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=LF2qNorYNLRrXW28snaYMh/0mPEE++mM1Q0BSuQRSa4=;
+        b=kcHDao+S780JBaV1TVug8QoMhZqjuxlDyLk91S1Z3S7CbJUtjYpQUJoeJmIB4KkmTS
+         AaQLA/HqwR+8aeckGXkUsVofYU6PkE4DTFkMasE3xP2IwuQUszK3rYnt46m2fwomfnfW
+         BAzq2z44tuRWB+IeEXwY8b5zUBiEKksmje/vDiUFlm7PdT9wj5BB+NPDeGgz7BC7VxDt
+         3IrQ6dkStHgY7fA53CT531zYrc4RaJwe8uv9LxKEQeyc1rPGW3iniMfU6GOPN2R9Y18i
+         4uY0QY2Q6k8oLiXEpyBAQTXY9c9EDyGlgSkPLWaoKaVFjesa+3ISvi9jb0JHB+MiGYXJ
+         cYVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683541189; x=1686133189;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=fx4GgDu8Dkg44mO4d5IPpyj3XYjpmsEYd11wgXVHt5o=;
-        b=kz6NAgHqx6t/rYKcw2zKJ5RhnkyxwMSLHGljYK/OSHF0h2iUs18CSw5It4CEcsg4R1
-         XdJLiWKyZthxmp4R3V1DfP1offeT1GONycEw9+QzpoZCQooruppGtXLwLp4XRh+UlHUP
-         heHmfigT1pAdOCUF5OS0sBf1IEPkUQ7K0XZgqBVhoAMV5NGeTyY9PeyJEwrN2J9HjZhm
-         X67rtTjrhsyQqj9JUKOxLn0i9XS0B/2UG2vGWyVFUIFKq+XHUaUBQJ59y4eCUSSP4N+w
-         veW5z2WhZtsIofZ13AkS1ASVMjx9o4YrJwvQzjJifrtpvhtZO8g/jUc1RikwDK2gmvD7
-         nFeg==
-X-Gm-Message-State: AC+VfDynDd/v/+sNNDpCVC8kX2aj/qZpIFlhKfBg8yLTBczL38xkkQWn
-	Mry3ne3t0yf/lAy+EnW4twx4Ng==
-X-Google-Smtp-Source: ACHHUZ7yINTzYwnaX7dpAIeK0GpIBuoM91ixacy8bLIfuZ1oSbgC4vzSbi6IHos2d7aK70RjDUpHCA==
-X-Received: by 2002:ac2:5d65:0:b0:4d8:8ad1:a05f with SMTP id h5-20020ac25d65000000b004d88ad1a05fmr2704763lft.48.1683541189555;
-        Mon, 08 May 2023 03:19:49 -0700 (PDT)
-Received: from ?IPV6:2001:14ba:a0db:1f00::8a5? (dzdqv0yyyyyyyyyyybcwt-3.rev.dnainternet.fi. [2001:14ba:a0db:1f00::8a5])
-        by smtp.gmail.com with ESMTPSA id l25-20020ac25559000000b004edc0fc3c35sm1251217lfk.5.2023.05.08.03.19.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 May 2023 03:19:49 -0700 (PDT)
-Message-ID: <d2bd30be-4d40-c301-464d-476dd07ad930@linaro.org>
-Date: Mon, 8 May 2023 13:19:48 +0300
+        d=1e100.net; s=20221208; t=1683556140; x=1686148140;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=LF2qNorYNLRrXW28snaYMh/0mPEE++mM1Q0BSuQRSa4=;
+        b=QC+uiICmgS7dBAkbYZLXQEzdJCeZaJ9wby9BWRvx2x4CNJuDot2Ea9abgcOzdgKHwB
+         YwcIveaEdgt/zvKbHb+fyfdz4EuJrKntTtrjMP0svSWp2ns6dpG/LRJjh8hSYYyGCWQI
+         ojk9ltQFUYdu//+PnSN+x93VLg1coXGzYu2bgDDgtiY479Oplj6212kQdwqoURY+KTp5
+         9uHmEH+rcQ4RxyDVdP/RMHzdDIsWPIxXRyOFl6MLC105QGuk3BF8YvmqE+Ts7S5aO0Vq
+         zcwTC/U8p8wyvtOpzhMuGXG18bdo5J4q/1cgwfNkpY7hHvcQP28H8J+BQJIuAVMSrB1/
+         /UNQ==
+X-Gm-Message-State: AC+VfDyio4+w1edSNSLMr1Pe9qpAlJ26ngbB1WjR6K3ydHWSjjTwqikB
+	O4Ui79UULqjf7JGp8PgsfURE2w==
+X-Google-Smtp-Source: ACHHUZ79HQjgxg2rLlN2Li60VZ7yxkETrrybO4Lw/VSG8fE5OPE74vz3oUoA/TjdCH+4TkgRWFk3ww==
+X-Received: by 2002:a05:6a20:5488:b0:100:fc8d:feaf with SMTP id i8-20020a056a20548800b00100fc8dfeafmr1080471pzk.21.1683556140030;
+        Mon, 08 May 2023 07:29:00 -0700 (PDT)
+Received: from anup-ubuntu-vm.localdomain ([171.76.84.206])
+        by smtp.gmail.com with ESMTPSA id k3-20020aa790c3000000b0063d46ec5777sm6082pfk.158.2023.05.08.07.28.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 May 2023 07:28:59 -0700 (PDT)
+From: Anup Patel <apatel@ventanamicro.com>
+To: Palmer Dabbelt <palmer@dabbelt.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Marc Zyngier <maz@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>
+Cc: Atish Patra <atishp@atishpatra.org>,
+	Andrew Jones <ajones@ventanamicro.com>,
+	Anup Patel <anup@brainfault.org>,
+	linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	iommu@lists.linux.dev,
+	Anup Patel <apatel@ventanamicro.com>
+Subject: [PATCH v3 00/11] Linux RISC-V AIA Support
+Date: Mon,  8 May 2023 19:58:31 +0530
+Message-Id: <20230508142842.854564-1-apatel@ventanamicro.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH v3 08/12] drm/msm/dpu: Add SM6375 support
-Content-Language: en-GB
-To: Konrad Dybcio <konrad.dybcio@linaro.org>, Rob Clark
- <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
- Sean Paul <sean@poorly.run>, David Airlie <airlied@gmail.com>,
- Daniel Vetter <daniel@ffwll.ch>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Krishna Manikandan <quic_mkrishn@quicinc.com>, Will Deacon
- <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>,
- linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
- freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev
-References: <20230411-topic-straitlagoon_mdss-v3-0-9837d6b3516d@linaro.org>
- <20230411-topic-straitlagoon_mdss-v3-8-9837d6b3516d@linaro.org>
- <4216540c-75b2-c08b-0147-d86632b493c0@linaro.org>
- <5ce4038f-2cf6-a3d4-89e8-fc8b085b508c@linaro.org>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <5ce4038f-2cf6-a3d4-89e8-fc8b085b508c@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 08/05/2023 11:43, Konrad Dybcio wrote:
-> 
-> 
-> On 7.05.2023 22:02, Dmitry Baryshkov wrote:
->> On 06/05/2023 00:40, Konrad Dybcio wrote:
->>> Add basic SM6375 support to the DPU1 driver to enable display output.
->>>
->>> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
->>> ---
->>>    .../gpu/drm/msm/disp/dpu1/catalog/dpu_6_9_sm6375.h | 152 +++++++++++++++++++++
->>>    drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c     |   1 +
->>>    drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h     |   1 +
->>>    drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c            |   1 +
->>>    4 files changed, 155 insertions(+)
->>>
->>> diff --git a/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_9_sm6375.h b/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_9_sm6375.h
->>> new file mode 100644
->>> index 000000000000..c7f303b0557e
->>> --- /dev/null
->>> +++ b/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_9_sm6375.h
->>> @@ -0,0 +1,152 @@
->>> +/* SPDX-License-Identifier: GPL-2.0-only */
->>> +/*
->>> + * Copyright (c) 2022. Qualcomm Innovation Center, Inc. All rights reserved.
->>> + * Copyright (c) 2015-2018, 2020 The Linux Foundation. All rights reserved.
->>> + * Copyright (c) 2023, Linaro Limited
->>> + */
->>> +
->>> +#ifndef _DPU_6_9_SM6375_H
->>> +#define _DPU_6_9_SM6375_H
->>> +
->>> +static const struct dpu_caps sm6375_dpu_caps = {
->>> +    .max_mixer_width = DEFAULT_DPU_LINE_WIDTH,
->>> +    .max_mixer_blendstages = 0x4,
->>> +    .qseed_type = DPU_SSPP_SCALER_QSEED4,
->>> +    .has_dim_layer = true,
->>> +    .has_idle_pc = true,
->>> +    .max_linewidth = 2160,
->>> +    .pixel_ram_size = DEFAULT_PIXEL_RAM_SIZE,
->>> +};
->>> +
->>> +static const struct dpu_ubwc_cfg sm6375_ubwc_cfg = {
->>> +    .ubwc_version = DPU_HW_UBWC_VER_20,
->>> +    .ubwc_swizzle = 6,
->>> +    .highest_bank_bit = 1,
->>> +};
->>> +
->>> +static const struct dpu_mdp_cfg sm6375_mdp[] = {
->>> +    {
->>> +    .name = "top_0", .id = MDP_TOP,
->>> +    .base = 0x0, .len = 0x494,
->>> +    .features = 0,
->>> +    .clk_ctrls[DPU_CLK_CTRL_VIG0] = { .reg_off = 0x2ac, .bit_off = 0 },
->>> +    .clk_ctrls[DPU_CLK_CTRL_DMA0] = { .reg_off = 0x2ac, .bit_off = 8 },
->>> +    },
->>> +};
->>> +
->>> +static const struct dpu_ctl_cfg sm6375_ctl[] = {
->>> +    {
->>> +    .name = "ctl_0", .id = CTL_0,
->>> +    .base = 0x1000, .len = 0x1dc,
->>> +    .features = BIT(DPU_CTL_ACTIVE_CFG),
->>> +    .intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 9),
->>> +    },
->>> +};
->>> +
->>> +static const struct dpu_sspp_cfg sm6375_sspp[] = {
->>> +    SSPP_BLK("sspp_0", SSPP_VIG0, 0x4000, 0x1f8, VIG_SC7180_MASK,
->>> +        sm6115_vig_sblk_0, 0, SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG0),
->>> +    SSPP_BLK("sspp_8", SSPP_DMA0, 0x24000, 0x1f8, DMA_SDM845_MASK,
->>> +        sdm845_dma_sblk_0, 1, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA0),
->>> +};
->>> +
->>> +static const struct dpu_lm_cfg sm6375_lm[] = {
->>> +    LM_BLK("lm_0", LM_0, 0x44000, MIXER_QCM2290_MASK,
->>> +        &qcm2290_lm_sblk, PINGPONG_0, 0, DSPP_0),
->>> +};
->>> +
->>> +static const struct dpu_dspp_cfg sm6375_dspp[] = {
->>> +    DSPP_BLK("dspp_0", DSPP_0, 0x54000, DSPP_SC7180_MASK,
->>> +        &sm8150_dspp_sblk),
->>> +};
->>> +
->>> +static const struct dpu_pingpong_cfg sm6375_pp[] = {
->>> +    PP_BLK("pingpong_0", PINGPONG_0, 0x70000, PINGPONG_SM8150_MASK, 0, sdm845_pp_sblk,
->>> +        DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 8),
->>> +        -1),
->>> +};
->>> +
->>> +static const struct dpu_intf_cfg sm6375_intf[] = {
->>> +    INTF_BLK("intf_0", INTF_0, 0x00000, 0x2c0, INTF_NONE, 0, 0, 0, 0, 0),
->>> +    INTF_BLK_DSI_TE("intf_1", INTF_1, 0x6a800, 0x2c0, INTF_DSI, 0, 24, INTF_SC7280_MASK,
->>
->> If I understand correctly, all 5.x and 6.x DPU also have HCTL/DATA_ACTIVE/etc. registers. (I do not know about the sdm845, if it has that reg or not). So a proper fix would be to add DPU_DATA_HCTL_EN to sc7180 mask rather than upgrading sm6375 to use sc7280 mask.
-> They're touched unconditionally on msm-4.14 (8150 /and 7180 I think/ release)
+The RISC-V AIA specification is now frozen as-per the RISC-V international
+process. The latest frozen specifcation can be found at:
+https://github.com/riscv/riscv-aia/releases/download/1.0-RC1/riscv-interrupts-1.0-RC1.pdf
 
-Yes. Verified, they are present since DPU 5.x Could you please adjust 
-masks accordingly?
+At a high-level, the AIA specification adds three things:
+1) AIA CSRs
+   - Improved local interrupt support
+2) Incoming Message Signaled Interrupt Controller (IMSIC)
+   - Per-HART MSI controller
+   - Support MSI virtualization
+   - Support IPI along with virtualization
+3) Advanced Platform-Level Interrupt Controller (APLIC)
+   - Wired interrupt controller
+   - In MSI-mode, converts wired interrupt into MSIs (i.e. MSI generator)
+   - In Direct-mode, injects external interrupts directly into HARTs
 
-> 
-> Konrad
->>
->>> +        DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 26),
->>> +        DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 27),
->>> +        DPU_IRQ_IDX(MDP_INTF1_TEAR_INTR, 2)),
->>> +};
->>> +
->>> +static const struct dpu_vbif_cfg sm6375_vbif[] = {
->>> +    {
->>> +    .name = "vbif_0", .id = VBIF_RT,
->>> +    .base = 0, .len = 0x2008,
->>> +    .features = BIT(DPU_VBIF_QOS_REMAP),
->>> +    .xin_halt_timeout = 0x4000,
->>> +    .qos_rp_remap_size = 0x40,
->>> +    .qos_rt_tbl = {
->>> +        .npriority_lvl = ARRAY_SIZE(sdm845_rt_pri_lvl),
->>> +        .priority_lvl = sdm845_rt_pri_lvl,
->>> +        },
->>> +    .qos_nrt_tbl = {
->>> +        .npriority_lvl = ARRAY_SIZE(sdm845_nrt_pri_lvl),
->>> +        .priority_lvl = sdm845_nrt_pri_lvl,
->>> +        },
->>> +    .memtype_count = 14,
->>> +    .memtype = {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
->>> +    },
->>> +};
->>> +
->>> +static const struct dpu_perf_cfg sm6375_perf_data = {
->>> +    .max_bw_low = 5200000,
->>> +    .max_bw_high = 6200000,
->>> +    .min_core_ib = 2500000,
->>> +    .min_llcc_ib = 0, /* No LLCC on this SoC */
->>> +    .min_dram_ib = 1600000,
->>> +    .min_prefill_lines = 24,
->>> +    /* TODO: confirm danger_lut_tbl */
->>> +    .danger_lut_tbl = {0xffff, 0xffff, 0x0, 0x0, 0xffff},
->>> +    .qos_lut_tbl = {
->>> +        {.nentry = ARRAY_SIZE(sm6350_qos_linear_macrotile),
->>> +        .entries = sm6350_qos_linear_macrotile
->>> +        },
->>> +        {.nentry = ARRAY_SIZE(sm6350_qos_linear_macrotile),
->>> +        .entries = sm6350_qos_linear_macrotile
->>> +        },
->>> +        {.nentry = ARRAY_SIZE(sc7180_qos_nrt),
->>> +        .entries = sc7180_qos_nrt
->>> +        },
->>> +    },
->>> +    .cdp_cfg = {
->>> +        {.rd_enable = 1, .wr_enable = 1},
->>> +        {.rd_enable = 1, .wr_enable = 0}
->>> +    },
->>> +    .clk_inefficiency_factor = 105,
->>> +    .bw_inefficiency_factor = 120,
->>> +};
->>> +
->>> +const struct dpu_mdss_cfg dpu_sm6375_cfg = {
->>> +    .caps = &sm6375_dpu_caps,
->>> +    .ubwc = &sm6375_ubwc_cfg,
->>> +    .mdp_count = ARRAY_SIZE(sm6375_mdp),
->>> +    .mdp = sm6375_mdp,
->>> +    .ctl_count = ARRAY_SIZE(sm6375_ctl),
->>> +    .ctl = sm6375_ctl,
->>> +    .sspp_count = ARRAY_SIZE(sm6375_sspp),
->>> +    .sspp = sm6375_sspp,
->>> +    .mixer_count = ARRAY_SIZE(sm6375_lm),
->>> +    .mixer = sm6375_lm,
->>> +    .dspp_count = ARRAY_SIZE(sm6375_dspp),
->>> +    .dspp = sm6375_dspp,
->>> +    .pingpong_count = ARRAY_SIZE(sm6375_pp),
->>> +    .pingpong = sm6375_pp,
->>> +    .intf_count = ARRAY_SIZE(sm6375_intf),
->>> +    .intf = sm6375_intf,
->>> +    .vbif_count = ARRAY_SIZE(sm6375_vbif),
->>> +    .vbif = sm6375_vbif,
->>> +    .perf = &sm6375_perf_data,
->>> +    .mdss_irqs = BIT(MDP_SSPP_TOP0_INTR) | \
->>> +             BIT(MDP_SSPP_TOP0_INTR2) | \
->>> +             BIT(MDP_SSPP_TOP0_HIST_INTR) | \
->>> +             BIT(MDP_INTF1_INTR) | \
->>> +             BIT(MDP_INTF1_TEAR_INTR),
->>> +};
->>> +
->>> +#endif
->>> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
->>> index 5ef1dffc27dc..7577572a5ef4 100644
->>> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
->>> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
->>> @@ -809,6 +809,7 @@ static const struct dpu_qos_lut_entry sc7180_qos_nrt[] = {
->>>    #include "catalog/dpu_6_3_sm6115.h"
->>>    #include "catalog/dpu_6_4_sm6350.h"
->>>    #include "catalog/dpu_6_5_qcm2290.h"
->>> +#include "catalog/dpu_6_9_sm6375.h"
->>>      #include "catalog/dpu_7_0_sm8350.h"
->>>    #include "catalog/dpu_7_2_sc7280.h"
->>> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
->>> index 56af77353b1e..96a8ec02b5b8 100644
->>> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
->>> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
->>> @@ -884,6 +884,7 @@ extern const struct dpu_mdss_cfg dpu_sc7180_cfg;
->>>    extern const struct dpu_mdss_cfg dpu_sm6115_cfg;
->>>    extern const struct dpu_mdss_cfg dpu_sm6350_cfg;
->>>    extern const struct dpu_mdss_cfg dpu_qcm2290_cfg;
->>> +extern const struct dpu_mdss_cfg dpu_sm6375_cfg;
->>>    extern const struct dpu_mdss_cfg dpu_sm8350_cfg;
->>>    extern const struct dpu_mdss_cfg dpu_sc7280_cfg;
->>>    extern const struct dpu_mdss_cfg dpu_sc8280xp_cfg;
->>> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
->>> index 46be7ad8d615..980c3c8f8269 100644
->>> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
->>> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
->>> @@ -1287,6 +1287,7 @@ static const struct of_device_id dpu_dt_match[] = {
->>>        { .compatible = "qcom,sc8280xp-dpu", .data = &dpu_sc8280xp_cfg, },
->>>        { .compatible = "qcom,sm6115-dpu", .data = &dpu_sm6115_cfg, },
->>>        { .compatible = "qcom,sm6350-dpu", .data = &dpu_sm6350_cfg, },
->>> +    { .compatible = "qcom,sm6375-dpu", .data = &dpu_sm6375_cfg, },
->>>        { .compatible = "qcom,sm8150-dpu", .data = &dpu_sm8150_cfg, },
->>>        { .compatible = "qcom,sm8250-dpu", .data = &dpu_sm8250_cfg, },
->>>        { .compatible = "qcom,sm8350-dpu", .data = &dpu_sm8350_cfg, },
->>>
->>
+For an overview of the AIA specification, refer the recent AIA virtualization
+talk at KVM Forum 2022:
+https://static.sched.com/hosted_files/kvmforum2022/a1/AIA_Virtualization_in_KVM_RISCV_final.pdf
+https://www.youtube.com/watch?v=r071dL8Z0yo
+
+The PATCH3 of this series conflicts with the "irqchip/riscv-intc: Add ACPI
+support" patch of the "Add basic ACPI support for RISC-V" series.
+(Refer, https://lore.kernel.org/linux-riscv/20230508115237.216337-1-sunilvl@ventanamicro.com/)
+
+To test this series, use QEMU v7.2 (or higher) and OpenSBI v1.2 (or higher).
+
+These patches can also be found in the riscv_aia_v3 branch at:
+https://github.com/avpatel/linux.git
+
+Changes since v2:
+ - Rebased on Linux-6.4-rc1
+ - Addressed Rob's comments on DT bindings patches 4 and 8.
+ - Addessed Marc's comments on IMSIC driver PATCH5
+ - Replaced use of OF apis in APLIC and IMSIC drivers with FWNODE apis
+   this makes both drivers easily portable for ACPI support. This also
+   removes unnecessary indirection from the APLIC and IMSIC drivers.
+ - PATCH1 is a new patch for portability with ACPI support
+ - PATCH2 is a new patch to fix probing in APLIC drivers for APLIC-only systems.
+ - PATCH7 is a new patch which addresses the IOMMU DMA domain issues pointed
+   out by SiFive
+
+Changes since v1:
+ - Rebased on Linux-6.2-rc2
+ - Addressed comments on IMSIC DT bindings for PATCH4
+ - Use raw_spin_lock_irqsave() on ids_lock for PATCH5
+ - Improved MMIO alignment checks in PATCH5 to allow MMIO regions
+   with holes.
+ - Addressed comments on APLIC DT bindings for PATCH6
+ - Fixed warning splat in aplic_msi_write_msg() caused by
+   zeroed MSI message in PATCH7
+ - Dropped DT property riscv,slow-ipi instead will have module
+   parameter in future.
+
+Anup Patel (11):
+  RISC-V: Add riscv_fw_parent_hartid() function
+  of/irq: Set FWNODE_FLAG_BEST_EFFORT for the interrupt controller DT
+    nodes
+  irqchip/riscv-intc: Add support for RISC-V AIA
+  dt-bindings: interrupt-controller: Add RISC-V incoming MSI controller
+  irqchip: Add RISC-V incoming MSI controller driver
+  irqchip/riscv-imsic: Add support for PCI MSI irqdomain
+  irqchip/riscv-imsic: Improve IOMMU DMA support
+  dt-bindings: interrupt-controller: Add RISC-V advanced PLIC
+  irqchip: Add RISC-V advanced PLIC driver
+  RISC-V: Select APLIC and IMSIC drivers
+  MAINTAINERS: Add entry for RISC-V AIA drivers
+
+ .../interrupt-controller/riscv,aplic.yaml     |  162 +++
+ .../interrupt-controller/riscv,imsics.yaml    |  172 +++
+ MAINTAINERS                                   |   12 +
+ arch/riscv/Kconfig                            |    2 +
+ arch/riscv/include/asm/processor.h            |    3 +
+ arch/riscv/kernel/cpu.c                       |   12 +
+ drivers/iommu/dma-iommu.c                     |   38 +
+ drivers/irqchip/Kconfig                       |   20 +-
+ drivers/irqchip/Makefile                      |    2 +
+ drivers/irqchip/irq-riscv-aplic.c             |  750 ++++++++++++
+ drivers/irqchip/irq-riscv-imsic.c             | 1080 +++++++++++++++++
+ drivers/irqchip/irq-riscv-intc.c              |   36 +-
+ drivers/of/irq.c                              |   10 +
+ include/linux/iommu.h                         |    6 +
+ include/linux/irqchip/riscv-aplic.h           |  119 ++
+ include/linux/irqchip/riscv-imsic.h           |   86 ++
+ 16 files changed, 2503 insertions(+), 7 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/interrupt-controller/riscv,aplic.yaml
+ create mode 100644 Documentation/devicetree/bindings/interrupt-controller/riscv,imsics.yaml
+ create mode 100644 drivers/irqchip/irq-riscv-aplic.c
+ create mode 100644 drivers/irqchip/irq-riscv-imsic.c
+ create mode 100644 include/linux/irqchip/riscv-aplic.h
+ create mode 100644 include/linux/irqchip/riscv-imsic.h
 
 -- 
-With best wishes
-Dmitry
+2.34.1
 
