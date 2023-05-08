@@ -1,80 +1,175 @@
-Received: from out-50.mta1.migadu.com (out-50.mta1.migadu.com [95.215.58.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AADDD2598
-	for <iommu@lists.linux.dev>; Sun,  7 May 2023 22:17:36 +0000 (UTC)
-Date: Sun, 7 May 2023 18:17:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1683497854;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=d+lJOOnfhP+AzQ3DkEk85/ecgDN1f+ChvYq0lSwsbl8=;
-	b=Ea2OCk8FDUlox1TGMFWcxWTq9n3Thxt078nnug0OxQY1AoSim5TEiuWbBaEGAnsMyyh96k
-	tAKo9bn8BQMZsAGD/+WJvJ6F70z8Mv3HNd5am9B3mRSfR6WpocOh6oEcC834W7IPObuvA1
-	3HLq0Wr1mthdeuFC0h635KLrCYWjb84=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Kent Overstreet <kent.overstreet@linux.dev>
-To: Steven Rostedt <rostedt@goodmis.org>
-Cc: Michal Hocko <mhocko@suse.com>, Suren Baghdasaryan <surenb@google.com>,
-	akpm@linux-foundation.org, vbabka@suse.cz, hannes@cmpxchg.org,
-	roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net,
-	willy@infradead.org, liam.howlett@oracle.com, corbet@lwn.net,
-	void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com,
-	ldufour@linux.ibm.com, catalin.marinas@arm.com, will@kernel.org,
-	arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
-	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
-	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org,
-	masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org,
-	tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org,
-	paulmck@kernel.org, pasha.tatashin@soleen.com,
-	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com,
-	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org,
-	ndesaulniers@google.com, gregkh@linuxfoundation.org,
-	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org,
-	dietmar.eggemann@arm.com, bsegall@google.com, bristot@redhat.com,
-	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
-	elver@google.com, dvyukov@google.com, shakeelb@google.com,
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
-	cgroups@vger.kernel.org
-Subject: Re: [PATCH 00/40] Memory allocation profiling
-Message-ID: <ZFgjc3rGbqGNONnS@moria.home.lan>
-References: <20230501165450.15352-1-surenb@google.com>
- <ZFIMaflxeHS3uR/A@dhcp22.suse.cz>
- <CAJuCfpHxbYFxDENYFfnggh1D8ot4s493PQX0C7kD-JLvixC-Vg@mail.gmail.com>
- <ZFN1yswCd9wRgYPR@dhcp22.suse.cz>
- <ZFfd99w9vFTftB8D@moria.home.lan>
- <20230507165538.3c8331be@rorschach.local.home>
- <ZFgdxR9PlUJYegDp@moria.home.lan>
- <20230507180911.09d328c8@rorschach.local.home>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CC1D210C
+	for <iommu@lists.linux.dev>; Mon,  8 May 2023 08:38:52 +0000 (UTC)
+Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-4effb818c37so4802885e87.3
+        for <iommu@lists.linux.dev>; Mon, 08 May 2023 01:38:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1683535130; x=1686127130;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=7M+LYvpo0uL6DRxOtraYhuPAgoiRvl+qFGnzZSo79f4=;
+        b=w3GXeMtyzwuRY7sysKSaMD++ZLTRpHQQAxAhiRO+cBGtPVZwBPcfj+CVxdPugtuHtj
+         e0jGozykIPHw5c9oZwVLX8uwlyUdbj2k8HVOcEaKtDonm73JFiFk0vOZ5QpvC/lbEJjZ
+         gNw9+uexlJCgR0LjtLiJy4hcGh2PNmrb91VcwpuP4LKMNMiJTjIdEVIOKJMm7Ah7Vdva
+         UZ0Ukpm0CB3oJ9RMa82eQ8RCq4FLpyjPIy6iF6bXapEF92JcVGEFZY9jpyX5pJVij2h1
+         bwcvGE7KevjjBG1wbaIWnL4K4Hh7bdXdH499QfbJ0qKzJFa/P2oOJye7I9Y1IMX46t/m
+         3GCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683535130; x=1686127130;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=7M+LYvpo0uL6DRxOtraYhuPAgoiRvl+qFGnzZSo79f4=;
+        b=SX8UV09O+gDchNz/RvJNjkiMwjc2l7pfSWUn27lCiD4b1LVV3/GA+HUMvx33XR1AlF
+         kICQTJCPGsdO0pRUeBtFS1ffsosrohltlzN9nN2ghBLGDYrxFWufXvEkY0+V1hOMpTjx
+         mBvLp84193mE5tUPrSQuBYfeUyQAIp5kXADBGEKzhjpmjwgORc6h1Rf5iHyXC5r/CYe2
+         FFb//6ObcgNR3dBLDgkzYOzbayEYQtp8qMH6yR022rHELmg4FvMrwmBWwuJ3/W+WkTae
+         +V9SV/+YAuYSRMK0zVnxTAQWpihTaifnil/CvZp1tRgVvyinrC7cY7qwsyYI0RYZaD7k
+         kDFg==
+X-Gm-Message-State: AC+VfDzgCFQK3wqzi+ik5J3tbUsZyzEWm2ny5ZheZa5zQUH9Uozi3vH8
+	ZLt4yz3+BpFOeetJuD1JeUAy3A==
+X-Google-Smtp-Source: ACHHUZ7BOe90sL4z+719tAJbqmfFOlSnY6F/doGifg/JqPAqaNHcSKmqP/u6JkByUE0L1pZ0R1Ag1g==
+X-Received: by 2002:ac2:52a9:0:b0:4f1:4602:fb63 with SMTP id r9-20020ac252a9000000b004f14602fb63mr2201009lfm.41.1683535130246;
+        Mon, 08 May 2023 01:38:50 -0700 (PDT)
+Received: from [192.168.1.101] (abyl248.neoplus.adsl.tpnet.pl. [83.9.31.248])
+        by smtp.gmail.com with ESMTPSA id c5-20020a05651221a500b004f143c11cbcsm1227074lft.51.2023.05.08.01.38.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 May 2023 01:38:49 -0700 (PDT)
+Message-ID: <faa64d3d-48bd-b6db-535e-05d6d50aebd7@linaro.org>
+Date: Mon, 8 May 2023 10:38:47 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230507180911.09d328c8@rorschach.local.home>
-X-Migadu-Flow: FLOW_OUT
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH v3 03/12] dt-bindings: display/msm: sc7180-dpu: Describe
+ SM6350 and SM6375
+Content-Language: en-US
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ Rob Clark <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>,
+ David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Krishna Manikandan <quic_mkrishn@quicinc.com>, Will Deacon
+ <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+ linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev
+References: <20230411-topic-straitlagoon_mdss-v3-0-9837d6b3516d@linaro.org>
+ <20230411-topic-straitlagoon_mdss-v3-3-9837d6b3516d@linaro.org>
+ <31147c6d-e77a-8abd-0b55-73ead2385bb9@linaro.org>
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+In-Reply-To: <31147c6d-e77a-8abd-0b55-73ead2385bb9@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Sun, May 07, 2023 at 06:09:11PM -0400, Steven Rostedt wrote:
-> On Sun, 7 May 2023 17:53:09 -0400
-> Kent Overstreet <kent.overstreet@linux.dev> wrote:
-> 
-> > The underscore is a legitimate complaint - I brought this up in
-> > development, not sure why it got lost. We'll do something better with a
-> > consistent suffix, perhaps kmem_cache_alloc_noacct().
-> 
-> Would "_noprofile()" be a better name. I'm not sure what "acct" means.
 
-account - but _noprofile() is probably better. Didn't suggest it at
-first because of an association in my head with CPU profiling, but
-considering we already renamed the feature to memory allocation
-profiling... :)
+
+On 7.05.2023 10:14, Krzysztof Kozlowski wrote:
+> On 05/05/2023 23:40, Konrad Dybcio wrote:
+>> SC7180, SM6350 and SM6375 use a rather similar hw setup for DPU, with
+>> the main exception being that the last one requires an additional
+>> throttle clock.
+>>
+>> It is not well understood yet, but failing to toggle it on makes the
+>> display hardware stall and not output any frames.
+>>
+>> Document SM6350 and SM6375 DPU.
+>>
+>> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+>> ---
+>>  .../bindings/display/msm/qcom,sc7180-dpu.yaml      | 23 +++++++++++++++++++++-
+>>  1 file changed, 22 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/display/msm/qcom,sc7180-dpu.yaml b/Documentation/devicetree/bindings/display/msm/qcom,sc7180-dpu.yaml
+>> index 1fb8321d9ee8..630b11480496 100644
+>> --- a/Documentation/devicetree/bindings/display/msm/qcom,sc7180-dpu.yaml
+>> +++ b/Documentation/devicetree/bindings/display/msm/qcom,sc7180-dpu.yaml
+>> @@ -13,7 +13,10 @@ $ref: /schemas/display/msm/dpu-common.yaml#
+>>  
+>>  properties:
+>>    compatible:
+>> -    const: qcom,sc7180-dpu
+>> +    enum:
+>> +      - qcom,sc7180-dpu
+>> +      - qcom,sm6350-dpu
+>> +      - qcom,sm6375-dpu
+>>  
+>>    reg:
+>>      items:
+>> @@ -26,6 +29,7 @@ properties:
+>>        - const: vbif
+>>  
+>>    clocks:
+>> +    minItems: 6
+>>      items:
+>>        - description: Display hf axi clock
+>>        - description: Display ahb clock
+>> @@ -33,8 +37,10 @@ properties:
+>>        - description: Display lut clock
+>>        - description: Display core clock
+>>        - description: Display vsync clock
+>> +      - description: Display core throttle clock
+>>  
+>>    clock-names:
+>> +    minItems: 6
+>>      items:
+>>        - const: bus
+>>        - const: iface
+>> @@ -42,6 +48,7 @@ properties:
+>>        - const: lut
+>>        - const: core
+>>        - const: vsync
+>> +      - const: throttle
+>>  
+>>  required:
+>>    - compatible
+>> @@ -52,6 +59,20 @@ required:
+>>  
+>>  unevaluatedProperties: false
+>>  
+>> +allOf:
+>> +  - if:
+>> +      properties:
+>> +        compatible:
+>> +          const: qcom,sm6375-dpu
+> 
+> And the two other variants? Is the clock valid there or not? If not
+> really, then you should have else: with maxItems: 6.
+Oh right!
+
+> 
+>> +
+>> +    then:
+>> +      properties:
+>> +        clocks:
+>> +          minItems: 7
+>> +
+>> +        clock-names:
+>> +          minItems: 7
+> 
+> If there is going new version - put allOf: before
+> unevaluatedProperties:. Otherwise it is fine.
+Thanks!
+
+Konrad
+> 
+>> +
+>>  examples:
+>>    - |
+>>      #include <dt-bindings/clock/qcom,dispcc-sc7180.h>
+>>
+> 
+> Best regards,
+> Krzysztof
+> 
