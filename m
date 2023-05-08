@@ -1,130 +1,85 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7DC217E3
-	for <iommu@lists.linux.dev>; Mon,  8 May 2023 16:35:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683563752; x=1715099752;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=9SyE4P+QDbRpFuKtyJj05TYVwS1756XOrjCcHThkRc4=;
-  b=GoEkv4E+mY6Bg4gEmr3lfvgYsMaatT0zFEfrRDJzyZ8+o6VENddYeDet
-   7Uia5DFIPBlKboN3+JMLCsAc5KJOLMuzqglmpGLm2p8GLaxTf2i0TZdXG
-   LuW70ksyFr9E0LgA0/Xrd7wf1TUjw4/yG3dvuoPqIQOnIzwlmnOy6f9KV
-   W2sioZd5WgbI4eN6h5pZJ7m0fwSYGpBAlFlMzw9+V4dD1eEVvOHRb/p1+
-   97aJyv3gDHLKgVGzCD7AXtCTdUsdSeT+OWY+TAbfFqDqCTOtRSQ2owl/c
-   20Sm6E5MBjLKM+5b6Uf8J8w6+ys4Bcf7RIOX3MYCTiJr2DW2izY++d/ct
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10704"; a="415257275"
-X-IronPort-AV: E=Sophos;i="5.99,259,1677571200"; 
-   d="scan'208";a="415257275"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2023 09:35:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10704"; a="788175585"
-X-IronPort-AV: E=Sophos;i="5.99,259,1677571200"; 
-   d="scan'208";a="788175585"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2023 09:35:50 -0700
-Date: Mon, 8 May 2023 09:40:14 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Jason
- Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg
- Roedel <joro@8bytes.org>, Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Raj
- Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu
- <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>,
- jacob.jun.pan@linux.intel.com, "Hansen, Dave" <dave.hansen@intel.com>
-Subject: Re: [PATCH] iommu: Add Kconfig help text for IOMMU_SVA
-Message-ID: <20230508094014.53913cf3@jacob-builder>
-In-Reply-To: <CAHk-=wjmOAQnqJF-pW=fzMXb_Rk_J_Oi4ESBLmVPhxwBK4xfGg@mail.gmail.com>
-References: <20230506133134.1492395-1-jacob.jun.pan@linux.intel.com>
-	<CAHk-=wgUiAtiszwseM1p2fCJ+sC4XWQ+YN4TanFhUgvUqjr9Xw@mail.gmail.com>
-	<20230506150741.2e3d2dcc@jacob-builder>
-	<CAHk-=wjmOAQnqJF-pW=fzMXb_Rk_J_Oi4ESBLmVPhxwBK4xfGg@mail.gmail.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79BA34424
+	for <iommu@lists.linux.dev>; Mon,  8 May 2023 16:42:39 +0000 (UTC)
+Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-94a34a14a54so951891066b.1
+        for <iommu@lists.linux.dev>; Mon, 08 May 2023 09:42:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google; t=1683564157; x=1686156157;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QR27B1v/nsW7Z6zgeZwIrFb522oCHrgCRwmb//arvhc=;
+        b=Sr6pXfgM7T3CynCy78ggzUdQWyxVKX4tIi6nfPfYt1RHbXcu5S8wMvB9tRXKIkU5Aw
+         nErFSccJxXYNyBiQEjpiMOC2f5jsZlh/dPJVwc+i1JX1dO8QQFR7PKFWNVC3hhS0Kwk2
+         lzMeanGP5oT5MTR0aIKUoozGegGyGGhzoMgIM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683564157; x=1686156157;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=QR27B1v/nsW7Z6zgeZwIrFb522oCHrgCRwmb//arvhc=;
+        b=bCZ1SPtZ21wZzuplENiczbkwCBnLyJhmW+TGTr5UoIOa2683lXptV9WIMnW9C669a9
+         kwnI96iQ2UnY1Pviw4k5f+HG+dK2+1qz5l185jAkJopWnAbxjVsFJQcPzTiq2ZNQd8AJ
+         w83kfdLGeTaiJXb3e/sLWNvqjx3uTGXnkDajedqX93Hi+6g0psznKxuZnmM/Zbqdv3oi
+         Gz6stVAQBpfUTYSTph6J0GWX7o6KJiileIzE8V9UCXWvLgUWUCQF0/Es8v7eJfCFgaxV
+         UY7/XX8dSDw1fQivtE+2TIN24wMkouzgbS2NkosvbsRzCCqbktWIHM0tQaCjSMi5Dh3d
+         Exyw==
+X-Gm-Message-State: AC+VfDwc1Wz1P/BePFTfJXtfQp3kmuren4Tjy4153F5CZo4XQ/9vmNml
+	en0dbux6YXvBPvk+LYJI6nweCthabmdBgh24qsLx6Q==
+X-Google-Smtp-Source: ACHHUZ65WT95dYtl0ZOvCJVmIIOxWe0c8qEZcWu3DqrI/K0qb3G0vOCZqz7WA52PM7Fa+jKS33r75w==
+X-Received: by 2002:a17:907:9308:b0:965:b2c3:9575 with SMTP id bu8-20020a170907930800b00965b2c39575mr8615700ejc.57.1683564157387;
+        Mon, 08 May 2023 09:42:37 -0700 (PDT)
+Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com. [209.85.208.51])
+        by smtp.gmail.com with ESMTPSA id d11-20020a50ea8b000000b0050bc6c04a66sm6286796edo.40.2023.05.08.09.42.35
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 May 2023 09:42:36 -0700 (PDT)
+Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-50b37f3e664so8684318a12.1
+        for <iommu@lists.linux.dev>; Mon, 08 May 2023 09:42:35 -0700 (PDT)
+X-Received: by 2002:a17:907:842:b0:94e:c8c:42ec with SMTP id
+ ww2-20020a170907084200b0094e0c8c42ecmr9098645ejb.20.1683564154924; Mon, 08
+ May 2023 09:42:34 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <20230506133134.1492395-1-jacob.jun.pan@linux.intel.com>
+ <CAHk-=wgUiAtiszwseM1p2fCJ+sC4XWQ+YN4TanFhUgvUqjr9Xw@mail.gmail.com>
+ <20230506150741.2e3d2dcc@jacob-builder> <CAHk-=wjmOAQnqJF-pW=fzMXb_Rk_J_Oi4ESBLmVPhxwBK4xfGg@mail.gmail.com>
+ <20230508094014.53913cf3@jacob-builder>
+In-Reply-To: <20230508094014.53913cf3@jacob-builder>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Mon, 8 May 2023 09:42:18 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgobPe0U=Sc-PH08vF-ZbG00KrzftEpQMQ=n0LLNn7y6A@mail.gmail.com>
+Message-ID: <CAHk-=wgobPe0U=Sc-PH08vF-ZbG00KrzftEpQMQ=n0LLNn7y6A@mail.gmail.com>
+Subject: Re: [PATCH] iommu: Add Kconfig help text for IOMMU_SVA
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, 
+	Jason Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Joerg Roedel <joro@8bytes.org>, Jean-Philippe Brucker <jean-philippe@linaro.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Raj Ashok <ashok.raj@intel.com>, 
+	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>, 
+	"Yu, Fenghua" <fenghua.yu@intel.com>, "Hansen, Dave" <dave.hansen@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi Linus,
+On Mon, May 8, 2023 at 9:35=E2=80=AFAM Jacob Pan <jacob.jun.pan@linux.intel=
+.com> wrote:
+>
+> Conversely, we could also have some part of PASID that is not about SVA.
 
-On Sun, 7 May 2023 11:52:18 -0700, Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
+If that's the case, then we should *definitely* have that IOMMU_PASID
+kind of config option.
 
-> On Sat, May 6, 2023 at 3:03=E2=80=AFPM Jacob Pan <jacob.jun.pan@linux.int=
-el.com>
-> wrote:
-> >
-> > Right, how about IOMMU_SHARING_CPU_PGTABLE? =20
->=20
-> I think from a VM / process angle, I'd actually prefer calling the
-> "pasid" part just that: IOMMU_PASID.
->=20
-> The VM code certainly understands about address space IDs, even if
-> people have called them different things: normal people called them
-> ASID's long ago, then Intel at some pointed decided that "PCID" made
-> sense as a name (narrator: "no it didn't"), and then you got that
-> combined "PASID" thing.
->=20
-> Now, it may be that this then goes hand-in-hand with other IOMMU code
-> that isn't *about* PASID itself, but that depends on PASID's being
-> present, and so I'd just expect IOMMU_PASID to be one of those options
-> that are selected by other options.
->=20
-> So maybe there is some part of IOMMU_SVA that is not about PASID
-> itself, but I really think that the PASID code itself should just have
-> that CONFIG_PASID around it.
-Conversely, we could also have some part of PASID that is not about SVA.
-e.g. Today, on PASID enabled IOMMUs, DMA request w/o PASID (legacy) uses a
-special PASID 0. This has nothing to do with mm->pasid.
+Then IOMMU_SVA - that needs PASID - can "select" it, but any other use
+- that doesn't bother about SVA but might want PASID for its own
+nefarious purposes - can also select it.
 
-> End result: from a legibility standpoint, I think it could be as
-> simple as having that
->=20
->     config IOMMU_SVA
->=20
-> option have a "select IOMMU_PASID".
-> Then make the VM/process PASID code depend on that. Maybe the "struct
-> device *" stuff makes more sense under CONFIG_IOMMU_SVA, ie things
-> like iopf_queue_add_device() and friends.
-right, we don;t support non-PASID IOPF.
+This is why we have config options. Not just for legibility, but also
+for "there are different scenarios".
 
-> How does that sound? Maybe those two options then always end up going
-> together, but even if that is the case, I think from a VM/process
-> standpoint it makes a lot more sense to simply have a "PASID enabled"
-> option. It's much more understandable in that context, while something
-> like "IOMMU_SVA" really is just a random jumble of letters to a VM
-> person.
-My only concern is the case above where DMA API uses a PASID for legacy DMA
-requests w/o PASID. I am also trying to add non-zero PASID for
-Intel's ENQCMDS.
-https://lore.kernel.org/linux-iommu/20230427174937.471668-1-jacob.jun.pan@l=
-inux.intel.com/
-The PASIDs used in this case uses IOVA page tables, not shared with any
-mm_struct.
-
-=46rom this use case, we need to select IOMMU_PASID, but not necessarily for
-mm->pasid which IMHO is only meaningful when IOMMU shares page tables with
-the CPU.
-
-> And while the individual words in IOMMU_SHARING_CPU_PGTABLE all make
-> sense, it's not clear what the combination means, and why it should
-> have anything to do with then having an address space identifier for
-> it.
->=20
->                   Linus
->=20
-
-
-Thanks,
-
-Jacob
+                Linus
