@@ -1,107 +1,106 @@
-Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11E0DDDDA
-	for <iommu@lists.linux.dev>; Mon,  8 May 2023 14:29:54 +0000 (UTC)
-Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-64115e652eeso34966471b3a.0
-        for <iommu@lists.linux.dev>; Mon, 08 May 2023 07:29:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1683556193; x=1686148193;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Ds73gnsFVEJ6u1RVbKPdKJnDIubBpKmFNgu55xzWEbU=;
-        b=lJgy3Bj1z5Uiu48QnHfq5K+VBP28Zxgip9ER4Yf6hmQQ8lPjaEpD0RK119Wik1cOJJ
-         iTNHWt1R/TFttkaNBKF61wx8kI5nvD0D/9ouPhVmGkGdKBAO/f6u7tSxBsDns2PtEpHY
-         oIiE2l2cRByWteEpf1vB2MkOni0dvyrKrnVlA/aMsfRfyhdhsK9izbxuoBPC0x7czg3s
-         juTXnjpVJf5pYCmVakR0Cgvp94ANIYMAK+LbvnfCPgH307fCgx//lO8LcLCqPQvCnR2s
-         yrH86CmjZ09YK9L2qscqvWOhivunsdFbAzxUvjvEKMVRsEx5Gn4gHywXyeDI8k3mww/1
-         TxzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683556193; x=1686148193;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Ds73gnsFVEJ6u1RVbKPdKJnDIubBpKmFNgu55xzWEbU=;
-        b=N9EYbr+59wY3hbEbaksITWktNcquue+uLXYCghG/pBr9S6QuxlVca81VqJ7u76YC2L
-         6JxIemAZNrUpfuEQw2Fk0oREt9KVb1HlrGav2pQxtXR01TmJnlKeUclw1TvbfN83WuTk
-         X/GdjonnFKmhJohw48A0B1ySwhq6/ICQu9dMPT5KconqOk2K9glmyVD4LtJHRlm+G56M
-         IurPyRHL1NECaLFJ+AuRfhGqjmnNJ90vCTkjIm6QqlL//5e73rhlthUZMxkZHLn4TVbg
-         fSScbu2vicnUtjoXuErs1wy5W5JTJmbZiXYEh3kM43MgAwdNrGx7aDlvJO+njHvje+re
-         vi2Q==
-X-Gm-Message-State: AC+VfDymRPf03iq8aZnoYo9oedLMX4MZhrC5s4Au300KX5Z2voTdfna7
-	bPfxlndUBdaR55LZFK5/9tk7OQ==
-X-Google-Smtp-Source: ACHHUZ7IFh1sQXPuJWRHj2WWGpozWbXGdVg2fdaqzgld/0LycsTzWlJonjSeEsRixOIeWaZl5X+7Vg==
-X-Received: by 2002:a05:6a20:a5a8:b0:d9:adc3:6a71 with SMTP id bc40-20020a056a20a5a800b000d9adc36a71mr10379138pzb.1.1683556193560;
-        Mon, 08 May 2023 07:29:53 -0700 (PDT)
-Received: from anup-ubuntu-vm.localdomain ([171.76.84.206])
-        by smtp.gmail.com with ESMTPSA id k3-20020aa790c3000000b0063d46ec5777sm6082pfk.158.2023.05.08.07.29.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 May 2023 07:29:53 -0700 (PDT)
-From: Anup Patel <apatel@ventanamicro.com>
-To: Palmer Dabbelt <palmer@dabbelt.com>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Marc Zyngier <maz@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Frank Rowand <frowand.list@gmail.com>
-Cc: Atish Patra <atishp@atishpatra.org>,
-	Andrew Jones <ajones@ventanamicro.com>,
-	Anup Patel <anup@brainfault.org>,
-	linux-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	iommu@lists.linux.dev,
-	Anup Patel <apatel@ventanamicro.com>
-Subject: [PATCH v3 11/11] MAINTAINERS: Add entry for RISC-V AIA drivers
-Date: Mon,  8 May 2023 19:58:42 +0530
-Message-Id: <20230508142842.854564-12-apatel@ventanamicro.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230508142842.854564-1-apatel@ventanamicro.com>
-References: <20230508142842.854564-1-apatel@ventanamicro.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B432E2F29
+	for <iommu@lists.linux.dev>; Mon,  8 May 2023 15:52:17 +0000 (UTC)
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 9C16C1551B1;
+	Mon,  8 May 2023 17:52:07 +0200 (CEST)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
+	t=1683561128; bh=BFn9Tracp9VxaZM60yLgxkOrsr3APEY/DMe++D00LuQ=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=Jzw6i+az4cd3ysej2exGEA4kISOYgjbh0ENPJCJyWdn/0A10t6Pwyho5Uw7WFybg9
+	 SXVB1YptnELAS3czSaqsGA3S1Fc4c5saIHHPysqmr9y1rU2b9ljk6jfQ8rlOCkNwim
+	 cHj4eyMx/pCZRE9brw036NLsIsxchE7n/wjhjOGiw5wl7R2Zyki+tLjWQvstofwtVk
+	 6fHcDmm+z3+deHDYoIGmgjSNkg7ik8nuHfaQDWnO8HZ09aHNDa2h+YtEFDLlKmYrxk
+	 sHKw8YWpCbC9atcnvI460v9AD07H/ZnY9enHVTTj1R8M4WAtbTa7GZFPo1ADZKB47X
+	 GYGs0qHAIF2xw==
+Date: Mon, 8 May 2023 17:52:06 +0200
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Kent Overstreet <kent.overstreet@linux.dev>
+Cc: Michal Hocko <mhocko@suse.com>, Suren Baghdasaryan <surenb@google.com>,
+ akpm@linux-foundation.org, vbabka@suse.cz, hannes@cmpxchg.org,
+ roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net,
+ willy@infradead.org, liam.howlett@oracle.com, corbet@lwn.net,
+ void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com,
+ ldufour@linux.ibm.com, catalin.marinas@arm.com, will@kernel.org,
+ arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
+ dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
+ david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
+ nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev,
+ rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com,
+ yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com,
+ hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org,
+ ndesaulniers@google.com, gregkh@linuxfoundation.org, ebiggers@google.com,
+ ytcoode@gmail.com, vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+ rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+ vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+ iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+ elver@google.com, dvyukov@google.com, shakeelb@google.com,
+ songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
+ minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+ linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
+ cgroups@vger.kernel.org
+Subject: Re: [PATCH 00/40] Memory allocation profiling
+Message-ID: <20230508175206.7dc3f87c@meshulam.tesarici.cz>
+In-Reply-To: <ZFfd99w9vFTftB8D@moria.home.lan>
+References: <20230501165450.15352-1-surenb@google.com>
+	<ZFIMaflxeHS3uR/A@dhcp22.suse.cz>
+	<CAJuCfpHxbYFxDENYFfnggh1D8ot4s493PQX0C7kD-JLvixC-Vg@mail.gmail.com>
+	<ZFN1yswCd9wRgYPR@dhcp22.suse.cz>
+	<ZFfd99w9vFTftB8D@moria.home.lan>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Add myself as maintainer for RISC-V AIA drivers including the
-RISC-V INTC driver which supports both AIA and non-AIA platforms.
+On Sun, 7 May 2023 13:20:55 -0400
+Kent Overstreet <kent.overstreet@linux.dev> wrote:
 
-Signed-off-by: Anup Patel <apatel@ventanamicro.com>
----
- MAINTAINERS | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+> On Thu, May 04, 2023 at 11:07:22AM +0200, Michal Hocko wrote:
+> > No. I am mostly concerned about the _maintenance_ overhead. For the
+> > bare tracking (without profiling and thus stack traces) only those
+> > allocations that are directly inlined into the consumer are really
+> > of any use. That increases the code impact of the tracing because any
+> > relevant allocation location has to go through the micro surgery. 
+> > 
+> > e.g. is it really interesting to know that there is a likely memory
+> > leak in seq_file proper doing and allocation? No as it is the specific
+> > implementation using seq_file that is leaking most likely. There are
+> > other examples like that See?  
+> 
+> So this is a rather strange usage of "maintenance overhead" :)
+> 
+> But it's something we thought of. If we had to plumb around a _RET_IP_
+> parameter, or a codetag pointer, it would be a hassle annotating the
+> correct callsite.
+> 
+> Instead, alloc_hooks() wraps a memory allocation function and stashes a
+> pointer to a codetag in task_struct for use by the core slub/buddy
+> allocator code.
+> 
+> That means that in your example, to move tracking to a given seq_file
+> function, we just:
+>  - hook the seq_file function with alloc_hooks
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 083ba321fc7c..8f00b56ef8d5 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -18111,6 +18111,18 @@ F:	drivers/perf/riscv_pmu.c
- F:	drivers/perf/riscv_pmu_legacy.c
- F:	drivers/perf/riscv_pmu_sbi.c
- 
-+RISC-V AIA DRIVERS
-+M:	Anup Patel <anup@brainfault.org>
-+L:	linux-riscv@lists.infradead.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/interrupt-controller/riscv,aplic.yaml
-+F:	Documentation/devicetree/bindings/interrupt-controller/riscv,imsics.yaml
-+F:	drivers/irqchip/irq-riscv-aplic.c
-+F:	drivers/irqchip/irq-riscv-imsic.c
-+F:	drivers/irqchip/irq-riscv-intc.c
-+F:	include/linux/irqchip/riscv-aplic.h
-+F:	include/linux/irqchip/riscv-imsic.h
-+
- RISC-V ARCHITECTURE
- M:	Paul Walmsley <paul.walmsley@sifive.com>
- M:	Palmer Dabbelt <palmer@dabbelt.com>
--- 
-2.34.1
+Thank you. That's exactly what I was trying to point out. So you hook
+seq_buf_alloc(), just to find out it's called from traverse(), which
+is not very helpful either. So, you hook traverse(), which sounds quite
+generic. Yes, you're lucky, because it is a static function, and the
+identifier is not actually used anywhere else (right now), but each
+time you want to hook something, you must make sure it does not
+conflict with any other identifier in the kernel...
 
+Petr T
