@@ -1,115 +1,107 @@
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 664A720F9
-	for <iommu@lists.linux.dev>; Mon,  8 May 2023 17:18:13 +0000 (UTC)
-Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-965cc5170bdso665043166b.2
-        for <iommu@lists.linux.dev>; Mon, 08 May 2023 10:18:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1683566291; x=1686158291;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=aPLrilJOpAfCtWH73NaWni8pY2sG/Rz0VNe7OUxyQPg=;
-        b=QBa5klLYRx6s5xUdv17wPOIXHSVMOnDCRRV+kMDzkp10mpOn414lUE7CKd2DD5xOlG
-         TEDhSJgzAMKYbKS0U31N33AjJY6Yiwr0vbD2vo93Z1FHmSMqjtWDTXsrR4Jnoq2ooFvj
-         v5sCzUMeR+r8Gj8N3ozf7y2nYwYqTJ44YIFS8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683566291; x=1686158291;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=aPLrilJOpAfCtWH73NaWni8pY2sG/Rz0VNe7OUxyQPg=;
-        b=XNxEqw4uTl9GTlAzHJOMX7Avx3nmXc3c3xM4ndOair3KToyeWcnt2bbv4xWDz9Lsgt
-         8B4YSANP1c1Fp7EqTJGulOMAcwSTfEG4uDnJj2zTFISpSUf5uNhGEI7EBDF7YN1qDz1W
-         sT6B0QAWDKiaMGmg5j+R5KEfHMaJcsY7lES5GLKSGA9LgU2MQ4/WLxYITcBQB+A6vHwg
-         4fxM/TdHwiHHkBdh1w/V5uIQbarAGIgOhYgXvnU7OtgYzt59Ql3/uEotCooOPFtfKuT9
-         2FOWYqssDL0fjNJpiuTGk8eYW+5/rMWWfP+kQAPcjab/Qk9j6+PrZahkMZpulOEoqE/9
-         alGg==
-X-Gm-Message-State: AC+VfDxmZUL7F826cD4/++abSdKYAlt1Pktvk1wmLDygESt+X1Ryx173
-	BAlZi9HZZEGN3xC606XXZlGutvzMOkNzmZOy5+xNiw==
-X-Google-Smtp-Source: ACHHUZ4MUU1kssiM7vAZ0Nu0IP80OcD0DFRGq2U/0coByoXXibqtpeXT5aj800MiJZbJ5krBzG14/w==
-X-Received: by 2002:a17:907:7fa2:b0:932:4255:5902 with SMTP id qk34-20020a1709077fa200b0093242555902mr10808206ejc.76.1683566291535;
-        Mon, 08 May 2023 10:18:11 -0700 (PDT)
-Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com. [209.85.208.52])
-        by smtp.gmail.com with ESMTPSA id ml23-20020a170906cc1700b0094ea3a32694sm201957ejb.190.2023.05.08.10.18.10
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 May 2023 10:18:11 -0700 (PDT)
-Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-50bcb00a4c2so7667083a12.1
-        for <iommu@lists.linux.dev>; Mon, 08 May 2023 10:18:10 -0700 (PDT)
-X-Received: by 2002:a17:907:2cc4:b0:94f:3338:12a2 with SMTP id
- hg4-20020a1709072cc400b0094f333812a2mr9978465ejc.33.1683566290229; Mon, 08
- May 2023 10:18:10 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EABF5682
+	for <iommu@lists.linux.dev>; Mon,  8 May 2023 18:59:45 +0000 (UTC)
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 46D7A15660F;
+	Mon,  8 May 2023 20:59:41 +0200 (CEST)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
+	t=1683572382; bh=uZkqx7aKUtaW85glkXkWc2KSVWl1+jLzvm0vqmvOK4k=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=oMA1JDBfpJw4sW7xwHIesfwzVvuWGRfEibImYMO8MGVZr8iRllWIfuu/0e/mR8S35
+	 iSTkGom3l2vCdobWQ2bfVa6nZe4sueYcQ8TRCacsjjA5CE1u6g+C6TnyFwqEgekR80
+	 QJhrpkc85RcLvfsJty39syGBqRtbVmBD8gRTuYp0lKs/3I0TMuZAwoFEzyxCISt87Q
+	 jFclnxrFT242I64DoHaTh7hEShSdJRQAi3f8B9Gi+6bMke4t3VWU3TXk/2b2p3mKb+
+	 ZKQmv+XMh4jxUtnY4XLyIY3pSmPZPhKIaboj506ssLQOCqeMss+Ypkje+lMahARxZd
+	 uaDOOK7Oe/wvA==
+Date: Mon, 8 May 2023 20:59:39 +0200
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Kent Overstreet <kent.overstreet@linux.dev>
+Cc: Michal Hocko <mhocko@suse.com>, Suren Baghdasaryan <surenb@google.com>,
+ akpm@linux-foundation.org, vbabka@suse.cz, hannes@cmpxchg.org,
+ roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net,
+ willy@infradead.org, liam.howlett@oracle.com, corbet@lwn.net,
+ void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com,
+ ldufour@linux.ibm.com, catalin.marinas@arm.com, will@kernel.org,
+ arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
+ dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
+ david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
+ nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev,
+ rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com,
+ yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com,
+ hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org,
+ ndesaulniers@google.com, gregkh@linuxfoundation.org, ebiggers@google.com,
+ ytcoode@gmail.com, vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+ rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+ vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+ iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+ elver@google.com, dvyukov@google.com, shakeelb@google.com,
+ songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
+ minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+ linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
+ cgroups@vger.kernel.org
+Subject: Re: [PATCH 00/40] Memory allocation profiling
+Message-ID: <20230508205939.0b5b485c@meshulam.tesarici.cz>
+In-Reply-To: <ZFkjRBCExpXfI+O5@moria.home.lan>
+References: <20230501165450.15352-1-surenb@google.com>
+	<ZFIMaflxeHS3uR/A@dhcp22.suse.cz>
+	<CAJuCfpHxbYFxDENYFfnggh1D8ot4s493PQX0C7kD-JLvixC-Vg@mail.gmail.com>
+	<ZFN1yswCd9wRgYPR@dhcp22.suse.cz>
+	<ZFfd99w9vFTftB8D@moria.home.lan>
+	<20230508175206.7dc3f87c@meshulam.tesarici.cz>
+	<ZFkb1p80vq19rieI@moria.home.lan>
+	<20230508180913.6a018b21@meshulam.tesarici.cz>
+	<ZFkjRBCExpXfI+O5@moria.home.lan>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230506133134.1492395-1-jacob.jun.pan@linux.intel.com>
- <CAHk-=wgUiAtiszwseM1p2fCJ+sC4XWQ+YN4TanFhUgvUqjr9Xw@mail.gmail.com>
- <20230506150741.2e3d2dcc@jacob-builder> <CAHk-=wjmOAQnqJF-pW=fzMXb_Rk_J_Oi4ESBLmVPhxwBK4xfGg@mail.gmail.com>
- <20230508094014.53913cf3@jacob-builder> <CAHk-=wgobPe0U=Sc-PH08vF-ZbG00KrzftEpQMQ=n0LLNn7y6A@mail.gmail.com>
- <ZFkpk8y8mUZuZjkV@nvidia.com>
-In-Reply-To: <ZFkpk8y8mUZuZjkV@nvidia.com>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Mon, 8 May 2023 10:17:53 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wiv=Dm5diw2N-4Mx3k8iYWNfyvjzrQxB3JxVLC_7cuY+g@mail.gmail.com>
-Message-ID: <CAHk-=wiv=Dm5diw2N-4Mx3k8iYWNfyvjzrQxB3JxVLC_7cuY+g@mail.gmail.com>
-Subject: Re: [PATCH] iommu: Add Kconfig help text for IOMMU_SVA
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>, LKML <linux-kernel@vger.kernel.org>, 
-	iommu@lists.linux.dev, Lu Baolu <baolu.lu@linux.intel.com>, 
-	Joerg Roedel <joro@8bytes.org>, Jean-Philippe Brucker <jean-philippe@linaro.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Raj Ashok <ashok.raj@intel.com>, 
-	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>, 
-	"Yu, Fenghua" <fenghua.yu@intel.com>, "Hansen, Dave" <dave.hansen@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, May 8, 2023 at 9:55=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wro=
-te:
->
-> CONFIG_IOMMU_MM_PASID perhaps? Says what it does without a clue about
-> why it does it. x86 arch code could select it ideally?
+On Mon, 8 May 2023 12:28:52 -0400
+Kent Overstreet <kent.overstreet@linux.dev> wrote:
 
-Maybe we don't even need the "IOMMU" part. It's a core x86
-architecture feature. Maybe it usually (always?) gets used within the
-framework of some IOMMU work, but I guess ENCQCMD could be used in
-some hardwired way even without that (ie is it possible to have just
-some "basic PASID set up by VMM environment" thing?)
+> On Mon, May 08, 2023 at 06:09:13PM +0200, Petr Tesa=C5=99=C3=ADk wrote:
+> > Sure, although AFAIK the index does not cover all possible config
+> > options (so non-x86 arch code is often forgotten). However, that's the
+> > less important part.
+> >=20
+> > What do you do if you need to hook something that does conflict with an
+> > existing identifier? =20
+>=20
+> As already happens in this patchset, rename the other identifier.
+>=20
+> But this is C, we avoid these kinds of conflicts already because the
+> language has no namespacing
 
-I don't actually know who uses it and how, so I'm probably not the
-right person to name it, but just looking at the x86 code that sets
-it, the PASID code technically has no connection to any iommu code,
-it's literally a core CPU feature with an MSR and some magic faulting
-thing, and seems to be possibly usable as-is.
+This statement is not accurate, but I agree there's not much. Refer to
+section 6.2.3 of ISO/IEC9899:2018 (Name spaces of identifiers).
 
-That existing
+More importantly, macros also interfere with identifier scoping, e.g.
+you cannot even have a local variable with the same name as a macro.
+That's why I dislike macros so much.
 
-    #ifdef CONFIG_IOMMU_SVA
+But since there's no clear policy regarding macros in the kernel, I'm
+merely showing a downside; it's perfectly fine to write kernel code
+like this as long as the maintainers agree that the limitation is
+acceptable and outweighed by the benefits.
 
-in the x86 traps.c code just looks odd, and making it be
-CONFIG_IOMMU_MM_PASID sounds better to me. I'm just not sure about the
-"IOMMU" part either. Just "MM_PASID"?
+Petr T
 
-That said, the arm-smmu-v3-sva.c code clearly *also* uses pasid,
-except it seems to really want to call it "ssid".
+> it's going to be a pretty rare situtaion
+> going forward. Most of the hooking that will be done is done with this
+> patchset, and there was only one identifier that needed to be renamed.
+>=20
 
-So "having a per-mm ASID for IO" is clearly a common feature. But
-naming seems hard, with x86 calling it PASID, arm64 seemingly calling
-it "SSID".
-
-Right now the only user *does* seem to be through the IOMMU SVA code,
-but that may or may not be fundamental.
-
-Now, "SSID" is a completely horrible name, as I immediately realized
-when I tried to google for it. So arm64 is just wrong, and we're most
-definitely continuing to call it PASID.
-
-I'd lean towards just "CONFIG_MM_PASID" or something, but at some
-point this is bikeshedding, and I don't know about any possible
-non-iommu direct uses?
-
-           Linus
