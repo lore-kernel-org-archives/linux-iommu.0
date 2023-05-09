@@ -1,40 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41A2819909
-	for <iommu@lists.linux.dev>; Tue,  9 May 2023 21:20:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAB34C433EF;
-	Tue,  9 May 2023 21:20:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AB461990A
+	for <iommu@lists.linux.dev>; Tue,  9 May 2023 21:20:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98D5FC433EF;
+	Tue,  9 May 2023 21:20:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683667232;
-	bh=bEhwPFSgAYO/aqAW7KRCo0ZzgXMoNX9Suxcuu8HfMqw=;
+	s=k20201202; t=1683667237;
+	bh=xRTjQfqCTQ45bcfNUtsVmgmumXhyrWlLlbjbfwfrJv4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=tvkaLGO8mPPAg3QVvALjEhVieznb4CW8UU07cAfPrp4c0hs+IGZRixpX+XiBm0fdx
-	 7DrzTzmSHgBdCmNwumwnITk70mXvoGf4+9eQuR9hI+SWbiZBKrivMhO/dvGaOATxPQ
-	 cb9zChti446x7ruKO5u4MNKe0Kj5ZFQ58TtcE3diIuY71wOTH9iFxISzYi+sPuID9K
-	 JkX8JWOTu5orzt+qAvN1AXlkL0+ePfT/AsklHfOdv5QmiKSp3iPXEuvOS32EcVLC3H
-	 ARc5cvo4T9vMLhR1/kFQgBB41dXQ65NRWhOG7MbbO0XBd266Lc0pnZdP4Xk3+ji4Vq
-	 rKGoCE+ZYTHnw==
+	b=c+JZQic+huFN67/VPpHCUNhPnEs9ohshrx/5fR1xitkONqvhqwhlnLQWxX0jOMyNF
+	 EKYUmTppakO9GQkGSk1ymqYFyCjeyAR9U3yEWh9Zae2gpQooazi1c4xS9uDeyDKU5P
+	 OxLIi2ljLPJogg+NDoT91ndINm+4T8xELIEnKOxVSBhJveAwZkC7XVHCfPcN0H7Et4
+	 c+NypoApuxM49xlrjcI21Ug8xYaiMaanW3TDvyX3tMl5E4HRF94LelWYVNClyqQdN7
+	 /47Lz/Ri4npEc4AfA0WYmThptbAllIzYiHLhvN8TRivFQoiqPq2wfWLxI+Bl6uaiH0
+	 uA6iC96Ykz0GA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-	Johan Hovold <johan+linaro@kernel.org>,
+Cc: Tomas Krcka <krckatom@amazon.de>,
 	Will Deacon <will@kernel.org>,
 	Sasha Levin <sashal@kernel.org>,
 	joro@8bytes.org,
-	dmitry.baryshkov@linaro.org,
-	quic_saipraka@quicinc.com,
-	konrad.dybcio@linaro.org,
-	quic_bjorande@quicinc.com,
-	a39.skl@gmail.com,
-	mani@kernel.org,
-	marijn.suijten@somainline.org,
+	baolu.lu@linux.intel.com,
+	robin.murphy@arm.com,
+	jgg@ziepe.ca,
+	shameerali.kolothum.thodi@huawei.com,
+	yangyicong@hisilicon.com,
+	nicolinc@nvidia.com,
 	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.15 02/13] iommu/arm-smmu-qcom: Limit the SMR groups to 128
-Date: Tue,  9 May 2023 17:20:10 -0400
-Message-Id: <20230509212023.22105-2-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 10/13] iommu/arm-smmu-v3: Acknowledge pri/event queue overflow if any
+Date: Tue,  9 May 2023 17:20:18 -0400
+Message-Id: <20230509212023.22105-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230509212023.22105-1-sashal@kernel.org>
 References: <20230509212023.22105-1-sashal@kernel.org>
@@ -48,65 +46,88 @@ X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+From: Tomas Krcka <krckatom@amazon.de>
 
-[ Upstream commit 12261134732689b7e30c59db9978f81230965181 ]
+[ Upstream commit 67ea0b7ce41844eae7c10bb04dfe66a23318c224 ]
 
-Some platforms support more than 128 stream matching groups than what is
-defined by the ARM SMMU architecture specification. But due to some unknown
-reasons, those additional groups don't exhibit the same behavior as the
-architecture supported ones.
+When an overflow occurs in the PRI queue, the SMMU toggles the overflow
+flag in the PROD register. To exit the overflow condition, the PRI thread
+is supposed to acknowledge it by toggling this flag in the CONS register.
+Unacknowledged overflow causes the queue to stop adding anything new.
 
-For instance, the additional groups will not detect the quirky behavior of
-some firmware versions intercepting writes to S2CR register, thus skipping
-the quirk implemented in the driver and causing boot crash.
+Currently, the priq thread always writes the CONS register back to the
+SMMU after clearing the queue.
 
-So let's limit the groups to 128 for now until the issue with those groups
-are fixed and issue a notice to users in that case.
+The writeback is not necessary if the OVFLG in the PROD register has not
+been changed, no overflow has occured.
 
-Reviewed-by: Johan Hovold <johan+linaro@kernel.org>
-Tested-by: Johan Hovold <johan+linaro@kernel.org>
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Link: https://lore.kernel.org/r/20230327080029.11584-1-manivannan.sadhasivam@linaro.org
-[will: Reworded the comment slightly]
+This commit checks the difference of the overflow flag between CONS and
+PROD register. If it's different, toggles the OVACKFLG flag in the CONS
+register and write it to the SMMU.
+
+The situation is similar for the event queue.
+The acknowledge register is also toggled after clearing the event
+queue but never propagated to the hardware. This would only be done the
+next time when executing evtq thread.
+
+Unacknowledged event queue overflow doesn't affect the event
+queue, because the SMMU still adds elements to that queue when the
+overflow condition is active.
+But it feel nicer to keep SMMU in sync when possible, so use the same
+way here as well.
+
+Signed-off-by: Tomas Krcka <krckatom@amazon.de>
+Link: https://lore.kernel.org/r/20230329123420.34641-1-tomas.krcka@gmail.com
 Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index c998960495b4e..50453d38400c5 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -247,12 +247,26 @@ static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index e7da4a47ce52e..bcdb2cbdda971 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -154,6 +154,18 @@ static void queue_inc_cons(struct arm_smmu_ll_queue *q)
+ 	q->cons = Q_OVF(q->cons) | Q_WRP(q, cons) | Q_IDX(q, cons);
+ }
  
- static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
++static void queue_sync_cons_ovf(struct arm_smmu_queue *q)
++{
++	struct arm_smmu_ll_queue *llq = &q->llq;
++
++	if (likely(Q_OVF(llq->prod) == Q_OVF(llq->cons)))
++		return;
++
++	llq->cons = Q_OVF(llq->prod) | Q_WRP(llq, llq->cons) |
++		      Q_IDX(llq, llq->cons);
++	queue_sync_cons_out(q);
++}
++
+ static int queue_sync_prod_in(struct arm_smmu_queue *q)
  {
--	unsigned int last_s2cr = ARM_SMMU_GR0_S2CR(smmu->num_mapping_groups - 1);
- 	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
-+	unsigned int last_s2cr;
- 	u32 reg;
- 	u32 smr;
- 	int i;
+ 	u32 prod;
+@@ -1564,8 +1576,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
+ 	} while (!queue_empty(llq));
  
-+	/*
-+	 * Some platforms support more than the Arm SMMU architected maximum of
-+	 * 128 stream matching groups. For unknown reasons, the additional
-+	 * groups don't exhibit the same behavior as the architected registers,
-+	 * so limit the groups to 128 until the behavior is fixed for the other
-+	 * groups.
-+	 */
-+	if (smmu->num_mapping_groups > 128) {
-+		dev_notice(smmu->dev, "\tLimiting the stream matching groups to 128\n");
-+		smmu->num_mapping_groups = 128;
-+	}
-+
-+	last_s2cr = ARM_SMMU_GR0_S2CR(smmu->num_mapping_groups - 1);
-+
- 	/*
- 	 * With some firmware versions writes to S2CR of type FAULT are
- 	 * ignored, and writing BYPASS will end up written as FAULT in the
+ 	/* Sync our overflow flag, as we believe we're up to speed */
+-	llq->cons = Q_OVF(llq->prod) | Q_WRP(llq, llq->cons) |
+-		    Q_IDX(llq, llq->cons);
++	queue_sync_cons_ovf(q);
+ 	return IRQ_HANDLED;
+ }
+ 
+@@ -1623,9 +1634,7 @@ static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
+ 	} while (!queue_empty(llq));
+ 
+ 	/* Sync our overflow flag, as we believe we're up to speed */
+-	llq->cons = Q_OVF(llq->prod) | Q_WRP(llq, llq->cons) |
+-		      Q_IDX(llq, llq->cons);
+-	queue_sync_cons_out(q);
++	queue_sync_cons_ovf(q);
+ 	return IRQ_HANDLED;
+ }
+ 
 -- 
 2.39.2
 
