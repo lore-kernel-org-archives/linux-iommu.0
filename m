@@ -1,126 +1,146 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2048.outbound.protection.outlook.com [40.107.243.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4CBB19900
-	for <iommu@lists.linux.dev>; Tue,  9 May 2023 21:21:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4196FC433EF;
-	Tue,  9 May 2023 21:21:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683667263;
-	bh=6QvBvkH///NvBvLTrTuGtXcNfrdX1zFcZbHf+0xjjgY=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=AAe7ye/scWe/28heCgqlPwIENJ8nPs36oXJKuHlaUv1K4a7FCjbFXD/O+6jwzj7uG
-	 5H9/xRgTNNJeP52aebUTFmQEAcJ7fToCSwwJ4VVeEeZ5jT94IPetMOzrTPADFx/Opm
-	 /ZFyD8BqlST0046ZzYj0PfLIe5jPSdvUVvDDjjh2t8geruXeiRekaCT+594yMLrYNZ
-	 42SlHMHW6SFwpfdLCtcvNHdKN6hA0Gg7/bfOnITalmhK+zPo4JeBASwQBKE3E2XrDA
-	 48sdGSXGQu1oYer1Mx7DZwMC61HpIAJQSu9vpaOrVHvIP9zmhkftWal74lKtT2PQWh
-	 Zhv9/mYCPHeTw==
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Cc: Tomas Krcka <krckatom@amazon.de>,
-	Will Deacon <will@kernel.org>,
-	Sasha Levin <sashal@kernel.org>,
-	joro@8bytes.org,
-	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.4 3/4] iommu/arm-smmu-v3: Acknowledge pri/event queue overflow if any
-Date: Tue,  9 May 2023 17:20:55 -0400
-Message-Id: <20230509212058.22651-3-sashal@kernel.org>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230509212058.22651-1-sashal@kernel.org>
-References: <20230509212058.22651-1-sashal@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 357281990C
+	for <iommu@lists.linux.dev>; Tue,  9 May 2023 23:06:08 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZV8kPkfeBAhz6rwN8ooqxKH3UHPNzMlEGdPMBMPZ/w5GtGPHH31KiEOWrEzR/+pN2OaUlnhQc5+oh53Z0tXGIR0k5CIwQg5j2rapFVkq4A6xG2+G2oobUvGdZ21+wESnuQuLNJzCQSBHZYNOwnYscbWkQFE8LST4R7Ftiw2bXTcr4Lu6HjlFUnSWQeIQcvGoL7oVFai3zCdaFTTh96+TbeE8GOzo/ANDy7Bdcgz3Q6fafqNGug4jhU/W1B79VjD41b7QpD6gROQm1FY9E8lEvHpo8lTqT+l7uBSPuxrVQy32vIILQoPaKolM/2bk+Zh09h1EigYKafc+aQ7lmoimaQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+E4ic5uQWQjKHNb+O3IOZ3y27j5ZYKekQtIv5Il5q0k=;
+ b=ZEIF7CSdaOhMU6Bx9s3PoXeuLAVq9dID2k6OFRhI9ZAnSPviC40hO1NxSKkZCWeiOcM50MXUXg6zFuu+uSj7YiIXQBPqwObnu7rJs1+XmEeV7lNKV73vV3slUXTPJOgTAwz8Yf3bpBNdjWhV69V48nc8Ffkor+mbjyo5aqhucw9OnK+0tMSL1PEp834263RXvQ0+LPJAyUSwNVkdmz7PLB4nzKoDbHJameZ2+VtqAMDtkbR51+0glIUy01pe4P6EuoH4iNyQxD6Q9Wq88H6T8+G6xcgpcF+VXPVNa2snpeRf+5xdECoR1iBoBeyp1CYmMtSlVqQAONV/KmqbCoyAgQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+E4ic5uQWQjKHNb+O3IOZ3y27j5ZYKekQtIv5Il5q0k=;
+ b=rBF2Kwrf5lAhvVlLeUt1/ou08b6EUGHjpibVgIWXTwgN4N51wUVbHyR4RArCd0/ZeXFwlRs5fupNtvnA0SB28oYsXyBLGxt9KdQWhHY7XJOgUy9NUzuoqqTo9ock+Btxbiox/sVZR2R36XPXPuOF77bHv1mVxt4gsZpvkJgBCwFASmYPTjQeh7JfB9BNYAfABzLVTbY/GhqKPwc1ejDAUUS4/fIbMHnhp4vZEaz0qkduR3ButGyFNm9xMpLUbJmEuKwS6qXmyfy9Fatbu5Q3FnPgLYciWADAzHj9KElUf1JGWpTHRBw81fTSfQ4sRY4omhtwpYO1nv6RxAFwlcwkng==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by PH8PR12MB6794.namprd12.prod.outlook.com (2603:10b6:510:1c5::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.32; Tue, 9 May
+ 2023 23:06:03 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6363.032; Tue, 9 May 2023
+ 23:06:03 +0000
+Date: Tue, 9 May 2023 20:06:01 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Jean-Philippe Brucker <jean-philippe@linaro.com>,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	Raj Ashok <ashok.raj@intel.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+	"Yu, Fenghua" <fenghua.yu@intel.com>,
+	"Hansen, Dave" <dave.hansen@intel.com>
+Subject: Re: [PATCH] iommu: Add Kconfig help text for IOMMU_SVA
+Message-ID: <ZFrR2XEuGWpZyJfh@nvidia.com>
+References: <20230506133134.1492395-1-jacob.jun.pan@linux.intel.com>
+ <CAHk-=wgUiAtiszwseM1p2fCJ+sC4XWQ+YN4TanFhUgvUqjr9Xw@mail.gmail.com>
+ <20230506150741.2e3d2dcc@jacob-builder>
+ <CAHk-=wjmOAQnqJF-pW=fzMXb_Rk_J_Oi4ESBLmVPhxwBK4xfGg@mail.gmail.com>
+ <20230508094014.53913cf3@jacob-builder>
+ <CAHk-=wgobPe0U=Sc-PH08vF-ZbG00KrzftEpQMQ=n0LLNn7y6A@mail.gmail.com>
+ <ZFkpk8y8mUZuZjkV@nvidia.com>
+ <CAHk-=wiv=Dm5diw2N-4Mx3k8iYWNfyvjzrQxB3JxVLC_7cuY+g@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wiv=Dm5diw2N-4Mx3k8iYWNfyvjzrQxB3JxVLC_7cuY+g@mail.gmail.com>
+X-ClientProxiedBy: MW4PR03CA0111.namprd03.prod.outlook.com
+ (2603:10b6:303:b7::26) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|PH8PR12MB6794:EE_
+X-MS-Office365-Filtering-Correlation-Id: f4512eb9-f2e5-4dba-dbf7-08db50e1f678
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	arTQP6d5UQu6RqtqEhlQABc7anr4Ga6XXf8f1ivJj0J7rbvNqbXXJvyMg7vxqktvZ0c5bPOFGNVETll8qewqquA3XbtVCMhbl9379dKs53UjVrUqE66933XzBjr4ZhQ6yseu3cdmb+vBTMll5daX+z7V17GOMdcu/lME2MaTMgjuLUn0Q49W8NtmgxR4exe4dpuqFF3+olk35A/R99kJCK0Ny1amjxyguu75iKqbVwDwre+09Kalsj0bd9T+a/LcQnyis9eLSjN5uiHmikFZ39dFHaYioRRWsLZX52Lwub/Uljvbor6oUqtSSAyLbixPUcLOwP4TWkhqXz1pPB4ddBxks389dLXlgjcKt98c0XBFzrDTg3E5eAasSwL4arA8yKXrZrVa+FflvhiNi0wHnqc3pahXItrpP015fexcCJ2dp+dnOQzGGOQY9mka7F/9Z3eT/5h2yZRCmJLu2csubXo8ydBL7R1fkwIuYs/fRFmcsXRQl1G/fahdOyM0M1ygbRfv83lA6dPShYOFr2Loa7SwWut1yMl61Hr8kiK2oUrHhyZWhRTv23oSW1IjCb1o
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(396003)(136003)(346002)(366004)(39860400002)(451199021)(6916009)(4326008)(316002)(66946007)(6486002)(478600001)(66556008)(54906003)(36756003)(86362001)(66476007)(26005)(6506007)(6512007)(83380400001)(2616005)(5660300002)(2906002)(41300700001)(7416002)(8676002)(8936002)(38100700002)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?EIq5O4a/q0vORPIgyw4eSFJaD9kGO/38aNr1U4gm0UGN9TB+Zewr6+oJqyFZ?=
+ =?us-ascii?Q?iiqiEn29DIB/fwV3xflSTNcyZaq1R5UurGsTaEFrg7oJIg5Ode3qYjphiuaT?=
+ =?us-ascii?Q?GHxKwjOMamdAnuf66z2lmLOGJja6hiq4DbfjkU5RY8y5bIjxqzV3Sii9BN4f?=
+ =?us-ascii?Q?+MlnfOQho5M5h5q3NjpVVJs/t/MBVEVffPtSqOwLusDPGf4D1h98GZmMRsf7?=
+ =?us-ascii?Q?Pgr/PTduM4bN7Tw+0Jq+nrVCZrY8p5FDcxPyLBJPHjcu4MlQOEe8ajLDKHn9?=
+ =?us-ascii?Q?MRh79V+DD0zpz66M8Us5evtEqxqmiQis50QsU596TtqJ53T3UNAyKIj2rpcm?=
+ =?us-ascii?Q?q4Ifk7LeT+eTz2xgkQe/tIdzT/AbKdGmNA7wvDARYuocVi91CV3d79ZCoeEp?=
+ =?us-ascii?Q?Cz3/PjOEVPfDd/RVLl12JN6msSpgMF7PK1iLi0msf98UnPqt3O1sTDpMU650?=
+ =?us-ascii?Q?oLe2RxYVwr/CW5LH/zj6j9HW3DLlu8/GucEs/Dtjcck7KZ1+KcXfm82U53Le?=
+ =?us-ascii?Q?GKBo6ICtqFg3OIrkMxCJgSy39HL3iV/QQRwZWCXJR8/CDa2fn/tzysB2Ag5M?=
+ =?us-ascii?Q?9XylqyEMyhw22BOOwDl75WUoMw0Ap78tOzZDJSQIPaKuA4U9u/4By/PQJKwj?=
+ =?us-ascii?Q?1d+saZNfiPCjdoOk5xHKwCAtXHzoaQ6p/UaZjyiJFzixxNrHYwaDRuiEf3l3?=
+ =?us-ascii?Q?Ji/j4sl73HoU6Mp9IDbssJYfg1Mt9XxT/sMn016zRs0qEu1Ie1eKfA5rzvOu?=
+ =?us-ascii?Q?/+9Sr1BYGJuB++245CEYeBWPdlgqLzcJSl0NmcSlyisBpuyX0FMqy5w4BAPa?=
+ =?us-ascii?Q?QkH/nMOWDW0f3mgKbuQEJ9LU65mVLooGl5NqsupO0NOVCmX7ubbgX+EfIEgH?=
+ =?us-ascii?Q?66MbyMqzhqEltY6t2xwLolF15qMh7ajeNQlOfCLGau/ZZ9Gjl8nwc28Z9RMb?=
+ =?us-ascii?Q?x1DIRNP2SOXOTd6bcA1/LeBUPpPx5sQ88QpQ5RIzfTQe8+LDbjj7HPDAEC38?=
+ =?us-ascii?Q?XnvztOGHkSzN0ie8lX+R/f0MH5vwPfwpAfju/bEol8yNOMQrcUB45lyGDynD?=
+ =?us-ascii?Q?y3xh5ty3ZoKc2+QOu1OHHM0jzfFLNx7wXRcq96qJ++unEsBlLVD9NZAmset6?=
+ =?us-ascii?Q?NCNrhN056ibeIEECGuMOprJe6Xsw5e82zCpoHZrA19qsJNOYefg6LzYrUHAf?=
+ =?us-ascii?Q?s+tdJCv9NdqblZpkn43Ex7Ub5ww32Ug91oaeByiCS/XPb4DqP21ir12b33HG?=
+ =?us-ascii?Q?lxaVWsEvEPW3zjmBeTDrxH/4TrgAJY1OrGp1L6V/MXeUz1rZwP81QU7wl7yE?=
+ =?us-ascii?Q?asoF+dqeAuSANdHCg93QOyWNzlD0T2ghZsZ4QiBiIJEQcA7LvaJBs2nkxoYb?=
+ =?us-ascii?Q?JGctK9gQV6z1HS2Ggseq/vyXX5crJ0ls9drlnW8DSqbdm0YFsldjFB9QynSJ?=
+ =?us-ascii?Q?a/M4PUIkfqWjR2LJdyLCn/v4hEQRfSXMbNNxdghFQ0HiqPH3oNvPQHtlUxH/?=
+ =?us-ascii?Q?qHvT6WJZCi6ehyr7sg5qSL0kHZvgRjNDAN/Vcvj+syC3o0KUUu+lJNcCOByq?=
+ =?us-ascii?Q?TkPeHoQc5I6XFDOmhV0=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f4512eb9-f2e5-4dba-dbf7-08db50e1f678
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2023 23:06:03.7345
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: UR4qIXRBALQKYHKgOIksn8LIXDk0O/NK+alkqb12bH0RJFtPgstD4XaltKaBvAHK
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6794
 
-From: Tomas Krcka <krckatom@amazon.de>
+On Mon, May 08, 2023 at 10:17:53AM -0700, Linus Torvalds wrote:
 
-[ Upstream commit 67ea0b7ce41844eae7c10bb04dfe66a23318c224 ]
+> That said, the arm-smmu-v3-sva.c code clearly *also* uses pasid,
+> except it seems to really want to call it "ssid".
 
-When an overflow occurs in the PRI queue, the SMMU toggles the overflow
-flag in the PROD register. To exit the overflow condition, the PRI thread
-is supposed to acknowledge it by toggling this flag in the CONS register.
-Unacknowledged overflow causes the queue to stop adding anything new.
+This code is incorrect.. It is using the mm->pasid to try to deliver
+an invalidation, but our new design does not restrict the userspace to
+a single PASID, thus it will fail to properly synchronize the ATC in
+some degenerate cases. In general the driver needs to be able to go
+over a list of PASIDs that the domains are linked to and replicate
+invalidations (of any sort) to the whole list. 
 
-Currently, the priq thread always writes the CONS register back to the
-SMMU after clearing the queue.
+It is still a WIP to make this driver implement the driver contract
+for PASID logic properly.
 
-The writeback is not necessary if the OVFLG in the PROD register has not
-been changed, no overflow has occured.
+> Now, "SSID" is a completely horrible name, as I immediately realized
+> when I tried to google for it. So arm64 is just wrong, and we're most
+> definitely continuing to call it PASID.
 
-This commit checks the difference of the overflow flag between CONS and
-PROD register. If it's different, toggles the OVACKFLG flag in the CONS
-register and write it to the SMMU.
+Yes, PASID comes from PCIe so we are using that.
 
-The situation is similar for the event queue.
-The acknowledge register is also toggled after clearing the event
-queue but never propagated to the hardware. This would only be done the
-next time when executing evtq thread.
+> I'd lean towards just "CONFIG_MM_PASID" or something, but at some
+> point this is bikeshedding, and I don't know about any possible
+> non-iommu direct uses?
 
-Unacknowledged event queue overflow doesn't affect the event
-queue, because the SMMU still adds elements to that queue when the
-overflow condition is active.
-But it feel nicer to keep SMMU in sync when possible, so use the same
-way here as well.
+I don't think there is any other use, IOMMU should be the only
+consumer of PASID, so it is a fine name as well.
 
-Signed-off-by: Tomas Krcka <krckatom@amazon.de>
-Link: https://lore.kernel.org/r/20230329123420.34641-1-tomas.krcka@gmail.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iommu/arm-smmu-v3.c | 19 ++++++++++++++-----
- 1 file changed, 14 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 4f64c3a9ee88d..b3c5d7b4547a4 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -760,6 +760,18 @@ static void queue_inc_cons(struct arm_smmu_ll_queue *q)
- 	q->cons = Q_OVF(q->cons) | Q_WRP(q, cons) | Q_IDX(q, cons);
- }
- 
-+static void queue_sync_cons_ovf(struct arm_smmu_queue *q)
-+{
-+	struct arm_smmu_ll_queue *llq = &q->llq;
-+
-+	if (likely(Q_OVF(llq->prod) == Q_OVF(llq->cons)))
-+		return;
-+
-+	llq->cons = Q_OVF(llq->prod) | Q_WRP(llq, llq->cons) |
-+		      Q_IDX(llq, llq->cons);
-+	queue_sync_cons_out(q);
-+}
-+
- static int queue_sync_prod_in(struct arm_smmu_queue *q)
- {
- 	int ret = 0;
-@@ -1720,8 +1732,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
- 	} while (!queue_empty(llq));
- 
- 	/* Sync our overflow flag, as we believe we're up to speed */
--	llq->cons = Q_OVF(llq->prod) | Q_WRP(llq, llq->cons) |
--		    Q_IDX(llq, llq->cons);
-+	queue_sync_cons_ovf(q);
- 	return IRQ_HANDLED;
- }
- 
-@@ -1779,9 +1790,7 @@ static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
- 	} while (!queue_empty(llq));
- 
- 	/* Sync our overflow flag, as we believe we're up to speed */
--	llq->cons = Q_OVF(llq->prod) | Q_WRP(llq, llq->cons) |
--		      Q_IDX(llq, llq->cons);
--	queue_sync_cons_out(q);
-+	queue_sync_cons_ovf(q);
- 	return IRQ_HANDLED;
- }
- 
--- 
-2.39.2
-
+Thanks,
+Jason
