@@ -1,94 +1,84 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 034FC14A81
-	for <iommu@lists.linux.dev>; Tue,  9 May 2023 19:11:38 +0000 (UTC)
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-1aafa41116fso43533045ad.1
-        for <iommu@lists.linux.dev>; Tue, 09 May 2023 12:11:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683659498; x=1686251498;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=GiDsH8G1Ml9mu5sSlgFdINiWzY2jO1Z5sTjGCqCyfWM=;
-        b=OHoAELdpBVUNdBcedKgaIrSzqY8mpapJQEE3me1X0GlYJxG1opVIZ82ANS24D8UPtG
-         Pt2dawEt+S0ERzDZ8ezL8OcIOWWqO9L1eryK0o6pszAoxIMPuD+jhRqXzf4me//VM0PJ
-         FOun4S3oDVIRhH/u1JmX6/c6pNlrGnzsUTZo/kz6gQSktOKQpHhNl8K+TyCsqJj2ZBJJ
-         52ig+ToxXnJIEh0wyCZF8Mth2Ax7GsgmBOe53OpuwAyHtGFjM2n+j9PcppngFiyluFiP
-         EBB4PWuxCYUiTExHMAvHAH8/2SO0zwGCGhatUE5MKIJDvVd7xgbPqD3z2bM8x5sGuxoY
-         vSJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683659498; x=1686251498;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=GiDsH8G1Ml9mu5sSlgFdINiWzY2jO1Z5sTjGCqCyfWM=;
-        b=Z0AZ2rw+vDu9HuZ4jskbryuFtUSCvfTAeYQATvzmYx2iXGkSymvUSEt2YptHsyjEt2
-         x/wHDkWMHOdZ05bSH29g1Uq4nGlpW2mzyWF7Rwup3U6LDWe4DQC42cnujwzetv/BcCOs
-         rT4EwVsIhNb1IeZNNuB+HJrkMtt/K2Xdn9QdA5+qD1Ed1MSi+fZOtroz9npTIlua0hSH
-         Vegb1bTH9ee6B0jVAl1dOWuptTDz5uu70ZmQw9jb0djL4wgNjlml2vh0CwyunpekZU6U
-         I2737MeO71967CBLmJSAhdPxjuV67M8dUWtPP7epYNHgiJdzUPADOhafGiUz9J9L8IrL
-         NcJQ==
-X-Gm-Message-State: AC+VfDzjbIgylZt1r/7Wb+K61IF87u0r19AHroRzg8awmTsNC1KpOTDW
-	iQtuOflVz99DnWT1Wl+8Qi6qa0cmrxE=
-X-Google-Smtp-Source: ACHHUZ4c9dGsxc56Vq7d4bMsklNgYny1qzmRzvIIBCBIw/4YDrf9m4QoU1u18kmttsWz08c//8Vl+Q==
-X-Received: by 2002:a17:902:d509:b0:1a6:51a6:ca76 with SMTP id b9-20020a170902d50900b001a651a6ca76mr18757686plg.11.1683659497972;
-        Tue, 09 May 2023 12:11:37 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id h6-20020a170902b94600b001ac78ac2cafsm1955579pls.239.2023.05.09.12.11.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 May 2023 12:11:37 -0700 (PDT)
-From: Florian Fainelli <f.fainelli@gmail.com>
-To: iommu@lists.linux.dev
-Cc: linux-kernel@vger.kernel.org,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH] iommu: Suppress empty whitespaces in prints
-Date: Tue,  9 May 2023 12:10:48 -0700
-Message-Id: <20230509191049.1752259-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 031EB19900
+	for <iommu@lists.linux.dev>; Tue,  9 May 2023 20:35:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1683664517; x=1715200517;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=zDgUrx46HKYf2WDUcb3OSI439GIUg2nqyHSQb8R/LPM=;
+  b=nD68BybdIjLNpuiq8tgOuHCTcDottfMKgtZ+yImSzbu4n2LVCIQe3vlW
+   ZZay5VaYrKwGJynQwN83YB0/xmPBzHt1mdeQycE0UYs02wYyU0BjZlad0
+   i5k+utyEXtgA0W0yc9YRP3ki8UZTc/cNmFkruIMjRNqPDQPU213pYcNts
+   pSqrG9Rle3yOklduDPsIu5wiJt2vcI+wjaOr/8dDFiWcHGilMHlW/KEzd
+   Aylk0rGcHOCQuDkb6fIO1KEwFuuygWkoQah308lSkkbvKeL9BdYdq/aTu
+   Y7IYFRpYCCBIdX+8mnpOlSEQdU+IDLn04Y/Dda4xVQQOVeiSNvpL9MoIF
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10705"; a="334504620"
+X-IronPort-AV: E=Sophos;i="5.99,262,1677571200"; 
+   d="scan'208";a="334504620"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2023 13:35:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10705"; a="702004029"
+X-IronPort-AV: E=Sophos;i="5.99,262,1677571200"; 
+   d="scan'208";a="702004029"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2023 13:35:15 -0700
+Date: Tue, 9 May 2023 13:39:40 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Robin Murphy <robin.murphy@arm.com>, Jason
+ Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg
+ Roedel <joro@8bytes.org>, "dmaengine@vger.kernel.org"
+ <dmaengine@vger.kernel.org>, "vkoul@kernel.org" <vkoul@kernel.org>, Will
+ Deacon <will@kernel.org>, "David Woodhouse" <dwmw2@infradead.org>, "Raj,
+ Ashok" <ashok.raj@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Yu,
+ Fenghua" <fenghua.yu@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>,
+ "Luck, Tony" <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
+ "Ranganathan, Narayan" <narayan.ranganathan@intel.com>,
+ jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v5 1/7] iommu: Generalize default PCIe requester ID
+ PASID
+Message-ID: <20230509133940.6bf0a053@jacob-builder>
+In-Reply-To: <BN9PR11MB5276A1CC0B5FF8D9394F22F98C729@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20230427174937.471668-1-jacob.jun.pan@linux.intel.com>
+	<20230427174937.471668-2-jacob.jun.pan@linux.intel.com>
+	<BN9PR11MB5276FD027EC3D6BAA24046F58C6B9@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20230428085615.58e437c9@jacob-builder>
+	<BN9PR11MB5276A1CC0B5FF8D9394F22F98C729@BN9PR11MB5276.namprd11.prod.outlook.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-If IOMMU_CMD_LINE_DMA_API or IOMMU_CMD_LINE_STRICT are not set in
-iommu_cmd_line, we will be emitting a whitespace before the newline.
+Hi Kevin,
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/iommu/iommu.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+On Fri, 5 May 2023 08:28:13 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+wrote:
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index f1dcfa3f1a1b..0dd6ed6bec47 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -176,16 +176,16 @@ static int __init iommu_subsys_init(void)
- 	if (!iommu_default_passthrough() && !iommu_dma_strict)
- 		iommu_def_domain_type = IOMMU_DOMAIN_DMA_FQ;
- 
--	pr_info("Default domain type: %s %s\n",
-+	pr_info("Default domain type: %s%s\n",
- 		iommu_domain_type_str(iommu_def_domain_type),
- 		(iommu_cmd_line & IOMMU_CMD_LINE_DMA_API) ?
--			"(set via kernel command line)" : "");
-+			" (set via kernel command line)" : "");
- 
- 	if (!iommu_default_passthrough())
--		pr_info("DMA domain TLB invalidation policy: %s mode %s\n",
-+		pr_info("DMA domain TLB invalidation policy: %s mode%s\n",
- 			iommu_dma_strict ? "strict" : "lazy",
- 			(iommu_cmd_line & IOMMU_CMD_LINE_STRICT) ?
--				"(set via kernel command line)" : "");
-+				" (set via kernel command line)" : "");
- 
- 	nb = kcalloc(ARRAY_SIZE(iommu_buses), sizeof(*nb), GFP_KERNEL);
- 	if (!nb)
--- 
-2.34.1
+> > > >
+> > > > By having a common RID_PASID, we can avoid conflicts between
+> > > > different use cases in the generic code. e.g. SVA and DMA API with
+> > > > PASIDs.  
+> > >
+> > > You intend it to be generic but in the end only vt-d driver is changed
+> > > to use it in this series...  
+> > change for SVA is in the patch.  
+> 
+> My point was that since it is common why there is no change in arm-smmu
+> driver to use the common macro?
+Got it, I will include changes to SSID 0 in smmu code.
 
+Thanks,
+
+Jacob
