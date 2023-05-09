@@ -1,136 +1,77 @@
-Received: from frasgout12.his.huawei.com (frasgout12.his.huawei.com [14.137.139.154])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com [209.85.219.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0F67AD3C
-	for <iommu@lists.linux.dev>; Tue,  9 May 2023 09:39:34 +0000 (UTC)
-Received: from mail02.huawei.com (unknown [172.18.147.228])
-	by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4QFslC18ccz9xFrs
-	for <iommu@lists.linux.dev>; Tue,  9 May 2023 17:08:23 +0800 (CST)
-Received: from A2101119013HW2.china.huawei.com (unknown [10.81.212.219])
-	by APP2 (Coremail) with SMTP id GxC2BwDHdz7lD1pksN2OAg--.5S3;
-	Tue, 09 May 2023 10:18:59 +0100 (CET)
-From: Petr Tesarik <petrtesarik@huaweicloud.com>
-To: Jonathan Corbet <corbet@lwn.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Airlie <airlied@gmail.com>,
-	Daniel Vetter <daniel@ffwll.ch>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Borislav Petkov <bp@suse.de>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-	Kim Phillips <kim.phillips@amd.com>,
-	"Steven Rostedt (Google)" <rostedt@goodmis.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Hans de Goede <hdegoede@redhat.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Kees Cook <keescook@chromium.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	linux-doc@vger.kernel.org (open list:DOCUMENTATION),
-	linux-kernel@vger.kernel.org (open list),
-	dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
-	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS)
-Cc: Roberto Sassu <roberto.sassu@huawei.com>,
-	Kefeng Wang <wangkefeng.wang@huawei.com>,
-	petr@tesarici.cz
-Subject: [PATCH v2 RESEND 1/7] swiotlb: Use a helper to initialize swiotlb fields in struct device
-Date: Tue,  9 May 2023 11:18:13 +0200
-Message-Id: <3fe75f413b87dd2106c023e73f336231d16abc96.1683623618.git.petr.tesarik.ext@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1683623618.git.petr.tesarik.ext@huawei.com>
-References: <cover.1683623618.git.petr.tesarik.ext@huawei.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2F01196;
+	Tue,  9 May 2023 13:12:20 +0000 (UTC)
+Received: by mail-yb1-f181.google.com with SMTP id 3f1490d57ef6-b9a6eec8611so30422878276.0;
+        Tue, 09 May 2023 06:12:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1683637939; x=1686229939;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=R2TVkTcRR+HHLfwU8yYzkifpJylSopd6W+iGl+jzFcc=;
+        b=IqgFetJku+D8SG7U+6Y+fxClTw09OYQB7Y9UUENlnULKngDeHvyObpmIfXEmo/6OY4
+         IqZ7jgbWgwjSUfkbVFRss8Y6dyRGtL805jEDf8ZeeIgir/aogu2u94CINhNnXe34yEqQ
+         rjxoO356CwHqYPWrRSXhs0jTglTN6i3HXrdgE+7eLwsbsbOvxrIMi/x1yuKIZwV2sBpO
+         kxPLBp1K9egrsJEvorxcZLSWf7T6gCV8c56RtaVIbU/QQwzXptlcXZLM26D2NLvOY+qq
+         9AItZhBwwnvuobPQOv7wuzfPN4l0br83JhCTzVKIwII2RueiDs6N3wbAOMkrNglYNYsg
+         sTjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683637939; x=1686229939;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=R2TVkTcRR+HHLfwU8yYzkifpJylSopd6W+iGl+jzFcc=;
+        b=i0FALIHdUSSeZ+a7+9F4Rh3FxQYALSBY/kUimq5DWpudNMJH2OXRQnFk+X0EMnETNA
+         mXSdr2i/gwO0VWKEEixJh5hRnN0WS/yt5zjdB5CplDCknE470O7sF2G4xsvtqwfRRpec
+         zkmDKel9HmBqzJW+nyGKU8xiuaGHpszH97tYoLPqUcU0uXi55Ve1YdjaMQ+QSBSTKcn8
+         KhB9OCZr08Mn4+kcRT2yskzce5bwsicwRVKOsnvmsPw3yLpGzV0dCV6BcdB3t+ZGzTCM
+         r8FSsKi+K/TX8D0riIvJyRBys4wHhhoqume1yJvrKbaEtbkXrVrlcAYMGUE35fq2yvJA
+         i9Zg==
+X-Gm-Message-State: AC+VfDwi4/FNOgxxu/d1C3lNTVfU6W4nXQ6OcZ/wedaPCD7j8Gz3K73t
+	JvTgaPbDTl0vxktCQuwp61yR1qmB+NSVAqP9ViM=
+X-Google-Smtp-Source: ACHHUZ4H70Ob3tXh7aZL/4+UzNdRfq3+NVyxO+HhjHaijcard9AvJqMssYLZC6/XQwlbr1GdM/OwTLNWrNmDeAouSGs=
+X-Received: by 2002:a25:e7d1:0:b0:b8f:3915:fbae with SMTP id
+ e200-20020a25e7d1000000b00b8f3915fbaemr15459162ybh.2.1683637939712; Tue, 09
+ May 2023 06:12:19 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:GxC2BwDHdz7lD1pksN2OAg--.5S3
-X-Coremail-Antispam: 1UD129KBjvJXoW7Ww4DuF1Utry5Cry7Jw1xuFg_yoW8ZrWUpF
-	97AayrGFW2gFs7CrW7C3s7AF1fKan7Ca4xCrya9wnYkrnxJr9xJFyDtrW5Awn5Jr409F4f
-	JFySvryYkF1xAw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUPab4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
-	6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUGw
-	A2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxS
-	w2x7M28EF7xvwVC0I7IYx2IY67AKxVWUJVWUCwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxV
-	WxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_
-	Gr0_Gr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMc
-	Ij6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_
-	Jr0_Gr1lF7xvr2IYc2Ij64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc7CjxVAKzI0EY4
-	vE52x082I5MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8C
-	rVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWrXVW8Jr
-	1lIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7Cj
-	xVAFwI0_Cr0_Gr1UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxV
-	WUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxU
-	2RwZUUUUU
-X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
-X-CFilter-Loop: Reflected
+References: <0-v2-cd32667d2ba6+70bd1-iommu_err_unwind_jgg@nvidia.com>
+ <2-v2-cd32667d2ba6+70bd1-iommu_err_unwind_jgg@nvidia.com> <CANiq72m4sGq10s==TPTjN4L28xgHk1dYsq+o1ves7_c6pho_pw@mail.gmail.com>
+ <ZCWcd5FkGhpYhCUi@nvidia.com>
+In-Reply-To: <ZCWcd5FkGhpYhCUi@nvidia.com>
+From: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date: Tue, 9 May 2023 15:12:08 +0200
+Message-ID: <CANiq72mymifSufr-uBJyVi-7rY2OCtKgLvbxbEQM8MF2bHG3Lw@mail.gmail.com>
+Subject: Re: [PATCH v2 02/14] iommu: Add for_each_group_device()
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, llvm@lists.linux.dev, 
+	Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, 
+	Miguel Ojeda <ojeda@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Tom Rix <trix@redhat.com>, 
+	Will Deacon <will@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Kevin Tian <kevin.tian@intel.com>, Nicolin Chen <nicolinc@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Petr Tesarik <petr.tesarik.ext@huawei.com>
+On Thu, Mar 30, 2023 at 4:28=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> wr=
+ote:
+>
+> That would be nice..
 
-Move swiotlb initialization code to swiotlb.h. This change also
-allows to provide a stub implementation if swiotlb is not
-configured, getting rid of an #ifdef in driver core.
+Done! https://lore.kernel.org/lkml/20230509125812.310307-2-ojeda@kernel.org=
+/
 
-Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
----
- drivers/base/core.c     |  4 +---
- include/linux/swiotlb.h | 12 ++++++++++++
- 2 files changed, 13 insertions(+), 3 deletions(-)
+> Yes!
+>
+> clang-format and clangd have really transformed how I'm working!
 
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index 3dff5037943e..46d1d78c5beb 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -3108,9 +3108,7 @@ void device_initialize(struct device *dev)
-     defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
- 	dev->dma_coherent = dma_default_coherent;
- #endif
--#ifdef CONFIG_SWIOTLB
--	dev->dma_io_tlb_mem = &io_tlb_default_mem;
--#endif
-+	swiotlb_dev_init(dev);
- }
- EXPORT_SYMBOL_GPL(device_initialize);
- 
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 7af2673b47ba..d851dbce1143 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -128,6 +128,15 @@ static inline bool is_swiotlb_force_bounce(struct device *dev)
- 	return mem && mem->force_bounce;
- }
- 
-+/**
-+ * swiotlb_dev_init() - initialize swiotlb fields in &struct device
-+ * @dev: device to be initialized
-+ */
-+static inline void swiotlb_dev_init(struct device *dev)
-+{
-+	dev->dma_io_tlb_mem = &io_tlb_default_mem;
-+}
-+
- void swiotlb_init(bool addressing_limited, unsigned int flags);
- void __init swiotlb_exit(void);
- size_t swiotlb_max_mapping_size(struct device *dev);
-@@ -137,6 +146,9 @@ void __init swiotlb_adjust_size(unsigned long size);
- static inline void swiotlb_init(bool addressing_limited, unsigned int flags)
- {
- }
-+static inline void swiotlb_dev_init(struct device *dev)
-+{
-+}
- static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
- {
- 	return false;
--- 
-2.25.1
+Thanks, I am glad that is the case, and it was also useful to justify
+the change above.
 
+Cheers,
+Miguel
