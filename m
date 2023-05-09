@@ -1,20 +1,20 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEF5A19909
-	for <iommu@lists.linux.dev>; Tue,  9 May 2023 21:20:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1471EC433EF;
-	Tue,  9 May 2023 21:20:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4CBB19900
+	for <iommu@lists.linux.dev>; Tue,  9 May 2023 21:21:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4196FC433EF;
+	Tue,  9 May 2023 21:21:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683667252;
-	bh=BNV/f4Kez2yLXS9U8C2xlcKB+uBud80pXz8NfeKJWm4=;
+	s=k20201202; t=1683667263;
+	bh=6QvBvkH///NvBvLTrTuGtXcNfrdX1zFcZbHf+0xjjgY=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=W3PYXTnMQjYK/MrG6efjD5TVQynxvI8Tg+jUDMB2NgrVk4RLMbpXf+bxt6jHqf8Dt
-	 VzPOSShWCtsZHkCQyNgyuQUAG4git7pAu75KpsBjlTC8k6n58VyAsV7IzdOfIBpNoU
-	 yakG/w9vzI4ziaGWwpLUlxKrxGSy5KjaHNvTSIabU23417rpEU8S2bFLu26+lHTQRC
-	 ib5qczOx3fK6U82qHf/4yqReevKr1t/+OTbuuzhxKlloP7KXJqKYNeTkJbIFVZMyWB
-	 s6H5F5XG93QMg6+6ZS7vJLvj5KiyKbxyASS8GIsaIYhzhdwSse6PlngfD2kYqmc1jR
-	 IfpZZr23tPnZA==
+	b=AAe7ye/scWe/28heCgqlPwIENJ8nPs36oXJKuHlaUv1K4a7FCjbFXD/O+6jwzj7uG
+	 5H9/xRgTNNJeP52aebUTFmQEAcJ7fToCSwwJ4VVeEeZ5jT94IPetMOzrTPADFx/Opm
+	 /ZFyD8BqlST0046ZzYj0PfLIe5jPSdvUVvDDjjh2t8geruXeiRekaCT+594yMLrYNZ
+	 42SlHMHW6SFwpfdLCtcvNHdKN6hA0Gg7/bfOnITalmhK+zPo4JeBASwQBKE3E2XrDA
+	 48sdGSXGQu1oYer1Mx7DZwMC61HpIAJQSu9vpaOrVHvIP9zmhkftWal74lKtT2PQWh
+	 Zhv9/mYCPHeTw==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -22,20 +22,13 @@ Cc: Tomas Krcka <krckatom@amazon.de>,
 	Will Deacon <will@kernel.org>,
 	Sasha Levin <sashal@kernel.org>,
 	joro@8bytes.org,
-	baolu.lu@linux.intel.com,
-	robin.murphy@arm.com,
-	jgg@ziepe.ca,
-	shameerali.kolothum.thodi@huawei.com,
-	yangyicong@hisilicon.com,
-	nicolinc@nvidia.com,
-	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.10 4/5] iommu/arm-smmu-v3: Acknowledge pri/event queue overflow if any
-Date: Tue,  9 May 2023 17:20:40 -0400
-Message-Id: <20230509212044.22294-4-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 3/4] iommu/arm-smmu-v3: Acknowledge pri/event queue overflow if any
+Date: Tue,  9 May 2023 17:20:55 -0400
+Message-Id: <20230509212058.22651-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230509212044.22294-1-sashal@kernel.org>
-References: <20230509212044.22294-1-sashal@kernel.org>
+In-Reply-To: <20230509212058.22651-1-sashal@kernel.org>
+References: <20230509212058.22651-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -81,14 +74,14 @@ Link: https://lore.kernel.org/r/20230329123420.34641-1-tomas.krcka@gmail.com
 Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 19 ++++++++++++++-----
+ drivers/iommu/arm-smmu-v3.c | 19 ++++++++++++++-----
  1 file changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index bc4cbc7542ce2..982c42c873102 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -162,6 +162,18 @@ static void queue_inc_cons(struct arm_smmu_ll_queue *q)
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 4f64c3a9ee88d..b3c5d7b4547a4 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -760,6 +760,18 @@ static void queue_inc_cons(struct arm_smmu_ll_queue *q)
  	q->cons = Q_OVF(q->cons) | Q_WRP(q, cons) | Q_IDX(q, cons);
  }
  
@@ -106,8 +99,8 @@ index bc4cbc7542ce2..982c42c873102 100644
 +
  static int queue_sync_prod_in(struct arm_smmu_queue *q)
  {
- 	u32 prod;
-@@ -1380,8 +1392,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
+ 	int ret = 0;
+@@ -1720,8 +1732,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
  	} while (!queue_empty(llq));
  
  	/* Sync our overflow flag, as we believe we're up to speed */
@@ -117,7 +110,7 @@ index bc4cbc7542ce2..982c42c873102 100644
  	return IRQ_HANDLED;
  }
  
-@@ -1439,9 +1450,7 @@ static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
+@@ -1779,9 +1790,7 @@ static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
  	} while (!queue_empty(llq));
  
  	/* Sync our overflow flag, as we believe we're up to speed */
