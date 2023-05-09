@@ -1,84 +1,112 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 031EB19900
-	for <iommu@lists.linux.dev>; Tue,  9 May 2023 20:35:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683664517; x=1715200517;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=zDgUrx46HKYf2WDUcb3OSI439GIUg2nqyHSQb8R/LPM=;
-  b=nD68BybdIjLNpuiq8tgOuHCTcDottfMKgtZ+yImSzbu4n2LVCIQe3vlW
-   ZZay5VaYrKwGJynQwN83YB0/xmPBzHt1mdeQycE0UYs02wYyU0BjZlad0
-   i5k+utyEXtgA0W0yc9YRP3ki8UZTc/cNmFkruIMjRNqPDQPU213pYcNts
-   pSqrG9Rle3yOklduDPsIu5wiJt2vcI+wjaOr/8dDFiWcHGilMHlW/KEzd
-   Aylk0rGcHOCQuDkb6fIO1KEwFuuygWkoQah308lSkkbvKeL9BdYdq/aTu
-   Y7IYFRpYCCBIdX+8mnpOlSEQdU+IDLn04Y/Dda4xVQQOVeiSNvpL9MoIF
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10705"; a="334504620"
-X-IronPort-AV: E=Sophos;i="5.99,262,1677571200"; 
-   d="scan'208";a="334504620"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2023 13:35:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10705"; a="702004029"
-X-IronPort-AV: E=Sophos;i="5.99,262,1677571200"; 
-   d="scan'208";a="702004029"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2023 13:35:15 -0700
-Date: Tue, 9 May 2023 13:39:40 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Robin Murphy <robin.murphy@arm.com>, Jason
- Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg
- Roedel <joro@8bytes.org>, "dmaengine@vger.kernel.org"
- <dmaengine@vger.kernel.org>, "vkoul@kernel.org" <vkoul@kernel.org>, Will
- Deacon <will@kernel.org>, "David Woodhouse" <dwmw2@infradead.org>, "Raj,
- Ashok" <ashok.raj@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Yu,
- Fenghua" <fenghua.yu@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>,
- "Luck, Tony" <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
- "Ranganathan, Narayan" <narayan.ranganathan@intel.com>,
- jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v5 1/7] iommu: Generalize default PCIe requester ID
- PASID
-Message-ID: <20230509133940.6bf0a053@jacob-builder>
-In-Reply-To: <BN9PR11MB5276A1CC0B5FF8D9394F22F98C729@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20230427174937.471668-1-jacob.jun.pan@linux.intel.com>
-	<20230427174937.471668-2-jacob.jun.pan@linux.intel.com>
-	<BN9PR11MB5276FD027EC3D6BAA24046F58C6B9@BN9PR11MB5276.namprd11.prod.outlook.com>
-	<20230428085615.58e437c9@jacob-builder>
-	<BN9PR11MB5276A1CC0B5FF8D9394F22F98C729@BN9PR11MB5276.namprd11.prod.outlook.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40D0519904
+	for <iommu@lists.linux.dev>; Tue,  9 May 2023 21:19:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC9BEC433D2;
+	Tue,  9 May 2023 21:19:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683667180;
+	bh=RkcAtB480GYQA9hn42rA8rzoGc08MhttzYGEylxcyW8=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=OIa2KRNMDsBD+i1HYnktaEso+Y9/S/fIIOkMakQcjsRcnaktD7xYyGHYzTz0twbe+
+	 6TBYwEf+S9onMNOo+s+/3St294G0Q780jgMwMdiC+ExK8/pd0gGKo6gUifsZcMdZvw
+	 TEftFCK2z+xUTz6ElM9RkviRINHM9Q6Z/+WZohP+ouX0L+/W7iBDHqrqXuTY7JJGwt
+	 DK2iLMfbau+QHpqEwYeI6xWZvW+cHhTG/+Jcw+JwXgOb8k6P7TpQ6wIljgAjudXPP5
+	 oDAr3SozRxxnBBFeCh5XDRxf9JeHDgNibPMzLfZgITPGoga98Ijp8nj+bpZol7STII
+	 52rILDIOC1qDQ==
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Cc: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+	Johan Hovold <johan+linaro@kernel.org>,
+	Will Deacon <will@kernel.org>,
+	Sasha Levin <sashal@kernel.org>,
+	joro@8bytes.org,
+	dmitry.baryshkov@linaro.org,
+	quic_saipraka@quicinc.com,
+	konrad.dybcio@linaro.org,
+	quic_bjorande@quicinc.com,
+	a39.skl@gmail.com,
+	quic_eberman@quicinc.com,
+	mani@kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev
+Subject: [PATCH AUTOSEL 6.3 03/18] iommu/arm-smmu-qcom: Limit the SMR groups to 128
+Date: Tue,  9 May 2023 17:19:11 -0400
+Message-Id: <20230509211928.21010-3-sashal@kernel.org>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230509211928.21010-1-sashal@kernel.org>
+References: <20230509211928.21010-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 
-Hi Kevin,
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-On Fri, 5 May 2023 08:28:13 +0000, "Tian, Kevin" <kevin.tian@intel.com>
-wrote:
+[ Upstream commit 12261134732689b7e30c59db9978f81230965181 ]
 
-> > > >
-> > > > By having a common RID_PASID, we can avoid conflicts between
-> > > > different use cases in the generic code. e.g. SVA and DMA API with
-> > > > PASIDs.  
-> > >
-> > > You intend it to be generic but in the end only vt-d driver is changed
-> > > to use it in this series...  
-> > change for SVA is in the patch.  
-> 
-> My point was that since it is common why there is no change in arm-smmu
-> driver to use the common macro?
-Got it, I will include changes to SSID 0 in smmu code.
+Some platforms support more than 128 stream matching groups than what is
+defined by the ARM SMMU architecture specification. But due to some unknown
+reasons, those additional groups don't exhibit the same behavior as the
+architecture supported ones.
 
-Thanks,
+For instance, the additional groups will not detect the quirky behavior of
+some firmware versions intercepting writes to S2CR register, thus skipping
+the quirk implemented in the driver and causing boot crash.
 
-Jacob
+So let's limit the groups to 128 for now until the issue with those groups
+are fixed and issue a notice to users in that case.
+
+Reviewed-by: Johan Hovold <johan+linaro@kernel.org>
+Tested-by: Johan Hovold <johan+linaro@kernel.org>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Link: https://lore.kernel.org/r/20230327080029.11584-1-manivannan.sadhasivam@linaro.org
+[will: Reworded the comment slightly]
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index d1b296b95c860..ae09c627bc844 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -268,12 +268,26 @@ static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+ 
+ static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
+ {
+-	unsigned int last_s2cr = ARM_SMMU_GR0_S2CR(smmu->num_mapping_groups - 1);
+ 	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
++	unsigned int last_s2cr;
+ 	u32 reg;
+ 	u32 smr;
+ 	int i;
+ 
++	/*
++	 * Some platforms support more than the Arm SMMU architected maximum of
++	 * 128 stream matching groups. For unknown reasons, the additional
++	 * groups don't exhibit the same behavior as the architected registers,
++	 * so limit the groups to 128 until the behavior is fixed for the other
++	 * groups.
++	 */
++	if (smmu->num_mapping_groups > 128) {
++		dev_notice(smmu->dev, "\tLimiting the stream matching groups to 128\n");
++		smmu->num_mapping_groups = 128;
++	}
++
++	last_s2cr = ARM_SMMU_GR0_S2CR(smmu->num_mapping_groups - 1);
++
+ 	/*
+ 	 * With some firmware versions writes to S2CR of type FAULT are
+ 	 * ignored, and writing BYPASS will end up written as FAULT in the
+-- 
+2.39.2
+
