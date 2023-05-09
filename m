@@ -1,14 +1,14 @@
-Received: from frasgout12.his.huawei.com (frasgout12.his.huawei.com [14.137.139.154])
+Received: from frasgout13.his.huawei.com (frasgout13.his.huawei.com [14.137.139.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DB018BF3
-	for <iommu@lists.linux.dev>; Tue,  9 May 2023 09:19:55 +0000 (UTC)
-Received: from mail02.huawei.com (unknown [172.18.147.228])
-	by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4QFslk6gbdz9v7Y4
-	for <iommu@lists.linux.dev>; Tue,  9 May 2023 17:08:50 +0800 (CST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8CCB8BF5
+	for <iommu@lists.linux.dev>; Tue,  9 May 2023 09:20:23 +0000 (UTC)
+Received: from mail02.huawei.com (unknown [172.18.147.227])
+	by frasgout13.his.huawei.com (SkyGuard) with ESMTP id 4QFsnd44Cnz9v7Qm
+	for <iommu@lists.linux.dev>; Tue,  9 May 2023 17:10:29 +0800 (CST)
 Received: from A2101119013HW2.china.huawei.com (unknown [10.81.212.219])
-	by APP2 (Coremail) with SMTP id GxC2BwDHdz7lD1pksN2OAg--.5S5;
-	Tue, 09 May 2023 10:19:27 +0100 (CET)
+	by APP2 (Coremail) with SMTP id GxC2BwDHdz7lD1pksN2OAg--.5S7;
+	Tue, 09 May 2023 10:19:54 +0100 (CET)
 From: Petr Tesarik <petrtesarik@huaweicloud.com>
 To: Jonathan Corbet <corbet@lwn.net>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -40,9 +40,9 @@ To: Jonathan Corbet <corbet@lwn.net>,
 Cc: Roberto Sassu <roberto.sassu@huawei.com>,
 	Kefeng Wang <wangkefeng.wang@huawei.com>,
 	petr@tesarici.cz
-Subject: [PATCH v2 RESEND 3/7] dma-mapping: introduce the DMA_ATTR_MAY_SLEEP attribute
-Date: Tue,  9 May 2023 11:18:15 +0200
-Message-Id: <5d00f29ab7f26a5de32c93792df32b689ccd9f3f.1683623618.git.petr.tesarik.ext@huawei.com>
+Subject: [PATCH v2 RESEND 5/7] swiotlb: Add a boot option to enable dynamic bounce buffers
+Date: Tue,  9 May 2023 11:18:17 +0200
+Message-Id: <87fbababd715ff4614025fb9093d2176fb819cd2.1683623618.git.petr.tesarik.ext@huawei.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1683623618.git.petr.tesarik.ext@huawei.com>
 References: <cover.1683623618.git.petr.tesarik.ext@huawei.com>
@@ -53,76 +53,170 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:GxC2BwDHdz7lD1pksN2OAg--.5S5
-X-Coremail-Antispam: 1UD129KBjvJXoW7ZF17ur1rGrWUZw18GFy5XFb_yoW8Cw48p3
-	ZagFyfGrZ2gr1xCr1kG3W29r4UXa18u345GF40vr1rZFW5A3Z29rZ8Kw1Yq3s8XryxCFWF
-	vrW29ry5CryqyrDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUPmb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
-	6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUWw
-	A2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxS
-	w2x7M28EF7xvwVC0I7IYx2IY67AKxVWUJVWUCwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxV
-	W8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E14v2
-	6r4UJVWxJr1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2
-	WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkE
-	bVWUJVW8JwACjcxG0xvY0x0EwIxGrwACI402YVCY1x02628vn2kIc2xKxwCY1x0264kExV
-	AvwVAq07x20xyl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAq
-	x4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26rWY6r
-	4UJwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY
-	1x0267AKxVW8Jr0_Cr1UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67
-	AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4UJVWxJrUvcSsGvfC2KfnxnUUI43ZE
-	Xa7IU86BT5UUUUU==
+X-CM-TRANSID:GxC2BwDHdz7lD1pksN2OAg--.5S7
+X-Coremail-Antispam: 1UD129KBjvJXoW3Gw1kXFWrJw13ArWrGry8Xwb_yoW7Ww13pr
+	W09a47KFs7JF18Z34DCa17GF1Fkan29ay3JFWFgryFyF98WrnYqrnrtr4YqF1Fy3y0vF47
+	ZFy5ZF4Ykr17t3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUPCb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
+	6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUAV
+	Cq3wA2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0
+	rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWUCVW8JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267
+	AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E
+	14v26r4UJVWxJr1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrV
+	C2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE
+	7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACI402YVCY1x02628vn2kIc2xKxwCY1x0264
+	kExVAvwVAq07x20xyl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2Iq
+	xVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r
+	WY6r4UJwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1I6r4UMIIF0xvE2Ix0cI8I
+	cVCY1x0267AKxVW8Jr0_Cr1UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87
+	Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4UJVWxJrUvcSsGvfC2KfnxnUUI
+	43ZEXa7IU8gAw7UUUUU==
 X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
 X-CFilter-Loop: Reflected
 
 From: Petr Tesarik <petr.tesarik.ext@huawei.com>
 
-Introduce a DMA attribute to tell the DMA-mapping subsystem that
-the operation is allowed to sleep.
+The main goal of allocating bounce buffers dynamically is to allow
+allocating a minimal fixed swiotlb at boot time but avoid hard
+limits on the amount of I/O that can be handled later.
 
-This patch merely adds the flag, but it does not do anything at
-the moment.
+Compared to fixed IO TLB slots, dynamic allocation of bounce buffers
+typically increases the worst-case I/O latency and may also reduce
+performance for some workloads.
+
+I did some basic testing with fio against a QEMU SATA drive backed
+by a RAM block device in the host to minimize external factors. The
+kernel was booted with "swiotlb=force,dynamic". I performed testing
+of single-threaded I/O of 4-KiB segments, single-threaded I/O of
+1-MiB segments, and 4-core parallel I/O of 64-KiB segments. The last
+column is the coefficient of variance in 5 runs of the test:
+
+               Read  Write  Coeff
+single 4-KiB  +1.9%  +1.9%  1.7%
+single 1-MiB  -8.1%  -8.2%  2.2%
+parallel      -9.4%  -9.5%  2.6%
+
+There is a slight increase in bandwidth for single-threaded 4-KiB
+segments. This is because the buddy allocator is quite efficient for
+order-0 allocations, so the overhead is offset by faster allocation
+from an almost empty fixed swiotlb (which is still used for buffers
+smaller than one page).
+
+Anyway, since the feature is new and does not benefit all
+workloads, make it disabled by default and let people turn it on
+with "swiotlb=dynamic" if needed. Since this option can be combined
+with "force", the parser is modified to allow multiple options
+separated by commas.
+
+A new bool field is added to struct io_tlb_mem to tell whether
+dynamic allocations are allowed. This field is always false for DMA
+restricted pools. It is also false for other software IO TLBs
+unless "swiotlb=dynamic" was specified.
 
 Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
 ---
- Documentation/core-api/dma-attributes.rst | 10 ++++++++++
- include/linux/dma-mapping.h               |  6 ++++++
- 2 files changed, 16 insertions(+)
+ .../admin-guide/kernel-parameters.txt         |  6 +++++-
+ include/linux/swiotlb.h                       |  3 ++-
+ kernel/dma/swiotlb.c                          | 20 ++++++++++++++-----
+ 3 files changed, 22 insertions(+), 7 deletions(-)
 
-diff --git a/Documentation/core-api/dma-attributes.rst b/Documentation/core-api/dma-attributes.rst
-index 1887d92e8e92..9ce00926455f 100644
---- a/Documentation/core-api/dma-attributes.rst
-+++ b/Documentation/core-api/dma-attributes.rst
-@@ -130,3 +130,13 @@ accesses to DMA buffers in both privileged "supervisor" and unprivileged
- subsystem that the buffer is fully accessible at the elevated privilege
- level (and ideally inaccessible or at least read-only at the
- lesser-privileged levels).
-+
-+DMA_ATTR_MAY_SLEEP
-+------------------
-+
-+This tells the DMA-mapping subsystem that it is allowed to sleep. For example,
-+if mapping needs a bounce buffer, software IO TLB may use CMA for the
-+allocation if this flag is given.
-+
-+This attribute is not used for dma_alloc\* functions. Instead, the provided
-+GFP flags are used to determine whether the allocation may sleep.
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 0ee20b764000..7a75c503ac38 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -61,6 +61,12 @@
-  */
- #define DMA_ATTR_PRIVILEGED		(1UL << 9)
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 9e5bab29685f..9f7f64edf6b5 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -6152,14 +6152,18 @@
+ 			Execution Facility on pSeries.
  
-+/*
-+ * DMA_ATTR_MAY_SLEEP: This tells the DMA-mapping subsystem that it is allowed
-+ * to sleep.
-+ */
-+#define DMA_ATTR_MAY_SLEEP		(1UL << 10)
+ 	swiotlb=	[ARM,IA-64,PPC,MIPS,X86]
+-			Format: { <int> [,<int>] | force | noforce }
++			Format: { <int> [,<int>] [,option-list] | option-list }
+ 			<int> -- Number of I/O TLB slabs
+ 			<int> -- Second integer after comma. Number of swiotlb
+ 				 areas with their own lock. Will be rounded up
+ 				 to a power of 2.
++			<option-list> -- Comma-separated list of options.
 +
- /*
-  * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
-  * be given to a device to use as a DMA source or target.  It is specific to a
++			Available options:
+ 			force -- force using of bounce buffers even if they
+ 			         wouldn't be automatically used by the kernel
+ 			noforce -- Never use bounce buffers (for debugging)
++			dynamic -- allow dynamic allocation of bounce buffers
+ 
+ 	switches=	[HW,M68k]
+ 
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index 6aada6ac31e2..daa2064f2ede 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -103,6 +103,7 @@ struct io_tlb_mem {
+ 	bool late_alloc;
+ 	bool force_bounce;
+ 	bool for_alloc;
++	bool allow_dyn;
+ 	unsigned int nareas;
+ 	unsigned int area_nslabs;
+ 	struct io_tlb_area *areas;
+@@ -151,7 +152,7 @@ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
+ 
+ 	return mem &&
+ 		(is_swiotlb_fixed(mem, paddr) ||
+-		 is_swiotlb_dyn(dev, paddr));
++		 (mem->allow_dyn && is_swiotlb_dyn(dev, paddr)));
+ }
+ 
+ static inline bool is_swiotlb_force_bounce(struct device *dev)
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 612e1c2e9573..81eab1c72c50 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -86,6 +86,7 @@ struct io_tlb_dyn_slot {
+ 
+ static bool swiotlb_force_bounce;
+ static bool swiotlb_force_disable;
++static bool swiotlb_dynamic;
+ 
+ struct io_tlb_mem io_tlb_default_mem;
+ 
+@@ -165,10 +166,18 @@ setup_io_tlb_npages(char *str)
+ 		swiotlb_adjust_nareas(simple_strtoul(str, &str, 0));
+ 	if (*str == ',')
+ 		++str;
+-	if (!strcmp(str, "force"))
+-		swiotlb_force_bounce = true;
+-	else if (!strcmp(str, "noforce"))
+-		swiotlb_force_disable = true;
++	while (str && *str) {
++		char *opt = strsep(&str, ",");
++
++		if (!strcmp(opt, "force"))
++			swiotlb_force_bounce = true;
++		else if (!strcmp(opt, "noforce"))
++			swiotlb_force_disable = true;
++		else if (!strcmp(opt, "dynamic"))
++			swiotlb_dynamic = true;
++		else
++			pr_warn("Invalid swiotlb option: %s", opt);
++	}
+ 
+ 	return 0;
+ }
+@@ -251,6 +260,7 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
+ 	mem->area_nslabs = nslabs / mem->nareas;
+ 
+ 	mem->force_bounce = swiotlb_force_bounce || (flags & SWIOTLB_FORCE);
++	mem->allow_dyn = swiotlb_dynamic;
+ 
+ 	for (i = 0; i < mem->nareas; i++) {
+ 		spin_lock_init(&mem->areas[i].lock);
+@@ -1063,7 +1073,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 	}
+ 
+ 	tlb_addr = (phys_addr_t)DMA_MAPPING_ERROR;
+-	if (!is_swiotlb_for_alloc(dev))
++	if (mem->allow_dyn)
+ 		tlb_addr = swiotlb_dyn_map(dev, orig_addr, alloc_size,
+ 					   alloc_align_mask, dir, attrs);
+ 	if (tlb_addr == (phys_addr_t)DMA_MAPPING_ERROR)
 -- 
 2.25.1
 
