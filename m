@@ -1,324 +1,155 @@
-Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2085.outbound.protection.outlook.com [40.107.102.85])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61D7621CDD
-	for <iommu@lists.linux.dev>; Wed, 10 May 2023 20:51:28 +0000 (UTC)
-Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-ba6388faf79so1841084276.0
-        for <iommu@lists.linux.dev>; Wed, 10 May 2023 13:51:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1683751887; x=1686343887;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Crl7UEul6Dcfq8QDpXhaI9Eed6TzM1uxfD1qvdE3PPQ=;
-        b=E34iKIHbcw2iwAefkui6Y8fb8t4HLsOQjNqt1book/JiKc5MTJgfjTRLyefr2cQ5Tl
-         ttxCxp801cxl+gipPupYLagjsf9cbJi+iujzmWCnorMJI/TqEFnHwO9qxkgkGpt8hOqh
-         /6N+osvQn3gDLvcqOrZhZCyASDH4oP30isSwbDcvXYFxg/tcc3S6sQmkMTLTm2nrl2pw
-         gPXVwqKrkdzby3WLUXuFz7nJKDgVC29y7MqRLTuO0Zoy3QXctrcHxQOicB/jM3nGgix5
-         pYOESBEWT/Isgxy0bnA5DVDmFRQCtPV301ZOAI+DwBAAqT6Kvrg2cgYImPalkXd+OqCj
-         a+Bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683751887; x=1686343887;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Crl7UEul6Dcfq8QDpXhaI9Eed6TzM1uxfD1qvdE3PPQ=;
-        b=CGG/3KJ7vKhUZnv6BdfQb1EfMjBw7+Udnw3LXKlVeJrZOkbvk8EoHLyq1Ir6rWFi0j
-         anAWuBkVzavTO47ZYkYaBtuYCTatAJgEkD1WoFd4XDSa8oaZ5WNpBKPcg25pUGS5leMo
-         neYZu/SZgWWaUYit1eEr0qc8mqrZdbh+zbiPmzl7bIdK9a8VgsFKlMsIaGMhRICraHra
-         MlLvIMxtOd1KrKm5GDcEfe+MqlS/pb8LqVbJmBqrz7OIin2JdTFR3tL/xS+mp2VA5prN
-         veuV117ls0uobWEb2borxzcbewfbPsd3nGCmOAF3YUYDlK00C34Ceoo736uPsQuhOBRP
-         N9+A==
-X-Gm-Message-State: AC+VfDwAXFV8vrJ1S3NLyiJQ/jTWvgtC8sVMUhlkYUpgTUn04fa++jmi
-	Va+CcdcrjwFWJW+jUsrEL0DXDTaD8pnI
-X-Google-Smtp-Source: ACHHUZ4n5rJoXtfVajxuWSLClEHWykNb92Fd743Dp9YuFoPRQCTDyrHk2ujH4WRb/j3lWIKrm3A+zT3yunih
-X-Received: from mshavit.ntc.corp.google.com ([2401:fa00:95:20c:2b1f:8d06:7923:f154])
- (user=mshavit job=sendgmr) by 2002:a25:328e:0:b0:ba0:f92f:84e7 with SMTP id
- y136-20020a25328e000000b00ba0f92f84e7mr11905705yby.7.1683751887458; Wed, 10
- May 2023 13:51:27 -0700 (PDT)
-Date: Thu, 11 May 2023 04:50:52 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D63DF21CC3
+	for <iommu@lists.linux.dev>; Wed, 10 May 2023 21:10:55 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QxLS+j3NT5jcuCJyimzCANSp94/b99idzzbU2wUfTPqaM9ghL8N5nfUd9u3mnN/CGZKhOr15TorZa/EBQbEvajteeeYx8kdCayISd7ClVX4XoHqPkoXUS2DuEcykISvNqYEl7PHVIvgnK+njiZR88HY+SyVM67p44gq5+mS0QXMOFNYma2JaCmUAAjRtzpfl1f9H/yYVOpP7mBm7RBglTCzKspIn3GMLKpwuMsWTYWh5KMNm/Qi2tMpLBLxXwYZ0mKUuivIfwQcSS/HIQq0w9YN3XWlo09hJeEU8x0WOwlhXaxns/JT7trTjXKiJH+S8MoGbeZEI5NEhUa0voD2iqA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gKQWilM2TdzxsBd5QJu4ltFNwcAwZDF8l02y6FfF30k=;
+ b=jPdCOL0q7eKojkLWceiPYgZbie84DKDzIpxJBo+sFERLs0IRRvbwlACi9I4HgvigW1fQUdx7TJ2AvkzC0Th583QlC+jH6AdJZ7hvPjh3gtdwsWMczmBc7WdG8RlIJb5hYz8BozsyveRucR09N7Jw3opoN7Gpjygn7QT8O+41MRFKSvtUvOoyz9ShKRmJCElXMFKXNhmmVwo2L4q62apxSVo705d0IfZ09lpTHsgJ6iYCGkM17R4S/U2BuvXrZe45uR0NO9Rv1Y5waADs8JCb0FJNPWS2xb6GlAmryU45AqxE/0MQ98SvOUjsoimLvMi/6gBgUg15wJ0v4Q2ZAdDvhA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gKQWilM2TdzxsBd5QJu4ltFNwcAwZDF8l02y6FfF30k=;
+ b=Ca6QqEAZas+yuumc9bpg1KsGc7YO91T6fgBe9GqkNLTS21QfXCZylFUJZZVFn25UfIRVRj5jy+QSW6uRBMcqnz+ipXqqxp8Pb31wD0+bvRXToMi4KYspaUeKKXwFe09+OoI3L2dYk26yx+wU/PZsyezvvHLBtboivz6HGU8+CFiSvUzJPrpFNWsA0Ar0pD+U4EQpRr0XpyeQDpLdX0LQOzfPcMCkyL5Ky8cFcWQ5AlvLZcOZ1Fm8H2ymCM3db14iSP7q8SGYfbbRzEXDYZUS12IWgMyPPTNjXlTiKme09vqMKOQx0U80wvs97H7xv8cZgbxyNTYXvPms6u7TBohWJg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DS7PR12MB5887.namprd12.prod.outlook.com (2603:10b6:8:7a::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6387.20; Wed, 10 May 2023 21:10:53 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6363.032; Wed, 10 May 2023
+ 21:10:53 +0000
+Date: Wed, 10 May 2023 18:10:51 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Michael Shavit <mshavit@google.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, jean-philippe@linaro.org,
+	nicolinc@nvidia.com, baolu.lu@linux.intel.com,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 0/5] Add PASID support to SMMUv3 unmanaged domains
+Message-ID: <ZFwIWz8kBL+bti1m@nvidia.com>
+References: <20230510205054.2667898-1-mshavit@google.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 In-Reply-To: <20230510205054.2667898-1-mshavit@google.com>
+X-ClientProxiedBy: MW4PR04CA0074.namprd04.prod.outlook.com
+ (2603:10b6:303:6b::19) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20230510205054.2667898-1-mshavit@google.com>
-X-Mailer: git-send-email 2.40.1.521.gf1e218fcd8-goog
-Message-ID: <20230510205054.2667898-6-mshavit@google.com>
-Subject: [PATCH v1 5/5] iommu/arm-smmu-v3: Implement set_dev_pasid
-From: Michael Shavit <mshavit@google.com>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>
-Cc: Michael Shavit <mshavit@google.com>, jean-philippe@linaro.org, nicolinc@nvidia.com, 
-	jgg@nvidia.com, baolu.lu@linux.intel.com, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DS7PR12MB5887:EE_
+X-MS-Office365-Filtering-Correlation-Id: 70881b9b-0278-4008-7e03-08db519b09f3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	/+3NMCE0U7ghFoq9noXZ+B5dHlmtsjsGxepdc0tCg/Qn59mDq3eo3qMhEkNmPppZufmx9+y3bNey7hfuznBA4FcDChUo3bE1NMs1/7ukS1WrlqoQk0O4F3CjW60PFekdIefHJnHZS0078uXBX2eZAAq5iy/i6WSJv818/fnQyYMrqpJvxVXshp7S6J2fnLf6wFsjHu3z40q30GGsn2WYJ7dZ69DqV9WnJfdAVgXLtqv3qvuBezuiItN4SVEODMAOf21AX7cACKct4W+/vVlYUzhMtTIgnHhStNghb1esJbBclc/9ledEeuOKB6OnOCpLEyPhQK2VxEgyzSMD4hxpMvujP5pyzCQudHSo+niwxZVGVCmH7AE0wWeFaXi86it3KjVfOewTfGtffqE1eEXdzcuTr/B62ycB2ezoFIy8X9SfDK9feAIZbq34oxPo9s6olkTBIElAsOeJyJEEqm6Tz9jhOZKHTMb22RHLNU4bCDcc4JsssCeX/gmG6jp3oeZKXSCDbYC7OX+M9HzL/QwyXZenlq64fEHm8Pams8zSMnz1mHTloqGCxYRQxutncwVHI6UPskSZX9BDGDeBBY/RWBypffRD1YB5ZuCz2bO+HNI=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(136003)(396003)(366004)(346002)(39860400002)(451199021)(2616005)(83380400001)(2906002)(186003)(6916009)(66476007)(66556008)(316002)(41300700001)(66946007)(54906003)(4326008)(6486002)(478600001)(5660300002)(6506007)(6512007)(26005)(8936002)(8676002)(38100700002)(36756003)(86362001)(66899021)(67856001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?VrJeY6oQYm0nLajRYwN5aZSNCZ+KBooGmI+0UuNOlF/qekSPa1CK9OWyE+c0?=
+ =?us-ascii?Q?f4cxbngZy1eGq/YxlrhPi6ZDSCcHNhGgoHlE93h88Ani0AwC780Jq+ncLIzM?=
+ =?us-ascii?Q?R8VjaiRjFSB6nMTEkhuJvLyWiU9/h7zzbRndhUbqCvQJubkxU6SKSDL/wwM/?=
+ =?us-ascii?Q?lyh5C5sbLdBGfnGn8MEcdLm70nNdGx96X35ogPP+l897Cs47Pb3KUH8q2eZz?=
+ =?us-ascii?Q?psikoqpEDCNGWsi9mFxTolmnwCtyqATNcHK7q6dGjyp8sH67+uzVoMAz0Lmo?=
+ =?us-ascii?Q?TdyG/441zGVjL4ucXyxxDmWMS5ti7jSUPI54YrLia/yvQoaqqSpHojVLO8Zk?=
+ =?us-ascii?Q?h7c4nDElbtuRo4mJkLHG9BmrfI2oiq8BiydvKKuHl/ludirE+oq7uRwbeQoq?=
+ =?us-ascii?Q?iA1WQmQ9y2P4mjFKUMgUcZv173nUYqaFwsyy7WW5po7nFx3V7GADiuT8G7vt?=
+ =?us-ascii?Q?a9oHbs/DgsheUFubSIQy2GmpvGfzJNoPVtZ5f4TtVWu1ml3yFu/oXibLmLUF?=
+ =?us-ascii?Q?h33gLhvbBn9iqcjJlWexwIdfmpEynT+At38yukaB95WEnDZ8Nu1qc/vl34eT?=
+ =?us-ascii?Q?DImrjXX1vvE42NhT1xFMNE4Wo6ajeSGM3gaO6QF/iJi6HjMAHB0HrB3AFNe+?=
+ =?us-ascii?Q?elfZcxzQ1GzK7y2O3xhS6aE83ODRDKRzb3aQrCEXE3D15vHinBvu04w8pziB?=
+ =?us-ascii?Q?l5ZOOvf8QYs7wvoxQyz38cmPZSWUgM388Z2MfXPtCjgYLtn1D0d8giVMykIn?=
+ =?us-ascii?Q?DM1puYETnQeGHNevSOV7+/lD3vZZ1DQnpFLOyR1WGOEgXE4V3zs3NTpHY3Je?=
+ =?us-ascii?Q?KrLbPmWGqwdLxZMHQ/846REOhrJuz5abfCrkHvd/wXN5BWsy68I5NRFT2HNB?=
+ =?us-ascii?Q?+SfhVj6EugpdSp8NJJeA+ZOagREUBbky4XsLT/OQv7SbhPKf+XKFgI9HU4DA?=
+ =?us-ascii?Q?JTP5kx0d8my2uDrCgDG38ZC6Wb/rE6vJAOdKIeTE95wcElA6phT9Ahf8GnFE?=
+ =?us-ascii?Q?Hag1gSYCWRMs8+C0xrsrY5aJokpm0jV0564uIWuwp/11M4UfKXZR2f1GmUjb?=
+ =?us-ascii?Q?EdZXyPAcV+fOpVVDoXDjY6FxRGCOx1kkLAnYXPqB1uEPtuPNBJpfiY8vf7tw?=
+ =?us-ascii?Q?T5DBc3wjqR9QFmOJPZeBQLWSQGERAzmopXkE5BeFeAhtDbpCbWSburGlHOI7?=
+ =?us-ascii?Q?+OS5SCbmlLLKG/iGfqfPq7JkLBpfdD8ZnKtwZdYbiyLMTZCu6Hyl8eghXPU1?=
+ =?us-ascii?Q?ZU57KsnWrkbzXacc/kZcZJgSHWkT1KslG65YgyJw7cm0VGyGgB7WcOx8wqfr?=
+ =?us-ascii?Q?c9tFyTdFF8e8LuIzmzYBtiW5mcsI+K3KK1rbZ/HtbttLGpAAXHGKUZ/I9TAq?=
+ =?us-ascii?Q?X68AVWrrlBtb1mvISBu0YM46lrqu8zD4AabMQU5ibOXDER2aTH8L6stWs140?=
+ =?us-ascii?Q?QiXRJ8hqxF/Cemvoac5dvI6mLSpAtKvS03nojAdpwTomixnrokiwlQyF1CQ0?=
+ =?us-ascii?Q?Hrhy2OJyn3eq4TuWG0H5BbhHOxmrLeN28p/3MrDUD86HtsrLUdtbNXKjJLat?=
+ =?us-ascii?Q?2svDv4Xz7zq0hXklp6s=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 70881b9b-0278-4008-7e03-08db519b09f3
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2023 21:10:53.5615
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uj53FJX6N/WBp28rVn+a6QhZ0Z41Umzim47FbYjzIHcM3/ZDThAp5/UUkKj+cj+o
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5887
 
-This change enables the use of the iommu_attach_dev_pasid API for
-UNMANAGED domains. The primary use-case is to allow in-kernel users of
-the iommu API to manage domains with PASID. This change also allows for
-future support of pasid in the DMA api.
+On Thu, May 11, 2023 at 04:50:47AM +0800, Michael Shavit wrote:
+> Hi all,
+> 
+> This patch series refactors the arm-smmu-v3 driver and implements the
+> set_dev_pasid functionality for DMA and UNMANAGED iommu domains. As part
+> of this effort, we also refactor the arm-smmu-v3 driver such that each
+> iommu domain represent a single address space. In particular, stage 1
+> domains hold a single ContextDescriptor instead of the entire STE entry.
 
-Signed-off-by: Michael Shavit <mshavit@google.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 165 +++++++++++++++++---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |   1 +
- 2 files changed, 147 insertions(+), 19 deletions(-)
+I'm not sure what you mean "holds" a ContextDescriptor?
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 81f49a86c1266..468a7a30ffe7b 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2353,6 +2353,11 @@ static int arm_smmu_enable_pasid(struct arm_smmu_master *master)
- 	return 0;
- }
- 
-+static bool arm_smmu_master_has_pasid_domains(struct arm_smmu_master *master)
-+{
-+	return master->nr_attached_pasid_domains > 0;
-+}
-+
- static void arm_smmu_disable_pasid(struct arm_smmu_master *master)
- {
- 	struct pci_dev *pdev;
-@@ -2396,6 +2401,33 @@ static void arm_smmu_detach_dev(struct arm_smmu_master *master)
- 	arm_smmu_install_ste_for_dev(master);
- }
- 
-+/*
-+ * Once attached for the first time, a domain can no longer be attached to any
-+ * master with a distinct upstream SMMU.
-+ */
-+static int arm_smmu_prepare_domain_for_smmu(struct device *dev,
-+					    struct arm_smmu_device *smmu,
-+					    struct arm_smmu_domain *smmu_domain)
-+{
-+	int ret = 0;
-+
-+	mutex_lock(&smmu_domain->init_mutex);
-+	if (!smmu_domain->smmu) {
-+		smmu_domain->smmu = smmu;
-+		ret = arm_smmu_domain_finalise(&smmu_domain->domain);
-+		if (ret) {
-+			smmu_domain->smmu = NULL;
-+			goto out_unlock;
-+		}
-+	} else if (smmu_domain->smmu != smmu) {
-+		ret = -EINVAL;
-+		goto out_unlock;
-+	}
-+out_unlock:
-+	mutex_unlock(&smmu_domain->init_mutex);
-+	return ret;
-+}
-+
- static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- {
- 	int ret = 0;
-@@ -2411,6 +2443,10 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	master = dev_iommu_priv_get(dev);
- 	smmu = master->smmu;
- 
-+	ret = arm_smmu_prepare_domain_for_smmu(dev, smmu, smmu_domain);
-+	if (ret)
-+		return ret;
-+
- 	/*
- 	 * Checking that SVA is disabled ensures that this device isn't bound to
- 	 * any mm, and can be safely detached from its old domain. Bonds cannot
-@@ -2421,22 +2457,18 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 		return -EBUSY;
- 	}
- 
--	arm_smmu_detach_dev(master);
--
--	mutex_lock(&smmu_domain->init_mutex);
--
--	if (!smmu_domain->smmu) {
--		smmu_domain->smmu = smmu;
--		ret = arm_smmu_domain_finalise(domain);
--		if (ret) {
--			smmu_domain->smmu = NULL;
--			goto out_unlock;
--		}
--	} else if (smmu_domain->smmu != smmu) {
--		ret = -EINVAL;
--		goto out_unlock;
-+	/*
-+	 * Attaching a bypass or stage 2 domain would break any domains attached
-+	 * with pasid. Attaching an S1 domain should be feasible but requires
-+	 * more complicated logic to handle.
-+	 */
-+	if (arm_smmu_master_has_pasid_domains(master)) {
-+		dev_err(dev, "cannot attach - domain attached with pasid\n");
-+		return -EBUSY;
- 	}
- 
-+	arm_smmu_detach_dev(master);
-+
- 	/*
- 	 * Note that this will end up calling arm_smmu_sync_cd() before
- 	 * the master has been added to the devices list for this domain.
-@@ -2446,7 +2478,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 		master->has_stage1 = true;
- 		ret = arm_smmu_write_ctx_desc(master, 0, &smmu_domain->cd);
- 		if (ret)
--			goto out_unlock;
-+			return ret;
- 	} else if (smmu_domain->stage == ARM_SMMU_DOMAIN_S2 ||
- 		   smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED) {
- 		master->s2_cfg = &smmu_domain->s2_cfg;
-@@ -2473,11 +2505,74 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 
- 	arm_smmu_enable_ats(master, smmu_domain);
- 
--out_unlock:
--	mutex_unlock(&smmu_domain->init_mutex);
- 	return ret;
- }
- 
-+static int arm_smmu_set_dev_pasid(struct iommu_domain *domain,
-+				  struct device *dev, ioasid_t pasid)
-+{
-+	int ret = 0;
-+	unsigned long flags;
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-+	struct arm_smmu_device *smmu;
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct arm_smmu_attached_domain *attached_domain;
-+	struct arm_smmu_master *master;
-+
-+	if (!fwspec)
-+		return -ENOENT;
-+
-+	master = dev_iommu_priv_get(dev);
-+	smmu = master->smmu;
-+
-+	ret = arm_smmu_prepare_domain_for_smmu(dev, smmu, smmu_domain);
-+	if (ret)
-+		return ret;
-+
-+	if (pasid == 0) {
-+		dev_err(dev, "pasid 0 is reserved for the device's primary domain\n");
-+		return -ENODEV;
-+	}
-+
-+	if (smmu_domain->stage != ARM_SMMU_DOMAIN_S1) {
-+		dev_err(dev, "set_dev_pasid only supports stage 1 domains\n");
-+		return -EINVAL;
-+	}
-+
-+	if (!master->has_stage1 || master->s2_cfg)
-+		return -EBUSY;
-+
-+	attached_domain = kzalloc(sizeof(*attached_domain), GFP_KERNEL);
-+	if (!attached_domain)
-+		return -ENOMEM;
-+
-+	attached_domain->master = master;
-+	attached_domain->domain = smmu_domain;
-+	attached_domain->ssid = pasid;
-+
-+	master->nr_attached_pasid_domains += 1;
-+	/*
-+	 * arm_smmu_share_asid may update the cd's asid value and write the
-+	 * ctx_desc for every attached_domains in the list. There's a potential
-+	 * race here regardless of whether we first the write the ctx_desc or
-+	 * first insert into the domain's list. Grabbing the asic_lock prevents
-+	 * SVA from changing the cd's ASID while the cd is being attached.
-+	 */
-+	mutex_lock(&arm_smmu_asid_lock);
-+	ret = arm_smmu_write_ctx_desc(master, pasid, &smmu_domain->cd);
-+	if (ret) {
-+		mutex_unlock(&arm_smmu_asid_lock);
-+		kfree(attached_domain);
-+	}
-+
-+	spin_lock_irqsave(&smmu_domain->attached_domains_lock, flags);
-+	list_add(&attached_domain->domain_head, &smmu_domain->attached_domains);
-+	spin_unlock_irqrestore(&smmu_domain->attached_domains_lock, flags);
-+	mutex_unlock(&arm_smmu_asid_lock);
-+
-+	return 0;
-+}
-+
- static int arm_smmu_map_pages(struct iommu_domain *domain, unsigned long iova,
- 			      phys_addr_t paddr, size_t pgsize, size_t pgcount,
- 			      int prot, gfp_t gfp, size_t *mapped)
-@@ -2723,6 +2818,15 @@ static void arm_smmu_release_device(struct device *dev)
- 
- 	if (WARN_ON(arm_smmu_master_sva_enabled(master)))
- 		iopf_queue_remove_device(master->smmu->evtq.iopf, dev);
-+	if (WARN_ON(master->nr_attached_pasid_domains != 0)) {
-+		/*
-+		 * TODO: Do we need to handle this case?
-+		 * This requires a mechanism to obtain all the pasid domains
-+		 * that this master is attached to so that we can clean up the
-+		 * domain's attached_domain list.
-+		 */
-+	}
-+
- 	arm_smmu_detach_dev(master);
- 	arm_smmu_free_cd_tables(master);
- 	arm_smmu_disable_pasid(master);
-@@ -2858,12 +2962,34 @@ static int arm_smmu_def_domain_type(struct device *dev)
- static void arm_smmu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
- {
- 	struct iommu_domain *domain;
-+	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-+	struct arm_smmu_domain *smmu_domain;
-+	struct arm_smmu_attached_domain *attached_domain;
-+	unsigned long flags;
- 
--	domain = iommu_get_domain_for_dev_pasid(dev, pasid, IOMMU_DOMAIN_SVA);
-+	if (!master || pasid == 0)
-+		return;
-+
-+	domain = iommu_get_domain_for_dev_pasid(dev, pasid, 0);
- 	if (WARN_ON(IS_ERR(domain)) || !domain)
- 		return;
-+	if (domain->type == IOMMU_DOMAIN_SVA)
-+		return arm_smmu_sva_remove_dev_pasid(domain, dev, pasid);
- 
--	arm_smmu_sva_remove_dev_pasid(domain, dev, pasid);
-+	smmu_domain = to_smmu_domain(domain);
-+	mutex_lock(&arm_smmu_asid_lock);
-+	spin_lock_irqsave(&smmu_domain->attached_domains_lock, flags);
-+	list_for_each_entry(attached_domain, &smmu_domain->attached_domains, domain_head) {
-+		if (attached_domain->master != master ||
-+		    attached_domain->ssid != pasid)
-+			continue;
-+		list_del(&attached_domain->domain_head);
-+		break;
-+	}
-+	spin_unlock_irqrestore(&smmu_domain->attached_domains_lock, flags);
-+	arm_smmu_write_ctx_desc(master, pasid, NULL);
-+	master->nr_attached_pasid_domains -= 1;
-+	mutex_unlock(&arm_smmu_asid_lock);
- }
- 
- static struct iommu_ops arm_smmu_ops = {
-@@ -2883,6 +3009,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.owner			= THIS_MODULE,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
- 		.attach_dev		= arm_smmu_attach_dev,
-+		.set_dev_pasid		= arm_smmu_set_dev_pasid,
- 		.map_pages		= arm_smmu_map_pages,
- 		.unmap_pages		= arm_smmu_unmap_pages,
- 		.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 35700534a0b4a..9ef63ea381f4b 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -705,6 +705,7 @@ struct arm_smmu_master {
- 	bool				iopf_enabled;
- 	struct list_head		bonds;
- 	unsigned int			ssid_bits;
-+	unsigned int			nr_attached_pasid_domains;
- };
- 
- /* SMMU private data for an IOMMU domain */
--- 
-2.40.1.521.gf1e218fcd8-goog
+Ideally the iommu_domain should only hold a pointer to some table
+top. Depending on the domain type this would be a S1 IOPTE table, S2
+IOPTE table or a CD table. Plus the non-table domains like IDENTITY
+and blocked.
 
+Logically when an iommu_domain is attached to a device or a PASID a
+STE or CD is generated from the iommu_domain's configuration but the
+iommu_domain doesn't "hold" it
+
+When a kernel-owned CD table is used it should be held someplace else,
+certianly not in the iommu_domain. Logically as a per-device
+structure, but maybe with optimizations for sharing.
+
+> The refactor is arguably valuable independently from the set_dev_pasid
+> feature since an iommu_domain is conceptually closer to a single address
+> space than an entire STE. In addition this unlocks some nice clean-up of
+> the arm SVA implementation which today piggybacks SVA domains on the
+> "primary" domain.
+
+I always thought of this as sort of a pre-calculation of the STE, that
+gets cached in the iommu_domain? Not sure the pre-calculation is that
+valuable though..
+ 
+> path forward for set_dev_pasid support? Or could a uAPI that only
+> exposes a single CD instead of the entire STE be an appropriate fit for
+> the nesting use cases?
+
+The uAPI is to create an iommu_domain that holds a CD Table Top
+located in user memory, it cannot deviate from this. These kinds of
+iommu_domain's can only be pointed at by STEs.
+
+Again it doesnt really "hold" the STE, but we can compute a STE that
+points to the SD Table that it does hold.
+
+Other than this, it is good to take this project on, getting PASID
+support aligned with the new API is something that needs to be done
+here!
+
+Thanks,
+Jason
