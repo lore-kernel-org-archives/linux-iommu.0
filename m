@@ -1,121 +1,213 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 097BF6AB7
-	for <iommu@lists.linux.dev>; Wed, 10 May 2023 10:24:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1683714269; x=1715250269;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0/dKuhBAooiK7NxI6ZJD57YCt/AXZDva/ko2oLS9g9Q=;
-  b=Fd1GbIgXZXVViU1Va74r4hk2tZo6qUwHFa/qX08f5/a809HLHO0sTr2M
-   ORcUDD+ZaP6+T+WzBeuRPPsYvpipao8nbWWJOLsIUlCossB2c8A+S5gam
-   5feYtK1xp1YK/b8W5jh9e8VJvGN7yq97t6qoIsMQkaKVvc2sZFVQOjznY
-   wnkLHP371Tbt/hco/nh/QhKySoMUwYXk7J65wDzgarZQbP1jbEyI8mhPG
-   Wsa050tW6oWmYyh9uVT7WZRdsDm/PK2ypb0kodXBYgR/ky/+/Z5PgFjHw
-   MImG8RldKllQ8mIuFd5iJF3gWm2hRlLmlaQ6gCXb/airTaz3tLtHzpt86
-   A==;
-X-IronPort-AV: E=Sophos;i="5.99,264,1677567600"; 
-   d="asc'?scan'208";a="213245200"
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 May 2023 03:24:27 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Wed, 10 May 2023 03:24:25 -0700
-Received: from wendy (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21 via Frontend
- Transport; Wed, 10 May 2023 03:24:22 -0700
-Date: Wed, 10 May 2023 11:24:03 +0100
-From: Conor Dooley <conor.dooley@microchip.com>
-To: Anup Patel <apatel@ventanamicro.com>
-CC: Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley
-	<paul.walmsley@sifive.com>, Thomas Gleixner <tglx@linutronix.de>, Marc
- Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>, Krzysztof
- Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Robin Murphy
-	<robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
-	<will@kernel.org>, Frank Rowand <frowand.list@gmail.com>, Atish Patra
-	<atishp@atishpatra.org>, Andrew Jones <ajones@ventanamicro.com>, Anup Patel
-	<anup@brainfault.org>, <linux-riscv@lists.infradead.org>,
-	<linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<iommu@lists.linux.dev>
-Subject: Re: [PATCH v3 00/11] Linux RISC-V AIA Support
-Message-ID: <20230510-parchment-saxophone-f91f9d96156c@wendy>
-References: <20230508142842.854564-1-apatel@ventanamicro.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CEB9C20B30
+	for <iommu@lists.linux.dev>; Wed, 10 May 2023 10:48:45 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AEBFD1063;
+	Wed, 10 May 2023 03:49:29 -0700 (PDT)
+Received: from [10.57.83.77] (unknown [10.57.83.77])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8F7D43F5A1;
+	Wed, 10 May 2023 03:48:42 -0700 (PDT)
+Message-ID: <38cb8b93-6f10-c269-e574-613ae6a9dd87@arm.com>
+Date: Wed, 10 May 2023 11:48:38 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="drOWBx1kyE087zJ+"
-Content-Disposition: inline
-In-Reply-To: <20230508142842.854564-1-apatel@ventanamicro.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH v3 07/11] irqchip/riscv-imsic: Improve IOMMU DMA support
+Content-Language: en-GB
+To: Anup Patel <apatel@ventanamicro.com>, Palmer Dabbelt
+ <palmer@dabbelt.com>, Paul Walmsley <paul.walmsley@sifive.com>,
+ Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Frank Rowand <frowand.list@gmail.com>
+Cc: Atish Patra <atishp@atishpatra.org>,
+ Andrew Jones <ajones@ventanamicro.com>, Anup Patel <anup@brainfault.org>,
+ linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, iommu@lists.linux.dev,
+ Vincent Chen <vincent.chen@sifive.com>
+References: <20230508142842.854564-1-apatel@ventanamicro.com>
+ <20230508142842.854564-8-apatel@ventanamicro.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20230508142842.854564-8-apatel@ventanamicro.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
---drOWBx1kyE087zJ+
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 2023-05-08 15:28, Anup Patel wrote:
+> We have a separate RISC-V IMSIC MSI address for each CPU so changing
+> MSI (or IRQ) affinity results in re-programming of MSI address in
+> the PCIe (or platform) device.
+> 
+> Currently, the iommu_dma_prepare_msi() is called only once at the
+> time of IRQ allocation so IOMMU DMA domain will only have mapping
+> for one MSI page. This means iommu_dma_compose_msi_msg() called
+> by imsic_irq_compose_msi_msg() will always use the same MSI page
+> irrespective to target CPU MSI address. In other words, changing
+> MSI (or IRQ) affinity for device using IOMMU DMA domain will not
+> work.
+> 
+> To address above issue, we do the following:
+> 1) Map MSI pages for all CPUs in imsic_irq_domain_alloc()
+>     using iommu_dma_prepare_msi().
+> 2) Add a new iommu_dma_select_msi() API to select a specific
+>     MSI page from a set of already mapped MSI pages.
+> 3) Use iommu_dma_select_msi() to select a specific MSI page
+>     before calling iommu_dma_compose_msi_msg() in
+>     imsic_irq_compose_msi_msg().
 
-Hey Anup,
-
-On Mon, May 08, 2023 at 07:58:31PM +0530, Anup Patel wrote:
-> The RISC-V AIA specification is now frozen as-per the RISC-V international
-> process. The latest frozen specifcation can be found at:
-> https://github.com/riscv/riscv-aia/releases/download/1.0-RC1/riscv-interr=
-upts-1.0-RC1.pdf
->=20
-> At a high-level, the AIA specification adds three things:
-> 1) AIA CSRs
->    - Improved local interrupt support
-> 2) Incoming Message Signaled Interrupt Controller (IMSIC)
->    - Per-HART MSI controller
->    - Support MSI virtualization
->    - Support IPI along with virtualization
-> 3) Advanced Platform-Level Interrupt Controller (APLIC)
->    - Wired interrupt controller
->    - In MSI-mode, converts wired interrupt into MSIs (i.e. MSI generator)
->    - In Direct-mode, injects external interrupts directly into HARTs
->=20
-> For an overview of the AIA specification, refer the recent AIA virtualiza=
-tion
-> talk at KVM Forum 2022:
-> https://static.sched.com/hosted_files/kvmforum2022/a1/AIA_Virtualization_=
-in_KVM_RISCV_final.pdf
-> https://www.youtube.com/watch?v=3Dr071dL8Z0yo
->=20
-> The PATCH3 of this series conflicts with the "irqchip/riscv-intc: Add ACPI
-> support" patch of the "Add basic ACPI support for RISC-V" series.
-> (Refer, https://lore.kernel.org/linux-riscv/20230508115237.216337-1-sunil=
-vl@ventanamicro.com/)
-
-This series does not apply for me (or the patchwork automation) on top of
-v6.4-rc1, which was released prior to you sending this & contains the AIA
-definitions this series relies on.
-You note here that there is a *conflict* with Sunil's series, but what
-you actually did, as far as I can tell, is base your series on top of
-theirs?
-If you're going to do that, at least point it out so that reviewers
-don't have to figure out what your intention was :( Better yet, for the
-sake of our automation in particular, don't do it at all.
+The high-level design is that prepare ensures any necessary page 
+mappings exist, then compose retrieves the appropriate page for the 
+given message. I think it generalises well enough without needing a new 
+op, it just means that caching a single page in the msi_desc up-front no 
+longer fits, so that wants tweaking to allow compose to do a more 
+general lookup.
 
 Thanks,
-Conor.
+Robin.
 
---drOWBx1kyE087zJ+
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZFtwwwAKCRB4tDGHoIJi
-0t1JAQDg/nff4RAapk5rR40Fc9M7gbVoPtea9uxe8wNvwzKrFgD8DzIxMd1/AHTL
-9YZT8pbRkIczFFTrwTSfcWJL2zf7Rg4=
-=T9IK
------END PGP SIGNATURE-----
-
---drOWBx1kyE087zJ+--
+> Reported-by: Vincent Chen <vincent.chen@sifive.com>
+> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> ---
+>   drivers/iommu/dma-iommu.c         | 38 +++++++++++++++++++++++++++++++
+>   drivers/irqchip/irq-riscv-imsic.c | 27 ++++++++++++----------
+>   include/linux/iommu.h             |  6 +++++
+>   3 files changed, 59 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 7a9f0b0bddbd..07782c77a6eb 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -1677,6 +1677,44 @@ int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
+>   	return 0;
+>   }
+>   
+> +/**
+> + * iommu_dma_select_msi() - Select a MSI page from a set of
+> + * already mapped MSI pages in the IOMMU domain.
+> + *
+> + * @desc: MSI descriptor prepared by iommu_dma_prepare_msi()
+> + * @msi_addr: physical address of the MSI page to be selected
+> + *
+> + * Return: 0 on success or negative error code if the select failed.
+> + */
+> +int iommu_dma_select_msi(struct msi_desc *desc, phys_addr_t msi_addr)
+> +{
+> +	struct device *dev = msi_desc_to_dev(desc);
+> +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+> +	const struct iommu_dma_msi_page *msi_page;
+> +	struct iommu_dma_cookie *cookie;
+> +
+> +	if (!domain || !domain->iova_cookie) {
+> +		desc->iommu_cookie = NULL;
+> +		return 0;
+> +	}
+> +
+> +	cookie = domain->iova_cookie;
+> +	msi_addr &= ~(phys_addr_t)(cookie_msi_granule(cookie) - 1);
+> +
+> +	msi_page = msi_desc_get_iommu_cookie(desc);
+> +	if (msi_page && msi_page->phys == msi_addr)
+> +		return 0;
+> +
+> +	list_for_each_entry(msi_page, &cookie->msi_page_list, list) {
+> +		if (msi_page->phys == msi_addr) {
+> +			msi_desc_set_iommu_cookie(desc, msi_page);
+> +			return 0;
+> +		}
+> +	}
+> +
+> +	return -ENOENT;
+> +}
+> +
+>   /**
+>    * iommu_dma_compose_msi_msg() - Apply translation to an MSI message
+>    * @desc: MSI descriptor prepared by iommu_dma_prepare_msi()
+> diff --git a/drivers/irqchip/irq-riscv-imsic.c b/drivers/irqchip/irq-riscv-imsic.c
+> index 30247c84a6b0..ec61c599e0c5 100644
+> --- a/drivers/irqchip/irq-riscv-imsic.c
+> +++ b/drivers/irqchip/irq-riscv-imsic.c
+> @@ -446,6 +446,10 @@ static void imsic_irq_compose_msi_msg(struct irq_data *d,
+>   	if (WARN_ON(err))
+>   		return;
+>   
+> +	err = iommu_dma_select_msi(desc, msi_addr);
+> +	if (WARN_ON(err))
+> +		return;
+> +
+>   	msg->address_hi = upper_32_bits(msi_addr);
+>   	msg->address_lo = lower_32_bits(msi_addr);
+>   	msg->data = d->hwirq;
+> @@ -493,11 +497,18 @@ static int imsic_irq_domain_alloc(struct irq_domain *domain,
+>   	int i, hwirq, err = 0;
+>   	unsigned int cpu;
+>   
+> -	err = imsic_get_cpu(&imsic->lmask, false, &cpu);
+> -	if (err)
+> -		return err;
+> +	/* Map MSI address of all CPUs */
+> +	for_each_cpu(cpu, &imsic->lmask) {
+> +		err = imsic_cpu_page_phys(cpu, 0, &msi_addr);
+> +		if (err)
+> +			return err;
+>   
+> -	err = imsic_cpu_page_phys(cpu, 0, &msi_addr);
+> +		err = iommu_dma_prepare_msi(info->desc, msi_addr);
+> +		if (err)
+> +			return err;
+> +	}
+> +
+> +	err = imsic_get_cpu(&imsic->lmask, false, &cpu);
+>   	if (err)
+>   		return err;
+>   
+> @@ -505,10 +516,6 @@ static int imsic_irq_domain_alloc(struct irq_domain *domain,
+>   	if (hwirq < 0)
+>   		return hwirq;
+>   
+> -	err = iommu_dma_prepare_msi(info->desc, msi_addr);
+> -	if (err)
+> -		goto fail;
+> -
+>   	for (i = 0; i < nr_irqs; i++) {
+>   		imsic_id_set_target(hwirq + i, cpu);
+>   		irq_domain_set_info(domain, virq + i, hwirq + i,
+> @@ -528,10 +535,6 @@ static int imsic_irq_domain_alloc(struct irq_domain *domain,
+>   	}
+>   
+>   	return 0;
+> -
+> -fail:
+> -	imsic_ids_free(hwirq, get_count_order(nr_irqs));
+> -	return err;
+>   }
+>   
+>   static void imsic_irq_domain_free(struct irq_domain *domain,
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index e8c9a7da1060..41e8613832ab 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -1117,6 +1117,7 @@ void iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 dma_limit);
+>   int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t base);
+>   
+>   int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr);
+> +int iommu_dma_select_msi(struct msi_desc *desc, phys_addr_t msi_addr);
+>   void iommu_dma_compose_msi_msg(struct msi_desc *desc, struct msi_msg *msg);
+>   
+>   #else /* CONFIG_IOMMU_DMA */
+> @@ -1138,6 +1139,11 @@ static inline int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_a
+>   	return 0;
+>   }
+>   
+> +static inline int iommu_dma_select_msi(struct msi_desc *desc, phys_addr_t msi_addr)
+> +{
+> +	return 0;
+> +}
+> +
+>   static inline void iommu_dma_compose_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
+>   {
+>   }
