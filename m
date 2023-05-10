@@ -1,112 +1,119 @@
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2089.outbound.protection.outlook.com [40.107.96.89])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A41F64F
-	for <iommu@lists.linux.dev>; Wed, 10 May 2023 16:20:45 +0000 (UTC)
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-3f42c865535so21161365e9.1
-        for <iommu@lists.linux.dev>; Wed, 10 May 2023 09:20:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1683735644; x=1686327644;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Obt8pVoKfz1tH1SqzwUaz8mcp0zUYaijmYQeIqh31d0=;
-        b=xQhhCDipjC0f0UqWuzN265VPFF8YOekzAEDhbBPlCrQomMsy6nQOEcAH9GQipyo2Af
-         3AKt5rhNWfyuHm4wiTbygvVCyRK+eFVelkvq9YI+Pgocnu0/G52koiBX+Dy+LG04UPLl
-         8Z1IGWZx3wxr+FZ2+zMD2V85UMGdtDqpxP0FOOOdS3iskdzGS6bxS2pnY6wofeuxiPmz
-         oqYmHIH5dO6ZNxIYXD55A+uI3kXeUSDUfkBIjc/EtWy4YCGYlFK2kMzkEDyX5Hk6yRhp
-         fKTKtVEh+U3EUYvyfFNny7xhgFxK4P8NlXKpup/3WuG7yMpAnk+DCFBVLTIq+fK/9JOY
-         oxgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683735644; x=1686327644;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Obt8pVoKfz1tH1SqzwUaz8mcp0zUYaijmYQeIqh31d0=;
-        b=LcFl52/DstxMwIw//2SgcD8j9vwpSv/gTwbDx9k/3AUW01p87oI1211mr9tVz7/C7L
-         OrWok0dnMMtHDUfZaXG3rfjXPZ7qEJvb2+mz9oeOzKegxrgMgt6HXhekgjTYNfu7hp3V
-         XA/lizM9VCeb7H37QPPxwfq7fdCg92U0VAdx2yVqY2Ee64vy95JxoB8slVyy538ZjV+v
-         eLcSeua56wmg0xKEY4qRgavhfydshaD/f8hiAdRWRQ/qj9coWtw+pzTW7KjKhtZDtjT3
-         PYrkqK3MpiFTOPUmdeU07TQDbCuf239h/1W1HgeLYTAQVSC4rjeCfSXqMCd0ugGBTpSV
-         79xg==
-X-Gm-Message-State: AC+VfDzCZD8mXeJ9k6vD5R7T3GsbFetNp+pDhv1QY/UfguwIiz5j57ag
-	G6nljE5MNG/EH9Lxh/0d4GfGLbFVDGvELfWSx0ES8A==
-X-Google-Smtp-Source: ACHHUZ5fATrqXEHKAu4umZysP4EZQVdpN9F4L+0yZryOi2EdhCPvsVeCsvyhDKqUSUhwrZ3qx+QjfQ==
-X-Received: by 2002:a05:600c:2201:b0:3f4:253b:92ae with SMTP id z1-20020a05600c220100b003f4253b92aemr7317004wml.0.1683735644170;
-        Wed, 10 May 2023 09:20:44 -0700 (PDT)
-Received: from myrica (5750a5b3.skybroadband.com. [87.80.165.179])
-        by smtp.gmail.com with ESMTPSA id n23-20020a7bc5d7000000b003ee74c25f12sm23222570wmk.35.2023.05.10.09.20.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 May 2023 09:20:43 -0700 (PDT)
-Date: Wed, 10 May 2023 17:20:34 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Eric Auger <eric.auger@redhat.com>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
-	akihiko.odaki@daynix.com
-Subject: Re: [PATCH] iommu/virtio: Detach domain on endpoint release
-Message-ID: <20230510162034.GA3390634@myrica>
-References: <20230414150744.562456-1-jean-philippe@linaro.org>
- <e58c48e0-6339-41ec-e65b-e3104c65bb81@redhat.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 890973D60
+	for <iommu@lists.linux.dev>; Wed, 10 May 2023 17:41:01 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fvUSc1yGnqKrEOJM81GWf+Ckv1OUAPSV3JQZ4n06GI/9TJZhUlknKcFqTOksKB8qVZf9smpJkmX88juInxfdi14kOOI/bha+GMsKrq7IyyoLPGKEoL+TMvG48J3bSU+brSz+27fx9rq27AB36p7lfYW3z7FFAvXLN8G1sC3+/7ENTDGIj/x4znsGqefp6mwlXAn+A/8Wy+VcvXwllAHPS/uc81mT1ogAFa4zrQZpxvG0qe0t06cIf9kb7dVtfhHyDR0ONbR30dgwzR/AXgixgZw9lmGeZwmfOSofTD8Tv2vCFJv3gwdE9bGpprB3nAb6+dmgCeLS/9N1eEasAecZNQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=i7kaRTlisBacM3ZRY3wTph60R+dm1Q8KFv82IxDCjfs=;
+ b=ChnFPWJ+gHfDcfYh7C77xvDT/FO6E8fLQDPN8YLBk4i/lFmBVMfZtyv4Hl8AKzo0XlHZCqdq1TwyVpdCDQxeNAlYIhPslhGXMs3S+lszid2Q/KWOmfH5c5JgKmFykmWLpePwIb2IE6Mkmc4OUk+tMZc/KS/7/8BgNUpqWhhFSQOf57EACHPTWXew7D45r8HFSoi2JeGGfUoYJm8nnycC7wqSWR5USU6TD1ApSsMHQIaaKapJpoG4KKwLzVz5HzgN1yLb49o68vO4k3PB4yrQxUJULY/mMOvTwbv/wPTWK7SXxRrUzJ+73Caryu40olibH8JHA2F5QB3aRAyn/YYkaw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=i7kaRTlisBacM3ZRY3wTph60R+dm1Q8KFv82IxDCjfs=;
+ b=q1uCIqy9jZlNGoJOlW2XEnPrlx/VnWQf5yGIO0aUNIyvajguZORcsS81Hjjyth/GmMAOdKw6yvuLsJ1cnW2Y9Ry/V9ebWVF6bePt4QG2gLV+nHZ7BQ2BS9eiVaZfvPj5V6uOxmY7QITCXRGBuFGsK71kcjVVgOL6X1gGijlW4IXH4GU75cHwn01bvnpuOGQbMq2wjJWMC+zSjW8LKhXVR9/0mFyOWcSiR8emtBzMthjmllDdfH2A0gxmgzwe3bLvWzJbfQtYgr4xkJK9gMRw38UEqKY9LCARrQnzeVzs8x6qe0w8ptQuSu91EN4oy+WLSAWgHEt8CTo8ZN64oOS1jg==
+Received: from MW4PR04CA0104.namprd04.prod.outlook.com (2603:10b6:303:83::19)
+ by PH7PR12MB6695.namprd12.prod.outlook.com (2603:10b6:510:1b2::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.32; Wed, 10 May
+ 2023 17:40:57 +0000
+Received: from CO1NAM11FT015.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:83:cafe::35) by MW4PR04CA0104.outlook.office365.com
+ (2603:10b6:303:83::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.18 via Frontend
+ Transport; Wed, 10 May 2023 17:40:57 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ CO1NAM11FT015.mail.protection.outlook.com (10.13.175.130) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6387.21 via Frontend Transport; Wed, 10 May 2023 17:40:56 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 10 May 2023
+ 10:40:42 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Wed, 10 May
+ 2023 10:40:41 -0700
+Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Wed, 10 May 2023 10:40:41 -0700
+Date: Wed, 10 May 2023 10:40:39 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+CC: <will@kernel.org>, <joro@8bytes.org>, <iommu@lists.linux.dev>,
+	<linux-arm-kernel@lists.infradead.org>, <jean-philippe@linaro.org>
+Subject: Re: [PATCH 1/4] iommu/arm-smmu-v3: Work around MMU-600 erratum
+ 1076982
+Message-ID: <ZFvXF3gKL4WHiBeZ@Asurada-Nvidia>
+References: <cover.1683731256.git.robin.murphy@arm.com>
+ <08adbe3d01024d8382a478325f73b56851f76e49.1683731256.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <e58c48e0-6339-41ec-e65b-e3104c65bb81@redhat.com>
+In-Reply-To: <08adbe3d01024d8382a478325f73b56851f76e49.1683731256.git.robin.murphy@arm.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT015:EE_|PH7PR12MB6695:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3417f7a6-572c-4450-d68d-08db517db616
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	r7YlWIDRZETVCzx7Sfq0/Q9sdV5XiLt/G4hKYjhKeR7oDaS8iSMCl1hWTJDU3N6h8JsyTvkaTllNv29gBwElspCa+avTI37wC537yBPWqpcTyDqXuxxYOtVEfn+BPzsnuly//HO+NMGDguSB3CcbUdW08xf2ICulEaSu9ZfMtKKgw+x04GnCvmaV2vUdkREkyZqMxDK9/zc9ndqoEhy/+wD3jMpbC+ek0+d+Ga/kftepuaumMmZxprbD0vRqUj1GgzuWOSlmirCDH0p21DR8SfVgPIFwRAc/8j4LeN+bF6tHpnwmwa5JazvwiR1BcUguvmlxhH256Ygw78PcsNYHbXfjURtP/0gi1MZbozOYBZoom51pIGvWAgJ60qOFPz83X4AkxaowTc01bbekHBb8NBoKltO5498qBHILyLGBiIHfIbyva1nVVIrPLmWsF8QHdc7yqTLlqVTnZCbN86qZoB37omOPoz6rFdd2kI9JZFYO18HY243lAYyNKmxA37sWuEuJp5Xia4W8YniQRRBxveX/KbZjGYhqTX3VfxXFRJ/nKMXw8U2KbJMbG8qAzWVhQIVBcd31TBovvhDzGVTixmc5jCUy9h4yIf8JUUnBV2jdYiGW/F3IqsbDyI3hUaP/7Yx5vEKU01YjMW3kYMOk4OGaizBEIP4r0pJCPrSrOadAp25UsrGCksVBFu+oySwvuudPVb/UxfrVMjooWxLq4w==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(396003)(136003)(39860400002)(346002)(451199021)(36840700001)(46966006)(40470700004)(40460700003)(4326008)(6916009)(316002)(70586007)(478600001)(70206006)(54906003)(86362001)(336012)(9686003)(426003)(36860700001)(47076005)(26005)(8936002)(41300700001)(8676002)(4744005)(33716001)(82310400005)(5660300002)(55016003)(40480700001)(2906002)(7636003)(82740400003)(356005)(186003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2023 17:40:56.9831
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3417f7a6-572c-4450-d68d-08db517db616
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1NAM11FT015.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6695
 
-On Wed, May 10, 2023 at 05:37:22PM +0200, Eric Auger wrote:
-> Hi Jean,
+On Wed, May 10, 2023 at 04:38:43PM +0100, Robin Murphy wrote:
+
+> MMU-600 versions prior to r1p0 fail to correctly generate a WFE wakeup
+> event when the command queue transitions fom full to non-full. We can
+> easily work around this by simply hiding the SEV capability such that we
+> fall back to polling for space in the queue - since MMU-600 implements
+> MSIs we wouldn't expect to need SEV for sync completion either, so this
+> should have little to no impact.
 > 
-> On 4/14/23 17:07, Jean-Philippe Brucker wrote:
-> > When an endpoint is released, for example a PCIe VF is disabled or a
-> > function hot-unplugged, it should be detached from its domain. Send a
-> > DETACH request.
-> >
-> > Fixes: edcd69ab9a32 ("iommu: Add virtio-iommu driver")
-> > Reported-by: Akihiko Odaki <akihiko.odaki@daynix.com>
-> > Link: https://lore.kernel.org/all/15bf1b00-3aa0-973a-3a86-3fa5c4d41d2c@daynix.com/
-> > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> > ---
-> >  drivers/iommu/virtio-iommu.c | 23 +++++++++++++++++++++++
-> >  1 file changed, 23 insertions(+)
-> >
-> > diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-> > index 5b8fe9bfa9a5..3d3d4462359e 100644
-> > --- a/drivers/iommu/virtio-iommu.c
-> > +++ b/drivers/iommu/virtio-iommu.c
-> > @@ -788,6 +788,28 @@ static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
-> >  	return 0;
-> >  }
-> >  
-> > +static void viommu_detach_dev(struct viommu_endpoint *vdev)
-> > +{
-> > +	int i;
-> > +	struct virtio_iommu_req_detach req;
-> > +	struct viommu_domain *vdomain = vdev->vdomain;
-> > +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(vdev->dev);
-> > +
-> > +	if (!vdomain)
-> > +		return;
-> > +
-> > +	req = (struct virtio_iommu_req_detach) {
-> > +		.head.type	= VIRTIO_IOMMU_T_DETACH,
-> > +		.domain		= cpu_to_le32(vdomain->id),
-> > +	};
-> > +
-> > +	for (i = 0; i < fwspec->num_ids; i++) {
-> > +		req.endpoint = cpu_to_le32(fwspec->ids[i]);
-> > +		WARN_ON(viommu_send_req_sync(vdev->viommu, &req, sizeof(req)));
-> > +	}
-> just a late question: don't you need to decrement vdomain's nr_endpoints?
-> 
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
-Ah yes, I'll fix that, thank you. I think attach() could use some cleanup
-as well: if the request fails then we should keep the nr_endpoints
-reference on the previous domain. But that's less urgent.
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
 
-Thanks,
-Jean
+> +static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
+> +{
+> +       u32 reg;
+> +       unsigned int implementer, productid, variant, revision;
 
+Just for curiosity -- what's the fashion behind the coding style
+here? Usually I follow a longer-to-shorter style, yet perhaps I
+can follow this one for further SMMU patches, if it matters.
+
+Thanks
+Nicolin
