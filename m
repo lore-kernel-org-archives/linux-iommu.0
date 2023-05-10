@@ -1,15 +1,15 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2040.outbound.protection.outlook.com [40.107.92.40])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2088.outbound.protection.outlook.com [40.107.223.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A3707F3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 171AB655
 	for <iommu@lists.linux.dev>; Wed, 10 May 2023 03:34:42 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CA7yT+6yF6DkdyYoOyaLuNN2vva4TjFcKUjLITHTpdGj5xX0NLzlJ7Xx//ihvumy2kg6vzm1hpHz4UeK8pq/F3ABHa/yWvqRCxsdppyzdw1kB4f1b7/di+vkgfDUMcR/qaIInx77mHlQTdn7H/rAKe17b2YEbgoG7hVpnzKCI7QijZV9usIDIR4vWS3dK8gcovFo2yc14YHmRaSlGQgeZEv6kNoxKpXSbiSjU61fe4h0sFvWMSKCRPS8+nm6mkxZp5GIphHLuusAViNYHwwjUZIEaWMIPw3luG8dmXwv0EH8I3KkDd+kQ/a0ztrB8fYKJsIntsZZTmRRbZldWKbuRA==
+ b=FHcy1DKcWiFK3wPhMT/bgS3SMHXk/Z05VclWok39dYGMNvWSR4ZAwWtPpICGoGsvt1Otw0RgTdBhIWWBpYT80WvLVrLp61rYgm/5/BNmtvf5yK77UH/3g5Po6QK0pG6Tt5VEzl5Z2JonVDhmfoojkzu6IZMk3Lb4OVNpLG/C7JaHla7m0O05tyQzLQt7YCvvSsmvAUgigFGky93w5tmOM2qsDU0HsXCUiFYobNLlFgSDRTEOZr7Bs08yjbdHu/BKHHmzQkRRwxm73MHUJbSv/++Yf0B9CSIbq7Wq5moO0OZN0vWCniQH4iTd7kRylHsBpuTL5ADQDWfL0FNs9JjzDA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wkozRIdnZ+SDWZ7LNbdDRxamnFQ7ndzENLR3RmzKDHM=;
- b=UaeDbL6Ip7tzk7KQFzUvBWmkfH+1qtyY7rHLJpa6CEXN6C+6JbeJCkzu2ySqDV0uXCjCuRl1LG5WdsKqGkodKrDl4QZRM938k3zl/Q/kevgF10xVAEid6bkFwCzkSXD2mngWwX9VEbAKeOQuR/ISZYzU8TAd/Bj6TcT0ISZvVwQpb6dMEEoSxh8zzDF48budRzGZ97ks1lLcA+WQ+4Z+0BDb9m7BWUJWeYSFvizo8fxd7omFQ40nJ5gYqns8rRfSqMNrl0DieB0E4EhcHfU+CoeEmrBQuecmzgsFBloFY2p2heLSqMjuFuUd/oB2kS5U/tF0e/MVisJU97n/H+5AXg==
+ bh=H3rtvKMREw8MQARcTr6aa6xYz4uEqadpb+U5I9v5Lw8=;
+ b=nUNmaUMRBhTnyQw2Yty9KYY55rApKALj7DVv5MtcHTfWjXhheCtywAD6J09jHn4NBQcWMb080ZJkjGRyRD+uDAZUvmarl62ff6xvl4JePluck7gmToam8Woe9IGYBkpR8LOVKCAZKmmBBN/6MVF+TM0Fh3/5D7/hwtwf3ELUjDyJrYIe6jUl6p8k7atahot0Oa9un+7PNQx6+aT86vyj9e0MoPFWk+TphrUqIMAMmjA+qexZtMcRrYrljPQXJ4ZmPiyICicohkZsYScf1VvIlU7UHrIBoByzuJCaREJsgJ8ARip8L56PSr7/ZWWm5TFSfDFQnZqVPnUt5buOw5c4gw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.160) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -17,18 +17,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wkozRIdnZ+SDWZ7LNbdDRxamnFQ7ndzENLR3RmzKDHM=;
- b=EpxKatNRt3Ffco8fD3OcXSX8xHUbVnhKLjeJZZrUphaYQYJ92pP48mOYXBlqwRRTq57ZPvo/2uPRjoBmSOMFVG9dpFSyxOE+aSgGOt7x7Qk11qJC7O1L3kYFBNy6KgRuM/qGqlHWq0+5leCDla6b/g7ctm0WvgKw002dDKRCJbVcgX09Hwch+4tShQLV5HG0isIboRgRS8kH3QgBDEfsdlgrrKrgkJxjON//0brER8P+oUlvfKlb8njiqwofpSgLb20g8oFWNW9u2c8sKRIRFR57/0FSc+NdR4m3E+1P4CuB1d81TbuUNbsmVmDBknYuQTC1+a6GmmkQVorUQTcxBw==
-Received: from MN2PR11CA0027.namprd11.prod.outlook.com (2603:10b6:208:23b::32)
- by DM4PR12MB7525.namprd12.prod.outlook.com (2603:10b6:8:113::10) with
+ bh=H3rtvKMREw8MQARcTr6aa6xYz4uEqadpb+U5I9v5Lw8=;
+ b=I6Z9OCx73lj37dotzhUe1pp2kftQw7J4t/f5loaINsQp5kHmJb2VHyvyD2044o5nSfD58xT1zoLgyjnLCnKzBHUEzi6CH3nlgPkNDx4Y9j5iJkNK4qE3biF4WoHujjzwDF4nvi9XE0XHZafOzGYglwdO1fliqSSQYpUMHB602FZc+0IBJTb61J1B1rm16yWuKjbbyVlcP2AxIfnIqOazv9C+udtrMM9RLPmg13dM4gvs9EUi+4iPULsaXrRzorBI+T8iLe0ReNbob3aImT0QpLwfsnDy6D/7l09vok+68Yg2cPbmnPhAqnFwKJrAUPGJSbRMSw7JsrB/FLXdW0b8HA==
+Received: from MN2PR11CA0002.namprd11.prod.outlook.com (2603:10b6:208:23b::7)
+ by MN2PR12MB4208.namprd12.prod.outlook.com (2603:10b6:208:1d0::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.18; Wed, 10 May
- 2023 03:34:39 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.32; Wed, 10 May
+ 2023 03:34:40 +0000
 Received: from BL02EPF000145BB.namprd05.prod.outlook.com
- (2603:10b6:208:23b:cafe::8a) by MN2PR11CA0027.outlook.office365.com
- (2603:10b6:208:23b::32) with Microsoft SMTP Server (version=TLS1_2,
+ (2603:10b6:208:23b:cafe::22) by MN2PR11CA0002.outlook.office365.com
+ (2603:10b6:208:23b::7) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.33 via Frontend
- Transport; Wed, 10 May 2023 03:34:39 +0000
+ Transport; Wed, 10 May 2023 03:34:40 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -38,18 +38,18 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
 Received: from mail.nvidia.com (216.228.117.160) by
  BL02EPF000145BB.mail.protection.outlook.com (10.167.241.211) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6387.20 via Frontend Transport; Wed, 10 May 2023 03:34:39 +0000
+ 15.20.6387.20 via Frontend Transport; Wed, 10 May 2023 03:34:40 +0000
 Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
  (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 9 May 2023
- 20:34:25 -0700
+ 20:34:28 -0700
 Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
  (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Tue, 9 May 2023
- 20:34:25 -0700
+ 20:34:27 -0700
 Received: from Asurada-Nvidia.nvidia.com (10.127.8.10) by mail.nvidia.com
  (10.129.68.6) with Microsoft SMTP Server id 15.2.986.37 via Frontend
- Transport; Tue, 9 May 2023 20:34:24 -0700
+ Transport; Tue, 9 May 2023 20:34:26 -0700
 From: Nicolin Chen <nicolinc@nvidia.com>
 To: <jgg@nvidia.com>, <robin.murphy@arm.com>, <will@kernel.org>
 CC: <eric.auger@redhat.com>, <kevin.tian@intel.com>,
@@ -58,9 +58,9 @@ CC: <eric.auger@redhat.com>, <kevin.tian@intel.com>,
 	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
 	<linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
 	<alex.williamson@redhat.com>, <yi.l.liu@intel.com>
-Subject: [PATCH v2 14/17] iommu/arm-smmu-v3: Support IOMMU_DOMAIN_NESTED type of allocations
-Date: Tue, 9 May 2023 20:33:34 -0700
-Message-ID: <75b2fb9e4473cfacbd762f451f8a3c35189a171b.1683688960.git.nicolinc@nvidia.com>
+Subject: [PATCH v2 16/17] iommu/arm-smmu-v3: Add CMDQ_OP_TLBI_NH_VAA and CMDQ_OP_TLBI_NH_ALL
+Date: Tue, 9 May 2023 20:33:36 -0700
+Message-ID: <b2d9dc7fb611c398a38f97843041673a44b784f3.1683688960.git.nicolinc@nvidia.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <cover.1683688960.git.nicolinc@nvidia.com>
 References: <cover.1683688960.git.nicolinc@nvidia.com>
@@ -74,234 +74,87 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF000145BB:EE_|DM4PR12MB7525:EE_
-X-MS-Office365-Filtering-Correlation-Id: 11b42380-0ce2-4681-d91b-08db51077c45
+X-MS-TrafficTypeDiagnostic: BL02EPF000145BB:EE_|MN2PR12MB4208:EE_
+X-MS-Office365-Filtering-Correlation-Id: e047e666-40a5-4cc6-bc79-08db51077d0b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	rhLC/ih8q615fmnw3v/jAFHXsljIDUv9FEa6vbAKr12fHu6kBhAcB9DbaqHex85iSWkDiHfCXM91p2xTh+3IDjpDoKOLGLJN6Th0jAMtiTtL8Opayc+7u603S0Zt0i688vfMaIKQ6UAB8jzNfA57J2S+9TNFJG+gE0G6zHdAdn/yi1vXARqRmEWRE4/U8y0ZWBdG0P+xOx6mPqVJxjc2emd8Eiwp6iDDkfUupS3kEBTac/5L4Nl5A5zH4rSPSd+VZTa3chD7q1U7Ozl2u6cyOV9jldZISrwG1PyM5Z1+VfSFYBQKCZSvrzsTUMS5NRusSdrbIPZ8QmjicpOlXawCzSRFIRces+qTR64/iiK7xNwB9/2/YJdx4+8hf36iLhoENlaWISnlzpZPfla62DoEO++mDaoIxoiG9oEEy2JuCKuDnDeYwCFrY8F3AvwgzyUnfLxQVxIwC42i0bDOtA3GIG5pJw5LLUmpyVC7DMfifx2QuQnr3pZl7ZqcwYiHx16pMmZ7IWZAxAiRZpvyie12pUDaICS6qhBvxGGnmwmkFj8Djt9qJETcRgObokASZRS/LtEucjQXiWAdjhz77t8GoC7XknhbO2DfmCPwtrz0ZyT29X8rXyFGt6SUvW6VDFUtc8mdZD/pA1IGi7d6l8PyFGwfeBkFT62JopiRhwEKtkt0lqxRDvDjM8dPFRSBK4qOGfyAtWGIrnDjDfrts8wCqpXl/0/vgFS/p1L05RJI+jIja/0jwTnaP+lLx9XhzjBazAjLqv0PMMojRcjz6qgumMhElTlLPRDvnawss6HCtcQ=
+	yAuFpRqIjpiYcq4zHXx1sy3HsXvM1WpFSdAe+nC9WX4zejjgmrUOja1ks2B3OaCTgc/TqHQPulOLvviNwOwWhiZ18TW10pw00isLGsx7n3FxjcymbpxPNjKCmvr2TnM2NmufGKLD6NIT/dyCG1DrgB8htqaLoba0sfDsHNxRKroAQLivhoeUSzGoxxJKBurbB8//psU4xHnOoko/6R/wb6OQajjjSi9dfLzPsTFavR63uG+YhauvId/3ZH5cytpEL3/iGbqjk5GBt3EWmvuj7zJunBrbduu45yb2LKEirzhCJ+x7ixT7nR3Juwfj2oase/3G1RC8x/uHsVqS+MWz4YQHPyx5lPVHkU9Av7yhd9U7tQ3H67pcVTkde96QvvpxKS9G6ty1pkzEjB+p64W1eJHpe6GgB+OAEYM08O1nzOyfSBV7FKUwXUJR+NOUqeyaFH+IkJ50R5SAgdkpP2rL10ZhmZ7a641aIvuy10azfNS+9r5OSTF3mqPgYqwYScKcyJewCmlseXa5ZSB7aWqajawrLbOaOwBrW7c3jB5+WimqejMylIC7loMRP46tBQQB/GVpfxoFRDsBWmcB91Lrf8fovGcT9XhnHVK3jsDdtjjxP+tVe//p0sy3HqSAOnfj8shlh9DUKuuGDRJUQUF3tNVAXTVM1e3DGUFEsP1xbFn9o/ikegByk+JbQUNPRKhH+yCoA/8xjldkIUgxT1gBfA==
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(136003)(39860400002)(346002)(396003)(376002)(451199021)(36840700001)(46966006)(40470700004)(54906003)(83380400001)(47076005)(70586007)(7636003)(7696005)(356005)(316002)(36756003)(5660300002)(186003)(70206006)(4326008)(82740400003)(2906002)(41300700001)(6666004)(426003)(36860700001)(336012)(86362001)(110136005)(26005)(82310400005)(40460700003)(2616005)(8936002)(8676002)(40480700001)(7416002)(478600001)(414714003)(473944003);DIR:OUT;SFP:1101;
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(346002)(39860400002)(376002)(136003)(396003)(451199021)(36840700001)(46966006)(40470700004)(40460700003)(2906002)(47076005)(36860700001)(426003)(7416002)(5660300002)(7636003)(356005)(82740400003)(82310400005)(36756003)(86362001)(40480700001)(54906003)(110136005)(186003)(26005)(478600001)(83380400001)(7696005)(6666004)(316002)(2616005)(8936002)(336012)(8676002)(41300700001)(70586007)(4326008)(70206006);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2023 03:34:39.2599
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2023 03:34:40.5724
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 11b42380-0ce2-4681-d91b-08db51077c45
+X-MS-Exchange-CrossTenant-Network-Message-Id: e047e666-40a5-4cc6-bc79-08db51077d0b
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
 	BL02EPF000145BB.namprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB7525
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4208
 
-Add domain allocation support for IOMMU_DOMAIN_NESTED type. This includes
-the "finalise" part to log in the user space Stream Table Entry info.
+With a nested translation setup, a stage-1 Context Descriptor table can be
+managed by a guest OS in the user space. So, the kernel driver should not
+assume that the guest OS will use a user space device driver that doesn't
+support TLBI_NH_VAA and TLBI_NH_ALL commands.
 
-Co-developed-by: Eric Auger <eric.auger@redhat.com>
-Signed-off-by: Eric Auger <eric.auger@redhat.com>
+Add them in the arm_smmu_cmdq_build_cmd(), to prepare for support of these
+two TLBI invalidation requests from the guest level.
+
 Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 112 +++++++++++++++++++-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |   1 +
- 2 files changed, 110 insertions(+), 3 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 12 +++++++++++-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  2 ++
+ 2 files changed, 13 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 75ee928c2390..3d150924581f 100644
+index 5fe7fed825d0..3902dd8cfcfa 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2181,6 +2181,76 @@ static int arm_smmu_domain_finalise_s2(struct arm_smmu_domain *smmu_domain,
- 	return 0;
- }
- 
-+static int
-+arm_smmu_domain_finalise_nested(struct iommu_domain *domain,
-+				struct arm_smmu_master *master,
-+				const struct iommu_hwpt_arm_smmuv3 *user_cfg)
-+{
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	bool feat_2lvl_cdtab = smmu->features & ARM_SMMU_FEAT_2_LVL_CDTAB;
-+	bool feat_s1 = smmu->features & ARM_SMMU_FEAT_TRANS_S1;
-+	bool feat_s2 = smmu->features & ARM_SMMU_FEAT_TRANS_S2;
-+	size_t event_len = EVTQ_ENT_DWORDS * sizeof(u64);
-+	size_t ste_len = STRTAB_STE_DWORDS * sizeof(u64);
-+	struct device *dev = master->dev;
-+	void __user *event_user = NULL;
-+	u64 event[EVTQ_ENT_DWORDS];
-+	u64 ste[STRTAB_STE_DWORDS];
-+	u8 s1dss, s1fmt, s1cdmax;
-+	u64 s1ctxptr;
-+
-+	if (user_cfg->out_event_uptr && user_cfg->event_len == event_len)
-+		event_user = u64_to_user_ptr(user_cfg->out_event_uptr);
-+	event[0] = FIELD_PREP(EVTQ_0_ID, EVT_ID_BAD_STE);
-+
-+	if (!feat_s1 || !feat_s2) {
-+		dev_dbg(dev, "does not implement two stages\n");
-+		if (event_user && copy_to_user(event_user, event, event_len))
-+			return -EFAULT;
-+		return -EINVAL;
-+	}
-+
-+	if (!user_cfg->ste_uptr || user_cfg->ste_len != ste_len)
-+		return -EINVAL;
-+	if (copy_from_user(ste, u64_to_user_ptr(user_cfg->ste_uptr), ste_len))
-+		return -EFAULT;
-+
-+	s1dss = FIELD_GET(STRTAB_STE_1_S1DSS, ste[1]);
-+
-+	s1fmt = FIELD_GET(STRTAB_STE_0_S1FMT, ste[0]);
-+	if (!feat_2lvl_cdtab && s1fmt != STRTAB_STE_0_S1FMT_LINEAR) {
-+		dev_dbg(dev, "unsupported format (0x%x)\n", s1fmt);
-+		if (event_user && copy_to_user(event_user, event, event_len))
-+			return -EFAULT;
-+		return -EINVAL;
-+	}
-+
-+	s1cdmax = FIELD_GET(STRTAB_STE_0_S1CDMAX, ste[0]);
-+	if (s1cdmax > master->ssid_bits) {
-+		dev_dbg(dev, "s1cdmax (%d-bit) is out of range (%d-bit)\n",
-+			s1cdmax, master->ssid_bits);
-+		if (event_user && copy_to_user(event_user, event, event_len))
-+			return -EFAULT;
-+		return -EINVAL;
-+	}
-+
-+	s1ctxptr = ste[0] & STRTAB_STE_0_S1CTXPTR_MASK;
-+	if (s1ctxptr & ~GENMASK_ULL(smmu->ias, 0)) {
-+		dev_dbg(dev, "s1ctxptr (0x%llx) is out of range (%lu-bit)\n",
-+			s1ctxptr, smmu->ias);
-+		if (event_user && copy_to_user(event_user, event, event_len))
-+			return -EFAULT;
-+		return -EINVAL;
-+	}
-+
-+	smmu_domain->s1_cfg.s1dss = s1dss;
-+	smmu_domain->s1_cfg.s1fmt = s1fmt;
-+	smmu_domain->s1_cfg.s1cdmax = s1cdmax;
-+	smmu_domain->s1_cfg.cdcfg.cdtab_dma = s1ctxptr;
-+	return 0;
-+}
-+
- static int arm_smmu_domain_finalise(struct iommu_domain *domain,
- 				    struct arm_smmu_master *master,
- 				    const struct iommu_hwpt_arm_smmuv3 *user_cfg)
-@@ -2202,6 +2272,11 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain,
- 		return 0;
- 	}
- 
-+	if (domain->type == IOMMU_DOMAIN_NESTED) {
-+		smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
-+		return arm_smmu_domain_finalise_nested(domain, master, user_cfg);
-+	}
-+
- 	if (user_cfg_s2 && !(smmu->features & ARM_SMMU_FEAT_TRANS_S2))
- 		return -EINVAL;
- 	if (user_cfg_s2)
-@@ -2898,9 +2973,16 @@ static void arm_smmu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
- 	arm_smmu_sva_remove_dev_pasid(domain, dev, pasid);
- }
- 
-+static const struct iommu_domain_ops arm_smmu_nested_domain_ops = {
-+	.attach_dev		= arm_smmu_attach_dev,
-+	.free			= arm_smmu_domain_free,
-+};
-+
- /**
-  * __arm_smmu_domain_alloc - Allocate a customizable iommu_domain
-  * @type: Type of the new iommu_domain, in form of IOMMU_DOMAIN_*
-+ * @s2: Optional pointer to an stage-2 domain, used by an stage-1 nested domain
-+ *      allocation, pairing with a valid user_cfg data to configure the domain.
-  * @master: Optional master pointer for the allocation. If given, this will be
-  *          used to call arm_smmu_domain_finalise at the end of the allocation.
-  *          Otherwise, arm_smmu_domain_finalise will be done when the domain is
-@@ -2918,6 +3000,7 @@ static void arm_smmu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
-  */
- static struct iommu_domain *
- __arm_smmu_domain_alloc(unsigned type,
-+			struct arm_smmu_domain *s2,
- 			struct arm_smmu_master *master,
- 			const struct iommu_hwpt_arm_smmuv3 *user_cfg)
- {
-@@ -2929,11 +3012,15 @@ __arm_smmu_domain_alloc(unsigned type,
- 		return arm_smmu_sva_domain_alloc();
- 
- 	if (type != IOMMU_DOMAIN_UNMANAGED &&
-+	    type != IOMMU_DOMAIN_NESTED &&
- 	    type != IOMMU_DOMAIN_DMA &&
- 	    type != IOMMU_DOMAIN_DMA_FQ &&
- 	    type != IOMMU_DOMAIN_IDENTITY)
- 		return NULL;
- 
-+	if (s2 && (s2->stage != ARM_SMMU_DOMAIN_S2 || !user_cfg))
-+		return NULL;
-+
- 	/*
- 	 * Allocate the domain and initialise some of its data structures.
- 	 * We can't really finalise the domain unless a master is given.
-@@ -2941,10 +3028,14 @@ __arm_smmu_domain_alloc(unsigned type,
- 	smmu_domain = kzalloc(sizeof(*smmu_domain), GFP_KERNEL);
- 	if (!smmu_domain)
- 		return NULL;
-+	smmu_domain->s2 = s2;
- 	domain = &smmu_domain->domain;
- 
- 	domain->type = type;
--	domain->ops = arm_smmu_ops.default_domain_ops;
-+	if (s2)
-+		domain->ops = &arm_smmu_nested_domain_ops;
-+	else
-+		domain->ops = arm_smmu_ops.default_domain_ops;
- 
- 	mutex_init(&smmu_domain->init_mutex);
- 	INIT_LIST_HEAD(&smmu_domain->devices);
-@@ -2965,7 +3056,7 @@ __arm_smmu_domain_alloc(unsigned type,
- 
- static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
- {
--	return __arm_smmu_domain_alloc(type, NULL, NULL);
-+	return __arm_smmu_domain_alloc(type, NULL, NULL, NULL);
- }
- 
- static struct iommu_domain *
-@@ -2975,8 +3066,23 @@ arm_smmu_domain_alloc_user(struct device *dev, struct iommu_domain *parent,
- 	const struct iommu_hwpt_arm_smmuv3 *user_cfg = user_data;
- 	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
- 	unsigned type = IOMMU_DOMAIN_UNMANAGED;
-+	struct arm_smmu_domain *s2 = NULL;
-+
-+	/*
-+	 * The type of the new domain stays at IOMMU_DOMAIN_UNMANAGED, unless a
-+	 * valid parent domain is given, turning it to be IOMMU_DOMAIN_NESTED.
-+	 * The "stage" of an IOMMU_DOMAIN_UNMANAGED domain, however, is decided
-+	 * in the arm_smmu_domain_finalise function that reads user_cfg->flags,
-+	 * to set the stage accordingly.
-+	 */
-+	if (parent) {
-+		if (parent->ops != arm_smmu_ops.default_domain_ops)
-+			return NULL;
-+		type = IOMMU_DOMAIN_NESTED;
-+		s2 = to_smmu_domain(parent);
-+	}
- 
--	return __arm_smmu_domain_alloc(type, master, user_cfg);
-+	return __arm_smmu_domain_alloc(type, s2, master, user_cfg);
- }
- 
- static const size_t arm_smmu_domain_user_data_len[] = {
+@@ -272,8 +272,17 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+ 		cmd[1] |= FIELD_PREP(CMDQ_CFGI_1_RANGE, 31);
+ 		break;
+ 	case CMDQ_OP_TLBI_NH_VA:
+-		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
++		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_ASID, ent->tlbi.asid);
+ 		fallthrough;
++	case CMDQ_OP_TLBI_NH_VAA:
++		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_NUM, ent->tlbi.num);
++		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_SCALE, ent->tlbi.scale);
++		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
++		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_LEAF, ent->tlbi.leaf);
++		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TTL, ent->tlbi.ttl);
++		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TG, ent->tlbi.tg);
++		cmd[1] |= ent->tlbi.addr & CMDQ_TLBI_1_VA_MASK;
++		break;
+ 	case CMDQ_OP_TLBI_EL2_VA:
+ 		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_NUM, ent->tlbi.num);
+ 		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_SCALE, ent->tlbi.scale);
+@@ -295,6 +304,7 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+ 	case CMDQ_OP_TLBI_NH_ASID:
+ 		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_ASID, ent->tlbi.asid);
+ 		fallthrough;
++	case CMDQ_OP_TLBI_NH_ALL:
+ 	case CMDQ_OP_TLBI_S12_VMALL:
+ 		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
+ 		break;
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 6ed86883d52e..9540926b4598 100644
+index 9540926b4598..43c971af663c 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -380,6 +380,7 @@
+@@ -455,8 +455,10 @@ struct arm_smmu_cmdq_ent {
+ 			};
+ 		} cfgi;
  
- #define EVTQ_0_ID			GENMASK_ULL(7, 0)
- 
-+#define EVT_ID_BAD_STE			0x4
- #define EVT_ID_TRANSLATION_FAULT	0x10
- #define EVT_ID_ADDR_SIZE_FAULT		0x11
- #define EVT_ID_ACCESS_FAULT		0x12
++		#define CMDQ_OP_TLBI_NH_ALL	0x10
+ 		#define CMDQ_OP_TLBI_NH_ASID	0x11
+ 		#define CMDQ_OP_TLBI_NH_VA	0x12
++		#define CMDQ_OP_TLBI_NH_VAA	0x13
+ 		#define CMDQ_OP_TLBI_EL2_ALL	0x20
+ 		#define CMDQ_OP_TLBI_EL2_ASID	0x21
+ 		#define CMDQ_OP_TLBI_EL2_VA	0x22
 -- 
 2.40.1
 
