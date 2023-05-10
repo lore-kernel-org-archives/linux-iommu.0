@@ -1,34 +1,35 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2085.outbound.protection.outlook.com [40.107.102.85])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2056.outbound.protection.outlook.com [40.107.220.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D63DF21CC3
-	for <iommu@lists.linux.dev>; Wed, 10 May 2023 21:10:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69C0921CC5
+	for <iommu@lists.linux.dev>; Wed, 10 May 2023 21:15:48 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QxLS+j3NT5jcuCJyimzCANSp94/b99idzzbU2wUfTPqaM9ghL8N5nfUd9u3mnN/CGZKhOr15TorZa/EBQbEvajteeeYx8kdCayISd7ClVX4XoHqPkoXUS2DuEcykISvNqYEl7PHVIvgnK+njiZR88HY+SyVM67p44gq5+mS0QXMOFNYma2JaCmUAAjRtzpfl1f9H/yYVOpP7mBm7RBglTCzKspIn3GMLKpwuMsWTYWh5KMNm/Qi2tMpLBLxXwYZ0mKUuivIfwQcSS/HIQq0w9YN3XWlo09hJeEU8x0WOwlhXaxns/JT7trTjXKiJH+S8MoGbeZEI5NEhUa0voD2iqA==
+ b=CBobELqfbWsXh3eitxbfT1oUbNhKPTmAtYgCzOGrGjfxRVtnVODoi3y81LQVFn8rZPLP4VgKZPr1wVlmMCxOA6mIKviNedqB9ppo+71n6oMWWV9oIMwAGotBue4mVkbc8bZn03WWI8+FFNm9Rtfl9O/ipDKBF4rLev7pbxTEhN/RiqTFJ3a/6WG8pXhnL0hP9VgHXdZDG/2snaPvwBYGdNVVdLJkEuNaIbPGbVFt6Q9CUgBNywRy8BeWhhXzfPmPrkGjV+9GLnfwBLvQXzKqhRSsh1xCwq+n1hfxKwTpTdb4ghPzn4Zjitev+1h8/Wy8IH9SgyPyPnmvxJgXuK6cOw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gKQWilM2TdzxsBd5QJu4ltFNwcAwZDF8l02y6FfF30k=;
- b=jPdCOL0q7eKojkLWceiPYgZbie84DKDzIpxJBo+sFERLs0IRRvbwlACi9I4HgvigW1fQUdx7TJ2AvkzC0Th583QlC+jH6AdJZ7hvPjh3gtdwsWMczmBc7WdG8RlIJb5hYz8BozsyveRucR09N7Jw3opoN7Gpjygn7QT8O+41MRFKSvtUvOoyz9ShKRmJCElXMFKXNhmmVwo2L4q62apxSVo705d0IfZ09lpTHsgJ6iYCGkM17R4S/U2BuvXrZe45uR0NO9Rv1Y5waADs8JCb0FJNPWS2xb6GlAmryU45AqxE/0MQ98SvOUjsoimLvMi/6gBgUg15wJ0v4Q2ZAdDvhA==
+ bh=L6pL+Ni+OvaZDBaERA29CIiO/sdbuEnE7Xyh81JHiP8=;
+ b=UsCH7JU0RFS80flpIGb1a/RnNoTv6FvXYb9/pfc9drgLWumFop4uCxzrN/JwEJirCnjqA8saVEZTE9Nezc9OEUqKNbJ6+cvprCZIzf5fPwOjbzOFT2mRdvco1TKDuQtRGhCJcnL1YcA0lYZr5PvSTH4u7IOVZMXeQtqibAoeATTGhfiU+WNCIutRy2fHN4qNICTLsgwn8XaVawaSMhtSFk9vZ4TMpKp2YrKpAs1BwB/1zYM4nyru3uU4IChllykQ7sJ0W2fbAudRVgQ2c6M7S7QVsVsuwPH++6K9s7KSonl/kmkiRKzVF/Z0ZBEx6OVNTFwnSpi9Dcn4/tqBAHaxng==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gKQWilM2TdzxsBd5QJu4ltFNwcAwZDF8l02y6FfF30k=;
- b=Ca6QqEAZas+yuumc9bpg1KsGc7YO91T6fgBe9GqkNLTS21QfXCZylFUJZZVFn25UfIRVRj5jy+QSW6uRBMcqnz+ipXqqxp8Pb31wD0+bvRXToMi4KYspaUeKKXwFe09+OoI3L2dYk26yx+wU/PZsyezvvHLBtboivz6HGU8+CFiSvUzJPrpFNWsA0Ar0pD+U4EQpRr0XpyeQDpLdX0LQOzfPcMCkyL5Ky8cFcWQ5AlvLZcOZ1Fm8H2ymCM3db14iSP7q8SGYfbbRzEXDYZUS12IWgMyPPTNjXlTiKme09vqMKOQx0U80wvs97H7xv8cZgbxyNTYXvPms6u7TBohWJg==
+ bh=L6pL+Ni+OvaZDBaERA29CIiO/sdbuEnE7Xyh81JHiP8=;
+ b=Sh6oderkzpvbETj+TXTCjQ56gTEJoeX6Y/ee1JcC2qv0PQDrHa67UtgXmVAzi3+4IniCXNUqC2TIrCFR/pnVPd673OAlep1BIp3elZlWnPSKdUxG4WdDZC9R3G7K5hib+/tIkjt1zRWohag9CAHKCev02+hzTWVdaBr5CP1YnPwcFr6+Gj3r5/cgXoJb5O56UTR+sriKGJp5mYEMoUoHVCFOvMoYWjOXwh+WmnqpUbyKLo5aG5hNCazm3tf664XPXqkE3GOdKwhRPT8qlEzTqPtW1QYgtHoEyX0D122t1lneRzZVfNa23Wghoe/V73JQuXyNLIgILHWXNK/kp2VKUg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DS7PR12MB5887.namprd12.prod.outlook.com (2603:10b6:8:7a::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6387.20; Wed, 10 May 2023 21:10:53 +0000
+ by BY5PR12MB4997.namprd12.prod.outlook.com (2603:10b6:a03:1d6::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.32; Wed, 10 May
+ 2023 21:15:46 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6363.032; Wed, 10 May 2023
- 21:10:53 +0000
-Date: Wed, 10 May 2023 18:10:51 -0300
+ 21:15:44 +0000
+Date: Wed, 10 May 2023 18:15:41 -0300
 From: Jason Gunthorpe <jgg@nvidia.com>
 To: Michael Shavit <mshavit@google.com>
 Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
@@ -36,14 +37,15 @@ Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
 	nicolinc@nvidia.com, baolu.lu@linux.intel.com,
 	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 0/5] Add PASID support to SMMUv3 unmanaged domains
-Message-ID: <ZFwIWz8kBL+bti1m@nvidia.com>
+Subject: Re: [PATCH v1 1/5] iommu/arm-smmu-v3: Move cdtable to arm_smmu_master
+Message-ID: <ZFwJfVOKWsFk8oup@nvidia.com>
 References: <20230510205054.2667898-1-mshavit@google.com>
+ <20230510205054.2667898-2-mshavit@google.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230510205054.2667898-1-mshavit@google.com>
-X-ClientProxiedBy: MW4PR04CA0074.namprd04.prod.outlook.com
- (2603:10b6:303:6b::19) To LV2PR12MB5869.namprd12.prod.outlook.com
+In-Reply-To: <20230510205054.2667898-2-mshavit@google.com>
+X-ClientProxiedBy: MW4PR03CA0212.namprd03.prod.outlook.com
+ (2603:10b6:303:b9::7) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -52,104 +54,69 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DS7PR12MB5887:EE_
-X-MS-Office365-Filtering-Correlation-Id: 70881b9b-0278-4008-7e03-08db519b09f3
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BY5PR12MB4997:EE_
+X-MS-Office365-Filtering-Correlation-Id: d8974887-13c3-41c9-1738-08db519bb7bb
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	/+3NMCE0U7ghFoq9noXZ+B5dHlmtsjsGxepdc0tCg/Qn59mDq3eo3qMhEkNmPppZufmx9+y3bNey7hfuznBA4FcDChUo3bE1NMs1/7ukS1WrlqoQk0O4F3CjW60PFekdIefHJnHZS0078uXBX2eZAAq5iy/i6WSJv818/fnQyYMrqpJvxVXshp7S6J2fnLf6wFsjHu3z40q30GGsn2WYJ7dZ69DqV9WnJfdAVgXLtqv3qvuBezuiItN4SVEODMAOf21AX7cACKct4W+/vVlYUzhMtTIgnHhStNghb1esJbBclc/9ledEeuOKB6OnOCpLEyPhQK2VxEgyzSMD4hxpMvujP5pyzCQudHSo+niwxZVGVCmH7AE0wWeFaXi86it3KjVfOewTfGtffqE1eEXdzcuTr/B62ycB2ezoFIy8X9SfDK9feAIZbq34oxPo9s6olkTBIElAsOeJyJEEqm6Tz9jhOZKHTMb22RHLNU4bCDcc4JsssCeX/gmG6jp3oeZKXSCDbYC7OX+M9HzL/QwyXZenlq64fEHm8Pams8zSMnz1mHTloqGCxYRQxutncwVHI6UPskSZX9BDGDeBBY/RWBypffRD1YB5ZuCz2bO+HNI=
+	gO5/bejvOxzT3mTuXJubarO6Oqeu/5i53ypCwo6qIrCEfegTOxxsPQjqbbSIuK3X4j++Lyk9y5rUh2CbfOv7oj6pjVwVLoSWO21ogBYS/nQuB51R2DoFHyGe4ibEcuStIbukJ/XGxI8dNoBdzEpw787b2tC+osHdBWUX/aD5f0SVXhVCoF0mZHDPqlzvCfOO2hvYDOeTuwDZf5Th1YrPxLVXIu1QdVvom9IILYzmgDgajlqq+qnbdB3QBx+m9TjLE+PR0Gu3LZvui7IsZ7DKNVNYKMUFjafxev9HCKzWVZU86BusVphZ4MvlPN7d4VeiJ8nxsBf698H6mXtNqOltBo1J1kOWx38EPq/Arl2eFiJNeEtGRI1JX2hGPoztrTG1XG3UAUL3MTvNu4c6YSkeiSWwKY3yPU3+pzv5TXvYpcKsAkIAz1s193EjlTkSxLGuPxRA7Iw7VH0WdGji0q2H431EJSmKfLulay+L6vyfTMqKiZYNLL9/wGhzOyhGWb3nyYXvIxvCdjUV+rcCub+FAuugWh4Z4Mn2RoK2xLsZ0UxKSMQSScsyr9kFV5fZzvoz
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(136003)(396003)(366004)(346002)(39860400002)(451199021)(2616005)(83380400001)(2906002)(186003)(6916009)(66476007)(66556008)(316002)(41300700001)(66946007)(54906003)(4326008)(6486002)(478600001)(5660300002)(6506007)(6512007)(26005)(8936002)(8676002)(38100700002)(36756003)(86362001)(66899021)(67856001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(346002)(376002)(136003)(366004)(396003)(451199021)(36756003)(6666004)(6916009)(316002)(54906003)(66476007)(478600001)(66556008)(4326008)(66946007)(6486002)(2906002)(5660300002)(8676002)(4744005)(41300700001)(8936002)(186003)(38100700002)(6506007)(86362001)(26005)(6512007)(83380400001)(2616005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?VrJeY6oQYm0nLajRYwN5aZSNCZ+KBooGmI+0UuNOlF/qekSPa1CK9OWyE+c0?=
- =?us-ascii?Q?f4cxbngZy1eGq/YxlrhPi6ZDSCcHNhGgoHlE93h88Ani0AwC780Jq+ncLIzM?=
- =?us-ascii?Q?R8VjaiRjFSB6nMTEkhuJvLyWiU9/h7zzbRndhUbqCvQJubkxU6SKSDL/wwM/?=
- =?us-ascii?Q?lyh5C5sbLdBGfnGn8MEcdLm70nNdGx96X35ogPP+l897Cs47Pb3KUH8q2eZz?=
- =?us-ascii?Q?psikoqpEDCNGWsi9mFxTolmnwCtyqATNcHK7q6dGjyp8sH67+uzVoMAz0Lmo?=
- =?us-ascii?Q?TdyG/441zGVjL4ucXyxxDmWMS5ti7jSUPI54YrLia/yvQoaqqSpHojVLO8Zk?=
- =?us-ascii?Q?h7c4nDElbtuRo4mJkLHG9BmrfI2oiq8BiydvKKuHl/ludirE+oq7uRwbeQoq?=
- =?us-ascii?Q?iA1WQmQ9y2P4mjFKUMgUcZv173nUYqaFwsyy7WW5po7nFx3V7GADiuT8G7vt?=
- =?us-ascii?Q?a9oHbs/DgsheUFubSIQy2GmpvGfzJNoPVtZ5f4TtVWu1ml3yFu/oXibLmLUF?=
- =?us-ascii?Q?h33gLhvbBn9iqcjJlWexwIdfmpEynT+At38yukaB95WEnDZ8Nu1qc/vl34eT?=
- =?us-ascii?Q?DImrjXX1vvE42NhT1xFMNE4Wo6ajeSGM3gaO6QF/iJi6HjMAHB0HrB3AFNe+?=
- =?us-ascii?Q?elfZcxzQ1GzK7y2O3xhS6aE83ODRDKRzb3aQrCEXE3D15vHinBvu04w8pziB?=
- =?us-ascii?Q?l5ZOOvf8QYs7wvoxQyz38cmPZSWUgM388Z2MfXPtCjgYLtn1D0d8giVMykIn?=
- =?us-ascii?Q?DM1puYETnQeGHNevSOV7+/lD3vZZ1DQnpFLOyR1WGOEgXE4V3zs3NTpHY3Je?=
- =?us-ascii?Q?KrLbPmWGqwdLxZMHQ/846REOhrJuz5abfCrkHvd/wXN5BWsy68I5NRFT2HNB?=
- =?us-ascii?Q?+SfhVj6EugpdSp8NJJeA+ZOagREUBbky4XsLT/OQv7SbhPKf+XKFgI9HU4DA?=
- =?us-ascii?Q?JTP5kx0d8my2uDrCgDG38ZC6Wb/rE6vJAOdKIeTE95wcElA6phT9Ahf8GnFE?=
- =?us-ascii?Q?Hag1gSYCWRMs8+C0xrsrY5aJokpm0jV0564uIWuwp/11M4UfKXZR2f1GmUjb?=
- =?us-ascii?Q?EdZXyPAcV+fOpVVDoXDjY6FxRGCOx1kkLAnYXPqB1uEPtuPNBJpfiY8vf7tw?=
- =?us-ascii?Q?T5DBc3wjqR9QFmOJPZeBQLWSQGERAzmopXkE5BeFeAhtDbpCbWSburGlHOI7?=
- =?us-ascii?Q?+OS5SCbmlLLKG/iGfqfPq7JkLBpfdD8ZnKtwZdYbiyLMTZCu6Hyl8eghXPU1?=
- =?us-ascii?Q?ZU57KsnWrkbzXacc/kZcZJgSHWkT1KslG65YgyJw7cm0VGyGgB7WcOx8wqfr?=
- =?us-ascii?Q?c9tFyTdFF8e8LuIzmzYBtiW5mcsI+K3KK1rbZ/HtbttLGpAAXHGKUZ/I9TAq?=
- =?us-ascii?Q?X68AVWrrlBtb1mvISBu0YM46lrqu8zD4AabMQU5ibOXDER2aTH8L6stWs140?=
- =?us-ascii?Q?QiXRJ8hqxF/Cemvoac5dvI6mLSpAtKvS03nojAdpwTomixnrokiwlQyF1CQ0?=
- =?us-ascii?Q?Hrhy2OJyn3eq4TuWG0H5BbhHOxmrLeN28p/3MrDUD86HtsrLUdtbNXKjJLat?=
- =?us-ascii?Q?2svDv4Xz7zq0hXklp6s=3D?=
+	=?us-ascii?Q?Q6kPzLFSOEBgIxOmzX9bG9xIhpsWot4txRIw/ZfXCo30NZC4pH3+IwdhFfCg?=
+ =?us-ascii?Q?hk/QXHKLdokV2cHCAjuRyska2L7wzLGZN4vIr8CNsETcYqA89+GVw+TPamB8?=
+ =?us-ascii?Q?qwIORU1+Z/VXM2DWTtx3lQvHEEVPJIWe6VO/KWEvPH1WnKyO/fW8oI5IQliJ?=
+ =?us-ascii?Q?ohXATmqwt+i9Rm2ogy1z3BNFnGlQUy+ha9wrqg34o+C0N0mPgBWd4fdnlK1o?=
+ =?us-ascii?Q?aOS/oq+/sUV3tXpnj/DjpOuo05gQ8ZQ7pqfL12qp1wZ20GgF505jJv3rySwi?=
+ =?us-ascii?Q?BBu0QLPxeZF38zh2hd2/3+Atymf0s5oyysa2t0mx+Avgu6AY9tcwFr8zlf6h?=
+ =?us-ascii?Q?EPN1cArMIn4+OKX+4OqoVWxkjCkM+7NQSuV/SOuQPiU9d5sLL4Gayqx3kiL5?=
+ =?us-ascii?Q?h6ySj8tVcxh5CBduE3HZpfvTmRbVolY9edVd7qnGYY+pxXOZlKDvzNIgh6xw?=
+ =?us-ascii?Q?uDBc3rWI/fH12xSijzRpoYV/mBAWFmbH/gVwsS1C2eueBhvLAMkxgOc8x5CS?=
+ =?us-ascii?Q?k7qUDpkjgI5aKQt9v4FOv2PT2SB3CXgLSPmegaAZxBJrLiTvUTvIYP8wReny?=
+ =?us-ascii?Q?+sD7Bozh3XyBFx6ui/IRc/V3N6X1DhEK8xnedzkh/lZ7Z4nxa2DSCsegldCj?=
+ =?us-ascii?Q?zoaHnd+b7sj3bdlEcVQ+pltJezb7d6BWUbhI252OSyDHph6ngbLXGAGsZbbF?=
+ =?us-ascii?Q?iEAUd4yS13YeMrBu65IiU/QpZWB2TCOfY0GHcCEkykQxLOMoH+5I2fK/NhGW?=
+ =?us-ascii?Q?xr2SkXPcvL/aKpqr+vjYRn5D8i8yT/imxBEPfMIGyvDylHa4MS73dHsH789p?=
+ =?us-ascii?Q?1l1B6aU9qawJz/HXo7K1Z24jPrk97SnxyduHAAVX3J0uU0aFeUlJ8Tjb8r0B?=
+ =?us-ascii?Q?2Qg4/ixK/IaNQrKrqZvrPKZeTHCI9VzN38EcNjsNqhwPIKOp8xjA6mI+6LyW?=
+ =?us-ascii?Q?zf0WCOfaXhUTHmXZx1culiK6y78l0nAH2kgbaK4tVG4aS54V3ioepzNX7zsn?=
+ =?us-ascii?Q?ZuMiZgT7Ii7UtpZY+jxfLcEqE1Bk4mWzAwt1TvmWWwbOQCavwO/q3SNbwyb+?=
+ =?us-ascii?Q?5ZljIzTU22JtjLA7Yx4UdiAWCdV64XGh6ckwcSyosB3pOd690m0qX3KCJyNu?=
+ =?us-ascii?Q?g78gMrtim0NBJx0bIf1gjAs2Sjzx7dMgbeapEzaOEBiawoDyEjE6+l/J0SFP?=
+ =?us-ascii?Q?GXsBlYA4TRSXKUgeyb3cBBWUoeTGul/7F032hXDfJdRidmcIsKnP6NuniSjm?=
+ =?us-ascii?Q?kNCmsOcjEToQwwvbUxQck9qf4NHyZVy8Kyy0aA/Ew+f04+8qXRsB/AhPtLBr?=
+ =?us-ascii?Q?pbGzxCN9nJsX91wsDhXbCveMp2zYtJfUEwF+zG1x4P+euzmNs3Kmee6n/Llf?=
+ =?us-ascii?Q?Inr76wHoCbYYwI2taQcMfvFJzI+AceVW236+r5J+lLIp2zxbGcjfRpFc9Axf?=
+ =?us-ascii?Q?5TXReFKyFiPPROkYTPocA0GpPk0HcUan1GaHGOjsNuhSkOsQFcO/XA5XgqxU?=
+ =?us-ascii?Q?+EKum0id6B52lE8hZMFaTSGndyQx9eLET4GAV5Joiam3NjlVHl/3aZ29KtTc?=
+ =?us-ascii?Q?LvGqMb3j6CqET3dTeYA=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 70881b9b-0278-4008-7e03-08db519b09f3
+X-MS-Exchange-CrossTenant-Network-Message-Id: d8974887-13c3-41c9-1738-08db519bb7bb
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2023 21:10:53.5615
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2023 21:15:44.9095
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uj53FJX6N/WBp28rVn+a6QhZ0Z41Umzim47FbYjzIHcM3/ZDThAp5/UUkKj+cj+o
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5887
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3AqsCioNgZzs6oj/rxZ6i/y1sHO0NzodnB5xgqV0wi0reeBohEBqQE9tKvT8XV4N
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4997
 
-On Thu, May 11, 2023 at 04:50:47AM +0800, Michael Shavit wrote:
-> Hi all,
-> 
-> This patch series refactors the arm-smmu-v3 driver and implements the
-> set_dev_pasid functionality for DMA and UNMANAGED iommu domains. As part
-> of this effort, we also refactor the arm-smmu-v3 driver such that each
-> iommu domain represent a single address space. In particular, stage 1
-> domains hold a single ContextDescriptor instead of the entire STE entry.
+On Thu, May 11, 2023 at 04:50:48AM +0800, Michael Shavit wrote:
+> In the arm-smmu-v3 driver, stage 1 domains represent the entire STE.
+> Iommu domains are conceptually closer to a single address space (with
+> some exceptions), which are better represented by a single
+> ContextDescriptor for stage 1 domains. With this change, the CD table is
+> now owned by the arm_smmu_master instead of the attached domain. Each
+> stage 1 domain now represents a single context.
 
-I'm not sure what you mean "holds" a ContextDescriptor?
+As per my remark on the cover letter this seems a bit confusing
+description, but the idea that the CD Table for kernel owned PASID
+list is placed in the 'struct arm_smmu_master' does make sense to me
 
-Ideally the iommu_domain should only hold a pointer to some table
-top. Depending on the domain type this would be a S1 IOPTE table, S2
-IOPTE table or a CD table. Plus the non-table domains like IDENTITY
-and blocked.
-
-Logically when an iommu_domain is attached to a device or a PASID a
-STE or CD is generated from the iommu_domain's configuration but the
-iommu_domain doesn't "hold" it
-
-When a kernel-owned CD table is used it should be held someplace else,
-certianly not in the iommu_domain. Logically as a per-device
-structure, but maybe with optimizations for sharing.
-
-> The refactor is arguably valuable independently from the set_dev_pasid
-> feature since an iommu_domain is conceptually closer to a single address
-> space than an entire STE. In addition this unlocks some nice clean-up of
-> the arm SVA implementation which today piggybacks SVA domains on the
-> "primary" domain.
-
-I always thought of this as sort of a pre-calculation of the STE, that
-gets cached in the iommu_domain? Not sure the pre-calculation is that
-valuable though..
+This patch seems very big, is there any way to break it into smaller
+steps?
  
-> path forward for set_dev_pasid support? Or could a uAPI that only
-> exposes a single CD instead of the entire STE be an appropriate fit for
-> the nesting use cases?
-
-The uAPI is to create an iommu_domain that holds a CD Table Top
-located in user memory, it cannot deviate from this. These kinds of
-iommu_domain's can only be pointed at by STEs.
-
-Again it doesnt really "hold" the STE, but we can compute a STE that
-points to the SD Table that it does hold.
-
-Other than this, it is good to take this project on, getting PASID
-support aligned with the new API is something that needs to be done
-here!
-
-Thanks,
 Jason
