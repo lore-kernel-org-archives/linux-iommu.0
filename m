@@ -1,134 +1,121 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2059.outbound.protection.outlook.com [40.107.93.59])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A15163E
-	for <iommu@lists.linux.dev>; Wed, 10 May 2023 08:41:36 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iaPxfSHvDosPq/z303i+/PJsnD55+slkuyEo8iWmhWv3jWEqjAuH+/Ixv/79TB+DkMr+rZWHw1BL2aFWza+hB0sHzltDLQVvcdyuFuDSeAYTApi8NcPJNYR+lSISOTU14GPDNiJEhYBZVltTC/4eDKODv0CCSZ2cV1kkq/bsd72EoLW7vU2APtyyaQ73plhUpWqjbttAZws+q/utaz07GZUVLOyjX6KpH47PfNYOdtHWKz4+VH5MidhuH66yyYuKhpDVrJ3WyVf2BDDmpTYN389Acro/yvzoYhrKjhYCkhf4gFrZ4sedv5JYhSXgvCDh9VbmAAPGXoFoPAYja49AbA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vbUREkIMAMcNk+Mixvnc1NzHRNlbQPHjV6DyuyAEdt0=;
- b=XlwXHVKIWGR82JTlZ+FJ+skNmFOt/FIWxTssYLzabmmgVu8K/6J1+8+tkHjXwMiHQ6n6ZLiJbfltdwmVYoylj1UhdUbTTp0ED1MSIn/hJ+lOKV2fzqTlOzR7wBlIe2wGoy9tRe3z3a+Luk4bdpJlFL7bbD1gditLo2OV91mxOdo0itZi1aOUsAmeasxQSNwia5jpU5xYvsR7941CYDZoS7pCMZqbjluOEtDk4PimVy7+ue93+FDd+nq9qJBD9rcU9EbXioty1bdWbKlZoThFIn13Hgt24ujf2MectQoBk9SUtceALn+F8wQC8Er2eFGvYFgQ1VLpMbIEpn7mLl++aQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vbUREkIMAMcNk+Mixvnc1NzHRNlbQPHjV6DyuyAEdt0=;
- b=WTn9OEdobOgPX6Ph9TmA2YtPA2BtWv2f2/D/OOMIwsz4u5l/EhKDj/ElECS8nTj3LYDK0KHF0qCAaOn3XQub/eQ2xI6oyuL0+B2Bt3+Tp7dBQbLNnfwNUdytXdQTneOZy+pQsSY2nkS4DSktr2pQszPXFLtJo+Pa1J1a5RY7CkhTQbZI6ld0G00eK/TOSp9PJE0i0m/ZQ6gcffqsNxpGMgIxt52PMgaYgOczboS+eckalqh8gjwy5KbsiyC2n4BYRciP+upHVjlzUyUQnVX7wgR3dldh861CXBtgaS5y8tAypd1/ztF6Mbpco6MJYBqRfb969OqN1+YnYohxmYWUng==
-Received: from SJ0PR05CA0094.namprd05.prod.outlook.com (2603:10b6:a03:334::9)
- by CH2PR12MB4245.namprd12.prod.outlook.com (2603:10b6:610:af::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.33; Wed, 10 May
- 2023 08:41:34 +0000
-Received: from DM6NAM11FT098.eop-nam11.prod.protection.outlook.com
- (2603:10b6:a03:334:cafe::aa) by SJ0PR05CA0094.outlook.office365.com
- (2603:10b6:a03:334::9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.18 via Frontend
- Transport; Wed, 10 May 2023 08:41:34 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- DM6NAM11FT098.mail.protection.outlook.com (10.13.173.61) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6387.20 via Frontend Transport; Wed, 10 May 2023 08:41:33 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 10 May 2023
- 01:41:17 -0700
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Wed, 10 May
- 2023 01:41:16 -0700
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.7)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Wed, 10 May 2023 01:41:15 -0700
-Date: Wed, 10 May 2023 01:41:14 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>, "jgg@nvidia.com" <jgg@nvidia.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "will@kernel.org"
-	<will@kernel.org>
-CC: "eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "joro@8bytes.org"
-	<joro@8bytes.org>, "shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "jean-philippe@linaro.org"
-	<jean-philippe@linaro.org>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>, "Liu, Yi L"
-	<yi.l.liu@intel.com>
-Subject: Re: [PATCH v2 00/17] Add Nested Translation Support for SMMUv3
-Message-ID: <ZFtYqtdsFSSx1Prr@Asurada-Nvidia>
-References: <cover.1683688960.git.nicolinc@nvidia.com>
- <BN9PR11MB5276A6619129034311C917FA8C779@BN9PR11MB5276.namprd11.prod.outlook.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 097BF6AB7
+	for <iommu@lists.linux.dev>; Wed, 10 May 2023 10:24:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1683714269; x=1715250269;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0/dKuhBAooiK7NxI6ZJD57YCt/AXZDva/ko2oLS9g9Q=;
+  b=Fd1GbIgXZXVViU1Va74r4hk2tZo6qUwHFa/qX08f5/a809HLHO0sTr2M
+   ORcUDD+ZaP6+T+WzBeuRPPsYvpipao8nbWWJOLsIUlCossB2c8A+S5gam
+   5feYtK1xp1YK/b8W5jh9e8VJvGN7yq97t6qoIsMQkaKVvc2sZFVQOjznY
+   wnkLHP371Tbt/hco/nh/QhKySoMUwYXk7J65wDzgarZQbP1jbEyI8mhPG
+   Wsa050tW6oWmYyh9uVT7WZRdsDm/PK2ypb0kodXBYgR/ky/+/Z5PgFjHw
+   MImG8RldKllQ8mIuFd5iJF3gWm2hRlLmlaQ6gCXb/airTaz3tLtHzpt86
+   A==;
+X-IronPort-AV: E=Sophos;i="5.99,264,1677567600"; 
+   d="asc'?scan'208";a="213245200"
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 May 2023 03:24:27 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Wed, 10 May 2023 03:24:25 -0700
+Received: from wendy (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21 via Frontend
+ Transport; Wed, 10 May 2023 03:24:22 -0700
+Date: Wed, 10 May 2023 11:24:03 +0100
+From: Conor Dooley <conor.dooley@microchip.com>
+To: Anup Patel <apatel@ventanamicro.com>
+CC: Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley
+	<paul.walmsley@sifive.com>, Thomas Gleixner <tglx@linutronix.de>, Marc
+ Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>, Krzysztof
+ Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Robin Murphy
+	<robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+	<will@kernel.org>, Frank Rowand <frowand.list@gmail.com>, Atish Patra
+	<atishp@atishpatra.org>, Andrew Jones <ajones@ventanamicro.com>, Anup Patel
+	<anup@brainfault.org>, <linux-riscv@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<iommu@lists.linux.dev>
+Subject: Re: [PATCH v3 00/11] Linux RISC-V AIA Support
+Message-ID: <20230510-parchment-saxophone-f91f9d96156c@wendy>
+References: <20230508142842.854564-1-apatel@ventanamicro.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="drOWBx1kyE087zJ+"
 Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276A6619129034311C917FA8C779@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT098:EE_|CH2PR12MB4245:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3c639ece-c270-4ad5-26de-08db51325c3e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	h5SLBaxWkJl2TrXxOD6w7Tg/YkGGk7Ilk4LuHlxX1Kq/VYGSoA1VVw55mEGfJr9ClJVeoUDywgOrKF/CYaQ6g3tD45TJMDZpqkGOHykFAiH99V7eCFHVVo6MxmT7hKYdkQE9AH8vEuJWOeL8cDELBR3wu8OtVaoMVWA+TEuldJG950WvR/XxtjluYPai5vp13bi9jZbXUId/kTfU4cThIKGNlTKw3Tei1Uzs96L4dm4pxuJB1+NeH/8T9GdAl+lQT4+DH54jJrIwACGVjkhAoG2fVnR3CoUMK4POYkN9slB/NTkxpXFLjF5PZ5V2ZxHp+G4xAvoce1MTwm96AhYoQaj8QRz8yM4h+GQZPGiVl+wX0v1RH+fylZurhmBhQRivYNyDgq42hDGlGhPa+VtD/LToG7b5WOLDVW2Uhhk2zRX65KZsmpdnrIvnVEwuHoKEs1lAq5fvt9UTIoYIB1UmPSTpcf9/G2oEC8NU1VoPqJC1iHzd6j/H2dbG/1BNiMIC/uzdd9DXAusvJVMCG40ZD9lZrNOVKAY64caUtq6i6V/jY3Jkx0vfMuQfeO6E2bux/2C9BcVY2eT7vfiw8tj1v8+KQq/rK6bnPf+rWoUTtw0Fr/CbCohmBhV36eRvr5N1tye5gUn5ObqMMNNwBIUoPVYX1eroQ8QY3uDTymcBNBIRnPU7Prg6trsIPf9sEuJrPFJvpRGNp2z0rOy7t8ddlDtQNtJaTbFkpo7+uCN6Ev+TVNNlAm9YgpTFc8iNoGBY
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(346002)(396003)(376002)(136003)(39860400002)(451199021)(36840700001)(40470700004)(46966006)(7416002)(5660300002)(54906003)(110136005)(478600001)(41300700001)(8936002)(8676002)(316002)(966005)(4326008)(70206006)(70586007)(26005)(9686003)(2906002)(47076005)(336012)(426003)(40460700003)(186003)(36860700001)(7636003)(82740400003)(356005)(40480700001)(55016003)(33716001)(86362001)(82310400005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2023 08:41:33.9442
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3c639ece-c270-4ad5-26de-08db51325c3e
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT098.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4245
+In-Reply-To: <20230508142842.854564-1-apatel@ventanamicro.com>
 
-On Wed, May 10, 2023 at 08:11:28AM +0000, Tian, Kevin wrote:
- 
-> > From: Nicolin Chen <nicolinc@nvidia.com>
-> > Sent: Wednesday, May 10, 2023 11:33 AM
-> >
-> > One unique requirement for SMMUv3 nested translation support is the MSI
-> > doorbell address translation, which is a 2-stage translation too. And,
-> > to working with the ITS driver, an msi_cookie needs to be setup on the
-> > kernel-managed domain, the stage-2 domain of the nesting setup. And the
-> > same msi_cookie will be fetched, via
-> > iommu_dma_get_msi_mapping_domain(),
-> > in the iommu core to allocate and creates IOVA mappings for MSI doorbell
-> > page(s). However, with the nesting design, the device is attached to a
-> > user-managed domain, the stage-1 domain. So both the setup and fetching
-> > of the msi_cookie would not work at the level of stage-2 domain. Thus,
-> > on both sides, the msi_cookie setup and fetching require a redirection
-> > of the domain pointer. It's easy to do so in iommufd core, but needs a
-> > new op in the iommu core and driver.
-> >
-> 
-> Looks the new preferred way is to map the physical ITS page to an IPA
-> provided by Qemu then let the guest allocate the cookie in S1 which
-> is then passed back by Qemu to the host kernel? [1]
-> 
-> [1] https://lore.kernel.org/linux-iommu/5ff0d72b-a7b8-c8a9-60e5-396e7a1ef363@arm.com/
+--drOWBx1kyE087zJ+
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Hmm..is that something firm to implement at this stage?
+Hey Anup,
 
-Thank you
-Nicolin
+On Mon, May 08, 2023 at 07:58:31PM +0530, Anup Patel wrote:
+> The RISC-V AIA specification is now frozen as-per the RISC-V international
+> process. The latest frozen specifcation can be found at:
+> https://github.com/riscv/riscv-aia/releases/download/1.0-RC1/riscv-interr=
+upts-1.0-RC1.pdf
+>=20
+> At a high-level, the AIA specification adds three things:
+> 1) AIA CSRs
+>    - Improved local interrupt support
+> 2) Incoming Message Signaled Interrupt Controller (IMSIC)
+>    - Per-HART MSI controller
+>    - Support MSI virtualization
+>    - Support IPI along with virtualization
+> 3) Advanced Platform-Level Interrupt Controller (APLIC)
+>    - Wired interrupt controller
+>    - In MSI-mode, converts wired interrupt into MSIs (i.e. MSI generator)
+>    - In Direct-mode, injects external interrupts directly into HARTs
+>=20
+> For an overview of the AIA specification, refer the recent AIA virtualiza=
+tion
+> talk at KVM Forum 2022:
+> https://static.sched.com/hosted_files/kvmforum2022/a1/AIA_Virtualization_=
+in_KVM_RISCV_final.pdf
+> https://www.youtube.com/watch?v=3Dr071dL8Z0yo
+>=20
+> The PATCH3 of this series conflicts with the "irqchip/riscv-intc: Add ACPI
+> support" patch of the "Add basic ACPI support for RISC-V" series.
+> (Refer, https://lore.kernel.org/linux-riscv/20230508115237.216337-1-sunil=
+vl@ventanamicro.com/)
+
+This series does not apply for me (or the patchwork automation) on top of
+v6.4-rc1, which was released prior to you sending this & contains the AIA
+definitions this series relies on.
+You note here that there is a *conflict* with Sunil's series, but what
+you actually did, as far as I can tell, is base your series on top of
+theirs?
+If you're going to do that, at least point it out so that reviewers
+don't have to figure out what your intention was :( Better yet, for the
+sake of our automation in particular, don't do it at all.
+
+Thanks,
+Conor.
+
+--drOWBx1kyE087zJ+
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZFtwwwAKCRB4tDGHoIJi
+0t1JAQDg/nff4RAapk5rR40Fc9M7gbVoPtea9uxe8wNvwzKrFgD8DzIxMd1/AHTL
+9YZT8pbRkIczFFTrwTSfcWJL2zf7Rg4=
+=T9IK
+-----END PGP SIGNATURE-----
+
+--drOWBx1kyE087zJ+--
