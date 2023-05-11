@@ -1,32 +1,32 @@
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEB1E36D
-	for <iommu@lists.linux.dev>; Thu, 11 May 2023 14:51:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A4A563B
+	for <iommu@lists.linux.dev>; Thu, 11 May 2023 14:51:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683816682; x=1715352682;
+  t=1683816684; x=1715352684;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=bXtmswM4fcZmRyz4ffkT34RI+fzlROFvWgl83sjywhU=;
-  b=KNr2HK1wQlwpCaIkOYVUKg3jB7SiolUab9osYVe+LoHayvT3bBaPdCkg
-   IxhnGw9AGubjcqJD6ehWdAHEVjfSXjTzTUf0tgA4oqPH4wHe6tKQNq+r8
-   ZFdz22yQA/Y9AqaxfgnCyvIBW5rU1ks10rbVi9xUlRucxZ9LBZEvhPNnx
-   yY4zq2ijInKUWG00neOg5rDlHZ9StQieXoDfDxArsR4heYWcIdnNwfLx7
-   Kt4KityYC4be3gVE92xYcVvYxlNCGFKELuIcqxfjbvqqwqUVJkqX810dr
-   tRlceuafdGBYx+7kUV3IMJcuJ/6/vNuAltZqBqSk07iOhMgbYDLPreYVI
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10707"; a="335025500"
+  bh=RiJbUCRtwm5Znm9STMCxtijeo+jb5c7PnzMHxXPV1jU=;
+  b=ah5GJTVT3Ae7qhk5cO/WaphLGjLZa8TgR54be5R6A+9Ee1HMeJMOsoXW
+   ZOBCAPVV5oHynf/foHzN4Or/caD87SO994DrAQA+3/9hwkPpwsnCmvmaw
+   kO4bnarVqh6QvQpDQbVOR8s04hxzmlXiFqHJu7zdBa6nouXrGhI3rE3LM
+   e6NGVInKIlJjW2o4nUcR0S+DmtGLVNTc4c1AvGyJLB8ggT8+otNZyCxgT
+   gw9ElLulvKlNIiPsaYMQ4ykzf3bL3/qV9ysvHNw3vcvxv0uFal2sphbqA
+   T9qytbwhoDIvSSN7N2a+Qw3rJJVMTG1ypFfh50O0VBcXtl+SfO6G2+OdM
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10707"; a="335025524"
 X-IronPort-AV: E=Sophos;i="5.99,266,1677571200"; 
-   d="scan'208";a="335025500"
+   d="scan'208";a="335025524"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2023 07:51:20 -0700
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2023 07:51:21 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10707"; a="769355185"
+X-IronPort-AV: E=McAfee;i="6600,9927,10707"; a="769355194"
 X-IronPort-AV: E=Sophos;i="5.99,266,1677571200"; 
-   d="scan'208";a="769355185"
+   d="scan'208";a="769355194"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga004.fm.intel.com with ESMTP; 11 May 2023 07:51:19 -0700
+  by fmsmga004.fm.intel.com with ESMTP; 11 May 2023 07:51:20 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -51,9 +51,9 @@ Cc: cohuck@redhat.com,
 	linux-kernel@vger.kernel.org,
 	linux-kselftest@vger.kernel.org,
 	zhenzhong.duan@intel.com
-Subject: [PATCH v3 07/10] iommu/vt-d: Add iotlb flush for nested domain
-Date: Thu, 11 May 2023 07:51:07 -0700
-Message-Id: <20230511145110.27707-8-yi.l.liu@intel.com>
+Subject: [PATCH v3 09/10] iommu/vt-d: Implement hw_info for iommu capability query
+Date: Thu, 11 May 2023 07:51:09 -0700
+Message-Id: <20230511145110.27707-10-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230511145110.27707-1-yi.l.liu@intel.com>
 References: <20230511145110.27707-1-yi.l.liu@intel.com>
@@ -65,249 +65,97 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This is needed as the stage-1 page table of the nested domain is
-maintained outside the iommu subsystem, hence, needs to support iotlb
-flush requests.
-
-This adds the data structure for flushing iotlb for the nested domain
-allocated with IOMMU_HWPT_TYPE_VTD_S1 type and the related callback
-to accept iotlb flush request from IOMMUFD.
-
-This only exposes the interface for invalidating IOTLB, but no for
-device-TLB as device-TLB invalidation will be covered automatically
-in IOTLB invalidation if the affected device is ATS-capable.
+Add intel_iommu_hw_info() to report cap_reg and ecap_reg information.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/intel/iommu.c  | 10 +++---
- drivers/iommu/intel/iommu.h  |  6 ++++
- drivers/iommu/intel/nested.c | 69 ++++++++++++++++++++++++++++++++++++
- drivers/iommu/iommufd/main.c |  6 ++++
- include/uapi/linux/iommufd.h | 59 ++++++++++++++++++++++++++++++
- 5 files changed, 145 insertions(+), 5 deletions(-)
+ drivers/iommu/intel/iommu.c  | 19 +++++++++++++++++++
+ include/uapi/linux/iommufd.h | 23 +++++++++++++++++++++++
+ 2 files changed, 42 insertions(+)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index e6536a43dd82..5f27cee4656a 100644
+index 51612da4a1ea..20d4ae1cb8a6 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -1474,10 +1474,10 @@ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
- 	spin_unlock_irqrestore(&domain->lock, flags);
+@@ -4746,6 +4746,23 @@ static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
+ 	intel_pasid_tear_down_entry(iommu, dev, pasid, false);
  }
  
--static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
--				  struct dmar_domain *domain,
--				  unsigned long pfn, unsigned int pages,
--				  int ih, int map)
-+void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
-+			   struct dmar_domain *domain,
-+			   unsigned long pfn, unsigned int pages,
-+			   int ih, int map)
- {
- 	unsigned int aligned_pages = __roundup_pow_of_two(pages);
- 	unsigned int mask = ilog2(aligned_pages);
-@@ -1550,7 +1550,7 @@ static inline void __mapping_notify_one(struct intel_iommu *iommu,
- 		iommu_flush_write_buffer(iommu);
- }
- 
--static void intel_flush_iotlb_all(struct iommu_domain *domain)
-+void intel_flush_iotlb_all(struct iommu_domain *domain)
- {
- 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
- 	struct iommu_domain_info *info;
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index ccb93aed6cf2..581596d90c1b 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -859,6 +859,12 @@ int prepare_domain_attach_device(struct iommu_domain *domain,
- 				 struct device *dev);
- bool intel_iommu_enforce_cache_coherency(struct iommu_domain *domain);
- void domain_update_iommu_cap(struct dmar_domain *domain);
-+void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
-+			   struct dmar_domain *domain,
-+			   unsigned long pfn, unsigned int pages,
-+			   int ih, int map);
-+void intel_flush_iotlb_all(struct iommu_domain *domain);
-+
- 
- int dmar_ir_support(void);
- 
-diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
-index fd38424b78f0..d13fbcd3f5a6 100644
---- a/drivers/iommu/intel/nested.c
-+++ b/drivers/iommu/intel/nested.c
-@@ -64,8 +64,77 @@ static void intel_nested_domain_free(struct iommu_domain *domain)
- 	kfree(to_dmar_domain(domain));
- }
- 
-+static void intel_nested_invalidate(struct device *dev,
-+				    struct dmar_domain *domain,
-+				    u64 addr, unsigned long npages)
++static void *intel_iommu_hw_info(struct device *dev, u32 *length)
 +{
 +	struct device_domain_info *info = dev_iommu_priv_get(dev);
 +	struct intel_iommu *iommu = info->iommu;
++	struct iommu_hw_info_vtd *vtd;
 +
-+	if (addr == 0 && npages == -1)
-+		intel_flush_iotlb_all(&domain->domain);
-+	else
-+		iommu_flush_iotlb_psi(iommu, domain,
-+				      addr >> VTD_PAGE_SHIFT,
-+				      npages, 1, 0);
++	vtd = kzalloc(sizeof(*vtd), GFP_KERNEL);
++	if (!vtd)
++		return ERR_PTR(-ENOMEM);
++
++	vtd->cap_reg = iommu->cap;
++	vtd->ecap_reg = iommu->ecap;
++	*length = sizeof(*vtd);
++
++	return vtd;
 +}
 +
-+static int intel_nested_cache_invalidate_user(struct iommu_domain *domain,
-+					      void *user_data)
-+{
-+	struct iommu_hwpt_invalidate_request_intel_vtd *req = user_data;
-+	struct iommu_hwpt_invalidate_intel_vtd *inv_info = user_data;
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+	unsigned int entry_size = inv_info->entry_size;
-+	u64 uptr = inv_info->inv_data_uptr;
-+	u64 nr_uptr = inv_info->entry_nr_uptr;
-+	struct device_domain_info *info;
-+	u32 entry_nr, index;
-+	unsigned long flags;
-+	int ret = 0;
-+
-+	if (WARN_ON(!user_data))
-+		return 0;
-+
-+	if (get_user(entry_nr, (uint32_t __user *)u64_to_user_ptr(nr_uptr)))
-+		return -EFAULT;
-+
-+	if (!entry_nr)
-+		return -EINVAL;
-+
-+	for (index = 0; index < entry_nr; index++) {
-+		ret = copy_struct_from_user(req, sizeof(*req),
-+					    u64_to_user_ptr(uptr + index * entry_size),
-+					    entry_size);
-+		if (ret) {
-+			pr_err_ratelimited("Failed to fetch invalidation request\n");
-+			break;
-+		}
-+
-+		if (req->__reserved || (req->flags & ~IOMMU_VTD_QI_FLAGS_LEAF) ||
-+		    !IS_ALIGNED(req->addr, VTD_PAGE_SIZE)) {
-+			ret = -EINVAL;
-+			break;
-+		}
-+
-+		spin_lock_irqsave(&dmar_domain->lock, flags);
-+		list_for_each_entry(info, &dmar_domain->devices, link)
-+			intel_nested_invalidate(info->dev, dmar_domain,
-+						req->addr, req->npages);
-+		spin_unlock_irqrestore(&dmar_domain->lock, flags);
-+	}
-+
-+	if (ret && put_user(index, (uint32_t __user *)u64_to_user_ptr(nr_uptr)))
-+		return -EFAULT;
-+
-+	return ret;
-+}
-+
- static const struct iommu_domain_ops intel_nested_domain_ops = {
- 	.attach_dev		= intel_nested_attach_dev,
-+	.cache_invalidate_user	= intel_nested_cache_invalidate_user,
-+	.cache_invalidate_user_data_len =
-+		sizeof(struct iommu_hwpt_invalidate_intel_vtd),
- 	.free			= intel_nested_domain_free,
- 	.enforce_cache_coherency = intel_iommu_enforce_cache_coherency,
- };
-diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-index 39922f83ce34..b338b082950b 100644
---- a/drivers/iommu/iommufd/main.c
-+++ b/drivers/iommu/iommufd/main.c
-@@ -282,6 +282,12 @@ union ucmd_buffer {
- #ifdef CONFIG_IOMMUFD_TEST
- 	struct iommu_test_cmd test;
- #endif
-+	/*
-+	 * hwpt_type specific structure used in the cache invalidation
-+	 * path.
-+	 */
-+	struct iommu_hwpt_invalidate_intel_vtd vtd;
-+	struct iommu_hwpt_invalidate_request_intel_vtd req_vtd;
- };
+ static int intel_iommu_domain_user_data_len(u32 hwpt_type)
+ {
+ 	if (hwpt_type != IOMMU_HWPT_TYPE_VTD_S1)
+@@ -4755,6 +4772,7 @@ static int intel_iommu_domain_user_data_len(u32 hwpt_type)
  
- struct iommufd_ioctl_op {
+ const struct iommu_ops intel_iommu_ops = {
+ 	.capable		= intel_iommu_capable,
++	.hw_info		= intel_iommu_hw_info,
+ 	.domain_alloc		= intel_iommu_domain_alloc,
+ 	.domain_alloc_user	= intel_iommu_domain_alloc_user,
+ 	.domain_alloc_user_data_len = intel_iommu_domain_user_data_len,
+@@ -4769,6 +4787,7 @@ const struct iommu_ops intel_iommu_ops = {
+ 	.def_domain_type	= device_def_domain_type,
+ 	.remove_dev_pasid	= intel_iommu_remove_dev_pasid,
+ 	.pgsize_bitmap		= SZ_4K,
++	.hw_info_type		= IOMMU_HW_INFO_TYPE_INTEL_VTD,
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ 	.page_response		= intel_svm_page_response,
+ #endif
 diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index c2658394827a..2e658fa346ad 100644
+index 2e658fa346ad..b46270a4cf46 100644
 --- a/include/uapi/linux/iommufd.h
 +++ b/include/uapi/linux/iommufd.h
-@@ -505,6 +505,63 @@ struct iommu_hw_info {
- };
- #define IOMMU_DEVICE_GET_HW_INFO _IO(IOMMUFD_TYPE, IOMMUFD_CMD_DEVICE_GET_HW_INFO)
+@@ -464,9 +464,32 @@ struct iommu_hwpt_alloc {
  
-+/**
-+ * enum iommu_hwpt_intel_vtd_invalidate_flags - Flags for Intel VT-d
-+ *                                              stage-1 page table cache
-+ *                                              invalidation
-+ * @IOMMU_VTD_QI_FLAGS_LEAF: The LEAF flag indicates whether only the
-+ *                           leaf PTE caching needs to be invalidated
-+ *                           and other paging structure caches can be
-+ *                           preserved.
-+ */
-+enum iommu_hwpt_intel_vtd_invalidate_flags {
-+	IOMMU_VTD_QI_FLAGS_LEAF = 1 << 0,
+ /**
+  * enum iommu_hw_info_type - IOMMU Hardware Info Types
++ * @IOMMU_HW_INFO_TYPE_INTEL_VTD: Intel VT-d iommu info type
+  */
+ enum iommu_hw_info_type {
+ 	IOMMU_HW_INFO_TYPE_NONE,
++	IOMMU_HW_INFO_TYPE_INTEL_VTD,
 +};
 +
 +/**
-+ * struct iommu_hwpt_invalidate_request_intel_vtd - Intel VT-d cache invalidation request
-+ * @addr: The start address of the addresses to be invalidated.
-+ * @npages: Number of contiguous 4K pages to be invalidated.
-+ * @flags: Combination of enum iommu_hwpt_intel_vtd_invalidate_flags
++ * struct iommu_hw_info_vtd - Intel VT-d hardware information
++ *
++ * @flags: Must be 0
 + * @__reserved: Must be 0
 + *
-+ * The Intel VT-d specific invalidation data for user-managed stage-1 cache
-+ * invalidation under nested translation. Userspace uses this structure to
-+ * tell host about the impacted caches after modifying the stage-1 page table.
++ * @cap_reg: Value of Intel VT-d capability register defined in VT-d spec
++ *           section 11.4.2 Capability Register.
++ * @ecap_reg: Value of Intel VT-d capability register defined in VT-d spec
++ *            section 11.4.3 Extended Capability Register.
 + *
-+ * Invalidating all the caches related to the hw_pagetable by setting
-+ * @addr==0 and @npages==__u64(-1).
++ * User needs to understand the Intel VT-d specification to decode the
++ * register value.
 + */
-+struct iommu_hwpt_invalidate_request_intel_vtd {
-+	__u64 addr;
-+	__u64 npages;
++struct iommu_hw_info_vtd {
 +	__u32 flags;
 +	__u32 __reserved;
-+};
-+
-+/**
-+ * struct iommu_hwpt_invalidate_intel_vtd - Intel VT-d cache invalidation info
-+ * @flags: Must be 0
-+ * @entry_size: Size in bytes of each cache invalidation request
-+ * @entry_nr_uptr: User pointer to the number of invalidation requests.
-+ *                 Kernel reads it to get the number of requests and
-+ *                 updates the buffer with the number of requests that
-+ *                 have been processed successfully. This pointer must
-+ *                 point to a __u32 type of memory location.
-+ * @inv_data_uptr: Pointer to the cache invalidation requests
-+ *
-+ * The Intel VT-d specific invalidation data for a set of cache invalidation
-+ * requests. Kernel loops the requests one-by-one and stops when failure
-+ * is encountered. The number of handled requests is reported to user by
-+ * writing the buffer pointed by @entry_nr_uptr.
-+ */
-+struct iommu_hwpt_invalidate_intel_vtd {
-+	__u32 flags;
-+	__u32 entry_size;
-+	__u64 entry_nr_uptr;
-+	__u64 inv_data_uptr;
-+};
-+
++	__aligned_u64 cap_reg;
++	__aligned_u64 ecap_reg;
+ };
+ 
  /**
-  * struct iommu_hwpt_invalidate - ioctl(IOMMU_HWPT_INVALIDATE)
-  * @size: sizeof(struct iommu_hwpt_invalidate)
-@@ -520,6 +577,8 @@ struct iommu_hw_info {
-  * +==============================+========================================+
-  * | @hwpt_type                   |     Data structure in @data_uptr       |
-  * +------------------------------+----------------------------------------+
-+ * | IOMMU_HWPT_TYPE_VTD_S1       | struct iommu_hwpt_invalidate_intel_vtd |
-+ * +------------------------------+----------------------------------------+
-  */
- struct iommu_hwpt_invalidate {
- 	__u32 size;
 -- 
 2.34.1
 
