@@ -1,118 +1,98 @@
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [62.89.141.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ED89EC9
-	for <iommu@lists.linux.dev>; Thu, 11 May 2023 03:53:18 +0000 (UTC)
-Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-3f38a9918d1so622871cf.1
-        for <iommu@lists.linux.dev>; Wed, 10 May 2023 20:53:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1683777197; x=1686369197;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=nEnFZ3b0l12xZ9FfK/rY8jy10P1V5kN/l6JT2CZl8wg=;
-        b=eMsesteKW69BSCBVof2zFprojUKDL2/ZGa1ZFGQYSYWINh/VOYm8xRNe+k+zQ0+Sk3
-         n/FQkyqbJoBEbyoiibKrIFZ83W55ZTK/FoBXyUsoEQPiZaFw+599Z5cO0uvJWUtIWbMq
-         p+gplDuXblN3txvyhOcg3jZrtgCxu5OL8F3QzRGNBSjh4eY4xmFdyu7rDHLbrNNFey7h
-         sNL2ze8LvfqLqHHp38TpLwaTWPGXcg+W92WG8nJeCWHjWC0Ub5XfoVrnsC7pJL5QwqEs
-         2/VqEH4IQ/fbNqewJ5a8KqxZYptTlvaEj4ljj1bH4F5bFSLqkm1B1/i56MGE172yJLl7
-         LN7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683777197; x=1686369197;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=nEnFZ3b0l12xZ9FfK/rY8jy10P1V5kN/l6JT2CZl8wg=;
-        b=laug5duUXjwAhQm/+b5OuQYeydD59L7Ul9HwS7lQan+10fZwOdpcZ8tr49HGH5ltjk
-         zAlCAmw3Vh/litQxqMywjFqaNqY/Bsrj3kTEYZ9n180oeOPE3OXQbTllqydlqwkP3dpD
-         +r91X7XxxnNNqIltpB+eEku/tOS3UofwLOeMaX+LZTk9ppezpYorfyCHMd9ptC2n65SW
-         mDXENx9FCwZKXxuL3/DIVZm0jHdig8I90gtM0NGz17OFFq4yqTN5CnVe654j976SS8ot
-         7ZR9SgiS3o8BZk9yLC4pfBHruCEQWlP+1Tlj05JFy7eRJrk1mrDNypMQyJi3+odJK9Hx
-         Qxpw==
-X-Gm-Message-State: AC+VfDwvYOaP80LE9sD9ariyAEqo5uWIeFOAldIMxydSj7qQ4Mnu6FSL
-	dqtk5RFpkE2/tBvRbtp1IsPLrIZy1NsY8trk1T8OPA==
-X-Google-Smtp-Source: ACHHUZ4aXC7oLv7s1rlgGpxqbUu6FGKhMrhFOJ8UUisecFOJ7K52Sa/Z8JCdD18AUJQ8fXOEpXogV1OOTdEYMV7AX1w=
-X-Received: by 2002:ac8:7d4a:0:b0:3ef:a55:7f39 with SMTP id
- h10-20020ac87d4a000000b003ef0a557f39mr269916qtb.12.1683777197246; Wed, 10 May
- 2023 20:53:17 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA4E3EC9
+	for <iommu@lists.linux.dev>; Thu, 11 May 2023 04:05:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=es1hAOZEanSpUzrO4i+W99kSmiTSzzhtBMlo8JnwlYU=; b=XiM0jwFnKxFWGJpiCOPcZXBOTf
+	7Lff2nNv1b4BAaAzu2+8+Z6IL8XztnltccQ/JJuih56T1wL6PGmnGsDk5E0M2IhLX/LK07JbuLSIZ
+	7MeUi0RBKlVjXfF2dQ49aEOFQTTDRlx51zHwTVQTE5xRu4I0fDcigOhciITUn6bZwgzkWHvP5GDoh
+	2fdZoKkTwbsFp75btQY8vp64HMyDOb8xRvh6sSFXwAn6is5GoyjejZl85uiLUVi+kd01BW70CUhr5
+	tVCPkz/2NQ/hoG7jre3wotCKe/XGVrVJE/Z2HuYhiIxeH3PutobfBK7QQ7ocB4hd/asQ7TR+7XP1K
+	n3LuDq7A==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.96 #2 (Red Hat Linux))
+	id 1pwxYC-001apk-2B;
+	Thu, 11 May 2023 04:05:08 +0000
+Date: Thu, 11 May 2023 05:05:08 +0100
+From: Al Viro <viro@zeniv.linux.org.uk>
+To: Zhangfei Gao <zhangfei.gao@linaro.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	jean-philippe <jean-philippe@linaro.org>,
+	Wangzhou <wangzhou1@hisilicon.com>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+	iommu@lists.linux.dev, acc@lists.linaro.org,
+	Weili Qian <qianweili@huawei.com>
+Subject: Re: [PATCH] uacce: use filep->f_mapping to replace inode->i_mapping
+Message-ID: <20230511040508.GF3390869@ZenIV>
+References: <20230511021553.44318-1-zhangfei.gao@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230510205054.2667898-1-mshavit@google.com> <ZFwIWz8kBL+bti1m@nvidia.com>
-In-Reply-To: <ZFwIWz8kBL+bti1m@nvidia.com>
-From: Michael Shavit <mshavit@google.com>
-Date: Thu, 11 May 2023 11:52:41 +0800
-Message-ID: <CAKHBV26rbPXr6QUAx1MSbX58Zr4B7iLhojOgfn9c0tc1wKaP+w@mail.gmail.com>
-Subject: Re: [PATCH v1 0/5] Add PASID support to SMMUv3 unmanaged domains
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, jean-philippe@linaro.org, nicolinc@nvidia.com, 
-	baolu.lu@linux.intel.com, linux-arm-kernel@lists.infradead.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230511021553.44318-1-zhangfei.gao@linaro.org>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 
-> Logically when an iommu_domain is attached to a device or a PASID a
-> STE or CD is generated from the iommu_domain's configuration but the
-> iommu_domain doesn't "hold" it
->
+On Thu, May 11, 2023 at 10:15:53AM +0800, Zhangfei Gao wrote:
+> The inode can be different in a container, for example, a docker and host
+> both open the same uacce parent device, which uses the same uacce struct
+> but different inode, so uacce->inode is not enough.
+> 
+> What's worse, when docker stops, the inode will be destroyed as well,
+> causing use-after-free in uacce_remove.
+> 
+> So use q->filep->f_mapping to replace uacce->inode->i_mapping.
 
-Ah yes, I was using iommu domain and arm_smmu_domain interchangeably
-here since there's a 1:1 mapping between the two. In the current
-smmuv3 implementation, arm_smmu_domain holds the s1cfg structure which
-represents the s1 portion of an STE.
+> @@ -574,12 +574,6 @@ void uacce_remove(struct uacce_device *uacce)
+>  
+>  	if (!uacce)
+>  		return;
+> -	/*
+> -	 * unmap remaining mapping from user space, preventing user still
+> -	 * access the mmaped area while parent device is already removed
+> -	 */
+> -	if (uacce->inode)
+> -		unmap_mapping_range(uacce->inode->i_mapping, 0, 0, 1);
+>  
+>  	/*
+>  	 * uacce_fops_open() may be running concurrently, even after we remove
+> @@ -589,6 +583,8 @@ void uacce_remove(struct uacce_device *uacce)
+>  	mutex_lock(&uacce->mutex);
+>  	/* ensure no open queue remains */
+>  	list_for_each_entry_safe(q, next_q, &uacce->queues, list) {
+> +		struct file *filep = q->private_data;
+> +
+>  		/*
+>  		 * Taking q->mutex ensures that fops do not use the defunct
+>  		 * uacce->ops after the queue is disabled.
+> @@ -597,6 +593,12 @@ void uacce_remove(struct uacce_device *uacce)
+>  		uacce_put_queue(q);
+>  		mutex_unlock(&q->mutex);
+>  		uacce_unbind_queue(q);
+> +
+> +		/*
+> +		 * unmap remaining mapping from user space, preventing user still
+> +		 * access the mmaped area while parent device is already removed
+> +		 */
+> +		unmap_mapping_range(filep->f_mapping, 0, 0, 1);
 
-> I always thought of this as sort of a pre-calculation of the STE, that
-> gets cached in the iommu_domain? Not sure the pre-calculation is that
-> valuable though..
+IDGI.  Going through uacce_queue instead of uacce_device is fine, but why
+bother with file *or* inode?  Just store a reference to struct address_space in
+your uacce_queue and be done with that...
 
-I think we can consider the case where an iommu domain is attached to
-multiple masters as a form of pre-calculation and resource sharing.
-When attaching an iommu domain that has been attached before, its
-arm_smmu_domain contains an already finalized STE configuration that
-can be immediately written to the smmu. I don't think there's anything
-specific to SVA about this behavior however, SVA will do the same
-amount of work whether the cd table is owned by some special iommu
-domain or by the arm_smmu_master (since we require that special iommu
-domain be attached to the master and disallow detaching it).
+Another problem in that driver is uacce_vma_close(); this
+        if (vma->vm_pgoff < UACCE_MAX_REGION)
+                qfr = q->qfrs[vma->vm_pgoff];
 
-> Ideally the iommu_domain should only hold a pointer to some table
-top. Depending on the domain type this would be a S1 IOPTE table, S2
-IOPTE table or a CD table. Plus the non-table domains like IDENTITY
-and blocked.
-
-Gotcha. So this patch series should be less aggressive, but is
-probably still workable with the nested domain patch series:
-1. For (stage 1) unmanaged/dma and sva domains, arm_smmu_domains
-should hold a single CD. For the nested domain series, arm_smmu_domain
-can alternatively hold an entire s1cfg.
-2. arm_smmu_master should own an s1cfg (which holds a cdtable) that is
-used by unmanaged/dma and sva domains attached to this master.
-3. arm_smmu_master also holds a pointer to the live s1cfg, which may
-either points to its owned s1cfg, or the nested domain's s1cfg, or
-null (bypass or stage2)
-
-
-
-
-
-
-
-> > path forward for set_dev_pasid support? Or could a uAPI that only
-> > exposes a single CD instead of the entire STE be an appropriate fit for
-> > the nesting use cases?
->
-> The uAPI is to create an iommu_domain that holds a CD Table Top
-> located in user memory, it cannot deviate from this. These kinds of
-> iommu_domain's can only be pointed at by STEs.
->
-> Again it doesnt really "hold" the STE, but we can compute a STE that
-> points to the SD Table that it does hold.
->
-> Other than this, it is good to take this project on, getting PASID
-> support aligned with the new API is something that needs to be done
-> here!
->
-> Thanks,
-> Jason
+        kfree(qfr);
+can't be right - you have q->qfrs left pointing to freed object.  If nothing
+else, subsequent mmap() will fail with -EEXIST, won't it?
