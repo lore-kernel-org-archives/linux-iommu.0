@@ -1,233 +1,131 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90BB262C
-	for <iommu@lists.linux.dev>; Thu, 11 May 2023 14:51:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683816684; x=1715352684;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=zSBFf3R+KE7eDYqzxRY/XTRifADKsFtYgSSwmUYfOpg=;
-  b=lFH2/l9W96m8tMb095jk0/meWb00Cet/q3ROQhIduSkCLdogfAEo6wmU
-   fDEG6Qp+++7iFSSeWVZi6cbQDp6uB0Lbv4hDYuvzb7OdsF3P5umjlTiXR
-   +l7RHeWurYmNm9OChdjC/rMQmiqJECCKdUplwv4y/yI2VVUxMussS7r9F
-   hTgCbP7RFEOzIho1deCJ2ds+pSHbZBkdIxmywQqN8HVyNh3KgE0THDFKk
-   JnMi1LcKS/rvTbYV5B2J6QV9NR0tH2bDCOf1C41pyoMP6WcYYrpfZ1k0N
-   aIVcAVv9/2n4vdljgs8EIyuGWdHfAsLgX/mf4GaVQHWd7KIJGdn9tgWHM
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10707"; a="335025530"
-X-IronPort-AV: E=Sophos;i="5.99,266,1677571200"; 
-   d="scan'208";a="335025530"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2023 07:51:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10707"; a="769355198"
-X-IronPort-AV: E=Sophos;i="5.99,266,1677571200"; 
-   d="scan'208";a="769355198"
-Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga004.fm.intel.com with ESMTP; 11 May 2023 07:51:21 -0700
-From: Yi Liu <yi.l.liu@intel.com>
-To: joro@8bytes.org,
-	alex.williamson@redhat.com,
-	jgg@nvidia.com,
-	kevin.tian@intel.com,
-	robin.murphy@arm.com,
-	baolu.lu@linux.intel.com
-Cc: cohuck@redhat.com,
-	eric.auger@redhat.com,
-	nicolinc@nvidia.com,
-	kvm@vger.kernel.org,
-	mjrosato@linux.ibm.com,
-	chao.p.peng@linux.intel.com,
-	yi.l.liu@intel.com,
-	yi.y.sun@linux.intel.com,
-	peterx@redhat.com,
-	jasowang@redhat.com,
-	shameerali.kolothum.thodi@huawei.com,
-	lulu@redhat.com,
-	suravee.suthikulpanit@amd.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-kselftest@vger.kernel.org,
-	zhenzhong.duan@intel.com
-Subject: [PATCH v3 10/10] iommu/vt-d: Disallow nesting on domains with read-only mappings
-Date: Thu, 11 May 2023 07:51:10 -0700
-Message-Id: <20230511145110.27707-11-yi.l.liu@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230511145110.27707-1-yi.l.liu@intel.com>
-References: <20230511145110.27707-1-yi.l.liu@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47866620
+	for <iommu@lists.linux.dev>; Thu, 11 May 2023 14:51:57 +0000 (UTC)
+Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-965c3f9af2aso1316234166b.0
+        for <iommu@lists.linux.dev>; Thu, 11 May 2023 07:51:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1683816715; x=1686408715;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=0sCDEYQ+lAwwMEzBoHzHhTtsRYd3XM3A3Tyzt01HFvA=;
+        b=mtPBUKQsWIlBp4e49W2yOkynlqDVHyfPbTN2fmMgQkVydDzOWHguXHqbQVzF+v+AAy
+         9QG9Bap4DMMbaZTgBgScyK7fzfUv7oi1UazTId8pZ0kF72X6C1Bk0ZRpA/sCRpPSM6c7
+         LlDEOs7ZHM4zxnAbSZk556uDtQxp7ZqwAA+8tw0DMcaG7G0x7WhaQBwIIF65AkErvfYg
+         Wv9iWoNkWV+w5QkB2iR983OxWYQgJP8KCarY1JD74jznB+tX4BNZhQeo0zvS+ztL+5Hg
+         MO1ncCKr8zzLXW6DYTDER1r3r8CUP2eLigJMFOYonulsPfpmApeajTXJYEOaPVN15iwh
+         PDrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683816715; x=1686408715;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=0sCDEYQ+lAwwMEzBoHzHhTtsRYd3XM3A3Tyzt01HFvA=;
+        b=DByEhMFnJufk7hPJKQl+Lj5WOWyK+dEIOEXLCLvzv5Z8VuxA3Oxpl9pg6RGgb0iwdK
+         zrlVX2hztJaQi/92CYv8+BKlLaZgX147zLSq8oA5jApqIRZooleQcpQSS0q7Rbd45P8C
+         ysJU3D7iFiEwWrZVaYJWsw7Bwh3DFpqAaO2GnLqo2A7d4oBQ9RIRAR0hlSxQWpxYVFpu
+         bu7+rln9nv77j9/jwe+eTbEXie5IqIvF0u8whtMCtM/wl+Awdg60tnyrSygXn6zQ9sVK
+         hQEjZFC+KHkEB3BDg2ATIoL9V6sbo8eDRXrh0bodWbwV/nVL+r3tdKOfriut/+BjpM2B
+         HXxg==
+X-Gm-Message-State: AC+VfDzhMrwakHiV2Zr2zAgAq4EcOzQJwu70fQEDKKJPQv9Pi9i6CO7g
+	2Q98w2DJyMF4ywNk9rYbIXNuXr5Ctj6R0a0RDvv06Q==
+X-Google-Smtp-Source: ACHHUZ5v+1zYrVOKi/Ghck/qxazn4S4a54LG3s/j3dKBOosBgCgbc+lcxrX3cV6IcluE1NS3v3DGkoZujZK00d/9fp0=
+X-Received: by 2002:a17:907:d09:b0:961:8fcd:53ca with SMTP id
+ gn9-20020a1709070d0900b009618fcd53camr21830645ejc.65.1683816715418; Thu, 11
+ May 2023 07:51:55 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20230509163712.376117-1-robdclark@gmail.com>
+In-Reply-To: <20230509163712.376117-1-robdclark@gmail.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date: Thu, 11 May 2023 17:51:43 +0300
+Message-ID: <CAA8EJppVaCuh1kp7842pHt=5sWSBVaf18fZGC6ifmsQKgGNVSw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] iommu/arm-smmu-qcom: Fix missing adreno_smmu's
+To: Rob Clark <robdclark@gmail.com>
+Cc: dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org, 
+	freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, 
+	Rob Clark <robdclark@chromium.org>, Lepton Wu <lepton@chromium.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+	Sai Prakash Ranjan <quic_saipraka@quicinc.com>, Konrad Dybcio <konrad.dybcio@linaro.org>, 
+	Bjorn Andersson <quic_bjorande@quicinc.com>, Elliot Berman <quic_eberman@quicinc.com>, 
+	Marijn Suijten <marijn.suijten@somainline.org>, Emma Anholt <emma@anholt.net>, 
+	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>, 
+	"open list:IOMMU SUBSYSTEM" <iommu@lists.linux.dev>, open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-From: Lu Baolu <baolu.lu@linux.intel.com>
+On Tue, 9 May 2023 at 19:37, Rob Clark <robdclark@gmail.com> wrote:
+>
+> From: Rob Clark <robdclark@chromium.org>
+>
+> When the special handling of qcom,adreno-smmu was moved into
+> qcom_smmu_create(), it was overlooked that we didn't have all the
+> required entries in qcom_smmu_impl_of_match.  So we stopped getting
+> adreno_smmu_priv on sc7180, breaking per-process pgtables.
+>
+> Fixes: 30b912a03d91 ("iommu/arm-smmu-qcom: Move the qcom,adreno-smmu check into qcom_smmu_create")
+> Suggested-by: Lepton Wu <lepton@chromium.org>
+> Signed-off-by: Rob Clark <robdclark@chromium.org>
+> ---
+>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> index d1b296b95c86..760d9c43dbd2 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> @@ -496,20 +496,21 @@ static const struct qcom_smmu_match_data qcom_smmu_500_impl0_data = {
+>  /*
+>   * Do not add any more qcom,SOC-smmu-500 entries to this list, unless they need
+>   * special handling and can not be covered by the qcom,smmu-500 entry.
+>   */
+>  static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
+>         { .compatible = "qcom,msm8996-smmu-v2", .data = &msm8996_smmu_data },
+>         { .compatible = "qcom,msm8998-smmu-v2", .data = &qcom_smmu_v2_data },
+>         { .compatible = "qcom,qcm2290-smmu-500", .data = &qcom_smmu_500_impl0_data },
+>         { .compatible = "qcom,qdu1000-smmu-500", .data = &qcom_smmu_500_impl0_data  },
+>         { .compatible = "qcom,sc7180-smmu-500", .data = &qcom_smmu_500_impl0_data },
+> +       { .compatible = "qcom,sc7180-smmu-v2", .data = &qcom_smmu_v2_data },
+>         { .compatible = "qcom,sc7280-smmu-500", .data = &qcom_smmu_500_impl0_data },
+>         { .compatible = "qcom,sc8180x-smmu-500", .data = &qcom_smmu_500_impl0_data },
+>         { .compatible = "qcom,sc8280xp-smmu-500", .data = &qcom_smmu_500_impl0_data },
+>         { .compatible = "qcom,sdm630-smmu-v2", .data = &qcom_smmu_v2_data },
+>         { .compatible = "qcom,sdm845-smmu-v2", .data = &qcom_smmu_v2_data },
+>         { .compatible = "qcom,sdm845-smmu-500", .data = &sdm845_smmu_500_data },
+>         { .compatible = "qcom,sm6115-smmu-500", .data = &qcom_smmu_500_impl0_data},
+>         { .compatible = "qcom,sm6125-smmu-500", .data = &qcom_smmu_500_impl0_data },
+>         { .compatible = "qcom,sm6350-smmu-v2", .data = &qcom_smmu_v2_data },
+>         { .compatible = "qcom,sm6350-smmu-500", .data = &qcom_smmu_500_impl0_data },
+> @@ -540,12 +541,14 @@ struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu)
+>                 /* Match platform for ACPI boot */
+>                 if (acpi_match_platform_list(qcom_acpi_platlist) >= 0)
+>                         return qcom_smmu_create(smmu, &qcom_smmu_500_impl0_data);
+>         }
+>  #endif
+>
+>         match = of_match_node(qcom_smmu_impl_of_match, np);
+>         if (match)
+>                 return qcom_smmu_create(smmu, match->data);
+>
+> +       WARN_ON(of_device_is_compatible(np, "qcom,adreno-smmu"));
 
-When remapping hardware is configured by system software in scalable mode
-as Nested (PGTT=011b) and with PWSNP field Set in the PASID-table-entry,
-it may Set Accessed bit and Dirty bit (and Extended Access bit if enabled)
-in first-stage page-table entries even when second-stage mappings indicate
-that corresponding first-stage page-table is Read-Only.
+Could you please add a comment here, noting the reason? Or maybe we
+should  change that to:
+if (WARN_ON(...))
+  return ERR_PTR(-EINVAL);
 
-As the result, contents of pages designated by VMM as Read-Only can be
-modified by IOMMU via PML5E (PML4E for 4-level tables) access as part of
-address translation process due to DMAs issued by Guest.
+> +
+>         return smmu;
+>  }
+> --
+> 2.40.1
+>
 
-Disallow the nested translation when there are read-only pages in the
-corresponding second-stage mappings. And, no read-only pages are allowed
-to be configured in the second-stage table of a nested translation.
-For the latter, an alternative is to disallow read-only mappings in
-any stage-2 domain as long as it's ever been used as a parent. In this
-way, we can simply replace the user counter with a flag.
 
-In concept if the user understands this errata and does expect to
-enable nested translation it should never install any RO mapping
-in stage-2 in the entire VM life cycle."
-
-Reference from Sapphire Rapids Specification Update [1], errata details,
-SPR17.
-
-[1] https://www.intel.com/content/www/us/en/content-details/772415/content-details.html
-
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
----
- drivers/iommu/intel/iommu.c  | 13 +++++++++++++
- drivers/iommu/intel/iommu.h  |  4 ++++
- drivers/iommu/intel/nested.c | 22 ++++++++++++++++++++--
- include/uapi/linux/iommufd.h | 12 +++++++++++-
- 4 files changed, 48 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 20d4ae1cb8a6..42288bd449a0 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -2150,6 +2150,7 @@ __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
- 	struct dma_pte *first_pte = NULL, *pte = NULL;
- 	unsigned int largepage_lvl = 0;
- 	unsigned long lvl_pages = 0;
-+	unsigned long flags;
- 	phys_addr_t pteval;
- 	u64 attr;
- 
-@@ -2159,6 +2160,17 @@ __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
- 	if ((prot & (DMA_PTE_READ|DMA_PTE_WRITE)) == 0)
- 		return -EINVAL;
- 
-+	if (!(prot & DMA_PTE_WRITE) && !domain->read_only_mapped) {
-+		spin_lock_irqsave(&domain->lock, flags);
-+		if (domain->nested_users > 0) {
-+			spin_unlock_irqrestore(&domain->lock, flags);
-+			return -EINVAL;
-+		}
-+
-+		domain->read_only_mapped = true;
-+		spin_unlock_irqrestore(&domain->lock, flags);
-+	}
-+
- 	attr = prot & (DMA_PTE_READ | DMA_PTE_WRITE | DMA_PTE_SNP);
- 	attr |= DMA_FL_PTE_PRESENT;
- 	if (domain->use_first_level) {
-@@ -4756,6 +4768,7 @@ static void *intel_iommu_hw_info(struct device *dev, u32 *length)
- 	if (!vtd)
- 		return ERR_PTR(-ENOMEM);
- 
-+	vtd->flags = IOMMU_HW_INFO_VTD_ERRATA_772415_SPR17;
- 	vtd->cap_reg = iommu->cap;
- 	vtd->ecap_reg = iommu->ecap;
- 	*length = sizeof(*vtd);
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 581596d90c1b..95644c6815af 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -616,6 +616,10 @@ struct dmar_domain {
- 			int		agaw;
- 			/* maximum mapped address */
- 			u64		max_addr;
-+			/* domain has mappings with read-only permission */
-+			bool		read_only_mapped;
-+			/* user nested domain count */
-+			int		nested_users;
- 		};
- 
- 		/* Nested user domain */
-diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
-index d13fbcd3f5a6..9092ce28382c 100644
---- a/drivers/iommu/intel/nested.c
-+++ b/drivers/iommu/intel/nested.c
-@@ -61,7 +61,14 @@ static int intel_nested_attach_dev(struct iommu_domain *domain,
- 
- static void intel_nested_domain_free(struct iommu_domain *domain)
- {
--	kfree(to_dmar_domain(domain));
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+	struct dmar_domain *s2_domain = dmar_domain->s2_domain;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&s2_domain->lock, flags);
-+	s2_domain->nested_users--;
-+	spin_unlock_irqrestore(&s2_domain->lock, flags);
-+	kfree(dmar_domain);
- }
- 
- static void intel_nested_invalidate(struct device *dev,
-@@ -143,14 +150,25 @@ struct iommu_domain *intel_nested_domain_alloc(struct iommu_domain *s2_domain,
- 					       const union iommu_domain_user_data *user_data)
- {
- 	const struct iommu_hwpt_intel_vtd *vtd = (struct iommu_hwpt_intel_vtd *)user_data;
-+	struct dmar_domain *s2_dmar_domain = to_dmar_domain(s2_domain);
- 	struct dmar_domain *domain;
-+	unsigned long flags;
- 
- 	domain = kzalloc(sizeof(*domain), GFP_KERNEL_ACCOUNT);
- 	if (!domain)
- 		return NULL;
- 
-+	spin_lock_irqsave(&s2_dmar_domain->lock, flags);
-+	if (s2_dmar_domain->read_only_mapped) {
-+		spin_unlock_irqrestore(&s2_dmar_domain->lock, flags);
-+		kfree(domain);
-+		return NULL;
-+	}
-+	s2_dmar_domain->nested_users++;
-+	spin_unlock_irqrestore(&s2_dmar_domain->lock, flags);
-+
- 	domain->use_first_level = true;
--	domain->s2_domain = to_dmar_domain(s2_domain);
-+	domain->s2_domain = s2_dmar_domain;
- 	domain->s1_pgtbl = vtd->pgtbl_addr;
- 	domain->s1_cfg = *vtd;
- 	domain->domain.ops = &intel_nested_domain_ops;
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index b46270a4cf46..8626f36e0353 100644
---- a/include/uapi/linux/iommufd.h
-+++ b/include/uapi/linux/iommufd.h
-@@ -471,10 +471,20 @@ enum iommu_hw_info_type {
- 	IOMMU_HW_INFO_TYPE_INTEL_VTD,
- };
- 
-+/**
-+ * enum iommu_hw_info_vtd_flags - Flags for VT-d hw_info
-+ * @IOMMU_HW_INFO_VTD_ERRATA_772415_SPR17: If set, disallow nesting on domains
-+ *                                   with read-only mapping.
-+ *                                   https://www.intel.com/content/www/us/en/content-details/772415/content-details.html
-+ */
-+enum iommu_hw_info_vtd_flags {
-+	IOMMU_HW_INFO_VTD_ERRATA_772415_SPR17 = 1 << 0,
-+};
-+
- /**
-  * struct iommu_hw_info_vtd - Intel VT-d hardware information
-  *
-- * @flags: Must be 0
-+ * @flags: Combination of enum iommu_hw_info_vtd_flags
-  * @__reserved: Must be 0
-  *
-  * @cap_reg: Value of Intel VT-d capability register defined in VT-d spec
 -- 
-2.34.1
-
+With best wishes
+Dmitry
