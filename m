@@ -1,32 +1,32 @@
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A4A563B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90BB262C
 	for <iommu@lists.linux.dev>; Thu, 11 May 2023 14:51:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1683816684; x=1715352684;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=RiJbUCRtwm5Znm9STMCxtijeo+jb5c7PnzMHxXPV1jU=;
-  b=ah5GJTVT3Ae7qhk5cO/WaphLGjLZa8TgR54be5R6A+9Ee1HMeJMOsoXW
-   ZOBCAPVV5oHynf/foHzN4Or/caD87SO994DrAQA+3/9hwkPpwsnCmvmaw
-   kO4bnarVqh6QvQpDQbVOR8s04hxzmlXiFqHJu7zdBa6nouXrGhI3rE3LM
-   e6NGVInKIlJjW2o4nUcR0S+DmtGLVNTc4c1AvGyJLB8ggT8+otNZyCxgT
-   gw9ElLulvKlNIiPsaYMQ4ykzf3bL3/qV9ysvHNw3vcvxv0uFal2sphbqA
-   T9qytbwhoDIvSSN7N2a+Qw3rJJVMTG1ypFfh50O0VBcXtl+SfO6G2+OdM
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10707"; a="335025524"
+  bh=zSBFf3R+KE7eDYqzxRY/XTRifADKsFtYgSSwmUYfOpg=;
+  b=lFH2/l9W96m8tMb095jk0/meWb00Cet/q3ROQhIduSkCLdogfAEo6wmU
+   fDEG6Qp+++7iFSSeWVZi6cbQDp6uB0Lbv4hDYuvzb7OdsF3P5umjlTiXR
+   +l7RHeWurYmNm9OChdjC/rMQmiqJECCKdUplwv4y/yI2VVUxMussS7r9F
+   hTgCbP7RFEOzIho1deCJ2ds+pSHbZBkdIxmywQqN8HVyNh3KgE0THDFKk
+   JnMi1LcKS/rvTbYV5B2J6QV9NR0tH2bDCOf1C41pyoMP6WcYYrpfZ1k0N
+   aIVcAVv9/2n4vdljgs8EIyuGWdHfAsLgX/mf4GaVQHWd7KIJGdn9tgWHM
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10707"; a="335025530"
 X-IronPort-AV: E=Sophos;i="5.99,266,1677571200"; 
-   d="scan'208";a="335025524"
+   d="scan'208";a="335025530"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2023 07:51:21 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10707"; a="769355194"
+X-IronPort-AV: E=McAfee;i="6600,9927,10707"; a="769355198"
 X-IronPort-AV: E=Sophos;i="5.99,266,1677571200"; 
-   d="scan'208";a="769355194"
+   d="scan'208";a="769355198"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga004.fm.intel.com with ESMTP; 11 May 2023 07:51:20 -0700
+  by fmsmga004.fm.intel.com with ESMTP; 11 May 2023 07:51:21 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -51,9 +51,9 @@ Cc: cohuck@redhat.com,
 	linux-kernel@vger.kernel.org,
 	linux-kselftest@vger.kernel.org,
 	zhenzhong.duan@intel.com
-Subject: [PATCH v3 09/10] iommu/vt-d: Implement hw_info for iommu capability query
-Date: Thu, 11 May 2023 07:51:09 -0700
-Message-Id: <20230511145110.27707-10-yi.l.liu@intel.com>
+Subject: [PATCH v3 10/10] iommu/vt-d: Disallow nesting on domains with read-only mappings
+Date: Thu, 11 May 2023 07:51:10 -0700
+Message-Id: <20230511145110.27707-11-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230511145110.27707-1-yi.l.liu@intel.com>
 References: <20230511145110.27707-1-yi.l.liu@intel.com>
@@ -65,97 +65,169 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add intel_iommu_hw_info() to report cap_reg and ecap_reg information.
+From: Lu Baolu <baolu.lu@linux.intel.com>
+
+When remapping hardware is configured by system software in scalable mode
+as Nested (PGTT=011b) and with PWSNP field Set in the PASID-table-entry,
+it may Set Accessed bit and Dirty bit (and Extended Access bit if enabled)
+in first-stage page-table entries even when second-stage mappings indicate
+that corresponding first-stage page-table is Read-Only.
+
+As the result, contents of pages designated by VMM as Read-Only can be
+modified by IOMMU via PML5E (PML4E for 4-level tables) access as part of
+address translation process due to DMAs issued by Guest.
+
+Disallow the nested translation when there are read-only pages in the
+corresponding second-stage mappings. And, no read-only pages are allowed
+to be configured in the second-stage table of a nested translation.
+For the latter, an alternative is to disallow read-only mappings in
+any stage-2 domain as long as it's ever been used as a parent. In this
+way, we can simply replace the user counter with a flag.
+
+In concept if the user understands this errata and does expect to
+enable nested translation it should never install any RO mapping
+in stage-2 in the entire VM life cycle."
+
+Reference from Sapphire Rapids Specification Update [1], errata details,
+SPR17.
+
+[1] https://www.intel.com/content/www/us/en/content-details/772415/content-details.html
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/intel/iommu.c  | 19 +++++++++++++++++++
- include/uapi/linux/iommufd.h | 23 +++++++++++++++++++++++
- 2 files changed, 42 insertions(+)
+ drivers/iommu/intel/iommu.c  | 13 +++++++++++++
+ drivers/iommu/intel/iommu.h  |  4 ++++
+ drivers/iommu/intel/nested.c | 22 ++++++++++++++++++++--
+ include/uapi/linux/iommufd.h | 12 +++++++++++-
+ 4 files changed, 48 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 51612da4a1ea..20d4ae1cb8a6 100644
+index 20d4ae1cb8a6..42288bd449a0 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -4746,6 +4746,23 @@ static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
- 	intel_pasid_tear_down_entry(iommu, dev, pasid, false);
+@@ -2150,6 +2150,7 @@ __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 	struct dma_pte *first_pte = NULL, *pte = NULL;
+ 	unsigned int largepage_lvl = 0;
+ 	unsigned long lvl_pages = 0;
++	unsigned long flags;
+ 	phys_addr_t pteval;
+ 	u64 attr;
+ 
+@@ -2159,6 +2160,17 @@ __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 	if ((prot & (DMA_PTE_READ|DMA_PTE_WRITE)) == 0)
+ 		return -EINVAL;
+ 
++	if (!(prot & DMA_PTE_WRITE) && !domain->read_only_mapped) {
++		spin_lock_irqsave(&domain->lock, flags);
++		if (domain->nested_users > 0) {
++			spin_unlock_irqrestore(&domain->lock, flags);
++			return -EINVAL;
++		}
++
++		domain->read_only_mapped = true;
++		spin_unlock_irqrestore(&domain->lock, flags);
++	}
++
+ 	attr = prot & (DMA_PTE_READ | DMA_PTE_WRITE | DMA_PTE_SNP);
+ 	attr |= DMA_FL_PTE_PRESENT;
+ 	if (domain->use_first_level) {
+@@ -4756,6 +4768,7 @@ static void *intel_iommu_hw_info(struct device *dev, u32 *length)
+ 	if (!vtd)
+ 		return ERR_PTR(-ENOMEM);
+ 
++	vtd->flags = IOMMU_HW_INFO_VTD_ERRATA_772415_SPR17;
+ 	vtd->cap_reg = iommu->cap;
+ 	vtd->ecap_reg = iommu->ecap;
+ 	*length = sizeof(*vtd);
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 581596d90c1b..95644c6815af 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -616,6 +616,10 @@ struct dmar_domain {
+ 			int		agaw;
+ 			/* maximum mapped address */
+ 			u64		max_addr;
++			/* domain has mappings with read-only permission */
++			bool		read_only_mapped;
++			/* user nested domain count */
++			int		nested_users;
+ 		};
+ 
+ 		/* Nested user domain */
+diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
+index d13fbcd3f5a6..9092ce28382c 100644
+--- a/drivers/iommu/intel/nested.c
++++ b/drivers/iommu/intel/nested.c
+@@ -61,7 +61,14 @@ static int intel_nested_attach_dev(struct iommu_domain *domain,
+ 
+ static void intel_nested_domain_free(struct iommu_domain *domain)
+ {
+-	kfree(to_dmar_domain(domain));
++	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
++	struct dmar_domain *s2_domain = dmar_domain->s2_domain;
++	unsigned long flags;
++
++	spin_lock_irqsave(&s2_domain->lock, flags);
++	s2_domain->nested_users--;
++	spin_unlock_irqrestore(&s2_domain->lock, flags);
++	kfree(dmar_domain);
  }
  
-+static void *intel_iommu_hw_info(struct device *dev, u32 *length)
-+{
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+	struct intel_iommu *iommu = info->iommu;
-+	struct iommu_hw_info_vtd *vtd;
-+
-+	vtd = kzalloc(sizeof(*vtd), GFP_KERNEL);
-+	if (!vtd)
-+		return ERR_PTR(-ENOMEM);
-+
-+	vtd->cap_reg = iommu->cap;
-+	vtd->ecap_reg = iommu->ecap;
-+	*length = sizeof(*vtd);
-+
-+	return vtd;
-+}
-+
- static int intel_iommu_domain_user_data_len(u32 hwpt_type)
+ static void intel_nested_invalidate(struct device *dev,
+@@ -143,14 +150,25 @@ struct iommu_domain *intel_nested_domain_alloc(struct iommu_domain *s2_domain,
+ 					       const union iommu_domain_user_data *user_data)
  {
- 	if (hwpt_type != IOMMU_HWPT_TYPE_VTD_S1)
-@@ -4755,6 +4772,7 @@ static int intel_iommu_domain_user_data_len(u32 hwpt_type)
+ 	const struct iommu_hwpt_intel_vtd *vtd = (struct iommu_hwpt_intel_vtd *)user_data;
++	struct dmar_domain *s2_dmar_domain = to_dmar_domain(s2_domain);
+ 	struct dmar_domain *domain;
++	unsigned long flags;
  
- const struct iommu_ops intel_iommu_ops = {
- 	.capable		= intel_iommu_capable,
-+	.hw_info		= intel_iommu_hw_info,
- 	.domain_alloc		= intel_iommu_domain_alloc,
- 	.domain_alloc_user	= intel_iommu_domain_alloc_user,
- 	.domain_alloc_user_data_len = intel_iommu_domain_user_data_len,
-@@ -4769,6 +4787,7 @@ const struct iommu_ops intel_iommu_ops = {
- 	.def_domain_type	= device_def_domain_type,
- 	.remove_dev_pasid	= intel_iommu_remove_dev_pasid,
- 	.pgsize_bitmap		= SZ_4K,
-+	.hw_info_type		= IOMMU_HW_INFO_TYPE_INTEL_VTD,
- #ifdef CONFIG_INTEL_IOMMU_SVM
- 	.page_response		= intel_svm_page_response,
- #endif
+ 	domain = kzalloc(sizeof(*domain), GFP_KERNEL_ACCOUNT);
+ 	if (!domain)
+ 		return NULL;
+ 
++	spin_lock_irqsave(&s2_dmar_domain->lock, flags);
++	if (s2_dmar_domain->read_only_mapped) {
++		spin_unlock_irqrestore(&s2_dmar_domain->lock, flags);
++		kfree(domain);
++		return NULL;
++	}
++	s2_dmar_domain->nested_users++;
++	spin_unlock_irqrestore(&s2_dmar_domain->lock, flags);
++
+ 	domain->use_first_level = true;
+-	domain->s2_domain = to_dmar_domain(s2_domain);
++	domain->s2_domain = s2_dmar_domain;
+ 	domain->s1_pgtbl = vtd->pgtbl_addr;
+ 	domain->s1_cfg = *vtd;
+ 	domain->domain.ops = &intel_nested_domain_ops;
 diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index 2e658fa346ad..b46270a4cf46 100644
+index b46270a4cf46..8626f36e0353 100644
 --- a/include/uapi/linux/iommufd.h
 +++ b/include/uapi/linux/iommufd.h
-@@ -464,9 +464,32 @@ struct iommu_hwpt_alloc {
- 
- /**
-  * enum iommu_hw_info_type - IOMMU Hardware Info Types
-+ * @IOMMU_HW_INFO_TYPE_INTEL_VTD: Intel VT-d iommu info type
-  */
- enum iommu_hw_info_type {
- 	IOMMU_HW_INFO_TYPE_NONE,
-+	IOMMU_HW_INFO_TYPE_INTEL_VTD,
-+};
-+
-+/**
-+ * struct iommu_hw_info_vtd - Intel VT-d hardware information
-+ *
-+ * @flags: Must be 0
-+ * @__reserved: Must be 0
-+ *
-+ * @cap_reg: Value of Intel VT-d capability register defined in VT-d spec
-+ *           section 11.4.2 Capability Register.
-+ * @ecap_reg: Value of Intel VT-d capability register defined in VT-d spec
-+ *            section 11.4.3 Extended Capability Register.
-+ *
-+ * User needs to understand the Intel VT-d specification to decode the
-+ * register value.
-+ */
-+struct iommu_hw_info_vtd {
-+	__u32 flags;
-+	__u32 __reserved;
-+	__aligned_u64 cap_reg;
-+	__aligned_u64 ecap_reg;
+@@ -471,10 +471,20 @@ enum iommu_hw_info_type {
+ 	IOMMU_HW_INFO_TYPE_INTEL_VTD,
  };
  
++/**
++ * enum iommu_hw_info_vtd_flags - Flags for VT-d hw_info
++ * @IOMMU_HW_INFO_VTD_ERRATA_772415_SPR17: If set, disallow nesting on domains
++ *                                   with read-only mapping.
++ *                                   https://www.intel.com/content/www/us/en/content-details/772415/content-details.html
++ */
++enum iommu_hw_info_vtd_flags {
++	IOMMU_HW_INFO_VTD_ERRATA_772415_SPR17 = 1 << 0,
++};
++
  /**
+  * struct iommu_hw_info_vtd - Intel VT-d hardware information
+  *
+- * @flags: Must be 0
++ * @flags: Combination of enum iommu_hw_info_vtd_flags
+  * @__reserved: Must be 0
+  *
+  * @cap_reg: Value of Intel VT-d capability register defined in VT-d spec
 -- 
 2.34.1
 
