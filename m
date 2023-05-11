@@ -1,52 +1,58 @@
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2087.outbound.protection.outlook.com [40.107.101.87])
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2080.outbound.protection.outlook.com [40.107.100.80])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB1A43C2C
-	for <iommu@lists.linux.dev>; Thu, 11 May 2023 04:34:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBDCF645;
+	Thu, 11 May 2023 04:42:21 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RZgysXIq0zwXwBTcTiU/97WgyJ1L7NQzvLQF45zsqIiFb92FiE7Ie5FO330+Dfz+GEMThPnwRUfdi8DltffhkCBF1CRO2u002ZgYSy8flbuAbxnyVBR20WW4m+kwVf3NIjNBmS87N/OeLBgzUC8OHqJfryj042oFRU4mR74V1+Bxx3dgQMBJDwk+T5e0FA8tqXKi25Uc5xjSxfzzM5y7ZvTu0g4tAwcF0dR7bYk4XPf4M91gIrHsLNTIKs5X+l8r5Ovjuqto9GPHyA/I6AYWU1VBS3Rxk6O/ZPefGzBD2XIkQvahr9rNUk9usYiWJPaC5sqvUqHr7YToftHVQR1EDw==
+ b=cBXR00rIZPjpVexZkjBsOZ5073YYeL/Q14rlx8rCfMCFc7p7XMlHtM4De2WSofuwQWeIhDjCBAE4gSytomZKxgVaM88Zsm0yY46IrP1q/h/xmzIqPKgtHkEXqdRG2I6DJWEzyiWsnZcpx3i/lh4Me1APH8i1nvpGEJT7Fp3AKRrwF4s5xWlKEcyxi3X+bGiLaheZV6fzatE12kzzU3ylHzUB+HCcdvnsmBsKL5l/JdJWr967NIykOqgNNtWPcxHn9Ih8vLEK06G0OqxuFdhK/ndQgbtQsCOBVDy1KFf0ARFqpo1XHrtjLe3Oopay+/MIoGEL4NQsq8wkOXFdbkWxcQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QTfqVodgxzvi3UDyu7WueMuQSaz6mm7vorIi5nPDFB4=;
- b=ipHYGEqHxiP4VkOfQpJDXeeoEXbxnfVYHlquluPvn1DsMNqzy2nrz3IPdZfCIoGgzQ8aTQc4AhZmygua63579gXO0hwKihZsuWcPhtieQV03xNCg8rJgfKzG0BOo/3sOGlrZfbzHkpPraed2EndqVhyu4ckjkAjWUlhNNs86CTm8LHQZM7Bh5eXY4cxWKwbs47aEoQCDq//gcCXdLN9ANkl7r5eMuXlRmPp2FEfqGCh2a1URP73tzAjulkAAltGhlwXYZSDWlh99h3TxaaE6atspL2Qcax8rmWE4lZhkX7EW9LBSkD4ytxu76BsgvKPvkUxJLcbj3Ts1eN6wlbZVoA==
+ bh=QfTEI0zkZVPC6cvwS2WiUeA5LcgScnzfZS3pkrw4Ihw=;
+ b=BaU1UXIG8Ikrp9KOZ3+lJCPiSsaMcjxotoir+pO4EtrnLrLcFSoF65yObPV8nBhw8qtvTBjiBuEip9Dw4Nzkqvno+T5yEiPibuQQb8y5RbPtV/Rlw7WWhxN73vJb6krv5UqolcHNhDSCBaAF5wc5lEj1T6z7DWeiRoCqcmqaSvdvJAOuzfzDAiakuOjW3Y+s73oSunfO9MuqI6molpt4GuJjGXsBIL1K28iyz9HcwFi7/BThH2SrHyXnRyHNQUpDm1+rEOcm72VrUnQWGtPMtZw6rlJjTYqvlKVZxV/yfRhfer/PhUILcrpx1PDDjMh3SdBJaiWVIbqpnuVBxZT43A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QTfqVodgxzvi3UDyu7WueMuQSaz6mm7vorIi5nPDFB4=;
- b=bGd6udIsQwNVYqztrpTWXcoJDIlkGp+vh9pag0XXj1oIh8SVjyYbUZwLNQo+/GAcHVB/uXqhx9S7R0K0lCjd1i8bAxejtRhAobKCHKC6oBujcuFLug6KudwWPG8yxW3pNCU8yKUWWPEM61obPOqyTqwVdjamBUeACOD9CrxQEd6pDAntHCCk4BDK/7/+NbMOcM+loSVpN0OYmzJZWPPMkEnDsxv5ugdISpl1FyPAXnlvMoSXyLRfBpqXLnS53xFJwqAFsFEK3TK+bkuixlJyoLfcX8B4eq7iCbS3tZ96DJc+YXuA7rDtDysdLOPkyrt2H4Lp3LPKgkyvccoTcfanpA==
+ bh=QfTEI0zkZVPC6cvwS2WiUeA5LcgScnzfZS3pkrw4Ihw=;
+ b=GUePmJ76f9jvvxyN/St/Veb8YDbCQwvanHF/1LoYI6zN8cjLGSjO8ujFX/HegTAbrT+/mpJTlhclP32NEOXn5OCQvy7tTvW4Y1dSCIz1Zq0zHwlanAuSxAB6pz3yQYgmpcX8uCkuFY/AixIMKSFfIW8OJRO2HSqC6+lCEUi7T8ZyxfAHDa/EZHrhPCZ33GmXidLqht8lPNVJwEgt1rwqQmOToNSEqsEFs/YsgfAa8czXnFVS3IoUelPoB7kGW1i6lYm10GJec02bjga8FeGRpsdqimfV9wQxyceTp2CncIgbsBbiqwl05vW5WYYx/KF5BVVxkqPwld8zOwUwclzO6w==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by MW4PR12MB7310.namprd12.prod.outlook.com (2603:10b6:303:22c::15) with
+ by BL1PR12MB5970.namprd12.prod.outlook.com (2603:10b6:208:399::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.33; Thu, 11 May
- 2023 04:33:24 +0000
+ 2023 04:42:17 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6387.021; Thu, 11 May 2023
- 04:33:24 +0000
-Date: Thu, 11 May 2023 01:33:21 -0300
+ 04:42:17 +0000
 From: Jason Gunthorpe <jgg@nvidia.com>
-To: Michael Shavit <mshavit@google.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, jean-philippe@linaro.org,
-	nicolinc@nvidia.com, baolu.lu@linux.intel.com,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 0/5] Add PASID support to SMMUv3 unmanaged domains
-Message-ID: <ZFxwEYPn74Tivcrb@nvidia.com>
-References: <20230510205054.2667898-1-mshavit@google.com>
- <ZFwIWz8kBL+bti1m@nvidia.com>
- <CAKHBV26rbPXr6QUAx1MSbX58Zr4B7iLhojOgfn9c0tc1wKaP+w@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKHBV26rbPXr6QUAx1MSbX58Zr4B7iLhojOgfn9c0tc1wKaP+w@mail.gmail.com>
-X-ClientProxiedBy: BY5PR16CA0032.namprd16.prod.outlook.com
- (2603:10b6:a03:1a0::45) To LV2PR12MB5869.namprd12.prod.outlook.com
+To: iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>,
+	llvm@lists.linux.dev,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <ndesaulniers@google.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Tom Rix <trix@redhat.com>,
+	Will Deacon <will@kernel.org>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>,
+	Heiko Stuebner <heiko@sntech.de>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>
+Subject: [PATCH v5 02/17] iommu: Add for_each_group_device()
+Date: Thu, 11 May 2023 01:42:00 -0300
+Message-Id: <2-v5-1b99ae392328+44574-iommu_err_unwind_jgg@nvidia.com>
+In-Reply-To: <0-v5-1b99ae392328+44574-iommu_err_unwind_jgg@nvidia.com>
+References:
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SJ0PR03CA0255.namprd03.prod.outlook.com
+ (2603:10b6:a03:3a0::20) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -55,114 +61,151 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MW4PR12MB7310:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6981cecf-cc95-4620-4492-08db51d8dba4
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BL1PR12MB5970:EE_
+X-MS-Office365-Filtering-Correlation-Id: cd03c7f9-e35b-49e1-562c-08db51da1986
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	VYeUIEJhU2uYlAO4skPGPXqti86BN9THVdR4jqr7cN75UTvzaPXWAaAy+opbEv3p7HVWYifZ2YISfPRCVhcIIuepNNHfbGJl2D7SYGMA+xCvgTfDqPMMtAfi+B1Bo9mBQbuhoPH7KOuqjXIH4KP2cmby37P+zibabMQERk5Zvqv0/hzg1RLhp2YEptRnoXqXYfAobsu4Tgh0+ZTepAj8Gs45S4l4PISAtUXNt/cQjS8OzHeTT6zFoSEkvp5xaQnDC18yFhbWIpWuRWxmpS/k35mR1G3+gDhcqRsFIOVORQP2RfT/wBLFyV7le921GAdtryVM9y6faD3q0Sl4LL2zKds8OWia4udVWm/aVts4onz61Ew/rLoKehDQlTqdv1L2/u3gNzPL9sgFFcvuBJc+2iIls2dwe4eIysraJIUgLPw4H16RVC/nkQXzPtwLDihQ/J7RclarrgFDwkNwRMWUjbHMXdcXygmuIHZEqCZe62aUjKS/rLl1b7WE0BaY4t+Uhea5NTS0hqOmH5vSh4tCTgU0Dv5Egf+dqInXKwbzrnGVpSZP1rT2B+drZg76FX7Qf+clfuyw7DKMshy93mQCng+t0H3FxGYCh2GJQOmlv8d//jI47bTI5O9PCmNQzo/1G7pBqho5IALDWWpoxpz9gw==
+	sZ2CQru6blCvM6JLeuwkWWinCpdBBCH6qeTbHE4X0Pf94xfVUMCcx/um18Zo3qzqXPZFWDg66qII1+sR/g24dhjxQVJPC2pJZ/YAPTMkSg0i1ljc931RCfBje5eje7UP+6Mz4iarpL4k3wEK7Amsa2F8K5dTx1E7U5foW3lMKYDHrlrjpOg6rsa+s9FjJt5AJK5EcfcFxZSesgZe74gu+Et96f8pG7/FuruJx0pR9Q3yHQfv0DFjPkBSpo2OuB+uUsFRL6hnVvK+21o3I1y0eZ//1nwWjUD/s53hYFPpDgmYIOfzhZkcIDCpnzb/RWrn8q42sV/0b4XKS1FA3clOu0dA8+9lucaWSItOO6a6xqLbO7Cdm/4k62hTf11VhpqgAuq71g0Mo+xFcRB4VtobTFTgEEVIxVghbfefuvbr2rW/GNP/aAoBoy41/yaMYkAB8uc7O3Gp78aKn9kHscR+ap0lNBRbnbx/cWMCJhVXfYl0wL3OAsPDl1R2iqtZg6Yz4EzlElQ9zCt+W24tUO4XKLYXEr5s6bUz2rDWxO7EA+u7X5jbVFYOkfEIC7SnM2Nxqki4SenIJ/HrvhvVrp/Z3bgvdZ+RsihVMcq4kvKwUIc=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(376002)(396003)(39860400002)(366004)(346002)(451199021)(6916009)(5660300002)(6666004)(316002)(4326008)(38100700002)(41300700001)(66476007)(86362001)(26005)(6506007)(54906003)(66556008)(66946007)(6512007)(2906002)(8676002)(8936002)(186003)(6486002)(36756003)(478600001)(2616005)(473944003)(414714003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(136003)(396003)(39860400002)(366004)(451199021)(7416002)(38100700002)(8936002)(66556008)(66476007)(66946007)(83380400001)(2906002)(478600001)(110136005)(54906003)(316002)(6666004)(8676002)(6486002)(5660300002)(41300700001)(4326008)(86362001)(6512007)(186003)(6506007)(26005)(2616005)(36756003)(4216001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?ALa5Ep7YI1G1aFRnL7muK+HuM6rikPOlQffR4c7DNFx5P25pYvvu6gCHy+UQ?=
- =?us-ascii?Q?7U1WpMN2F80EZntnSaPj4eUf9aQxpHidfzR1MDHpb1OSiSIrLByV31L2DeHo?=
- =?us-ascii?Q?rAgfJdivHp0z+CAbYDENoi4T6g7bADGdfariiw831egxlF9Odp3G3A9go/sa?=
- =?us-ascii?Q?5waDLZ1sus/tGD9c2HjawOfr2SgALni52x8RS6rCcJs2LSHRfhQj3EYIyJRh?=
- =?us-ascii?Q?L448cgvwJCgua22pw+pv96Nvgz4SBFpWv4R/FP/BSLXpMV4kNjRMj7OlEgFL?=
- =?us-ascii?Q?Bos1tX0DHMsjc7bD/QTHHsxpNxb67ugZiI+gw+nXlFu6UaD7eLBLcceQ2SAG?=
- =?us-ascii?Q?EYegx5o9dSNgV5UHaYLKdFclybh2bcjRQTyqYeyuv+y58Ozf8t4AIrluu7Oj?=
- =?us-ascii?Q?7QAwLupySu+fHkOFCm3gr6pHphkrncTtF8/Hq+pwY1apyuJ1usiZ6JczeCw+?=
- =?us-ascii?Q?DSbdkx3WdjzDZx8g+kvFhudJCF+SCv2P3xMPzukwzPjCxUEg7/2Jl927t97l?=
- =?us-ascii?Q?B03oDdN0aW350/86Xb/1rRhzWnVv+v7eN8UBwsAZxn/V5zsax2uuNzTn2iGy?=
- =?us-ascii?Q?qinZNPWq+XXAXHP5C0/eTI3CZqZG+K1f19oAuJ1NJ79XeXxtA64zi466INI2?=
- =?us-ascii?Q?bRaIzTbzynLLrPslAA+PHVwgziLfp6QxcZx/U8y3WsEk0xZ+Fapqpr5CUybl?=
- =?us-ascii?Q?pK2MVYVoWv8Eq2ZeA4dRsP36VFTLFeWZGMJCS3P4Ta61fa6tg2DDVvfqDvcB?=
- =?us-ascii?Q?3yB1EeXpigoryh2rJDEwTwn9Pxge2vint7ObJlGoZTRBTb+hXkfD0ruBSW0s?=
- =?us-ascii?Q?OLC1Pj0tR0ZqHctZ1hJhRyPQhL8FI+RIqeR4IdTTAWp9IxP7E766Df10ZoaD?=
- =?us-ascii?Q?LHbST8ykuBYFQ+C96qBToPiqD3B1GbW4Ifn/1otBpZjcJ63iLeKwY7gtpDq+?=
- =?us-ascii?Q?AS7ZtL3+yN8OUgOz2TGF6ZowOgTuUkGTUvyZ7exZUIJ9kvChLDKbnxw7IN6Q?=
- =?us-ascii?Q?oKAb3Y7Vik6W8vT7r9SWz5x2W/cxZfFMxk9WmaFePiBd99skMhD7Wveh/GU4?=
- =?us-ascii?Q?CSSt0Tj6Zsr+A77QmOcQ1hwN0kfG2oFtTUjygjrQYFLoB8L+QMVpazvdIWkh?=
- =?us-ascii?Q?eJoUdKJBCq3RItyhMSyMT4TI3jcBL518ICvPdbJCItsecm6IDQb8E9V7uoUk?=
- =?us-ascii?Q?+Zrj9eS9gfK/WMQbtkexe+f6BCgrM7UkOF5RHPlMQ6k+h3ED8CFQfoyEbenp?=
- =?us-ascii?Q?9RFRUkOQLCMoLTvzdDm1MNMQQErXsOcKNfioSl+TiCwhIfhE5aGNjwqxRCah?=
- =?us-ascii?Q?ASU78F5A/b8rMQbWJYi2WDAPJOC9vWDvzDG+4701qKJKYsBKTqhNqowXMefU?=
- =?us-ascii?Q?NPKiwVNeW6RtOHVVsTJ1JdMLOPxTnvNe7QiVVgOx+YG1/Y6qQ+a9na3e6MPL?=
- =?us-ascii?Q?YPC4uy1ai2qkNwPfxXBcWwpAIm3V31l+osxVGGkpm+DLMz/Vsu8WDDfjhC+G?=
- =?us-ascii?Q?hJAueZnfnj9XhET4Cqr9mVJ1RhxFeHjwqCoY+x6tcGrap0RgqqDBkvgYRb/M?=
- =?us-ascii?Q?6RixZ02ZXI041eSPa8P4WcGsgRIOBnUtsuxjSxpM?=
+	=?us-ascii?Q?+sYSlsJGTCNYLX07TieHv0kvyKwK8jMSSJwYB3umyGbQQ77RIzMWZ7N5mx7X?=
+ =?us-ascii?Q?dx37Ebn+aK3H0LVeZY3tyKjxTJRbeaSUusc4esEUQhg5KLvRTQoE5WvKK4ZQ?=
+ =?us-ascii?Q?ec+xzSKSXLwV/+LyE3fr2ze60oi2fN+LB1d4FIci06QnlHfSJel8c496r7t8?=
+ =?us-ascii?Q?7khR2f2bXwq6thJMLFli4iQDQ6LFbOCcThRKu/YhEcQ7PEcJgYw6oNEmBues?=
+ =?us-ascii?Q?dr8wTi5UM/Qg7Upo00Y0L50sTzNRXPG0HncY8AFMFTvBIsCyHSimbxIYMJAq?=
+ =?us-ascii?Q?H3O4mZC1O2Z97S0tWUf6pMcdfv+1Dlaqc/vVgWp1+fz5CrV+8wBBMfvhNygj?=
+ =?us-ascii?Q?0PPwYtks68MizDH6pSrL3r0D8ZtjM0eMoD8V1CNe32kYHiEOX36GnjOHWrxA?=
+ =?us-ascii?Q?FkPw7VtEpsChtbMyiQ7sZNaQuEXI4+LgX9APe/JDuhrxXA1ai92x91uNInmu?=
+ =?us-ascii?Q?l6iymgN+B/ofijQlcQYRL+GjGMp4XJ9Jc5oqYbAjHwWP0jhHKc40oaUxiI64?=
+ =?us-ascii?Q?qp7RbMIqMMLSoltQ2/0xA8VHutSqz+Lg23xcv8dBo+7BAD9PpqRZ4dqudV/m?=
+ =?us-ascii?Q?6NLvTdf14fgSukdYXxTnKacUuv1e/7CSRlH0Z1153tlaP232zhV2mVTLNYR/?=
+ =?us-ascii?Q?XTABY1G14DZNksxpu3djUWWq8SYe4LecNGopjBPGHidJehS29uURP23GwLeF?=
+ =?us-ascii?Q?d/o3r9Z9E8Fw78dmQbLpJnno/Gu4E/GFwp5afcurPb8TKKXN0D5bN0278Uh3?=
+ =?us-ascii?Q?MP3PB4orcKrXXoEbfUQI5foUDagUItPcDFs4iIMH4v5TF91+5fhRdyQ3xUIn?=
+ =?us-ascii?Q?Caf8sxPgta6ZZaszq/v5HjnrWjIwjWviwaYuAaL5aTClrMBb1kW/7fnmWuSw?=
+ =?us-ascii?Q?CHuTk1T9kQVtD5V8wARO9Gj9YRL7WCEqg2CEAj/c/MzEpl8MKHyb1qrdEaGW?=
+ =?us-ascii?Q?yLZwq5TkkuBTmLvZi/2KgDuJLKIym/spLPoEZ8MYw4YVaMfM0hCuT05aPu6l?=
+ =?us-ascii?Q?SvCQVd6DH88mkUZ1fucXvLdi8dkOIo/0pXmHhooRvlnNQAxY+5uceP6sEZEG?=
+ =?us-ascii?Q?Wf3qeUpYI0p2RozIHh6f5cradyVg1rgXVLE+fFkJhFuUA2vi4Zt7QZdkNZEi?=
+ =?us-ascii?Q?mtRChBq/uSSO3dx8NTK3MeFHN3/aYooKdqAQHD6mK6+cWL9ruoVoV2p5T/rD?=
+ =?us-ascii?Q?FcD5ENBPKON6QMNH5Cd/0/OCi8ledC/Zmp1XGZDCPwVFfk+4KCfxvVgYsMdO?=
+ =?us-ascii?Q?gN+SIrAsWxJUVfBa2SH8zWtv2ItcQZYWoExAB4joTjAU6zWAO71zWTdcQVSQ?=
+ =?us-ascii?Q?9PdnU9HnZuNrBS28yT9fqioIFXiwbNh97CiEXKtUFvD2olrvz4ioUBExaZ4V?=
+ =?us-ascii?Q?R6GgntWfaEuulS/qt4wuSapboTZnRIyYy/Y+f14/0RuVapaYYzL6hN2hGryy?=
+ =?us-ascii?Q?gqbqowCzZ675m3LQAFlgTqskcCybfQm+WGTduccDuiFUr621Ffr4QTBvThMx?=
+ =?us-ascii?Q?xcKqKi7aKUuu5q6lhCFUd0Es/tll0q+7dq/snd/ZVpqjNT2uDNLdLSsQwMMp?=
+ =?us-ascii?Q?8S0hx1kxILZkRUxDn7BlM11s5VSnYPOCgAvcYX1E?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6981cecf-cc95-4620-4492-08db51d8dba4
+X-MS-Exchange-CrossTenant-Network-Message-Id: cd03c7f9-e35b-49e1-562c-08db51da1986
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2023 04:33:24.3988
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2023 04:42:17.6986
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pUcImwaK1g+c0zqst5T+ynWBMozRTlXJcFVSxqK+iVANXdFmXEpyovabBiengp37
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7310
+X-MS-Exchange-CrossTenant-UserPrincipalName: BTLNkR+1Xqwf6Vd5TGBRf/xwnzHjTqjiR1kuO0mQsbTcwn2nbfxrAfmxTy7TCL41
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5970
 
-On Thu, May 11, 2023 at 11:52:41AM +0800, Michael Shavit wrote:
-> > Logically when an iommu_domain is attached to a device or a PASID a
-> > STE or CD is generated from the iommu_domain's configuration but the
-> > iommu_domain doesn't "hold" it
-> >
-> 
-> Ah yes, I was using iommu domain and arm_smmu_domain interchangeably
-> here since there's a 1:1 mapping between the two. In the current
-> smmuv3 implementation, arm_smmu_domain holds the s1cfg structure which
-> represents the s1 portion of an STE.
+Convenience macro to iterate over every struct group_device in the group.
 
-I mean to include the arm_smmu_domain too..
+Replace all open coded list_for_each_entry's with this macro.
 
-Generally this sort of seemed OK in the code, I just wouldn't use the
-word 'hold' - the iommu_domain may cache a computed STE or CD value
-but that the actual steering or context tables are held else where
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Tested-by: Heiko Stuebner <heiko@sntech.de>
+Tested-by: Niklas Schnelle <schnelle@linux.ibm.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ .clang-format         |  1 +
+ drivers/iommu/iommu.c | 16 ++++++++++------
+ 2 files changed, 11 insertions(+), 6 deletions(-)
 
-ie you insert an iommu_domain into a steering or context table, it
-does not 'hold' a table entry.
-
-> specific to SVA about this behavior however, SVA will do the same
-> amount of work whether the cd table is owned by some special iommu
-> domain or by the arm_smmu_master (since we require that special iommu
-> domain be attached to the master and disallow detaching it).
-
-The CD table for SVA definately should not be part of an iommu_domain,
-moving it to the master seems reasonable.
+diff --git a/.clang-format b/.clang-format
+index 0d1ed87767337e..0bbb1991defead 100644
+--- a/.clang-format
++++ b/.clang-format
+@@ -254,6 +254,7 @@ ForEachMacros:
+   - 'for_each_free_mem_range'
+   - 'for_each_free_mem_range_reverse'
+   - 'for_each_func_rsrc'
++  - 'for_each_group_device'
+   - 'for_each_group_evsel'
+   - 'for_each_group_member'
+   - 'for_each_hstate'
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index f2c0c10af32c4c..b315cba0d4ed0f 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -68,6 +68,10 @@ struct group_device {
+ 	char *name;
+ };
  
-> Gotcha. So this patch series should be less aggressive, but is
-> probably still workable with the nested domain patch series:
-> 1. For (stage 1) unmanaged/dma and sva domains, arm_smmu_domains
-> should hold a single CD. For the nested domain series, arm_smmu_domain
-> can alternatively hold an entire s1cfg.
++/* Iterate over each struct group_device in a struct iommu_group */
++#define for_each_group_device(group, pos) \
++	list_for_each_entry(pos, &(group)->devices, list)
++
+ struct iommu_group_attribute {
+ 	struct attribute attr;
+ 	ssize_t (*show)(struct iommu_group *group, char *buf);
+@@ -468,7 +472,7 @@ __iommu_group_remove_device(struct iommu_group *group, struct device *dev)
+ 	struct group_device *device;
+ 
+ 	lockdep_assert_held(&group->mutex);
+-	list_for_each_entry(device, &group->devices, list) {
++	for_each_group_device(group, device) {
+ 		if (device->dev == dev) {
+ 			list_del(&device->list);
+ 			return device;
+@@ -707,7 +711,7 @@ int iommu_get_group_resv_regions(struct iommu_group *group,
+ 	int ret = 0;
+ 
+ 	mutex_lock(&group->mutex);
+-	list_for_each_entry(device, &group->devices, list) {
++	for_each_group_device(group, device) {
+ 		struct list_head dev_resv_regions;
+ 
+ 		/*
+@@ -1131,7 +1135,7 @@ static int __iommu_group_for_each_dev(struct iommu_group *group, void *data,
+ 	struct group_device *device;
+ 	int ret = 0;
+ 
+-	list_for_each_entry(device, &group->devices, list) {
++	for_each_group_device(group, device) {
+ 		ret = fn(device->dev, data);
+ 		if (ret)
+ 			break;
+@@ -1935,7 +1939,7 @@ bool iommu_group_has_isolated_msi(struct iommu_group *group)
+ 	bool ret = true;
+ 
+ 	mutex_lock(&group->mutex);
+-	list_for_each_entry(group_dev, &group->devices, list)
++	for_each_group_device(group, group_dev)
+ 		ret &= msi_device_has_isolated_msi(group_dev->dev);
+ 	mutex_unlock(&group->mutex);
+ 	return ret;
+@@ -3242,7 +3246,7 @@ static int __iommu_set_group_pasid(struct iommu_domain *domain,
+ 	struct group_device *device;
+ 	int ret = 0;
+ 
+-	list_for_each_entry(device, &group->devices, list) {
++	for_each_group_device(group, device) {
+ 		ret = domain->ops->set_dev_pasid(domain, device->dev, pasid);
+ 		if (ret)
+ 			break;
+@@ -3257,7 +3261,7 @@ static void __iommu_remove_group_pasid(struct iommu_group *group,
+ 	struct group_device *device;
+ 	const struct iommu_ops *ops;
+ 
+-	list_for_each_entry(device, &group->devices, list) {
++	for_each_group_device(group, device) {
+ 		ops = dev_iommu_ops(device->dev);
+ 		ops->remove_dev_pasid(device->dev, pasid);
+ 	}
+-- 
+2.40.1
 
-These are just pre computed values the can help when inserting the
-iommu_domain into a steering or CD table
-
-> 2. arm_smmu_master should own an s1cfg (which holds a cdtable) that is
-> used by unmanaged/dma and sva domains attached to this master.
-
-The arm_smmu_master's cd table can be inserted into a steering table
-
-> 3. arm_smmu_master also holds a pointer to the live s1cfg, which may
-> either points to its owned s1cfg, or the nested domain's s1cfg, or
-> null (bypass or stage2)
-
-The steering table either points to the CD table owned by the
-arm_smmu_master, a S1 domain held by an iommu_domain, or a S1 & CD
-table owned by userspace represented by a special nested iommu_domain
-and its internal parent.
-
-If a kernel owned S2 it attached then the S1 points at the CD table
-owned by the arm_smmu_master and the CD table points to the S2, same
-as if there was PASID (IIRC, from memory I don't have the spec here
-right now)
-
-Think about it in terms of what object owns the table and what other
-object(s) are inserted into the the table. Nothing "holds" a table
-entry.
-
-Jason
