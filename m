@@ -1,101 +1,87 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8F22637
-	for <iommu@lists.linux.dev>; Thu, 11 May 2023 10:36:47 +0000 (UTC)
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id B71DB1595D1;
-	Thu, 11 May 2023 12:36:38 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1683801399; bh=56/JMFS+y5+CL0epGr/j+rgw0VuJ8cbzk2SU58O1JvY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=0BHwBStv5OjKVHlW+V+xEk83k2yG4uBHsF/ilA8hjkkAZ2+xWGZuvq7yXChlnSsQ/
-	 vkg+2FgTIizvKFk8fiYtSIQmtFvDQa27jGXi6MRaQbKwgPqEv7BreWlqS16s2La/yo
-	 dHRa/Ov4etWgJ4M/KJ12Ehz776rYZwYs7TUHbI9nbuSG8iWSJQjeitND5atJVAgpPh
-	 MibcahQ0DMPohWnsYlSwt/V3d+3M2xO/HJlLAKCeVSVVQK+a1ZffycgxH6VmDhrBGv
-	 u7pUIGEmwPs+E0LGUfiW2nerpG6eumk+X+b1ee6ADXXP8Ft+v5bpcQn5cvA7rxn18k
-	 RwB+DRtbM9xjA==
-Date: Thu, 11 May 2023 12:36:36 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Juerg Haefliger <juergh@proton.me>
-Cc: Petr Tesarik <petrtesarik@huaweicloud.com>, Christoph Hellwig
- <hch@lst.de>, Jonathan Corbet <corbet@lwn.net>, Marek Szyprowski
- <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Borislav
- Petkov <bp@suse.de>, "Paul E. McKenney" <paulmck@kernel.org>, Andrew Morton
- <akpm@linux-foundation.org>, Randy Dunlap <rdunlap@infradead.org>, Damien
- Le Moal <damien.lemoal@opensource.wdc.com>, Kim Phillips
- <kim.phillips@amd.com>, "Steven Rostedt (Google)" <rostedt@goodmis.org>,
- "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, open list
- <linux-kernel@vger.kernel.org>, "open list:DMA MAPPING HELPERS"
- <iommu@lists.linux.dev>, Roberto Sassu <roberto.sassu@huawei.com>,
- Alexander Graf <graf@amazon.com>
-Subject: Re: [RFC v1 3/4] swiotlb: Allow dynamic allocation of bounce
- buffers
-Message-ID: <20230511123636.168eb62f@meshulam.tesarici.cz>
-In-Reply-To: <20230406134440.72959135@gollum>
-References: <4268fa4e-4f0f-a2f6-a2a5-5b78ca4a073d@huaweicloud.com>
-	<20230331092553.677e9649@smeagol>
-	<20230331110043.7b1ddfa3@meshulam.tesarici.cz>
-	<20230406134440.72959135@gollum>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-suse-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15EF02102
+	for <iommu@lists.linux.dev>; Thu, 11 May 2023 12:06:32 +0000 (UTC)
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-965f7bdab6bso1387279766b.3
+        for <iommu@lists.linux.dev>; Thu, 11 May 2023 05:06:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1683806791; x=1686398791;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2tDfXQ17FO7BOQj7+ESY06ETyUTlemE288YQq2nrYcU=;
+        b=jbI88sNpPdUELvvFxsUTjkocAebLsvf95+U/8NHHX/pJvUND+kMggu0ip00C9fLHW3
+         Sr00b7xjjhTkvvT16eK9VLhjAc2/n5gSxn1ZBsc2D9snJt/WMj3vv7/e0h7/7LGTarfq
+         rzKcRql09iF6sqmFS6xDgNR8RclAqTpY7WQdZDQcqBooYjV4ijtzGTvpDcsWbe4/7yeI
+         Ygcbswr7MJAm2agnKxHM3GxOf1IG0++tStjs7U/EHFTQN6nLOIru+hGV/143e4J5a1Kt
+         MUQ+ILA696hZm94i+PaymfHWPSvY0e3Oi1cn9Q4WMlgyTOfbp9D7m5cJjY+7DuquofJW
+         OAIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683806791; x=1686398791;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=2tDfXQ17FO7BOQj7+ESY06ETyUTlemE288YQq2nrYcU=;
+        b=jGtm35ctfFLEEtnbZuIRKhDLT6nqpp04JWTTmg0n1QPx+wntQ8D4Fuekbcye6lfOiN
+         nrUw6dNquQujj4DwBQKjMNISq7MGLB9OeB1L0HZb3pWOqDslkCaS6LL3VgLGtalNS7+H
+         ON/qzELsYYcw0FajWZOOKKhSl7At/D7QzNmjs8bl9NuvlCRqnmH3oqHMoRukfx0iFTyX
+         8Wdk/gzDJghscb0uvguPda1pyDldtQADEkD0QumWC1/9oa5tzF3zS9xyawQA1Zme+J6C
+         VoBpqN204nPYMzK8EVXfNrP4Sal+pG+5i3tbiSJYr/1nY6uFzouantuvGvokH5celctW
+         pAMA==
+X-Gm-Message-State: AC+VfDzL8LJTBxCMDGPtEJZ8aTWqgEMctZrj2iXs4bltkk4a4nMCUwWE
+	T/zltNcGbAginVlyv2ZThOLpwAubF19bfv9iJtw=
+X-Google-Smtp-Source: ACHHUZ60+xojJ+RF7byu2Sar29A3i4lAnC4JlYOPqe+rUOFHFfM22cKd8y41fY8EeH1nbgJXNHR16+LwNdR9w90VWHw=
+X-Received: by 2002:a17:907:2d09:b0:966:4d75:4a44 with SMTP id
+ gs9-20020a1709072d0900b009664d754a44mr14333819ejc.24.1683806790925; Thu, 11
+ May 2023 05:06:30 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <20230421080800.18837-1-adrianhuang0701@gmail.com>
+ <20230503161759.GA1614@lst.de> <ZFvgz5VgVGEmyAuj@kbusch-mbp.dhcp.thefacebook.com>
+In-Reply-To: <ZFvgz5VgVGEmyAuj@kbusch-mbp.dhcp.thefacebook.com>
+From: Huang Adrian <adrianhuang0701@gmail.com>
+Date: Thu, 11 May 2023 20:06:19 +0800
+Message-ID: <CAHKZfL3Pbv76fqF6Dn8NHbMn7oQ=G02azU-=meLwAKMFPi+jbg@mail.gmail.com>
+Subject: Re: [PATCH v2 1/1] nvme-pci: clamp max_hw_sectors based on DMA
+ optimized limitation
+To: Keith Busch <kbusch@kernel.org>
+Cc: Christoph Hellwig <hch@lst.de>, linux-nvme@lists.infradead.org, Jens Axboe <axboe@fb.com>, 
+	Sagi Grimberg <sagi@grimberg.me>, iommu@lists.linux.dev, Jiwei Sun <sunjw10@lenovo.com>, 
+	Adrian Huang <ahuang12@lenovo.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 06 Apr 2023 11:44:55 +0000
-Juerg Haefliger <juergh@proton.me> wrote:
+On Thu, May 11, 2023 at 2:22=E2=80=AFAM Keith Busch <kbusch@kernel.org> wro=
+te:
+>
+> On Wed, May 03, 2023 at 06:17:59PM +0200, Christoph Hellwig wrote:
+> > dma_opt_mapping_size falls back to and is bound by dma_max_mapping_size=
+.
+> > So I think we could just do this:
+>
+> Thanks for discoverying this even futher simplifaction. This looks good
+> to me.
+>
+> Adrian, are you okay with the suggestion?
 
-> On Fri, 31 Mar 2023 11:00:43 +0200
-> Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> wrote:
->=20
-> > Hi Juerg,
+Yes. This looks good to me. I like this simplicity.
+
+Thanks for Christoph's changes.
+
+> > @@ -2956,7 +2956,7 @@ static struct nvme_dev *nvme_pci_alloc_dev(struct=
+ pci_dev *pdev,
+> >        * over a single page.
+> >        */
+> >       dev->ctrl.max_hw_sectors =3D min_t(u32,
+> > -             NVME_MAX_KB_SZ << 1, dma_max_mapping_size(&pdev->dev) >> =
+9);
+> > +             NVME_MAX_KB_SZ << 1, dma_opt_mapping_size(&pdev->dev) >> =
+9);
+> >       dev->ctrl.max_segments =3D NVME_MAX_SEGS;
 > >
-> > On Fri, 31 Mar 2023 07:26:09 +0000
-> > Juerg Haefliger <juergh@proton.me> wrote:
-> > =20
-> > > On Tue, 28 Mar 2023 09:54:35 +0200
-> > > Petr Tesarik <petrtesarik@huaweicloud.com> wrote:
-> > >
-> > >[...] =20
-> > > > Anyway, I suspected that the buffers need not be imported into the =
-vc4
-> > > > driver (also hinted by Eric Anholt in a 2018 blog post [1]), and it
-> > > > seems I was right. I encountered the issue with Ubuntu 22.10; I
-> > > > installed latest openSUSE Tumbleweed yesterday, and I was not able =
-to
-> > > > reproduce the issue there, most likely because the Mesa drivers have
-> > > > been fixed meanwhile. This makes the specific case of the Raspberry=
- Pi 4
-> > > > drivers moot. The issue may still affect other combinations of driv=
-ers,
-> > > > but I don't have any other real-world example ATM. =20
-> > >
-> > > I'm only seeing this problem with Wayland, no issue when switching Ub=
-untu to
-> > > X. It seems Tumbleweed is using X by default. =20
-> >
-> > I know; I was the team lead of SUSE low-level graphics engineers until
-> > end of last year... I have just double-checked, but this output of
-> > wayland-info in the GNOME session accessed over RDP is quite convincing=
-: =20
->=20
-> It sure is but how did you get that??
-
-I'm sorry for late reply.
-
-Yes, the default is GNOME on X.org, but you can change it on the GDM
-login screen. After choosing your account, a settings gear icon appears
-in the lower right corner. Click on it and choose GNOME. That starts a
-Wayland session.
-
-HTH
-Petr T
+> >       /*
