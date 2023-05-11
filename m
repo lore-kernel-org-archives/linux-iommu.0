@@ -1,107 +1,168 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08CEB1E50B;
-	Wed, 10 May 2023 23:23:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683761033; x=1715297033;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=owMYhO0s+rr/YtNogvkkYbl04vO/j6AuZPt0IqqsS30=;
-  b=jaD18d923SlYHOzSFEz1QLnweMCiE9OKvUYAqC1p2kUBOZFG0rCsyJOu
-   DISZI7CBuzTrUqr0S9HQOEHEjchGyuI7Pb64XZZXa/Hjgwacv3tSBcoF7
-   qA7++DFxQqnEGAp3YaUICh1lFY8XpiEV8C5EY8R4z1YOamr1qLaVECIvr
-   ylwlnwHPblbsf2PvUGeZ4LmL08Fje9LH3w6/UGVTR8kgIb7/549yyGgVK
-   i3sMPZ1x6C+5SqxcRlQfGeHt1/8dxGzE3O3I+tHe6EYbUAPir1Ya151P0
-   lu3DMbAWSgomI3NjXDLS2tqgkeQnUCUKOj3rCyz0atB5mZqmKuNv7nrY2
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10706"; a="353428233"
-X-IronPort-AV: E=Sophos;i="5.99,265,1677571200"; 
-   d="scan'208";a="353428233"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2023 16:23:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10706"; a="699481227"
-X-IronPort-AV: E=Sophos;i="5.99,265,1677571200"; 
-   d="scan'208";a="699481227"
-Received: from lkp-server01.sh.intel.com (HELO dea6d5a4f140) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 10 May 2023 16:23:49 -0700
-Received: from kbuild by dea6d5a4f140 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1pwt9w-0003ea-2Q;
-	Wed, 10 May 2023 23:23:48 +0000
-Date: Thu, 11 May 2023 07:23:18 +0800
-From: kernel test robot <lkp@intel.com>
-To: Michael Shavit <mshavit@google.com>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>
-Cc: oe-kbuild-all@lists.linux.dev, Michael Shavit <mshavit@google.com>,
-	jean-philippe@linaro.org, nicolinc@nvidia.com, jgg@nvidia.com,
-	baolu.lu@linux.intel.com, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 4/5] iommu/arm-smmu-v3: Keep track of attached ssids
-Message-ID: <202305110736.wdeuqPAi-lkp@intel.com>
-References: <20230510205054.2667898-5-mshavit@google.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9ADB82F2D
+	for <iommu@lists.linux.dev>; Thu, 11 May 2023 02:16:22 +0000 (UTC)
+Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-3078fa679a7so4707314f8f.3
+        for <iommu@lists.linux.dev>; Wed, 10 May 2023 19:16:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1683771381; x=1686363381;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=c7NhY70nKePpFKW1tNMvcsBAqsK2Oz2JiYYqlXCn6ek=;
+        b=VzlDVeswYJTkHS18WfZGHZ94kK1HMGNiS+QWCFjD+YQvom1A9OAwXhkdBvdBe22xb1
+         wo2+YNPN2MLaLnGPFkdicBRqtv0CqWMFPg8QmcSKYNV9CwYtC9HjcrmNGJ/D2dsCz3lb
+         Z5PlRQDTuLjC9YYVM1X5I8xGDP/4vF1xu/GrZJojtbOuyCP+QJF9DWyY0/3Y99Q8a5ua
+         eByKEUXFxYnoBU9GBECtwMdo6BJkmns+hZ8YD2GZV8eQReJfbHcXZ0zBy6866p8r3miX
+         9dO9UeQ30UHWgOkJMCSmPXFkmsjsPkCrdbwew7yxIcitgBsJRx24CfkS0WtbbIPC8y/0
+         lm4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683771381; x=1686363381;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=c7NhY70nKePpFKW1tNMvcsBAqsK2Oz2JiYYqlXCn6ek=;
+        b=a/dniEwqP3h72NL68cVqsGUqsFl0VA0c0pAUlvQyqBA3blLjjLiMyCJ19AoFhpmm4V
+         1rSLl7AaS7bHYcmyObT3H8rYumMsVEhsM1J6md5aGsBssXZOA5U5Hnq/TC74Yk4Zc1YP
+         IXtmn4ymZUfXg3PET1n0HI83G54LFdXZXDjDjcCZWKUPoSytXreFD41SYzitA0znzW0T
+         3LjXjWnEjNs49wdOTjmybJdEvIuClJrUWWQVL9zLSMTfusNTr1SLfrclus3nWZpILsY3
+         dimuIArZnrU5IYM2FM/YZzxPvhgXropDnqt/Iad+dOC55A9NcyZjO/54KW/qW06pB1Sb
+         Awig==
+X-Gm-Message-State: AC+VfDxNEYH9xNvKVOtnF1ykexB0Cc4AFo+fAW5XpiRuy4jRVXtghjaH
+	QuYkVav8NS84PU9rj29ISWJ9nQ==
+X-Google-Smtp-Source: ACHHUZ7Sd+QhrUQhXDP5FYiCHBKYHYlWW2eiRLWyVaZMfV2uj0aNLztC4C2YUrLSDZA108qzs4//xg==
+X-Received: by 2002:a5d:45c7:0:b0:306:3bac:e235 with SMTP id b7-20020a5d45c7000000b003063bace235mr11720300wrs.10.1683771380676;
+        Wed, 10 May 2023 19:16:20 -0700 (PDT)
+Received: from localhost.localdomain ([64.64.123.10])
+        by smtp.gmail.com with ESMTPSA id j18-20020a5d4492000000b003021288a56dsm18945908wrq.115.2023.05.10.19.16.14
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Wed, 10 May 2023 19:16:20 -0700 (PDT)
+From: Zhangfei Gao <zhangfei.gao@linaro.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	jean-philippe <jean-philippe@linaro.org>,
+	Wangzhou <wangzhou1@hisilicon.com>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: linux-kernel@vger.kernel.org,
+	linux-crypto@vger.kernel.org,
+	iommu@lists.linux.dev,
+	acc@lists.linaro.org,
+	Zhangfei Gao <zhangfei.gao@linaro.org>,
+	Weili Qian <qianweili@huawei.com>
+Subject: [PATCH] uacce: use filep->f_mapping to replace inode->i_mapping
+Date: Thu, 11 May 2023 10:15:53 +0800
+Message-Id: <20230511021553.44318-1-zhangfei.gao@linaro.org>
+X-Mailer: git-send-email 2.39.2 (Apple Git-143)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230510205054.2667898-5-mshavit@google.com>
+Content-Transfer-Encoding: 8bit
 
-Hi Michael,
+The inode can be different in a container, for example, a docker and host
+both open the same uacce parent device, which uses the same uacce struct
+but different inode, so uacce->inode is not enough.
 
-kernel test robot noticed the following build warnings:
+What's worse, when docker stops, the inode will be destroyed as well,
+causing use-after-free in uacce_remove.
 
-[auto build test WARNING on v6.4-rc1]
-[also build test WARNING on linus/master next-20230510]
-[cannot apply to joro-iommu/next arm-perf/for-next/perf]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+So use q->filep->f_mapping to replace uacce->inode->i_mapping.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Michael-Shavit/iommu-arm-smmu-v3-Move-cdtable-to-arm_smmu_master/20230511-045514
-base:   ac9a78681b921877518763ba0e89202254349d1b
-patch link:    https://lore.kernel.org/r/20230510205054.2667898-5-mshavit%40google.com
-patch subject: [PATCH v1 4/5] iommu/arm-smmu-v3: Keep track of attached ssids
-config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20230511/202305110736.wdeuqPAi-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/2172fed7450d1bb8518b86b2b7113a1e42b4d456
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Michael-Shavit/iommu-arm-smmu-v3-Move-cdtable-to-arm_smmu_master/20230511-045514
-        git checkout 2172fed7450d1bb8518b86b2b7113a1e42b4d456
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm64 olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/iommu/arm/arm-smmu-v3/
+Signed-off-by: Weili Qian <qianweili@huawei.com>
+Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+---
+ drivers/misc/uacce/uacce.c | 16 +++++++++-------
+ include/linux/uacce.h      |  4 ++--
+ 2 files changed, 11 insertions(+), 9 deletions(-)
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202305110736.wdeuqPAi-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
->> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:1857:5: warning: no previous prototype for 'arm_smmu_atc_inv_domain' [-Wmissing-prototypes]
-    1857 | int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain,
-         |     ^~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/arm_smmu_atc_inv_domain +1857 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-
-  1856	
-> 1857	int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain,
-  1858				    unsigned long iova, size_t size)
-  1859	{
-  1860		return arm_smmu_atc_inv_domain_ssid(smmu_domain, 0, iova, size);
-  1861	}
-  1862	
-
+diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
+index 346bd7cf2e94..740ace422baa 100644
+--- a/drivers/misc/uacce/uacce.c
++++ b/drivers/misc/uacce/uacce.c
+@@ -166,8 +166,8 @@ static int uacce_fops_open(struct inode *inode, struct file *filep)
+ 
+ 	init_waitqueue_head(&q->wait);
+ 	filep->private_data = q;
+-	uacce->inode = inode;
+ 	q->state = UACCE_Q_INIT;
++	q->private_data = filep;
+ 	mutex_init(&q->mutex);
+ 	list_add(&q->list, &uacce->queues);
+ 	mutex_unlock(&uacce->mutex);
+@@ -574,12 +574,6 @@ void uacce_remove(struct uacce_device *uacce)
+ 
+ 	if (!uacce)
+ 		return;
+-	/*
+-	 * unmap remaining mapping from user space, preventing user still
+-	 * access the mmaped area while parent device is already removed
+-	 */
+-	if (uacce->inode)
+-		unmap_mapping_range(uacce->inode->i_mapping, 0, 0, 1);
+ 
+ 	/*
+ 	 * uacce_fops_open() may be running concurrently, even after we remove
+@@ -589,6 +583,8 @@ void uacce_remove(struct uacce_device *uacce)
+ 	mutex_lock(&uacce->mutex);
+ 	/* ensure no open queue remains */
+ 	list_for_each_entry_safe(q, next_q, &uacce->queues, list) {
++		struct file *filep = q->private_data;
++
+ 		/*
+ 		 * Taking q->mutex ensures that fops do not use the defunct
+ 		 * uacce->ops after the queue is disabled.
+@@ -597,6 +593,12 @@ void uacce_remove(struct uacce_device *uacce)
+ 		uacce_put_queue(q);
+ 		mutex_unlock(&q->mutex);
+ 		uacce_unbind_queue(q);
++
++		/*
++		 * unmap remaining mapping from user space, preventing user still
++		 * access the mmaped area while parent device is already removed
++		 */
++		unmap_mapping_range(filep->f_mapping, 0, 0, 1);
+ 	}
+ 
+ 	/* disable sva now since no opened queues */
+diff --git a/include/linux/uacce.h b/include/linux/uacce.h
+index 0a81c3dfd26c..64b800b74436 100644
+--- a/include/linux/uacce.h
++++ b/include/linux/uacce.h
+@@ -86,6 +86,7 @@ enum uacce_q_state {
+  * @state: queue state machine
+  * @pasid: pasid associated to the mm
+  * @handle: iommu_sva handle returned by iommu_sva_bind_device()
++ * @private_data: private data for saving filep
+  */
+ struct uacce_queue {
+ 	struct uacce_device *uacce;
+@@ -97,6 +98,7 @@ struct uacce_queue {
+ 	enum uacce_q_state state;
+ 	u32 pasid;
+ 	struct iommu_sva *handle;
++	void *private_data;
+ };
+ 
+ /**
+@@ -114,7 +116,6 @@ struct uacce_queue {
+  * @mutex: protects uacce operation
+  * @priv: private pointer of the uacce
+  * @queues: list of queues
+- * @inode: core vfs
+  */
+ struct uacce_device {
+ 	const char *algs;
+@@ -130,7 +131,6 @@ struct uacce_device {
+ 	struct mutex mutex;
+ 	void *priv;
+ 	struct list_head queues;
+-	struct inode *inode;
+ };
+ 
+ #if IS_ENABLED(CONFIG_UACCE)
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+2.39.2 (Apple Git-143)
+
