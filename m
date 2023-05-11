@@ -1,153 +1,134 @@
-Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CF2E1D2AF
-	for <iommu@lists.linux.dev>; Thu, 11 May 2023 14:25:59 +0000 (UTC)
-Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-6ab0bad2587so3005929a34.3
-        for <iommu@lists.linux.dev>; Thu, 11 May 2023 07:25:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683815158; x=1686407158;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=EUMshOhJ/jCmOAXf0wSXeoJInJRRSEiHUd4QhJk0RRA=;
-        b=DBl+lObSFhApj2jZOTQrUAOrwRIAf4xArfq5YCzK0SszrY7+8QX++/DM1qlgt14Z4R
-         qEopsANTv+hPnlePep+XdcNtxdNulvw4P5qNfXchJTTbUCd4MSP29UPZAWuBhn0ffsNe
-         uhXM+8dw1jy9CJHT+Ql38XqBeVvflRY7TBo3m4f6CCuzjIKoMFKj/JS2HWrh7bdfKWuB
-         jUFxRKvMdOMAQoKc0pJI563yjY1+zqSRmyDiRVXpx0HsB3WrccNCpvBiX+VEv4xtPcB7
-         UtSTAo8Q5KxkKiY0EdMzMlhESgiq2VDLZO4Z51EjGPKslAyjqv3+PuBbQGS8w2KckX/T
-         1POw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683815158; x=1686407158;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=EUMshOhJ/jCmOAXf0wSXeoJInJRRSEiHUd4QhJk0RRA=;
-        b=SMIE9EHPfLVnph3MRpPqYlu7T6iDWiz1zEbxp4I/ZUnY6nahthbZU5bqdIp5yiPTmp
-         mssEjCPjPD/GK3KQvq1lvmrwgrm/1siNV1a04I6c8+5c5qceqNgw7WMtx2EzdNcpEQr3
-         qdP/1ybBsPUYrBmZloM+WtQk+DrEBhv65Ao0unn+YpQ3x2h8hgIHoeiE7jhvX03iPLU3
-         KZbSeEZBx79RgAFBXv4huis+OultUkqDgI5f/sYedT7QcA0R0rzcQ98bHpu8DL42wAGj
-         b2de0gmlKSAKRkm1QEeXb3AGVM53Z2lOI6lqHOvueGYaal0WibLVusTOWE/4ppW3Bq5+
-         ulkg==
-X-Gm-Message-State: AC+VfDxeb4walsdpUniWWqcwEWSvJL1UwB9Kj6ak1NalX8kUlOM5Axd/
-	/ZXKvjpyg9mXHy5KthxPkYTUGN0a360ok0zhvzY=
-X-Google-Smtp-Source: ACHHUZ7poZgOitdfQqtIlPzYx5Qk56gFW9JRYK0fJ/hsY7AKW7RFp3/ZwhYX+SOn+yAUhmAJCncEuRY5yF/6vgL4jRQ=
-X-Received: by 2002:a05:6808:59:b0:38e:eaf:cf29 with SMTP id
- v25-20020a056808005900b0038e0eafcf29mr4889151oic.29.1683815157913; Thu, 11
- May 2023 07:25:57 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96A73205D1
+	for <iommu@lists.linux.dev>; Thu, 11 May 2023 14:30:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1683815432; x=1715351432;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=E0KtwujeglEeF/ZWyb3T3PBoQXAEhfP+ii+zv5qpFkU=;
+  b=BCCEoBAat0splf9Uj+JL9tnHH9YJ4hudYdZyJUeiQ8BBJNbF0oU07YRZ
+   Y6ZY/7KUh7U58rQwb+WNmej+7vgTmrYohUr3QNLAFHtnOKnPrj+1+vo0r
+   9W+yl0m769lj6GH1p4pvaIwXJCfKCiP0iz3aj1FSbPUCjjLoG5eRkR7I8
+   KyF/gQKy2ULomRF6NyaclErVgGaotMrh/KBtB6QlGYaUdRmnxMbzaWS9f
+   W00/QPSGmSxRmn8TvCgvX7onRYdb/BArJZXiYODDrPn4Ag7ZfrtfReh03
+   L6LzJsPqjmdex6ZeRKv3mPL0IKfX4X1QNvadBYFFkDeOXktNUgZisM+7L
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10707"; a="378639847"
+X-IronPort-AV: E=Sophos;i="5.99,266,1677571200"; 
+   d="scan'208";a="378639847"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2023 07:30:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10707"; a="874004405"
+X-IronPort-AV: E=Sophos;i="5.99,266,1677571200"; 
+   d="scan'208";a="874004405"
+Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
+  by orsmga005.jf.intel.com with ESMTP; 11 May 2023 07:30:25 -0700
+From: Yi Liu <yi.l.liu@intel.com>
+To: joro@8bytes.org,
+	alex.williamson@redhat.com,
+	jgg@nvidia.com,
+	kevin.tian@intel.com,
+	robin.murphy@arm.com,
+	baolu.lu@linux.intel.com
+Cc: cohuck@redhat.com,
+	eric.auger@redhat.com,
+	nicolinc@nvidia.com,
+	kvm@vger.kernel.org,
+	mjrosato@linux.ibm.com,
+	chao.p.peng@linux.intel.com,
+	yi.l.liu@intel.com,
+	yi.y.sun@linux.intel.com,
+	peterx@redhat.com,
+	jasowang@redhat.com,
+	shameerali.kolothum.thodi@huawei.com,
+	lulu@redhat.com,
+	suravee.suthikulpanit@amd.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-kselftest@vger.kernel.org,
+	zhenzhong.duan@intel.com
+Subject: [PATCH v3 0/4] iommufd: Add iommu hardware info reporting
+Date: Thu, 11 May 2023 07:30:20 -0700
+Message-Id: <20230511143024.19542-1-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230509163712.376117-1-robdclark@gmail.com>
-In-Reply-To: <20230509163712.376117-1-robdclark@gmail.com>
-From: Rob Clark <robdclark@gmail.com>
-Date: Thu, 11 May 2023 07:25:46 -0700
-Message-ID: <CAF6AEGv4kThhyCEhf3NeqTSwVT5X7rgxM5nuM_jq3aFbfUHpqA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] iommu/arm-smmu-qcom: Fix missing adreno_smmu's
-To: dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org
-Cc: freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, 
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Rob Clark <robdclark@chromium.org>, 
-	Lepton Wu <lepton@chromium.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
-	Sai Prakash Ranjan <quic_saipraka@quicinc.com>, Konrad Dybcio <konrad.dybcio@linaro.org>, 
-	Bjorn Andersson <quic_bjorande@quicinc.com>, Elliot Berman <quic_eberman@quicinc.com>, 
-	Marijn Suijten <marijn.suijten@somainline.org>, Emma Anholt <emma@anholt.net>, 
-	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>, 
-	"open list:IOMMU SUBSYSTEM" <iommu@lists.linux.dev>, open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Tue, May 9, 2023 at 9:37=E2=80=AFAM Rob Clark <robdclark@gmail.com> wrot=
-e:
->
-> From: Rob Clark <robdclark@chromium.org>
->
-> When the special handling of qcom,adreno-smmu was moved into
-> qcom_smmu_create(), it was overlooked that we didn't have all the
-> required entries in qcom_smmu_impl_of_match.  So we stopped getting
-> adreno_smmu_priv on sc7180, breaking per-process pgtables.
->
-> Fixes: 30b912a03d91 ("iommu/arm-smmu-qcom: Move the qcom,adreno-smmu chec=
-k into qcom_smmu_create")
-> Suggested-by: Lepton Wu <lepton@chromium.org>
-> Signed-off-by: Rob Clark <robdclark@chromium.org>
+iommufd gives userspace the capability to manipulate iommu subsytem.
+e.g. DMA map/unmap etc. In the near future, it will support iommu nested
+translation. Different platform vendors have different implementation for
+the nested translation. So before set up nested translation, userspace
+needs to know the hardware iommu information. For example, Intel VT-d
+supports using guest I/O page table as the stage-1 translation table. This
+requires guest I/O page table be compatible with hardware IOMMU.
 
-Any chance I could get an ack for landing this fix via msm-fixes?
-Broken per-process pgtables is kind of a serious regression..
+This series reports the iommu hardware information for a given iommufd_device
+which has been bound to iommufd. It is preparation work for userspace to
+allocate hwpt for given device. Like the nested translation support[1].
 
-BR,
--R
+This series introduces an iommu op to report the iommu hardware info,
+and an ioctl IOMMU_DEVICE_GET_HW_INFO is added to report such hardware
+info to user. enum iommu_hw_info_type is defined to differentiate the
+iommu hardware info reported to user hence user can decode them. This
+series only adds the framework for iommu hw info reporting, the complete
+reporting path needs vendor specific definition and driver support. The
+full picture is available in [1] as well.
 
-> ---
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/a=
-rm/arm-smmu/arm-smmu-qcom.c
-> index d1b296b95c86..760d9c43dbd2 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -496,20 +496,21 @@ static const struct qcom_smmu_match_data qcom_smmu_=
-500_impl0_data =3D {
->  /*
->   * Do not add any more qcom,SOC-smmu-500 entries to this list, unless th=
-ey need
->   * special handling and can not be covered by the qcom,smmu-500 entry.
->   */
->  static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[=
-] =3D {
->         { .compatible =3D "qcom,msm8996-smmu-v2", .data =3D &msm8996_smmu=
-_data },
->         { .compatible =3D "qcom,msm8998-smmu-v2", .data =3D &qcom_smmu_v2=
-_data },
->         { .compatible =3D "qcom,qcm2290-smmu-500", .data =3D &qcom_smmu_5=
-00_impl0_data },
->         { .compatible =3D "qcom,qdu1000-smmu-500", .data =3D &qcom_smmu_5=
-00_impl0_data  },
->         { .compatible =3D "qcom,sc7180-smmu-500", .data =3D &qcom_smmu_50=
-0_impl0_data },
-> +       { .compatible =3D "qcom,sc7180-smmu-v2", .data =3D &qcom_smmu_v2_=
-data },
->         { .compatible =3D "qcom,sc7280-smmu-500", .data =3D &qcom_smmu_50=
-0_impl0_data },
->         { .compatible =3D "qcom,sc8180x-smmu-500", .data =3D &qcom_smmu_5=
-00_impl0_data },
->         { .compatible =3D "qcom,sc8280xp-smmu-500", .data =3D &qcom_smmu_=
-500_impl0_data },
->         { .compatible =3D "qcom,sdm630-smmu-v2", .data =3D &qcom_smmu_v2_=
-data },
->         { .compatible =3D "qcom,sdm845-smmu-v2", .data =3D &qcom_smmu_v2_=
-data },
->         { .compatible =3D "qcom,sdm845-smmu-500", .data =3D &sdm845_smmu_=
-500_data },
->         { .compatible =3D "qcom,sm6115-smmu-500", .data =3D &qcom_smmu_50=
-0_impl0_data},
->         { .compatible =3D "qcom,sm6125-smmu-500", .data =3D &qcom_smmu_50=
-0_impl0_data },
->         { .compatible =3D "qcom,sm6350-smmu-v2", .data =3D &qcom_smmu_v2_=
-data },
->         { .compatible =3D "qcom,sm6350-smmu-500", .data =3D &qcom_smmu_50=
-0_impl0_data },
-> @@ -540,12 +541,14 @@ struct arm_smmu_device *qcom_smmu_impl_init(struct =
-arm_smmu_device *smmu)
->                 /* Match platform for ACPI boot */
->                 if (acpi_match_platform_list(qcom_acpi_platlist) >=3D 0)
->                         return qcom_smmu_create(smmu, &qcom_smmu_500_impl=
-0_data);
->         }
->  #endif
->
->         match =3D of_match_node(qcom_smmu_impl_of_match, np);
->         if (match)
->                 return qcom_smmu_create(smmu, match->data);
->
-> +       WARN_ON(of_device_is_compatible(np, "qcom,adreno-smmu"));
-> +
->         return smmu;
->  }
-> --
-> 2.40.1
->
+base-commit: 35db4f4dac813ffaa987cf633694107fabf3aff5
+
+[1] https://github.com/yiliu1765/iommufd/tree/iommufd_nesting
+
+Change log:
+
+v3:
+ - Add r-b from Baolu
+ - Rename IOMMU_HW_INFO_TYPE_DEFAULT to be IOMMU_HW_INFO_TYPE_NONE to
+   better suit what it means
+ - Let IOMMU_DEVICE_GET_HW_INFO succeed even the underlying iommu driver
+   does not have driver-specific data to report per below remark.
+   https://lore.kernel.org/kvm/ZAcwJSK%2F9UVI9LXu@nvidia.com/
+
+v2: https://lore.kernel.org/linux-iommu/20230309075358.571567-1-yi.l.liu@intel.com/
+ - Drop patch 05 of v1 as it is already covered by other series
+ - Rename the capability info to be iommu hardware info
+
+v1: https://lore.kernel.org/linux-iommu/20230209041642.9346-1-yi.l.liu@intel.com/
+
+Regards,
+	Yi Liu
+
+Lu Baolu (1):
+  iommu: Add new iommu op to get iommu hardware information
+
+Nicolin Chen (1):
+  iommufd/selftest: Add coverage for IOMMU_DEVICE_GET_HW_INFO ioctl
+
+Yi Liu (2):
+  iommu: Move dev_iommu_ops() to private header
+  iommufd: Add IOMMU_DEVICE_GET_HW_INFO
+
+ drivers/iommu/iommu-priv.h                    | 11 +++
+ drivers/iommu/iommu.c                         |  2 +
+ drivers/iommu/iommufd/device.c                | 73 +++++++++++++++++++
+ drivers/iommu/iommufd/iommufd_private.h       |  1 +
+ drivers/iommu/iommufd/iommufd_test.h          |  9 +++
+ drivers/iommu/iommufd/main.c                  |  3 +
+ drivers/iommu/iommufd/selftest.c              | 16 ++++
+ include/linux/iommu.h                         | 27 ++++---
+ include/uapi/linux/iommufd.h                  | 44 +++++++++++
+ tools/testing/selftests/iommu/iommufd.c       | 17 ++++-
+ tools/testing/selftests/iommu/iommufd_utils.h | 26 +++++++
+ 11 files changed, 217 insertions(+), 12 deletions(-)
+
+-- 
+2.34.1
+
