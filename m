@@ -1,163 +1,87 @@
-Received: from out-59.mta0.migadu.com (out-59.mta0.migadu.com [91.218.175.59])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC695BE5C
-	for <iommu@lists.linux.dev>; Fri, 12 May 2023 09:42:30 +0000 (UTC)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1683884548;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=+3Cj7WM/5H/yN4K+1lxE1r8ARjSog11gtcnlJ0Ke9Cs=;
-	b=LoyWQci7E7aehvM7RvdT5fPZDShGQ0N3hNobaGAYqQcwfBmJdJo6pX3oyMFuEuj73ybj1D
-	kvJRMx80dPfs9ElFWf5o/QxBLIG4as4augYHlH0kmV7lyvL3hJrGCYfvR0m1Joc4JYGGif
-	tnnA3xwaUSyksPgKlMMz11sZeCuICQY=
-From: Yajun Deng <yajun.deng@linux.dev>
-To: corbet@lwn.net,
-	catalin.marinas@arm.com,
-	will@kernel.org,
-	hch@lst.de,
-	m.szyprowski@samsung.com,
-	robin.murphy@arm.com,
-	paulmck@kernel.org,
-	bp@suse.de,
-	akpm@linux-foundation.org,
-	peterz@infradead.org,
-	rdunlap@infradead.org,
-	kim.phillips@amd.com,
-	rostedt@goodmis.org,
-	thunder.leizhen@huawei.com,
-	ardb@kernel.org,
-	bhe@redhat.com,
-	anshuman.khandual@arm.com,
-	song.bao.hua@hisilicon.com
-Cc: linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	Yajun Deng <yajun.deng@linux.dev>
-Subject: [PATCH] dma-contiguous: support per-numa CMA for all architectures
-Date: Fri, 12 May 2023 17:42:10 +0800
-Message-Id: <20230512094210.141540-1-yajun.deng@linux.dev>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 427E0A920;
+	Fri, 12 May 2023 14:29:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=UJ5M4FuUsPXGf9jn2+wgLDeUAy88NE08OYzpAkSXrBo=; b=VJA9B3BdVCi/hNaPl05E0LAq70
+	54nBDz8d1HjxMbQS2kwOl1M27HQznnsUoSe9fcx3GI/0tuCahZ/RuJwVBr8DxcFcTceuWLL3Ky5c2
+	xuUt46um71u1RBdva6H6syFtKQkfMKTGFMoRkjjlaGB6CmDxktHnkG2e+fW4YQCoYa5EBPVGQ7Sk4
+	dXskkSpRU8R9OmjBv21gxUH2W+af6HkIA/7eMVuUbhUDmmBAkbckKphjdc4ryit0CNSE/yzlfZUUB
+	X9OHecZRqejU02mlJWIbo8/ZdDtdlPKdEIku1F8n0jEqa8+EetzoUfkS3+rCEtyyL277r1MnvwNBV
+	Ms/Uiodw==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.96 #2 (Red Hat Linux))
+	id 1pxTlu-00CB7h-0p;
+	Fri, 12 May 2023 14:29:26 +0000
+Date: Fri, 12 May 2023 07:29:26 -0700
+From: Christoph Hellwig <hch@infradead.org>
+To: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Matthew Rosato <mjrosato@linux.ibm.com>,
+	Will Deacon <will@kernel.org>, Wenjia Zhang <wenjia@linux.ibm.com>,
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Gerd Bayer <gbayer@linux.ibm.com>,
+	Julian Ruess <julianr@linux.ibm.com>,
+	Pierre Morel <pmorel@linux.ibm.com>,
+	Alexandra Winter <wintera@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Yong Wu <yong.wu@mediatek.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Krishna Reddy <vdumpa@nvidia.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, asahi@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+	linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
+	linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCH v8 0/6] iommu/dma: s390 DMA API conversion and optimized
+ IOTLB flushing
+Message-ID: <ZF5NRls92rhmzV7B@infradead.org>
+References: <20230310-dma_iommu-v8-0-2347dfbed7af@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230310-dma_iommu-v8-0-2347dfbed7af@linux.ibm.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-In the commit b7176c261cdb ("dma-contiguous: provide the ability to
-reserve per-numa CMA"), Barry adds DMA_PERNUMA_CMA for ARM64.
+On Fri, Mar 10, 2023 at 05:07:45PM +0100, Niklas Schnelle wrote:
+> Hi All,
+> 
+> This patch series converts s390's PCI support from its platform specific DMA
+> API implementation in arch/s390/pci/pci_dma.c to the common DMA IOMMU layer.
+> The conversion itself is done in patches 3-4 with patch 2 providing the final
+> necessary IOMMU driver improvement to handle s390's special IOTLB flush
+> out-of-resource indication in virtualized environments. Patches 1-2 may be
+> applied independently. The conversion itself only touches the s390 IOMMU driver
+> and s390 arch code moving over remaining functions from the s390 DMA API
+> implementation. No changes to common code are necessary.
 
-But this feature is architecture independent, so support per-numa CMA
-for all architectures, and enable it by default if NUMA.
-
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
----
- Documentation/admin-guide/kernel-parameters.txt | 2 +-
- arch/arm64/mm/init.c                            | 2 --
- include/linux/dma-map-ops.h                     | 6 ------
- kernel/dma/Kconfig                              | 6 +++---
- kernel/dma/contiguous.c                         | 8 +++++++-
- 5 files changed, 11 insertions(+), 13 deletions(-)
-
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 56d9458276a6..ac0002b2e323 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -692,7 +692,7 @@
- 			kernel/dma/contiguous.c
- 
- 	cma_pernuma=nn[MG]
--			[ARM64,KNL,CMA]
-+			[KNL,CMA]
- 			Sets the size of kernel per-numa memory area for
- 			contiguous memory allocations. A value of 0 disables
- 			per-numa CMA altogether. And If this option is not
-diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-index 66e70ca47680..d560aef6aafa 100644
---- a/arch/arm64/mm/init.c
-+++ b/arch/arm64/mm/init.c
-@@ -410,8 +410,6 @@ void __init bootmem_init(void)
- 	arm64_hugetlb_cma_reserve();
- #endif
- 
--	dma_pernuma_cma_reserve();
--
- 	kvm_hyp_reserve();
- 
- 	/*
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index 31f114f486c4..7af9949828ff 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -168,12 +168,6 @@ static inline void dma_free_contiguous(struct device *dev, struct page *page,
- }
- #endif /* CONFIG_DMA_CMA*/
- 
--#ifdef CONFIG_DMA_PERNUMA_CMA
--void dma_pernuma_cma_reserve(void);
--#else
--static inline void dma_pernuma_cma_reserve(void) { }
--#endif /* CONFIG_DMA_PERNUMA_CMA */
--
- #ifdef CONFIG_DMA_DECLARE_COHERENT
- int dma_declare_coherent_memory(struct device *dev, phys_addr_t phys_addr,
- 		dma_addr_t device_addr, size_t size);
-diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-index 6677d0e64d27..79f83091e3a2 100644
---- a/kernel/dma/Kconfig
-+++ b/kernel/dma/Kconfig
-@@ -140,10 +140,10 @@ if  DMA_CMA
- 
- config DMA_PERNUMA_CMA
- 	bool "Enable separate DMA Contiguous Memory Area for each NUMA Node"
--	default NUMA && ARM64
-+	default NUMA
- 	help
--	  Enable this option to get pernuma CMA areas so that devices like
--	  ARM64 SMMU can get local memory by DMA coherent APIs.
-+	  Enable this option to get pernuma CMA areas so that NUMA devices
-+	  can get local memory by DMA coherent APIs.
- 
- 	  You can set the size of pernuma CMA by specifying "cma_pernuma=size"
- 	  on the kernel's command line.
-diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index 6ea80ae42622..26a8e5365fcd 100644
---- a/kernel/dma/contiguous.c
-+++ b/kernel/dma/contiguous.c
-@@ -128,7 +128,7 @@ static inline __maybe_unused phys_addr_t cma_early_percent_memory(void)
- #endif
- 
- #ifdef CONFIG_DMA_PERNUMA_CMA
--void __init dma_pernuma_cma_reserve(void)
-+static void __init dma_pernuma_cma_reserve(void)
- {
- 	int nid;
- 
-@@ -153,6 +153,10 @@ void __init dma_pernuma_cma_reserve(void)
- 			(unsigned long long)pernuma_size_bytes / SZ_1M, nid);
- 	}
- }
-+#else
-+static inline void __init dma_pernuma_cma_reserve(void)
-+{
-+}
- #endif
- 
- /**
-@@ -171,6 +175,8 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
- 	phys_addr_t selected_limit = limit;
- 	bool fixed = false;
- 
-+	dma_pernuma_cma_reserve();
-+
- 	pr_debug("%s(limit %08lx)\n", __func__, (unsigned long)limit);
- 
- 	if (size_cmdline != -1) {
--- 
-2.25.1
-
+It looks like this still hasn't made it upstream as of 6.4-rc1.  What's
+holding this series up?
