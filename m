@@ -1,45 +1,34 @@
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5A487E9;
-	Fri, 12 May 2023 02:55:29 +0000 (UTC)
-Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-4efe8b3f3f7so10721231e87.2;
-        Thu, 11 May 2023 19:55:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683860128; x=1686452128;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=dkOUlUNxiR4Gqj0+EmYuULSRki0JxNp8SsnGkEdjwKw=;
-        b=PpruK/NzGHjzRovvWCYvW7HqDD68KmOoIjPRjVBwwjOl44YKmS9LJw0bJlpO5wCaTK
-         JYQMRTt8PUIg7Tt3sXx/BumOofEX1UyIXH2rVZ7HQ4xk8w/0TIePej2ODQWIhhjMLGCF
-         ObsKQnai0HwA0gxPpanVkllqPWACWFvsyhk8otvSXkxJ7boKNh6rOvhXhhU7XGpKW3yF
-         bnb3jZjGoJuviMp6XaP/FxIe9hwsqI+C+2qQBWPRGsJkiS6fP0ZvUhHR+JTm3yUIwJpq
-         rSKT9UqKx0zvTFuela8XEHqJdseFq2qZbEhMjlCN21nk45Ltut9jjYaQ7C5U84jN7UFH
-         YUlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683860128; x=1686452128;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=dkOUlUNxiR4Gqj0+EmYuULSRki0JxNp8SsnGkEdjwKw=;
-        b=cy70onkHMr0Ral/R5zW74sgugAnxznBDgifZLmL6/Bd90WmrPNPITAebOnjIkNtfRw
-         DOahBLAeLwCdC4henTjzOy0TTWiw3O7VFM0njQeCUzUVFXEGuq2OI57TrQ95/Taewwbd
-         T7tNrDlWFevgPLuKMkFLoi57AKstzgeeV3PPFLqn1Pj8J6rIXJrC+w+apw+VBzTf0g3q
-         MQVwZQDbLjFwwqCXW4C1OLqdHOVcoKb/6bYxs+Q33VeLQZIBtkx5cDh3d9wiytHrouze
-         yNiHAOnI7//GI4XtFX+AaIVC0AFgm6ihH/Ao1OmQ0rDywuxt0ly4Y1blO8/o6aN4YWhM
-         j1uQ==
-X-Gm-Message-State: AC+VfDyy+wtfob0G1rLvNYtH9BAjeAGxPHJ3C9kaxaOE0BhvWvbKOPiF
-	kXdz0+KFCznbzezpsrxcAd8=
-X-Google-Smtp-Source: ACHHUZ4dxW4iqzv/N28X1gKcL88SemTjJ65/wtcy0AZdHSmj4XHMTrDxPz8Icvt/RO3sRR4TuYCJgw==
-X-Received: by 2002:ac2:488c:0:b0:4f1:4086:9384 with SMTP id x12-20020ac2488c000000b004f140869384mr3159987lfc.61.1683860127415;
-        Thu, 11 May 2023 19:55:27 -0700 (PDT)
-Received: from [192.168.2.145] (109-252-144-198.dynamic.spd-mgts.ru. [109.252.144.198])
-        by smtp.googlemail.com with ESMTPSA id c26-20020ac244ba000000b004efae490c51sm1285288lfm.240.2023.05.11.19.55.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 11 May 2023 19:55:26 -0700 (PDT)
-Message-ID: <4a5ebc65-a384-a8df-c692-ca114f1a018d@gmail.com>
-Date: Fri, 12 May 2023 05:55:23 +0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CA85818
+	for <iommu@lists.linux.dev>; Fri, 12 May 2023 05:39:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1683869948; x=1715405948;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=zC92a2N0m2Rf8NugNXwOSZnbIW4HBYFpSQTmsIkInWs=;
+  b=fJdXAgEwuGpNpy1+scSIqGAcurWGYCDhCkIN7n0tITlDikiPqMFpzthP
+   76K3Y8qIGC3FevnFRiRxTejvtRcwEs5xM0Pi/bSdnYfh6ffU+vtbZxdA6
+   X19GMkgqBFmk9OeTNA8GnRqOOnXP19ODA8pcGUIJhVbraGJql28eH1+8v
+   hFtzNM7Zhr1Ussk9T2HoAEj9C4coTpTO0koxx9Z+5GzF5kVEGZb9AKig2
+   eywp4nicoAYLrETODDlTjy3yAuVTKJkj+M+bfflUnJLGmlHXct0U8gs96
+   2+O956Qer6H5VFMIDTVgX13cfHaYp9GxhsnU+m3F30ltfnyqXScbc0tbr
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10707"; a="350734482"
+X-IronPort-AV: E=Sophos;i="5.99,269,1677571200"; 
+   d="scan'208";a="350734482"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2023 22:39:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10707"; a="732893212"
+X-IronPort-AV: E=Sophos;i="5.99,269,1677571200"; 
+   d="scan'208";a="732893212"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by orsmga001.jf.intel.com with ESMTP; 11 May 2023 22:39:01 -0700
+Message-ID: <6ab2d63e-4dcc-6562-9698-d23300c7d1ae@linux.intel.com>
+Date: Fri, 12 May 2023 13:38:31 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -47,143 +36,137 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.1
-Subject: Re: [PATCH 02/20] iommu/terga-gart: Replace set_platform_dma_ops()
- with IOMMU_DOMAIN_PLATFORM
+ Thunderbird/102.10.0
+Cc: baolu.lu@linux.intel.com, cohuck@redhat.com, eric.auger@redhat.com,
+ nicolinc@nvidia.com, kvm@vger.kernel.org, mjrosato@linux.ibm.com,
+ chao.p.peng@linux.intel.com, yi.y.sun@linux.intel.com, peterx@redhat.com,
+ jasowang@redhat.com, shameerali.kolothum.thodi@huawei.com, lulu@redhat.com,
+ suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ zhenzhong.duan@intel.com
+Subject: Re: [PATCH v3 3/4] iommufd: Add IOMMU_DEVICE_GET_HW_INFO
 Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>,
- Thierry Reding <thierry.reding@gmail.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Andy Gross <agross@kernel.org>,
- Alim Akhtar <alim.akhtar@samsung.com>, Bjorn Andersson
- <andersson@kernel.org>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
- Jernej Skrabec <jernej.skrabec@gmail.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Konrad Dybcio <konrad.dybcio@linaro.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
- linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
- linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>, Orson Zhai <orsonzhai@gmail.com>,
- Rob Clark <robdclark@gmail.com>, Samuel Holland <samuel@sholland.org>,
- Niklas Schnelle <schnelle@linux.ibm.com>, Krishna Reddy <vdumpa@nvidia.com>,
- Chen-Yu Tsai <wens@csie.org>, Will Deacon <will@kernel.org>,
- Yong Wu <yong.wu@mediatek.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
- Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
- Nicolin Chen <nicolinc@nvidia.com>, Steven Price <steven.price@arm.com>
-References: <2-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
- <1db712d2-9e33-4183-2766-34e32f170507@arm.com> <ZFI/D6mnLKYpdIqx@nvidia.com>
- <1a995f30-31fe-354f-ddfe-e944fa36e7a0@arm.com> <ZFJlZ03lswl9uHD0@nvidia.com>
- <ZFJzKQcKNFHdIWqy@orome> <ZFKXz/HWFkYOJrgT@nvidia.com>
-From: Dmitry Osipenko <digetx@gmail.com>
-In-Reply-To: <ZFKXz/HWFkYOJrgT@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, alex.williamson@redhat.com,
+ jgg@nvidia.com, kevin.tian@intel.com, robin.murphy@arm.com
+References: <20230511143024.19542-1-yi.l.liu@intel.com>
+ <20230511143024.19542-4-yi.l.liu@intel.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20230511143024.19542-4-yi.l.liu@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-03.05.2023 20:20, Jason Gunthorpe пишет:
-> On Wed, May 03, 2023 at 04:43:53PM +0200, Thierry Reding wrote:
+On 5/11/23 10:30 PM, Yi Liu wrote:
+> Under nested IOMMU translation, userspace owns the stage-1 translation
+> table (e.g. the stage-1 page table of Intel VT-d or the context table
+> of ARM SMMUv3, and etc.). Stage-1 translation tables are vendor specific,
+> and needs to be compatiable with the underlying IOMMU hardware. Hence,
+> userspace should know the IOMMU hardware capability before creating and
+> configuring the stage-1 translation table to kernel.
 > 
->>> The only thing it does is cause dma-iommu.c in ARM64 to use the
->>> dma-ranges from OF instead of the domain aperture. sprd has no
->>> dma-ranges in arch/arm64/boot/dts/sprd.
->>>
->>> Further, sprd hard fails any map attempt outside the aperture, so it
->>> looks like a bug if the OF somehow chooses a wider aperture as
->>> dma-iommu.c will start failing maps.
->>
->> That all sounds odd. of_dma_configure_id() already sets up the DMA mask
->> based on dma-ranges and the DMA API uses that to restrict what IOVA any
->> buffers can get mapped to for a given device.
+> This adds IOMMU_DEVICE_GET_HW_INFO to query the IOMMU hardware information
+> for a given device. The returned data is vendor specific, userspace needs
+> to decode it with the structure mapped by the @out_data_type field.
 > 
-> Yes, and after it sets up the mask it also passes that range down like this:
+> As only physical devices have IOMMU hardware, so this will return error
+> if the given device is not a physical device.
 > 
->  of_dma_configure_id():
-> 	end = dma_start + size - 1;
-> 	mask = DMA_BIT_MASK(ilog2(end) + 1);
-> 	dev->coherent_dma_mask &= mask;
+> Co-developed-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+> ---
+>   drivers/iommu/iommufd/device.c          | 72 +++++++++++++++++++++++++
+>   drivers/iommu/iommufd/iommufd_private.h |  1 +
+>   drivers/iommu/iommufd/main.c            |  3 ++
+>   include/uapi/linux/iommufd.h            | 37 +++++++++++++
+>   4 files changed, 113 insertions(+)
 > 
-> 	arch_setup_dma_ops(dev, dma_start, size, iommu, coherent);
-> 
-> Which eventually goes to:
-> 
->  iommu_setup_dma_ops()
->  iommu_dma_init_domain()
-> 
-> Which then does:
-> 
-> 	if (domain->geometry.force_aperture) {
-> 
-> And if not set uses the dma_start/size parameter as the actual
-> aperture. (!?)
-> 
-> Since sprd does this in the iommu driver:
-> 
-> 	dom->domain.geometry.aperture_start = 0;
-> 	dom->domain.geometry.aperture_end = SZ_256M - 1;
-> 
-> And it is serious about enforcing it during map:
-> 
-> 	unsigned long start = domain->geometry.aperture_start;
-> 	unsigned long end = domain->geometry.aperture_end;
-> 
-> 	if (iova < start || (iova + size) > (end + 1)) {
-> 			return -EINVAL;
-> 
-> We must see the dma_start/size parameter be a subset of the aperture
-> or eventually dma-iommu.c will see map failures.
-> 
-> I can't see how this is can happen, so it looks like omitting
-> force_aperture is a mistake not a deliberate choice. I'll make a patch
-> and see if the SPRD folks have any comment. If there is no reason I
-> can go ahead and purge force_aperture and all the dma_start/size
-> passing through arch_setup_dma_ops().
-> 
->>> Thus, I propose we just remove the whole thing. All drivers must set
->>> an aperture and the aperture is the pure HW capability to map an
->>> IOPTE at that address. ie it reflects the design of the page table
->>> itself and nothing else.
->>
->> Yeah, that sounds reasonable. If the aperture represents what the IOMMU
->> supports. Together with each device's DMA mask we should have everything
->> we need.
-> 
-> Arguably we should respect the dma-ranges as well, but I think that
-> should come up from the iommu driver via the get_resv_regions() which
-> is the usual place we return FW originated information.
-> 
->> For Tegra GART I think there's indeed no use-cases at the moment. Dmitry
->> had at one point tried to make use of it because it can be helpful on
->> some of the older devices that were very memory-constrained. That
->> support never made it upstream because it required significant changes
->> in various places, if I recall correctly. For anything with a decent
->> enough amount of RAM, CMA is usually a better option.
-> 
-> So the actual use case of this HW is to linearize buffers? ie it is a
-> general scatter/gather engine?
-> 
->> This has occasionally come up in the past and I seem to remember that it
->> had once been proposed to simply remove tegra-gart and there had been no
->> objections. Adding Dmitry, if he doesn't have objections to remaving it,
->> neither do I.
-> 
-> Dmitry, please say yes and I will remove it instead of trying to carry
-> it. The driver is almost 10 years old at this point, I'm skeptical
-> anyone will need it on a 6.2 era kernel..
+> diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+> index 051bd8e99858..bc99d092de8f 100644
+> --- a/drivers/iommu/iommufd/device.c
+> +++ b/drivers/iommu/iommufd/device.c
+> @@ -263,6 +263,78 @@ u32 iommufd_device_to_id(struct iommufd_device *idev)
+>   }
+>   EXPORT_SYMBOL_NS_GPL(iommufd_device_to_id, IOMMUFD);
+>   
+> +static int iommufd_zero_fill_user(u64 ptr, int bytes)
+> +{
+> +	int index = 0;
+> +
+> +	for (; index < bytes; index++) {
+> +		if (put_user(0, (uint8_t __user *)u64_to_user_ptr(ptr + index)))
+> +			return -EFAULT;
+> +	}
+> +	return 0;
+> +}
+> +
+> +int iommufd_device_get_hw_info(struct iommufd_ucmd *ucmd)
+> +{
+> +	struct iommu_hw_info *cmd = ucmd->cmd;
+> +	unsigned int length = 0, data_len;
+> +	struct iommufd_device *idev;
+> +	const struct iommu_ops *ops;
+> +	void *data = NULL;
+> +	int rc = 0;
+> +
+> +	if (cmd->flags || cmd->__reserved || !cmd->data_len)
+> +		return -EOPNOTSUPP;
+> +
+> +	idev = iommufd_get_device(ucmd, cmd->dev_id);
+> +	if (IS_ERR(idev))
+> +		return PTR_ERR(idev);
+> +
+> +	ops = dev_iommu_ops(idev->dev);
+> +	if (!ops->hw_info)
+> +		goto done;
 
-You probably missed that support for many of 10 years old Tegra2/3
-devices was added to kernel during last years.
+If the iommu driver doesn't provide a hw_info callback, it still
+returns success?
 
-This GART isn't used by upstream DRM driver, but it's used by downstream
-kernel which uses alternative Tegra DRM driver that works better for
-older hardware.
+> +
+> +	/* driver has hw_info callback should have a unique hw_info_type */
+> +	if (ops->hw_info_type == IOMMU_HW_INFO_TYPE_NONE) {
+> +		pr_warn_ratelimited("iommu driver set an invalid type\n");
+> +		rc = -ENODEV;
+> +		goto out_err;
+> +	}
+> +
+> +	data = ops->hw_info(idev->dev, &data_len);
+> +	if (IS_ERR(data)) {
+> +		rc = PTR_ERR(data);
+> +		goto out_err;
+> +	}
+> +
+> +	length = min(cmd->data_len, data_len);
+> +	if (copy_to_user(u64_to_user_ptr(cmd->data_ptr), data, length)) {
+> +		rc = -EFAULT;
+> +		goto out_err;
+> +	}
+> +
+> +	/*
+> +	 * Zero the trailing bytes if the user buffer is bigger than the
+> +	 * data size kernel actually has.
+> +	 */
+> +	if (length < cmd->data_len) {
+> +		rc = iommufd_zero_fill_user(cmd->data_ptr + length,
+> +					    cmd->data_len - length);
+> +		if (rc)
+> +			goto out_err;
+> +	}
+> +
+> +done:
+> +	cmd->data_len = length;
+> +	cmd->out_data_type = ops->hw_info_type;
+> +	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
+> +
+> +out_err:
+> +	kfree(data);
+> +	iommufd_put_object(&idev->obj);
+> +	return rc;
+> +}
+> +
+>   static int iommufd_group_setup_msi(struct iommufd_group *igroup,
+>   				   struct iommufd_hw_pagetable *hwpt)
+>   {
 
-If it's too much burden to maintain this driver, then feel free to
-remove it and I'll continue maintaining it in downstream myself.
-Otherwise I can test your changes if needed.
-
+Best regards,
+baolu
