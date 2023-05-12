@@ -1,105 +1,65 @@
-Received: from relay.yourmailgateway.de (relay.yourmailgateway.de [188.68.63.162])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA3E523D43
-	for <iommu@lists.linux.dev>; Fri, 12 May 2023 18:58:56 +0000 (UTC)
-Received: from mors-relay-8201.netcup.net (localhost [127.0.0.1])
-	by mors-relay-8201.netcup.net (Postfix) with ESMTPS id 4QHyZM4cp7z3rWB
-	for <iommu@lists.linux.dev>; Fri, 12 May 2023 20:52:59 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=fischbytes.de;
-	s=key2; t=1683917579;
-	bh=lKGQHVMSDCGGZWxoYWIEDFldZMXjM7h9ggdmiwcQrfc=;
-	h=From:To:Subject:Date:From;
-	b=WcpUyJuEoPIZOtSLj6DqP/bdhgNiEuC/smcQMhrACDNcgyu5AVL1bYzON1z/BFbpd
-	 c8p3E33ExVtTuWPiYQszKrZqvXduE6IqauwQFRSu1FAooTuFQC18ZPx91CRjQbKX5L
-	 6tuNoM5dGJgcpxW2bJKEa1au/YMBLnooy9NQwtK4lHRhnULmZ3ggYRHpTuLratkKvU
-	 voNcVUwZb2UJnVTaEtw2DNsz9HnAgRoBmQNB0tEdybGw7k0H2TFF8gHgsZvP62Xr5s
-	 t+3CshVXNJLnoBcRvXmHGT75IMbQ3kmkco/F/ZNeePuQx2I903vcPS/oXDpP8LwsJ1
-	 s3JtGxXwqU1RQ==
-Received: from policy01-mors.netcup.net (unknown [46.38.225.35])
-	by mors-relay-8201.netcup.net (Postfix) with ESMTPS id 4QHyZM3vqDz3rW4
-	for <iommu@lists.linux.dev>; Fri, 12 May 2023 20:52:59 +0200 (CEST)
-X-Virus-Scanned: Debian amavisd-new at policy01-mors.netcup.net
-X-Spam-Flag: NO
-X-Spam-Score: -2.901
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.901 required=6.31 tests=[ALL_TRUSTED=-1,
-	BAYES_00=-1.9, SPF_PASS=-0.001] autolearn=ham autolearn_force=no
-Received: from mxe860.netcup.net (unknown [10.243.12.53])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by policy01-mors.netcup.net (Postfix) with ESMTPS id 4QHyZM0LSTz8tXH
-	for <iommu@lists.linux.dev>; Fri, 12 May 2023 20:52:58 +0200 (CEST)
-Received: from helios-lx.localnet (p200300cc9f24cc0073be15352864e555.dip0.t-ipconnect.de [IPv6:2003:cc:9f24:cc00:73be:1535:2864:e555])
-	by mxe860.netcup.net (Postfix) with ESMTPSA id 5C2321C0034
-	for <iommu@lists.linux.dev>; Fri, 12 May 2023 20:52:54 +0200 (CEST)
-Authentication-Results: mxe860;
-        spf=pass (sender IP is 2003:cc:9f24:cc00:73be:1535:2864:e555) smtp.mailfrom=bugtracker@fischbytes.de smtp.helo=helios-lx.localnet
-Received-SPF: pass (mxe860: connection is authenticated)
-From: bugtracker@fischbytes.de
-To: iommu@lists.linux.dev
-Subject: Relaxable RMRR kernel parameter for broken platforms
-Date: Fri, 12 May 2023 20:52:53 +0200
-Message-ID: <2282218.ElGaqSPkdT@helios-lx>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7A8B923D43
+	for <iommu@lists.linux.dev>; Fri, 12 May 2023 19:02:33 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 79CDAD75;
+	Fri, 12 May 2023 12:03:17 -0700 (PDT)
+Received: from [10.57.82.232] (unknown [10.57.82.232])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E56C53F67D;
+	Fri, 12 May 2023 12:02:31 -0700 (PDT)
+Message-ID: <57cb07ff-dbaf-dda3-fc6f-75ca8e886672@arm.com>
+Date: Fri, 12 May 2023 20:02:27 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-PPP-Message-ID: <168391757468.20510.12136189973612816253@mxe860.netcup.net>
-X-Rspamd-Queue-Id: 5C2321C0034
-X-Spamd-Result: default: False [-4.60 / 15.00];
-	BAYES_HAM(-5.50)[100.00%];
-	MID_RHS_NOT_FQDN(0.50)[];
-	CTE_CASE(0.50)[];
-	MIME_GOOD(-0.10)[text/plain];
-	ASN(0.00)[asn:3320, ipnet:2003::/19, country:DE];
-	FROM_EQ_ENVFROM(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	RCVD_COUNT_ZERO(0.00)[0];
-	RCPT_COUNT_ONE(0.00)[1];
-	FROM_NO_DN(0.00)[];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	TO_DN_NONE(0.00)[];
-	ARC_NA(0.00)[]
-X-Rspamd-Server: rspamd-worker-8404
-X-NC-CID: u5HrE7wb//T8kWtD0/OF3CNnOF+8/d+5OKdS5uPUASm9VGYVYNHLMg==
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH 1/4] iommu/arm-smmu-v3: Work around MMU-600 erratum
+ 1076982
+Content-Language: en-GB
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: will@kernel.org, joro@8bytes.org, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, jean-philippe@linaro.org
+References: <cover.1683731256.git.robin.murphy@arm.com>
+ <08adbe3d01024d8382a478325f73b56851f76e49.1683731256.git.robin.murphy@arm.com>
+ <ZFvXF3gKL4WHiBeZ@Asurada-Nvidia>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <ZFvXF3gKL4WHiBeZ@Asurada-Nvidia>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi there,
+On 2023-05-10 18:40, Nicolin Chen wrote:
+> On Wed, May 10, 2023 at 04:38:43PM +0100, Robin Murphy wrote:
+> 
+>> MMU-600 versions prior to r1p0 fail to correctly generate a WFE wakeup
+>> event when the command queue transitions fom full to non-full. We can
+>> easily work around this by simply hiding the SEV capability such that we
+>> fall back to polling for space in the queue - since MMU-600 implements
+>> MSIs we wouldn't expect to need SEV for sync completion either, so this
+>> should have little to no impact.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> 
+> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
 
-I came here today to ask if there are any plans regarding the implementation 
-of a "relaxed RMRR" kernel parameter to aid using IOMMU on broken platforms 
-such as the ProLiant Series by Hewlett Packard Enterprise. To everyone not 
-aware of the issue;
+Thanks!
 
-Certain vendors that are under the assumption that standards are for jerks and 
-Intel's specifications are a loose optional guideline have implemented RMRR in 
-such a way that every PCI device is marked as reserved and therefore cannot be 
-passed through to a virtual machine. This issue has been very well documented 
-by some people that have a lot more experience than I do at the below linked 
-resource. I was hoping that the kernel devs could implement the Relaxed RMRR 
-option as an optional kernel parameter to use on these bugged platforms as 
-that would re-enable or rather enable a lot of broken servers for the first 
-time ever to use PCIe Passthrough. I can verify the issue exists on a HPE 
-DL360e Gen8 with trying to passthrough a GPU to a KVM/QEMU machine.
+>> +static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
+>> +{
+>> +       u32 reg;
+>> +       unsigned int implementer, productid, variant, revision;
+> 
+> Just for curiosity -- what's the fashion behind the coding style
+> here? Usually I follow a longer-to-shorter style, yet perhaps I
+> can follow this one for further SMMU patches, if it matters.
 
-Link to fix: https://github.com/Aterfax/relax-intel-rmrr
+In the case of my code, it's usually some intuitive contextual order 
+based on a hierarchy of the types and/or importance of variables within 
+the logic of the function and relative to each other. I couldn't really 
+explain it as a set of rules, it's just whatever feels most right :)
 
-Furthermore, since I am not a developer and wouldn't claim that I am competent 
-enough to decide whether or not implementing this patch would present an issue 
-in terms of stability or security, I was hoping that you could evaluate the 
-situation. I can verify the pre-built packages for the Proxmox Linux 
-environment fix the issue and behave identical in function to other systems 
-that ignore RMRR completely, such as VMWare ESXi.
-
-Thanks alot in advance, you implementing this patch would really mean a lot, 
-since the hardware manufacturers just don't seem to care for fixing up this, 
-erm, mess.
-
-Skali S.
-
-
+Cheers,
+Robin.
