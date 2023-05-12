@@ -1,14 +1,14 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7A8B923D43
-	for <iommu@lists.linux.dev>; Fri, 12 May 2023 19:02:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4BD9F23D4D
+	for <iommu@lists.linux.dev>; Fri, 12 May 2023 19:24:04 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 79CDAD75;
-	Fri, 12 May 2023 12:03:17 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 08E7CD75;
+	Fri, 12 May 2023 12:24:46 -0700 (PDT)
 Received: from [10.57.82.232] (unknown [10.57.82.232])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E56C53F67D;
-	Fri, 12 May 2023 12:02:31 -0700 (PDT)
-Message-ID: <57cb07ff-dbaf-dda3-fc6f-75ca8e886672@arm.com>
-Date: Fri, 12 May 2023 20:02:27 +0100
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 778913F67D;
+	Fri, 12 May 2023 12:24:00 -0700 (PDT)
+Message-ID: <a45be5e3-c605-f93a-f523-1bb1f6150986@arm.com>
+Date: Fri, 12 May 2023 20:23:54 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -17,49 +17,44 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
  Thunderbird/102.10.1
-Subject: Re: [PATCH 1/4] iommu/arm-smmu-v3: Work around MMU-600 erratum
- 1076982
+Subject: Re: [PATCH 2/4] iommu/arm-smmu-v3: Document MMU-700 erratum 2812531
 Content-Language: en-GB
 To: Nicolin Chen <nicolinc@nvidia.com>
 Cc: will@kernel.org, joro@8bytes.org, iommu@lists.linux.dev,
  linux-arm-kernel@lists.infradead.org, jean-philippe@linaro.org
 References: <cover.1683731256.git.robin.murphy@arm.com>
- <08adbe3d01024d8382a478325f73b56851f76e49.1683731256.git.robin.murphy@arm.com>
- <ZFvXF3gKL4WHiBeZ@Asurada-Nvidia>
+ <330221cdfd0003cd51b6c04e7ff3566741ad8374.1683731256.git.robin.murphy@arm.com>
+ <ZFvec0JGfbaYHie2@Asurada-Nvidia> <ZFvi/WEksryM0cin@Asurada-Nvidia>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ZFvXF3gKL4WHiBeZ@Asurada-Nvidia>
+In-Reply-To: <ZFvi/WEksryM0cin@Asurada-Nvidia>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023-05-10 18:40, Nicolin Chen wrote:
-> On Wed, May 10, 2023 at 04:38:43PM +0100, Robin Murphy wrote:
-> 
->> MMU-600 versions prior to r1p0 fail to correctly generate a WFE wakeup
->> event when the command queue transitions fom full to non-full. We can
->> easily work around this by simply hiding the SEV capability such that we
->> fall back to polling for space in the queue - since MMU-600 implements
->> MSIs we wouldn't expect to need SEV for sync completion either, so this
->> should have little to no impact.
+On 2023-05-10 19:31, Nicolin Chen wrote:
+> On Wed, May 10, 2023 at 11:12:05AM -0700, Nicolin Chen wrote:
+>> On Wed, May 10, 2023 at 04:38:44PM +0100, Robin Murphy wrote:
 >>
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>>> To work around MMU-700 erratum 2812531 we need to ensure that certain
+>>> sequences of commands cannot be issued without an intervening sync. In
+>>> practice this falls out of our current command-batching machinery
+>>> anyway - each batch only contains a single type of invalidation command,
+>>
+>> Hmm. This doesn't apply to the user cache invalidation solution
+>> in my v2. A user cmdq could possibly mix different commands in
+>> a single batch if the driver isn't aware of such an errata. So,
+>> I think I'd need some twist when the host has a FORCE_SYNC flag
+>> in my v3.
 > 
-> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+> Just found that you unset the NESTING feature flag in PATCH-4
+> for this errata too. So, the solution in my v2 should be safe.
 
-Thanks!
+For the short term at least - we will still need to come up with a more 
+practical active mitigation sooner rather than later, since I imagine 
+people are likely to be a bit miffed if nesting support lands in distros 
+but still refuses to play at all on the newest shiniest hardware. 
+Unfortunately all current versions of MMU-700 are affected (hence the 
+unconditional nature of this patch), and some of those are going to 
+found in production SoCs.
 
->> +static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
->> +{
->> +       u32 reg;
->> +       unsigned int implementer, productid, variant, revision;
-> 
-> Just for curiosity -- what's the fashion behind the coding style
-> here? Usually I follow a longer-to-shorter style, yet perhaps I
-> can follow this one for further SMMU patches, if it matters.
-
-In the case of my code, it's usually some intuitive contextual order 
-based on a hierarchy of the types and/or importance of variables within 
-the logic of the function and relative to each other. I couldn't really 
-explain it as a set of rules, it's just whatever feels most right :)
-
-Cheers,
+Thanks,
 Robin.
