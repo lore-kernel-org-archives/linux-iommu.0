@@ -1,98 +1,105 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1BCFD200AE;
-	Fri, 12 May 2023 18:12:32 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A03D3D75;
-	Fri, 12 May 2023 11:13:16 -0700 (PDT)
-Received: from [10.57.82.232] (unknown [10.57.82.232])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 672A53F67D;
-	Fri, 12 May 2023 11:12:26 -0700 (PDT)
-Message-ID: <9488a2cc-fbc6-6c1e-58f8-e2e1dc5db579@arm.com>
-Date: Fri, 12 May 2023 19:12:21 +0100
+Received: from relay.yourmailgateway.de (relay.yourmailgateway.de [188.68.63.162])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA3E523D43
+	for <iommu@lists.linux.dev>; Fri, 12 May 2023 18:58:56 +0000 (UTC)
+Received: from mors-relay-8201.netcup.net (localhost [127.0.0.1])
+	by mors-relay-8201.netcup.net (Postfix) with ESMTPS id 4QHyZM4cp7z3rWB
+	for <iommu@lists.linux.dev>; Fri, 12 May 2023 20:52:59 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=fischbytes.de;
+	s=key2; t=1683917579;
+	bh=lKGQHVMSDCGGZWxoYWIEDFldZMXjM7h9ggdmiwcQrfc=;
+	h=From:To:Subject:Date:From;
+	b=WcpUyJuEoPIZOtSLj6DqP/bdhgNiEuC/smcQMhrACDNcgyu5AVL1bYzON1z/BFbpd
+	 c8p3E33ExVtTuWPiYQszKrZqvXduE6IqauwQFRSu1FAooTuFQC18ZPx91CRjQbKX5L
+	 6tuNoM5dGJgcpxW2bJKEa1au/YMBLnooy9NQwtK4lHRhnULmZ3ggYRHpTuLratkKvU
+	 voNcVUwZb2UJnVTaEtw2DNsz9HnAgRoBmQNB0tEdybGw7k0H2TFF8gHgsZvP62Xr5s
+	 t+3CshVXNJLnoBcRvXmHGT75IMbQ3kmkco/F/ZNeePuQx2I903vcPS/oXDpP8LwsJ1
+	 s3JtGxXwqU1RQ==
+Received: from policy01-mors.netcup.net (unknown [46.38.225.35])
+	by mors-relay-8201.netcup.net (Postfix) with ESMTPS id 4QHyZM3vqDz3rW4
+	for <iommu@lists.linux.dev>; Fri, 12 May 2023 20:52:59 +0200 (CEST)
+X-Virus-Scanned: Debian amavisd-new at policy01-mors.netcup.net
+X-Spam-Flag: NO
+X-Spam-Score: -2.901
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.901 required=6.31 tests=[ALL_TRUSTED=-1,
+	BAYES_00=-1.9, SPF_PASS=-0.001] autolearn=ham autolearn_force=no
+Received: from mxe860.netcup.net (unknown [10.243.12.53])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by policy01-mors.netcup.net (Postfix) with ESMTPS id 4QHyZM0LSTz8tXH
+	for <iommu@lists.linux.dev>; Fri, 12 May 2023 20:52:58 +0200 (CEST)
+Received: from helios-lx.localnet (p200300cc9f24cc0073be15352864e555.dip0.t-ipconnect.de [IPv6:2003:cc:9f24:cc00:73be:1535:2864:e555])
+	by mxe860.netcup.net (Postfix) with ESMTPSA id 5C2321C0034
+	for <iommu@lists.linux.dev>; Fri, 12 May 2023 20:52:54 +0200 (CEST)
+Authentication-Results: mxe860;
+        spf=pass (sender IP is 2003:cc:9f24:cc00:73be:1535:2864:e555) smtp.mailfrom=bugtracker@fischbytes.de smtp.helo=helios-lx.localnet
+Received-SPF: pass (mxe860: connection is authenticated)
+From: bugtracker@fischbytes.de
+To: iommu@lists.linux.dev
+Subject: Relaxable RMRR kernel parameter for broken platforms
+Date: Fri, 12 May 2023 20:52:53 +0200
+Message-ID: <2282218.ElGaqSPkdT@helios-lx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.10.1
-Subject: Re: [PATCH 02/20] iommu/terga-gart: Replace set_platform_dma_ops()
- with IOMMU_DOMAIN_PLATFORM
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>, Dmitry Osipenko <digetx@gmail.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Andy Gross
- <agross@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>,
- Bjorn Andersson <andersson@kernel.org>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
- Jernej Skrabec <jernej.skrabec@gmail.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Konrad Dybcio <konrad.dybcio@linaro.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
- linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
- linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>, Orson Zhai <orsonzhai@gmail.com>,
- Rob Clark <robdclark@gmail.com>, Samuel Holland <samuel@sholland.org>,
- Niklas Schnelle <schnelle@linux.ibm.com>, Krishna Reddy <vdumpa@nvidia.com>,
- Chen-Yu Tsai <wens@csie.org>, Will Deacon <will@kernel.org>,
- Yong Wu <yong.wu@mediatek.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
- Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
- Nicolin Chen <nicolinc@nvidia.com>, Steven Price <steven.price@arm.com>
-References: <2-v1-21cc72fcfb22+a7a-iommu_all_defdom_jgg@nvidia.com>
- <1db712d2-9e33-4183-2766-34e32f170507@arm.com> <ZFI/D6mnLKYpdIqx@nvidia.com>
- <1a995f30-31fe-354f-ddfe-e944fa36e7a0@arm.com> <ZFJlZ03lswl9uHD0@nvidia.com>
- <ZFJzKQcKNFHdIWqy@orome> <ZFKXz/HWFkYOJrgT@nvidia.com>
- <4a5ebc65-a384-a8df-c692-ca114f1a018d@gmail.com>
- <ZF5uKPhpBNioJUwL@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ZF5uKPhpBNioJUwL@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-PPP-Message-ID: <168391757468.20510.12136189973612816253@mxe860.netcup.net>
+X-Rspamd-Queue-Id: 5C2321C0034
+X-Spamd-Result: default: False [-4.60 / 15.00];
+	BAYES_HAM(-5.50)[100.00%];
+	MID_RHS_NOT_FQDN(0.50)[];
+	CTE_CASE(0.50)[];
+	MIME_GOOD(-0.10)[text/plain];
+	ASN(0.00)[asn:3320, ipnet:2003::/19, country:DE];
+	FROM_EQ_ENVFROM(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	RCVD_COUNT_ZERO(0.00)[0];
+	RCPT_COUNT_ONE(0.00)[1];
+	FROM_NO_DN(0.00)[];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	TO_DN_NONE(0.00)[];
+	ARC_NA(0.00)[]
+X-Rspamd-Server: rspamd-worker-8404
+X-NC-CID: u5HrE7wb//T8kWtD0/OF3CNnOF+8/d+5OKdS5uPUASm9VGYVYNHLMg==
 
-On 2023-05-12 17:49, Jason Gunthorpe wrote:
-> On Fri, May 12, 2023 at 05:55:23AM +0300, Dmitry Osipenko wrote:
-> 
->>>> This has occasionally come up in the past and I seem to remember that it
->>>> had once been proposed to simply remove tegra-gart and there had been no
->>>> objections. Adding Dmitry, if he doesn't have objections to remaving it,
->>>> neither do I.
->>>
->>> Dmitry, please say yes and I will remove it instead of trying to carry
->>> it. The driver is almost 10 years old at this point, I'm skeptical
->>> anyone will need it on a 6.2 era kernel..
->>
->> You probably missed that support for many of 10 years old Tegra2/3
->> devices was added to kernel during last years.
->>
->> This GART isn't used by upstream DRM driver, but it's used by downstream
->> kernel which uses alternative Tegra DRM driver that works better for
->> older hardware.
-> 
-> It is kernel policy not to carry code to only support out of tree drivers in
-> mainline, so it should be removed, thanks
+Hi there,
 
-Aww, I was literally in the middle of writing a Friday-afternoon patch 
-to fix it... still need to build-test, but it's really not looking too 
-bad at all:
+I came here today to ask if there are any plans regarding the implementation 
+of a "relaxed RMRR" kernel parameter to aid using IOMMU on broken platforms 
+such as the ProLiant Series by Hewlett Packard Enterprise. To everyone not 
+aware of the issue;
 
-  drivers/iommu/tegra-gart.c | 53 +++++++++++++++++-----------------
-  1 file changed, 27 insertions(+), 26 deletions(-)
+Certain vendors that are under the assumption that standards are for jerks and 
+Intel's specifications are a loose optional guideline have implemented RMRR in 
+such a way that every PCI device is marked as reserved and therefore cannot be 
+passed through to a virtual machine. This issue has been very well documented 
+by some people that have a lot more experience than I do at the below linked 
+resource. I was hoping that the kernel devs could implement the Relaxed RMRR 
+option as an optional kernel parameter to use on these bugged platforms as 
+that would re-enable or rather enable a lot of broken servers for the first 
+time ever to use PCIe Passthrough. I can verify the issue exists on a HPE 
+DL360e Gen8 with trying to passthrough a GPU to a KVM/QEMU machine.
 
-After that I was going to clean up the force_aperture confusion. TBH 
-I've grown to rather like having this driver around as an exception to 
-prove our abstractions and help make sure they make sense - it doesn't 
-take much effort to keep it functional, and it's not like there aren't 
-plenty of in-tree drivers for hardware even more ancient, obscure and 
-less-used than Tegra20. FWIW I have *20*-year-old hardware at home 
-running an up-to-date mainline-based distro for a practical purpose, but 
-I guess that's considered valid if it says Intel on it? :P
+Link to fix: https://github.com/Aterfax/relax-intel-rmrr
 
-Thanks,
-Robin.
+Furthermore, since I am not a developer and wouldn't claim that I am competent 
+enough to decide whether or not implementing this patch would present an issue 
+in terms of stability or security, I was hoping that you could evaluate the 
+situation. I can verify the pre-built packages for the Proxmox Linux 
+environment fix the issue and behave identical in function to other systems 
+that ignore RMRR completely, such as VMWare ESXi.
+
+Thanks alot in advance, you implementing this patch would really mean a lot, 
+since the hardware manufacturers just don't seem to care for fixing up this, 
+erm, mess.
+
+Skali S.
+
+
