@@ -1,93 +1,93 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 052E9138F
-	for <iommu@lists.linux.dev>; Fri, 12 May 2023 21:09:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF4CCC433D2;
-	Fri, 12 May 2023 21:09:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-	s=korg; t=1683925741;
-	bh=Zoj1leKNOORoojkAdze7x3n08l6XVgteqFUXTKCFCkc=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=M3ZtWdAK1MMtAD8FNsEZczJdw+XPnyFzJ1mypAWweZjCxH9XkbPgy6oQYKemtNBbb
-	 d+BpEanzSAj6HUjWFaa5N3fe7pykepCAXllNCDKkyOgB07pbN99sLNDtnTYi+Z168p
-	 NEKtvHnuX9+85HyvhOoYNw6e1vlxJKFweH7tVCUc=
-Date: Fri, 12 May 2023 14:08:59 -0700
-From: Andrew Morton <akpm@linux-foundation.org>
-To: Yajun Deng <yajun.deng@linux.dev>
-Cc: corbet@lwn.net, catalin.marinas@arm.com, will@kernel.org, hch@lst.de,
- m.szyprowski@samsung.com, robin.murphy@arm.com, paulmck@kernel.org,
- bp@suse.de, peterz@infradead.org, rdunlap@infradead.org,
- kim.phillips@amd.com, rostedt@goodmis.org, thunder.leizhen@huawei.com,
- ardb@kernel.org, bhe@redhat.com, anshuman.khandual@arm.com,
- song.bao.hua@hisilicon.com, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev
-Subject: Re: [PATCH] dma-contiguous: support per-numa CMA for all
- architectures
-Message-Id: <20230512140859.641222bd40cfa4b1ee591cc6@linux-foundation.org>
-In-Reply-To: <20230512094210.141540-1-yajun.deng@linux.dev>
-References: <20230512094210.141540-1-yajun.deng@linux.dev>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A346FEDB
+	for <iommu@lists.linux.dev>; Sat, 13 May 2023 06:21:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1683958874; x=1715494874;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=kYq/V8AzZkWUq2/ZyfsAahPlzJZsAgoT28ErdCgEvkY=;
+  b=BWtvGDSqY5F+V99jbc6MjD6qxiXoUzBbEdNrlQANvE0tH3HTMb5Gv7z6
+   lTB+hVOEHfvriiVDLRQ98clQCMMqkPq1wgDCZ0i38HzyC4IVSSfmHqXJM
+   c/sKAl7itVtwac5IVy74u6z/nJZqgdEBUanNELdKKtUl1mqPThwmNu3m9
+   vexP8+/KC7jCwG1xEcSARbrH0qtZ75+iu1o0GfgGXSrGskJEu/DGnKTFQ
+   ggkzmOK6wR2cQD19yp7r9MMTJMmDvOJIFK+GnIXJpgUDggJYxPFYdOiwA
+   EXkpm0i1SA64X1R/Cg/GnMG5VFRURDrdf1Y7eYFlBOu44F5VQDcYftn1o
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10708"; a="354070400"
+X-IronPort-AV: E=Sophos;i="5.99,271,1677571200"; 
+   d="scan'208";a="354070400"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2023 23:21:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10708"; a="946849007"
+X-IronPort-AV: E=Sophos;i="5.99,271,1677571200"; 
+   d="scan'208";a="946849007"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by fmsmga006.fm.intel.com with ESMTP; 12 May 2023 23:21:12 -0700
+Message-ID: <4ab4966b-48bd-56fc-5078-d5fdddc1613a@linux.intel.com>
+Date: Sat, 13 May 2023 14:20:40 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Cc: baolu.lu@linux.intel.com
+Subject: Re: Relaxable RMRR kernel parameter for broken platforms
+Content-Language: en-US
+To: bugtracker@fischbytes.de, iommu@lists.linux.dev
+References: <2282218.ElGaqSPkdT@helios-lx>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <2282218.ElGaqSPkdT@helios-lx>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On Fri, 12 May 2023 17:42:10 +0800 Yajun Deng <yajun.deng@linux.dev> wrote:
-
-> In the commit b7176c261cdb ("dma-contiguous: provide the ability to
-> reserve per-numa CMA"), Barry adds DMA_PERNUMA_CMA for ARM64.
+On 5/13/23 2:52 AM, bugtracker@fischbytes.de wrote:
+> Hi there,
 > 
-> But this feature is architecture independent, so support per-numa CMA
-> for all architectures, and enable it by default if NUMA.
+> I came here today to ask if there are any plans regarding the implementation
+> of a "relaxed RMRR" kernel parameter to aid using IOMMU on broken platforms
+> such as the ProLiant Series by Hewlett Packard Enterprise. To everyone not
+> aware of the issue;
 > 
-> ...
->
-> --- a/include/linux/dma-map-ops.h
-> +++ b/include/linux/dma-map-ops.h
-> @@ -168,12 +168,6 @@ static inline void dma_free_contiguous(struct device *dev, struct page *page,
->  }
->  #endif /* CONFIG_DMA_CMA*/
->  
-> -#ifdef CONFIG_DMA_PERNUMA_CMA
-> -void dma_pernuma_cma_reserve(void);
-> -#else
-> -static inline void dma_pernuma_cma_reserve(void) { }
+> Certain vendors that are under the assumption that standards are for jerks and
+> Intel's specifications are a loose optional guideline have implemented RMRR in
+> such a way that every PCI device is marked as reserved and therefore cannot be
+> passed through to a virtual machine. This issue has been very well documented
+> by some people that have a lot more experience than I do at the below linked
+> resource. I was hoping that the kernel devs could implement the Relaxed RMRR
+> option as an optional kernel parameter to use on these bugged platforms as
+> that would re-enable or rather enable a lot of broken servers for the first
+> time ever to use PCIe Passthrough. I can verify the issue exists on a HPE
+> DL360e Gen8 with trying to passthrough a GPU to a KVM/QEMU machine.
+> 
+> Link to fix: https://github.com/Aterfax/relax-intel-rmrr
+> 
+> Furthermore, since I am not a developer and wouldn't claim that I am competent
+> enough to decide whether or not implementing this patch would present an issue
+> in terms of stability or security, I was hoping that you could evaluate the
+> situation. I can verify the pre-built packages for the Proxmox Linux
+> environment fix the issue and behave identical in function to other systems
+> that ignore RMRR completely, such as VMWare ESXi.
+> 
+> Thanks alot in advance, you implementing this patch would really mean a lot,
+> since the hardware manufacturers just don't seem to care for fixing up this,
+> erm, mess.
 
-It would be a little nicer to retain this line.
+The relaxed RMRRs are used for legacy purpose, but it requires the full
+range of memory addresses are available after the OS device driver takes
+over the control of the device.
 
-> -#endif /* CONFIG_DMA_PERNUMA_CMA */
-> -
->  #ifdef CONFIG_DMA_DECLARE_COHERENT
->  int dma_declare_coherent_memory(struct device *dev, phys_addr_t phys_addr,
->  		dma_addr_t device_addr, size_t size);
->
-> ...
->
-> --- a/kernel/dma/contiguous.c
-> +++ b/kernel/dma/contiguous.c
-> @@ -128,7 +128,7 @@ static inline __maybe_unused phys_addr_t cma_early_percent_memory(void)
->  #endif
->  
->  #ifdef CONFIG_DMA_PERNUMA_CMA
-> -void __init dma_pernuma_cma_reserve(void)
-> +static void __init dma_pernuma_cma_reserve(void)
->  {
->  	int nid;
->  
-> @@ -153,6 +153,10 @@ void __init dma_pernuma_cma_reserve(void)
->  			(unsigned long long)pernuma_size_bytes / SZ_1M, nid);
->  	}
->  }
-> +#else
-> +static inline void __init dma_pernuma_cma_reserve(void)
-> +{
-> +}
->  #endif
+Not all RMRRs are of this type and typically the VT-d driver only allows
+those RMRRs for USB and graphic devices as relaxed ones.
 
-And to not add this function?
+Are you proposing to add a kernel parameter to allow any RMRR for an
+arbitrary device to be relaxed, or I didn't get the idea here?
+
+Best regards,
+baolu
