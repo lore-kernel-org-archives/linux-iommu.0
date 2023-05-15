@@ -1,166 +1,153 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2067.outbound.protection.outlook.com [40.107.244.67])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2302C8CE
-	for <iommu@lists.linux.dev>; Mon, 15 May 2023 15:58:13 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XU+20i5Jw11BG05+Kf5iWbmvUbofMI/3OiF1XMKrKfZ4Q0/Acrp3hzgr11Y4wfQQNxeJXhssP4AODR3XjnHlgppuiPDEpXgVJkl/VjRtvWlyHY3Pxp3KbgOGPFFxnwhEC0R4mKUCzFAC96+JoaaJHvEY/Bzho47cXABATncqBZBBpHoFCRbdaGqGAYLE24U6+Z/164dtujIpOmnP3bdONh32LePIggW0wRnXrkc6N1lnVXrmsqme3jHhCJT7jVbaFDsNnf9CJHus/GvaosVG/wJksCpTX12ZjRuQ11XTZVEpaG5qjJvDQkz+S2+68IG4XZMgfqZaFiUc7jSRUhAX7w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lLCdeyfuqkdoWsFvgwI2ZPMmQ7gFAcK9jgiuQU9FpdY=;
- b=L+eQyqOhDZBZ+Ouyuypu62yznfqKraleWjMbqBChKr2HIDiRXhrZhaInXClH2fHxWlplZAbX2nx51J7k/pOjO9Wun/ozboxcysPOR5kGwK/WlJ1CBxEuh7Ri7ua1b/EfRWEMF4PK4CuuoW6Y9IbOYLSmL5aWzi/QR8pc86ovRycgsjZe6EBfjIrNteAnDxLE8Y629Y+u/Bqdq8jYu1BQD4yIIxFT47BE4xo17W0YRat0S8VseYy8GCwMtxop64+IQ6o68aCMGox900Pd9S8T7QXdn3+IzBV4JkSLklORmH8uwnLFzR09IajuDjbmCGZlp4Gz7lPiZSrvaCinnzjnRA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=linaro.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lLCdeyfuqkdoWsFvgwI2ZPMmQ7gFAcK9jgiuQU9FpdY=;
- b=ni8fLrWqgNTaKLfgHjOvsQPhUcTSZtdiQPvW4fXGJ1s3XflulfO7mUx9m70+UeLPP4DcVZFvHHyYOSxdmFFRe/G1Rk7QtJ2rijEkbUF1yCbT+N8aYkCL9dw2Nac8foP+Lnbd5QdmzasCcjtQtFnSs9nHlB9ybMdlzlyktYxil7Mc4JGbF5UrlqEIC0Ordr9N206P18z8EN3hVJ5YVI1mMIl7xV7bZMX4sNTk+LzPWHkxJwj4G0iT3nBFGNfmCPGw4JB8A2px4bbMsCaHWQtrkFSIUJe7Cd6a8HuE7cQrsofwW4+n2zwj8Dgrsi2/XYn8WKPGHhPeRqvUe8mEgpYutQ==
-Received: from BN0PR04CA0153.namprd04.prod.outlook.com (2603:10b6:408:eb::8)
- by LV3PR12MB9093.namprd12.prod.outlook.com (2603:10b6:408:19d::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.30; Mon, 15 May
- 2023 15:58:10 +0000
-Received: from BN8NAM11FT015.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:eb:cafe::2a) by BN0PR04CA0153.outlook.office365.com
- (2603:10b6:408:eb::8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.30 via Frontend
- Transport; Mon, 15 May 2023 15:58:10 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- BN8NAM11FT015.mail.protection.outlook.com (10.13.176.90) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6411.14 via Frontend Transport; Mon, 15 May 2023 15:58:10 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Mon, 15 May 2023
- 08:57:54 -0700
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Mon, 15 May
- 2023 08:57:54 -0700
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.7)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Mon, 15 May 2023 08:57:53 -0700
-Date: Mon, 15 May 2023 08:57:52 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Zhangfei Gao <zhangfei.gao@linaro.org>
-CC: <jgg@nvidia.com>, <robin.murphy@arm.com>, <will@kernel.org>,
-	<eric.auger@redhat.com>, <kevin.tian@intel.com>, <baolu.lu@linux.intel.com>,
-	<joro@8bytes.org>, <shameerali.kolothum.thodi@huawei.com>,
-	<jean-philippe@linaro.org>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<kvm@vger.kernel.org>, <alex.williamson@redhat.com>, <yi.l.liu@intel.com>
-Subject: Re: [PATCH v2 00/17] Add Nested Translation Support for SMMUv3
-Message-ID: <ZGJWgFVJDWxVpiBE@Asurada-Nvidia>
-References: <cover.1683688960.git.nicolinc@nvidia.com>
- <CABQgh9FL4ssQjBJM52_kb0aBVVPb_9Wc0Q+NL1PaQO=2LYBHCA@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 122BDE564
+	for <iommu@lists.linux.dev>; Mon, 15 May 2023 16:28:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2382C433D2;
+	Mon, 15 May 2023 16:28:41 +0000 (UTC)
+Date: Mon, 15 May 2023 17:28:38 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+Cc: Petr Tesarik <petrtesarik@huaweicloud.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	Borislav Petkov <bp@suse.de>, Randy Dunlap <rdunlap@infradead.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Kim Phillips <kim.phillips@amd.com>,
+	"Steven Rostedt (Google)" <rostedt@goodmis.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Hans de Goede <hdegoede@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Kees Cook <keescook@chromium.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	"open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+	open list <linux-kernel@vger.kernel.org>,
+	"open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+	Roberto Sassu <roberto.sassu@huawei.com>,
+	Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: Re: [PATCH v2 RESEND 7/7] swiotlb: per-device flag if there are
+ dynamically allocated buffers
+Message-ID: <ZGJdtmP13pv06xDH@arm.com>
+References: <cover.1683623618.git.petr.tesarik.ext@huawei.com>
+ <69f9e058bb1ad95905a62a4fc8461b064872af97.1683623618.git.petr.tesarik.ext@huawei.com>
+ <ZGEuYxR2PM6wHeDh@arm.com>
+ <20230515104847.6dfdf31b@meshulam.tesarici.cz>
+ <20230515120054.0115a4eb@meshulam.tesarici.cz>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CABQgh9FL4ssQjBJM52_kb0aBVVPb_9Wc0Q+NL1PaQO=2LYBHCA@mail.gmail.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT015:EE_|LV3PR12MB9093:EE_
-X-MS-Office365-Filtering-Correlation-Id: e48d40ec-0f4e-4946-af04-08db555d2ea2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	SKe7LsCQHX7Y3rHey3Syi2/3rjtRGNDLi8ArCTEuK9FHJrfvNa7UJzxxDBXlqYclWYPNb3cGYtDrywjcLiNhNNa1cCI/hrTg1XPybrwJSgcHIu7tbMGLnjBjrwhLsIjL65F6JSa/+PbxU23c9znvIvwYbUTnwM3u11bi2fyPjHYDwo5a7s4z7AfpPw130Fw5l249tCGyN0YdRDW0GtLB9CdSmKeRV8LGqFa/I5TCqXZWQqLPPhGGYb5MynEgjAzA3xcYqE5kO+Mok9maSQmu7fVMyVoYmAwKWSvaH7XfJfZTYn+o1NFDwiZlRwCQb9IbYs6zsCg8ZV+hwu04p2MEM5p9f+WtBWsHyUkWR5YOct61EuwT01kxeexZ4lqCFFvJBNgvMZep1zGbLnSVxQ2xJijATRyNXvrZDiynSaROWIFzFHN6nzR6xWpdw9KKxZLvXCHt8F419D/PNaZBUyzOtm6j6qh/7qqWkRYXILTOLFkHJ01Qg66Yn14w9ZeF4F2dCdV0OnKasISNZWxksrt6B6w+aRQ/CiOfUNOaIq3+9K4jQOm/cE17ClPziFe5gPbZJ1opkR96f1pAeiEhUCtJpnn+FKG6JDy6FeU85juMUd5mXWxB+z9Enpl58Qf5py1voNUfxWWl2Rv59paKNI8GvpsVez5RQSAoYjcxGfoo+HBBvZ0Sel9nXKMo8ChJosOceB03vpjcs5AFThdIvTnFoELdNIUILHbKW2e+dlwW/Gjhluir9FoOP1iqvGltZof1w9K+CKhZPWlF/h2aGG7tTp0Z7QIvMdcvEDx3W0o2KJ3xs20721f1tWrdd2c3ROsh
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(136003)(346002)(396003)(376002)(39860400002)(451199021)(46966006)(40470700004)(36840700001)(33716001)(336012)(47076005)(36860700001)(426003)(9686003)(316002)(70586007)(70206006)(55016003)(26005)(966005)(40480700001)(478600001)(54906003)(2906002)(86362001)(186003)(7416002)(8676002)(8936002)(40460700003)(5660300002)(356005)(82740400003)(4326008)(6916009)(41300700001)(7636003)(82310400005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2023 15:58:10.3915
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e48d40ec-0f4e-4946-af04-08db555d2ea2
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT015.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR12MB9093
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230515120054.0115a4eb@meshulam.tesarici.cz>
 
-Hi Zhangfei,
+(some of you replies may have been filtered to various of my mailboxes,
+depending on which lists you cc'ed; replying here)
 
-On Mon, May 15, 2023 at 06:00:26PM +0800, Zhangfei Gao wrote:
- 
-> I rebased on these two branches and did some basic tests.
+On Mon, May 15, 2023 at 12:00:54PM +0200, Petr Tesařík wrote:
+> On Mon, 15 May 2023 10:48:47 +0200
+> Petr Tesařík <petr@tesarici.cz> wrote:
+> > On Sun, 14 May 2023 19:54:27 +0100
+> > Catalin Marinas <catalin.marinas@arm.com> wrote:
+> > > Now, thinking about the list_head access and the flag ordering, since it
+> > > doesn't matter, you might as well not bother with the flag at all and
+> > > rely on list_add() and list_empty() ordering vs the hypothetical 'blah'
+> > > access. Both of these use READ/WRITE_ONCE() for setting
+> > > dma_io_tlb_dyn_slots.next. You only need an smp_wmb() after the
+> > > list_add() and an smp_rmb() before a list_empty() check in
+>                       ^^^^^^^^^
+> Got it, finally. Well, that's exactly something I don't want to do.
+> For example, on arm64 (seeing your email address), smp_rmb() translates
+> to a "dsb ld" instruction. I would expect that this is more expensive
+> than a "ldar", generated by smp_load_acquire().
+
+It translates to a dmb ishld which is on par with ldar (dsb is indeed a
+lot more expensive but that's not generated here).
+
+> > > is_swiotlb_buffer(), no dma_iotlb_have_dyn variable.  
+> > 
+> > Wait, let me check that I understand you right. Do you suggest that I
+> > convert dma_io_tlb_dyn_slots to a lockless list and get rid of the
+> > spinlock?
+> > 
+> > I'm sure it can be done for list_add() and list_del(). I'll have
+> > to think about list_move().
 > 
-> The basic functions work after backport
-> iommufd: Add IOMMU_PAGE_RESPONSE
-> iommufd: Add device fault handler support
-> 
-> https://github.com/Linaro/linux-kernel-warpdrive/tree/uacce-devel-6.4
-> https://github.com/Linaro/qemu/tree/iommufd-6.4-nesting-smmuv3-v2
+> Hm, even the documentation of llist_empty() says that it is "not
+> guaranteed to be accurate or up to date". If it could be, I'm quite
+> sure the authors would have gladly implemented it as such.
 
-Thanks for testing!
+It doesn't but neither does your flag. If you want a guarantee, you'd
+need locks because a llist_empty() on its own can race with other
+llist_add/del_*() that may not yet be visible to a CPU at exactly that
+moment. BTW, the llist implementation cannot delete a random element, so
+not sure this is suitable for your implementation (it can only delete
+the first element or the whole list).
 
-> However when debugging hotplug PCI device, it still does not work,
-> Segmentation fault same as 6.2.
-> 
-> guest kernel
-> CONFIG_HOTPLUG_PCI_PCIE=y
-> 
-> boot guest (this info does not appear in 6.2)
-> qemu-system-aarch64: -device
-> vfio-pci,host=0000:76:00.1,bus=pci.1,addr=0x0,id=acc1,iommufd=iommufd0:
-> Failed to set data -1
-> qemu-system-aarch64: -device
-> vfio-pci,host=0000:76:00.1,bus=pci.1,addr=0x0,id=acc1,iommufd=iommufd0:
-> failed to set device data
+I do think you need to change your invariants and not rely on an
+absolute list_empty() or some flag:
 
-Hmm.. I wonder what fails the set_dev_data ioctl...
+P0:
+	list_add(paddr);
+	WRITE_ONCE(blah, paddr);
 
-> $ sudo nc -U /tmp/qmpm_1.socket
-> (qemu) info pci
-> (qemu) device_del acc1
-> 
-> guest:
-> qemu-system-aarch64: IOMMU_IOAS_UNMAP failed: No such file or directory
-> qemu-system-aarch64: vfio_container_dma_unmap(0xaaaae1fc0380,
-> 0x8000000000, 0x10000) = -2 (No such file or directory)
+P1:
+	paddr = READ_ONCE(blah);
+	list_empty();
 
-This is resulted from the following commit that we should
-drop later:
+Your invariant (on P1) should be blah == paddr => !list_empty(). If
+there is another P2 removing paddr from the list, this wouldn't work
+(nor your flag) but the assumption is that a correctly written driver
+that still has a reference to paddr doesn't use it after being removed
+from the list (i.e. it doesn't do a dma_unmap(paddr) and still continue
+to use this paddr for e.g. dma_sync()).
 
-commit c4fd2efd7c02dd30491adf676c1b0aed67656f36
-Author: Yi Liu <yi.l.liu@intel.com>
-Date:   Thu Apr 27 05:47:03 2023 -0700
+For such invariant, you'd need ordering between list_add() and the
+write of paddr (smp_wmb() would do). On P1, you need an smp_rmb() before
+list_empty() since the implementation does a READ_ONCE only).
 
-    vfio/container: Skip readonly pages
-
-    This is a temparary solution for Intel platform due to an errata in
-    which readonly pages in second stage page table is exclusive with
-    nested support.
-
-    Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+You still need the locks for list modifications and list traversal as I
+don't see how you can use the llist implementation with random element
+removal.
 
 
-> qemu-system-aarch64: Failed to unset data -1
-> Segmentation fault (core dumped).  // also happened in 6.2
+There is another scenario to take into account on the list_del() side.
+Let's assume that there are other elements on the list, so
+list_empty() == false:
 
-Hmm, would it be possible for you to run the test again by
-adding the following tracers to your QEMU command?
-    --trace "iommufd*" \
-    --trace "smmu*" \
-    --trace "vfio_*" \
-    --trace "pci_*"
+P0:
+	list_del(paddr);
+	/* the memory gets freed, added to some slab or page free list */
+	WRITE_ONCE(slab_free_list, __va(paddr));
 
-Thanks
-Nic
+P1:
+	paddr = __pa(READ_ONCE(slab_free_list));/* re-allocating paddr freed on P0 */
+	if (!list_empty()) {			/* assuming other elements on the list */
+		/* searching the list */
+		list_for_each() {
+			if (pos->paddr) == __pa(vaddr))
+				/* match */
+		}
+	}
+
+On P0, you want the list update to be visible before the memory is freed
+(and potentially reallocated on P1). An smp_wmb() on P0 would do. For
+P1, we don't care about list_empty() as there can be other elements
+already. But we do want any list elements reading during the search to
+be ordered after the slab_free_list reading. The smp_rmb() you'd add for
+the case above would suffice.
+
+-- 
+Catalin
