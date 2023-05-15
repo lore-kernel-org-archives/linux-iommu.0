@@ -1,76 +1,132 @@
-Received: from mta16.hihonor.com (mta16.hihonor.com [8.141.234.179])
+Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24CAD23D6
-	for <iommu@lists.linux.dev>; Mon, 15 May 2023 07:17:27 +0000 (UTC)
-Received: from a007.hihonor.com (unknown [10.68.22.31])
-	by mta16.hihonor.com (SkyGuard) with ESMTPS id 4QKVZy4VcZz28fXQ;
-	Mon, 15 May 2023 14:58:50 +0800 (CST)
-Received: from a007.hihonor.com (10.68.22.31) by a007.hihonor.com
- (10.68.22.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.21; Mon, 15 May
- 2023 14:59:31 +0800
-Received: from a007.hihonor.com ([fe80::fc39:c25:3c0f:a4e7]) by
- a007.hihonor.com ([fe80::fc39:c25:3c0f:a4e7%10]) with mapi id 15.02.1118.021;
- Mon, 15 May 2023 14:59:31 +0800
-From: gaoxu <gaoxu2@hihonor.com>
-To: "hch@lst.de" <hch@lst.de>, "m.szyprowski@samsung.com"
-	<m.szyprowski@samsung.com>
-CC: "robin.murphy@arm.com" <robin.murphy@arm.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "surenb@google.com" <surenb@google.com>,
-	yipengxiang <yipengxiang@hihonor.com>, wangbintian 00013160
-	<bintian.wang@hihonor.com>
-Subject: RE: [PATCH] dma-remap: Use kvmalloc_array/kvfree for larger dma
- memory remap
-Thread-Topic: [PATCH] dma-remap: Use kvmalloc_array/kvfree for larger dma
- memory remap
-Thread-Index: Adl/7N1/zhRx438JTrqVRawCg6p65QHDZoCA
-Date: Mon, 15 May 2023 06:59:31 +0000
-Message-ID: <a37f80a55eeb4b2eb125e3340320032e@hihonor.com>
-References: <18448ae569e24dfd84e811081ede376f@hihonor.com>
-In-Reply-To: <18448ae569e24dfd84e811081ede376f@hihonor.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-originating-ip: [10.164.11.140]
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 841D48489
+	for <iommu@lists.linux.dev>; Mon, 15 May 2023 08:07:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
+	Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
+	Content-ID:Content-Description:In-Reply-To;
+	bh=gp7OCKaBYjIIkPcuPMybL+ixdp/AdwhFq0MWXNBGUCo=; b=mfr/Lee6q6wb3hW9VLMJP6RMas
+	nTl9Qe1+9Iu48xOQT4aXYKIo3YdHu4pVixS6ep5klWjn2Hleinv1VLcJZJw+35Dak53xO4M9X9KIK
+	FpMiCIIAsi7/QgdKTHO+THopVLnjgnmza7zDZfiP5yT3vka2IQVSR4N/m/pdNqYPnTzsA8lIVgWqD
+	P5m3mwC26ExmfD/meFO5f1ezwrEtuIohzrkIWoLo3mQANg3Hx3wLE8RBN4yr9HOkOwiYyEuNQ3/1W
+	PLL/LI+1uLThBRAeCCPMwP+WHJ7vOYl/0orY1PoeN18xp4Y80oyboD7BypdwlKtzQ00oQnrhgh54F
+	yIuqhB5w==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+	by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+	id 1pyTDk-00BQMy-1T;
+	Mon, 15 May 2023 08:06:16 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 0C5C8300786;
+	Mon, 15 May 2023 10:06:10 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
+	id AB37F202674A5; Mon, 15 May 2023 10:06:10 +0200 (CEST)
+Message-ID: <20230515080553.979680310@infradead.org>
+User-Agent: quilt/0.66
+Date: Mon, 15 May 2023 09:57:00 +0200
+From: Peter Zijlstra <peterz@infradead.org>
+To: torvalds@linux-foundation.org
+Cc: corbet@lwn.net,
+ will@kernel.org,
+ peterz@infradead.org,
+ boqun.feng@gmail.com,
+ mark.rutland@arm.com,
+ catalin.marinas@arm.com,
+ dennis@kernel.org,
+ tj@kernel.org,
+ cl@linux.com,
+ hca@linux.ibm.com,
+ gor@linux.ibm.com,
+ agordeev@linux.ibm.com,
+ borntraeger@linux.ibm.com,
+ svens@linux.ibm.com,
+ tglx@linutronix.de,
+ mingo@redhat.com,
+ bp@alien8.de,
+ dave.hansen@linux.intel.com,
+ x86@kernel.org,
+ hpa@zytor.com,
+ joro@8bytes.org,
+ suravee.suthikulpanit@amd.com,
+ robin.murphy@arm.com,
+ dwmw2@infradead.org,
+ baolu.lu@linux.intel.com,
+ Arnd Bergmann <arnd@arndb.de>,
+ Herbert Xu <herbert@gondor.apana.org.au>,
+ davem@davemloft.net,
+ penberg@kernel.org,
+ rientjes@google.com,
+ iamjoonsoo.kim@lge.com,
+ Andrew Morton <akpm@linux-foundation.org>,
+ vbabka@suse.cz,
+ roman.gushchin@linux.dev,
+ 42.hyeyoo@gmail.com,
+ linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ linux-mm@kvack.org,
+ linux-s390@vger.kernel.org,
+ iommu@lists.linux.dev,
+ linux-arch@vger.kernel.org,
+ linux-crypto@vger.kernel.org
+Subject: [PATCH v3 01/11] cyrpto/b128ops: Remove struct u128
+References: <20230515075659.118447996@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 
-UGxlYXNlIGhlbHAgdG8gcmV2aWV3LCB0aGFua3MuDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0t
-LS0tDQpGcm9tOiBnYW94dSAwMDAxNjk3NyANClNlbnQ6IDIwMjPE6jXUwjbI1SAxNTozNA0KVG86
-ICdoY2hAbHN0LmRlJyA8aGNoQGxzdC5kZT47ICdtLnN6eXByb3dza2lAc2Ftc3VuZy5jb20nIDxt
-LnN6eXByb3dza2lAc2Ftc3VuZy5jb20+DQpDYzogJ3JvYmluLm11cnBoeUBhcm0uY29tJyA8cm9i
-aW4ubXVycGh5QGFybS5jb20+OyAnaW9tbXVAbGlzdHMubGludXguZGV2JyA8aW9tbXVAbGlzdHMu
-bGludXguZGV2PjsgJ2xpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcnIDxsaW51eC1rZXJuZWxA
-dmdlci5rZXJuZWwub3JnPjsgJ3N1cmVuYkBnb29nbGUuY29tJyA8c3VyZW5iQGdvb2dsZS5jb20+
-OyB5aXBlbmd4aWFuZyAwMDAxMzI2OCA8eWlwZW5neGlhbmdAaGlob25vci5jb20+OyB3YW5nYmlu
-dGlhbiAwMDAxMzE2MCA8YmludGlhbi53YW5nQGhpaG9ub3IuY29tPjsgaGFuZmVuZyAwMDAxMjk4
-NSA8ZmVuZy5oYW5AaGlob25vci5jb20+DQpTdWJqZWN0OiBbUEFUQ0hdIGRtYS1yZW1hcDogVXNl
-IGt2bWFsbG9jX2FycmF5L2t2ZnJlZSBmb3IgbGFyZ2VyIGRtYSBtZW1vcnkgcmVtYXANCg0KSWYg
-ZG1hX2RpcmVjdF9hbGxvYygpIGFsbG9jIG1lbW9yeSBpbiBzaXplIG9mIDY0TUIsIHRoZSBpbm5l
-ciBmdW5jdGlvbg0KZG1hX2NvbW1vbl9jb250aWd1b3VzX3JlbWFwKCkgd2lsbCBhbGxvY2F0ZSAx
-MjhLQiBtZW1vcnkgYnkgaW52b2tpbmcgdGhlIGZ1bmN0aW9uIGttYWxsb2NfYXJyYXkoKS4gYW5k
-IHRoZSBrbWFsbG9jX2FycmF5IHNlZW1zIHRvIGZhaWwgdG8gdHJ5IHRvIGFsbG9jYXRlIDEyOEtC
-IG1lbS4gd29yayBhcm91bmQgYnkgZG9pbmcga3ZtYWxsb2NfYXJyYXkgaW5zdGVhZC4NCg0KU2ln
-bmVkLW9mZi1ieTogR2FvIFh1IDxnYW94dTJAaGlob25vci5jb20+DQotLS0NCiBrZXJuZWwvZG1h
-L3JlbWFwLmMgfCA0ICsrLS0NCiAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCspLCAyIGRl
-bGV0aW9ucygtKQ0KDQpkaWZmIC0tZ2l0IGEva2VybmVsL2RtYS9yZW1hcC5jIGIva2VybmVsL2Rt
-YS9yZW1hcC5jIGluZGV4IGI0NTI2NjY4MC4uMjc1OTZmM2I0IDEwMDY0NA0KLS0tIGEva2VybmVs
-L2RtYS9yZW1hcC5jDQorKysgYi9rZXJuZWwvZG1hL3JlbWFwLmMNCkBAIC00MywxMyArNDMsMTMg
-QEAgdm9pZCAqZG1hX2NvbW1vbl9jb250aWd1b3VzX3JlbWFwKHN0cnVjdCBwYWdlICpwYWdlLCBz
-aXplX3Qgc2l6ZSwNCiAJdm9pZCAqdmFkZHI7DQogCWludCBpOw0KIA0KLQlwYWdlcyA9IGttYWxs
-b2NfYXJyYXkoY291bnQsIHNpemVvZihzdHJ1Y3QgcGFnZSAqKSwgR0ZQX0tFUk5FTCk7DQorCXBh
-Z2VzID0ga3ZtYWxsb2NfYXJyYXkoY291bnQsIHNpemVvZihzdHJ1Y3QgcGFnZSAqKSwgR0ZQX0tF
-Uk5FTCk7DQogCWlmICghcGFnZXMpDQogCQlyZXR1cm4gTlVMTDsNCiAJZm9yIChpID0gMDsgaSA8
-IGNvdW50OyBpKyspDQogCQlwYWdlc1tpXSA9IG50aF9wYWdlKHBhZ2UsIGkpOw0KIAl2YWRkciA9
-IHZtYXAocGFnZXMsIGNvdW50LCBWTV9ETUFfQ09IRVJFTlQsIHByb3QpOw0KLQlrZnJlZShwYWdl
-cyk7DQorCWt2ZnJlZShwYWdlcyk7DQogDQogCXJldHVybiB2YWRkcjsNCiB9DQotLQ0KMi4xNy4x
-DQoNCg==
+Per git-grep u128_xor() and its related struct u128 are unused except
+to implement {be,le}128_xor(). Remove them to free up the namespace.
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+---
+ include/crypto/b128ops.h |   14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
+
+--- a/include/crypto/b128ops.h
++++ b/include/crypto/b128ops.h
+@@ -50,10 +50,6 @@
+ #include <linux/types.h>
+ 
+ typedef struct {
+-	u64 a, b;
+-} u128;
+-
+-typedef struct {
+ 	__be64 a, b;
+ } be128;
+ 
+@@ -61,20 +57,16 @@ typedef struct {
+ 	__le64 b, a;
+ } le128;
+ 
+-static inline void u128_xor(u128 *r, const u128 *p, const u128 *q)
++static inline void be128_xor(be128 *r, const be128 *p, const be128 *q)
+ {
+ 	r->a = p->a ^ q->a;
+ 	r->b = p->b ^ q->b;
+ }
+ 
+-static inline void be128_xor(be128 *r, const be128 *p, const be128 *q)
+-{
+-	u128_xor((u128 *)r, (u128 *)p, (u128 *)q);
+-}
+-
+ static inline void le128_xor(le128 *r, const le128 *p, const le128 *q)
+ {
+-	u128_xor((u128 *)r, (u128 *)p, (u128 *)q);
++	r->a = p->a ^ q->a;
++	r->b = p->b ^ q->b;
+ }
+ 
+ #endif /* _CRYPTO_B128OPS_H */
+
+
