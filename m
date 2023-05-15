@@ -1,121 +1,161 @@
-Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2066.outbound.protection.outlook.com [40.107.95.66])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92FACC154
-	for <iommu@lists.linux.dev>; Mon, 15 May 2023 13:07:30 +0000 (UTC)
-Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-7590aa05af6so499271185a.0
-        for <iommu@lists.linux.dev>; Mon, 15 May 2023 06:07:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1684156049; x=1686748049;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=r52VsGt7pCD5MqwU7Iz5hhf7etBKNWqtKNN+QQL4Wbs=;
-        b=c+5jOYw/nbV0ulxcZUPP/BwmGfGabE0GudFc4Pxot2MDSxnZOMjQBHanidAXv8AN4s
-         wCtL4vKPT/NQuQtyRosfY1v+Cc4PX94PKhH/K4vGQkh8BXrOSCykMzDtIWTaHdinMTlL
-         GTd1vPbd7jdhMb9Xp18vHEaSJ5oykF8Q18Co+JrFWfrSsGa06ytgp5MPhg2lAuMcBHY9
-         +cXuTSEKaaD6FCDHfVc+wlq2TFUxcMNkM8xdx//DfRqBb1wXlbXwUaZ0w2XcKKmJCXYm
-         rNhNdyMFvde5Wj2WqbjDnUEci9/JLzGroYUlyOEdGT2Q14DOTFUq69HjSZo3vkt1aQ7q
-         pxiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684156049; x=1686748049;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=r52VsGt7pCD5MqwU7Iz5hhf7etBKNWqtKNN+QQL4Wbs=;
-        b=bZicPALJVldeD5bP1pwbo6T0xPgzG7KLZqnVxuOF9zlwZiuXablkWBF07SfQXLQPsy
-         IE+lJxY7+LOLkxAF+ccp89bBKpRK1NVDCVptH3kZQCFvDXeViQLHjlwchwlHrKsFjtEV
-         L2cV3cTr+S5D8EROZWmolLN1YWKyaiMw18h8HrAc9LizfmSWjGG/5G3MIVR8U5rG0jPb
-         XN4ZZ25f6oOVRUbKMI6q1E+hUNodXQ59lqLJd1ASzU4EpfGWMHWJ+kiUV+yrMgX2Jy/e
-         VIHM6RKGJmPcgoGzjbV8y3NT/Nrxt5urQ+zgf6olBpNMUNkTh7MLR46S2l67HEnA8QJw
-         KBtA==
-X-Gm-Message-State: AC+VfDw/OAIDstGph0SZuka7fy0bFgTDlD2Edp/aA979wzb1qFh4fxM8
-	sIYS8M7b+ODrddx4hv4UBIlcbA==
-X-Google-Smtp-Source: ACHHUZ6oq1rgsxAhha/L8rTgUYSyK7wV0xG3BSAlCLbWHRWP4j4vcs+gZ2cT74Vr/sFz2mlpsmeCpA==
-X-Received: by 2002:ac8:7f44:0:b0:3f3:928a:eae2 with SMTP id g4-20020ac87f44000000b003f3928aeae2mr42158943qtk.4.1684156049337;
-        Mon, 15 May 2023 06:07:29 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id n27-20020ac81e1b000000b003e388264753sm5328251qtl.65.2023.05.15.06.07.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 May 2023 06:07:28 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1pyXvD-000xlt-MR;
-	Mon, 15 May 2023 10:07:27 -0300
-Date: Mon, 15 May 2023 10:07:27 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Niklas Schnelle <schnelle@linux.ibm.com>,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Matthew Rosato <mjrosato@linux.ibm.com>,
-	Will Deacon <will@kernel.org>, Wenjia Zhang <wenjia@linux.ibm.com>,
-	Gerd Bayer <gbayer@linux.ibm.com>,
-	Julian Ruess <julianr@linux.ibm.com>,
-	Pierre Morel <pmorel@linux.ibm.com>,
-	Alexandra Winter <wintera@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Yong Wu <yong.wu@mediatek.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Krishna Reddy <vdumpa@nvidia.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, asahi@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-	linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
-	linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v9 5/6] iommu/dma: Allow a single FQ in addition to
- per-CPU FQs
-Message-ID: <ZGIuj2pRjOPffqZZ@ziepe.ca>
-References: <20230310-dma_iommu-v9-0-65bb8edd2beb@linux.ibm.com>
- <20230310-dma_iommu-v9-5-65bb8edd2beb@linux.ibm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C40B3C8DB
+	for <iommu@lists.linux.dev>; Mon, 15 May 2023 13:15:20 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oeZeiCnvOYDvp5THwwyrrh9ScKwcUFPfaC1Bw6z5zqWYNPpKlz53Ln5sPBc7WFChlhAxYWBknZ5KIFZoEWokaWOxqwLrnXjSn8WYlJVb9jAX2GgOMrV/wEiQyFzjSJjPlP9UNHL3STpc8BxE7YzPl/r7KMAScVqDpidz+9aRw1Vzym3OLKfqyS/cs41GG29qmCQiBxta/SxU1SCcXoBAFLMJblqw7PipcmGHwoFKMqMuRLBnzM2Aue6Ae/Sp+fK95MqdiUtsIMOX2Iv3BDusHN5Eg5oXKdtZswipZqKq5+WB/NTFx+GaHXde0LFlTazEr71mMneo7eO2p+kQ54ghjQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qyUpS0bsF9aotS93XKkxk9JlTgVcOqHQEXxXoOhPTiI=;
+ b=d+zJU2kaH4NJPYVv3obnMm4tS55Nct8zqOARoAn4YzamUhK4WvxwQvQ4H7owXbjLFVksGneFMB9wejWLnkHsXAP4G6f/A20NIIwHExlu+yDtN2dg28Zu6YbAZv/oOvg4yJ+wwCEHKDRxeJq6sVhK3/11v6c6B2WabzCQIyXXos7NB4w6bpLiD7a0AxZgtjhf9D17AfMFCa8pFmV6mngrgWphdTniUF8Dzlw3Y+L9620dSHsMNhAy+I6Y4FBThyhHWh8bQNrLCwurH14rMKOMeQjYPz/cwS41NuvGjf8djRPikIcRVZSAmgl9x6LLPBOoJYYCQI+Fdqdm0DaREWorqw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qyUpS0bsF9aotS93XKkxk9JlTgVcOqHQEXxXoOhPTiI=;
+ b=daTxwwUxPZkoVF0HFLsnRhaV/D1CeQVznlIhQY+Nni2XruLwbEW0uHwJW2e/BYB3Dhh+uv4aNIGFqkBT3e9XcRZwqvOv1wKy3kdCPDxgnD5j1OySOHEW7EOLfZm1J8OQtf1pGNNtv5n0tft14ZQb6tPh8ZvfSqK4jkbRS0zYpZaOcLfyzpUKcBKxVw2tHkuI/N+Z3Ug+dT36AiWU/PatSuEBftdgHhiSwQhxz4YfG4lqMcXg03JSMPvdctpRRcYz/OXbQMZL88HOPFUPJWZJ8s5YiSuvr92xrwY7+ZR/aLX+MDlvlz4nm+kN8z9y6y43ZCI0qAO1IdwDZ3DKR9q4jQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by LV2PR12MB5824.namprd12.prod.outlook.com (2603:10b6:408:176::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.30; Mon, 15 May
+ 2023 13:15:18 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6387.030; Mon, 15 May 2023
+ 13:15:18 +0000
+Date: Mon, 15 May 2023 10:15:17 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, iommu@lists.linux.dev, will@kernel.org,
+	digetx@gmail.com, thierry.reding@gmail.com,
+	linux-tegra@vger.kernel.org
+Subject: Re: [PATCH 4/4] iommu: Clean up force_aperture confusion
+Message-ID: <ZGIwZZCcUV2lalIq@nvidia.com>
+References: <cover.1684154219.git.robin.murphy@arm.com>
+ <ed26ed3213bf07ab4977211702dc0898680524cd.1684154219.git.robin.murphy@arm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ed26ed3213bf07ab4977211702dc0898680524cd.1684154219.git.robin.murphy@arm.com>
+X-ClientProxiedBy: MN2PR05CA0061.namprd05.prod.outlook.com
+ (2603:10b6:208:236::30) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230310-dma_iommu-v9-5-65bb8edd2beb@linux.ibm.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|LV2PR12MB5824:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2e49f52f-447d-4f79-a6ce-08db55466dfa
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	sj3+lMyRyryOlBwgVekAE09pzc3+4QRompA8eUmGK6rjIprzRrGvN+p/mrXaWD73RxHUO5DK60wbFSK4WCu10Ht3Xe0VEpLFlWcDu0aapLVo80/A7XUSL5V8YGmxHgvzWJh2tc71mju6u4Tb5gPWK/nNtOixghhGK7ut8scRysJC4l7gjXC2kNQTLAQ0Rsn4QhxoKw0qJkuRblHFVsRb8CimF4/enfjhtDJPvqWj228LN1Oo59o8mhUSwEOnj7Pzu76HOi3qid8rfLvNG49Yk76mRj8Rqw0nE593kuVKLe9IxA8yvUAoRkxK5b6JJ+71Pr4PUylHvgLy6njf3ezIOC0LYMpm79otsW6n3p9CHKrkUs0ZRuJ8qOSSVyuEYTyYgb3VCgAAWjK8exOYZ1lcK3vSNNvJf7JX10R2QjnTiXCNFtKOfqZtWcRrVyujscwud8t/wBpzAyk7VbNoCprLCi/e+7y3IrDkF2Bfs3sZt4dDBsZ+2xg2cy7xTpqCExzV4Sz6HajwqIocOtwFp4p9HWGrVgfw6AJWN/0Fk9FrcghXYkIr/kbyz4g5hmtR6EI/
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(136003)(396003)(346002)(376002)(451199021)(186003)(2616005)(38100700002)(41300700001)(6486002)(83380400001)(6512007)(6506007)(26005)(478600001)(66899021)(6916009)(4326008)(66556008)(66476007)(66946007)(316002)(5660300002)(8676002)(8936002)(86362001)(2906002)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?OapPwTBmUHKL6e+KfCTBvPryfM0pp8YjvJtq5PmHzktorqpbE9hHJKNQxws6?=
+ =?us-ascii?Q?c3k5IWwZ1jfa5q4PcGdJbYd15HQpV663SyRQWeW4R1S6E+jg3sMBqNlQenJj?=
+ =?us-ascii?Q?6O06NevxguM/DY1fq+AgLwNV+OSdkrUFEAKFv/CL2sm/pr7EnIzv38Zz5WLv?=
+ =?us-ascii?Q?nuoF70c4IhnAW7HPbKNPobZZlgPfi48fnqm0lNY6+0U5INiVfxfe+ol4YLNQ?=
+ =?us-ascii?Q?BlVoMb/MihCMvObpt2ivbUKsnsSCFGplEpnDLy52yLuKWbYktkA+bBGRhe6T?=
+ =?us-ascii?Q?Vr8Dc1KwDOHKj2XN/gqpNLLaSzxcGN5iZiwVFlzaAvs0KOGNU34zojeuL6HS?=
+ =?us-ascii?Q?BQeZ7ZYrOvTTzj/eFFkitV7Po9ceMKE8N3DvPSQuZytZEpEgny4RZ/5b4XO5?=
+ =?us-ascii?Q?GMlMZSzmOvdKhv12sD6b83feX6BqI19dcd4khbAsvEk5uLK+J/BZ4ZTzQg/c?=
+ =?us-ascii?Q?QfiWi+kWc9cdPjSqmexp0fVoG5z9V3SSlNdTyk+1FVM6+oLN0UMuRb5uXfbr?=
+ =?us-ascii?Q?vADGkHa9BnnbbvW0/NECvnpb/6KNXsePFKfDXiMtLMASkLeAM6BDoCV0ghQU?=
+ =?us-ascii?Q?3RJYV4TkfxqTOOSq5bs7Z207LBu+DaSdkBofhzS0XnZ/dlIv/kuO2gGYQ2ga?=
+ =?us-ascii?Q?Nb0o0ZxezV4W01geiBagcxaXqhMZ7e7tMCk089zhbpKfbwD9HK9C5xKWjgG5?=
+ =?us-ascii?Q?1dIQMAMb1TJMfwROvm8nVoQH0w2Q5R8skJtBV5JgM0r93tVTEtxwz11px0Kb?=
+ =?us-ascii?Q?k/Io9esieUGX0pBY7OpDTAKNVYaf0DdKdYwTOxR6VS1dPUOSqMF/HFRFlIQG?=
+ =?us-ascii?Q?Zq++j7zCd/BFtkEA5y0IN/hTNnU2WN1QVst5TKb6c82wwh0KLIjCVxcAlzs4?=
+ =?us-ascii?Q?wQ3lEBvU/Ul4LCLrpw55GXRl9h88vRruk3Dv/t9NEsLmcnV4H61t8Uf9LvY8?=
+ =?us-ascii?Q?GmZmmtsiMI4D2WyRdicjBgoou36DTRCgAlkBenCt6xWSsqSxubgDdXqZdbMH?=
+ =?us-ascii?Q?jcwwgxFWNFg50vdOuQ4cQzTrhd96x2XfcGeUQwOox5YWA0FAG7vrNdffQZ4b?=
+ =?us-ascii?Q?BEtDG2bp7yhHsnIJdwAyQtAXQt+7jvcYN/tXKv3PndScPHnP32UE0LjQs1zs?=
+ =?us-ascii?Q?5sDweTk9aS1m6MRjX02Iz0GKJ/pbIVxF6OvnFpyxBtztRYllXS9ZMm7xDaeP?=
+ =?us-ascii?Q?HgzXLOQ4Tws222Ve6OEjPdqcSelrawClm0loupFpp3XxJsB8SGRkfRURX9eB?=
+ =?us-ascii?Q?5E7q/GWbmQbjusuziPHeIbVlxPWYK7NvdSiubop1shhFApjeGhbChs1kxrHB?=
+ =?us-ascii?Q?+O0DebOF3CULBBI6ku8GJV5+7kH83i7eg67YSHGSq2ozPvmUH7iC2s6rEvxQ?=
+ =?us-ascii?Q?F4b/LMucCqmqxND1oeoR2Rt97kPHKXdt4+dK2STu8FYviYJM3OyaIi0PMWaY?=
+ =?us-ascii?Q?BOln+72J1PkPTDp7i2WtlHwPVUvtNOD6ZU923oryK4U2R6MV1BjVLPQ1GsgA?=
+ =?us-ascii?Q?eUK0Jx0S0aBErOUA7qT266VmRZNl+XwLDiZQjd3Z1Oqa0YqdyOrwBItBwHHF?=
+ =?us-ascii?Q?SbCgzQcWA0m4RzWOZ2+SKiqeLQgywbQc38ugb+R4?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2e49f52f-447d-4f79-a6ce-08db55466dfa
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2023 13:15:18.5363
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +prmTtyr7uV9nfnWgibalGgpPD5I2wY1eCiJ2YphY7A1nEI8Bn3jt+KidomdeztH
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5824
 
-On Mon, May 15, 2023 at 11:15:55AM +0200, Niklas Schnelle wrote:
+On Mon, May 15, 2023 at 01:49:32PM +0100, Robin Murphy wrote:
+> It was never entirely clear whether the force_aperture flag was supposed
+> to be a hardware capability or a software policy. So far things seem to
+> have leant towards the latter, given that the only drivers not setting
+> the flag are ones where the aperture is seemingly a whole virtual
+> address space such that accesses outside it wouldn't be possible, and
+> the one driver which definitely can't enforce it in hardware *does*
+> still set the flag.
+> 
+> On reflection, though, it makes little sense for drivers to dictate
+> usage policy to callers, and the interpretation that a driver setting
+> the flag might also translate addresses outside the given aperture but
+> has for some reason chosen not to is not actually a useful one. It seems
+> a lot more logical to treat the aperture as the absolute limit of what
+> can be translated, and the flag to indicate what would happen if a
+> device did try to access an address outside the aperture, i.e. whether
+> the access would fault or pass through untranslated. As such, reframe
+> the flag consistent with a hardware capability in the hope of clearing
+> up the misconception.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>  drivers/iommu/dma-iommu.c    | 19 +++++++------------
+>  drivers/iommu/mtk_iommu_v1.c |  4 ++++
+>  drivers/iommu/sprd-iommu.c   |  1 +
+>  drivers/iommu/tegra-gart.c   |  2 +-
+>  4 files changed, 13 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 7a9f0b0bddbd..4693b021d54f 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -548,24 +548,19 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+>  	if (!cookie || cookie->type != IOMMU_DMA_IOVA_COOKIE)
+>  		return -EINVAL;
+>  
+> +	/*
+> +	 * If the IOMMU only offers a non-isolated GART-style translation
+> +	 * aperture, just let the device use dma-direct.
+> +	 */
 
-> +/**
-> + * struct dma_iommu_options - Options for dma-iommu
-> + *
-> + * @flags: Flag bits for enabling/disabling dma-iommu settings
-> + *
-> + * This structure is intended to provide IOMMU drivers a way to influence the
-> + * behavior of the dma-iommu DMA API implementation. This allows optimizing for
-> + * example for a virtualized environment with slow IOTLB flushes.
-> + */
-> +struct dma_iommu_options {
-> +#define IOMMU_DMA_OPTS_PER_CPU_QUEUE	(0L << 0)
-> +#define IOMMU_DMA_OPTS_SINGLE_QUEUE	(1L << 0)
-> +	u64	flags;
-> +};
+So we add code to dma-iommu.c for a driver that never enables
+dma-iommu.c and uses def_default_domain to prevent it from ever being
+used anyhow? :(
 
-You need to hash it out with robin if we do something like this or use
-more untyped caps as he put in this series:
+> +	if (!domain->geometry.force_aperture)
+> +		return -EINVAL;
 
-https://lore.kernel.org/linux-iommu/cover.1683233867.git.robin.murphy@arm.com/
+We need more checks than just this, the 'blocking domain is an empty
+unmanaged' thing needs it, there is a check in virtio-iommu that looks
+wonky and the name doesn't really convay what it does
+anymore.. "partial_translation" or something would be better.
+
+I still prefer deleting tegra-gart and deleting force_aperture
+completely.
 
 Jason
