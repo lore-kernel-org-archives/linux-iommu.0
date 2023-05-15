@@ -1,33 +1,32 @@
-Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A2EC848C
-	for <iommu@lists.linux.dev>; Mon, 15 May 2023 08:07:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D6D38801
+	for <iommu@lists.linux.dev>; Mon, 15 May 2023 08:07:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
+	d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
 	Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
 	Content-ID:Content-Description:In-Reply-To;
-	bh=4kaqfhENJznU2Mt7hBhEZrEbaoSBpAbVRLS0RsxQHdk=; b=XLXPvYSK56u1FQB+k+bhon/4pv
-	zSD0YSZlWXiZHPUqIUl6Yyjf5NB4UWFAN3n7Oyp5hyeiOUtKZ9mBZT9y0+I9Onvas22ORYZ6Y3maD
-	/QyoXUY4K27SRULt1VqM5bU6j/J3FLtlzDzZjEbqJpQgQUxuBK0FWXTF3USAeGyIQx0wTYpj+p7lO
-	J/i/ZJRbdXbF8MlsCfnRwwzoTdOCq+IXrVCfsrCDR2uvOke13V5Dr4oE/McXFo/bEOt60OgXbLqEc
-	XeXVrkZaRUSBBo2VPSQDMRDARGlBnk/FVOdYNtIj6j7ZjCFKOzNR7PzQQ9P/94djJbRTqJ9LyTCal
-	lulzxa5w==;
+	bh=1dpaKFw/ImnX3ivBkF4/OTirLfnK12XzoUFqOemVS9M=; b=nCa92XFnMhdkelbE+tRZRrXIYS
+	kOcZdCKGEMW4KSKB+6B4aivSqYkUHANT/UlD4Aj6tqOcvWV54dCTn3Zgoan/4wXM6P8uTariGluRA
+	dK6MON9zNhNVc6sBNEvJzPx2w9m+W7e4I4aCZpl5DVMtACFO18Ch9JPZ1jyUpU83EMRKXHtV8Iz1D
+	XfR1l9t+Il6O7f3x5b8EmWQM90cSGueNT4YgQOkrbRReRJORMk8uuKxUx66lTPr2d1C5h5y33LUiC
+	TgvfbRNNsp0dRP9g9qP2uK7HzZtalOk93SWeVN83x38l4Z+We3DOMEzC6VzL2KU4lEfmaiaAB2JGw
+	HPP9047A==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-	by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-	id 1pyTDl-00BQN5-1u;
-	Mon, 15 May 2023 08:06:17 +0000
+	by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1pyTDk-003HUP-En; Mon, 15 May 2023 08:06:17 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
 	(Client did not present a certificate)
-	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 870D5302DA8;
-	Mon, 15 May 2023 10:06:15 +0200 (CEST)
+	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 10D4F300912;
+	Mon, 15 May 2023 10:06:10 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-	id CF2C4202FCEAA; Mon, 15 May 2023 10:06:10 +0200 (CEST)
-Message-ID: <20230515080554.520976397@infradead.org>
+	id B1D27202FCE9F; Mon, 15 May 2023 10:06:10 +0200 (CEST)
+Message-ID: <20230515080554.114813040@infradead.org>
 User-Agent: quilt/0.66
-Date: Mon, 15 May 2023 09:57:08 +0200
+Date: Mon, 15 May 2023 09:57:02 +0200
 From: Peter Zijlstra <peterz@infradead.org>
 To: torvalds@linux-foundation.org
 Cc: corbet@lwn.net,
@@ -72,7 +71,7 @@ Cc: corbet@lwn.net,
  iommu@lists.linux.dev,
  linux-arch@vger.kernel.org,
  linux-crypto@vger.kernel.org
-Subject: [PATCH v3 09/11] mm/slub: Fold slab_update_freelist()
+Subject: [PATCH v3 03/11] arch: Introduce arch_{,try_}_cmpxchg128{,_local}()
 References: <20230515075659.118447996@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -82,151 +81,255 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 
-The two functions slab_update_freelist() and __slab_update_freelist()
-are nearly identical, fold and add a boolean argument and rely on
-constant propagation.
+For all architectures that currently support cmpxchg_double()
+implement the cmpxchg128() family of functions that is basically the
+same but with a saner interface.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Heiko Carstens <hca@linux.ibm.com>
+Acked-by: Mark Rutland <mark.rutland@arm.com>
 ---
- mm/slub.c |   80 +++++++++++++++++++++-----------------------------------------
- 1 file changed, 28 insertions(+), 52 deletions(-)
+ arch/arm64/include/asm/atomic_ll_sc.h |   41 +++++++++++++++++++++
+ arch/arm64/include/asm/atomic_lse.h   |   31 ++++++++++++++++
+ arch/arm64/include/asm/cmpxchg.h      |   26 +++++++++++++
+ arch/s390/include/asm/cmpxchg.h       |   14 +++++++
+ arch/x86/include/asm/cmpxchg_32.h     |    3 +
+ arch/x86/include/asm/cmpxchg_64.h     |   64 +++++++++++++++++++++++++++++++++-
+ 6 files changed, 177 insertions(+), 2 deletions(-)
 
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -559,53 +559,29 @@ __update_freelist_slow(struct slab *slab
-  * allocation/ free operation in hardirq context. Therefore nothing can
-  * interrupt the operation.
-  */
--static inline bool __slab_update_freelist(struct kmem_cache *s, struct slab *slab,
--		void *freelist_old, unsigned long counters_old,
--		void *freelist_new, unsigned long counters_new,
--		const char *n)
-+static __always_inline
-+bool slab_update_freelist(struct kmem_cache *s, struct slab *slab,
-+			  void *freelist_old, unsigned long counters_old,
-+			  void *freelist_new, unsigned long counters_new,
-+			  bool irq_save, const char *n)
- {
- 	bool ret;
+--- a/arch/arm64/include/asm/atomic_ll_sc.h
++++ b/arch/arm64/include/asm/atomic_ll_sc.h
+@@ -326,6 +326,47 @@ __CMPXCHG_DBL(   ,        ,  ,         )
+ __CMPXCHG_DBL(_mb, dmb ish, l, "memory")
  
--	if (USE_LOCKLESS_FAST_PATH())
-+	if (!irq_save && USE_LOCKLESS_FAST_PATH())
- 		lockdep_assert_irqs_disabled();
+ #undef __CMPXCHG_DBL
++
++union __u128_halves {
++	u128 full;
++	struct {
++		u64 low, high;
++	};
++};
++
++#define __CMPXCHG128(name, mb, rel, cl...)                             \
++static __always_inline u128						\
++__ll_sc__cmpxchg128##name(volatile u128 *ptr, u128 old, u128 new)	\
++{									\
++	union __u128_halves r, o = { .full = (old) },			\
++			       n = { .full = (new) };			\
++       unsigned int tmp;                                               \
++									\
++	asm volatile("// __cmpxchg128" #name "\n"			\
++       "       prfm    pstl1strm, %[v]\n"                              \
++       "1:     ldxp    %[rl], %[rh], %[v]\n"                           \
++       "       cmp     %[rl], %[ol]\n"                                 \
++       "       ccmp    %[rh], %[oh], 0, eq\n"                          \
++       "       b.ne    2f\n"                                           \
++       "       st" #rel "xp    %w[tmp], %[nl], %[nh], %[v]\n"          \
++       "       cbnz    %w[tmp], 1b\n"                                  \
++	"	" #mb "\n"						\
++	"2:"								\
++       : [v] "+Q" (*(u128 *)ptr),                                      \
++         [rl] "=&r" (r.low), [rh] "=&r" (r.high),                      \
++         [tmp] "=&r" (tmp)                                             \
++       : [ol] "r" (o.low), [oh] "r" (o.high),                          \
++         [nl] "r" (n.low), [nh] "r" (n.high)                           \
++       : "cc", ##cl);                                                  \
++									\
++	return r.full;							\
++}
++
++__CMPXCHG128(   ,        ,  )
++__CMPXCHG128(_mb, dmb ish, l, "memory")
++
++#undef __CMPXCHG128
++
+ #undef K
  
- 	if (s->flags & __CMPXCHG_DOUBLE) {
- 		ret = __update_freelist_fast(slab, freelist_old, counters_old,
- 				            freelist_new, counters_new);
- 	} else {
--		ret = __update_freelist_slow(slab, freelist_old, counters_old,
--				            freelist_new, counters_new);
--	}
--	if (likely(ret))
--		return true;
--
--	cpu_relax();
--	stat(s, CMPXCHG_DOUBLE_FAIL);
--
--#ifdef SLUB_DEBUG_CMPXCHG
--	pr_info("%s %s: cmpxchg double redo ", n, s->name);
--#endif
--
--	return false;
--}
--
--static inline bool slab_update_freelist(struct kmem_cache *s, struct slab *slab,
--		void *freelist_old, unsigned long counters_old,
--		void *freelist_new, unsigned long counters_new,
--		const char *n)
--{
--	bool ret;
--
--	if (s->flags & __CMPXCHG_DOUBLE) {
--		ret = __update_freelist_fast(slab, freelist_old, counters_old,
--				            freelist_new, counters_new);
--	} else {
- 		unsigned long flags;
+ #endif	/* __ASM_ATOMIC_LL_SC_H */
+--- a/arch/arm64/include/asm/atomic_lse.h
++++ b/arch/arm64/include/asm/atomic_lse.h
+@@ -317,4 +317,35 @@ __CMPXCHG_DBL(_mb, al, "memory")
  
--		local_irq_save(flags);
-+		if (irq_save)
-+			local_irq_save(flags);
- 		ret = __update_freelist_slow(slab, freelist_old, counters_old,
- 				            freelist_new, counters_new);
--		local_irq_restore(flags);
-+		if (irq_save)
-+			local_irq_restore(flags);
- 	}
- 	if (likely(ret))
- 		return true;
-@@ -2250,10 +2226,10 @@ static inline void *acquire_slab(struct
- 	VM_BUG_ON(new.frozen);
- 	new.frozen = 1;
+ #undef __CMPXCHG_DBL
  
--	if (!__slab_update_freelist(s, slab,
--			freelist, counters,
--			new.freelist, new.counters,
--			"acquire_slab"))
-+	if (!slab_update_freelist(s, slab,
-+				  freelist, counters,
-+				  new.freelist, new.counters,
-+				  false, "acquire_slab"))
- 		return NULL;
++#define __CMPXCHG128(name, mb, cl...)					\
++static __always_inline u128						\
++__lse__cmpxchg128##name(volatile u128 *ptr, u128 old, u128 new)		\
++{									\
++	union __u128_halves r, o = { .full = (old) },			\
++			       n = { .full = (new) };			\
++	register unsigned long x0 asm ("x0") = o.low;			\
++	register unsigned long x1 asm ("x1") = o.high;			\
++	register unsigned long x2 asm ("x2") = n.low;			\
++	register unsigned long x3 asm ("x3") = n.high;			\
++	register unsigned long x4 asm ("x4") = (unsigned long)ptr;	\
++									\
++	asm volatile(							\
++	__LSE_PREAMBLE							\
++	"	casp" #mb "\t%[old1], %[old2], %[new1], %[new2], %[v]\n"\
++	: [old1] "+&r" (x0), [old2] "+&r" (x1),				\
++	  [v] "+Q" (*(u128 *)ptr)					\
++	: [new1] "r" (x2), [new2] "r" (x3), [ptr] "r" (x4),		\
++	  [oldval1] "r" (o.low), [oldval2] "r" (o.high)			\
++	: cl);								\
++									\
++	r.low = x0; r.high = x1;					\
++									\
++	return r.full;							\
++}
++
++__CMPXCHG128(   ,   )
++__CMPXCHG128(_mb, al, "memory")
++
++#undef __CMPXCHG128
++
+ #endif	/* __ASM_ATOMIC_LSE_H */
+--- a/arch/arm64/include/asm/cmpxchg.h
++++ b/arch/arm64/include/asm/cmpxchg.h
+@@ -146,6 +146,19 @@ __CMPXCHG_DBL(_mb)
  
- 	remove_partial(n, slab);
-@@ -2577,9 +2553,9 @@ static void deactivate_slab(struct kmem_
+ #undef __CMPXCHG_DBL
  
++#define __CMPXCHG128(name)						\
++static inline u128 __cmpxchg128##name(volatile u128 *ptr,		\
++				      u128 old, u128 new)		\
++{									\
++	return __lse_ll_sc_body(_cmpxchg128##name,			\
++				ptr, old, new);				\
++}
++
++__CMPXCHG128(   )
++__CMPXCHG128(_mb)
++
++#undef __CMPXCHG128
++
+ #define __CMPXCHG_GEN(sfx)						\
+ static __always_inline unsigned long __cmpxchg##sfx(volatile void *ptr,	\
+ 					   unsigned long old,		\
+@@ -228,6 +241,19 @@ __CMPXCHG_GEN(_mb)
+ 	__ret;									\
+ })
  
- 	if (!slab_update_freelist(s, slab,
--				old.freelist, old.counters,
--				new.freelist, new.counters,
--				"unfreezing slab")) {
-+				  old.freelist, old.counters,
-+				  new.freelist, new.counters,
-+				  true, "unfreezing slab")) {
- 		if (mode == M_PARTIAL)
- 			spin_unlock_irqrestore(&n->list_lock, flags);
- 		goto redo;
-@@ -2633,10 +2609,10 @@ static void __unfreeze_partials(struct k
++/* cmpxchg128 */
++#define system_has_cmpxchg128()		1
++
++#define arch_cmpxchg128(ptr, o, n)						\
++({										\
++	__cmpxchg128_mb((ptr), (o), (n));					\
++})
++
++#define arch_cmpxchg128_local(ptr, o, n)					\
++({										\
++	__cmpxchg128((ptr), (o), (n));						\
++})
++
+ #define __CMPWAIT_CASE(w, sfx, sz)					\
+ static inline void __cmpwait_case_##sz(volatile void *ptr,		\
+ 				       unsigned long val)		\
+--- a/arch/s390/include/asm/cmpxchg.h
++++ b/arch/s390/include/asm/cmpxchg.h
+@@ -224,4 +224,18 @@ static __always_inline int __cmpxchg_dou
+ 			 (unsigned long)(n1), (unsigned long)(n2));	\
+ })
  
- 			new.frozen = 0;
++#define system_has_cmpxchg128()		1
++
++static __always_inline u128 arch_cmpxchg128(volatile u128 *ptr, u128 old, u128 new)
++{
++	asm volatile(
++		"	cdsg	%[old],%[new],%[ptr]\n"
++		: [old] "+d" (old), [ptr] "+QS" (*ptr)
++		: [new] "d" (new)
++		: "memory", "cc");
++	return old;
++}
++
++#define arch_cmpxchg128		arch_cmpxchg128
++
+ #endif /* __ASM_CMPXCHG_H */
+--- a/arch/x86/include/asm/cmpxchg_32.h
++++ b/arch/x86/include/asm/cmpxchg_32.h
+@@ -103,6 +103,7 @@ static inline bool __try_cmpxchg64(volat
  
--		} while (!__slab_update_freelist(s, slab,
--				old.freelist, old.counters,
--				new.freelist, new.counters,
--				"unfreezing slab"));
-+		} while (!slab_update_freelist(s, slab,
-+					       old.freelist, old.counters,
-+					       new.freelist, new.counters,
-+					       false, "unfreezing slab"));
+ #endif
  
- 		if (unlikely(!new.inuse && n->nr_partial >= s->min_partial)) {
- 			slab->next = slab_to_discard;
-@@ -3072,10 +3048,10 @@ static inline void *get_freelist(struct
- 		new.inuse = slab->objects;
- 		new.frozen = freelist != NULL;
+-#define system_has_cmpxchg_double() boot_cpu_has(X86_FEATURE_CX8)
++#define system_has_cmpxchg_double()	boot_cpu_has(X86_FEATURE_CX8)
++#define system_has_cmpxchg64()		boot_cpu_has(X86_FEATURE_CX8)
  
--	} while (!__slab_update_freelist(s, slab,
--		freelist, counters,
--		NULL, new.counters,
--		"get_freelist"));
-+	} while (!slab_update_freelist(s, slab,
-+				       freelist, counters,
-+				       NULL, new.counters,
-+				       false, "get_freelist"));
+ #endif /* _ASM_X86_CMPXCHG_32_H */
+--- a/arch/x86/include/asm/cmpxchg_64.h
++++ b/arch/x86/include/asm/cmpxchg_64.h
+@@ -20,6 +20,68 @@
+ 	arch_try_cmpxchg((ptr), (po), (n));				\
+ })
  
- 	return freelist;
- }
-@@ -3666,9 +3642,9 @@ static void __slab_free(struct kmem_cach
- 		}
+-#define system_has_cmpxchg_double() boot_cpu_has(X86_FEATURE_CX16)
++union __u128_halves {
++	u128 full;
++	struct {
++		u64 low, high;
++	};
++};
++
++#define __arch_cmpxchg128(_ptr, _old, _new, _lock)			\
++({									\
++	union __u128_halves o = { .full = (_old), },			\
++			    n = { .full = (_new), };			\
++									\
++	asm volatile(_lock "cmpxchg16b %[ptr]"				\
++		     : [ptr] "+m" (*(_ptr)),				\
++		       "+a" (o.low), "+d" (o.high)			\
++		     : "b" (n.low), "c" (n.high)			\
++		     : "memory");					\
++									\
++	o.full;								\
++})
++
++static __always_inline u128 arch_cmpxchg128(volatile u128 *ptr, u128 old, u128 new)
++{
++	return __arch_cmpxchg128(ptr, old, new, LOCK_PREFIX);
++}
++
++static __always_inline u128 arch_cmpxchg128_local(volatile u128 *ptr, u128 old, u128 new)
++{
++	return __arch_cmpxchg128(ptr, old, new,);
++}
++
++#define __arch_try_cmpxchg128(_ptr, _oldp, _new, _lock)			\
++({									\
++	union __u128_halves o = { .full = *(_oldp), },			\
++			    n = { .full = (_new), };			\
++	bool ret;							\
++									\
++	asm volatile(_lock "cmpxchg16b %[ptr]"				\
++		     CC_SET(e)						\
++		     : CC_OUT(e) (ret),					\
++		       [ptr] "+m" (*ptr),				\
++		       "+a" (o.low), "+d" (o.high)			\
++		     : "b" (n.low), "c" (n.high)			\
++		     : "memory");					\
++									\
++	if (unlikely(!ret))						\
++		*(_oldp) = o.full;					\
++									\
++	likely(ret);							\
++})
++
++static __always_inline bool arch_try_cmpxchg128(volatile u128 *ptr, u128 *oldp, u128 new)
++{
++	return __arch_try_cmpxchg128(ptr, oldp, new, LOCK_PREFIX);
++}
++
++static __always_inline bool arch_try_cmpxchg128_local(volatile u128 *ptr, u128 *oldp, u128 new)
++{
++	return __arch_try_cmpxchg128(ptr, oldp, new,);
++}
++
++#define system_has_cmpxchg_double()	boot_cpu_has(X86_FEATURE_CX16)
++#define system_has_cmpxchg128()		boot_cpu_has(X86_FEATURE_CX16)
  
- 	} while (!slab_update_freelist(s, slab,
--		prior, counters,
--		head, new.counters,
--		"__slab_free"));
-+				       prior, counters,
-+				       head, new.counters,
-+				       true, "__slab_free"));
- 
- 	if (likely(!n)) {
- 
+ #endif /* _ASM_X86_CMPXCHG_64_H */
 
 
