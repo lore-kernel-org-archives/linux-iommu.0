@@ -1,105 +1,174 @@
-Received: from mail-pg1-f180.google.com (mail-pg1-f180.google.com [209.85.215.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F6C68836
-	for <iommu@lists.linux.dev>; Mon, 15 May 2023 14:36:12 +0000 (UTC)
-Received: by mail-pg1-f180.google.com with SMTP id 41be03b00d2f7-53404873a19so1147380a12.3
-        for <iommu@lists.linux.dev>; Mon, 15 May 2023 07:36:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684161372; x=1686753372;
-        h=content-transfer-encoding:subject:from:cc:to:content-language
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ntle7Mc0MN09Ld4JSB2zHnjwzKKJ2xLWcbwccUINeWM=;
-        b=nmpPkLbkHeWzrNUYIBgGFtDeWZrt9C1ULqbYHO7f3h/8Rozghdl8hEcHeNcKQkbTlG
-         zADuBhj4lbPnYGD8y9sfS2D+zwgCOyNhxCHNtW1op6PeVK3aiuq4zlzeYQvUA28CJK6A
-         3faxbTFV4s9D85ojUIQ+o+ptrFpllMArk8nNfCl3GnS2e3QJST0XWRxMHnW/0vpfgned
-         //KOYuh+4ZkNpexBLsdOZfUrPTcSn276Nmt3xBHXEGTsWs6VRzquyRJHGZvncJT0hSd4
-         qCNkxCZ3A9UIDtDzZJrZupk0r8lpurw1ZMdYnFvm5xR+qi/kyrRcfUe1UHTveEBeGVOl
-         zU3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684161372; x=1686753372;
-        h=content-transfer-encoding:subject:from:cc:to:content-language
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=ntle7Mc0MN09Ld4JSB2zHnjwzKKJ2xLWcbwccUINeWM=;
-        b=E18H0OwequXwf/RcsDOXq57/WTvkYVyYu36FwbxVY2tmU5cnbhcqb+g8ysCzkcNW/D
-         fms9XZggSGdaEeQHIsGCFU+O0DqyJr9xF82Aott+7Tydl1aUO2ua6kfwzFbikxzTpa0r
-         wSdEe0ODIVFP/jq9//m30c3qNKusgaIHhUfRzbp1xFdGiR1qFZLIY6/HipKxw6mrjlpZ
-         1TLSrEArcW9Jz6zGDpyYDZdPA6VxC5VXH082qkDH0RAszI0Xsexp12v6QUwTppiu4Jx/
-         pFc57nDoBWosg1lT1Xl3qbWJ1ge5otqBw0ip+2SqX1GvmIdz3bnRXhlJ2XJA3JcI5OCc
-         bTTw==
-X-Gm-Message-State: AC+VfDwacLKbCF7HOfTwtSk3Vwvlyh0v3uQYILpWWNhQx1wg0m47+sw8
-	ViwxgsJ4rff7+WwmMp7wAFY=
-X-Google-Smtp-Source: ACHHUZ5Y1IBpWDwTz6WkQ1oOqRQ0CqOq276XS/52HNucim7sFHfLFQo4MIjL/je6cCeGa2eTmGpHdw==
-X-Received: by 2002:a05:6a20:9146:b0:105:393b:5dff with SMTP id x6-20020a056a20914600b00105393b5dffmr9261541pzc.16.1684161371517;
-        Mon, 15 May 2023 07:36:11 -0700 (PDT)
-Received: from [192.168.0.115] ([113.173.119.15])
-        by smtp.gmail.com with ESMTPSA id a5-20020aa780c5000000b006439bc7d791sm11899633pfn.57.2023.05.15.07.36.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 May 2023 07:36:10 -0700 (PDT)
-Message-ID: <e8a87c2b-a29a-ccf9-49c6-3cfceaa208bb@gmail.com>
-Date: Mon, 15 May 2023 21:36:05 +0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E30A8836;
+	Mon, 15 May 2023 14:43:09 +0000 (UTC)
+Received: from pps.filterd (m0353726.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34FEdfW2001912;
+	Mon, 15 May 2023 14:42:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=3xmrodnLEt3plr6PfR2NiDKXpK4TnrjIaL6sDzQ/7GU=;
+ b=q+a2WxQK3J7w6NJiJUphIIf9ajPoK7dLJYqI+t2yd270W7CmFhfqcxPQ4sLDs8I3yoHG
+ pxet7qhizsDe49r5qacnn0up7txnPYLcrU93fC8Bm+i3aeBN80Ggy2bsIoIYrG+r6kUc
+ J1XYXBbpdTFIkOMbNS2Hzs4i6D8uAWoosggxD2ywApVOUoB3k+0BLdM34/EKgjTr0v0I
+ M1Qugs2xEIxBRanx3Lb4zTEg+aHcUy6ykjy9rtQaZ1BfcKCrOV62c4cgy2n4HHtWIcJg
+ tOJu+la3PVYmFqjAttTuVrNtJHuyBkPyuDeqcvdGca4YJcbHej4ZLYZBslN6wQePhEil xg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qkpes0q07-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 15 May 2023 14:42:47 +0000
+Received: from m0353726.ppops.net (m0353726.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 34FEe63m005221;
+	Mon, 15 May 2023 14:42:46 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qkpes0pvy-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 15 May 2023 14:42:46 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+	by ppma01fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 34FD2VOD016196;
+	Mon, 15 May 2023 14:42:43 GMT
+Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
+	by ppma01fra.de.ibm.com (PPS) with ESMTPS id 3qj264rxmt-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 15 May 2023 14:42:42 +0000
+Received: from smtpav03.fra02v.mail.ibm.com (smtpav03.fra02v.mail.ibm.com [10.20.54.102])
+	by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 34FEgdw220447944
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 15 May 2023 14:42:39 GMT
+Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 4949420043;
+	Mon, 15 May 2023 14:42:39 +0000 (GMT)
+Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id DF9C920040;
+	Mon, 15 May 2023 14:42:36 +0000 (GMT)
+Received: from [9.171.65.23] (unknown [9.171.65.23])
+	by smtpav03.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Mon, 15 May 2023 14:42:36 +0000 (GMT)
+Message-ID: <a2a9a2bdb431d7611588a9f9bdca64856ac56139.camel@linux.ibm.com>
+Subject: Re: [PATCH v9 5/6] iommu/dma: Allow a single FQ in addition to
+ per-CPU FQs
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Matthew Rosato <mjrosato@linux.ibm.com>,
+        Will Deacon <will@kernel.org>, Wenjia Zhang <wenjia@linux.ibm.com>,
+        Gerd
+ Bayer <gbayer@linux.ibm.com>,
+        Julian Ruess <julianr@linux.ibm.com>,
+        Pierre
+ Morel <pmorel@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger
+ <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Suravee
+ Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Hector Martin
+ <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig
+ <alyssa@rosenzweig.io>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu
+ <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson
+ <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Yong Wu
+ <yong.wu@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Orson Zhai
+ <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan
+ Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec
+ <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thierry
+ Reding <thierry.reding@gmail.com>,
+        Krishna Reddy <vdumpa@nvidia.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, asahi@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
+Date: Mon, 15 May 2023 16:42:36 +0200
+In-Reply-To: <ZGIuj2pRjOPffqZZ@ziepe.ca>
+References: <20230310-dma_iommu-v9-0-65bb8edd2beb@linux.ibm.com>
+	 <20230310-dma_iommu-v9-5-65bb8edd2beb@linux.ibm.com>
+	 <ZGIuj2pRjOPffqZZ@ziepe.ca>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.48.1 (3.48.1-1.fc38) 
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: gNuxWXJsmokdhsaD92T6yUFS_UMSNhrG
+X-Proofpoint-ORIG-GUID: me_7t4m8_jWebgWrnvUvQ84qdxzJLwc5
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Content-Language: en-US
-To: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
- Wan Zongshun <vincent.wan@amd.com>
-Cc: Joerg Roedel <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- "Michael S. Tsirkin" <mst@redhat.com>
-From: Bui Quang Minh <minhquangbui99@gmail.com>
-Subject: amd-iommu: get_highest_supported_ivhd_type question
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-05-15_11,2023-05-05_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ clxscore=1015 phishscore=0 spamscore=0 mlxscore=0 suspectscore=0
+ mlxlogscore=596 bulkscore=0 impostorscore=0 lowpriorityscore=0
+ malwarescore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2304280000 definitions=main-2305150121
 
-Hello everyone,
+On Mon, 2023-05-15 at 10:07 -0300, Jason Gunthorpe wrote:
+> On Mon, May 15, 2023 at 11:15:55AM +0200, Niklas Schnelle wrote:
+>=20
+> > +/**
+> > + * struct dma_iommu_options - Options for dma-iommu
+> > + *
+> > + * @flags: Flag bits for enabling/disabling dma-iommu settings
+> > + *
+> > + * This structure is intended to provide IOMMU drivers a way to influe=
+nce the
+> > + * behavior of the dma-iommu DMA API implementation. This allows optim=
+izing for
+> > + * example for a virtualized environment with slow IOTLB flushes.
+> > + */
+> > +struct dma_iommu_options {
+> > +#define IOMMU_DMA_OPTS_PER_CPU_QUEUE	(0L << 0)
+> > +#define IOMMU_DMA_OPTS_SINGLE_QUEUE	(1L << 0)
+> > +	u64	flags;
+> > +};
+>=20
+> You need to hash it out with robin if we do something like this or use
+> more untyped caps as he put in this series:
+>=20
+> https://lore.kernel.org/linux-iommu/cover.1683233867.git.robin.murphy@arm=
+.com/
+>=20
+> Jason
 
-Since this commit 8c7142f56fedfc6824b5bca56fee1f443e01746b (iommu/amd: 
-Use the most comprehensive IVHD type that the driver can support), 
-amd_iommu driver can support IVHD type 0x11 and 0x40 beside old type 
-0x10. This commit introduces a new function to determine the appropriate 
-IVHD type
+Ok. I do wonder how to best represent this as a capability.
+Semantically I think a capability needs to be something positive i.e.
+while IOMMU_CAP_EXPENSIVE_FLUSH would technically work having slow
+IOTLB flushes really isn't a capability. So the best I can think of is
+maybe IOMMU_CAP_SHADOW_ON_FLUSH. It's a bit specific but does convey
+that the IOTLB flush does more than dropping hardware caches where the
+main cost is the then empty TLB not the operation itself. Or maybe to
+keep thing separate one would have to add capabilities for the existing
+users IOMMU_CAP_HW_FLUSH and IOMMU_CAP_CONCURRENT_FLUSH.
 
-	/**
-	 * get_highest_supported_ivhd_type - Look up the appropriate IVHD type
-	 * @ivrs          Pointer to the IVRS header
-	 *
-	 * This function search through all IVDB of the maximum supported IVHD
-	 */
-	static u8 get_highest_supported_ivhd_type(struct acpi_table_header *ivrs)
-	{
-		u8 *base = (u8 *)ivrs;
-		struct ivhd_header *ivhd = (struct ivhd_header *)
-						(base + IVRS_HEADER_LENGTH);
-		u8 last_type = ivhd->type;
-		u16 devid = ivhd->devid;
+Not sure though. It does feel more clunky than the tuning op I added
+and maybe instead these mechanisms should co-exist. After all even
+though the IOTLB flushes with shadowing are expensive they still
+benefit from the flush queue just with more entries and less
+parallelism.
 
-		while (((u8 *)ivhd - base < ivrs->length) &&
-		       (ivhd->type <= ACPI_IVHD_TYPE_MAX_SUPPORTED)) {
-			u8 *p = (u8 *) ivhd;
-
-			if (ivhd->devid == devid)
-				last_type = ivhd->type;
-			ivhd = (struct ivhd_header *)(p + ivhd->length);
-		}
-
-		return last_type;
-	}
-
-As the name and comment suggest, the driver is intended to use the 
-highest IVHD type provided in ACPI table. However, looking at the 
-implementation, I see that it chooses to use the last IVHD type of the 
-first devid appears in the ACPI table. Are there any reasons behind this 
-implementation?
-
-Thank you,
-Quang Minh.
+Thanks,
+Niklas
