@@ -1,153 +1,97 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 122BDE564
-	for <iommu@lists.linux.dev>; Mon, 15 May 2023 16:28:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2382C433D2;
-	Mon, 15 May 2023 16:28:41 +0000 (UTC)
-Date: Mon, 15 May 2023 17:28:38 +0100
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-Cc: Petr Tesarik <petrtesarik@huaweicloud.com>,
-	Jonathan Corbet <corbet@lwn.net>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C552A18C18
+	for <iommu@lists.linux.dev>; Mon, 15 May 2023 19:09:18 +0000 (UTC)
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-1ac65ab7432so747245ad.0
+        for <iommu@lists.linux.dev>; Mon, 15 May 2023 12:09:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1684177758; x=1686769758;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=NScEF4DUT2RK1kg1ycQM1CBgCg/fSirJtyzV/whK0J0=;
+        b=OC0n6O9mt8GEKWsOuiJlnAMyqeZY0/5tkzV4mYOVlaKSWY/9pW0fmBpr1lTRRaY+kx
+         zmTHiiXRSd5rL/KZBC/d5bJY7dwa3Z9nYpiykc5TkluI4pfv2JZQbHN5W1q02vevK64P
+         mUYLgKP2lJ9ANa5mCrBgiTBq473BLqTADQfY89IHqfhYx1RlFkAHR5G4ytTwaX95J4BP
+         5oZSFQa0Vpgrx7t7MkcF5DH0/GKNVwYK1ScMJPbrOsgpit1nwJR6/5ZG3Ll6ESaOYBgX
+         e5XFltTBPFiU0N2Af/eN5yTe5I2EQlthcMUKOqOfxpmkzBw2dIBtcBm3taDJYVD6xs0j
+         nvqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684177758; x=1686769758;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=NScEF4DUT2RK1kg1ycQM1CBgCg/fSirJtyzV/whK0J0=;
+        b=ihKwc/Wthmy5bR6XI/mykuSn+f5yO2wsONV6h2rAuMvS7UHvD9mtzhLImV6qIIeBNQ
+         rFqxqt1ljoSjAwTaz8YNtBCB9N9z+V5wzhJkfPVzGiUBd6do8gSCVclQnvlZEirTplJf
+         H1wEvDnovDelUmsZGrYJy8/mzczPXsnOVx7KJxv7/HZVKzX5z3xLZ3dm4SClcMnNYoe1
+         w+siStWjc0M4qFjztoCL+BJSISeqrwLQOECPZWlsIp0tLhJrRBZd8BqmUBt+Y4bTIVK6
+         g573Gj+vj60uOh4UmQBvo9rsPa7WychmYPVBAFGL+MZU3BOXM2znMzK4Q6UYgSG4ekeE
+         c7DQ==
+X-Gm-Message-State: AC+VfDx35V4t81h8J0wdCjddGbYQP8gfC2XBYdOZjnURiwsm70nApOHF
+	MtPTSg6xLO9STOu0ZF+xSgNDIA==
+X-Google-Smtp-Source: ACHHUZ6ZwVUoftc1tRpuaAlUdt1ybXqL+4C27qcMcoX/qt34Q62hQcY9bonn36MRLP7Pkq4ToUtlhQ==
+X-Received: by 2002:a17:902:ea02:b0:1a9:bb1d:64e with SMTP id s2-20020a170902ea0200b001a9bb1d064emr8433plg.15.1684177757962;
+        Mon, 15 May 2023 12:09:17 -0700 (PDT)
+Received: from google.com ([2620:15c:2d:3:b860:7e3e:331f:4d8b])
+        by smtp.gmail.com with ESMTPSA id m5-20020a170902768500b001a682a195basm13906296pll.28.2023.05.15.12.09.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 May 2023 12:09:17 -0700 (PDT)
+Date: Mon, 15 May 2023 12:09:12 -0700
+From: Isaac Manjarres <isaacmanjarres@google.com>
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>,
+	Arnd Bergmann <arnd@arndb.de>, Christoph Hellwig <hch@lst.de>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Ard Biesheuvel <ardb@kernel.org>,
+	Saravana Kannan <saravanak@google.com>,
+	Alasdair Kergon <agk@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Joerg Roedel <joro@8bytes.org>, Mark Brown <broonie@kernel.org>,
+	Mike Snitzer <snitzer@kernel.org>,
 	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Borislav Petkov <bp@suse.de>, Randy Dunlap <rdunlap@infradead.org>,
-	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-	Kim Phillips <kim.phillips@amd.com>,
-	"Steven Rostedt (Google)" <rostedt@goodmis.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Hans de Goede <hdegoede@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Kees Cook <keescook@chromium.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	"open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-	open list <linux-kernel@vger.kernel.org>,
-	"open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-	Roberto Sassu <roberto.sassu@huawei.com>,
-	Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: Re: [PATCH v2 RESEND 7/7] swiotlb: per-device flag if there are
- dynamically allocated buffers
-Message-ID: <ZGJdtmP13pv06xDH@arm.com>
-References: <cover.1683623618.git.petr.tesarik.ext@huawei.com>
- <69f9e058bb1ad95905a62a4fc8461b064872af97.1683623618.git.petr.tesarik.ext@huawei.com>
- <ZGEuYxR2PM6wHeDh@arm.com>
- <20230515104847.6dfdf31b@meshulam.tesarici.cz>
- <20230515120054.0115a4eb@meshulam.tesarici.cz>
+	Robin Murphy <robin.murphy@arm.com>, linux-mm@kvack.org,
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	Petr Tesarik <petrtesarik@huaweicloud.com>
+Subject: Re: [PATCH v3 00/13] mm, dma, arm64: Reduce ARCH_KMALLOC_MINALIGN to
+ 8
+Message-ID: <ZGKDWMqTt/f05AmG@google.com>
+References: <20221106220143.2129263-1-catalin.marinas@arm.com>
+ <ZBNiN9CR2F/fvUTh@google.com>
+ <ZEARbKMfMS8KdkhJ@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230515120054.0115a4eb@meshulam.tesarici.cz>
+In-Reply-To: <ZEARbKMfMS8KdkhJ@arm.com>
 
-(some of you replies may have been filtered to various of my mailboxes,
-depending on which lists you cc'ed; replying here)
+On Wed, Apr 19, 2023 at 05:06:04PM +0100, Catalin Marinas wrote:
+> I rebased it locally but the last stumbling block is sorting out the
+> iommu bouncing. I was hoping Robin Murphy can lend a hand but he's been
+> busy with other bits. I'll repost the series at 6.4-rc1.
+Hey Catalin, just following up on this. I think it might be worthwhile
+to split this series into two series:
 
-On Mon, May 15, 2023 at 12:00:54PM +0200, Petr Tesařík wrote:
-> On Mon, 15 May 2023 10:48:47 +0200
-> Petr Tesařík <petr@tesarici.cz> wrote:
-> > On Sun, 14 May 2023 19:54:27 +0100
-> > Catalin Marinas <catalin.marinas@arm.com> wrote:
-> > > Now, thinking about the list_head access and the flag ordering, since it
-> > > doesn't matter, you might as well not bother with the flag at all and
-> > > rely on list_add() and list_empty() ordering vs the hypothetical 'blah'
-> > > access. Both of these use READ/WRITE_ONCE() for setting
-> > > dma_io_tlb_dyn_slots.next. You only need an smp_wmb() after the
-> > > list_add() and an smp_rmb() before a list_empty() check in
->                       ^^^^^^^^^
-> Got it, finally. Well, that's exactly something I don't want to do.
-> For example, on arm64 (seeing your email address), smp_rmb() translates
-> to a "dsb ld" instruction. I would expect that this is more expensive
-> than a "ldar", generated by smp_load_acquire().
+Series 1: Decouple ARCH_KMALLOC_MINALIGN from ARCH_DMA_MINALIGN,
+and use the cacheline size to determine the minimum kmalloc
+alignment.
 
-It translates to a dmb ishld which is on par with ldar (dsb is indeed a
-lot more expensive but that's not generated here).
+Series 2: Lower the minimum kmalloc alignment to 8 bytes by adding
+support for using SWIOTLB to bounce unaligned kmalloc buffers for DMA
+transactions.
 
-> > > is_swiotlb_buffer(), no dma_iotlb_have_dyn variable.  
-> > 
-> > Wait, let me check that I understand you right. Do you suggest that I
-> > convert dma_io_tlb_dyn_slots to a lockless list and get rid of the
-> > spinlock?
-> > 
-> > I'm sure it can be done for list_add() and list_del(). I'll have
-> > to think about list_move().
-> 
-> Hm, even the documentation of llist_empty() says that it is "not
-> guaranteed to be accurate or up to date". If it could be, I'm quite
-> sure the authors would have gladly implemented it as such.
+Dividing the patches as such has the advantage of lowering the minimum
+kmalloc alignment to 64 bytes on many ARM64 systems while the work for
+lowering the minimum alignment to 8 bytes proceeds. This provides a
+noticeable decrease in the slab memory footprint (e.g. I observed a 15
+MB decrease in slab usage on a device I was using).
 
-It doesn't but neither does your flag. If you want a guarantee, you'd
-need locks because a llist_empty() on its own can race with other
-llist_add/del_*() that may not yet be visible to a CPU at exactly that
-moment. BTW, the llist implementation cannot delete a random element, so
-not sure this is suitable for your implementation (it can only delete
-the first element or the whole list).
+What are your thoughts on this?
 
-I do think you need to change your invariants and not rely on an
-absolute list_empty() or some flag:
-
-P0:
-	list_add(paddr);
-	WRITE_ONCE(blah, paddr);
-
-P1:
-	paddr = READ_ONCE(blah);
-	list_empty();
-
-Your invariant (on P1) should be blah == paddr => !list_empty(). If
-there is another P2 removing paddr from the list, this wouldn't work
-(nor your flag) but the assumption is that a correctly written driver
-that still has a reference to paddr doesn't use it after being removed
-from the list (i.e. it doesn't do a dma_unmap(paddr) and still continue
-to use this paddr for e.g. dma_sync()).
-
-For such invariant, you'd need ordering between list_add() and the
-write of paddr (smp_wmb() would do). On P1, you need an smp_rmb() before
-list_empty() since the implementation does a READ_ONCE only).
-
-You still need the locks for list modifications and list traversal as I
-don't see how you can use the llist implementation with random element
-removal.
-
-
-There is another scenario to take into account on the list_del() side.
-Let's assume that there are other elements on the list, so
-list_empty() == false:
-
-P0:
-	list_del(paddr);
-	/* the memory gets freed, added to some slab or page free list */
-	WRITE_ONCE(slab_free_list, __va(paddr));
-
-P1:
-	paddr = __pa(READ_ONCE(slab_free_list));/* re-allocating paddr freed on P0 */
-	if (!list_empty()) {			/* assuming other elements on the list */
-		/* searching the list */
-		list_for_each() {
-			if (pos->paddr) == __pa(vaddr))
-				/* match */
-		}
-	}
-
-On P0, you want the list update to be visible before the memory is freed
-(and potentially reallocated on P1). An smp_wmb() on P0 would do. For
-P1, we don't care about list_empty() as there can be other elements
-already. But we do want any list elements reading during the search to
-be ordered after the slab_free_list reading. The smp_rmb() you'd add for
-the case above would suffice.
-
--- 
-Catalin
+--Isaac
