@@ -1,12 +1,12 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 854ACC8C8
-	for <iommu@lists.linux.dev>; Mon, 15 May 2023 12:49:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D1343C2E1
+	for <iommu@lists.linux.dev>; Mon, 15 May 2023 12:49:42 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D1B991063;
-	Mon, 15 May 2023 05:50:25 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1200D2F4;
+	Mon, 15 May 2023 05:50:27 -0700 (PDT)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 2A89A3F67D;
-	Mon, 15 May 2023 05:49:40 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 5E17E3F67D;
+	Mon, 15 May 2023 05:49:41 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: joro@8bytes.org
 Cc: iommu@lists.linux.dev,
@@ -15,9 +15,9 @@ Cc: iommu@lists.linux.dev,
 	digetx@gmail.com,
 	thierry.reding@gmail.com,
 	linux-tegra@vger.kernel.org
-Subject: [PATCH 3/4] iommu/tegra-gart: Generalise domain support
-Date: Mon, 15 May 2023 13:49:31 +0100
-Message-Id: <38e4c004c6b3d0120c5dc6739301bb97bb28fcf6.1684154219.git.robin.murphy@arm.com>
+Subject: [PATCH 4/4] iommu: Clean up force_aperture confusion
+Date: Mon, 15 May 2023 13:49:32 +0100
+Message-Id: <ed26ed3213bf07ab4977211702dc0898680524cd.1684154219.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
 In-Reply-To: <cover.1684154219.git.robin.murphy@arm.com>
 References: <cover.1684154219.git.robin.murphy@arm.com>
@@ -29,147 +29,109 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Now that we have a clear notion of mappings being owned by a domain,
-rather than the GART instance, it's easy enough to support operating on
-them independently of whether the domain is currently active. This also
-makes the PTE checks for debugging as cheap as testing the gart_debug
-option itself, so we may as well just remove the option.
+It was never entirely clear whether the force_aperture flag was supposed
+to be a hardware capability or a software policy. So far things seem to
+have leant towards the latter, given that the only drivers not setting
+the flag are ones where the aperture is seemingly a whole virtual
+address space such that accesses outside it wouldn't be possible, and
+the one driver which definitely can't enforce it in hardware *does*
+still set the flag.
+
+On reflection, though, it makes little sense for drivers to dictate
+usage policy to callers, and the interpretation that a driver setting
+the flag might also translate addresses outside the given aperture but
+has for some reason chosen not to is not actually a useful one. It seems
+a lot more logical to treat the aperture as the absolute limit of what
+can be translated, and the flag to indicate what would happen if a
+device did try to access an address outside the aperture, i.e. whether
+the access would fault or pass through untranslated. As such, reframe
+the flag consistent with a hardware capability in the hope of clearing
+up the misconception.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/tegra-gart.c | 46 ++++++++++++++------------------------
- 1 file changed, 17 insertions(+), 29 deletions(-)
+ drivers/iommu/dma-iommu.c    | 19 +++++++------------
+ drivers/iommu/mtk_iommu_v1.c |  4 ++++
+ drivers/iommu/sprd-iommu.c   |  1 +
+ drivers/iommu/tegra-gart.c   |  2 +-
+ 4 files changed, 13 insertions(+), 13 deletions(-)
 
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 7a9f0b0bddbd..4693b021d54f 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -548,24 +548,19 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+ 	if (!cookie || cookie->type != IOMMU_DMA_IOVA_COOKIE)
+ 		return -EINVAL;
+ 
++	/*
++	 * If the IOMMU only offers a non-isolated GART-style translation
++	 * aperture, just let the device use dma-direct.
++	 */
++	if (!domain->geometry.force_aperture)
++		return -EINVAL;
++
+ 	iovad = &cookie->iovad;
+ 
+ 	/* Use the smallest supported page size for IOVA granularity */
+ 	order = __ffs(domain->pgsize_bitmap);
+ 	base_pfn = max_t(unsigned long, 1, base >> order);
+ 
+-	/* Check the domain allows at least some access to the device... */
+-	if (domain->geometry.force_aperture) {
+-		if (base > domain->geometry.aperture_end ||
+-		    limit < domain->geometry.aperture_start) {
+-			pr_warn("specified DMA range outside IOMMU capability\n");
+-			return -EFAULT;
+-		}
+-		/* ...then finally give it a kicking to make sure it fits */
+-		base_pfn = max_t(unsigned long, base_pfn,
+-				domain->geometry.aperture_start >> order);
+-	}
+-
+ 	/* start_pfn is always nonzero for an already-initialised domain */
+ 	mutex_lock(&cookie->mutex);
+ 	if (iovad->start_pfn) {
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index 8a0a5e5d049f..3ca813919974 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -281,6 +281,10 @@ static struct iommu_domain *mtk_iommu_v1_domain_alloc(unsigned type)
+ 	if (!dom)
+ 		return NULL;
+ 
++	dom->domain.geometry.aperture_start = 0;
++	dom->domain.geometry.aperture_end = SZ_4G - 1;
++	dom->domain.geometry.force_aperture = true;
++
+ 	return &dom->domain;
+ }
+ 
+diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
+index 39e34fdeccda..eb684d8807ca 100644
+--- a/drivers/iommu/sprd-iommu.c
++++ b/drivers/iommu/sprd-iommu.c
+@@ -148,6 +148,7 @@ static struct iommu_domain *sprd_iommu_domain_alloc(unsigned int domain_type)
+ 
+ 	dom->domain.geometry.aperture_start = 0;
+ 	dom->domain.geometry.aperture_end = SZ_256M - 1;
++	dom->domain.geometry.force_aperture = true;
+ 
+ 	return &dom->domain;
+ }
 diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index a74648655dac..0a121cbc17b8 100644
+index 0a121cbc17b8..c221af290798 100644
 --- a/drivers/iommu/tegra-gart.c
 +++ b/drivers/iommu/tegra-gart.c
-@@ -52,8 +52,6 @@ struct gart_device {
+@@ -160,7 +160,7 @@ static struct iommu_domain *gart_iommu_domain_alloc(unsigned type)
  
- static struct gart_device *gart_handle; /* unique for a system */
+ 	domain->domain.geometry.aperture_start = gart->iovmm_base;
+ 	domain->domain.geometry.aperture_end = gart->iovmm_end - 1;
+-	domain->domain.geometry.force_aperture = true;
++	domain->domain.geometry.force_aperture = false;
  
--static bool gart_debug;
--
- /*
-  * Any interaction between any block on PPSB and a block on APB or AHB
-  * must have these read-back to ensure the APB/AHB bus transaction is
-@@ -83,17 +81,6 @@ static inline void gart_set_pte(struct gart_device *gart,
- 	writel_relaxed(pte, gart->regs + GART_ENTRY_DATA);
- }
- 
--static inline unsigned long gart_read_pte(struct gart_device *gart,
--					  unsigned long iova)
--{
--	unsigned long pte;
--
--	writel_relaxed(iova, gart->regs + GART_ENTRY_ADDR);
--	pte = readl_relaxed(gart->regs + GART_ENTRY_DATA);
--
--	return pte;
--}
--
- static void do_gart_setup(struct gart_device *gart)
- {
- 	unsigned long iova;
-@@ -113,9 +100,9 @@ static inline bool gart_iova_range_invalid(struct gart_device *gart,
- 			iova + bytes > gart->iovmm_end);
- }
- 
--static inline bool gart_pte_valid(struct gart_device *gart, unsigned long iova)
-+static inline bool gart_pte_valid(u32 pte)
- {
--	return !!(gart_read_pte(gart, iova) & GART_ENTRY_PHYS_ADDR_VALID);
-+	return pte & GART_ENTRY_PHYS_ADDR_VALID;
- }
- 
- static int gart_iommu_attach_dev(struct iommu_domain *domain,
-@@ -192,18 +179,19 @@ static void gart_iommu_domain_free(struct iommu_domain *domain)
- }
- 
- static inline int __gart_iommu_map(struct gart_device *gart, unsigned long iova,
--				   unsigned long pa)
-+				   unsigned long pa, struct gart_domain *domain)
- {
- 	int idx = gart_pte_index(gart, iova);
- 	u32 pte = GART_ENTRY_PHYS_ADDR_VALID | pa;
- 
--	if (unlikely(gart_debug && gart_pte_valid(gart, iova))) {
-+	if (unlikely(gart_pte_valid(domain->savedata[idx]))) {
- 		dev_err(gart->dev, "Page entry is in-use\n");
- 		return -EINVAL;
- 	}
- 
--	gart->active_domain->savedata[idx] = pte;
--	gart_set_pte(gart, iova, pte);
-+	domain->savedata[idx] = pte;
-+	if (domain == gart->active_domain)
-+		gart_set_pte(gart, iova, pte);
- 
- 	return 0;
- }
-@@ -218,24 +206,26 @@ static int gart_iommu_map(struct iommu_domain *domain, unsigned long iova,
- 		return -EINVAL;
- 
- 	spin_lock(&gart->pte_lock);
--	ret = __gart_iommu_map(gart, iova, (unsigned long)pa);
-+	ret = __gart_iommu_map(gart, iova, (unsigned long)pa, to_gart_domain(domain));
- 	spin_unlock(&gart->pte_lock);
- 
- 	return ret;
- }
- 
- static inline int __gart_iommu_unmap(struct gart_device *gart,
--				     unsigned long iova)
-+				     unsigned long iova,
-+				     struct gart_domain *domain)
- {
- 	int idx = gart_pte_index(gart, iova);
- 
--	if (unlikely(gart_debug && !gart_pte_valid(gart, iova))) {
-+	if (unlikely(!gart_pte_valid(domain->savedata[idx]))) {
- 		dev_err(gart->dev, "Page entry is invalid\n");
- 		return -EINVAL;
- 	}
- 
--	gart->active_domain->savedata[idx] = 0;
--	gart_set_pte(gart, iova, 0);
-+	domain->savedata[idx] = 0;
-+	if (domain == gart->active_domain)
-+		gart_set_pte(gart, iova, 0);
- 
- 	return 0;
- }
-@@ -250,7 +240,7 @@ static size_t gart_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- 		return 0;
- 
- 	spin_lock(&gart->pte_lock);
--	err = __gart_iommu_unmap(gart, iova);
-+	err = __gart_iommu_unmap(gart, iova, to_gart_domain(domain));
- 	spin_unlock(&gart->pte_lock);
- 
- 	return err ? 0 : bytes;
-@@ -261,12 +251,13 @@ static phys_addr_t gart_iommu_iova_to_phys(struct iommu_domain *domain,
- {
- 	struct gart_device *gart = gart_handle;
- 	unsigned long pte;
-+	int idx = gart_pte_index(gart, iova);
- 
- 	if (gart_iova_range_invalid(gart, iova, GART_PAGE_SIZE))
- 		return -EINVAL;
- 
- 	spin_lock(&gart->pte_lock);
--	pte = gart_read_pte(gart, iova);
-+	pte = to_gart_domain(domain)->savedata[idx];
- 	spin_unlock(&gart->pte_lock);
- 
- 	return pte & GART_PAGE_MASK;
-@@ -390,6 +381,3 @@ struct gart_device *tegra_gart_probe(struct device *dev, struct tegra_mc *mc)
- 
- 	return ERR_PTR(err);
- }
--
--module_param(gart_debug, bool, 0644);
--MODULE_PARM_DESC(gart_debug, "Enable GART debugging");
+ 	num_pages = (gart->iovmm_end - gart->iovmm_base) / GART_PAGE_SIZE;
+ 	domain->savedata = vcalloc(num_pages, sizeof(u32));
 -- 
 2.39.2.101.g768bb238c484.dirty
 
