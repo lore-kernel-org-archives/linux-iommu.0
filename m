@@ -1,33 +1,33 @@
 Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D191848E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5FFB8495
 	for <iommu@lists.linux.dev>; Mon, 15 May 2023 08:07:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
 	Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
 	Content-ID:Content-Description:In-Reply-To;
-	bh=qQ97W8DjtNWYNvTOAleOKLKZr+6FI4styhSio5/BDPE=; b=jDA5YrBAqv2XXwX2hyoap3XhWh
-	FUFqXWI9xbofaUhrnD/ux504IzigT+5UAWA2nMY5JWOA6Oqia5Te8jXiDxFNK8pNpovPpq5Ipx4Tp
-	BoP1Xn/k2yhszEl4J3D1i1ULvw2aVOT2NmbFxiAt/QCeyGGnPAoLUpB5+TENS4VG9T0BTK9qeOYph
-	j0IJUDpNmFgbT4b5PUux6ZW+r1nWua3QIgMmTlB8o48//Is03yKfVTJtReG1SFLB/GbnnyxmvNPD4
-	42RHsxPs8LP1AfUAk0r3kC5W2n+QFqPC+el6SkJJV5JBjO1M1OFIEMoIuucEObRX9HHJj+weRarpG
-	WQ5sFIOg==;
+	bh=/ezz9F43epJmjX+2+q2EuT6G37yn9BJ4CMV+iiE+KIk=; b=EaiXXa+JLNkopxcm154uvINSoT
+	XXhhxSNYI9Dj8TJsMePYGsmPawAk4PgxqA24LoC8ToY8T+UvgX6Mt1Iok43XBxw17lZCw5OZdQ2tQ
+	ZaaSSGuhzCCsuKXfTSd/sC/q9v1c7d0frobCxDxfEp+AjNlpv5Qz2smjLvBY1tflTjx41hwRaKkev
+	GYei11HqZz4Lpne0uwvABdXqI3PMUjfJYYIBLxOseh77Y/9EJ3pflT5Yk/oyQZ6FSRQ1NCjm4r6UF
+	NHWZLaCOz+6hbMv+Kar15kRPnKaI+ssxzGQ048NySZiovPqlPKgHK6tfNCL3XXal7p8b7Oo4dmUEi
+	/ipC8uhw==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
 	by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-	id 1pyTDl-00BQN6-1z;
-	Mon, 15 May 2023 08:06:18 +0000
+	id 1pyTDl-00BQN4-1M;
+	Mon, 15 May 2023 08:06:17 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
 	(Client did not present a certificate)
-	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 934F2305ECF;
+	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 87106302FB8;
 	Mon, 15 May 2023 10:06:15 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-	id D82FB202FCEA8; Mon, 15 May 2023 10:06:10 +0200 (CEST)
-Message-ID: <20230515080554.657068280@infradead.org>
+	id C75F2202FCEA7; Mon, 15 May 2023 10:06:10 +0200 (CEST)
+Message-ID: <20230515080554.382778664@infradead.org>
 User-Agent: quilt/0.66
-Date: Mon, 15 May 2023 09:57:10 +0200
+Date: Mon, 15 May 2023 09:57:06 +0200
 From: Peter Zijlstra <peterz@infradead.org>
 To: torvalds@linux-foundation.org
 Cc: corbet@lwn.net,
@@ -72,7 +72,7 @@ Cc: corbet@lwn.net,
  iommu@lists.linux.dev,
  linux-arch@vger.kernel.org,
  linux-crypto@vger.kernel.org
-Subject: [PATCH v3 11/11] s390/cpum_sf: Convert to cmpxchg128()
+Subject: [PATCH v3 07/11] x86,intel_iommu: Replace cmpxchg_double()
 References: <20230515075659.118447996@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -82,72 +82,172 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 
-Now that there is a cross arch u128 and cmpxchg128(), use those
-instead of the custom CDSG helper.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Heiko Carstens <hca@linux.ibm.com>
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- arch/s390/include/asm/cpu_mf.h  |    2 +-
- arch/s390/kernel/perf_cpum_sf.c |   16 +++-------------
- 2 files changed, 4 insertions(+), 14 deletions(-)
+ drivers/iommu/intel/irq_remapping.c |    8 --
+ include/linux/dmar.h                |  125 +++++++++++++++++++-----------------
+ 2 files changed, 68 insertions(+), 65 deletions(-)
 
---- a/arch/s390/include/asm/cpu_mf.h
-+++ b/arch/s390/include/asm/cpu_mf.h
-@@ -140,7 +140,7 @@ union hws_trailer_header {
- 		unsigned int dsdes:16;	/* 48-63: size of diagnostic SDE */
- 		unsigned long long overflow; /* 64 - Overflow Count   */
+--- a/drivers/iommu/intel/irq_remapping.c
++++ b/drivers/iommu/intel/irq_remapping.c
+@@ -174,18 +174,14 @@ static int modify_irte(struct irq_2_iomm
+ 	irte = &iommu->ir_table->base[index];
+ 
+ 	if ((irte->pst == 1) || (irte_modified->pst == 1)) {
+-		bool ret;
+-
+-		ret = cmpxchg_double(&irte->low, &irte->high,
+-				     irte->low, irte->high,
+-				     irte_modified->low, irte_modified->high);
+ 		/*
+ 		 * We use cmpxchg16 to atomically update the 128-bit IRTE,
+ 		 * and it cannot be updated by the hardware or other processors
+ 		 * behind us, so the return value of cmpxchg16 should be the
+ 		 * same as the old value.
+ 		 */
+-		WARN_ON(!ret);
++		u128 old = irte->irte;
++		WARN_ON(!try_cmpxchg128(&irte->irte, &old, irte_modified->irte));
+ 	} else {
+ 		WRITE_ONCE(irte->low, irte_modified->low);
+ 		WRITE_ONCE(irte->high, irte_modified->high);
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -201,67 +201,74 @@ static inline void detect_intel_iommu(vo
+ 
+ struct irte {
+ 	union {
+-		/* Shared between remapped and posted mode*/
+ 		struct {
+-			__u64	present		: 1,  /*  0      */
+-				fpd		: 1,  /*  1      */
+-				__res0		: 6,  /*  2 -  6 */
+-				avail		: 4,  /*  8 - 11 */
+-				__res1		: 3,  /* 12 - 14 */
+-				pst		: 1,  /* 15      */
+-				vector		: 8,  /* 16 - 23 */
+-				__res2		: 40; /* 24 - 63 */
++			union {
++				/* Shared between remapped and posted mode*/
++				struct {
++					__u64	present		: 1,  /*  0      */
++						fpd		: 1,  /*  1      */
++						__res0		: 6,  /*  2 -  6 */
++						avail		: 4,  /*  8 - 11 */
++						__res1		: 3,  /* 12 - 14 */
++						pst		: 1,  /* 15      */
++						vector		: 8,  /* 16 - 23 */
++						__res2		: 40; /* 24 - 63 */
++				};
++
++				/* Remapped mode */
++				struct {
++					__u64	r_present	: 1,  /*  0      */
++						r_fpd		: 1,  /*  1      */
++						dst_mode	: 1,  /*  2      */
++						redir_hint	: 1,  /*  3      */
++						trigger_mode	: 1,  /*  4      */
++						dlvry_mode	: 3,  /*  5 -  7 */
++						r_avail		: 4,  /*  8 - 11 */
++						r_res0		: 4,  /* 12 - 15 */
++						r_vector	: 8,  /* 16 - 23 */
++						r_res1		: 8,  /* 24 - 31 */
++						dest_id		: 32; /* 32 - 63 */
++				};
++
++				/* Posted mode */
++				struct {
++					__u64	p_present	: 1,  /*  0      */
++						p_fpd		: 1,  /*  1      */
++						p_res0		: 6,  /*  2 -  7 */
++						p_avail		: 4,  /*  8 - 11 */
++						p_res1		: 2,  /* 12 - 13 */
++						p_urgent	: 1,  /* 14      */
++						p_pst		: 1,  /* 15      */
++						p_vector	: 8,  /* 16 - 23 */
++						p_res2		: 14, /* 24 - 37 */
++						pda_l		: 26; /* 38 - 63 */
++				};
++				__u64 low;
++			};
++
++			union {
++				/* Shared between remapped and posted mode*/
++				struct {
++					__u64	sid		: 16,  /* 64 - 79  */
++						sq		: 2,   /* 80 - 81  */
++						svt		: 2,   /* 82 - 83  */
++						__res3		: 44;  /* 84 - 127 */
++				};
++
++				/* Posted mode*/
++				struct {
++					__u64	p_sid		: 16,  /* 64 - 79  */
++						p_sq		: 2,   /* 80 - 81  */
++						p_svt		: 2,   /* 82 - 83  */
++						p_res3		: 12,  /* 84 - 95  */
++						pda_h		: 32;  /* 96 - 127 */
++				};
++				__u64 high;
++			};
+ 		};
+-
+-		/* Remapped mode */
+-		struct {
+-			__u64	r_present	: 1,  /*  0      */
+-				r_fpd		: 1,  /*  1      */
+-				dst_mode	: 1,  /*  2      */
+-				redir_hint	: 1,  /*  3      */
+-				trigger_mode	: 1,  /*  4      */
+-				dlvry_mode	: 3,  /*  5 -  7 */
+-				r_avail		: 4,  /*  8 - 11 */
+-				r_res0		: 4,  /* 12 - 15 */
+-				r_vector	: 8,  /* 16 - 23 */
+-				r_res1		: 8,  /* 24 - 31 */
+-				dest_id		: 32; /* 32 - 63 */
+-		};
+-
+-		/* Posted mode */
+-		struct {
+-			__u64	p_present	: 1,  /*  0      */
+-				p_fpd		: 1,  /*  1      */
+-				p_res0		: 6,  /*  2 -  7 */
+-				p_avail		: 4,  /*  8 - 11 */
+-				p_res1		: 2,  /* 12 - 13 */
+-				p_urgent	: 1,  /* 14      */
+-				p_pst		: 1,  /* 15      */
+-				p_vector	: 8,  /* 16 - 23 */
+-				p_res2		: 14, /* 24 - 37 */
+-				pda_l		: 26; /* 38 - 63 */
+-		};
+-		__u64 low;
+-	};
+-
+-	union {
+-		/* Shared between remapped and posted mode*/
+-		struct {
+-			__u64	sid		: 16,  /* 64 - 79  */
+-				sq		: 2,   /* 80 - 81  */
+-				svt		: 2,   /* 82 - 83  */
+-				__res3		: 44;  /* 84 - 127 */
+-		};
+-
+-		/* Posted mode*/
+-		struct {
+-			__u64	p_sid		: 16,  /* 64 - 79  */
+-				p_sq		: 2,   /* 80 - 81  */
+-				p_svt		: 2,   /* 82 - 83  */
+-				p_res3		: 12,  /* 84 - 95  */
+-				pda_h		: 32;  /* 96 - 127 */
+-		};
+-		__u64 high;
++#ifdef CONFIG_IRQ_REMAP
++		__u128 irte;
++#endif
  	};
--	__uint128_t val;
-+	u128 val;
  };
  
- struct hws_trailer_entry {
---- a/arch/s390/kernel/perf_cpum_sf.c
-+++ b/arch/s390/kernel/perf_cpum_sf.c
-@@ -1275,16 +1275,6 @@ static void hw_collect_samples(struct pe
- 	}
- }
- 
--static inline __uint128_t __cdsg(__uint128_t *ptr, __uint128_t old, __uint128_t new)
--{
--	asm volatile(
--		"	cdsg	%[old],%[new],%[ptr]\n"
--		: [old] "+d" (old), [ptr] "+QS" (*ptr)
--		: [new] "d" (new)
--		: "memory", "cc");
--	return old;
--}
--
- /* hw_perf_event_update() - Process sampling buffer
-  * @event:	The perf event
-  * @flush_all:	Flag to also flush partially filled sample-data-blocks
-@@ -1362,7 +1352,7 @@ static void hw_perf_event_update(struct
- 			new.f = 0;
- 			new.a = 1;
- 			new.overflow = 0;
--			prev.val = __cdsg(&te->header.val, old.val, new.val);
-+			prev.val = cmpxchg128(&te->header.val, old.val, new.val);
- 		} while (prev.val != old.val);
- 
- 		/* Advance to next sample-data-block */
-@@ -1572,7 +1562,7 @@ static bool aux_set_alert(struct aux_buf
- 		}
- 		new.a = 1;
- 		new.overflow = 0;
--		prev.val = __cdsg(&te->header.val, old.val, new.val);
-+		prev.val = cmpxchg128(&te->header.val, old.val, new.val);
- 	} while (prev.val != old.val);
- 	return true;
- }
-@@ -1646,7 +1636,7 @@ static bool aux_reset_buffer(struct aux_
- 				new.a = 1;
- 			else
- 				new.a = 0;
--			prev.val = __cdsg(&te->header.val, old.val, new.val);
-+			prev.val = cmpxchg128(&te->header.val, old.val, new.val);
- 		} while (prev.val != old.val);
- 		*overflow += orig_overflow;
- 	}
 
 
