@@ -1,32 +1,32 @@
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A22228494
-	for <iommu@lists.linux.dev>; Mon, 15 May 2023 08:07:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A9FF849C
+	for <iommu@lists.linux.dev>; Mon, 15 May 2023 08:07:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=Subject:Cc:To:From:Date:Message-ID:
-	Sender:Reply-To:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:In-Reply-To:References;
-	bh=oaAnHSQUa44CIjEzLECo4Bz9k0HVG1DLxoBT0I79NeI=; b=NfkvPcdWsJTjmoEQrA9fvkbzZc
-	OLWjr4UU1kWvWf66uviIN6aqUIZ1bU0a8aEQPzT/ji1FUTxQToxV1V2kLh8dentwTx5nRMQ4vbB0i
-	gIPkqOaBfpPHRlc4Q9v4DKGIZOs5zR693IMyllbhfUlUJPHFrv0sH5wUWWcgPRBAKgBI1lgDssb4e
-	9PWNLgpBVKQLGKCOHMSvDJkLwwQ85cxYADGoR5hXnOpJdsJmtsyLLYpk0hwzrXnE5x14WXOtUXAW9
-	mjJQ2i0rMf3kX9KquBpjBy/2GJyEk+TX/LIQwUBEiDSc3Rf/hALuWs5q5Nr/iPhIXqgtRSb4GdE7Z
-	shGEbmvA==;
+	d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
+	Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
+	Content-ID:Content-Description:In-Reply-To;
+	bh=rgZ7hZWkHDtTpF84Xw00Ifyh/7yejqO/hjYHP4KrVyk=; b=VA/C0CmchcfXpbAczSsPgonOyt
+	2aUt/agGqPFIFpZ6l2I6Qg5nqdJuz9IoNMj9V/ozfrCxRR6fb5YEf1Ga0kiJRyftM4e6pWjqWSKkc
+	dIb0BRa5UE1aFif3qoM2MZ9k3ki3NvKxYPbB/R6/S547Pj10WkYXT/Q4uPhD0UtHAZXSrtLCyzGlN
+	kb1o1hAHxW8lgC6PteRUH9iYuSUB3Gmflm7Y6x74H7yhLbWGQ2MymwpDc7/LOZXgNN8aLC7xVvmQ7
+	r4CZEX4BQYELzBYNeKfUDIJMu3CGkBsiIghUyTmTjEZk9+BAmwahfI7LbKKQJ31UK8rF4TV1yz3Wq
+	y8BpnERg==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
 	by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-	id 1pyTDk-003HUQ-Em; Mon, 15 May 2023 08:06:17 +0000
+	id 1pyTDl-003HUW-Ez; Mon, 15 May 2023 08:06:17 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
 	(Client did not present a certificate)
-	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 079C030003A;
-	Mon, 15 May 2023 10:06:10 +0200 (CEST)
+	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 872123033CC;
+	Mon, 15 May 2023 10:06:15 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-	id A6A6E202F7F66; Mon, 15 May 2023 10:06:10 +0200 (CEST)
-Message-ID: <20230515075659.118447996@infradead.org>
+	id C2169202FCEA4; Mon, 15 May 2023 10:06:10 +0200 (CEST)
+Message-ID: <20230515080554.315901115@infradead.org>
 User-Agent: quilt/0.66
-Date: Mon, 15 May 2023 09:56:59 +0200
+Date: Mon, 15 May 2023 09:57:05 +0200
 From: Peter Zijlstra <peterz@infradead.org>
 To: torvalds@linux-foundation.org
 Cc: corbet@lwn.net,
@@ -70,82 +70,77 @@ Cc: corbet@lwn.net,
  linux-s390@vger.kernel.org,
  iommu@lists.linux.dev,
  linux-arch@vger.kernel.org,
- linux-crypto@vger.kernel.org
-Subject: [PATCH v3 00/11] Introduce cmpxchg128() -- aka. the demise of cmpxchg_double()
+ linux-crypto@vger.kernel.org,
+ Vasant Hegde <vasant.hegde@amd.com>
+Subject: [PATCH v3 06/11] x86,amd_iommu: Replace cmpxchg_double()
+References: <20230515075659.118447996@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-
-Hi!
-
-I seem to have forgotten to post this series last release; so here goes. I'm
-really hoping to merge it and forget about it.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 
 
-Since Linus hated on cmpxchg_double(), a few patches to get rid of it, as
-proposed here:
-
-  https://lkml.kernel.org/r/Y2U3WdU61FvYlpUh@hirez.programming.kicks-ass.net
-
-
-These patches are based on 6.4.0-rc2.
-
-Available here:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git core/wip-u128
-
-Since v2:
-
- - reworked this_cpu_cmpxchg() to not implicity do u128 but provide explicit
-   this_cpu_cmpxchg128() (arnd)
- - added try_cmpxchg12_local() (per the addition of the try_cmpxchg*_local()
-   family of functions)
- - slight cleanup of the SLUB conversion (due to rebase and having to touch it)
- - added a 'cleanup' patch for SLUB, since I was staring at that anyway
-
-Since v1:
-
- - rebaed on Eric's ghash cleanups (hence the cryptodev-2.6 dependency)
- - rebased on Heiko's s390/cpum_sf CDSG patch
- - fixed up a bunch of arch code
- - fixed up the inline asm to use 'u128 *' mem argument so the compiler knows
-   how wide the modification is.
- - reworked the percpu thing to use union based type-punning instead of
-   _Generic() based casts.
-
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Tested-by: Vasant Hegde <vasant.hegde@amd.com>
 ---
- Documentation/core-api/this_cpu_ops.rst     |   2 -
- arch/arm64/include/asm/atomic_ll_sc.h       |  56 ++++----
- arch/arm64/include/asm/atomic_lse.h         |  39 +++---
- arch/arm64/include/asm/cmpxchg.h            |  48 ++-----
- arch/arm64/include/asm/percpu.h             |  30 +++--
- arch/s390/include/asm/cmpxchg.h             |  32 +----
- arch/s390/include/asm/cpu_mf.h              |   2 +-
- arch/s390/include/asm/percpu.h              |  34 +++--
- arch/s390/kernel/perf_cpum_sf.c             |  16 +--
- arch/x86/include/asm/cmpxchg.h              |  25 ----
- arch/x86/include/asm/cmpxchg_32.h           |   2 +-
- arch/x86/include/asm/cmpxchg_64.h           |  63 ++++++++-
- arch/x86/include/asm/percpu.h               | 100 +++++++++------
- drivers/iommu/amd/amd_iommu_types.h         |   9 +-
- drivers/iommu/amd/iommu.c                   |  10 +-
- drivers/iommu/intel/irq_remapping.c         |   8 +-
- include/asm-generic/percpu.h                |  66 ++--------
- include/crypto/b128ops.h                    |  14 +-
- include/linux/atomic/atomic-arch-fallback.h |  95 +++++++++++++-
- include/linux/atomic/atomic-instrumented.h  |  93 ++++++++++++--
- include/linux/dmar.h                        | 125 +++++++++---------
- include/linux/percpu-defs.h                 |  38 ------
- include/linux/slub_def.h                    |  12 +-
- include/linux/types.h                       |   5 +
- include/uapi/linux/types.h                  |   4 +
- lib/crypto/curve25519-hacl64.c              |   2 -
- lib/crypto/poly1305-donna64.c               |   2 -
- mm/slab.h                                   |  49 ++++++-
- mm/slub.c                                   | 191 ++++++++++++++--------------
- scripts/atomic/gen-atomic-fallback.sh       |   4 +-
- scripts/atomic/gen-atomic-instrumented.sh   |  19 +--
- 31 files changed, 667 insertions(+), 528 deletions(-)
+ drivers/iommu/amd/amd_iommu_types.h |    9 +++++++--
+ drivers/iommu/amd/iommu.c           |   10 ++++------
+ 2 files changed, 11 insertions(+), 8 deletions(-)
+
+--- a/drivers/iommu/amd/amd_iommu_types.h
++++ b/drivers/iommu/amd/amd_iommu_types.h
+@@ -986,8 +986,13 @@ union irte_ga_hi {
+ };
+ 
+ struct irte_ga {
+-	union irte_ga_lo lo;
+-	union irte_ga_hi hi;
++	union {
++		struct {
++			union irte_ga_lo lo;
++			union irte_ga_hi hi;
++		};
++		u128 irte;
++	};
+ };
+ 
+ struct irq_2_irte {
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -3003,10 +3003,10 @@ static int alloc_irq_index(struct amd_io
+ static int modify_irte_ga(struct amd_iommu *iommu, u16 devid, int index,
+ 			  struct irte_ga *irte, struct amd_ir_data *data)
+ {
+-	bool ret;
+ 	struct irq_remap_table *table;
+-	unsigned long flags;
+ 	struct irte_ga *entry;
++	unsigned long flags;
++	u128 old;
+ 
+ 	table = get_irq_table(iommu, devid);
+ 	if (!table)
+@@ -3017,16 +3017,14 @@ static int modify_irte_ga(struct amd_iom
+ 	entry = (struct irte_ga *)table->table;
+ 	entry = &entry[index];
+ 
+-	ret = cmpxchg_double(&entry->lo.val, &entry->hi.val,
+-			     entry->lo.val, entry->hi.val,
+-			     irte->lo.val, irte->hi.val);
+ 	/*
+ 	 * We use cmpxchg16 to atomically update the 128-bit IRTE,
+ 	 * and it cannot be updated by the hardware or other processors
+ 	 * behind us, so the return value of cmpxchg16 should be the
+ 	 * same as the old value.
+ 	 */
+-	WARN_ON(!ret);
++	old = entry->irte;
++	WARN_ON(!try_cmpxchg128(&entry->irte, &old, irte->irte));
+ 
+ 	if (data)
+ 		data->ref = entry;
+
 
