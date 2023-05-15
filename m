@@ -1,219 +1,102 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 796FA749F
-	for <iommu@lists.linux.dev>; Mon, 15 May 2023 08:48:57 +0000 (UTC)
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 1D16D15F16F;
-	Mon, 15 May 2023 10:48:48 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1684140528; bh=tStAwueOxbXDMBwSLNTJ9Qsuwa6+o5KusDWfCkARZKs=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=iH23OyGTr4tc1eztxSRC7l5DyGiPYJCtProPLZW0bSCFOghwW/tINr+gJraHtwGry
-	 hX72zLn8R/XonT8ju3AnubkdQpZTJZAV6EpvpedhqTn/K2s23lm9d5q9YeWEC4fImw
-	 xn45833kH9Y4z/8Gkb/OZjH2nRPRqo0gmtt7ovFRS7gqvveT1jnIIVSvWHsiBlDiQ2
-	 EIXlYIBZjGenSLF92tW6bjW8pzmeZYOMluUfdjGybfuSiBlNwooy5dBWhi6PoMQIaj
-	 3Fe3KCsXq2kAY34gB1tRoD4jNkukE+Txg9XTDFtk3uLqX+vjXhnaeEwJtdiCer9VTq
-	 ErmGi5SmkKILw==
-Date: Mon, 15 May 2023 10:48:47 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Petr Tesarik <petrtesarik@huaweicloud.com>, Jonathan Corbet
- <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael
- J. Wysocki" <rafael@kernel.org>, Maarten Lankhorst
- <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>,
- Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
- Daniel Vetter <daniel@ffwll.ch>, Christoph Hellwig <hch@lst.de>, Marek
- Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>,
- "Paul E. McKenney" <paulmck@kernel.org>, Borislav Petkov <bp@suse.de>,
- Randy Dunlap <rdunlap@infradead.org>, Damien Le Moal
- <damien.lemoal@opensource.wdc.com>, Kim Phillips <kim.phillips@amd.com>,
- "Steven Rostedt (Google)" <rostedt@goodmis.org>, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Hans de Goede <hdegoede@redhat.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Kees Cook <keescook@chromium.org>, Thomas
- Gleixner <tglx@linutronix.de>, "open list:DOCUMENTATION"
- <linux-doc@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>,
- "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>, "open list:DMA
- MAPPING HELPERS" <iommu@lists.linux.dev>, Roberto Sassu
- <roberto.sassu@huawei.com>, Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: Re: [PATCH v2 RESEND 7/7] swiotlb: per-device flag if there are
- dynamically allocated buffers
-Message-ID: <20230515104847.6dfdf31b@meshulam.tesarici.cz>
-In-Reply-To: <ZGEuYxR2PM6wHeDh@arm.com>
-References: <cover.1683623618.git.petr.tesarik.ext@huawei.com>
-	<69f9e058bb1ad95905a62a4fc8461b064872af97.1683623618.git.petr.tesarik.ext@huawei.com>
-	<ZGEuYxR2PM6wHeDh@arm.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-suse-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5EE13D6D
+	for <iommu@lists.linux.dev>; Mon, 15 May 2023 08:52:59 +0000 (UTC)
+Received: from pps.filterd (m0353726.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34F8dWhE030931;
+	Mon, 15 May 2023 08:52:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=tL2Dh34WXBi3w0uOo/CEgFzRe9FVdf1V2DHXt3B1hzQ=;
+ b=RgF2SLU/GSbIC43sewd93OJMJuQob/OvXp/h4GcpmDVvR3haOU9gtgWCmUKnHIJqaRGS
+ zM/YtGmo0F8o8AehEEdxcNS5S0EutJWDp4JzJk07alCpgvPG+u+6OvcpgT1klbETGM7R
+ B3vqZS3dTkEwbYIKYt4ZQsetvwQt11RWsnoYCa5Px4UUmeFelWObYB7JNRzhe/quKuJD
+ vMFqFRrITU3nBkbW2ns34tBjo2HW/+MSDGQuEIVXyWuTB3BizyyzEZpEsC9781iymOJu
+ Bb0Z15FQiZPDvAoBVmZu1rGvQpa8B5kCqVkHQuthmRbvDz+D5OTlICsTTU9UlTO916UP ag== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qkgnsskcr-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 15 May 2023 08:52:52 +0000
+Received: from m0353726.ppops.net (m0353726.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 34F8g6jY012065;
+	Mon, 15 May 2023 08:52:52 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qkgnsskbd-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 15 May 2023 08:52:52 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+	by ppma01fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 34F4cDHw008930;
+	Mon, 15 May 2023 08:52:49 GMT
+Received: from smtprelay02.fra02v.mail.ibm.com ([9.218.2.226])
+	by ppma01fra.de.ibm.com (PPS) with ESMTPS id 3qj264rt34-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 15 May 2023 08:52:49 +0000
+Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
+	by smtprelay02.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 34F8qlos22151814
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 15 May 2023 08:52:47 GMT
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id E464220043;
+	Mon, 15 May 2023 08:52:46 +0000 (GMT)
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 27F9620040;
+	Mon, 15 May 2023 08:52:45 +0000 (GMT)
+Received: from osiris (unknown [9.179.13.205])
+	by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTPS;
+	Mon, 15 May 2023 08:52:45 +0000 (GMT)
+Date: Mon, 15 May 2023 10:52:43 +0200
+From: Heiko Carstens <hca@linux.ibm.com>
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: torvalds@linux-foundation.org, corbet@lwn.net, will@kernel.org,
+        boqun.feng@gmail.com, mark.rutland@arm.com, catalin.marinas@arm.com,
+        dennis@kernel.org, tj@kernel.org, cl@linux.com, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, borntraeger@linux.ibm.com, svens@linux.ibm.com,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        joro@8bytes.org, suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
+        dwmw2@infradead.org, baolu.lu@linux.intel.com,
+        Arnd Bergmann <arnd@arndb.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>, davem@davemloft.net,
+        penberg@kernel.org, rientjes@google.com, iamjoonsoo.kim@lge.com,
+        Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz,
+        roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-s390@vger.kernel.org, iommu@lists.linux.dev,
+        linux-arch@vger.kernel.org, linux-crypto@vger.kernel.org
+Subject: Re: [PATCH v3 10/11] arch: Remove cmpxchg_double
+Message-ID: <ZGHy21ZEK4Q6umhV@osiris>
+References: <20230515075659.118447996@infradead.org>
+ <20230515080554.589824283@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230515080554.589824283@infradead.org>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: t1yqOEs5O0QDxVKZWXKnAMcNMUkxJyzX
+X-Proofpoint-GUID: 01k30nTH3vJOdbRkPWfhMNqXAs4dbI1r
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-05-15_06,2023-05-05_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 mlxscore=0
+ spamscore=0 bulkscore=0 clxscore=1011 phishscore=0 adultscore=0
+ mlxlogscore=660 priorityscore=1501 suspectscore=0 impostorscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2304280000 definitions=main-2305150073
 
-Hi Catalin,
-
-On Sun, 14 May 2023 19:54:27 +0100
-Catalin Marinas <catalin.marinas@arm.com> wrote:
-
-> On Tue, May 09, 2023 at 11:18:19AM +0200, Petr Tesarik wrote:
-> > diff --git a/include/linux/device.h b/include/linux/device.h
-> > index d1d2b8557b30..e340e0f06dce 100644
-> > --- a/include/linux/device.h
-> > +++ b/include/linux/device.h
-> > @@ -516,6 +516,9 @@ struct device_physical_location {
-> >   * @dma_io_tlb_dyn_slots:
-> >   *		Dynamically allocated bounce buffers for this device.
-> >   *		Not for driver use.
-> > + * @dma_io_tlb_have_dyn:
-> > + *		Does this device have any dynamically allocated bounce
-> > + *		buffers? Not for driver use.
-> >   * @archdata:	For arch-specific additions.
-> >   * @of_node:	Associated device tree node.
-> >   * @fwnode:	Associated device node supplied by platform firmware.
-> > @@ -623,6 +626,7 @@ struct device {
-> >  	struct io_tlb_mem *dma_io_tlb_mem;
-> >  	spinlock_t dma_io_tlb_dyn_lock;
-> >  	struct list_head dma_io_tlb_dyn_slots;
-> > +	bool dma_io_tlb_have_dyn;
-> >  #endif
-> >  	/* arch specific additions */
-> >  	struct dev_archdata	archdata;
-> > diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-> > index daa2064f2ede..8cbb0bebb0bc 100644
-> > --- a/include/linux/swiotlb.h
-> > +++ b/include/linux/swiotlb.h
-> > @@ -152,7 +152,11 @@ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
-> >  
-> >  	return mem &&
-> >  		(is_swiotlb_fixed(mem, paddr) ||
-> > -		 (mem->allow_dyn && is_swiotlb_dyn(dev, paddr)));
-> > +		 /* Pairs with smp_store_release() in swiotlb_dyn_map()
-> > +		  * and swiotlb_dyn_unmap().
-> > +		  */
-> > +		 (smp_load_acquire(&dev->dma_io_tlb_have_dyn) &&
-> > +		  is_swiotlb_dyn(dev, paddr)));
-> >  }
-> >  
-> >  static inline bool is_swiotlb_force_bounce(struct device *dev)
-> > diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> > index 81eab1c72c50..e8be3ee50f18 100644
-> > --- a/kernel/dma/swiotlb.c
-> > +++ b/kernel/dma/swiotlb.c
-> > @@ -642,6 +642,9 @@ static phys_addr_t swiotlb_dyn_map(struct device *dev, phys_addr_t orig_addr,
-> >  
-> >  	spin_lock_irqsave(&dev->dma_io_tlb_dyn_lock, flags);
-> >  	list_add(&slot->node, &dev->dma_io_tlb_dyn_slots);
-> > +	if (!dev->dma_io_tlb_have_dyn)
-> > +		/* Pairs with smp_load_acquire() in is_swiotlb_buffer() */
-> > +		smp_store_release(&dev->dma_io_tlb_have_dyn, true);
-> >  	spin_unlock_irqrestore(&dev->dma_io_tlb_dyn_lock, flags);  
+On Mon, May 15, 2023 at 09:57:09AM +0200, Peter Zijlstra wrote:
+> No moar users, remove the monster.
 > 
-> I'm not sure this works. What this seems to do is that if the caller of
-> is_swiotlb_buffer() sees the flag set, it's guaranteed that something
-> was added to the dma_io_tlb_dyn_slots list. But the reverse is not
-> necessarily true. IOW, if something was added to the list, there is a
-> brief window where the dma_io_tlb_have_dyn flag is still false. In the
-> general case, I doubt any ordering between list_add() and the flag
-> setting changes anything since neither of them may be visible to another
-> CPU.
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> ---
+...
+>  arch/s390/include/asm/cmpxchg.h            |   34 -----------------
+>  arch/s390/include/asm/percpu.h             |   18 ---------
 
-Thank you for the review! This patch probably needs a bit more
-explanation.
-
-The goal is to avoid taking a spin lock in the mkost common case that
-the dynamic list is empty. The only required invariant is:
-
-  When the flag is clear, it is safe to skip the list.
-
-It's not a bug to walk an empty list, it's merely less efficient. Such
-race window would be acceptable. OTOH that's not your concern if I
-understand you correctly.
-
-> What you need is for a 'paddr' added to the dynamic list to be correctly
-> identified by another CPU as dynamic swiotlb. That other CPU doesn't
-> check random addresses but only those returned by the DMA API.
-
-Yes, that's correct.
-
-> Such
-> values would be normally passed through a memory location (e.g. driver
-> local structures) and that's what you want to order against.
-
-This would certainly work, but I'm not sure I need it. My only goal is
-that when the flag is set, the new value is observed by all CPUs on the
-next call to is_swiotlb_buffer().
-
-> What I mean is that a 'dev->blah = paddr' needs to be ordered _after_
-> your flag setting. So you need the either the 'blah = paddr' assignment
-> to have release semantics or the flag setting to be an
-> smp_store_acquire() (but we don't have such thing). You'd have to use an
-> explicit smp_wmb() barrier after the flag setting (it can be outside the
-> lock). The spin_unlock() is not sufficient since it only has release
-> semantics.
-
-Understood. The spinlock is supposed to order changes to the list, not
-to the flag.
-
-> I also don't think the ordering between list_add() and flag
-> setting matters since the smp_wmb() would ensure that both are visible
-> when the 'paddr' value made it to the other CPU.
-
-If the flag makes it before the list, then the other CPU will walk the
-list only after acquiring dma_io_tlb_dyn_lock, and that's what the list
-is ordered against.
-
-I don't think there is any concern if the list makes it before the
-flag, as long as the new value of the flag is observed on the next call
-to is_swiotlb_buffer (on any CPU).
-
-> Similarly on the is_swiotlb_buffer() side, you want the flag reading to
-> be ordered after the 'blah = paddr' is observed. Here the
-> smp_load_acquire() is sufficient.
-> 
-> >  	return page_to_phys(slot->page);
-> > @@ -668,6 +671,9 @@ static void swiotlb_dyn_unmap(struct device *dev, phys_addr_t tlb_addr,
-> >  	unsigned long flags;
-> >  
-> >  	spin_lock_irqsave(&dev->dma_io_tlb_dyn_lock, flags);
-> > +	if (list_is_singular(&dev->dma_io_tlb_dyn_slots))
-> > +		/* Pairs with smp_load_acquire() in is_swiotlb_buffer() */
-> > +		smp_store_release(&dev->dma_io_tlb_have_dyn, false);
-> >  	slot = lookup_dyn_slot_locked(dev, tlb_addr);
-> >  	list_del(&slot->node);
-> >  	spin_unlock_irqrestore(&dev->dma_io_tlb_dyn_lock, flags);  
-> 
-> As with the map case, I don't think the ordering between list_del() and
-> the flag setting matters. If you unmap the last dynamic buffer, the
-> worst that can happen is that an is_swiotlb_buffer() call attempts a
-> read of the list but the flag will eventually become visible. There
-> shouldn't be another caller trying to unmap the same paddr (in well
-> behaved drivers).
-> 
-> Now, thinking about the list_head access and the flag ordering, since it
-> doesn't matter, you might as well not bother with the flag at all and
-> rely on list_add() and list_empty() ordering vs the hypothetical 'blah'
-> access. Both of these use READ/WRITE_ONCE() for setting
-> dma_io_tlb_dyn_slots.next. You only need an smp_wmb() after the
-> list_add() and an smp_rmb() before a list_empty() check in
-> is_swiotlb_buffer(), no dma_iotlb_have_dyn variable.
-
-Wait, let me check that I understand you right. Do you suggest that I
-convert dma_io_tlb_dyn_slots to a lockless list and get rid of the
-spinlock?
-
-I'm sure it can be done for list_add() and list_del(). I'll have
-to think about list_move().
-
-> That's my reasoning but to I'll have be absolutely sure, you can pass that through
-> some formal modelling.
-
-Good idea. Especially if I try to get rid of the lock.
-
-Petr T
+FWIW, for s390:
+Acked-by: Heiko Carstens <hca@linux.ibm.com>
