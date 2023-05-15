@@ -1,37 +1,174 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EED7F883A
-	for <iommu@lists.linux.dev>; Mon, 15 May 2023 09:56:43 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id BE47A68BFE; Mon, 15 May 2023 11:49:55 +0200 (CEST)
-Date: Mon, 15 May 2023 11:49:55 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Yajun Deng <yajun.deng@linux.dev>
-Cc: corbet@lwn.net, catalin.marinas@arm.com, will@kernel.org, hch@lst.de,
-	m.szyprowski@samsung.com, robin.murphy@arm.com, paulmck@kernel.org,
-	bp@suse.de, akpm@linux-foundation.org, peterz@infradead.org,
-	rdunlap@infradead.org, kim.phillips@amd.com, rostedt@goodmis.org,
-	thunder.leizhen@huawei.com, ardb@kernel.org, bhe@redhat.com,
-	anshuman.khandual@arm.com, song.bao.hua@hisilicon.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
-Subject: Re: [PATCH] dma-contiguous: support per-numa CMA for all
- architectures
-Message-ID: <20230515094955.GB23880@lst.de>
-References: <20230512094210.141540-1-yajun.deng@linux.dev>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E533C13C
+	for <iommu@lists.linux.dev>; Mon, 15 May 2023 10:00:38 +0000 (UTC)
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-6216a09ec38so19948346d6.3
+        for <iommu@lists.linux.dev>; Mon, 15 May 2023 03:00:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1684144837; x=1686736837;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=SmOMWPo18vGFDtTuraejpVVU9tOcfMjTbcnb/sRrPI8=;
+        b=IZeLFC15oPqxEGdYJHzx4HmxTfBqxd8j+LKyVXLZn5EORmXMF23ESuLRHbhr53Pdgc
+         +749Y8OWBrXIGmxIYIdQgxJxv50F1QtQojUg/2sJpaV6pKUCsTiKiN2Os6OYE73LPR0a
+         4Qa5M1pOmLKLjwdk9g2KY63Y3/aGdi0nCFVuH9UFxK8lrpD8WPDTYx+9Bmjr55Pi7n/n
+         XWGnV71Vdx/pzv9mHgTPDCnu69IFDvoX5H7Ks0140HsLmaVv7hojjwBSkvKsbDjmUbFL
+         QY/62CMl1SNf4v3I+/E++w4hJ3YHu2OtpMcEg1V4MIAcyyhEuyMrG1hyq7JPUvO1Dci/
+         nd/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684144837; x=1686736837;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=SmOMWPo18vGFDtTuraejpVVU9tOcfMjTbcnb/sRrPI8=;
+        b=VpSjT1eeMvWM1sA9+96UW5t2RhwY0xtu9CR8l+hExMSiRZ57sCJJMBE1SfxsT8t96m
+         LkmAgRPY0hRROCKeMuAyl3qs00/DolWLcIK+I/kJCZtxGwMeJnElDYyOX/RmKYcGmihw
+         ASwKyXXTgDdIfG8S1NK2vjeyZiGu+3hJR4OVYJB72YmNJc2PkKx2j7UMoO2IxQjVKJCP
+         n/qXOq2GYdgcvsiMBOUo/7znvpTy2gYdQeTNi1f4qZ/DdfXMR5SDSau+/JsZ/9EUC92q
+         MpsX6ewh0qU3w2CSTeWh6IZyb3qta11DbUXCm9FLG99jjA1exsUMWO99Iq5S4YhFGPRY
+         ZPvw==
+X-Gm-Message-State: AC+VfDx88f5Er/mcJ0L0a3tNRU8sX740XbXJe+/lmPPHp0v/wHNNQ4RG
+	Gph6sHlGRRj9h+f0DT4VRO+rZvuIbZDRBqPsxkUyKw==
+X-Google-Smtp-Source: ACHHUZ67CVh5Hzsksx47EDC4a6Xy4GO4KXQRZ/T0I3OXGD/qt6qZ+VpJMnseXs+OlzVAshIxwy5FS/auAdTpYgGsM2E=
+X-Received: by 2002:ad4:5ecf:0:b0:619:152a:b99b with SMTP id
+ jm15-20020ad45ecf000000b00619152ab99bmr53895082qvb.6.1684144836989; Mon, 15
+ May 2023 03:00:36 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230512094210.141540-1-yajun.deng@linux.dev>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+References: <cover.1683688960.git.nicolinc@nvidia.com>
+In-Reply-To: <cover.1683688960.git.nicolinc@nvidia.com>
+From: Zhangfei Gao <zhangfei.gao@linaro.org>
+Date: Mon, 15 May 2023 18:00:26 +0800
+Message-ID: <CABQgh9FL4ssQjBJM52_kb0aBVVPb_9Wc0Q+NL1PaQO=2LYBHCA@mail.gmail.com>
+Subject: Re: [PATCH v2 00/17] Add Nested Translation Support for SMMUv3
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, robin.murphy@arm.com, will@kernel.org, 
+	eric.auger@redhat.com, kevin.tian@intel.com, baolu.lu@linux.intel.com, 
+	joro@8bytes.org, shameerali.kolothum.thodi@huawei.com, 
+	jean-philippe@linaro.org, linux-arm-kernel@lists.infradead.org, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, 
+	alex.williamson@redhat.com, yi.l.liu@intel.com
+Content-Type: text/plain; charset="UTF-8"
 
-This looks fine to me.  Can you please work with Barry to make sure
-the slight different place of the initcall doesn't break anything
-for his setup?  I doubt it would, but I'd rather have a Tested-by:
-tag.
+Hi, Nico
+
+On Wed, 10 May 2023 at 11:34, Nicolin Chen <nicolinc@nvidia.com> wrote:
+>
+> [ This series is rebased on top of v6.4-rc1 merging Jason's iommu_hwpt
+>   branch and Yi's vfio cdev v11 branch, then the replace v7 series and
+>   the nesting v2 (candidate) series and Intel VT-d series. Note that
+>   some of them are still getting finalized. So, there can be potential
+>   minor API changes that would not be reflected in this series. Yet, we
+>   can start the review at the SMMU driver specific things.
+>
+>   @robin, the hw_info patch still requires the errata patch that you
+>   mentioned. Perhaps we can merge that separately or include it in v3.
+>
+>   Thanks! ]
+>
+> Changelog
+> v2:
+>  * Added arm_smmu_set_dev_data after the set_dev_data series.
+>  * Added Jason's patch "vfio: Remove VFIO_TYPE1_NESTING_IOMMU"
+>  * Replaced the iommu_get_unmanaged_domain() helper with Robin's patch.
+>  * Reworked the code in arm_smmu_cmdq_build_cmd() to make NH_VA to be
+>    a superset of NH_VAA.
+>  * Added inline comments and a bug-report link to the patch unsetting
+>    dst[2] and dst[3] of STE.
+>  * Dropped the to_s2_cfg helper since only one place really needs it.
+>  * Dropped the VMID (override) flag and s2vmid in iommu_hwpt_arm_smmuv3
+>    structure, because it's expected for user space to use a shared S2
+>    domain/hwpt for all devices, i.e. the VMID (allocated with the S2
+>    domain is already unified. If there's some special case that still
+>    needs a VMID unification, we should probably add it incrementally.
+>  * Move the introduction of the "struct arm_smmu_domain *s2" function
+>    parameter to the proper patch.
+>  * Redefined "struct iommu_hwpt_arm_smmuv3" by adding ste_uptr/len and
+>    out_event_uptr/len. Then added an arm_smmu_domain_finalise_nested()
+>    function to read guest Stream Table Entry with a proper sanity.
+>  * Reworked arm_smmu_cache_invalidate_user() by reading the guest CMDQ
+>    directly, to support batching. Also, added return value feedback of
+>    -ETIMEDOUT at CMD_SYNC, and reported CERROR_ILL errors via the CONS
+>    in the user_data structure.
+>  * Updated data/functions following the nesting infrastructure updates.
+>  * Added/fixed multiple comments per v1 review inputs.
+> v1:
+>  https://lore.kernel.org/all/cover.1678348754.git.nicolinc@nvidia.com/
+>
+> --------------------------------------------------------------------------
+>
+> Hi all,
+>
+> This series of patches add nested translation support for ARM SMMUv3.
+>
+> Eric Auger made a huge effort previously with the VFIO uAPIs, and sent
+> his v16 a year ago. Now, the nested translation should follow the new
+> IOMMUFD uAPIs design. So, most of the key features are ported from the
+> privous VFIO solution, and then rebuilt on top of the IOMMUFD nesting
+> infrastructure.
+>
+> The essential parts in the driver to support a nested translation are
+> ->hw_info, ->domain_alloc_user and ->cache_invalidate_user ops. So this
+> series fundamentally adds these three functions in the SMMUv3 driver,
+> along with several preparations and cleanups for them.
+>
+> One unique requirement for SMMUv3 nested translation support is the MSI
+> doorbell address translation, which is a 2-stage translation too. And,
+> to working with the ITS driver, an msi_cookie needs to be setup on the
+> kernel-managed domain, the stage-2 domain of the nesting setup. And the
+> same msi_cookie will be fetched, via iommu_dma_get_msi_mapping_domain(),
+> in the iommu core to allocate and creates IOVA mappings for MSI doorbell
+> page(s). However, with the nesting design, the device is attached to a
+> user-managed domain, the stage-1 domain. So both the setup and fetching
+> of the msi_cookie would not work at the level of stage-2 domain. Thus,
+> on both sides, the msi_cookie setup and fetching require a redirection
+> of the domain pointer. It's easy to do so in iommufd core, but needs a
+> new op in the iommu core and driver.
+>
+> You can also find this series on the Github:
+> https://github.com/nicolinc/iommufd/commits/iommufd_nesting-v2
+>
+> The kernel branch is tested with this QEMU branch:
+> https://github.com/nicolinc/qemu/commits/wip/iommufd_rfcv4+nesting+smmuv3-v2
+>
+
+I rebased on these two branches and did some basic tests.
+
+The basic functions work after backport
+iommufd: Add IOMMU_PAGE_RESPONSE
+iommufd: Add device fault handler support
+
+https://github.com/Linaro/linux-kernel-warpdrive/tree/uacce-devel-6.4
+https://github.com/Linaro/qemu/tree/iommufd-6.4-nesting-smmuv3-v2
+
+However when debugging hotplug PCI device, it still does not work,
+Segmentation fault same as 6.2.
+
+guest kernel
+CONFIG_HOTPLUG_PCI_PCIE=y
+
+boot guest (this info does not appear in 6.2)
+qemu-system-aarch64: -device
+vfio-pci,host=0000:76:00.1,bus=pci.1,addr=0x0,id=acc1,iommufd=iommufd0:
+Failed to set data -1
+qemu-system-aarch64: -device
+vfio-pci,host=0000:76:00.1,bus=pci.1,addr=0x0,id=acc1,iommufd=iommufd0:
+failed to set device data
+
+$ sudo nc -U /tmp/qmpm_1.socket
+(qemu) info pci
+(qemu) device_del acc1
+
+guest:
+qemu-system-aarch64: IOMMU_IOAS_UNMAP failed: No such file or directory
+qemu-system-aarch64: vfio_container_dma_unmap(0xaaaae1fc0380,
+0x8000000000, 0x10000) = -2 (No such file or directory)
+qemu-system-aarch64: Failed to unset data -1
+Segmentation fault (core dumped).  // also happened in 6.2
+
+Thanks
