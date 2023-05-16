@@ -1,164 +1,100 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4B457182D0
-	for <iommu@lists.linux.dev>; Tue, 16 May 2023 15:00:53 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 189061FB;
-	Tue, 16 May 2023 08:01:36 -0700 (PDT)
-Received: from [10.57.83.102] (unknown [10.57.83.102])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9B9193F7BD;
-	Tue, 16 May 2023 08:00:50 -0700 (PDT)
-Message-ID: <33b25946-8970-6711-41a5-8b07ccff77c3@arm.com>
-Date: Tue, 16 May 2023 16:00:47 +0100
+Received: from mail-oo1-f52.google.com (mail-oo1-f52.google.com [209.85.161.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50A2E34CEC
+	for <iommu@lists.linux.dev>; Tue, 16 May 2023 15:15:27 +0000 (UTC)
+Received: by mail-oo1-f52.google.com with SMTP id 006d021491bc7-54fb46d8631so4748292eaf.1
+        for <iommu@lists.linux.dev>; Tue, 16 May 2023 08:15:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684250126; x=1686842126;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xq/FuI0gOpzvfdbdJmPxEDUFLUJapP40FhB8TwSxte4=;
+        b=L+1zPFmW5cqaEZ8kDZNuGIvHzRjiWIY5LDPieIsyuUwsfWODiprrFL9z1ACcunFzn0
+         I6HwUjq5w5lWXfbHBiRpfFi/w2GNXEoLaeqhhHO/lJkmchlxJcOTkQf97xxLlKAgppij
+         L0/hIFsegcALFm9jpOkLi0HbRonHz2o7lVDpUvILuifHg0YnPWB/F1X1EW7qMrgT6qkt
+         OV+oq71g2eVyLCfnA6Or7Pypk0Gk27mRkMTE/L0mSF66zJk7FC8ZErFOxywjff6zJ3xU
+         Gk5tTMMG/P9wa0O8RccyLN0B2zaesV++dyqlFvXQS+o7q3gic8qktZFDBtM3oz0+09Wi
+         Ymcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684250126; x=1686842126;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=xq/FuI0gOpzvfdbdJmPxEDUFLUJapP40FhB8TwSxte4=;
+        b=H2mcnDvSKMKVSAUNay26KOjFC1o/lH8YZPe7B7io3vzsPU6m+P1rGw5BdATA+pTJHn
+         oGv+XcUq7C90fFT5oruIHOorxoG6Vc90dW24r9/vcr3CtshmyKTJDE6VrTfTcW+JjF9O
+         MrFZ0cG0eSF+EAP7SWzdZK14E4JoMyWELE/GYnGGp7tXUjjSpyyFPoHxwOiV9oD+SuGn
+         CN9jItXvzXgo5yfIrduovPXfoR5nd//HX/2qnUDVdKrpEWJcVkUJsPa9YMEb6aiJXI2b
+         nieM/RQw3MkAVtxfgu6kYLUvTjeZeGv7kmhCH+pktTRXA8DisQ8JBYtoOeleZAxl/v3a
+         Yosw==
+X-Gm-Message-State: AC+VfDxpgsUixFgWMBZUoifYg44uOj7y+rDa8fsRlxmvanO4PWRjPOQS
+	UcsTBOLNZBAAMbQs1lduVGc4EqMS6p6J4SC73Rk=
+X-Google-Smtp-Source: ACHHUZ7hKL4wO1p9Isk5Bui22fhJLNa5nygADjpBUbV+o2pAu/UoDAHH404cjCkf0SKnWfQ6CFLLkp8mJhYNtAT/qQw=
+X-Received: by 2002:a05:6820:291:b0:54f:84d1:51ac with SMTP id
+ q17-20020a056820029100b0054f84d151acmr10945948ood.6.1684250126328; Tue, 16
+ May 2023 08:15:26 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.10.1
-Subject: Re: [PATCH 1/2] iommu/fsl: Do not use iommu_group_remove_device()
- under ops->device_group()
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-References: <1-v1-8fb05192ea02+e5-fsl_rm_groups_jgg@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <1-v1-8fb05192ea02+e5-fsl_rm_groups_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <cover.1684154219.git.robin.murphy@arm.com> <CABr+WTnzNPfOGbAmy-E3pH9U5XR0y2PdVmDd2gtnv67ByEb_0w@mail.gmail.com>
+ <11d8adf1-75f5-5728-2139-e32aae6e6c49@arm.com> <CABr+WTm=SehaNVaFym5FM-tpCvh93Ma_xG3xX5PuGt6n9+xh4Q@mail.gmail.com>
+ <aadb69ff-732d-cffc-ab44-398269a11d4e@arm.com>
+In-Reply-To: <aadb69ff-732d-cffc-ab44-398269a11d4e@arm.com>
+From: Nicolas Chauvet <kwizart@gmail.com>
+Date: Tue, 16 May 2023 17:15:15 +0200
+Message-ID: <CABr+WT=qZvvW5QqCW_J0V20-56d_2+xkdPs0FcgiJZiY6K0CCg@mail.gmail.com>
+Subject: Re: [PATCH 0/4] iommu: tegra-gart cleanups
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, iommu@lists.linux.dev, will@kernel.org, jgg@nvidia.com, 
+	digetx@gmail.com, thierry.reding@gmail.com, linux-tegra@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2023-05-16 01:27, Jason Gunthorpe wrote:
-> This API is expected to be used only by POWER and VFIO no-iommu that
-> manually manage the group lifecycle. It should not be called under
-> ops->device_group().
-> 
-> This is already buggy as is since the core code does not expect a probed
-> driver to loose it's iommu_group without also releasing the device.
-> 
-> FSL seems to be trying to block the platform_device that represents the
-> pci_controller, eg the thing passed to fsl_add_bridge(), from having an
-> iommu_group.
-> 
-> Instead of creating an iommu_group that we don't want and then later
-> removing it, just don't create it at all in the first place.
-> 
-> For the 'pci_endpt_partitioning' case every PCI device already gets its
-> own iommu_group through the standard code, so it is unclear why having a
-> dedicated group for the controller could be problematic.
-> 
-> For the other case, the controller group was being used to bizarrely
-> de-duplicate the group in it's hose. Instead just directly create a group
-> for the hose the first time we encounter it. The code already searches the
-> entire hose to find any iommu_group. Again, it is unclear why having the
-> pci_controller inside the same iommu_group as the PCI devices would be
-> harmful.
+Le mar. 16 mai 2023 =C3=A0 14:31, Robin Murphy <robin.murphy@arm.com> a =C3=
+=A9crit :
+>
+> On 2023-05-16 13:16, Nicolas Chauvet wrote:
+> > Le mar. 16 mai 2023 =C3=A0 13:45, Robin Murphy <robin.murphy@arm.com> a=
+ =C3=A9crit :
+> >>
+> >> On 2023-05-16 10:53, Nicolas Chauvet wrote:
+> > ...
+> >>> For what it worth, I've tried to test this serie with "grate patches"
+> >>> (1) rebased on top on 6.4-rc2, that would make use of the tegra-gart.
+> >>> That was on PAZ00 (with only 512M of RAM and 96M CMA still allocated)=
+.
+> >>> Unfortunately, this lead to the following errors with display problem=
+s
+> >>> (no character displayed in lxt-terminal and etc)
+> >>
+> >> Thanks for testing - it's quite possible I've made a silly mistake
+> >> somewhere, but just to double-check, does the same happen with the
+> >> existing driver if you boot with "tegra-gart.gart_debug=3D1" (or at le=
+ast
+> >> enable the parameter via sysfs before the DRM driver gets going)?
+> >
+> > Using echo 1 > /sys/module/tegra_gart/parameters/gart_debug shows the
+> > same messages and the same artefacts (missing refreshed window
+> > content).
+> > Using "echo 0 > /sys/module/tegra_gart/parameters/gart_debug" revert
+> > back to normal...
+>
+> OK, cool, so it looks like a pre-existing bug in the caller, but I guess
+> it does mean that unconditionally enabling the checks isn't ideal until
+> that can be sorted out.
 
-It's harmful in that case because it prevents VFIO from working at all - 
-even now that VFIO no longer rejects cross-bus groups on principle, the 
-fsl-pci driver being bound to the platform device would then deny VFIO 
-from taking ownership.
+Seems like I had a non-default option with tegra-drm that was
+controlling the way tegra-gart is used:
+https://github.com/grate-driver/linux/blob/master/drivers/gpu/drm/grate/gar=
+t.c#L19-L29
 
-> In any case, this is a cleaner way to not enable iommu support for the
-> platform_device.
-> 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->   drivers/iommu/fsl_pamu_domain.c | 42 ++++++++++++++++-----------------
->   1 file changed, 20 insertions(+), 22 deletions(-)
-> 
-> diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-> index bce37229709965..bf045f58cd50ae 100644
-> --- a/drivers/iommu/fsl_pamu_domain.c
-> +++ b/drivers/iommu/fsl_pamu_domain.c
-> @@ -11,6 +11,7 @@
->   
->   #include <linux/platform_device.h>
->   #include <sysdev/fsl_pci.h>
-> +#include <linux/pci.h>
->   
->   /*
->    * Global spinlock that needs to be held while
-> @@ -379,7 +380,21 @@ static struct iommu_group *get_shared_pci_device_group(struct pci_dev *pdev)
->   		bus = bus->parent;
->   	}
->   
-> -	return NULL;
-> +	return iommu_group_alloc();
-> +}
-> +
-> +static int __is_pci_controller_parent(struct device *dev, void *data)
-> +{
-> +	struct pci_dev *pdev = to_pci_dev(dev);
-> +	struct pci_controller *pci_ctl = pci_bus_to_host(pdev->bus);
-> +
-> +	return dev == pci_ctl->parent;
+With option 4, occurrences of failing allocation are experienced more
+often than the default 0 options when only "scattered BOs are mapped".
+Also with the default option, no noticeable failure is seen.
 
-If I'm not mistaken, this is testing every *PCI* device to see any of 
-them are their own host bridge's platform parent...
-
-> +}
-> +
-> +static bool is_pci_controller_parent(struct device *dev)
-> +{
-> +	return bus_for_each_dev(&pci_bus_type, NULL, NULL,
-> +				__is_pci_controller_parent);
-
-for_each_pci_dev() might be easier to handle, however for what I think 
-this is ultimately trying to do, device_find_child() would seem even better.
-
->   }
->   
->   static struct iommu_group *get_pci_device_group(struct pci_dev *pdev)
-> @@ -393,30 +408,12 @@ static struct iommu_group *get_pci_device_group(struct pci_dev *pdev)
->   	/* We can partition PCIe devices so assign device group to the device */
->   	if (pci_endpt_partitioning) {
->   		group = pci_device_group(&pdev->dev);
-> -
-> -		/*
-> -		 * PCIe controller is not a paritionable entity
-> -		 * free the controller device iommu_group.
-> -		 */
-> -		if (pci_ctl->parent->iommu_group)
-> -			iommu_group_remove_device(pci_ctl->parent);
->   	} else {
->   		/*
->   		 * All devices connected to the controller will share the
-> -		 * PCI controllers device group. If this is the first
-> -		 * device to be probed for the pci controller, copy the
-> -		 * device group information from the PCI controller device
-> -		 * node and remove the PCI controller iommu group.
-> -		 * For subsequent devices, the iommu group information can
-> -		 * be obtained from sibling devices (i.e. from the bus_devices
-> -		 * link list).
-> +		 * same device group.
->   		 */
-> -		if (pci_ctl->parent->iommu_group) {
-> -			group = get_device_iommu_group(pci_ctl->parent);
-> -			iommu_group_remove_device(pci_ctl->parent);
-> -		} else {
-> -			group = get_shared_pci_device_group(pdev);
-> -		}
-> +		group = get_shared_pci_device_group(pdev);
-
-It would be nice if we could still associate the "PCI group" directly 
-with the pci_controller some other way, and avoid all the 
-slightly-confusing bus walks altogether, but I don't see a sufficiently 
-clean way to achieve that :(
-
-Thanks,
-Robin.
-
->   	}
->   
->   	if (!group)
-> @@ -436,7 +433,8 @@ static struct iommu_group *fsl_pamu_device_group(struct device *dev)
->   	 */
->   	if (dev_is_pci(dev))
->   		group = get_pci_device_group(to_pci_dev(dev));
-> -	else if (of_get_property(dev->of_node, "fsl,liodn", &len))
-> +	else if (of_get_property(dev->of_node, "fsl,liodn", &len) &&
-> +		 !is_pci_controller_parent(dev))
->   		group = get_device_iommu_group(dev);
->   
->   	return group;
+Thanks.
