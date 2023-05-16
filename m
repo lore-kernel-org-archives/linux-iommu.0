@@ -1,34 +1,34 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F644621
-	for <iommu@lists.linux.dev>; Tue, 16 May 2023 02:44:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE92323C1
+	for <iommu@lists.linux.dev>; Tue, 16 May 2023 03:00:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684205042; x=1715741042;
+  t=1684206054; x=1715742054;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=PQC9n1gXUZAOwEzChv+hdaQZHcZ4tJdAn2yzVm4wFag=;
-  b=I/zKEefwXyOlCEYKfa7By2R0EP6OoEBOS9YctGYh/LdL3kIY71LcV1WQ
-   YaAYJJXkCUf32AN9FmI/CCrYN/4x9V+9dSR6i3FjRQsLRI01Dj+WflzHB
-   cXlbzZyWbeM24OqbFG6yGj1uZYWNuLPRZQZH2RGA2kArcZjgKTAgIO3jR
-   BR49EnuUdJvUWAVshp+YmkyeINPMaCvQWi2smSvilTlILzHsihZ/nYOx9
-   WGxsuxV2aIfcIZ0Z7DITsofPawM+AUnbltFXxf96ZHNWWVpTmn6dn4uXg
-   i9sRLl6eNLCHUt6p4Su8OPq2ADlTk2MNjQ4LnNL2jCOFhTbBRTEnmQgyf
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="437704665"
+  bh=utRQjcKthufdYW48GrQXIXbMoZ4rXaRkOhdYI6E/87c=;
+  b=MmQOdqGHYqrpXm9xQfRWgi+UA1ecTEVOBjTl9Gv0PVZ/KwpBhsjTrmHl
+   qwAQxKD8Zu9dj1FpS1608HHZzpTLG+YdGwOU8zhPB+UVzVzBsuB9HIdGS
+   OW6pgoe03hlw2jzOo4yvIJD9GqTGwVeGtDBBpwh7b3Zd/dECndNQdMPLX
+   bWjHxEXQ5QrmrqgxI4rLnyq4AQhx+Ho7Q3z7cqiLQKAM28vREbu/WqCYT
+   cGKpzcTtX7Q73bB+e+mXjdZKMomogbE3lepqTswfWEgazXIa4ntaonCVo
+   zx2ZRE/maIKBG/4j4NhgGB+rwOWB8H94A5dD+LTjGUN54ikO0JR86Z5SI
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="350203797"
 X-IronPort-AV: E=Sophos;i="5.99,277,1677571200"; 
-   d="scan'208";a="437704665"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2023 19:44:01 -0700
+   d="scan'208";a="350203797"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2023 20:00:53 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="770856241"
+X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="695269167"
 X-IronPort-AV: E=Sophos;i="5.99,277,1677571200"; 
-   d="scan'208";a="770856241"
+   d="scan'208";a="695269167"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmsmga004.fm.intel.com with ESMTP; 15 May 2023 19:43:59 -0700
-Message-ID: <89d800bf-87cf-6a7d-85b3-74bd457b1454@linux.intel.com>
-Date: Tue, 16 May 2023 10:43:23 +0800
+  by orsmga007.jf.intel.com with ESMTP; 15 May 2023 20:00:52 -0700
+Message-ID: <569b959e-a702-fc19-3d67-0dde4e77251a@linux.intel.com>
+Date: Tue, 16 May 2023 11:00:16 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -41,56 +41,101 @@ Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
  kvm@vger.kernel.org, Lixiao Yang <lixiao.yang@intel.com>,
  Matthew Rosato <mjrosato@linux.ibm.com>, Nicolin Chen <nicolinc@nvidia.com>,
  Yi Liu <yi.l.liu@intel.com>
-Subject: Re: [PATCH v7 02/19] iommufd: Add iommufd_group
+Subject: Re: [PATCH v7 03/19] iommufd: Replace the hwpt->devices list with
+ iommufd_group
 Content-Language: en-US
 To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
  linux-kselftest@vger.kernel.org
-References: <2-v7-6c0fd698eda2+5e3-iommufd_alloc_jgg@nvidia.com>
+References: <3-v7-6c0fd698eda2+5e3-iommufd_alloc_jgg@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <2-v7-6c0fd698eda2+5e3-iommufd_alloc_jgg@nvidia.com>
+In-Reply-To: <3-v7-6c0fd698eda2+5e3-iommufd_alloc_jgg@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 5/15/23 10:00 PM, Jason Gunthorpe wrote:
->   void iommufd_device_destroy(struct iommufd_object *obj)
->   {
->   	struct iommufd_device *idev =
->   		container_of(obj, struct iommufd_device, obj);
->   
->   	iommu_device_release_dma_owner(idev->dev);
-> -	iommu_group_put(idev->group);
-> +	iommufd_put_group(idev->igroup);
->   	if (!iommufd_selftest_is_mock_dev(idev->dev))
->   		iommufd_ctx_put(idev->ictx);
->   }
-> @@ -46,7 +154,7 @@ struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
->   					   struct device *dev, u32 *id)
->   {
->   	struct iommufd_device *idev;
-> -	struct iommu_group *group;
-> +	struct iommufd_group *igroup;
->   	int rc;
->   
->   	/*
-> @@ -56,9 +164,9 @@ struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
->   	if (!device_iommu_capable(dev, IOMMU_CAP_CACHE_COHERENCY))
->   		return ERR_PTR(-EINVAL);
->   
-> -	group = iommu_group_get(dev);
-> -	if (!group)
-> -		return ERR_PTR(-ENODEV);
-> +	igroup = iommufd_get_group(ictx, dev);
-> +	if (IS_ERR(igroup))
-> +		return ERR_CAST(igroup);
->   
->   	/*
->   	 * For historical compat with VFIO the insecure interrupt path is
+> The devices list was used as a simple way to avoid having per-group
+> information. Now that this seems to be unavoidable, just commit to
+> per-group information fully and remove the devices list from the HWPT.
+> 
+> The iommufd_group stores the currently assigned HWPT for the entire group
+> and we can manage the per-device attach/detach with a list in the
+> iommufd_group.
 
-Hi Jason,
+I am preparing the patches to route I/O page faults to user space
+through iommufd. The iommufd page fault handler knows the hwpt and the
+device pointer, but it needs to convert the device pointer into its
+iommufd object id and pass the id to user space.
 
-Perhaps I am asking a silly question. The iommufd_group is get in
-iommufd_device_bind(), but put in iommufd_device_destroy(). Why not put
-it in iommufd_device_unbind()?
+It's fine that we remove the hwpt->devices here, but perhaps I need to
+add the context pointer in ioas later,
+
+struct iommufd_ioas {
+         struct io_pagetable iopt;
+         struct mutex mutex;
+         struct list_head hwpt_list;
++       struct iommufd_ctx *ictx;
+  };
+
+and, use below helper to look up the device id.
+
++u32 iommufd_get_device_id(struct iommufd_ctx *ictx, struct device *dev)
++{
++       struct iommu_group *group = iommu_group_get(dev);
++       u32 dev_id = IOMMUFD_INVALID_OBJ_ID;
++       struct iommufd_group *igroup;
++       struct iommufd_device *cur;
++       unsigned int id;
++
++       if (!group)
++               return IOMMUFD_INVALID_OBJ_ID;
++
++       id = iommu_group_id(group);
++       xa_lock(&ictx->groups);
++       igroup = xa_load(&ictx->groups, id);
++       if (!iommufd_group_try_get(igroup, group)) {
++               xa_unlock(&ictx->groups);
++               iommu_group_put(group);
++               return IOMMUFD_INVALID_OBJ_ID;
++        }
++        xa_unlock(&ictx->groups);
++
++       mutex_lock(&igroup->lock);
++       list_for_each_entry(cur, &igroup->device_list, group_item) {
++               if (cur->dev == dev) {
++                       dev_id = cur->obj.id;
++                       break;
++               }
++       }
++       mutex_unlock(&igroup->lock);
++
++       iommufd_put_group(igroup);
++       iommu_group_put(group);
++
++       return dev_id;
++}
+
+and, use it like this in the fault handler:
+
+        dev_id = iommufd_get_device_id(hwpt->ioas->ictx, dev);
++       if (dev_id == IOMMUFD_INVALID_OBJ_ID)
++               return IOMMU_PAGE_RESP_FAILURE;
+
+Will this look good to you?
+
+> For destruction the flow is organized to make the following patches
+> easier, the actual call to iommufd_object_destroy_user() is done at the
+> top of the call chain without holding any locks. The HWPT to be destroyed
+> is returned out from the locked region to make this possible. Later
+> patches create locking that requires this.
+> 
+> Reviewed-by: Lu Baolu<baolu.lu@linux.intel.com>
+> Reviewed-by: Kevin Tian<kevin.tian@intel.com>
+> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+> ---
+>   drivers/iommu/iommufd/device.c          | 100 +++++++++++-------------
+>   drivers/iommu/iommufd/hw_pagetable.c    |  22 +-----
+>   drivers/iommu/iommufd/iommufd_private.h |  13 ++-
+>   3 files changed, 54 insertions(+), 81 deletions(-)
 
 Best regards,
 baolu
