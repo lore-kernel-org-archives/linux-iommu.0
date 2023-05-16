@@ -1,69 +1,76 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D6432566
-	for <iommu@lists.linux.dev>; Tue, 16 May 2023 04:07:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684210062; x=1715746062;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=YziHanXZZgtVTeTDOEw80tR1iSfnjM4PSBzGx7IvwG8=;
-  b=IAa/7aDjwKKijbiMrzYOZj7EDgG1v2IVbs4kYdvSGrDQhU6t+dcv2Seb
-   PuJstTZJK/DAajNG2BjQc/hGOLgQE2X94pHvw4gOzBdXjTPZ7jH2EFsSu
-   QN9x8NQLkTb4rcUvwafrLTjXn5ITm8UtawMaBvAKdIYF8geOF/UQqdLpH
-   WYeBETcPEw+rJwPJjIqbydE0DSWQ1EqHicMt0VeG6CF5YeNmDano+9yJh
-   5Qy8sGcp5jqe9XS4sU2W88vK14tcqF9MO/G2ExZtW7hp90ifjWZ66xxsT
-   av/0sONBpO+jIzwV6XzGPSZPjUG2yDkNdlqsy7K58mVz/aAmL6UwqCD3A
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="350210794"
-X-IronPort-AV: E=Sophos;i="5.99,277,1677571200"; 
-   d="scan'208";a="350210794"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2023 21:07:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="704237247"
-X-IronPort-AV: E=Sophos;i="5.99,277,1677571200"; 
-   d="scan'208";a="704237247"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmsmga007.fm.intel.com with ESMTP; 15 May 2023 21:07:39 -0700
-Message-ID: <2944e798-1599-df10-398f-1afa6e983bf2@linux.intel.com>
-Date: Tue, 16 May 2023 12:07:03 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A5CE19E73
+	for <iommu@lists.linux.dev>; Tue, 16 May 2023 06:13:16 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 1F6EB67373; Tue, 16 May 2023 08:13:10 +0200 (CEST)
+Date: Tue, 16 May 2023 08:13:09 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Cc: Petr Tesarik <petrtesarik@huaweicloud.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	Borislav Petkov <bp@suse.de>, Randy Dunlap <rdunlap@infradead.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Kim Phillips <kim.phillips@amd.com>,
+	"Steven Rostedt (Google)" <rostedt@goodmis.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Hans de Goede <hdegoede@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Kees Cook <keescook@chromium.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	"open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+	open list <linux-kernel@vger.kernel.org>,
+	"open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+	Roberto Sassu <roberto.sassu@huawei.com>,
+	Kefeng Wang <wangkefeng.wang@huawei.com>,
+	"petr@tesarici.cz" <petr@tesarici.cz>
+Subject: Re: [PATCH v2 RESEND 4/7] swiotlb: Dynamically allocated bounce
+ buffers
+Message-ID: <20230516061309.GA7219@lst.de>
+References: <cover.1683623618.git.petr.tesarik.ext@huawei.com> <346abecdb13b565820c414ecf3267275577dbbf3.1683623618.git.petr.tesarik.ext@huawei.com> <BYAPR21MB168874BC467BFCEC133A9DCDD7789@BYAPR21MB1688.namprd21.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
- kvm@vger.kernel.org, Lixiao Yang <lixiao.yang@intel.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>, Nicolin Chen <nicolinc@nvidia.com>,
- Yi Liu <yi.l.liu@intel.com>
-Subject: Re: [PATCH v7 01/19] iommufd: Move isolated msi enforcement to
- iommufd_device_bind()
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
- linux-kselftest@vger.kernel.org
-References: <1-v7-6c0fd698eda2+5e3-iommufd_alloc_jgg@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <1-v7-6c0fd698eda2+5e3-iommufd_alloc_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BYAPR21MB168874BC467BFCEC133A9DCDD7789@BYAPR21MB1688.namprd21.prod.outlook.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On 5/15/23 10:00 PM, Jason Gunthorpe wrote:
-> With the recent rework this no longer needs to be done at domain
-> attachment time, we know if the device is usable by iommufd when we bind
-> it.
-> 
-> The value of msi_device_has_isolated_msi() is not allowed to change while
-> a driver is bound.
-> 
-> Reviewed-by: Kevin Tian<kevin.tian@intel.com>
-> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+On Mon, May 15, 2023 at 07:43:52PM +0000, Michael Kelley (LINUX) wrote:
+> FWIW, I don't think the approach you have implemented here will be
+> practical to use for CoCo VMs (SEV, TDX, whatever else).  The problem
+> is that dma_direct_alloc_pages() and dma_direct_free_pages() must
+> call dma_set_decrypted() and dma_set_encrypted(), respectively.  In CoCo
+> VMs, these calls are expensive because they require a hypercall to the host,
+> and the operation on the host isn't trivial either.  I haven't measured the
+> overhead, but doing a hypercall on every DMA map operation and on
+> every unmap operation has long been something we thought we must
+> avoid.  The fixed swiotlb bounce buffer space solves this problem by
+> doing set_decrypted() in batch at boot time, and never
+> doing set_encrypted().
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+I also suspect it doesn't really scale too well due to the number of
+allocations.  I suspect a better way to implement things would be to
+add more large chunks that are used just like the main swiotlb buffers.
 
-Best regards,
-baolu
+That is when we run out of space try to allocate another chunk of the
+same size in the background, similar to what we do with the pool in
+dma-pool.c.  This means we'll do a fairly large allocation, so we'll
+need compaction or even CMA to back it up, but the other big upside
+is that it also reduces the number of buffers that need to be checked
+in is_swiotlb_buffer or the free / sync side.
