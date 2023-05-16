@@ -1,156 +1,191 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00F551D2D0;
-	Tue, 16 May 2023 07:40:01 +0000 (UTC)
-Received: from pps.filterd (m0353727.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34G7aShZ005037;
-	Tue, 16 May 2023 07:39:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=oyXmAuPB2QwCsFmA09TyMaE9r5Wsa42TS9CvhNr4Xxo=;
- b=jQyJnX2IE0Q9/uHuiK+tFFDM2ICZfdAS10yyEEvjakfFqK1quX2CS8p56sTYXWMVS9QP
- hlMhqOQ+mI2WQwYJsEhn/wIKZL3WkKjRMXk6BZ5K5F/WPJmxqsampKPSkDiJmsAwxLPd
- QY59SXf1QlQ2ey9cq+26TAma4O3D76d5TXhUj46eB6o4zAbnPGEbluM8Lr7Wt3ylPD0b
- TxIDWKMJtEgDfyXMimQ6TXr011dMhE4PtQ4wOjElsEyFil+mkDcEqxqAJcWoxs0Fmgce
- X8T8mgU2Vps3ESnTmGZo3FC5OP5dsorRnLIdraV+j9qiSgyKFAl3jwTnHpk6XFcyzama 7Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qm4y8hh1p-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 16 May 2023 07:39:32 +0000
-Received: from m0353727.ppops.net (m0353727.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 34G7amRA007488;
-	Tue, 16 May 2023 07:39:31 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qm4y8hgpq-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 16 May 2023 07:39:31 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-	by ppma03ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 34G3qs8k006665;
-	Tue, 16 May 2023 07:39:23 GMT
-Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
-	by ppma03ams.nl.ibm.com (PPS) with ESMTPS id 3qj264sfp5-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 16 May 2023 07:39:23 +0000
-Received: from smtpav07.fra02v.mail.ibm.com (smtpav07.fra02v.mail.ibm.com [10.20.54.106])
-	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 34G7dKNV41615626
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 16 May 2023 07:39:20 GMT
-Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 3C0C320043;
-	Tue, 16 May 2023 07:39:20 +0000 (GMT)
-Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 7498920040;
-	Tue, 16 May 2023 07:39:18 +0000 (GMT)
-Received: from [9.152.222.242] (unknown [9.152.222.242])
-	by smtpav07.fra02v.mail.ibm.com (Postfix) with ESMTPS;
-	Tue, 16 May 2023 07:39:18 +0000 (GMT)
-Message-ID: <168d8026-207a-e7ee-21b3-4a02ed00f0ce@linux.ibm.com>
-Date: Tue, 16 May 2023 09:39:17 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFE64168AC
+	for <iommu@lists.linux.dev>; Tue, 16 May 2023 07:55:18 +0000 (UTC)
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id C0F70162782;
+	Tue, 16 May 2023 09:55:14 +0200 (CEST)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
+	t=1684223715; bh=ltmMIkpXlWFWJgW4qrm50FfrVYKnQeXJbbPUFDmFZTg=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=VKfP35Lh1yXXj9553giwHfdTZoqsQDB37mWTxTJThZdSRN23daQlBOpnXS9vL05Pg
+	 uC97J1Kf+D1G2AwXt1C7FLvgYDKD0/C5ExaeYz7u0qPEJUjwJCKoWatDmvB35NtVzn
+	 BmagPSlWyaTvBjs2zOwAk/N9k1i37nKeAhyrN8ffWS9V54bEeKWRGeiNbkqNAWa8d5
+	 XLjxx+zEidTK0pogygEvPM7zA4KD0atcnJzN2BW2Rho8T/2tOcndLtEfRMxZSfYTl9
+	 xKoY9Niyr2ZVu7EXnpXxIRj1RtczCxJ/ATZTJK9rUSOhVzqosNzYWOYazX0+6rThnu
+	 dpDfs+OJ47qHg==
+Date: Tue, 16 May 2023 09:55:12 +0200
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Petr Tesarik <petrtesarik@huaweicloud.com>, Jonathan Corbet
+ <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael
+ J. Wysocki" <rafael@kernel.org>, Maarten Lankhorst
+ <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>,
+ Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Christoph Hellwig <hch@lst.de>, Marek
+ Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>,
+ "Paul E. McKenney" <paulmck@kernel.org>, Borislav Petkov <bp@suse.de>,
+ Randy Dunlap <rdunlap@infradead.org>, Damien Le Moal
+ <damien.lemoal@opensource.wdc.com>, Kim Phillips <kim.phillips@amd.com>,
+ "Steven Rostedt (Google)" <rostedt@goodmis.org>, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Hans de Goede <hdegoede@redhat.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Kees Cook <keescook@chromium.org>, Thomas
+ Gleixner <tglx@linutronix.de>, "open list:DOCUMENTATION"
+ <linux-doc@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>,
+ "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>, "open list:DMA
+ MAPPING HELPERS" <iommu@lists.linux.dev>, Roberto Sassu
+ <roberto.sassu@huawei.com>, Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: Re: [PATCH v2 RESEND 7/7] swiotlb: per-device flag if there are
+ dynamically allocated buffers
+Message-ID: <20230516095512.3c99c35e@meshulam.tesarici.cz>
+In-Reply-To: <ZGJdtmP13pv06xDH@arm.com>
+References: <cover.1683623618.git.petr.tesarik.ext@huawei.com>
+	<69f9e058bb1ad95905a62a4fc8461b064872af97.1683623618.git.petr.tesarik.ext@huawei.com>
+	<ZGEuYxR2PM6wHeDh@arm.com>
+	<20230515104847.6dfdf31b@meshulam.tesarici.cz>
+	<20230515120054.0115a4eb@meshulam.tesarici.cz>
+	<ZGJdtmP13pv06xDH@arm.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v9 1/6] s390/ism: Set DMA coherent mask
-Content-Language: en-US
-To: Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
-        Matthew Rosato <mjrosato@linux.ibm.com>, Will Deacon <will@kernel.org>,
-        Wenjia Zhang <wenjia@linux.ibm.com>,
-        Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Gerd Bayer <gbayer@linux.ibm.com>, Julian Ruess <julianr@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Heiko Carstens
- <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Yong Wu <yong.wu@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang
- <baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Krishna Reddy
- <vdumpa@nvidia.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev, asahi@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
-References: <20230310-dma_iommu-v9-0-65bb8edd2beb@linux.ibm.com>
- <20230310-dma_iommu-v9-1-65bb8edd2beb@linux.ibm.com>
-From: Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <20230310-dma_iommu-v9-1-65bb8edd2beb@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: J4ionigi6aUPze2O9mlNApMYAufA_hrk
-X-Proofpoint-GUID: i4d6Dd2ZX11emMnTTTHfoZmJwBDtd8nN
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-05-16_02,2023-05-05_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxlogscore=999
- clxscore=1011 spamscore=0 priorityscore=1501 malwarescore=0 adultscore=0
- mlxscore=0 impostorscore=0 bulkscore=0 suspectscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2304280000
- definitions=main-2305160065
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
+On Mon, 15 May 2023 17:28:38 +0100
+Catalin Marinas <catalin.marinas@arm.com> wrote:
 
-On 5/15/23 11:15, Niklas Schnelle wrote:
-> A future change will convert the DMA API implementation from the
-> architecture specific arch/s390/pci/pci_dma.c to using the common code
-> drivers/iommu/dma-iommu.c which the utilizes the same IOMMU hardware
-> through the s390-iommu driver. Unlike the s390 specific DMA API this
-> requires devices to correctly call set the coherent mask to be allowed
+> (some of you replies may have been filtered to various of my mailboxes,
+> depending on which lists you cc'ed; replying here)
+>=20
+> On Mon, May 15, 2023 at 12:00:54PM +0200, Petr Tesa=C5=99=C3=ADk wrote:
+> > On Mon, 15 May 2023 10:48:47 +0200
+> > Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> wrote: =20
+> > > On Sun, 14 May 2023 19:54:27 +0100
+> > > Catalin Marinas <catalin.marinas@arm.com> wrote: =20
+> > > > Now, thinking about the list_head access and the flag ordering, sin=
+ce it
+> > > > doesn't matter, you might as well not bother with the flag at all a=
+nd
+> > > > rely on list_add() and list_empty() ordering vs the hypothetical 'b=
+lah'
+> > > > access. Both of these use READ/WRITE_ONCE() for setting
+> > > > dma_io_tlb_dyn_slots.next. You only need an smp_wmb() after the
+> > > > list_add() and an smp_rmb() before a list_empty() check in =20
+> >                       ^^^^^^^^^
+> > Got it, finally. Well, that's exactly something I don't want to do.
+> > For example, on arm64 (seeing your email address), smp_rmb() translates
+> > to a "dsb ld" instruction. I would expect that this is more expensive
+> > than a "ldar", generated by smp_load_acquire(). =20
+>=20
+> It translates to a dmb ishld which is on par with ldar (dsb is indeed a
+> lot more expensive but that's not generated here).
 
+You're right, dsb is generated for the non-smp barrier variants. Thanks
+for the correction.
 
-s/call//
+> > > > is_swiotlb_buffer(), no dma_iotlb_have_dyn variable.   =20
+> > >=20
+> > > Wait, let me check that I understand you right. Do you suggest that I
+> > > convert dma_io_tlb_dyn_slots to a lockless list and get rid of the
+> > > spinlock?
+> > >=20
+> > > I'm sure it can be done for list_add() and list_del(). I'll have
+> > > to think about list_move(). =20
+> >=20
+> > Hm, even the documentation of llist_empty() says that it is "not
+> > guaranteed to be accurate or up to date". If it could be, I'm quite
+> > sure the authors would have gladly implemented it as such. =20
+>=20
+> It doesn't but neither does your flag.
 
+Yes, I have already agreed in another sub-thread.
 
-> to use IOVAs >2^32 in dma_alloc_coherent(). This was however not done
-> for ISM devices. ISM requires such addresses since currently the DMA
-> aperture for PCI devices starts at 2^32 and all calls to
-> dma_alloc_coherent() would thus fail.
->
-> Reviewed-by: Alexandra Winter <wintera@linux.ibm.com>
-> Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> ---
->   drivers/s390/net/ism_drv.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/s390/net/ism_drv.c b/drivers/s390/net/ism_drv.c
-> index 8acb9eba691b..1399b5dc646c 100644
-> --- a/drivers/s390/net/ism_drv.c
-> +++ b/drivers/s390/net/ism_drv.c
-> @@ -660,7 +660,7 @@ static int ism_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->   	if (ret)
->   		goto err_disable;
->   
-> -	ret = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64));
-> +	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
->   	if (ret)
->   		goto err_resource;
->   
->
-Reviewed-by: Pierre Morel <pmorel@linux.ibm.com>
+> If you want a guarantee, you'd
+> need locks because a llist_empty() on its own can race with other
+> llist_add/del_*() that may not yet be visible to a CPU at exactly that
+> moment. BTW, the llist implementation cannot delete a random element, so
+> not sure this is suitable for your implementation (it can only delete
+> the first element or the whole list).
+>=20
+> I do think you need to change your invariants and not rely on an
+> absolute list_empty() or some flag:
+>=20
+> P0:
+> 	list_add(paddr);
+> 	WRITE_ONCE(blah, paddr);
+>=20
+> P1:
+> 	paddr =3D READ_ONCE(blah);
+> 	list_empty();
+>=20
+> Your invariant (on P1) should be blah =3D=3D paddr =3D> !list_empty(). If
+> there is another P2 removing paddr from the list, this wouldn't work
+> (nor your flag) but the assumption is that a correctly written driver
+> that still has a reference to paddr doesn't use it after being removed
+> from the list (i.e. it doesn't do a dma_unmap(paddr) and still continue
+> to use this paddr for e.g. dma_sync()).
 
+Right. In other words, given any paddr:
+
+  a. Either it is on the list, and then the list cannot become empty by
+     any concurrent code.
+
+  a. Or it is not on the list, but then we may skip the search
+     regardless of any races with other CPUs.
+
+> For such invariant, you'd need ordering between list_add() and the
+> write of paddr (smp_wmb() would do). On P1, you need an smp_rmb() before
+> list_empty() since the implementation does a READ_ONCE only).
+
+I agree.
+
+> You still need the locks for list modifications and list traversal as I
+> don't see how you can use the llist implementation with random element
+> removal.
+
+That's right. It might even perform better than a truly non-blocking
+list (cf. Valois, Harris, Zhang).
+
+> There is another scenario to take into account on the list_del() side.
+> Let's assume that there are other elements on the list, so
+> list_empty() =3D=3D false:
+>=20
+> P0:
+> 	list_del(paddr);
+> 	/* the memory gets freed, added to some slab or page free list */
+> 	WRITE_ONCE(slab_free_list, __va(paddr));
+>=20
+> P1:
+> 	paddr =3D __pa(READ_ONCE(slab_free_list));/* re-allocating paddr freed o=
+n P0 */
+> 	if (!list_empty()) {			/* assuming other elements on the list */
+> 		/* searching the list */
+> 		list_for_each() {
+> 			if (pos->paddr) =3D=3D __pa(vaddr))
+> 				/* match */
+> 		}
+> 	}
+>=20
+> On P0, you want the list update to be visible before the memory is freed
+> (and potentially reallocated on P1). An smp_wmb() on P0 would do. For
+> P1, we don't care about list_empty() as there can be other elements
+> already. But we do want any list elements reading during the search to
+> be ordered after the slab_free_list reading. The smp_rmb() you'd add for
+> the case above would suffice.
+
+Yes, but to protect against concurrent insertions/deletions, a spinlock
+is held while searching the list. The spin lock provides the necessary
+memory barriers implicitly.
+
+Again, thank you very much for your time!
+
+Petr T
