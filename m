@@ -1,45 +1,34 @@
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BFA21FB0
-	for <iommu@lists.linux.dev>; Tue, 16 May 2023 01:26:26 +0000 (UTC)
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2ac88d9edf3so132873451fa.0
-        for <iommu@lists.linux.dev>; Mon, 15 May 2023 18:26:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1684200384; x=1686792384;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=iCXuzrQVE7NqQDfgmpBc13d69ZLB2zjvkbjuCp0orcg=;
-        b=fo7JEKjFInLMQlPsQc9w3oWP9T2Aj3MwuPxcvyHykOb2kVt4FarGuSfCQP4XU4Xnn5
-         x5GH+EB4iUanMe7Bfr7LNvrgKn3WpFmIzLB0BdD7ArHp+OQKi244DylCU+iCmzRRyOvB
-         YUaC+Sve3s2lOHw85mHDkjdteeYJfIA3SYA2Vumbsg5KhYoXmqTEoDE8CuRZ6xsS54WD
-         s+v/0xEmG/HaXwivV50aKTUSU83U9wFHWwmdPQ1FEwYgtrlzAaWGeKImVizgwaxfRdDG
-         qEuPlIASiqDQquTEvvyuZneyvqtcnEODZ6i+p2UFNPdAMbXlyJxkzsz70wwLnYvfKwrz
-         IhmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684200384; x=1686792384;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=iCXuzrQVE7NqQDfgmpBc13d69ZLB2zjvkbjuCp0orcg=;
-        b=DGWXRGSswF+XqmyYjCgg3647VKXc6J0VLBQ4O/n7FbLlx+v6fFzZZgE0hMKePfz3ec
-         M7Xx9HyT/JlHdbQomw9Wwqt6v/wOwL/IlM/RKl45aKAT1K9+NIidCH6v7iGGDIvNe4u2
-         q6w8G/y2iHGFCn5Olrq+M82bUfAw6LGlFVtIkCooFQ62tW3dbDEdliu+wptF0d27Ff+a
-         SZoJj/57IG2oQ1w6YJ8QW1BJNrUU1y8R+n/gRnd1CV08qYouxOVH2KqS1M/ijfu/wtl2
-         hlv8ZK6V9hvD4wYiF6tj8zbZUaFmlxGHHdKRxgy/mnVgmWJ7aFZWFDILVD2FXMY88C6q
-         bkiA==
-X-Gm-Message-State: AC+VfDyNwasi6kizJx/tvVfyFBPfd+YzvYsXY3r9at0lriTPfEeMs0c7
-	OwdzlBU1KQ0QGsAYalwVIXIRDw==
-X-Google-Smtp-Source: ACHHUZ4v2kFHkHVE+gkX96V7S+QQVZsWTNBB9cJxYxR5LY8juK88Lz0HRrauXlwj+MM81B5kOulXgw==
-X-Received: by 2002:a2e:2c09:0:b0:2ad:bb53:8b9a with SMTP id s9-20020a2e2c09000000b002adbb538b9amr6041019ljs.20.1684200384228;
-        Mon, 15 May 2023 18:26:24 -0700 (PDT)
-Received: from [192.168.1.101] (abxi58.neoplus.adsl.tpnet.pl. [83.9.2.58])
-        by smtp.gmail.com with ESMTPSA id h4-20020a2e3a04000000b002adbe01cd69sm1912340lja.9.2023.05.15.18.26.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 May 2023 18:26:23 -0700 (PDT)
-Message-ID: <1801db13-aeb7-ba50-6939-d194a9029f18@linaro.org>
-Date: Tue, 16 May 2023 03:26:21 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70D5E1FB0
+	for <iommu@lists.linux.dev>; Tue, 16 May 2023 01:49:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1684201794; x=1715737794;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=yoBH6vhYXirTJn4ngLQetM+EEw/EqS96eNcX9cDbZ/o=;
+  b=BR04lS4lP/ELMB8tQoS067kbCPNy39tya0lNKYcdtOBpA4roEG1G1Aeg
+   YKmAxRUCqlkp2q2j0JyBzgTQiNJ1dEl9N6D9TmHAXQ5sarZxgrrMEnLe5
+   X4E0cHVpBEepw1U5mB/YC1Cwg0cVf6TfE3ec8l4qb0aLbPd/nB4ckSYZg
+   qxq7/QjOBWaHSCrJh51nIX4JfsQuspI9Cbsea1wFqsZBobY8LThLt4ywt
+   lRPUw2Etu408HkPLbjRrmiNcnWQrOJw8ScCkqiaf5h6Niu3ki4Z6HTqEA
+   xjNug+iSQY8UxovqRQ/rDYrhsHiWnnovzBF6F0Qb+r/l6nu6ku6S+TstG
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="340716251"
+X-IronPort-AV: E=Sophos;i="5.99,277,1677571200"; 
+   d="scan'208";a="340716251"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2023 18:49:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="790880836"
+X-IronPort-AV: E=Sophos;i="5.99,277,1677571200"; 
+   d="scan'208";a="790880836"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by FMSMGA003.fm.intel.com with ESMTP; 15 May 2023 18:49:48 -0700
+Message-ID: <57101685-35c3-8a71-9a39-a6d9fd58414c@linux.intel.com>
+Date: Tue, 16 May 2023 09:49:13 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -47,102 +36,127 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH v3 05/12] dt-bindings: display/msm: Add SM6375 MDSS
+ Thunderbird/102.10.0
+Cc: baolu.lu@linux.intel.com, "cohuck@redhat.com" <cohuck@redhat.com>,
+ "eric.auger@redhat.com" <eric.auger@redhat.com>,
+ "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
+ "chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
+ "yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
+ "peterx@redhat.com" <peterx@redhat.com>,
+ "jasowang@redhat.com" <jasowang@redhat.com>,
+ "shameerali.kolothum.thodi@huawei.com"
+ <shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+ "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+ "Duan, Zhenzhong" <zhenzhong.duan@intel.com>
+Subject: Re: [PATCH v3 3/4] iommufd: Add IOMMU_DEVICE_GET_HW_INFO
 Content-Language: en-US
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Rob Clark <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>,
- David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Krishna Manikandan <quic_mkrishn@quicinc.com>, Will Deacon
- <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>,
- linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
- freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev
-References: <20230411-topic-straitlagoon_mdss-v3-0-9837d6b3516d@linaro.org>
- <20230411-topic-straitlagoon_mdss-v3-5-9837d6b3516d@linaro.org>
- <4a563d96-ec59-7db3-d288-1ba3bb9d8eb7@linaro.org>
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <4a563d96-ec59-7db3-d288-1ba3bb9d8eb7@linaro.org>
-Content-Type: text/plain; charset=UTF-8
+To: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "jgg@nvidia.com" <jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>
+References: <20230511143024.19542-1-yi.l.liu@intel.com>
+ <20230511143024.19542-4-yi.l.liu@intel.com>
+ <6ab2d63e-4dcc-6562-9698-d23300c7d1ae@linux.intel.com>
+ <DS0PR11MB752940450312B2E0529C3DC6C3789@DS0PR11MB7529.namprd11.prod.outlook.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <DS0PR11MB752940450312B2E0529C3DC6C3789@DS0PR11MB7529.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-
-
-On 7.05.2023 10:20, Krzysztof Kozlowski wrote:
-> On 05/05/2023 23:40, Konrad Dybcio wrote:
->> Document the SM6375 MDSS.
+On 5/15/23 2:14 PM, Liu, Yi L wrote:
+>> -----Original Message-----
+>> From: Baolu Lu<baolu.lu@linux.intel.com>
+>> Sent: Friday, May 12, 2023 1:39 PM
+>> To: Liu, Yi L<yi.l.liu@intel.com>;joro@8bytes.org;alex.williamson@redhat.com;
+>> jgg@nvidia.com; Tian, Kevin<kevin.tian@intel.com>;robin.murphy@arm.com
+>> Cc:baolu.lu@linux.intel.com;cohuck@redhat.com;eric.auger@redhat.com;
+>> nicolinc@nvidia.com;kvm@vger.kernel.org;mjrosato@linux.ibm.com;
+>> chao.p.peng@linux.intel.com;yi.y.sun@linux.intel.com;peterx@redhat.com;
+>> jasowang@redhat.com;shameerali.kolothum.thodi@huawei.com;lulu@redhat.com;
+>> suravee.suthikulpanit@amd.com;iommu@lists.linux.dev;linux-kernel@vger.kernel.org;
+>> linux-kselftest@vger.kernel.org; Duan, Zhenzhong<zhenzhong.duan@intel.com>
+>> Subject: Re: [PATCH v3 3/4] iommufd: Add IOMMU_DEVICE_GET_HW_INFO
 >>
->> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
->> ---
->>  .../bindings/display/msm/qcom,sm6375-mdss.yaml     | 216 +++++++++++++++++++++
->>  1 file changed, 216 insertions(+)
->>
+>> On 5/11/23 10:30 PM, Yi Liu wrote:
+>>> Under nested IOMMU translation, userspace owns the stage-1 translation
+>>> table (e.g. the stage-1 page table of Intel VT-d or the context table
+>>> of ARM SMMUv3, and etc.). Stage-1 translation tables are vendor specific,
+>>> and needs to be compatiable with the underlying IOMMU hardware. Hence,
+>>> userspace should know the IOMMU hardware capability before creating and
+>>> configuring the stage-1 translation table to kernel.
+>>>
+>>> This adds IOMMU_DEVICE_GET_HW_INFO to query the IOMMU hardware
+>> information
+>>> for a given device. The returned data is vendor specific, userspace needs
+>>> to decode it with the structure mapped by the @out_data_type field.
+>>>
+>>> As only physical devices have IOMMU hardware, so this will return error
+>>> if the given device is not a physical device.
+>>>
+>>> Co-developed-by: Nicolin Chen<nicolinc@nvidia.com>
+>>> Signed-off-by: Nicolin Chen<nicolinc@nvidia.com>
+>>> Signed-off-by: Yi Liu<yi.l.liu@intel.com>
+>>> ---
+>>>    drivers/iommu/iommufd/device.c          | 72 +++++++++++++++++++++++++
+>>>    drivers/iommu/iommufd/iommufd_private.h |  1 +
+>>>    drivers/iommu/iommufd/main.c            |  3 ++
+>>>    include/uapi/linux/iommufd.h            | 37 +++++++++++++
+>>>    4 files changed, 113 insertions(+)
+>>>
+>>> diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+>>> index 051bd8e99858..bc99d092de8f 100644
+>>> --- a/drivers/iommu/iommufd/device.c
+>>> +++ b/drivers/iommu/iommufd/device.c
+>>> @@ -263,6 +263,78 @@ u32 iommufd_device_to_id(struct iommufd_device *idev)
+>>>    }
+>>>    EXPORT_SYMBOL_NS_GPL(iommufd_device_to_id, IOMMUFD);
+>>>
+>>> +static int iommufd_zero_fill_user(u64 ptr, int bytes)
+>>> +{
+>>> +	int index = 0;
+>>> +
+>>> +	for (; index < bytes; index++) {
+>>> +		if (put_user(0, (uint8_t __user *)u64_to_user_ptr(ptr + index)))
+>>> +			return -EFAULT;
+>>> +	}
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +int iommufd_device_get_hw_info(struct iommufd_ucmd *ucmd)
+>>> +{
+>>> +	struct iommu_hw_info *cmd = ucmd->cmd;
+>>> +	unsigned int length = 0, data_len;
+>>> +	struct iommufd_device *idev;
+>>> +	const struct iommu_ops *ops;
+>>> +	void *data = NULL;
+>>> +	int rc = 0;
+>>> +
+>>> +	if (cmd->flags || cmd->__reserved || !cmd->data_len)
+>>> +		return -EOPNOTSUPP;
+>>> +
+>>> +	idev = iommufd_get_device(ucmd, cmd->dev_id);
+>>> +	if (IS_ERR(idev))
+>>> +		return PTR_ERR(idev);
+>>> +
+>>> +	ops = dev_iommu_ops(idev->dev);
+>>> +	if (!ops->hw_info)
+>>> +		goto done;
+>> If the iommu driver doesn't provide a hw_info callback, it still
+>> returns success?
+> Yes, as noted in the cover letter. It's for a remark from Jason. In such
+> case, the out_data_type is NULL, it means no specific data is filled
+> in the buffer pointed by cmd->data_ptr.
 > 
-> Thank you for your patch. There is something to discuss/improve.
-> 
->> +
->> +examples:
->> +  - |
->> +    #include <dt-bindings/clock/qcom,rpmcc.h>
->> +    #include <dt-bindings/clock/qcom,sm6375-gcc.h>
->> +    #include <dt-bindings/clock/qcom,sm6375-dispcc.h>
->> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
->> +    #include <dt-bindings/power/qcom-rpmpd.h>
->> +
->> +    display-subsystem@5e00000 {
->> +        compatible = "qcom,sm6375-mdss";
->> +        reg = <0x05e00000 0x1000>;
->> +        reg-names = "mdss";
->> +
->> +        power-domains = <&dispcc MDSS_GDSC>;
->> +
->> +        clocks = <&gcc GCC_DISP_AHB_CLK>,
->> +                 <&dispcc DISP_CC_MDSS_AHB_CLK>,
->> +                 <&dispcc DISP_CC_MDSS_MDP_CLK>;
->> +        clock-names = "iface", "ahb", "core";
->> +
->> +        interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
->> +        interrupt-controller;
->> +        #interrupt-cells = <1>;
->> +
->> +        iommus = <&apps_smmu 0x820 0x2>;
->> +        #address-cells = <1>;
->> +        #size-cells = <1>;
->> +        ranges;
->> +
->> +        display-controller@5e01000 {
->> +            compatible = "qcom,sm6375-dpu";
->> +            reg = <0x05e01000 0x8e030>,
->> +                  <0x05eb0000 0x2008>;
->> +            reg-names = "mdp", "vbif";
->> +
->> +            clocks = <&dispcc DISP_CC_MDSS_AHB_CLK>,
->> +                     <&gcc GCC_DISP_HF_AXI_CLK>,
->> +                     <&dispcc DISP_CC_MDSS_MDP_CLK>,
->> +                     <&dispcc DISP_CC_MDSS_MDP_LUT_CLK>,
->> +                     <&dispcc DISP_CC_MDSS_ROT_CLK>,
->> +                     <&dispcc DISP_CC_MDSS_VSYNC_CLK>,
->> +                     <&gcc GCC_DISP_THROTTLE_CORE_CLK>;
->> +            clock-names = "iface",
->> +                          "bus",
->> +                          "core",
->> +                          "lut",
->> +                          "rot",
->> +                          "vsync",
->> +                          "throttle";
-> 
-> Are you sure you have clocks in correct order? I see warnings...
-Right, testing *both* the DTs and bindings after making changes sounds
-like a good thing to stop forgetting..
+> - Let IOMMU_DEVICE_GET_HW_INFO succeed even the underlying iommu driver
+>     does not have driver-specific data to report per below remark.
+>     https://lore.kernel.org/kvm/ZAcwJSK%2F9UVI9LXu@nvidia.com/
 
-Konrad
-> 
-> Best regards,
-> Krzysztof
-> 
+Oh, I overlooked that. Thanks for the explanation. It's fair enough.
+
+Best regards,
+baolu
