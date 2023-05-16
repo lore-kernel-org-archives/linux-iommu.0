@@ -1,14 +1,14 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8BC5534CEB
-	for <iommu@lists.linux.dev>; Tue, 16 May 2023 11:45:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5CEF51EA8F
+	for <iommu@lists.linux.dev>; Tue, 16 May 2023 11:51:17 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6C4082F4;
-	Tue, 16 May 2023 04:46:25 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7FB242F4;
+	Tue, 16 May 2023 04:52:01 -0700 (PDT)
 Received: from [10.57.83.102] (unknown [10.57.83.102])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 72E6B3F663;
-	Tue, 16 May 2023 04:45:39 -0700 (PDT)
-Message-ID: <11d8adf1-75f5-5728-2139-e32aae6e6c49@arm.com>
-Date: Tue, 16 May 2023 12:45:35 +0100
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 878AE3F663;
+	Tue, 16 May 2023 04:51:15 -0700 (PDT)
+Message-ID: <29f6d2c8-fc10-6120-1ce6-888db8db13dc@arm.com>
+Date: Tue, 16 May 2023 12:51:09 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -17,74 +17,71 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
  Thunderbird/102.10.1
-Subject: Re: [PATCH 0/4] iommu: tegra-gart cleanups
+Subject: Re: [PATCH v2] iommu: make IPMMU_VMSA dependencies more strict
 Content-Language: en-GB
-To: Nicolas Chauvet <kwizart@gmail.com>
-Cc: joro@8bytes.org, iommu@lists.linux.dev, will@kernel.org, jgg@nvidia.com,
- digetx@gmail.com, thierry.reding@gmail.com, linux-tegra@vger.kernel.org
-References: <cover.1684154219.git.robin.murphy@arm.com>
- <CABr+WTnzNPfOGbAmy-E3pH9U5XR0y2PdVmDd2gtnv67ByEb_0w@mail.gmail.com>
+To: Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Joerg Roedel
+ <joro@8bytes.org>, Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
+ Conor Dooley <conor@kernel.org>,
+ Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20230330165817.21920-1-rdunlap@infradead.org>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <CABr+WTnzNPfOGbAmy-E3pH9U5XR0y2PdVmDd2gtnv67ByEb_0w@mail.gmail.com>
+In-Reply-To: <20230330165817.21920-1-rdunlap@infradead.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 2023-05-16 10:53, Nicolas Chauvet wrote:
-> Le lun. 15 mai 2023 à 14:57, Robin Murphy <robin.murphy@arm.com> a écrit :
->>
->> Hi all,
->>
->> For the sake of discussion, here's my irrational pet project to bring
->> the tegra-gart driver right up to date as an example of a
->> properly-implemented IOMMU driver for a non-isolated address space. Part
->> of that irrationality is that I don't even own any hardware which uses
->> this driver, so it's only build-tested :)
->>
->> Thanks,
->> Robin.
->>
->>
->> Robin Murphy (4):
->>    iommu/tegra-gart: Add default identity domain support
->>    iommu/tegra-gart: Improve domain support
->>    iommu/tegra-gart: Generalise domain support
->>    iommu: Clean up force_aperture confusion
->>
->>   drivers/iommu/dma-iommu.c    |  19 ++--
->>   drivers/iommu/mtk_iommu_v1.c |   4 +
->>   drivers/iommu/sprd-iommu.c   |   1 +
->>   drivers/iommu/tegra-gart.c   | 162 +++++++++++++++++++----------------
->>   4 files changed, 99 insertions(+), 87 deletions(-)
+On 2023-03-30 17:58, Randy Dunlap wrote:
+> On riscv64, linux-next-20233030 (and for several days earlier),
+> there is a kconfig warning:
 > 
+> WARNING: unmet direct dependencies detected for IOMMU_IO_PGTABLE_LPAE
+>    Depends on [n]: IOMMU_SUPPORT [=y] && (ARM || ARM64 || COMPILE_TEST [=n]) && !GENERIC_ATOMIC64 [=n]
+>    Selected by [y]:
+>    - IPMMU_VMSA [=y] && IOMMU_SUPPORT [=y] && (ARCH_RENESAS [=y] || COMPILE_TEST [=n]) && !GENERIC_ATOMIC64 [=n]
 > 
-> For what it worth, I've tried to test this serie with "grate patches"
-> (1) rebased on top on 6.4-rc2, that would make use of the tegra-gart.
-> That was on PAZ00 (with only 512M of RAM and 96M CMA still allocated).
-> Unfortunately, this lead to the following errors with display problems
-> (no character displayed in lxt-terminal and etc)
-
-Thanks for testing - it's quite possible I've made a silly mistake 
-somewhere, but just to double-check, does the same happen with the 
-existing driver if you boot with "tegra-gart.gart_debug=1" (or at least 
-enable the parameter via sysfs before the DRM driver gets going)?
-
-Thanks,
-Robin.
-
-> [  888.691348] tegra-mc 7000f000.memory-controller: gart: Page entry is in-use
-> [  888.698400] [drm:tegra_bo_gart_map_locked [tegra_drm]] *ERROR*
-> mapping failed 4294967274 262144
-> [  888.707365] [drm:tegra_bo_gart_map_locked [tegra_drm]] *ERROR*
-> failed size 262144: -12
-> [  888.716735] tegra-mc 7000f000.memory-controller: gart: Page entry is in-use
-> [  888.723800] [drm:tegra_bo_gart_map_locked [tegra_drm]] *ERROR*
-> mapping failed 4294967274 262144
-> [  888.733156] [drm:tegra_bo_gart_map_locked [tegra_drm]] *ERROR*
-> failed size 262144: -12
-> [  889.055247] tegra-mc 7000f000.memory-controller: gart: Page entry is in-use
-> [  889.062296] [drm:tegra_bo_gart_map_locked [tegra_drm]] *ERROR*
-> mapping failed 4294967274 262144
-> [  889.071266] [drm:tegra_bo_gart_map_locked [tegra_drm]] *ERROR*
-> failed size 262144: -12
+> and build errors:
 > 
-> (1) https://github.com/grate-driver/linux
+> riscv64-linux-ld: drivers/iommu/io-pgtable-arm.o: in function `.L140':
+> io-pgtable-arm.c:(.init.text+0x1e8): undefined reference to `alloc_io_pgtable_ops'
+> riscv64-linux-ld: drivers/iommu/io-pgtable-arm.o: in function `.L168':
+> io-pgtable-arm.c:(.init.text+0xab0): undefined reference to `free_io_pgtable_ops'
+> riscv64-linux-ld: drivers/iommu/ipmmu-vmsa.o: in function `.L140':
+> ipmmu-vmsa.c:(.text+0xbc4): undefined reference to `free_io_pgtable_ops'
+> riscv64-linux-ld: drivers/iommu/ipmmu-vmsa.o: in function `.L0 ':
+> ipmmu-vmsa.c:(.text+0x145e): undefined reference to `alloc_io_pgtable_ops'
+> 
+> Add ARM || ARM64 || COMPILE_TEST dependencies to IPMMU_VMSA to prevent
+> these issues, i.e., so that ARCH_RENESAS on RISC-V is not allowed.
+> 
+> This makes the ARCH dependencies become:
+> 	depends on (ARCH_RENESAS && (ARM || ARM64)) || COMPILE_TEST
+> but that can be a bit hard to read.
+
+If it helps,
+
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+
+> Fixes: 8292493c22c8 ("riscv: Kconfig.socs: Add ARCH_RENESAS kconfig option")
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Suggested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: iommu@lists.linux.dev
+> Cc: Conor Dooley <conor@kernel.org>
+> Cc: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+>   drivers/iommu/Kconfig |    1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff -- a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -287,6 +287,7 @@ config EXYNOS_IOMMU_DEBUG
+>   config IPMMU_VMSA
+>   	bool "Renesas VMSA-compatible IPMMU"
+>   	depends on ARCH_RENESAS || COMPILE_TEST
+> +	depends on ARM || ARM64 || COMPILE_TEST
+>   	depends on !GENERIC_ATOMIC64	# for IOMMU_IO_PGTABLE_LPAE
+>   	select IOMMU_API
+>   	select IOMMU_IO_PGTABLE_LPAE
