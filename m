@@ -1,103 +1,109 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f53.google.com (mail-oo1-f53.google.com [209.85.161.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 346281DDC7;
-	Tue, 16 May 2023 07:58:24 +0000 (UTC)
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 022691617A9;
-	Tue, 16 May 2023 09:58:20 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1684223901; bh=vgp/F7g/spz90YI9EAe5zEYmTaqdHJkzRNoRv0QNyqo=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=PiKtJUDXeLIXLILtSnIYL0BWgkz+1wtz3Skq/knjoFpezpja2UdK19+qCjZ7PudN3
-	 Y30ABlU9VOPl9n8xKjK5pH/3a8JiDL195rF6HNNpdMHP6wArDy70+Zi6x/LxqQIQlu
-	 ibT19G77KLEtOH9rfxVy+qRNl4Bzq6+qxaP4382xqIziuSKvlMU3p8RupyFg5U5W/o
-	 tFWS2oTyGYyMLRjdnCK2qeWtiHho1mdvnndZuLvLV1+H80+qAAYo8Pq83ef4A8xA4R
-	 +bQXyF5Kf4JJ/L0goFRsCBPLCj0g5AtWa0385zU9r4oMTsoeg4N3n8jhCgkY5fSenZ
-	 tDBAOVxUZcDdg==
-Date: Tue, 16 May 2023 09:58:19 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Niklas Schnelle <schnelle@linux.ibm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Matthew Rosato <mjrosato@linux.ibm.com>,
- Will Deacon <will@kernel.org>, Wenjia Zhang <wenjia@linux.ibm.com>, Robin
- Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Gerd Bayer
- <gbayer@linux.ibm.com>, Julian Ruess <julianr@linux.ibm.com>, Pierre Morel
- <pmorel@linux.ibm.com>, Alexandra Winter <wintera@linux.ibm.com>, Heiko
- Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, Alexander
- Gordeev <agordeev@linux.ibm.com>, Christian Borntraeger
- <borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>, Suravee
- Suthikulpanit <suravee.suthikulpanit@amd.com>, Hector Martin
- <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>, Alyssa Rosenzweig
- <alyssa@rosenzweig.io>, David Woodhouse <dwmw2@infradead.org>, Lu Baolu
- <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>, Bjorn Andersson
- <andersson@kernel.org>, Konrad Dybcio <konrad.dybcio@linaro.org>, Yong Wu
- <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>, Orson Zhai
- <orsonzhai@gmail.com>, Baolin Wang <baolin.wang@linux.alibaba.com>, Chunyan
- Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>, Jernej Skrabec
- <jernej.skrabec@gmail.com>, Samuel Holland <samuel@sholland.org>, Thierry
- Reding <thierry.reding@gmail.com>, Krishna Reddy <vdumpa@nvidia.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
- linux-s390@vger.kernel.org, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev, asahi@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
- linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
- linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v9 1/6] s390/ism: Set DMA coherent mask
-Message-ID: <20230516095819.78442f09@meshulam.tesarici.cz>
-In-Reply-To: <20230310-dma_iommu-v9-1-65bb8edd2beb@linux.ibm.com>
-References: <20230310-dma_iommu-v9-0-65bb8edd2beb@linux.ibm.com>
-	<20230310-dma_iommu-v9-1-65bb8edd2beb@linux.ibm.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B013E2C726
+	for <iommu@lists.linux.dev>; Tue, 16 May 2023 09:53:13 +0000 (UTC)
+Received: by mail-oo1-f53.google.com with SMTP id 006d021491bc7-54fb3ef9c53so2789927eaf.3
+        for <iommu@lists.linux.dev>; Tue, 16 May 2023 02:53:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684230793; x=1686822793;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=sUyWbDWLzBbwVa1NBzeenGWyMmMD2r29seiz5UsbH5s=;
+        b=D/yRNt4MQRyZ0HSzVSkvV/+LSWJfO1P9YchgIq0aqYq5lq95Uz05BhRpR+muzlLGRx
+         knRT5R4JbyYdOCBluPeerFZ1y7C7ak614gh3jMNQ0jl9k/qb9IJyJdBb9Q03cSo5Mohl
+         64TnQg8QWbqLCBqrokrYuCFhMrDpFkwq3NPlrdzHIhH4VwaxiQG7t+hvU3CEG3gk9FZd
+         obSleGPG2bW1wJXBWLm9F62eYK1eOvUYjgDVhggH/4uljhLBtZ+XtfIlHEqgnj37fm8A
+         WM0a1rGDD98MP+GM9mw47vJ7ZLvS3JnuwqHMdnamwG1hbdFmRTxFKhvDZnRpFVCtajR6
+         E5Pg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684230793; x=1686822793;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=sUyWbDWLzBbwVa1NBzeenGWyMmMD2r29seiz5UsbH5s=;
+        b=Yy+hP0tAKdUSMEHksUjT01gTnfiaGpx4lcgv2kseR2/Euq8t83ntF51UdDZekAGn2x
+         vaE03fHcAa4FmyvEGVnq6pgPJjkHpNjaIIIww2BZEIBuEjo7i0Iu2v8Yu+9HLfy52MVZ
+         176Jzn9r666s1wRFQ5Zn7leMDkRKIWNt1xc31hPK24h9V4R0uEecddnmPmmJ5Pt66ewh
+         +W9azKKRbZrET/nBsFZm2pp3bfED6/C4bGEkx2c+xI1WTgrWs8hlSeTCvrDkck3ecdqa
+         Mmuy7yT7skFbxs5r8uMhNlicWxOWF7Q7SYV5lCfYupM8/jOPwqhDH5vkGDVvx5lthfDY
+         fiiA==
+X-Gm-Message-State: AC+VfDzyq9TB2vLMOq1fHqbJ5f6ZRBwi2L26m+KN/N91GBxZcI05R3DH
+	ZNMat+Ea13lkf0/+qezK8NBj739CV05bczAHG18=
+X-Google-Smtp-Source: ACHHUZ6qBzkUrqzfZWjjUyTwZDpxczedNsiP925z+88F8yPLQgbrPTp/axsev+vTNGfxAb7ND65H0v0H6XeLLlMFWX8=
+X-Received: by 2002:a4a:2a5d:0:b0:54f:6a7a:c6d with SMTP id
+ x29-20020a4a2a5d000000b0054f6a7a0c6dmr10042774oox.3.1684230792632; Tue, 16
+ May 2023 02:53:12 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <cover.1684154219.git.robin.murphy@arm.com>
+In-Reply-To: <cover.1684154219.git.robin.murphy@arm.com>
+From: Nicolas Chauvet <kwizart@gmail.com>
+Date: Tue, 16 May 2023 11:53:01 +0200
+Message-ID: <CABr+WTnzNPfOGbAmy-E3pH9U5XR0y2PdVmDd2gtnv67ByEb_0w@mail.gmail.com>
+Subject: Re: [PATCH 0/4] iommu: tegra-gart cleanups
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, iommu@lists.linux.dev, will@kernel.org, jgg@nvidia.com, 
+	digetx@gmail.com, thierry.reding@gmail.com, linux-tegra@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 15 May 2023 11:15:51 +0200
-Niklas Schnelle <schnelle@linux.ibm.com> wrote:
+Le lun. 15 mai 2023 =C3=A0 14:57, Robin Murphy <robin.murphy@arm.com> a =C3=
+=A9crit :
+>
+> Hi all,
+>
+> For the sake of discussion, here's my irrational pet project to bring
+> the tegra-gart driver right up to date as an example of a
+> properly-implemented IOMMU driver for a non-isolated address space. Part
+> of that irrationality is that I don't even own any hardware which uses
+> this driver, so it's only build-tested :)
+>
+> Thanks,
+> Robin.
+>
+>
+> Robin Murphy (4):
+>   iommu/tegra-gart: Add default identity domain support
+>   iommu/tegra-gart: Improve domain support
+>   iommu/tegra-gart: Generalise domain support
+>   iommu: Clean up force_aperture confusion
+>
+>  drivers/iommu/dma-iommu.c    |  19 ++--
+>  drivers/iommu/mtk_iommu_v1.c |   4 +
+>  drivers/iommu/sprd-iommu.c   |   1 +
+>  drivers/iommu/tegra-gart.c   | 162 +++++++++++++++++++----------------
+>  4 files changed, 99 insertions(+), 87 deletions(-)
 
-> A future change will convert the DMA API implementation from the
-> architecture specific arch/s390/pci/pci_dma.c to using the common code
-> drivers/iommu/dma-iommu.c which the utilizes the same IOMMU hardware
-> through the s390-iommu driver. Unlike the s390 specific DMA API this
-> requires devices to correctly call set the coherent mask to be allowed
-> to use IOVAs >2^32 in dma_alloc_coherent(). This was however not done
-> for ISM devices. ISM requires such addresses since currently the DMA
-> aperture for PCI devices starts at 2^32 and all calls to
-> dma_alloc_coherent() would thus fail.
-> 
-> Reviewed-by: Alexandra Winter <wintera@linux.ibm.com>
-> Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> ---
->  drivers/s390/net/ism_drv.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/s390/net/ism_drv.c b/drivers/s390/net/ism_drv.c
-> index 8acb9eba691b..1399b5dc646c 100644
-> --- a/drivers/s390/net/ism_drv.c
-> +++ b/drivers/s390/net/ism_drv.c
-> @@ -660,7 +660,7 @@ static int ism_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->  	if (ret)
->  		goto err_disable;
->  
-> -	ret = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64));
-> +	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
 
-Ah. I love this change. I have already wondered a few times if the
-coherent DMA mask for this device may actually be different from
-dma_mask. Now I know. ;-)
+For what it worth, I've tried to test this serie with "grate patches"
+(1) rebased on top on 6.4-rc2, that would make use of the tegra-gart.
+That was on PAZ00 (with only 512M of RAM and 96M CMA still allocated).
+Unfortunately, this lead to the following errors with display problems
+(no character displayed in lxt-terminal and etc)
 
-Thanks!
+[  888.691348] tegra-mc 7000f000.memory-controller: gart: Page entry is in-=
+use
+[  888.698400] [drm:tegra_bo_gart_map_locked [tegra_drm]] *ERROR*
+mapping failed 4294967274 262144
+[  888.707365] [drm:tegra_bo_gart_map_locked [tegra_drm]] *ERROR*
+failed size 262144: -12
+[  888.716735] tegra-mc 7000f000.memory-controller: gart: Page entry is in-=
+use
+[  888.723800] [drm:tegra_bo_gart_map_locked [tegra_drm]] *ERROR*
+mapping failed 4294967274 262144
+[  888.733156] [drm:tegra_bo_gart_map_locked [tegra_drm]] *ERROR*
+failed size 262144: -12
+[  889.055247] tegra-mc 7000f000.memory-controller: gart: Page entry is in-=
+use
+[  889.062296] [drm:tegra_bo_gart_map_locked [tegra_drm]] *ERROR*
+mapping failed 4294967274 262144
+[  889.071266] [drm:tegra_bo_gart_map_locked [tegra_drm]] *ERROR*
+failed size 262144: -12
 
-Petr T
+(1) https://github.com/grate-driver/linux
