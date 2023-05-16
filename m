@@ -1,109 +1,124 @@
-Received: from mail-oo1-f53.google.com (mail-oo1-f53.google.com [209.85.161.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B013E2C726
-	for <iommu@lists.linux.dev>; Tue, 16 May 2023 09:53:13 +0000 (UTC)
-Received: by mail-oo1-f53.google.com with SMTP id 006d021491bc7-54fb3ef9c53so2789927eaf.3
-        for <iommu@lists.linux.dev>; Tue, 16 May 2023 02:53:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684230793; x=1686822793;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=sUyWbDWLzBbwVa1NBzeenGWyMmMD2r29seiz5UsbH5s=;
-        b=D/yRNt4MQRyZ0HSzVSkvV/+LSWJfO1P9YchgIq0aqYq5lq95Uz05BhRpR+muzlLGRx
-         knRT5R4JbyYdOCBluPeerFZ1y7C7ak614gh3jMNQ0jl9k/qb9IJyJdBb9Q03cSo5Mohl
-         64TnQg8QWbqLCBqrokrYuCFhMrDpFkwq3NPlrdzHIhH4VwaxiQG7t+hvU3CEG3gk9FZd
-         obSleGPG2bW1wJXBWLm9F62eYK1eOvUYjgDVhggH/4uljhLBtZ+XtfIlHEqgnj37fm8A
-         WM0a1rGDD98MP+GM9mw47vJ7ZLvS3JnuwqHMdnamwG1hbdFmRTxFKhvDZnRpFVCtajR6
-         E5Pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684230793; x=1686822793;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=sUyWbDWLzBbwVa1NBzeenGWyMmMD2r29seiz5UsbH5s=;
-        b=Yy+hP0tAKdUSMEHksUjT01gTnfiaGpx4lcgv2kseR2/Euq8t83ntF51UdDZekAGn2x
-         vaE03fHcAa4FmyvEGVnq6pgPJjkHpNjaIIIww2BZEIBuEjo7i0Iu2v8Yu+9HLfy52MVZ
-         176Jzn9r666s1wRFQ5Zn7leMDkRKIWNt1xc31hPK24h9V4R0uEecddnmPmmJ5Pt66ewh
-         +W9azKKRbZrET/nBsFZm2pp3bfED6/C4bGEkx2c+xI1WTgrWs8hlSeTCvrDkck3ecdqa
-         Mmuy7yT7skFbxs5r8uMhNlicWxOWF7Q7SYV5lCfYupM8/jOPwqhDH5vkGDVvx5lthfDY
-         fiiA==
-X-Gm-Message-State: AC+VfDzyq9TB2vLMOq1fHqbJ5f6ZRBwi2L26m+KN/N91GBxZcI05R3DH
-	ZNMat+Ea13lkf0/+qezK8NBj739CV05bczAHG18=
-X-Google-Smtp-Source: ACHHUZ6qBzkUrqzfZWjjUyTwZDpxczedNsiP925z+88F8yPLQgbrPTp/axsev+vTNGfxAb7ND65H0v0H6XeLLlMFWX8=
-X-Received: by 2002:a4a:2a5d:0:b0:54f:6a7a:c6d with SMTP id
- x29-20020a4a2a5d000000b0054f6a7a0c6dmr10042774oox.3.1684230792632; Tue, 16
- May 2023 02:53:12 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7590D34CEC
+	for <iommu@lists.linux.dev>; Tue, 16 May 2023 11:22:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D5D5C433D2;
+	Tue, 16 May 2023 11:22:05 +0000 (UTC)
+Date: Tue, 16 May 2023 12:22:02 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+Cc: Petr Tesarik <petrtesarik@huaweicloud.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	Borislav Petkov <bp@suse.de>, Randy Dunlap <rdunlap@infradead.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Kim Phillips <kim.phillips@amd.com>,
+	"Steven Rostedt (Google)" <rostedt@goodmis.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Hans de Goede <hdegoede@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Kees Cook <keescook@chromium.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	"open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+	open list <linux-kernel@vger.kernel.org>,
+	"open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+	Roberto Sassu <roberto.sassu@huawei.com>,
+	Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: Re: [PATCH v2 RESEND 7/7] swiotlb: per-device flag if there are
+ dynamically allocated buffers
+Message-ID: <ZGNnWmw4eDsh9hBN@arm.com>
+References: <cover.1683623618.git.petr.tesarik.ext@huawei.com>
+ <69f9e058bb1ad95905a62a4fc8461b064872af97.1683623618.git.petr.tesarik.ext@huawei.com>
+ <ZGEuYxR2PM6wHeDh@arm.com>
+ <20230515104847.6dfdf31b@meshulam.tesarici.cz>
+ <20230515120054.0115a4eb@meshulam.tesarici.cz>
+ <ZGJdtmP13pv06xDH@arm.com>
+ <20230516095512.3c99c35e@meshulam.tesarici.cz>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1684154219.git.robin.murphy@arm.com>
-In-Reply-To: <cover.1684154219.git.robin.murphy@arm.com>
-From: Nicolas Chauvet <kwizart@gmail.com>
-Date: Tue, 16 May 2023 11:53:01 +0200
-Message-ID: <CABr+WTnzNPfOGbAmy-E3pH9U5XR0y2PdVmDd2gtnv67ByEb_0w@mail.gmail.com>
-Subject: Re: [PATCH 0/4] iommu: tegra-gart cleanups
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, iommu@lists.linux.dev, will@kernel.org, jgg@nvidia.com, 
-	digetx@gmail.com, thierry.reding@gmail.com, linux-tegra@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230516095512.3c99c35e@meshulam.tesarici.cz>
 
-Le lun. 15 mai 2023 =C3=A0 14:57, Robin Murphy <robin.murphy@arm.com> a =C3=
-=A9crit :
->
-> Hi all,
->
-> For the sake of discussion, here's my irrational pet project to bring
-> the tegra-gart driver right up to date as an example of a
-> properly-implemented IOMMU driver for a non-isolated address space. Part
-> of that irrationality is that I don't even own any hardware which uses
-> this driver, so it's only build-tested :)
->
-> Thanks,
-> Robin.
->
->
-> Robin Murphy (4):
->   iommu/tegra-gart: Add default identity domain support
->   iommu/tegra-gart: Improve domain support
->   iommu/tegra-gart: Generalise domain support
->   iommu: Clean up force_aperture confusion
->
->  drivers/iommu/dma-iommu.c    |  19 ++--
->  drivers/iommu/mtk_iommu_v1.c |   4 +
->  drivers/iommu/sprd-iommu.c   |   1 +
->  drivers/iommu/tegra-gart.c   | 162 +++++++++++++++++++----------------
->  4 files changed, 99 insertions(+), 87 deletions(-)
+On Tue, May 16, 2023 at 09:55:12AM +0200, Petr Tesařík wrote:
+> On Mon, 15 May 2023 17:28:38 +0100
+> Catalin Marinas <catalin.marinas@arm.com> wrote:
+> > There is another scenario to take into account on the list_del() side.
+> > Let's assume that there are other elements on the list, so
+> > list_empty() == false:
+> > 
+> > P0:
+> > 	list_del(paddr);
+> > 	/* the memory gets freed, added to some slab or page free list */
+> > 	WRITE_ONCE(slab_free_list, __va(paddr));
+> > 
+> > P1:
+> > 	paddr = __pa(READ_ONCE(slab_free_list));/* re-allocating paddr freed on P0 */
+> > 	if (!list_empty()) {			/* assuming other elements on the list */
+> > 		/* searching the list */
+> > 		list_for_each() {
+> > 			if (pos->paddr) == __pa(vaddr))
+> > 				/* match */
+> > 		}
+> > 	}
+> > 
+> > On P0, you want the list update to be visible before the memory is freed
+> > (and potentially reallocated on P1). An smp_wmb() on P0 would do. For
+> > P1, we don't care about list_empty() as there can be other elements
+> > already. But we do want any list elements reading during the search to
+> > be ordered after the slab_free_list reading. The smp_rmb() you'd add for
+> > the case above would suffice.
+> 
+> Yes, but to protect against concurrent insertions/deletions, a spinlock
+> is held while searching the list. The spin lock provides the necessary
+> memory barriers implicitly.
 
+Well, mostly. The spinlock acquire/release semantics ensure that
+accesses within the locked region are not observed outside the
+lock/unlock. But it doesn't guarantee anything about accesses outside
+such region in relation to the accesses within the region. For example:
 
-For what it worth, I've tried to test this serie with "grate patches"
-(1) rebased on top on 6.4-rc2, that would make use of the tegra-gart.
-That was on PAZ00 (with only 512M of RAM and 96M CMA still allocated).
-Unfortunately, this lead to the following errors with display problems
-(no character displayed in lxt-terminal and etc)
+P0:
+	spin_lock_irqsave(&swiotlb_dyn_lock);
+	list_del(paddr);
+	spin_unlock_irqrestore(&swiotlb_dyn_lock);
 
-[  888.691348] tegra-mc 7000f000.memory-controller: gart: Page entry is in-=
-use
-[  888.698400] [drm:tegra_bo_gart_map_locked [tegra_drm]] *ERROR*
-mapping failed 4294967274 262144
-[  888.707365] [drm:tegra_bo_gart_map_locked [tegra_drm]] *ERROR*
-failed size 262144: -12
-[  888.716735] tegra-mc 7000f000.memory-controller: gart: Page entry is in-=
-use
-[  888.723800] [drm:tegra_bo_gart_map_locked [tegra_drm]] *ERROR*
-mapping failed 4294967274 262144
-[  888.733156] [drm:tegra_bo_gart_map_locked [tegra_drm]] *ERROR*
-failed size 262144: -12
-[  889.055247] tegra-mc 7000f000.memory-controller: gart: Page entry is in-=
-use
-[  889.062296] [drm:tegra_bo_gart_map_locked [tegra_drm]] *ERROR*
-mapping failed 4294967274 262144
-[  889.071266] [drm:tegra_bo_gart_map_locked [tegra_drm]] *ERROR*
-failed size 262144: -12
+	/* the blah write below can be observed before list_del() above */
+	WRITE_ONCE(blah, paddr);
 
-(1) https://github.com/grate-driver/linux
+	/* that's somewhat tricker but slab_free_list update can also be
+	 * seen before list_del() above on certain architectures */
+	spin_lock_irqsave(&slab_lock);
+ 	WRITE_ONCE(slab_free_list, __va(paddr));
+	spin_unlock_irqrestore(&slab_lock);
+
+On most architectures, the writing of the pointer to a slab structure
+(assuming some spinlocks) would be ordered against the list_del() from
+the swiotlb code. Apart from powerpc where the spin_unlock() is not
+necessarily ordered against the subsequent spin_lock(). The architecture
+selects ARCH_WEAK_RELEASE_ACQUIRE which in turns makes
+smp_mb__after_unlock_lock() an smp_mb() (rather than no-op on all the
+other architectures).
+
+On arm64 we have smp_mb__after_spinlock() which ensures that memory
+accesses prior to spin_lock() are not observed after accesses within the
+locked region. I don't think this matters for your case but I thought
+I'd mention it.
+
+-- 
+Catalin
