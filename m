@@ -1,65 +1,96 @@
-Received: from out-1.mta0.migadu.com (out-1.mta0.migadu.com [91.218.175.1])
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BAFE17CE
-	for <iommu@lists.linux.dev>; Tue, 16 May 2023 01:57:44 +0000 (UTC)
-Message-ID: <6db6be89-553b-2ea4-c560-85d7656b1a64@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1684202262;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=nkgJr5TntcsmOa2FHc9lEEHs25pFEnEi+hsLB4y5ZKc=;
-	b=PBzDjZNOTYQwIdfGd4tTMQ4KbP5VVFAryOUs1Ecmxp7cM7IZDPm8iLGmf4uFDVOatqXkBp
-	I4qkw3Y9eYYAOXVVGCL4Fk3+CeR1Labso0Evadby62oplEOZho3OuZrEuZAk4iEr/K4Yqw
-	JBttLnfSbkLEBFknClhf9/KXiBpBSMg=
-Date: Tue, 16 May 2023 09:57:28 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F644621
+	for <iommu@lists.linux.dev>; Tue, 16 May 2023 02:44:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1684205042; x=1715741042;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=PQC9n1gXUZAOwEzChv+hdaQZHcZ4tJdAn2yzVm4wFag=;
+  b=I/zKEefwXyOlCEYKfa7By2R0EP6OoEBOS9YctGYh/LdL3kIY71LcV1WQ
+   YaAYJJXkCUf32AN9FmI/CCrYN/4x9V+9dSR6i3FjRQsLRI01Dj+WflzHB
+   cXlbzZyWbeM24OqbFG6yGj1uZYWNuLPRZQZH2RGA2kArcZjgKTAgIO3jR
+   BR49EnuUdJvUWAVshp+YmkyeINPMaCvQWi2smSvilTlILzHsihZ/nYOx9
+   WGxsuxV2aIfcIZ0Z7DITsofPawM+AUnbltFXxf96ZHNWWVpTmn6dn4uXg
+   i9sRLl6eNLCHUt6p4Su8OPq2ADlTk2MNjQ4LnNL2jCOFhTbBRTEnmQgyf
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="437704665"
+X-IronPort-AV: E=Sophos;i="5.99,277,1677571200"; 
+   d="scan'208";a="437704665"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2023 19:44:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="770856241"
+X-IronPort-AV: E=Sophos;i="5.99,277,1677571200"; 
+   d="scan'208";a="770856241"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by fmsmga004.fm.intel.com with ESMTP; 15 May 2023 19:43:59 -0700
+Message-ID: <89d800bf-87cf-6a7d-85b3-74bd457b1454@linux.intel.com>
+Date: Tue, 16 May 2023 10:43:23 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Subject: Re: [PATCH] dma-contiguous: support per-numa CMA for all
- architectures
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
+ kvm@vger.kernel.org, Lixiao Yang <lixiao.yang@intel.com>,
+ Matthew Rosato <mjrosato@linux.ibm.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH v7 02/19] iommufd: Add iommufd_group
 Content-Language: en-US
-To: =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>
-Cc: Christoph Hellwig <hch@lst.de>, corbet@lwn.net, catalin.marinas@arm.com,
- will@kernel.org, m.szyprowski@samsung.com, robin.murphy@arm.com,
- paulmck@kernel.org, bp@suse.de, akpm@linux-foundation.org,
- peterz@infradead.org, rdunlap@infradead.org, kim.phillips@amd.com,
- rostedt@goodmis.org, thunder.leizhen@huawei.com, ardb@kernel.org,
- bhe@redhat.com, anshuman.khandual@arm.com, song.bao.hua@hisilicon.com,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- 21cnbao@gmail.com
-References: <20230515094955.GB23880@lst.de>
- <20230512094210.141540-1-yajun.deng@linux.dev>
- <055f964384a2bb4ba51c64a0be6072c9@linux.dev>
- <20230515133821.769158bb@meshulam.tesarici.cz>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Yajun Deng <yajun.deng@linux.dev>
-In-Reply-To: <20230515133821.769158bb@meshulam.tesarici.cz>
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+ linux-kselftest@vger.kernel.org
+References: <2-v7-6c0fd698eda2+5e3-iommufd_alloc_jgg@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <2-v7-6c0fd698eda2+5e3-iommufd_alloc_jgg@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
+Content-Transfer-Encoding: 7bit
 
+On 5/15/23 10:00 PM, Jason Gunthorpe wrote:
+>   void iommufd_device_destroy(struct iommufd_object *obj)
+>   {
+>   	struct iommufd_device *idev =
+>   		container_of(obj, struct iommufd_device, obj);
+>   
+>   	iommu_device_release_dma_owner(idev->dev);
+> -	iommu_group_put(idev->group);
+> +	iommufd_put_group(idev->igroup);
+>   	if (!iommufd_selftest_is_mock_dev(idev->dev))
+>   		iommufd_ctx_put(idev->ictx);
+>   }
+> @@ -46,7 +154,7 @@ struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
+>   					   struct device *dev, u32 *id)
+>   {
+>   	struct iommufd_device *idev;
+> -	struct iommu_group *group;
+> +	struct iommufd_group *igroup;
+>   	int rc;
+>   
+>   	/*
+> @@ -56,9 +164,9 @@ struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
+>   	if (!device_iommu_capable(dev, IOMMU_CAP_CACHE_COHERENCY))
+>   		return ERR_PTR(-EINVAL);
+>   
+> -	group = iommu_group_get(dev);
+> -	if (!group)
+> -		return ERR_PTR(-ENODEV);
+> +	igroup = iommufd_get_group(ictx, dev);
+> +	if (IS_ERR(igroup))
+> +		return ERR_CAST(igroup);
+>   
+>   	/*
+>   	 * For historical compat with VFIO the insecure interrupt path is
 
-On 2023/5/15 19:38, Petr Tesařík wrote:
-> On Mon, 15 May 2023 11:23:27 +0000
-> "Yajun Deng" <yajun.deng@linux.dev> wrote:
->
->> May 15, 2023 5:49 PM, "Christoph Hellwig" <hch@lst.de> wrote:
->>
->>> This looks fine to me. Can you please work with Barry to make sure
->>> the slight different place of the initcall doesn't break anything
->>> for his setup? I doubt it would, but I'd rather have a Tested-by:
->>> tag.
->> Barry's email is no longer in use. I can't reach him.
-> Which one? I would hope that his Gmail account is still valid:
->
->    Barry Song <21cnbao@gmail.com>
-   Thanks.
->
-> Petr T
+Hi Jason,
+
+Perhaps I am asking a silly question. The iommufd_group is get in
+iommufd_device_bind(), but put in iommufd_device_destroy(). Why not put
+it in iommufd_device_unbind()?
+
+Best regards,
+baolu
