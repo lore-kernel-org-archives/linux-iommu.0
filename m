@@ -1,110 +1,119 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C430107A5
-	for <iommu@lists.linux.dev>; Tue, 16 May 2023 18:19:28 +0000 (UTC)
-Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-1ae3f74c98bso10505ad.1
-        for <iommu@lists.linux.dev>; Tue, 16 May 2023 11:19:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1684261168; x=1686853168;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=hnujQIGnrKrvLF8j2U/POTslbNBCDtRpy4BK62wtAF8=;
-        b=3bKAHTvYQyO/brVIc1IMrdaoFfCBkLctq4Zb7NTxNHIrbn6f8fUd1pH9iHS06GNijW
-         qVKtvEtuLqo4nMrw/GLP2IsVLrrmMkJvgLbfM8XV8dKpF4xfgo4ETGtBBp9zYo3iWNfo
-         7LNMsrv5vaSiZ0xmYl5bG2BeC59EZ76n1olLQktzyu6aOJD5dLaG/tZmAwiJdPQOM6U5
-         401rX5HzxpiJ73bzZPOV06pay4MI/gehzyVVUIhUp3mF+gs8KADF94ylzYcyTq7nIEhZ
-         oQWeevdmnl4LsmYlGj8vbNWS9lcHADKgz02M/AJYjRqHorVEaYEnOAxPF1CdX0V/RnWZ
-         RmxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684261168; x=1686853168;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hnujQIGnrKrvLF8j2U/POTslbNBCDtRpy4BK62wtAF8=;
-        b=AuRp+QqTKFmkrUV2NHdPNJeH6eMF6KbQkbQXWnhDJg8H7lZ7e0yMBy4Bvsn/0v4Kkx
-         yMo+qQn0Qk5c1laA2AxtzNRUhH3/4JF5F3JSoFJxJGHfX174Et9PHVsz8RjMKaUfT/eD
-         31Zd8xmCV4JVWaFVRrk5LStMWO8Ms5YAHY5ixAR5ueMwfCOqE3shimIwcq10K2ETKz4c
-         nqOGy9q1KoXa0ZKrzv931yNZWHjS17JOIS4XhlrqUqqGfZeS5RAznzQUK/xjeHve/Ts0
-         /LmzOvO+pIPIgpamZW0xDq+zLpGodk2+IvMfBOFZM2ZpbsZUl4aYhudKRhi/wI76bYyo
-         WvFA==
-X-Gm-Message-State: AC+VfDxZU20WkXKshMIBOu17m152lokgWIBfMppq5aCCXyVwnHMeId+P
-	AmfI4f43EGJTg1zRek60GtM9kw==
-X-Google-Smtp-Source: ACHHUZ45WumG7sRiSKKxNUeVxPh+M46qd/Nuj3/4l0Bzt6CPpdXbJTPt8n03GszfoPTeFsj+7ZnZZw==
-X-Received: by 2002:a17:902:d4c5:b0:1aa:e90c:d437 with SMTP id o5-20020a170902d4c500b001aae90cd437mr15026plg.8.1684261167679;
-        Tue, 16 May 2023 11:19:27 -0700 (PDT)
-Received: from google.com ([2620:15c:2d:3:fd80:d223:d66f:530f])
-        by smtp.gmail.com with ESMTPSA id x5-20020a170902b40500b0019a6cce2060sm15837904plr.57.2023.05.16.11.19.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 May 2023 11:19:26 -0700 (PDT)
-Date: Tue, 16 May 2023 11:19:22 -0700
-From: Isaac Manjarres <isaacmanjarres@google.com>
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>,
-	Arnd Bergmann <arnd@arndb.de>, Christoph Hellwig <hch@lst.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	Ard Biesheuvel <ardb@kernel.org>,
-	Saravana Kannan <saravanak@google.com>,
-	Alasdair Kergon <agk@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
-	Joerg Roedel <joro@8bytes.org>, Mark Brown <broonie@kernel.org>,
-	Mike Snitzer <snitzer@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, linux-mm@kvack.org,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	Petr Tesarik <petrtesarik@huaweicloud.com>
-Subject: Re: [PATCH v3 00/13] mm, dma, arm64: Reduce ARCH_KMALLOC_MINALIGN to
- 8
-Message-ID: <ZGPJKq5ME2r6KIFt@google.com>
-References: <20221106220143.2129263-1-catalin.marinas@arm.com>
- <ZBNiN9CR2F/fvUTh@google.com>
- <ZEARbKMfMS8KdkhJ@arm.com>
- <ZGKDWMqTt/f05AmG@google.com>
- <ZGO7L9EyDEXU6zWf@arm.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6AC7D107A5
+	for <iommu@lists.linux.dev>; Tue, 16 May 2023 18:24:25 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5321D1FB;
+	Tue, 16 May 2023 11:25:09 -0700 (PDT)
+Received: from [10.57.83.102] (unknown [10.57.83.102])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D4CC13F793;
+	Tue, 16 May 2023 11:24:23 -0700 (PDT)
+Message-ID: <e8157615-abd3-9072-6245-50add0eeb284@arm.com>
+Date: Tue, 16 May 2023 19:24:20 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZGO7L9EyDEXU6zWf@arm.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH 1/2] iommu/fsl: Do not use iommu_group_remove_device()
+ under ops->device_group()
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>
+References: <1-v1-8fb05192ea02+e5-fsl_rm_groups_jgg@nvidia.com>
+ <33b25946-8970-6711-41a5-8b07ccff77c3@arm.com> <ZGOqnWBspvDynyJ4@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <ZGOqnWBspvDynyJ4@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, May 16, 2023 at 06:19:43PM +0100, Catalin Marinas wrote:
-> On Mon, May 15, 2023 at 12:09:12PM -0700, Isaac Manjarres wrote:
-> > Hey Catalin, just following up on this. I think it might be worthwhile
-> > to split this series into two series:
-> > 
-> > Series 1: Decouple ARCH_KMALLOC_MINALIGN from ARCH_DMA_MINALIGN,
-> > and use the cacheline size to determine the minimum kmalloc
-> > alignment.
-> > 
-> > Series 2: Lower the minimum kmalloc alignment to 8 bytes by adding
-> > support for using SWIOTLB to bounce unaligned kmalloc buffers for DMA
-> > transactions.
+On 2023-05-16 17:09, Jason Gunthorpe wrote:
+> On Tue, May 16, 2023 at 04:00:47PM +0100, Robin Murphy wrote:
+>> On 2023-05-16 01:27, Jason Gunthorpe wrote:
+>>> This API is expected to be used only by POWER and VFIO no-iommu that
+>>> manually manage the group lifecycle. It should not be called under
+>>> ops->device_group().
+>>>
+>>> This is already buggy as is since the core code does not expect a probed
+>>> driver to loose it's iommu_group without also releasing the device.
+>>>
+>>> FSL seems to be trying to block the platform_device that represents the
+>>> pci_controller, eg the thing passed to fsl_add_bridge(), from having an
+>>> iommu_group.
+>>>
+>>> Instead of creating an iommu_group that we don't want and then later
+>>> removing it, just don't create it at all in the first place.
+>>>
+>>> For the 'pci_endpt_partitioning' case every PCI device already gets its
+>>> own iommu_group through the standard code, so it is unclear why having a
+>>> dedicated group for the controller could be problematic.
+>>>
+>>> For the other case, the controller group was being used to bizarrely
+>>> de-duplicate the group in it's hose. Instead just directly create a group
+>>> for the hose the first time we encounter it. The code already searches the
+>>> entire hose to find any iommu_group. Again, it is unclear why having the
+>>> pci_controller inside the same iommu_group as the PCI devices would be
+>>> harmful.
+>>
+>> It's harmful in that case because it prevents VFIO from working at all -
+>> even now that VFIO no longer rejects cross-bus groups on principle, the
+>> fsl-pci driver being bound to the platform device would then deny VFIO from
+>> taking ownership.
 > 
-> I attempted "series 1" some time ago and the discussion led to the
-> combined approach (i.e. don't bother with limiting kmalloc minimum
-> alignment to cache_line_size() but instead bounce those small buffers).
-> In my series, I still have this fallback in case there's no swiotlb
-> buffer.
+> I think that was true before..
+> 
+> Today we block out VFIO based on iommu_device_use_default_domain()
+> which is called prior to probe. That function is a NOP if the iommu
+> group hasn't already been setup.
+> 
+> Thus the platform_device probed by fsl_pci_probe() does not block VFIO
+> any more, even if it is in the same group.
 
-> I'll post a new series this week (including DMA bouncing) but I'll try
-> to move the bouncing towards the end of the series in case there are
-> more discussions around this, at least the first part could be picked
-> up.
+My reading of the current code is that it must absolutely be relying on 
+fsl_pamu_init() having run before fsl_pci_init() (they're both at 
+arch_initcall level, implying an icky fragile link-order dependency), 
+such that the platform device group is already assigned by the time the 
+PCI host driver binds and starts adding PCI devices, so for *their* 
+iommu_probe, get_pci_device_group() can then hoick that group over into 
+PCI-land to start propagating it around.
 
-Thanks Catalin! I think restructuring the series as you're suggesting
-makes sense. At least being able to pick up the first part of the series
-would be great, since it will have a positive impact on the memory
-footprint for a lot of devices. This also helps alleviate some of the
-memory overhead for devices that move from a 32-bit ARM kernel to a
-64-bit ARM kernel.
+Thus if all we did was remove the dodgy iommu_group_remove_device() 
+calls, I believe use_default_domain *would* start getting in the way...
 
-The second part can continue to be refined until the SWIOTLB and IOMMU bounce
-buffering refactor is complete.
+> But, more broadly, we exclude things like PCI bridges from the VFIO
+> check by using driver_managed_dma:
+> 
+> index b7232c46b24481..6daf620b63a4d5 100644
+> --- a/arch/powerpc/sysdev/fsl_pci.c
+> +++ b/arch/powerpc/sysdev/fsl_pci.c
+> @@ -1353,6 +1353,7 @@ static struct platform_driver fsl_pci_driver = {
+>                  .of_match_table = pci_ids,
+>          },
+>          .probe = fsl_pci_probe,
+> +       .driver_managed_dma = true,
+>   };
+>   
+>   static int __init fsl_pci_init(void)
+> 
+> Even though it is a NOP in this case because of ordering, it still
+> would be good for documentation purposes.
 
--Isaac
+...however I think you're on to something here - if with this we can 
+safely guarantee to negate any ownership problem as well, then flipping 
+it all around to *always* rely on the platform device's group might be 
+neatest of all. It's redundant in the pci_endpt_partitioning case, but I 
+don't see how that would really hurt other than slightly changing group 
+numbering to the annoyance of users with dodgy hard-coded scripts who 
+mistakenly assumed group IDs were stable. Crucially, all of the other 
+crap can go away and leave us with simply:
+
+	if (pci_endpt_partitioning)
+		return pci_device_group(&pdev->dev);
+	else
+		return iommu_group_get(pci_ctl->parent);
+
+Thanks,
+Robin.
