@@ -1,109 +1,110 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E97DC101CF
-	for <iommu@lists.linux.dev>; Tue, 16 May 2023 17:59:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99991C433D2;
-	Tue, 16 May 2023 17:59:33 +0000 (UTC)
-Date: Tue, 16 May 2023 18:59:30 +0100
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-Cc: Christoph Hellwig <hch@lst.de>,
-	"Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-	Petr Tesarik <petrtesarik@huaweicloud.com>,
-	Jonathan Corbet <corbet@lwn.net>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C430107A5
+	for <iommu@lists.linux.dev>; Tue, 16 May 2023 18:19:28 +0000 (UTC)
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-1ae3f74c98bso10505ad.1
+        for <iommu@lists.linux.dev>; Tue, 16 May 2023 11:19:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1684261168; x=1686853168;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=hnujQIGnrKrvLF8j2U/POTslbNBCDtRpy4BK62wtAF8=;
+        b=3bKAHTvYQyO/brVIc1IMrdaoFfCBkLctq4Zb7NTxNHIrbn6f8fUd1pH9iHS06GNijW
+         qVKtvEtuLqo4nMrw/GLP2IsVLrrmMkJvgLbfM8XV8dKpF4xfgo4ETGtBBp9zYo3iWNfo
+         7LNMsrv5vaSiZ0xmYl5bG2BeC59EZ76n1olLQktzyu6aOJD5dLaG/tZmAwiJdPQOM6U5
+         401rX5HzxpiJ73bzZPOV06pay4MI/gehzyVVUIhUp3mF+gs8KADF94ylzYcyTq7nIEhZ
+         oQWeevdmnl4LsmYlGj8vbNWS9lcHADKgz02M/AJYjRqHorVEaYEnOAxPF1CdX0V/RnWZ
+         RmxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684261168; x=1686853168;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hnujQIGnrKrvLF8j2U/POTslbNBCDtRpy4BK62wtAF8=;
+        b=AuRp+QqTKFmkrUV2NHdPNJeH6eMF6KbQkbQXWnhDJg8H7lZ7e0yMBy4Bvsn/0v4Kkx
+         yMo+qQn0Qk5c1laA2AxtzNRUhH3/4JF5F3JSoFJxJGHfX174Et9PHVsz8RjMKaUfT/eD
+         31Zd8xmCV4JVWaFVRrk5LStMWO8Ms5YAHY5ixAR5ueMwfCOqE3shimIwcq10K2ETKz4c
+         nqOGy9q1KoXa0ZKrzv931yNZWHjS17JOIS4XhlrqUqqGfZeS5RAznzQUK/xjeHve/Ts0
+         /LmzOvO+pIPIgpamZW0xDq+zLpGodk2+IvMfBOFZM2ZpbsZUl4aYhudKRhi/wI76bYyo
+         WvFA==
+X-Gm-Message-State: AC+VfDxZU20WkXKshMIBOu17m152lokgWIBfMppq5aCCXyVwnHMeId+P
+	AmfI4f43EGJTg1zRek60GtM9kw==
+X-Google-Smtp-Source: ACHHUZ45WumG7sRiSKKxNUeVxPh+M46qd/Nuj3/4l0Bzt6CPpdXbJTPt8n03GszfoPTeFsj+7ZnZZw==
+X-Received: by 2002:a17:902:d4c5:b0:1aa:e90c:d437 with SMTP id o5-20020a170902d4c500b001aae90cd437mr15026plg.8.1684261167679;
+        Tue, 16 May 2023 11:19:27 -0700 (PDT)
+Received: from google.com ([2620:15c:2d:3:fd80:d223:d66f:530f])
+        by smtp.gmail.com with ESMTPSA id x5-20020a170902b40500b0019a6cce2060sm15837904plr.57.2023.05.16.11.19.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 May 2023 11:19:26 -0700 (PDT)
+Date: Tue, 16 May 2023 11:19:22 -0700
+From: Isaac Manjarres <isaacmanjarres@google.com>
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>,
+	Arnd Bergmann <arnd@arndb.de>, Christoph Hellwig <hch@lst.de>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Ard Biesheuvel <ardb@kernel.org>,
+	Saravana Kannan <saravanak@google.com>,
+	Alasdair Kergon <agk@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Joerg Roedel <joro@8bytes.org>, Mark Brown <broonie@kernel.org>,
+	Mike Snitzer <snitzer@kernel.org>,
 	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Borislav Petkov <bp@suse.de>, Randy Dunlap <rdunlap@infradead.org>,
-	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-	Kim Phillips <kim.phillips@amd.com>,
-	"Steven Rostedt (Google)" <rostedt@goodmis.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Hans de Goede <hdegoede@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Kees Cook <keescook@chromium.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	"open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-	open list <linux-kernel@vger.kernel.org>,
-	"open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-	Roberto Sassu <roberto.sassu@huawei.com>,
-	Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: Re: [PATCH v2 RESEND 4/7] swiotlb: Dynamically allocated bounce
- buffers
-Message-ID: <ZGPEgsplBSsI9li3@arm.com>
-References: <cover.1683623618.git.petr.tesarik.ext@huawei.com>
- <346abecdb13b565820c414ecf3267275577dbbf3.1683623618.git.petr.tesarik.ext@huawei.com>
- <BYAPR21MB168874BC467BFCEC133A9DCDD7789@BYAPR21MB1688.namprd21.prod.outlook.com>
- <20230516061309.GA7219@lst.de>
- <20230516083942.0303b5fb@meshulam.tesarici.cz>
+	Robin Murphy <robin.murphy@arm.com>, linux-mm@kvack.org,
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	Petr Tesarik <petrtesarik@huaweicloud.com>
+Subject: Re: [PATCH v3 00/13] mm, dma, arm64: Reduce ARCH_KMALLOC_MINALIGN to
+ 8
+Message-ID: <ZGPJKq5ME2r6KIFt@google.com>
+References: <20221106220143.2129263-1-catalin.marinas@arm.com>
+ <ZBNiN9CR2F/fvUTh@google.com>
+ <ZEARbKMfMS8KdkhJ@arm.com>
+ <ZGKDWMqTt/f05AmG@google.com>
+ <ZGO7L9EyDEXU6zWf@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230516083942.0303b5fb@meshulam.tesarici.cz>
+In-Reply-To: <ZGO7L9EyDEXU6zWf@arm.com>
 
-On Tue, May 16, 2023 at 08:39:42AM +0200, Petr Tesařík wrote:
-> On Tue, 16 May 2023 08:13:09 +0200
-> Christoph Hellwig <hch@lst.de> wrote:
-> > On Mon, May 15, 2023 at 07:43:52PM +0000, Michael Kelley (LINUX) wrote:
-> > > FWIW, I don't think the approach you have implemented here will be
-> > > practical to use for CoCo VMs (SEV, TDX, whatever else).  The problem
-> > > is that dma_direct_alloc_pages() and dma_direct_free_pages() must
-> > > call dma_set_decrypted() and dma_set_encrypted(), respectively.  In CoCo
-> > > VMs, these calls are expensive because they require a hypercall to the host,
-> > > and the operation on the host isn't trivial either.  I haven't measured the
-> > > overhead, but doing a hypercall on every DMA map operation and on
-> > > every unmap operation has long been something we thought we must
-> > > avoid.  The fixed swiotlb bounce buffer space solves this problem by
-> > > doing set_decrypted() in batch at boot time, and never
-> > > doing set_encrypted().  
+On Tue, May 16, 2023 at 06:19:43PM +0100, Catalin Marinas wrote:
+> On Mon, May 15, 2023 at 12:09:12PM -0700, Isaac Manjarres wrote:
+> > Hey Catalin, just following up on this. I think it might be worthwhile
+> > to split this series into two series:
 > > 
-> > I also suspect it doesn't really scale too well due to the number of
-> > allocations.  I suspect a better way to implement things would be to
-> > add more large chunks that are used just like the main swiotlb buffers.
+> > Series 1: Decouple ARCH_KMALLOC_MINALIGN from ARCH_DMA_MINALIGN,
+> > and use the cacheline size to determine the minimum kmalloc
+> > alignment.
 > > 
-> > That is when we run out of space try to allocate another chunk of the
-> > same size in the background, similar to what we do with the pool in
-> > dma-pool.c.  This means we'll do a fairly large allocation, so we'll
-> > need compaction or even CMA to back it up, but the other big upside
-> > is that it also reduces the number of buffers that need to be checked
-> > in is_swiotlb_buffer or the free / sync side.
+> > Series 2: Lower the minimum kmalloc alignment to 8 bytes by adding
+> > support for using SWIOTLB to bounce unaligned kmalloc buffers for DMA
+> > transactions.
 > 
-> I have considered this approach. The two main issues I ran into were:
-> 
-> 1. MAX_ORDER allocations were too small (at least with 4K pages), and
->    even then they would often fail.
-> 
-> 2. Allocating from CMA did work but only from process context.
->    I made a stab at modifying the CMA allocator to work from interrupt
->    context, but there are non-trivial interactions with the buddy
->    allocator. Making them safe from interrupt context looked like a
->    major task.
+> I attempted "series 1" some time ago and the discussion led to the
+> combined approach (i.e. don't bother with limiting kmalloc minimum
+> alignment to cache_line_size() but instead bounce those small buffers).
+> In my series, I still have this fallback in case there's no swiotlb
+> buffer.
 
-Can you kick off a worker thread when the swiotlb allocation gets past
-some reserve limit? It still has a risk of failing to bounce until the
-swiotlb buffer is extended.
+> I'll post a new series this week (including DMA bouncing) but I'll try
+> to move the bouncing towards the end of the series in case there are
+> more discussions around this, at least the first part could be picked
+> up.
 
-> I also had some fears about the length of the dynamic buffer list. I
-> observed maximum length for block devices, and then it roughly followed
-> the queue depth. Walking a few hundred buffers was still fast enough.
-> I admit the list length may become an issue with high-end NVMe and
-> I/O-intensive applications.
+Thanks Catalin! I think restructuring the series as you're suggesting
+makes sense. At least being able to pick up the first part of the series
+would be great, since it will have a positive impact on the memory
+footprint for a lot of devices. This also helps alleviate some of the
+memory overhead for devices that move from a 32-bit ARM kernel to a
+64-bit ARM kernel.
 
-You could replace the list with an rbtree, O(log n) look-up vs O(n),
-could be faster if you have many bounces active.
+The second part can continue to be refined until the SWIOTLB and IOMMU bounce
+buffering refactor is complete.
 
--- 
-Catalin
+-Isaac
