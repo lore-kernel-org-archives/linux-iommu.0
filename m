@@ -1,110 +1,164 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94BE134CD9
-	for <iommu@lists.linux.dev>; Tue, 16 May 2023 13:55:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11530C433D2;
-	Tue, 16 May 2023 13:55:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684245333;
-	bh=wZ62vZSRS8wP66zvBvXFymljcnlfadcikGe0oxhN+BE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=OAGr9szX1xMSABTUwVaAywEIAq0f/k7uM41GXb/FOyxdKxRLSQTL48v/6fRuqTbJj
-	 s0S1lR87KmWRD7cWf621kwk0q1PiwDpTRb3VFCVC/1dD9qHt0WooW2V+bzEnKNW9e+
-	 nsBYAtQwejfBMnw5/Fyg8NlPtl2GeVgdvRydyuVP0q381CCGfU6fJ7IvZvAInzSTAa
-	 cQVyzz6x9/nEhLIWKlazhJXZRcwDS3CK5O24v5VLxs2qJr0OOrKRgzFUvS+IHFDz4R
-	 19RqzkxRteJ3k8KQ+JbViNy2cy7P6eypNPoR+KgPdclq5HDMnaBUqEl6sgTvYRHsCN
-	 WiRZ1CjEyp6+A==
-Date: Tue, 16 May 2023 14:55:26 +0100
-From: Will Deacon <will@kernel.org>
-To: Rob Clark <robdclark@gmail.com>
-Cc: dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
-	freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Rob Clark <robdclark@chromium.org>, Lepton Wu <lepton@chromium.org>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Bjorn Andersson <quic_bjorande@quicinc.com>,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	Elliot Berman <quic_eberman@quicinc.com>,
-	Adam Skladowski <a39.skl@gmail.com>,
-	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
-	"open list:IOMMU SUBSYSTEM" <iommu@lists.linux.dev>,
-	open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 1/2] iommu/arm-smmu-qcom: Fix missing adreno_smmu's
-Message-ID: <20230516135525.GC30894@willie-the-truck>
-References: <20230511145908.597683-1-robdclark@gmail.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4B457182D0
+	for <iommu@lists.linux.dev>; Tue, 16 May 2023 15:00:53 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 189061FB;
+	Tue, 16 May 2023 08:01:36 -0700 (PDT)
+Received: from [10.57.83.102] (unknown [10.57.83.102])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9B9193F7BD;
+	Tue, 16 May 2023 08:00:50 -0700 (PDT)
+Message-ID: <33b25946-8970-6711-41a5-8b07ccff77c3@arm.com>
+Date: Tue, 16 May 2023 16:00:47 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230511145908.597683-1-robdclark@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH 1/2] iommu/fsl: Do not use iommu_group_remove_device()
+ under ops->device_group()
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+References: <1-v1-8fb05192ea02+e5-fsl_rm_groups_jgg@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <1-v1-8fb05192ea02+e5-fsl_rm_groups_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, May 11, 2023 at 07:59:05AM -0700, Rob Clark wrote:
-> From: Rob Clark <robdclark@chromium.org>
+On 2023-05-16 01:27, Jason Gunthorpe wrote:
+> This API is expected to be used only by POWER and VFIO no-iommu that
+> manually manage the group lifecycle. It should not be called under
+> ops->device_group().
 > 
-> When the special handling of qcom,adreno-smmu was moved into
-> qcom_smmu_create(), it was overlooked that we didn't have all the
-> required entries in qcom_smmu_impl_of_match.  So we stopped getting
-> adreno_smmu_priv on sc7180, breaking per-process pgtables.
+> This is already buggy as is since the core code does not expect a probed
+> driver to loose it's iommu_group without also releasing the device.
 > 
-> Fixes: 30b912a03d91 ("iommu/arm-smmu-qcom: Move the qcom,adreno-smmu check into qcom_smmu_create")
-> Suggested-by: Lepton Wu <lepton@chromium.org>
-> Signed-off-by: Rob Clark <robdclark@chromium.org>
+> FSL seems to be trying to block the platform_device that represents the
+> pci_controller, eg the thing passed to fsl_add_bridge(), from having an
+> iommu_group.
+> 
+> Instead of creating an iommu_group that we don't want and then later
+> removing it, just don't create it at all in the first place.
+> 
+> For the 'pci_endpt_partitioning' case every PCI device already gets its
+> own iommu_group through the standard code, so it is unclear why having a
+> dedicated group for the controller could be problematic.
+> 
+> For the other case, the controller group was being used to bizarrely
+> de-duplicate the group in it's hose. Instead just directly create a group
+> for the hose the first time we encounter it. The code already searches the
+> entire hose to find any iommu_group. Again, it is unclear why having the
+> pci_controller inside the same iommu_group as the PCI devices would be
+> harmful.
+
+It's harmful in that case because it prevents VFIO from working at all - 
+even now that VFIO no longer rejects cross-bus groups on principle, the 
+fsl-pci driver being bound to the platform device would then deny VFIO 
+from taking ownership.
+
+> In any case, this is a cleaner way to not enable iommu support for the
+> platform_device.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > ---
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 7 +++++++
->  1 file changed, 7 insertions(+)
+>   drivers/iommu/fsl_pamu_domain.c | 42 ++++++++++++++++-----------------
+>   1 file changed, 20 insertions(+), 22 deletions(-)
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> index d1b296b95c86..66e191773099 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -496,20 +496,21 @@ static const struct qcom_smmu_match_data qcom_smmu_500_impl0_data = {
->  /*
->   * Do not add any more qcom,SOC-smmu-500 entries to this list, unless they need
->   * special handling and can not be covered by the qcom,smmu-500 entry.
->   */
->  static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
->  	{ .compatible = "qcom,msm8996-smmu-v2", .data = &msm8996_smmu_data },
->  	{ .compatible = "qcom,msm8998-smmu-v2", .data = &qcom_smmu_v2_data },
->  	{ .compatible = "qcom,qcm2290-smmu-500", .data = &qcom_smmu_500_impl0_data },
->  	{ .compatible = "qcom,qdu1000-smmu-500", .data = &qcom_smmu_500_impl0_data  },
->  	{ .compatible = "qcom,sc7180-smmu-500", .data = &qcom_smmu_500_impl0_data },
-> +	{ .compatible = "qcom,sc7180-smmu-v2", .data = &qcom_smmu_v2_data },
->  	{ .compatible = "qcom,sc7280-smmu-500", .data = &qcom_smmu_500_impl0_data },
->  	{ .compatible = "qcom,sc8180x-smmu-500", .data = &qcom_smmu_500_impl0_data },
->  	{ .compatible = "qcom,sc8280xp-smmu-500", .data = &qcom_smmu_500_impl0_data },
->  	{ .compatible = "qcom,sdm630-smmu-v2", .data = &qcom_smmu_v2_data },
->  	{ .compatible = "qcom,sdm845-smmu-v2", .data = &qcom_smmu_v2_data },
->  	{ .compatible = "qcom,sdm845-smmu-500", .data = &sdm845_smmu_500_data },
->  	{ .compatible = "qcom,sm6115-smmu-500", .data = &qcom_smmu_500_impl0_data},
->  	{ .compatible = "qcom,sm6125-smmu-500", .data = &qcom_smmu_500_impl0_data },
->  	{ .compatible = "qcom,sm6350-smmu-v2", .data = &qcom_smmu_v2_data },
->  	{ .compatible = "qcom,sm6350-smmu-500", .data = &qcom_smmu_500_impl0_data },
-> @@ -540,12 +541,18 @@ struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu)
->  		/* Match platform for ACPI boot */
->  		if (acpi_match_platform_list(qcom_acpi_platlist) >= 0)
->  			return qcom_smmu_create(smmu, &qcom_smmu_500_impl0_data);
->  	}
->  #endif
->  
->  	match = of_match_node(qcom_smmu_impl_of_match, np);
->  	if (match)
->  		return qcom_smmu_create(smmu, match->data);
->  
-> +	/* If you hit this WARN_ON() you are missing an entry in the
-> +	 * qcom_smmu_impl_of_match[] table, and GPU per-process page-
-> +	 * tables will be broken.
-> +	 */
-> +	WARN_ON(of_device_is_compatible(np, "qcom,adreno-smmu"));
+> diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+> index bce37229709965..bf045f58cd50ae 100644
+> --- a/drivers/iommu/fsl_pamu_domain.c
+> +++ b/drivers/iommu/fsl_pamu_domain.c
+> @@ -11,6 +11,7 @@
+>   
+>   #include <linux/platform_device.h>
+>   #include <sysdev/fsl_pci.h>
+> +#include <linux/pci.h>
+>   
+>   /*
+>    * Global spinlock that needs to be held while
+> @@ -379,7 +380,21 @@ static struct iommu_group *get_shared_pci_device_group(struct pci_dev *pdev)
+>   		bus = bus->parent;
+>   	}
+>   
+> -	return NULL;
+> +	return iommu_group_alloc();
+> +}
+> +
+> +static int __is_pci_controller_parent(struct device *dev, void *data)
+> +{
+> +	struct pci_dev *pdev = to_pci_dev(dev);
+> +	struct pci_controller *pci_ctl = pci_bus_to_host(pdev->bus);
+> +
+> +	return dev == pci_ctl->parent;
 
-Wouldn't it be better to print the information from the comment, rather
-than force the user to diagnose a WARN_ON() back to the source?
+If I'm not mistaken, this is testing every *PCI* device to see any of 
+them are their own host bridge's platform parent...
 
-Will
+> +}
+> +
+> +static bool is_pci_controller_parent(struct device *dev)
+> +{
+> +	return bus_for_each_dev(&pci_bus_type, NULL, NULL,
+> +				__is_pci_controller_parent);
+
+for_each_pci_dev() might be easier to handle, however for what I think 
+this is ultimately trying to do, device_find_child() would seem even better.
+
+>   }
+>   
+>   static struct iommu_group *get_pci_device_group(struct pci_dev *pdev)
+> @@ -393,30 +408,12 @@ static struct iommu_group *get_pci_device_group(struct pci_dev *pdev)
+>   	/* We can partition PCIe devices so assign device group to the device */
+>   	if (pci_endpt_partitioning) {
+>   		group = pci_device_group(&pdev->dev);
+> -
+> -		/*
+> -		 * PCIe controller is not a paritionable entity
+> -		 * free the controller device iommu_group.
+> -		 */
+> -		if (pci_ctl->parent->iommu_group)
+> -			iommu_group_remove_device(pci_ctl->parent);
+>   	} else {
+>   		/*
+>   		 * All devices connected to the controller will share the
+> -		 * PCI controllers device group. If this is the first
+> -		 * device to be probed for the pci controller, copy the
+> -		 * device group information from the PCI controller device
+> -		 * node and remove the PCI controller iommu group.
+> -		 * For subsequent devices, the iommu group information can
+> -		 * be obtained from sibling devices (i.e. from the bus_devices
+> -		 * link list).
+> +		 * same device group.
+>   		 */
+> -		if (pci_ctl->parent->iommu_group) {
+> -			group = get_device_iommu_group(pci_ctl->parent);
+> -			iommu_group_remove_device(pci_ctl->parent);
+> -		} else {
+> -			group = get_shared_pci_device_group(pdev);
+> -		}
+> +		group = get_shared_pci_device_group(pdev);
+
+It would be nice if we could still associate the "PCI group" directly 
+with the pci_controller some other way, and avoid all the 
+slightly-confusing bus walks altogether, but I don't see a sufficiently 
+clean way to achieve that :(
+
+Thanks,
+Robin.
+
+>   	}
+>   
+>   	if (!group)
+> @@ -436,7 +433,8 @@ static struct iommu_group *fsl_pamu_device_group(struct device *dev)
+>   	 */
+>   	if (dev_is_pci(dev))
+>   		group = get_pci_device_group(to_pci_dev(dev));
+> -	else if (of_get_property(dev->of_node, "fsl,liodn", &len))
+> +	else if (of_get_property(dev->of_node, "fsl,liodn", &len) &&
+> +		 !is_pci_controller_parent(dev))
+>   		group = get_device_iommu_group(dev);
+>   
+>   	return group;
