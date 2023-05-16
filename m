@@ -1,162 +1,161 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+Received: from out-35.mta1.migadu.com (out-35.mta1.migadu.com [95.215.58.35])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70D5E1FB0
-	for <iommu@lists.linux.dev>; Tue, 16 May 2023 01:49:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684201794; x=1715737794;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=yoBH6vhYXirTJn4ngLQetM+EEw/EqS96eNcX9cDbZ/o=;
-  b=BR04lS4lP/ELMB8tQoS067kbCPNy39tya0lNKYcdtOBpA4roEG1G1Aeg
-   YKmAxRUCqlkp2q2j0JyBzgTQiNJ1dEl9N6D9TmHAXQ5sarZxgrrMEnLe5
-   X4E0cHVpBEepw1U5mB/YC1Cwg0cVf6TfE3ec8l4qb0aLbPd/nB4ckSYZg
-   qxq7/QjOBWaHSCrJh51nIX4JfsQuspI9Cbsea1wFqsZBobY8LThLt4ywt
-   lRPUw2Etu408HkPLbjRrmiNcnWQrOJw8ScCkqiaf5h6Niu3ki4Z6HTqEA
-   xjNug+iSQY8UxovqRQ/rDYrhsHiWnnovzBF6F0Qb+r/l6nu6ku6S+TstG
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="340716251"
-X-IronPort-AV: E=Sophos;i="5.99,277,1677571200"; 
-   d="scan'208";a="340716251"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2023 18:49:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="790880836"
-X-IronPort-AV: E=Sophos;i="5.99,277,1677571200"; 
-   d="scan'208";a="790880836"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by FMSMGA003.fm.intel.com with ESMTP; 15 May 2023 18:49:48 -0700
-Message-ID: <57101685-35c3-8a71-9a39-a6d9fd58414c@linux.intel.com>
-Date: Tue, 16 May 2023 09:49:13 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F10A17CE
+	for <iommu@lists.linux.dev>; Tue, 16 May 2023 01:56:03 +0000 (UTC)
+Message-ID: <0b4c1395-1884-c08d-2f8e-3847ec454886@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1684202161;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=pvlTPaBYv/2FkTx9E5TFLyGvyeNCPtjPEVThm12ZmIw=;
+	b=eb8vgY+hy7+FYtnQp80uf3TrjxZ6vccTbCV5MfaF5DHPnZ4TjGg5gVDYSg0E0i2mH8wgs3
+	I0knmzq/2UqrNcVe9wHC6HeWU5kqWDjrz18ixnx1JGd62ni+2g89r5lgnMQ0lcdVDOb+7t
+	Q1a7kC0XF/Yo1Tu0RVKtXNO9FcOII8o=
+Date: Tue, 16 May 2023 09:55:46 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Cc: baolu.lu@linux.intel.com, "cohuck@redhat.com" <cohuck@redhat.com>,
- "eric.auger@redhat.com" <eric.auger@redhat.com>,
- "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
- "chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
- "yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
- "peterx@redhat.com" <peterx@redhat.com>,
- "jasowang@redhat.com" <jasowang@redhat.com>,
- "shameerali.kolothum.thodi@huawei.com"
- <shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
- "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
- "Duan, Zhenzhong" <zhenzhong.duan@intel.com>
-Subject: Re: [PATCH v3 3/4] iommufd: Add IOMMU_DEVICE_GET_HW_INFO
+Subject: Re: [PATCH] dma-contiguous: support per-numa CMA for all
+ architectures
 Content-Language: en-US
-To: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "jgg@nvidia.com" <jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>
-References: <20230511143024.19542-1-yi.l.liu@intel.com>
- <20230511143024.19542-4-yi.l.liu@intel.com>
- <6ab2d63e-4dcc-6562-9698-d23300c7d1ae@linux.intel.com>
- <DS0PR11MB752940450312B2E0529C3DC6C3789@DS0PR11MB7529.namprd11.prod.outlook.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <DS0PR11MB752940450312B2E0529C3DC6C3789@DS0PR11MB7529.namprd11.prod.outlook.com>
+To: 21cnbao@gmail.com
+Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ song.bao.hua@hisilicon.com, anshuman.khandual@arm.com, corbet@lwn.net,
+ bhe@redhat.com, ardb@kernel.org, thunder.leizhen@huawei.com,
+ rostedt@goodmis.org, kim.phillips@amd.com, rdunlap@infradead.org,
+ peterz@infradead.org, akpm@linux-foundation.org, bp@suse.de,
+ paulmck@kernel.org, robin.murphy@arm.com, m.szyprowski@samsung.com,
+ hch@lst.de, will@kernel.org, catalin.marinas@arm.com, petr@tesarici.cz
+References: <20230512094210.141540-1-yajun.deng@linux.dev>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Yajun Deng <yajun.deng@linux.dev>
+In-Reply-To: <20230512094210.141540-1-yajun.deng@linux.dev>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 
-On 5/15/23 2:14 PM, Liu, Yi L wrote:
->> -----Original Message-----
->> From: Baolu Lu<baolu.lu@linux.intel.com>
->> Sent: Friday, May 12, 2023 1:39 PM
->> To: Liu, Yi L<yi.l.liu@intel.com>;joro@8bytes.org;alex.williamson@redhat.com;
->> jgg@nvidia.com; Tian, Kevin<kevin.tian@intel.com>;robin.murphy@arm.com
->> Cc:baolu.lu@linux.intel.com;cohuck@redhat.com;eric.auger@redhat.com;
->> nicolinc@nvidia.com;kvm@vger.kernel.org;mjrosato@linux.ibm.com;
->> chao.p.peng@linux.intel.com;yi.y.sun@linux.intel.com;peterx@redhat.com;
->> jasowang@redhat.com;shameerali.kolothum.thodi@huawei.com;lulu@redhat.com;
->> suravee.suthikulpanit@amd.com;iommu@lists.linux.dev;linux-kernel@vger.kernel.org;
->> linux-kselftest@vger.kernel.org; Duan, Zhenzhong<zhenzhong.duan@intel.com>
->> Subject: Re: [PATCH v3 3/4] iommufd: Add IOMMU_DEVICE_GET_HW_INFO
->>
->> On 5/11/23 10:30 PM, Yi Liu wrote:
->>> Under nested IOMMU translation, userspace owns the stage-1 translation
->>> table (e.g. the stage-1 page table of Intel VT-d or the context table
->>> of ARM SMMUv3, and etc.). Stage-1 translation tables are vendor specific,
->>> and needs to be compatiable with the underlying IOMMU hardware. Hence,
->>> userspace should know the IOMMU hardware capability before creating and
->>> configuring the stage-1 translation table to kernel.
->>>
->>> This adds IOMMU_DEVICE_GET_HW_INFO to query the IOMMU hardware
->> information
->>> for a given device. The returned data is vendor specific, userspace needs
->>> to decode it with the structure mapped by the @out_data_type field.
->>>
->>> As only physical devices have IOMMU hardware, so this will return error
->>> if the given device is not a physical device.
->>>
->>> Co-developed-by: Nicolin Chen<nicolinc@nvidia.com>
->>> Signed-off-by: Nicolin Chen<nicolinc@nvidia.com>
->>> Signed-off-by: Yi Liu<yi.l.liu@intel.com>
->>> ---
->>>    drivers/iommu/iommufd/device.c          | 72 +++++++++++++++++++++++++
->>>    drivers/iommu/iommufd/iommufd_private.h |  1 +
->>>    drivers/iommu/iommufd/main.c            |  3 ++
->>>    include/uapi/linux/iommufd.h            | 37 +++++++++++++
->>>    4 files changed, 113 insertions(+)
->>>
->>> diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
->>> index 051bd8e99858..bc99d092de8f 100644
->>> --- a/drivers/iommu/iommufd/device.c
->>> +++ b/drivers/iommu/iommufd/device.c
->>> @@ -263,6 +263,78 @@ u32 iommufd_device_to_id(struct iommufd_device *idev)
->>>    }
->>>    EXPORT_SYMBOL_NS_GPL(iommufd_device_to_id, IOMMUFD);
->>>
->>> +static int iommufd_zero_fill_user(u64 ptr, int bytes)
->>> +{
->>> +	int index = 0;
->>> +
->>> +	for (; index < bytes; index++) {
->>> +		if (put_user(0, (uint8_t __user *)u64_to_user_ptr(ptr + index)))
->>> +			return -EFAULT;
->>> +	}
->>> +	return 0;
->>> +}
->>> +
->>> +int iommufd_device_get_hw_info(struct iommufd_ucmd *ucmd)
->>> +{
->>> +	struct iommu_hw_info *cmd = ucmd->cmd;
->>> +	unsigned int length = 0, data_len;
->>> +	struct iommufd_device *idev;
->>> +	const struct iommu_ops *ops;
->>> +	void *data = NULL;
->>> +	int rc = 0;
->>> +
->>> +	if (cmd->flags || cmd->__reserved || !cmd->data_len)
->>> +		return -EOPNOTSUPP;
->>> +
->>> +	idev = iommufd_get_device(ucmd, cmd->dev_id);
->>> +	if (IS_ERR(idev))
->>> +		return PTR_ERR(idev);
->>> +
->>> +	ops = dev_iommu_ops(idev->dev);
->>> +	if (!ops->hw_info)
->>> +		goto done;
->> If the iommu driver doesn't provide a hw_info callback, it still
->> returns success?
-> Yes, as noted in the cover letter. It's for a remark from Jason. In such
-> case, the out_data_type is NULL, it means no specific data is filled
-> in the buffer pointed by cmd->data_ptr.
-> 
-> - Let IOMMU_DEVICE_GET_HW_INFO succeed even the underlying iommu driver
->     does not have driver-specific data to report per below remark.
->     https://lore.kernel.org/kvm/ZAcwJSK%2F9UVI9LXu@nvidia.com/
+Hello,  Barry
 
-Oh, I overlooked that. Thanks for the explanation. It's fair enough.
+This patch changed the caller of dma_pernuma_cma_reserve() from
 
-Best regards,
-baolu
+bootmem_init() to dma_contiguous_reserve(), do you think
+
+would there be something wrong?
+
+On 2023/5/12 17:42, Yajun Deng wrote:
+> In the commit b7176c261cdb ("dma-contiguous: provide the ability to
+> reserve per-numa CMA"), Barry adds DMA_PERNUMA_CMA for ARM64.
+>
+> But this feature is architecture independent, so support per-numa CMA
+> for all architectures, and enable it by default if NUMA.
+>
+> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+> ---
+>   Documentation/admin-guide/kernel-parameters.txt | 2 +-
+>   arch/arm64/mm/init.c                            | 2 --
+>   include/linux/dma-map-ops.h                     | 6 ------
+>   kernel/dma/Kconfig                              | 6 +++---
+>   kernel/dma/contiguous.c                         | 8 +++++++-
+>   5 files changed, 11 insertions(+), 13 deletions(-)
+>
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index 56d9458276a6..ac0002b2e323 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -692,7 +692,7 @@
+>   			kernel/dma/contiguous.c
+>   
+>   	cma_pernuma=nn[MG]
+> -			[ARM64,KNL,CMA]
+> +			[KNL,CMA]
+>   			Sets the size of kernel per-numa memory area for
+>   			contiguous memory allocations. A value of 0 disables
+>   			per-numa CMA altogether. And If this option is not
+> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+> index 66e70ca47680..d560aef6aafa 100644
+> --- a/arch/arm64/mm/init.c
+> +++ b/arch/arm64/mm/init.c
+> @@ -410,8 +410,6 @@ void __init bootmem_init(void)
+>   	arm64_hugetlb_cma_reserve();
+>   #endif
+>   
+> -	dma_pernuma_cma_reserve();
+> -
+>   	kvm_hyp_reserve();
+>   
+>   	/*
+> diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+> index 31f114f486c4..7af9949828ff 100644
+> --- a/include/linux/dma-map-ops.h
+> +++ b/include/linux/dma-map-ops.h
+> @@ -168,12 +168,6 @@ static inline void dma_free_contiguous(struct device *dev, struct page *page,
+>   }
+>   #endif /* CONFIG_DMA_CMA*/
+>   
+> -#ifdef CONFIG_DMA_PERNUMA_CMA
+> -void dma_pernuma_cma_reserve(void);
+> -#else
+> -static inline void dma_pernuma_cma_reserve(void) { }
+> -#endif /* CONFIG_DMA_PERNUMA_CMA */
+> -
+>   #ifdef CONFIG_DMA_DECLARE_COHERENT
+>   int dma_declare_coherent_memory(struct device *dev, phys_addr_t phys_addr,
+>   		dma_addr_t device_addr, size_t size);
+> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+> index 6677d0e64d27..79f83091e3a2 100644
+> --- a/kernel/dma/Kconfig
+> +++ b/kernel/dma/Kconfig
+> @@ -140,10 +140,10 @@ if  DMA_CMA
+>   
+>   config DMA_PERNUMA_CMA
+>   	bool "Enable separate DMA Contiguous Memory Area for each NUMA Node"
+> -	default NUMA && ARM64
+> +	default NUMA
+>   	help
+> -	  Enable this option to get pernuma CMA areas so that devices like
+> -	  ARM64 SMMU can get local memory by DMA coherent APIs.
+> +	  Enable this option to get pernuma CMA areas so that NUMA devices
+> +	  can get local memory by DMA coherent APIs.
+>   
+>   	  You can set the size of pernuma CMA by specifying "cma_pernuma=size"
+>   	  on the kernel's command line.
+> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+> index 6ea80ae42622..26a8e5365fcd 100644
+> --- a/kernel/dma/contiguous.c
+> +++ b/kernel/dma/contiguous.c
+> @@ -128,7 +128,7 @@ static inline __maybe_unused phys_addr_t cma_early_percent_memory(void)
+>   #endif
+>   
+>   #ifdef CONFIG_DMA_PERNUMA_CMA
+> -void __init dma_pernuma_cma_reserve(void)
+> +static void __init dma_pernuma_cma_reserve(void)
+>   {
+>   	int nid;
+>   
+> @@ -153,6 +153,10 @@ void __init dma_pernuma_cma_reserve(void)
+>   			(unsigned long long)pernuma_size_bytes / SZ_1M, nid);
+>   	}
+>   }
+> +#else
+> +static inline void __init dma_pernuma_cma_reserve(void)
+> +{
+> +}
+>   #endif
+>   
+>   /**
+> @@ -171,6 +175,8 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
+>   	phys_addr_t selected_limit = limit;
+>   	bool fixed = false;
+>   
+> +	dma_pernuma_cma_reserve();
+> +
+>   	pr_debug("%s(limit %08lx)\n", __func__, (unsigned long)limit);
+>   
+>   	if (size_cmdline != -1) {
