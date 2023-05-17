@@ -1,215 +1,136 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2087.outbound.protection.outlook.com [40.107.92.87])
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C46118B0C
-	for <iommu@lists.linux.dev>; Wed, 17 May 2023 12:43:57 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l7Xac/R2GJdOSQEreqQCAzqlEF9VrAOOrwBqbiroBvapNVg5UleBetvgcMOT/B2v1LzEWk2EMeLbpCdUniuOxF5xuMMH1o/PH57nYsImRqIAh8Tdj1QglS9BxkJ7zzUJuqJXYblXI615MzcGcEMzJBAVsVDuoSun/1wux8OWKVGUqWbtqpOlGEJBBR7n6Et6GBuZ0DeLMVZLlzu3PFuuvmpMGtOZvLk9viQ/wD6pYsYnlB83tv/wXWLnemRNHfTjClCf9ZVE3Y+fxisWpoMa7Gk+jI8qpwv0QNh/t4gnnP5QuocZOMpuAy33zxRZ1l52W3Io8VjT1zGZnKWnMTq4Nw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UbuIK4v6IqhN3MaHN+TfOrqMseb+SepC+AhMyijCNJ4=;
- b=HXlLdpUbj3q/V7fCbq2C9dNfsf5XqF7Oo1U89PIge6bGngccvgvLlax5WnmrriqWUmavUszmtm5DC/kI6qMBgGV4aIAMBW5Znkh7D5H8UJUxByeFjHMlGq8J+dDwLEZk3AZl/IdNaaI31aIGsbs8ApmeTHmQWjFSrcOfu4a4Yll0VMsf1UroUKlKJiFjej+RwpJbv29NEezJcs6Pydrvo1O0kST+2vJJ0gD8bofG0HonKXU9WuWtzCXINLAXrlgzvmrLpfObER59rxG2DyaFF2JX8Qryny1E490HD42qZUWCxZDZs514nK70r4Aw1K7O7uNPDxOvEAhpAOgPuShQKA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UbuIK4v6IqhN3MaHN+TfOrqMseb+SepC+AhMyijCNJ4=;
- b=P+jratqHfbBiNdbW5J5Q7e9NoICGNyL3aP+BfUBVzjkhPyIxmvzKyEYWZXS4dK4TPmx153mRTqzmdqcMJHGjBfnwhjZ0ePKfd0zBgNtb8TSsYiOgvApndmBgO1Ln+NTU8+8I3NmQZKZHNKALBevjOzikg5pBeWgZX1nGmuNkeutSv8ODqXBiZ3+4iEsNDvMe44Xb5HCWVXwzlZFgAX4hZitEUVvKd8p22dBZPnyDY2Kqm3BwsAmEgUqq6cT/fBYVsc3xbsmRqV1JAKF8YofEO6L/Vs2BAeyuf0VDlwY8tApNoSbt44Qs03E7CShquvyy+hNoxGNWXXoeH7E4FUll9w==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by MN0PR12MB6055.namprd12.prod.outlook.com (2603:10b6:208:3cd::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.30; Wed, 17 May
- 2023 12:43:54 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6411.017; Wed, 17 May 2023
- 12:43:54 +0000
-Date: Wed, 17 May 2023 09:43:53 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	Lixiao Yang <lixiao.yang@intel.com>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>
-Subject: Re: [PATCH v7 03/19] iommufd: Replace the hwpt->devices list with
- iommufd_group
-Message-ID: <ZGTMCSJKvgpyYxG/@nvidia.com>
-References: <3-v7-6c0fd698eda2+5e3-iommufd_alloc_jgg@nvidia.com>
- <569b959e-a702-fc19-3d67-0dde4e77251a@linux.intel.com>
- <ZGN2yvhpIvrvu74r@nvidia.com>
- <852e85b3-9fd2-bfc2-6080-82cea7ab6abd@linux.intel.com>
- <BN9PR11MB5276DE1BC30E90B1032C0E468C7E9@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276DE1BC30E90B1032C0E468C7E9@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: BL0PR03CA0031.namprd03.prod.outlook.com
- (2603:10b6:208:2d::44) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6DCB18B16
+	for <iommu@lists.linux.dev>; Wed, 17 May 2023 13:56:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1684331811; x=1715867811;
+  h=message-id:date:mime-version:cc:to:from:subject:
+   content-transfer-encoding;
+  bh=3oqBeIRf93syaOJtaYRnoxz0zmze61KEDSyNdVFv6qQ=;
+  b=Y/1lJRs9CBZmFPcy4NLBB0Ay2F0qH8bT9v5i/l9k3NqokzBEOZeXAM3+
+   62WvknZe3rv/IlNguiGQxXG95PyDXZZ898vhvWa9bE2O4z+kbj0H468KR
+   IqcjVK/0RjNaeh48k3o4owztQv+vwR5Du8+xmK7CsiO1DuzeDan7o4zlW
+   7Zg3FWrJ+HizdasGGxGA5o9m3o0fiyV5wLwA5RuCuH6Tf7bdTdN+4gzPF
+   L69I5ezP9ClLqHbVu6PpcjlvMpKHHeaKcS7Q+RZ1I3cs9htWF1xgkPcVc
+   afWoD77kUOFRdXjtuqmJh9KKcU0hg4sG6hn1/pwSUt5Mr8HEm1+HmhgLr
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10713"; a="415177828"
+X-IronPort-AV: E=Sophos;i="5.99,282,1677571200"; 
+   d="scan'208";a="415177828"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2023 06:56:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10713"; a="846100049"
+X-IronPort-AV: E=Sophos;i="5.99,282,1677571200"; 
+   d="scan'208";a="846100049"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.31.223]) ([10.255.31.223])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2023 06:56:49 -0700
+Message-ID: <2e437fe7-59ef-be3c-1b94-c92adaf2e8eb@linux.intel.com>
+Date: Wed, 17 May 2023 21:56:47 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MN0PR12MB6055:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9cf0373b-4a54-4213-490b-08db56d45ff7
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	X/CGflMBv+3sKuKKuSdvTo6Ew+DGZ7eMqlA9EK8puIiuRuHS/QG6vHIFCmWrCtjW99OdG58V3bKJB4K5rxmLWnxTdM+vF8GRJ8br/bQ0hKxatKKxaDpLCDbU0t9e0Kfa84rq6g5/Y3ldTzy03PQiC8iwparvgLGY3LNax8WqAlMKdMxHkkKuug0t/0CfKSgxeS9pklk1tLZDccJi3uNnEY8D/W6ghaHWTnUu+e+8Cu10miHIbXZf/AszmpGLIHvoNFytlZANNipqkCXncEMACR/d8JJqkQ3xsqtHAj5x4rDuvHnEWiR2nCgYzydP9l/6iM/y86to6Y4EEIDSw7WRQMUfV6+lB9nExia7OKLERfbrQBq7RgHpJoQXf5k13QIoDHOK7gpB18soC4pwGSeO9V6lZM34Yv2GrSzDNblaQxhlr3X7KwWkyBmswF8QovNZxlkYIQ9S9L1kbMOLzWFWdPFcz0huva23cERh04ibZ8yotaeGkBhuz5msXg9ZJpZ1scIFCEVdbmCKeKrkJO869rXlE6/mgM30/lonmYg0j7M4JOelFaJsA5lASEwurbID
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(346002)(396003)(39860400002)(376002)(366004)(451199021)(478600001)(54906003)(86362001)(8676002)(5660300002)(8936002)(36756003)(2906002)(6916009)(66556008)(4326008)(66476007)(66946007)(316002)(41300700001)(38100700002)(186003)(2616005)(26005)(53546011)(83380400001)(6512007)(6506007)(6486002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?ePT9g4lJGnLOowBeNAq4AVzT+X72tWgzynTc7XlbTUiPuJej1fT44fNB17uF?=
- =?us-ascii?Q?gtVxjVM1vV/zYHLHlIdTXkVfJnk3t+obtvgQ2lOCtzXIT9LBVHn7k6Kd+BEt?=
- =?us-ascii?Q?dB4c6RYlLdB50BCDbyV4aTWAdwXimRROnFJ17fO51z6Angkh5Z43vMNPQerS?=
- =?us-ascii?Q?6CwsTzZp9G8s8Tw/3LLZSOSXpBrjrhKhZIz/WyNdI3FgDxXgBLp3DBZ2gK2x?=
- =?us-ascii?Q?4rxOFX9QGx6YCy81CQcrHhlN/rHxw5RfvhPmEYea8KhGF4wbLI3Wds47Iore?=
- =?us-ascii?Q?uMJQHmgB3+t61o2cewlLmOdFOiLSpfWs0uduR87CjfQGX6M4tH9vS6iQ5LVd?=
- =?us-ascii?Q?Xop2m/ztgsrgxfhEuK9xnDorB0HMVu946nkdUbC1JcnP2tN7/XUU0ATa4RkE?=
- =?us-ascii?Q?WVTgW2wycKmNvtrnxGhg6rs9s1nNLhmQGovyk+EfrwXkIBTdfFB6cubgvK/c?=
- =?us-ascii?Q?yzS74+NXxcuqPpB6I3K7TXP6NrcgqRZcntqPbD3gGyaq1WWZrqANLIhGZz5l?=
- =?us-ascii?Q?9fbYMvp2wyprqfsnSKKeeL7QbShViL5IsqVVOTXvAmrDE1zz4qTovNys68EY?=
- =?us-ascii?Q?uD8ttmD8JkxZTPyeHqT+GTeEuhpdDzx1WHTbE+b555NskHDMJUPxoq+T28I7?=
- =?us-ascii?Q?byL3RFPQZX5CKRYgSXOdCbvOazyu5Y44Cxp052KXane5MYVWXBqmr0PKqGuw?=
- =?us-ascii?Q?wN0eNLQ+ViSET/H0jZnI10HoFK7K45LAmZ0SUYLV9IU6ZRFNfqsCFDoMTQxD?=
- =?us-ascii?Q?/tIAJmtIhtKXzEGUfKM1Nr1HsPQ59wkGczOsxyfDQeFfErWOGLB5EroSYbhs?=
- =?us-ascii?Q?dLQsl3TW+uun7Ky3c8jr/epM8qeqgySjhxe684qpEp8cq6AviXDEgj47YU6P?=
- =?us-ascii?Q?x8foBOeuiLOl475A8P6IezNK3LVIJIhti8e6Kv8cteCLOEGkoepHHluW2oBQ?=
- =?us-ascii?Q?ANC8LfOFjUZLOLFnsPHVjutVTd17l9mw8jQP1GTYUxTL6KQip4IEMqANYPlO?=
- =?us-ascii?Q?V+QzgfVSqUBUCTdujyWrpTOfx7ZhnyxMcCKh2MdOkrIWvymYSOPDrLReDLNF?=
- =?us-ascii?Q?3XIqGzmk4DbPSsZigYdwb636AXtVKn2XOQwU7Q+yumo7xy3+tRkMZfSxtyUZ?=
- =?us-ascii?Q?J2lOomNMlGxzM2ILMYaF3FZdOlHEpAI5TYM703L1m3oj7K3joVjnivaORbeZ?=
- =?us-ascii?Q?ydzESh6Xsvnie6gBd2+2xE0LwIm2H1V+cOI2lu4NxEjye1K1ACVLmQtixiJf?=
- =?us-ascii?Q?qmaWGDPrAdcisb+z54IncPmhQAl2tjGCX3Yr0AEjRiKryUmOeyRg3zcT3LvM?=
- =?us-ascii?Q?JXFQulgxeYr78/Ht0cDgGUipB4zgltPGm/KMC5ytuY2XKCH5LRBExGhLScqG?=
- =?us-ascii?Q?exjbqwxEbmEsJSp0jcrjOr+o0QCOIGp3Tj0W96Gf0YQev9UsnHdtji3Ld9v6?=
- =?us-ascii?Q?ftCjx0zpta+LGHWFG+5j73+TfW+07VuAFsam5ij9P7n8PrxKIfs+pJnQBAwP?=
- =?us-ascii?Q?vY9KSdAkbWvQnvY0POmnwZsiiulcHf18xevjgjnmZMkbwkITffwv8xfOKiZ0?=
- =?us-ascii?Q?Dc8dc9FcsnADWdvC7Cd5W2BB6D0mzvf+CQrp8PAy?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9cf0373b-4a54-4213-490b-08db56d45ff7
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2023 12:43:54.8784
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2jXDPLZoW7VddyVo20jWcjSBpxtdUWle6DBMPk79XjF/W5V/sXsGUXDeDnf1Damq
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6055
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ Kevin Tian <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+ Nicolin Chen <nicolinc@nvidia.com>
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+Subject: an iommufd selftest issue with 6.4-rc1
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, May 17, 2023 at 06:33:30AM +0000, Tian, Kevin wrote:
-> > From: Baolu Lu <baolu.lu@linux.intel.com>
-> > Sent: Wednesday, May 17, 2023 12:15 PM
-> > 
-> > On 5/16/23 8:27 PM, Jason Gunthorpe wrote:
-> > > On Tue, May 16, 2023 at 11:00:16AM +0800, Baolu Lu wrote:
-> > >> On 5/15/23 10:00 PM, Jason Gunthorpe wrote:
-> > >>> The devices list was used as a simple way to avoid having per-group
-> > >>> information. Now that this seems to be unavoidable, just commit to
-> > >>> per-group information fully and remove the devices list from the HWPT.
-> > >>>
-> > >>> The iommufd_group stores the currently assigned HWPT for the entire
-> > group
-> > >>> and we can manage the per-device attach/detach with a list in the
-> > >>> iommufd_group.
-> > >>
-> > >> I am preparing the patches to route I/O page faults to user space
-> > >> through iommufd. The iommufd page fault handler knows the hwpt and
-> > the
-> > >> device pointer, but it needs to convert the device pointer into its
-> > >> iommufd object id and pass the id to user space.
-> > >>
-> > >> It's fine that we remove the hwpt->devices here, but perhaps I need to
-> > >> add the context pointer in ioas later,
-> > >>
-> > >> struct iommufd_ioas {
-> > >>          struct io_pagetable iopt;
-> > >>          struct mutex mutex;
-> > >>          struct list_head hwpt_list;
-> > >> +       struct iommufd_ctx *ictx;
-> > >>   };
-> > >>
-> > >> and, use below helper to look up the device id.
-> > >>
-> > >> +u32 iommufd_get_device_id(struct iommufd_ctx *ictx, struct device *dev)
-> > >> +{
-> > >> +       struct iommu_group *group = iommu_group_get(dev);
-> > >> +       u32 dev_id = IOMMUFD_INVALID_OBJ_ID;
-> > >> +       struct iommufd_group *igroup;
-> > >> +       struct iommufd_device *cur;
-> > >> +       unsigned int id;
-> > >> +
-> > >> +       if (!group)
-> > >> +               return IOMMUFD_INVALID_OBJ_ID;
-> > >> +
-> > >> +       id = iommu_group_id(group);
-> > >> +       xa_lock(&ictx->groups);
-> > >> +       igroup = xa_load(&ictx->groups, id);
-> > >> +       if (!iommufd_group_try_get(igroup, group)) {
-> > >> +               xa_unlock(&ictx->groups);
-> > >> +               iommu_group_put(group);
-> > >> +               return IOMMUFD_INVALID_OBJ_ID;
-> > >> +        }
-> > >> +        xa_unlock(&ictx->groups);
-> > >> +
-> > >> +       mutex_lock(&igroup->lock);
-> > >> +       list_for_each_entry(cur, &igroup->device_list, group_item) {
-> > >> +               if (cur->dev == dev) {
-> > >> +                       dev_id = cur->obj.id;
-> > >> +                       break;
-> > >> +               }
-> > >> +       }
-> > >
-> > > I dislike how slow this is on something resembling a fastish path :\
-> > 
-> > Yes, agreed.
-> > 
-> > > Maybe we should stash something in the dev_iommu instead?
-> > >
-> > > Or can the PRI stuff provide a cookie per-device?
-> > 
-> > We already have a per-device fault cookie:
-> > 
-> > /**
-> >   * struct iommu_fault_param - per-device IOMMU fault data
-> >   * @handler: Callback function to handle IOMMU faults at device level
-> >   * @data: handler private data
-> >   * @faults: holds the pending faults which needs response
-> >   * @lock: protect pending faults list
-> >   */
-> > struct iommu_fault_param {
-> >          iommu_dev_fault_handler_t handler;
-> >          void *data;
-> >          struct list_head faults;
-> >          struct mutex lock;
-> > };
-> > 
-> > Perhaps we can add a @dev_id memory here?
-> > 
-> 
-> what about SIOV? There is only one cookie per parent device.
+Hi Jason,
 
-It doesn't make any sense to store a struct like that in dev_iommu.
+I compiled a 6.4-rc1 kernel and ran the iommufd selftest. The test hung,
+and I had to break it with Ctrl+C. Is this a known issue, or there is
+something wrong with my test setup?
 
-The fault handler should come from the domain and we should be able to
-have a unique 'void *data' cookie linked to the (dev,PASID) to go
-along with the fault handler.
+Best regards,
+baolu
 
-This is all going to need some revising before we can expose it to
-iommufd
+PS: the test log:
 
-Jason
+TAP version 13
+1..1
+# selftests: iommu: iommufd
+# TAP version 13
+# 1..129
+# # Starting 129 tests from 11 test cases.
+# #  RUN           iommufd.simple_close ...
+# #            OK  iommufd.simple_close
+# ok 1 iommufd.simple_close
+# #  RUN           iommufd.cmd_fail ...
+# #            OK  iommufd.cmd_fail
+# ok 2 iommufd.cmd_fail
+# #  RUN           iommufd.cmd_length ...
+# #            OK  iommufd.cmd_length
+# ok 3 iommufd.cmd_length
+# #  RUN           iommufd.cmd_ex_fail ...
+# #            OK  iommufd.cmd_ex_fail
+# ok 4 iommufd.cmd_ex_fail
+# #  RUN           iommufd.global_options ...
+# #            OK  iommufd.global_options
+# ok 5 iommufd.global_options
+# #  RUN           iommufd.simple_ioctls ...
+# #            OK  iommufd.simple_ioctls
+# ok 6 iommufd.simple_ioctls
+# #  RUN           iommufd.unmap_cmd ...
+# #            OK  iommufd.unmap_cmd
+# ok 7 iommufd.unmap_cmd
+# #  RUN           iommufd.map_cmd ...
+# #            OK  iommufd.map_cmd
+# ok 8 iommufd.map_cmd
+# #  RUN           iommufd.info_cmd ...
+# #            OK  iommufd.info_cmd
+# ok 9 iommufd.info_cmd
+# #  RUN           iommufd.set_iommu_cmd ...
+# #            OK  iommufd.set_iommu_cmd
+# ok 10 iommufd.set_iommu_cmd
+# #  RUN           iommufd.vfio_ioas ...
+# #            OK  iommufd.vfio_ioas
+# ok 11 iommufd.vfio_ioas
+# #  RUN           iommufd_ioas.no_domain.ioas_auto_destroy ...
+# #            OK  iommufd_ioas.no_domain.ioas_auto_destroy
+# ok 12 iommufd_ioas.no_domain.ioas_auto_destroy
+# #  RUN           iommufd_ioas.no_domain.ioas_destroy ...
+# #            OK  iommufd_ioas.no_domain.ioas_destroy
+# ok 13 iommufd_ioas.no_domain.ioas_destroy
+# #  RUN           iommufd_ioas.no_domain.hwpt_attach ...
+# # hwpt_attach: Test terminated unexpectedly by signal 9
+# #          FAIL  iommufd_ioas.no_domain.hwpt_attach
+# not ok 14 iommufd_ioas.no_domain.hwpt_attach
+# #  RUN           iommufd_ioas.no_domain.ioas_area_destroy ...
+# #            OK  iommufd_ioas.no_domain.ioas_area_destroy
+# ok 15 iommufd_ioas.no_domain.ioas_area_destroy
+# #  RUN           iommufd_ioas.no_domain.ioas_area_auto_destroy ...
+# #            OK  iommufd_ioas.no_domain.ioas_area_auto_destroy
+# ok 16 iommufd_ioas.no_domain.ioas_area_auto_destroy
+# #  RUN           iommufd_ioas.no_domain.area ...
+# #            OK  iommufd_ioas.no_domain.area
+# ok 17 iommufd_ioas.no_domain.area
+# #  RUN           iommufd_ioas.no_domain.unmap_fully_contained_areas ...
+# #            OK  iommufd_ioas.no_domain.unmap_fully_contained_areas
+# ok 18 iommufd_ioas.no_domain.unmap_fully_contained_areas
+# #  RUN           iommufd_ioas.no_domain.area_auto_iova ...
+# #            OK  iommufd_ioas.no_domain.area_auto_iova
+# ok 19 iommufd_ioas.no_domain.area_auto_iova
+# #  RUN           iommufd_ioas.no_domain.area_allowed ...
+# #            OK  iommufd_ioas.no_domain.area_allowed
+# ok 20 iommufd_ioas.no_domain.area_allowed
+# #  RUN           iommufd_ioas.no_domain.copy_area ...
+# #            OK  iommufd_ioas.no_domain.copy_area
+# ok 21 iommufd_ioas.no_domain.copy_area
+# #  RUN           iommufd_ioas.no_domain.iova_ranges ...
+# #            OK  iommufd_ioas.no_domain.iova_ranges
+# ok 22 iommufd_ioas.no_domain.iova_ranges
+# #  RUN           iommufd_ioas.no_domain.access_domain_destory ...
+# # iommufd.c:611:access_domain_destory:Expected MAP_FAILED 
+(18446744073709551615) != buf (18446744073709551615)
