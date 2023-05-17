@@ -1,82 +1,137 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 775CBDDBA
-	for <iommu@lists.linux.dev>; Wed, 17 May 2023 10:55:02 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 923431FB;
-	Wed, 17 May 2023 03:55:46 -0700 (PDT)
-Received: from [10.57.84.7] (unknown [10.57.84.7])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 903B73F793;
-	Wed, 17 May 2023 03:55:00 -0700 (PDT)
-Message-ID: <864d2de3-a2d7-9d59-a24a-27fd33e29497@arm.com>
-Date: Wed, 17 May 2023 11:54:56 +0100
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C80FF156C7
+	for <iommu@lists.linux.dev>; Wed, 17 May 2023 11:09:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A863EC433D2;
+	Wed, 17 May 2023 11:08:58 +0000 (UTC)
+Date: Wed, 17 May 2023 12:08:55 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+Cc: Christoph Hellwig <hch@lst.de>,
+	"Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+	Petr Tesarik <petrtesarik@huaweicloud.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	Borislav Petkov <bp@suse.de>, Randy Dunlap <rdunlap@infradead.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Kim Phillips <kim.phillips@amd.com>,
+	"Steven Rostedt (Google)" <rostedt@goodmis.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Hans de Goede <hdegoede@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Kees Cook <keescook@chromium.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	"open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+	open list <linux-kernel@vger.kernel.org>,
+	"open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+	Roberto Sassu <roberto.sassu@huawei.com>,
+	Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: Re: [PATCH v2 RESEND 4/7] swiotlb: Dynamically allocated bounce
+ buffers
+Message-ID: <ZGS1xz8Hfhfq3n4Z@arm.com>
+References: <cover.1683623618.git.petr.tesarik.ext@huawei.com>
+ <346abecdb13b565820c414ecf3267275577dbbf3.1683623618.git.petr.tesarik.ext@huawei.com>
+ <BYAPR21MB168874BC467BFCEC133A9DCDD7789@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <20230516061309.GA7219@lst.de>
+ <20230516083942.0303b5fb@meshulam.tesarici.cz>
+ <ZGPEgsplBSsI9li3@arm.com>
+ <20230517083510.0cd7fa1a@meshulam.tesarici.cz>
+ <20230517065653.GA25016@lst.de>
+ <ZGShP6i1Ed0kTF83@arm.com>
+ <20230517115821.4bf63bf5@meshulam.tesarici.cz>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.10.1
-Subject: Re: [PATCH 0/4] iommu: tegra-gart cleanups
-Content-Language: en-GB
-To: Nicolas Chauvet <kwizart@gmail.com>
-Cc: joro@8bytes.org, iommu@lists.linux.dev, will@kernel.org, jgg@nvidia.com,
- digetx@gmail.com, thierry.reding@gmail.com, linux-tegra@vger.kernel.org
-References: <cover.1684154219.git.robin.murphy@arm.com>
- <CABr+WTnzNPfOGbAmy-E3pH9U5XR0y2PdVmDd2gtnv67ByEb_0w@mail.gmail.com>
- <11d8adf1-75f5-5728-2139-e32aae6e6c49@arm.com>
- <CABr+WTm=SehaNVaFym5FM-tpCvh93Ma_xG3xX5PuGt6n9+xh4Q@mail.gmail.com>
- <aadb69ff-732d-cffc-ab44-398269a11d4e@arm.com>
- <CABr+WT=qZvvW5QqCW_J0V20-56d_2+xkdPs0FcgiJZiY6K0CCg@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <CABr+WT=qZvvW5QqCW_J0V20-56d_2+xkdPs0FcgiJZiY6K0CCg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230517115821.4bf63bf5@meshulam.tesarici.cz>
 
-On 2023-05-16 16:15, Nicolas Chauvet wrote:
-> Le mar. 16 mai 2023 à 14:31, Robin Murphy <robin.murphy@arm.com> a écrit :
->>
->> On 2023-05-16 13:16, Nicolas Chauvet wrote:
->>> Le mar. 16 mai 2023 à 13:45, Robin Murphy <robin.murphy@arm.com> a écrit :
->>>>
->>>> On 2023-05-16 10:53, Nicolas Chauvet wrote:
->>> ...
->>>>> For what it worth, I've tried to test this serie with "grate patches"
->>>>> (1) rebased on top on 6.4-rc2, that would make use of the tegra-gart.
->>>>> That was on PAZ00 (with only 512M of RAM and 96M CMA still allocated).
->>>>> Unfortunately, this lead to the following errors with display problems
->>>>> (no character displayed in lxt-terminal and etc)
->>>>
->>>> Thanks for testing - it's quite possible I've made a silly mistake
->>>> somewhere, but just to double-check, does the same happen with the
->>>> existing driver if you boot with "tegra-gart.gart_debug=1" (or at least
->>>> enable the parameter via sysfs before the DRM driver gets going)?
->>>
->>> Using echo 1 > /sys/module/tegra_gart/parameters/gart_debug shows the
->>> same messages and the same artefacts (missing refreshed window
->>> content).
->>> Using "echo 0 > /sys/module/tegra_gart/parameters/gart_debug" revert
->>> back to normal...
->>
->> OK, cool, so it looks like a pre-existing bug in the caller, but I guess
->> it does mean that unconditionally enabling the checks isn't ideal until
->> that can be sorted out.
+On Wed, May 17, 2023 at 11:58:21AM +0200, Petr Tesařík wrote:
+> On Wed, 17 May 2023 10:41:19 +0100
+> Catalin Marinas <catalin.marinas@arm.com> wrote:
+> > On Wed, May 17, 2023 at 08:56:53AM +0200, Christoph Hellwig wrote:
+> > > Just thinking out loud:
+> > > 
+> > >  - what if we always way overallocate the swiotlb buffer
+> > >  - and then mark the second half / two thirds / <pull some number out
+> > >    of the thin air> slots as used, and make that region available
+> > >    through a special CMA mechanism as ZONE_MOVABLE (but not allowing
+> > >    other CMA allocations to dip into it).
+> > > 
+> > > This allows us to have a single slot management for the entire
+> > > area, but allow reclaiming from it.  We'd probably also need to make
+> > > this CMA variant irq safe.  
+> > 
+> > I think this could work. It doesn't need to be ZONE_MOVABLE (and we
+> > actually need this buffer in ZONE_DMA). But we can introduce a new
+> > migrate type, MIGRATE_SWIOTLB, and movable page allocations can use this
+> > range. The CMA allocations go to free_list[MIGRATE_CMA], so they won't
+> > overlap.
+> > 
+> > One of the downsides is that migrating movable pages still needs a
+> > sleep-able context.
 > 
-> Seems like I had a non-default option with tegra-drm that was
-> controlling the way tegra-gart is used:
-> https://github.com/grate-driver/linux/blob/master/drivers/gpu/drm/grate/gart.c#L19-L29
+> Pages can be migrated by a separate worker thread when the number of
+> free slots reaches a low watermark.
+
+Indeed, you still need such worker thread.
+
+> > Another potential confusion is is_swiotlb_buffer() for pages in this
+> > range allocated through the normal page allocator. We may need to check
+> > the slots as well rather than just the buffer boundaries.
 > 
-> With option 4, occurrences of failing allocation are experienced more
-> often than the default 0 options when only "scattered BOs are mapped".
-> Also with the default option, no noticeable failure is seen.
+> Ah, yes, I forgot about this part; thanks for the reminder.
+> 
+> Indeed, movable pages can be used for the page cache, and drivers do
+> DMA to/from buffers in the page cache.
+> 
+> Let me recap:
+> 
+> - Allocated chunks must still be tracked with this approach.
+> - The pool of available slots cannot be grown from interrupt context.
+> 
+> So, what exactly is the advantage compared to allocating additional
+> swiotlb chunks from CMA?
 
-Oh, I see it now - the logic around tegra_bo_mm_evict_something() 
-actually depends on being able to map new PTEs over the top of existing 
-ones without an unmap :/
+This would work as well but it depends on how many other drivers
+allocate from the CMA range. Maybe it's simpler to this initially (I
+haven't got to your other emails yet).
 
-The map/unmap overhead that that's trying to avoid could probably be 
-reduced quite significantly anyway by converting GART to the new 
-map_pages/unmap_pages callbacks.
+> > > This could still be combined with more aggressive use of per-device
+> > > swiotlb area, which is probably a good idea based on some hints.
+> > > E.g. device could hint an amount of inflight DMA to the DMA layer,
+> > > and if there are addressing limitations and the amout is large enough
+> > > that could cause the allocation of a per-device swiotlb area.  
+> > 
+> > If we go for one large-ish per-device buffer for specific cases, maybe
+> > something similar to the rmem_swiotlb_setup() but which can be
+> > dynamically allocated at run-time and may live alongside the default
+> > swiotlb. The advantage is that it uses a similar slot tracking to the
+> > default swiotlb, no need to invent another. This per-device buffer could
+> > also be allocated from the MIGRATE_SWIOTLB range if we make it large
+> > enough at boot. It would be seen just a local accelerator for devices
+> > that use bouncing frequently or from irq context.
+> 
+> A per-device pool could also be used for small buffers. IIRC somebody
+> was interested in that.
 
-Thanks,
-Robin.
+That was me ;) but TBH, I don't care how large the bounce buffer is,
+only that it can bounce small structures. If there's some critical path,
+people can change the kmalloc() allocation for those structures to make
+them cacheline-aligned.
+
+-- 
+Catalin
