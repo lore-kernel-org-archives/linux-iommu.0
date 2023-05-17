@@ -1,176 +1,199 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2048.outbound.protection.outlook.com [40.107.220.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 140B22F5B
-	for <iommu@lists.linux.dev>; Wed, 17 May 2023 16:42:01 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DRRdkMaLyqUCX0ianh8vkAmTteWMCbARgNvDcnlfRTb+izPsG5+DYsRuM8jinDO60uQU7TLadm24gW4yR0G+4+hz7kNTpCNE0uQeae9xn7twAm9lGxNq2i5uqkmiBx3Drb1W4nLxlenGPiLdWX7a0JsP1JZRBR+sBo8qI2t9W4gVtzke8T1rG98sYwG2YVqEln+C1jFfyjhtD1PzaFqCT6FHizQj6NugUHyPJV572o0RWHBhLv7PUBGywQhUFdkSxDEGmsEumWO8uDPsAytVgvkkDrnrk3svCopOo42wWue1z5/6Iv84hc7k3UIXIB3qEMsaFXAyPbPq9IzcYXleTw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YZmAEiLt9BbGfZJn3vO6d9yz/DPdC6Fo4hpOQXxr/c0=;
- b=YCi5L3GN8uIcl9VL+rRRvY2mal2ToVOGlZFzp9rj9700SjjNslcl3sYTk5xAK/iqwPUFVX4DyKwKMHRmhCvR6dvEEXTkPlq6z5by+iVRvaYla04cqkZW5ifgxf3GKK2wxSOxQ8d4DUOjHr/dhVgbvBzdSIdk39t+mN5D1LHLv9RuQ96ee81C72811vdLDxrDFa+d9r7lOMhtdm1A0syvF6GICCL5NkdJu1BofJ2JEo8skvlDYw0bHOOIEe7Y58DvMXzIuLgWhK/KulE47CTwQxelbgxhfggDJN5ONvO54qGPahov2MSpkZ15jnxtfj5SvTkM48Iw7K5I6TBopJcxoQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YZmAEiLt9BbGfZJn3vO6d9yz/DPdC6Fo4hpOQXxr/c0=;
- b=NTu793/FPerVsLWUPo9esfL+HTwgnrGoAdRmsYjNrM/UQ18dfzSTIokvZZY/35eyDBYu2ZzxNiI/hdEsoWAEByyuIVqlK0s5s/wIUwXOfKH8ukNTEfbgvICAVSghgDJsmLTfb6wvf08SYsUnJI4+DvFlYaHcprmeqvKstGdbKQOGwCp8pDGx1MJi8feoTNZ4SMd8V+L+Cvn388PPorBRSkbUKeBwmymg4VYAHW8Nyx9wzp5vHx3dw+8Z6uk0pGc4KuIdZ1Ln6s+KSpqM24MOeMuUoUbpLWTykkj2H6q/gjXbhXaVCO4mQpmqcc+H6rirHVnUU98IlNGbx+9oUKameQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by CY8PR12MB8411.namprd12.prod.outlook.com (2603:10b6:930:6e::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.33; Wed, 17 May
- 2023 16:41:59 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6411.017; Wed, 17 May 2023
- 16:41:59 +0000
-Date: Wed, 17 May 2023 13:41:57 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	eric.auger@redhat.com, virtualization@lists.linux-foundation.org,
-	iommu@lists.linux.dev, akihiko.odaki@daynix.com
-Subject: Re: [PATCH v2 2/2] iommu/virtio: Return size mapped for a detached
- domain
-Message-ID: <ZGUD1efvOttujDPp@nvidia.com>
-References: <20230515113946.1017624-1-jean-philippe@linaro.org>
- <20230515113946.1017624-3-jean-philippe@linaro.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230515113946.1017624-3-jean-philippe@linaro.org>
-X-ClientProxiedBy: MN2PR16CA0017.namprd16.prod.outlook.com
- (2603:10b6:208:134::30) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DF4731F01
+	for <iommu@lists.linux.dev>; Wed, 17 May 2023 19:25:41 +0000 (UTC)
+Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-30781184e78so296546f8f.0
+        for <iommu@lists.linux.dev>; Wed, 17 May 2023 12:25:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684351539; x=1686943539;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=S3weABmS34nZVMLJo+XTzwZMXin1WTjGdDKVc/7JR4E=;
+        b=jGTRNaT/LTEfefiq7iqw5TaJTPZA9TvIW3MjtLorKW+Kvhvp856nVPG5cbioprbYxW
+         /1gJIPovKpgZj//NU8LN58hvGAl9o0TeOmswwjgR3g+OAR/02RTQtyaXz2b/YGkqVosZ
+         6hsrlRZVEvvFxPLck4msRzdPTPsf3m2WXx7T13x0VCG4M0mW/wr55sxmbQSTnd7YYheo
+         vQujQxPFUYm7HVF1F1sW21FscyTgGBy6UrtT6V5kydLfRh12iqndOBJOMXpYaHJWHt4Q
+         AZvImUUAbB5UT1lEZFAFTBzcRayTpDXVrTX416cenJYX7bP0DZ8GK1O/VM1RVqG+2Bug
+         lavQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684351539; x=1686943539;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=S3weABmS34nZVMLJo+XTzwZMXin1WTjGdDKVc/7JR4E=;
+        b=WVXV2l0k6E5oAWgCQHzbJFB3nwPL2+t4NzLD90wdTmReJyu6JCc05i4rRc3QbYXK7K
+         tGaaqRx9VBo3QgWyhHy93rpnGXx+ofkGWwcjWMTIdLJH6oEGIOoCdtFS0p0G1MA7R0qd
+         gOS+ladlnkOiyufUlYFqmITZZIxe02If0vmh6w93PQvnonvKyuxEFk3/q1+OnAByZkiB
+         n3FuMyKrsWBoP+lVooUWL0ezP8qire7HXkEWTcBlCbKqeTUF9wHh7m7Qm29LJO8zqNJC
+         UzZVSAh3nSKOhb+PxhWR39dJIPVgkqVaCd53iqUEyhyo0HemUdMHS4WTLM3sCOFjmhiA
+         BOnw==
+X-Gm-Message-State: AC+VfDwlwGFc8rZuHyerMgeWJ1ZDpH1RD5+/9Us1JRLOLCHH/WoDTZl5
+	aCrsUparHgzyrG/pPd///gY=
+X-Google-Smtp-Source: ACHHUZ41Ld9JgKrYrlAx6gZJdD/qq/cESCQqKPp4/u9Jh+7PIgc4GjZmT9TPDR7j6Hx7/rIs3UxZoQ==
+X-Received: by 2002:a5d:528a:0:b0:2fd:c315:bb2c with SMTP id c10-20020a5d528a000000b002fdc315bb2cmr1331031wrv.22.1684351539048;
+        Wed, 17 May 2023 12:25:39 -0700 (PDT)
+Received: from lucifer.home (host86-156-84-164.range86-156.btcentralplus.com. [86.156.84.164])
+        by smtp.googlemail.com with ESMTPSA id t2-20020a5d5342000000b00307972e46fasm3588386wrv.107.2023.05.17.12.25.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 May 2023 12:25:38 -0700 (PDT)
+From: Lorenzo Stoakes <lstoakes@gmail.com>
+To: linux-mm@kvack.org,
+	linux-kernel@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
+	iommu@lists.linux.dev
+Cc: Matthew Wilcox <willy@infradead.org>,
+	David Hildenbrand <david@redhat.com>,
+	kvm@vger.kernel.org,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Jens Axboe <axboe@kernel.dk>,
+	Pavel Begunkov <asml.silence@gmail.com>,
+	John Hubbard <jhubbard@nvidia.com>,
+	Lorenzo Stoakes <lstoakes@gmail.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Christoph Hellwig <hch@lst.de>
+Subject: [PATCH v6 2/6] mm/gup: remove unused vmas parameter from pin_user_pages_remote()
+Date: Wed, 17 May 2023 20:25:36 +0100
+Message-Id: <28f000beb81e45bf538a2aaa77c90f5482b67a32.1684350871.git.lstoakes@gmail.com>
+X-Mailer: git-send-email 2.40.1
+In-Reply-To: <cover.1684350871.git.lstoakes@gmail.com>
+References: <cover.1684350871.git.lstoakes@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CY8PR12MB8411:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9301adbb-a087-4af1-6982-08db56f5a260
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	6N2XLZ8FV2C5TkiHQn86zOjU6mcwmTHKVFoZhufA3IVykm2JmskkChL4U2JeFoRlmMmQLg3fWi3SAB6FN8/8s/DMS7kGDt/+/ALIQD2byh6ZVt3qRl5hf7CJSC34dVkFK+2QijFwCl3LMO8aDF0zpMjEd73SBHsgIAuOH06/DHEWSOzlo9eMxUvnd2EC5yZCCu3MwPfZjX2DXgBEcuPsnN6snoaspS1RxghEp22fJ+bW84IyoshS0vnUKZKKLNb9OJ9w101ht5X7JWnb3XARbWqKRAjyGpauYaxQi/eesjP25I1Zh2cK4sss7S5sLyVumBDjj37YKxZ5HH7RqDNqoUbS0Ql63RKEkiXhXrSc3jb7DgVeTBGLRIRxN91fsEmj40k5oPHzR3Smihty7yymKKYSpgdPfm6C9eyf2cE6KNx2oQyvJJkQs3UXIIh1QSoSEIXGRhP40r5hXjB9tdO0j0cnhFuixtbF7nVF4YvKn5IdoUpY07sjzOIkz0jCZuN6T/6WvMiVMaZzv6wO/rUX14GLO6VZvKjSnEq59aWgz/lfhU4jxo60EpGKgCH1SqLy
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(376002)(346002)(366004)(396003)(136003)(451199021)(5660300002)(8676002)(8936002)(2616005)(186003)(6506007)(83380400001)(6512007)(26005)(38100700002)(478600001)(6486002)(316002)(66476007)(66556008)(86362001)(41300700001)(66946007)(36756003)(4326008)(2906002)(6916009);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?yA0ussTn586nFQQLQh1SCscH0K3xBY/5gTIXx3kiOnBcR32yraaQiRNbqgmE?=
- =?us-ascii?Q?U2MjwWQrgD93jByP6ajs1NmtCj055YVggkGGt3dzJmyZtmao0x8WH8+tBMlJ?=
- =?us-ascii?Q?J3/QEWSzUQSnvy7E0TETSP5FBPJiQB2HJF0fByumKTPszWu/2A+0jp8pmDb6?=
- =?us-ascii?Q?3s7NYM0A923T3DYSR5IGYZ8GJCbK1syoYSaj71kBYvpeOOIMAbTohC0IbXsP?=
- =?us-ascii?Q?X4d2ZPC5wu27jKBrQ6HuHy996HlXJ1v578kAj3YcZzq+TC4QELzue2vUA0gz?=
- =?us-ascii?Q?nyF5evlhzbT0qMftjoHPKASDgrgGUHa7JxLHmFz5bfXxGCiEW2h8E2dsZfas?=
- =?us-ascii?Q?spwkbf3c7GjfpVoSdcL94VsQDWSnmzTuMjm27S6BhGjtP2lVkapv9ERoDigW?=
- =?us-ascii?Q?q0fYRVfRJU/fgZ3a0vNF8QTPO+51bkVnRfQuwNdxvajGMb4bMosn8rlrxln6?=
- =?us-ascii?Q?mGPDCNmnPnAtG8y+oJ9PznnQTQA2S4phRPcPUZlff2+Gc+dE07gJTKfc8Sbk?=
- =?us-ascii?Q?La5luAuWw7DNy7tNjyApD4aA4oBWXO6rCUWTvJOI32fXW45GAA8tfo2xWYrU?=
- =?us-ascii?Q?RiFbVq2UBddqVtyb/WnXvwN1XX2UosQsoO8k72UaJ2yIIgnfPKjMIpCADdzZ?=
- =?us-ascii?Q?XUov1KviuQMma29byzlmKfkoUH/u4DHtFrCnQElOpXvL8oqipeApcfjsXAKT?=
- =?us-ascii?Q?6WGC5Fp9gjALps7RL0OrURMYaHLHwn26d3U7UrpKLV8HnCfQnSPU65rksC9w?=
- =?us-ascii?Q?mEzc4ToeH5l9eaRzwd+iVNgRGhVJ5xVIOy6/b21VK0csRTWG3wj2uonLag1V?=
- =?us-ascii?Q?V8OBCnVVrCbtLGnuN9I1e2wjqU4q0kL5jJ9chz7PIxSUPLPouVz1d+gMm/Lb?=
- =?us-ascii?Q?qS6R0o8g7ohz6VMSJn75E6rSp0gAda91G/dQ4TEWp4sLrvkx/R9A2StUbNb6?=
- =?us-ascii?Q?QwgZkB6pgYROYBt2N3FN3SRxNBElLr2ddpsAM0zZxTz7VmL+lBTAlUEplZID?=
- =?us-ascii?Q?k1irw6cCr38YNuP5mSP6Ggd1Zlu3Z4fmHBcQ3CX0FhH/tgqTEOGVVnRKLEcd?=
- =?us-ascii?Q?wT/F1QTM3j1rWneE3UysY0i5eULYwP2AuX8/+hr6rJZbojlXyLYjz+8RK0K9?=
- =?us-ascii?Q?0f3sCVZvGACphaFAcOOuqHVjqf9dyEb1P/jKTkiR86uQWDQ6/DNDKNfpOwj+?=
- =?us-ascii?Q?evWwZM7/2Yi+xup5AqQqzwSxSP4QIYktsJpse24TqGIEMfjmW15jbNxUKy6a?=
- =?us-ascii?Q?EJlnNna2dBfilX/h2SJ9T+OiB6zl+UAI4OblJngCTr8CIXKV/ObysyEE5gts?=
- =?us-ascii?Q?4Ba4GVd9OuQf+NLRcZlff1N2XOMk9k/qds8lshC8TS3IaQQe2HsH4A0xIjvg?=
- =?us-ascii?Q?BI/xEVZsivBrLKVRNWfUG+xUbi7KhJPr9REHckhNhrfruToHMaxfQNzHtgIu?=
- =?us-ascii?Q?qCDBY6Rtqcks9gYUgpsm0BdAMZGuC2tMBix8iDUnDSUKYoe1yp5WoO8kd7dC?=
- =?us-ascii?Q?Mo0/CDoLupRhABaqiNK9e/6WyH2Sq6EJvBjlbgzIrMecBQL2IbH/5R2OyXtc?=
- =?us-ascii?Q?Y7ldDNCw7qI06/ey8Rc1f+5V+TZQE57GG8ETqjau?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9301adbb-a087-4af1-6982-08db56f5a260
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2023 16:41:59.5988
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: T4Ox3ybZecg+HMnaN1rcL/FmN1OA2Q4+DZXTGZOLEog5KR6q6V0mXmT9wUpnjLcS
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB8411
+Content-Transfer-Encoding: 8bit
 
-On Mon, May 15, 2023 at 12:39:50PM +0100, Jean-Philippe Brucker wrote:
-> When map() is called on a detached domain, the domain does not exist in
-> the device so we do not send a MAP request, but we do update the
-> internal mapping tree, to be replayed on the next attach. Since this
-> constitutes a successful iommu_map() call, return *mapped in this case
-> too.
-> 
-> Fixes: 7e62edd7a33a ("iommu/virtio: Add map/unmap_pages() callbacks implementation")
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> ---
->  drivers/iommu/virtio-iommu.c | 33 +++++++++++++++++----------------
->  1 file changed, 17 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-> index fd316a37d7562..3551ed057774e 100644
-> --- a/drivers/iommu/virtio-iommu.c
-> +++ b/drivers/iommu/virtio-iommu.c
-> @@ -833,25 +833,26 @@ static int viommu_map_pages(struct iommu_domain *domain, unsigned long iova,
->  	if (ret)
->  		return ret;
->  
-> -	map = (struct virtio_iommu_req_map) {
-> -		.head.type	= VIRTIO_IOMMU_T_MAP,
-> -		.domain		= cpu_to_le32(vdomain->id),
-> -		.virt_start	= cpu_to_le64(iova),
-> -		.phys_start	= cpu_to_le64(paddr),
-> -		.virt_end	= cpu_to_le64(end),
-> -		.flags		= cpu_to_le32(flags),
-> -	};
-> +	if (vdomain->nr_endpoints) {
-> +		map = (struct virtio_iommu_req_map) {
-> +			.head.type	= VIRTIO_IOMMU_T_MAP,
-> +			.domain		= cpu_to_le32(vdomain->id),
-> +			.virt_start	= cpu_to_le64(iova),
-> +			.phys_start	= cpu_to_le64(paddr),
-> +			.virt_end	= cpu_to_le64(end),
-> +			.flags		= cpu_to_le32(flags),
-> +		};
->  
-> -	if (!vdomain->nr_endpoints)
-> -		return 0;
-> -
-> -	ret = viommu_send_req_sync(vdomain->viommu, &map, sizeof(map));
-> -	if (ret)
-> -		viommu_del_mappings(vdomain, iova, end);
-> -	else if (mapped)
-> +		ret = viommu_send_req_sync(vdomain->viommu, &map, sizeof(map));
-> +		if (ret) {
-> +			viommu_del_mappings(vdomain, iova, end);
-> +			return ret;
-> +		}
-> +	}
-> +	if (mapped)
->  		*mapped = size;
+No invocation of pin_user_pages_remote() uses the vmas parameter, so remove
+it. This forms part of a larger patch set eliminating the use of the vmas
+parameters altogether.
 
-This looks right
-
+Acked-by: David Hildenbrand <david@redhat.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Lorenzo Stoakes <lstoakes@gmail.com>
+---
+ drivers/iommu/iommufd/pages.c    | 4 ++--
+ drivers/vfio/vfio_iommu_type1.c  | 2 +-
+ include/linux/mm.h               | 2 +-
+ kernel/trace/trace_events_user.c | 2 +-
+ mm/gup.c                         | 8 +++-----
+ mm/process_vm_access.c           | 2 +-
+ 6 files changed, 9 insertions(+), 11 deletions(-)
 
-But your unmap looks troubled:
+diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
+index 3c47846cc5ef..412ca96be128 100644
+--- a/drivers/iommu/iommufd/pages.c
++++ b/drivers/iommu/iommufd/pages.c
+@@ -786,7 +786,7 @@ static int pfn_reader_user_pin(struct pfn_reader_user *user,
+ 			user->locked = 1;
+ 		}
+ 		rc = pin_user_pages_remote(pages->source_mm, uptr, npages,
+-					   user->gup_flags, user->upages, NULL,
++					   user->gup_flags, user->upages,
+ 					   &user->locked);
+ 	}
+ 	if (rc <= 0) {
+@@ -1799,7 +1799,7 @@ static int iopt_pages_rw_page(struct iopt_pages *pages, unsigned long index,
+ 	rc = pin_user_pages_remote(
+ 		pages->source_mm, (uintptr_t)(pages->uptr + index * PAGE_SIZE),
+ 		1, (flags & IOMMUFD_ACCESS_RW_WRITE) ? FOLL_WRITE : 0, &page,
+-		NULL, NULL);
++		NULL);
+ 	mmap_read_unlock(pages->source_mm);
+ 	if (rc != 1) {
+ 		if (WARN_ON(rc >= 0))
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index 3d4dd9420c30..3d2d9a944906 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -562,7 +562,7 @@ static int vaddr_get_pfns(struct mm_struct *mm, unsigned long vaddr,
+ 
+ 	mmap_read_lock(mm);
+ 	ret = pin_user_pages_remote(mm, vaddr, npages, flags | FOLL_LONGTERM,
+-				    pages, NULL, NULL);
++				    pages, NULL);
+ 	if (ret > 0) {
+ 		int i;
+ 
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 2c1a92bf5626..8ea82e9e7719 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2380,7 +2380,7 @@ long get_user_pages_remote(struct mm_struct *mm,
+ long pin_user_pages_remote(struct mm_struct *mm,
+ 			   unsigned long start, unsigned long nr_pages,
+ 			   unsigned int gup_flags, struct page **pages,
+-			   struct vm_area_struct **vmas, int *locked);
++			   int *locked);
+ long get_user_pages(unsigned long start, unsigned long nr_pages,
+ 		    unsigned int gup_flags, struct page **pages);
+ long pin_user_pages(unsigned long start, unsigned long nr_pages,
+diff --git a/kernel/trace/trace_events_user.c b/kernel/trace/trace_events_user.c
+index b1ecd7677642..bdc2666e8d39 100644
+--- a/kernel/trace/trace_events_user.c
++++ b/kernel/trace/trace_events_user.c
+@@ -406,7 +406,7 @@ static int user_event_enabler_write(struct user_event_mm *mm,
+ 		return -EBUSY;
+ 
+ 	ret = pin_user_pages_remote(mm->mm, uaddr, 1, FOLL_WRITE | FOLL_NOFAULT,
+-				    &page, NULL, NULL);
++				    &page, NULL);
+ 
+ 	if (unlikely(ret <= 0)) {
+ 		if (!fixup_fault)
+diff --git a/mm/gup.c b/mm/gup.c
+index b8189396f435..ce78a5186dbb 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -3243,8 +3243,6 @@ EXPORT_SYMBOL_GPL(pin_user_pages_fast);
+  * @gup_flags:	flags modifying lookup behaviour
+  * @pages:	array that receives pointers to the pages pinned.
+  *		Should be at least nr_pages long.
+- * @vmas:	array of pointers to vmas corresponding to each page.
+- *		Or NULL if the caller does not require them.
+  * @locked:	pointer to lock flag indicating whether lock is held and
+  *		subsequently whether VM_FAULT_RETRY functionality can be
+  *		utilised. Lock must initially be held.
+@@ -3259,14 +3257,14 @@ EXPORT_SYMBOL_GPL(pin_user_pages_fast);
+ long pin_user_pages_remote(struct mm_struct *mm,
+ 			   unsigned long start, unsigned long nr_pages,
+ 			   unsigned int gup_flags, struct page **pages,
+-			   struct vm_area_struct **vmas, int *locked)
++			   int *locked)
+ {
+ 	int local_locked = 1;
+ 
+-	if (!is_valid_gup_args(pages, vmas, locked, &gup_flags,
++	if (!is_valid_gup_args(pages, NULL, locked, &gup_flags,
+ 			       FOLL_PIN | FOLL_TOUCH | FOLL_REMOTE))
+ 		return 0;
+-	return __gup_longterm_locked(mm, start, nr_pages, pages, vmas,
++	return __gup_longterm_locked(mm, start, nr_pages, pages, NULL,
+ 				     locked ? locked : &local_locked,
+ 				     gup_flags);
+ }
+diff --git a/mm/process_vm_access.c b/mm/process_vm_access.c
+index 78dfaf9e8990..0523edab03a6 100644
+--- a/mm/process_vm_access.c
++++ b/mm/process_vm_access.c
+@@ -104,7 +104,7 @@ static int process_vm_rw_single_vec(unsigned long addr,
+ 		mmap_read_lock(mm);
+ 		pinned_pages = pin_user_pages_remote(mm, pa, pinned_pages,
+ 						     flags, process_pages,
+-						     NULL, &locked);
++						     &locked);
+ 		if (locked)
+ 			mmap_read_unlock(mm);
+ 		if (pinned_pages <= 0)
+-- 
+2.40.1
 
-	unmapped = viommu_del_mappings(vdomain, iova, iova + size - 1);
-	if (unmapped < size)
-		return 0;
-
-It shouldn't unmap something and then return 0...
-
-Also, these days this driver be much better to use a multi-order
-xarray than in interval tree..
-
-Jason
