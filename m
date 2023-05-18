@@ -1,137 +1,76 @@
-Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com [209.85.219.177])
+Received: from mail-qv1-f47.google.com (mail-qv1-f47.google.com [209.85.219.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6540C17AB8
-	for <iommu@lists.linux.dev>; Thu, 18 May 2023 12:15:14 +0000 (UTC)
-Received: by mail-yb1-f177.google.com with SMTP id 3f1490d57ef6-ba841216e92so2781286276.1
-        for <iommu@lists.linux.dev>; Thu, 18 May 2023 05:15:14 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEC6F23C64
+	for <iommu@lists.linux.dev>; Thu, 18 May 2023 12:36:55 +0000 (UTC)
+Received: by mail-qv1-f47.google.com with SMTP id 6a1803df08f44-61a4e03ccbcso17448146d6.2
+        for <iommu@lists.linux.dev>; Thu, 18 May 2023 05:36:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google; t=1684412113; x=1687004113;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XgFOSV/UZQum0un5ddf5wbQcMT/9BA1IjZd6FVUmCYU=;
-        b=GOJI+vZ+hkzomUZOEnr8zjRGHiv2hqqLvNHs/wcE90qc088sPT3caF7Kl5tUxrifex
-         n2L8AGuDLnTohuTkvhKkFOOVisGil9d+2zd/M6gc9yEGZxZIrywXb8SCHe97XZmcDpjn
-         WbqMg90rREBOiQIM4jBYWxYUcfib5PymxKcWA=
+        d=ziepe.ca; s=google; t=1684413414; x=1687005414;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=1ZHehlmJ9aM/l0dubjtOOkzgamyeWee8cpMOepFC//s=;
+        b=S/guCeu7QK9uBAUpQW5YPel4p5sO1Rsfe/EMAcJJeDPPabOeBmzrdSsZsC0N6qMG22
+         918GVqJgvHnTWXTltvoC0J9StMjLQs8NjDC0Hf/LnCb/sBYYVDBgANMQOD7cjXqB2IHi
+         wrkkqqg6mURgV0+9WfEFIgpxJwe+cwLjr8kHGhYxYWmGujGH5Vr4tnKHaap7pI6Klf+3
+         PERcxBXz5LQA3GKMTZDjWjnBOjDKAb2gvOUA8eDdHUKDqQaanFfPDXd7X0cy1HnfuYXj
+         bZlcfzn/Fs9vRQsnguQt2dfidhsdhZ8rcGre7jAvzhjGsCaHKwzZO9WRBiUutVsgrUYl
+         +H6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684412113; x=1687004113;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=XgFOSV/UZQum0un5ddf5wbQcMT/9BA1IjZd6FVUmCYU=;
-        b=VvTEpDFbF39vDnpgwe6fpsCuQYtXRXq8dRUYIlF62MNuWgQVdNULKDg+dJ4fe+F1tt
-         Sh8CHcbQRv27Cz68IMKWqVKc5OSiVUK8pG9iFowNJV+R39hI0uhvio91RFzKgV8ZL9+I
-         KoVo5gvyL1VvgoEyEu3oNpTfeZ6IGNpQLl3NMembMhGgYfdS+Yz95vq5q++/Mq5QftgX
-         U1p/WZsHp/ORISqgLlLrP8VL4n0EdSEUXV0pYHlxx+roiV0xjXnss0v6/heLPuiI2DMF
-         Ht0QNXTGerQdTQNUMon2cI2BmMHNTA0Hluf0bToPyhL75eS0E1QQoZZG8/PRu0zc1S4Q
-         pc6A==
-X-Gm-Message-State: AC+VfDz4kNttHJDbv+WqvMK8b0/C0X7OeuUofMfVzxv0/UE46256wrOZ
-	Z6Z6Xdw5iqFINmNAj+FsdFHvlrKhoDOMo1O3G4jQew==
-X-Google-Smtp-Source: ACHHUZ7nFwLw8vU2gQmUrRhe5rNw2YJS/jctgIgXoQk+5ckkK64KcX4r0qAl4gnBCbLNwU3FrQdfHumNxwfG1gN0gdY=
-X-Received: by 2002:a25:c42:0:b0:ba8:aaef:bc53 with SMTP id
- 63-20020a250c42000000b00ba8aaefbc53mr766483ybm.6.1684412113261; Thu, 18 May
- 2023 05:15:13 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1684413414; x=1687005414;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1ZHehlmJ9aM/l0dubjtOOkzgamyeWee8cpMOepFC//s=;
+        b=WlmSannrsHA5nPo3FOs90U+H3rdPzFY+eW95Bf9+gpXaMFhYHhrYkybUgmrG/VCFAf
+         V7V5NpY2P0VuxwuWSm7wqkY/hV6kYtcaywMCnnvuxmKjaoufScqBYBqN0aFc/UwqM4La
+         9QAhUPwAeWZ0BKygcTQuZ7kbuWzof5+ime3+/o6/nRlZAhEdIDoJMmjb9cOzyHsawmLj
+         WmCUSzinnnD4qEzjw2x+/AnhiqWA+aVXx5ahMyqWh2Ql8qwsX9sRJgHw6thqqc/buXwh
+         4uoi8vaJoSWsvsByUh1KQm0MDyvaIPs7plcBp9LHNaX5BOF3Urj/MSNtblYeooBBkSgI
+         Jjbg==
+X-Gm-Message-State: AC+VfDyFrM8TqnGBKcMsqRojwblUzKXeEVerjMVKZ9X92zHWdlmWwHmc
+	0Nif9+Maj5BDXSFz/LSwZWwufg==
+X-Google-Smtp-Source: ACHHUZ4ALjNvexRyN8fvYtA2j8Eb3UYWss9cY2LgPG0/kcRB1lLHDApvlZyhjit+R/dPaDeAG/5PBA==
+X-Received: by 2002:a05:6214:62c:b0:5ef:4254:d6f0 with SMTP id a12-20020a056214062c00b005ef4254d6f0mr4517705qvx.36.1684413414718;
+        Thu, 18 May 2023 05:36:54 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
+        by smtp.gmail.com with ESMTPSA id n18-20020a05620a153200b0075783f6c2b4sm358959qkk.128.2023.05.18.05.36.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 May 2023 05:36:53 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1pzcsH-0055on-4J;
+	Thu, 18 May 2023 09:36:53 -0300
+Date: Thu, 18 May 2023 09:36:53 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Peng Fan <peng.fan@nxp.com>,
+	"eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"jean-philippe.brucker@arm.com" <jean-philippe.brucker@arm.com>,
+	"will@kernel.org" <will@kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Subject: Re: arm-smmu-v3 sharing SID
+Message-ID: <ZGYb5Y1eAgvt/TdY@ziepe.ca>
+References: <DU0PR04MB94172CB3F138AD39E9B6DEEF887F9@DU0PR04MB9417.eurprd04.prod.outlook.com>
+ <359b01bc-e87a-9a50-c971-681e89985491@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230330131746.1475514-1-jagan@amarulasolutions.com>
- <20230330131746.1475514-2-jagan@amarulasolutions.com> <beae35a5-b094-087a-8443-5f669a2a37c6@arm.com>
- <CAMty3ZBD8Eca4ECd03c1WD_tKTrd_=Tx1FF3KeihLAXySTVL8A@mail.gmail.com>
-In-Reply-To: <CAMty3ZBD8Eca4ECd03c1WD_tKTrd_=Tx1FF3KeihLAXySTVL8A@mail.gmail.com>
-From: Jagan Teki <jagan@amarulasolutions.com>
-Date: Thu, 18 May 2023 17:45:01 +0530
-Message-ID: <CAMty3ZBDAwY+3qApU_mQJ7ZNEw52SpbV3TeOk38TSicG9CoiVg@mail.gmail.com>
-Subject: Re: [PATCH 2/3] iommu/rockchip: Disable the device link during resume
-To: Heiko Stuebner <heiko@sntech.de>, Simon Xue <xxm@rock-chips.com>, 
-	Kever Yang <kever.yang@rock-chips.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Rob Herring <robh+dt@kernel.org>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, iommu@lists.linux.dev, 
-	linux-rockchip@lists.infradead.org, linux-arm-kernel@lists.infradead.org, 
-	devicetree@vger.kernel.org, 
-	linux-amarula <linux-amarula@amarulasolutions.com>, Robin Murphy <robin.murphy@arm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <359b01bc-e87a-9a50-c971-681e89985491@arm.com>
 
-Hi Heiko/Kever/Simon,
+On Thu, May 18, 2023 at 12:33:25PM +0100, Robin Murphy wrote:
 
-On Tue, Apr 4, 2023 at 1:21=E2=80=AFPM Jagan Teki <jagan@amarulasolutions.c=
-om> wrote:
->
-> On Thu, Mar 30, 2023 at 7:13=E2=80=AFPM Robin Murphy <robin.murphy@arm.co=
-m> wrote:
-> >
-> > On 2023-03-30 14:17, Jagan Teki wrote:
-> > > Rockchip iommu is trying to enable the associated device at runtime
-> > > resume however some devices might enable the iommu during their pm
-> > > runtime resume operation which indeed leads iommu to use the wrong
-> > > domain and this leads to device iommu page fault.
-> > >
-> > > An example of this behavior has been observed in Rockchip RK3328, whe=
-re
-> > > iommu stalls request timeout dring VOP device enablement.
-> > >
-> > > Here is the dmesg log for the same:
-> > >
-> > > rockchip-drm display-subsystem: bound ff370000.vop (ops vop_component=
-_ops)
-> > > dwhdmi-rockchip ff3c0000.hdmi: supply avdd-0v9 not found, using dummy=
- regulator
-> > > rk_iommu ff373f00.iommu: Enable stall request timed out, status: 0x00=
-004b
-> > > dwhdmi-rockchip ff3c0000.hdmi: supply avdd-1v8 not found, using dummy=
- regulator
-> > > rk_iommu ff373f00.iommu: Disable paging request timed out, status: 0x=
-00004b
-> > > dwhdmi-rockchip ff3c0000.hdmi: Detected HDMI TX controller v2.11a wit=
-h HDCP (inno_dw_hdmi_phy2)
-> > > dwhdmi-rockchip ff3c0000.hdmi: registered DesignWare HDMI I2C bus dri=
-ver
-> > > rockchip-drm display-subsystem: bound ff3c0000.hdmi (ops dw_hdmi_rock=
-chip_ops)
-> > > [drm] Initialized rockchip 1.0.0 20140818 for display-subsystem on mi=
-nor 0
-> > >
-> > > This issue is reproduced if we enable the display in U-Boot however
-> > > U-Boot is not even touched any iommu register as the U-Boot display
-> > > uses the simple frame buffer like other Rockchip platforms RK3399,
-> > > and RK3328 do.
-> > >
-> > > When VOP is trying to enable the iommu using runtime resume call
-> > > pm_runtime_resume_and_get from @vop_enable then the iommu runtime
-> > > resume call @rk_iommu_resume will try to attach the VOP in the wrong
-> > > domain via @rk_iommu_enable will lead to the vop iommu page fault.
-> >
-> > That sounds like a driver bug. The whole point of the device link is
->
-> Do you mean the bug in rockchip-iommu.c or vop?
->
-> > supposed to be that the IOMMU gets suspended after the VOP, and resumed
-> > before it, so it can make sure that whatever translations the VOP was
-> > using are restored *before* the VOP starts trying to access them again.
-> > If the IOMMU driver is failing to restore the correct state on resume,
-> > no amount of DT abuse is the right answer.
->
-> Then how can we handle the co-relation b/w them as VOP already
-> attaching the iommu and at the same time IOMMU trying to enable VOP
-> device but referring to the wrong domain? Any suggestions?
->
-> >
-> > I can understand if the IOMMU itself expects to be idle for the initial
-> > configuration at probe time, and gets unhappy if we try to reset it
-> > while (bypass) VOP traffic for the bootloader framebuffer is still goin=
-g
-> > through, but that's an entirely different issue, and again hacking
->
-> Does it mean accessing VOP traffic at the bootloader stage effecting
-> iommu even though the VOP drivers in the bootloader are not using
-> iommu at all?
+> I'm fairly confident in reasoning about this for basic .attach_dev purposes,
+> since I did implement the equivalent for SMMUv2, but I'm not sure I even
+> want to think about what it would mean for SVA, PASIDs and nesting...
 
-Any suggestions on this issue? we found similar issues even with
-upcoming RK SoCs - RV1126, RK3566, RK3588.
+IIRC we've already taken the approach elsewhere to block PASID if the
+group is not singleton.
 
-Thanks,
-Jagan.
+Jason
