@@ -1,71 +1,135 @@
-Received: from mail-pg1-f178.google.com (mail-pg1-f178.google.com [209.85.215.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42DED384
-	for <iommu@lists.linux.dev>; Thu, 18 May 2023 02:06:06 +0000 (UTC)
-Received: by mail-pg1-f178.google.com with SMTP id 41be03b00d2f7-51f6461af24so972251a12.2
-        for <iommu@lists.linux.dev>; Wed, 17 May 2023 19:06:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1684375565; x=1686967565;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8A6n7TPl3Bf8PshfqYMRFRlRyw953NrmDFfTNUP/bbQ=;
-        b=QAc7usRIMsfTVODanK4D9s7wXoA5fw37B+ks+7mYoByTtuJEThS2hz9lBesIyc6cHG
-         J7INqP09ttUF2Tw0vU1qkR4NDuxU09KLYAs04snDwN3OiqsApFfFIQsrEnR7cRv79CXY
-         Z9vqpL1r/DSwvRWl3ONlJltGK3u9ZuS0+YIUh2gjrOBbOBfJthGqmQJR1jK4dA/gQ9qS
-         iMm6ijqKoAwD60AtAZdw8EL8bhU4MYU8Rcoup5Gk7khpM6s50mUejGmi/DCYlezrkDeq
-         a7UJZ+cZ7q0BpwgIUzcns5XBmcWivrDkxr10t7pLwVoPD7LNM3hJEQRVkpkN9dN/4/I/
-         d1MQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684375565; x=1686967565;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=8A6n7TPl3Bf8PshfqYMRFRlRyw953NrmDFfTNUP/bbQ=;
-        b=JbsDOlv1qNoXs0/K1FRMrhYo0pDmXtoa5TkNx0e88/If6LCya03qJuWtk9lKYZVcgt
-         2NAEmTcImRE+xNCgD1BOVfUxIp2m45UUlr9C9ksNTUHxV3DGQSt6Oqho7EegSe0Ip7/y
-         uLnNbaD+nB6kA7zRlKwmQ5hkCHniXH/9g98rDeEhov3SrcdC7Dc3gyXdsTxgzXyl2JYW
-         3j1+Oiap85s+R46DEodnwSDXKmQ4NBbLmUj4BElBHopH2e7cAnLkwNk3T/RWGq7sGZt2
-         J7Mj4qgo+RUwOK/6IJXPNmid4axp1HRNf/0ZAWUEu7laR5KKXwIW2mB0UpLZkGtBt+SO
-         PiBQ==
-X-Gm-Message-State: AC+VfDxg/xXtvnNsI+nSd8+IoU3N6dWvWgfBIHePfHMuwYtypzSbyYjW
-	3677CevHe8hw+sAd2Ch0otz9uUSiykjhbDUU8P1jtjwbJQnF3Tq3keMqyA==
-X-Google-Smtp-Source: ACHHUZ5+/xwE+l6usLwj6P1JHWzG5auA3q5JTxDnDA4ufgOuxaZgFDdN0+91BvUCU7lOuLiQ8eWjdhfb+k/PCoJSn1I=
-X-Received: by 2002:a17:90a:1b0c:b0:253:2a56:3831 with SMTP id
- q12-20020a17090a1b0c00b002532a563831mr920985pjq.34.1684375565424; Wed, 17 May
- 2023 19:06:05 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38CAE137D
+	for <iommu@lists.linux.dev>; Thu, 18 May 2023 05:44:24 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=So7WPD/lRN8oj7BJxOaNKdZ4mZOVZW9ivmKT9hu2fQ7cNG45lLv/+Qn1Lz18qiuUkYl1x7Li/YiN5p1v4yUGgTY0SKN6Y+QWyORtG3yHcGEULmNyLOx9Sx8yQKI8ee6fSkeuik3QhLBd7Go6TMVDnFoqa33oCfXdpN85xH9JFJ15Ed5l78/721FHlTDhhdWnAeaeuMq7/zxYBusTACv/jOI3xELzPSflY34/pkTt+yI1pU+MSwv30iug0l92LTLvOxJ7W1Y27DewPulsjmo+7CVBjqHT48RyLcObp7tQqyA0GcipOjnQL2PiUQh7u62I0MKDp8hh66DCuwJBAGCyCQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=M5EJt2+oWJS7Sx0ocMWdV7uTBLtWo7AhPHsSqoGDgX8=;
+ b=Oml59ysCPy6vkkhTK3Tjz1yc5CTOZ3NmyxZAZCA51Q0ku93HIPk00DhUPkTimzc9wKznv1lSMRyH5yuFd0BpjQT5sT8gclLWadj2zKC65fq8E/uzi+jxApV/P6g8xsPhXd9ZKElgryU6yGESE0NM/Mp8VfBbd6pVbFjQb7b7HpZmvakkGqF9v626IAbNhaAH2TjC5Ldw8JM3bHjhl08xFRDLDdMEgY2KIbSqQawr/ggB/F3RSjzbwBTrX11TZkfgrnRUngW+L7DN1nCfAtBp9I2RwULJtCLkrKF0SvlomCna3CxvqWEwqBLcjDig976FMm3lThPee21yNyH4mQKVSw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=M5EJt2+oWJS7Sx0ocMWdV7uTBLtWo7AhPHsSqoGDgX8=;
+ b=d3WV2NOGbphwOWJH++YscSEdLEYHEj9b76JILjvYWwH5oblKC1KKb5edVzEogN4r+XNNzmuARFSM0lZWEsuauopSoeo28vBB5+iCy7shGM9virkyRgyF1znvIzo1htWD7LmGWwoqd7mpjEe+1sYMK80uC8em0V0Zy8lc8SwHW24=
+Received: from BN0PR03CA0006.namprd03.prod.outlook.com (2603:10b6:408:e6::11)
+ by CY8PR12MB7097.namprd12.prod.outlook.com (2603:10b6:930:63::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.30; Thu, 18 May
+ 2023 05:44:21 +0000
+Received: from BN8NAM11FT028.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:e6:cafe::22) by BN0PR03CA0006.outlook.office365.com
+ (2603:10b6:408:e6::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.19 via Frontend
+ Transport; Thu, 18 May 2023 05:44:21 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT028.mail.protection.outlook.com (10.13.176.225) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6411.19 via Frontend Transport; Thu, 18 May 2023 05:44:21 +0000
+Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 18 May
+ 2023 00:44:17 -0500
+From: Vasant Hegde <vasant.hegde@amd.com>
+To: <iommu@lists.linux.dev>, <joro@8bytes.org>
+CC: <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>,
+	Jerry Snitselaar <jsnitsel@redhat.com>, <Stable@vger.kernel.org>
+Subject: [PATCH] iommu/amd/pgtbl_v2: Fix domain max address
+Date: Thu, 18 May 2023 05:43:51 +0000
+Message-ID: <20230518054351.9626-1-vasant.hegde@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230426203256.237116-1-pandoh@google.com> <CAMC_AXUkiHvBaWQm8fnAbgbxe59iF9UM59=yBoa3LcuLGQ=E3A@mail.gmail.com>
- <71A3F44C-B684-4946-AF11-3DB98E3AC641@vmware.com>
-In-Reply-To: <71A3F44C-B684-4946-AF11-3DB98E3AC641@vmware.com>
-From: Jon Pan-Doh <pandoh@google.com>
-Date: Wed, 17 May 2023 19:05:54 -0700
-Message-ID: <CAMC_AXUWDGy4u-WYYaiBCMZYKMxpzAvrZZORpUNZGpVr8GOr6Q@mail.gmail.com>
-Subject: Re: [PATCH] iommu/amd: Fix domain flush size when syncing iotlb
-To: Nadav Amit <namit@vmware.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Sudheer Dantuluri <dantuluris@google.com>, 
-	Gary Zibrat <gzibrat@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT028:EE_|CY8PR12MB7097:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6b291859-8ca3-4573-618e-08db5762edf1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	+HzrwJ0JKYYtr1I/rvfMEF4kajxh0EvcaOU2/vPEmAg7ufMtDHBo098cwijtDoeaZmUy/zaoUeHU6nc24pD5Bf9Iyd7eOeUppuC8zRydCit+jJMhtszQAj13NPt/Y9/SXdz5ubUpvF2yXTuMdF+kTDTlj16NZcFPVSXizC3Rt86DyzdtMl/xeTk7e4NMYXgSlzk2MphuDqsQOtMft+PaqnmOhBwKb2hcvQoloVZGhDP0SJoVZ3S0kIkgX5lAXLX6x/lsTM7mqcwf4euYDZxdWKk+64XfjLinSAvvNrw02DVtGr9rekbbaVpj+bAdMm8wgEiXMv7h2j2rZ2jY1GpXV/QlW9J3mJce62oRrdtWNda4Wfay/rs1j7IJSYLFpJEzIx6UEUFhcOM/sYajW19ElZd+pYQA7Ch4Td3w8lrRn7NIiWvJdaTymhrB3hiWW2SbhST2jdCcM47fWCwp7DOcMMyMCL8r42q0kcHSU9RP9ef0vkIvMWe08Gn8Glvb3tgiKQptc4N/gpV8Foa/36ecOZIwDXbsg5Ed9FGomAfHZ8xgSdhoHNnYIqf4JVP1BWegWMLl36zbw4ZAd30h2UWbekK+z94MnFpdehAmO9sFdfcyAKfF1uZA4FPBmsayTmkVBxFtfHPZJ2vQikJtGoJWM3cRN6zBTKbjYYBpz3E9agbe6LrzuVCUUBNLtkxuOPMDrRw220lzSr7AuHxXexXNtfbrqBOBvwxb7CaWG9I2V1kVRgCvP4eYsNliDGrC0vTPhWlF/DjQmbY6E7LwSJVijg==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(376002)(136003)(39860400002)(451199021)(46966006)(36840700001)(40470700004)(82310400005)(83380400001)(47076005)(336012)(426003)(36860700001)(316002)(82740400003)(41300700001)(2906002)(4326008)(81166007)(356005)(478600001)(40480700001)(54906003)(5660300002)(7696005)(70206006)(26005)(70586007)(2616005)(40460700003)(8676002)(86362001)(8936002)(16526019)(44832011)(36756003)(110136005)(1076003)(186003)(6666004)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2023 05:44:21.3019
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6b291859-8ca3-4573-618e-08db5762edf1
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN8NAM11FT028.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7097
 
-On Tue, May 16, 2023 at 10:58=E2=80=AFPM Nadav Amit <namit@vmware.com> wrot=
-e:
-> IOW: If the patch was still not applied by Joerg, please send v2 with:
->
-> Cc: <stable@vger.kernel.org <mailto:stable@vger.kernel.org>> # 5.15.x
->
-> In the commit log.
->
+IOMMU v2 page table supports 4 level (47 bit) or 5 level (56 bit) virtual
+address space. Current code assumes it can support 64bit IOVA address
+space. If IOVA allocator allocates virtual address > 47/56 bit (depending
+on page table level) then it will do wrong mapping and cause invalid
+translation.
 
-Thanks for the clarification/guidance. I've resent the patch for
-review with added tags (Acked-by, Reviewed-by). Will re-read the patch
-submission doc and try to avoid formatting issues in the future.
+Hence adjust aperture size to use max address supported by the page table.
+
+Reported-by: Jerry Snitselaar <jsnitsel@redhat.com>
+Fixes: aaac38f61487 ("iommu/amd: Initial support for AMD IOMMU v2 page table")
+Cc: <Stable@vger.kernel.org>  # v6.0+
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+---
+ drivers/iommu/amd/iommu.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 5aaa4cf84506..e14c7c666745 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -2128,6 +2128,15 @@ static struct protection_domain *protection_domain_alloc(unsigned int type)
+ 	return NULL;
+ }
+ 
++static inline u64 dma_max_address(void)
++{
++	if (amd_iommu_pgtable == AMD_IOMMU_V1)
++		return ~0ULL;
++
++	/* V2 with 4/5 level page table */
++	return ((1ULL << PM_LEVEL_SHIFT(amd_iommu_gpt_level)) - 1);
++}
++
+ static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
+ {
+ 	struct protection_domain *domain;
+@@ -2144,7 +2153,7 @@ static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
+ 		return NULL;
+ 
+ 	domain->domain.geometry.aperture_start = 0;
+-	domain->domain.geometry.aperture_end   = ~0ULL;
++	domain->domain.geometry.aperture_end   = dma_max_address();
+ 	domain->domain.geometry.force_aperture = true;
+ 
+ 	return &domain->domain;
+-- 
+2.31.1
+
