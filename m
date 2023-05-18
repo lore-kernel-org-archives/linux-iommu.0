@@ -1,37 +1,37 @@
 Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E473120EB
-	for <iommu@lists.linux.dev>; Thu, 18 May 2023 20:49:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DD4020EB
+	for <iommu@lists.linux.dev>; Thu, 18 May 2023 20:49:24 +0000 (UTC)
 Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34IIx9kD015384;
-	Thu, 18 May 2023 20:49:03 GMT
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34IIxAXG015520;
+	Thu, 18 May 2023 20:49:13 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=corp-2023-03-30;
- bh=8dUdIZkk4mF1VFVAvcQyDH3mky5o3NyzbdKt58jwQPE=;
- b=G1AJwzMntb50af6hyzrfXVmuB/xeNfYb1rvfAKMSf+Kx5nquQDVXfKCga0ZLycKsN3PD
- /pC+ABaT7vfqmi/3Oleb4CInVueMiFsEbSC2/8W6sute7ZTJNvS/vBubIc/w+aaPaA9C
- YNQNAgjdvDIZZV8fya/dFPLO2WpX8i0bZzUZaA3lRJPuwBKcS7dbpCv55x3lxx+en9Eg
- fIniGY+Szu1wVJ9Z6SAlw1pR8rR1WfO+JRVIidisi29KmrXmnsOcRnAEQ1pf+iaAODkP
- 0iPYdMZLtFHqHvvdreO1Kt7Ah2Q7byXNHGf+59WxI+IU7W2MZmoQh9rUa1l+JEUAEFJ1 3A== 
+ bh=LMvi/hYF8ATr0QTdOqJooiRhnqgeYdhXDKmWJ5nZxc0=;
+ b=Q4Fc4H1ibmadDmr5uAj7AnGtb9hm3aV+7wcds45UyuagmFocFsnhtIRo3TtjCGbPg8fq
+ mmYRjX80np8zgvky4j6xo7eVVtsOxlXI5UPhSvVUSUBDjzI71VlgnlbEJzw8actggYMU
+ zrFcLWA5yWyOdmbrCuI43Q46P1vZcGEPl8Weeyyirl3aM4RAWOgqfyDPW3q3Ms66FxVG
+ poXyd7D76NlY/SP7a18ZZoNrWlLPFqbmmvgjImYNNkBkQSYjqFeMgoDK2lCKToenXDlS
+ WNR0FZqR3TLKcHc5N6uSHO8qoBP5R5YkP2S4dGC4UEklhb0x9sN5QQHxwNellPdwlQWN 5Q== 
 Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3qmx8j3n69-1
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3qmx8j3n6y-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 18 May 2023 20:49:03 +0000
+	Thu, 18 May 2023 20:49:12 +0000
 Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 34IJBdG1032190;
-	Thu, 18 May 2023 20:49:02 GMT
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 34IJK7xd032108;
+	Thu, 18 May 2023 20:49:11 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3qj10dafme-1
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3qj10dafrr-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 18 May 2023 20:49:01 +0000
+	Thu, 18 May 2023 20:49:11 +0000
 Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 34IKlE3P033533;
-	Thu, 18 May 2023 20:49:01 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 34IKlE3T033533;
+	Thu, 18 May 2023 20:49:10 GMT
 Received: from joaomart-mac.uk.oracle.com (dhcp-10-175-172-172.vpn.oracle.com [10.175.172.172])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3qj10dae46-20;
-	Thu, 18 May 2023 20:49:01 +0000
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3qj10dae46-22;
+	Thu, 18 May 2023 20:49:09 +0000
 From: Joao Martins <joao.m.martins@oracle.com>
 To: iommu@lists.linux.dev
 Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
@@ -44,9 +44,9 @@ Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
         Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
         Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
         Joao Martins <joao.m.martins@oracle.com>
-Subject: [PATCH RFCv2 19/24] iommu/intel: Access/Dirty bit support for SL domains
-Date: Thu, 18 May 2023 21:46:45 +0100
-Message-Id: <20230518204650.14541-20-joao.m.martins@oracle.com>
+Subject: [PATCH RFCv2 21/24] iommu/arm-smmu-v3: Enable HTTU for stage1 with io-pgtable mapping
+Date: Thu, 18 May 2023 21:46:47 +0100
+Message-Id: <20230518204650.14541-22-joao.m.martins@oracle.com>
 In-Reply-To: <20230518204650.14541-1-joao.m.martins@oracle.com>
 References: <20230518204650.14541-1-joao.m.martins@oracle.com>
 Precedence: bulk
@@ -63,363 +63,155 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 a
  malwarescore=0 mlxscore=0 spamscore=0 bulkscore=0 phishscore=0
  suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2304280000 definitions=main-2305180171
-X-Proofpoint-GUID: D0VI0rHUKneO4gbYsi5H0D4GtHTHxkbJ
-X-Proofpoint-ORIG-GUID: D0VI0rHUKneO4gbYsi5H0D4GtHTHxkbJ
+X-Proofpoint-GUID: nucMYkaRm7ZmTX6k_82ZCTKIKWBw4VsW
+X-Proofpoint-ORIG-GUID: nucMYkaRm7ZmTX6k_82ZCTKIKWBw4VsW
 
-IOMMU advertises Access/Dirty bits for second-stage page table if the
-extended capability DMAR register reports it (ECAP, mnemonic ECAP.SSADS).
-The first stage table is compatible with CPU page table thus A/D bits are
-implicitly supported. Relevant Intel IOMMU SDM ref for first stage table
-"3.6.2 Accessed, Extended Accessed, and Dirty Flags" and second stage table
-"3.7.2 Accessed and Dirty Flags".
+From: Kunkun Jiang <jiangkunkun@huawei.com>
 
-First stage page table is enabled by default so it's allowed to set dirty
-tracking and no control bits needed, we just return 0. To use SSADS, we set
-bit 9 (SSADE) in the scalable-mode PASID table entry and flush the IOTLB
-via pasid_flush_caches(). Relevant SDM refs:
+As nested mode is not upstreamed now, we just aim to support dirty
+log tracking for stage1 with io-pgtable mapping (means not support
+SVA mapping). If HTTU is supported, we enable HA/HD bits in the SMMU
+CD and transfer ARM_HD quirk to io-pgtable.
 
-"3.7.2 Accessed and Dirty Flags"
-"6.5.3.3 Guidance to Software for Invalidations,
- Table 23. Guidance to Software for Invalidations"
+We additionally filter out HD|HA if not supportted. The CD.HD bit
+is not particularly useful unless we toggle the DBM bit in the PTE
+entries.
 
-PTE dirty bit is located in bit 9 and it's cached in the IOTLB so
-we also need to flush IOTLB to make sure IOMMU attempts to set the
-dirty bit again. Note that iommu_dirty_bitmap_record() will add the
-IOVA to iotlb_gather and thus the caller of the iommu op will flush the
-IOTLB. Relevant manuals over the hardware translation is
-chapter 6 with some special mention to:
-
-"6.2.3.1 Scalable-Mode PASID-Table Entry Programming Considerations"
-"6.2.4 IOTLB"
-
+Link: https://lore.kernel.org/lkml/20210413085457.25400-6-zhukeqian1@huawei.com/
+Co-developed-by: Keqian Zhu <zhukeqian1@huawei.com>
+Signed-off-by: Keqian Zhu <zhukeqian1@huawei.com>
+Signed-off-by: Kunkun Jiang <jiangkunkun@huawei.com>
+[joaomart:Convey HD|HA bits over to the context descriptor
+ and update commit message; original in Link, where this is based on]
 Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
 ---
-The IOPTE walker is still inneficient, but v3 will change that. Mainly
-purpose here would be to make sure the UAPI/IOMMUFD is solid and agreed upon.
----
- drivers/iommu/intel/iommu.c |  88 ++++++++++++++++++++++++++++++
- drivers/iommu/intel/iommu.h |  15 ++++++
- drivers/iommu/intel/pasid.c | 103 ++++++++++++++++++++++++++++++++++++
- drivers/iommu/intel/pasid.h |   4 ++
- 4 files changed, 210 insertions(+)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 10 ++++++++++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  3 +++
+ drivers/iommu/io-pgtable-arm.c              | 11 +++++++++--
+ include/linux/io-pgtable.h                  |  4 ++++
+ 4 files changed, 26 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 4662292d60ba..6cf9cbe4c299 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4112,6 +4112,10 @@ static int prepare_domain_attach_device(struct iommu_domain *domain,
- 	if (!iommu)
- 		return -ENODEV;
- 
-+	if (domain->flags & IOMMU_DOMAIN_F_ENFORCE_DIRTY &&
-+	    !ecap_slads(iommu->ecap))
-+		return -EINVAL;
-+
- 	if (dmar_domain->force_snooping && !ecap_sc_support(iommu->ecap))
- 		return -EINVAL;
- 
-@@ -4374,6 +4378,9 @@ static bool intel_iommu_capable(struct device *dev, enum iommu_cap cap)
- 		return dmar_platform_optin();
- 	case IOMMU_CAP_ENFORCE_CACHE_COHERENCY:
- 		return ecap_sc_support(info->iommu->ecap);
-+	case IOMMU_CAP_DIRTY:
-+		return sm_supported(info->iommu) &&
-+			ecap_slads(info->iommu->ecap);
- 	default:
- 		return false;
- 	}
-@@ -4739,6 +4746,84 @@ static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
- 	intel_pasid_tear_down_entry(iommu, dev, pasid, false);
- }
- 
-+static int intel_iommu_set_dirty_tracking(struct iommu_domain *domain,
-+					  bool enable)
-+{
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+	struct device_domain_info *info;
-+	int ret = -EINVAL;
-+
-+	spin_lock(&dmar_domain->lock);
-+	if (!(dmar_domain->dirty_tracking ^ enable) ||
-+	    list_empty(&dmar_domain->devices)) {
-+		spin_unlock(&dmar_domain->lock);
-+		return 0;
-+	}
-+
-+	list_for_each_entry(info, &dmar_domain->devices, link) {
-+		/* First-level page table always enables dirty bit*/
-+		if (dmar_domain->use_first_level) {
-+			ret = 0;
-+			break;
-+		}
-+
-+		ret = intel_pasid_setup_dirty_tracking(info->iommu, info->domain,
-+						     info->dev, PASID_RID2PASID,
-+						     enable);
-+		if (ret)
-+			break;
-+
-+	}
-+
-+	if (!ret)
-+		dmar_domain->dirty_tracking = enable;
-+	spin_unlock(&dmar_domain->lock);
-+
-+	return ret;
-+}
-+
-+static int intel_iommu_read_and_clear_dirty(struct iommu_domain *domain,
-+					    unsigned long iova, size_t size,
-+					    unsigned long flags,
-+					    struct iommu_dirty_bitmap *dirty)
-+{
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+	unsigned long end = iova + size - 1;
-+	unsigned long pgsize;
-+	bool ad_enabled;
-+
-+	spin_lock(&dmar_domain->lock);
-+	ad_enabled = dmar_domain->dirty_tracking;
-+	spin_unlock(&dmar_domain->lock);
-+
-+	if (!ad_enabled && dirty->bitmap)
-+		return -EINVAL;
-+
-+	rcu_read_lock();
-+	do {
-+		struct dma_pte *pte;
-+		int lvl = 0;
-+
-+		pte = pfn_to_dma_pte(dmar_domain, iova >> VTD_PAGE_SHIFT, &lvl,
-+				     GFP_ATOMIC);
-+		pgsize = level_size(lvl) << VTD_PAGE_SHIFT;
-+		if (!pte || !dma_pte_present(pte)) {
-+			iova += pgsize;
-+			continue;
-+		}
-+
-+		/* It is writable, set the bitmap */
-+		if (((flags & IOMMU_DIRTY_NO_CLEAR) &&
-+				dma_sl_pte_dirty(pte)) ||
-+		    dma_sl_pte_test_and_clear_dirty(pte))
-+			iommu_dirty_bitmap_record(dirty, iova, pgsize);
-+		iova += pgsize;
-+	} while (iova < end);
-+	rcu_read_unlock();
-+
-+	return 0;
-+}
-+
- const struct iommu_ops intel_iommu_ops = {
- 	.capable		= intel_iommu_capable,
- 	.domain_alloc		= intel_iommu_domain_alloc,
-@@ -4753,6 +4838,7 @@ const struct iommu_ops intel_iommu_ops = {
- 	.def_domain_type	= device_def_domain_type,
- 	.remove_dev_pasid	= intel_iommu_remove_dev_pasid,
- 	.pgsize_bitmap		= SZ_4K,
-+	.supported_flags	= IOMMU_DOMAIN_F_ENFORCE_DIRTY,
- #ifdef CONFIG_INTEL_IOMMU_SVM
- 	.page_response		= intel_svm_page_response,
- #endif
-@@ -4766,6 +4852,8 @@ const struct iommu_ops intel_iommu_ops = {
- 		.iova_to_phys		= intel_iommu_iova_to_phys,
- 		.free			= intel_iommu_domain_free,
- 		.enforce_cache_coherency = intel_iommu_enforce_cache_coherency,
-+		.set_dirty_tracking	= intel_iommu_set_dirty_tracking,
-+		.read_and_clear_dirty   = intel_iommu_read_and_clear_dirty,
- 	}
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index e110ff4710bf..e2b98a6a6b74 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1998,6 +1998,11 @@ static const struct iommu_flush_ops arm_smmu_flush_ops = {
+ 	.tlb_add_page	= arm_smmu_tlb_inv_page_nosync,
  };
  
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 1c5e1d88862b..56ee6ce2e09d 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -48,6 +48,9 @@
- #define DMA_FL_PTE_DIRTY	BIT_ULL(6)
- #define DMA_FL_PTE_XD		BIT_ULL(63)
- 
-+#define DMA_SL_PTE_DIRTY_BIT	9
-+#define DMA_SL_PTE_DIRTY	BIT_ULL(DMA_SL_PTE_DIRTY_BIT)
-+
- #define ADDR_WIDTH_5LEVEL	(57)
- #define ADDR_WIDTH_4LEVEL	(48)
- 
-@@ -592,6 +595,7 @@ struct dmar_domain {
- 					 * otherwise, goes through the second
- 					 * level.
- 					 */
-+	u8 dirty_tracking:1;		/* Dirty tracking is enabled */
- 
- 	spinlock_t lock;		/* Protect device tracking lists */
- 	struct list_head devices;	/* all devices' list */
-@@ -774,6 +778,17 @@ static inline bool dma_pte_present(struct dma_pte *pte)
- 	return (pte->val & 3) != 0;
- }
- 
-+static inline bool dma_sl_pte_dirty(struct dma_pte *pte)
++static bool arm_smmu_dbm_capable(struct arm_smmu_device *smmu)
 +{
-+	return (pte->val & DMA_SL_PTE_DIRTY) != 0;
++	return smmu->features & (ARM_SMMU_FEAT_HD | ARM_SMMU_FEAT_COHERENCY);
 +}
 +
-+static inline bool dma_sl_pte_test_and_clear_dirty(struct dma_pte *pte)
-+{
-+	return test_and_clear_bit(DMA_SL_PTE_DIRTY_BIT,
-+				  (unsigned long *)&pte->val);
-+}
-+
- static inline bool dma_pte_superpage(struct dma_pte *pte)
+ /* IOMMU API */
+ static bool arm_smmu_capable(struct device *dev, enum iommu_cap cap)
  {
- 	return (pte->val & DMA_PTE_LARGE_PAGE);
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index c5d479770e12..c7cfa0387277 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -277,6 +277,11 @@ static inline void pasid_set_bits(u64 *ptr, u64 mask, u64 bits)
- 	WRITE_ONCE(*ptr, (old & ~mask) | bits);
- }
+@@ -2124,6 +2129,8 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
+ 			  FIELD_PREP(CTXDESC_CD_0_TCR_SH0, tcr->sh) |
+ 			  FIELD_PREP(CTXDESC_CD_0_TCR_IPS, tcr->ips) |
+ 			  CTXDESC_CD_0_TCR_EPD1 | CTXDESC_CD_0_AA64;
++	if (pgtbl_cfg->quirks & IO_PGTABLE_QUIRK_ARM_HD)
++		cfg->cd.tcr |= CTXDESC_CD_0_TCR_HA | CTXDESC_CD_0_TCR_HD;
+ 	cfg->cd.mair	= pgtbl_cfg->arm_lpae_s1_cfg.mair;
  
-+static inline u64 pasid_get_bits(u64 *ptr)
-+{
-+	return READ_ONCE(*ptr);
-+}
-+
- /*
-  * Setup the DID(Domain Identifier) field (Bit 64~79) of scalable mode
-  * PASID entry.
-@@ -335,6 +340,45 @@ static inline void pasid_set_fault_enable(struct pasid_entry *pe)
- 	pasid_set_bits(&pe->val[0], 1 << 1, 0);
- }
+ 	/*
+@@ -2226,6 +2233,9 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain,
+ 		.iommu_dev	= smmu->dev,
+ 	};
  
-+/*
-+ * Enable second level A/D bits by setting the SLADE (Second Level
-+ * Access Dirty Enable) field (Bit 9) of a scalable mode PASID
-+ * entry.
-+ */
-+static inline void pasid_set_ssade(struct pasid_entry *pe)
-+{
-+	pasid_set_bits(&pe->val[0], 1 << 9, 1 << 9);
-+}
++	if (smmu->features & arm_smmu_dbm_capable(smmu))
++		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_ARM_HD;
 +
-+/*
-+ * Enable second level A/D bits by setting the SLADE (Second Level
-+ * Access Dirty Enable) field (Bit 9) of a scalable mode PASID
-+ * entry.
-+ */
-+static inline void pasid_clear_ssade(struct pasid_entry *pe)
-+{
-+	pasid_set_bits(&pe->val[0], 1 << 9, 0);
-+}
-+
-+/*
-+ * Checks if second level A/D bits by setting the SLADE (Second Level
-+ * Access Dirty Enable) field (Bit 9) of a scalable mode PASID
-+ * entry is enabled.
-+ */
-+static inline bool pasid_get_ssade(struct pasid_entry *pe)
-+{
-+	return pasid_get_bits(&pe->val[0]) & (1 << 9);
-+}
-+
-+/*
-+ * Setup the SRE(Supervisor Request Enable) field (Bit 128) of a
-+ * scalable mode PASID entry.
-+ */
-+static inline void pasid_set_sre(struct pasid_entry *pe)
-+{
-+	pasid_set_bits(&pe->val[2], 1 << 0, 1);
-+}
-+
- /*
-  * Setup the WPE(Write Protect Enable) field (Bit 132) of a
-  * scalable mode PASID entry.
-@@ -627,6 +671,8 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
- 	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_SL_ONLY);
- 	pasid_set_fault_enable(pte);
- 	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
-+	if (domain->dirty_tracking)
-+		pasid_set_ssade(pte);
+ 	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
+ 	if (!pgtbl_ops)
+ 		return -ENOMEM;
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index d82dd125446c..83d6f3a2554f 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -288,6 +288,9 @@
+ #define CTXDESC_CD_0_TCR_IPS		GENMASK_ULL(34, 32)
+ #define CTXDESC_CD_0_TCR_TBI0		(1ULL << 38)
  
- 	pasid_set_present(pte);
- 	spin_unlock(&iommu->lock);
-@@ -636,6 +682,63 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
- 	return 0;
- }
++#define CTXDESC_CD_0_TCR_HA            (1UL << 43)
++#define CTXDESC_CD_0_TCR_HD            (1UL << 42)
++
+ #define CTXDESC_CD_0_AA64		(1UL << 41)
+ #define CTXDESC_CD_0_S			(1UL << 44)
+ #define CTXDESC_CD_0_R			(1UL << 45)
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 72dcdd468cf3..b2f470529459 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -75,6 +75,7 @@
  
-+/*
-+ * Set up dirty tracking on a second only translation type.
-+ */
-+int intel_pasid_setup_dirty_tracking(struct intel_iommu *iommu,
-+				     struct dmar_domain *domain,
-+				     struct device *dev, u32 pasid,
-+				     bool enabled)
-+{
-+	struct pasid_entry *pte;
-+	u16 did, pgtt;
-+
-+	spin_lock(&iommu->lock);
-+
-+	did = domain_id_iommu(domain, iommu);
-+	pte = intel_pasid_get_entry(dev, pasid);
-+	if (!pte) {
-+		spin_unlock(&iommu->lock);
-+		dev_err(dev, "Failed to get pasid entry of PASID %d\n", pasid);
-+		return -ENODEV;
-+	}
-+
-+	pgtt = pasid_pte_get_pgtt(pte);
-+
-+	if (enabled)
-+		pasid_set_ssade(pte);
-+	else
-+		pasid_clear_ssade(pte);
-+	spin_unlock(&iommu->lock);
-+
-+	/*
-+	 * From VT-d spec table 25 "Guidance to Software for Invalidations":
+ #define ARM_LPAE_PTE_NSTABLE		(((arm_lpae_iopte)1) << 63)
+ #define ARM_LPAE_PTE_XN			(((arm_lpae_iopte)3) << 53)
++#define ARM_LPAE_PTE_DBM		(((arm_lpae_iopte)1) << 51)
+ #define ARM_LPAE_PTE_AF			(((arm_lpae_iopte)1) << 10)
+ #define ARM_LPAE_PTE_SH_NS		(((arm_lpae_iopte)0) << 8)
+ #define ARM_LPAE_PTE_SH_OS		(((arm_lpae_iopte)2) << 8)
+@@ -84,7 +85,7 @@
+ 
+ #define ARM_LPAE_PTE_ATTR_LO_MASK	(((arm_lpae_iopte)0x3ff) << 2)
+ /* Ignore the contiguous bit for block splitting */
+-#define ARM_LPAE_PTE_ATTR_HI_MASK	(((arm_lpae_iopte)6) << 52)
++#define ARM_LPAE_PTE_ATTR_HI_MASK	(((arm_lpae_iopte)13) << 51)
+ #define ARM_LPAE_PTE_ATTR_MASK		(ARM_LPAE_PTE_ATTR_LO_MASK |	\
+ 					 ARM_LPAE_PTE_ATTR_HI_MASK)
+ /* Software bit for solving coherency races */
+@@ -93,6 +94,9 @@
+ /* Stage-1 PTE */
+ #define ARM_LPAE_PTE_AP_UNPRIV		(((arm_lpae_iopte)1) << 6)
+ #define ARM_LPAE_PTE_AP_RDONLY		(((arm_lpae_iopte)2) << 6)
++#define ARM_LPAE_PTE_AP_RDONLY_BIT	7
++#define ARM_LPAE_PTE_AP_WRITABLE	(ARM_LPAE_PTE_AP_RDONLY | \
++					 ARM_LPAE_PTE_DBM)
+ #define ARM_LPAE_PTE_ATTRINDX_SHIFT	2
+ #define ARM_LPAE_PTE_nG			(((arm_lpae_iopte)1) << 11)
+ 
+@@ -407,6 +411,8 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
+ 		pte = ARM_LPAE_PTE_nG;
+ 		if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
+ 			pte |= ARM_LPAE_PTE_AP_RDONLY;
++		else if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_ARM_HD)
++			pte |= ARM_LPAE_PTE_AP_WRITABLE;
+ 		if (!(prot & IOMMU_PRIV))
+ 			pte |= ARM_LPAE_PTE_AP_UNPRIV;
+ 	} else {
+@@ -804,7 +810,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+ 
+ 	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
+ 			    IO_PGTABLE_QUIRK_ARM_TTBR1 |
+-			    IO_PGTABLE_QUIRK_ARM_OUTER_WBWA))
++			    IO_PGTABLE_QUIRK_ARM_OUTER_WBWA |
++			    IO_PGTABLE_QUIRK_ARM_HD))
+ 		return NULL;
+ 
+ 	data = arm_lpae_alloc_pgtable(cfg);
+diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+index 25142a0e2fc2..9a996ba7856d 100644
+--- a/include/linux/io-pgtable.h
++++ b/include/linux/io-pgtable.h
+@@ -85,6 +85,8 @@ struct io_pgtable_cfg {
+ 	 *
+ 	 * IO_PGTABLE_QUIRK_ARM_OUTER_WBWA: Override the outer-cacheability
+ 	 *	attributes set in the TCR for a non-coherent page-table walker.
 +	 *
-+	 * - PASID-selective-within-Domain PASID-cache invalidation
-+	 *   If (PGTT=SS or Nested)
-+	 *    - Domain-selective IOTLB invalidation
-+	 *   Else
-+	 *    - PASID-selective PASID-based IOTLB invalidation
-+	 * - If (pasid is RID_PASID)
-+	 *    - Global Device-TLB invalidation to affected functions
-+	 *   Else
-+	 *    - PASID-based Device-TLB invalidation (with S=1 and
-+	 *      Addr[63:12]=0x7FFFFFFF_FFFFF) to affected functions
-+	 */
-+	pasid_cache_invalidation_with_pasid(iommu, did, pasid);
++	 * IO_PGTABLE_QUIRK_ARM_HD: Enables dirty tracking.
+ 	 */
+ 	#define IO_PGTABLE_QUIRK_ARM_NS			BIT(0)
+ 	#define IO_PGTABLE_QUIRK_NO_PERMS		BIT(1)
+@@ -92,6 +94,8 @@ struct io_pgtable_cfg {
+ 	#define IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT	BIT(4)
+ 	#define IO_PGTABLE_QUIRK_ARM_TTBR1		BIT(5)
+ 	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA		BIT(6)
++	#define IO_PGTABLE_QUIRK_ARM_HD			BIT(7)
 +
-+	if (pgtt == PASID_ENTRY_PGTT_SL_ONLY || pgtt == PASID_ENTRY_PGTT_NESTED)
-+		iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
-+	else
-+		qi_flush_piotlb(iommu, did, pasid, 0, -1, 0);
-+
-+	/* Device IOTLB doesn't need to be flushed in caching mode. */
-+	if (!cap_caching_mode(iommu->cap))
-+		devtlb_invalidation_with_pasid(iommu, dev, pasid);
-+
-+	return 0;
-+}
-+
- /*
-  * Set up the scalable mode pasid entry for passthrough translation type.
-  */
-diff --git a/drivers/iommu/intel/pasid.h b/drivers/iommu/intel/pasid.h
-index d6b7d21244b1..3fc5aba02971 100644
---- a/drivers/iommu/intel/pasid.h
-+++ b/drivers/iommu/intel/pasid.h
-@@ -108,6 +108,10 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
- int intel_pasid_setup_second_level(struct intel_iommu *iommu,
- 				   struct dmar_domain *domain,
- 				   struct device *dev, u32 pasid);
-+int intel_pasid_setup_dirty_tracking(struct intel_iommu *iommu,
-+				     struct dmar_domain *domain,
-+				     struct device *dev, u32 pasid,
-+				     bool enabled);
- int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
- 				   struct dmar_domain *domain,
- 				   struct device *dev, u32 pasid);
+ 	unsigned long			quirks;
+ 	unsigned long			pgsize_bitmap;
+ 	unsigned int			ias;
 -- 
 2.17.2
 
