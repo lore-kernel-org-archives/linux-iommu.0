@@ -1,164 +1,229 @@
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2070.outbound.protection.outlook.com [40.107.212.70])
+Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C6323D380
-	for <iommu@lists.linux.dev>; Thu, 18 May 2023 18:17:26 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DFZnMwpyeLFiNiYIVUeT33zlBCxihScKywkzwnwNE6vAOSxCp2aC4AEb9GyQzKdxm5U4DRw0uvXEmvOa3uBk7rjzid1yJU3/+P69Jr2x4Zag5nDB/2LpmqAXDxopUvNbk1DgOtteVT0Ze9C/X9jFAdbPaPe0LERWyqCCn+1ZGj+/Ahl6UNl5a5XDOMkEPhpMmUzNQeiM+oyoCGY1oGnQRvoRhcXrSNIdR4btf/0WWMcCyIwefi3dDnX+1JZL7ebiREouHUG2DimeWOgsreU7Ngy7zt1SpOnADYHKNOLhOyE3IH9JY+/no/qvZoCwiITO+G98oMKYLqlEmVQcZiwJrg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vZqKG8p8anZ4Y/3XhrWw54VPBy+G9efNoKxCZzEt6QY=;
- b=g63qlOTHLDJpQPk6kzLNUy7k0m9OcCIIRGJ8/EYLJUt6H1e5WK4LJxef+GqLEGTHrEueeJzAZ56WT3qiCz4ykS4JqKammdGpNmLLuRyiReT91+FMT7UHI1BmeUoi9LWHhFu9qz/DA55LBQa2w7f0YwMrvDHs4tgSp7cpF5QiWmjm1+5QEmt97meTtm1lMT/op2rrNs+Mf5ayA1REFmI10Mi3wv2Z3T+GxSF6cl+wSYXGpJXYBtI7BHX8Aq7rg0nbMvrCYHksFCEwNpFu7GvgJ5Ucm1pbSPZ7ndlVqW8q31Bef1ggeOEUJhCvPxy+LaOcl3QwmhVsSnBT+AmcGjmV5g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vZqKG8p8anZ4Y/3XhrWw54VPBy+G9efNoKxCZzEt6QY=;
- b=FS6nouLp1qxYBzGS844FD/jQQF3F+Zxa+B0rrNkhUN4h+DD+l9WHpT2++NKRXVQaxAiZTsHB+N55qBgOtDELbwmp7zL76UAknrv9PU1lvPXtKc/3PXVOrEGFWifTZbm2Sqi3Y4D0L5xgDbKwp6RIm1BCxy41P6ApBw4Ayrr4PbIgRj2aet3AghxsReeZrlv1bNCyuB+kq50krkK3ZhU5diGFCPMw1CYNAvzUdrWnxcXJitXcvO0wiXTT9WH+470V+UhBh6ycft6Wh8QhKxF29DMMojqO2qAcgHPxvnC6/jptGvLUAhvVGnIkPm0OcmQlK+XBJ/evlmFFtEWmJBz1ow==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by SA0PR12MB4383.namprd12.prod.outlook.com (2603:10b6:806:94::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.30; Thu, 18 May
- 2023 18:17:23 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6411.017; Thu, 18 May 2023
- 18:17:23 +0000
-Date: Thu, 18 May 2023 15:17:22 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	eric.auger@redhat.com, virtualization@lists.linux-foundation.org,
-	iommu@lists.linux.dev, akihiko.odaki@daynix.com
-Subject: Re: [PATCH] iommu/virtio: Detach domain on endpoint release
-Message-ID: <ZGZrsgNX1ALNP2w3@nvidia.com>
-References: <20230414150744.562456-1-jean-philippe@linaro.org>
- <20230510081157.GA3326511@myrica>
- <ZGT+44a6RYZ999kz@nvidia.com>
- <20230518135638.GB2587493@myrica>
- <ZGYvMDbkBN+2UgzG@nvidia.com>
- <20230518164937.GA2934820@myrica>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230518164937.GA2934820@myrica>
-X-ClientProxiedBy: MN2PR07CA0002.namprd07.prod.outlook.com
- (2603:10b6:208:1a0::12) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47B1C3D380
+	for <iommu@lists.linux.dev>; Thu, 18 May 2023 18:18:46 +0000 (UTC)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+	by mailout.nyi.internal (Postfix) with ESMTP id 467EA5C0189;
+	Thu, 18 May 2023 14:18:45 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Thu, 18 May 2023 14:18:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	invisiblethingslab.com; h=cc:cc:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:sender:subject:subject:to:to; s=fm3; t=
+	1684433925; x=1684520325; bh=8axqpDZcBJUL6/RSlQEGx3UykZkeYDfsoFq
+	sKS4DlH8=; b=LTDJ72ZJBNU4Q+wdQtTMHbKI7Rf7xCwPmPlFPa/OWtk6KR2yIsb
+	wUx4TgI9fwxNTiD9tCkEW9fGhx6uFOOexL8CANKKVptANJ3uJC8nIcLpDQnNeuJ5
+	9tieBz0pNDhKd4uSNPNux7XAJUkWci2MO18bTW3KhOKheIthnn54/C2EIz2B7n0p
+	ArsV7dtXoA+8i7LqZVw5QBTuof9aSMA381lGLdwimEdPy6/4q2hSQupv4lFLphcq
+	Xz1nGSd9blAmwB1xoafB3KUXW/7h0gRdkot2+/Ph2RsVSc6V0quQymU13VP2wcXw
+	AuAa+ike1zV5TPGd9EvSg2UdVQTk5IVi74g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:sender:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=fm1; t=1684433925; x=1684520325; bh=8axqpDZcBJUL6
+	/RSlQEGx3UykZkeYDfsoFqsKS4DlH8=; b=ahTrDDMNHMprtR6j7zsInmHT0unIR
+	qAyeVpbtq7fyzs/HsksHaOtng51EzIdD1Y4DmO8WoPBkTWZ5M3rG0m/mcJ6JDmPw
+	Ecy4AFX/C+Uewwq8xxSQ0sk7Is2WYhYYslyESxZijdWH/cei3IxLH5Fq8X6pTphq
+	SxFdOZPf2JQXVzxxMxEilNQPw4mbB+ZrezIiDlKcdSqxv2j25fEZnzUl0MJ8yfLX
+	4IBsMTnU58G/IcA7jgPp15uxmuqzn8dHYvRHo01VfoDYtRBqchFq9RUOtpPcUI9N
+	ZflIOipXAScjPuYZeecwD2XoSt2p9rjtUfsNR+ACw3XeX8tFtlst0182g==
+X-ME-Sender: <xms:BGxmZEHwrxvzj2rUdyQFtkeClxzfILEtdDb-xaRPscDsugNfa_gRhg>
+    <xme:BGxmZNXNpf0AMvINhbKCxiq-tUTzBaefoJnHwWVNaDikDkZjQkGPm_8uhSk2JyFpn
+    4sOIN4kpu3nRQ>
+X-ME-Received: <xmr:BGxmZOJZQmSuEVRCprIH4kzePADrtGYRp1bSQUHUENFrUWHdOe2cZ4QgvTtelEMwRsTpyFOh_IZf-gSqvSecmq8Ebl-rrYiRAFA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeeifedguddvfecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvvefukfhfgggtuggjsehgtderredttdejnecuhfhrohhmpeforghr
+    vghkucforghrtgiihihkohifshhkihdqifpkrhgvtghkihcuoehmrghrmhgrrhgvkhesih
+    hnvhhishhisghlvghthhhinhhgshhlrggsrdgtohhmqeenucggtffrrghtthgvrhhnpefg
+    udelteefvefhfeehieetleeihfejhfeludevteetkeevtedtvdegueetfeejudenucevlh
+    hushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrghrmhgrrhgv
+    khesihhnvhhishhisghlvghthhhinhhgshhlrggsrdgtohhm
+X-ME-Proxy: <xmx:BGxmZGG9PGqozfwHtPqImZp0h9jq6zXETkRQMUn2ych4Vg8Ht-Fv7g>
+    <xmx:BGxmZKWMsb0cJjwvkTZF5RgdlJXSFKEsQNnO8v9cj_4G3rifEk9oVA>
+    <xmx:BGxmZJO894ds2AjAhhHmsTz7sH_UR233C-BOjr4cInJFMiOoHG__fw>
+    <xmx:BWxmZDVQItjPzKlagxJxlOPA1P5hwMRsW1KjHLFzxth6sl8DCB60tA>
+Feedback-ID: i1568416f:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 18 May 2023 14:18:42 -0400 (EDT)
+Date: Thu, 18 May 2023 20:18:39 +0200
+From: Marek =?utf-8?Q?Marczykowski-G=C3=B3recki?= <marmarek@invisiblethingslab.com>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Juergen Gross <jgross@suse.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	"H. Peter Anvin" <hpa@zytor.com>, Ben Skeggs <bskeggs@redhat.com>,
+	Karol Herbst <kherbst@redhat.com>, Lyude Paul <lyude@redhat.com>,
+	xen-devel@lists.xenproject.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, nouveau@lists.freedesktop.org
+Subject: Re: [PATCH 2/4] x86: always initialize xen-swiotlb when xen-pcifront
+ is enabling
+Message-ID: <ZGZr/xgbUmVqpOpN@mail-itl>
+References: <20230518134253.909623-1-hch@lst.de>
+ <20230518134253.909623-3-hch@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SA0PR12MB4383:EE_
-X-MS-Office365-Filtering-Correlation-Id: ad3c36c8-72ee-42e9-2408-08db57cc2066
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	SmZuOzVfy6BAO4dpqveV0NZlsZAsQRGmKfLmXGF2/bt0q3jU/lKGAzdoELMnodpzkz5hRTFqp+xS2waQkI2QH+QRt+xyXQQ2i1UWlRNzFkG4O4KDX9dGEwhqN2c9Iv1VhGl0JwmRj90+A2m1xD8NDFh//ZYPeD6+28OUyARBf3r7LF8B72sLKE5+HlcSfT4oNB7hAhZ24fSABd8hZuS4s+IvPxhlXVgy5fG20VgbWSOSPrqDYSG4X4ZQqO6BSIfJW8QeWcBptn10uT2P5/bTR9McONlG0RBZx+U2gCoISqd5GJm2cQVNasdSSuVu3xHzb00syjH0Qgett0dDCXsvrq8voco/EEdIcwTp7P8Pe/8/a4ejpD7QjzQEVAPhh+W4Ckp4tINOrmEK1zfowPC0rBlVed/U5C3K8ZqTAfH6TcYgItuZRT8RDUdN3EiRsMVGYmXgKGnyRlsW9+EOjWbmhKwpCtNo+b/e1JWttNh3SZVK0zsM86C11jASAeU/BwhjTSotbcNC130NNHgfUCsW92vEjhCfyqRoyZCRMEamgtoGvZiF002DJxrFtyLjc7Cm
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(39860400002)(376002)(136003)(366004)(396003)(451199021)(83380400001)(2906002)(2616005)(6486002)(6512007)(66946007)(66476007)(6916009)(66556008)(4326008)(316002)(86362001)(478600001)(36756003)(38100700002)(5660300002)(6506007)(186003)(26005)(41300700001)(8676002)(8936002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?RjTp/fmLhbJh5m1LhM5N4d1MJHPw6om6O3NwbGgyx9TalSVx/iqchWd5oMef?=
- =?us-ascii?Q?7zWd0FtFyFKcwaWEKxluHSpgZ98h5sQMtCcLJFymtIFiIWM2K6wEPeTNFrpo?=
- =?us-ascii?Q?PKzbGJGba4N0Ttp7MdQHCHKpJ5x/TUjvDlmyfRMkqPvGxqxGpAO77YsWqw9Y?=
- =?us-ascii?Q?7y0vnZ9ncibNDy86zTP+Zkerho2aeVkGSvwAax4Wn77Snb+V5IC9li2JYsOM?=
- =?us-ascii?Q?gXj+bytrSclS5HiY9NkoZaCdIfupPfh8k2+g6QaV2zlUcDkarOl0S/zOVBVE?=
- =?us-ascii?Q?F4XVS9O61sXRb7CkPHjFrV+xZK2wMTqz1FTzRAGgTYsvt4bzEkLt/uzLy4ZC?=
- =?us-ascii?Q?kYbGv9FaXXoKm9fjIQyA0V3+YbVQBteCqHhYRZroppN95jitBIlfRUZTb5vv?=
- =?us-ascii?Q?YVKSOYCUMi0sLGOMJeSEOU06bCLC7H8L+jCJZo5zIskOFFMqJfiFYKtfRKA3?=
- =?us-ascii?Q?+V9F1Ry8lCZgizv8yYRcOv0Z7MwUfZxABNoONef5e4DDFKoJV5FG41V7WqOa?=
- =?us-ascii?Q?1yHM+GW6LMpmktLN7U7SlXyRy627mQ1QJM/qdqkNERL1W0DgKPGS2N82ebE3?=
- =?us-ascii?Q?Rm3uHnAhy0VbP9JuJmdA+hn/jc/9PAKSvh8HeoqQBFGjtKpiDBjYFllH6imP?=
- =?us-ascii?Q?VcA+y/ZVyx1vT5bQFkMCU6NFuwY0LgfEu1fBvnfVLc2HrvachmMJzP3WRtVG?=
- =?us-ascii?Q?7j+xPdtMq0NmYKx27fPSgauPxLz1ixVP/vlVZyu3tWamJVW3jp9ftPzHdf2j?=
- =?us-ascii?Q?rXU9biwBcrWmCwsRNxAykAY0oHrmKOTS/50WXQDxwvQLymgz/IkvGhv6ScvL?=
- =?us-ascii?Q?xE/ihIpa7F5U6Xw0doxbel9oBxK0FCLcSUo/Q6MTA1sJ2rYz1vp4GUr1q/kk?=
- =?us-ascii?Q?fam7Egq6L2sLD79VHq5hmVlZ31QO4ht2scgLQSHRM5hYLmpW9FiJGhpEcSeD?=
- =?us-ascii?Q?wusgJpF8djhaPsv4Nr7TFP8fkA1etAEzJi9T7bE8s1zTt/zVtvWgyhtUihTe?=
- =?us-ascii?Q?JRmaXWQs0U3/o++HrSltEonwb3h8O51f5fO91m0u/r5/SkJluubqrPxLIK0/?=
- =?us-ascii?Q?FsywrVqoJEurEKVycAzmZnfpNC8tdOW+y0jNxD/5mshBNm4BoOpzRr93N0N0?=
- =?us-ascii?Q?7RoRtK1I4mFAdw8yVRpg1tgG4LEWN+sfcoDOcFWshybfIYkvYMmitj/1+wQb?=
- =?us-ascii?Q?aLhOCL3rGGylu0zpclS8rFpmIaV/HOqjjwecISXl93JXdKivQmv1wLm6rxM8?=
- =?us-ascii?Q?e3A7KORjyEfKM97ye4jwHa498px3PBnmateDR3LKj0FjL1cwbQU77VHrPV26?=
- =?us-ascii?Q?zUE28Iin8NYU0Ie+lMT/7cbsKmXGGENqz4gdZHcd33aUEJrBbEwFAVYzo3Ss?=
- =?us-ascii?Q?2ctYxyzrEJ2xtvlyfY8fT4VL+MNx8v1KY16weOXJFUINwqVo75ju5pBNfFfR?=
- =?us-ascii?Q?KzuIsdM+H5fB8oKcgBBttaiYSpevHJGvA5RYFSBn5zDmZMea298WUiiUmg9Q?=
- =?us-ascii?Q?6MMlvFSeFTpnMoIZh6hO/aDSe0AGzXRHRgYSa9Zq82p89YmhlH8r6pxIkA0C?=
- =?us-ascii?Q?Qn864Ws78gxe3eOwfawEvwY7a6b4rQGJexSf2gk2?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ad3c36c8-72ee-42e9-2408-08db57cc2066
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2023 18:17:23.2472
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2f+eTdUK1FDIqjG3m9PaIOie8LB6YFr+Qe5LFxqWcgOV0FtWSXFrVDJenOyGPGSQ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4383
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="CsM+DO8kg05XbydD"
+Content-Disposition: inline
+In-Reply-To: <20230518134253.909623-3-hch@lst.de>
 
-On Thu, May 18, 2023 at 05:49:37PM +0100, Jean-Philippe Brucker wrote:
-> On Thu, May 18, 2023 at 10:59:12AM -0300, Jason Gunthorpe wrote:
-> > On Thu, May 18, 2023 at 02:56:38PM +0100, Jean-Philippe Brucker wrote:
-> > > > Can you wrapper this into a BLOCKED domain like we are moving drivers
-> > > > toward, and then attach the blocked domain instead of introducing this
-> > > > special case?
-> > > 
-> > > Yes, I think the way the virtio-iommu driver should implement BLOCKED
-> > > domains is initially clearing the global-bypass bit, and then issuing
-> > > DETACH requests when the core asks to attach a BLOCKED domain. This has
-> > > the same effect as issuing an ATTACH request with an empty domain, but
-> > > requires fewer resources in the VMM.
-> > 
-> > Does that exclude identity though?
-> 
-> No, identity attaches a domain with the ATTACH_F_BYPASS flag (or an
-> identity-mapped domain if the feature is missing), it doesn't rely on
-> global-bypass.
 
-Oh, so you can clear the global-bypass bit and that turns detach into
-blocked then you can model this detach operation with blocked and
-still get identity because that is attach with a flag :) Wow, a bit
-indirect but OK
+--CsM+DO8kg05XbydD
+Content-Type: text/plain; protected-headers=v1; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 18 May 2023 20:18:39 +0200
+From: Marek =?utf-8?Q?Marczykowski-G=C3=B3recki?= <marmarek@invisiblethingslab.com>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Juergen Gross <jgross@suse.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	"H. Peter Anvin" <hpa@zytor.com>, Ben Skeggs <bskeggs@redhat.com>,
+	Karol Herbst <kherbst@redhat.com>, Lyude Paul <lyude@redhat.com>,
+	xen-devel@lists.xenproject.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, nouveau@lists.freedesktop.org
+Subject: Re: [PATCH 2/4] x86: always initialize xen-swiotlb when xen-pcifront
+ is enabling
 
-> > this, the desired translation mode should always be made
-> > explicit.
-> 
-> I probably misunderstood your plan for BLOCKED. This particular patch is
-> about removing devices from the machine, for example PCIe hot-unplug. So I
-> thought you were suggesting the core will at some point attach a BLOCKED
-> domain to a device being removed, in order to block translation while the
-> device is being removed and while a new one is being plugged in with the
-> same RID.
+On Thu, May 18, 2023 at 03:42:51PM +0200, Christoph Hellwig wrote:
+> Remove the dangerous late initialization of xen-swiotlb in
+> pci_xen_swiotlb_init_late and instead just always initialize
+> xen-swiotlb in the boot code if CONFIG_XEN_PCIDEV_FRONTEND is enabled.
+>=20
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-Yes, that would be appropriate
+Doesn't it mean all the PV guests will basically waste 64MB of RAM
+by default each if they don't really have PCI devices?
 
-> For that case I think DETACH, rather than ATTACH an empty domain,
-> makes more sense. Otherwise with the same reasoning we'd need to
-> attach all 4 billion endpoint IDs to an empty domain at boot which
-> isn't feasible.
+> ---
+>  arch/x86/include/asm/xen/swiotlb-xen.h |  6 ------
+>  arch/x86/kernel/pci-dma.c              | 25 +++----------------------
+>  drivers/pci/xen-pcifront.c             |  6 ------
+>  3 files changed, 3 insertions(+), 34 deletions(-)
+>=20
+> diff --git a/arch/x86/include/asm/xen/swiotlb-xen.h b/arch/x86/include/as=
+m/xen/swiotlb-xen.h
+> index 77a2d19cc9909e..abde0f44df57dc 100644
+> --- a/arch/x86/include/asm/xen/swiotlb-xen.h
+> +++ b/arch/x86/include/asm/xen/swiotlb-xen.h
+> @@ -2,12 +2,6 @@
+>  #ifndef _ASM_X86_SWIOTLB_XEN_H
+>  #define _ASM_X86_SWIOTLB_XEN_H
+> =20
+> -#ifdef CONFIG_SWIOTLB_XEN
+> -extern int pci_xen_swiotlb_init_late(void);
+> -#else
+> -static inline int pci_xen_swiotlb_init_late(void) { return -ENXIO; }
+> -#endif
+> -
+>  int xen_swiotlb_fixup(void *buf, unsigned long nslabs);
+>  int xen_create_contiguous_region(phys_addr_t pstart, unsigned int order,
+>  				unsigned int address_bits,
+> diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
+> index f887b08ac5ffe4..c4a7ead9eb674e 100644
+> --- a/arch/x86/kernel/pci-dma.c
+> +++ b/arch/x86/kernel/pci-dma.c
+> @@ -81,27 +81,6 @@ static void __init pci_xen_swiotlb_init(void)
+>  	if (IS_ENABLED(CONFIG_PCI))
+>  		pci_request_acs();
+>  }
+> -
+> -int pci_xen_swiotlb_init_late(void)
+> -{
+> -	if (dma_ops =3D=3D &xen_swiotlb_dma_ops)
+> -		return 0;
+> -
+> -	/* we can work with the default swiotlb */
+> -	if (!io_tlb_default_mem.nslabs) {
+> -		int rc =3D swiotlb_init_late(swiotlb_size_or_default(),
+> -					   GFP_KERNEL, xen_swiotlb_fixup);
+> -		if (rc < 0)
+> -			return rc;
+> -	}
+> -
+> -	/* XXX: this switches the dma ops under live devices! */
+> -	dma_ops =3D &xen_swiotlb_dma_ops;
+> -	if (IS_ENABLED(CONFIG_PCI))
+> -		pci_request_acs();
+> -	return 0;
+> -}
+> -EXPORT_SYMBOL_GPL(pci_xen_swiotlb_init_late);
+>  #else
+>  static inline void __init pci_xen_swiotlb_init(void)
+>  {
+> @@ -111,7 +90,9 @@ static inline void __init pci_xen_swiotlb_init(void)
+>  void __init pci_iommu_alloc(void)
+>  {
+>  	if (xen_pv_domain()) {
+> -		if (xen_initial_domain() || x86_swiotlb_enable)
+> +		if (xen_initial_domain() ||
+> +		    IS_ENABLED(CONFIG_XEN_PCIDEV_FRONTEND) ||
+> +		    x86_swiotlb_enable)
+>  			pci_xen_swiotlb_init();
+>  		return;
+>  	}
+> diff --git a/drivers/pci/xen-pcifront.c b/drivers/pci/xen-pcifront.c
+> index 83c0ab50676dff..11636634ae512f 100644
+> --- a/drivers/pci/xen-pcifront.c
+> +++ b/drivers/pci/xen-pcifront.c
+> @@ -22,7 +22,6 @@
+>  #include <linux/bitops.h>
+>  #include <linux/time.h>
+>  #include <linux/ktime.h>
+> -#include <linux/swiotlb.h>
+>  #include <xen/platform_pci.h>
+> =20
+>  #include <asm/xen/swiotlb-xen.h>
+> @@ -669,11 +668,6 @@ static int pcifront_connect_and_init_dma(struct pcif=
+ront_device *pdev)
+> =20
+>  	spin_unlock(&pcifront_dev_lock);
+> =20
+> -	if (!err && !is_swiotlb_active(&pdev->xdev->dev)) {
+> -		err =3D pci_xen_swiotlb_init_late();
+> -		if (err)
+> -			dev_err(&pdev->xdev->dev, "Could not setup SWIOTLB!\n");
+> -	}
+>  	return err;
+>  }
+> =20
+> --=20
+> 2.39.2
+>=20
+>=20
 
-Well, this is what the default is for. You can consider the default as
-being implicitly attached to BLOCKED or IDENTIY. If you want to change
-the translation then you ask to change the translation to some other
-defined thing.
+--=20
+Best Regards,
+Marek Marczykowski-G=C3=B3recki
+Invisible Things Lab
 
-Detach is just a confusing idea because it doesn't really say what the
-translation changes into - and there is always an active translation.
+--CsM+DO8kg05XbydD
+Content-Type: application/pgp-signature; name="signature.asc"
 
-On the VMM side we always have a translation assigned in VFIO so it
-doesn't really matter how the command is carried over.
+-----BEGIN PGP SIGNATURE-----
 
-This command coding is weird, but it seems like it is fine, and the
-driver will be clearer when everything is labeled :)
+iQEzBAEBCAAdFiEEhrpukzGPukRmQqkK24/THMrX1ywFAmRma/8ACgkQ24/THMrX
+1yzT+gf/S1uwHKmjBfQtKqzw50EE/PUeNAO8869wN0cpWYT6WkKJT5BxXOVgbJfW
+9mibLfMCcVO0H1cE8+PCxvC9BIv3ldhC7KVtSQks99V24zf0mPiqBiGM2mAI9VRD
+SYMwmipIXDSRFERIcBo1XomAt4ytJj/BkqCv+Xy5PgYIqdABz9R4G3HT2q6rN0Lq
+M2sLnKWdGwoYdk8hOmlTY5F3/iYdv/Zlel4Ki2s5ZzLUBxCZ1IKErb31wRaRid8p
+APcTnrs8RZE8+YBL7nzdr9HudKMlaChsiZsPkIo0v0aI5oFa+OHs6Z5sOXOP0RAB
+qmCDKShHiVUc6Lqc1gT6VHLmZdEEig==
+=Y97F
+-----END PGP SIGNATURE-----
 
-Jason
+--CsM+DO8kg05XbydD--
