@@ -1,85 +1,100 @@
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44FDE27211
-	for <iommu@lists.linux.dev>; Thu, 18 May 2023 17:56:45 +0000 (UTC)
-Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-96f588bc322so18782366b.1
-        for <iommu@lists.linux.dev>; Thu, 18 May 2023 10:56:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1684432603; x=1687024603;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=zzWNbSRJVd3rro7yhzWQMEtJ5Iqu6HA19zSm7B5FPgA=;
-        b=CR3LZCuBVanPMOVw+f751EMAMvtEZd2t/+627rc/6+CtRcPO50RJ5/NSlcfM2K3Z7O
-         3N2gG432V4o1DSNY5M5jWq5lzr4PvGxJfwtL7xSCXyzSUjSFGkqNQR9NqwgOjHJC0dRj
-         bYg+eZgnAoaHp7ksEc2rcz19caimOTmhXYN2s=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684432603; x=1687024603;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=zzWNbSRJVd3rro7yhzWQMEtJ5Iqu6HA19zSm7B5FPgA=;
-        b=GgcVKeddMRvgS5qf+h2Os++fssWZaTfxjGwhv6xyKweavE1nJD3N/KdCPUQj0K/fYu
-         auPKMq1YE0F5LJNvCVpnGxCyz7R4lRs/doHjokcXTE+D/XwE1XWGtu0jLZgmn4MmI0m2
-         UUYGZAlCjgiW/NkH4zynLb1azRuAmuzN569VI/REJzuqdIAlFZrDgmGQj0+fRbOXv6WU
-         iaIA+00hIr/YSOiBBtIJsfy4MMWrLpd9JbJQZyGBGkH/txDcF9xKc4DIUSCbuXdbLcfL
-         I80W2CNsOHhp2agz0yeV2yB9E0Czn3h8MMUvIRlSgH5S2s9p2AHQgaWN9oSNyXS5ZxVT
-         AlHQ==
-X-Gm-Message-State: AC+VfDzkFDQZckT8vkU79urKeSAAyr7wpN17h2y0H0JDJwMpa8QhJLZf
-	TZircpTV35KyeLXKQwabMDqK/k/ZsqWhQ389Y4K7xJ00
-X-Google-Smtp-Source: ACHHUZ6ttwS39alx4hHVB91FLbKdQvETC+dSDvltRRRZr6qZFxM6fZ1cb4L6PGw9O5NagXldz1Iv5Q==
-X-Received: by 2002:a17:907:7250:b0:966:b4b:eb0 with SMTP id ds16-20020a170907725000b009660b4b0eb0mr45592814ejc.30.1684432603180;
-        Thu, 18 May 2023 10:56:43 -0700 (PDT)
-Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com. [209.85.208.52])
-        by smtp.gmail.com with ESMTPSA id bv17-20020a170906b1d100b00965c529f103sm1236592ejb.86.2023.05.18.10.56.41
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 May 2023 10:56:42 -0700 (PDT)
-Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-510d0e40c6eso3247815a12.2
-        for <iommu@lists.linux.dev>; Thu, 18 May 2023 10:56:41 -0700 (PDT)
-X-Received: by 2002:a17:907:928b:b0:966:2123:e0c3 with SMTP id
- bw11-20020a170907928b00b009662123e0c3mr39319767ejc.15.1684432601629; Thu, 18
- May 2023 10:56:41 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD3643D383
+	for <iommu@lists.linux.dev>; Thu, 18 May 2023 18:13:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AC77C4339E
+	for <iommu@lists.linux.dev>; Thu, 18 May 2023 18:13:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684433602;
+	bh=yDLL5tj1xkKKmoFc1E/7+xQ4B2wCPYZH5V6TDDGmdVc=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=uziSSf850u+mnpk+Vt1aKBnNp//kYAxFjsh+mMI9rh9QjaZmPs5eKQ4XQE5GfLbgE
+	 UEwgqvsb2EnCYBJ+WtEluPwWCV+hPVV46gjmJBQi6lrUSJeeos+kY1S+UJH1HBt7wX
+	 OAyKIz96thG8jVLS1OwjN9vQGfRIzPOY2q6K15LZjm9l+fRIKvAMVDv4b4kL1Fjwqm
+	 xNjSbF5RIfcylAzkksZo7aa8v9S13dtIiXmf8ROLes3xnitKdB7Z8hjjRAaKbCBQAg
+	 9vAwY7yxi9HaxERDSSIfE/BBL47l9kdIGDEc8cuuQV/6R9UWc4CGjnXx+vpMRdyLkO
+	 qgnTrCHQzDRKg==
+Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-4f13c577e36so2811876e87.1
+        for <iommu@lists.linux.dev>; Thu, 18 May 2023 11:13:22 -0700 (PDT)
+X-Gm-Message-State: AC+VfDygjIWm7DWr40WGpmkMO6NUMOuMzRi0YDjV7ivjiKauNPb3z4YA
+	qpWvgke9DLChGzHfL5GFnrjEqKzka5D3NtL0/mk=
+X-Google-Smtp-Source: ACHHUZ5ZRa9ejECdwGeIRHQ+9cR034EbTY8WRobK152Od8eJ3dm0azWveVvkgRAsW3mfiYSG4a1O44PnOa9uH4m38gU=
+X-Received: by 2002:ac2:4836:0:b0:4e9:afb3:d56a with SMTP id
+ 22-20020ac24836000000b004e9afb3d56amr39584lft.7.1684433600349; Thu, 18 May
+ 2023 11:13:20 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230518173403.1150549-1-catalin.marinas@arm.com>
-In-Reply-To: <20230518173403.1150549-1-catalin.marinas@arm.com>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Thu, 18 May 2023 10:56:24 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgm77p42Ow87pZf042+s5aC4S0N4TEPHQnrEyeg-aKtpg@mail.gmail.com>
-Message-ID: <CAHk-=wgm77p42Ow87pZf042+s5aC4S0N4TEPHQnrEyeg-aKtpg@mail.gmail.com>
+References: <20230518173403.1150549-1-catalin.marinas@arm.com> <CAHk-=wgm77p42Ow87pZf042+s5aC4S0N4TEPHQnrEyeg-aKtpg@mail.gmail.com>
+In-Reply-To: <CAHk-=wgm77p42Ow87pZf042+s5aC4S0N4TEPHQnrEyeg-aKtpg@mail.gmail.com>
+From: Ard Biesheuvel <ardb@kernel.org>
+Date: Thu, 18 May 2023 20:13:08 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXE+LvjV2fnTg=DHP2ynaqaPtj-YKKC1y1YS4Jf_DOCL3A@mail.gmail.com>
+Message-ID: <CAMj1kXE+LvjV2fnTg=DHP2ynaqaPtj-YKKC1y1YS4Jf_DOCL3A@mail.gmail.com>
 Subject: Re: [PATCH v4 00/15] mm, dma, arm64: Reduce ARCH_KMALLOC_MINALIGN to 8
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Christoph Hellwig <hch@lst.de>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Will Deacon <will@kernel.org>, 
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>, Arnd Bergmann <arnd@arndb.de>, 
+	Christoph Hellwig <hch@lst.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Will Deacon <will@kernel.org>, 
 	Marc Zyngier <maz@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, 
-	Herbert Xu <herbert@gondor.apana.org.au>, Ard Biesheuvel <ardb@kernel.org>, 
-	Isaac Manjarres <isaacmanjarres@google.com>, Saravana Kannan <saravanak@google.com>, 
-	Alasdair Kergon <agk@redhat.com>, Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>, 
-	Mark Brown <broonie@kernel.org>, Mike Snitzer <snitzer@kernel.org>, 
+	Herbert Xu <herbert@gondor.apana.org.au>, Isaac Manjarres <isaacmanjarres@google.com>, 
+	Saravana Kannan <saravanak@google.com>, Alasdair Kergon <agk@redhat.com>, Daniel Vetter <daniel@ffwll.ch>, 
+	Joerg Roedel <joro@8bytes.org>, Mark Brown <broonie@kernel.org>, Mike Snitzer <snitzer@kernel.org>, 
 	"Rafael J. Wysocki" <rafael@kernel.org>, Robin Murphy <robin.murphy@arm.com>, linux-mm@kvack.org, 
 	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, May 18, 2023 at 10:34=E2=80=AFAM Catalin Marinas
-<catalin.marinas@arm.com> wrote:
+On Thu, 18 May 2023 at 19:56, Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
 >
-> That's the fourth version of the series reducing the kmalloc() minimum
-> alignment on arm64 to 8 (from 128).
+> On Thu, May 18, 2023 at 10:34=E2=80=AFAM Catalin Marinas
+> <catalin.marinas@arm.com> wrote:
+> >
+> > That's the fourth version of the series reducing the kmalloc() minimum
+> > alignment on arm64 to 8 (from 128).
 
-Lovely. On my M2 Macbook air, I right now have about 24MB in the
-kmalloc-128 bucket, and most of it is presumably just 16 byte
-allocations (judging by my x86-64 slabinfo).
+For the series:
 
-I guess it doesn't really matter when I have 16GB in the machine, but
-this has annoyed me for a while.
+Tested-by: Ard Biesheuvel <ardb@kernel.org> # tx2
 
-It feels like this is ready for 6.5, no?
+and I am seeing lots of smaller allocations, all of which would have
+otherwise taken up 128 or 256 bytes:
 
-                 Linus
+kmalloc-192         6426   6426    192   42    2 : tunables    0    0
+  0 : slabdata    153    153      0
+kmalloc-128         9472   9472    128   64    2 : tunables    0    0
+  0 : slabdata    148    148      0
+kmalloc-96         15666  15666     96   42    1 : tunables    0    0
+  0 : slabdata    373    373      0
+kmalloc-64         21952  21952     64   64    1 : tunables    0    0
+  0 : slabdata    343    343      0
+kmalloc-32         23424  23424     32  128    1 : tunables    0    0
+  0 : slabdata    183    183      0
+kmalloc-16         41216  41216     16  256    1 : tunables    0    0
+  0 : slabdata    161    161      0
+kmalloc-8          77846  80384      8  512    1 : tunables    0    0
+  0 : slabdata    157    157      0
+
+The box is fully DMA coherent, of course, so this doesn't really tell
+us whether the swiotlb DMA bouncing stuff works or not.
+
+>
+> Lovely. On my M2 Macbook air, I right now have about 24MB in the
+> kmalloc-128 bucket, and most of it is presumably just 16 byte
+> allocations (judging by my x86-64 slabinfo).
+>
+> I guess it doesn't really matter when I have 16GB in the machine, but
+> this has annoyed me for a while.
+>
+
+Yeah but surely the overhead in terms of D-cache footprint is a factor here=
+ too?
+
+> It feels like this is ready for 6.5, no?
+>
+
+Yes, please...
