@@ -1,135 +1,201 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38CAE137D
-	for <iommu@lists.linux.dev>; Thu, 18 May 2023 05:44:24 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=So7WPD/lRN8oj7BJxOaNKdZ4mZOVZW9ivmKT9hu2fQ7cNG45lLv/+Qn1Lz18qiuUkYl1x7Li/YiN5p1v4yUGgTY0SKN6Y+QWyORtG3yHcGEULmNyLOx9Sx8yQKI8ee6fSkeuik3QhLBd7Go6TMVDnFoqa33oCfXdpN85xH9JFJ15Ed5l78/721FHlTDhhdWnAeaeuMq7/zxYBusTACv/jOI3xELzPSflY34/pkTt+yI1pU+MSwv30iug0l92LTLvOxJ7W1Y27DewPulsjmo+7CVBjqHT48RyLcObp7tQqyA0GcipOjnQL2PiUQh7u62I0MKDp8hh66DCuwJBAGCyCQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=M5EJt2+oWJS7Sx0ocMWdV7uTBLtWo7AhPHsSqoGDgX8=;
- b=Oml59ysCPy6vkkhTK3Tjz1yc5CTOZ3NmyxZAZCA51Q0ku93HIPk00DhUPkTimzc9wKznv1lSMRyH5yuFd0BpjQT5sT8gclLWadj2zKC65fq8E/uzi+jxApV/P6g8xsPhXd9ZKElgryU6yGESE0NM/Mp8VfBbd6pVbFjQb7b7HpZmvakkGqF9v626IAbNhaAH2TjC5Ldw8JM3bHjhl08xFRDLDdMEgY2KIbSqQawr/ggB/F3RSjzbwBTrX11TZkfgrnRUngW+L7DN1nCfAtBp9I2RwULJtCLkrKF0SvlomCna3CxvqWEwqBLcjDig976FMm3lThPee21yNyH4mQKVSw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=M5EJt2+oWJS7Sx0ocMWdV7uTBLtWo7AhPHsSqoGDgX8=;
- b=d3WV2NOGbphwOWJH++YscSEdLEYHEj9b76JILjvYWwH5oblKC1KKb5edVzEogN4r+XNNzmuARFSM0lZWEsuauopSoeo28vBB5+iCy7shGM9virkyRgyF1znvIzo1htWD7LmGWwoqd7mpjEe+1sYMK80uC8em0V0Zy8lc8SwHW24=
-Received: from BN0PR03CA0006.namprd03.prod.outlook.com (2603:10b6:408:e6::11)
- by CY8PR12MB7097.namprd12.prod.outlook.com (2603:10b6:930:63::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.30; Thu, 18 May
- 2023 05:44:21 +0000
-Received: from BN8NAM11FT028.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:e6:cafe::22) by BN0PR03CA0006.outlook.office365.com
- (2603:10b6:408:e6::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.19 via Frontend
- Transport; Thu, 18 May 2023 05:44:21 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT028.mail.protection.outlook.com (10.13.176.225) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6411.19 via Frontend Transport; Thu, 18 May 2023 05:44:21 +0000
-Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 18 May
- 2023 00:44:17 -0500
-From: Vasant Hegde <vasant.hegde@amd.com>
-To: <iommu@lists.linux.dev>, <joro@8bytes.org>
-CC: <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>,
-	Jerry Snitselaar <jsnitsel@redhat.com>, <Stable@vger.kernel.org>
-Subject: [PATCH] iommu/amd/pgtbl_v2: Fix domain max address
-Date: Thu, 18 May 2023 05:43:51 +0000
-Message-ID: <20230518054351.9626-1-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 807167E
+	for <iommu@lists.linux.dev>; Thu, 18 May 2023 07:06:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1684393562; x=1715929562;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=9agQxg5bvZCEiPO3PP4r8dyZAobzZ5RKZtw1oa41Muo=;
+  b=MIVC6LJ1dmav6Pt5m7tvQML+cmaHXtEXqIzovdH+Ui7MiNg0B8U+nxRv
+   JNRgz+OqcLLxTpmFqQCLcO6w8vstT5ELSh9mgFLSsu72VwABM/d86tDe0
+   7XtJx+iu79vzSU8yrRGyC0h93GvNjgfqYDximk6OGcp3LqEkQHhtCT0C+
+   ElMWssbCiagjoYWKYiBzVqziWuFtQxKGKQvIAFMb7xcDRiz+SbLTfSEIJ
+   wunAbtKDlsHytiSpcIB2VkXqaJYm2c3lz2+1HzHMOlLEVVHCkzGYMldjz
+   gzyK46mpIPImyklU/aTZMFtZcz6o5HzWOD/lmwpHuW8N18ghHbytdr8Ph
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10713"; a="380196152"
+X-IronPort-AV: E=Sophos;i="5.99,284,1677571200"; 
+   d="scan'208";a="380196152"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2023 00:06:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10713"; a="767079155"
+X-IronPort-AV: E=Sophos;i="5.99,284,1677571200"; 
+   d="scan'208";a="767079155"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.30.48]) ([10.255.30.48])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2023 00:05:25 -0700
+Message-ID: <5cdc1a83-f29b-6862-d513-dbfd5c500807@linux.intel.com>
+Date: Thu, 18 May 2023 15:05:23 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT028:EE_|CY8PR12MB7097:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6b291859-8ca3-4573-618e-08db5762edf1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	+HzrwJ0JKYYtr1I/rvfMEF4kajxh0EvcaOU2/vPEmAg7ufMtDHBo098cwijtDoeaZmUy/zaoUeHU6nc24pD5Bf9Iyd7eOeUppuC8zRydCit+jJMhtszQAj13NPt/Y9/SXdz5ubUpvF2yXTuMdF+kTDTlj16NZcFPVSXizC3Rt86DyzdtMl/xeTk7e4NMYXgSlzk2MphuDqsQOtMft+PaqnmOhBwKb2hcvQoloVZGhDP0SJoVZ3S0kIkgX5lAXLX6x/lsTM7mqcwf4euYDZxdWKk+64XfjLinSAvvNrw02DVtGr9rekbbaVpj+bAdMm8wgEiXMv7h2j2rZ2jY1GpXV/QlW9J3mJce62oRrdtWNda4Wfay/rs1j7IJSYLFpJEzIx6UEUFhcOM/sYajW19ElZd+pYQA7Ch4Td3w8lrRn7NIiWvJdaTymhrB3hiWW2SbhST2jdCcM47fWCwp7DOcMMyMCL8r42q0kcHSU9RP9ef0vkIvMWe08Gn8Glvb3tgiKQptc4N/gpV8Foa/36ecOZIwDXbsg5Ed9FGomAfHZ8xgSdhoHNnYIqf4JVP1BWegWMLl36zbw4ZAd30h2UWbekK+z94MnFpdehAmO9sFdfcyAKfF1uZA4FPBmsayTmkVBxFtfHPZJ2vQikJtGoJWM3cRN6zBTKbjYYBpz3E9agbe6LrzuVCUUBNLtkxuOPMDrRw220lzSr7AuHxXexXNtfbrqBOBvwxb7CaWG9I2V1kVRgCvP4eYsNliDGrC0vTPhWlF/DjQmbY6E7LwSJVijg==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(376002)(136003)(39860400002)(451199021)(46966006)(36840700001)(40470700004)(82310400005)(83380400001)(47076005)(336012)(426003)(36860700001)(316002)(82740400003)(41300700001)(2906002)(4326008)(81166007)(356005)(478600001)(40480700001)(54906003)(5660300002)(7696005)(70206006)(26005)(70586007)(2616005)(40460700003)(8676002)(86362001)(8936002)(16526019)(44832011)(36756003)(110136005)(1076003)(186003)(6666004)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2023 05:44:21.3019
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6b291859-8ca3-4573-618e-08db5762edf1
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT028.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7097
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>,
+ "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Lixiao Yang <lixiao.yang@intel.com>, Matthew Rosato
+ <mjrosato@linux.ibm.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: Re: [PATCH v7 03/19] iommufd: Replace the hwpt->devices list with
+ iommufd_group
+To: Jason Gunthorpe <jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>
+References: <3-v7-6c0fd698eda2+5e3-iommufd_alloc_jgg@nvidia.com>
+ <569b959e-a702-fc19-3d67-0dde4e77251a@linux.intel.com>
+ <ZGN2yvhpIvrvu74r@nvidia.com>
+ <852e85b3-9fd2-bfc2-6080-82cea7ab6abd@linux.intel.com>
+ <BN9PR11MB5276DE1BC30E90B1032C0E468C7E9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZGTMCSJKvgpyYxG/@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <ZGTMCSJKvgpyYxG/@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-IOMMU v2 page table supports 4 level (47 bit) or 5 level (56 bit) virtual
-address space. Current code assumes it can support 64bit IOVA address
-space. If IOVA allocator allocates virtual address > 47/56 bit (depending
-on page table level) then it will do wrong mapping and cause invalid
-translation.
+On 2023/5/17 20:43, Jason Gunthorpe wrote:
+> On Wed, May 17, 2023 at 06:33:30AM +0000, Tian, Kevin wrote:
+>>> From: Baolu Lu <baolu.lu@linux.intel.com>
+>>> Sent: Wednesday, May 17, 2023 12:15 PM
+>>>
+>>> On 5/16/23 8:27 PM, Jason Gunthorpe wrote:
+>>>> On Tue, May 16, 2023 at 11:00:16AM +0800, Baolu Lu wrote:
+>>>>> On 5/15/23 10:00 PM, Jason Gunthorpe wrote:
+>>>>>> The devices list was used as a simple way to avoid having per-group
+>>>>>> information. Now that this seems to be unavoidable, just commit to
+>>>>>> per-group information fully and remove the devices list from the HWPT.
+>>>>>>
+>>>>>> The iommufd_group stores the currently assigned HWPT for the entire
+>>> group
+>>>>>> and we can manage the per-device attach/detach with a list in the
+>>>>>> iommufd_group.
+>>>>>
+>>>>> I am preparing the patches to route I/O page faults to user space
+>>>>> through iommufd. The iommufd page fault handler knows the hwpt and
+>>> the
+>>>>> device pointer, but it needs to convert the device pointer into its
+>>>>> iommufd object id and pass the id to user space.
+>>>>>
+>>>>> It's fine that we remove the hwpt->devices here, but perhaps I need to
+>>>>> add the context pointer in ioas later,
+>>>>>
+>>>>> struct iommufd_ioas {
+>>>>>           struct io_pagetable iopt;
+>>>>>           struct mutex mutex;
+>>>>>           struct list_head hwpt_list;
+>>>>> +       struct iommufd_ctx *ictx;
+>>>>>    };
+>>>>>
+>>>>> and, use below helper to look up the device id.
+>>>>>
+>>>>> +u32 iommufd_get_device_id(struct iommufd_ctx *ictx, struct device *dev)
+>>>>> +{
+>>>>> +       struct iommu_group *group = iommu_group_get(dev);
+>>>>> +       u32 dev_id = IOMMUFD_INVALID_OBJ_ID;
+>>>>> +       struct iommufd_group *igroup;
+>>>>> +       struct iommufd_device *cur;
+>>>>> +       unsigned int id;
+>>>>> +
+>>>>> +       if (!group)
+>>>>> +               return IOMMUFD_INVALID_OBJ_ID;
+>>>>> +
+>>>>> +       id = iommu_group_id(group);
+>>>>> +       xa_lock(&ictx->groups);
+>>>>> +       igroup = xa_load(&ictx->groups, id);
+>>>>> +       if (!iommufd_group_try_get(igroup, group)) {
+>>>>> +               xa_unlock(&ictx->groups);
+>>>>> +               iommu_group_put(group);
+>>>>> +               return IOMMUFD_INVALID_OBJ_ID;
+>>>>> +        }
+>>>>> +        xa_unlock(&ictx->groups);
+>>>>> +
+>>>>> +       mutex_lock(&igroup->lock);
+>>>>> +       list_for_each_entry(cur, &igroup->device_list, group_item) {
+>>>>> +               if (cur->dev == dev) {
+>>>>> +                       dev_id = cur->obj.id;
+>>>>> +                       break;
+>>>>> +               }
+>>>>> +       }
+>>>>
+>>>> I dislike how slow this is on something resembling a fastish path :\
+>>>
+>>> Yes, agreed.
+>>>
+>>>> Maybe we should stash something in the dev_iommu instead?
+>>>>
+>>>> Or can the PRI stuff provide a cookie per-device?
+>>>
+>>> We already have a per-device fault cookie:
+>>>
+>>> /**
+>>>    * struct iommu_fault_param - per-device IOMMU fault data
+>>>    * @handler: Callback function to handle IOMMU faults at device level
+>>>    * @data: handler private data
+>>>    * @faults: holds the pending faults which needs response
+>>>    * @lock: protect pending faults list
+>>>    */
+>>> struct iommu_fault_param {
+>>>           iommu_dev_fault_handler_t handler;
+>>>           void *data;
+>>>           struct list_head faults;
+>>>           struct mutex lock;
+>>> };
+>>>
+>>> Perhaps we can add a @dev_id memory here?
+>>>
+>>
+>> what about SIOV? There is only one cookie per parent device.
+> 
+> It doesn't make any sense to store a struct like that in dev_iommu.
+> 
+> The fault handler should come from the domain and we should be able to
+> have a unique 'void *data' cookie linked to the (dev,PASID) to go
+> along with the fault handler.
 
-Hence adjust aperture size to use max address supported by the page table.
+If I get your point correctly, the iommu core should provide some places
+for the iommufd to put a cookie for each pair of {device, pasid}, and
+provide interfaces to manage it. For example,
 
-Reported-by: Jerry Snitselaar <jsnitsel@redhat.com>
-Fixes: aaac38f61487 ("iommu/amd: Initial support for AMD IOMMU v2 page table")
-Cc: <Stable@vger.kernel.org>  # v6.0+
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
----
- drivers/iommu/amd/iommu.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+void iommu_set_device_fault_cookie(struct device *dev,
+				   ioasit_t pasid,
+				   void *fault_cookie);
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 5aaa4cf84506..e14c7c666745 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2128,6 +2128,15 @@ static struct protection_domain *protection_domain_alloc(unsigned int type)
- 	return NULL;
- }
- 
-+static inline u64 dma_max_address(void)
-+{
-+	if (amd_iommu_pgtable == AMD_IOMMU_V1)
-+		return ~0ULL;
-+
-+	/* V2 with 4/5 level page table */
-+	return ((1ULL << PM_LEVEL_SHIFT(amd_iommu_gpt_level)) - 1);
-+}
-+
- static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
- {
- 	struct protection_domain *domain;
-@@ -2144,7 +2153,7 @@ static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
- 		return NULL;
- 
- 	domain->domain.geometry.aperture_start = 0;
--	domain->domain.geometry.aperture_end   = ~0ULL;
-+	domain->domain.geometry.aperture_end   = dma_max_address();
- 	domain->domain.geometry.force_aperture = true;
- 
- 	return &domain->domain;
--- 
-2.31.1
+void *iommu_get_device_fault_cookie(struct device *dev,
+				    ioasit_t pasid)
 
+If so, perhaps we need some special treatment for ARM as a user hwpt
+actually presents the PASID table of the device and the guest setting
+pasid table entry will not be propagated to host. Then, the @pasid in
+above interfaces is meaningless.
+
+> This is all going to need some revising before we can expose it to
+> iommufd
+
+Yes, agreed. i will post a preparation series to do this. Besides the
+fault cookie, at least, I want to do the following preparation.
+
+1) Move iommu faults uapi from uapi/linux/iommu.h to uapi/linux
+   /iommufd.h and remove the former.
+
+2) Add a device id in the iommu_fault structure.
+  struct iommu_fault {
+         __u32   type;
+-       __u32   padding;
++       __u32   dev_id;
+         union {
+                 struct iommu_fault_unrecoverable event;
+                 struct iommu_fault_page_request prm;
+
+3) Add the device pointer to the parameters of domain fault handler.
+
+4) Decouple I/O page fault handling from IOMMU_SVA in the iommu core and
+    the drivers.
+
+Best regards,
+baolu
