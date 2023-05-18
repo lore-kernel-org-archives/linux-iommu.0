@@ -1,139 +1,165 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BEFD29AD
-	for <iommu@lists.linux.dev>; Thu, 18 May 2023 20:30:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684441853;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Ks6xt/wC6E+ECyHt7NO8D94Kf2RxqGGaF/pXlLsIP+4=;
-	b=hhMSrOa6g48vToxh/Dd/Meb0nIyRItdD3x56+Pvx4vZNW8lYpx/ZWFCIjE1Cibp0bRi47A
-	Zr/qGc51mSJwItxCfv7n/Y46nuAHhstwqqch/hDYSZKOXXB482E9yU7pvvGLggl6It46OH
-	y8rYAoxwjdM8kKq+GR4L4EaWLs0oNaU=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-520-iKU1jcJNPO-FjERf98I9ZQ-1; Thu, 18 May 2023 16:30:51 -0400
-X-MC-Unique: iKU1jcJNPO-FjERf98I9ZQ-1
-Received: by mail-qv1-f70.google.com with SMTP id 6a1803df08f44-6238dcbc30bso11131826d6.1
-        for <iommu@lists.linux.dev>; Thu, 18 May 2023 13:30:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684441851; x=1687033851;
-        h=mime-version:user-agent:content-transfer-encoding:organization
-         :references:in-reply-to:date:cc:to:from:subject:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=UBHXSM6N4oYTfABvCGd3gPEAq2HM572bDIbMq8xh2Y4=;
-        b=e13kcUvprwM9sIbEoqxxO4Y3n7fS4HC8JPtAwAoSRgygnqHOM8lugnRitSMlMtiGP7
-         YJN3FDlQRCRa6GtWRJcs2EgKeWekDtWw6qHGI8vgT84NXjtIePVl1FFtVtB6yQey+KrV
-         /jttcCVjf3XugXYeQ3uc87ZAKAFckWCOqCPlO82MyWTkEBCkLTKTXanp1Nv5uK5qIRCz
-         eaHNoKmp7FMDVn7jHcc6dumcY2Ll829fn4lPv+l2dzLB6hu4HWIaJC5sEjvHUAQz4lI3
-         +KsWrLNOotnSjY1cIwuZaBEWHnmXylbijvXfJpbLxW6U7MmEoQpevgapW0EMnolyfeJW
-         Hzjw==
-X-Gm-Message-State: AC+VfDw8WfOuRZHTiInxclpSJCoc5HGAdXIkvGr/B46h8IM6rWnb1VTY
-	JOreViBZQ0AXbz+J80I37KxIEEbiZVS21DdNE4wlqubv06jTGL06VTHD15EChq4ZVaOm3DKr8yb
-	7IXjJeoGxCxo+JjOVct/rIZE=
-X-Received: by 2002:a05:6214:e4d:b0:5c7:d03c:f2b2 with SMTP id o13-20020a0562140e4d00b005c7d03cf2b2mr361304qvc.28.1684441851011;
-        Thu, 18 May 2023 13:30:51 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ7vnjCpdmwKeoU/jIRT/FUAUaf5A1UGyq52Jfrp1Qr7akRm4t7XVgexBhARVnPncRSkeITgNQ==
-X-Received: by 2002:a05:6214:e4d:b0:5c7:d03c:f2b2 with SMTP id o13-20020a0562140e4d00b005c7d03cf2b2mr361277qvc.28.1684441850746;
-        Thu, 18 May 2023 13:30:50 -0700 (PDT)
-Received: from ?IPv6:2600:4040:5c62:8200::feb? ([2600:4040:5c62:8200::feb])
-        by smtp.gmail.com with ESMTPSA id cx3-20020a056214188300b006238f82cde4sm763000qvb.108.2023.05.18.13.30.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 May 2023 13:30:50 -0700 (PDT)
-Message-ID: <b07c93bc7cb71a32091794cd97f7c702c34539da.camel@redhat.com>
-Subject: Re: [PATCH 3/4] drm/nouveau: stop using is_swiotlb_active
-From: Lyude Paul <lyude@redhat.com>
-To: Christoph Hellwig <hch@lst.de>, Juergen Gross <jgross@suse.com>, Stefano
- Stabellini <sstabellini@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
- Ingo Molnar <mingo@redhat.com>,  Borislav Petkov <bp@alien8.de>, Dave
- Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, "H. Peter Anvin"
- <hpa@zytor.com>, Ben Skeggs <bskeggs@redhat.com>, Karol Herbst
- <kherbst@redhat.com>
-Cc: xen-devel@lists.xenproject.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, nouveau@lists.freedesktop.org
-Date: Thu, 18 May 2023 16:30:49 -0400
-In-Reply-To: <20230518134253.909623-4-hch@lst.de>
-References: <20230518134253.909623-1-hch@lst.de>
-	 <20230518134253.909623-4-hch@lst.de>
-Organization: Red Hat Inc.
-User-Agent: Evolution 3.44.4 (3.44.4-3.fc36)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7348F134CB
+	for <iommu@lists.linux.dev>; Thu, 18 May 2023 20:47:39 +0000 (UTC)
+Received: from pps.filterd (m0333521.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34IIx6iJ025284;
+	Thu, 18 May 2023 20:47:21 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=corp-2023-03-30;
+ bh=lmBX3d6EEqid/HWfvIQqyMVUgRO0Wer5JoCL94qDets=;
+ b=qA27Ed6TF7M4KQu1JB/enySS1cHu83hGHvO469u8Em4h0xp5F5DwbMaN4ETx0B+hWF0d
+ uwWobPyMGVd4GNEM3DdLwhb/TKnrx6t8Y9Ft8yfOUJgHCBLDPxaQkYXv7oEtBQP29g34
+ LouvDc2fZcBCz8SoEH+NJNZx9XxdvIOIVo0TCfkwZ2sbXBSTipnprj6ozTdK2NjZHHuo
+ ZDtoqDiOkzibnQRd1qoKl9915Dit3fo3Ey10dOMeRdRY2XTV3nsACmzE48sUcdRWW3XY
+ RQ208itkEi6pJ/lAwBtqRaiKpTrGFJtboQnJtrmyCpdwWwpE6fZLALPVFtZlyXzpXMZ+ Zw== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3qj1fc97c4-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 18 May 2023 20:47:20 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 34IJ3Pn5032141;
+	Thu, 18 May 2023 20:47:19 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3qj10dae7g-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 18 May 2023 20:47:19 +0000
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 34IKlE2n033533;
+	Thu, 18 May 2023 20:47:18 GMT
+Received: from joaomart-mac.uk.oracle.com (dhcp-10-175-172-172.vpn.oracle.com [10.175.172.172])
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3qj10dae46-2;
+	Thu, 18 May 2023 20:47:18 +0000
+From: Joao Martins <joao.m.martins@oracle.com>
+To: iommu@lists.linux.dev
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+        Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>, Yi Liu <yi.l.liu@intel.com>,
+        Yi Y Sun <yi.y.sun@intel.com>, Eric Auger <eric.auger@redhat.com>,
+        Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
+        Joao Martins <joao.m.martins@oracle.com>
+Subject: [PATCH RFCv2 01/24] iommu: Add RCU-protected page free support
+Date: Thu, 18 May 2023 21:46:27 +0100
+Message-Id: <20230518204650.14541-2-joao.m.martins@oracle.com>
+In-Reply-To: <20230518204650.14541-1-joao.m.martins@oracle.com>
+References: <20230518204650.14541-1-joao.m.martins@oracle.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-05-18_15,2023-05-17_02,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 adultscore=0
+ malwarescore=0 mlxscore=0 spamscore=0 bulkscore=0 phishscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2304280000 definitions=main-2305180170
+X-Proofpoint-ORIG-GUID: dDDr2URMhFRURT5eRyrAX1r_Ov3r1IFZ
+X-Proofpoint-GUID: dDDr2URMhFRURT5eRyrAX1r_Ov3r1IFZ
 
-Reviewed-by: Lyude Paul <lyude@redhat.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
 
-Thanks for getting to this!
+The IOMMU page tables are updated using iommu_map/unmap() interfaces.
+Currently, there is no mandatory requirement for drivers to use locks
+to ensure concurrent updates to page tables, because it's assumed that
+overlapping IOVA ranges do not have concurrent updates. Therefore the
+IOMMU drivers only need to take care of concurrent updates to level
+page table entries.
 
-On Thu, 2023-05-18 at 15:42 +0200, Christoph Hellwig wrote:
-> Drivers have no business looking into dma-mapping internals and check
-> what backend is used.  Unfortunstely the DRM core is still broken and
-> tries to do plain page allocations instead of using DMA API allocators
-> by default and uses various bandaids on when to use dma_alloc_coherent.
->=20
-> Switch nouveau to use the same (broken) scheme as amdgpu and radeon
-> to remove the last driver user of is_swiotlb_active.
->=20
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  drivers/gpu/drm/nouveau/nouveau_ttm.c | 10 +++-------
->  1 file changed, 3 insertions(+), 7 deletions(-)
->=20
-> diff --git a/drivers/gpu/drm/nouveau/nouveau_ttm.c b/drivers/gpu/drm/nouv=
-eau/nouveau_ttm.c
-> index 1469a88910e45d..486f39f31a38df 100644
-> --- a/drivers/gpu/drm/nouveau/nouveau_ttm.c
-> +++ b/drivers/gpu/drm/nouveau/nouveau_ttm.c
-> @@ -24,9 +24,9 @@
->   */
-> =20
->  #include <linux/limits.h>
-> -#include <linux/swiotlb.h>
-> =20
->  #include <drm/ttm/ttm_range_manager.h>
-> +#include <drm/drm_cache.h>
-> =20
->  #include "nouveau_drv.h"
->  #include "nouveau_gem.h"
-> @@ -265,7 +265,6 @@ nouveau_ttm_init(struct nouveau_drm *drm)
->  =09struct nvkm_pci *pci =3D device->pci;
->  =09struct nvif_mmu *mmu =3D &drm->client.mmu;
->  =09struct drm_device *dev =3D drm->dev;
-> -=09bool need_swiotlb =3D false;
->  =09int typei, ret;
-> =20
->  =09ret =3D nouveau_ttm_init_host(drm, 0);
-> @@ -300,13 +299,10 @@ nouveau_ttm_init(struct nouveau_drm *drm)
->  =09=09drm->agp.cma =3D pci->agp.cma;
->  =09}
-> =20
-> -#if IS_ENABLED(CONFIG_SWIOTLB) && IS_ENABLED(CONFIG_X86)
-> -=09need_swiotlb =3D is_swiotlb_active(dev->dev);
-> -#endif
-> -
->  =09ret =3D ttm_device_init(&drm->ttm.bdev, &nouveau_bo_driver, drm->dev-=
->dev,
->  =09=09=09=09  dev->anon_inode->i_mapping,
-> -=09=09=09=09  dev->vma_offset_manager, need_swiotlb,
-> +=09=09=09=09  dev->vma_offset_manager,
-> +=09=09=09=09  drm_need_swiotlb(drm->client.mmu.dmabits),
->  =09=09=09=09  drm->client.mmu.dmabits <=3D 32);
->  =09if (ret) {
->  =09=09NV_ERROR(drm, "error initialising bo driver, %d\n", ret);
+But enabling new features challenges this assumption. For example, the
+hardware assisted dirty page tracking feature requires scanning page
+tables in interfaces other than mapping and unmapping. This might result
+in a use-after-free scenario in which a level page table has been freed
+by the unmap() interface, while another thread is scanning the next level
+page table.
 
---=20
-Cheers,
- Lyude Paul (she/her)
- Software Engineer at Red Hat
+This adds RCU-protected page free support so that the pages are really
+freed and reused after a RCU grace period. Hence, the page tables are
+safe for scanning within a rcu_read_lock critical region. Considering
+that scanning the page table is a rare case, this also adds a domain
+flag and the RCU-protected page free is only used when this flat is set.
+
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/iommu.c | 23 +++++++++++++++++++++++
+ include/linux/iommu.h | 10 ++++++++++
+ 2 files changed, 33 insertions(+)
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 91573efd9488..2088caae5074 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -3432,3 +3432,26 @@ struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
+ 
+ 	return domain;
+ }
++
++static void pgtble_page_free_rcu(struct rcu_head *rcu)
++{
++	struct page *page = container_of(rcu, struct page, rcu_head);
++
++	__free_pages(page, 0);
++}
++
++void iommu_free_pgtbl_pages(struct iommu_domain *domain,
++			    struct list_head *pages)
++{
++	struct page *page, *next;
++
++	if (!domain->concurrent_traversal) {
++		put_pages_list(pages);
++		return;
++	}
++
++	list_for_each_entry_safe(page, next, pages, lru) {
++		list_del(&page->lru);
++		call_rcu(&page->rcu_head, pgtble_page_free_rcu);
++	}
++}
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index e8c9a7da1060..39d25645a5ab 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -110,6 +110,7 @@ struct iommu_domain {
+ 			int users;
+ 		};
+ 	};
++	unsigned long concurrent_traversal:1;
+ };
+ 
+ static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
+@@ -697,6 +698,12 @@ static inline void dev_iommu_priv_set(struct device *dev, void *priv)
+ 	dev->iommu->priv = priv;
+ }
+ 
++static inline void domain_set_concurrent_traversal(struct iommu_domain *domain,
++						   bool value)
++{
++	domain->concurrent_traversal = value;
++}
++
+ int iommu_probe_device(struct device *dev);
+ 
+ int iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features f);
+@@ -721,6 +728,9 @@ void iommu_detach_device_pasid(struct iommu_domain *domain,
+ struct iommu_domain *
+ iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid,
+ 			       unsigned int type);
++
++void iommu_free_pgtbl_pages(struct iommu_domain *domain,
++			    struct list_head *pages);
+ #else /* CONFIG_IOMMU_API */
+ 
+ struct iommu_ops {};
+-- 
+2.17.2
 
