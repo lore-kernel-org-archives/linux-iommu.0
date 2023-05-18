@@ -1,115 +1,189 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A8571D2BD
-	for <iommu@lists.linux.dev>; Thu, 18 May 2023 20:49:47 +0000 (UTC)
-Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34IIx3RR018492;
-	Thu, 18 May 2023 20:49:25 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=corp-2023-03-30;
- bh=LQKbjMN345OghwKCC/x/MrOorlZAr2BYoI+k4BaQA+Y=;
- b=sGHL2F+8xs6TCPX9puedXFBKd19Dsatyq5wQ5myWqPwZ1n1Q3rdcGTfKfRUjUIe4PMN2
- Fwi0247qu4rlEeBp0sGPYuy4MV4PeHOO5bzG5etWLa8fMTcgYiB8/Z7wwNE6z9XWItqt
- XRur3415EPCU5Iw8PimfdpFK5DXVxT8yMQoeaerG7sOP+w8l6O4MzqleUPoeDPYPSILd
- 8qVp7dXaTrJfHMvdkHMqm4xMv04W2qmQXJMIdaD/ORAI/J5qncdrKdcz5Yj/EU6IYIA/
- deNwI4PJOyvzmfkL8sOSuySepPUltwKdUA4iUmMMQCxa21QuyYPzJsg4zA+2TGsSdBrI Dg== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3qj2kds9ca-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 18 May 2023 20:49:25 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 34IJV8dK032116;
-	Thu, 18 May 2023 20:49:24 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3qj10dafy2-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 18 May 2023 20:49:24 +0000
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 34IKlE3Z033533;
-	Thu, 18 May 2023 20:49:23 GMT
-Received: from joaomart-mac.uk.oracle.com (dhcp-10-175-172-172.vpn.oracle.com [10.175.172.172])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3qj10dae46-25;
-	Thu, 18 May 2023 20:49:23 +0000
-From: Joao Martins <joao.m.martins@oracle.com>
-To: iommu@lists.linux.dev
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
-        Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>, Yi Liu <yi.l.liu@intel.com>,
-        Yi Y Sun <yi.y.sun@intel.com>, Eric Auger <eric.auger@redhat.com>,
-        Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
-        Joao Martins <joao.m.martins@oracle.com>
-Subject: [PATCH RFCv2 24/24] iommu/arm-smmu-v3: Advertise IOMMU_DOMAIN_F_ENFORCE_DIRTY
-Date: Thu, 18 May 2023 21:46:50 +0100
-Message-Id: <20230518204650.14541-25-joao.m.martins@oracle.com>
-In-Reply-To: <20230518204650.14541-1-joao.m.martins@oracle.com>
-References: <20230518204650.14541-1-joao.m.martins@oracle.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 853A3134B3
+	for <iommu@lists.linux.dev>; Thu, 18 May 2023 21:21:37 +0000 (UTC)
+Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-2ac90178fdaso27111301fa.3
+        for <iommu@lists.linux.dev>; Thu, 18 May 2023 14:21:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1684444895; x=1687036895;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Ne0CBuH0zjj78muqOd6R3pN+R3bEYTrlVu/BAC21qjA=;
+        b=WzfcUPgFq7FTAqECnrUW6Q5fRuRqmlX5j/aRIuPzcQPBSfKL9PvUX/GRw/OPe6NxuN
+         94HQc9B8HOg11ExiqHdkvGsXuQrIy79i+zlLGvTKYOe7wM9jhQYKOkJLn8olt731NmQ8
+         YGhbyyjcG+2Ou4thxIw47e3PbkgUvasvFVJgCr9IFP+zSXm58o0CmdWGe1j6hl5BBtqS
+         goYQCYIQ4MwrcBeHYIT27V2XewnM4WKnyh+4pLgWDDEUTJqJU8uUfHRt5HttjgusfiJq
+         RGAFooZEdqIuiEx+DTAngirJn305x9C/GbKkgaSWgGkiSdGd5OeXBAWgTFcQpa86cP4f
+         6rAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684444895; x=1687036895;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Ne0CBuH0zjj78muqOd6R3pN+R3bEYTrlVu/BAC21qjA=;
+        b=ZX84ofmu+HNkTGsxQ+FVNagsz7QQ92P+y2XyEGAzN/NcabZJMRh+A/1WXQ8u6VWnTh
+         VZyT/9Pk0EjILPSke8VWHlfcRkjUk7DwW1PCuoA0slUsYrRFJjtOSDTCcW1qI9i54u69
+         /JSMvz0C9vnRVFilXA+nJ/6xsNC+kD4YGe9zaX1OGiHvOkmuTUygyGyGPwE1icCmDnIE
+         M+iZwL+Wq1DBMO+gLxiuBFoZKcBSeqLbIyN37w7M/x+DVF6SmsAvPhgY29naneTCSbVz
+         qW9K7kMysU9d9fPvbdSYy96ZnS20e2zAlSmDL+N+tGpBi1yYjsS/AN5BU8HCVTlZ1Vxs
+         GFyA==
+X-Gm-Message-State: AC+VfDzm71oM7Qe0+ZLsIs87Hf0E0+VyYl/NIPwB6YsfJ/ANJZ/zmyNG
+	HFSPm68dntwZVHa/fWg8ky84fA==
+X-Google-Smtp-Source: ACHHUZ6Gq3N2jwWufqKr6XW8Ud3J/F+FMeFoKmfTEbkhG6Xvwj7EVVx3QO9vEu9OgyzWj5dD47g47g==
+X-Received: by 2002:a2e:80c4:0:b0:2af:c2b:40c1 with SMTP id r4-20020a2e80c4000000b002af0c2b40c1mr2751706ljg.3.1684444895438;
+        Thu, 18 May 2023 14:21:35 -0700 (PDT)
+Received: from ?IPV6:2001:14ba:a0db:1f00::8a5? (dzdqv0yyyyyyyyyyybcwt-3.rev.dnainternet.fi. [2001:14ba:a0db:1f00::8a5])
+        by smtp.gmail.com with ESMTPSA id u9-20020ac248a9000000b004f00189e1dasm369214lfg.143.2023.05.18.14.21.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 May 2023 14:21:34 -0700 (PDT)
+Message-ID: <a11fd14a-995c-4f79-5754-a22b77995ba9@linaro.org>
+Date: Fri, 19 May 2023 00:21:34 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH v2 07/13] drm/msm/dpu: Add SM6350 support
+Content-Language: en-GB
+To: Konrad Dybcio <konrad.dybcio@linaro.org>, Rob Clark
+ <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
+ Sean Paul <sean@poorly.run>, David Airlie <airlied@gmail.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Krishna Manikandan <quic_mkrishn@quicinc.com>, Will Deacon
+ <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+ linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, Konrad Dybcio <konrad.dybcio@somainline.org>
+References: <20230411-topic-straitlagoon_mdss-v2-0-5def73f50980@linaro.org>
+ <20230411-topic-straitlagoon_mdss-v2-7-5def73f50980@linaro.org>
+ <fd2f43eb-aa10-eaf4-62f8-945a3152a28a@linaro.org>
+ <4da9bd19-9403-812e-4554-847b18df78c9@linaro.org>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <4da9bd19-9403-812e-4554-847b18df78c9@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-05-18_15,2023-05-17_02,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=902 adultscore=0
- malwarescore=0 mlxscore=0 spamscore=0 bulkscore=0 phishscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2304280000 definitions=main-2305180171
-X-Proofpoint-GUID: YKl1ERjnwCeW7oQrrjbN608uKWTdMhdh
-X-Proofpoint-ORIG-GUID: YKl1ERjnwCeW7oQrrjbN608uKWTdMhdh
 
-Now that we probe, and handle the DBM bit modifier, unblock
-the kAPI usage by exposing the IOMMU_DOMAIN_F_ENFORCE_DIRTY
-and implement it's requirement of revoking device attachment
-in the iommu_capable. Finally expose the IOMMU_CAP_DIRTY to
-users (IOMMUFD_DEVICE_GET_CAPS).
+On 21/04/2023 02:05, Konrad Dybcio wrote:
+> 
+> 
+> On 21.04.2023 00:41, Dmitry Baryshkov wrote:
+>> On 21/04/2023 01:31, Konrad Dybcio wrote:
+>>> Add SM6350 support to the DPU1 driver to enable display output.
+>>>
+>>> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+>>> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+>>> ---
+> [...]
+> 
+>>> +
+>>> +static const struct dpu_sspp_cfg sm6350_sspp[] = {
+>>> +    SSPP_BLK("sspp_0", SSPP_VIG0, 0x4000, 0x1f8, VIG_SC7180_MASK,
+>>> +         sc7180_vig_sblk_0, 0,  SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG0),
+>>> +    SSPP_BLK("sspp_8", SSPP_DMA0, 0x24000, 0x1f8, DMA_SDM845_MASK,
+>>> +         sdm845_dma_sblk_0, 1, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA0),
+>>> +    SSPP_BLK("sspp_9", SSPP_DMA1, 0x26000, 0x1f8, DMA_CURSOR_SDM845_MASK,
+>>> +         sdm845_dma_sblk_1, 5, SSPP_TYPE_DMA, DPU_CLK_CTRL_CURSOR0),
+>>
+>> DPU_CLK_CTRL_DMA0
+>>
+>>> +    SSPP_BLK("sspp_10", SSPP_DMA2, 0x28000, 0x1f8, DMA_CURSOR_SDM845_MASK,
+>>> +         sdm845_dma_sblk_2, 9, SSPP_TYPE_DMA, DPU_CLK_CTRL_CURSOR1),
+>>
+>> DPU_CLK_CTRL_DMA2
+> _DMA1?
+> 
+> 
+>>
+>>
+>>> +};
+>>> +
+> 
+>>> +static const struct dpu_qos_lut_entry sm6350_qos_linear_macrotile[] = {
+>>> +    {.fl = 0, .lut = 0x0011223344556677 },
+>>> +    {.fl = 0, .lut = 0x0011223445566777 },
+>>
+>> Do we need two equal entries here?
+> Hmm.. looks like the SDE driver dropped the fill level
+> logic in 4.19 times and that might have thrown me off
+> when porting this Since the [0] entry has what looks
+> like a lower LUT value, should I give it .fl=1?
+> 
+> 
+>>
+>> Also please push the qos to the dpu_hw_catalog.c, I want to take another look at these structures and it is easier if all of them are beneath one's eyes.
+> Will do.
+> 
+>>
+>>> +};
+>>> +
+>>> +static const struct dpu_perf_cfg sm6350_perf_data = {
+>>> +    .max_bw_low = 4200000,
+>>> +    .max_bw_high = 5100000,
+>>> +    .min_core_ib = 2500000,
+>>> +    .min_llcc_ib = 0,
+>>> +    .min_dram_ib = 1600000,
+>>> +    .min_prefill_lines = 35,
+>>> +    /* TODO: confirm danger_lut_tbl */
+>>> +    .danger_lut_tbl = {0xffff, 0xffff, 0x0, 0x0, 0xffff},
+> [...]
+> 
+> 
+>>> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
+>>> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
+>>> @@ -320,6 +320,8 @@ enum dpu_qos_lut_usage {
+>>>        DPU_QOS_LUT_USAGE_LINEAR,
+>>>        DPU_QOS_LUT_USAGE_MACROTILE,
+>>>        DPU_QOS_LUT_USAGE_NRT,
+>>> +    DPU_QOS_LUT_USAGE_CWB,
+>>> +    DPU_QOS_LUT_USAGE_MACROTILE_QSEED,
+>>
+>> This should probably be removed. It would be nice to clean these things up, but not as a part of sm6350.
+> Well, I won't be able to fill in the danger LUT table otherwise!
 
-Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+danger/safe LUT tables have two entries for portrait/landscape (which we 
+do not support). Please choose either of them for now.
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index bf0aac333725..71dd95a687fd 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2014,6 +2014,8 @@ static bool arm_smmu_capable(struct device *dev, enum iommu_cap cap)
- 		return master->smmu->features & ARM_SMMU_FEAT_COHERENCY;
- 	case IOMMU_CAP_NOEXEC:
- 		return true;
-+	case IOMMU_CAP_DIRTY:
-+		return arm_smmu_dbm_capable(master->smmu);
- 	default:
- 		return false;
- 	}
-@@ -2430,6 +2432,11 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	master = dev_iommu_priv_get(dev);
- 	smmu = master->smmu;
- 
-+	if (domain->flags & IOMMU_DOMAIN_F_ENFORCE_DIRTY &&
-+	    !arm_smmu_dbm_capable(smmu))
-+		return -EINVAL;
-+
-+
- 	/*
- 	 * Checking that SVA is disabled ensures that this device isn't bound to
- 	 * any mm, and can be safely detached from its old domain. Bonds cannot
-@@ -2913,6 +2920,7 @@ static void arm_smmu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
- }
- 
- static struct iommu_ops arm_smmu_ops = {
-+	.supported_flags	= IOMMU_DOMAIN_F_ENFORCE_DIRTY,
- 	.capable		= arm_smmu_capable,
- 	.domain_alloc		= arm_smmu_domain_alloc,
- 	.probe_device		= arm_smmu_probe_device,
+These two entries should be dropped for now (it was known for some time 
+that MACROTILE_QSEED != MACROTILE. And CWB is not supported yet).
+
+> 
+> Konrad
+>>
+>>>        DPU_QOS_LUT_USAGE_MAX,
+>>>    };
+>>>    @@ -880,6 +882,7 @@ extern const struct dpu_mdss_cfg dpu_sc8180x_cfg;
+>>>    extern const struct dpu_mdss_cfg dpu_sm8250_cfg;
+>>>    extern const struct dpu_mdss_cfg dpu_sc7180_cfg;
+>>>    extern const struct dpu_mdss_cfg dpu_sm6115_cfg;
+>>> +extern const struct dpu_mdss_cfg dpu_sm6350_cfg;
+>>>    extern const struct dpu_mdss_cfg dpu_qcm2290_cfg;
+>>>    extern const struct dpu_mdss_cfg dpu_sm8350_cfg;
+>>>    extern const struct dpu_mdss_cfg dpu_sc7280_cfg;
+>>> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+>>> index 0e7a68714e9e..46be7ad8d615 100644
+>>> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+>>> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+>>> @@ -1286,6 +1286,7 @@ static const struct of_device_id dpu_dt_match[] = {
+>>>        { .compatible = "qcom,sc8180x-dpu", .data = &dpu_sc8180x_cfg, },
+>>>        { .compatible = "qcom,sc8280xp-dpu", .data = &dpu_sc8280xp_cfg, },
+>>>        { .compatible = "qcom,sm6115-dpu", .data = &dpu_sm6115_cfg, },
+>>> +    { .compatible = "qcom,sm6350-dpu", .data = &dpu_sm6350_cfg, },
+>>>        { .compatible = "qcom,sm8150-dpu", .data = &dpu_sm8150_cfg, },
+>>>        { .compatible = "qcom,sm8250-dpu", .data = &dpu_sm8250_cfg, },
+>>>        { .compatible = "qcom,sm8350-dpu", .data = &dpu_sm8350_cfg, },
+>>>
+>>
+
 -- 
-2.17.2
+With best wishes
+Dmitry
 
