@@ -1,105 +1,128 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0118125AD
-	for <iommu@lists.linux.dev>; Thu, 18 May 2023 13:43:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-	:Reply-To:Content-Type:Content-ID:Content-Description;
-	bh=0qIa3nDGH6TUOBAqJwF2s8Hp3AbyQ3Z9bxsITaMukWA=; b=pbfDTeq5MMRbhVEH4CcdLdnaIl
-	cLan6u3lCSEqM4f7q8nJqZieDbhwOHHwFhSmsXM+2qxYj6DG3yMd0HOMjR58sstguuZ77BU9YJPyF
-	Gq2BxiI4p9KIc19qV7MrhjjquWR8DTa68qrZBvDpK4lspAF2bcFqXQFEGH/ctEOaYlz0ydULrznJu
-	fTKWdqL1KcqMzgW8IWNlqgjkpiSonSU/N02Ryto3srwkIe5afJY4CG3YrCwULl9ZWmNuF8if5C7Pj
-	f+9G6D6Evcs7iO6Gx1cZhk6B1nbfBHfS3KpZeNIVDKkj5akOhZyeVSrW5OgkXWV06WpKhlDx7WvLX
-	bin8x6rQ==;
-Received: from [2001:4bb8:188:3dd5:1149:8081:5f51:3e54] (helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-	id 1pzduK-00D6SB-1r;
-	Thu, 18 May 2023 13:43:05 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: Juergen Gross <jgross@suse.com>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	x86@kernel.org,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	Ben Skeggs <bskeggs@redhat.com>,
-	Karol Herbst <kherbst@redhat.com>,
-	Lyude Paul <lyude@redhat.com>
-Cc: xen-devel@lists.xenproject.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	nouveau@lists.freedesktop.org
-Subject: [PATCH 3/4] drm/nouveau: stop using is_swiotlb_active
-Date: Thu, 18 May 2023 15:42:52 +0200
-Message-Id: <20230518134253.909623-4-hch@lst.de>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230518134253.909623-1-hch@lst.de>
-References: <20230518134253.909623-1-hch@lst.de>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76C9823C8A
+	for <iommu@lists.linux.dev>; Thu, 18 May 2023 13:56:37 +0000 (UTC)
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-3f4c6c4b425so13512455e9.2
+        for <iommu@lists.linux.dev>; Thu, 18 May 2023 06:56:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1684418195; x=1687010195;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=MPzdKdRGQGElWUYovOVhZT8DMwrnx0aSVXCHunf9t6E=;
+        b=As/izmzGYSC0uCCOTiNEMEWQHttyHnw/qT5g27C1MUAraum18e9vbbIcd1uBWgx6vC
+         cO4wX5OzcnWDndLe9aLvteTZlEcVRzSaBWfOBfjKJfXCaNsbz/9zq7jBbMgnfadwAgGg
+         qT2dOdGDo2r3+fmCM5Y6rYMdWd2JrFAZcfOUzNENAGmpnB7yaKulsK3dHXZn+GSSIRim
+         Hl4qgHSj7jRacXc9ZvmoDC2ciE0DvQA80mdVGQTyLNjgx3W8Losc8znXsUCxzTfYMK4E
+         71BtjV124+dqVQ5yO1QXKPPVW/5Pvyif9WNzbXPsRArmCwsFaQYsM8C3BxAD9ep22EXT
+         Ow0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684418195; x=1687010195;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MPzdKdRGQGElWUYovOVhZT8DMwrnx0aSVXCHunf9t6E=;
+        b=X5rXVXQVujnbdRkiCrzkQupCilVnZZqKcS3xX+LZYiHRJmp0k3UZEqDcRc0H9+oL0y
+         ahltD80y0TX3dSDhKtD/XWlEAgcNEXbmxp1bfL2O5rr+pew24B7kaEhFGLME5m7GQI7s
+         9OIOcBdu6b8ud/IZqhl8WETHgLVYiWuCnwOxEC6F+CZb6xNVdVs4oQmDUIAwp/3XlPdt
+         eJSEsK2zlN2NVLP/HuPrHoGUq/t0vreO9oJz7FyvhyCB49FheMT/I0PlWd+vVM8LsXp7
+         wxvBblzDOCm+zs7W574Zz3mLhrYMtPa5omcFRqH4CO1W5EJA9uo00TlBlnVuMIdQsa3G
+         U3Fw==
+X-Gm-Message-State: AC+VfDyFfNSEpEOxVL09w6sYZT5JkQm4iNlatYVZaBM6ESqvBBDiudcN
+	kmuCI2iB16Cb3cqYDT4tgfvCTg==
+X-Google-Smtp-Source: ACHHUZ4KO5bq7EE1YgvTlu5at/kRF7zYw/DEuhR+gKplRgcp8q22BfKN7YzXPz82nsxzB+jpDTJn0w==
+X-Received: by 2002:a05:600c:364c:b0:3f4:2267:10cf with SMTP id y12-20020a05600c364c00b003f4226710cfmr1548896wmq.32.1684418195586;
+        Thu, 18 May 2023 06:56:35 -0700 (PDT)
+Received: from myrica (5750a5b3.skybroadband.com. [87.80.165.179])
+        by smtp.gmail.com with ESMTPSA id p4-20020a05600c204400b003f0aefcc457sm5554965wmg.45.2023.05.18.06.56.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 May 2023 06:56:35 -0700 (PDT)
+Date: Thu, 18 May 2023 14:56:38 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+	eric.auger@redhat.com, virtualization@lists.linux-foundation.org,
+	iommu@lists.linux.dev, akihiko.odaki@daynix.com
+Subject: Re: [PATCH] iommu/virtio: Detach domain on endpoint release
+Message-ID: <20230518135638.GB2587493@myrica>
+References: <20230414150744.562456-1-jean-philippe@linaro.org>
+ <20230510081157.GA3326511@myrica>
+ <ZGT+44a6RYZ999kz@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZGT+44a6RYZ999kz@nvidia.com>
 
-Drivers have no business looking into dma-mapping internals and check
-what backend is used.  Unfortunstely the DRM core is still broken and
-tries to do plain page allocations instead of using DMA API allocators
-by default and uses various bandaids on when to use dma_alloc_coherent.
+On Wed, May 17, 2023 at 01:20:51PM -0300, Jason Gunthorpe wrote:
+> On Wed, May 10, 2023 at 09:11:57AM +0100, Jean-Philippe Brucker wrote:
+> 
+> > > diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+> > > index 5b8fe9bfa9a5..3d3d4462359e 100644
+> > > --- a/drivers/iommu/virtio-iommu.c
+> > > +++ b/drivers/iommu/virtio-iommu.c
+> > > @@ -788,6 +788,28 @@ static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
+> > >  	return 0;
+> > >  }
+> > >  
+> > > +static void viommu_detach_dev(struct viommu_endpoint *vdev)
+> > > +{
+> > > +	int i;
+> > > +	struct virtio_iommu_req_detach req;
+> > > +	struct viommu_domain *vdomain = vdev->vdomain;
+> > > +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(vdev->dev);
+> > > +
+> > > +	if (!vdomain)
+> > > +		return;
+> > > +
+> > > +	req = (struct virtio_iommu_req_detach) {
+> > > +		.head.type	= VIRTIO_IOMMU_T_DETACH,
+> > > +		.domain		= cpu_to_le32(vdomain->id),
+> > > +	};
+> > > +
+> > > +	for (i = 0; i < fwspec->num_ids; i++) {
+> > > +		req.endpoint = cpu_to_le32(fwspec->ids[i]);
+> > > +		WARN_ON(viommu_send_req_sync(vdev->viommu, &req, sizeof(req)));
+> > > +	}
+> > > +	vdev->vdomain = NULL;
+> 
+> Not for this patch, but something to work on..
+> 
+> I assume detach disconnects the container on the VFIO side and puts it
+> into a BLOCKED state?
 
-Switch nouveau to use the same (broken) scheme as amdgpu and radeon
-to remove the last driver user of is_swiotlb_active.
+At the moment that depends on the VMM boot-bypass policy: if virtio-iommu
+is booted with global-bypass set, then detaching will go back to an
+identity-mapped container, not a BLOCKED state. If the global-bypass bit
+is clear, then it does go back to a BLOCKED state. However QEMU has a
+default policy of boot-bypass (because that allows booting a firmware or
+OS that doesn't have the IOMMU drivers).
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- drivers/gpu/drm/nouveau/nouveau_ttm.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+The driver can clear the global-bypass bit to change this behavior, but at
+the moment we just follow the VMM boot policy.
 
-diff --git a/drivers/gpu/drm/nouveau/nouveau_ttm.c b/drivers/gpu/drm/nouveau/nouveau_ttm.c
-index 1469a88910e45d..486f39f31a38df 100644
---- a/drivers/gpu/drm/nouveau/nouveau_ttm.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_ttm.c
-@@ -24,9 +24,9 @@
-  */
- 
- #include <linux/limits.h>
--#include <linux/swiotlb.h>
- 
- #include <drm/ttm/ttm_range_manager.h>
-+#include <drm/drm_cache.h>
- 
- #include "nouveau_drv.h"
- #include "nouveau_gem.h"
-@@ -265,7 +265,6 @@ nouveau_ttm_init(struct nouveau_drm *drm)
- 	struct nvkm_pci *pci = device->pci;
- 	struct nvif_mmu *mmu = &drm->client.mmu;
- 	struct drm_device *dev = drm->dev;
--	bool need_swiotlb = false;
- 	int typei, ret;
- 
- 	ret = nouveau_ttm_init_host(drm, 0);
-@@ -300,13 +299,10 @@ nouveau_ttm_init(struct nouveau_drm *drm)
- 		drm->agp.cma = pci->agp.cma;
- 	}
- 
--#if IS_ENABLED(CONFIG_SWIOTLB) && IS_ENABLED(CONFIG_X86)
--	need_swiotlb = is_swiotlb_active(dev->dev);
--#endif
--
- 	ret = ttm_device_init(&drm->ttm.bdev, &nouveau_bo_driver, drm->dev->dev,
- 				  dev->anon_inode->i_mapping,
--				  dev->vma_offset_manager, need_swiotlb,
-+				  dev->vma_offset_manager,
-+				  drm_need_swiotlb(drm->client.mmu.dmabits),
- 				  drm->client.mmu.dmabits <= 32);
- 	if (ret) {
- 		NV_ERROR(drm, "error initialising bo driver, %d\n", ret);
--- 
-2.39.2
+> 
+> Can you wrapper this into a BLOCKED domain like we are moving drivers
+> toward, and then attach the blocked domain instead of introducing this
+> special case?
 
+Yes, I think the way the virtio-iommu driver should implement BLOCKED
+domains is initially clearing the global-bypass bit, and then issuing
+DETACH requests when the core asks to attach a BLOCKED domain. This has
+the same effect as issuing an ATTACH request with an empty domain, but
+requires fewer resources in the VMM.
+
+Thanks,
+Jean
+
+> 
+> I've been thinking about having some core code support to do fairly
+> common pattern of 'parking' the iommu at some well defined translation
+> mode, BLOCKED in this case.
+> 
+> Thanks,
+> Jason
