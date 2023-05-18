@@ -1,112 +1,120 @@
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80ED523C9D
-	for <iommu@lists.linux.dev>; Thu, 18 May 2023 16:49:36 +0000 (UTC)
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-30644c18072so1518583f8f.2
-        for <iommu@lists.linux.dev>; Thu, 18 May 2023 09:49:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1684428574; x=1687020574;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=AM8DwTmosLNfh4+dWykqnnp3+AvL+dO94NEcMeQYDFQ=;
-        b=jkffKmivCJNFzoQ6z0jsuQ5OnNUV5s7hDGPvgf502x3D56V4OZ9auOZcWvEUFF+cu5
-         8Bqzvq5wySx+SiLdeLdGNJYKOBq6L0BhG3Vb3hSZFZP79+k9eN4YkE5U92VREm7o8lWw
-         yWmJrf52yWPr5YCVg18BLi0hjqS/8Im/oTiO5W7fBVOEvoYqljLM76wz9skAAJIwBM9V
-         /2W2q/uS8iNZ+qjIDhvjh9AhHmm9zozY4c5x3z7RX0p4vZahyMTXon2PTgKkZQG7lGW1
-         LQpd7pxqDlGbUgLIviL4Z+/DvvS2tburMNKQ/CYy70SEk8A9NdQWEZYhujMuahMAQiyz
-         9StQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684428574; x=1687020574;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AM8DwTmosLNfh4+dWykqnnp3+AvL+dO94NEcMeQYDFQ=;
-        b=D68UNwvJrPLYH9kUaItYjD7r9nWsGPyQ2WmiZJy5Lbmcz0KXK59MPlDTNGBS59mbQv
-         LI422qJRQHdbt2oxbSSQV3VpX005SXSJA4nY0sCXSOXyyteR+/lcpcVgzpObGCOnKjiI
-         4tQe/BaLWygGNRDMdHkflqzUlaw0efc5J3Toqda/h8BZrwRP1Rhg2IAI5LiDHyT4uaXX
-         OBFt5jIPz3CC/taV21/NfbKqHnKqqDANnwMFgpGo9yHZrrlvD+d1/E6mDrDGh7HMOAlM
-         zT7FkS759gIgKDedt6HlRYXVF0swSXGCgFnsYfYf0syYpb5cST6oiyxOEStxgYSa0DdM
-         uyuw==
-X-Gm-Message-State: AC+VfDzR01HRhMHBcE8LL6r0/MnKjR4s0cKwPjQg1Dpcd4DLgLU/Dc76
-	feq7qBTEX0Qj4CGUUsK6+Jr38A==
-X-Google-Smtp-Source: ACHHUZ7/wGIKmYno/qEiN1QV7YGyBQN5K4Nr3OQzJ53R0OvyhypPiOw2/5mRgNMSCEwVBuOW1B6WKA==
-X-Received: by 2002:a5d:4041:0:b0:309:732:86df with SMTP id w1-20020a5d4041000000b00309073286dfmr1915516wrp.58.1684428574676;
-        Thu, 18 May 2023 09:49:34 -0700 (PDT)
-Received: from myrica (5750a5b3.skybroadband.com. [87.80.165.179])
-        by smtp.gmail.com with ESMTPSA id e2-20020adfe382000000b00304832cd960sm2726216wrm.10.2023.05.18.09.49.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 May 2023 09:49:34 -0700 (PDT)
-Date: Thu, 18 May 2023 17:49:37 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	eric.auger@redhat.com, virtualization@lists.linux-foundation.org,
-	iommu@lists.linux.dev, akihiko.odaki@daynix.com
-Subject: Re: [PATCH] iommu/virtio: Detach domain on endpoint release
-Message-ID: <20230518164937.GA2934820@myrica>
-References: <20230414150744.562456-1-jean-philippe@linaro.org>
- <20230510081157.GA3326511@myrica>
- <ZGT+44a6RYZ999kz@nvidia.com>
- <20230518135638.GB2587493@myrica>
- <ZGYvMDbkBN+2UgzG@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 490D2182B8
+	for <iommu@lists.linux.dev>; Thu, 18 May 2023 17:34:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 785F2C433D2;
+	Thu, 18 May 2023 17:34:05 +0000 (UTC)
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Christoph Hellwig <hch@lst.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Will Deacon <will@kernel.org>,
+	Marc Zyngier <maz@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Ard Biesheuvel <ardb@kernel.org>,
+	Isaac Manjarres <isaacmanjarres@google.com>,
+	Saravana Kannan <saravanak@google.com>,
+	Alasdair Kergon <agk@redhat.com>,
+	Daniel Vetter <daniel@ffwll.ch>,
+	Joerg Roedel <joro@8bytes.org>,
+	Mark Brown <broonie@kernel.org>,
+	Mike Snitzer <snitzer@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	linux-mm@kvack.org,
+	iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v4 00/15] mm, dma, arm64: Reduce ARCH_KMALLOC_MINALIGN to 8
+Date: Thu, 18 May 2023 18:33:48 +0100
+Message-Id: <20230518173403.1150549-1-catalin.marinas@arm.com>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZGYvMDbkBN+2UgzG@nvidia.com>
+Content-Transfer-Encoding: 8bit
 
-On Thu, May 18, 2023 at 10:59:12AM -0300, Jason Gunthorpe wrote:
-> On Thu, May 18, 2023 at 02:56:38PM +0100, Jean-Philippe Brucker wrote:
-> > > Can you wrapper this into a BLOCKED domain like we are moving drivers
-> > > toward, and then attach the blocked domain instead of introducing this
-> > > special case?
-> > 
-> > Yes, I think the way the virtio-iommu driver should implement BLOCKED
-> > domains is initially clearing the global-bypass bit, and then issuing
-> > DETACH requests when the core asks to attach a BLOCKED domain. This has
-> > the same effect as issuing an ATTACH request with an empty domain, but
-> > requires fewer resources in the VMM.
-> 
-> Does that exclude identity though?
+Hi,
 
-No, identity attaches a domain with the ATTACH_F_BYPASS flag (or an
-identity-mapped domain if the feature is missing), it doesn't rely on
-global-bypass.
+That's the fourth version of the series reducing the kmalloc() minimum
+alignment on arm64 to 8 (from 128).
 
-> 
-> It seems like the protocol should not have an implicit operation like
-> this, the desired translation mode should always be made
-> explicit.
+The first 10 patches decouple ARCH_KMALLOC_MINALIGN from
+ARCH_DMA_MINALIGN and, for arm64, it limits the kmalloc() caches to
+those aligned to the run-time probed cache_line_size(). The advantage on
+arm64 is that we gain the kmalloc-{64,192} caches.
 
-I probably misunderstood your plan for BLOCKED. This particular patch is
-about removing devices from the machine, for example PCIe hot-unplug. So I
-thought you were suggesting the core will at some point attach a BLOCKED
-domain to a device being removed, in order to block translation while the
-device is being removed and while a new one is being plugged in with the
-same RID. For that case I think DETACH, rather than ATTACH an empty
-domain, makes more sense. Otherwise with the same reasoning we'd need to
-attach all 4 billion endpoint IDs to an empty domain at boot which isn't
-feasible. In addition I don't think we'll want to force the VMMs to keep
-endpoint ID state internally after destroying devices, though that does
-need to be specified one way or another.
+The subsequent patches (11 to 15) further reduce the kmalloc() caches to
+kmalloc-{8,16,32,96} if the default swiotlb is present by bouncing small
+buffers in the DMA API. For iommu, following discussions with Robin, we
+concluded that it's still simpler to walk the sg list if the device is
+non-coherent and follow the bouncing path when any of the elements may
+originate from a small kmalloc() allocation.
 
-If BLOCKED is only for transient states, for example while a struct device
-is not bound to a driver, then attaching an empty domain works and is
-simpler to implement. Probably the best is to implement BLOCKED this way
-and still call DETACH in the release_device() op.
+Main changes since v3:
 
-In any case, it shouldn't make a difference to the core. I'll see which
-one is better for the VMMs.
+- Reorganise the series so that the first 10 patches could be applied
+  before the DMA bouncing. They are still useful on arm64 reducing the
+  kmalloc() alignment to 64.
 
-Thanks,
-Jean
+- There is no dma_sg_kmalloc_needs_bounce() function, it has been
+  unrolled in the iommu_dma_sync_sg_for_device() function.
 
-> Having a boot time default makes sense, but there is little
-> reason for an OS to go back to the boot time default...
-> 
-> Jason
+- No crypto changes needed following Herbert's reworking of the crypto
+  code (thanks!).
+
+The patches are also available on this branch:
+
+git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux devel/kmalloc-minalign
+
+Thanks.
+
+Catalin Marinas (14):
+  mm/slab: Decouple ARCH_KMALLOC_MINALIGN from ARCH_DMA_MINALIGN
+  dma: Allow dma_get_cache_alignment() to return the smaller
+    cache_line_size()
+  mm/slab: Simplify create_kmalloc_cache() args and make it static
+  mm/slab: Limit kmalloc() minimum alignment to
+    dma_get_cache_alignment()
+  drivers/base: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+  drivers/gpu: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+  drivers/usb: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+  drivers/spi: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+  drivers/md: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+  arm64: Allow kmalloc() caches aligned to the smaller cache_line_size()
+  dma-mapping: Force bouncing if the kmalloc() size is not
+    cache-line-aligned
+  iommu/dma: Force bouncing if the size is not cacheline-aligned
+  mm: slab: Reduce the kmalloc() minimum alignment if DMA bouncing
+    possible
+  arm64: Enable ARCH_WANT_KMALLOC_DMA_BOUNCE for arm64
+
+Robin Murphy (1):
+  scatterlist: Add dedicated config for DMA flags
+
+ arch/arm64/Kconfig             |  2 ++
+ arch/arm64/include/asm/cache.h |  1 +
+ arch/arm64/mm/init.c           |  7 ++++-
+ drivers/base/devres.c          |  6 ++---
+ drivers/gpu/drm/drm_managed.c  |  6 ++---
+ drivers/iommu/dma-iommu.c      | 25 ++++++++++++++----
+ drivers/md/dm-crypt.c          |  2 +-
+ drivers/pci/Kconfig            |  1 +
+ drivers/spi/spidev.c           |  2 +-
+ drivers/usb/core/buffer.c      |  8 +++---
+ include/linux/dma-map-ops.h    | 48 ++++++++++++++++++++++++++++++++++
+ include/linux/dma-mapping.h    |  4 ++-
+ include/linux/scatterlist.h    | 29 +++++++++++++++++---
+ include/linux/slab.h           | 16 +++++++++---
+ kernel/dma/Kconfig             | 19 ++++++++++++++
+ kernel/dma/direct.h            |  3 ++-
+ mm/slab.c                      |  6 +----
+ mm/slab.h                      |  5 ++--
+ mm/slab_common.c               | 43 +++++++++++++++++++++++-------
+ 19 files changed, 188 insertions(+), 45 deletions(-)
+
