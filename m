@@ -1,37 +1,37 @@
 Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FF311D2BD
-	for <iommu@lists.linux.dev>; Thu, 18 May 2023 20:49:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B84281D2BD
+	for <iommu@lists.linux.dev>; Thu, 18 May 2023 20:49:30 +0000 (UTC)
 Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34IIxYl6012418;
-	Thu, 18 May 2023 20:49:14 GMT
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34IIxZTg012446;
+	Thu, 18 May 2023 20:49:17 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=corp-2023-03-30;
- bh=rarZQdWfoONRlaZJKhm0wS9rPiQ9FWSS3CiTbDMh+yU=;
- b=YVl0/JuyzGQPa3yhr/6wz2rnEVpyNvFWr1qXsIdvuyHB6eNJnQhhQtq1HJrvVX16R4AB
- zTva1YZxeRFqI2QpE2CAO1L+42y1vRDY6JGEWFa7erAhNLPmrPO9HRkvNxKjNgq1yVZJ
- tPJ7JfQ43xF73kjJoU/TQEEESUkpzcvJcoBF/Gtx04EQadqyvtPjejA05NuPexIGqCnn
- nmzmXBey0qeGvF5Jq1Z/Ey54X4mINOcLQQL3ue1LVjSQ5yY34hdWs6+/rLj8DeoPBwEy
- 8VwTe6SBRcuW3SieAjDcVpe+G3W28lAGwCE4nCJlaac0pLhM9qVaeAOXS2E7Yo/QsF7u 8g== 
+ bh=GuoSj46gusCPx2n8p781D/gEMzPiYIlbDruZ4mnxf18=;
+ b=P7nMhyREZdOL9tPzY0ptU6Xo9IcPA9WI3yZumnJs8H7cLRYO5+AlU9uB7Jw2C1Z14UcE
+ DmiYVhP7nD09sE9bkIOafDqmg3mfJL13rIXHHVhDAwb2yinwk48vHGhQfsm8XBfoo/W7
+ 6CFrpXXqpAqij9lPUWgdsET8a/WpDIVSK57d79lralMIR9iOpSIrKIe6aGOYMvy1rGO1
+ 8WwUV5rtpM1ibc4CKuZwLKbHEJG4tkLg7sdMGZfNfOO8UQgXccMrdUQCfEYh1pkzRhrC
+ EiDRzRdrNexURMXM/UkXcdtV6WLv1J/2sD6+rY5Wo7216SUSxsf15QYpQi3wNfeoVFca lg== 
 Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3qmxfc3k04-1
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3qmxfc3k16-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 18 May 2023 20:48:55 +0000
+	Thu, 18 May 2023 20:49:17 +0000
 Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 34IJ1gqV032153;
-	Thu, 18 May 2023 20:48:53 GMT
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 34IJ3Pnp032141;
+	Thu, 18 May 2023 20:49:16 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3qj10daffx-1
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3qj10daftw-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 18 May 2023 20:48:53 +0000
+	Thu, 18 May 2023 20:49:15 +0000
 Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 34IKlE3L033533;
-	Thu, 18 May 2023 20:48:53 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 34IKlE3V033533;
+	Thu, 18 May 2023 20:49:15 GMT
 Received: from joaomart-mac.uk.oracle.com (dhcp-10-175-172-172.vpn.oracle.com [10.175.172.172])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3qj10dae46-18;
-	Thu, 18 May 2023 20:48:52 +0000
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3qj10dae46-23;
+	Thu, 18 May 2023 20:49:14 +0000
 From: Joao Martins <joao.m.martins@oracle.com>
 To: iommu@lists.linux.dev
 Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
@@ -44,9 +44,9 @@ Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
         Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
         Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
         Joao Martins <joao.m.martins@oracle.com>
-Subject: [PATCH RFCv2 17/24] iommu/amd: Access/Dirty bit support in IOPTEs
-Date: Thu, 18 May 2023 21:46:43 +0100
-Message-Id: <20230518204650.14541-18-joao.m.martins@oracle.com>
+Subject: [PATCH RFCv2 22/24] iommu/arm-smmu-v3: Add read_and_clear_dirty() support
+Date: Thu, 18 May 2023 21:46:48 +0100
+Message-Id: <20230518204650.14541-23-joao.m.martins@oracle.com>
 In-Reply-To: <20230518204650.14541-1-joao.m.martins@oracle.com>
 References: <20230518204650.14541-1-joao.m.martins@oracle.com>
 Precedence: bulk
@@ -59,409 +59,202 @@ Content-Transfer-Encoding: 8bit
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.170.22
  definitions=2023-05-18_15,2023-05-17_02,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 adultscore=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=709 adultscore=0
  malwarescore=0 mlxscore=0 spamscore=0 bulkscore=0 phishscore=0
  suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2304280000 definitions=main-2305180171
-X-Proofpoint-GUID: RaRMpkRs2DAbAA8PItrBG-mVO30-SbQQ
-X-Proofpoint-ORIG-GUID: RaRMpkRs2DAbAA8PItrBG-mVO30-SbQQ
+X-Proofpoint-GUID: pVWoFGVw22b47mNe1uOMa0FvadM2rC3W
+X-Proofpoint-ORIG-GUID: pVWoFGVw22b47mNe1uOMa0FvadM2rC3W
 
-IOMMU advertises Access/Dirty bits if the extended feature register
-reports it. Relevant AMD IOMMU SDM ref[0]
-"1.3.8 Enhanced Support for Access and Dirty Bits"
+From: Keqian Zhu <zhukeqian1@huawei.com>
 
-To enable it set the DTE flag in bits 7 and 8 to enable access, or
-access+dirty. With that, the IOMMU starts marking the D and A flags on
-every Memory Request or ATS translation request. It is on the VMM side
-to steer whether to enable dirty tracking or not, rather than wrongly
-doing in IOMMU. Relevant AMD IOMMU SDM ref [0], "Table 7. Device Table
-Entry (DTE) Field Definitions" particularly the entry "HAD".
+.read_and_clear_dirty() IOMMU domain op takes care of reading the dirty
+bits (i.e. PTE has both DBM and AP[2] set) and marshalling into a bitmap of
+a given page size.
 
-To actually toggle on and off it's relatively simple as it's setting
-2 bits on DTE and flush the device DTE cache.
+While reading the dirty bits we also clear the PTE AP[2] bit to mark it as
+writable-clean depending on read_and_clear_dirty() flags.
 
-To get what's dirtied use existing AMD io-pgtable support, by walking
-the pagetables over each IOVA, with fetch_pte().  The IOTLB flushing is
-left to the caller (much like unmap), and iommu_dirty_bitmap_record() is
-the one adding page-ranges to invalidate. This allows caller to batch
-the flush over a big span of IOVA space, without the iommu wondering
-about when to flush.
+Structure it in a way that the IOPTE walker is generic, and so we pass a
+function pointer over what to do on a per-PTE basis.
 
-Worthwhile sections from AMD IOMMU SDM:
+[Link below points to the original version that was based on]
 
-"2.2.3.1 Host Access Support"
-"2.2.3.2 Host Dirty Support"
-
-For details on how IOMMU hardware updates the dirty bit see,
-and expects from its consequent clearing by CPU:
-
-"2.2.7.4 Updating Accessed and Dirty Bits in the Guest Address Tables"
-"2.2.7.5 Clearing Accessed and Dirty Bits"
-
-Quoting the SDM:
-
-"The setting of accessed and dirty status bits in the page tables is
-visible to both the CPU and the peripheral when sharing guest page
-tables. The IOMMU interlocked operations to update A and D bits must be
-64-bit operations and naturally aligned on a 64-bit boundary"
-
-.. and for the IOMMU update sequence to Dirty bit, essentially is states:
-
-1. Decodes the read and write intent from the memory access.
-2. If P=0 in the page descriptor, fail the access.
-3. Compare the A & D bits in the descriptor with the read and write
-intent in the request.
-4. If the A or D bits need to be updated in the descriptor:
-* Start atomic operation.
-* Read the descriptor as a 64-bit access.
-* If the descriptor no longer appears to require an update, release the
-atomic lock with
-no further action and continue to step 5.
-* Calculate the new A & D bits.
-* Write the descriptor as a 64-bit access.
-* End atomic operation.
-5. Continue to the next stage of translation or to the memory access.
-
-Access/Dirty bits readout also need to consider the non-default
-page-sizes (aka replicated PTEs as mentined by manual), as AMD
-supports all powers of two (except 512G) page sizes.
-
+Link: https://lore.kernel.org/lkml/20210413085457.25400-11-zhukeqian1@huawei.com/
+Co-developed-by: Keqian Zhu <zhukeqian1@huawei.com>
+Co-developed-by: Kunkun Jiang <jiangkunkun@huawei.com>
+Signed-off-by: Kunkun Jiang <jiangkunkun@huawei.com>
+[joaomart: Massage commit message]
+Co-developed-by: Joao Martins <joao.m.martins@oracle.com>
 Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
 ---
- drivers/iommu/amd/amd_iommu.h       |  1 +
- drivers/iommu/amd/amd_iommu_types.h | 12 +++++
- drivers/iommu/amd/init.c            |  5 ++
- drivers/iommu/amd/io_pgtable.c      | 84 +++++++++++++++++++++++++++++
- drivers/iommu/amd/iommu.c           | 81 ++++++++++++++++++++++++++++
- 5 files changed, 183 insertions(+)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  23 +++++
+ drivers/iommu/io-pgtable-arm.c              | 104 ++++++++++++++++++++
+ 2 files changed, 127 insertions(+)
 
-diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index e98f20a9bdd8..62567f275878 100644
---- a/drivers/iommu/amd/amd_iommu.h
-+++ b/drivers/iommu/amd/amd_iommu.h
-@@ -35,6 +35,7 @@ extern int amd_iommu_enable_faulting(void);
- extern int amd_iommu_guest_ir;
- extern enum io_pgtable_fmt amd_iommu_pgtable;
- extern int amd_iommu_gpt_level;
-+extern bool amd_iommu_had_support;
- 
- /* IOMMUv2 specific functions */
- struct iommu_domain;
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 2ddbda3a4374..3138c257338d 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -97,7 +97,9 @@
- #define FEATURE_GATS_MASK	(3ULL)
- #define FEATURE_GAM_VAPIC	(1ULL<<21)
- #define FEATURE_GIOSUP		(1ULL<<48)
-+#define FEATURE_HASUP		(1ULL<<49)
- #define FEATURE_EPHSUP		(1ULL<<50)
-+#define FEATURE_HDSUP		(1ULL<<52)
- #define FEATURE_SNP		(1ULL<<63)
- 
- #define FEATURE_PASID_SHIFT	32
-@@ -208,6 +210,7 @@
- /* macros and definitions for device table entries */
- #define DEV_ENTRY_VALID         0x00
- #define DEV_ENTRY_TRANSLATION   0x01
-+#define DEV_ENTRY_HAD           0x07
- #define DEV_ENTRY_PPR           0x34
- #define DEV_ENTRY_IR            0x3d
- #define DEV_ENTRY_IW            0x3e
-@@ -366,10 +369,16 @@
- #define PTE_LEVEL_PAGE_SIZE(level)			\
- 	(1ULL << (12 + (9 * (level))))
- 
-+/*
-+ * The IOPTE dirty bit
-+ */
-+#define IOMMU_PTE_HD_BIT (6)
-+
- /*
-  * Bit value definition for I/O PTE fields
-  */
- #define IOMMU_PTE_PR (1ULL << 0)
-+#define IOMMU_PTE_HD (1ULL << IOMMU_PTE_HD_BIT)
- #define IOMMU_PTE_U  (1ULL << 59)
- #define IOMMU_PTE_FC (1ULL << 60)
- #define IOMMU_PTE_IR (1ULL << 61)
-@@ -380,6 +389,7 @@
-  */
- #define DTE_FLAG_V  (1ULL << 0)
- #define DTE_FLAG_TV (1ULL << 1)
-+#define DTE_FLAG_HAD (3ULL << 7)
- #define DTE_FLAG_IR (1ULL << 61)
- #define DTE_FLAG_IW (1ULL << 62)
- 
-@@ -409,6 +419,7 @@
- 
- #define IOMMU_PAGE_MASK (((1ULL << 52) - 1) & ~0xfffULL)
- #define IOMMU_PTE_PRESENT(pte) ((pte) & IOMMU_PTE_PR)
-+#define IOMMU_PTE_DIRTY(pte) ((pte) & IOMMU_PTE_HD)
- #define IOMMU_PTE_PAGE(pte) (iommu_phys_to_virt((pte) & IOMMU_PAGE_MASK))
- #define IOMMU_PTE_MODE(pte) (((pte) >> 9) & 0x07)
- 
-@@ -559,6 +570,7 @@ struct protection_domain {
- 	int nid;		/* Node ID */
- 	u64 *gcr3_tbl;		/* Guest CR3 table */
- 	unsigned long flags;	/* flags to find out type of domain */
-+	bool dirty_tracking;	/* dirty tracking is enabled in the domain */
- 	unsigned dev_cnt;	/* devices assigned to this domain */
- 	unsigned dev_iommu[MAX_IOMMUS]; /* per-IOMMU reference count */
- };
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 329a406cc37d..082f47e22c6e 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -151,6 +151,7 @@ struct ivmd_header {
- 
- bool amd_iommu_dump;
- bool amd_iommu_irq_remap __read_mostly;
-+bool amd_iommu_had_support __read_mostly;
- 
- enum io_pgtable_fmt amd_iommu_pgtable = AMD_IOMMU_V1;
- /* Guest page table level */
-@@ -2201,6 +2202,10 @@ static int __init amd_iommu_init_pci(void)
- 	for_each_iommu(iommu)
- 		iommu_flush_all_caches(iommu);
- 
-+	if (check_feature_on_all_iommus(FEATURE_HASUP) &&
-+	    check_feature_on_all_iommus(FEATURE_HDSUP))
-+		amd_iommu_had_support = true;
-+
- 	print_iommu_info();
- 
- out:
-diff --git a/drivers/iommu/amd/io_pgtable.c b/drivers/iommu/amd/io_pgtable.c
-index 666b643106f8..63b4b3ae7c71 100644
---- a/drivers/iommu/amd/io_pgtable.c
-+++ b/drivers/iommu/amd/io_pgtable.c
-@@ -486,6 +486,89 @@ static phys_addr_t iommu_v1_iova_to_phys(struct io_pgtable_ops *ops, unsigned lo
- 	return (__pte & ~offset_mask) | (iova & offset_mask);
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index e2b98a6a6b74..2cde14003469 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2765,6 +2765,28 @@ static int arm_smmu_enable_nesting(struct iommu_domain *domain)
+ 	return ret;
  }
  
-+static bool pte_test_dirty(u64 *ptep, unsigned long size)
-+{
-+       bool dirty = false;
-+       int i, count;
-+
-+       /*
-+        * 2.2.3.2 Host Dirty Support
-+        * When a non-default page size is used , software must OR the
-+        * Dirty bits in all of the replicated host PTEs used to map
-+        * the page. The IOMMU does not guarantee the Dirty bits are
-+        * set in all of the replicated PTEs. Any portion of the page
-+        * may have been written even if the Dirty bit is set in only
-+        * one of the replicated PTEs.
-+        */
-+       count = PAGE_SIZE_PTE_COUNT(size);
-+       for (i = 0; i < count; i++) {
-+               if (test_bit(IOMMU_PTE_HD_BIT, (unsigned long *) &ptep[i])) {
-+                       dirty = true;
-+                       break;
-+               }
-+       }
-+
-+       return dirty;
-+}
-+
-+static bool pte_test_and_clear_dirty(u64 *ptep, unsigned long size)
-+{
-+	bool dirty = false;
-+	int i, count;
-+
-+	/*
-+	 * 2.2.3.2 Host Dirty Support
-+	 * When a non-default page size is used , software must OR the
-+	 * Dirty bits in all of the replicated host PTEs used to map
-+	 * the page. The IOMMU does not guarantee the Dirty bits are
-+	 * set in all of the replicated PTEs. Any portion of the page
-+	 * may have been written even if the Dirty bit is set in only
-+	 * one of the replicated PTEs.
-+	 */
-+	count = PAGE_SIZE_PTE_COUNT(size);
-+	for (i = 0; i < count; i++)
-+		if (test_and_clear_bit(IOMMU_PTE_HD_BIT,
-+					(unsigned long *) &ptep[i]))
-+			dirty = true;
-+
-+	return dirty;
-+}
-+
-+static int iommu_v1_read_and_clear_dirty(struct io_pgtable_ops *ops,
++static int arm_smmu_read_and_clear_dirty(struct iommu_domain *domain,
 +					 unsigned long iova, size_t size,
 +					 unsigned long flags,
 +					 struct iommu_dirty_bitmap *dirty)
 +{
-+	struct amd_io_pgtable *pgtable = io_pgtable_ops_to_data(ops);
-+	unsigned long end = iova + size - 1;
-+
-+	do {
-+		unsigned long pgsize = 0;
-+		u64 *ptep, pte;
-+
-+		ptep = fetch_pte(pgtable, iova, &pgsize);
-+		if (ptep)
-+			pte = READ_ONCE(*ptep);
-+		if (!ptep || !IOMMU_PTE_PRESENT(pte)) {
-+			pgsize = pgsize ?: PTE_LEVEL_PAGE_SIZE(0);
-+			iova += pgsize;
-+			continue;
-+		}
-+
-+		/*
-+		 * Mark the whole IOVA range as dirty even if only one of
-+		 * the replicated PTEs were marked dirty.
-+		 */
-+		if (((flags & IOMMU_DIRTY_NO_CLEAR) &&
-+				pte_test_dirty(ptep, pgsize)) ||
-+		    pte_test_and_clear_dirty(ptep, pgsize))
-+			iommu_dirty_bitmap_record(dirty, iova, pgsize);
-+		iova += pgsize;
-+	} while (iova < end);
-+
-+	return 0;
-+}
-+
- /*
-  * ----------------------------------------------------
-  */
-@@ -526,6 +609,7 @@ static struct io_pgtable *v1_alloc_pgtable(struct io_pgtable_cfg *cfg, void *coo
- 	pgtable->iop.ops.map_pages    = iommu_v1_map_pages;
- 	pgtable->iop.ops.unmap_pages  = iommu_v1_unmap_pages;
- 	pgtable->iop.ops.iova_to_phys = iommu_v1_iova_to_phys;
-+	pgtable->iop.ops.read_and_clear_dirty = iommu_v1_read_and_clear_dirty;
- 
- 	return &pgtable->iop;
- }
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 4a314647d1f7..ddb92005f018 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -1586,6 +1586,9 @@ static void set_dte_entry(struct amd_iommu *iommu, u16 devid,
- 			pte_root |= 1ULL << DEV_ENTRY_PPR;
- 	}
- 
-+	if (domain->dirty_tracking)
-+		pte_root |= DTE_FLAG_HAD;
-+
- 	if (domain->flags & PD_IOMMUV2_MASK) {
- 		u64 gcr3 = iommu_virt_to_phys(domain->gcr3_tbl);
- 		u64 glx  = domain->glx;
-@@ -2177,6 +2180,10 @@ static int amd_iommu_attach_device(struct iommu_domain *dom,
- 
- 	dev_data->defer_attach = false;
- 
-+	if (dom->flags & IOMMU_DOMAIN_F_ENFORCE_DIRTY &&
-+	    (iommu && !(iommu->features & FEATURE_HDSUP)))
-+		return -EINVAL;
-+
- 	if (dev_data->domain)
- 		detach_device(dev);
- 
-@@ -2293,6 +2300,8 @@ static bool amd_iommu_capable(struct device *dev, enum iommu_cap cap)
- 		return amdr_ivrs_remap_support;
- 	case IOMMU_CAP_ENFORCE_CACHE_COHERENCY:
- 		return true;
-+	case IOMMU_CAP_DIRTY:
-+		return amd_iommu_had_support;
- 	default:
- 		break;
- 	}
-@@ -2300,6 +2309,75 @@ static bool amd_iommu_capable(struct device *dev, enum iommu_cap cap)
- 	return false;
- }
- 
-+static int amd_iommu_set_dirty_tracking(struct iommu_domain *domain,
-+					bool enable)
-+{
-+	struct protection_domain *pdomain = to_pdomain(domain);
-+	struct dev_table_entry *dev_table;
-+	struct iommu_dev_data *dev_data;
-+	struct amd_iommu *iommu;
-+	unsigned long flags;
-+	u64 pte_root;
-+
-+	spin_lock_irqsave(&pdomain->lock, flags);
-+	if (!(pdomain->dirty_tracking ^ enable)) {
-+		spin_unlock_irqrestore(&pdomain->lock, flags);
-+		return 0;
-+	}
-+
-+	list_for_each_entry(dev_data, &pdomain->dev_list, list) {
-+		iommu = rlookup_amd_iommu(dev_data->dev);
-+		if (!iommu)
-+			continue;
-+
-+		dev_table = get_dev_table(iommu);
-+		pte_root = dev_table[dev_data->devid].data[0];
-+
-+		pte_root = (enable ?
-+			pte_root | DTE_FLAG_HAD : pte_root & ~DTE_FLAG_HAD);
-+
-+		/* Flush device DTE */
-+		dev_table[dev_data->devid].data[0] = pte_root;
-+		device_flush_dte(dev_data);
-+	}
-+
-+	/* Flush IOTLB to mark IOPTE dirty on the next translation(s) */
-+	amd_iommu_domain_flush_tlb_pde(pdomain);
-+	amd_iommu_domain_flush_complete(pdomain);
-+	pdomain->dirty_tracking = enable;
-+	spin_unlock_irqrestore(&pdomain->lock, flags);
-+
-+	return 0;
-+}
-+
-+static int amd_iommu_read_and_clear_dirty(struct iommu_domain *domain,
-+					  unsigned long iova, size_t size,
-+					  unsigned long flags,
-+					  struct iommu_dirty_bitmap *dirty)
-+{
-+	struct protection_domain *pdomain = to_pdomain(domain);
-+	struct io_pgtable_ops *ops = &pdomain->iop.iop.ops;
-+	unsigned long lflags;
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
 +	int ret;
 +
-+	if (!ops || !ops->read_and_clear_dirty)
-+		return -EOPNOTSUPP;
-+
-+	spin_lock_irqsave(&pdomain->lock, lflags);
-+	if (!pdomain->dirty_tracking && dirty->bitmap) {
-+		spin_unlock_irqrestore(&pdomain->lock, lflags);
++	if (smmu_domain->stage != ARM_SMMU_DOMAIN_S1)
 +		return -EINVAL;
-+	}
-+	spin_unlock_irqrestore(&pdomain->lock, lflags);
 +
-+	rcu_read_lock();
++	if (!ops || !ops->read_and_clear_dirty) {
++		pr_err_once("io-pgtable don't support dirty tracking\n");
++		return -ENODEV;
++	}
++
 +	ret = ops->read_and_clear_dirty(ops, iova, size, flags, dirty);
-+	rcu_read_unlock();
 +
 +	return ret;
 +}
 +
-+
- static void amd_iommu_get_resv_regions(struct device *dev,
- 				       struct list_head *head)
+ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
  {
-@@ -2432,6 +2510,7 @@ const struct iommu_ops amd_iommu_ops = {
- 	.get_resv_regions = amd_iommu_get_resv_regions,
- 	.is_attach_deferred = amd_iommu_is_attach_deferred,
- 	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
-+	.supported_flags = IOMMU_DOMAIN_F_ENFORCE_DIRTY,
- 	.def_domain_type = amd_iommu_def_domain_type,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
- 		.attach_dev	= amd_iommu_attach_device,
-@@ -2443,6 +2522,8 @@ const struct iommu_ops amd_iommu_ops = {
- 		.iotlb_sync	= amd_iommu_iotlb_sync,
- 		.free		= amd_iommu_domain_free,
- 		.enforce_cache_coherency = amd_iommu_enforce_cache_coherency,
-+		.set_dirty_tracking = amd_iommu_set_dirty_tracking,
-+		.read_and_clear_dirty = amd_iommu_read_and_clear_dirty,
+ 	return iommu_fwspec_add_ids(dev, args->args, 1);
+@@ -2893,6 +2915,7 @@ static struct iommu_ops arm_smmu_ops = {
+ 		.iova_to_phys		= arm_smmu_iova_to_phys,
+ 		.enable_nesting		= arm_smmu_enable_nesting,
+ 		.free			= arm_smmu_domain_free,
++		.read_and_clear_dirty	= arm_smmu_read_and_clear_dirty,
  	}
  };
  
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index b2f470529459..de9e61f8452d 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -717,6 +717,109 @@ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
+ 	return iopte_to_paddr(pte, data) | iova;
+ }
+ 
++struct arm_lpae_iopte_read_dirty {
++	unsigned long flags;
++	struct iommu_dirty_bitmap *dirty;
++};
++
++static int __arm_lpae_read_and_clear_dirty(unsigned long iova, size_t size,
++					   arm_lpae_iopte *ptep, void *opaque)
++{
++	struct arm_lpae_iopte_read_dirty *arg = opaque;
++	struct iommu_dirty_bitmap *dirty = arg->dirty;
++	arm_lpae_iopte pte;
++
++	pte = READ_ONCE(*ptep);
++	if (WARN_ON(!pte))
++		return -EINVAL;
++
++	if ((pte & ARM_LPAE_PTE_AP_WRITABLE) == ARM_LPAE_PTE_AP_WRITABLE)
++		return 0;
++
++	iommu_dirty_bitmap_record(dirty, iova, size);
++	if (!(arg->flags & IOMMU_DIRTY_NO_CLEAR))
++		set_bit(ARM_LPAE_PTE_AP_RDONLY_BIT, (unsigned long *)ptep);
++	return 0;
++}
++
++static int __arm_lpae_iopte_walk(struct arm_lpae_io_pgtable *data,
++				 unsigned long iova, size_t size,
++				 int lvl, arm_lpae_iopte *ptep,
++				 int (*fn)(unsigned long iova, size_t size,
++					   arm_lpae_iopte *pte, void *opaque),
++				 void *opaque)
++{
++	arm_lpae_iopte pte;
++	struct io_pgtable *iop = &data->iop;
++	size_t base, next_size;
++	int ret;
++
++	if (WARN_ON_ONCE(!fn))
++		return -EINVAL;
++
++	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
++		return -EINVAL;
++
++	ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
++	pte = READ_ONCE(*ptep);
++	if (WARN_ON(!pte))
++		return -EINVAL;
++
++	if (size == ARM_LPAE_BLOCK_SIZE(lvl, data)) {
++		if (iopte_leaf(pte, lvl, iop->fmt))
++			return fn(iova, size, ptep, opaque);
++
++		/* Current level is table, traverse next level */
++		next_size = ARM_LPAE_BLOCK_SIZE(lvl + 1, data);
++		ptep = iopte_deref(pte, data);
++		for (base = 0; base < size; base += next_size) {
++			ret = __arm_lpae_iopte_walk(data, iova + base,
++						    next_size, lvl + 1, ptep,
++						    fn, opaque);
++			if (ret)
++				return ret;
++		}
++		return 0;
++	} else if (iopte_leaf(pte, lvl, iop->fmt)) {
++		return fn(iova, size, ptep, opaque);
++	}
++
++	/* Keep on walkin */
++	ptep = iopte_deref(pte, data);
++	return __arm_lpae_iopte_walk(data, iova, size, lvl + 1, ptep,
++				     fn, opaque);
++}
++
++static int arm_lpae_read_and_clear_dirty(struct io_pgtable_ops *ops,
++					 unsigned long iova, size_t size,
++					 unsigned long flags,
++					 struct iommu_dirty_bitmap *dirty)
++{
++	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
++	struct io_pgtable_cfg *cfg = &data->iop.cfg;
++	struct arm_lpae_iopte_read_dirty arg = {
++		.flags = flags, .dirty = dirty,
++	};
++	arm_lpae_iopte *ptep = data->pgd;
++	int lvl = data->start_level;
++	long iaext = (s64)iova >> cfg->ias;
++
++	if (WARN_ON(!size || (size & cfg->pgsize_bitmap) != size))
++		return -EINVAL;
++
++	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1)
++		iaext = ~iaext;
++	if (WARN_ON(iaext))
++		return -EINVAL;
++
++	if (data->iop.fmt != ARM_64_LPAE_S1 &&
++	    data->iop.fmt != ARM_32_LPAE_S1)
++		return -EINVAL;
++
++	return __arm_lpae_iopte_walk(data, iova, size, lvl, ptep,
++				     __arm_lpae_read_and_clear_dirty, &arg);
++}
++
+ static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
+ {
+ 	unsigned long granule, page_sizes;
+@@ -795,6 +898,7 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
+ 		.map_pages	= arm_lpae_map_pages,
+ 		.unmap_pages	= arm_lpae_unmap_pages,
+ 		.iova_to_phys	= arm_lpae_iova_to_phys,
++		.read_and_clear_dirty = arm_lpae_read_and_clear_dirty,
+ 	};
+ 
+ 	return data;
 -- 
 2.17.2
 
