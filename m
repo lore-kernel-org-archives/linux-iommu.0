@@ -1,328 +1,134 @@
-Received: from relay01.th.seeweb.it (relay01.th.seeweb.it [5.144.164.162])
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2077.outbound.protection.outlook.com [40.107.102.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E4ED20EE
-	for <iommu@lists.linux.dev>; Thu, 18 May 2023 23:33:45 +0000 (UTC)
-Received: from SoMainline.org (94-211-6-86.cable.dynamic.v4.ziggo.nl [94.211.6.86])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by m-r1.th.seeweb.it (Postfix) with ESMTPSA id 94B7A20490;
-	Thu, 18 May 2023 23:06:53 +0200 (CEST)
-Date: Thu, 18 May 2023 23:06:52 +0200
-From: Marijn Suijten <marijn.suijten@somainline.org>
-To: Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc: Rob Clark <robdclark@gmail.com>, 
-	Abhinav Kumar <quic_abhinavk@quicinc.com>, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
-	Sean Paul <sean@poorly.run>, David Airlie <airlied@gmail.com>, 
-	Daniel Vetter <daniel@ffwll.ch>, Rob Herring <robh+dt@kernel.org>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Krishna Manikandan <quic_mkrishn@quicinc.com>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	freedreno@lists.freedesktop.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
-	Konrad Dybcio <konrad.dybcio@somainline.org>
-Subject: Re: [PATCH v3 06/12] drm/msm/dpu: Add SM6350 support
-Message-ID: <ahxy4jj56aeyorokzfuc7qmpuofml32amg5x4fgpthr6almhju@g5okcc6nsz6j>
-References: <20230411-topic-straitlagoon_mdss-v3-0-9837d6b3516d@linaro.org>
- <20230411-topic-straitlagoon_mdss-v3-6-9837d6b3516d@linaro.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2F7D362
+	for <iommu@lists.linux.dev>; Fri, 19 May 2023 00:56:05 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OBW9OVl8PAXmsAvQ9XJJqHqVv23X7X0TWdStvDhjUmvke/taG6dbZgXv2f5HALTfFwRUlGesB67iDO5RoXuStepLlG0BwcK3Rs0QuquwGSItZIwcYy2YAmbDwmS5OAWZIev8/aoGyzfi6IgbVPhltc0dRdC0Nri1tBxOas8lZ3WF7mIi5Hne+RUc5jSGlJmRINxseZUDzCVEF3mJvzNVHBJQl03ikyvyEXN2MNCJfTs7ZC0nLBem5WhsA2N+HpjsDmDD6ztlVNa3aiqaz850g6isV2f51eeK/wJkWd8XjhXAPCx+GTbByevW6U6ebbpyeURVjE3dZgsKR1Z3ENvnLQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SswM4iZWjT0MphktUFPYYp8g/TgBWbRCpuStOvDcPms=;
+ b=NYoH9DZ+iUl4r5lCtK+MuVRBrU4nDwAqJeNB8Rq9iHXNfgakhDi2v/6muI2uqxKZwouXNIu1XcQCyh58hnKjszvfUTnRA9rTwACkCmOT18aUg5BZiQAbTs3fPl/n3TtkfGfNlomT3vScnEE5NIk6fUULoVjMQ0iNh5cq5QyE0Eh4lS+c5rgQwDXIxQdxZtH9DHWBdXJMtpBXXYvzgfV6xywM/x1In9YjgYbZ6q22Y9DiXlRvPb32DU5pUzdRpRVyXuOPvkfquaGCEKdMEKOp+EgJW/UkHdYMemNi7XufBqtGpJdE79lCKXv5hqZjjdFZVwqAD1pWPCmHJps7eR9sug==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SswM4iZWjT0MphktUFPYYp8g/TgBWbRCpuStOvDcPms=;
+ b=WZFGxngkCbb6WgFDnB7hZREkYAtw9qZnUg3u4SGiFVnOVf8V3PhMoEf/SarxPVnmxLLMFLf9Tzwh++RzisDhGOfN2Vtfw6+AMCOc7keH1WwGXapofj7LvojZrqfpEVSJNXnulWmrT7Lzlg3zXu7AnVRTcYM+gaR4FQr+EIne8Yw=
+Received: from MW4PR04CA0373.namprd04.prod.outlook.com (2603:10b6:303:81::18)
+ by SN7PR12MB6864.namprd12.prod.outlook.com (2603:10b6:806:263::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.30; Fri, 19 May
+ 2023 00:56:03 +0000
+Received: from CO1NAM11FT070.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:81:cafe::94) by MW4PR04CA0373.outlook.office365.com
+ (2603:10b6:303:81::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.19 via Frontend
+ Transport; Fri, 19 May 2023 00:56:02 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT070.mail.protection.outlook.com (10.13.175.20) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6411.21 via Frontend Transport; Fri, 19 May 2023 00:56:02 +0000
+Received: from titanite-d432host.amd.com (10.180.168.240) by
+ SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Thu, 18 May 2023 19:56:00 -0500
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
+CC: <joro@8bytes.org>, <joao.m.martins@oracle.com>,
+	<alejandro.j.jimenez@oracle.com>, <boris.ostrovsky@oracle.com>,
+	<jon.grimm@amd.com>, <santosh.shukla@amd.com>, <vasant.hegde@amd.com>,
+	<kishon.vijayabraham@amd.com>, Suravee Suthikulpanit
+	<suravee.suthikulpanit@amd.com>
+Subject: [PATCH v2 0/5] iommu/amd: AVIC Interrupt Remapping Improvements
+Date: Thu, 18 May 2023 20:55:24 -0400
+Message-ID: <20230519005529.28171-1-suravee.suthikulpanit@amd.com>
+X-Mailer: git-send-email 2.31.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230411-topic-straitlagoon_mdss-v3-6-9837d6b3516d@linaro.org>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT070:EE_|SN7PR12MB6864:EE_
+X-MS-Office365-Filtering-Correlation-Id: dae670ee-9603-436b-a675-08db5803d1a2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	mySPGbYYF8D0RPdMmiTIk6oZACFLnZ/iVVko+3JtHC5JUwVA5LraHRTd12x4CjNAuKMpOBvMGZM08t3j8aqD/yJ3Z+SjgU4fsSt322jo68qnA+4HftmfV+z/VTsu+0qB/OKZIHL4EDHPzjl9iaeWHSuCsq8rBu1a9g1Nw/JrTd5gA78k0vcvRaNn4bYel3P1RBXO/t103r6v+teGwLjko4lTOm1Ly2L0xdoYuR30i2dcHkU/FVvKzYgPYxaYJlgWHbmqAKR3+npZ0o+uHbUQNL1qRay10GZbF2x5og7prjwMrhWj0yzp+HlZ7VM/VQzS1c5LWiaNkpH2o1Rk3qEuyGHzdKhywprnmf+JhO/uHE0fp6++I71YH1a8mQ3yqyt5fo5EyeF9HaEvQALiePTC9kDO7orvaFy43Mcp7a2xUkqNkYBHF/Z8FW7NZxPY0kpi5oMshcjURKwWhn/thZTaym2zF2SvEVUvdWeng3rD2KoHeH++lyM0krSK1b6WbdCGTT1dDtBSOKYaaCa2na85Sf6y2gfZ//vEOsG+AxvbNcBxjjxsO/bsdo2gxmq5j6VVbX3oCcQNbCulqJY1a+XN5JHoLDf+QamqPMA3qa+ot+4zQF67VgnysksPApixl+6xO6PSbYp3vkvAjRYP+yBZubWCus1YZ83AGFu7+NY1AGBlj5DTTvfYAUrn3d1fThHI8VLWeqKWBj63UdL+iJ9670rC1boZnL1RodBtfMECf5lMFKKd2cH+ARDnpf7dRngr
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(136003)(39860400002)(346002)(396003)(376002)(451199021)(46966006)(40470700004)(36840700001)(82740400003)(110136005)(4326008)(70586007)(70206006)(54906003)(478600001)(6666004)(44832011)(316002)(7696005)(8676002)(2906002)(8936002)(40480700001)(26005)(5660300002)(1076003)(41300700001)(82310400005)(81166007)(86362001)(356005)(426003)(16526019)(83380400001)(336012)(2616005)(40460700003)(36860700001)(186003)(47076005)(36756003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2023 00:56:02.6582
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: dae670ee-9603-436b-a675-08db5803d1a2
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1NAM11FT070.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6864
 
-On 2023-05-05 23:40:32, Konrad Dybcio wrote:
-> Add SM6350 support to the DPU1 driver to enable display output.
-> 
-> It's worth noting that one entry dpu_qos_lut_entry was trimmed off:
-> 
-> {.fl = 0, .lut = 0x0011223344556677 },
+For IOMMU AVIC, the IOMMU driver needs to keep track of vcpu scheduling
+changes, and updates interrupt remapping table entry (IRTE) accordingly.
+The IRTE is normally cached by the hardware, which requires the IOMMU
+driver to issue IOMMU IRT invalidation command and wait for completion
+everytime it updates the table.
 
-Is this macrotile-qseed?  Not really following where this is supposed to
-sit.
+Enabling IOMMU AVIC on a large scale system with lots of vcpus and
+VFIO pass-through devices running interrupt-intensive workload,
+it could result in high IRT invalidation rate. In such case, the overhead
+from IRT invalidation could outweigh the benefit of IRTE caching.
 
-> 
-> due to the fact that newer SoCs dropped the .fl (fill level)-based
-> logic and don't provide real values, resulting in all entries but
-> the last one being unused.
-> 
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-> Reviewed-by: Marijn Suijten <marijn.suijten@somainline.org>
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> ---
->  .../gpu/drm/msm/disp/dpu1/catalog/dpu_6_4_sm6350.h | 187 +++++++++++++++++++++
->  drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c     |   5 +
->  drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h     |   3 +
->  drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c            |   1 +
->  4 files changed, 196 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_4_sm6350.h b/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_4_sm6350.h
-> new file mode 100644
-> index 000000000000..e8bfbd468e0a
-> --- /dev/null
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_4_sm6350.h
-> @@ -0,0 +1,187 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * Copyright (c) 2022. Qualcomm Innovation Center, Inc. All rights reserved.
-> + * Copyright (c) 2015-2018, 2020 The Linux Foundation. All rights reserved.
-> + * Copyright (c) 2023, Linaro Limited
-> + */
-> +
-> +#ifndef _DPU_6_4_SM6350_H
-> +#define _DPU_6_4_SM6350_H
-> +
-> +static const struct dpu_caps sm6350_dpu_caps = {
-> +	.max_mixer_width = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
-> +	.max_mixer_blendstages = 0x7,
-> +	.qseed_type = DPU_SSPP_SCALER_QSEED4,
-> +	.has_src_split = true,
-> +	.has_dim_layer = true,
-> +	.has_idle_pc = true,
-> +	.max_linewidth = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
-> +	.pixel_ram_size = DEFAULT_PIXEL_RAM_SIZE,
-> +};
-> +
-> +static const struct dpu_ubwc_cfg sm6350_ubwc_cfg = {
-> +	.ubwc_version = DPU_HW_UBWC_VER_20,
-> +	.ubwc_swizzle = 6,
-> +	.highest_bank_bit = 1,
-> +};
-> +
-> +static const struct dpu_mdp_cfg sm6350_mdp[] = {
-> +	{
-> +	.name = "top_0", .id = MDP_TOP,
-> +	.base = 0x0, .len = 0x494,
-> +	.features = 0,
-> +	.clk_ctrls[DPU_CLK_CTRL_VIG0] = { .reg_off = 0x2ac, .bit_off = 0 },
-> +	.clk_ctrls[DPU_CLK_CTRL_DMA0] = { .reg_off = 0x2ac, .bit_off = 8 },
-> +	.clk_ctrls[DPU_CLK_CTRL_DMA1] = { .reg_off = 0x2b4, .bit_off = 8 },
-> +	.clk_ctrls[DPU_CLK_CTRL_DMA2] = { .reg_off = 0x2c4, .bit_off = 8 },
-> +	.clk_ctrls[DPU_CLK_CTRL_REG_DMA] = { .reg_off = 0x2bc, .bit_off = 20 },
-> +	},
-> +};
-> +
-> +static const struct dpu_ctl_cfg sm6350_ctl[] = {
-> +	{
-> +	.name = "ctl_0", .id = CTL_0,
-> +	.base = 0x1000, .len = 0x1dc,
-> +	.features = BIT(DPU_CTL_ACTIVE_CFG),
-> +	.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 9),
-> +	},
-> +	{
-> +	.name = "ctl_1", .id = CTL_1,
-> +	.base = 0x1200, .len = 0x1dc,
-> +	.features = BIT(DPU_CTL_ACTIVE_CFG),
-> +	.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 10),
-> +	},
-> +	{
-> +	.name = "ctl_2", .id = CTL_2,
-> +	.base = 0x1400, .len = 0x1dc,
-> +	.features = BIT(DPU_CTL_ACTIVE_CFG),
-> +	.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 11),
-> +	},
-> +	{
-> +	.name = "ctl_3", .id = CTL_3,
-> +	.base = 0x1600, .len = 0x1dc,
-> +	.features = BIT(DPU_CTL_ACTIVE_CFG),
-> +	.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 12),
-> +	},
-> +};
-> +
-> +static const struct dpu_sspp_cfg sm6350_sspp[] = {
-> +	SSPP_BLK("sspp_0", SSPP_VIG0, 0x4000, 0x1f8, VIG_SC7180_MASK,
-> +		sc7180_vig_sblk_0, 0,  SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG0),
-> +	SSPP_BLK("sspp_8", SSPP_DMA0, 0x24000, 0x1f8, DMA_SDM845_MASK,
-> +		sdm845_dma_sblk_0, 1, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA0),
-> +	SSPP_BLK("sspp_9", SSPP_DMA1, 0x26000, 0x1f8, DMA_CURSOR_SDM845_MASK,
-> +		sdm845_dma_sblk_1, 5, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA1),
-> +	SSPP_BLK("sspp_10", SSPP_DMA2, 0x28000, 0x1f8, DMA_CURSOR_SDM845_MASK,
-> +		sdm845_dma_sblk_2, 9, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA2),
-> +};
-> +
-> +static const struct dpu_lm_cfg sm6350_lm[] = {
-> +	LM_BLK("lm_0", LM_0, 0x44000, MIXER_SDM845_MASK,
-> +		&sc7180_lm_sblk, PINGPONG_0, LM_1, DSPP_0),
-> +	LM_BLK("lm_1", LM_1, 0x45000, MIXER_SDM845_MASK,
-> +		&sc7180_lm_sblk, PINGPONG_1, LM_0, 0),
-> +};
-> +
-> +static const struct dpu_dspp_cfg sm6350_dspp[] = {
-> +	DSPP_BLK("dspp_0", DSPP_0, 0x54000, DSPP_SC7180_MASK,
-> +		&sm8150_dspp_sblk),
-> +};
-> +
-> +static struct dpu_pingpong_cfg sm6350_pp[] = {
-> +	PP_BLK("pingpong_0", PINGPONG_0, 0x70000, PINGPONG_SM8150_MASK, 0, sdm845_pp_sblk,
-> +		DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 8),
-> +		-1),
-> +	PP_BLK("pingpong_1", PINGPONG_1, 0x70800, PINGPONG_SM8150_MASK, 0, sdm845_pp_sblk,
-> +		DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 9),
-> +		-1),
-> +};
-> +
-> +static const struct dpu_intf_cfg sm6350_intf[] = {
-> +	INTF_BLK("intf_0", INTF_0, 0x6a000, 0x2c0, INTF_DP, 0, 35, INTF_SC7180_MASK,
-> +		DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 24),
-> +		DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 25)),
-> +	INTF_BLK_DSI_TE("intf_1", INTF_1, 0x6a800, 0x2c0, INTF_DSI, 0, 35, INTF_SC7180_MASK,
-> +		DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 26),
-> +		DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 27),
-> +		DPU_IRQ_IDX(MDP_INTF1_TEAR_INTR, 2)),
-> +};
-> +
-> +static const struct dpu_vbif_cfg sm6350_vbif[] = {
-> +	{
-> +	.name = "vbif_0", .id = VBIF_RT,
-> +	.base = 0, .len = 0x1044,
-> +	.features = BIT(DPU_VBIF_QOS_REMAP),
-> +	.xin_halt_timeout = 0x4000,
-> +	.qos_rt_tbl = {
-> +		.npriority_lvl = ARRAY_SIZE(sdm845_rt_pri_lvl),
-> +		.priority_lvl = sdm845_rt_pri_lvl,
-> +	},
-> +	.qos_nrt_tbl = {
-> +		.npriority_lvl = ARRAY_SIZE(sdm845_nrt_pri_lvl),
-> +		.priority_lvl = sdm845_nrt_pri_lvl,
-> +	},
-> +	.memtype_count = 14,
-> +	.memtype = {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-> +	},
-> +};
-> +
-> +static const struct dpu_perf_cfg sm6350_perf_data = {
-> +	.max_bw_low = 4200000,
-> +	.max_bw_high = 5100000,
-> +	.min_core_ib = 2500000,
-> +	.min_llcc_ib = 0,
-> +	.min_dram_ib = 1600000,
-> +	.min_prefill_lines = 35,
-> +	/* TODO: confirm danger_lut_tbl */
-> +	.danger_lut_tbl = {0xffff, 0xffff, 0x0, 0x0, 0xffff},
-> +	.qos_lut_tbl = {
-> +		{.nentry = ARRAY_SIZE(sm6350_qos_linear_macrotile),
-> +		.entries = sm6350_qos_linear_macrotile
-> +		},
-> +		{.nentry = ARRAY_SIZE(sm6350_qos_linear_macrotile),
-> +		.entries = sm6350_qos_linear_macrotile
-> +		},
-> +		{.nentry = ARRAY_SIZE(sc7180_qos_nrt),
-> +		.entries = sc7180_qos_nrt
-> +		},
+Therefore, introduce a new AMD IOMMU driver option "amd_iommu=irtcachedis"
+to allow disabling IRTE caching, and avoid the need for IRTE invalidation.
 
-Strangely there are only 3 entries here, for LINEAR, MACROTILE and NRT.
-Where's CWB and MACROTILE_QSEED?  Or was dpu_qos_lut_usage only extended
-to account for more entries in danger_lut_tbl?  How about safe_lut_tbl?
+Patch 1,2 prepare the AMD IOMMU driver to support IRT cache disabling.
+Patch 3,4 introduce IRT cache disabling support
+Patch 5 improves the code path in IOMMU driver for updating vcpu scheduling
+for AVIC.
 
-> +	},
-> +	.cdp_cfg = {
-> +		{.rd_enable = 1, .wr_enable = 1},
-> +		{.rd_enable = 1, .wr_enable = 0}
-> +	},
-> +	.clk_inefficiency_factor = 105,
-> +	.bw_inefficiency_factor = 120,
-> +};
-> +
-> +const struct dpu_mdss_cfg dpu_sm6350_cfg = {
-> +	.caps = &sm6350_dpu_caps,
-> +	.ubwc = &sm6350_ubwc_cfg,
-> +	.mdp_count = ARRAY_SIZE(sm6350_mdp),
-> +	.mdp = sm6350_mdp,
-> +	.ctl_count = ARRAY_SIZE(sm6350_ctl),
-> +	.ctl = sm6350_ctl,
-> +	.sspp_count = ARRAY_SIZE(sm6350_sspp),
-> +	.sspp = sm6350_sspp,
-> +	.mixer_count = ARRAY_SIZE(sm6350_lm),
-> +	.mixer = sm6350_lm,
-> +	.dspp_count = ARRAY_SIZE(sm6350_dspp),
-> +	.dspp = sm6350_dspp,
-> +	.pingpong_count = ARRAY_SIZE(sm6350_pp),
-> +	.pingpong = sm6350_pp,
-> +	.intf_count = ARRAY_SIZE(sm6350_intf),
-> +	.intf = sm6350_intf,
-> +	.vbif_count = ARRAY_SIZE(sm6350_vbif),
-> +	.vbif = sm6350_vbif,
-> +	.reg_dma_count = 1,
-> +	.dma_cfg = &sm8250_regdma,
-> +	.perf = &sm6350_perf_data,
-> +	.mdss_irqs = BIT(MDP_SSPP_TOP0_INTR) | \
-> +		     BIT(MDP_SSPP_TOP0_INTR2) | \
-> +		     BIT(MDP_SSPP_TOP0_HIST_INTR) | \
-> +		     BIT(MDP_INTF0_INTR) | \
-> +		     BIT(MDP_INTF1_INTR) | \
-> +		     BIT(MDP_INTF1_TEAR_INTR),
-> +};
-> +
-> +#endif
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
-> index 9daeaccc4f52..5ef1dffc27dc 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
-> @@ -748,6 +748,10 @@ static const struct dpu_qos_lut_entry sc7180_qos_linear[] = {
->  	{.fl = 0, .lut = 0x0011222222335777},
->  };
->  
-> +static const struct dpu_qos_lut_entry sm6350_qos_linear_macrotile[] = {
-> +	{.fl = 0, .lut = 0x0011223445566777 },
-> +};
-> +
->  static const struct dpu_qos_lut_entry sm8150_qos_linear[] = {
->  	{.fl = 0, .lut = 0x0011222222223357 },
->  };
-> @@ -803,6 +807,7 @@ static const struct dpu_qos_lut_entry sc7180_qos_nrt[] = {
->  #include "catalog/dpu_6_0_sm8250.h"
->  #include "catalog/dpu_6_2_sc7180.h"
->  #include "catalog/dpu_6_3_sm6115.h"
-> +#include "catalog/dpu_6_4_sm6350.h"
->  #include "catalog/dpu_6_5_qcm2290.h"
->  
->  #include "catalog/dpu_7_0_sm8350.h"
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
-> index e9237321df77..56af77353b1e 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
-> @@ -320,6 +320,8 @@ enum dpu_qos_lut_usage {
->  	DPU_QOS_LUT_USAGE_LINEAR,
->  	DPU_QOS_LUT_USAGE_MACROTILE,
->  	DPU_QOS_LUT_USAGE_NRT,
-> +	DPU_QOS_LUT_USAGE_CWB,
-> +	DPU_QOS_LUT_USAGE_MACROTILE_QSEED,
+Thank you,
+Suravee
 
-Because you allocated extra space for them here.  Either drop this, or
-do it in a separate patch and provide the QOS and safe LUTs in the
-catalog?
+Changes from V1
+(https://lore.kernel.org/lkml/20230509111646.369661-1-suravee.suthikulpanit@amd.com/T/)
+* Patch 3: Add logic to clean up the IRTE cache disabling
+  and handle kdump code path (per Alejandro)
 
-- Marijn
+Joao Martins (1):
+  iommu/amd: Switch amd_iommu_update_ga() to use modify_irte_ga()
 
->  	DPU_QOS_LUT_USAGE_MAX,
->  };
->  
-> @@ -880,6 +882,7 @@ extern const struct dpu_mdss_cfg dpu_sc8180x_cfg;
->  extern const struct dpu_mdss_cfg dpu_sm8250_cfg;
->  extern const struct dpu_mdss_cfg dpu_sc7180_cfg;
->  extern const struct dpu_mdss_cfg dpu_sm6115_cfg;
-> +extern const struct dpu_mdss_cfg dpu_sm6350_cfg;
->  extern const struct dpu_mdss_cfg dpu_qcm2290_cfg;
->  extern const struct dpu_mdss_cfg dpu_sm8350_cfg;
->  extern const struct dpu_mdss_cfg dpu_sc7280_cfg;
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> index 0e7a68714e9e..46be7ad8d615 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> @@ -1286,6 +1286,7 @@ static const struct of_device_id dpu_dt_match[] = {
->  	{ .compatible = "qcom,sc8180x-dpu", .data = &dpu_sc8180x_cfg, },
->  	{ .compatible = "qcom,sc8280xp-dpu", .data = &dpu_sc8280xp_cfg, },
->  	{ .compatible = "qcom,sm6115-dpu", .data = &dpu_sm6115_cfg, },
-> +	{ .compatible = "qcom,sm6350-dpu", .data = &dpu_sm6350_cfg, },
->  	{ .compatible = "qcom,sm8150-dpu", .data = &dpu_sm8150_cfg, },
->  	{ .compatible = "qcom,sm8250-dpu", .data = &dpu_sm8250_cfg, },
->  	{ .compatible = "qcom,sm8350-dpu", .data = &dpu_sm8350_cfg, },
-> 
-> -- 
-> 2.40.1
-> 
+Suravee Suthikulpanit (4):
+  iommu/amd: Remove the unused struct amd_ir_data.ref
+  iommu/amd: Introduce Disable IRTE Caching Support
+  iommu/amd: Do not Invalidate IRT when disable IRTE caching
+  iommu/amd: Improving Interrupt Remapping Table Invalidation
+
+ .../admin-guide/kernel-parameters.txt         |  1 +
+ drivers/iommu/amd/amd_iommu_types.h           |  7 +-
+ drivers/iommu/amd/init.c                      | 38 +++++++-
+ drivers/iommu/amd/iommu.c                     | 97 ++++++++++---------
+ 4 files changed, 94 insertions(+), 49 deletions(-)
+
+-- 
+2.31.1
+
