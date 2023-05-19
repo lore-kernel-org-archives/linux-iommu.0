@@ -1,263 +1,197 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B49812B99
-	for <iommu@lists.linux.dev>; Fri, 19 May 2023 20:28:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684528084; x=1716064084;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=XALtxzpKtpRxLIztaMGye6Hq0U/QQOFMvurHPzjt4es=;
-  b=T8PX8UFJ0WH+ippUZLd/ZDZdlDVMOjq4oYIhfwHljOLNP9pQVnIfrijT
-   PZ8bq01TfFLgrrOmdAAhez4jJtR9PSfLKbLkFmXuO9+pwWsQ0S26Ha6qb
-   fl5kM0HznUOd+82rbS2fjNF3RpF+5J7941LikpstfeZDFjS2vvbZeRDEE
-   KTVJZfut4XlodsOnr0T8geYV2cTR/o1xcUsU4Uc2AS3nRgdCzcm1ILpiO
-   p4GH2zBo9YgL49seYnTYtqVWaaBxZUm+2+VnlGmoDiMbWk1ef5JLwi6DT
-   J/gHm2lEtc4jfo3E6INVqWe6VU5wBVPsGcHqyvy49a4v6J1tLJo1GjAXb
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10715"; a="418175382"
-X-IronPort-AV: E=Sophos;i="6.00,177,1681196400"; 
-   d="scan'208";a="418175382"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2023 13:27:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10715"; a="876967803"
-X-IronPort-AV: E=Sophos;i="6.00,177,1681196400"; 
-   d="scan'208";a="876967803"
-Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.97.184])
-  by orsmga005.jf.intel.com with ESMTP; 19 May 2023 13:27:56 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: LKML <linux-kernel@vger.kernel.org>,
-	iommu@lists.linux.dev,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	"Lu Baolu" <baolu.lu@linux.intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	dmaengine@vger.kernel.org,
-	vkoul@kernel.org
-Cc: "Robin Murphy" <robin.murphy@arm.com>,
-	"Will Deacon" <will@kernel.org>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Raj Ashok <ashok.raj@intel.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>,
-	Yi Liu <yi.l.liu@intel.com>,
-	"Yu, Fenghua" <fenghua.yu@intel.com>,
-	Dave Jiang <dave.jiang@intel.com>,
-	Tony Luck <tony.luck@intel.com>,
-	"Zanussi, Tom" <tom.zanussi@intel.com>,
-	narayan.ranganathan@intel.com,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v6 4/4] dmaengine/idxd: Re-enable kernel workqueue under DMA API
-Date: Fri, 19 May 2023 13:32:23 -0700
-Message-Id: <20230519203223.2777255-5-jacob.jun.pan@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230519203223.2777255-1-jacob.jun.pan@linux.intel.com>
-References: <20230519203223.2777255-1-jacob.jun.pan@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42A2B18000
+	for <iommu@lists.linux.dev>; Fri, 19 May 2023 22:26:57 +0000 (UTC)
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34JCifIL031366;
+	Fri, 19 May 2023 13:52:35 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2023-03-30;
+ bh=QGZhMMrMmO7Bz1Jb8YC29xPOFSYsF7WQJnxM5sYv+cw=;
+ b=vvCpjY65fxa2V5cwqlTyJV10jDfYVmqQvOad6ogF+ivQV/49qgjL0rFtRomM0wQyBjgx
+ wv2tz7oNCh+9hkYBwWX/aS0nHBTAb0zD3MeDICt7UksA1zJshPCP8/aHrywx5+SuBdSQ
+ ol8EvVpC60lftDk6cPCidY16ZRFidCJKS9se5rSF6gDZSBJcdm0e/HV9kN8BAKnc6vMl
+ RvB+GJNaFb9zKL7G5eKXlynzTNPNu8utjgIXnUWXwgcI/1KJJQ4yk8MgZLomzw8/Hhx0
+ r14w2drtZJCbrAgGvnec+c+CtsD3tquICuU2Zajo00X/0odRZcL1FF+TNy3jCttNGgHQ RA== 
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3qj0yea4t6-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 19 May 2023 13:52:35 +0000
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 34JCaXIY040018;
+	Fri, 19 May 2023 13:52:34 GMT
+Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1nam02lp2044.outbound.protection.outlook.com [104.47.57.44])
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3qj107v42c-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 19 May 2023 13:52:34 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aqTKJ6eBnCiJtA0JkdX84q/FPeS8jeU7xcrLcGqmVkU1BfMQuilrl1EUNf1BFzMpgL8xX7AHk/Sg/cwbm7msT7ZlRM1u5y0R5foACKMR6qcUKj1HLcvD8VeKuzSG33RGPkYdDDRfurzQauQ4EgpV1tKQBxwhXmOLcsNaxXS8R2OJ484GhkZXq5DpwFIiWb13BqIEFXwWccLM2/pGdnr1gRr0mchwAPtyOfjq371WUjYXv7w+egxQI5kOUh2h0unJPgDgRA4081WfQ4fRY9VQVnh2BQOPzadzuVKwhY0ti0gyMBb1GFjVEUDSMhgUohCocoIhsv3RgtBt3qjj6CJDxg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QGZhMMrMmO7Bz1Jb8YC29xPOFSYsF7WQJnxM5sYv+cw=;
+ b=XpIGzMmCI7QORSh+/Fae32GvGRNw5NZ4YUUYgtkFDYJQIyRgI1yTQ3gaPavQ6HbZ1Ne97z7jAPV0d/oaanYhQbee6TU2V6+2Hfe6XwTOyL2miOOXByno2eVc4hJM6uYWfalHR+9z1JyLLTC0uj6jtqZx6xkTJ2lD7BVFtC8HGzh5bnIc9TrILAajXjbkAbcXadFojEeYXO/R1OU9hbvV4/Pxlpjr8UP4KQZ/ef9QNWDI4GrreQY4tFufgakT0dRCdqkr/yRwhsLwyEW0yUTyUrIHweGXy4A01WCTLhjkiuASA1Qn8l9ADHi5EyOzYKcdr2G0GxyZwdTIfNzMsXIQiw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QGZhMMrMmO7Bz1Jb8YC29xPOFSYsF7WQJnxM5sYv+cw=;
+ b=A5x0tgWMgkghpSvTQmJ3dhoR08Aax5PrHSvyfur0Kw5Jba88N6yDKB5T/cta9EpkZVKv89lu9PBOsws5mZNSisBrEiC5LpNlQs7Sj8ImCDVc3s8mqC74bB1sQv6P0yTebdNhUjtqDcWwf5wBkzq0FFPl/v/+PRbN0m02OkrCqaU=
+Received: from BLAPR10MB4835.namprd10.prod.outlook.com (2603:10b6:208:331::11)
+ by PH0PR10MB5658.namprd10.prod.outlook.com (2603:10b6:510:fd::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.19; Fri, 19 May
+ 2023 13:52:32 +0000
+Received: from BLAPR10MB4835.namprd10.prod.outlook.com
+ ([fe80::b176:d5b0:55e9:1c2b]) by BLAPR10MB4835.namprd10.prod.outlook.com
+ ([fe80::b176:d5b0:55e9:1c2b%3]) with mapi id 15.20.6411.021; Fri, 19 May 2023
+ 13:52:31 +0000
+Message-ID: <e2be6c92-59a8-5dfe-9969-eaf3e91256b2@oracle.com>
+Date: Fri, 19 May 2023 14:52:25 +0100
+Subject: Re: [PATCH RFCv2 07/24] iommufd/selftest: Test
+ IOMMU_HWPT_ALLOC_ENFORCE_DIRTY
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
+        Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>, Yi Liu <yi.l.liu@intel.com>,
+        Yi Y Sun <yi.y.sun@intel.com>, Eric Auger <eric.auger@redhat.com>,
+        Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org
+References: <20230518204650.14541-1-joao.m.martins@oracle.com>
+ <20230518204650.14541-8-joao.m.martins@oracle.com>
+ <ZGd7MzUiESbzeLeg@nvidia.com>
+From: Joao Martins <joao.m.martins@oracle.com>
+In-Reply-To: <ZGd7MzUiESbzeLeg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AS4P250CA0024.EURP250.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5e3::17) To BLAPR10MB4835.namprd10.prod.outlook.com
+ (2603:10b6:208:331::11)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BLAPR10MB4835:EE_|PH0PR10MB5658:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8c39c75f-ede2-482f-dc8e-08db58704aab
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 
+	2T8Bp4ypVT+ZlIr+1XrBp/lFKa+eW6nxejMf31czbt6akT7L1814jiomvGnQ9a7VMfRvYQv9vM/44kEga+W5eqA69bEv6lit2PKSVkyxtq9AAm9kx92iqt//NKRqnUPAxDC/B1mrGhtFF3+ChRVScUZVwTUWfAZ1Cvvx2o242sqOvJVbkefZ5SW5MdvY+1eYeLNE1uYH11w9a72Fap8+an40U/gWhGvb3zU3nnrKdA5ZxsCi7ZU953PW23hkpJksDbfTv44WwVbECYMf9ZQh0eoI3XP2TeXid4GK3G7zrw1fzWu5UGd3Cg+6ToAHvzny7CGSq7QgjZXXgg6KTaTQibt8LYxHMXN5In0JoOZgDJGnqznbtV1H0nOUiE495BQm69a8UndQD5yLRHsf5R4fvAYmHkuzyew1GBlofxeyxh4eCBR2KJCJGcTsdZIt+bFKJOBxnOxhzKgwXQLeKG1wksYAVxoObAlA0YCLEp/nMWy9/G1OlO+oKfQzhXCVNUT2ReeaEREeB8BtzNtngczIHVHPamMnBR/T+SvCBnJ68PtCSfAoy72emtvt+nuH20U1cFFXOT3z3l340FIcpfLRXIZ9XbQtSb244Nj0pahKZ3hIsPV4XfIQCA8g3JiqUu/qbbwaBef+isKr0ri4sfkcng==
+X-Forefront-Antispam-Report: 
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR10MB4835.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(396003)(376002)(346002)(39860400002)(366004)(136003)(451199021)(7416002)(86362001)(8676002)(8936002)(31686004)(66946007)(66556008)(66476007)(2906002)(4326008)(6916009)(4744005)(316002)(54906003)(5660300002)(478600001)(41300700001)(6486002)(31696002)(38100700002)(6666004)(2616005)(6512007)(6506007)(36756003)(26005)(53546011)(186003)(14143004)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: 
+	=?utf-8?B?TVB1Rnh5c2d6MWFEbmsvcHBSZ2tENFFXLzZTL1VENnhPclBZdHlFOWZmdnhq?=
+ =?utf-8?B?MEJDNGdPN0dkbGFaZWdsRkkrRWhEeWRhR3JsNitqOUl6MEFRRTEybEhmTUgx?=
+ =?utf-8?B?dHhEcnlpaXpTM0pxM3ZqY0I3K2hVZzVJMFB6Ym9BYVFtYUMyM1lYVzY1Q3NE?=
+ =?utf-8?B?L2I5M3FERUxYN0hENEpLWHVUeDBrRktWekpYOUdHczlpY0wwOVNaWUwrUHhG?=
+ =?utf-8?B?WmVwNzBXVEc0dUxlRzhORHBOaWlxY293Qm94WGpLWkdXZW9OaGY3RVk1RG5m?=
+ =?utf-8?B?UDUyTitaOURJL2RFdkcrM055cis1cDIwMEVpN1ROTnRVL3FydDFReDBnbmww?=
+ =?utf-8?B?dlVydWR3SWN4OHQ1MGQ1OHpCcEN4aC9aM21MS0RxNURTNWtHTHVQRmt4RTRu?=
+ =?utf-8?B?OStPUyszRWxWUHdsMjk2eEJ5SGxWaUxRcm0vbEpjbTVEK0dSZk91QVliaTZy?=
+ =?utf-8?B?UUcwYUVjbnlBMUJzVXNXS2JDMEJ5d1RMUzV3Slc4Z2dUczJUSEIrNE56UlYr?=
+ =?utf-8?B?QW5sU0t4bVNBUUFYcDVNZE1pMUtUSFR1eXdyU1VPN2lSOXd1ODZFWWtZdkds?=
+ =?utf-8?B?UzJ2RTFGVGJBaW1Uc0pDZHJzeXNaOGliamhPajdNak5vdUFzVE5wOTRqZ2g3?=
+ =?utf-8?B?aG5wdmVIRVltbVpFbUpZb2JEbEhmcm1aVFJ0clJFMVV2N1ZJbjNDUGdMVWg3?=
+ =?utf-8?B?NjN6K1FjQ3ZIL0pPQThxeW1YYkdoVGs4NDUwOTBQQWZETHM1MDlEVDBPMnZr?=
+ =?utf-8?B?WEYybkVzK2Qra2tGcndTdHY2VUNKYTVIcU9IcWJqUStleE1BcGNZRkRLUGx4?=
+ =?utf-8?B?cXAvOStBRU9MelNJT1orb0N2WVVNZ0VIL2x1ZG5YRnpzSzhqWmlhcXhmeTJG?=
+ =?utf-8?B?cXhJYkhERFFpb1JycldjMmNTSjBJY3QwaDJWdHpkZk9yVWpkTzRoR1RIYW9u?=
+ =?utf-8?B?UnprbEd0NkFTLzVnWjBNVmpuVW5sSWRRRDdJc1Joa1pnQkpyaXFsWkNEalF1?=
+ =?utf-8?B?UnU5SHhLTjVHSUJxengrVFFnMjhJbVlNTzhGeWFtaC9VV2t6ZkFTOUxYd2Ux?=
+ =?utf-8?B?S0gwTnlJU0dub2RTYnc4TDREelNZVzgwUEtNUWZaK1F4YWVMODJVYVFzUXA4?=
+ =?utf-8?B?anFBMHZaQzl4bWRjNSt3U2xJMkdvRTZiVFhrdWJ2a1EwUmh2ZU9DZEIydXBK?=
+ =?utf-8?B?THZjWU5KNThsV1BvNkNna1NaZVpaTkRnc3FqcllaQldJQWQ1Z3FONG1KVWN2?=
+ =?utf-8?B?R2FvTmZHUDJ4VUlJSXdwWjJRdHJ3YzRxMitXTDdSY2dpRENkNFRxU29ZSVZB?=
+ =?utf-8?B?ZjJ6OVhxQ09hQzcyR2hlUnlFUlZ0RjFyaG1mSnUxY0k2ZmttQlhpS21GQjJj?=
+ =?utf-8?B?NFNPVm5YbWJoMjV2TExvWWh5cW9GT1dFdzVLaWRNV3h6Ym9Ic21memppZGZJ?=
+ =?utf-8?B?T0owbHJQMnNXbXZ6bHgvUjBiWlh6VFlOb0ppdldJcUVLTVFJRlBUMFNtSmxJ?=
+ =?utf-8?B?VGlCQnVXOVFsa254bzg0RWE5OEQwcVRxMDg3SS9RS1c1WkdqVU5wbzczWTdn?=
+ =?utf-8?B?SzdMTHFzYjYxc2V5VlcyN1JwVTk3TGsyQndOUzdaamFqcktqRUJyd0ZERHpF?=
+ =?utf-8?B?bEpzVGF4NWNOc1ZqaUZScE4vdG4yZEVHekN5azNDUVNHUVl3VmUvdkZyZDhY?=
+ =?utf-8?B?eGZNbTdnOCtGeFlaTDdyMVYvSEtTVkZod3RoS0toZUx3aW9sV2k5YkhNRGpO?=
+ =?utf-8?B?UDdJSm1UZFJnSjBDTTdDZmRhMDJMQmtGaE94KzE0VmFack44RkFoUjRYTEFn?=
+ =?utf-8?B?L09XNlIvZTI5Y1Rmeno5SUpSdXdGS3hVbVhkVmoxNHdOa20xTXd4cDk2SzY4?=
+ =?utf-8?B?cHlHQTBtSi85cDJmcElObEszTEswZS9qbVRSYXVqZll2Z1V1SzZsNmY5dk04?=
+ =?utf-8?B?OTRtcXZ0a3ZEbGp1NkJDbU56c3pUcGJWMjBlRVYzOEJnUy9lWlYvcE54Szcr?=
+ =?utf-8?B?R2RwbmxHaEFQenhINmpqY1IvcE9lSHF5a0xHd0ZpZTVZT3dkT3NqUG1yNXA4?=
+ =?utf-8?B?WlJ6N1NVZDBNSjlwVHBxVkc3Z1M5cDJMYXFwUndENDczS3dYbG9EMmx4Ulc3?=
+ =?utf-8?B?M2MzNEtzYUhwWTEvQ2hzdXNJZEZPTlErd3VDUDBSR0JzbWxNc3QxN1JCNFp2?=
+ =?utf-8?B?Wmc9PQ==?=
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
+	=?utf-8?B?QU81L3JoQnNxV0VPUEtMdk9JRXJJdC9QL3o4dk9XbnZJNmhOTGpmbTI2ajU2?=
+ =?utf-8?B?ZlRXOCs0Q24waVdTUVNXSm1qOXMxalpLQ0FXRDR5R01LYVZNOXlDTWhWR2p6?=
+ =?utf-8?B?RjI0K1hUVnhhSHgzYlF1dG1zZlQ5Q05VaDd5NEJURWY5Zk5NYnBNSUtRMXFI?=
+ =?utf-8?B?SmE0cHBhYkhoWlhqOHlLTGRyLzJrL3Q2OWpHUHZmOTFUb05JSGhvM2tPZjhs?=
+ =?utf-8?B?RlMzUkErUFZ0Qzg5d2RFZkpHS2dRbXJhejJrU1djTmpwVFQ3b1JNN1ZlSVlT?=
+ =?utf-8?B?aWZlY05mSlJlWFFoa0JxQnZ5WThGenlFREk2cDBXdHFLWW1FYWFxR3YrZlQv?=
+ =?utf-8?B?VjhxR1QyenQrZTViMno1SHE1c3pvKzdGem1xdjBnU3U0LzAvZkVGa05MMU4v?=
+ =?utf-8?B?NWVUeHJCNU9xTmdLTDA4Vkt3RkZNZWRyV0t4dW92OTI1VUpkWVc2eGkxbjgv?=
+ =?utf-8?B?QzJVMjl6b1BGUEtBcXl1ZTRRb1doalRkeVQ4bmtzMUZOejFRZGJ2WUJLRWhS?=
+ =?utf-8?B?SWZwVEROd293MFc5OXVKSHJ5T1pQMjNGSlR0a3RqWHlzYXBpUkcvUVVOYlpT?=
+ =?utf-8?B?VEJVcVpPakFOOGZNMlZ0Y3pQYk1SL3ZNcWJJZTJBR0UzWE50UW43T1M5NDdv?=
+ =?utf-8?B?MmhYL0pUM3RWMXRoWWNDKzdQZlNtWkJTL0VTcVlpUndJRjhHeUpYbEJDblNU?=
+ =?utf-8?B?NWtlY1VMMmJtbXdnWVJxTzB0OGJNY1c0YTJNeHJPN0x1NlZHVi9KQWNneUkv?=
+ =?utf-8?B?L2lYTVNjNUVQY1M4dGNYaGtVRGROZTBrTVJFdlJTS2lWT0xKdmtqemJ0VGpr?=
+ =?utf-8?B?NitUSDN6Y0s5K1BxQVFYT1kvYUp0VnMwREd2NkRVdHBoNUlqVXBQa1NkY3RQ?=
+ =?utf-8?B?SE9XbjF1SVRLYXV5cE1zTTBjZEdobzFUS3l5dWpXVjlocDB5N2hDVC9BS0E0?=
+ =?utf-8?B?dnFoWTg4K0czT215UXNXSFpkQ05WUFdONmhrNDVFZmIwUmU2ZlQweXJ1VHJV?=
+ =?utf-8?B?aXJiL0psUmFEdE41NTk5bDZCeENHbm52d0hoU2ppQml0MnFXc1NmbUVTc3RZ?=
+ =?utf-8?B?dW41Q1NWN1pLUDNrZFh3NmlKUk9pMlhza2hzTm5QSy8wU3BxOEpyb2hDTnI5?=
+ =?utf-8?B?NzY1WWRyR1Z1TDdSTTJoenhweTM1Sy9aT3p6UkRYWlFzWS9FVDZBRWgzbi9v?=
+ =?utf-8?B?VjBnMWUvRGxEWUlNL2xFT0xIWlVMU3hXOEoraHc0ZVY3WkhqUFQ0dUpETk95?=
+ =?utf-8?B?Z1hESXNTRzQyWnlBeWJTY0NBNGFWOVl4dmJHeE5rNWNYdmlKcWZzVHQ4cWU3?=
+ =?utf-8?B?SEcxRHUzWVR3NGtNQmhaVXRCMmU3azlJRW5ZaVAyT0R0TSttQTNLQkxzdU9D?=
+ =?utf-8?B?QVVtYzhVenc4cGhaK0lpVnRXVjkrUGR1K25JSWxMK3FESmxBYlNXK1V3Mldw?=
+ =?utf-8?B?dEpEaXdpaEhKUUo2MzA0OUw1bWFTRUc0MDlkTFFRPT0=?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8c39c75f-ede2-482f-dc8e-08db58704aab
+X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB4835.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2023 13:52:31.8153
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fSJjjliv58p1Xxd/Y6m8aCyrCcfZ544gYQB+iofRq1NeBo/9DSYPV7ZJ3xfEo52kA/+sPoI+xX5xAmm1tn83hTWNewqdse6baXyt7Puu9vQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR10MB5658
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-05-19_09,2023-05-17_02,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 adultscore=0 bulkscore=0
+ mlxscore=0 phishscore=0 malwarescore=0 spamscore=0 mlxlogscore=988
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2304280000
+ definitions=main-2305190117
+X-Proofpoint-ORIG-GUID: NvnJ_s4UL92fpRp-zwulQUJENnPNsMs6
+X-Proofpoint-GUID: NvnJ_s4UL92fpRp-zwulQUJENnPNsMs6
 
-Kernel workqueues were disabled due to flawed use of kernel VA and SVA
-API. Now that we have the support for attaching PASID to the device's
-default domain and the ability to reserve global PASIDs from SVA APIs,
-we can re-enable the kernel work queues and use them under DMA API.
+On 19/05/2023 14:35, Jason Gunthorpe wrote:
+> On Thu, May 18, 2023 at 09:46:33PM +0100, Joao Martins wrote:
+> 
+>> @@ -50,6 +54,7 @@ struct iommu_test_cmd {
+>>  			__aligned_u64 length;
+>>  		} add_reserved;
+>>  		struct {
+>> +			__u32 dev_flags;
+>>  			__u32 out_stdev_id;
+>>  			__u32 out_hwpt_id;
+> 
+> Don't break the ABI needlessly, syzkaller relies on this
 
-We also use non-privileged access for in-kernel DMA to be consistent
-with the IOMMU settings. Consequently, interrupt for user privilege is
-enabled for work completion IRQs.
+IOMMUFD_TEST was quoted "dangerous" in kconfig so I thought that ABI was loosed up
 
-Link:https://lore.kernel.org/linux-iommu/20210511194726.GP1002214@nvidia.com/
-Reviewed-by: Dave Jiang <dave.jiang@intel.com>
-Reviewed-by: Fenghua Yu <fenghua.yu@intel.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
----
- drivers/dma/idxd/device.c | 30 ++++----------------
- drivers/dma/idxd/dma.c    |  5 ++--
- drivers/dma/idxd/init.c   | 60 ++++++++++++++++++++++++++++++++++++---
- drivers/dma/idxd/sysfs.c  |  7 -----
- 4 files changed, 64 insertions(+), 38 deletions(-)
-
-diff --git a/drivers/dma/idxd/device.c b/drivers/dma/idxd/device.c
-index 5abbcc61c528..66b6665a45cb 100644
---- a/drivers/dma/idxd/device.c
-+++ b/drivers/dma/idxd/device.c
-@@ -299,21 +299,6 @@ void idxd_wqs_unmap_portal(struct idxd_device *idxd)
- 	}
- }
- 
--static void __idxd_wq_set_priv_locked(struct idxd_wq *wq, int priv)
--{
--	struct idxd_device *idxd = wq->idxd;
--	union wqcfg wqcfg;
--	unsigned int offset;
--
--	offset = WQCFG_OFFSET(idxd, wq->id, WQCFG_PRIVL_IDX);
--	spin_lock(&idxd->dev_lock);
--	wqcfg.bits[WQCFG_PRIVL_IDX] = ioread32(idxd->reg_base + offset);
--	wqcfg.priv = priv;
--	wq->wqcfg->bits[WQCFG_PRIVL_IDX] = wqcfg.bits[WQCFG_PRIVL_IDX];
--	iowrite32(wqcfg.bits[WQCFG_PRIVL_IDX], idxd->reg_base + offset);
--	spin_unlock(&idxd->dev_lock);
--}
--
- static void __idxd_wq_set_pasid_locked(struct idxd_wq *wq, int pasid)
- {
- 	struct idxd_device *idxd = wq->idxd;
-@@ -1423,15 +1408,14 @@ int drv_enable_wq(struct idxd_wq *wq)
- 	}
- 
- 	/*
--	 * In the event that the WQ is configurable for pasid and priv bits.
--	 * For kernel wq, the driver should setup the pasid, pasid_en, and priv bit.
--	 * However, for non-kernel wq, the driver should only set the pasid_en bit for
--	 * shared wq. A dedicated wq that is not 'kernel' type will configure pasid and
-+	 * In the event that the WQ is configurable for pasid, the driver
-+	 * should setup the pasid, pasid_en bit. This is true for both kernel
-+	 * and user shared workqueues. There is no need to setup priv bit in
-+	 * that in-kernel DMA will also do user privileged requests.
-+	 * A dedicated wq that is not 'kernel' type will configure pasid and
- 	 * pasid_en later on so there is no need to setup.
- 	 */
- 	if (test_bit(IDXD_FLAG_CONFIGURABLE, &idxd->flags)) {
--		int priv = 0;
--
- 		if (wq_pasid_enabled(wq)) {
- 			if (is_idxd_wq_kernel(wq) || wq_shared(wq)) {
- 				u32 pasid = wq_dedicated(wq) ? idxd->pasid : 0;
-@@ -1439,10 +1423,6 @@ int drv_enable_wq(struct idxd_wq *wq)
- 				__idxd_wq_set_pasid_locked(wq, pasid);
- 			}
- 		}
--
--		if (is_idxd_wq_kernel(wq))
--			priv = 1;
--		__idxd_wq_set_priv_locked(wq, priv);
- 	}
- 
- 	rc = 0;
-diff --git a/drivers/dma/idxd/dma.c b/drivers/dma/idxd/dma.c
-index eb35ca313684..07623fb0f52f 100644
---- a/drivers/dma/idxd/dma.c
-+++ b/drivers/dma/idxd/dma.c
-@@ -75,9 +75,10 @@ static inline void idxd_prep_desc_common(struct idxd_wq *wq,
- 	hw->xfer_size = len;
- 	/*
- 	 * For dedicated WQ, this field is ignored and HW will use the WQCFG.priv
--	 * field instead. This field should be set to 1 for kernel descriptors.
-+	 * field instead. This field should be set to 0 for kernel descriptors
-+	 * since kernel DMA on VT-d supports "user" privilege only.
- 	 */
--	hw->priv = 1;
-+	hw->priv = 0;
- 	hw->completion_addr = compl;
- }
- 
-diff --git a/drivers/dma/idxd/init.c b/drivers/dma/idxd/init.c
-index 1aa823974cda..bd7b9bd40f0a 100644
---- a/drivers/dma/idxd/init.c
-+++ b/drivers/dma/idxd/init.c
-@@ -550,14 +550,65 @@ static struct idxd_device *idxd_alloc(struct pci_dev *pdev, struct idxd_driver_d
- 
- static int idxd_enable_system_pasid(struct idxd_device *idxd)
- {
--	return -EOPNOTSUPP;
-+	struct pci_dev *pdev = idxd->pdev;
-+	struct device *dev = &pdev->dev;
-+	struct iommu_domain *domain;
-+	union gencfg_reg gencfg;
-+	ioasid_t pasid;
-+	int ret;
-+
-+	/*
-+	 * Attach a global PASID to the DMA domain so that we can use ENQCMDS
-+	 * to submit work on buffers mapped by DMA API.
-+	 */
-+	domain = iommu_get_domain_for_dev(dev);
-+	if (!domain)
-+		return -EPERM;
-+
-+	pasid = iommu_alloc_global_pasid_dev(dev);
-+	if (pasid == IOMMU_PASID_INVALID)
-+		return -ENOSPC;
-+
-+	/*
-+	 * DMA domain is owned by the driver, it should support all valid
-+	 * types such as DMA-FQ, identity, etc.
-+	 */
-+	ret = iommu_attach_device_pasid(domain, dev, pasid);
-+	if (ret) {
-+		dev_err(dev, "failed to attach device pasid %d, domain type %d",
-+			pasid, domain->type);
-+		iommu_free_global_pasid(pasid);
-+		return ret;
-+	}
-+
-+	/* Since we set user privilege for kernel DMA, enable completion IRQ */
-+	gencfg.bits = ioread32(idxd->reg_base + IDXD_GENCFG_OFFSET);
-+	gencfg.user_int_en = 1;
-+	iowrite32(gencfg.bits, idxd->reg_base + IDXD_GENCFG_OFFSET);
-+	idxd->pasid = pasid;
-+
-+	return ret;
- }
- 
- static void idxd_disable_system_pasid(struct idxd_device *idxd)
- {
-+	struct pci_dev *pdev = idxd->pdev;
-+	struct device *dev = &pdev->dev;
-+	struct iommu_domain *domain;
-+	union gencfg_reg gencfg;
-+
-+	domain = iommu_get_domain_for_dev(dev);
-+	if (!domain)
-+		return;
-+
-+	iommu_detach_device_pasid(domain, dev, idxd->pasid);
-+	iommu_free_global_pasid(idxd->pasid);
- 
--	iommu_sva_unbind_device(idxd->sva);
-+	gencfg.bits = ioread32(idxd->reg_base + IDXD_GENCFG_OFFSET);
-+	gencfg.user_int_en = 0;
-+	iowrite32(gencfg.bits, idxd->reg_base + IDXD_GENCFG_OFFSET);
- 	idxd->sva = NULL;
-+	idxd->pasid = IOMMU_PASID_INVALID;
- }
- 
- static int idxd_enable_sva(struct pci_dev *pdev)
-@@ -600,8 +651,9 @@ static int idxd_probe(struct idxd_device *idxd)
- 		} else {
- 			set_bit(IDXD_FLAG_USER_PASID_ENABLED, &idxd->flags);
- 
--			if (idxd_enable_system_pasid(idxd))
--				dev_warn(dev, "No in-kernel DMA with PASID.\n");
-+			rc = idxd_enable_system_pasid(idxd);
-+			if (rc)
-+				dev_warn(dev, "No in-kernel DMA with PASID. %d\n", rc);
- 			else
- 				set_bit(IDXD_FLAG_PASID_ENABLED, &idxd->flags);
- 		}
-diff --git a/drivers/dma/idxd/sysfs.c b/drivers/dma/idxd/sysfs.c
-index 293739ac5596..63f6966c51aa 100644
---- a/drivers/dma/idxd/sysfs.c
-+++ b/drivers/dma/idxd/sysfs.c
-@@ -948,13 +948,6 @@ static ssize_t wq_name_store(struct device *dev,
- 	if (strlen(buf) > WQ_NAME_SIZE || strlen(buf) == 0)
- 		return -EINVAL;
- 
--	/*
--	 * This is temporarily placed here until we have SVM support for
--	 * dmaengine.
--	 */
--	if (wq->type == IDXD_WQT_KERNEL && device_pasid_enabled(wq->idxd))
--		return -EOPNOTSUPP;
--
- 	input = kstrndup(buf, count, GFP_KERNEL);
- 	if (!input)
- 		return -ENOMEM;
--- 
-2.25.1
-
+I guess I just add a new struct here that extends struct mock_domain inside the
+union.
