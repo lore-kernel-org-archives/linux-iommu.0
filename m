@@ -1,80 +1,195 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7416D8C16
-	for <iommu@lists.linux.dev>; Fri, 19 May 2023 12:13:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684498393; x=1716034393;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=oE6bARp4hKw3cRBqUJZEMxSRLzfZZiTuupE4Ov1vvl0=;
-  b=Q+5n2fIx8ZwzUJaiiDkvqHwkeELZZ+1hbq4pxMZr+zeCai5KJ98qeBcp
-   tbK4Cx4uGsIYjsSS9mHeEhsg4CM0pg94NgStcjRDjnpyRgbHaD8M6TXkK
-   2urigBMmsKiV2QzUi++HIfHxCQq/qouTMoRRq2pYrwi1bCcEhKWa49gNM
-   Yk7uBL4AGapeGSiKAzgHsnIHUmlfHPppwHFPQioshHtpRFd0ne6YUWptd
-   b1BA3JRqxzasNtKNUukwgX2MsKaIm3Tm8wQZxOc5R3mdoQX4raofBnFDx
-   vJvB/1orYFvPblY8QLxOYviwlYHRTdgGA9iw1fOKkRzdadgTeKf2D9sxJ
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10714"; a="351197498"
-X-IronPort-AV: E=Sophos;i="6.00,176,1681196400"; 
-   d="scan'208";a="351197498"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2023 05:13:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10714"; a="949093773"
-X-IronPort-AV: E=Sophos;i="6.00,176,1681196400"; 
-   d="scan'208";a="949093773"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.210.160]) ([10.254.210.160])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2023 05:13:05 -0700
-Message-ID: <4581681d-748e-1e1b-2b9c-b4a57e3a4b33@linux.intel.com>
-Date: Fri, 19 May 2023 20:13:03 +0800
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B4C098C13
+	for <iommu@lists.linux.dev>; Fri, 19 May 2023 12:29:52 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0B52C1FB;
+	Fri, 19 May 2023 05:30:31 -0700 (PDT)
+Received: from [10.57.84.114] (unknown [10.57.84.114])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 20AFD3F762;
+	Fri, 19 May 2023 05:29:42 -0700 (PDT)
+Message-ID: <9dc3e036-75cd-debf-7093-177ef6c7a3ae@arm.com>
+Date: Fri, 19 May 2023 13:29:38 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
  Thunderbird/102.11.0
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
- Kevin Tian <kevin.tian@intel.com>,
- Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- Yi Liu <yi.l.liu@intel.com>, Yi Y Sun <yi.y.sun@intel.com>,
- Eric Auger <eric.auger@redhat.com>, Nicolin Chen <nicolinc@nvidia.com>,
- Joerg Roedel <joro@8bytes.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org
-Subject: Re: [PATCH RFCv2 04/24] iommu: Add iommu_domain ops for dirty
- tracking
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, Joao Martins <joao.m.martins@oracle.com>
-References: <20230518204650.14541-1-joao.m.martins@oracle.com>
- <20230518204650.14541-5-joao.m.martins@oracle.com>
- <ZGdgNblpO4rE+IF4@nvidia.com>
- <424d37fc-d1a4-f56c-e034-20fb96b69c86@oracle.com>
- <ZGdipWrnZNI/C7mF@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ZGdipWrnZNI/C7mF@nvidia.com>
+Subject: Re: [PATCH v4 13/15] iommu/dma: Force bouncing if the size is not
+ cacheline-aligned
+Content-Language: en-GB
+To: Catalin Marinas <catalin.marinas@arm.com>,
+ Linus Torvalds <torvalds@linux-foundation.org>, Arnd Bergmann
+ <arnd@arndb.de>, Christoph Hellwig <hch@lst.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Herbert Xu <herbert@gondor.apana.org.au>, Ard Biesheuvel <ardb@kernel.org>,
+ Isaac Manjarres <isaacmanjarres@google.com>,
+ Saravana Kannan <saravanak@google.com>, Alasdair Kergon <agk@redhat.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>,
+ Mark Brown <broonie@kernel.org>, Mike Snitzer <snitzer@kernel.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, linux-mm@kvack.org,
+ iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
+References: <20230518173403.1150549-1-catalin.marinas@arm.com>
+ <20230518173403.1150549-14-catalin.marinas@arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20230518173403.1150549-14-catalin.marinas@arm.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/5/19 19:51, Jason Gunthorpe wrote:
-> On Fri, May 19, 2023 at 12:47:24PM +0100, Joao Martins wrote:
+On 2023-05-18 18:34, Catalin Marinas wrote:
+> Similarly to the direct DMA, bounce small allocations as they may have
+> originated from a kmalloc() cache not safe for DMA. Unlike the direct
+> DMA, iommu_dma_map_sg() cannot call iommu_dma_map_sg_swiotlb() for all
+> non-coherent devices as this would break some cases where the iova is
+> expected to be contiguous (dmabuf). Instead, scan the scatterlist for
+> any small sizes and only go the swiotlb path if any element of the list
+> needs bouncing (note that iommu_dma_map_page() would still only bounce
+> those buffers which are not DMA-aligned).
 > 
->> In practice it is done as soon after the domain is created but I understand what
->> you mean that both should be together; I have this implemented like that as my
->> first take as a domain_alloc passed flags, but I was a little undecided because
->> we are adding another domain_alloc() op for the user-managed pagetable and after
->> having another one we would end up with 3 ways of creating iommu domain -- but
->> maybe that's not an issue
-> It should ride on the same user domain alloc op as some generic flags,
-> there is no immediate use case to enable dirty tracking for
-> non-iommufd page tables
+> To avoid scanning the scatterlist on the 'sync' operations, introduce a
+> SG_DMA_BOUNCED flag set during the iommu_dma_map_sg() call (suggested by
+> Robin Murphy).
+> 
+> Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Christoph Hellwig <hch@lst.de>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> ---
+>   drivers/iommu/dma-iommu.c   | 25 ++++++++++++++++++++-----
+>   include/linux/scatterlist.h | 25 +++++++++++++++++++++++--
+>   2 files changed, 43 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 7a9f0b0bddbd..ab1c1681c06e 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -956,7 +956,7 @@ static void iommu_dma_sync_sg_for_cpu(struct device *dev,
+>   	struct scatterlist *sg;
+>   	int i;
+>   
+> -	if (dev_use_swiotlb(dev))
+> +	if (dev_use_swiotlb(dev) || sg_is_dma_bounced(sgl))
+>   		for_each_sg(sgl, sg, nelems, i)
+>   			iommu_dma_sync_single_for_cpu(dev, sg_dma_address(sg),
+>   						      sg->length, dir);
+> @@ -972,7 +972,7 @@ static void iommu_dma_sync_sg_for_device(struct device *dev,
+>   	struct scatterlist *sg;
+>   	int i;
+>   
+> -	if (dev_use_swiotlb(dev))
+> +	if (dev_use_swiotlb(dev) || sg_is_dma_bounced(sgl))
+>   		for_each_sg(sgl, sg, nelems, i)
+>   			iommu_dma_sync_single_for_device(dev,
+>   							 sg_dma_address(sg),
+> @@ -998,7 +998,8 @@ static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+>   	 * If both the physical buffer start address and size are
+>   	 * page aligned, we don't need to use a bounce page.
+>   	 */
+> -	if (dev_use_swiotlb(dev) && iova_offset(iovad, phys | size)) {
+> +	if ((dev_use_swiotlb(dev) && iova_offset(iovad, phys | size)) ||
+> +	    dma_kmalloc_needs_bounce(dev, size, dir)) {
+>   		void *padding_start;
+>   		size_t padding_size, aligned_size;
+>   
+> @@ -1210,7 +1211,21 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+>   			goto out;
+>   	}
+>   
+> -	if (dev_use_swiotlb(dev))
+> +	/*
+> +	 * If kmalloc() buffers are not DMA-safe for this device and
+> +	 * direction, check the individual lengths in the sg list. If one of
+> +	 * the buffers is deemed unsafe, follow the iommu_dma_map_sg_swiotlb()
+> +	 * path for potential bouncing.
+> +	 */
+> +	if (!dma_kmalloc_safe(dev, dir)) {
+> +		for_each_sg(sg, s, nents, i)
+> +			if (!dma_kmalloc_size_aligned(s->length)) {
 
-This is better than the current solution.
+Just to remind myself, we're not checking s->offset on the grounds that 
+if anyone wants to DMA into an unaligned part of a larger allocation 
+that remains at their own risk, is that right?
 
-Best regards,
-baolu
+Do we care about the (probably theoretical) case where someone might 
+build a scatterlist for multiple small allocations such that ones which 
+happen to be adjacent might get combined into a single segment of 
+apparently "safe" length but still at "unsafe" alignment?
+
+> +				sg_dma_mark_bounced(sg);
+
+I'd prefer to have iommu_dma_map_sg_swiotlb() mark the segments, since 
+that's in charge of the actual bouncing. Then we can fold the alignment 
+check into dev_use_swiotlb() (with the dev_is_untrusted() condition 
+taking priority), and sync/unmap can simply rely on sg_is_dma_bounced() 
+alone.
+
+(ultimately I'd like to merge the two separate paths back together and 
+handle bouncing per-segment, but that can wait)
+
+Thanks,
+Robin.
+
+> +				break;
+> +			}
+> +	}
+> +
+> +	if (dev_use_swiotlb(dev) || sg_is_dma_bounced(sg))
+>   		return iommu_dma_map_sg_swiotlb(dev, sg, nents, dir, attrs);
+>   
+>   	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+> @@ -1315,7 +1330,7 @@ static void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
+>   	struct scatterlist *tmp;
+>   	int i;
+>   
+> -	if (dev_use_swiotlb(dev)) {
+> +	if (dev_use_swiotlb(dev) || sg_is_dma_bounced(sg)) {
+>   		iommu_dma_unmap_sg_swiotlb(dev, sg, nents, dir, attrs);
+>   		return;
+>   	}
+> diff --git a/include/linux/scatterlist.h b/include/linux/scatterlist.h
+> index 87aaf8b5cdb4..9306880cae1c 100644
+> --- a/include/linux/scatterlist.h
+> +++ b/include/linux/scatterlist.h
+> @@ -248,6 +248,29 @@ static inline void sg_unmark_end(struct scatterlist *sg)
+>   	sg->page_link &= ~SG_END;
+>   }
+>   
+> +#define SG_DMA_BUS_ADDRESS	(1 << 0)
+> +#define SG_DMA_BOUNCED		(1 << 1)
+> +
+> +#ifdef CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC
+> +static inline bool sg_is_dma_bounced(struct scatterlist *sg)
+> +{
+> +	return sg->dma_flags & SG_DMA_BOUNCED;
+> +}
+> +
+> +static inline void sg_dma_mark_bounced(struct scatterlist *sg)
+> +{
+> +	sg->dma_flags |= SG_DMA_BOUNCED;
+> +}
+> +#else
+> +static inline bool sg_is_dma_bounced(struct scatterlist *sg)
+> +{
+> +	return false;
+> +}
+> +static inline void sg_dma_mark_bounced(struct scatterlist *sg)
+> +{
+> +}
+> +#endif
+> +
+>   /*
+>    * CONFIG_PCI_P2PDMA depends on CONFIG_64BIT which means there is 4 bytes
+>    * in struct scatterlist (assuming also CONFIG_NEED_SG_DMA_LENGTH is set).
+> @@ -256,8 +279,6 @@ static inline void sg_unmark_end(struct scatterlist *sg)
+>    */
+>   #ifdef CONFIG_PCI_P2PDMA
+>   
+> -#define SG_DMA_BUS_ADDRESS (1 << 0)
+> -
+>   /**
+>    * sg_dma_is_bus address - Return whether a given segment was marked
+>    *			   as a bus address
