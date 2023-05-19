@@ -1,142 +1,90 @@
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2057.outbound.protection.outlook.com [40.107.95.57])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68B5D12B95
-	for <iommu@lists.linux.dev>; Fri, 19 May 2023 18:58:14 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fVQKBkMHiQHfWKlNbnlGa5hHYo6W8gPskjrozp2wkrX0US2kOuCNl2Ce5aufwQBbncFYEKuhAjIJiBB3DqREZRsM6LYVz7yzaMTye3YZ9xIJOOv6f4KfTjyf0EJeJyHSpmPNqrr1gvb3jYZWLGfTzQ4Gw69TLAKB9hlXg6Nn4q0PGp+lc6L+kYPfdCy4ghBOdUh/JvFiF2hLwbU/baAOxw4Oo666am6Y2GemBGy7WNaTKRGsBbr4V94qncpi0In45WY1fZSnm6nSLppDXzAfrnmVU++qQDmFK+7zIMF7QYE+NasBm4Aeq3/90yYLkFnXgXX78S5IGrW/V2feIGZkOQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=m2t67dAkX3C5fc87sDQLoehTgLtv8rC7EOW2c0zFUGM=;
- b=FXg0xKPwYxHKLvQ/oHQvuMFvmlCQC8xpEVE66GrV3V2nHaWXTIGQufGlWc5nSBIzCo06j3/e4AIppzCxldPphXNRfj3dGz4ZttgSXhIMTpOUe28kzcTPU3BNxv1bb4zkiB5DEHV4Ev5ckZXF2UWaENZ0KLGYb90q2PP21nTN8wVK0vKsVxAT1BDt7QmuOWkc+y7OcDhK7KLMZZSAUXHill02Cfgki74QktNWZ8Om/lOrDzqV2MwJ1N/TmIqFkvNDo//NgQU7su5jNiOnPJ8RX0cJJibGmS9qdZfh6/KSCRHUQ3eBKtewiem8y1G+t2wpw6eWlzwxXeUbVDV/7N616A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=m2t67dAkX3C5fc87sDQLoehTgLtv8rC7EOW2c0zFUGM=;
- b=qRHxV55hW7Dtsss6kTdIWIWyU0SqIQ2/hzvYjtzFQp4T2MKf6IWk3L/ezyRBSpZT/ZYbg0dMdMZwS51MMJYqbffpCFXNagiZOpKwwapCI6Yh5LgoEuopEUwUOVsogqKa16urv+PGPacvgUFn2e+FOoczzsYH8NByox2h0NFTCRCTrsR12lmtjuMTHWC2MmiVUz5YLBn/FhXe5uSPLPkAyxNyItk5F/gyV0uBw+GmUUe7fpd50Ow4T+poatYz2oyotVTFS3WtRYShbMa91bBHiRfXp6CgjLZX0j8gaYBt1HiIZv/MxsZzPNmZ0S6oxjtfc53pPT9JlCKyVts+NFa+Rw==
-Received: from DM6PR02CA0055.namprd02.prod.outlook.com (2603:10b6:5:177::32)
- by SA1PR12MB8722.namprd12.prod.outlook.com (2603:10b6:806:373::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.21; Fri, 19 May
- 2023 18:58:12 +0000
-Received: from DM6NAM11FT091.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:177:cafe::a7) by DM6PR02CA0055.outlook.office365.com
- (2603:10b6:5:177::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.19 via Frontend
- Transport; Fri, 19 May 2023 18:58:12 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- DM6NAM11FT091.mail.protection.outlook.com (10.13.173.108) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6411.21 via Frontend Transport; Fri, 19 May 2023 18:58:12 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Fri, 19 May 2023
- 11:57:58 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Fri, 19 May
- 2023 11:57:58 -0700
-Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Fri, 19 May 2023 11:57:56 -0700
-Date: Fri, 19 May 2023 11:57:55 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-CC: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jgg@nvidia.com"
-	<jgg@nvidia.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
-	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
-	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
-	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
-	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
- Zhenzhong" <zhenzhong.duan@intel.com>
-Subject: Re: [PATCH v2 03/11] iommufd/hw_pagetable: Use domain_alloc_user op
- for domain allocation
-Message-ID: <ZGfGs85B4hPBBxXc@Asurada-Nvidia>
-References: <20230511143844.22693-1-yi.l.liu@intel.com>
- <20230511143844.22693-4-yi.l.liu@intel.com>
- <BN9PR11MB5276FADBA5E22DCF3FFA2F838C7C9@BN9PR11MB5276.namprd11.prod.outlook.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2974812B9A
+	for <iommu@lists.linux.dev>; Fri, 19 May 2023 19:05:33 +0000 (UTC)
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-19a1ac5e200so2639282fac.1
+        for <iommu@lists.linux.dev>; Fri, 19 May 2023 12:05:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684523132; x=1687115132;
+        h=date:subject:message-id:references:in-reply-to:cc:to:from
+         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=I40vgsxqxEeuLbFdYwBEPCfpX/jxJIkwaPXV/ediegI=;
+        b=dVZLloGwZW61P+X8heq1VuOh+CfPLU5RmbbYKc8dabDtwfjighvy8TSlZplIKVQs42
+         uPcTwTML0E+oRryNBiiu11n2zmKDpTO4Dy2EflPs0dm9RAFeDJdMT8DNlFi7sx1EI4B9
+         PzqqOW2PVtB8wDQIambhSREcZActYstkAHSAeKxFRT4o8B6qqMIEmjn6aZoy2KjH1uVj
+         Ubd7Y0/a9oJzO/wjFZG9rUEpBhob9ONUDdJKgkcVtKgh8Nq87+NZAyFauQw5YQbVG0Bc
+         2KgjfZApSFKmAQQhcFHmYLW9zMc+NJu8Nfq6O7vHQlzbbTEWBJbAkXf3efJfOi4SSMIV
+         r5Qw==
+X-Gm-Message-State: AC+VfDzzwGpIGErmHhrq2g7Rp6arUvEnUq3nbQ1zLlmvE/h10aOUATkl
+	9RRvxzeW8yZBTpTkz0O7qw==
+X-Google-Smtp-Source: ACHHUZ6Z7ctoE0Xg6rjUWDn3rqomNMMmXJEoVf2UiTHn5Uezqyl7vhRSGEzk/DBjyr6PSMIrc1TYBg==
+X-Received: by 2002:a05:6870:36c1:b0:187:85c1:8075 with SMTP id u1-20020a05687036c100b0018785c18075mr1541235oak.15.1684523132174;
+        Fri, 19 May 2023 12:05:32 -0700 (PDT)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id v1-20020a056870e28100b0018456166c7asm2259270oad.39.2023.05.19.12.05.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 May 2023 12:05:31 -0700 (PDT)
+Received: (nullmailer pid 3852246 invoked by uid 1000);
+	Fri, 19 May 2023 19:05:30 -0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276FADBA5E22DCF3FFA2F838C7C9@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT091:EE_|SA1PR12MB8722:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4bd6de8a-bd0c-4040-fe18-08db589afe87
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	0PRADzsV8OqgDazRaW16jwAd+04G6hQO8NCd2qUwnXC3t2O0Sk0VHhMiHqstnXeKeP721+bGRho5WTmvng3fdULW8ElCvwP+qul6wJ8QiPO77PscCyb630E1TsP6M+ciQjZ+xyasDzpkugslQXitzioMf+TChI36notEpfDBXiRhMlMLLQE3hKKv2FQUFpUrV9JS6+oKv+mR3pwuwYjWFu8bzFLcLwOze02UZYZz4lSA6sm00HSh/g/1bud8suJtNkCg8nOYh4GJKbiCR5bf0iqrIjl9NXmfhnrolw6RI1/3y8XR2nXpVZMrPxeMsqj6r3mF89juMwwlhEfFGoqbMsxHko4OtDFWVA19SdVTf8ouGNdwfjF2RUyGhgIZ9/jU6Koqab09d0T6SJrxVb3o64e2DGK9HrmxqhXpubj0YKx7QuNljxwkd+eeYmyhV8r3jWFzUn59+rKp2uBSRDk2cPr6OnUdW1hilTeppmCNA7xLrissqLtc3DOynlI4KkoeCrec/G8Tul1ScdKS9kPbTd4/oBD36oBngQeDVYyi9AA9x9cVkHXwx4bMLTp8MdhJSqa+BpkFPOsqg+kGymXUIK5rgtoNTOStwjX143NicS6z5orVAeEQxpXbVrArmyBorZcch4qdWONqK9bMNOnI3mDVXCNRacZys2sRppWpME4dChKlxSluOdd98cnlXV5VoBTGXO4T0ygGAxdynfvtX2eHT4YA/9NwQi4KBnG7neZkP4iGSb/qwfJ57kxM+FXd
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(346002)(376002)(39860400002)(451199021)(36840700001)(46966006)(40470700004)(54906003)(478600001)(6916009)(70206006)(70586007)(316002)(41300700001)(9686003)(8936002)(8676002)(5660300002)(26005)(186003)(336012)(426003)(2906002)(47076005)(36860700001)(4326008)(7636003)(33716001)(356005)(82740400003)(82310400005)(86362001)(7416002)(40460700003)(40480700001)(55016003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2023 18:58:12.0027
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4bd6de8a-bd0c-4040-fe18-08db589afe87
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT091.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8722
+From: Rob Herring <robh@kernel.org>
+To: Konrad Dybcio <konrad.dybcio@linaro.org>
+Cc: linux-arm-msm@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>, freedreno@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>, dri-devel@lists.freedesktop.org, Sean Paul <sean@poorly.run>, Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>, devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, linux-arm-kernel@lists.infradead.org, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Rob Clark <robdclark@gmail.com>, iommu@lists.linux.dev, Abhinav Kumar <quic_abhinavk@quicinc.com>, Marijn Suijten <marijn.suijten@somainline.org>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, David Airlie <airlied@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Krishna Manikandan <quic_mkrishn@quicinc.com>
+In-Reply-To: <20230411-topic-straitlagoon_mdss-v4-5-68e7e25d70e1@linaro.org>
+References: <20230411-topic-straitlagoon_mdss-v4-0-68e7e25d70e1@linaro.org>
+ <20230411-topic-straitlagoon_mdss-v4-5-68e7e25d70e1@linaro.org>
+Message-Id: <168452313011.3852116.2187810600963716663.robh@kernel.org>
+Subject: Re: [PATCH v4 05/12] dt-bindings: display/msm: Add SM6375 MDSS
+Date: Fri, 19 May 2023 14:05:30 -0500
 
-On Fri, May 19, 2023 at 08:56:25AM +0000, Tian, Kevin wrote:
- 
-> > From: Yi Liu <yi.l.liu@intel.com>
-> > Sent: Thursday, May 11, 2023 10:39 PM
-> >
-> >
-> > @@ -88,7 +90,10 @@ iommufd_hw_pagetable_alloc(struct iommufd_ctx
-> > *ictx, struct iommufd_ioas *ioas,
-> >       refcount_inc(&ioas->obj.users);
-> >       hwpt->ioas = ioas;
-> >
-> > -     hwpt->domain = iommu_domain_alloc(idev->dev->bus);
-> > +     if (ops->domain_alloc_user)
-> > +             hwpt->domain = ops->domain_alloc_user(idev->dev, NULL,
-> > NULL);
-> > +     else
-> > +             hwpt->domain = iommu_domain_alloc(idev->dev->bus);
+
+On Fri, 19 May 2023 19:04:26 +0200, Konrad Dybcio wrote:
+> Document the SM6375 MDSS.
 > 
-> this reminds the comment for @domain_alloc_user() should clarify
-> that UNMANGED domain type is assumed when no user data is
-> provided, to be compatible with iommu_domain_alloc().
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> ---
+>  .../bindings/display/msm/qcom,sm6375-mdss.yaml     | 216 +++++++++++++++++++++
+>  1 file changed, 216 insertions(+)
+> 
 
-Yes. Perhaps:
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
- * @domain_alloc_user: allocate user iommu domain. A valid user_data pointer and
- *                     a parent pointer to a kernel-managed domain are required
- *                     to allocate an IOMMU_DOMAIN_NESTED domain. Otherwise, the
- *                     new domain will be set to an IOMMU_DOMAIN_UNMANAGED type.
+yamllint warnings/errors:
 
-Thanks
-Nic
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/qcom,sm6375-mdss.example.dtb: display-controller@5e01000: clock-names:0: 'bus' was expected
+	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/qcom,sc7180-dpu.yaml
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/qcom,sm6375-mdss.example.dtb: display-controller@5e01000: clock-names:1: 'iface' was expected
+	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/qcom,sc7180-dpu.yaml
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/qcom,sm6375-mdss.example.dtb: display-controller@5e01000: clock-names:2: 'rot' was expected
+	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/qcom,sc7180-dpu.yaml
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/qcom,sm6375-mdss.example.dtb: display-controller@5e01000: clock-names:4: 'core' was expected
+	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/qcom,sc7180-dpu.yaml
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230411-topic-straitlagoon_mdss-v4-5-68e7e25d70e1@linaro.org
+
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
+
