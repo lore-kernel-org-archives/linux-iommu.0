@@ -1,37 +1,37 @@
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 056686112
-	for <iommu@lists.linux.dev>; Fri, 19 May 2023 09:09:45 +0000 (UTC)
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34J8OQIv010516;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E99E6116
+	for <iommu@lists.linux.dev>; Fri, 19 May 2023 09:09:46 +0000 (UTC)
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34J88rJs021844;
 	Fri, 19 May 2023 09:09:18 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references; s=qcppdkim1;
- bh=95M721hrBInKgdw4/io4mHNhN7hc3CMqo+qwioU1Jf8=;
- b=fHLAv9lANbnV7ftiRiPKce//OORoYWWEGp3TJO0JMW+5pMqfqw8zGPFD6gI8qQ5iXV5o
- cTMPF6B7HO8C3K81UdwWCFrBey9NWice2i5pY9AfX6+Cihv/baz5ooAXyOwvSGHuM0n0
- ydZHNVTR9hDrbuxalPegMrQC29DehGPbhKzedZ6uZuQ2MDWS2at3aYRDX6wTWUlp1fmB
- IYZ/pyL3j+Bv4Yea2zUQrzJ1UtGbpnAz5Fh0DqkHC19EH5iS/S9gt+JluRHW6MtVgJFO
- HhiJu1QzLnXoj6vRz5fuDvKUymta/YJ8H6GCD7r3D8MSLeP14agxht11ZrQv5nfvwc6s cQ== 
+ bh=duYJiXervBo0TKyeGdUUa3CpjhN6QuYZxnEKEWoHRMg=;
+ b=JmDP+UMXI+fQy8cDF5ZIXZIfrPKAFQ/5uni47Lk+z1DTJn1WeOxn0U1T9UScrHPp5mrp
+ wFasPIu0gwFLTALckNQAZcI0C40XfE+ZhBuyqgJrHeH9lLdIjNW81xa/ALQs3F2hNnxE
+ MSFAtLwl9i8a1rCdFwmuus+wORtqL+vpDR5uwUMAm5dc1gw7EeT8dt5HsZTA+XiT6Pl5
+ y9N9G1FkxpNyv6g6Fc26ztjdMFq0VSoZgA7Fh3m/wp9++OLJRQ6qC2xNM99jmwPSSqq3
+ yY7xCbRlLsDDQw75HvPWNsVK61DTllxemURaR0fF0pjAR8zyiH74oDKHPpe1+erCt0kq 6A== 
 Received: from apblrppmta01.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3qp2e98gjg-1
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3qnbxqkcfx-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 19 May 2023 09:09:17 +0000
+	Fri, 19 May 2023 09:09:18 +0000
 Received: from pps.filterd (APBLRPPMTA01.qualcomm.com [127.0.0.1])
-	by APBLRPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 34J99Dfm031657;
-	Fri, 19 May 2023 09:09:13 GMT
+	by APBLRPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 34J99Ck5031621;
+	Fri, 19 May 2023 09:09:12 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTP id 3qj3mm558m-1;
-	Fri, 19 May 2023 09:09:13 +0000
+	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTP id 3qj3mm5587-1;
+	Fri, 19 May 2023 09:09:12 +0000
 Received: from APBLRPPMTA01.qualcomm.com (APBLRPPMTA01.qualcomm.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 34J99C9M031608;
-	Fri, 19 May 2023 09:09:13 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 34J99CD0031612;
+	Fri, 19 May 2023 09:09:12 GMT
 Received: from hu-sgudaval-hyd.qualcomm.com (hu-rohiagar-hyd.qualcomm.com [10.213.106.138])
-	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTP id 34J99D8Z031636;
-	Fri, 19 May 2023 09:09:13 +0000
+	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTP id 34J99CwO031606;
+	Fri, 19 May 2023 09:09:12 +0000
 Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3970568)
-	id 926565EB5; Fri, 19 May 2023 14:39:12 +0530 (+0530)
+	id B4D705EBF; Fri, 19 May 2023 14:39:11 +0530 (+0530)
 From: Rohit Agarwal <quic_rohiagar@quicinc.com>
 To: agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
         robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
@@ -41,9 +41,9 @@ To: agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
 Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         iommu@lists.linux.dev, Rohit Agarwal <quic_rohiagar@quicinc.com>
-Subject: [PATCH 4/8] dt-bindings: arm-smmu: Add SDX75 SMMU compatible
-Date: Fri, 19 May 2023 14:39:06 +0530
-Message-Id: <1684487350-30476-5-git-send-email-quic_rohiagar@quicinc.com>
+Subject: [PATCH 1/8] dt-bindings: arm: qcom: Document SDX75 platform and boards
+Date: Fri, 19 May 2023 14:39:03 +0530
+Message-Id: <1684487350-30476-2-git-send-email-quic_rohiagar@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1684487350-30476-1-git-send-email-quic_rohiagar@quicinc.com>
 References: <1684487350-30476-1-git-send-email-quic_rohiagar@quicinc.com>
@@ -51,14 +51,14 @@ X-QCInternal: smtphost
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: p5vpuQ8wfC5-W2JyA4O5xK8EbNDTgPlt
-X-Proofpoint-ORIG-GUID: p5vpuQ8wfC5-W2JyA4O5xK8EbNDTgPlt
+X-Proofpoint-ORIG-GUID: 3z-SQJvBFU8i3WYPoZ0Z8nFlydArrj_L
+X-Proofpoint-GUID: 3z-SQJvBFU8i3WYPoZ0Z8nFlydArrj_L
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.170.22
  definitions=2023-05-19_05,2023-05-17_02,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
- suspectscore=0 bulkscore=0 malwarescore=0 phishscore=0 spamscore=0
- adultscore=0 priorityscore=1501 impostorscore=0 mlxlogscore=691
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 clxscore=1015
+ priorityscore=1501 impostorscore=0 mlxscore=0 bulkscore=0 adultscore=0
+ phishscore=0 suspectscore=0 mlxlogscore=898 malwarescore=0
  lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2304280000 definitions=main-2305190076
 Precedence: bulk
@@ -67,25 +67,45 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 
-Add devicetree binding for Qualcomm SDX75 SMMU.
+Document the SDX75 platform binding and also the boards using it.
 
 Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
 ---
- Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/devicetree/bindings/arm/qcom.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-index ba677d4..631be10 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-@@ -45,6 +45,7 @@ properties:
-               - qcom,sdm845-smmu-500
-               - qcom,sdx55-smmu-500
-               - qcom,sdx65-smmu-500
-+              - qcom,sdx75-smmu-500
-               - qcom,sm6115-smmu-500
-               - qcom,sm6125-smmu-500
-               - qcom,sm6350-smmu-500
+diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+index d9dd256..772f145 100644
+--- a/Documentation/devicetree/bindings/arm/qcom.yaml
++++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+@@ -69,6 +69,7 @@ description: |
+         sdm845
+         sdx55
+         sdx65
++        sdx75
+         sm4250
+         sm6115
+         sm6115p
+@@ -821,6 +822,11 @@ properties:
+ 
+       - items:
+           - enum:
++              - qcom,sdx75-idp
++          - const: qcom,sdx75
++
++      - items:
++          - enum:
+               - qcom,ipq6018-cp01
+               - qcom,ipq6018-cp01-c1
+           - const: qcom,ipq6018
+@@ -1042,6 +1048,7 @@ allOf:
+               - qcom,sdm845
+               - qcom,sdx55
+               - qcom,sdx65
++              - qcom,sdx75
+               - qcom,sm4250
+               - qcom,sm6115
+               - qcom,sm6125
 -- 
 2.7.4
 
