@@ -1,346 +1,191 @@
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D4001119C
-	for <iommu@lists.linux.dev>; Fri, 19 May 2023 19:35:59 +0000 (UTC)
-Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-4f3a99b9177so2099813e87.1
-        for <iommu@lists.linux.dev>; Fri, 19 May 2023 12:35:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1684524957; x=1687116957;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=VObE1ZvkdtDX8P+Xd9wxmydQLedL/CQ9SFu1ZO9D4kQ=;
-        b=ce9D1Qq3h0ENu6JkVY6qJHEMOjHfJQCB0LV3I3dXyNaTZ5XADRPLBg5bCY/gLQGPWG
-         HDoFXgugNh/EawlnuOtp4eReNR+/oG5ozRmidWRapH32kMZtSC0da7OlTglggZPdn+mw
-         uB9DPJ9T7al+lPDb60sy4Boqpz9jvXXJy9TkMehkocf2+9rHPBNn1Bm9V49w6rEpC6hS
-         ayK9kmimUWPDjhdU+6YVxx+FV4auHGhKvuafTmj2TqvBzohT3pXJ1fFoerJ6QCWTO52x
-         rkIvmkt6qB78KsfxkER3Yi94V1UDMvx5lDG74w5kAaFLQ4TWUUSMS6fk8Mg6s9pUUQp0
-         f0pw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684524957; x=1687116957;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=VObE1ZvkdtDX8P+Xd9wxmydQLedL/CQ9SFu1ZO9D4kQ=;
-        b=XlIUVKM6c21K6CDQHWKrHt8ISNi00OOUsKfbnDkCEZDfxtYfsZLGjteIPcyYODIjWJ
-         Ib9LzSHdfmrKf9psJiC34KrwkD8n0XBmeNr3t48wEigsrvOB1Qmo1kD08rZJ9sPK85pD
-         m+8TpMxo4RkYVR3i8OQuzXLkFudE/y8Pps5SurQxWILHK4EEQObZ9CsftJzI/dnvZ7gV
-         sCGM6EB3iOnd3T09cbdsp8SRhZ2QIayYU5jIEF/YnANfD7AEwvEi4KitqIgH8K8B79Re
-         cc1Ph69ogrLtG0202+7jmZfuO/spdgwRIZ3dvFiC/L9G7vLy88BBDTBw97tQBZkbfxvA
-         xxfg==
-X-Gm-Message-State: AC+VfDwbh7BoLT+NqfB49Hq4q4iv1c9qOyH3ovbYcUfUgA/BMAOHxuCN
-	1qxodmM9NzPKc4hX/615r+m3bA==
-X-Google-Smtp-Source: ACHHUZ4ZdzdUHI1PdE6hQeia/XlczG6s/zeawOmvzi50ITQmpPJlYeFmJsm47G/n+CLd3XpVCG12NQ==
-X-Received: by 2002:ac2:4a84:0:b0:4f3:a44d:6982 with SMTP id l4-20020ac24a84000000b004f3a44d6982mr1013721lfp.45.1684524957261;
-        Fri, 19 May 2023 12:35:57 -0700 (PDT)
-Received: from ?IPV6:2001:14ba:a0db:1f00::8a5? (dzdqv0yyyyyyyyyyybcwt-3.rev.dnainternet.fi. [2001:14ba:a0db:1f00::8a5])
-        by smtp.gmail.com with ESMTPSA id m19-20020ac24293000000b004f3943f279bsm687151lfh.244.2023.05.19.12.35.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 May 2023 12:35:56 -0700 (PDT)
-Message-ID: <1de494a7-9188-0eca-e45c-0b4a6fa06eba@linaro.org>
-Date: Fri, 19 May 2023 22:35:56 +0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39E41DDD0
+	for <iommu@lists.linux.dev>; Fri, 19 May 2023 19:48:52 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IK08sKhD3nomrv8OZT1PVztWfyoQKBHoIZIfKTb9yJSh/4lUbyFacTNzdlO8QFyfTFRgMz+t6iSttvUkdcMXFMiouoUgRrCQPYjMYoDGYdHvqWpl86XkAS+PIHjFDiPsh/lc9dfdOZteRNf1ODupwiM8cT4Odi0h7QssUldHTffqTViP6L8qfBWHXEjaMLXotQOIlJilhv1CZxY6Ijwkq9XpCXLRqQbCNRzNXpChNo7nBbCCF5eSNRzILfKGFpLxSlja7JOm3k5NKveE14JXnuJbad3ETwMP+OvW3wvEC1uOjMqja+VTV0YUkg8lSvhMMffM/sl2nQDOimJP9gl1Hg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9jxEsXgJI98k/z3IqOECTL/vn2LsOyK0Yvtu0DxcwS0=;
+ b=khj+LcpKqC70AjT4ZXxix7V6vHCGoLuF7UUG3/v+0fR/H65h+ZGRiXPo4HHLIgDUvs9BMlfFumJZq1bXUBniXW9csZ2/Degnirygbp+QO1FueHb31twrfQFHHZl9uYLSGS848Uk+vyVVW3srB1iI7laodRKww5z8fSPMNz6J4Ln0dv1AZAFOKRIRqcYUCTD5HzoE4c3iqLMXJ3Y1B8MuOZ770iEtN0iH7FqMJpXAE2/9S4TMuPllpQnGhUEzLgC6fsjjOzAdRVFGprAS7WHikaB/4CSOZZAb7MVpwypyxYRqiY4aetfk0BbCPjbQ7GBP+WNFLBXYSJ11PmA5zfWO3g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9jxEsXgJI98k/z3IqOECTL/vn2LsOyK0Yvtu0DxcwS0=;
+ b=fI6Y/d5U2Jy+922AcZRhL4q1k/9vPhrgrR+G8Fd3JL3g+Snizc5d6hRnB3FyJj1l5g3f+XTg8+wAstEzufwbyLj3pT0FmdfnpVGvMG5I3iu5F9BjnLperRi8kN/X0GsiO/wt3igZL3n5b/U3gQR2XPol1CxQ3Fnq+mK9NMgtwkEMVfSmlrSsPbGnuhSv17z4n8s6/U+uPVluwAsyt6qW5FIrxJXwmYmVveJi0fTM95azzPnbhd82aHRWeIK4vHCKFfHcba7V11yZnfIOX1AjUBJOcEM9TBQxy4cQAZxKwBqqw3Z/jYcgjLfZ55J9sCJscuvc7ZPPzFNg7WqU+W0BKA==
+Received: from BL0PR05CA0025.namprd05.prod.outlook.com (2603:10b6:208:91::35)
+ by SJ1PR12MB6337.namprd12.prod.outlook.com (2603:10b6:a03:456::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.19; Fri, 19 May
+ 2023 19:48:49 +0000
+Received: from BL02EPF000145BA.namprd05.prod.outlook.com
+ (2603:10b6:208:91:cafe::92) by BL0PR05CA0025.outlook.office365.com
+ (2603:10b6:208:91::35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.15 via Frontend
+ Transport; Fri, 19 May 2023 19:48:48 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BL02EPF000145BA.mail.protection.outlook.com (10.167.241.210) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6433.7 via Frontend Transport; Fri, 19 May 2023 19:48:48 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Fri, 19 May 2023
+ 12:48:32 -0700
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Fri, 19 May
+ 2023 12:48:31 -0700
+Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.9)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Fri, 19 May 2023 12:48:30 -0700
+Date: Fri, 19 May 2023 12:48:29 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+CC: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jgg@nvidia.com"
+	<jgg@nvidia.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
+	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
+	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
+	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
+	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
+ Zhenzhong" <zhenzhong.duan@intel.com>
+Subject: Re: [PATCH v2 06/11] iommufd: IOMMU_HWPT_ALLOC allocation with user
+ data
+Message-ID: <ZGfSjYMA06PmaI+Y@Asurada-Nvidia>
+References: <20230511143844.22693-1-yi.l.liu@intel.com>
+ <20230511143844.22693-7-yi.l.liu@intel.com>
+ <BN9PR11MB52767257B1AC401121F3B24F8C7C9@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH v4 06/12] drm/msm/dpu: Add SM6350 support
-Content-Language: en-GB
-To: Konrad Dybcio <konrad.dybcio@linaro.org>, Rob Clark
- <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
- Sean Paul <sean@poorly.run>, David Airlie <airlied@gmail.com>,
- Daniel Vetter <daniel@ffwll.ch>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Krishna Manikandan <quic_mkrishn@quicinc.com>, Will Deacon
- <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, Conor Dooley <conor+dt@kernel.org>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>,
- linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
- freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, Konrad Dybcio <konrad.dybcio@somainline.org>
-References: <20230411-topic-straitlagoon_mdss-v4-0-68e7e25d70e1@linaro.org>
- <20230411-topic-straitlagoon_mdss-v4-6-68e7e25d70e1@linaro.org>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20230411-topic-straitlagoon_mdss-v4-6-68e7e25d70e1@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB52767257B1AC401121F3B24F8C7C9@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL02EPF000145BA:EE_|SJ1PR12MB6337:EE_
+X-MS-Office365-Filtering-Correlation-Id: 65411883-5093-45cd-75bb-08db58a2103a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	ZucyivpXTxXVoKGnd4mXmcLFKYMxsxMRqdVM4ywVP1HbXjOHccSE9HZcb5AXrw253ECBRYBtUnDV3v7RiQ5AkXNMo8mCZ0WF8YLGqDsyDCFZ5tCWOnipnLmO9izElz4yCQR2w1p1/msAL6D+CzLqJ+TfKLSQGI8t2qG5o6pg02dRGBtKjorK2jjhyp94Tes2sl4ep5htGVuIjkN2ok447GvbEeJQXkhGh4zLQiIqZE1J5EIiKOlDDRJvMNyb45ZTCHPnXbd9sS6IboOBFkKwu71RSk0/qY2RSdwqL9Vt/7pyj4Dg14s+MnKIJDXAB08dZPgUL8gyewescSOXyw5kKRVQOw87gJahAltvE3kHs+szrl0toHgHDFJvoksdRJnEKrkP8wfJI9QLXy3AmoekzSyfJ4rNNmXc7EfGihBgbjxHMAhmmpG7fVnGZcKW2lXr7JicwxPSQTPTRquLfTFHZ+hYZFCY3YIhRP6AAwJzVCDef99xTNOgn5aShmQHcweWhhYRCQfYYdCot5pY9Wagi99xoD3UDdpupblccKyS5QxabNI/+ezTyKvnGxVsEi6Ywt6WF4YJVa7/9nntP3wuPhJWqci/T8lYKmJbI+hEKMJBrWpDMS6spQjBTkvXvlPpMJCiH6QBFer00EkXTHqtqf5dlGIfLbxePnveTq5rY9v2bECvJC4kgIemlRyC6edfyG/SwAQcM4j87kehYtRijR1ikzZ2Y3WGPrWNGWKYmIi7Ot5StXAnLxJNaPfYXiiTPM01f8x3PDo0e9DBV6TyGw==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(136003)(346002)(39860400002)(451199021)(36840700001)(40470700004)(46966006)(33716001)(356005)(82310400005)(7636003)(82740400003)(40460700003)(40480700001)(2906002)(55016003)(54906003)(478600001)(86362001)(36860700001)(186003)(26005)(9686003)(70586007)(70206006)(316002)(4326008)(8676002)(5660300002)(8936002)(6916009)(41300700001)(7416002)(47076005)(426003)(336012)(67856001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2023 19:48:48.1395
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 65411883-5093-45cd-75bb-08db58a2103a
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL02EPF000145BA.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6337
 
-On 19/05/2023 20:04, Konrad Dybcio wrote:
-> Add SM6350 support to the DPU1 driver to enable display output.
+On Fri, May 19, 2023 at 09:41:00AM +0000, Tian, Kevin wrote:
+> External email: Use caution opening links or attachments
 > 
-> It's worth noting that one entry dpu_qos_lut_entry was trimmed off:
 > 
-> {.fl = 0, .lut = 0x0011223344556677 },
+> > From: Yi Liu <yi.l.liu@intel.com>
+> > Sent: Thursday, May 11, 2023 10:39 PM
+> > +     if (cmd->hwpt_type != IOMMU_HWPT_TYPE_DEFAULT) {
+> > +             if (!ops->domain_alloc_user_data_len) {
+> > +                     rc = -EOPNOTSUPP;
+> > +                     goto out_put_idev;
+> > +             }
+> > +             klen = ops->domain_alloc_user_data_len(cmd->hwpt_type);
+> > +             if (WARN_ON(klen < 0)) {
+> > +                     rc = -EINVAL;
+> > +                     goto out_put_pt;
+> > +             }
+> > +     }
 > 
-> due to the fact that newer SoCs dropped the .fl (fill level)-based
-> logic and don't provide real values, resulting in all entries but
-> the last one being unused.
+> What about passing the user pointer to the iommu driver which
+> then does the copy so we don't need an extra @data_len()
+> callback for every driver?
 
-I think that the commit message is misleading. The DPU driver uses 
-fill-level logic. It doesn't yet support selecting between portrait and 
-landscape LUT settings (for danger and safe LUTs) and it doesn't provide 
-full support for qseed/non-qseed usescases (for QoS LUT).
+It's doable by letting the driver do copy_from_user(), yet I
+recall that Jason suggested to keep it in the iommufd. Also,
+we are reusing the ucmd_buffer for the user_data. And the klen
+isn't really being used for its value here. So, it is likely
+enough to have an ops->hwpt_type_is_supported.
 
+> >
+> > +     switch (pt_obj->type) {
+> > +     case IOMMUFD_OBJ_IOAS:
+> > +             ioas = container_of(pt_obj, struct iommufd_ioas, obj);
+> > +             break;
 > 
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-> Reviewed-by: Marijn Suijten <marijn.suijten@somainline.org>
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> ---
->   .../gpu/drm/msm/disp/dpu1/catalog/dpu_6_4_sm6350.h | 188 +++++++++++++++++++++
->   drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c     |   5 +
->   drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h     |   1 +
->   drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c            |   1 +
->   4 files changed, 195 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_4_sm6350.h b/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_4_sm6350.h
-> new file mode 100644
-> index 000000000000..5d66a194155a
-> --- /dev/null
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_4_sm6350.h
-> @@ -0,0 +1,188 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * Copyright (c) 2022. Qualcomm Innovation Center, Inc. All rights reserved.
-> + * Copyright (c) 2015-2018, 2020 The Linux Foundation. All rights reserved.
-> + * Copyright (c) 2023, Linaro Limited
-> + */
-> +
-> +#ifndef _DPU_6_4_SM6350_H
-> +#define _DPU_6_4_SM6350_H
-> +
-> +static const struct dpu_caps sm6350_dpu_caps = {
-> +	.max_mixer_width = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
-> +	.max_mixer_blendstages = 0x7,
-> +	.qseed_type = DPU_SSPP_SCALER_QSEED4,
-> +	.has_src_split = true,
-> +	.has_dim_layer = true,
-> +	.has_idle_pc = true,
-> +	.max_linewidth = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
-> +	.pixel_ram_size = DEFAULT_PIXEL_RAM_SIZE,
-> +};
-> +
-> +static const struct dpu_ubwc_cfg sm6350_ubwc_cfg = {
-> +	.ubwc_version = DPU_HW_UBWC_VER_20,
-> +	.ubwc_swizzle = 6,
-> +	.highest_bank_bit = 1,
-> +};
-> +
-> +static const struct dpu_mdp_cfg sm6350_mdp[] = {
-> +	{
-> +	.name = "top_0", .id = MDP_TOP,
-> +	.base = 0x0, .len = 0x494,
-> +	.features = 0,
-> +	.clk_ctrls[DPU_CLK_CTRL_VIG0] = { .reg_off = 0x2ac, .bit_off = 0 },
-> +	.clk_ctrls[DPU_CLK_CTRL_DMA0] = { .reg_off = 0x2ac, .bit_off = 8 },
-> +	.clk_ctrls[DPU_CLK_CTRL_DMA1] = { .reg_off = 0x2b4, .bit_off = 8 },
-> +	.clk_ctrls[DPU_CLK_CTRL_DMA2] = { .reg_off = 0x2c4, .bit_off = 8 },
-> +	.clk_ctrls[DPU_CLK_CTRL_REG_DMA] = { .reg_off = 0x2bc, .bit_off = 20 },
-> +	},
-> +};
-> +
-> +static const struct dpu_ctl_cfg sm6350_ctl[] = {
-> +	{
-> +	.name = "ctl_0", .id = CTL_0,
-> +	.base = 0x1000, .len = 0x1dc,
-> +	.features = BIT(DPU_CTL_ACTIVE_CFG),
-> +	.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 9),
-> +	},
-> +	{
-> +	.name = "ctl_1", .id = CTL_1,
-> +	.base = 0x1200, .len = 0x1dc,
-> +	.features = BIT(DPU_CTL_ACTIVE_CFG),
-> +	.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 10),
-> +	},
-> +	{
-> +	.name = "ctl_2", .id = CTL_2,
-> +	.base = 0x1400, .len = 0x1dc,
-> +	.features = BIT(DPU_CTL_ACTIVE_CFG),
-> +	.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 11),
-> +	},
-> +	{
-> +	.name = "ctl_3", .id = CTL_3,
-> +	.base = 0x1600, .len = 0x1dc,
-> +	.features = BIT(DPU_CTL_ACTIVE_CFG),
-> +	.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 12),
-> +	},
-> +};
-> +
-> +static const struct dpu_sspp_cfg sm6350_sspp[] = {
-> +	SSPP_BLK("sspp_0", SSPP_VIG0, 0x4000, 0x1f8, VIG_SC7180_MASK,
-> +		sc7180_vig_sblk_0, 0,  SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG0),
-> +	SSPP_BLK("sspp_8", SSPP_DMA0, 0x24000, 0x1f8, DMA_SDM845_MASK,
-> +		sdm845_dma_sblk_0, 1, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA0),
-> +	SSPP_BLK("sspp_9", SSPP_DMA1, 0x26000, 0x1f8, DMA_CURSOR_SDM845_MASK,
-> +		sdm845_dma_sblk_1, 5, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA1),
-> +	SSPP_BLK("sspp_10", SSPP_DMA2, 0x28000, 0x1f8, DMA_CURSOR_SDM845_MASK,
-> +		sdm845_dma_sblk_2, 9, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA2),
-> +};
-> +
-> +static const struct dpu_lm_cfg sm6350_lm[] = {
-> +	LM_BLK("lm_0", LM_0, 0x44000, MIXER_SDM845_MASK,
-> +		&sc7180_lm_sblk, PINGPONG_0, LM_1, DSPP_0),
-> +	LM_BLK("lm_1", LM_1, 0x45000, MIXER_SDM845_MASK,
-> +		&sc7180_lm_sblk, PINGPONG_1, LM_0, 0),
-> +};
-> +
-> +static const struct dpu_dspp_cfg sm6350_dspp[] = {
-> +	DSPP_BLK("dspp_0", DSPP_0, 0x54000, DSPP_SC7180_MASK,
-> +		&sm8150_dspp_sblk),
-> +};
-> +
-> +static struct dpu_pingpong_cfg sm6350_pp[] = {
-> +	PP_BLK("pingpong_0", PINGPONG_0, 0x70000, PINGPONG_SM8150_MASK, 0, sdm845_pp_sblk,
-> +		DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 8),
-> +		-1),
-> +	PP_BLK("pingpong_1", PINGPONG_1, 0x70800, PINGPONG_SM8150_MASK, 0, sdm845_pp_sblk,
-> +		DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 9),
-> +		-1),
-> +};
-> +
-> +static const struct dpu_intf_cfg sm6350_intf[] = {
-> +	INTF_BLK("intf_0", INTF_0, 0x6a000, 0x2c0, INTF_DP, 0, 35, INTF_SC7180_MASK,
-> +		DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 24),
-> +		DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 25)),
-> +	INTF_BLK_DSI_TE("intf_1", INTF_1, 0x6a800, 0x2c0, INTF_DSI, 0, 35, INTF_SC7180_MASK,
-> +		DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 26),
-> +		DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 27),
-> +		DPU_IRQ_IDX(MDP_INTF1_TEAR_INTR, 2)),
-> +};
-> +
-> +static const struct dpu_vbif_cfg sm6350_vbif[] = {
-> +	{
-> +	.name = "vbif_0", .id = VBIF_RT,
-> +	.base = 0, .len = 0x1044,
-> +	.features = BIT(DPU_VBIF_QOS_REMAP),
-> +	.xin_halt_timeout = 0x4000,
-> +	.qos_rt_tbl = {
-> +		.npriority_lvl = ARRAY_SIZE(sdm845_rt_pri_lvl),
-> +		.priority_lvl = sdm845_rt_pri_lvl,
-> +	},
-> +	.qos_nrt_tbl = {
-> +		.npriority_lvl = ARRAY_SIZE(sdm845_nrt_pri_lvl),
-> +		.priority_lvl = sdm845_nrt_pri_lvl,
-> +	},
-> +	.memtype_count = 14,
-> +	.memtype = {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-> +	},
-> +};
-> +
-> +static const struct dpu_perf_cfg sm6350_perf_data = {
-> +	.max_bw_low = 4200000,
-> +	.max_bw_high = 5100000,
-> +	.min_core_ib = 2500000,
-> +	.min_llcc_ib = 0,
-> +	.min_dram_ib = 1600000,
-> +	.min_prefill_lines = 35,
-> +	/* TODO: confirm danger_lut_tbl */
-> +	.danger_lut_tbl = {0xffff, 0xffff, 0x0},
-> +	.safe_lut_tbl = {0xff00, 0xff00, 0xffff},
-> +	.qos_lut_tbl = {
-> +		{.nentry = ARRAY_SIZE(sm6350_qos_linear_macrotile),
-> +		.entries = sm6350_qos_linear_macrotile
-> +		},
-> +		{.nentry = ARRAY_SIZE(sm6350_qos_linear_macrotile),
-> +		.entries = sm6350_qos_linear_macrotile
-> +		},
-> +		{.nentry = ARRAY_SIZE(sc7180_qos_nrt),
-> +		.entries = sc7180_qos_nrt
-> +		},
-> +	},
-> +	.cdp_cfg = {
-> +		{.rd_enable = 1, .wr_enable = 1},
-> +		{.rd_enable = 1, .wr_enable = 0}
-> +	},
-> +	.clk_inefficiency_factor = 105,
-> +	.bw_inefficiency_factor = 120,
-> +};
-> +
-> +const struct dpu_mdss_cfg dpu_sm6350_cfg = {
-> +	.caps = &sm6350_dpu_caps,
-> +	.ubwc = &sm6350_ubwc_cfg,
-> +	.mdp_count = ARRAY_SIZE(sm6350_mdp),
-> +	.mdp = sm6350_mdp,
-> +	.ctl_count = ARRAY_SIZE(sm6350_ctl),
-> +	.ctl = sm6350_ctl,
-> +	.sspp_count = ARRAY_SIZE(sm6350_sspp),
-> +	.sspp = sm6350_sspp,
-> +	.mixer_count = ARRAY_SIZE(sm6350_lm),
-> +	.mixer = sm6350_lm,
-> +	.dspp_count = ARRAY_SIZE(sm6350_dspp),
-> +	.dspp = sm6350_dspp,
-> +	.pingpong_count = ARRAY_SIZE(sm6350_pp),
-> +	.pingpong = sm6350_pp,
-> +	.intf_count = ARRAY_SIZE(sm6350_intf),
-> +	.intf = sm6350_intf,
-> +	.vbif_count = ARRAY_SIZE(sm6350_vbif),
-> +	.vbif = sm6350_vbif,
-> +	.reg_dma_count = 1,
-> +	.dma_cfg = &sm8250_regdma,
-> +	.perf = &sm6350_perf_data,
-> +	.mdss_irqs = BIT(MDP_SSPP_TOP0_INTR) | \
-> +		     BIT(MDP_SSPP_TOP0_INTR2) | \
-> +		     BIT(MDP_SSPP_TOP0_HIST_INTR) | \
-> +		     BIT(MDP_INTF0_INTR) | \
-> +		     BIT(MDP_INTF1_INTR) | \
-> +		     BIT(MDP_INTF1_TEAR_INTR),
-> +};
-> +
-> +#endif
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
-> index 9daeaccc4f52..5ef1dffc27dc 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
-> @@ -748,6 +748,10 @@ static const struct dpu_qos_lut_entry sc7180_qos_linear[] = {
->   	{.fl = 0, .lut = 0x0011222222335777},
->   };
->   
-> +static const struct dpu_qos_lut_entry sm6350_qos_linear_macrotile[] = {
-> +	{.fl = 0, .lut = 0x0011223445566777 },
-> +};
-> +
->   static const struct dpu_qos_lut_entry sm8150_qos_linear[] = {
->   	{.fl = 0, .lut = 0x0011222222223357 },
->   };
-> @@ -803,6 +807,7 @@ static const struct dpu_qos_lut_entry sc7180_qos_nrt[] = {
->   #include "catalog/dpu_6_0_sm8250.h"
->   #include "catalog/dpu_6_2_sc7180.h"
->   #include "catalog/dpu_6_3_sm6115.h"
-> +#include "catalog/dpu_6_4_sm6350.h"
->   #include "catalog/dpu_6_5_qcm2290.h"
->   
->   #include "catalog/dpu_7_0_sm8350.h"
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
-> index e9237321df77..67ff78e7bc99 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
-> @@ -880,6 +880,7 @@ extern const struct dpu_mdss_cfg dpu_sc8180x_cfg;
->   extern const struct dpu_mdss_cfg dpu_sm8250_cfg;
->   extern const struct dpu_mdss_cfg dpu_sc7180_cfg;
->   extern const struct dpu_mdss_cfg dpu_sm6115_cfg;
-> +extern const struct dpu_mdss_cfg dpu_sm6350_cfg;
->   extern const struct dpu_mdss_cfg dpu_qcm2290_cfg;
->   extern const struct dpu_mdss_cfg dpu_sm8350_cfg;
->   extern const struct dpu_mdss_cfg dpu_sc7280_cfg;
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> index 0e7a68714e9e..46be7ad8d615 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> @@ -1286,6 +1286,7 @@ static const struct of_device_id dpu_dt_match[] = {
->   	{ .compatible = "qcom,sc8180x-dpu", .data = &dpu_sc8180x_cfg, },
->   	{ .compatible = "qcom,sc8280xp-dpu", .data = &dpu_sc8280xp_cfg, },
->   	{ .compatible = "qcom,sm6115-dpu", .data = &dpu_sm6115_cfg, },
-> +	{ .compatible = "qcom,sm6350-dpu", .data = &dpu_sm6350_cfg, },
->   	{ .compatible = "qcom,sm8150-dpu", .data = &dpu_sm8150_cfg, },
->   	{ .compatible = "qcom,sm8250-dpu", .data = &dpu_sm8250_cfg, },
->   	{ .compatible = "qcom,sm8350-dpu", .data = &dpu_sm8350_cfg, },
-> 
+> this should fail if parent is specified.
 
--- 
-With best wishes
-Dmitry
+I don't think that's necessaray: the parent is NULL by default
+and only specified (if IOMMUFD_OBJ_HW_PAGETABLE) by the exact
+pt_id/pt_obj here.
 
+> > +     case IOMMUFD_OBJ_HW_PAGETABLE:
+> > +             /* pt_id points HWPT only when hwpt_type
+> > is !IOMMU_HWPT_TYPE_DEFAULT */
+> > +             if (cmd->hwpt_type == IOMMU_HWPT_TYPE_DEFAULT) {
+> > +                     rc = -EINVAL;
+> > +                     goto out_put_pt;
+> > +             }
+> > +
+> > +             parent = container_of(pt_obj, struct iommufd_hw_pagetable,
+> > obj);
+> > +             /*
+> > +              * Cannot allocate user-managed hwpt linking to
+> > auto_created
+> > +              * hwpt. If the parent hwpt is already a user-managed hwpt,
+> > +              * don't allocate another user-managed hwpt linking to it.
+> > +              */
+> > +             if (parent->auto_domain || parent->parent) {
+> > +                     rc = -EINVAL;
+> > +                     goto out_put_pt;
+> > +             }
+> > +             ioas = parent->ioas;
+> 
+> for nesting why is ioas required? In concept we can just pass NULL ioas
+> to iommufd_hw_pagetable_alloc() for this hwpt. If within that function
+> there is a need to toggle ioas for the parent it can always retrieve it
+> from the parent hwpt.
+
+Jason suggested this for simplicity. As I replied in another
+email, a user hwpt still needs ioas's refcount and mutex, so
+it would otherwise have a duplicated code in the beginning of
+most of hwpt_ functions:
+	if (hwpt->parent)
+		ioas = hwpt->parent->ioas;
+	else (hwpt->ioas)
+		ioas = hwpt->ioas;
+	else
+		WARN_ON(1);
+
+Thanks
+Nic
