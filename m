@@ -1,34 +1,34 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6189D362
-	for <iommu@lists.linux.dev>; Fri, 19 May 2023 02:04:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25158375
+	for <iommu@lists.linux.dev>; Fri, 19 May 2023 02:49:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684461853; x=1715997853;
+  t=1684464563; x=1716000563;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=bigg4gk47lNFdVx20xWM4FyRwF5SyiVXdpidC4nBQUs=;
-  b=eEbhIjgznOLYznoFm/eG99PcMQipNbW9ibqhp4iFz31Xs1KvrQi2iiZC
-   d7RlNefv91Ccv6hArQFf9stw1shpbCVAJSynjXvZdKslfzS+wwPffvHbr
-   U0DRxy2eZEbIHVffdUV/ZnHMZtaZSwsnQ1q8aOX6X35ALog6s6jvJ5TUB
-   PEMzKBMuO09q50Cnt2KBaYfeG5yUkkFI0lJTTb/jEnIIa9hrQHfmqKi5W
-   6farGXKFBXth1Hm9NWGerFFMPQaXucppsWhCiPpI+BsWjK2XIlqbYsuWq
-   rYaFBM6mzGtr786gBXnH2ZEX10cQjpM72w11xeHEyiiiuPkbbiX30ECB9
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10714"; a="351093601"
+  bh=YlGUzZYLdlp8PPHldOoXpzQtyPgUf7pfJQY5cYObzAU=;
+  b=C49FWvP6lRPgtM8uf50qkuQib0gLLuP0js4tWQsF096rMViklyE5xED3
+   AY3Fy080FbCxwwAqh36SHLNqRSK4r9KTSmRfwznezrKxomyMImv2ieRDB
+   hd6vEYZQuRE3PnJG+RcotFozOgbY35uQYd0LhxPSfJDltcC9GBDEk0/os
+   eZ6d0NfM65B+fudIkz6ialBm1lI9p5bRHILhXWELZG035AikRYEka3PTW
+   /h4KJk9FzElsmARswMFOgIRlBSMNbThO5PM8wGAms0ysyDziRuTMR7all
+   lUE2j3f0TDinzQ4I19bDv/A7lXAV/0424WXt7bHIRaB4GPVC4jPZteU2b
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10714"; a="336851957"
 X-IronPort-AV: E=Sophos;i="6.00,175,1681196400"; 
-   d="scan'208";a="351093601"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2023 19:04:01 -0700
+   d="scan'208";a="336851957"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2023 19:49:21 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10714"; a="876673929"
+X-IronPort-AV: E=McAfee;i="6600,9927,10714"; a="814567147"
 X-IronPort-AV: E=Sophos;i="6.00,175,1681196400"; 
-   d="scan'208";a="876673929"
+   d="scan'208";a="814567147"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.210.160]) ([10.254.210.160])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2023 19:03:59 -0700
-Message-ID: <d99e284d-31b1-6d04-cf14-d7b160ee3f44@linux.intel.com>
-Date: Fri, 19 May 2023 10:03:57 +0800
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2023 19:49:19 -0700
+Message-ID: <29132993-25e1-3e9d-464c-b9037d5c71d3@linux.intel.com>
+Date: Fri, 19 May 2023 10:49:17 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,101 +37,121 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.11.0
-Cc: baolu.lu@linux.intel.com, "Tian, Kevin" <kevin.tian@intel.com>,
+Cc: baolu.lu@linux.intel.com, Robin Murphy <robin.murphy@arm.com>,
+ "eric.auger@redhat.com" <eric.auger@redhat.com>,
+ "jean-philippe.brucker@arm.com" <jean-philippe.brucker@arm.com>,
+ "will@kernel.org" <will@kernel.org>,
  "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- Lixiao Yang <lixiao.yang@intel.com>, Matthew Rosato
- <mjrosato@linux.ibm.com>, Nicolin Chen <nicolinc@nvidia.com>,
- "Liu, Yi L" <yi.l.liu@intel.com>
-Subject: Re: [PATCH v7 03/19] iommufd: Replace the hwpt->devices list with
- iommufd_group
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <3-v7-6c0fd698eda2+5e3-iommufd_alloc_jgg@nvidia.com>
- <569b959e-a702-fc19-3d67-0dde4e77251a@linux.intel.com>
- <ZGN2yvhpIvrvu74r@nvidia.com>
- <852e85b3-9fd2-bfc2-6080-82cea7ab6abd@linux.intel.com>
- <BN9PR11MB5276DE1BC30E90B1032C0E468C7E9@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZGTMCSJKvgpyYxG/@nvidia.com>
- <5cdc1a83-f29b-6862-d513-dbfd5c500807@linux.intel.com>
- <ZGYT8RmGM+vwNzDa@nvidia.com>
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Subject: Re: arm-smmu-v3 sharing SID
 Content-Language: en-US
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Peng Fan <peng.fan@nxp.com>
+References: <DU0PR04MB94172CB3F138AD39E9B6DEEF887F9@DU0PR04MB9417.eurprd04.prod.outlook.com>
+ <359b01bc-e87a-9a50-c971-681e89985491@arm.com>
+ <DU0PR04MB9417B971D20D1572FB598769887F9@DU0PR04MB9417.eurprd04.prod.outlook.com>
+ <20230518130459.GA2587493@myrica>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ZGYT8RmGM+vwNzDa@nvidia.com>
+In-Reply-To: <20230518130459.GA2587493@myrica>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/5/18 20:02, Jason Gunthorpe wrote:
-> On Thu, May 18, 2023 at 03:05:23PM +0800, Baolu Lu wrote:
-> 
->>> It doesn't make any sense to store a struct like that in dev_iommu.
+On 2023/5/18 21:04, Jean-Philippe Brucker wrote:
+> On Thu, May 18, 2023 at 11:44:56AM +0000, Peng Fan wrote:
+>>> Subject: Re: arm-smmu-v3 sharing SID
 >>>
->>> The fault handler should come from the domain and we should be able to
->>> have a unique 'void *data' cookie linked to the (dev,PASID) to go
->>> along with the fault handler.
+>>> On 2023-05-18 11:46, Peng Fan wrote:
+>>>> Hi all,
+>>>>
+>>>> Current arm-smmu-v3 driver does not support sharing SID, If there are
+>>>> two devices sharing one SID, the smmu-v3 driver will report "stream x
+>>>> already in tree".
+>>>>
+>>>> We have an SOC that using smmu-v3, only supports limited SIDs. From my
+>>>> understanding, the smmu-v3 hardware supports SID sharing, but linux
+>>>> driver not support that.
+>>>
+>>> Ugh, we've always hoped that nobody would build such a thing, since
+>>> SMMUv3 allows for plenty of stream IDs for any reasonable system (Arm's
+>>> implementations support at least 24 bits), and aliasing at the StreamID level
+>>> does rather compromise the usefulness.
 >>
->> If I get your point correctly, the iommu core should provide some places
->> for the iommufd to put a cookie for each pair of {device, pasid}, and
->> provide interfaces to manage it. For example,
+>> We only support max 64 SIDs. So I am thinking to share SID, since we
+>> have lots of dma channels.
+>>
+>>>
+>>>> I would like know is it ok to add support for sharing SID?
+>>>> Something like to use common rb_add/find, not
+>>>> smmu-v3 driver local rb tree add/find.
+>>>
+>>> Not sure what you're thinking there - the StreamID tree is still private to the
+>>> SMMU instance either way, and the existing arm_smmu_find_master()
+>>> function is ideal for arm_smmu_device_group() to detect aliasing devices
+>>> and group them appropriately. Then you also need some way to skip
+>>> updating STEs that have already been touched for a previous device in the
+>>> group (basically generalising what arm_smmu_install_ste_for_dev()
+>>> currently does for duplicate StreamIDs owned by one device).
+>>
+>> Thanks for sharing insights. BTW, would you plan to add the support?
+>>
+>>>
+>>> I'm fairly confident in reasoning about this for basic .attach_dev purposes,
+>>> since I did implement the equivalent for SMMUv2, but I'm not sure I even
+>>> want to think about what it would mean for SVA, PASIDs and nesting...
 > 
-> I'd say when you attach a PRI capable domain (eg to a PASID) then provide
-> a 'void * data' during the attach.
-> 
->> If so, perhaps we need some special treatment for ARM as a user hwpt
->> actually presents the PASID table of the device and the guest setting
->> pasid table entry will not be propagated to host. Then, the @pasid in
->> above interfaces is meaningless.
-> 
-> As above, when attaching to a RID you'd still pass in the *data
+> We should disable all these things for multi-device groups, it's not worth
+> the headache. I think we used to but I can't find it anywhere. That said,
+> I guess only PCIe PRI (not upstream) absolutely won't work with multiple
+> devices sharing a SID, since page responses are routed back by RID to the
+> endpoint.
 
-Yes! Merging these with hwpt attach/detach would be more logical.
+I second that we only support pasid features with singleton group.
 
-> 
->> 1) Move iommu faults uapi from uapi/linux/iommu.h to uapi/linux
->>    /iommufd.h and remove the former.
-> 
-> Please no, delete all the dead code from here and move whatever is
-> still in use into include/linux/
-> 
-> Then we can talk about what parts of it become uAPI and how best to
-> manage that on a patch by patch basis.
+Previously we have below explicit check and comment in
+iommu_sva_bind_device():
 
-Okay, let's rebuild it from the ground up.
+         /*
+          * To keep things simple, SVA currently doesn't support IOMMU 
+groups
+          * with more than one device. Existing SVA-capable systems are not
+          * affected by the problems that required IOMMU groups (lack of ACS
+          * isolation, device ID aliasing and other hardware issues).
+          */
+         if (iommu_group_device_count(group) != 1)
+                 goto out_unlock;
 
-> 
->> 2) Add a device id in the iommu_fault structure.
->>   struct iommu_fault {
->>          __u32   type;
->> -       __u32   padding;
->> +       __u32   dev_id;
-> 
-> Why? This is iommufd internal, the void * above should cover it.
+This fact still holds true today, but the check has been moved to
+pci_enable_pasid():
 
-This is actually part of 1). :-)
+         if (!pci_acs_path_enabled(pdev, NULL, PCI_ACS_RR | PCI_ACS_UF))
+                 return -EINVAL;
 
-> 
->> 3) Add the device pointer to the parameters of domain fault handler.
-> 
-> That makes some sense
->   
->> 4) Decouple I/O page fault handling from IOMMU_SVA in the iommu core and
->>     the drivers.
-> 
-> Definately, this SVA stuff need to be scrubbed out.
-> 
-> SVA is only a special domain type that takes the page table top from a
-> mmu_stuct and a shared fault handler in the core code to do handle_mm_fault()
-> 
-> It should not be in drivers any more deeply than that. We still have a
-> ways to go.
+And the implementation of iommu_attach/detach_device_pasid() is quite
+confusing. The pasid domains are stored in the iommu_group. The
+attach/detach_device_pasid interfaces iterate all devices in the group
+and set pasid domain to each device of the group.
 
-Agreed. In addition to fault handler, SVA usually needs to register a
-callback to mm_notifier to keep the IO or device TLB cache consistent.
-This part of code could also be consolidated to the core.
+This creates an illusion that the iommu core still insists on supporting
+pasid on multiple device groups.
 
-There are still things to do here, but the priority (from my point of
-view) is to make the iopf handling framework in the iommu core more
-generic, rather than just serving SVA.
+> Stall and by extension SVA can't really be supported with multiple devices
+> per SID either, but that's mainly a software complexity issue (we'd need
+> to guess which device it comes from, or report the fault for all devices).
+> PASID and nesting might work transparently due to iommu_group, though I'd
+> rather not think about that either.
+> 
+> It may boil down to updating the smmu->streams structure to support
+> multiple masters per stream (maybe simplify the driver first by moving to
+> a xarray [1]). That would provide a refcount for each SID and allow to
+> only write the STE once on setup and teardown. Since arm_smmu_find_master()
+> is only used to handle I/O page faults (stall/PRI which we won't support
+> in this case), it could return NULL for multi-master streams.
+> 
+> Thanks,
+> Jean
+> 
+> [1] https://lore.kernel.org/linux-iommu/ecb3725c-27c4-944b-b42c-f4e293521f94@arm.com/
+> 
 
 Best regards,
 baolu
