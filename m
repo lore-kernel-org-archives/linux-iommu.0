@@ -1,106 +1,150 @@
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3626E125D1
-	for <iommu@lists.linux.dev>; Fri, 19 May 2023 17:04:55 +0000 (UTC)
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2af1ae3a21fso22166351fa.0
-        for <iommu@lists.linux.dev>; Fri, 19 May 2023 10:04:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1684515893; x=1687107893;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=KKTw5Zfw+dKxxnY8fd/tof/aQPft5PObVsbIBwm4nOE=;
-        b=z3yvfQ4KllCaIiBPBzGr9FG7c5sdwTiPqU6aglyOS4rJihClrvueBLtwUcEXnJTQhE
-         KlBTPqEwHR5um1+ryteThNBiq3Kv3LgHLa8HPLErzzMrUm+2kKOBMLyqJNnVrN+8dKEY
-         3m3pTPxnqWLSpGlNWegJTsWft6XfG0P1wCxfXxjqXzgqd0catmm3Ku0GmWczouxrKs/y
-         2LH8VuuUaOSrNDmFbiHZ6rp3jxyNtSRD97xY2lflSuVPUdm166+HMvBXLEgxL1ia4/Bw
-         UFDEIicCYwh0FLE1ePZv5oMLb9U5k/hMD6Es+M4rCtTnjsJh9iRUzJ/mLPMtf4nZBmJk
-         rtWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684515893; x=1687107893;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=KKTw5Zfw+dKxxnY8fd/tof/aQPft5PObVsbIBwm4nOE=;
-        b=S/5lxV1pKw9xEY1lwDaDV1vsLrZCW6wLH3fCPDGxJjAGZYYP6BtRWFdQdKVZbJBjib
-         bDK8SSJUPD0fmP9CoeddOWtDLVQRkNeXACvZaTXT8F716aVQLUim7UBEwPcmFnaUMows
-         3oo/YwP2idYIaXt27GmU8cGMl+5SJYBPNetfqkPXe05Vf8qqfdxW4rOUCeEdZHqwhzDS
-         EqSccT8ty7cosHVBucuuN6v9DxwbYBzpJEKyI7ExkCHrrSnB7TFVljKIPLygc7GqNakj
-         WGNeZNi7gyi1CkyuGDkPQyLSSqeGA50HxFp1DRGnN1dxo/ctg43Zk7KoSXly1zl2655X
-         e49g==
-X-Gm-Message-State: AC+VfDw392pH0Hd805wZooVOh9xOrL5q9UgelQU1GaQtbEkTgPWNhle2
-	Jeabom9zk/r9CGhBuZtKp+GfEugls3YWKFaZ1lM=
-X-Google-Smtp-Source: ACHHUZ6hb+9tW9dZymi1gZLakhlpllRE71/FgqhEmtf6uNPbPo+mBDJ1VJEFHKSoSos09di8OsIesQ==
-X-Received: by 2002:a2e:3213:0:b0:2af:1eee:84af with SMTP id y19-20020a2e3213000000b002af1eee84afmr1168912ljy.26.1684515893318;
-        Fri, 19 May 2023 10:04:53 -0700 (PDT)
-Received: from [192.168.1.101] (abxi58.neoplus.adsl.tpnet.pl. [83.9.2.58])
-        by smtp.gmail.com with ESMTPSA id a6-20020a19f806000000b004f38260f196sm654478lff.218.2023.05.19.10.04.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 May 2023 10:04:52 -0700 (PDT)
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Date: Fri, 19 May 2023 19:04:33 +0200
-Subject: [PATCH v4 12/12] iommu/arm-smmu-qcom: Add SM6350 DPU compatible
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EB50D10942
+	for <iommu@lists.linux.dev>; Fri, 19 May 2023 17:09:53 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E4D9C1FB;
+	Fri, 19 May 2023 10:10:37 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9653B3F59C;
+	Fri, 19 May 2023 10:09:50 -0700 (PDT)
+Message-ID: <30a91384-157c-0192-443c-12c835ad3b35@arm.com>
+Date: Fri, 19 May 2023 18:09:45 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH v4 13/15] iommu/dma: Force bouncing if the size is not
+ cacheline-aligned
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>,
+ Arnd Bergmann <arnd@arndb.de>, Christoph Hellwig <hch@lst.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Herbert Xu <herbert@gondor.apana.org.au>, Ard Biesheuvel <ardb@kernel.org>,
+ Isaac Manjarres <isaacmanjarres@google.com>,
+ Saravana Kannan <saravanak@google.com>, Alasdair Kergon <agk@redhat.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>,
+ Mark Brown <broonie@kernel.org>, Mike Snitzer <snitzer@kernel.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, linux-mm@kvack.org,
+ iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
+References: <20230518173403.1150549-1-catalin.marinas@arm.com>
+ <20230518173403.1150549-14-catalin.marinas@arm.com>
+ <9dc3e036-75cd-debf-7093-177ef6c7a3ae@arm.com> <ZGeBcLVFKpLdTveZ@arm.com>
+Content-Language: en-GB
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <ZGeBcLVFKpLdTveZ@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230411-topic-straitlagoon_mdss-v4-12-68e7e25d70e1@linaro.org>
-References: <20230411-topic-straitlagoon_mdss-v4-0-68e7e25d70e1@linaro.org>
-In-Reply-To: <20230411-topic-straitlagoon_mdss-v4-0-68e7e25d70e1@linaro.org>
-To: Rob Clark <robdclark@gmail.com>, 
- Abhinav Kumar <quic_abhinavk@quicinc.com>, 
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>, 
- David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
- Rob Herring <robh+dt@kernel.org>, 
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
- Krishna Manikandan <quic_mkrishn@quicinc.com>, 
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
- Joerg Roedel <joro@8bytes.org>, Conor Dooley <conor+dt@kernel.org>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>, 
- linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org, 
- freedreno@lists.freedesktop.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- iommu@lists.linux.dev, Konrad Dybcio <konrad.dybcio@linaro.org>, 
- Konrad Dybcio <konrad.dybcio@somainline.org>
-X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1684515870; l=1014;
- i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
- bh=d3S3xhOuliIdaa9KoHmUn1yxgnvenr1zId8Sw3Pr4Gg=;
- b=ihwHwr0j8S4l2zwqo/DbkiQez0VWcdnrFgJZGS+0sED5bEZluFPe94qSoPP/csG4/zAKv0PiV
- fDngCeGT1ZID8bR3q1gXI/bL59YYGxIww0TnxuHMyLWg2Di1qBia5nL
-X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
- pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
 
-From: Konrad Dybcio <konrad.dybcio@somainline.org>
+On 19/05/2023 3:02 pm, Catalin Marinas wrote:
+> On Fri, May 19, 2023 at 01:29:38PM +0100, Robin Murphy wrote:
+>> On 2023-05-18 18:34, Catalin Marinas wrote:
+>>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>>> index 7a9f0b0bddbd..ab1c1681c06e 100644
+>>> --- a/drivers/iommu/dma-iommu.c
+>>> +++ b/drivers/iommu/dma-iommu.c
+>>> @@ -956,7 +956,7 @@ static void iommu_dma_sync_sg_for_cpu(struct device *dev,
+>>>    	struct scatterlist *sg;
+>>>    	int i;
+>>> -	if (dev_use_swiotlb(dev))
+>>> +	if (dev_use_swiotlb(dev) || sg_is_dma_bounced(sgl))
+>>>    		for_each_sg(sgl, sg, nelems, i)
+>>>    			iommu_dma_sync_single_for_cpu(dev, sg_dma_address(sg),
+>>>    						      sg->length, dir);
+>>> @@ -972,7 +972,7 @@ static void iommu_dma_sync_sg_for_device(struct device *dev,
+>>>    	struct scatterlist *sg;
+>>>    	int i;
+>>> -	if (dev_use_swiotlb(dev))
+>>> +	if (dev_use_swiotlb(dev) || sg_is_dma_bounced(sgl))
+>>>    		for_each_sg(sgl, sg, nelems, i)
+>>>    			iommu_dma_sync_single_for_device(dev,
+>>>    							 sg_dma_address(sg),
+>>> @@ -998,7 +998,8 @@ static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+>>>    	 * If both the physical buffer start address and size are
+>>>    	 * page aligned, we don't need to use a bounce page.
+>>>    	 */
+>>> -	if (dev_use_swiotlb(dev) && iova_offset(iovad, phys | size)) {
+>>> +	if ((dev_use_swiotlb(dev) && iova_offset(iovad, phys | size)) ||
+>>> +	    dma_kmalloc_needs_bounce(dev, size, dir)) {
+>>>    		void *padding_start;
+>>>    		size_t padding_size, aligned_size;
+>>> @@ -1210,7 +1211,21 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+>>>    			goto out;
+>>>    	}
+>>> -	if (dev_use_swiotlb(dev))
+>>> +	/*
+>>> +	 * If kmalloc() buffers are not DMA-safe for this device and
+>>> +	 * direction, check the individual lengths in the sg list. If one of
+>>> +	 * the buffers is deemed unsafe, follow the iommu_dma_map_sg_swiotlb()
+>>> +	 * path for potential bouncing.
+>>> +	 */
+>>> +	if (!dma_kmalloc_safe(dev, dir)) {
+>>> +		for_each_sg(sg, s, nents, i)
+>>> +			if (!dma_kmalloc_size_aligned(s->length)) {
+>>
+>> Just to remind myself, we're not checking s->offset on the grounds that if
+>> anyone wants to DMA into an unaligned part of a larger allocation that
+>> remains at their own risk, is that right?
+> 
+> Right. That's the case currently as well and those users that were
+> relying on ARCH_KMALLOC_MINALIGN for this have either been migrated to
+> ARCH_DMA_MINALIGN in this series or the logic rewritten (as in the
+> crypto code).
 
-Add the SM6350 DPU compatible to clients compatible list, as it also
-needs the workarounds.
+OK, I did manage to summon a vague memory of this being discussed 
+before, which at least stopped me asking "Should we be checking..." - 
+perhaps a comment on dma_kmalloc_safe() to help remember that reasoning 
+might not go amiss?
 
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Acked-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
----
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
- 1 file changed, 1 insertion(+)
+>> Do we care about the (probably theoretical) case where someone might build a
+>> scatterlist for multiple small allocations such that ones which happen to be
+>> adjacent might get combined into a single segment of apparently "safe"
+>> length but still at "unsafe" alignment?
+> 
+> I'd say that's theoretical only. One could write such code but normally
+> you'd go for an array rather than relying on the randomness of the
+> kmalloc pointers to figure out adjacent objects. It also only works if
+> the individual struct size is exactly one of the kmalloc cache sizes, so
+> not generic enough.
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index d7d5d1dbee17..e64c737724c4 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -253,6 +253,7 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
- 	{ .compatible = "qcom,sc8280xp-mdss" },
- 	{ .compatible = "qcom,sdm845-mdss" },
- 	{ .compatible = "qcom,sdm845-mss-pil" },
-+	{ .compatible = "qcom,sm6350-mdss" },
- 	{ .compatible = "qcom,sm6375-mdss" },
- 	{ .compatible = "qcom,sm8150-mdss" },
- 	{ .compatible = "qcom,sm8250-mdss" },
+FWIW I was imagining something like sg_alloc_table_from_pages() but at a 
+smaller scale, queueing up some list/array of, say, 32-byte buffers into 
+a scatterlist to submit as a single DMA job. I'm not aware that such a 
+thing exists though, and I'm inclined to agree that it probably is 
+sufficiently unrealistic to be concerned about. As usual I just want to 
+feel comfortable that we've explored all the possibilities :)
 
--- 
-2.40.1
+>>> +				sg_dma_mark_bounced(sg);
+>>
+>> I'd prefer to have iommu_dma_map_sg_swiotlb() mark the segments, since
+>> that's in charge of the actual bouncing. Then we can fold the alignment
+>> check into dev_use_swiotlb() (with the dev_is_untrusted() condition taking
+>> priority), and sync/unmap can simply rely on sg_is_dma_bounced() alone.
+> 
+> With this patch we only set the SG_DMA_BOUNCED on the first element of
+> the sglist. Do you want to set this flag only on individual elements
+> being bounced? It makes some sense in principle but the
+> iommu_dma_unmap_sg() path would need to scan the list again to decide
+> whether to go the swiotlb path.
+> 
+> If we keep the SG_DMA_BOUNCED flag only on the first element, I can
+> change it to your suggestion, assuming I understood it.
 
+Indeed that should be fine - sync_sg/unmap_sg always have to be given 
+the same arguments which were passed to map_sg (and note that in the 
+normal case, the DMA address/length will often end up concatenated 
+entirely into the first element), so while we still have the two 
+distinct flows internally, I don't think there's any issue with only 
+tagging the head of the list to steer between them. Of course if it then 
+works out to be trivial enough to tag *all* the segments for good 
+measure, there should be no harm in that either - at the moment the flag 
+is destined to have more of a "this might be bounced, so needs checking" 
+meaning than "this definitely is bounced" either way.
+
+Cheers,
+Robin.
