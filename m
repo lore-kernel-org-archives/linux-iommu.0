@@ -1,341 +1,128 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1E6F38F4A
-	for <iommu@lists.linux.dev>; Fri, 19 May 2023 18:12:54 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BC92B1FB;
-	Fri, 19 May 2023 11:13:38 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DAB933F59C;
-	Fri, 19 May 2023 11:12:51 -0700 (PDT)
-Message-ID: <e3403ba0-92d0-b7f0-bca5-c571848818d1@arm.com>
-Date: Fri, 19 May 2023 19:12:43 +0100
+Received: from relay02.th.seeweb.it (relay02.th.seeweb.it [5.144.164.163])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A85CF12B82
+	for <iommu@lists.linux.dev>; Fri, 19 May 2023 18:18:06 +0000 (UTC)
+Received: from SoMainline.org (94-211-6-86.cable.dynamic.v4.ziggo.nl [94.211.6.86])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by m-r1.th.seeweb.it (Postfix) with ESMTPSA id 6F87D1F58D;
+	Fri, 19 May 2023 20:18:03 +0200 (CEST)
+Date: Fri, 19 May 2023 20:18:01 +0200
+From: Marijn Suijten <marijn.suijten@somainline.org>
+To: Konrad Dybcio <konrad.dybcio@linaro.org>
+Cc: Rob Clark <robdclark@gmail.com>, 
+	Abhinav Kumar <quic_abhinavk@quicinc.com>, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
+	Sean Paul <sean@poorly.run>, David Airlie <airlied@gmail.com>, 
+	Daniel Vetter <daniel@ffwll.ch>, Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Krishna Manikandan <quic_mkrishn@quicinc.com>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, Conor Dooley <conor+dt@kernel.org>, 
+	linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, Rob Herring <robh@kernel.org>, 
+	Konrad Dybcio <konrad.dybcio@somainline.org>
+Subject: Re: [PATCH v4 00/12] SM63(50|75) DPU support
+Message-ID: <dktpk4msw3v7y4tgyovcqels34urqzm3fcocygn6ocufws3kev@bd5zcy572cle>
+References: <20230411-topic-straitlagoon_mdss-v4-0-68e7e25d70e1@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH RFCv2 04/24] iommu: Add iommu_domain ops for dirty
- tracking
-Content-Language: en-GB
-To: Joao Martins <joao.m.martins@oracle.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
- Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- Lu Baolu <baolu.lu@linux.intel.com>, Yi Liu <yi.l.liu@intel.com>,
- Yi Y Sun <yi.y.sun@intel.com>, Eric Auger <eric.auger@redhat.com>,
- Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, Alex Williamson <alex.williamson@redhat.com>,
- kvm@vger.kernel.org, iommu@lists.linux.dev
-References: <20230518204650.14541-1-joao.m.martins@oracle.com>
- <20230518204650.14541-5-joao.m.martins@oracle.com>
- <940bbc2e-874e-8cde-c4c9-be7884c3ef57@arm.com>
- <857caf51-ee45-0d72-1ca4-5881bc313b8a@oracle.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <857caf51-ee45-0d72-1ca4-5881bc313b8a@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230411-topic-straitlagoon_mdss-v4-0-68e7e25d70e1@linaro.org>
 
-On 19/05/2023 2:43 pm, Joao Martins wrote:
-> On 19/05/2023 14:22, Robin Murphy wrote:
->> On 2023-05-18 21:46, Joao Martins wrote:
->>> Add to iommu domain operations a set of callbacks to perform dirty
->>> tracking, particulary to start and stop tracking and finally to read and
->>> clear the dirty data.
->>>
->>> Drivers are generally expected to dynamically change its translation
->>> structures to toggle the tracking and flush some form of control state
->>> structure that stands in the IOVA translation path. Though it's not
->>> mandatory, as drivers will be enable dirty tracking at boot, and just flush
->>> the IO pagetables when setting dirty tracking.  For each of the newly added
->>> IOMMU core APIs:
->>>
->>> .supported_flags[IOMMU_DOMAIN_F_ENFORCE_DIRTY]: Introduce a set of flags
->>> that enforce certain restrictions in the iommu_domain object. For dirty
->>> tracking this means that when IOMMU_DOMAIN_F_ENFORCE_DIRTY is set via its
->>> helper iommu_domain_set_flags(...) devices attached via attach_dev will
->>> fail on devices that do *not* have dirty tracking supported. IOMMU drivers
->>> that support dirty tracking should advertise this flag, while enforcing
->>> that dirty tracking is supported by the device in its .attach_dev iommu op.
->>
->> Eww, no. For an internal thing, just call ->capable() - I mean, you're literally
->> adding this feature as one of its caps...
->>
->> However I'm not sure if we even need that - domains which don't support dirty
->> tracking should just not expose the ops, and thus it ought to be inherently
->> obvious.
->>
-> OK.
-> 
->> I'm guessing most of the weirdness here is implicitly working around the
->> enabled-from-the-start scenario on SMMUv3:
->>
-> It has nothing to do with SMMUv3. This is to futureproof the case where the
-> IOMMU capabilities are not homogeneous, even though, it isn't the case today.
+On 2023-05-19 19:04:21, Konrad Dybcio wrote:
+> v3 -> v4:
+> - Drop adding new QoS LUT entries
+> - Add safe_lut_tbl for both SoCs
 
-Indeed, but in practice SMMUv3 is the only case where you're 
-realistically likely to see heterogenous dirty-tracking support across 
-instances, and the one where it's most problematic to do things with a 
-domain immediately after allocation.
+I may not have pinged you correctly with this message [1], but can you
+add the DSC configuration for both SoCs?
 
-iommu_domain_alloc() is the last piece of the puzzle in terms of 
-updating the public IOMMU API to the modern multi-instance model, and 
-we're working towards the point where it will be able to return a fully 
-functional domain right off the bat. Thus I'm not keen on building more 
-APIs around the current behviour which would become obsolete all too 
-soon and need to be unpicked again. The domain_alloc_user stuff is a 
-glimpse of the future, so if you're happy to focus on the IOMMUFD case 
-for now and build on that model for the initial concept, that's great - 
-by the time anyone comes up with a reason for generalising it further, 
-the rest of the API should have caught up.
+[1]: https://lore.kernel.org/linux-arm-msm/u47xthqfjxpbbzjbvnrz4qa2f2m3aip4iose7cwuhzg4raf7db@qxbos7u55wko/
 
-Thanks,
-Robin.
+- Marijn
 
-> The only thing SMMUv3 that kinda comes for free in this series is clearing
-> dirties before setting dirty tracking, because [it is always enabled]. But that
-> is needed regardless of SMMUv3.
 > 
->>      domain = iommu_domain_alloc(bus);
->>      iommu_set_dirty_tracking(domain);
->>      // arm-smmu-v3 says OK since it doesn't know that it
->>      // definitely *isn't* possible, and saying no wouldn't
->>      // be helpful
->>      iommu_attach_group(group, domain);
->>      // oops, now we see that the relevant SMMU instance isn't one
->>      // which actually supports HTTU, what do we do? :(
->>
->> I don't have any major objection to the general principle of flagging the domain
->> to fail attach if it can't do what we promised
+> Depends on:
+> - https://lore.kernel.org/linux-arm-msm/20230411-dpu-intf-te-v4-0-27ce1a5ab5c6@somainline.org/
 > 
-> This is the reason why the I had the flag (or now a domain_alloc flag)...
+> v3: https://lore.kernel.org/r/20230411-topic-straitlagoon_mdss-v3-0-9837d6b3516d@linaro.org
 > 
->> , as a bodge for now, but please
->> implement it privately in arm-smmu-v3 so it's easier to clean up again in future
->> once until iommu_domain_alloc() gets sorted out properly to get rid of this
->> awkward blind spot.
->>
+> v2 -> v3:
+> - Don't duplicate qcm2290_lm_sblk
+> - Use DEFAULT_DPU_LINE_WIDTH defines
+> - Fix up sspp clk assignments for sm6350
+> - Add 6350-6375-common QoS data straight to the common file
+>   instead of moving it around after adding it
+> - Fix up iommu compatible order before adding new entries
+> - Reuse sm6350 msm_mdss_data for sm6375
+> - INTF_SC7180_MASK -> INTF_SC7280_MASK (enable HCTL) on 6375
+> - use double tabs in catalog headers
+> - remove one unused entry in 6350 dpu_qos_lut_entry
+> - add missing tear IRQs, drop INTF0 irq on 6375
+> - don't overduplicate DPU bindings, reuse 7180
+> - Pick up tags
+> - Rebase on INTF_TE v4 and next-20230504
 > 
-> But it wasn't related to smmu-v3 logic.
+> Depends on:
+> - https://lore.kernel.org/linux-arm-msm/20230411-dpu-intf-te-v4-0-27ce1a5ab5c6@somainline.org/
 > 
-> All it is meant is to guarantee that when we only ever have dirty tracking
-> supported in a single domain. And we don't want that to change throughout the
-> lifetime of the domain.
+> v2: https://lore.kernel.org/r/20230411-topic-straitlagoon_mdss-v2-0-5def73f50980@linaro.org
 > 
->> Thanks,
->> Robin.
->>
->>> iommu_cap::IOMMU_CAP_DIRTY: new device iommu_capable value when probing for
->>> capabilities of the device.
->>>
->>> .set_dirty_tracking(): an iommu driver is expected to change its
->>> translation structures and enable dirty tracking for the devices in the
->>> iommu_domain. For drivers making dirty tracking always-enabled, it should
->>> just return 0.
->>>
->>> .read_and_clear_dirty(): an iommu driver is expected to walk the iova range
->>> passed in and use iommu_dirty_bitmap_record() to record dirty info per
->>> IOVA. When detecting a given IOVA is dirty it should also clear its dirty
->>> state from the PTE, *unless* the flag IOMMU_DIRTY_NO_CLEAR is passed in --
->>> flushing is steered from the caller of the domain_op via iotlb_gather. The
->>> iommu core APIs use the same data structure in use for dirty tracking for
->>> VFIO device dirty (struct iova_bitmap) abstracted by
->>> iommu_dirty_bitmap_record() helper function.
->>>
->>> Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
->>> ---
->>>    drivers/iommu/iommu.c      | 11 +++++++
->>>    include/linux/io-pgtable.h |  4 +++
->>>    include/linux/iommu.h      | 67 ++++++++++++++++++++++++++++++++++++++
->>>    3 files changed, 82 insertions(+)
->>>
->>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>> index 2088caae5074..95acc543e8fb 100644
->>> --- a/drivers/iommu/iommu.c
->>> +++ b/drivers/iommu/iommu.c
->>> @@ -2013,6 +2013,17 @@ struct iommu_domain *iommu_domain_alloc(const struct
->>> bus_type *bus)
->>>    }
->>>    EXPORT_SYMBOL_GPL(iommu_domain_alloc);
->>>    +int iommu_domain_set_flags(struct iommu_domain *domain,
->>> +               const struct bus_type *bus, unsigned long val)
->>> +{
->>> +    if (!(val & bus->iommu_ops->supported_flags))
->>> +        return -EINVAL;
->>> +
->>> +    domain->flags |= val;
->>> +    return 0;
->>> +}
->>> +EXPORT_SYMBOL_GPL(iommu_domain_set_flags);
->>> +
->>>    void iommu_domain_free(struct iommu_domain *domain)
->>>    {
->>>        if (domain->type == IOMMU_DOMAIN_SVA)
->>> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
->>> index 1b7a44b35616..25142a0e2fc2 100644
->>> --- a/include/linux/io-pgtable.h
->>> +++ b/include/linux/io-pgtable.h
->>> @@ -166,6 +166,10 @@ struct io_pgtable_ops {
->>>                      struct iommu_iotlb_gather *gather);
->>>        phys_addr_t (*iova_to_phys)(struct io_pgtable_ops *ops,
->>>                        unsigned long iova);
->>> +    int (*read_and_clear_dirty)(struct io_pgtable_ops *ops,
->>> +                    unsigned long iova, size_t size,
->>> +                    unsigned long flags,
->>> +                    struct iommu_dirty_bitmap *dirty);
->>>    };
->>>      /**
->>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->>> index 39d25645a5ab..992ea87f2f8e 100644
->>> --- a/include/linux/iommu.h
->>> +++ b/include/linux/iommu.h
->>> @@ -13,6 +13,7 @@
->>>    #include <linux/errno.h>
->>>    #include <linux/err.h>
->>>    #include <linux/of.h>
->>> +#include <linux/iova_bitmap.h>
->>>    #include <uapi/linux/iommu.h>
->>>      #define IOMMU_READ    (1 << 0)
->>> @@ -65,6 +66,11 @@ struct iommu_domain_geometry {
->>>      #define __IOMMU_DOMAIN_SVA    (1U << 4)  /* Shared process address space */
->>>    +/* Domain feature flags that do not define domain types */
->>> +#define IOMMU_DOMAIN_F_ENFORCE_DIRTY    (1U << 6)  /* Enforce attachment of
->>> +                              dirty tracking supported
->>> +                              devices          */
->>> +
->>>    /*
->>>     * This are the possible domain-types
->>>     *
->>> @@ -93,6 +99,7 @@ struct iommu_domain_geometry {
->>>      struct iommu_domain {
->>>        unsigned type;
->>> +    unsigned flags;
->>>        const struct iommu_domain_ops *ops;
->>>        unsigned long pgsize_bitmap;    /* Bitmap of page sizes in use */
->>>        struct iommu_domain_geometry geometry;
->>> @@ -128,6 +135,7 @@ enum iommu_cap {
->>>         * this device.
->>>         */
->>>        IOMMU_CAP_ENFORCE_CACHE_COHERENCY,
->>> +    IOMMU_CAP_DIRTY,        /* IOMMU supports dirty tracking */
->>>    };
->>>      /* These are the possible reserved region types */
->>> @@ -220,6 +228,17 @@ struct iommu_iotlb_gather {
->>>        bool            queued;
->>>    };
->>>    +/**
->>> + * struct iommu_dirty_bitmap - Dirty IOVA bitmap state
->>> + *
->>> + * @bitmap: IOVA bitmap
->>> + * @gather: Range information for a pending IOTLB flush
->>> + */
->>> +struct iommu_dirty_bitmap {
->>> +    struct iova_bitmap *bitmap;
->>> +    struct iommu_iotlb_gather *gather;
->>> +};
->>> +
->>>    /**
->>>     * struct iommu_ops - iommu ops and capabilities
->>>     * @capable: check capability
->>> @@ -248,6 +267,7 @@ struct iommu_iotlb_gather {
->>>     *                    pasid, so that any DMA transactions with this pasid
->>>     *                    will be blocked by the hardware.
->>>     * @pgsize_bitmap: bitmap of all possible supported page sizes
->>> + * @flags: All non domain type supported features
->>>     * @owner: Driver module providing these ops
->>>     */
->>>    struct iommu_ops {
->>> @@ -281,6 +301,7 @@ struct iommu_ops {
->>>          const struct iommu_domain_ops *default_domain_ops;
->>>        unsigned long pgsize_bitmap;
->>> +    unsigned long supported_flags;
->>>        struct module *owner;
->>>    };
->>>    @@ -316,6 +337,11 @@ struct iommu_ops {
->>>     * @enable_nesting: Enable nesting
->>>     * @set_pgtable_quirks: Set io page table quirks (IO_PGTABLE_QUIRK_*)
->>>     * @free: Release the domain after use.
->>> + * @set_dirty_tracking: Enable or Disable dirty tracking on the iommu domain
->>> + * @read_and_clear_dirty: Walk IOMMU page tables for dirtied PTEs marshalled
->>> + *                        into a bitmap, with a bit represented as a page.
->>> + *                        Reads the dirty PTE bits and clears it from IO
->>> + *                        pagetables.
->>>     */
->>>    struct iommu_domain_ops {
->>>        int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
->>> @@ -348,6 +374,12 @@ struct iommu_domain_ops {
->>>                      unsigned long quirks);
->>>          void (*free)(struct iommu_domain *domain);
->>> +
->>> +    int (*set_dirty_tracking)(struct iommu_domain *domain, bool enabled);
->>> +    int (*read_and_clear_dirty)(struct iommu_domain *domain,
->>> +                    unsigned long iova, size_t size,
->>> +                    unsigned long flags,
->>> +                    struct iommu_dirty_bitmap *dirty);
->>>    };
->>>      /**
->>> @@ -461,6 +493,9 @@ extern bool iommu_present(const struct bus_type *bus);
->>>    extern bool device_iommu_capable(struct device *dev, enum iommu_cap cap);
->>>    extern bool iommu_group_has_isolated_msi(struct iommu_group *group);
->>>    extern struct iommu_domain *iommu_domain_alloc(const struct bus_type *bus);
->>> +extern int iommu_domain_set_flags(struct iommu_domain *domain,
->>> +                  const struct bus_type *bus,
->>> +                  unsigned long flags);
->>>    extern void iommu_domain_free(struct iommu_domain *domain);
->>>    extern int iommu_attach_device(struct iommu_domain *domain,
->>>                       struct device *dev);
->>> @@ -627,6 +662,28 @@ static inline bool iommu_iotlb_gather_queued(struct
->>> iommu_iotlb_gather *gather)
->>>        return gather && gather->queued;
->>>    }
->>>    +static inline void iommu_dirty_bitmap_init(struct iommu_dirty_bitmap *dirty,
->>> +                       struct iova_bitmap *bitmap,
->>> +                       struct iommu_iotlb_gather *gather)
->>> +{
->>> +    if (gather)
->>> +        iommu_iotlb_gather_init(gather);
->>> +
->>> +    dirty->bitmap = bitmap;
->>> +    dirty->gather = gather;
->>> +}
->>> +
->>> +static inline void
->>> +iommu_dirty_bitmap_record(struct iommu_dirty_bitmap *dirty, unsigned long iova,
->>> +              unsigned long length)
->>> +{
->>> +    if (dirty->bitmap)
->>> +        iova_bitmap_set(dirty->bitmap, iova, length);
->>> +
->>> +    if (dirty->gather)
->>> +        iommu_iotlb_gather_add_range(dirty->gather, iova, length);
->>> +}
->>> +
->>>    /* PCI device grouping function */
->>>    extern struct iommu_group *pci_device_group(struct device *dev);
->>>    /* Generic device grouping function */
->>> @@ -657,6 +714,9 @@ struct iommu_fwspec {
->>>    /* ATS is supported */
->>>    #define IOMMU_FWSPEC_PCI_RC_ATS            (1 << 0)
->>>    +/* Read but do not clear any dirty bits */
->>> +#define IOMMU_DIRTY_NO_CLEAR            (1 << 0)
->>> +
->>>    /**
->>>     * struct iommu_sva - handle to a device-mm bond
->>>     */
->>> @@ -755,6 +815,13 @@ static inline struct iommu_domain
->>> *iommu_domain_alloc(const struct bus_type *bus
->>>        return NULL;
->>>    }
->>>    +static inline int iommu_domain_set_flags(struct iommu_domain *domain,
->>> +                     const struct bus_type *bus,
->>> +                     unsigned long flags)
->>> +{
->>> +    return -ENODEV;
->>> +}
->>> +
->>>    static inline void iommu_domain_free(struct iommu_domain *domain)
->>>    {
->>>    }
+> v1 -> v2:
+> - Rebase on the DPU catalog rework and INTF_TE
+> - Fix QSEED(3L/4) discrepancies
+> - Fixed DMA/cursor discrepancies for 6350
+> - No deduplication, that's gonna be handled in catalogrework 2:
+>   "the return of the catalogrework"
+> - Split MDSS & DPU binding additions
+> - Drop "Allow variable SSPP/INTF_BLK size", that got in w/ the rework
+> - Split MDSS and DPU additions
+> - Pick up Rob's acks
+> 
+> Depends on (and based on): https://lore.kernel.org/linux-arm-msm/20230411-dpu-intf-te-v2-0-ef76c877eb97@somainline.org/T/#t
+> 
+> v1: https://lore.kernel.org/linux-arm-msm/20230211122656.1479141-1-konrad.dybcio@linaro.org/
+> 
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> ---
+> Konrad Dybcio (12):
+>       dt-bindings: display/msm: dsi-controller-main: Add SM6350
+>       dt-bindings: display/msm: dsi-controller-main: Add SM6375
+>       dt-bindings: display/msm: sc7180-dpu: Describe SM6350 and SM6375
+>       dt-bindings: display/msm: Add SM6350 MDSS
+>       dt-bindings: display/msm: Add SM6375 MDSS
+>       drm/msm/dpu: Add SM6350 support
+>       drm/msm: mdss: Add SM6350 support
+>       drm/msm/dpu: Add SM6375 support
+>       drm/msm: mdss: Add SM6375 support
+>       iommu/arm-smmu-qcom: Sort the compatible list alphabetically
+>       iommu/arm-smmu-qcom: Add SM6375 DPU compatible
+>       iommu/arm-smmu-qcom: Add SM6350 DPU compatible
+> 
+>  .../bindings/display/msm/dsi-controller-main.yaml  |   4 +
+>  .../bindings/display/msm/qcom,sc7180-dpu.yaml      |  23 ++-
+>  .../bindings/display/msm/qcom,sm6350-mdss.yaml     | 214 ++++++++++++++++++++
+>  .../bindings/display/msm/qcom,sm6375-mdss.yaml     | 216 +++++++++++++++++++++
+>  .../gpu/drm/msm/disp/dpu1/catalog/dpu_6_4_sm6350.h | 188 ++++++++++++++++++
+>  .../gpu/drm/msm/disp/dpu1/catalog/dpu_6_9_sm6375.h | 153 +++++++++++++++
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c     |   6 +
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h     |   2 +
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c            |   2 +
+>  drivers/gpu/drm/msm/msm_mdss.c                     |  10 +
+>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |   6 +-
+>  11 files changed, 821 insertions(+), 3 deletions(-)
+> ---
+> base-commit: c437aff71b13c5ca77821ec1bab98ca7e18716d0
+> change-id: 20230411-topic-straitlagoon_mdss-8f34cacd5e26
+> 
+> Best regards,
+> -- 
+> Konrad Dybcio <konrad.dybcio@linaro.org>
+> 
