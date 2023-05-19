@@ -1,205 +1,127 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2053.outbound.protection.outlook.com [40.107.93.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FFB15670
-	for <iommu@lists.linux.dev>; Fri, 19 May 2023 15:33:19 +0000 (UTC)
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-3f5dbd8f677so55285e9.1
-        for <iommu@lists.linux.dev>; Fri, 19 May 2023 08:33:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1684510398; x=1687102398;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Z86CxvgDjR+XK0uf9yod5lX5QLSIaIX8FS/Ty9Oxyco=;
-        b=X24fX+TqJfReB8Iq09t+a2WgYpxkcKcPyoTdANZwDXVObw3De/NVmgUnPwCujOcl46
-         CABGTuR28Vs7n+trdr346X8iOUoiygSp1+QCzIt6c5ToZHrdiAPBl1wstzBJ6tPg41zl
-         8ynHbqa4InnPx1D3esoawq+LR3FMusbAHK3kB52L1ewSV/Ixenat4oiri3OnWyhDWzri
-         RhtPM366yNU50x1bbiWCatBsHqhH/QGe1s8qSugQsJY0kolfXlmg8/5ue4CCk3G1Eg68
-         ylqEqmBzJN8sau4gf7gv5V+NnJI+nodRNzyKyNX2g4DWIXpSYq18ZLLYfrI4dfOLZIJZ
-         9p1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684510398; x=1687102398;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Z86CxvgDjR+XK0uf9yod5lX5QLSIaIX8FS/Ty9Oxyco=;
-        b=NATZa6u6T26hYa0WwB5+Em34ntbZ6r7Z2SaqWVUTFxoxp1xB1goQNpEtpLLrCtfEhH
-         yhMwXceu9taSSfEg76M1SuWwzKRMcd9FA8DYNswK4164pjy0zh6mOZk/1fQbvhjv80lg
-         ilAh/rebwrGyOgAO1Oq0iKogzi602ifT/lL3YTgD1cYBFBQtmOZDAc5XBNMaBOkzHpv4
-         A6kYoyR5Hcgyuny0rJL7D3D8KRyWYJHkpXCrhpk62NZL/DiRqRpNsRPqHU3Gm/7L/OyS
-         KN6S/N64wsgTBltE9Dhe6FZXLbL8VVltnlN2D1OVyo1z2tT3X9wBp1zth/ou58Ke67/i
-         3wFA==
-X-Gm-Message-State: AC+VfDzwn1Ej8jRb3eeYQoG0Kqh6/LkYK4doqzOzJBi9CN0GQ/CZ8tZL
-	/eR+l+1G2x6PCg4IhKnUFR9wCw==
-X-Google-Smtp-Source: ACHHUZ6qEKVEHmq9piPQVm6SKlYXBJCIKcsvG3FkugXOXvqVGo678gNN0J/WEnFpjTK4AcF0U0OV4A==
-X-Received: by 2002:a05:600c:4f4f:b0:3f4:2594:118a with SMTP id m15-20020a05600c4f4f00b003f42594118amr216324wmq.2.1684510397778;
-        Fri, 19 May 2023 08:33:17 -0700 (PDT)
-Received: from google.com (44.232.78.34.bc.googleusercontent.com. [34.78.232.44])
-        by smtp.gmail.com with ESMTPSA id z19-20020a7bc7d3000000b003f18b942338sm2735332wmk.3.2023.05.19.08.33.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 May 2023 08:33:17 -0700 (PDT)
-Date: Fri, 19 May 2023 15:33:13 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: maz@kernel.org, catalin.marinas@arm.com, will@kernel.org,
-	joro@8bytes.org, robin.murphy@arm.com, james.morse@arm.com,
-	suzuki.poulose@arm.com, oliver.upton@linux.dev,
-	yuzenghui@huawei.com, dbrazdil@google.com, ryan.roberts@arm.com,
-	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev,
-	iommu@lists.linux.dev
-Subject: Re: [RFC PATCH 19/45] KVM: arm64: iommu: Add domains
-Message-ID: <ZGeWudESZP5BGjaA@google.com>
-References: <20230201125328.2186498-1-jean-philippe@linaro.org>
- <20230201125328.2186498-20-jean-philippe@linaro.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B9E45670
+	for <iommu@lists.linux.dev>; Fri, 19 May 2023 15:39:53 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Qtuels8XDCJqgfgBWP8C9mlDYe0F2MAEYjzwA6Z89KpPAubnNYJpOiGeqY8B1nNT6lyL/kRC2+9Z+V6ToaRzqeNtYiOTodNJolEn1svTy3vjdHTFEHd98nz9OElg+0WYiEarBVMdDgVcA2UvrhEePwjItmhN/V/PzqCSMypMiNU6LAWfA53+86qFXyVihSiU1rJJ8UROeaumWbV1lQ9CeD7hr6NAsPLn61hkSkvy4OaOx0nlHszS+Y4LwAk+l35/1witZn3QyzbqMx3naCQ5aFxGB+DFIrJBXZQLFLaIJfzAvsM65BjpmiqHMjpoj7AdfKe7WdbdiEqUrssi9mNvZw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cfmfe01kbpnLfdKNLmKP2ZMP7CaU0Ku6Jsi22KlHWF0=;
+ b=anYnRzYHHL18Q2cBfZm1zvPMHoA6flc+J7MCe4Syk6HBNHU5HnYJZgP2mbWqv0ptD5YocDBffpv0IE/PzpmM2A2n2gqyqneTk4GYktZiZWmuQC7qq+Zci/BBqq/gqacqbG9UVLbILFzMwrJ3zPIghs2DIclo1H6SuNmBO7E4Tq6rcb/rfjkpODP/IEddEbbwZXAknqfcUtUwO2te3pNzZgJRSyn5nR1Hb+Cyx3DRFJb2Xf/mnvxZpeqv3UYSo1X7pbs7op7low/yVmoU51wvtEPg0kys+DzpMlnyDV92WrC/xd6/MOq0+9sHnLjCx51gxl+P0zfoUmsFereFvrCtjA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cfmfe01kbpnLfdKNLmKP2ZMP7CaU0Ku6Jsi22KlHWF0=;
+ b=R7fbjvf/LoRHPk5UuGvbvpFEQGCB1n54Ctj2LEfzHTV6FW73x0qWFIF+5kvcdFadpZHmALpz3+lMOtVErPzJjhPdHQTXrdi8bO1gvhcyK4GYLHxVD732tqu/1rinpzMPvyX6Fr0FO1HvQXMdTiMjmzixsa8XFx6FWf5q/ALnbwZjKkNgh5bTvl2aNgOhrSBxT7+W6xs7Yt/wp9W1+YeHPGglQRfENki1ZWBOH+8NUDr1ekZIloBxOTxRSdN5+nh33fJbWq46szY5XdBkbQHu0GtdYobhBExySlJaQ9dEUhbf3xawg/rSRkm6u1f2QxxuP0u9UhW0n5h1rrU1jRrGPQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by CH3PR12MB9250.namprd12.prod.outlook.com (2603:10b6:610:1ae::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.21; Fri, 19 May
+ 2023 15:39:49 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6411.021; Fri, 19 May 2023
+ 15:39:49 +0000
+Date: Fri, 19 May 2023 12:39:47 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Alim Akhtar <alim.akhtar@samsung.com>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
+Subject: Re: [PATCH] iommu/exynos: Implement an IDENTITY domain
+Message-ID: <ZGeYQ6DAca6ujN18@nvidia.com>
+References: <0-v1-9bede1ab3a9b+15-exynos-identity_jgg@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0-v1-9bede1ab3a9b+15-exynos-identity_jgg@nvidia.com>
+X-ClientProxiedBy: BL6PEPF00013E0C.NAMP222.PROD.OUTLOOK.COM
+ (2603:10b6:22e:400:0:1001:0:e) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230201125328.2186498-20-jean-philippe@linaro.org>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CH3PR12MB9250:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1297e802-598f-4382-3cde-08db587f47ad
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	WQOD5QeHtvPoozgQhuOd9qdaF+8WpaZ0gSOdEeHK7n07PGnqIhaxsaUCKRzSj3MFqbI/lHZBH1kRt8x9LtUXLnlpBbYLmSKSKPIH42kN/3jHe7u+REzzCLm7W94J9B9glE1teauY4dvSzLJcTpG7Y3eJw9Y+67cumISC9s89yZbBQdjvwhsCbgNJkC/8QDj4PL6PiUYOLjdlvbtIyjBEQoY5c/0/xFiKiM2EdaNAfFRJ7ChzUAkIy1U3N8Ch5KGP7U3r3HbO7WXtjPpUFkw0k/VMR5Ij25pUiHmGdBBSelJym19C+NN1khxzTIgeEHnSqkYz/7lF7/BgIHrQui3YfrG0B6MDqCRjJrllXNOjorQcMiZQApYPxiUG1JEZvk9wBtD2hax+fVC1sEmr392DVogS1M5Hu0ZZwm1tXV5vHEexaozsZcFR3E8Ts1uhaVRUdS+ZjhXvBOgWzOc4oDPnoDHNtJG8ISdJ2+hF4dVh++ThFRGcQmFgLOYHybPHmadPhQXznwZXR6Ye91YJx2gOzQ3YvbttgES4QdyphYcEA9yCavzdx/aRrxKbTlty/VTMvpByIW7+rgcVpODUcLfSOMwEo/nQNmMddZgYMJA5LgU=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(366004)(39860400002)(346002)(376002)(136003)(451199021)(66556008)(66946007)(66476007)(186003)(110136005)(8676002)(478600001)(8936002)(5660300002)(41300700001)(316002)(2616005)(38100700002)(83380400001)(6486002)(966005)(26005)(6512007)(6506007)(86362001)(2906002)(4744005)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?naitvCyEloMzyFjR3tKSuHeRua+bYqwuKOHHSNJqR3ck1NWcnjQI9gVCOH9F?=
+ =?us-ascii?Q?TjYqvG4afNPjO+Zdtzu6XyZRdv82GMx2+sZJwQkqxpv0DniGfJPmGHYfxRea?=
+ =?us-ascii?Q?vBWD3MuUOR1+ct7UgWN50NGXf5OgYR4yHxUigdw0bem3S+k9qJEvm/VWzxhe?=
+ =?us-ascii?Q?o/oR/P6KcCoAdqbJlXVpRUcYS+JYeCP1dtf7aYtYH3VvAaNtxOJmoE1dd81c?=
+ =?us-ascii?Q?wKGguEanYKEVNWqPcbNrnu8B/1j9C4gEVGAEERDU8vMdDgBXtmjUquWuId7+?=
+ =?us-ascii?Q?5jqWAbiWuxiYzmUPXJmnhlHCT3KOp137a2Ox1xNFF/ghJ06hIAsTisng/uWb?=
+ =?us-ascii?Q?/BQXfP3FHijCdyWDwHn0CD/BkLodKeT4y7PEzlMq8HBVkxBxRmqw2emNEKaT?=
+ =?us-ascii?Q?EchpshYtBEWQpdy7r3w44KkSlsMlPUKHJqUgu8aAeSIEVYnyH1CmrtIQVceU?=
+ =?us-ascii?Q?PUjdOMBCYurZLrYAhHxOA3msF3VlQQxcDgqdd2NKUGL5gqkscNYPwzCMYff8?=
+ =?us-ascii?Q?wsDb1pRKdcBVtc8JmuDDsvzkQ8Oun14w2us4RikyTqwPNLm7ybeX3MpmMev1?=
+ =?us-ascii?Q?8s8lzahPXspffKRC8OP4V8RDr7h4zidJKrxLPdKHqaKJg9O8D25fcuoYEO/7?=
+ =?us-ascii?Q?fAJ5r3knVbP1aSgRcjD+fwza+oOhvCJ/D4TXdHNdJq/C2Vh4omz4kqW9kjuj?=
+ =?us-ascii?Q?DpPtUOfjAnHLU5dx8baMn5Kw1ejksqLuxPZdYXgnTudqJT3syiLCqGWLRueO?=
+ =?us-ascii?Q?Yhrx57bJZpVcNQWnrIlBrLIjJFswoFKAN0OQKq2gw/GtWJBHRKiLnTLRRTjI?=
+ =?us-ascii?Q?MUxokPMU4aCJT5S/OFw9yq/wIyHdEEIJeDzpTlSj+JRBcZEHhJZSiUUrluje?=
+ =?us-ascii?Q?Kv3Ht945ZMCG73mF7KrUQioTayBmmEvFhXtNjKyI6e37fQl3lfnZ2HEMQSt5?=
+ =?us-ascii?Q?25z4RJgHluqvr5WE/j8i8qmt71EG2wr5uL5HBX5Q7oTb0bQ8i4laSIrmgKf+?=
+ =?us-ascii?Q?Vs5rY6+o8Nd4o/VuUnwDTIuhnt9WXcxlkPkLHDGTDs3opRa7ra9YjT6b9706?=
+ =?us-ascii?Q?dm8bF5rYd3myWBkm+p3H6wY17qBkcF6sEc3lEG/c3kqmBPE2Pfk6wI1g8Iou?=
+ =?us-ascii?Q?+3uvspG5/7KwWeB98bjzdIyEL2JK82inftfvQGbZUtUHQZDDxNzbPypdFdjN?=
+ =?us-ascii?Q?/lFkv9JGjpKU8KoB5Y0N0wyMH4mMZJLLfVsxAtCWBWwcZKL8/D3cXrTHbEbv?=
+ =?us-ascii?Q?n1l9ZT5prUC2k0xgh2wHfsfIizdfF8cRPKPT1KbhrYtylk+e5qA6jgyU22rW?=
+ =?us-ascii?Q?uns9gOV4AqSbbGViTWv50VsBR3NiTQ8T5aC4SK51Xcnbm+SBQBNZqXNEZ6JI?=
+ =?us-ascii?Q?LPuJ8FkYSbBMybJQUnylU/Yus8K306s2V2gXq8PaFQdmosW3mO/GesgTjWKn?=
+ =?us-ascii?Q?zBOxKiVKSRz03IQrZggO0pM/djqIhTjZq3z7H2IxZTlOQ7IDdE16zh7TAVs/?=
+ =?us-ascii?Q?aDvPZme5oll59IXRRDQxg378IfcoDiDhoRgOg9WFP6L81kp8U3kJjJQ24OkV?=
+ =?us-ascii?Q?f7q0NqzJizRrDgt6miBWY7/rjAvqePWIiKZxXmIn?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1297e802-598f-4382-3cde-08db587f47ad
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2023 15:39:49.1351
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: smAbQzxskIts6sm6LtdwEyDh17l9UQ0ehOJwpHOLYsNaN+01IqJ/KrDTE2K4Hn7s
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9250
 
-Hi Jean,
+On Thu, Apr 06, 2023 at 08:42:57PM -0300, Jason Gunthorpe wrote:
+> What exynos calls exynos_iommu_detach_device is actually putting the iommu
+> into identity mode. Instead of having a translation mode that is invisible
+> to the core code implement it as an actual IDENTITY domain.
+> 
+> On ARM64 this will allow the IDENTITIY dma iommu mode to work, and on
+> ARM32 this clarifies what set_platform_dma_ops is actually doing.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/exynos-iommu.c | 67 ++++++++++++++++++++++--------------
+>  1 file changed, 42 insertions(+), 25 deletions(-)
+> 
+> Marek, as requested here is that patch on top of your stuff that went to rc
 
-On Wed, Feb 01, 2023 at 12:53:03PM +0000, Jean-Philippe Brucker wrote:
-> +/*
-> + * Serialize access to domains and IOMMU driver internal structures (command
-> + * queue, device tables)
-> + */
-> +static hyp_spinlock_t iommu_lock;
-> +
-I was looking more into this lock and I think we can make it per IOMMU instead
-of having one big lock to avoid congestion, as I see it is only used to
-protect per-IOMMU resources.
-Some special handling needed as hyp_spinlock_t is not exposed to EL1.
-Maybe something like this:
+Just for clarity this patch was superseded by this series where it is patch
+10:
 
-diff --git a/arch/arm64/kvm/hyp/hyp-constants.c b/arch/arm64/kvm/hyp/hyp-constants.c
-index b257a3b4bfc5..96d30a37f9e6 100644
---- a/arch/arm64/kvm/hyp/hyp-constants.c
-+++ b/arch/arm64/kvm/hyp/hyp-constants.c
-@@ -3,11 +3,13 @@
- #include <linux/kbuild.h>
- #include <nvhe/memory.h>
- #include <nvhe/pkvm.h>
-+#include <nvhe/spinlock.h>
+https://lore.kernel.org/linux-iommu/0-v2-8d1dc464eac9+10f-iommu_all_defdom_jgg@nvidia.com
 
- int main(void)
- {
- 	DEFINE(STRUCT_HYP_PAGE_SIZE,	sizeof(struct hyp_page));
- 	DEFINE(PKVM_HYP_VM_SIZE,	sizeof(struct pkvm_hyp_vm));
- 	DEFINE(PKVM_HYP_VCPU_SIZE,	sizeof(struct pkvm_hyp_vcpu));
-+	DEFINE(HYP_SPINLOCK_SIZE,	sizeof(hyp_spinlock_t));
- 	return 0;
- }
-diff --git a/drivers/iommu/arm/arm-smmu-v3/Makefile b/drivers/iommu/arm/arm-smmu-v3/Makefile
-index a90b97d8bae3..cf9195e24a08 100644
---- a/drivers/iommu/arm/arm-smmu-v3/Makefile
-+++ b/drivers/iommu/arm/arm-smmu-v3/Makefile
-@@ -6,6 +6,7 @@ arm_smmu_v3-objs-$(CONFIG_ARM_SMMU_V3_SVA) += arm-smmu-v3-sva.o
- arm_smmu_v3-objs := $(arm_smmu_v3-objs-y)
- 
- obj-$(CONFIG_ARM_SMMU_V3_PKVM) += arm_smmu_v3_kvm.o
-+ccflags-$(CONFIG_ARM_SMMU_V3_PKVM) += -Iarch/arm64/kvm/
- arm_smmu_v3_kvm-objs-y += arm-smmu-v3-kvm.o
- arm_smmu_v3_kvm-objs-y += arm-smmu-v3-common.o
- arm_smmu_v3_kvm-objs := $(arm_smmu_v3_kvm-objs-y)
-diff --git a/include/kvm/iommu.h b/include/kvm/iommu.h
-index ab888da731bc..82827b99b1ed 100644
---- a/include/kvm/iommu.h
-+++ b/include/kvm/iommu.h
-@@ -5,6 +5,12 @@
- #include <asm/kvm_host.h>
- #include <kvm/power_domain.h>
- #include <linux/io-pgtable.h>
-+#ifdef __KVM_NVHE_HYPERVISOR__
-+#include <nvhe/spinlock.h>
-+#else
-+#include "hyp_constants.h"
-+#endif
- 
- /*
-  * Parameters from the trusted host:
-@@ -23,6 +29,11 @@ struct kvm_hyp_iommu {
- 
- 	struct io_pgtable_params	*pgtable;
- 	bool				power_is_off;
-+#ifdef __KVM_NVHE_HYPERVISOR__
-+	hyp_spinlock_t			iommu_lock;
-+#else
-+	u8 unused[HYP_SPINLOCK_SIZE];
-+#endif
- };
- 
- struct kvm_hyp_iommu_memcache {
-diff --git a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-index 1f4d5fcc1386..afaf173e65ed 100644
---- a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-+++ b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-@@ -14,12 +14,6 @@
- 
- struct kvm_hyp_iommu_memcache __ro_after_init *kvm_hyp_iommu_memcaches;
- 
--/*
-- * Serialize access to domains and IOMMU driver internal structures (command
-- * queue, device tables)
-- */
--static hyp_spinlock_t iommu_lock;
--
- #define domain_to_iopt(_iommu, _domain, _domain_id)		\
- 	(struct io_pgtable) {					\
- 		.ops = &(_iommu)->pgtable->ops,			\
-@@ -93,10 +87,10 @@ int kvm_iommu_alloc_domain(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
- {
- 	int ret = -EINVAL;
- 	struct io_pgtable iopt;
--	struct kvm_hyp_iommu *iommu;
-+	struct kvm_hyp_iommu *iommu = kvm_iommu_ops.get_iommu_by_id(iommu_id);
- 	struct kvm_hyp_iommu_domain *domain;
- 
--	hyp_spin_lock(&iommu_lock);
-+	hyp_spin_lock(&iommu->iommu_lock);
- 	domain = handle_to_domain(iommu_id, domain_id, &iommu);
- 	if (!domain)
- 		goto out_unlock;
-@@ -112,7 +106,7 @@ int kvm_iommu_alloc_domain(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
- 	domain->refs = 1;
- 	domain->pgd = iopt.pgd;
- out_unlock:
--	hyp_spin_unlock(&iommu_lock);
-+	hyp_spin_unlock(&iommu->iommu_lock);
- 	return ret;
- }
- 
-@@ -120,10 +114,10 @@ int kvm_iommu_free_domain(pkvm_handle_t iommu_id, pkvm_handle_t domain_id)
- {
- 	int ret = -EINVAL;
- 	struct io_pgtable iopt;
--	struct kvm_hyp_iommu *iommu;
-+	struct kvm_hyp_iommu *iommu = kvm_iommu_ops.get_iommu_by_id(iommu_id);
- 	struct kvm_hyp_iommu_domain *domain;
- 
--	hyp_spin_lock(&iommu_lock);
-+	hyp_spin_lock(&iommu->iommu_lock);
- 	domain = handle_to_domain(iommu_id, domain_id, &iommu);
- 	if (!domain)
- 		goto out_unlock;
-@@ -137,7 +131,7 @@ int kvm_iommu_free_domain(pkvm_handle_t iommu_id, pkvm_handle_t domain_id)
- 	memset(domain, 0, sizeof(*domain));
- 
- out_unlock:
--	hyp_spin_unlock(&iommu_lock);
-+	hyp_spin_unlock(&iommu->iommu_lock);
- 	return ret;
- }
--- 
-
-(I didn't include full patch as it is too long, but mainly the
-rest is s/&iommu_lock/&iommu->iommu_lock)
-
-Please let me know what do you think?
-
-Thanks,
-Mostafa
-
+Jason
