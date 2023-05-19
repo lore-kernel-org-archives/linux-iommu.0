@@ -1,188 +1,137 @@
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2049.outbound.protection.outlook.com [40.107.212.49])
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 286FE373
-	for <iommu@lists.linux.dev>; Fri, 19 May 2023 00:56:13 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kXrsfhm0uF0jReUqlcUDW49nZ1h98M7rZsXmlHlq1O2yb75U7mMnXcYnVPKQIAyLKdhqqhFIVJ7HiEIgEaMMmbCsgJFkczEMKDJcQtJxv3eum8vp5w5wTIAfeXlRryZtLuJ7KNmbxDN54iQT3Sv6oQgPcWdq5UQ/fa5YORCdke7Z+X8Ebn83EDBMwPABBSwub+em5edGdCHvJY3Io+N745rRDtKggrm6SvjIuma/7PYGB2bHWR+c75lBQ+eQ6XH/n8mVtyQD210V0/4bmCkBB/MdtY7rnIwFX65hRi3A+hxPIYq+8N+U5JyKJVG9tSAVuw/AA0jFesym+UsCncY1lA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vBhOL0jUPEE03ICFVxiMjPZqqR2ysO3QoiGzRk2CjJE=;
- b=XhPexjSINKiB7Ea4WQ/hdIGHa64X/i9h19+qvZ+vIT/CDyfZDf7z7x7Jg3QPGJhZZGywJkPxYL3aXUj2aMp8Tpg1nx1WAsFBA+A6NmYQkRgoqboasn78itEmq9Q3iEHzfEDBplksFz5Lpxyi193qsVqhM4MHcEDP9KoWTEhUZzQOo8zudUNNYrPd1ZHRsUt3l04Hv84AZ7F/ZGROx/dFcp9Dwv2DZxDLWomJ/sOjGpSoxW4T5eZSq5rDb07kQOVCO9VVMPbVGZWjoy7J8hwg/EkdVvT0xm2FchQxORiVP36jYUvOq6RZkQ3eEUmntqF+cJp4qT3qOErF2oo0ko/XZA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vBhOL0jUPEE03ICFVxiMjPZqqR2ysO3QoiGzRk2CjJE=;
- b=g+kDhmIQgiHJ0IplSvGu5C/1oQZU5oXpTs/xMgzczcyxnlkbT6w9LYus7A9EiJy8FCv841EPlsdKzekCbOBgEsf/wOaYHn+wQvSfwg5jGZU746MNYSPoRYgQ6Oqpw/kYQ7xb6oWPB/VqqtXKk6KlBoJhQDNKZ1xZxV3D09omFaA=
-Received: from MW4PR03CA0156.namprd03.prod.outlook.com (2603:10b6:303:8d::11)
- by MW6PR12MB8949.namprd12.prod.outlook.com (2603:10b6:303:248::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.21; Fri, 19 May
- 2023 00:56:10 +0000
-Received: from CO1NAM11FT057.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8d:cafe::be) by MW4PR03CA0156.outlook.office365.com
- (2603:10b6:303:8d::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.19 via Frontend
- Transport; Fri, 19 May 2023 00:56:10 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT057.mail.protection.outlook.com (10.13.174.205) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6411.21 via Frontend Transport; Fri, 19 May 2023 00:56:10 +0000
-Received: from titanite-d432host.amd.com (10.180.168.240) by
- SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Thu, 18 May 2023 19:56:07 -0500
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
-CC: <joro@8bytes.org>, <joao.m.martins@oracle.com>,
-	<alejandro.j.jimenez@oracle.com>, <boris.ostrovsky@oracle.com>,
-	<jon.grimm@amd.com>, <santosh.shukla@amd.com>, <vasant.hegde@amd.com>,
-	<kishon.vijayabraham@amd.com>, Suravee Suthikulpanit
-	<suravee.suthikulpanit@amd.com>
-Subject: [PATCH v2 5/5] iommu/amd: Improving Interrupt Remapping Table Invalidation
-Date: Thu, 18 May 2023 20:55:29 -0400
-Message-ID: <20230519005529.28171-6-suravee.suthikulpanit@amd.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20230519005529.28171-1-suravee.suthikulpanit@amd.com>
-References: <20230519005529.28171-1-suravee.suthikulpanit@amd.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6189D362
+	for <iommu@lists.linux.dev>; Fri, 19 May 2023 02:04:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1684461853; x=1715997853;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=bigg4gk47lNFdVx20xWM4FyRwF5SyiVXdpidC4nBQUs=;
+  b=eEbhIjgznOLYznoFm/eG99PcMQipNbW9ibqhp4iFz31Xs1KvrQi2iiZC
+   d7RlNefv91Ccv6hArQFf9stw1shpbCVAJSynjXvZdKslfzS+wwPffvHbr
+   U0DRxy2eZEbIHVffdUV/ZnHMZtaZSwsnQ1q8aOX6X35ALog6s6jvJ5TUB
+   PEMzKBMuO09q50Cnt2KBaYfeG5yUkkFI0lJTTb/jEnIIa9hrQHfmqKi5W
+   6farGXKFBXth1Hm9NWGerFFMPQaXucppsWhCiPpI+BsWjK2XIlqbYsuWq
+   rYaFBM6mzGtr786gBXnH2ZEX10cQjpM72w11xeHEyiiiuPkbbiX30ECB9
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10714"; a="351093601"
+X-IronPort-AV: E=Sophos;i="6.00,175,1681196400"; 
+   d="scan'208";a="351093601"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2023 19:04:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10714"; a="876673929"
+X-IronPort-AV: E=Sophos;i="6.00,175,1681196400"; 
+   d="scan'208";a="876673929"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.210.160]) ([10.254.210.160])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2023 19:03:59 -0700
+Message-ID: <d99e284d-31b1-6d04-cf14-d7b160ee3f44@linux.intel.com>
+Date: Fri, 19 May 2023 10:03:57 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT057:EE_|MW6PR12MB8949:EE_
-X-MS-Office365-Filtering-Correlation-Id: c417290f-4a6a-4f55-0ee3-08db5803d61b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	/N0SyD1Je0bHBayAcpfF95+XH2XTkhsYhD77T+Z53qZ6Qg08TjurACrN/C/ImDq/nNJpOFfRUwdNto/kUlIl2kuGDhjoqvRS982HIxaKPH0g0J3WUKQWBggCg1M09vpSyx6qlq16P10GF9popY+0kLBmIGNF5dPxJ2laU0TuzXrmBGBbz4x+ved2689nP8MAkvFH6tryagfqwGkZvEMTmJUXKtHhDFhI6TUlkPtaDRMZX7NNvncvFCR96y1Cnil17alZSLCKS6JRMLaL2zGKN1tA+yyc/8hAMbNVg/64XbTF/AE3x2zPalzaCdMkpzaAHt4hC84fpKsVVyl/Cwgb15eYT9RpViD1FAj36YFfoPSqzgZDngpezxIs+udDdNLd61Mo7DABxgY/IDCE6pRFR0D7/5aCdhJRjjZRse5C1Zw6oJD9dLZvp7sXS6ZonnAo3xv2M08I2Zh9Yk/JarHO27/dsZYYtU8XNB9E8CFbrWWHiWzsu+Tc25tz0BH9pn/3cgVrgbG8TnBTiXb1VHSqY7lFvSgeG4Kp2rg6jQzET+HYNWY+NCcJpZ859GxKPqzN/EbbUpnmr24RO0iKGB1b1xtlqZyXOK/L72EzIkv4Gdadokg6FDBrg9XOWjpUapsV62KVT26ty/z4NpZv3vqujYxxuQhEcgqlN9Gc61FxaRdlUtnYQGvtDAaiGhwpj5r2gDfMLj0r1CG5in0p7y6KBpg+XDJyx3gGOVJTnAY4OvSYutMw2uz3qhgRlaPj0pCp2vxKhR1zezMMGnRTGe3zTQ==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(346002)(39860400002)(376002)(136003)(396003)(451199021)(46966006)(36840700001)(40470700004)(2906002)(44832011)(8676002)(8936002)(316002)(4326008)(70586007)(70206006)(5660300002)(41300700001)(86362001)(2616005)(426003)(47076005)(336012)(110136005)(40460700003)(54906003)(478600001)(36756003)(40480700001)(7696005)(6666004)(1076003)(186003)(26005)(16526019)(36860700001)(83380400001)(82310400005)(81166007)(82740400003)(356005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2023 00:56:10.1738
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c417290f-4a6a-4f55-0ee3-08db5803d61b
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT057.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB8949
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Cc: baolu.lu@linux.intel.com, "Tian, Kevin" <kevin.tian@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Lixiao Yang <lixiao.yang@intel.com>, Matthew Rosato
+ <mjrosato@linux.ibm.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: Re: [PATCH v7 03/19] iommufd: Replace the hwpt->devices list with
+ iommufd_group
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <3-v7-6c0fd698eda2+5e3-iommufd_alloc_jgg@nvidia.com>
+ <569b959e-a702-fc19-3d67-0dde4e77251a@linux.intel.com>
+ <ZGN2yvhpIvrvu74r@nvidia.com>
+ <852e85b3-9fd2-bfc2-6080-82cea7ab6abd@linux.intel.com>
+ <BN9PR11MB5276DE1BC30E90B1032C0E468C7E9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZGTMCSJKvgpyYxG/@nvidia.com>
+ <5cdc1a83-f29b-6862-d513-dbfd5c500807@linux.intel.com>
+ <ZGYT8RmGM+vwNzDa@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <ZGYT8RmGM+vwNzDa@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Invalidating Interrupt Remapping Table (IRT) requires, the AMD IOMMU driver
-to issue INVALIDATE_INTERRUPT_TABLE and COMPLETION_WAIT commands.
-Currently, the driver issues the two commands separately, which requires
-calling raw_spin_lock_irqsave() twice. In addition, the COMPLETION_WAIT
-could potentially be interleaved with other commands causing delay of
-the COMPLETION_WAIT command.
+On 2023/5/18 20:02, Jason Gunthorpe wrote:
+> On Thu, May 18, 2023 at 03:05:23PM +0800, Baolu Lu wrote:
+> 
+>>> It doesn't make any sense to store a struct like that in dev_iommu.
+>>>
+>>> The fault handler should come from the domain and we should be able to
+>>> have a unique 'void *data' cookie linked to the (dev,PASID) to go
+>>> along with the fault handler.
+>>
+>> If I get your point correctly, the iommu core should provide some places
+>> for the iommufd to put a cookie for each pair of {device, pasid}, and
+>> provide interfaces to manage it. For example,
+> 
+> I'd say when you attach a PRI capable domain (eg to a PASID) then provide
+> a 'void * data' during the attach.
+> 
+>> If so, perhaps we need some special treatment for ARM as a user hwpt
+>> actually presents the PASID table of the device and the guest setting
+>> pasid table entry will not be propagated to host. Then, the @pasid in
+>> above interfaces is meaningless.
+> 
+> As above, when attaching to a RID you'd still pass in the *data
 
-Therefore, combine issuing of the two commands in one spin-lock, and
-changing struct amd_iommu.cmd_sem_val to use atomic64 to minimize
-locking.
+Yes! Merging these with hwpt attach/detach would be more logical.
 
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- drivers/iommu/amd/amd_iommu_types.h |  2 +-
- drivers/iommu/amd/init.c            |  2 +-
- drivers/iommu/amd/iommu.c           | 27 ++++++++++++++++++++++-----
- 3 files changed, 24 insertions(+), 7 deletions(-)
+> 
+>> 1) Move iommu faults uapi from uapi/linux/iommu.h to uapi/linux
+>>    /iommufd.h and remove the former.
+> 
+> Please no, delete all the dead code from here and move whatever is
+> still in use into include/linux/
+> 
+> Then we can talk about what parts of it become uAPI and how best to
+> manage that on a patch by patch basis.
 
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 486a052e37ca..2fa65da2a9a5 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -744,7 +744,7 @@ struct amd_iommu {
- 
- 	u32 flags;
- 	volatile u64 *cmd_sem;
--	u64 cmd_sem_val;
-+	atomic64_t cmd_sem_val;
- 
- #ifdef CONFIG_AMD_IOMMU_DEBUGFS
- 	/* DebugFS Info */
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index fc0392d706db..16737819f79a 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -1750,7 +1750,7 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h,
- 	iommu->pci_seg = pci_seg;
- 
- 	raw_spin_lock_init(&iommu->lock);
--	iommu->cmd_sem_val = 0;
-+	atomic64_set(&iommu->cmd_sem_val, 0);
- 
- 	/* Add IOMMU to internal data structures */
- 	list_add_tail(&iommu->list, &amd_iommu_list);
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 51c2b018433d..57ae4a8072d3 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -1182,11 +1182,11 @@ static int iommu_completion_wait(struct amd_iommu *iommu)
- 	if (!iommu->need_sync)
- 		return 0;
- 
--	raw_spin_lock_irqsave(&iommu->lock, flags);
--
--	data = ++iommu->cmd_sem_val;
-+	data = atomic64_add_return(1, &iommu->cmd_sem_val);
- 	build_completion_wait(&cmd, iommu, data);
- 
-+	raw_spin_lock_irqsave(&iommu->lock, flags);
-+
- 	ret = __iommu_queue_command_sync(iommu, &cmd, false);
- 	if (ret)
- 		goto out_unlock;
-@@ -1284,11 +1284,28 @@ static void amd_iommu_flush_irt_all(struct amd_iommu *iommu)
- 
- static void iommu_flush_irt_and_complete(struct amd_iommu *iommu, u16 devid)
- {
-+	int ret;
-+	u64 data;
-+	unsigned long flags;
-+	struct iommu_cmd cmd, cmd2;
-+
- 	if (iommu->irtcachedis_enabled)
- 		return;
- 
--	iommu_flush_irt(iommu, devid);
--	iommu_completion_wait(iommu);
-+	build_inv_irt(&cmd, devid);
-+	data = atomic64_add_return(1, &iommu->cmd_sem_val);
-+	build_completion_wait(&cmd2, iommu, data);
-+
-+	raw_spin_lock_irqsave(&iommu->lock, flags);
-+	ret = __iommu_queue_command_sync(iommu, &cmd, true);
-+	if (ret)
-+		goto out;
-+	ret = __iommu_queue_command_sync(iommu, &cmd2, false);
-+	if (ret)
-+		goto out;
-+	wait_on_sem(iommu, data);
-+out:
-+	raw_spin_unlock_irqrestore(&iommu->lock, flags);
- }
- 
- void iommu_flush_all_caches(struct amd_iommu *iommu)
--- 
-2.31.1
+Okay, let's rebuild it from the ground up.
 
+> 
+>> 2) Add a device id in the iommu_fault structure.
+>>   struct iommu_fault {
+>>          __u32   type;
+>> -       __u32   padding;
+>> +       __u32   dev_id;
+> 
+> Why? This is iommufd internal, the void * above should cover it.
+
+This is actually part of 1). :-)
+
+> 
+>> 3) Add the device pointer to the parameters of domain fault handler.
+> 
+> That makes some sense
+>   
+>> 4) Decouple I/O page fault handling from IOMMU_SVA in the iommu core and
+>>     the drivers.
+> 
+> Definately, this SVA stuff need to be scrubbed out.
+> 
+> SVA is only a special domain type that takes the page table top from a
+> mmu_stuct and a shared fault handler in the core code to do handle_mm_fault()
+> 
+> It should not be in drivers any more deeply than that. We still have a
+> ways to go.
+
+Agreed. In addition to fault handler, SVA usually needs to register a
+callback to mm_notifier to keep the IO or device TLB cache consistent.
+This part of code could also be consolidated to the core.
+
+There are still things to do here, but the priority (from my point of
+view) is to make the iopf handling framework in the iommu core more
+generic, rather than just serving SVA.
+
+Best regards,
+baolu
