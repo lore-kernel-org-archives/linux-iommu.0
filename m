@@ -1,119 +1,331 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAF191119C
-	for <iommu@lists.linux.dev>; Fri, 19 May 2023 17:16:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684516606;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=yR/NkvCfvmT4S31V3jI5qchDRG5AoNbgq8Ky6KegdPs=;
-	b=ZJIqtpMZPh7QhNfu+0h8rFoKRV9EL0MeFmKtCrtu02pfydIB7vFWigGUeSkodT+M6Oe9gK
-	VPM6JvpqouubGhFfRJmuZBIxRtKygG8xDSUUdlwIlQSNvUktl7qlZik2tPPZv10A9QVoOo
-	GMQKHSw6X4BNxkZEhfGV15YqsAxUAcw=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-451-bIPzHKXaPa24a4Hlq6ScnA-1; Fri, 19 May 2023 13:16:45 -0400
-X-MC-Unique: bIPzHKXaPa24a4Hlq6ScnA-1
-Received: by mail-qt1-f198.google.com with SMTP id d75a77b69052e-3f3903da7d9so24825461cf.3
-        for <iommu@lists.linux.dev>; Fri, 19 May 2023 10:16:45 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2797BDDCA
+	for <iommu@lists.linux.dev>; Fri, 19 May 2023 17:28:28 +0000 (UTC)
+Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-2af189d323fso13299441fa.1
+        for <iommu@lists.linux.dev>; Fri, 19 May 2023 10:28:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1684517306; x=1687109306;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=CxGxnPUJjHuZyUcS7YnICwHCISjOXoTWhWv3CA+SKBY=;
+        b=jpzsIx3rnDzYUkMrMBBF4JPwVn/S114JDwpjPJ3UO3swndpZJ1H+ilPS6O1THlLZs3
+         1VyXjONvKGFtVb1oHJlFH3SafHWsgm+035QG7+zlO2XQjhR50LGd7MCVUjPmQXs63+gz
+         +l/L0GnCF5sB8ZwE7lqp5RQl90B2/TOhWiyjXRBcKzNJ36syLfLAXpelHMuk2IyfMBKY
+         j1Bc6ANyG4QLoe49gmF3R27sU8dHjqmkImPODlDX3ZQjg/M+D+UTMegO+i3iHiLAyNr+
+         PrBS9XLvX/hcL0K1jjyfT6kmIqfMxDYu8lGX8ARvWpnsqGvldmEgM0Zl/hJIikcEfCAq
+         EmAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684516605; x=1687108605;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=yR/NkvCfvmT4S31V3jI5qchDRG5AoNbgq8Ky6KegdPs=;
-        b=OYRXcRXa6MVRQgBS6Vdp5IvpnbtN/ixnkoAT2WYhOcjOX1lkFe1kqI3EoWqChsSkJs
-         7g9y1Gxnc3YFWipQWscd4DMMQVOF9v+5/rZ5TGP1Orz9/LhnLcXmmEKayg3a1jusctUe
-         ARsJX8ldsaI8S2htelhRu33f3pLJIBRjAKiYvCzdy1ljHKiYlX4aGCRjtbmKaQAbe3bZ
-         Ege2O1e0q5l2NUQtuW1y6JvsdFguN8fn1/9+8MrvCcyygKTU8+AMjbYogYWSGc/Jq+b0
-         7a4V1uTaRL27P0xdRTwE63kA9VaNCqt7sQ5jdXxOEVkimv9S3ZCVWXpc0Yfm3as+X9oh
-         DOOQ==
-X-Gm-Message-State: AC+VfDzPvhHJo+YH+gMEvmAinXQ9g6Jb/7cWw1IXRT47GKz/IyWuK/cd
-	lMYxdmj4nQdIDxYh8e7qz9KnY3ahOcMeMtsR4gABKy8rXGTaSXQNBhvBOhf94keHWCKZKZaqL1J
-	FLcyjQjqOd8pPu4dcUXNvRBo=
-X-Received: by 2002:a05:622a:64d:b0:3f2:eaa:6b0f with SMTP id a13-20020a05622a064d00b003f20eaa6b0fmr3715109qtb.68.1684516604785;
-        Fri, 19 May 2023 10:16:44 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ7VP2sdXzCif5qwDVtl6gpXZ991V9IZ7QuC40clV6OSnUYaAaVN7v50hwqgdKY/Xz+tUl5c3A==
-X-Received: by 2002:a05:622a:64d:b0:3f2:eaa:6b0f with SMTP id a13-20020a05622a064d00b003f20eaa6b0fmr3715071qtb.68.1684516604226;
-        Fri, 19 May 2023 10:16:44 -0700 (PDT)
-Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id u13-20020a05620a120d00b0074d1d3b2143sm1236524qkj.118.2023.05.19.10.16.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 May 2023 10:16:43 -0700 (PDT)
-Date: Fri, 19 May 2023 10:16:42 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com, 
-	Stable@vger.kernel.org
-Subject: Re: [PATCH] iommu/amd/pgtbl_v2: Fix domain max address
-Message-ID: <2meuricmfok2vumlsw4lq3ut2ulrbhmlzwfsxoo6krfa4wt5ux@j2d65uzpierq>
-References: <20230518054351.9626-1-vasant.hegde@amd.com>
+        d=1e100.net; s=20221208; t=1684517306; x=1687109306;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=CxGxnPUJjHuZyUcS7YnICwHCISjOXoTWhWv3CA+SKBY=;
+        b=KeblO4O3lra4URQrnXwhweTQZ22ln9mkkd0vtqJlDDF3XxxH+LED3hjCVwVzcT+OI+
+         hDMwnz91AMWQmCAbIQuT3uYNDq/edgkGjo3yrhIVeGy2TtBglAbPshUmFAElR3Q+COEA
+         gYQZIAQqLjOqZRnAmLN/i5QRqGRfWmyPAb2czl+xWSeEYZ73U76HD7uxKTkKRBX7Rw3H
+         49164+jk8JXjEnXaY3W2xTMTbWeDtZKgpP/yO239R3VrtEuEW/2KOulOvfNc945/DBE4
+         gH7qzzh8uVkVBheixMxv/8r6SspdFJTunGfoJxTHefXx3impjKXyjMYt9YA8cn2dVWHI
+         HwUQ==
+X-Gm-Message-State: AC+VfDwh2t/Da0vt4FqfdrEevqrTwW+OTQYFqnqkHFhFPJ/n0YpCk3lC
+	mC5XglY1uWkgpjBzyo/ZQxWTtkyFJ1G4AhH3+54=
+X-Google-Smtp-Source: ACHHUZ7rRMfyzJGZjCUTiXFmMObwN1i0P6LQUBk4gM6jpz/Kl0kOj3YR2P7dv9Rpo3TcnP5KH8Oy/w==
+X-Received: by 2002:a2e:8559:0:b0:2ae:d911:1fb4 with SMTP id u25-20020a2e8559000000b002aed9111fb4mr1093179ljj.14.1684517306080;
+        Fri, 19 May 2023 10:28:26 -0700 (PDT)
+Received: from [192.168.1.101] (abxi58.neoplus.adsl.tpnet.pl. [83.9.2.58])
+        by smtp.gmail.com with ESMTPSA id a2-20020a2e8302000000b002a7853b9339sm904102ljh.119.2023.05.19.10.28.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 May 2023 10:28:25 -0700 (PDT)
+Message-ID: <405186ab-46df-fcf1-2894-a08c4b42c069@linaro.org>
+Date: Fri, 19 May 2023 19:28:23 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20230518054351.9626-1-vasant.hegde@amd.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH 5/8] arm64: dts: qcom: Add SDX75 platform and IDP board
+ support
+Content-Language: en-US
+To: Rohit Agarwal <quic_rohiagar@quicinc.com>, agross@kernel.org,
+ andersson@kernel.org, robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+ conor+dt@kernel.org, tglx@linutronix.de, maz@kernel.org, will@kernel.org,
+ robin.murphy@arm.com, joro@8bytes.org, robimarko@gmail.com,
+ quic_gurus@quicinc.com
+Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev
+References: <1684487350-30476-1-git-send-email-quic_rohiagar@quicinc.com>
+ <1684487350-30476-6-git-send-email-quic_rohiagar@quicinc.com>
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+In-Reply-To: <1684487350-30476-6-git-send-email-quic_rohiagar@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Thu, May 18, 2023 at 05:43:51AM +0000, Vasant Hegde wrote:
-> IOMMU v2 page table supports 4 level (47 bit) or 5 level (56 bit) virtual
-> address space. Current code assumes it can support 64bit IOVA address
-> space. If IOVA allocator allocates virtual address > 47/56 bit (depending
-> on page table level) then it will do wrong mapping and cause invalid
-> translation.
+
+
+On 19.05.2023 11:09, Rohit Agarwal wrote:
+> Add basic devicetree support for SDX75 platform and IDP board from
+> Qualcomm. The SDX75 platform features an ARM Cortex A55 CPU which forms
+> the Application Processor Sub System (APSS) along with standard Qualcomm
+> peripherals like GCC, TLMM, UART, QPIC, and BAM etc... Also, there
+> exists the networking parts such as IPA, MHI, PCIE-EP, EMAC, and Modem
+> etc..
 > 
-> Hence adjust aperture size to use max address supported by the page table.
+> This commit adds basic devicetree support.
 > 
-> Reported-by: Jerry Snitselaar <jsnitsel@redhat.com>
-> Fixes: aaac38f61487 ("iommu/amd: Initial support for AMD IOMMU v2 page table")
-> Cc: <Stable@vger.kernel.org>  # v6.0+
-> Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-
-Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com
-
+> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
 > ---
->  drivers/iommu/amd/iommu.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
+>  arch/arm64/boot/dts/qcom/Makefile      |   1 +
+>  arch/arm64/boot/dts/qcom/sdx75-idp.dts |  19 ++
+>  arch/arm64/boot/dts/qcom/sdx75.dtsi    | 534 +++++++++++++++++++++++++++++++++
+>  3 files changed, 554 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/qcom/sdx75-idp.dts
+>  create mode 100644 arch/arm64/boot/dts/qcom/sdx75.dtsi
 > 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index 5aaa4cf84506..e14c7c666745 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -2128,6 +2128,15 @@ static struct protection_domain *protection_domain_alloc(unsigned int type)
->  	return NULL;
->  }
->  
-> +static inline u64 dma_max_address(void)
-> +{
-> +	if (amd_iommu_pgtable == AMD_IOMMU_V1)
-> +		return ~0ULL;
+> diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
+> index d42c595..4fd5a18 100644
+> --- a/arch/arm64/boot/dts/qcom/Makefile
+> +++ b/arch/arm64/boot/dts/qcom/Makefile
+> @@ -173,6 +173,7 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-xiaomi-polaris.dtb
+>  dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-shift-axolotl.dtb
+>  dtb-$(CONFIG_ARCH_QCOM)	+= sdm850-lenovo-yoga-c630.dtb
+>  dtb-$(CONFIG_ARCH_QCOM)	+= sdm850-samsung-w737.dtb
+> +dtb-$(CONFIG_ARCH_QCOM)	+= sdx75-idp.dtb
+>  dtb-$(CONFIG_ARCH_QCOM)	+= sm4250-oneplus-billie2.dtb
+>  dtb-$(CONFIG_ARCH_QCOM)	+= sm6115p-lenovo-j606f.dtb
+>  dtb-$(CONFIG_ARCH_QCOM)	+= sm6125-sony-xperia-seine-pdx201.dtb
+> diff --git a/arch/arm64/boot/dts/qcom/sdx75-idp.dts b/arch/arm64/boot/dts/qcom/sdx75-idp.dts
+> new file mode 100644
+> index 0000000..e2e803b
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/qcom/sdx75-idp.dts
+> @@ -0,0 +1,19 @@
+> +// SPDX-License-Identifier: BSD-3-Clause
+> +/*
+> + * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+> + */
 > +
-> +	/* V2 with 4/5 level page table */
-> +	return ((1ULL << PM_LEVEL_SHIFT(amd_iommu_gpt_level)) - 1);
-> +}
+> +/dts-v1/;
 > +
->  static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
->  {
->  	struct protection_domain *domain;
-> @@ -2144,7 +2153,7 @@ static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
->  		return NULL;
->  
->  	domain->domain.geometry.aperture_start = 0;
-> -	domain->domain.geometry.aperture_end   = ~0ULL;
-> +	domain->domain.geometry.aperture_end   = dma_max_address();
->  	domain->domain.geometry.force_aperture = true;
->  
->  	return &domain->domain;
-> -- 
-> 2.31.1
-> 
+> +#include "sdx75.dtsi"
+> +
+> +/ {
+> +	model = "Qualcomm Technologies, Inc. SDX75 IDP";
+> +	compatible = "qcom,sdx75-idp", "qcom,sdx75";
+> +	qcom,board-id = <0x2010022 0x302>;
+You should be able to get by without qcom,{msm,board}-id.
 
+> +
+> +};
+> +
+> +&tlmm {
+> +	gpio-reserved-ranges = <110 6>;
+> +};
+> diff --git a/arch/arm64/boot/dts/qcom/sdx75.dtsi b/arch/arm64/boot/dts/qcom/sdx75.dtsi
+> new file mode 100644
+> index 0000000..c2b8810
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/qcom/sdx75.dtsi
+> @@ -0,0 +1,534 @@
+> +// SPDX-License-Identifier: BSD-3-Clause
+> +/*
+> + * SDX75 SoC device tree source
+> + *
+> + * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+> + *
+> + */
+> +
+> +#include <dt-bindings/clock/qcom,rpmh.h>
+> +#include <dt-bindings/interrupt-controller/arm-gic.h>
+> +#include <dt-bindings/soc/qcom,rpmh-rsc.h>
+> +
+> +/ {
+> +	#address-cells = <2>;
+> +	#size-cells = <2>;
+> +	qcom,msm-id = <556 0x10000>;
+> +	interrupt-parent = <&intc>;
+> +
+> +	chosen: chosen { };
+> +
+> +	memory {
+The memory node should have a unit address.
+
+> +		device_type = "memory";
+> +		reg = <0 0 0 0>;
+> +	};
+> +
+> +	clocks { };
+> +
+> +	cpus {
+> +		#address-cells = <2>;
+> +		#size-cells = <0>;
+> +
+[...]
+
+> +
+> +		CLUSTER_PD: power-domain-cpu-cluster0 {
+> +			#power-domain-cells = <0>;
+> +			domain-idle-states = <&CLUSTER_SLEEP_0 &CX_RET &CLUSTER_SLEEP_1>;
+Is CLUSTER_SLEEP_1 deeper than CX retention?
+
+> +		};
+> +	};
+> +
+> +	firmware {
+> +		scm: scm {
+> +			compatible = "qcom,scm-sdx75", "qcom,scm";
+> +		};
+> +	};
+> +
+> +	pmu {
+> +		compatible = "arm,armv8-pmuv3";
+> +		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_HIGH>;
+> +	};
+> +
+> +	reserved-memory {
+> +		#address-cells = <2>;
+> +		#size-cells = <2>;
+> +		ranges;
+> +
+> +		gunyah_hyp_mem: memory@80000000 {
+reserved memory subnodes should have meaningful node names, e.g.
+
+hypervisor@800...
+
+> +			reg = <0x0 0x80000000 0x0 0x800000>;
+> +			no-map;
+> +		};
+> +
+[...]
+
+> +
+> +	smem: qcom,smem {
+> +		compatible = "qcom,smem";
+> +		memory-region = <&smem_mem>;
+> +		hwlocks = <&tcsr_mutex 3>;
+> +	};
+> +
+> +	soc: soc {
+> +		#address-cells = <2>;
+> +		#size-cells = <2>;
+> +		ranges;
+Are the SoC buses limited to 32b addresses?
+
+> +		compatible = "simple-bus";
+Compatible should go first.
+
+> +
+> +		tcsr_mutex: hwlock@1f40000 {
+> +			compatible = "qcom,tcsr-mutex";
+> +			reg = <0x0 0x01f40000 0x0 0x40000>;
+> +			#hwlock-cells = <1>;
+> +		};
+> +
+> +		pdc: interrupt-controller@b220000 {
+> +			compatible = "qcom,sdx75-pdc", "qcom,pdc";
+> +			reg = <0x0 0xb220000 0x0 0x30000>,
+> +			      <0x0 0x174000f0 0x0 0x64>;
+> +			qcom,pdc-ranges = <0 147 52>,
+> +					  <52 266 32>,
+> +					  <84 500 59>;
+> +			#interrupt-cells = <2>;
+> +			interrupt-parent = <&intc>;
+> +			interrupt-controller;
+> +		};
+> +
+> +		tlmm: pinctrl@f000000 {
+> +			compatible = "qcom,sdx75-tlmm";
+> +			reg = <0x0 0x0f000000 0x0 0x400000>;
+> +			interrupts = <GIC_SPI 212 IRQ_TYPE_LEVEL_HIGH>;
+> +			gpio-controller;
+> +			#gpio-cells = <2>;
+> +			gpio-ranges = <&tlmm 0 0 133>;
+> +			interrupt-controller;
+> +			#interrupt-cells = <2>;
+> +			wakeup-parent = <&pdc>;
+> +		};
+> +
+> +		apps_smmu: iommu@15000000 {
+> +			compatible = "qcom,sdx75-smmu-500", "arm,mmu-500";
+> +			reg = <0x0 0x15000000 0x0 0x40000>;
+> +			#iommu-cells = <2>;
+> +			#global-interrupts = <2>;
+> +			interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 68 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 69 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 104 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 105 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 298 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 299 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 300 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 301 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 302 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 303 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 304 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 305 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 306 IRQ_TYPE_LEVEL_HIGH>;
+Many newer SoCs have dma-coherent SMMUs. Is this the case here?
+
+> +		};
+> +
+> +		intc: interrupt-controller@17200000 {
+> +			compatible = "arm,gic-v3";
+> +			#interrupt-cells = <3>;
+> +			interrupt-controller;
+> +			#redistributor-regions = <1>;
+> +			redistributor-stride = <0x0 0x20000>;
+> +			reg = <0x0 0x17200000 0x0 0x10000>,
+> +			      <0x0 0x17260000 0x0 0x80000>;
+> +			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
+> +		};
+> +
+> +		timer@17420000 {
+> +			compatible = "arm,armv7-timer-mem";
+> +			#address-cells = <2>;
+> +			#size-cells = <2>;
+> +			ranges;
+> +			reg = <0x0 0x17420000 0x0 0x1000>;
+> +			clock-frequency = <19200000>;
+clock-frequency is discouraged, unless strictly necessary.
+
+Since gh is running, the timer is already programmed so it should be
+fine to drop this.
+
+[...]
+
+> +	timer {
+> +		compatible = "arm,armv8-timer";
+> +		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+> +			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+> +			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+> +			     <GIC_PPI 12 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>;
+> +		clock-frequency = <19200000>;
+Ditto
+
+Konrad
+> +	};
+> +};
