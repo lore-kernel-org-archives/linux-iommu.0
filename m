@@ -1,45 +1,45 @@
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39ADB624
-	for <iommu@lists.linux.dev>; Sat, 20 May 2023 01:33:18 +0000 (UTC)
-Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-4f1411e8111so4305600e87.1
-        for <iommu@lists.linux.dev>; Fri, 19 May 2023 18:33:18 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDDCA624
+	for <iommu@lists.linux.dev>; Sat, 20 May 2023 01:34:16 +0000 (UTC)
+Received: by mail-lj1-f169.google.com with SMTP id 38308e7fff4ca-2af290cf9b7so10619421fa.3
+        for <iommu@lists.linux.dev>; Fri, 19 May 2023 18:34:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1684546396; x=1687138396;
+        d=linaro.org; s=google; t=1684546455; x=1687138455;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=UAL5nYCj2vZvRS2Tz7EI1xVwLYus4KEX3uqoy05ZFFI=;
-        b=MTtBkbuHU4/MtJ2M4gEQGQcKGpcAIKjxMBA8u71oeSIBlIaXgZGwFWU8lP4d4QpWGz
-         Q55Uc+H4S97UyOl520XJv4/JiqOhB9R3obS14SIpS5axsPkO/1bWKNFPjNe0FMmBLY7O
-         sN3GU7V7SIkd5vO8+0rrihI3bOsM8ADLqD7XnkRwj9roQM7UoFl55dx/JLkHAncL0h66
-         PHVSkLoXKte65M6h/FWpH8RZCC94imjYWBnd1XfWCm3KB/9HhDqXRzzl5nZxisu5A/b3
-         H/IzKovHCpUSQOHXzr593hDO0I3aKt8S6be3DqAbJfE0TY04RC9/mxzbLsKKt3FtOWlm
-         vQ6A==
+        bh=pLAGUtWMudiFE1fjRVJz4UPReT3teB4CnEhketxzvG8=;
+        b=jtF8SWdB4WbRVXC2NVHEZAvpwX249s2JclIrlpwexrwTZ2cgknIxXFoIhINKIkcngD
+         APKbH2AD071j63Ei7ZCjRI1cp3sR8ofPnMa9S+XUjAUpqcGwkEGcPnoZpNeqQjcxKRU/
+         1bZ9K5Xzfn680v4atudeR+w5P+OUWHaQixtmKmpyo99nmTydUPJRLgvoV7GLffnLjbCw
+         +7c2yO4kksTWsoRJNjLgSvyjbsZdl4IxeX4OdRdo2/bILsDog/QeiCBEY6XyYVD5MgLs
+         PVniMBfasG458Cuy73WkDz3ybI67t7Kj3E0BlX7pibybU/fzS8tBbrjxg1beaIWUuomF
+         BFLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684546396; x=1687138396;
+        d=1e100.net; s=20221208; t=1684546455; x=1687138455;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=UAL5nYCj2vZvRS2Tz7EI1xVwLYus4KEX3uqoy05ZFFI=;
-        b=eMGWnGcrrROGTk6j3sAicopLjGcjobF4KeJSnhvGhHGUp5NOKCXCAHtYaee6MzXY5V
-         /705S+xIHdmAP+H3aU5iRQQXPc93GEo/vOK36QWxmFjy5u9kePqGYoeRvg293lFp2rMn
-         o12cFIw+TowYPQ/5+OTvkA5Cgo24PmfrKrIpa1bvmC++SLa0GJjc81tzISC7/GA94hlI
-         BPoOfHK9dt5ZTmjnktHL1Gqt/nc8tsRrztUgyglTvnOTAVQ0WWmZUUpMnfMSoQ/TKFcW
-         dt4hBtNXMptdUGbKBtUYL+SYPZ5wELPfEef4ahQe4gyS9/TCAlNP6wHz2wSuQyBtpgb2
-         bDBg==
-X-Gm-Message-State: AC+VfDyJSB6eUSljIabhtrSBywRzlODNFAdrlNbEZXom/uBfl/UmW6NX
-	UOy8p/OPbgHMHPEHkFHoQqN16w==
-X-Google-Smtp-Source: ACHHUZ7HHg3UADQtG6fGoZzNDiGfxuM+1bHdrchFAFZ7Orolvob30+32S9e800thyEfVX5X2KbhKPw==
-X-Received: by 2002:ac2:4e4c:0:b0:4f3:ac64:84f5 with SMTP id f12-20020ac24e4c000000b004f3ac6484f5mr1097360lfr.36.1684546396305;
-        Fri, 19 May 2023 18:33:16 -0700 (PDT)
+        bh=pLAGUtWMudiFE1fjRVJz4UPReT3teB4CnEhketxzvG8=;
+        b=YuVgLi8nSqJlNrOGl+8zKOBzcaPM14eBCC8M/C7ysw75AKmGjj6deoZVa8UBRe2O8t
+         tc9Rbu+VJG4lY/i9Bmgi3afV/QGPiK8rFPbM5/7zvfr7GpgIXmRJ0vChrThDaUv6Ma24
+         F5VfpObkNqBuyzpP3vkvkDPaSBAKgGTtD+GaLQrtiTU37NHfBXne8q5DiNajggAsBZOZ
+         BNfTGCTxXpp7Z7QJ57Qj8/hcKs+q482b7LrgzzSeYHkFxkQXx9xF/wfszCPIh//U/BEs
+         o+VzdCeIhorG8YR4sQGCnCwZyVZtvCKlVVvgcIrq0c/1tMeAXxzZoAPk2qdC8ZYNgqgA
+         1AaQ==
+X-Gm-Message-State: AC+VfDy0k+vhekDvA0UcbXA2xo7+XFTK38pdqGOPGmZ7OMMEwl+cqoPL
+	RL2+iO9daAaf9tWUVtkJUAhezQ==
+X-Google-Smtp-Source: ACHHUZ7G6s2ldDT/PJWyP3GIpJqiwJxUgAD9NJmFazGPXUEt5kQ8ak4Spemx2LJsae2R6elvXeTolg==
+X-Received: by 2002:a2e:9ac7:0:b0:2ad:509a:22b8 with SMTP id p7-20020a2e9ac7000000b002ad509a22b8mr1586632ljj.16.1684546454796;
+        Fri, 19 May 2023 18:34:14 -0700 (PDT)
 Received: from ?IPV6:2001:14ba:a0db:1f00::8a5? (dzdqv0yyyyyyyyyyybcwt-3.rev.dnainternet.fi. [2001:14ba:a0db:1f00::8a5])
-        by smtp.gmail.com with ESMTPSA id c26-20020ac2531a000000b004f160559d4asm86296lfh.183.2023.05.19.18.33.15
+        by smtp.gmail.com with ESMTPSA id l21-20020a2e99d5000000b002ad333df101sm73780ljj.133.2023.05.19.18.34.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 May 2023 18:33:15 -0700 (PDT)
-Message-ID: <8ae06612-6108-4cda-79b0-7e26b4b38d24@linaro.org>
-Date: Sat, 20 May 2023 04:33:15 +0300
+        Fri, 19 May 2023 18:34:14 -0700 (PDT)
+Message-ID: <e04ed1b6-958e-ffc8-ea5e-7fe89bb2b9f9@linaro.org>
+Date: Sat, 20 May 2023 04:34:13 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,7 +48,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.0
-Subject: Re: [PATCH v4 09/12] drm/msm: mdss: Add SM6375 support
+Subject: Re: [PATCH v4 10/12] iommu/arm-smmu-qcom: Sort the compatible list
+ alphabetically
 Content-Language: en-GB
 To: Konrad Dybcio <konrad.dybcio@linaro.org>, Rob Clark
  <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
@@ -64,21 +65,19 @@ Cc: Marijn Suijten <marijn.suijten@somainline.org>,
  linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux.dev
 References: <20230411-topic-straitlagoon_mdss-v4-0-68e7e25d70e1@linaro.org>
- <20230411-topic-straitlagoon_mdss-v4-9-68e7e25d70e1@linaro.org>
+ <20230411-topic-straitlagoon_mdss-v4-10-68e7e25d70e1@linaro.org>
 From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20230411-topic-straitlagoon_mdss-v4-9-68e7e25d70e1@linaro.org>
+In-Reply-To: <20230411-topic-straitlagoon_mdss-v4-10-68e7e25d70e1@linaro.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 19/05/2023 20:04, Konrad Dybcio wrote:
-> Add support for MDSS on SM6375.
+> It got broken at some point, fix it up.
 > 
-> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> Reviewed-by: Marijn Suijten <marijn.suijten@somainline.org>
 > Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 > ---
->   drivers/gpu/drm/msm/msm_mdss.c | 1 +
->   1 file changed, 1 insertion(+)
+>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
 
 Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
