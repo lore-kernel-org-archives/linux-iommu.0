@@ -1,34 +1,34 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7D49A29
-	for <iommu@lists.linux.dev>; Sun, 21 May 2023 06:29:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCCD4EA3
+	for <iommu@lists.linux.dev>; Sun, 21 May 2023 08:18:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684650591; x=1716186591;
+  t=1684657122; x=1716193122;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=/Q8Gd2GY1jd4ghoLFlo6kfcmDpadDjTFnWDXPbpPLBI=;
-  b=TGy1hh7l3OsXa5UlQRnWfmOmOAP3nnwkehywJL809CgeHaFiXuYSpfK/
-   W5N1EGt/J+VZ4VMO7qcRGnMySuEks774ya2LgWKO1BxO4R17g9d1crE5E
-   JWLVb3cbxnRNGZVpQ/96IyBBNbCnYmEyDbyRTGnIoDhKsonkd7hx7RE0F
-   j6VXPwfYAO2HnHe1xtdeoCaYrzM8FbvM0jxRz1YL9zreSe9M3hoPyCw1h
-   peMIgpu6HfHfpYPa9z7du56dDsuhsZ+BNudR/9DgdllV/WTc799gUvq6K
-   KK3kyDihVqZi5b5Fts770JbZ0+hBbSh5qcVbqzoCPtadRRZJ3Pov5ydts
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10716"; a="439030609"
+  bh=Nltdqj1+yLFscqIMCZdovelKmFjnXYgPdLIs5/rUMm0=;
+  b=G9KMEfrPKlVADtxlDM+MKT2D2qhHqxYecIcThfRNlAmfg/ha83eskcpN
+   1kiAXQO7vouxxnAkb/Jxfj/w6kXwQn5elyg8W+rKtW15Gk3S2safoBkDP
+   zjl2mXbSWu193SEaVEF04ou5U7J61xDpR4SgtWgit87UIKrYMRb8OKZbb
+   sTQWaDelRfa6mR21J5dkVNHLYiwTJ8nwTRTZKSHcQZVwwYnjqNSz0KKfH
+   mWToebY+i/On8ZPadct9cfA9O6WZ5Ef2XMOUFd0ekBC0WQrGgLRjXtmGy
+   /7p6pwxGZSX5JLWwe6uqCrrUmeaOa7enGhSJL48VuWFWhVajmCHJqSHY9
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10716"; a="350189201"
 X-IronPort-AV: E=Sophos;i="6.00,181,1681196400"; 
-   d="scan'208";a="439030609"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2023 23:29:51 -0700
+   d="scan'208";a="350189201"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2023 01:18:42 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10716"; a="697256587"
+X-IronPort-AV: E=McAfee;i="6600,9927,10716"; a="792903455"
 X-IronPort-AV: E=Sophos;i="6.00,181,1681196400"; 
-   d="scan'208";a="697256587"
+   d="scan'208";a="792903455"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orsmga007.jf.intel.com with ESMTP; 20 May 2023 23:29:46 -0700
-Message-ID: <175e0393-735f-3dde-b086-fb5bc514ddee@linux.intel.com>
-Date: Sun, 21 May 2023 14:29:04 +0800
+  by FMSMGA003.fm.intel.com with ESMTP; 21 May 2023 01:18:39 -0700
+Message-ID: <f92a9558-f202-40fd-7ace-14c40f675dc8@linux.intel.com>
+Date: Sun, 21 May 2023 16:17:57 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,40 +37,49 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.0
-Cc: baolu.lu@linux.intel.com, Robin Murphy <robin.murphy@arm.com>,
- Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
- Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- Yi Liu <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>,
- Dave Jiang <dave.jiang@intel.com>, Tony Luck <tony.luck@intel.com>,
- "Zanussi, Tom" <tom.zanussi@intel.com>, narayan.ranganathan@intel.com
-Subject: Re: [PATCH v6 4/4] dmaengine/idxd: Re-enable kernel workqueue under
- DMA API
+Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
+ Nicolin Chen <nicolinc@nvidia.com>
+Subject: Re: [PATCH v2 01/10] iommu: Have __iommu_probe_device() check for
+ already probed devices
 Content-Language: en-US
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
- Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- dmaengine@vger.kernel.org, vkoul@kernel.org
-References: <20230519203223.2777255-1-jacob.jun.pan@linux.intel.com>
- <20230519203223.2777255-5-jacob.jun.pan@linux.intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, David Woodhouse <dwmw2@infradead.org>,
+ iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Robin Murphy
+ <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
+References: <1-v2-3c3bb7aa6e48+1916b-iommu_probe_jgg@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230519203223.2777255-5-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <1-v2-3c3bb7aa6e48+1916b-iommu_probe_jgg@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 5/20/23 4:32 AM, Jacob Pan wrote:
-> Kernel workqueues were disabled due to flawed use of kernel VA and SVA
-> API. Now that we have the support for attaching PASID to the device's
-> default domain and the ability to reserve global PASIDs from SVA APIs,
-> we can re-enable the kernel work queues and use them under DMA API.
+On 5/20/23 2:42 AM, Jason Gunthorpe wrote:
+> This is a step toward making __iommu_probe_device() self contained.
 > 
-> We also use non-privileged access for in-kernel DMA to be consistent
-> with the IOMMU settings. Consequently, interrupt for user privilege is
-> enabled for work completion IRQs.
+> It should, under proper locking, check if the device is already associated
+> with an iommu driver and resolve parallel probes. All but one of the
+> callers open code this test using two different means, but they all
+> rely on dev->iommu_group.
 > 
-> Link:https://lore.kernel.org/linux-iommu/20210511194726.GP1002214@nvidia.com/
-> Reviewed-by: Dave Jiang<dave.jiang@intel.com>
-> Reviewed-by: Fenghua Yu<fenghua.yu@intel.com>
-> Signed-off-by: Jacob Pan<jacob.jun.pan@linux.intel.com>
+> Currently the bus_iommu_probe()/probe_iommu_group() and
+> probe_acpi_namespace_devices() rejects already probed devices with an
+> unlocked read of dev->iommu_group. The OF and ACPI "replay" functions use
+> device_iommu_mapped() which is the same read without the pointless
+> refcount.
+> 
+> Move this test into __iommu_probe_device() and put it under the
+> iommu_probe_device_lock. The store to dev->iommu_group is in
+> iommu_group_add_device() which is also called under this lock for iommu
+> driver devices, making it properly locked.
+> 
+> The only path that didn't have this check is the hotplug path triggered by
+> BUS_NOTIFY_ADD_DEVICE. The only way to get dev->iommu_group assigned
+> outside the probe path is via iommu_group_add_device(). Today the only
+> caller is VFIO no-iommu which never associates with an iommu driver. Thus
+> adding this additional check is safe.
+> 
+> Reviewed-by: Kevin Tian<kevin.tian@intel.com>
+> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
 
 Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
