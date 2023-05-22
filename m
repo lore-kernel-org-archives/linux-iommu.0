@@ -1,34 +1,34 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A6177F0
-	for <iommu@lists.linux.dev>; Mon, 22 May 2023 02:35:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F00CEA2
+	for <iommu@lists.linux.dev>; Mon, 22 May 2023 02:40:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684722938; x=1716258938;
+  t=1684723237; x=1716259237;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=OBnrxtIzz48wzmeh7S+AaCrm0N9o9EGx5LnaVLGcdVc=;
-  b=XhJDw9EpwWgNITp7Rcbeh4cq1HH4W1iFDmH4zDBzDo4pHK+BB+N3v4UE
-   75lwOKgppPjmoIQxBLDZWMuTjiqVn+o4Xao9yQtvjSWHJ0KnfMBHobQKK
-   9i/rv4u49KPLLY62HiDShMMHPOaXvDPavcAT3gfSX39qWwt30hxruDdEI
-   P1MaYKZmDwcyVwhtaOdsKnK0p576oQchRVs7n0FQ+6A0IzAdVBsYBe1Tz
-   B1RK8Hk4Tc+gT/CMadGw11dZtkn8H0Wqps7g7M37Ze4c3X2KQJBw50Nvr
-   K5BgkQMUapwcaMQTe9td86tJkTq/ntCuN8PCyE6QGhHIifO78pHtEp+35
+  bh=xmzhWPnmJhTOy/cF278AiDEnzQcCzw7OgqRfXxJnCtk=;
+  b=Iq/QE2eQJw5WLvpEzyYAelesAjLaPBK+p+qAqdLII+sSz31GrGTnLtZG
+   0tpcA0vZ++AyeGkbxMTjmHXfairysBd0x8Bpr2iP7ejV2SgF3JHPSU8dq
+   Gm5d8ySh6MkxIKTUgblJVZkQ1mzu6KlA+yXdOxFpI90eJmZ2+tfHDTSFc
+   SXpiVwyCVIJPfYW9J5U9lQl3or/0MpgEN1QAV+hE9z8N9N2wtm1pZdtSI
+   IvogRhuMNd0wbTMU73FFtOlF+ZXJWf0CPgCgpPx8uQxtLvmIw6BQyBlLA
+   OxuMdXYJVm+5g8Uigvi54FPA/MieE5vjVcHTxI1Bz+eji2+jnH66oICfi
    Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10717"; a="342263813"
+X-IronPort-AV: E=McAfee;i="6600,9927,10717"; a="332416862"
 X-IronPort-AV: E=Sophos;i="6.00,183,1681196400"; 
-   d="scan'208";a="342263813"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2023 19:35:37 -0700
+   d="scan'208";a="332416862"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2023 19:40:36 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10717"; a="706359300"
+X-IronPort-AV: E=McAfee;i="6600,9927,10717"; a="773051627"
 X-IronPort-AV: E=Sophos;i="6.00,183,1681196400"; 
-   d="scan'208";a="706359300"
+   d="scan'208";a="773051627"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmsmga007.fm.intel.com with ESMTP; 21 May 2023 19:35:34 -0700
-Message-ID: <8900ceec-ce7f-841e-28c1-1c31bd6edda5@linux.intel.com>
-Date: Mon, 22 May 2023 10:34:53 +0800
+  by fmsmga004.fm.intel.com with ESMTP; 21 May 2023 19:40:33 -0700
+Message-ID: <dc5d6fb3-ed20-73f8-9ece-a4ff0d15998e@linux.intel.com>
+Date: Mon, 22 May 2023 10:39:53 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -39,30 +39,38 @@ User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.11.0
 Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
  Nicolin Chen <nicolinc@nvidia.com>
-Subject: Re: [PATCH v2 09/10] iommu: Split iommu_group_add_device()
+Subject: Re: [PATCH v2 10/10] iommu: Avoid locking/unlocking for
+ iommu_probe_device()
 Content-Language: en-US
 To: Jason Gunthorpe <jgg@nvidia.com>, David Woodhouse <dwmw2@infradead.org>,
  iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
  Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
  "Rafael J. Wysocki" <rafael@kernel.org>, Robin Murphy
  <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
-References: <9-v2-3c3bb7aa6e48+1916b-iommu_probe_jgg@nvidia.com>
+References: <10-v2-3c3bb7aa6e48+1916b-iommu_probe_jgg@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <9-v2-3c3bb7aa6e48+1916b-iommu_probe_jgg@nvidia.com>
+In-Reply-To: <10-v2-3c3bb7aa6e48+1916b-iommu_probe_jgg@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 5/20/23 2:42 AM, Jason Gunthorpe wrote:
-> Move the list_add_tail() for the group_device into the critical region
-> that immediately follows in __iommu_probe_device(). This avoids one case
-> of unlocking and immediately re-locking the group->mutex.
+> Remove the race where a hotplug of a device into an existing group will
+> have the device installed in the group->devices, but not yet attached to
+> the group's current domain.
 > 
-> Consistently make the caller responsible for setting dev->iommu_group,
-> prior patches moved this into iommu_init_device(), make the no-driver path
-> do this in iommu_group_add_device().
+> Move the group attachment logic from iommu_probe_device() and put it under
+> the same mutex that updates the group->devices list so everything is
+> atomic under the lock.
 > 
-> This completes making __iommu_group_free_device() and
-> iommu_group_alloc_device() into pair'd functions.
+> We retain the two step setup of the default domain for the
+> bus_iommu_probe() case solely so that we have a more complete view of the
+> group when creating the default domain for boot time devices. This is not
+> generally necessary with the current code structure but seems to be
+> supporting some odd corner cases like alias RID's and IOMMU_RESV_DIRECT or
+> driver bugs returning different default_domain types for the same group.
+> 
+> During bus_iommu_probe() the group will have a device list but both
+> group->default_domain and group->domain will be NULL.
 > 
 > Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
 
