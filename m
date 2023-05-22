@@ -1,510 +1,334 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5E2D2154AA;
-	Mon, 22 May 2023 16:26:17 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5B316139F;
-	Mon, 22 May 2023 09:27:01 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4399F3F762;
-	Mon, 22 May 2023 09:26:09 -0700 (PDT)
-Message-ID: <b1e53f39-5e0b-a09d-2954-cdc9e8592b67@arm.com>
-Date: Mon, 22 May 2023 17:26:03 +0100
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D1BF12B71
+	for <iommu@lists.linux.dev>; Mon, 22 May 2023 16:44:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1684773869;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=sW2LyuY7Znrs2BmHTDe8qJ3Pf/3rmibkdu2EhgvDatE=;
+	b=eCCZFEM0LnG++tgA65YDIx7jvDzpeTt/I0lDAQ78w0frJoNM1FzWJLMH6wecgpnbie6WCa
+	s66qKkSfupQkgHDumF6Lf7B7j/X0XINnQpkBXVDl9BUCx8GaJ+bkBuzR6J3OliocnuSm9Q
+	6ziaIbXfFSi4JHLW4NPKtrjplx9XshA=
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
+ [209.85.166.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-672-uymp7_XYM5O1C6mcJQWwWw-1; Mon, 22 May 2023 12:44:26 -0400
+X-MC-Unique: uymp7_XYM5O1C6mcJQWwWw-1
+Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-3381796d685so97942095ab.1
+        for <iommu@lists.linux.dev>; Mon, 22 May 2023 09:44:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684773865; x=1687365865;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Q5xLlyF6fbpaSXnlf8tFIuiWzedzwNQSadFf+qnr7H4=;
+        b=HkdKO+Fd7qMw0JBu5/fi1W0E/hDbtKEl3RxGWxVSoCHI00EkLBPEh72YtL9nIfZfEL
+         P6rfv6V6DLzG3h2aW+E0ysD0J0gbiLI1A7OVT7VReawoA+Ed+lAd3PzfTceMv9N3ILcC
+         WeFq09SF0Aj1pkLffAqjT9OVPc6Yy5zXdloQElAwvyZ4lE98ZC72Tf+Ld+Gq4AqsTUuY
+         6WwLAokheeJ5wO/drvUxSYM59BJJ4h4m7QqNPVEiS09vfdMEe6KtQ2N81LB7Y29xDcb3
+         itmZ1Riv+ttwfPBIgyi8T2S2WT/DqZJ5qLMd7fl0U3ybc+uok4egZBSA3cVrGMJqoKk1
+         vX6w==
+X-Gm-Message-State: AC+VfDwJ7oW6rXyrDmbHf7vfrw4ooaz5d2JLXBgXgpEPDIe/3D3//qyK
+	jsNYof93sQRnLVsyzXi7F2VtEuefMVy1vCx2Mf/S9oZXQ/NwoJCK+Um4KF5ZGsvzWteCPV/1lNu
+	LYcL9EPJlDy4uBOHbR7QfHYM=
+X-Received: by 2002:a92:d84f:0:b0:331:53ee:921d with SMTP id h15-20020a92d84f000000b0033153ee921dmr6842579ilq.25.1684773865014;
+        Mon, 22 May 2023 09:44:25 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ4nkKPaRrlcl83u4yYaceR/8FdvHxOyPCDaxRIFntqHUqtQWGVJdMT6fZkK+m9kV4rseONigg==
+X-Received: by 2002:a92:d84f:0:b0:331:53ee:921d with SMTP id h15-20020a92d84f000000b0033153ee921dmr6842571ilq.25.1684773864605;
+        Mon, 22 May 2023 09:44:24 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id q9-20020a6bf209000000b0076ca45ebfc4sm2015043ioh.14.2023.05.22.09.44.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 May 2023 09:44:24 -0700 (PDT)
+Date: Mon, 22 May 2023 10:44:22 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, bugtracker@fischbytes.de,
+ iommu@lists.linux.dev
+Subject: Re: Relaxable RMRR kernel parameter for broken platforms
+Message-ID: <20230522104422.1ae39d78.alex.williamson@redhat.com>
+In-Reply-To: <c36e755a-416a-cf50-57fb-78438a2f61db@arm.com>
+References: <2282218.ElGaqSPkdT@helios-lx>
+	<4ab4966b-48bd-56fc-5078-d5fdddc1613a@linux.intel.com>
+	<1877598.tdWV9SEqCh@helios-lx>
+	<302501af-05a3-9757-d923-602ad9a6d9c9@linux.intel.com>
+	<c36e755a-416a-cf50-57fb-78438a2f61db@arm.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.35; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v9 5/6] iommu/dma: Allow a single FQ in addition to
- per-CPU FQs
-To: Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
- Matthew Rosato <mjrosato@linux.ibm.com>, Will Deacon <will@kernel.org>,
- Wenjia Zhang <wenjia@linux.ibm.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Gerd Bayer <gbayer@linux.ibm.com>, Julian Ruess <julianr@linux.ibm.com>,
- Pierre Morel <pmorel@linux.ibm.com>, Alexandra Winter
- <wintera@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>,
- Vasily Gorbik <gor@linux.ibm.com>, Alexander Gordeev
- <agordeev@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>,
- Sven Schnelle <svens@linux.ibm.com>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
- Alyssa Rosenzweig <alyssa@rosenzweig.io>,
- David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
- Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konrad.dybcio@linaro.org>, Yong Wu <yong.wu@mediatek.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Orson Zhai <orsonzhai@gmail.com>, Baolin Wang
- <baolin.wang@linux.alibaba.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
- Chen-Yu Tsai <wens@csie.org>, Jernej Skrabec <jernej.skrabec@gmail.com>,
- Samuel Holland <samuel@sholland.org>,
- Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy
- <vdumpa@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>,
- Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-arm-msm@vger.kernel.org, linux-mediatek@lists.infradead.org,
- linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
- linux-doc@vger.kernel.org
-References: <20230310-dma_iommu-v9-0-65bb8edd2beb@linux.ibm.com>
- <20230310-dma_iommu-v9-5-65bb8edd2beb@linux.ibm.com>
-Content-Language: en-GB
-In-Reply-To: <20230310-dma_iommu-v9-5-65bb8edd2beb@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On 2023-05-15 10:15, Niklas Schnelle wrote:
-> In some virtualized environments, including s390 paged memory guests,
-> IOTLB flushes are used to update IOMMU shadow tables. Due to this, they
-> are much more expensive than in typical bare metal environments or
-> non-paged s390 guests. In addition they may parallelize more poorly in
-> virtualized environments. This changes the trade off for flushing IOVAs
-> such that minimizing the number of IOTLB flushes trumps any benefit of
-> cheaper queuing operations or increased paralellism.
-> 
-> In this scenario per-CPU flush queues pose several problems. Firstly
-> per-CPU memory is often quite limited prohibiting larger queues.
-> Secondly collecting IOVAs per-CPU but flushing via a global timeout
-> reduces the number of IOVAs flushed for each timeout especially on s390
-> where PCI interrupts may not be bound to a specific CPU.
-> 
-> Let's introduce a single flush queue mode that reuses the same queue
-> logic but only allocates a single global queue. This mode can be
-> selected as a flag bit in a new dma_iommu_options struct which can be
-> modified from its defaults by IOMMU drivers implementing a new
-> ops.tune_dma_iommu() callback. As a first user the s390 IOMMU driver
-> selects the single queue mode if IOTLB flushes are needed on map which
-> indicates shadow table use. With the unchanged small FQ size and
-> timeouts this setting is worse than per-CPU queues but a follow up patch
-> will make the FQ size and timeout variable. Together this allows the
-> common IOVA flushing code to more closely resemble the global flush
-> behavior used on s390's previous internal DMA API implementation.
-> 
-> Link: https://lore.kernel.org/linux-iommu/3e402947-61f9-b7e8-1414-fde006257b6f@arm.com/
-> Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com> #s390
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> ---
->   drivers/iommu/dma-iommu.c  | 163 ++++++++++++++++++++++++++++++++++-----------
->   drivers/iommu/dma-iommu.h  |   4 +-
->   drivers/iommu/iommu.c      |  18 +++--
->   drivers/iommu/s390-iommu.c |  10 +++
->   include/linux/iommu.h      |  21 ++++++
->   5 files changed, 169 insertions(+), 47 deletions(-)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 7a9f0b0bddbd..be4cab6b4fe4 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -49,8 +49,11 @@ struct iommu_dma_cookie {
->   		/* Full allocator for IOMMU_DMA_IOVA_COOKIE */
->   		struct {
->   			struct iova_domain	iovad;
-> -
-> -			struct iova_fq __percpu *fq;	/* Flush queue */
-> +			/* Flush queue */
-> +			union {
-> +				struct iova_fq	*single_fq;
-> +				struct iova_fq	__percpu *percpu_fq;
-> +			};
->   			/* Number of TLB flushes that have been started */
->   			atomic64_t		fq_flush_start_cnt;
->   			/* Number of TLB flushes that have been finished */
-> @@ -67,6 +70,8 @@ struct iommu_dma_cookie {
->   
->   	/* Domain for flush queue callback; NULL if flush queue not in use */
->   	struct iommu_domain		*fq_domain;
-> +	/* Options for dma-iommu use */
-> +	struct dma_iommu_options	options;
->   	struct mutex			mutex;
->   };
->   
-> @@ -152,25 +157,44 @@ static void fq_flush_iotlb(struct iommu_dma_cookie *cookie)
->   	atomic64_inc(&cookie->fq_flush_finish_cnt);
->   }
->   
-> -static void fq_flush_timeout(struct timer_list *t)
-> +static void fq_flush_percpu(struct iommu_dma_cookie *cookie)
->   {
-> -	struct iommu_dma_cookie *cookie = from_timer(cookie, t, fq_timer);
->   	int cpu;
->   
-> -	atomic_set(&cookie->fq_timer_on, 0);
-> -	fq_flush_iotlb(cookie);
-> -
->   	for_each_possible_cpu(cpu) {
->   		unsigned long flags;
->   		struct iova_fq *fq;
->   
-> -		fq = per_cpu_ptr(cookie->fq, cpu);
-> +		fq = per_cpu_ptr(cookie->percpu_fq, cpu);
->   		spin_lock_irqsave(&fq->lock, flags);
->   		fq_ring_free(cookie, fq);
->   		spin_unlock_irqrestore(&fq->lock, flags);
->   	}
->   }
->   
-> +static void fq_flush_single(struct iommu_dma_cookie *cookie)
-> +{
-> +	struct iova_fq *fq = cookie->single_fq;
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&fq->lock, flags);
-> +	fq_ring_free(cookie, fq);
-> +	spin_unlock_irqrestore(&fq->lock, flags)
+On Mon, 22 May 2023 12:42:51 +0100
+Robin Murphy <robin.murphy@arm.com> wrote:
 
-Nit: this should clearly just be a self-locked version of fq_ring_free() 
-that takes fq as an argument, then both the new case and the existing 
-loop body become trivial one-line calls.
+> On 2023-05-16 02:13, Baolu Lu wrote:
+> > On 5/13/23 9:11 PM, bugtracker@fischbytes.de wrote: =20
+> >> On Saturday, May 13, 2023 8:20:40 AM CEST you wrote:
+> >> =20
+> >> =C2=A0> On 5/13/23 2:52 AM, bugtracker@fischbytes.de wrote: =20
+> >> =20
+> >> =C2=A0> > Hi there, =20
+> >> =20
+> >> =C2=A0> > =20
+> >> =20
+> >> =C2=A0> > I came here today to ask if there are any plans regarding th=
+e =20
+> >> =20
+> >> =C2=A0> > implementation of a "relaxed RMRR" kernel parameter to aid u=
+sing  =20
+> >> IOMMU on
+> >> =20
+> >> =C2=A0> > broken platforms such as the ProLiant Series by Hewlett Pack=
+ard =20
+> >> =20
+> >> =C2=A0> > Enterprise. To everyone not aware of the issue; =20
+> >> =20
+> >> =C2=A0> > =20
+> >> =20
+> >> =C2=A0> > Certain vendors that are under the assumption that standards=
+ are  =20
+> >> for jerks
+> >> =20
+> >> =C2=A0> > and Intel's specifications are a loose optional guideline ha=
+ve =20
+> >> =20
+> >> =C2=A0> > implemented RMRR in such a way that every PCI device is mark=
+ed as =20
+> >> =20
+> >> =C2=A0> > reserved and therefore cannot be passed through to a virtual=
+  =20
+> >> machine.
+> >> =20
+> >> =C2=A0> > This issue has been very well documented by some people that=
+ have  =20
+> >> a lot
+> >> =20
+> >> =C2=A0> > more experience than I do at the below linked resource. I wa=
+s  =20
+> >> hoping that
+> >> =20
+> >> =C2=A0> > the kernel devs could implement the Relaxed RMRR option as a=
+n  =20
+> >> optional
+> >> =20
+> >> =C2=A0> > kernel parameter to use on these bugged platforms as that wo=
+uld  =20
+> >> re-enable
+> >> =20
+> >> =C2=A0> > or rather enable a lot of broken servers for the first time =
+ever  =20
+> >> to use
+> >> =20
+> >> =C2=A0> > PCIe Passthrough. I can verify the issue exists on a HPE DL3=
+60e  =20
+> >> Gen8 with
+> >> =20
+> >> =C2=A0> > trying to passthrough a GPU to a KVM/QEMU machine. =20
+> >> =20
+> >> =C2=A0> > =20
+> >> =20
+> >> =C2=A0> > Link to fix: https://github.com/Aterfax/relax-intel-rmrr =20
+> >> =20
+> >> =C2=A0> > =20
+> >> =20
+> >> =C2=A0> > Furthermore, since I am not a developer and wouldn't claim t=
+hat I am =20
+> >> =20
+> >> =C2=A0> > competent enough to decide whether or not implementing this =
+patch  =20
+> >> would
+> >> =20
+> >> =C2=A0> > present an issue in terms of stability or security, I was ho=
+ping  =20
+> >> that you
+> >> =20
+> >> =C2=A0> > could evaluate the situation. I can verify the pre-built pac=
+kages  =20
+> >> for the
+> >> =20
+> >> =C2=A0> > Proxmox Linux environment fix the issue and behave identical=
+ in  =20
+> >> function
+> >> =20
+> >> =C2=A0> > to other systems that ignore RMRR completely, such as VMWare=
+ ESXi. =20
+> >> =20
+> >> =C2=A0> > =20
+> >> =20
+> >> =C2=A0> > Thanks alot in advance, you implementing this patch would re=
+ally  =20
+> >> mean a
+> >> =20
+> >> =C2=A0> > lot, since the hardware manufacturers just don't seem to car=
+e for  =20
+> >> fixing
+> >> =20
+> >> =C2=A0> > up this, erm, mess. =20
+> >> =20
+> >> =C2=A0> =20
+> >> =20
+> >> =C2=A0> The relaxed RMRRs are used for legacy purpose, but it requires=
+ the  =20
+> >> full
+> >> =20
+> >> =C2=A0> range of memory addresses are available after the OS device dr=
+iver  =20
+> >> takes
+> >> =20
+> >> =C2=A0> over the control of the device. =20
+> >> =20
+> >> =C2=A0> =20
+> >> =20
+> >> =C2=A0> Not all RMRRs are of this type and typically the VT-d driver o=
+nly  =20
+> >> allows
+> >> =20
+> >> =C2=A0> those RMRRs for USB and graphic devices as relaxed ones. =20
+> >> =20
+> >> =C2=A0> =20
+> >> =20
+> >> =C2=A0> Are you proposing to add a kernel parameter to allow any RMRR =
+for an =20
+> >> =20
+> >> =C2=A0> arbitrary device to be relaxed, or I didn't get the idea here?=
+ =20
+> >> =20
+> >> =C2=A0> =20
+> >> =20
+> >> =C2=A0> Best regards, =20
+> >> =20
+> >> =C2=A0> baolu =20
+> >>
+> >>
+> >> Correct, the idea here is that, while this observation can only be=20
+> >> made on specific hardware, it more often than not occurs that devices=
+=20
+> >> that definitely shouldn't be (like e.g. GPUs attached to the PCIe=20
+> >> Interface) are marked as reserved by offending firmware. A perfect=20
+> >> solution would of course be to force the hardware vendors to push a=20
+> >> firmware update that resolves the violation of Intel's specifications,=
+=20
+> >> but such a thing doesn't appear to have happened in the past and it's=
+=20
+> >> very unlikely that, let's say Hewlett Packard Enterprise, will ever=20
+> >> release a firmware update for those thousands of broken servers.
+> >>
+> >>
+> >> (Quoted from here;=20
+> >> https://github.com/Aterfax/relax-intel-rmrr/blob/master/deep-dive.md#r=
+mrr---the-monster-in-a-closet ;
+> >>
+> >>
+> >> /Intel anticipated the some will be tempted to misuse the feature as=
+=20
+> >> they warned in the VT-d specification: "RMRR regions are expected to=
+=20
+> >> be used for legacy usages (...). Platform designers should avoid or=20
+> >> limit use of reserved memory regions"./
+> >>
+> >>
+> >> /HP (and probably others) decided to mark every freaking PCI device=20
+> >> memory space as RMRR! Like that, just in case... just that their tools=
+=20
+> >> could potentially maybe monitor these devices while OS agent is not=20
+> >> installed. But wait, there's more! They marked ALL devices as such,=20
+> >> even third party ones physically installed in motherboard's PCI/PCIe=
+=20
+> >> slots!/)
+> >>
+> >>
+> >> Hope this could clarify my inquiry a bit more. =20
+> >=20
+> > Thanks for the information.
+> >=20
+> > This Red Hat white paper explains why RMRR is not supported for device
+> > pass-through.
+> >=20
+> > https://access.redhat.com/sites/default/files/attachments/rmrr-wp1.pdf
+> >=20
+> > I am concerned that adding a kernel option to release all RMRRs blindly
+> > could be harmful to users. Some users may not be aware of how RMRR
+> > impacts device passthrough and may only use the option because they
+> > find it will help them in some use cases where it's impossible without
+> > it. =20
+>=20
+> Agreed, I would be very uncomfortable doing anything at the IOMMU API=20
+> level to override firmware information. Not to mention that doing=20
+> anything at the level of individual drivers is plain impractical when we=
+=20
+> already have at least 4 of these mechanisms (Intel RMRR, AMD IVMD, Arm=20
+> IORT RMR, and now the generic Devicetree binding as well).
+>=20
+> The thing to propose, if anything, would be not messing with the=20
+> reserved regions themselves, but adding another "I know what I'm doing=20
+> and I accept responsibility for picking the pieces up if it breaks"=20
+> control at the VFIO level to permit assignment in spite of them - it=20
+> feels like it's probably somewhere in between allow_unsafe_interrupts=20
+> and noiommu mode in terms of potential impact, so doesn't seem entirely=
+=20
+> unreasonable off the bat.
 
-> +}
-> +
-> +static void fq_flush_timeout(struct timer_list *t)
-> +{
-> +	struct iommu_dma_cookie *cookie = from_timer(cookie, t, fq_timer);
-> +
-> +	atomic_set(&cookie->fq_timer_on, 0);
-> +	fq_flush_iotlb(cookie);
-> +
-> +	if (cookie->options.flags & IOMMU_DMA_OPTS_SINGLE_QUEUE)
-> +		fq_flush_single(cookie);
-> +	else
-> +		fq_flush_percpu(cookie);
-> +}
-> +
->   static void queue_iova(struct iommu_dma_cookie *cookie,
->   		unsigned long pfn, unsigned long pages,
->   		struct list_head *freelist)
-> @@ -188,7 +212,11 @@ static void queue_iova(struct iommu_dma_cookie *cookie,
->   	 */
->   	smp_mb();
->   
-> -	fq = raw_cpu_ptr(cookie->fq);
-> +	if (cookie->options.flags & IOMMU_DMA_OPTS_SINGLE_QUEUE)
-> +		fq = cookie->single_fq;
-> +	else
-> +		fq = raw_cpu_ptr(cookie->percpu_fq);
-> +
->   	spin_lock_irqsave(&fq->lock, flags);
->   
->   	/*
-> @@ -219,58 +247,114 @@ static void queue_iova(struct iommu_dma_cookie *cookie,
->   			  jiffies + msecs_to_jiffies(IOVA_FQ_TIMEOUT));
->   }
->   
-> -static void iommu_dma_free_fq(struct iommu_dma_cookie *cookie)
-> +static void iommu_dma_free_fq_single(struct iova_fq *fq)
-> +{
-> +	int idx;
-> +
-> +	if (!fq)
-> +		return;
-> +	fq_ring_for_each(idx, fq)
-> +		put_pages_list(&fq->entries[idx].freelist);
-> +	vfree(fq);
-> +}
-> +
-> +static void iommu_dma_free_fq_percpu(struct iova_fq __percpu *percpu_fq)
->   {
->   	int cpu, idx;
->   
-> -	if (!cookie->fq)
-> -		return;
-> -
-> -	del_timer_sync(&cookie->fq_timer);
->   	/* The IOVAs will be torn down separately, so just free our queued pages */
->   	for_each_possible_cpu(cpu) {
-> -		struct iova_fq *fq = per_cpu_ptr(cookie->fq, cpu);
-> +		struct iova_fq *fq = per_cpu_ptr(percpu_fq, cpu);
->   
->   		fq_ring_for_each(idx, fq)
->   			put_pages_list(&fq->entries[idx].freelist);
->   	}
->   
-> -	free_percpu(cookie->fq);
-> +	free_percpu(percpu_fq);
-> +}
-> +
-> +static void iommu_dma_free_fq(struct iommu_dma_cookie *cookie)
-> +{
-> +	if (!cookie->fq_domain)
-> +		return;
-> +
-> +	del_timer_sync(&cookie->fq_timer);
-> +	if (cookie->options.flags & IOMMU_DMA_OPTS_SINGLE_QUEUE)
-> +		iommu_dma_free_fq_single(cookie->single_fq);
-> +	else
-> +		iommu_dma_free_fq_percpu(cookie->percpu_fq);
-> +}
-> +
-> +
-> +static void iommu_dma_init_one_fq(struct iova_fq *fq)
-> +{
-> +	int i;
-> +
-> +	fq->head = 0;
-> +	fq->tail = 0;
-> +
-> +	spin_lock_init(&fq->lock);
-> +
-> +	for (i = 0; i < IOVA_FQ_SIZE; i++)
-> +		INIT_LIST_HEAD(&fq->entries[i].freelist);
-> +}
-> +
-> +static int iommu_dma_init_fq_single(struct iommu_dma_cookie *cookie)
-> +{
-> +	struct iova_fq *queue;
-> +
-> +	queue = vzalloc(sizeof(*queue));
-> +	if (!queue)
-> +		return -ENOMEM;
-> +	iommu_dma_init_one_fq(queue);
-> +	cookie->single_fq = queue;
-> +
-> +	return 0;
-> +}
-> +
-> +static int iommu_dma_init_fq_percpu(struct iommu_dma_cookie *cookie)
-> +{
-> +	struct iova_fq __percpu *queue;
-> +	int cpu;
-> +
-> +	queue = alloc_percpu(struct iova_fq);
-> +	if (!queue)
-> +		return -ENOMEM;
-> +
-> +	for_each_possible_cpu(cpu)
-> +		iommu_dma_init_one_fq(per_cpu_ptr(queue, cpu));
-> +	cookie->percpu_fq = queue;
-> +	return 0;
->   }
->   
->   /* sysfs updates are serialised by the mutex of the group owning @domain */
-> -int iommu_dma_init_fq(struct iommu_domain *domain)
-> +int iommu_dma_init_fq(struct device *dev, struct iommu_domain *domain)
->   {
->   	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-> -	struct iova_fq __percpu *queue;
-> -	int i, cpu;
-> +	const struct iommu_ops *ops = dev_iommu_ops(dev);
-> +	int rc;
->   
->   	if (cookie->fq_domain)
->   		return 0;
->   
-> +	if (ops->tune_dma_iommu)
-> +		ops->tune_dma_iommu(dev, &cookie->options);
-> +
->   	atomic64_set(&cookie->fq_flush_start_cnt,  0);
->   	atomic64_set(&cookie->fq_flush_finish_cnt, 0);
->   
-> -	queue = alloc_percpu(struct iova_fq);
-> -	if (!queue) {
-> +	if (cookie->options.flags & IOMMU_DMA_OPTS_SINGLE_QUEUE)
-> +		rc = iommu_dma_init_fq_single(cookie);
-> +	else
-> +		rc = iommu_dma_init_fq_percpu(cookie);
-> +
-> +	if (rc) {
->   		pr_warn("iova flush queue initialization failed\n");
-> -		return -ENOMEM;
-> +		/* fall back to strict mode */
-> +		domain->type = IOMMU_DOMAIN_DMA;
+I'd more likely put this in the same category as the ACS override
+patch, which we've rejected from mainline.
 
-Why move this? It doesn't logically belong to FQ initialisation itself.
+In the case of the unsafe interrupts option, the risk is a malicious
+guest exploiting arbitrary interrupt vectors on the host.  I certainly
+wouldn't suggest this opt-in for a virtual hosting service, but there
+are a good number of use cases where it can be a relatively safe
+assumption that the guest OS has not been subverted.  Unlike RMRR or
+ACS, an exploit of this vector more likely resulted in a denial of
+service rather than a potential for silent data corruption, and had
+there not been an opt-in, it would have broken the majority of x86
+device assignment cases at the time.  It's also telling that this
+option, which is all but irrelevant on any remotely modern x86 system
+now, still appears with some regularity in vfio related guides, forums,
+and bug logs.
 
-> +		return rc;
->   	}
->   
-> -	for_each_possible_cpu(cpu) {
-> -		struct iova_fq *fq = per_cpu_ptr(queue, cpu);
-> -
-> -		fq->head = 0;
-> -		fq->tail = 0;
-> -
-> -		spin_lock_init(&fq->lock);
-> -
-> -		for (i = 0; i < IOVA_FQ_SIZE; i++)
-> -			INIT_LIST_HEAD(&fq->entries[i].freelist);
-> -	}
-> -
-> -	cookie->fq = queue;
-> -
->   	timer_setup(&cookie->fq_timer, fq_flush_timeout, 0);
->   	atomic_set(&cookie->fq_timer_on, 0);
->   	/*
-> @@ -297,6 +381,7 @@ static struct iommu_dma_cookie *cookie_alloc(enum iommu_dma_cookie_type type)
->   	if (cookie) {
->   		INIT_LIST_HEAD(&cookie->msi_page_list);
->   		cookie->type = type;
-> +		cookie->options.flags = IOMMU_DMA_OPTS_PER_CPU_QUEUE;
->   	}
->   	return cookie;
->   }
-> @@ -585,9 +670,9 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
->   	if (ret)
->   		goto done_unlock;
->   
-> -	/* If the FQ fails we can simply fall back to strict mode */
-> -	if (domain->type == IOMMU_DOMAIN_DMA_FQ && iommu_dma_init_fq(domain))
-> -		domain->type = IOMMU_DOMAIN_DMA;
-> +	/* If the FQ fails we fall back to strict mode */
-> +	if (domain->type == IOMMU_DOMAIN_DMA_FQ)
-> +		iommu_dma_init_fq(dev, domain);
->   
->   	ret = iova_reserve_iommu_regions(dev, domain);
->   
-> diff --git a/drivers/iommu/dma-iommu.h b/drivers/iommu/dma-iommu.h
-> index 942790009292..4f727ab56d3c 100644
-> --- a/drivers/iommu/dma-iommu.h
-> +++ b/drivers/iommu/dma-iommu.h
-> @@ -12,7 +12,7 @@
->   int iommu_get_dma_cookie(struct iommu_domain *domain);
->   void iommu_put_dma_cookie(struct iommu_domain *domain);
->   
-> -int iommu_dma_init_fq(struct iommu_domain *domain);
-> +int iommu_dma_init_fq(struct device *dev, struct iommu_domain *domain);
->   
->   void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
->   
-> @@ -20,7 +20,7 @@ extern bool iommu_dma_forcedac;
->   
->   #else /* CONFIG_IOMMU_DMA */
->   
-> -static inline int iommu_dma_init_fq(struct iommu_domain *domain)
-> +static inline int iommu_dma_init_fq(struct device *dev, struct iommu_domain *domain)
->   {
->   	return -EINVAL;
->   }
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 51f816367205..e2334ca480dd 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -2967,10 +2967,19 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
->   		return -EINVAL;
->   
->   	mutex_lock(&group->mutex);
-> +	/* Ensure that device exists. */
-> +	if (list_empty(&group->devices)) {
-> +		mutex_unlock(&group->mutex);
-> +		return -EPERM;
-> +	}
-> +
-> +	grp_dev = list_first_entry(&group->devices, struct group_device, list);
-> +	dev = grp_dev->dev;
-> +
->   	/* We can bring up a flush queue without tearing down the domain. */
->   	if (req_type == IOMMU_DOMAIN_DMA_FQ &&
->   	    group->default_domain->type == IOMMU_DOMAIN_DMA) {
-> -		ret = iommu_dma_init_fq(group->default_domain);
-> +		ret = iommu_dma_init_fq(dev, group->default_domain);
->   		if (!ret)
->   			group->default_domain->type = IOMMU_DOMAIN_DMA_FQ;
->   		mutex_unlock(&group->mutex);
-> @@ -2978,15 +2987,12 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
->   		return ret ?: count;
->   	}
->   
-> -	/* Otherwise, ensure that device exists and no driver is bound. */
-> -	if (list_empty(&group->devices) || group->owner_cnt) {
-> +	/* Otherwise, ensure that no driver is bound. */
-> +	if (group->owner_cnt) {
->   		mutex_unlock(&group->mutex);
->   		return -EPERM;
->   	}
->   
-> -	grp_dev = list_first_entry(&group->devices, struct group_device, list);
-> -	dev = grp_dev->dev;
-> -
->   	ret = iommu_change_dev_def_domain(group, dev, req_type);
->   
->   	/*
-> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-> index 161b0be5aba6..65dd469ad524 100644
-> --- a/drivers/iommu/s390-iommu.c
-> +++ b/drivers/iommu/s390-iommu.c
-> @@ -451,6 +451,15 @@ static void s390_iommu_get_resv_regions(struct device *dev,
->   	}
->   }
->   
-> +static void s390_iommu_tune_dma_iommu(struct device *dev,
-> +					     struct dma_iommu_options *options)
-> +{
-> +	struct zpci_dev *zdev = to_zpci_dev(dev);
-> +
-> +	if (zdev->tlb_refresh)
-> +		options->flags |= IOMMU_DMA_OPTS_SINGLE_QUEUE;
-> +}
-> +
->   static struct iommu_device *s390_iommu_probe_device(struct device *dev)
->   {
->   	struct zpci_dev *zdev;
-> @@ -793,6 +802,7 @@ static const struct iommu_ops s390_iommu_ops = {
->   	.device_group = generic_device_group,
->   	.pgsize_bitmap = SZ_4K,
->   	.get_resv_regions = s390_iommu_get_resv_regions,
-> +	.tune_dma_iommu = s390_iommu_tune_dma_iommu,
->   	.default_domain_ops = &(const struct iommu_domain_ops) {
->   		.attach_dev	= s390_iommu_attach_device,
->   		.map_pages	= s390_iommu_map_pages,
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 58891eddc2c4..3649a17256a5 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -219,6 +219,21 @@ struct iommu_iotlb_gather {
->   	bool			queued;
->   };
->   
-> +/**
-> + * struct dma_iommu_options - Options for dma-iommu
-> + *
-> + * @flags: Flag bits for enabling/disabling dma-iommu settings
-> + *
-> + * This structure is intended to provide IOMMU drivers a way to influence the
-> + * behavior of the dma-iommu DMA API implementation. This allows optimizing for
-> + * example for a virtualized environment with slow IOTLB flushes.
-> + */
-> +struct dma_iommu_options {
-> +#define IOMMU_DMA_OPTS_PER_CPU_QUEUE	(0L << 0)
-> +#define IOMMU_DMA_OPTS_SINGLE_QUEUE	(1L << 0)
-> +	u64	flags;
-> +};
+OTOH, noiommu is an entirely different beast.  The argument for noiommu
+is that certain environments are making use of direct DMA programming
+of devices that are not protected by an IOMMU anyway, access to
+/dev/mem and pci-sysfs enables this given sufficient privileges.  The
+gap that vfio noiommu filled was MSI interrupts.  We'd generally like
+these use cases to move to proper IOMMU protected vfio environments
+anyway, so the goal here was to make that transition easier by waving a
+carrot for making use of the vfio device interface with MSI interrupts
+rather than extending uio-pci-generic beyond what it intended to
+support.  Importantly, vfio noiommu taints the kernel (introducing
+logging of these use cases), requires access using a different device
+file (requiring userspace, as well as kernel opt-in), and provides no
+DMA translation (ruling out more common use cases like VM assignment).
 
-I think for now this can just use a bit in dev_iommu to indicate that 
-the device will prefer a global flush queue; s390 can set that in 
-.probe_device, then iommu_dma_init_domain() can propagate it to an 
-equivalent flag in the cookie (possibly even a new cookie type?) that 
-iommu_dma_init_fq() can then consume. Then just make the s390 parameters 
-from patch #6 the standard parameters for a global queue.
+Much like what appears to be the history of this patch, the ACS
+override patch has lived a life beyond its initial mainline proposal and
+rejection, it's even been included in a few downstream kernel builds,
+but none of the mainstream distros AFAIK.  My observations of its use
+cases in various communities suggest to me that it was the right choice
+to reject it from mainline.  Like the unsafe interrupt option above,
+making the option sound scary or logging warning in dmesg does not
+ultimately have much affect in an average user's choice to enable these
+sorts of options.  On the contrary, we might speculate that had such
+workarounds been so readily available, would we have as many ACS quirks
+as we do now, would vendors have moved away from RMRRs?
 
-Thanks,
-Robin.
+It's unfortunate that there are generations of server lines that have
+such a barrier to these sorts of use cases, but ultimately we still
+cannot vouch that it's safe to ignore RMRR requirements imposed by the
+firmware in these systems.  Including such options in mainline provides
+a certain degree of validity in these workarounds that we cannot
+support.  Therefore, I'd not be in favor of a user option to ignore a
+firmware directive like this in the mainline kernel, especially to
+enable a system that's potentially already a decade old.  Thanks,
 
-> +
->   /**
->    * struct iommu_ops - iommu ops and capabilities
->    * @capable: check capability
-> @@ -242,6 +257,9 @@ struct iommu_iotlb_gather {
->    *		- IOMMU_DOMAIN_IDENTITY: must use an identity domain
->    *		- IOMMU_DOMAIN_DMA: must use a dma domain
->    *		- 0: use the default setting
-> + * @tune_dma_iommu: Allows the IOMMU driver to modify the default
-> + *		    options of the dma-iommu layer for a specific
-> + *		    device.
->    * @default_domain_ops: the default ops for domains
->    * @remove_dev_pasid: Remove any translation configurations of a specific
->    *                    pasid, so that any DMA transactions with this pasid
-> @@ -278,6 +296,9 @@ struct iommu_ops {
->   	int (*def_domain_type)(struct device *dev);
->   	void (*remove_dev_pasid)(struct device *dev, ioasid_t pasid);
->   
-> +	void (*tune_dma_iommu)(struct device *dev,
-> +			       struct dma_iommu_options *options);
-> +
->   	const struct iommu_domain_ops *default_domain_ops;
->   	unsigned long pgsize_bitmap;
->   	struct module *owner;
-> 
+Alex
+
