@@ -1,30 +1,67 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D340514AA9
-	for <iommu@lists.linux.dev>; Mon, 22 May 2023 15:39:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 359491427A;
+	Mon, 22 May 2023 16:10:05 +0000 (UTC)
 Received: from 8bytes.org (p200300c2773e310086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:773e:3100:86ad:4f9d:2505:dd0d])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id C828E2434D7;
-	Mon, 22 May 2023 17:39:13 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 0771D2434D7;
+	Mon, 22 May 2023 18:10:03 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1684769953;
-	bh=n+8sDh7ZCWBHnADUqNRq+iXfL3Ttwr2xopem+ZmkQ6o=;
+	s=default; t=1684771803;
+	bh=IEYacWChjS8pqW2eXYZUvSMLj48VE4JauxQLZBxYtqA=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=iG6jVFsxIJGn3t1cYdEx2mIRkvXP/AfeWAYHCqNw3t9EvR5EnEfyPJ/huAPw3PrfT
-	 iACKC+nCWneSG5S3TcDVojotJit+ytT2ulc6y0gHn3oHqakubAoT/X1ku7XQchNAeW
-	 OYgwXf8WaAWbK6E9L9cRxLVKsn+wUWlqEZO560asedvilplL7FLqgTKzmUSddF4QTD
-	 DsjR+uFVaH+MK5vrWAn7zBI6OtcYK8yePt1iv5yQYefJ0QtyadcNHDEeamj3Pq74Hh
-	 NWGziWUpAA3zIx36SjRNAKdV4n96FhWP7IZJg0lmPMI+5PedHvfHHu2ttHAenaKW1E
-	 RWwzqCqtuU1YQ==
-Date: Mon, 22 May 2023 17:39:12 +0200
+	b=dsW1m+Y4pRxReMA3YAV1dR7xSpCrEFNRWPSoWZvvgL9y9t+B8nkXGdS5pIZgE/Mxc
+	 jDkmtQgdl3dVqv6n3e4yCwCoQwKfP4wgVU7uooQ8pyt47lwv0bvnKcPDbqciBPuGzz
+	 QflQuvzLHWoxNs4RdcEri8p72xuZLmU5YY/fJNWHmC0sEkQSGm+KOysLl+ctiUYkJ4
+	 7Qlh+elGqPq5y9QZv4ABmp2fOJsDSjiUh+6IV6ASZ54RN9zWxU/tU36JULF7zRzETM
+	 EVBM6Dq0OgEW2aYEblrwJsY5LuCTfZP55UCddCCkbSfFJKvpE/vQhuL22KcZwPL64w
+	 mMOPCB+3NQIhg==
+Date: Mon, 22 May 2023 18:10:01 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: jgg@nvidia.com, will@kernel.org, schnelle@linux.ibm.com,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/2] iommu: Make flush queues a proper capability
-Message-ID: <ZGuMoMec48zUeYkH@8bytes.org>
-References: <cover.1683233867.git.robin.murphy@arm.com>
+To: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>, Will Deacon <will@kernel.org>,
+	Wenjia Zhang <wenjia@linux.ibm.com>,
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Gerd Bayer <gbayer@linux.ibm.com>,
+	Julian Ruess <julianr@linux.ibm.com>,
+	Pierre Morel <pmorel@linux.ibm.com>,
+	Alexandra Winter <wintera@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Yong Wu <yong.wu@mediatek.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Krishna Reddy <vdumpa@nvidia.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, asahi@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+	linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
+	linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCH v9 6/6] iommu/dma: Make flush queue sizes and timeout
+ driver configurable
+Message-ID: <ZGuT2R42SWFHmklu@8bytes.org>
+References: <20230310-dma_iommu-v9-0-65bb8edd2beb@linux.ibm.com>
+ <20230310-dma_iommu-v9-6-65bb8edd2beb@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -33,11 +70,20 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1683233867.git.robin.murphy@arm.com>
+In-Reply-To: <20230310-dma_iommu-v9-6-65bb8edd2beb@linux.ibm.com>
 
-On Thu, May 04, 2023 at 10:10:54PM +0100, Robin Murphy wrote:
-> Robin Murphy (2):
->   iommu: Add a capability for flush queue support
->   iommu: Use flush queue capability
+On Mon, May 15, 2023 at 11:15:56AM +0200, Niklas Schnelle wrote:
+> In the s390 IOMMU driver a large fixed queue size and timeout is then
+> set together with single queue mode bringing its performance on s390
+> paged memory guests on par with the previous s390 specific DMA API
+> implementation.
 
-Applied, thanks Robin.
+Hmm, the right flush-queue size and timeout settings are more a function
+of the endpoint device and device driver than of the iommu driver, no? I
+think something like this could also help solving the recently reported
+scalability problems in the fq-code, if done right.
+
+Regards,
+
+	Joerg
+
