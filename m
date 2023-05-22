@@ -1,97 +1,131 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86A0F10F4
-	for <iommu@lists.linux.dev>; Mon, 22 May 2023 07:55:24 +0000 (UTC)
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 1897E13C2DA;
-	Mon, 22 May 2023 09:55:21 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1684742122; bh=+ecvThwVNIF+3jNDHwnBtc4nIfmBUPqhUAXqbUCfwlk=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=w6Ocr72GrnkWKmosOG9bJ8iIBfigFQC9bv9xRTioGZ2CSHlV1/RuH3eE+gUvmnvfs
-	 nupeVvjngA4t2geGD3q69X34CzBWx4qAmKkpMuMnSFHVYByJ5zbwogqgIPUcoeZdqa
-	 RqNtDRI+JKpfH9XtQLhgST01DHruuB5GwQejM4Ac7KHF3ZawwFK/uucm8u7sEHcsSb
-	 n5PuaYK1sl0TjJmngp2og1zrSsW9f7hvCWGHGBD5YJUn25qj/Sh4f0J4vGA0wTbHg3
-	 1jgpWjjEIZaxcs9YzhpV6ZMzjLM+wn23DgInohFErWKjQU2sYMZYfNvHQ7zx6gSJuh
-	 Mz/r0JnFTJi2w==
-Date: Mon, 22 May 2023 09:54:08 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Marek =?UTF-8?B?TWFyY3p5a293c2tpLUfDs3JlY2tp?=
- <marmarek@invisiblethingslab.com>
-Cc: Christoph Hellwig <hch@lst.de>, Juergen Gross <jgross@suse.com>, Stefano
- Stabellini <sstabellini@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen
- <dave.hansen@linux.intel.com>, x86@kernel.org, "H. Peter Anvin"
- <hpa@zytor.com>, Ben Skeggs <bskeggs@redhat.com>, Karol Herbst
- <kherbst@redhat.com>, Lyude Paul <lyude@redhat.com>,
- xen-devel@lists.xenproject.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, nouveau@lists.freedesktop.org
-Subject: Re: [PATCH 2/4] x86: always initialize xen-swiotlb when
- xen-pcifront is enabling
-Message-ID: <20230522095408.02874498@meshulam.tesarici.cz>
-In-Reply-To: <ZGdLErBzi9MANL3i@mail-itl>
-References: <20230518134253.909623-1-hch@lst.de>
-	<20230518134253.909623-3-hch@lst.de>
-	<ZGZr/xgbUmVqpOpN@mail-itl>
-	<20230519040405.GA10818@lst.de>
-	<ZGdLErBzi9MANL3i@mail-itl>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56C9FA31
+	for <iommu@lists.linux.dev>; Mon, 22 May 2023 08:36:22 +0000 (UTC)
+Received: from pps.filterd (m0353722.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34M7BCRf014700;
+	Mon, 22 May 2023 08:35:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=5ROhQBkArFep+UPB9mqu4wVSvS6XVSUEou8A5Q3oEu4=;
+ b=hoAhjWZUYBGB2tlR/O6LDUBgSgkiV1cAexCofKUQqWJvZ/55YegucyINmZCg+h+32lsP
+ z15QJzCEeFFOKQYi+IuF+jJlbN2Yj3z631n1NMcDziXdBsXC43Pp+waF845ciOMdAV28
+ nPd7p1i5ib3+0Y1WJSdXaUeiIETm08glJa5c9J/7vVlfPoYpz6XZTn5/C5dNFia1aL8C
+ jVx9fQ31nRFWRx6JIizeVuHrOTlhJdlwNe4w7Y5uFJlrYf1uJNjHotKg+QFmJhs4ckK0
+ 2oyvFVACoJ9SZEIJEt9qPN1AoEF+u//X45hnvvCvUrj2xPAqoqw65xMXUHAgO8CPessa UQ== 
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qqgbq5ny7-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 22 May 2023 08:35:55 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+	by ppma04fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 34M6Xa1V027512;
+	Mon, 22 May 2023 08:35:53 GMT
+Received: from smtprelay02.fra02v.mail.ibm.com ([9.218.2.226])
+	by ppma04fra.de.ibm.com (PPS) with ESMTPS id 3qppcf0qdk-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 22 May 2023 08:35:53 +0000
+Received: from smtpav01.fra02v.mail.ibm.com (smtpav01.fra02v.mail.ibm.com [10.20.54.100])
+	by smtprelay02.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 34M8Zoed7406294
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 22 May 2023 08:35:50 GMT
+Received: from smtpav01.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 8400C20043;
+	Mon, 22 May 2023 08:35:50 +0000 (GMT)
+Received: from smtpav01.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id BAB7320040;
+	Mon, 22 May 2023 08:35:49 +0000 (GMT)
+Received: from [9.171.23.45] (unknown [9.171.23.45])
+	by smtpav01.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Mon, 22 May 2023 08:35:49 +0000 (GMT)
+Message-ID: <8c00a455c0ff008634aad331d5d85584697f02ff.camel@linux.ibm.com>
+Subject: Re: [PATCH v2 04/10] iommu: Simplify the
+ __iommu_group_remove_device() flow
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>,
+        David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
+        Joerg Roedel
+ <joro@8bytes.org>, Len Brown <lenb@kernel.org>,
+        linux-acpi@vger.kernel.org, "Rafael J. Wysocki" <rafael@kernel.org>,
+        Robin Murphy
+ <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
+Cc: Kevin Tian <kevin.tian@intel.com>, Nicolin Chen <nicolinc@nvidia.com>
+Date: Mon, 22 May 2023 10:35:49 +0200
+In-Reply-To: <4-v2-3c3bb7aa6e48+1916b-iommu_probe_jgg@nvidia.com>
+References: <4-v2-3c3bb7aa6e48+1916b-iommu_probe_jgg@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.48.1 (3.48.1-1.fc38) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/4FW=_VIffR_gzuETX7eJ3Lw";
- protocol="application/pgp-signature"; micalg=pgp-sha512
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: nQp6YTRyXjfQ4VJNyzcy_PAXxT0P4p_m
+X-Proofpoint-ORIG-GUID: nQp6YTRyXjfQ4VJNyzcy_PAXxT0P4p_m
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-05-22_05,2023-05-17_02,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 spamscore=0
+ phishscore=0 clxscore=1011 impostorscore=0 adultscore=0 mlxlogscore=999
+ lowpriorityscore=0 mlxscore=0 malwarescore=0 suspectscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2304280000 definitions=main-2305220068
 
---Sig_/4FW=_VIffR_gzuETX7eJ3Lw
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, 19 May 2023 12:10:26 +0200
-Marek Marczykowski-G=C3=B3recki <marmarek@invisiblethingslab.com> wrote:
-
-> On Fri, May 19, 2023 at 06:04:05AM +0200, Christoph Hellwig wrote:
-> > On Thu, May 18, 2023 at 08:18:39PM +0200, Marek Marczykowski-G=C3=B3rec=
-ki wrote: =20
-> > > On Thu, May 18, 2023 at 03:42:51PM +0200, Christoph Hellwig wrote: =20
-> > > > Remove the dangerous late initialization of xen-swiotlb in
-> > > > pci_xen_swiotlb_init_late and instead just always initialize
-> > > > xen-swiotlb in the boot code if CONFIG_XEN_PCIDEV_FRONTEND is enabl=
-ed.
-> > > >=20
-> > > > Signed-off-by: Christoph Hellwig <hch@lst.de> =20
-> > >=20
-> > > Doesn't it mean all the PV guests will basically waste 64MB of RAM
-> > > by default each if they don't really have PCI devices? =20
-> >=20
-> > If CONFIG_XEN_PCIDEV_FRONTEND is enabled, and the kernel's isn't booted
-> > with swiotlb=3Dnoforce, yes. =20
+On Fri, 2023-05-19 at 15:42 -0300, Jason Gunthorpe wrote:
+> Instead of returning the struct group_device and then later freeing it, d=
+o
+> the entire free under the group->mutex and defer only putting the
+> iommu_group.
 >=20
-> That's "a bit" unfortunate, since that might be significant part of the
-> VM memory, or if you have a lot of VMs, a significant part of the host
-> memory - it quickly adds up.
+> It is safe to remove the sysfs_links and free memory while holding that
+> mutex.
+>=20
+> Move the sanity assert of the group status into
+> __iommu_group_free_device().
+>=20
+> The next patch will improve upon this and consolidate the group put and
+> the mutex into __iommu_group_remove_device().
+>=20
+> __iommu_group_free_device() is close to being the paired undo of
+> iommu_group_add_device(), following patches will improve on that.
+>=20
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/iommu.c | 83 ++++++++++++++++++++-----------------------
+>  1 file changed, 39 insertions(+), 44 deletions(-)
+>=20
+---8<---
+> +
+> +/*
+> + * Remove the iommu_group from the struct device. The attached group mus=
+t be put
+> + * by the caller after releaseing the group->mutex.
+> + */
+> +static void __iommu_group_remove_device(struct device *dev)
+> +{
+> +	struct iommu_group *group =3D dev->iommu_group;
+> +	struct group_device *device;
+> +
+> +	lockdep_assert_held(&group->mutex);
+> +	for_each_group_device(group, device) {
+> +		if (device->dev !=3D dev)
+> +			continue;
+> +
+> +		list_del(&device->list);
 
-I wonder if dynamic swiotlb allocation might also help with this...
+for_each_group_device() uses list_for_each_entry() but here you are
+deleting from the list, don't we need a ..._safe() variant then?
 
-Petr T
-
---Sig_/4FW=_VIffR_gzuETX7eJ3Lw
-Content-Type: application/pgp-signature
-Content-Description: Digitální podpis OpenPGP
-
------BEGIN PGP SIGNATURE-----
-
-iHUEARYKAB0WIQQR36mnYrQDNXFnn8/Pem5ZkryZSgUCZGsfoQAKCRDPem5ZkryZ
-SqVBAP0bQzVwflJ+O+7tLcfRm7IETeA07OEHXqZhmGqGL5eX8QD9HjbTN1pnVQK5
-45KGLgOriHcE1PpDjMqZrgg7MRy/3gY=
-=o6/4
------END PGP SIGNATURE-----
-
---Sig_/4FW=_VIffR_gzuETX7eJ3Lw--
+> +		__iommu_group_free_device(group, device);
+> +		/* Caller must put iommu_group */
+> +		return;
+> +	}
+> +	WARN(true, "Corrupted iommu_group device_list");
+>  }
+>=20
+---8<---
