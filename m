@@ -1,334 +1,198 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D1BF12B71
-	for <iommu@lists.linux.dev>; Mon, 22 May 2023 16:44:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684773869;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=sW2LyuY7Znrs2BmHTDe8qJ3Pf/3rmibkdu2EhgvDatE=;
-	b=eCCZFEM0LnG++tgA65YDIx7jvDzpeTt/I0lDAQ78w0frJoNM1FzWJLMH6wecgpnbie6WCa
-	s66qKkSfupQkgHDumF6Lf7B7j/X0XINnQpkBXVDl9BUCx8GaJ+bkBuzR6J3OliocnuSm9Q
-	6ziaIbXfFSi4JHLW4NPKtrjplx9XshA=
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
- [209.85.166.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-672-uymp7_XYM5O1C6mcJQWwWw-1; Mon, 22 May 2023 12:44:26 -0400
-X-MC-Unique: uymp7_XYM5O1C6mcJQWwWw-1
-Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-3381796d685so97942095ab.1
-        for <iommu@lists.linux.dev>; Mon, 22 May 2023 09:44:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684773865; x=1687365865;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Q5xLlyF6fbpaSXnlf8tFIuiWzedzwNQSadFf+qnr7H4=;
-        b=HkdKO+Fd7qMw0JBu5/fi1W0E/hDbtKEl3RxGWxVSoCHI00EkLBPEh72YtL9nIfZfEL
-         P6rfv6V6DLzG3h2aW+E0ysD0J0gbiLI1A7OVT7VReawoA+Ed+lAd3PzfTceMv9N3ILcC
-         WeFq09SF0Aj1pkLffAqjT9OVPc6Yy5zXdloQElAwvyZ4lE98ZC72Tf+Ld+Gq4AqsTUuY
-         6WwLAokheeJ5wO/drvUxSYM59BJJ4h4m7QqNPVEiS09vfdMEe6KtQ2N81LB7Y29xDcb3
-         itmZ1Riv+ttwfPBIgyi8T2S2WT/DqZJ5qLMd7fl0U3ybc+uok4egZBSA3cVrGMJqoKk1
-         vX6w==
-X-Gm-Message-State: AC+VfDwJ7oW6rXyrDmbHf7vfrw4ooaz5d2JLXBgXgpEPDIe/3D3//qyK
-	jsNYof93sQRnLVsyzXi7F2VtEuefMVy1vCx2Mf/S9oZXQ/NwoJCK+Um4KF5ZGsvzWteCPV/1lNu
-	LYcL9EPJlDy4uBOHbR7QfHYM=
-X-Received: by 2002:a92:d84f:0:b0:331:53ee:921d with SMTP id h15-20020a92d84f000000b0033153ee921dmr6842579ilq.25.1684773865014;
-        Mon, 22 May 2023 09:44:25 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4nkKPaRrlcl83u4yYaceR/8FdvHxOyPCDaxRIFntqHUqtQWGVJdMT6fZkK+m9kV4rseONigg==
-X-Received: by 2002:a92:d84f:0:b0:331:53ee:921d with SMTP id h15-20020a92d84f000000b0033153ee921dmr6842571ilq.25.1684773864605;
-        Mon, 22 May 2023 09:44:24 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id q9-20020a6bf209000000b0076ca45ebfc4sm2015043ioh.14.2023.05.22.09.44.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 May 2023 09:44:24 -0700 (PDT)
-Date: Mon, 22 May 2023 10:44:22 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, bugtracker@fischbytes.de,
- iommu@lists.linux.dev
-Subject: Re: Relaxable RMRR kernel parameter for broken platforms
-Message-ID: <20230522104422.1ae39d78.alex.williamson@redhat.com>
-In-Reply-To: <c36e755a-416a-cf50-57fb-78438a2f61db@arm.com>
-References: <2282218.ElGaqSPkdT@helios-lx>
-	<4ab4966b-48bd-56fc-5078-d5fdddc1613a@linux.intel.com>
-	<1877598.tdWV9SEqCh@helios-lx>
-	<302501af-05a3-9757-d923-602ad9a6d9c9@linux.intel.com>
-	<c36e755a-416a-cf50-57fb-78438a2f61db@arm.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.35; x86_64-redhat-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9E9179D2
+	for <iommu@lists.linux.dev>; Mon, 22 May 2023 17:02:30 +0000 (UTC)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34MFjLM2007431;
+	Mon, 22 May 2023 17:02:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2023-03-30;
+ bh=4kWPUE145LQv61HtbuOClkkxqgdB6ygNDagzVxQbSqs=;
+ b=tS7SBuWvLyxm9yu5edG8FHhK1t2xWkafr8UP8nxHOjTSJxi61GB0Q0Xl06E2WcIF+NGX
+ MY6ygp2tJBapZvDOfPEO1WrnwBLbWiQd7zA55CT7Bol8JPOPjxD7SpsNj9M0GJOLH8qs
+ B7RMtQbbPx/2Xp0b+DUMV8WrURaP9Y1bvmm3CPGGV2gmgG1vKtAhGbNM7GTzZE/1PQOH
+ 403IJb6Zqr1liELaKVxNz0oNKL4ez0wbHT5Q3ac/drcxNcVkSxhkVojjdZSNpx7CleqB
+ SvpTRPUkk47r5mSgSe1d95lH20hvyCPDB0Al3Cgu6Ay5s2dWKfR9BtJmzvMSP04pZjcY xw== 
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3qpp3qk873-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 22 May 2023 17:02:25 +0000
+Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 34MG5MGC012966;
+	Mon, 22 May 2023 17:02:24 GMT
+Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2044.outbound.protection.outlook.com [104.47.66.44])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3qqk7dqkfk-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 22 May 2023 17:02:24 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iqeg012+/nVk3kOapvgDZUsyF7cgGiTaemb3g4zemNW9Qp3XkIfpd3+FeX3jWn9PqI4YBqXXrvtskSsp09MDTyG2xuNRuddvEDGQ0LOMTb1rtgak9AfHPEXG0BWnPbhRLIzTR626o8yCwP8y3YFQN9cGxvxWOOLUersuaRe3/PioBbZ4+sZsN2v5CIKawuhus1xtJRlENRRQzBOO8cCnlOOm59mi/HRxowzuRNIRpeF69quLKWBsIWsxpQhlkI3TNFwqi6O2A6mzNiKIAt0SzSGAKX6aPot7dQ/Hvh9TONFI14dRTPOeTxgTCIcu0epS3sQgte9Oiku8TCLjnBN6zg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4kWPUE145LQv61HtbuOClkkxqgdB6ygNDagzVxQbSqs=;
+ b=jPSM4D45xiy8lho45PO6XDcD8Ms4hxIytviXAgPncXScyGxKmzBlyH5n1yEYqVs4JmIIwjUEd6w7V7/ZbXub+Gle6U9BUJhbpdnI5+TN31VoG2sS7TeTvshzYwNqjHWVecJtDQPCH63/ICYIu4suKnanyoh1ZXRwAb4GCkf1WIs0EpNHGGz1y+LIkBmhKhz2wEoTsOE0XA9AB5x48uYeQQp7UeBPJJV2iL3zxIhFqGOmi+nzrNgnwh5fvy7MZfyGb/ot5o3khnBNCK1l8Gr/A9rAdR6wnWH2GVh5TBz6g3Sioiq3ZYitPKBYDg+TLCKbspKkB5jMbsn76VFcs4e6Xg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4kWPUE145LQv61HtbuOClkkxqgdB6ygNDagzVxQbSqs=;
+ b=WRNUBlln4xE50VaOB0aPLh1L84bbNk6GoxyS7yOYet6Vd+Idv/Boy1foiyHOs5BOszcGCP7718DQb0v4ImWKhcroYJ2EJDv7PLL+/R/THsbnM9BBVx4uL5uHPE57zsX/Wyiy9uXxDqKqpZOi+CUUHzaH5PdWira4mfh+l4F1Z4Y=
+Received: from DS7PR10MB5280.namprd10.prod.outlook.com (2603:10b6:5:3a7::5) by
+ DM4PR10MB7390.namprd10.prod.outlook.com (2603:10b6:8:10e::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6411.28; Mon, 22 May 2023 17:02:22 +0000
+Received: from DS7PR10MB5280.namprd10.prod.outlook.com
+ ([fe80::f942:ba2a:1330:244b]) by DS7PR10MB5280.namprd10.prod.outlook.com
+ ([fe80::f942:ba2a:1330:244b%3]) with mapi id 15.20.6411.028; Mon, 22 May 2023
+ 17:02:22 +0000
+Message-ID: <875e1afa-6bab-bddd-19d7-9f60b47c64f7@oracle.com>
+Date: Mon, 22 May 2023 13:02:19 -0400
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH v2 3/5] iommu/amd: Introduce Disable IRTE Caching Support
+To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Cc: joro@8bytes.org, joao.m.martins@oracle.com, boris.ostrovsky@oracle.com,
+        jon.grimm@amd.com, santosh.shukla@amd.com, vasant.hegde@amd.com,
+        kishon.vijayabraham@amd.com
+References: <20230519005529.28171-1-suravee.suthikulpanit@amd.com>
+ <20230519005529.28171-4-suravee.suthikulpanit@amd.com>
+Content-Language: en-US
+From: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
+Organization: Oracle Corporation
+In-Reply-To: <20230519005529.28171-4-suravee.suthikulpanit@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: DM6PR13CA0001.namprd13.prod.outlook.com
+ (2603:10b6:5:bc::14) To DS7PR10MB5280.namprd10.prod.outlook.com
+ (2603:10b6:5:3a7::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR10MB5280:EE_|DM4PR10MB7390:EE_
+X-MS-Office365-Filtering-Correlation-Id: e861b936-eb64-435b-e2a2-08db5ae64f17
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 
+	m/KQkkiovpXxA1fSQFnJSLdCndYVy2OCn/2MXFus3tvqPbXMSS0WRumH5m+k0BCVbmrd0P85xjK6C6nT23aev8ZevUcQIbNv0qRPlIuVaRuRMmVXeC0/qDIZxuU2nwnPiAogJIv8gWXC+Vjuf54//86Q+SfY/qD4AVAIIbEHkoLjmTXK8TceDEW7Z8vU75JNR4InSMAEKwDNsOAH6wrodis693Uv42hec4uG/jKilCDiI/66LigGP9Bx0IkdyK5dfa7uhnfEqQUTwfXqvJDD7RQdAzd+yvsmNc+iPZ8CQi8sbfMeSlPK56+ZrBnhVqtdeWWCqdK6Fkk37oRYsCTCgy3lZHMMyMSCWWMO8bY7eaweqH5N6/8hd1Kz5cPpVEYOgDih0080tTIKPaDlMvKVlitkN42vH4zzRST0FXO0uvbvgOgIaWCQBfXbBmzyWnd9s4Fng67bvuujIuKbmvvSBR2u0gSX8k6UJutSlLou/t8v02Q/m/XfR6ZBCAu2DO/9Wp/kXmPR6Sx4Qot7KQSw2Fxgw8eaBPCERpZ6TQ7jIuj1k6dBmAVMyZwiCAMQfBKXNRCaQhBp9FoAkA6WS4yzGfYKfLnDFCYj49djvhiIHXaFYV4Q5BlsbWIyTSu9SdY7Gp0g217+xNFQnjxcAE8NXg==
+X-Forefront-Antispam-Report: 
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR10MB5280.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(376002)(366004)(346002)(136003)(396003)(451199021)(38100700002)(31696002)(86362001)(36756003)(31686004)(8676002)(8936002)(36916002)(26005)(5660300002)(6512007)(6506007)(2906002)(2616005)(186003)(83380400001)(6486002)(6666004)(41300700001)(66946007)(66476007)(66556008)(478600001)(316002)(53546011)(4326008)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: 
+	=?utf-8?B?ZFFFR2U3S21kaURnbXRTeWsrU0lVVHpzU05MQ3hJVTRHeUw3MXIyK01HaUhE?=
+ =?utf-8?B?TGdOZE9aRFdLaUpFYnEyeG5YdEcwRVAyc2hFN1BlcFdEdkNnSGJnaEVIYWJh?=
+ =?utf-8?B?Q0phc3JyOTVaS0Y2ZjNHOEs2QWF6dVJGTWVGUG1Ybm1aTmoxRVpjZFhuT1Nk?=
+ =?utf-8?B?cFpuNjRKM2tJOEpURjcxeENHY0M4VHQ0MTZSRmJ5aGR2ZWs3bUFIRG5FK3dB?=
+ =?utf-8?B?VC9qekJWUjlrYXlvaEJhTDZmcWdpUFcrd1BiZGhRZVBmNHg5OHlaV0NSVkxr?=
+ =?utf-8?B?ZXJiMk5lKzFML0JuT3YxYm1OQ1lnYXFrR1N2NG94UWRlSTdHZVpCMUNoeVNH?=
+ =?utf-8?B?b1BFTjhZbXhjTTBHbW1EMHg4S1V6TEprUWxna3VKdnRPeWJ3Q21XU3hGMHBV?=
+ =?utf-8?B?aWFTeXJ0NGo4UEM1S0dQSXZEM3dLcmVodVhLdWU3R2tWS2xXL0tTT2kwS3RP?=
+ =?utf-8?B?OHRONW1OeUM4Mjl1aGpzSExnNjRkbEJaVEdNQTlKUWNnc2dPYTVXVllINUls?=
+ =?utf-8?B?eWlxUlBKdTFNc0FjanNlZzEwYmFDQWxJWTFUVUpiREtTZElWSFhGeEpmMFlq?=
+ =?utf-8?B?Y0hTTSs2L2d0akNYZGYva0tyLzBjUHVBbHYwTHpNbXJPK2dGUFFOL0NxYzdi?=
+ =?utf-8?B?VXByaGgzY05rVjdTcG9qdHJOYzV0KzZnL3hLaXFNZ3kwbGYvdHUrbCsxcGEv?=
+ =?utf-8?B?WnpOQ2Z6SXFOMmpqN3FjUDQ2a2NFV3J3WFh4VFFRQmtCL1laWHlKRUlYOG4w?=
+ =?utf-8?B?cmxxUUNmMEFpMmJKZDEwdHM4THZld1NYMU9kbVdyRVVManI1OHZZQ1lKc3d4?=
+ =?utf-8?B?ZVpPanVZclA1RmNCR2p3WUZTcURwTFRRVGU2NnlRVkdRcjAzNTBYYTZxSFVs?=
+ =?utf-8?B?aUxKRDdIenYwUVJ3bEJsUTFtVFJCTG5saGZUd20zdXRtK085aE5IRFh0WXA1?=
+ =?utf-8?B?Z0RHbE0yYXkvYmY5c0FsaTlvV2ZidGZ4U1FaaGg3OHl5OXJURFVJRFVNT2o2?=
+ =?utf-8?B?dHJwMnkvUXp2Y1kzWFMxUSt0SGZEQkptMEEwSzVZZnNKL1BEVDIvKzBrb1Zq?=
+ =?utf-8?B?NW13cnNxNW9lY3MwaEg2T3lzK1ROMXZBZUJLU09xbXdySGJCa3VrZ0NQbEJO?=
+ =?utf-8?B?SnZaUE5ac2QzZVdKTFlieEZTVlVjU2F5QWNVQmNRbnNMUC9rcVJEd3o5d01i?=
+ =?utf-8?B?S1VFYXV0c25UUkhZNi9raVhoZWJpMG5aWmhJVmt1ajFHSmYxNGYwcXhyMk9N?=
+ =?utf-8?B?cGErZUVKZDk3Q0FjUXR6bEVLRUlVNzRrR3JiRld5REhJZ2xjUDhHUWNuZHYy?=
+ =?utf-8?B?NXN4R05ZVVNrNnE4YlU0Ym1zeml3TjBJaDJqMjZVLy8zd1NKMXVNM1h2ZUpi?=
+ =?utf-8?B?bXBtWklVeUpQcE5LS2NPSmNHQjdYbDB3aWdxRzVOODlLc1NZdHNlVlFTMnlR?=
+ =?utf-8?B?Q2pnVWlRNURsWkVTRFBDa0ZXckMxbUpNcTNkZDNUWWRCTlR4di8vWE53R09X?=
+ =?utf-8?B?RDN5VEtyZ1RWUDRPWkd5TjJWa3EvQXBsNUpBZXcvejJqS0VYN2VHK05oczJv?=
+ =?utf-8?B?N2xPWDROL2FsazZlclZCclJwU0dSSWYxcDdOeWMvSnBQTzlqaFJTc0crMmhG?=
+ =?utf-8?B?NHlSUjRlK1B0eklUSG1PSnQ1a0N2bXZITTluT0s2M1luRllGYVE2VEYrbHRk?=
+ =?utf-8?B?Q2trRCtHYUlCamk4cFZqUi9BcVl0YnlyZXlMYzQ4cHJlU3daSDNPaGliM0Nv?=
+ =?utf-8?B?UC8rVS9wUXVpanc3Tld6bzludm95SGVyeGd2N2NUZW1ndjdkWXlKeFFuMHFO?=
+ =?utf-8?B?eVFYa0NvNWRDMTFiT3JVWmh5SDd3RXJlaWFnVVpCc3VJQmV2Y2VXQmk2a2tn?=
+ =?utf-8?B?TVAvcTNGZXV4NmVmSFV5QmtCZjdJUjRpTC96eXdTTW92Y2lkdDlncUZET2g5?=
+ =?utf-8?B?dUtIbDB3czV0RmdHbTgxQVA5dE01K1M4aW5jSnA3bVJHSjJmamF0TzlrY3dt?=
+ =?utf-8?B?eS9va3RsWFQxTXJENmdrTCt6cUJPZ09IUGwyMVFaclRyVjM3UjkvT2JrV3ls?=
+ =?utf-8?B?dTZnV1YydXZFbzk3Nkt2eHYvV2ZPaFdoZHFXa2d4M3V2NEJZZzd0TDM3akpV?=
+ =?utf-8?B?ZDZPZ1p1NVdBS1g5eElNN04ydGc4eU9WUkdNT1Rwc1F3NmhUTUw2QVR4YlRI?=
+ =?utf-8?B?WEE9PQ==?=
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
+	lKiSoidhxT/GaamUeeXquY0fNTUmveHXW+5cUZobgZT7NoyLz45N7M2Y9BwM2V4exHE74Mq4ulQHM8NKCIhRKapK8x59XJG4jwnPDvK3lSTVdZ0CFnwAliMII+HBWW7jIUbH/OfCzqIA5MtA1FERLBiYVWObekFdEGC4WZujHSoiEpr8KwmGmdJTvVBpUs7+v5tVMGxzpHdkOVXNvxXREzumFzH7WkV3HEHHRWnKYJ7E0v0Xovzs+fMV3ULDrIu5X396OmCtF19SaV1BRV3kyXSXWxz9wmn5SCR9kuCjqHzK7Rn4r94By76eeftjcjrXxCKqhJdHd3/cLzPbtcI/OUpFdyoL/wA5bgd5mpeb8zjbTOhxevI36lG6UZUKh82ln5IQ/jARHC8tvvInFWFyhk9vpD2wp1Rn7FjKFrfzFo76FsuHZIxxlASwuFweAHooT08f/uS+J9NKjmjg2zYp6YDLYMhbt5QP34iDdOZHokNgvwfpyt3eucW5MWYyT5i+3cvhvu5zQvwskGykl7wUe7wjuZwSvLUPzvIbvA9KdCT1y9O+1wktL/OrwyzK3u4Z9HB8JpjLjqErOz1AjTWiZTXfPOqHi8bG12kqlCwatKSABhkG9nvSlgalmt9iEvvmSiB72iGowqnNA3apt8Yp9p//19YyY099zxNNF4EgZKtbvEDl4fzUnUlZ7mciecLrj2L+L+05x12hER0kY5x+kHkp+7loLyZiVVe1YfV6Hva9cj42xuVpbTfLS391W8dOKcec3rfoE/iILs/Xt4Q71kJfoUxy5iSlTcOOV88d2hkFFWoRTb9msHneHDhcE06kFP2qZxYrGmKz4SaOuQP6seTgL0BuiiGXU9XAxJqleh0=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e861b936-eb64-435b-e2a2-08db5ae64f17
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR10MB5280.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 May 2023 17:02:22.0487
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: k05QbNrvaWDABnNeM1m9v+j7SpQbNw/6AJIL67cQqNiT0N7RK0Dy2j2WoDMAxhjKjEhbmlENRAQBGGxV3jSQhFTEFCJFdSB/SFWWsngSjW4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR10MB7390
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
+ definitions=2023-05-22_12,2023-05-22_03,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 suspectscore=0
+ mlxscore=0 spamscore=0 mlxlogscore=999 adultscore=0 phishscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2304280000 definitions=main-2305220143
+X-Proofpoint-GUID: sST_WWvOUGIWwGotwdN8B9dHdKfVFw8L
+X-Proofpoint-ORIG-GUID: sST_WWvOUGIWwGotwdN8B9dHdKfVFw8L
 
-On Mon, 22 May 2023 12:42:51 +0100
-Robin Murphy <robin.murphy@arm.com> wrote:
+Hi Suravee,
 
-> On 2023-05-16 02:13, Baolu Lu wrote:
-> > On 5/13/23 9:11 PM, bugtracker@fischbytes.de wrote: =20
-> >> On Saturday, May 13, 2023 8:20:40 AM CEST you wrote:
-> >> =20
-> >> =C2=A0> On 5/13/23 2:52 AM, bugtracker@fischbytes.de wrote: =20
-> >> =20
-> >> =C2=A0> > Hi there, =20
-> >> =20
-> >> =C2=A0> > =20
-> >> =20
-> >> =C2=A0> > I came here today to ask if there are any plans regarding th=
-e =20
-> >> =20
-> >> =C2=A0> > implementation of a "relaxed RMRR" kernel parameter to aid u=
-sing  =20
-> >> IOMMU on
-> >> =20
-> >> =C2=A0> > broken platforms such as the ProLiant Series by Hewlett Pack=
-ard =20
-> >> =20
-> >> =C2=A0> > Enterprise. To everyone not aware of the issue; =20
-> >> =20
-> >> =C2=A0> > =20
-> >> =20
-> >> =C2=A0> > Certain vendors that are under the assumption that standards=
- are  =20
-> >> for jerks
-> >> =20
-> >> =C2=A0> > and Intel's specifications are a loose optional guideline ha=
-ve =20
-> >> =20
-> >> =C2=A0> > implemented RMRR in such a way that every PCI device is mark=
-ed as =20
-> >> =20
-> >> =C2=A0> > reserved and therefore cannot be passed through to a virtual=
-  =20
-> >> machine.
-> >> =20
-> >> =C2=A0> > This issue has been very well documented by some people that=
- have  =20
-> >> a lot
-> >> =20
-> >> =C2=A0> > more experience than I do at the below linked resource. I wa=
-s  =20
-> >> hoping that
-> >> =20
-> >> =C2=A0> > the kernel devs could implement the Relaxed RMRR option as a=
-n  =20
-> >> optional
-> >> =20
-> >> =C2=A0> > kernel parameter to use on these bugged platforms as that wo=
-uld  =20
-> >> re-enable
-> >> =20
-> >> =C2=A0> > or rather enable a lot of broken servers for the first time =
-ever  =20
-> >> to use
-> >> =20
-> >> =C2=A0> > PCIe Passthrough. I can verify the issue exists on a HPE DL3=
-60e  =20
-> >> Gen8 with
-> >> =20
-> >> =C2=A0> > trying to passthrough a GPU to a KVM/QEMU machine. =20
-> >> =20
-> >> =C2=A0> > =20
-> >> =20
-> >> =C2=A0> > Link to fix: https://github.com/Aterfax/relax-intel-rmrr =20
-> >> =20
-> >> =C2=A0> > =20
-> >> =20
-> >> =C2=A0> > Furthermore, since I am not a developer and wouldn't claim t=
-hat I am =20
-> >> =20
-> >> =C2=A0> > competent enough to decide whether or not implementing this =
-patch  =20
-> >> would
-> >> =20
-> >> =C2=A0> > present an issue in terms of stability or security, I was ho=
-ping  =20
-> >> that you
-> >> =20
-> >> =C2=A0> > could evaluate the situation. I can verify the pre-built pac=
-kages  =20
-> >> for the
-> >> =20
-> >> =C2=A0> > Proxmox Linux environment fix the issue and behave identical=
- in  =20
-> >> function
-> >> =20
-> >> =C2=A0> > to other systems that ignore RMRR completely, such as VMWare=
- ESXi. =20
-> >> =20
-> >> =C2=A0> > =20
-> >> =20
-> >> =C2=A0> > Thanks alot in advance, you implementing this patch would re=
-ally  =20
-> >> mean a
-> >> =20
-> >> =C2=A0> > lot, since the hardware manufacturers just don't seem to car=
-e for  =20
-> >> fixing
-> >> =20
-> >> =C2=A0> > up this, erm, mess. =20
-> >> =20
-> >> =C2=A0> =20
-> >> =20
-> >> =C2=A0> The relaxed RMRRs are used for legacy purpose, but it requires=
- the  =20
-> >> full
-> >> =20
-> >> =C2=A0> range of memory addresses are available after the OS device dr=
-iver  =20
-> >> takes
-> >> =20
-> >> =C2=A0> over the control of the device. =20
-> >> =20
-> >> =C2=A0> =20
-> >> =20
-> >> =C2=A0> Not all RMRRs are of this type and typically the VT-d driver o=
-nly  =20
-> >> allows
-> >> =20
-> >> =C2=A0> those RMRRs for USB and graphic devices as relaxed ones. =20
-> >> =20
-> >> =C2=A0> =20
-> >> =20
-> >> =C2=A0> Are you proposing to add a kernel parameter to allow any RMRR =
-for an =20
-> >> =20
-> >> =C2=A0> arbitrary device to be relaxed, or I didn't get the idea here?=
- =20
-> >> =20
-> >> =C2=A0> =20
-> >> =20
-> >> =C2=A0> Best regards, =20
-> >> =20
-> >> =C2=A0> baolu =20
-> >>
-> >>
-> >> Correct, the idea here is that, while this observation can only be=20
-> >> made on specific hardware, it more often than not occurs that devices=
-=20
-> >> that definitely shouldn't be (like e.g. GPUs attached to the PCIe=20
-> >> Interface) are marked as reserved by offending firmware. A perfect=20
-> >> solution would of course be to force the hardware vendors to push a=20
-> >> firmware update that resolves the violation of Intel's specifications,=
-=20
-> >> but such a thing doesn't appear to have happened in the past and it's=
-=20
-> >> very unlikely that, let's say Hewlett Packard Enterprise, will ever=20
-> >> release a firmware update for those thousands of broken servers.
-> >>
-> >>
-> >> (Quoted from here;=20
-> >> https://github.com/Aterfax/relax-intel-rmrr/blob/master/deep-dive.md#r=
-mrr---the-monster-in-a-closet ;
-> >>
-> >>
-> >> /Intel anticipated the some will be tempted to misuse the feature as=
-=20
-> >> they warned in the VT-d specification: "RMRR regions are expected to=
-=20
-> >> be used for legacy usages (...). Platform designers should avoid or=20
-> >> limit use of reserved memory regions"./
-> >>
-> >>
-> >> /HP (and probably others) decided to mark every freaking PCI device=20
-> >> memory space as RMRR! Like that, just in case... just that their tools=
-=20
-> >> could potentially maybe monitor these devices while OS agent is not=20
-> >> installed. But wait, there's more! They marked ALL devices as such,=20
-> >> even third party ones physically installed in motherboard's PCI/PCIe=
-=20
-> >> slots!/)
-> >>
-> >>
-> >> Hope this could clarify my inquiry a bit more. =20
-> >=20
-> > Thanks for the information.
-> >=20
-> > This Red Hat white paper explains why RMRR is not supported for device
-> > pass-through.
-> >=20
-> > https://access.redhat.com/sites/default/files/attachments/rmrr-wp1.pdf
-> >=20
-> > I am concerned that adding a kernel option to release all RMRRs blindly
-> > could be harmful to users. Some users may not be aware of how RMRR
-> > impacts device passthrough and may only use the option because they
-> > find it will help them in some use cases where it's impossible without
-> > it. =20
->=20
-> Agreed, I would be very uncomfortable doing anything at the IOMMU API=20
-> level to override firmware information. Not to mention that doing=20
-> anything at the level of individual drivers is plain impractical when we=
-=20
-> already have at least 4 of these mechanisms (Intel RMRR, AMD IVMD, Arm=20
-> IORT RMR, and now the generic Devicetree binding as well).
->=20
-> The thing to propose, if anything, would be not messing with the=20
-> reserved regions themselves, but adding another "I know what I'm doing=20
-> and I accept responsibility for picking the pieces up if it breaks"=20
-> control at the VFIO level to permit assignment in spite of them - it=20
-> feels like it's probably somewhere in between allow_unsafe_interrupts=20
-> and noiommu mode in terms of potential impact, so doesn't seem entirely=
-=20
-> unreasonable off the bat.
+On 5/18/2023 8:55 PM, Suravee Suthikulpanit wrote:
+> An Interrupt Remapping Table (IRT) stores interrupt remapping configuration
+> for each device. In a normal operation, the AMD IOMMU caches the table
+> to optimize subsequent data accesses. This requires the IOMMU driver to
+> invalidate IRT whenever it updates the table. The invalidation process
+> includes issuing an INVALIDATE_INTERRUPT_TABLE command following by
+> a COMPLETION_WAIT command.
+>
+> However, there are cases in which the IRT is updated at a high rate.
+> For example, for IOMMU AVIC, the IRTE[IsRun] bit is updated on every
+> vcpu scheduling (i.e. amd_iommu_update_ga()). On system with large
+> amount of vcpus and VFIO PCI pass-through devices, the invalidation
+> process could potentially become a performance bottleneck.
+>
+> Introducing a new kernel boot option:
+>
+>      amd_iommu=irtcachedis
+>
+> which disables IRTE caching by setting the IRTCachedis bit in each IOMMU
+> Control register, and bypass the IRT invalidation process.
+>
+> Co-developed-by: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
+> [Awaiting sign-off by Alejandro]
+Signed-off-by: Alejandro Jimenez <alejandro.j.jimenez@oracle.com
 
-I'd more likely put this in the same category as the ACS override
-patch, which we've rejected from mainline.
+I sanity tested the kdump mechanism, and confirmed that 
+CONTROL_IRTCACHEDIS is set appropriately based on the irtcachedis kernel 
+parameter.
 
-In the case of the unsafe interrupts option, the risk is a malicious
-guest exploiting arbitrary interrupt vectors on the host.  I certainly
-wouldn't suggest this opt-in for a virtual hosting service, but there
-are a good number of use cases where it can be a relatively safe
-assumption that the guest OS has not been subverted.  Unlike RMRR or
-ACS, an exploit of this vector more likely resulted in a denial of
-service rather than a potential for silent data corruption, and had
-there not been an opt-in, it would have broken the majority of x86
-device assignment cases at the time.  It's also telling that this
-option, which is all but irrelevant on any remotely modern x86 system
-now, still appears with some regularity in vfio related guides, forums,
-and bug logs.
+Also, I have not observed any errors during multiple rounds of testing 
+with large vCPU counts and VFIO passthrough devices under 
+interrupt-intensive workload that causes heavy vCPU scheduling activity 
+and exercises the relevant code path.
 
-OTOH, noiommu is an entirely different beast.  The argument for noiommu
-is that certain environments are making use of direct DMA programming
-of devices that are not protected by an IOMMU anyway, access to
-/dev/mem and pci-sysfs enables this given sufficient privileges.  The
-gap that vfio noiommu filled was MSI interrupts.  We'd generally like
-these use cases to move to proper IOMMU protected vfio environments
-anyway, so the goal here was to make that transition easier by waving a
-carrot for making use of the vfio device interface with MSI interrupts
-rather than extending uio-pci-generic beyond what it intended to
-support.  Importantly, vfio noiommu taints the kernel (introducing
-logging of these use cases), requires access using a different device
-file (requiring userspace, as well as kernel opt-in), and provides no
-DMA translation (ruling out more common use cases like VM assignment).
-
-Much like what appears to be the history of this patch, the ACS
-override patch has lived a life beyond its initial mainline proposal and
-rejection, it's even been included in a few downstream kernel builds,
-but none of the mainstream distros AFAIK.  My observations of its use
-cases in various communities suggest to me that it was the right choice
-to reject it from mainline.  Like the unsafe interrupt option above,
-making the option sound scary or logging warning in dmesg does not
-ultimately have much affect in an average user's choice to enable these
-sorts of options.  On the contrary, we might speculate that had such
-workarounds been so readily available, would we have as many ACS quirks
-as we do now, would vendors have moved away from RMRRs?
-
-It's unfortunate that there are generations of server lines that have
-such a barrier to these sorts of use cases, but ultimately we still
-cannot vouch that it's safe to ignore RMRR requirements imposed by the
-firmware in these systems.  Including such options in mainline provides
-a certain degree of validity in these workarounds that we cannot
-support.  Therefore, I'd not be in favor of a user option to ignore a
-firmware directive like this in the mainline kernel, especially to
-enable a system that's potentially already a decade old.  Thanks,
-
-Alex
+Thank you,
+Alejandro
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> ---
+>   .../admin-guide/kernel-parameters.txt         |  1 +
+>   drivers/iommu/amd/amd_iommu_types.h           |  4 +++
+>   drivers/iommu/amd/init.c                      | 36 +++++++++++++++++++
+>   3 files changed, 41 insertions(+)
+>
+>
 
