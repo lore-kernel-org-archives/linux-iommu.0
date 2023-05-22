@@ -1,205 +1,202 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id ACCE8BA27
-	for <iommu@lists.linux.dev>; Mon, 22 May 2023 11:42:57 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E5B5011FB;
-	Mon, 22 May 2023 04:43:41 -0700 (PDT)
-Received: from [10.57.83.43] (unknown [10.57.83.43])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5047C3F6C4;
-	Mon, 22 May 2023 04:42:56 -0700 (PDT)
-Message-ID: <c36e755a-416a-cf50-57fb-78438a2f61db@arm.com>
-Date: Mon, 22 May 2023 12:42:51 +0100
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E07B107A6
+	for <iommu@lists.linux.dev>; Mon, 22 May 2023 12:18:33 +0000 (UTC)
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-96f66fbd770so64961566b.1
+        for <iommu@lists.linux.dev>; Mon, 22 May 2023 05:18:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684757911; x=1687349911;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=I6loFUA9mZTaBhksiYSDr//MIYwSKmH+WH5P5CiDYiw=;
+        b=hnOb8JJTQ/WFy6FCCGZW0Ot9rm6JYMBPhfopJz2bWgVoPDPqsFLfEhuutQVqsHDd8f
+         PtUmBg2+tNIKNhpEBfpQZtO/ONBrAoCtsJ+W4caiar2yH+el/EaPTMn38V3SpA0eZHDV
+         cXKu9XFKT+odQP6V6VRy0YUnNWsBKonA8V6Fb0EgyAV/Ms1qz6356hbYN3h8bBox/ij8
+         7vBMM8LakrNhR0TmMsxcGN3werSvKbhTlpYgJXGqLuoaP6/JSgt91qw0xJ1xgkXO+jTp
+         Ak3HzN87fGFL6l7SjnuOHIBgfmb5MYfeJ1bcwj1lD3TUfNzHP8N+c3Tn/QxFRSwRafqi
+         HsBA==
+X-Gm-Message-State: AC+VfDyApWte34H0suvHULnkjelyoMgjncq4ZMwA3OxVp2iA0cfEncva
+	wUTMGTh0jVDEPXiqIO+Hs213l1MwFWwbq5JSSbM=
+X-Google-Smtp-Source: ACHHUZ6M5NMrb+OBmOGW1h/Os0NMQMNGTVGnzskp0Gbc9OhXhbS6nhThOOS730m1iI0OfkjZODVuNeGRoegPixYdLNY=
+X-Received: by 2002:a17:906:2218:b0:96f:4c38:4b1a with SMTP id
+ s24-20020a170906221800b0096f4c384b1amr9027269ejs.5.1684757911056; Mon, 22 May
+ 2023 05:18:31 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: Relaxable RMRR kernel parameter for broken platforms
-Content-Language: en-GB
-To: Baolu Lu <baolu.lu@linux.intel.com>, bugtracker@fischbytes.de,
- iommu@lists.linux.dev
-References: <2282218.ElGaqSPkdT@helios-lx>
- <4ab4966b-48bd-56fc-5078-d5fdddc1613a@linux.intel.com>
- <1877598.tdWV9SEqCh@helios-lx>
- <302501af-05a3-9757-d923-602ad9a6d9c9@linux.intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <302501af-05a3-9757-d923-602ad9a6d9c9@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <0-v2-3c3bb7aa6e48+1916b-iommu_probe_jgg@nvidia.com> <1-v2-3c3bb7aa6e48+1916b-iommu_probe_jgg@nvidia.com>
+In-Reply-To: <1-v2-3c3bb7aa6e48+1916b-iommu_probe_jgg@nvidia.com>
+From: "Rafael J. Wysocki" <rafael@kernel.org>
+Date: Mon, 22 May 2023 14:18:19 +0200
+Message-ID: <CAJZ5v0hu+=TpAOGnh5gyz685t6DV2LRJwN7Rrq=j3rMdtQHgHw@mail.gmail.com>
+Subject: Re: [PATCH v2 01/10] iommu: Have __iommu_probe_device() check for
+ already probed devices
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev, 
+	Joerg Roedel <joro@8bytes.org>, Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org, 
+	"Rafael J. Wysocki" <rafael@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, 
+	Kevin Tian <kevin.tian@intel.com>, Nicolin Chen <nicolinc@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2023-05-16 02:13, Baolu Lu wrote:
-> On 5/13/23 9:11 PM, bugtracker@fischbytes.de wrote:
->> On Saturday, May 13, 2023 8:20:40 AM CEST you wrote:
->>
->>  > On 5/13/23 2:52 AM, bugtracker@fischbytes.de wrote:
->>
->>  > > Hi there,
->>
->>  > >
->>
->>  > > I came here today to ask if there are any plans regarding the
->>
->>  > > implementation of a "relaxed RMRR" kernel parameter to aid using 
->> IOMMU on
->>
->>  > > broken platforms such as the ProLiant Series by Hewlett Packard
->>
->>  > > Enterprise. To everyone not aware of the issue;
->>
->>  > >
->>
->>  > > Certain vendors that are under the assumption that standards are 
->> for jerks
->>
->>  > > and Intel's specifications are a loose optional guideline have
->>
->>  > > implemented RMRR in such a way that every PCI device is marked as
->>
->>  > > reserved and therefore cannot be passed through to a virtual 
->> machine.
->>
->>  > > This issue has been very well documented by some people that have 
->> a lot
->>
->>  > > more experience than I do at the below linked resource. I was 
->> hoping that
->>
->>  > > the kernel devs could implement the Relaxed RMRR option as an 
->> optional
->>
->>  > > kernel parameter to use on these bugged platforms as that would 
->> re-enable
->>
->>  > > or rather enable a lot of broken servers for the first time ever 
->> to use
->>
->>  > > PCIe Passthrough. I can verify the issue exists on a HPE DL360e 
->> Gen8 with
->>
->>  > > trying to passthrough a GPU to a KVM/QEMU machine.
->>
->>  > >
->>
->>  > > Link to fix: https://github.com/Aterfax/relax-intel-rmrr
->>
->>  > >
->>
->>  > > Furthermore, since I am not a developer and wouldn't claim that I am
->>
->>  > > competent enough to decide whether or not implementing this patch 
->> would
->>
->>  > > present an issue in terms of stability or security, I was hoping 
->> that you
->>
->>  > > could evaluate the situation. I can verify the pre-built packages 
->> for the
->>
->>  > > Proxmox Linux environment fix the issue and behave identical in 
->> function
->>
->>  > > to other systems that ignore RMRR completely, such as VMWare ESXi.
->>
->>  > >
->>
->>  > > Thanks alot in advance, you implementing this patch would really 
->> mean a
->>
->>  > > lot, since the hardware manufacturers just don't seem to care for 
->> fixing
->>
->>  > > up this, erm, mess.
->>
->>  >
->>
->>  > The relaxed RMRRs are used for legacy purpose, but it requires the 
->> full
->>
->>  > range of memory addresses are available after the OS device driver 
->> takes
->>
->>  > over the control of the device.
->>
->>  >
->>
->>  > Not all RMRRs are of this type and typically the VT-d driver only 
->> allows
->>
->>  > those RMRRs for USB and graphic devices as relaxed ones.
->>
->>  >
->>
->>  > Are you proposing to add a kernel parameter to allow any RMRR for an
->>
->>  > arbitrary device to be relaxed, or I didn't get the idea here?
->>
->>  >
->>
->>  > Best regards,
->>
->>  > baolu
->>
->>
->> Correct, the idea here is that, while this observation can only be 
->> made on specific hardware, it more often than not occurs that devices 
->> that definitely shouldn't be (like e.g. GPUs attached to the PCIe 
->> Interface) are marked as reserved by offending firmware. A perfect 
->> solution would of course be to force the hardware vendors to push a 
->> firmware update that resolves the violation of Intel's specifications, 
->> but such a thing doesn't appear to have happened in the past and it's 
->> very unlikely that, let's say Hewlett Packard Enterprise, will ever 
->> release a firmware update for those thousands of broken servers.
->>
->>
->> (Quoted from here; 
->> https://github.com/Aterfax/relax-intel-rmrr/blob/master/deep-dive.md#rmrr---the-monster-in-a-closet ;
->>
->>
->> /Intel anticipated the some will be tempted to misuse the feature as 
->> they warned in the VT-d specification: "RMRR regions are expected to 
->> be used for legacy usages (...). Platform designers should avoid or 
->> limit use of reserved memory regions"./
->>
->>
->> /HP (and probably others) decided to mark every freaking PCI device 
->> memory space as RMRR! Like that, just in case... just that their tools 
->> could potentially maybe monitor these devices while OS agent is not 
->> installed. But wait, there's more! They marked ALL devices as such, 
->> even third party ones physically installed in motherboard's PCI/PCIe 
->> slots!/)
->>
->>
->> Hope this could clarify my inquiry a bit more.
-> 
-> Thanks for the information.
-> 
-> This Red Hat white paper explains why RMRR is not supported for device
-> pass-through.
-> 
-> https://access.redhat.com/sites/default/files/attachments/rmrr-wp1.pdf
-> 
-> I am concerned that adding a kernel option to release all RMRRs blindly
-> could be harmful to users. Some users may not be aware of how RMRR
-> impacts device passthrough and may only use the option because they
-> find it will help them in some use cases where it's impossible without
-> it.
+On Fri, May 19, 2023 at 8:42=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> wr=
+ote:
+>
+> This is a step toward making __iommu_probe_device() self contained.
+>
+> It should, under proper locking, check if the device is already associate=
+d
+> with an iommu driver and resolve parallel probes. All but one of the
+> callers open code this test using two different means, but they all
+> rely on dev->iommu_group.
+>
+> Currently the bus_iommu_probe()/probe_iommu_group() and
+> probe_acpi_namespace_devices() rejects already probed devices with an
+> unlocked read of dev->iommu_group. The OF and ACPI "replay" functions use
+> device_iommu_mapped() which is the same read without the pointless
+> refcount.
+>
+> Move this test into __iommu_probe_device() and put it under the
+> iommu_probe_device_lock. The store to dev->iommu_group is in
+> iommu_group_add_device() which is also called under this lock for iommu
+> driver devices, making it properly locked.
+>
+> The only path that didn't have this check is the hotplug path triggered b=
+y
+> BUS_NOTIFY_ADD_DEVICE. The only way to get dev->iommu_group assigned
+> outside the probe path is via iommu_group_add_device(). Today the only
+> caller is VFIO no-iommu which never associates with an iommu driver. Thus
+> adding this additional check is safe.
+>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 
-Agreed, I would be very uncomfortable doing anything at the IOMMU API 
-level to override firmware information. Not to mention that doing 
-anything at the level of individual drivers is plain impractical when we 
-already have at least 4 of these mechanisms (Intel RMRR, AMD IVMD, Arm 
-IORT RMR, and now the generic Devicetree binding as well).
+Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-The thing to propose, if anything, would be not messing with the 
-reserved regions themselves, but adding another "I know what I'm doing 
-and I accept responsibility for picking the pieces up if it breaks" 
-control at the VFIO level to permit assignment in spite of them - it 
-feels like it's probably somewhere in between allow_unsafe_interrupts 
-and noiommu mode in terms of potential impact, so doesn't seem entirely 
-unreasonable off the bat.
+for the ACPI change in scan.c.
 
-Thanks,
-Robin.
+> ---
+>  drivers/acpi/scan.c         |  2 +-
+>  drivers/iommu/intel/iommu.c |  7 -------
+>  drivers/iommu/iommu.c       | 19 +++++++++----------
+>  drivers/iommu/of_iommu.c    |  2 +-
+>  4 files changed, 11 insertions(+), 19 deletions(-)
+>
+> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+> index 0c6f06abe3f47f..945866f3bd8ebd 100644
+> --- a/drivers/acpi/scan.c
+> +++ b/drivers/acpi/scan.c
+> @@ -1579,7 +1579,7 @@ static const struct iommu_ops *acpi_iommu_configure=
+_id(struct device *dev,
+>          * If we have reason to believe the IOMMU driver missed the initi=
+al
+>          * iommu_probe_device() call for dev, replay it to get things in =
+order.
+>          */
+> -       if (!err && dev->bus && !device_iommu_mapped(dev))
+> +       if (!err && dev->bus)
+>                 err =3D iommu_probe_device(dev);
+>
+>         /* Ignore all other errors apart from EPROBE_DEFER */
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index b871a6afd80321..3c37b50c121c2d 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -3763,7 +3763,6 @@ static int __init probe_acpi_namespace_devices(void=
+)
+>                 for_each_active_dev_scope(drhd->devices,
+>                                           drhd->devices_cnt, i, dev) {
+>                         struct acpi_device_physical_node *pn;
+> -                       struct iommu_group *group;
+>                         struct acpi_device *adev;
+>
+>                         if (dev->bus !=3D &acpi_bus_type)
+> @@ -3773,12 +3772,6 @@ static int __init probe_acpi_namespace_devices(voi=
+d)
+>                         mutex_lock(&adev->physical_node_lock);
+>                         list_for_each_entry(pn,
+>                                             &adev->physical_node_list, no=
+de) {
+> -                               group =3D iommu_group_get(pn->dev);
+> -                               if (group) {
+> -                                       iommu_group_put(group);
+> -                                       continue;
+> -                               }
+> -
+>                                 ret =3D iommu_probe_device(pn->dev);
+>                                 if (ret)
+>                                         break;
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 4d7010f2b260a7..6d4d6a4d692893 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -351,9 +351,16 @@ static int __iommu_probe_device(struct device *dev, =
+struct list_head *group_list
+>          * but for now enforcing a simple global ordering is fine.
+>          */
+>         mutex_lock(&iommu_probe_device_lock);
+> +
+> +       /* Device is probed already if in a group */
+> +       if (dev->iommu_group) {
+> +               ret =3D 0;
+> +               goto out_unlock;
+> +       }
+> +
+>         if (!dev_iommu_get(dev)) {
+>                 ret =3D -ENOMEM;
+> -               goto err_unlock;
+> +               goto out_unlock;
+>         }
+>
+>         if (!try_module_get(ops->owner)) {
+> @@ -399,7 +406,7 @@ static int __iommu_probe_device(struct device *dev, s=
+truct list_head *group_list
+>  err_free:
+>         dev_iommu_free(dev);
+>
+> -err_unlock:
+> +out_unlock:
+>         mutex_unlock(&iommu_probe_device_lock);
+>
+>         return ret;
+> @@ -1711,16 +1718,8 @@ struct iommu_domain *iommu_group_default_domain(st=
+ruct iommu_group *group)
+>  static int probe_iommu_group(struct device *dev, void *data)
+>  {
+>         struct list_head *group_list =3D data;
+> -       struct iommu_group *group;
+>         int ret;
+>
+> -       /* Device is probed already if in a group */
+> -       group =3D iommu_group_get(dev);
+> -       if (group) {
+> -               iommu_group_put(group);
+> -               return 0;
+> -       }
+> -
+>         ret =3D __iommu_probe_device(dev, group_list);
+>         if (ret =3D=3D -ENODEV)
+>                 ret =3D 0;
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index 40f57d293a79d4..157b286e36bf3a 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -159,7 +159,7 @@ const struct iommu_ops *of_iommu_configure(struct dev=
+ice *dev,
+>          * If we have reason to believe the IOMMU driver missed the initi=
+al
+>          * probe for dev, replay it to get things in order.
+>          */
+> -       if (!err && dev->bus && !device_iommu_mapped(dev))
+> +       if (!err && dev->bus)
+>                 err =3D iommu_probe_device(dev);
+>
+>         /* Ignore all other errors apart from EPROBE_DEFER */
+> --
+> 2.40.1
+>
