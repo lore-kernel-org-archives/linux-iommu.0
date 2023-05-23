@@ -1,89 +1,76 @@
-Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C836CBE7D
-	for <iommu@lists.linux.dev>; Tue, 23 May 2023 08:34:57 +0000 (UTC)
-Received: by mail-ot1-f54.google.com with SMTP id 46e09a7af769-6af812703b6so719812a34.1
-        for <iommu@lists.linux.dev>; Tue, 23 May 2023 01:34:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684830897; x=1687422897;
-        h=date:subject:message-id:references:in-reply-to:cc:to:from
-         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=8Rk/6TkhHiy7aOgeY8F1RdAT5pIvD1dRXseK75IVn/U=;
-        b=Oi87TdI9+Cr38I+T/wzi1bY66E7RFsFNdd06aQrkHN8vJIKN6X4R7kTPY9BGY+RotM
-         0vi6Od+fBYc8L4tPSLkHNmHPAlh3M5OdVoEJsAN2DPu3kw1YQAHdO32djsuJ641UGBhy
-         EiwIFUao1KWCuhIc8KLRuTV7RXu335PCfZXXMJWlQOU/gSMe7J/rKggkE8U+8zlsPqg8
-         q+AOP5fZCiuHHSBxHccazi0fgz5xumG0kAjo01ICDMH04dz2KLOrh2cKjGiEqw0swcLu
-         a8fKIZHL/iZEu4HtYofAcOCfrUArjIOMp0BTkmW+mbT7ECgMbEZanOe/KUTBwliUvnxZ
-         C0Jw==
-X-Gm-Message-State: AC+VfDxqZ1CCE7qcDnI4j+bb6K2Er2E/ECoecIa+uUSOjaqoFIL+x8wC
-	ASZz2Ygn287Eepih94nK6cNd/xE/1w==
-X-Google-Smtp-Source: ACHHUZ5s/vzpTb+9BMMWcelUyV4uhEXM/zWmwl11RKvNss9ted8Bfh3Z6TbSKaa7B4n4vss2ArZacw==
-X-Received: by 2002:a9d:7e9a:0:b0:6af:8743:d5ac with SMTP id m26-20020a9d7e9a000000b006af8743d5acmr1845750otp.29.1684830896813;
-        Tue, 23 May 2023 01:34:56 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id g7-20020a9d6c47000000b006ae7c3eaf4esm1353685otq.26.2023.05.23.01.34.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 May 2023 01:34:56 -0700 (PDT)
-Received: (nullmailer pid 140436 invoked by uid 1000);
-	Tue, 23 May 2023 08:34:52 -0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5B281E516
+	for <iommu@lists.linux.dev>; Tue, 23 May 2023 09:54:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E4D0C433EF;
+	Tue, 23 May 2023 09:54:14 +0000 (UTC)
+Date: Tue, 23 May 2023 10:54:11 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+Cc: Christoph Hellwig <hch@lst.de>,
+	"Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+	Petr Tesarik <petrtesarik@huaweicloud.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	Borislav Petkov <bp@suse.de>, Randy Dunlap <rdunlap@infradead.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Kim Phillips <kim.phillips@amd.com>,
+	"Steven Rostedt (Google)" <rostedt@goodmis.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Hans de Goede <hdegoede@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Kees Cook <keescook@chromium.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	"open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+	open list <linux-kernel@vger.kernel.org>,
+	"open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+	Roberto Sassu <roberto.sassu@huawei.com>,
+	Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: Re: [PATCH v2 RESEND 4/7] swiotlb: Dynamically allocated bounce
+ buffers
+Message-ID: <ZGyNQxY6By1QdXur@arm.com>
+References: <cover.1683623618.git.petr.tesarik.ext@huawei.com>
+ <346abecdb13b565820c414ecf3267275577dbbf3.1683623618.git.petr.tesarik.ext@huawei.com>
+ <BYAPR21MB168874BC467BFCEC133A9DCDD7789@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <20230516061309.GA7219@lst.de>
+ <20230516083942.0303b5fb@meshulam.tesarici.cz>
+ <ZGPEgsplBSsI9li3@arm.com>
+ <20230517083510.0cd7fa1a@meshulam.tesarici.cz>
+ <20230517132748.2e250f9c@meshulam.tesarici.cz>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: Rob Herring <robh@kernel.org>
-To: Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc: Daniel Vetter <daniel@ffwll.ch>, Robin Murphy <robin.murphy@arm.com>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, Sean Paul <sean@poorly.run>, Marijn Suijten <marijn.suijten@somainline.org>, Krishna Manikandan <quic_mkrishn@quicinc.com>, linux-arm-kernel@lists.infradead.org, Rob Clark <robdclark@gmail.com>, devicetree@vger.kernel.org, Abhinav Kumar <quic_abhinavk@quicinc.com>, dri-devel@lists.freedesktop.org, Conor Dooley <conor+dt@kernel.org>, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Joerg Roedel <joro@8bytes.org>, David Airlie <airlied@gmail.com>, Rob Herring <robh+dt@kernel.org>, iommu@lists.linux.dev
-In-Reply-To: <20230411-topic-straitlagoon_mdss-v5-5-998b4d2f7dd1@linaro.org>
-References: <20230411-topic-straitlagoon_mdss-v5-0-998b4d2f7dd1@linaro.org>
- <20230411-topic-straitlagoon_mdss-v5-5-998b4d2f7dd1@linaro.org>
-Message-Id: <168483089291.140404.16963046121189730936.robh@kernel.org>
-Subject: Re: [PATCH v5 05/12] dt-bindings: display/msm: Add SM6375 MDSS
-Date: Tue, 23 May 2023 03:34:52 -0500
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230517132748.2e250f9c@meshulam.tesarici.cz>
 
-
-On Tue, 23 May 2023 09:46:16 +0200, Konrad Dybcio wrote:
-> Document the SM6375 MDSS.
+On Wed, May 17, 2023 at 01:27:48PM +0200, Petr Tesařík wrote:
+> On Wed, 17 May 2023 08:35:10 +0200
+> Petr Tesařík <petr@tesarici.cz> wrote:
+> > Anyway, my greatest objection to allocating additional swiotlb chunks is
+> > that _all_ of them must be searched to determine that the physical
+> > address does _not_ belong to a swiotlb, incurring performance penalty
 > 
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> ---
->  .../bindings/display/msm/qcom,sm6375-mdss.yaml     | 216 +++++++++++++++++++++
->  1 file changed, 216 insertions(+)
-> 
+> I thought about this part again, and I overlooked one option. We can
+> track only the _active_ swiotlbs for each device. If a device never
+> needs a swiotlb, there is no active swiotlb, and is_swiotlb_buffer()
+> short-circuits to false. This should avoid all collateral damage to
+> innocent devices.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Does this work with dma-buf or does dma-buf not allow swiotlb bouncing?
 
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/qcom,sm6375-mdss.example.dtb: dsi@5e94000: compatible: 'oneOf' conditional failed, one must be fixed:
-	['qcom,sm6375-dsi-ctrl', 'qcom,mdss-dsi-ctrl'] is too long
-	'qcom,sm6375-dsi-ctrl' is not one of ['qcom,apq8064-dsi-ctrl', 'qcom,msm8916-dsi-ctrl', 'qcom,msm8953-dsi-ctrl', 'qcom,msm8974-dsi-ctrl', 'qcom,msm8996-dsi-ctrl', 'qcom,msm8998-dsi-ctrl', 'qcom,qcm2290-dsi-ctrl', 'qcom,sc7180-dsi-ctrl', 'qcom,sc7280-dsi-ctrl', 'qcom,sdm660-dsi-ctrl', 'qcom,sdm845-dsi-ctrl', 'qcom,sm6115-dsi-ctrl', 'qcom,sm8150-dsi-ctrl', 'qcom,sm8250-dsi-ctrl', 'qcom,sm8350-dsi-ctrl', 'qcom,sm8450-dsi-ctrl', 'qcom,sm8550-dsi-ctrl']
-	'qcom,sm6375-dsi-ctrl' is not one of ['qcom,dsi-ctrl-6g-qcm2290', 'qcom,mdss-dsi-ctrl']
-	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/dsi-controller-main.yaml
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/qcom,sm6375-mdss.example.dtb: dsi@5e94000: Unevaluated properties are not allowed ('compatible' was unexpected)
-	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/msm/dsi-controller-main.yaml
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230411-topic-straitlagoon_mdss-v5-5-998b4d2f7dd1@linaro.org
-
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
-
+-- 
+Catalin
