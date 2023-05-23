@@ -1,149 +1,170 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF574EA1
-	for <iommu@lists.linux.dev>; Tue, 23 May 2023 00:17:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB0F1EA1
+	for <iommu@lists.linux.dev>; Tue, 23 May 2023 00:22:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684801039;
+	s=mimecast20190719; t=1684801340;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=VTeHVdraaDyLmGTmp7Ytrme6w/+h6Z+q6yjLpuN0RnU=;
-	b=becM+nlivtvpA4+0rvg3ouY98fWzSLcVKyQbYTtogU8qgwEMp/ACrtchvrfb3VEHmaeW+Q
-	0cM6OL9RjfGBifiekao1iT6apZPjfwyCg7x68wnSdiDzb0PNd4K8qcS5TNa4Jm6SM5BPNw
-	zJ45/muZrP9b9MdXUmLK8iQEjGiT4aQ=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=mIt6VPJ0y1Ndcra7Hh8sY5ZEea4UepRZahWsTnGZ1jA=;
+	b=XlMa2Ahbvm9b2obv1ujooFWjmGKwSOh1IZE2QD+2V4YOEMc6Rd79d+aScszXw6Q2Ri6ukd
+	irSZFr/B0sP9q6RBvjbjRq6o4F05qjKoBXhMuVegRXbkEvLflJvczPbiPFOs/iNdrnoEPr
+	DExo2LW/SDkbMj5RG4Wk0gvbyAeE9qA=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-326-OtjORQGCOyqPFcfmU6YtHg-1; Mon, 22 May 2023 20:17:16 -0400
-X-MC-Unique: OtjORQGCOyqPFcfmU6YtHg-1
-Received: by mail-qv1-f70.google.com with SMTP id 6a1803df08f44-623998c0d33so28555496d6.0
-        for <iommu@lists.linux.dev>; Mon, 22 May 2023 17:17:16 -0700 (PDT)
+ us-mta-609-sWpHwLv7Ogiywsb-RIqG7Q-1; Mon, 22 May 2023 20:22:18 -0400
+X-MC-Unique: sWpHwLv7Ogiywsb-RIqG7Q-1
+Received: by mail-qt1-f198.google.com with SMTP id d75a77b69052e-3f6ab996ea3so27432181cf.2
+        for <iommu@lists.linux.dev>; Mon, 22 May 2023 17:22:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684801036; x=1687393036;
-        h=in-reply-to:content-disposition:mime-version:references:\from
-         :message-id:subject:cc:to:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=VTeHVdraaDyLmGTmp7Ytrme6w/+h6Z+q6yjLpuN0RnU=;
-        b=gU+EpWiccd8tGkUbxSIvPnD09Rv9hJa0f38InVhBq6Zfdt3A0VKdODsmsBBuO+Ti3b
-         7Ka6prNRqO9LMyoyh8bPpai3h1Ek3PymBr0ApHO0qdovHh3ZvhET+25XyI0dV+8kDfa2
-         1EpJuQ+MysfWe4OAoUhf2JZABjT/9GibhO2JQ5cs+XExupMES3/wlFD2fP54+i1sckCR
-         HlVSOv6RwpsMGdpo9Se9nYa0RyPOFKGXXRxeoMfbeKhmK3VQOOJ79GvumjCE6HsxBD2k
-         BCFhgjySDtTVTstRYRvkbd6aVZBCcFh5uaPoQULIQ5G5nLMWssKeuP8ULrAiaiyGoqpN
-         ORHg==
-X-Gm-Message-State: AC+VfDzPr6xUjPCdqq9ogzYEcUVzilcciDNb1DVsyYA3Bj1Ej0NPT8OV
-	BbSxYEYwjEvuUes/oB6N2B/sU9tddOtkCwQC3lfJnfaXPgbrXHxqWBSosLC3BweS20yxprjfnG4
-	GK7fiQx2PHXlKwb0=
-X-Received: by 2002:ad4:5dcd:0:b0:5ef:6103:1475 with SMTP id m13-20020ad45dcd000000b005ef61031475mr19615162qvh.20.1684801036062;
-        Mon, 22 May 2023 17:17:16 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ5Omec8OxIXzGdyaG2GXBjw0uJnau8rGKkmpAA3GeKRceyP72vusWAP6o3ol0Op1EwAoMrd4w==
-X-Received: by 2002:ad4:5dcd:0:b0:5ef:6103:1475 with SMTP id m13-20020ad45dcd000000b005ef61031475mr19615139qvh.20.1684801035816;
-        Mon, 22 May 2023 17:17:15 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1684801338; x=1687393338;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mIt6VPJ0y1Ndcra7Hh8sY5ZEea4UepRZahWsTnGZ1jA=;
+        b=fL2dpuWdG9MZKfbWzfJCHYYTEQD+VpjhIqkxqDyv2JXxHqqB9MFshLAFVQWiaPHHP5
+         vonN+nC/9OJP5Dsh8kPakk6LSBNnU68bJEbT/dpdFoJhh9WYmqIUshph4yzGgUWFaAa1
+         8BjN7GaSJZt2tmg4u4/uJsvTOsf7dxTtVB8p6PTR+ze6xQkpOgdafRN8DgFr4nyfvbls
+         21JpbPecJZVku30uaPbBhmC19i4N/uYqT5NXUrIanyVkVqOzdtbXnr82iwq0OEpOQ3ja
+         fRPIpnH8OlkLmfQzKs++nt4/QOY46iwxHnIseexim3wPZwypTJSAQdBLAd6mOolbJ4UG
+         LmCQ==
+X-Gm-Message-State: AC+VfDy+e3mjsFObp7jqWFR3fL3FzODq5C6NoQ1r0/Ivj9lORKuIvvZ3
+	ZU3tRqtcmx8WAVsYutVrMyhpHthhw7fJFboT7ldf1Wa9Yc6qBLKiXKDv7Z52StXJObz3otCAK1P
+	lfwNLFfJc8BoLN6s=
+X-Received: by 2002:ac8:5a4d:0:b0:3f3:90a8:6906 with SMTP id o13-20020ac85a4d000000b003f390a86906mr21456786qta.17.1684801338228;
+        Mon, 22 May 2023 17:22:18 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ5IHiuUF7WdKpoLIxcdAp2dC2ynXUmyRziuKbBWWi+UBwpzPzyZMNVkTqxG2kw8j9yrr4iA/A==
+X-Received: by 2002:ac8:5a4d:0:b0:3f3:90a8:6906 with SMTP id o13-20020ac85a4d000000b003f390a86906mr21456779qta.17.1684801337984;
+        Mon, 22 May 2023 17:22:17 -0700 (PDT)
 Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id pp8-20020a056214138800b0061b62c15351sm2361791qvb.90.2023.05.22.17.17.14
+        by smtp.gmail.com with ESMTPSA id x7-20020a05622a000700b003bf9f9f1844sm2480249qtw.71.2023.05.22.17.22.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 May 2023 17:17:15 -0700 (PDT)
-From: jsnitsel@redhat.com
-Date: Mon, 22 May 2023 17:17:13 -0700
+        Mon, 22 May 2023 17:22:17 -0700 (PDT)
+Date: Mon, 22 May 2023 17:22:16 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
 To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org, 
 	joao.m.martins@oracle.com, alejandro.j.jimenez@oracle.com, boris.ostrovsky@oracle.com, 
 	jon.grimm@amd.com, santosh.shukla@amd.com, vasant.hegde@amd.com, 
 	kishon.vijayabraham@amd.com
-Subject: Re: [PATCH v2 4/5] iommu/amd: Do not Invalidate IRT when disable
- IRTE caching
-Message-ID: <byrqmwgki5ak5yn74ubvgikeb7ibrzml2lcnnx3qgkyi2omn3x@qyo5q5atbe33>
-\From: Jerry Snitselaar <jsnitsel@redhat.com>
+Subject: Re: [PATCH v2 5/5] iommu/amd: Improving Interrupt Remapping Table
+ Invalidation
+Message-ID: <sxyc5b2ifguf7r3krewwp4o42uzqlkhvshhc4m2nhkumedgy5s@r2arntwzmmpa>
 References: <20230519005529.28171-1-suravee.suthikulpanit@amd.com>
- <20230519005529.28171-5-suravee.suthikulpanit@amd.com>
+ <20230519005529.28171-6-suravee.suthikulpanit@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20230519005529.28171-5-suravee.suthikulpanit@amd.com>
+In-Reply-To: <20230519005529.28171-6-suravee.suthikulpanit@amd.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-On Thu, May 18, 2023 at 08:55:28PM -0400, Suravee Suthikulpanit wrote:
-> With the Interrupt Remapping Table cache disabled, there is no need to
-> issue invalidate IRT and wait for its completion. Therefore, add logic
-> to bypass the operation.
+On Thu, May 18, 2023 at 08:55:29PM -0400, Suravee Suthikulpanit wrote:
+> Invalidating Interrupt Remapping Table (IRT) requires, the AMD IOMMU driver
+> to issue INVALIDATE_INTERRUPT_TABLE and COMPLETION_WAIT commands.
+> Currently, the driver issues the two commands separately, which requires
+> calling raw_spin_lock_irqsave() twice. In addition, the COMPLETION_WAIT
+> could potentially be interleaved with other commands causing delay of
+> the COMPLETION_WAIT command.
 > 
-> Suggested-by: Joao Martins <joao.m.martins@oracle.com>
+> Therefore, combine issuing of the two commands in one spin-lock, and
+> changing struct amd_iommu.cmd_sem_val to use atomic64 to minimize
+> locking.
+> 
 > Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-
-Would it be clearer for the summary to be "iommu/amd: Do not
-Invalidate IRT when IRTE caching is disabled"?
 
 Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
 
 > ---
->  drivers/iommu/amd/iommu.c | 21 +++++++++++++++------
->  1 file changed, 15 insertions(+), 6 deletions(-)
+>  drivers/iommu/amd/amd_iommu_types.h |  2 +-
+>  drivers/iommu/amd/init.c            |  2 +-
+>  drivers/iommu/amd/iommu.c           | 27 ++++++++++++++++++++++-----
+>  3 files changed, 24 insertions(+), 7 deletions(-)
 > 
+> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+> index 486a052e37ca..2fa65da2a9a5 100644
+> --- a/drivers/iommu/amd/amd_iommu_types.h
+> +++ b/drivers/iommu/amd/amd_iommu_types.h
+> @@ -744,7 +744,7 @@ struct amd_iommu {
+>  
+>  	u32 flags;
+>  	volatile u64 *cmd_sem;
+> -	u64 cmd_sem_val;
+> +	atomic64_t cmd_sem_val;
+>  
+>  #ifdef CONFIG_AMD_IOMMU_DEBUGFS
+>  	/* DebugFS Info */
+> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+> index fc0392d706db..16737819f79a 100644
+> --- a/drivers/iommu/amd/init.c
+> +++ b/drivers/iommu/amd/init.c
+> @@ -1750,7 +1750,7 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h,
+>  	iommu->pci_seg = pci_seg;
+>  
+>  	raw_spin_lock_init(&iommu->lock);
+> -	iommu->cmd_sem_val = 0;
+> +	atomic64_set(&iommu->cmd_sem_val, 0);
+>  
+>  	/* Add IOMMU to internal data structures */
+>  	list_add_tail(&iommu->list, &amd_iommu_list);
 > diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index 0c4a2796bb0a..51c2b018433d 100644
+> index 51c2b018433d..57ae4a8072d3 100644
 > --- a/drivers/iommu/amd/iommu.c
 > +++ b/drivers/iommu/amd/iommu.c
-> @@ -1273,12 +1273,24 @@ static void amd_iommu_flush_irt_all(struct amd_iommu *iommu)
->  	u32 devid;
->  	u16 last_bdf = iommu->pci_seg->last_bdf;
+> @@ -1182,11 +1182,11 @@ static int iommu_completion_wait(struct amd_iommu *iommu)
+>  	if (!iommu->need_sync)
+>  		return 0;
 >  
-> +	if (iommu->irtcachedis_enabled)
-> +		return;
-> +
->  	for (devid = 0; devid <= last_bdf; devid++)
->  		iommu_flush_irt(iommu, devid);
+> -	raw_spin_lock_irqsave(&iommu->lock, flags);
+> -
+> -	data = ++iommu->cmd_sem_val;
+> +	data = atomic64_add_return(1, &iommu->cmd_sem_val);
+>  	build_completion_wait(&cmd, iommu, data);
 >  
->  	iommu_completion_wait(iommu);
->  }
+> +	raw_spin_lock_irqsave(&iommu->lock, flags);
+> +
+>  	ret = __iommu_queue_command_sync(iommu, &cmd, false);
+>  	if (ret)
+>  		goto out_unlock;
+> @@ -1284,11 +1284,28 @@ static void amd_iommu_flush_irt_all(struct amd_iommu *iommu)
 >  
-> +static void iommu_flush_irt_and_complete(struct amd_iommu *iommu, u16 devid)
-> +{
-> +	if (iommu->irtcachedis_enabled)
-> +		return;
-> +
-> +	iommu_flush_irt(iommu, devid);
-> +	iommu_completion_wait(iommu);
-> +}
-> +
->  void iommu_flush_all_caches(struct amd_iommu *iommu)
+>  static void iommu_flush_irt_and_complete(struct amd_iommu *iommu, u16 devid)
 >  {
->  	if (iommu_feature(iommu, FEATURE_IA)) {
-> @@ -3028,8 +3040,7 @@ static int modify_irte_ga(struct amd_iommu *iommu, u16 devid, int index,
->  
->  	raw_spin_unlock_irqrestore(&table->lock, flags);
->  
-> -	iommu_flush_irt(iommu, devid);
-> -	iommu_completion_wait(iommu);
-> +	iommu_flush_irt_and_complete(iommu, devid);
->  
->  	return 0;
->  }
-> @@ -3048,8 +3059,7 @@ static int modify_irte(struct amd_iommu *iommu,
->  	table->table[index] = irte->val;
->  	raw_spin_unlock_irqrestore(&table->lock, flags);
+> +	int ret;
+> +	u64 data;
+> +	unsigned long flags;
+> +	struct iommu_cmd cmd, cmd2;
+> +
+>  	if (iommu->irtcachedis_enabled)
+>  		return;
 >  
 > -	iommu_flush_irt(iommu, devid);
 > -	iommu_completion_wait(iommu);
-> +	iommu_flush_irt_and_complete(iommu, devid);
->  
->  	return 0;
+> +	build_inv_irt(&cmd, devid);
+> +	data = atomic64_add_return(1, &iommu->cmd_sem_val);
+> +	build_completion_wait(&cmd2, iommu, data);
+> +
+> +	raw_spin_lock_irqsave(&iommu->lock, flags);
+> +	ret = __iommu_queue_command_sync(iommu, &cmd, true);
+> +	if (ret)
+> +		goto out;
+> +	ret = __iommu_queue_command_sync(iommu, &cmd2, false);
+> +	if (ret)
+> +		goto out;
+> +	wait_on_sem(iommu, data);
+> +out:
+> +	raw_spin_unlock_irqrestore(&iommu->lock, flags);
 >  }
-> @@ -3067,8 +3077,7 @@ static void free_irte(struct amd_iommu *iommu, u16 devid, int index)
->  	iommu->irte_ops->clear_allocated(table, index);
->  	raw_spin_unlock_irqrestore(&table->lock, flags);
 >  
-> -	iommu_flush_irt(iommu, devid);
-> -	iommu_completion_wait(iommu);
-> +	iommu_flush_irt_and_complete(iommu, devid);
->  }
->  
->  static void irte_prepare(void *entry,
+>  void iommu_flush_all_caches(struct amd_iommu *iommu)
 > -- 
 > 2.31.1
 > 
