@@ -1,10 +1,10 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFFA818AFF
-	for <iommu@lists.linux.dev>; Wed, 24 May 2023 17:19:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6EE9C433A0;
-	Wed, 24 May 2023 17:19:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E651D18AFF
+	for <iommu@lists.linux.dev>; Wed, 24 May 2023 17:19:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AFB4C433D2;
+	Wed, 24 May 2023 17:19:34 +0000 (UTC)
 From: Catalin Marinas <catalin.marinas@arm.com>
 To: Linus Torvalds <torvalds@linux-foundation.org>,
 	Christoph Hellwig <hch@lst.de>,
@@ -27,9 +27,9 @@ Cc: Arnd Bergmann <arnd@arndb.de>,
 	linux-mm@kvack.org,
 	iommu@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v5 06/15] drivers/gpu: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
-Date: Wed, 24 May 2023 18:18:55 +0100
-Message-Id: <20230524171904.3967031-7-catalin.marinas@arm.com>
+Subject: [PATCH v5 07/15] drivers/usb: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+Date: Wed, 24 May 2023 18:18:56 +0100
+Message-Id: <20230524171904.3967031-8-catalin.marinas@arm.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230524171904.3967031-1-catalin.marinas@arm.com>
 References: <20230524171904.3967031-1-catalin.marinas@arm.com>
@@ -46,26 +46,30 @@ operations while ARCH_KMALLOC_MINALIGN is the minimum kmalloc() objects
 alignment.
 
 Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Daniel Vetter <daniel@ffwll.ch>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/drm_managed.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/usb/core/buffer.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_managed.c b/drivers/gpu/drm/drm_managed.c
-index 4cf214de50c4..3a5802f60e65 100644
---- a/drivers/gpu/drm/drm_managed.c
-+++ b/drivers/gpu/drm/drm_managed.c
-@@ -49,10 +49,10 @@ struct drmres {
- 	 * Some archs want to perform DMA into kmalloc caches
- 	 * and need a guaranteed alignment larger than
- 	 * the alignment of a 64-bit integer.
--	 * Thus we use ARCH_KMALLOC_MINALIGN here and get exactly the same
--	 * buffer alignment as if it was allocated by plain kmalloc().
-+	 * Thus we use ARCH_DMA_MINALIGN for data[] which will force the same
-+	 * alignment for struct drmres when allocated by kmalloc().
+diff --git a/drivers/usb/core/buffer.c b/drivers/usb/core/buffer.c
+index fbb087b728dc..e21d8d106977 100644
+--- a/drivers/usb/core/buffer.c
++++ b/drivers/usb/core/buffer.c
+@@ -34,13 +34,13 @@ void __init usb_init_pool_max(void)
+ {
+ 	/*
+ 	 * The pool_max values must never be smaller than
+-	 * ARCH_KMALLOC_MINALIGN.
++	 * ARCH_DMA_MINALIGN.
  	 */
--	u8 __aligned(ARCH_KMALLOC_MINALIGN) data[];
-+	u8 __aligned(ARCH_DMA_MINALIGN) data[];
- };
- 
- static void free_dr(struct drmres *dr)
+-	if (ARCH_KMALLOC_MINALIGN <= 32)
++	if (ARCH_DMA_MINALIGN <= 32)
+ 		;			/* Original value is okay */
+-	else if (ARCH_KMALLOC_MINALIGN <= 64)
++	else if (ARCH_DMA_MINALIGN <= 64)
+ 		pool_max[0] = 64;
+-	else if (ARCH_KMALLOC_MINALIGN <= 128)
++	else if (ARCH_DMA_MINALIGN <= 128)
+ 		pool_max[0] = 0;	/* Don't use this pool */
+ 	else
+ 		BUILD_BUG();		/* We don't allow this */
