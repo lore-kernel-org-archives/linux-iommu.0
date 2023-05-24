@@ -1,10 +1,10 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2592A18AFF
-	for <iommu@lists.linux.dev>; Wed, 24 May 2023 17:19:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 444B1C433A8;
-	Wed, 24 May 2023 17:19:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DD8718AFF
+	for <iommu@lists.linux.dev>; Wed, 24 May 2023 17:19:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E95DC433A7;
+	Wed, 24 May 2023 17:19:47 +0000 (UTC)
 From: Catalin Marinas <catalin.marinas@arm.com>
 To: Linus Torvalds <torvalds@linux-foundation.org>,
 	Christoph Hellwig <hch@lst.de>,
@@ -27,9 +27,9 @@ Cc: Arnd Bergmann <arnd@arndb.de>,
 	linux-mm@kvack.org,
 	iommu@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v5 09/15] drivers/md: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
-Date: Wed, 24 May 2023 18:18:58 +0100
-Message-Id: <20230524171904.3967031-10-catalin.marinas@arm.com>
+Subject: [PATCH v5 10/15] arm64: Allow kmalloc() caches aligned to the smaller cache_line_size()
+Date: Wed, 24 May 2023 18:18:59 +0100
+Message-Id: <20230524171904.3967031-11-catalin.marinas@arm.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230524171904.3967031-1-catalin.marinas@arm.com>
 References: <20230524171904.3967031-1-catalin.marinas@arm.com>
@@ -41,27 +41,38 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-ARCH_DMA_MINALIGN represents the minimum (static) alignment for safe DMA
-operations while ARCH_KMALLOC_MINALIGN is the minimum kmalloc() objects
-alignment.
+On arm64, ARCH_DMA_MINALIGN is 128, larger than the cache line size on
+most of the current platforms (typically 64). Define
+ARCH_KMALLOC_MINALIGN to 8 (the default for architectures without their
+own ARCH_DMA_MINALIGN) and override dma_get_cache_alignment() to return
+cache_line_size(), probed at run-time. The kmalloc() caches will be
+limited to the cache line size. This will allow the additional
+kmalloc-{64,192} caches on most arm64 platforms.
 
 Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Alasdair Kergon <agk@redhat.com>
-Cc: Mike Snitzer <snitzer@kernel.org>
+Cc: Will Deacon <will@kernel.org>
 ---
- drivers/md/dm-crypt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/include/asm/cache.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/md/dm-crypt.c b/drivers/md/dm-crypt.c
-index 8b47b913ee83..ebbd8f7db880 100644
---- a/drivers/md/dm-crypt.c
-+++ b/drivers/md/dm-crypt.c
-@@ -3256,7 +3256,7 @@ static int crypt_ctr(struct dm_target *ti, unsigned int argc, char **argv)
+diff --git a/arch/arm64/include/asm/cache.h b/arch/arm64/include/asm/cache.h
+index a51e6e8f3171..ceb368d33bf4 100644
+--- a/arch/arm64/include/asm/cache.h
++++ b/arch/arm64/include/asm/cache.h
+@@ -33,6 +33,7 @@
+  * the CPU.
+  */
+ #define ARCH_DMA_MINALIGN	(128)
++#define ARCH_KMALLOC_MINALIGN	(8)
  
- 	cc->per_bio_data_size = ti->per_io_data_size =
- 		ALIGN(sizeof(struct dm_crypt_io) + cc->dmreq_start + additional_req_size,
--		      ARCH_KMALLOC_MINALIGN);
-+		      ARCH_DMA_MINALIGN);
+ #ifndef __ASSEMBLY__
  
- 	ret = mempool_init(&cc->page_pool, BIO_MAX_VECS, crypt_page_alloc, crypt_page_free, cc);
- 	if (ret) {
+@@ -90,6 +91,8 @@ static inline int cache_line_size_of_cpu(void)
+ 
+ int cache_line_size(void);
+ 
++#define dma_get_cache_alignment	cache_line_size
++
+ /*
+  * Read the effective value of CTR_EL0.
+  *
