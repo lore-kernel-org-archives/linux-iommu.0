@@ -1,14 +1,14 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A21A419BDF
-	for <iommu@lists.linux.dev>; Thu, 25 May 2023 15:57:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7F4A519E7F
+	for <iommu@lists.linux.dev>; Thu, 25 May 2023 16:12:49 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 003CAD75;
-	Thu, 25 May 2023 08:58:42 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A82561042;
+	Thu, 25 May 2023 09:13:33 -0700 (PDT)
 Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 729503F762;
-	Thu, 25 May 2023 08:57:54 -0700 (PDT)
-Message-ID: <df0dd2a4-34f5-3627-ce8c-7636974879ee@arm.com>
-Date: Thu, 25 May 2023 16:57:53 +0100
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 060BB3F762;
+	Thu, 25 May 2023 09:12:38 -0700 (PDT)
+Message-ID: <ac8e86ba-fd2c-3816-8156-86af7ac8327c@arm.com>
+Date: Thu, 25 May 2023 17:12:37 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -17,8 +17,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.0
-Subject: Re: [PATCH v5 13/15] iommu/dma: Force bouncing if the size is not
- cacheline-aligned
+Subject: Re: [PATCH v5 15/15] arm64: Enable ARCH_WANT_KMALLOC_DMA_BOUNCE for
+ arm64
 Content-Language: en-GB
 To: Catalin Marinas <catalin.marinas@arm.com>,
  Linus Torvalds <torvalds@linux-foundation.org>,
@@ -35,95 +35,63 @@ Cc: Arnd Bergmann <arnd@arndb.de>,
  "Rafael J. Wysocki" <rafael@kernel.org>, linux-mm@kvack.org,
  iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
 References: <20230524171904.3967031-1-catalin.marinas@arm.com>
- <20230524171904.3967031-14-catalin.marinas@arm.com>
+ <20230524171904.3967031-16-catalin.marinas@arm.com>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230524171904.3967031-14-catalin.marinas@arm.com>
+In-Reply-To: <20230524171904.3967031-16-catalin.marinas@arm.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 24/05/2023 6:19 pm, Catalin Marinas wrote:
-> Similarly to the direct DMA, bounce small allocations as they may have
-> originated from a kmalloc() cache not safe for DMA. Unlike the direct
-> DMA, iommu_dma_map_sg() cannot call iommu_dma_map_sg_swiotlb() for all
-> non-coherent devices as this would break some cases where the iova is
-> expected to be contiguous (dmabuf). Instead, scan the scatterlist for
-> any small sizes and only go the swiotlb path if any element of the list
-> needs bouncing (note that iommu_dma_map_page() would still only bounce
-> those buffers which are not DMA-aligned).
-> 
-> To avoid scanning the scatterlist on the 'sync' operations, introduce an
-> SG_DMA_USE_SWIOTLB flag set by iommu_dma_map_sg_swiotlb(). The
-> dev_use_swiotlb() function together with the newly added
-> dev_use_sg_swiotlb() now check for both untrusted devices and unaligned
-> kmalloc() buffers (suggested by Robin Murphy).
+> With the DMA bouncing of unaligned kmalloc() buffers now in place,
+> enable it for arm64 to allow the kmalloc-{8,16,32,48,96} caches. In
+> addition, always create the swiotlb buffer even when the end of RAM is
+> within the 32-bit physical address range (the swiotlb buffer can still
+> be disabled on the kernel command line).
 > 
 > Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Christoph Hellwig <hch@lst.de>
-> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Will Deacon <will@kernel.org>
 > ---
-[...]
-> diff --git a/include/linux/scatterlist.h b/include/linux/scatterlist.h
-> index 87aaf8b5cdb4..330a157c5501 100644
-> --- a/include/linux/scatterlist.h
-> +++ b/include/linux/scatterlist.h
-> @@ -248,6 +248,29 @@ static inline void sg_unmark_end(struct scatterlist *sg)
->   	sg->page_link &= ~SG_END;
->   }
->   
-> +#define SG_DMA_BUS_ADDRESS	(1 << 0)
-> +#define SG_DMA_USE_SWIOTLB	(1 << 1)
-> +
-> +#ifdef CONFIG_SWIOTLB
-> +static inline bool sg_is_dma_use_swiotlb(struct scatterlist *sg)
+>   arch/arm64/Kconfig   | 1 +
+>   arch/arm64/mm/init.c | 7 ++++++-
+>   2 files changed, 7 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+> index b1201d25a8a4..af42871431c0 100644
+> --- a/arch/arm64/Kconfig
+> +++ b/arch/arm64/Kconfig
+> @@ -120,6 +120,7 @@ config ARM64
+>   	select CRC32
+>   	select DCACHE_WORD_ACCESS
+>   	select DYNAMIC_FTRACE if FUNCTION_TRACER
+> +	select DMA_BOUNCE_UNALIGNED_KMALLOC
 
-Nit: can we decide whether this API is named sg_<verb>_<flag name> or 
-sg_dma_<verb>_<flag suffix>? I'm leaning towards the latter, which would 
-be consistent with the existing kerneldoc if not all the code (which I 
-shall probably now send a patch to fix).
-
-However, my internal grammar parser just cannot cope with the "is use" 
-double-verb construct, so I would be inclined to collapse this 
-particular one to "sg_dma_use_swiotlb" either way. Yes, it breaks the 
-pattern, but that's what the English language does best :)
-
-Otherwise,
-
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-
-I don't seem to have got round to giving this a spin on my Juno today, 
-but will try to do so soon.
+We may want to give the embedded folks an easier way of turning this 
+off, since IIRC one of the reasons for the existing automatic behaviour 
+was people not wanting to have to depend on the command line. Things 
+with 256MB or so of RAM seem unlikely to get enough memory efficiency 
+back from the smaller kmem caches to pay off the SWIOTLB allocation :)
 
 Cheers,
 Robin.
 
-> +{
-> +	return sg->dma_flags & SG_DMA_USE_SWIOTLB;
-> +}
-> +
-> +static inline void sg_dma_mark_use_swiotlb(struct scatterlist *sg)
-> +{
-> +	sg->dma_flags |= SG_DMA_USE_SWIOTLB;
-> +}
-> +#else
-> +static inline bool sg_is_dma_use_swiotlb(struct scatterlist *sg)
-> +{
-> +	return false;
-> +}
-> +static inline void sg_dma_mark_use_swiotlb(struct scatterlist *sg)
-> +{
-> +}
-> +#endif
-> +
->   /*
->    * CONFIG_PCI_P2PDMA depends on CONFIG_64BIT which means there is 4 bytes
->    * in struct scatterlist (assuming also CONFIG_NEED_SG_DMA_LENGTH is set).
-> @@ -256,8 +279,6 @@ static inline void sg_unmark_end(struct scatterlist *sg)
+>   	select DMA_DIRECT_REMAP
+>   	select EDAC_SUPPORT
+>   	select FRAME_POINTER
+> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+> index 66e70ca47680..3ac2e9d79ce4 100644
+> --- a/arch/arm64/mm/init.c
+> +++ b/arch/arm64/mm/init.c
+> @@ -442,7 +442,12 @@ void __init bootmem_init(void)
 >    */
->   #ifdef CONFIG_PCI_P2PDMA
+>   void __init mem_init(void)
+>   {
+> -	swiotlb_init(max_pfn > PFN_DOWN(arm64_dma_phys_limit), SWIOTLB_VERBOSE);
+> +	bool swiotlb = max_pfn > PFN_DOWN(arm64_dma_phys_limit);
+> +
+> +	if (IS_ENABLED(CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC))
+> +		swiotlb = true;
+> +
+> +	swiotlb_init(swiotlb, SWIOTLB_VERBOSE);
 >   
-> -#define SG_DMA_BUS_ADDRESS (1 << 0)
-> -
->   /**
->    * sg_dma_is_bus address - Return whether a given segment was marked
->    *			   as a bus address
+>   	/* this will put all unused low memory onto the freelists */
+>   	memblock_free_all();
