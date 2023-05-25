@@ -1,69 +1,80 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2054.outbound.protection.outlook.com [40.107.93.54])
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BDB817C7
-	for <iommu@lists.linux.dev>; Thu, 25 May 2023 01:41:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D5F91C02
+	for <iommu@lists.linux.dev>; Thu, 25 May 2023 02:28:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1684981719; x=1716517719;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=GwGKzAaubtZd74qRHVt7bC8iEmOkTw7gy+yWes+SSdo=;
+  b=BjWD/RZ9vnAEGRCIlxubCgnrNq+zinwNkuuNuoBGX4FIpa+qTY2tWktW
+   pJLfUps38KH4YFCMOCRYqEy8IQOysfrSo2GREeFz4u+B+j+S5a69sEx3/
+   xViatj5KwldkM6HllxI9B5fLI1a32y3XE3gYFv3lprOezqSy8owC0FbV8
+   12oEszX/8ghKtatvcWM/Twrtj75aOQvRETb1TbNovX8Z89tvBzMjXmRJD
+   qH15ai8X3U3th3xtRktrLvT7QT4tgzJ6Boge0FujKIn/oM1WZZMXefLoT
+   EYUue+DkztfROxdDdcqKhhDseK2REpnjwaxeL7KjokDMn8Xc9AypgF9wW
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10720"; a="352599015"
+X-IronPort-AV: E=Sophos;i="6.00,190,1681196400"; 
+   d="scan'208";a="352599015"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2023 19:28:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10720"; a="655028716"
+X-IronPort-AV: E=Sophos;i="6.00,190,1681196400"; 
+   d="scan'208";a="655028716"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by orsmga003.jf.intel.com with ESMTP; 24 May 2023 19:28:25 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Wed, 24 May 2023 19:28:25 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Wed, 24 May 2023 19:28:24 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Wed, 24 May 2023 19:28:24 -0700
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.49) by
+ edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Wed, 24 May 2023 19:28:24 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DWrxX+EvnSE6YoLNpRZq0/yUZqKkPNjVTNY9hVGZNAPD/snXxbASUyfDH2GvAIaTO8tNHWSTEj2JZpZsrtgCbeEIUef7kl18FT7FMYsCCptGtIYHsgYjkWrWHV76uRK3RUroWoosTGMsDzRxKMCcexOrmGrArC3OZvLAE7OyGO+9jJV2mGkJ7viNm6I+Jlp6Hdqm/LBb2+DIbM/v2m1RzrNYlgYw3d+8q199klqXD27BzmvSpcQGbwh/3x87QLbVLVS+WbAlbMgKH88uCiTPOT4MiZOU7ETubTVAkobW9JyVCynGI8cbn3YGWAUJ9VINzLVP8w7AfA0ip1hlYNnAfA==
+ b=f1HUFxW0fGdp4y5YGeuWSt7eFWx2QEp15LBVL6GU7cYTtA/kV6GFeiBMjyGPHUnN2qBExtYXb0L7XANbAEig6q6gEh0/W6XEVIT7NGXDdOqqSr8Jg5cDXkyGmWFo5gME2ITPdFtFKfU7EZ8rE72Z4jzvXAxPlmnS1F5qsvToIyYk5dRd8ojLsCUGbIyJ1kFmesTVCiV+SuZBM4k6DUwqBc6u61VQDqzbGZje/LgNnAxShcR9Jw/rRP/0bqLgVB84OWv7ejZfZ7PyqGOZ5NDo1D4vYzU2geyqdXOXk1aErEf9mViTH61nc91dl8KHE+qDXxYdorRLbaBEp+rpkal5kg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8g8JyXKqeW/uXBF8+vZSR2TfQuYTkw+qxu/MiCZm59w=;
- b=fEKCJQHPdF104ng0PXeDYCiDPabU4snOrwuQq0DekfGeb7WA74shqUykdxq+hflrh1AN7QGd1rFciLvh5DQsg8hHgrufmKc/4JDhYZZGlLbOYRDxn06JvQ+mCnjGp95s2CMsgVLcKPW8V6UCShJzLL+BIHrHulhFjdLi5uKcpHMDRWa2NleP9Nu530Mdk6CPR8j9WYEM3OPpRLWWyp7smGi8GjvNcl732ff7mHrbUgz9BJXuYXW9QUrpYuVsvnmmdpq8N51CG28/S1nnldCrjxTOpBduQ/cMUea4TTQ872RptkwGN8qQV30cKS5J0MSco6TCc4h1XQIYHCm/rf6VUA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8g8JyXKqeW/uXBF8+vZSR2TfQuYTkw+qxu/MiCZm59w=;
- b=NRV6WMmmHs687II5W7pqo5Bo9BPqw/C4QxI6NAH0qrgzi/x4tT2M6DxO0/4P9Gz8GlS506fPx4Iu3aZn7CT1adRhqpKmVO0VV9IsuLc2ArZ1xDRoHz0sRc7Wns1c3TX7L1k1MRhH8zt+aBarsNSFUttHkPLHO+dly8xlsvM4GzDQzEfT7FsPxTYR+ff5wNVMoAdLnVXoc8U5zb0H8PG7HV7tXJJlewH9VVTjoCmeXbMcaH/sWoBJiVeptbFNnpherHBWKLtvKONHRQjjSUft56QPnm/8CFSWCMkGMFLS+yMU5WOQ1No/RGXFEtqG+LPrbEgmFKSpfqmItsJOIts9tA==
-Received: from SJ0PR03CA0252.namprd03.prod.outlook.com (2603:10b6:a03:3a0::17)
- by SJ0PR12MB6941.namprd12.prod.outlook.com (2603:10b6:a03:448::10) with
+ bh=6yZ9tO/KQFhGCm81wY3fr8WeI3S0VSxWqPX6A57hRM0=;
+ b=AWECLK3dpx0bVkmkOr9kceymYG5EuzIdk0NIe4NKMvpq6627KtCYUq0fCHZBGAJ5JfgdJQY5V9cf+sG8sZkji4/D3E9v9w6zhuCHRznKcrz5OaaSqjBAvH1ltrH+9PKnMiiM1kCagI1M4zQVsBghoTssxdi+TLXnD8pekCJvJuDfKIo2TbkF4rJBrb+P4c+aWvZUbTcqe/7ohlglx+/mbxNot3hFJZtO/8xDfs69hqi0kVT746tqGQ1bZFFKR/MAwlhnQiFo8m8gwmO4LTLNB7hAzHiQbqp1JJm/ZvmmGqovxEZoviAU33Y5J+h/YCqWxWyP5JxNA3zEp6udPw0FkQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from MW5PR11MB5881.namprd11.prod.outlook.com (2603:10b6:303:19d::14)
+ by PH0PR11MB4902.namprd11.prod.outlook.com (2603:10b6:510:37::5) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.15; Thu, 25 May
- 2023 01:41:47 +0000
-Received: from CO1NAM11FT086.eop-nam11.prod.protection.outlook.com
- (2603:10b6:a03:3a0:cafe::ae) by SJ0PR03CA0252.outlook.office365.com
- (2603:10b6:a03:3a0::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.15 via Frontend
- Transport; Thu, 25 May 2023 01:41:47 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- CO1NAM11FT086.mail.protection.outlook.com (10.13.175.73) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6411.30 via Frontend Transport; Thu, 25 May 2023 01:41:47 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 24 May 2023
- 18:41:43 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.37; Wed, 24 May 2023 18:41:43 -0700
-Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Wed, 24 May 2023 18:41:42 -0700
-Date: Wed, 24 May 2023 18:41:41 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-CC: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.16; Thu, 25 May
+ 2023 02:28:18 +0000
+Received: from MW5PR11MB5881.namprd11.prod.outlook.com
+ ([fe80::a284:d072:336c:f233]) by MW5PR11MB5881.namprd11.prod.outlook.com
+ ([fe80::a284:d072:336c:f233%4]) with mapi id 15.20.6433.015; Thu, 25 May 2023
+ 02:28:18 +0000
+From: "Zhang, Tina" <tina.zhang@intel.com>
+To: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
 	"alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jgg@nvidia.com"
-	<jgg@nvidia.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
-	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+	<jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>
+CC: "cohuck@redhat.com" <cohuck@redhat.com>, "eric.auger@redhat.com"
+	<eric.auger@redhat.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
 	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
 	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
-	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
-	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
+	<chao.p.peng@linux.intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>, "peterx@redhat.com"
+	<peterx@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>,
 	"shameerali.kolothum.thodi@huawei.com"
 	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
 	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
@@ -71,101 +82,202 @@ CC: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
 	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
  Zhenzhong" <zhenzhong.duan@intel.com>
-Subject: Re: [PATCH v2 01/11] iommu: Add new iommu op to create domains owned
- by userspace
-Message-ID: <ZG681VohNlw2vvLD@Asurada-Nvidia>
-References: <20230511143844.22693-1-yi.l.liu@intel.com>
- <20230511143844.22693-2-yi.l.liu@intel.com>
- <BL1PR11MB5271B553140BB729AF4389AB8C7C9@BL1PR11MB5271.namprd11.prod.outlook.com>
- <ZGfDrRDI50oGih2r@Asurada-Nvidia>
- <BN9PR11MB52766A760580E6FBB995A33F8C419@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZG2fVj41GgosR1dk@Asurada-Nvidia>
- <BN9PR11MB5276F1410A11ED631CE6824F8C419@BN9PR11MB5276.namprd11.prod.outlook.com>
+Subject: RE: [PATCH v3 01/10] iommufd: Add data structure for Intel VT-d
+ stage-1 domain allocation
+Thread-Topic: [PATCH v3 01/10] iommufd: Add data structure for Intel VT-d
+ stage-1 domain allocation
+Thread-Index: AQHZhBgUs9pDDOk/NEG33iLtnrQuO69qVPJA
+Date: Thu, 25 May 2023 02:28:18 +0000
+Message-ID: <MW5PR11MB5881B1B7C7B14F776F0FD3F489469@MW5PR11MB5881.namprd11.prod.outlook.com>
+References: <20230511145110.27707-1-yi.l.liu@intel.com>
+ <20230511145110.27707-2-yi.l.liu@intel.com>
+In-Reply-To: <20230511145110.27707-2-yi.l.liu@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: MW5PR11MB5881:EE_|PH0PR11MB4902:EE_
+x-ms-office365-filtering-correlation-id: d252629c-26dd-4451-049f-08db5cc7b368
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: /kaAAgozRj5f6OuO5h9ki/PKo7gBVafxeA2x/Z+l+jKXnDZe3zJmLRC6u0bO3VTYHPTC5edpUm3o02CSQjJTBzYs++LcCE+745UITx9iRx7L8AyJtcXjeRrAFMZEzTK2UVFw9GiDjCgnlaXgUpw1AgPY2RWkdQJdVtugbvnQPraBa5QBo1wm5OUlezK1RY5Ekme1IqVxsysK4BwqXEItnJWCHPInT25J5ZmatdK46a1XDlJ191UvGfqL7mo49XlOPfeVhYIsO/Bdx4qKnVawSNaDd/goh8c48J+82pYiY7KCnka5p0qGCquKFexZniwtERmsk8GCDeErn/H248Cj6lvpNWUz1wtOgAA1ArKh4EqfK6zRA8HgcS/3ZDsXaWRmpURTIRWU4P/4krotFkFGM1nXyMlpba2GIxzn1Rrdanv84MFu6hIStDYwklEbbZcqXJh3z6iC/qExcfTK5W8rri2wF8JRVtCr017bF9ANdf6c2V1SE8vUOC1uapjp2uSivpigQMdByVOJme6g32gLXULw0MPa9iykTQmuWtrH4+2yv8HqFQ5L7grp7PQ/oam57mmIop2ZRvj4Kq8fNdKvdVQt4r7jBJIkFLmD1XSOfpPTrwnFUrXn53uN3MPUHFM0
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW5PR11MB5881.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(136003)(39860400002)(376002)(396003)(366004)(451199021)(71200400001)(7696005)(41300700001)(7416002)(26005)(53546011)(9686003)(6506007)(8936002)(8676002)(52536014)(38100700002)(5660300002)(83380400001)(38070700005)(2906002)(186003)(33656002)(86362001)(55016003)(122000001)(82960400001)(4326008)(64756008)(76116006)(66946007)(66446008)(66476007)(66556008)(54906003)(478600001)(110136005)(316002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?s90osqtwNFwE8RE4WKEIN1HL4nrAaPZMAUZFDPEXfp7H9697xGv3FErtodEA?=
+ =?us-ascii?Q?Q0HsE1xqLj7f+1FMnN3nVAtVCs2BhTzQzD6HRxL+9PPakxXWN5ZJ83+zeDUa?=
+ =?us-ascii?Q?k3DbGPBV6nabPJ2dVt9VuJACj3zY+sD7uJFIwCMM2m+GawqqQKwqHuQ4Rn+A?=
+ =?us-ascii?Q?QuRB5X6y0Sf6yin9Yyp/WthDzlnfdFNpRYYVFgRrV1DxCdHUtCEc8U9tcC/e?=
+ =?us-ascii?Q?lGfg2ZGHZLDuSmsvcTOpeTIiAyU9wsgpSlDDv9C2YkMLC6Aeg87+9AgvpYZK?=
+ =?us-ascii?Q?/mI8GGWPoRpGkGW5BoBkcMqma4Ghecihp0E/trWY9P1IOkNxHy6od2xttYY2?=
+ =?us-ascii?Q?ufFZgxr/pgZNIwswbWZZxzUN1gPdT766iQlYUPYYu+wKoztxGE550fZua26u?=
+ =?us-ascii?Q?tw/fXrqwAwbBkU5ZlO2l1gCDSOsFTOAD0KBVjYrEmz2cXRWdkwB7rVbtfrQv?=
+ =?us-ascii?Q?5cG/WXTatoxdOPbgvAjvLkiC6bOTiEPtbpqB71nH1tfNIJg96UbhAbCUIvyC?=
+ =?us-ascii?Q?I+VmFto7MGEVdKqJu7LMKa35Upi8jMOOLQYQFXr245BmWqQp0SHWOQ6iLtt1?=
+ =?us-ascii?Q?8LphvI9/n+rggQRz6p1RCebYfoUI1nRWbgvPV2jXM/ZCycZoo1Q3Q8lSzeOK?=
+ =?us-ascii?Q?NByO7/NnyxeLoch0c07Ay9MScB7bOX03jQZCilokJ2D/2/975YPbKUzrdA7f?=
+ =?us-ascii?Q?w0Cwq2J/TFJyyfqzDvtezp8haM6S0qmocADqkrq09L8UCiiYWcxQaidH92MH?=
+ =?us-ascii?Q?tY6+0+qr3TPB/KmY+WU8otBH8hOATuneSM+NxDPHlN9m+mG7YflppGtXcl04?=
+ =?us-ascii?Q?pS0mbJuT6CJe0xuGu9c5ImFd51d9inhNlM8aKAknKKMkWXgvZN48cYkwUpXt?=
+ =?us-ascii?Q?i5cw54ZJlO7M9IbEd4bmu779FKhdYXJSnHr4F2Cv01uBVnKXcjBEHM/R2Wf3?=
+ =?us-ascii?Q?EZxVAZmV6j+nq0ig2d682ClQl8ihCLqtQdtryL1kWO6FkU4m/yLdO+5qQYG0?=
+ =?us-ascii?Q?q91XNvE7bR0/wkLKPk+214zH/zlPiv+BZKvUtpMyRX5CwwrjUXlsbfNs3jbu?=
+ =?us-ascii?Q?ptcx6ijMShKLcRgP1ha2pisOad+jSh6iSwpVEENlzvghbr7SDKawYxUqSEmE?=
+ =?us-ascii?Q?jRoSmFT+09V3lXu1COHFk6P5yRQzebrCCN302a/HUJvDAmzPIx/6lUvjeNjj?=
+ =?us-ascii?Q?aqiZfB4dh5CGrFpLmcxoOQdsS9WSxO3Joh6ld9qJaFcfmYJD5nRYZETLUOE+?=
+ =?us-ascii?Q?H8LFR1NIFySHHZCk2ySDf1PKDLrlF5Nqtot6+PrE7eCl6ga6WuNXTtxsTMW8?=
+ =?us-ascii?Q?+J1FHgmu1RitpNyoGPNV8CZZi/yPA431WohFp0H/uwjkLZoSfbA45N2w5Tcy?=
+ =?us-ascii?Q?5U9utlqn1EwTmTuUY+d79tyH2dT2kKRh3cvkFvhXFQZmlM010i/jBNm1WMzi?=
+ =?us-ascii?Q?V2Hg8PW0PM6moCmY8DTKmN6qZdhvnn2mSso5ouoXjQ/I/KkBrAH1BvdR+EoH?=
+ =?us-ascii?Q?mbwaM/8XMaa6KEshW9lYlPxSg1Wak3m5dpM64cpbQSCGok+9tVX5RTF8vR43?=
+ =?us-ascii?Q?nNOSljASl8iGKTT7EtLY4pbdotAqdk33HYPD1+Ax?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276F1410A11ED631CE6824F8C419@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT086:EE_|SJ0PR12MB6941:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9a430cdf-f3fa-45de-c925-08db5cc13408
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	iiFTWjWSac8PV3jH6fpHaqQub5IgmKRty2os+i53fKq4sW2MUuqPIigZCYmiBaa2f56xa60F+E/kp4v6NtM9W2T26YpSKTjRh3/4orvOoxCanmdlV6xpWZXC3+R9VIRn5Qkha8grerq1SXQEbWYR+et1S+5ZcDOpzLi5nLJY0qYZzacxmVAVFB6AiTfHOqECzCGmB2CY8YActAw4yDx9uazddB4oBcRSJeunjOtazsnAw5RqUNG+yIIlgAdPt2xqQJ6icl/a72CFTOJ+lbfXLHhfLdlcBjoAiOKVwxjvRle7aN2hRys/PEdwqsawOQi07oh9BLcHvB8w/IkkuPwNnvcUjVjIzr88DXSRx9HmOWWsWQq7x01IV8skvIxdl7ndI+A8RGrQKxlByIi0lKuH9rUBDh7QMI1FAHe2Hpcb4Znf4r5Yd1w6aLcK/L4INdUwec0vgy3cFoMJXuANj7ITYwU8Gn0hS6QBv9bJfPgcWDk16HivO0UfHeDlQ9T224BBEWn21R63EmfCX0I/JdNHCRva4AkeTnYMSZatE25GmrKDEhrTMo7t/ZC7ny5OVdg8kszA/V93aYNWXGmB+Z4JyAelX0bXd68iuhMRxoJ4eT37zgRSkQLuLj3aA69PSXRAGRjNRfUT62NxBkJCLhSUL9Vi2AIvOcGHrYet7fqih9ar+mFSU0bYuSl4c5TaJUCV/KrgBBC3RQbddE9jsClRxTHGtewop3GM0ql/odQgn5VJtgUcCv4kf0TTI3ScI2yF
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(136003)(346002)(376002)(451199021)(36840700001)(40470700004)(46966006)(478600001)(54906003)(26005)(9686003)(186003)(70586007)(70206006)(6916009)(4326008)(82740400003)(356005)(5660300002)(82310400005)(426003)(336012)(41300700001)(36860700001)(33716001)(40480700001)(86362001)(55016003)(2906002)(8676002)(8936002)(7636003)(7416002)(47076005)(316002)(83380400001)(40460700003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 May 2023 01:41:47.3241
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MW5PR11MB5881.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d252629c-26dd-4451-049f-08db5cc7b368
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 May 2023 02:28:18.0755
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9a430cdf-f3fa-45de-c925-08db5cc13408
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT086.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB6941
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 5NqqhwNuNLIwVBT5aCEmQHJtGDSxtKdOpP9eFgJL8yMODbnRtXdSf0djuFdjGgETZmc6l0t6DoKSHV6lTr1qUQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB4902
+X-OriginatorOrg: intel.com
 
-On Wed, May 24, 2023 at 07:48:46AM +0000, Tian, Kevin wrote:
+Hi,
 
-> > > > > >   *           after use. Return the data buffer if success, or ERR_PTR on
-> > > > > >   *           failure.
-> > > > > >   * @domain_alloc: allocate iommu domain
-> > > > > > + * @domain_alloc_user: allocate user iommu domain
-> > > > > > + * @domain_alloc_user_data_len: return the required length of the
-> > user
-> > > > > > data
-> > > > > > + *                              to allocate a specific type user iommu domain.
-> > > > > > + *                              @hwpt_type is defined as enum
-> > iommu_hwpt_type
-> > > > > > + *                              in include/uapi/linux/iommufd.h. The returned
-> > > > > > + *                              length is the corresponding sizeof driver data
-> > > > > > + *                              structures in include/uapi/linux/iommufd.h.
-> > > > > > + *                              -EOPNOTSUPP would be returned if the input
-> > > > > > + *                              @hwpt_type is not supported by the driver.
-> > > > >
-> > > > > Can this be merged with earlier @hw_info callback? That will already
-> > > > > report a list of supported hwpt types. is there a problem to further
-> > > > > describe the data length for each type in that interface?
-> > > >
-> > > > Yi and I had a last minute talk before he sent this version
-> > > > actually... This version of hw_info no longer reports a list
-> > > > of supported hwpt types. We previously did that in a bitmap,
-> > > > but we found that a bitmap will not be sufficient eventually
-> > > > if there are more than 64 hwpt_types.
-> > > >
-> > > > And this domain_alloc_user_data_len might not be necessary,
-> > > > because in this version the IOMMUFD core doesn't really care
-> > > > about the actual data_len since it copies the data into the
-> > > > ucmd_buffer, i.e. we would probably only need a bool op like
-> > > > "hwpt_type_is_supported".
-> > > >
-> > >
-> > > Or just pass to the @domain_alloc_user ops which should fail
-> > > if the type is not supported?
-> >
-> > The domain_alloc_user returns NULL, which then would be turned
-> > into an ENOMEM error code. It might be confusing from the user
-> > space perspective. Having an op at least allows the user space
-> > to realize that something is wrong with the input structure?
-> >
-> 
-> this is a new callback. any reason why it cannot be defined to
-> allow returning ERR_PTR?
-
-Upon a quick check, I think we could. Though it'd be slightly
-mismatched with the domain_alloc op, it should be fine since
-iommufd is likely to be the only caller.
-
-So, I think we can just take the approach letting user space
-try a hwpt_type and see if the ioctl would fail with -EINVAL.
+> -----Original Message-----
+> From: Yi Liu <yi.l.liu@intel.com>
+> Sent: Thursday, May 11, 2023 10:51 PM
+> To: joro@8bytes.org; alex.williamson@redhat.com; jgg@nvidia.com; Tian,
+> Kevin <kevin.tian@intel.com>; robin.murphy@arm.com;
+> baolu.lu@linux.intel.com
+> Cc: cohuck@redhat.com; eric.auger@redhat.com; nicolinc@nvidia.com;
+> kvm@vger.kernel.org; mjrosato@linux.ibm.com;
+> chao.p.peng@linux.intel.com; Liu, Yi L <yi.l.liu@intel.com>;
+> yi.y.sun@linux.intel.com; peterx@redhat.com; jasowang@redhat.com;
+> shameerali.kolothum.thodi@huawei.com; lulu@redhat.com;
+> suravee.suthikulpanit@amd.com; iommu@lists.linux.dev; linux-
+> kernel@vger.kernel.org; linux-kselftest@vger.kernel.org; Duan, Zhenzhong
+> <zhenzhong.duan@intel.com>
+> Subject: [PATCH v3 01/10] iommufd: Add data structure for Intel VT-d stag=
+e-1
+> domain allocation
+>=20
+> This adds IOMMU_HWPT_TYPE_VTD_S1 for stage-1 hw_pagetable of Intel VT-
+> d and the corressponding data structure for userspace specified parameter
+> for the domain allocation.
+>=20
+> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+> ---
+>  include/uapi/linux/iommufd.h | 57
+> ++++++++++++++++++++++++++++++++++++
+>  1 file changed, 57 insertions(+)
+>=20
+> diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+> index 06dcad6ab082..c2658394827a 100644
+> --- a/include/uapi/linux/iommufd.h
+> +++ b/include/uapi/linux/iommufd.h
+> @@ -353,9 +353,64 @@ struct iommu_vfio_ioas {
+>  /**
+>   * enum iommu_hwpt_type - IOMMU HWPT Type
+>   * @IOMMU_HWPT_TYPE_DEFAULT: default
+> + * @IOMMU_HWPT_TYPE_VTD_S1: Intel VT-d stage-1 page table
+>   */
+>  enum iommu_hwpt_type {
+>  	IOMMU_HWPT_TYPE_DEFAULT,
+> +	IOMMU_HWPT_TYPE_VTD_S1,
+> +};
+> +
+> +/**
+> + * enum iommu_hwpt_intel_vtd_flags - Intel VT-d stage-1 page
+> + *				     table entry attributes
+> + * @IOMMU_VTD_PGTBL_SRE: Supervisor request
+> + * @IOMMU_VTD_PGTBL_EAFE: Extended access enable
+> + * @IOMMU_VTD_PGTBL_PCD: Page-level cache disable
+> + * @IOMMU_VTD_PGTBL_PWT: Page-level write through
+> + * @IOMMU_VTD_PGTBL_EMTE: Extended mem type enable
+> + * @IOMMU_VTD_PGTBL_CD: PASID-level cache disable
+> + * @IOMMU_VTD_PGTBL_WPE: Write protect enable  */ enum
+> +iommu_hwpt_intel_vtd_flags {
+> +	IOMMU_VTD_PGTBL_SRE =3D 1 << 0,
+> +	IOMMU_VTD_PGTBL_EAFE =3D 1 << 1,
+> +	IOMMU_VTD_PGTBL_PCD =3D 1 << 2,
+> +	IOMMU_VTD_PGTBL_PWT =3D 1 << 3,
+> +	IOMMU_VTD_PGTBL_EMTE =3D 1 << 4,
+> +	IOMMU_VTD_PGTBL_CD =3D 1 << 5,
+> +	IOMMU_VTD_PGTBL_WPE =3D 1 << 6,
+> +	IOMMU_VTD_PGTBL_LAST =3D 1 << 7,
+> +};
+> +
+> +/**
+> + * struct iommu_hwpt_intel_vtd - Intel VT-d specific user-managed
+> + *                               stage-1 page table info
+> + * @flags: Combination of enum iommu_hwpt_intel_vtd_flags
+> + * @pgtbl_addr: The base address of the user-managed stage-1 page table.
+> + * @pat: Page attribute table data to compute effective memory type
+> + * @emt: Extended memory type
+> + * @addr_width: The address width of the untranslated addresses that are
+> + *              subjected to the user-managed stage-1 page table.
+> + * @__reserved: Must be 0
+> + *
+> + * The Intel VT-d specific data for creating hw_pagetable to represent
+> + * the user-managed stage-1 page table that is used in nested translatio=
+n.
+> + *
+> + * In nested translation, the stage-1 page table locates in the address
+> + * space that defined by the corresponding stage-2 page table. Hence
+> +the
+> + * stage-1 page table base address value should not be higher than the
+> + * maximum untranslated address of stage-2 page table.
+> + *
+> + * The paging level of the stage-1 page table should be compatible with
+> + * the hardware iommu. Otherwise, the allocation would be failed.
+> + */
+> +struct iommu_hwpt_intel_vtd {
+> +	__u64 flags;
+> +	__u64 pgtbl_addr;
+> +	__u32 pat;
+> +	__u32 emt;
+Do we need the emt field as part of the stage-1 page table info? IIUC, acco=
+rding to vt-d spec, the emt field is in stage-2 page table entries. Since i=
+n nested mode we only expose stage-1 page table to guest vt-d driver, I'm c=
+urious how does guest vt-d driver populate this EMT?
 
 Thanks
-Nic
+-Tina
+> +	__u32 addr_width;
+> +	__u32 __reserved;
+>  };
+>=20
+>  /**
+> @@ -391,6 +446,8 @@ enum iommu_hwpt_type {
+>   * +------------------------------+-------------------------------------=
++-----------+
+>   * | IOMMU_HWPT_TYPE_DEFAULT      |               N/A                   =
+|    IOAS   |
+>   * +------------------------------+-------------------------------------=
++-----------+
+> + * | IOMMU_HWPT_TYPE_VTD_S1       |      struct iommu_hwpt_intel_vtd    =
+|
+> HWPT   |
+> + *
+> + +------------------------------+-------------------------------------+
+> + -----------+
+>   */
+>  struct iommu_hwpt_alloc {
+>  	__u32 size;
+> --
+> 2.34.1
+>=20
+
