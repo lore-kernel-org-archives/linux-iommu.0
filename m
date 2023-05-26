@@ -1,181 +1,173 @@
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2077.outbound.protection.outlook.com [40.107.7.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 293FA18E
-	for <iommu@lists.linux.dev>; Fri, 26 May 2023 00:33:40 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=I7dp7zm6n/dqif6RjZeSnDj3wMDMzdRzuQgJhw9maApZRKUrMl5GFJ2mOrkGz/aT2WiFBgLkUNFhExcT8hYJzJi19UWaG6tXu+U7RNLp1AdCGwo6jecow/ybTsFLNLjMY0w5U4o9yZdYXVj5G0/TZe8KTqAiIh9iaYfY+7UhnqEHsQ0sv2Y97IoGd5mtJDANMOYOKO2bTagKwxU/h3/1qP5XEM4mqWkt514d/bhM5VvZCkfqW1fbJWunCnr4+IkjKRN4Fy6sEMpzSbc5r2s3WOwCgDJgB2j0hTWj3s2qUq8SxnSKL0QuNhHHueudPnce1QTkVfS1HfM5F1xfaFUQcQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7nDsa4rGp93bYQ4nJQ1nlrKYUr/Q41wEifORTs5E/wA=;
- b=mMR4rAw4PB/dgDw3jmWJSDX8RU87pphE/IxH80xe/kWEDd6aVjUyINSOMbcF7lnSBMiYaXEPyzc1osublBNCOhhoUio5dro/f6xHGxsxCKk1lV6YscZk1QPBRReHD4wKtDFXofhKNVTufBsRyOJUAABGQ5+P5SGDgKJ5O1mwq6AylNdJhOldHkAWhA6JzK4tpBYeTBFHOcz02Y6MFR82GOdJdgre7TpEzOhrXSfoi4zpQUcpFUYZpLe9aD59SQRpqX469Bm7HRUUWylcqDkkZgu/d68YMpUbzE3gGTVDoUIdt+jQa7D22KwQrf014qZWwLzb5opv5yg7ropST1iG8g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7nDsa4rGp93bYQ4nJQ1nlrKYUr/Q41wEifORTs5E/wA=;
- b=CmiX9toSkEGhT2s/vHmvY2e3AZWJljHznqc6qq2K9tElRK7jl5KhnJnkdhPm084dFyP45r9WYF+Ksv8uoWDccM8l0Yw0R6LbfXTnOjTLswLXxxVBK1pWnldwocBGRMQArR+EKNqXCPPZGvU6ZqU25FAvcKF5Jlp5dHMsyG0hG3A=
-Received: from DB9PR04MB9236.eurprd04.prod.outlook.com (2603:10a6:10:370::16)
- by AS8PR04MB9094.eurprd04.prod.outlook.com (2603:10a6:20b:445::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.17; Fri, 26 May
- 2023 00:33:37 +0000
-Received: from DB9PR04MB9236.eurprd04.prod.outlook.com
- ([fe80::ebb7:2418:4038:925d]) by DB9PR04MB9236.eurprd04.prod.outlook.com
- ([fe80::ebb7:2418:4038:925d%5]) with mapi id 15.20.6433.016; Fri, 26 May 2023
- 00:33:36 +0000
-From: "Z.Q. Hou" <zhiqiang.hou@nxp.com>
-To: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
-CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>
-Subject: RE: [RFC PATCH] dma: coherent: respect to device 'dma-coherent'
- property
-Thread-Topic: [RFC PATCH] dma: coherent: respect to device 'dma-coherent'
- property
-Thread-Index: AQHZbqX64aqH8/sqmEm+RldR8MQMVa8tfJIAgAFAtvCAALVkgIABXOxggDsl29A=
-Date: Fri, 26 May 2023 00:33:36 +0000
-Message-ID:
- <DB9PR04MB92361C6DF63AB009FE57A46C84479@DB9PR04MB9236.eurprd04.prod.outlook.com>
-References: <20230414080307.35114-1-Zhiqiang.Hou@nxp.com>
- <20230416063028.GA6276@lst.de>
- <DB9PR04MB9236E1467316DFEE177D5E9E849C9@DB9PR04MB9236.eurprd04.prod.outlook.com>
- <42d401e9-57d2-1178-eb94-68f975be73e8@arm.com>
- <DB9PR04MB9236D992207FD9AC47CC1385849D9@DB9PR04MB9236.eurprd04.prod.outlook.com>
-In-Reply-To:
- <DB9PR04MB9236D992207FD9AC47CC1385849D9@DB9PR04MB9236.eurprd04.prod.outlook.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DB9PR04MB9236:EE_|AS8PR04MB9094:EE_
-x-ms-office365-filtering-correlation-id: b35f9112-6b9d-4e96-3c54-08db5d80d83a
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- RN859/KaRsqCGQMX0HudW01HDEY3YXvmKEdzKm+AQ1UhvTF2Oes7tLJbcY5P5CCuuU66OkY4d881TYRvb7Vc7/XfpaUuVcaF9LqhqohUFW5LTuCr0Texy/lH+Tf77nrtiVyNJ/kUyNnZwSXLsvpxi051W5CInzLh6WqOns7jkEDYgo7+LyCVRSQb/geAgn4wNPoXJsZjei8xseTIzKPm66xLGBP3rWUNmdiTySJdakty++kNI85nVAS1nnsIqaQ81WwRb5K5FpZav56hFAa8856/BKIlv6eQnQLYqAv5CRNofEq9EURCupHim8hhSBiUm0iKMAHmh3TFjg7hc31ISL/lK3yDMZZiR8om4FCID150r4DW/HkJMDAt54bbtJZmzphIKWPiwIZJW8MsCbYY3YbUN84XbTUQYCwlksiezKkiAkaMaXc7qfekHpP7GYqVD0fmjDe1Yt1U3mKgo7paU8/J7sV9mb4hwf7dpN+nnzNF9oUWgeXFDkfW+yAt9yoSr/GVFv1rJnMhpQDDcsLsbVLmSZhCPBsTL7136Z48wwd05qWbjLW2c5YbELbxiIh0CkoSWHweVJ5ft4TaiZeTNMnWm96/RbkgMnmrr4b1E+G4ZNoe0tIdI3f8xX3fUq1b
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB9236.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(376002)(136003)(39860400002)(366004)(451199021)(4326008)(33656002)(55016003)(86362001)(53546011)(8676002)(8936002)(6506007)(9686003)(41300700001)(186003)(26005)(83380400001)(52536014)(76116006)(54906003)(316002)(66476007)(64756008)(66556008)(66446008)(66946007)(5660300002)(478600001)(71200400001)(7696005)(122000001)(38070700005)(38100700002)(2906002)(110136005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?Z2lGQW1jd3orRXlKZDVqN1haTFliN3BzdFBrTHFUWWZydWpaRnlzbkFlNU11?=
- =?utf-8?B?WVJJQ2xuK2IzRFlVQ2lYZG92U0V4cGNvVHFYY0t3b1gzZ29IWVNLMFdWZUFt?=
- =?utf-8?B?OUQwVGJOcnkvQWRHc1lRMm1YQkd1VU5GRHFxdFYzVWQ2U1FjTEtJa1h4MnVw?=
- =?utf-8?B?WDBaT3hYT1FKZ0hBU2J1eTFnRGhMYktkbTA1Q1U4VFZMVm5HUExvNkZPdTI1?=
- =?utf-8?B?czFIUmw3YytYUktvZTErQW1hbWU3VlZaaU53SWcvMWx5Rnh4RFR4VHlQeXdz?=
- =?utf-8?B?Sk55SWkzWEJKendaMWs5T2RXZjk4cCtUaG9XQkdvWUVMNktnZkthektrM0dj?=
- =?utf-8?B?MzhkTjdUMFBNUDY3TmQ4a1pITWxpWXd4ZjZweVZsU05tMkFWWkFXYlRtM2Vo?=
- =?utf-8?B?OHNjdTMxQ2RrQkJNWUZNMEx3enI1V2MrN0NsT1UvQzhXZWFwNldPcjEzUE5T?=
- =?utf-8?B?RUNOWVB5SGZFc2JGSE5DV3JNZmYydDlJQmVPU3g0aHkrWXdMM0gvZVd5NXRM?=
- =?utf-8?B?MTN2QjRHVHZpZUo2Ump0Zi9jcXd4bFBIbjIvVnpCdHByQ2M3L2k4cFhETWlu?=
- =?utf-8?B?MStRRStHd2RZa3RjNENoYnNxdkczdEVDcjB3WkRKZExYcVQvL3pTOHR5UHpG?=
- =?utf-8?B?K3pEYmVPRzRPd0xRN2h4RzY4TVoxQ0dWb2tRVkhEd1JFWXpGZDFwTmZuMEVi?=
- =?utf-8?B?Sy9GdVhSekk4c01PS04wSGgyd21Gam1WbXBjN0hNM0Z6b1VtaWJSSFFud3N3?=
- =?utf-8?B?OW0wbXIwWG5Peit0blE4N0dzQmJhTjZFY0ZRNXBwT2VJU1NzbnBJZ0U4T2sv?=
- =?utf-8?B?dHBXVG5rSE5SbUF3OFhHbSt2bDVnTFpMVHN5V0s3Z2hpOXZscUxmaldrZmlo?=
- =?utf-8?B?WkhuNkYzVXhUSGoyTSs4eFRnbGhjTnhYSlF4YXIydFI4WkJDektuUXBkRkxo?=
- =?utf-8?B?Nis1bEFFSUVOTlQ1MUlOREpCejNjbHJuMWQyYm9idnE0eDNySXJ6M3lnMDE3?=
- =?utf-8?B?N0pUS0ozWHZ2ays0TEpNMVZIdTRpbkNoWVhSbnNtKzgzRHJOUU5rMTNLT1ps?=
- =?utf-8?B?U0xHL1U3c0kvYUh6ZThrQmlwWDNZMEJGN21QeEhLaXdocmxxMExZUTMrcFQ4?=
- =?utf-8?B?MlVCUkFYUkhQUnlSZ1hJZWRKc0wwWVFUVzV0cHhqRGQxdUI3V0lRVERPODA5?=
- =?utf-8?B?QXo2WGp6eXltWnp0KzIwMUdOWHd1M0xxVGZtRXBqNkFNU0REQXgzdGpXanZn?=
- =?utf-8?B?THNZelRCdGc1TitmSmUrNWQ1Wm5Nd0FobkpLYlV2VlRFREpBU1I2eDBIOWJ0?=
- =?utf-8?B?Y2hOSWhma0FpZ21pWGdYVURxc2NRVnRZTmN6M0ZEV3lTS01UTDhVaG1ic1hS?=
- =?utf-8?B?ZGVCamNKOEl5Q3lmYmxpNWxxYklidzA3RkdFbVBOTmxQWG9rbHA4dzdQc2Ny?=
- =?utf-8?B?Wk1rbWRLc2JLWXFCa3h4cnNCQUtLNU1pT0dVdjFNMW52ekhSbkpLUG9xWllR?=
- =?utf-8?B?aWVJL2d4ZVFWWldGS3hjSjdmTnl4YS92UEZQdTJKRXBVbElwK09xYXQ3c2Ur?=
- =?utf-8?B?Sk9DY0ZWSElDL0ZKRHg5dXBQUFp0S3RoLzlEc1RhWmtiVDhldGJ0N1RrZ3ZU?=
- =?utf-8?B?bGltZzF2UnZVMWlNdytGOHFWbkxCS0did01ic3VmNmVDV01XQUNxNk8rWExv?=
- =?utf-8?B?V3dGS3QyY2hHVFVYN1VXdy91ODVqSUNDcDJ6eUNiRFo4TEFWVmJOT2c4Vjkx?=
- =?utf-8?B?UlFnQVp2bEVES2x6c0xMT3JLNVhucTVSSU5LM293R0gxVW4wMEV0ZUhqOW4v?=
- =?utf-8?B?c2Rja2Z3RkZaQk1VT25OUE1Ea2VvNzIvZEQ1QUlMVkRGMWs1Unlzang0QjBP?=
- =?utf-8?B?R3dFczJlRGNPa2QyVGVtZ1F1MlpYeDVpQSsvV29GVUdnRmdEeDB6YkZWTVdv?=
- =?utf-8?B?UkxneVRIbmdlYzA5eUV2L3E3Y1BZbkdtV0JubEVzbWpYK1dTSGd4cS9PSEVn?=
- =?utf-8?B?d205STVlYXpsajRnZ0QvQ3Y2amhUYkZPbExpMDhQTkJ0WS9iNFpObjRrMzNr?=
- =?utf-8?B?aEZDbTF5WUkwaDlYQWpQU0dUc1F0R2xSTE9MSWFMSEljcXRVdXlJMU9POU9P?=
- =?utf-8?Q?H8Obo4Uvi+SOu0/pZDHtQttNa?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 035AF17C9
+	for <iommu@lists.linux.dev>; Fri, 26 May 2023 01:59:11 +0000 (UTC)
+Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-64d2e8a842cso341055b3a.3
+        for <iommu@lists.linux.dev>; Thu, 25 May 2023 18:59:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1685066351; x=1687658351;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=SHXSI++vej3nO9JdS3WPE1L2j+X5Z0vQui5q9gEk36o=;
+        b=u7yPykjjbmCytXH6pFeAr3KKb+n0Dr/7iRiYbmd/2mW7OQXDxbdmhCf6WTf2zF/OQA
+         xgvnwKpsoHs4kD48+/NfDkt4HR9uPDjpqKei+Ka0yT6ZhcdLK0WEzirOb1pdjfT6Kl/l
+         y6fqshg9NP1bWU2EoPB5oKxxwgbLMKz4RY56SNq0KLh4CyYFVyxMAhQ+DwYJrgwVHozn
+         ykFkaZy8lZ3/pfwXq3RhNVJy8Z3tiOBvh2IeTdxOFY+GxHTOeQ3Bo9obBuv5UG6Awwnw
+         iKpzYkpMjs2MOvS3KHQ6adGU+HflbDF/dnFeXzOZjqesxCry1a0qQjNBSsy4ajckxZwl
+         R13A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685066351; x=1687658351;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=SHXSI++vej3nO9JdS3WPE1L2j+X5Z0vQui5q9gEk36o=;
+        b=RYanGMLE9gb4Pqidv39YXzYjihh15kuVOdTo13iAIoNK9DgqhsCfccSVvAfKCh3EO/
+         hYQn853eZT8rQwpP0HtJKiO1Xx9jTqD4X/dHCxvyQJMqYm//eCab2awwoj4bukjtpu3a
+         afINF9n+lUlQOUEVRGR3NJG+VQyqToKCIa4S1/2hKbdCNBlPE+fjuRZVV6vJEiVC/emP
+         fo8RXq8CJwwW4D3ruHUl083bTSqb36myKdLE5mSKWOpz8zSnzHkHAORLjVTqsdJKN4xz
+         7MY5I3isOH6PlMLGytVsUEJQIFKpEOxzynOgfosUgWiurzTMrtLCfdBvC3WZnatMmIc4
+         KTAQ==
+X-Gm-Message-State: AC+VfDy5Rq3AMOZdHEQPx0L2fPd3KiU6YQFz/Oc6YmJVibqiPvuiubqD
+	PLEt9OaV5lAa/XVhXul3B5JpjA==
+X-Google-Smtp-Source: ACHHUZ62FFB/huSWayTmzsRIupHGq1n53axHnLv9NDLNL/oh5ccqB5HNl6tnnxMTd0vHw7gzQMDQng==
+X-Received: by 2002:a05:6a00:2491:b0:647:d698:56d2 with SMTP id c17-20020a056a00249100b00647d69856d2mr1017231pfv.27.1685066351315;
+        Thu, 25 May 2023 18:59:11 -0700 (PDT)
+Received: from [100.64.100.6] ([194.5.48.111])
+        by smtp.gmail.com with ESMTPSA id fe22-20020a056a002f1600b0064ceb16a1a8sm1751764pfb.33.2023.05.25.18.59.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 May 2023 18:59:10 -0700 (PDT)
+Message-ID: <7650f32d-6d4d-012e-b14b-538529de0577@linaro.org>
+Date: Fri, 26 May 2023 09:58:52 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB9236.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b35f9112-6b9d-4e96-3c54-08db5d80d83a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 May 2023 00:33:36.7468
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: KcGfynUAF1iOMfpdoN9CimCK5lzzDb8e7pyVh6+fGd9bq+HXP54ezYOjaEG62DwZRO2sWlOwHk4prjbWemai2Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB9094
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.11.0
+Subject: Re: [PATCH v2 00/17] Add Nested Translation Support for SMMUv3
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, robin.murphy@arm.com, will@kernel.org,
+ eric.auger@redhat.com, kevin.tian@intel.com, baolu.lu@linux.intel.com,
+ joro@8bytes.org, shameerali.kolothum.thodi@huawei.com,
+ jean-philippe@linaro.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+ alex.williamson@redhat.com, yi.l.liu@intel.com
+References: <cover.1683688960.git.nicolinc@nvidia.com>
+ <CABQgh9FL4ssQjBJM52_kb0aBVVPb_9Wc0Q+NL1PaQO=2LYBHCA@mail.gmail.com>
+ <ZGJWgFVJDWxVpiBE@Asurada-Nvidia>
+ <CABQgh9FMGPnUpz6tc6c27i6nT0Lcs9YQMoO=V40Fi2inJiCh-A@mail.gmail.com>
+ <ZG/ygPy1XbSSNzR4@Asurada-Nvidia>
+From: zhangfei gao <zhangfei.gao@linaro.org>
+In-Reply-To: <ZG/ygPy1XbSSNzR4@Asurada-Nvidia>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogWi5RLiBIb3UNCj4gU2Vu
-dDogVHVlc2RheSwgQXByaWwgMTgsIDIwMjMgNTo1NiBQTQ0KPiBUbzogUm9iaW4gTXVycGh5IDxy
-b2Jpbi5tdXJwaHlAYXJtLmNvbT47IENocmlzdG9waCBIZWxsd2lnIDxoY2hAbHN0LmRlPg0KPiBD
-YzogaW9tbXVAbGlzdHMubGludXguZGV2OyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOw0K
-PiBtLnN6eXByb3dza2lAc2Ftc3VuZy5jb20NCj4gU3ViamVjdDogUkU6IFtSRkMgUEFUQ0hdIGRt
-YTogY29oZXJlbnQ6IHJlc3BlY3QgdG8gZGV2aWNlICdkbWEtY29oZXJlbnQnDQo+IHByb3BlcnR5
-DQo+IA0KPiBIaSBSb2JpbiwNCj4gDQo+ID4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4g
-PiBGcm9tOiBSb2JpbiBNdXJwaHkgPHJvYmluLm11cnBoeUBhcm0uY29tPg0KPiA+IFNlbnQ6IE1v
-bmRheSwgQXByaWwgMTcsIDIwMjMgODoyOCBQTQ0KPiA+IFRvOiBaLlEuIEhvdSA8emhpcWlhbmcu
-aG91QG54cC5jb20+OyBDaHJpc3RvcGggSGVsbHdpZyA8aGNoQGxzdC5kZT4NCj4gPiBDYzogaW9t
-bXVAbGlzdHMubGludXguZGV2OyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOw0KPiA+IG0u
-c3p5cHJvd3NraUBzYW1zdW5nLmNvbQ0KPiA+IFN1YmplY3Q6IFJlOiBbUkZDIFBBVENIXSBkbWE6
-IGNvaGVyZW50OiByZXNwZWN0IHRvIGRldmljZSAnZG1hLWNvaGVyZW50Jw0KPiA+IHByb3BlcnR5
-DQo+ID4NCj4gPiBPbiAyMDIzLTA0LTE3IDAzOjA2LCBaLlEuIEhvdSB3cm90ZToNCj4gPiA+IEhp
-IENocmlzdG9waCwNCj4gPiA+DQo+ID4gPj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4g
-PiA+PiBGcm9tOiBDaHJpc3RvcGggSGVsbHdpZyA8aGNoQGxzdC5kZT4NCj4gPiA+PiBTZW50OiBT
-dW5kYXksIEFwcmlsIDE2LCAyMDIzIDI6MzAgUE0NCj4gPiA+PiBUbzogWi5RLiBIb3UgPHpoaXFp
-YW5nLmhvdUBueHAuY29tPg0KPiA+ID4+IENjOiBpb21tdUBsaXN0cy5saW51eC5kZXY7IGxpbnV4
-LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7DQo+ID4gPj4gaGNoQGxzdC5kZTsgbS5zenlwcm93c2tp
-QHNhbXN1bmcuY29tOyByb2Jpbi5tdXJwaHlAYXJtLmNvbQ0KPiA+ID4+IFN1YmplY3Q6IFJlOiBb
-UkZDIFBBVENIXSBkbWE6IGNvaGVyZW50OiByZXNwZWN0IHRvIGRldmljZSAnZG1hLWNvaGVyZW50
-Jw0KPiA+ID4+IHByb3BlcnR5DQo+ID4gPj4NCj4gPiA+PiBPbiBGcmksIEFwciAxNCwgMjAyMyBh
-dCAwNDowMzowN1BNICswODAwLCBaaGlxaWFuZyBIb3Ugd3JvdGU6DQo+ID4gPj4+IEZyb206IEhv
-dSBaaGlxaWFuZyA8WmhpcWlhbmcuSG91QG54cC5jb20+DQo+ID4gPj4+DQo+ID4gPj4+IEN1cnJl
-bnRseSwgdGhlIGNvaGVyZW50IERNQSBtZW1vcnkgaXMgYWx3YXlzIG1hcHBlZCBhcw0KPiA+ID4+
-PiB3cml0ZWNvbWJpbmUgYW5kIHVuY2FjaGVkLCBpZ25vcmVkIHRoZSAnZG1hLWNvaGVyZW50JyBw
-cm9wZXJ0eSBpbg0KPiA+ID4+PiBkZXZpY2Ugbm9kZSwgdGhpcyBwYXRjaCBpcyB0byBtYXAgdGhl
-IG1lbW9yeSBhcyB3cml0ZWJhY2sgYW5kDQo+ID4gPj4+IGNhY2hlZCB3aGVuIHRoZSBkZXZpY2Ug
-aGFzICdkbWEtY29oZXJlbnQnIHByb3BlcnR5Lg0KPiA+ID4+DQo+ID4gPj4gV2hhdCBpcyB0aGUg
-dXNlIGNhc2UgaGVyZT8gVGhlIHNvbWV3aGF0IG1pc25hbWVkIHBlci1kZXZpY2UNCj4gPiA+PiBj
-b2hlcmVudCBtZW1vcnkgaXMgaW50ZW5kZWQgZm9yIHNtYWxsIHBlci1kZXZpY2UgcG9vbHMgb2Yg
-c3JhbSBvcg0KPiA+ID4+IHN1Y2ggdXNlZCBmb3Igc3RhZ2luZyBtZW1vcnkuDQo+ID4gPg0KPiA+
-ID4gSW4gbXkgY2FzZSwgdGhlcmUgYXJlIG11bHRpcGxlIENvcnRleC1BIGNvcmVzIHdpdGhpbiB0
-aGUgY2x1c3RlciwgaW4NCj4gPiA+IHdoaWNoIGl0IGlzIGNhY2hlIGNvaGVyZW50LCB0aGV5IGFy
-ZSBzcGxpdCBpbnRvIDIgaXNsYW5kIGZvciBydW5uaW5nDQo+ID4gPiBMaW51eCBhbmQNCj4gPiBS
-VE9TIHJlc3BlY3RpdmVseS4NCj4gPiA+IEkgY3JlYXRlZCBhIHZpcnR1YWwgZGV2aWNlIGZvciBM
-aW51eCBhbmQgUlRPUyBjb21tdW5pY2F0aW9uIHVzaW5nDQo+ID4gPiBzaGFyZWQNCj4gPiBtZW1v
-cnkuDQo+ID4gPiBJbiBMaW51eCBzaWRlLCBJIGNyZWF0ZWQgYSBwZXItZGV2aWNlIGRtYSBtZW1v
-cnkgcG9vbCBhbmQgYWRkZWQNCj4gPiAnZG1hLWNvaGVyZW50Jw0KPiA+ID4gZm9yIHRoZSB2aXJ0
-dWFsIGRldmljZSwgYnV0IHRoZSBkYXRhIGluIHNoYXJlZCBtZW1vcnkgY2FuJ3QgYmUgc3luYw0K
-PiA+ID4gdXAsIGZpbmFsbHkgZm91bmQgdGhlIHBlci1kZXZpY2UgZG1hIHBvb2wgaXMgYWx3YXlz
-IG1hcHBlZCBhcw0KPiA+ID4gdW5jYWNoZWQsIHNvDQo+ID4gc3VibWl0dGVkIHRoaXMgZml4IHBh
-dGNoLg0KPiA+DQo+ID4gWWVzLCBpbiBwcmluY2lwbGUgdGhpcyBzaG91bGQgYXBwbHkgc2ltaWxh
-cmx5IHRvIHJlc3RyaWN0ZWQgRE1BIG9yDQo+ID4gY29uZmlkZW50aWFsIGNvbXB1dGUgVk1zIHdo
-ZXJlIERNQSBidWZmZXJzIGFyZSB0byBiZSBhbGxvY2F0ZWQgZnJvbSBhDQo+ID4gcHJlZGV0ZXJt
-aW5lZCBzaGFyZWQgbWVtb3J5IGFyZWEsIGFuZCBhIERUIHJlc2VydmVkLW1lbW9yeSByZWdpb24g
-aXMNCj4gPiB1c2VkIGFzIGEgY29oZXJlbnQgcG9vbCB0byBhY2hpZXZlIHRoYXQuIFF1aXRlIGxp
-a2VseSB0aGF0IHNvIGZhciB0aGlzDQo+ID4gaGFzIG9ubHkgYmVlbiBkb25lIHdpdGggbm9uLWNv
-aGVyZW50IGhhcmR3YXJlIG9yIGluIHNvZnR3YXJlIG1vZGVscw0KPiA+IHdoZXJlIGEgbWlzbWF0
-Y2ggaW4gbm9taW5hbCBjYWNoZWFiaWxpdHkgd2Fzbid0IG5vdGljZWFibGUuDQo+ID4NCj4gPiBJ
-dCdzIGEgYml0IG5pY2hlLCBidXQgbm90IGVudGlyZWx5IHVucmVhc29uYWJsZS4NCj4gPg0KPiAN
-Cj4gVW5kZXJzdGFuZCwgdGhpcyBjaGFuZ2UgZG9lc24ndCBhZmZlY3QgdGhlIG9uZXMgd2l0aG91
-dCAnZG1hLWNvaGVyZW50JywgYW5kIGl0DQo+IGNhbiBpbXByb3ZlIHRoZSBwZXJmb3JtYW5jZSBs
-ZXZlcmFnaW5nIHRoZSBoYXJkd2FyZSBjYWNoZSBjb2hlcmVudCBmZWF0dXJlLg0KPiBBbmQgaW4g
-dGhlIENNQSwgaXQgbWFwcyB0aGUgbWVtb3J5IGFzIGNhY2hlYWJsZSB3aGVuIHRoZSBkZXZpY2Ug
-bm9kZSBoYXMNCj4gJ2RtYS1jb2hlcmVudCcsIG90aGVyd2lzZSBub24tY2FjaGVhYmxlLg0KPiBT
-byB0aGlzIGNoYW5nZSBhbGlnbnMgdGhlIGJlaGF2aW9yIG9mIHRoZSBwZXItZGV2aWNlIGRtYSBw
-b29sIHRvIHRoZSBDTUEuDQoNCkFueSBjb21tZW50cywgaXMgaXQgYWNjZXB0YWJsZT8NCg0KVGhh
-bmtzLA0KWmhpcWlhbmcNCg==
+
+在 2023/5/26 07:42, Nicolin Chen 写道:
+> On Tue, May 16, 2023 at 11:12:44AM +0800, Zhangfei Gao wrote:
+>
+>>>> However when debugging hotplug PCI device, it still does not work,
+>>>> Segmentation fault same as 6.2.
+>>>>
+>>>> guest kernel
+>>>> CONFIG_HOTPLUG_PCI_PCIE=y
+>>>>
+>>>> boot guest (this info does not appear in 6.2)
+>>>> qemu-system-aarch64: -device
+>>>> vfio-pci,host=0000:76:00.1,bus=pci.1,addr=0x0,id=acc1,iommufd=iommufd0:
+>>>> Failed to set data -1
+>>>> qemu-system-aarch64: -device
+>>>> vfio-pci,host=0000:76:00.1,bus=pci.1,addr=0x0,id=acc1,iommufd=iommufd0:
+>>>> failed to set device data
+>>> Hmm.. I wonder what fails the set_dev_data ioctl...
+>> Simply debug, it is because dev_data.sid=0, causing
+>> arm_smmu_set_dev_user_data fail
+> I found that too. The input pci bus number is 1, yet the in
+> the context of set_dev_data, the pci bus number is 0, which
+> resulted in a 0-valued sid. I will take another look to get
+> why.
+>
+>>>> $ sudo nc -U /tmp/qmpm_1.socket
+>>>> (qemu) info pci
+>>>> (qemu) device_del acc1
+>>>>
+>>>> guest:
+>>>> qemu-system-aarch64: IOMMU_IOAS_UNMAP failed: No such file or directory
+>>>> qemu-system-aarch64: vfio_container_dma_unmap(0xaaaae1fc0380,
+>>>> 0x8000000000, 0x10000) = -2 (No such file or directory)
+>>  From ex-email reply
+>> (Eric) In qemu arm virt machine 0x8000000000 matches the PCI MMIO region.
+>> (Yi) Currently, iommufd kernel part doesn't support mapping device BAR MMIO.
+>> This is a known gap.
+> OK.
+>
+>>>> qemu-system-aarch64: Failed to unset data -1
+>>>> Segmentation fault (core dumped).  // also happened in 6.2
+>>> Hmm, would it be possible for you to run the test again by
+>>> adding the following tracers to your QEMU command?
+>>>      --trace "iommufd*" \
+>>>      --trace "smmu*" \
+>>>      --trace "vfio_*" \
+>>>      --trace "pci_*"
+>>>
+>> Have sent you the log directly, since it is too big.
+> I have found two missing pieces in the device detach routine.
+> Applying the following should fix the crash at hotplug path.
+>
+> ----------------------------------------------------------------------------
+> diff --git a/hw/vfio/container-base.c b/hw/vfio/container-base.c
+> index 89a256efa999..2344307523cb 100644
+> --- a/hw/vfio/container-base.c
+> +++ b/hw/vfio/container-base.c
+> @@ -151,8 +151,10 @@ void vfio_container_destroy(VFIOContainer *container)
+>       }
+>
+>       QLIST_FOREACH_SAFE(giommu, &container->giommu_list, giommu_next, tmp) {
+> -        memory_region_unregister_iommu_notifier(
+> -                MEMORY_REGION(giommu->iommu_mr), &giommu->n);
+> +        if (giommu->n.notifier_flags) {
+> +            memory_region_unregister_iommu_notifier(
+> +                    MEMORY_REGION(giommu->iommu_mr), &giommu->n);
+> +        }
+>           QLIST_REMOVE(giommu, giommu_next);
+>           g_free(giommu);
+>       }
+> diff --git a/hw/vfio/iommufd.c b/hw/vfio/iommufd.c
+> index 844c60892db2..35d31480390d 100644
+> --- a/hw/vfio/iommufd.c
+> +++ b/hw/vfio/iommufd.c
+> @@ -652,6 +652,9 @@ found:
+>        */
+>       if (QLIST_EMPTY(&container->hwpt_list)) {
+>           vfio_as_del_container(space, bcontainer);
+> +        if (bcontainer->nested) {
+> +            memory_listener_unregister(& bcontainer->prereg_listener);
+> +        }
+>       }
+>       __vfio_device_detach_container(vbasedev, container, &err);
+>       if (err) {
+> ----------------------------------------------------------------------------
+>
+> Would you please try your case with it?
+
+
+Yes, this solve the hotplug segmentation fault
+
+Still report
+
+qemu-system-aarch64: IOMMU_IOAS_UNMAP failed: No such file or directory
+qemu-system-aarch64: vfio_container_dma_unmap(0xaaaae622e300, 
+0x8000000000, 0x10000) = -2 (No such file or directory)
+qemu-system-aarch64: Failed to unset data -1 (only the first time of 
+device_del)
+
+Test with device_del and device_add
+
+Thanks.
+
+
+
