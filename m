@@ -1,139 +1,260 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80F44271F3
-	for <iommu@lists.linux.dev>; Fri, 26 May 2023 16:29:34 +0000 (UTC)
-Received: from lhrpeml500005.china.huawei.com (unknown [172.18.147.207])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4QSVhg0zhhz67nhP;
-	Sat, 27 May 2023 00:28:03 +0800 (CST)
-Received: from localhost (10.202.227.76) by lhrpeml500005.china.huawei.com
- (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Fri, 26 May
- 2023 17:29:30 +0100
-Date: Fri, 26 May 2023 17:29:30 +0100
-From: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD3552CA6
+	for <iommu@lists.linux.dev>; Fri, 26 May 2023 16:47:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C2E2C4339B;
+	Fri, 26 May 2023 16:47:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685119667;
+	bh=HztkGlGNg6aotOmvW2bUdXS74YXZP4CAN2DBXK9jDjo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=dcLSeYsK32132xu+uotqzZvQoogKUiU5Xy8bJpIZ3CJf7hfuOzFpx6ttdfVpbOjlj
+	 tEZ1V4imWO0kq6RUOfL5SpfVtFQR5FHROAdrqvnou63KhxQS8vnsTuDkD5CEvVnL5T
+	 7DDgwcBuVvbqMYEKEG/kf9504v5kbZMT2Y6YlmX2P+tRKyjyfRpHBZQfaVfanXpi5X
+	 kFnny0XgcKojxMZva4/Jl+HdXYsjdvgYwRQj5YtMksOMZUU7XucW9Vl7WeJmF/oIf7
+	 bzEvKpdtOvAxLMvVAntV98IqeWBgSW1ysneSs2iTZjfO1XRKmHrM3LBV38lF0/bJgs
+	 PVd0BWk96A93A==
+Date: Sat, 27 May 2023 00:36:30 +0800
+From: Jisheng Zhang <jszhang@kernel.org>
 To: Catalin Marinas <catalin.marinas@arm.com>
-CC: Linus Torvalds <torvalds@linux-foundation.org>, Christoph Hellwig
-	<hch@lst.de>, Robin Murphy <robin.murphy@arm.com>, Arnd Bergmann
-	<arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Will
- Deacon" <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Andrew Morton
-	<akpm@linux-foundation.org>, Herbert Xu <herbert@gondor.apana.org.au>, "Ard
- Biesheuvel" <ardb@kernel.org>, Isaac Manjarres <isaacmanjarres@google.com>,
-	Saravana Kannan <saravanak@google.com>, Alasdair Kergon <agk@redhat.com>,
-	Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>, Mark Brown
-	<broonie@kernel.org>, Mike Snitzer <snitzer@kernel.org>, "Rafael J. Wysocki"
-	<rafael@kernel.org>, <linux-mm@kvack.org>, <iommu@lists.linux.dev>,
-	<linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v5 00/15] mm, dma, arm64: Reduce ARCH_KMALLOC_MINALIGN
- to 8
-Message-ID: <20230526172930.000015f8@Huawei.com>
-In-Reply-To: <20230526170740.000000df@Huawei.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>,
+	Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Ard Biesheuvel <ardb@kernel.org>,
+	Isaac Manjarres <isaacmanjarres@google.com>,
+	Saravana Kannan <saravanak@google.com>,
+	Alasdair Kergon <agk@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Joerg Roedel <joro@8bytes.org>, Mark Brown <broonie@kernel.org>,
+	Mike Snitzer <snitzer@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>, linux-mm@kvack.org,
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v5 13/15] iommu/dma: Force bouncing if the size is not
+ cacheline-aligned
+Message-ID: <ZHDgDrQL+WPDsxxh@xhacker>
 References: <20230524171904.3967031-1-catalin.marinas@arm.com>
-	<20230525133138.000014b4@Huawei.com>
-	<ZG9xRjpdezVr5sjx@arm.com>
-	<20230526170740.000000df@Huawei.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-w64-mingw32)
+ <20230524171904.3967031-14-catalin.marinas@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.227.76]
-X-ClientProxiedBy: lhrpeml100003.china.huawei.com (7.191.160.210) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20230524171904.3967031-14-catalin.marinas@arm.com>
 
-On Fri, 26 May 2023 17:07:40 +0100
-Jonathan Cameron <Jonathan.Cameron@Huawei.com> wrote:
+On Wed, May 24, 2023 at 06:19:02PM +0100, Catalin Marinas wrote:
+> Similarly to the direct DMA, bounce small allocations as they may have
+> originated from a kmalloc() cache not safe for DMA. Unlike the direct
+> DMA, iommu_dma_map_sg() cannot call iommu_dma_map_sg_swiotlb() for all
+> non-coherent devices as this would break some cases where the iova is
+> expected to be contiguous (dmabuf). Instead, scan the scatterlist for
+> any small sizes and only go the swiotlb path if any element of the list
+> needs bouncing (note that iommu_dma_map_page() would still only bounce
+> those buffers which are not DMA-aligned).
+> 
+> To avoid scanning the scatterlist on the 'sync' operations, introduce an
+> SG_DMA_USE_SWIOTLB flag set by iommu_dma_map_sg_swiotlb(). The
+> dev_use_swiotlb() function together with the newly added
+> dev_use_sg_swiotlb() now check for both untrusted devices and unaligned
+> kmalloc() buffers (suggested by Robin Murphy).
+> 
+> Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Christoph Hellwig <hch@lst.de>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> ---
+>  drivers/iommu/Kconfig       |  1 +
+>  drivers/iommu/dma-iommu.c   | 50 ++++++++++++++++++++++++++++++-------
+>  include/linux/scatterlist.h | 25 +++++++++++++++++--
+>  3 files changed, 65 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index db98c3f86e8c..670eff7a8e11 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -152,6 +152,7 @@ config IOMMU_DMA
+>  	select IOMMU_IOVA
+>  	select IRQ_MSI_IOMMU
+>  	select NEED_SG_DMA_LENGTH
+> +	select NEED_SG_DMA_FLAGS if SWIOTLB
+>  
+>  # Shared Virtual Addressing
+>  config IOMMU_SVA
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 7a9f0b0bddbd..24a8b8c2368c 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -520,9 +520,38 @@ static bool dev_is_untrusted(struct device *dev)
+>  	return dev_is_pci(dev) && to_pci_dev(dev)->untrusted;
+>  }
+>  
+> -static bool dev_use_swiotlb(struct device *dev)
+> +static bool dev_use_swiotlb(struct device *dev, size_t size,
+> +			    enum dma_data_direction dir)
+>  {
+> -	return IS_ENABLED(CONFIG_SWIOTLB) && dev_is_untrusted(dev);
+> +	return IS_ENABLED(CONFIG_SWIOTLB) &&
+> +		(dev_is_untrusted(dev) ||
+> +		 dma_kmalloc_needs_bounce(dev, size, dir));
+> +}
+> +
+> +static bool dev_use_sg_swiotlb(struct device *dev, struct scatterlist *sg,
+> +			       int nents, enum dma_data_direction dir)
+> +{
+> +	struct scatterlist *s;
+> +	int i;
+> +
+> +	if (!IS_ENABLED(CONFIG_SWIOTLB))
+> +		return false;
+> +
+> +	if (dev_is_untrusted(dev))
+> +		return true;
+> +
+> +	/*
+> +	 * If kmalloc() buffers are not DMA-safe for this device and
+> +	 * direction, check the individual lengths in the sg list. If any
+> +	 * element is deemed unsafe, use the swiotlb for bouncing.
+> +	 */
+> +	if (!dma_kmalloc_safe(dev, dir)) {
+> +		for_each_sg(sg, s, nents, i)
+> +			if (!dma_kmalloc_size_aligned(s->length))
+> +				return true;
+> +	}
+> +
+> +	return false;
+>  }
+>  
+>  /**
+> @@ -922,7 +951,7 @@ static void iommu_dma_sync_single_for_cpu(struct device *dev,
+>  {
+>  	phys_addr_t phys;
+>  
+> -	if (dev_is_dma_coherent(dev) && !dev_use_swiotlb(dev))
+> +	if (dev_is_dma_coherent(dev) && !dev_use_swiotlb(dev, size, dir))
+>  		return;
+>  
+>  	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle);
+> @@ -938,7 +967,7 @@ static void iommu_dma_sync_single_for_device(struct device *dev,
+>  {
+>  	phys_addr_t phys;
+>  
+> -	if (dev_is_dma_coherent(dev) && !dev_use_swiotlb(dev))
+> +	if (dev_is_dma_coherent(dev) && !dev_use_swiotlb(dev, size, dir))
+>  		return;
+>  
+>  	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle);
+> @@ -956,7 +985,7 @@ static void iommu_dma_sync_sg_for_cpu(struct device *dev,
+>  	struct scatterlist *sg;
+>  	int i;
+>  
+> -	if (dev_use_swiotlb(dev))
+> +	if (sg_is_dma_use_swiotlb(sgl))
+>  		for_each_sg(sgl, sg, nelems, i)
+>  			iommu_dma_sync_single_for_cpu(dev, sg_dma_address(sg),
+>  						      sg->length, dir);
+> @@ -972,7 +1001,7 @@ static void iommu_dma_sync_sg_for_device(struct device *dev,
+>  	struct scatterlist *sg;
+>  	int i;
+>  
+> -	if (dev_use_swiotlb(dev))
+> +	if (sg_is_dma_use_swiotlb(sgl))
+>  		for_each_sg(sgl, sg, nelems, i)
+>  			iommu_dma_sync_single_for_device(dev,
+>  							 sg_dma_address(sg),
+> @@ -998,7 +1027,8 @@ static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+>  	 * If both the physical buffer start address and size are
+>  	 * page aligned, we don't need to use a bounce page.
+>  	 */
+> -	if (dev_use_swiotlb(dev) && iova_offset(iovad, phys | size)) {
+> +	if (dev_use_swiotlb(dev, size, dir) &&
+> +	    iova_offset(iovad, phys | size)) {
+>  		void *padding_start;
+>  		size_t padding_size, aligned_size;
+>  
+> @@ -1166,6 +1196,8 @@ static int iommu_dma_map_sg_swiotlb(struct device *dev, struct scatterlist *sg,
+>  	struct scatterlist *s;
+>  	int i;
+>  
+> +	sg_dma_mark_use_swiotlb(sg);
+> +
+>  	for_each_sg(sg, s, nents, i) {
+>  		sg_dma_address(s) = iommu_dma_map_page(dev, sg_page(s),
+>  				s->offset, s->length, dir, attrs);
+> @@ -1210,7 +1242,7 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+>  			goto out;
+>  	}
+>  
+> -	if (dev_use_swiotlb(dev))
+> +	if (dev_use_sg_swiotlb(dev, sg, nents, dir))
+>  		return iommu_dma_map_sg_swiotlb(dev, sg, nents, dir, attrs);
+>  
+>  	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+> @@ -1315,7 +1347,7 @@ static void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
+>  	struct scatterlist *tmp;
+>  	int i;
+>  
+> -	if (dev_use_swiotlb(dev)) {
+> +	if (sg_is_dma_use_swiotlb(sg)) {
+>  		iommu_dma_unmap_sg_swiotlb(dev, sg, nents, dir, attrs);
+>  		return;
+>  	}
+> diff --git a/include/linux/scatterlist.h b/include/linux/scatterlist.h
+> index 87aaf8b5cdb4..330a157c5501 100644
+> --- a/include/linux/scatterlist.h
+> +++ b/include/linux/scatterlist.h
+> @@ -248,6 +248,29 @@ static inline void sg_unmark_end(struct scatterlist *sg)
+>  	sg->page_link &= ~SG_END;
+>  }
+>  
+> +#define SG_DMA_BUS_ADDRESS	(1 << 0)
+> +#define SG_DMA_USE_SWIOTLB	(1 << 1)
+> +
+> +#ifdef CONFIG_SWIOTLB
 
-> On Thu, 25 May 2023 15:31:34 +0100
-> Catalin Marinas <catalin.marinas@arm.com> wrote:
-> 
-> > On Thu, May 25, 2023 at 01:31:38PM +0100, Jonathan Cameron wrote:  
-> > > On Wed, 24 May 2023 18:18:49 +0100
-> > > Catalin Marinas <catalin.marinas@arm.com> wrote:    
-> > > > Another version of the series reducing the kmalloc() minimum alignment
-> > > > on arm64 to 8 (from 128). Other architectures can easily opt in by
-> > > > defining ARCH_KMALLOC_MINALIGN as 8 and selecting
-> > > > DMA_BOUNCE_UNALIGNED_KMALLOC.
-> > > > 
-> > > > The first 10 patches decouple ARCH_KMALLOC_MINALIGN from
-> > > > ARCH_DMA_MINALIGN and, for arm64, limit the kmalloc() caches to those
-> > > > aligned to the run-time probed cache_line_size(). On arm64 we gain the
-> > > > kmalloc-{64,192} caches.
-> > > > 
-> > > > The subsequent patches (11 to 15) further reduce the kmalloc() caches to
-> > > > kmalloc-{8,16,32,96} if the default swiotlb is present by bouncing small
-> > > > buffers in the DMA API.    
-> > > 
-> > > I think IIO_DMA_MINALIGN needs to switch to ARCH_DMA_MINALIGN as well.
-> > > 
-> > > It's used to force static alignement of buffers with larger structures,
-> > > to make them suitable for non coherent DMA, similar to your other cases.    
-> > 
-> > Ah, I forgot that you introduced that macro. However, at a quick grep, I
-> > don't think this forced alignment always works as intended (irrespective
-> > of this series). Let's take an example:
-> > 
-> > struct ltc2496_driverdata {
-> > 	/* this must be the first member */
-> > 	struct ltc2497core_driverdata common_ddata;
-> > 	struct spi_device *spi;
-> > 
-> > 	/*
-> > 	 * DMA (thus cache coherency maintenance) may require the
-> > 	 * transfer buffers to live in their own cache lines.
-> > 	 */
-> > 	unsigned char rxbuf[3] __aligned(IIO_DMA_MINALIGN);
-> > 	unsigned char txbuf[3];
-> > };
-> > 
-> > The rxbuf is aligned to IIO_DMA_MINALIGN, the structure and its size as
-> > well but txbuf is at an offset of 3 bytes from the aligned
-> > IIO_DMA_MINALIGN. So basically any cache maintenance on rxbuf would
-> > corrupt txbuf.  
-> 
-> That was intentional (though possibly wrong if I've misunderstood
-> the underlying issue).
-> 
-> For SPI controllers at least my understanding was that it is safe to
-> assume that they won't trample on themselves.  The driver doesn't
-> touch the buffers when DMA is in flight - to do so would indeed result
-> in corruption.
-> 
-> So whilst we could end up with the SPI master writing stale data back
-> to txbuf after the transfer it will never matter (as the value is unchanged).
-> Any flushes in the other direction will end up flushing both rxbuf and
-> txbuf anyway which is also harmless.
+s/CONFIG_SWIOTLB/CONFIG_NEED_SG_DMA_FLAGS ?
+Otherwise, there's compiler error if SWIOTLB=y but IOMMU=n
 
-Adding missing detail.  As the driver never writes txbuf whilst any DMA
-is going on, the second cache evict (to flush out any lines that have
-crept back into cache after the flush - and write backs - pre DMA) will
-find a clean line and will drop it without writing back - thus no corruption.
+Thanks
 
-
-
+> +static inline bool sg_is_dma_use_swiotlb(struct scatterlist *sg)
+> +{
+> +	return sg->dma_flags & SG_DMA_USE_SWIOTLB;
+> +}
+> +
+> +static inline void sg_dma_mark_use_swiotlb(struct scatterlist *sg)
+> +{
+> +	sg->dma_flags |= SG_DMA_USE_SWIOTLB;
+> +}
+> +#else
+> +static inline bool sg_is_dma_use_swiotlb(struct scatterlist *sg)
+> +{
+> +	return false;
+> +}
+> +static inline void sg_dma_mark_use_swiotlb(struct scatterlist *sg)
+> +{
+> +}
+> +#endif
+> +
+>  /*
+>   * CONFIG_PCI_P2PDMA depends on CONFIG_64BIT which means there is 4 bytes
+>   * in struct scatterlist (assuming also CONFIG_NEED_SG_DMA_LENGTH is set).
+> @@ -256,8 +279,6 @@ static inline void sg_unmark_end(struct scatterlist *sg)
+>   */
+>  #ifdef CONFIG_PCI_P2PDMA
+>  
+> -#define SG_DMA_BUS_ADDRESS (1 << 0)
+> -
+>  /**
+>   * sg_dma_is_bus address - Return whether a given segment was marked
+>   *			   as a bus address
 > 
-> > You need rxbuf to be the only resident of a
-> > cache line, therefore the next member needs such alignment as well.
-> > 
-> > With this series and SWIOTLB enabled, however, if you try to transfer 3
-> > bytes, they will be bounced, so the missing alignment won't matter much.
-> >   
-> 
-> Only on arm64?  If the above is wrong, it might cause trouble on
-> some other architectures.
-> 
-> As a side note spi_write_then_read() goes through a bounce buffer dance
-> to avoid using dma unsafe buffers. Superficially that looks to me like it might
-> now end up with an undersized buffer and hence up bouncing which rather
-> defeats the point of it.  It uses SMP_CACHE_BYTES for the size.
-> 
-> Jonathan
-> 
-> 
-
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
