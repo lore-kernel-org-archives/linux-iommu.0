@@ -1,144 +1,131 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2045.outbound.protection.outlook.com [40.107.94.45])
+Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2091.outbound.protection.outlook.com [40.107.114.91])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 749577C
-	for <iommu@lists.linux.dev>; Mon, 29 May 2023 00:46:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A38537E
+	for <iommu@lists.linux.dev>; Mon, 29 May 2023 04:58:07 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l2JDQuy5PpuF1wlkvj5dQQPEfMMyWDi+7MLWteOVpQkCzBpNUEXafWflg0p9/LYafysj59v6sZwmDgswykonjhWcYjK4jyVZT0pcF1zM2jPyJTieogpitcljegDQy+mq6AB4dZrxHRl3dSDBZRD9PBBfwe5lCgDbNAS4aG+F878zmt8LUz6NF7ashkvyLlau44VOET7QYYnulZK3RRCppHmWH8y4GmH7VrTAJNzGgkCWuSaOPD+V10raQ5tdCl95hvpE5CnlVVMmBEkZv5q/hIZKPleMgNYEjh5SyQ1k9Ug53OYYIyNe0jtKem6WfNlGEBEERv1i1njDpPaZCbScMQ==
+ b=UqQrXXBD4pXL2qgiUYJIKcuJRui6NTgMgDtXkSFPZUd17vJIyQx8lgM57DvHfEqZit4KBrpg8dNcSVPCjuWQ6J+GJoX3X8+5rUem5Ndit+2PnxsfEAw8SKkteprsFWQ+tq0NvDLKdzbtGLmsIH0VkTMjaC8Mj9hCMa8ePPV4nrJEbeO5ag+sRpYzuiZpKZKpdddL9WztPv8hbRonyKjfwS9t0eT9Sl5Y/wGIF3TguGQq6e4uhwAXGeVRlwpRL58IxwvlVqStfglE4nIMw1SifU3WxP39ZcEHfKc9CcP3GxDW7cohZW4GKR1hKH2HoschGxKP+zcRRmVCZIgefjOO3g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=eVMyjlvg/KlrSG6hdT6cZXpbFu0qwmoujW4rupeqVzQ=;
- b=TQVl/BOgAvSXZ6D41+38rgfrIuBReQGNzbl9eyc4g1uBHFzmxR5GcX6A7bghtzvMsJSv4++bf4ZJT2Y6R7IMm1oP9MHA47KqFFg91RjGvox2Gxdl9zHqCG3VH7dKInPMc8ELc9QOVFTSddj9+qtTdAqb5LMpjlfp1iGnVNZ4v7HC2646Z4df1BSXicGNVCE+PnXCTBLfNyX08h5TyTLmFRoa3G4RTNDxbZLg54AQnVWSpW5h2UX8dW28hfDeCwAQAyF4uLRtnAOydvGjfmDVGjL/twJ6v0nuX5UZqKCFpr0cYCGR9XGExwq8WHiV4AtWRWLHJE56g8DCA+H8LVlwfQ==
+ bh=5R4nLpaTj8i7oqP+UE2tmgbuf0YZ9vBSLvI99FzX0Tk=;
+ b=ZkXGWfcSr9gm1Ns4RjQRugzy2MCz5AvUo2pUW8VcTuDoeuKEoxsRT6EF2p7qcJnty0lnEYdjpSfunwV57fDFt9w/u9aj2JBQGHO/md8+DsmN5ce1No6HH0ujNZX9eidgN66I8aEi/mlP63lJZiZc1Bai2krwXuS+yfPfY6vVjWnlCkqYNIPD1sRKbjHfRyzINt0TG+TDGfdYYyPkFrEZsWfbRVbDOE0RTuo26kP3VzBo1XZf5H/L9bPqgtraIcZB1ar2rz9lT6AQPKAdWvkXEXRrSr1FBcPbQbROTQeUMCA9RL5VfOHlO7Z7WMK94vmstpJ5NCySo8AKlHDdeFWjQQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eVMyjlvg/KlrSG6hdT6cZXpbFu0qwmoujW4rupeqVzQ=;
- b=GGeDvTr0vD7wyt7WaB+eldrORNImAUrWXhuw1WtwTTX6i5vJrNIyrzz5xjz0ZnQwuFDA0oBeVEP6Wn+eTp/GbQ2sL71HZe34B5K+ATmBn3YhinrOEjRYGkC1M4fRBP6E7ndXZuFKtDKxuHmHShLTxqfRKap2dJfBmw+tts+49HRRZVesWM0pukb5MHT6Fnix+Cc/tLmjPPkjkJ2qhfJsu/K65egctNMLhz+fXymKxq5QOrFKbc3kB99Kcx/RZ5zyVTdRi5VX9sHzItVgQzD6esKu/r8xZjNhHfIYWZj8c9WI77cD6brYAi74g3hd8wvbh4KkTVhv+REGzAtMTQOotg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by MW4PR12MB5665.namprd12.prod.outlook.com (2603:10b6:303:187::17) with
- Microsoft SMTP Server (version=TLS1_2,
+ bh=5R4nLpaTj8i7oqP+UE2tmgbuf0YZ9vBSLvI99FzX0Tk=;
+ b=XJd1XTgIgm/L4OZbVPVBgec8qT1l9USKEhcYCKEFoXjsgc9f0TxPBEXHt9AVObnBHo+58j72nGw6hF3082mwzgT16Pt5MccZtd2tj6G58jdVbpRRB2dPRiXe0thg2Q3VGc1TDAXyfbw/1Wa6wrwnHwTPZ/En0CTNIR1DxmI8niI=
+Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
+ (2603:1096:404:8028::13) by TYWPR01MB11781.jpnprd01.prod.outlook.com
+ (2603:1096:400:3fb::9) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.22; Mon, 29 May
- 2023 00:46:08 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6433.017; Mon, 29 May 2023
- 00:46:08 +0000
-Date: Sun, 28 May 2023 21:46:06 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Joerg Roedel <joro@8bytes.org>, Li Yang <leoyang.li@nxp.com>
-Cc: Christophe Leroy <christophe.leroy@csgroup.eu>, iommu@lists.linux.dev,
-	linuxppc-dev@lists.ozlabs.org,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v2 0/3] Remove iommu_group_remove_device() from fsl
-Message-ID: <ZHP1zv48iZUV5Ypj@nvidia.com>
-References: <0-v2-ce71068deeec+4cf6-fsl_rm_groups_jgg@nvidia.com>
- <ZGxcmJ3vH0Smqqxu@8bytes.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZGxcmJ3vH0Smqqxu@8bytes.org>
-X-ClientProxiedBy: MN2PR19CA0020.namprd19.prod.outlook.com
- (2603:10b6:208:178::33) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+ 2023 04:58:03 +0000
+Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
+ ([fe80::5198:fdcf:d9b1:6003]) by TYBPR01MB5341.jpnprd01.prod.outlook.com
+ ([fe80::5198:fdcf:d9b1:6003%6]) with mapi id 15.20.6433.022; Mon, 29 May 2023
+ 04:58:03 +0000
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To: Joerg Roedel <joro@8bytes.org>
+CC: "will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>
+Subject: RE: [PATCH v2] iommu/ipmmu-vmsa: Allow PCIe devices
+Thread-Topic: [PATCH v2] iommu/ipmmu-vmsa: Allow PCIe devices
+Thread-Index: AQHZeBigMam75OEStUaN1FttN5gn5K9mlJGAgApPVRA=
+Date: Mon, 29 May 2023 04:58:03 +0000
+Message-ID:
+ <TYBPR01MB53413708DFFFAC9CBA5B409DD84A9@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+References: <20230426082511.3621484-1-yoshihiro.shimoda.uh@renesas.com>
+ <ZGuKp2hPnkJ6hy6B@8bytes.org>
+In-Reply-To: <ZGuKp2hPnkJ6hy6B@8bytes.org>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=renesas.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: TYBPR01MB5341:EE_|TYWPR01MB11781:EE_
+x-ms-office365-filtering-correlation-id: 23d52a87-4cd0-41a8-5427-08db600148fe
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ 1626jZFUP2/0vyRJL9WzscsEcQA2fTHwRvM3OVaAmS+Ol/iq+WyC7zz9y+Zjwx7CIA8pQ0lNINximLMXUpa8z/eP+LDl/PRozVgStKSYfy/Nrc6dM1GtPLAXhVOmHD9qptx8/i0KmxftxNYIo1io6YEgkdeORtw5eeOsfDLeXj8M5lzHHCdf+8FNP5TpEYOsxrnHzKa2eUPWh5kQJeQC/F+C9hVYEb2FbBSuctsSnQe4108v2a2S5HWRtM9QzFiKzc7xpX8D4uvPvm7uRvHfwlE5SW25b3CBM4sP0mtIFKS7zShq/R/Bs5OwIAeP1B0KxakesIpRkaq34tteuVlwraOkDV3yMU1CDIiwNcIlglAHP8C2GYsg2XKK6VnrH8v6oybNpwF2CqtT40/ESgZiW622qN0V/VRFy5p+nseDOad+OrUawzXWgRwfq1kqmjRmsPk4CY7pDSs5oa1moGjRjh7dt7Zi5UTsFEEQkC/bHyWJvOO91QrXzzWKL/CrUcPDzkC4kJ29ygchTLAqeu2ief9sgYI9NDZzONzgMNRF9DeMjvc2SqAe3HPHJd6AcTcs88kB+5KMB86J0zZq+5SvZ7ZfIgRXr4LMvEBEEu+74EDHzZzZk48IQf1K3tyKnBLK
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYBPR01MB5341.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(346002)(396003)(376002)(39860400002)(366004)(451199021)(38070700005)(6506007)(9686003)(4744005)(186003)(2906002)(54906003)(478600001)(86362001)(7696005)(8936002)(8676002)(122000001)(38100700002)(41300700001)(55016003)(5660300002)(76116006)(64756008)(66446008)(66476007)(316002)(66946007)(66556008)(33656002)(71200400001)(52536014)(6916009)(4326008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?O858dUti/mxddpP3cgajcyZiHELWrxVb0mZSSdBPCKuurRqxj7CcK3C49XOY?=
+ =?us-ascii?Q?NT7MPi2jbkOKAXilx/q4n+lqgwNA3Yq3WGO2z9D9yPusfvr7onUb+YrOmBaY?=
+ =?us-ascii?Q?nbJNKuz9lk/BYUVzrWTjIgYj5Lc71sraA3V7ifQdNf95BLqYLuz/ymTMZbQV?=
+ =?us-ascii?Q?P4trKmJNAKYFn9etY5rG+HODp/lIC4Hxvf/TaMjE/s/tZ5FXLNM53Ks6F9RR?=
+ =?us-ascii?Q?4hkFeNX50hpRHF5KCNQUJXuC+uBN+NaHYN7/Q+inKUx7vVr6/OTrkvCxCvXF?=
+ =?us-ascii?Q?D+U8ajCPEvp0NCFDApkOfy+Q071J3nXKnvuvWxi2t86GC559nh2Kxs+PySgv?=
+ =?us-ascii?Q?VOf0vbQX97TTh+xZ7+q15eHtizPoQs1XjW8MA4DBAGQhVG5RVSuq9sdYZ6hx?=
+ =?us-ascii?Q?8jmowhVYUBOUmIcDmoVOQxq8B3R6tZWZlt2xZ+xhFwLlZeBcqzZezzyPpKiF?=
+ =?us-ascii?Q?NBKeUbSLPzGluM7OqvV9W0Ad14UMWDx7iwOlKAmRIFsvTMEKZPOTM2Htyzgn?=
+ =?us-ascii?Q?XgvE8sZfmKhe8x6aKMIecFfUzFuDdj1tmVLQtCtDgSOi5Wu4iWGdg5I8AJs3?=
+ =?us-ascii?Q?OWp8VCG5je8qb0xjXOLYk/7aSxojy6VbLHwoDeu6lfuXObiyLJrAz3lbpQjx?=
+ =?us-ascii?Q?MOnORGWreUMZRKB+KdGwvdIxGVhPJP5Nag4ouPSDqbl4ahyKvhX18BVC9AeH?=
+ =?us-ascii?Q?q92WUP4knntskAaVWVj8CwhVibCap7GMRUWwGDrzAeeDzLJDLtlZmZBPExzt?=
+ =?us-ascii?Q?/xqkYCUoBJKN5RZfqd2Ov+2PGpGb8p4w4inGMbkx9NaYq3zi3P4XkHzD8M8w?=
+ =?us-ascii?Q?M0VN9OF2lRof2nwBpVzB5HtMq4zn7lJMk6aXH89tYpgq0mz9Frt/tO71B2Ia?=
+ =?us-ascii?Q?lBlc39Ym9y+9CBzD6vk4HV2x4tiVe6lPM7pVNCic0xuEVoX+UEAKm8v3dbKu?=
+ =?us-ascii?Q?En2iDjQ0+DtzBFt66pQTeH2oS7842t7k1ok4lXF5pxpNj6aRCc3Jb1lWfqlM?=
+ =?us-ascii?Q?4TjT098EYqdHR81KnnuWzvG+SoZoSpo4I1a6euX1FuTwlCPKjPO+jql5pEKN?=
+ =?us-ascii?Q?f0dnEVi+BPBAmU2E9Kzo2Xe0u7F9dDk+YpolnTenG+PxEtLDAMbEqmqLwfTQ?=
+ =?us-ascii?Q?dtHwdmu+k7vP65w7ZDG9+LJdJsb5Z++MnB2HrJz6xmWY7c/jnBHEaBnG9NME?=
+ =?us-ascii?Q?9371uc515eGS8TeQvUWjCD3XE8nnyK30fhS8HoRP8y2G7VJHHdFAiBIM8cHY?=
+ =?us-ascii?Q?LyyHjEeO7izJqptC+7IYrIu2jj/Xpmg8tm+vdw6r9tT87CZ6ZCEpNbDXbITv?=
+ =?us-ascii?Q?hcCg92pGAYD8LJXh8A3QxuZbv1WqrWA8LQutdQZtdAuers/MkncZBhJQgnHW?=
+ =?us-ascii?Q?nkWz+hOP3FZ7sij9GaIgt+ZbBu6kZ46JVQWmTBSwchd2MhvfkVxZQ3RHGHfB?=
+ =?us-ascii?Q?epG05RXDYrV4+K1qM8Ghp+lV94HXX9sx1zxmAW8UyJa1wdWICqgIMez0G5iK?=
+ =?us-ascii?Q?pr+xEyvGgHDfclRBV1GMC7yX8HztwwjApJPLcSsuzTY12RlyNnD6//gVq01b?=
+ =?us-ascii?Q?QW4kfp/k5m0iln0dLxgIMvuKIFfs+HnVtI0f+LYdbXRnUbBA2Pi02YaOX5U/?=
+ =?us-ascii?Q?wTunpjQb49kJvUL+HvK8WJ9I/sxcbiI//lHQEoP5Of4EjCpZ5o43turKngte?=
+ =?us-ascii?Q?rvwRkw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MW4PR12MB5665:EE_
-X-MS-Office365-Filtering-Correlation-Id: ea622c01-bf7d-42ff-54cd-08db5fde1736
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	w1RM5uAXMXErVn30ZOtAj8K9b0wZBQYp4znaaX2ZnhTFotDzLnSz/bWxWCrnVHVrWYIFEFYPjcwcduyxl2dzSVjfmnWA4qt2WvLtbqGzpgTjwx6+gWUg7YzNKsRUF4ppLSkAo5gllPDU+jfeGWdYx1NcYbOET113PiSugke8UATzWlbQfLXHU8WRdXn0x7cBmTqThbL/AIRw67e/LE9VdOZkfT+aquyh+VsFy8n4zxKCu765J+Zr0sl1vqX4gDq/g4NgZsdNfN1WhazEPDNiHOlAbYiSOMKTcHch5CKFsGSQ6qsT1qZ6sCwVw5WaM9046VyPqJZMu3tnAW6vz50gyV3pUZS0NbXl2jaEqiaWKLcjOSXgNIokWFKDkZHDwQ8ov8Ek7onRfnEy/W6mPzw5kaLoHluvUk+YkeAnvgXYHhFLVV3zoxkSlrncAssWvXFyCKMlEUOSw1VCdL0lJoAqQx72zEAcL6FMjnszEs1jPLBl9OiAAQsFuUUKqqcAn3lM1nhsMAC5+pnaAJzkIRojrDmoTUAFVHUYkIYT3LuMxNt3VTFCp1CWY5O4a1aFF+jbru3jKUHimJZF3CPHREKC8CYVY3IX0hpED/OU81u1cO4=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(136003)(346002)(39860400002)(366004)(451199021)(6506007)(6512007)(186003)(2906002)(2616005)(54906003)(110136005)(26005)(478600001)(83380400001)(86362001)(8936002)(8676002)(6486002)(966005)(38100700002)(41300700001)(5660300002)(36756003)(66476007)(316002)(66946007)(66556008)(4326008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?aRtfgznu6TVsI8SdTr9cm0B7m7L+NCP2jIICnLkmZwQzKsUiCbavNQlM9ujT?=
- =?us-ascii?Q?7TEo+ufYFQ5fVwbYqXRZ/LeWYqZcphH9qmyLaNgeMc/YNxB79PUIPEfbfoB4?=
- =?us-ascii?Q?Mhby3dHgNoVv0RXjmGj6dDOcpWA7pwWMBjXss2SQcJqGmIeSjt7srCSH0Nbt?=
- =?us-ascii?Q?nHIyfoT42BzMn4EHVbPi3WWijPZzz702ETrxYlrih4hUIKUUfHS7DpPqj121?=
- =?us-ascii?Q?fWPLU+aVsgNUqstlzUfrmTr12fgNgFNmaQQxQivvKl1kyUAqR7mApVHaKQvY?=
- =?us-ascii?Q?js4gxDmOGn7q4CjvqI+RHXItYGRFpvxLpZF1Xh66EBAEbIIyda49odU5Cqzc?=
- =?us-ascii?Q?IXpzKazS8C4vJk5REq4/EWt4K2Mbx/qhUNanghsCNkU8BbUJ1P7Ve8Ca46mG?=
- =?us-ascii?Q?tCMYM3AEtWm5oxC/L+2/STrckDw2C/4CgfMC/BmpUsyEdtqNK1kyMwqozjyX?=
- =?us-ascii?Q?l6CjTnVNIPhIEn5rgBmsTyabUUlqSCiJIOpX/S6m4zbV9f/1zhgmWmnA1ZoE?=
- =?us-ascii?Q?1lbvmt7qdQUhzpoEBXX+2+b1g2hN2JgnSq4e3/EZuKnoDTQb5GGkHai7Yrek?=
- =?us-ascii?Q?x8Ja91pLJ1j+wiKS8ZFpzFqwPkmQxZB03SoLryCnsOS2/m+q6kucKFVQNlB3?=
- =?us-ascii?Q?9Q6DZ/x2LC1/xa/XGRCf4RCQBho5yGrrpwOMPW1z4JfsIl2iaxsR02WXDg4g?=
- =?us-ascii?Q?pNn2Vkd2f8oLIZ/DlcH8BIENLDJ/H7xRXVa4dai6uBA+94oj5TM2i+yzeYUc?=
- =?us-ascii?Q?L+lZcesyajdQLRWxpo/7XQAEh2ZdCoIhpRSJVsKce6As+1NJTHfDh7VOX+Oy?=
- =?us-ascii?Q?ujQlbW5Beb7c/nlnus7HFZUnhwRiU8eotRwzoaU/7CgdtuvlvJI6CcsTuRE6?=
- =?us-ascii?Q?UcvpY92+NOcesmfGWilQKz0Jvjb5EDLVV/03sSiT0u+gw3ZADCaJImM1WSRM?=
- =?us-ascii?Q?fVJSIqOPnmZf0BPhFwwOyGy/KXIHGz5RKRSWQiKcX7Ynd8Dq9R62M3HniWf6?=
- =?us-ascii?Q?ch12Nlg10rXhjR9upKJF6JmVKX7ksIexSIqq1SpBZw2lZ8iLihUsuXKRAKVk?=
- =?us-ascii?Q?Zv2nN18j870sdXGLCoWcJwaOc/y2ZWSe8jVBXlocwl64f6WJpUZGDmdhDe9A?=
- =?us-ascii?Q?wOcvwUse+CYbqc3Y+2rYQuzDzMcMfkfSxQI1hiA8IBSgSGDcxZjhkyJn/2DL?=
- =?us-ascii?Q?IeOT+yniEaPmKAaGuBTIZq/XXz9xgAeKnKh6aMEM+RblajuZ0LAsMAB9326H?=
- =?us-ascii?Q?9FK+e3S8aKGHl/64sqKD19yiQSYs0E4DXRHUDtnFbE7MYZf5NHHvynr3CMHp?=
- =?us-ascii?Q?AZ9avHHQidr1rGZONNv6hgaQrDDLdttsbe5kmFgByuHRSgRUt+hjRBxBL2QG?=
- =?us-ascii?Q?cRWWYDHzqGPhhZyEU6VqUT2qn3W3e/tD/UEGrpPwrulDvVyeJAn9fTriW39I?=
- =?us-ascii?Q?Pacxaa0gREK5/z5Ijrq6HCYa4c0u8nk6wcKOSvGH1TBX6lV4jMXhftBI728E?=
- =?us-ascii?Q?oTwh8pnHQ6vtdZW4dJIuc4RvHdgaWu2pc9zWPXZ8MkRm2aI37Mt56kA9i0Vj?=
- =?us-ascii?Q?ATwkFrtIYl8K28F+N4Q=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ea622c01-bf7d-42ff-54cd-08db5fde1736
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-OriginatorOrg: renesas.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 May 2023 00:46:08.1263
+X-MS-Exchange-CrossTenant-AuthSource: TYBPR01MB5341.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 23d52a87-4cd0-41a8-5427-08db600148fe
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 May 2023 04:58:03.8401
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PracepHHgI6o1uh/vdcTqYQLrrOjNQZBKXCnqdnevs9KPtz7v+rigfyLB5Sz1OpQ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB5665
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 0+1ozGZcUk0K645cRm33N0yLdLikUeYrHqozWlQsovoVIFBWIiHaLEy9Hme/CqXsXcd8MKB9xXxMuD3ma5sRxgK+9V4UDoaElJHwHoqnQzEVCWG6B5M7OWrUNVRVk9IV
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYWPR01MB11781
 
-On Tue, May 23, 2023 at 08:26:32AM +0200, Joerg Roedel wrote:
-> On Tue, May 16, 2023 at 09:35:25PM -0300, Jason Gunthorpe wrote:
-> > With POWER SPAPR now having a real iommu driver and using the normal group
-> > lifecycle stuff fixing FSL will leave only VFIO's no-iommu support as a
-> > user for the iommu_group_add/remove_device() calls. This will help
-> > simplify the understanding of what the core code should be doing for these
-> > functions.
-> > 
-> > Fix FSL to not need to call iommu_group_remove_device() at all.
-> > 
-> > v2:
-> >  - Change the approach to use driver_managed_dma
-> >  - Really simplify fsl_pamu_device_group() and just put everything in one
-> >    function
-> >  - New patch to make missing OF properties a probe failure
-> > v1: https://lore.kernel.org/r/0-v1-1421774b874b+167-ppc_device_group_jgg@nvidia.com
-> > 
-> > Jason Gunthorpe (3):
-> >   iommu/fsl: Always allocate a group for non-pci devices
-> >   iommu/fsl: Move ENODEV to fsl_pamu_probe_device()
-> >   iommu/fsl: Use driver_managed_dma to allow VFIO to work
-> > 
-> >  arch/powerpc/sysdev/fsl_pci.c   |   1 +
-> >  drivers/iommu/fsl_pamu_domain.c | 123 +++++++++-----------------------
-> >  2 files changed, 36 insertions(+), 88 deletions(-)
-> 
-> Any chance someone can test this on real hardware?
+Hello Joerg,
 
-There isn't even a MAINTAINERS entry for this, and the git log looks
-pretty dead for a long time. I tried to cc people who might care,
-but I'm not so optimistic - unless Li says something.
+> From: Joerg Roedel, Sent: Tuesday, May 23, 2023 12:31 AM
+>=20
+> On Wed, Apr 26, 2023 at 05:25:11PM +0900, Yoshihiro Shimoda wrote:
+> > To allow PCIe devices, add a new condition whether the device is
+> > a PCI device or not in the ipmmu_device_is_allowed().
+>=20
+> This needs more explanation on why PCI devices are safe to be allowed.
+> Without this context it looks just too dangerous.
 
-I do feel good that if there is a problem and someone does come
-forward it can be fixed up without a big trouble. Certainly without
-going back to mis-using iommu_grou_add/remove_device..
+Thank you for your review. I'll revise the description on v3.
 
-Thanks,
-Jason
+Best regards,
+Yoshihiro Shimoda
+
+> Regards,
+>=20
+> 	Joerg
+>=20
+
