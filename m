@@ -1,101 +1,174 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9E3F370
-	for <iommu@lists.linux.dev>; Tue, 30 May 2023 00:16:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685405809;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=cBl3q2i812Jlu/HY8zePZKnZZJeg4miQ7XeIUUOuIUs=;
-	b=EC8IjAlaEJeGBXv9msEe2PdkvOHjVXRikyqJlItGhZoe36YjqmxzdlK8Xusjb+bAPiqU1d
-	Pd9R5CwwQwv14isZMokhEHJtOQjvrhAPxvS1sHuCbIeSEv2NQf3GNmqS4NICocYOWj0MWH
-	gtau7H3FlWceDAlkbuGcACATVJVvFhI=
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
- [209.85.166.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-614-XCPfqzsBPIK4knEzwBELSA-1; Mon, 29 May 2023 20:16:48 -0400
-X-MC-Unique: XCPfqzsBPIK4knEzwBELSA-1
-Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-33b59d59193so20320095ab.0
-        for <iommu@lists.linux.dev>; Mon, 29 May 2023 17:16:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685405807; x=1687997807;
-        h=content-transfer-encoding:mime-version:organization:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=cBl3q2i812Jlu/HY8zePZKnZZJeg4miQ7XeIUUOuIUs=;
-        b=iFjwVIpHKMfXiGOskeArqWTcFca/AyHxlrB/jPcj3CRQLnmj88wlxfnFE4ICOnkhv9
-         BPFMhzDK2q3vh5wdaUcNR+jN3KGoHBWx4urYqbu7VdNUbJGlor2IJLl6iXPZevdXo6Sy
-         9owq0UVRn2zJHWH35kLLs/8vY4uCjVnArHM6n2/43OLLPk3Af56h2LI3fdA41XeQp2jH
-         35orLJbWamSYiwHRahyU8ByHtIuNIcVfsnqVEMuUfosRg4/g9q985wxYCyajwStai3W9
-         wTfwIN/LZaauLfWXqoIfyZiBYntzwgdO1rfsLPhSQuL0EAWrcRnLp3NZa0JMPxnGld0B
-         YmPw==
-X-Gm-Message-State: AC+VfDy2SmWPFg9FvE8P4Mg0CiZVXmPgIUoaqXOPpXP/OWUyiN0SWzTz
-	iXU+kRntyiF4pXXK8kJvztgyyqyWhHBXOktw51F3ejHg+wJqUYa/TTJ2mpdv20rCfxMFExzjDvv
-	nHd6PdVK6T2OwpnQ=
-X-Received: by 2002:a92:dcc1:0:b0:328:8770:b9c2 with SMTP id b1-20020a92dcc1000000b003288770b9c2mr507365ilr.14.1685405807098;
-        Mon, 29 May 2023 17:16:47 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ73yMhHh+AVUWd+tWnEm39ZtbwzqfO2AHakkj3n4fptb2pthTIWuj5Tj1tTy9hAry5+QAej4w==
-X-Received: by 2002:a92:dcc1:0:b0:328:8770:b9c2 with SMTP id b1-20020a92dcc1000000b003288770b9c2mr507347ilr.14.1685405806881;
-        Mon, 29 May 2023 17:16:46 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id d6-20020a926806000000b003248469e5easm590655ilc.43.2023.05.29.17.16.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 May 2023 17:16:46 -0700 (PDT)
-Date: Mon, 29 May 2023 18:16:44 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
- "joro@8bytes.org" <joro@8bytes.org>, "robin.murphy@arm.com"
- <robin.murphy@arm.com>, "baolu.lu@linux.intel.com"
- <baolu.lu@linux.intel.com>, "cohuck@redhat.com" <cohuck@redhat.com>,
- "eric.auger@redhat.com" <eric.auger@redhat.com>, "nicolinc@nvidia.com"
- <nicolinc@nvidia.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
- "chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
- "yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>, "peterx@redhat.com"
- <peterx@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>,
- "shameerali.kolothum.thodi@huawei.com"
- <shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com"
- <lulu@redhat.com>, "suravee.suthikulpanit@amd.com"
- <suravee.suthikulpanit@amd.com>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, "linux-kselftest@vger.kernel.org"
- <linux-kselftest@vger.kernel.org>, "Duan, Zhenzhong"
- <zhenzhong.duan@intel.com>
-Subject: Re: [PATCH v3 00/10] Add Intel VT-d nested translation
-Message-ID: <20230529181644.3a6a5c7b.alex.williamson@redhat.com>
-In-Reply-To: <ZHTyNgnjj/bOkIgi@nvidia.com>
-References: <20230511145110.27707-1-yi.l.liu@intel.com>
-	<BN9PR11MB52765FA8255FB8F8A1A6F11B8C419@BN9PR11MB5276.namprd11.prod.outlook.com>
-	<ZHTyNgnjj/bOkIgi@nvidia.com>
-Organization: Red Hat
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B70BA3D
+	for <iommu@lists.linux.dev>; Tue, 30 May 2023 02:20:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685413204; x=1716949204;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=lFYn7kOvp6cOxyKCTax16qx7apM/MziGizg65AamduI=;
+  b=iDxsoZTFnXHDeTNNpTp+n9BFbS2no/ELA6LrZSvor+eGryRbf+AcFbP7
+   wU7QJRcPeS8laSRX1ikU6Vx+kJMh8E0NSRYljHQmfJBlgsJhPWNHFjcGn
+   7d+88Batd+N8TVllkVJJn485ByC1bPPTxsauSK0LbGUr8e2e/358zcZO7
+   1UnaZclohYkvF/CZitm6UgV7bGbyeIbyNV2jVAYm17Ibi0rx02Nk7P7cb
+   pqfuBIZouOzLR0AWA+ef/SMPi6md9pmn3jcx9YwgOTeQLvwJ0vYKyvXFN
+   aKrFeyUBdTQcexAeaJGiShjPq1vqsGXywNpDNQOzkx/RwXAmSBozIqUb8
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="418284090"
+X-IronPort-AV: E=Sophos;i="6.00,201,1681196400"; 
+   d="scan'208";a="418284090"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2023 19:20:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="880595918"
+X-IronPort-AV: E=Sophos;i="6.00,201,1681196400"; 
+   d="scan'208";a="880595918"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by orsmga005.jf.intel.com with ESMTP; 29 May 2023 19:19:58 -0700
+Message-ID: <ba26db48-4102-d6bc-add8-5449423158ca@linux.intel.com>
+Date: Tue, 30 May 2023 10:19:05 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Cc: baolu.lu@linux.intel.com, LKML <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ dmaengine@vger.kernel.org, vkoul@kernel.org,
+ Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+ David Woodhouse <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>,
+ "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+ "Yu, Fenghua" <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Tony Luck <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
+ narayan.ranganathan@intel.com
+Subject: Re: [PATCH v6 3/4] iommu/vt-d: Add set_dev_pasid callback for dma
+ domain
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>
+References: <20230519203223.2777255-1-jacob.jun.pan@linux.intel.com>
+ <20230519203223.2777255-4-jacob.jun.pan@linux.intel.com>
+ <ZHUBoBev2Vzp8nGF@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <ZHUBoBev2Vzp8nGF@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On Mon, 29 May 2023 15:43:02 -0300
-Jason Gunthorpe <jgg@nvidia.com> wrote:
-
-> On Wed, May 24, 2023 at 08:59:43AM +0000, Tian, Kevin wrote:
+On 5/30/23 3:48 AM, Jason Gunthorpe wrote:
+> On Fri, May 19, 2023 at 01:32:22PM -0700, Jacob Pan wrote:
 > 
-> > At least this looks a reasonable tradeoff to some proprietary VMMs
-> > which never adds RO mappings in stage-2 today.  
+>> @@ -4720,25 +4762,99 @@ static void intel_iommu_iotlb_sync_map(struct iommu_domain *domain,
+>>   static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
+>>   {
+>>   	struct intel_iommu *iommu = device_to_iommu(dev, NULL, NULL);
+>> +	struct dev_pasid_info *curr, *dev_pasid = NULL;
+>> +	struct dmar_domain *dmar_domain;
+>>   	struct iommu_domain *domain;
+>> +	unsigned long flags;
+>>   
+>> -	/* Domain type specific cleanup: */
+>>   	domain = iommu_get_domain_for_dev_pasid(dev, pasid, 0);
+>> -	if (domain) {
+>> -		switch (domain->type) {
+>> -		case IOMMU_DOMAIN_SVA:
+>> -			intel_svm_remove_dev_pasid(dev, pasid);
+>> -			break;
+>> -		default:
+>> -			/* should never reach here */
+>> -			WARN_ON(1);
+>> +	if (!domain)
+>> +		goto out_tear_down;
+>> +
+>> +	/*
+>> +	 * The SVA implementation needs to stop mm notification, drain the
+>> +	 * pending page fault requests before tearing down the pasid entry.
+>> +	 * The VT-d spec (section 6.2.3.1) also recommends that software
+>> +	 * could use a reserved domain id for all first-only and pass-through
+>> +	 * translations. Hence there's no need to call domain_detach_iommu()
+>> +	 * in the sva domain case.
+>> +	 */
+>> +	if (domain->type == IOMMU_DOMAIN_SVA) {
+>> +		intel_svm_remove_dev_pasid(dev, pasid);
+>> +		goto out_tear_down;
+>> +	}
 > 
-> What is the reason for the RO anyhow?
+> But why don't you need to do all the other
+> intel_pasid_tear_down_entry(), intel_svm_drain_prq() (which is
+> misnamed) and other stuff from intel_svm_remove_dev_pasid() ?
+
+Perhaps,
+
+	if (domain->type == IOMMU_DOMAIN_SVA) {
+		intel_svm_remove_dev_pasid(dev, pasid);
+		return;
+	}
+
+?
+
 > 
-> Would it be so bad if it was DMA mapped as RW due to the errata?
+> There still seems to be waaay too much "SVM" in the PASID code.
 
-What if it's the zero page?  Thanks,
+This segment of code is destined to be temporary. From a long-term
+perspective, I hope to move SVA specific staffs such as mm notification,
+prq draining, etc. to the iommu core. They are generic rather than Intel
+iommu specific.
 
-Alex
+After the code consolidation done, the code here will become simpler and
+appealing. We just need to tear down the pasid entry.
 
+> 
+>> +static int intel_iommu_set_dev_pasid(struct iommu_domain *domain,
+>> +				     struct device *dev, ioasid_t pasid)
+>> +{
+>> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
+>> +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+>> +	struct intel_iommu *iommu = info->iommu;
+>> +	struct dev_pasid_info *dev_pasid;
+>> +	unsigned long flags;
+>> +	int ret;
+>> +
+>> +	if (!pasid_supported(iommu) || dev_is_real_dma_subdevice(dev))
+>> +		return -EOPNOTSUPP;
+>> +
+>> +	if (context_copied(iommu, info->bus, info->devfn))
+>> +		return -EBUSY;
+>> +
+>> +	ret = prepare_domain_attach_device(domain, dev);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	dev_pasid = kzalloc(sizeof(*dev_pasid), GFP_KERNEL);
+>> +	if (!dev_pasid)
+>> +		return -ENOMEM;
+>> +
+>> +	ret = domain_attach_iommu(dmar_domain, iommu);
+>> +	if (ret)
+>> +		goto out_free;
+>> +
+>> +	if (domain_type_is_si(dmar_domain))
+>> +		ret = intel_pasid_setup_pass_through(iommu, dmar_domain,
+>> +						     dev, pasid);
+>> +	else if (dmar_domain->use_first_level)
+>> +		ret = domain_setup_first_level(iommu, dmar_domain,
+>> +					       dev, pasid);
+>> +	else
+>> +		ret = intel_pasid_setup_second_level(iommu, dmar_domain,
+>> +						     dev, pasid);
+> 
+> It would be nice if the different domain types had their own ops..
+
+Good suggestion!
+
+We can add a domain ops in the Intel domain structure which is
+responsible for how to install an Intel iommu domain onto the VT-d
+hardware.
+
+It worth a separated refactoring series. Let me do it afterward.
+
+Best regards,
+baolu
