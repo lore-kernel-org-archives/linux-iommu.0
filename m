@@ -1,33 +1,33 @@
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2081.outbound.protection.outlook.com [40.107.100.81])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2061.outbound.protection.outlook.com [40.107.92.61])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BB4C21083
-	for <iommu@lists.linux.dev>; Tue, 30 May 2023 14:12:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4053D21083
+	for <iommu@lists.linux.dev>; Tue, 30 May 2023 14:12:12 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=m+rMbqzsyFs7sAMww2Mz6mJtnRNQmgJOdlr/kunaDgLrXK7hVw5NiFEfMUe53k+dlB9kRATMvHwgjJwodNAOtblXwhxrBV5toZ/TJK6qIKlt8Te1Qh/FArt6hDGSHMElXrWBlU0xBmNsfLt9zZ1gEi/iPPAZH4144JSASQ9MbKmiAgqaTmojQDauP0UFjoGMV5/Ia4LHGYfRkdz69/IhQS9zaPsVdQbsEawFVpqpUTjhmy7Jo0dB8mlK/pfNBPZSTatQ4AXbcFwELKh5PUfe3xUOzm6kFKUkLn+cDhHB0OSiuzkv5xPRpVVyXgYYHfHokfOOWh6+ZJ2dJPymaD0TaA==
+ b=BOdpDNO4kQZUBwd0sYzpQff1saappuN6OZEnTym7qM7YHBIJxDr26aIBo9tijstIbtycgoncZaQ+gFu+x/g5GcNJAn0DMTTmGZrOTuNQOdWedC5Kpi6ZnHf0pHc11Jc6Z9n1lGf+WPX7Zf2TNRWRsKCJawclHwYBWi+4bkW/5VJHIarJC6c/jLcXfc08AKIz0qa8kTIsero+UEf41btRwfqdOIBatqR3Z/0/VHeR3w2/gLyQL3SJ7i+4Q+a9jHVV3UYwiQFnyOmBejluYpT19lOznF96UAysVCi/JH/VdSEco6P6QhbMFoDZEYpDhRNgMemg9Il11E1jlhR1XkNLpA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oZYs+r8uNjVf/8lOAlN48BpcDCsnxQBl31dbkVBXYTA=;
- b=IgQwfOdlPknHfXYZvIG8OaU96reqam774Lzejy+O83ZIITuo0/lLbOzn1RxfzsM5p/qBNVQHC66JFHywkstW+PnCgROkKrde9pRLdo1T9eRG0qg6Ws0F4oIJCbY4rO4STP77Vvo5V/6FHyGHFfhE0NkvgYudnQXBXp3kEFH2x07p+0JDk617P+IIYlJTUKhYIsAIhtG/ktTc7FfxsZzwgkS7LE54QfUHezh/APWpcM+trKeeSTnfc0nM8oi1lMtmGzLtJALgjJXCYgQvW+wnjKf9s60y6S2tZUtl0j9317t5my1tEAmME7bwOyLsKkYBig4Bnb9p50T2mF9FznI+EA==
+ bh=yVqVpbSQ/trAhvaBLYKV0USAlWtHJf5UXN7XTgy/4Kw=;
+ b=V1cTBnb4Yny3mjnhGXsYI1bOVCKoVPqCB/ovTke4gmKw7QgB1lueZUmWaO+6neVOIDDoFe2GkRqJfKcg/77ME4yUJuJsd/3luwcMo+AQ2baN8G6gxYM+MuAcCsn6Kln7n53BlqLVR4rLQ3qpNVcTipysp3f1V2zHPWzfjuXkgbkRKv9dNUk6d1UN0qzujINaKYXGotjGxYs2f0ZEaqnLtjbYSPuMaR0XdziWfV4UOhq6lflJz00Srb3RRKElFSVLPpbyy8mQuyRyl1WNkZWVNnsP4w3JEfOxDdlWR8j2znDErUIu12DR1SxvZs0YgSiyMpiu4L/cofvnnGGuIpVU2w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oZYs+r8uNjVf/8lOAlN48BpcDCsnxQBl31dbkVBXYTA=;
- b=KehOOcJoLT/H1QWp2XzTYPeOXukSPuSH3Gw8kdmpx2+y4geg1AIVb+/MTz3MZ2sAo1G0S+WX1nt+6f9BOaTKZhZGpfm0TMxQqBKhh2spms5H9WCam2ht90+R0FAdAjleyHDgIWWfan3g4qEV7gV29+BHJQdZF3+0LlirnL8rxVs=
-Received: from SJ0PR03CA0267.namprd03.prod.outlook.com (2603:10b6:a03:3a0::32)
- by PH0PR12MB8007.namprd12.prod.outlook.com (2603:10b6:510:28e::5) with
+ bh=yVqVpbSQ/trAhvaBLYKV0USAlWtHJf5UXN7XTgy/4Kw=;
+ b=uP//OT8UsVgligOL3/2BQCwDESpy/ROXBbeTeveZEhhEpYiSUXNcwPUKu5pZPQ4/5V2tOYUeSoRVSQmnDOcwiZsw4LT4YjgXusN5rGBnOkaKnh+sPnqOBaUDckm3dJdJGd0aBCufnqf8jJoJvxYcYpkfjy5EnPMuie13BRqXFTU=
+Received: from SJ0PR03CA0256.namprd03.prod.outlook.com (2603:10b6:a03:3a0::21)
+ by PH7PR12MB9222.namprd12.prod.outlook.com (2603:10b6:510:2ef::8) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.23; Tue, 30 May
- 2023 14:12:05 +0000
+ 2023 14:12:07 +0000
 Received: from CO1NAM11FT044.eop-nam11.prod.protection.outlook.com
- (2603:10b6:a03:3a0:cafe::6e) by SJ0PR03CA0267.outlook.office365.com
- (2603:10b6:a03:3a0::32) with Microsoft SMTP Server (version=TLS1_2,
+ (2603:10b6:a03:3a0:cafe::9c) by SJ0PR03CA0256.outlook.office365.com
+ (2603:10b6:a03:3a0::21) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.23 via Frontend
- Transport; Tue, 30 May 2023 14:12:05 +0000
+ Transport; Tue, 30 May 2023 14:12:07 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -37,11 +37,11 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
  CO1NAM11FT044.mail.protection.outlook.com (10.13.175.188) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6455.22 via Frontend Transport; Tue, 30 May 2023 14:12:04 +0000
+ 15.20.6455.22 via Frontend Transport; Tue, 30 May 2023 14:12:06 +0000
 Received: from titanite-d432host.amd.com (10.180.168.240) by
  SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Tue, 30 May 2023 09:12:00 -0500
+ 15.1.2375.34; Tue, 30 May 2023 09:12:03 -0500
 From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
 CC: <joro@8bytes.org>, <joao.m.martins@oracle.com>,
@@ -49,9 +49,9 @@ CC: <joro@8bytes.org>, <joao.m.martins@oracle.com>,
 	<jon.grimm@amd.com>, <santosh.shukla@amd.com>, <vasant.hegde@amd.com>,
 	<kishon.vijayabraham@amd.com>, <jsnitsel@redhat.com>, Suravee Suthikulpanit
 	<suravee.suthikulpanit@amd.com>
-Subject: [PATCH v3 3/5] iommu/amd: Introduce Disable IRTE Caching Support
-Date: Tue, 30 May 2023 10:11:35 -0400
-Message-ID: <20230530141137.14376-4-suravee.suthikulpanit@amd.com>
+Subject: [PATCH v3 5/5] iommu/amd: Improving Interrupt Remapping Table Invalidation
+Date: Tue, 30 May 2023 10:11:37 -0400
+Message-ID: <20230530141137.14376-6-suravee.suthikulpanit@amd.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20230530141137.14376-1-suravee.suthikulpanit@amd.com>
 References: <20230530141137.14376-1-suravee.suthikulpanit@amd.com>
@@ -68,177 +68,122 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT044:EE_|PH0PR12MB8007:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4eb980ea-2f3e-4d8b-e24d-08db6117d8a2
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT044:EE_|PH7PR12MB9222:EE_
+X-MS-Office365-Filtering-Correlation-Id: c425a9ca-570c-4c04-e2c4-08db6117d9eb
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	7axUAzPtV9sPuoqUQjmnq5fpc1A++9wVUR/iONPcsimFDiBIKGAAzpMLfKTqf3ReSQhpQnd+JyjbKPxGxFULBBhb53al4Gb+Xyp/hlgl68bAO/M/xxbIYNaIcnS5FoxN2pKCVZUgBjMTJKNy4XnCfUY3vlNJgDRtRJa6SffZ4I17NHiHpZ4plfKV4PqyU7qXYNWHM+yhnBLhwGFdLe55Jvf2Ookop0ZFI5OnphyTm6YINXK7ndewZsOPH2OgmqbohwY7lipj7alYXoD6zc2AbH/deK7FoZ+jJV8BcClOAR58WADpPmMFVTaPQ5/Af/gj0/cj1AhizL5BX9h0pyolMZE/ND7bBxnrA/p3wp3YXbgirePfQ7XFXWurchl6FCNMlL6okjNaAEG4oJv84z7FJTaPCHH3DD6wzW6LCGHmPj6b8urfQPcL51oljb/vdnABnvUfsp+QzMnQXT1i0z9BsI/ugWiOwc9SeQ1C5/wT752d1N4aznrJlglJEu0YgitjNCMevBU6KWCYie0kPN7eiH5wC6Yb0O3j+xU2tPk5MmpiFMgIr2my8t8C5UbtJZoPNa+/TajxKwyj2sFGmdlQCruDjG5fLLTtcQkX4MxmeWVKQCw6dOcY7Bo0GskQjgZ/17jZh+C936axCpUZKGBHDykFz/Mh/s7tLwLquX7TzEj0iRGL6IY6lNEhq73tUmvfMVoPPVcP6eNsoqo3z8SKmV8pcysD0mW0rP1rG3H8gI1yQwxJw7C4MhL/M6c+tj916TnIi9WUnEFy3vWjkuLNEw==
+	jEuSmauE/qiNR/KT4EpObdkSQyGBz+chsLxt4ee/3DrisOdtMZWULgqtrY3hNCsubrqJ68ntJFDmtv4jA+Ne8sp2JHOcfWsrOHx7W/0lN3873NxG31FaCvPI78N5GlrSk0SZp8vn+/fs08V9BnA6TGjXg2tsqafU98fhrLGMOg22PeIp2H4kndWhdQCzziv6N96f55t0qQlYHMhuSti0uDxLhOhtPPVL4Zpn8STswm+Pv8rQyIWEVaAhUE3M/whMxWJ+FtWufyEdQcgqUdLQfHW57wEK8zAO+pC5NvNOUv9VZCNw9xywb0irqzxt1y4LD2aD6pNTsGFZWI38IqmamsFT2SAzAo0kUjfmtFJpkRp8WWCxyEusO5y2GcYCb79l8tMVHPgd8dqi5O6vx7jtJDlYKTffc3TdZPgUINzOyVTVvRkRJT+6dASXEZ86pjftYA00Ha5scgblOXR1ggnrN8y44uRUmDs5E15JSYVBpe8Jd6BISKCdHuZLTQFYmpLGephuyVlsNenUlDJxXw270mlrnG5/tDm11fiYwAf+FHOj6Luizes+KFPNltjUH2LcZg/BwfGkhq8hjwMkJ9d9U7COl1YEzMSTkTSQ0/Bx1TkvA5aav12kH5fAQS0JZOzRk1OYlP4ARNdhb2yqVIlNEX6zSJyjcKAEhM2f1rKFo0FRy1TUO8QMJynbYKfCAh2EivZEgiMHT0NxsVlhVNB7czRaN/W3ny+YzBkErGBPjAxr6v2zc7zix1HjwTAbG2KpFbrAjr7IgN/OXcZk4E33lQ==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(39860400002)(136003)(346002)(451199021)(36840700001)(46966006)(40470700004)(478600001)(40460700003)(54906003)(110136005)(8936002)(8676002)(5660300002)(44832011)(86362001)(82310400005)(36756003)(2906002)(356005)(81166007)(4326008)(82740400003)(70206006)(70586007)(316002)(40480700001)(41300700001)(2616005)(16526019)(186003)(1076003)(26005)(47076005)(36860700001)(7696005)(6666004)(426003)(336012)(83380400001)(36900700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(376002)(39860400002)(346002)(396003)(136003)(451199021)(40470700004)(36840700001)(46966006)(186003)(1076003)(2906002)(16526019)(36860700001)(2616005)(36756003)(40460700003)(83380400001)(47076005)(40480700001)(336012)(426003)(4326008)(6666004)(316002)(70586007)(70206006)(41300700001)(7696005)(110136005)(478600001)(54906003)(356005)(81166007)(82740400003)(26005)(82310400005)(44832011)(8676002)(5660300002)(86362001)(8936002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2023 14:12:04.8346
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2023 14:12:06.9907
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4eb980ea-2f3e-4d8b-e24d-08db6117d8a2
+X-MS-Exchange-CrossTenant-Network-Message-Id: c425a9ca-570c-4c04-e2c4-08db6117d9eb
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
 	CO1NAM11FT044.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB8007
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB9222
 
-An Interrupt Remapping Table (IRT) stores interrupt remapping configuration
-for each device. In a normal operation, the AMD IOMMU caches the table
-to optimize subsequent data accesses. This requires the IOMMU driver to
-invalidate IRT whenever it updates the table. The invalidation process
-includes issuing an INVALIDATE_INTERRUPT_TABLE command following by
-a COMPLETION_WAIT command.
+Invalidating Interrupt Remapping Table (IRT) requires, the AMD IOMMU driver
+to issue INVALIDATE_INTERRUPT_TABLE and COMPLETION_WAIT commands.
+Currently, the driver issues the two commands separately, which requires
+calling raw_spin_lock_irqsave() twice. In addition, the COMPLETION_WAIT
+could potentially be interleaved with other commands causing delay of
+the COMPLETION_WAIT command.
 
-However, there are cases in which the IRT is updated at a high rate.
-For example, for IOMMU AVIC, the IRTE[IsRun] bit is updated on every
-vcpu scheduling (i.e. amd_iommu_update_ga()). On system with large
-amount of vcpus and VFIO PCI pass-through devices, the invalidation
-process could potentially become a performance bottleneck.
-
-Introducing a new kernel boot option:
-
-    amd_iommu=irtcachedis
-
-which disables IRTE caching by setting the IRTCachedis bit in each IOMMU
-Control register, and bypass the IRT invalidation process.
+Therefore, combine issuing of the two commands in one spin-lock, and
+changing struct amd_iommu.cmd_sem_val to use atomic64 to minimize
+locking.
 
 Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
-Co-developed-by: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
-Signed-off-by: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 ---
- .../admin-guide/kernel-parameters.txt         |  1 +
- drivers/iommu/amd/amd_iommu_types.h           |  4 +++
- drivers/iommu/amd/init.c                      | 36 +++++++++++++++++++
- 3 files changed, 41 insertions(+)
+ drivers/iommu/amd/amd_iommu_types.h |  2 +-
+ drivers/iommu/amd/init.c            |  2 +-
+ drivers/iommu/amd/iommu.c           | 27 ++++++++++++++++++++++-----
+ 3 files changed, 24 insertions(+), 7 deletions(-)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 6221a1d057dd..f29dee600faf 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -323,6 +323,7 @@
- 				       option with care.
- 			pgtbl_v1     - Use v1 page table for DMA-API (Default).
- 			pgtbl_v2     - Use v2 page table for DMA-API.
-+			irtcachedis  - Disable Interrupt Remapping Table (IRT) caching.
- 
- 	amd_iommu_dump=	[HW,X86-64]
- 			Enable AMD IOMMU driver option to dump the ACPI table
 diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index a0ff1e852efc..486a052e37ca 100644
+index 486a052e37ca..2fa65da2a9a5 100644
 --- a/drivers/iommu/amd/amd_iommu_types.h
 +++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -172,6 +172,7 @@
- #define CONTROL_GAINT_EN	29
- #define CONTROL_XT_EN		50
- #define CONTROL_INTCAPXT_EN	51
-+#define CONTROL_IRTCACHEDIS	59
- #define CONTROL_SNPAVIC_EN	61
+@@ -744,7 +744,7 @@ struct amd_iommu {
  
- #define CTRL_INV_TO_MASK	(7 << CONTROL_INV_TIMEOUT)
-@@ -708,6 +709,9 @@ struct amd_iommu {
- 	/* if one, we need to send a completion wait command */
- 	bool need_sync;
+ 	u32 flags;
+ 	volatile u64 *cmd_sem;
+-	u64 cmd_sem_val;
++	atomic64_t cmd_sem_val;
  
-+	/* true if disable irte caching */
-+	bool irtcachedis_enabled;
-+
- 	/* Handle for IOMMU core code */
- 	struct iommu_device iommu;
- 
+ #ifdef CONFIG_AMD_IOMMU_DEBUGFS
+ 	/* DebugFS Info */
 diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index fd487c33b28a..fc0392d706db 100644
+index fc0392d706db..16737819f79a 100644
 --- a/drivers/iommu/amd/init.c
 +++ b/drivers/iommu/amd/init.c
-@@ -160,6 +160,7 @@ static int amd_iommu_xt_mode = IRQ_REMAP_XAPIC_MODE;
- static bool amd_iommu_detected;
- static bool amd_iommu_disabled __initdata;
- static bool amd_iommu_force_enable __initdata;
-+static bool amd_iommu_irtcachedis;
- static int amd_iommu_target_ivhd_type;
+@@ -1750,7 +1750,7 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h,
+ 	iommu->pci_seg = pci_seg;
  
- /* Global EFR and EFR2 registers */
-@@ -477,6 +478,9 @@ static void iommu_disable(struct amd_iommu *iommu)
+ 	raw_spin_lock_init(&iommu->lock);
+-	iommu->cmd_sem_val = 0;
++	atomic64_set(&iommu->cmd_sem_val, 0);
  
- 	/* Disable IOMMU hardware itself */
- 	iommu_feature_disable(iommu, CONTROL_IOMMU_EN);
-+
-+	/* Clear IRTE cache disabling bit */
-+	iommu_feature_disable(iommu, CONTROL_IRTCACHEDIS);
- }
+ 	/* Add IOMMU to internal data structures */
+ 	list_add_tail(&iommu->list, &amd_iommu_list);
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 51c2b018433d..57ae4a8072d3 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -1182,11 +1182,11 @@ static int iommu_completion_wait(struct amd_iommu *iommu)
+ 	if (!iommu->need_sync)
+ 		return 0;
  
- /*
-@@ -2700,6 +2704,33 @@ static void iommu_enable_ga(struct amd_iommu *iommu)
- #endif
- }
+-	raw_spin_lock_irqsave(&iommu->lock, flags);
+-
+-	data = ++iommu->cmd_sem_val;
++	data = atomic64_add_return(1, &iommu->cmd_sem_val);
+ 	build_completion_wait(&cmd, iommu, data);
  
-+static void iommu_disable_irtcachedis(struct amd_iommu *iommu)
-+{
-+	iommu_feature_disable(iommu, CONTROL_IRTCACHEDIS);
-+}
++	raw_spin_lock_irqsave(&iommu->lock, flags);
 +
-+static void iommu_enable_irtcachedis(struct amd_iommu *iommu)
-+{
-+	u64 ctrl;
-+
-+	if (!amd_iommu_irtcachedis)
-+		return;
-+
-+	/*
-+	 * Note:
-+	 * The support for IRTCacheDis feature is dertermined by
-+	 * checking if the bit is writable.
-+	 */
-+	iommu_feature_enable(iommu, CONTROL_IRTCACHEDIS);
-+	ctrl = readq(iommu->mmio_base +  MMIO_CONTROL_OFFSET);
-+	ctrl &= (1ULL << CONTROL_IRTCACHEDIS);
-+	if (ctrl)
-+		iommu->irtcachedis_enabled = true;
-+	pr_info("iommu%d (%#06x) : IRT cache is %s\n",
-+		iommu->index, iommu->devid,
-+		iommu->irtcachedis_enabled ? "disabled" : "enabled");
-+}
-+
- static void early_enable_iommu(struct amd_iommu *iommu)
+ 	ret = __iommu_queue_command_sync(iommu, &cmd, false);
+ 	if (ret)
+ 		goto out_unlock;
+@@ -1284,11 +1284,28 @@ static void amd_iommu_flush_irt_all(struct amd_iommu *iommu)
+ 
+ static void iommu_flush_irt_and_complete(struct amd_iommu *iommu, u16 devid)
  {
- 	iommu_disable(iommu);
-@@ -2710,6 +2741,7 @@ static void early_enable_iommu(struct amd_iommu *iommu)
- 	iommu_set_exclusion_range(iommu);
- 	iommu_enable_ga(iommu);
- 	iommu_enable_xt(iommu);
-+	iommu_enable_irtcachedis(iommu);
- 	iommu_enable(iommu);
- 	iommu_flush_all_caches(iommu);
++	int ret;
++	u64 data;
++	unsigned long flags;
++	struct iommu_cmd cmd, cmd2;
++
+ 	if (iommu->irtcachedis_enabled)
+ 		return;
+ 
+-	iommu_flush_irt(iommu, devid);
+-	iommu_completion_wait(iommu);
++	build_inv_irt(&cmd, devid);
++	data = atomic64_add_return(1, &iommu->cmd_sem_val);
++	build_completion_wait(&cmd2, iommu, data);
++
++	raw_spin_lock_irqsave(&iommu->lock, flags);
++	ret = __iommu_queue_command_sync(iommu, &cmd, true);
++	if (ret)
++		goto out;
++	ret = __iommu_queue_command_sync(iommu, &cmd2, false);
++	if (ret)
++		goto out;
++	wait_on_sem(iommu, data);
++out:
++	raw_spin_unlock_irqrestore(&iommu->lock, flags);
  }
-@@ -2760,10 +2792,12 @@ static void early_enable_iommus(void)
- 		for_each_iommu(iommu) {
- 			iommu_disable_command_buffer(iommu);
- 			iommu_disable_event_buffer(iommu);
-+			iommu_disable_irtcachedis(iommu);
- 			iommu_enable_command_buffer(iommu);
- 			iommu_enable_event_buffer(iommu);
- 			iommu_enable_ga(iommu);
- 			iommu_enable_xt(iommu);
-+			iommu_enable_irtcachedis(iommu);
- 			iommu_set_device_table(iommu);
- 			iommu_flush_all_caches(iommu);
- 		}
-@@ -3411,6 +3445,8 @@ static int __init parse_amd_iommu_options(char *str)
- 			amd_iommu_pgtable = AMD_IOMMU_V1;
- 		} else if (strncmp(str, "pgtbl_v2", 8) == 0) {
- 			amd_iommu_pgtable = AMD_IOMMU_V2;
-+		} else if (strncmp(str, "irtcachedis", 11) == 0) {
-+			amd_iommu_irtcachedis = true;
- 		} else {
- 			pr_notice("Unknown option - '%s'\n", str);
- 		}
+ 
+ void iommu_flush_all_caches(struct amd_iommu *iommu)
 -- 
 2.31.1
 
