@@ -1,32 +1,32 @@
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C06863DE
-	for <iommu@lists.linux.dev>; Tue, 30 May 2023 05:39:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B8A663DE
+	for <iommu@lists.linux.dev>; Tue, 30 May 2023 05:39:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685425141; x=1716961141;
+  t=1685425145; x=1716961145;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=07iXsgZBQsRNVYOgRRfnTYdWG3SMG8/nVfXEU8dn588=;
-  b=hN6oVPkZBjOb5k+OD+7MuY5JY9BTm2zNPsx0HbTAXjWkflxw3JJ8uWzA
-   9LQZYWM6JKO82FgHUele5KcyC4aW0Ri4Cl0LAlyb+hQfAgiI3YvnX4WFq
-   gHKYDwg4eGJesVVuuiWwfhqZFcjm6uh9lgcuFCDlpYVQ/bFOX9gm37FQ5
-   kF+mocLMAk3pM3n5Xi5XzovIkK/u0mxNmQ1goJI1qFjbwUNQ/QDH1k0l5
-   UeXumutlTq588cfES2t1fDD3ezaZoDEe3qkqPiZKsMUOVW4ZAQrQaekOB
-   RMdZNLwIOFtd3hFeZn9XgTmTdC79sNDOtHOKAJFwptd+6Kx1YHqJ5j1TF
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="420579804"
+  bh=z6fZzsnppnyR7kpcIKhto0g6Vd7ftpsuL2xR0ieUO5k=;
+  b=eScc8JQss+SPMgqYXI4rj2AkY1kfKs+21Tz7RAOepslz26zL81APCGuY
+   6utyFrNfpyrQOLDkt7A/AKJZIJ1Tdt07LReLIjA8kDsw7vOwlyZayQ/8K
+   qBkXWYe9A79OcfwOYj2Jstx3IyX4Ilzb05+iRzyi3c4V9QNEFbDHTFjSQ
+   QbcqlIZzPuM/uORaer/3VpCOp5RMAZCuyFBrXrKysQtRXTXpL1BhtSjvq
+   TYdqGRx6EAPgtqrJEz/Z7UTMm8ITaIZrJGopleClAF/q3B3xRRiz4uNo8
+   Rx1HK3ujqOeSDf6Pcd4BkFqFsGdial/PISXnfW/Sy6l1OVMLZSuNdGSeq
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="420579820"
 X-IronPort-AV: E=Sophos;i="6.00,203,1681196400"; 
-   d="scan'208";a="420579804"
+   d="scan'208";a="420579820"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2023 22:39:01 -0700
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2023 22:39:05 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="739369765"
+X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="739369801"
 X-IronPort-AV: E=Sophos;i="6.00,203,1681196400"; 
-   d="scan'208";a="739369765"
+   d="scan'208";a="739369801"
 Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by orsmga001.jf.intel.com with ESMTP; 29 May 2023 22:38:58 -0700
+  by orsmga001.jf.intel.com with ESMTP; 29 May 2023 22:39:02 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Jason Gunthorpe <jgg@ziepe.ca>,
 	Kevin Tian <kevin.tian@intel.com>,
@@ -42,9 +42,9 @@ Cc: iommu@lists.linux.dev,
 	virtualization@lists.linux-foundation.org,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [RFC PATCHES 10/17] iommufd: Add IOMMU_HWPT_ALLOC_FLAGS_USER_PASID_TABLE for hwpt_alloc
-Date: Tue, 30 May 2023 13:37:17 +0800
-Message-Id: <20230530053724.232765-11-baolu.lu@linux.intel.com>
+Subject: [RFC PATCHES 11/17] iommufd: Deliver fault messages to user space
+Date: Tue, 30 May 2023 13:37:18 +0800
+Message-Id: <20230530053724.232765-12-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230530053724.232765-1-baolu.lu@linux.intel.com>
 References: <20230530053724.232765-1-baolu.lu@linux.intel.com>
@@ -56,76 +56,132 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This flag indicates that the architecture supports assigning the whole
-PASID table for a device to userspace. When this flag is set, the host
-kernel does not need to be involved in attaching or detaching HWPTs to
-any PASID of the device. For such architectures, the fault cookie is
-always saved as {device, 0}.
+Provide a read-only file interface that allows user space to obtain fault
+messages by sequentially reading the file. User space can determine whether
+all fault messages have been read by comparing the provided read buffer
+with the actually returned data length. Once a fault is read by the user,
+it will be moved from the pending list to the waiting-for-response list.
 
+Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/iommufd/iommufd_private.h | 1 +
- include/uapi/linux/iommufd.h            | 3 +++
- drivers/iommu/iommufd/hw_pagetable.c    | 6 +++++-
- 3 files changed, 9 insertions(+), 1 deletion(-)
+ drivers/iommu/iommufd/iommufd_private.h |  2 +
+ drivers/iommu/iommufd/hw_pagetable.c    | 66 +++++++++++++++++++++++++
+ 2 files changed, 68 insertions(+)
 
 diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 8ff7721ea922..67e5aa0f996e 100644
+index 67e5aa0f996e..6da0ba9421d0 100644
 --- a/drivers/iommu/iommufd/iommufd_private.h
 +++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -241,6 +241,7 @@ struct hw_pgtable_fault {
- 	struct list_head deliver;
+@@ -242,6 +242,8 @@ struct hw_pgtable_fault {
  	struct list_head response;
  	struct eventfd_ctx *trigger;
-+	bool user_pasid_table;
+ 	bool user_pasid_table;
++	struct file *fault_file;
++	int fault_fd;
  };
  
  struct iommufd_fault {
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index 2c7c44c00da2..63863e21d043 100644
---- a/include/uapi/linux/iommufd.h
-+++ b/include/uapi/linux/iommufd.h
-@@ -449,6 +449,8 @@ struct iommu_hwpt_arm_smmuv3 {
-  *    must be valid once this flag is set. On successful return, user can
-  *    listen to @event_fd and retrieve faults by reading @out_fault_fd.
-  *    The fault data is encoded in the format defined by iommu_hwpt_pgfault.
-+ *  - USER_PASID_TABLE: The architecture supports assigning the whole pasid
-+ *    table of a device to user.
-  * @dev_id: The device to allocate this HWPT for
-  * @pt_id: The IOAS to connect this HWPT to
-  * @out_hwpt_id: The ID of the new HWPT
-@@ -487,6 +489,7 @@ struct iommu_hwpt_alloc {
- 	__u32 size;
- 	__u32 flags;
- #define IOMMU_HWPT_ALLOC_FLAGS_IOPF_CAPABLE		(1 << 0)
-+#define IOMMU_HWPT_ALLOC_FLAGS_USER_PASID_TABLE		(1 << 1)
- 	__u32 dev_id;
- 	__u32 pt_id;
- 	__u32 out_hwpt_id;
 diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
-index 4d07c7c0073e..ca3e4d92f2aa 100644
+index ca3e4d92f2aa..09377a98069b 100644
 --- a/drivers/iommu/iommufd/hw_pagetable.c
 +++ b/drivers/iommu/iommufd/hw_pagetable.c
-@@ -304,6 +304,9 @@ int iommufd_hwpt_alloc(struct iommufd_ucmd *ucmd)
- 			goto out_hwpt;
- 		}
+@@ -4,6 +4,8 @@
+  */
+ #include <linux/iommu.h>
+ #include <linux/eventfd.h>
++#include <linux/file.h>
++#include <linux/anon_inodes.h>
+ #include <uapi/linux/iommufd.h>
  
-+		if (cmd->flags & IOMMU_HWPT_ALLOC_FLAGS_USER_PASID_TABLE)
-+			hwpt->fault->user_pasid_table = true;
-+
+ #include "../iommu-priv.h"
+@@ -310,6 +312,8 @@ int iommufd_hwpt_alloc(struct iommufd_ucmd *ucmd)
  		iommu_domain_set_iopf_handler(hwpt->domain,
  					      iommufd_hw_pagetable_iopf_handler,
  					      hwpt);
-@@ -401,7 +404,8 @@ iommufd_hw_pagetable_iopf_handler(struct iommu_fault *fault,
- 	if (!ifault)
- 		return IOMMU_PAGE_RESP_FAILURE;
++
++		cmd->out_fault_fd = hwpt->fault->fault_fd;
+ 	}
  
--	cookie = iommu_get_device_fault_cookie(dev, fault->prm.pasid);
-+	cookie = iommu_get_device_fault_cookie(dev,
-+			hwpt->fault->user_pasid_table ?  0 : fault->prm.pasid);
- 	if (!cookie)
- 		return IOMMU_PAGE_RESP_FAILURE;
+ 	cmd->out_hwpt_id = hwpt->obj.id;
+@@ -421,6 +425,62 @@ iommufd_hw_pagetable_iopf_handler(struct iommu_fault *fault,
+ 	return IOMMU_PAGE_RESP_ASYNC;
+ }
  
++static ssize_t hwpt_fault_fops_read(struct file *filep, char __user *buf,
++				    size_t count, loff_t *ppos)
++{
++	struct hw_pgtable_fault *fault = filep->private_data;
++	size_t fault_size = sizeof(struct iommu_fault);
++	struct iommufd_fault *ifault;
++	size_t done = 0;
++
++	if (ppos || count % fault_size)
++		return -ESPIPE;
++
++	mutex_lock(&fault->mutex);
++	while (!list_empty(&fault->deliver) && count > done) {
++		ifault = list_first_entry(&fault->deliver, struct iommufd_fault, item);
++		if (copy_to_user(buf + done, &ifault->fault, fault_size))
++			break;
++		done += fault_size;
++		list_del_init(&ifault->item);
++		if (ifault->fault.flags & IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE)
++			list_add_tail(&ifault->item, &fault->response);
++		else
++			kfree(ifault);
++	}
++	mutex_unlock(&fault->mutex);
++
++	return done;
++}
++
++static const struct file_operations hwpt_fault_fops = {
++	.owner		= THIS_MODULE,
++	.read		= hwpt_fault_fops_read,
++};
++
++static int hw_pagetable_get_fault_fd(struct hw_pgtable_fault *fault)
++{
++	struct file *filep;
++	int fdno;
++
++	fdno = get_unused_fd_flags(O_CLOEXEC);
++	if (fdno < 0)
++		return fdno;
++
++	filep = anon_inode_getfile("[iommufd-pgfault]", &hwpt_fault_fops,
++				   fault, O_RDONLY);
++	if (IS_ERR(filep)) {
++		put_unused_fd(fdno);
++		return PTR_ERR(filep);
++	}
++
++	fd_install(fdno, filep);
++	fault->fault_file = filep;
++	fault->fault_fd = fdno;
++
++	return 0;
++}
++
+ static struct hw_pgtable_fault *hw_pagetable_fault_alloc(int eventfd)
+ {
+ 	struct hw_pgtable_fault *fault;
+@@ -440,8 +500,14 @@ static struct hw_pgtable_fault *hw_pagetable_fault_alloc(int eventfd)
+ 		goto out_free;
+ 	}
+ 
++	rc = hw_pagetable_get_fault_fd(fault);
++	if (rc)
++		goto out_put_eventfd;
++
+ 	return fault;
+ 
++out_put_eventfd:
++	eventfd_ctx_put(fault->trigger);
+ out_free:
+ 	kfree(fault);
+ 	return ERR_PTR(rc);
 -- 
 2.34.1
 
