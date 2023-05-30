@@ -1,32 +1,32 @@
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B96A663DE
-	for <iommu@lists.linux.dev>; Tue, 30 May 2023 05:39:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10B2863DE
+	for <iommu@lists.linux.dev>; Tue, 30 May 2023 05:39:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685425162; x=1716961162;
+  t=1685425165; x=1716961165;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Il+8YMeI0EiWGMw/azL1HK4UGyN0VoQuqukfg2UvUJc=;
-  b=RmghQYURdCzsgdYx9DK/ThpVKh9g/ZV+9tSjMJ3klrPxDztKMt2/v6Fs
-   JbSczMAPd9lwESUBIwaw2MbnQGueTc7mkACBw3yzbcf8AM73MAAE4lyHR
-   ktNo9TRAVethpr582VLI9oC8E1Mxnc+PZjSG4khiJi5Z7bcm92LXCI7RB
-   dG5KgBJSIKtI91UD2SkxOT00i1fyKyOZdPf58GPpTbUBa38QTp3Ewu7Wf
-   mgNF9MbesCyh14Xp/6LncrBTYB1F42nkS25pdhfKq/yUNVdakwDPweF9z
-   vXwCZ+77z8hvzXQU3drvKjPgase8cVmnbCogSPu8+YNMevaFrAlWNI6c+
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="420579897"
+  bh=ahpCrKl/gZhgbumlo1Sx9/qZq5FOZ/WQW6MhgCLqjXg=;
+  b=hhFh4t+Kn6swgW/Id6GuScwmvYkyT4E3UrSf4xDVD4Vla2SvL7MUlcqt
+   jUK/DtLwWJxpn6Y2qM95gXrbvnMvGY33qj/4/GHf5lTu6K1IKAFKty7wl
+   9n+FJzJDVeWwc5KUfnpY7QdO25PZHLCU93zfs0KR5RErNAGSL3CiUMj9Q
+   FiJ5Awt32WG8uwnGSEhzZIa5fJRuxGy/+FTVXPFt3jqODRzO7HCMGHHy6
+   lkaXJBJJI4hZzDha98V9SD21hBV6lk2aZRsFd+bfmty1E0e3wfmWZdb64
+   hmtfFcIPFTxmcq58/awdqFn1buLpt9NEc3qy1+PAy4KY2DagggyVFHkXO
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="420579915"
 X-IronPort-AV: E=Sophos;i="6.00,203,1681196400"; 
-   d="scan'208";a="420579897"
+   d="scan'208";a="420579915"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2023 22:39:21 -0700
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2023 22:39:25 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="739369946"
+X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="739369974"
 X-IronPort-AV: E=Sophos;i="6.00,203,1681196400"; 
-   d="scan'208";a="739369946"
+   d="scan'208";a="739369974"
 Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by orsmga001.jf.intel.com with ESMTP; 29 May 2023 22:39:18 -0700
+  by orsmga001.jf.intel.com with ESMTP; 29 May 2023 22:39:22 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Jason Gunthorpe <jgg@ziepe.ca>,
 	Kevin Tian <kevin.tian@intel.com>,
@@ -42,9 +42,9 @@ Cc: iommu@lists.linux.dev,
 	virtualization@lists.linux-foundation.org,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [RFC PATCHES 15/17] iommufd: Allow new hwpt_alloc flags
-Date: Tue, 30 May 2023 13:37:22 +0800
-Message-Id: <20230530053724.232765-16-baolu.lu@linux.intel.com>
+Subject: [RFC PATCHES 16/17] iommufd/selftest: Add IOPF feature for mock devices
+Date: Tue, 30 May 2023 13:37:23 +0800
+Message-Id: <20230530053724.232765-17-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230530053724.232765-1-baolu.lu@linux.intel.com>
 References: <20230530053724.232765-1-baolu.lu@linux.intel.com>
@@ -56,43 +56,134 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-We have completed all puzzles for IO page fault delivery so far. We can
-allow user space to opt-in the flags of IOMMU_HWPT_ALLOC_FLAGS_IOPF and
-IOMMU_HWPT_ALLOC_FLAGS_USER_PASID_TABLE now.
+So that we can test the delilvery of IO page faults through IOMMU with
+the selftest infrastructure.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- include/uapi/linux/iommufd.h         | 3 +++
- drivers/iommu/iommufd/hw_pagetable.c | 2 +-
- 2 files changed, 4 insertions(+), 1 deletion(-)
+ drivers/iommu/iommufd/selftest.c | 71 ++++++++++++++++++++++++++++++++
+ 1 file changed, 71 insertions(+)
 
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index 65bb856dd8fb..908d12219727 100644
---- a/include/uapi/linux/iommufd.h
-+++ b/include/uapi/linux/iommufd.h
-@@ -491,6 +491,9 @@ struct iommu_hwpt_alloc {
- 	__u32 flags;
- #define IOMMU_HWPT_ALLOC_FLAGS_IOPF_CAPABLE		(1 << 0)
- #define IOMMU_HWPT_ALLOC_FLAGS_USER_PASID_TABLE		(1 << 1)
-+#define IOMMU_HWPT_ALLOC_FLAGS_ALL				\
-+		(IOMMU_HWPT_ALLOC_FLAGS_IOPF_CAPABLE |		\
-+		 IOMMU_HWPT_ALLOC_FLAGS_USER_PASID_TABLE)
- 	__u32 dev_id;
- 	__u32 pt_id;
- 	__u32 out_hwpt_id;
-diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
-index 7f18e6bd76ec..7be6bf26290f 100644
---- a/drivers/iommu/iommufd/hw_pagetable.c
-+++ b/drivers/iommu/iommufd/hw_pagetable.c
-@@ -208,7 +208,7 @@ int iommufd_hwpt_alloc(struct iommufd_ucmd *ucmd)
- 	int klen = 0;
- 	int rc = 0;
+diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
+index debf2d588990..d3d3342e95b6 100644
+--- a/drivers/iommu/iommufd/selftest.c
++++ b/drivers/iommu/iommufd/selftest.c
+@@ -14,6 +14,7 @@
+ #include "io_pagetable.h"
+ #include "iommufd_private.h"
+ #include "iommufd_test.h"
++#include "../io-pgfault.h"
  
--	if (cmd->flags || cmd->__reserved)
-+	if ((cmd->flags & ~IOMMU_HWPT_ALLOC_FLAGS_ALL) || cmd->__reserved)
- 		return -EOPNOTSUPP;
+ static DECLARE_FAULT_ATTR(fail_iommufd);
+ static struct dentry *dbgfs_root;
+@@ -96,6 +97,8 @@ enum selftest_obj_type {
+ struct mock_dev {
+ 	struct device dev;
+ 	u32 dev_data;
++	unsigned char iopfq_name[16];
++	struct iopf_queue *iopf_queue;
+ };
  
- 	idev = iommufd_get_device(ucmd, cmd->dev_id);
+ struct selftest_obj {
+@@ -360,6 +363,64 @@ static int mock_domain_user_data_len(u32 hwpt_type)
+ 	return sizeof(struct iommu_hwpt_selftest);
+ };
+ 
++static int mock_dev_enable_feat(struct device *dev, enum iommu_dev_features feat)
++{
++	struct mock_dev *mdev = container_of(dev, struct mock_dev, dev);
++	struct iommu_group *group;
++	int rc;
++
++	if (feat != IOMMU_DEV_FEAT_IOPF)
++		return -EOPNOTSUPP;
++
++	group = iommu_group_get(dev);
++	if (!group)
++		return -ENODEV;
++
++	/* Allocate the iopf queue: */
++	snprintf(mdev->iopfq_name, sizeof(mdev->iopfq_name),
++		 "mock%d-iopfq", iommu_group_id(group));
++	mdev->iopf_queue = iopf_queue_alloc(mdev->iopfq_name);
++	if (!mdev->iopf_queue) {
++		rc = -ENOMEM;
++		goto err_put_group;
++	}
++
++	/* Register I/O page fault: */
++	rc = iopf_queue_add_device(mdev->iopf_queue, &mdev->dev);
++	if (rc)
++		goto err_free_queue;
++	rc = iommu_register_device_fault_handler(&mdev->dev, iommu_queue_iopf,
++						 &mdev->dev);
++	if (rc)
++		goto err_remove_device;
++
++	iommu_group_put(group);
++
++	return 0;
++
++err_remove_device:
++	iopf_queue_remove_device(mdev->iopf_queue, &mdev->dev);
++err_free_queue:
++	iopf_queue_free(mdev->iopf_queue);
++err_put_group:
++	iommu_group_put(group);
++	return rc;
++}
++
++static int mock_dev_disable_feat(struct device *dev, enum iommu_dev_features feat)
++{
++	struct mock_dev *mdev = container_of(dev, struct mock_dev, dev);
++
++	if (feat != IOMMU_DEV_FEAT_IOPF)
++		return -EOPNOTSUPP;
++
++	iommu_unregister_device_fault_handler(dev);
++	iopf_queue_remove_device(mdev->iopf_queue, dev);
++	iopf_queue_free(mdev->iopf_queue);
++
++	return 0;
++}
++
+ static const struct iommu_ops mock_ops = {
+ 	.owner = THIS_MODULE,
+ 	.pgsize_bitmap = MOCK_IO_PAGE_SIZE,
+@@ -373,6 +434,8 @@ static const struct iommu_ops mock_ops = {
+ 	.set_dev_user_data = mock_domain_set_dev_user_data,
+ 	.unset_dev_user_data = mock_domain_unset_dev_user_data,
+ 	.dev_user_data_len = sizeof(struct iommu_test_device_data),
++	.dev_enable_feat = mock_dev_enable_feat,
++	.dev_disable_feat = mock_dev_disable_feat,
+ 	.default_domain_ops =
+ 		&(struct iommu_domain_ops){
+ 			.free = mock_domain_free,
+@@ -494,9 +557,16 @@ static struct mock_dev *mock_dev_create(void)
+ 	rc = iommu_group_add_device(iommu_group, &mdev->dev);
+ 	if (rc)
+ 		goto err_del;
++
++	rc = iommu_dev_enable_feature(&mdev->dev, IOMMU_DEV_FEAT_IOPF);
++	if (rc)
++		goto err_remove;
++
+ 	iommu_group_put(iommu_group);
+ 	return mdev;
+ 
++err_remove:
++	iommu_group_remove_device(&mdev->dev);
+ err_del:
+ 	device_del(&mdev->dev);
+ err_dev_iommu:
+@@ -511,6 +581,7 @@ static struct mock_dev *mock_dev_create(void)
+ 
+ static void mock_dev_destroy(struct mock_dev *mdev)
+ {
++	iommu_dev_disable_feature(&mdev->dev, IOMMU_DEV_FEAT_IOPF);
+ 	iommu_group_remove_device(&mdev->dev);
+ 	device_del(&mdev->dev);
+ 	kfree(mdev->dev.iommu);
 -- 
 2.34.1
 
