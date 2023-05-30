@@ -1,98 +1,96 @@
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2A6D17FF5
-	for <iommu@lists.linux.dev>; Tue, 30 May 2023 12:04:03 +0000 (UTC)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.ozlabs.org (Postfix) with ESMTPSA id 4QVrf31PFMz4x1R;
-	Tue, 30 May 2023 22:03:55 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-	s=201909; t=1685448236;
-	bh=NlMpB9Y8fKEOI5Yr+LlELeQrjM7WIaVHlIeb8yVblew=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=FQRcNXuAibOUXeC/CPKmGWgD3vEhKTF1Qjx1LQc2xr+qMaRKk5Rmc4gGHPrMyaz6G
-	 i60lCc4YLnQuZp/LfDpu+GcYRc8KgMRE44wGBP7b7kyr+7d2KD1JDGFtdVz2f5sAtp
-	 MUoVuR1CNcyz5gaZsFu7eIkGXRqOFGe0D00j2AMHgQcorV3Mdx8mVpYLFWyfZnKdcO
-	 QIw6mKG/bOM2zYSLCJEyS1S9x9ai0Z5zCjsegMjl7oyJ/6Ef2z0FcLs1vpLqVLjcnB
-	 HzdLXMOJ5qIP3awPM3+ncFqFntowGtUIKIIeHxaWiX8bCPn67/S+9SFYWGORpidaYm
-	 vh4dNZ/w7wcmw==
-From: Michael Ellerman <mpe@ellerman.id.au>
-To: Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Li
- Yang <leoyang.li@nxp.com>
-Cc: Christophe Leroy <christophe.leroy@csgroup.eu>, iommu@lists.linux.dev,
- linuxppc-dev@lists.ozlabs.org, Nicholas Piggin <npiggin@gmail.com>, Robin
- Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v2 0/3] Remove iommu_group_remove_device() from fsl
-In-Reply-To: <ZHP1zv48iZUV5Ypj@nvidia.com>
-References: <0-v2-ce71068deeec+4cf6-fsl_rm_groups_jgg@nvidia.com>
- <ZGxcmJ3vH0Smqqxu@8bytes.org> <ZHP1zv48iZUV5Ypj@nvidia.com>
-Date: Tue, 30 May 2023 22:03:53 +1000
-Message-ID: <87leh658ly.fsf@mail.lhotse>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 59C011DDD9
+	for <iommu@lists.linux.dev>; Tue, 30 May 2023 13:08:15 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 96CC7AB6;
+	Tue, 30 May 2023 06:02:23 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BB7A43F67D;
+	Tue, 30 May 2023 06:01:35 -0700 (PDT)
+Message-ID: <dcde9632-3ef9-dd59-1619-28ea2a0f9d89@arm.com>
+Date: Tue, 30 May 2023 14:01:30 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH v5 13/15] iommu/dma: Force bouncing if the size is not
+ cacheline-aligned
+To: Catalin Marinas <catalin.marinas@arm.com>,
+ Jisheng Zhang <jszhang@kernel.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>,
+ Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Herbert Xu <herbert@gondor.apana.org.au>, Ard Biesheuvel <ardb@kernel.org>,
+ Isaac Manjarres <isaacmanjarres@google.com>,
+ Saravana Kannan <saravanak@google.com>, Alasdair Kergon <agk@redhat.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>,
+ Mark Brown <broonie@kernel.org>, Mike Snitzer <snitzer@kernel.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, linux-mm@kvack.org,
+ iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
+References: <20230524171904.3967031-1-catalin.marinas@arm.com>
+ <20230524171904.3967031-14-catalin.marinas@arm.com>
+ <ZHDgDrQL+WPDsxxh@xhacker> <ZHEG5ghHMXcv1/WL@arm.com>
+Content-Language: en-GB
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <ZHEG5ghHMXcv1/WL@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Jason Gunthorpe <jgg@nvidia.com> writes:
-> On Tue, May 23, 2023 at 08:26:32AM +0200, Joerg Roedel wrote:
->> On Tue, May 16, 2023 at 09:35:25PM -0300, Jason Gunthorpe wrote:
->> > With POWER SPAPR now having a real iommu driver and using the normal group
->> > lifecycle stuff fixing FSL will leave only VFIO's no-iommu support as a
->> > user for the iommu_group_add/remove_device() calls. This will help
->> > simplify the understanding of what the core code should be doing for these
->> > functions.
->> > 
->> > Fix FSL to not need to call iommu_group_remove_device() at all.
->> > 
->> > v2:
->> >  - Change the approach to use driver_managed_dma
->> >  - Really simplify fsl_pamu_device_group() and just put everything in one
->> >    function
->> >  - New patch to make missing OF properties a probe failure
->> > v1: https://lore.kernel.org/r/0-v1-1421774b874b+167-ppc_device_group_jgg@nvidia.com
->> > 
->> > Jason Gunthorpe (3):
->> >   iommu/fsl: Always allocate a group for non-pci devices
->> >   iommu/fsl: Move ENODEV to fsl_pamu_probe_device()
->> >   iommu/fsl: Use driver_managed_dma to allow VFIO to work
->> > 
->> >  arch/powerpc/sysdev/fsl_pci.c   |   1 +
->> >  drivers/iommu/fsl_pamu_domain.c | 123 +++++++++-----------------------
->> >  2 files changed, 36 insertions(+), 88 deletions(-)
->> 
->> Any chance someone can test this on real hardware?
->
-> There isn't even a MAINTAINERS entry for this, and the git log looks
-> pretty dead for a long time. I tried to cc people who might care,
-> but I'm not so optimistic - unless Li says something.
+On 26/05/2023 8:22 pm, Catalin Marinas wrote:
+> On Sat, May 27, 2023 at 12:36:30AM +0800, Jisheng Zhang wrote:
+>> On Wed, May 24, 2023 at 06:19:02PM +0100, Catalin Marinas wrote:
+>>> diff --git a/include/linux/scatterlist.h b/include/linux/scatterlist.h
+>>> index 87aaf8b5cdb4..330a157c5501 100644
+>>> --- a/include/linux/scatterlist.h
+>>> +++ b/include/linux/scatterlist.h
+>>> @@ -248,6 +248,29 @@ static inline void sg_unmark_end(struct scatterlist *sg)
+>>>   	sg->page_link &= ~SG_END;
+>>>   }
+>>>   
+>>> +#define SG_DMA_BUS_ADDRESS	(1 << 0)
+>>> +#define SG_DMA_USE_SWIOTLB	(1 << 1)
+>>> +
+>>> +#ifdef CONFIG_SWIOTLB
+>>
+>> s/CONFIG_SWIOTLB/CONFIG_NEED_SG_DMA_FLAGS ?
+>> Otherwise, there's compiler error if SWIOTLB=y but IOMMU=n
+> 
+> Yes, I pushed a fixup to the kmalloc-minalign branch.
 
-I guess it falls under LINUX FOR POWERPC EMBEDDED PPC83XX AND PPC85XX,
-but that's basically orphaned these days. Basically all the FSL/NXP
-powerpc code is orphaned, although there are still some users.
+I'd agree that CONFIG_NEED_SG_DMA_FLAGS is the better option.
 
-And things are somewhat complicated because some of the drivers are also
-used on their ARM SOCs, so those still get maintained from the ARM side.
+>>> +static inline bool sg_is_dma_use_swiotlb(struct scatterlist *sg)
+>>> +{
+>>> +	return sg->dma_flags & SG_DMA_USE_SWIOTLB;
+>>> +}
+>>> +
+>>> +static inline void sg_dma_mark_use_swiotlb(struct scatterlist *sg)
+>>> +{
+>>> +	sg->dma_flags |= SG_DMA_USE_SWIOTLB;
+>>> +}
+>>> +#else
+>>> +static inline bool sg_is_dma_use_swiotlb(struct scatterlist *sg)
+>>> +{
+>>> +	return false;
+>>> +}
+>>> +static inline void sg_dma_mark_use_swiotlb(struct scatterlist *sg)
+>>> +{
+>>> +}
+>>> +#endif
+> 
+> And I wonder whether we should keep these accessors in the scatterlist.h
+> file. They are only used by the dma-iommu.c code.
 
-But looks like this driver is powerpc only.
+Nah, logically they belong with the definition of the flag itself, which 
+certainly should be here. Also once this does land, dma-direct and 
+possibly others will be able to take advantage if it too (as a small win 
+over repeating the is_swiotlb_buffer() check a lot).
 
-Turns out I do have a machine that will probe this driver. AFAICS this
-series doesn't regress it, but that's just booting. I don't have it
-setup to test KVM/VFIO etc.
-
-I do see some changes in dmesg, eg:
-
--fsl-pci ffe270000.pcie: Removing from iommu group 61
--pci 0003:00:00.0: Adding to iommu group 60
-+pci 0003:00:00.0: Adding to iommu group 64
-
-And lots more like that.
-
-Anything else I can check easily?
-
-cheers
+Thanks,
+Robin.
