@@ -1,96 +1,117 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 59C011DDD9
-	for <iommu@lists.linux.dev>; Tue, 30 May 2023 13:08:15 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 96CC7AB6;
-	Tue, 30 May 2023 06:02:23 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BB7A43F67D;
-	Tue, 30 May 2023 06:01:35 -0700 (PDT)
-Message-ID: <dcde9632-3ef9-dd59-1619-28ea2a0f9d89@arm.com>
-Date: Tue, 30 May 2023 14:01:30 +0100
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9ABD7134C8
+	for <iommu@lists.linux.dev>; Tue, 30 May 2023 13:39:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFFF6C433EF;
+	Tue, 30 May 2023 13:38:58 +0000 (UTC)
+Date: Tue, 30 May 2023 14:38:55 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>,
+	Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Ard Biesheuvel <ardb@kernel.org>,
+	Isaac Manjarres <isaacmanjarres@google.com>,
+	Saravana Kannan <saravanak@google.com>,
+	Alasdair Kergon <agk@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Joerg Roedel <joro@8bytes.org>, Mark Brown <broonie@kernel.org>,
+	Mike Snitzer <snitzer@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>, linux-mm@kvack.org,
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v5 00/15] mm, dma, arm64: Reduce ARCH_KMALLOC_MINALIGN to
+ 8
+Message-ID: <ZHX8by5zkzcnCUry@arm.com>
+References: <20230524171904.3967031-1-catalin.marinas@arm.com>
+ <20230525133138.000014b4@Huawei.com>
+ <ZG9xRjpdezVr5sjx@arm.com>
+ <20230526170740.000000df@Huawei.com>
+ <20230526172930.000015f8@Huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH v5 13/15] iommu/dma: Force bouncing if the size is not
- cacheline-aligned
-To: Catalin Marinas <catalin.marinas@arm.com>,
- Jisheng Zhang <jszhang@kernel.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>,
- Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
- Andrew Morton <akpm@linux-foundation.org>,
- Herbert Xu <herbert@gondor.apana.org.au>, Ard Biesheuvel <ardb@kernel.org>,
- Isaac Manjarres <isaacmanjarres@google.com>,
- Saravana Kannan <saravanak@google.com>, Alasdair Kergon <agk@redhat.com>,
- Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>,
- Mark Brown <broonie@kernel.org>, Mike Snitzer <snitzer@kernel.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>, linux-mm@kvack.org,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
-References: <20230524171904.3967031-1-catalin.marinas@arm.com>
- <20230524171904.3967031-14-catalin.marinas@arm.com>
- <ZHDgDrQL+WPDsxxh@xhacker> <ZHEG5ghHMXcv1/WL@arm.com>
-Content-Language: en-GB
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ZHEG5ghHMXcv1/WL@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230526172930.000015f8@Huawei.com>
 
-On 26/05/2023 8:22 pm, Catalin Marinas wrote:
-> On Sat, May 27, 2023 at 12:36:30AM +0800, Jisheng Zhang wrote:
->> On Wed, May 24, 2023 at 06:19:02PM +0100, Catalin Marinas wrote:
->>> diff --git a/include/linux/scatterlist.h b/include/linux/scatterlist.h
->>> index 87aaf8b5cdb4..330a157c5501 100644
->>> --- a/include/linux/scatterlist.h
->>> +++ b/include/linux/scatterlist.h
->>> @@ -248,6 +248,29 @@ static inline void sg_unmark_end(struct scatterlist *sg)
->>>   	sg->page_link &= ~SG_END;
->>>   }
->>>   
->>> +#define SG_DMA_BUS_ADDRESS	(1 << 0)
->>> +#define SG_DMA_USE_SWIOTLB	(1 << 1)
->>> +
->>> +#ifdef CONFIG_SWIOTLB
->>
->> s/CONFIG_SWIOTLB/CONFIG_NEED_SG_DMA_FLAGS ?
->> Otherwise, there's compiler error if SWIOTLB=y but IOMMU=n
+On Fri, May 26, 2023 at 05:29:30PM +0100, Jonathan Cameron wrote:
+> On Fri, 26 May 2023 17:07:40 +0100
+> Jonathan Cameron <Jonathan.Cameron@Huawei.com> wrote:
+> > On Thu, 25 May 2023 15:31:34 +0100
+> > Catalin Marinas <catalin.marinas@arm.com> wrote:
+> > > On Thu, May 25, 2023 at 01:31:38PM +0100, Jonathan Cameron wrote:  
+> > > > On Wed, 24 May 2023 18:18:49 +0100
+> > > > Catalin Marinas <catalin.marinas@arm.com> wrote:    
+> > > > > Another version of the series reducing the kmalloc() minimum alignment
+> > > > > on arm64 to 8 (from 128). Other architectures can easily opt in by
+> > > > > defining ARCH_KMALLOC_MINALIGN as 8 and selecting
+> > > > > DMA_BOUNCE_UNALIGNED_KMALLOC.
+> > > > > 
+> > > > > The first 10 patches decouple ARCH_KMALLOC_MINALIGN from
+> > > > > ARCH_DMA_MINALIGN and, for arm64, limit the kmalloc() caches to those
+> > > > > aligned to the run-time probed cache_line_size(). On arm64 we gain the
+> > > > > kmalloc-{64,192} caches.
+> > > > > 
+> > > > > The subsequent patches (11 to 15) further reduce the kmalloc() caches to
+> > > > > kmalloc-{8,16,32,96} if the default swiotlb is present by bouncing small
+> > > > > buffers in the DMA API.    
+> > > > 
+> > > > I think IIO_DMA_MINALIGN needs to switch to ARCH_DMA_MINALIGN as well.
+> > > > 
+> > > > It's used to force static alignement of buffers with larger structures,
+> > > > to make them suitable for non coherent DMA, similar to your other cases.    
+> > > 
+> > > Ah, I forgot that you introduced that macro. However, at a quick grep, I
+> > > don't think this forced alignment always works as intended (irrespective
+> > > of this series). Let's take an example:
+> > > 
+> > > struct ltc2496_driverdata {
+> > > 	/* this must be the first member */
+> > > 	struct ltc2497core_driverdata common_ddata;
+> > > 	struct spi_device *spi;
+> > > 
+> > > 	/*
+> > > 	 * DMA (thus cache coherency maintenance) may require the
+> > > 	 * transfer buffers to live in their own cache lines.
+> > > 	 */
+> > > 	unsigned char rxbuf[3] __aligned(IIO_DMA_MINALIGN);
+> > > 	unsigned char txbuf[3];
+> > > };
+> > > 
+> > > The rxbuf is aligned to IIO_DMA_MINALIGN, the structure and its size as
+> > > well but txbuf is at an offset of 3 bytes from the aligned
+> > > IIO_DMA_MINALIGN. So basically any cache maintenance on rxbuf would
+> > > corrupt txbuf.  
+> > 
+> > That was intentional (though possibly wrong if I've misunderstood
+> > the underlying issue).
+> > 
+> > For SPI controllers at least my understanding was that it is safe to
+> > assume that they won't trample on themselves.  The driver doesn't
+> > touch the buffers when DMA is in flight - to do so would indeed result
+> > in corruption.
+> > 
+> > So whilst we could end up with the SPI master writing stale data back
+> > to txbuf after the transfer it will never matter (as the value is unchanged).
+> > Any flushes in the other direction will end up flushing both rxbuf and
+> > txbuf anyway which is also harmless.
 > 
-> Yes, I pushed a fixup to the kmalloc-minalign branch.
+> Adding missing detail.  As the driver never writes txbuf whilst any DMA
+> is going on, the second cache evict (to flush out any lines that have
+> crept back into cache after the flush - and write backs - pre DMA) will
+> find a clean line and will drop it without writing back - thus no corruption.
 
-I'd agree that CONFIG_NEED_SG_DMA_FLAGS is the better option.
+Thanks for the clarification. One more thing, can the txbuf be written
+prior to the DMA_FROM_DEVICE transfer into rxbuf? Or the txbuf writing
+is always followed by a DMA_TO_DEVICE mapping (which would flush the
+cache line).
 
->>> +static inline bool sg_is_dma_use_swiotlb(struct scatterlist *sg)
->>> +{
->>> +	return sg->dma_flags & SG_DMA_USE_SWIOTLB;
->>> +}
->>> +
->>> +static inline void sg_dma_mark_use_swiotlb(struct scatterlist *sg)
->>> +{
->>> +	sg->dma_flags |= SG_DMA_USE_SWIOTLB;
->>> +}
->>> +#else
->>> +static inline bool sg_is_dma_use_swiotlb(struct scatterlist *sg)
->>> +{
->>> +	return false;
->>> +}
->>> +static inline void sg_dma_mark_use_swiotlb(struct scatterlist *sg)
->>> +{
->>> +}
->>> +#endif
-> 
-> And I wonder whether we should keep these accessors in the scatterlist.h
-> file. They are only used by the dma-iommu.c code.
-
-Nah, logically they belong with the definition of the flag itself, which 
-certainly should be here. Also once this does land, dma-direct and 
-possibly others will be able to take advantage if it too (as a small win 
-over repeating the is_swiotlb_buffer() check a lot).
-
-Thanks,
-Robin.
+-- 
+Catalin
