@@ -1,174 +1,156 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B70BA3D
-	for <iommu@lists.linux.dev>; Tue, 30 May 2023 02:20:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCD6163A9
+	for <iommu@lists.linux.dev>; Tue, 30 May 2023 05:38:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685413204; x=1716949204;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=lFYn7kOvp6cOxyKCTax16qx7apM/MziGizg65AamduI=;
-  b=iDxsoZTFnXHDeTNNpTp+n9BFbS2no/ELA6LrZSvor+eGryRbf+AcFbP7
-   wU7QJRcPeS8laSRX1ikU6Vx+kJMh8E0NSRYljHQmfJBlgsJhPWNHFjcGn
-   7d+88Batd+N8TVllkVJJn485ByC1bPPTxsauSK0LbGUr8e2e/358zcZO7
-   1UnaZclohYkvF/CZitm6UgV7bGbyeIbyNV2jVAYm17Ibi0rx02Nk7P7cb
-   pqfuBIZouOzLR0AWA+ef/SMPi6md9pmn3jcx9YwgOTeQLvwJ0vYKyvXFN
-   aKrFeyUBdTQcexAeaJGiShjPq1vqsGXywNpDNQOzkx/RwXAmSBozIqUb8
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="418284090"
-X-IronPort-AV: E=Sophos;i="6.00,201,1681196400"; 
-   d="scan'208";a="418284090"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2023 19:20:03 -0700
+  t=1685425107; x=1716961107;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=SlmVU0gCOJtKzGhhoLJtPHVYcv/MzAh06Xb0nC+R2xw=;
+  b=eCe/hlL2QJFzeMkcb5OxWRZk4o47Lb1qQ7XYBp1Kh41KfRW/E5gJBZU0
+   cgvHvpxuOgu1DNTR9XdXTU02OK26xa+/FXtcDIxvFSTFRVMlqOVDoSH2w
+   ubt8ZLVQVsfU4VuGWDn5uXQaJLE8MSApYNf/S5qFrD48WKujGjmN8MDx8
+   6MmINFuTepaxFPegwhnZyPzqQzKST/6+6a1NjCxScBa6Sl6SvYOs4DsH3
+   2VdjzoiN2qI0nNDezcOb6HZBeBhf4QlARNlwX0GLErN5F3jhwBHJAWgHJ
+   2IgpRI0xx3AX+zepaDtjhd76Ypnb7D34xK8iVY9PwEkisvaXs73eT9Bat
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="420579568"
+X-IronPort-AV: E=Sophos;i="6.00,203,1681196400"; 
+   d="scan'208";a="420579568"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2023 22:38:24 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="880595918"
-X-IronPort-AV: E=Sophos;i="6.00,201,1681196400"; 
-   d="scan'208";a="880595918"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orsmga005.jf.intel.com with ESMTP; 29 May 2023 19:19:58 -0700
-Message-ID: <ba26db48-4102-d6bc-add8-5449423158ca@linux.intel.com>
-Date: Tue, 30 May 2023 10:19:05 +0800
+X-IronPort-AV: E=McAfee;i="6600,9927,10725"; a="739369265"
+X-IronPort-AV: E=Sophos;i="6.00,203,1681196400"; 
+   d="scan'208";a="739369265"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by orsmga001.jf.intel.com with ESMTP; 29 May 2023 22:38:20 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Yi Liu <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: iommu@lists.linux.dev,
+	linux-kselftest@vger.kernel.org,
+	virtualization@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [RFC PATCHES 00/17] IOMMUFD: Deliver IO page faults to user space
+Date: Tue, 30 May 2023 13:37:07 +0800
+Message-Id: <20230530053724.232765-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Cc: baolu.lu@linux.intel.com, LKML <linux-kernel@vger.kernel.org>,
- iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- dmaengine@vger.kernel.org, vkoul@kernel.org,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
- David Woodhouse <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>,
- "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
- "Yu, Fenghua" <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Tony Luck <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
- narayan.ranganathan@intel.com
-Subject: Re: [PATCH v6 3/4] iommu/vt-d: Add set_dev_pasid callback for dma
- domain
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <20230519203223.2777255-1-jacob.jun.pan@linux.intel.com>
- <20230519203223.2777255-4-jacob.jun.pan@linux.intel.com>
- <ZHUBoBev2Vzp8nGF@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ZHUBoBev2Vzp8nGF@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 5/30/23 3:48 AM, Jason Gunthorpe wrote:
-> On Fri, May 19, 2023 at 01:32:22PM -0700, Jacob Pan wrote:
-> 
->> @@ -4720,25 +4762,99 @@ static void intel_iommu_iotlb_sync_map(struct iommu_domain *domain,
->>   static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
->>   {
->>   	struct intel_iommu *iommu = device_to_iommu(dev, NULL, NULL);
->> +	struct dev_pasid_info *curr, *dev_pasid = NULL;
->> +	struct dmar_domain *dmar_domain;
->>   	struct iommu_domain *domain;
->> +	unsigned long flags;
->>   
->> -	/* Domain type specific cleanup: */
->>   	domain = iommu_get_domain_for_dev_pasid(dev, pasid, 0);
->> -	if (domain) {
->> -		switch (domain->type) {
->> -		case IOMMU_DOMAIN_SVA:
->> -			intel_svm_remove_dev_pasid(dev, pasid);
->> -			break;
->> -		default:
->> -			/* should never reach here */
->> -			WARN_ON(1);
->> +	if (!domain)
->> +		goto out_tear_down;
->> +
->> +	/*
->> +	 * The SVA implementation needs to stop mm notification, drain the
->> +	 * pending page fault requests before tearing down the pasid entry.
->> +	 * The VT-d spec (section 6.2.3.1) also recommends that software
->> +	 * could use a reserved domain id for all first-only and pass-through
->> +	 * translations. Hence there's no need to call domain_detach_iommu()
->> +	 * in the sva domain case.
->> +	 */
->> +	if (domain->type == IOMMU_DOMAIN_SVA) {
->> +		intel_svm_remove_dev_pasid(dev, pasid);
->> +		goto out_tear_down;
->> +	}
-> 
-> But why don't you need to do all the other
-> intel_pasid_tear_down_entry(), intel_svm_drain_prq() (which is
-> misnamed) and other stuff from intel_svm_remove_dev_pasid() ?
+Hi folks,
 
-Perhaps,
+This series implements the functionality of delivering IO page faults to
+user space through the IOMMUFD framework. The use case is nested
+translation, where modern IOMMU hardware supports two-stage translation
+tables. The second-stage translation table is managed by the host VMM
+while the first-stage translation table is owned by the user space.
+Hence, any IO page fault that occurs on the first-stage page table
+should be delivered to the user space and handled there. The user space
+should respond the page fault handling result to the device top-down
+through the IOMMUFD response uAPI.
 
-	if (domain->type == IOMMU_DOMAIN_SVA) {
-		intel_svm_remove_dev_pasid(dev, pasid);
-		return;
-	}
+User space indicates its capablity of handling IO page faults by setting
+a user HWPT allocation flag IOMMU_HWPT_ALLOC_FLAGS_IOPF_CAPABLE. IOMMUFD
+will then setup its infrastructure for page fault delivery. Together
+with the iopf-capable flag, user space should also provide an eventfd
+where it will listen on any down-top page fault messages.
 
-?
+On a successful return of the allocation of iopf-capable HWPT, a fault
+fd will be returned. User space can open and read fault messages from it
+once the eventfd is signaled.
 
-> 
-> There still seems to be waaay too much "SVM" in the PASID code.
+Besides the overall design, I'd like to hear comments about below
+designs:
 
-This segment of code is destined to be temporary. From a long-term
-perspective, I hope to move SVA specific staffs such as mm notification,
-prq draining, etc. to the iommu core. They are generic rather than Intel
-iommu specific.
+- The IOMMUFD fault message format. It is very similar to that in
+  uapi/linux/iommu which has been discussed before and partially used by
+  the IOMMU SVA implementation. I'd like to get more comments on the
+  format when it comes to IOMMUFD.
 
-After the code consolidation done, the code here will become simpler and
-appealing. We just need to tear down the pasid entry.
+- The timeout value for the pending page fault messages. Ideally we
+  should determine the timeout value from the device configuration, but
+  I failed to find any statement in the PCI specification (version 6.x).
+  A default 100 milliseconds is selected in the implementation, but it
+  leave the room for grow the code for per-device setting.
 
-> 
->> +static int intel_iommu_set_dev_pasid(struct iommu_domain *domain,
->> +				     struct device *dev, ioasid_t pasid)
->> +{
->> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
->> +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
->> +	struct intel_iommu *iommu = info->iommu;
->> +	struct dev_pasid_info *dev_pasid;
->> +	unsigned long flags;
->> +	int ret;
->> +
->> +	if (!pasid_supported(iommu) || dev_is_real_dma_subdevice(dev))
->> +		return -EOPNOTSUPP;
->> +
->> +	if (context_copied(iommu, info->bus, info->devfn))
->> +		return -EBUSY;
->> +
->> +	ret = prepare_domain_attach_device(domain, dev);
->> +	if (ret)
->> +		return ret;
->> +
->> +	dev_pasid = kzalloc(sizeof(*dev_pasid), GFP_KERNEL);
->> +	if (!dev_pasid)
->> +		return -ENOMEM;
->> +
->> +	ret = domain_attach_iommu(dmar_domain, iommu);
->> +	if (ret)
->> +		goto out_free;
->> +
->> +	if (domain_type_is_si(dmar_domain))
->> +		ret = intel_pasid_setup_pass_through(iommu, dmar_domain,
->> +						     dev, pasid);
->> +	else if (dmar_domain->use_first_level)
->> +		ret = domain_setup_first_level(iommu, dmar_domain,
->> +					       dev, pasid);
->> +	else
->> +		ret = intel_pasid_setup_second_level(iommu, dmar_domain,
->> +						     dev, pasid);
-> 
-> It would be nice if the different domain types had their own ops..
+This series is only for review comment purpose. I used IOMMUFD selftest
+to verify the hwpt allocation, attach/detach and replace. But I didn't
+get a chance to run it with real hardware yet. I will do more test in
+the subsequent versions when I am confident that I am heading on the
+right way.
 
-Good suggestion!
+This series is based on the latest implementation of the nested
+translation under discussion. The whole series and related patches are
+available on gitbub:
 
-We can add a domain ops in the Intel domain structure which is
-responsible for how to install an Intel iommu domain onto the VT-d
-hardware.
-
-It worth a separated refactoring series. Let me do it afterward.
+https://github.com/LuBaolu/intel-iommu/commits/iommufd-io-pgfault-delivery-v1
 
 Best regards,
 baolu
+
+Lu Baolu (17):
+  iommu: Move iommu fault data to linux/iommu.h
+  iommu: Support asynchronous I/O page fault response
+  iommu: Add helper to set iopf handler for domain
+  iommu: Pass device parameter to iopf handler
+  iommu: Split IO page fault handling from SVA
+  iommu: Add iommu page fault cookie helpers
+  iommufd: Add iommu page fault data
+  iommufd: IO page fault delivery initialization and release
+  iommufd: Add iommufd hwpt iopf handler
+  iommufd: Add IOMMU_HWPT_ALLOC_FLAGS_USER_PASID_TABLE for hwpt_alloc
+  iommufd: Deliver fault messages to user space
+  iommufd: Add io page fault response support
+  iommufd: Add a timer for each iommufd fault data
+  iommufd: Drain all pending faults when destroying hwpt
+  iommufd: Allow new hwpt_alloc flags
+  iommufd/selftest: Add IOPF feature for mock devices
+  iommufd/selftest: Cover iopf-capable nested hwpt
+
+ include/linux/iommu.h                         | 175 +++++++++-
+ drivers/iommu/{iommu-sva.h => io-pgfault.h}   |  25 +-
+ drivers/iommu/iommu-priv.h                    |   3 +
+ drivers/iommu/iommufd/iommufd_private.h       |  32 ++
+ include/uapi/linux/iommu.h                    | 161 ---------
+ include/uapi/linux/iommufd.h                  |  73 +++-
+ tools/testing/selftests/iommu/iommufd_utils.h |  20 +-
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |   2 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |   2 +-
+ drivers/iommu/intel/iommu.c                   |   2 +-
+ drivers/iommu/intel/svm.c                     |   2 +-
+ drivers/iommu/io-pgfault.c                    |   7 +-
+ drivers/iommu/iommu-sva.c                     |   4 +-
+ drivers/iommu/iommu.c                         |  50 ++-
+ drivers/iommu/iommufd/device.c                |  64 +++-
+ drivers/iommu/iommufd/hw_pagetable.c          | 318 +++++++++++++++++-
+ drivers/iommu/iommufd/main.c                  |   3 +
+ drivers/iommu/iommufd/selftest.c              |  71 ++++
+ tools/testing/selftests/iommu/iommufd.c       |  17 +-
+ MAINTAINERS                                   |   1 -
+ drivers/iommu/Kconfig                         |   4 +
+ drivers/iommu/Makefile                        |   3 +-
+ drivers/iommu/intel/Kconfig                   |   1 +
+ 23 files changed, 837 insertions(+), 203 deletions(-)
+ rename drivers/iommu/{iommu-sva.h => io-pgfault.h} (71%)
+ delete mode 100644 include/uapi/linux/iommu.h
+
+-- 
+2.34.1
+
