@@ -1,189 +1,147 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2061.outbound.protection.outlook.com [40.107.92.61])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4053D21083
-	for <iommu@lists.linux.dev>; Tue, 30 May 2023 14:12:12 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BOdpDNO4kQZUBwd0sYzpQff1saappuN6OZEnTym7qM7YHBIJxDr26aIBo9tijstIbtycgoncZaQ+gFu+x/g5GcNJAn0DMTTmGZrOTuNQOdWedC5Kpi6ZnHf0pHc11Jc6Z9n1lGf+WPX7Zf2TNRWRsKCJawclHwYBWi+4bkW/5VJHIarJC6c/jLcXfc08AKIz0qa8kTIsero+UEf41btRwfqdOIBatqR3Z/0/VHeR3w2/gLyQL3SJ7i+4Q+a9jHVV3UYwiQFnyOmBejluYpT19lOznF96UAysVCi/JH/VdSEco6P6QhbMFoDZEYpDhRNgMemg9Il11E1jlhR1XkNLpA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yVqVpbSQ/trAhvaBLYKV0USAlWtHJf5UXN7XTgy/4Kw=;
- b=V1cTBnb4Yny3mjnhGXsYI1bOVCKoVPqCB/ovTke4gmKw7QgB1lueZUmWaO+6neVOIDDoFe2GkRqJfKcg/77ME4yUJuJsd/3luwcMo+AQ2baN8G6gxYM+MuAcCsn6Kln7n53BlqLVR4rLQ3qpNVcTipysp3f1V2zHPWzfjuXkgbkRKv9dNUk6d1UN0qzujINaKYXGotjGxYs2f0ZEaqnLtjbYSPuMaR0XdziWfV4UOhq6lflJz00Srb3RRKElFSVLPpbyy8mQuyRyl1WNkZWVNnsP4w3JEfOxDdlWR8j2znDErUIu12DR1SxvZs0YgSiyMpiu4L/cofvnnGGuIpVU2w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yVqVpbSQ/trAhvaBLYKV0USAlWtHJf5UXN7XTgy/4Kw=;
- b=uP//OT8UsVgligOL3/2BQCwDESpy/ROXBbeTeveZEhhEpYiSUXNcwPUKu5pZPQ4/5V2tOYUeSoRVSQmnDOcwiZsw4LT4YjgXusN5rGBnOkaKnh+sPnqOBaUDckm3dJdJGd0aBCufnqf8jJoJvxYcYpkfjy5EnPMuie13BRqXFTU=
-Received: from SJ0PR03CA0256.namprd03.prod.outlook.com (2603:10b6:a03:3a0::21)
- by PH7PR12MB9222.namprd12.prod.outlook.com (2603:10b6:510:2ef::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.23; Tue, 30 May
- 2023 14:12:07 +0000
-Received: from CO1NAM11FT044.eop-nam11.prod.protection.outlook.com
- (2603:10b6:a03:3a0:cafe::9c) by SJ0PR03CA0256.outlook.office365.com
- (2603:10b6:a03:3a0::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.23 via Frontend
- Transport; Tue, 30 May 2023 14:12:07 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT044.mail.protection.outlook.com (10.13.175.188) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6455.22 via Frontend Transport; Tue, 30 May 2023 14:12:06 +0000
-Received: from titanite-d432host.amd.com (10.180.168.240) by
- SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Tue, 30 May 2023 09:12:03 -0500
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
-CC: <joro@8bytes.org>, <joao.m.martins@oracle.com>,
-	<alejandro.j.jimenez@oracle.com>, <boris.ostrovsky@oracle.com>,
-	<jon.grimm@amd.com>, <santosh.shukla@amd.com>, <vasant.hegde@amd.com>,
-	<kishon.vijayabraham@amd.com>, <jsnitsel@redhat.com>, Suravee Suthikulpanit
-	<suravee.suthikulpanit@amd.com>
-Subject: [PATCH v3 5/5] iommu/amd: Improving Interrupt Remapping Table Invalidation
-Date: Tue, 30 May 2023 10:11:37 -0400
-Message-ID: <20230530141137.14376-6-suravee.suthikulpanit@amd.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20230530141137.14376-1-suravee.suthikulpanit@amd.com>
-References: <20230530141137.14376-1-suravee.suthikulpanit@amd.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FA5D21076
+	for <iommu@lists.linux.dev>; Tue, 30 May 2023 14:23:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=NWEmuGkLTCUa79jBEH3/UxEeJ1XI0nknDfWdtfSsgPs=; b=Ct+KeY0bR7Fd2pFV938dRGSXTb
+	+T51wSDRsfKeMuSei4YQEsU4Xi76eoiaYVk/lttEnZJBJ2NUxa0nAwt21F7XjN8xiXMXaKvYxsPjv
+	1JwrujAB4owDEhg+CCV3cNBdBGPbJO1CWCIJ3zo7ADAp/AyyICHpHTcJDGSsXcUaQJ2nQQY3rFLU9
+	SCt5AhrjoGTUAJR4EssZvVmoJZxXtj67WW2fm46MJfmTOgqrwkt1CaD0nt4+OU3de5LcfLLr02uIQ
+	paqW6ykLF99/+KF3EKEe2ruu40MWJIAj+6KGzGVrsLeK2a2sThWNiV/lisP1NFlavwALCeW8DS4eD
+	ytHa5ABQ==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+	by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1q40FD-006M99-Vy; Tue, 30 May 2023 14:22:42 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id E4605300233;
+	Tue, 30 May 2023 16:22:32 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+	id A11CD2414735F; Tue, 30 May 2023 16:22:32 +0200 (CEST)
+Date: Tue, 30 May 2023 16:22:32 +0200
+From: Peter Zijlstra <peterz@infradead.org>
+To: torvalds@linux-foundation.org
+Cc: corbet@lwn.net, will@kernel.org, boqun.feng@gmail.com,
+	mark.rutland@arm.com, catalin.marinas@arm.com, dennis@kernel.org,
+	tj@kernel.org, cl@linux.com, hca@linux.ibm.com, gor@linux.ibm.com,
+	agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+	svens@linux.ibm.com, tglx@linutronix.de, mingo@redhat.com,
+	bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+	hpa@zytor.com, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
+	Arnd Bergmann <arnd@arndb.de>,
+	Herbert Xu <herbert@gondor.apana.org.au>, davem@davemloft.net,
+	penberg@kernel.org, rientjes@google.com, iamjoonsoo.kim@lge.com,
+	Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz,
+	roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, linux-s390@vger.kernel.org,
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+	linux-crypto@vger.kernel.org, sfr@canb.auug.org.au,
+	mpe@ellerman.id.au, James.Bottomley@hansenpartnership.com,
+	deller@gmx.de, linux-parisc@vger.kernel.org
+Subject: Re: [PATCH v3 08/11] slub: Replace cmpxchg_double()
+Message-ID: <20230530142232.GA200270@hirez.programming.kicks-ass.net>
+References: <20230515075659.118447996@infradead.org>
+ <20230515080554.453785148@infradead.org>
+ <20230524093246.GP83892@hirez.programming.kicks-ass.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT044:EE_|PH7PR12MB9222:EE_
-X-MS-Office365-Filtering-Correlation-Id: c425a9ca-570c-4c04-e2c4-08db6117d9eb
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	jEuSmauE/qiNR/KT4EpObdkSQyGBz+chsLxt4ee/3DrisOdtMZWULgqtrY3hNCsubrqJ68ntJFDmtv4jA+Ne8sp2JHOcfWsrOHx7W/0lN3873NxG31FaCvPI78N5GlrSk0SZp8vn+/fs08V9BnA6TGjXg2tsqafU98fhrLGMOg22PeIp2H4kndWhdQCzziv6N96f55t0qQlYHMhuSti0uDxLhOhtPPVL4Zpn8STswm+Pv8rQyIWEVaAhUE3M/whMxWJ+FtWufyEdQcgqUdLQfHW57wEK8zAO+pC5NvNOUv9VZCNw9xywb0irqzxt1y4LD2aD6pNTsGFZWI38IqmamsFT2SAzAo0kUjfmtFJpkRp8WWCxyEusO5y2GcYCb79l8tMVHPgd8dqi5O6vx7jtJDlYKTffc3TdZPgUINzOyVTVvRkRJT+6dASXEZ86pjftYA00Ha5scgblOXR1ggnrN8y44uRUmDs5E15JSYVBpe8Jd6BISKCdHuZLTQFYmpLGephuyVlsNenUlDJxXw270mlrnG5/tDm11fiYwAf+FHOj6Luizes+KFPNltjUH2LcZg/BwfGkhq8hjwMkJ9d9U7COl1YEzMSTkTSQ0/Bx1TkvA5aav12kH5fAQS0JZOzRk1OYlP4ARNdhb2yqVIlNEX6zSJyjcKAEhM2f1rKFo0FRy1TUO8QMJynbYKfCAh2EivZEgiMHT0NxsVlhVNB7czRaN/W3ny+YzBkErGBPjAxr6v2zc7zix1HjwTAbG2KpFbrAjr7IgN/OXcZk4E33lQ==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(376002)(39860400002)(346002)(396003)(136003)(451199021)(40470700004)(36840700001)(46966006)(186003)(1076003)(2906002)(16526019)(36860700001)(2616005)(36756003)(40460700003)(83380400001)(47076005)(40480700001)(336012)(426003)(4326008)(6666004)(316002)(70586007)(70206006)(41300700001)(7696005)(110136005)(478600001)(54906003)(356005)(81166007)(82740400003)(26005)(82310400005)(44832011)(8676002)(5660300002)(86362001)(8936002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2023 14:12:06.9907
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c425a9ca-570c-4c04-e2c4-08db6117d9eb
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT044.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB9222
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230524093246.GP83892@hirez.programming.kicks-ass.net>
 
-Invalidating Interrupt Remapping Table (IRT) requires, the AMD IOMMU driver
-to issue INVALIDATE_INTERRUPT_TABLE and COMPLETION_WAIT commands.
-Currently, the driver issues the two commands separately, which requires
-calling raw_spin_lock_irqsave() twice. In addition, the COMPLETION_WAIT
-could potentially be interleaved with other commands causing delay of
-the COMPLETION_WAIT command.
+On Wed, May 24, 2023 at 11:32:47AM +0200, Peter Zijlstra wrote:
+> On Mon, May 15, 2023 at 09:57:07AM +0200, Peter Zijlstra wrote:
+> 
+> > @@ -3008,6 +3029,22 @@ static inline bool pfmemalloc_match(stru
+> >  }
+> >  
+> >  #ifndef CONFIG_SLUB_TINY
+> > +static inline bool
+> > +__update_cpu_freelist_fast(struct kmem_cache *s,
+> > +			   void *freelist_old, void *freelist_new,
+> > +			   unsigned long tid)
+> > +{
+> > +#ifdef system_has_freelist_aba
+> > +	freelist_aba_t old = { .freelist = freelist_old, .counter = tid };
+> > +	freelist_aba_t new = { .freelist = freelist_new, .counter = next_tid(tid) };
+> > +
+> > +	return this_cpu_cmpxchg_freelist(s->cpu_slab->freelist_tid.full,
+> > +					 old.full, new.full) == old.full;
+> > +#else
+> > +	return false;
+> > +#endif
+> > +}
+> > +
+> >  /*
+> >   * Check the slab->freelist and either transfer the freelist to the
+> >   * per cpu freelist or deactivate the slab.
+> > @@ -3359,11 +3396,7 @@ static __always_inline void *__slab_allo
+> >  		 * against code executing on this cpu *not* from access by
+> >  		 * other cpus.
+> >  		 */
+> > -		if (unlikely(!this_cpu_cmpxchg_double(
+> > -				s->cpu_slab->freelist, s->cpu_slab->tid,
+> > -				object, tid,
+> > -				next_object, next_tid(tid)))) {
+> > -
+> > +		if (unlikely(!__update_cpu_freelist_fast(s, object, next_object, tid))) {
+> >  			note_cmpxchg_failure("slab_alloc", s, tid);
+> >  			goto redo;
+> >  		}
+> > @@ -3736,11 +3769,7 @@ static __always_inline void do_slab_free
+> >  
+> >  		set_freepointer(s, tail_obj, freelist);
+> >  
+> > -		if (unlikely(!this_cpu_cmpxchg_double(
+> > -				s->cpu_slab->freelist, s->cpu_slab->tid,
+> > -				freelist, tid,
+> > -				head, next_tid(tid)))) {
+> > -
+> > +		if (unlikely(!__update_cpu_freelist_fast(s, freelist, head, tid))) {
+> >  			note_cmpxchg_failure("slab_free", s, tid);
+> >  			goto redo;
+> >  		}
+> 
+> This isn't right; the this_cpu_cmpxchg_double() was unconditional and
+> relied on the local_irq_save() fallback when no native cmpxchg128 is
+> present.
 
-Therefore, combine issuing of the two commands in one spin-lock, and
-changing struct amd_iommu.cmd_sem_val to use atomic64 to minimize
-locking.
+This means this_cpu_cmpxchg128 is expected to be present on all 64bit
+archs, except Mark just found out that HPPA doens't support __int128
+until gcc-11.
 
-Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- drivers/iommu/amd/amd_iommu_types.h |  2 +-
- drivers/iommu/amd/init.c            |  2 +-
- drivers/iommu/amd/iommu.c           | 27 ++++++++++++++++++++++-----
- 3 files changed, 24 insertions(+), 7 deletions(-)
+(I've been building using gcc-12.2)
 
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 486a052e37ca..2fa65da2a9a5 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -744,7 +744,7 @@ struct amd_iommu {
- 
- 	u32 flags;
- 	volatile u64 *cmd_sem;
--	u64 cmd_sem_val;
-+	atomic64_t cmd_sem_val;
- 
- #ifdef CONFIG_AMD_IOMMU_DEBUGFS
- 	/* DebugFS Info */
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index fc0392d706db..16737819f79a 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -1750,7 +1750,7 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h,
- 	iommu->pci_seg = pci_seg;
- 
- 	raw_spin_lock_init(&iommu->lock);
--	iommu->cmd_sem_val = 0;
-+	atomic64_set(&iommu->cmd_sem_val, 0);
- 
- 	/* Add IOMMU to internal data structures */
- 	list_add_tail(&iommu->list, &amd_iommu_list);
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 51c2b018433d..57ae4a8072d3 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -1182,11 +1182,11 @@ static int iommu_completion_wait(struct amd_iommu *iommu)
- 	if (!iommu->need_sync)
- 		return 0;
- 
--	raw_spin_lock_irqsave(&iommu->lock, flags);
--
--	data = ++iommu->cmd_sem_val;
-+	data = atomic64_add_return(1, &iommu->cmd_sem_val);
- 	build_completion_wait(&cmd, iommu, data);
- 
-+	raw_spin_lock_irqsave(&iommu->lock, flags);
-+
- 	ret = __iommu_queue_command_sync(iommu, &cmd, false);
- 	if (ret)
- 		goto out_unlock;
-@@ -1284,11 +1284,28 @@ static void amd_iommu_flush_irt_all(struct amd_iommu *iommu)
- 
- static void iommu_flush_irt_and_complete(struct amd_iommu *iommu, u16 devid)
- {
-+	int ret;
-+	u64 data;
-+	unsigned long flags;
-+	struct iommu_cmd cmd, cmd2;
-+
- 	if (iommu->irtcachedis_enabled)
- 		return;
- 
--	iommu_flush_irt(iommu, devid);
--	iommu_completion_wait(iommu);
-+	build_inv_irt(&cmd, devid);
-+	data = atomic64_add_return(1, &iommu->cmd_sem_val);
-+	build_completion_wait(&cmd2, iommu, data);
-+
-+	raw_spin_lock_irqsave(&iommu->lock, flags);
-+	ret = __iommu_queue_command_sync(iommu, &cmd, true);
-+	if (ret)
-+		goto out;
-+	ret = __iommu_queue_command_sync(iommu, &cmd2, false);
-+	if (ret)
-+		goto out;
-+	wait_on_sem(iommu, data);
-+out:
-+	raw_spin_unlock_irqrestore(&iommu->lock, flags);
- }
- 
- void iommu_flush_all_caches(struct amd_iommu *iommu)
--- 
-2.31.1
+And because the cmpxchg128 fallback relies on '==' we can't trivally
+fudge that with a struct type either :/ Now, afaict it all magically
+works if I use:
 
+#ifdef __SIZEOF_INT128__
+typedef __s128 s128
+typedef __u128 u128
+#else
+#if defined(CONFIG_PARISC) && defined(CONFIG_64BIT)
+typedef long double u128;
+#endif
+#endif
+
+but that is *super* gross.
+
+The alternative is raising the minimum GCC for PARISC to gcc-11..
+
+Yet another alternative is using a struct type and an equality function,
+just for this.
+
+Anybody?
