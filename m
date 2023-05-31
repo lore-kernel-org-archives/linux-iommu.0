@@ -1,10 +1,10 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 597CC171D5
-	for <iommu@lists.linux.dev>; Wed, 31 May 2023 15:49:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CE58C433A8;
-	Wed, 31 May 2023 15:49:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87FA3171D5
+	for <iommu@lists.linux.dev>; Wed, 31 May 2023 15:49:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F1CDC433AE;
+	Wed, 31 May 2023 15:49:27 +0000 (UTC)
 From: Catalin Marinas <catalin.marinas@arm.com>
 To: Linus Torvalds <torvalds@linux-foundation.org>,
 	Christoph Hellwig <hch@lst.de>,
@@ -28,9 +28,9 @@ Cc: Arnd Bergmann <arnd@arndb.de>,
 	linux-mm@kvack.org,
 	iommu@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v6 11/17] arm64: Allow kmalloc() caches aligned to the smaller cache_line_size()
-Date: Wed, 31 May 2023 16:48:30 +0100
-Message-Id: <20230531154836.1366225-12-catalin.marinas@arm.com>
+Subject: [PATCH v6 12/17] scatterlist: Add dedicated config for DMA flags
+Date: Wed, 31 May 2023 16:48:31 +0100
+Message-Id: <20230531154836.1366225-13-catalin.marinas@arm.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230531154836.1366225-1-catalin.marinas@arm.com>
 References: <20230531154836.1366225-1-catalin.marinas@arm.com>
@@ -40,40 +40,87 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On arm64, ARCH_DMA_MINALIGN is 128, larger than the cache line size on
-most of the current platforms (typically 64). Define
-ARCH_KMALLOC_MINALIGN to 8 (the default for architectures without their
-own ARCH_DMA_MINALIGN) and override dma_get_cache_alignment() to return
-cache_line_size(), probed at run-time. The kmalloc() caches will be
-limited to the cache line size. This will allow the additional
-kmalloc-{64,192} caches on most arm64 platforms.
+From: Robin Murphy <robin.murphy@arm.com>
 
+The DMA flags field will be useful for users beyond PCI P2P, so upgrade
+to its own dedicated config option.
+
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+[catalin.marinas@arm.com: use #ifdef CONFIG_NEED_SG_DMA_FLAGS in scatterlist.h]
+[catalin.marinas@arm.com: update PCI_P2PDMA dma_flags comment in scatterlist.h]
 Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/arm64/include/asm/cache.h | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/pci/Kconfig         |  1 +
+ include/linux/scatterlist.h | 13 ++++++-------
+ kernel/dma/Kconfig          |  3 +++
+ 3 files changed, 10 insertions(+), 7 deletions(-)
 
-diff --git a/arch/arm64/include/asm/cache.h b/arch/arm64/include/asm/cache.h
-index a51e6e8f3171..ceb368d33bf4 100644
---- a/arch/arm64/include/asm/cache.h
-+++ b/arch/arm64/include/asm/cache.h
-@@ -33,6 +33,7 @@
-  * the CPU.
-  */
- #define ARCH_DMA_MINALIGN	(128)
-+#define ARCH_KMALLOC_MINALIGN	(8)
+diff --git a/drivers/pci/Kconfig b/drivers/pci/Kconfig
+index 9309f2469b41..3c07d8d214b3 100644
+--- a/drivers/pci/Kconfig
++++ b/drivers/pci/Kconfig
+@@ -168,6 +168,7 @@ config PCI_P2PDMA
+ 	#
+ 	depends on 64BIT
+ 	select GENERIC_ALLOCATOR
++	select NEED_SG_DMA_FLAGS
+ 	help
+ 	  Enableѕ drivers to do PCI peer-to-peer transactions to and from
+ 	  BARs that are exposed in other devices that are the part of
+diff --git a/include/linux/scatterlist.h b/include/linux/scatterlist.h
+index 375a5e90d86a..19833fd4113b 100644
+--- a/include/linux/scatterlist.h
++++ b/include/linux/scatterlist.h
+@@ -16,7 +16,7 @@ struct scatterlist {
+ #ifdef CONFIG_NEED_SG_DMA_LENGTH
+ 	unsigned int	dma_length;
+ #endif
+-#ifdef CONFIG_PCI_P2PDMA
++#ifdef CONFIG_NEED_SG_DMA_FLAGS
+ 	unsigned int    dma_flags;
+ #endif
+ };
+@@ -249,12 +249,11 @@ static inline void sg_unmark_end(struct scatterlist *sg)
+ }
  
- #ifndef __ASSEMBLY__
- 
-@@ -90,6 +91,8 @@ static inline int cache_line_size_of_cpu(void)
- 
- int cache_line_size(void);
- 
-+#define dma_get_cache_alignment	cache_line_size
-+
  /*
-  * Read the effective value of CTR_EL0.
-  *
+- * CONFGI_PCI_P2PDMA depends on CONFIG_64BIT which means there is 4 bytes
+- * in struct scatterlist (assuming also CONFIG_NEED_SG_DMA_LENGTH is set).
+- * Use this padding for DMA flags bits to indicate when a specific
+- * dma address is a bus address.
++ * One 64-bit architectures there is a 4-byte padding in struct scatterlist
++ * (assuming also CONFIG_NEED_SG_DMA_LENGTH is set). Use this padding for DMA
++ * flags bits to indicate when a specific dma address is a bus address.
+  */
+-#ifdef CONFIG_PCI_P2PDMA
++#ifdef CONFIG_NEED_SG_DMA_FLAGS
+ 
+ #define SG_DMA_BUS_ADDRESS (1 << 0)
+ 
+@@ -312,7 +311,7 @@ static inline void sg_dma_unmark_bus_address(struct scatterlist *sg)
+ {
+ }
+ 
+-#endif
++#endif	/* CONFIG_NEED_SG_DMA_FLAGS */
+ 
+ /**
+  * sg_phys - Return physical address of an sg entry
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index 6677d0e64d27..acc6f231259c 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -24,6 +24,9 @@ config DMA_OPS_BYPASS
+ config ARCH_HAS_DMA_MAP_DIRECT
+ 	bool
+ 
++config NEED_SG_DMA_FLAGS
++	bool
++
+ config NEED_SG_DMA_LENGTH
+ 	bool
+ 
