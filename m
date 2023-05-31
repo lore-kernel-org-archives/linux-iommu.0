@@ -1,10 +1,10 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C795171D5
-	for <iommu@lists.linux.dev>; Wed, 31 May 2023 15:48:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACC7CC433AF;
-	Wed, 31 May 2023 15:48:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBCCB171D5
+	for <iommu@lists.linux.dev>; Wed, 31 May 2023 15:49:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C08ABC433EF;
+	Wed, 31 May 2023 15:48:58 +0000 (UTC)
 From: Catalin Marinas <catalin.marinas@arm.com>
 To: Linus Torvalds <torvalds@linux-foundation.org>,
 	Christoph Hellwig <hch@lst.de>,
@@ -28,9 +28,9 @@ Cc: Arnd Bergmann <arnd@arndb.de>,
 	linux-mm@kvack.org,
 	iommu@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v6 04/17] mm/slab: Limit kmalloc() minimum alignment to dma_get_cache_alignment()
-Date: Wed, 31 May 2023 16:48:23 +0100
-Message-Id: <20230531154836.1366225-5-catalin.marinas@arm.com>
+Subject: [PATCH v6 05/17] drivers/base: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+Date: Wed, 31 May 2023 16:48:24 +0100
+Message-Id: <20230531154836.1366225-6-catalin.marinas@arm.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230531154836.1366225-1-catalin.marinas@arm.com>
 References: <20230531154836.1366225-1-catalin.marinas@arm.com>
@@ -42,73 +42,32 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Do not create kmalloc() caches which are not aligned to
-dma_get_cache_alignment(). There is no functional change since for
-current architectures defining ARCH_DMA_MINALIGN, ARCH_KMALLOC_MINALIGN
-equals ARCH_DMA_MINALIGN (and dma_get_cache_alignment()). On
-architectures without a specific ARCH_DMA_MINALIGN,
-dma_get_cache_alignment() is 1, so no change to the kmalloc() caches.
-
-If an architecture selects ARCH_HAS_DMA_CACHE_LINE_SIZE (introduced
-previously), the kmalloc() caches will be aligned to a cache line size.
+ARCH_DMA_MINALIGN represents the minimum (static) alignment for safe DMA
+operations while ARCH_KMALLOC_MINALIGN is the minimum kmalloc() objects
+alignment.
 
 Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Robin Murphy <robin.murphy@arm.com>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>
 ---
- mm/slab_common.c | 24 +++++++++++++++++++++---
- 1 file changed, 21 insertions(+), 3 deletions(-)
+ drivers/base/devres.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/mm/slab_common.c b/mm/slab_common.c
-index 7f069159aee2..7c6475847fdf 100644
---- a/mm/slab_common.c
-+++ b/mm/slab_common.c
-@@ -17,6 +17,7 @@
- #include <linux/cpu.h>
- #include <linux/uaccess.h>
- #include <linux/seq_file.h>
-+#include <linux/dma-mapping.h>
- #include <linux/proc_fs.h>
- #include <linux/debugfs.h>
- #include <linux/kasan.h>
-@@ -862,9 +863,18 @@ void __init setup_kmalloc_cache_index_table(void)
- 	}
- }
+diff --git a/drivers/base/devres.c b/drivers/base/devres.c
+index 5c998cfac335..3df0025d12aa 100644
+--- a/drivers/base/devres.c
++++ b/drivers/base/devres.c
+@@ -29,10 +29,10 @@ struct devres {
+ 	 * Some archs want to perform DMA into kmalloc caches
+ 	 * and need a guaranteed alignment larger than
+ 	 * the alignment of a 64-bit integer.
+-	 * Thus we use ARCH_KMALLOC_MINALIGN here and get exactly the same
+-	 * buffer alignment as if it was allocated by plain kmalloc().
++	 * Thus we use ARCH_DMA_MINALIGN for data[] which will force the same
++	 * alignment for struct devres when allocated by kmalloc().
+ 	 */
+-	u8 __aligned(ARCH_KMALLOC_MINALIGN) data[];
++	u8 __aligned(ARCH_DMA_MINALIGN) data[];
+ };
  
-+static unsigned int __kmalloc_minalign(void)
-+{
-+	return dma_get_cache_alignment();
-+}
-+
- void __init
- new_kmalloc_cache(int idx, enum kmalloc_cache_type type, slab_flags_t flags)
- {
-+	unsigned int minalign = __kmalloc_minalign();
-+	unsigned int aligned_size = kmalloc_info[idx].size;
-+	int aligned_idx = idx;
-+
- 	if ((KMALLOC_RECLAIM != KMALLOC_NORMAL) && (type == KMALLOC_RECLAIM)) {
- 		flags |= SLAB_RECLAIM_ACCOUNT;
- 	} else if (IS_ENABLED(CONFIG_MEMCG_KMEM) && (type == KMALLOC_CGROUP)) {
-@@ -877,9 +887,17 @@ new_kmalloc_cache(int idx, enum kmalloc_cache_type type, slab_flags_t flags)
- 		flags |= SLAB_CACHE_DMA;
- 	}
- 
--	kmalloc_caches[type][idx] = create_kmalloc_cache(
--					kmalloc_info[idx].name[type],
--					kmalloc_info[idx].size, flags);
-+	if (minalign > ARCH_KMALLOC_MINALIGN) {
-+		aligned_size = ALIGN(aligned_size, minalign);
-+		aligned_idx = __kmalloc_index(aligned_size, false);
-+	}
-+
-+	if (!kmalloc_caches[type][aligned_idx])
-+		kmalloc_caches[type][aligned_idx] = create_kmalloc_cache(
-+					kmalloc_info[aligned_idx].name[type],
-+					aligned_size, flags);
-+	if (idx != aligned_idx)
-+		kmalloc_caches[type][idx] = kmalloc_caches[type][aligned_idx];
- 
- 	/*
- 	 * If CONFIG_MEMCG_KMEM is enabled, disable cache merging for
+ struct devres_group {
