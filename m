@@ -1,10 +1,10 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F124171D5
-	for <iommu@lists.linux.dev>; Wed, 31 May 2023 15:48:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84008C433AA;
-	Wed, 31 May 2023 15:48:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B0F3171D5
+	for <iommu@lists.linux.dev>; Wed, 31 May 2023 15:48:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F0FAC433EF;
+	Wed, 31 May 2023 15:48:50 +0000 (UTC)
 From: Catalin Marinas <catalin.marinas@arm.com>
 To: Linus Torvalds <torvalds@linux-foundation.org>,
 	Christoph Hellwig <hch@lst.de>,
@@ -28,9 +28,9 @@ Cc: Arnd Bergmann <arnd@arndb.de>,
 	linux-mm@kvack.org,
 	iommu@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v6 02/17] dma: Allow dma_get_cache_alignment() to be overridden by the arch code
-Date: Wed, 31 May 2023 16:48:21 +0100
-Message-Id: <20230531154836.1366225-3-catalin.marinas@arm.com>
+Subject: [PATCH v6 03/17] mm/slab: Simplify create_kmalloc_cache() args and make it static
+Date: Wed, 31 May 2023 16:48:22 +0100
+Message-Id: <20230531154836.1366225-4-catalin.marinas@arm.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230531154836.1366225-1-catalin.marinas@arm.com>
 References: <20230531154836.1366225-1-catalin.marinas@arm.com>
@@ -42,36 +42,95 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-On arm64, ARCH_DMA_MINALIGN is larger than most cache line size
-configurations deployed. Allow an architecture to override
-dma_get_cache_alignment() in order to return a run-time probed value
-(e.g. cache_line_size()).
+In the slab variant of kmem_cache_init(), call new_kmalloc_cache()
+instead of initialising the kmalloc_caches array directly. With this,
+create_kmalloc_cache() is now only called from new_kmalloc_cache() in
+the same file, so make it static. In addition, the useroffset argument
+is always 0 while usersize is the same as size. Remove them.
 
 Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Will Deacon <will@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
 ---
- include/linux/dma-mapping.h | 2 ++
- 1 file changed, 2 insertions(+)
+ mm/slab.c        |  6 +-----
+ mm/slab.h        |  5 ++---
+ mm/slab_common.c | 14 ++++++--------
+ 3 files changed, 9 insertions(+), 16 deletions(-)
 
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 3288a1339271..c41019289223 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -543,6 +543,7 @@ static inline int dma_set_min_align_mask(struct device *dev,
- 	return 0;
+diff --git a/mm/slab.c b/mm/slab.c
+index bb57f7fdbae1..b7817dcba63e 100644
+--- a/mm/slab.c
++++ b/mm/slab.c
+@@ -1240,11 +1240,7 @@ void __init kmem_cache_init(void)
+ 	 * Initialize the caches that provide memory for the  kmem_cache_node
+ 	 * structures first.  Without this, further allocations will bug.
+ 	 */
+-	kmalloc_caches[KMALLOC_NORMAL][INDEX_NODE] = create_kmalloc_cache(
+-				kmalloc_info[INDEX_NODE].name[KMALLOC_NORMAL],
+-				kmalloc_info[INDEX_NODE].size,
+-				ARCH_KMALLOC_FLAGS, 0,
+-				kmalloc_info[INDEX_NODE].size);
++	new_kmalloc_cache(INDEX_NODE, KMALLOC_NORMAL, ARCH_KMALLOC_FLAGS);
+ 	slab_state = PARTIAL_NODE;
+ 	setup_kmalloc_cache_index_table();
+ 
+diff --git a/mm/slab.h b/mm/slab.h
+index f01ac256a8f5..592590fcddae 100644
+--- a/mm/slab.h
++++ b/mm/slab.h
+@@ -255,9 +255,8 @@ gfp_t kmalloc_fix_flags(gfp_t flags);
+ /* Functions provided by the slab allocators */
+ int __kmem_cache_create(struct kmem_cache *, slab_flags_t flags);
+ 
+-struct kmem_cache *create_kmalloc_cache(const char *name, unsigned int size,
+-			slab_flags_t flags, unsigned int useroffset,
+-			unsigned int usersize);
++void __init new_kmalloc_cache(int idx, enum kmalloc_cache_type type,
++			      slab_flags_t flags);
+ extern void create_boot_cache(struct kmem_cache *, const char *name,
+ 			unsigned int size, slab_flags_t flags,
+ 			unsigned int useroffset, unsigned int usersize);
+diff --git a/mm/slab_common.c b/mm/slab_common.c
+index 607249785c07..7f069159aee2 100644
+--- a/mm/slab_common.c
++++ b/mm/slab_common.c
+@@ -658,17 +658,16 @@ void __init create_boot_cache(struct kmem_cache *s, const char *name,
+ 	s->refcount = -1;	/* Exempt from merging for now */
  }
  
-+#ifndef dma_get_cache_alignment
- static inline int dma_get_cache_alignment(void)
+-struct kmem_cache *__init create_kmalloc_cache(const char *name,
+-		unsigned int size, slab_flags_t flags,
+-		unsigned int useroffset, unsigned int usersize)
++static struct kmem_cache *__init create_kmalloc_cache(const char *name,
++						      unsigned int size,
++						      slab_flags_t flags)
  {
- #ifdef ARCH_HAS_DMA_MINALIGN
-@@ -550,6 +551,7 @@ static inline int dma_get_cache_alignment(void)
- #endif
- 	return 1;
- }
-+#endif
+ 	struct kmem_cache *s = kmem_cache_zalloc(kmem_cache, GFP_NOWAIT);
  
- static inline void *dmam_alloc_coherent(struct device *dev, size_t size,
- 		dma_addr_t *dma_handle, gfp_t gfp)
+ 	if (!s)
+ 		panic("Out of memory when creating slab %s\n", name);
+ 
+-	create_boot_cache(s, name, size, flags | SLAB_KMALLOC, useroffset,
+-								usersize);
++	create_boot_cache(s, name, size, flags | SLAB_KMALLOC, 0, size);
+ 	list_add(&s->list, &slab_caches);
+ 	s->refcount = 1;
+ 	return s;
+@@ -863,7 +862,7 @@ void __init setup_kmalloc_cache_index_table(void)
+ 	}
+ }
+ 
+-static void __init
++void __init
+ new_kmalloc_cache(int idx, enum kmalloc_cache_type type, slab_flags_t flags)
+ {
+ 	if ((KMALLOC_RECLAIM != KMALLOC_NORMAL) && (type == KMALLOC_RECLAIM)) {
+@@ -880,8 +879,7 @@ new_kmalloc_cache(int idx, enum kmalloc_cache_type type, slab_flags_t flags)
+ 
+ 	kmalloc_caches[type][idx] = create_kmalloc_cache(
+ 					kmalloc_info[idx].name[type],
+-					kmalloc_info[idx].size, flags, 0,
+-					kmalloc_info[idx].size);
++					kmalloc_info[idx].size, flags);
+ 
+ 	/*
+ 	 * If CONFIG_MEMCG_KMEM is enabled, disable cache merging for
