@@ -1,10 +1,10 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4958C171D5
-	for <iommu@lists.linux.dev>; Wed, 31 May 2023 15:49:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C384C433A4;
-	Wed, 31 May 2023 15:49:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 597CC171D5
+	for <iommu@lists.linux.dev>; Wed, 31 May 2023 15:49:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CE58C433A8;
+	Wed, 31 May 2023 15:49:23 +0000 (UTC)
 From: Catalin Marinas <catalin.marinas@arm.com>
 To: Linus Torvalds <torvalds@linux-foundation.org>,
 	Christoph Hellwig <hch@lst.de>,
@@ -27,11 +27,10 @@ Cc: Arnd Bergmann <arnd@arndb.de>,
 	Jonathan Cameron <jic23@kernel.org>,
 	linux-mm@kvack.org,
 	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v6 10/17] iio: core: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
-Date: Wed, 31 May 2023 16:48:29 +0100
-Message-Id: <20230531154836.1366225-11-catalin.marinas@arm.com>
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v6 11/17] arm64: Allow kmalloc() caches aligned to the smaller cache_line_size()
+Date: Wed, 31 May 2023 16:48:30 +0100
+Message-Id: <20230531154836.1366225-12-catalin.marinas@arm.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230531154836.1366225-1-catalin.marinas@arm.com>
 References: <20230531154836.1366225-1-catalin.marinas@arm.com>
@@ -43,27 +42,38 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-ARCH_DMA_MINALIGN represents the minimum (static) alignment for safe DMA
-operations while ARCH_KMALLOC_MINALIGN is the minimum kmalloc() objects
-alignment.
+On arm64, ARCH_DMA_MINALIGN is 128, larger than the cache line size on
+most of the current platforms (typically 64). Define
+ARCH_KMALLOC_MINALIGN to 8 (the default for architectures without their
+own ARCH_DMA_MINALIGN) and override dma_get_cache_alignment() to return
+cache_line_size(), probed at run-time. The kmalloc() caches will be
+limited to the cache line size. This will allow the additional
+kmalloc-{64,192} caches on most arm64 platforms.
 
 Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Will Deacon <will@kernel.org>
 ---
- include/linux/iio/iio.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/include/asm/cache.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 81413cd3a3e7..d28a5e8097e4 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -722,7 +722,7 @@ static inline void *iio_device_get_drvdata(const struct iio_dev *indio_dev)
-  * must not share  cachelines with the rest of the structure, thus making
-  * them safe for use with non-coherent DMA.
+diff --git a/arch/arm64/include/asm/cache.h b/arch/arm64/include/asm/cache.h
+index a51e6e8f3171..ceb368d33bf4 100644
+--- a/arch/arm64/include/asm/cache.h
++++ b/arch/arm64/include/asm/cache.h
+@@ -33,6 +33,7 @@
+  * the CPU.
   */
--#define IIO_DMA_MINALIGN ARCH_KMALLOC_MINALIGN
-+#define IIO_DMA_MINALIGN ARCH_DMA_MINALIGN
- struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv);
+ #define ARCH_DMA_MINALIGN	(128)
++#define ARCH_KMALLOC_MINALIGN	(8)
  
- /* The information at the returned address is guaranteed to be cacheline aligned */
+ #ifndef __ASSEMBLY__
+ 
+@@ -90,6 +91,8 @@ static inline int cache_line_size_of_cpu(void)
+ 
+ int cache_line_size(void);
+ 
++#define dma_get_cache_alignment	cache_line_size
++
+ /*
+  * Read the effective value of CTR_EL0.
+  *
