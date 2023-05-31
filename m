@@ -1,139 +1,124 @@
-Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D53016425
-	for <iommu@lists.linux.dev>; Wed, 31 May 2023 15:04:34 +0000 (UTC)
-Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-4f4b384c09fso7092233e87.3
-        for <iommu@lists.linux.dev>; Wed, 31 May 2023 08:04:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1685545472; x=1688137472;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=vBciu8IUz0vdlWcni9FF4uUhO0LU6XOb9eyf9C827Ho=;
-        b=F3/9fdJooQi3A7ohsFU9tS4SwZD9ktZAukLHq/SO4yRqiZv6j/0w2BVKW9jaPyGpmc
-         61BYIKRpol8gHP2c7RCIptTA0gD5F3X02oMC4+tEVQ4cOszY3ncSi2jvdECqsHCJk26M
-         h8DILCBuC48MSc74ueJASvUcbZIoEmJbTjZd26l6cPqBEA1P07OZN8j4oqHBEgfkU+0s
-         GPdwJ/ckS5kiOt4sqgBBizYGTtKl9FMl+wyWTbdRMKrRHTVCMDIEQz1TUC5kGn9nffsu
-         Uw28Yxy5pm2WmUFPBD9xbabSZo3UStxiZc8yXR5ubmo+NkLmv7GiTuKirSyppFGxQN5/
-         m4yA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685545472; x=1688137472;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=vBciu8IUz0vdlWcni9FF4uUhO0LU6XOb9eyf9C827Ho=;
-        b=BMgyRcS8CP3n6b1TEOL7A2rOCOEXkApSZw09ZXUDW7Z0iIYyjc82HlfpJ3AVS1xY+Y
-         I9itCO4nX5K6s9RFKMGVoU7fRs+kmxT6JtFMpyypDVWIv1pifjiJtvBTRNymNGz/jNih
-         1Mdz0W/5FykfhLR4uX4Lv6cKgb6zVfPTOInyovLqTGUVfE1ZeRkvocBlVfe6qaLceIPk
-         R0e2MyGKIHzheV68aVNBc8jnHa32W53xMDqE0fur1vuMW3apKfqOPQ74WYeEgJzjLyyb
-         kBMiV2F3SFHhEvfPpnfKlqHR0GwMJVDOD+SWpOgDnMAODRnyNKNP4REV9x8tzmD4QPFF
-         jCUA==
-X-Gm-Message-State: AC+VfDyXdc/Rz1ebw9KPWuTA2I/Dpc22PhHwZsCs9NkcW86k5Khd4vSw
-	ezWEoN0WpGgzgjdy+XkdzZx2OA==
-X-Google-Smtp-Source: ACHHUZ7R4nk2gm5iFOwfNg+kcoT3U5GmcqIxiuSd/sSJnm1971fkxNGCuVI8TjZHxwQV8eqZo0DFjQ==
-X-Received: by 2002:ac2:44ae:0:b0:4f3:8196:80cb with SMTP id c14-20020ac244ae000000b004f3819680cbmr2957225lfm.41.1685545472269;
-        Wed, 31 May 2023 08:04:32 -0700 (PDT)
-Received: from [192.168.1.101] (abyj77.neoplus.adsl.tpnet.pl. [83.9.29.77])
-        by smtp.gmail.com with ESMTPSA id v25-20020a197419000000b004f019d3eab4sm756325lfe.23.2023.05.31.08.04.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 May 2023 08:04:31 -0700 (PDT)
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Date: Wed, 31 May 2023 17:04:24 +0200
-Subject: [PATCH 2/2] arm64: dts: qcom: sm6375: Add GPUCC and Adreno SMMU
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FA9F171D5
+	for <iommu@lists.linux.dev>; Wed, 31 May 2023 15:48:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 550CEC433D2;
+	Wed, 31 May 2023 15:48:38 +0000 (UTC)
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>,
+	Christoph Hellwig <hch@lst.de>,
+	Robin Murphy <robin.murphy@arm.com>
+Cc: Arnd Bergmann <arnd@arndb.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Will Deacon <will@kernel.org>,
+	Marc Zyngier <maz@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Ard Biesheuvel <ardb@kernel.org>,
+	Isaac Manjarres <isaacmanjarres@google.com>,
+	Saravana Kannan <saravanak@google.com>,
+	Alasdair Kergon <agk@redhat.com>,
+	Daniel Vetter <daniel@ffwll.ch>,
+	Joerg Roedel <joro@8bytes.org>,
+	Mark Brown <broonie@kernel.org>,
+	Mike Snitzer <snitzer@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	linux-mm@kvack.org,
+	iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v6 00/17] mm, dma, arm64: Reduce ARCH_KMALLOC_MINALIGN to 8
+Date: Wed, 31 May 2023 16:48:19 +0100
+Message-Id: <20230531154836.1366225-1-catalin.marinas@arm.com>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20230531-topic-sm6375_gpusmmu-v1-2-860943894c71@linaro.org>
-References: <20230531-topic-sm6375_gpusmmu-v1-0-860943894c71@linaro.org>
-In-Reply-To: <20230531-topic-sm6375_gpusmmu-v1-0-860943894c71@linaro.org>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
- Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, 
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
- Conor Dooley <conor+dt@kernel.org>, Andy Gross <agross@kernel.org>, 
- Bjorn Andersson <andersson@kernel.org>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>, 
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-arm-msm@vger.kernel.org, Konrad Dybcio <konrad.dybcio@linaro.org>
-X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1685545468; l=2217;
- i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
- bh=0qRthIuQ5GXryV4KqwemAc1v1T13tS3GmpDq4wc4d9Q=;
- b=LQedeCbvmtolR0nCDOCffZcsRKQtljPkZB5M7fCUYyluIH+p/GHigxqARJSVI+tDv6kCeipth
- 0qk8Eb5tkoFA2Y3hkDRi5NZRoFvnNhwpNnUsNouaeXPj509BhPZnoES
-X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
- pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
+Content-Transfer-Encoding: 8bit
 
-Add GPUCC and Adreno SMMU nodes in preparation for adding the GPU
-itself.
+Hi,
 
-Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
----
- arch/arm64/boot/dts/qcom/sm6375.dtsi | 37 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 37 insertions(+)
+Here's version 6 of the series reducing the kmalloc() minimum alignment
+on arm64 to 8 (from 128). There are patches already to do the same for
+riscv (pretty straight-forward after this series).
 
-diff --git a/arch/arm64/boot/dts/qcom/sm6375.dtsi b/arch/arm64/boot/dts/qcom/sm6375.dtsi
-index f8d9c34d3b2f..3dba34210a6d 100644
---- a/arch/arm64/boot/dts/qcom/sm6375.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm6375.dtsi
-@@ -5,6 +5,7 @@
- 
- #include <dt-bindings/clock/qcom,rpmcc.h>
- #include <dt-bindings/clock/qcom,sm6375-gcc.h>
-+#include <dt-bindings/clock/qcom,sm6375-gpucc.h>
- #include <dt-bindings/dma/qcom-gpi.h>
- #include <dt-bindings/firmware/qcom,scm.h>
- #include <dt-bindings/interrupt-controller/arm-gic.h>
-@@ -1276,6 +1277,42 @@ usb_1_dwc3: usb@4e00000 {
- 			};
- 		};
- 
-+		adreno_smmu: iommu@5940000 {
-+			compatible = "qcom,sm6375-smmu-v2", "qcom,smmu-v2";
-+			reg = <0 0x05940000 0 0x10000>;
-+			#iommu-cells = <1>;
-+			#global-interrupts = <2>;
-+			interrupts = <GIC_SPI 379 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 381 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 457 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 458 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 459 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 460 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 461 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 462 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 463 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 464 IRQ_TYPE_LEVEL_HIGH>;
-+
-+			clocks = <&gcc GCC_GPU_MEMNOC_GFX_CLK>;
-+			clock-names = "bus";
-+
-+			power-domains = <&gpucc GPU_CX_GDSC>;
-+		};
-+
-+		gpucc: clock-controller@5990000 {
-+			compatible = "qcom,sm6375-gpucc";
-+			reg = <0 0x05990000 0 0x9000>;
-+			clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>,
-+				 <&gcc GCC_GPU_GPLL0_CLK_SRC>,
-+				 <&gcc GCC_GPU_GPLL0_DIV_CLK_SRC>,
-+				 <&gcc GCC_GPU_SNOC_DVM_GFX_CLK>;
-+			power-domains = <&rpmpd SM6375_VDDGX>;
-+			required-opps = <&rpmpd_opp_low_svs>;
-+			#clock-cells = <1>;
-+			#reset-cells = <1>;
-+			#power-domain-cells = <1>;
-+		};
-+
- 		remoteproc_mss: remoteproc@6000000 {
- 			compatible = "qcom,sm6375-mpss-pas";
- 			reg = <0 0x06000000 0 0x4040>;
+The first 11 patches decouple ARCH_KMALLOC_MINALIGN from
+ARCH_DMA_MINALIGN and, for arm64, limit the kmalloc() caches to those
+aligned to the run-time probed cache_line_size(). On arm64 we gain the
+kmalloc-{64,192} caches.
 
--- 
-2.40.1
+The subsequent patches (11 to 17) further reduce the kmalloc() caches to
+kmalloc-{8,16,32,96} if the default swiotlb is present by bouncing small
+buffers in the DMA API.
+
+Changes since v5:
+
+- Renaming of the sg_* accessors for consistency.
+
+- IIO_DMA_MINALIGN defined to ARCH_DMA_MINALIGN (missed it in previous
+  versions).
+
+- Modified Robin's patch 11 to use #ifdef CONFIG_NEED_SG_DMA_FLAGS
+  instead of CONFIG_PCI_P2PDMA in scatterlist.h.
+
+- Added the new sg_dma_*_swiotlb() under the same #ifdef as above.
+
+The updated patches are also available on this branch:
+
+git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux devel/kmalloc-minalign
+
+Thanks.
+
+Catalin Marinas (15):
+  mm/slab: Decouple ARCH_KMALLOC_MINALIGN from ARCH_DMA_MINALIGN
+  dma: Allow dma_get_cache_alignment() to be overridden by the arch code
+  mm/slab: Simplify create_kmalloc_cache() args and make it static
+  mm/slab: Limit kmalloc() minimum alignment to
+    dma_get_cache_alignment()
+  drivers/base: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+  drivers/gpu: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+  drivers/usb: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+  drivers/spi: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+  dm-crypt: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+  iio: core: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+  arm64: Allow kmalloc() caches aligned to the smaller cache_line_size()
+  dma-mapping: Force bouncing if the kmalloc() size is not
+    cache-line-aligned
+  iommu/dma: Force bouncing if the size is not cacheline-aligned
+  mm: slab: Reduce the kmalloc() minimum alignment if DMA bouncing
+    possible
+  arm64: Enable ARCH_WANT_KMALLOC_DMA_BOUNCE for arm64
+
+Robin Murphy (2):
+  scatterlist: Add dedicated config for DMA flags
+  dma-mapping: Name SG DMA flag helpers consistently
+
+ arch/arm64/Kconfig             |  1 +
+ arch/arm64/include/asm/cache.h |  3 ++
+ arch/arm64/mm/init.c           |  7 +++-
+ drivers/base/devres.c          |  6 ++--
+ drivers/gpu/drm/drm_managed.c  |  6 ++--
+ drivers/iommu/Kconfig          |  1 +
+ drivers/iommu/dma-iommu.c      | 58 ++++++++++++++++++++++++--------
+ drivers/iommu/iommu.c          |  2 +-
+ drivers/md/dm-crypt.c          |  2 +-
+ drivers/pci/Kconfig            |  1 +
+ drivers/spi/spidev.c           |  2 +-
+ drivers/usb/core/buffer.c      |  8 ++---
+ include/linux/dma-map-ops.h    | 61 ++++++++++++++++++++++++++++++++++
+ include/linux/dma-mapping.h    |  4 ++-
+ include/linux/iio/iio.h        |  2 +-
+ include/linux/scatterlist.h    | 60 ++++++++++++++++++++++++++-------
+ include/linux/slab.h           | 14 ++++++--
+ kernel/dma/Kconfig             |  7 ++++
+ kernel/dma/direct.c            |  2 +-
+ kernel/dma/direct.h            |  3 +-
+ mm/slab.c                      |  6 +---
+ mm/slab.h                      |  5 ++-
+ mm/slab_common.c               | 46 +++++++++++++++++++------
+ 23 files changed, 243 insertions(+), 64 deletions(-)
 
