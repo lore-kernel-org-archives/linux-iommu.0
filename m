@@ -1,10 +1,10 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 321F4171D5
-	for <iommu@lists.linux.dev>; Wed, 31 May 2023 15:49:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EBEEC433AA;
-	Wed, 31 May 2023 15:49:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4958C171D5
+	for <iommu@lists.linux.dev>; Wed, 31 May 2023 15:49:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C384C433A4;
+	Wed, 31 May 2023 15:49:19 +0000 (UTC)
 From: Catalin Marinas <catalin.marinas@arm.com>
 To: Linus Torvalds <torvalds@linux-foundation.org>,
 	Christoph Hellwig <hch@lst.de>,
@@ -27,10 +27,11 @@ Cc: Arnd Bergmann <arnd@arndb.de>,
 	Jonathan Cameron <jic23@kernel.org>,
 	linux-mm@kvack.org,
 	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v6 09/17] dm-crypt: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
-Date: Wed, 31 May 2023 16:48:28 +0100
-Message-Id: <20230531154836.1366225-10-catalin.marinas@arm.com>
+	linux-arm-kernel@lists.infradead.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v6 10/17] iio: core: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+Date: Wed, 31 May 2023 16:48:29 +0100
+Message-Id: <20230531154836.1366225-11-catalin.marinas@arm.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230531154836.1366225-1-catalin.marinas@arm.com>
 References: <20230531154836.1366225-1-catalin.marinas@arm.com>
@@ -47,22 +48,22 @@ operations while ARCH_KMALLOC_MINALIGN is the minimum kmalloc() objects
 alignment.
 
 Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Alasdair Kergon <agk@redhat.com>
-Cc: Mike Snitzer <snitzer@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/md/dm-crypt.c | 2 +-
+ include/linux/iio/iio.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/md/dm-crypt.c b/drivers/md/dm-crypt.c
-index 8b47b913ee83..ebbd8f7db880 100644
---- a/drivers/md/dm-crypt.c
-+++ b/drivers/md/dm-crypt.c
-@@ -3256,7 +3256,7 @@ static int crypt_ctr(struct dm_target *ti, unsigned int argc, char **argv)
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 81413cd3a3e7..d28a5e8097e4 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -722,7 +722,7 @@ static inline void *iio_device_get_drvdata(const struct iio_dev *indio_dev)
+  * must not share  cachelines with the rest of the structure, thus making
+  * them safe for use with non-coherent DMA.
+  */
+-#define IIO_DMA_MINALIGN ARCH_KMALLOC_MINALIGN
++#define IIO_DMA_MINALIGN ARCH_DMA_MINALIGN
+ struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv);
  
- 	cc->per_bio_data_size = ti->per_io_data_size =
- 		ALIGN(sizeof(struct dm_crypt_io) + cc->dmreq_start + additional_req_size,
--		      ARCH_KMALLOC_MINALIGN);
-+		      ARCH_DMA_MINALIGN);
- 
- 	ret = mempool_init(&cc->page_pool, BIO_MAX_VECS, crypt_page_alloc, crypt_page_free, cc);
- 	if (ret) {
+ /* The information at the returned address is guaranteed to be cacheline aligned */
