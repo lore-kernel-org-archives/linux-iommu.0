@@ -1,34 +1,34 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FD751866
-	for <iommu@lists.linux.dev>; Wed, 31 May 2023 03:27:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8579DEC4
+	for <iommu@lists.linux.dev>; Wed, 31 May 2023 04:04:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685503672; x=1717039672;
+  t=1685505850; x=1717041850;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=TYMzU74WAhBotOE3c77ui6pPmq/ocGmpdHVCBH4pbX4=;
-  b=PjSvsr0k112D4vkPS7G89FtXqV0KQRUPrV+qp3bbCozf3bexWxzVrLvX
-   QAwzHgXugh/iBGbp7psilfvMWxUaawxOQZTcgco3yCDKn0cu3605K/gDU
-   GtJIVba8tvGaxom4PITcgpkCJnYX7UtCRpQ3bSqazoEkFRpojuPcFAP3L
-   iPdU02sNnJf7ny5ssLTAkY2U3QUzpUc/GtJNHESj/mdx+JJdPpG3uOajr
-   cciHjcpyCSUareAGn+Osc+OlBcf+i/GMS/Zboc+0EdinqKqx166qn0O0E
-   Mh5wxHvjzYRUPWBEQj6svej+o8ZwMgcZeJcisuECqvdefYbh5LZ/99KHe
+  bh=WHj2RuuzQ5MIhm5hULZNZ/8NBi6foHkjop6klLlJc2w=;
+  b=lavY90dn6lWjEzDmQP5i9X8vqe312UywDRr6TPB+5inYb5c+ML+dZxv6
+   5GaBCPs7CLfu1/DSMDtjkaWWZZK49BZ4VOL7hmYFzhOE6mFhB5AV+p097
+   qUAKJIAmAM5JuYroL/1cxAYorI6OPyALlEh0ltG2dlYF5tHRyMoGwngwb
+   76Et+7f2W0Muill5AtYJyX+MrLbzgkdd1a9IxJnbavEAfdy8DtDa7DQwZ
+   LUoRDP7OGavTnGYerbn1XwPUMTq1THpTbNmMj7XGw0/vFkA54f0tGWMBD
+   EHMFEnnTTk17cL0UJlclPEX3O98aJQFwv6oGpn8I3/jJLZz8aSNlA3/Ib
    A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10726"; a="339715116"
+X-IronPort-AV: E=McAfee;i="6600,9927,10726"; a="335477390"
 X-IronPort-AV: E=Sophos;i="6.00,205,1681196400"; 
-   d="scan'208";a="339715116"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2023 20:27:51 -0700
+   d="scan'208";a="335477390"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2023 21:03:08 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10726"; a="831049681"
+X-IronPort-AV: E=McAfee;i="6600,9927,10726"; a="881013685"
 X-IronPort-AV: E=Sophos;i="6.00,205,1681196400"; 
-   d="scan'208";a="831049681"
+   d="scan'208";a="881013685"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orsmga004.jf.intel.com with ESMTP; 30 May 2023 20:27:49 -0700
-Message-ID: <3e75f9de-4c67-93aa-9fb4-28da9849dd48@linux.intel.com>
-Date: Wed, 31 May 2023 11:26:55 +0800
+  by orsmga005.jf.intel.com with ESMTP; 30 May 2023 21:03:03 -0700
+Message-ID: <325046c8-cfc3-c42a-0b39-bafc1acae800@linux.intel.com>
+Date: Wed, 31 May 2023 12:02:08 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,47 +37,121 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.11.0
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iommu/vt-d: Use BUG_ON to check NULL value of 'table'
+Cc: baolu.lu@linux.intel.com, Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, dmaengine@vger.kernel.org, vkoul@kernel.org,
+ Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+ David Woodhouse <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>,
+ "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+ "Yu, Fenghua" <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Tony Luck <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
+ narayan.ranganathan@intel.com
+Subject: Re: [PATCH v6 3/4] iommu/vt-d: Add set_dev_pasid callback for dma
+ domain
 Content-Language: en-US
-To: Yanfei Xu <yanfei.xu@intel.com>, dwmw2@infradead.org, joro@8bytes.org,
- will@kernel.org, robin.murphy@arm.com
-References: <20230530092503.152926-1-yanfei.xu@intel.com>
- <20230530092503.152926-3-yanfei.xu@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <20230519203223.2777255-1-jacob.jun.pan@linux.intel.com>
+ <20230519203223.2777255-4-jacob.jun.pan@linux.intel.com>
+ <ZHUBoBev2Vzp8nGF@nvidia.com>
+ <ba26db48-4102-d6bc-add8-5449423158ca@linux.intel.com>
+ <ZHYqebpMC12ck6gQ@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230530092503.152926-3-yanfei.xu@intel.com>
+In-Reply-To: <ZHYqebpMC12ck6gQ@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 5/30/23 5:25 PM, Yanfei Xu wrote:
-> Checking NULL value of 'table' variable deserves a BUG_ON as the
-> following code will trigger a crash by dereferencing the NULL
-> 'table' pointer. Crash in advance with BUG_ON to avoid WARN_ON
-> plus NULL pointer dereferencing can simplify the crash log.
+On 5/31/23 12:55 AM, Jason Gunthorpe wrote:
+> On Tue, May 30, 2023 at 10:19:05AM +0800, Baolu Lu wrote:
+>> On 5/30/23 3:48 AM, Jason Gunthorpe wrote:
+>>> On Fri, May 19, 2023 at 01:32:22PM -0700, Jacob Pan wrote:
+>>>
+>>>> @@ -4720,25 +4762,99 @@ static void intel_iommu_iotlb_sync_map(struct iommu_domain *domain,
+>>>>    static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
+>>>>    {
+>>>>    	struct intel_iommu *iommu = device_to_iommu(dev, NULL, NULL);
+>>>> +	struct dev_pasid_info *curr, *dev_pasid = NULL;
+>>>> +	struct dmar_domain *dmar_domain;
+>>>>    	struct iommu_domain *domain;
+>>>> +	unsigned long flags;
+>>>> -	/* Domain type specific cleanup: */
+>>>>    	domain = iommu_get_domain_for_dev_pasid(dev, pasid, 0);
+>>>> -	if (domain) {
+>>>> -		switch (domain->type) {
+>>>> -		case IOMMU_DOMAIN_SVA:
+>>>> -			intel_svm_remove_dev_pasid(dev, pasid);
+>>>> -			break;
+>>>> -		default:
+>>>> -			/* should never reach here */
+>>>> -			WARN_ON(1);
+>>>> +	if (!domain)
+>>>> +		goto out_tear_down;
+>>>> +
+>>>> +	/*
+>>>> +	 * The SVA implementation needs to stop mm notification, drain the
+>>>> +	 * pending page fault requests before tearing down the pasid entry.
+>>>> +	 * The VT-d spec (section 6.2.3.1) also recommends that software
+>>>> +	 * could use a reserved domain id for all first-only and pass-through
+>>>> +	 * translations. Hence there's no need to call domain_detach_iommu()
+>>>> +	 * in the sva domain case.
+>>>> +	 */
+>>>> +	if (domain->type == IOMMU_DOMAIN_SVA) {
+>>>> +		intel_svm_remove_dev_pasid(dev, pasid);
+>>>> +		goto out_tear_down;
+>>>> +	}
+>>>
+>>> But why don't you need to do all the other
+>>> intel_pasid_tear_down_entry(), intel_svm_drain_prq() (which is
+>>> misnamed) and other stuff from intel_svm_remove_dev_pasid() ?
+>>
+>> Perhaps,
+>>
+>> 	if (domain->type == IOMMU_DOMAIN_SVA) {
+>> 		intel_svm_remove_dev_pasid(dev, pasid);
+>> 		return;
+>> 	}
+>>
+>> ?
 > 
-> Signed-off-by: Yanfei Xu<yanfei.xu@intel.com>
-> ---
->   drivers/iommu/intel/iommu.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> I would expect only stuff directly connected to SVM be in the SVM
+> function.
 > 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index e98f1b122b49..8aa3bfdb7f95 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -1944,7 +1944,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
->   	if (sm_supported(iommu)) {
->   		unsigned long pds;
->   
-> -		WARN_ON(!table);
-> +		BUG_ON(!table);
+> De-initalizing PRI and any other pasid destruction should be in this
+> function.
+> 
+>>> There still seems to be waaay too much "SVM" in the PASID code.
+>>
+>> This segment of code is destined to be temporary. From a long-term
+>> perspective, I hope to move SVA specific staffs such as mm notification,
+>> prq draining, etc. to the iommu core. They are generic rather than Intel
+>> iommu specific.
+> 
+> Yes, sort of, but.. That is just the mmu notifier bits
+> 
+> All the PRI/PASID teardown needs to be unlinked from SVM
 
-BUG_ON() is not recommended. Perhaps,
+Get your point now. Yes. PRI and PASID teardown are not SVA-specific.
+Sorry that we should rename SVM to SVA to unify the Linux terminology.
 
-		if (!table)
-			-ENODEV;
+> 
+>>> It would be nice if the different domain types had their own ops..
+>>
+>> Good suggestion!
+>>
+>> We can add a domain ops in the Intel domain structure which is
+>> responsible for how to install an Intel iommu domain onto the VT-d
+>> hardware.
+> 
+> We should have seperate iommu_domain_ops at least, I think that would
+> cover alot of it?
 
-?
+Are you suggesting adding this ops in common iommu_domain or intel's
+dmar_domain? My understanding is the latter. To do so, probably we need
+to define various callbacks for different type of domains: identity,
+blocking, dma remapping, sva and possibly nested. Also need to care
+about legacy vs. scalable mode.
+
+That's the reason why I hoped to do all these in separated series with
+carefully reviewing and testing.
 
 Best regards,
 baolu
