@@ -1,116 +1,125 @@
-Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A929FA23
-	for <iommu@lists.linux.dev>; Wed, 31 May 2023 00:33:35 +0000 (UTC)
-Received: by mail-qt1-f172.google.com with SMTP id d75a77b69052e-3f8115ca685so25003151cf.1
-        for <iommu@lists.linux.dev>; Tue, 30 May 2023 17:33:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1685493214; x=1688085214;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=YxfeX6CjU1T6VFT6WQGkkGRNUy8IJFRL+Q8oTwikiYE=;
-        b=NSprOvANr8rmmNMRfGUGQhrlbjOY3VNneKCREemdYMFsq+wZseIXs4cVn2cfctqTC4
-         l/Fex2UztpB64Sv6bVKzNW2Qn0dqqb5NbD1cJWjIOn75Zk0NXfpMON7ItM9ydFy5Ew5U
-         s1hUijdnCq5qu7Zs5EJmJe13GN3xQ65TBxqudO3SU+vn3Sqj6RrsWVsk2oCYcnPG3p84
-         jQDN28rHXrMKZ637sGrN6F/CCcU4XEcphoJElhcnaXxrFBaFj8p/dlxWO0sR9zCxF7Dn
-         z3eQ+08mRG3B2cvqFNdTFZputqdjR8OXMmJun0qCmRxWBxzTeKu07oZNguwRyhjTnf+2
-         ghdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685493214; x=1688085214;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YxfeX6CjU1T6VFT6WQGkkGRNUy8IJFRL+Q8oTwikiYE=;
-        b=HA7Ic/5Sm/svASMewkGVII4KzD8CksvXyb3XPEZTjaqXVzLnC0WgLgkBJGtyWbOdak
-         Vx0/vooqGRQ4s7eE4i4VH59YEo+ozOLEU6gZhUhho00qqyzZSrmOLIu7WkAYqU16gap4
-         J1FkooTY4gX+KAy+8/P9wteGmu05h4WMTCzv4LItFmcnRJ2V9u4SItVYZyUlwr8EQDTO
-         +VLYZKaCNUdEvYpJlUdGVcvKZBjwt82BiGT4cRKbe9VPPr68oYb94WjNULLr9150X8f7
-         yQ+w4tzaFv9h5QPQo1lJLJydAWQ9U3rkN2lxAlBtHybDpaR3NK40dUMv3cFDbmsHRosG
-         lM9g==
-X-Gm-Message-State: AC+VfDy8CVhbqXBmkCAs4qGlJKihf/lWIR8gJbEsh3AHpS4oTVSburao
-	1JDhxT55Rn9Y4ig1ma0u+mukXQ==
-X-Google-Smtp-Source: ACHHUZ76cGYRoxD2nR+OVC7+AsKBaaMRBv2OxrvCIPruwBslaqJO8TAA8q2yEjn3iVhl/m095jOZyA==
-X-Received: by 2002:a05:622a:198f:b0:3f6:c52e:21bc with SMTP id u15-20020a05622a198f00b003f6c52e21bcmr4111272qtc.19.1685493214434;
-        Tue, 30 May 2023 17:33:34 -0700 (PDT)
-Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id ff27-20020a05622a4d9b00b003f6bbd7863csm5256617qtb.86.2023.05.30.17.33.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 May 2023 17:33:33 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1q49mO-000kYe-OG;
-	Tue, 30 May 2023 21:33:32 -0300
-Date: Tue, 30 May 2023 21:33:32 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
-	linux-kselftest@vger.kernel.org,
-	virtualization@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCHES 00/17] IOMMUFD: Deliver IO page faults to user space
-Message-ID: <ZHaV3GwYXCvfNUBn@ziepe.ca>
-References: <20230530053724.232765-1-baolu.lu@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9446E1374
+	for <iommu@lists.linux.dev>; Wed, 31 May 2023 02:11:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685499074; x=1717035074;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=g2gT8/k6n0r5Xqt7LtizrMmloP8awjFUudd28EEp1gc=;
+  b=O9fGka58XHIHChz37ZYWTghQgyeAtxa9qwYoT+lg7Kz/OerpHqpgb7Se
+   H9ZWrIN0e9h7NDUQKDbNVbA1mN/rJvSvf++2IFGkfkyY/Dtu/o0Q12M1u
+   39qo0aa4veM0abtMdnxmQqXVyA9uCKYoAnx2oaoYmUtixbo8qw+cHjM/M
+   CcMpMcMvT88O5an6l5uSQAGVsMWZq1tALrAW+MiX8occlsaIO8RmVfsL9
+   GrJo7fp7KP5tjz/LW+ENa3Cz7+6qEQVIK9UfcgJZjOk/4m/J70kKl+9MB
+   +1KMbxd+Mbhc5tKjPKL1Xo4vvDPv2fqA9zlMf8FPyZK+ovvi3KQAUkgPq
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10726"; a="353952166"
+X-IronPort-AV: E=Sophos;i="6.00,205,1681196400"; 
+   d="scan'208";a="353952166"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2023 19:11:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10726"; a="684213418"
+X-IronPort-AV: E=Sophos;i="6.00,205,1681196400"; 
+   d="scan'208";a="684213418"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by orsmga006.jf.intel.com with ESMTP; 30 May 2023 19:11:09 -0700
+Message-ID: <ac924372-210c-155e-9aeb-36218d35444e@linux.intel.com>
+Date: Wed, 31 May 2023 10:10:15 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230530053724.232765-1-baolu.lu@linux.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Cc: baolu.lu@linux.intel.com, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>, Yi Liu
+ <yi.l.liu@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ iommu@lists.linux.dev, linux-kselftest@vger.kernel.org,
+ virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCHES 00/17] IOMMUFD: Deliver IO page faults to user space
+Content-Language: en-US
+To: Nicolin Chen <nicolinc@nvidia.com>
+References: <20230530053724.232765-1-baolu.lu@linux.intel.com>
+ <ZHZFi28jRxeZMKK3@Asurada-Nvidia>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <ZHZFi28jRxeZMKK3@Asurada-Nvidia>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, May 30, 2023 at 01:37:07PM +0800, Lu Baolu wrote:
-> Hi folks,
+On 5/31/23 2:50 AM, Nicolin Chen wrote:
+> Hi Baolu,
+
+Hi Nicolin,
+
 > 
-> This series implements the functionality of delivering IO page faults to
-> user space through the IOMMUFD framework. The use case is nested
-> translation, where modern IOMMU hardware supports two-stage translation
-> tables. The second-stage translation table is managed by the host VMM
-> while the first-stage translation table is owned by the user space.
-> Hence, any IO page fault that occurs on the first-stage page table
-> should be delivered to the user space and handled there. The user space
-> should respond the page fault handling result to the device top-down
-> through the IOMMUFD response uAPI.
+> On Tue, May 30, 2023 at 01:37:07PM +0800, Lu Baolu wrote:
+>   
+>> This series implements the functionality of delivering IO page faults to
+>> user space through the IOMMUFD framework. The use case is nested
+>> translation, where modern IOMMU hardware supports two-stage translation
+>> tables. The second-stage translation table is managed by the host VMM
+>> while the first-stage translation table is owned by the user space.
+>> Hence, any IO page fault that occurs on the first-stage page table
+>> should be delivered to the user space and handled there. The user space
+>> should respond the page fault handling result to the device top-down
+>> through the IOMMUFD response uAPI.
+>>
+>> User space indicates its capablity of handling IO page faults by setting
+>> a user HWPT allocation flag IOMMU_HWPT_ALLOC_FLAGS_IOPF_CAPABLE. IOMMUFD
+>> will then setup its infrastructure for page fault delivery. Together
+>> with the iopf-capable flag, user space should also provide an eventfd
+>> where it will listen on any down-top page fault messages.
+>>
+>> On a successful return of the allocation of iopf-capable HWPT, a fault
+>> fd will be returned. User space can open and read fault messages from it
+>> once the eventfd is signaled.
 > 
-> User space indicates its capablity of handling IO page faults by setting
-> a user HWPT allocation flag IOMMU_HWPT_ALLOC_FLAGS_IOPF_CAPABLE. IOMMUFD
-> will then setup its infrastructure for page fault delivery. Together
-> with the iopf-capable flag, user space should also provide an eventfd
-> where it will listen on any down-top page fault messages.
+> I think that, whether the guest has an IOPF capability or not,
+> the host should always forward any stage-1 fault/error back to
+> the guest. Yet, the implementation of this series builds with
+> the IOPF framework that doesn't report IOMMU_FAULT_DMA_UNRECOV.
+
+I agree with you that DMA unrecoverable faults on stage-1 hwpt should
+also be reported to user space. However, I have some concerns about how
+this will be implemented.
+
+In the shadow page table case, we don't report DMA unrecoverable faults.
+This could lead to confusion for users, as they may expect to receive
+DMA unrecoverable faults regardless of whether hardware nested
+translation is used.
+
+I would suggest that we report DMA unrecoverable faults in all cases,
+regardless of whether hardware nested translation is used. This would
+make it easier for users to understand the behavior of their systems.
+
 > 
-> On a successful return of the allocation of iopf-capable HWPT, a fault
-> fd will be returned. User space can open and read fault messages from it
-> once the eventfd is signaled.
-
-This is a performance path so we really need to think about this more,
-polling on an eventfd and then reading a different fd is not a good
-design.
-
-What I would like is to have a design from the start that fits into
-io_uring, so we can have pre-posted 'recvs' in io_uring that just get
-completed at high speed when PRIs come in.
-
-This suggests that the PRI should be delivered via read() on a single
-FD and pollability on the single FD without any eventfd.
-
-> Besides the overall design, I'd like to hear comments about below
-> designs:
+> And I have my doubt at the using the IOPF framework with that
+> IOMMU_PAGE_RESP_ASYNC flag: using the IOPF framework is for
+> its bottom half workqueue, because a page response could take
+> a long cycle. But adding that flag feels like we don't really
+> need the bottom half workqueue, i.e. losing the point of using
+> the IOPF framework, IMHO.
 > 
-> - The IOMMUFD fault message format. It is very similar to that in
->   uapi/linux/iommu which has been discussed before and partially used by
->   the IOMMU SVA implementation. I'd like to get more comments on the
->   format when it comes to IOMMUFD.
+> Combining the two facts above, I wonder if we really need to
+> go through the IOPF framework; can't we just register a user
+> fault handler in the iommufd directly upon a valid event_fd?
 
-We have to have the same discussion as always, does a generic fault
-message format make any sense here?
+I agree with you that the existing IOPF framework is not ideal for
+IOMMUFD. The adding ASYNC flag conflicts with the IOPF workqueue.
+This could lead to performance issues.
 
-PRI seems more likely that it would but it needs a big carefull cross
-vendor check out.
+I can improve the IOPF framework to make it more friendly to IOMMUFD.
+One way to do this would be not use workqueue for the IOMMUFD case.
 
-Jason
+Have I covered all your concerns?
+
+Best regards,
+baolu
