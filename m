@@ -1,57 +1,60 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36E48206B4
-	for <iommu@lists.linux.dev>; Tue, 30 May 2023 19:34:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=4dc8sj3FHzzLhi63BMaL8ARsadXKK6PBMKS8wZ1D+bM=; b=JM7SiKdzfwoBik0AKgxOsdxCpD
-	sDgnOT4X96GVp8CNJPJb+VOQVteRUg7rUp37Z51bccNB5PtdZZdFWuUdw496KccyYIcrBvzDCr6Bv
-	Y9Jko3S3agioN15y2YYHTWvPLYowFj33IOP2SMXTSAX3jmWiVTemAd+VQ5v3vP1z5MSBp1M6+QMNj
-	Yl95WQRRrZI/coCZDx5VKzQpkvp2WzKa6i9icU6WPABaTXb+MamtUc/8gix4iHb9+PGyAKxTFw0YV
-	PhcQmCHWi2/I64g8MCskmYk+R7GDeCcI2mbko//pOUA83Bdwaq1ULOdq+hdnfRe4a1X3c5leImvPG
-	MPvGP5Ww==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-	by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-	id 1q455b-006ZKF-17; Tue, 30 May 2023 19:33:03 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 9784F300233;
-	Tue, 30 May 2023 21:32:58 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-	id 45294243A9FD8; Tue, 30 May 2023 21:32:58 +0200 (CEST)
-Date: Tue, 30 May 2023 21:32:58 +0200
-From: Peter Zijlstra <peterz@infradead.org>
-To: torvalds@linux-foundation.org
-Cc: corbet@lwn.net, will@kernel.org, boqun.feng@gmail.com,
-	mark.rutland@arm.com, catalin.marinas@arm.com, dennis@kernel.org,
-	tj@kernel.org, cl@linux.com, hca@linux.ibm.com, gor@linux.ibm.com,
-	agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
-	svens@linux.ibm.com, tglx@linutronix.de, mingo@redhat.com,
-	bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-	hpa@zytor.com, joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
-	Arnd Bergmann <arnd@arndb.de>,
-	Herbert Xu <herbert@gondor.apana.org.au>, davem@davemloft.net,
-	penberg@kernel.org, rientjes@google.com, iamjoonsoo.kim@lge.com,
-	Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz,
-	roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org, linux-s390@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
-	linux-crypto@vger.kernel.org, sfr@canb.auug.org.au,
-	mpe@ellerman.id.au, James.Bottomley@hansenpartnership.com,
-	deller@gmx.de, linux-parisc@vger.kernel.org
-Subject: Re: [PATCH v3 08/11] slub: Replace cmpxchg_double()
-Message-ID: <20230530193258.GB211927@hirez.programming.kicks-ass.net>
-References: <20230515075659.118447996@infradead.org>
- <20230515080554.453785148@infradead.org>
- <20230524093246.GP83892@hirez.programming.kicks-ass.net>
- <20230530142232.GA200270@hirez.programming.kicks-ass.net>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A929FA23
+	for <iommu@lists.linux.dev>; Wed, 31 May 2023 00:33:35 +0000 (UTC)
+Received: by mail-qt1-f172.google.com with SMTP id d75a77b69052e-3f8115ca685so25003151cf.1
+        for <iommu@lists.linux.dev>; Tue, 30 May 2023 17:33:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1685493214; x=1688085214;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=YxfeX6CjU1T6VFT6WQGkkGRNUy8IJFRL+Q8oTwikiYE=;
+        b=NSprOvANr8rmmNMRfGUGQhrlbjOY3VNneKCREemdYMFsq+wZseIXs4cVn2cfctqTC4
+         l/Fex2UztpB64Sv6bVKzNW2Qn0dqqb5NbD1cJWjIOn75Zk0NXfpMON7ItM9ydFy5Ew5U
+         s1hUijdnCq5qu7Zs5EJmJe13GN3xQ65TBxqudO3SU+vn3Sqj6RrsWVsk2oCYcnPG3p84
+         jQDN28rHXrMKZ637sGrN6F/CCcU4XEcphoJElhcnaXxrFBaFj8p/dlxWO0sR9zCxF7Dn
+         z3eQ+08mRG3B2cvqFNdTFZputqdjR8OXMmJun0qCmRxWBxzTeKu07oZNguwRyhjTnf+2
+         ghdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685493214; x=1688085214;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YxfeX6CjU1T6VFT6WQGkkGRNUy8IJFRL+Q8oTwikiYE=;
+        b=HA7Ic/5Sm/svASMewkGVII4KzD8CksvXyb3XPEZTjaqXVzLnC0WgLgkBJGtyWbOdak
+         Vx0/vooqGRQ4s7eE4i4VH59YEo+ozOLEU6gZhUhho00qqyzZSrmOLIu7WkAYqU16gap4
+         J1FkooTY4gX+KAy+8/P9wteGmu05h4WMTCzv4LItFmcnRJ2V9u4SItVYZyUlwr8EQDTO
+         +VLYZKaCNUdEvYpJlUdGVcvKZBjwt82BiGT4cRKbe9VPPr68oYb94WjNULLr9150X8f7
+         yQ+w4tzaFv9h5QPQo1lJLJydAWQ9U3rkN2lxAlBtHybDpaR3NK40dUMv3cFDbmsHRosG
+         lM9g==
+X-Gm-Message-State: AC+VfDy8CVhbqXBmkCAs4qGlJKihf/lWIR8gJbEsh3AHpS4oTVSburao
+	1JDhxT55Rn9Y4ig1ma0u+mukXQ==
+X-Google-Smtp-Source: ACHHUZ76cGYRoxD2nR+OVC7+AsKBaaMRBv2OxrvCIPruwBslaqJO8TAA8q2yEjn3iVhl/m095jOZyA==
+X-Received: by 2002:a05:622a:198f:b0:3f6:c52e:21bc with SMTP id u15-20020a05622a198f00b003f6c52e21bcmr4111272qtc.19.1685493214434;
+        Tue, 30 May 2023 17:33:34 -0700 (PDT)
+Received: from ziepe.ca ([206.223.160.26])
+        by smtp.gmail.com with ESMTPSA id ff27-20020a05622a4d9b00b003f6bbd7863csm5256617qtb.86.2023.05.30.17.33.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 May 2023 17:33:33 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1q49mO-000kYe-OG;
+	Tue, 30 May 2023 21:33:32 -0300
+Date: Tue, 30 May 2023 21:33:32 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
+	linux-kselftest@vger.kernel.org,
+	virtualization@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCHES 00/17] IOMMUFD: Deliver IO page faults to user space
+Message-ID: <ZHaV3GwYXCvfNUBn@ziepe.ca>
+References: <20230530053724.232765-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -60,231 +63,54 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230530142232.GA200270@hirez.programming.kicks-ass.net>
+In-Reply-To: <20230530053724.232765-1-baolu.lu@linux.intel.com>
 
-On Tue, May 30, 2023 at 04:22:32PM +0200, Peter Zijlstra wrote:
+On Tue, May 30, 2023 at 01:37:07PM +0800, Lu Baolu wrote:
+> Hi folks,
+> 
+> This series implements the functionality of delivering IO page faults to
+> user space through the IOMMUFD framework. The use case is nested
+> translation, where modern IOMMU hardware supports two-stage translation
+> tables. The second-stage translation table is managed by the host VMM
+> while the first-stage translation table is owned by the user space.
+> Hence, any IO page fault that occurs on the first-stage page table
+> should be delivered to the user space and handled there. The user space
+> should respond the page fault handling result to the device top-down
+> through the IOMMUFD response uAPI.
+> 
+> User space indicates its capablity of handling IO page faults by setting
+> a user HWPT allocation flag IOMMU_HWPT_ALLOC_FLAGS_IOPF_CAPABLE. IOMMUFD
+> will then setup its infrastructure for page fault delivery. Together
+> with the iopf-capable flag, user space should also provide an eventfd
+> where it will listen on any down-top page fault messages.
+> 
+> On a successful return of the allocation of iopf-capable HWPT, a fault
+> fd will be returned. User space can open and read fault messages from it
+> once the eventfd is signaled.
 
-> Yet another alternative is using a struct type and an equality function,
-> just for this.
+This is a performance path so we really need to think about this more,
+polling on an eventfd and then reading a different fd is not a good
+design.
 
-The best I could come up with in the regard is the below. It builds on
-HPPA64 and x86_64, but I've not ran it yet.
+What I would like is to have a design from the start that fits into
+io_uring, so we can have pre-posted 'recvs' in io_uring that just get
+completed at high speed when PRIs come in.
 
-(also, the introduction of this_cpu_try_cmpxchg() should probably be
-split out into its own patch)
+This suggests that the PRI should be delivered via read() on a single
+FD and pollability on the single FD without any eventfd.
 
---- a/include/asm-generic/percpu.h
-+++ b/include/asm-generic/percpu.h
-@@ -99,6 +99,15 @@ do {									\
- 	__ret;								\
- })
- 
-+#define raw_cpu_generic_try_cmpxchg(pcp, ovalp, nval)			\
-+({									\
-+	typeof(pcp) __ret, __old = *(ovalp);				\
-+	__ret = raw_cpu_cmpxchg(pcp, __old, nval);			\
-+	if (!likely(__ret == __old))					\
-+		*(ovalp) = __ret;					\
-+	likely(__ret == __old);						\
-+})
-+
- #define __this_cpu_generic_read_nopreempt(pcp)				\
- ({									\
- 	typeof(pcp) ___ret;						\
-@@ -167,6 +176,15 @@ do {									\
- 	__ret;								\
- })
- 
-+#define this_cpu_generic_try_cmpxchg(pcp, ovalp, nval)			\
-+({									\
-+	typeof(pcp) __ret, __old = *(ovalp);				\
-+	__ret = this_cpu_cmpxchg(pcp, __old, nval);			\
-+	if (!likely(__ret == __old))					\
-+		*(ovalp) = __ret;					\
-+	likely(__ret == __old);						\
-+})
-+
- #ifndef raw_cpu_read_1
- #define raw_cpu_read_1(pcp)		raw_cpu_generic_read(pcp)
- #endif
-@@ -258,6 +276,36 @@ do {									\
- #define raw_cpu_xchg_8(pcp, nval)	raw_cpu_generic_xchg(pcp, nval)
- #endif
- 
-+#ifndef __SIZEOF_INT128__
-+#define raw_cpu_generic_try_cmpxchg_memcmp(pcp, ovalp, nval)		\
-+({									\
-+	typeof(pcp) *__p = raw_cpu_ptr(&(pcp));				\
-+	typeof(pcp) __ret, __old = *(ovalp);				\
-+	bool __s;							\
-+	__ret = *__p;							\
-+	if (!__builtin_memcmp(&__ret, &__old, sizeof(pcp))) {		\
-+		*__p = nval;						\
-+		__s = true;						\
-+	} else {							\
-+		*(ovalp) = __ret;					\
-+		__s = false;						\
-+	}								\
-+	__s;								\
-+})
-+
-+#define raw_cpu_generic_cmpxchg_memcmp(pcp, oval, nval)			\
-+({									\
-+	typeof(pcp) __old = (oval);					\
-+	raw_cpu_generic_try_cmpxchg_memcpy(pcp, &__old, nval);		\
-+	__old;								\
-+})
-+
-+#define raw_cpu_cmpxchg128(pcp, oval, nval) \
-+	raw_cpu_generic_cmpxchg_memcmp(pcp, oval, nval)
-+#define raw_cpu_try_cmpxchg128(pcp, ovalp, nval) \
-+	raw_cpu_generic_try_cmpxchg_memcmp(pcp, ovalp, nval)
-+#endif
-+
- #ifndef raw_cpu_cmpxchg_1
- #define raw_cpu_cmpxchg_1(pcp, oval, nval) \
- 	raw_cpu_generic_cmpxchg(pcp, oval, nval)
-@@ -283,6 +331,31 @@ do {									\
- 	raw_cpu_generic_cmpxchg(pcp, oval, nval)
- #endif
- 
-+#ifndef raw_cpu_try_cmpxchg_1
-+#define raw_cpu_try_cmpxchg_1(pcp, ovalp, nval) \
-+	raw_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
-+#endif
-+#ifndef raw_cpu_try_cmpxchg_2
-+#define raw_cpu_try_cmpxchg_2(pcp, ovalp, nval) \
-+	raw_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
-+#endif
-+#ifndef raw_cpu_try_cmpxchg_4
-+#define raw_cpu_try_cmpxchg_4(pcp, ovalp, nval) \
-+	raw_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
-+#endif
-+#ifndef raw_cpu_try_cmpxchg_8
-+#define raw_cpu_try_cmpxchg_8(pcp, ovalp, nval) \
-+	raw_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
-+#endif
-+#ifndef raw_cpu_try_cmpxchg64
-+#define raw_cpu_try_cmpxchg64(pcp, ovalp, nval) \
-+	raw_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
-+#endif
-+#ifndef raw_cpu_try_cmpxchg128
-+#define raw_cpu_try_cmpxchg128(pcp, ovalp, nval) \
-+	raw_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
-+#endif
-+
- #ifndef this_cpu_read_1
- #define this_cpu_read_1(pcp)		this_cpu_generic_read(pcp)
- #endif
-@@ -374,6 +447,33 @@ do {									\
- #define this_cpu_xchg_8(pcp, nval)	this_cpu_generic_xchg(pcp, nval)
- #endif
- 
-+#ifndef __SIZEOF_INT128__
-+#define this_cpu_generic_try_cmpxchg_memcmp(pcp, ovalp, nval)		\
-+({									\
-+ 	bool __ret;							\
-+	unsigned long __flags;						\
-+	raw_local_irq_save(__flags);					\
-+	__ret = raw_cpu_generic_try_cmpxchg_memcmp(pcp, ovalp, nval);	\
-+	raw_local_irq_restore(__flags);					\
-+	__ret;								\
-+})
-+
-+#define this_cpu_generic_cmpxchg_memcmp(pcp, oval, nval)		\
-+({									\
-+	typeof(pcp) __ret;						\
-+	unsigned long __flags;						\
-+	raw_local_irq_save(__flags);					\
-+	__ret = raw_cpu_generic_cmpxchg_memcmp(pcp, oval, nval);	\
-+	raw_local_irq_restore(__flags);					\
-+	__ret;								\
-+})
-+
-+#define this_cpu_cmpxchg128(pcp, oval, nval) \
-+	this_cpu_generic_cmpxchg_memcmp(pcp, oval, nval)
-+#define this_cpu_try_cmpxchg128(pcp, ovalp, nval) \
-+	this_cpu_generic_try_cmpxchg_memcmp(pcp, ovalp, nval)
-+#endif
-+
- #ifndef this_cpu_cmpxchg_1
- #define this_cpu_cmpxchg_1(pcp, oval, nval) \
- 	this_cpu_generic_cmpxchg(pcp, oval, nval)
-@@ -399,4 +499,29 @@ do {									\
- 	this_cpu_generic_cmpxchg(pcp, oval, nval)
- #endif
- 
-+#ifndef this_cpu_try_cmpxchg_1
-+#define this_cpu_try_cmpxchg_1(pcp, ovalp, nval) \
-+	this_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
-+#endif
-+#ifndef this_cpu_try_cmpxchg_2
-+#define this_cpu_try_cmpxchg_2(pcp, ovalp, nval) \
-+	this_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
-+#endif
-+#ifndef this_cpu_try_cmpxchg_4
-+#define this_cpu_try_cmpxchg_4(pcp, ovalp, nval) \
-+	this_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
-+#endif
-+#ifndef this_cpu_try_cmpxchg_8
-+#define this_cpu_try_cmpxchg_8(pcp, ovalp, nval) \
-+	this_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
-+#endif
-+#ifndef this_cpu_try_cmpxchg64
-+#define this_cpu_try_cmpxchg64(pcp, ovalp, nval) \
-+	this_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
-+#endif
-+#ifndef this_cpu_try_cmpxchg128
-+#define this_cpu_try_cmpxchg128(pcp, ovalp, nval) \
-+	this_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
-+#endif
-+
- #endif /* _ASM_GENERIC_PERCPU_H_ */
---- a/include/linux/types.h
-+++ b/include/linux/types.h
-@@ -13,6 +13,13 @@
- #ifdef __SIZEOF_INT128__
- typedef __s128 s128;
- typedef __u128 u128;
-+#else
-+#ifdef CONFIG_64BIT
-+/* hack for this_cpu_cmpxchg128 */
-+typedef struct {
-+	u64 a, b;
-+} u128 __attribute__((aligned(16)));
-+#endif
- #endif
- 
- typedef u32 __kernel_dev_t;
---- a/mm/slab.h
-+++ b/mm/slab.h
-@@ -11,14 +11,14 @@ void __init kmem_cache_init(void);
- # define system_has_freelist_aba()	system_has_cmpxchg128()
- # define try_cmpxchg_freelist		try_cmpxchg128
- # endif
--#define this_cpu_cmpxchg_freelist	this_cpu_cmpxchg128
-+#define this_cpu_try_cmpxchg_freelist	this_cpu_try_cmpxchg128
- typedef u128 freelist_full_t;
- #else /* CONFIG_64BIT */
- # ifdef system_has_cmpxchg64
- # define system_has_freelist_aba()	system_has_cmpxchg64()
- # define try_cmpxchg_freelist		try_cmpxchg64
- # endif
--#define this_cpu_cmpxchg_freelist	this_cpu_cmpxchg64
-+#define this_cpu_try_cmpxchg_freelist	this_cpu_try_cmpxchg64
- typedef u64 freelist_full_t;
- #endif /* CONFIG_64BIT */
- 
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -3037,8 +3037,8 @@ __update_cpu_freelist_fast(struct kmem_c
- 	freelist_aba_t old = { .freelist = freelist_old, .counter = tid };
- 	freelist_aba_t new = { .freelist = freelist_new, .counter = next_tid(tid) };
- 
--	return this_cpu_cmpxchg_freelist(s->cpu_slab->freelist_tid.full,
--					 old.full, new.full) == old.full;
-+	return this_cpu_try_cmpxchg_freelist(s->cpu_slab->freelist_tid.full,
-+					     &old.full, new.full);
- }
- 
- /*
+> Besides the overall design, I'd like to hear comments about below
+> designs:
+> 
+> - The IOMMUFD fault message format. It is very similar to that in
+>   uapi/linux/iommu which has been discussed before and partially used by
+>   the IOMMU SVA implementation. I'd like to get more comments on the
+>   format when it comes to IOMMUFD.
+
+We have to have the same discussion as always, does a generic fault
+message format make any sense here?
+
+PRI seems more likely that it would but it needs a big carefull cross
+vendor check out.
+
+Jason
