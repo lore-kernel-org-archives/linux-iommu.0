@@ -1,32 +1,32 @@
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1319A14A8A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 346AB14A8C
 	for <iommu@lists.linux.dev>; Wed, 31 May 2023 13:28:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
 	Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
 	Content-ID:Content-Description:In-Reply-To;
-	bh=OYq3F8aZwPPC/Y8UsexFdal3aiucmNsqQObmCMz9zjE=; b=LIi2st653mrq+qr82jZjSZoSMu
-	b4IdGvoFjlZSfW2/JQDfIQgkhRmizDc+3i69fP7F75A4WAkEYw/JPtYzsJYXvDjOlO3lYqV3CTQG2
-	W5QHSm3lF3LRIXC6DORpHYE0GY/d/aV+oN7w/SrBOka2MUxnFUNUBPn6uIzvLTkgZCknrMs9/URJT
-	jHAuSX05RfqOvsyIyF/kFoW7hbFpLP/c+WXZHzxrpS37v59bTdQPKeQCwIDOzbrtY2xMJrtSDtp8c
-	jQSyhSMxk2M6L9+FSzaQWKUsmX61W6UzXzdaMQ0wKEbO8TRWRg4MO80O6dbE/9Vv3BMgIz9xTSMYB
-	XK7W6Mcg==;
+	bh=0OKPBc3mt+ezfW70uBbauBPqh/QqcxZBd2GTGmmN3GA=; b=F56ze+VZ1f3mhyQBWTK1kZLCn6
+	DLlgkphQzhgklsVG742VjxiOdPtMB2tFaRRj4ss52ZIzg5HDYYF31EK4DXSi/DBDAeVFHjkmrUm0h
+	ne6G2EAVd73HH115bh0qIhr/f9oQBI9cuDHH7XFY1y/+Q1FpTMH9h1VOfDocjZ5WggkAfzbIC/6lw
+	/R1le7+B6S9xT4fJdC8c/xNvJw5kkcaR6ZulxEdI+j2JZO7YzfdcWmyiXFyEXXqo4vyOHwzhrYeMk
+	0nK10XnwacPBKHLyQBVTSJ62ZjRwUYdyes4r9vMpGHQ0Qmitpgvm5rzNtp4HxY1UbL2ndUxA94pCS
+	aCNZwNaA==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
 	by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-	id 1q4LrH-007IJW-3w; Wed, 31 May 2023 13:27:23 +0000
+	id 1q4LrG-007IJ5-DJ; Wed, 31 May 2023 13:27:22 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
 	(Client did not present a certificate)
-	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 55A95300C0E;
+	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 55AF2300CB5;
 	Wed, 31 May 2023 15:27:21 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-	id 95BD0243B856F; Wed, 31 May 2023 15:27:16 +0200 (CEST)
-Message-ID: <20230531132323.722039569@infradead.org>
+	id 8BB1B243B8560; Wed, 31 May 2023 15:27:16 +0200 (CEST)
+Message-ID: <20230531132323.587480729@infradead.org>
 User-Agent: quilt/0.66
-Date: Wed, 31 May 2023 15:08:40 +0200
+Date: Wed, 31 May 2023 15:08:38 +0200
 From: Peter Zijlstra <peterz@infradead.org>
 To: torvalds@linux-foundation.org
 Cc: corbet@lwn.net,
@@ -76,7 +76,7 @@ Cc: corbet@lwn.net,
  James.Bottomley@hansenpartnership.com,
  deller@gmx.de,
  linux-parisc@vger.kernel.org
-Subject: [PATCH 07/12] percpu: #ifndef __SIZEOF_INT128__
+Subject: [PATCH 05/12] percpu: Add {raw,this}_cpu_try_cmpxchg()
 References: <20230531130833.635651916@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -86,110 +86,204 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 
-Some 64bit architectures do not advertise __SIZEOF_INT128__ on all
-supported compiler versions. Notably the HPPA64 only started doing
-with GCC-11.
-
-Since the per-cpu ops are universally availably, and
-this_cpu_{,try_}cmpxchg128() is expected to be available on all 64bit
-architectures a wee bodge is in order.
-
-Sadly, while C reverts to memcpy() for assignment of POD types, it does
-not revert to memcmp() for for equality. Therefore frob that manually.
+Add the try_cmpxchg() form to the per-cpu ops.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- include/asm-generic/percpu.h |   56 +++++++++++++++++++++++++++++++++++++++++++
- include/linux/types.h        |    7 +++++
- 2 files changed, 63 insertions(+)
+ include/asm-generic/percpu.h |  113 +++++++++++++++++++++++++++++++++++++++++--
+ include/linux/percpu-defs.h  |   19 +++++++
+ 2 files changed, 128 insertions(+), 4 deletions(-)
 
 --- a/include/asm-generic/percpu.h
 +++ b/include/asm-generic/percpu.h
-@@ -313,6 +313,35 @@ do {									\
- #define raw_cpu_xchg_8(pcp, nval)	raw_cpu_generic_xchg(pcp, nval)
- #endif
+@@ -89,16 +89,37 @@ do {									\
+ 	__ret;								\
+ })
  
-+#ifndef __SIZEOF_INT128__
-+#define raw_cpu_generic_try_cmpxchg_memcmp(pcp, ovalp, nval)		\
+-#define raw_cpu_generic_cmpxchg(pcp, oval, nval)			\
++#define __cpu_fallback_try_cmpxchg(pcp, ovalp, nval, _cmpxchg)		\
 +({									\
-+	typeof(pcp) *__p = raw_cpu_ptr(&(pcp));				\
++	typeof(pcp) __val, __old = *(ovalp);				\
++ 	__val = _cmpxchg(pcp, __old, nval);				\
++	if (__val != __old)						\
++		*(ovalp) = __val;					\
++	__val == __old;							\
++})
++
++#define raw_cpu_generic_try_cmpxchg(pcp, ovalp, nval)			\
+ ({									\
+ 	typeof(pcp) *__p = raw_cpu_ptr(&(pcp));				\
+-	typeof(pcp) __ret;						\
+-	__ret = *__p;							\
+-	if (__ret == (oval))						\
 +	typeof(pcp) __val = *__p, __old = *(ovalp);			\
 +	bool __ret;							\
-+	if (!__builtin_memcmp(&__val, &__old, sizeof(pcp))) {		\
-+		*__p = nval;						\
++	if (__val == __old) {						\
+ 		*__p = nval;						\
 +		__ret = true;						\
 +	} else {							\
 +		*(ovalp) = __val;					\
 +		__ret = false;						\
 +	}								\
-+	__ret;								\
-+})
-+
-+#define raw_cpu_generic_cmpxchg_memcmp(pcp, oval, nval)			\
+ 	__ret;								\
+ })
+ 
++#define raw_cpu_generic_cmpxchg(pcp, oval, nval)			\
 +({									\
 +	typeof(pcp) __old = (oval);					\
-+	raw_cpu_generic_try_cmpxchg_memcpy(pcp, &__old, nval);		\
++	raw_cpu_generic_try_cmpxchg(pcp, &__old, nval);			\
 +	__old;								\
 +})
 +
-+#define raw_cpu_cmpxchg128(pcp, oval, nval) \
-+	raw_cpu_generic_cmpxchg_memcmp(pcp, oval, nval)
-+#define raw_cpu_try_cmpxchg128(pcp, ovalp, nval) \
-+	raw_cpu_generic_try_cmpxchg_memcmp(pcp, ovalp, nval)
-+#endif
-+
- #ifndef raw_cpu_try_cmpxchg_1
- #ifdef raw_cpu_cmpxchg_1
- #define raw_cpu_try_cmpxchg_1(pcp, ovalp, nval) \
-@@ -503,6 +532,33 @@ do {									\
- #define this_cpu_xchg_8(pcp, nval)	this_cpu_generic_xchg(pcp, nval)
- #endif
+ #define raw_cpu_generic_cmpxchg_double(pcp1, pcp2, oval1, oval2, nval1, nval2) \
+ ({									\
+ 	typeof(pcp1) *__p1 = raw_cpu_ptr(&(pcp1));			\
+@@ -170,6 +191,16 @@ do {									\
+ 	__ret;								\
+ })
  
-+#ifndef __SIZEOF_INT128__
-+#define this_cpu_generic_try_cmpxchg_memcmp(pcp, ovalp, nval)		\
++#define this_cpu_generic_try_cmpxchg(pcp, ovalp, nval)			\
 +({									\
 +	bool __ret;							\
 +	unsigned long __flags;						\
 +	raw_local_irq_save(__flags);					\
-+	__ret = raw_cpu_generic_try_cmpxchg_memcmp(pcp, ovalp, nval);	\
++	__ret = raw_cpu_generic_try_cmpxchg(pcp, ovalp, nval);		\
 +	raw_local_irq_restore(__flags);					\
 +	__ret;								\
 +})
 +
-+#define this_cpu_generic_cmpxchg_memcmp(pcp, oval, nval)		\
-+({									\
-+	typeof(pcp) __ret;						\
-+	unsigned long __flags;						\
-+	raw_local_irq_save(__flags);					\
-+	__ret = raw_cpu_generic_cmpxchg_memcmp(pcp, oval, nval);	\
-+	raw_local_irq_restore(__flags);					\
-+	__ret;								\
-+})
-+
-+#define this_cpu_cmpxchg128(pcp, oval, nval) \
-+	this_cpu_generic_cmpxchg_memcmp(pcp, oval, nval)
-+#define this_cpu_try_cmpxchg128(pcp, ovalp, nval) \
-+	this_cpu_generic_try_cmpxchg_memcmp(pcp, ovalp, nval)
-+#endif
-+
- #ifndef this_cpu_try_cmpxchg_1
- #ifdef this_cpu_cmpxchg_1
- #define this_cpu_try_cmpxchg_1(pcp, ovalp, nval) \
---- a/include/linux/types.h
-+++ b/include/linux/types.h
-@@ -13,6 +13,13 @@
- #ifdef __SIZEOF_INT128__
- typedef __s128 s128;
- typedef __u128 u128;
-+#else
-+#ifdef CONFIG_64BIT
-+/* hack for this_cpu_cmpxchg128 */
-+typedef struct {
-+	u64 a, b;
-+} u128 __attribute__((aligned(16)));
-+#endif
+ #define this_cpu_generic_cmpxchg(pcp, oval, nval)			\
+ ({									\
+ 	typeof(pcp) __ret;						\
+@@ -282,6 +313,43 @@ do {									\
+ #define raw_cpu_xchg_8(pcp, nval)	raw_cpu_generic_xchg(pcp, nval)
  #endif
  
- typedef u32 __kernel_dev_t;
++#ifndef raw_cpu_try_cmpxchg_1
++#ifdef raw_cpu_cmpxchg_1
++#define raw_cpu_try_cmpxchg_1(pcp, ovalp, nval) \
++	__cpu_fallback_try_cmpxchg(pcp, ovalp, nval, raw_cpu_cmpxchg_1)
++#else
++#define raw_cpu_try_cmpxchg_1(pcp, ovalp, nval) \
++	raw_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
++#endif
++#endif
++#ifndef raw_cpu_try_cmpxchg_2
++#ifdef raw_cpu_cmpxchg_2
++#define raw_cpu_try_cmpxchg_2(pcp, ovalp, nval) \
++	__cpu_fallback_try_cmpxchg(pcp, ovalp, nval, raw_cpu_cmpxchg_2)
++#else
++#define raw_cpu_try_cmpxchg_2(pcp, ovalp, nval) \
++	raw_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
++#endif
++#endif
++#ifndef raw_cpu_try_cmpxchg_4
++#ifdef raw_cpu_cmpxchg_4
++#define raw_cpu_try_cmpxchg_4(pcp, ovalp, nval) \
++	__cpu_fallback_try_cmpxchg(pcp, ovalp, nval, raw_cpu_cmpxchg_4)
++#else
++#define raw_cpu_try_cmpxchg_4(pcp, ovalp, nval) \
++	raw_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
++#endif
++#endif
++#ifndef raw_cpu_try_cmpxchg_8
++#ifdef raw_cpu_cmpxchg_8
++#define raw_cpu_try_cmpxchg_8(pcp, ovalp, nval) \
++	__cpu_fallback_try_cmpxchg(pcp, ovalp, nval, raw_cpu_cmpxchg_8)
++#else
++#define raw_cpu_try_cmpxchg_8(pcp, ovalp, nval) \
++	raw_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
++#endif
++#endif
++
+ #ifndef raw_cpu_cmpxchg_1
+ #define raw_cpu_cmpxchg_1(pcp, oval, nval) \
+ 	raw_cpu_generic_cmpxchg(pcp, oval, nval)
+@@ -407,6 +475,43 @@ do {									\
+ #define this_cpu_xchg_8(pcp, nval)	this_cpu_generic_xchg(pcp, nval)
+ #endif
+ 
++#ifndef this_cpu_try_cmpxchg_1
++#ifdef this_cpu_cmpxchg_1
++#define this_cpu_try_cmpxchg_1(pcp, ovalp, nval) \
++	__cpu_fallback_try_cmpxchg(pcp, ovalp, nval, this_cpu_cmpxchg_1)
++#else
++#define this_cpu_try_cmpxchg_1(pcp, ovalp, nval) \
++	this_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
++#endif
++#endif
++#ifndef this_cpu_try_cmpxchg_2
++#ifdef this_cpu_cmpxchg_2
++#define this_cpu_try_cmpxchg_2(pcp, ovalp, nval) \
++	__cpu_fallback_try_cmpxchg(pcp, ovalp, nval, this_cpu_cmpxchg_2)
++#else
++#define this_cpu_try_cmpxchg_2(pcp, ovalp, nval) \
++	this_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
++#endif
++#endif
++#ifndef this_cpu_try_cmpxchg_4
++#ifdef this_cpu_cmpxchg_4
++#define this_cpu_try_cmpxchg_4(pcp, ovalp, nval) \
++	__cpu_fallback_try_cmpxchg(pcp, ovalp, nval, this_cpu_cmpxchg_4)
++#else
++#define this_cpu_try_cmpxchg_4(pcp, ovalp, nval) \
++	this_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
++#endif
++#endif
++#ifndef this_cpu_try_cmpxchg_8
++#ifdef this_cpu_cmpxchg_8
++#define this_cpu_try_cmpxchg_8(pcp, ovalp, nval) \
++	__cpu_fallback_try_cmpxchg(pcp, ovalp, nval, this_cpu_cmpxchg_8)
++#else
++#define this_cpu_try_cmpxchg_8(pcp, ovalp, nval) \
++	this_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
++#endif
++#endif
++
+ #ifndef this_cpu_cmpxchg_1
+ #define this_cpu_cmpxchg_1(pcp, oval, nval) \
+ 	this_cpu_generic_cmpxchg(pcp, oval, nval)
+--- a/include/linux/percpu-defs.h
++++ b/include/linux/percpu-defs.h
+@@ -343,6 +343,21 @@ static __always_inline void __this_cpu_p
+ 	pscr2_ret__;							\
+ })
+ 
++#define __pcpu_size_call_return2bool(stem, variable, ...)		\
++({									\
++	bool pscr2_ret__;						\
++	__verify_pcpu_ptr(&(variable));					\
++	switch(sizeof(variable)) {					\
++	case 1: pscr2_ret__ = stem##1(variable, __VA_ARGS__); break;	\
++	case 2: pscr2_ret__ = stem##2(variable, __VA_ARGS__); break;	\
++	case 4: pscr2_ret__ = stem##4(variable, __VA_ARGS__); break;	\
++	case 8: pscr2_ret__ = stem##8(variable, __VA_ARGS__); break;	\
++	default:							\
++		__bad_size_call_parameter(); break;			\
++	}								\
++	pscr2_ret__;							\
++})
++
+ /*
+  * Special handling for cmpxchg_double.  cmpxchg_double is passed two
+  * percpu variables.  The first has to be aligned to a double word
+@@ -426,6 +441,8 @@ do {									\
+ #define raw_cpu_xchg(pcp, nval)		__pcpu_size_call_return2(raw_cpu_xchg_, pcp, nval)
+ #define raw_cpu_cmpxchg(pcp, oval, nval) \
+ 	__pcpu_size_call_return2(raw_cpu_cmpxchg_, pcp, oval, nval)
++#define raw_cpu_try_cmpxchg(pcp, ovalp, nval) \
++	__pcpu_size_call_return2bool(raw_cpu_try_cmpxchg_, pcp, ovalp, nval)
+ #define raw_cpu_cmpxchg_double(pcp1, pcp2, oval1, oval2, nval1, nval2) \
+ 	__pcpu_double_call_return_bool(raw_cpu_cmpxchg_double_, pcp1, pcp2, oval1, oval2, nval1, nval2)
+ 
+@@ -513,6 +530,8 @@ do {									\
+ #define this_cpu_xchg(pcp, nval)	__pcpu_size_call_return2(this_cpu_xchg_, pcp, nval)
+ #define this_cpu_cmpxchg(pcp, oval, nval) \
+ 	__pcpu_size_call_return2(this_cpu_cmpxchg_, pcp, oval, nval)
++#define this_cpu_try_cmpxchg(pcp, ovalp, nval) \
++	__pcpu_size_call_return2bool(this_cpu_try_cmpxchg_, pcp, ovalp, nval)
+ #define this_cpu_cmpxchg_double(pcp1, pcp2, oval1, oval2, nval1, nval2) \
+ 	__pcpu_double_call_return_bool(this_cpu_cmpxchg_double_, pcp1, pcp2, oval1, oval2, nval1, nval2)
+ 
 
 
