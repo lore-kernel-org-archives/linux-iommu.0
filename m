@@ -1,157 +1,116 @@
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2054.outbound.protection.outlook.com [40.107.101.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8579DEC4
-	for <iommu@lists.linux.dev>; Wed, 31 May 2023 04:04:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685505850; x=1717041850;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=WHj2RuuzQ5MIhm5hULZNZ/8NBi6foHkjop6klLlJc2w=;
-  b=lavY90dn6lWjEzDmQP5i9X8vqe312UywDRr6TPB+5inYb5c+ML+dZxv6
-   5GaBCPs7CLfu1/DSMDtjkaWWZZK49BZ4VOL7hmYFzhOE6mFhB5AV+p097
-   qUAKJIAmAM5JuYroL/1cxAYorI6OPyALlEh0ltG2dlYF5tHRyMoGwngwb
-   76Et+7f2W0Muill5AtYJyX+MrLbzgkdd1a9IxJnbavEAfdy8DtDa7DQwZ
-   LUoRDP7OGavTnGYerbn1XwPUMTq1THpTbNmMj7XGw0/vFkA54f0tGWMBD
-   EHMFEnnTTk17cL0UJlclPEX3O98aJQFwv6oGpn8I3/jJLZz8aSNlA3/Ib
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10726"; a="335477390"
-X-IronPort-AV: E=Sophos;i="6.00,205,1681196400"; 
-   d="scan'208";a="335477390"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2023 21:03:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10726"; a="881013685"
-X-IronPort-AV: E=Sophos;i="6.00,205,1681196400"; 
-   d="scan'208";a="881013685"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orsmga005.jf.intel.com with ESMTP; 30 May 2023 21:03:03 -0700
-Message-ID: <325046c8-cfc3-c42a-0b39-bafc1acae800@linux.intel.com>
-Date: Wed, 31 May 2023 12:02:08 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B272EC4
+	for <iommu@lists.linux.dev>; Wed, 31 May 2023 04:13:12 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RncTv6oWDy6ibT8J5cvK7jVZRYTvwVaBMSt6S14kw1ENwMy0/G2QLZiTAuZrq6XywdO1UjutLQPw0IMKYYwUdySoGe71/QikTy/d6MttJI/O/tsytBbnF/UyK4P0n1jdBn+x4EAja52x1K6V1+7R0pDvxmhPAASFLZ3fTVabFWCKCIMVNHIiniq3qWgPJCGypX2o3PteWSw8Ck/r3Fcr7F+i7C8unYDsrPdIrwCNmMKMYd2WHMcHUV7QJu0I+IILfBC1y41qFLiWrJ5X2Dbj0cYymljIJRoG4Ah6s4y71PlZFnx8hHbAldlmioMDddvMOCOqBzpbfWE+AhV1ip/PCw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=aco+PFHPL2vMJiTsabcyUNTpq2gnRc7tt8AN+dm+o+A=;
+ b=D7D+rENCZnwdwVGQiQK43fUr0qlrK4Oy9nTuBDRNYCLtn0aet13L8Kjfn7SblK/HYuR682oDw0otFd9fqFUXdzThOGTPjka8tJt4283VpIIOIMHt0YCln0j9huieJcVE6HS8cHDkmVFTy94HMbDfbPVsHa9lXrH9Y1AVpPfAEs/6GOvQQ1GJSK7HOswTKmrcbFoiSx/EI1Z4hhISEJkUPel3Sqne1TzNp0Ww/lAMBWOhFm2u4ajIyAatgipHXfCSoXFZUXysV+k4zlAZzf1+zZrwhGniQjomNifZvx/bqaKC7/Q212KzC6qrzwO+6b3SmAo5NRBbxsvQVSQAQH77dQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aco+PFHPL2vMJiTsabcyUNTpq2gnRc7tt8AN+dm+o+A=;
+ b=Rq3fIFFGx2/3uEOwccPruOJm6YvaUnbYgGlx80stnhzVmNr6rjTGR6iLbeEBDHqsFX0TGVFoRiLNy9gS+/p7UCsXu4HjHDciWVBmQpqY31kDGLfJTcVThbYFskXQWCqZddNcZihwVHAWa6kWfk1e/qHe02Wx61O8urcedlpzW6po2VDfgQAWNFojI/oFcBLt9gvW0wrLbI4zpwIfVwZ6sIN9FeLctkt4/V9C8s41lCxaikQ/ZpZ7sCix64lFlD1cKlz5G9ldP9l2/67xZZO6Jy8nFfsZ9sP6cMhZDmCxvq4j7Rb+2lthij+cLEZLAWCJlm5gFyE5/8wl4jwXzPgD3w==
+Received: from MW4P221CA0002.NAMP221.PROD.OUTLOOK.COM (2603:10b6:303:8b::7) by
+ BL1PR12MB5288.namprd12.prod.outlook.com (2603:10b6:208:314::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.22; Wed, 31 May
+ 2023 04:13:09 +0000
+Received: from CO1NAM11FT113.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:8b:cafe::78) by MW4P221CA0002.outlook.office365.com
+ (2603:10b6:303:8b::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.23 via Frontend
+ Transport; Wed, 31 May 2023 04:13:09 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ CO1NAM11FT113.mail.protection.outlook.com (10.13.174.180) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6455.22 via Frontend Transport; Wed, 31 May 2023 04:13:08 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 30 May 2023
+ 21:12:58 -0700
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Tue, 30 May
+ 2023 21:12:57 -0700
+Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com (10.129.68.9)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Tue, 30 May 2023 21:12:56 -0700
+Date: Tue, 30 May 2023 21:12:55 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+CC: Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, "Joerg
+ Roedel" <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+	<robin.murphy@arm.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>, "Yi
+ Liu" <yi.l.liu@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	<iommu@lists.linux.dev>, <linux-kselftest@vger.kernel.org>,
+	<virtualization@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCHES 00/17] IOMMUFD: Deliver IO page faults to user space
+Message-ID: <ZHbJR2wrRarW90Jy@Asurada-Nvidia>
+References: <20230530053724.232765-1-baolu.lu@linux.intel.com>
+ <ZHZFi28jRxeZMKK3@Asurada-Nvidia>
+ <ac924372-210c-155e-9aeb-36218d35444e@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Cc: baolu.lu@linux.intel.com, Jacob Pan <jacob.jun.pan@linux.intel.com>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, dmaengine@vger.kernel.org, vkoul@kernel.org,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
- David Woodhouse <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>,
- "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
- "Yu, Fenghua" <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Tony Luck <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
- narayan.ranganathan@intel.com
-Subject: Re: [PATCH v6 3/4] iommu/vt-d: Add set_dev_pasid callback for dma
- domain
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20230519203223.2777255-1-jacob.jun.pan@linux.intel.com>
- <20230519203223.2777255-4-jacob.jun.pan@linux.intel.com>
- <ZHUBoBev2Vzp8nGF@nvidia.com>
- <ba26db48-4102-d6bc-add8-5449423158ca@linux.intel.com>
- <ZHYqebpMC12ck6gQ@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ZHYqebpMC12ck6gQ@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ac924372-210c-155e-9aeb-36218d35444e@linux.intel.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT113:EE_|BL1PR12MB5288:EE_
+X-MS-Office365-Filtering-Correlation-Id: f6f02efe-3097-406a-ccda-08db618d578a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	pRJvG9iAUXbwwijb4s451lqGH+YEsw3HN9l45aple0lD2nMjQIgCFndyUsOeJ/BXvyWAztpwrg4rrB+zBPar5iUIb2m3FljwO+0iBVI0fTW2qjn7OnFHtcVY49H0DBQwX+tAp7cCNu42oSpBHdmeMl0aA7qEKTTJcBtW+W+GoE+VYMnQ8S88xzqGisuZ2k5xAgp7/qX8JJPNuLhMNENfepNGBQ+lmT+2PAMi1lAgcWb+tBfiiwPcy2Kvj5iVnItKTQd6mg1EWxgpZu4dqdaNa7HVWgIqOVlj9cX1y9osXVu4WeNRMNvA4qA2tZPQRAyiY+1z/j2I2oU3L0RZFwhHQ0ZXtDPORoT2OuGjxxMq6t0VnB6aLUJlPi1YeHptJ9gyq4rV+ClVlygnCYCQfUbB8yWmEK0OkW89CsYTepKqvtC4oQqrqTO9TYgTP/t77VDIR9V8ABZuKGl10hrZVtB+553ZNCgXs3xSDKgSanQMVW0VLxBoYOQScS0wKv5kz98Ne0okAngVAL9p6pkmduZo8M0IjPp361uaZGuq2A7A5Sda1IEyBHTNDyVKaVYw4e4T2PyQGw3q8A/31HlMmYbvo7MZEChKwF1HTN9S064BckulyctTCdyJWjkkgdR9I+c2IcbuR7p0HThir1/IixX1Xg7ZezjOQ4AaIqsm4ch/Kaf775R4JbpkY6UGC/iTBUy2eEG5LZx3RrvNSRfLrqIZ8BcnAsnBqnfXerw/LXF0gKZaJQAU1YfgnQB2rFgkHDkW
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(39860400002)(376002)(136003)(346002)(451199021)(40470700004)(36840700001)(46966006)(41300700001)(33716001)(66899021)(5660300002)(186003)(40460700003)(82310400005)(55016003)(40480700001)(8936002)(8676002)(6916009)(9686003)(26005)(4326008)(7636003)(356005)(316002)(70586007)(36860700001)(70206006)(2906002)(54906003)(4744005)(426003)(47076005)(336012)(478600001)(7416002)(82740400003)(86362001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2023 04:13:08.9116
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f6f02efe-3097-406a-ccda-08db618d578a
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1NAM11FT113.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5288
 
-On 5/31/23 12:55 AM, Jason Gunthorpe wrote:
-> On Tue, May 30, 2023 at 10:19:05AM +0800, Baolu Lu wrote:
->> On 5/30/23 3:48 AM, Jason Gunthorpe wrote:
->>> On Fri, May 19, 2023 at 01:32:22PM -0700, Jacob Pan wrote:
->>>
->>>> @@ -4720,25 +4762,99 @@ static void intel_iommu_iotlb_sync_map(struct iommu_domain *domain,
->>>>    static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
->>>>    {
->>>>    	struct intel_iommu *iommu = device_to_iommu(dev, NULL, NULL);
->>>> +	struct dev_pasid_info *curr, *dev_pasid = NULL;
->>>> +	struct dmar_domain *dmar_domain;
->>>>    	struct iommu_domain *domain;
->>>> +	unsigned long flags;
->>>> -	/* Domain type specific cleanup: */
->>>>    	domain = iommu_get_domain_for_dev_pasid(dev, pasid, 0);
->>>> -	if (domain) {
->>>> -		switch (domain->type) {
->>>> -		case IOMMU_DOMAIN_SVA:
->>>> -			intel_svm_remove_dev_pasid(dev, pasid);
->>>> -			break;
->>>> -		default:
->>>> -			/* should never reach here */
->>>> -			WARN_ON(1);
->>>> +	if (!domain)
->>>> +		goto out_tear_down;
->>>> +
->>>> +	/*
->>>> +	 * The SVA implementation needs to stop mm notification, drain the
->>>> +	 * pending page fault requests before tearing down the pasid entry.
->>>> +	 * The VT-d spec (section 6.2.3.1) also recommends that software
->>>> +	 * could use a reserved domain id for all first-only and pass-through
->>>> +	 * translations. Hence there's no need to call domain_detach_iommu()
->>>> +	 * in the sva domain case.
->>>> +	 */
->>>> +	if (domain->type == IOMMU_DOMAIN_SVA) {
->>>> +		intel_svm_remove_dev_pasid(dev, pasid);
->>>> +		goto out_tear_down;
->>>> +	}
->>>
->>> But why don't you need to do all the other
->>> intel_pasid_tear_down_entry(), intel_svm_drain_prq() (which is
->>> misnamed) and other stuff from intel_svm_remove_dev_pasid() ?
->>
->> Perhaps,
->>
->> 	if (domain->type == IOMMU_DOMAIN_SVA) {
->> 		intel_svm_remove_dev_pasid(dev, pasid);
->> 		return;
->> 	}
->>
->> ?
-> 
-> I would expect only stuff directly connected to SVM be in the SVM
-> function.
-> 
-> De-initalizing PRI and any other pasid destruction should be in this
-> function.
-> 
->>> There still seems to be waaay too much "SVM" in the PASID code.
->>
->> This segment of code is destined to be temporary. From a long-term
->> perspective, I hope to move SVA specific staffs such as mm notification,
->> prq draining, etc. to the iommu core. They are generic rather than Intel
->> iommu specific.
-> 
-> Yes, sort of, but.. That is just the mmu notifier bits
-> 
-> All the PRI/PASID teardown needs to be unlinked from SVM
+On Wed, May 31, 2023 at 10:10:15AM +0800, Baolu Lu wrote:
 
-Get your point now. Yes. PRI and PASID teardown are not SVA-specific.
-Sorry that we should rename SVM to SVA to unify the Linux terminology.
-
+> I agree with you that the existing IOPF framework is not ideal for
+> IOMMUFD. The adding ASYNC flag conflicts with the IOPF workqueue.
+> This could lead to performance issues.
 > 
->>> It would be nice if the different domain types had their own ops..
->>
->> Good suggestion!
->>
->> We can add a domain ops in the Intel domain structure which is
->> responsible for how to install an Intel iommu domain onto the VT-d
->> hardware.
+> I can improve the IOPF framework to make it more friendly to IOMMUFD.
+> One way to do this would be not use workqueue for the IOMMUFD case.
 > 
-> We should have seperate iommu_domain_ops at least, I think that would
-> cover alot of it?
+> Have I covered all your concerns?
 
-Are you suggesting adding this ops in common iommu_domain or intel's
-dmar_domain? My understanding is the latter. To do so, probably we need
-to define various callbacks for different type of domains: identity,
-blocking, dma remapping, sva and possibly nested. Also need to care
-about legacy vs. scalable mode.
+Yea. My concern was mainly at the fault report for non-PRI cases.
+Though I am still on the fence about using IOPF framework, let's
+see first how the improved design would look like.
 
-That's the reason why I hoped to do all these in separated series with
-carefully reviewing and testing.
-
-Best regards,
-baolu
+Thanks
+Nic
