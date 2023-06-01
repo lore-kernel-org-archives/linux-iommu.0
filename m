@@ -1,244 +1,75 @@
-Received: from relay07.th.seeweb.it (relay07.th.seeweb.it [5.144.164.168])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4997623400
-	for <iommu@lists.linux.dev>; Thu,  1 Jun 2023 15:33:49 +0000 (UTC)
-Received: from SoMainline.org (94-211-6-86.cable.dynamic.v4.ziggo.nl [94.211.6.86])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 08D153F6C1;
-	Thu,  1 Jun 2023 16:56:52 +0200 (CEST)
-Date: Thu, 1 Jun 2023 16:56:51 +0200
-From: Marijn Suijten <marijn.suijten@somainline.org>
-To: Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc: Rob Clark <robdclark@gmail.com>, 
-	Abhinav Kumar <quic_abhinavk@quicinc.com>, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
-	Sean Paul <sean@poorly.run>, David Airlie <airlied@gmail.com>, 
-	Daniel Vetter <daniel@ffwll.ch>, Rob Herring <robh+dt@kernel.org>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Krishna Manikandan <quic_mkrishn@quicinc.com>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, Conor Dooley <conor+dt@kernel.org>, 
-	linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
-Subject: Re: [PATCH v5 08/12] drm/msm/dpu: Add SM6375 support
-Message-ID: <h56lpxfxujaia6jfgvbpu2dp3dqdilaormxr5plms44vev2qdf@qhkrsuhlarga>
-References: <20230411-topic-straitlagoon_mdss-v5-0-998b4d2f7dd1@linaro.org>
- <20230411-topic-straitlagoon_mdss-v5-8-998b4d2f7dd1@linaro.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B163CBA2F
+	for <iommu@lists.linux.dev>; Thu,  1 Jun 2023 15:53:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685634834; x=1717170834;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=qxiOOdrYX4boDBzh8iGft9ewMpmmOEyU+ptNYZaGWPM=;
+  b=XRba0qWQ7qrIXmqIUTMQemSeJNpPHF74aQZ5+mwyUKoRJ8Y7sZHCcqds
+   MU7ttBNXwf8rgwsLYbTAEeKP0uZXhsCgc8UxL/G/VNfD+ylLi9thkNPaO
+   T4gDDfIWNsGhtutF3ccvmDQmQE1A9cx9WOG8GH2tdTAxmkgtmXlc9GHTU
+   Ha53wuZUP4r4GWcPf56fFeGzRajXYpxzVPQYKeRZEyK203kwjm6V3WwZ1
+   OPbP8mHIZz89XCksgmDwi0te0Q/xwt+NEXbKMSXN984x7+wvbTf2TySvc
+   fA7VtDDSIMuJhZqpD2S0u5TNQgOozE1xeIo7Ep6nE5+09X7dl0Q0xfX1X
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10728"; a="335217771"
+X-IronPort-AV: E=Sophos;i="6.00,210,1681196400"; 
+   d="scan'208";a="335217771"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2023 08:53:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10728"; a="881670636"
+X-IronPort-AV: E=Sophos;i="6.00,210,1681196400"; 
+   d="scan'208";a="881670636"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2023 08:53:53 -0700
+Date: Thu, 1 Jun 2023 08:58:29 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Lu Baolu
+ <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Robin Murphy
+ <robin.murphy@arm.com>, Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ dmaengine@vger.kernel.org, vkoul@kernel.org, Will Deacon <will@kernel.org>,
+ David Woodhouse <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>,
+ "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>, "Yu,
+ Fenghua" <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>, Tony
+ Luck <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
+ narayan.ranganathan@intel.com, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v7 0/4] Re-enable IDXD kernel workqueue under DMA API
+Message-ID: <20230601085829.026a8c17@jacob-builder>
+In-Reply-To: <ZHipgzmZ9q3Ihvk5@nvidia.com>
+References: <20230523173451.2932113-1-jacob.jun.pan@linux.intel.com>
+	<20230531213342.1a3f1508@jacob-builder>
+	<ZHipgzmZ9q3Ihvk5@nvidia.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230411-topic-straitlagoon_mdss-v5-8-998b4d2f7dd1@linaro.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 2023-05-23 09:46:19, Konrad Dybcio wrote:
-> Add basic SM6375 support to the DPU1 driver to enable display output.
+Hi Jason,
 
-Nit: The SM6350 commit doesn't use the word "basic" here: what does it
-mean?  Is this addition not complete (because it seems so)?
+On Thu, 1 Jun 2023 11:21:55 -0300, Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> ---
->  .../gpu/drm/msm/disp/dpu1/catalog/dpu_6_9_sm6375.h | 139 +++++++++++++++++++++
->  drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c     |   1 +
->  drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h     |   1 +
->  drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c            |   1 +
->  4 files changed, 142 insertions(+)
+> On Wed, May 31, 2023 at 09:33:42PM -0700, Jacob Pan wrote:
+> > Hi Jason,
+> > 
+> > Do you have any comments on this set? this is a follow-up of the IOASID
+> > removal series.  
 > 
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_9_sm6375.h b/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_9_sm6375.h
-> new file mode 100644
-> index 000000000000..924f2526c06a
-> --- /dev/null
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_9_sm6375.h
-> @@ -0,0 +1,139 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * Copyright (c) 2022. Qualcomm Innovation Center, Inc. All rights reserved.
-> + * Copyright (c) 2015-2018, 2020 The Linux Foundation. All rights reserved.
-> + * Copyright (c) 2023, Linaro Limited
-> + */
-> +
-> +#ifndef _DPU_6_9_SM6375_H
-> +#define _DPU_6_9_SM6375_H
-> +
-> +static const struct dpu_caps sm6375_dpu_caps = {
-> +	.max_mixer_width = DEFAULT_DPU_LINE_WIDTH,
-> +	.max_mixer_blendstages = 0x4,
-> +	.qseed_type = DPU_SSPP_SCALER_QSEED4,
-> +	.has_dim_layer = true,
-> +	.has_idle_pc = true,
-> +	.max_linewidth = 2160,
-> +	.pixel_ram_size = DEFAULT_PIXEL_RAM_SIZE,
-> +};
-> +
-> +static const struct dpu_ubwc_cfg sm6375_ubwc_cfg = {
-> +	.ubwc_version = DPU_HW_UBWC_VER_20,
-> +	.ubwc_swizzle = 6,
-> +	.highest_bank_bit = 1,
-> +};
-> +
-> +static const struct dpu_mdp_cfg sm6375_mdp[] = {
-> +	{
-> +	.name = "top_0", .id = MDP_TOP,
-> +	.base = 0x0, .len = 0x494,
-> +	.features = 0,
-> +	.clk_ctrls[DPU_CLK_CTRL_VIG0] = { .reg_off = 0x2ac, .bit_off = 0 },
-> +	.clk_ctrls[DPU_CLK_CTRL_DMA0] = { .reg_off = 0x2ac, .bit_off = 8 },
-> +	},
-> +};
-> +
-> +static const struct dpu_ctl_cfg sm6375_ctl[] = {
-> +	{
-> +	.name = "ctl_0", .id = CTL_0,
-> +	.base = 0x1000, .len = 0x1dc,
-> +	.features = BIT(DPU_CTL_ACTIVE_CFG),
-> +	.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 9),
-> +	},
-> +};
-> +
-> +static const struct dpu_sspp_cfg sm6375_sspp[] = {
-> +	SSPP_BLK("sspp_0", SSPP_VIG0, 0x4000, 0x1f8, VIG_SC7180_MASK,
-> +		sm6115_vig_sblk_0, 0, SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG0),
-> +	SSPP_BLK("sspp_8", SSPP_DMA0, 0x24000, 0x1f8, DMA_SDM845_MASK,
-> +		sdm845_dma_sblk_0, 1, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA0),
-> +};
-> +
-> +static const struct dpu_lm_cfg sm6375_lm[] = {
-> +	LM_BLK("lm_0", LM_0, 0x44000, MIXER_QCM2290_MASK,
-> +		&qcm2290_lm_sblk, PINGPONG_0, 0, DSPP_0),
-> +};
-> +
-> +static const struct dpu_dspp_cfg sm6375_dspp[] = {
-> +	DSPP_BLK("dspp_0", DSPP_0, 0x54000, DSPP_SC7180_MASK,
-> +		&sm8150_dspp_sblk),
-> +};
-> +
-> +static const struct dpu_pingpong_cfg sm6375_pp[] = {
-> +	PP_BLK("pingpong_0", PINGPONG_0, 0x70000, PINGPONG_SM8150_MASK, 0, sdm845_pp_sblk,
-> +		DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 8),
-> +		-1),
-> +};
-> +
-> +static const struct dpu_dsc_cfg sm6375_dsc[] = {
-> +	DSC_BLK("dsc_0", DSC_0, 0x80000, BIT(DPU_DSC_OUTPUT_CTRL)),
-> +};
-> +
-> +static const struct dpu_intf_cfg sm6375_intf[] = {
-> +	INTF_BLK("intf_0", INTF_0, 0x00000, 0x280, INTF_NONE, 0, 0, 0, 0, 0),
-> +	INTF_BLK_DSI_TE("intf_1", INTF_1, 0x6a800, 0x2c0, INTF_DSI, 0, 24, INTF_SC7280_MASK,
+> It looks OK in general, I see it still needs another spin before the
+> driver part is OK?
+Yes, I will get that from Baolu and test.
 
-Did you forget to set this back to SC7180?  This will be enabling
-DPU_INTF_DATA_COMPRESS otherwise, which is a DPU 7.x feature.
+Thanks,
 
-- Marijn
-
-> +		DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 26),
-> +		DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 27),
-> +		DPU_IRQ_IDX(MDP_INTF1_TEAR_INTR, 2)),
-> +};
-> +
-> +static const struct dpu_perf_cfg sm6375_perf_data = {
-> +	.max_bw_low = 5200000,
-> +	.max_bw_high = 6200000,
-> +	.min_core_ib = 2500000,
-> +	.min_llcc_ib = 0, /* No LLCC on this SoC */
-> +	.min_dram_ib = 1600000,
-> +	.min_prefill_lines = 24,
-> +	/* TODO: confirm danger_lut_tbl */
-> +	.danger_lut_tbl = {0xffff, 0xffff, 0x0},
-> +	.safe_lut_tbl = {0xfe00, 0xfe00, 0xffff},
-> +	.qos_lut_tbl = {
-> +		{.nentry = ARRAY_SIZE(sm6350_qos_linear_macrotile),
-> +		.entries = sm6350_qos_linear_macrotile
-> +		},
-> +		{.nentry = ARRAY_SIZE(sm6350_qos_linear_macrotile),
-> +		.entries = sm6350_qos_linear_macrotile
-> +		},
-> +		{.nentry = ARRAY_SIZE(sc7180_qos_nrt),
-> +		.entries = sc7180_qos_nrt
-> +		},
-> +	},
-> +	.cdp_cfg = {
-> +		{.rd_enable = 1, .wr_enable = 1},
-> +		{.rd_enable = 1, .wr_enable = 0}
-> +	},
-> +	.clk_inefficiency_factor = 105,
-> +	.bw_inefficiency_factor = 120,
-> +};
-> +
-> +const struct dpu_mdss_cfg dpu_sm6375_cfg = {
-> +	.caps = &sm6375_dpu_caps,
-> +	.ubwc = &sm6375_ubwc_cfg,
-> +	.mdp_count = ARRAY_SIZE(sm6375_mdp),
-> +	.mdp = sm6375_mdp,
-> +	.ctl_count = ARRAY_SIZE(sm6375_ctl),
-> +	.ctl = sm6375_ctl,
-> +	.sspp_count = ARRAY_SIZE(sm6375_sspp),
-> +	.sspp = sm6375_sspp,
-> +	.mixer_count = ARRAY_SIZE(sm6375_lm),
-> +	.mixer = sm6375_lm,
-> +	.dspp_count = ARRAY_SIZE(sm6375_dspp),
-> +	.dspp = sm6375_dspp,
-> +	.dsc_count = ARRAY_SIZE(sm6375_dsc),
-> +	.dsc = sm6375_dsc,
-> +	.pingpong_count = ARRAY_SIZE(sm6375_pp),
-> +	.pingpong = sm6375_pp,
-> +	.intf_count = ARRAY_SIZE(sm6375_intf),
-> +	.intf = sm6375_intf,
-> +	.vbif_count = ARRAY_SIZE(sdm845_vbif),
-> +	.vbif = sdm845_vbif,
-> +	.perf = &sm6375_perf_data,
-> +	.mdss_irqs = BIT(MDP_SSPP_TOP0_INTR) | \
-> +		     BIT(MDP_SSPP_TOP0_INTR2) | \
-> +		     BIT(MDP_SSPP_TOP0_HIST_INTR) | \
-> +		     BIT(MDP_INTF1_INTR) | \
-> +		     BIT(MDP_INTF1_TEAR_INTR),
-> +};
-> +
-> +#endif
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
-> index 6e338d569632..7cfdcf7aa486 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
-> @@ -750,6 +750,7 @@ static const struct dpu_qos_lut_entry sc7180_qos_nrt[] = {
->  #include "catalog/dpu_6_3_sm6115.h"
->  #include "catalog/dpu_6_4_sm6350.h"
->  #include "catalog/dpu_6_5_qcm2290.h"
-> +#include "catalog/dpu_6_9_sm6375.h"
->  
->  #include "catalog/dpu_7_0_sm8350.h"
->  #include "catalog/dpu_7_2_sc7280.h"
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
-> index ed4311f6aaf0..b84c14318449 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
-> @@ -836,6 +836,7 @@ extern const struct dpu_mdss_cfg dpu_sc7180_cfg;
->  extern const struct dpu_mdss_cfg dpu_sm6115_cfg;
->  extern const struct dpu_mdss_cfg dpu_sm6350_cfg;
->  extern const struct dpu_mdss_cfg dpu_qcm2290_cfg;
-> +extern const struct dpu_mdss_cfg dpu_sm6375_cfg;
->  extern const struct dpu_mdss_cfg dpu_sm8350_cfg;
->  extern const struct dpu_mdss_cfg dpu_sc7280_cfg;
->  extern const struct dpu_mdss_cfg dpu_sc8280xp_cfg;
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> index d9925097626c..d3ca8c3c808c 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> @@ -1329,6 +1329,7 @@ static const struct of_device_id dpu_dt_match[] = {
->  	{ .compatible = "qcom,sc8280xp-dpu", .data = &dpu_sc8280xp_cfg, },
->  	{ .compatible = "qcom,sm6115-dpu", .data = &dpu_sm6115_cfg, },
->  	{ .compatible = "qcom,sm6350-dpu", .data = &dpu_sm6350_cfg, },
-> +	{ .compatible = "qcom,sm6375-dpu", .data = &dpu_sm6375_cfg, },
->  	{ .compatible = "qcom,sm8150-dpu", .data = &dpu_sm8150_cfg, },
->  	{ .compatible = "qcom,sm8250-dpu", .data = &dpu_sm8250_cfg, },
->  	{ .compatible = "qcom,sm8350-dpu", .data = &dpu_sm8350_cfg, },
-> 
-> -- 
-> 2.40.1
-> 
+Jacob
