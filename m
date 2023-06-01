@@ -1,84 +1,134 @@
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C17713AC3
-	for <iommu@lists.linux.dev>; Thu,  1 Jun 2023 16:55:58 +0000 (UTC)
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-97454836448so55474266b.2
-        for <iommu@lists.linux.dev>; Thu, 01 Jun 2023 09:55:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1685638556; x=1688230556;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=/9PhABrR6fbuT1S1oyIuPZW5VFgQbeU/P+IYi+AHHxM=;
-        b=ffZXKYwLf5T1O2JvWMZdIWhRi7SWjAPrvhw6AL6FlT1bG2FLKbU8LX68ph7e3LO04U
-         dU0rRDYbrveOU6ArfGhxfOLABRs2IHbfoby2DxZgAs86Y9xgm2Bz6MkxmTFh0uZotOlr
-         CpBbV70cVmqyHYXRn5dfEu06K1RrnQc0B65w8dp4o3x3hVSHqwXMddY+I6OdXIITVbLh
-         wagj+12DMz6Zvies9MQnbslGC4lzfDHT+hrH1o/RcDSO3+dpYJN1XPzXdQRATYrdVfpI
-         TSximRQqSXxMHjLDol5p1/cvuNwXunbRaV7yApHcxtcA54c1/WoUiTSehetLPYX13zRc
-         GHQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685638556; x=1688230556;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/9PhABrR6fbuT1S1oyIuPZW5VFgQbeU/P+IYi+AHHxM=;
-        b=Ofh4zRhIsrrn84vrpp6mNtSa9RssUW1ZVFcbBKtXqcpg4AB7L69YhgKHvDuB79Fnh7
-         DgZ1rRs+Dj10fDVlw4hIaFH60hkHcXIBY3heh9i2mdrDjL7c9fbOs572ClIBszpOIdMN
-         4eC+D/8kcY+JmneHypWQZyRcfPxQgYrFZZuVSQhdvKef0Qw4rmprwIDtBC7895TcZgC1
-         7xtI7fbvs38mRUj2Ey3V6P5SxTBha+imTMiOuThB/XXqbI2T0/LYPRHf684JWicg/Idj
-         QLBiZgERtjuaoqFOerUnNxP4ksduNapWWYEYA7v8ucLUO1rXvjZG6PBujFv/3blqPVSK
-         AFhw==
-X-Gm-Message-State: AC+VfDzer1rmLeA21yOPl5Xp7uJ76NPxjEUwXgyMWjz99koCBfE7mt98
-	uhQHAKKXzZmC9Iq8E8903c3krQ==
-X-Google-Smtp-Source: ACHHUZ6ygqoysrjPFxzcfm1Ac5L9I1KaJ4mwEF6HXcgsykWw+pw5MRf0NYhA4AB2O0EcNhhoiAnYUQ==
-X-Received: by 2002:a17:907:86a4:b0:973:e4c2:2bcd with SMTP id qa36-20020a17090786a400b00973e4c22bcdmr8555945ejc.18.1685638556663;
-        Thu, 01 Jun 2023 09:55:56 -0700 (PDT)
-Received: from [192.168.1.20] ([178.197.199.204])
-        by smtp.gmail.com with ESMTPSA id a6-20020a1709063a4600b00973fac6065esm6693089ejf.223.2023.06.01.09.55.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Jun 2023 09:55:56 -0700 (PDT)
-Message-ID: <3589e3fc-2add-52d7-68bd-2b41a9cba4af@linaro.org>
-Date: Thu, 1 Jun 2023 18:55:53 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B18142501
+	for <iommu@lists.linux.dev>; Thu,  1 Jun 2023 17:39:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA405C433AA
+	for <iommu@lists.linux.dev>; Thu,  1 Jun 2023 17:39:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685641181;
+	bh=rOyxKwyKoD8JRFg4gUZg/5MsYAzctjBiJEmXXIw+2Pg=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=o/tcJHGXDGK+Cmz0WPMH9eqt4DXVRB87b+bOc4yCFZZx+pNoEHu0L6Kk/WHl5TZCQ
+	 v4wg++ka5L5/koa89l5lEtczt9Lp/CS49/lq9S/D/gsV6IN2cJNGZcqlW9mzDWtgf8
+	 kSPa6HE9uQjRqdmZMZGwEA+2H5w1XPFs1bwtf87IXl053GkxGBjbRGWwQEhiSemK34
+	 SURRDqI9JYl4AuMZSjsgfbIzfuYI4ScXci6h+5ayJwzrwQeS7v4C8WHfjDAbGm6Wt7
+	 HhKwh2oygRzaHVjZAo7rCNsfYsqW/i3EtbygDwQjD02rjzFKXYyUdDoEjObai2iibs
+	 UOf6kgrQWTHWg==
+Received: by mail-vs1-f43.google.com with SMTP id ada2fe7eead31-439554d9a69so789770137.1
+        for <iommu@lists.linux.dev>; Thu, 01 Jun 2023 10:39:41 -0700 (PDT)
+X-Gm-Message-State: AC+VfDzRcKLrR+J8uzvuOkn9kX0HLVhowFdTu+SW9zrpy1YTwRZVb7Le
+	QDwPgoLqBwvmKuUnf1/AN9WknjQCAG4U0x6J8XQ=
+X-Google-Smtp-Source: ACHHUZ7saBfaT5uX7NLiJU4LIkIoXw37eBnBmjdUSiEWtD7RMOu14iPsR47csoQHy7I8rQlHKSda/v96q9Noy2qP/FE=
+X-Received: by 2002:aca:ead6:0:b0:398:2f7f:a5cd with SMTP id
+ i205-20020acaead6000000b003982f7fa5cdmr1228908oih.24.1685641160132; Thu, 01
+ Jun 2023 10:39:20 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH 1/2] dt-bindings: arm-smmu: Add SM6375 GPU SMMU
-Content-Language: en-US
-To: Konrad Dybcio <konrad.dybcio@linaro.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, Andy Gross <agross@kernel.org>,
- Bjorn Andersson <andersson@kernel.org>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-msm@vger.kernel.org
-References: <20230531-topic-sm6375_gpusmmu-v1-0-860943894c71@linaro.org>
- <20230531-topic-sm6375_gpusmmu-v1-1-860943894c71@linaro.org>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230531-topic-sm6375_gpusmmu-v1-1-860943894c71@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20230531130833.635651916@infradead.org> <20230531132323.722039569@infradead.org>
+ <70a69deb-7ad4-45b2-8e13-34955594a7ce@app.fastmail.com> <20230601101409.GS4253@hirez.programming.kicks-ass.net>
+ <14c50e58-fecc-e96a-ee73-39ef4e4617c7@gmx.de> <CAHk-=whL65CLuy9D9gyO608acM5WLWo_ggAMP1cGu2XvyC0-hA@mail.gmail.com>
+In-Reply-To: <CAHk-=whL65CLuy9D9gyO608acM5WLWo_ggAMP1cGu2XvyC0-hA@mail.gmail.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
+Date: Fri, 2 Jun 2023 02:38:43 +0900
+X-Gmail-Original-Message-ID: <CAK7LNATxpUK+w=VAkhLZserLr4cMk2ffSr+qzzZwuZ6DKWA0mw@mail.gmail.com>
+Message-ID: <CAK7LNATxpUK+w=VAkhLZserLr4cMk2ffSr+qzzZwuZ6DKWA0mw@mail.gmail.com>
+Subject: Re: [PATCH v2 07/12] parisc/percpu: Work around the lack of __SIZEOF_INT128__
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Helge Deller <deller@gmx.de>, Peter Zijlstra <peterz@infradead.org>, Arnd Bergmann <arnd@arndb.de>, 
+	Jonathan Corbet <corbet@lwn.net>, Will Deacon <will@kernel.org>, Boqun Feng <boqun.feng@gmail.com>, 
+	Mark Rutland <mark.rutland@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, dennis@kernel.org, 
+	Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@linux.com>, Heiko Carstens <hca@linux.ibm.com>, gor@linux.ibm.com, 
+	Alexander Gordeev <agordeev@linux.ibm.com>, borntraeger@linux.ibm.com, 
+	Sven Schnelle <svens@linux.ibm.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, 
+	Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, 
+	"H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>, suravee.suthikulpanit@amd.com, 
+	Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>, 
+	Baolu Lu <baolu.lu@linux.intel.com>, Herbert Xu <herbert@gondor.apana.org.au>, 
+	"David S . Miller" <davem@davemloft.net>, Pekka Enberg <penberg@kernel.org>, 
+	David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>, 
+	Roman Gushchin <roman.gushchin@linux.dev>, Hyeonggon Yoo <42.hyeyoo@gmail.com>, 
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-s390@vger.kernel.org, iommu@lists.linux.dev, 
+	Linux-Arch <linux-arch@vger.kernel.org>, linux-crypto@vger.kernel.org, 
+	Stephen Rothwell <sfr@canb.auug.org.au>, Michael Ellerman <mpe@ellerman.id.au>, 
+	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, linux-parisc@vger.kernel.org, 
+	John David Anglin <dave.anglin@bell.net>, Sam James <sam@gentoo.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 31/05/2023 17:04, Konrad Dybcio wrote:
-> SM6375 has a "Qualcomm SMMU V2" implementation for its GPU SMMU. It
-> does not however qualify for the qcom,adreno-smmu compatible, as it can
-> not do split pagetables. It consumes a single clock and a single genpd.
-> 
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> ---
->  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 2 ++
+On Thu, Jun 1, 2023 at 10:29=E2=80=AFPM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> On Thu, Jun 1, 2023 at 6:32=E2=80=AFAM Helge Deller <deller@gmx.de> wrote=
+:
+> >
+> > I don't think we need to care about gcc-10 on parisc.
+> > Debian and Gentoo are the only supported distributions, while Debian
+> > requires gcc-12 to build > 6.x kernels, and I assume Gentoo uses at lea=
+st
+> > gcc-12 as well.
+> >
+> > So raising the gcc limit for parisc only (at least temporarily for now)
+> > should be fine and your workaround below wouldn't be necessary, right?
+>
+> This absolutely sounds like the right option. Let's simplify the
+> problem space by just saying that parisc needs the newer compiler.
+>
+> Right now we have that "minimum gcc version" in a somewhat annoying
+> place: it's in the ./scripts/min-tool-version.sh file as a shell
+> script.
+>
+> I wonder if we could move the gcc minimum version check into the
+> Kconfig file instead, and make it easier to let architectures override
+> the minimum version.
+
+Currently, it is invoked in the Kconfig time,
+but not directly in Kconfig files.
+
+scripts/Kconfig.include
+ -> scripts/cc-version.sh
+    -> scripts/min-tool-version.sh
+
+It would be ugly if we wrote the equivalent code
+directly in Kconfig files.
 
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>
+> I don't quite know how to do that sanely, though. I don't think we
+> have a sane way to error out at Kconfig time (except by forcing some
+> syntax error inside an 'if' statement or something horrendously hacky
+> like that).
 
-Best regards,
-Krzysztof
+The parse stage can fail by $(error-if ) macro, but
+the evaluation stage never fails. I think it is a design.
 
+I think checking the compiler version during the parse stage
+makes sense given the current situation. The compiler version is
+fixed when Kconfig starts. If the compiler is found to be too old,
+there is no meaning to proceed.
+
+
+You suggested to choose a compiler in the Kconfig time:
+https://lore.kernel.org/lkml/CAHk-=3DwhdrvCkSWh=3DBRrwZwNo3=3DyLBXXM88NGx8V=
+EpP1VTgmkyQ@mail.gmail.com/
+
+When we achieve that, moving the min version to Kconfig files will be
+the right thing to do. Then, everything will be evaluated dynamically.
+
+
+>
+> Added Masahiro to the (already overlong) participants list.
+>
+>                    Linus
+
+
+
+--=20
+Best Regards
+Masahiro Yamada
