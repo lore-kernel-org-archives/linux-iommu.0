@@ -1,124 +1,244 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2059.outbound.protection.outlook.com [40.107.223.59])
+Received: from relay07.th.seeweb.it (relay07.th.seeweb.it [5.144.164.168])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7386021CD8
-	for <iommu@lists.linux.dev>; Thu,  1 Jun 2023 14:21:58 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FaJGhdVXJPBfPz2NhJ1CA01l85iU8o5zIepyuIbNdd0M9rhcVIsQSVO8xWa2nH2uSVhjK668mEZEcbNMza8/JDx0dIWDHfFt/0zSmCqmvFVR83t6SQvP33SQLAVzrfXauc/UtFd1bkyg5gVW1ZIEYHt8oOFINBXOoHsaLhz+0KFXC+6PTPYJC8FgOi4hWzST3tSUuTc/3WjP5utmwDBbXmyw9ip9hldxCEhOKbu4/XsesNF68c2r+ZI7iTttqKJ62L5OFDp+ycTyKbRsCYCBM99rPvBgoyxk6iRHr0r5wKEyyVciBDmMgFRSjjZZrY0CnqyR+NpfGEnl5zc0/YjrHA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PsPfpPbCukFF1WJaf95QnUvNfEQ6DU6+krbi9Dg+5ZA=;
- b=U+68nFlLBRRzyF+ngmRzLqjvwaqs+7ROm2swyh4EyHrEG6wtI/0EG7TNLq6/dAHVUwz8z9peHpXx8PIyb1GnHOCBlTj0EJ8U2PKPUvZYAAygKasFYWLBWZ8Mdu9Abg84dl0qPNX5dTVEXqfSOSn3lTNiWC4Lu8zbI5NLrB6ApgylKQjuvZjxELVg41sVm0KZOBhdsT/PyDLgM+znYf74GYI5vsMzxNF3LpDi11x8PMa1C+yP8ia0QLU6BKaZkHipczeQWRyvs1JHYU1OJ6derzRxLaU8MGX1TK9U8HaJj0B3yge+H8U/D93MjR7ue4dZkwTofhHmEvp1/a4vjYCT8A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PsPfpPbCukFF1WJaf95QnUvNfEQ6DU6+krbi9Dg+5ZA=;
- b=HX9dDqW23YYsWJLIbit/atNTIBBjH9JjWpnO7YBpzehSUscOjSi+TZuYMWfYjUcaHUh5NPHd9zT0TcJ3Bf9tkwqY7vPph85Z1vuqU+zTe06zSL8tfxOCED2V2TrcD0htdog/92XVrMH8HN3Sy37xJXoiMgMLfZyBDCxFH/7mx2EEFlJKfwwj+Xhgf9jp4YtWqZb/QsOwNWwPGzD3w1vaeUqPiw31/k8qSdeXEmtv2gj8cpfqGhLujMxIE/WeJQe4t+5Tx/iv+zx8e81WVU3xgp21RG8+7gIXMjHQ9eW/TipOhfjmh2LAhSk6f5Qnc5sCDMFLOpE5COsjBS6vGkxzyA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DM4PR12MB5182.namprd12.prod.outlook.com (2603:10b6:5:395::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.22; Thu, 1 Jun
- 2023 14:21:57 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6433.024; Thu, 1 Jun 2023
- 14:21:56 +0000
-Date: Thu, 1 Jun 2023 11:21:55 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>,
-	dmaengine@vger.kernel.org, vkoul@kernel.org,
-	Will Deacon <will@kernel.org>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Raj Ashok <ashok.raj@intel.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
-	"Yu, Fenghua" <fenghua.yu@intel.com>,
-	Dave Jiang <dave.jiang@intel.com>, Tony Luck <tony.luck@intel.com>,
-	"Zanussi, Tom" <tom.zanussi@intel.com>,
-	narayan.ranganathan@intel.com
-Subject: Re: [PATCH v7 0/4] Re-enable IDXD kernel workqueue under DMA API
-Message-ID: <ZHipgzmZ9q3Ihvk5@nvidia.com>
-References: <20230523173451.2932113-1-jacob.jun.pan@linux.intel.com>
- <20230531213342.1a3f1508@jacob-builder>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230531213342.1a3f1508@jacob-builder>
-X-ClientProxiedBy: YT4PR01CA0167.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:ac::23) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4997623400
+	for <iommu@lists.linux.dev>; Thu,  1 Jun 2023 15:33:49 +0000 (UTC)
+Received: from SoMainline.org (94-211-6-86.cable.dynamic.v4.ziggo.nl [94.211.6.86])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 08D153F6C1;
+	Thu,  1 Jun 2023 16:56:52 +0200 (CEST)
+Date: Thu, 1 Jun 2023 16:56:51 +0200
+From: Marijn Suijten <marijn.suijten@somainline.org>
+To: Konrad Dybcio <konrad.dybcio@linaro.org>
+Cc: Rob Clark <robdclark@gmail.com>, 
+	Abhinav Kumar <quic_abhinavk@quicinc.com>, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
+	Sean Paul <sean@poorly.run>, David Airlie <airlied@gmail.com>, 
+	Daniel Vetter <daniel@ffwll.ch>, Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Krishna Manikandan <quic_mkrishn@quicinc.com>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, Conor Dooley <conor+dt@kernel.org>, 
+	linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+Subject: Re: [PATCH v5 08/12] drm/msm/dpu: Add SM6375 support
+Message-ID: <h56lpxfxujaia6jfgvbpu2dp3dqdilaormxr5plms44vev2qdf@qhkrsuhlarga>
+References: <20230411-topic-straitlagoon_mdss-v5-0-998b4d2f7dd1@linaro.org>
+ <20230411-topic-straitlagoon_mdss-v5-8-998b4d2f7dd1@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB5182:EE_
-X-MS-Office365-Filtering-Correlation-Id: 81434a72-7dbd-46b6-1c4c-08db62ab8e28
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	8sGBa1Yk0hYSY44IXzZpeQBMxjs5bxEncye4/qpSN5YsvfO2vMmbpltE8wx3AOgz727dYkt03PPAfDsE2jDxBzomHQcJavlBAxqFzIgkN45cFbM1Rji8CR7Z5A+O7I7U+bIt2tmxBhhg4D6aLoFzBeoco/JRr/PSx5zmX5mXyq6dYZcJfBzbi8S/PF9lTqaq85cgxS8Ew07utE/StYQ2RbwIZzkscH6+cvOrjKs2vxX22XJ0bO9X+k6TSZ4g63p2G2Jw9sMyYrHs5Hn4Y2SgwkhcJnZQ09U9SZJer0CBLZKB1EW77XqKBZBXY9QZfnY3fYg7RpiealkrNNGKzuNOfW+FfbdmDVSffwRsvML0vv9j2aPq0+DV2+ujBaye1+BKrbm09SSBLLFsagoKkq8rQi33DhLtcVc3jqnoBuIIACJTQJpYW3xT8Hb8LuCye0mcrBajxec+LU6hnFYWpdlhgFoDjwnVjvWZkUUXViKbmsBAt534Xkcjbbjn570j5nSjpeX8cOHvO68DRFXjRjHooVqCwjjksPOd7DiDr0MPAXJ4+Pi/JKwsvaRgdWCNrgQA
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(346002)(376002)(136003)(396003)(451199021)(6486002)(478600001)(558084003)(83380400001)(36756003)(186003)(26005)(2616005)(6506007)(38100700002)(86362001)(6512007)(4326008)(6916009)(316002)(66556008)(66946007)(66476007)(41300700001)(2906002)(7416002)(5660300002)(8936002)(8676002)(54906003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?Q1Y80z7kjvRws8E+yAftGCPvcet/nYRSSNQ2PtHeTj2UEDEbxNUfHosRVRIt?=
- =?us-ascii?Q?/jeAEwzYvSETMJYI3sppj60PvveetyQIqNteApBiM0r69StVTN/ph9G/GNV/?=
- =?us-ascii?Q?ENQcDgLfRltMp6w48OJ3/ePXS2ns5mJ7BZKbxACrGzuFxd0An3w3K6BSs8iq?=
- =?us-ascii?Q?CnyZDJ/xEr5+eG7fJ8nK/yARyonv08ZISJe+VBjkkIrMbybgCW1X8FDzNoGQ?=
- =?us-ascii?Q?UIcYedGGglk6NGLesZk9PVEMp/SbDdN3XPOLg3USCFyaIVLYibgpohNMry1a?=
- =?us-ascii?Q?b6DnPI/+O5R2XnTec9e0mPQfP+JFny9TZhhC9fIAskv6a2FZ5UXGc+74Mjmy?=
- =?us-ascii?Q?K8nJ6k+1vTW422fFiQexcSSCqnynC6+8eFCKofZfqoVGw+l22svzeePKcl9f?=
- =?us-ascii?Q?jU/6E3fktUbwgGzrX+qLDzPrSCtjHhO/5WLeECHOKxwLk4JsGPPkQDwbC3WV?=
- =?us-ascii?Q?ORbW9I5+/2GmesnInm/ZqriYDbIdcQXrjlFDujj876Pf+C6a84JXnZUcPMg5?=
- =?us-ascii?Q?aKH3lTyfaVQN1P+w1daR5sfI6978RK/VYMBagPCzQkqDiEqvwUTzZv9bKCRl?=
- =?us-ascii?Q?TR7dHRKc8AeDE1zidgh6Uramp3atBgreDmwnfAnLuI2qFck3I1zHwZXA6Rc+?=
- =?us-ascii?Q?Z9WkO9Iu5FDlsSwdDnCkZeDEofjo/1PQKQyJeQyoDYbIx7TGlDis3acssu73?=
- =?us-ascii?Q?LknNSbomEgUd3a1Dte2BqdjcqvyahWl+UB9yEd9gXiMlSRuIJ3cLWD6gvE0t?=
- =?us-ascii?Q?xl++PYxuZXQk/0Y8iGhgAP8ntpQ4XmpPhrg28UdCz6TXuiFAGfHTh/EF/K8n?=
- =?us-ascii?Q?1nOF36f8Lf2VlvFkSG+nZXR4B735CcDKuA2w3sr8r0A9lnjMZicIoPB5xKYI?=
- =?us-ascii?Q?ZMIrYJJJv7qjFb3UJxgiqeRnrx4MfcB8Zzn+4Lqa6OtFUo3dqcJdCofl+8Nl?=
- =?us-ascii?Q?M5gUCK1ApsuTA2VGHsEAgSlQzzOI/GNDuyPAZ4RmGz8zL07gv1DAMTnqYSYf?=
- =?us-ascii?Q?YpHjQyUABvC072OjjpE6Fl9KvqGE1EfqwkoQ3UBhA3ORl+c3XZapGHa0D+Zx?=
- =?us-ascii?Q?VoDr60CEO8RKJ+B0il0KsNJsHgF4s1QqeCqfrnXXIDi+tcJRggcDAcYjtl3K?=
- =?us-ascii?Q?3sGQ1vEkUZ0DjeTQINm8mMNXOVC6qPoBIaFT+u2I8qJPo5ff6ewfoocKuIKG?=
- =?us-ascii?Q?BoP3d304PwaNZ1QhaYEC1DdecYuKQUUTkn04u8PYV/Ay9uPPCt0N5LGGJiO6?=
- =?us-ascii?Q?/ZKJiBYp705/YE0gK1C0lm0lbHQNOvWB9tJvLStiO1+qKls0JxkvmraFKBDM?=
- =?us-ascii?Q?YaenGX+57r1Bxl4GWGt/i25DjujCQhhz3pdsbEEpVJXSnP3YpnNBWJHO/QFa?=
- =?us-ascii?Q?hzPtbcQiF33OLXCDYSTHKjc/5Gn7+KIeAyGPmAPDM8PqH+VpRbGBpB7Hp0d/?=
- =?us-ascii?Q?f7ABus/t6s3iEWTnAJjPZi+Lmwf4eK3JhN+Aq0ZaySjDeUmYehLtvigxDR9V?=
- =?us-ascii?Q?yeyiNDRijzwXd8eVq+7ENtFPciwor2ZoVotodt7nWVFq4FCEw17DLLDuac5X?=
- =?us-ascii?Q?a1WL0TfrCyAgdEw7eREegHVzx+L+1wgsmaxdFfL2?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 81434a72-7dbd-46b6-1c4c-08db62ab8e28
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2023 14:21:56.8501
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vFB06rqu26ER7ZXDB3FFtdHIWiJsjw4VQo+NilWA2/Z+CcW3TAMGZU3pYlGRU3Hd
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5182
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230411-topic-straitlagoon_mdss-v5-8-998b4d2f7dd1@linaro.org>
 
-On Wed, May 31, 2023 at 09:33:42PM -0700, Jacob Pan wrote:
-> Hi Jason,
+On 2023-05-23 09:46:19, Konrad Dybcio wrote:
+> Add basic SM6375 support to the DPU1 driver to enable display output.
+
+Nit: The SM6350 commit doesn't use the word "basic" here: what does it
+mean?  Is this addition not complete (because it seems so)?
+
+> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> ---
+>  .../gpu/drm/msm/disp/dpu1/catalog/dpu_6_9_sm6375.h | 139 +++++++++++++++++++++
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c     |   1 +
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h     |   1 +
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c            |   1 +
+>  4 files changed, 142 insertions(+)
 > 
-> Do you have any comments on this set? this is a follow-up of the IOASID
-> removal series.
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_9_sm6375.h b/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_9_sm6375.h
+> new file mode 100644
+> index 000000000000..924f2526c06a
+> --- /dev/null
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_9_sm6375.h
+> @@ -0,0 +1,139 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/*
+> + * Copyright (c) 2022. Qualcomm Innovation Center, Inc. All rights reserved.
+> + * Copyright (c) 2015-2018, 2020 The Linux Foundation. All rights reserved.
+> + * Copyright (c) 2023, Linaro Limited
+> + */
+> +
+> +#ifndef _DPU_6_9_SM6375_H
+> +#define _DPU_6_9_SM6375_H
+> +
+> +static const struct dpu_caps sm6375_dpu_caps = {
+> +	.max_mixer_width = DEFAULT_DPU_LINE_WIDTH,
+> +	.max_mixer_blendstages = 0x4,
+> +	.qseed_type = DPU_SSPP_SCALER_QSEED4,
+> +	.has_dim_layer = true,
+> +	.has_idle_pc = true,
+> +	.max_linewidth = 2160,
+> +	.pixel_ram_size = DEFAULT_PIXEL_RAM_SIZE,
+> +};
+> +
+> +static const struct dpu_ubwc_cfg sm6375_ubwc_cfg = {
+> +	.ubwc_version = DPU_HW_UBWC_VER_20,
+> +	.ubwc_swizzle = 6,
+> +	.highest_bank_bit = 1,
+> +};
+> +
+> +static const struct dpu_mdp_cfg sm6375_mdp[] = {
+> +	{
+> +	.name = "top_0", .id = MDP_TOP,
+> +	.base = 0x0, .len = 0x494,
+> +	.features = 0,
+> +	.clk_ctrls[DPU_CLK_CTRL_VIG0] = { .reg_off = 0x2ac, .bit_off = 0 },
+> +	.clk_ctrls[DPU_CLK_CTRL_DMA0] = { .reg_off = 0x2ac, .bit_off = 8 },
+> +	},
+> +};
+> +
+> +static const struct dpu_ctl_cfg sm6375_ctl[] = {
+> +	{
+> +	.name = "ctl_0", .id = CTL_0,
+> +	.base = 0x1000, .len = 0x1dc,
+> +	.features = BIT(DPU_CTL_ACTIVE_CFG),
+> +	.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 9),
+> +	},
+> +};
+> +
+> +static const struct dpu_sspp_cfg sm6375_sspp[] = {
+> +	SSPP_BLK("sspp_0", SSPP_VIG0, 0x4000, 0x1f8, VIG_SC7180_MASK,
+> +		sm6115_vig_sblk_0, 0, SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG0),
+> +	SSPP_BLK("sspp_8", SSPP_DMA0, 0x24000, 0x1f8, DMA_SDM845_MASK,
+> +		sdm845_dma_sblk_0, 1, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA0),
+> +};
+> +
+> +static const struct dpu_lm_cfg sm6375_lm[] = {
+> +	LM_BLK("lm_0", LM_0, 0x44000, MIXER_QCM2290_MASK,
+> +		&qcm2290_lm_sblk, PINGPONG_0, 0, DSPP_0),
+> +};
+> +
+> +static const struct dpu_dspp_cfg sm6375_dspp[] = {
+> +	DSPP_BLK("dspp_0", DSPP_0, 0x54000, DSPP_SC7180_MASK,
+> +		&sm8150_dspp_sblk),
+> +};
+> +
+> +static const struct dpu_pingpong_cfg sm6375_pp[] = {
+> +	PP_BLK("pingpong_0", PINGPONG_0, 0x70000, PINGPONG_SM8150_MASK, 0, sdm845_pp_sblk,
+> +		DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 8),
+> +		-1),
+> +};
+> +
+> +static const struct dpu_dsc_cfg sm6375_dsc[] = {
+> +	DSC_BLK("dsc_0", DSC_0, 0x80000, BIT(DPU_DSC_OUTPUT_CTRL)),
+> +};
+> +
+> +static const struct dpu_intf_cfg sm6375_intf[] = {
+> +	INTF_BLK("intf_0", INTF_0, 0x00000, 0x280, INTF_NONE, 0, 0, 0, 0, 0),
+> +	INTF_BLK_DSI_TE("intf_1", INTF_1, 0x6a800, 0x2c0, INTF_DSI, 0, 24, INTF_SC7280_MASK,
 
-It looks OK in general, I see it still needs another spin before the
-driver part is OK?
+Did you forget to set this back to SC7180?  This will be enabling
+DPU_INTF_DATA_COMPRESS otherwise, which is a DPU 7.x feature.
 
-Jason
+- Marijn
+
+> +		DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 26),
+> +		DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 27),
+> +		DPU_IRQ_IDX(MDP_INTF1_TEAR_INTR, 2)),
+> +};
+> +
+> +static const struct dpu_perf_cfg sm6375_perf_data = {
+> +	.max_bw_low = 5200000,
+> +	.max_bw_high = 6200000,
+> +	.min_core_ib = 2500000,
+> +	.min_llcc_ib = 0, /* No LLCC on this SoC */
+> +	.min_dram_ib = 1600000,
+> +	.min_prefill_lines = 24,
+> +	/* TODO: confirm danger_lut_tbl */
+> +	.danger_lut_tbl = {0xffff, 0xffff, 0x0},
+> +	.safe_lut_tbl = {0xfe00, 0xfe00, 0xffff},
+> +	.qos_lut_tbl = {
+> +		{.nentry = ARRAY_SIZE(sm6350_qos_linear_macrotile),
+> +		.entries = sm6350_qos_linear_macrotile
+> +		},
+> +		{.nentry = ARRAY_SIZE(sm6350_qos_linear_macrotile),
+> +		.entries = sm6350_qos_linear_macrotile
+> +		},
+> +		{.nentry = ARRAY_SIZE(sc7180_qos_nrt),
+> +		.entries = sc7180_qos_nrt
+> +		},
+> +	},
+> +	.cdp_cfg = {
+> +		{.rd_enable = 1, .wr_enable = 1},
+> +		{.rd_enable = 1, .wr_enable = 0}
+> +	},
+> +	.clk_inefficiency_factor = 105,
+> +	.bw_inefficiency_factor = 120,
+> +};
+> +
+> +const struct dpu_mdss_cfg dpu_sm6375_cfg = {
+> +	.caps = &sm6375_dpu_caps,
+> +	.ubwc = &sm6375_ubwc_cfg,
+> +	.mdp_count = ARRAY_SIZE(sm6375_mdp),
+> +	.mdp = sm6375_mdp,
+> +	.ctl_count = ARRAY_SIZE(sm6375_ctl),
+> +	.ctl = sm6375_ctl,
+> +	.sspp_count = ARRAY_SIZE(sm6375_sspp),
+> +	.sspp = sm6375_sspp,
+> +	.mixer_count = ARRAY_SIZE(sm6375_lm),
+> +	.mixer = sm6375_lm,
+> +	.dspp_count = ARRAY_SIZE(sm6375_dspp),
+> +	.dspp = sm6375_dspp,
+> +	.dsc_count = ARRAY_SIZE(sm6375_dsc),
+> +	.dsc = sm6375_dsc,
+> +	.pingpong_count = ARRAY_SIZE(sm6375_pp),
+> +	.pingpong = sm6375_pp,
+> +	.intf_count = ARRAY_SIZE(sm6375_intf),
+> +	.intf = sm6375_intf,
+> +	.vbif_count = ARRAY_SIZE(sdm845_vbif),
+> +	.vbif = sdm845_vbif,
+> +	.perf = &sm6375_perf_data,
+> +	.mdss_irqs = BIT(MDP_SSPP_TOP0_INTR) | \
+> +		     BIT(MDP_SSPP_TOP0_INTR2) | \
+> +		     BIT(MDP_SSPP_TOP0_HIST_INTR) | \
+> +		     BIT(MDP_INTF1_INTR) | \
+> +		     BIT(MDP_INTF1_TEAR_INTR),
+> +};
+> +
+> +#endif
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+> index 6e338d569632..7cfdcf7aa486 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+> @@ -750,6 +750,7 @@ static const struct dpu_qos_lut_entry sc7180_qos_nrt[] = {
+>  #include "catalog/dpu_6_3_sm6115.h"
+>  #include "catalog/dpu_6_4_sm6350.h"
+>  #include "catalog/dpu_6_5_qcm2290.h"
+> +#include "catalog/dpu_6_9_sm6375.h"
+>  
+>  #include "catalog/dpu_7_0_sm8350.h"
+>  #include "catalog/dpu_7_2_sc7280.h"
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
+> index ed4311f6aaf0..b84c14318449 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
+> @@ -836,6 +836,7 @@ extern const struct dpu_mdss_cfg dpu_sc7180_cfg;
+>  extern const struct dpu_mdss_cfg dpu_sm6115_cfg;
+>  extern const struct dpu_mdss_cfg dpu_sm6350_cfg;
+>  extern const struct dpu_mdss_cfg dpu_qcm2290_cfg;
+> +extern const struct dpu_mdss_cfg dpu_sm6375_cfg;
+>  extern const struct dpu_mdss_cfg dpu_sm8350_cfg;
+>  extern const struct dpu_mdss_cfg dpu_sc7280_cfg;
+>  extern const struct dpu_mdss_cfg dpu_sc8280xp_cfg;
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+> index d9925097626c..d3ca8c3c808c 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+> @@ -1329,6 +1329,7 @@ static const struct of_device_id dpu_dt_match[] = {
+>  	{ .compatible = "qcom,sc8280xp-dpu", .data = &dpu_sc8280xp_cfg, },
+>  	{ .compatible = "qcom,sm6115-dpu", .data = &dpu_sm6115_cfg, },
+>  	{ .compatible = "qcom,sm6350-dpu", .data = &dpu_sm6350_cfg, },
+> +	{ .compatible = "qcom,sm6375-dpu", .data = &dpu_sm6375_cfg, },
+>  	{ .compatible = "qcom,sm8150-dpu", .data = &dpu_sm8150_cfg, },
+>  	{ .compatible = "qcom,sm8250-dpu", .data = &dpu_sm8250_cfg, },
+>  	{ .compatible = "qcom,sm8350-dpu", .data = &dpu_sm8350_cfg, },
+> 
+> -- 
+> 2.40.1
+> 
