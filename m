@@ -1,167 +1,84 @@
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4FD8156F0;
-	Thu,  1 Jun 2023 16:51:16 +0000 (UTC)
-Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-96f99222e80so248652366b.1;
-        Thu, 01 Jun 2023 09:51:16 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C17713AC3
+	for <iommu@lists.linux.dev>; Thu,  1 Jun 2023 16:55:58 +0000 (UTC)
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-97454836448so55474266b.2
+        for <iommu@lists.linux.dev>; Thu, 01 Jun 2023 09:55:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685638275; x=1688230275;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=E6aw7YI0APlK+a4Ho7hkA2bZ/IE4Hfe3r+p1hUTo22w=;
-        b=P5K1gIvm5lMpyivClcYlSPpZk74Scq23UC7J49ZKXtd2Ty5NCk14Pzlmiw6G4TAT4e
-         R1SGrpIa7IOeMrrklx7UG2tAsiq9TFD4L8+GH42Zwqhfq/57kAkCKDh9e1B9u0uiq27N
-         Z2+cMvWVhGdpGqS04+8eMH1XROW5TNrSoWp21DvbX4Cljkzg06zAxgkEeZxXqtAHLxHn
-         Ukmg1ow9zsxYl1omDwPfgFBfHdDY/RlrCywsx1cRypvE8ktrFFqeuPghyapZVqcnmPfd
-         pHVao4wq68V+9Udu892pd4CZQNueuUSskC33wv4222J7q5LLmeCFeujIxSJZqtaz7HbM
-         QbBQ==
+        d=linaro.org; s=google; t=1685638556; x=1688230556;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=/9PhABrR6fbuT1S1oyIuPZW5VFgQbeU/P+IYi+AHHxM=;
+        b=ffZXKYwLf5T1O2JvWMZdIWhRi7SWjAPrvhw6AL6FlT1bG2FLKbU8LX68ph7e3LO04U
+         dU0rRDYbrveOU6ArfGhxfOLABRs2IHbfoby2DxZgAs86Y9xgm2Bz6MkxmTFh0uZotOlr
+         CpBbV70cVmqyHYXRn5dfEu06K1RrnQc0B65w8dp4o3x3hVSHqwXMddY+I6OdXIITVbLh
+         wagj+12DMz6Zvies9MQnbslGC4lzfDHT+hrH1o/RcDSO3+dpYJN1XPzXdQRATYrdVfpI
+         TSximRQqSXxMHjLDol5p1/cvuNwXunbRaV7yApHcxtcA54c1/WoUiTSehetLPYX13zRc
+         GHQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685638275; x=1688230275;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=E6aw7YI0APlK+a4Ho7hkA2bZ/IE4Hfe3r+p1hUTo22w=;
-        b=cx0T7itCzlpgfCsSnLM6MRyKHDcsZtrMa0O8jfBvOfFE4RPmRraNuPqMdpKb3tclFl
-         zfbRIrzskWebQ7MVa9kKpLiGavqYrr0XH/cV9x6OiFxNcRK6nIOsp9ANxHcSF3P4P3nb
-         a61K9zxEMhEGV+viPwxWPCfGMPcthIVGRtGvPRhmhwGQEOPTLwKvby01Ads+DHhhf/TN
-         4MLoBGjILBPyNm5O7iBWiDbTwJBjbjkcxDCL8KrzHwRtMIJKRFXOzRtNK+onhmr8wl3j
-         Lg2+qoepk9J9PqJb5XuwhlUDtv4g/wf3zCVK8c0hu1MSnLY6pmAo+TjHO+zJ/9+9ovlL
-         g5pw==
-X-Gm-Message-State: AC+VfDz2rs/CtFZnElRX48WvU9dIJSTmbxiXVbliIdtgfO9X2vrkcj7m
-	wx34F2hcGPMvaRxAomTFQC0=
-X-Google-Smtp-Source: ACHHUZ6tapSBvaY3YL2Ex5VOuVrYb3aIm5DVnhvBJZ6q0GGzp5g+K/kybtTX/EWGyJOG95QWxE5s1Q==
-X-Received: by 2002:a17:907:7f15:b0:94a:4e86:31bc with SMTP id qf21-20020a1709077f1500b0094a4e8631bcmr2589785ejc.13.1685638274568;
-        Thu, 01 Jun 2023 09:51:14 -0700 (PDT)
-Received: from orome (p200300e41f305300f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f30:5300:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id s7-20020a170906c30700b0094f410225c7sm10744283ejz.169.2023.06.01.09.51.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Jun 2023 09:51:14 -0700 (PDT)
-Date: Thu, 1 Jun 2023 18:51:11 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Andy Gross <agross@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-	linux-mediatek@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
-	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
-	linux-tegra@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-	linuxppc-dev@lists.ozlabs.org,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Orson Zhai <orsonzhai@gmail.com>, Rob Clark <robdclark@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Samuel Holland <samuel@sholland.org>,
-	Krishna Reddy <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
-	Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Dmitry Osipenko <digetx@gmail.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Steven Price <steven.price@arm.com>,
-	Thierry Reding <treding@nvidia.com>
-Subject: Re: [PATCH v2 05/25] iommu/tegra-gart: Remove tegra-gart
-Message-ID: <ZHjMf9_uunlvVWtB@orome>
-References: <0-v2-8d1dc464eac9+10f-iommu_all_defdom_jgg@nvidia.com>
- <5-v2-8d1dc464eac9+10f-iommu_all_defdom_jgg@nvidia.com>
+        d=1e100.net; s=20221208; t=1685638556; x=1688230556;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=/9PhABrR6fbuT1S1oyIuPZW5VFgQbeU/P+IYi+AHHxM=;
+        b=Ofh4zRhIsrrn84vrpp6mNtSa9RssUW1ZVFcbBKtXqcpg4AB7L69YhgKHvDuB79Fnh7
+         DgZ1rRs+Dj10fDVlw4hIaFH60hkHcXIBY3heh9i2mdrDjL7c9fbOs572ClIBszpOIdMN
+         4eC+D/8kcY+JmneHypWQZyRcfPxQgYrFZZuVSQhdvKef0Qw4rmprwIDtBC7895TcZgC1
+         7xtI7fbvs38mRUj2Ey3V6P5SxTBha+imTMiOuThB/XXqbI2T0/LYPRHf684JWicg/Idj
+         QLBiZgERtjuaoqFOerUnNxP4ksduNapWWYEYA7v8ucLUO1rXvjZG6PBujFv/3blqPVSK
+         AFhw==
+X-Gm-Message-State: AC+VfDzer1rmLeA21yOPl5Xp7uJ76NPxjEUwXgyMWjz99koCBfE7mt98
+	uhQHAKKXzZmC9Iq8E8903c3krQ==
+X-Google-Smtp-Source: ACHHUZ6ygqoysrjPFxzcfm1Ac5L9I1KaJ4mwEF6HXcgsykWw+pw5MRf0NYhA4AB2O0EcNhhoiAnYUQ==
+X-Received: by 2002:a17:907:86a4:b0:973:e4c2:2bcd with SMTP id qa36-20020a17090786a400b00973e4c22bcdmr8555945ejc.18.1685638556663;
+        Thu, 01 Jun 2023 09:55:56 -0700 (PDT)
+Received: from [192.168.1.20] ([178.197.199.204])
+        by smtp.gmail.com with ESMTPSA id a6-20020a1709063a4600b00973fac6065esm6693089ejf.223.2023.06.01.09.55.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Jun 2023 09:55:56 -0700 (PDT)
+Message-ID: <3589e3fc-2add-52d7-68bd-2b41a9cba4af@linaro.org>
+Date: Thu, 1 Jun 2023 18:55:53 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="0JJNQg2cyOE2ETg4"
-Content-Disposition: inline
-In-Reply-To: <5-v2-8d1dc464eac9+10f-iommu_all_defdom_jgg@nvidia.com>
-User-Agent: Mutt/2.2.10 (2023-03-25)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH 1/2] dt-bindings: arm-smmu: Add SM6375 GPU SMMU
+Content-Language: en-US
+To: Konrad Dybcio <konrad.dybcio@linaro.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Andy Gross <agross@kernel.org>,
+ Bjorn Andersson <andersson@kernel.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org
+References: <20230531-topic-sm6375_gpusmmu-v1-0-860943894c71@linaro.org>
+ <20230531-topic-sm6375_gpusmmu-v1-1-860943894c71@linaro.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230531-topic-sm6375_gpusmmu-v1-1-860943894c71@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-
---0JJNQg2cyOE2ETg4
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Mon, May 15, 2023 at 09:00:38PM -0300, Jason Gunthorpe wrote:
-> Thierry says this is not used anymore, and doesn't think it ever will
-> be. The HW it supports is about 10 years old now and newer HW uses
-> different IOMMU drivers.
->=20
-> As this is the only driver with a GART approach, and it doesn't really
-> meet the driver expectations from the IOMMU core, let's just remove it
-> so we don't have to think about how to make it fit in.
->=20
-> It has a number of identified problems:
->  - The assignment of iommu_groups doesn't match the HW behavior
->=20
->  - It claims to have an UNMANAGED domain but it is really an IDENTITY
->    domain with a translation aperture. This is inconsistent with the core
->    expectation for security sensitive operations
->=20
->  - It doesn't implement a SW page table under struct iommu_domain so
->    * It can't accept a map until the domain is attached
->    * It forgets about all maps after the domain is detached
->    * It doesn't clear the HW of maps once the domain is detached
->      (made worse by having the wrong groups)
->=20
-> Cc: Thierry Reding <treding@nvidia.com>
-> Cc: Dmitry Osipenko <digetx@gmail.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+On 31/05/2023 17:04, Konrad Dybcio wrote:
+> SM6375 has a "Qualcomm SMMU V2" implementation for its GPU SMMU. It
+> does not however qualify for the qcom,adreno-smmu compatible, as it can
+> not do split pagetables. It consumes a single clock and a single genpd.
+> 
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 > ---
->  arch/arm/configs/multi_v7_defconfig |   1 -
->  arch/arm/configs/tegra_defconfig    |   1 -
->  drivers/iommu/Kconfig               |  11 -
->  drivers/iommu/Makefile              |   1 -
->  drivers/iommu/tegra-gart.c          | 371 ----------------------------
->  drivers/memory/tegra/mc.c           |  34 ---
->  drivers/memory/tegra/tegra20.c      |  28 ---
->  include/soc/tegra/mc.h              |  26 --
->  8 files changed, 473 deletions(-)
->  delete mode 100644 drivers/iommu/tegra-gart.c
+>  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 2 ++
 
-To clarify, I think this hardware could very well be used again, but I
-don't think it makes sense to use it in the context of the IOMMU
-subsystem. If anybody wants to make use of this on Tegra20, it probably
-makes more sense to move the GART programming into whatever driver ends
-up using it instead of jumping through all these hoops just to make it
-work like something it isn't.
 
-Acked-by: Thierry Reding <treding@nvidia.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
---0JJNQg2cyOE2ETg4
-Content-Type: application/pgp-signature; name="signature.asc"
+Best regards,
+Krzysztof
 
------BEGIN PGP SIGNATURE-----
-
-iQIyBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmR4zHwACgkQ3SOs138+
-s6EzXg/4sDDYzIY93jnjqgBAzF26DdM9+f9tNLS+tEhgUpn3WoMfZ+2mVBZJ6Qvl
-+zK/7cpay72mra2XCdI2nBDl4fc/MivQMZ2uBvnu1mNY4uQypRWZsVlnpKO5nkpf
-55oa0ZvczaCmITixiNpt58qIRcL/+Rwn+kuXCMcfZYr8WXq09eTZJ/E0SndTbgRv
-RNPyDbkY2T939Z3KYEhZH3filqm0ul9asQvbO31FsU+htgOT6XEYwanpd1jZuV+E
-uemlmy/fYzUkBbJoZ1wk9/pbYhZqlvZnOF3XvyJXOfsbrBiP/gkDstxYeMS86AVq
-ITwKKqX80dphMpO6Af5OEpuKjrh6wtzPgdgcKIMIgd6aQADSX5xLsQ/P0kIqI0em
-H679cza6Mm7Nl7NwmAMCiOVL568ME8criReWPK5nEnRg4TLj1AvsKLAubgHxXIP/
-Hzxox5RDNL5ubE2gcko6btoFu+yXxvxGT9nF1YcJxBcWUhHPVqpwg1q403RqF0bE
-Kfcfzs07wR/OM8vsXJxYxZdgE7HdZkh/vZnE0MWmiaGCHDaPZdx8vsMW8g0G1Wn9
-a3GXa18+zdEntyjXiH2QaNuytRlcnTWX6Egc9uLjzjyWgjW8dA2PHN70fli1p+Zf
-wv1qFNssXNER2qzepDmLQj621WybUok9GAhhWu0jfezY8b75zw==
-=Ciid
------END PGP SIGNATURE-----
-
---0JJNQg2cyOE2ETg4--
