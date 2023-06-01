@@ -1,134 +1,154 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B18142501
-	for <iommu@lists.linux.dev>; Thu,  1 Jun 2023 17:39:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA405C433AA
-	for <iommu@lists.linux.dev>; Thu,  1 Jun 2023 17:39:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685641181;
-	bh=rOyxKwyKoD8JRFg4gUZg/5MsYAzctjBiJEmXXIw+2Pg=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=o/tcJHGXDGK+Cmz0WPMH9eqt4DXVRB87b+bOc4yCFZZx+pNoEHu0L6Kk/WHl5TZCQ
-	 v4wg++ka5L5/koa89l5lEtczt9Lp/CS49/lq9S/D/gsV6IN2cJNGZcqlW9mzDWtgf8
-	 kSPa6HE9uQjRqdmZMZGwEA+2H5w1XPFs1bwtf87IXl053GkxGBjbRGWwQEhiSemK34
-	 SURRDqI9JYl4AuMZSjsgfbIzfuYI4ScXci6h+5ayJwzrwQeS7v4C8WHfjDAbGm6Wt7
-	 HhKwh2oygRzaHVjZAo7rCNsfYsqW/i3EtbygDwQjD02rjzFKXYyUdDoEjObai2iibs
-	 UOf6kgrQWTHWg==
-Received: by mail-vs1-f43.google.com with SMTP id ada2fe7eead31-439554d9a69so789770137.1
-        for <iommu@lists.linux.dev>; Thu, 01 Jun 2023 10:39:41 -0700 (PDT)
-X-Gm-Message-State: AC+VfDzRcKLrR+J8uzvuOkn9kX0HLVhowFdTu+SW9zrpy1YTwRZVb7Le
-	QDwPgoLqBwvmKuUnf1/AN9WknjQCAG4U0x6J8XQ=
-X-Google-Smtp-Source: ACHHUZ7saBfaT5uX7NLiJU4LIkIoXw37eBnBmjdUSiEWtD7RMOu14iPsR47csoQHy7I8rQlHKSda/v96q9Noy2qP/FE=
-X-Received: by 2002:aca:ead6:0:b0:398:2f7f:a5cd with SMTP id
- i205-20020acaead6000000b003982f7fa5cdmr1228908oih.24.1685641160132; Thu, 01
- Jun 2023 10:39:20 -0700 (PDT)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 21C9347017;
+	Thu,  1 Jun 2023 18:25:46 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4B9511063;
+	Thu,  1 Jun 2023 11:26:31 -0700 (PDT)
+Received: from [10.57.84.85] (unknown [10.57.84.85])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B053E3F663;
+	Thu,  1 Jun 2023 11:25:38 -0700 (PDT)
+Message-ID: <914124dd-c319-15c5-cc03-c5db0e4002f4@arm.com>
+Date: Thu, 1 Jun 2023 19:25:32 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230531130833.635651916@infradead.org> <20230531132323.722039569@infradead.org>
- <70a69deb-7ad4-45b2-8e13-34955594a7ce@app.fastmail.com> <20230601101409.GS4253@hirez.programming.kicks-ass.net>
- <14c50e58-fecc-e96a-ee73-39ef4e4617c7@gmx.de> <CAHk-=whL65CLuy9D9gyO608acM5WLWo_ggAMP1cGu2XvyC0-hA@mail.gmail.com>
-In-Reply-To: <CAHk-=whL65CLuy9D9gyO608acM5WLWo_ggAMP1cGu2XvyC0-hA@mail.gmail.com>
-From: Masahiro Yamada <masahiroy@kernel.org>
-Date: Fri, 2 Jun 2023 02:38:43 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATxpUK+w=VAkhLZserLr4cMk2ffSr+qzzZwuZ6DKWA0mw@mail.gmail.com>
-Message-ID: <CAK7LNATxpUK+w=VAkhLZserLr4cMk2ffSr+qzzZwuZ6DKWA0mw@mail.gmail.com>
-Subject: Re: [PATCH v2 07/12] parisc/percpu: Work around the lack of __SIZEOF_INT128__
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Helge Deller <deller@gmx.de>, Peter Zijlstra <peterz@infradead.org>, Arnd Bergmann <arnd@arndb.de>, 
-	Jonathan Corbet <corbet@lwn.net>, Will Deacon <will@kernel.org>, Boqun Feng <boqun.feng@gmail.com>, 
-	Mark Rutland <mark.rutland@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, dennis@kernel.org, 
-	Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@linux.com>, Heiko Carstens <hca@linux.ibm.com>, gor@linux.ibm.com, 
-	Alexander Gordeev <agordeev@linux.ibm.com>, borntraeger@linux.ibm.com, 
-	Sven Schnelle <svens@linux.ibm.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, 
-	Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, 
-	"H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>, suravee.suthikulpanit@amd.com, 
-	Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>, 
-	Baolu Lu <baolu.lu@linux.intel.com>, Herbert Xu <herbert@gondor.apana.org.au>, 
-	"David S . Miller" <davem@davemloft.net>, Pekka Enberg <penberg@kernel.org>, 
-	David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>, 
-	Roman Gushchin <roman.gushchin@linux.dev>, Hyeonggon Yoo <42.hyeyoo@gmail.com>, 
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-s390@vger.kernel.org, iommu@lists.linux.dev, 
-	Linux-Arch <linux-arch@vger.kernel.org>, linux-crypto@vger.kernel.org, 
-	Stephen Rothwell <sfr@canb.auug.org.au>, Michael Ellerman <mpe@ellerman.id.au>, 
-	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, linux-parisc@vger.kernel.org, 
-	John David Anglin <dave.anglin@bell.net>, Sam James <sam@gentoo.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.2
+Subject: Re: [PATCH v2 04/25] iommu: Add IOMMU_DOMAIN_PLATFORM for S390
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
+ Alim Akhtar <alim.akhtar@samsung.com>, Bjorn Andersson
+ <andersson@kernel.org>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Baolin Wang <baolin.wang@linux.alibaba.com>,
+ Christophe Leroy <christophe.leroy@csgroup.eu>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Kevin Tian <kevin.tian@intel.com>, Konrad Dybcio <konrad.dybcio@linaro.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+ linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org,
+ linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+ linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
+ Russell King <linux@armlinux.org.uk>, linuxppc-dev@lists.ozlabs.org,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Matthew Rosato <mjrosato@linux.ibm.com>,
+ Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
+ Orson Zhai <orsonzhai@gmail.com>, Rob Clark <robdclark@gmail.com>,
+ Samuel Holland <samuel@sholland.org>,
+ Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy
+ <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
+ Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+ Chunyan Zhang <zhang.lyra@gmail.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Dmitry Osipenko <digetx@gmail.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, Niklas Schnelle
+ <schnelle@linux.ibm.com>, Steven Price <steven.price@arm.com>,
+ Thierry Reding <treding@nvidia.com>
+References: <4-v2-8d1dc464eac9+10f-iommu_all_defdom_jgg@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <4-v2-8d1dc464eac9+10f-iommu_all_defdom_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Jun 1, 2023 at 10:29=E2=80=AFPM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Thu, Jun 1, 2023 at 6:32=E2=80=AFAM Helge Deller <deller@gmx.de> wrote=
-:
-> >
-> > I don't think we need to care about gcc-10 on parisc.
-> > Debian and Gentoo are the only supported distributions, while Debian
-> > requires gcc-12 to build > 6.x kernels, and I assume Gentoo uses at lea=
-st
-> > gcc-12 as well.
-> >
-> > So raising the gcc limit for parisc only (at least temporarily for now)
-> > should be fine and your workaround below wouldn't be necessary, right?
->
-> This absolutely sounds like the right option. Let's simplify the
-> problem space by just saying that parisc needs the newer compiler.
->
-> Right now we have that "minimum gcc version" in a somewhat annoying
-> place: it's in the ./scripts/min-tool-version.sh file as a shell
-> script.
->
-> I wonder if we could move the gcc minimum version check into the
-> Kconfig file instead, and make it easier to let architectures override
-> the minimum version.
+On 2023-05-16 01:00, Jason Gunthorpe wrote:
+> The PLATFORM domain will be set as the default domain and attached as
+> normal during probe. The driver will ignore the initial attach from a NULL
+> domain to the PLATFORM domain.
+> 
+> After this, the PLATFORM domain's attach_dev will be called whenever we
+> detach from an UNMANAGED domain (eg for VFIO). This is the same time the
+> original design would have called op->detach_dev().
+> 
+> This is temporary until the S390 dma-iommu.c conversion is merged.
 
-Currently, it is invoked in the Kconfig time,
-but not directly in Kconfig files.
+If we do need a stopgap here, can we please just call the current 
+situation an identity domain? It's true enough in the sense that the 
+IOMMU API is not offering any translation or guarantee of isolation, so 
+the semantics of an identity domain - from the point of view of anything 
+inside the IOMMU API that would be looking - are no weaker or less 
+useful than a "platform" domain whose semantics are intentionally unknown.
 
-scripts/Kconfig.include
- -> scripts/cc-version.sh
-    -> scripts/min-tool-version.sh
+Then similarly for patch #3 - since we already know s390 is temporary, 
+it seems an anathema to introduce a whole domain type with its own weird 
+ops->default_domain mechanism solely for POWER to not actually use 
+domains with.
 
-It would be ugly if we wrote the equivalent code
-directly in Kconfig files.
+In terms of reasoning, I don't see that IOMMU_DOMAIN_PLATFORM is any 
+more useful than a NULL default domain, it just renames the problem, and 
+gives us more code to maintain for the privilege. As I say, though, we 
+don't actually need to juggle the semantic of a "we don't know what's 
+happening here" domain around any further, since it works out that a 
+"we're not influencing anything here" domain actually suffices for what 
+we want to reason about, and those are already well-defined. Sure, the 
+platform DMA ops *might* be doing more, but that's beyond the scope of 
+the IOMMU API either way. At that point, lo and behold, s390 and POWER 
+now look just like ARM and the core code only needs a single special 
+case for arch-specific default identity domains, lovely!
 
+Thanks,
+Robin.
 
->
-> I don't quite know how to do that sanely, though. I don't think we
-> have a sane way to error out at Kconfig time (except by forcing some
-> syntax error inside an 'if' statement or something horrendously hacky
-> like that).
-
-The parse stage can fail by $(error-if ) macro, but
-the evaluation stage never fails. I think it is a design.
-
-I think checking the compiler version during the parse stage
-makes sense given the current situation. The compiler version is
-fixed when Kconfig starts. If the compiler is found to be too old,
-there is no meaning to proceed.
-
-
-You suggested to choose a compiler in the Kconfig time:
-https://lore.kernel.org/lkml/CAHk-=3DwhdrvCkSWh=3DBRrwZwNo3=3DyLBXXM88NGx8V=
-EpP1VTgmkyQ@mail.gmail.com/
-
-When we achieve that, moving the min version to Kconfig files will be
-the right thing to do. Then, everything will be evaluated dynamically.
-
-
->
-> Added Masahiro to the (already overlong) participants list.
->
->                    Linus
-
-
-
---=20
-Best Regards
-Masahiro Yamada
+> Tested-by: Heiko Stuebner <heiko@sntech.de>
+> Tested-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>   drivers/iommu/s390-iommu.c | 21 +++++++++++++++++++--
+>   1 file changed, 19 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+> index fbf59a8db29b11..f0c867c57a5b9b 100644
+> --- a/drivers/iommu/s390-iommu.c
+> +++ b/drivers/iommu/s390-iommu.c
+> @@ -142,14 +142,31 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
+>   	return 0;
+>   }
+>   
+> -static void s390_iommu_set_platform_dma(struct device *dev)
+> +/*
+> + * Switch control over the IOMMU to S390's internal dma_api ops
+> + */
+> +static int s390_iommu_platform_attach(struct iommu_domain *platform_domain,
+> +				      struct device *dev)
+>   {
+>   	struct zpci_dev *zdev = to_zpci_dev(dev);
+>   
+> +	if (!zdev->s390_domain)
+> +		return 0;
+> +
+>   	__s390_iommu_detach_device(zdev);
+>   	zpci_dma_init_device(zdev);
+> +	return 0;
+>   }
+>   
+> +static struct iommu_domain_ops s390_iommu_platform_ops = {
+> +	.attach_dev = s390_iommu_platform_attach,
+> +};
+> +
+> +static struct iommu_domain s390_iommu_platform_domain = {
+> +	.type = IOMMU_DOMAIN_PLATFORM,
+> +	.ops = &s390_iommu_platform_ops,
+> +};
+> +
+>   static void s390_iommu_get_resv_regions(struct device *dev,
+>   					struct list_head *list)
+>   {
+> @@ -428,12 +445,12 @@ void zpci_destroy_iommu(struct zpci_dev *zdev)
+>   }
+>   
+>   static const struct iommu_ops s390_iommu_ops = {
+> +	.default_domain = &s390_iommu_platform_domain,
+>   	.capable = s390_iommu_capable,
+>   	.domain_alloc = s390_domain_alloc,
+>   	.probe_device = s390_iommu_probe_device,
+>   	.release_device = s390_iommu_release_device,
+>   	.device_group = generic_device_group,
+> -	.set_platform_dma_ops = s390_iommu_set_platform_dma,
+>   	.pgsize_bitmap = SZ_4K,
+>   	.get_resv_regions = s390_iommu_get_resv_regions,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
