@@ -1,63 +1,35 @@
-Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 851AB14274
+	for <iommu@lists.linux.dev>; Thu,  1 Jun 2023 09:50:29 +0000 (UTC)
+Received: from 8bytes.org (p200300c2773e310086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:773e:3100:86ad:4f9d:2505:dd0d])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C795179DF
-	for <iommu@lists.linux.dev>; Thu,  1 Jun 2023 09:26:41 +0000 (UTC)
-Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-4eed764a10cso644617e87.0
-        for <iommu@lists.linux.dev>; Thu, 01 Jun 2023 02:26:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1685611599; x=1688203599;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=zVFNX3zBr144yloFjBpc+DF1izqPZvrTSNy+oaQ0gEw=;
-        b=jFmfkxombN6/nnnv1lrM8/pSBthA85NbrMdUkWp3PeiSm3qEMBTWzTvyfHruvO207f
-         Z/hpkndz9S7tiA+hegXOTR3WUeu+X+eWMwfkD0aFYm86Qu/h+kLt3fXrzYNnGzo0ipYy
-         3Mh0eUvdyJBMD6PLhGYPrArORLVhznQ6L8SivJnJjCbBoKmHFIZTIoAzlbWwsQ2QX+6z
-         lztu5y0YI3YnAHZqRBD9he341Xsu++9+2ZSnxcP6wIfnNhDjxJ/3c0nG9pyvAGyoDGuQ
-         0dZl9BsUhQz7zeeQ+cdmV86LwzkSNaJo+2nx4sa6zxCM5fQiDi0/NQuwhlf2j1zT3ILF
-         BysQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685611599; x=1688203599;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=zVFNX3zBr144yloFjBpc+DF1izqPZvrTSNy+oaQ0gEw=;
-        b=U0Fb9XZ+BVMR2R8YQYs0ccYq484RniJdgWYqQyge4PqpN5dZYxh1iKOyx/scRLOPIL
-         R7t4Awgm6HzummEMWoRbPfLLEMvJAyq8cbm5TWWesZDn3MvZVpdE/NMwaI8IhJ5gyF4Q
-         sdClr9WLP3bV/gK1D3fg0P9VreMgXCO/KDOdtrqr2ZCc7+p+2waewSz8V68Hxi9qFK8b
-         iVFffN5Y/7ftPGkOSzamh29XXYLzfysi5pQAEXoTV76y9PBJq2tE+J03O/7pdG5Oshtm
-         GMAYhSArmzd1HOaFnOyyZhmXQYXK3M4kArydT1lizaPGlvHCd+NaW/MuwizlOWg/Dgdv
-         sEzA==
-X-Gm-Message-State: AC+VfDzW1Go0HuS0qafjAdfW4EDNEFqBG+UrgHp3yfntDTZ4eMbexZIw
-	k9G03pdsh5LgcMj1xN9YmbzorA==
-X-Google-Smtp-Source: ACHHUZ6qUwSfXgjFll3OhFMDEEdvNv/jw2fpES6Wr4ZhOXI3g9wDa0fPGHI9DGQf//Q45HEyfRrqKA==
-X-Received: by 2002:ac2:5306:0:b0:4ee:5aeb:e2f2 with SMTP id c6-20020ac25306000000b004ee5aebe2f2mr885985lfh.38.1685611599527;
-        Thu, 01 Jun 2023 02:26:39 -0700 (PDT)
-Received: from myrica (5750a5b3.skybroadband.com. [87.80.165.179])
-        by smtp.gmail.com with ESMTPSA id 8-20020a05600c230800b003f6cf9afc25sm1651626wmo.40.2023.06.01.02.26.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Jun 2023 02:26:38 -0700 (PDT)
-Date: Thu, 1 Jun 2023 10:26:34 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	by mail.8bytes.org (Postfix) with ESMTPSA id 05203224BC8;
+	Thu,  1 Jun 2023 11:50:28 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1685613028;
+	bh=xEqsgsE38eCXYXY7O8duufhtCqHfv4vqpHwODdP2KJw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=cCQzkY1L+2Lg8fvEY/wUofVUMctdZx5EHEXrBfGBEA4CI05S0yxu7W0ahzwFkZ7zO
+	 xh0k2gFU7WMFEmTzLRxGtxgsMGYsA1h+Ucmy9mqKCXJVafdae+l7RPzAXJ8bAIpK8b
+	 f4T2cgClLkgbasqy+ExBb8M2MDHHM+Q1ohbkeE/QoNRrz1zqfYTWEX0KzVfJ81Vxu1
+	 X4NSExFiyVJbOOLorK8mO0/tVcfeB7jfE3TOIexjVWz1FHGvs2XWP8PZwDa3Kn0Z+J
+	 272fF0BHA15yKEgQhQudew9874ZmZ4dlFFHBjbOgC7B/Rkx1MtU7ae6cfZITl3CQsd
+	 PGgKli2e29NGQ==
+Date: Thu, 1 Jun 2023 11:50:26 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Chen-Yu Tsai <wenst@chromium.org>
+Cc: Yong Wu <yong.wu@mediatek.com>, Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>,
-	dmaengine@vger.kernel.org, vkoul@kernel.org,
-	Will Deacon <will@kernel.org>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Raj Ashok <ashok.raj@intel.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
-	"Yu, Fenghua" <fenghua.yu@intel.com>,
-	Dave Jiang <dave.jiang@intel.com>, Tony Luck <tony.luck@intel.com>,
-	"Zanussi, Tom" <tom.zanussi@intel.com>,
-	narayan.ranganathan@intel.com
-Subject: Re: [PATCH v7 1/4] iommu: Generalize PASID 0 for normal DMA w/o PASID
-Message-ID: <20230601092634.GA3059361@myrica>
-References: <20230523173451.2932113-1-jacob.jun.pan@linux.intel.com>
- <20230523173451.2932113-2-jacob.jun.pan@linux.intel.com>
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC] iommu/mediatek: Flush IOTLB completely only if
+ domain has been attached
+Message-ID: <ZHhp4mZZkQbBoGWg@8bytes.org>
+References: <20230526085402.394239-1-wenst@chromium.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -66,142 +38,11 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230523173451.2932113-2-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <20230526085402.394239-1-wenst@chromium.org>
 
-Hi Jacob,
+On Fri, May 26, 2023 at 04:53:59PM +0800, Chen-Yu Tsai wrote:
+> Fixes: 08500c43d4f7 ("iommu/mediatek: Adjust the structure")
+> Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
 
-On Tue, May 23, 2023 at 10:34:48AM -0700, Jacob Pan wrote:
-> PCIe Process address space ID (PASID) is used to tag DMA traffic, it
-> provides finer grained isolation than requester ID (RID).
-> 
-> For each device/RID, 0 is a special PASID for the normal DMA (no
-> PASID). This is universal across all architectures that supports PASID,
-> therefore warranted to be reserved globally and declared in the common
-> header. Consequently, we can avoid the conflict between different PASID
-> use cases in the generic code. e.g. SVA and DMA API with PASIDs.
-> 
-> This paved away for device drivers to choose global PASID policy while
-> continue doing normal DMA.
-> 
-> Noting that VT-d could support none-zero RID/NO_PASID, but currently not
-> used.
-> 
-> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> ---
-> v7:
->    - renamed IOMMU_DEF_RID_PASID to be IOMMU_NO_PASID to be more generic
-> v6:
->    - let SMMU code use the common RID_PASID macro
-> ---
->  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  2 +-
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 10 ++++----
->  drivers/iommu/intel/iommu.c                   | 24 +++++++++----------
->  drivers/iommu/intel/pasid.c                   |  2 +-
->  drivers/iommu/intel/pasid.h                   |  1 -
->  include/linux/iommu.h                         |  1 +
->  6 files changed, 20 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> index a5a63b1c947e..5e6b39881c04 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> @@ -80,7 +80,7 @@ arm_smmu_share_asid(struct mm_struct *mm, u16 asid)
->  	 * be some overlap between use of both ASIDs, until we invalidate the
->  	 * TLB.
->  	 */
-> -	arm_smmu_write_ctx_desc(smmu_domain, 0, cd);
-> +	arm_smmu_write_ctx_desc(smmu_domain, IOMMU_NO_PASID, cd);
->  
->  	/* Invalidate TLB entries previously associated with that context */
->  	arm_smmu_tlb_inv_asid(smmu, asid);
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 3fd83fb75722..6d64c8fc923f 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -1053,7 +1053,7 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
->  	/*
->  	 * This function handles the following cases:
->  	 *
-> -	 * (1) Install primary CD, for normal DMA traffic (SSID = 0).
-> +	 * (1) Install primary CD, for normal DMA traffic (SSID = IOMMU_NO_PASID = 0).
->  	 * (2) Install a secondary CD, for SID+SSID traffic.
->  	 * (3) Update ASID of a CD. Atomically write the first 64 bits of the
->  	 *     CD, then invalidate the old entry and mappings.
-> @@ -1869,7 +1869,7 @@ static void arm_smmu_tlb_inv_context(void *cookie)
->  		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
->  		arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
->  	}
-> -	arm_smmu_atc_inv_domain(smmu_domain, 0, 0, 0);
-> +	arm_smmu_atc_inv_domain(smmu_domain, IOMMU_NO_PASID, 0, 0);
->  }
->  
->  static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
-> @@ -1957,7 +1957,7 @@ static void arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
->  	 * Unfortunately, this can't be leaf-only since we may have
->  	 * zapped an entire table.
->  	 */
-> -	arm_smmu_atc_inv_domain(smmu_domain, 0, iova, size);
-> +	arm_smmu_atc_inv_domain(smmu_domain, IOMMU_NO_PASID, iova, size);
->  }
->  
->  void arm_smmu_tlb_inv_range_asid(unsigned long iova, size_t size, int asid,
-> @@ -2131,7 +2131,7 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
->  	 * the master has been added to the devices list for this domain.
->  	 * This isn't an issue because the STE hasn't been installed yet.
->  	 */
-> -	ret = arm_smmu_write_ctx_desc(smmu_domain, 0, &cfg->cd);
-> +	ret = arm_smmu_write_ctx_desc(smmu_domain, IOMMU_NO_PASID, &cfg->cd);
->  	if (ret)
->  		goto out_free_cd_tables;
->  
-> @@ -2317,7 +2317,7 @@ static void arm_smmu_enable_ats(struct arm_smmu_master *master)
->  	pdev = to_pci_dev(master->dev);
->  
->  	atomic_inc(&smmu_domain->nr_ats_masters);
-> -	arm_smmu_atc_inv_domain(smmu_domain, 0, 0, 0);
-> +	arm_smmu_atc_inv_domain(smmu_domain, IOMMU_NO_PASID, 0, 0);
->  	if (pci_enable_ats(pdev, stu))
->  		dev_err(master->dev, "Failed to enable ATS (STU %zu)\n", stu);
->  }
+Applied for 6.4, thanks.
 
-Thanks, I think this makes the code clearer. For consistency you could
-also add these:
-
----
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 6d64c8fc923fc..c977106357961 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1601,7 +1601,7 @@ static void arm_smmu_handle_ppr(struct arm_smmu_device *smmu, u64 *evt)
-
- 	sid = FIELD_GET(PRIQ_0_SID, evt[0]);
- 	ssv = FIELD_GET(PRIQ_0_SSID_V, evt[0]);
--	ssid = ssv ? FIELD_GET(PRIQ_0_SSID, evt[0]) : 0;
-+	ssid = ssv ? FIELD_GET(PRIQ_0_SSID, evt[0]) : IOMMU_NO_PASID;
- 	last = FIELD_GET(PRIQ_0_PRG_LAST, evt[0]);
- 	grpid = FIELD_GET(PRIQ_1_PRG_IDX, evt[1]);
-
-@@ -1742,7 +1742,7 @@ arm_smmu_atc_inv_to_cmd(int ssid, unsigned long iova, size_t size,
- 	 */
- 	*cmd = (struct arm_smmu_cmdq_ent) {
- 		.opcode			= CMDQ_OP_ATC_INV,
--		.substream_valid	= !!ssid,
-+		.substream_valid	= (ssid != IOMMU_NO_PASID),
- 		.atc.ssid		= ssid,
- 	};
-
-@@ -1789,7 +1789,7 @@ static int arm_smmu_atc_inv_master(struct arm_smmu_master *master)
- 	struct arm_smmu_cmdq_ent cmd;
- 	struct arm_smmu_cmdq_batch cmds;
-
--	arm_smmu_atc_inv_to_cmd(0, 0, 0, &cmd);
-+	arm_smmu_atc_inv_to_cmd(IOMMU_NO_PASID, 0, 0, &cmd);
-
- 	cmds.num = 0;
- 	for (i = 0; i < master->num_streams; i++) {
----
-
-With that, for SMMU:
-
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
