@@ -1,89 +1,85 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5539623BD
-	for <iommu@lists.linux.dev>; Thu,  1 Jun 2023 04:47:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C550ABE7F
+	for <iommu@lists.linux.dev>; Thu,  1 Jun 2023 07:50:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685594875; x=1717130875;
+  t=1685605816; x=1717141816;
   h=message-id:date:subject:to:cc:references:from:
    in-reply-to:content-transfer-encoding:mime-version;
-  bh=etl4QXDnJjVWFgxKdJVqsdR5er9ViOKxIIYC1A+xLcM=;
-  b=ctma1F/R+DQNmrWpbOjqpVm9iUMumr1BgZenjiSIpieh3hbz72PTOL4a
-   k2jSJZbAnsP0KYFxSGRz60r8NLYwOH3/iZNtTfHHIP2G5HHMRTx6i/Hvq
-   PyDlSnuirYew55YGZUKl08zDWXGBRaZ7r/+QwsxShaWQWl5GzV7ksSpCO
-   b7AFP1Gjmb5SpTrDd32zd0kB/m5SoeHowKbFjiCVMQv+zHOJlcVZr29Hm
-   oAWSlk5+iyJ0bxNeJH4X6D3D0S4l7M7TBY/lz7KXTv/qYPrkjaKFtSPby
-   FPc4/5MHXqHeI2/YE2EP81J8wEu2Atnzsvwen7C9NzUB7cPmj6vHUHSoy
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10727"; a="340050462"
+  bh=JamNfFfFwjowlCsL09QTiA+m4k/8Lxk17gHkt3D4KMs=;
+  b=TK33O1UJ48zVmfrLdFozfh3AN1aXL8MiHNaL8IxC/suIT/cJrmJz+mpm
+   Idaj8i9/jezHIUpcLKc8vmitNS9wZmgbSbhEVTl4fAFzj69Bid+iLQZmE
+   +siuLgTuZ6VwPnvQQ0nepXtaDmSFowVA0tqacj+22lAWRLjPTLjqXnizO
+   x8Xb+87XmrInYyQKlYDXjoRzWMO0yaIA5/noeKyHNcUCK6x1aGKBSOhf9
+   coTb3/1TUEx3JBXVnfgjESyatJS/rLXGwFmjFfkHkf8CzeUul4eL0raMk
+   ZvCoGGgRRqFUEFYV+757cCEa9cUkgCqtW2znveCfSjlX9zzAyY6U3Uf/H
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10727"; a="421267629"
 X-IronPort-AV: E=Sophos;i="6.00,209,1681196400"; 
-   d="scan'208";a="340050462"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2023 21:47:54 -0700
+   d="scan'208";a="421267629"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2023 00:50:00 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10727"; a="796987384"
+X-IronPort-AV: E=McAfee;i="6600,9927,10727"; a="657658680"
 X-IronPort-AV: E=Sophos;i="6.00,209,1681196400"; 
-   d="scan'208";a="796987384"
+   d="scan'208";a="657658680"
 Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by FMSMGA003.fm.intel.com with ESMTP; 31 May 2023 21:47:54 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+  by orsmga003.jf.intel.com with ESMTP; 01 Jun 2023 00:49:59 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
  fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Wed, 31 May 2023 21:47:53 -0700
-Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ 15.1.2507.23; Thu, 1 Jun 2023 00:49:59 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Wed, 31 May 2023 21:47:53 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Wed, 31 May 2023 21:47:53 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.102)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ 15.1.2507.23 via Frontend Transport; Thu, 1 Jun 2023 00:49:59 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.104)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Wed, 31 May 2023 21:47:51 -0700
+ 15.1.2507.23; Thu, 1 Jun 2023 00:49:58 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=L+o2I6sw75qb2ykJvM+SjXriMbwxlpebyg2UNfpSEfXA9j1S4arww4LEh1JMMmZFGAYQUqLan23NiCFwOQiDe1Fynbf+pB1du3FlIDxR0PzwtbL9EbCrI1vpYbvySj9c+okRTfOowGgk+EHXXC4I8EWpl91bB3MuemwWa+n14WMT/wqUm3EV/965nhdPDHKfYeAOXsitI0891sxaNNhGbUTXDiG5K21Q1JnvV1B2UnTTkGS/WjutpKWierCylAFMTdoQa5K9X3aNF0DUKqXcoe6+4pgp7CMiuyKBm2Vem2QU3ga5NHUE4D/NVQ4Sb9WTF7nDwBh6CQeFyRb/fiVa8A==
+ b=Mthpns5+2FbIIEVD6Xy6gMY0Ge0aS9CWUf/Blkl0aY6Zn2PFSZaLELv51KxCYfKGiyc7bM5LTfpM1ea5PVAVdj952RMC0Mm1OYDr4zafzlxuXC8HVgFDle4xGDXdP/GuELtNHxT26ZZJJRsFVr5tOh/KfMMRMyFJlS1AXSEcQmPA6QxvkvJIIJM+mX9i2H4Ljby7y3P23d/8CsnspOGYPjS5IroG0ozxVBsgCZM68kaDC/eauu250dTlCPQ9hH6fbFB7aaCRGLDvD0e7j7Lq+Ms9FDJyhEIBIgL0ZR3FYip81LhEvANB7nIqJXZ3ZjSraThk5q7qAhXQehatYjgilA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oUh0tC2iAU80dGdYyXt53PbBKS/+wpDPm81wkkQZrf4=;
- b=kf0REnyPEjY9hgUn0JRmUQ26eDKkCmMkYYK/vIU0itJirwvi82Wnro7W5jaXRphdwoe3xcxLhNuIoOWl41UyEnWN/0ArAzoagfGSlZbLU5KOqD9/vwJDDFj2626IoVe+gWvbB7xw+6RrtIZr1YzAxOm2Ip0l9dWGU2WMCNnOnp0ZTpUGT5P3jGk8IzHw4ndfyJIk3n7T6V0K5Ap5ogOs/0j5Cj2k4KkYY+9fGo47Yd107SjrnjCmy1H11Q+N6E1ybkq+DCf9lrk0/FqkfKIGUBfrLNMu2e7uD8AWaphdGunAVZDVJMkI50d2FvJOA0H2JOwqXWBbmsgh97P1xLIDKA==
+ bh=bbiD7kShnrt3MaxlmymWNEPfsgrn4Hfia0EymOHWyTY=;
+ b=iR1WjjlHwTUebLAu7E/yE3Z7T9VXpUuI4iCtVIqQy9HJWgW7wzRhHvMZ6p44Lz9ABTM/RVDwZQN8uFCGSKuCoV/LdbTrQRGdJCRi9+rpwQcLdKe6IpZrFdEy0MZRPKvA3kpA71nvJhloDmbSxAYjsCMwtz15vZEgAopVwBvgDrpYsPwUI8E9nOhF9SV3ha8DC8SkYLSAFBoFTcvvtMyfBpcbkO8+d4A/CT/bkopgVB/4NK0nQifroN6OucOLAOhZToEbWPFLr1fv1ToizjfxrCIdZkDkzgw5GkAOiyMuZ9fvnsBj/DhDFGU2c+BnEr6w3iPXv9eWbXtCfRMFoGcBUg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from DM6PR11MB4138.namprd11.prod.outlook.com (2603:10b6:5:19a::31)
- by BL1PR11MB5413.namprd11.prod.outlook.com (2603:10b6:208:30b::16) with
+ by BL1PR11MB5301.namprd11.prod.outlook.com (2603:10b6:208:309::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.22; Thu, 1 Jun
- 2023 04:47:44 +0000
+ 2023 07:49:51 +0000
 Received: from DM6PR11MB4138.namprd11.prod.outlook.com
  ([fe80::a01f:d6e:1b90:3cb9]) by DM6PR11MB4138.namprd11.prod.outlook.com
  ([fe80::a01f:d6e:1b90:3cb9%5]) with mapi id 15.20.6433.022; Thu, 1 Jun 2023
- 04:47:44 +0000
-Message-ID: <9c3a29fa-6533-de16-472c-7570605da3ed@intel.com>
-Date: Thu, 1 Jun 2023 12:47:33 +0800
+ 07:49:51 +0000
+Message-ID: <2efdc34b-555f-bce9-7e81-6ff2f3d2d8dd@intel.com>
+Date: Thu, 1 Jun 2023 15:49:41 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.11.0
-Subject: Re: [PATCH 2/2] iommu/vt-d: Use BUG_ON to check NULL value of 'table'
+Subject: Re: [PATCH 1/2] iommu/vt-d: Remove the dead code in init_iommu_hw()
 Content-Language: en-CA
 To: Baolu Lu <baolu.lu@linux.intel.com>, <dwmw2@infradead.org>,
 	<joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>
 CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
 References: <20230530092503.152926-1-yanfei.xu@intel.com>
- <20230530092503.152926-3-yanfei.xu@intel.com>
- <3e75f9de-4c67-93aa-9fb4-28da9849dd48@linux.intel.com>
- <a745c910-f4be-62f6-cb02-a610c04f4698@intel.com>
- <e735528a-7bbd-b9a8-7945-10f779fb750e@linux.intel.com>
+ <20230530092503.152926-2-yanfei.xu@intel.com>
+ <3d7ce5c1-c248-a14a-2dc4-79449da9aa43@linux.intel.com>
+ <35cff015-2408-b7bf-976a-b0ac8cfd6857@intel.com>
+ <c8c0a8f6-751b-b9e7-ffd8-72859c0e3b12@linux.intel.com>
 From: Yanfei Xu <yanfei.xu@intel.com>
-In-Reply-To: <e735528a-7bbd-b9a8-7945-10f779fb750e@linux.intel.com>
+In-Reply-To: <c8c0a8f6-751b-b9e7-ffd8-72859c0e3b12@linux.intel.com>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SG2PR01CA0125.apcprd01.prod.exchangelabs.com
- (2603:1096:4:40::29) To DM6PR11MB4138.namprd11.prod.outlook.com
+X-ClientProxiedBy: SG2PR02CA0008.apcprd02.prod.outlook.com
+ (2603:1096:3:17::20) To DM6PR11MB4138.namprd11.prod.outlook.com
  (2603:10b6:5:19a::31)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -92,124 +88,206 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR11MB4138:EE_|BL1PR11MB5413:EE_
-X-MS-Office365-Filtering-Correlation-Id: d780a032-b035-4cec-26ff-08db625b565a
+X-MS-TrafficTypeDiagnostic: DM6PR11MB4138:EE_|BL1PR11MB5301:EE_
+X-MS-Office365-Filtering-Correlation-Id: 42ba4aff-ab23-4cb5-fdf6-08db6274c7ce
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +wBZ5AkpKm3000AdelMNt6O1tjn7RimGu2L5XprZvaGypFaAKcq48fta8xlOMKGkI2MALGqHWEHJ0XyhnbvdXoMRKjOPfsqu3ckiIwotlWwozW0ocU7jAiVhgFDRfPVuY3PnbNL2nIE89GV+BUllbwnIGrH9/4TkmLnyp9wKy5TNjoMTAf9oJ0kogcTVSYJ4hqEDByh9V9K8PTfrVjZBLtjev/NmqWnel3iEpX/sbxWyd1FcZRP0ic01oInrJxB89bzlb0GAjeyCjefx6rO9P33f72vAHV6col0mLyAtMl0LjVOvsNT5hE9S5LOqnccx+GBLScBRiT8AsNyBatuonH6mh3W6C5JenXI9FCkkgMcfMZcWfHSFVKwXQTNPYA25pcWMmD3brux8DPkUZlsu9H2H85FU7tnvW87NzrKhH4b3urPzoFmZNXcSYB4SivbY6wb3owuBvZ4TEI5ZYY5dMsye++4B6PthXLkwOS44vrC0FcHEaSWuZ6mTiK92jmOHm1toEZlPlHwuBaZYMFVStPNWNLA1GHz6GCKfiZ/oXHmIzuRg5AtzX7vkaEZh7+ZXN7hhbWqETSmiCZz6Mnr97UjKR89QEtn04pHofFw3QXnMeGzcdkRG3LyDyqzdXlNc48EDxJg5rfOnp4D09P0tEg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4138.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(376002)(366004)(136003)(39860400002)(396003)(451199021)(41300700001)(6486002)(5660300002)(186003)(6666004)(8936002)(8676002)(36756003)(53546011)(38100700002)(6506007)(6512007)(26005)(4326008)(66476007)(66556008)(44832011)(31686004)(316002)(2906002)(83380400001)(478600001)(2616005)(66946007)(82960400001)(31696002)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: bwxPhD/c1hirg9FeLcUzMtRlXB87WYZy0qYa4sf9XNw7gvd3CTYpJDyzG9G3RXUQwktRxdK7VXC/uWBadWeRFA0MK9FKBpdxdlKQ0oQ1slAxNL5B//nKeCEhgoea7uRLN/0lAiU27qgU9VzhN/+qTI1ILrQD1CtyuQkvcUf7HhkM7oA57913hXOeXJhpgurLUarakXUBWaMf8/cFQzH9eYg/2/pr8d/uEsH2hnGw3pEH3ZH0sRzKNlAEVEEGXZWVaNZz0cOZrPZVpEboprsVWMDwCn6CFsciD8INU+olTo5OI+QtUrOJvkBlDTd9JuInc4Rp0Y4OQIAK4bbsuvbOZc2UU5CPoXcGq4Il37xnVJtJtJmQBL/Dt9XPfDxtNBTJVyU1ndVx/DjYOpf/1y3S+VPx1Rr+SGWr1A/rPArJVRXglryBW/wWsR+S7K65jjq3d8hjPaZoodccpJvzceN31YONgHCsdBMVv1aPleNBGaLIJgbSrjOzMJi7uI1uthOl2dn0Dnj9FLL+K/hu2ibOJylpNM8IfED+8veERre4Ja9tC3Ohr6MDuLNHIfYCNXqBhUR1yl6g2q6zkJlhFF+jouwB9a/C3da+B9/J4wpdEN5tWGLKrTEFXPDtVc5xhKm9FWbesdcEnz4P0SeqjtVjmg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4138.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(39860400002)(396003)(366004)(376002)(346002)(451199021)(86362001)(31696002)(36756003)(2906002)(186003)(26005)(5660300002)(6512007)(53546011)(6506007)(44832011)(6666004)(6486002)(2616005)(478600001)(83380400001)(66556008)(4326008)(66946007)(38100700002)(31686004)(41300700001)(66476007)(8936002)(8676002)(316002)(82960400001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?S0Q5L3BndDJjRDRkYzlxK1VueVU5VFpjNS84V0V3ZFFrRzJKb3MzdDg1VDVo?=
- =?utf-8?B?QTFsaVdxOUE4VUVjVGl2YlM1NjhqbTAvRENSckUyamp2TW1wM2F4ZFI1MGJp?=
- =?utf-8?B?TmhqMkhKaE9xeDA1bEFSbitPWjlGZ3NVTjJtV3dlbmRzRUZwQzFULzhqVHRW?=
- =?utf-8?B?S040dkdhcllTalhkZk9QQnMzelJaU2JsZVBpeGFHaXZIdGNYYjZNT21Ua3NZ?=
- =?utf-8?B?ZENXcEdVRDNreFQ4ZnpqNWlXQU83dG41aldRamYxMkJ3eCs4Wm54cVBHMzBv?=
- =?utf-8?B?R1NwekhaMzAwR2RrVmE2K245dFZMWmJnUTdTenlOajFVT2c5ZXl4NVB1MkZv?=
- =?utf-8?B?VVpEQzd3SG1KckovQThXQllXTER0TnRsYy9YWm9xc083ejdRS0xIWVl3SUE5?=
- =?utf-8?B?ZVQ4R3BOZTNVU3VOS1ptSVRxRmR1UXZPdzc3Rm5TdXR2UXRjT2o4bXZsd3p3?=
- =?utf-8?B?ajhBNzJHKytrQ3JyVnBHYTVxdkdTYkNQelAzU3F6MEsvNUtudnREUy9iSkZw?=
- =?utf-8?B?U2pXaWhGQzNHWURQd2ZkS0VIQ2tQb2VCRCtiOFFvYnc2eGZJK0xTa016akFj?=
- =?utf-8?B?Q3dTVUVQTDZhdytWS0o0RC9YdU45RjBaL0JKakRZUVpSaG1DRFdFS3hhWFh1?=
- =?utf-8?B?UkJNRlJuaEJPcmN0cmtJN3hiTHVPL3o1SC9Pb3hQZWJDeE9UcWZaaUtLcG9I?=
- =?utf-8?B?c1Q2QnJiWG5qSTlWWUZFaGY0SFk1ZCs5MnZnWnNWb1RxS3F1NDVUUm5MVVZ0?=
- =?utf-8?B?WUxIU3hrK3RxTllLTGtGU3BHTXBkNUw3RVZBK1pjMEx3VWJkdktKV2RoWTNt?=
- =?utf-8?B?R3crd0xKTlJRZEZ2a01vdkxHK0I1eXE4Z2FLZ1ZjclA2VlFGbHNsTHgzYk5S?=
- =?utf-8?B?OGpMd3l1MFRkRUgrbEFyWi9JMW1jUVA1WVM3dG92dmNocGZtU3NmSjFpV1RD?=
- =?utf-8?B?RjR5T29xWE9zTS9tRUEzSXhNQnJBNk1ZWUN5Z2dqNjcxdGNMZE1Ed3U4NG9S?=
- =?utf-8?B?L25sY1NWOFBFZnlQYlhWTWtxejFrL3JIQ25oUkpUREg3K2JCREtvd3NXclFY?=
- =?utf-8?B?cXB3S2l2OTdDN0Z0OWJIdm85bVppK1RDQlIxdjQ0UUdlNGVtV0w1cFpPZnh2?=
- =?utf-8?B?OVFjMEVnVVBNc2ZaWWZ3a1VEL2xWSHNzZkxOajVvRzBrWU1QN1phcUltci9I?=
- =?utf-8?B?ei85aldDQmMzb21zNDRPT0llUjdxem1EdkRrVHBoU3dGaXJRdFF6VnZuVld5?=
- =?utf-8?B?MXNhWVZIUmo3R0IyeUxaRTlWeWFmbFFYNG5oc1M0QW1CaU16RmVSdHYzTmdw?=
- =?utf-8?B?QzhvRkRhV0pvcWxNelo0NGhHYjFoMGdBeHhRQXZFMlNsUlJMc0ZXcy81MUlx?=
- =?utf-8?B?S0g0OGozb04xeERMRG9sTlNYVWFYR1VkaGNpTWZEMkNrQmJkamNxMU1XOXFk?=
- =?utf-8?B?cTY1eVVPR1JMOSs3cjlhNXk0U0dQVXFnUUJQQTVGQUJjOElJNURUandVUGRx?=
- =?utf-8?B?TW9xS3BwT05XU2JSS1FScmwxWWFabU5mYXZIdmJrb1pEeEc2bktYRnBnL1RM?=
- =?utf-8?B?ZHVIcVZQMC85cFg1bFRKTkxiUEdwS0ZiYXIzSmMxOVE4QzhOMHFSd0U1dVN3?=
- =?utf-8?B?S29rQnBZY1Y1WXV5aXJIWlEyRUVCZ3FpSkE2eVFpRVFsYkVCMlJqbU9ZSnlq?=
- =?utf-8?B?NzFYYWQwTGhJMGh1S3dKa3NYRDZYVld2NkRsWm4zV2ZwTU9TNm5OV1ltclJC?=
- =?utf-8?B?NjU0cFZhZlhHSmMvWnNDWi8vS3pIMjU4L1pXSi81VkVqVGIvSUJFeHBPbXBp?=
- =?utf-8?B?OFFLSWwxa1RxRzRDZW9GMkVWTGNIdVB1UjVMTUgzbHVnTFNqRUxlMlQzaHB5?=
- =?utf-8?B?dGx1VzRXTlNRQ1RBMmNLbVpLRGRPQ3VwT0ovQXl1VG1zN3VjZjM4dUJMYU1G?=
- =?utf-8?B?c1JvVWt4bXpwU2FPR2dYbjZQdnZFZkVJVi8zY3k1L1ZYRStLWEE1OUlXa0xY?=
- =?utf-8?B?ZDhoRDdDb1NhdFVybHBlbWlxYThhZklHbVFSd0lsUXdDN1RkZmxtVEFnaHJV?=
- =?utf-8?B?Z3NlTTRCeWJQZ0x3eW81MGMyN3RCL1hodENMdkRsamFyWSttVFArNktiQTRT?=
- =?utf-8?Q?0aqlqaJWw8vCtrfcCiRC0SFf1?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: d780a032-b035-4cec-26ff-08db625b565a
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eUVJM21JT2ZhZjF5bkgzYitmckI1MzNYLzZTSnpKVzRRMG13RXIzb3FIcE5n?=
+ =?utf-8?B?UnBMc2NscHFjVVJ1c0hYSFlVRHJWMDVpZHVlM2tWeklWZnMvbDVubmRQa2VY?=
+ =?utf-8?B?YytmamVIYzlMVEZaRGtPQm1WZ2RVa2R6eGx3NFVhNXlDcjJPazd3TVozTHNW?=
+ =?utf-8?B?RlMyOGRBczhyU0laT1FBc3hSVGFpT3djSVRYeUo1OHYwbUNkK2UzOFNkZlln?=
+ =?utf-8?B?dWMxcTcrZFJrN2xsK1pYME1VRlZVbXpSemUyT0lVem5VaXp2dWoyRG01cFdo?=
+ =?utf-8?B?TlVCOTZaaUpJRHMyTzBoQlV0Q3VNMEJ6dm1uMWVwMEM4UjNTYjVhamh5d0tD?=
+ =?utf-8?B?akRFVmlnRVd5YjBJcjVMNXFLK2hlLzFvOHJ0M05UZHpXSEZrN0syc085NndD?=
+ =?utf-8?B?YzRzQ3VtQy9Lc01jL0REb0lkSDNSanN1emJHZkpTaDAxMGcxN3BRbVNzaFdj?=
+ =?utf-8?B?bnc2TFo3M3lCcmVyR2tMSTdZZmxhTzRmS0ZtZHdOOWV5YS8wcy9zazg3djNz?=
+ =?utf-8?B?L2pDRHA1b050emc5ZkFmVXpmVy9Uc0R4N0xqdnlBYlY1Q09IUEJzVjBmQnZO?=
+ =?utf-8?B?bTFmSGtpMm1QWHpaMFN1TXh4YzN0ZWxVR1ppZGdGU2VQaHB1MkUwSjdCWmFs?=
+ =?utf-8?B?cHRSQmR2anBOU0NXMmNDRVc2SE93Q1kvbVBaWkJaN0grWTk5WXNHTHhQbHBo?=
+ =?utf-8?B?OVdlQUgvMWFvQ0ZuMU5KL1ZnSStBKzdOLzZVbzlFME9MVjdraDhLRUgwRVl0?=
+ =?utf-8?B?dVROT2NFd2xrQzVWdCtxTWcrN1V0UmMvbVhXalIyUStjQi9uQThDNldlTVBC?=
+ =?utf-8?B?TVNma3ArMTdXR2RnZStwcUpnWTBqbmFIdUs0dHYrR0xWRU1YelNjalYwMTdO?=
+ =?utf-8?B?a0JuMi9mQ0hrVGFxVUVIMkVqYnFycStUa05LNkNldit0bUM3c1FkL2VwZ3Bv?=
+ =?utf-8?B?dGpyMmg3REtnMENtcTU1YVphRFA3ZG45SnZyTk9WcVlZS1BXekNUOFd0Nmg0?=
+ =?utf-8?B?TVlXYmVkb0tnUHlUV3h3NFY2VnA5eUwvZEpxZlRObS8yMFdZMjIyQ0o0MEhP?=
+ =?utf-8?B?bU40bXJkdHFHci9veTE2MUVIQVVEVFZCWG5qQVRYR0ZGMngyUFZ3Z3VBOElY?=
+ =?utf-8?B?aDA1T3hYSWpyYWV6QkVISm81dFpOWitqSEFLLzNQRHdpdjZzaXI5Ui9VYWJ4?=
+ =?utf-8?B?ZDBrZ25aeDIwM0RLQUh0Wm9EUGN1Vi8ycE1NK0dmSVlXVmswNndzVjBPeGla?=
+ =?utf-8?B?ZG5jOC9UaDQzRjdtREorUnduRmtrejVLdGVDcEZFamd6MGJhdXdIdWlsREEx?=
+ =?utf-8?B?NHBLWXNYU2NrUFd6eHdjOEd6RFVEd2xxY2ZSTDVJdFBPMHlrQlZkbElwY2xh?=
+ =?utf-8?B?RW8zV0gvU0hCVTBzTVlZTVRoWFJOYzdpSzdzK3RUalJ5M2duYThyTUIzYjlP?=
+ =?utf-8?B?TDY2aGQ5QUFxNTNFRVZtdklZY0dSTUNXbE5aOGVIN1Npd295YkVERVpTYVdH?=
+ =?utf-8?B?ZC9jRW5ZcmZxUlBYelQ0ZHJrRUFsaWkvV3krYVVhZ1pLOUk3SlBWK1RCRlBR?=
+ =?utf-8?B?dFdMdHR3V2NmN0ZsOU0xQkF3bVk1WThuc0NNWXI5UEkzc1QxaFpPQXhleTJt?=
+ =?utf-8?B?NHh4VzhxZXdXMVpCVTZIOWQ2YnBuNUdpOHZxRGtLd2hEMnAzMUNwOW9PVjQ1?=
+ =?utf-8?B?Tm5jVFh2VjVjTGtxWlpLdEhOYTc5SjdSNVFKcXdXd2FLZ1BoM0gzWFhWelhB?=
+ =?utf-8?B?VFlUYzZuNzFQNnl4RFQ4SW5TVEV3SG8waFZYTDVxQkZSMmtvcXB2SDNYbDNX?=
+ =?utf-8?B?TkphaUdLY3RYVmVSYjN3YXJyRWk5bHZCbUJWRUhId3dIT3RoM24wYmJEYUtK?=
+ =?utf-8?B?S0VGSTBzZGdza1huZkRjenNDbElCNVlmVHFkdElHcmpyMWZaOU5uWHJqaEN5?=
+ =?utf-8?B?eTdpVFQxSHJYNTQvYnBKbGJHaXg1SlhRSWNRSGVlNDlQeDlIZTJJbGdmMUU5?=
+ =?utf-8?B?c3RWUkVobDR3c3NCb0lVMDdxYWMzWC9ubG5UcXJ4aTNNMlRRdFd5Q1JCSG0w?=
+ =?utf-8?B?SHJ5Q0c3NVh1Ylp4S0RKcHNKaHFtNEVObUtuUUlRUTZsZng2ZFZaY2RTdSs4?=
+ =?utf-8?Q?j7VkdLEiufABkcff/OUqEXomy?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 42ba4aff-ab23-4cb5-fdf6-08db6274c7ce
 X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB4138.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2023 04:47:43.8420
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2023 07:49:51.5177
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Ig9MQdEXlMQEu8sSFU8d4EDJPjWnNYXmZDXZoLLZP8YTUawQQPjANVSjFBJ0kiA+jzdSRu/IJ/msyX7LTV3yXQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5413
+X-MS-Exchange-CrossTenant-UserPrincipalName: Y+ErXqURusNQMNtIiybHoprDFMakOplF0+Nm5PlByCPdqk4sCVKiu4eKN9wy0DK+ZowYU2/tD1h7M/qJMFAugg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5301
 X-OriginatorOrg: intel.com
 
 
-On 6/1/2023 9:23 AM, Baolu Lu wrote:
-> On 5/31/23 3:09 PM, Yanfei Xu wrote:
->> On 5/31/2023 11:26 AM, Baolu Lu wrote:
+On 6/1/2023 9:15 AM, Baolu Lu wrote:
+> On 5/31/23 2:55 PM, Yanfei Xu wrote:
+>>
+>> On 5/31/2023 11:24 AM, Baolu Lu wrote:
 >>> On 5/30/23 5:25 PM, Yanfei Xu wrote:
->>>> Checking NULL value of 'table' variable deserves a BUG_ON as the
->>>> following code will trigger a crash by dereferencing the NULL
->>>> 'table' pointer. Crash in advance with BUG_ON to avoid WARN_ON
->>>> plus NULL pointer dereferencing can simplify the crash log.
+>>>> After 'commit 2a41ccee2fdc ("iommu/vt-d: Change
+>>>> iommu_enable/disable_translation to return void")', init_iommu_hw() 
+>>>> only
+>>>> returns 0. If statement for return value of this function is 
+>>>> meaningless.
+>>>> Hence change init_iommu_hw() to return viod and remove the dead 
+>>>> code of
+>>>> if statement in init_iommu_hw()
 >>>>
 >>>> Signed-off-by: Yanfei Xu<yanfei.xu@intel.com>
 >>>> ---
->>>>   drivers/iommu/intel/iommu.c | 2 +-
->>>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>   drivers/iommu/intel/iommu.c | 12 ++----------
+>>>>   1 file changed, 2 insertions(+), 10 deletions(-)
 >>>>
 >>>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->>>> index e98f1b122b49..8aa3bfdb7f95 100644
+>>>> index 8096273b034c..e98f1b122b49 100644
 >>>> --- a/drivers/iommu/intel/iommu.c
 >>>> +++ b/drivers/iommu/intel/iommu.c
->>>> @@ -1944,7 +1944,7 @@ static int domain_context_mapping_one(struct 
->>>> dmar_domain *domain,
->>>>       if (sm_supported(iommu)) {
->>>>           unsigned long pds;
->>>>   -        WARN_ON(!table);
->>>> +        BUG_ON(!table);
+>>>> @@ -2963,7 +2963,7 @@ static void __init 
+>>>> init_no_remapping_devices(void)
+>>>>   }
+>>>>     #ifdef CONFIG_SUSPEND
+>>>> -static int init_iommu_hw(void)
+>>>> +static void init_iommu_hw(void)
+>>>>   {
+>>>>       struct dmar_drhd_unit *drhd;
+>>>>       struct intel_iommu *iommu = NULL;
+>>>> @@ -2988,8 +2988,6 @@ static int init_iommu_hw(void)
+>>>>           iommu_enable_translation(iommu);
+>>>>           iommu_disable_protect_mem_regions(iommu);
+>>>>       }
+>>>> -
+>>>> -    return 0;
 >>>
->>> BUG_ON() is not recommended. Perhaps,
+>>> 2966 static int init_iommu_hw(void)
+>>> 2967 {
+>>> 2968         struct dmar_drhd_unit *drhd;
+>>> 2969         struct intel_iommu *iommu = NULL;
+>>> 2970
+>>> 2971         for_each_active_iommu(iommu, drhd)
+>>> 2972                 if (iommu->qi)
+>>> 2973                         dmar_reenable_qi(iommu);
 >>>
->>>         if (!table)
->>>             -ENODEV;
+>>> dmar_reenable_qi() still possibly returns an error number. It's better
+>>> to pass this error number to the caller of init_iommu_hw()?
 >>>
->> Agree:) It is always better to handle the error than crash kernel.
+>> Event dmar_reenable_qi can return error number, but there is no caller
+>> check it. As below, only these two places invoke it:
+>> 1. init_iommu_hw->dmar_reenable_qi
+>> 2. reenable_irq_remapping->dmar_reenable_qi
 >>
->> How about:
->> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->> index 8096273b034c..7f077e3a4128 100644
->> --- a/drivers/iommu/intel/iommu.c
->> +++ b/drivers/iommu/intel/iommu.c
->> @@ -1944,7 +1944,10 @@ static int domain_context_mapping_one(struct 
->> dmar_domain *domain,
->>          if (sm_supported(iommu)) {
->>                  unsigned long pds;
+>> I think we can also convert dmar_reenable_qi() to return void:
+>> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+>> index a3414afe11b0..1432483c79e8 100644
+>> --- a/drivers/iommu/intel/dmar.c
+>> +++ b/drivers/iommu/intel/dmar.c
+>> @@ -2112,13 +2112,10 @@ int __init enable_drhd_fault_handling(void)
+>>   /*
+>>    * Re-enable Queued Invalidation interface.
+>>    */
+>> -int dmar_reenable_qi(struct intel_iommu *iommu)
+>> +void dmar_reenable_qi(struct intel_iommu *iommu)
+>>   {
+>> -       if (!ecap_qis(iommu->ecap))
+>> -               return -ENOENT;
+>> -
+>> -       if (!iommu->qi)
+>> -               return -ENOENT;
+>> +       WARN_ON(!iommu->qi || !ecap_qis(iommu->ecap))
+>> +               return;
 >>
->> -               WARN_ON(!table);
->> +               if (WARN_ON(!table)) {
->> +                       ret = -ENODEV;
->> +                       goto out_unlock;
->> +               }
+>>          /*
+>>           * First disable queued invalidation.
+>> @@ -2130,8 +2127,6 @@ int dmar_reenable_qi(struct intel_iommu *iommu)
+>>           * invalidation.
+>>           */
+>>          __dmar_enable_qi(iommu);
+>> -
+>> -       return 0;
+>>   }
+>>
+>>  From my understanding, dmar_reenable_qi() is used in suspend/resume 
+>> case,
+>> so the extended cap of an existing IOMMU hardware is unlikely 
+>> changed. As
+>> for the check of iommu->qi, if dmar_reenable_qi() can be invoked all is
+>> depended on the no-NULL of iommu->qi at first. How about using 
+>> WARN_ON for
+>> both of them to simply this function.
 >
-> I'd recommend to remove this line directly. This pointer will be
-> accessed in the following code, if empty "table" really happens, the
-> kernel will report a NULL pointer reference warning at the first place.
+> This seems to be heading in the opposite direction. Actually any
+> operation may succeed or fail.
 >
-> In the same function, I also saw "WARN_ON(did == 0);". It's unnecessary
-> as domain_id_iommu() will never return 0. Perhaps we can clean it up as
-> well.
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index b871a6afd803..ecc2007a96f9 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -2967,10 +2967,13 @@ static int init_iommu_hw(void)
+>  {
+>         struct dmar_drhd_unit *drhd;
+>         struct intel_iommu *iommu = NULL;
+> +       int ret;
+>
+> -       for_each_active_iommu(iommu, drhd)
+> -               if (iommu->qi)
+> -                       dmar_reenable_qi(iommu);
+> +       for_each_active_iommu(iommu, drhd) {
+> +               ret = dmar_reenable_qi(iommu);
+> +               if (ret)
+> +                       return ret;
 
-Will do in V2.
+For confirm, you mean this?
+@@ -2967,10 +2970,14 @@ static int init_iommu_hw(void)
+  {
+         struct dmar_drhd_unit *drhd;
+         struct intel_iommu *iommu = NULL;
++       int ret;
+
+-       for_each_active_iommu(iommu, drhd)
++       for_each_active_iommu(iommu, drhd) {
+                 if (iommu->qi)
+-                       dmar_reenable_qi(iommu);
++                       ret = dmar_reenable_qi(iommu);
++               if (ret)
++                       return ret;
++       }
+
+If drop NULL value check of iommu->qi, dmar_reenable_qi() may
+return minus value to break the loop of dmar_reenable_qi as
+one of iommus doesn't set up iommu->qi.
 
 Thanks,
 Yanfei
 
+> + }
+>
+>         for_each_iommu(iommu, drhd) {
+>                 if (drhd->ignored) {
 >
 > Best regards,
 > baolu
