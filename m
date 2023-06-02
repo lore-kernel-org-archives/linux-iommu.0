@@ -1,118 +1,154 @@
-Received: from terminus.zytor.com (terminus.zytor.com [198.137.202.136])
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40CB4332EE
-	for <iommu@lists.linux.dev>; Fri,  2 Jun 2023 17:39:26 +0000 (UTC)
-Received: from [127.0.0.1] ([73.231.166.163])
-	(authenticated bits=0)
-	by mail.zytor.com (8.17.1/8.17.1) with ESMTPSA id 352H0LaS2715581
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-	Fri, 2 Jun 2023 10:00:21 -0700
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 352H0LaS2715581
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
-	s=2023051001; t=1685725229;
-	bh=V6iJrWJJDLQYjecCwNtSmfh10OvdV8TAJ4Liut90hTM=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
-	b=uPFx05CyW1BpZXeT87CyY8RQtjp5NgyjdvmFkLaPOSkerjoOaX418Gxy0SEASWCfk
-	 6OU5WS8qq7OF0xdgiwBE1NGx8DbNIrczc+xjAUYuh6Hn3pYdiFuRnciKBhciDyJOOI
-	 PtbPbK/C+duRWrZe/QHzvXYYGpqts981bZKHmO/brXOBPs6W8JhS+672AOxS9JQcC0
-	 zfeYaYNkDjMGvk/RykG+GdjoUic+Ff92KZNfWXs887fhgkEFfZA1xodBxxkWZSynR4
-	 Lmzyg3qOQXOtRftEt+BLjXMoM8h9EoUz38KTt9lCKS8N9e1BPlhydYYPwGe4NZYCBA
-	 Nj8HY1VstDhAA==
-Date: Fri, 02 Jun 2023 10:00:17 -0700
-From: "H. Peter Anvin" <hpa@zytor.com>
-To: Peter Zijlstra <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-CC: Helge Deller <deller@gmx.de>, Masahiro Yamada <masahiroy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>,
-        Will Deacon <will@kernel.org>, Boqun Feng <boqun.feng@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>, dennis@kernel.org,
-        Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@linux.com>,
-        Heiko Carstens <hca@linux.ibm.com>, gor@linux.ibm.com,
-        Alexander Gordeev <agordeev@linux.ibm.com>, borntraeger@linux.ibm.com,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        Joerg Roedel <joro@8bytes.org>, suravee.suthikulpanit@amd.com,
-        Robin Murphy <robin.murphy@arm.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Baolu Lu <baolu.lu@linux.intel.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-s390@vger.kernel.org, iommu@lists.linux.dev,
-        Linux-Arch <linux-arch@vger.kernel.org>, linux-crypto@vger.kernel.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
-        linux-parisc@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
-        Sam James <sam@gentoo.org>
-Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_v2_07/12=5D_parisc/percpu=3A_Wo?= =?US-ASCII?Q?rk_around_the_lack_of_=5F=5FSIZEOF=5FINT128=5F=5F?=
-User-Agent: K-9 Mail for Android
-In-Reply-To: <20230602143912.GI620383@hirez.programming.kicks-ass.net>
-References: <20230531130833.635651916@infradead.org> <20230531132323.722039569@infradead.org> <70a69deb-7ad4-45b2-8e13-34955594a7ce@app.fastmail.com> <20230601101409.GS4253@hirez.programming.kicks-ass.net> <14c50e58-fecc-e96a-ee73-39ef4e4617c7@gmx.de> <CAHk-=whL65CLuy9D9gyO608acM5WLWo_ggAMP1cGu2XvyC0-hA@mail.gmail.com> <20230602143912.GI620383@hirez.programming.kicks-ass.net>
-Message-ID: <E333E35E-5F9C-441C-B75A-082F19D37978@zytor.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D3EC1C755
+	for <iommu@lists.linux.dev>; Fri,  2 Jun 2023 18:17:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685729858; x=1717265858;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=IGxdUSxk/dJPljzxTOGxhMsQ3H/NV4Hapm/IKJF0xNg=;
+  b=PnhFqsh3F1syohMtSqDF/qkCbdbMl+QbThSbIsJ+pfCke9FOFMu5QHKk
+   MnVdAITmDdgGUneLX8l1KOg25ysTRfxy944FsJWxWqspKBECuMNpag7+c
+   M/x3cquFwfQHu95Xj/j3sjgH3Mb2thi+SyRtLFH1WJDiDSi9peC8KBwAq
+   izc+/Ml4lJ8zgLhHVY5M5yYapl7b0lzWhBaM3iiV3Gi2t7zNjEpgHWbKF
+   iEI07WzeEFg0cq3rWfGTdquFR7nIEn6R0sh9y/vyZnQ83KXBx70dIbkN4
+   E55G2+2pyH2SAQOBkuoaDeeEz/BKrUgPkqFeJIo3XnI+1wRZeGSuCx0mV
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10729"; a="442310201"
+X-IronPort-AV: E=Sophos;i="6.00,213,1681196400"; 
+   d="scan'208";a="442310201"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2023 11:17:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10729"; a="832060955"
+X-IronPort-AV: E=Sophos;i="6.00,213,1681196400"; 
+   d="scan'208";a="832060955"
+Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.97.184])
+  by orsmga004.jf.intel.com with ESMTP; 02 Jun 2023 11:17:36 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: LKML <linux-kernel@vger.kernel.org>,
+	iommu@lists.linux.dev,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	"Lu Baolu" <baolu.lu@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	"Robin Murphy" <robin.murphy@arm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.com>,
+	dmaengine@vger.kernel.org,
+	vkoul@kernel.org
+Cc: "Will Deacon" <will@kernel.org>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Raj Ashok <ashok.raj@intel.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	Yi Liu <yi.l.liu@intel.com>,
+	"Yu, Fenghua" <fenghua.yu@intel.com>,
+	Dave Jiang <dave.jiang@intel.com>,
+	Tony Luck <tony.luck@intel.com>,
+	"Zanussi, Tom" <tom.zanussi@intel.com>,
+	rex.zhang@intel.com,
+	xiaochen.shen@intel.com,
+	narayan.ranganathan@intel.com,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v8 0/7] Re-enable IDXD kernel workqueue under DMA API
+Date: Fri,  2 Jun 2023 11:22:05 -0700
+Message-Id: <20230602182212.150825-1-jacob.jun.pan@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On June 2, 2023 7:39:12 AM PDT, Peter Zijlstra <peterz@infradead=2Eorg> wro=
-te:
->On Thu, Jun 01, 2023 at 09:29:18AM -0400, Linus Torvalds wrote:
->
->> Right now we have that "minimum gcc version" in a somewhat annoying
->> place: it's in the =2E/scripts/min-tool-version=2Esh file as a shell
->> script=2E
->
->Something like so then?
->
->---
->Subject: parisc: Raise minimal GCC version
->From: Peter Zijlstra <peterz@infradead=2Eorg>
->Date: Fri Jun  2 16:33:54 CEST 2023
->
->With 64bit builds depending on __SIZEOF_INT128__ raise the parisc
->minimum compiler version to gcc-11=2E0=2E0=2E
->
->All other 64bit architectures provide this from GCC-5=2E1=2E0 (and
->probably before), except hppa64 which only started advertising this
->with GCC-11=2E
->
->Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead=2Eorg>
->---
-> scripts/min-tool-version=2Esh |    6 +++++-
-> 1 file changed, 5 insertions(+), 1 deletion(-)
->
->--- a/scripts/min-tool-version=2Esh
->+++ b/scripts/min-tool-version=2Esh
->@@ -17,7 +17,11 @@ binutils)
-> 	echo 2=2E25=2E0
-> 	;;
-> gcc)
->-	echo 5=2E1=2E0
->+	if [ "$SRCARCH" =3D parisc ]; then
->+		echo 11=2E0=2E0
->+	else
->+		echo 5=2E1=2E0
->+	fi
-> 	;;
-> llvm)
-> 	if [ "$SRCARCH" =3D s390 ]; then
+Hi Joerg and all,
 
-Dumb question: is this only about the cpp macro or is it about __int128 ex=
-isting at all?
+IDXD kernel work queues were disabled due to the flawed use of kernel VA
+and SVA API.
+Link: https://lore.kernel.org/linux-iommu/20210511194726.GP1002214@nvidia.com/
+
+The solution is to enable it under DMA API where IDXD shared workqueue users
+can use ENQCMDS to submit work on buffers mapped by DMA API.
+
+This patchset adds support for attaching PASID to the device's default
+domain and the ability to allocate global PASIDs from IOMMU APIs. IDXD driver
+can then re-enable the kernel work queues and use them under DMA API.
+
+This depends on the IOASID removal series. (merged)
+https://lore.kernel.org/all/ZCaUBJvUMsJyD7EW@8bytes.org/
+
+
+Thanks,
+
+Jacob
+
+---
+Changelog:
+v8:
+	- further vt-d driver refactoring (3-6) around set/remove device PASID
+	  (Baolu)
+	- make consistent use of NO_PASID in SMMU code (Jean)
+	- fix off-by-one error in max PASID check (Kevin)
+v7:
+	- renamed IOMMU_DEF_RID_PASID to be IOMMU_NO_PASID to be more generic
+	  (Jean)
+	- simplify range checking for sva PASID (Baolu) 
+v6:
+	- use a simplified version of vt-d driver change for set_device_pasid
+	  from Baolu.
+	- check and rename global PASID allocation base
+v5:
+	- exclude two patches related to supervisor mode, taken by VT-d
+	maintainer Baolu.
+	- move PASID range check into allocation API so that device drivers
+	  only need to pass in struct device*. (Kevin)
+	- factor out helper functions in device-domain attach (Baolu)
+	- make explicit use of RID_PASID across architectures
+v4:
+	- move dummy functions outside ifdef CONFIG_IOMMU_SVA (Baolu)
+	- dropped domain type check while disabling idxd system PASID (Baolu)
+
+v3:
+	- moved global PASID allocation API from SVA to IOMMU (Kevin)
+	- remove #ifdef around global PASID reservation during boot (Baolu)
+	- remove restriction on PASID 0 allocation (Baolu)
+	- fix a bug in sysfs domain change when attaching devices
+	- clear idxd user interrupt enable bit after disabling device( Fenghua)
+v2:
+	- refactored device PASID attach domain ops based on Baolu's early patch
+	- addressed TLB flush gap
+	- explicitly reserve RID_PASID from SVA PASID number space
+	- get dma domain directly, avoid checking domain types
+
+
+Jacob Pan (3):
+  iommu: Generalize PASID 0 for normal DMA w/o PASID
+  iommu: Move global PASID allocation from SVA to core
+  dmaengine/idxd: Re-enable kernel workqueue under DMA API
+
+Lu Baolu (4):
+  iommu/vt-d: Add domain_flush_pasid_iotlb()
+  iommu/vt-d: Remove pasid_mutex
+  iommu/vt-d: Make prq draining code generic
+  iommu/vt-d: Add set_dev_pasid callback for dma domain
+
+ drivers/dma/idxd/device.c                     |  30 +---
+ drivers/dma/idxd/dma.c                        |   5 +-
+ drivers/dma/idxd/init.c                       |  60 ++++++-
+ drivers/dma/idxd/sysfs.c                      |   7 -
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |   2 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  16 +-
+ drivers/iommu/intel/iommu.c                   | 161 +++++++++++++++---
+ drivers/iommu/intel/iommu.h                   |   9 +
+ drivers/iommu/intel/pasid.c                   |   2 +-
+ drivers/iommu/intel/pasid.h                   |   2 -
+ drivers/iommu/intel/svm.c                     |  53 +-----
+ drivers/iommu/iommu-sva.c                     |  28 ++-
+ drivers/iommu/iommu.c                         |  28 +++
+ include/linux/iommu.h                         |  11 ++
+ 14 files changed, 279 insertions(+), 135 deletions(-)
+
+-- 
+2.25.1
+
