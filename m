@@ -1,57 +1,77 @@
-Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0413258F
-	for <iommu@lists.linux.dev>; Fri,  2 Jun 2023 14:32:37 +0000 (UTC)
-Received: by mail-oi1-f171.google.com with SMTP id 5614622812f47-39a505b901dso1841696b6e.0
-        for <iommu@lists.linux.dev>; Fri, 02 Jun 2023 07:32:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1685716357; x=1688308357;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=6NwA907vGnrNpaOFyWDRDxSy5v1vFxmBWhlUfMES2kw=;
-        b=EauV+zfSnBg6r0ozgcM9FVLsm5gQCUXgiYyfYePz+nQ/L81vRnwKSIX3WIdM4BmfS2
-         Y6Q0se655hmMB+A2zm5Ipm6ukstFJH/l3WWIKs6vgRvCR18zZL6inolAzhr0+/y2NZGd
-         wLDgV6XS3o9gg12dJMji52ozOCvPoJ1oejgSpyUaETeJQtItQiIplDI7sgX65PF7k5G4
-         6CGEq9XCateFJruI6vXJDAEmQOFsSgegr4aLlAXyQ/0o/BOZtRDufrYSj2nRrD0gd/Ip
-         HkDVzLSDdWPCV3pG3MTk58ed9yYqeyz8j4tvKpboWViVkZaPjy84wwHmnWt93wpu6fLU
-         6WTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685716357; x=1688308357;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6NwA907vGnrNpaOFyWDRDxSy5v1vFxmBWhlUfMES2kw=;
-        b=FT99PmUCfnAW0nHr30IOGkX2Hps9+e6YNR3Nv0Y1IdIIgiia5pBMdv7OkUOIuJEhSC
-         iE5Wqu5i1mIOXy5z4FkWIBsyXHAKBeK2/K29ZKp3H8vx1f9ikD/OE5aKXDOcE9zm7vSv
-         qhJASJev1FNkyZCtYUz8WjX79ZMIWuvACSa3aQE5IysTOjAdj6s2KrtSx8x+QIfRBu+L
-         38rNcMgsLUGDy54+955OuYig38zKpEfCXh2qj5AaQE7OMaH0twYvEL5Rr+NLDzMqglXr
-         oZUGoEcFbNa0OPb0gWSK++vvUsCRptQYcvrS+h8PmIXqdWO6YMJFnpr3kWu+JLHCsBvW
-         g87Q==
-X-Gm-Message-State: AC+VfDzPUa0kpCwFLKVh1UqEl7rdhTSaOlvEI9qq9bKXQ7KeFhWkeSrI
-	yvzdELzhrdIHYdsDQz7rKXDTKA==
-X-Google-Smtp-Source: ACHHUZ4V0UzJXmOaS27pn0qGqFdFCh76Hfz2jr/a0CAePlRB6y4q8OwnVaD7Jbl2aB8HCK25aVZeqQ==
-X-Received: by 2002:a54:408b:0:b0:39a:748f:4bbd with SMTP id i11-20020a54408b000000b0039a748f4bbdmr132133oii.15.1685716356815;
-        Fri, 02 Jun 2023 07:32:36 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id j18-20020a0ceb12000000b0061b5dbf1994sm839858qvp.146.2023.06.02.07.32.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Jun 2023 07:32:36 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1q55pT-001vhW-EA;
-	Fri, 02 Jun 2023 11:32:35 -0300
-Date: Fri, 2 Jun 2023 11:32:35 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Yanfei Xu <yanfei.xu@intel.com>, dwmw2@infradead.org, joro@8bytes.org,
-	will@kernel.org, robin.murphy@arm.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iommu/vt-d: Use BUG_ON to check NULL value of 'table'
-Message-ID: <ZHn9g6QoMUo3ZPog@ziepe.ca>
-References: <20230530092503.152926-1-yanfei.xu@intel.com>
- <20230530092503.152926-3-yanfei.xu@intel.com>
- <3e75f9de-4c67-93aa-9fb4-28da9849dd48@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56D40156D2
+	for <iommu@lists.linux.dev>; Fri,  2 Jun 2023 14:40:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=csXHyTVxkO+EGfVGUkTCJ6dG3JVY9wkWTgHzblW+1z8=; b=SkQmNVOGlL8AQWBC9GS+DAhOCy
+	pofqCKOFBuExSWYSUk1GOFt2m62JU8NEtYoPUUfMMqQ0Tvi3EJsHfNqSp200ooaTXY3PTzxOlEQx6
+	hi6KhG2M0AEguimnvfwFgRjrDAvrv2QoVKzAWqxP0rpemSCRkLCdxugTW/2YQ1/pytbyyJaEsm9Pe
+	9fF8rqccSYOqcoqSnuyarEBqbcWLdOeZyGMTbYC1Yo4yux9gcXUpErSi7OVplE7ALO5MRwva9+CqF
+	/GgutI8B0hYBrP2dcBrjvb6Ay3CWgXFc24hfBxmA3Q5N4iL4PvgjqQKKMoMxbpDLjeMpfcsPrfrFt
+	gFDjAmFA==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+	by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+	id 1q55vz-001Lw5-1U;
+	Fri, 02 Jun 2023 14:39:19 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
+	(Client did not present a certificate)
+	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id B3BB5300188;
+	Fri,  2 Jun 2023 16:39:12 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+	id 6982E22BA6445; Fri,  2 Jun 2023 16:39:12 +0200 (CEST)
+Date: Fri, 2 Jun 2023 16:39:12 +0200
+From: Peter Zijlstra <peterz@infradead.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Helge Deller <deller@gmx.de>, Masahiro Yamada <masahiroy@kernel.org>,
+	Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>,
+	Will Deacon <will@kernel.org>, Boqun Feng <boqun.feng@gmail.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>, dennis@kernel.org,
+	Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@linux.com>,
+	Heiko Carstens <hca@linux.ibm.com>, gor@linux.ibm.com,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	borntraeger@linux.ibm.com, Sven Schnelle <svens@linux.ibm.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	"H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>,
+	suravee.suthikulpanit@amd.com, Robin Murphy <robin.murphy@arm.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Baolu Lu <baolu.lu@linux.intel.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	"David S . Miller" <davem@davemloft.net>,
+	Pekka Enberg <penberg@kernel.org>,
+	David Rientjes <rientjes@google.com>,
+	Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Vlastimil Babka <vbabka@suse.cz>,
+	Roman Gushchin <roman.gushchin@linux.dev>,
+	Hyeonggon Yoo <42.hyeyoo@gmail.com>, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+	linux-s390@vger.kernel.org, iommu@lists.linux.dev,
+	Linux-Arch <linux-arch@vger.kernel.org>,
+	linux-crypto@vger.kernel.org,
+	Stephen Rothwell <sfr@canb.auug.org.au>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
+	linux-parisc@vger.kernel.org,
+	John David Anglin <dave.anglin@bell.net>,
+	Sam James <sam@gentoo.org>
+Subject: Re: [PATCH v2 07/12] parisc/percpu: Work around the lack of
+ __SIZEOF_INT128__
+Message-ID: <20230602143912.GI620383@hirez.programming.kicks-ass.net>
+References: <20230531130833.635651916@infradead.org>
+ <20230531132323.722039569@infradead.org>
+ <70a69deb-7ad4-45b2-8e13-34955594a7ce@app.fastmail.com>
+ <20230601101409.GS4253@hirez.programming.kicks-ass.net>
+ <14c50e58-fecc-e96a-ee73-39ef4e4617c7@gmx.de>
+ <CAHk-=whL65CLuy9D9gyO608acM5WLWo_ggAMP1cGu2XvyC0-hA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -60,43 +80,45 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3e75f9de-4c67-93aa-9fb4-28da9849dd48@linux.intel.com>
+In-Reply-To: <CAHk-=whL65CLuy9D9gyO608acM5WLWo_ggAMP1cGu2XvyC0-hA@mail.gmail.com>
 
-On Wed, May 31, 2023 at 11:26:55AM +0800, Baolu Lu wrote:
-> On 5/30/23 5:25 PM, Yanfei Xu wrote:
-> > Checking NULL value of 'table' variable deserves a BUG_ON as the
-> > following code will trigger a crash by dereferencing the NULL
-> > 'table' pointer. Crash in advance with BUG_ON to avoid WARN_ON
-> > plus NULL pointer dereferencing can simplify the crash log.
-> > 
-> > Signed-off-by: Yanfei Xu<yanfei.xu@intel.com>
-> > ---
-> >   drivers/iommu/intel/iommu.c | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> > index e98f1b122b49..8aa3bfdb7f95 100644
-> > --- a/drivers/iommu/intel/iommu.c
-> > +++ b/drivers/iommu/intel/iommu.c
-> > @@ -1944,7 +1944,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
-> >   	if (sm_supported(iommu)) {
-> >   		unsigned long pds;
-> > -		WARN_ON(!table);
-> > +		BUG_ON(!table);
-> 
-> BUG_ON() is not recommended. Perhaps,
-> 
-> 		if (!table)
-> 			-ENODEV;
-> 
-> ?
+On Thu, Jun 01, 2023 at 09:29:18AM -0400, Linus Torvalds wrote:
 
-If it is not something you think needs active debugging then just let
-it crash on the NULL pointer deref. You get a nice backtrace from that
-already.
+> Right now we have that "minimum gcc version" in a somewhat annoying
+> place: it's in the ./scripts/min-tool-version.sh file as a shell
+> script.
 
-The additional value of the WARN is it gives you a line number, a
-prettier print and it might recover more cleanly (or not, it might
-just crash somewhere else).
+Something like so then?
 
-Jason
+---
+Subject: parisc: Raise minimal GCC version
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Fri Jun  2 16:33:54 CEST 2023
+
+With 64bit builds depending on __SIZEOF_INT128__ raise the parisc
+minimum compiler version to gcc-11.0.0.
+
+All other 64bit architectures provide this from GCC-5.1.0 (and
+probably before), except hppa64 which only started advertising this
+with GCC-11.
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+---
+ scripts/min-tool-version.sh |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+--- a/scripts/min-tool-version.sh
++++ b/scripts/min-tool-version.sh
+@@ -17,7 +17,11 @@ binutils)
+ 	echo 2.25.0
+ 	;;
+ gcc)
+-	echo 5.1.0
++	if [ "$SRCARCH" = parisc ]; then
++		echo 11.0.0
++	else
++		echo 5.1.0
++	fi
+ 	;;
+ llvm)
+ 	if [ "$SRCARCH" = s390 ]; then
