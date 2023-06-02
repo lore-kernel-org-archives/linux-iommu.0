@@ -1,106 +1,69 @@
-Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56C9233DF
-	for <iommu@lists.linux.dev>; Thu,  1 Jun 2023 21:15:04 +0000 (UTC)
-References: <20230531130833.635651916@infradead.org>
- <20230531132323.722039569@infradead.org>
- <70a69deb-7ad4-45b2-8e13-34955594a7ce@app.fastmail.com>
- <20230601101409.GS4253@hirez.programming.kicks-ass.net>
- <14c50e58-fecc-e96a-ee73-39ef4e4617c7@gmx.de>
- <20230601105021.GU4253@hirez.programming.kicks-ass.net>
-User-agent: mu4e 1.10.3; emacs 29.0.91
-From: Sam James <sam@gentoo.org>
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: Helge Deller <deller@gmx.de>, Arnd Bergmann <arnd@arndb.de>, Linus
- Torvalds <torvalds@linux-foundation.org>, Jonathan Corbet
- <corbet@lwn.net>, Will Deacon <will@kernel.org>, Boqun Feng
- <boqun.feng@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Catalin
- Marinas <catalin.marinas@arm.com>, dennis@kernel.org, Tejun Heo
- <tj@kernel.org>, Christoph Lameter <cl@linux.com>, Heiko Carstens
- <hca@linux.ibm.com>, gor@linux.ibm.com, Alexander Gordeev
- <agordeev@linux.ibm.com>, borntraeger@linux.ibm.com, Sven Schnelle
- <svens@linux.ibm.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar
- <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen
- <dave.hansen@linux.intel.com>, x86@kernel.org, "H. Peter Anvin"
- <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>,
- suravee.suthikulpanit@amd.com, Robin Murphy <robin.murphy@arm.com>, David
- Woodhouse <dwmw2@infradead.org>, Baolu Lu <baolu.lu@linux.intel.com>,
- Herbert Xu <herbert@gondor.apana.org.au>, "David S . Miller"
- <davem@davemloft.net>, Pekka Enberg <penberg@kernel.org>, David Rientjes
- <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Andrew Morton
- <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>, Roman
- Gushchin <roman.gushchin@linux.dev>, Hyeonggon Yoo <42.hyeyoo@gmail.com>,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, linux-s390@vger.kernel.org, iommu@lists.linux.dev,
- Linux-Arch <linux-arch@vger.kernel.org>, linux-crypto@vger.kernel.org,
- Stephen Rothwell <sfr@canb.auug.org.au>, Michael Ellerman
- <mpe@ellerman.id.au>, "James E . J . Bottomley"
- <James.Bottomley@hansenpartnership.com>, linux-parisc@vger.kernel.org,
- John David Anglin <dave.anglin@bell.net>
-Subject: Re: [PATCH v2 07/12] parisc/percpu: Work around the lack of
- __SIZEOF_INT128__
-Date: Thu, 01 Jun 2023 22:08:44 +0100
-In-reply-to: <20230601105021.GU4253@hirez.programming.kicks-ass.net>
-Message-ID: <87jzwmvqin.fsf@gentoo.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 557DD10E3
+	for <iommu@lists.linux.dev>; Fri,  2 Jun 2023 02:08:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685671711; x=1717207711;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=CGlNXT/q4/l3CvQLFTPbchlcffVRsXT/d11BWSw/2/o=;
+  b=C126j8jtzPiDZ0DvZDd9tSkbCSIgGyUGt9giWRel4p2RIYx8sWdoPXN4
+   bMZvVGl8im8UoaqmkxZBpt33Y/q4SxmR3cFJfW8OcfZ7WR/LTPTaeBMSS
+   HiPb5wJuMO5TKc8mR0lhitr96dJlPg14fGCHFw16GYEdJDxsNyxzAIOek
+   PzbNe7umcqG7fDT88aUeIgkBotbXBjPQfbcpcrMCP2YC89iHVFQE3svZI
+   r+0xaX/i1kuRfiz/KNU8EsRoYMyJXNwoHcBi2BZwZAlh/3aoDhgU53UJt
+   x/4ULK0k16V31Q8YlXfKEJEw4M068oqdd5hYGkBc8p8oMhiiWoJDkyLmn
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10728"; a="359039374"
+X-IronPort-AV: E=Sophos;i="6.00,211,1681196400"; 
+   d="scan'208";a="359039374"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2023 19:08:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10728"; a="777457798"
+X-IronPort-AV: E=Sophos;i="6.00,211,1681196400"; 
+   d="scan'208";a="777457798"
+Received: from tower.bj.intel.com ([10.238.157.62])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2023 19:08:19 -0700
+From: Yanfei Xu <yanfei.xu@intel.com>
+To: dwmw2@infradead.org,
+	baolu.lu@linux.intel.com,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	yanfei.xu@intel.com
+Subject: [PATCH v2 0/2] Misc cleanup for iommu/vt-d
+Date: Fri,  2 Jun 2023 10:05:18 +0800
+Message-Id: <20230602020520.224465-1-yanfei.xu@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-	micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Transfer-Encoding: 8bit
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+No functional changes expected.
 
+v1->v2:
+1.Change to use check and return for dmar_reenable_qi()
+2.Remove WARN_ON of 'table' instead of using BUG_ON
+3.Also remove useless WARN_ON of domain id
 
-Peter Zijlstra <peterz@infradead.org> writes:
+Thanks for Baolu's suggestion!
 
-> On Thu, Jun 01, 2023 at 12:32:38PM +0200, Helge Deller wrote:
->> On 6/1/23 12:14, Peter Zijlstra wrote:
->> > On Wed, May 31, 2023 at 04:21:22PM +0200, Arnd Bergmann wrote:
->> >=20
->> > > It would be nice to have the hack more localized to parisc
->> > > and guarded with a CONFIG_GCC_VERSION check so we can kill
->> > > it off in the future, once we drop either gcc-10 or parisc
->> > > support.
->> >=20
->> > I vote for dropping parisc -- it's the only 64bit arch that doesn't ha=
-ve
->> > sane atomics.
->>=20
->> Of course I'm against dropping parisc.
->
-> :-)
->
->> > Anyway, the below seems to work -- build tested with GCC-10.1
->>=20
->> I don't think we need to care about gcc-10 on parisc.
->> Debian and Gentoo are the only supported distributions, while Debian
->> requires gcc-12 to build > 6.x kernels, and I assume Gentoo uses at least
->> gcc-12 as well.
->>=20
->> So raising the gcc limit for parisc only (at least temporarily for now)
->> should be fine and your workaround below wouldn't be necessary, right?
->
-> Correct, if you're willing to set minimum GCC version to 11 for parisc
-> all is well and this patch can go play in the bit bucket.
+Yanfei Xu (2):
+  iommu/vt-d: Handle the failure case of dmar_reenable_qi()
+  iommu/vt-d: Remove two WARN_ON in domain_context_mapping_one()
 
-It's fine for us in Gentoo, thanks!
+ drivers/iommu/intel/iommu.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+-- 
+2.34.1
 
------BEGIN PGP SIGNATURE-----
-
-iOUEARYKAI0WIQQlpruI3Zt2TGtVQcJzhAn1IN+RkAUCZHkJAF8UgAAAAAAuAChp
-c3N1ZXItZnByQG5vdGF0aW9ucy5vcGVucGdwLmZpZnRoaG9yc2VtYW4ubmV0MjVB
-NkJCODhERDlCNzY0QzZCNTU0MUMyNzM4NDA5RjUyMERGOTE5MA8cc2FtQGdlbnRv
-by5vcmcACgkQc4QJ9SDfkZCxTgD8DvRqnel67WrRU5+HwB76oJ89eB+XZVKI63Ih
-mkFPKKIBAJQcSVIUwNsG7OzOuRH/3R6pDjmn/yKfCEUMjHqK3HEH
-=fJgU
------END PGP SIGNATURE-----
---=-=-=--
