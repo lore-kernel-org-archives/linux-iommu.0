@@ -1,23 +1,23 @@
-Received: from weierstrass.telenet-ops.be (weierstrass.telenet-ops.be [195.130.137.81])
+Received: from riemann.telenet-ops.be (riemann.telenet-ops.be [195.130.137.80])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 296FB8838
-	for <iommu@lists.linux.dev>; Fri,  2 Jun 2023 08:57:53 +0000 (UTC)
-Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
-	by weierstrass.telenet-ops.be (Postfix) with ESMTPS id 4QXcDT587cz4x8lG
-	for <iommu@lists.linux.dev>; Fri,  2 Jun 2023 10:51:21 +0200 (CEST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30E818838
+	for <iommu@lists.linux.dev>; Fri,  2 Jun 2023 08:57:56 +0000 (UTC)
+Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
+	by riemann.telenet-ops.be (Postfix) with ESMTPS id 4QXcDS4qwNz4xCsZ
+	for <iommu@lists.linux.dev>; Fri,  2 Jun 2023 10:51:20 +0200 (CEST)
 Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed30:158c:2ccf:1f70:e136])
-	by michel.telenet-ops.be with bizsmtp
-	id 48qo2A00B1tRZS8068qoZc; Fri, 02 Jun 2023 10:51:13 +0200
+	by xavier.telenet-ops.be with bizsmtp
+	id 48qo2A0031tRZS8018qoDE; Fri, 02 Jun 2023 10:51:12 +0200
 Received: from rox.of.borg ([192.168.97.57])
 	by ramsan.of.borg with esmtp (Exim 4.95)
 	(envelope-from <geert@linux-m68k.org>)
-	id 1q50UO-00BhYO-Uv;
+	id 1q50UO-00BhY8-RL;
 	Fri, 02 Jun 2023 10:50:48 +0200
 Received: from geert by rox.of.borg with local (Exim 4.95)
 	(envelope-from <geert@linux-m68k.org>)
-	id 1q50Ui-00APxh-20;
-	Fri, 02 Jun 2023 10:50:48 +0200
+	id 1q50Uh-00APxP-UC;
+	Fri, 02 Jun 2023 10:50:47 +0200
 From: Geert Uytterhoeven <geert+renesas@glider.be>
 To: Michael Turquette <mturquette@baylibre.com>,
 	Stephen Boyd <sboyd@kernel.org>,
@@ -51,12 +51,10 @@ Cc: Tomasz Figa <tomasz.figa@gmail.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v3 5/7] clk: renesas: rzg2l: Convert to readl_poll_timeout_atomic()
-Date: Fri,  2 Jun 2023 10:50:40 +0200
-Message-Id: <900543d4b9abc1004e6aecdb676f23e5508ae96f.1685692810.git.geert+renesas@glider.be>
+Subject: [PATCH v3 0/7] iopoll: Busy loop and timeout improvements + conversions
+Date: Fri,  2 Jun 2023 10:50:35 +0200
+Message-Id: <cover.1685692810.git.geert+renesas@glider.be>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1685692810.git.geert+renesas@glider.be>
-References: <cover.1685692810.git.geert+renesas@glider.be>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -66,60 +64,98 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Use readl_poll_timeout_atomic() instead of open-coding the same
-operation.
+	Hi all,
 
-As typically no retries are needed, 10 µs is a suitable timeout value.
+When implementing a polling loop, a common review comment is to use one
+of the read*_poll_timeout*() helpers.  Unfortunately this is not always
+possible, or might introduce subtle bugs.  This patch series aims to
+improve these helpers, so they can gain wider use.
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
-Polling measurements done on RZ/Five.
+  1. The first patch improves busy-looping behavior of both the atomic
+     and non-atomic read*_poll_timeout*() helpers.
+     The issue addressed by this patch was discussed before[1-2], but I
+     am not aware of any patches moving forward.
 
-v3:
-  - New.
----
- drivers/clk/renesas/rzg2l-cpg.c | 16 +++++-----------
- 1 file changed, 5 insertions(+), 11 deletions(-)
+  2. The second patch fixes timeout handling of the atomic variants.
+     Some of the issues addressed by this patch were mitigated in
+     various places[3-5], and some of these findings may be of interest
+     to the authors of [6-8].
 
-diff --git a/drivers/clk/renesas/rzg2l-cpg.c b/drivers/clk/renesas/rzg2l-cpg.c
-index ca8b921c77625317..bc623515ad843cf5 100644
---- a/drivers/clk/renesas/rzg2l-cpg.c
-+++ b/drivers/clk/renesas/rzg2l-cpg.c
-@@ -903,9 +903,9 @@ static int rzg2l_mod_clock_endisable(struct clk_hw *hw, bool enable)
- 	unsigned int reg = clock->off;
- 	struct device *dev = priv->dev;
- 	unsigned long flags;
--	unsigned int i;
- 	u32 bitmask = BIT(clock->bit);
- 	u32 value;
-+	int error;
- 
- 	if (!clock->off) {
- 		dev_dbg(dev, "%pC does not support ON/OFF\n",  hw->clk);
-@@ -930,19 +930,13 @@ static int rzg2l_mod_clock_endisable(struct clk_hw *hw, bool enable)
- 	if (!priv->info->has_clk_mon_regs)
- 		return 0;
- 
--	for (i = 1000; i > 0; --i) {
--		if (((readl(priv->base + CLK_MON_R(reg))) & bitmask))
--			break;
--		cpu_relax();
--	}
--
--	if (!i) {
-+	error = readl_poll_timeout_atomic(priv->base + CLK_MON_R(reg), value,
-+					  value & bitmask, 0, 10);
-+	if (error)
- 		dev_err(dev, "Failed to enable CLK_ON %p\n",
- 			priv->base + CLK_ON_R(reg));
--		return -ETIMEDOUT;
--	}
- 
--	return 0;
-+	return error;
- }
- 
- static int rzg2l_mod_clock_enable(struct clk_hw *hw)
+The first two patches were sent before, and already received some acks
+and reviews.  I plan to queue these in an immutable and tagged branch
+after the weekend, for consumption by myself, and by other interested
+parties.
+
+The last five patches are new, and convert several Renesas-specific
+drivers from open-coded loops to the fixed read*_poll_timeout_atomic()
+helpers:
+  - I plan to queue the clk and soc patches in renesas-devel resp.
+    renesas-clk for v6.5,
+  - The IOMMU patch can wait for v6.6, unless the IOMMU maintainers
+    already want to merge the immutable branch, too.
+
+Thanks for your comments!
+
+Changes compared to v2[9]:
+  - Add Acked-by, Reviewed-by,
+  - Add comment about not using timekeeping, and its impact,
+  - Add conversion patches 3-7.
+
+Changes compared to v1[10]:
+  - Add Acked-by,
+  - Add compiler barrier and inlining explanation (thanks, Peter!),
+  - Add patch [2/2].
+
+Thanks for your comments!
+
+[1] "Re: [PATCH 6/7] clk: renesas: rcar-gen3: Add custom clock for PLLs"
+    https://lore.kernel.org/all/CAMuHMdWUEhs=nwP+a0vO2jOzkq-7FEOqcJ+SsxAGNXX1PQ2KMA@mail.gmail.com
+[2] "Re: [PATCH v2] clk: samsung: Prevent potential endless loop in the
+    PLL set_rate ops"
+    https://lore.kernel.org/all/20200811164628.GA7958@kozik-lap
+[3] b3e9431854e8f305 ("bus: ti-sysc: Fix timekeeping_suspended warning
+		       on resume")
+[4] 44a9e78f9242872c ("clk: samsung: Prevent potential endless loop in
+		       the PLL ops")
+[5] 3d8598fb9c5a7783 ("clk: ti: clkctrl: use fallback udelay approach if
+		      timekeeping is suspended")
+[6] bd40cbb0e3b37a4d ("PM: domains: Move genpd's time-accounting to
+		       ktime_get_mono_fast_ns()")
+[7] c155f6499f9797f2 ("PM-runtime: Switch accounting over to
+		       ktime_get_mono_fast_ns()")
+[8] 15efb47dc560849d ("PM-runtime: Fix deadlock with ktime_get()")
+
+[9] https://lore.kernel.org/all/cover.1683722688.git.geert+renesas@glider.be
+
+[10] https://lore.kernel.org/r/8d492ee4a391bd089a01c218b0b4e05cf8ea593c.1674729407.git.geert+renesas@glider.be/
+
+Geert Uytterhoeven (7):
+  iopoll: Call cpu_relax() in busy loops
+  iopoll: Do not use timekeeping in read_poll_timeout_atomic()
+  clk: renesas: cpg-mssr: Convert to readl_poll_timeout_atomic()
+  clk: renesas: mstp: Convert to readl_poll_timeout_atomic()
+  clk: renesas: rzg2l: Convert to readl_poll_timeout_atomic()
+  soc: renesas: rmobile-sysc: Convert to readl_poll_timeout_atomic()
+  iommu/ipmmu-vmsa: Convert to read_poll_timeout_atomic()
+
+ drivers/clk/renesas/clk-mstp.c         | 18 ++++++---------
+ drivers/clk/renesas/renesas-cpg-mssr.c | 31 +++++++++-----------------
+ drivers/clk/renesas/rzg2l-cpg.c        | 16 +++++--------
+ drivers/iommu/ipmmu-vmsa.c             | 15 +++++--------
+ drivers/soc/renesas/rmobile-sysc.c     | 31 +++++++++-----------------
+ include/linux/iopoll.h                 | 24 +++++++++++++++-----
+ 6 files changed, 58 insertions(+), 77 deletions(-)
+
 -- 
 2.34.1
 
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
