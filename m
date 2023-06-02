@@ -1,162 +1,177 @@
-Received: from gauss.telenet-ops.be (gauss.telenet-ops.be [195.130.132.49])
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 839FE171AA
-	for <iommu@lists.linux.dev>; Fri,  2 Jun 2023 08:57:59 +0000 (UTC)
-Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
-	by gauss.telenet-ops.be (Postfix) with ESMTPS id 4QXcDR4GYnz4wyF5
-	for <iommu@lists.linux.dev>; Fri,  2 Jun 2023 10:51:19 +0200 (CEST)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed30:158c:2ccf:1f70:e136])
-	by xavier.telenet-ops.be with bizsmtp
-	id 48qo2A0061tRZS8018qoDG; Fri, 02 Jun 2023 10:51:12 +0200
-Received: from rox.of.borg ([192.168.97.57])
-	by ramsan.of.borg with esmtp (Exim 4.95)
-	(envelope-from <geert@linux-m68k.org>)
-	id 1q50UO-00BhYG-TJ;
-	Fri, 02 Jun 2023 10:50:48 +0200
-Received: from geert by rox.of.borg with local (Exim 4.95)
-	(envelope-from <geert@linux-m68k.org>)
-	id 1q50Ui-00APxY-0T;
-	Fri, 02 Jun 2023 10:50:48 +0200
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-To: Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>,
-	Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-	Magnus Damm <magnus.damm@gmail.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: Tomasz Figa <tomasz.figa@gmail.com>,
-	Sylwester Nawrocki <s.nawrocki@samsung.com>,
-	Will Deacon <will@kernel.org>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Dejin Zheng <zhengdejin5@gmail.com>,
-	Kai-Heng Feng <kai.heng.feng@canonical.com>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Russell King <linux@armlinux.org.uk>,
-	John Stultz <jstultz@google.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Tony Lindgren <tony@atomide.com>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Tero Kristo <tero.kristo@linux.intel.com>,
-	Ulf Hansson <ulf.hansson@linaro.org>,
-	"Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-	Vincent Guittot <vincent.guittot@linaro.org>,
-	linux-clk@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-renesas-soc@vger.kernel.org,
-	linux-pm@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v3 3/7] clk: renesas: cpg-mssr: Convert to readl_poll_timeout_atomic()
-Date: Fri,  2 Jun 2023 10:50:38 +0200
-Message-Id: <832d29fd9aa3239ea949535309d2bdb003d40c9e.1685692810.git.geert+renesas@glider.be>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1685692810.git.geert+renesas@glider.be>
-References: <cover.1685692810.git.geert+renesas@glider.be>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C63D814286
+	for <iommu@lists.linux.dev>; Fri,  2 Jun 2023 09:02:43 +0000 (UTC)
+X-UUID: 35640376012411eeb20a276fd37b9834-20230602
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=tkXvsKWiCiKvGwn/DYFIYckSfCXc3Ts7n72TyGWrQmc=;
+	b=FPa4fei4T/U5nTPHvMgqemEhIBYngoZHYXOhI0j9rFBOBsSz+DT/Agz5odsETxpgpCuHF5k0FzJcwagJJpDda4hUjDWeeknEtUyiUCX+vex0gyDIqKaa8G2rt8/weZxRGuE7l3SM2Rw4NAKj7eAdX9LC7V3pTBV1in65y9frUY0=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.25,REQID:d1b47338-9435-4331-8e3a-64032cf64e36,IP:0,U
+	RL:0,TC:0,Content:-25,EDM:0,RT:0,SF:100,FILE:0,BULK:0,RULE:Release_Ham,ACT
+	ION:release,TS:75
+X-CID-INFO: VERSION:1.1.25,REQID:d1b47338-9435-4331-8e3a-64032cf64e36,IP:0,URL
+	:0,TC:0,Content:-25,EDM:0,RT:0,SF:100,FILE:0,BULK:0,RULE:Spam_GS981B3D,ACT
+	ION:quarantine,TS:75
+X-CID-META: VersionHash:d5b0ae3,CLOUDID:44b95f3d-7aa7-41f3-a6bd-0433bee822f3,B
+	ulkID:230602170233GFCM3XCM,BulkQuantity:0,Recheck:0,SF:29|28|17|19|48|38,T
+	C:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+	,OSI:0,OSA:0,AV:0
+X-CID-BVR: 0
+X-CID-BAS: 0,_,0,_
+X-UUID: 35640376012411eeb20a276fd37b9834-20230602
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+	(envelope-from <yong.wu@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 256430585; Fri, 02 Jun 2023 17:02:32 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Fri, 2 Jun 2023 17:02:31 +0800
+Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.1118.26 via Frontend Transport; Fri, 2 Jun 2023 17:02:30 +0800
+From: Yong Wu <yong.wu@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Rob Herring
+	<robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>
+CC: Robin Murphy <robin.murphy@arm.com>, Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>, Yong Wu <yong.wu@mediatek.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	<iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <mingyuan.ma@mediatek.com>,
+	<yf.wang@mediatek.com>, <jianjiao.zeng@mediatek.com>,
+	<chengci.xu@mediatek.com>
+Subject: [PATCH v12 0/7] MT8188 IOMMU SUPPORT
+Date: Fri, 2 Jun 2023 17:02:20 +0800
+Message-ID: <20230602090227.7264-1-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK: N
 
-Use readl_poll_timeout_atomic() instead of open-coding the same
-operation.
+MT8188 have 3 IOMMU HWs. 2 IOMMU HW is for multimedia, and 1 IOMMU HW
+is for infra-master, like PCIe.
 
-As typically no retries are needed, 10 µs is a suitable timeout value.
+About the 2 MM IOMMU HW, the connection could be something like this:
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
-Polling measurements done on R-Car M2-W, H3 ES2.0, M3-W, M3-N, E3, and
-V4H.
+        IOMMU(VDO)          IOMMU(VPP)
+           |                   |
+      SMI_COMMON(VDO)      SMI_COMMON(VPP)
+      ---------------     ----------------
+      |      |   ...      |      |     ...
+    larb0 larb2  ...    larb1 larb3    ...
 
-v3:
-  - New.
----
- drivers/clk/renesas/renesas-cpg-mssr.c | 31 +++++++++-----------------
- 1 file changed, 11 insertions(+), 20 deletions(-)
+INFRA IOMMU does not have SMI, the master connects to IOMMU directly.
 
-diff --git a/drivers/clk/renesas/renesas-cpg-mssr.c b/drivers/clk/renesas/renesas-cpg-mssr.c
-index e9c0e341380e8f55..2772499d20165127 100644
---- a/drivers/clk/renesas/renesas-cpg-mssr.c
-+++ b/drivers/clk/renesas/renesas-cpg-mssr.c
-@@ -17,6 +17,7 @@
- #include <linux/device.h>
- #include <linux/init.h>
- #include <linux/io.h>
-+#include <linux/iopoll.h>
- #include <linux/mod_devicetable.h>
- #include <linux/module.h>
- #include <linux/of_address.h>
-@@ -196,8 +197,8 @@ static int cpg_mstp_clock_endisable(struct clk_hw *hw, bool enable)
- 	struct device *dev = priv->dev;
- 	u32 bitmask = BIT(bit);
- 	unsigned long flags;
--	unsigned int i;
- 	u32 value;
-+	int error;
- 
- 	dev_dbg(dev, "MSTP %u%02u/%pC %s\n", reg, bit, hw->clk,
- 		enable ? "ON" : "OFF");
-@@ -228,19 +229,13 @@ static int cpg_mstp_clock_endisable(struct clk_hw *hw, bool enable)
- 	if (!enable || priv->reg_layout == CLK_REG_LAYOUT_RZ_A)
- 		return 0;
- 
--	for (i = 1000; i > 0; --i) {
--		if (!(readl(priv->base + priv->status_regs[reg]) & bitmask))
--			break;
--		cpu_relax();
--	}
--
--	if (!i) {
-+	error = readl_poll_timeout_atomic(priv->base + priv->status_regs[reg],
-+					  value, !(value & bitmask), 0, 10);
-+	if (error)
- 		dev_err(dev, "Failed to enable SMSTP %p[%d]\n",
- 			priv->base + priv->control_regs[reg], bit);
--		return -ETIMEDOUT;
--	}
- 
--	return 0;
-+	return error;
- }
- 
- static int cpg_mstp_clock_enable(struct clk_hw *hw)
-@@ -896,8 +891,9 @@ static int cpg_mssr_suspend_noirq(struct device *dev)
- static int cpg_mssr_resume_noirq(struct device *dev)
- {
- 	struct cpg_mssr_priv *priv = dev_get_drvdata(dev);
--	unsigned int reg, i;
-+	unsigned int reg;
- 	u32 mask, oldval, newval;
-+	int error;
- 
- 	/* This is the best we can do to check for the presence of PSCI */
- 	if (!psci_ops.cpu_suspend)
-@@ -935,14 +931,9 @@ static int cpg_mssr_resume_noirq(struct device *dev)
- 		if (!mask)
- 			continue;
- 
--		for (i = 1000; i > 0; --i) {
--			oldval = readl(priv->base + priv->status_regs[reg]);
--			if (!(oldval & mask))
--				break;
--			cpu_relax();
--		}
--
--		if (!i)
-+		error = readl_poll_timeout_atomic(priv->base + priv->status_regs[reg],
-+						oldval, !(oldval & mask), 0, 10);
-+		if (error)
- 			dev_warn(dev, "Failed to enable SMSTP%u[0x%x]\n", reg,
- 				 oldval & mask);
- 	}
+Although multiple banks supported in MT8188, we only use one of them,
+which means PCIe is put in bank0 of INFRA IOMMU.
+
+So we have two pgtable for MT8188, specifically, these two MM IOMMU HW
+share a pgtable while INFRA IOMMU HW use a independent pgtable.
+
+Another change is that we add some SMC command for INFRA master to 
+enable INFRA IOMMU in ATF considering security concerns.
+
+We also adjust the flow of mtk_iommu_config to reduce indention.
+
+Change in v12:
+  - Change nothing. Just rebase on v6.4-rc4 and collect AngeloGioacchino's R-b.
+
+change in v11:
+  https://lore.kernel.org/linux-iommu/20230418083514.4379-1-yong.wu@mediatek.com/
+  - Just add a new entry in MAINTAINERS from AngeloGioacchino.
+
+change in v10:
+  https://lore.kernel.org/linux-mediatek/20230417073606.25729-1-yong.wu@mediatek.com/
+  - Add a Fixes tag for [2/7].
+  - Rebase on mtk-iommu-dma-range-v7:
+    https://lore.kernel.org/linux-mediatek/20230411093144.2690-1-yong.wu@mediatek.com/
+
+change since v9:
+  https://lore.kernel.org/linux-mediatek/20230317085541.20447-1-yong.wu@mediatek.com/
+  - Move the patch about setting set_dma_mask out from this patchset.
+  - Add a MAINTAINER patch since the header file was added a prefix "mediatek,"
+
+change since v8:
+    https://lore.kernel.org/linux-mediatek/20230307080555.14399-1-yong.wu@mediatek.com/
+  - Base on v6.3-rc1 and mtk-iommu-dma-range-v5:
+    https://lore.kernel.org/linux-mediatek/20230307023507.13306-1-yong.wu@mediatek.com/
+  - Add a new patch set_dma_mask about since mt8188 support the PA of pgtable 35bits.
+
+changes since v7:
+    https://lore.kernel.org/linux-mediatek/20230216053322.11596-1-yong.wu@mediatek.com/
+  - Base on mtk-iommu-dma-range-v4:
+    https://lore.kernel.org/linux-mediatek/20230215062544.8677-1-yong.wu@mediatek.com/
+  - Add a new patch for two IOMMU share pagetable issue.
+  - Add a new patch for adding iova_region_larb_msk for mt8188.
+  - Add the comment in the dt-binding header file about larb index.
+    This is for readable when updating the iova_region_larb_msk.
+    
+    Since there is something wrong for chengci's mail account when sending
+    to devicetree mail list, we don't know why. I help send this patchset.
+    https://lore.kernel.org/linux-mediatek/5a916595-12ee-92e6-d380-84146dd75218@linaro.org/
+
+changes since v6:
+    https://lore.kernel.org/linux-mediatek/20221223101439.494-1-chengci.xu@mediatek.com/
+  - base on tag: next-20221220.
+  - update commit message of patch[2/4].
+
+changes since v5:
+  - base on tag: next-20221205.
+  - add flag PGTABLE_PA_35_EN for all IOMMU in MT8188.
+  - modify the type of "portid_msk" from "u32" to "unsigned long".
+
+changes since v4:
+  - base on tag: next-20221018.
+  - add patch[2/4] to reduce indention by adjust mtk_iommu_config flow.
+
+changes since v3:
+  - base on tag: next-20220916.
+  - use license "GPL-2.0-only OR BSD-2-Clause" in bingings head file.
+  - drop redundant "portid" assignment when configure infra master.
+  - reduce indentation by using "else if" when config infra master.
+  - update probe flow about "pericfg" for CFG_IFA_MASTER_IN_ATF.
+  - drop unused "pericfg_comp_str" in mt8188_data_infra.
+  - drop words like "This commit/patch".
+
+changes since v2:
+  - base on tag: next-20220831.
+  - rename "mt8188-memory-port.h" to "mediatek,mt8188-memory-port.h".
+  - use dual-license in "mediatek,mt8188-memory-port.h"
+  - remove unnecessary "()" when define SMI_LARB_ID
+
+changes since v1:
+  - base on tag: next-20220803.
+  - adds MT8188 IOMMU support.
+
+Chengci.Xu (5):
+  dt-bindings: mediatek: mt8188: Add binding for MM & INFRA IOMMU
+  iommu/mediatek: Fix two IOMMU share pagetable issue
+  iommu/mediatek: Adjust mtk_iommu_config flow
+  iommu/mediatek: Add enable IOMMU SMC command for INFRA masters
+  iommu/mediatek: Add MT8188 IOMMU Support
+
+Yong Wu (2):
+  iommu/mediatek: mt8188: Add iova_region_larb_msk
+  MAINTAINERS: iommu/mediatek: Update the header file name
+
+ .../bindings/iommu/mediatek,iommu.yaml        |  12 +-
+ MAINTAINERS                                   |   1 +
+ drivers/iommu/mtk_iommu.c                     | 151 ++++--
+ .../memory/mediatek,mt8188-memory-port.h      | 489 ++++++++++++++++++
+ include/soc/mediatek/smi.h                    |   1 +
+ 5 files changed, 622 insertions(+), 32 deletions(-)
+ create mode 100644 include/dt-bindings/memory/mediatek,mt8188-memory-port.h
+
 -- 
-2.34.1
+2.18.0
+
 
