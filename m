@@ -1,22 +1,22 @@
-Received: from riemann.telenet-ops.be (riemann.telenet-ops.be [195.130.137.80])
+Received: from cantor.telenet-ops.be (cantor.telenet-ops.be [195.130.132.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30E818838
-	for <iommu@lists.linux.dev>; Fri,  2 Jun 2023 08:57:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFE60168AF
+	for <iommu@lists.linux.dev>; Fri,  2 Jun 2023 08:57:58 +0000 (UTC)
 Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
-	by riemann.telenet-ops.be (Postfix) with ESMTPS id 4QXcDS4qwNz4xCsZ
-	for <iommu@lists.linux.dev>; Fri,  2 Jun 2023 10:51:20 +0200 (CEST)
+	by cantor.telenet-ops.be (Postfix) with ESMTPS id 4QXcDR4J77z4x0Fd
+	for <iommu@lists.linux.dev>; Fri,  2 Jun 2023 10:51:19 +0200 (CEST)
 Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed30:158c:2ccf:1f70:e136])
 	by xavier.telenet-ops.be with bizsmtp
-	id 48qo2A0031tRZS8018qoDE; Fri, 02 Jun 2023 10:51:12 +0200
+	id 48qo2A0041tRZS8018qoDF; Fri, 02 Jun 2023 10:51:12 +0200
 Received: from rox.of.borg ([192.168.97.57])
 	by ramsan.of.borg with esmtp (Exim 4.95)
 	(envelope-from <geert@linux-m68k.org>)
-	id 1q50UO-00BhY8-RL;
+	id 1q50UO-00BhYB-SP;
 	Fri, 02 Jun 2023 10:50:48 +0200
 Received: from geert by rox.of.borg with local (Exim 4.95)
 	(envelope-from <geert@linux-m68k.org>)
-	id 1q50Uh-00APxP-UC;
+	id 1q50Uh-00APxV-Vr;
 	Fri, 02 Jun 2023 10:50:47 +0200
 From: Geert Uytterhoeven <geert+renesas@glider.be>
 To: Michael Turquette <mturquette@baylibre.com>,
@@ -51,111 +51,120 @@ Cc: Tomasz Figa <tomasz.figa@gmail.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v3 0/7] iopoll: Busy loop and timeout improvements + conversions
-Date: Fri,  2 Jun 2023 10:50:35 +0200
-Message-Id: <cover.1685692810.git.geert+renesas@glider.be>
+Subject: [PATCH v3 2/7] iopoll: Do not use timekeeping in read_poll_timeout_atomic()
+Date: Fri,  2 Jun 2023 10:50:37 +0200
+Message-Id: <3d2a2f4e553489392d871108797c3be08f88300b.1685692810.git.geert+renesas@glider.be>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <cover.1685692810.git.geert+renesas@glider.be>
+References: <cover.1685692810.git.geert+renesas@glider.be>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-	Hi all,
+read_poll_timeout_atomic() uses ktime_get() to implement the timeout
+feature, just like its non-atomic counterpart.  However, there are
+several issues with this, due to its use in atomic contexts:
 
-When implementing a polling loop, a common review comment is to use one
-of the read*_poll_timeout*() helpers.  Unfortunately this is not always
-possible, or might introduce subtle bugs.  This patch series aims to
-improve these helpers, so they can gain wider use.
+  1. When called in the s2ram path (as typically done by clock or PM
+     domain drivers), timekeeping may be suspended, triggering the
+     WARN_ON(timekeeping_suspended) in ktime_get():
 
-  1. The first patch improves busy-looping behavior of both the atomic
-     and non-atomic read*_poll_timeout*() helpers.
-     The issue addressed by this patch was discussed before[1-2], but I
-     am not aware of any patches moving forward.
+	WARNING: CPU: 0 PID: 654 at kernel/time/timekeeping.c:843 ktime_get+0x28/0x78
 
-  2. The second patch fixes timeout handling of the atomic variants.
-     Some of the issues addressed by this patch were mitigated in
-     various places[3-5], and some of these findings may be of interest
-     to the authors of [6-8].
+     Calling ktime_get_mono_fast_ns() instead of ktime_get() would get
+     rid of that warning.  However, that would break timeout handling,
+     as (at least on systems with an ARM architectured timer), the time
+     returned by ktime_get_mono_fast_ns() does not advance while
+     timekeeping is suspended.
+     Interestingly, (on the same ARM systems) the time returned by
+     ktime_get() does advance while timekeeping is suspended, despite
+     the warning.
 
-The first two patches were sent before, and already received some acks
-and reviews.  I plan to queue these in an immutable and tagged branch
-after the weekend, for consumption by myself, and by other interested
-parties.
+  2. Depending on the actual clock source, and especially before a
+     high-resolution clocksource (e.g. the ARM architectured timer)
+     becomes available, time may not advance in atomic contexts, thus
+     breaking timeout handling.
 
-The last five patches are new, and convert several Renesas-specific
-drivers from open-coded loops to the fixed read*_poll_timeout_atomic()
-helpers:
-  - I plan to queue the clk and soc patches in renesas-devel resp.
-    renesas-clk for v6.5,
-  - The IOMMU patch can wait for v6.6, unless the IOMMU maintainers
-    already want to merge the immutable branch, too.
+Fix this by abandoning the idea that one can rely on timekeeping to
+implement timeout handling in all atomic contexts, and switch from a
+global time-based to a locally-estimated timeout handling.  In most
+(all?) cases the timeout condition is exceptional and an error
+condition, hence any additional delays due to underestimating wall clock
+time are irrelevant.
 
-Thanks for your comments!
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Tony Lindgren <tony@atomide.com>
+Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+---
+The first issue was seen with the rcar-sysc driver in the BSP, as the
+BSP contains modifications to the resume sequence of various PM Domains.
 
-Changes compared to v2[9]:
+v3:
   - Add Acked-by, Reviewed-by,
   - Add comment about not using timekeeping, and its impact,
-  - Add conversion patches 3-7.
 
-Changes compared to v1[10]:
-  - Add Acked-by,
-  - Add compiler barrier and inlining explanation (thanks, Peter!),
-  - Add patch [2/2].
+v2:
+  - New.
+---
+ include/linux/iopoll.h | 22 +++++++++++++++++-----
+ 1 file changed, 17 insertions(+), 5 deletions(-)
 
-Thanks for your comments!
-
-[1] "Re: [PATCH 6/7] clk: renesas: rcar-gen3: Add custom clock for PLLs"
-    https://lore.kernel.org/all/CAMuHMdWUEhs=nwP+a0vO2jOzkq-7FEOqcJ+SsxAGNXX1PQ2KMA@mail.gmail.com
-[2] "Re: [PATCH v2] clk: samsung: Prevent potential endless loop in the
-    PLL set_rate ops"
-    https://lore.kernel.org/all/20200811164628.GA7958@kozik-lap
-[3] b3e9431854e8f305 ("bus: ti-sysc: Fix timekeeping_suspended warning
-		       on resume")
-[4] 44a9e78f9242872c ("clk: samsung: Prevent potential endless loop in
-		       the PLL ops")
-[5] 3d8598fb9c5a7783 ("clk: ti: clkctrl: use fallback udelay approach if
-		      timekeeping is suspended")
-[6] bd40cbb0e3b37a4d ("PM: domains: Move genpd's time-accounting to
-		       ktime_get_mono_fast_ns()")
-[7] c155f6499f9797f2 ("PM-runtime: Switch accounting over to
-		       ktime_get_mono_fast_ns()")
-[8] 15efb47dc560849d ("PM-runtime: Fix deadlock with ktime_get()")
-
-[9] https://lore.kernel.org/all/cover.1683722688.git.geert+renesas@glider.be
-
-[10] https://lore.kernel.org/r/8d492ee4a391bd089a01c218b0b4e05cf8ea593c.1674729407.git.geert+renesas@glider.be/
-
-Geert Uytterhoeven (7):
-  iopoll: Call cpu_relax() in busy loops
-  iopoll: Do not use timekeeping in read_poll_timeout_atomic()
-  clk: renesas: cpg-mssr: Convert to readl_poll_timeout_atomic()
-  clk: renesas: mstp: Convert to readl_poll_timeout_atomic()
-  clk: renesas: rzg2l: Convert to readl_poll_timeout_atomic()
-  soc: renesas: rmobile-sysc: Convert to readl_poll_timeout_atomic()
-  iommu/ipmmu-vmsa: Convert to read_poll_timeout_atomic()
-
- drivers/clk/renesas/clk-mstp.c         | 18 ++++++---------
- drivers/clk/renesas/renesas-cpg-mssr.c | 31 +++++++++-----------------
- drivers/clk/renesas/rzg2l-cpg.c        | 16 +++++--------
- drivers/iommu/ipmmu-vmsa.c             | 15 +++++--------
- drivers/soc/renesas/rmobile-sysc.c     | 31 +++++++++-----------------
- include/linux/iopoll.h                 | 24 +++++++++++++++-----
- 6 files changed, 58 insertions(+), 77 deletions(-)
-
+diff --git a/include/linux/iopoll.h b/include/linux/iopoll.h
+index 0417360a6db9b0d6..19a7b00baff43595 100644
+--- a/include/linux/iopoll.h
++++ b/include/linux/iopoll.h
+@@ -74,6 +74,10 @@
+  * Returns 0 on success and -ETIMEDOUT upon a timeout. In either
+  * case, the last read value at @args is stored in @val.
+  *
++ * This macro does not rely on timekeeping.  Hence it is safe to call even when
++ * timekeeping is suspended, at the expense of an underestimation of wall clock
++ * time, which is rather minimal with a non-zero delay_us.
++ *
+  * When available, you'll probably want to use one of the specialized
+  * macros defined below rather than this macro directly.
+  */
+@@ -81,22 +85,30 @@
+ 					delay_before_read, args...) \
+ ({ \
+ 	u64 __timeout_us = (timeout_us); \
++	s64 __left_ns = __timeout_us * NSEC_PER_USEC; \
+ 	unsigned long __delay_us = (delay_us); \
+-	ktime_t __timeout = ktime_add_us(ktime_get(), __timeout_us); \
+-	if (delay_before_read && __delay_us) \
++	u64 __delay_ns = __delay_us * NSEC_PER_USEC; \
++	if (delay_before_read && __delay_us) { \
+ 		udelay(__delay_us); \
++		if (__timeout_us) \
++			__left_ns -= __delay_ns; \
++	} \
+ 	for (;;) { \
+ 		(val) = op(args); \
+ 		if (cond) \
+ 			break; \
+-		if (__timeout_us && \
+-		    ktime_compare(ktime_get(), __timeout) > 0) { \
++		if (__timeout_us && __left_ns < 0) { \
+ 			(val) = op(args); \
+ 			break; \
+ 		} \
+-		if (__delay_us) \
++		if (__delay_us) { \
+ 			udelay(__delay_us); \
++			if (__timeout_us) \
++				__left_ns -= __delay_ns; \
++		} \
+ 		cpu_relax(); \
++		if (__timeout_us) \
++			__left_ns--; \
+ 	} \
+ 	(cond) ? 0 : -ETIMEDOUT; \
+ })
 -- 
 2.34.1
 
-Gr{oetje,eeting}s,
-
-						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-							    -- Linus Torvalds
