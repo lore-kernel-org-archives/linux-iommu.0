@@ -1,93 +1,75 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D25E3330D
-	for <iommu@lists.linux.dev>; Fri,  2 Jun 2023 19:11:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=AJABSmQfgLq8Q+2ppxsM6XF5q+Vq5qZe9N94edfIwwY=; b=PU4T7ADc0jcAq3KFGfGex3diK8
-	vuW6kxlnkjA4+MmRJvz0D0+wTteEYEdN0jEKVsMD/rWd4UKxTB9R75WweAYuX8LhbgcrsPvFit3yI
-	lh7intlQyz7vxEAlTtCqyyD8JU13qOTD16vLtKcHmFSXi2Pyo9MrCSkaYoixNrt5uhFV6lzG4WxI4
-	2nLcE6+JFpQ/MhqrGMsVU/cbMmJGBLPLrkolWc5jANycOonOz9+oT0qGgaU6JjJZWKYWvYHTgqSEx
-	acJK6R/uKBhblUAn+hhA5XEIMwsd+asra2KUYSEbBY8+7a7B+ca3G+EnF+XF7HS+DZKZBrmkC0kGI
-	jbJBbSdQ==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-	by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-	id 1q5AAJ-009SqQ-JN; Fri, 02 Jun 2023 19:10:23 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id EB5333002F0;
-	Fri,  2 Jun 2023 21:10:14 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-	id B12CE20581278; Fri,  2 Jun 2023 21:10:14 +0200 (CEST)
-Date: Fri, 2 Jun 2023 21:10:14 +0200
-From: Peter Zijlstra <peterz@infradead.org>
-To: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>,
-	Helge Deller <deller@gmx.de>,
-	Masahiro Yamada <masahiroy@kernel.org>,
-	Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>,
-	Will Deacon <will@kernel.org>, Boqun Feng <boqun.feng@gmail.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>, dennis@kernel.org,
-	Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@linux.com>,
-	Heiko Carstens <hca@linux.ibm.com>, gor@linux.ibm.com,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	borntraeger@linux.ibm.com, Sven Schnelle <svens@linux.ibm.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-	Joerg Roedel <joro@8bytes.org>, suravee.suthikulpanit@amd.com,
-	Robin Murphy <robin.murphy@arm.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Baolu Lu <baolu.lu@linux.intel.com>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	"David S . Miller" <davem@davemloft.net>,
-	Pekka Enberg <penberg@kernel.org>,
-	David Rientjes <rientjes@google.com>,
-	Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Vlastimil Babka <vbabka@suse.cz>,
-	Roman Gushchin <roman.gushchin@linux.dev>,
-	Hyeonggon Yoo <42.hyeyoo@gmail.com>, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-	linux-s390@vger.kernel.org, iommu@lists.linux.dev,
-	Linux-Arch <linux-arch@vger.kernel.org>,
-	linux-crypto@vger.kernel.org,
-	Stephen Rothwell <sfr@canb.auug.org.au>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
-	linux-parisc@vger.kernel.org,
-	John David Anglin <dave.anglin@bell.net>,
-	Sam James <sam@gentoo.org>
-Subject: Re: [PATCH v2 07/12] parisc/percpu: Work around the lack of
- __SIZEOF_INT128__
-Message-ID: <20230602191014.GA695361@hirez.programming.kicks-ass.net>
-References: <20230531130833.635651916@infradead.org>
- <20230531132323.722039569@infradead.org>
- <70a69deb-7ad4-45b2-8e13-34955594a7ce@app.fastmail.com>
- <20230601101409.GS4253@hirez.programming.kicks-ass.net>
- <14c50e58-fecc-e96a-ee73-39ef4e4617c7@gmx.de>
- <CAHk-=whL65CLuy9D9gyO608acM5WLWo_ggAMP1cGu2XvyC0-hA@mail.gmail.com>
- <20230602143912.GI620383@hirez.programming.kicks-ass.net>
- <E333E35E-5F9C-441C-B75A-082F19D37978@zytor.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5161217759
+	for <iommu@lists.linux.dev>; Fri,  2 Jun 2023 19:21:20 +0000 (UTC)
+Received: from [127.0.0.1] ([73.231.166.163])
+	(authenticated bits=0)
+	by mail.zytor.com (8.17.1/8.17.1) with ESMTPSA id 352JK7fE2750506
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
+	Fri, 2 Jun 2023 12:20:07 -0700
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 352JK7fE2750506
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
+	s=2023051001; t=1685733612;
+	bh=SMZguLjkAGwW1nnxkS45sNuwWaVSmMrNfx0ztcGGwoA=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
+	b=M12klTJ5FYJ+X8CUS9C3VIpLDDMPTsKRZ0ndgBKVMmE7aVMV0MN0/y9Jvzn81tOqa
+	 8VYX8/bm9osGsG2ClUgVOyJj8lbUxvR+FH3nCAq2d658yulezFd25UFLxwFRhjtOS5
+	 IjlBfRN2e8q9yDkAuYcRFZPnJBPmhZVzw4981sWNvjYtM4oL0bb3Na6skyPzoQgIdo
+	 iCn1fDCEMrqULzSB9GRm5RmqDinfT0ZlP//XuPLwDhfhWBfc2pGRjLhHy9T2u4pvwH
+	 vQYmPBqCCoxSpJWpRZkrllXh+v8F6mpkhaRL54uoSHt6pPLFXvZrX+niKiXYDc8cPp
+	 mA9OLCSWYPRCg==
+Date: Fri, 02 Jun 2023 12:20:05 -0700
+From: "H. Peter Anvin" <hpa@zytor.com>
+To: Peter Zijlstra <peterz@infradead.org>
+CC: Linus Torvalds <torvalds@linux-foundation.org>,
+        Helge Deller <deller@gmx.de>, Masahiro Yamada <masahiroy@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>,
+        Will Deacon <will@kernel.org>, Boqun Feng <boqun.feng@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>, dennis@kernel.org,
+        Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@linux.com>,
+        Heiko Carstens <hca@linux.ibm.com>, gor@linux.ibm.com,
+        Alexander Gordeev <agordeev@linux.ibm.com>, borntraeger@linux.ibm.com,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        Joerg Roedel <joro@8bytes.org>, suravee.suthikulpanit@amd.com,
+        Robin Murphy <robin.murphy@arm.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Baolu Lu <baolu.lu@linux.intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-s390@vger.kernel.org, iommu@lists.linux.dev,
+        Linux-Arch <linux-arch@vger.kernel.org>, linux-crypto@vger.kernel.org,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
+        linux-parisc@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
+        Sam James <sam@gentoo.org>
+Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_v2_07/12=5D_parisc/percpu=3A_Wo?= =?US-ASCII?Q?rk_around_the_lack_of_=5F=5FSIZEOF=5FINT128=5F=5F?=
+User-Agent: K-9 Mail for Android
+In-Reply-To: <20230602191014.GA695361@hirez.programming.kicks-ass.net>
+References: <20230531130833.635651916@infradead.org> <20230531132323.722039569@infradead.org> <70a69deb-7ad4-45b2-8e13-34955594a7ce@app.fastmail.com> <20230601101409.GS4253@hirez.programming.kicks-ass.net> <14c50e58-fecc-e96a-ee73-39ef4e4617c7@gmx.de> <CAHk-=whL65CLuy9D9gyO608acM5WLWo_ggAMP1cGu2XvyC0-hA@mail.gmail.com> <20230602143912.GI620383@hirez.programming.kicks-ass.net> <E333E35E-5F9C-441C-B75A-082F19D37978@zytor.com> <20230602191014.GA695361@hirez.programming.kicks-ass.net>
+Message-ID: <B432FCD8-2ED7-42B1-BC3B-34F277A1CD9F@zytor.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E333E35E-5F9C-441C-B75A-082F19D37978@zytor.com>
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jun 02, 2023 at 10:00:17AM -0700, H. Peter Anvin wrote:
-
-> Dumb question: is this only about the cpp macro or is it about __int128 existing at all?
-
-It's mostly about __int128 being there, __SIZEOF_INT128__ is just the
-way we go about detecting if it's there or not.
+Ok=2E So the patch description needs to be fixed=2E Otherwise the solution =
+would be far simpler :)
