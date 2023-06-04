@@ -1,93 +1,69 @@
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32A0B28FE
-	for <iommu@lists.linux.dev>; Sat,  3 Jun 2023 16:50:07 +0000 (UTC)
-Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-4f619c2ba18so767722e87.1
-        for <iommu@lists.linux.dev>; Sat, 03 Jun 2023 09:50:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685811005; x=1688403005;
-        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=Za3JwyNUM6yl+naXXldCKnK+dNxMe8IEOxSvG25sGMY=;
-        b=CFa8OLiG1JnXPIPGzSSp/ngDXZ4zVzuJxC4CfuR+sVhHchzZHZ84MDX8KWIzZv6qMm
-         97HB7CuV6aUG/l9wMTNB8C6DF1STGQzuFhMtLa30hrxR/e0g81HNxFWBloZaRosnwDol
-         8OT1DZlmQS0/uk9SO+Gkrt1pk+Zjop8P1jFgHYdF9qDgTE+5oqrWjMYep+GIMSGmUtOC
-         XB+Y0bbm7hFKVw9qTA/N8fcrVczoLQT08pzjtWg0e9y1QzZpgChCjc7OMVMlFu76lJpp
-         FnD5XlqfnnHacLNDk/OCraJO+v+H8Uz9xMvHhJn/2aaxuGNPGAN0f8pxPo/17pULEM20
-         pT7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685811005; x=1688403005;
-        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Za3JwyNUM6yl+naXXldCKnK+dNxMe8IEOxSvG25sGMY=;
-        b=jsnVy4f9JXuXcU0cun+bmvxJl7U6NWseBhuqIpKoX/MoBk1gYQ2Rj6UuqSBGUC1Som
-         PU78v5aWFlA5b4HI7+mOFzwmi7ZUnzReuD3nd3INs3n5PObA4iLcTecc06KkGOmNVwel
-         ii09SPvgpzPNT5ZbBNfJ+vVsxdDJbcA8fWLMKZzPHCX9Egj7RPHgTqBz+JXbCAMoiE4M
-         fvqumpHU9eQ25t4H4l0acI1GDLOpKr/2/jMuW0R9eMnprlXlicac9i/Y0j1oTKWTVmpk
-         LFLowq6K+DXMJ/Pv/eIwCHqeRdEsNInRtZU82YYKSM3xfMe/7roICwfa3k5HWrBmgZBx
-         pMNQ==
-X-Gm-Message-State: AC+VfDzrIBcKZnjivvVX3iaCt0Ola7lQh6/OmY+lXOjesUHL93jIT1GZ
-	k5PvxCkLD/lPtNnpGwPq+l9S95njxnS2xBodDh1YQHEi8v2pDw==
-X-Google-Smtp-Source: ACHHUZ5l4REtX6hh1qWMMeKuTdQzEOs+ieQxI1/xuYz4YE8DO0EXqNcz0JzhMgvbcrdSYNJBdIQLGBpoUzJzv8ZXs0g=
-X-Received: by 2002:a19:ee13:0:b0:4f3:b520:e0af with SMTP id
- g19-20020a19ee13000000b004f3b520e0afmr3402100lfb.13.1685811005335; Sat, 03
- Jun 2023 09:50:05 -0700 (PDT)
+Received: from mail.loongson.cn (mail.loongson.cn [114.242.206.163])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7E5EB33F2
+	for <iommu@lists.linux.dev>; Sun,  4 Jun 2023 13:52:55 +0000 (UTC)
+Received: from loongson.cn (unknown [10.20.42.43])
+	by gateway (Coremail) with SMTP id _____8BxV_G+lnxkA0cEAA--.8812S3;
+	Sun, 04 Jun 2023 21:50:54 +0800 (CST)
+Received: from openarena.loongson.cn (unknown [10.20.42.43])
+	by localhost.localdomain (Coremail) with SMTP id AQAAf8DxfTu+lnxkpC+JAA--.24334S2;
+	Sun, 04 Jun 2023 21:50:54 +0800 (CST)
+From: Sui Jingfeng <suijingfeng@loongson.cn>
+To: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	loongson-kernel@lists.loongnix.cn
+Subject: [PATCH] dma/Kconfig: fix a typo
+Date: Sun,  4 Jun 2023 21:50:54 +0800
+Message-Id: <20230604135054.3055185-1-suijingfeng@loongson.cn>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: Chathura Rajapaksha <chathura.abeyrathne.lk@gmail.com>
-Date: Sat, 3 Jun 2023 12:49:53 -0400
-Message-ID: <CAD7mqryC_JROVXY9eD--iigjCU9266+ufPvZO2BujhVfM7qYfw@mail.gmail.com>
-Subject: IOMMU software bounce buffers and their overhead
-To: iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:AQAAf8DxfTu+lnxkpC+JAA--.24334S2
+X-CM-SenderInfo: xvxlyxpqjiv03j6o00pqjv00gofq/
+X-Coremail-Antispam: 1Uk129KBjvdXoWrtrWkZryrWFWkKF45ZF15CFg_yoW3Jwb_Jw
+	10qrW8Wr1kZrZ2gFWUJFZ3XFn0qa4jgFyF9w17tF429347Xwn8Ww4fXFn3JFnxGw4kWFZ8
+	uFZ5Zr1kAF4SqjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8wcxFpf9Il3svdxBIdaVrn0
+	xqx4xG64xvF2IEw4CE5I8CrVC2j2Jv73VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUY
+	b7kC6x804xWl14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3w
+	AFIxvE14AKwVWUGVWUXwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK
+	6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r1j6r4UM28EF7
+	xvwVC2z280aVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVCY1x0267AKxVW8Jr0_Cr1UM2AI
+	xVAIcxkEcVAq07x20xvEncxIr21l57IF6xkI12xvs2x26I8E6xACxx1l5I8CrVACY4xI64
+	kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm
+	72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41l42xK82IYc2Ij64vIr41l4I8I3I
+	0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWU
+	GVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI
+	0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0
+	rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r1j6r
+	4UYxBIdaVFxhVjvjDU0xZFpf9x07j8yCJUUUUU=
 
-Hi All,
+'thing' -> 'think'
 
-I have a few questions about IOMMU software bounce buffering.
-Description of the kernel config IOMMU_DEFAULT_DMA_STRICT mentions that,
-"Untrusted devices always use this mode, with an additional layer of
-bounce-buffering such that they cannot gain access to any unrelated data
-within a mapped page.".
+Signed-off-by: Sui Jingfeng <suijingfeng@loongson.cn>
+---
+ kernel/dma/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-What I am trying to do:
-What I understood from the above description is that the STRICT mode
-provides an additional layer of security for the hardware IOMMU.
-I want to measure the overhead of this additional layer of protection
-(software bounce buffers).
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index 6677d0e64d27..fd35ed4c67b8 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -39,7 +39,7 @@ config ARCH_HAS_DMA_SET_MASK
+ #
+ # Select this option if the architecture needs special handling for
+ # DMA_ATTR_WRITE_COMBINE.  Normally the "uncached" mapping should be what
+-# people thing of when saying write combine, so very few platforms should
++# people think of when saying write combine, so very few platforms should
+ # need to enable this.
+ #
+ config ARCH_HAS_DMA_WRITE_COMBINE
+-- 
+2.25.1
 
-My questions are:
-1. Is my understanding correct regarding the software bounce buffers
-being used alongside hardware IOMMU, or do software bounce buffers replace
-the hardware IOMMU?
-
-2. Are untrusted PCI devices use SW bounce buffers by default in the upstream
-kernel?
-
-3. Are there already available numbers for the performance/memory overhead
-of software bounce buffers?
-
-3. How can I enable/disable software bounce buffers without
-enabling/disabling strict IOTLB invalidations?
-Details:
-Since I want to measure the overhead of SW bounce buffers, I want to
-know if there is a way to enable/disable only the bounce buffers while
-keeping all other configurations the same. Any suggestions on how to
-properly measure the overhead is welcome.
-
-I tried to find answers to these questions in kernel mailing lists and
-documentation but I could not find the exact answers.
-References I looked at so far:
-https://www.kernel.org/doc/Documentation/x86/x86_64/boot-options.txt
-https://www.kernel.org/doc/html/v6.3/admin-guide/kernel-parameters.html
-https://lore.kernel.org/lkml/20190730045229.3826-9-baolu.lu@linux.intel.com/T/
-https://lwn.net/Articles/786558/
-
-I really appreciate any help on this. Thank you in advance.
-
-Regards,
-Chathura
