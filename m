@@ -1,32 +1,32 @@
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD26C171A7
-	for <iommu@lists.linux.dev>; Mon,  5 Jun 2023 11:29:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A4D711C9F
+	for <iommu@lists.linux.dev>; Mon,  5 Jun 2023 11:29:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685964586; x=1717500586;
+  t=1685964588; x=1717500588;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=xTKbEBDDCXHkiOwFc8keR7O1v8qG4g2CVMGkrh5HwGY=;
-  b=F4qmDLinHiPUi1r4HMGClI4bzPYB+Idiyoie6zQ+StyadjzFnt507zoT
-   ByhdC/xvn6WnMPXEmBr5FHaZFR94BRmzrXd6aE2LVzSqKoxB753EQ6JFJ
-   J3araf93lCAoe39ah6s+y5QjRNp+JjvSCzgptwyUdCPfUeIKZFUR6LmwH
-   rLONSxUgBH5uF3NrCKRjdRK2H8j9WiAItQDaiMfEcK67HzsAILVu3iev0
-   YUd+BoADalqgZ6xEeWI4jk3SoavhfzWK5IF/aY4KkW/twlQhO1CxCYCHo
-   oyLu9UHYNZbN1yg8QbyPwzZaWkgVpXks/TgEb56PO5M+Fxi3b/slq7jFI
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10731"; a="336699350"
+  bh=WEJON0mdcarcf+gq8BZwb49Cru53/uhaflnw7S9fEAQ=;
+  b=FXQnaWXrpKbXMlEDWrQ7hJWXjYZRv3n+bmwx1R4fIrPkZ7l3HUtq48ix
+   QV3SokPOGPWYkUVGXF8kcp76HLzULeXX3j7eSVCnpaSs1BB8TdWeQBW+m
+   7NzW9Mj9KZ20OvYTuVDpfYjdlU2UkjvM9EaMZMk4mAuJ84xOYxQDlueke
+   6Oi7v9h1tStl4NGvpWZb5RrU2gMn/DmbeeUneErl6JoEOQNXeNSPFfFAE
+   deYI/0mdziFRFkVMYoX4myYBKGibwP5vExzdUQk0OwiPKSu3O+iWK0syI
+   Q6htNz4tL7wOQHsDwLt9oluUWi1FSANTcTjNspV6aenXWpoyExqkhhBnm
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10731"; a="336699363"
 X-IronPort-AV: E=Sophos;i="6.00,217,1681196400"; 
-   d="scan'208";a="336699350"
+   d="scan'208";a="336699363"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2023 04:29:45 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2023 04:29:47 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10731"; a="708626664"
+X-IronPort-AV: E=McAfee;i="6600,9927,10731"; a="708626668"
 X-IronPort-AV: E=Sophos;i="6.00,217,1681196400"; 
-   d="scan'208";a="708626664"
+   d="scan'208";a="708626668"
 Received: from tower.bj.intel.com ([10.238.157.62])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2023 04:29:43 -0700
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2023 04:29:45 -0700
 From: Yanfei Xu <yanfei.xu@intel.com>
 To: dwmw2@infradead.org,
 	baolu.lu@linux.intel.com,
@@ -36,9 +36,9 @@ To: dwmw2@infradead.org,
 Cc: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	yanfei.xu@intel.com
-Subject: [PATCH v3 1/2] iommu/vt-d: Handle the failure case of dmar_reenable_qi()
-Date: Mon,  5 Jun 2023 19:26:58 +0800
-Message-Id: <20230605112659.308981-2-yanfei.xu@intel.com>
+Subject: [PATCH v3 2/2] iommu/vt-d: Remove two WARN_ON in domain_context_mapping_one()
+Date: Mon,  5 Jun 2023 19:26:59 +0800
+Message-Id: <20230605112659.308981-3-yanfei.xu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230605112659.308981-1-yanfei.xu@intel.com>
 References: <20230605112659.308981-1-yanfei.xu@intel.com>
@@ -50,36 +50,41 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-dmar_reenable_qi() may not succeed. Check and return when it fails.
+Remove the WARN_ON(did == 0) as the domain id 0 is reserved and
+set once the domain_ids is allocated. So iommu_init_domains will
+never return 0.
+
+Remvoe the WARN_ON(!table) as this pointer will be accessed in
+the following code, if empty "table" really happens, the kernel
+will report a NULL pointer reference warning at the first place.
 
 Signed-off-by: Yanfei Xu <yanfei.xu@intel.com>
 ---
- drivers/iommu/intel/iommu.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/iommu/intel/iommu.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 8096273b034c..c13c6475b626 100644
+index c13c6475b626..cd9e01a0aa1d 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -2967,10 +2967,15 @@ static int init_iommu_hw(void)
- {
- 	struct dmar_drhd_unit *drhd;
- 	struct intel_iommu *iommu = NULL;
-+	int ret;
+@@ -1897,8 +1897,6 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+ 	struct context_entry *context;
+ 	int ret;
  
--	for_each_active_iommu(iommu, drhd)
--		if (iommu->qi)
--			dmar_reenable_qi(iommu);
-+	for_each_active_iommu(iommu, drhd) {
-+		if (iommu->qi) {
-+			ret = dmar_reenable_qi(iommu);
-+			if (ret)
-+				return ret;
-+		}
-+	}
+-	WARN_ON(did == 0);
+-
+ 	if (hw_pass_through && domain_type_is_si(domain))
+ 		translation = CONTEXT_TT_PASS_THROUGH;
  
- 	for_each_iommu(iommu, drhd) {
- 		if (drhd->ignored) {
+@@ -1944,8 +1942,6 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+ 	if (sm_supported(iommu)) {
+ 		unsigned long pds;
+ 
+-		WARN_ON(!table);
+-
+ 		/* Setup the PASID DIR pointer: */
+ 		pds = context_get_sm_pds(table);
+ 		context->lo = (u64)virt_to_phys(table->table) |
 -- 
 2.34.1
 
