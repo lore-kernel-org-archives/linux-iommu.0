@@ -1,364 +1,167 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD323194
-	for <iommu@lists.linux.dev>; Mon,  5 Jun 2023 06:59:39 +0000 (UTC)
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3556gNN8028143;
-	Mon, 5 Jun 2023 06:58:51 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=EZQ2L225UF7EpySH1Ej360rO7oKz24TgQ4wLenyKS3U=;
- b=KsoUde3wMjzUz25vyt7NM/J5v5gov/WvhmA9SG6Dnc2H8igRBwPHW0B7SHopY6+H7Pv7
- P4a/OyEks43W8v19BqCQ/ugFUS8cXXE9CmWtFSd06gPo9KyNjS9K/klNPWrSY0wZcYMi
- xWltjpK9GECH/mXE3juq0L95hRYzPbjzrsvgi4oK2sqQAXOK9Lxw9+y9BkBBPMU7ysuu
- xO0LMTiFjeQ71Y9FL1se8ZHxzHKPJUqspw+114Xhl3fiFxJCQ8Ysnuf/4frxqr5bsrjt
- osp6eF7t1yiL+5njoh2xhyouRNqRp/wZ8FWhaFm6rlKlc/D+2EPgqKU8ekjColgcsZCP eg== 
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3qyxq02qb5-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 05 Jun 2023 06:58:51 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3556woEU022573
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 5 Jun 2023 06:58:50 GMT
-Received: from [10.214.66.58] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.42; Sun, 4 Jun 2023
- 23:58:45 -0700
-Message-ID: <2a775d11-346a-0dea-615e-51c2647b818a@quicinc.com>
-Date: Mon, 5 Jun 2023 12:28:42 +0530
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD59F194;
+	Mon,  5 Jun 2023 07:10:09 +0000 (UTC)
+Received: from localhost (unknown [IPv6:2a0c:5a83:9203:ad00:105c:4a2e:21cc:9510])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: rcn)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id B720066056AA;
+	Mon,  5 Jun 2023 08:10:01 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1685949001;
+	bh=ttQxumYxsI9wbZv28D/0f3/5CjJMvIirydWesENCOKM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=F5uwEPdhDs8khscGqYuK+hxleRSjKtruKjMzRuvtFXZON0RYuuNPWnYpZenuB3ohn
+	 7DGlGAmjoWdEVh+OKWAQ+2ZLxyySKYnPhB6MPsU2hKtLYlxs3LQqgJOmrg7bYYbOlm
+	 R1x7IerBE8I57Ewe+nGePwcH3DooLWoUSlE5EI6bROMCt4X6Iq7HLFsT7dXFys+gnK
+	 lwlX037XplxXsHzSu2FmqBrPMG9BZ+vmKtQ2W5Yq+xomx0V9ruIE8DohcofWY7C2ei
+	 PLOU36DNewYb8pxs8Q0H5r0l887R7y8+xb0cQ0eNrSQRYEI5OWDS6aJGDbAzNPMJNg
+	 pK31f6HLB46+A==
+Date: Mon, 5 Jun 2023 09:09:59 +0200
+From: Ricardo =?utf-8?Q?Ca=C3=B1uelo?= <ricardo.canuelo@collabora.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <ndesaulniers@google.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Tom Rix <trix@redhat.com>,
+	Will Deacon <will@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+	Heiko Stuebner <heiko@sntech.de>, Kevin Tian <kevin.tian@intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>
+Subject: Re: [PATCH v5 10/17] iommu: Do iommu_group_create_direct_mappings()
+ before attach
+Message-ID: <20230605070959.moupivvi7wr4nibu@rcn-XPS-13-9305>
+References: <0-v5-1b99ae392328+44574-iommu_err_unwind_jgg@nvidia.com>
+ <10-v5-1b99ae392328+44574-iommu_err_unwind_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH 5/8] arm64: dts: qcom: Add SDX75 platform and IDP board
- support
-Content-Language: en-US
-To: Konrad Dybcio <konrad.dybcio@linaro.org>, <agross@kernel.org>,
-        <andersson@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
-        <tglx@linutronix.de>, <maz@kernel.org>, <will@kernel.org>,
-        <robin.murphy@arm.com>, <joro@8bytes.org>, <robimarko@gmail.com>,
-        <quic_gurus@quicinc.com>
-CC: <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux.dev>
-References: <1684487350-30476-1-git-send-email-quic_rohiagar@quicinc.com>
- <1684487350-30476-6-git-send-email-quic_rohiagar@quicinc.com>
- <405186ab-46df-fcf1-2894-a08c4b42c069@linaro.org>
- <ec664db0-ae0f-5046-25c4-315d0a2c8a3f@quicinc.com>
- <f839fd42-2d04-30b2-65b4-23df37a52f81@linaro.org>
-From: Rohit Agarwal <quic_rohiagar@quicinc.com>
-In-Reply-To: <f839fd42-2d04-30b2-65b4-23df37a52f81@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: dC-JoBe2uPQAhfCiUDf2ZLM8UEcI2OLS
-X-Proofpoint-GUID: dC-JoBe2uPQAhfCiUDf2ZLM8UEcI2OLS
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
- definitions=2023-06-03_08,2023-06-02_02,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
- priorityscore=1501 lowpriorityscore=0 impostorscore=0 phishscore=0
- suspectscore=0 clxscore=1015 bulkscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2304280000 definitions=main-2306050062
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <10-v5-1b99ae392328+44574-iommu_err_unwind_jgg@nvidia.com>
 
+Hi Jason,
 
-On 5/30/2023 11:19 PM, Konrad Dybcio wrote:
->
-> On 30.05.2023 13:40, Rohit Agarwal wrote:
->> Thanks for reviewing. Sorry for the late reply was on leave.
->>
->> On 5/19/2023 10:58 PM, Konrad Dybcio wrote:
->>> On 19.05.2023 11:09, Rohit Agarwal wrote:
->>>> Add basic devicetree support for SDX75 platform and IDP board from
->>>> Qualcomm. The SDX75 platform features an ARM Cortex A55 CPU which forms
->>>> the Application Processor Sub System (APSS) along with standard Qualcomm
->>>> peripherals like GCC, TLMM, UART, QPIC, and BAM etc... Also, there
->>>> exists the networking parts such as IPA, MHI, PCIE-EP, EMAC, and Modem
->>>> etc..
->>>>
->>>> This commit adds basic devicetree support.
->>>>
->>>> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
->>>> ---
->>>>    arch/arm64/boot/dts/qcom/Makefile      |   1 +
->>>>    arch/arm64/boot/dts/qcom/sdx75-idp.dts |  19 ++
->>>>    arch/arm64/boot/dts/qcom/sdx75.dtsi    | 534 +++++++++++++++++++++++++++++++++
->>>>    3 files changed, 554 insertions(+)
->>>>    create mode 100644 arch/arm64/boot/dts/qcom/sdx75-idp.dts
->>>>    create mode 100644 arch/arm64/boot/dts/qcom/sdx75.dtsi
->>>>
->>>> diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
->>>> index d42c595..4fd5a18 100644
->>>> --- a/arch/arm64/boot/dts/qcom/Makefile
->>>> +++ b/arch/arm64/boot/dts/qcom/Makefile
->>>> @@ -173,6 +173,7 @@ dtb-$(CONFIG_ARCH_QCOM)    += sdm845-xiaomi-polaris.dtb
->>>>    dtb-$(CONFIG_ARCH_QCOM)    += sdm845-shift-axolotl.dtb
->>>>    dtb-$(CONFIG_ARCH_QCOM)    += sdm850-lenovo-yoga-c630.dtb
->>>>    dtb-$(CONFIG_ARCH_QCOM)    += sdm850-samsung-w737.dtb
->>>> +dtb-$(CONFIG_ARCH_QCOM)    += sdx75-idp.dtb
->>>>    dtb-$(CONFIG_ARCH_QCOM)    += sm4250-oneplus-billie2.dtb
->>>>    dtb-$(CONFIG_ARCH_QCOM)    += sm6115p-lenovo-j606f.dtb
->>>>    dtb-$(CONFIG_ARCH_QCOM)    += sm6125-sony-xperia-seine-pdx201.dtb
->>>> diff --git a/arch/arm64/boot/dts/qcom/sdx75-idp.dts b/arch/arm64/boot/dts/qcom/sdx75-idp.dts
->>>> new file mode 100644
->>>> index 0000000..e2e803b
->>>> --- /dev/null
->>>> +++ b/arch/arm64/boot/dts/qcom/sdx75-idp.dts
->>>> @@ -0,0 +1,19 @@
->>>> +// SPDX-License-Identifier: BSD-3-Clause
->>>> +/*
->>>> + * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
->>>> + */
->>>> +
->>>> +/dts-v1/;
->>>> +
->>>> +#include "sdx75.dtsi"
->>>> +
->>>> +/ {
->>>> +    model = "Qualcomm Technologies, Inc. SDX75 IDP";
->>>> +    compatible = "qcom,sdx75-idp", "qcom,sdx75";
->>>> +    qcom,board-id = <0x2010022 0x302>;
->>> You should be able to get by without qcom,{msm,board}-id.
->> Actually the bootloader requires the msm and board id. Shouldn't this become a necessary field then?
-> We generally discourage that, especially since at least on the LA front
-> it became unnecessary (no msm-id and appended dtb -> abl picks the only
-> one present).. I'm not sure at what point in product dev the SDX75 is,
-> but if we could get rid of that requirement, it'd be very nice..
->
-> OTOH getting rid of it just on one device and keeping it necessary with
-> fw builds that have been distributed to vendors sounds wouldn't be
-> very beneficial either :/
-Going deeper in the ABL code, Got to know that ABL does support the 
-single appended DTB.
-So will go ahead and remove the board-id and msm-id from this.
+On jue 11-05-2023 01:42:08, Jason Gunthorpe wrote:
+> The iommu_probe_device() path calls iommu_create_device_direct_mappings()
+> after attaching the device.
+> 
+> IOMMU_RESV_DIRECT maps need to be continually in place, so if a hotplugged
+> device has new ranges the should have been mapped into the default domain
+> before it is attached.
 
-Thanks,
-Rohit.
+This patch seems to introduce a regression in `hana` Chromebooks
+(MT8173), this was detected by the KernelCI bot [1].
 
->
-> Konrad
->>>> +
->>>> +};
->>>> +
->>>> +&tlmm {
->>>> +    gpio-reserved-ranges = <110 6>;
->>>> +};
->>>> diff --git a/arch/arm64/boot/dts/qcom/sdx75.dtsi b/arch/arm64/boot/dts/qcom/sdx75.dtsi
->>>> new file mode 100644
->>>> index 0000000..c2b8810
->>>> --- /dev/null
->>>> +++ b/arch/arm64/boot/dts/qcom/sdx75.dtsi
->>>> @@ -0,0 +1,534 @@
->>>> +// SPDX-License-Identifier: BSD-3-Clause
->>>> +/*
->>>> + * SDX75 SoC device tree source
->>>> + *
->>>> + * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
->>>> + *
->>>> + */
->>>> +
->>>> +#include <dt-bindings/clock/qcom,rpmh.h>
->>>> +#include <dt-bindings/interrupt-controller/arm-gic.h>
->>>> +#include <dt-bindings/soc/qcom,rpmh-rsc.h>
->>>> +
->>>> +/ {
->>>> +    #address-cells = <2>;
->>>> +    #size-cells = <2>;
->>>> +    qcom,msm-id = <556 0x10000>;
->>>> +    interrupt-parent = <&intc>;
->>>> +
->>>> +    chosen: chosen { };
->>>> +
->>>> +    memory {
->>> The memory node should have a unit address.
->> Sure will update this.
->>>> +        device_type = "memory";
->>>> +        reg = <0 0 0 0>;
->>>> +    };
->>>> +
->>>> +    clocks { };
->>>> +
->>>> +    cpus {
->>>> +        #address-cells = <2>;
->>>> +        #size-cells = <0>;
->>>> +
->>> [...]
->>>
->>>> +
->>>> +        CLUSTER_PD: power-domain-cpu-cluster0 {
->>>> +            #power-domain-cells = <0>;
->>>> +            domain-idle-states = <&CLUSTER_SLEEP_0 &CX_RET &CLUSTER_SLEEP_1>;
->>> Is CLUSTER_SLEEP_1 deeper than CX retention?
->> Yes
->>>> +        };
->>>> +    };
->>>> +
->>>> +    firmware {
->>>> +        scm: scm {
->>>> +            compatible = "qcom,scm-sdx75", "qcom,scm";
->>>> +        };
->>>> +    };
->>>> +
->>>> +    pmu {
->>>> +        compatible = "arm,armv8-pmuv3";
->>>> +        interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_HIGH>;
->>>> +    };
->>>> +
->>>> +    reserved-memory {
->>>> +        #address-cells = <2>;
->>>> +        #size-cells = <2>;
->>>> +        ranges;
->>>> +
->>>> +        gunyah_hyp_mem: memory@80000000 {
->>> reserved memory subnodes should have meaningful node names, e.g.
->>>
->>> hypervisor@800...
->> Will update this.
->>>> +            reg = <0x0 0x80000000 0x0 0x800000>;
->>>> +            no-map;
->>>> +        };
->>>> +
->>> [...]
->>>
->>>> +
->>>> +    smem: qcom,smem {
->>>> +        compatible = "qcom,smem";
->>>> +        memory-region = <&smem_mem>;
->>>> +        hwlocks = <&tcsr_mutex 3>;
->>>> +    };
->>>> +
->>>> +    soc: soc {
->>>> +        #address-cells = <2>;
->>>> +        #size-cells = <2>;
->>>> +        ranges;
->>> Are the SoC buses limited to 32b addresses?
->> No, Will fix this in the next.
->>>> +        compatible = "simple-bus";
->>> Compatible should go first.
->> Yes, Ok.
->>>> +
->>>> +        tcsr_mutex: hwlock@1f40000 {
->>>> +            compatible = "qcom,tcsr-mutex";
->>>> +            reg = <0x0 0x01f40000 0x0 0x40000>;
->>>> +            #hwlock-cells = <1>;
->>>> +        };
->>>> +
->>>> +        pdc: interrupt-controller@b220000 {
->>>> +            compatible = "qcom,sdx75-pdc", "qcom,pdc";
->>>> +            reg = <0x0 0xb220000 0x0 0x30000>,
->>>> +                  <0x0 0x174000f0 0x0 0x64>;
->>>> +            qcom,pdc-ranges = <0 147 52>,
->>>> +                      <52 266 32>,
->>>> +                      <84 500 59>;
->>>> +            #interrupt-cells = <2>;
->>>> +            interrupt-parent = <&intc>;
->>>> +            interrupt-controller;
->>>> +        };
->>>> +
->>>> +        tlmm: pinctrl@f000000 {
->>>> +            compatible = "qcom,sdx75-tlmm";
->>>> +            reg = <0x0 0x0f000000 0x0 0x400000>;
->>>> +            interrupts = <GIC_SPI 212 IRQ_TYPE_LEVEL_HIGH>;
->>>> +            gpio-controller;
->>>> +            #gpio-cells = <2>;
->>>> +            gpio-ranges = <&tlmm 0 0 133>;
->>>> +            interrupt-controller;
->>>> +            #interrupt-cells = <2>;
->>>> +            wakeup-parent = <&pdc>;
->>>> +        };
->>>> +
->>>> +        apps_smmu: iommu@15000000 {
->>>> +            compatible = "qcom,sdx75-smmu-500", "arm,mmu-500";
->>>> +            reg = <0x0 0x15000000 0x0 0x40000>;
->>>> +            #iommu-cells = <2>;
->>>> +            #global-interrupts = <2>;
->>>> +            interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 68 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 69 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 104 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 105 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 298 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 299 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 300 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 301 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 302 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 303 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 304 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 305 IRQ_TYPE_LEVEL_HIGH>,
->>>> +                     <GIC_SPI 306 IRQ_TYPE_LEVEL_HIGH>;
->>> Many newer SoCs have dma-coherent SMMUs. Is this the case here?
->> Yes, Will add the dma-coherent property here.
->>>> +        };
->>>> +
->>>> +        intc: interrupt-controller@17200000 {
->>>> +            compatible = "arm,gic-v3";
->>>> +            #interrupt-cells = <3>;
->>>> +            interrupt-controller;
->>>> +            #redistributor-regions = <1>;
->>>> +            redistributor-stride = <0x0 0x20000>;
->>>> +            reg = <0x0 0x17200000 0x0 0x10000>,
->>>> +                  <0x0 0x17260000 0x0 0x80000>;
->>>> +            interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
->>>> +        };
->>>> +
->>>> +        timer@17420000 {
->>>> +            compatible = "arm,armv7-timer-mem";
->>>> +            #address-cells = <2>;
->>>> +            #size-cells = <2>;
->>>> +            ranges;
->>>> +            reg = <0x0 0x17420000 0x0 0x1000>;
->>>> +            clock-frequency = <19200000>;
->>> clock-frequency is discouraged, unless strictly necessary.
->>>
->>> Since gh is running, the timer is already programmed so it should be
->>> fine to drop this.
->>>
->>> [...]
->>>
->>>> +    timer {
->>>> +        compatible = "arm,armv8-timer";
->>>> +        interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
->>>> +                 <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
->>>> +                 <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
->>>> +                 <GIC_PPI 12 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>;
->>>> +        clock-frequency = <19200000>;
->>> Ditto
->> Ok Thanks for the info. Dropping the clock frequency property in the next version.
->>
->> Thanks,
->> Rohit.
->>> Konrad
->>>> +    };
->>>> +};
+This is an excerpt of the kernel log when the failure happens:
+
+============================================================
+[   16.051893] mediatek-disp-rdma 14010000.rdma: Adding to iommu group 0
+[   16.092921] Bluetooth: vendor=0x2df, device=0x912e, class=255, fn=2
+[   16.094140] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000018
+[   16.098392] usbcore: registered new interface driver uvcvideo
+[   16.120447] mwifiex_sdio mmc2:0001:1: Direct firmware load for mrvl/sd8897_uapsta.bin failed with error -2
+[   16.126182] Mem abort info:
+[   16.126185]   ESR = 0x0000000096000006
+[   16.126187]   EC = 0x25: DABT (current EL), IL = 32 bits
+[   16.126189]   SET = 0, FnV = 0
+[   16.126191]   EA = 0, S1PTW = 0
+[   16.126193]   FSC = 0x06: level 2 translation fault
+[   16.126196] Data abort info:
+[   16.126197]   ISV = 0, ISS = 0x00000006, ISS2 = 0x00000000
+[   16.126208]   CM = 0, WnR = 0, TnD = 0, TagAccess = 0
+[   16.126210]   GCS = 0, Overlay = 0, DirtyBit = 0, Xs = 0
+[   16.126213] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000107b6f000
+[   16.126238] [0000000000000018] pgd=0800000107bac003, p4d=0800000107bac003, pud=0800000107bad003, pmd=0000000000000000
+[   16.126248] Internal error: Oops: 0000000096000006 [#1] PREEMPT SMP
+[   16.126251] Modules linked in: mwifiex_sdio(+) uvcvideo mtk_mdp uvc videobuf2_vmalloc v4l2_mem2mem videobuf2_dma_contig mwifiex videobuf2_memops btmrvl_sdio(+) mediatek_drm(+) videobuf2_v4l2 btmrvl r8152(+) mtk_mutex hid_multitouch mtk_mmsys cfg80211 videodev videobuf2_common bluetooth mc ecdh_generic ecc rfkill sbs_battery elan_i2c elants_i2c cros_ec_sensors cros_ec_sensors_core industrialio_triggered_buffer kfifo_buf cros_ec_chardev auxadc_thermal mediatek_drm_hdmi
+[   16.136728] mwifiex_sdio mmc2:0001:1: Failed to get firmware mrvl/sd8897_uapsta.bin
+[   16.141848]  mt6577_auxadc mtk_vpu phy_mtk_hdmi_drv phy_mtk_mipi_dsi_drv display_connector
+[   16.141859] CPU: 2 PID: 126 Comm: udevd Not tainted 6.4.0-rc4-next-20230530-dirty #1
+[   16.141863] Hardware name: Google Hana (DT)
+[   16.141865] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[   16.141869] pc : mtk_iommu_flush_iotlb_all+0x18/0x70
+[   16.141881] lr : iommu_create_device_direct_mappings.part.0+0x13c/0x21c
+[   16.141886] sp : ffff80000b4e3640
+[   16.141888] x29: ffff80000b4e3640 x28: ffff80000b4e36d8 x27: 0000000000001000
+[   16.141894] x26: ffff0000c966e268 x25: ffff80000aa0d874 x24: 0000000000000000
+[   16.141900] x23: ffff0000c08c5c10 x22: ffff80000b4e36d8
+[   16.155999] mwifiex_sdio mmc2:0001:1: info: _mwifiex_fw_dpc: unregister device
+[   16.157791]  x21: 0000000000000000
+[   16.157795] x20: ffff0000c966e148 x19: ffff0000c966e268 x18: 00000000fffffffe
+[   16.157800] x17: 5f6272616c5f696d x16: 735f6b746d207370 x15: 0000000000000020
+[   16.157806] x14: 00000000000002f3 x13: 0000000000000001 x12: 0000000000000000
+[   16.157812] x11: 0000000000000000 x10: ffff0000c08c5c10
+[   16.168820] r8152 2-1.1:1.0: Direct firmware load for rtl_nic/rtl8153b-2.fw failed with error -2
+[   16.170416]  x9 : 0000000000000000
+[   16.173730] r8152 2-1.1:1.0: unable to load firmware patch rtl_nic/rtl8153b-2.fw (-2)
+[   16.177107] x8 : ffff0000c084f400 x7 : ffff80000957b028 x6 : ffff0000c966cc00
+[   16.177113] x5 : 0000000000000040 x4 : ffff80000957b4a8 x3 : ffff80000957b4a8
+[   16.228229] btmrvl_sdio mmc2:0001:2: Direct firmware load for mrvl/sd8897_uapsta.bin failed with error -2
+[   16.267586] 
+[   16.267588] x2 : 0000000000000000 x1 : ffff800008883548 x0 : 0000000000000000
+[   16.267594] Call trace:
+[   16.267597]  mtk_iommu_flush_iotlb_all+0x18/0x70
+[   16.267603]  iommu_create_device_direct_mappings.part.0+0x13c/0x21c
+[   16.267608]  iommu_setup_default_domain+0x27c/0x430
+[   16.267611]  iommu_probe_device+0x7c/0x144
+[   16.267615]  of_iommu_configure+0x114/0x200
+[   16.267619]  of_dma_configure_id+0x1e0/0x3b4
+[   16.275567] Bluetooth: request_firmware(firmware) failed, error code = -2
+[   16.275604] r8152 2-1.1:1.0 eth0: v1.12.13
+[   16.276104] usbcore: registered new interface driver r8152
+[   16.284034]  platform_dma_configure+0x30/0xc0
+[   16.284039]  really_probe+0x70/0x2b4
+[   16.284044]  __driver_probe_device+0x78/0x12c
+[   16.284049]  driver_probe_device+0xd8/0x15c
+[   16.284054]  __driver_attach+0x94/0x19c
+[   16.292076] Bluetooth: Failed to download firmware!
+[   16.296474]  bus_for_each_dev+0x74/0xd4
+[   16.296479]  driver_attach+0x24/0x30
+[   16.296483]  bus_add_driver+0xe4/0x1e8
+[   16.296488]  driver_register+0x60/0x128
+[   16.296490]  __platform_register_drivers+0x64/0xe8
+[   16.296494]  mtk_drm_init+0x24/0x1000 [mediatek_drm]
+[   16.303720] Bluetooth: Downloading firmware failed!
+[   16.308914]  do_one_initcall+0x6c/0x1b0
+[   16.308919]  do_init_module+0x58/0x1e4
+[   16.308924]  load_module+0x18f4/0x1a98
+[   16.552552]  __do_sys_finit_module+0xb8/0x10c
+[   16.557162]  __arm64_sys_finit_module+0x20/0x2c
+[   16.561945]  invoke_syscall+0x48/0x114
+[   16.565947]  el0_svc_common.constprop.0+0x44/0xec
+[   16.570902]  do_el0_svc+0x38/0xa4
+[   16.574469]  el0_svc+0x2c/0x84
+[   16.577777]  el0t_64_sync_handler+0xb8/0xbc
+[   16.582211]  el0t_64_sync+0x190/0x194
+[   16.586126] Code: 910003fd a90153f3 f90013f5 f85f8000 (f9400c15) 
+[   16.592470] ---[ end trace 0000000000000000 ]---
+============================================================
+
+I reproduced the bug running the same test with a kernel containing the
+patch: https://lava.collabora.dev/scheduler/job/10563738
+
+and I checked that reverting the patch fixes the problem:
+https://lava.collabora.dev/scheduler/job/10564507
+
+In order to run these tests I used kci_build [2] to build the kernels,
+dtbs and modules, and ran the same LAVA jobs definitions than the
+original test run using the generated kernels.
+
+This doesn't seem to be affecting other targets supported by KernelCI.
+
+[1] https://groups.io/g/kernelci-results/message/42976
+[2] https://github.com/kernelci/kernelci-core/blob/main/doc/kci_build.md
+
+#regzbot introduced 152431e4fe7f
+#regzbot title iommu: NULL pointer dereference in Hana Chromebook
+
+Cheers,
+Ricardo
