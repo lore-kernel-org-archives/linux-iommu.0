@@ -1,40 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17D6B6FC3
-	for <iommu@lists.linux.dev>; Mon,  5 Jun 2023 16:35:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81C04C433A7;
-	Mon,  5 Jun 2023 16:35:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2B9E6FC3
+	for <iommu@lists.linux.dev>; Mon,  5 Jun 2023 16:35:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64862C433EF;
+	Mon,  5 Jun 2023 16:35:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685982928;
-	bh=YpF8KnazYCU1ts51crNZK0GQy+R6C0M3FsaVYRAaWu0=;
+	s=k20201202; t=1685982933;
+	bh=kzk1uLqR7lhr9MbM4g4pUuPLXhPsS5eosz4kR4msr3s=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=k89yT2+0OdiOHy7eFZIplfBfY8cBM26XycksSCxqn2/TYK7yJq09GeBNCY0/gogUA
-	 ZKHFMKkCXEWkBlOm0GskrF4pZxMRsQt3h76rDzs4L/1xfVM9z2WMKaOYWOqhKzq6Ue
-	 PJ51Ds5/MmLPJ+zyYapsaB9RoXHxgKPsaxsYLR+INtKMfnRQTnQ1dtroUVL2s/oveS
-	 4aSkyIIZ4Wx3LvXUoH/5ohf0fNDl5fzH44z0rFd0D+YBgeZcQUgEND1sNX3kuAp3y7
-	 qDI2jU9YQXKeKK8DLY8wSmhPGWF8IypFKBszWMi0oBkMsoCKYIwt8I3OlXBM/uhRSi
-	 R2laYsDrRsxmA==
+	b=hvY+Tt2nizHAIAgmP5WHt6hWuudvrSwOCe10koDSb3NB8He5rzfv5MxqH06/64Qsl
+	 vB6ln02PopoxNU4jIuF7PgdtTKorOSpcLvj2h8MHpEtuOTwMrlJux/UDbAnajiQnZ6
+	 fJVm6GDiqXBMKvwJrbcsx/p/Y2DomzS5tSnSYS5B5USJi878hgOiG/XpxEDNPujtE8
+	 EImRhN4DcIUKooEg+HpKDOaBxMD2fZ4Ny2e1vRTLmnV1jIg7Kn8NlzqjjzAZotp6l2
+	 Yu9uDf+YZe4UEGkM5+QrXbW2HNiXcWStzRF71cblpc5mUu5c3OTKv8kS7HJ3j11+/4
+	 LCAcdE7Xdh3zw==
 From: Will Deacon <will@kernel.org>
-To: Conor Dooley <conor+dt@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Bjorn Andersson <quic_bjorande@quicinc.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+To: conor+dt@kernel.org,
+	andersson@kernel.org,
+	robin.murphy@arm.com,
+	maz@kernel.org,
+	Rohit Agarwal <quic_rohiagar@quicinc.com>,
+	tglx@linutronix.de,
+	robimarko@gmail.com,
+	robh+dt@kernel.org,
+	agross@kernel.org,
+	quic_gurus@quicinc.com,
+	joro@8bytes.org,
+	konrad.dybcio@linaro.org,
+	krzysztof.kozlowski+dt@linaro.org
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
-	iommu@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev,
 	devicetree@vger.kernel.org,
-	Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] dt-bindings: arm-smmu: Fix SC8280XP Adreno binding
-Date: Mon,  5 Jun 2023 17:35:06 +0100
-Message-Id: <168597889655.22601.5244449695920772097.b4-ty@kernel.org>
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/8] Add devicetree support for SDX75 Modem and IDP
+Date: Mon,  5 Jun 2023 17:35:07 +0100
+Message-Id: <168597991653.31513.630869633781794728.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20230523010441.63236-1-quic_bjorande@quicinc.com>
-References: <20230523010441.63236-1-quic_bjorande@quicinc.com>
+In-Reply-To: <1684487350-30476-1-git-send-email-quic_rohiagar@quicinc.com>
+References: <1684487350-30476-1-git-send-email-quic_rohiagar@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -44,16 +52,22 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Mon, 22 May 2023 18:04:41 -0700, Bjorn Andersson wrote:
-> The qcom,sc8280xp-smmu-500 Adreno SMMU binding has clocks, so fix up the
-> binding to allow this.
+On Fri, 19 May 2023 14:39:02 +0530, Rohit Agarwal wrote:
+> This series adds devicetree support for Qualcomm SDX75 platform and IDP
+> board. This series functionally depends on GCC and RPMh Clock support
+> series [1], and pinctrl support for SDX75 [2] which are under review.
 > 
+> With this current devicetree support, the IDP can boot into initramfsshell.
 > 
+> [1] https://lore.kernel.org/lkml/20230419133013.2563-3-quic_tdas@quicinc.com/
+> [2] https://lore.kernel.org/all/1684409015-25196-1-git-send-email-quic_rohiagar@quicinc.com/
+> 
+> [...]
 
-Applied to will (for-joerg/arm-smmu/bindings), thanks!
+Applied bindings patch to will (for-joerg/arm-smmu/bindings), thanks!
 
-[1/1] dt-bindings: arm-smmu: Fix SC8280XP Adreno binding
-      https://git.kernel.org/will/c/84b8a7fe2920
+[4/8] dt-bindings: arm-smmu: Add SDX75 SMMU compatible
+      https://git.kernel.org/will/c/48989c0b25ca
 
 Cheers,
 -- 
