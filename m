@@ -1,37 +1,37 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BF6E2261A
-	for <iommu@lists.linux.dev>; Mon,  5 Jun 2023 16:29:52 +0000 (UTC)
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 355FsagK004361;
-	Mon, 5 Jun 2023 16:29:23 GMT
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E08BF2262C
+	for <iommu@lists.linux.dev>; Mon,  5 Jun 2023 16:29:53 +0000 (UTC)
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 355Co2ds015778;
+	Mon, 5 Jun 2023 16:29:25 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id; s=qcppdkim1;
- bh=vL6D0As9ECdahRNEPut0utmGQpSV82VRmuPgQ0w6HiU=;
- b=k1bmnUIXRzVBx8zsfRJABLi83+C4m8vPap6pYLMvNtjQx9fNp2eaQ7O2m69OycyB255s
- i8ZJZftkwDSsEItwc4ahxJ9h/AnL0I/vhK7tp3RnpcTjB5yMQmThXrCJf5S0Paf6SNhi
- 0eSre1RhTidyKohhybRD1+SdhLf3pzAtPzjrvmC2IyByXh7A0VKw2k9HOgQfelbwQlE5
- AAOZ1m85LnM8DyzgV7A1D4q08res9u0VyXRhLIcemCsPPp2JxE0ujmr7HkDxzuh9ISiA
- V9OnxvjKKnOCscI+ilAdPPkYO5wx2cDsWodAhkbTD+FGMfEzkiLUSb6LkJR42WomNurW HQ== 
+ subject : date : message-id : in-reply-to : references; s=qcppdkim1;
+ bh=tkXjIno05T5Gn5aWvcwiFQsgZ0JFsJ8oSWtY1w53KMU=;
+ b=p6kAe/nlwOKxXNT+ubYqeC9Q0psafHq1pUK87qCEOike5Lh0uPHEwK35jnSH+9bo+KcK
+ RvlxQTuwBvBaDkBNMd/9ag2YpDothMgwmOujOuMbGmgM9qn6yPbVLQHzg7f3U7gFSPyH
+ gUx/NlBpOINMr6p4N5RSJSzQioOJJO686cc2bE0Z8x1mJjf8e0wUE7jFRJobpJS+/UbE
+ pE9mimfRcziu04k1LnTMmYkUXh8xTtVr9LXn6fN1ef8Y+zGELzbMKoGgDVSKzrwD9tqx
+ VKJ1jrlaPGFOmRInn5UWw+hGAZQFuSO6RRAq+AYGLboxt0ey81vEulAs0GzmYV2tKX2b lA== 
 Received: from apblrppmta01.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3r1arnsf2b-1
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3r1aughe61-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 05 Jun 2023 16:29:23 +0000
+	Mon, 05 Jun 2023 16:29:24 +0000
 Received: from pps.filterd (APBLRPPMTA01.qualcomm.com [127.0.0.1])
-	by APBLRPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 355GTJlQ030307;
-	Mon, 5 Jun 2023 16:29:19 GMT
+	by APBLRPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 355GTKOf030377;
+	Mon, 5 Jun 2023 16:29:21 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTP id 3qyxkkq41b-1;
-	Mon, 05 Jun 2023 16:29:19 +0000
+	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTP id 3qyxkkq42g-1;
+	Mon, 05 Jun 2023 16:29:21 +0000
 Received: from APBLRPPMTA01.qualcomm.com (APBLRPPMTA01.qualcomm.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 355GTI4v030293;
-	Mon, 5 Jun 2023 16:29:18 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 355GTJSL030342;
+	Mon, 5 Jun 2023 16:29:21 GMT
 Received: from hu-sgudaval-hyd.qualcomm.com (hu-rohiagar-hyd.qualcomm.com [10.213.106.138])
-	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTP id 355GTIau030291;
-	Mon, 05 Jun 2023 16:29:18 +0000
+	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTP id 355GTJDg030326;
+	Mon, 05 Jun 2023 16:29:21 +0000
 Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3970568)
-	id D1CFA5F03; Mon,  5 Jun 2023 21:59:17 +0530 (+0530)
+	id 447FF5F03; Mon,  5 Jun 2023 21:59:20 +0530 (+0530)
 From: Rohit Agarwal <quic_rohiagar@quicinc.com>
 To: agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
         robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
@@ -43,75 +43,106 @@ Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
         Rohit Agarwal <quic_rohiagar@quicinc.com>
-Subject: [PATCH v2 00/10] Add devicetree support for SDX75 Modem and IDP
-Date: Mon,  5 Jun 2023 21:59:07 +0530
-Message-Id: <1685982557-28326-1-git-send-email-quic_rohiagar@quicinc.com>
+Subject: [PATCH v2 08/10] arm64: dts: qcom: Add QUPv3 UART console node for SDX75
+Date: Mon,  5 Jun 2023 21:59:15 +0530
+Message-Id: <1685982557-28326-9-git-send-email-quic_rohiagar@quicinc.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1685982557-28326-1-git-send-email-quic_rohiagar@quicinc.com>
+References: <1685982557-28326-1-git-send-email-quic_rohiagar@quicinc.com>
 X-QCInternal: smtphost
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: FIyRgPkSvHuPpeP1VKL5Wjd0GmoV2R8z
-X-Proofpoint-GUID: FIyRgPkSvHuPpeP1VKL5Wjd0GmoV2R8z
+X-Proofpoint-GUID: Bpvy3jEqU05SuztDDVwCY5bfJGdwiXBM
+X-Proofpoint-ORIG-GUID: Bpvy3jEqU05SuztDDVwCY5bfJGdwiXBM
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
  definitions=2023-06-05_31,2023-06-02_02,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=641
- impostorscore=0 priorityscore=1501 lowpriorityscore=0 suspectscore=0
- phishscore=0 spamscore=0 clxscore=1015 malwarescore=0 adultscore=0
- mlxscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2304280000 definitions=main-2306050141
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ bulkscore=0 phishscore=0 impostorscore=0 mlxscore=0 adultscore=0
+ malwarescore=0 spamscore=0 priorityscore=1501 clxscore=1015
+ mlxlogscore=856 suspectscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2304280000 definitions=main-2306050141
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 
-Hi,
+Add the debug uart console node in devicetree.
 
-Changes in v2:
- - Added the CPUFreq support patch.
- - Collected the Acked by tags.
- - Addressed some minor comments from Konrad.
+Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
+---
+ arch/arm64/boot/dts/qcom/sdx75.dtsi | 49 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
 
-This series adds devicetree support for Qualcomm SDX75 platform and IDP
-board. This series functionally depends on GCC and RPMh Clock support
-series [1], and pinctrl support for SDX75 [2] which are under review.
-
-With this current devicetree support, the IDP can boot into initramfsshell.
-
-[1] https://lore.kernel.org/lkml/20230419133013.2563-3-quic_tdas@quicinc.com/
-[2] https://lore.kernel.org/all/1684409015-25196-1-git-send-email-quic_rohiagar@quicinc.com/
-
-Thanks,
-Rohit.
-
-Imran Shaik (1):
-  arm64: dts: qcom: Add support for GCC and RPMHCC for SDX75
-
-Rohit Agarwal (9):
-  dt-bindings: arm: qcom: Document SDX75 platform and boards
-  dt-bindings: firmware: scm: Add compatible for SDX75
-  dt-bindings: interrupt-controller: Add SDX75 PDC compatible
-  dt-bindings: arm-smmu: Add SDX75 SMMU compatible
-  dt-bindings: cpufreq: cpufreq-qcom-hw: Add SDX75 compatible
-  arm64: dts: qcom: Add SDX75 platform and IDP board support
-  arm64: dts: qcom: Add QUPv3 UART console node for SDX75
-  arm64: dts: qcom: Enable the QUPv3 UART console for SDX75
-  arm64: dts: qcom: Add the support of cpufreq on SDX75
-
- Documentation/devicetree/bindings/arm/qcom.yaml    |   7 +
- .../bindings/cpufreq/cpufreq-qcom-hw.yaml          |   1 +
- .../devicetree/bindings/firmware/qcom,scm.yaml     |   1 +
- .../bindings/interrupt-controller/qcom,pdc.yaml    |   1 +
- .../devicetree/bindings/iommu/arm,smmu.yaml        |   1 +
- arch/arm64/boot/dts/qcom/Makefile                  |   1 +
- arch/arm64/boot/dts/qcom/sdx75-idp.dts             |  33 ++
- arch/arm64/boot/dts/qcom/sdx75.dtsi                | 647 +++++++++++++++++++++
- 8 files changed, 692 insertions(+)
- create mode 100644 arch/arm64/boot/dts/qcom/sdx75-idp.dts
- create mode 100644 arch/arm64/boot/dts/qcom/sdx75.dtsi
-
+diff --git a/arch/arm64/boot/dts/qcom/sdx75.dtsi b/arch/arm64/boot/dts/qcom/sdx75.dtsi
+index f83eef8..47170ae 100644
+--- a/arch/arm64/boot/dts/qcom/sdx75.dtsi
++++ b/arch/arm64/boot/dts/qcom/sdx75.dtsi
+@@ -385,6 +385,34 @@
+ 			#power-domain-cells = <1>;
+ 		};
+ 
++		qupv3_id_0: geniqup@9c0000 {
++			compatible = "qcom,geni-se-qup";
++			reg = <0x0 0x009c0000 0x0 0x2000>;
++			clocks = <&gcc GCC_QUPV3_WRAP_0_M_AHB_CLK>,
++				 <&gcc GCC_QUPV3_WRAP_0_S_AHB_CLK>;
++			clock-names = "m-ahb",
++				      "s-ahb";
++			iommus = <&apps_smmu 0xe3 0x0>;
++			#address-cells = <2>;
++			#size-cells = <2>;
++			ranges;
++			status = "disabled";
++
++			uart1: serial@984000 {
++				compatible = "qcom,geni-debug-uart";
++				reg = <0x0 0x00984000 0x0 0x4000>;
++				clock-names = "se";
++				clocks = <&gcc GCC_QUPV3_WRAP0_S1_CLK>;
++				interrupts = <GIC_SPI 338 IRQ_TYPE_LEVEL_HIGH>;
++				pinctrl-0 = <&qupv3_se1_2uart_tx_active>,
++					    <&qupv3_se1_2uart_rx_active>;
++				pinctrl-1 = <&qupv3_se1_2uart_sleep>;
++				pinctrl-names = "default",
++						"sleep";
++				status = "disabled";
++			};
++		};
++
+ 		tcsr_mutex: hwlock@1f40000 {
+ 			compatible = "qcom,tcsr-mutex";
+ 			reg = <0x0 0x01f40000 0x0 0x40000>;
+@@ -413,6 +441,27 @@
+ 			interrupt-controller;
+ 			#interrupt-cells = <2>;
+ 			wakeup-parent = <&pdc>;
++
++			qupv3_se1_2uart_tx_active: qupv3-se1-2uart-tx-active-state {
++				pins = "gpio12";
++				function = "qup_se1_l2_mira";
++				drive-strength= <2>;
++				bias-disable;
++			};
++
++			qupv3_se1_2uart_rx_active: qupv3-se1-2uart-rx-active-state {
++				pins = "gpio13";
++				function = "qup_se1_l3_mira";
++				drive-strength= <2>;
++				bias-disable;
++			};
++
++			qupv3_se1_2uart_sleep: qupv3-se1-2uart-sleep-state {
++				pins = "gpio12", "gpio13";
++				function = "gpio";
++				drive-strength = <2>;
++				bias-pull-down;
++			};
+ 		};
+ 
+ 		apps_smmu: iommu@15000000 {
 -- 
 2.7.4
 
