@@ -1,37 +1,37 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D88B422601
-	for <iommu@lists.linux.dev>; Mon,  5 Jun 2023 16:29:50 +0000 (UTC)
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 355DU46C016589;
-	Mon, 5 Jun 2023 16:29:36 GMT
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4112F2261A
+	for <iommu@lists.linux.dev>; Mon,  5 Jun 2023 16:29:51 +0000 (UTC)
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 355FstbX016791;
+	Mon, 5 Jun 2023 16:29:23 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references; s=qcppdkim1;
- bh=0EB/2bm6n63XmQQ27jSNwrVyH2tn76g7ixF/gd2TUcY=;
- b=o8XTU/97bk0GrEolIdGxDF+mgKj+7BeBp4sje0LjaJv0awMhztkezWTnD8v5ia0IgR3X
- hDvQ4rfxDNDaKz+YXP3jps8+h+T91f9g0b3mshhaaH192EnuQRgfSuWl+osNYP/8hR7W
- 3PicC3h5ndFnuT2MIIPBL8BjTvqGMKOJ2PkmbMxjkF3TARJbWXkWFPzUvqiUKlvQVExD
- qjg+VJ/SpDPxfUGTpkD3X9O2Jp8me9P2bdo7PHn0GeZNgBQcD5j7ZHbjfisRpkgwlOXu
- epaL6swlVBr3f5dtaR9lp5qiCxntNJWzwEj6fqtKJLHyZLl3uBTtqmdfXiDhTmNCgzKi 8g== 
+ bh=MIV3rmjMcZyaUTjM7aikjgAiSTVyfL8WSe1C+6FmZIs=;
+ b=ogNJzjb+Yy5iVJvP6Si2CWCrAAxrwFneu9qQlwkhdjWBl4kpGGYrJnLzKH5LEk+cqbnj
+ vJIFTa2YWgPVeaHt/5h1kndxsKMttIrIHkmgNq0f95Y/0r+nPk1OHDSifiHjVUA/+QLh
+ rtNIfHeV8UZVn7eCp5uQqFCYHaRR3cKLNetRNu4Cz8x+g+AaQjIeR72cAHbxd9gTYc40
+ 7/Xg8h8LqRKVI2xwxdzNyWoMQT38mA1Rvsy/XluyiEL1/uzTW94d7Zg7UFjGdESG+18r
+ E652Kf/GF6uSTwrdYSOE71tDT/ydRvtGjtvcITeyJULYe5y+8KRMj/8EuKizBqv0Lts/ oA== 
 Received: from apblrppmta01.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3qyx9p44y3-1
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3r1ahp9e7h-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 05 Jun 2023 16:29:35 +0000
+	Mon, 05 Jun 2023 16:29:23 +0000
 Received: from pps.filterd (APBLRPPMTA01.qualcomm.com [127.0.0.1])
-	by APBLRPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 355GTJqb030308;
+	by APBLRPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 355GTJOf030339;
 	Mon, 5 Jun 2023 16:29:19 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTP id 3qyxkkq41f-1;
+	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTP id 3qyxkkq41u-1;
 	Mon, 05 Jun 2023 16:29:19 +0000
 Received: from APBLRPPMTA01.qualcomm.com (APBLRPPMTA01.qualcomm.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 355GTIko030296;
-	Mon, 5 Jun 2023 16:29:18 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 355GTJIM030322;
+	Mon, 5 Jun 2023 16:29:19 GMT
 Received: from hu-sgudaval-hyd.qualcomm.com (hu-rohiagar-hyd.qualcomm.com [10.213.106.138])
-	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTP id 355GTIQ3030292;
-	Mon, 05 Jun 2023 16:29:18 +0000
+	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTP id 355GTJfd030313;
+	Mon, 05 Jun 2023 16:29:19 +0000
 Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3970568)
-	id 2AB9B5F1F; Mon,  5 Jun 2023 21:59:18 +0530 (+0530)
+	id B46885F26; Mon,  5 Jun 2023 21:59:18 +0530 (+0530)
 From: Rohit Agarwal <quic_rohiagar@quicinc.com>
 To: agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
         robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
@@ -43,9 +43,9 @@ Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
         Rohit Agarwal <quic_rohiagar@quicinc.com>
-Subject: [PATCH v2 01/10] dt-bindings: arm: qcom: Document SDX75 platform and boards
-Date: Mon,  5 Jun 2023 21:59:08 +0530
-Message-Id: <1685982557-28326-2-git-send-email-quic_rohiagar@quicinc.com>
+Subject: [PATCH v2 03/10] dt-bindings: interrupt-controller: Add SDX75 PDC compatible
+Date: Mon,  5 Jun 2023 21:59:10 +0530
+Message-Id: <1685982557-28326-4-git-send-email-quic_rohiagar@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1685982557-28326-1-git-send-email-quic_rohiagar@quicinc.com>
 References: <1685982557-28326-1-git-send-email-quic_rohiagar@quicinc.com>
@@ -53,62 +53,42 @@ X-QCInternal: smtphost
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: SASo7CPnnw6GGj7eEuFIgpoRbxO6qk81
-X-Proofpoint-GUID: SASo7CPnnw6GGj7eEuFIgpoRbxO6qk81
+X-Proofpoint-GUID: PpGoWy1MgKeAjk6_-WlSVgGcElWFYBHo
+X-Proofpoint-ORIG-GUID: PpGoWy1MgKeAjk6_-WlSVgGcElWFYBHo
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
  definitions=2023-06-05_31,2023-06-02_02,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxlogscore=863
- clxscore=1015 mlxscore=0 adultscore=0 impostorscore=0 lowpriorityscore=0
- bulkscore=0 phishscore=0 priorityscore=1501 suspectscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2304280000
- definitions=main-2306050142
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 bulkscore=0
+ malwarescore=0 adultscore=0 mlxlogscore=635 spamscore=0 mlxscore=0
+ impostorscore=0 lowpriorityscore=0 clxscore=1011 phishscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2304280000 definitions=main-2306050141
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 
-Document the SDX75 platform binding and also the boards using it.
+Add device tree bindings for PDC on SDX75 SOC.
 
 Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
 Acked-by: Conor Dooley <conor.dooley@microchip.com>
 ---
- Documentation/devicetree/bindings/arm/qcom.yaml | 7 +++++++
- 1 file changed, 7 insertions(+)
+ Documentation/devicetree/bindings/interrupt-controller/qcom,pdc.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index d9dd256..772f145 100644
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -69,6 +69,7 @@ description: |
-         sdm845
-         sdx55
-         sdx65
-+        sdx75
-         sm4250
-         sm6115
-         sm6115p
-@@ -821,6 +822,11 @@ properties:
- 
-       - items:
-           - enum:
-+              - qcom,sdx75-idp
-+          - const: qcom,sdx75
-+
-+      - items:
-+          - enum:
-               - qcom,ipq6018-cp01
-               - qcom,ipq6018-cp01-c1
-           - const: qcom,ipq6018
-@@ -1042,6 +1048,7 @@ allOf:
-               - qcom,sdm845
-               - qcom,sdx55
-               - qcom,sdx65
-+              - qcom,sdx75
-               - qcom,sm4250
-               - qcom,sm6115
-               - qcom,sm6125
+diff --git a/Documentation/devicetree/bindings/interrupt-controller/qcom,pdc.yaml b/Documentation/devicetree/bindings/interrupt-controller/qcom,pdc.yaml
+index a106ba6..24ec69a 100644
+--- a/Documentation/devicetree/bindings/interrupt-controller/qcom,pdc.yaml
++++ b/Documentation/devicetree/bindings/interrupt-controller/qcom,pdc.yaml
+@@ -34,6 +34,7 @@ properties:
+           - qcom,sdm845-pdc
+           - qcom,sdx55-pdc
+           - qcom,sdx65-pdc
++          - qcom,sdx75-pdc
+           - qcom,sm6350-pdc
+           - qcom,sm8150-pdc
+           - qcom,sm8250-pdc
 -- 
 2.7.4
 
