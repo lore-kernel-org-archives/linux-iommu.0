@@ -1,166 +1,146 @@
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com [209.85.219.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2080.outbound.protection.outlook.com [40.107.93.80])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 125BB23D5A
-	for <iommu@lists.linux.dev>; Mon,  5 Jun 2023 18:30:45 +0000 (UTC)
-Received: by mail-yb1-f175.google.com with SMTP id 3f1490d57ef6-bacfa9fa329so5325462276.0
-        for <iommu@lists.linux.dev>; Mon, 05 Jun 2023 11:30:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1685989845; x=1688581845;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=2bCD5PZj1At8yqhL4CYuYaQGs7kVSIn0/Mt/nLV2HXs=;
-        b=c5a8KY3tXAcIgrvqx6pKcIyicw4mhKUoO7L6uvtT5vI+5nzchsky91+qaYZuDhZWgk
-         loqPxlttSDTnongyVNVNRJw46CKmugZ4Q5VIalUbQjK5O9X9gCKOZn70yBFlBtwX5GgJ
-         gySIHVqIxIpPzWsFxS1u+wOtokXml2HheNIg0+4LdlbaZuy/3n/GmU2iR5097ifqOFBZ
-         9hyNiMEde/WN0CU5S8l8NNOmrYr2h5H4DbB4SrjtsHqqWGhMBtMD+Cu3SGuY4dIiwbo2
-         q5mHLcwYphvgfbYJO9U/a2Ft+KsZX8f2RJhBOKsg8sTjvMvsGJqdQEPRWQCiwXIUojff
-         qrNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685989845; x=1688581845;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=2bCD5PZj1At8yqhL4CYuYaQGs7kVSIn0/Mt/nLV2HXs=;
-        b=daW4gQXL94jOc9SQFG+0fzPUkC5uSofR73XoYTOUpaZi+PO38Ec1n7JgqFGWMaKCSa
-         kLhN5LFYiOxUyq7temdmEtMb393YQDMXciUf6C+B3Aa9hBvD6mhLhtcvOuq4gFqJflpn
-         MoACI2vhqnVsF5nCMc3irbTaSQZe+PuraLwIqFTiLMhLUeF9fyWvl6Lqj1ye4qtrgbnr
-         /XZTMR5F7whN3Hvi4VnAGvuZirgJDMZKfTpglfs1rIaavLOIq/jDR5RV97SZxSkg8m1z
-         eiGecLKWFXV5TCY5Sf5FxTHGPYjdSA0Gd/rXwuyJK+ojOCHaJrTWw+XbgUm/wKWv16O2
-         gQkQ==
-X-Gm-Message-State: AC+VfDwsre4lrNEtxDc2gCqoNaFHW/L+JPRa9tzpWxIcCpTb3B67PNLh
-	4LLYKb6ZOu1QBnHfQQWgiMGYx2Cmbz42V3HI1ThB2w==
-X-Google-Smtp-Source: ACHHUZ6mF0HQB1db3oxZ/PWuW6L+XmF5rCHXz5idoZNIDLqw0b82MU/KjjtQYOFBLP++iwX0UEUHhBXI+vEEnCK+zB4=
-X-Received: by 2002:a25:2413:0:b0:bad:1159:1aea with SMTP id
- k19-20020a252413000000b00bad11591aeamr11057933ybk.8.1685989844815; Mon, 05
- Jun 2023 11:30:44 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E5527F
+	for <iommu@lists.linux.dev>; Tue,  6 Jun 2023 00:59:54 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mHOwqa20oJz0Uis1XzLkCLvN5hbRcPZQE0VnlE2gjovaIFhTSIQX2jZYt7Dq7bAmb6GynKKBYcDkf4mrpKA4dc0k7kYsR7xQyxeoUhvKKhIRmrUcLYxz0FZVw3HfQFTyoPWEm6gft3E9vS0dClpH3txDCL3V5G78oHtqO6dNSj5XolDYmokPkThuPT51KR9m4kCndIrWp4FJ+1fY+lCM/DKntmTNzHMSScWTNOxnqKQkfAAKMpRQ4lIA9y5VmiJOWPjZsQ37TIT6A5XMUwp/UeezQWGRDc10hS0bCb7D3piHh/jotZto/ZqxCkBI2P9UrQSxFj7ya9ZbQkBW3YWuHQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8diz4XTS7ftFZVs8zPgjZwLv6G8O1Qh/M2aGohNqR1c=;
+ b=KGCWyniE7OoC7nfvoyF8OLBncSu+Ma2PcfvV9rbd0zcHhZAhXqP5W7xjhXYo17qjoqBpsvYBa80iGw+kDDm7VIQll+kzo8UQvrVmqfUs9j3qlFOOHFcF10MUU6EPMKZ71kr8HKdUotHyDlpHK9UpEE7q6dHiuXuPsW5PjLaONv5D12DAquSct0Ics/cy9k75/lAb+6HYCEFIaqcdKCev/cuje+dkxeROJNj3TJMPwKgJ79Nkd/ILuSGufu8x1E4L9eUQV1IG2UyZ+/8ZifAzJkAcUnuuRCWvxAu0K9hsuejSajKrdxNUCffwsSiZ20/SlK1fVsSvAtGTViiPm0lP2w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8diz4XTS7ftFZVs8zPgjZwLv6G8O1Qh/M2aGohNqR1c=;
+ b=GGCL8NBK4hJ7XVQXrAL273E/gEZNSVbOK9G/Bloim/OHdwgJLtkCJ8MMHn/s96rCIIKrUdqkklUJA0uy96JtOIChqjapvhIkJP2GmFEZ7D+EpOkacZeuVuAAVNbjfx/ZOV9+dVsnfKfKTg7kfvx5IvtKNZrKvFTZzjGCx+ZR3eckdnRgzEV9GXJUG9JGeSRBFTQiegcnt5LJS9mix2Jj+axj6NKXdOt9hRcqnm7BfNmrBhhOr0ymJTjHPEPg+gidrtFIfCofHYem1hkfDcs4ZKLKsC/Uh0uy+cFaf5KwOfCPXDzF5/c1P+a7QhZUcAOGNi1GSzJtQRTFZQHdrUcNKA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DM4PR12MB7765.namprd12.prod.outlook.com (2603:10b6:8:102::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.32; Tue, 6 Jun
+ 2023 00:59:52 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6455.028; Tue, 6 Jun 2023
+ 00:59:51 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: David Woodhouse <dwmw2@infradead.org>,
+	iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>,
+	Len Brown <lenb@kernel.org>,
+	linux-acpi@vger.kernel.org,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH v3 02/10] iommu: Use iommu_group_ref_get/put() for dev->iommu_group
+Date: Mon,  5 Jun 2023 21:59:40 -0300
+Message-Id: <2-v3-328044aa278c+45e49-iommu_probe_jgg@nvidia.com>
+In-Reply-To: <0-v3-328044aa278c+45e49-iommu_probe_jgg@nvidia.com>
+References:
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BY3PR10CA0017.namprd10.prod.outlook.com
+ (2603:10b6:a03:255::22) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <1685982557-28326-1-git-send-email-quic_rohiagar@quicinc.com> <1685982557-28326-8-git-send-email-quic_rohiagar@quicinc.com>
-In-Reply-To: <1685982557-28326-8-git-send-email-quic_rohiagar@quicinc.com>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Mon, 5 Jun 2023 21:30:34 +0300
-Message-ID: <CAA8EJpogj0uzQdk-kDqm7Pju7Q5aXJg6FHswkJy+ugawqePWLw@mail.gmail.com>
-Subject: Re: [PATCH v2 07/10] arm64: dts: qcom: Add support for GCC and RPMHCC
- for SDX75
-To: Rohit Agarwal <quic_rohiagar@quicinc.com>
-Cc: agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org, 
-	robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org, 
-	rafael@kernel.org, viresh.kumar@linaro.org, tglx@linutronix.de, 
-	maz@kernel.org, will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, 
-	mani@kernel.org, robimarko@gmail.com, linux-arm-msm@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	iommu@lists.linux.dev, Imran Shaik <quic_imrashai@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB7765:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5c58df7e-c9ad-45ad-3d5d-08db66295513
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	Ej+C2E37dO+8Q9H1pL/SZwRFbYx5SPAnwgikkSNIm3VQJUaDR8+46MdqBHQFMAfdoyXZ690qr1PHtz1vngmiqmW3tfp1oKvXKCLSfyguYCOgivdSQP86QZ4l+IUJZnYqOEqwVxNfqFMbMUnk+EisP/m0mULo6xTLOfBqls7MqI/uxwZeNgipHicVRcr9+RiuzdeeM+4o+MT3tJOOKrBI2ieq8VE9ejHVeL5us3FjzjTRflKws75g2jUcvOhSH0Nk9b1emq2lCzPmKVAQO58NOxizxUTI0eKCdpEIvpcnp7JT8uOs8lp1yMy3mc8XdshT4aB0iX2iQX43bH28o+GZc+ZL57n9BzGbb/3aFHeFhXb7RKHNJF2F+y9x7viLLSR9njCrWCSXMhlxvO/mGPOxxR1xEWDiiRR09KCqFZ7z+obg7V7icUYpMD+KOXWqd1n7ERzNx8y6FB4Bk7TWamvpL+0zGQvbn7bQft+H+X85/skwHYw2HijZpzGltJOuOg+3PL1A5wuO1x/T5YzfOXlZcMTyQzDhjo0366nTDY5DNWld3u1zKFkpf4lb7gzV/lJNnzTyuA8Alrl9QmJRRkT6iggplILiv1kCWnBf5jP56/o=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(346002)(376002)(136003)(396003)(451199021)(54906003)(66946007)(110136005)(478600001)(8936002)(8676002)(38100700002)(66476007)(316002)(41300700001)(66556008)(4326008)(2616005)(186003)(6486002)(6666004)(83380400001)(26005)(6512007)(6506007)(7416002)(86362001)(5660300002)(4744005)(2906002)(36756003)(4216001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?y7dMRSZnJeoMFXPIVTtTdcBewCkwKUJx5xpKWvss4+lZIZYrBUq4CIomBWd2?=
+ =?us-ascii?Q?2pZIPDe5eG76ZxGUO92+A4ZkFVwjozfTCFxBFziELLiOqGrPMVDUhOhRYd4l?=
+ =?us-ascii?Q?g3QOoTjK9AN6v3U8G1ElpucAD5Xf1F4Gm8EEnW1ngPdE5S0VJWlzmoGZXzVz?=
+ =?us-ascii?Q?Qw9CMwO2f+aH427x4RixUhvtR7rvfqXyUTmMNO/j8MBsYut1jkgr+VpIvOSj?=
+ =?us-ascii?Q?KKXnk3JhY9l9TY5j+dmQ+HE6S1MvS1wkFo7z5ZFK+1sV5C06wB4SUk3m3S7b?=
+ =?us-ascii?Q?xlm2Wc2/MNfK+FczLpwND0DQxH36ReZUHDENuDCMEiACFI9+wNNfj8vkbLHB?=
+ =?us-ascii?Q?yw60Zv8ashcurtJT1txGA2lpTeAMTbnO4tybn7Z6SzY16oGBx6VQHtTQO9Nb?=
+ =?us-ascii?Q?5kht76cxTAB5ZI3KWTfO0vcplXx7c1AA9KHa8OhwfykxelcCN6RJi54RkY1y?=
+ =?us-ascii?Q?gjr5QKSOtkiMnz9LmTeAbp5qcl1QUYyn/8YqIxZTTgoKPBnVSoXvR4JlIRCS?=
+ =?us-ascii?Q?YoFcV9hgH4NHuan6EwUtrq1OEshjvv4mTbEMCeNYXvyrLL5ORnyKWZFEXJ+P?=
+ =?us-ascii?Q?KPKpVDctkBgO7OZd/QH+65stNtEgZU+AFh+5bEvCa0RCsVyDKob0Nq63VOWJ?=
+ =?us-ascii?Q?ERBuryux75dQ7gHX6ta06XXZXXQ1tmDLHNxUTCv1WMCwnZ5h1HOjNPsg/dqX?=
+ =?us-ascii?Q?P1aDUIUGiLfzV/kzicooa1m1Dhb9lirK4AeqjJo01qyF/rPh5Fku3+ttvCQS?=
+ =?us-ascii?Q?7eE+zEjqIIsc3YmLkfTIb0zmXWzJAdA3XZPEbRRjQSc7IyCipbrIRdrlZJh9?=
+ =?us-ascii?Q?dotp/EqQka+b78QwETJl1Cx7/BZihrwHv5k94blKWgtf4DnDt6liuTilWlLp?=
+ =?us-ascii?Q?l/nuK9/FUVjZhKap04jdLysPuDlG0ty3+TrDcbBs1VpGyFCAtyBKCDnYU5H0?=
+ =?us-ascii?Q?TWyOe4PDfjbXheA2EaS9f3Q0n/SDjCQd//KqinvZj+4p1HFA26IlD3Fb5xer?=
+ =?us-ascii?Q?geoqCu52T/ZK7TKAK9QI6i3iHvsvaZmm8TgpfwsKz3gQ59XkX9uPIOCgm1V7?=
+ =?us-ascii?Q?/gBadNplb4bwtpF4noJWF3FOOPvuv8Mj4cUcwShP5fdfUkKRAn4+GzSYXU+h?=
+ =?us-ascii?Q?T+nWJZhEnV9nh4jc4fXSQaQx33/KiWgJnLA6TGjUleEsSuxUqxi8KrQGVioe?=
+ =?us-ascii?Q?GaXpR6dS9xM0/+7KasZhZoZZas3meNwPF8H/Yk500h4QMpXlhmtkGQ5/NhdM?=
+ =?us-ascii?Q?i5nBQNCVN5TjLRzRU49j1pvGdOYJ++O63CfoaBynS7WtGS7hMSQkNY70Zn+6?=
+ =?us-ascii?Q?9AE3nn6XyexBSZs7ehBUGIreJd1zew/IZqNp19K75o7RBZtr//RaV3aSU0+C?=
+ =?us-ascii?Q?BRQ6Ib586dqpse99ZH+I7j95uAR6NfvPOsQILXH/O7aOVVQ9c34eEXMLWoku?=
+ =?us-ascii?Q?eDRbJb2ZpHCs8N0cC5+4t1/c+3PzeNGyAv9gtbZ5w1q0kbvuItIEMy0+jYGW?=
+ =?us-ascii?Q?hl9d+DLAeicdQ6yfgpnMs+hn5SkG0IaxVfGBe08WReKsdkw98pdxYxhnB4NS?=
+ =?us-ascii?Q?3nMAutNW3GKM3kcqU67n3724X3sbT5qRjCLfiwqN?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c58df7e-c9ad-45ad-3d5d-08db66295513
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2023 00:59:51.0893
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: p3sQdkeo24Oy+n4frliaebepcSwlvbNcMZ+v/6J0ZdNYeIOQd4IQZtj9bYgapXTD
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB7765
 
-On Mon, 5 Jun 2023 at 19:30, Rohit Agarwal <quic_rohiagar@quicinc.com> wrote:
->
-> From: Imran Shaik <quic_imrashai@quicinc.com>
->
-> Add support for GCC and RPMHCC clock nodes for SDX75 platform.
->
-> Signed-off-by: Imran Shaik <quic_imrashai@quicinc.com>
-> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
-> ---
->  arch/arm64/boot/dts/qcom/sdx75.dtsi | 37 ++++++++++++++++++++++++++++++++++++-
->  1 file changed, 36 insertions(+), 1 deletion(-)
->
-> diff --git a/arch/arm64/boot/dts/qcom/sdx75.dtsi b/arch/arm64/boot/dts/qcom/sdx75.dtsi
-> index 3d1646b..f83eef8 100644
-> --- a/arch/arm64/boot/dts/qcom/sdx75.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sdx75.dtsi
-> @@ -7,6 +7,7 @@
->   */
->
->  #include <dt-bindings/clock/qcom,rpmh.h>
-> +#include <dt-bindings/clock/qcom,sdx75-gcc.h>
->  #include <dt-bindings/interrupt-controller/arm-gic.h>
->  #include <dt-bindings/soc/qcom,rpmh-rsc.h>
->
-> @@ -22,7 +23,21 @@
->                 reg = <0 0x80000000 0 0>;
->         };
->
-> -       clocks { };
-> +       clocks {
-> +               xo_board: xo_board {
+No reason to open code this, use the proper helper functions.
 
-No underscores in node names
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/iommu/iommu.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-> +                       compatible = "fixed-clock";
-> +                       clock-frequency = <76800000>;
-> +                       clock-output-names = "xo_board";
-
-Why do you need this?
-
-> +                       #clock-cells = <0>;
-> +               };
-> +
-> +               sleep_clk: sleep_clk {
-
-No underscores in node names
-
-> +                       compatible = "fixed-clock";
-> +                       clock-frequency = <32000>;
-> +                       clock-output-names = "sleep_clk";
-
-Why do you need this?
-
-> +                       #clock-cells = <0>;
-> +               };
-> +       };
->
->         cpus {
->                 #address-cells = <2>;
-> @@ -358,6 +373,18 @@
->                 ranges = <0 0 0 0 0x10 0>;
->                 dma-ranges = <0 0 0 0 0x10 0>;
->
-> +               gcc: clock-controller@80000 {
-> +                       compatible = "qcom,sdx75-gcc";
-> +                       reg = <0x0 0x0080000 0x0 0x1f7400>;
-> +                       clocks = <&rpmhcc RPMH_CXO_CLK>,
-> +                                <&sleep_clk>;
-> +                       clock-names = "bi_tcxo",
-> +                                     "sleep_clk";
-
-As this is a new platform, it should not be using clock-names to bind
-gcc clocks. Please use clock indices instead.
-
-> +                       #clock-cells = <1>;
-> +                       #reset-cells = <1>;
-> +                       #power-domain-cells = <1>;
-> +               };
-> +
->                 tcsr_mutex: hwlock@1f40000 {
->                         compatible = "qcom,tcsr-mutex";
->                         reg = <0x0 0x01f40000 0x0 0x40000>;
-> @@ -520,6 +547,14 @@
->                         apps_bcm_voter: bcm_voter {
->                                 compatible = "qcom,bcm-voter";
->                         };
-> +
-> +                       rpmhcc: clock-controller {
-> +                               compatible = "qcom,sdx75-rpmh-clk";
-> +                               clocks = <&xo_board>;
-
-> +                               clock-names = "xo";
-> +                               #clock-cells = <1>;
-> +                       };
-> +
->                 };
->         };
->
-> --
-> 2.7.4
->
-
-
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 8e77e12a180116..aa162b48c7dc64 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -500,7 +500,7 @@ static void __iommu_group_release_device(struct iommu_group *group,
+ 	kfree(grp_dev->name);
+ 	kfree(grp_dev);
+ 	dev->iommu_group = NULL;
+-	kobject_put(group->devices_kobj);
++	iommu_group_put(group);
+ }
+ 
+ static void iommu_release_device(struct device *dev)
+@@ -1067,8 +1067,7 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+ 		goto err_free_name;
+ 	}
+ 
+-	kobject_get(group->devices_kobj);
+-
++	iommu_group_ref_get(group);
+ 	dev->iommu_group = group;
+ 
+ 	mutex_lock(&group->mutex);
 -- 
-With best wishes
-Dmitry
+2.40.1
+
