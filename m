@@ -1,84 +1,102 @@
-Received: from frasgout12.his.huawei.com (unknown [14.137.139.154])
+Received: from mta21.hihonor.com (mta21.hihonor.com [81.70.160.142])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A690037B6F
-	for <iommu@lists.linux.dev>; Tue,  6 Jun 2023 13:02:33 +0000 (UTC)
-Received: from mail02.huawei.com (unknown [172.18.147.229])
-	by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4Qb90g5911z9xFmn
-	for <iommu@lists.linux.dev>; Tue,  6 Jun 2023 20:34:59 +0800 (CST)
-Received: from A2101119013HW2.china.huawei.com (unknown [10.45.145.135])
-	by APP1 (Coremail) with SMTP id LxC2BwDHLemsKn9kjDEWAw--.4009S2;
-	Tue, 06 Jun 2023 13:46:44 +0100 (CET)
-From: Petr Tesarik <petrtesarik@huaweicloud.com>
-To: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
-	linux-kernel@vger.kernel.org (open list)
-Cc: Roberto Sassu <roberto.sassu@huawei.com>,
-	Kefeng Wang <wangkefeng.wang@huawei.com>,
-	petr@tesarici.cz
-Subject: [PATCH v1 1/1] swiotlb: remove unused field "used" from struct io_tlb_mem
-Date: Tue,  6 Jun 2023 14:46:25 +0200
-Message-Id: <20230606124625.175-1-petrtesarik@huaweicloud.com>
-X-Mailer: git-send-email 2.25.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EE5A37B6F
+	for <iommu@lists.linux.dev>; Tue,  6 Jun 2023 13:03:56 +0000 (UTC)
+Received: from w013.hihonor.com (unknown [10.68.26.19])
+	by mta21.hihonor.com (SkyGuard) with ESMTPS id 4Qb9HC5cTVzZFR27;
+	Tue,  6 Jun 2023 20:47:35 +0800 (CST)
+Received: from a005.hihonor.com (10.68.18.24) by w013.hihonor.com
+ (10.68.26.19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.21; Tue, 6 Jun
+ 2023 20:47:37 +0800
+Received: from a007.hihonor.com (10.68.22.31) by a005.hihonor.com
+ (10.68.18.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.21; Tue, 6 Jun
+ 2023 20:47:37 +0800
+Received: from a007.hihonor.com ([fe80::fc39:c25:3c0f:a4e7]) by
+ a007.hihonor.com ([fe80::fc39:c25:3c0f:a4e7%10]) with mapi id 15.02.1118.021;
+ Tue, 6 Jun 2023 20:47:37 +0800
+From: gaoxu <gaoxu2@hihonor.com>
+To: Christoph Hellwig <hch@lst.de>, Marek Szyprowski
+	<m.szyprowski@samsung.com>
+CC: Robin Murphy <robin.murphy@arm.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, Suren Baghdasaryan <surenb@google.com>,
+	yipengxiang <yipengxiang@hihonor.com>, "wangbintian(BintianWang)"
+	<bintian.wang@hihonor.com>
+Subject: [RESEND  PATCH] dma-remap: Use kvmalloc_array/kvfree for larger dma
+ memory remap
+Thread-Topic: [RESEND  PATCH] dma-remap: Use kvmalloc_array/kvfree for larger
+ dma memory remap
+Thread-Index: AdmYdFzrTjKG3Wk/TNCzbQyr42cDew==
+Content-Class:
+Date: Tue, 6 Jun 2023 12:47:37 +0000
+Message-ID: <4cae21d9a89a4c4da47fb3ef6465b676@hihonor.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-originating-ip: [10.164.11.140]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:LxC2BwDHLemsKn9kjDEWAw--.4009S2
-X-Coremail-Antispam: 1UD129KBjvdXoWruw1DWF1rZrW8GFy5Ar48Crg_yoWktrc_Za
-	1xtr4Uu3yrJr4xXw1xtF4ayF4Sgw18KF13uF93JrZrJ3WUZFZ5u3Z2gF9FvrZxGFs3CrZx
-	XFnxWr97CF1UKjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-	9fnUUIcSsGvfJTRUUUb7kYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E6xAIw20E
-	Y4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwV
-	A0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWUJVWUCwA2z4x0Y4vE2Ix0cI8IcVCY1x02
-	67AKxVWUJVW8JwA2z4x0Y4vEx4A2jsIE14v26r4j6F4UM28EF7xvwVC2z280aVCY1x0267
-	AKxVW8Jr0_Cr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40E
-	x7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x
-	0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lc7CjxVAKzI0EY4vE52x082I5MxAIw28IcxkI
-	7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxV
-	Cjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY
-	6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6x
-	AIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv
-	6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxU2K9aDUUUU
-X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
-X-CFilter-Loop: Reflected
 
-From: Petr Tesarik <petr.tesarik.ext@huawei.com>
+If dma_direct_alloc() alloc memory in size of 64MB, the inner function
+dma_common_contiguous_remap() will allocate 128KB memory by invoking=20
+the function kmalloc_array(). and the kmalloc_array seems to fail to try to
+allocate 128KB mem.=20
 
-Commit 20347fca71a3 ("swiotlb: split up the global swiotlb lock") moved
-the number of used slots to struct io_tlb_area, but it did not remove
-the field from struct io_tlb_mem.
+Call trace:
+[14977.928623] qcrosvm: page allocation failure: order:5, mode:0x40cc0
+[14977.928638] dump_backtrace.cfi_jt+0x0/0x8
+[14977.928647] dump_stack_lvl+0x80/0xb8
+[14977.928652] warn_alloc+0x164/0x200
+[14977.928657] __alloc_pages_slowpath+0x9f0/0xb4c
+[14977.928660] __alloc_pages+0x21c/0x39c
+[14977.928662] kmalloc_order+0x48/0x108
+[14977.928666] kmalloc_order_trace+0x34/0x154
+[14977.928668] __kmalloc+0x548/0x7e4
+[14977.928673] dma_direct_alloc+0x11c/0x4f8
+[14977.928678] dma_alloc_attrs+0xf4/0x138
+[14977.928680] gh_vm_ioctl_set_fw_name+0x3c4/0x610 [gunyah]
+[14977.928698] gh_vm_ioctl+0x90/0x14c [gunyah]
+[14977.928705] __arm64_sys_ioctl+0x184/0x210
 
-Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
+work around by doing kvmalloc_array instead.
+
+Signed-off-by: Gao Xu <gaoxu2@hihonor.com>
+Reviewed-by: Suren Baghdasaryan <surenb@google.com>
 ---
- include/linux/swiotlb.h | 2 --
- 1 file changed, 2 deletions(-)
+ kernel/dma/remap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 7af2673b47ba..4e52cd5e0bdc 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -76,7 +76,6 @@ dma_addr_t swiotlb_map(struct device *dev, phys_addr_t phys,
-  * @nslabs:	The number of IO TLB blocks (in groups of 64) between @start and
-  *		@end. For default swiotlb, this is command line adjustable via
-  *		setup_io_tlb_npages.
-- * @used:	The number of used IO TLB block.
-  * @list:	The free list describing the number of free entries available
-  *		from each index.
-  * @orig_addr:	The original address corresponding to a mapped entry.
-@@ -98,7 +97,6 @@ struct io_tlb_mem {
- 	phys_addr_t end;
+diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c index b45266680..27596=
+f3b4 100644
+--- a/kernel/dma/remap.c
++++ b/kernel/dma/remap.c
+@@ -43,13 +43,13 @@ void *dma_common_contiguous_remap(struct page *page, si=
+ze_t size,
  	void *vaddr;
- 	unsigned long nslabs;
--	unsigned long used;
- 	struct dentry *debugfs;
- 	bool late_alloc;
- 	bool force_bounce;
--- 
-2.25.1
+ 	int i;
+=20
+-	pages =3D kmalloc_array(count, sizeof(struct page *), GFP_KERNEL);
++	pages =3D kvmalloc_array(count, sizeof(struct page *), GFP_KERNEL);
+ 	if (!pages)
+ 		return NULL;
+ 	for (i =3D 0; i < count; i++)
+ 		pages[i] =3D nth_page(page, i);
+ 	vaddr =3D vmap(pages, count, VM_DMA_COHERENT, prot);
+-	kfree(pages);
++	kvfree(pages);
+=20
+ 	return vaddr;
+ }
+--
+2.17.1
 
