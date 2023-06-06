@@ -1,90 +1,66 @@
-Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC4AF360
-	for <iommu@lists.linux.dev>; Tue,  6 Jun 2023 05:09:43 +0000 (UTC)
-Received: by mail-oi1-f179.google.com with SMTP id 5614622812f47-39a3f26688bso4788187b6e.2
-        for <iommu@lists.linux.dev>; Mon, 05 Jun 2023 22:09:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1686028182; x=1688620182;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=4QAmYzkZJYwnJJFYZpQxGTcgFYpbZNs+6+zl7l0n4pU=;
-        b=JXFSn6VNhygL1OAk3/ZP0liCG/XEnZWOsOFIzpkLeJid5YgJ/0UBH95KhvW+OQJiqq
-         PTV80ggbnXi52CYWyai3ElIfou8S0cLneNhd5a3rr6PDGCiiazrcLIHJv5RFHIYhAo6G
-         cZI3JHXDJQeBard1omGS9y9hMPr/+9dEVFIRQoKbceJX0wgX9zG+1SUN+fZbbwav5qAP
-         Q8OZECiThm0WQSXeakApMmZc3Ng5oZjZtcnlnG+IOXXJ5au58Srui8K10ENsmcSB10TZ
-         p8MBS90sii5U1HIE+InCJZXRMXlMF3ivep5n1kNza2kek2/mTC9h/Yct/pTEipCuTZZr
-         7HlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686028182; x=1688620182;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4QAmYzkZJYwnJJFYZpQxGTcgFYpbZNs+6+zl7l0n4pU=;
-        b=WKrryDEZ6BJzi4hswsfthyM91KU7jKIsa9W9VEXA37Ee0/2+zSiNy19NoiiMiPhw4s
-         CAQF5S3h0dhRCFnFp6U1ODtF84qQH3EZZy5s63bnRiOGZ6Y7jc16Pwh35dAqB6RDUBDi
-         nGBjfSB6yse6KRx0EUW1kKEbd7XXlk+O5NqrSaShl1Jb1wRrkiKRQ2Gv8yAcNfUPfDQg
-         kPxSoFyeROpnGFoqzD225wlJauaHfoXysOk38OcF7+mvtTpNzJ5dpDhyN3q2ilcN8oV8
-         VTOIhIWRgzjMnKNqm4WKl3q3750NEzcLpWuugfq690krwT9OIq4U7onmcMeGIj58f7Zu
-         w/fA==
-X-Gm-Message-State: AC+VfDwsNArUzHBxeVbTavuoteKbef0v3trVpFnyn6l0LjL8bTrH9pRZ
-	ZS5Ic9yeBCNzXISgaEPbO8/PTg==
-X-Google-Smtp-Source: ACHHUZ4LPB7P+/U4Q9XmCW1NRg+AD+DxaS2uUaaghhhEJeB0XPHf03Y/D3Km/OUJ1v+WJgOlH0YoFw==
-X-Received: by 2002:a54:401a:0:b0:398:a09:3d5 with SMTP id x26-20020a54401a000000b003980a0903d5mr977168oie.41.1686028182536;
-        Mon, 05 Jun 2023 22:09:42 -0700 (PDT)
-Received: from localhost ([122.172.87.195])
-        by smtp.gmail.com with ESMTPSA id f3-20020a170902ce8300b001aaf2e7b06csm7444051plg.132.2023.06.05.22.09.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Jun 2023 22:09:42 -0700 (PDT)
-Date: Tue, 6 Jun 2023 10:39:39 +0530
-From: Viresh Kumar <viresh.kumar@linaro.org>
-To: Rohit Agarwal <quic_rohiagar@quicinc.com>
-Cc: agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
-	robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-	conor+dt@kernel.org, rafael@kernel.org, tglx@linutronix.de,
-	maz@kernel.org, will@kernel.org, robin.murphy@arm.com,
-	joro@8bytes.org, mani@kernel.org, robimarko@gmail.com,
-	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
-Subject: Re: [PATCH v2 05/10] dt-bindings: cpufreq: cpufreq-qcom-hw: Add
- SDX75 compatible
-Message-ID: <20230606050939.jzpiuupwhirpyooq@vireshk-i7>
-References: <1685982557-28326-1-git-send-email-quic_rohiagar@quicinc.com>
- <1685982557-28326-6-git-send-email-quic_rohiagar@quicinc.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 947BF360;
+	Tue,  6 Jun 2023 05:33:36 +0000 (UTC)
+Received: from [IPV6:2a0c:5a83:9203:ad00:6f2e:82dd:9a04:a2e5] (unknown [IPv6:2a0c:5a83:9203:ad00:6f2e:82dd:9a04:a2e5])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: rcn)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id 964B666003B1;
+	Tue,  6 Jun 2023 06:33:33 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1686029614;
+	bh=jW2QzKdWyriO8SRFnigos0KPZxwCwcXsEMTvj9Md6oI=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=ZRbuJWBWca2FwsExoZmlnThqAcRp/hU91IPhB2QDUuHdsyh7E6zMjKG82D19xYuKh
+	 pH3zfzJEJFawm6vvVh5NOf/oC0NFFdHgpyOTeeXjt/u4+uhzxhnYNkAdhm7r4bC0gW
+	 HC2dAgEdbcETm3LJqwrAiaAIcys4TKkhBc78dky9RtemIzANITTVeC6NaXHCmVmoev
+	 HoOehKq6SwJJUxTCXMCREatoNJaYh3NrxAhV+eqgKACRE3Qq9j734RUB9bfFrk94fJ
+	 diHB5L5+mDgyUKzC/vYkNZxExG5t6NqFTKdHxf67wcc2IXgrVdBPXIl/k4lRLXShyo
+	 YHzEQeQ5qh0Hg==
+Message-ID: <6561c295-f98b-8930-9368-1a225acdca16@collabora.com>
+Date: Tue, 6 Jun 2023 07:33:30 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1685982557-28326-6-git-send-email-quic_rohiagar@quicinc.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH v5 10/17] iommu: Do iommu_group_create_direct_mappings()
+ before attach
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Yong Wu <yong.wu@mediatek.com>, linux-mediatek@lists.infradead.org
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
+ Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
+ Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>, Heiko Stuebner <heiko@sntech.de>,
+ Kevin Tian <kevin.tian@intel.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ Niklas Schnelle <schnelle@linux.ibm.com>
+References: <0-v5-1b99ae392328+44574-iommu_err_unwind_jgg@nvidia.com>
+ <10-v5-1b99ae392328+44574-iommu_err_unwind_jgg@nvidia.com>
+ <20230605070959.moupivvi7wr4nibu@rcn-XPS-13-9305>
+ <ZH3nXbVFR6JfUKpV@nvidia.com> <01dee34c-5663-22f4-0d88-90f87b1fe879@arm.com>
+From: =?UTF-8?Q?Ricardo_Ca=c3=b1uelo?= <ricardo.canuelo@collabora.com>
+In-Reply-To: <01dee34c-5663-22f4-0d88-90f87b1fe879@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On 05-06-23, 21:59, Rohit Agarwal wrote:
-> Add compatible for EPSS CPUFREQ-HW on SDX75.
-> 
-> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
-> ---
->  Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml b/Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml
-> index a6b3bb8..866ed2d 100644
-> --- a/Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml
-> +++ b/Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml
-> @@ -36,6 +36,7 @@ properties:
->                - qcom,sa8775p-cpufreq-epss
->                - qcom,sc7280-cpufreq-epss
->                - qcom,sc8280xp-cpufreq-epss
-> +              - qcom,sdx75-cpufreq-epss
->                - qcom,sm6375-cpufreq-epss
->                - qcom,sm8250-cpufreq-epss
->                - qcom,sm8350-cpufreq-epss
+Hi all,
 
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+On 5/6/23 16:00, Robin Murphy wrote:
+> The log says it's next-20230530 - the fix you're seeing there from commit b3fc95709c54 landed 2 days later :)
 
--- 
-viresh
+Thanks for checking that out Robin, KernelCI still hasn't run
+that build but I tested it manually and the issue is not there
+anymore.
+
+#regzbot fix: b3fc95709c54
+
+Cheers,
+Ricardo
