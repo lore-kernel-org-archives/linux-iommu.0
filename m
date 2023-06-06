@@ -1,137 +1,79 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2058.outbound.protection.outlook.com [40.107.93.58])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9232737B71
-	for <iommu@lists.linux.dev>; Tue,  6 Jun 2023 14:08:49 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PSn6vWR6Rc2SBe6zcjKOUTYUpWjOrxayhkYb9cYj8/KqYXHEyLyr5jodc/R+t4bRnK6QwTucCqgWtuuxbcUlPfdIKTTmNkNt9GdgslMyEdIPMIgg6yzC4BiUAJakL2OjGhyNQ9it3b0yYqooMwdS7kLsDNYQMq1u5JhlHiiBEIIL0EkXwwvj4u1A5KJDXRtFrgzGWXDWs5fIc7qhZMfZqtYdcMIzKuHEx3ieObYysc9BD9WlfIaa1kQ4wujpX9Nb0JmE/d0vp+zbqAhRhTjO9ieMEnxwBw5NFxHBqKXUIK0oUt129c8aXR0g1OpXnCcZdTqEYVJ3EvuFlbOAFU3T5w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=avFlAWeSP6eqgQGjd9uhV0P0U5lGZ4EXqx+DzJ41PDc=;
- b=EKT0F+YFjtyU3dSPZwk4OHIzW2Ry59L8/HbbK+r1R2zFQlFXcGsTghEvCAnduQfOORYQ6k0lXwsa1A1gxizFzJpYKQVlexX97o7AlCK3hlOXqp//hzdn1JhPy+HSZ/gfGveC1IPnhvJKCwpGHNrTTEMCeUeS4Jx0P8ZQ+AHIkFoNkxXVnudRToih+wtaXnW6R0HHX/drRxNIVYVKwDS0i3auoPAiJmWPMuZsIwmE/DLWvY7mNQUIH4lCD92pLe4E6bt/nXNPiszFn05OhC18htNHchV+oTk3eTFK0Zw1GjH+CVtOaYarTsKBNT2PggF5eDHB562O/0TtXLJoZsvAZg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=avFlAWeSP6eqgQGjd9uhV0P0U5lGZ4EXqx+DzJ41PDc=;
- b=PyOFzCl+wLLGIXeOdvag1oppokY0NUeMCbqIrUHvv//kDFnq7e5TRhKx3Rgif8bZIETq+RD2fx1aDFIiVcpmepprt3eABYKnokNBQa1nW62ZI0PGYUfTpzMYmy8+aIT8ZGDYUNEx+3QLoy/4zj5rpPH/FHoOg/iEBki5/pHQzzDcgRNKHLK85sJ4sv2i2Ec/0imvoBa/TSGfLFmNoMvXqUpJ5gEJD0dj7xutuNTbiPMCcCFf61xYbR7DOHbz/KRo+8E0aKNEYovvdqmtdIQeR+KLM8mduIjLBlNNxm22555Z9/vBk/n6rudC40I5d68cOkR+46gBM+UL7FEQjLhMFQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DM4PR12MB6424.namprd12.prod.outlook.com (2603:10b6:8:be::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.32; Tue, 6 Jun
- 2023 14:08:47 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6455.028; Tue, 6 Jun 2023
- 14:08:46 +0000
-Date: Tue, 6 Jun 2023 11:08:44 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"cohuck@redhat.com" <cohuck@redhat.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
-	"peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com" <shameerali.kolothum.thodi@huawei.com>,
-	"lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	"Duan, Zhenzhong" <zhenzhong.duan@intel.com>
-Subject: Re: [PATCH v2 01/11] iommu: Add new iommu op to create domains owned
- by userspace
-Message-ID: <ZH897AGywGVbt51Z@nvidia.com>
-References: <20230511143844.22693-1-yi.l.liu@intel.com>
- <20230511143844.22693-2-yi.l.liu@intel.com>
- <BL1PR11MB5271B553140BB729AF4389AB8C7C9@BL1PR11MB5271.namprd11.prod.outlook.com>
- <ZGfDrRDI50oGih2r@Asurada-Nvidia>
- <BN9PR11MB52766A760580E6FBB995A33F8C419@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZG2fVj41GgosR1dk@Asurada-Nvidia>
- <BN9PR11MB5276F1410A11ED631CE6824F8C419@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZG681VohNlw2vvLD@Asurada-Nvidia>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZG681VohNlw2vvLD@Asurada-Nvidia>
-X-ClientProxiedBy: YT3PR01CA0067.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:84::26) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9901737B71
+	for <iommu@lists.linux.dev>; Tue,  6 Jun 2023 14:16:42 +0000 (UTC)
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-3f6da07ff00so62738905e9.3
+        for <iommu@lists.linux.dev>; Tue, 06 Jun 2023 07:16:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20221208.gappssmtp.com; s=20221208; t=1686061001; x=1688653001;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=jAJKlhfbMyQplK7V4LBuMFmDWCWyf09orv4Khsn/h98=;
+        b=ADRP1bQCKU0JZgIwyThrHejXZNS6SNtFkb6zSc3+4bezjfXOJL3O1QvSWzx0VvpR8C
+         2vq87FZ5pL5J2j4gFKw0Nwzn6WP2VJwm2pji9kwz8kD9umkqWuR8ESx5xE8BvO3f9nQA
+         rEArD1O/c16OLFBalQbBhIMTaqGfXHsGVLWTkNwqxa/OJ3FGO281KY65uA5CUAJ9TX2C
+         fQtrjAMHE+Ogw71XfCqYa3gJZjSpf698KrNAaHYPPYv8Nm1fzkxSi7OAJDBMRqYW7VDW
+         4zwGz4OgW+D3M6Zk+StsGM5Nb4Vk6V0Bi+JxKP6ZDCQXP8d4YXin8NoyPTBBI8kxzyWo
+         eADA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686061001; x=1688653001;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=jAJKlhfbMyQplK7V4LBuMFmDWCWyf09orv4Khsn/h98=;
+        b=AYJUNSxY9qHXwZ5PoU44gMn5wk1mHYcxM2e3+j5YLAh3kasJeKMPm97yuCIbFPEUgK
+         IQKbXIUaE1jPWAvDoNzQJxv9TMMD7veZFQDA6+EcS1D1sEtRveWuuUxSfKbBrm8wNxjF
+         fuA9dG3k6ZbEqhU7c63qZ+KnfneTtxq05DBAdBDlTq+LBAHH38lug2FsmFSUsJvXBVKp
+         9AhiSzpZmoYP4tuYefbHcPdmKxKxoWKcI+ZnD1FzvYKNn0pcubpr4JcamVVulgQ+O+Qg
+         hNg9fhvihPXtP/vrZlgMNCj3H9+liHmRgs3Jf3mumGh9AJogGAYN74tLN3LvUhJ3po+n
+         MIcQ==
+X-Gm-Message-State: AC+VfDz482cgS8enZCijKH2+CntDq3uK02FF06hYIlCqdy7ZgCeKj+jI
+	ktD7CZGtJzj+IOaIyLkJIiJegA==
+X-Google-Smtp-Source: ACHHUZ4B+HMXMA37SveRg95J8RPbhX92Kzuddi7nlYWzpXsyavm7U7yYxf7JFrAAtLM2rTtQfbDpPg==
+X-Received: by 2002:a05:600c:b49:b0:3f7:8fd5:567 with SMTP id k9-20020a05600c0b4900b003f78fd50567mr2601919wmr.2.1686061000705;
+        Tue, 06 Jun 2023 07:16:40 -0700 (PDT)
+Received: from [192.168.1.172] (158.22.5.93.rev.sfr.net. [93.5.22.158])
+        by smtp.gmail.com with ESMTPSA id y24-20020a7bcd98000000b003f42314832fsm14077795wmj.18.2023.06.06.07.16.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 06 Jun 2023 07:16:40 -0700 (PDT)
+Message-ID: <e925728b-ae6b-6347-20f9-2510f046d598@baylibre.com>
+Date: Tue, 6 Jun 2023 16:16:38 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB6424:EE_
-X-MS-Office365-Filtering-Correlation-Id: 57346cde-b778-402d-24d9-08db66978b52
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	iKYHDArzlwULlu58riQb892LUOinv9cPvdVw3lxqab7O8JBr6P8KOve4DIRDFsJ/oCpZLhlIZwKVd+t6qDOnP1qUTKeTat59Z3Csnj7TehxEQXeR3EFbmUNXAbsBJdQwP8UP5gu9toP8SurOtxF4AdsI0qCBD2JeNcmcDho/KKpffJ+JRnEGPed8n0bW1B06hu4zi7auvN6YK2huoCAaG2xqEiZ+yHjDCFMTt1Xu6A59kqkLnPt5WCQDsMm8G8IiZUIbvrGJb9WJwLEnzHs66ZH7nhqu9qwJ+kbevQwBGmi7RQl55Lyw9nK4kx0E5c2Bx86B00TRICt6Wh+weyGUFwoawucotsd/0pGZN6CV9IvJS03zeuviB7qlQUQLFYvI1FZciqOrCXojjB0n/j6u9qmC4/FoEuR2iQU8gnMDhJZOCgjTgxkyow97IZ/fUiVXAMqo6NlZAjOPicl3lWWc5iCVmzftgTrHzO7YmupKVazeBEMgE50UqPmrzR9mRFKsb2foO2hTmZ4DASsCFZ2k7YX9xfN6u1mk7L1aGvvIgOGKZec+1x+EcTuJxZeSyX4Y
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(39860400002)(396003)(136003)(346002)(366004)(451199021)(2906002)(2616005)(558084003)(86362001)(36756003)(38100700002)(6486002)(41300700001)(5660300002)(316002)(8936002)(8676002)(6862004)(54906003)(37006003)(478600001)(66556008)(66946007)(66476007)(4326008)(6512007)(66899021)(6506007)(6636002)(26005)(186003)(7416002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?AUfZ3Th7SWRjvV3p6QH0JVZNj8B1b6ybdcDtqGuxYecnkw4kiluTrNOcJTlh?=
- =?us-ascii?Q?n0VY3LK+K5NnXzC4qdeXop9pQcE0ciriBW2RHtXNacW7Kf7WQfK9E51rJcgr?=
- =?us-ascii?Q?MleLkyw8cwpde6NMHOZx/15QaM2qDdpOiWRiBsdSFUnPOAyll3gRKASFoiM5?=
- =?us-ascii?Q?iztRWfYB1SgsdjOdzlOdW+MKPDhdRciM0VEoHqYso1P2aWK2DbS0wT1yC0NY?=
- =?us-ascii?Q?LUkWXJFtg98ZU1ZK9nVlMRwwIvVZmbbv4tRf1Y/vG4gXZHLxmia8bC+nxxWV?=
- =?us-ascii?Q?XFfMMMtkZLvC2Q2a1AcypGdprOnytgqDuX7d0YalH/jn67flRTC5/31VKIFq?=
- =?us-ascii?Q?QkZ0PaiyVWAZ+g7qPRq1VKD+Y57YTanwJuSUDxV3dtx7pk+bsSvRbY/nur61?=
- =?us-ascii?Q?8BtCm0XxLhxgZfCVmaHYr13FWVvIxFP34dBBK1hhpDXx0tinkZbc4ODaxqww?=
- =?us-ascii?Q?ddayUw7eWEWh2jL78M21mk+A6cIaEYiNS8plYfnyywGdjasvJCEpH5cKeohD?=
- =?us-ascii?Q?L/F6uicudo1v20W5JK2D0yBBdXzUZVZI77NByjBFc1YzWwQSy1JY06VRio95?=
- =?us-ascii?Q?+JqInwyZJL2xbkPCIm8Im1syxFpl56qn09MQTsse5EzAWrNkT1haJtrQINER?=
- =?us-ascii?Q?YuzBI20q6pfuMOeU+k8HNQ7SN0b4a1t6E9bRIfgCK/Pxm2VipjRYqJTEMftN?=
- =?us-ascii?Q?Q1w8nUMjjV/A98EzA0vDzj5YL+Gx9zsLQDdYIdLTFwjnY2kb6xtp/WYvSqBN?=
- =?us-ascii?Q?Abj3VR3XyRxGzlekUrAgqvp+zE+6pI6zZc2L0xV6pkaoSyPRkcyKWBj+OX9c?=
- =?us-ascii?Q?2ZXl50myQZGMiDAfC6BqAzk/+FmxDQ6ddfcouKjBzwaOKQRK6wBlvXPZ987I?=
- =?us-ascii?Q?MlgSosNph/RlRM4DYAAE5XxUUcJC4onWsB7TyT3j6fpsRcaoVajD+abr/Ecq?=
- =?us-ascii?Q?W0YuLcxRoEGxM9sooR7hPLGF03zyhYEc6kWddiMUxQ3UmnBpdr3oAHBNVYio?=
- =?us-ascii?Q?KtlpJjKMwzACjoeSWivynYZz43hN+9/5bWqeEyyDR/C2FwMIjz6WBG5qdpkT?=
- =?us-ascii?Q?kyH/aBDau9zIqShUv7EP1ZidNIEju/t4bhBc8QfXUIQItXP312PKTU6eNz1x?=
- =?us-ascii?Q?pKZngFSxr0wzIOdOmT6eYByKCmqMfZx3469vJWIMtbvk//TB3EaGNTh3z9aK?=
- =?us-ascii?Q?a0b1UAOBhCiTsvE1XNlxcwFTj3WcXguDswU47iffKYU0Y7NeT2cypfqhdzk9?=
- =?us-ascii?Q?5yVYkWTmUPDnizguxZ1HlQJhC/MwAHzGsII6NpFc7Euo/HvpdZYOGnbMismD?=
- =?us-ascii?Q?Ho9yIPrc9LKxDoCUrkpKpVPSSTKFGGCDmhFE4GqZzfB4ckOBg9TyB3LxjuRZ?=
- =?us-ascii?Q?Q3EnciuE9Kub8LwvjQiKKYfOV47Lcw0Lxqb8a2i5+S5mocmx/WIqb0pRzynq?=
- =?us-ascii?Q?cu2OjZ5q8OM9xC9uJpI7MtWFOy05XS625f+KYDsMwg2IDoX1wpBzp4fDd8lC?=
- =?us-ascii?Q?WRR2I1mE/DYCy5emx7YRrGUzr+qX+y3GfYLIo1xoti2NtyG8MOYwdkS2gWha?=
- =?us-ascii?Q?7PBQq2H5DHEetAGzxzrgiJgo3TVvJfrvKezfKhwa?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 57346cde-b778-402d-24d9-08db66978b52
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2023 14:08:46.8969
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zSZt8AllVIUHrg1ULRIPSwpzJQqKOpSAXS84QG8rGKv0nYH/hq39OWSs+6ZUzsRg
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6424
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH v12 5/7] iommu/mediatek: Add MT8188 IOMMU Support
+Content-Language: en-US
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, mingyuan.ma@mediatek.com,
+ yf.wang@mediatek.com, jianjiao.zeng@mediatek.com, chengci.xu@mediatek.com
+References: <20230602090227.7264-1-yong.wu@mediatek.com>
+ <20230602090227.7264-6-yong.wu@mediatek.com>
+From: Alexandre Mergnat <amergnat@baylibre.com>
+In-Reply-To: <20230602090227.7264-6-yong.wu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, May 24, 2023 at 06:41:41PM -0700, Nicolin Chen wrote:
+On 02/06/2023 11:02, Yong Wu wrote:
+> MT8188 has 3 IOMMU, containing 2 MM IOMMUs, one is for vdo, the other
+> is for vpp. and 1 INFRA IOMMU.
 
-> Upon a quick check, I think we could. Though it'd be slightly
-> mismatched with the domain_alloc op, it should be fine since
-> iommufd is likely to be the only caller.
+Reviewed-by: Alexandre Mergnat <amergnat@baylibre.com>
 
-Ideally the main op would return ERR_PTR too
+-- 
+Regards,
+Alexandre
 
-Jason
