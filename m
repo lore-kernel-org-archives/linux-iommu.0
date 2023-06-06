@@ -1,22 +1,22 @@
-Received: from mta21.hihonor.com (mta21.hihonor.com [81.70.160.142])
+Received: from mta20.hihonor.com (mta20.hihonor.com [81.70.206.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EE5A37B6F
-	for <iommu@lists.linux.dev>; Tue,  6 Jun 2023 13:03:56 +0000 (UTC)
-Received: from w013.hihonor.com (unknown [10.68.26.19])
-	by mta21.hihonor.com (SkyGuard) with ESMTPS id 4Qb9HC5cTVzZFR27;
-	Tue,  6 Jun 2023 20:47:35 +0800 (CST)
-Received: from a005.hihonor.com (10.68.18.24) by w013.hihonor.com
- (10.68.26.19) with Microsoft SMTP Server (version=TLS1_2,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 722F137B84
+	for <iommu@lists.linux.dev>; Tue,  6 Jun 2023 13:23:58 +0000 (UTC)
+Received: from w011.hihonor.com (unknown [10.68.20.122])
+	by mta20.hihonor.com (SkyGuard) with ESMTPS id 4Qb9h71GgSzZB6mj;
+	Tue,  6 Jun 2023 21:05:43 +0800 (CST)
+Received: from a005.hihonor.com (10.68.18.24) by w011.hihonor.com
+ (10.68.20.122) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.21; Tue, 6 Jun
- 2023 20:47:37 +0800
+ 2023 21:05:45 +0800
 Received: from a007.hihonor.com (10.68.22.31) by a005.hihonor.com
  (10.68.18.24) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.21; Tue, 6 Jun
- 2023 20:47:37 +0800
+ 2023 21:05:45 +0800
 Received: from a007.hihonor.com ([fe80::fc39:c25:3c0f:a4e7]) by
  a007.hihonor.com ([fe80::fc39:c25:3c0f:a4e7%10]) with mapi id 15.02.1118.021;
- Tue, 6 Jun 2023 20:47:37 +0800
+ Tue, 6 Jun 2023 21:05:45 +0800
 From: gaoxu <gaoxu2@hihonor.com>
 To: Christoph Hellwig <hch@lst.de>, Marek Szyprowski
 	<m.szyprowski@samsung.com>
@@ -29,10 +29,9 @@ Subject: [RESEND  PATCH] dma-remap: Use kvmalloc_array/kvfree for larger dma
  memory remap
 Thread-Topic: [RESEND  PATCH] dma-remap: Use kvmalloc_array/kvfree for larger
  dma memory remap
-Thread-Index: AdmYdFzrTjKG3Wk/TNCzbQyr42cDew==
-Content-Class:
-Date: Tue, 6 Jun 2023 12:47:37 +0000
-Message-ID: <4cae21d9a89a4c4da47fb3ef6465b676@hihonor.com>
+Thread-Index: AdmYd4mQIRgJP4x9QqusZkCY0/hvWA==
+Date: Tue, 6 Jun 2023 13:05:44 +0000
+Message-ID: <3eb3b4b4b08c446591a3e25ba9fa7287@hihonor.com>
 Accept-Language: zh-CN, en-US
 Content-Language: zh-CN
 X-MS-Has-Attach:
@@ -99,4 +98,5 @@ ze_t size,
  }
 --
 2.17.1
+
 
