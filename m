@@ -1,53 +1,84 @@
-Received: from mta21.hihonor.com (mta21.hihonor.com [81.70.160.142])
+Received: from frasgout12.his.huawei.com (unknown [14.137.139.154])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9327125B1
-	for <iommu@lists.linux.dev>; Tue,  6 Jun 2023 12:58:55 +0000 (UTC)
-Received: from w002.hihonor.com (unknown [10.68.28.120])
-	by mta21.hihonor.com (SkyGuard) with ESMTPS id 4Qb9XB5v1fzZFR2B;
-	Tue,  6 Jun 2023 20:58:50 +0800 (CST)
-Received: from a007.hihonor.com (10.68.22.31) by w002.hihonor.com
- (10.68.28.120) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.21; Tue, 6 Jun
- 2023 20:58:53 +0800
-Received: from a007.hihonor.com (10.68.22.31) by a007.hihonor.com
- (10.68.22.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.21; Tue, 6 Jun
- 2023 20:58:52 +0800
-Received: from a007.hihonor.com ([fe80::fc39:c25:3c0f:a4e7]) by
- a007.hihonor.com ([fe80::fc39:c25:3c0f:a4e7%10]) with mapi id 15.02.1118.021;
- Tue, 6 Jun 2023 20:58:52 +0800
-From: gaoxu <gaoxu2@hihonor.com>
-To: Christoph Hellwig <hch@lst.de>, Marek Szyprowski
-	<m.szyprowski@samsung.com>
-CC: Robin Murphy <robin.murphy@arm.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, Suren Baghdasaryan <surenb@google.com>,
-	yipengxiang <yipengxiang@hihonor.com>, "wangbintian(BintianWang)"
-	<bintian.wang@hihonor.com>
-Subject: =?gb2312?B?s7e72DogW1JFU0VORCAgUEFUQ0hdIGRtYS1yZW1hcDogVXNlIGt2bWFsbG9j?=
- =?gb2312?Q?=5Farray/kvfree_for_larger_dma_memory_remap?=
-Thread-Topic: [RESEND  PATCH] dma-remap: Use kvmalloc_array/kvfree for larger
- dma memory remap
-Thread-Index: AQHZmHakTjKG3Wk/TNCzbQyr42cDew==
-X-CallingTelephoneNumber: IPM.Note
-X-VoiceMessageDuration: 1
-X-FaxNumberOfPages: 0
-Date: Tue, 6 Jun 2023 12:58:52 +0000
-Message-ID: <8503f60f264342018384b5427ac361e4@hihonor.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-originating-ip: [10.164.11.140]
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A690037B6F
+	for <iommu@lists.linux.dev>; Tue,  6 Jun 2023 13:02:33 +0000 (UTC)
+Received: from mail02.huawei.com (unknown [172.18.147.229])
+	by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4Qb90g5911z9xFmn
+	for <iommu@lists.linux.dev>; Tue,  6 Jun 2023 20:34:59 +0800 (CST)
+Received: from A2101119013HW2.china.huawei.com (unknown [10.45.145.135])
+	by APP1 (Coremail) with SMTP id LxC2BwDHLemsKn9kjDEWAw--.4009S2;
+	Tue, 06 Jun 2023 13:46:44 +0100 (CET)
+From: Petr Tesarik <petrtesarik@huaweicloud.com>
+To: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
+	linux-kernel@vger.kernel.org (open list)
+Cc: Roberto Sassu <roberto.sassu@huawei.com>,
+	Kefeng Wang <wangkefeng.wang@huawei.com>,
+	petr@tesarici.cz
+Subject: [PATCH v1 1/1] swiotlb: remove unused field "used" from struct io_tlb_mem
+Date: Tue,  6 Jun 2023 14:46:25 +0200
+Message-Id: <20230606124625.175-1-petrtesarik@huaweicloud.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:LxC2BwDHLemsKn9kjDEWAw--.4009S2
+X-Coremail-Antispam: 1UD129KBjvdXoWruw1DWF1rZrW8GFy5Ar48Crg_yoWktrc_Za
+	1xtr4Uu3yrJr4xXw1xtF4ayF4Sgw18KF13uF93JrZrJ3WUZFZ5u3Z2gF9FvrZxGFs3CrZx
+	XFnxWr97CF1UKjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUIcSsGvfJTRUUUb7kYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E6xAIw20E
+	Y4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwV
+	A0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWUJVWUCwA2z4x0Y4vE2Ix0cI8IcVCY1x02
+	67AKxVWUJVW8JwA2z4x0Y4vEx4A2jsIE14v26r4j6F4UM28EF7xvwVC2z280aVCY1x0267
+	AKxVW8Jr0_Cr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40E
+	x7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x
+	0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lc7CjxVAKzI0EY4vE52x082I5MxAIw28IcxkI
+	7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxV
+	Cjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY
+	6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6x
+	AIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv
+	6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxU2K9aDUUUU
+X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
+X-CFilter-Loop: Reflected
 
-Z2FveHUgvauzt7vY08q8/qGwW1JFU0VORCAgUEFUQ0hdIGRtYS1yZW1hcDogVXNlIGt2bWFsbG9j
-X2FycmF5L2t2ZnJlZSBmb3IgbGFyZ2VyIGRtYSBtZW1vcnkgcmVtYXChsaGj
+From: Petr Tesarik <petr.tesarik.ext@huawei.com>
+
+Commit 20347fca71a3 ("swiotlb: split up the global swiotlb lock") moved
+the number of used slots to struct io_tlb_area, but it did not remove
+the field from struct io_tlb_mem.
+
+Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
+---
+ include/linux/swiotlb.h | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index 7af2673b47ba..4e52cd5e0bdc 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -76,7 +76,6 @@ dma_addr_t swiotlb_map(struct device *dev, phys_addr_t phys,
+  * @nslabs:	The number of IO TLB blocks (in groups of 64) between @start and
+  *		@end. For default swiotlb, this is command line adjustable via
+  *		setup_io_tlb_npages.
+- * @used:	The number of used IO TLB block.
+  * @list:	The free list describing the number of free entries available
+  *		from each index.
+  * @orig_addr:	The original address corresponding to a mapped entry.
+@@ -98,7 +97,6 @@ struct io_tlb_mem {
+ 	phys_addr_t end;
+ 	void *vaddr;
+ 	unsigned long nslabs;
+-	unsigned long used;
+ 	struct dentry *debugfs;
+ 	bool late_alloc;
+ 	bool force_bounce;
+-- 
+2.25.1
+
