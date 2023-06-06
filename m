@@ -1,170 +1,44 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3F035660
-	for <iommu@lists.linux.dev>; Tue,  6 Jun 2023 08:07:27 +0000 (UTC)
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3565LdJt011096;
-	Tue, 6 Jun 2023 08:07:03 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=GmbQksY5LjsuP+/o0XAuMubNUkJYqYdsPCNjeqFxsyY=;
- b=Yj3zXg0c4kIirvfvkd9ymggEw/PLNp6DPr2hZ1WvAhrD3/nzwx4C/IjfYH+ntYifVrEx
- jhUWtbwF+g6KGgI9pkHy4MTh8vxQZZZKGQigoxAIiiPTjRtaIB6tSReUQKEXv2C65uyi
- SjduLEimraSJ/kWcP0TI8qIKFEWFQ+BXyccOul9yuNvtwg0g5PbcjUI9oQpvlijmohoY
- K6sNXuQqkST8R4deJH6HitvNAnGQl0hQ/B+kGZmMBUCW0+1zkTv+X8Jufu7jSaSJjEbt
- R0A+sf6zWxzCGLhavBTISOWpNraDa0JyNfYw/Kre5plNXFfgsmkqM4avly5cJf1f82aJ Yw== 
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3r1uvv0kmr-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 06 Jun 2023 08:07:02 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3568708N006720
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 6 Jun 2023 08:07:00 GMT
-Received: from [10.214.66.58] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.42; Tue, 6 Jun 2023
- 01:06:53 -0700
-Message-ID: <327b8d8a-edc9-f0a6-6c7d-070b8bb86ed5@quicinc.com>
-Date: Tue, 6 Jun 2023 13:36:50 +0530
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56B3A125AB;
+	Tue,  6 Jun 2023 09:24:45 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 64DA367373; Tue,  6 Jun 2023 11:24:35 +0200 (CEST)
+Date: Tue, 6 Jun 2023 11:24:35 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Linux regressions mailing list <regressions@lists.linux.dev>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	Jason Adriaanse <jason_a69@yahoo.co.uk>, hch@lst.de,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Bjorn Helgaas <helgaas@kernel.org>, baolu.lu@linux.intel.com,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-pci@vger.kernel.org
+Subject: Re: [regression] Bug 217218 - Trying to boot Linux version 6-2.2
+ kernel with Marvell SATA controller 88SE9235
+Message-ID: <20230606092435.GA31061@lst.de>
+References: <5f37b0b0-6cb5-b210-a894-d1e91976126e@arm.com> <2a699a99-545c-1324-e052-7d2f41fed1ae@yahoo.co.uk> <07ee0cf7-a5c2-f87a-d627-8dd8fb082345@arm.com> <9648f668-a3bc-3296-71d1-c91cd4c9980e@yahoo.co.uk> <1539e760-392f-a33e-436e-bbf043e79bfc@arm.com> <14f2b1ab-2c7c-fa4d-5854-3df08ac9feef@yahoo.co.uk> <1928df45-7b56-a8a4-21b5-22e5d8ef95eb@leemhuis.info> <9b602abc-37e9-f236-37ee-71bcf1b7ce66@arm.com> <211f3938-2f93-cad7-a92b-821d3ac45b9e@leemhuis.info> <c7da7095-7d68-c65b-daf8-7eee43b79d53@leemhuis.info>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v2 08/10] arm64: dts: qcom: Add QUPv3 UART console node
- for SDX75
-Content-Language: en-US
-To: Konrad Dybcio <konrad.dybcio@linaro.org>, <agross@kernel.org>,
-        <andersson@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
-        <rafael@kernel.org>, <viresh.kumar@linaro.org>, <tglx@linutronix.de>,
-        <maz@kernel.org>, <will@kernel.org>, <robin.murphy@arm.com>,
-        <joro@8bytes.org>, <mani@kernel.org>, <robimarko@gmail.com>
-CC: <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>
-References: <1685982557-28326-1-git-send-email-quic_rohiagar@quicinc.com>
- <1685982557-28326-9-git-send-email-quic_rohiagar@quicinc.com>
- <d8c9b229-47ab-cedd-3515-4faf3146e6f8@linaro.org>
-From: Rohit Agarwal <quic_rohiagar@quicinc.com>
-In-Reply-To: <d8c9b229-47ab-cedd-3515-4faf3146e6f8@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: G2z3kGFlJJ1RCZNoTkUurkFP1dv2JYQV
-X-Proofpoint-GUID: G2z3kGFlJJ1RCZNoTkUurkFP1dv2JYQV
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
- definitions=2023-06-06_04,2023-06-05_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 adultscore=0
- priorityscore=1501 malwarescore=0 impostorscore=0 lowpriorityscore=0
- suspectscore=0 spamscore=0 clxscore=1015 mlxscore=0 mlxlogscore=999
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2304280000 definitions=main-2306060069
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c7da7095-7d68-c65b-daf8-7eee43b79d53@leemhuis.info>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
+On Fri, Jun 02, 2023 at 03:07:19PM +0200, Thorsten Leemhuis wrote:
+> Christoph, could you do me a favor and...
 
-On 6/5/2023 11:47 PM, Konrad Dybcio wrote:
->
-> On 5.06.2023 18:29, Rohit Agarwal wrote:
->> Add the debug uart console node in devicetree.
->>
->> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
->> ---
->>   arch/arm64/boot/dts/qcom/sdx75.dtsi | 49 +++++++++++++++++++++++++++++++++++++
->>   1 file changed, 49 insertions(+)
->>
->> diff --git a/arch/arm64/boot/dts/qcom/sdx75.dtsi b/arch/arm64/boot/dts/qcom/sdx75.dtsi
->> index f83eef8..47170ae 100644
->> --- a/arch/arm64/boot/dts/qcom/sdx75.dtsi
->> +++ b/arch/arm64/boot/dts/qcom/sdx75.dtsi
->> @@ -385,6 +385,34 @@
->>   			#power-domain-cells = <1>;
->>   		};
->>   
->> +		qupv3_id_0: geniqup@9c0000 {
->> +			compatible = "qcom,geni-se-qup";
->> +			reg = <0x0 0x009c0000 0x0 0x2000>;
->> +			clocks = <&gcc GCC_QUPV3_WRAP_0_M_AHB_CLK>,
->> +				 <&gcc GCC_QUPV3_WRAP_0_S_AHB_CLK>;
->> +			clock-names = "m-ahb",
->> +				      "s-ahb";
->> +			iommus = <&apps_smmu 0xe3 0x0>;
->> +			#address-cells = <2>;
->> +			#size-cells = <2>;
->> +			ranges;
->> +			status = "disabled";
->> +
->> +			uart1: serial@984000 {
->> +				compatible = "qcom,geni-debug-uart";
->> +				reg = <0x0 0x00984000 0x0 0x4000>;
->> +				clock-names = "se";
->> +				clocks = <&gcc GCC_QUPV3_WRAP0_S1_CLK>;
->> +				interrupts = <GIC_SPI 338 IRQ_TYPE_LEVEL_HIGH>;
->> +				pinctrl-0 = <&qupv3_se1_2uart_tx_active>,
->> +					    <&qupv3_se1_2uart_rx_active>;
->> +				pinctrl-1 = <&qupv3_se1_2uart_sleep>;
->> +				pinctrl-names = "default",
->> +						"sleep";
->> +				status = "disabled";
->> +			};
->> +		};
->> +
->>   		tcsr_mutex: hwlock@1f40000 {
->>   			compatible = "qcom,tcsr-mutex";
->>   			reg = <0x0 0x01f40000 0x0 0x40000>;
->> @@ -413,6 +441,27 @@
->>   			interrupt-controller;
->>   			#interrupt-cells = <2>;
->>   			wakeup-parent = <&pdc>;
->> +
->> +			qupv3_se1_2uart_tx_active: qupv3-se1-2uart-tx-active-state {
->> +				pins = "gpio12";
->> +				function = "qup_se1_l2_mira";
->> +				drive-strength= <2>;
->> +				bias-disable;
->> +			};
-> You can bunch these two up like this:
->
-> qupv3_se1_2uart_active: qup.... {
-> 	tx {
-> 		pins = ...
-> 		foo = ...
-> 	};
->
-> 	rx {
-> 		pins = ...
-> 		bar = ...
-> 	};
-> };
-Sure will do this in the next version having all this in the single patch.
+> ...submit that quirk, as Bjorn and Alex apparently didn't pick this up?
+> I could do so myself, but prefer to leave that to people that actually
+> known what they are doing -- and thus can also handle problems later, in
+> case any show up. And strictly speaking it apparently was you who caused
+> this regression with 78013eaadf6 ("x86: remove the IOMMU table
+> infrastructure").
 
-Thanks,
-Rohit.
-> Konrad
->> +
->> +			qupv3_se1_2uart_rx_active: qupv3-se1-2uart-rx-active-state {
->> +				pins = "gpio13";
->> +				function = "qup_se1_l3_mira";
->> +				drive-strength= <2>;
->> +				bias-disable;
->> +			};
->> +
->> +			qupv3_se1_2uart_sleep: qupv3-se1-2uart-sleep-state {
->> +				pins = "gpio12", "gpio13";
->> +				function = "gpio";
->> +				drive-strength = <2>;
->> +				bias-pull-down;
->> +			};
->>   		};
->>   
->>   		apps_smmu: iommu@15000000 {
+Well, Robin posted it so I think he should also finish it up and get
+the credit.  Robin, can you send the quirk with a formal signoff?
+
