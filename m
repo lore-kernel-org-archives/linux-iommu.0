@@ -1,115 +1,118 @@
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 317CF3B3E0
-	for <iommu@lists.linux.dev>; Wed,  7 Jun 2023 23:20:06 +0000 (UTC)
-Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-4f642a24568so46890e87.2
-        for <iommu@lists.linux.dev>; Wed, 07 Jun 2023 16:20:06 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4D0C3B3E0
+	for <iommu@lists.linux.dev>; Wed,  7 Jun 2023 23:39:09 +0000 (UTC)
+Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-2b1b92845e1so59430311fa.0
+        for <iommu@lists.linux.dev>; Wed, 07 Jun 2023 16:39:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1686180005; x=1688772005;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VyY/6IODHDlyeeop9FZuaK8o19bhh4JMPkyiNt+oF7I=;
-        b=A9Vo0XkJIpgWyLRpiuu4l+nqzYPZyLpVqVdvCiGXgVQ1bC5U/NMMhRPj2tMBh1pHlz
-         4E3UGxsRvR8xbq/CTMWAZEoIbXITXi8fPElZ5zapepohNCtK/0DWv/89o6AXmp0itP2O
-         TWMW2xpyJylMKi+csThqo2mUbBuD8VdyBd3oySuu7CTWcEQDRdQv4GdGXv03pHoJastY
-         B3nTDZc8VnZ9emMvGY4b/6QPd2nP+3NfvlmtSsvIqXvj+O+ehhxQAoT3W9qganeqYX/+
-         icJ+rMTamrIocafOYueceNpwIpEAWwRFJ2UcGgRoTmfT0X3GKxwB29afKvLfGfk0+K58
-         iEyQ==
+        d=linaro.org; s=google; t=1686181148; x=1688773148;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=XONB9T8Mj7o/MLrEwoJSSBYj969JG7tPSlspH2W5BIw=;
+        b=GTSY7qEdobWh7LkTRnOAImvPKZUJQfgOgETcJ+tk6DI5sF/chuwr6uFDqqlVN23O2W
+         //yo7tNg480hQs0zkZINMpSZx3sk/T3RykwcV+TsgCqjcm6lxUr7OIiZgxIFpwSR5GDM
+         4G0wg5Ie0zBjwOhgMcBHNt5pPR8zWZkXbyFtqUc4AfJayZmsCu3RwDeCa8spwMuwj3kd
+         l7IFXSZtuqtnQi6PcQ7vFnWwXhpYhZaVzrLSjtc6apATcNyaMuyKL3dvg8eSImkt7HNR
+         s3HuH1jxWmY/bYrPhnN5PoHhxg9HXsMayW/9mjwSHTu08V8Fjpsb3fvDLgVQ95kyqjtA
+         HJ8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686180005; x=1688772005;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=VyY/6IODHDlyeeop9FZuaK8o19bhh4JMPkyiNt+oF7I=;
-        b=ATiLEtJOZA0BxANHrq2KAsu66pnNeknKqj2rwb5XjJI+jri84s/nu+uo/943u9mNtl
-         s/BYuwA4UUy42AR71tgfvZv3hDkc/zyBfzSTwyWIQnVg4KOIhkP8Bl5DQfLsV3wMTVD6
-         iV+0Tyrsuh5txHeJgInhQ6+C/WxL2XMdaPPDxxkFxW7TIY2b7xEhziPQXq3KpjXc3t0S
-         EK1LByFRvfvmP0UGwPyoN4AO1mtmqq/IcpBjm9DJIw/pJc8E+kqIqdg2hfHkGZ+pQbIU
-         W6wkpnYaMxkgAf3J5fI6IbajZOmdMKdcj+zBHsz1fXP5jsK/LpWEajf9biIi/Q9PFTJM
-         7o3g==
-X-Gm-Message-State: AC+VfDyly232BizXboIubbg7uHyi36qnIjvKRLUogql+3zi4XeLHGNw7
-	MZTx6DAXNR90ZAnLHhxE2G6SFg==
-X-Google-Smtp-Source: ACHHUZ7hRM7SbUTZb8qBUPmUIUaSTu0RbpCLtAbbhmsR/dpPRr3/MkmoarjoWZTP2QKK3G21z5N7rg==
-X-Received: by 2002:ac2:430e:0:b0:4f6:2e4e:e41b with SMTP id l14-20020ac2430e000000b004f62e4ee41bmr2199648lfh.3.1686180004908;
-        Wed, 07 Jun 2023 16:20:04 -0700 (PDT)
-Received: from eriador.lan (dzdqv0yyyyyyyyyyybcwt-3.rev.dnainternet.fi. [2001:14ba:a0db:1f00::8a5])
-        by smtp.gmail.com with ESMTPSA id h18-20020a197012000000b004f00189e1dcsm1908952lfc.117.2023.06.07.16.20.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Jun 2023 16:20:04 -0700 (PDT)
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To: Rob Clark <robdclark@gmail.com>,
-	Abhinav Kumar <quic_abhinavk@quicinc.com>,
-	Sean Paul <sean@poorly.run>,
-	David Airlie <airlied@gmail.com>,
-	Daniel Vetter <daniel@ffwll.ch>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Krishna Manikandan <quic_mkrishn@quicinc.com>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>,
-	linux-arm-msm@vger.kernel.org,
-	dri-devel@lists.freedesktop.org,
-	freedreno@lists.freedesktop.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Konrad Dybcio <konrad.dybcio@somainline.org>
-Subject: Re: [PATCH v6 00/12] SM63(50|75) DPU support
-Date: Thu,  8 Jun 2023 02:20:02 +0300
-Message-Id: <168617996601.1879421.15966890603577062057.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230411-topic-straitlagoon_mdss-v6-0-dee6a882571b@linaro.org>
-References: <20230411-topic-straitlagoon_mdss-v6-0-dee6a882571b@linaro.org>
+        d=1e100.net; s=20221208; t=1686181148; x=1688773148;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=XONB9T8Mj7o/MLrEwoJSSBYj969JG7tPSlspH2W5BIw=;
+        b=BGH8nY2xElpWaqAAnALVwBXKTewHdruc8kd1hpT6i58MTK65sQAk4xg7jmUc4un3v4
+         NKTLv7dUHmmh3xH3FiERpxKYZD4IqboDnEF3zR4ueBbOKe5v8HmLJlxTju6PSj5xhLCB
+         UPQaR0ShpTJDy7d/1cq9cJmjve6DcZBFlNZD2QSl19Wvx1ZWqTgKoO3Ai7zGeQHBo9m7
+         IYwSMd1vIRloxEHRnBeTMwWDlbHcH8Smht+eATJH+diZUI1Xn/E4HMtGKJslresoa8ll
+         Oo6a0JN7WPrAm/CwcSTGotv/v+em9I4M9pgGxauNdnT28i5QMOvHk22ISU69th7qBpz9
+         fiSw==
+X-Gm-Message-State: AC+VfDy/RAM7qomWPGLy/HXt6Vy0/3wuP4nEKZ6u6UnYC7KUOL0n3l9D
+	Ux+QgkcLaAA/ADbj1bA71YDh/w==
+X-Google-Smtp-Source: ACHHUZ5Ti07xNp1+TYebI62vHoSL/r5taUDlEmn3ZQRy27Ik7N84bpsPjsq4VfKfSjqdaopI0zXg+A==
+X-Received: by 2002:a2e:730c:0:b0:2a7:7100:ff5a with SMTP id o12-20020a2e730c000000b002a77100ff5amr2976356ljc.6.1686181147775;
+        Wed, 07 Jun 2023 16:39:07 -0700 (PDT)
+Received: from ?IPV6:2001:14ba:a0db:1f00::8a5? (dzdqv0yyyyyyyyyyybcwt-3.rev.dnainternet.fi. [2001:14ba:a0db:1f00::8a5])
+        by smtp.gmail.com with ESMTPSA id o15-20020a2e90cf000000b002b1b92910c8sm346ljg.86.2023.06.07.16.39.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 07 Jun 2023 16:39:07 -0700 (PDT)
+Message-ID: <e70b266b-85bb-f23f-dac8-47702a2aaf37@linaro.org>
+Date: Thu, 8 Jun 2023 02:39:06 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH v6 00/12] SM63(50|75) DPU support
+Content-Language: en-GB
+To: Konrad Dybcio <konrad.dybcio@linaro.org>, Rob Clark
+ <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
+ Sean Paul <sean@poorly.run>, David Airlie <airlied@gmail.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Krishna Manikandan <quic_mkrishn@quicinc.com>, Will Deacon
+ <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>, Conor Dooley <conor+dt@kernel.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+ linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ Konrad Dybcio <konrad.dybcio@somainline.org>
+References: <20230411-topic-straitlagoon_mdss-v6-0-dee6a882571b@linaro.org>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20230411-topic-straitlagoon_mdss-v6-0-dee6a882571b@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
+On 06/06/2023 15:43, Konrad Dybcio wrote:
 
-On Tue, 06 Jun 2023 14:43:51 +0200, Konrad Dybcio wrote:
-> v5 -> v6:
-> - Drop unnecessary items: level in bindings
-> - Use INTF_SC7180_MASK for 6375 to avoid enabling DPU_INTF_DATA_COMPRESS on DPU6
-> - Pick up tags
+[skipped the changelog]
+
+> ---
+> Konrad Dybcio (12):
+>        dt-bindings: display/msm: dsi-controller-main: Add SM6350
+>        dt-bindings: display/msm: dsi-controller-main: Add SM6375
+>        dt-bindings: display/msm: sc7180-dpu: Describe SM6350 and SM6375
+>        dt-bindings: display/msm: Add SM6350 MDSS
+>        dt-bindings: display/msm: Add SM6375 MDSS
+>        drm/msm/dpu: Add SM6350 support
+>        drm/msm: mdss: Add SM6350 support
+>        drm/msm/dpu: Add SM6375 support
+>        drm/msm: mdss: Add SM6375 support
+
+Will, we have finally picked up the display related patches. Could you 
+please pick up the IOMMU patches if they look fine to you.
+
+>        iommu/arm-smmu-qcom: Sort the compatible list alphabetically
+>        iommu/arm-smmu-qcom: Add SM6375 DPU compatible
+>        iommu/arm-smmu-qcom: Add SM6350 DPU compatible
 > 
-> v5: https://lore.kernel.org/r/20230411-topic-straitlagoon_mdss-v5-0-998b4d2f7dd1@linaro.org
+>   .../bindings/display/msm/dsi-controller-main.yaml  |   4 +
+>   .../bindings/display/msm/qcom,sc7180-dpu.yaml      |  23 ++-
+>   .../bindings/display/msm/qcom,sm6350-mdss.yaml     | 213 ++++++++++++++++++++
+>   .../bindings/display/msm/qcom,sm6375-mdss.yaml     | 215 +++++++++++++++++++++
+>   .../gpu/drm/msm/disp/dpu1/catalog/dpu_6_4_sm6350.h | 173 +++++++++++++++++
+>   .../gpu/drm/msm/disp/dpu1/catalog/dpu_6_9_sm6375.h | 139 +++++++++++++
+>   drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c     |   6 +
+>   drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h     |   2 +
+>   drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c            |   2 +
+>   drivers/gpu/drm/msm/msm_mdss.c                     |  10 +
+>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |   6 +-
+>   11 files changed, 790 insertions(+), 3 deletions(-)
+> ---
+> base-commit: 6db29e14f4fb7bce9eb5290288e71b05c2b0d118
+> change-id: 20230411-topic-straitlagoon_mdss-8f34cacd5e26
 > 
-> [...]
+> Best regards,
 
-Applied, thanks!
-
-[01/12] dt-bindings: display/msm: dsi-controller-main: Add SM6350
-        https://gitlab.freedesktop.org/lumag/msm/-/commit/e99b2d0670a7
-[02/12] dt-bindings: display/msm: dsi-controller-main: Add SM6375
-        https://gitlab.freedesktop.org/lumag/msm/-/commit/27a869221bb7
-[03/12] dt-bindings: display/msm: sc7180-dpu: Describe SM6350 and SM6375
-        https://gitlab.freedesktop.org/lumag/msm/-/commit/ed41005f5b7c
-[04/12] dt-bindings: display/msm: Add SM6350 MDSS
-        https://gitlab.freedesktop.org/lumag/msm/-/commit/3b7502b0c205
-[05/12] dt-bindings: display/msm: Add SM6375 MDSS
-        https://gitlab.freedesktop.org/lumag/msm/-/commit/2a5c1021bc77
-[06/12] drm/msm/dpu: Add SM6350 support
-        https://gitlab.freedesktop.org/lumag/msm/-/commit/3186acba5cdc
-[07/12] drm/msm: mdss: Add SM6350 support
-        https://gitlab.freedesktop.org/lumag/msm/-/commit/c2c1217e61bd
-[08/12] drm/msm/dpu: Add SM6375 support
-        https://gitlab.freedesktop.org/lumag/msm/-/commit/27f0df03f3ff
-[09/12] drm/msm: mdss: Add SM6375 support
-        https://gitlab.freedesktop.org/lumag/msm/-/commit/5ff3d3a0a09e
-
-Best regards,
 -- 
-Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+With best wishes
+Dmitry
+
