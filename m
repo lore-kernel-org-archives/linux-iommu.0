@@ -1,604 +1,148 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A1318F4D
-	for <iommu@lists.linux.dev>; Wed,  7 Jun 2023 09:15:23 +0000 (UTC)
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3577prol030440;
-	Wed, 7 Jun 2023 08:51:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=BFvvIGaxkDjzyEbprg5h52b36LSiOCuqreNkF1YXBNQ=;
- b=eSGcH11Xar5CYhXxKPBCgvCqkVN849Gtde5s9pQoJ9REkYggPLp8pEMBBIjOpFh4xzf/
- g5HF4O//QgoAzkg0CMjAjVGBSymqjOIeTM5FEm7hNLlcn+GslHoc4+eLFzlTmkliK0gV
- WWEbFJmfGgT6oDbH+Hu8Nkr9dq38XVKObDr9nN6MpJcYCjLmcGbZ926ZMcfFi69Ujb0b
- vCMk1UbZlNRPePBVlmZGFe8htxSL6ZFF1wBQZCKVz1vm6XIQYcNstXlRrtcr3sTIKqsZ
- z1NiRPXHs5puANkxk/gjxs0SIwGSALD0zO7DlDWCJZdaF/G/9qNjawTYu7WpkTfg8L36 CA== 
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3r2a769c97-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 07 Jun 2023 08:51:15 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3578pERK020281
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 7 Jun 2023 08:51:14 GMT
-Received: from [10.214.66.58] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.42; Wed, 7 Jun 2023
- 01:51:08 -0700
-Message-ID: <3cbfd2a9-f9ad-5bfc-6ff7-89869bdfce56@quicinc.com>
-Date: Wed, 7 Jun 2023 14:21:06 +0530
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E08633C86
+	for <iommu@lists.linux.dev>; Wed,  7 Jun 2023 12:00:03 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Nv/VRcVy5Xuv5WhvUP3YhpIvf57rSleH/zBtJu18dvds5Q1QTy+1ehYcAahA/JbXfqhogKLZ0ylu6eZ2kh1dWFxg+/SsvxyUVuvFHRtlBi2ewGgFPXqqWP3e/vc0Row826RNqqNKzv79oNIGKRBWNapRGWwQr39iAuYbaBTwzbvPXFvaxMqnKnZHtbW/j/OEOaf1HX8aOEsXq8+SVaERtFAjzxXXTC+8wEBk3C9sUeaAH1TbTUxdbalUmRQRpDjRmTpJ3Lq3gD7Yd+OWiMSmCiXGxDbr/qbCvqch0QIOYwTtAEz+22AQjGHxW2bxDisYjR90cfQ5CS8aEEPQhIF30w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=V17/DRSGkRxRC7p6MR2MdcKAUdZg1LtxpglUBLNNnOg=;
+ b=BBNsVN0Pw2WmNs+Bq6Vktm9GwZnfE8V+YcSw9Q/Siu5Asg3BzLkXjydbay9FY3KyfQJ7Rvek3Gw/J+6C6CaxvrzC3xJrqqOABBoHpiv6oW1zmHNw3TFR/uEhQHqM3GSZqbpj5d6pWSTY1SY+yc3qO+3/BbFrbDQaabwncqINPn6jCowoFlMW/hQyB9Ocwn6/gFu5YujnocBvF3Rf8vhDys5h0+ickH6gPLx4ytMOCjBYcmDFScNbESjMsXvU8R7lJChalJ4jZdJX5r42x46bwCC2uWc/ACm3NfntXuzgSoVbSrbNG185bG2vcvAN+PN5nb4I5Liq7BrkQsN73h1WUg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=V17/DRSGkRxRC7p6MR2MdcKAUdZg1LtxpglUBLNNnOg=;
+ b=FDU9FX8X6O6wAZHSmplPCJNRo/TYev5bRBJWo27wwRzaBuo0uJ9FyatM8Xzbz83Tk863IRvyQFFQUCgz7GjofdihN3oTmZxlTO74EPRylavhhH6IbYz4Mz4oOhkITqjt9p6VP+kCgzGLPoPejJCZB0W6seUVUxgw3eyfsuP3lQ2HH4tmxeaOOovCaAZxC7vBMPLYsu80sR6yKB4v38QB2oQD1MtCATWZd7B5cKvF8YFo3rD6R/wF80gpvWayaQDPKJtjN4LqXxcyHsxaZOmKQEfi0vZvl0H++VV4JejDB0ehZu28viId5Q0ueYq/AQc91w9Dt+NQFB3Uxdk1UdjQxQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DM4PR12MB5312.namprd12.prod.outlook.com (2603:10b6:5:39d::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.36; Wed, 7 Jun
+ 2023 12:00:00 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6455.030; Wed, 7 Jun 2023
+ 12:00:00 +0000
+Date: Wed, 7 Jun 2023 08:59:57 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Michael Shavit <mshavit@google.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, jean-philippe@linaro.org,
+	nicolinc@nvidia.com, baolu.lu@linux.intel.com,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 14/18] iommu/arm-smmu-v3: Support domains with shared
+ CDs
+Message-ID: <ZIBxPd1/JCAle6yP@nvidia.com>
+References: <20230606120854.4170244-1-mshavit@google.com>
+ <20230606120854.4170244-15-mshavit@google.com>
+ <ZH9oQMmI8CezMCnx@nvidia.com>
+ <CAKHBV25eDNXEu+6GWDJqpw1h5N-Jq-GPzf81kNH1dyw3Z=KsZA@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKHBV25eDNXEu+6GWDJqpw1h5N-Jq-GPzf81kNH1dyw3Z=KsZA@mail.gmail.com>
+X-ClientProxiedBy: BYAPR03CA0001.namprd03.prod.outlook.com
+ (2603:10b6:a02:a8::14) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v2 06/10] arm64: dts: qcom: Add SDX75 platform and IDP
- board support
-Content-Language: en-US
-To: Konrad Dybcio <konrad.dybcio@linaro.org>, <agross@kernel.org>,
-        <andersson@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
-        <rafael@kernel.org>, <viresh.kumar@linaro.org>, <tglx@linutronix.de>,
-        <maz@kernel.org>, <will@kernel.org>, <robin.murphy@arm.com>,
-        <joro@8bytes.org>, <mani@kernel.org>, <robimarko@gmail.com>
-CC: <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>
-References: <1685982557-28326-1-git-send-email-quic_rohiagar@quicinc.com>
- <1685982557-28326-7-git-send-email-quic_rohiagar@quicinc.com>
- <fc579cdb-4594-bdc9-18f0-e16ab89e8eaf@linaro.org>
- <f2885b05-e6e7-6576-a0de-6f930cfd539f@quicinc.com>
- <1a74a7e5-f20d-39de-bb8f-4371f10a612c@linaro.org>
- <cebcdf94-f83d-7348-df69-b7f782c411ce@quicinc.com>
- <3a9c1b7e-c1ac-61a1-0a67-8653f1027b35@linaro.org>
- <ffaa2700-27d1-f406-bcef-ac042ad1af61@quicinc.com>
- <832578df-4425-36fe-47e7-3040965c9f4e@linaro.org>
-From: Rohit Agarwal <quic_rohiagar@quicinc.com>
-In-Reply-To: <832578df-4425-36fe-47e7-3040965c9f4e@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: AUBLK4UFPeD1XZkD2DTZRYT4_eX0Ewez
-X-Proofpoint-GUID: AUBLK4UFPeD1XZkD2DTZRYT4_eX0Ewez
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
- definitions=2023-06-07_06,2023-06-06_02,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
- priorityscore=1501 malwarescore=0 lowpriorityscore=0 clxscore=1015
- mlxscore=0 bulkscore=0 adultscore=0 phishscore=0 mlxlogscore=999
- impostorscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2305260000 definitions=main-2306070072
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB5312:EE_
+X-MS-Office365-Filtering-Correlation-Id: 297f08ae-620a-4c3e-4dad-08db674eb876
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	aRs0gHWmGvyXbzQUC6HeQRGL6uK/hwspo3SvZYvT5Mwy+kMDzhbol5NhA8KOuCjimTfG3Uhh1xnIfYl0xX3L5aRtDqd1juSuBh9Q7HltlHimrrg9jmDGL9cXQJGOlp7MaEiaRYfM0IhUqyYxXJSWE3f6iYyiI/WhxKWZ/n2EKgNon37cwXg/ZRKNynsgMVcZf6NkiRcOiBQ7YDvw3AszcxijmYdVjDhTc38Sq0LI9YgtdFM6Bx3fNLQXT+WMN8bEddq2mNyN1a8zy8Zw4XfrYoTbxhU8XbHYbFTK1Nfr41CeV8evj5AnTxLximrKghdCeeenFma/JvZS3Ckydk4brSi7xw2p7VkKc+kWz/ZrUOB2Vgrg4SSc9RnIAsttPSpL6ahjnRqts5t0/2exGT1NFzXhIxJne+dZ3iIoVfd3IPpeAJ7nrYiJ0Kf2InxO6Oi0Pq9jmPYDpGJwtBnsmGeQWESMHjQ0rNk/O5DHi7clkxU+vPQYfa9oBcM1rCfd80WjzuSzB5iIl9XuO6fMG0RdiFsFTNK813ernzdNeZIoIHIag34o24nat1spxnL2auNo
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(346002)(366004)(376002)(39860400002)(396003)(451199021)(478600001)(2906002)(83380400001)(2616005)(186003)(6512007)(6506007)(26005)(86362001)(38100700002)(6486002)(36756003)(6666004)(5660300002)(8936002)(8676002)(41300700001)(6916009)(4326008)(66476007)(66946007)(66556008)(316002)(54906003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?GW4Zo9cRhe1qeDidqTTa8A9kkCOJxD4D3k7X29NsP8vCKlCaD5QAYVnKvqy9?=
+ =?us-ascii?Q?EAq0IjyJywhDwf5N8bN42bEclY2FIrlCU6azkjrIPwXeJ69tGF4oXk5e2LCA?=
+ =?us-ascii?Q?tvG3N2qBasWtneBacLv96LXxWmsRtfSLjsMcOVhyYl9UtXEem/88vIkhAKVk?=
+ =?us-ascii?Q?ixFP6l6RgkcW3M8ixaA3jEhr2oUYfeqWh8zt+QOeP3pH9tLDLcNir5KeTBAj?=
+ =?us-ascii?Q?2GOSMvD79YpFBWOZr5rosJucEyFmXNslXLNvEF8IR+Vpq1cRgi3L9rSk7hYS?=
+ =?us-ascii?Q?e/5qwpmohfIIpSURufSokICWHzDTmcDt578UQJrpgR8urbqnIfn/Pj2+p5ug?=
+ =?us-ascii?Q?BmyhmCNU0VOTgHW7QwJX0923lsAb8JYe5KKWm5GjXhOuiOpPcMrC1e24vpLz?=
+ =?us-ascii?Q?v8l1lgz6wo2CqaWPgQbU3VGsQqCJloUPcIvW5mPcOafDa3CK06xF08f4Op4q?=
+ =?us-ascii?Q?xZkUIcAttebkTn2elqwE87Bzee+DziB9efrqr4Z//zpU5feQDsBaU/WzClqa?=
+ =?us-ascii?Q?Vw+nHpDCFustkrMVfVv8SiMuLdlu+6TnLLTSqm2HTVgAUnjzLJjWu5hx923A?=
+ =?us-ascii?Q?hgLSV0MrqcnFRzJLZ2DWBT1mifdx1mq+kdWtGgu+KvAOrdySsCDZiOIISSdE?=
+ =?us-ascii?Q?OjW9yPHrlWC+O+4bHAwNE3azUDgJ52jO/8HrVCsi4op7GiezrstzFAS3yraB?=
+ =?us-ascii?Q?JdYo96wh9FnqIEMPOQu1fgNN4snzzuP9KrYrArD8XEoYsarB/h5YJQma2BLb?=
+ =?us-ascii?Q?D/75vtVHVHQjQEDfOHqoRukacB4KLTu1Fyy+IdR9xrj4lsv1M0PHVrB6wfvE?=
+ =?us-ascii?Q?72jArBOc9VA9+csv03wfyqw15daSQP8gVeXPgaUDG+zIYVaRX2WmGcaPS98j?=
+ =?us-ascii?Q?eu1uEVDLCbXlfV+B1KEC4rNq8PYSuu9OF2RuWnJrzSehL1a7qR6P7Lg1pGgW?=
+ =?us-ascii?Q?01r266KkzW4mLEu3/WRg+k118lcgKjIaM6TdOwLBe2YMc63mVz6lwRk48mcQ?=
+ =?us-ascii?Q?PCyQAXLod8y47gOv6jENUAAX7S5YpgGjucZ2qm73QF4rQcvfrsbclKWYViDE?=
+ =?us-ascii?Q?F5mms7T94GzjllB/W6y8qP3p5hZSdsMhBpqSJblHz7h57VR8k1783V83r+IA?=
+ =?us-ascii?Q?AKOcjHZY/mRJQQa3B7G+atYzW8eZk2HYbhUSpTvLnH5vcD1VFaCQEeUsTWmA?=
+ =?us-ascii?Q?AztpnC01BuAXF4q5U/0A5Bqx5kDqTiHCdOK6gv0Q6+QUlAng5RmQKOXkbNhq?=
+ =?us-ascii?Q?JDyZfUjbT839zelCq/DdFPnXAShTgI5uUDXlT1Y1p3AFk6lll5eo4TU66Gcu?=
+ =?us-ascii?Q?yK9oODMLjYpVYooNUb2e/AimRPlEX+gio/SG/l5DzvQjmWvd19DEeXuVtHf0?=
+ =?us-ascii?Q?IuhsDH5/emPzQ1Uf0quD0LLckrEMWJf+mGG1GxQisuNrcqfT1RCctJwZX6mq?=
+ =?us-ascii?Q?HwCHXognqHAbAQvPFOC2YwRe2Zr4LzgGo3MB0wuOcOl8BBQPgu1gHZFZsDHW?=
+ =?us-ascii?Q?CTpY7ar2CCE93RzwvcohOeISuNOHuNc55qLqFtTesCixaVRNMz7o+ISW4F6d?=
+ =?us-ascii?Q?IZkYog6WLWRkf3DwuHEUhqEDd2op0OMJP1rLs7Tz?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 297f08ae-620a-4c3e-4dad-08db674eb876
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2023 12:00:00.4412
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qKN+IudnreXY3CdJwBVRfiDIp3venDwxX5d+GAQLvMUDL+pmrxTO1LAckDWuwh+M
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5312
 
+On Wed, Jun 07, 2023 at 12:06:07AM +0530, Michael Shavit wrote:
+> > What we definately shouldn't do is try to have different SVA
+> > iommu_domain's pointing at the same ASID. That is again making SVA
+> > special, which we are trying to get away from :)
+> 
+> Fwiw, this change is preserving the status-quo in that regard;
+> arm-smmu-v3-sva.c is already doing this. But yes, I agree that
+> resolving the limitation is a better long term solution... and
+> something I can try to look at further.
 
-On 6/7/2023 2:13 PM, Konrad Dybcio wrote:
->
-> On 7.06.2023 08:52, Rohit Agarwal wrote:
->> On 6/6/2023 5:48 PM, Konrad Dybcio wrote:
->>> On 6.06.2023 13:42, Rohit Agarwal wrote:
->>>> On 6/6/2023 3:06 PM, Konrad Dybcio wrote:
->>>>> On 6.06.2023 10:04, Rohit Agarwal wrote:
->>>>>> On 6/5/2023 11:45 PM, Konrad Dybcio wrote:
->>>>>>> On 5.06.2023 18:29, Rohit Agarwal wrote:
->>>>>>>> Add basic devicetree support for SDX75 platform and IDP board from
->>>>>>>> Qualcomm. The SDX75 platform features an ARM Cortex A55 CPU which forms
->>>>>>>> the Application Processor Sub System (APSS) along with standard Qualcomm
->>>>>>>> peripherals like GCC, TLMM, UART, QPIC, and BAM etc... Also, there
->>>>>>>> exists the networking parts such as IPA, MHI, PCIE-EP, EMAC, and Modem
->>>>>>>> etc..
->>>>>>>>
->>>>>>>> This commit adds basic devicetree support.
->>>>>>> You just said that in the first sentence! :P
->>>>>> Sorry :')
->>>>>>>> Signed-off-by: Rohit Agarwal<quic_rohiagar@quicinc.com>
->>>>>>>> ---
->>>>>>>>      arch/arm64/boot/dts/qcom/Makefile      |   1 +
->>>>>>>>      arch/arm64/boot/dts/qcom/sdx75-idp.dts |  18 ++
->>>>>>>>      arch/arm64/boot/dts/qcom/sdx75.dtsi    | 533 +++++++++++++++++++++++++++++++++
->>>>>>>>      3 files changed, 552 insertions(+)
->>>>>>>>      create mode 100644 arch/arm64/boot/dts/qcom/sdx75-idp.dts
->>>>>>>>      create mode 100644 arch/arm64/boot/dts/qcom/sdx75.dtsi
->>>>>>>>
->>>>>>>> diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
->>>>>>>> index d42c595..4fd5a18 100644
->>>>>>>> --- a/arch/arm64/boot/dts/qcom/Makefile
->>>>>>>> +++ b/arch/arm64/boot/dts/qcom/Makefile
->>>>>>>> @@ -173,6 +173,7 @@ dtb-$(CONFIG_ARCH_QCOM)    += sdm845-xiaomi-polaris.dtb
->>>>>>>>      dtb-$(CONFIG_ARCH_QCOM)    += sdm845-shift-axolotl.dtb
->>>>>>>>      dtb-$(CONFIG_ARCH_QCOM)    += sdm850-lenovo-yoga-c630.dtb
->>>>>>>>      dtb-$(CONFIG_ARCH_QCOM)    += sdm850-samsung-w737.dtb
->>>>>>>> +dtb-$(CONFIG_ARCH_QCOM)    += sdx75-idp.dtb
->>>>>>>>      dtb-$(CONFIG_ARCH_QCOM)    += sm4250-oneplus-billie2.dtb
->>>>>>>>      dtb-$(CONFIG_ARCH_QCOM)    += sm6115p-lenovo-j606f.dtb
->>>>>>>>      dtb-$(CONFIG_ARCH_QCOM)    += sm6125-sony-xperia-seine-pdx201.dtb
->>>>>>>> diff --git a/arch/arm64/boot/dts/qcom/sdx75-idp.dts b/arch/arm64/boot/dts/qcom/sdx75-idp.dts
->>>>>>>> new file mode 100644
->>>>>>>> index 0000000..1e08f25
->>>>>>>> --- /dev/null
->>>>>>>> +++ b/arch/arm64/boot/dts/qcom/sdx75-idp.dts
->>>>>>>> @@ -0,0 +1,18 @@
->>>>>>>> +// SPDX-License-Identifier: BSD-3-Clause
->>>>>>>> +/*
->>>>>>>> + * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
->>>>>>>> + */
->>>>>>>> +
->>>>>>>> +/dts-v1/;
->>>>>>>> +
->>>>>>>> +#include "sdx75.dtsi"
->>>>>>>> +
->>>>>>>> +/ {
->>>>>>>> +    model = "Qualcomm Technologies, Inc. SDX75 IDP";
->>>>>>>> +    compatible = "qcom,sdx75-idp", "qcom,sdx75";
->>>>>>>> +
->>>>>>> Stray newline
->>>>>>>
->>>>>>>> +};
->>>>>>>> +
->>>>>>>> +&tlmm {
->>>>>>>> +    gpio-reserved-ranges = <110 6>;
->>>>>>>> +};
->>>>>>>> diff --git a/arch/arm64/boot/dts/qcom/sdx75.dtsi b/arch/arm64/boot/dts/qcom/sdx75.dtsi
->>>>>>>> new file mode 100644
->>>>>>>> index 0000000..3d1646b
->>>>>>>> --- /dev/null
->>>>>>>> +++ b/arch/arm64/boot/dts/qcom/sdx75.dtsi
->>>>>>>> @@ -0,0 +1,533 @@
->>>>>>>> +// SPDX-License-Identifier: BSD-3-Clause
->>>>>>>> +/*
->>>>>>>> + * SDX75 SoC device tree source
->>>>>>>> + *
->>>>>>>> + * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
->>>>>>>> + *
->>>>>>>> + */
->>>>>>>> +
->>>>>>>> +#include <dt-bindings/clock/qcom,rpmh.h>
->>>>>>>> +#include <dt-bindings/interrupt-controller/arm-gic.h>
->>>>>>>> +#include <dt-bindings/soc/qcom,rpmh-rsc.h>
->>>>>>>> +
->>>>>>>> +/ {
->>>>>>>> +    #address-cells = <2>;
->>>>>>>> +    #size-cells = <2>;
->>>>>>>> +    interrupt-parent = <&intc>;
->>>>>>>> +
->>>>>>>> +    chosen: chosen { };
->>>>>>>> +
->>>>>>>> +    memory@80000000 {
->>>>>>> Please sort the top-level nodes alphabetically
->>>>>>>
->>>>>>>> +        device_type = "memory";
->>>>>>>> +        reg = <0 0x80000000 0 0>;
->>>>>>> Please use 0x0 for consistency
->>>>>> Sure, Will make everywhere this as 0x0
->>>>>>>> +    };
->>>>>>>> +
->>>>>>>> +    clocks { };
->>>>>>>> +
->>>>>>>> +    cpus {
->>>>>>>> +        #address-cells = <2>;
->>>>>>>> +        #size-cells = <0>;
->>>>>>>> +
->>>>>>>> +        CPU0: cpu@0 {
->>>>>>>> +            device_type = "cpu";
->>>>>>>> +            compatible = "arm,cortex-a55";
->>>>>>>> +            reg = <0x0 0x0>;
->>>>>>>> +            enable-method = "psci";
->>>>>>>> +            power-domains = <&CPU_PD0>;
->>>>>>>> +            power-domain-names = "psci";
->>>>>>>> +            next-level-cache = <&L2_0>;
->>>>>>> Missing newline before subnode
->>>>>>>
->>>>>>>> +            L2_0: l2-cache {
->>>>>>>> +                compatible = "cache";
->>>>>>>> +                next-level-cache = <&L3_0>;
->>>>>>>> +                L3_0: l3-cache {
->>>>>>>> +                    compatible = "cache";
->>>>>>>> +                };
->>>>>>>> +            };
->>>>>>>> +        };
->>>>>>> [...]
->>>>>>>
->>>>>>>> +        CLUSTER_PD: power-domain-cpu-cluster0 {
->>>>>>>> +            #power-domain-cells = <0>;
->>>>>>>> +            domain-idle-states = <&CLUSTER_SLEEP_0 &CX_RET &CLUSTER_SLEEP_1>;
->>>>>>> Shouldn't CX_RET be the last one?
->>>>>> Here seems to an issue with the naming that I added. CLUSTER_SLEEP_1 should actually be APPS_SLEEP
->>>>>> which is deeper than CX_RET.
->>>>>> So will update the names in the next.
->>>>> Are you sure?
->>>>>
->>>>> Both the PSCI params and longer latency/residency times suggest
->>>>> the reverse!
->>>> The larger values of CLUSTER_SLEEP_1 of entry, exit and min suggests that it is deeper, right?
->>>> When compared to other SoCs, I see the larger values signify that it is deeper.
->>>> Please correct my understanding if I am wrong. Happy to learn !!!
->>> Technically speaking Arm lets silicon vendors implement all this as they
->>> wish, but the general idea is that lower power states correspond to higher
->>> values in each bitfield (which is usually 4-bit- / 1-hex-digit-wide).
->>>
->>> You can see the table 16 in [1] for what Arm recommends. Qualcomm doesn't
->>> follow it though.
->>>
->>> Lower power states usually require more things to go back to life and
->>> hence the delays are higher as the HW needs to be physically switched on.
->>>
->>> Konrad
->>>
->>> [1]https://documentation-service.arm.com/static/5f905b78f86e16515cdc1fca
->> Does lower power state means deeper? If yes, then aren't we on the same page?
->> Higher latencies suggest deeper states indicating more things to bring up again,
->> the ordering of nodes may be a bit confusing here? Like CX_RET should be defined
->> before CLUSTER_SLEEP_1 as CLUSTER_SLEEP_1 is deeper (CLUSTER_SLEEP_1 have higher values).
-> Ohh you're right.. I misread this and was almost sure CX_RET had
-> the higher value.. In this case, yes, it's good to go as-is!
-Yes. Thanks.
-Will update the naming though in the next version as it might be the 
-cause of confusion.
+I suppose we also don't really have a entirely clear picture what
+allocating multiple SVA domains should even do in the iommu driver.
 
-Thanks,
-Rohit.
->
-> Konrad
->
->> CLUSTER_SLEEP_1: cluster-sleep-1 { // Will change this name to something relevant. compatible = "domain-idle-state"; arm,psci-suspend-param = <0x4100b344>; entry-latency-us = <2793>; exit-latency-us = <4023>; min-residency-us = <9826>; }; CX_RET: cx-ret { compatible = "domain-idle-state"; arm,psci-suspend-param = <0x41001344>; entry-latency-us = <2761>; exit-latency-us = <3964>; min-residency-us = <8467>; };
->>
->> This should be reversed?
->>
->> Thanks,
->> Rohit.
->>>> Thanks,
->>>> Rohit.
->>>>> Konrad
->>>>>> Thanks for pointing out.
->>>>>> Rohit.
->>>>>>> Konrad
->>>>>>>> +        };
->>>>>>>> +    };
->>>>>>>> +
->>>>>>>> +    firmware {
->>>>>>>> +        scm: scm {
->>>>>>>> +            compatible = "qcom,scm-sdx75", "qcom,scm";
->>>>>>>> +        };
->>>>>>>> +    };
->>>>>>>> +
->>>>>>>> +    pmu {
->>>>>>>> +        compatible = "arm,armv8-pmuv3";
->>>>>>>> +        interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_HIGH>;
->>>>>>>> +    };
->>>>>>>> +
->>>>>>>> +    reserved-memory {
->>>>>>>> +        #address-cells = <2>;
->>>>>>>> +        #size-cells = <2>;
->>>>>>>> +        ranges;
->>>>>>>> +
->>>>>>>> +        gunyah_hyp_mem: gunyah-hyp@80000000 {
->>>>>>>> +            reg = <0x0 0x80000000 0x0 0x800000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        hyp_elf_package_mem: hyp-elf-package@80800000 {
->>>>>>>> +            reg = <0x0 0x80800000 0x0 0x200000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        access_control_db_mem: access-control-db@81380000 {
->>>>>>>> +            reg = <0x0 0x81380000 0x0 0x80000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        qteetz_mem: qteetz@814e0000 {
->>>>>>>> +            reg = <0x0 0x814e0000 0x0 0x2a0000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        trusted_apps_mem: trusted-apps@81780000 {
->>>>>>>> +            reg = <0x0 0x81780000 0x0 0xa00000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        xbl_ramdump_mem: xbl-ramdump@87a00000 {
->>>>>>>> +            reg = <0x0 0x87a00000 0x0 0x1c0000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        cpucp_fw_mem: cpucp-fw@87c00000 {
->>>>>>>> +            reg = <0x0 0x87c00000 0x0 0x100000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        xbl_dtlog_mem: xbl-dtlog@87d00000 {
->>>>>>>> +            reg = <0x0 0x87d00000 0x0 0x40000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        xbl_sc_mem: xbl-sc@87d40000 {
->>>>>>>> +            reg = <0x0 0x87d40000 0x0 0x40000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        modem_efs_shared_mem: modem-efs-shared@87d80000 {
->>>>>>>> +            reg = <0x0 0x87d80000 0x0 0x10000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        aop_image_mem: aop-image@87e00000 {
->>>>>>>> +            reg = <0x0 0x87e00000 0x0 0x20000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        smem_mem: smem@87e20000 {
->>>>>>>> +            reg = <0x0 0x87e20000 0x0 0xc0000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        aop_cmd_db_mem: aop-cmd-db@87ee0000 {
->>>>>>>> +            compatible = "qcom,cmd-db";
->>>>>>>> +            reg = <0x0 0x87ee0000 0x0 0x20000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        aop_config_mem: aop-config@87f00000 {
->>>>>>>> +            reg = <0x0 0x87f00000 0x0 0x20000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        ipa_fw_mem: ipa-fw@87f20000 {
->>>>>>>> +            reg = <0x0 0x87f20000 0x0 0x10000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        secdata_mem: secdata@87f30000 {
->>>>>>>> +            reg = <0x0 0x87f30000 0x0 0x1000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        tme_crashdump_mem: tme-crashdump@87f31000 {
->>>>>>>> +            reg = <0x0 0x87f31000 0x0 0x40000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        tme_log_mem: tme-log@87f71000 {
->>>>>>>> +            reg = <0x0 0x87f71000 0x0 0x4000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        uefi_log_mem: uefi-log@87f75000 {
->>>>>>>> +            reg = <0x0 0x87f75000 0x0 0x10000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        qdss_mem: qdss@88800000 {
->>>>>>>> +            reg = <0x0 0x88800000 0x0 0x300000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        audio_heap_mem: audio-heap@88b00000 {
->>>>>>>> +            compatible = "shared-dma-pool";
->>>>>>>> +            reg = <0x0 0x88b00000 0x0 0x400000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        mpss_dsmharq_mem: mpss-dsmharq@88f00000 {
->>>>>>>> +            reg = <0x0 0x88f00000 0x0 0x5080000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        q6_mpss_dtb_mem: q6-mpss-dtb@8df80000 {
->>>>>>>> +            reg = <0x0 0x8df80000 0x0 0x80000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        mpssadsp_mem: mpssadsp@8e000000 {
->>>>>>>> +            reg = <0x0 0x8e000000 0x0 0xf400000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        gunyah_trace_buffer_mem: gunyah-trace-buffer@bdb00000 {
->>>>>>>> +            reg = <0x0 0xbdb00000 0x0 0x2000000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        smmu_debug_buf_mem: smmu-debug-buf@bfb00000 {
->>>>>>>> +            reg = <0x0 0xbfb00000 0x0 0x100000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        hyp_smmu_s2_pt_mem: hyp-smmu-s2-pt@bfc00000 {
->>>>>>>> +            reg = <0x0 0xbfc00000 0x0 0x400000>;
->>>>>>>> +            no-map;
->>>>>>>> +        };
->>>>>>>> +    };
->>>>>>>> +
->>>>>>>> +    smem: qcom,smem {
->>>>>>>> +        compatible = "qcom,smem";
->>>>>>>> +        memory-region = <&smem_mem>;
->>>>>>>> +        hwlocks = <&tcsr_mutex 3>;
->>>>>>>> +    };
->>>>>>>> +
->>>>>>>> +    soc: soc {
->>>>>>>> +        compatible = "simple-bus";
->>>>>>>> +        #address-cells = <2>;
->>>>>>>> +        #size-cells = <2>;
->>>>>>>> +        ranges = <0 0 0 0 0x10 0>;
->>>>>>>> +        dma-ranges = <0 0 0 0 0x10 0>;
->>>>>>>> +
->>>>>>>> +        tcsr_mutex: hwlock@1f40000 {
->>>>>>>> +            compatible = "qcom,tcsr-mutex";
->>>>>>>> +            reg = <0x0 0x01f40000 0x0 0x40000>;
->>>>>>>> +            #hwlock-cells = <1>;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        pdc: interrupt-controller@b220000 {
->>>>>>>> +            compatible = "qcom,sdx75-pdc", "qcom,pdc";
->>>>>>>> +            reg = <0x0 0xb220000 0x0 0x30000>,
->>>>>>>> +                  <0x0 0x174000f0 0x0 0x64>;
->>>>>>>> +            qcom,pdc-ranges = <0 147 52>,
->>>>>>>> +                      <52 266 32>,
->>>>>>>> +                      <84 500 59>;
->>>>>>>> +            #interrupt-cells = <2>;
->>>>>>>> +            interrupt-parent = <&intc>;
->>>>>>>> +            interrupt-controller;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        tlmm: pinctrl@f000000 {
->>>>>>>> +            compatible = "qcom,sdx75-tlmm";
->>>>>>>> +            reg = <0x0 0x0f000000 0x0 0x400000>;
->>>>>>>> +            interrupts = <GIC_SPI 212 IRQ_TYPE_LEVEL_HIGH>;
->>>>>>>> +            gpio-controller;
->>>>>>>> +            #gpio-cells = <2>;
->>>>>>>> +            gpio-ranges = <&tlmm 0 0 133>;
->>>>>>>> +            interrupt-controller;
->>>>>>>> +            #interrupt-cells = <2>;
->>>>>>>> +            wakeup-parent = <&pdc>;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        apps_smmu: iommu@15000000 {
->>>>>>>> +            compatible = "qcom,sdx75-smmu-500", "arm,mmu-500";
->>>>>>>> +            reg = <0x0 0x15000000 0x0 0x40000>;
->>>>>>>> +            #iommu-cells = <2>;
->>>>>>>> +            #global-interrupts = <2>;
->>>>>>>> +            dma-coherent;
->>>>>>>> +            interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 68 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 69 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 104 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 105 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 298 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 299 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 300 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 301 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 302 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 303 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 304 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 305 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 306 IRQ_TYPE_LEVEL_HIGH>;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        intc: interrupt-controller@17200000 {
->>>>>>>> +            compatible = "arm,gic-v3";
->>>>>>>> +            #interrupt-cells = <3>;
->>>>>>>> +            interrupt-controller;
->>>>>>>> +            #redistributor-regions = <1>;
->>>>>>>> +            redistributor-stride = <0x0 0x20000>;
->>>>>>>> +            reg = <0x0 0x17200000 0x0 0x10000>,
->>>>>>>> +                  <0x0 0x17260000 0x0 0x80000>;
->>>>>>>> +            interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        timer@17420000 {
->>>>>>>> +            compatible = "arm,armv7-timer-mem";
->>>>>>>> +            reg = <0x0 0x17420000 0x0 0x1000>;
->>>>>>>> +            #address-cells = <1>;
->>>>>>>> +            #size-cells = <1>;
->>>>>>>> +            ranges = <0 0 0 0x20000000>;
->>>>>>>> +
->>>>>>>> +            frame@17421000 {
->>>>>>>> +                reg = <0x17421000 0x1000>,
->>>>>>>> +                      <0x17422000 0x1000>;
->>>>>>>> +                frame-number = <0>;
->>>>>>>> +                interrupts = <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                         <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>;
->>>>>>>> +            };
->>>>>>>> +
->>>>>>>> +            frame@17423000 {
->>>>>>>> +                reg = <0x17423000 0x1000>;
->>>>>>>> +                frame-number = <1>;
->>>>>>>> +                interrupts = <GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>;
->>>>>>>> +                status = "disabled";
->>>>>>>> +            };
->>>>>>>> +
->>>>>>>> +            frame@17425000 {
->>>>>>>> +                reg = <0x17425000 0x1000>;
->>>>>>>> +                frame-number = <2>;
->>>>>>>> +                interrupts = <GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>;
->>>>>>>> +                status = "disabled";
->>>>>>>> +            };
->>>>>>>> +
->>>>>>>> +            frame@17427000 {
->>>>>>>> +                reg = <0x17427000 0x1000>;
->>>>>>>> +                frame-number = <3>;
->>>>>>>> +                interrupts = <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
->>>>>>>> +                status = "disabled";
->>>>>>>> +            };
->>>>>>>> +
->>>>>>>> +            frame@17429000 {
->>>>>>>> +                reg = <0x17429000 0x1000>;
->>>>>>>> +                frame-number = <4>;
->>>>>>>> +                interrupts = <GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>;
->>>>>>>> +                status = "disabled";
->>>>>>>> +            };
->>>>>>>> +
->>>>>>>> +            frame@1742b000 {
->>>>>>>> +                reg = <0x1742b000 0x1000>;
->>>>>>>> +                frame-number = <5>;
->>>>>>>> +                interrupts = <GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
->>>>>>>> +                status = "disabled";
->>>>>>>> +            };
->>>>>>>> +
->>>>>>>> +            frame@1742d000 {
->>>>>>>> +                reg = <0x1742d000 0x1000>;
->>>>>>>> +                frame-number = <6>;
->>>>>>>> +                interrupts = <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>;
->>>>>>>> +                status = "disabled";
->>>>>>>> +            };
->>>>>>>> +        };
->>>>>>>> +
->>>>>>>> +        apps_rsc: rsc@17a00000 {
->>>>>>>> +            label = "apps_rsc";
->>>>>>>> +            compatible = "qcom,rpmh-rsc";
->>>>>>>> +            reg = <0x0 0x17a00000 0x0 0x10000>,
->>>>>>>> +                  <0x0 0x17a10000 0x0 0x10000>,
->>>>>>>> +                  <0x0 0x17a20000 0x0 0x10000>;
->>>>>>>> +            reg-names = "drv-0", "drv-1", "drv-2";
->>>>>>>> +            interrupts = <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
->>>>>>>> +                     <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>;
->>>>>>>> +
->>>>>>>> +            power-domains = <&CLUSTER_PD>;
->>>>>>>> +            qcom,tcs-offset = <0xd00>;
->>>>>>>> +            qcom,drv-id = <2>;
->>>>>>>> +            qcom,tcs-config = <ACTIVE_TCS    3>,
->>>>>>>> +                      <SLEEP_TCS     2>,
->>>>>>>> +                      <WAKE_TCS      2>,
->>>>>>>> +                      <CONTROL_TCS   0>;
->>>>>>>> +
->>>>>>>> +            apps_bcm_voter: bcm_voter {
->>>>>>>> +                compatible = "qcom,bcm-voter";
->>>>>>>> +            };
->>>>>>>> +        };
->>>>>>>> +    };
->>>>>>>> +
->>>>>>>> +    timer {
->>>>>>>> +        compatible = "arm,armv8-timer";
->>>>>>>> +        interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
->>>>>>>> +                 <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
->>>>>>>> +                 <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
->>>>>>>> +                 <GIC_PPI 12 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>;
->>>>>>>> +    };
->>>>>>>> +};
+The driver would like to share the ASID, but things are much cleaner
+for everything if the driver model has ASID 1:1 with the iommu_domain.
+
+It suggests we are missing some core code in iommu_sva_bind_device()
+to try to re-use existing SVA iommu_domains. This would certainly be
+better than trying to teach every driver how to share and refcount
+its ASID concept...
+
+Today we have this super hacky iommu_get_domain_for_dev_pasid()
+thing that allows SVA domain reuse for a single device.
+
+Possibly what we should do is conver the u32 pasid in the mm_struct to
+a struct iommu_mm_data * and put alot more stuff in there. eg a linked
+list of all SVA domains.
+
+> Splitting this part into a follow-up patch series would definitely be
+> easier and helpful if you're all ok with it :) .
+
+I think splitting it into a series to re-organize the way ste/cd stuff
+works is a nice contained topic.
+
+Adjusting the way the ASID works with SVA is another good topic
+
+And so on
+
+Jason
