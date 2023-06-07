@@ -1,81 +1,115 @@
-Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com [209.85.215.171])
+Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 460203B3E0
-	for <iommu@lists.linux.dev>; Wed,  7 Jun 2023 23:04:31 +0000 (UTC)
-Received: by mail-pg1-f171.google.com with SMTP id 41be03b00d2f7-5144a9c11c7so7290093a12.2
-        for <iommu@lists.linux.dev>; Wed, 07 Jun 2023 16:04:31 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 317CF3B3E0
+	for <iommu@lists.linux.dev>; Wed,  7 Jun 2023 23:20:06 +0000 (UTC)
+Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-4f642a24568so46890e87.2
+        for <iommu@lists.linux.dev>; Wed, 07 Jun 2023 16:20:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686179070; x=1688771070;
-        h=content-transfer-encoding:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        d=linaro.org; s=google; t=1686180005; x=1688772005;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=XEQmXBu5dD2JANi2wiTQk+OaHV1+Cn5N+E2Jx9Z9qA4=;
-        b=RylNv+3BIY+SkOFVAD23uBHZj3gl+6CGLSkAPg+jewP+TXl+yMgPLX6SW4utvQFk5H
-         EH7z/qzntgcgtmMbuBotoKMWdu1zz6kl61hyvmvMZemO0yBPxR5qJxn+hlm5VEyDdIwX
-         ASrRHvjOICNXkznM1ujPM6yNPppmEjhbN5H/OcrhR9xY+BAYQUVBWXyfAd28VEcEAGRJ
-         W6uwAK3z8RHShgB+B3TR+0qli2YJ9J5nN2uHEiUIy7UAHQcBknMD0d05qMnd5aL4gqcd
-         LdwMS7BKs1bMUBiJQvpGkweej2mWnwYJKjDUZ1rkkTAvpN2mrpqTEaFdTLdsRAZvO1eR
-         yk9g==
+        bh=VyY/6IODHDlyeeop9FZuaK8o19bhh4JMPkyiNt+oF7I=;
+        b=A9Vo0XkJIpgWyLRpiuu4l+nqzYPZyLpVqVdvCiGXgVQ1bC5U/NMMhRPj2tMBh1pHlz
+         4E3UGxsRvR8xbq/CTMWAZEoIbXITXi8fPElZ5zapepohNCtK/0DWv/89o6AXmp0itP2O
+         TWMW2xpyJylMKi+csThqo2mUbBuD8VdyBd3oySuu7CTWcEQDRdQv4GdGXv03pHoJastY
+         B3nTDZc8VnZ9emMvGY4b/6QPd2nP+3NfvlmtSsvIqXvj+O+ehhxQAoT3W9qganeqYX/+
+         icJ+rMTamrIocafOYueceNpwIpEAWwRFJ2UcGgRoTmfT0X3GKxwB29afKvLfGfk0+K58
+         iEyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686179070; x=1688771070;
-        h=content-transfer-encoding:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20221208; t=1686180005; x=1688772005;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=XEQmXBu5dD2JANi2wiTQk+OaHV1+Cn5N+E2Jx9Z9qA4=;
-        b=Q0LXMhFiRPVFribE0i9pHx5JI4WXZVLUdnVyYHBqPvqlu8wis4NY68VGrmpVlWGH4G
-         twKUGXXWX7soqQtTNY82cmBySpLq+Z5RtIIhsNcdonIKCr9Gb+1lEVNyq68T+WYj1x7e
-         ++XwAUILdUasdLvZILD9++crmPeMk1ENYg1PPZQmquHWJALACW2pmNjGvKYPeEps2v4m
-         q+fRNiv07xlk5hwGU/ut6SnmgBOF149QwtcAjuOrcT6HK31GlbyFt4AKq3x2eSMSK5PS
-         6Gd4yLC+2wjCW+a0VeMnBsbK0n83/LuL5iI/5htYa9NU+DTlEJFYbivQWKbo/OEXUpBq
-         mYsA==
-X-Gm-Message-State: AC+VfDyJTmGiLaDUW6K5DlHoG7h8XEeNwTV+7XM3lcWvJeSONjKu9v/3
-	ryMzXtvoirbfp6FXV6YheWpsbQ769ggmdoytAWM=
-X-Google-Smtp-Source: ACHHUZ72aumlNuKAoBEIFQvO8H4ETvfhLNixmshgtGFlUP5g7IApmZyyIjopu2EXDuiSlejJtibjp5Y+wkJnk1Q5LAs=
-X-Received: by 2002:a17:90b:4a08:b0:256:4217:b955 with SMTP id
- kk8-20020a17090b4a0800b002564217b955mr5585682pjb.35.1686179070356; Wed, 07
- Jun 2023 16:04:30 -0700 (PDT)
+        bh=VyY/6IODHDlyeeop9FZuaK8o19bhh4JMPkyiNt+oF7I=;
+        b=ATiLEtJOZA0BxANHrq2KAsu66pnNeknKqj2rwb5XjJI+jri84s/nu+uo/943u9mNtl
+         s/BYuwA4UUy42AR71tgfvZv3hDkc/zyBfzSTwyWIQnVg4KOIhkP8Bl5DQfLsV3wMTVD6
+         iV+0Tyrsuh5txHeJgInhQ6+C/WxL2XMdaPPDxxkFxW7TIY2b7xEhziPQXq3KpjXc3t0S
+         EK1LByFRvfvmP0UGwPyoN4AO1mtmqq/IcpBjm9DJIw/pJc8E+kqIqdg2hfHkGZ+pQbIU
+         W6wkpnYaMxkgAf3J5fI6IbajZOmdMKdcj+zBHsz1fXP5jsK/LpWEajf9biIi/Q9PFTJM
+         7o3g==
+X-Gm-Message-State: AC+VfDyly232BizXboIubbg7uHyi36qnIjvKRLUogql+3zi4XeLHGNw7
+	MZTx6DAXNR90ZAnLHhxE2G6SFg==
+X-Google-Smtp-Source: ACHHUZ7hRM7SbUTZb8qBUPmUIUaSTu0RbpCLtAbbhmsR/dpPRr3/MkmoarjoWZTP2QKK3G21z5N7rg==
+X-Received: by 2002:ac2:430e:0:b0:4f6:2e4e:e41b with SMTP id l14-20020ac2430e000000b004f62e4ee41bmr2199648lfh.3.1686180004908;
+        Wed, 07 Jun 2023 16:20:04 -0700 (PDT)
+Received: from eriador.lan (dzdqv0yyyyyyyyyyybcwt-3.rev.dnainternet.fi. [2001:14ba:a0db:1f00::8a5])
+        by smtp.gmail.com with ESMTPSA id h18-20020a197012000000b004f00189e1dcsm1908952lfc.117.2023.06.07.16.20.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Jun 2023 16:20:04 -0700 (PDT)
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+To: Rob Clark <robdclark@gmail.com>,
+	Abhinav Kumar <quic_abhinavk@quicinc.com>,
+	Sean Paul <sean@poorly.run>,
+	David Airlie <airlied@gmail.com>,
+	Daniel Vetter <daniel@ffwll.ch>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Krishna Manikandan <quic_mkrishn@quicinc.com>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+	linux-arm-msm@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	freedreno@lists.freedesktop.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Konrad Dybcio <konrad.dybcio@somainline.org>
+Subject: Re: [PATCH v6 00/12] SM63(50|75) DPU support
+Date: Thu,  8 Jun 2023 02:20:02 +0300
+Message-Id: <168617996601.1879421.15966890603577062057.b4-ty@linaro.org>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230411-topic-straitlagoon_mdss-v6-0-dee6a882571b@linaro.org>
+References: <20230411-topic-straitlagoon_mdss-v6-0-dee6a882571b@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAKgT0UezciLjHacOx372+v8MZkDf22D5Thn82n-07xxKy_0FTQ@mail.gmail.com>
-In-Reply-To: <CAKgT0UezciLjHacOx372+v8MZkDf22D5Thn82n-07xxKy_0FTQ@mail.gmail.com>
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Wed, 7 Jun 2023 16:03:54 -0700
-Message-ID: <CAKgT0UfMeVOz6AOqSvVvzpsedGDiXCNQrjM+4KDv7qJJ1orpsw@mail.gmail.com>
-Subject: Re: Question about reserved_regions w/ Intel IOMMU
-To: LKML <linux-kernel@vger.kernel.org>, linux-pci <linux-pci@vger.kernel.org>, 
-	iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-On Wed, Jun 7, 2023 at 3:40=E2=80=AFPM Alexander Duyck
-<alexander.duyck@gmail.com> wrote:
->
-> I am running into a DMA issue that appears to be a conflict between
-> ACS and IOMMU. As per the documentation I can find, the IOMMU is
-> supposed to create reserved regions for MSI and the memory window
-> behind the root port. However looking at reserved_regions I am not
-> seeing that. I only see the reservation for the MSI.
->
-> So for example with an enabled NIC and iommu enabled w/o passthru I am se=
-eing:
-> # cat /sys/bus/pci/devices/0000\:83\:00.0/iommu_group/reserved_regions
-> 0x00000000fee00000 0x00000000feefffff msi
->
-> Shouldn't there also be a memory window for the region behind the root
-> port to prevent any possible peer-to-peer access?
 
-Since the iommu portion of the email bounced I figured I would fix
-that and provide some additional info.
+On Tue, 06 Jun 2023 14:43:51 +0200, Konrad Dybcio wrote:
+> v5 -> v6:
+> - Drop unnecessary items: level in bindings
+> - Use INTF_SC7180_MASK for 6375 to avoid enabling DPU_INTF_DATA_COMPRESS on DPU6
+> - Pick up tags
+> 
+> v5: https://lore.kernel.org/r/20230411-topic-straitlagoon_mdss-v5-0-998b4d2f7dd1@linaro.org
+> 
+> [...]
 
-I added some instrumentation to the kernel to dump the resources found
-in iova_reserve_pci_windows. From what I can tell it is finding the
-correct resources for the Memory and Prefetchable regions behind the
-root port. It seems to be calling reserve_iova which is successfully
-allocating an iova to reserve the region.
+Applied, thanks!
 
-However still no luck on why it isn't showing up in reserved_regions.
+[01/12] dt-bindings: display/msm: dsi-controller-main: Add SM6350
+        https://gitlab.freedesktop.org/lumag/msm/-/commit/e99b2d0670a7
+[02/12] dt-bindings: display/msm: dsi-controller-main: Add SM6375
+        https://gitlab.freedesktop.org/lumag/msm/-/commit/27a869221bb7
+[03/12] dt-bindings: display/msm: sc7180-dpu: Describe SM6350 and SM6375
+        https://gitlab.freedesktop.org/lumag/msm/-/commit/ed41005f5b7c
+[04/12] dt-bindings: display/msm: Add SM6350 MDSS
+        https://gitlab.freedesktop.org/lumag/msm/-/commit/3b7502b0c205
+[05/12] dt-bindings: display/msm: Add SM6375 MDSS
+        https://gitlab.freedesktop.org/lumag/msm/-/commit/2a5c1021bc77
+[06/12] drm/msm/dpu: Add SM6350 support
+        https://gitlab.freedesktop.org/lumag/msm/-/commit/3186acba5cdc
+[07/12] drm/msm: mdss: Add SM6350 support
+        https://gitlab.freedesktop.org/lumag/msm/-/commit/c2c1217e61bd
+[08/12] drm/msm/dpu: Add SM6375 support
+        https://gitlab.freedesktop.org/lumag/msm/-/commit/27f0df03f3ff
+[09/12] drm/msm: mdss: Add SM6375 support
+        https://gitlab.freedesktop.org/lumag/msm/-/commit/5ff3d3a0a09e
+
+Best regards,
+-- 
+Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
