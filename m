@@ -1,49 +1,92 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57F01139F
-	for <iommu@lists.linux.dev>; Wed,  7 Jun 2023 13:13:01 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 33B3F6732D; Wed,  7 Jun 2023 15:12:58 +0200 (CEST)
-Date: Wed, 7 Jun 2023 15:12:57 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 213B2139F
+	for <iommu@lists.linux.dev>; Wed,  7 Jun 2023 13:25:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+	Content-ID:Content-Description:In-Reply-To:References;
+	bh=/2ulYW69Fet+oQidjF0EozGV7t1Yw4gVukyr/Zwn4NI=; b=aSYlXJYrUG9pogF6BrsKOLkr3d
+	kaC12Xqhh/9MC/zCfVYGWt1reUOEbN5jFS7Z6z8gF63YwkwJU+nHV93D3/ZB3QBMK98DWX0ELlcAF
+	eVuSvlauRr+jkv+SxCd/xUgSTU2KDJW1h5L6jNrtevLdviK1sYUrviAijzbMtBiUBbckG90oL04vq
+	0vNOCA3K9YR7XTrKoXA9aAeglmQ+eQ+RcDPs54/CURN45PbDALIrTixKVMIVMa3tnFTwq/7P3HfhH
+	oCq8s8DR0CvnhqdrCG6JiqJ5S/s9H0GEWfpBa5bYsJB10w778Wd6pTQVK2nybgniQ+I7e/mljumiA
+	I+1CS0tA==;
+Received: from 2a02-8389-2341-5b80-8c8c-28f8-1274-e038.cable.dynamic.v6.surfer.at ([2a02:8389:2341:5b80:8c8c:28f8:1274:e038] helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+	id 1q6tAA-0065rT-1N;
+	Wed, 07 Jun 2023 13:25:22 +0000
 From: Christoph Hellwig <hch@lst.de>
-To: Juergen Gross <jgross@suse.com>
-Cc: Marek =?iso-8859-1?Q?Marczykowski-G=F3recki?= <marmarek@invisiblethingslab.com>,
-	Christoph Hellwig <hch@lst.de>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-	"H. Peter Anvin" <hpa@zytor.com>, Ben Skeggs <bskeggs@redhat.com>,
-	Karol Herbst <kherbst@redhat.com>, Lyude Paul <lyude@redhat.com>,
-	xen-devel@lists.xenproject.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, nouveau@lists.freedesktop.org
-Subject: Re: [PATCH 2/4] x86: always initialize xen-swiotlb when
- xen-pcifront is enabling
-Message-ID: <20230607131257.GB19206@lst.de>
-References: <20230518134253.909623-1-hch@lst.de> <20230518134253.909623-3-hch@lst.de> <ZGZr/xgbUmVqpOpN@mail-itl> <20230519040405.GA10818@lst.de> <ZGdLErBzi9MANL3i@mail-itl> <c5defff8-882e-3482-0de1-e50a4bcdfa99@suse.com>
+To: jgross@suse.com,
+	sstabellini@kernel.org,
+	oleksandr_tyshchenko@epam.com
+Cc: xen-devel@lists.xenproject.org,
+	iommu@lists.linux.dev
+Subject: [PATCH, RFC] swiotlb-xen: fix dma to physical address translation for cache operations
+Date: Wed,  7 Jun 2023 15:25:18 +0200
+Message-Id: <20230607132518.15381-1-hch@lst.de>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c5defff8-882e-3482-0de1-e50a4bcdfa99@suse.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-On Mon, May 22, 2023 at 10:37:09AM +0200, Juergen Gross wrote:
-> In normal cases PCI passthrough in PV guests requires to start the guest
-> with e820_host=1. So it should be rather easy to limit allocating the
-> 64MB in PV guests to the cases where the memory map has non-RAM regions
-> especially in the first 1MB of the memory.
->
-> This will cover even hotplug cases. The only case not covered would be a
-> guest started with e820_host=1 even if no PCI passthrough was planned.
-> But this should be rather rare (at least I hope so).
+All other places in swiotlb-xen got from PFN to BFN and then call
+phys_to_dma on the result or vice versa, but the reverse mapping used
+for cache maintenance skips the BFN to PFN mapping.
 
-So is this an ACK for the patch and can we go ahead with it?
+[Note: only found by code inspection, please review very carefully!]
 
-(I'd still like to merge swiotlb-xen into swiotlb eventually, but it's
-probably not going to happen this merge window)
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ drivers/xen/swiotlb-xen.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+index 67aa74d201627d..e4620303138b4d 100644
+--- a/drivers/xen/swiotlb-xen.c
++++ b/drivers/xen/swiotlb-xen.c
+@@ -234,7 +234,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
+ 
+ done:
+ 	if (!dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)) {
+-		if (pfn_valid(PFN_DOWN(dma_to_phys(dev, dev_addr))))
++		if (pfn_valid(PFN_DOWN(phys)))
+ 			arch_sync_dma_for_device(phys, size, dir);
+ 		else
+ 			xen_dma_sync_for_device(dev, dev_addr, size, dir);
+@@ -258,7 +258,7 @@ static void xen_swiotlb_unmap_page(struct device *hwdev, dma_addr_t dev_addr,
+ 	BUG_ON(dir == DMA_NONE);
+ 
+ 	if (!dev_is_dma_coherent(hwdev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)) {
+-		if (pfn_valid(PFN_DOWN(dma_to_phys(hwdev, dev_addr))))
++		if (pfn_valid(PFN_DOWN(paddr)))
+ 			arch_sync_dma_for_cpu(paddr, size, dir);
+ 		else
+ 			xen_dma_sync_for_cpu(hwdev, dev_addr, size, dir);
+@@ -276,7 +276,7 @@ xen_swiotlb_sync_single_for_cpu(struct device *dev, dma_addr_t dma_addr,
+ 	phys_addr_t paddr = xen_dma_to_phys(dev, dma_addr);
+ 
+ 	if (!dev_is_dma_coherent(dev)) {
+-		if (pfn_valid(PFN_DOWN(dma_to_phys(dev, dma_addr))))
++		if (pfn_valid(PFN_DOWN(paddr)))
+ 			arch_sync_dma_for_cpu(paddr, size, dir);
+ 		else
+ 			xen_dma_sync_for_cpu(dev, dma_addr, size, dir);
+@@ -296,7 +296,7 @@ xen_swiotlb_sync_single_for_device(struct device *dev, dma_addr_t dma_addr,
+ 		swiotlb_sync_single_for_device(dev, paddr, size, dir);
+ 
+ 	if (!dev_is_dma_coherent(dev)) {
+-		if (pfn_valid(PFN_DOWN(dma_to_phys(dev, dma_addr))))
++		if (pfn_valid(PFN_DOWN(paddr)))
+ 			arch_sync_dma_for_device(paddr, size, dir);
+ 		else
+ 			xen_dma_sync_for_device(dev, dma_addr, size, dir);
+-- 
+2.39.2
+
