@@ -1,108 +1,81 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com [209.85.215.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C353E34CF6;
-	Wed,  7 Jun 2023 20:20:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BFC7C4339B;
-	Wed,  7 Jun 2023 20:20:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1686169250;
-	bh=00iCl4bqdVstjkAl+RaZcwQs98xts3crNbxHDEZdYqY=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=N6CYzpv4SwBv7wtCsMHoxmI4HXsQx7jDllt56AQomozBfzXGD//94r/hlVwQcGXPj
-	 LLaj3BJnl9PAEgLuDV8Qm5rmmOvPbMPxaMn75OumC5vdFHNXT43q0e3DGi0PEUtt2H
-	 dDlNd3Wf8pMpdO94DxKbDvWF23GJFAlBCsHctHlA=
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: stable@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	patches@lists.linux.dev,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev,
-	Conor Dooley <conor@kernel.org>,
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-	Joerg Roedel <jroedel@suse.de>,
-	Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 6.3 010/286] iommu: Make IPMMU_VMSA dependencies more strict
-Date: Wed,  7 Jun 2023 22:11:49 +0200
-Message-ID: <20230607200923.333906281@linuxfoundation.org>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20230607200922.978677727@linuxfoundation.org>
-References: <20230607200922.978677727@linuxfoundation.org>
-User-Agent: quilt/0.67
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 460203B3E0
+	for <iommu@lists.linux.dev>; Wed,  7 Jun 2023 23:04:31 +0000 (UTC)
+Received: by mail-pg1-f171.google.com with SMTP id 41be03b00d2f7-5144a9c11c7so7290093a12.2
+        for <iommu@lists.linux.dev>; Wed, 07 Jun 2023 16:04:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686179070; x=1688771070;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=XEQmXBu5dD2JANi2wiTQk+OaHV1+Cn5N+E2Jx9Z9qA4=;
+        b=RylNv+3BIY+SkOFVAD23uBHZj3gl+6CGLSkAPg+jewP+TXl+yMgPLX6SW4utvQFk5H
+         EH7z/qzntgcgtmMbuBotoKMWdu1zz6kl61hyvmvMZemO0yBPxR5qJxn+hlm5VEyDdIwX
+         ASrRHvjOICNXkznM1ujPM6yNPppmEjhbN5H/OcrhR9xY+BAYQUVBWXyfAd28VEcEAGRJ
+         W6uwAK3z8RHShgB+B3TR+0qli2YJ9J5nN2uHEiUIy7UAHQcBknMD0d05qMnd5aL4gqcd
+         LdwMS7BKs1bMUBiJQvpGkweej2mWnwYJKjDUZ1rkkTAvpN2mrpqTEaFdTLdsRAZvO1eR
+         yk9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686179070; x=1688771070;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=XEQmXBu5dD2JANi2wiTQk+OaHV1+Cn5N+E2Jx9Z9qA4=;
+        b=Q0LXMhFiRPVFribE0i9pHx5JI4WXZVLUdnVyYHBqPvqlu8wis4NY68VGrmpVlWGH4G
+         twKUGXXWX7soqQtTNY82cmBySpLq+Z5RtIIhsNcdonIKCr9Gb+1lEVNyq68T+WYj1x7e
+         ++XwAUILdUasdLvZILD9++crmPeMk1ENYg1PPZQmquHWJALACW2pmNjGvKYPeEps2v4m
+         q+fRNiv07xlk5hwGU/ut6SnmgBOF149QwtcAjuOrcT6HK31GlbyFt4AKq3x2eSMSK5PS
+         6Gd4yLC+2wjCW+a0VeMnBsbK0n83/LuL5iI/5htYa9NU+DTlEJFYbivQWKbo/OEXUpBq
+         mYsA==
+X-Gm-Message-State: AC+VfDyJTmGiLaDUW6K5DlHoG7h8XEeNwTV+7XM3lcWvJeSONjKu9v/3
+	ryMzXtvoirbfp6FXV6YheWpsbQ769ggmdoytAWM=
+X-Google-Smtp-Source: ACHHUZ72aumlNuKAoBEIFQvO8H4ETvfhLNixmshgtGFlUP5g7IApmZyyIjopu2EXDuiSlejJtibjp5Y+wkJnk1Q5LAs=
+X-Received: by 2002:a17:90b:4a08:b0:256:4217:b955 with SMTP id
+ kk8-20020a17090b4a0800b002564217b955mr5585682pjb.35.1686179070356; Wed, 07
+ Jun 2023 16:04:30 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <CAKgT0UezciLjHacOx372+v8MZkDf22D5Thn82n-07xxKy_0FTQ@mail.gmail.com>
+In-Reply-To: <CAKgT0UezciLjHacOx372+v8MZkDf22D5Thn82n-07xxKy_0FTQ@mail.gmail.com>
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Wed, 7 Jun 2023 16:03:54 -0700
+Message-ID: <CAKgT0UfMeVOz6AOqSvVvzpsedGDiXCNQrjM+4KDv7qJJ1orpsw@mail.gmail.com>
+Subject: Re: Question about reserved_regions w/ Intel IOMMU
+To: LKML <linux-kernel@vger.kernel.org>, linux-pci <linux-pci@vger.kernel.org>, 
+	iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Randy Dunlap <rdunlap@infradead.org>
+On Wed, Jun 7, 2023 at 3:40=E2=80=AFPM Alexander Duyck
+<alexander.duyck@gmail.com> wrote:
+>
+> I am running into a DMA issue that appears to be a conflict between
+> ACS and IOMMU. As per the documentation I can find, the IOMMU is
+> supposed to create reserved regions for MSI and the memory window
+> behind the root port. However looking at reserved_regions I am not
+> seeing that. I only see the reservation for the MSI.
+>
+> So for example with an enabled NIC and iommu enabled w/o passthru I am se=
+eing:
+> # cat /sys/bus/pci/devices/0000\:83\:00.0/iommu_group/reserved_regions
+> 0x00000000fee00000 0x00000000feefffff msi
+>
+> Shouldn't there also be a memory window for the region behind the root
+> port to prevent any possible peer-to-peer access?
 
-[ Upstream commit e332003bb216a9f91e08004b9e2de0745f321290 ]
+Since the iommu portion of the email bounced I figured I would fix
+that and provide some additional info.
 
-On riscv64, linux-next-20233030 (and for several days earlier),
-there is a kconfig warning:
+I added some instrumentation to the kernel to dump the resources found
+in iova_reserve_pci_windows. From what I can tell it is finding the
+correct resources for the Memory and Prefetchable regions behind the
+root port. It seems to be calling reserve_iova which is successfully
+allocating an iova to reserve the region.
 
-WARNING: unmet direct dependencies detected for IOMMU_IO_PGTABLE_LPAE
-  Depends on [n]: IOMMU_SUPPORT [=y] && (ARM || ARM64 || COMPILE_TEST [=n]) && !GENERIC_ATOMIC64 [=n]
-  Selected by [y]:
-  - IPMMU_VMSA [=y] && IOMMU_SUPPORT [=y] && (ARCH_RENESAS [=y] || COMPILE_TEST [=n]) && !GENERIC_ATOMIC64 [=n]
-
-and build errors:
-
-riscv64-linux-ld: drivers/iommu/io-pgtable-arm.o: in function `.L140':
-io-pgtable-arm.c:(.init.text+0x1e8): undefined reference to `alloc_io_pgtable_ops'
-riscv64-linux-ld: drivers/iommu/io-pgtable-arm.o: in function `.L168':
-io-pgtable-arm.c:(.init.text+0xab0): undefined reference to `free_io_pgtable_ops'
-riscv64-linux-ld: drivers/iommu/ipmmu-vmsa.o: in function `.L140':
-ipmmu-vmsa.c:(.text+0xbc4): undefined reference to `free_io_pgtable_ops'
-riscv64-linux-ld: drivers/iommu/ipmmu-vmsa.o: in function `.L0 ':
-ipmmu-vmsa.c:(.text+0x145e): undefined reference to `alloc_io_pgtable_ops'
-
-Add ARM || ARM64 || COMPILE_TEST dependencies to IPMMU_VMSA to prevent
-these issues, i.e., so that ARCH_RENESAS on RISC-V is not allowed.
-
-This makes the ARCH dependencies become:
-	depends on (ARCH_RENESAS && (ARM || ARM64)) || COMPILE_TEST
-but that can be a bit hard to read.
-
-Fixes: 8292493c22c8 ("riscv: Kconfig.socs: Add ARCH_RENESAS kconfig option")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Suggested-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev
-Cc: Conor Dooley <conor@kernel.org>
-Cc: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/20230330165817.21920-1-rdunlap@infradead.org
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iommu/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 889c7efd050bc..18e68fbaec884 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -287,6 +287,7 @@ config EXYNOS_IOMMU_DEBUG
- config IPMMU_VMSA
- 	bool "Renesas VMSA-compatible IPMMU"
- 	depends on ARCH_RENESAS || COMPILE_TEST
-+	depends on ARM || ARM64 || COMPILE_TEST
- 	depends on !GENERIC_ATOMIC64	# for IOMMU_IO_PGTABLE_LPAE
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
--- 
-2.39.2
-
-
-
+However still no luck on why it isn't showing up in reserved_regions.
