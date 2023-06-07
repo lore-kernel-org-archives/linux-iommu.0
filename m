@@ -1,150 +1,146 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A0AF7C
-	for <iommu@lists.linux.dev>; Wed,  7 Jun 2023 03:53:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686110011; x=1717646011;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=2oi385LpKq1ZlutXYkuJeGeLsStTSAV0zDtArWRKxVY=;
-  b=jxfucnoRA/igVBPR7jw/5756qnPELVsXdqeTb0uL0dTlGWAtXcOz3iZA
-   OhtioQQHPMaHRWGGIgPIqBNTUYuVKS/Mi3SG23JTcl+WRj20oAohQ4cWt
-   x6DlFwlU8X3xXiHx599Q0IQ2fGGgnYOo74uLI5dJqHyuPHO49J4TCMMZm
-   wBPadY0MkKeN5fpCNeP+JBk2SaTnc61uqjnhxTkAzdP9Ekq0oKiBgiA3L
-   9EvdyIqS6B50imPp/UBdky30yQ11SeZ3Y+aaJ7ef3GgxTUgFLlIZ1NsFE
-   mCwE4Vm0OUHR6W9pKOmz6EoCCsg7rK65qpM/ernAJ8FUTMyB4c49oY8+3
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10733"; a="385186357"
-X-IronPort-AV: E=Sophos;i="6.00,222,1681196400"; 
-   d="scan'208";a="385186357"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2023 20:53:31 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10733"; a="799125371"
-X-IronPort-AV: E=Sophos;i="6.00,222,1681196400"; 
-   d="scan'208";a="799125371"
-Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by FMSMGA003.fm.intel.com with ESMTP; 06 Jun 2023 20:53:28 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Nicolin Chen <nicolinc@nvidia.com>
-Cc: iommu@lists.linux.dev,
-	kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 2/2] iommu/vt-d: Remove rmrr check in domain attaching device path
-Date: Wed,  7 Jun 2023 11:51:45 +0800
-Message-Id: <20230607035145.343698-3-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230607035145.343698-1-baolu.lu@linux.intel.com>
-References: <20230607035145.343698-1-baolu.lu@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 393637C
+	for <iommu@lists.linux.dev>; Wed,  7 Jun 2023 04:19:22 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hBUZToYx1vwbzYROIIA+ZwS5MeCOIIJY2Hi9zq9pjT7dtAdIL5+7N4izvkhdRs7WSTN7/jdGIuzXB3RERWbT0LxmUBbRD6rbOrov5OlFlOdXpFFET/isQN/RGdQh8iRNBVDn3Z+HCkosiI4WBDICmhvBGlzhw7UmFVvN7G6Rxmbb4vXK42+FPL1ufPlq8XCSrIhOeAg36cFT10gy+UT73nGMiQevV5NjmSr9UHkthLF30XPMdcYcqDkJaKO13xBcb7Jpw6/hnEkq6U6BO8aAdSwPbsL1Lsy4Js2q+sUXsUwL9hMHB9ddfZt88rzDUjV4ligr3HlBAQ8Zsu8S/YDAzg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=johPKzC95uwnqjq/A8l1LI4UFwfkha+sn7H8Buw0kNk=;
+ b=KKSvG/so8q0W3EIDP7vVoKXL/QFhg4dLoM2aFiWs25Xx3Bxn61DYZmcCsNgCUZ3C0oOHmT05M44IxQOqN9h5fIb7zfNCuR6S7x0FeX1fPgpizHOhAQXG+za6QWIIK8k37cdCUaj3eNMU8XIHbpDLtqEXWiDMfl3bAmc6myhvw686jLa0H3rmcjCHopWJ89Z8a1sy0irFPUlr55D4vlt+3Bc8fXHnLWjisixYCvQMQKeB9yGONntC4A163dbf0ehZGMbZjRsCZ2bh6hqKIg4pKOz5YmpVPX0q1UnOb5kNGYa8tldoa+kXcr4t9Tr8hZopTD2BJp4xlEnlWSCgKXlJug==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=johPKzC95uwnqjq/A8l1LI4UFwfkha+sn7H8Buw0kNk=;
+ b=dcB9zkTWUfePRsJcwLG+vHFQR8l4SsEVKgU1NUmJLmSjI0l/F30M5LleiwM+srSgFgYDDNXJO8g6Mk/MY+5/MDTULrFAbEhWEuDFSDdZu6rYtx1wgGKf4AFfj2Qn2owyvJJFrzjkOfzo3SEJONNe/F2N+HhvEX7H8wurB5Y3cYo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ BN9PR12MB5084.namprd12.prod.outlook.com (2603:10b6:408:135::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33; Wed, 7 Jun
+ 2023 04:19:19 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::7cbf:236a:55b:2c99]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::7cbf:236a:55b:2c99%4]) with mapi id 15.20.6455.030; Wed, 7 Jun 2023
+ 04:19:19 +0000
+Message-ID: <8610d516-b83b-3614-04a4-5ed2d4b66c56@amd.com>
+Date: Wed, 7 Jun 2023 09:49:07 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] iommu/amd: Fix possible memory leak of 'domain'
+Content-Language: en-US
+To: Su Hui <suhui@nfschina.com>, Joerg Roedel <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Cc: jgg@ziepe.ca, kevin.tian@intel.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20230606070742.139575-1-suhui@nfschina.com>
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <20230606070742.139575-1-suhui@nfschina.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN2PR01CA0009.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:25::14) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|BN9PR12MB5084:EE_
+X-MS-Office365-Filtering-Correlation-Id: c3cb58d8-4310-4c24-e817-08db670e5cf5
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	XVWAsPu5G1cFVdnVKWcUe7QRODlplEsaV5r0BzIFRnP1dwvGWvJ4h/f09SNifNlLIe1gQXhDx3/l14zu7TVhNGVX4KZ6u3VuV4FamdvDwf1bpO2FWypqUTIk5ZqQgbfM7ugqo5hDrBCCYem9WRTIvtNin600lZgkUY9/EM299+iU/JLgtLjfFfiPRRCBN/etZjHnHJBlii1D3ZLdqXiEpV9J6L0+ott2xAmVZCFTF5GBymYWtd2/YTmwDfmhUUvE5j46iTbjQRKDRNSuTog/zcN01LPMv2yChR9uFKXYKqM8VbPNEmJfSteviM5Ljxsrs76Pvnunuuucz7T/R7JOPHysBWAfXzpr3xUlBvAkuAOP0xWMW5NPVL5Ox0qPGAmw+LtgRFfgC6UUd32VbHH79TzxvYnNKzEwy0iI6CD8ehifdMhTUDqHxcZoMk7nPOxNBBF+qDO0yW+zwXWNnShScZiZpSrjoiKwBX+9AaUb0f00bBuYjxI4n/eevdmXr7yrsBkGcJcLv5GLl8x1SKhn/tAQ03juRbF2G0OcU+DFGogo89fiiW5l87+WQDdkOybwj8cyzW1pp9tHO6HtgNf5a8dyKDEPNKgduyDFvYbKXEnd4gectKNncHMPqrkJJItjCp5eYpzKtkfStWJOIEBGrA==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(366004)(136003)(396003)(376002)(39860400002)(451199021)(86362001)(83380400001)(110136005)(4326008)(38100700002)(66476007)(66946007)(6666004)(66556008)(6486002)(478600001)(2906002)(36756003)(186003)(4744005)(2616005)(5660300002)(8936002)(41300700001)(8676002)(316002)(31696002)(44832011)(31686004)(26005)(53546011)(6512007)(6506007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?Z25uQktwYjJRMWtHdkc5bkhoSzNwM1k4OERKOE96ZEN4dHczT3lQWk9aTzZn?=
+ =?utf-8?B?OWNvS1FlMTg1Wk44YndyZzFtb2xlSmlHMUU5aUtOQTl6R1pXZDNDYk1JKzdH?=
+ =?utf-8?B?blh6OU9QRCtmbW1MdUJBS0R2SmtjZUJWM2h3cWJ5WHZHc3ZGZkZtWVFMU0Vh?=
+ =?utf-8?B?bmJscEpUajBTMkh2Zkl3UzdBUmF5aU1yY1k3M3YyL0loOTNkWnduY2VBM29K?=
+ =?utf-8?B?R0NGalQrdEszVDRmZnZIeU5ZdWdNc2lKczdBSE5mY2VIUHgxUTZsbmk5MWdz?=
+ =?utf-8?B?bDdmeEZsTTBMMUpYZGRta3JmanFEY2RBcktJZDlhNmNEQm0yTXdrTW9LbzIz?=
+ =?utf-8?B?NHV6K25wdmU3T1JRU1E4NVNQZHcyZTFwbUFrcWtnemsxY0xWMmxOZWRzZE11?=
+ =?utf-8?B?WlU4M0FOdDV4WWVPVTcrUkxVOXJkTUpiYlcyUkpkcEJIZXpabWErcE1lU29U?=
+ =?utf-8?B?N1BPbHg0S0JZcTFpTDFiTWdUNDVTcTQyUGNuUXI5S0M5TVVvZFBNanJRazM0?=
+ =?utf-8?B?NkZFYTNPcm45aHRldU1ZM1V6RkZiYVdoOUJMb2o0OHNmbTU5ek5GVE8xNXYw?=
+ =?utf-8?B?aTdGY3Y5eVlLMGJmckZEZTJmNHdvRStmVUdsMHBZMk5vQyt1Wm9XTHNIeW1W?=
+ =?utf-8?B?bStCUGIzSkl0ZkZiUVBkcmR3YmIyWWZCTjFuanVGODBKQUFTSTdWZ2RlQjFP?=
+ =?utf-8?B?N1VUclZoUDFYc1R2ZVlJck5aKzBzdHlMNEcwcFlnRUdVL045ZER4elpHU1Bl?=
+ =?utf-8?B?WUQ0Z1V3N3RQS2lBWENCenpyYlhQS3hFRWs2aWxJdGlqanFmSkpBeWpNNklG?=
+ =?utf-8?B?TldoN3FQckZrRkhuZU5DbjQ1S0h0bU1Ba0FLZi9qd3dnSjVWUVZkRS9pRHZB?=
+ =?utf-8?B?ajVKcm9WMS8vNk13K21GMjJDOWpEenJTRGZMWHB0allWTTFDeXZLVWh5a0tR?=
+ =?utf-8?B?elVrOENpNStVNENpRnNpQ1VlSjFQZzFTRTA0eHIrbENIc2ZYbUtmVlFsMThY?=
+ =?utf-8?B?QXhnRkUzcUg0UHEyYkRWQXZXOWx6YnJKT3RVN0ppZmI4UEMvTklFeGUzMkpr?=
+ =?utf-8?B?L1BZeG1oNDJVTlBwWEpBUHhlVSthVlpqUk02V2x2Y1VFYVBVUlFvRGVQQWFH?=
+ =?utf-8?B?N0tENk12TkQ2ZzloR2FtVTB1OXNSSFUrQWZ3YWhXeWZVSmFLK2p3VjBpTlNI?=
+ =?utf-8?B?a2p2MzZHQS9OUldUQUN0bkkxWFpuRWJGcG10dEcrVVVpeGtjMzZ1ek9rTFdH?=
+ =?utf-8?B?M1JZWGFicHY5KzZaNm9aYVRvZERZdmNyaE53ZjNXK0pKQlVlNHBwWWY5Mng4?=
+ =?utf-8?B?eU12allBdVFOb1VnM0cwYVl1OW1nUFFlZ3dIVm9VUUdmQUpWTW5xblNBUE13?=
+ =?utf-8?B?aTZCd1pEc2lxN1VpanV4Q3hMSWxIUHFpSEcwTVljUTlzMGZRaGd2bXhrbHky?=
+ =?utf-8?B?bHNVOVc5NHBLSzhzeHE1bUFMZlp2ODkwU0J3WHFCa1MxNDBZZGxQRUJqTnhY?=
+ =?utf-8?B?dWNRU053NFh3RnVjUE13V3hZUS9HbzBBTmVsTjdzWHBBWFBvWjcxeERVaHJP?=
+ =?utf-8?B?bjZFeDZiUkU0QUY3Z09VS0c3M1R1VEtHYkdqWHZiQUJDUGZnbnJ1WVhTMGZZ?=
+ =?utf-8?B?T2NiMk9zbnZwYSsyYWNMNk95K0QzOUZiT2Z4TDhBNzhhbkZKelF4bTZVWjZ3?=
+ =?utf-8?B?RDYzTkExb0FxcDltdjkrOGVjRlB2ZnZKUGxKWGQ3dEVBREZHR0c3UFk4cW1J?=
+ =?utf-8?B?NWloU3IrVnlaTmlQOW9yeS8vWGh5dHB3YXhmMDlyTkduZTVaZWFESFk5NXpN?=
+ =?utf-8?B?SXpNRFF0SUZYcWx1VjJtZUZVem9lbFdGUnY2ZWdIZVFYWlRBMHN6YmVSaEht?=
+ =?utf-8?B?emcyVThSL05vWXBxSCt0UFhzbmNKdHZlUVprTWowblB1d0ZlT3FrSGYvVWZU?=
+ =?utf-8?B?b2E4TE85QnVMYWsyWFdUdFlyRkIzMEhmdEpNR0l2OEp1UVA5N1Rpd3FOYVZ2?=
+ =?utf-8?B?LzNKTVpVQm1naW5lK1VMekhXbEprZGRnMnpFMFVmeUJVMmVNelJRNTgvM091?=
+ =?utf-8?B?MVVkUE5FR1Z6YXhXdkhkYWRDeXFzTWxHcHlUWEJnOFF0S0hrM21WRFFydlRJ?=
+ =?utf-8?Q?VD9Dfe1of47QV/hdWqAhBsxju?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c3cb58d8-4310-4c24-e817-08db670e5cf5
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2023 04:19:19.3442
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dgG2t9kQ/t8gJHoZu13WN+X42pZw0ZBxrRiPP//M1raOAaokLd02uJlEt+KKXZ3wI6VPi0s7fu+Bow2ZVqYCnw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5084
 
-The core code now prevents devices with RMRR regions from being assigned
-to user space. There is no need to check for this condition in individual
-drivers. Remove it to avoid duplicate code.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.c | 58 -------------------------------------
- 1 file changed, 58 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 8096273b034c..4efc87e74455 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -2458,30 +2458,6 @@ static int dmar_domain_attach_device(struct dmar_domain *domain,
- 	return 0;
- }
- 
--static bool device_has_rmrr(struct device *dev)
--{
--	struct dmar_rmrr_unit *rmrr;
--	struct device *tmp;
--	int i;
--
--	rcu_read_lock();
--	for_each_rmrr_units(rmrr) {
--		/*
--		 * Return TRUE if this RMRR contains the device that
--		 * is passed in.
--		 */
--		for_each_active_dev_scope(rmrr->devices,
--					  rmrr->devices_cnt, i, tmp)
--			if (tmp == dev ||
--			    is_downstream_to_pci_bridge(dev, tmp)) {
--				rcu_read_unlock();
--				return true;
--			}
--	}
--	rcu_read_unlock();
--	return false;
--}
--
- /**
-  * device_rmrr_is_relaxable - Test whether the RMRR of this device
-  * is relaxable (ie. is allowed to be not enforced under some conditions)
-@@ -2511,34 +2487,6 @@ static bool device_rmrr_is_relaxable(struct device *dev)
- 		return false;
- }
- 
--/*
-- * There are a couple cases where we need to restrict the functionality of
-- * devices associated with RMRRs.  The first is when evaluating a device for
-- * identity mapping because problems exist when devices are moved in and out
-- * of domains and their respective RMRR information is lost.  This means that
-- * a device with associated RMRRs will never be in a "passthrough" domain.
-- * The second is use of the device through the IOMMU API.  This interface
-- * expects to have full control of the IOVA space for the device.  We cannot
-- * satisfy both the requirement that RMRR access is maintained and have an
-- * unencumbered IOVA space.  We also have no ability to quiesce the device's
-- * use of the RMRR space or even inform the IOMMU API user of the restriction.
-- * We therefore prevent devices associated with an RMRR from participating in
-- * the IOMMU API, which eliminates them from device assignment.
-- *
-- * In both cases, devices which have relaxable RMRRs are not concerned by this
-- * restriction. See device_rmrr_is_relaxable comment.
-- */
--static bool device_is_rmrr_locked(struct device *dev)
--{
--	if (!device_has_rmrr(dev))
--		return false;
--
--	if (device_rmrr_is_relaxable(dev))
--		return false;
--
--	return true;
--}
--
- /*
-  * Return the required default domain type for a specific device.
-  *
-@@ -4146,12 +4094,6 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
- 	struct device_domain_info *info = dev_iommu_priv_get(dev);
- 	int ret;
- 
--	if (domain->type == IOMMU_DOMAIN_UNMANAGED &&
--	    device_is_rmrr_locked(dev)) {
--		dev_warn(dev, "Device is ineligible for IOMMU domain attach due to platform RMRR requirement.  Contact your platform vendor.\n");
--		return -EPERM;
--	}
--
- 	if (info->domain)
- 		device_block_translation(dev);
- 
--- 
-2.34.1
+On 6/6/2023 12:37 PM, Su Hui wrote:
+> free memory of domain before return NULL.
+> 
+> Fixes: 29f54745f245 ("iommu/amd: Add missing domain type checks")
+> Signed-off-by: Su Hui <suhui@nfschina.com>
 
+Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+
+
+-Vasant
+
+
+> ---
+>  drivers/iommu/amd/iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index dc1ec6849775..f08e65629c74 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -2094,7 +2094,7 @@ static struct protection_domain *protection_domain_alloc(unsigned int type)
+>  	} else if (type == IOMMU_DOMAIN_DMA || type == IOMMU_DOMAIN_DMA_FQ) {
+>  		pgtable = amd_iommu_pgtable;
+>  	} else {
+> -		return NULL;
+> +		goto out_err;
+>  	}
+>  
+>  	switch (pgtable) {
