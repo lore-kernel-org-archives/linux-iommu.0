@@ -1,146 +1,601 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 393637C
-	for <iommu@lists.linux.dev>; Wed,  7 Jun 2023 04:19:22 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hBUZToYx1vwbzYROIIA+ZwS5MeCOIIJY2Hi9zq9pjT7dtAdIL5+7N4izvkhdRs7WSTN7/jdGIuzXB3RERWbT0LxmUBbRD6rbOrov5OlFlOdXpFFET/isQN/RGdQh8iRNBVDn3Z+HCkosiI4WBDICmhvBGlzhw7UmFVvN7G6Rxmbb4vXK42+FPL1ufPlq8XCSrIhOeAg36cFT10gy+UT73nGMiQevV5NjmSr9UHkthLF30XPMdcYcqDkJaKO13xBcb7Jpw6/hnEkq6U6BO8aAdSwPbsL1Lsy4Js2q+sUXsUwL9hMHB9ddfZt88rzDUjV4ligr3HlBAQ8Zsu8S/YDAzg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=johPKzC95uwnqjq/A8l1LI4UFwfkha+sn7H8Buw0kNk=;
- b=KKSvG/so8q0W3EIDP7vVoKXL/QFhg4dLoM2aFiWs25Xx3Bxn61DYZmcCsNgCUZ3C0oOHmT05M44IxQOqN9h5fIb7zfNCuR6S7x0FeX1fPgpizHOhAQXG+za6QWIIK8k37cdCUaj3eNMU8XIHbpDLtqEXWiDMfl3bAmc6myhvw686jLa0H3rmcjCHopWJ89Z8a1sy0irFPUlr55D4vlt+3Bc8fXHnLWjisixYCvQMQKeB9yGONntC4A163dbf0ehZGMbZjRsCZ2bh6hqKIg4pKOz5YmpVPX0q1UnOb5kNGYa8tldoa+kXcr4t9Tr8hZopTD2BJp4xlEnlWSCgKXlJug==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=johPKzC95uwnqjq/A8l1LI4UFwfkha+sn7H8Buw0kNk=;
- b=dcB9zkTWUfePRsJcwLG+vHFQR8l4SsEVKgU1NUmJLmSjI0l/F30M5LleiwM+srSgFgYDDNXJO8g6Mk/MY+5/MDTULrFAbEhWEuDFSDdZu6rYtx1wgGKf4AFfj2Qn2owyvJJFrzjkOfzo3SEJONNe/F2N+HhvEX7H8wurB5Y3cYo=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- BN9PR12MB5084.namprd12.prod.outlook.com (2603:10b6:408:135::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.33; Wed, 7 Jun
- 2023 04:19:19 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::7cbf:236a:55b:2c99]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::7cbf:236a:55b:2c99%4]) with mapi id 15.20.6455.030; Wed, 7 Jun 2023
- 04:19:19 +0000
-Message-ID: <8610d516-b83b-3614-04a4-5ed2d4b66c56@amd.com>
-Date: Wed, 7 Jun 2023 09:49:07 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] iommu/amd: Fix possible memory leak of 'domain'
-Content-Language: en-US
-To: Su Hui <suhui@nfschina.com>, Joerg Roedel <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-Cc: jgg@ziepe.ca, kevin.tian@intel.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20230606070742.139575-1-suhui@nfschina.com>
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20230606070742.139575-1-suhui@nfschina.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN2PR01CA0009.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:25::14) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC29A613B
+	for <iommu@lists.linux.dev>; Wed,  7 Jun 2023 07:02:04 +0000 (UTC)
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3575L2fj022857;
+	Wed, 7 Jun 2023 07:01:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=beCaBPZnurKk60B02ThLdHsSpgX//rRpUOxZIpqMqzc=;
+ b=aPKlIHWTMpqoufRoT723GoGnjBtcjy8rJiT3wk2nmxLzcQlHlECf5wYGTfEpuNRQVUze
+ ccD8DTfwtDw6FnVpis7rJ6DYmWYXw/8q6Uv2C3Qxkv78MoDjNYtIImrQUD+CMZkzHw0K
+ MBoLAUI4KGQjTbhyFT0x79SbtB0sD7CIqMv2YZ6M5/CBoXznmzO5tmKLBgqt0HxzXKpZ
+ pFe5m6TtauU5/x4v9n1YGOe3ZmVni3xnKSnqGuSu01eKUT0fUgCTjWuxv6+fER74w3Z9
+ Kv/X6wJkS2G92q21vIeyfc7+ULB8uvasVG0zt9pX69M5CH3uaufjMEgCDnjK1EAHvVIg gA== 
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3r2a7k16fq-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 07 Jun 2023 07:01:46 +0000
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 35771jBD030317
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 7 Jun 2023 07:01:45 GMT
+Received: from [10.214.66.58] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.42; Wed, 7 Jun 2023
+ 00:01:39 -0700
+Message-ID: <2b623e45-edb6-d05e-b549-ed00db59b47d@quicinc.com>
+Date: Wed, 7 Jun 2023 12:31:36 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|BN9PR12MB5084:EE_
-X-MS-Office365-Filtering-Correlation-Id: c3cb58d8-4310-4c24-e817-08db670e5cf5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	XVWAsPu5G1cFVdnVKWcUe7QRODlplEsaV5r0BzIFRnP1dwvGWvJ4h/f09SNifNlLIe1gQXhDx3/l14zu7TVhNGVX4KZ6u3VuV4FamdvDwf1bpO2FWypqUTIk5ZqQgbfM7ugqo5hDrBCCYem9WRTIvtNin600lZgkUY9/EM299+iU/JLgtLjfFfiPRRCBN/etZjHnHJBlii1D3ZLdqXiEpV9J6L0+ott2xAmVZCFTF5GBymYWtd2/YTmwDfmhUUvE5j46iTbjQRKDRNSuTog/zcN01LPMv2yChR9uFKXYKqM8VbPNEmJfSteviM5Ljxsrs76Pvnunuuucz7T/R7JOPHysBWAfXzpr3xUlBvAkuAOP0xWMW5NPVL5Ox0qPGAmw+LtgRFfgC6UUd32VbHH79TzxvYnNKzEwy0iI6CD8ehifdMhTUDqHxcZoMk7nPOxNBBF+qDO0yW+zwXWNnShScZiZpSrjoiKwBX+9AaUb0f00bBuYjxI4n/eevdmXr7yrsBkGcJcLv5GLl8x1SKhn/tAQ03juRbF2G0OcU+DFGogo89fiiW5l87+WQDdkOybwj8cyzW1pp9tHO6HtgNf5a8dyKDEPNKgduyDFvYbKXEnd4gectKNncHMPqrkJJItjCp5eYpzKtkfStWJOIEBGrA==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(366004)(136003)(396003)(376002)(39860400002)(451199021)(86362001)(83380400001)(110136005)(4326008)(38100700002)(66476007)(66946007)(6666004)(66556008)(6486002)(478600001)(2906002)(36756003)(186003)(4744005)(2616005)(5660300002)(8936002)(41300700001)(8676002)(316002)(31696002)(44832011)(31686004)(26005)(53546011)(6512007)(6506007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Z25uQktwYjJRMWtHdkc5bkhoSzNwM1k4OERKOE96ZEN4dHczT3lQWk9aTzZn?=
- =?utf-8?B?OWNvS1FlMTg1Wk44YndyZzFtb2xlSmlHMUU5aUtOQTl6R1pXZDNDYk1JKzdH?=
- =?utf-8?B?blh6OU9QRCtmbW1MdUJBS0R2SmtjZUJWM2h3cWJ5WHZHc3ZGZkZtWVFMU0Vh?=
- =?utf-8?B?bmJscEpUajBTMkh2Zkl3UzdBUmF5aU1yY1k3M3YyL0loOTNkWnduY2VBM29K?=
- =?utf-8?B?R0NGalQrdEszVDRmZnZIeU5ZdWdNc2lKczdBSE5mY2VIUHgxUTZsbmk5MWdz?=
- =?utf-8?B?bDdmeEZsTTBMMUpYZGRta3JmanFEY2RBcktJZDlhNmNEQm0yTXdrTW9LbzIz?=
- =?utf-8?B?NHV6K25wdmU3T1JRU1E4NVNQZHcyZTFwbUFrcWtnemsxY0xWMmxOZWRzZE11?=
- =?utf-8?B?WlU4M0FOdDV4WWVPVTcrUkxVOXJkTUpiYlcyUkpkcEJIZXpabWErcE1lU29U?=
- =?utf-8?B?N1BPbHg0S0JZcTFpTDFiTWdUNDVTcTQyUGNuUXI5S0M5TVVvZFBNanJRazM0?=
- =?utf-8?B?NkZFYTNPcm45aHRldU1ZM1V6RkZiYVdoOUJMb2o0OHNmbTU5ek5GVE8xNXYw?=
- =?utf-8?B?aTdGY3Y5eVlLMGJmckZEZTJmNHdvRStmVUdsMHBZMk5vQyt1Wm9XTHNIeW1W?=
- =?utf-8?B?bStCUGIzSkl0ZkZiUVBkcmR3YmIyWWZCTjFuanVGODBKQUFTSTdWZ2RlQjFP?=
- =?utf-8?B?N1VUclZoUDFYc1R2ZVlJck5aKzBzdHlMNEcwcFlnRUdVL045ZER4elpHU1Bl?=
- =?utf-8?B?WUQ0Z1V3N3RQS2lBWENCenpyYlhQS3hFRWs2aWxJdGlqanFmSkpBeWpNNklG?=
- =?utf-8?B?TldoN3FQckZrRkhuZU5DbjQ1S0h0bU1Ba0FLZi9qd3dnSjVWUVZkRS9pRHZB?=
- =?utf-8?B?ajVKcm9WMS8vNk13K21GMjJDOWpEenJTRGZMWHB0allWTTFDeXZLVWh5a0tR?=
- =?utf-8?B?elVrOENpNStVNENpRnNpQ1VlSjFQZzFTRTA0eHIrbENIc2ZYbUtmVlFsMThY?=
- =?utf-8?B?QXhnRkUzcUg0UHEyYkRWQXZXOWx6YnJKT3RVN0ppZmI4UEMvTklFeGUzMkpr?=
- =?utf-8?B?L1BZeG1oNDJVTlBwWEpBUHhlVSthVlpqUk02V2x2Y1VFYVBVUlFvRGVQQWFH?=
- =?utf-8?B?N0tENk12TkQ2ZzloR2FtVTB1OXNSSFUrQWZ3YWhXeWZVSmFLK2p3VjBpTlNI?=
- =?utf-8?B?a2p2MzZHQS9OUldUQUN0bkkxWFpuRWJGcG10dEcrVVVpeGtjMzZ1ek9rTFdH?=
- =?utf-8?B?M1JZWGFicHY5KzZaNm9aYVRvZERZdmNyaE53ZjNXK0pKQlVlNHBwWWY5Mng4?=
- =?utf-8?B?eU12allBdVFOb1VnM0cwYVl1OW1nUFFlZ3dIVm9VUUdmQUpWTW5xblNBUE13?=
- =?utf-8?B?aTZCd1pEc2lxN1VpanV4Q3hMSWxIUHFpSEcwTVljUTlzMGZRaGd2bXhrbHky?=
- =?utf-8?B?bHNVOVc5NHBLSzhzeHE1bUFMZlp2ODkwU0J3WHFCa1MxNDBZZGxQRUJqTnhY?=
- =?utf-8?B?dWNRU053NFh3RnVjUE13V3hZUS9HbzBBTmVsTjdzWHBBWFBvWjcxeERVaHJP?=
- =?utf-8?B?bjZFeDZiUkU0QUY3Z09VS0c3M1R1VEtHYkdqWHZiQUJDUGZnbnJ1WVhTMGZZ?=
- =?utf-8?B?T2NiMk9zbnZwYSsyYWNMNk95K0QzOUZiT2Z4TDhBNzhhbkZKelF4bTZVWjZ3?=
- =?utf-8?B?RDYzTkExb0FxcDltdjkrOGVjRlB2ZnZKUGxKWGQ3dEVBREZHR0c3UFk4cW1J?=
- =?utf-8?B?NWloU3IrVnlaTmlQOW9yeS8vWGh5dHB3YXhmMDlyTkduZTVaZWFESFk5NXpN?=
- =?utf-8?B?SXpNRFF0SUZYcWx1VjJtZUZVem9lbFdGUnY2ZWdIZVFYWlRBMHN6YmVSaEht?=
- =?utf-8?B?emcyVThSL05vWXBxSCt0UFhzbmNKdHZlUVprTWowblB1d0ZlT3FrSGYvVWZU?=
- =?utf-8?B?b2E4TE85QnVMYWsyWFdUdFlyRkIzMEhmdEpNR0l2OEp1UVA5N1Rpd3FOYVZ2?=
- =?utf-8?B?LzNKTVpVQm1naW5lK1VMekhXbEprZGRnMnpFMFVmeUJVMmVNelJRNTgvM091?=
- =?utf-8?B?MVVkUE5FR1Z6YXhXdkhkYWRDeXFzTWxHcHlUWEJnOFF0S0hrM21WRFFydlRJ?=
- =?utf-8?Q?VD9Dfe1of47QV/hdWqAhBsxju?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c3cb58d8-4310-4c24-e817-08db670e5cf5
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2023 04:19:19.3442
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dgG2t9kQ/t8gJHoZu13WN+X42pZw0ZBxrRiPP//M1raOAaokLd02uJlEt+KKXZ3wI6VPi0s7fu+Bow2ZVqYCnw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5084
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH v2 06/10] arm64: dts: qcom: Add SDX75 platform and IDP
+ board support
+Content-Language: en-US
+To: Konrad Dybcio <konrad.dybcio@linaro.org>, <agross@kernel.org>,
+        <andersson@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
+        <rafael@kernel.org>, <viresh.kumar@linaro.org>, <tglx@linutronix.de>,
+        <maz@kernel.org>, <will@kernel.org>, <robin.murphy@arm.com>,
+        <joro@8bytes.org>, <mani@kernel.org>, <robimarko@gmail.com>
+CC: <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>
+References: <1685982557-28326-1-git-send-email-quic_rohiagar@quicinc.com>
+ <1685982557-28326-7-git-send-email-quic_rohiagar@quicinc.com>
+ <fc579cdb-4594-bdc9-18f0-e16ab89e8eaf@linaro.org>
+ <f2885b05-e6e7-6576-a0de-6f930cfd539f@quicinc.com>
+ <1a74a7e5-f20d-39de-bb8f-4371f10a612c@linaro.org>
+ <cebcdf94-f83d-7348-df69-b7f782c411ce@quicinc.com>
+ <3a9c1b7e-c1ac-61a1-0a67-8653f1027b35@linaro.org>
+From: Rohit Agarwal <quic_rohiagar@quicinc.com>
+In-Reply-To: <3a9c1b7e-c1ac-61a1-0a67-8653f1027b35@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: m9gKNTSlTYUFEdaMWbhKa7-snjFz-9JD
+X-Proofpoint-GUID: m9gKNTSlTYUFEdaMWbhKa7-snjFz-9JD
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
+ definitions=2023-06-07_04,2023-06-06_02,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 clxscore=1015
+ impostorscore=0 spamscore=0 lowpriorityscore=0 phishscore=0
+ mlxlogscore=999 adultscore=0 bulkscore=0 suspectscore=0 priorityscore=1501
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2305260000 definitions=main-2306070057
 
 
+On 6/6/2023 5:48 PM, Konrad Dybcio wrote:
+>
+> On 6.06.2023 13:42, Rohit Agarwal wrote:
+>> On 6/6/2023 3:06 PM, Konrad Dybcio wrote:
+>>> On 6.06.2023 10:04, Rohit Agarwal wrote:
+>>>> On 6/5/2023 11:45 PM, Konrad Dybcio wrote:
+>>>>> On 5.06.2023 18:29, Rohit Agarwal wrote:
+>>>>>> Add basic devicetree support for SDX75 platform and IDP board from
+>>>>>> Qualcomm. The SDX75 platform features an ARM Cortex A55 CPU which forms
+>>>>>> the Application Processor Sub System (APSS) along with standard Qualcomm
+>>>>>> peripherals like GCC, TLMM, UART, QPIC, and BAM etc... Also, there
+>>>>>> exists the networking parts such as IPA, MHI, PCIE-EP, EMAC, and Modem
+>>>>>> etc..
+>>>>>>
+>>>>>> This commit adds basic devicetree support.
+>>>>> You just said that in the first sentence! :P
+>>>> Sorry :')
+>>>>>> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
+>>>>>> ---
+>>>>>>     arch/arm64/boot/dts/qcom/Makefile      |   1 +
+>>>>>>     arch/arm64/boot/dts/qcom/sdx75-idp.dts |  18 ++
+>>>>>>     arch/arm64/boot/dts/qcom/sdx75.dtsi    | 533 +++++++++++++++++++++++++++++++++
+>>>>>>     3 files changed, 552 insertions(+)
+>>>>>>     create mode 100644 arch/arm64/boot/dts/qcom/sdx75-idp.dts
+>>>>>>     create mode 100644 arch/arm64/boot/dts/qcom/sdx75.dtsi
+>>>>>>
+>>>>>> diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
+>>>>>> index d42c595..4fd5a18 100644
+>>>>>> --- a/arch/arm64/boot/dts/qcom/Makefile
+>>>>>> +++ b/arch/arm64/boot/dts/qcom/Makefile
+>>>>>> @@ -173,6 +173,7 @@ dtb-$(CONFIG_ARCH_QCOM)    += sdm845-xiaomi-polaris.dtb
+>>>>>>     dtb-$(CONFIG_ARCH_QCOM)    += sdm845-shift-axolotl.dtb
+>>>>>>     dtb-$(CONFIG_ARCH_QCOM)    += sdm850-lenovo-yoga-c630.dtb
+>>>>>>     dtb-$(CONFIG_ARCH_QCOM)    += sdm850-samsung-w737.dtb
+>>>>>> +dtb-$(CONFIG_ARCH_QCOM)    += sdx75-idp.dtb
+>>>>>>     dtb-$(CONFIG_ARCH_QCOM)    += sm4250-oneplus-billie2.dtb
+>>>>>>     dtb-$(CONFIG_ARCH_QCOM)    += sm6115p-lenovo-j606f.dtb
+>>>>>>     dtb-$(CONFIG_ARCH_QCOM)    += sm6125-sony-xperia-seine-pdx201.dtb
+>>>>>> diff --git a/arch/arm64/boot/dts/qcom/sdx75-idp.dts b/arch/arm64/boot/dts/qcom/sdx75-idp.dts
+>>>>>> new file mode 100644
+>>>>>> index 0000000..1e08f25
+>>>>>> --- /dev/null
+>>>>>> +++ b/arch/arm64/boot/dts/qcom/sdx75-idp.dts
+>>>>>> @@ -0,0 +1,18 @@
+>>>>>> +// SPDX-License-Identifier: BSD-3-Clause
+>>>>>> +/*
+>>>>>> + * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+>>>>>> + */
+>>>>>> +
+>>>>>> +/dts-v1/;
+>>>>>> +
+>>>>>> +#include "sdx75.dtsi"
+>>>>>> +
+>>>>>> +/ {
+>>>>>> +    model = "Qualcomm Technologies, Inc. SDX75 IDP";
+>>>>>> +    compatible = "qcom,sdx75-idp", "qcom,sdx75";
+>>>>>> +
+>>>>> Stray newline
+>>>>>
+>>>>>> +};
+>>>>>> +
+>>>>>> +&tlmm {
+>>>>>> +    gpio-reserved-ranges = <110 6>;
+>>>>>> +};
+>>>>>> diff --git a/arch/arm64/boot/dts/qcom/sdx75.dtsi b/arch/arm64/boot/dts/qcom/sdx75.dtsi
+>>>>>> new file mode 100644
+>>>>>> index 0000000..3d1646b
+>>>>>> --- /dev/null
+>>>>>> +++ b/arch/arm64/boot/dts/qcom/sdx75.dtsi
+>>>>>> @@ -0,0 +1,533 @@
+>>>>>> +// SPDX-License-Identifier: BSD-3-Clause
+>>>>>> +/*
+>>>>>> + * SDX75 SoC device tree source
+>>>>>> + *
+>>>>>> + * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+>>>>>> + *
+>>>>>> + */
+>>>>>> +
+>>>>>> +#include <dt-bindings/clock/qcom,rpmh.h>
+>>>>>> +#include <dt-bindings/interrupt-controller/arm-gic.h>
+>>>>>> +#include <dt-bindings/soc/qcom,rpmh-rsc.h>
+>>>>>> +
+>>>>>> +/ {
+>>>>>> +    #address-cells = <2>;
+>>>>>> +    #size-cells = <2>;
+>>>>>> +    interrupt-parent = <&intc>;
+>>>>>> +
+>>>>>> +    chosen: chosen { };
+>>>>>> +
+>>>>>> +    memory@80000000 {
+>>>>> Please sort the top-level nodes alphabetically
+>>>>>
+>>>>>> +        device_type = "memory";
+>>>>>> +        reg = <0 0x80000000 0 0>;
+>>>>> Please use 0x0 for consistency
+>>>> Sure, Will make everywhere this as 0x0
+>>>>>> +    };
+>>>>>> +
+>>>>>> +    clocks { };
+>>>>>> +
+>>>>>> +    cpus {
+>>>>>> +        #address-cells = <2>;
+>>>>>> +        #size-cells = <0>;
+>>>>>> +
+>>>>>> +        CPU0: cpu@0 {
+>>>>>> +            device_type = "cpu";
+>>>>>> +            compatible = "arm,cortex-a55";
+>>>>>> +            reg = <0x0 0x0>;
+>>>>>> +            enable-method = "psci";
+>>>>>> +            power-domains = <&CPU_PD0>;
+>>>>>> +            power-domain-names = "psci";
+>>>>>> +            next-level-cache = <&L2_0>;
+>>>>> Missing newline before subnode
+>>>>>
+>>>>>> +            L2_0: l2-cache {
+>>>>>> +                compatible = "cache";
+>>>>>> +                next-level-cache = <&L3_0>;
+>>>>>> +                L3_0: l3-cache {
+>>>>>> +                    compatible = "cache";
+>>>>>> +                };
+>>>>>> +            };
+>>>>>> +        };
+>>>>> [...]
+>>>>>
+>>>>>> +        CLUSTER_PD: power-domain-cpu-cluster0 {
+>>>>>> +            #power-domain-cells = <0>;
+>>>>>> +            domain-idle-states = <&CLUSTER_SLEEP_0 &CX_RET &CLUSTER_SLEEP_1>;
+>>>>> Shouldn't CX_RET be the last one?
+>>>> Here seems to an issue with the naming that I added. CLUSTER_SLEEP_1 should actually be APPS_SLEEP
+>>>> which is deeper than CX_RET.
+>>>> So will update the names in the next.
+>>> Are you sure?
+>>>
+>>> Both the PSCI params and longer latency/residency times suggest
+>>> the reverse!
+>> The larger values of CLUSTER_SLEEP_1 of entry, exit and min suggests that it is deeper, right?
+>> When compared to other SoCs, I see the larger values signify that it is deeper.
+>> Please correct my understanding if I am wrong. Happy to learn !!!
+> Technically speaking Arm lets silicon vendors implement all this as they
+> wish, but the general idea is that lower power states correspond to higher
+> values in each bitfield (which is usually 4-bit- / 1-hex-digit-wide).
+>
+> You can see the table 16 in [1] for what Arm recommends. Qualcomm doesn't
+> follow it though.
+>
+> Lower power states usually require more things to go back to life and
+> hence the delays are higher as the HW needs to be physically switched on.
+>
+> Konrad
+>
+> [1] https://documentation-service.arm.com/static/5f905b78f86e16515cdc1fca
+Does lower power state means deeper? If yes, then aren't we on the same 
+page?
+Higher latencies suggest deeper states indicating more things to bring 
+up again,
+the ordering of nodes may be a bit confusing here? Like CX_RET should be 
+defined
+before CLUSTER_SLEEP_1 as CLUSTER_SLEEP_1 is deeper (CLUSTER_SLEEP_1 
+have higher values).
 
-On 6/6/2023 12:37 PM, Su Hui wrote:
-> free memory of domain before return NULL.
-> 
-> Fixes: 29f54745f245 ("iommu/amd: Add missing domain type checks")
-> Signed-off-by: Su Hui <suhui@nfschina.com>
+CLUSTER_SLEEP_1: cluster-sleep-1 {
+[...]
 
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+}
 
+CX_RET: cx-ret {
+[...]
 
--Vasant
+}
 
+Thanks,
+Rohit.
 
-> ---
->  drivers/iommu/amd/iommu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index dc1ec6849775..f08e65629c74 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -2094,7 +2094,7 @@ static struct protection_domain *protection_domain_alloc(unsigned int type)
->  	} else if (type == IOMMU_DOMAIN_DMA || type == IOMMU_DOMAIN_DMA_FQ) {
->  		pgtable = amd_iommu_pgtable;
->  	} else {
-> -		return NULL;
-> +		goto out_err;
->  	}
->  
->  	switch (pgtable) {
+>> Thanks,
+>> Rohit.
+>>> Konrad
+>>>> Thanks for pointing out.
+>>>> Rohit.
+>>>>> Konrad
+>>>>>> +        };
+>>>>>> +    };
+>>>>>> +
+>>>>>> +    firmware {
+>>>>>> +        scm: scm {
+>>>>>> +            compatible = "qcom,scm-sdx75", "qcom,scm";
+>>>>>> +        };
+>>>>>> +    };
+>>>>>> +
+>>>>>> +    pmu {
+>>>>>> +        compatible = "arm,armv8-pmuv3";
+>>>>>> +        interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>> +    };
+>>>>>> +
+>>>>>> +    reserved-memory {
+>>>>>> +        #address-cells = <2>;
+>>>>>> +        #size-cells = <2>;
+>>>>>> +        ranges;
+>>>>>> +
+>>>>>> +        gunyah_hyp_mem: gunyah-hyp@80000000 {
+>>>>>> +            reg = <0x0 0x80000000 0x0 0x800000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        hyp_elf_package_mem: hyp-elf-package@80800000 {
+>>>>>> +            reg = <0x0 0x80800000 0x0 0x200000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        access_control_db_mem: access-control-db@81380000 {
+>>>>>> +            reg = <0x0 0x81380000 0x0 0x80000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        qteetz_mem: qteetz@814e0000 {
+>>>>>> +            reg = <0x0 0x814e0000 0x0 0x2a0000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        trusted_apps_mem: trusted-apps@81780000 {
+>>>>>> +            reg = <0x0 0x81780000 0x0 0xa00000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        xbl_ramdump_mem: xbl-ramdump@87a00000 {
+>>>>>> +            reg = <0x0 0x87a00000 0x0 0x1c0000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        cpucp_fw_mem: cpucp-fw@87c00000 {
+>>>>>> +            reg = <0x0 0x87c00000 0x0 0x100000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        xbl_dtlog_mem: xbl-dtlog@87d00000 {
+>>>>>> +            reg = <0x0 0x87d00000 0x0 0x40000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        xbl_sc_mem: xbl-sc@87d40000 {
+>>>>>> +            reg = <0x0 0x87d40000 0x0 0x40000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        modem_efs_shared_mem: modem-efs-shared@87d80000 {
+>>>>>> +            reg = <0x0 0x87d80000 0x0 0x10000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        aop_image_mem: aop-image@87e00000 {
+>>>>>> +            reg = <0x0 0x87e00000 0x0 0x20000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        smem_mem: smem@87e20000 {
+>>>>>> +            reg = <0x0 0x87e20000 0x0 0xc0000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        aop_cmd_db_mem: aop-cmd-db@87ee0000 {
+>>>>>> +            compatible = "qcom,cmd-db";
+>>>>>> +            reg = <0x0 0x87ee0000 0x0 0x20000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        aop_config_mem: aop-config@87f00000 {
+>>>>>> +            reg = <0x0 0x87f00000 0x0 0x20000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        ipa_fw_mem: ipa-fw@87f20000 {
+>>>>>> +            reg = <0x0 0x87f20000 0x0 0x10000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        secdata_mem: secdata@87f30000 {
+>>>>>> +            reg = <0x0 0x87f30000 0x0 0x1000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        tme_crashdump_mem: tme-crashdump@87f31000 {
+>>>>>> +            reg = <0x0 0x87f31000 0x0 0x40000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        tme_log_mem: tme-log@87f71000 {
+>>>>>> +            reg = <0x0 0x87f71000 0x0 0x4000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        uefi_log_mem: uefi-log@87f75000 {
+>>>>>> +            reg = <0x0 0x87f75000 0x0 0x10000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        qdss_mem: qdss@88800000 {
+>>>>>> +            reg = <0x0 0x88800000 0x0 0x300000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        audio_heap_mem: audio-heap@88b00000 {
+>>>>>> +            compatible = "shared-dma-pool";
+>>>>>> +            reg = <0x0 0x88b00000 0x0 0x400000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        mpss_dsmharq_mem: mpss-dsmharq@88f00000 {
+>>>>>> +            reg = <0x0 0x88f00000 0x0 0x5080000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        q6_mpss_dtb_mem: q6-mpss-dtb@8df80000 {
+>>>>>> +            reg = <0x0 0x8df80000 0x0 0x80000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        mpssadsp_mem: mpssadsp@8e000000 {
+>>>>>> +            reg = <0x0 0x8e000000 0x0 0xf400000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        gunyah_trace_buffer_mem: gunyah-trace-buffer@bdb00000 {
+>>>>>> +            reg = <0x0 0xbdb00000 0x0 0x2000000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        smmu_debug_buf_mem: smmu-debug-buf@bfb00000 {
+>>>>>> +            reg = <0x0 0xbfb00000 0x0 0x100000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        hyp_smmu_s2_pt_mem: hyp-smmu-s2-pt@bfc00000 {
+>>>>>> +            reg = <0x0 0xbfc00000 0x0 0x400000>;
+>>>>>> +            no-map;
+>>>>>> +        };
+>>>>>> +    };
+>>>>>> +
+>>>>>> +    smem: qcom,smem {
+>>>>>> +        compatible = "qcom,smem";
+>>>>>> +        memory-region = <&smem_mem>;
+>>>>>> +        hwlocks = <&tcsr_mutex 3>;
+>>>>>> +    };
+>>>>>> +
+>>>>>> +    soc: soc {
+>>>>>> +        compatible = "simple-bus";
+>>>>>> +        #address-cells = <2>;
+>>>>>> +        #size-cells = <2>;
+>>>>>> +        ranges = <0 0 0 0 0x10 0>;
+>>>>>> +        dma-ranges = <0 0 0 0 0x10 0>;
+>>>>>> +
+>>>>>> +        tcsr_mutex: hwlock@1f40000 {
+>>>>>> +            compatible = "qcom,tcsr-mutex";
+>>>>>> +            reg = <0x0 0x01f40000 0x0 0x40000>;
+>>>>>> +            #hwlock-cells = <1>;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        pdc: interrupt-controller@b220000 {
+>>>>>> +            compatible = "qcom,sdx75-pdc", "qcom,pdc";
+>>>>>> +            reg = <0x0 0xb220000 0x0 0x30000>,
+>>>>>> +                  <0x0 0x174000f0 0x0 0x64>;
+>>>>>> +            qcom,pdc-ranges = <0 147 52>,
+>>>>>> +                      <52 266 32>,
+>>>>>> +                      <84 500 59>;
+>>>>>> +            #interrupt-cells = <2>;
+>>>>>> +            interrupt-parent = <&intc>;
+>>>>>> +            interrupt-controller;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        tlmm: pinctrl@f000000 {
+>>>>>> +            compatible = "qcom,sdx75-tlmm";
+>>>>>> +            reg = <0x0 0x0f000000 0x0 0x400000>;
+>>>>>> +            interrupts = <GIC_SPI 212 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>> +            gpio-controller;
+>>>>>> +            #gpio-cells = <2>;
+>>>>>> +            gpio-ranges = <&tlmm 0 0 133>;
+>>>>>> +            interrupt-controller;
+>>>>>> +            #interrupt-cells = <2>;
+>>>>>> +            wakeup-parent = <&pdc>;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        apps_smmu: iommu@15000000 {
+>>>>>> +            compatible = "qcom,sdx75-smmu-500", "arm,mmu-500";
+>>>>>> +            reg = <0x0 0x15000000 0x0 0x40000>;
+>>>>>> +            #iommu-cells = <2>;
+>>>>>> +            #global-interrupts = <2>;
+>>>>>> +            dma-coherent;
+>>>>>> +            interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 68 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 69 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 104 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 105 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 298 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 299 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 300 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 301 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 302 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 303 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 304 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 305 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 306 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        intc: interrupt-controller@17200000 {
+>>>>>> +            compatible = "arm,gic-v3";
+>>>>>> +            #interrupt-cells = <3>;
+>>>>>> +            interrupt-controller;
+>>>>>> +            #redistributor-regions = <1>;
+>>>>>> +            redistributor-stride = <0x0 0x20000>;
+>>>>>> +            reg = <0x0 0x17200000 0x0 0x10000>,
+>>>>>> +                  <0x0 0x17260000 0x0 0x80000>;
+>>>>>> +            interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        timer@17420000 {
+>>>>>> +            compatible = "arm,armv7-timer-mem";
+>>>>>> +            reg = <0x0 0x17420000 0x0 0x1000>;
+>>>>>> +            #address-cells = <1>;
+>>>>>> +            #size-cells = <1>;
+>>>>>> +            ranges = <0 0 0 0x20000000>;
+>>>>>> +
+>>>>>> +            frame@17421000 {
+>>>>>> +                reg = <0x17421000 0x1000>,
+>>>>>> +                      <0x17422000 0x1000>;
+>>>>>> +                frame-number = <0>;
+>>>>>> +                interrupts = <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                         <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>> +            };
+>>>>>> +
+>>>>>> +            frame@17423000 {
+>>>>>> +                reg = <0x17423000 0x1000>;
+>>>>>> +                frame-number = <1>;
+>>>>>> +                interrupts = <GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>> +                status = "disabled";
+>>>>>> +            };
+>>>>>> +
+>>>>>> +            frame@17425000 {
+>>>>>> +                reg = <0x17425000 0x1000>;
+>>>>>> +                frame-number = <2>;
+>>>>>> +                interrupts = <GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>> +                status = "disabled";
+>>>>>> +            };
+>>>>>> +
+>>>>>> +            frame@17427000 {
+>>>>>> +                reg = <0x17427000 0x1000>;
+>>>>>> +                frame-number = <3>;
+>>>>>> +                interrupts = <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>> +                status = "disabled";
+>>>>>> +            };
+>>>>>> +
+>>>>>> +            frame@17429000 {
+>>>>>> +                reg = <0x17429000 0x1000>;
+>>>>>> +                frame-number = <4>;
+>>>>>> +                interrupts = <GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>> +                status = "disabled";
+>>>>>> +            };
+>>>>>> +
+>>>>>> +            frame@1742b000 {
+>>>>>> +                reg = <0x1742b000 0x1000>;
+>>>>>> +                frame-number = <5>;
+>>>>>> +                interrupts = <GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>> +                status = "disabled";
+>>>>>> +            };
+>>>>>> +
+>>>>>> +            frame@1742d000 {
+>>>>>> +                reg = <0x1742d000 0x1000>;
+>>>>>> +                frame-number = <6>;
+>>>>>> +                interrupts = <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>> +                status = "disabled";
+>>>>>> +            };
+>>>>>> +        };
+>>>>>> +
+>>>>>> +        apps_rsc: rsc@17a00000 {
+>>>>>> +            label = "apps_rsc";
+>>>>>> +            compatible = "qcom,rpmh-rsc";
+>>>>>> +            reg = <0x0 0x17a00000 0x0 0x10000>,
+>>>>>> +                  <0x0 0x17a10000 0x0 0x10000>,
+>>>>>> +                  <0x0 0x17a20000 0x0 0x10000>;
+>>>>>> +            reg-names = "drv-0", "drv-1", "drv-2";
+>>>>>> +            interrupts = <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
+>>>>>> +                     <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>> +
+>>>>>> +            power-domains = <&CLUSTER_PD>;
+>>>>>> +            qcom,tcs-offset = <0xd00>;
+>>>>>> +            qcom,drv-id = <2>;
+>>>>>> +            qcom,tcs-config = <ACTIVE_TCS    3>,
+>>>>>> +                      <SLEEP_TCS     2>,
+>>>>>> +                      <WAKE_TCS      2>,
+>>>>>> +                      <CONTROL_TCS   0>;
+>>>>>> +
+>>>>>> +            apps_bcm_voter: bcm_voter {
+>>>>>> +                compatible = "qcom,bcm-voter";
+>>>>>> +            };
+>>>>>> +        };
+>>>>>> +    };
+>>>>>> +
+>>>>>> +    timer {
+>>>>>> +        compatible = "arm,armv8-timer";
+>>>>>> +        interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+>>>>>> +                 <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+>>>>>> +                 <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+>>>>>> +                 <GIC_PPI 12 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>;
+>>>>>> +    };
+>>>>>> +};
