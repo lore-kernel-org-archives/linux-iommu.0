@@ -1,157 +1,107 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2070.outbound.protection.outlook.com [40.107.223.70])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f176.google.com (mail-pg1-f176.google.com [209.85.215.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7B06947B
-	for <iommu@lists.linux.dev>; Thu,  8 Jun 2023 13:39:32 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FU5d9TaIEeOKGcx9fjcXB9dSEz5hb9oq7CBHIn0WEKUIRAbmcU1MuyGI90brQegbHxB7JlwKt4PDFO9tYo50Qtqy8ScSn3wIPuGLfsH48jKPjGPHHxFBZgAUgQWlyAx5rBbqbOLQZZmwuFwvNQSpXrE/APny6ozOj7Hz7OBA89ENYAVYcARtIPbcDcDH1l6wreCTFiaYgSIcgjd8znTFqm2PegPEo3r8iopDIF6vZc521Hwxe5bXIuNJnK9biMzBktiPuY4o5Wh/QzVal3TLlHZkLdXQWqzDWOYa6ojkh6OCOE/f7YC7LozVnruEn41Po0fPwRpLMIDKlquphfzHGA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JhXYZaAOsIcenZi6X9/sNKFSirThFdp14q8lVTXpiXs=;
- b=dCbdL2v7qGp4DxBbwjN47zNMloQdsV07SqmSh15qpNycFvf1arARNxDO+fnN8cF4upFTIq9V5FHb4hd1sUiy7NGwoxMpYz1DDae/hWhO3akYNT8CY6F2Mteu3iKkeCaDaup7BGrezg2fUAwZs1sZlIHUQOw55i1VwBfsemv3VftkE6kQjKT5ZzvGZHuqDZBWoNUherwGAuU6Uvd7fPIfNujAydJw9JQWJR2qq8kuBRrokYv2yq0AS5OI17tsSbww0ZeRmGNSGTQem0fyWndO3qt1ojVZmgqJxNbYIg4psP0sZoFgzzgogf5VvNc3KeqbxfNWz0Wii9vQZ1LqxW2aCw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JhXYZaAOsIcenZi6X9/sNKFSirThFdp14q8lVTXpiXs=;
- b=soTwDQzWGlOm4IMDpmAGEsLFKhHO5xW1u++7d7+lvUqeEuh0Qe9BWj/0tNKYxdqzDQCEORtDA7ZrI2QRfTqaKL0WYpZd1dNxO8tGjmYCXfTaXFtetCbbhN2y9AEJ0EaF5O25E7c57trcbp6Lqd2NtJ4vPM8dVJXOAuop3rZR/e2pV7SUsnKslkUxTK9cnZQWRbAF8BNboo5TFQC9Uo9ZnzPrii6U19Vxf3+doxROd5J/jIcXWZ6F3wUHN6p6RPHXkuk7oOhGd9lqJMKFh5syraD79gv0/BENbwmT6dMlSgjib0x95NZTs8TTuk2hxBVBDpNwmDBFgV0umVAAqE6a2g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by BY5PR12MB4052.namprd12.prod.outlook.com (2603:10b6:a03:209::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.38; Thu, 8 Jun
- 2023 13:39:30 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6455.030; Thu, 8 Jun 2023
- 13:39:30 +0000
-Date: Thu, 8 Jun 2023 10:39:28 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Michael Shavit <mshavit@google.com>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	jean-philippe@linaro.org, nicolinc@nvidia.com,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 14/18] iommu/arm-smmu-v3: Support domains with shared
- CDs
-Message-ID: <ZIHaEFJFVQqvJvmU@nvidia.com>
-References: <20230606120854.4170244-1-mshavit@google.com>
- <20230606120854.4170244-15-mshavit@google.com>
- <ZH9oQMmI8CezMCnx@nvidia.com>
- <CAKHBV25eDNXEu+6GWDJqpw1h5N-Jq-GPzf81kNH1dyw3Z=KsZA@mail.gmail.com>
- <ZIBxPd1/JCAle6yP@nvidia.com>
- <f0a691fa-d050-f457-9c8d-0ae340eab58f@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f0a691fa-d050-f457-9c8d-0ae340eab58f@linux.intel.com>
-X-ClientProxiedBy: CH0PR04CA0010.namprd04.prod.outlook.com
- (2603:10b6:610:76::15) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA2431FA3
+	for <iommu@lists.linux.dev>; Thu,  8 Jun 2023 14:34:08 +0000 (UTC)
+Received: by mail-pg1-f176.google.com with SMTP id 41be03b00d2f7-53fa455cd94so301160a12.2
+        for <iommu@lists.linux.dev>; Thu, 08 Jun 2023 07:34:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686234848; x=1688826848;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ogxEtO10zQv7idp4qQrzpIhC6RXX1WD8S/obzp5FPO8=;
+        b=riTC/3N/fynAvE5Sm3rVrRLtGarvt1CSaDOWe7izLt2EMbZwGqQOctCrs2JxP79wwA
+         o5SBTnJcug5VQ969dfmfBCeTgmDNcEIerIvtrrXB0yGb2Eski+laTJF9NHWIqGSl5JR/
+         8xU1g9aFrJp0zyM0MWHyn9OLDIlLAWWjlotC3jajlS80moPp7sKu/kBxCuMl+MhhPjEi
+         R3e7cTdejmgfSCFEVzZnT7YjabnqPhRZQ8cSQqeUafoO2527CyiBBycT4/ANKiBVAT3v
+         DvE0/kCprG3lowuS/sIT9URsCtmZdThWRcuPlXXBI4BcA8p/tAi4IP4rrvnQ1Z5KxA2P
+         QP4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686234848; x=1688826848;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ogxEtO10zQv7idp4qQrzpIhC6RXX1WD8S/obzp5FPO8=;
+        b=G0J+/Ne62ccCPUWQiJYxf4ZSSf6W7xHDM/1BdC5de6UUwuFPVo7vhqvwy6IaHXE1Dk
+         ZCKsH6bGrYUX+CXhlojQFQKzRtdPNNHaJTTNi1b3x45fdzrUjqFcxLJ5NvfKS5WgwW9e
+         /JyQQRV3nhHSi47YP65s4zJdo1qmFDPRF8cjciQ7gmgefB6PzkOJloA59swei4UfTR9u
+         xzb7vGyS0cnFXZnyI2y50lraowJJYxxeDSM6n0bxbM1xBtnVb9G0vnaRedDdjIa6xl6w
+         vLwnDvjvseu5ujZ+LTD7jemDWTN8h5THiZW39jYCMpFp/bh3R+6N8hETbz5n7qp/abZ4
+         00fA==
+X-Gm-Message-State: AC+VfDxNKo8UzhRB/jlO6DbxurULDPFaeRLJE4m6ttqps78OY/8aP9h1
+	4TnJzHLyOyU4oCSqOq3qCSdCmu+fxNIxJUdBOstOu1Etu90=
+X-Google-Smtp-Source: ACHHUZ5AjxzhpRwD2YACGND7PcjUeMfdk0Rx0KCbQI87WLYw+UnOhm4RVx3HdMR6kQJdV/PyMdco8CA3DJ58HcVSl3I=
+X-Received: by 2002:a17:90a:ea09:b0:255:5f47:c85c with SMTP id
+ w9-20020a17090aea0900b002555f47c85cmr3963738pjy.30.1686234847900; Thu, 08 Jun
+ 2023 07:34:07 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BY5PR12MB4052:EE_
-X-MS-Office365-Filtering-Correlation-Id: 09d392b8-55cc-4e83-5661-08db6825c8fc
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	oe5mLQlFglWJUVFUi/vHvF2Zc4Z9ZuxoQWb1+wvoZMiv02amboOWW7jhFLa2HKVpszFa/5MvFAgB1cjfX2Ff61MCQ06lST5BHXzdF8gGGcOWydtWpGmOwwBX974oFc0Cr24VBC/vHF3CDuYI449v5UaBYJ300erNjEdVnglsjbVokogVcGl1yamH1+ZT5Wzj2y8kPonG36siqMNtVT/QQuXTGGXMD6vCRqpS/DY/AcNN+lVruWtcIN8IOEWoxJymO690lVJN2kvkkjy+HE8DMvTkp06yTZv/fTj1fXgnDPWHLaQwBLm522NI4DBg80sgI3a8dcp+2ZRqmJ2haZTyZsdt6GCmAtvIkx0h5yzeUcE/5yKEVkkxUT6uO46YEvWccFPhlZfoD700rTU7tOij8tWCPVLlKjWf4QGXRpJrctJtfZkwmDpn8ObN3heNrz1APMrBQOGHRsGflLPTcdWnwSzI2NdTvPfxtstZrByksyIUid1Lh4ih3wQqfMd3tQJlmNK4UM3Np9jcGJlSKc5F9tfagIofJS611Is13KXIync0h5f5EyJB3zcIzj73jYPe
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(136003)(366004)(346002)(376002)(451199021)(2906002)(5660300002)(6916009)(8676002)(41300700001)(316002)(8936002)(4326008)(66556008)(66476007)(66946007)(54906003)(66899021)(478600001)(36756003)(6486002)(186003)(53546011)(86362001)(2616005)(83380400001)(6512007)(6506007)(26005)(38100700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?UmJFa0FUYlh4d25yME9tVExYL1ZHMnM2bUxVMFRCSzNuYUpsOTR4cGZocm5U?=
- =?utf-8?B?Wk9DMkVGdVF4NE5iV0prcCtjUlkvTHM5cEVwdGZMR3BUQW52M04yQURIUnQr?=
- =?utf-8?B?cGN5bkdNeGVWRDVGdU8wQmE4K1c2MGo0b0xQQnAxdG1UWU1nM2pGeEJKN05x?=
- =?utf-8?B?aXgwZ29LM0FCSWlzOU9lQTVNK2Z2dlVNczhoTEV0aGdFUmRuTnM1eEY3RlR5?=
- =?utf-8?B?QU9QM0NWVE1FT1RIdHRPcWZPZ280eXlRbG95SWtBbCtxeU1EanZlMnZEdXh2?=
- =?utf-8?B?T1dXaG1RdUpiUWtEcEQ4aUlkSFVvRnlWVWZvbjFpZ01TY3dHZk82OU9JUWNL?=
- =?utf-8?B?S3RmMi9sU0w0b1VVeGFxRU5vQ0wxZDNnWVNkbHBYOEczak9hazVJVHZ4OXJB?=
- =?utf-8?B?V082YkJnMEk1TWE5SnBZcUNwRTAwb3VYR1J6R1hxdVlualpkMWpMN20razls?=
- =?utf-8?B?OUtTNkVscUxadjBVSTJmOUJVLzk1djBqUDEvb1VhdG9vSFovVzZtV3hTVlBw?=
- =?utf-8?B?NFY4WGgvU0dtTllwdEh4eWswUkRxMTZIK0huZ0VwaUdZcGpyelZidDNGR0Jk?=
- =?utf-8?B?SDloQzU4UGdMRFhVdkJwN1NXREsyVmkvQ0tnditoVFgyRTJrRkt4SHNvRytV?=
- =?utf-8?B?RUoyK0phaVFERUU1UVlqWlFScGltSWE1MjA2NHZxTFNCTXBnbFpyMzlvak8w?=
- =?utf-8?B?cXRUZEc0SnMySnRGVEVzaWhCTDdGZkE5YkxwMkM4bk4ycUpmaEhSMEhoRGpi?=
- =?utf-8?B?cUNPK1VjeHovKzJUSGgyNkxGdzBHZm5IazRoQnUwTWVPZnBpdWpPdHR0MWxt?=
- =?utf-8?B?cVo1NitNdVNxblg2dTdjYU5ERWZ5WTNjamlOY0RTWjlVR3VjNDdrRG9zUWxL?=
- =?utf-8?B?blkzejRxOW1ndTNBUFRVRUdNZHRSa0NhajNvaEY0WUJMRTZ1Sy9yZlRQSHFE?=
- =?utf-8?B?OGx2eHhLSThZV09vVFJOZE1kZTZwNzBmNHdMbGN5MDc2cVp6Q3VKancrR0lo?=
- =?utf-8?B?ZkF3ZytUWU5SV25SYUtwdHRTTFVoQUJGRWRHZFdYRDlaYlg1UHpXVkV4UTdG?=
- =?utf-8?B?WHNuSXFLeFNON3FxQmxtOTE0WTRPQzFwc3NwR2lIZ0tETnJCNUlId0hKVW5I?=
- =?utf-8?B?bms4VUMxRWFtZzNGM2gxTkZ1Z1FwbVlLUVNydVdsNFptVkxnaWxzQ3FNRTBj?=
- =?utf-8?B?QUFNek44RHlZelRUb01uelVkSi9XNElIR3V5WCtmT3lhOHEwaFVBdDg2MVFZ?=
- =?utf-8?B?eHoyd1dUNjB0WGR0T0VuYWhNOGNLVE9UVXpXc3oxTzRxNXJmaTNweU8vbHdZ?=
- =?utf-8?B?NUlNb1lRYStPM1V1ODJtanU0Z2lUU1lvR24rc0xXSm1JZ3BZQkJSelR0WStR?=
- =?utf-8?B?U1k2ZUM5WWZ2VHVBR20zQ3d3NWVkUUVCWjA5RE81eXh0MmVqMWh4RURXTCt6?=
- =?utf-8?B?dEZTVGhVaklEbVBDTnRsMGtxakxMMDVUTWQvelM4NVI3QmVsa0UybkUvZi9L?=
- =?utf-8?B?TzNPZnRlWGdmN0liRE5wWEdQOHF6d1pSSURDd3BpcVVrQU5rRDc0elM4dGZY?=
- =?utf-8?B?NHVtb0czSUJBaTgycENSVDQvUFVKWCtNQ1lqS0hxYVBqK25zdDhLV2RMTTJ0?=
- =?utf-8?B?dHozby9DTHpPYTdLWnRVTkIyR2FYSFFpRmxlUDIzTkpPVlVvUFhKVDJ4NDhX?=
- =?utf-8?B?WloxSjNmd2dQNzVyQlFVK3pveGlsY09WQWNLUy9kd3BQQkQ4Ky9wWHFqb25q?=
- =?utf-8?B?MTYvdmJiMmZLVFNaYWhSNlBNcFRhZHVxclVSd25vTURnaTdqYm1jQXMyZVlN?=
- =?utf-8?B?ejNQYUtabnN1WVdod25jdEdNdXkyUnVBZ0VNalJoK3MxWDU0MXMraG01NDNw?=
- =?utf-8?B?aXk3NHFYQnovM1B0eGJxTWZoWUZDQUgrM2tuSnBnb3FpYXB2blJuQUQ1ZFkz?=
- =?utf-8?B?dlhvc00wbSswbmt2SCt5Ti9KT0JzOXRwUEEyZFFDVjBFVGx1SS9PeU80TzBT?=
- =?utf-8?B?QTJGdURCTXZTV1RZampDbTQ1VEtWQnVYc21FcHVXVDRhQmI0YVYwR2hISitT?=
- =?utf-8?B?OE9QTkMwemNqWWNnS0N0WWN2eFJZVnJNNGJpNnkrREUwVm9jSFhZbDNHb29Y?=
- =?utf-8?Q?kt60=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 09d392b8-55cc-4e83-5661-08db6825c8fc
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2023 13:39:30.0382
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lMv+cV1qVlWgwZxECm4zeCkmcC9JlRmhW7ofqP5VjK/8fsFXmbPcpllumDV1js4u
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4052
+References: <CAKgT0UezciLjHacOx372+v8MZkDf22D5Thn82n-07xxKy_0FTQ@mail.gmail.com>
+ <CAKgT0UfMeVOz6AOqSvVvzpsedGDiXCNQrjM+4KDv7qJJ1orpsw@mail.gmail.com> <a1cff65b-b390-3872-25b5-dd6bbfb3524c@linux.intel.com>
+In-Reply-To: <a1cff65b-b390-3872-25b5-dd6bbfb3524c@linux.intel.com>
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Date: Thu, 8 Jun 2023 07:33:31 -0700
+Message-ID: <CAKgT0UcE5bUe7ChytSyUWEkyqdwnNR1k_rcfyykPPWJ=ZzsdRg@mail.gmail.com>
+Subject: Re: Question about reserved_regions w/ Intel IOMMU
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, linux-pci <linux-pci@vger.kernel.org>, 
+	iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 08, 2023 at 10:39:23AM +0800, Baolu Lu wrote:
-> On 6/7/23 7:59 PM, Jason Gunthorpe wrote:
-> > On Wed, Jun 07, 2023 at 12:06:07AM +0530, Michael Shavit wrote:
-> > > > What we definately shouldn't do is try to have different SVA
-> > > > iommu_domain's pointing at the same ASID. That is again making SVA
-> > > > special, which we are trying to get away from 😄
-> > > Fwiw, this change is preserving the status-quo in that regard;
-> > > arm-smmu-v3-sva.c is already doing this. But yes, I agree that
-> > > resolving the limitation is a better long term solution... and
-> > > something I can try to look at further.
-> > I suppose we also don't really have a entirely clear picture what
-> > allocating multiple SVA domains should even do in the iommu driver.
-> > 
-> > The driver would like to share the ASID, but things are much cleaner
-> > for everything if the driver model has ASID 1:1 with the iommu_domain.
-> 
-> This means that each ASID should be mapped to a single IOMMU domain.
-> This is conceptually right as iommu_domain represents a hardware page
-> table. For SVA, it's an mm_struct.
-> 
-> So in my mind, each sva_domain should have a 1:1 relationship with an
-> mm_struct.
+On Wed, Jun 7, 2023 at 8:05=E2=80=AFPM Baolu Lu <baolu.lu@linux.intel.com> =
+wrote:
+>
+> On 6/8/23 7:03 AM, Alexander Duyck wrote:
+> > On Wed, Jun 7, 2023 at 3:40=E2=80=AFPM Alexander Duyck
+> > <alexander.duyck@gmail.com> wrote:
+> >>
+> >> I am running into a DMA issue that appears to be a conflict between
+> >> ACS and IOMMU. As per the documentation I can find, the IOMMU is
+> >> supposed to create reserved regions for MSI and the memory window
+> >> behind the root port. However looking at reserved_regions I am not
+> >> seeing that. I only see the reservation for the MSI.
+> >>
+> >> So for example with an enabled NIC and iommu enabled w/o passthru I am=
+ seeing:
+> >> # cat /sys/bus/pci/devices/0000\:83\:00.0/iommu_group/reserved_regions
+> >> 0x00000000fee00000 0x00000000feefffff msi
+> >>
+> >> Shouldn't there also be a memory window for the region behind the root
+> >> port to prevent any possible peer-to-peer access?
+> >
+> > Since the iommu portion of the email bounced I figured I would fix
+> > that and provide some additional info.
+> >
+> > I added some instrumentation to the kernel to dump the resources found
+> > in iova_reserve_pci_windows. From what I can tell it is finding the
+> > correct resources for the Memory and Prefetchable regions behind the
+> > root port. It seems to be calling reserve_iova which is successfully
+> > allocating an iova to reserve the region.
+> >
+> > However still no luck on why it isn't showing up in reserved_regions.
+>
+> Perhaps I can ask the opposite question, why it should show up in
+> reserve_regions? Why does the iommu subsystem block any possible peer-
+> to-peer DMA access? Isn't that a decision of the device driver.
+>
+> The iova_reserve_pci_windows() you've seen is for kernel DMA interfaces
+> which is not related to peer-to-peer accesses.
 
-If we want to support multiple iommu drivers then we should support
-multiple iommu_domains per mm_struct so that each driver can have its
-own. In this world if each instance wants its own iommu_domain it is
-not a big deal.
+The problem is if the IOVA overlaps with the physical addresses of
+other devices that can be routed to via ACS redirect. As such if ACS
+redirect is enabled a host IOVA could be directed to another device on
+the switch instead. To prevent that we need to reserve those addresses
+to avoid address space collisions.
 
-Drivers that can share iommu_domains across instances should probably
-also share sva iommu_domains across instances.
-
-Most real systems have only one iommu driver and we'd like the good
-iommu drivers to be able to share domains across instances, so we'd
-expect only 1 iommu_domain per mm struct.
-
-Jason
+From what I can tell it looks like the IOVA should be reserved, but I
+don't see it showing up anywhere in reserved_regions. What I am
+wondering is if iova_reserve_pci_windows() should be taking some steps
+so that it will appear, or if  intel_iommu_get_resv_regions() needs to
+have some code similar to iova_reserve_pci_windows() to get the ranges
+and verify they are reserved in the IOVA.
