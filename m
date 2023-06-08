@@ -1,107 +1,89 @@
-Received: from mail-pg1-f176.google.com (mail-pg1-f176.google.com [209.85.215.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA2431FA3
-	for <iommu@lists.linux.dev>; Thu,  8 Jun 2023 14:34:08 +0000 (UTC)
-Received: by mail-pg1-f176.google.com with SMTP id 41be03b00d2f7-53fa455cd94so301160a12.2
-        for <iommu@lists.linux.dev>; Thu, 08 Jun 2023 07:34:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686234848; x=1688826848;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ogxEtO10zQv7idp4qQrzpIhC6RXX1WD8S/obzp5FPO8=;
-        b=riTC/3N/fynAvE5Sm3rVrRLtGarvt1CSaDOWe7izLt2EMbZwGqQOctCrs2JxP79wwA
-         o5SBTnJcug5VQ969dfmfBCeTgmDNcEIerIvtrrXB0yGb2Eski+laTJF9NHWIqGSl5JR/
-         8xU1g9aFrJp0zyM0MWHyn9OLDIlLAWWjlotC3jajlS80moPp7sKu/kBxCuMl+MhhPjEi
-         R3e7cTdejmgfSCFEVzZnT7YjabnqPhRZQ8cSQqeUafoO2527CyiBBycT4/ANKiBVAT3v
-         DvE0/kCprG3lowuS/sIT9URsCtmZdThWRcuPlXXBI4BcA8p/tAi4IP4rrvnQ1Z5KxA2P
-         QP4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686234848; x=1688826848;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ogxEtO10zQv7idp4qQrzpIhC6RXX1WD8S/obzp5FPO8=;
-        b=G0J+/Ne62ccCPUWQiJYxf4ZSSf6W7xHDM/1BdC5de6UUwuFPVo7vhqvwy6IaHXE1Dk
-         ZCKsH6bGrYUX+CXhlojQFQKzRtdPNNHaJTTNi1b3x45fdzrUjqFcxLJ5NvfKS5WgwW9e
-         /JyQQRV3nhHSi47YP65s4zJdo1qmFDPRF8cjciQ7gmgefB6PzkOJloA59swei4UfTR9u
-         xzb7vGyS0cnFXZnyI2y50lraowJJYxxeDSM6n0bxbM1xBtnVb9G0vnaRedDdjIa6xl6w
-         vLwnDvjvseu5ujZ+LTD7jemDWTN8h5THiZW39jYCMpFp/bh3R+6N8hETbz5n7qp/abZ4
-         00fA==
-X-Gm-Message-State: AC+VfDxNKo8UzhRB/jlO6DbxurULDPFaeRLJE4m6ttqps78OY/8aP9h1
-	4TnJzHLyOyU4oCSqOq3qCSdCmu+fxNIxJUdBOstOu1Etu90=
-X-Google-Smtp-Source: ACHHUZ5AjxzhpRwD2YACGND7PcjUeMfdk0Rx0KCbQI87WLYw+UnOhm4RVx3HdMR6kQJdV/PyMdco8CA3DJ58HcVSl3I=
-X-Received: by 2002:a17:90a:ea09:b0:255:5f47:c85c with SMTP id
- w9-20020a17090aea0900b002555f47c85cmr3963738pjy.30.1686234847900; Thu, 08 Jun
- 2023 07:34:07 -0700 (PDT)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C5D66C2DA
+	for <iommu@lists.linux.dev>; Thu,  8 Jun 2023 15:28:37 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 32679AB6;
+	Thu,  8 Jun 2023 08:29:22 -0700 (PDT)
+Received: from [10.57.83.198] (unknown [10.57.83.198])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CB8B53F6C4;
+	Thu,  8 Jun 2023 08:28:35 -0700 (PDT)
+Message-ID: <b24a6c7b-27fc-41c0-5c82-15696b4a7dc1@arm.com>
+Date: Thu, 8 Jun 2023 16:28:24 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAKgT0UezciLjHacOx372+v8MZkDf22D5Thn82n-07xxKy_0FTQ@mail.gmail.com>
- <CAKgT0UfMeVOz6AOqSvVvzpsedGDiXCNQrjM+4KDv7qJJ1orpsw@mail.gmail.com> <a1cff65b-b390-3872-25b5-dd6bbfb3524c@linux.intel.com>
-In-Reply-To: <a1cff65b-b390-3872-25b5-dd6bbfb3524c@linux.intel.com>
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Thu, 8 Jun 2023 07:33:31 -0700
-Message-ID: <CAKgT0UcE5bUe7ChytSyUWEkyqdwnNR1k_rcfyykPPWJ=ZzsdRg@mail.gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.2
 Subject: Re: Question about reserved_regions w/ Intel IOMMU
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, linux-pci <linux-pci@vger.kernel.org>, 
-	iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+To: Baolu Lu <baolu.lu@linux.intel.com>,
+ Alexander Duyck <alexander.duyck@gmail.com>,
+ LKML <linux-kernel@vger.kernel.org>, linux-pci <linux-pci@vger.kernel.org>,
+ iommu@lists.linux.dev
+References: <CAKgT0UezciLjHacOx372+v8MZkDf22D5Thn82n-07xxKy_0FTQ@mail.gmail.com>
+ <CAKgT0UfMeVOz6AOqSvVvzpsedGDiXCNQrjM+4KDv7qJJ1orpsw@mail.gmail.com>
+ <a1cff65b-b390-3872-25b5-dd6bbfb3524c@linux.intel.com>
+Content-Language: en-GB
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <a1cff65b-b390-3872-25b5-dd6bbfb3524c@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Wed, Jun 7, 2023 at 8:05=E2=80=AFPM Baolu Lu <baolu.lu@linux.intel.com> =
-wrote:
->
+On 2023-06-08 04:03, Baolu Lu wrote:
 > On 6/8/23 7:03 AM, Alexander Duyck wrote:
-> > On Wed, Jun 7, 2023 at 3:40=E2=80=AFPM Alexander Duyck
-> > <alexander.duyck@gmail.com> wrote:
-> >>
-> >> I am running into a DMA issue that appears to be a conflict between
-> >> ACS and IOMMU. As per the documentation I can find, the IOMMU is
-> >> supposed to create reserved regions for MSI and the memory window
-> >> behind the root port. However looking at reserved_regions I am not
-> >> seeing that. I only see the reservation for the MSI.
-> >>
-> >> So for example with an enabled NIC and iommu enabled w/o passthru I am=
- seeing:
-> >> # cat /sys/bus/pci/devices/0000\:83\:00.0/iommu_group/reserved_regions
-> >> 0x00000000fee00000 0x00000000feefffff msi
-> >>
-> >> Shouldn't there also be a memory window for the region behind the root
-> >> port to prevent any possible peer-to-peer access?
-> >
-> > Since the iommu portion of the email bounced I figured I would fix
-> > that and provide some additional info.
-> >
-> > I added some instrumentation to the kernel to dump the resources found
-> > in iova_reserve_pci_windows. From what I can tell it is finding the
-> > correct resources for the Memory and Prefetchable regions behind the
-> > root port. It seems to be calling reserve_iova which is successfully
-> > allocating an iova to reserve the region.
-> >
-> > However still no luck on why it isn't showing up in reserved_regions.
->
+>> On Wed, Jun 7, 2023 at 3:40 PM Alexander Duyck
+>> <alexander.duyck@gmail.com> wrote:
+>>>
+>>> I am running into a DMA issue that appears to be a conflict between
+>>> ACS and IOMMU. As per the documentation I can find, the IOMMU is
+>>> supposed to create reserved regions for MSI and the memory window
+>>> behind the root port. However looking at reserved_regions I am not
+>>> seeing that. I only see the reservation for the MSI.
+>>>
+>>> So for example with an enabled NIC and iommu enabled w/o passthru I 
+>>> am seeing:
+>>> # cat /sys/bus/pci/devices/0000\:83\:00.0/iommu_group/reserved_regions
+>>> 0x00000000fee00000 0x00000000feefffff msi
+>>>
+>>> Shouldn't there also be a memory window for the region behind the root
+>>> port to prevent any possible peer-to-peer access?
+>>
+>> Since the iommu portion of the email bounced I figured I would fix
+>> that and provide some additional info.
+>>
+>> I added some instrumentation to the kernel to dump the resources found
+>> in iova_reserve_pci_windows. From what I can tell it is finding the
+>> correct resources for the Memory and Prefetchable regions behind the
+>> root port. It seems to be calling reserve_iova which is successfully
+>> allocating an iova to reserve the region.
+>>
+>> However still no luck on why it isn't showing up in reserved_regions.
+> 
 > Perhaps I can ask the opposite question, why it should show up in
 > reserve_regions? Why does the iommu subsystem block any possible peer-
 > to-peer DMA access? Isn't that a decision of the device driver.
->
+> 
 > The iova_reserve_pci_windows() you've seen is for kernel DMA interfaces
 > which is not related to peer-to-peer accesses.
 
-The problem is if the IOVA overlaps with the physical addresses of
-other devices that can be routed to via ACS redirect. As such if ACS
-redirect is enabled a host IOVA could be directed to another device on
-the switch instead. To prevent that we need to reserve those addresses
-to avoid address space collisions.
+Right, in general the IOMMU driver cannot be held responsible for 
+whatever might happen upstream of the IOMMU input. The DMA layer carves 
+PCI windows out of its IOVA space unconditionally because we know that 
+they *might* be problematic, and we don't have any specific constraints 
+on our IOVA layout so it's no big deal to just sacrifice some space for 
+simplicity. We don't want to have to go digging any further into 
+bus-specific code to reason about whether the right ACS capabilities are 
+present and enabled everywhere to prevent direct P2P or not. Other 
+use-cases may have different requirements, though, so it's up to them 
+what they want to do.
 
-From what I can tell it looks like the IOVA should be reserved, but I
-don't see it showing up anywhere in reserved_regions. What I am
-wondering is if iova_reserve_pci_windows() should be taking some steps
-so that it will appear, or if  intel_iommu_get_resv_regions() needs to
-have some code similar to iova_reserve_pci_windows() to get the ranges
-and verify they are reserved in the IOVA.
+It's conceptually pretty much the same as the case where the device (or 
+indeed a PCI host bridge or other interconnect segment in-between) has a 
+constrained DMA address width - the device may not be able to access all 
+of the address space that the IOMMU provides, but the IOMMU itself can't 
+tell you that.
+
+Thanks,
+Robin.
