@@ -1,147 +1,79 @@
-Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0D3410973
-	for <iommu@lists.linux.dev>; Thu,  8 Jun 2023 17:11:32 +0000 (UTC)
-Received: by mail-pj1-f47.google.com with SMTP id 98e67ed59e1d1-256712d65ceso493342a91.1
-        for <iommu@lists.linux.dev>; Thu, 08 Jun 2023 10:11:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686244292; x=1688836292;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=X0Xr4K9cnwEpUv2AEzAchReOMWS0DSH3sD0+mXFGpWo=;
-        b=RTmafsJXiePGF8irS2bY69S+2DNvF7JkfDRkolowy2mCdE04SytlAbWK6TFybEi5u1
-         7yrCDn711JWYYfrjeb5DKoiOFsw74XM9+jCGBupXNL5JKYfdWCuYUfL8fJNqMZB63Grh
-         luI/ZWF9Tz8lT5rOzyW3HzwDFiu/M5GFY/KR4VguUrwB8h/ileAoXKoG5CqDjtKDekKZ
-         J9kzFhUogqtKYYGM4qMG2+wZHbnPzG91KAMuTqqQC6wqsN80GlilfUrmn4AI1i2W3Uem
-         dXo3LJk3bzJjDLtlGTeyQKlOLTKJuhhYxtISKDWHRTxlWg3Ny379NQbbBArDJ90RfrVY
-         2roA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686244292; x=1688836292;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=X0Xr4K9cnwEpUv2AEzAchReOMWS0DSH3sD0+mXFGpWo=;
-        b=A5Mz4Uz54WDrXRFZ1ANyuUiSQId1kP+tYwd3b9kjdUXYI6YX8aLGcOklwteffn7L4u
-         DCv1/jEMoPAk7Ygq7G9J1UwkTnr1Ovb/+DYMBatJcjDY60UO5UZ5/FREoAXfuB6OuNtr
-         hpfe984/CRAKZ/ewn8h4xRvZgpOow9S+QQjaYNNcF+72XtvCLtSur/GEOpEIK5pVZo26
-         cazo+vtpNL3oE7ANZDfD/TYB8r8IBfYflSki/7Wpm4WNhLMQhYqgDbksZrCkC2YMiHva
-         ehcJpri0vS/dTEdQpv94Nbi1PzX3aaUz8hbRdmZkeNbdtkcI23Mf3bwot+Z5O7AVZOEo
-         C4FQ==
-X-Gm-Message-State: AC+VfDz1sF5x654mmerwgkw7GKXJVgEFU8H6KegAIP/I0PXQIAuyNcXx
-	cOi0Dhu11aE83hkfTfYuY6OaNJkei5NBpHj13uI=
-X-Google-Smtp-Source: ACHHUZ4sdjpiZcRrkp65Zj15eLf3o8W8T5TXQT0V1GcFJoTVDeImzDv5CpwKS97p0BlwMInw+BM/CWE+sxtaETQfxB4=
-X-Received: by 2002:a17:90b:811:b0:259:3f3c:99cc with SMTP id
- bk17-20020a17090b081100b002593f3c99ccmr4366962pjb.21.1686244291715; Thu, 08
- Jun 2023 10:11:31 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4078519922
+	for <iommu@lists.linux.dev>; Thu,  8 Jun 2023 17:19:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83DCAC433D2;
+	Thu,  8 Jun 2023 17:19:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1686244773;
+	bh=6ad4Ze1/w0HwSx4VHiAz44pNtRELAkpuEtOfWAJU1Eo=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=YdfcfRKqLJ40FuDdoTSVmRM59ViFQ9d62OUiQnwXIXPAteXBAEXPSS1RwfI34G5Q/
+	 IXT7FFgFG83agNDw1g2EZmqgIuAXoBm5Y2tnLegxMyp4PhZsYj+N4eHL+kq8pr2CC7
+	 crFZoqJyfoVY6ZKzBAsac8uLYJvnSMaaXYhuGhUkZlno6X9sN4zviMFHrKEFNm8cW7
+	 xzvDsHK2w/T1vIdlTZfAjlvk6uxU9Cs6UOjLU+j7K4/jtix0t5hdaNiGHVC4oEwhRq
+	 pMYw3WUhTeuRw1Cwha0qtfFWslBtasx/UMavhic7exuLXedpc+q6J+WE7wAz1k6i+c
+	 9jhxtxE3aMKSA==
+Date: Thu, 8 Jun 2023 12:19:32 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: bhelgaas@google.com, linux-pci@vger.kernel.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	hch@infradead.org, stable@vger.kernel.org,
+	Jason Adriaanse <jason_a69@yahoo.co.uk>
+Subject: Re: [PATCH RESEND] PCI: Add function 1 DMA alias quirk for Marvell
+ 88SE9235
+Message-ID: <20230608171932.GA1206912@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAKgT0UezciLjHacOx372+v8MZkDf22D5Thn82n-07xxKy_0FTQ@mail.gmail.com>
- <CAKgT0UfMeVOz6AOqSvVvzpsedGDiXCNQrjM+4KDv7qJJ1orpsw@mail.gmail.com>
- <a1cff65b-b390-3872-25b5-dd6bbfb3524c@linux.intel.com> <CAKgT0UcE5bUe7ChytSyUWEkyqdwnNR1k_rcfyykPPWJ=ZzsdRg@mail.gmail.com>
- <ZIH1/e2OcCuD7DEi@araj-dh-work>
-In-Reply-To: <ZIH1/e2OcCuD7DEi@araj-dh-work>
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Thu, 8 Jun 2023 10:10:54 -0700
-Message-ID: <CAKgT0UfTzExYZGNCEXCJaS7huWDxwoC3Z_2JCzJHAgr9Qyxmsg@mail.gmail.com>
-Subject: Re: Question about reserved_regions w/ Intel IOMMU
-To: Ashok Raj <ashok_raj@linux.intel.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, LKML <linux-kernel@vger.kernel.org>, 
-	linux-pci <linux-pci@vger.kernel.org>, iommu@lists.linux.dev, 
-	Ashok Raj <ashok.raj@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <731507e05d70239aec96fcbfab6e65d8ce00edd2.1686157165.git.robin.murphy@arm.com>
 
-On Thu, Jun 8, 2023 at 8:40=E2=80=AFAM Ashok Raj <ashok_raj@linux.intel.com=
-> wrote:
->
-> On Thu, Jun 08, 2023 at 07:33:31AM -0700, Alexander Duyck wrote:
-> > On Wed, Jun 7, 2023 at 8:05=E2=80=AFPM Baolu Lu <baolu.lu@linux.intel.c=
-om> wrote:
-> > >
-> > > On 6/8/23 7:03 AM, Alexander Duyck wrote:
-> > > > On Wed, Jun 7, 2023 at 3:40=E2=80=AFPM Alexander Duyck
-> > > > <alexander.duyck@gmail.com> wrote:
-> > > >>
-> > > >> I am running into a DMA issue that appears to be a conflict betwee=
-n
-> > > >> ACS and IOMMU. As per the documentation I can find, the IOMMU is
-> > > >> supposed to create reserved regions for MSI and the memory window
-> > > >> behind the root port. However looking at reserved_regions I am not
-> > > >> seeing that. I only see the reservation for the MSI.
-> > > >>
-> > > >> So for example with an enabled NIC and iommu enabled w/o passthru =
-I am seeing:
-> > > >> # cat /sys/bus/pci/devices/0000\:83\:00.0/iommu_group/reserved_reg=
-ions
-> > > >> 0x00000000fee00000 0x00000000feefffff msi
-> > > >>
-> > > >> Shouldn't there also be a memory window for the region behind the =
-root
-> > > >> port to prevent any possible peer-to-peer access?
-> > > >
-> > > > Since the iommu portion of the email bounced I figured I would fix
-> > > > that and provide some additional info.
-> > > >
-> > > > I added some instrumentation to the kernel to dump the resources fo=
-und
-> > > > in iova_reserve_pci_windows. From what I can tell it is finding the
-> > > > correct resources for the Memory and Prefetchable regions behind th=
-e
-> > > > root port. It seems to be calling reserve_iova which is successfull=
-y
-> > > > allocating an iova to reserve the region.
-> > > >
-> > > > However still no luck on why it isn't showing up in reserved_region=
-s.
-> > >
-> > > Perhaps I can ask the opposite question, why it should show up in
-> > > reserve_regions? Why does the iommu subsystem block any possible peer=
--
-> > > to-peer DMA access? Isn't that a decision of the device driver.
-> > >
-> > > The iova_reserve_pci_windows() you've seen is for kernel DMA interfac=
-es
-> > > which is not related to peer-to-peer accesses.
-> >
-> > The problem is if the IOVA overlaps with the physical addresses of
-> > other devices that can be routed to via ACS redirect. As such if ACS
-> > redirect is enabled a host IOVA could be directed to another device on
-> > the switch instead. To prevent that we need to reserve those addresses
-> > to avoid address space collisions.
+On Wed, Jun 07, 2023 at 06:18:47PM +0100, Robin Murphy wrote:
+> Marvell's own product brief implies the 92xx series are a closely
+> related family, and sure enough it turns out that 9235 seems to need the
+> same quirk as the other three, although possibly only when certain ports
+> are used.
+> 
+> CC: stable@vger.kernel.org
+> Reported-by: Jason Adriaanse <jason_a69@yahoo.co.uk>
+> Link: https://lore.kernel.org/linux-iommu/2a699a99-545c-1324-e052-7d2f41fed1ae@yahoo.co.uk/
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
-Our test case is just to perform DMA to/from the host on one device on
-a switch and what we are seeing is that when we hit an IOVA that
-matches up with the physical address of the neighboring devices BAR0
-then we are seeing an AER followed by a hot reset.
+Applied with Christoph's reviewed-by to pci/virtualization for v6.5,
+thanks!
 
-> Any untranslated address from a device must be forwarded to the IOMMU whe=
-n
-> ACS is enabled correct?I guess if you want true p2p, then you would need
-> to map so that the hpa turns into the peer address.. but its always a rou=
-nd
-> trip to IOMMU.
-
-This assumes all parts are doing the Request Redirect "correctly". In
-our case there is a PCIe switch we are trying to debug and we have a
-few working theories. One concern I have is that the switch may be
-throwing an ACS violation for us using an address that matches a
-neighboring device instead of redirecting it to the upstream port. If
-we pull the switch and just run on the root complex the issue seems to
-be resolved so I started poking into the code which led me to the
-documentation pointing out what is supposed to be reserved based on
-the root complex and MSI regions.
-
-As a part of going down that rabbit hole I realized that the
-reserved_regions seems to only list the MSI reservation. However after
-digging a bit deeper it seems like there is code to reserve the memory
-behind the root complex in the IOVA but it doesn't look like that is
-visible anywhere and is the piece I am currently trying to sort out.
-What I am working on is trying to figure out if the system that is
-failing is actually reserving that memory region in the IOVA, or if
-that is somehow not happening in our test setup.
+> ---
+> 
+> Note that the actual regression which started the thread is a different
+> matter, wherein a particular combination of parameters which used to put
+> intel-iommu into passthrough mode now enables full translation instead.
+> 
+> Take #2, hopefully not royally screwing up my email alises this time.
+> Sorry about that...
+> 
+>  drivers/pci/quirks.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+> index f4e2a88729fd..3186f2c84eab 100644
+> --- a/drivers/pci/quirks.c
+> +++ b/drivers/pci/quirks.c
+> @@ -4174,6 +4174,8 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9220,
+>  /* https://bugzilla.kernel.org/show_bug.cgi?id=42679#c49 */
+>  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9230,
+>  			 quirk_dma_func1_alias);
+> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9235,
+> +			 quirk_dma_func1_alias);
+>  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_TTI, 0x0642,
+>  			 quirk_dma_func1_alias);
+>  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_TTI, 0x0645,
+> -- 
+> 2.39.2.101.g768bb238c484.dirty
+> 
