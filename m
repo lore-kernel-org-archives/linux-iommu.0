@@ -1,95 +1,332 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DD33917757
-	for <iommu@lists.linux.dev>; Fri,  9 Jun 2023 15:39:33 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 88FB6AB6;
-	Fri,  9 Jun 2023 08:40:18 -0700 (PDT)
-Received: from [10.57.85.120] (unknown [10.57.85.120])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 45C7D3F663;
-	Fri,  9 Jun 2023 08:39:30 -0700 (PDT)
-Message-ID: <78995241-826f-bf42-9d4b-9ab7c9c9bf7d@arm.com>
-Date: Fri, 9 Jun 2023 16:39:29 +0100
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2814019539
+	for <iommu@lists.linux.dev>; Fri,  9 Jun 2023 16:10:43 +0000 (UTC)
+Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-4f63ea7bfb6so2422347e87.3
+        for <iommu@lists.linux.dev>; Fri, 09 Jun 2023 09:10:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1686327042; x=1688919042;
+        h=content-transfer-encoding:in-reply-to:from:cc:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=7A4fU6QoWxC0y2Sy3FIgTg9nFgE7RuqgyoUp2KWf0Go=;
+        b=XTRb6KWtvjOWlVe6ijBWSXNL5zPLJVAIKcPEDxX7UFHLqkCvY76bG3mzmi1sXlytUz
+         DftRWFb9+0I0QmyWzpszBUn4AtfS1FJym9LdbwQ24SJ5QyJpvQdfigbxeJ2XySzXxnCM
+         aw0a32JQsTgz9mfFwcmsHr1V5N81hU+6Yr9ECaIy6dm0L3Bm8qrYUOQRwaZb1Aad7f0d
+         VtbB0iON1neb4qmal8SWqe+CQRBGLskxXOHGhYk0yXaaRaTVOO8CAumS8nzdQBPRrsG7
+         zoS9BJAp6eWzAR8r09dElcaQEKo8EY4rTlzaYhqwH9J32xpUF3GqXzlgh91JQNb7T4zW
+         E+3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686327042; x=1688919042;
+        h=content-transfer-encoding:in-reply-to:from:cc:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=7A4fU6QoWxC0y2Sy3FIgTg9nFgE7RuqgyoUp2KWf0Go=;
+        b=SSN/kZMuBbTRTrAjN8AFJrhVlRCfazlhHHOJeEj9mzrsfLHUAqgsUK1p/VZU676ZK8
+         olb6wt1BS/1HtQnHJDA8/5fWNj6F2iqQJpM9lhze6rk3h7pSx3yzrNIU8YqzZ+rg02Cj
+         qdOrzqe/f1S6lLvbybe8uzEVPyQVEAowRgNTQj0jUeBzGeg1CH9EArMIx63IFmRRNYCH
+         s7Zg6lgaDrmXjd01s3FN0zalJDqune8aG3aC3GqjRTmmF/TNNRMjqmUpqDmVvN04+KNS
+         3I5O35xkJRukQfuYeianwb88fitcevBHLDnEuNgUyDZUhsJ65aqm6Ldb7BmLqAEY4Azx
+         O/uQ==
+X-Gm-Message-State: AC+VfDwVwml/+0y9y1/deUi9lvuAloYQr1YmfQZJ6/lVV42yPSCwbT7v
+	eAC3jqId73hbiZjJnfVUJABaXA==
+X-Google-Smtp-Source: ACHHUZ5ZGgSMiJfuI5fvPzb//LBZ0VtwD8E//F+BiE2R6HZ2SAPeeNmjeUuvenzCgUluIhSQRSB/mg==
+X-Received: by 2002:a19:671e:0:b0:4f4:3418:4726 with SMTP id b30-20020a19671e000000b004f434184726mr1117317lfc.56.1686327041951;
+        Fri, 09 Jun 2023 09:10:41 -0700 (PDT)
+Received: from [192.168.1.101] (abyj190.neoplus.adsl.tpnet.pl. [83.9.29.190])
+        by smtp.gmail.com with ESMTPSA id f14-20020a19ae0e000000b004f4e637db2fsm587260lfc.167.2023.06.09.09.10.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Jun 2023 09:10:41 -0700 (PDT)
+Message-ID: <f320f021-88c4-c5c9-0781-c82d0b88f67d@linaro.org>
+Date: Fri, 9 Jun 2023 18:10:38 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [PATCH 0/3] arm64: dts: qcom: sa8775p: Add interconnect to SMMU
-Content-Language: en-GB
-To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
- Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc: Parikshit Pareek <quic_ppareek@quicinc.com>, Will Deacon
- <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, Andy Gross <agross@kernel.org>,
- Bjorn Andersson <andersson@kernel.org>,
- Manivannan Sadhasivam <mani@kernel.org>,
- Marijn Suijten <marijn.suijten@somainline.org>,
- Adam Skladowski <a39.skl@gmail.com>, linux-arm-msm@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org,
- "linux-kernel @ vger . kernel . org Prasanna Kumar"
- <quic_kprasan@quicinc.com>, Shazad Hussain <quic_shazhuss@quicinc.com>
-References: <20230609054141.18938-1-quic_ppareek@quicinc.com>
- <79206b05-674b-1f6c-6eb1-ed45e6bd5637@linaro.org>
- <20230609125631.GA29252@hu-ppareek-blr.qualcomm.com>
- <2881f374-70e2-0057-f43e-7be12d32ae22@arm.com>
- <c3c12574-fc38-84ae-2a94-3c80fb9fb363@linaro.org>
- <CAA8EJprqfq0ey2hgBXxf9Zg1Y_MwHP_73EQkwg-W-sRYS7VE8w@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <CAA8EJprqfq0ey2hgBXxf9Zg1Y_MwHP_73EQkwg-W-sRYS7VE8w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.2
+Subject: Re: [PATCH v2 5/12] percpu: Add {raw,this}_cpu_try_cmpxchg()
+Content-Language: en-US
+To: Peter Zijlstra <peterz@infradead.org>
+References: <20230531132323.587480729@infradead.org>
+Cc: corbet@lwn.net, will@kernel.org, peterz@infradead.org,
+ boqun.feng@gmail.com, mark.rutland@arm.com, catalin.marinas@arm.com,
+ dennis@kernel.org, tj@kernel.org, cl@linux.com, hca@linux.ibm.com,
+ gor@linux.ibm.com, agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+ svens@linux.ibm.com, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com, joro@8bytes.org,
+ suravee.suthikulpanit@amd.com, robin.murphy@arm.com, dwmw2@infradead.org,
+ baolu.lu@linux.intel.com, Arnd Bergmann <arnd@arndb.de>,
+ Herbert Xu <herbert@gondor.apana.org.au>, davem@davemloft.net,
+ penberg@kernel.org, rientjes@google.com, iamjoonsoo.kim@lge.com,
+ Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz,
+ roman.gushchin@linux.dev, 42.hyeyoo@gmail.com, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+ linux-s390@vger.kernel.org, iommu@lists.linux.dev,
+ linux-arch@vger.kernel.org, linux-crypto@vger.kernel.org,
+ sfr@canb.auug.org.au, mpe@ellerman.id.au,
+ James.Bottomley@hansenpartnership.com, deller@gmx.de,
+ linux-parisc@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+ llvm@lists.linux.dev
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+In-Reply-To: <20230531132323.587480729@infradead.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 2023-06-09 15:56, Dmitry Baryshkov wrote:
-> On Fri, 9 Jun 2023 at 17:52, Konrad Dybcio <konrad.dybcio@linaro.org> wrote:
->>
->>
->>
->> On 9.06.2023 16:45, Robin Murphy wrote:
->>> On 2023-06-09 13:56, Parikshit Pareek wrote:
->>>> On Fri, Jun 09, 2023 at 10:52:26AM +0200, Konrad Dybcio wrote:
->>>>>
->>>>>
->>>>> On 9.06.2023 07:41, Parikshit Pareek wrote:
->>>>>> Some qcom SoCs have SMMUs, which need the interconnect bandwidth to be
->>>>>> This series introduce the due support for associated interconnect, and
->>>>>> setting of the due interconnect-bandwidth. Setting due interconnect
->>>>>> bandwidth is needed to avoid the issues like [1], caused by not having
->>>>>> due clock votes(indirectly dependent upon interconnect bandwidth).
->>>>>
->>>>> [1] ???
->>>>
->>>> My bad. Intended to mention following:
->>>> https://lore.kernel.org/linux-arm-msm/20230418165224.vmok75fwcjqdxspe@echanude/
->>>
->>> This sounds super-dodgy - do you really have to rely on configuration of the interconnect path from the SMMU's pagetable walker to RAM to keep a completely different interconnect path clocked for the CPU to access SMMU registers? You can't just request the programming interface clock directly like on other SoCs?
->> On Qualcomm platforms, particularly so with the more recent ones, some
->> clocks are managed by various remote cores. Half of what the interconnect
->> infra does on these SoCs is telling one such core to change the internally
->> managed clock's rate based on the requested bw.
+
+
+On 31.05.2023 15:08, Peter Zijlstra wrote:
+> Add the try_cmpxchg() form to the per-cpu ops.
 > 
-> But enabling PCIe interconnect to keep SMMU working sounds strange to
-> me too. Does the fault come from some outstanding PCIe transaction?
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> ---
++CC Nathan, llvm list
 
-The "Injecting instruction/data abort to VM 3" message from the 
-hypervisor implies that it is the access to SMMU_CR0 from 
-arm_smmu_shutdown() that's blown up. I can even believe that the SMMU 
-shares some clocks with the PCIe interconnect, given that its TBU must 
-be *in* that path from PCIe to memory, at least. However I would 
-instinctively expect the abstraction layers above to have some notion of 
-distinct votes for "CPU wants to access SMMU" vs. "SMMU/PCIe wants to 
-access RAM", given that the latter is liable to need to enable more than 
-the former if the clock/power gating is as fine-grained as previous SoCs 
-seem to have been. But maybe my hunch is wrong and this time 
-everything's just in one big clock domain. I don't know. I'm just here 
-to ask questions to establish whether this really is the most correct 
-abstraction or just a lazy bodge to avoid doing the proper thing in some 
-other driver.
+Hi all, this patch seems to break booting on Qualcomm ARM64 platforms
+when compiled with clang (GCC works fine) for some reason..:
 
-Thanks,
-Robin.
+next-20230605 - works
+next-20230606 - doesn't
+
+grev -m 1 dc4e51fd9846 on next-20230606 - works again
+b4 shazam <this_msgid> -P 1-4 - still works
+b4 shazam <this_msgid> -P 5 - breaks
+
+Confirmed on at least Qualcomm QCM2290, SM8250.
+
+Checking the serial console, it hits a BUG_ON:
+
+[    0.000000] ------------[ cut here ]------------
+[    0.000000] kernel BUG at mm/vmalloc.c:1638!
+[    0.000000] Internal error: Oops - BUG: 00000000f2000800 [#1] SMP
+[    0.000000] Modules linked in:
+[    0.000000] CPU: 0 PID: 0 Comm: swapper/0 Not tainted [snip]
+[    0.000000] Hardware name: Qualcomm Technologies, Inc. Robotics RB1 (DT)
+[    0.000000] pstate: 000000c5 (nzcv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[    0.000000] pc : alloc_vmap_area+0xafc/0xb08
+[    0.000000] lr : alloc_vmap_area+0x9e4/0xb08
+[    0.000000] sp : ffffa50137f53c20
+[    0.000000] x29: ffffa50137f53c60 x28: ffffa50137f30c18 x27: 0000000000000000
+[    0.000000] x26: 0000000000007fff x25: ffff800080000000 x24: 000000000000cfff
+[    0.000000] x23: ffffffffffff8000 x22: ffffa50137fef970 x21: fffffbfff0000000
+[    0.000000] x20: ffff022982003208 x19: ffff0229820031f8 x18: ffffa50137f64f70
+[    0.000000] x17: ffffa50137fef980 x16: ffffa501375e6d08 x15: 0000000000000001
+[    0.000000] x14: ffffa5013831e1a0 x13: ffffa50137f30c18 x12: 0000000000402dc2
+[    0.000000] x11: 0000000000000000 x10: ffff022982003018 x9 : ffffa5013831e188
+[    0.000000] x8 : ffffcb55ff003228 x7 : 0000000000000000 x6 : 0000000000000048
+[    0.000000] x5 : 0000000000000000 x4 : ffffa50137f53bd0 x3 : ffffa50136490000
+[    0.000000] x2 : 0000000000000001 x1 : ffffa5013831e190 x0 : ffff022982003208
+[    0.000000] Call trace:
+[    0.000000]  alloc_vmap_area+0xafc/0xb08
+[    0.000000]  __get_vm_area_node+0x108/0x1e8
+[    0.000000]  __vmalloc_node_range+0x1fc/0x728
+[    0.000000]  __vmalloc_node+0x5c/0x70
+[    0.000000]  init_IRQ+0x90/0x11c
+[    0.000000]  start_kernel+0x1ac/0x3bc
+[    0.000000]  __primary_switched+0xc4/0xcc
+[    0.000000] Code: f000e300 91062000 943bd9ba 17ffff8f (d4210000)
+[    0.000000] ---[ end trace 0000000000000000 ]---
+[    0.000000] Kernel panic - not syncing: Attempted to kill the idle task!
+
+Compiled with clang 15.0.7 from Arch repos, with
+make ARCH=arm64 LLVM=1
+
+Konrad
+>  include/asm-generic/percpu.h |  113 +++++++++++++++++++++++++++++++++++++++++--
+>  include/linux/percpu-defs.h  |   19 +++++++
+>  2 files changed, 128 insertions(+), 4 deletions(-)
+> 
+> --- a/include/asm-generic/percpu.h
+> +++ b/include/asm-generic/percpu.h
+> @@ -89,16 +89,37 @@ do {									\
+>  	__ret;								\
+>  })
+>  
+> -#define raw_cpu_generic_cmpxchg(pcp, oval, nval)			\
+> +#define __cpu_fallback_try_cmpxchg(pcp, ovalp, nval, _cmpxchg)		\
+> +({									\
+> +	typeof(pcp) __val, __old = *(ovalp);				\
+> + 	__val = _cmpxchg(pcp, __old, nval);				\
+> +	if (__val != __old)						\
+> +		*(ovalp) = __val;					\
+> +	__val == __old;							\
+> +})
+> +
+> +#define raw_cpu_generic_try_cmpxchg(pcp, ovalp, nval)			\
+>  ({									\
+>  	typeof(pcp) *__p = raw_cpu_ptr(&(pcp));				\
+> -	typeof(pcp) __ret;						\
+> -	__ret = *__p;							\
+> -	if (__ret == (oval))						\
+> +	typeof(pcp) __val = *__p, __old = *(ovalp);			\
+> +	bool __ret;							\
+> +	if (__val == __old) {						\
+>  		*__p = nval;						\
+> +		__ret = true;						\
+> +	} else {							\
+> +		*(ovalp) = __val;					\
+> +		__ret = false;						\
+> +	}								\
+>  	__ret;								\
+>  })
+>  
+> +#define raw_cpu_generic_cmpxchg(pcp, oval, nval)			\
+> +({									\
+> +	typeof(pcp) __old = (oval);					\
+> +	raw_cpu_generic_try_cmpxchg(pcp, &__old, nval);			\
+> +	__old;								\
+> +})
+> +
+>  #define raw_cpu_generic_cmpxchg_double(pcp1, pcp2, oval1, oval2, nval1, nval2) \
+>  ({									\
+>  	typeof(pcp1) *__p1 = raw_cpu_ptr(&(pcp1));			\
+> @@ -170,6 +191,16 @@ do {									\
+>  	__ret;								\
+>  })
+>  
+> +#define this_cpu_generic_try_cmpxchg(pcp, ovalp, nval)			\
+> +({									\
+> +	bool __ret;							\
+> +	unsigned long __flags;						\
+> +	raw_local_irq_save(__flags);					\
+> +	__ret = raw_cpu_generic_try_cmpxchg(pcp, ovalp, nval);		\
+> +	raw_local_irq_restore(__flags);					\
+> +	__ret;								\
+> +})
+> +
+>  #define this_cpu_generic_cmpxchg(pcp, oval, nval)			\
+>  ({									\
+>  	typeof(pcp) __ret;						\
+> @@ -282,6 +313,43 @@ do {									\
+>  #define raw_cpu_xchg_8(pcp, nval)	raw_cpu_generic_xchg(pcp, nval)
+>  #endif
+>  
+> +#ifndef raw_cpu_try_cmpxchg_1
+> +#ifdef raw_cpu_cmpxchg_1
+> +#define raw_cpu_try_cmpxchg_1(pcp, ovalp, nval) \
+> +	__cpu_fallback_try_cmpxchg(pcp, ovalp, nval, raw_cpu_cmpxchg_1)
+> +#else
+> +#define raw_cpu_try_cmpxchg_1(pcp, ovalp, nval) \
+> +	raw_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
+> +#endif
+> +#endif
+> +#ifndef raw_cpu_try_cmpxchg_2
+> +#ifdef raw_cpu_cmpxchg_2
+> +#define raw_cpu_try_cmpxchg_2(pcp, ovalp, nval) \
+> +	__cpu_fallback_try_cmpxchg(pcp, ovalp, nval, raw_cpu_cmpxchg_2)
+> +#else
+> +#define raw_cpu_try_cmpxchg_2(pcp, ovalp, nval) \
+> +	raw_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
+> +#endif
+> +#endif
+> +#ifndef raw_cpu_try_cmpxchg_4
+> +#ifdef raw_cpu_cmpxchg_4
+> +#define raw_cpu_try_cmpxchg_4(pcp, ovalp, nval) \
+> +	__cpu_fallback_try_cmpxchg(pcp, ovalp, nval, raw_cpu_cmpxchg_4)
+> +#else
+> +#define raw_cpu_try_cmpxchg_4(pcp, ovalp, nval) \
+> +	raw_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
+> +#endif
+> +#endif
+> +#ifndef raw_cpu_try_cmpxchg_8
+> +#ifdef raw_cpu_cmpxchg_8
+> +#define raw_cpu_try_cmpxchg_8(pcp, ovalp, nval) \
+> +	__cpu_fallback_try_cmpxchg(pcp, ovalp, nval, raw_cpu_cmpxchg_8)
+> +#else
+> +#define raw_cpu_try_cmpxchg_8(pcp, ovalp, nval) \
+> +	raw_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
+> +#endif
+> +#endif
+> +
+>  #ifndef raw_cpu_cmpxchg_1
+>  #define raw_cpu_cmpxchg_1(pcp, oval, nval) \
+>  	raw_cpu_generic_cmpxchg(pcp, oval, nval)
+> @@ -407,6 +475,43 @@ do {									\
+>  #define this_cpu_xchg_8(pcp, nval)	this_cpu_generic_xchg(pcp, nval)
+>  #endif
+>  
+> +#ifndef this_cpu_try_cmpxchg_1
+> +#ifdef this_cpu_cmpxchg_1
+> +#define this_cpu_try_cmpxchg_1(pcp, ovalp, nval) \
+> +	__cpu_fallback_try_cmpxchg(pcp, ovalp, nval, this_cpu_cmpxchg_1)
+> +#else
+> +#define this_cpu_try_cmpxchg_1(pcp, ovalp, nval) \
+> +	this_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
+> +#endif
+> +#endif
+> +#ifndef this_cpu_try_cmpxchg_2
+> +#ifdef this_cpu_cmpxchg_2
+> +#define this_cpu_try_cmpxchg_2(pcp, ovalp, nval) \
+> +	__cpu_fallback_try_cmpxchg(pcp, ovalp, nval, this_cpu_cmpxchg_2)
+> +#else
+> +#define this_cpu_try_cmpxchg_2(pcp, ovalp, nval) \
+> +	this_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
+> +#endif
+> +#endif
+> +#ifndef this_cpu_try_cmpxchg_4
+> +#ifdef this_cpu_cmpxchg_4
+> +#define this_cpu_try_cmpxchg_4(pcp, ovalp, nval) \
+> +	__cpu_fallback_try_cmpxchg(pcp, ovalp, nval, this_cpu_cmpxchg_4)
+> +#else
+> +#define this_cpu_try_cmpxchg_4(pcp, ovalp, nval) \
+> +	this_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
+> +#endif
+> +#endif
+> +#ifndef this_cpu_try_cmpxchg_8
+> +#ifdef this_cpu_cmpxchg_8
+> +#define this_cpu_try_cmpxchg_8(pcp, ovalp, nval) \
+> +	__cpu_fallback_try_cmpxchg(pcp, ovalp, nval, this_cpu_cmpxchg_8)
+> +#else
+> +#define this_cpu_try_cmpxchg_8(pcp, ovalp, nval) \
+> +	this_cpu_generic_try_cmpxchg(pcp, ovalp, nval)
+> +#endif
+> +#endif
+> +
+>  #ifndef this_cpu_cmpxchg_1
+>  #define this_cpu_cmpxchg_1(pcp, oval, nval) \
+>  	this_cpu_generic_cmpxchg(pcp, oval, nval)
+> --- a/include/linux/percpu-defs.h
+> +++ b/include/linux/percpu-defs.h
+> @@ -343,6 +343,21 @@ static __always_inline void __this_cpu_p
+>  	pscr2_ret__;							\
+>  })
+>  
+> +#define __pcpu_size_call_return2bool(stem, variable, ...)		\
+> +({									\
+> +	bool pscr2_ret__;						\
+> +	__verify_pcpu_ptr(&(variable));					\
+> +	switch(sizeof(variable)) {					\
+> +	case 1: pscr2_ret__ = stem##1(variable, __VA_ARGS__); break;	\
+> +	case 2: pscr2_ret__ = stem##2(variable, __VA_ARGS__); break;	\
+> +	case 4: pscr2_ret__ = stem##4(variable, __VA_ARGS__); break;	\
+> +	case 8: pscr2_ret__ = stem##8(variable, __VA_ARGS__); break;	\
+> +	default:							\
+> +		__bad_size_call_parameter(); break;			\
+> +	}								\
+> +	pscr2_ret__;							\
+> +})
+> +
+>  /*
+>   * Special handling for cmpxchg_double.  cmpxchg_double is passed two
+>   * percpu variables.  The first has to be aligned to a double word
+> @@ -426,6 +441,8 @@ do {									\
+>  #define raw_cpu_xchg(pcp, nval)		__pcpu_size_call_return2(raw_cpu_xchg_, pcp, nval)
+>  #define raw_cpu_cmpxchg(pcp, oval, nval) \
+>  	__pcpu_size_call_return2(raw_cpu_cmpxchg_, pcp, oval, nval)
+> +#define raw_cpu_try_cmpxchg(pcp, ovalp, nval) \
+> +	__pcpu_size_call_return2bool(raw_cpu_try_cmpxchg_, pcp, ovalp, nval)
+>  #define raw_cpu_cmpxchg_double(pcp1, pcp2, oval1, oval2, nval1, nval2) \
+>  	__pcpu_double_call_return_bool(raw_cpu_cmpxchg_double_, pcp1, pcp2, oval1, oval2, nval1, nval2)
+>  
+> @@ -513,6 +530,8 @@ do {									\
+>  #define this_cpu_xchg(pcp, nval)	__pcpu_size_call_return2(this_cpu_xchg_, pcp, nval)
+>  #define this_cpu_cmpxchg(pcp, oval, nval) \
+>  	__pcpu_size_call_return2(this_cpu_cmpxchg_, pcp, oval, nval)
+> +#define this_cpu_try_cmpxchg(pcp, ovalp, nval) \
+> +	__pcpu_size_call_return2bool(this_cpu_try_cmpxchg_, pcp, ovalp, nval)
+>  #define this_cpu_cmpxchg_double(pcp1, pcp2, oval1, oval2, nval1, nval2) \
+>  	__pcpu_double_call_return_bool(this_cpu_cmpxchg_double_, pcp1, pcp2, oval1, oval2, nval1, nval2)
+>  
