@@ -1,132 +1,68 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EA5B171B4
-	for <iommu@lists.linux.dev>; Fri,  9 Jun 2023 14:39:11 +0000 (UTC)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 7981A218E8;
-	Fri,  9 Jun 2023 14:39:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1686321549; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=O+nq2sVFNvU6nyWExPnHDrSk7SL7j6fMmlV/ftm6VIU=;
-	b=ODZm/S6k31XYx+UCgoj7RzO3oZFNknYltRACUNBh5M4wtGImi+QiMGTDk8gi1vrICkOq5w
-	b1rG3dINTJz4oB9ka0qLpAkaBqVtBwhhpKERhdAywR/C5Zpb57ZJuq+N/CXuKJyKhGPrDd
-	VCk+tqXsjxxOzq5OoPxbGdqNpNL/7As=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1686321549;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=O+nq2sVFNvU6nyWExPnHDrSk7SL7j6fMmlV/ftm6VIU=;
-	b=0Bl4ggUNIl7d0gyZnuB8rmdlsXkGQqNVlYeBQhcny6DxjGyGMsb8BkIKydQr80ttblBIdh
-	7SOD0umVHOv90FBQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1162713A47;
-	Fri,  9 Jun 2023 14:39:09 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-	by imap2.suse-dmz.suse.de with ESMTPSA
-	id 9Ax0A405g2RUcgAAMHmgww
-	(envelope-from <vbabka@suse.cz>); Fri, 09 Jun 2023 14:39:09 +0000
-Message-ID: <3b2c5414-7623-c4a8-1a24-1c8e1ced0387@suse.cz>
-Date: Fri, 9 Jun 2023 16:39:08 +0200
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B9E0515AA
+	for <iommu@lists.linux.dev>; Fri,  9 Jun 2023 14:45:20 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 704FFAB6;
+	Fri,  9 Jun 2023 07:46:05 -0700 (PDT)
+Received: from [10.57.85.120] (unknown [10.57.85.120])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 30E6D3F663;
+	Fri,  9 Jun 2023 07:45:17 -0700 (PDT)
+Message-ID: <2881f374-70e2-0057-f43e-7be12d32ae22@arm.com>
+Date: Fri, 9 Jun 2023 15:45:13 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.2
-Subject: Re: [PATCH v6 16/17] mm: slab: Reduce the kmalloc() minimum alignment
- if DMA bouncing possible
-Content-Language: en-US
-To: Catalin Marinas <catalin.marinas@arm.com>,
- Linus Torvalds <torvalds@linux-foundation.org>,
- Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>
-Cc: Arnd Bergmann <arnd@arndb.de>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
- Andrew Morton <akpm@linux-foundation.org>,
- Herbert Xu <herbert@gondor.apana.org.au>, Ard Biesheuvel <ardb@kernel.org>,
- Isaac Manjarres <isaacmanjarres@google.com>,
- Saravana Kannan <saravanak@google.com>, Alasdair Kergon <agk@redhat.com>,
- Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>,
- Mark Brown <broonie@kernel.org>, Mike Snitzer <snitzer@kernel.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Jonathan Cameron
- <jic23@kernel.org>, linux-mm@kvack.org, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, Christoph Lameter <cl@linux.com>,
- David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>,
- Pekka Enberg <penberg@kernel.org>, Hyeonggon Yoo <42.hyeyoo@gmail.com>,
- Roman Gushchin <roman.gushchin@linux.dev>
-References: <20230531154836.1366225-1-catalin.marinas@arm.com>
- <20230531154836.1366225-17-catalin.marinas@arm.com>
-From: Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20230531154836.1366225-17-catalin.marinas@arm.com>
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH 0/3] arm64: dts: qcom: sa8775p: Add interconnect to SMMU
+Content-Language: en-GB
+To: Parikshit Pareek <quic_ppareek@quicinc.com>,
+ Konrad Dybcio <konrad.dybcio@linaro.org>
+Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Andy Gross <agross@kernel.org>,
+ Bjorn Andersson <andersson@kernel.org>,
+ Manivannan Sadhasivam <mani@kernel.org>,
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+ Marijn Suijten <marijn.suijten@somainline.org>,
+ Adam Skladowski <a39.skl@gmail.com>, linux-arm-msm@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org,
+ "linux-kernel @ vger . kernel . org Prasanna Kumar"
+ <quic_kprasan@quicinc.com>, Shazad Hussain <quic_shazhuss@quicinc.com>
+References: <20230609054141.18938-1-quic_ppareek@quicinc.com>
+ <79206b05-674b-1f6c-6eb1-ed45e6bd5637@linaro.org>
+ <20230609125631.GA29252@hu-ppareek-blr.qualcomm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20230609125631.GA29252@hu-ppareek-blr.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 5/31/23 17:48, Catalin Marinas wrote:
-> If an architecture opted in to DMA bouncing of unaligned kmalloc()
-> buffers (ARCH_WANT_KMALLOC_DMA_BOUNCE), reduce the minimum kmalloc()
-> cache alignment below cache-line size to ARCH_KMALLOC_MINALIGN.
+On 2023-06-09 13:56, Parikshit Pareek wrote:
+> On Fri, Jun 09, 2023 at 10:52:26AM +0200, Konrad Dybcio wrote:
+>>
+>>
+>> On 9.06.2023 07:41, Parikshit Pareek wrote:
+>>> Some qcom SoCs have SMMUs, which need the interconnect bandwidth to be
+>>> This series introduce the due support for associated interconnect, and
+>>> setting of the due interconnect-bandwidth. Setting due interconnect
+>>> bandwidth is needed to avoid the issues like [1], caused by not having
+>>> due clock votes(indirectly dependent upon interconnect bandwidth).
+>>
+>> [1] ???
 > 
-> Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+> My bad. Intended to mention following:
+> https://lore.kernel.org/linux-arm-msm/20230418165224.vmok75fwcjqdxspe@echanude/
 
-Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
+This sounds super-dodgy - do you really have to rely on configuration of 
+the interconnect path from the SMMU's pagetable walker to RAM to keep a 
+completely different interconnect path clocked for the CPU to access 
+SMMU registers? You can't just request the programming interface clock 
+directly like on other SoCs?
 
-Nit below:
-
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: Christoph Hellwig <hch@lst.de>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> ---
->  mm/slab_common.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/mm/slab_common.c b/mm/slab_common.c
-> index 7c6475847fdf..fe46459a8b77 100644
-> --- a/mm/slab_common.c
-> +++ b/mm/slab_common.c
-> @@ -18,6 +18,7 @@
->  #include <linux/uaccess.h>
->  #include <linux/seq_file.h>
->  #include <linux/dma-mapping.h>
-> +#include <linux/swiotlb.h>
->  #include <linux/proc_fs.h>
->  #include <linux/debugfs.h>
->  #include <linux/kasan.h>
-> @@ -863,10 +864,19 @@ void __init setup_kmalloc_cache_index_table(void)
->  	}
->  }
->  
-> +#ifdef CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC
-> +static unsigned int __kmalloc_minalign(void)
-> +{
-> +	if (io_tlb_default_mem.nslabs)
-> +		return ARCH_KMALLOC_MINALIGN;
-> +	return dma_get_cache_alignment();
-> +}
-> +#else
->  static unsigned int __kmalloc_minalign(void)
->  {
->  	return dma_get_cache_alignment();
->  }
-> +#endif
-
-Should be enough to put the #ifdef around the two lines into a single
-implementation of the function?
-
->  void __init
->  new_kmalloc_cache(int idx, enum kmalloc_cache_type type, slab_flags_t flags)
-> 
-
+Thanks,
+Robin.
