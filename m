@@ -1,88 +1,76 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 513A515AA
-	for <iommu@lists.linux.dev>; Fri,  9 Jun 2023 06:06:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686290779; x=1717826779;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=pCUTHnlZlVar+pAAYPKyf+GGBotLIiPQRNKzfWEppzc=;
-  b=aeZ3SGhR3WpRihEYYh7FHsTfd7VxtMb7h8QeyiqicqgfuLGtasZqLtWG
-   Ps00el0oOCzeydVUgO66+qDqJxVXyg2ZyIvqwjhPtti8DL1rID3D1tjLN
-   xc3Uo1lcx8Z9fVMEVR2LJLQBpCyY/EoazH/2yPzW0RaIfM+Jcosms37cq
-   jU7SG5C+robRrJLFHb4H1mYYXL1jvTao3fy1A5UA5YwTrhob+mE18+kTA
-   51h43atIBB5/qUZdRXkg7sp6pF40Cm8LA3SBt1CEaawvAVi7KW1UJcimc
-   8IxbM5Dl/CRn8QtZMC9A032osxq+SzkkINSt0cttEB7dnhc+H3PjOwK6W
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10735"; a="360881590"
-X-IronPort-AV: E=Sophos;i="6.00,228,1681196400"; 
-   d="scan'208";a="360881590"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2023 23:06:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10735"; a="660652218"
-X-IronPort-AV: E=Sophos;i="6.00,228,1681196400"; 
-   d="scan'208";a="660652218"
-Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by orsmga003.jf.intel.com with ESMTP; 08 Jun 2023 23:06:17 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: iommu@lists.linux.dev
-Cc: linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 1/1] iommu/vt-d: Remove commented-out code
-Date: Fri,  9 Jun 2023 14:05:14 +0800
-Message-Id: <20230609060514.15154-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A5118F76
+	for <iommu@lists.linux.dev>; Fri,  9 Jun 2023 08:12:05 +0000 (UTC)
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id C7DBB16965A;
+	Fri,  9 Jun 2023 10:11:56 +0200 (CEST)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
+	t=1686298317; bh=hZfrcwcxHoyRa5wqyYqCGUTJUrze6YAm/fimj/PnGkc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=11LODvHIZXX438UC905uhWdeYSYnSaBwWC1C3JeTEWrwMES7jzmGLA2yl6TLdyajR
+	 1uEkwLsW3k6HHY7h8c4eUk7sJ69NGbp5vNT3Vl6N3ahZ0ms7VgpsaBGi2yci/o5N/8
+	 LU3Tdh0TSdTic8Txb4Sdoq9uDFtUZ5d2x5XuQ6wBEaI21pKfONYDaoNZv2o7MlPDnr
+	 wHmx26NHQi18vxwwSis5VYN7bY1i20LdObSRRRNfab/BdF/hog0dOow5AgRPf71k/z
+	 rghGRLVjvTYvbn7Hh2BiyktIJFqH6DmX/Vvr5Sr9jbsNHc8WDug322OQXVv+m3nYc6
+	 A3i4lL2SouHqw==
+Date: Fri, 9 Jun 2023 10:11:56 +0200
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Isaac Manjarres <isaacmanjarres@google.com>
+Cc: Ard Biesheuvel <ardb@kernel.org>, Catalin Marinas
+ <catalin.marinas@arm.com>, Linus Torvalds <torvalds@linux-foundation.org>,
+ Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>, Arnd
+ Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Andrew Morton
+ <akpm@linux-foundation.org>, Herbert Xu <herbert@gondor.apana.org.au>,
+ Saravana Kannan <saravanak@google.com>, Alasdair Kergon <agk@redhat.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>, Mark Brown
+ <broonie@kernel.org>, Mike Snitzer <snitzer@kernel.org>, "Rafael J.
+ Wysocki" <rafael@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+ linux-mm@kvack.org, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, FUJITA Tomonori
+ <fujita.tomonori@lab.ntt.co.jp>, Konrad Rzeszutek Wilk
+ <konrad.wilk@oracle.com>
+Subject: Re: [PATCH v6 00/17] mm, dma, arm64: Reduce ARCH_KMALLOC_MINALIGN
+ to 8
+Message-ID: <20230609101156.6f17e3c6@meshulam.tesarici.cz>
+In-Reply-To: <ZIJISbauzCR/oKby@google.com>
+References: <20230531154836.1366225-1-catalin.marinas@arm.com>
+	<CABfwK12_wC1t5J9c8qRmUi9H4GtYc6KR9oeJPi8ucK36prhUzQ@mail.gmail.com>
+	<CAMj1kXHP_57EOOYQtuL2NO9=7sHPxrX=c0ayYwHaYx9x9hxhJw@mail.gmail.com>
+	<ZIJISbauzCR/oKby@google.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-These lines of code were commented out when they were first added in commit
-ba39592764ed ("Intel IOMMU: Intel IOMMU driver"). We do not want to restore
-them because the VT-d spec has deprecated the read/write draining hit.
+On Thu, 8 Jun 2023 14:29:45 -0700
+Isaac Manjarres <isaacmanjarres@google.com> wrote:
 
-VT-d spec (section 11.4.2):
-"
- Hardware implementation with Major Version 2 or higher (VER_REG), always
- performs required drain without software explicitly requesting a drain in
- IOTLB invalidation. This field is deprecated and hardware  will always
- report it as 1 to maintain backward compatibility with software.
-"
+>[...]
+> P.S. I noticed that the trace_swiotlb_bounced() tracepoint may not be
+> invoked even though bouncing occurs. For example, in the dma-iommu path,
+> swiotlb_tbl_map_single() is called when bouncing, instead of
+> swiotlb_map(), which is what ends up calling trace_swiotlb_bounced().
+> 
+> Would it make sense to move the call to trace_swiotlb_bounced() to
+> swiotlb_tbl_map_single() since that function is always invoked?
 
-Remove the code to make the code cleaner.
+Definitely, if you ask me. I believe the change was merely forgotten in
+commit eb605a5754d0 ("swiotlb: add swiotlb_tbl_map_single library
+function").
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.c | 10 +---------
- 1 file changed, 1 insertion(+), 9 deletions(-)
+Let me take the author into Cc. Plus Konrad, who built further on that
+commit, may also have an opinion.
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 4c0b7424c45e..e5c111ff4dd9 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -1312,15 +1312,7 @@ static void __iommu_flush_iotlb(struct intel_iommu *iommu, u16 did,
- 			iommu->name, type);
- 		return;
- 	}
--	/* Note: set drain read/write */
--#if 0
--	/*
--	 * This is probably to be super secure.. Looks like we can
--	 * ignore it without any impact.
--	 */
--	if (cap_read_drain(iommu->cap))
--		val |= DMA_TLB_READ_DRAIN;
--#endif
-+
- 	if (cap_write_drain(iommu->cap))
- 		val |= DMA_TLB_WRITE_DRAIN;
- 
--- 
-2.34.1
-
+Petr T
