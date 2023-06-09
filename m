@@ -1,45 +1,46 @@
-Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A926E20F3
-	for <iommu@lists.linux.dev>; Fri,  9 Jun 2023 08:53:49 +0000 (UTC)
-Received: by mail-lj1-f169.google.com with SMTP id 38308e7fff4ca-2b1a46ad09fso16332621fa.2
-        for <iommu@lists.linux.dev>; Fri, 09 Jun 2023 01:53:49 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5065920F3
+	for <iommu@lists.linux.dev>; Fri,  9 Jun 2023 08:56:48 +0000 (UTC)
+Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-4effb818c37so1895141e87.3
+        for <iommu@lists.linux.dev>; Fri, 09 Jun 2023 01:56:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1686300827; x=1688892827;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=hqc7b6Q+g/CohWxFaiQNgMOrW73y4+LWnJE4cKqKUVQ=;
-        b=FVMYQZZ+1ggHUXFPybxhrwf6kWVwQQmoPV9TIm7dKxDQ1J5bYSGl8mCBYCduQC9tci
-         oKQgkveQY6aiRKExaeSONPstmLY0FI/jDVcVovc50HNowcviUKAP6d75AttmGbb+5uRl
-         LESds+hDmRKenoErLUuS4lZXDHAx5lB84S3s2w0UlETrpz2ESc79NEXBFxpzjO9k8DTJ
-         LMC4ZHF/VwPAQEQ7mDZwYEsziK4x+WGZLUMyILKLGy2TYevjGB4OV7G2Cp6z+ycxhmXr
-         +wLUXEd6RZKK1o8g4AtoIIhOwXfmfVls27+0lrISBDQG6WtArCKAMyzcyGgdlpHcZVAX
-         buZw==
+        d=linaro.org; s=google; t=1686301006; x=1688893006;
+        h=in-reply-to:from:references:cc:to:content-language:subject
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=lZ8EAz3IAPCoKMsP5lnMwjtfBcG41hslbw2SnA8v2JU=;
+        b=OEgiS5DyaF7scVtBk5M9rgCwhMdxFpuBvKLSqlsiHVWTj9cp+bIJC26wSBWnV6gz+1
+         WE5gEcFYX8Xjh6kv1T09hWPuVSokmOjSFidxHLiCwyrIDZZhH+5FvJfuGzJ89p/o0bwJ
+         z+cEAB8C285u83zioQ1UtX2r/mmaotF+p63qqeVHxry3bxUc3fEiPeG3FKKoRJuS9mBb
+         MZB0Gt97Ymw2GObNbFzgISves2C7Iy26di8m80pxjNVcE2ONWJHR1evGWC5h6M8Q7a5U
+         vpwLbVGG7y7Lclb2/xlF+XNC0stJElXJCDj08rlipNcUTQxDqu1/Nlr+0nYWtfdPGsF7
+         mtdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686300827; x=1688892827;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=hqc7b6Q+g/CohWxFaiQNgMOrW73y4+LWnJE4cKqKUVQ=;
-        b=BveQdB96WHiftGR9zbINRxzHsUVocYeKnG6Fk+hRc2KsNUbSDJTipwb9oxl6bdiT4W
-         whWe04vlPyhauZuQ6LdBks1dcUchffDSa/w/s+JL7bN3Vmfa2cYfYiM94jAHh45SClLv
-         l0VGbmKkwfl71bzhnY1iewkImJHLK3wVD6Y/GRnUJutD2hytbYasjtdNWWjU1QOsffc+
-         FwXXkVZ7lLVNRk0lXrWUSskntAapZf8DhVZzhqnJAMSpr1FrU2Ppy5HM29WOeH3S2Pks
-         4ueu0NxUp9naxv0pIPWCl421CNH2fcp2o4b7c4Ex78YYAi7j7a3dNONpTh6URhyDziNf
-         J+Nw==
-X-Gm-Message-State: AC+VfDweLXYauF7zAzzSiz3Z6NYRFstH7bI/08SXGfYj7I+iPD70QHzA
-	iOQMdXYRDw9lh+tl2Y0srM508Q==
-X-Google-Smtp-Source: ACHHUZ7qZqosiJP9Jkt7v4+WhBbhhZbxgDN9UMFeOJ5MeM8qzrGOivaF1ZgOUnhmsjiTBTGmjg5Hmg==
-X-Received: by 2002:a2e:9cc9:0:b0:2b0:2bf6:1448 with SMTP id g9-20020a2e9cc9000000b002b02bf61448mr585354ljj.47.1686300827402;
-        Fri, 09 Jun 2023 01:53:47 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1686301006; x=1688893006;
+        h=in-reply-to:from:references:cc:to:content-language:subject
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=lZ8EAz3IAPCoKMsP5lnMwjtfBcG41hslbw2SnA8v2JU=;
+        b=P7MHzuSFtXB1WJu6478UvCabHIlbRhX8r07HozAILwQP/frCRp+DZ2AO96aV6m/5XF
+         Y3JdXqo3q6howlanRTtJQSg85DCXGKLsnccov0G2YmmZUcDJbw/gHbnfmBv7wH+yeMwu
+         /LrUkTn13PCWnhtVd6tCwMterahSiRDh5yJ8LyI9kglS5TGROAq16OKru4cKFh9FHfWo
+         FAZyTehw4H2aTMGOPH5IsIvSzKvVmCJhydMsfBXN01LKJ9Pfj9K9mmFqV6JeCJCJHN02
+         l0FtX8botD6eMXcLNHxgbHuKEuovityxVz5o3CuUCpzkq27OZBAZwc34X7uPS7X84Qlx
+         tj7Q==
+X-Gm-Message-State: AC+VfDxDrSRRPq4o89fUBDFOI7jafb/MngDYi8pIfd2SftFPjslBB42B
+	pY4OtfK0VTDT1JBvHW5iP0dFWQ==
+X-Google-Smtp-Source: ACHHUZ6OoNZDgxplcOy7E7sTPdgQYPjV4rTE9rHqpSz8TyCUq+cpdz1rYVONoiOn4MzIMRiNoYKYoQ==
+X-Received: by 2002:a19:661a:0:b0:4dd:9a38:fcc with SMTP id a26-20020a19661a000000b004dd9a380fccmr417827lfc.63.1686301006059;
+        Fri, 09 Jun 2023 01:56:46 -0700 (PDT)
 Received: from [192.168.1.101] (abyj190.neoplus.adsl.tpnet.pl. [83.9.29.190])
-        by smtp.gmail.com with ESMTPSA id b10-20020a2e988a000000b002ac7a25c001sm306894ljj.24.2023.06.09.01.53.45
+        by smtp.gmail.com with ESMTPSA id p5-20020ac246c5000000b004f62fdf61fdsm473548lfo.204.2023.06.09.01.56.44
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 09 Jun 2023 01:53:47 -0700 (PDT)
-Message-ID: <316fd262-eeec-a2a4-cbc1-2c39935be87c@linaro.org>
-Date: Fri, 9 Jun 2023 10:53:45 +0200
+        Fri, 09 Jun 2023 01:56:45 -0700 (PDT)
+Content-Type: multipart/mixed; boundary="------------GYmyCXdemZ1VyOZMsdA20KP3"
+Message-ID: <e8700c76-17db-f0b1-c60b-20bf292f0a85@linaro.org>
+Date: Fri, 9 Jun 2023 10:56:43 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,8 +49,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.11.2
-Subject: Re: [PATCH 1/3] dt-bindings: arm-smmu: Add interconnect for qcom
- SMMUs
+Subject: Re: [PATCH 3/3] iommu/arm-smmu-qcom: Add support for the interconnect
 Content-Language: en-US
 To: Parikshit Pareek <quic_ppareek@quicinc.com>, Will Deacon
  <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
@@ -66,62 +66,128 @@ Cc: Manivannan Sadhasivam <mani@kernel.org>,
  "linux-kernel @ vger . kernel . org Prasanna Kumar"
  <quic_kprasan@quicinc.com>, Shazad Hussain <quic_shazhuss@quicinc.com>
 References: <20230609054141.18938-1-quic_ppareek@quicinc.com>
- <20230609054141.18938-2-quic_ppareek@quicinc.com>
+ <20230609055225.20717-1-quic_ppareek@quicinc.com>
 From: Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <20230609054141.18938-2-quic_ppareek@quicinc.com>
+In-Reply-To: <20230609055225.20717-1-quic_ppareek@quicinc.com>
+
+This is a multi-part message in MIME format.
+--------------GYmyCXdemZ1VyOZMsdA20KP3
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 
 
-On 9.06.2023 07:41, Parikshit Pareek wrote:
-> There are certain SMMUs on qcom SoCs, which need to set interconnect-
-> bandwidth, before accessing any MIMO mapped HW registers, and accessing
-> RAM during page table walk. Hence introduce the due bindings for
-> interconnects.
+On 9.06.2023 07:52, Parikshit Pareek wrote:
+> Introduce support to detect the interconnect, and set its bandwidth.
+> For certain targets, we need to set the bandwidth of interconnect,
+> connecting smmu to memory. This is accessed during memory mapped IO
+> access to smmu registers, and during page tables walks.
 > 
 > Reported-by: Eric Chanudet <echanude@redhat.com>
 > Signed-off-by: Parikshit Pareek <quic_ppareek@quicinc.com>
 > ---
->  .../devicetree/bindings/iommu/arm,smmu.yaml   | 22 +++++++++++++++++++
->  1 file changed, 22 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> index ba677d401e24..75e00789d8c2 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> @@ -327,6 +327,28 @@ allOf:
->              - description: interface clock required to access smmu's registers
->                  through the TCU's programming interface.
->  
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              qcom,sa8775p-smmu-500
-> +    then:
-> +      properties:
-> +        interconnects:
-This isn't specific to SA8775P.. I believe we could make it SMMU-generic..
-
-> +          minItems: 1
-> +          maxItems: 1
-> +
-> +        interconnect-names:
-> +          minItems: 1
-> +          items:
-> +            - const: tbu_mc
-> +
-> +        icc_bw:
-No underscores in property names.
-> +          $ref: /schemas/types.yaml#/definitions/int32
-Can't we use OPP tables? They'd also allow for specifying required-opps.
+Quite recently, I've been toying with this too.. I coded it in
+a way that allows it to be reused by other impls and uses OPP APIs.
+Please take a look at the attached patch.
 
 Konrad
-> +          description:
-> +            An integer expressing the interconnect bandwidth(MBps) to be set.
+>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> index c71afda79d64..6961d564869b 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> @@ -8,6 +8,7 @@
+>  #include <linux/delay.h>
+>  #include <linux/of_device.h>
+>  #include <linux/firmware/qcom/qcom_scm.h>
+> +#include <linux/interconnect.h>
+>  
+>  #include "arm-smmu.h"
+>  #include "arm-smmu-qcom.h"
+> @@ -549,6 +550,8 @@ struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu)
+>  {
+>  	const struct device_node *np = smmu->dev->of_node;
+>  	const struct of_device_id *match;
+> +	struct icc_path *icc_path;
+> +	int ret, icc_bw;
+>  
+>  #ifdef CONFIG_ACPI
+>  	if (np == NULL) {
+> @@ -558,6 +561,19 @@ struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu)
+>  	}
+>  #endif
+>  
+> +	icc_path = devm_of_icc_get(smmu->dev, "tbu_mc");
+> +	if (IS_ERR(icc_path))
+> +		return (struct arm_smmu_device *)icc_path;
 > +
->    - if:
->        properties:
->          compatible:
+> +	ret = of_property_read_u32(np, "icc_bw", &icc_bw);
+> +
+> +	/*if interconnect exists, check for the  bandwidth value*/
+> +	if (icc_path && !ret) {
+> +		ret = icc_set_bw(icc_path, 0, MBps_to_icc(icc_bw));
+> +		if (ret)
+> +			return ERR_PTR(ret);
+> +	}
+> +
+>  	match = of_match_node(qcom_smmu_impl_of_match, np);
+>  	if (match)
+>  		return qcom_smmu_create(smmu, match->data);
+--------------GYmyCXdemZ1VyOZMsdA20KP3
+Content-Type: text/x-patch; charset=UTF-8; name="0001-smmu-opp-wip.patch"
+Content-Disposition: attachment; filename="0001-smmu-opp-wip.patch"
+Content-Transfer-Encoding: base64
+
+RnJvbSA4MTEyZDhmOGI5YTQzMTc4YWYzYjIwM2UzZmNmOTRjYmQyNDUxMGE0IE1vbiBTZXAg
+MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBLb25yYWQgRHliY2lvIDxrb25yYWQuZHliY2lvQGxp
+bmFyby5vcmc+CkRhdGU6IFR1ZSwgMzAgTWF5IDIwMjMgMjM6Mzk6NTYgKzAyMDAKU3ViamVj
+dDogW1BBVENIXSBzbW11IG9wcCB3aXAKCi0tLQogZHJpdmVycy9pb21tdS9hcm0vYXJtLXNt
+bXUvYXJtLXNtbXUuYyB8IDQxICsrKysrKysrKysrKysrKysrKysrKysrKysrLQogMSBmaWxl
+IGNoYW5nZWQsIDQwIGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkKCmRpZmYgLS1naXQg
+YS9kcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS9hcm0tc21tdS5jIGIvZHJpdmVycy9pb21t
+dS9hcm0vYXJtLXNtbXUvYXJtLXNtbXUuYwppbmRleCBhODZhY2Q3NmMxZGYuLjAzNDQ4YmY4
+YWU3ZSAxMDA2NDQKLS0tIGEvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUvYXJtLXNtbXUu
+YworKysgYi9kcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS9hcm0tc21tdS5jCkBAIC0zMiw2
+ICszMiw3IEBACiAjaW5jbHVkZSA8bGludXgvb2ZfZGV2aWNlLmg+CiAjaW5jbHVkZSA8bGlu
+dXgvcGNpLmg+CiAjaW5jbHVkZSA8bGludXgvcGxhdGZvcm1fZGV2aWNlLmg+CisjaW5jbHVk
+ZSA8bGludXgvcG1fb3BwLmg+CiAjaW5jbHVkZSA8bGludXgvcG1fcnVudGltZS5oPgogI2lu
+Y2x1ZGUgPGxpbnV4L3JhdGVsaW1pdC5oPgogI2luY2x1ZGUgPGxpbnV4L3NsYWIuaD4KQEAg
+LTE5NzAsNyArMTk3MSwxMCBAQCBzdGF0aWMgaW50IGFybV9zbW11X2RldmljZV9kdF9wcm9i
+ZShzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNlICpzbW11LAogewogCWNvbnN0IHN0cnVjdCBhcm1f
+c21tdV9tYXRjaF9kYXRhICpkYXRhOwogCXN0cnVjdCBkZXZpY2UgKmRldiA9IHNtbXUtPmRl
+djsKKwlzdHJ1Y3QgZGV2X3BtX29wcCAqb3BwOwogCWJvb2wgbGVnYWN5X2JpbmRpbmc7CisJ
+dW5zaWduZWQgaW50IGJ3ID0gMDsKKwlpbnQgcmV0OwogCiAJaWYgKG9mX3Byb3BlcnR5X3Jl
+YWRfdTMyKGRldi0+b2Zfbm9kZSwgIiNnbG9iYWwtaW50ZXJydXB0cyIsIGdsb2JhbF9pcnFz
+KSkKIAkJcmV0dXJuIGRldl9lcnJfcHJvYmUoZGV2LCAtRU5PREVWLApAQCAtMTk5OCw3ICsy
+MDAyLDI1IEBAIHN0YXRpYyBpbnQgYXJtX3NtbXVfZGV2aWNlX2R0X3Byb2JlKHN0cnVjdCBh
+cm1fc21tdV9kZXZpY2UgKnNtbXUsCiAJaWYgKG9mX2RtYV9pc19jb2hlcmVudChkZXYtPm9m
+X25vZGUpKQogCQlzbW11LT5mZWF0dXJlcyB8PSBBUk1fU01NVV9GRUFUX0NPSEVSRU5UX1dB
+TEs7CiAKLQlyZXR1cm4gMDsKKwkvKiBJdCdzIGZpbmUgdG8gb21pdCB0aGUgT1BQIHRhYmxl
+ICovCisJaWYgKCFkZXZfcG1fb3BwX29mX2dldF9vcHBfZGVzY19ub2RlKGRldikpCisJCXJl
+dHVybiAwOworCisJcmV0ID0gZGV2bV9wbV9vcHBfb2ZfYWRkX3RhYmxlKGRldik7CisJaWYg
+KHJldCkKKwkJcmV0dXJuIHJldDsKKworCXJldCA9IGRldl9wbV9vcHBfb2ZfZmluZF9pY2Nf
+cGF0aHMoZGV2LCBOVUxMKTsKKwlpZiAocmV0KQorCQlyZXR1cm4gcmV0OworCisJb3BwID0g
+ZGV2X3BtX29wcF9maW5kX2J3X2NlaWwoZGV2LCAmYncsIDApOworCWlmIChJU19FUlIob3Bw
+KSkKKwkJcmV0dXJuIFBUUl9FUlIob3BwKTsKKworCWRldl9wbV9vcHBfc2V0X29wcChkZXYs
+IG9wcCk7CisKKwlyZXR1cm4gcmV0OwogfQogCiBzdGF0aWMgdm9pZCBhcm1fc21tdV9ybXJf
+aW5zdGFsbF9ieXBhc3Nfc21yKHN0cnVjdCBhcm1fc21tdV9kZXZpY2UgKnNtbXUpCkBAIC0y
+MjI0LDggKzIyNDYsMjAgQEAgc3RhdGljIHZvaWQgYXJtX3NtbXVfZGV2aWNlX3JlbW92ZShz
+dHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQogc3RhdGljIGludCBfX21heWJlX3VudXNl
+ZCBhcm1fc21tdV9ydW50aW1lX3Jlc3VtZShzdHJ1Y3QgZGV2aWNlICpkZXYpCiB7CiAJc3Ry
+dWN0IGFybV9zbW11X2RldmljZSAqc21tdSA9IGRldl9nZXRfZHJ2ZGF0YShkZXYpOworCXN0
+cnVjdCBkZXZfcG1fb3BwICpvcHA7CisJdW5zaWduZWQgaW50IGJ3ID0gMDsKIAlpbnQgcmV0
+OwogCisJaWYgKFBUUl9FUlIoZGV2X3BtX29wcF9nZXRfb3BwX3RhYmxlKGRldikpIDwgMCkK
+KwkJZ290byBza2lwX29wcDsKKworCW9wcCA9IGRldl9wbV9vcHBfZmluZF9id19jZWlsKGRl
+diwgJmJ3LCAwKTsKKwlpZiAoSVNfRVJSKG9wcCkpCisJCXJldHVybiBQVFJfRVJSKG9wcCk7
+CisKKwlkZXZfcG1fb3BwX3NldF9vcHAoZGV2LCBvcHApOworCitza2lwX29wcDoKIAlyZXQg
+PSBjbGtfYnVsa19lbmFibGUoc21tdS0+bnVtX2Nsa3MsIHNtbXUtPmNsa3MpOwogCWlmIChy
+ZXQpCiAJCXJldHVybiByZXQ7CkBAIC0yMjQxLDYgKzIyNzUsMTEgQEAgc3RhdGljIGludCBf
+X21heWJlX3VudXNlZCBhcm1fc21tdV9ydW50aW1lX3N1c3BlbmQoc3RydWN0IGRldmljZSAq
+ZGV2KQogCiAJY2xrX2J1bGtfZGlzYWJsZShzbW11LT5udW1fY2xrcywgc21tdS0+Y2xrcyk7
+CiAKKwlpZiAoUFRSX0VSUihkZXZfcG1fb3BwX2dldF9vcHBfdGFibGUoZGV2KSkgPCAwKQor
+CQlyZXR1cm4gMDsKKworCWRldl9wbV9vcHBfc2V0X29wcChkZXYsIE5VTEwpOworCiAJcmV0
+dXJuIDA7CiB9CiAKLS0gCjIuNDEuMAoK
+
+--------------GYmyCXdemZ1VyOZMsdA20KP3--
