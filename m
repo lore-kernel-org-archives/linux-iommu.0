@@ -1,44 +1,44 @@
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E84706D39
-	for <iommu@lists.linux.dev>; Fri,  9 Jun 2023 14:34:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EA5B171B4
+	for <iommu@lists.linux.dev>; Fri,  9 Jun 2023 14:39:11 +0000 (UTC)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
 	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 1849B21A1C;
-	Fri,  9 Jun 2023 14:33:57 +0000 (UTC)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 7981A218E8;
+	Fri,  9 Jun 2023 14:39:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1686321237; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1686321549; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=TQ5/N7tIpnehH7MNg1vCRZG6KJhrS3cnWdoR3DT75S0=;
-	b=0x4PDx2WgWEEMtCNo0TUQk8emvr+6TCjcUkl/iYzM5SaUCuAW6CcpwnWUbxjChnbeINtfU
-	DMIuNCS3djQAsKqf3O8xe/QKzPejV7Cd5G9uba4tgX7+ho3EQMwkwhKIvYVTw3Axmfry1T
-	7uMFJPrXsLnYamEahXpT4Xa75B0b20Q=
+	bh=O+nq2sVFNvU6nyWExPnHDrSk7SL7j6fMmlV/ftm6VIU=;
+	b=ODZm/S6k31XYx+UCgoj7RzO3oZFNknYltRACUNBh5M4wtGImi+QiMGTDk8gi1vrICkOq5w
+	b1rG3dINTJz4oB9ka0qLpAkaBqVtBwhhpKERhdAywR/C5Zpb57ZJuq+N/CXuKJyKhGPrDd
+	VCk+tqXsjxxOzq5OoPxbGdqNpNL/7As=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1686321237;
+	s=susede2_ed25519; t=1686321549;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=TQ5/N7tIpnehH7MNg1vCRZG6KJhrS3cnWdoR3DT75S0=;
-	b=iVjQ83RC5Vfu9jY7+B+Iscc8r0IIsumksRx96GBNACPaLUsTuQtjmwglOEHowGwLN8/HFc
-	6exgN8sJteR9X8BQ==
+	bh=O+nq2sVFNvU6nyWExPnHDrSk7SL7j6fMmlV/ftm6VIU=;
+	b=0Bl4ggUNIl7d0gyZnuB8rmdlsXkGQqNVlYeBQhcny6DxjGyGMsb8BkIKydQr80ttblBIdh
+	7SOD0umVHOv90FBQ==
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
 	(No client certificate requested)
-	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9D65013A47;
-	Fri,  9 Jun 2023 14:33:56 +0000 (UTC)
+	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1162713A47;
+	Fri,  9 Jun 2023 14:39:09 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
 	by imap2.suse-dmz.suse.de with ESMTPSA
-	id liS3JFQ4g2QVcAAAMHmgww
-	(envelope-from <vbabka@suse.cz>); Fri, 09 Jun 2023 14:33:56 +0000
-Message-ID: <90b845e6-c121-2e10-6750-c170b1fa8c7f@suse.cz>
-Date: Fri, 9 Jun 2023 16:33:56 +0200
+	id 9Ax0A405g2RUcgAAMHmgww
+	(envelope-from <vbabka@suse.cz>); Fri, 09 Jun 2023 14:39:09 +0000
+Message-ID: <3b2c5414-7623-c4a8-1a24-1c8e1ced0387@suse.cz>
+Date: Fri, 9 Jun 2023 16:39:08 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -47,8 +47,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.11.2
-Subject: Re: [PATCH v6 04/17] mm/slab: Limit kmalloc() minimum alignment to
- dma_get_cache_alignment()
+Subject: Re: [PATCH v6 16/17] mm: slab: Reduce the kmalloc() minimum alignment
+ if DMA bouncing possible
 Content-Language: en-US
 To: Catalin Marinas <catalin.marinas@arm.com>,
  Linus Torvalds <torvalds@linux-foundation.org>,
@@ -66,90 +66,67 @@ Cc: Arnd Bergmann <arnd@arndb.de>,
  <jic23@kernel.org>, linux-mm@kvack.org, iommu@lists.linux.dev,
  linux-arm-kernel@lists.infradead.org, Christoph Lameter <cl@linux.com>,
  David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>,
- Pekka Enberg <penberg@kernel.org>, Roman Gushchin
- <roman.gushchin@linux.dev>, Hyeonggon Yoo <42.hyeyoo@gmail.com>
+ Pekka Enberg <penberg@kernel.org>, Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+ Roman Gushchin <roman.gushchin@linux.dev>
 References: <20230531154836.1366225-1-catalin.marinas@arm.com>
- <20230531154836.1366225-5-catalin.marinas@arm.com>
+ <20230531154836.1366225-17-catalin.marinas@arm.com>
 From: Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20230531154836.1366225-5-catalin.marinas@arm.com>
+In-Reply-To: <20230531154836.1366225-17-catalin.marinas@arm.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 5/31/23 17:48, Catalin Marinas wrote:
-> Do not create kmalloc() caches which are not aligned to
-> dma_get_cache_alignment(). There is no functional change since for
-> current architectures defining ARCH_DMA_MINALIGN, ARCH_KMALLOC_MINALIGN
-> equals ARCH_DMA_MINALIGN (and dma_get_cache_alignment()). On
-> architectures without a specific ARCH_DMA_MINALIGN,
-> dma_get_cache_alignment() is 1, so no change to the kmalloc() caches.
+> If an architecture opted in to DMA bouncing of unaligned kmalloc()
+> buffers (ARCH_WANT_KMALLOC_DMA_BOUNCE), reduce the minimum kmalloc()
+> cache alignment below cache-line size to ARCH_KMALLOC_MINALIGN.
 > 
-> If an architecture selects ARCH_HAS_DMA_CACHE_LINE_SIZE (introduced
-> previously), the kmalloc() caches will be aligned to a cache line size.
-
-It this part leftover from a previous version?
-
 > Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: Christoph Hellwig <hch@lst.de>
-> Cc: Robin Murphy <robin.murphy@arm.com>
 
 Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
 
+Nit below:
+
+> Cc: Andrew Morton <akpm@linux-foundation.org>
+> Cc: Christoph Hellwig <hch@lst.de>
+> Cc: Robin Murphy <robin.murphy@arm.com>
 > ---
->  mm/slab_common.c | 24 +++++++++++++++++++++---
->  1 file changed, 21 insertions(+), 3 deletions(-)
+>  mm/slab_common.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
 > 
 > diff --git a/mm/slab_common.c b/mm/slab_common.c
-> index 7f069159aee2..7c6475847fdf 100644
+> index 7c6475847fdf..fe46459a8b77 100644
 > --- a/mm/slab_common.c
 > +++ b/mm/slab_common.c
-> @@ -17,6 +17,7 @@
->  #include <linux/cpu.h>
+> @@ -18,6 +18,7 @@
 >  #include <linux/uaccess.h>
 >  #include <linux/seq_file.h>
-> +#include <linux/dma-mapping.h>
+>  #include <linux/dma-mapping.h>
+> +#include <linux/swiotlb.h>
 >  #include <linux/proc_fs.h>
 >  #include <linux/debugfs.h>
 >  #include <linux/kasan.h>
-> @@ -862,9 +863,18 @@ void __init setup_kmalloc_cache_index_table(void)
+> @@ -863,10 +864,19 @@ void __init setup_kmalloc_cache_index_table(void)
 >  	}
 >  }
 >  
+> +#ifdef CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC
 > +static unsigned int __kmalloc_minalign(void)
 > +{
+> +	if (io_tlb_default_mem.nslabs)
+> +		return ARCH_KMALLOC_MINALIGN;
 > +	return dma_get_cache_alignment();
 > +}
-> +
+> +#else
+>  static unsigned int __kmalloc_minalign(void)
+>  {
+>  	return dma_get_cache_alignment();
+>  }
+> +#endif
+
+Should be enough to put the #ifdef around the two lines into a single
+implementation of the function?
+
 >  void __init
 >  new_kmalloc_cache(int idx, enum kmalloc_cache_type type, slab_flags_t flags)
->  {
-> +	unsigned int minalign = __kmalloc_minalign();
-> +	unsigned int aligned_size = kmalloc_info[idx].size;
-> +	int aligned_idx = idx;
-> +
->  	if ((KMALLOC_RECLAIM != KMALLOC_NORMAL) && (type == KMALLOC_RECLAIM)) {
->  		flags |= SLAB_RECLAIM_ACCOUNT;
->  	} else if (IS_ENABLED(CONFIG_MEMCG_KMEM) && (type == KMALLOC_CGROUP)) {
-> @@ -877,9 +887,17 @@ new_kmalloc_cache(int idx, enum kmalloc_cache_type type, slab_flags_t flags)
->  		flags |= SLAB_CACHE_DMA;
->  	}
->  
-> -	kmalloc_caches[type][idx] = create_kmalloc_cache(
-> -					kmalloc_info[idx].name[type],
-> -					kmalloc_info[idx].size, flags);
-> +	if (minalign > ARCH_KMALLOC_MINALIGN) {
-> +		aligned_size = ALIGN(aligned_size, minalign);
-> +		aligned_idx = __kmalloc_index(aligned_size, false);
-> +	}
-> +
-> +	if (!kmalloc_caches[type][aligned_idx])
-> +		kmalloc_caches[type][aligned_idx] = create_kmalloc_cache(
-> +					kmalloc_info[aligned_idx].name[type],
-> +					aligned_size, flags);
-> +	if (idx != aligned_idx)
-> +		kmalloc_caches[type][idx] = kmalloc_caches[type][aligned_idx];
->  
->  	/*
->  	 * If CONFIG_MEMCG_KMEM is enabled, disable cache merging for
 > 
 
