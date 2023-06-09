@@ -1,147 +1,127 @@
-Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com [209.85.219.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CFAA79E5
-	for <iommu@lists.linux.dev>; Fri,  9 Jun 2023 11:40:58 +0000 (UTC)
-Received: by mail-yb1-f171.google.com with SMTP id 3f1490d57ef6-ba8cd61ee2dso4000446276.1
-        for <iommu@lists.linux.dev>; Fri, 09 Jun 2023 04:40:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1686310858; x=1688902858;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xJt3feXs6SxyQtoTGkEhwKTgAeqCp1KzPotYyZ8bIc4=;
-        b=Y1My6pemRG3jJeTY2XZLEGCaA4W6dI+/ilaXi1H7/t5ar1Xt08MRq8dPmkoDStDMXm
-         kT2xMT9WUoCFhPjjVnNLR8FpVjjfLYljLuWfy8+gOcf4qMNF/4Tck3DfURhGh74b+61z
-         5GXCx94pwXORCfv023PbhMTxYlyvhBya7BIUcVnWvxxeGZcEgH5TX6NbHW18bpW1nuGw
-         Zu7ssPlBukM6546UMTV8PcfcFD6llsNDuNBHHzOZtqi1Ok3QZgWECjoiRzVFRgFzyVHD
-         DMbQV34S2wEd4j9azFOrRar6xAS/7Ve1/EQCLv7a1Gpoq0xRaDBwip/8ZWJP5a1jFG/J
-         z5TA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686310858; x=1688902858;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=xJt3feXs6SxyQtoTGkEhwKTgAeqCp1KzPotYyZ8bIc4=;
-        b=O1mn3YbTJh+MBgI0I07r0klJPmPkU50JkR7htnjL7qNj6NrD8lRonH2sDlAWoUr24H
-         bwK78AUm88qaiA30eYf3wwrgu+FKAGYie61+Myx1DGT79JDmkEZQAnTqaYGqjJvrbum/
-         JkYsofPhDP9n1nRAdROGwS0iTD2enDYTJkdc9PXJDNpOieREjr9aAF9alYBP8i0h5C33
-         pF4EsbDR3OPAF4vTM/ryzO7qOpXvvwgy/qN84IntdTyQtTADvqqoZMki8U7t2DMqjPjM
-         Wi8xhl26Ce/90CSE0xo4b1+A/UD0SOgaVnkjHTD6wOqpNY3kiB9qpYjd8oW6GKBbPxKQ
-         TlfQ==
-X-Gm-Message-State: AC+VfDwITPUSddVmSHs/gEpvhXP+B5NrDJ8LGZG2yVnjT/Xadu0GVj/o
-	ZiD0SW33bmePnXPvCkRnKRWapAGVd8I7mYG8o97MBA==
-X-Google-Smtp-Source: ACHHUZ6tcnye369zFXBV2bBHJWRzfVKRU8NYtwA27HSSc5WJJxk9tivdQDX48v29djspGuooSVUxeE1q+GAIw2Q6QXE=
-X-Received: by 2002:a81:4e4e:0:b0:568:ed48:21bb with SMTP id
- c75-20020a814e4e000000b00568ed4821bbmr1746710ywb.13.1686310857937; Fri, 09
- Jun 2023 04:40:57 -0700 (PDT)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 37EFA79E5
+	for <iommu@lists.linux.dev>; Fri,  9 Jun 2023 11:52:35 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 673C6AB6;
+	Fri,  9 Jun 2023 04:53:20 -0700 (PDT)
+Received: from [10.57.85.120] (unknown [10.57.85.120])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DB14A3F587;
+	Fri,  9 Jun 2023 04:52:31 -0700 (PDT)
+Message-ID: <5438a21b-fcd8-0175-1fdd-ce6afbf84d86@arm.com>
+Date: Fri, 9 Jun 2023 12:52:27 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230508142842.854564-1-apatel@ventanamicro.com>
- <20230508142842.854564-3-apatel@ventanamicro.com> <20230608182828.GA3183987-robh@kernel.org>
- <CAGETcx_4OH=EmSUL2-rwKa=1uoOj+AH_xn4PoPsc0kt_aU0WOg@mail.gmail.com>
-In-Reply-To: <CAGETcx_4OH=EmSUL2-rwKa=1uoOj+AH_xn4PoPsc0kt_aU0WOg@mail.gmail.com>
-From: Anup Patel <apatel@ventanamicro.com>
-Date: Fri, 9 Jun 2023 17:10:45 +0530
-Message-ID: <CAK9=C2V1LH0739Nq5Ji7gGbgbyFtNAtBYR43fU7vr9omD5tKSA@mail.gmail.com>
-Subject: Re: [PATCH v3 02/11] of/irq: Set FWNODE_FLAG_BEST_EFFORT for the
- interrupt controller DT nodes
-To: Saravana Kannan <saravanak@google.com>
-Cc: Rob Herring <robh@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Paul Walmsley <paul.walmsley@sifive.com>, Thomas Gleixner <tglx@linutronix.de>, 
-	Marc Zyngier <maz@kernel.org>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Frank Rowand <frowand.list@gmail.com>, Atish Patra <atishp@atishpatra.org>, 
-	Andrew Jones <ajones@ventanamicro.com>, Anup Patel <anup@brainfault.org>, 
-	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	devicetree@vger.kernel.org, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH v6 15/17] iommu/dma: Force bouncing if the size is not
+ cacheline-aligned
+To: Catalin Marinas <catalin.marinas@arm.com>,
+ Linus Torvalds <torvalds@linux-foundation.org>,
+ Christoph Hellwig <hch@lst.de>
+Cc: Arnd Bergmann <arnd@arndb.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Herbert Xu <herbert@gondor.apana.org.au>, Ard Biesheuvel <ardb@kernel.org>,
+ Isaac Manjarres <isaacmanjarres@google.com>,
+ Saravana Kannan <saravanak@google.com>, Alasdair Kergon <agk@redhat.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>,
+ Mark Brown <broonie@kernel.org>, Mike Snitzer <snitzer@kernel.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Jonathan Cameron
+ <jic23@kernel.org>, linux-mm@kvack.org, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org
+References: <20230531154836.1366225-1-catalin.marinas@arm.com>
+ <20230531154836.1366225-16-catalin.marinas@arm.com>
+Content-Language: en-GB
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20230531154836.1366225-16-catalin.marinas@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Jun 9, 2023 at 1:35=E2=80=AFAM Saravana Kannan <saravanak@google.co=
-m> wrote:
->
-> On Thu, Jun 8, 2023 at 11:28=E2=80=AFAM Rob Herring <robh@kernel.org> wro=
-te:
-> >
-> > +Saravana
-> >
-> > On Mon, May 08, 2023 at 07:58:33PM +0530, Anup Patel wrote:
-> > > The RISC-V APLIC interrupt controller driver is a regular platform
-> > > driver so we need to ensure that it is probed as soon as possible.
-> > > To achieve this, we mark the interrupt controller device nodes with
-> > > FWNODE_FLAG_BEST_EFFORT (just like console DT node).
-> > >
-> > > Fixes: 8f486cab263c ("driver core: fw_devlink: Allow firmware to mark=
- devices as best effort")
-> >
-> > It is good practice to Cc the commit author of what you are fixing.
-> >
-> > > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> > > ---
-> > >  drivers/of/irq.c | 10 ++++++++++
-> > >  1 file changed, 10 insertions(+)
-> > >
-> > > diff --git a/drivers/of/irq.c b/drivers/of/irq.c
-> > > index 174900072c18..94e1d9245cff 100644
-> > > --- a/drivers/of/irq.c
-> > > +++ b/drivers/of/irq.c
-> > > @@ -535,6 +535,16 @@ void __init of_irq_init(const struct of_device_i=
-d *matches)
-> > >       INIT_LIST_HEAD(&intc_desc_list);
-> > >       INIT_LIST_HEAD(&intc_parent_list);
-> > >
-> > > +     /*
-> > > +      * We need interrupt controller platform drivers to work as soo=
-n
-> >
-> > If it's platform drivers/devices you care about, then perhaps this
-> > should be done when platform devices are created.
-> >
-> > > +      * as possible so mark the interrupt controller device nodes wi=
-th
-> > > +      * FWNODE_FLAG_BEST_EFFORT so that fw_delink knows not to delay
-> > > +      * the probe of the interrupt controller device for suppliers
-> > > +      * without drivers.
-> > > +      */
-> > > +     for_each_node_with_property(np, "interrupt-controller")
-> >
-> > This function only operates on nodes matching 'matches', but this
-> > operates on everything.
-> >
-> > It does make sense that if we init an interrupt controller here, then w=
-e
-> > will surely want to probe its driver later on. So maybe just move
-> > setting FWNODE_FLAG_BEST_EFFORT within
-> > for_each_matching_node_and_match() below.
-> >
-> > > +             np->fwnode.flags |=3D FWNODE_FLAG_BEST_EFFORT;
-> > > +
->
-> Definite Nack. You are pretty much disabling fw_devlink for all
-> interrupt controllers. There are plenty of examples of the IRQ drivers
-> being needed very early on and still probing properly without the need
-> for this flag. Please fix your driver/DT.
+On 2023-05-31 16:48, Catalin Marinas wrote:
+[...]
+> diff --git a/include/linux/scatterlist.h b/include/linux/scatterlist.h
+> index 2f06178996ba..69d87e312263 100644
+> --- a/include/linux/scatterlist.h
+> +++ b/include/linux/scatterlist.h
+> @@ -251,11 +251,13 @@ static inline void sg_unmark_end(struct scatterlist *sg)
+>   /*
+>    * One 64-bit architectures there is a 4-byte padding in struct scatterlist
+>    * (assuming also CONFIG_NEED_SG_DMA_LENGTH is set). Use this padding for DMA
+> - * flags bits to indicate when a specific dma address is a bus address.
+> + * flags bits to indicate when a specific dma address is a bus address or the
+> + * buffer may have been bounced via SWIOTLB.
+>    */
+>   #ifdef CONFIG_NEED_SG_DMA_FLAGS
+>   
+> -#define SG_DMA_BUS_ADDRESS (1 << 0)
+> +#define SG_DMA_BUS_ADDRESS	(1 << 0)
+> +#define SG_DMA_SWIOTLB		(1 << 1)
+>   
+>   /**
+>    * sg_dma_is_bus_address - Return whether a given segment was marked
+> @@ -298,6 +300,34 @@ static inline void sg_dma_unmark_bus_address(struct scatterlist *sg)
+>   	sg->dma_flags &= ~SG_DMA_BUS_ADDRESS;
+>   }
+>   
+> +/**
+> + * sg_dma_use_swiotlb - Return whether the scatterlist was marked for SWIOTLB
+> + *			bouncing
+> + * @sg:		SG entry
+> + *
+> + * Description:
+> + *   Returns true if the scatterlist was marked for SWIOTLB bouncing. Not all
+> + *   elements may have been bounced, so the caller would have to check
+> + *   individual SG entries with is_swiotlb_buffer().
+> + */
+> +static inline bool sg_dma_use_swiotlb(struct scatterlist *sg)
 
-Okay, I will try to set FWNODE_FLAG_BEST_EFFORT only for
-APLIC device_node via IRQCHIP_DECLARE().
+Nit: since you tweaked the flag name again, we could happily go back to 
+the pattern with s/use/is/ for this one now too.
 
-Regards,
-Anup
+> +{
+> +	return sg->dma_flags & SG_DMA_SWIOTLB;
+> +}
+> +
+> +/**
+> + * sg_dma_use_swiotlb - Mark the scatterlist for SWIOTLB bouncing
 
+Oops - s/use/mark/
 
->
-> -Saravana
->
->
-> > >       for_each_matching_node_and_match(np, matches, &match) {
-> > >               if (!of_property_read_bool(np, "interrupt-controller") =
-||
-> > >                               !of_device_is_available(np))
-> > > --
-> > > 2.34.1
-> > >
+Feel free to fix those up when applying if there's no other reason for a v7.
+
+Thanks,
+Robin.
+
+> + * @sg:		SG entry
+> + *
+> + * Description:
+> + *   Marks a a scatterlist for SWIOTLB bounce. Not all SG entries may be
+> + *   bounced.
+> + */
+> +static inline void sg_dma_mark_swiotlb(struct scatterlist *sg)
+> +{
+> +	sg->dma_flags |= SG_DMA_SWIOTLB;
+> +}
+> +
+>   #else
+>   
+>   static inline bool sg_dma_is_bus_address(struct scatterlist *sg)
+> @@ -310,6 +340,13 @@ static inline void sg_dma_mark_bus_address(struct scatterlist *sg)
+>   static inline void sg_dma_unmark_bus_address(struct scatterlist *sg)
+>   {
+>   }
+> +static inline bool sg_dma_use_swiotlb(struct scatterlist *sg)
+> +{
+> +	return false;
+> +}
+> +static inline void sg_dma_mark_swiotlb(struct scatterlist *sg)
+> +{
+> +}
+>   
+>   #endif	/* CONFIG_NEED_SG_DMA_FLAGS */
+>   
