@@ -1,33 +1,33 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2073.outbound.protection.outlook.com [40.107.94.73])
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2057.outbound.protection.outlook.com [40.107.212.57])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5256BBA48
-	for <iommu@lists.linux.dev>; Fri,  9 Jun 2023 09:03:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A244BE53
+	for <iommu@lists.linux.dev>; Fri,  9 Jun 2023 09:07:01 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DosZTQaBFCHA2duuJor2wvzr1UHiJFdcWwKv8eW5CGsthrSHx+uTT1QQ1dqvRf+a/kzgVEpqphpAOrbwhsYch8BIrm8/K3nrNPmpMe0F2HKunBKcF5btUrfr0h2L6sd56jBMXfVmT5LhgPaCltlp1SPTmqCsFvhvdKJRf6hrSUexmdqiyQKqPcr80oX78GhkfFeRH77OYwevAg++D10v8I7fMwTHKafUmzG2zz1cYOinl9bxi3s6EugsJFjXptXdouXMj81a1734+Htxv8VSFlRmsQtJak8gcVo6O4+FOdxFqh/6P0DmyJJyYFcF0+voUDxG50/gtA0i3pAD5VCATA==
+ b=E6UTjlDOTDxuFRSsuKmb0nZAUKvF8sbsg82tPA8ghGY5h7Q2mtQW5XOfGqwFMfmGkVA+GGss7bfr5X3QrGD5nH0YiMt40qma5iltI196BhA6dDZSYjMP/PJbssJliaKQREFbQoNwdV2TTST39x5bwYuOy9PuqtbE7ygWfHKg50HV4XcbzxZex+mzotCmhNZ0A5TAqUdI4QT2DA5hBxHQDOCEfimKGl3eYY5KHgdoshYkgntzHj6lxLBiv656HeKorutnjO5nb5/KN66qigzO5FVPonZJqCeKYJLpC9l0JIYViyVx0f0dtcenU+3EEh06dpM1claHcqaPA8ncvzw8LQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=L25Dp1tj5y5j1arkN3afgHZruBwx33nVKco1xMwSurM=;
- b=XNrxEfEzplzPqAYzYJ+CiRMDgiYzrg6xcg4w1D15vbiHFWR/Y0UU9KIsC+t6c3qj8lPCd/trCZCn1VirOKyeAocwCnpgVPQuQGQPK5lKf/524B4lvZziNua6xpwS0izevJSTu1D7GnKr00mG8Bj3M6U3+0uU5xo7NA+tfu2vipzNYPIw5j8RwP0fZOqifKghZtdcbq1JovSdm+H0y+WzeexcQKMN/fz4PlULJCd8yj/qs5/ddgEbb6lfcC3SKWpIyXq4J1CeiIBrYMd/+kydn+4o+IvnIa7fR7SE7bCoQB38VJAS57g3KMNsZ2ZgOG8r4muuG+wkJhFJpshD2hWNdA==
+ bh=JuuFU4H4dGCRJDHy445uOZ2Dw/2+lxYKbeFCLGCiyWE=;
+ b=jKzISb1DJ3UZRIu3+BMwb1JipsgQ0gchrAFefX9rCEG9JnHQIkE4y3y6MSRj+M3ccZ+FE+8mhdiRGDFBpWBRQuQE7zz1FpXD72rkwHs7pSogAmLgwOmJFHU0QELqXZWuHKVKUB7VXqfoMuOprUcBz9KyDvmlHGlRN390rbpB1PXj/qgf4+WOUIXjq8vWSdttlVEZDZUSRYG9GrlWlOS6Ubud0hAYtxZJ1/X0mFPVGOQ9Hi5FFHxkeFER9m//s+FJPVUZo0PlDAsBJ94bRkLFoArXGZacq4bjWtn2ck9N/qlYy9AQh0pklQjer01EAy09RZi0I8124D0IAPEWDoMBgA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L25Dp1tj5y5j1arkN3afgHZruBwx33nVKco1xMwSurM=;
- b=GQ8r0zGg/fQtkgg2OPFHw9C73KsvfNlyGLl7GEY6mGJvVoAbFS9T7CHCL3duK1hi/DE3J8SyR7bbcS6Sl4RXC9RzncDdBx1BFGg+k7a9Rbl7WrM3mgjX0mv7H2u4cwG1CW1Dpp7C+1Zs8a4v0xskcmOKcEBbhOfhyqKoFtGYvBo=
-Received: from MW4PR03CA0342.namprd03.prod.outlook.com (2603:10b6:303:dc::17)
- by SA1PR12MB5671.namprd12.prod.outlook.com (2603:10b6:806:23b::21) with
+ bh=JuuFU4H4dGCRJDHy445uOZ2Dw/2+lxYKbeFCLGCiyWE=;
+ b=hRSL8SrAaqUS9Q70Ga3nbsFK0xU46++C0URFzkaUQosiedDipTMHlEcft4sTofQb78agGA+LNLE1rN/eLO6T5lRjS9irchTijoVT7hvC5R9mzxQJ5zW2LsNcnwOz4s1CcRNmpZIH2V1gtbW3lEQ7wOovHdqQomJrE4InuVaPWa0=
+Received: from MW4PR04CA0099.namprd04.prod.outlook.com (2603:10b6:303:83::14)
+ by PH7PR12MB7284.namprd12.prod.outlook.com (2603:10b6:510:20b::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.19; Fri, 9 Jun
- 2023 09:03:48 +0000
-Received: from MWH0EPF000971E9.namprd02.prod.outlook.com
- (2603:10b6:303:dc:cafe::86) by MW4PR03CA0342.outlook.office365.com
- (2603:10b6:303:dc::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.41; Fri, 9 Jun
+ 2023 09:06:56 +0000
+Received: from CO1PEPF000044F0.namprd05.prod.outlook.com
+ (2603:10b6:303:83:cafe::56) by MW4PR04CA0099.outlook.office365.com
+ (2603:10b6:303:83::14) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.26 via Frontend
- Transport; Fri, 9 Jun 2023 09:03:48 +0000
+ Transport; Fri, 9 Jun 2023 09:06:56 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -35,19 +35,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- MWH0EPF000971E9.mail.protection.outlook.com (10.167.243.71) with Microsoft
+ CO1PEPF000044F0.mail.protection.outlook.com (10.167.241.70) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6477.24 via Frontend Transport; Fri, 9 Jun 2023 09:03:48 +0000
+ 15.20.6477.13 via Frontend Transport; Fri, 9 Jun 2023 09:06:56 +0000
 Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 9 Jun
- 2023 04:03:45 -0500
+ 2023 04:06:53 -0500
 From: Vasant Hegde <vasant.hegde@amd.com>
 To: <iommu@lists.linux.dev>, <joro@8bytes.org>
-CC: <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH] iommu/amd: Fix DTE_IRQ_PHYS_ADDR_MASK macro
-Date: Fri, 9 Jun 2023 09:03:27 +0000
-Message-ID: <20230609090327.5923-1-vasant.hegde@amd.com>
+CC: <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>,
+	Yazen Ghannam <yazen.ghannam@amd.com>
+Subject: [PATCH 1/2] iommu/amd: Use BIT/BIT_ULL macro to define bit fields
+Date: Fri, 9 Jun 2023 09:06:30 +0000
+Message-ID: <20230609090631.6052-1-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -62,51 +63,153 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MWH0EPF000971E9:EE_|SA1PR12MB5671:EE_
-X-MS-Office365-Filtering-Correlation-Id: e7f292d1-403b-49a1-b183-08db68c86fea
+X-MS-TrafficTypeDiagnostic: CO1PEPF000044F0:EE_|PH7PR12MB7284:EE_
+X-MS-Office365-Filtering-Correlation-Id: 45b7e360-9152-4d8b-7ba8-08db68c8dfe6
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	K9PCqoX2WgYXKirBh6G9IBbIfyiqbXlkgyXw7swJXeGs3+rQ608vHRzhXI4/rQTTMXlqPMd1xrTL8cJZb+7LLlx/a31h3Klx4c/5R5/uyuLYXGBDzmXsvaCFxjSA8HAhYvflc0G+yk8x9qiw+RTYYaKXTu+Ky6HScCm0J2aUwTeTg44Cf9Wlm9cvdwGEkAiWT2NOtCJ9sFjxZ5itzfzy8eDBlfvCzy1CXR2J20bQpEQl1j+D1d2yExxP5n8kp6YBUuIN7V5pQbCAph6aGxvwYD6LGrHijZioMsW6gjDtPxUtPLf2/xxS2gVzDFssoM22yjeZ29yRVm6l7nSV9xsMc9S617qmbpHM3YeaOxRT43TW2XNV9Ehv1xVqAOfbT97WKtJ73pjqKHskNLvGEcf7gNaSfRMJiS/bpPD3OcO+GLxdM69Iih5oUOIUtYwd8Y3mX71B/mA0JTQcQbIrICG5d6oYAHE/txbk/6B8eJIMyb31x5jmC/GtOvBWE16/YWqC3f2dnCILFeCYtTAU1sw/hv6rsBq8dNKjJJncUQqX6x2En0xqVxMrXGQA/tK146KwZykN+a0PBh5TZCZ3pFSHVtSy+L6KCLrLhbXy2qoCSVPqTQ/PHIYDk3CbnNFtMmlU1/cdxXQQUxIY0K6I5+FA60+4XLOm48mQEqkXzeEt9FAT6Q5wxzYtS5ysc1PaTzHAfw52u3jnrMgHBGUQTarnFKmm7g8OmEF348PKVWIsMQPxA+08aNQHti5e48GkQ6paw/yaWoRYzaCCIGGVZLsPRw==
+	HpAromDyKEGpPsdtFdMCMPc5s5hTv69BxdaGzCQJVIlrOXCMQ9tAkjP9NHN3z8DceCWbf/uVhrrku1tcwSgGpzKpkPISmRlNP4WGRLjJzx/NjwODlj6E0TfiOuwN0YgImd6AW6Vpaae4Ed2s987vm3FgINpXY/GLC2WVFOEeO3tltEqlmOjN8JckBZC6LC3GAR72DPBsmjSXn7YFPVH92eXZvAbUPttCwRS+6RrB35CD14lMc2HrnJqDjHWkJLk0ZENbH+jE++8XyBeAtIhL/88HI65mog5AnS7aM2v/lsQvL48SDZIcr4WQrARBbL5fgN/dLKfWAiJ9+ysvALYRQk51jGsjDXUPGRxSW/Avlkf8ACvmc8MRaeOh1aVQaMNPCJuDw6NXN9k5X1jQAQRQGZhxDddAG22iamkmBzGh53bwqEx0bxD8++fKQdWr4LQq8Aj/SyEoScbYaa5wZJLUV+lbU3WzJSNAP16eAeCAS8zacQ0w3OTz7FU3Jj7jcBNDWE0sevUE42sujvs7ZaqenHMCax1xwzXFG7oi+06TjM4FfiNf/Nk1K+xMSZrNv4d/Wh4+75BemtPdkHwhGX1jBFohyxGsAZjwfNRIdySKUIIrk/hi4FxiE0nhcGYDNiMDOOIC8RuIl1qcpGh9WJtfh7ZYiORos1Hy7wSR+i3B1cg5q38HK2+2yhwWC+6b5hs6BobKwjSgu9J9ywCT2gsR2hQelZ3ZXpbH8vNFOL8cpGXbcCgl9SeYB6deIgKyvq+nEYZWdNjpM8z5VarcfR8JhA==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(396003)(136003)(39860400002)(451199021)(40470700004)(46966006)(36840700001)(16526019)(478600001)(186003)(1076003)(26005)(36860700001)(83380400001)(426003)(336012)(6666004)(47076005)(2616005)(40460700003)(40480700001)(7696005)(8936002)(316002)(8676002)(86362001)(82310400005)(41300700001)(82740400003)(70206006)(81166007)(36756003)(356005)(70586007)(44832011)(4326008)(2906002)(5660300002)(110136005)(4744005)(54906003)(36900700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(136003)(346002)(39860400002)(451199021)(36840700001)(46966006)(40470700004)(40480700001)(40460700003)(110136005)(54906003)(82740400003)(81166007)(478600001)(8936002)(8676002)(4326008)(316002)(70586007)(356005)(41300700001)(70206006)(2616005)(16526019)(186003)(36860700001)(83380400001)(6666004)(47076005)(7696005)(1076003)(26005)(426003)(5660300002)(336012)(86362001)(44832011)(82310400005)(2906002)(36756003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2023 09:03:48.1894
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2023 09:06:56.0666
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e7f292d1-403b-49a1-b183-08db68c86fea
+X-MS-Exchange-CrossTenant-Network-Message-Id: 45b7e360-9152-4d8b-7ba8-08db68c8dfe6
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	MWH0EPF000971E9.namprd02.prod.outlook.com
+	CO1PEPF000044F0.namprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB5671
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7284
 
-Interrupt Table Root Pointer is 52 bit and table must be aligned to start
-on a 128-byte boundary. Hence first 6 bits are ignored.
+Make use of BIT macro when defining bitfields which makes it easy to read.
 
-Current code uses address mask as 45 instead of 46bit. Use GENMASK_ULL
-macro instead of manually generating address mask.
+No functional change intended.
 
+Suggested-by: Yazen Ghannam <yazen.ghannam@amd.com>
 Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 ---
- drivers/iommu/amd/amd_iommu_types.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/amd/amd_iommu_types.h | 76 ++++++++++++++---------------
+ 1 file changed, 38 insertions(+), 38 deletions(-)
 
 diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 2ddbda3a4374..ae0edeb379d4 100644
+index ae0edeb379d4..a49cc2258a76 100644
 --- a/drivers/iommu/amd/amd_iommu_types.h
 +++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -283,7 +283,7 @@
- #define AMD_IOMMU_PGSIZES_V2	(PAGE_SIZE | (1ULL << 21) | (1ULL << 30))
+@@ -84,21 +84,21 @@
  
- /* Bit value definition for dte irq remapping fields*/
--#define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
-+#define DTE_IRQ_PHYS_ADDR_MASK		GENMASK_ULL(51, 6)
- #define DTE_IRQ_REMAP_INTCTL_MASK	(0x3ULL << 60)
- #define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
- #define DTE_IRQ_REMAP_ENABLE    1ULL
+ 
+ /* Extended Feature Bits */
+-#define FEATURE_PREFETCH	(1ULL<<0)
+-#define FEATURE_PPR		(1ULL<<1)
+-#define FEATURE_X2APIC		(1ULL<<2)
+-#define FEATURE_NX		(1ULL<<3)
+-#define FEATURE_GT		(1ULL<<4)
+-#define FEATURE_IA		(1ULL<<6)
+-#define FEATURE_GA		(1ULL<<7)
+-#define FEATURE_HE		(1ULL<<8)
+-#define FEATURE_PC		(1ULL<<9)
++#define FEATURE_PREFETCH	BIT_ULL(0)
++#define FEATURE_PPR		BIT_ULL(1)
++#define FEATURE_X2APIC		BIT_ULL(2)
++#define FEATURE_NX		BIT_ULL(3)
++#define FEATURE_GT		BIT_ULL(4)
++#define FEATURE_IA		BIT_ULL(6)
++#define FEATURE_GA		BIT_ULL(7)
++#define FEATURE_HE		BIT_ULL(8)
++#define FEATURE_PC		BIT_ULL(9)
+ #define FEATURE_GATS_SHIFT	(12)
+ #define FEATURE_GATS_MASK	(3ULL)
+-#define FEATURE_GAM_VAPIC	(1ULL<<21)
+-#define FEATURE_GIOSUP		(1ULL<<48)
+-#define FEATURE_EPHSUP		(1ULL<<50)
+-#define FEATURE_SNP		(1ULL<<63)
++#define FEATURE_GAM_VAPIC	BIT_ULL(21)
++#define FEATURE_GIOSUP		BIT_ULL(48)
++#define FEATURE_EPHSUP		BIT_ULL(50)
++#define FEATURE_SNP		BIT_ULL(63)
+ 
+ #define FEATURE_PASID_SHIFT	32
+ #define FEATURE_PASID_MASK	(0x1fULL << FEATURE_PASID_SHIFT)
+@@ -120,13 +120,13 @@
+ #define PASID_MASK		0x0000ffff
+ 
+ /* MMIO status bits */
+-#define MMIO_STATUS_EVT_OVERFLOW_INT_MASK	(1 << 0)
+-#define MMIO_STATUS_EVT_INT_MASK	(1 << 1)
+-#define MMIO_STATUS_COM_WAIT_INT_MASK	(1 << 2)
+-#define MMIO_STATUS_PPR_INT_MASK	(1 << 6)
+-#define MMIO_STATUS_GALOG_RUN_MASK	(1 << 8)
+-#define MMIO_STATUS_GALOG_OVERFLOW_MASK	(1 << 9)
+-#define MMIO_STATUS_GALOG_INT_MASK	(1 << 10)
++#define MMIO_STATUS_EVT_OVERFLOW_INT_MASK	BIT(0)
++#define MMIO_STATUS_EVT_INT_MASK		BIT(1)
++#define MMIO_STATUS_COM_WAIT_INT_MASK		BIT(2)
++#define MMIO_STATUS_PPR_INT_MASK		BIT(6)
++#define MMIO_STATUS_GALOG_RUN_MASK		BIT(8)
++#define MMIO_STATUS_GALOG_OVERFLOW_MASK		BIT(9)
++#define MMIO_STATUS_GALOG_INT_MASK		BIT(10)
+ 
+ /* event logging constants */
+ #define EVENT_ENTRY_SIZE	0x10
+@@ -369,23 +369,23 @@
+ /*
+  * Bit value definition for I/O PTE fields
+  */
+-#define IOMMU_PTE_PR (1ULL << 0)
+-#define IOMMU_PTE_U  (1ULL << 59)
+-#define IOMMU_PTE_FC (1ULL << 60)
+-#define IOMMU_PTE_IR (1ULL << 61)
+-#define IOMMU_PTE_IW (1ULL << 62)
++#define IOMMU_PTE_PR	BIT_ULL(0)
++#define IOMMU_PTE_U	BIT_ULL(59)
++#define IOMMU_PTE_FC	BIT_ULL(60)
++#define IOMMU_PTE_IR	BIT_ULL(61)
++#define IOMMU_PTE_IW	BIT_ULL(62)
+ 
+ /*
+  * Bit value definition for DTE fields
+  */
+-#define DTE_FLAG_V  (1ULL << 0)
+-#define DTE_FLAG_TV (1ULL << 1)
+-#define DTE_FLAG_IR (1ULL << 61)
+-#define DTE_FLAG_IW (1ULL << 62)
+-
+-#define DTE_FLAG_IOTLB	(1ULL << 32)
+-#define DTE_FLAG_GIOV	(1ULL << 54)
+-#define DTE_FLAG_GV	(1ULL << 55)
++#define DTE_FLAG_V	BIT_ULL(0)
++#define DTE_FLAG_TV	BIT_ULL(1)
++#define DTE_FLAG_IR	BIT_ULL(61)
++#define DTE_FLAG_IW	BIT_ULL(62)
++
++#define DTE_FLAG_IOTLB	BIT_ULL(32)
++#define DTE_FLAG_GIOV	BIT_ULL(54)
++#define DTE_FLAG_GV	BIT_ULL(55)
+ #define DTE_FLAG_MASK	(0x3ffULL << 32)
+ #define DTE_GLX_SHIFT	(56)
+ #define DTE_GLX_MASK	(3)
+@@ -439,13 +439,13 @@
+ #define MAX_DOMAIN_ID 65536
+ 
+ /* Protection domain flags */
+-#define PD_DMA_OPS_MASK		(1UL << 0) /* domain used for dma_ops */
+-#define PD_DEFAULT_MASK		(1UL << 1) /* domain is a default dma_ops
++#define PD_DMA_OPS_MASK		BIT(0) /* domain used for dma_ops */
++#define PD_DEFAULT_MASK		BIT(1) /* domain is a default dma_ops
+ 					      domain for an IOMMU */
+-#define PD_PASSTHROUGH_MASK	(1UL << 2) /* domain has no page
++#define PD_PASSTHROUGH_MASK	BIT(2) /* domain has no page
+ 					      translation */
+-#define PD_IOMMUV2_MASK		(1UL << 3) /* domain has gcr3 table */
+-#define PD_GIOV_MASK		(1UL << 4) /* domain enable GIOV support */
++#define PD_IOMMUV2_MASK		BIT(3) /* domain has gcr3 table */
++#define PD_GIOV_MASK		BIT(4) /* domain enable GIOV support */
+ 
+ extern bool amd_iommu_dump;
+ #define DUMP_printk(format, arg...)				\
 -- 
 2.31.1
 
