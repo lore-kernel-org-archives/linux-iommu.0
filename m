@@ -1,137 +1,88 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F71715AC
-	for <iommu@lists.linux.dev>; Fri,  9 Jun 2023 05:53:21 +0000 (UTC)
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3594WSIb029465;
-	Fri, 9 Jun 2023 05:53:10 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=qcppdkim1;
- bh=Sa241Jhc0rB20AIxBgrwQotffKxAIKzXI/CdDmbz5MY=;
- b=BROYdUlsLF6FwXfEkJpuWovySZaU3VyRaMUnhXuBR5LHwy6vvG5pqxDLW+pkMw7a2IEY
- 6+OLdT2wfhcho5EZbh0drp5VyvM5MsoGwSUvlXokraYKoCPQLAiGXL6iVKKbaQA98n7q
- WspV+1EU2MJwZ/BLQbZ0JFXLjgEgvBnyh6nbn8KGy/mYeeQSkE8JJl0go+IsJzlBKslx
- yoX+wT0JuH5ual7npA+XyK2BV5JX8zeoXdcNjGlbw4Xqk7fX+yc9Bs371b7enQHrLIDr
- JKwTJ9qon8JZOzvQNN6iAJetGkmum+HyU27FpofLHAVaxRPwibMcPh8wqv20Kap05D9P vQ== 
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3r3uja08wa-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 09 Jun 2023 05:53:10 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3595r9Xt010946
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 9 Jun 2023 05:53:09 GMT
-Received: from hu-ppareek-blr.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.42; Thu, 8 Jun 2023 22:52:48 -0700
-From: Parikshit Pareek <quic_ppareek@quicinc.com>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        "Joerg
- Roedel" <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof
- Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley
-	<conor+dt@kernel.org>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson
-	<andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>
-CC: Manivannan Sadhasivam <mani@kernel.org>,
-        Dmitry Baryshkov
-	<dmitry.baryshkov@linaro.org>,
-        Marijn Suijten
-	<marijn.suijten@somainline.org>,
-        Adam Skladowski <a39.skl@gmail.com>, <linux-arm-msm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-        <devicetree@vger.kernel.org>,
-        "linux-kernel @ vger .
- kernel . org Prasanna Kumar" <quic_kprasan@quicinc.com>,
-        Shazad Hussain
-	<quic_shazhuss@quicinc.com>,
-        Parikshit Pareek <quic_ppareek@quicinc.com>
-Subject: [PATCH 3/3] iommu/arm-smmu-qcom: Add support for the interconnect
-Date: Fri, 9 Jun 2023 11:22:25 +0530
-Message-ID: <20230609055225.20717-1-quic_ppareek@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20230609054141.18938-1-quic_ppareek@quicinc.com>
-References: <20230609054141.18938-1-quic_ppareek@quicinc.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 513A515AA
+	for <iommu@lists.linux.dev>; Fri,  9 Jun 2023 06:06:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1686290779; x=1717826779;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=pCUTHnlZlVar+pAAYPKyf+GGBotLIiPQRNKzfWEppzc=;
+  b=aeZ3SGhR3WpRihEYYh7FHsTfd7VxtMb7h8QeyiqicqgfuLGtasZqLtWG
+   Ps00el0oOCzeydVUgO66+qDqJxVXyg2ZyIvqwjhPtti8DL1rID3D1tjLN
+   xc3Uo1lcx8Z9fVMEVR2LJLQBpCyY/EoazH/2yPzW0RaIfM+Jcosms37cq
+   jU7SG5C+robRrJLFHb4H1mYYXL1jvTao3fy1A5UA5YwTrhob+mE18+kTA
+   51h43atIBB5/qUZdRXkg7sp6pF40Cm8LA3SBt1CEaawvAVi7KW1UJcimc
+   8IxbM5Dl/CRn8QtZMC9A032osxq+SzkkINSt0cttEB7dnhc+H3PjOwK6W
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10735"; a="360881590"
+X-IronPort-AV: E=Sophos;i="6.00,228,1681196400"; 
+   d="scan'208";a="360881590"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2023 23:06:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10735"; a="660652218"
+X-IronPort-AV: E=Sophos;i="6.00,228,1681196400"; 
+   d="scan'208";a="660652218"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by orsmga003.jf.intel.com with ESMTP; 08 Jun 2023 23:06:17 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: iommu@lists.linux.dev
+Cc: linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 1/1] iommu/vt-d: Remove commented-out code
+Date: Fri,  9 Jun 2023 14:05:14 +0800
+Message-Id: <20230609060514.15154-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: 53Kv0YAoHXBldbEtHdhUviorfcHk1GPp
-X-Proofpoint-ORIG-GUID: 53Kv0YAoHXBldbEtHdhUviorfcHk1GPp
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
- definitions=2023-06-09_03,2023-06-08_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 mlxscore=0
- malwarescore=0 bulkscore=0 priorityscore=1501 lowpriorityscore=0
- phishscore=0 suspectscore=0 spamscore=0 adultscore=0 clxscore=1015
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2305260000 definitions=main-2306090050
+Content-Transfer-Encoding: 8bit
 
-Introduce support to detect the interconnect, and set its bandwidth.
-For certain targets, we need to set the bandwidth of interconnect,
-connecting smmu to memory. This is accessed during memory mapped IO
-access to smmu registers, and during page tables walks.
+These lines of code were commented out when they were first added in commit
+ba39592764ed ("Intel IOMMU: Intel IOMMU driver"). We do not want to restore
+them because the VT-d spec has deprecated the read/write draining hit.
 
-Reported-by: Eric Chanudet <echanude@redhat.com>
-Signed-off-by: Parikshit Pareek <quic_ppareek@quicinc.com>
+VT-d spec (section 11.4.2):
+"
+ Hardware implementation with Major Version 2 or higher (VER_REG), always
+ performs required drain without software explicitly requesting a drain in
+ IOTLB invalidation. This field is deprecated and hardware  will always
+ report it as 1 to maintain backward compatibility with software.
+"
+
+Remove the code to make the code cleaner.
+
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ drivers/iommu/intel/iommu.c | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index c71afda79d64..6961d564869b 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -8,6 +8,7 @@
- #include <linux/delay.h>
- #include <linux/of_device.h>
- #include <linux/firmware/qcom/qcom_scm.h>
-+#include <linux/interconnect.h>
- 
- #include "arm-smmu.h"
- #include "arm-smmu-qcom.h"
-@@ -549,6 +550,8 @@ struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu)
- {
- 	const struct device_node *np = smmu->dev->of_node;
- 	const struct of_device_id *match;
-+	struct icc_path *icc_path;
-+	int ret, icc_bw;
- 
- #ifdef CONFIG_ACPI
- 	if (np == NULL) {
-@@ -558,6 +561,19 @@ struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu)
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 4c0b7424c45e..e5c111ff4dd9 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1312,15 +1312,7 @@ static void __iommu_flush_iotlb(struct intel_iommu *iommu, u16 did,
+ 			iommu->name, type);
+ 		return;
  	}
- #endif
+-	/* Note: set drain read/write */
+-#if 0
+-	/*
+-	 * This is probably to be super secure.. Looks like we can
+-	 * ignore it without any impact.
+-	 */
+-	if (cap_read_drain(iommu->cap))
+-		val |= DMA_TLB_READ_DRAIN;
+-#endif
++
+ 	if (cap_write_drain(iommu->cap))
+ 		val |= DMA_TLB_WRITE_DRAIN;
  
-+	icc_path = devm_of_icc_get(smmu->dev, "tbu_mc");
-+	if (IS_ERR(icc_path))
-+		return (struct arm_smmu_device *)icc_path;
-+
-+	ret = of_property_read_u32(np, "icc_bw", &icc_bw);
-+
-+	/*if interconnect exists, check for the  bandwidth value*/
-+	if (icc_path && !ret) {
-+		ret = icc_set_bw(icc_path, 0, MBps_to_icc(icc_bw));
-+		if (ret)
-+			return ERR_PTR(ret);
-+	}
-+
- 	match = of_match_node(qcom_smmu_impl_of_match, np);
- 	if (match)
- 		return qcom_smmu_create(smmu, match->data);
 -- 
-2.17.1
+2.34.1
 
