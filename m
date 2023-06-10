@@ -1,113 +1,60 @@
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68C933236
-	for <iommu@lists.linux.dev>; Sat, 10 Jun 2023 12:14:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686399253; x=1717935253;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=8elPVM81BdGcGGAZYBdokG8hYC/1QRR+oygJ7EhpjR0=;
-  b=Sa4/O0je2J6B7ZGsVWGfny6DWcrVefion6JAlEV2Clv3Ov5/Csk8pBCO
-   v0N3bxw6lOm2skHRUNAOUtUSmGd/S8MvwqFh5o+PkTRodZ3ePciKrhZBN
-   YsKEqWRTI1hVaikFoz02nd4b/11diJTRYKg2bgXZjCuo1BuGYkw64QDkM
-   4IAFRRFYo852Z2aIGfDsl4Oexq8fn5DqMFVdchIrjXH8RZ//2in7W6q3T
-   idsNUQqCTG2RzeT5g9sqb5IO5CfrhKYFlOdo2UWTUMissGau9aaPfu22o
-   U+4W7D/sG2NvZhQc0LriFOqqhwi9OPW2TafBvJ83alMbUHaR5O9yvn4R3
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10736"; a="338119666"
-X-IronPort-AV: E=Sophos;i="6.00,232,1681196400"; 
-   d="scan'208";a="338119666"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2023 05:14:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10736"; a="884879484"
-X-IronPort-AV: E=Sophos;i="6.00,232,1681196400"; 
-   d="scan'208";a="884879484"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orsmga005.jf.intel.com with ESMTP; 10 Jun 2023 05:14:07 -0700
-Message-ID: <08830c11-5528-0c42-0bc3-89c3796611fe@linux.intel.com>
-Date: Sat, 10 Jun 2023 20:13:03 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89354110A
+	for <iommu@lists.linux.dev>; Sat, 10 Jun 2023 20:50:36 +0000 (UTC)
+Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-2b1a86cdec6so32424081fa.3
+        for <iommu@lists.linux.dev>; Sat, 10 Jun 2023 13:50:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686430234; x=1689022234;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=3mBDbLFqvjAGNEyFKxiTNYtiar4TLQ4ztWPhRjrpVlw=;
+        b=IxStg4faBgkuCF49oX7er3oOu4ux7zMQVyrq8i8kgl4kZIo62OvFLR9qndc0jZCWLH
+         OUinExoCGzGp6/ds6+5krvK7DDsUU8A+0+SYgBze30HCQ/9a/7Fx7XlhF5liHtKXts5o
+         HQaSRxkJqrEZCNbCxpHjm2oQ612/5pVw8HC6fNGuudLUtTJ5CR39IYXBcgpDnvQDr4fm
+         hJVAsjh2Ar7q6Jx28IxIdorHew+xrtAHGBQbMFminLZ567EmFRRWRzqckcyq4F+/V7+f
+         uxCm6vGhPSNedlwQzSqcZgk5d3QvGR3mLlq0znXX5L1R0NmwV5w7A5LaqZiY6rAYQq+S
+         sEcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686430234; x=1689022234;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=3mBDbLFqvjAGNEyFKxiTNYtiar4TLQ4ztWPhRjrpVlw=;
+        b=DWQHMcpmwgFCHdkDJA949VkFyzLeYlK0/cxY/TaLcAG1H7wJI2bO8NbkxoySO5ZCev
+         eDX4b6P4MFpE9OR+FxSMAaal9gJuYZb7S9hUAYMFM3C/XRpU/Lb1WPb8ZGrojwhqX4ON
+         cfZCAvoDZpqlT04AtiL+tKZKNMyNEUDhap9Q0ZK+QP4oDuYOhoQ0O3iUjTkMEWqKklz8
+         H1yitFwOE8anHZkNNYgCYKUMlZgv2wVVsvBtIogfNDzdkR16HIhGZ1OPmSIs+blDWD1o
+         SX29sw7+2sugNsBxIantywz7NYY2ke4hMz/EudZ7ozqsI6X/U1psuz0/dMm5/8AzdB6P
+         S89g==
+X-Gm-Message-State: AC+VfDxah91gqNiIA3ogV6YtjtmCclfV+9RBmYwldg7SEfyELqKtN4vB
+	Kme6LTeMNoYR0M+STS6sDU0uNjzYnoQTn7du0cncXEUYs9U=
+X-Google-Smtp-Source: ACHHUZ5FS5Bm/Exvz2rA3cba4GJPU2EfFhL5jebyIyTTaok6cIyW4kpL9X+j+rAE8cmOK76iA8WJkv9DFJI3Zxo8Cco=
+X-Received: by 2002:a2e:804b:0:b0:2b0:489e:c457 with SMTP id
+ p11-20020a2e804b000000b002b0489ec457mr812326ljg.39.1686430233983; Sat, 10 Jun
+ 2023 13:50:33 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Cc: baolu.lu@linux.intel.com, Will Deacon <will@kernel.org>,
- David Woodhouse <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>,
- "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
- "Yu, Fenghua" <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Tony Luck <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
- rex.zhang@intel.com, xiaochen.shen@intel.com, narayan.ranganathan@intel.com
-Subject: Re: [PATCH v8 2/7] iommu: Move global PASID allocation from SVA to
- core
-Content-Language: en-US
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
- Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>, dmaengine@vger.kernel.org,
- vkoul@kernel.org
-References: <20230602182212.150825-1-jacob.jun.pan@linux.intel.com>
- <20230602182212.150825-3-jacob.jun.pan@linux.intel.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230602182212.150825-3-jacob.jun.pan@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <CAD7mqryC_JROVXY9eD--iigjCU9266+ufPvZO2BujhVfM7qYfw@mail.gmail.com>
+ <f416c0dc-a82b-f608-4c6a-c2441b417bfb@linux.intel.com>
+In-Reply-To: <f416c0dc-a82b-f608-4c6a-c2441b417bfb@linux.intel.com>
+From: Chathura Rajapaksha <chathura.abeyrathne.lk@gmail.com>
+Date: Sat, 10 Jun 2023 16:50:22 -0400
+Message-ID: <CAD7mqrwR7RmUt5q22biJyTWx15HiOFDoBUuhOzf=EBuXxmghwQ@mail.gmail.com>
+Subject: Re: IOMMU software bounce buffers and their overhead
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On 6/3/23 2:22 AM, Jacob Pan wrote:
-> +ioasid_t iommu_alloc_global_pasid_dev(struct device *dev)
-> +{
-> +	int ret;
-> +	ioasid_t max;
-> +
-> +	max = dev->iommu->max_pasids;
-> +	/*
-> +	 * max_pasids is set up by vendor driver based on number of PASID bits
-> +	 * supported but the IDA allocation is inclusive.
-> +	 */
-> +	ret = ida_alloc_range(&iommu_global_pasid_ida, IOMMU_FIRST_GLOBAL_PASID, max - 1, GFP_KERNEL);
-> +	if (ret < 0)
-> +		return IOMMU_PASID_INVALID;
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_alloc_global_pasid_dev);
-
-"dev->iommu->max_pasids == 0" indicates no pasid support on the device.
-The code should return IOMMU_PASID_INVALID explicitly. Perhaps we can
-make this function like this:
-
-ioasid_t iommu_alloc_global_pasid_dev(struct device *dev)
-{
-         int ret;
-
-         if (!dev->iommu->max_pasids)
-                 return IOMMU_PASID_INVALID;
-
-         /*
-          * max_pasids is set up by vendor driver based on number of 
-PASID bits
-          * supported but the IDA allocation is inclusive.
-          */
-         ret = ida_alloc_range(&iommu_global_pasid_ida, 
-IOMMU_FIRST_GLOBAL_PASID,
-                               dev->iommu->max_pasids - 1, GFP_KERNEL);
-
-         return ret < 0 ? IOMMU_PASID_INVALID : ret;
-}
-EXPORT_SYMBOL_GPL(iommu_alloc_global_pasid_dev);
-
-Other change in this series looks good to me.
-
-I hope I can queue this series including above change as part of my VT-d
-update for v6.5 to Joerg if no objection.
-
-Let's try to re-enable this key feature of Intel idxd driver in v6.5.
+Thank you for the response and resources.
+I was able to mark a device as external and untrusted by
+editing the kernel source code which enabled SW bounce
+buffers for that device.
 
 Best regards,
-baolu
+Chathura
