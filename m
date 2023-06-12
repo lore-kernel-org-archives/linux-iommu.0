@@ -1,60 +1,77 @@
-Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89354110A
-	for <iommu@lists.linux.dev>; Sat, 10 Jun 2023 20:50:36 +0000 (UTC)
-Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-2b1a86cdec6so32424081fa.3
-        for <iommu@lists.linux.dev>; Sat, 10 Jun 2023 13:50:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686430234; x=1689022234;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=3mBDbLFqvjAGNEyFKxiTNYtiar4TLQ4ztWPhRjrpVlw=;
-        b=IxStg4faBgkuCF49oX7er3oOu4ux7zMQVyrq8i8kgl4kZIo62OvFLR9qndc0jZCWLH
-         OUinExoCGzGp6/ds6+5krvK7DDsUU8A+0+SYgBze30HCQ/9a/7Fx7XlhF5liHtKXts5o
-         HQaSRxkJqrEZCNbCxpHjm2oQ612/5pVw8HC6fNGuudLUtTJ5CR39IYXBcgpDnvQDr4fm
-         hJVAsjh2Ar7q6Jx28IxIdorHew+xrtAHGBQbMFminLZ567EmFRRWRzqckcyq4F+/V7+f
-         uxCm6vGhPSNedlwQzSqcZgk5d3QvGR3mLlq0znXX5L1R0NmwV5w7A5LaqZiY6rAYQq+S
-         sEcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686430234; x=1689022234;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=3mBDbLFqvjAGNEyFKxiTNYtiar4TLQ4ztWPhRjrpVlw=;
-        b=DWQHMcpmwgFCHdkDJA949VkFyzLeYlK0/cxY/TaLcAG1H7wJI2bO8NbkxoySO5ZCev
-         eDX4b6P4MFpE9OR+FxSMAaal9gJuYZb7S9hUAYMFM3C/XRpU/Lb1WPb8ZGrojwhqX4ON
-         cfZCAvoDZpqlT04AtiL+tKZKNMyNEUDhap9Q0ZK+QP4oDuYOhoQ0O3iUjTkMEWqKklz8
-         H1yitFwOE8anHZkNNYgCYKUMlZgv2wVVsvBtIogfNDzdkR16HIhGZ1OPmSIs+blDWD1o
-         SX29sw7+2sugNsBxIantywz7NYY2ke4hMz/EudZ7ozqsI6X/U1psuz0/dMm5/8AzdB6P
-         S89g==
-X-Gm-Message-State: AC+VfDxah91gqNiIA3ogV6YtjtmCclfV+9RBmYwldg7SEfyELqKtN4vB
-	Kme6LTeMNoYR0M+STS6sDU0uNjzYnoQTn7du0cncXEUYs9U=
-X-Google-Smtp-Source: ACHHUZ5FS5Bm/Exvz2rA3cba4GJPU2EfFhL5jebyIyTTaok6cIyW4kpL9X+j+rAE8cmOK76iA8WJkv9DFJI3Zxo8Cco=
-X-Received: by 2002:a2e:804b:0:b0:2b0:489e:c457 with SMTP id
- p11-20020a2e804b000000b002b0489ec457mr812326ljg.39.1686430233983; Sat, 10 Jun
- 2023 13:50:33 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40FE41C06
+	for <iommu@lists.linux.dev>; Mon, 12 Jun 2023 03:00:22 +0000 (UTC)
+X-UUID: 625a568d3da64d2aa78ff3d2e669f391-20230612
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.22,REQID:8dbb7674-442a-4ae3-b328-85febe458103,IP:5,U
+	RL:0,TC:0,Content:0,EDM:-25,RT:0,SF:-15,FILE:0,BULK:0,RULE:Release_Ham,ACT
+	ION:release,TS:-35
+X-CID-INFO: VERSION:1.1.22,REQID:8dbb7674-442a-4ae3-b328-85febe458103,IP:5,URL
+	:0,TC:0,Content:0,EDM:-25,RT:0,SF:-15,FILE:0,BULK:0,RULE:EDM_GE969F26,ACTI
+	ON:release,TS:-35
+X-CID-META: VersionHash:120426c,CLOUDID:6d5a183e-de1e-4348-bc35-c96f92f1dcbb,B
+	ulkID:230612101800XIEZGSAS,BulkQuantity:0,Recheck:0,SF:17|19|44|38|24|102,
+	TC:nil,Content:0,EDM:1,IP:-2,URL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,
+	OSI:0,OSA:0,AV:0
+X-CID-BVR: 0
+X-CID-BAS: 0,_,0,_
+X-UUID: 625a568d3da64d2aa78ff3d2e669f391-20230612
+X-User: gehao@kylinos.cn
+Received: from localhost.localdomain [(116.128.244.169)] by mailgw
+	(envelope-from <gehao@kylinos.cn>)
+	(Generic MTA)
+	with ESMTP id 1936308362; Mon, 12 Jun 2023 10:17:55 +0800
+From: Hao Ge <gehao@kylinos.cn>
+To: joro@8bytes.org,
+	suravee.suthikulpanit@amd.com,
+	will@kernel.org,
+	robin.murphy@arm.com
+Cc: kevin.tian@intel.com,
+	jgg@ziepe.ca,
+	vasant.hegde@amd.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	gehao618@163.com,
+	Hao Ge <gehao@kylinos.cn>
+Subject: [PATCH] iommu/amd: Fix memory leak when domain type checks fail
+Date: Mon, 12 Jun 2023 10:17:18 +0800
+Message-Id: <20230612021718.82293-1-gehao@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAD7mqryC_JROVXY9eD--iigjCU9266+ufPvZO2BujhVfM7qYfw@mail.gmail.com>
- <f416c0dc-a82b-f608-4c6a-c2441b417bfb@linux.intel.com>
-In-Reply-To: <f416c0dc-a82b-f608-4c6a-c2441b417bfb@linux.intel.com>
-From: Chathura Rajapaksha <chathura.abeyrathne.lk@gmail.com>
-Date: Sat, 10 Jun 2023 16:50:22 -0400
-Message-ID: <CAD7mqrwR7RmUt5q22biJyTWx15HiOFDoBUuhOzf=EBuXxmghwQ@mail.gmail.com>
-Subject: Re: IOMMU software bounce buffers and their overhead
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-Thank you for the response and resources.
-I was able to mark a device as external and untrusted by
-editing the kernel source code which enabled SW bounce
-buffers for that device.
+When domain type checks fail,we also should free protection_domain struct
+to avoid memory leak in protection_domain_alloc
 
-Best regards,
-Chathura
+Fixes: 29f54745f245 ("iommu/amd: Add missing domain type checks")
+Signed-off-by: Hao Ge <gehao@kylinos.cn>
+---
+ drivers/iommu/amd/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index dc1ec6849775..f08e65629c74 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -2094,7 +2094,7 @@ static struct protection_domain *protection_domain_alloc(unsigned int type)
+ 	} else if (type == IOMMU_DOMAIN_DMA || type == IOMMU_DOMAIN_DMA_FQ) {
+ 		pgtable = amd_iommu_pgtable;
+ 	} else {
+-		return NULL;
++		goto out_err;
+ 	}
+ 
+ 	switch (pgtable) {
+-- 
+2.25.1
+
+
+No virus found
+		Checked by Hillstone Network AntiVirus
