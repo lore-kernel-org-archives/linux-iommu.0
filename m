@@ -1,10 +1,10 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A3801DDC6
-	for <iommu@lists.linux.dev>; Mon, 12 Jun 2023 15:32:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0019C433D2;
-	Mon, 12 Jun 2023 15:32:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 058DD182C8
+	for <iommu@lists.linux.dev>; Mon, 12 Jun 2023 15:32:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 589BBC433A0;
+	Mon, 12 Jun 2023 15:32:08 +0000 (UTC)
 From: Catalin Marinas <catalin.marinas@arm.com>
 To: Andrew Morton <akpm@linux-foundation.org>,
 	Linus Torvalds <torvalds@linux-foundation.org>
@@ -29,10 +29,12 @@ Cc: Christoph Hellwig <hch@lst.de>,
 	linux-mm@kvack.org,
 	iommu@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v7 00/17] mm, dma, arm64: Reduce ARCH_KMALLOC_MINALIGN to 8
-Date: Mon, 12 Jun 2023 16:31:44 +0100
-Message-Id: <20230612153201.554742-1-catalin.marinas@arm.com>
+Subject: [PATCH v7 01/17] mm/slab: Decouple ARCH_KMALLOC_MINALIGN from ARCH_DMA_MINALIGN
+Date: Mon, 12 Jun 2023 16:31:45 +0100
+Message-Id: <20230612153201.554742-2-catalin.marinas@arm.com>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230612153201.554742-1-catalin.marinas@arm.com>
+References: <20230612153201.554742-1-catalin.marinas@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -41,83 +43,101 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi,
+In preparation for supporting a kmalloc() minimum alignment smaller than
+the arch DMA alignment, decouple the two definitions. This requires that
+either the kmalloc() caches are aligned to a (run-time) cache-line size
+or the DMA API bounces unaligned kmalloc() allocations. Subsequent
+patches will implement both options.
 
-That's v7 of the series reducing the kmalloc() minimum alignment on
-arm64 to 8 (from 128). There's no new/different functionality, mostly
-cosmetic changes and acks/tested-bys.
+After this patch, ARCH_DMA_MINALIGN is expected to be used in static
+alignment annotations and defined by an architecture to be the maximum
+alignment for all supported configurations/SoCs in a single Image.
+Architectures opting in to a smaller ARCH_KMALLOC_MINALIGN will need to
+define its value in the arch headers.
 
-Andrew, if there are no further comments or objections to this version,
-are you ok to take the series through the mm tree? The arm64 changes are
-fairly small. Alternatively, I can push it into linux-next now to give
-it some wider exposure and decide whether to upstream it when the
-merging window opens. Thanks.
+Since ARCH_DMA_MINALIGN is now always defined, adjust the #ifdef in
+dma_get_cache_alignment() so that there is no change for architectures
+not requiring a minimum DMA alignment.
 
-The updated patches are also available on this branch:
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Tested-by: Isaac J. Manjarres <isaacmanjarres@google.com>
+---
+ include/linux/cache.h       |  6 ++++++
+ include/linux/dma-mapping.h |  3 ++-
+ include/linux/slab.h        | 14 ++++++++++----
+ 3 files changed, 18 insertions(+), 5 deletions(-)
 
-git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux devel/kmalloc-minalign
-
-Changes since v6
-(https://lore.kernel.org/r/20230531154836.1366225-1-catalin.marinas@arm.com):
-
-- Moved ARCH_DMA_MINALIGN to include/linux/cache.h from slab.h (it
-  matches the asm/cache.h where most architectures defining this macro
-  place it).
-
-- Single body for __kmalloc_minalign() with an #ifdef.
-
-- Renamed the sg_dma_use_swiotlb() to sg_dma_is_swiotlb() (Robin's
-  suggestion).
-
-- Added acks/tested-by.
-
-Catalin Marinas (15):
-  mm/slab: Decouple ARCH_KMALLOC_MINALIGN from ARCH_DMA_MINALIGN
-  dma: Allow dma_get_cache_alignment() to be overridden by the arch code
-  mm/slab: Simplify create_kmalloc_cache() args and make it static
-  mm/slab: Limit kmalloc() minimum alignment to
-    dma_get_cache_alignment()
-  drivers/base: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
-  drivers/gpu: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
-  drivers/usb: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
-  drivers/spi: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
-  dm-crypt: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
-  iio: core: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
-  arm64: Allow kmalloc() caches aligned to the smaller cache_line_size()
-  dma-mapping: Force bouncing if the kmalloc() size is not
-    cache-line-aligned
-  iommu/dma: Force bouncing if the size is not cacheline-aligned
-  mm: slab: Reduce the kmalloc() minimum alignment if DMA bouncing
-    possible
-  arm64: Enable ARCH_WANT_KMALLOC_DMA_BOUNCE for arm64
-
-Robin Murphy (2):
-  scatterlist: Add dedicated config for DMA flags
-  dma-mapping: Name SG DMA flag helpers consistently
-
- arch/arm64/Kconfig             |  1 +
- arch/arm64/include/asm/cache.h |  3 ++
- arch/arm64/mm/init.c           |  7 +++-
- drivers/base/devres.c          |  6 ++--
- drivers/gpu/drm/drm_managed.c  |  6 ++--
- drivers/iommu/Kconfig          |  1 +
- drivers/iommu/dma-iommu.c      | 58 ++++++++++++++++++++++++--------
- drivers/iommu/iommu.c          |  2 +-
- drivers/md/dm-crypt.c          |  2 +-
- drivers/pci/Kconfig            |  1 +
- drivers/spi/spidev.c           |  2 +-
- drivers/usb/core/buffer.c      |  8 ++---
- include/linux/cache.h          |  6 ++++
- include/linux/dma-map-ops.h    | 61 ++++++++++++++++++++++++++++++++++
- include/linux/dma-mapping.h    |  5 ++-
- include/linux/iio/iio.h        |  2 +-
- include/linux/scatterlist.h    | 60 ++++++++++++++++++++++++++-------
- include/linux/slab.h           | 14 +++++---
- kernel/dma/Kconfig             |  7 ++++
- kernel/dma/direct.c            |  2 +-
- kernel/dma/direct.h            |  3 +-
- mm/slab.c                      |  6 +---
- mm/slab.h                      |  5 ++-
- mm/slab_common.c               | 41 +++++++++++++++++------
- 24 files changed, 244 insertions(+), 65 deletions(-)
-
+diff --git a/include/linux/cache.h b/include/linux/cache.h
+index 5da1bbd96154..9900d20b76c2 100644
+--- a/include/linux/cache.h
++++ b/include/linux/cache.h
+@@ -98,4 +98,10 @@ struct cacheline_padding {
+ #define CACHELINE_PADDING(name)
+ #endif
+ 
++#ifdef ARCH_DMA_MINALIGN
++#define ARCH_HAS_DMA_MINALIGN
++#else
++#define ARCH_DMA_MINALIGN __alignof__(unsigned long long)
++#endif
++
+ #endif /* __LINUX_CACHE_H */
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 0ee20b764000..a50375331eac 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -2,6 +2,7 @@
+ #ifndef _LINUX_DMA_MAPPING_H
+ #define _LINUX_DMA_MAPPING_H
+ 
++#include <linux/cache.h>
+ #include <linux/sizes.h>
+ #include <linux/string.h>
+ #include <linux/device.h>
+@@ -545,7 +546,7 @@ static inline int dma_set_min_align_mask(struct device *dev,
+ 
+ static inline int dma_get_cache_alignment(void)
+ {
+-#ifdef ARCH_DMA_MINALIGN
++#ifdef ARCH_HAS_DMA_MINALIGN
+ 	return ARCH_DMA_MINALIGN;
+ #endif
+ 	return 1;
+diff --git a/include/linux/slab.h b/include/linux/slab.h
+index 6b3e155b70bf..ca53425e9b32 100644
+--- a/include/linux/slab.h
++++ b/include/linux/slab.h
+@@ -12,6 +12,7 @@
+ #ifndef _LINUX_SLAB_H
+ #define	_LINUX_SLAB_H
+ 
++#include <linux/cache.h>
+ #include <linux/gfp.h>
+ #include <linux/overflow.h>
+ #include <linux/types.h>
+@@ -235,12 +236,17 @@ void kmem_dump_obj(void *object);
+  * alignment larger than the alignment of a 64-bit integer.
+  * Setting ARCH_DMA_MINALIGN in arch headers allows that.
+  */
+-#if defined(ARCH_DMA_MINALIGN) && ARCH_DMA_MINALIGN > 8
++#ifdef ARCH_HAS_DMA_MINALIGN
++#if ARCH_DMA_MINALIGN > 8 && !defined(ARCH_KMALLOC_MINALIGN)
+ #define ARCH_KMALLOC_MINALIGN ARCH_DMA_MINALIGN
+-#define KMALLOC_MIN_SIZE ARCH_DMA_MINALIGN
+-#define KMALLOC_SHIFT_LOW ilog2(ARCH_DMA_MINALIGN)
+-#else
++#endif
++#endif
++
++#ifndef ARCH_KMALLOC_MINALIGN
+ #define ARCH_KMALLOC_MINALIGN __alignof__(unsigned long long)
++#elif ARCH_KMALLOC_MINALIGN > 8
++#define KMALLOC_MIN_SIZE ARCH_KMALLOC_MINALIGN
++#define KMALLOC_SHIFT_LOW ilog2(KMALLOC_MIN_SIZE)
+ #endif
+ 
+ /*
