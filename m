@@ -1,10 +1,10 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAB7A182C8
-	for <iommu@lists.linux.dev>; Mon, 12 Jun 2023 15:33:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA072C4339C;
-	Mon, 12 Jun 2023 15:32:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99795182C8
+	for <iommu@lists.linux.dev>; Mon, 12 Jun 2023 15:33:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EF3FC433A8;
+	Mon, 12 Jun 2023 15:33:01 +0000 (UTC)
 From: Catalin Marinas <catalin.marinas@arm.com>
 To: Andrew Morton <akpm@linux-foundation.org>,
 	Linus Torvalds <torvalds@linux-foundation.org>
@@ -28,10 +28,12 @@ Cc: Christoph Hellwig <hch@lst.de>,
 	Vlastimil Babka <vbabka@suse.cz>,
 	linux-mm@kvack.org,
 	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v7 12/17] scatterlist: Add dedicated config for DMA flags
-Date: Mon, 12 Jun 2023 16:31:56 +0100
-Message-Id: <20230612153201.554742-13-catalin.marinas@arm.com>
+	linux-arm-kernel@lists.infradead.org,
+	Jerry Snitselaar <jsnitsel@redhat.com>,
+	Logan Gunthorpe <logang@deltatee.com>
+Subject: [PATCH v7 13/17] dma-mapping: Name SG DMA flag helpers consistently
+Date: Mon, 12 Jun 2023 16:31:57 +0100
+Message-Id: <20230612153201.554742-14-catalin.marinas@arm.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230612153201.554742-1-catalin.marinas@arm.com>
 References: <20230612153201.554742-1-catalin.marinas@arm.com>
@@ -41,88 +43,132 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 From: Robin Murphy <robin.murphy@arm.com>
 
-The DMA flags field will be useful for users beyond PCI P2P, so upgrade
-to its own dedicated config option.
+sg_is_dma_bus_address() is inconsistent with the naming pattern of its
+corresponding setters and its own kerneldoc, so take the majority vote
+and rename it sg_dma_is_bus_address() (and fix up the missing
+underscores in the kerneldoc too). This gives us a nice clear pattern
+where SG DMA flags are SG_DMA_<NAME>, and the helpers for acting on them
+are sg_dma_<action>_<name>().
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-[catalin.marinas@arm.com: use #ifdef CONFIG_NEED_SG_DMA_FLAGS in scatterlist.h]
-[catalin.marinas@arm.com: update PCI_P2PDMA dma_flags comment in scatterlist.h]
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
+Reviewed-by: Logan Gunthorpe <logang@deltatee.com>
+Link: https://lore.kernel.org/r/fa2eca2862c7ffc41b50337abffb2dfd2864d3ea.1685036694.git.robin.murphy@arm.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Tested-by: Isaac J. Manjarres <isaacmanjarres@google.com>
 ---
- drivers/pci/Kconfig         |  1 +
- include/linux/scatterlist.h | 13 ++++++-------
- kernel/dma/Kconfig          |  3 +++
- 3 files changed, 10 insertions(+), 7 deletions(-)
+ drivers/iommu/dma-iommu.c   | 8 ++++----
+ drivers/iommu/iommu.c       | 2 +-
+ include/linux/scatterlist.h | 8 ++++----
+ kernel/dma/direct.c         | 2 +-
+ 4 files changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/pci/Kconfig b/drivers/pci/Kconfig
-index 9309f2469b41..3c07d8d214b3 100644
---- a/drivers/pci/Kconfig
-+++ b/drivers/pci/Kconfig
-@@ -168,6 +168,7 @@ config PCI_P2PDMA
- 	#
- 	depends on 64BIT
- 	select GENERIC_ALLOCATOR
-+	select NEED_SG_DMA_FLAGS
- 	help
- 	  Enableѕ drivers to do PCI peer-to-peer transactions to and from
- 	  BARs that are exposed in other devices that are the part of
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 7a9f0b0bddbd..b8bba4aa196f 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -1080,7 +1080,7 @@ static int __finalise_sg(struct device *dev, struct scatterlist *sg, int nents,
+ 		sg_dma_address(s) = DMA_MAPPING_ERROR;
+ 		sg_dma_len(s) = 0;
+ 
+-		if (sg_is_dma_bus_address(s)) {
++		if (sg_dma_is_bus_address(s)) {
+ 			if (i > 0)
+ 				cur = sg_next(cur);
+ 
+@@ -1136,7 +1136,7 @@ static void __invalidate_sg(struct scatterlist *sg, int nents)
+ 	int i;
+ 
+ 	for_each_sg(sg, s, nents, i) {
+-		if (sg_is_dma_bus_address(s)) {
++		if (sg_dma_is_bus_address(s)) {
+ 			sg_dma_unmark_bus_address(s);
+ 		} else {
+ 			if (sg_dma_address(s) != DMA_MAPPING_ERROR)
+@@ -1329,7 +1329,7 @@ static void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
+ 	 * just have to be determined.
+ 	 */
+ 	for_each_sg(sg, tmp, nents, i) {
+-		if (sg_is_dma_bus_address(tmp)) {
++		if (sg_dma_is_bus_address(tmp)) {
+ 			sg_dma_unmark_bus_address(tmp);
+ 			continue;
+ 		}
+@@ -1343,7 +1343,7 @@ static void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
+ 
+ 	nents -= i;
+ 	for_each_sg(tmp, tmp, nents, i) {
+-		if (sg_is_dma_bus_address(tmp)) {
++		if (sg_dma_is_bus_address(tmp)) {
+ 			sg_dma_unmark_bus_address(tmp);
+ 			continue;
+ 		}
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index f1dcfa3f1a1b..eb620552967b 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2567,7 +2567,7 @@ ssize_t iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+ 			len = 0;
+ 		}
+ 
+-		if (sg_is_dma_bus_address(sg))
++		if (sg_dma_is_bus_address(sg))
+ 			goto next;
+ 
+ 		if (len) {
 diff --git a/include/linux/scatterlist.h b/include/linux/scatterlist.h
-index 375a5e90d86a..19833fd4113b 100644
+index 19833fd4113b..2f06178996ba 100644
 --- a/include/linux/scatterlist.h
 +++ b/include/linux/scatterlist.h
-@@ -16,7 +16,7 @@ struct scatterlist {
- #ifdef CONFIG_NEED_SG_DMA_LENGTH
- 	unsigned int	dma_length;
- #endif
--#ifdef CONFIG_PCI_P2PDMA
-+#ifdef CONFIG_NEED_SG_DMA_FLAGS
- 	unsigned int    dma_flags;
- #endif
- };
-@@ -249,12 +249,11 @@ static inline void sg_unmark_end(struct scatterlist *sg)
- }
- 
- /*
-- * CONFGI_PCI_P2PDMA depends on CONFIG_64BIT which means there is 4 bytes
-- * in struct scatterlist (assuming also CONFIG_NEED_SG_DMA_LENGTH is set).
-- * Use this padding for DMA flags bits to indicate when a specific
-- * dma address is a bus address.
-+ * One 64-bit architectures there is a 4-byte padding in struct scatterlist
-+ * (assuming also CONFIG_NEED_SG_DMA_LENGTH is set). Use this padding for DMA
-+ * flags bits to indicate when a specific dma address is a bus address.
-  */
--#ifdef CONFIG_PCI_P2PDMA
-+#ifdef CONFIG_NEED_SG_DMA_FLAGS
- 
+@@ -258,7 +258,7 @@ static inline void sg_unmark_end(struct scatterlist *sg)
  #define SG_DMA_BUS_ADDRESS (1 << 0)
  
-@@ -312,7 +311,7 @@ static inline void sg_dma_unmark_bus_address(struct scatterlist *sg)
+ /**
+- * sg_dma_is_bus address - Return whether a given segment was marked
++ * sg_dma_is_bus_address - Return whether a given segment was marked
+  *			   as a bus address
+  * @sg:		 SG entry
+  *
+@@ -266,13 +266,13 @@ static inline void sg_unmark_end(struct scatterlist *sg)
+  *   Returns true if sg_dma_mark_bus_address() has been called on
+  *   this segment.
+  **/
+-static inline bool sg_is_dma_bus_address(struct scatterlist *sg)
++static inline bool sg_dma_is_bus_address(struct scatterlist *sg)
  {
+ 	return sg->dma_flags & SG_DMA_BUS_ADDRESS;
  }
  
--#endif
-+#endif	/* CONFIG_NEED_SG_DMA_FLAGS */
- 
  /**
-  * sg_phys - Return physical address of an sg entry
-diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-index 6677d0e64d27..acc6f231259c 100644
---- a/kernel/dma/Kconfig
-+++ b/kernel/dma/Kconfig
-@@ -24,6 +24,9 @@ config DMA_OPS_BYPASS
- config ARCH_HAS_DMA_MAP_DIRECT
- 	bool
+- * sg_dma_mark_bus address - Mark the scatterlist entry as a bus address
++ * sg_dma_mark_bus_address - Mark the scatterlist entry as a bus address
+  * @sg:		 SG entry
+  *
+  * Description:
+@@ -300,7 +300,7 @@ static inline void sg_dma_unmark_bus_address(struct scatterlist *sg)
  
-+config NEED_SG_DMA_FLAGS
-+	bool
-+
- config NEED_SG_DMA_LENGTH
- 	bool
+ #else
  
+-static inline bool sg_is_dma_bus_address(struct scatterlist *sg)
++static inline bool sg_dma_is_bus_address(struct scatterlist *sg)
+ {
+ 	return false;
+ }
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 5595d1d5cdcc..d29cade048db 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -463,7 +463,7 @@ void dma_direct_unmap_sg(struct device *dev, struct scatterlist *sgl,
+ 	int i;
+ 
+ 	for_each_sg(sgl,  sg, nents, i) {
+-		if (sg_is_dma_bus_address(sg))
++		if (sg_dma_is_bus_address(sg))
+ 			sg_dma_unmark_bus_address(sg);
+ 		else
+ 			dma_direct_unmap_page(dev, sg->dma_address,
