@@ -1,22 +1,22 @@
 Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5ADDB19E79
-	for <iommu@lists.linux.dev>; Mon, 12 Jun 2023 14:26:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 555F21B8E8
+	for <iommu@lists.linux.dev>; Mon, 12 Jun 2023 14:26:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-	Content-ID:Content-Description:In-Reply-To:References;
-	bh=f6jpt7lo8djdkscLPVrkqv8ySzbiCW/dI5HE2X2RneY=; b=D++FS2n3NbokanCiRHuXrRYJFB
-	1O4lDTnE+D1HQHO2AKpMGQ9+FQIFYTJSb0lQt3XrPAm08Tq6mnTZq+kgtFT44f8tGewYEwfIZHO/h
-	YBgrsdTbfjZ9Y1XMZSrXDLROWWaZstFQitWpEw7rmifT7IYuYN6djDb3d/YRnetzhSJJqpJELxqq2
-	czIJi68GIT2zYuBVMka5Tl6uYHkD99z8M5hudtG6z1deEZxdxZHfnXeCQXVwyr8sGMxDTDg/oQrBa
-	qITv89Zql2Si0e2SXoNmdtiN/FNHvISQbH03beP0rj+2N5MP2tb9B/fKR/5zmT67+j6MAscZFdmih
-	9rBheVNA==;
+	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
+	:Reply-To:Content-Type:Content-ID:Content-Description;
+	bh=Do07+ZJ8mt79MyKnagn3FmtuEPVS6qLM8Uvv604VtrU=; b=ft+LfENSbzDpGdR/jPu3Jnufmf
+	IHfMnVhVYCDVxL4lsWCBWJNprt6qecPh6iVJH/jyJVtFumN4qbS/yfXinn70dOukq6yXFXA2M+RRH
+	FxQpGw2Lk57s0+ygZfS5ucxKr9EfjhLyg81/6pzAN4HAsl67+sCPnuCdCkiJ2UUERt+DcZl7kUxYX
+	1xyscFp19lM8RLbNmZhw1hpPskXnts+EK7+TobUzf3g8hRDwewyJipGeaMsQ0LGSpUwlEpT2Hp4jq
+	ab/k68N1uDss72tLrlMmwIJaDI+iWY9G36Z1jHRVNlO48LAHDdfPieKLQl3MLtJDhnZggvllYttAA
+	3vrSr1ng==;
 Received: from 2a02-8389-2341-5b80-8c8c-28f8-1274-e038.cable.dynamic.v6.surfer.at ([2a02:8389:2341:5b80:8c8c:28f8:1274:e038] helo=localhost)
 	by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-	id 1q8iUN-004I84-13;
-	Mon, 12 Jun 2023 14:25:47 +0000
+	id 1q8iUS-004I8p-2v;
+	Mon, 12 Jun 2023 14:25:53 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Juergen Gross <jgross@suse.com>,
 	Stefano Stabellini <sstabellini@kernel.org>,
@@ -29,10 +29,12 @@ To: Juergen Gross <jgross@suse.com>,
 Cc: xen-devel@lists.xenproject.org,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: unexport swiotlb_active v2
-Date: Mon, 12 Jun 2023 16:25:39 +0200
-Message-Id: <20230612142542.111581-1-hch@lst.de>
+Subject: [PATCH 2/3] x86: always initialize xen-swiotlb when xen-pcifront is enabling
+Date: Mon, 12 Jun 2023 16:25:41 +0200
+Message-Id: <20230612142542.111581-3-hch@lst.de>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230612142542.111581-1-hch@lst.de>
+References: <20230612142542.111581-1-hch@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,22 +44,108 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-Hi all,
+Remove the dangerous late initialization of xen-swiotlb in
+pci_xen_swiotlb_init_late and instead just always initialize
+xen-swiotlb in the boot code if CONFIG_XEN_PCIDEV_FRONTEND is
+enabled and Xen PV PCI is possible.
 
-this little series removes the last swiotlb API exposed to modules.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ arch/x86/include/asm/xen/swiotlb-xen.h |  6 ------
+ arch/x86/kernel/pci-dma.c              | 29 +++++++-------------------
+ drivers/pci/xen-pcifront.c             |  6 ------
+ 3 files changed, 7 insertions(+), 34 deletions(-)
 
-Changes since v1:
- - add a patch from Juergen to export if the e820 table indicates Xen PV
-   PCI is enabled
- - slightly reorganize the logic to check if swiotlb is needed for
-   Xen/x86
- - drop the already merged nouveau patch
+diff --git a/arch/x86/include/asm/xen/swiotlb-xen.h b/arch/x86/include/asm/xen/swiotlb-xen.h
+index 77a2d19cc9909e..abde0f44df57dc 100644
+--- a/arch/x86/include/asm/xen/swiotlb-xen.h
++++ b/arch/x86/include/asm/xen/swiotlb-xen.h
+@@ -2,12 +2,6 @@
+ #ifndef _ASM_X86_SWIOTLB_XEN_H
+ #define _ASM_X86_SWIOTLB_XEN_H
+ 
+-#ifdef CONFIG_SWIOTLB_XEN
+-extern int pci_xen_swiotlb_init_late(void);
+-#else
+-static inline int pci_xen_swiotlb_init_late(void) { return -ENXIO; }
+-#endif
+-
+ int xen_swiotlb_fixup(void *buf, unsigned long nslabs);
+ int xen_create_contiguous_region(phys_addr_t pstart, unsigned int order,
+ 				unsigned int address_bits,
+diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
+index de6be0a3965ee4..f323d83e40a70b 100644
+--- a/arch/x86/kernel/pci-dma.c
++++ b/arch/x86/kernel/pci-dma.c
+@@ -72,9 +72,15 @@ static inline void __init pci_swiotlb_detect(void)
+ #endif /* CONFIG_SWIOTLB */
+ 
+ #ifdef CONFIG_SWIOTLB_XEN
++static bool xen_swiotlb_enabled(void)
++{
++	return xen_initial_domain() || x86_swiotlb_enable ||
++		(IS_ENABLED(CONFIG_XEN_PCIDEV_FRONTEND) && xen_pv_pci_possible);
++}
++
+ static void __init pci_xen_swiotlb_init(void)
+ {
+-	if (!xen_initial_domain() && !x86_swiotlb_enable)
++	if (!xen_swiotlb_enabled())
+ 		return;
+ 	x86_swiotlb_enable = true;
+ 	x86_swiotlb_flags |= SWIOTLB_ANY;
+@@ -83,27 +89,6 @@ static void __init pci_xen_swiotlb_init(void)
+ 	if (IS_ENABLED(CONFIG_PCI))
+ 		pci_request_acs();
+ }
+-
+-int pci_xen_swiotlb_init_late(void)
+-{
+-	if (dma_ops == &xen_swiotlb_dma_ops)
+-		return 0;
+-
+-	/* we can work with the default swiotlb */
+-	if (!io_tlb_default_mem.nslabs) {
+-		int rc = swiotlb_init_late(swiotlb_size_or_default(),
+-					   GFP_KERNEL, xen_swiotlb_fixup);
+-		if (rc < 0)
+-			return rc;
+-	}
+-
+-	/* XXX: this switches the dma ops under live devices! */
+-	dma_ops = &xen_swiotlb_dma_ops;
+-	if (IS_ENABLED(CONFIG_PCI))
+-		pci_request_acs();
+-	return 0;
+-}
+-EXPORT_SYMBOL_GPL(pci_xen_swiotlb_init_late);
+ #else
+ static inline void __init pci_xen_swiotlb_init(void)
+ {
+diff --git a/drivers/pci/xen-pcifront.c b/drivers/pci/xen-pcifront.c
+index 83c0ab50676dff..11636634ae512f 100644
+--- a/drivers/pci/xen-pcifront.c
++++ b/drivers/pci/xen-pcifront.c
+@@ -22,7 +22,6 @@
+ #include <linux/bitops.h>
+ #include <linux/time.h>
+ #include <linux/ktime.h>
+-#include <linux/swiotlb.h>
+ #include <xen/platform_pci.h>
+ 
+ #include <asm/xen/swiotlb-xen.h>
+@@ -669,11 +668,6 @@ static int pcifront_connect_and_init_dma(struct pcifront_device *pdev)
+ 
+ 	spin_unlock(&pcifront_dev_lock);
+ 
+-	if (!err && !is_swiotlb_active(&pdev->xdev->dev)) {
+-		err = pci_xen_swiotlb_init_late();
+-		if (err)
+-			dev_err(&pdev->xdev->dev, "Could not setup SWIOTLB!\n");
+-	}
+ 	return err;
+ }
+ 
+-- 
+2.39.2
 
-Diffstat:
- arch/x86/include/asm/xen/swiotlb-xen.h |    6 ------
- arch/x86/kernel/pci-dma.c              |   29 +++++++----------------------
- arch/x86/xen/setup.c                   |    6 ++++++
- drivers/pci/xen-pcifront.c             |    6 ------
- include/xen/xen.h                      |    6 ++++++
- kernel/dma/swiotlb.c                   |    1 -
- 6 files changed, 19 insertions(+), 35 deletions(-)
