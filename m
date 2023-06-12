@@ -1,89 +1,112 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D9FB1E534
-	for <iommu@lists.linux.dev>; Mon, 12 Jun 2023 15:33:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 216D4C433D2;
-	Mon, 12 Jun 2023 15:33:18 +0000 (UTC)
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: Andrew Morton <akpm@linux-foundation.org>,
-	Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Christoph Hellwig <hch@lst.de>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Will Deacon <will@kernel.org>,
-	Marc Zyngier <maz@kernel.org>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	Ard Biesheuvel <ardb@kernel.org>,
-	Isaac Manjarres <isaacmanjarres@google.com>,
-	Saravana Kannan <saravanak@google.com>,
-	Alasdair Kergon <agk@redhat.com>,
-	Daniel Vetter <daniel@ffwll.ch>,
-	Joerg Roedel <joro@8bytes.org>,
-	Mark Brown <broonie@kernel.org>,
-	Mike Snitzer <snitzer@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Vlastimil Babka <vbabka@suse.cz>,
-	linux-mm@kvack.org,
-	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v7 17/17] arm64: Enable ARCH_WANT_KMALLOC_DMA_BOUNCE for arm64
-Date: Mon, 12 Jun 2023 16:32:01 +0100
-Message-Id: <20230612153201.554742-18-catalin.marinas@arm.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230612153201.554742-1-catalin.marinas@arm.com>
-References: <20230612153201.554742-1-catalin.marinas@arm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B2D419BB1
+	for <iommu@lists.linux.dev>; Mon, 12 Jun 2023 18:12:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686593532;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=WfC+fA7QHuUg+7zV3oJP34eZ8O1o0OXP59IbCjsY+f8=;
+	b=HSmRQeo1volkW8gqb+QkBYZI+hKdOl1+buoVhGogfNN0uzLtfORwbYRgaSzt3J//Z4slo2
+	M5Hhg0VMgQoIvDkzNsKEO6zaQ/AySGcICVEJSH53o+WLa23Uo9TUCdwYleqfsBDYJO4Kj2
+	1zK/4HuOffxTqIAJdzEIZKd/D5S96+4=
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com
+ [209.85.167.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-299-nksY_gv3O2mQL2mMBeiBew-1; Mon, 12 Jun 2023 14:12:09 -0400
+X-MC-Unique: nksY_gv3O2mQL2mMBeiBew-1
+Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-39cd7689d15so1162877b6e.1
+        for <iommu@lists.linux.dev>; Mon, 12 Jun 2023 11:12:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686593529; x=1689185529;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=WfC+fA7QHuUg+7zV3oJP34eZ8O1o0OXP59IbCjsY+f8=;
+        b=UqJtO9batopggGN1LlpDIxJlf+bXNGqppD+nM8vvEiQpnRKbt1jY7a3venaok4ypIU
+         q8ZpjXXevyeamOfGczUk6V030R7gKWDqnePYawyUyLCwCGMcP/bP4+v6Pec9FQfA5hbp
+         2hVfie36HYWPZaq2ad1kXQlmOKo/jEMyxvHi6En2ZqB7GP2GJc7ut/8myETYDzQ7Fop8
+         RYL7bEsN0SnCVtWoeFYJmEqXJRFOlkKSab8qujSScOZDstFAHPlJFoRpiCh2DgpHozU+
+         Nk00HegGX9yarPx+fBcDFJwJ30s2pK5vzLLY30+v2Oi3hsBC8mS+U6HjdKfZUC7kSNbx
+         czMg==
+X-Gm-Message-State: AC+VfDyMO6/Tv1w+wHway7NVjM/Jwnb1/CSV0II2kHb2AqlmM50mEbx5
+	loNUlZpMqe/g+BDNygW0jjNyXvAXIuYbnlObA0peRHvEuklcNAfLGdD8dJEWWCKxS+5XtCoq4C9
+	O3A9llgUw7btJkU0=
+X-Received: by 2002:a05:6808:bce:b0:39c:5ef9:a287 with SMTP id o14-20020a0568080bce00b0039c5ef9a287mr5838745oik.28.1686593528941;
+        Mon, 12 Jun 2023 11:12:08 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ5siJQtPBzzmM7yK6WLPkp0yQIVivZKClJMlvcgOVp6oXj9tBIggGZOzsc2/5O0+BibBQWFng==
+X-Received: by 2002:a05:6808:bce:b0:39c:5ef9:a287 with SMTP id o14-20020a0568080bce00b0039c5ef9a287mr5838723oik.28.1686593528694;
+        Mon, 12 Jun 2023 11:12:08 -0700 (PDT)
+Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
+        by smtp.gmail.com with ESMTPSA id ay9-20020a05622a228900b003f7a54fa72fsm3617904qtb.0.2023.06.12.11.12.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Jun 2023 11:12:08 -0700 (PDT)
+Date: Mon, 12 Jun 2023 11:12:06 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: Su Hui <suhui@nfschina.com>
+Cc: Joerg Roedel <joro@8bytes.org>, 
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, kevin.tian@intel.com, vasant.hegde@amd.com, jgg@ziepe.ca, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iommu/amd: Fix possible memory leak of 'domain'
+Message-ID: <g6iqzwutmdtmi2enfogchhs3toduy4e2hs45hjipuuybcawbhh@uuzohezj3ryj>
+References: <20230608021933.856045-1-suhui@nfschina.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230608021933.856045-1-suhui@nfschina.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-With the DMA bouncing of unaligned kmalloc() buffers now in place,
-enable it for arm64 to allow the kmalloc-{8,16,32,48,96} caches. In
-addition, always create the swiotlb buffer even when the end of RAM is
-within the 32-bit physical address range (the swiotlb buffer can still
-be disabled on the kernel command line).
+On Thu, Jun 08, 2023 at 10:19:34AM +0800, Su Hui wrote:
+> Move allocation code down to avoid memory leak.
+> 
+> Fixes: 29f54745f245 ("iommu/amd: Add missing domain type checks")
+> Signed-off-by: Su Hui <suhui@nfschina.com>
 
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Tested-by: Isaac J. Manjarres <isaacmanjarres@google.com>
----
- arch/arm64/Kconfig   | 1 +
- arch/arm64/mm/init.c | 7 ++++++-
- 2 files changed, 7 insertions(+), 1 deletion(-)
+Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
 
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index b1201d25a8a4..af42871431c0 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -120,6 +120,7 @@ config ARM64
- 	select CRC32
- 	select DCACHE_WORD_ACCESS
- 	select DYNAMIC_FTRACE if FUNCTION_TRACER
-+	select DMA_BOUNCE_UNALIGNED_KMALLOC
- 	select DMA_DIRECT_REMAP
- 	select EDAC_SUPPORT
- 	select FRAME_POINTER
-diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-index 66e70ca47680..3ac2e9d79ce4 100644
---- a/arch/arm64/mm/init.c
-+++ b/arch/arm64/mm/init.c
-@@ -442,7 +442,12 @@ void __init bootmem_init(void)
-  */
- void __init mem_init(void)
- {
--	swiotlb_init(max_pfn > PFN_DOWN(arm64_dma_phys_limit), SWIOTLB_VERBOSE);
-+	bool swiotlb = max_pfn > PFN_DOWN(arm64_dma_phys_limit);
-+
-+	if (IS_ENABLED(CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC))
-+		swiotlb = true;
-+
-+	swiotlb_init(swiotlb, SWIOTLB_VERBOSE);
- 
- 	/* this will put all unused low memory onto the freelists */
- 	memblock_free_all();
+> ---
+> Changes in v2:
+> 	change code order is better and more consistent with other
+> drivers. 
+>  drivers/iommu/amd/iommu.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index dc1ec6849775..e8a2e5984acb 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -2078,10 +2078,6 @@ static struct protection_domain *protection_domain_alloc(unsigned int type)
+>  	int mode = DEFAULT_PGTABLE_LEVEL;
+>  	int ret;
+>  
+> -	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
+> -	if (!domain)
+> -		return NULL;
+> -
+>  	/*
+>  	 * Force IOMMU v1 page table when iommu=pt and
+>  	 * when allocating domain for pass-through devices.
+> @@ -2097,6 +2093,10 @@ static struct protection_domain *protection_domain_alloc(unsigned int type)
+>  		return NULL;
+>  	}
+>  
+> +	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
+> +	if (!domain)
+> +		return NULL;
+> +
+>  	switch (pgtable) {
+>  	case AMD_IOMMU_V1:
+>  		ret = protection_domain_init_v1(domain, mode);
+> -- 
+> 2.30.2
+> 
+
