@@ -1,112 +1,112 @@
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B2D419BB1
-	for <iommu@lists.linux.dev>; Mon, 12 Jun 2023 18:12:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5BB721CF2
+	for <iommu@lists.linux.dev>; Mon, 12 Jun 2023 18:15:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686593532;
+	s=mimecast20190719; t=1686593716;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=WfC+fA7QHuUg+7zV3oJP34eZ8O1o0OXP59IbCjsY+f8=;
-	b=HSmRQeo1volkW8gqb+QkBYZI+hKdOl1+buoVhGogfNN0uzLtfORwbYRgaSzt3J//Z4slo2
-	M5Hhg0VMgQoIvDkzNsKEO6zaQ/AySGcICVEJSH53o+WLa23Uo9TUCdwYleqfsBDYJO4Kj2
-	1zK/4HuOffxTqIAJdzEIZKd/D5S96+4=
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com
- [209.85.167.198]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=t6mC2Gj4NTSoNkT1TGWH5FyPDTv10EwEaEEXjwoc+qg=;
+	b=iFW04Dy6HHPAck33nqu6VuAP/xbm1wMy6ozeFALp7/RhT8NC8gBrDdwb7ZXHGRt6+4XvTi
+	RWvalRShWI80OYceXzdbhhF6y3XKnzNAkvID8t/kbWQCyGxh4TZkKLPo08oM/D5L30cRLn
+	INfnjd/2wUmbLvQH9JUpXxQMjti+nb8=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-299-nksY_gv3O2mQL2mMBeiBew-1; Mon, 12 Jun 2023 14:12:09 -0400
-X-MC-Unique: nksY_gv3O2mQL2mMBeiBew-1
-Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-39cd7689d15so1162877b6e.1
-        for <iommu@lists.linux.dev>; Mon, 12 Jun 2023 11:12:09 -0700 (PDT)
+ us-mta-413-lJH94mqjNCClGIF7o-6OKw-1; Mon, 12 Jun 2023 14:15:13 -0400
+X-MC-Unique: lJH94mqjNCClGIF7o-6OKw-1
+Received: by mail-qv1-f72.google.com with SMTP id 6a1803df08f44-62621cdb1f0so2122086d6.0
+        for <iommu@lists.linux.dev>; Mon, 12 Jun 2023 11:15:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686593529; x=1689185529;
+        d=1e100.net; s=20221208; t=1686593711; x=1689185711;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=WfC+fA7QHuUg+7zV3oJP34eZ8O1o0OXP59IbCjsY+f8=;
-        b=UqJtO9batopggGN1LlpDIxJlf+bXNGqppD+nM8vvEiQpnRKbt1jY7a3venaok4ypIU
-         q8ZpjXXevyeamOfGczUk6V030R7gKWDqnePYawyUyLCwCGMcP/bP4+v6Pec9FQfA5hbp
-         2hVfie36HYWPZaq2ad1kXQlmOKo/jEMyxvHi6En2ZqB7GP2GJc7ut/8myETYDzQ7Fop8
-         RYL7bEsN0SnCVtWoeFYJmEqXJRFOlkKSab8qujSScOZDstFAHPlJFoRpiCh2DgpHozU+
-         Nk00HegGX9yarPx+fBcDFJwJ30s2pK5vzLLY30+v2Oi3hsBC8mS+U6HjdKfZUC7kSNbx
-         czMg==
-X-Gm-Message-State: AC+VfDyMO6/Tv1w+wHway7NVjM/Jwnb1/CSV0II2kHb2AqlmM50mEbx5
-	loNUlZpMqe/g+BDNygW0jjNyXvAXIuYbnlObA0peRHvEuklcNAfLGdD8dJEWWCKxS+5XtCoq4C9
-	O3A9llgUw7btJkU0=
-X-Received: by 2002:a05:6808:bce:b0:39c:5ef9:a287 with SMTP id o14-20020a0568080bce00b0039c5ef9a287mr5838745oik.28.1686593528941;
-        Mon, 12 Jun 2023 11:12:08 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ5siJQtPBzzmM7yK6WLPkp0yQIVivZKClJMlvcgOVp6oXj9tBIggGZOzsc2/5O0+BibBQWFng==
-X-Received: by 2002:a05:6808:bce:b0:39c:5ef9:a287 with SMTP id o14-20020a0568080bce00b0039c5ef9a287mr5838723oik.28.1686593528694;
-        Mon, 12 Jun 2023 11:12:08 -0700 (PDT)
+        bh=t6mC2Gj4NTSoNkT1TGWH5FyPDTv10EwEaEEXjwoc+qg=;
+        b=DQGtNtgJdpisvOS9nl6/PBow27EjfViySni9UcgWnLzvOXqAnHcfhsJOgWd5ll8xVR
+         SssNFFLFI9lMfWGTYRjWQ0sFUh2pXw5rhK4O/M87w66GKHy1YvljKmSGPAaadLEb7W5s
+         bLhsL3Iq3v2blismk6DT/McrNhOhV4etqn5ObFOOYtoJKtGH9q8WIZhL22FzB2jv6W/f
+         p8U5vzQcw4/GLYdgFgaptOZ7eJ2c3JXOoIbDnmSLb4MfX2vNW6FiD/Gjy4J6q1aFkvLU
+         771RqN9cFUEcEt/qbQIheysfe4EJ4ehqGHcWJuZ4qTrrigbkM3C8PaYtioQQygLjbSlT
+         Y/fA==
+X-Gm-Message-State: AC+VfDyiL+pZYQQRs4FIN9oLyiUXnvzegwYlu7gOf20q7h/IpNYQBFi6
+	ypQofi6Ubi6pG1x0EtVUIGCoZ1QoI7OKikk5Ow1HRHZYyoDj8vwyQh2QY/cUiXH473IZIE7x+hX
+	kjdBZ25Tt3HZRYMs=
+X-Received: by 2002:ad4:5e89:0:b0:626:272b:28e9 with SMTP id jl9-20020ad45e89000000b00626272b28e9mr11413979qvb.24.1686593711637;
+        Mon, 12 Jun 2023 11:15:11 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ6bESJW0vHksEPcPPYKyF5PSn9yIzTWoB+yYciwXrI3nT+mM8U9XGVRMWRepJDjc2th5lgO8w==
+X-Received: by 2002:ad4:5e89:0:b0:626:272b:28e9 with SMTP id jl9-20020ad45e89000000b00626272b28e9mr11413960qvb.24.1686593711414;
+        Mon, 12 Jun 2023 11:15:11 -0700 (PDT)
 Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id ay9-20020a05622a228900b003f7a54fa72fsm3617904qtb.0.2023.06.12.11.12.07
+        by smtp.gmail.com with ESMTPSA id s5-20020a05621412c500b006255bcfca88sm3391563qvv.7.2023.06.12.11.15.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Jun 2023 11:12:08 -0700 (PDT)
-Date: Mon, 12 Jun 2023 11:12:06 -0700
+        Mon, 12 Jun 2023 11:15:10 -0700 (PDT)
+Date: Mon, 12 Jun 2023 11:15:09 -0700
 From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Su Hui <suhui@nfschina.com>
-Cc: Joerg Roedel <joro@8bytes.org>, 
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, kevin.tian@intel.com, vasant.hegde@amd.com, jgg@ziepe.ca, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iommu/amd: Fix possible memory leak of 'domain'
-Message-ID: <g6iqzwutmdtmi2enfogchhs3toduy4e2hs45hjipuuybcawbhh@uuzohezj3ryj>
-References: <20230608021933.856045-1-suhui@nfschina.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu/vt-d: Remove commented-out code
+Message-ID: <54wdooghiofgutm73l6klmr6kkalwxuw46l3kxqgccwkta3brz@dezrf7rslvl7>
+References: <20230609060514.15154-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20230608021933.856045-1-suhui@nfschina.com>
+In-Reply-To: <20230609060514.15154-1-baolu.lu@linux.intel.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-On Thu, Jun 08, 2023 at 10:19:34AM +0800, Su Hui wrote:
-> Move allocation code down to avoid memory leak.
+On Fri, Jun 09, 2023 at 02:05:14PM +0800, Lu Baolu wrote:
+> These lines of code were commented out when they were first added in commit
+> ba39592764ed ("Intel IOMMU: Intel IOMMU driver"). We do not want to restore
+> them because the VT-d spec has deprecated the read/write draining hit.
 > 
-> Fixes: 29f54745f245 ("iommu/amd: Add missing domain type checks")
-> Signed-off-by: Su Hui <suhui@nfschina.com>
+> VT-d spec (section 11.4.2):
+> "
+>  Hardware implementation with Major Version 2 or higher (VER_REG), always
+>  performs required drain without software explicitly requesting a drain in
+>  IOTLB invalidation. This field is deprecated and hardware  will always
+>  report it as 1 to maintain backward compatibility with software.
+> "
+> 
+> Remove the code to make the code cleaner.
+> 
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 
 Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
 
 > ---
-> Changes in v2:
-> 	change code order is better and more consistent with other
-> drivers. 
->  drivers/iommu/amd/iommu.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+>  drivers/iommu/intel/iommu.c | 10 +---------
+>  1 file changed, 1 insertion(+), 9 deletions(-)
 > 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index dc1ec6849775..e8a2e5984acb 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -2078,10 +2078,6 @@ static struct protection_domain *protection_domain_alloc(unsigned int type)
->  	int mode = DEFAULT_PGTABLE_LEVEL;
->  	int ret;
->  
-> -	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
-> -	if (!domain)
-> -		return NULL;
-> -
->  	/*
->  	 * Force IOMMU v1 page table when iommu=pt and
->  	 * when allocating domain for pass-through devices.
-> @@ -2097,6 +2093,10 @@ static struct protection_domain *protection_domain_alloc(unsigned int type)
->  		return NULL;
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 4c0b7424c45e..e5c111ff4dd9 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -1312,15 +1312,7 @@ static void __iommu_flush_iotlb(struct intel_iommu *iommu, u16 did,
+>  			iommu->name, type);
+>  		return;
 >  	}
->  
-> +	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
-> +	if (!domain)
-> +		return NULL;
+> -	/* Note: set drain read/write */
+> -#if 0
+> -	/*
+> -	 * This is probably to be super secure.. Looks like we can
+> -	 * ignore it without any impact.
+> -	 */
+> -	if (cap_read_drain(iommu->cap))
+> -		val |= DMA_TLB_READ_DRAIN;
+> -#endif
 > +
->  	switch (pgtable) {
->  	case AMD_IOMMU_V1:
->  		ret = protection_domain_init_v1(domain, mode);
+>  	if (cap_write_drain(iommu->cap))
+>  		val |= DMA_TLB_WRITE_DRAIN;
+>  
 > -- 
-> 2.30.2
+> 2.34.1
 > 
 
