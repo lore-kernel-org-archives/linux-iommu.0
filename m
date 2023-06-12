@@ -1,10 +1,10 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F733182C8
-	for <iommu@lists.linux.dev>; Mon, 12 Jun 2023 15:32:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAAB8C433D2;
-	Mon, 12 Jun 2023 15:32:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72507182C8
+	for <iommu@lists.linux.dev>; Mon, 12 Jun 2023 15:32:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49096C433A4;
+	Mon, 12 Jun 2023 15:32:30 +0000 (UTC)
 From: Catalin Marinas <catalin.marinas@arm.com>
 To: Andrew Morton <akpm@linux-foundation.org>,
 	Linus Torvalds <torvalds@linux-foundation.org>
@@ -29,9 +29,9 @@ Cc: Christoph Hellwig <hch@lst.de>,
 	linux-mm@kvack.org,
 	iommu@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v7 05/17] drivers/base: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
-Date: Mon, 12 Jun 2023 16:31:49 +0100
-Message-Id: <20230612153201.554742-6-catalin.marinas@arm.com>
+Subject: [PATCH v7 06/17] drivers/gpu: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+Date: Mon, 12 Jun 2023 16:31:50 +0100
+Message-Id: <20230612153201.554742-7-catalin.marinas@arm.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230612153201.554742-1-catalin.marinas@arm.com>
 References: <20230612153201.554742-1-catalin.marinas@arm.com>
@@ -48,28 +48,27 @@ operations while ARCH_KMALLOC_MINALIGN is the minimum kmalloc() objects
 alignment.
 
 Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Daniel Vetter <daniel@ffwll.ch>
 Tested-by: Isaac J. Manjarres <isaacmanjarres@google.com>
 ---
- drivers/base/devres.c | 6 +++---
+ drivers/gpu/drm/drm_managed.c | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/base/devres.c b/drivers/base/devres.c
-index 5c998cfac335..3df0025d12aa 100644
---- a/drivers/base/devres.c
-+++ b/drivers/base/devres.c
-@@ -29,10 +29,10 @@ struct devres {
+diff --git a/drivers/gpu/drm/drm_managed.c b/drivers/gpu/drm/drm_managed.c
+index 4cf214de50c4..3a5802f60e65 100644
+--- a/drivers/gpu/drm/drm_managed.c
++++ b/drivers/gpu/drm/drm_managed.c
+@@ -49,10 +49,10 @@ struct drmres {
  	 * Some archs want to perform DMA into kmalloc caches
  	 * and need a guaranteed alignment larger than
  	 * the alignment of a 64-bit integer.
 -	 * Thus we use ARCH_KMALLOC_MINALIGN here and get exactly the same
 -	 * buffer alignment as if it was allocated by plain kmalloc().
 +	 * Thus we use ARCH_DMA_MINALIGN for data[] which will force the same
-+	 * alignment for struct devres when allocated by kmalloc().
++	 * alignment for struct drmres when allocated by kmalloc().
  	 */
 -	u8 __aligned(ARCH_KMALLOC_MINALIGN) data[];
 +	u8 __aligned(ARCH_DMA_MINALIGN) data[];
  };
  
- struct devres_group {
+ static void free_dr(struct drmres *dr)
