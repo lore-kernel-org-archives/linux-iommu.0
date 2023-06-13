@@ -1,40 +1,40 @@
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com [209.85.219.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14D57361
-	for <iommu@lists.linux.dev>; Tue, 13 Jun 2023 04:42:53 +0000 (UTC)
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-51873e43986so399817a12.2
-        for <iommu@lists.linux.dev>; Mon, 12 Jun 2023 21:42:53 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 252C7323C
+	for <iommu@lists.linux.dev>; Tue, 13 Jun 2023 07:55:53 +0000 (UTC)
+Received: by mail-yb1-f173.google.com with SMTP id 3f1490d57ef6-bc49318aa64so2059913276.3
+        for <iommu@lists.linux.dev>; Tue, 13 Jun 2023 00:55:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20221208.gappssmtp.com; s=20221208; t=1686631372; x=1689223372;
+        d=ventanamicro.com; s=google; t=1686642953; x=1689234953;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=CzwXO5LLinsbc81q9m0mJrThXDrRsGSZgZKBrqcWDhU=;
-        b=Re/JoZDdl7WWFhPNRzXIFIPRLlnyd5pZGoZse5aP6tFTQ1ruH4SblQBU/qotEyJ8+O
-         iMqIDMjO/+jluK8C/6EtzKspe3cTT3unitXHicVeJQf2SUUyk0agBJRXEkoityiA8USl
-         v82m85Hryu0TtYHH2IvWElQGzoJEg1Hu9nIdWCU1jFX2Bahe/MV3MRRvw/Ijm+3gPMB5
-         oTjOChfwoW7JOm9AYO1Uq0jt6SzTUsTP/bekTVKCXC9wOrzlXcAHZw8HEfWsXmQurh+D
-         6NBihHB3EucGRXJ+Rsd7kWSihtlrYwnUX7Kmnsaw2UqKgcpvTyaaNakSa1BFWTDPXa4R
-         HabA==
+        bh=GqkMTpZSPTrtiBwrlg2HB9jORG0uNI2X+Q54yKxHyHA=;
+        b=X1lH0zTSm/2trYaS1XeQ55Q9hA/9/r0gKILDhIP3BM1V9j/9FcNnlTg8C6eqes6MhY
+         kEEujrjfs/bXMw2MXXaDIEhSffQ3ZxmyyehIWQMaGdQ83t9lijLU+cai3uaF5ZNQ3hJ1
+         U4h+mNKlmJ4enUA0b9qIy8BcA850nZF9q8DNphIsqHIDVsbimRdE1m2LdXqy6pRLVSor
+         CuNaeb3ZHWvaqWp2UlX8SxpNaeTb54BL1Y6A72HUI8F4MxEPteEgE7OxPWAGRl2KwREW
+         FSjlxEtmon50dMqJgkzch8RTCiRJz+wMgeMWSkqDFbH4doZHuoKH0L9GHXdRo8TV+x0S
+         4DDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686631372; x=1689223372;
+        d=1e100.net; s=20221208; t=1686642953; x=1689234953;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=CzwXO5LLinsbc81q9m0mJrThXDrRsGSZgZKBrqcWDhU=;
-        b=C8zUYvkBT/tm5tIh4jhCdeCpEcQYeLIe4JlEBpPgRVxgJ6YQhVAbwGDKSnQ0Rp2+z8
-         qzUf4nXfRjNg2wVfIIUswsbOmHXQsRHvabtW6suZ7bGpbu5fBrvKMF46SRZzkRMLKID8
-         LNZmqyQKSlI5EYxaMFZShoODGEberJPU6qRQNBNZNiSbhdGB1otZ3V/eqzyaWIOuy+pa
-         6tTj6NkQ9eFnEiLMYhBAob2MqfwKiRAKYIQzzQVF+Pg5ElB/H/EBAazCo15iLLqd67L+
-         Z5KGMuR1eCCMMZPzqFJyG36Wm/6ftaGzuZUnLhaP0bW9KErfJPuy/2LZrXhyEC/UtMwB
-         ZEAA==
-X-Gm-Message-State: AC+VfDxm9lBJD6lV6EU/rIfq8TR8IsHYzB6Eddu2CPbCvgFb8Ogw90iM
-	EzwGBYnYZ/7rqHcEivQsxwlrh+t6/t1Z9+Bokj5G5Q==
-X-Google-Smtp-Source: ACHHUZ4ETr5UZ3VbtqL8LS3ZVa0OXp7qvMh694ytmLxSCEv5jRu14utuMLjd7mOBnSDm2aadOjxLwJ3P3GoNW1vtYdA=
-X-Received: by 2002:aa7:c553:0:b0:508:3b1f:e6b5 with SMTP id
- s19-20020aa7c553000000b005083b1fe6b5mr5571374edr.15.1686631371900; Mon, 12
- Jun 2023 21:42:51 -0700 (PDT)
+        bh=GqkMTpZSPTrtiBwrlg2HB9jORG0uNI2X+Q54yKxHyHA=;
+        b=dBEmGiN9tKLvydPJ7a8msiZhsHGpFy0AkrmafJC1h+MoL8aIAW7IL/gjR1NUvlaX5H
+         o6aqojY1nVre3OHOqdM3p2UYm3jbjpQTalRwZt8BJzU63t/U/NwbSe5GRFqkzhzzrT22
+         YbYfnIba/FkZx8lotPkFHZB1EqHSTf4Pf6xzQ0JcA4ZftKwezYsu8FQXR6hsqWBjcV14
+         HerSXvGMmkwQB4vUc40T/tIoM3Q5RjLCExq9ZMvqKMHFtJKMzV9jgVilXUEnGlQiJZLa
+         cmJQRW11eTWFuGH9CYU8Aq1aq9J8jDVRwq9z8qQRsImF8p0mTMtCk1wUGKE7WjpZ3Ze6
+         3Q4A==
+X-Gm-Message-State: AC+VfDyVJA2YJpZ/bemtJXP56IV7zziHuQNqJHo6cFxas+wSw4jsZ4hM
+	/DYlP92YmPOXZyq2EEUEE25TKDPLa6JJd0T13lFofw==
+X-Google-Smtp-Source: ACHHUZ7O4IuL4c5Qy6TEcv499ftciQaYRXdKcvbuS5ivN5I0ThoFAm05aH64SAu17/J52IMOAeGVAiqoO7kjJSXAUJs=
+X-Received: by 2002:a0d:fd83:0:b0:56d:4014:dd20 with SMTP id
+ n125-20020a0dfd83000000b0056d4014dd20mr982407ywf.30.1686642952928; Tue, 13
+ Jun 2023 00:55:52 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,117 +42,75 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 References: <20230508142842.854564-1-apatel@ventanamicro.com>
- <20230508142842.854564-3-apatel@ventanamicro.com> <20230608182828.GA3183987-robh@kernel.org>
- <CAGETcx_4OH=EmSUL2-rwKa=1uoOj+AH_xn4PoPsc0kt_aU0WOg@mail.gmail.com>
- <CAK9=C2V1LH0739Nq5Ji7gGbgbyFtNAtBYR43fU7vr9omD5tKSA@mail.gmail.com> <CAGETcx--aEEB6ag1qGcEeygPyZM9Q-T1NOY+wK911LGJGisN8Q@mail.gmail.com>
-In-Reply-To: <CAGETcx--aEEB6ag1qGcEeygPyZM9Q-T1NOY+wK911LGJGisN8Q@mail.gmail.com>
-From: Anup Patel <anup@brainfault.org>
-Date: Tue, 13 Jun 2023 10:12:40 +0530
-Message-ID: <CAAhSdy2p6K70fc2yZLPdVGqEq61Y8F7WVT2J8st5mQrzBi4WHg@mail.gmail.com>
-Subject: Re: [PATCH v3 02/11] of/irq: Set FWNODE_FLAG_BEST_EFFORT for the
- interrupt controller DT nodes
-To: Saravana Kannan <saravanak@google.com>
-Cc: Anup Patel <apatel@ventanamicro.com>, Rob Herring <robh@kernel.org>, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
-	Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>, 
+ <20230508142842.854564-8-apatel@ventanamicro.com> <ZGIrOKIT8uHcNqbQ@nvidia.com>
+In-Reply-To: <ZGIrOKIT8uHcNqbQ@nvidia.com>
+From: Anup Patel <apatel@ventanamicro.com>
+Date: Tue, 13 Jun 2023 13:25:41 +0530
+Message-ID: <CAK9=C2V9o4FsFXAfRHLGSuJaDubwM_HSL7keTYeWb_vFDNLd7g@mail.gmail.com>
+Subject: Re: [PATCH v3 07/11] irqchip/riscv-imsic: Improve IOMMU DMA support
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
+	Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>, 
 	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Robin Murphy <robin.murphy@arm.com>, 
 	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Frank Rowand <frowand.list@gmail.com>, 
 	Atish Patra <atishp@atishpatra.org>, Andrew Jones <ajones@ventanamicro.com>, 
-	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	devicetree@vger.kernel.org, iommu@lists.linux.dev
+	Anup Patel <anup@brainfault.org>, linux-riscv@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+	iommu@lists.linux.dev, Vincent Chen <vincent.chen@sifive.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Jun 10, 2023 at 2:47=E2=80=AFAM Saravana Kannan <saravanak@google.c=
-om> wrote:
+On Mon, May 15, 2023 at 6:23=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> wr=
+ote:
 >
-> On Fri, Jun 9, 2023 at 4:40=E2=80=AFAM Anup Patel <apatel@ventanamicro.co=
-m> wrote:
+> On Mon, May 08, 2023 at 07:58:38PM +0530, Anup Patel wrote:
+> > We have a separate RISC-V IMSIC MSI address for each CPU so changing
+> > MSI (or IRQ) affinity results in re-programming of MSI address in
+> > the PCIe (or platform) device.
 > >
-> > On Fri, Jun 9, 2023 at 1:35=E2=80=AFAM Saravana Kannan <saravanak@googl=
-e.com> wrote:
-> > >
-> > > On Thu, Jun 8, 2023 at 11:28=E2=80=AFAM Rob Herring <robh@kernel.org>=
- wrote:
-> > > >
-> > > > +Saravana
-> > > >
-> > > > On Mon, May 08, 2023 at 07:58:33PM +0530, Anup Patel wrote:
-> > > > > The RISC-V APLIC interrupt controller driver is a regular platfor=
-m
-> > > > > driver so we need to ensure that it is probed as soon as possible=
-.
-> > > > > To achieve this, we mark the interrupt controller device nodes wi=
-th
-> > > > > FWNODE_FLAG_BEST_EFFORT (just like console DT node).
-> > > > >
-> > > > > Fixes: 8f486cab263c ("driver core: fw_devlink: Allow firmware to =
-mark devices as best effort")
-> > > >
-> > > > It is good practice to Cc the commit author of what you are fixing.
-> > > >
-> > > > > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> > > > > ---
-> > > > >  drivers/of/irq.c | 10 ++++++++++
-> > > > >  1 file changed, 10 insertions(+)
-> > > > >
-> > > > > diff --git a/drivers/of/irq.c b/drivers/of/irq.c
-> > > > > index 174900072c18..94e1d9245cff 100644
-> > > > > --- a/drivers/of/irq.c
-> > > > > +++ b/drivers/of/irq.c
-> > > > > @@ -535,6 +535,16 @@ void __init of_irq_init(const struct of_devi=
-ce_id *matches)
-> > > > >       INIT_LIST_HEAD(&intc_desc_list);
-> > > > >       INIT_LIST_HEAD(&intc_parent_list);
-> > > > >
-> > > > > +     /*
-> > > > > +      * We need interrupt controller platform drivers to work as=
- soon
-> > > >
-> > > > If it's platform drivers/devices you care about, then perhaps this
-> > > > should be done when platform devices are created.
-> > > >
-> > > > > +      * as possible so mark the interrupt controller device node=
-s with
-> > > > > +      * FWNODE_FLAG_BEST_EFFORT so that fw_delink knows not to d=
-elay
-> > > > > +      * the probe of the interrupt controller device for supplie=
-rs
-> > > > > +      * without drivers.
-> > > > > +      */
-> > > > > +     for_each_node_with_property(np, "interrupt-controller")
-> > > >
-> > > > This function only operates on nodes matching 'matches', but this
-> > > > operates on everything.
-> > > >
-> > > > It does make sense that if we init an interrupt controller here, th=
-en we
-> > > > will surely want to probe its driver later on. So maybe just move
-> > > > setting FWNODE_FLAG_BEST_EFFORT within
-> > > > for_each_matching_node_and_match() below.
-> > > >
-> > > > > +             np->fwnode.flags |=3D FWNODE_FLAG_BEST_EFFORT;
-> > > > > +
-> > >
-> > > Definite Nack. You are pretty much disabling fw_devlink for all
-> > > interrupt controllers. There are plenty of examples of the IRQ driver=
-s
-> > > being needed very early on and still probing properly without the nee=
-d
-> > > for this flag. Please fix your driver/DT.
+> > Currently, the iommu_dma_prepare_msi() is called only once at the
+> > time of IRQ allocation so IOMMU DMA domain will only have mapping
+> > for one MSI page. This means iommu_dma_compose_msi_msg() called
+> > by imsic_irq_compose_msi_msg() will always use the same MSI page
+> > irrespective to target CPU MSI address. In other words, changing
+> > MSI (or IRQ) affinity for device using IOMMU DMA domain will not
+> > work.
 > >
-> > Okay, I will try to set FWNODE_FLAG_BEST_EFFORT only for
-> > APLIC device_node via IRQCHIP_DECLARE().
+> > To address above issue, we do the following:
+> > 1) Map MSI pages for all CPUs in imsic_irq_domain_alloc()
+> >    using iommu_dma_prepare_msi().
+> > 2) Add a new iommu_dma_select_msi() API to select a specific
+> >    MSI page from a set of already mapped MSI pages.
+> > 3) Use iommu_dma_select_msi() to select a specific MSI page
+> >    before calling iommu_dma_compose_msi_msg() in
+> >    imsic_irq_compose_msi_msg().
 >
-> No, my point is that you very likely don't need to use that flag.
->
-> What exactly is the problem you are facing? Point to an example RISC-V
-> dts (not dtsi) in upstream and give specifics please.
+> Is there an iommu driver somewhere in all this? I don't obviously see
+> one?
 
-The APLIC irqchip driver added by this series is a platform driver. It
-used to work fine without setting FWNODE_FLAG_BEST_EFFORT
-flag in fwnode but after commit 8f486cab263c the APLIC irqchip
-driver did not probe hence this fix.
+Sorry for the delayed response.
+
+The RISC-V IOMMU specification is frozen and will be ratified/released
+anytime this month or next.
+https://github.com/riscv-non-isa/riscv-iommu/releases/download/v1.0-rc6/ris=
+cv-iommu.pdf
+
+The RISC-V IOMMU driver will be send-out on LKML pretty soon
+https://github.com/tjeznach/linux/tree/tjeznach/riscv-iommu
+which can be tested on QEMU
+https://github.com/tjeznach/qemu/tree/tjeznach/riscv-iommu
+
+>
+> There should be no reason to use the dma-iommu.c stuff just to make
+> interrupts work, that is only necessary if there is an iommu, and the
+> platform architecture requires the iommu to have the MSI region
+> programmed into IOPTEs.
+>
+> And I'd be much happier if we could clean this design up before risc-v
+> starts using it too :\
+>
+
+Sure, I will send-out v4 in the next few days.
 
 Regards,
 Anup
