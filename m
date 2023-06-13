@@ -1,204 +1,183 @@
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FCE5136A
-	for <iommu@lists.linux.dev>; Tue, 13 Jun 2023 20:22:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42D97136A
+	for <iommu@lists.linux.dev>; Tue, 13 Jun 2023 20:29:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686687761;
+	s=mimecast20190719; t=1686688179;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=d5B1pzjowp/tCmf2O0tPlj/RNUeX3QXYEhwB/uqSf4Q=;
-	b=TUwvtlc4iHnJrXrhu/8AvaV9IdxogciXIMeetX2BX3UbHt19oFi7m4XVl2t4hSeq6cr/0d
-	i4oz1YQHBgMCEL2XEw8pBfvKANT9K5cVAxvSE/c53M1TJYoEL79h9zC+2O+NZ0z6KJelRi
-	63QN2xtzXFrkGCgyjXJDoqTDcKdjlUk=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=jB9k2lmRqdf20Dr728jPEg2gHGj47Otozz5QCdEFJJ4=;
+	b=PzCZK/Dfn1LGms1VagAtShUNQbtITXZVLZLg1DU03oDcPplz90+AoczQZxith2gGh8ZkLs
+	tIXd2PJKeK6dv3Q6HMpTO71SPrunAGGAuIXTBmkXruYt3OR4TKcTRtq5y5u6pUBbiNXLcA
+	eP0dfiiGyuRC34kSV3Ol8Kk6xazBq2U=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-146-k1VPsMw4N6GLgiz8oUJ2Lg-1; Tue, 13 Jun 2023 16:22:38 -0400
-X-MC-Unique: k1VPsMw4N6GLgiz8oUJ2Lg-1
-Received: by mail-qt1-f197.google.com with SMTP id d75a77b69052e-3f9f1f27b13so17965391cf.1
-        for <iommu@lists.linux.dev>; Tue, 13 Jun 2023 13:22:38 -0700 (PDT)
+ us-mta-446-CUyH9ttuMBeHtHpScDWLVw-1; Tue, 13 Jun 2023 16:29:38 -0400
+X-MC-Unique: CUyH9ttuMBeHtHpScDWLVw-1
+Received: by mail-qv1-f69.google.com with SMTP id 6a1803df08f44-621257e86daso17080356d6.1
+        for <iommu@lists.linux.dev>; Tue, 13 Jun 2023 13:29:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686687758; x=1689279758;
+        d=1e100.net; s=20221208; t=1686688161; x=1689280161;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=d5B1pzjowp/tCmf2O0tPlj/RNUeX3QXYEhwB/uqSf4Q=;
-        b=WiFWlPRSUEaubAqyPBY0+lpR8OgKKFccDZqBFmdQYbXrbVJwDct+9jYO7HYD5zUtHl
-         tFeO2NWKByVbP+ybmtsWrOTVgl9RlxSlp0NsRkmcybnVgX3dyVVpSqKRpi3EayBIXLJU
-         G3UQEvo1ZEDzwfQcbXga8N1VZweitfmxrUZEIKp4S8BzGsm+hQzt+fhA+gOxTVp8JTdH
-         vGvWy6oPtj7+PsP72Mqd+0gwkB/vyxdre/MqLh6AADh7dCI1NnjsIB9+kI/XCFVwy/Xi
-         2zuwNwdktxHpOPRQdkWVkUnm4jeBhI+8/Uw2O4ggit51sVqWYjIJUyih22zSSk5iS7oe
-         NJuQ==
-X-Gm-Message-State: AC+VfDyigqd61W/Tg/IOG2fRhSX6zuA/4giuaPtH1vIE6R5BEJpOo4Dm
-	dIqsv+b5zvh7KfZ3560VbMmdosB/pP1/Z8CBw6gvZ7YeYL4BWSadf7f+5jYB4u43GcC0sRSg5Mp
-	NWfzfHoFHjrMe0yo=
-X-Received: by 2002:a05:622a:214:b0:3f9:f789:2af0 with SMTP id b20-20020a05622a021400b003f9f7892af0mr8783576qtx.64.1686687758176;
-        Tue, 13 Jun 2023 13:22:38 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ44tTpgGsRnGmo5FNWUShXLNsElOlLiVxG97fV4zlgPFSQVAohMXLpZg3/cWMvP4g6jqOEQ1Q==
-X-Received: by 2002:a05:622a:214:b0:3f9:f789:2af0 with SMTP id b20-20020a05622a021400b003f9f7892af0mr8783566qtx.64.1686687757891;
-        Tue, 13 Jun 2023 13:22:37 -0700 (PDT)
+        bh=jB9k2lmRqdf20Dr728jPEg2gHGj47Otozz5QCdEFJJ4=;
+        b=jMePdv29tHXVfBMzIRD2Mf2d5m0TlA5WznVZN0XVnbuNgKApiJ0HWSItcHJsfA+pBB
+         7Jder1hF7bzhgeuYwZgTtg28n0QGbfKEnSdSczzO6jNIKlBJM3Mw/a64KLLpDcAWOwFT
+         lEhjgWh/x2ZmGrY3seO+ZzZBGxAfOOIQed8gZ8KPoeE/+xCx0txo3D8YXdkmeQQNzXwB
+         7tmS/YEAKuu/xGHSj+e1nfrxYi3LmkeLJm5RNmtQTuGpqG9UMqolPpgZvKMgePJ7XLd3
+         tO5NUKs+y4k+QYuBwtFuzlkj8p/5FYC+WJv5631H5peC+w4t/xk1FBhkU+7iLxI6M9zJ
+         JfqA==
+X-Gm-Message-State: AC+VfDzsYuvU3N6tJwWad/voqZ7fhv/3RKnF+1KH1RuVZIj+8s3NvEvx
+	oT/F/7NKdlXr6agXFcmiOp0OGBpoRi7HlbYs1/aeXU5/9uQgUVwA1sqpXcQnZtWEnhdgHaAt2T0
+	/ddMi2zNuJaSw75k=
+X-Received: by 2002:a05:6214:f26:b0:62d:e946:5187 with SMTP id iw6-20020a0562140f2600b0062de9465187mr9481068qvb.13.1686688161550;
+        Tue, 13 Jun 2023 13:29:21 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ5Lwp8D8RhamKOGXc5F/5rYVMBeTtbZC7c1txwXlahzS2lPGZeIkB8eGEIpg4eJ/f2MGJWCnQ==
+X-Received: by 2002:a05:6214:f26:b0:62d:e946:5187 with SMTP id iw6-20020a0562140f2600b0062de9465187mr9481052qvb.13.1686688161322;
+        Tue, 13 Jun 2023 13:29:21 -0700 (PDT)
 Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id m13-20020ac85b0d000000b003f3c9754e1dsm4444936qtw.17.2023.06.13.13.22.36
+        by smtp.gmail.com with ESMTPSA id w10-20020a0ce10a000000b006261c80d76dsm4208759qvk.71.2023.06.13.13.29.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Jun 2023 13:22:37 -0700 (PDT)
-Date: Tue, 13 Jun 2023 13:22:35 -0700
+        Tue, 13 Jun 2023 13:29:20 -0700 (PDT)
+Date: Tue, 13 Jun 2023 13:29:19 -0700
 From: Jerry Snitselaar <jsnitsel@redhat.com>
 To: Vasant Hegde <vasant.hegde@amd.com>
 Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com, 
 	joao.m.martins@oracle.com
-Subject: Re: [PATCH 1/2] iommu/amd: Generalize log overflow handling
-Message-ID: <isd7bdakea24udn4baqy5g6ibcjn4gyflqosnsio4tm4tqigww@z4mlflbl5bdp>
+Subject: Re: [PATCH 2/2] iommu/amd: Handle PPR log overflow
+Message-ID: <6rz75f6nq3ia2bymqjv5alxauqqdk5ea3emfew7nkdjvxtv5ks@qwyzsbg3ckxr>
 References: <20230609101746.6412-1-vasant.hegde@amd.com>
- <20230609101746.6412-2-vasant.hegde@amd.com>
+ <20230609101746.6412-3-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20230609101746.6412-2-vasant.hegde@amd.com>
+In-Reply-To: <20230609101746.6412-3-vasant.hegde@amd.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-On Fri, Jun 09, 2023 at 10:17:45AM +0000, Vasant Hegde wrote:
-> IOMMU has three different logs (Event, GA and PPR log) and each uses
-> different buffer for logging. Once buffer becomes full IOMMU generates
-> overflow interrupt and we have to restart the logs. Log restart procedure
-> is same for all three logs except it uses different bits in 'MMIO Offset
-> 2020h IOMMU Status Register'. Hence lets move common code to generic
-> function and individual log overflow handler will call generic function
-> with appropriate parameters.
+On Fri, Jun 09, 2023 at 10:17:46AM +0000, Vasant Hegde wrote:
+> Some ATS-capable peripherals can issue requests to the processor to service
+> peripheral page requests using PCIe PRI (the Page Request Interface). IOMMU
+> supports PRI using PPR log buffer. IOMMU writes PRI request to PPR log
+> buffer and sends PPR interrupt to host. When there is no space in the
+> PPR log buffer (PPR log overflow) it will set PprOverflow bit in 'MMIO
+> Offset 2020h IOMMU Status Register'. When this happens PPR log needs to be
+> restarted as specified in IOMMU spec [1] section 2.6.2.
 > 
-> Also rename MMIO_STATUS_EVT_OVERFLOW_INT_MASK as
-> MMIO_STATUS_EVT_OVERFLOW_MASK.
+> When handling the event it just resumes the PPR log without resizing
+> (similar to the way event and GA log overflow is handled).
+> 
+> Failing to handle PPR overflow means device may not work properly as
+> IOMMU stops processing new PPR events from device.
+> 
+> [1] https://www.amd.com/system/files/TechDocs/48882_3.07_PUB.pdf
 > 
 > Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 
 Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
 
+Will the code re-org you are doing move the event log overflow check
+next to the event log processing check, like is done with the ga log
+and ppr log?
+
+Regards,
+Jerry
+
 > ---
->  drivers/iommu/amd/amd_iommu_types.h |  3 +-
->  drivers/iommu/amd/init.c            | 51 ++++++++++++++++++-----------
->  drivers/iommu/amd/iommu.c           |  4 +--
->  3 files changed, 36 insertions(+), 22 deletions(-)
+>  drivers/iommu/amd/amd_iommu.h       |  1 +
+>  drivers/iommu/amd/amd_iommu_types.h |  2 ++
+>  drivers/iommu/amd/init.c            | 11 +++++++++++
+>  drivers/iommu/amd/iommu.c           |  9 ++++++++-
+>  4 files changed, 22 insertions(+), 1 deletion(-)
 > 
+> diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+> index 317d5c26c614..156f57b4f78c 100644
+> --- a/drivers/iommu/amd/amd_iommu.h
+> +++ b/drivers/iommu/amd/amd_iommu.h
+> @@ -16,6 +16,7 @@ irqreturn_t amd_iommu_int_handler(int irq, void *data);
+>  void amd_iommu_apply_erratum_63(struct amd_iommu *iommu, u16 devid);
+>  void amd_iommu_restart_event_logging(struct amd_iommu *iommu);
+>  void amd_iommu_restart_ga_log(struct amd_iommu *iommu);
+> +void amd_iommu_restart_ppr_log(struct amd_iommu *iommu);
+>  void amd_iommu_set_rlookup_table(struct amd_iommu *iommu, u16 devid);
+>  
+>  #ifdef CONFIG_AMD_IOMMU_DEBUGFS
 > diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-> index 364fdaa52e74..318b84cf47f6 100644
+> index 318b84cf47f6..a993e1bdb70b 100644
 > --- a/drivers/iommu/amd/amd_iommu_types.h
 > +++ b/drivers/iommu/amd/amd_iommu_types.h
-> @@ -120,9 +120,10 @@
->  #define PASID_MASK		0x0000ffff
->  
->  /* MMIO status bits */
-> -#define MMIO_STATUS_EVT_OVERFLOW_INT_MASK	BIT(0)
-> +#define MMIO_STATUS_EVT_OVERFLOW_MASK		BIT(0)
+> @@ -124,7 +124,9 @@
 >  #define MMIO_STATUS_EVT_INT_MASK		BIT(1)
 >  #define MMIO_STATUS_COM_WAIT_INT_MASK		BIT(2)
-> +#define MMIO_STATUS_EVT_RUN_MASK		BIT(3)
+>  #define MMIO_STATUS_EVT_RUN_MASK		BIT(3)
+> +#define MMIO_STATUS_PPR_OVERFLOW_MASK		BIT(5)
 >  #define MMIO_STATUS_PPR_INT_MASK		BIT(6)
+> +#define MMIO_STATUS_PPR_RUN_MASK		BIT(7)
 >  #define MMIO_STATUS_GALOG_RUN_MASK		BIT(8)
 >  #define MMIO_STATUS_GALOG_OVERFLOW_MASK		BIT(9)
+>  #define MMIO_STATUS_GALOG_INT_MASK		BIT(10)
 > diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-> index c2d80a4e5fb0..3c21e9333899 100644
+> index 3c21e9333899..9908cd4f1c31 100644
 > --- a/drivers/iommu/amd/init.c
 > +++ b/drivers/iommu/amd/init.c
-> @@ -748,38 +748,51 @@ static int __init alloc_command_buffer(struct amd_iommu *iommu)
->  	return iommu->cmd_buf ? 0 : -ENOMEM;
+> @@ -795,6 +795,17 @@ void amd_iommu_restart_ga_log(struct amd_iommu *iommu)
+>  			      MMIO_STATUS_GALOG_OVERFLOW_MASK);
 >  }
 >  
 > +/*
-> + * Interrupt handler has processed all pending events and adjusted head
-> + * and tail pointer. Reset overflow mask and restart logging again.
+> + * This function restarts ppr logging in case the IOMMU experienced
+> + * PPR log overflow.
 > + */
-> +static void amd_iommu_restart_log(struct amd_iommu *iommu, const char *evt_type,
-> +				  u8 cntrl_intr, u8 cntrl_log,
-> +				  u32 status_run_mask, u32 status_overflow_mask)
+> +void amd_iommu_restart_ppr_log(struct amd_iommu *iommu)
 > +{
-> +	u32 status;
-> +
-> +	status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
-> +	if (status & status_run_mask)
-> +		return;
-> +
-> +	pr_info_ratelimited("IOMMU %s log restarting\n", evt_type);
-> +
-> +	iommu_feature_disable(iommu, cntrl_log);
-> +	iommu_feature_disable(iommu, cntrl_intr);
-> +
-> +	writel(status_overflow_mask, iommu->mmio_base + MMIO_STATUS_OFFSET);
-> +
-> +	iommu_feature_enable(iommu, cntrl_intr);
-> +	iommu_feature_enable(iommu, cntrl_log);
+> +	amd_iommu_restart_log(iommu, "PPR", CONTROL_PPRINT_EN,
+> +			      CONTROL_PPRLOG_EN, MMIO_STATUS_PPR_RUN_MASK,
+> +			      MMIO_STATUS_PPR_OVERFLOW_MASK);
 > +}
 > +
 >  /*
->   * This function restarts event logging in case the IOMMU experienced
->   * an event log buffer overflow.
->   */
->  void amd_iommu_restart_event_logging(struct amd_iommu *iommu)
->  {
-> -	iommu_feature_disable(iommu, CONTROL_EVT_LOG_EN);
-> -	iommu_feature_enable(iommu, CONTROL_EVT_LOG_EN);
-> +	amd_iommu_restart_log(iommu, "Event", CONTROL_EVT_INT_EN,
-> +			      CONTROL_EVT_LOG_EN, MMIO_STATUS_EVT_RUN_MASK,
-> +			      MMIO_STATUS_EVT_OVERFLOW_MASK);
->  }
->  
->  /*
->   * This function restarts event logging in case the IOMMU experienced
-> - * an GA log overflow.
-> + * GA log overflow.
->   */
->  void amd_iommu_restart_ga_log(struct amd_iommu *iommu)
->  {
-> -	u32 status;
-> -
-> -	status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
-> -	if (status & MMIO_STATUS_GALOG_RUN_MASK)
-> -		return;
-> -
-> -	pr_info_ratelimited("IOMMU GA Log restarting\n");
-> -
-> -	iommu_feature_disable(iommu, CONTROL_GALOG_EN);
-> -	iommu_feature_disable(iommu, CONTROL_GAINT_EN);
-> -
-> -	writel(MMIO_STATUS_GALOG_OVERFLOW_MASK,
-> -	       iommu->mmio_base + MMIO_STATUS_OFFSET);
-> -
-> -	iommu_feature_enable(iommu, CONTROL_GAINT_EN);
-> -	iommu_feature_enable(iommu, CONTROL_GALOG_EN);
-> +	amd_iommu_restart_log(iommu, "GA", CONTROL_GAINT_EN,
-> +			      CONTROL_GALOG_EN, MMIO_STATUS_GALOG_RUN_MASK,
-> +			      MMIO_STATUS_GALOG_OVERFLOW_MASK);
->  }
->  
->  /*
+>   * This function resets the command buffer if the IOMMU stopped fetching
+>   * commands from it.
 > diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index ad501944d77c..a29548d98b6a 100644
+> index a29548d98b6a..3c179d548ecd 100644
 > --- a/drivers/iommu/amd/iommu.c
 > +++ b/drivers/iommu/amd/iommu.c
-> @@ -842,7 +842,7 @@ amd_iommu_set_pci_msi_domain(struct device *dev, struct amd_iommu *iommu) { }
->  #endif /* !CONFIG_IRQ_REMAP */
->  
+> @@ -844,6 +844,7 @@ amd_iommu_set_pci_msi_domain(struct device *dev, struct amd_iommu *iommu) { }
 >  #define AMD_IOMMU_INT_MASK	\
-> -	(MMIO_STATUS_EVT_OVERFLOW_INT_MASK | \
-> +	(MMIO_STATUS_EVT_OVERFLOW_MASK | \
+>  	(MMIO_STATUS_EVT_OVERFLOW_MASK | \
 >  	 MMIO_STATUS_EVT_INT_MASK | \
+> +	 MMIO_STATUS_PPR_OVERFLOW_MASK | \
 >  	 MMIO_STATUS_PPR_INT_MASK | \
 >  	 MMIO_STATUS_GALOG_OVERFLOW_MASK | \
-> @@ -881,7 +881,7 @@ irqreturn_t amd_iommu_int_thread(int irq, void *data)
+>  	 MMIO_STATUS_GALOG_INT_MASK)
+> @@ -863,11 +864,17 @@ irqreturn_t amd_iommu_int_thread(int irq, void *data)
+>  			iommu_poll_events(iommu);
 >  		}
->  #endif
 >  
-> -		if (status & MMIO_STATUS_EVT_OVERFLOW_INT_MASK) {
-> +		if (status & MMIO_STATUS_EVT_OVERFLOW_MASK) {
->  			pr_info_ratelimited("IOMMU event log overflow\n");
->  			amd_iommu_restart_event_logging(iommu);
+> -		if (status & MMIO_STATUS_PPR_INT_MASK) {
+> +		if (status & (MMIO_STATUS_PPR_INT_MASK |
+> +			      MMIO_STATUS_PPR_OVERFLOW_MASK)) {
+>  			pr_devel("Processing IOMMU PPR Log\n");
+>  			iommu_poll_ppr_log(iommu);
 >  		}
+>  
+> +		if (status & MMIO_STATUS_PPR_OVERFLOW_MASK) {
+> +			pr_info_ratelimited("IOMMU PPR log overflow\n");
+> +			amd_iommu_restart_ppr_log(iommu);
+> +		}
+> +
+>  #ifdef CONFIG_IRQ_REMAP
+>  		if (status & (MMIO_STATUS_GALOG_INT_MASK |
+>  			      MMIO_STATUS_GALOG_OVERFLOW_MASK)) {
 > -- 
 > 2.31.1
 > 
