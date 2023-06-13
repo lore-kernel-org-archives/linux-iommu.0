@@ -1,43 +1,43 @@
-Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com [209.85.210.41])
+Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B211423DB
-	for <iommu@lists.linux.dev>; Tue, 13 Jun 2023 15:34:41 +0000 (UTC)
-Received: by mail-ot1-f41.google.com with SMTP id 46e09a7af769-6b2d356530eso2527298a34.0
-        for <iommu@lists.linux.dev>; Tue, 13 Jun 2023 08:34:41 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F2E223DB
+	for <iommu@lists.linux.dev>; Tue, 13 Jun 2023 15:34:49 +0000 (UTC)
+Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-6b2d356530eso2527444a34.0
+        for <iommu@lists.linux.dev>; Tue, 13 Jun 2023 08:34:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1686670480; x=1689262480;
+        d=ventanamicro.com; s=google; t=1686670488; x=1689262488;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=SaKztkphf6Bxk7epVR1Wqf3vysiYNPTt+hK5SRnwDA8=;
-        b=oeYO7hapZBlaFPJX1SWGXlckvFpmgvdEQoR7Hdm+8KE+HpXFwmSrfNfkCAR9rHgKHk
-         tT3q3cYy257vFWErU6BWhttTkFNTnmi39WE5TJXcJ8/IuT2xmK2orgTRvmsiJXVcIXnB
-         /HRCq16h0pKYGI01r/NNH+vtdIEBQiPOof4pXJVqdaQkw/86ifq5mKgtffxZHwdPVE7k
-         UoYfVnqTiE5i8yAeJe8QWotssx5NiHuyq13oMHjW8lubXHGzxkvTgfeK9aiP79UaZQtE
-         5emH1jKV9m0myuqPez+BXC+6wvubfxpN7p3PF/54FyqRj3hLSVh3gdp2gFDTxdyBvUpl
-         egWw==
+        bh=XXSsvlQ/R6yHM0Hz/nbqBTRJ+migXFNIKunDjIZh+EE=;
+        b=JojL+gfZIo4k2B2N1XNc6LNsjmo8WP6nwvdAY/onRH8Zqxu4pd+KVL1KxrrjkyXY96
+         Joqz5ZSGZFWiIRkE5swbNsTyHOBbYKsDIU6WOyz/Yv/epbAMDBVdnd/pzm/r4Re01wM3
+         0I1OFaRBqJfQNQnzC8UZgUXzPW9I3+cbm6Jb04CqNCsB53hq2jRIaasZYV4gaJRnvbKT
+         xbPihBDPiQsUZgx6U1T4ju4hnEpu9xIef8Ilol0yCzhRe7Ls57cYEPkZbBrEWLs4wgXH
+         JOoTqVjnLgqMN6ihBEOtMb44bu9HSKT2MAkkFeaKHVD+ekZSdQbP0HXTF0P0KVzbHdp8
+         67Og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686670480; x=1689262480;
+        d=1e100.net; s=20221208; t=1686670488; x=1689262488;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=SaKztkphf6Bxk7epVR1Wqf3vysiYNPTt+hK5SRnwDA8=;
-        b=jH0Iopj0i6P3oj//kVKRNGXmVOqzb4bjArIBNrAYdR1pYyAjOMJag3GcJMLPc0YBum
-         YHwZEquejfkmR2DHQPnGgl1bxY3CdZ8xR7LhB/VyW5i2RXJwClfl/NqXrFlxuyceEzre
-         VF1IB+T6TGOdY434/+AZaeLMA0W4lRpUQiYUBr9mxkoMUg/G/s+5s6GLjDEMx3+jWP09
-         4hbnceCtJLtfZ+9IvNRo1N1XgwKCF5nXq6jZcD+Yl0Yd0D4K3lk3LXbqEheATXUxh1P1
-         jteJn7y6Uv08Z7wxepon++eCOpfUdG0ZshVmcPgT1dRcUhss2crK4G/ifRAUp9Hk8xnv
-         95TQ==
-X-Gm-Message-State: AC+VfDzumpjP6VDqrfeJmDedK4aDH6NV7w25dnvfld8VyeloQz4EWJ3B
-	2ufobwqtkY8Dh7IWpYqwPhHlCg==
-X-Google-Smtp-Source: ACHHUZ5bFvT8beTRSpq/IpBy8h5mVYBspjf+Wsvpe0B+YtIFMJxpp8SFXQt2G2tf2Mp5NyW2jc9/NA==
-X-Received: by 2002:a05:6808:87:b0:398:f48:eb4 with SMTP id s7-20020a056808008700b003980f480eb4mr6986593oic.36.1686670480558;
-        Tue, 13 Jun 2023 08:34:40 -0700 (PDT)
+        bh=XXSsvlQ/R6yHM0Hz/nbqBTRJ+migXFNIKunDjIZh+EE=;
+        b=Se/ingNXGihN/DxH2Vn38SbZ4sQl36Dyc20MQXhYYWRZh46GWKj32in8g3Vn1p6LI5
+         Te7sMCTzjIoXb5KWbh1KzylqNnYS04pcYUXlyIgjGj6w6Rx11DpeTmHUoFJp0qCmc/ix
+         d1XiZgZ1Qm28m0bO0hHcrELHMv46bVa1mjtM0Xcdz3kGiQGq1YEOIRFG4m0sBTdrq/3k
+         YVBIXAH0KDIEk0Z/QgW3sOJQeOnqWBEnqe5Ir0/sUhbvNuBAmoUCRZVHGVNcr5dZj4Ky
+         MDF99oO0b2gjWS7jDeOcHJOUtBp1yEzK6QZItn/i+3Z/FRDw6j93WBngUpJV78D8ImYf
+         L4eA==
+X-Gm-Message-State: AC+VfDxe6neOGDYxaVxM2xp/qaiaDeVd8+wvZkm+MfoeLQdO/Ug6NyTQ
+	hbIXvmD3DZ5xJaY/mB3sC4/6AQ==
+X-Google-Smtp-Source: ACHHUZ4zSdqrg0FoDckfeqsUwQBijAmHsngd8VD44TIt7ZxFz+NbF3OXoUg7rKPjPP/3duHDx3VYrw==
+X-Received: by 2002:a05:6808:23d3:b0:39a:a19a:3207 with SMTP id bq19-20020a05680823d300b0039aa19a3207mr8116705oib.18.1686670488400;
+        Tue, 13 Jun 2023 08:34:48 -0700 (PDT)
 Received: from anup-ubuntu-vm.localdomain ([103.97.165.210])
-        by smtp.gmail.com with ESMTPSA id n2-20020acabd02000000b0039ce305ea4fsm1630807oif.14.2023.06.13.08.34.33
+        by smtp.gmail.com with ESMTPSA id n2-20020acabd02000000b0039ce305ea4fsm1630807oif.14.2023.06.13.08.34.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Jun 2023 08:34:40 -0700 (PDT)
+        Tue, 13 Jun 2023 08:34:48 -0700 (PDT)
 From: Anup Patel <apatel@ventanamicro.com>
 To: Palmer Dabbelt <palmer@dabbelt.com>,
 	Paul Walmsley <paul.walmsley@sifive.com>,
@@ -59,9 +59,9 @@ Cc: Atish Patra <atishp@atishpatra.org>,
 	devicetree@vger.kernel.org,
 	iommu@lists.linux.dev,
 	Anup Patel <apatel@ventanamicro.com>
-Subject: [PATCH v4 01/10] RISC-V: Add riscv_fw_parent_hartid() function
-Date: Tue, 13 Jun 2023 21:04:06 +0530
-Message-Id: <20230613153415.350528-2-apatel@ventanamicro.com>
+Subject: [PATCH v4 02/10] irqchip/riscv-intc: Add support for RISC-V AIA
+Date: Tue, 13 Jun 2023 21:04:07 +0530
+Message-Id: <20230613153415.350528-3-apatel@ventanamicro.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230613153415.350528-1-apatel@ventanamicro.com>
 References: <20230613153415.350528-1-apatel@ventanamicro.com>
@@ -73,57 +73,107 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-We add common riscv_fw_parent_hartid() which help device drivers
-to get parent hartid of the INTC (i.e. local interrupt controller)
-fwnode. This should work for both DT and ACPI.
+The RISC-V advanced interrupt architecture (AIA) extends the per-HART
+local interrupts in following ways:
+1. Minimum 64 local interrupts for both RV32 and RV64
+2. Ability to process multiple pending local interrupts in same
+   interrupt handler
+3. Priority configuration for each local interrupts
+4. Special CSRs to configure/access the per-HART MSI controller
+
+This patch adds support for RISC-V AIA in the RISC-V intc driver.
 
 Signed-off-by: Anup Patel <apatel@ventanamicro.com>
 ---
- arch/riscv/include/asm/processor.h |  3 +++
- arch/riscv/kernel/cpu.c            | 16 ++++++++++++++++
- 2 files changed, 19 insertions(+)
+ drivers/irqchip/irq-riscv-intc.c | 36 ++++++++++++++++++++++++++------
+ 1 file changed, 30 insertions(+), 6 deletions(-)
 
-diff --git a/arch/riscv/include/asm/processor.h b/arch/riscv/include/asm/processor.h
-index 94a0590c6971..6fb8bbec8459 100644
---- a/arch/riscv/include/asm/processor.h
-+++ b/arch/riscv/include/asm/processor.h
-@@ -77,6 +77,9 @@ struct device_node;
- int riscv_of_processor_hartid(struct device_node *node, unsigned long *hartid);
- int riscv_of_parent_hartid(struct device_node *node, unsigned long *hartid);
+diff --git a/drivers/irqchip/irq-riscv-intc.c b/drivers/irqchip/irq-riscv-intc.c
+index 4adeee1bc391..e235bf1708a4 100644
+--- a/drivers/irqchip/irq-riscv-intc.c
++++ b/drivers/irqchip/irq-riscv-intc.c
+@@ -17,6 +17,7 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/smp.h>
++#include <asm/hwcap.h>
  
-+struct fwnode_handle;
-+int riscv_fw_parent_hartid(struct fwnode_handle *node, unsigned long *hartid);
-+
- extern void riscv_fill_hwcap(void);
- extern int arch_dup_task_struct(struct task_struct *dst, struct task_struct *src);
+ static struct irq_domain *intc_domain;
  
-diff --git a/arch/riscv/kernel/cpu.c b/arch/riscv/kernel/cpu.c
-index 5de6fb703cc2..67b335789b22 100644
---- a/arch/riscv/kernel/cpu.c
-+++ b/arch/riscv/kernel/cpu.c
-@@ -73,6 +73,22 @@ int riscv_of_parent_hartid(struct device_node *node, unsigned long *hartid)
- 	return -1;
+@@ -30,6 +31,15 @@ static asmlinkage void riscv_intc_irq(struct pt_regs *regs)
+ 	generic_handle_domain_irq(intc_domain, cause);
  }
  
-+/* Find hart ID of the CPU fwnode under which given fwnode falls. */
-+int riscv_fw_parent_hartid(struct fwnode_handle *node, unsigned long *hartid)
++static asmlinkage void riscv_intc_aia_irq(struct pt_regs *regs)
 +{
-+	int rc;
-+	u64 temp;
++	unsigned long topi;
 +
-+	if (!is_of_node(node)) {
-+		rc = fwnode_property_read_u64_array(node, "hartid", &temp, 1);
-+		if (!rc)
-+			*hartid = temp;
-+	} else
-+		rc = riscv_of_parent_hartid(to_of_node(node), hartid);
-+
-+	return rc;
++	while ((topi = csr_read(CSR_TOPI)))
++		generic_handle_domain_irq(intc_domain,
++					  topi >> TOPI_IID_SHIFT);
 +}
 +
- DEFINE_PER_CPU(struct riscv_cpuinfo, riscv_cpuinfo);
+ /*
+  * On RISC-V systems local interrupts are masked or unmasked by writing
+  * the SIE (Supervisor Interrupt Enable) CSR.  As CSRs can only be written
+@@ -39,12 +49,18 @@ static asmlinkage void riscv_intc_irq(struct pt_regs *regs)
  
- unsigned long riscv_cached_mvendorid(unsigned int cpu_id)
+ static void riscv_intc_irq_mask(struct irq_data *d)
+ {
+-	csr_clear(CSR_IE, BIT(d->hwirq));
++	if (d->hwirq < BITS_PER_LONG)
++		csr_clear(CSR_IE, BIT(d->hwirq));
++	else
++		csr_clear(CSR_IEH, BIT(d->hwirq - BITS_PER_LONG));
+ }
+ 
+ static void riscv_intc_irq_unmask(struct irq_data *d)
+ {
+-	csr_set(CSR_IE, BIT(d->hwirq));
++	if (d->hwirq < BITS_PER_LONG)
++		csr_set(CSR_IE, BIT(d->hwirq));
++	else
++		csr_set(CSR_IEH, BIT(d->hwirq - BITS_PER_LONG));
+ }
+ 
+ static void riscv_intc_irq_eoi(struct irq_data *d)
+@@ -115,16 +131,22 @@ static struct fwnode_handle *riscv_intc_hwnode(void)
+ 
+ static int __init riscv_intc_init_common(struct fwnode_handle *fn)
+ {
+-	int rc;
++	int rc, nr_irqs = BITS_PER_LONG;
++
++	if (riscv_isa_extension_available(NULL, SxAIA) && BITS_PER_LONG == 32)
++		nr_irqs = nr_irqs * 2;
+ 
+-	intc_domain = irq_domain_create_linear(fn, BITS_PER_LONG,
++	intc_domain = irq_domain_create_linear(fn, nr_irqs,
+ 					       &riscv_intc_domain_ops, NULL);
+ 	if (!intc_domain) {
+ 		pr_err("unable to add IRQ domain\n");
+ 		return -ENXIO;
+ 	}
+ 
+-	rc = set_handle_irq(&riscv_intc_irq);
++	if (riscv_isa_extension_available(NULL, SxAIA))
++		rc = set_handle_irq(&riscv_intc_aia_irq);
++	else
++		rc = set_handle_irq(&riscv_intc_irq);
+ 	if (rc) {
+ 		pr_err("failed to set irq handler\n");
+ 		return rc;
+@@ -132,7 +154,9 @@ static int __init riscv_intc_init_common(struct fwnode_handle *fn)
+ 
+ 	riscv_set_intc_hwnode_fn(riscv_intc_hwnode);
+ 
+-	pr_info("%d local interrupts mapped\n", BITS_PER_LONG);
++	pr_info("%d local interrupts mapped%s\n",
++		nr_irqs, (riscv_isa_extension_available(NULL, SxAIA)) ?
++			 " using AIA" : "");
+ 
+ 	return 0;
+ }
 -- 
 2.34.1
 
