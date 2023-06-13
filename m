@@ -1,40 +1,40 @@
-Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com [209.85.219.173])
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 252C7323C
-	for <iommu@lists.linux.dev>; Tue, 13 Jun 2023 07:55:53 +0000 (UTC)
-Received: by mail-yb1-f173.google.com with SMTP id 3f1490d57ef6-bc49318aa64so2059913276.3
-        for <iommu@lists.linux.dev>; Tue, 13 Jun 2023 00:55:53 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C961E567D
+	for <iommu@lists.linux.dev>; Tue, 13 Jun 2023 08:06:06 +0000 (UTC)
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-569386b7861so91928857b3.0
+        for <iommu@lists.linux.dev>; Tue, 13 Jun 2023 01:06:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1686642953; x=1689234953;
+        d=ventanamicro.com; s=google; t=1686643565; x=1689235565;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=GqkMTpZSPTrtiBwrlg2HB9jORG0uNI2X+Q54yKxHyHA=;
-        b=X1lH0zTSm/2trYaS1XeQ55Q9hA/9/r0gKILDhIP3BM1V9j/9FcNnlTg8C6eqes6MhY
-         kEEujrjfs/bXMw2MXXaDIEhSffQ3ZxmyyehIWQMaGdQ83t9lijLU+cai3uaF5ZNQ3hJ1
-         U4h+mNKlmJ4enUA0b9qIy8BcA850nZF9q8DNphIsqHIDVsbimRdE1m2LdXqy6pRLVSor
-         CuNaeb3ZHWvaqWp2UlX8SxpNaeTb54BL1Y6A72HUI8F4MxEPteEgE7OxPWAGRl2KwREW
-         FSjlxEtmon50dMqJgkzch8RTCiRJz+wMgeMWSkqDFbH4doZHuoKH0L9GHXdRo8TV+x0S
-         4DDw==
+        bh=1k/4HquP2HeWTu3gqyEqAfIouxpypkLo7uElSrv6hWc=;
+        b=awkBk+howhXC9J91GGN+gEhLJqzy4lI2+Nm2ME0HsBbRSUGNzB9llZL0mmuInqWVYv
+         goSHwsqToUzZst/eUhuADOvGa79vijbWRbT4TcdQ2JmJleqsoTRcCvxuusNEuv6phnbg
+         RcFVy5pFpePMCFA0meViSbb2mb42Bx5rqvMemzvomS6qHphXqCA6RmLGATsD2HzrkCA1
+         BkLuRJCoQE77Ziur1z4yQgYkJD1IJuA9j7kkcYm63Qc/WQZ672nsx8jaG3lyN5ld0Qc/
+         D3GNmDLwiLZE+jQJmHUTQzfaOhAFnuIcRdTgLn9/Ia/jM4+weREaTvv8hYftc1NWFSLr
+         EJGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686642953; x=1689234953;
+        d=1e100.net; s=20221208; t=1686643565; x=1689235565;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=GqkMTpZSPTrtiBwrlg2HB9jORG0uNI2X+Q54yKxHyHA=;
-        b=dBEmGiN9tKLvydPJ7a8msiZhsHGpFy0AkrmafJC1h+MoL8aIAW7IL/gjR1NUvlaX5H
-         o6aqojY1nVre3OHOqdM3p2UYm3jbjpQTalRwZt8BJzU63t/U/NwbSe5GRFqkzhzzrT22
-         YbYfnIba/FkZx8lotPkFHZB1EqHSTf4Pf6xzQ0JcA4ZftKwezYsu8FQXR6hsqWBjcV14
-         HerSXvGMmkwQB4vUc40T/tIoM3Q5RjLCExq9ZMvqKMHFtJKMzV9jgVilXUEnGlQiJZLa
-         cmJQRW11eTWFuGH9CYU8Aq1aq9J8jDVRwq9z8qQRsImF8p0mTMtCk1wUGKE7WjpZ3Ze6
-         3Q4A==
-X-Gm-Message-State: AC+VfDyVJA2YJpZ/bemtJXP56IV7zziHuQNqJHo6cFxas+wSw4jsZ4hM
-	/DYlP92YmPOXZyq2EEUEE25TKDPLa6JJd0T13lFofw==
-X-Google-Smtp-Source: ACHHUZ7O4IuL4c5Qy6TEcv499ftciQaYRXdKcvbuS5ivN5I0ThoFAm05aH64SAu17/J52IMOAeGVAiqoO7kjJSXAUJs=
-X-Received: by 2002:a0d:fd83:0:b0:56d:4014:dd20 with SMTP id
- n125-20020a0dfd83000000b0056d4014dd20mr982407ywf.30.1686642952928; Tue, 13
- Jun 2023 00:55:52 -0700 (PDT)
+        bh=1k/4HquP2HeWTu3gqyEqAfIouxpypkLo7uElSrv6hWc=;
+        b=l7Tvb1dsM4U/qFNYFvwtQ+ZMMoZJO3K4G93H2HmpX5Ud5sRTyFfplTRUded9mKcNXz
+         Rseqp2CWRc6vOmECkoYLezczczAq20b9LEYohFz23hwks8QhqRvJLuhwGW6Fhy/EJKLx
+         XvplInxUdo/DWF9o7caDbV5r5bqmFl8tMVzWPEYDRI2fJ5WhuH+zzXYsxw81UdE0LkS0
+         3R3jULy6J5wozRmGVE9kZiL0tPzMJUnc/3VaK4ewShUEftYFWyXIx1fCqs3oa4j2xRNG
+         Kx2dSqz+djHuCz+AUPPL+01QbqQSxni5ofVdkKDgRfocjhNild0JNxQSVweoKbjhaGjo
+         jRUw==
+X-Gm-Message-State: AC+VfDxdwped6oiQ7tt6Gff+aKzou3vEVazVEWmb5EV/YNnDysUwgyMv
+	+YKrHTUhO1tihDmEmDQTOImE5oYCZHVTowe898NeZg==
+X-Google-Smtp-Source: ACHHUZ6duDMZEOxgSlCrtpBwenRyzgNSxW6ESMhkrTlkPUSo6LUwj8CSY7DYsQmwkus4eMXqhFWEsLczZTipIuenZig=
+X-Received: by 2002:a25:a423:0:b0:bc4:77a:22a0 with SMTP id
+ f32-20020a25a423000000b00bc4077a22a0mr878350ybi.15.1686643565505; Tue, 13 Jun
+ 2023 01:06:05 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,13 +42,13 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 References: <20230508142842.854564-1-apatel@ventanamicro.com>
- <20230508142842.854564-8-apatel@ventanamicro.com> <ZGIrOKIT8uHcNqbQ@nvidia.com>
-In-Reply-To: <ZGIrOKIT8uHcNqbQ@nvidia.com>
+ <20230508142842.854564-2-apatel@ventanamicro.com> <20230510-squealing-pruning-2c94b85785b0@wendy>
+In-Reply-To: <20230510-squealing-pruning-2c94b85785b0@wendy>
 From: Anup Patel <apatel@ventanamicro.com>
-Date: Tue, 13 Jun 2023 13:25:41 +0530
-Message-ID: <CAK9=C2V9o4FsFXAfRHLGSuJaDubwM_HSL7keTYeWb_vFDNLd7g@mail.gmail.com>
-Subject: Re: [PATCH v3 07/11] irqchip/riscv-imsic: Improve IOMMU DMA support
-To: Jason Gunthorpe <jgg@nvidia.com>
+Date: Tue, 13 Jun 2023 13:35:54 +0530
+Message-ID: <CAK9=C2VqAX+xGH0oPhda1ygMu4umhNAXbPAQ+Z4q+fGR0R54ug@mail.gmail.com>
+Subject: Re: [PATCH v3 01/11] RISC-V: Add riscv_fw_parent_hartid() function
+To: Conor Dooley <conor.dooley@microchip.com>
 Cc: Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
 	Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>, 
 	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Robin Murphy <robin.murphy@arm.com>, 
@@ -56,61 +56,84 @@ Cc: Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <paul.walmsley@sifive.com
 	Atish Patra <atishp@atishpatra.org>, Andrew Jones <ajones@ventanamicro.com>, 
 	Anup Patel <anup@brainfault.org>, linux-riscv@lists.infradead.org, 
 	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
-	iommu@lists.linux.dev, Vincent Chen <vincent.chen@sifive.com>
+	iommu@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, May 15, 2023 at 6:23=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> wr=
-ote:
+On Wed, May 10, 2023 at 6:15=E2=80=AFPM Conor Dooley <conor.dooley@microchi=
+p.com> wrote:
 >
-> On Mon, May 08, 2023 at 07:58:38PM +0530, Anup Patel wrote:
-> > We have a separate RISC-V IMSIC MSI address for each CPU so changing
-> > MSI (or IRQ) affinity results in re-programming of MSI address in
-> > the PCIe (or platform) device.
+> On Mon, May 08, 2023 at 07:58:32PM +0530, Anup Patel wrote:
+> > We add common riscv_fw_parent_hartid() which help device drivers
+> > to get parent hartid of the INTC (i.e. local interrupt controller)
+> > fwnode. Currently, this new function only supports device tree
+> > but it can be extended to support ACPI as well.
 > >
-> > Currently, the iommu_dma_prepare_msi() is called only once at the
-> > time of IRQ allocation so IOMMU DMA domain will only have mapping
-> > for one MSI page. This means iommu_dma_compose_msi_msg() called
-> > by imsic_irq_compose_msi_msg() will always use the same MSI page
-> > irrespective to target CPU MSI address. In other words, changing
-> > MSI (or IRQ) affinity for device using IOMMU DMA domain will not
-> > work.
+> > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> > ---
+> >  arch/riscv/include/asm/processor.h |  3 +++
+> >  arch/riscv/kernel/cpu.c            | 12 ++++++++++++
+> >  2 files changed, 15 insertions(+)
 > >
-> > To address above issue, we do the following:
-> > 1) Map MSI pages for all CPUs in imsic_irq_domain_alloc()
-> >    using iommu_dma_prepare_msi().
-> > 2) Add a new iommu_dma_select_msi() API to select a specific
-> >    MSI page from a set of already mapped MSI pages.
-> > 3) Use iommu_dma_select_msi() to select a specific MSI page
-> >    before calling iommu_dma_compose_msi_msg() in
-> >    imsic_irq_compose_msi_msg().
+> > diff --git a/arch/riscv/include/asm/processor.h b/arch/riscv/include/as=
+m/processor.h
+> > index 94a0590c6971..6fb8bbec8459 100644
+> > --- a/arch/riscv/include/asm/processor.h
+> > +++ b/arch/riscv/include/asm/processor.h
+> > @@ -77,6 +77,9 @@ struct device_node;
+> >  int riscv_of_processor_hartid(struct device_node *node, unsigned long =
+*hartid);
+> >  int riscv_of_parent_hartid(struct device_node *node, unsigned long *ha=
+rtid);
+> >
+> > +struct fwnode_handle;
+> > +int riscv_fw_parent_hartid(struct fwnode_handle *node, unsigned long *=
+hartid);
+> > +
+> >  extern void riscv_fill_hwcap(void);
+> >  extern int arch_dup_task_struct(struct task_struct *dst, struct task_s=
+truct *src);
+> >
+> > diff --git a/arch/riscv/kernel/cpu.c b/arch/riscv/kernel/cpu.c
+> > index 5de6fb703cc2..1adbe48b2b58 100644
+> > --- a/arch/riscv/kernel/cpu.c
+> > +++ b/arch/riscv/kernel/cpu.c
+> > @@ -73,6 +73,18 @@ int riscv_of_parent_hartid(struct device_node *node,=
+ unsigned long *hartid)
+> >       return -1;
+> >  }
+> >
+> > +/* Find hart ID of the CPU fwnode under which given fwnode falls. */
+> > +int riscv_fw_parent_hartid(struct fwnode_handle *node, unsigned long *=
+hartid)
+> > +{
+> > +     /*
+> > +      * Currently, this function only supports DT but it can be
+> > +      * extended to support ACPI as well.
+> > +      */
 >
-> Is there an iommu driver somewhere in all this? I don't obviously see
-> one?
+> Statement of the obvious here, no?
+> Although, it seems a little odd to read this comment & the corresponding
+> statement in the commit message, when the series appears to have been
+> based on the ACPI?
+>
+> Perhaps by the time v4 comes around, ACPI support will have been merged
+> & that'll be moot.
 
-Sorry for the delayed response.
-
-The RISC-V IOMMU specification is frozen and will be ratified/released
-anytime this month or next.
-https://github.com/riscv-non-isa/riscv-iommu/releases/download/v1.0-rc6/ris=
-cv-iommu.pdf
-
-The RISC-V IOMMU driver will be send-out on LKML pretty soon
-https://github.com/tjeznach/linux/tree/tjeznach/riscv-iommu
-which can be tested on QEMU
-https://github.com/tjeznach/qemu/tree/tjeznach/riscv-iommu
+Yes, I was anyway going to update this in v4 to support both DT and ACPI.
 
 >
-> There should be no reason to use the dma-iommu.c stuff just to make
-> interrupts work, that is only necessary if there is an iommu, and the
-> platform architecture requires the iommu to have the MSI region
-> programmed into IOPTEs.
+> > +     if (!is_of_node(node))
+> > +             return -EINVAL;
+> > +     return riscv_of_parent_hartid(to_of_node(node), hartid);
 >
-> And I'd be much happier if we could clean this design up before risc-v
-> starts using it too :\
->
+> nit: blank line before the return here please.
 
-Sure, I will send-out v4 in the next few days.
+Okay, I will update.
+
+>
+> Thanks,
+> Conor.
 
 Regards,
 Anup
