@@ -1,34 +1,34 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD7637F
-	for <iommu@lists.linux.dev>; Tue, 13 Jun 2023 03:07:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D61787F
+	for <iommu@lists.linux.dev>; Tue, 13 Jun 2023 03:15:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686625637; x=1718161637;
+  t=1686626141; x=1718162141;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=P/VoxzPYJGKVWcFbYSel2k5NLgVhyd1yXneHuuZGDj4=;
-  b=dMH1ldJi4vSfS7MFV/f1KJ/Hdj1/99WxYkXP2JkfMvfmf+ChS8DBCUOd
-   PmgYzEUy1d8X2LCFXYHuCqBDwHmqjcFlGOvO9oAqJw1oZDUuaQ7TnPRHS
-   ZjoOluIrLkbD5TdgmTRsdrXH+yoXfeFU6mUYMVyb1c+igwghDt4LNWrTb
-   LIdBy6frC3y8ffhY64S2OtNvzpR+KRTFdSBLP9BklkATTBG9jLZH1RcY5
-   zKFuUj5rbkkgZn0yzrzWFvrb94GaNeA156GMsBspuKGKVOSlcP5k9kqQS
-   3S49EFNV7j14pe624q9VbTHT+LOvhFgqtXJnDTVOBvFDLeN/a2axdMhVx
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10739"; a="424098735"
+  bh=2YVq3aZ9XIb0zceB5aVAvaOJdnAo1cIPmdg8DLRTCLU=;
+  b=RECczq4ijrgMofYOofaSxkbbGi1L/Gc5kiYude2MfV0lyYtfrAFHVX0c
+   24Z4jiYqqFw37aiQFmpcE7dngbDyGQxtXH5MjFBkBfeJIL0UMD6q5Uw5C
+   xrIbNE8CA5utjCecQng8niIvl9sbUTMENXMINv8Qwea4LBKKGjoZV42K+
+   kTWG/riL92A1+W43bCuw0mb14XJNUVn+PHAndhGwPs7Mrqwj5SDFMeMO7
+   L65nmDH7QgpJvAvS/9Ct2fsmsb9VbVYaV+DnAPBb2SgKWv+S5EkW4nX8W
+   xMm/tVnGz0g3PgJaa72wj0iydlSr4N8KX72GjCRWa400ugt4V6R7pilLU
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10739"; a="421807840"
 X-IronPort-AV: E=Sophos;i="6.00,238,1681196400"; 
-   d="scan'208";a="424098735"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2023 20:07:16 -0700
+   d="scan'208";a="421807840"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2023 20:15:40 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10739"; a="1041594701"
+X-IronPort-AV: E=McAfee;i="6600,9927,10739"; a="958242936"
 X-IronPort-AV: E=Sophos;i="6.00,238,1681196400"; 
-   d="scan'208";a="1041594701"
+   d="scan'208";a="958242936"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmsmga005.fm.intel.com with ESMTP; 12 Jun 2023 20:07:09 -0700
-Message-ID: <b5a6a7ad-bfad-b550-f4be-f5ec0679f3d2@linux.intel.com>
-Date: Tue, 13 Jun 2023 11:06:03 +0800
+  by fmsmga006.fm.intel.com with ESMTP; 12 Jun 2023 20:15:37 -0700
+Message-ID: <69f50ced-e806-717a-0c74-a4cfa58600fa@linux.intel.com>
+Date: Tue, 13 Jun 2023 11:14:30 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,89 +37,109 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.11.0
-Cc: baolu.lu@linux.intel.com, Will Deacon <will@kernel.org>,
- David Woodhouse <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>,
- "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
- "Yu, Fenghua" <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Tony Luck <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
- rex.zhang@intel.com, xiaochen.shen@intel.com, narayan.ranganathan@intel.com
-Subject: Re: [PATCH v8 2/7] iommu: Move global PASID allocation from SVA to
- core
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev, kvm@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH 1/2] iommu: Prevent RESV_DIRECT devices from blocking
+ domains
 Content-Language: en-US
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
- Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>, dmaengine@vger.kernel.org,
- vkoul@kernel.org
-References: <20230602182212.150825-1-jacob.jun.pan@linux.intel.com>
- <20230602182212.150825-3-jacob.jun.pan@linux.intel.com>
- <08830c11-5528-0c42-0bc3-89c3796611fe@linux.intel.com>
+To: "Liu, Jingqi" <jingqi.liu@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Nicolin Chen <nicolinc@nvidia.com>
+References: <20230607035145.343698-1-baolu.lu@linux.intel.com>
+ <20230607035145.343698-2-baolu.lu@linux.intel.com>
+ <8cc1d69e-f86d-fd04-7737-914d967dc0f5@intel.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <08830c11-5528-0c42-0bc3-89c3796611fe@linux.intel.com>
+In-Reply-To: <8cc1d69e-f86d-fd04-7737-914d967dc0f5@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 6/10/23 8:13 PM, Baolu Lu wrote:
-> On 6/3/23 2:22 AM, Jacob Pan wrote:
->> +ioasid_t iommu_alloc_global_pasid_dev(struct device *dev)
->> +{
->> +    int ret;
->> +    ioasid_t max;
->> +
->> +    max = dev->iommu->max_pasids;
->> +    /*
->> +     * max_pasids is set up by vendor driver based on number of PASID 
->> bits
->> +     * supported but the IDA allocation is inclusive.
->> +     */
->> +    ret = ida_alloc_range(&iommu_global_pasid_ida, 
->> IOMMU_FIRST_GLOBAL_PASID, max - 1, GFP_KERNEL);
->> +    if (ret < 0)
->> +        return IOMMU_PASID_INVALID;
->> +
->> +    return ret;
->> +}
->> +EXPORT_SYMBOL_GPL(iommu_alloc_global_pasid_dev);
+On 6/12/23 4:28 PM, Liu, Jingqi wrote:
+> On 6/7/2023 11:51 AM, Lu Baolu wrote:
+>> The IOMMU_RESV_DIRECT flag indicates that a memory region must be mapped
+>> 1:1 at all times. This means that the region must always be accessible to
+>> the device, even if the device is attached to a blocking domain. This is
+>> equal to saying that IOMMU_RESV_DIRECT flag prevents devices from being
+>> attached to blocking domains.
+>>
+>> This also implies that devices that implement RESV_DIRECT regions will be
+>> prevented from being assigned to user space since taking the DMA 
+>> ownership
+>> immediately switches to a blocking domain.
+>>
+>> The rule of preventing devices with the IOMMU_RESV_DIRECT regions from
+>> being assigned to user space has existed in the Intel IOMMU driver for
+>> a long time. Now, this rule is being lifted up to a general core rule,
+>> as other architectures like AMD and ARM also have RMRR-like reserved
+>> regions. This has been discussed in the community mailing list and refer
+>> to below link for more details.
+>>
+>> Other places using unmanaged domains for kernel DMA must follow the
+>> iommu_get_resv_regions() and setup IOMMU_RESV_DIRECT - we do not restrict
+>> them in the core code.
+>>
+>> Cc: Robin Murphy <robin.murphy@arm.com>
+>> Cc: Alex Williamson <alex.williamson@redhat.com>
+>> Cc: Kevin Tian <kevin.tian@intel.com>
+>> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+>> Link: 
+>> https://lore.kernel.org/linux-iommu/BN9PR11MB5276E84229B5BD952D78E9598C639@BN9PR11MB5276.namprd11.prod.outlook.com
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   include/linux/iommu.h |  2 ++
+>>   drivers/iommu/iommu.c | 39 +++++++++++++++++++++++++++++----------
+>>   2 files changed, 31 insertions(+), 10 deletions(-)
+>>
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index d31642596675..fd18019ac951 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -409,6 +409,7 @@ struct iommu_fault_param {
+>>    * @priv:     IOMMU Driver private data
+>>    * @max_pasids:  number of PASIDs this device can consume
+>>    * @attach_deferred: the dma domain attachment is deferred
+>> + * @requires_direct: The driver requested IOMMU_RESV_DIRECT
+>>    *
+>>    * TODO: migrate other per device data pointers under 
+>> iommu_dev_data, e.g.
+>>    *    struct iommu_group    *iommu_group;
+>> @@ -422,6 +423,7 @@ struct dev_iommu {
+>>       void                *priv;
+>>       u32                max_pasids;
+>>       u32                attach_deferred:1;
+>> +    u32                requires_direct:1;
+>>   };
+>>   int iommu_device_register(struct iommu_device *iommu,
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 9e0228ef612b..e59de7852067 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -959,12 +959,7 @@ static int 
+>> iommu_create_device_direct_mappings(struct iommu_domain *domain,
+>>       unsigned long pg_size;
+>>       int ret = 0;
+>> -    if (!iommu_is_dma_domain(domain))
+>> -        return 0;
+>> -
+>> -    BUG_ON(!domain->pgsize_bitmap);
+>> -
+>> -    pg_size = 1UL << __ffs(domain->pgsize_bitmap);
+>> +    pg_size = domain->pgsize_bitmap ? 1UL << 
+>> __ffs(domain->pgsize_bitmap) : 0;
+> Would it be better to add the following check here?
+>      if (WARN_ON(!pg_size))
+>              return -EINVAL;
 > 
-> "dev->iommu->max_pasids == 0" indicates no pasid support on the device.
-> The code should return IOMMU_PASID_INVALID explicitly. Perhaps we can
-> make this function like this:
-> 
-> ioasid_t iommu_alloc_global_pasid_dev(struct device *dev)
-> {
->          int ret;
-> 
->          if (!dev->iommu->max_pasids)
->                  return IOMMU_PASID_INVALID;
-> 
->          /*
->           * max_pasids is set up by vendor driver based on number of 
-> PASID bits
->           * supported but the IDA allocation is inclusive.
->           */
->          ret = ida_alloc_range(&iommu_global_pasid_ida, 
-> IOMMU_FIRST_GLOBAL_PASID,
->                                dev->iommu->max_pasids - 1, GFP_KERNEL);
-> 
->          return ret < 0 ? IOMMU_PASID_INVALID : ret;
-> }
-> EXPORT_SYMBOL_GPL(iommu_alloc_global_pasid_dev);
-> 
-> Other change in this series looks good to me.
-> 
-> I hope I can queue this series including above change as part of my VT-d
-> update for v6.5 to Joerg if no objection.
-> 
-> Let's try to re-enable this key feature of Intel idxd driver in v6.5.
+> Instead of checking latter in the loop as follows.
+>      if (WARN_ON_ONCE(!pg_size)) {
+>              ret = -EINVAL;
+>              goto out;
+>      }
 
-This series didn't pass my test.
-
-The first time when I run "idxd_ktest.sh -c 1 -t 1 -i 100 -m shared", it
-passed. But when I run it again, the idxd hardware operation resulted in
-timed-out issues.
-
-I have removed this series from my queue.
+I am afraid no. Only the paging domains need a valid pg_size. That's the
+reason why I put it after the iommu_is_dma_domain() check. The previous
+code has the same behavior too.
 
 Best regards,
 baolu
