@@ -1,145 +1,158 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D61787F
-	for <iommu@lists.linux.dev>; Tue, 13 Jun 2023 03:15:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686626141; x=1718162141;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=2YVq3aZ9XIb0zceB5aVAvaOJdnAo1cIPmdg8DLRTCLU=;
-  b=RECczq4ijrgMofYOofaSxkbbGi1L/Gc5kiYude2MfV0lyYtfrAFHVX0c
-   24Z4jiYqqFw37aiQFmpcE7dngbDyGQxtXH5MjFBkBfeJIL0UMD6q5Uw5C
-   xrIbNE8CA5utjCecQng8niIvl9sbUTMENXMINv8Qwea4LBKKGjoZV42K+
-   kTWG/riL92A1+W43bCuw0mb14XJNUVn+PHAndhGwPs7Mrqwj5SDFMeMO7
-   L65nmDH7QgpJvAvS/9Ct2fsmsb9VbVYaV+DnAPBb2SgKWv+S5EkW4nX8W
-   xMm/tVnGz0g3PgJaa72wj0iydlSr4N8KX72GjCRWa400ugt4V6R7pilLU
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10739"; a="421807840"
-X-IronPort-AV: E=Sophos;i="6.00,238,1681196400"; 
-   d="scan'208";a="421807840"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2023 20:15:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10739"; a="958242936"
-X-IronPort-AV: E=Sophos;i="6.00,238,1681196400"; 
-   d="scan'208";a="958242936"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmsmga006.fm.intel.com with ESMTP; 12 Jun 2023 20:15:37 -0700
-Message-ID: <69f50ced-e806-717a-0c74-a4cfa58600fa@linux.intel.com>
-Date: Tue, 13 Jun 2023 11:14:30 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14D57361
+	for <iommu@lists.linux.dev>; Tue, 13 Jun 2023 04:42:53 +0000 (UTC)
+Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-51873e43986so399817a12.2
+        for <iommu@lists.linux.dev>; Mon, 12 Jun 2023 21:42:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=brainfault-org.20221208.gappssmtp.com; s=20221208; t=1686631372; x=1689223372;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=CzwXO5LLinsbc81q9m0mJrThXDrRsGSZgZKBrqcWDhU=;
+        b=Re/JoZDdl7WWFhPNRzXIFIPRLlnyd5pZGoZse5aP6tFTQ1ruH4SblQBU/qotEyJ8+O
+         iMqIDMjO/+jluK8C/6EtzKspe3cTT3unitXHicVeJQf2SUUyk0agBJRXEkoityiA8USl
+         v82m85Hryu0TtYHH2IvWElQGzoJEg1Hu9nIdWCU1jFX2Bahe/MV3MRRvw/Ijm+3gPMB5
+         oTjOChfwoW7JOm9AYO1Uq0jt6SzTUsTP/bekTVKCXC9wOrzlXcAHZw8HEfWsXmQurh+D
+         6NBihHB3EucGRXJ+Rsd7kWSihtlrYwnUX7Kmnsaw2UqKgcpvTyaaNakSa1BFWTDPXa4R
+         HabA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686631372; x=1689223372;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=CzwXO5LLinsbc81q9m0mJrThXDrRsGSZgZKBrqcWDhU=;
+        b=C8zUYvkBT/tm5tIh4jhCdeCpEcQYeLIe4JlEBpPgRVxgJ6YQhVAbwGDKSnQ0Rp2+z8
+         qzUf4nXfRjNg2wVfIIUswsbOmHXQsRHvabtW6suZ7bGpbu5fBrvKMF46SRZzkRMLKID8
+         LNZmqyQKSlI5EYxaMFZShoODGEberJPU6qRQNBNZNiSbhdGB1otZ3V/eqzyaWIOuy+pa
+         6tTj6NkQ9eFnEiLMYhBAob2MqfwKiRAKYIQzzQVF+Pg5ElB/H/EBAazCo15iLLqd67L+
+         Z5KGMuR1eCCMMZPzqFJyG36Wm/6ftaGzuZUnLhaP0bW9KErfJPuy/2LZrXhyEC/UtMwB
+         ZEAA==
+X-Gm-Message-State: AC+VfDxm9lBJD6lV6EU/rIfq8TR8IsHYzB6Eddu2CPbCvgFb8Ogw90iM
+	EzwGBYnYZ/7rqHcEivQsxwlrh+t6/t1Z9+Bokj5G5Q==
+X-Google-Smtp-Source: ACHHUZ4ETr5UZ3VbtqL8LS3ZVa0OXp7qvMh694ytmLxSCEv5jRu14utuMLjd7mOBnSDm2aadOjxLwJ3P3GoNW1vtYdA=
+X-Received: by 2002:aa7:c553:0:b0:508:3b1f:e6b5 with SMTP id
+ s19-20020aa7c553000000b005083b1fe6b5mr5571374edr.15.1686631371900; Mon, 12
+ Jun 2023 21:42:51 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev, kvm@vger.kernel.org,
- linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH 1/2] iommu: Prevent RESV_DIRECT devices from blocking
- domains
-Content-Language: en-US
-To: "Liu, Jingqi" <jingqi.liu@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Nicolin Chen <nicolinc@nvidia.com>
-References: <20230607035145.343698-1-baolu.lu@linux.intel.com>
- <20230607035145.343698-2-baolu.lu@linux.intel.com>
- <8cc1d69e-f86d-fd04-7737-914d967dc0f5@intel.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <8cc1d69e-f86d-fd04-7737-914d967dc0f5@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20230508142842.854564-1-apatel@ventanamicro.com>
+ <20230508142842.854564-3-apatel@ventanamicro.com> <20230608182828.GA3183987-robh@kernel.org>
+ <CAGETcx_4OH=EmSUL2-rwKa=1uoOj+AH_xn4PoPsc0kt_aU0WOg@mail.gmail.com>
+ <CAK9=C2V1LH0739Nq5Ji7gGbgbyFtNAtBYR43fU7vr9omD5tKSA@mail.gmail.com> <CAGETcx--aEEB6ag1qGcEeygPyZM9Q-T1NOY+wK911LGJGisN8Q@mail.gmail.com>
+In-Reply-To: <CAGETcx--aEEB6ag1qGcEeygPyZM9Q-T1NOY+wK911LGJGisN8Q@mail.gmail.com>
+From: Anup Patel <anup@brainfault.org>
+Date: Tue, 13 Jun 2023 10:12:40 +0530
+Message-ID: <CAAhSdy2p6K70fc2yZLPdVGqEq61Y8F7WVT2J8st5mQrzBi4WHg@mail.gmail.com>
+Subject: Re: [PATCH v3 02/11] of/irq: Set FWNODE_FLAG_BEST_EFFORT for the
+ interrupt controller DT nodes
+To: Saravana Kannan <saravanak@google.com>
+Cc: Anup Patel <apatel@ventanamicro.com>, Rob Herring <robh@kernel.org>, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
+	Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Frank Rowand <frowand.list@gmail.com>, 
+	Atish Patra <atishp@atishpatra.org>, Andrew Jones <ajones@ventanamicro.com>, 
+	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	devicetree@vger.kernel.org, iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 6/12/23 4:28 PM, Liu, Jingqi wrote:
-> On 6/7/2023 11:51 AM, Lu Baolu wrote:
->> The IOMMU_RESV_DIRECT flag indicates that a memory region must be mapped
->> 1:1 at all times. This means that the region must always be accessible to
->> the device, even if the device is attached to a blocking domain. This is
->> equal to saying that IOMMU_RESV_DIRECT flag prevents devices from being
->> attached to blocking domains.
->>
->> This also implies that devices that implement RESV_DIRECT regions will be
->> prevented from being assigned to user space since taking the DMA 
->> ownership
->> immediately switches to a blocking domain.
->>
->> The rule of preventing devices with the IOMMU_RESV_DIRECT regions from
->> being assigned to user space has existed in the Intel IOMMU driver for
->> a long time. Now, this rule is being lifted up to a general core rule,
->> as other architectures like AMD and ARM also have RMRR-like reserved
->> regions. This has been discussed in the community mailing list and refer
->> to below link for more details.
->>
->> Other places using unmanaged domains for kernel DMA must follow the
->> iommu_get_resv_regions() and setup IOMMU_RESV_DIRECT - we do not restrict
->> them in the core code.
->>
->> Cc: Robin Murphy <robin.murphy@arm.com>
->> Cc: Alex Williamson <alex.williamson@redhat.com>
->> Cc: Kevin Tian <kevin.tian@intel.com>
->> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
->> Link: 
->> https://lore.kernel.org/linux-iommu/BN9PR11MB5276E84229B5BD952D78E9598C639@BN9PR11MB5276.namprd11.prod.outlook.com
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> ---
->>   include/linux/iommu.h |  2 ++
->>   drivers/iommu/iommu.c | 39 +++++++++++++++++++++++++++++----------
->>   2 files changed, 31 insertions(+), 10 deletions(-)
->>
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index d31642596675..fd18019ac951 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -409,6 +409,7 @@ struct iommu_fault_param {
->>    * @priv:     IOMMU Driver private data
->>    * @max_pasids:  number of PASIDs this device can consume
->>    * @attach_deferred: the dma domain attachment is deferred
->> + * @requires_direct: The driver requested IOMMU_RESV_DIRECT
->>    *
->>    * TODO: migrate other per device data pointers under 
->> iommu_dev_data, e.g.
->>    *    struct iommu_group    *iommu_group;
->> @@ -422,6 +423,7 @@ struct dev_iommu {
->>       void                *priv;
->>       u32                max_pasids;
->>       u32                attach_deferred:1;
->> +    u32                requires_direct:1;
->>   };
->>   int iommu_device_register(struct iommu_device *iommu,
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 9e0228ef612b..e59de7852067 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -959,12 +959,7 @@ static int 
->> iommu_create_device_direct_mappings(struct iommu_domain *domain,
->>       unsigned long pg_size;
->>       int ret = 0;
->> -    if (!iommu_is_dma_domain(domain))
->> -        return 0;
->> -
->> -    BUG_ON(!domain->pgsize_bitmap);
->> -
->> -    pg_size = 1UL << __ffs(domain->pgsize_bitmap);
->> +    pg_size = domain->pgsize_bitmap ? 1UL << 
->> __ffs(domain->pgsize_bitmap) : 0;
-> Would it be better to add the following check here?
->      if (WARN_ON(!pg_size))
->              return -EINVAL;
-> 
-> Instead of checking latter in the loop as follows.
->      if (WARN_ON_ONCE(!pg_size)) {
->              ret = -EINVAL;
->              goto out;
->      }
+On Sat, Jun 10, 2023 at 2:47=E2=80=AFAM Saravana Kannan <saravanak@google.c=
+om> wrote:
+>
+> On Fri, Jun 9, 2023 at 4:40=E2=80=AFAM Anup Patel <apatel@ventanamicro.co=
+m> wrote:
+> >
+> > On Fri, Jun 9, 2023 at 1:35=E2=80=AFAM Saravana Kannan <saravanak@googl=
+e.com> wrote:
+> > >
+> > > On Thu, Jun 8, 2023 at 11:28=E2=80=AFAM Rob Herring <robh@kernel.org>=
+ wrote:
+> > > >
+> > > > +Saravana
+> > > >
+> > > > On Mon, May 08, 2023 at 07:58:33PM +0530, Anup Patel wrote:
+> > > > > The RISC-V APLIC interrupt controller driver is a regular platfor=
+m
+> > > > > driver so we need to ensure that it is probed as soon as possible=
+.
+> > > > > To achieve this, we mark the interrupt controller device nodes wi=
+th
+> > > > > FWNODE_FLAG_BEST_EFFORT (just like console DT node).
+> > > > >
+> > > > > Fixes: 8f486cab263c ("driver core: fw_devlink: Allow firmware to =
+mark devices as best effort")
+> > > >
+> > > > It is good practice to Cc the commit author of what you are fixing.
+> > > >
+> > > > > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> > > > > ---
+> > > > >  drivers/of/irq.c | 10 ++++++++++
+> > > > >  1 file changed, 10 insertions(+)
+> > > > >
+> > > > > diff --git a/drivers/of/irq.c b/drivers/of/irq.c
+> > > > > index 174900072c18..94e1d9245cff 100644
+> > > > > --- a/drivers/of/irq.c
+> > > > > +++ b/drivers/of/irq.c
+> > > > > @@ -535,6 +535,16 @@ void __init of_irq_init(const struct of_devi=
+ce_id *matches)
+> > > > >       INIT_LIST_HEAD(&intc_desc_list);
+> > > > >       INIT_LIST_HEAD(&intc_parent_list);
+> > > > >
+> > > > > +     /*
+> > > > > +      * We need interrupt controller platform drivers to work as=
+ soon
+> > > >
+> > > > If it's platform drivers/devices you care about, then perhaps this
+> > > > should be done when platform devices are created.
+> > > >
+> > > > > +      * as possible so mark the interrupt controller device node=
+s with
+> > > > > +      * FWNODE_FLAG_BEST_EFFORT so that fw_delink knows not to d=
+elay
+> > > > > +      * the probe of the interrupt controller device for supplie=
+rs
+> > > > > +      * without drivers.
+> > > > > +      */
+> > > > > +     for_each_node_with_property(np, "interrupt-controller")
+> > > >
+> > > > This function only operates on nodes matching 'matches', but this
+> > > > operates on everything.
+> > > >
+> > > > It does make sense that if we init an interrupt controller here, th=
+en we
+> > > > will surely want to probe its driver later on. So maybe just move
+> > > > setting FWNODE_FLAG_BEST_EFFORT within
+> > > > for_each_matching_node_and_match() below.
+> > > >
+> > > > > +             np->fwnode.flags |=3D FWNODE_FLAG_BEST_EFFORT;
+> > > > > +
+> > >
+> > > Definite Nack. You are pretty much disabling fw_devlink for all
+> > > interrupt controllers. There are plenty of examples of the IRQ driver=
+s
+> > > being needed very early on and still probing properly without the nee=
+d
+> > > for this flag. Please fix your driver/DT.
+> >
+> > Okay, I will try to set FWNODE_FLAG_BEST_EFFORT only for
+> > APLIC device_node via IRQCHIP_DECLARE().
+>
+> No, my point is that you very likely don't need to use that flag.
+>
+> What exactly is the problem you are facing? Point to an example RISC-V
+> dts (not dtsi) in upstream and give specifics please.
 
-I am afraid no. Only the paging domains need a valid pg_size. That's the
-reason why I put it after the iommu_is_dma_domain() check. The previous
-code has the same behavior too.
+The APLIC irqchip driver added by this series is a platform driver. It
+used to work fine without setting FWNODE_FLAG_BEST_EFFORT
+flag in fwnode but after commit 8f486cab263c the APLIC irqchip
+driver did not probe hence this fix.
 
-Best regards,
-baolu
+Regards,
+Anup
