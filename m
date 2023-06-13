@@ -1,110 +1,174 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E597B3C25
-	for <iommu@lists.linux.dev>; Tue, 13 Jun 2023 11:13:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E4EEC433EF;
-	Tue, 13 Jun 2023 11:13:49 +0000 (UTC)
-Date: Tue, 13 Jun 2023 12:13:46 +0100
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: Vlastimil Babka <vbabka@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	Ard Biesheuvel <ardb@kernel.org>,
-	Isaac Manjarres <isaacmanjarres@google.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 319E923DB
+	for <iommu@lists.linux.dev>; Tue, 13 Jun 2023 15:34:33 +0000 (UTC)
+Received: by mail-oi1-f179.google.com with SMTP id 5614622812f47-39ca48cd4c6so3082031b6e.0
+        for <iommu@lists.linux.dev>; Tue, 13 Jun 2023 08:34:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google; t=1686670473; x=1689262473;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=VsADkvrA5S1kbrkqvdaSHEE1vVM0lyWbIsRf34hJch0=;
+        b=QcvoS6qCya0lGy2C9YBKXjfHCysqEV2Tg24L2Vp+nEQmSCcH3TK/NUl7vsZRw7Giph
+         NHql/xcBrcrK8cCu7oiQXI5BZJKbKFXJEOC4eS57uWZ84WQ/CObt+fV97Aa3QikDz1/s
+         aOhi24sVsYx1ZlzEuFhCW5ZjKZWI7CIQ4qsFDic+p9MAvEbihcWrphyw9WfFEV4FPhu5
+         oTYIpXiwkFczKZLkbvIcyWeDAnO8BFaEcd0XvjCQyvl/a/8vLhO9baZOl2+z/szJ5SSZ
+         6eai9sdV3DkHmGivTEPlkWhBaMUw1+TOz29I/gWwZbPKQQTsb4SVwrNC1SpVONI+JUuT
+         sLxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686670473; x=1689262473;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=VsADkvrA5S1kbrkqvdaSHEE1vVM0lyWbIsRf34hJch0=;
+        b=EImbnDXS2CMq3XNF++O7UaGHqnyzXGjrhrzPpDchb3dknC3DVXwTb32wXTLPJca4oO
+         FVtWIRkWVCF4om7a2VLF2doRGPBp6T9hY1ZcECmdvpJmEpbYn5AgKFEly1YsC/9M9JGo
+         ybjeUjwajI9wXQTdcUuqWuAA/zKf74DZ4TO6pCL8BU8dUwdfKCA5bYKmGG8nmBuIPX7K
+         2y/BkmoVVHY52o2L6wnQwVImmYsCrDm2zJUiZ5n9eP/CbN4eszh5R8TW2OXh6ArRg/Wz
+         u9RqAe7rsMF1SUqiGsbtbO4hmbRe6vTcYE9CYjMYYsYia2dTd+T2wwAZqQAE3DN6bj7i
+         L3KA==
+X-Gm-Message-State: AC+VfDzEeov7XcGbpLO1abRRmRz6d4xSlXYAOn/FYKMxUUJbFBaYLsUO
+	/yOsCoDuv0mHKafBB4oH1pd3pA==
+X-Google-Smtp-Source: ACHHUZ5C6PHpJR9woDHJHbAl8srvmzU0pQcvBbUPxH8+bIF5BtDVwfB8mNfUN66XKC+7bA5NTe9D2w==
+X-Received: by 2002:a05:6808:181f:b0:399:b0ee:de1 with SMTP id bh31-20020a056808181f00b00399b0ee0de1mr8291881oib.49.1686670472960;
+        Tue, 13 Jun 2023 08:34:32 -0700 (PDT)
+Received: from anup-ubuntu-vm.localdomain ([103.97.165.210])
+        by smtp.gmail.com with ESMTPSA id n2-20020acabd02000000b0039ce305ea4fsm1630807oif.14.2023.06.13.08.34.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Jun 2023 08:34:32 -0700 (PDT)
+From: Anup Patel <apatel@ventanamicro.com>
+To: Palmer Dabbelt <palmer@dabbelt.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Marc Zyngier <maz@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>
+Cc: Atish Patra <atishp@atishpatra.org>,
+	Andrew Jones <ajones@ventanamicro.com>,
+	Conor Dooley <conor@kernel.org>,
 	Saravana Kannan <saravanak@google.com>,
-	Alasdair Kergon <agk@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
-	Joerg Roedel <joro@8bytes.org>, Mark Brown <broonie@kernel.org>,
-	Mike Snitzer <snitzer@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>, linux-mm@kvack.org,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	Michael Ellerman <mpe@ellerman.id.au>
-Subject: Re: [PATCH v7 01/17] mm/slab: Decouple ARCH_KMALLOC_MINALIGN from
- ARCH_DMA_MINALIGN
-Message-ID: <ZIhPaixb/0ve7zZo@arm.com>
-References: <20230612153201.554742-1-catalin.marinas@arm.com>
- <20230612153201.554742-2-catalin.marinas@arm.com>
- <5faed13c-43f2-66ef-c42c-7d7bebb224d8@suse.cz>
+	Anup Patel <anup@brainfault.org>,
+	linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	iommu@lists.linux.dev,
+	Anup Patel <apatel@ventanamicro.com>
+Subject: [PATCH v4 00/10] Linux RISC-V AIA Support
+Date: Tue, 13 Jun 2023 21:04:05 +0530
+Message-Id: <20230613153415.350528-1-apatel@ventanamicro.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5faed13c-43f2-66ef-c42c-7d7bebb224d8@suse.cz>
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jun 13, 2023 at 11:46:31AM +0200, Vlastimil Babka wrote:
-> On 6/12/23 17:31, Catalin Marinas wrote:
-> > In preparation for supporting a kmalloc() minimum alignment smaller than
-> > the arch DMA alignment, decouple the two definitions. This requires that
-> > either the kmalloc() caches are aligned to a (run-time) cache-line size
-> > or the DMA API bounces unaligned kmalloc() allocations. Subsequent
-> > patches will implement both options.
-> > 
-> > After this patch, ARCH_DMA_MINALIGN is expected to be used in static
-> > alignment annotations and defined by an architecture to be the maximum
-> > alignment for all supported configurations/SoCs in a single Image.
-> > Architectures opting in to a smaller ARCH_KMALLOC_MINALIGN will need to
-> > define its value in the arch headers.
-> > 
-> > Since ARCH_DMA_MINALIGN is now always defined, adjust the #ifdef in
-> > dma_get_cache_alignment() so that there is no change for architectures
-> > not requiring a minimum DMA alignment.
-> > 
-> > Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-> > Cc: Andrew Morton <akpm@linux-foundation.org>
-> > Cc: Vlastimil Babka <vbabka@suse.cz>
-> > Cc: Christoph Hellwig <hch@lst.de>
-> > Cc: Robin Murphy <robin.murphy@arm.com>
-> > Tested-by: Isaac J. Manjarres <isaacmanjarres@google.com>
-> 
-> Acked-by: Vlastimil Babka <vbabka@suse.cz>
+The RISC-V AIA specification is now frozen as-per the RISC-V international
+process. The latest frozen specifcation can be found at:
+https://github.com/riscv/riscv-aia/releases/download/1.0-RC1/riscv-interrupts-1.0-RC1.pdf
 
-Thanks for the ack.
+At a high-level, the AIA specification adds three things:
+1) AIA CSRs
+   - Improved local interrupt support
+2) Incoming Message Signaled Interrupt Controller (IMSIC)
+   - Per-HART MSI controller
+   - Support MSI virtualization
+   - Support IPI along with virtualization
+3) Advanced Platform-Level Interrupt Controller (APLIC)
+   - Wired interrupt controller
+   - In MSI-mode, converts wired interrupt into MSIs (i.e. MSI generator)
+   - In Direct-mode, injects external interrupts directly into HARTs
 
-It looks like moving the ARCH_DMA_MINALIGN definition to linux/cache.h
-messes up powerpc32 -
-https://lore.kernel.org/r/202306131053.1ybvRRhO-lkp@intel.com - possibly
-a few other architecture that define this macro in a file other than
-asm/cache.h (I only tested powerpc64 before posting).
+For an overview of the AIA specification, refer the recent AIA virtualization
+talk at KVM Forum 2022:
+https://static.sched.com/hosted_files/kvmforum2022/a1/AIA_Virtualization_in_KVM_RISCV_final.pdf
+https://www.youtube.com/watch?v=r071dL8Z0yo
 
-At a quick grep, we have:
+The PATCH2 of this series conflicts with the "irqchip/riscv-intc: Add ACPI
+support" patch of the "Add basic ACPI support for RISC-V" series hence this
+series is based upon the "Add basic ACPI support for RISC-V" series.
+(Refer, https://lore.kernel.org/lkml/20230515054928.2079268-1-sunilvl@ventanamicro.com/)
 
-  arch/microblaze/include/asm/page.h:34: #define ARCH_DMA_MINALIGN       L1_CACHE_BYTES
+To test this series, use QEMU v7.2 (or higher) and OpenSBI v1.2 (or higher).
 
-This could be moved to asm/cache.h. It probably already relies on some
-indirect includes.
+These patches can also be found in the riscv_aia_v4 branch at:
+https://github.com/avpatel/linux.git
 
-  arch/mips/include/asm/mach-generic/kmalloc.h:10: #define ARCH_DMA_MINALIGN       128
-  arch/mips/include/asm/mach-ip32/kmalloc.h:7: #define ARCH_DMA_MINALIGN       32
-  arch/mips/include/asm/mach-ip32/kmalloc.h:9: #define ARCH_DMA_MINALIGN       128
-  arch/mips/include/asm/mach-n64/kmalloc.h:6: #define ARCH_DMA_MINALIGN L1_CACHE_BYTES
-  arch/mips/include/asm/mach-tx49xx/kmalloc.h:5: #define ARCH_DMA_MINALIGN L1_CACHE_BYTES
+Changes since v3:
+ - Rebased on Linux-6.4-rc6
+ - Droped PATCH2 of v3 series instead we now set FWNODE_FLAG_BEST_EFFORT via
+   IRQCHIP_DECLARE()
+ - Extend riscv_fw_parent_hartid() to support both DT and ACPI in PATCH1
+ - Extend iommu_dma_compose_msi_msg() instead of adding iommu_dma_select_msi()
+   in PATCH6
+ - Addressed Conor's comments in PATCH3
+ - Addressed Conor's and Rob's comments in PATCH7
 
-These are ok since kmalloc.h is included in asm/cache.h.
+Changes since v2:
+ - Rebased on Linux-6.4-rc1
+ - Addressed Rob's comments on DT bindings patches 4 and 8.
+ - Addessed Marc's comments on IMSIC driver PATCH5
+ - Replaced use of OF apis in APLIC and IMSIC drivers with FWNODE apis
+   this makes both drivers easily portable for ACPI support. This also
+   removes unnecessary indirection from the APLIC and IMSIC drivers.
+ - PATCH1 is a new patch for portability with ACPI support
+ - PATCH2 is a new patch to fix probing in APLIC drivers for APLIC-only systems.
+ - PATCH7 is a new patch which addresses the IOMMU DMA domain issues pointed
+   out by SiFive
 
-  arch/powerpc/include/asm/page_32.h:16: #define ARCH_DMA_MINALIGN       L1_CACHE_BYTES
+Changes since v1:
+ - Rebased on Linux-6.2-rc2
+ - Addressed comments on IMSIC DT bindings for PATCH4
+ - Use raw_spin_lock_irqsave() on ids_lock for PATCH5
+ - Improved MMIO alignment checks in PATCH5 to allow MMIO regions
+   with holes.
+ - Addressed comments on APLIC DT bindings for PATCH6
+ - Fixed warning splat in aplic_msi_write_msg() caused by
+   zeroed MSI message in PATCH7
+ - Dropped DT property riscv,slow-ipi instead will have module
+   parameter in future.
 
-I'd move this macro to asm/cache.h on powerpc. asm/page_32.h already
-includes asm/cache.h.
+Anup Patel (10):
+  RISC-V: Add riscv_fw_parent_hartid() function
+  irqchip/riscv-intc: Add support for RISC-V AIA
+  dt-bindings: interrupt-controller: Add RISC-V incoming MSI controller
+  irqchip: Add RISC-V incoming MSI controller driver
+  irqchip/riscv-imsic: Add support for PCI MSI irqdomain
+  irqchip/riscv-imsic: Improve IOMMU DMA support
+  dt-bindings: interrupt-controller: Add RISC-V advanced PLIC
+  irqchip: Add RISC-V advanced PLIC driver
+  RISC-V: Select APLIC and IMSIC drivers
+  MAINTAINERS: Add entry for RISC-V AIA drivers
 
-  arch/sh/include/asm/page.h:181: #define ARCH_DMA_MINALIGN       L1_CACHE_BYTES
-
-Same here. L1_CACHE_BYTES is defined in asm/cache.h but it's not
-included in asm/page.h, so I guess it's relying on some indirect
-includes.
-
-I'll post three more patches to move the ARCH_DMA_MINALIGN to
-asm/cache.h for microblaze, powerpc and sh (once I finished build
-testing).
+ .../interrupt-controller/riscv,aplic.yaml     |  169 +++
+ .../interrupt-controller/riscv,imsics.yaml    |  172 +++
+ MAINTAINERS                                   |   12 +
+ arch/riscv/Kconfig                            |    2 +
+ arch/riscv/include/asm/processor.h            |    3 +
+ arch/riscv/kernel/cpu.c                       |   16 +
+ drivers/iommu/dma-iommu.c                     |   24 +-
+ drivers/irqchip/Kconfig                       |   20 +-
+ drivers/irqchip/Makefile                      |    2 +
+ drivers/irqchip/irq-riscv-aplic.c             |  765 ++++++++++++
+ drivers/irqchip/irq-riscv-imsic.c             | 1076 +++++++++++++++++
+ drivers/irqchip/irq-riscv-intc.c              |   36 +-
+ include/linux/irqchip/riscv-aplic.h           |  119 ++
+ include/linux/irqchip/riscv-imsic.h           |   86 ++
+ 14 files changed, 2492 insertions(+), 10 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/interrupt-controller/riscv,aplic.yaml
+ create mode 100644 Documentation/devicetree/bindings/interrupt-controller/riscv,imsics.yaml
+ create mode 100644 drivers/irqchip/irq-riscv-aplic.c
+ create mode 100644 drivers/irqchip/irq-riscv-imsic.c
+ create mode 100644 include/linux/irqchip/riscv-aplic.h
+ create mode 100644 include/linux/irqchip/riscv-imsic.h
 
 -- 
-Catalin
+2.34.1
+
