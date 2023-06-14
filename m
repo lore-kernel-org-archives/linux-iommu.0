@@ -1,129 +1,106 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB9D22EC16
-	for <iommu@lists.linux.dev>; Wed, 14 Jun 2023 19:27:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4C2FC433C0;
-	Wed, 14 Jun 2023 19:27:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686770849;
-	bh=T2ORHO5yFSlNbPCHm8exnTbQMAiovym6Yw8Agz5UFng=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=mTMCil+hklnlF1wdBdgexpCOuFi7k1H8k1v4rWagRqV3dxUorHBVWLvou82XCQT8/
-	 jGgNlk8Ejwuimir91p35ihiH6bHZUUrwQqRDeRZgQL1tDYxS/Ig7Y28b2KpoP74PQP
-	 kjFwt2HNJmkbJL06LaIx9f95tFxmKDQAkPlvRt0PTrDM/HhW3/Bm1lH46mPgZ2kYA3
-	 AkRZ7zBaMSKFK5ptaSPTUDDg+omBNLLOKpL41HRYpqsUsDS37laN3QtBlcz1E3dMGk
-	 JXhBGHlC+rn9z6ohcuooizlA1WQTPc5Jc1eq9JeNUTEIu7fvwCZjNQBV1UBO6JP6Ck
-	 2bTCSnLKgL2KQ==
-Date: Wed, 14 Jun 2023 20:27:23 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Anup Patel <apatel@ventanamicro.com>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Frank Rowand <frowand.list@gmail.com>,
-	Atish Patra <atishp@atishpatra.org>,
-	Andrew Jones <ajones@ventanamicro.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 269C7125C5
+	for <iommu@lists.linux.dev>; Wed, 14 Jun 2023 23:55:27 +0000 (UTC)
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-1b4fe2139a8so44725ad.1
+        for <iommu@lists.linux.dev>; Wed, 14 Jun 2023 16:55:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1686786927; x=1689378927;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=cp8A+EkiL0VYJVNToeqPquceOf+WVhmFookr8OmaRSM=;
+        b=Pf4mNAMn9dp36uBXyHz5uNXAjSQ4WYXHKBb2JMlBKTTRzb2BLWNto0F8B2d2/+tVBB
+         IISvciJ6L2DBe+qRhbWFmtkLfrflUm/aUmxcEfxGIwEUPNPUb2rfS9cnniqVH3GNjo5u
+         JELvww7og3gzZyrQzIJfpYaMKrhKTNlk7n/q9e5KAxJAklyLW8Kiyed8IiqRv4thceR3
+         Ale9dLKP8uUuLq/J8kt95IcPg1U+DE0y+l0FjjcShQZ/aErLILik0i5/r+nytzfRPAgd
+         4Y9+M6DlE4l/z/Ty3v6/aY48Ov8bOB2pMIngjCGP5oGtmY5bpI2jbrEDOzqPLWRFyXZC
+         tTQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686786927; x=1689378927;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cp8A+EkiL0VYJVNToeqPquceOf+WVhmFookr8OmaRSM=;
+        b=aVCFypjLH9s5VXAY8O0zHPDuLZ7nWmwPn9dpK+q5BZRXLKqgRm+Tp3n/O7Hbi/NDiz
+         pPkOeKZI0yAHX+gEjSyzPZ5tqHgFVDmnNbG8WydoLfhmnNCmAAKe1RCHyuf9p+le75iX
+         V0SWm8g2a9TA0nOMraMrsc2WdZzUczap00l9BuyB2stlUP3vw9K9qxYs7YG3GXp0H/aR
+         ANLo0iJN4ev6cbZ6nDmINdEntKDZNtn6KONawkRCMnyL2DiEe2TaUMfXTHrFFOkAZR8d
+         e8+6wlaYlz25rDvR8SMCJnyWGhOsgkQI512nyOJdg2wItKL7x3xX8npq+BZVpeUU/ba6
+         /qLA==
+X-Gm-Message-State: AC+VfDyrL9nGB/Tm58KHpRRdNOZmpsPfNj41PfiIecAYgLarIX5++UJM
+	Tc50bM5KqfJy8KiHyDeqZ91uIw==
+X-Google-Smtp-Source: ACHHUZ4LZ3tbRG7AocVYuv1WtNna6ocaxw45maUfrbQyz+pehk7SJKYGZchCEC1ssOUIwjWnOtBZrg==
+X-Received: by 2002:a17:903:5cb:b0:1b0:4687:ba19 with SMTP id kf11-20020a17090305cb00b001b04687ba19mr108329plb.10.1686786927017;
+        Wed, 14 Jun 2023 16:55:27 -0700 (PDT)
+Received: from google.com ([2620:15c:2d:3:ac7a:bf2e:1950:e94c])
+        by smtp.gmail.com with ESMTPSA id b17-20020aa78111000000b006542e358721sm10853520pfi.186.2023.06.14.16.55.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Jun 2023 16:55:26 -0700 (PDT)
+Date: Wed, 14 Jun 2023 16:55:21 -0700
+From: Isaac Manjarres <isaacmanjarres@google.com>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Tomonori Fujita <tomonori.fujita@ntt.com>,
+	Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>,
+	Ard Biesheuvel <ardb@kernel.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Linus Torvalds <torvalds@linux-foundation.org>,
+	Robin Murphy <robin.murphy@arm.com>, Arnd Bergmann <arnd@arndb.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
 	Saravana Kannan <saravanak@google.com>,
-	Anup Patel <anup@brainfault.org>, linux-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH v4 07/10] dt-bindings: interrupt-controller: Add RISC-V
- advanced PLIC
-Message-ID: <20230614-devotee-repave-37d670dbfb7c@spud>
-References: <20230613153415.350528-1-apatel@ventanamicro.com>
- <20230613153415.350528-8-apatel@ventanamicro.com>
+	Alasdair Kergon <agk@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Joerg Roedel <joro@8bytes.org>, Mark Brown <broonie@kernel.org>,
+	Mike Snitzer <snitzer@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	"linux-mm@kvack.org" <linux-mm@kvack.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	FUJITA Tomonori <fujita.tomonori@lab.ntt.co.jp>,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Subject: Re: [PATCH v6 00/17] mm, dma, arm64: Reduce ARCH_KMALLOC_MINALIGN to
+ 8
+Message-ID: <ZIpTafmE2r9sA5EV@google.com>
+References: <20230531154836.1366225-1-catalin.marinas@arm.com>
+ <CABfwK12_wC1t5J9c8qRmUi9H4GtYc6KR9oeJPi8ucK36prhUzQ@mail.gmail.com>
+ <CAMj1kXHP_57EOOYQtuL2NO9=7sHPxrX=c0ayYwHaYx9x9hxhJw@mail.gmail.com>
+ <ZIJISbauzCR/oKby@google.com>
+ <20230609101156.6f17e3c6@meshulam.tesarici.cz>
+ <TYWPR01MB101127656AB0A0D5DB1FF4CB3F354A@TYWPR01MB10112.jpnprd01.prod.outlook.com>
+ <20230612074755.GA24234@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="5BjMorMatJMI/kO2"
-Content-Disposition: inline
-In-Reply-To: <20230613153415.350528-8-apatel@ventanamicro.com>
-
-
---5BjMorMatJMI/kO2
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20230612074755.GA24234@lst.de>
 
-Hey Anup,
+On Mon, Jun 12, 2023 at 09:47:55AM +0200, Christoph Hellwig wrote:
+> On Mon, Jun 12, 2023 at 07:44:46AM +0000, Tomonori Fujita wrote:
+> > I cannot recall the patch but from quick look, moving trace_swiotlb_bounced() to
+> > swiotlb_tbl_map_single() makes sense.
+> 
+> Agreed.
 
-Mostly looks good, once minor comment.
+There's actually two call-sites for trace_swiotlb_bounced():
+swiotlb_map() and xen_swiotlb_map_page(). Both those functions
+also invoke swiotlb_tbl_map_single(), so moving the call to
+trace_swiotlb_bounced() to swiotlb_tbl_map_single() means that
+there will be 2 traces per bounce buffering event.
 
-On Tue, Jun 13, 2023 at 09:04:12PM +0530, Anup Patel wrote:
+The difference between the two call-sites of trace_swiotlb_bounced()
+is that the call in swiotlb_map() uses phys_to_dma() for the device
+address, while xen_swiotlb_map_page() uses xen_phys_to_dma().
 
-> +  riscv,children:
-> +    $ref: /schemas/types.yaml#/definitions/phandle-array
-> +    minItems: 1
-> +    maxItems: 1024
-> +    items:
-> +      maxItems: 1
-> +    description:
-> +      A list of child APLIC domains for the given APLIC domain. Each child
-> +      APLIC domain is assigned a child index in increasing order, with the
-> +      first child APLIC domain assigned child index 0. The APLIC domain child
-> +      index is used by firmware to delegate interrupts from the given APLIC
-> +      domain to a particular child APLIC domain.
-> +
-> +  riscv,delegation:
-> +    $ref: /schemas/types.yaml#/definitions/phandle-array
-> +    minItems: 1
-> +    maxItems: 1024
-> +    items:
-> +      items:
-> +        - description: child APLIC domain phandle
-> +        - description: first interrupt number of the parent APLIC domain (inclusive)
-> +        - description: last interrupt number of the parent APLIC domain (inclusive)
-> +    description:
-> +      A interrupt delegation list where each entry is a triple consisting
-> +      of child APLIC domain phandle, first interrupt number of the parent
-> +      APLIC domain, and last interrupt number of the parent APLIC domain.
-> +      Firmware must configure interrupt delegation registers based on
-> +      interrupt delegation list.
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupt-controller
-> +  - "#interrupt-cells"
-> +  - riscv,num-sources
-> +
-> +anyOf:
-> +  - required:
-> +      - interrupts-extended
-> +  - required:
-> +      - msi-parent
+Would it make sense to move the trace_swiotlb_bounced() call to
+swiotlb_tbl_map_single() and then introduce a
+swiotlb_tbl_map_single_notrace() function which doesn't do the tracing,
+and xen_swiotlb_map_page() can call this?
 
-Not sure if you missed this from the last version, but I asked if we
-needed a
-	dependencies:
-	  riscv,delegate: [ riscv,children ]
-
-IOW, I don't think it is valid to have a delegation without having
-children?
-
-Otherwise,
-Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
-
-Cheers,
-Conor.
-
---5BjMorMatJMI/kO2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZIoUmwAKCRB4tDGHoIJi
-0s8OAQC9Z5JXorm19qiau/8bfDQbErjoln46aJVOZhOB61Zs4AEAldzBD4e5sVZx
-BB4EhiqD4OULcq1ms+OtgVW6TW7zIgE=
-=hrI0
------END PGP SIGNATURE-----
-
---5BjMorMatJMI/kO2--
+--Isaac
