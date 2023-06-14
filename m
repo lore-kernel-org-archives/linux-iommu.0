@@ -1,123 +1,84 @@
-Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C40E10782
-	for <iommu@lists.linux.dev>; Wed, 14 Jun 2023 15:43:27 +0000 (UTC)
-Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-565d1b86a64so11159267b3.3
-        for <iommu@lists.linux.dev>; Wed, 14 Jun 2023 08:43:27 -0700 (PDT)
+Received: from zg8tmja2lje4os4yms4ymjma.icoremail.net (zg8tmja2lje4os4yms4ymjma.icoremail.net [206.189.21.223])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 292F4101EC
+	for <iommu@lists.linux.dev>; Wed, 14 Jun 2023 15:43:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1686757407; x=1689349407;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=mAfUZAOawoyT8CZyBzszrXXIQaEA3XJLD6s2UAVMv7M=;
-        b=klcb7noUuAhdnyf4XlxZkBVy6m4Tak9FnBDCYLv6vayg10s9lLLt3qPnVLxLMx4V/h
-         pzPnayfvfuzQEUOB5XX/2G4ghnontqIKTbMe/zek+dZYqjblajQdwzG5A5/4xyYyQv0d
-         uNT6JXsDQ4tSPqvuddMCl0Qt2DTW0J2AIZ9hpB9C/p7k2dqijFS2u2wBiti+po7ZBLXc
-         EUD2/i+KUUbqSkgvN3ngtvMFkwb8ug7x3Ak6EEbKeN8Lm1RGfOZajT7aoy+JasZ6nVLM
-         be92jLBxtpRiPyw9LnERbrec0UvRLfJPdL+sInjK5bYmS+0vcPh/N9mBFQSxzlY0jGVK
-         J6jA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686757407; x=1689349407;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=mAfUZAOawoyT8CZyBzszrXXIQaEA3XJLD6s2UAVMv7M=;
-        b=HE9mgx3utHROD3xGFoIV3C0cv6jSkYBy2NbQ22bONvWZq5nzDVZvqy2K6JH7v69iX6
-         W5gi6UfLN1lMUzxRo7Lla9FkAJ5Ygmx0Piy7cgd4Ej9Rth/D3IQ8t7oFRgPXagP5ebKR
-         vJnJhe7Nn08Yr3qUh0wb67xqWwNWjjzJeAIm9YtfFQyjrgt1qBArm+Gdx+9TwJ5X/9RT
-         Ra/eaC/dmc747wBB+wX1bRGm5eMEGKpAMyUJOcuoYfTLeqTohaQhZrHlT+tJ2bH1OrbH
-         DB2tSCBd0abWr6FCp0TEjo7N1BWqN3Fog7ykC8V8yt+l6BU7nJzzS2lJPOpAA1T8+Uf/
-         /c2g==
-X-Gm-Message-State: AC+VfDwYmFBpX8JsP01vtmIa+TZrKs5Ddbg/UzGb9ZL2vjNX+A4FQ52K
-	Px7oIwNzpChwbhsxTdP55L96zvzdAxwM
-X-Google-Smtp-Source: ACHHUZ7xIpowVbdQXt1AFVkmjdLe/ViKNLhbx2+GqU5cx7xGsa3h+wqyu0XBexhlSmG0mpwgu06VfPb3ROLc
-X-Received: from mshavit.ntc.corp.google.com ([2401:fa00:95:20c:c6e6:49bf:5c44:5965])
- (user=mshavit job=sendgmr) by 2002:a81:b64a:0:b0:56c:fffd:49db with SMTP id
- h10-20020a81b64a000000b0056cfffd49dbmr1019861ywk.7.1686757406946; Wed, 14 Jun
- 2023 08:43:26 -0700 (PDT)
-Date: Wed, 14 Jun 2023 23:41:52 +0800
+	d=fudan.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
+	Message-Id; bh=GO8rfML0jUHU67vdinHhiKtJMBNZI92wuILfIrohgyU=; b=W
+	dm0lY6FLG6d/JdSHY5VF0498NhNAWX7lH0QezTl6QxxyE7hAx7DlIbR0+XeXLhqe
+	/cjV4KAj96GY/9DEMsTrPFHQX5hOpGd3d6ZZByWWRrdZMBPmC2fVOaQOojbfRbD3
+	jdpEzKuZGuEDqhQ+WQvbAdtm/R4M+i2s9j/8ml1x0Q=
+Received: from ubuntu.localdomain (unknown [10.230.35.76])
+	by app1 (Coremail) with SMTP id XAUFCgAnLfUO4Ilkj4DsAA--.39227S2;
+	Wed, 14 Jun 2023 23:43:10 +0800 (CST)
+From: Chenyuan Mi <cymi20@fudan.edu.cn>
+To: joro@8bytes.org
+Cc: will@kernel.org,
+	robin.murphy@arm.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Chenyuan Mi <cymi20@fudan.edu.cn>
+Subject: [PATCH] iommu: Fix missing check for return value of iommu_group_get()
+Date: Wed, 14 Jun 2023 08:43:08 -0700
+Message-Id: <20230614154308.118783-1-cymi20@fudan.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID:XAUFCgAnLfUO4Ilkj4DsAA--.39227S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7Xw1DCryrGr1ktF1fuw4UJwb_yoWkXFc_G3
+	Z7ZryUXrWrCr40kF1jvrnxZrZxK3909rn3tFWq9wn3JF1qgrn0y3WrZFZ7JrW3Cw47KFnF
+	kFy7J3W3JFy7AjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUIcSsGvfJTRUUUbskFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+	6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+	A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
+	6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+	Cq3wAac4AC62xK8xCEY4vEwIxC4wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC
+	0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Gr0_Cr
+	1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IE
+	rcIFxwCY02Avz4vE-syl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2
+	IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v2
+	6r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2
+	IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E
+	87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73Uj
+	IFyTuYvjfUeEfoUUUUU
+X-CM-SenderInfo: isqsiiisuqikmt6i3vldqovvfxof0/
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.41.0.162.gfafddb0af9-goog
-Message-ID: <20230614154304.2860121-1-mshavit@google.com>
-Subject: [PATCH v3 00/13] Add PASID support to SMMUv3 unmanaged domains
-From: Michael Shavit <mshavit@google.com>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>
-Cc: Michael Shavit <mshavit@google.com>, jean-philippe@linaro.org, nicolinc@nvidia.com, 
-	jgg@nvidia.com, baolu.lu@linux.intel.com, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
 
-Hi all,
+The iommu_group_get() function may return NULL, which may
+cause null pointer deference, and most other callsites of
+iommu_group_get() do Null check. Add Null check for return
+value of iommu_group_get().
 
-This patch series implements the set_dev_pasid operation for DMA
-and UNMANAGED iommu domains.
+Found by our static analysis tool.
 
-The bulk of the series involves a refactor of stage 1 domains so that
-they describe a single CD entry. On attach, stage 1 domains are inserted
-into a CD table that is now owned by the arm_smmu_master struct. This is
-a pre-requisite to the set_dev_pasid implementation but also results in
-a conceptually cleaner arm_smmu_domain. Note that this does not preclude
-from attaching domains that represent a CD table, such as for the
-proposed iommufd NESTED domains.
+Signed-off-by: Chenyuan Mi <cymi20@fudan.edu.cn>
+---
+ drivers/iommu/iommu.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-The last few patches of the series make drive-by cleanups to the smmu
-SVA implementation. A follow-up patch-series is planned so that the SVA
-implementation can further take advantages of the changes introduced here. See
-discussion on patch 14 of the v2 series.
-
-This patch series is also available on gerrit with Jean's SMMU test
-engine patches cherry-picked on top:
-https://linux-review.googlesource.com/id/I0fcd9adc058d1c58a12d2599cc82fba73da7697a
-This allowed testing of basic SVA functionality (e.g.: attaching, page
-fault handling, and detaching).
-
-Thanks,
-Michael Shavit
-
-Changelog
-v3:
- * Dropped the bulk of the SVA refactoring to re-work as a follow-up
-   series.
- * Reworded cover letter to omit dropped changes.
- * Rebased on 6.4 tip
-v2:
-https://lore.kernel.org/all/20230606120854.4170244-1-mshavit@google.com/
- * Reworded cover letter and commits based on v1 feedback.
- * Split and reworked `iommu/arm-smmu-v3: Move cdtable to arm_smmu_master`
- * Added SVA clean-up and refactor.
- * A few other small bug fixes and cosmetics.
-v1:
-https://lore.kernel.org/all/20230510205054.2667898-1-mshavit@google.com/
-
-
-Michael Shavit (13):
-  iommu/arm-smmu-v3: Move ctx_desc out of s1_cfg
-  iommu/arm-smmu-v3: Add smmu_s1_cfg to smmu_master
-  iommu/arm-smmu-v3: Refactor write_strtab_ent
-  iommu/arm-smmu-v3: Refactor write_ctx_desc
-  iommu/arm-smmu-v3: Use the master-owned s1_cfg
-  iommu/arm-smmu-v3: Simplify arm_smmu_enable_ats
-  iommu/arm-smmu-v3: Keep track of attached ssids
-  iommu/arm-smmu-v3: Add helper for atc invalidation
-  iommu/arm-smmu-v3: Implement set_dev_pasid
-  iommu/arm-smmu-v3-sva: Remove bond refcount
-  iommu/arm-smmu-v3-sva: Clean unused iommu_sva
-  iommu/arm-smmu-v3-sva: Remove arm_smmu_bond
-  iommu/arm-smmu-v3-sva: Add check when enabling sva
-
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 156 +++---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 447 ++++++++++++------
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  49 +-
- 3 files changed, 414 insertions(+), 238 deletions(-)
-
-
-base-commit: b6dad5178ceaf23f369c3711062ce1f2afc33644
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index f1dcfa3f1a1b..ef3483e75511 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -3217,6 +3217,8 @@ EXPORT_SYMBOL_GPL(iommu_group_release_dma_owner);
+ void iommu_device_release_dma_owner(struct device *dev)
+ {
+ 	struct iommu_group *group = iommu_group_get(dev);
++	if (!group)
++		return;
+ 
+ 	mutex_lock(&group->mutex);
+ 	if (group->owner_cnt > 1)
+@@ -3329,6 +3331,8 @@ void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
+ 			       ioasid_t pasid)
+ {
+ 	struct iommu_group *group = iommu_group_get(dev);
++	if (!group)
++		return;
+ 
+ 	mutex_lock(&group->mutex);
+ 	__iommu_remove_group_pasid(group, pasid);
 -- 
-2.41.0.162.gfafddb0af9-goog
+2.17.1
 
