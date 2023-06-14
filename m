@@ -1,41 +1,41 @@
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C172938A
-	for <iommu@lists.linux.dev>; Wed, 14 Jun 2023 02:48:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA39A363
+	for <iommu@lists.linux.dev>; Wed, 14 Jun 2023 02:48:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686710897; x=1718246897;
+  t=1686710898; x=1718246898;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=ajj3+Tvbe7c1CGxr5IoLKuJl8BuTkCHeP1QAQhNq9bM=;
-  b=SWqvETxnzvliPCZNpSWRQyATV5vKOLqs49W5WBZtiYd0qgF+o6hMK7N+
-   0MNB5rl0wu92sz7tES/m8vZsW3oManO98e7NgXXhqNEd6V/Vq70PB+y2b
-   87DXYLi5wVbv0YfsVlUfOZ/V+Ar5V+RZyh0RgBKQSwGm8y1yF8EXOqUTt
-   L/OcJuFojp/WSLOK8qWuuyoRMluaSEkcWaiBeGe5MknKZVS8QTZw02mr4
-   IH3EdvkwzQ7jR0P15vhDuE5BkZ2/r/Ko8LQiicXaGg/C9oBE52H9vso/G
-   xuqYaHGK3ZhUSP72FrjHdJTn+EqmM15+X0drxVRVw/B+pHCw9dCyxx3tH
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10740"; a="348164449"
+  bh=1Kwv1UQHKRHrV8kbWrew4OGtdP1EEr6az2+Laq0Cs7w=;
+  b=Yv/MKVYWAxZ0+YkyQN7ZeCT/rnCWa7K3S3XY6ttzm3lKSXtVIQXPbC4g
+   q4CBI8JfRoSuxDLa3hUPwTqhUx7i8p7Bvax945nHNb9Tu0Y8X3y6W0gIu
+   Kgj24gbecuadYOUhXeilQBxOWE7yIObE/LB+X9LgTr6AhkEV9Li4xodgo
+   AtdW5q+9olwhM1maMsBIFOUacLlXG1L1Bxf+LvP1WYE2wBOecLjVvQBxw
+   hB6RRdElsVPrMg8wiiPAJFKMGzt8+xobhWsOfT/rUAiSUyPuZ5ok3MsNV
+   J2N27OunedLYikTHiJiXmIBEFFrVeTCJL9+YYi/E3cGkr6EZI7EY3kreE
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10740"; a="348164458"
 X-IronPort-AV: E=Sophos;i="6.00,241,1681196400"; 
-   d="scan'208";a="348164449"
+   d="scan'208";a="348164458"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2023 19:48:16 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2023 19:48:18 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10740"; a="711884191"
+X-IronPort-AV: E=McAfee;i="6600,9927,10740"; a="711884198"
 X-IronPort-AV: E=Sophos;i="6.00,241,1681196400"; 
-   d="scan'208";a="711884191"
+   d="scan'208";a="711884198"
 Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by orsmga002.jf.intel.com with ESMTP; 13 Jun 2023 19:48:15 -0700
+  by orsmga002.jf.intel.com with ESMTP; 13 Jun 2023 19:48:16 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: Yanfei Xu <yanfei.xu@intel.com>,
 	Suhui <suhui@nfschina.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 1/4] iommu/vt-d: Remove unnecessary (void*) conversions
-Date: Wed, 14 Jun 2023 10:47:02 +0800
-Message-Id: <20230614024705.88878-2-baolu.lu@linux.intel.com>
+Subject: [PATCH 2/4] iommu/vt-d: Handle the failure case of dmar_reenable_qi()
+Date: Wed, 14 Jun 2023 10:47:03 +0800
+Message-Id: <20230614024705.88878-3-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230614024705.88878-1-baolu.lu@linux.intel.com>
 References: <20230614024705.88878-1-baolu.lu@linux.intel.com>
@@ -47,30 +47,40 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Suhui <suhui@nfschina.com>
+From: Yanfei Xu <yanfei.xu@intel.com>
 
-No need cast (void*) to (struct root_entry *).
+dmar_reenable_qi() may not succeed. Check and return when it fails.
 
-Signed-off-by: Suhui <suhui@nfschina.com>
-Link: https://lore.kernel.org/r/20230425033743.75986-1-suhui@nfschina.com
+Signed-off-by: Yanfei Xu <yanfei.xu@intel.com>
+Link: https://lore.kernel.org/r/20230605112659.308981-2-yanfei.xu@intel.com
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel/iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/intel/iommu.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index b871a6afd803..323fa1a93765 100644
+index 323fa1a93765..e83fe243680b 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -1185,7 +1185,7 @@ static int iommu_alloc_root_entry(struct intel_iommu *iommu)
+@@ -2967,10 +2967,15 @@ static int init_iommu_hw(void)
  {
- 	struct root_entry *root;
+ 	struct dmar_drhd_unit *drhd;
+ 	struct intel_iommu *iommu = NULL;
++	int ret;
  
--	root = (struct root_entry *)alloc_pgtable_page(iommu->node, GFP_ATOMIC);
-+	root = alloc_pgtable_page(iommu->node, GFP_ATOMIC);
- 	if (!root) {
- 		pr_err("Allocating root entry for %s failed\n",
- 			iommu->name);
+-	for_each_active_iommu(iommu, drhd)
+-		if (iommu->qi)
+-			dmar_reenable_qi(iommu);
++	for_each_active_iommu(iommu, drhd) {
++		if (iommu->qi) {
++			ret = dmar_reenable_qi(iommu);
++			if (ret)
++				return ret;
++		}
++	}
+ 
+ 	for_each_iommu(iommu, drhd) {
+ 		if (drhd->ignored) {
 -- 
 2.34.1
 
