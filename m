@@ -1,83 +1,133 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 21758539F
-	for <iommu@lists.linux.dev>; Wed, 14 Jun 2023 09:57:43 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 73ACD1FB;
-	Wed, 14 Jun 2023 02:58:27 -0700 (PDT)
-Received: from [10.57.85.233] (unknown [10.57.85.233])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 91D133F71E;
-	Wed, 14 Jun 2023 02:57:41 -0700 (PDT)
-Message-ID: <0454d58b-1de0-a4b4-6b93-8c0b99090d96@arm.com>
-Date: Wed, 14 Jun 2023 10:57:36 +0100
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2061.outbound.protection.outlook.com [40.107.223.61])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3699579E1
+	for <iommu@lists.linux.dev>; Wed, 14 Jun 2023 11:52:54 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SKGjutLgHbV5Obwzh9+ZYr7Mxi0TAku/QB5ghO8lJy4VByeANhhzoVqLmPkXV/2dJznzithchbdyu+ccOMdoxHZYDRyq5+t7Xaz7FaCUKgImiRX5cYGYk6sG+cTjx4hvqYAIte8nRZNvJDp/7sQrFmB0QY/4aslWwfIP6fnnOwQE1hvT7/P/PhKpZHwFtTpANpaqQmDpUa0x+5RQDcijAP7p57fh0EodyrFhbcEHuUrHrnkdjRM+x7QUfOTIz2LCelaeL69f0WBngNnwZnixBtXlrZodPEscrqKVqp8tv2la7rswMAAkziTW1kFnC9yToQX0fyx7y08xbQjtXE/tEA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lwkUQq7bXC3QFqlS4jAf+w/NtuH95RA0DfP2hnm5J9I=;
+ b=GynbzcOxEEHzOGC0nhnuc12xo5JAoo1143yDM9WRFvUUsWu4sLEK7PWgh42bfEiE/A4m8+Ge3+eDiEPGpM+Y+/HZ/2JWT/Dfg0mCUzCBD2B/WqrjfkxRFACT1eJgYhNy8SS47a6SCn3qt19tbBf+wlQfW4CbcINaT76zQ+93uVpjEA0+C4J6Wo5XhT26nwp5Im1xZi07m7mrzOSjHSw/wFAm5M91bnZn3OwSm5mW6S0jyNVG/8fYPPj16b9i56K80u7xTU0MbZuPiGm8/5jpfFqMtWAwIt5orjLXzQ+QmTbD2adJjmqzQdgOnjGB7CP5YcTvZ2BVKDW0EyljqA4Z4g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lwkUQq7bXC3QFqlS4jAf+w/NtuH95RA0DfP2hnm5J9I=;
+ b=g3evwp6zeTT6nEuQQTE9ulwMnm4o0tRWilMJ8/ZL1TDVHQqygzSQ1p2RKUOKv/6O+d3S0Hnd5yEbL63lj1PrVj7OOht0hudFsI6PJYMHK9ICfBRTrqDYM4uzd03kvpzeEnkRHPVLs0P6daoxvDLstr3PLDwYFASg8rshG0OwLmOUNEEraohUh+G8hu6c5lE9MEptcmFQVK80/NhupR8PzIkHXY6tWrb/jVoMrbDrPuSscj6WieDVPZw1b59rS1xebF0BZi3D2O86w+mMBHSe2gGzMqBWFCa5/6DsTkdM9/Kc46G3h1N2TPYeuJeDzU4wWpBfIlKYqbOp2VYsOswpIw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by IA1PR12MB8358.namprd12.prod.outlook.com (2603:10b6:208:3fa::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.29; Wed, 14 Jun
+ 2023 11:52:52 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab%7]) with mapi id 15.20.6477.037; Wed, 14 Jun 2023
+ 11:52:52 +0000
+Date: Wed, 14 Jun 2023 08:52:49 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"cohuck@redhat.com" <cohuck@redhat.com>,
+	"eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
+	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
+	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
+	"peterx@redhat.com" <peterx@redhat.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com" <shameerali.kolothum.thodi@huawei.com>,
+	"lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+	"Duan, Zhenzhong" <zhenzhong.duan@intel.com>
+Subject: Re: [PATCH v3 00/10] Add Intel VT-d nested translation
+Message-ID: <ZImqERPS0UV6mBsG@nvidia.com>
+References: <20230511145110.27707-1-yi.l.liu@intel.com>
+ <BN9PR11MB52765FA8255FB8F8A1A6F11B8C419@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZHTyNgnjj/bOkIgi@nvidia.com>
+ <BN9PR11MB5276B15B4709F595B2A5A84A8C5AA@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB5276B15B4709F595B2A5A84A8C5AA@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-ClientProxiedBy: BYAPR05CA0048.namprd05.prod.outlook.com
+ (2603:10b6:a03:74::25) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [PATCH v2 14/18] iommu/arm-smmu-v3: Support domains with shared
- CDs
-Content-Language: en-GB
-To: Michael Shavit <mshavit@google.com>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
- jean-philippe@linaro.org, nicolinc@nvidia.com, baolu.lu@linux.intel.com,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20230606120854.4170244-1-mshavit@google.com>
- <20230606120854.4170244-15-mshavit@google.com> <ZH9oQMmI8CezMCnx@nvidia.com>
- <CAKHBV25eDNXEu+6GWDJqpw1h5N-Jq-GPzf81kNH1dyw3Z=KsZA@mail.gmail.com>
- <ZIBxPd1/JCAle6yP@nvidia.com>
- <CAKHBV25K4BCewMdp3HcRtaX1iNhVpxL_6dMwp1_fmcQ5RWpKBQ@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <CAKHBV25K4BCewMdp3HcRtaX1iNhVpxL_6dMwp1_fmcQ5RWpKBQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|IA1PR12MB8358:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2cede1bd-078e-4a22-7d7b-08db6ccde206
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	UbzHHhqDNw/hiwiKPjw/slMzHdGhcI5Jj2v/rRiQw6DPfbtSRYG0ExUYnUp146LqsZmF4cwVvllThHlTiqaqM7lsZG0gtmSpvs3lhhp3W0uWOLqGCwM6r1B0Zkg5Grkdbwxlw9232bmb7Fpib9wsoiCByXX70ACO6hmW2UV7eIa0E7rUlRabohUfFh8kRy+tpW0H9LP6ophvofMRdVkfPQ/PdbFcTtXnnrdQ/uxkXzDo8LnyIJWYPxf3OyuSEhJkCcnqcmHOikk9G7YKoG6LBD2yEkGWh78bJsSV57XfiRU8z3nIMvKkw8RaTfeNn5AvvfgywR/0qNLfeUkg/5TOyrc052VYU1WwNPkWqxSyvB0FI/Me1V232HgF98fLnhwAAW7lpESWVayHKIYHsFJtmqZdbT9DWv612W7hk72WZNG9KgYlA+NhG79xS8A5dvb7RKkxkk4Qz6xBDvWgR86dknzT3RMfHuHL3fRIXN+joT1CGkdybyqV4Tp2NFDeu1oaFQaxvqZOiwEYzcVPuqSSW0DT1jTVEgtS78L0jjCXNDG7Xu42PkFKlLEJtl0SkgE+
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(346002)(366004)(396003)(136003)(376002)(451199021)(26005)(186003)(6512007)(6506007)(38100700002)(86362001)(7416002)(2616005)(2906002)(4744005)(6486002)(66946007)(66556008)(66476007)(41300700001)(316002)(6666004)(6916009)(4326008)(36756003)(54906003)(478600001)(5660300002)(8936002)(8676002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?59D7FWtHi5QvKDstFNEIW5B7d+YNnto6hm+p1GGNLCb1nAqIQ7W0VnmqPIY2?=
+ =?us-ascii?Q?+4HySCCt0CzgCa4toV+Id53H6kIkL12l/k2cRT0BjcN26goSjK8PqR+UJOra?=
+ =?us-ascii?Q?l3nK7LeCMEnSlC0AxngzemUI+rWWlxZtj1apoQSs3mrNeY7fiy9scUhlLIwb?=
+ =?us-ascii?Q?R67V61EXXVIY3LBdBOSmCDBqe57DPuRMlj8u/j+ZjJoR9twOHvyeMgseGqqg?=
+ =?us-ascii?Q?q+UqMvFywaGv7H46zA/ASMdvQMqYozkwkHuaW7+FdLcP+A5Yrtmzk6sSzSiE?=
+ =?us-ascii?Q?XF8oxNSoJH5LD05NKuUzonYsxT181VDhHUfXWTK4asYD3sbAVH654i7kI6hF?=
+ =?us-ascii?Q?zAVdUAWeZEjyG/Ny7dYHisM1h/QsIHYfs6TVuSve2a0nFDJtwSI49YH1ZCtd?=
+ =?us-ascii?Q?ATXuZLRKHpv8poU9wxt22ZvUAa5+8v3jdBc5YnnscpJJswjcCt6o+znyvEa7?=
+ =?us-ascii?Q?PPesU8jkksqc+0j+pU+3TZWFf8PYZZ4OXT5Eslcf3QEcqUl/hox1m68jJc4X?=
+ =?us-ascii?Q?kYd6h21OsEVtcu2ebFpfD3K6xhI1A/LsH5p3aHWrneOoE2Xnk7IGsSn10TjW?=
+ =?us-ascii?Q?0vNt2x9cmsbQwKyidx9uqGlxTN5yxaTCh7sGo5HYOV8j71+CC2ERu43WRgwf?=
+ =?us-ascii?Q?1n72UYsB8S+NWTxVv6mmEaddl+OG/0dwhg3aHflu9C4jpGisU6VJNQi5yT9u?=
+ =?us-ascii?Q?FdMqB1zhmvg5NLtSm7VGGIJEImGqUwKz+JDxNhNovaY3173E98TTv8POV8pl?=
+ =?us-ascii?Q?2vvNOQjQyboAfL23COP1jdbd5v+Z3XqjnA0Es9qb4uhqOC7JOxPQP0O3lg/m?=
+ =?us-ascii?Q?bn8xflSB4A9EFp1A4Yal+jY+vvYQKGlEM9HmyktKEs8Z5dHk7yM86NGqPwny?=
+ =?us-ascii?Q?w5nae1pYbi7dc5HFM8eiDZsraP2qKKMDcYrsHeWqfZWhWtOK76OuG4pJIsvK?=
+ =?us-ascii?Q?wFx35+AbZ0hOA0EbiVGrrCnZnOnqs0xErtrSY/099qYeRptp6x8RJ/SVw3+b?=
+ =?us-ascii?Q?HRi+4xJ2XzGbemztxr+/brJpt+kq1Lnt9z1XkHfUN2SXwD6TuClgVSYK69p/?=
+ =?us-ascii?Q?/YvxEU8niE4uF1vXMZS80qrhZH0wBFdUoHEWAIRfDNNWxvW1RezVQ5iT762h?=
+ =?us-ascii?Q?NixXJwOBRA9uEPFjjBTIwEwDDYef8wtnpBw3CMvaA9JE6BHVILPVLz+79NUB?=
+ =?us-ascii?Q?IkRISfefts3uV+JUQ6nLCDQRKFdfiQqK3HRFspUIbCnhIGJL0rz/hX13Ow4g?=
+ =?us-ascii?Q?dPa/tUUqoeN/lnM6r5t3ddZiZ37b3GS0CJMXxxA7zFl80ZwX+3X+bQyl87Gm?=
+ =?us-ascii?Q?8OCRt7Cx41m7NB+hdPSTAPTuiUhoGtZ+nESGVX0nzbDK3OVt1/2CuvfVrmjv?=
+ =?us-ascii?Q?q7jMpCLei6AyduR65P3h9LnrmwmeLoGbQ10tS+CpHTojtWmIVgzJ77C/gwIO?=
+ =?us-ascii?Q?q/SgErfzlUA6A2ajbCMithgJ2EsvDZU4p6LzlqwtnQrHHgIVDqAiO6nj8nqJ?=
+ =?us-ascii?Q?wVRGf91dyKMRNQ0pxNf19SG3pcOY/kbKrxuThRLPqFR/Rp46w8pvkBP6MDpK?=
+ =?us-ascii?Q?zJ0GMAt+sXZ8VkdYTEgOaj4xsfVJLhza2Wkf6Ony?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2cede1bd-078e-4a22-7d7b-08db6ccde206
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2023 11:52:52.2656
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: s21TLjNjIlRhwI7c57C705+tQx/GUinN/rcgFSSxADK1YlRH+zei02LXo6EVXVta
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8358
 
-On 2023-06-14 10:17, Michael Shavit wrote:
-> On Wed, Jun 7, 2023 at 1:09 AM Jason Gunthorpe <jgg@nvidia.com> wrote:
->>
->> On Tue, Jun 06, 2023 at 08:07:50PM +0800, Michael Shavit wrote:
->>> SVA may attach a CD to masters that have different upstream SMMU
->>> devices. The arm_smmu_domain structure can only be attached to a single
->>> upstream SMMU device however.
->>
->> Isn't that pretty much because we don't support replicating
->> invalidations to each of the different SMMU instances?
-> 
-> Looked into this some more, and supporting attach to multiple devices
-> is still very hard:
-> 1. When an arm_smmu_domain is first attached to a master, it
-> initializes an io_pgtable_cfg object whose properties depend on the
-> master's upstream SMMU device. This io_pgtable_cfg is then used to
-> allocate an io_pgtable object, and the arm_smmu_ctx_desc's TTBR field
-> points to that io_pgtable's TTBR (and ditto for the vttbr on stage 2
-> domains). So then arm_smmu_domain needs to be split into two,
-> arm_smmu_domain and arm_smmu_device_domain with the latter containing
-> a per-SMMU device io_pgtable, arm_smmu_ctx_desc and arm_smmu_s2_cfg.
-> Each iommu_domain_ops operation now needs to loop over each
-> arm_smmu_device_domain.
-> 2. Some of the iommu_domain fields also depend on the per-SMMU
-> io_pgtable_cfg; specifically pgsize_bitmap and geometry.aperture_end.
-> These need to be restricted as the domain is attached to more devices.
-> 3. Attaching a domain to a new SMMU device must be prohibited after
-> any call to map_pages or if iommu_domain.pgsize_bitmap and
-> iommu-domain.geometry.aperture_end have been consumed by any system.
-> The first is something the arm-smmu-v3.c driver could feasibly enforce
-> on its own, the second requires changes to the iommu framework.
+On Wed, Jun 14, 2023 at 08:07:30AM +0000, Tian, Kevin wrote:
 
-In practice it would be entirely reasonable to only support 
-cross-instance attach between instances with matching capabilities such 
-that they *can* share the pagetable directly.
+> think of a scenario where the vbios memory is shared by multiple qemu
+> instances then RW allows a malicious VM to modify the shared content
+> then potentially attacking other VMs.
 
-> The arm-smmu-v3-sva.c implementation avoids all these problems because it
-> doesn't need to allocate an io_pgtable;
+qemu would have to map the vbios as MAP_PRIVATE WRITE before the iommu
+side could map it writable, so this is not a real worry.
 
-SVA has all the same underlying problems - pagetable sharing is still 
-pagetable sharing regardless of which code happens to allocate the 
-physical pages - they're just avoided up-front by disallowing SVA at all 
-if the relevant capabilities don't line up between SMMU and CPU.
-
-Thanks,
-Robin.
+Jason
