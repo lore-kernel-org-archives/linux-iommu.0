@@ -1,103 +1,122 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B284111C98
-	for <iommu@lists.linux.dev>; Wed, 14 Jun 2023 16:30:04 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 40BE01FB;
-	Wed, 14 Jun 2023 09:30:48 -0700 (PDT)
-Received: from [10.57.85.233] (unknown [10.57.85.233])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 102F13F71E;
-	Wed, 14 Jun 2023 09:30:02 -0700 (PDT)
-Message-ID: <ef78b027-d6df-c8c5-5166-097dc23c1506@arm.com>
-Date: Wed, 14 Jun 2023 17:29:58 +0100
+Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 102F17F
+	for <iommu@lists.linux.dev>; Wed, 14 Jun 2023 16:50:07 +0000 (UTC)
+Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-3f9cf20da51so21312161cf.2
+        for <iommu@lists.linux.dev>; Wed, 14 Jun 2023 09:50:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1686761406; x=1689353406;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=2Xh6X95qQ4DKgCGH6vSh1zNOD+c5n9iWRwnQijGvBds=;
+        b=dsskxX9aeYFjsrOcIx3DHDQpEY4ERJCKdwVqYZCSpgugbUzHGvRMkohghaw4/+u8Wy
+         wcvIylrAGJmwAq/pVQUec7zDf/W41hOfu805hrZGAp1J2PDCKQOapMj/YEqVrF8MBicr
+         OAEI+IV+qixaozNZGYSaH1Y5uF85sBn6W2AzMPJ6er4nKcP+RwiOuRs5VYOXaqUhFWUs
+         7Kawvn2xj3fhcTXWZ8lLQrdqKk818nnwDp9OaprO2/kXgC3sWv6i14DRZeSuQ1p4mf4w
+         2K+CFzY3gKpZIHeJDGQsz4fBXVzUIZkLfpdWGVZ8w/mP5vqAzZsW2zFFrbpkiR19z+V/
+         K4lA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686761406; x=1689353406;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=2Xh6X95qQ4DKgCGH6vSh1zNOD+c5n9iWRwnQijGvBds=;
+        b=fOOc7lrMWXSBXjmEi8NS6FMFNt/R3pUifuPCtHu2Xomly/oIQkDr1YZkhRdJugVvBw
+         rokUX9uXEPbRSUCVPkReK6Eg5MX8KeMa+fQPc492D82ChU54jHhzuKl1ZjASHhgMkgz8
+         6HMugGBW2eAdaMmX8C0IKnXQgk4xjmkqEncZ/0t9/Nvt18jfn5G8Pc452qsoleH93Hly
+         BXg6nKwPl1GwjLDmc8DsXXuAJ7K/tL9FEw+dxA5shb1DvJi+No1CqJDivhRxL8Uxxj+a
+         3jPGfwAKHiv5uiHiudYBcwOqc5MWtLcr2tHLh0bXPVpuuN76qSLi5gzr6WVlCp/Sk36L
+         0VYQ==
+X-Gm-Message-State: AC+VfDySrojHwOkHFynFLa8OSQH4VCvQXulJQpOI/+OuD/uaBNrdrZaP
+	fhWlheYw91903L/jKIjtAOSj5Q==
+X-Google-Smtp-Source: ACHHUZ66gdwAQVn8ETVVjnmelI9LapHpISswaU4wiKmZDwt9r7b0rzQ0VjaameNq5XrIkQhgzt3XBg==
+X-Received: by 2002:a05:622a:354:b0:3f8:4905:9533 with SMTP id r20-20020a05622a035400b003f849059533mr2381471qtw.50.1686761406694;
+        Wed, 14 Jun 2023 09:50:06 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
+        by smtp.gmail.com with ESMTPSA id bb6-20020a05622a1b0600b003e1cf472b17sm4236320qtb.97.2023.06.14.09.50.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Jun 2023 09:50:05 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1q9Th6-005A4Q-Ov;
+	Wed, 14 Jun 2023 13:50:04 -0300
+Date: Wed, 14 Jun 2023 13:50:04 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Anup Patel <apatel@ventanamicro.com>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Atish Patra <atishp@atishpatra.org>,
+	Andrew Jones <ajones@ventanamicro.com>,
+	Conor Dooley <conor@kernel.org>,
+	Saravana Kannan <saravanak@google.com>,
+	Anup Patel <anup@brainfault.org>, linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	iommu@lists.linux.dev, Vincent Chen <vincent.chen@sifive.com>
+Subject: Re: [PATCH v4 06/10] irqchip/riscv-imsic: Improve IOMMU DMA support
+Message-ID: <ZInvvMZvrP4U/LL+@ziepe.ca>
+References: <20230613153415.350528-1-apatel@ventanamicro.com>
+ <20230613153415.350528-7-apatel@ventanamicro.com>
+ <ZInSqC6b7RPD1nzX@ziepe.ca>
+ <CAK9=C2XBObBGh2R2pxVgM0E1gFPBn4m7DKzoTxEmDdZ9V1QLrA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [PATCH] iommu: Fix missing check for return value of
- iommu_group_get()
-Content-Language: en-GB
-To: Chenyuan Mi <cymi20@fudan.edu.cn>, joro@8bytes.org
-Cc: will@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20230614154308.118783-1-cymi20@fudan.edu.cn>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230614154308.118783-1-cymi20@fudan.edu.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAK9=C2XBObBGh2R2pxVgM0E1gFPBn4m7DKzoTxEmDdZ9V1QLrA@mail.gmail.com>
 
-On 2023-06-14 16:43, Chenyuan Mi wrote:
-> The iommu_group_get() function may return NULL, which may
-> cause null pointer deference, and most other callsites of
-> iommu_group_get() do Null check. Add Null check for return
-> value of iommu_group_get().
+On Wed, Jun 14, 2023 at 09:47:53PM +0530, Anup Patel wrote:
+> On Wed, Jun 14, 2023 at 8:16 PM Jason Gunthorpe <jgg@ziepe.ca> wrote:
+> >
+> > On Tue, Jun 13, 2023 at 09:04:11PM +0530, Anup Patel wrote:
+> > > We have a separate RISC-V IMSIC MSI address for each CPU so changing
+> > > MSI (or IRQ) affinity results in re-programming of MSI address in
+> > > the PCIe (or platform) device.
+> > >
+> > > Currently, the iommu_dma_prepare_msi() is called only once at the
+> > > time of IRQ allocation so IOMMU DMA domain will only have mapping
+> > > for one MSI page. This means iommu_dma_compose_msi_msg() called
+> > > by imsic_irq_compose_msi_msg() will always use the same MSI page
+> > > irrespective to target CPU MSI address. In other words, changing
+> > > MSI (or IRQ) affinity for device using IOMMU DMA domain will not
+> > > work.
+> >
+> > You didn't answer my question from last time - there seems to be no
+> > iommu driver here so why are you messing with iommu_dma_prepare_msi()?
+> >
+> > This path is only for platforms that have IOMMU drivers that translate
+> > the MSI window. You should add this code to link the interrupt
+> > controller to the iommu driver when you introduce the iommu driver,
+> > not in this series?
+> >
+> > And, as I said before, I'd like to NOT see new users of
+> > iommu_dma_prepare_msi() since it is a very problematic API.
+> >
+> > This hacking of it here is not making it better :(
 > 
-> Found by our static analysis tool.
-
-Static analysis is good at highlighting areas of code that might be 
-worth looking at, but you then still need to actually look at the code 
-and understand whether there's a problem or not...
-
-> Signed-off-by: Chenyuan Mi <cymi20@fudan.edu.cn>
-> ---
->   drivers/iommu/iommu.c | 4 ++++
->   1 file changed, 4 insertions(+)
+> I misunderstood your previous comments.
 > 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index f1dcfa3f1a1b..ef3483e75511 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -3217,6 +3217,8 @@ EXPORT_SYMBOL_GPL(iommu_group_release_dma_owner);
+> We can certainly deal with this later when the IOMMU
+> driver is available for RISC-V. I will drop this patch in the
+> next revision.
 
-/**
-  * iommu_group_release_dma_owner() - Release DMA ownership of a group
-  * @dev: The device
-  *
-  * Release the DMA ownership claimed by iommu_group_claim_dma_owner().
-  */
+Not only just this patch but the calls to iommu_dma_prepare_msi() and
+related APIs in the prior patch too. Assume the MSI window is directly
+visible to DMA without translation.
 
-If dev->iommu_group could have somehow disappeared since 
-iommu_group_claim_dma_owner() succeeded then something has gone so 
-catastrophically wrong that it's not worth even trying to reason about. 
-Or if the caller is passing something here that isn't the same device, 
-then why should we assume it's even a valid device pointer at all, and 
-iommu_group_get() isn't going to crash or return nonzero garbage?
-
->   void iommu_device_release_dma_owner(struct device *dev)
->   {
->   	struct iommu_group *group = iommu_group_get(dev);
-> +	if (!group)
-> +		return;
->   
->   	mutex_lock(&group->mutex);
->   	if (group->owner_cnt > 1)
-> @@ -3329,6 +3331,8 @@ void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
->   			       ioasid_t pasid)
-
-/*
-  * iommu_detach_device_pasid() - Detach the domain from pasid of device
-  * @domain: the iommu domain.
-  * @dev: the attached device.
-  * @pasid: the pasid of the device.
-  *
-  * The @domain must have been attached to @pasid of the @dev with
-  * iommu_attach_device_pasid().
-  */
-
-Again, iommu_attach_device_pasid() already validates that the device has 
-a group. If a caller uses the API incorrectly then all bets are off. 
-Plus, look at the callsites of iommu_detach_device_pasid() - they're 
-already holding their own reference to the same group anyway!
+When you come with an iommu driver we can discuss how best to proceed.
 
 Thanks,
-Robin.
-
->   {
->   	struct iommu_group *group = iommu_group_get(dev);
-> +	if (!group)
-> +		return;
->   
->   	mutex_lock(&group->mutex);
->   	__iommu_remove_group_pasid(group, pasid);
+Jason
