@@ -1,220 +1,578 @@
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D4EA15AD9
-	for <iommu@lists.linux.dev>; Thu, 15 Jun 2023 12:15:44 +0000 (UTC)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 35FBETOm028784;
-	Thu, 15 Jun 2023 12:15:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2023-03-30;
- bh=vTrbw4wAVBBn6crFAJhhSuUAd4DLo/sVjr6S9clYs1s=;
- b=OGPlhW+o0Zc44MBzYbVQBLjXFIPCen+ofrvT+K59UXJwQy964HRxjhHKpSxYRGScyPOm
- BTvP7BuKDlyEo37Z96hqd9rJzo0oj+maI4RshwRZ5llSVM9w36HCAfwuKZyYoZBh5f7U
- WtunDT/YnZwSQJOdDKtSJe1LZP3bDxIXg5+Bz/FYEqk1bqsKTl9XjCG0cdSuOqk1rTpe
- gkYG+EwW9v7rjT6LER46Hv0Q2SpO2h3ciD1mH6OAkkHMJ/IUyMZ0z1tHH4MmgPPu7u3i
- QAQQKrKfkQzhN1cRcGzlUBYMDiRPJTNu1PEtlXKMi6c5N2BmXcKndQQt7ZjN9QFthB+w 4w== 
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3r4h2asssj-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 15 Jun 2023 12:15:16 +0000
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 35FBXrxE011441;
-	Thu, 15 Jun 2023 12:15:14 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2042.outbound.protection.outlook.com [104.47.66.42])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3r4fm6vfgj-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 15 Jun 2023 12:15:14 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SiytQVLMPh+kIgCwJnBOG5diMLJQsNZyEg09bAUJQwyhqcBYkHOqfpYI1lKaosKqN6dwerdjncekuctSShTM5kIkkB1WHNUSK+AkNM9+hS/Z0imZKLuX2cdWsSXxmrqe0qkiUQvl2RqXZ6mIa7v1me3pcDBWGCaQu6VUyPvTXE2/yNseZtTSfBG94ukuLN4M7bPCbPtFS329+MTOTLhcGNWkPp1SxwxBjvzPhGI4GJ5YmQLVjIcHjFo1GL3Rs9AaMqMe7LTqcWyhbNy9EMDrSIXJCEyvLtzJygR26u7rWOO3zEVhHg4iskRChj7MFncBxjWfSE7tEQmT8UskhHjAXg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vTrbw4wAVBBn6crFAJhhSuUAd4DLo/sVjr6S9clYs1s=;
- b=hB1KAYjcAoqxQ1u7NrQEqubUrj4uEd0o8pfFM2ZBZpcxGJ2cZHR4Y2tTDEHusexyBfUlOUNw03IKDtNbL0PTvAJxwxLxK16t5xS3wBMYv+788T562arvZl/50N4VTWNw2ByCT3nQKETdbUM3r+LjzJzIyAj/4rokL3o/+YUfUjf7m99mMO8Aja5k61gBh86DJ5df2uxExqjru609MiGeVua7Q/8ISRX0dfTfL+jY3L7DOkiaABuYApS90QgXB1hgfgKV4iJ8Lcz92IwmnTL0+xlakgXOYOSwfmf+iURpvwcRtTXFWuZTppqbxQlmoZ0JDuHuBJrm5OVL0H+Wc5WsbQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A5766AA8
+	for <iommu@lists.linux.dev>; Thu, 15 Jun 2023 13:32:40 +0000 (UTC)
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-3f7359a3b78so118455e9.0
+        for <iommu@lists.linux.dev>; Thu, 15 Jun 2023 06:32:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vTrbw4wAVBBn6crFAJhhSuUAd4DLo/sVjr6S9clYs1s=;
- b=TNGAnn4JFNpCeqHVuRc130b7W0CnrUpsfCjtAjAOXR3vjth+v8cz0P7cf9iWm5obnBfqnoF3xWc9VJFUqhbiCizOriqEjd4bLe5+CMmTI6kYxwRrR1SKTYlHds036jK9XI8cGGXg3qojuVbircy+emulIvlAATKQPkaW7jQcGj8=
-Received: from DM6PR10MB4313.namprd10.prod.outlook.com (2603:10b6:5:212::20)
- by MW4PR10MB6440.namprd10.prod.outlook.com (2603:10b6:303:218::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6455.46; Thu, 15 Jun
- 2023 12:15:12 +0000
-Received: from DM6PR10MB4313.namprd10.prod.outlook.com
- ([fe80::e38:5b81:b87f:c1eb]) by DM6PR10MB4313.namprd10.prod.outlook.com
- ([fe80::e38:5b81:b87f:c1eb%7]) with mapi id 15.20.6500.026; Thu, 15 Jun 2023
- 12:15:12 +0000
-Message-ID: <f17ab40c-d5c6-e31b-7877-7452b612505c@oracle.com>
-Date: Thu, 15 Jun 2023 13:15:07 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH v4] iommu: Optimise PCI SAC address trick
-To: Robin Murphy <robin.murphy@arm.com>, Jakub Kicinski <kuba@kernel.org>,
-        Joerg Roedel <joro@8bytes.org>
-Cc: will@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>
-References: <b8502b115b915d2a3fabde367e099e39106686c8.1681392791.git.robin.murphy@arm.com>
- <ZDk83vpIarQ9jWa7@8bytes.org> <20230613105850.30172085@kernel.org>
- <4f9184c5-e6a2-08da-f44a-3000b6cdfe35@oracle.com>
- <198a73b0-d7c0-57d6-5ef9-4e9dddb6365b@arm.com>
- <568df53c-41a7-94d7-6662-f8f7c72e5178@oracle.com>
- <99c1e8ab-a064-c770-072f-23ef9e9abb82@arm.com>
-Content-Language: en-US
-From: John Garry <john.g.garry@oracle.com>
-Organization: Oracle Corporation
-In-Reply-To: <99c1e8ab-a064-c770-072f-23ef9e9abb82@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P123CA0149.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:188::10) To DM6PR10MB4313.namprd10.prod.outlook.com
- (2603:10b6:5:212::20)
+        d=google.com; s=20221208; t=1686835958; x=1689427958;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=2Fe8n19wwAbmfd0VoTnH2Ng+wpFvAxCOrxXVaNksRc8=;
+        b=M58HbVYDKes0Ymmt25UG1OsX8ciJJVVMZ/Sl9VqReqm18w/exin513E9I/JyzouDKv
+         umgPYLupQusdpaAHh4VOsxTbb7c1XCp+nQd7tQ8xHmaGOm6U/QMM0IYkbztMyxJsekCD
+         hmOrTEFTxaaL1MVlVFz4/PBRj7P70UPoC4wmp30NuqStV5MLlE6hEz5SDlcU75XJJJ78
+         oD4k2Ny47mBUB7/5vywa1ZTJ3Kzhek4NC1zmo7Q/DBQaYXQRBi/McePILS7cvc64GkYw
+         m7JNqmurJBNDGuscaW1wu0Z1Zrbn/qb1AxsgYtudJNbtOvywaXRvJLIbY8TXamb0oUJy
+         JpRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686835958; x=1689427958;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2Fe8n19wwAbmfd0VoTnH2Ng+wpFvAxCOrxXVaNksRc8=;
+        b=hrJnnsQz/efZfdVtrEXu0/fzUnKG0HzQB0OjnbQXnkTXq5ExcMqSISIdQUANWTtG8n
+         kGLboOq8bG5FtSQrvPwD6XX8nkaH5MWakn7RxCNXUsnYleZcJGrCSi3Va9uYbDnScm5K
+         NLSe1uryIxKSuGnbE1Y4RSLxBbIfWhn9ZCjVqj+w1yJKkeX7ThxfTk7TKoIM8PHQKIyY
+         G9fWJ81eSHVb3WkNX826+LCjUFj4P+/Q9JRNlXaAxXX05unuPY77lWyz5Mhf9hgzKQ4E
+         0z/RD8+Mb5IgRJbKIjqc9CjMy/p2ooN9a3sR9/Y6LhElXsfL1nyh1iMF2qjeX3JKITG3
+         YjqA==
+X-Gm-Message-State: AC+VfDwUAqPS+scSQvs61vJgaAs1Geo5MSydSinu+2gN3oStkv+SpasO
+	vc7mYVJUi7qaczZVv+/bVhc5dg==
+X-Google-Smtp-Source: ACHHUZ79fiwPqrRlbx+3qk28Z9rFtrqp/3CO/qQv4XWJ0xVG2mkDoWB/nNftzRbS0JBfV79r2m/YKg==
+X-Received: by 2002:a7b:cd18:0:b0:3f7:7bd4:3b9d with SMTP id f24-20020a7bcd18000000b003f77bd43b9dmr174650wmj.6.1686835958154;
+        Thu, 15 Jun 2023 06:32:38 -0700 (PDT)
+Received: from google.com (44.232.78.34.bc.googleusercontent.com. [34.78.232.44])
+        by smtp.gmail.com with ESMTPSA id t1-20020adfe101000000b0030e5a63e2dbsm21261717wrz.80.2023.06.15.06.32.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Jun 2023 06:32:37 -0700 (PDT)
+Date: Thu, 15 Jun 2023 13:32:32 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: maz@kernel.org, catalin.marinas@arm.com, will@kernel.org,
+	joro@8bytes.org, robin.murphy@arm.com, james.morse@arm.com,
+	suzuki.poulose@arm.com, oliver.upton@linux.dev,
+	yuzenghui@huawei.com, dbrazdil@google.com, ryan.roberts@arm.com,
+	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev,
+	iommu@lists.linux.dev
+Subject: Re: [RFC PATCH 19/45] KVM: arm64: iommu: Add domains
+Message-ID: <ZIsS8C/8yyIS6GYP@google.com>
+References: <20230201125328.2186498-1-jean-philippe@linaro.org>
+ <20230201125328.2186498-20-jean-philippe@linaro.org>
+ <ZGeWudESZP5BGjaA@google.com>
+ <CAEBBgu3QbgHb2Bf1hTaYL2SDDsYKKqixJ7+u+VCd_sYj6VfWbw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR10MB4313:EE_|MW4PR10MB6440:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0d04ed31-1826-4d4e-dc7b-08db6d9a2b07
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 
-	LCkXFpLRUrHJC+t+pOOe88ZB813+mc81Ljw8o8Fm3mxy70nHKxOmcayJliPd90rHE2dGykDemdIVCc36f1HTXQiupzQFdxOHffGjbGNVVv/IcfoYyCZW3Nwu7+BtRUin4S8K+GkKhNlGugitmiGa1/07avTZejqRSeWMyB/nBDxKcoLry8m8gBGBSuK3SbX4RE8A8K/UTDw0A009ePqxgz6tMC6Eai4TrTBYnixkpTecnhUJZ+btAVFIK2Enq4xibG8be1dJ2A8pcd9Ri5SmMA1okTkcXlQYHCOrQhkpjmrJ0FKf5dZW0fsg+M/tkPtwZTbFF4A/w+P0XIUqZHcI/D4Ahx2OfG4wZVAU8BcIXM0Ez0OAyyvHzUg2ciGm/5MpgjRu/relY+t9gTLRA2Ff7PWhOfVWp59KrCYvwwdnqAKV/ta5VdP4MQ/ZSsV2rHm3/YaernPThEv2wJjXy9tx3Qao7juPkX1bRdLAMp5NLk9uxhT1vqnAHTjHY79u0uQ3gi/C3JM2kS/tytkZ3kyj7XIHsxpjlwWwQPrnLiugARs2xln+l+eCYup0Sh8kvc4LbW+7DbFptByaPo1Vg1mZI3iiBmVLN9HbIa/Eb9aqb08dy3GNr8AFr8GAgRevSGKBlAeXZAz5Po6PF/eTXdb6Zw==
-X-Forefront-Antispam-Report: 
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR10MB4313.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(346002)(136003)(376002)(366004)(396003)(451199021)(6486002)(86362001)(31696002)(38100700002)(36756003)(478600001)(6666004)(110136005)(8936002)(966005)(36916002)(8676002)(5660300002)(66556008)(4326008)(66946007)(66476007)(41300700001)(316002)(2906002)(31686004)(2616005)(6512007)(6506007)(26005)(53546011)(186003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: 
-	=?utf-8?B?WlZzZVlYdnlVUTZBNVZDcmYxUTk2cjFMUEViZlNHMEJoNVdzTHZ3SW0xQXZC?=
- =?utf-8?B?TXdlcjNZamVCQTJmYURwdjFZZzlJWjlEa1RPV25PZ1NpbXl1ZzJnZkoySGRl?=
- =?utf-8?B?OHpjVzVDdk5wYkpLV3hUejN0V1d6alpPNFJ0UEpjK0VqeFFoRTBBM2l5Qmhr?=
- =?utf-8?B?N2k2VHIvV1QyZ3hKOVlWalVMS2szaVRFRFhYRWRMc1ZqVDM3Z0MrYWRCb0xZ?=
- =?utf-8?B?T0ZacFVrT1Eva3oycUxlRVBFTnpBdXlWeHdCeHVSd2NOeHh0bTRveEc5NVZ6?=
- =?utf-8?B?ME0yd0w3dTVlMlh3N0QweFVmUVVDejY3M2JGd3Z6c1FaeXFFTEJQbFVtQ0lu?=
- =?utf-8?B?M0hUSHpRUWIveFNhSGxlTTdCdlA5L1ErSE55TVB3MHpqZGNoL2plbjkyTFdM?=
- =?utf-8?B?U0JIVFRKY0JkdVh6NVRXT2FVaE9xRDFybUM5VGkxcGRzQSsxZVAzL2V6Mm5I?=
- =?utf-8?B?cVA3UTlpMnM4d1NhaDFZZkxtdm5RZ3RYNVRGbWwwdXZyTXJpZjB1MEZteisv?=
- =?utf-8?B?R1JaMWk3aEc4bWtudVNpRWM0cllkS3htLzZmUzNCRGdyQXBRNGNsL3c3MVdm?=
- =?utf-8?B?RG5ONlpLcUdwanlBeU5TQ1lZUlNTL2F5THpHWVQvM1krYnFyK2NUSjgvSERH?=
- =?utf-8?B?U3ZObDRjeXBGMk83bG41cy9PSTJiYUljVHR1UGtUVTBvbHdqRjlDdmNvbXZJ?=
- =?utf-8?B?cDJNWDMzSkpJd3pQNC9tbmVkM2UwTHNtanZnR2E4VWpYT3FacDhhSTRlNU53?=
- =?utf-8?B?Z1JEZU9JSXFnYkFvWFgrYnA3SzJYWlIzdFhrWXQxa0h1U003eW9IM1ZDMFpF?=
- =?utf-8?B?amhkUVdFUjFOaU1ZWGgyTFVGYjh0bldHRUMrdkdzNVpaYVQrRlc5cEtGQjVR?=
- =?utf-8?B?Y3J5blhVby9abmN6THhsZUNVNjNUdWRXRE1IOWNLdjlubmhiMytMeG0ybG9r?=
- =?utf-8?B?dDRzV0ExZEpwa0JnYUFCQjdUUjVacGdSc01jVWlSVVNqNmUvaWs3NCtHbkVO?=
- =?utf-8?B?d3QwWG1US1l2WFMvaURWVDY5Z1FuTFFnNWdDL1ZyQmNnelFSNWU1R2VKdmV0?=
- =?utf-8?B?ajV3UVA0V3NCd0RCWERGMnJkSVhBcnh5UkRoaGU2WEhqayt6RUo2OW1TQlhN?=
- =?utf-8?B?RlRIY21WdmZTR1crR0p0aDhjd3RjZ1hMb3IyTUNKQlh6K3FBdzN3RlkxeGUy?=
- =?utf-8?B?VURKMVJUeWVRNUR0S1A5Zi9BcFpJNFNsL1pTYlVDdi9DaTB4WTZDUG1OYVFj?=
- =?utf-8?B?SFNYOTdNblo0NnNFZEJTNHhsbkhUSm9mMTcxY1E5UkU3NXgybEVLOTNVTDlV?=
- =?utf-8?B?V1laRHlCRm80d3k5NHQwSGpnNDhnSUdJdzI2Ulhabm51czQrN0hXei80YlFN?=
- =?utf-8?B?VEhpRXgvRUg0d3pTQnFsb2ZmNGZaN2NqUUdtREMydmZoK1piOWZkSWoyY3No?=
- =?utf-8?B?d3krdTV0cGpEWVB5UlJ1TWtkZWF3M1VsbldabkFnY0xUOXg4enJsWGVuM3Z5?=
- =?utf-8?B?QWZTRU0vSHRzZ3p4NXZZaVdsOXB1Y3lLbVEwQTQ2bTN0bElqaEZQNFNrQWJ0?=
- =?utf-8?B?bDZqM0ZKSlpYRWdXWmx5ZVVkWlloZmlXOHZKWnV4TUxQM3FpQkJmRlFHQzRk?=
- =?utf-8?B?eWg4NXE0MThrZDlsdW16elNLUEMrK3lxQU9nRThQRjlUc0dDYUFKNGh5WFpn?=
- =?utf-8?B?cGpQczRPSHBzajRteHp6eWtsZDNwRWp6eGFLc2FybUtMb3J5eVhuUTNoSXhJ?=
- =?utf-8?B?OEYwOGN1K3lueWVPRGxHb3FGZjExbUZIUk4xb3ZMVE02U2xjOHN0c3dpQnBk?=
- =?utf-8?B?UnFDT0xOc3JNL2orTDdlYVo1ZTlPNWRuVmJMSTBQVWc1Qk9Bd1gwTm9VN2JS?=
- =?utf-8?B?TG5RZG9SVkFYT2tXdVlPbWJ4ZWg2Y2xZUWtMRWEvQUxLb3BDMmFUT0hOTlh1?=
- =?utf-8?B?N3FQYzVPMlZaaktHYnY1ckxua1p1cWZyelYweC9tK3grNVkzaWJSRitsbkJS?=
- =?utf-8?B?djhLT0V5cDFQdDY1VXRJb21kcXdBWGdNdG01ZlU2VkdmekNWNEExbVNFODkv?=
- =?utf-8?B?RThWMVJvK0NpQWJXS2YwZGRtL0c3MGFYSGRLdVlZZTVZUHdGMzgrcGpEZjRS?=
- =?utf-8?B?N3dOM3l3MFhQU0xEUmhmNGtlRjJDbVFONWZwZlQ1SDVudURxZWlUTlYvMWF5?=
- =?utf-8?B?a2c9PQ==?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
-	=?utf-8?B?YTlWSFpMeWZQN1NZckk3aUtiY3czKzdWSkxoZVpMZTN1c29BL3p6Mk5oN1Av?=
- =?utf-8?B?MDJud2dBbEc1aFZXWXdyOUtTa1k5TU1zUjZsQ21MTFIzTTNiZTNTSkNTKzFu?=
- =?utf-8?B?aU1FQllwTmZDOHdxa3dhcDNoYzdheW8rbnh4NC9XamtObEJZRk9PT0RoMmZB?=
- =?utf-8?B?ZG1KUlZIRDE4a1RCMVI2c0hDK0RvTlNZaThUUmM5NWdPeHN5UU9YdWNPcGxD?=
- =?utf-8?B?S3FwNXEvK0VzWFpMMTRVaEc3VEhRRzlzcmxpaGVoWU1XNmJNeUl3c0VMVmdx?=
- =?utf-8?B?Q01lK0RqV0ZVaEVJMURqWk5qWElmOCs1dW45WjZ3WDRLOE5Eb0w0NGc4aGlD?=
- =?utf-8?B?dGY4VGR6eitaaVFqSlBnWFFlU3dDcVRYRnpFVjEzaU1ya0c4dGZBN3kvUEVi?=
- =?utf-8?B?WFdyUFlTZVJPTXBUZ2Q4cVh0cm1pbkdBV3RFbWdEY2I3SXhtai9kc3NDaDVx?=
- =?utf-8?B?cVZUQzdZQUNQY3FMeDNlUm9QUVRaTG56SStwY2ZxcjducHVWaTFHeTl3ckxS?=
- =?utf-8?B?TS9HRjViQW1JTmRFaVordUdRdTFZU3M1ZzFtOFJjTjZyaVBSNURyV0plL2Ur?=
- =?utf-8?B?cVNaZnJXdmJQeGhoYVRLeXN3OVI4MmtQNTVlRzFMUHR1cWNreitPZDJEK0NB?=
- =?utf-8?B?VXhTTFZHVyt0bFpNV3A3V0dXOHFFclNUc2RScElUVGtzR3VvZTZuaFB5VzIv?=
- =?utf-8?B?ZVB1STJHb2o4QmkyOUJPRzY2dlR3S1kzWC90Z3I2NWRjTXBHeFJTWFBCa2ww?=
- =?utf-8?B?MDgwUDdHQkgydlBwWUQ2ZHZud05heEcyQ3JCVGptUkNKbmp4bkU4OEw3dCty?=
- =?utf-8?B?YXZDakVGNXBlL1VxSUk2QS9WNWsrS1doN3FVaGxQT3l1dVNQcWJHdDF0WG5q?=
- =?utf-8?B?UDhSeHVSUTluZ240TjVyWTFNZklVQThTUmM1VG1aTGhlVmc5WUVuQkVucTJM?=
- =?utf-8?B?QjFXVytzU0t4N2I2L0J5Yk5vSUlvYjdSYnFlR1pyZ0dNT3ZEYzJHYWxub1Zm?=
- =?utf-8?B?UHFJcmQwQlk1V0krWVBzRE1sYjZUQmpkd1RhTndJcnlsa3NxblVJM2MzNnFU?=
- =?utf-8?B?YlhRaGZtR3FWTG9ReGVjWDF2bmZIc2xXS3dsT3VvUzducldyYzF2SVR0YzRQ?=
- =?utf-8?B?NEZwUUlUbUJ5cTNIZksxQ29BMHlkVCs2bDNwVHJpSnJ1ZVZGQldXbG93RkJ6?=
- =?utf-8?B?c0c1aEFGVEV0L2tnNFYxVklKQ0ZaOXVrWmttZ1J2YmlRbkx2UUJXdUFlQVEv?=
- =?utf-8?Q?LFwSNMoajid1Bfi?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0d04ed31-1826-4d4e-dc7b-08db6d9a2b07
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR10MB4313.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2023 12:15:11.9290
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QoI6/9ySs6ctd+WaJFE+IINZpGCoihaveoHODnWADVZhsKJwyGBfU0EMEAyjDXwaJPPdZAC1Q3UTHx4WH28l/A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR10MB6440
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
- definitions=2023-06-15_08,2023-06-14_02,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=892 bulkscore=0 mlxscore=0
- spamscore=0 malwarescore=0 adultscore=0 phishscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2305260000
- definitions=main-2306150107
-X-Proofpoint-ORIG-GUID: rRAJWizuLCXN_dar15hdKKP0QsXPx103
-X-Proofpoint-GUID: rRAJWizuLCXN_dar15hdKKP0QsXPx103
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEBBgu3QbgHb2Bf1hTaYL2SDDsYKKqixJ7+u+VCd_sYj6VfWbw@mail.gmail.com>
 
-On 15/06/2023 12:41, Robin Murphy wrote:
->>
->> Sure, not the same problem.
->>
->> However when we switched storage drivers to use dma_opt_mapping_size() 
->> then performance is similar to iommu.forcedac=1 - that's what I found, 
->> anyway.
->>
->> This tells me that that even though IOVA allocator performance is poor 
->> when the 32b space fills, it was those large IOVAs which don't fit in 
->> the rcache which were the major contributor to hogging the CPU in the 
->> allocator.
+Hi Jean,
+
+On Fri, Jun 02, 2023 at 04:29:07PM +0100, Jean-Philippe Brucker wrote:
+> Hi Mostafa,
 > 
-> The root cause is that every time the last usable 32-bit IOVA is 
-> allocated, the *next* PCI caller to hit the rbtree for a SAC allocation 
-> is burdened with walking the whole 32-bit subtree to determine that it's 
-> full again and re-set max32_alloc_size. That's the overhead that 
-> forcedac avoids.
+> On Fri, 19 May 2023 at 16:33, Mostafa Saleh <smostafa@google.com> wrote:
+> >
+> > Hi Jean,
+> >
+> > On Wed, Feb 01, 2023 at 12:53:03PM +0000, Jean-Philippe Brucker wrote:
+> > > +/*
+> > > + * Serialize access to domains and IOMMU driver internal structures (command
+> > > + * queue, device tables)
+> > > + */
+> > > +static hyp_spinlock_t iommu_lock;
+> > > +
+> > I was looking more into this lock and I think we can make it per IOMMU instead
+> > of having one big lock to avoid congestion, as I see it is only used to
+> > protect per-IOMMU resources.
 > 
+> Yes it's a major bottleneck, thanks for looking into this. I think we'll
+> eventually want to improve scalability within an IOMMU and even a domain:
+> a multi-queue network device will share a single domain between multiple
+> CPUs, each issuing lots of map/unmap calls. Or just two devices drivers
+> working on different CPUs and sharing one IOMMU. In those cases the
+> per-IOMMU lock won't be good enough and we'll be back to this problem, but
+> a per-IOMMU lock should already improve scalability for some systems.
+> 
+> Currently the global lock protects:
+> 
+> (1) The domain array (per IOMMU)
+> (2) The io-pgtables (per domain)
+> (3) The command queue (per SMMU)
+> (4) Power state (per SMMU)
+> 
+> I ran some experiments with refcounting the domains to avoid the lock for
+> (1) and (2), which improves map() scalability. See
+> https://jpbrucker.net/git/linux/commit/?h=pkvm/smmu-wip&id=5ad3bc6fd589b6f11fe31ccee5b8777ba8739167
+> (and another experiment to optimize the DMA refcount on branch pkvm/smmu-wip)
 
-Sure
+Thanks for the detailed explanation! I will give it a try.
 
-> In the storage case with larger buffers, dma_opt_mapping_size() also 
-> means you spend less time in the rbtree, but because you're inherently 
-> hitting it less often at all, since most allocations can now hopefully 
-> be fulfilled by the caches.
+> For (2), the io-pgtable-arm code already supports concurrent accesses
+> (2c3d273eabe8 ("iommu/io-pgtable-arm: Support lockless operation")). But
+> this one needs careful consideration because in the host, the io-pgtable
+> code trusts the device drivers. For example it expects that only buggy
+> drivers call map()/unmap() to the same IOVA concurrently. We need to make
+> sure a compromised host drivers can't exploit these assumptions to do
+> anything nasty.
+> 
+> There are options to improve (3) as well. The host SMMU driver supports
+> lockless command-queue (587e6c10a7ce ("iommu/arm-smmu-v3: Reduce
+> contention during command-queue insertion")) but it may be too complex to
+> put in the hypervisor (or rather, I haven't tried to understand it yet).
+> We could also wait for systems with ECMDQ, which enables per-CPU queues.
+I was thinking about the same thing, in the futrue we should aim to have a
+similar lockless approach for the cmdq as the host in EL2. I am not sure
+how feasable it is, I will have a closer look. But having a per-IOMMU
+shouldbe be a step in the right direction.
 
-Sure
-
-> That's obviously moot when the mappings are 
-> already small enough to be cached and the only reason for hitting the 
-> rbtree is overflow/underflow in the depot because the working set is 
-> sufficiently large and the allocation pattern sufficiently "bursty".
-
-After a bit of checking, this is same issue 
-https://lore.kernel.org/linux-iommu/20230329181407.3eed7378@kernel.org/, 
-and indeed we would always be using rcache'able-sized mappings.
-
-So you think that we are reaching the depot full issue when we start to 
-free depot magazines in __iova_rcache_insert(), right? From my 
-experience in storage testing, it takes a long time to get to this state.
+> > Some special handling needed as hyp_spinlock_t is not exposed to EL1.
+> > Maybe something like this:
+> >
+> > diff --git a/arch/arm64/kvm/hyp/hyp-constants.c b/arch/arm64/kvm/hyp/hyp-constants.c
+> > index b257a3b4bfc5..96d30a37f9e6 100644
+> > --- a/arch/arm64/kvm/hyp/hyp-constants.c
+> > +++ b/arch/arm64/kvm/hyp/hyp-constants.c
+> > @@ -3,11 +3,13 @@
+> >  #include <linux/kbuild.h>
+> >  #include <nvhe/memory.h>
+> >  #include <nvhe/pkvm.h>
+> > +#include <nvhe/spinlock.h>
+> >
+> >  int main(void)
+> >  {
+> >         DEFINE(STRUCT_HYP_PAGE_SIZE,    sizeof(struct hyp_page));
+> >         DEFINE(PKVM_HYP_VM_SIZE,        sizeof(struct pkvm_hyp_vm));
+> >         DEFINE(PKVM_HYP_VCPU_SIZE,      sizeof(struct pkvm_hyp_vcpu));
+> > +       DEFINE(HYP_SPINLOCK_SIZE,       sizeof(hyp_spinlock_t));
+> >         return 0;
+> >  }
+> > diff --git a/drivers/iommu/arm/arm-smmu-v3/Makefile b/drivers/iommu/arm/arm-smmu-v3/Makefile
+> > index a90b97d8bae3..cf9195e24a08 100644
+> > --- a/drivers/iommu/arm/arm-smmu-v3/Makefile
+> > +++ b/drivers/iommu/arm/arm-smmu-v3/Makefile
+> > @@ -6,6 +6,7 @@ arm_smmu_v3-objs-$(CONFIG_ARM_SMMU_V3_SVA) += arm-smmu-v3-sva.o
+> >  arm_smmu_v3-objs := $(arm_smmu_v3-objs-y)
+> >
+> >  obj-$(CONFIG_ARM_SMMU_V3_PKVM) += arm_smmu_v3_kvm.o
+> > +ccflags-$(CONFIG_ARM_SMMU_V3_PKVM) += -Iarch/arm64/kvm/
+> >  arm_smmu_v3_kvm-objs-y += arm-smmu-v3-kvm.o
+> >  arm_smmu_v3_kvm-objs-y += arm-smmu-v3-common.o
+> >  arm_smmu_v3_kvm-objs := $(arm_smmu_v3_kvm-objs-y)
+> > diff --git a/include/kvm/iommu.h b/include/kvm/iommu.h
+> > index ab888da731bc..82827b99b1ed 100644
+> > --- a/include/kvm/iommu.h
+> > +++ b/include/kvm/iommu.h
+> > @@ -5,6 +5,12 @@
+> >  #include <asm/kvm_host.h>
+> >  #include <kvm/power_domain.h>
+> >  #include <linux/io-pgtable.h>
+> > +#ifdef __KVM_NVHE_HYPERVISOR__
+> > +#include <nvhe/spinlock.h>
+> > +#else
+> > +#include "hyp_constants.h"
+> > +#endif
+> >
+> >  /*
+> >   * Parameters from the trusted host:
+> > @@ -23,6 +29,11 @@ struct kvm_hyp_iommu {
+> >
+> >         struct io_pgtable_params        *pgtable;
+> >         bool                            power_is_off;
+> > +#ifdef __KVM_NVHE_HYPERVISOR__
+> > +       hyp_spinlock_t                  iommu_lock;
+> > +#else
+> > +       u8 unused[HYP_SPINLOCK_SIZE];
+> > +#endif
+> >  };
+> >
+> >  struct kvm_hyp_iommu_memcache {
+> > diff --git a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
+> > index 1f4d5fcc1386..afaf173e65ed 100644
+> > --- a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
+> > +++ b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
+> > @@ -14,12 +14,6 @@
+> >
+> >  struct kvm_hyp_iommu_memcache __ro_after_init *kvm_hyp_iommu_memcaches;
+> >
+> > -/*
+> > - * Serialize access to domains and IOMMU driver internal structures (command
+> > - * queue, device tables)
+> > - */
+> > -static hyp_spinlock_t iommu_lock;
+> > -
+> >  #define domain_to_iopt(_iommu, _domain, _domain_id)            \
+> >         (struct io_pgtable) {                                   \
+> >                 .ops = &(_iommu)->pgtable->ops,                 \
+> > @@ -93,10 +87,10 @@ int kvm_iommu_alloc_domain(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
+> >  {
+> >         int ret = -EINVAL;
+> >         struct io_pgtable iopt;
+> > -       struct kvm_hyp_iommu *iommu;
+> > +       struct kvm_hyp_iommu *iommu = kvm_iommu_ops.get_iommu_by_id(iommu_id);
+> >         struct kvm_hyp_iommu_domain *domain;
+> >
+> > -       hyp_spin_lock(&iommu_lock);
+> > +       hyp_spin_lock(&iommu->iommu_lock);
+> >         domain = handle_to_domain(iommu_id, domain_id, &iommu);
+> >         if (!domain)
+> >                 goto out_unlock;
+> > @@ -112,7 +106,7 @@ int kvm_iommu_alloc_domain(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
+> >         domain->refs = 1;
+> >         domain->pgd = iopt.pgd;
+> >  out_unlock:
+> > -       hyp_spin_unlock(&iommu_lock);
+> > +       hyp_spin_unlock(&iommu->iommu_lock);
+> >         return ret;
+> >  }
+> >
+> > @@ -120,10 +114,10 @@ int kvm_iommu_free_domain(pkvm_handle_t iommu_id, pkvm_handle_t domain_id)
+> >  {
+> >         int ret = -EINVAL;
+> >         struct io_pgtable iopt;
+> > -       struct kvm_hyp_iommu *iommu;
+> > +       struct kvm_hyp_iommu *iommu = kvm_iommu_ops.get_iommu_by_id(iommu_id);
+> >         struct kvm_hyp_iommu_domain *domain;
+> >
+> > -       hyp_spin_lock(&iommu_lock);
+> > +       hyp_spin_lock(&iommu->iommu_lock);
+> >         domain = handle_to_domain(iommu_id, domain_id, &iommu);
+> >         if (!domain)
+> >                 goto out_unlock;
+> > @@ -137,7 +131,7 @@ int kvm_iommu_free_domain(pkvm_handle_t iommu_id, pkvm_handle_t domain_id)
+> >         memset(domain, 0, sizeof(*domain));
+> >
+> >  out_unlock:
+> > -       hyp_spin_unlock(&iommu_lock);
+> > +       hyp_spin_unlock(&iommu->iommu_lock);
+> >         return ret;
+> >  }
+> > --
+> >
+> > (I didn't include full patch as it is too long, but mainly the
+> > rest is s/&iommu_lock/&iommu->iommu_lock)
+> >
+> > Please let me know what do you think?
+> 
+> It makes sense, I can append it to my tree or squash it (with your S-o-B)
+> if you want to send the full patch
+Sure, that is the full patch based on latest
+https://jpbrucker.net/git/linux/log/?h=pkvm/smmu
 
 Thanks,
-John
+Mostafa
+
+--
+
+From 5b43b97ca2486d52aa2ad475e4a34357dea57bca Mon Sep 17 00:00:00 2001
+From: Mostafa Saleh <smostafa@google.com>
+Date: Tue, 13 Jun 2023 14:59:37 +0000
+Subject: [PATCH] KVM: arm: iommu: Use per-iommu lock instead of one global
+ lock
+
+Currently, there is one big lock for all of the IOMMU operations
+which is used to protect per-IOMMU resources or domains (which are
+currently per-IOMMU also).
+
+This can be improved for setups with many IOMMUs by having a per
+IOMMU lock.
+
+As now we always get the iommu before calling handle_to_domain, we
+can remove the out_iommu arg and iommu_id and pass iommu instead.
+
+Signed-off-by: Mostafa Saleh <smostafa@google.com>
+---
+ arch/arm64/kvm/hyp/hyp-constants.c     |  1 +
+ arch/arm64/kvm/hyp/nvhe/iommu/iommu.c  | 75 +++++++++++++-------------
+ drivers/iommu/arm/arm-smmu-v3/Makefile |  1 +
+ include/kvm/iommu.h                    | 10 ++++
+ 4 files changed, 48 insertions(+), 39 deletions(-)
+
+diff --git a/arch/arm64/kvm/hyp/hyp-constants.c b/arch/arm64/kvm/hyp/hyp-constants.c
+index b257a3b4bfc5..d84cc8ec1e46 100644
+--- a/arch/arm64/kvm/hyp/hyp-constants.c
++++ b/arch/arm64/kvm/hyp/hyp-constants.c
+@@ -9,5 +9,6 @@ int main(void)
+ 	DEFINE(STRUCT_HYP_PAGE_SIZE,	sizeof(struct hyp_page));
+ 	DEFINE(PKVM_HYP_VM_SIZE,	sizeof(struct pkvm_hyp_vm));
+ 	DEFINE(PKVM_HYP_VCPU_SIZE,	sizeof(struct pkvm_hyp_vcpu));
++	DEFINE(HYP_SPINLOCK_SIZE,       sizeof(hyp_spinlock_t));
+ 	return 0;
+ }
+diff --git a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
+index c70d3b6934eb..1dcba39d1d41 100644
+--- a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
++++ b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
+@@ -14,12 +14,6 @@
+
+ struct kvm_hyp_iommu_memcache __ro_after_init *kvm_hyp_iommu_memcaches;
+
+-/*
+- * Serialize access to domains and IOMMU driver internal structures (command
+- * queue, device tables)
+- */
+-static hyp_spinlock_t iommu_lock;
+-
+ #define domain_to_iopt(_iommu, _domain, _domain_id)		\
+ 	(struct io_pgtable) {					\
+ 		.ops = &(_iommu)->pgtable->ops,			\
+@@ -59,14 +53,11 @@ void kvm_iommu_reclaim_page(void *p)
+ }
+
+ static struct kvm_hyp_iommu_domain *
+-handle_to_domain(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
+-		 struct kvm_hyp_iommu **out_iommu)
++handle_to_domain(struct kvm_hyp_iommu *iommu, pkvm_handle_t domain_id)
+ {
+ 	int idx;
+-	struct kvm_hyp_iommu *iommu;
+ 	struct kvm_hyp_iommu_domain *domains;
+
+-	iommu = kvm_iommu_ops.get_iommu_by_id(iommu_id);
+ 	if (!iommu)
+ 		return NULL;
+
+@@ -83,7 +74,6 @@ handle_to_domain(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
+ 		iommu->domains[idx] = domains;
+ 	}
+
+-	*out_iommu = iommu;
+ 	return &domains[domain_id & KVM_IOMMU_DOMAIN_ID_LEAF_MASK];
+ }
+
+@@ -95,8 +85,9 @@ int kvm_iommu_alloc_domain(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
+ 	struct kvm_hyp_iommu *iommu;
+ 	struct kvm_hyp_iommu_domain *domain;
+
+-	hyp_spin_lock(&iommu_lock);
+-	domain = handle_to_domain(iommu_id, domain_id, &iommu);
++	iommu = kvm_iommu_ops.get_iommu_by_id(iommu_id);
++	hyp_spin_lock(&iommu->iommu_lock);
++	domain = handle_to_domain(iommu, domain_id);
+ 	if (!domain)
+ 		goto out_unlock;
+
+@@ -111,7 +102,7 @@ int kvm_iommu_alloc_domain(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
+ 	domain->refs = 1;
+ 	domain->pgd = iopt.pgd;
+ out_unlock:
+-	hyp_spin_unlock(&iommu_lock);
++	hyp_spin_unlock(&iommu->iommu_lock);
+ 	return ret;
+ }
+
+@@ -122,8 +113,9 @@ int kvm_iommu_free_domain(pkvm_handle_t iommu_id, pkvm_handle_t domain_id)
+ 	struct kvm_hyp_iommu *iommu;
+ 	struct kvm_hyp_iommu_domain *domain;
+
+-	hyp_spin_lock(&iommu_lock);
+-	domain = handle_to_domain(iommu_id, domain_id, &iommu);
++	iommu = kvm_iommu_ops.get_iommu_by_id(iommu_id);
++	hyp_spin_lock(&iommu->iommu_lock);
++	domain = handle_to_domain(iommu, domain_id);
+ 	if (!domain)
+ 		goto out_unlock;
+
+@@ -136,7 +128,7 @@ int kvm_iommu_free_domain(pkvm_handle_t iommu_id, pkvm_handle_t domain_id)
+ 	memset(domain, 0, sizeof(*domain));
+
+ out_unlock:
+-	hyp_spin_unlock(&iommu_lock);
++	hyp_spin_unlock(&iommu->iommu_lock);
+ 	return ret;
+ }
+
+@@ -147,8 +139,9 @@ int kvm_iommu_attach_dev(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
+ 	struct kvm_hyp_iommu *iommu;
+ 	struct kvm_hyp_iommu_domain *domain;
+
+-	hyp_spin_lock(&iommu_lock);
+-	domain = handle_to_domain(iommu_id, domain_id, &iommu);
++	iommu = kvm_iommu_ops.get_iommu_by_id(iommu_id);
++	hyp_spin_lock(&iommu->iommu_lock);
++	domain = handle_to_domain(iommu, domain_id);
+ 	if (!domain || !domain->refs || domain->refs == UINT_MAX)
+ 		goto out_unlock;
+
+@@ -158,7 +151,7 @@ int kvm_iommu_attach_dev(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
+
+ 	domain->refs++;
+ out_unlock:
+-	hyp_spin_unlock(&iommu_lock);
++	hyp_spin_unlock(&iommu->iommu_lock);
+ 	return ret;
+ }
+
+@@ -169,8 +162,9 @@ int kvm_iommu_detach_dev(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
+ 	struct kvm_hyp_iommu *iommu;
+ 	struct kvm_hyp_iommu_domain *domain;
+
+-	hyp_spin_lock(&iommu_lock);
+-	domain = handle_to_domain(iommu_id, domain_id, &iommu);
++	iommu = kvm_iommu_ops.get_iommu_by_id(iommu_id);
++	hyp_spin_lock(&iommu->iommu_lock);
++	domain = handle_to_domain(iommu, domain_id);
+ 	if (!domain || domain->refs <= 1)
+ 		goto out_unlock;
+
+@@ -180,7 +174,7 @@ int kvm_iommu_detach_dev(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
+
+ 	domain->refs--;
+ out_unlock:
+-	hyp_spin_unlock(&iommu_lock);
++	hyp_spin_unlock(&iommu->iommu_lock);
+ 	return ret;
+ }
+
+@@ -209,9 +203,10 @@ int kvm_iommu_map_pages(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
+ 	    iova + size < iova || paddr + size < paddr)
+ 		return -EOVERFLOW;
+
+-	hyp_spin_lock(&iommu_lock);
++	iommu = kvm_iommu_ops.get_iommu_by_id(iommu_id);
++	hyp_spin_lock(&iommu->iommu_lock);
+
+-	domain = handle_to_domain(iommu_id, domain_id, &iommu);
++	domain = handle_to_domain(iommu, domain_id);
+ 	if (!domain)
+ 		goto err_unlock;
+
+@@ -236,7 +231,7 @@ int kvm_iommu_map_pages(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
+ 		paddr += mapped;
+ 	}
+
+-	hyp_spin_unlock(&iommu_lock);
++	hyp_spin_unlock(&iommu->iommu_lock);
+ 	return 0;
+
+ err_unmap:
+@@ -245,7 +240,7 @@ int kvm_iommu_map_pages(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
+ 		iopt_unmap_pages(&iopt, iova_orig, pgsize, pgcount, NULL);
+ 	__pkvm_host_unshare_dma(paddr_orig, size);
+ err_unlock:
+-	hyp_spin_unlock(&iommu_lock);
++	hyp_spin_unlock(&iommu->iommu_lock);
+ 	return ret;
+ }
+
+@@ -269,8 +264,9 @@ size_t kvm_iommu_unmap_pages(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
+ 	    iova + size < iova)
+ 		return 0;
+
+-	hyp_spin_lock(&iommu_lock);
+-	domain = handle_to_domain(iommu_id, domain_id, &iommu);
++	iommu = kvm_iommu_ops.get_iommu_by_id(iommu_id);
++	hyp_spin_lock(&iommu->iommu_lock);
++	domain = handle_to_domain(iommu, domain_id);
+ 	if (!domain)
+ 		goto out_unlock;
+
+@@ -299,7 +295,7 @@ size_t kvm_iommu_unmap_pages(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
+ 	}
+
+ out_unlock:
+-	hyp_spin_unlock(&iommu_lock);
++	hyp_spin_unlock(&iommu->iommu_lock);
+ 	return total_unmapped;
+ }
+
+@@ -311,14 +307,15 @@ phys_addr_t kvm_iommu_iova_to_phys(pkvm_handle_t iommu_id,
+ 	struct kvm_hyp_iommu *iommu;
+ 	struct kvm_hyp_iommu_domain *domain;
+
+-	hyp_spin_lock(&iommu_lock);
+-	domain = handle_to_domain(iommu_id, domain_id, &iommu);
++	iommu = kvm_iommu_ops.get_iommu_by_id(iommu_id);
++	hyp_spin_lock(&iommu->iommu_lock);
++	domain = handle_to_domain(iommu, domain_id);
+ 	if (domain) {
+ 		iopt = domain_to_iopt(iommu, domain, domain_id);
+
+ 		phys = iopt_iova_to_phys(&iopt, iova);
+ 	}
+-	hyp_spin_unlock(&iommu_lock);
++	hyp_spin_unlock(&iommu->iommu_lock);
+ 	return phys;
+ }
+
+@@ -333,9 +330,9 @@ static int iommu_power_on(struct kvm_power_domain *pd)
+ 	 * We currently assume that the device retains its architectural state
+ 	 * across power off, hence no save/restore.
+ 	 */
+-	hyp_spin_lock(&iommu_lock);
++	hyp_spin_lock(&iommu->iommu_lock);
+ 	iommu->power_is_off = false;
+-	hyp_spin_unlock(&iommu_lock);
++	hyp_spin_unlock(&iommu->iommu_lock);
+ 	return 0;
+ }
+
+@@ -346,9 +343,9 @@ static int iommu_power_off(struct kvm_power_domain *pd)
+
+ 	pkvm_debug("%s\n", __func__);
+
+-	hyp_spin_lock(&iommu_lock);
++	hyp_spin_lock(&iommu->iommu_lock);
+ 	iommu->power_is_off = true;
+-	hyp_spin_unlock(&iommu_lock);
++	hyp_spin_unlock(&iommu->iommu_lock);
+ 	return 0;
+ }
+
+@@ -362,6 +359,8 @@ int kvm_iommu_init_device(struct kvm_hyp_iommu *iommu)
+ 	int ret;
+ 	void *domains;
+
++	hyp_spin_lock_init(&iommu->iommu_lock);
++
+ 	ret = pkvm_init_power_domain(&iommu->power_domain, &iommu_power_ops);
+ 	if (ret)
+ 		return ret;
+@@ -376,8 +375,6 @@ int kvm_iommu_init(void)
+ {
+ 	enum kvm_pgtable_prot prot;
+
+-	hyp_spin_lock_init(&iommu_lock);
+-
+ 	if (WARN_ON(!kvm_iommu_ops.get_iommu_by_id ||
+ 		    !kvm_iommu_ops.alloc_iopt ||
+ 		    !kvm_iommu_ops.free_iopt ||
+diff --git a/drivers/iommu/arm/arm-smmu-v3/Makefile b/drivers/iommu/arm/arm-smmu-v3/Makefile
+index a90b97d8bae3..cf9195e24a08 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/Makefile
++++ b/drivers/iommu/arm/arm-smmu-v3/Makefile
+@@ -6,6 +6,7 @@ arm_smmu_v3-objs-$(CONFIG_ARM_SMMU_V3_SVA) += arm-smmu-v3-sva.o
+ arm_smmu_v3-objs := $(arm_smmu_v3-objs-y)
+
+ obj-$(CONFIG_ARM_SMMU_V3_PKVM) += arm_smmu_v3_kvm.o
++ccflags-$(CONFIG_ARM_SMMU_V3_PKVM) += -Iarch/arm64/kvm/
+ arm_smmu_v3_kvm-objs-y += arm-smmu-v3-kvm.o
+ arm_smmu_v3_kvm-objs-y += arm-smmu-v3-common.o
+ arm_smmu_v3_kvm-objs := $(arm_smmu_v3_kvm-objs-y)
+diff --git a/include/kvm/iommu.h b/include/kvm/iommu.h
+index ab888da731bc..b7cda7540156 100644
+--- a/include/kvm/iommu.h
++++ b/include/kvm/iommu.h
+@@ -5,6 +5,11 @@
+ #include <asm/kvm_host.h>
+ #include <kvm/power_domain.h>
+ #include <linux/io-pgtable.h>
++#ifdef __KVM_NVHE_HYPERVISOR__
++#include <nvhe/spinlock.h>
++#else
++#include "hyp_constants.h"
++#endif
+
+ /*
+  * Parameters from the trusted host:
+@@ -23,6 +28,11 @@ struct kvm_hyp_iommu {
+
+ 	struct io_pgtable_params	*pgtable;
+ 	bool				power_is_off;
++#ifdef __KVM_NVHE_HYPERVISOR__
++	hyp_spinlock_t			iommu_lock;
++#else
++	u8 unused[HYP_SPINLOCK_SIZE];
++#endif
+ };
+
+ struct kvm_hyp_iommu_memcache {
+--
+2.41.0.162.gfafddb0af9-goog
+
