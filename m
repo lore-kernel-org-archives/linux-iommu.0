@@ -1,83 +1,153 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EF2DA2E0FC
-	for <iommu@lists.linux.dev>; Thu, 15 Jun 2023 21:25:26 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 457C31FB;
-	Thu, 15 Jun 2023 14:26:10 -0700 (PDT)
-Received: from [10.57.85.251] (unknown [10.57.85.251])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9CC173F663;
-	Thu, 15 Jun 2023 14:25:24 -0700 (PDT)
-Message-ID: <67aab611-29cd-1a80-d0e2-e5b6523b2785@arm.com>
-Date: Thu, 15 Jun 2023 22:25:19 +0100
+Received: from s.wrqvwxzv.outbound-mail.sendgrid.net (s.wrqvwxzv.outbound-mail.sendgrid.net [149.72.154.232])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 489222E0D4
+	for <iommu@lists.linux.dev>; Thu, 15 Jun 2023 21:55:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kwiboo.se;
+	h=mime-version:subject:references:from:in-reply-to:to:cc:content-type:
+	content-transfer-encoding:cc:content-type:from:subject:to;
+	s=s1; bh=pmSNmFv8Qq/2rHp1zEKtJzjGqmBa6T/jN8+FgSZUDls=;
+	b=p6CehaPAY1h1iCF05fwKdPovmHB53S/8IxXG0tcYDMWyFkOf5JLAeooCwDkP7SYvxKqq
+	LWrrFfGnFNB/obKwzPNQYfwfFOmy8fO9OJ5ZZp5h+npxbUzRJKoK2p4u0xefHqElmQ4WZH
+	kunhtv9sOH1ZIligw0EuMryiRJfa2wG5OswWHs1cR+Vy6s/0i7iwGUsFTxR444ucu44iGg
+	OizU3T0TNVpM/Z2b8YsLf9AwfARu4FlCNMhfkeFJYDLf9CjWNq5T/ViRHRhc6cSSZRiFRS
+	StFScmxsB6hEk2nIuN+0jSMaRW6lFL1sovqweKtwRUPfxy8THF1k+Q3FUvmCRcOQ==
+Received: by filterdrecv-8684c58db7-nd6mk with SMTP id filterdrecv-8684c58db7-nd6mk-1-648B88CB-19
+        2023-06-15 21:55:23.885959543 +0000 UTC m=+3104213.148175023
+Received: from [192.168.1.50] (unknown)
+	by geopod-ismtpd-9 (SG) with ESMTP
+	id SyILOUxbSpSZyd76TgqJvw
+	Thu, 15 Jun 2023 21:55:23.448 +0000 (UTC)
+Message-ID: <76bd851f-ce85-4695-2f6c-797019f50ba6@kwiboo.se>
+Date: Thu, 15 Jun 2023 21:55:24 +0000 (UTC)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [PATCH v2 3/3] iommu: rockchip: Allocate tables from all
- available memory
-Content-Language: en-GB
-To: Jonas Karlman <jonas@kwiboo.se>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Heiko Stuebner <heiko@sntech.de>
-Cc: Benjamin Gaignard <benjamin.gaignard@collabora.com>,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.2
+Subject: Re: [PATCH v2 1/3] iommu: rockchip: Fix discovery table address
+ encoding
+Content-Language: en-US
 References: <20230615201042.2291867-1-jonas@kwiboo.se>
- <20230615201042.2291867-4-jonas@kwiboo.se>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230615201042.2291867-4-jonas@kwiboo.se>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+ <20230615201042.2291867-2-jonas@kwiboo.se>
+ <81ea403e-1279-bb01-9b74-51afd6d8532b@arm.com>
+From: Jonas Karlman <jonas@kwiboo.se>
+In-Reply-To: <81ea403e-1279-bb01-9b74-51afd6d8532b@arm.com>
+X-SG-EID: 
+ =?us-ascii?Q?TdbjyGynYnRZWhH+7lKUQJL+ZxmxpowvO2O9SQF5CwCVrYgcwUXgU5DKUU3QxA?=
+ =?us-ascii?Q?fZekEeQsTe+RrMu3cja6a0h7EUeRq2SPOAxvJSb?=
+ =?us-ascii?Q?IwwbxO8yaLTE9GQ552mGiSuOFkpow81qZjI9loa?=
+ =?us-ascii?Q?ewxGLE8qaAGjuXJiqPzIky7teT5aRw4kkGcbPEd?=
+ =?us-ascii?Q?4xNxaBvx=2FCFbiTqelCSX24mRVgCJEH2bZE4Y7mx?=
+ =?us-ascii?Q?6HnLA+GeRsAHSvYyggNnYDxMXeh2vuwLY4Vj4u?=
+To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+	Joerg Roedel <jroedel@suse.de>
+X-Entity-ID: P7KYpSJvGCELWjBME/J5tg==
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 
-On 2023-06-15 21:10, Jonas Karlman wrote:
-> Newer Rockchip SoCs, RK356x and RK3588, support more then 4GB of memory.
-
-Older ones supposedly did too, e.g. commit 79db45be2b8b ("ARM: dts: 
-rockchip: convert rk3288 device tree files to 64 bits"). Are we certain 
-that nobody actually has a system with IOMMUv1 and more than 4GB of RAM?
-
-> However, the RK IOMMU driver is using the GFP_DMA32 flag to limit
-> allocation of the discovery and page tables into memory below 4GB.
+On 2023-06-15 23:24, Robin Murphy wrote:
+> On 2023-06-15 21:10, Jonas Karlman wrote:
+>> The address to the discovery table is currently encoded using the
+>> following bit layout.
+>>
+>>   31:12 - Address bit 31:0
+>>   11: 4 - Address bit 39:32
+>>
+>> This is also the bit layout used by the vendor kernel.
+>>
+>> However, testing has shown that addresses to the discovery/page tables
+>> and memory pages are all encoded using the same bit layout.
+>>
+>> IOMMU v1:
+>>   31:12 - Address bit 31:0
+>>
+>> IOMMU v2:
+>>   31:12 - Address bit 31:0
+>>   11: 8 - Address bit 35:32
+>>    7: 4 - Address bit 39:36
+>>
+>> Change to use the mk_dtentries ops to encode the discovery table address
 > 
-> Let's remove this limitation now that the discovery table address is
+> Nit: s/discovery/directory/g
 
-Nit: s/discovery/directory/g again
+Oops, will fix in entire series in a v3 :-)
 
-Thanks,
-Robin.
+> 
+>> correctly. Also update the bit layout comment for the page address.
+>>
+>> These changes render the dte_addr_phys and dma_addr_dte ops unused
+>> and will be removed in a following patch.
+> 
+> TBH I'd just squash that into this patch - we don't gain anything from 
+> leaving dead code in stable kernels, and at worst it just stands to make 
+> future fixes harder to backport.
 
-> correctly configured for addresses above 4GB.
+Make sense, will squash them in v3.
+
 > 
-> Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
-> ---
-> v2:
-> - no change
+>> Fixes: 227014b33f62 ("iommu: rockchip: Add internal ops to handle variants")
+>> Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+>> ---
+>> v2:
+>> - replace currently with correctly in commit message
+>>
+>>   drivers/iommu/rockchip-iommu.c | 8 ++++----
+>>   1 file changed, 4 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+>> index 4054030c3237..d46319f77e5c 100644
+>> --- a/drivers/iommu/rockchip-iommu.c
+>> +++ b/drivers/iommu/rockchip-iommu.c
+>> @@ -278,8 +278,8 @@ static u32 rk_mk_pte(phys_addr_t page, int prot)
+>>   /*
+>>    * In v2:
+>>    * 31:12 - Page address bit 31:0
+>> - *  11:9 - Page address bit 34:32
+>> - *   8:4 - Page address bit 39:35
+>> + * 11: 8 - Page address bit 35:32
+>> + *  7: 4 - Page address bit 39:36
+>>    *     3 - Security
+>>    *     2 - Writable
+>>    *     1 - Readable
+>> @@ -577,7 +577,7 @@ static void log_iova(struct rk_iommu *iommu, int index, dma_addr_t iova)
+>>   	page_offset = rk_iova_page_offset(iova);
+>>   
+>>   	mmu_dte_addr = rk_iommu_read(base, RK_MMU_DTE_ADDR);
+>> -	mmu_dte_addr_phys = rk_ops->dte_addr_phys(mmu_dte_addr);
+>> +	mmu_dte_addr_phys = rk_ops->pt_address(mmu_dte_addr);
+>>   
+>>   	dte_addr_phys = mmu_dte_addr_phys + (4 * dte_index);
+>>   	dte_addr = phys_to_virt(dte_addr_phys);
+>> @@ -967,7 +967,7 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
+>>   
+>>   	for (i = 0; i < iommu->num_mmu; i++) {
+>>   		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR,
+>> -			       rk_ops->dma_addr_dte(rk_domain->dt_dma));
+>> +			       rk_ops->mk_dtentries(rk_domain->dt_dma));
 > 
->   drivers/iommu/rockchip-iommu.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
+> Hmm, this writes the RK_DTE_PT_VALID bit into the register as well - 
+> does that really make sense?
+
+On v1 bit 11:0 behave as read-only and on v2 bit 3:0 behave read-only.
+Writing anything to those bits read back as 0, so was safe to write
+RK_DTE_PT_VALID. Should probably mention this in a comment in v3.
+
+Regards,
+Jonas
+
 > 
-> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-> index 62be9bf42390..46498fc382ee 100644
-> --- a/drivers/iommu/rockchip-iommu.c
-> +++ b/drivers/iommu/rockchip-iommu.c
-> @@ -727,7 +727,7 @@ static u32 *rk_dte_get_page_table(struct rk_iommu_domain *rk_domain,
->   	if (rk_dte_is_pt_valid(dte))
->   		goto done;
->   
-> -	page_table = (u32 *)get_zeroed_page(GFP_ATOMIC | GFP_DMA32);
-> +	page_table = (u32 *)get_zeroed_page(GFP_ATOMIC);
->   	if (!page_table)
->   		return ERR_PTR(-ENOMEM);
->   
-> @@ -1076,7 +1076,7 @@ static struct iommu_domain *rk_iommu_domain_alloc(unsigned type)
->   	 * Each level1 (dt) and level2 (pt) table has 1024 4-byte entries.
->   	 * Allocate one 4 KiB page for each table.
->   	 */
-> -	rk_domain->dt = (u32 *)get_zeroed_page(GFP_KERNEL | GFP_DMA32);
-> +	rk_domain->dt = (u32 *)get_zeroed_page(GFP_KERNEL);
->   	if (!rk_domain->dt)
->   		goto err_free_domain;
->   
+> Thanks,
+> Robin.
+> 
+>>   		rk_iommu_base_command(iommu->bases[i], RK_MMU_CMD_ZAP_CACHE);
+>>   		rk_iommu_write(iommu->bases[i], RK_MMU_INT_MASK, RK_MMU_IRQ_MASK);
+>>   	}
+
