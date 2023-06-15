@@ -1,178 +1,81 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90638134AA
-	for <iommu@lists.linux.dev>; Thu, 15 Jun 2023 11:38:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F1ECC433D9;
-	Thu, 15 Jun 2023 11:38:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686829100;
-	bh=tySDa0XoEJtzAYPx5MNPEvUCe7vAfgvVHOqhnd3UqBs=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=qjgZFaRzeLUbNUGmMFWiNGhqPADdyp90LWNVz+lDMrjgOPcugCx9dHl4/sTAFh0ky
-	 PBvomnKCDhWpS5vCLJAaUiSjwKIZ45IPgZ3GvhmadeteC94UDznqBe+X2DqmnWtkb7
-	 Lrc2SbEySK/67akJDJ/R++lkF4k3gs/Asc/0QJsoXGJuXGPbzELnKoYzDSFitH+1V8
-	 xfXqKn2rHppv1Z3QmXfsFjfjqkXLSv7bE8fq89oWshuY8JxnIZELqedx4d1dqQWn9M
-	 2eP0wbqwRvaPsxAwpCdctk1ZdULUjEuHvfhbmEiaixIOw73RgKHKuJf2S/rPyB8CE0
-	 c6/f3D+JB7/5A==
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Cc: Joao Martins <joao.m.martins@oracle.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Joerg Roedel <jroedel@suse.de>,
-	Sasha Levin <sashal@kernel.org>,
-	joro@8bytes.org,
-	will@kernel.org,
-	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.1 02/16] iommu/amd: Handle GALog overflows
-Date: Thu, 15 Jun 2023 07:38:02 -0400
-Message-Id: <20230615113816.649135-2-sashal@kernel.org>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230615113816.649135-1-sashal@kernel.org>
-References: <20230615113816.649135-1-sashal@kernel.org>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B99E2125DA
+	for <iommu@lists.linux.dev>; Thu, 15 Jun 2023 11:42:03 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 08E7F1FB;
+	Thu, 15 Jun 2023 04:42:47 -0700 (PDT)
+Received: from [10.57.85.251] (unknown [10.57.85.251])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A58463F64C;
+	Thu, 15 Jun 2023 04:42:01 -0700 (PDT)
+Message-ID: <99c1e8ab-a064-c770-072f-23ef9e9abb82@arm.com>
+Date: Thu, 15 Jun 2023 12:41:56 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.1.34
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH v4] iommu: Optimise PCI SAC address trick
+Content-Language: en-GB
+To: John Garry <john.g.garry@oracle.com>, Jakub Kicinski <kuba@kernel.org>,
+ Joerg Roedel <joro@8bytes.org>
+Cc: will@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Linus Torvalds <torvalds@linux-foundation.org>
+References: <b8502b115b915d2a3fabde367e099e39106686c8.1681392791.git.robin.murphy@arm.com>
+ <ZDk83vpIarQ9jWa7@8bytes.org> <20230613105850.30172085@kernel.org>
+ <4f9184c5-e6a2-08da-f44a-3000b6cdfe35@oracle.com>
+ <198a73b0-d7c0-57d6-5ef9-4e9dddb6365b@arm.com>
+ <568df53c-41a7-94d7-6662-f8f7c72e5178@oracle.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <568df53c-41a7-94d7-6662-f8f7c72e5178@oracle.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Joao Martins <joao.m.martins@oracle.com>
+On 2023-06-15 11:11, John Garry wrote:
+> On 15/06/2023 10:04, Robin Murphy wrote:
+>>> Since we're at rc6 time and a cautious approach was wanted to merge 
+>>> this change, I doubt that this will be merged for this cycle. That's 
+>>> quite unfortunate.
+>>>
+>>> Please note what I mentioned earlier about using 
+>>> dma_opt_mapping_size(). This API is used by some block storage 
+>>> drivers to avoid your same problem, by clamping max_sectors_kb at 
+>>> this size - see sysfs-block Doc for info there. Maybe it can be used 
+>>> similarly for network drivers.
+>>
+>> It's not the same problem - in this case the mappings are already 
+>> small enough to use the rcaches, and it seems more to do with the 
+>> total number of unusable cached IOVAs being enough to keep the 32-bit 
+>> space almost-but-not-quite full most of the time, defeating the 
+>> max32_alloc_size optimisation whenever the caches run out of the right 
+>> size entries.
+> 
+> Sure, not the same problem.
+> 
+> However when we switched storage drivers to use dma_opt_mapping_size() 
+> then performance is similar to iommu.forcedac=1 - that's what I found, 
+> anyway.
+> 
+> This tells me that that even though IOVA allocator performance is poor 
+> when the 32b space fills, it was those large IOVAs which don't fit in 
+> the rcache which were the major contributor to hogging the CPU in the 
+> allocator.
 
-[ Upstream commit af47b0a24058e56e983881993752f88288ca6511 ]
+The root cause is that every time the last usable 32-bit IOVA is 
+allocated, the *next* PCI caller to hit the rbtree for a SAC allocation 
+is burdened with walking the whole 32-bit subtree to determine that it's 
+full again and re-set max32_alloc_size. That's the overhead that 
+forcedac avoids.
 
-GALog exists to propagate interrupts into all vCPUs in the system when
-interrupts are marked as non running (e.g. when vCPUs aren't running). A
-GALog overflow happens when there's in no space in the log to record the
-GATag of the interrupt. So when the GALOverflow condition happens, the
-GALog queue is processed and the GALog is restarted, as the IOMMU
-manual indicates in section "2.7.4 Guest Virtual APIC Log Restart
-Procedure":
+In the storage case with larger buffers, dma_opt_mapping_size() also 
+means you spend less time in the rbtree, but because you're inherently 
+hitting it less often at all, since most allocations can now hopefully 
+be fulfilled by the caches. That's obviously moot when the mappings are 
+already small enough to be cached and the only reason for hitting the 
+rbtree is overflow/underflow in the depot because the working set is 
+sufficiently large and the allocation pattern sufficiently "bursty".
 
-| * Wait until MMIO Offset 2020h[GALogRun]=0b so that all request
-|   entries are completed as circumstances allow. GALogRun must be 0b to
-|   modify the guest virtual APIC log registers safely.
-| * Write MMIO Offset 0018h[GALogEn]=0b.
-| * As necessary, change the following values (e.g., to relocate or
-| resize the guest virtual APIC event log):
-|   - the Guest Virtual APIC Log Base Address Register
-|      [MMIO Offset 00E0h],
-|   - the Guest Virtual APIC Log Head Pointer Register
-|      [MMIO Offset 2040h][GALogHead], and
-|   - the Guest Virtual APIC Log Tail Pointer Register
-|      [MMIO Offset 2048h][GALogTail].
-| * Write MMIO Offset 2020h[GALOverflow] = 1b to clear the bit (W1C).
-| * Write MMIO Offset 0018h[GALogEn] = 1b, and either set
-|   MMIO Offset 0018h[GAIntEn] to enable the GA log interrupt or clear
-|   the bit to disable it.
-
-Failing to handle the GALog overflow means that none of the VFs (in any
-guest) will work with IOMMU AVIC forcing the user to power cycle the
-host. When handling the event it resumes the GALog without resizing
-much like how it is done in the event handler overflow. The
-[MMIO Offset 2020h][GALOverflow] bit might be set in status register
-without the [MMIO Offset 2020h][GAInt] bit, so when deciding to poll
-for GA events (to clear space in the galog), also check the overflow
-bit.
-
-[suravee: Check for GAOverflow without GAInt, toggle CONTROL_GAINT_EN]
-
-Co-developed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
-Link: https://lore.kernel.org/r/20230419201154.83880-3-joao.m.martins@oracle.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iommu/amd/amd_iommu.h |  1 +
- drivers/iommu/amd/init.c      | 24 ++++++++++++++++++++++++
- drivers/iommu/amd/iommu.c     |  9 ++++++++-
- 3 files changed, 33 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index c160a332ce339..24c7e6c6c0de9 100644
---- a/drivers/iommu/amd/amd_iommu.h
-+++ b/drivers/iommu/amd/amd_iommu.h
-@@ -15,6 +15,7 @@ extern irqreturn_t amd_iommu_int_thread(int irq, void *data);
- extern irqreturn_t amd_iommu_int_handler(int irq, void *data);
- extern void amd_iommu_apply_erratum_63(struct amd_iommu *iommu, u16 devid);
- extern void amd_iommu_restart_event_logging(struct amd_iommu *iommu);
-+extern void amd_iommu_restart_ga_log(struct amd_iommu *iommu);
- extern int amd_iommu_init_devices(void);
- extern void amd_iommu_uninit_devices(void);
- extern void amd_iommu_init_notifier(void);
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 7c14b1d32c8db..b0af8b5967e0d 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -751,6 +751,30 @@ void amd_iommu_restart_event_logging(struct amd_iommu *iommu)
- 	iommu_feature_enable(iommu, CONTROL_EVT_LOG_EN);
- }
- 
-+/*
-+ * This function restarts event logging in case the IOMMU experienced
-+ * an GA log overflow.
-+ */
-+void amd_iommu_restart_ga_log(struct amd_iommu *iommu)
-+{
-+	u32 status;
-+
-+	status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
-+	if (status & MMIO_STATUS_GALOG_RUN_MASK)
-+		return;
-+
-+	pr_info_ratelimited("IOMMU GA Log restarting\n");
-+
-+	iommu_feature_disable(iommu, CONTROL_GALOG_EN);
-+	iommu_feature_disable(iommu, CONTROL_GAINT_EN);
-+
-+	writel(MMIO_STATUS_GALOG_OVERFLOW_MASK,
-+	       iommu->mmio_base + MMIO_STATUS_OFFSET);
-+
-+	iommu_feature_enable(iommu, CONTROL_GAINT_EN);
-+	iommu_feature_enable(iommu, CONTROL_GALOG_EN);
-+}
-+
- /*
-  * This function resets the command buffer if the IOMMU stopped fetching
-  * commands from it.
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 26fb78003889f..2bda7d9a27bbd 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -836,6 +836,7 @@ amd_iommu_set_pci_msi_domain(struct device *dev, struct amd_iommu *iommu) { }
- 	(MMIO_STATUS_EVT_OVERFLOW_INT_MASK | \
- 	 MMIO_STATUS_EVT_INT_MASK | \
- 	 MMIO_STATUS_PPR_INT_MASK | \
-+	 MMIO_STATUS_GALOG_OVERFLOW_MASK | \
- 	 MMIO_STATUS_GALOG_INT_MASK)
- 
- irqreturn_t amd_iommu_int_thread(int irq, void *data)
-@@ -859,10 +860,16 @@ irqreturn_t amd_iommu_int_thread(int irq, void *data)
- 		}
- 
- #ifdef CONFIG_IRQ_REMAP
--		if (status & MMIO_STATUS_GALOG_INT_MASK) {
-+		if (status & (MMIO_STATUS_GALOG_INT_MASK |
-+			      MMIO_STATUS_GALOG_OVERFLOW_MASK)) {
- 			pr_devel("Processing IOMMU GA Log\n");
- 			iommu_poll_ga_log(iommu);
- 		}
-+
-+		if (status & MMIO_STATUS_GALOG_OVERFLOW_MASK) {
-+			pr_info_ratelimited("IOMMU GA Log overflow\n");
-+			amd_iommu_restart_ga_log(iommu);
-+		}
- #endif
- 
- 		if (status & MMIO_STATUS_EVT_OVERFLOW_INT_MASK) {
--- 
-2.39.2
-
+Thanks,
+Robin.
