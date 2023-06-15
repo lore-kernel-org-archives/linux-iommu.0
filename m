@@ -1,66 +1,90 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3B63C525B
-	for <iommu@lists.linux.dev>; Thu, 15 Jun 2023 09:05:05 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 390011FB;
-	Thu, 15 Jun 2023 02:05:38 -0700 (PDT)
-Received: from [10.57.85.251] (unknown [10.57.85.251])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C18CA3F71E;
-	Thu, 15 Jun 2023 02:04:52 -0700 (PDT)
-Message-ID: <198a73b0-d7c0-57d6-5ef9-4e9dddb6365b@arm.com>
-Date: Thu, 15 Jun 2023 10:04:47 +0100
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB0925697
+	for <iommu@lists.linux.dev>; Thu, 15 Jun 2023 09:33:54 +0000 (UTC)
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 35F8P3NM006680;
+	Thu, 15 Jun 2023 09:33:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=qcppdkim1;
+ bh=GLpzsJcKyUDHvjSzNRle4HJAV06lwhJVDoZ6sTtkRXg=;
+ b=IJJZ5Js6gb8pBffwf2yDAdKS6HkB+bH81/2rpzBFjN5OQizYmSV/TvV6MKCB+cGW073h
+ 1oF5+GNI4MSvS/Yee1viFPv5dSLg8e4IN5QPt4tL9k5uPzqz3INK9TV+UjP/IwdWQ+MZ
+ txBTn92G6DC5uv5K7NPGs+7fbMQoNR5q3WBKu4jb3yTVptgCtXbiIJUQJPEidRZop2UE
+ SjEbwCgkq7C8uGHEkPscYqI2sAKGy6IHeGpV3GtVxqFU/HhEXTNQIq5ET1doTsSl2lnF
+ 484Q07l/738cV/ISDgHohkmFaP6/NAUeP4Hzey1CCBLVZTwTQ6j8AOkGxU2J+PA1KLd7 EQ== 
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3r7faea0xy-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 15 Jun 2023 09:33:40 +0000
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 35F9XdXg009521
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 15 Jun 2023 09:33:39 GMT
+Received: from hu-ajainp-blr.qualcomm.com (10.80.80.8) by
+ nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.42; Thu, 15 Jun 2023 02:33:36 -0700
+From: Anvesh Jain P <quic_ajainp@quicinc.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        "Robin
+ Murphy" <robin.murphy@arm.com>
+CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        Anvesh Jain P
+	<quic_ajainp@quicinc.com>,
+        Venkata Rao Kakani <quic_vkakani@quicinc.com>,
+        Vagdhan Kumar <quic_vagdhank@quicinc.com>
+Subject: [PATCH] iommu: export iommu_set_default_translated function
+Date: Thu, 15 Jun 2023 15:03:08 +0530
+Message-ID: <20230615093308.24989-1-quic_ajainp@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [PATCH v4] iommu: Optimise PCI SAC address trick
-Content-Language: en-GB
-To: John Garry <john.g.garry@oracle.com>, Jakub Kicinski <kuba@kernel.org>,
- Joerg Roedel <joro@8bytes.org>
-Cc: will@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- Linus Torvalds <torvalds@linux-foundation.org>
-References: <b8502b115b915d2a3fabde367e099e39106686c8.1681392791.git.robin.murphy@arm.com>
- <ZDk83vpIarQ9jWa7@8bytes.org> <20230613105850.30172085@kernel.org>
- <4f9184c5-e6a2-08da-f44a-3000b6cdfe35@oracle.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <4f9184c5-e6a2-08da-f44a-3000b6cdfe35@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: QbhkyLbaLgfmV02yj--GH6bd89dyqRAe
+X-Proofpoint-GUID: QbhkyLbaLgfmV02yj--GH6bd89dyqRAe
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
+ definitions=2023-06-15_06,2023-06-14_02,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 malwarescore=0
+ spamscore=0 priorityscore=1501 lowpriorityscore=0 bulkscore=0 adultscore=0
+ impostorscore=0 suspectscore=0 phishscore=0 mlxscore=0 mlxlogscore=903
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2305260000
+ definitions=main-2306150081
 
-On 2023-06-15 08:49, John Garry wrote:
-> On 13/06/2023 18:58, Jakub Kicinski wrote:
->> On Fri, 14 Apr 2023 13:45:34 +0200 Joerg Roedel wrote:
->>> Thanks for working on this, I think this is good to go. But given the
->>> issues we had with last attempt I'd like to have this in linux-next for
->>> a few weeks before sending it upstream. Therefore I will defer this
->>> patch and merge it early in the next cycle.
->> Is this patch queued up? I don't see it in linux-next and we keep
->> hitting this issue in production. After a few NIC reconfigurations
->> IOMMU starts consuming 90+% of CPU time.
->>
-> 
-> Since we're at rc6 time and a cautious approach was wanted to merge this 
-> change, I doubt that this will be merged for this cycle. That's quite 
-> unfortunate.
-> 
-> Please note what I mentioned earlier about using dma_opt_mapping_size(). 
-> This API is used by some block storage drivers to avoid your same 
-> problem, by clamping max_sectors_kb at this size - see sysfs-block Doc 
-> for info there. Maybe it can be used similarly for network drivers.
+export iommu_set_default_translated function to be used by other modules.
 
-It's not the same problem - in this case the mappings are already small 
-enough to use the rcaches, and it seems more to do with the total number 
-of unusable cached IOVAs being enough to keep the 32-bit space 
-almost-but-not-quite full most of the time, defeating the 
-max32_alloc_size optimisation whenever the caches run out of the right 
-size entries.
+Signed-off-by: Anvesh Jain P <quic_ajainp@quicinc.com>
+Signed-off-by: Venkata Rao Kakani <quic_vkakani@quicinc.com>
+Signed-off-by: Vagdhan Kumar <quic_vagdhank@quicinc.com>
+---
+ drivers/iommu/iommu.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-The manual workaround for now would be to boot with "iommu.forcedac=1" 
-and hope that no other devices break because of it.
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index f1dcfa3f1a1b..1b4a5db58d66 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2730,6 +2730,7 @@ void iommu_set_default_translated(bool cmd_line)
+ 		iommu_cmd_line |= IOMMU_CMD_LINE_DMA_API;
+ 	iommu_def_domain_type = IOMMU_DOMAIN_DMA;
+ }
++EXPORT_SYMBOL_GPL(iommu_set_default_translated);
+ 
+ bool iommu_default_passthrough(void)
+ {
 
-Thanks,
-Robin.
+base-commit: b6dad5178ceaf23f369c3711062ce1f2afc33644
+-- 
+2.17.1
+
