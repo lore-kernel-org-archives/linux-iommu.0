@@ -1,20 +1,20 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7001134AA
-	for <iommu@lists.linux.dev>; Thu, 15 Jun 2023 11:37:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 494A1C433C8;
-	Thu, 15 Jun 2023 11:37:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90638134AA
+	for <iommu@lists.linux.dev>; Thu, 15 Jun 2023 11:38:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F1ECC433D9;
+	Thu, 15 Jun 2023 11:38:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686829043;
-	bh=q2NTqAV7xYh5SFM8A23c4xh/TLXaZ1ssbaIzMvu1Z10=;
+	s=k20201202; t=1686829100;
+	bh=tySDa0XoEJtzAYPx5MNPEvUCe7vAfgvVHOqhnd3UqBs=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=SCCjl4IrHkjxz/r7hwaXs5NCNQ8nJNTVVkZlF0nzbFDZr+Uufdz5kyTZzrhBN9M/t
-	 zNq8eqSaFse5Y/x6HeVLsOr2kpAiadfQ2myzl1w/r9vYM6i9kg4Y4zyejHg1juSA0E
-	 NFJYggKP2Yijm+R238+u+cyExIgeA9YFg1x/vqSosW2E2ki0p6qQXL+d86FXJZ4QEy
-	 6JYDfQDzabuQj+gifehKad2N/ZisvqDJOFVZ7Fw6s4Jbnw2jHfWpaH3RdKUO5IRMaY
-	 lKHIQIoRIYIHLF2lh+rysyH8yRGmsiGesH8pR11LZ/8LYpWktGRzkenrlD0B53lhxu
-	 oCw5Jv6GK8VFQ==
+	b=qjgZFaRzeLUbNUGmMFWiNGhqPADdyp90LWNVz+lDMrjgOPcugCx9dHl4/sTAFh0ky
+	 PBvomnKCDhWpS5vCLJAaUiSjwKIZ45IPgZ3GvhmadeteC94UDznqBe+X2DqmnWtkb7
+	 Lrc2SbEySK/67akJDJ/R++lkF4k3gs/Asc/0QJsoXGJuXGPbzELnKoYzDSFitH+1V8
+	 xfXqKn2rHppv1Z3QmXfsFjfjqkXLSv7bE8fq89oWshuY8JxnIZELqedx4d1dqQWn9M
+	 2eP0wbqwRvaPsxAwpCdctk1ZdULUjEuHvfhbmEiaixIOw73RgKHKuJf2S/rPyB8CE0
+	 c6/f3D+JB7/5A==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -26,12 +26,12 @@ Cc: Joao Martins <joao.m.martins@oracle.com>,
 	joro@8bytes.org,
 	will@kernel.org,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.3 02/19] iommu/amd: Handle GALog overflows
-Date: Thu, 15 Jun 2023 07:37:02 -0400
-Message-Id: <20230615113719.648862-2-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.1 02/16] iommu/amd: Handle GALog overflows
+Date: Thu, 15 Jun 2023 07:38:02 -0400
+Message-Id: <20230615113816.649135-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230615113719.648862-1-sashal@kernel.org>
-References: <20230615113719.648862-1-sashal@kernel.org>
+In-Reply-To: <20230615113816.649135-1-sashal@kernel.org>
+References: <20230615113816.649135-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.3.8
+X-stable-base: Linux 6.1.34
 Content-Transfer-Encoding: 8bit
 
 From: Joao Martins <joao.m.martins@oracle.com>
@@ -109,7 +109,7 @@ index c160a332ce339..24c7e6c6c0de9 100644
  extern void amd_iommu_uninit_devices(void);
  extern void amd_iommu_init_notifier(void);
 diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 19a46b9f73574..fd487c33b28aa 100644
+index 7c14b1d32c8db..b0af8b5967e0d 100644
 --- a/drivers/iommu/amd/init.c
 +++ b/drivers/iommu/amd/init.c
 @@ -751,6 +751,30 @@ void amd_iommu_restart_event_logging(struct amd_iommu *iommu)
@@ -144,10 +144,10 @@ index 19a46b9f73574..fd487c33b28aa 100644
   * This function resets the command buffer if the IOMMU stopped fetching
   * commands from it.
 diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 167da5b1a5e31..3f2355c377630 100644
+index 26fb78003889f..2bda7d9a27bbd 100644
 --- a/drivers/iommu/amd/iommu.c
 +++ b/drivers/iommu/amd/iommu.c
-@@ -845,6 +845,7 @@ amd_iommu_set_pci_msi_domain(struct device *dev, struct amd_iommu *iommu) { }
+@@ -836,6 +836,7 @@ amd_iommu_set_pci_msi_domain(struct device *dev, struct amd_iommu *iommu) { }
  	(MMIO_STATUS_EVT_OVERFLOW_INT_MASK | \
  	 MMIO_STATUS_EVT_INT_MASK | \
  	 MMIO_STATUS_PPR_INT_MASK | \
@@ -155,7 +155,7 @@ index 167da5b1a5e31..3f2355c377630 100644
  	 MMIO_STATUS_GALOG_INT_MASK)
  
  irqreturn_t amd_iommu_int_thread(int irq, void *data)
-@@ -868,10 +869,16 @@ irqreturn_t amd_iommu_int_thread(int irq, void *data)
+@@ -859,10 +860,16 @@ irqreturn_t amd_iommu_int_thread(int irq, void *data)
  		}
  
  #ifdef CONFIG_IRQ_REMAP
