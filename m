@@ -1,39 +1,39 @@
-Received: from mail-io1-f80.google.com (mail-io1-f80.google.com [209.85.166.80])
+Received: from mail-io1-f77.google.com (mail-io1-f77.google.com [209.85.166.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 868DC7C
-	for <iommu@lists.linux.dev>; Fri, 16 Jun 2023 05:19:10 +0000 (UTC)
-Received: by mail-io1-f80.google.com with SMTP id ca18e2360f4ac-77accdaa0e0so28850839f.0
-        for <iommu@lists.linux.dev>; Thu, 15 Jun 2023 22:19:10 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA9817C
+	for <iommu@lists.linux.dev>; Fri, 16 Jun 2023 06:01:14 +0000 (UTC)
+Received: by mail-io1-f77.google.com with SMTP id ca18e2360f4ac-77a1d6d2f7fso28871339f.2
+        for <iommu@lists.linux.dev>; Thu, 15 Jun 2023 23:01:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686892749; x=1689484749;
+        d=1e100.net; s=20221208; t=1686895273; x=1689487273;
         h=to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=ySAhRrPH4UiQ0829ONIJ39ZvetYIG76OqcC8MyYo+jk=;
-        b=ID+M3Yxi3nt9xFBlbm49joitl5/WMeqTds8sxbsQlAy+O1lrd66cOnUezltQF1Lzso
-         W2oqGR7GKIc0F+tSA93Za79wAQpE9SFrFjq2IuTlDja2fTWTkjASA/C4CtHiYLpvHVq4
-         8T0UM7ZI8QnNowuHOTnXkFGe4yYRKDkWvsF6kqT7Scwb8BeJmXWfWtv7FWiYUDZcMsfv
-         MAMfQhvph4mFfWaMYIV74BnCg0SIBjwWol2SvBtT/OFYSQpNj+aDBuO/AjmoTuVt9kdx
-         vIaJQJORl5zRodWHHu0ZLibQZC9bSALLCZy8eUib7W1LlmsegfolG/LwBhGDXeX+YJrf
-         02RQ==
-X-Gm-Message-State: AC+VfDz8ze1bo6m73q3JyM7UZ0vsn06mQNe1bSa78FcSv/A/BQtrk5GL
-	4OGHENb27+qOdk1kN01nWb5EAyw5TyRrBABb7ggawH+50iLNRVtXDg==
-X-Google-Smtp-Source: ACHHUZ7QPWfFGSqh39SUkK24lZWaJjn7tGlLbRZK1JNMkLxU9+ZGaz2MydIAfb6chk6gOUtC5tJY3b1g+5+sDb3ebX3lZMyi9F8M
+        bh=KuhMsJImBWZkS4STwMps+fTTdmfKxPPAWibcumrJnTw=;
+        b=VIiH0kXOq4Rjn5X3mmJGo1zAzqr2ZXRW0yShAdymoOZItXc6JFbVGiL051Va2/MjYr
+         cMpK/rlBZJgmTy8OhFgLsIRt079WxGt26qu7NvYKf2UVXb8D9KeltkUvUaebEwyvoXTg
+         CCCutDdbarFjnEkoBqk10bctvnsNsWkjmycGAVx7MtiE7MFAwE730cuqNIiitND4gl+h
+         0ZW8/vFfgQMU45fpq10EZueqY4iXu3HdBw3o2fA036Z37CZOMJI8yZ+Kjltp3lyTZBvx
+         oHSDTs3/dqR9Cpcxap/Xc8XuZ/gwtgpiH5It5pEAzEN6uPeSd/kSOCCc5VRuy2S5QYSm
+         A39A==
+X-Gm-Message-State: AC+VfDwl0UL7nXJlPhII/QATgAGUjuBFKdCMwFzY7vWD8MnuulgN+23z
+	vZjhav2f8+LIJyIZ7zYmoDeORnmHA4YgH3odBjeiCJ0XxIkTCG/vvA==
+X-Google-Smtp-Source: ACHHUZ4Zv7gZoLXBlKgNdxHDzQ8VYsD70jvWV6omTecSakxDyWb6dBr3PyQwmIKbJrVqap1IXaBGA/2L7QhK6wJm5LN9+bX826tm
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a5e:8c11:0:b0:76c:6610:9d6c with SMTP id
- n17-20020a5e8c11000000b0076c66109d6cmr475691ioj.0.1686892749601; Thu, 15 Jun
- 2023 22:19:09 -0700 (PDT)
-Date: Thu, 15 Jun 2023 22:19:09 -0700
+X-Received: by 2002:a92:d391:0:b0:341:da64:d82d with SMTP id
+ o17-20020a92d391000000b00341da64d82dmr531139ilo.6.1686895273723; Thu, 15 Jun
+ 2023 23:01:13 -0700 (PDT)
+Date: Thu, 15 Jun 2023 23:01:13 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000001d40fc05fe385332@google.com>
-Subject: [syzbot] [iommu?] KASAN: slab-use-after-free Read in iopt_unmap_iova_range
-From: syzbot <syzbot+1ad12d16afca0e7d2dde@syzkaller.appspotmail.com>
+Message-ID: <000000000000905eba05fe38e9f2@google.com>
+Subject: [syzbot] [iommu?] KASAN: slab-use-after-free Read in iommufd_access_unpin_pages
+From: syzbot <syzbot+6c8d756f238a75fc3eb8@syzkaller.appspotmail.com>
 To: iommu@lists.linux.dev, jgg@ziepe.ca, joro@8bytes.org, kevin.tian@intel.com, 
 	linux-kernel@vger.kernel.org, robin.murphy@arm.com, 
 	syzkaller-bugs@googlegroups.com, will@kernel.org
@@ -45,12 +45,12 @@ syzbot found the following issue on:
 
 HEAD commit:    4c605260bc60 Merge tag 'x86_urgent_for_v6.4_rc6' of git://..
 git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=103c6a63280000
+console output: https://syzkaller.appspot.com/x/log.txt?x=14d07943280000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=3c980bfe8b399968
-dashboard link: https://syzkaller.appspot.com/bug?extid=1ad12d16afca0e7d2dde
+dashboard link: https://syzkaller.appspot.com/bug?extid=6c8d756f238a75fc3eb8
 compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-
-Unfortunately, I don't have any reproducer for this issue yet.
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=158a29dd280000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=167dd475280000
 
 Downloadable assets:
 disk image: https://storage.googleapis.com/syzbot-assets/9c4a756cb2ce/disk-4c605260.raw.xz
@@ -58,13 +58,15 @@ vmlinux: https://storage.googleapis.com/syzbot-assets/321df5350ca6/vmlinux-4c605
 kernel image: https://storage.googleapis.com/syzbot-assets/f117647a1dc2/bzImage-4c605260.xz
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+1ad12d16afca0e7d2dde@syzkaller.appspotmail.com
+Reported-by: syzbot+6c8d756f238a75fc3eb8@syzkaller.appspotmail.com
 
 ==================================================================
-BUG: KASAN: slab-use-after-free in iopt_unmap_iova_range+0x5ba/0x5f0 drivers/iommu/iommufd/io_pagetable.c:499
-Read of size 4 at addr ffff888075996184 by task syz-executor.2/31160
+BUG: KASAN: slab-use-after-free in iopt_area_last_iova drivers/iommu/iommufd/io_pagetable.h:88 [inline]
+BUG: KASAN: slab-use-after-free in iopt_area_contig_done drivers/iommu/iommufd/io_pagetable.h:160 [inline]
+BUG: KASAN: slab-use-after-free in iommufd_access_unpin_pages+0x363/0x370 drivers/iommu/iommufd/device.c:557
+Read of size 8 at addr ffff888022286e20 by task syz-executor669/5771
 
-CPU: 1 PID: 31160 Comm: syz-executor.2 Not tainted 6.4.0-rc5-syzkaller-00313-g4c605260bc60 #0
+CPU: 0 PID: 5771 Comm: syz-executor669 Not tainted 6.4.0-rc5-syzkaller-00313-g4c605260bc60 #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 05/25/2023
 Call Trace:
  <TASK>
@@ -73,7 +75,12 @@ Call Trace:
  print_address_description.constprop.0+0x2c/0x3c0 mm/kasan/report.c:351
  print_report mm/kasan/report.c:462 [inline]
  kasan_report+0x11c/0x130 mm/kasan/report.c:572
- iopt_unmap_iova_range+0x5ba/0x5f0 drivers/iommu/iommufd/io_pagetable.c:499
+ iopt_area_last_iova drivers/iommu/iommufd/io_pagetable.h:88 [inline]
+ iopt_area_contig_done drivers/iommu/iommufd/io_pagetable.h:160 [inline]
+ iommufd_access_unpin_pages+0x363/0x370 drivers/iommu/iommufd/device.c:557
+ iommufd_test_access_unmap+0x24b/0x390 drivers/iommu/iommufd/selftest.c:613
+ iommufd_access_notify_unmap+0x24c/0x3a0 drivers/iommu/iommufd/device.c:520
+ iopt_unmap_iova_range+0x4c4/0x5f0 drivers/iommu/iommufd/io_pagetable.c:497
  iopt_unmap_all+0x27/0x50 drivers/iommu/iommufd/io_pagetable.c:555
  iommufd_ioas_unmap+0x3d0/0x490 drivers/iommu/iommufd/ioas.c:300
  iommufd_fops_ioctl+0x317/0x4b0 drivers/iommu/iommufd/main.c:337
@@ -84,17 +91,17 @@ Call Trace:
  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
  do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f0812c8c169
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 f1 19 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f0813914168 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007f0812dabf80 RCX: 00007f0812c8c169
-RDX: 0000000020000100 RSI: 0000000000003b86 RDI: 0000000000000005
-RBP: 00007f0812ce7ca1 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f0812ecfb1f R14: 00007f0813914300 R15: 0000000000022000
+RIP: 0033:0x7fec1dae3b19
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 11 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fec1da74308 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007fec1db6b438 RCX: 00007fec1dae3b19
+RDX: 0000000020000100 RSI: 0000000000003b86 RDI: 0000000000000003
+RBP: 00007fec1db6b430 R08: 00007fec1da74700 R09: 0000000000000000
+R10: 00007fec1da74700 R11: 0000000000000246 R12: 00007fec1db6b43c
+R13: 00007fec1db39074 R14: 6d6f692f7665642f R15: 0000000000022000
  </TASK>
 
-Allocated by task 31160:
+Allocated by task 5770:
  kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
  kasan_set_track+0x25/0x30 mm/kasan/common.c:52
  ____kasan_kmalloc mm/kasan/common.c:374 [inline]
@@ -115,7 +122,7 @@ Allocated by task 31160:
  do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
  entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-Freed by task 31161:
+Freed by task 5770:
  kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
  kasan_set_track+0x25/0x30 mm/kasan/common.c:52
  kasan_save_free_info+0x2e/0x40 mm/kasan/generic.c:521
@@ -139,21 +146,20 @@ Freed by task 31161:
  do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
  entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-The buggy address belongs to the object at ffff888075996100
+The buggy address belongs to the object at ffff888022286e00
  which belongs to the cache kmalloc-cg-192 of size 192
-The buggy address is located 132 bytes inside of
- freed 192-byte region [ffff888075996100, ffff8880759961c0)
+The buggy address is located 32 bytes inside of
+ freed 192-byte region [ffff888022286e00, ffff888022286ec0)
 
 The buggy address belongs to the physical page:
-page:ffffea0001d66580 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x75996
-memcg:ffff88801f1c2701
+page:ffffea000088a180 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x22286
 flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
 page_type: 0xffffffff()
 raw: 00fff00000000200 ffff88801244ddc0 dead000000000122 0000000000000000
-raw: 0000000000000000 0000000080100010 00000001ffffffff ffff88801f1c2701
+raw: 0000000000000000 0000000080100010 00000001ffffffff 0000000000000000
 page dumped because: kasan: bad access detected
 page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Unmovable, gfp_mask 0x112cc0(GFP_USER|__GFP_NOWARN|__GFP_NORETRY), pid 31157, tgid 31154 (syz-executor.0), ts 1984547323469, free_ts 1983933451331
+page last allocated via order 0, migratetype Unmovable, gfp_mask 0x12cc0(GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY), pid 5725, tgid 5724 (syz-executor669), ts 62798621274, free_ts 62769254078
  set_page_owner include/linux/page_owner.h:31 [inline]
  post_alloc_hook+0x2db/0x350 mm/page_alloc.c:1731
  prep_new_page mm/page_alloc.c:1738 [inline]
@@ -171,9 +177,10 @@ page last allocated via order 0, migratetype Unmovable, gfp_mask 0x112cc0(GFP_US
  kmalloc_trace+0x26/0xe0 mm/slab_common.c:1057
  kmalloc include/linux/slab.h:559 [inline]
  kzalloc include/linux/slab.h:680 [inline]
- iommufd_test_alloc_access drivers/iommu/iommufd/selftest.c:680 [inline]
- iommufd_test_create_access drivers/iommu/iommufd/selftest.c:710 [inline]
- iommufd_test+0x1328/0x2c20 drivers/iommu/iommufd/selftest.c:961
+ iopt_alloc_area_pages+0x94/0x560 drivers/iommu/iommufd/io_pagetable.c:234
+ iopt_map_pages drivers/iommu/iommufd/io_pagetable.c:339 [inline]
+ iopt_map_user_pages+0x205/0x4e0 drivers/iommu/iommufd/io_pagetable.c:404
+ iommufd_ioas_map+0x329/0x5f0 drivers/iommu/iommufd/ioas.c:222
  iommufd_fops_ioctl+0x317/0x4b0 drivers/iommu/iommufd/main.c:337
  vfs_ioctl fs/ioctl.c:51 [inline]
  __do_sys_ioctl fs/ioctl.c:870 [inline]
@@ -198,22 +205,20 @@ page last free stack trace:
  exit_mm kernel/exit.c:567 [inline]
  do_exit+0x9b0/0x29b0 kernel/exit.c:861
  do_group_exit+0xd4/0x2a0 kernel/exit.c:1024
- get_signal+0x2318/0x25b0 kernel/signal.c:2876
- arch_do_signal_or_restart+0x79/0x5c0 arch/x86/kernel/signal.c:306
- exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
- exit_to_user_mode_prepare+0x11f/0x240 kernel/entry/common.c:204
- __syscall_exit_to_user_mode_work kernel/entry/common.c:286 [inline]
- syscall_exit_to_user_mode+0x1d/0x50 kernel/entry/common.c:297
- do_syscall_64+0x46/0xb0 arch/x86/entry/common.c:86
+ __do_sys_exit_group kernel/exit.c:1035 [inline]
+ __se_sys_exit_group kernel/exit.c:1033 [inline]
+ __x64_sys_exit_group+0x3e/0x50 kernel/exit.c:1033
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
  entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
 Memory state around the buggy address:
- ffff888075996080: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
- ffff888075996100: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff888075996180: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
-                   ^
- ffff888075996200: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff888075996280: 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc fc
+ ffff888022286d00: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff888022286d80: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+>ffff888022286e00: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                               ^
+ ffff888022286e80: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+ ffff888022286f00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 ==================================================================
 
 
@@ -227,6 +232,10 @@ https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
 
 If the bug is already fixed, let syzbot know by replying with:
 #syz fix: exact-commit-title
+
+If you want syzbot to run the reproducer, reply with:
+#syz test: git://repo/address.git branch-or-commit-hash
+If you attach or paste a git patch, syzbot will apply it before testing.
 
 If you want to change bug's subsystems, reply with:
 #syz set subsystems: new-subsystem
