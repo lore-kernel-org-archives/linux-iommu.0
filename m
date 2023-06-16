@@ -1,131 +1,148 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8D31F8F59
-	for <iommu@lists.linux.dev>; Fri, 16 Jun 2023 16:35:03 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1AC941FB;
-	Fri, 16 Jun 2023 09:35:46 -0700 (PDT)
-Received: from [10.57.85.251] (unknown [10.57.85.251])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BC6DD3F663;
-	Fri, 16 Jun 2023 09:35:00 -0700 (PDT)
-Message-ID: <520e2be4-726f-c680-c010-a308cdddbae0@arm.com>
-Date: Fri, 16 Jun 2023 17:34:53 +0100
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E31B13AC6
+	for <iommu@lists.linux.dev>; Fri, 16 Jun 2023 17:00:12 +0000 (UTC)
+Received: from lhrpeml500005.china.huawei.com (unknown [172.18.147.206])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4QjQM61fMwz6J7fM;
+	Sat, 17 Jun 2023 00:57:38 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ lhrpeml500005.china.huawei.com (7.191.163.240) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Fri, 16 Jun 2023 18:00:09 +0100
+Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
+ lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.023;
+ Fri, 16 Jun 2023 18:00:09 +0100
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Joao Martins <joao.m.martins@oracle.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>
+CC: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>, "Lu
+ Baolu" <baolu.lu@linux.intel.com>, Yi Liu <yi.l.liu@intel.com>, Yi Y Sun
+	<yi.y.sun@intel.com>, Eric Auger <eric.auger@redhat.com>, Nicolin Chen
+	<nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Jean-Philippe Brucker
+	<jean-philippe@linaro.org>, Suravee Suthikulpanit
+	<suravee.suthikulpanit@amd.com>, Will Deacon <will@kernel.org>, Robin Murphy
+	<robin.murphy@arm.com>, Alex Williamson <alex.williamson@redhat.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>
+Subject: RE: [PATCH RFCv2 21/24] iommu/arm-smmu-v3: Enable HTTU for stage1
+ with io-pgtable mapping
+Thread-Topic: [PATCH RFCv2 21/24] iommu/arm-smmu-v3: Enable HTTU for stage1
+ with io-pgtable mapping
+Thread-Index: AQHZico50POrCq6Z9ESUTUA7KQEZ/a9mHK1Q///zYICAJ8MbUA==
+Date: Fri, 16 Jun 2023 17:00:09 +0000
+Message-ID: <f4656595f62a46e48edecd259bce950e@huawei.com>
+References: <20230518204650.14541-1-joao.m.martins@oracle.com>
+ <20230518204650.14541-22-joao.m.martins@oracle.com>
+ <e16e35b399044e4f825a453e1b325e40@huawei.com>
+ <e22772db-e432-c42f-181c-e7055aeed553@oracle.com>
+In-Reply-To: <e22772db-e432-c42f-181c-e7055aeed553@oracle.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-originating-ip: [10.202.227.178]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: Question about reserved_regions w/ Intel IOMMU
-Content-Language: en-GB
-To: Alexander Duyck <alexander.duyck@gmail.com>,
- Jason Gunthorpe <jgg@nvidia.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Baolu Lu <baolu.lu@linux.intel.com>, LKML <linux-kernel@vger.kernel.org>,
- linux-pci <linux-pci@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <CAKgT0UezciLjHacOx372+v8MZkDf22D5Thn82n-07xxKy_0FTQ@mail.gmail.com>
- <CAKgT0UfMeVOz6AOqSvVvzpsedGDiXCNQrjM+4KDv7qJJ1orpsw@mail.gmail.com>
- <a1cff65b-b390-3872-25b5-dd6bbfb3524c@linux.intel.com>
- <b24a6c7b-27fc-41c0-5c82-15696b4a7dc1@arm.com> <ZIiRK2Dzl2/9Jqle@ziepe.ca>
- <BN9PR11MB52765C24405D2475CF3CBEBE8C58A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZIxTmGU4a5dniEY3@nvidia.com>
- <CAKgT0UfmdOOPSD5YvpHnh1A02URn9zxVLbyXJM_67On7xojLcA@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <CAKgT0UfmdOOPSD5YvpHnh1A02URn9zxVLbyXJM_67On7xojLcA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-CFilter-Loop: Reflected
 
-On 2023-06-16 16:27, Alexander Duyck wrote:
-> On Fri, Jun 16, 2023 at 5:20 AM Jason Gunthorpe <jgg@nvidia.com> wrote:
->>
->> On Fri, Jun 16, 2023 at 08:39:46AM +0000, Tian, Kevin wrote:
->>> +Alex
->>>
->>>> From: Jason Gunthorpe <jgg@nvidia.com>
->>>> Sent: Tuesday, June 13, 2023 11:54 PM
->>>>
->>>> On Thu, Jun 08, 2023 at 04:28:24PM +0100, Robin Murphy wrote:
->>>>
->>>>>> The iova_reserve_pci_windows() you've seen is for kernel DMA interfaces
->>>>>> which is not related to peer-to-peer accesses.
->>>>>
->>>>> Right, in general the IOMMU driver cannot be held responsible for
->>>> whatever
->>>>> might happen upstream of the IOMMU input.
->>>>
->>>> The driver yes, but..
->>>>
->>>>> The DMA layer carves PCI windows out of its IOVA space
->>>>> unconditionally because we know that they *might* be problematic,
->>>>> and we don't have any specific constraints on our IOVA layout so
->>>>> it's no big deal to just sacrifice some space for simplicity.
->>>>
->>>> This is a problem for everything using UNMANAGED domains. If the iommu
->>>> API user picks an IOVA it should be able to expect it to work. If the
->>>> intereconnect fails to allow it to work then this has to be discovered
->>>> otherwise UNAMANGED domains are not usable at all.
->>>>
->>>> Eg vfio and iommufd are also in trouble on these configurations.
->>>>
->>>
->>> If those PCI windows are problematic e.g. due to ACS they belong to
->>> a single iommu group. If a vfio user opens all the devices in that group
->>> then it can discover and reserve those windows in its IOVA space.
->>
->> How? We don't even exclude the single device's BAR if there is no ACS?
-> 
-> The issue here was a defective ACS on a PCIe switch.
-> 
->>> The problem is that the user may not open all the devices then
->>> currently there is no way for it to know the windows on those
->>> unopened devices.
->>>
->>> Curious why nobody complains about this gap before this thread...
->>
->> Probably because it only matters if you have a real PCIe switch in the
->> system, which is pretty rare.
-> 
-> So just FYI I am pretty sure we have a partitioned PCIe switch that
-> has FW issues. Specifically it doesn't seem to be honoring the
-> Redirect Request bit so what is happening is that we are seeing
-> requests that are supposed to be going to the root complex/IOMMU
-> getting redirected to an NVMe device that was on the same physical
-> PCIe switch. We are in the process of getting that sorted out now and
-> are using the forcedac option in the meantime to keep the IOMMU out of
-> the 32b address space that was causing the issue.
-> 
-> The reason for my original request is more about the user experience
-> of trying to figure out what is reserved and what isn't. It seems like
-> the IOVA will have reservations that are not visible to the end user.
-> So when I go looking through the reserved_regions in sysfs it just
-> lists the MSI regions that are reserved, and maybe some regions such
-> as the memory for USB. while in reality we may be reserving IOVA
-> regions in iova_reserve_pci_windows that will not be exposed without
-> having to add probes or adding some printk debugging.
-
-lspci -vvv seems to have no problem telling me about what PCI memory 
-space is assigned where, even as an unprivileged user, so surely it's 
-available to any VFIO user too?
-
-It is not necessarily useful for eeh IOMMU layer to claim to userspace 
-that an entire window is unusable if in fact there's nothing in there 
-that would be treated as a P2P address so it's actually fine. As I say, 
-iommu-dma can make that assumption for itself because iommu-dma doesn't 
-need to maintain any particular address space layout, but it could be 
-overly restrictive for a userspace process or VMM which does.
-
-If the system has working ACS configured correctly, then this issue 
-should be moot; if it doesn't, then a VFIO user is going to get a whole 
-group of peer devices if they're getting anything at all, so it doesn't 
-seem entirely unreasonable to leave it up to them to check that all 
-those devices' resources play well with their expected memory map. And 
-the particular case of a system which claims to have working ACS but 
-doesn't, doesn't really seem to be something that can or should be 
-worked around from userspace; if that switch can't be fixed, it probably 
-wants an ACS quirk adding in the kernel.
-
-Thanks,
-Robin.
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSm9hbyBNYXJ0aW5zIFtt
+YWlsdG86am9hby5tLm1hcnRpbnNAb3JhY2xlLmNvbV0NCj4gU2VudDogMjIgTWF5IDIwMjMgMTE6
+NDMNCj4gVG86IFNoYW1lZXJhbGkgS29sb3RodW0gVGhvZGkgPHNoYW1lZXJhbGkua29sb3RodW0u
+dGhvZGlAaHVhd2VpLmNvbT47DQo+IGlvbW11QGxpc3RzLmxpbnV4LmRldg0KPiBDYzogSmFzb24g
+R3VudGhvcnBlIDxqZ2dAbnZpZGlhLmNvbT47IEtldmluIFRpYW4gPGtldmluLnRpYW5AaW50ZWwu
+Y29tPjsNCj4gTHUgQmFvbHUgPGJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbT47IFlpIExpdSA8eWku
+bC5saXVAaW50ZWwuY29tPjsgWWkgWSBTdW4NCj4gPHlpLnkuc3VuQGludGVsLmNvbT47IEVyaWMg
+QXVnZXIgPGVyaWMuYXVnZXJAcmVkaGF0LmNvbT47IE5pY29saW4gQ2hlbg0KPiA8bmljb2xpbmNA
+bnZpZGlhLmNvbT47IEpvZXJnIFJvZWRlbCA8am9yb0A4Ynl0ZXMub3JnPjsgSmVhbi1QaGlsaXBw
+ZQ0KPiBCcnVja2VyIDxqZWFuLXBoaWxpcHBlQGxpbmFyby5vcmc+OyBTdXJhdmVlIFN1dGhpa3Vs
+cGFuaXQNCj4gPHN1cmF2ZWUuc3V0aGlrdWxwYW5pdEBhbWQuY29tPjsgV2lsbCBEZWFjb24gPHdp
+bGxAa2VybmVsLm9yZz47IFJvYmluDQo+IE11cnBoeSA8cm9iaW4ubXVycGh5QGFybS5jb20+OyBB
+bGV4IFdpbGxpYW1zb24NCj4gPGFsZXgud2lsbGlhbXNvbkByZWRoYXQuY29tPjsga3ZtQHZnZXIu
+a2VybmVsLm9yZw0KPiBTdWJqZWN0OiBSZTogW1BBVENIIFJGQ3YyIDIxLzI0XSBpb21tdS9hcm0t
+c21tdS12MzogRW5hYmxlIEhUVFUgZm9yDQo+IHN0YWdlMSB3aXRoIGlvLXBndGFibGUgbWFwcGlu
+Zw0KDQpbLi4uXQ0KDQo+ID4+IEBAIC0yMjI2LDYgKzIyMzMsOSBAQCBzdGF0aWMgaW50IGFybV9z
+bW11X2RvbWFpbl9maW5hbGlzZShzdHJ1Y3QNCj4gPj4gaW9tbXVfZG9tYWluICpkb21haW4sDQo+
+ID4+ICAJCS5pb21tdV9kZXYJPSBzbW11LT5kZXYsDQo+ID4+ICAJfTsNCj4gPj4NCj4gPj4gKwlp
+ZiAoc21tdS0+ZmVhdHVyZXMgJiBhcm1fc21tdV9kYm1fY2FwYWJsZShzbW11KSkNCj4gPj4gKwkJ
+cGd0YmxfY2ZnLnF1aXJrcyB8PSBJT19QR1RBQkxFX1FVSVJLX0FSTV9IRDsNCg0KQWxzbywgSSB0
+aGluayB3ZSBzaG91bGQgbGltaXQgc2V0dGluZyB0aGlzIHRvIHMxIG9ubHkgcGd0YmxfY2ZnLg0K
+DQpUaGFua3MsDQpTaGFtZWVyDQoNCj4gPj4gKw0KPiA+PiAgCXBndGJsX29wcyA9IGFsbG9jX2lv
+X3BndGFibGVfb3BzKGZtdCwgJnBndGJsX2NmZywgc21tdV9kb21haW4pOw0KPiA+PiAgCWlmICgh
+cGd0Ymxfb3BzKQ0KPiA+PiAgCQlyZXR1cm4gLUVOT01FTTsNCj4gPj4gZGlmZiAtLWdpdCBhL2Ry
+aXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLmgNCj4gPj4gYi9kcml2ZXJz
+L2lvbW11L2FybS9hcm0tc21tdS12My9hcm0tc21tdS12My5oDQo+ID4+IGluZGV4IGQ4MmRkMTI1
+NDQ2Yy4uODNkNmYzYTI1NTRmIDEwMDY0NA0KPiA+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2FybS9h
+cm0tc21tdS12My9hcm0tc21tdS12My5oDQo+ID4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtL2Fy
+bS1zbW11LXYzL2FybS1zbW11LXYzLmgNCj4gPj4gQEAgLTI4OCw2ICsyODgsOSBAQA0KPiA+PiAg
+I2RlZmluZSBDVFhERVNDX0NEXzBfVENSX0lQUwkJR0VOTUFTS19VTEwoMzQsIDMyKQ0KPiA+PiAg
+I2RlZmluZSBDVFhERVNDX0NEXzBfVENSX1RCSTAJCSgxVUxMIDw8IDM4KQ0KPiA+Pg0KPiA+PiAr
+I2RlZmluZSBDVFhERVNDX0NEXzBfVENSX0hBICAgICAgICAgICAgKDFVTCA8PCA0MykNCj4gPj4g
+KyNkZWZpbmUgQ1RYREVTQ19DRF8wX1RDUl9IRCAgICAgICAgICAgICgxVUwgPDwgNDIpDQo+ID4+
+ICsNCj4gPj4gICNkZWZpbmUgQ1RYREVTQ19DRF8wX0FBNjQJCSgxVUwgPDwgNDEpDQo+ID4+ICAj
+ZGVmaW5lIENUWERFU0NfQ0RfMF9TCQkJKDFVTCA8PCA0NCkNCj4gPj4gICNkZWZpbmUgQ1RYREVT
+Q19DRF8wX1IJCQkoMVVMIDw8IDQ1KQ0KPiA+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9p
+by1wZ3RhYmxlLWFybS5jDQo+ID4+IGIvZHJpdmVycy9pb21tdS9pby1wZ3RhYmxlLWFybS5jIGlu
+ZGV4IDcyZGNkZDQ2OGNmMy4uYjJmNDcwNTI5NDU5DQo+ID4+IDEwMDY0NA0KPiA+PiAtLS0gYS9k
+cml2ZXJzL2lvbW11L2lvLXBndGFibGUtYXJtLmMNCj4gPj4gKysrIGIvZHJpdmVycy9pb21tdS9p
+by1wZ3RhYmxlLWFybS5jDQo+ID4+IEBAIC03NSw2ICs3NSw3IEBADQo+ID4+DQo+ID4+ICAjZGVm
+aW5lIEFSTV9MUEFFX1BURV9OU1RBQkxFCQkoKChhcm1fbHBhZV9pb3B0ZSkxKSA8PCA2MykNCj4g
+Pj4gICNkZWZpbmUgQVJNX0xQQUVfUFRFX1hOCQkJKCgoYXJtX2xwYWVfaW9wdGUpMykgPDwgNTMp
+DQo+ID4+ICsjZGVmaW5lIEFSTV9MUEFFX1BURV9EQk0JCSgoKGFybV9scGFlX2lvcHRlKTEpIDw8
+IDUxKQ0KPiA+PiAgI2RlZmluZSBBUk1fTFBBRV9QVEVfQUYJCQkoKChhcm1fbHBhZV9pb3B0ZSkx
+KSA8PCAxMCkNCj4gPj4gICNkZWZpbmUgQVJNX0xQQUVfUFRFX1NIX05TCQkoKChhcm1fbHBhZV9p
+b3B0ZSkwKSA8PCA4KQ0KPiA+PiAgI2RlZmluZSBBUk1fTFBBRV9QVEVfU0hfT1MJCSgoKGFybV9s
+cGFlX2lvcHRlKTIpIDw8IDgpDQo+ID4+IEBAIC04NCw3ICs4NSw3IEBADQo+ID4+DQo+ID4+ICAj
+ZGVmaW5lIEFSTV9MUEFFX1BURV9BVFRSX0xPX01BU0sJKCgoYXJtX2xwYWVfaW9wdGUpMHgzZmYp
+IDw8DQo+IDIpDQo+ID4+ICAvKiBJZ25vcmUgdGhlIGNvbnRpZ3VvdXMgYml0IGZvciBibG9jayBz
+cGxpdHRpbmcgKi8NCj4gPj4gLSNkZWZpbmUgQVJNX0xQQUVfUFRFX0FUVFJfSElfTUFTSwkoKChh
+cm1fbHBhZV9pb3B0ZSk2KSA8PCA1MikNCj4gPj4gKyNkZWZpbmUgQVJNX0xQQUVfUFRFX0FUVFJf
+SElfTUFTSwkoKChhcm1fbHBhZV9pb3B0ZSkxMykgPDwNCj4gNTEpDQo+ID4+ICAjZGVmaW5lIEFS
+TV9MUEFFX1BURV9BVFRSX01BU0sNCj4gCShBUk1fTFBBRV9QVEVfQVRUUl9MT19NQVNLDQo+ID4+
+IHwJXA0KPiA+PiAgCQkJCQkgQVJNX0xQQUVfUFRFX0FUVFJfSElfTUFTSykNCj4gPj4gIC8qIFNv
+ZnR3YXJlIGJpdCBmb3Igc29sdmluZyBjb2hlcmVuY3kgcmFjZXMgKi8gQEAgLTkzLDYgKzk0LDkg
+QEANCj4gPj4gIC8qIFN0YWdlLTEgUFRFICovDQo+ID4+ICAjZGVmaW5lIEFSTV9MUEFFX1BURV9B
+UF9VTlBSSVYJCSgoKGFybV9scGFlX2lvcHRlKTEpIDw8IDYpDQo+ID4+ICAjZGVmaW5lIEFSTV9M
+UEFFX1BURV9BUF9SRE9OTFkJCSgoKGFybV9scGFlX2lvcHRlKTIpIDw8IDYpDQo+ID4+ICsjZGVm
+aW5lIEFSTV9MUEFFX1BURV9BUF9SRE9OTFlfQklUCTcNCj4gPj4gKyNkZWZpbmUgQVJNX0xQQUVf
+UFRFX0FQX1dSSVRBQkxFDQo+IAkoQVJNX0xQQUVfUFRFX0FQX1JET05MWSB8IFwNCj4gPj4gKwkJ
+CQkJIEFSTV9MUEFFX1BURV9EQk0pDQo+ID4+ICAjZGVmaW5lIEFSTV9MUEFFX1BURV9BVFRSSU5E
+WF9TSElGVAkyDQo+ID4+ICAjZGVmaW5lIEFSTV9MUEFFX1BURV9uRwkJCSgoKGFybV9scGFlX2lv
+cHRlKTEpIDw8IDExKQ0KPiA+Pg0KPiA+PiBAQCAtNDA3LDYgKzQxMSw4IEBAIHN0YXRpYyBhcm1f
+bHBhZV9pb3B0ZQ0KPiBhcm1fbHBhZV9wcm90X3RvX3B0ZShzdHJ1Y3QNCj4gPj4gYXJtX2xwYWVf
+aW9fcGd0YWJsZSAqZGF0YSwNCj4gPj4gIAkJcHRlID0gQVJNX0xQQUVfUFRFX25HOw0KPiA+PiAg
+CQlpZiAoIShwcm90ICYgSU9NTVVfV1JJVEUpICYmIChwcm90ICYgSU9NTVVfUkVBRCkpDQo+ID4+
+ICAJCQlwdGUgfD0gQVJNX0xQQUVfUFRFX0FQX1JET05MWTsNCj4gPj4gKwkJZWxzZSBpZiAoZGF0
+YS0+aW9wLmNmZy5xdWlya3MgJiBJT19QR1RBQkxFX1FVSVJLX0FSTV9IRCkNCj4gPj4gKwkJCXB0
+ZSB8PSBBUk1fTFBBRV9QVEVfQVBfV1JJVEFCTEU7DQo+ID4+ICAJCWlmICghKHByb3QgJiBJT01N
+VV9QUklWKSkNCj4gPj4gIAkJCXB0ZSB8PSBBUk1fTFBBRV9QVEVfQVBfVU5QUklWOw0KPiA+PiAg
+CX0gZWxzZSB7DQo+ID4+IEBAIC04MDQsNyArODEwLDggQEAgYXJtXzY0X2xwYWVfYWxsb2NfcGd0
+YWJsZV9zMShzdHJ1Y3QNCj4gPj4gaW9fcGd0YWJsZV9jZmcgKmNmZywgdm9pZCAqY29va2llKQ0K
+PiA+Pg0KPiA+PiAgCWlmIChjZmctPnF1aXJrcyAmIH4oSU9fUEdUQUJMRV9RVUlSS19BUk1fTlMg
+fA0KPiA+PiAgCQkJICAgIElPX1BHVEFCTEVfUVVJUktfQVJNX1RUQlIxIHwNCj4gPj4gLQkJCSAg
+ICBJT19QR1RBQkxFX1FVSVJLX0FSTV9PVVRFUl9XQldBKSkNCj4gPj4gKwkJCSAgICBJT19QR1RB
+QkxFX1FVSVJLX0FSTV9PVVRFUl9XQldBIHwNCj4gPj4gKwkJCSAgICBJT19QR1RBQkxFX1FVSVJL
+X0FSTV9IRCkpDQo+ID4+ICAJCXJldHVybiBOVUxMOw0KPiA+Pg0KPiA+PiAgCWRhdGEgPSBhcm1f
+bHBhZV9hbGxvY19wZ3RhYmxlKGNmZyk7IGRpZmYgLS1naXQNCj4gPj4gYS9pbmNsdWRlL2xpbnV4
+L2lvLXBndGFibGUuaCBiL2luY2x1ZGUvbGludXgvaW8tcGd0YWJsZS5oIGluZGV4DQo+ID4+IDI1
+MTQyYTBlMmZjMi4uOWE5OTZiYTc4NTZkIDEwMDY0NA0KPiA+PiAtLS0gYS9pbmNsdWRlL2xpbnV4
+L2lvLXBndGFibGUuaA0KPiA+PiArKysgYi9pbmNsdWRlL2xpbnV4L2lvLXBndGFibGUuaA0KPiA+
+PiBAQCAtODUsNiArODUsOCBAQCBzdHJ1Y3QgaW9fcGd0YWJsZV9jZmcgew0KPiA+PiAgCSAqDQo+
+ID4+ICAJICogSU9fUEdUQUJMRV9RVUlSS19BUk1fT1VURVJfV0JXQTogT3ZlcnJpZGUgdGhlDQo+
+IG91dGVyLWNhY2hlYWJpbGl0eQ0KPiA+PiAgCSAqCWF0dHJpYnV0ZXMgc2V0IGluIHRoZSBUQ1Ig
+Zm9yIGEgbm9uLWNvaGVyZW50IHBhZ2UtdGFibGUgd2Fsa2VyLg0KPiA+PiArCSAqDQo+ID4+ICsJ
+ICogSU9fUEdUQUJMRV9RVUlSS19BUk1fSEQ6IEVuYWJsZXMgZGlydHkgdHJhY2tpbmcuDQo+ID4+
+ICAJICovDQo+ID4+ICAJI2RlZmluZSBJT19QR1RBQkxFX1FVSVJLX0FSTV9OUwkJCUJJVCgwKQ0K
+PiA+PiAgCSNkZWZpbmUgSU9fUEdUQUJMRV9RVUlSS19OT19QRVJNUwkJQklUKDEpDQo+ID4+IEBA
+IC05Miw2ICs5NCw4IEBAIHN0cnVjdCBpb19wZ3RhYmxlX2NmZyB7DQo+ID4+ICAJI2RlZmluZSBJ
+T19QR1RBQkxFX1FVSVJLX0FSTV9NVEtfVFRCUl9FWFQJQklUKDQpDQo+ID4+ICAJI2RlZmluZSBJ
+T19QR1RBQkxFX1FVSVJLX0FSTV9UVEJSMQkJQklUKDUpDQo+ID4+ICAJI2RlZmluZSBJT19QR1RB
+QkxFX1FVSVJLX0FSTV9PVVRFUl9XQldBCQlCSVQoNikNCj4gPj4gKwkjZGVmaW5lIElPX1BHVEFC
+TEVfUVVJUktfQVJNX0hECQkJQklUKDcpDQo+ID4+ICsNCj4gPj4gIAl1bnNpZ25lZCBsb25nCQkJ
+cXVpcmtzOw0KPiA+PiAgCXVuc2lnbmVkIGxvbmcJCQlwZ3NpemVfYml0bWFwOw0KPiA+PiAgCXVu
+c2lnbmVkIGludAkJCWlhczsNCj4gPj4gLS0NCj4gPj4gMi4xNy4yDQo+ID4NCg==
