@@ -1,562 +1,1034 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2087.outbound.protection.outlook.com [40.107.237.87])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A331A1EA94;
-	Fri, 16 Jun 2023 19:03:16 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GRhEmnHwLnr9Ez13B9Ep6kg5Naa0iYZmUb89fx/rWs6WKiLA9ODjLoPjSVyvpFvJHLUDhchqCSotpb6uAmUGiPDCNB4LAvHtznfwvro5f3nVX/9xn09BpJ3B+0716UvScQR9CC8pCIymAVUNuTsrwO+Vg695cpsSqh9R/GtNf950M2KjPj2e4lSZBKxmzZo5Wn1GqrRZ2Nn1tBuM9cXDkLHdpiG09OfvwQ1RFqZ+gGZ3KrSDRQTVz6btbHloimcTXOUBGFLseIDoE82bUzscHnvRk8NtzwCHqC1UPxFph/jr7vC2ug7BYMi1N2PvE8SDpiZUJSkJXFgRGjSBR3gyyA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ufSWSvsleexlF3GNgDXWYBv3/yHgBGse/HO/S7+KY9k=;
- b=Q+bXc9qS/Ma0U6zuAjELIX8HDd0XcpAUOLkjcq7q8JakY2mrG3aI6wEByoUpIq9GmUQ/0ueeah1pHjVc0eHBpuzDefCyCkmixZexDXGXKHVQq367gIREVUZWX+pDRdPA1/5yDfbAbODd494gVbHU0sK1kFjVpq8s1q6cG6wR18a4SVVwHayC2pbnHsRKZYoflSt/mHLYwblK+/TdMUmitQzvzkQdIM+eIH50FHacyMC5ZGa0kf5f9tmUaebczX0WaBPSNmJzsWfCixcYu/ayK4xpHfvacrSKR/cCm/koBUYFuYWUexDEG4QtfH6GI8Yq7qEhBPeijXmRv1BHWwlGng==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ufSWSvsleexlF3GNgDXWYBv3/yHgBGse/HO/S7+KY9k=;
- b=efz5JtpQCCHYuybGKAF5/iCbkJVxIaevIvslY/euuNw0metlnaj3AY05PbIzMbxZjtzgtRJy4Bv38OxKXEspdFM+/tWNeVbdRZCleRky7G2Q4HNWyBUjkjhlVjwD00pljzS2c/t+138yZJagsQCFLBDDuzCAwxom7Fn3eMXHFiWu+yXNc/Ngcunke8y9J1KalYMXOlntGX0tx3D6Fgt857j5vYLJ+B/uFouA2Zjfijwsx4b3gDO0MaduwE3Bnzo7O2MHRr5IBcvR/DAnQzLauLuwi0trsXenp0EM0otSA32ZYs+NIqHkIH2W3XZyYsR1AlQqwDTRt/95A7bDhhhyaQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DS7PR12MB5912.namprd12.prod.outlook.com (2603:10b6:8:7d::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.29; Fri, 16 Jun
- 2023 19:03:10 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab%7]) with mapi id 15.20.6477.037; Fri, 16 Jun 2023
- 19:03:10 +0000
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Andy Gross <agross@kernel.org>,
-	Alim Akhtar <alim.akhtar@samsung.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Stuebner <heiko@sntech.de>,
-	iommu@lists.linux.dev,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-arm-msm@vger.kernel.org,
-	linux-mediatek@lists.infradead.org,
-	linux-rockchip@lists.infradead.org,
-	linux-s390@vger.kernel.org,
-	linux-samsung-soc@vger.kernel.org,
-	linux-sunxi@lists.linux.dev,
-	linux-tegra@vger.kernel.org,
-	Russell King <linux@armlinux.org.uk>,
-	linuxppc-dev@lists.ozlabs.org,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Rob Clark <robdclark@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Samuel Holland <samuel@sholland.org>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Krishna Reddy <vdumpa@nvidia.com>,
-	Chen-Yu Tsai <wens@csie.org>,
-	Will Deacon <will@kernel.org>,
-	Yong Wu <yong.wu@mediatek.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>,
-	Dmitry Osipenko <digetx@gmail.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Steven Price <steven.price@arm.com>,
-	Thierry Reding <treding@nvidia.com>
-Subject: [PATCH v4 15/25] iommufd/selftest: Make the mock iommu driver into a real driver
-Date: Fri, 16 Jun 2023 16:02:44 -0300
-Message-Id: <15-v4-874277bde66e+1a9f6-iommu_all_defdom_jgg@nvidia.com>
-In-Reply-To: <0-v4-874277bde66e+1a9f6-iommu_all_defdom_jgg@nvidia.com>
-References:
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BLAPR03CA0061.namprd03.prod.outlook.com
- (2603:10b6:208:329::6) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D6846AA4
+	for <iommu@lists.linux.dev>; Fri, 16 Jun 2023 22:06:31 +0000 (UTC)
+Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-3f9b7de94e7so84401cf.0
+        for <iommu@lists.linux.dev>; Fri, 16 Jun 2023 15:06:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1686953190; x=1689545190;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=f/C2lm6UVSBIMthyOQ1Yeb9R1X5LuraV1gWK5zXAuSw=;
+        b=ogYMXbQKGD0/ywXbciTEDKPJvOuhrDbBBM9FdcKHvw5bMiUFKbGK4X9Yuflzw1ZPft
+         p1YygEvqjTUpZLbXrCCBY6nhNsEAcjTt4BDKYJ6ZDLJtBo18wDmGVB/J7wwO7/omdYe/
+         etHz3w47e2tVG7ptFgUGf08+IysY1D4N/IRD9eET1M7J21NVkW2o8X9naibjPfX6N6Nn
+         bQkabuhwcETZUgLFXM2grFec67AnjmQU8oRuoyofDDxc1FhALlVgeNV1BanvBOHqmmiK
+         EhsPZWcCbiWq2ea8oiyu+OH563VGeFH5TRu5GAc8drDt0gintysxoUECw3NWnoYG7VYK
+         n5kA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686953190; x=1689545190;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=f/C2lm6UVSBIMthyOQ1Yeb9R1X5LuraV1gWK5zXAuSw=;
+        b=QeZX5uhc0Y/fHUKLEmwPQMlWqAYH5GaghcYtjRYhieUlFwhpeueeofyNP174HI9w0J
+         B88mKlcBcfxwfgpvoyCxZ+IAocjOuxvMGLsOej+VVVvCGvPKmhQGGGaf3I35qroamGK9
+         9HQYmq2tIMEz6n92CqMDPZ79ujaPdbGnW9vedl/wUXQ7PbvwA+Zi2AIWG4tpsnHDyIK/
+         FrnR3iX+V+o7cEgLX2mYsXUd1/T7MFijZe7jMGRNoDPdDPraJ3/px496mH4n7DvSH043
+         3i4AH+GiSi7dgnrUQdDUPX7b7F9Bk8Rl8AnicXgL8VrxJad7F5FwLeqiWwhxTgaa069O
+         im4A==
+X-Gm-Message-State: AC+VfDwdnFhIGgpxCzx1X+UtcQwA4mBw0J1cR+F7bG4Hi2pqynDbiMdg
+	6KCXvwNKgnvMcDj1fs4Nt3PucPw/UBKP6pEHeiJ8YQ==
+X-Google-Smtp-Source: ACHHUZ57kWvocmSCVk2nWpdzQdduRz1+yiXGRaHiGQ3VV8ffgQvt0LYLYqi1YP5+hPaRor/WLNtWuSfAQ58MrhgY2hs=
+X-Received: by 2002:a05:622a:1a07:b0:3ed:6bde:9681 with SMTP id
+ f7-20020a05622a1a0700b003ed6bde9681mr549996qtb.0.1686953190024; Fri, 16 Jun
+ 2023 15:06:30 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DS7PR12MB5912:EE_
-X-MS-Office365-Filtering-Correlation-Id: ba463ba2-4f3a-4539-4f23-08db6e9c4cbb
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	GF0G29oxabSmmqdQN0BnFy2tB5iNCES4gT0yZW2eoqkutCfko0YX7QrjgqWOjSKcYuiAHVoQDsd0imyrlf1swEZpd0NdSpd+gnlfkLU4XFYCBWoGyWVkXpsvqwzfC7NGKBmjxYENHW24R4azcGlR9PVh+r+xUbLI6F9E4vMGBYMtYzvgxh7o2uzXyAd1EwlsUQM8bU1jJYn84UzeQiNH3BEl9xbpw65EjGB+z3AMIByYPVtNDqBG3C9o/fa+28smDEDOqk5P1hr28C1OHOESiPY8YClF/66qIwsijcLaj2EHUsCTAvHZxDBGQTFPwnFDowEMZJNNiGf3fFTMmKWDjOdH/ovi6SbK4/1SYEzCcuyFg/7Ei3mYFBtONdattUIZiVXHeu7rZAcGhVeJDPLbBMlcPbj+q8LROIARY+IgSMh69Na7ts/tXL5uNkSgEMbIYGeytk3jNqLurskSz3kx5FgJ7KmYu3zEpd+MiJPDAP9ppBqYkPNIGSkiho3HZR9Msn9F84G2MuDrDciISiezaCYDKpSCfN/jSoUPegsI5B2uXsUd8HaW6M9ZB1UP+ri66sdlh0ksuUBM8yIC78TLHhypMom7JhXqvFJep3ko7VM=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(376002)(366004)(136003)(396003)(346002)(451199021)(36756003)(86362001)(110136005)(66556008)(66476007)(54906003)(4326008)(316002)(66946007)(107886003)(478600001)(6666004)(6486002)(7416002)(41300700001)(5660300002)(30864003)(8936002)(8676002)(7406005)(2906002)(38100700002)(921005)(2616005)(83380400001)(6512007)(6506007)(186003)(26005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?OD3URbfRUK6XTLLO446Pg9h7hT/PoE7wKPu+5Yx5BWOXClT0U23qVEZfaRjE?=
- =?us-ascii?Q?pVoogRex/H+LwgbY4qYScVtVQ5iy+7+AOv8GCwM/TFh9Sn/kdh5uDVbjpXOL?=
- =?us-ascii?Q?lf4VpB4EogWyjpP3QJDTg9uw0Y4uvsg3wtzSRE5sopcdpcYp1xh++W7twuZf?=
- =?us-ascii?Q?SSIj5js7pWLw+e0T/GhioCshFkU0lLd6/kFm8bwomaW1V7yjIh6lCgPHkKmE?=
- =?us-ascii?Q?Va8kaYc38HH25vg8/CCyBrHKyjQSSOXIIAgDhZk5G9aa6KLFR70kq6FZ0p9g?=
- =?us-ascii?Q?BZO1I0nE3lIxEYxg1vtFrxDJq617ueb/hpDD5vPl1b2F2dO+OcIgXKvT9IV+?=
- =?us-ascii?Q?KdkuEzyap+uB+kJ+Tv8zN6GZmzD58/1bRqqZEFe7KJ7GQrLc0/6WwVhvC33B?=
- =?us-ascii?Q?+7n6p/Ciwq7F3yD9CZ6qYcMylDxuXjKJQyQl3IVXCBRjvEhqKL09H1SmoRwj?=
- =?us-ascii?Q?tftnEIYquwKt37pQenWLSYommzA9a/hVB9rejwoWQaFUkf+QTuI7l50Sgoe+?=
- =?us-ascii?Q?yfnIHOWsyje++oN6Fhrc0GIbeafvIpjvWlpYxI1Xh2ZvRMaMS1XI8MLievZP?=
- =?us-ascii?Q?GuY/HBXHcXgS8FGdF6WBLdug3L48Nay4Q74G/QO3HBaySIN13VbPn7ZNrOT4?=
- =?us-ascii?Q?Nafh64oZuT9itVKsYZZ9OerC6igg9pOpzkVhIA3Ib59gRCaadGSIlrqB10pF?=
- =?us-ascii?Q?X+H8MWw7gHyhuo+NLFmamIZ0mLQ5uWWi+Cjy6nmW8h+TiayjoVPCA46BEwcl?=
- =?us-ascii?Q?I1tXTQrUHEX/CQWYE6hFT43pVAPWDg9aIYSBz3U+JC1f5WeQu7MSASlpVYWI?=
- =?us-ascii?Q?GTwDPGlO7jA6xsrIYY+94CHbDbFzQRB4dCEx/5pR0iOE4v78LorA4NRokfFs?=
- =?us-ascii?Q?F9R2f9+E+jQAZ/6ww4CSEHkHKRx/Ln3hQeyhg0p0ipCI7ZWShHxpqmv2bXo6?=
- =?us-ascii?Q?O3sWoguuHdGo2/NOGZ4jzMfgHvuMFpGpTsyrc9qLORvadJvgJnGquLxtCe1I?=
- =?us-ascii?Q?O2TiFycFDTcLrS+e4VhRzuIKa9w3nUJ2PNvWbas/BqXEdnTg215my2iLFq6p?=
- =?us-ascii?Q?gWRB65ewEAz6PwoEQMag0mxVmz9l7AWxXk/VPJOg4rN691W5ES09FQQz/UiJ?=
- =?us-ascii?Q?gWPzvxrUhhf4JvS5TnrZV1s4WkODKoCQxgeEuyJmF8RhK62gPhL1ucsOxtq5?=
- =?us-ascii?Q?q4ysNRs4tEUHmefa9UUKADoffKvKjk/B92q3bROf6jfVAJMsLqqNHkv2wS1X?=
- =?us-ascii?Q?nO1+H0KgyNqJ2lTMVqe+8ZSHSJosaD2WmgqHjBSf+6l4vK6qUZAAzmDAAc89?=
- =?us-ascii?Q?BejJAClAHY7Ai1oN+tE2Ri5/XAxCFMk8XJDNPr8Yjq6r6JzC8X6PP6qT7aZ6?=
- =?us-ascii?Q?uiC6ufKOU38Yqq++8PLamy8KSomW64dclNhGG0PmI/ROVe1/6+HiNsgq1NYu?=
- =?us-ascii?Q?nkTH+Qn4+IfiDsSTN2ztjEqAnp9R6DWbLQLlNH/EfJ383rCkANSt03HzZLat?=
- =?us-ascii?Q?2YKf/60JXRDUN+MVFoG8rEwEECiacmmvqrmgGEAHFMWeDNNgZZ4SFw+Z/SlU?=
- =?us-ascii?Q?D9MdT398fg2LbVWfOPTwGOsH6bBunvax5sirzGCx?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ba463ba2-4f3a-4539-4f23-08db6e9c4cbb
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2023 19:02:58.5860
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: y1OO0dJaTEJ66dkyxY9MszZL5cpEeyboyhRSQ2LdWC0XBhepzsQfcyVtezJyVgBT
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5912
+References: <20230613153415.350528-1-apatel@ventanamicro.com>
+ <20230613153415.350528-9-apatel@ventanamicro.com> <CAGETcx-hoPNanAwe4++6roqBXwSdc7z6Ei=-r9z6qFG1U7xVXg@mail.gmail.com>
+ <CAAhSdy3WH_nrKC-3AC4RHn9=crh6mPzaKO8jmAeo2j8-VJnT5g@mail.gmail.com>
+In-Reply-To: <CAAhSdy3WH_nrKC-3AC4RHn9=crh6mPzaKO8jmAeo2j8-VJnT5g@mail.gmail.com>
+From: Saravana Kannan <saravanak@google.com>
+Date: Fri, 16 Jun 2023 15:05:53 -0700
+Message-ID: <CAGETcx_DkuyZ+c50QmA7eu8vUByfVosABugZpd7R8NgR8Wc-FA@mail.gmail.com>
+Subject: Re: [PATCH v4 08/10] irqchip: Add RISC-V advanced PLIC driver
+To: Anup Patel <anup@brainfault.org>
+Cc: Anup Patel <apatel@ventanamicro.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
+	Paul Walmsley <paul.walmsley@sifive.com>, Thomas Gleixner <tglx@linutronix.de>, 
+	Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Frank Rowand <frowand.list@gmail.com>, 
+	Atish Patra <atishp@atishpatra.org>, Andrew Jones <ajones@ventanamicro.com>, 
+	Conor Dooley <conor@kernel.org>, linux-riscv@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+	iommu@lists.linux.dev, Android Kernel Team <kernel-team@android.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-I've avoided doing this because there is no way to make this happen
-without an intrusion into the core code. Up till now this has avoided
-needing the core code's probe path with some hackery - but now that
-default domains are becoming mandatory it is unavoidable. The core probe
-path must be run to set the default_domain, only it can do it. Without
-a default domain iommufd can't use the group.
+On Thu, Jun 15, 2023 at 7:01=E2=80=AFPM Anup Patel <anup@brainfault.org> wr=
+ote:
+>
+> On Fri, Jun 16, 2023 at 12:47=E2=80=AFAM Saravana Kannan <saravanak@googl=
+e.com> wrote:
+> >
+> > On Tue, Jun 13, 2023 at 8:35=E2=80=AFAM Anup Patel <apatel@ventanamicro=
+.com> wrote:
+> > >
+> > > The RISC-V advanced interrupt architecture (AIA) specification define=
+s
+> > > a new interrupt controller for managing wired interrupts on a RISC-V
+> > > platform. This new interrupt controller is referred to as advanced
+> > > platform-level interrupt controller (APLIC) which can forward wired
+> > > interrupts to CPUs (or HARTs) as local interrupts OR as message
+> > > signaled interrupts.
+> > > (For more details refer https://github.com/riscv/riscv-aia)
+> > >
+> > > This patch adds an irqchip driver for RISC-V APLIC found on RISC-V
+> > > platforms.
+> > >
+> > > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> > > ---
+> > >  drivers/irqchip/Kconfig             |   6 +
+> > >  drivers/irqchip/Makefile            |   1 +
+> > >  drivers/irqchip/irq-riscv-aplic.c   | 765 ++++++++++++++++++++++++++=
+++
+> > >  include/linux/irqchip/riscv-aplic.h | 119 +++++
+> > >  4 files changed, 891 insertions(+)
+> > >  create mode 100644 drivers/irqchip/irq-riscv-aplic.c
+> > >  create mode 100644 include/linux/irqchip/riscv-aplic.h
+> > >
+> > > diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+> > > index d700980372ef..834c0329f583 100644
+> > > --- a/drivers/irqchip/Kconfig
+> > > +++ b/drivers/irqchip/Kconfig
+> > > @@ -544,6 +544,12 @@ config SIFIVE_PLIC
+> > >         select IRQ_DOMAIN_HIERARCHY
+> > >         select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
+> > >
+> > > +config RISCV_APLIC
+> > > +       bool
+> > > +       depends on RISCV
+> > > +       select IRQ_DOMAIN_HIERARCHY
+> > > +       select GENERIC_MSI_IRQ
+> > > +
+> > >  config RISCV_IMSIC
+> > >         bool
+> > >         depends on RISCV
+> > > diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
+> > > index 577bde3e986b..438b8e1a152c 100644
+> > > --- a/drivers/irqchip/Makefile
+> > > +++ b/drivers/irqchip/Makefile
+> > > @@ -95,6 +95,7 @@ obj-$(CONFIG_QCOM_MPM)                        +=3D =
+irq-qcom-mpm.o
+> > >  obj-$(CONFIG_CSKY_MPINTC)              +=3D irq-csky-mpintc.o
+> > >  obj-$(CONFIG_CSKY_APB_INTC)            +=3D irq-csky-apb-intc.o
+> > >  obj-$(CONFIG_RISCV_INTC)               +=3D irq-riscv-intc.o
+> > > +obj-$(CONFIG_RISCV_APLIC)              +=3D irq-riscv-aplic.o
+> > >  obj-$(CONFIG_RISCV_IMSIC)              +=3D irq-riscv-imsic.o
+> > >  obj-$(CONFIG_SIFIVE_PLIC)              +=3D irq-sifive-plic.o
+> > >  obj-$(CONFIG_IMX_IRQSTEER)             +=3D irq-imx-irqsteer.o
+> > > diff --git a/drivers/irqchip/irq-riscv-aplic.c b/drivers/irqchip/irq-=
+riscv-aplic.c
+> > > new file mode 100644
+> > > index 000000000000..1e710fdf5608
+> > > --- /dev/null
+> > > +++ b/drivers/irqchip/irq-riscv-aplic.c
+> > > @@ -0,0 +1,765 @@
+> > > +// SPDX-License-Identifier: GPL-2.0
+> > > +/*
+> > > + * Copyright (C) 2021 Western Digital Corporation or its affiliates.
+> > > + * Copyright (C) 2022 Ventana Micro Systems Inc.
+> > > + */
+> > > +
+> > > +#define pr_fmt(fmt) "riscv-aplic: " fmt
+> > > +#include <linux/bitops.h>
+> > > +#include <linux/cpu.h>
+> > > +#include <linux/interrupt.h>
+> > > +#include <linux/io.h>
+> > > +#include <linux/irq.h>
+> > > +#include <linux/irqchip.h>
+> > > +#include <linux/irqchip/chained_irq.h>
+> > > +#include <linux/irqchip/riscv-aplic.h>
+> > > +#include <linux/irqchip/riscv-imsic.h>
+> > > +#include <linux/irqdomain.h>
+> > > +#include <linux/module.h>
+> > > +#include <linux/msi.h>
+> > > +#include <linux/platform_device.h>
+> > > +#include <linux/smp.h>
+> > > +
+> > > +#define APLIC_DEFAULT_PRIORITY         1
+> > > +#define APLIC_DISABLE_IDELIVERY                0
+> > > +#define APLIC_ENABLE_IDELIVERY         1
+> > > +#define APLIC_DISABLE_ITHRESHOLD       1
+> > > +#define APLIC_ENABLE_ITHRESHOLD                0
+> > > +
+> > > +struct aplic_msicfg {
+> > > +       phys_addr_t             base_ppn;
+> > > +       u32                     hhxs;
+> > > +       u32                     hhxw;
+> > > +       u32                     lhxs;
+> > > +       u32                     lhxw;
+> > > +};
+> > > +
+> > > +struct aplic_idc {
+> > > +       unsigned int            hart_index;
+> > > +       void __iomem            *regs;
+> > > +       struct aplic_priv       *priv;
+> > > +};
+> > > +
+> > > +struct aplic_priv {
+> > > +       struct fwnode_handle    *fwnode;
+> > > +       u32                     gsi_base;
+> > > +       u32                     nr_irqs;
+> > > +       u32                     nr_idcs;
+> > > +       void __iomem            *regs;
+> > > +       struct irq_domain       *irqdomain;
+> > > +       struct aplic_msicfg     msicfg;
+> > > +       struct cpumask          lmask;
+> > > +};
+> > > +
+> > > +static unsigned int aplic_idc_parent_irq;
+> > > +static DEFINE_PER_CPU(struct aplic_idc, aplic_idcs);
+> > > +
+> > > +static void aplic_irq_unmask(struct irq_data *d)
+> > > +{
+> > > +       struct aplic_priv *priv =3D irq_data_get_irq_chip_data(d);
+> > > +
+> > > +       writel(d->hwirq, priv->regs + APLIC_SETIENUM);
+> > > +
+> > > +       if (!priv->nr_idcs)
+> > > +               irq_chip_unmask_parent(d);
+> > > +}
+> > > +
+> > > +static void aplic_irq_mask(struct irq_data *d)
+> > > +{
+> > > +       struct aplic_priv *priv =3D irq_data_get_irq_chip_data(d);
+> > > +
+> > > +       writel(d->hwirq, priv->regs + APLIC_CLRIENUM);
+> > > +
+> > > +       if (!priv->nr_idcs)
+> > > +               irq_chip_mask_parent(d);
+> > > +}
+> > > +
+> > > +static int aplic_set_type(struct irq_data *d, unsigned int type)
+> > > +{
+> > > +       u32 val =3D 0;
+> > > +       void __iomem *sourcecfg;
+> > > +       struct aplic_priv *priv =3D irq_data_get_irq_chip_data(d);
+> > > +
+> > > +       switch (type) {
+> > > +       case IRQ_TYPE_NONE:
+> > > +               val =3D APLIC_SOURCECFG_SM_INACTIVE;
+> > > +               break;
+> > > +       case IRQ_TYPE_LEVEL_LOW:
+> > > +               val =3D APLIC_SOURCECFG_SM_LEVEL_LOW;
+> > > +               break;
+> > > +       case IRQ_TYPE_LEVEL_HIGH:
+> > > +               val =3D APLIC_SOURCECFG_SM_LEVEL_HIGH;
+> > > +               break;
+> > > +       case IRQ_TYPE_EDGE_FALLING:
+> > > +               val =3D APLIC_SOURCECFG_SM_EDGE_FALL;
+> > > +               break;
+> > > +       case IRQ_TYPE_EDGE_RISING:
+> > > +               val =3D APLIC_SOURCECFG_SM_EDGE_RISE;
+> > > +               break;
+> > > +       default:
+> > > +               return -EINVAL;
+> > > +       }
+> > > +
+> > > +       sourcecfg =3D priv->regs + APLIC_SOURCECFG_BASE;
+> > > +       sourcecfg +=3D (d->hwirq - 1) * sizeof(u32);
+> > > +       writel(val, sourcecfg);
+> > > +
+> > > +       return 0;
+> > > +}
+> > > +
+> > > +static void aplic_irq_eoi(struct irq_data *d)
+> > > +{
+> > > +       struct aplic_priv *priv =3D irq_data_get_irq_chip_data(d);
+> > > +       u32 reg_off, reg_mask;
+> > > +
+> > > +       /*
+> > > +        * EOI handling only required only for level-triggered
+> > > +        * interrupts in APLIC MSI mode.
+> > > +        */
+> > > +
+> > > +       if (priv->nr_idcs)
+> > > +               return;
+> > > +
+> > > +       reg_off =3D APLIC_CLRIP_BASE + ((d->hwirq / APLIC_IRQBITS_PER=
+_REG) * 4);
+> > > +       reg_mask =3D BIT(d->hwirq % APLIC_IRQBITS_PER_REG);
+> > > +       switch (irqd_get_trigger_type(d)) {
+> > > +       case IRQ_TYPE_LEVEL_LOW:
+> > > +               if (!(readl(priv->regs + reg_off) & reg_mask))
+> > > +                       writel(d->hwirq, priv->regs + APLIC_SETIPNUM_=
+LE);
+> > > +               break;
+> > > +       case IRQ_TYPE_LEVEL_HIGH:
+> > > +               if (readl(priv->regs + reg_off) & reg_mask)
+> > > +                       writel(d->hwirq, priv->regs + APLIC_SETIPNUM_=
+LE);
+> > > +               break;
+> > > +       }
+> > > +}
+> > > +
+> > > +#ifdef CONFIG_SMP
+> > > +static int aplic_set_affinity(struct irq_data *d,
+> > > +                             const struct cpumask *mask_val, bool fo=
+rce)
+> > > +{
+> > > +       struct aplic_priv *priv =3D irq_data_get_irq_chip_data(d);
+> > > +       struct aplic_idc *idc;
+> > > +       unsigned int cpu, val;
+> > > +       struct cpumask amask;
+> > > +       void __iomem *target;
+> > > +
+> > > +       if (!priv->nr_idcs)
+> > > +               return irq_chip_set_affinity_parent(d, mask_val, forc=
+e);
+> > > +
+> > > +       cpumask_and(&amask, &priv->lmask, mask_val);
+> > > +
+> > > +       if (force)
+> > > +               cpu =3D cpumask_first(&amask);
+> > > +       else
+> > > +               cpu =3D cpumask_any_and(&amask, cpu_online_mask);
+> > > +
+> > > +       if (cpu >=3D nr_cpu_ids)
+> > > +               return -EINVAL;
+> > > +
+> > > +       idc =3D per_cpu_ptr(&aplic_idcs, cpu);
+> > > +       target =3D priv->regs + APLIC_TARGET_BASE;
+> > > +       target +=3D (d->hwirq - 1) * sizeof(u32);
+> > > +       val =3D idc->hart_index & APLIC_TARGET_HART_IDX_MASK;
+> > > +       val <<=3D APLIC_TARGET_HART_IDX_SHIFT;
+> > > +       val |=3D APLIC_DEFAULT_PRIORITY;
+> > > +       writel(val, target);
+> > > +
+> > > +       irq_data_update_effective_affinity(d, cpumask_of(cpu));
+> > > +
+> > > +       return IRQ_SET_MASK_OK_DONE;
+> > > +}
+> > > +#endif
+> > > +
+> > > +static struct irq_chip aplic_chip =3D {
+> > > +       .name           =3D "RISC-V APLIC",
+> > > +       .irq_mask       =3D aplic_irq_mask,
+> > > +       .irq_unmask     =3D aplic_irq_unmask,
+> > > +       .irq_set_type   =3D aplic_set_type,
+> > > +       .irq_eoi        =3D aplic_irq_eoi,
+> > > +#ifdef CONFIG_SMP
+> > > +       .irq_set_affinity =3D aplic_set_affinity,
+> > > +#endif
+> > > +       .flags          =3D IRQCHIP_SET_TYPE_MASKED |
+> > > +                         IRQCHIP_SKIP_SET_WAKE |
+> > > +                         IRQCHIP_MASK_ON_SUSPEND,
+> > > +};
+> > > +
+> > > +static int aplic_irqdomain_translate(struct irq_fwspec *fwspec,
+> > > +                                    u32 gsi_base,
+> > > +                                    unsigned long *hwirq,
+> > > +                                    unsigned int *type)
+> > > +{
+> > > +       if (WARN_ON(fwspec->param_count < 2))
+> > > +               return -EINVAL;
+> > > +       if (WARN_ON(!fwspec->param[0]))
+> > > +               return -EINVAL;
+> > > +
+> > > +       /* For DT, gsi_base is always zero. */
+> > > +       *hwirq =3D fwspec->param[0] - gsi_base;
+> > > +       *type =3D fwspec->param[1] & IRQ_TYPE_SENSE_MASK;
+> > > +
+> > > +       WARN_ON(*type =3D=3D IRQ_TYPE_NONE);
+> > > +
+> > > +       return 0;
+> > > +}
+> > > +
+> > > +static int aplic_irqdomain_msi_translate(struct irq_domain *d,
+> > > +                                        struct irq_fwspec *fwspec,
+> > > +                                        unsigned long *hwirq,
+> > > +                                        unsigned int *type)
+> > > +{
+> > > +       struct aplic_priv *priv =3D platform_msi_get_host_data(d);
+> > > +
+> > > +       return aplic_irqdomain_translate(fwspec, priv->gsi_base, hwir=
+q, type);
+> > > +}
+> > > +
+> > > +static int aplic_irqdomain_msi_alloc(struct irq_domain *domain,
+> > > +                                    unsigned int virq, unsigned int =
+nr_irqs,
+> > > +                                    void *arg)
+> > > +{
+> > > +       int i, ret;
+> > > +       unsigned int type;
+> > > +       irq_hw_number_t hwirq;
+> > > +       struct irq_fwspec *fwspec =3D arg;
+> > > +       struct aplic_priv *priv =3D platform_msi_get_host_data(domain=
+);
+> > > +
+> > > +       ret =3D aplic_irqdomain_translate(fwspec, priv->gsi_base, &hw=
+irq, &type);
+> > > +       if (ret)
+> > > +               return ret;
+> > > +
+> > > +       ret =3D platform_msi_device_domain_alloc(domain, virq, nr_irq=
+s);
+> > > +       if (ret)
+> > > +               return ret;
+> > > +
+> > > +       for (i =3D 0; i < nr_irqs; i++) {
+> > > +               irq_domain_set_info(domain, virq + i, hwirq + i,
+> > > +                                   &aplic_chip, priv, handle_fasteoi=
+_irq,
+> > > +                                   NULL, NULL);
+> > > +               /*
+> > > +                * APLIC does not implement irq_disable() so Linux in=
+terrupt
+> > > +                * subsystem will take a lazy approach for disabling =
+an APLIC
+> > > +                * interrupt. This means APLIC interrupts are left un=
+masked
+> > > +                * upon system suspend and interrupts are not process=
+ed
+> > > +                * immediately upon system wake up. To tackle this, w=
+e disable
+> > > +                * the lazy approach for all APLIC interrupts.
+> > > +                */
+> > > +               irq_set_status_flags(virq + i, IRQ_DISABLE_UNLAZY);
+> > > +       }
+> > > +
+> > > +       return 0;
+> > > +}
+> > > +
+> > > +static const struct irq_domain_ops aplic_irqdomain_msi_ops =3D {
+> > > +       .translate      =3D aplic_irqdomain_msi_translate,
+> > > +       .alloc          =3D aplic_irqdomain_msi_alloc,
+> > > +       .free           =3D platform_msi_device_domain_free,
+> > > +};
+> > > +
+> > > +static int aplic_irqdomain_idc_translate(struct irq_domain *d,
+> > > +                                        struct irq_fwspec *fwspec,
+> > > +                                        unsigned long *hwirq,
+> > > +                                        unsigned int *type)
+> > > +{
+> > > +       struct aplic_priv *priv =3D d->host_data;
+> > > +
+> > > +       return aplic_irqdomain_translate(fwspec, priv->gsi_base, hwir=
+q, type);
+> > > +}
+> > > +
+> > > +static int aplic_irqdomain_idc_alloc(struct irq_domain *domain,
+> > > +                                    unsigned int virq, unsigned int =
+nr_irqs,
+> > > +                                    void *arg)
+> > > +{
+> > > +       int i, ret;
+> > > +       unsigned int type;
+> > > +       irq_hw_number_t hwirq;
+> > > +       struct irq_fwspec *fwspec =3D arg;
+> > > +       struct aplic_priv *priv =3D domain->host_data;
+> > > +
+> > > +       ret =3D aplic_irqdomain_translate(fwspec, priv->gsi_base, &hw=
+irq, &type);
+> > > +       if (ret)
+> > > +               return ret;
+> > > +
+> > > +       for (i =3D 0; i < nr_irqs; i++) {
+> > > +               irq_domain_set_info(domain, virq + i, hwirq + i,
+> > > +                                   &aplic_chip, priv, handle_fasteoi=
+_irq,
+> > > +                                   NULL, NULL);
+> > > +               irq_set_affinity(virq + i, &priv->lmask);
+> > > +               /* See the reason described in aplic_irqdomain_msi_al=
+loc() */
+> > > +               irq_set_status_flags(virq + i, IRQ_DISABLE_UNLAZY);
+> > > +       }
+> > > +
+> > > +       return 0;
+> > > +}
+> > > +
+> > > +static const struct irq_domain_ops aplic_irqdomain_idc_ops =3D {
+> > > +       .translate      =3D aplic_irqdomain_idc_translate,
+> > > +       .alloc          =3D aplic_irqdomain_idc_alloc,
+> > > +       .free           =3D irq_domain_free_irqs_top,
+> > > +};
+> > > +
+> > > +static void aplic_init_hw_irqs(struct aplic_priv *priv)
+> > > +{
+> > > +       int i;
+> > > +
+> > > +       /* Disable all interrupts */
+> > > +       for (i =3D 0; i <=3D priv->nr_irqs; i +=3D 32)
+> > > +               writel(-1U, priv->regs + APLIC_CLRIE_BASE +
+> > > +                           (i / 32) * sizeof(u32));
+> > > +
+> > > +       /* Set interrupt type and default priority for all interrupts=
+ */
+> > > +       for (i =3D 1; i <=3D priv->nr_irqs; i++) {
+> > > +               writel(0, priv->regs + APLIC_SOURCECFG_BASE +
+> > > +                         (i - 1) * sizeof(u32));
+> > > +               writel(APLIC_DEFAULT_PRIORITY,
+> > > +                      priv->regs + APLIC_TARGET_BASE +
+> > > +                      (i - 1) * sizeof(u32));
+> > > +       }
+> > > +
+> > > +       /* Clear APLIC domaincfg */
+> > > +       writel(0, priv->regs + APLIC_DOMAINCFG);
+> > > +}
+> > > +
+> > > +static void aplic_init_hw_global(struct aplic_priv *priv)
+> > > +{
+> > > +       u32 val;
+> > > +#ifdef CONFIG_RISCV_M_MODE
+> > > +       u32 valH;
+> > > +
+> > > +       if (!priv->nr_idcs) {
+> > > +               val =3D priv->msicfg.base_ppn;
+> > > +               valH =3D (priv->msicfg.base_ppn >> 32) &
+> > > +                       APLIC_xMSICFGADDRH_BAPPN_MASK;
+> > > +               valH |=3D (priv->msicfg.lhxw & APLIC_xMSICFGADDRH_LHX=
+W_MASK)
+> > > +                       << APLIC_xMSICFGADDRH_LHXW_SHIFT;
+> > > +               valH |=3D (priv->msicfg.hhxw & APLIC_xMSICFGADDRH_HHX=
+W_MASK)
+> > > +                       << APLIC_xMSICFGADDRH_HHXW_SHIFT;
+> > > +               valH |=3D (priv->msicfg.lhxs & APLIC_xMSICFGADDRH_LHX=
+S_MASK)
+> > > +                       << APLIC_xMSICFGADDRH_LHXS_SHIFT;
+> > > +               valH |=3D (priv->msicfg.hhxs & APLIC_xMSICFGADDRH_HHX=
+S_MASK)
+> > > +                       << APLIC_xMSICFGADDRH_HHXS_SHIFT;
+> > > +               writel(val, priv->regs + APLIC_xMSICFGADDR);
+> > > +               writel(valH, priv->regs + APLIC_xMSICFGADDRH);
+> > > +       }
+> > > +#endif
+> > > +
+> > > +       /* Setup APLIC domaincfg register */
+> > > +       val =3D readl(priv->regs + APLIC_DOMAINCFG);
+> > > +       val |=3D APLIC_DOMAINCFG_IE;
+> > > +       if (!priv->nr_idcs)
+> > > +               val |=3D APLIC_DOMAINCFG_DM;
+> > > +       writel(val, priv->regs + APLIC_DOMAINCFG);
+> > > +       if (readl(priv->regs + APLIC_DOMAINCFG) !=3D val)
+> > > +               pr_warn("%pfwP: unable to write 0x%x in domaincfg\n",
+> > > +                       priv->fwnode, val);
+> > > +}
+> > > +
+> > > +static void aplic_msi_write_msg(struct msi_desc *desc, struct msi_ms=
+g *msg)
+> > > +{
+> > > +       unsigned int group_index, hart_index, guest_index, val;
+> > > +       struct irq_data *d =3D irq_get_irq_data(desc->irq);
+> > > +       struct aplic_priv *priv =3D irq_data_get_irq_chip_data(d);
+> > > +       struct aplic_msicfg *mc =3D &priv->msicfg;
+> > > +       phys_addr_t tppn, tbppn, msg_addr;
+> > > +       void __iomem *target;
+> > > +
+> > > +       /* For zeroed MSI, simply write zero into the target register=
+ */
+> > > +       if (!msg->address_hi && !msg->address_lo && !msg->data) {
+> > > +               target =3D priv->regs + APLIC_TARGET_BASE;
+> > > +               target +=3D (d->hwirq - 1) * sizeof(u32);
+> > > +               writel(0, target);
+> > > +               return;
+> > > +       }
+> > > +
+> > > +       /* Sanity check on message data */
+> > > +       WARN_ON(msg->data > APLIC_TARGET_EIID_MASK);
+> > > +
+> > > +       /* Compute target MSI address */
+> > > +       msg_addr =3D (((u64)msg->address_hi) << 32) | msg->address_lo=
+;
+> > > +       tppn =3D msg_addr >> APLIC_xMSICFGADDR_PPN_SHIFT;
+> > > +
+> > > +       /* Compute target HART Base PPN */
+> > > +       tbppn =3D tppn;
+> > > +       tbppn &=3D ~APLIC_xMSICFGADDR_PPN_HART(mc->lhxs);
+> > > +       tbppn &=3D ~APLIC_xMSICFGADDR_PPN_LHX(mc->lhxw, mc->lhxs);
+> > > +       tbppn &=3D ~APLIC_xMSICFGADDR_PPN_HHX(mc->hhxw, mc->hhxs);
+> > > +       WARN_ON(tbppn !=3D mc->base_ppn);
+> > > +
+> > > +       /* Compute target group and hart indexes */
+> > > +       group_index =3D (tppn >> APLIC_xMSICFGADDR_PPN_HHX_SHIFT(mc->=
+hhxs)) &
+> > > +                    APLIC_xMSICFGADDR_PPN_HHX_MASK(mc->hhxw);
+> > > +       hart_index =3D (tppn >> APLIC_xMSICFGADDR_PPN_LHX_SHIFT(mc->l=
+hxs)) &
+> > > +                    APLIC_xMSICFGADDR_PPN_LHX_MASK(mc->lhxw);
+> > > +       hart_index |=3D (group_index << mc->lhxw);
+> > > +       WARN_ON(hart_index > APLIC_TARGET_HART_IDX_MASK);
+> > > +
+> > > +       /* Compute target guest index */
+> > > +       guest_index =3D tppn & APLIC_xMSICFGADDR_PPN_HART(mc->lhxs);
+> > > +       WARN_ON(guest_index > APLIC_TARGET_GUEST_IDX_MASK);
+> > > +
+> > > +       /* Update IRQ TARGET register */
+> > > +       target =3D priv->regs + APLIC_TARGET_BASE;
+> > > +       target +=3D (d->hwirq - 1) * sizeof(u32);
+> > > +       val =3D (hart_index & APLIC_TARGET_HART_IDX_MASK)
+> > > +                               << APLIC_TARGET_HART_IDX_SHIFT;
+> > > +       val |=3D (guest_index & APLIC_TARGET_GUEST_IDX_MASK)
+> > > +                               << APLIC_TARGET_GUEST_IDX_SHIFT;
+> > > +       val |=3D (msg->data & APLIC_TARGET_EIID_MASK);
+> > > +       writel(val, target);
+> > > +}
+> > > +
+> > > +static int aplic_setup_msi(struct aplic_priv *priv)
+> > > +{
+> > > +       struct aplic_msicfg *mc =3D &priv->msicfg;
+> > > +       const struct imsic_global_config *imsic_global;
+> > > +
+> > > +       /*
+> > > +        * The APLIC outgoing MSI config registers assume target MSI
+> > > +        * controller to be RISC-V AIA IMSIC controller.
+> > > +        */
+> > > +       imsic_global =3D imsic_get_global_config();
+> > > +       if (!imsic_global) {
+> > > +               pr_err("%pfwP: IMSIC global config not found\n",
+> > > +                       priv->fwnode);
+> > > +               return -ENODEV;
+> > > +       }
+> > > +
+> > > +       /* Find number of guest index bits (LHXS) */
+> > > +       mc->lhxs =3D imsic_global->guest_index_bits;
+> > > +       if (APLIC_xMSICFGADDRH_LHXS_MASK < mc->lhxs) {
+> > > +               pr_err("%pfwP: IMSIC guest index bits big for APLIC L=
+HXS\n",
+> > > +                       priv->fwnode);
+> > > +               return -EINVAL;
+> > > +       }
+> > > +
+> > > +       /* Find number of HART index bits (LHXW) */
+> > > +       mc->lhxw =3D imsic_global->hart_index_bits;
+> > > +       if (APLIC_xMSICFGADDRH_LHXW_MASK < mc->lhxw) {
+> > > +               pr_err("%pfwP: IMSIC hart index bits big for APLIC LH=
+XW\n",
+> > > +                       priv->fwnode);
+> > > +               return -EINVAL;
+> > > +       }
+> > > +
+> > > +       /* Find number of group index bits (HHXW) */
+> > > +       mc->hhxw =3D imsic_global->group_index_bits;
+> > > +       if (APLIC_xMSICFGADDRH_HHXW_MASK < mc->hhxw) {
+> > > +               pr_err("%pfwP: IMSIC group index bits big for APLIC H=
+HXW\n",
+> > > +                       priv->fwnode);
+> > > +               return -EINVAL;
+> > > +       }
+> > > +
+> > > +       /* Find first bit position of group index (HHXS) */
+> > > +       mc->hhxs =3D imsic_global->group_index_shift;
+> > > +       if (mc->hhxs < (2 * APLIC_xMSICFGADDR_PPN_SHIFT)) {
+> > > +               pr_err("%pfwP: IMSIC group index shift should be >=3D=
+ %d\n",
+> > > +                       priv->fwnode, (2 * APLIC_xMSICFGADDR_PPN_SHIF=
+T));
+> > > +               return -EINVAL;
+> > > +       }
+> > > +       mc->hhxs -=3D (2 * APLIC_xMSICFGADDR_PPN_SHIFT);
+> > > +       if (APLIC_xMSICFGADDRH_HHXS_MASK < mc->hhxs) {
+> > > +               pr_err("%pfwP: IMSIC group index shift big for APLIC =
+HHXS\n",
+> > > +                       priv->fwnode);
+> > > +               return -EINVAL;
+> > > +       }
+> > > +
+> > > +       /* Compute PPN base */
+> > > +       mc->base_ppn =3D imsic_global->base_addr >> APLIC_xMSICFGADDR=
+_PPN_SHIFT;
+> > > +       mc->base_ppn &=3D ~APLIC_xMSICFGADDR_PPN_HART(mc->lhxs);
+> > > +       mc->base_ppn &=3D ~APLIC_xMSICFGADDR_PPN_LHX(mc->lhxw, mc->lh=
+xs);
+> > > +       mc->base_ppn &=3D ~APLIC_xMSICFGADDR_PPN_HHX(mc->hhxw, mc->hh=
+xs);
+> > > +
+> > > +       /* Use all possible CPUs as lmask */
+> > > +       cpumask_copy(&priv->lmask, cpu_possible_mask);
+> > > +
+> > > +       return 0;
+> > > +}
+> > > +
+> > > +/*
+> > > + * To handle an APLIC IDC interrupts, we just read the CLAIMI regist=
+er
+> > > + * which will return highest priority pending interrupt and clear th=
+e
+> > > + * pending bit of the interrupt. This process is repeated until CLAI=
+MI
+> > > + * register return zero value.
+> > > + */
+> > > +static void aplic_idc_handle_irq(struct irq_desc *desc)
+> > > +{
+> > > +       struct aplic_idc *idc =3D this_cpu_ptr(&aplic_idcs);
+> > > +       struct irq_chip *chip =3D irq_desc_get_chip(desc);
+> > > +       irq_hw_number_t hw_irq;
+> > > +       int irq;
+> > > +
+> > > +       chained_irq_enter(chip, desc);
+> > > +
+> > > +       while ((hw_irq =3D readl(idc->regs + APLIC_IDC_CLAIMI))) {
+> > > +               hw_irq =3D hw_irq >> APLIC_IDC_TOPI_ID_SHIFT;
+> > > +               irq =3D irq_find_mapping(idc->priv->irqdomain, hw_irq=
+);
+> > > +
+> > > +               if (unlikely(irq <=3D 0))
+> > > +                       pr_warn_ratelimited("hw_irq %lu mapping not f=
+ound\n",
+> > > +                                           hw_irq);
+> > > +               else
+> > > +                       generic_handle_irq(irq);
+> > > +       }
+> > > +
+> > > +       chained_irq_exit(chip, desc);
+> > > +}
+> > > +
+> > > +static void aplic_idc_set_delivery(struct aplic_idc *idc, bool en)
+> > > +{
+> > > +       u32 de =3D (en) ? APLIC_ENABLE_IDELIVERY : APLIC_DISABLE_IDEL=
+IVERY;
+> > > +       u32 th =3D (en) ? APLIC_ENABLE_ITHRESHOLD : APLIC_DISABLE_ITH=
+RESHOLD;
+> > > +
+> > > +       /* Priority must be less than threshold for interrupt trigger=
+ing */
+> > > +       writel(th, idc->regs + APLIC_IDC_ITHRESHOLD);
+> > > +
+> > > +       /* Delivery must be set to 1 for interrupt triggering */
+> > > +       writel(de, idc->regs + APLIC_IDC_IDELIVERY);
+> > > +}
+> > > +
+> > > +static int aplic_idc_dying_cpu(unsigned int cpu)
+> > > +{
+> > > +       if (aplic_idc_parent_irq)
+> > > +               disable_percpu_irq(aplic_idc_parent_irq);
+> > > +
+> > > +       return 0;
+> > > +}
+> > > +
+> > > +static int aplic_idc_starting_cpu(unsigned int cpu)
+> > > +{
+> > > +       if (aplic_idc_parent_irq)
+> > > +               enable_percpu_irq(aplic_idc_parent_irq,
+> > > +                                 irq_get_trigger_type(aplic_idc_pare=
+nt_irq));
+> > > +
+> > > +       return 0;
+> > > +}
+> > > +
+> > > +static int aplic_setup_idc(struct aplic_priv *priv)
+> > > +{
+> > > +       int i, j, rc, cpu, setup_count =3D 0;
+> > > +       struct fwnode_reference_args parent;
+> > > +       struct irq_domain *domain;
+> > > +       unsigned long hartid;
+> > > +       struct aplic_idc *idc;
+> > > +       u32 val;
+> > > +
+> > > +       /* Setup per-CPU IDC and target CPU mask */
+> > > +       for (i =3D 0; i < priv->nr_idcs; i++) {
+> > > +               rc =3D fwnode_property_get_reference_args(priv->fwnod=
+e,
+> > > +                               "interrupts-extended", "#interrupt-ce=
+lls",
+> > > +                               0, i, &parent);
+> > > +               if (rc) {
+> > > +                       pr_warn("%pfwP: parent irq for IDC%d not foun=
+d\n",
+> > > +                               priv->fwnode, i);
+> > > +                       continue;
+> > > +               }
+> > > +
+> > > +               /*
+> > > +                * Skip interrupts other than external interrupts for
+> > > +                * current privilege level.
+> > > +                */
+> > > +               if (parent.args[0] !=3D RV_IRQ_EXT)
+> > > +                       continue;
+> > > +
+> > > +               rc =3D riscv_fw_parent_hartid(parent.fwnode, &hartid)=
+;
+> > > +               if (rc) {
+> > > +                       pr_warn("%pfwP: invalid hartid for IDC%d\n",
+> > > +                               priv->fwnode, i);
+> > > +                       continue;
+> > > +               }
+> > > +
+> > > +               cpu =3D riscv_hartid_to_cpuid(hartid);
+> > > +               if (cpu < 0) {
+> > > +                       pr_warn("%pfwP: invalid cpuid for IDC%d\n",
+> > > +                               priv->fwnode, i);
+> > > +                       continue;
+> > > +               }
+> > > +
+> > > +               cpumask_set_cpu(cpu, &priv->lmask);
+> > > +
+> > > +               idc =3D per_cpu_ptr(&aplic_idcs, cpu);
+> > > +               idc->hart_index =3D i;
+> > > +               idc->regs =3D priv->regs + APLIC_IDC_BASE + i * APLIC=
+_IDC_SIZE;
+> > > +               idc->priv =3D priv;
+> > > +
+> > > +               aplic_idc_set_delivery(idc, true);
+> > > +
+> > > +               /*
+> > > +                * Boot cpu might not have APLIC hart_index =3D 0 so =
+check
+> > > +                * and update target registers of all interrupts.
+> > > +                */
+> > > +               if (cpu =3D=3D smp_processor_id() && idc->hart_index)=
+ {
+> > > +                       val =3D idc->hart_index & APLIC_TARGET_HART_I=
+DX_MASK;
+> > > +                       val <<=3D APLIC_TARGET_HART_IDX_SHIFT;
+> > > +                       val |=3D APLIC_DEFAULT_PRIORITY;
+> > > +                       for (j =3D 1; j <=3D priv->nr_irqs; j++)
+> > > +                               writel(val, priv->regs + APLIC_TARGET=
+_BASE +
+> > > +                                           (j - 1) * sizeof(u32));
+> > > +               }
+> > > +
+> > > +               setup_count++;
+> > > +       }
+> > > +
+> > > +       /* Find parent domain and register chained handler */
+> > > +       domain =3D irq_find_matching_fwnode(riscv_get_intc_hwnode(),
+> > > +                                         DOMAIN_BUS_ANY);
+> > > +       if (!aplic_idc_parent_irq && domain) {
+> > > +               aplic_idc_parent_irq =3D irq_create_mapping(domain, R=
+V_IRQ_EXT);
+> > > +               if (aplic_idc_parent_irq) {
+> > > +                       irq_set_chained_handler(aplic_idc_parent_irq,
+> > > +                                               aplic_idc_handle_irq)=
+;
+> > > +
+> > > +                       /*
+> > > +                        * Setup CPUHP notifier to enable IDC parent
+> > > +                        * interrupt on all CPUs
+> > > +                        */
+> > > +                       cpuhp_setup_state(CPUHP_AP_ONLINE_DYN,
+> > > +                                         "irqchip/riscv/aplic:starti=
+ng",
+> > > +                                         aplic_idc_starting_cpu,
+> > > +                                         aplic_idc_dying_cpu);
+> > > +               }
+> > > +       }
+> > > +
+> > > +       /* Fail if we were not able to setup IDC for any CPU */
+> > > +       return (setup_count) ? 0 : -ENODEV;
+> > > +}
+> > > +
+> > > +static int aplic_probe(struct platform_device *pdev)
+> > > +{
+> > > +       struct fwnode_handle *fwnode =3D pdev->dev.fwnode;
+> > > +       struct fwnode_reference_args parent;
+> > > +       struct aplic_priv *priv;
+> > > +       struct resource *res;
+> > > +       phys_addr_t pa;
+> > > +       int rc;
+> > > +
+> > > +       priv =3D devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+> > > +       if (!priv)
+> > > +               return -ENOMEM;
+> > > +       priv->fwnode =3D fwnode;
+> > > +
+> > > +       /* Map the MMIO registers */
+> > > +       res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> > > +       if (!res) {
+> > > +               pr_err("%pfwP: failed to get MMIO resource\n", fwnode=
+);
+> > > +               return -EINVAL;
+> > > +       }
+> > > +       priv->regs =3D devm_ioremap(&pdev->dev, res->start, resource_=
+size(res));
+> > > +       if (!priv->regs) {
+> > > +               pr_err("%pfwP: failed map MMIO registers\n", fwnode);
+> > > +               return -ENOMEM;
+> > > +       }
+> > > +
+> > > +       /*
+> > > +        * Find out GSI base number
+> > > +        *
+> > > +        * Note: DT does not define "riscv,gsi-base" property so GSI
+> > > +        * base is always zero for DT.
+> > > +        */
+> > > +       rc =3D fwnode_property_read_u32_array(fwnode, "riscv,gsi-base=
+",
+> > > +                                           &priv->gsi_base, 1);
+> > > +       if (rc)
+> > > +               priv->gsi_base =3D 0;
+> > > +
+> > > +       /* Find out number of interrupt sources */
+> > > +       rc =3D fwnode_property_read_u32_array(fwnode, "riscv,num-sour=
+ces",
+> > > +                                           &priv->nr_irqs, 1);
+> > > +       if (rc) {
+> > > +               pr_err("%pfwP: failed to get number of interrupt sour=
+ces\n",
+> > > +                       fwnode);
+> > > +               return rc;
+> > > +       }
+> > > +
+> > > +       /* Setup initial state APLIC interrupts */
+> > > +       aplic_init_hw_irqs(priv);
+> > > +
+> > > +       /*
+> > > +        * Find out number of IDCs based on parent interrupts
+> > > +        *
+> > > +        * If "msi-parent" property is present then we ignore the
+> > > +        * APLIC IDCs which forces the APLIC driver to use MSI mode.
+> > > +        */
+> > > +       if (!fwnode_property_present(fwnode, "msi-parent")) {
+> > > +               while (!fwnode_property_get_reference_args(fwnode,
+> > > +                               "interrupts-extended", "#interrupt-ce=
+lls",
+> > > +                               0, priv->nr_idcs, &parent))
+> > > +                       priv->nr_idcs++;
+> > > +       }
+> > > +
+> > > +       /* Setup IDCs or MSIs based on number of IDCs */
+> > > +       if (priv->nr_idcs)
+> > > +               rc =3D aplic_setup_idc(priv);
+> > > +       else
+> > > +               rc =3D aplic_setup_msi(priv);
+> > > +       if (rc) {
+> > > +               pr_err("%pfwP: failed setup %s\n",
+> > > +                       fwnode, priv->nr_idcs ? "IDCs" : "MSIs");
+> > > +               return rc;
+> > > +       }
+> > > +
+> > > +       /* Setup global config and interrupt delivery */
+> > > +       aplic_init_hw_global(priv);
+> > > +
+> > > +       /* Create irq domain instance for the APLIC */
+> > > +       if (priv->nr_idcs)
+> > > +               priv->irqdomain =3D irq_domain_create_linear(
+> > > +                                               priv->fwnode,
+> > > +                                               priv->nr_irqs + 1,
+> > > +                                               &aplic_irqdomain_idc_=
+ops,
+> > > +                                               priv);
+> > > +       else
+> > > +               priv->irqdomain =3D platform_msi_create_device_domain=
+(
+> > > +                                               &pdev->dev,
+> > > +                                               priv->nr_irqs + 1,
+> > > +                                               aplic_msi_write_msg,
+> > > +                                               &aplic_irqdomain_msi_=
+ops,
+> > > +                                               priv);
+> > > +       if (!priv->irqdomain) {
+> > > +               pr_err("%pfwP: failed to add irq domain\n", priv->fwn=
+ode);
+> > > +               return -ENOMEM;
+> > > +       }
+> > > +
+> > > +       /* Advertise the interrupt controller */
+> > > +       if (priv->nr_idcs) {
+> > > +               pr_info("%pfwP: %d interrupts directly connected to %=
+d CPUs\n",
+> > > +                       priv->fwnode, priv->nr_irqs, priv->nr_idcs);
+> > > +       } else {
+> > > +               pa =3D priv->msicfg.base_ppn << APLIC_xMSICFGADDR_PPN=
+_SHIFT;
+> > > +               pr_info("%pfwP: %d interrupts forwared to MSI base %p=
+a\n",
+> > > +                       priv->fwnode, priv->nr_irqs, &pa);
+> > > +       }
+> > > +
+> > > +       return 0;
+> > > +}
+> > > +
+> > > +static const struct of_device_id aplic_match[] =3D {
+> > > +       { .compatible =3D "riscv,aplic" },
+> > > +       {}
+> > > +};
+> > > +
+> > > +static struct platform_driver aplic_driver =3D {
+> > > +       .driver =3D {
+> > > +               .name           =3D "riscv-aplic",
+> > > +               .of_match_table =3D aplic_match,
+> > > +       },
+> > > +       .probe =3D aplic_probe,
+> > > +};
+> > > +builtin_platform_driver(aplic_driver);
+> > > +
+> > > +static int __init aplic_dt_init(struct device_node *node,
+> > > +                               struct device_node *parent)
+> > > +{
+> > > +       /*
+> > > +        * The APLIC platform driver needs to be probed early
+> > > +        * so for device tree:
+> > > +        *
+> > > +        * 1) Set the FWNODE_FLAG_BEST_EFFORT flag in fwnode which
+> > > +        *    provides a hint to the device driver core to probe the
+> > > +        *    platform driver early.
+> > > +        * 2) Clear the OF_POPULATED flag in device_node because
+> > > +        *    of_irq_init() sets it which prevents creation of
+> > > +        *    platform device.
+> > > +        */
+> > > +       node->fwnode.flags |=3D FWNODE_FLAG_BEST_EFFORT;
+> >
+> > NACK. You are blindly plastering flags without trying to understand
+> > the real issue and fixing this correctly.
+> >
+> > > +       of_node_clear_flag(node, OF_POPULATED);
+> > > +       return 0;
+> > > +}
+> > > +IRQCHIP_DECLARE(riscv_aplic, "riscv,aplic", aplic_dt_init);
+> >
+> > This macro pretty much skips the entire driver core framework to probe
+> > and calls init and you are supposed to initialize the device when the
+> > init function is called.
+> >
+> > If you want your device/driver to follow the proper platform driver
+> > path (which is recommended), then you need to use the
+> > IRQCHIP_PLATFORM_DRIVER_BEGIN() and related macros. Grep for plenty of =
+examples.
+> >
+> > I offered to help you debug this issue and I asked for a dts file that
+> > corresponds to a board you are testing this on and seeing an issue.
+> > But you haven't answered my question [1] and are pointing to some
+> > random commit and blaming it. That commit has no impact on any
+> > existing devices/drivers.
+> >
+> > Hi Marc,
+> >
+> > Please consider this patch Nacked as long as FWNODE_FLAG_BEST_EFFORT
+> > is used or until Anup actually works with us to debug the real issue.
+>
+> Maybe I misread your previous comment.
+>
+> You can easily reproduce the issue on QEMU virt machine for RISC-V:
+> 1) Build qemu-system-riscv64 from latest QEMU master
+> 2) Build kernel from riscv_aia_v4 branch at https://github.com/avpatel/li=
+nux.git
+> (Note: make sure you remove the FWNODE_FLAG_BEST_EFFORT flag from
+>  APLIC driver at the time of building kernel)
+> 3) Boot a APLIC-only system on QEMU virt machine
+>     qemu-system-riscv64 -smp 4 -M virt,aia=3Daplic -m 1G -nographic \
+>     -bios opensbi/build/platform/generic/firmware/fw_dynamic.bin \
+>     -kernel ./build-riscv64/arch/riscv/boot/Image \
+>     -append "root=3D/dev/ram rw console=3DttyS0 earlycon" \
+>     -initrd ./rootfs_riscv64.img
 
-Make it so that iommufd selftest can create a real iommu driver and bind
-it only to is own private bus. Add iommu_device_register_bus() as a core
-code helper to make this possible. It simply sets the right pointers and
-registers the notifier block. The mock driver then works like any normal
-driver should, with probe triggered by the bus ops
+Unfortunately, I don't have the time to do all that, but I generally
+don't need to run something to figure out the issue. It's generally
+fairly obvious once I look at the DT. I'll also lean on you for some
+debug logs.
 
-When the bus->iommu_ops stuff is fully unwound we can probably do better
-here and remove this special case.
+Where is the dts file that corresponds to this QEMU run? This is the
+third time I'm asking for a pointer to a dts file that has this issue,
+can you point me to it please? I shouldn't have to say this but: put
+it somewhere and point me to it please. Please don't point me to some
+git repo and ask me to dig around.
 
-Remove set_platform_dma_ops from selftest and make it use a BLOCKED
-default domain.
+Can you give me details on what supplier is causing the deferred probe
+that's a problem for you? Any other details you can provide that'll
+help debug this issue?
 
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/iommu/iommu-priv.h              |  16 +++
- drivers/iommu/iommu.c                   |  43 ++++++++
- drivers/iommu/iommufd/iommufd_private.h |   5 +-
- drivers/iommu/iommufd/main.c            |   8 +-
- drivers/iommu/iommufd/selftest.c        | 141 +++++++++++++-----------
- 5 files changed, 144 insertions(+), 69 deletions(-)
- create mode 100644 drivers/iommu/iommu-priv.h
+> I hope the above steps help you reproduce the issue. I will certainly
+> test whatever fix you propose.
 
-diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
-new file mode 100644
-index 00000000000000..1cbc04b9cf7297
---- /dev/null
-+++ b/drivers/iommu/iommu-priv.h
-@@ -0,0 +1,16 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.
-+ */
-+#ifndef __IOMMU_PRIV_H
-+#define __IOMMU_PRIV_H
-+
-+#include <linux/iommu.h>
-+
-+int iommu_device_register_bus(struct iommu_device *iommu,
-+			      const struct iommu_ops *ops, struct bus_type *bus,
-+			      struct notifier_block *nb);
-+void iommu_device_unregister_bus(struct iommu_device *iommu,
-+				 struct bus_type *bus,
-+				 struct notifier_block *nb);
-+
-+#endif
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 7ca70e2a3f51e9..a3a4d004767b4d 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -36,6 +36,7 @@
- #include "dma-iommu.h"
- 
- #include "iommu-sva.h"
-+#include "iommu-priv.h"
- 
- static struct kset *iommu_group_kset;
- static DEFINE_IDA(iommu_group_ida);
-@@ -287,6 +288,48 @@ void iommu_device_unregister(struct iommu_device *iommu)
- }
- EXPORT_SYMBOL_GPL(iommu_device_unregister);
- 
-+#if IS_ENABLED(CONFIG_IOMMUFD_TEST)
-+void iommu_device_unregister_bus(struct iommu_device *iommu,
-+				 struct bus_type *bus,
-+				 struct notifier_block *nb)
-+{
-+	bus_unregister_notifier(bus, nb);
-+	iommu_device_unregister(iommu);
-+}
-+EXPORT_SYMBOL_GPL(iommu_device_unregister_bus);
-+
-+/*
-+ * Register an iommu driver against a single bus. This is only used by iommufd
-+ * selftest to create a mock iommu driver. The caller must provide
-+ * some memory to hold a notifier_block.
-+ */
-+int iommu_device_register_bus(struct iommu_device *iommu,
-+			      const struct iommu_ops *ops, struct bus_type *bus,
-+			      struct notifier_block *nb)
-+{
-+	int err;
-+
-+	iommu->ops = ops;
-+	nb->notifier_call = iommu_bus_notifier;
-+	err = bus_register_notifier(bus, nb);
-+	if (err)
-+		return err;
-+
-+	spin_lock(&iommu_device_lock);
-+	list_add_tail(&iommu->list, &iommu_device_list);
-+	spin_unlock(&iommu_device_lock);
-+
-+	bus->iommu_ops = ops;
-+	err = bus_iommu_probe(bus);
-+	if (err) {
-+		iommu_device_unregister_bus(iommu, bus, nb);
-+		return err;
-+	}
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(iommu_device_register_bus);
-+#endif
-+
- static struct dev_iommu *dev_iommu_get(struct device *dev)
- {
- 	struct dev_iommu *param = dev->iommu;
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index b38e67d1988bdb..368f66c63a239a 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -303,7 +303,7 @@ extern size_t iommufd_test_memory_limit;
- void iommufd_test_syz_conv_iova_id(struct iommufd_ucmd *ucmd,
- 				   unsigned int ioas_id, u64 *iova, u32 *flags);
- bool iommufd_should_fail(void);
--void __init iommufd_test_init(void);
-+int __init iommufd_test_init(void);
- void iommufd_test_exit(void);
- bool iommufd_selftest_is_mock_dev(struct device *dev);
- #else
-@@ -316,8 +316,9 @@ static inline bool iommufd_should_fail(void)
- {
- 	return false;
- }
--static inline void __init iommufd_test_init(void)
-+static inline int __init iommufd_test_init(void)
- {
-+	return 0;
- }
- static inline void iommufd_test_exit(void)
- {
-diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-index 3fbe636c3d8a69..042d45cc0b1c0d 100644
---- a/drivers/iommu/iommufd/main.c
-+++ b/drivers/iommu/iommufd/main.c
-@@ -437,8 +437,14 @@ static int __init iommufd_init(void)
- 		if (ret)
- 			goto err_misc;
- 	}
--	iommufd_test_init();
-+	ret = iommufd_test_init();
-+	if (ret)
-+		goto err_vfio_misc;
- 	return 0;
-+
-+err_vfio_misc:
-+	if (IS_ENABLED(CONFIG_IOMMUFD_VFIO_CONTAINER))
-+		misc_deregister(&vfio_misc_dev);
- err_misc:
- 	misc_deregister(&iommu_misc_dev);
- 	return ret;
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index 74c2076105d486..5433c9c545526d 100644
---- a/drivers/iommu/iommufd/selftest.c
-+++ b/drivers/iommu/iommufd/selftest.c
-@@ -9,14 +9,17 @@
- #include <linux/file.h>
- #include <linux/anon_inodes.h>
- #include <linux/fault-inject.h>
-+#include <linux/platform_device.h>
- #include <uapi/linux/iommufd.h>
- 
-+#include "../iommu-priv.h"
- #include "io_pagetable.h"
- #include "iommufd_private.h"
- #include "iommufd_test.h"
- 
- static DECLARE_FAULT_ATTR(fail_iommufd);
- static struct dentry *dbgfs_root;
-+static struct platform_device *selftest_iommu_dev;
- 
- size_t iommufd_test_memory_limit = 65536;
- 
-@@ -108,10 +111,6 @@ struct selftest_obj {
- 	};
- };
- 
--static void mock_domain_blocking_free(struct iommu_domain *domain)
--{
--}
--
- static int mock_domain_nop_attach(struct iommu_domain *domain,
- 				  struct device *dev)
- {
-@@ -119,7 +118,6 @@ static int mock_domain_nop_attach(struct iommu_domain *domain,
- }
- 
- static const struct iommu_domain_ops mock_blocking_ops = {
--	.free = mock_domain_blocking_free,
- 	.attach_dev = mock_domain_nop_attach,
- };
- 
-@@ -268,20 +266,26 @@ static bool mock_domain_capable(struct device *dev, enum iommu_cap cap)
- 	return cap == IOMMU_CAP_CACHE_COHERENCY;
- }
- 
--static void mock_domain_set_plaform_dma_ops(struct device *dev)
-+static struct iommu_device mock_iommu_device = {
-+};
-+
-+static struct iommu_device *mock_probe_device(struct device *dev)
- {
--	/*
--	 * mock doesn't setup default domains because we can't hook into the
--	 * normal probe path
--	 */
-+	return &mock_iommu_device;
- }
- 
- static const struct iommu_ops mock_ops = {
-+	/*
-+	 * IOMMU_DOMAIN_BLOCKED cannot be returned from def_domain_type()
-+	 * because it is zero.
-+	 */
-+	.default_domain = &mock_blocking_domain,
- 	.owner = THIS_MODULE,
- 	.pgsize_bitmap = MOCK_IO_PAGE_SIZE,
- 	.domain_alloc = mock_domain_alloc,
- 	.capable = mock_domain_capable,
--	.set_platform_dma_ops = mock_domain_set_plaform_dma_ops,
-+	.device_group = generic_device_group,
-+	.probe_device = mock_probe_device,
- 	.default_domain_ops =
- 		&(struct iommu_domain_ops){
- 			.free = mock_domain_free,
-@@ -292,10 +296,6 @@ static const struct iommu_ops mock_ops = {
- 		},
- };
- 
--static struct iommu_device mock_iommu_device = {
--	.ops = &mock_ops,
--};
--
- static inline struct iommufd_hw_pagetable *
- get_md_pagetable(struct iommufd_ucmd *ucmd, u32 mockpt_id,
- 		 struct mock_iommu_domain **mock)
-@@ -316,22 +316,29 @@ get_md_pagetable(struct iommufd_ucmd *ucmd, u32 mockpt_id,
- 	return hwpt;
- }
- 
--static struct bus_type iommufd_mock_bus_type = {
--	.name = "iommufd_mock",
--	.iommu_ops = &mock_ops,
-+struct mock_bus_type {
-+	struct bus_type bus;
-+	struct notifier_block nb;
- };
- 
-+static struct mock_bus_type iommufd_mock_bus_type = {
-+	.bus = {
-+		.name = "iommufd_mock",
-+	},
-+};
-+
-+static atomic_t mock_dev_num;
-+
- static void mock_dev_release(struct device *dev)
- {
- 	struct mock_dev *mdev = container_of(dev, struct mock_dev, dev);
- 
-+	atomic_dec(&mock_dev_num);
- 	kfree(mdev);
- }
- 
- static struct mock_dev *mock_dev_create(void)
- {
--	struct iommu_group *iommu_group;
--	struct dev_iommu *dev_iommu;
- 	struct mock_dev *mdev;
- 	int rc;
- 
-@@ -341,51 +348,18 @@ static struct mock_dev *mock_dev_create(void)
- 
- 	device_initialize(&mdev->dev);
- 	mdev->dev.release = mock_dev_release;
--	mdev->dev.bus = &iommufd_mock_bus_type;
--
--	iommu_group = iommu_group_alloc();
--	if (IS_ERR(iommu_group)) {
--		rc = PTR_ERR(iommu_group);
--		goto err_put;
--	}
-+	mdev->dev.bus = &iommufd_mock_bus_type.bus;
- 
- 	rc = dev_set_name(&mdev->dev, "iommufd_mock%u",
--			  iommu_group_id(iommu_group));
-+			  atomic_inc_return(&mock_dev_num));
- 	if (rc)
--		goto err_group;
--
--	/*
--	 * The iommu core has no way to associate a single device with an iommu
--	 * driver (heck currently it can't even support two iommu_drivers
--	 * registering). Hack it together with an open coded dev_iommu_get().
--	 * Notice that the normal notifier triggered iommu release process also
--	 * does not work here because this bus is not in iommu_buses.
--	 */
--	mdev->dev.iommu = kzalloc(sizeof(*dev_iommu), GFP_KERNEL);
--	if (!mdev->dev.iommu) {
--		rc = -ENOMEM;
--		goto err_group;
--	}
--	mutex_init(&mdev->dev.iommu->lock);
--	mdev->dev.iommu->iommu_dev = &mock_iommu_device;
-+		goto err_put;
- 
- 	rc = device_add(&mdev->dev);
- 	if (rc)
--		goto err_dev_iommu;
--
--	rc = iommu_group_add_device(iommu_group, &mdev->dev);
--	if (rc)
--		goto err_del;
--	iommu_group_put(iommu_group);
-+		goto err_put;
- 	return mdev;
- 
--err_del:
--	device_del(&mdev->dev);
--err_dev_iommu:
--	kfree(mdev->dev.iommu);
--	mdev->dev.iommu = NULL;
--err_group:
--	iommu_group_put(iommu_group);
- err_put:
- 	put_device(&mdev->dev);
- 	return ERR_PTR(rc);
-@@ -393,11 +367,7 @@ static struct mock_dev *mock_dev_create(void)
- 
- static void mock_dev_destroy(struct mock_dev *mdev)
- {
--	iommu_group_remove_device(&mdev->dev);
--	device_del(&mdev->dev);
--	kfree(mdev->dev.iommu);
--	mdev->dev.iommu = NULL;
--	put_device(&mdev->dev);
-+	device_unregister(&mdev->dev);
- }
- 
- bool iommufd_selftest_is_mock_dev(struct device *dev)
-@@ -443,9 +413,14 @@ static int iommufd_test_mock_domain(struct iommufd_ucmd *ucmd,
- 	/* Userspace must destroy the device_id to destroy the object */
- 	cmd->mock_domain.out_hwpt_id = pt_id;
- 	cmd->mock_domain.out_stdev_id = sobj->obj.id;
-+	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
-+	if (rc)
-+		goto out_detach;
- 	iommufd_object_finalize(ucmd->ictx, &sobj->obj);
--	return iommufd_ucmd_respond(ucmd, sizeof(*cmd));
-+	return 0;
- 
-+out_detach:
-+	iommufd_device_detach(idev);
- out_unbind:
- 	iommufd_device_unbind(idev);
- out_mdev:
-@@ -992,15 +967,49 @@ bool iommufd_should_fail(void)
- 	return should_fail(&fail_iommufd, 1);
- }
- 
--void __init iommufd_test_init(void)
-+int __init iommufd_test_init(void)
- {
-+	struct platform_device_info pdevinfo = {
-+		.name = "iommufd_selftest_iommu",
-+	};
-+	int rc;
-+
- 	dbgfs_root =
- 		fault_create_debugfs_attr("fail_iommufd", NULL, &fail_iommufd);
--	WARN_ON(bus_register(&iommufd_mock_bus_type));
-+
-+	selftest_iommu_dev = platform_device_register_full(&pdevinfo);
-+	if (IS_ERR(selftest_iommu_dev)) {
-+		rc = PTR_ERR(selftest_iommu_dev);
-+		goto err_dbgfs;
-+	}
-+
-+	rc = bus_register(&iommufd_mock_bus_type.bus);
-+	if (rc)
-+		goto err_platform;
-+
-+	mock_iommu_device.dev = &selftest_iommu_dev->dev;
-+	rc = iommu_device_register_bus(&mock_iommu_device, &mock_ops,
-+				  &iommufd_mock_bus_type.bus,
-+				  &iommufd_mock_bus_type.nb);
-+	if (rc)
-+		goto err_bus;
-+	return 0;
-+
-+err_bus:
-+	bus_unregister(&iommufd_mock_bus_type.bus);
-+err_platform:
-+	platform_device_del(selftest_iommu_dev);
-+err_dbgfs:
-+	debugfs_remove_recursive(dbgfs_root);
-+	return rc;
- }
- 
- void iommufd_test_exit(void)
- {
-+	iommu_device_unregister_bus(&mock_iommu_device,
-+				    &iommufd_mock_bus_type.bus,
-+				    &iommufd_mock_bus_type.nb);
-+	bus_unregister(&iommufd_mock_bus_type.bus);
-+	platform_device_del(selftest_iommu_dev);
- 	debugfs_remove_recursive(dbgfs_root);
--	bus_unregister(&iommufd_mock_bus_type);
- }
--- 
-2.40.1
+Do you plan to try the fix I suggested already? The one about using
+the correct macros?
 
+-Saravana
