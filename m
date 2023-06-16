@@ -1,120 +1,157 @@
-Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2069.outbound.protection.outlook.com [40.107.243.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D071D6117
-	for <iommu@lists.linux.dev>; Fri, 16 Jun 2023 11:32:32 +0000 (UTC)
-Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-4f61b45ee0dso761054e87.0
-        for <iommu@lists.linux.dev>; Fri, 16 Jun 2023 04:32:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1686915151; x=1689507151;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=2nuyRQlcqUJ1I+sHmU3UQhaVpsWzNHbMeXA40SLBfto=;
-        b=DH5R7s1yTiVsAJI1g99s6OalFVFW9cM5DAnNDqJJfwlRotOUA96IF3DT5skABPinz5
-         E4IcsKOQ3I0Rl1kStGkLFAxRCwwg624eQLqtopcQdxXR3xBLUA2PpbggQ7ZzEgEqRcbe
-         zLF4TFVCygtMwuugGFfMrYnwW9LYL8yD4irsAG/DyJmz0CufETPyYE1jSdmH8wJwQ6tx
-         vSjOiWjZxCKLbz+1fw0d11obwbqVVFSHTsLjqc7E95c4rZrMb4MBr8n0fUJ+UFj2gDls
-         a5bE+ElDJi7ADNbMc9uGiuwj+Q1wcaJHUu12vHRDhSs8Nb7M2gleCC8WcLdhD9mV7s2o
-         YiUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686915151; x=1689507151;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2nuyRQlcqUJ1I+sHmU3UQhaVpsWzNHbMeXA40SLBfto=;
-        b=EKu6lE4C3/ojsB5V6Uac9Du6a36gwdlc5LZZVd8HeMl3sUOOZtxygFUPd3HPpvM2HL
-         dk9rpw9nHNbB1/EUW9waVmQmEw8s1enlJsMQemrrT03bg3zXPcvUtW9qBQUKx+5hCIj3
-         ENHoeobPCtPIBxfeLqGXrW4Jl8AUiMGmA0BR10FRI0L0sY71laZoDOxeFCkuvhEf4jcO
-         Mglzp+Z87yaEOeKSvXhYV+XgJKUoZEl+1DWrefrVlmJMj145ldb1t+13MKw964/Tjm08
-         HYwFvcWJChv2N1dFYZd9+Jh+f68Aaz1BwYLQk8ZAiELJO9GOTV40qfTECYQigA8lpeXg
-         y+sg==
-X-Gm-Message-State: AC+VfDwhFrbCJy/vSlZFvUKuUudCi7cvOo4q8G1xt+i1x6I3qNIQwg5J
-	K6bUO4Hi5Vf5wAMl2Vg2pa5E0g==
-X-Google-Smtp-Source: ACHHUZ4vwQur9icwi+r14RxKea4abemDipKgtryepasg7loeFJIpKxEcaQTsVhSGPpckiB9/VJ/YOA==
-X-Received: by 2002:a19:4409:0:b0:4f3:b07e:7eb8 with SMTP id r9-20020a194409000000b004f3b07e7eb8mr1138136lfa.29.1686915150597;
-        Fri, 16 Jun 2023 04:32:30 -0700 (PDT)
-Received: from myrica (5750a5b3.skybroadband.com. [87.80.165.179])
-        by smtp.gmail.com with ESMTPSA id w21-20020a1cf615000000b003f8126bcf34sm1879491wmc.48.2023.06.16.04.32.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Jun 2023 04:32:29 -0700 (PDT)
-Date: Fri, 16 Jun 2023 12:32:32 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
-	linux-kselftest@vger.kernel.org,
-	virtualization@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCHES 00/17] IOMMUFD: Deliver IO page faults to user space
-Message-ID: <20230616113232.GA84678@myrica>
-References: <20230530053724.232765-1-baolu.lu@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F10E1428F
+	for <iommu@lists.linux.dev>; Fri, 16 Jun 2023 12:20:44 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nTmdETKkI4Qus7n0IAvAYFHaSJ00YJl2mCsGpesABAJs9N838D4keMNc7zwlysZ+ggmRSVydxYIeaRNoQwn+qJGq5rAaqrAESfsOEe56aXpRDPgicoE1v4ZrYOChCYRBpdDErCgXgDpmS3VAwzbobLsrAJg320kZQl6DHUMNQjMHiKC9EwIS9P6KeZT938WnS8Qu1H0RYdfGnDSmQ4vbej0p+Kp1yM9hx4w+qAyuMRoWa7aMDbixwgu5gF/5SkPQGhCuLBnPdC7wxuZxBHJZ5dcqVOUYUq4BEPQYjNC7CnZgwVWmQqRP1Mg11A2ItAaXbOlORcGbyLsra8Rpm+gjfg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gLC6qM/b0govMJqHe+EdbWXwRwTAiqjJKy00sP5djxU=;
+ b=VdVPpHcdooHeinWkX7boeDC07quNUTqcmx2l0yAlyBYTaARcKdLGGq/KelKOr3gMk5E82BOJtdK+CgvcId/WlwLgISOqv3Ymdx7C3mkvFr4clGpJFbFoeyLggk6LTXLHjUFDvbC22pWBkaww7e0vGST/EPFpC7ljgAa+nLS/7AxASzkguNy5yoa6619t1kvnuzjssIlEt8mTmWjmpeXVt8ZQiAgdcZucUCBx2z7667NCLj7KZGdiTKOzKLkZ7+OVxYD+9xI3KCZPSDbclxM9aWhrP/PjPFBzjeh5lrfnthbseBRhN5wKLTOFymc4pDDPe9jkTNyYh8lgXSmq7bW7Pw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gLC6qM/b0govMJqHe+EdbWXwRwTAiqjJKy00sP5djxU=;
+ b=QoK6+fR93rGEtdr4nC/qaU35iqa/VSvOasXTdq4gQYcYyBMSrlHmvVtUdkdsyAkcHL9wvYLhafoZQzJJ9EYVoKGy0P5w2biLHd2gPjg9/4HWmbSY7zFL/GAO4pG+iiHwlzDG4AGGWWbPyvHs6Xfws3KMGR4cIR/cOYJA3phBA/EkQzxqWhoa+fMc5QFguc2rhTtHjqHFAJMZxjc3rTvPhOeXaw41Sx6AIx0cNexVJhMHqr0X1TOmsstR+MwviSJLGRHIf2nYjoDgm7MEWq8nnA4iwv/d4IJC/hYt2k+IoWpoPdYKa66enFQBat0sSJh/NqFbN069iQBdKyUWRL/nzg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DM4PR12MB7576.namprd12.prod.outlook.com (2603:10b6:8:10c::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.27; Fri, 16 Jun
+ 2023 12:20:42 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab%7]) with mapi id 15.20.6477.037; Fri, 16 Jun 2023
+ 12:20:42 +0000
+Date: Fri, 16 Jun 2023 09:20:40 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Baolu Lu <baolu.lu@linux.intel.com>,
+	Alexander Duyck <alexander.duyck@gmail.com>,
+	LKML <linux-kernel@vger.kernel.org>,
+	linux-pci <linux-pci@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: Question about reserved_regions w/ Intel IOMMU
+Message-ID: <ZIxTmGU4a5dniEY3@nvidia.com>
+References: <CAKgT0UezciLjHacOx372+v8MZkDf22D5Thn82n-07xxKy_0FTQ@mail.gmail.com>
+ <CAKgT0UfMeVOz6AOqSvVvzpsedGDiXCNQrjM+4KDv7qJJ1orpsw@mail.gmail.com>
+ <a1cff65b-b390-3872-25b5-dd6bbfb3524c@linux.intel.com>
+ <b24a6c7b-27fc-41c0-5c82-15696b4a7dc1@arm.com>
+ <ZIiRK2Dzl2/9Jqle@ziepe.ca>
+ <BN9PR11MB52765C24405D2475CF3CBEBE8C58A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB52765C24405D2475CF3CBEBE8C58A@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-ClientProxiedBy: BL0PR01CA0001.prod.exchangelabs.com (2603:10b6:208:71::14)
+ To LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230530053724.232765-1-baolu.lu@linux.intel.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB7576:EE_
+X-MS-Office365-Filtering-Correlation-Id: 636436de-9b1a-478e-255b-08db6e641a22
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	dZF8Au+PkGv7rL6TE7ktRBFpD9EIxL25NGffHnLHRsHR0J0wBRcKKi/6hNaoA5EqlNN4QLxNLFPiT+0LZEaggqmu6j92sYuz6hbtMPNvR8kat8fjEDVZwYU4FW2/q9306nzwUHinWm+VllBU/uFUvK7pln1i4jTz7vuovyNw2wUpgPS0oUbEtnVf+z0Rb/Kwhtm//yN4zEgqRgOnh3ft51bTDlpZIuf58bwXgV/4GymmxVJlB0ToWrehDoEizkSBVR/Y+Ord8ytvK/NfH2oIrxt+ymbzkBBENVhRXAJFhLqw60L5h+9PTQMQpYgn4Y2CiGWNthXXdkq/u/TE6fEMeRnXf+5bb3uIoS9je9NqH2ZHpVzY6O5zln6mjS/TLxa5MsYAOcV1VK5OIyYO0i2lbddQYkgpJZ4v+oeYaF32MCdGYo9tmBp/F+AmB0izif9Rdnu5Pb7vv5g3moYK5GaJH9C/H0EAoObjAvJxYtOXWRoIz7cg05nlZH1k75y2WTqyg4ImMsJFxZV6tDV5V6AoWPU0MluDT303hS3KqIxRQ1r/7+SMRNLFYJmboxsJXIDm
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(366004)(39860400002)(346002)(136003)(376002)(451199021)(54906003)(41300700001)(8676002)(86362001)(66946007)(66476007)(66556008)(6486002)(6916009)(8936002)(316002)(4326008)(36756003)(66899021)(478600001)(6512007)(26005)(5660300002)(83380400001)(6506007)(2906002)(186003)(38100700002)(2616005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?o6lz8TBOctyI0HzKhcRLFBcnGwDkAeNCrpsjwPswBsFDwsvJljk/jSL8tUOK?=
+ =?us-ascii?Q?fI73m3c2b8qS13VTGAOI4iY+cnncOQpPe2m1IYb0Wi9YIn9cfUpmBDVIvcau?=
+ =?us-ascii?Q?5qtGliBgiZKBX5HNwaJRuVFfx2/2V5vFjq820JKdcL/L7hJGgVvBhkwRQYf6?=
+ =?us-ascii?Q?Rfju9iXNVIw3ERAQ1zNfuWHzPE0R3EMeNyTnPf1Puf1qK46P4x2Ab8UPWROv?=
+ =?us-ascii?Q?WIcMtApE5H+hVxGZoq3F5xBMG2WTNv8Q8pkYCMZ+g8rdDiXYD5AMCBFmwOEp?=
+ =?us-ascii?Q?wZIzSFhNOjQPnT8fHt8IP2qACRUOozYXtjLo/Fdl+s4cpc2iHc9f09tWwBh6?=
+ =?us-ascii?Q?o5XJFrLtYLxvNWdA7ZtrITsydc+P+Bf7ZEqjxnWYqa8vOpN4pKwfHiVoybIV?=
+ =?us-ascii?Q?4XRPj6Pj5HQgVqntEfXyeuuEGMyWjnwg2fGw4poUtk5CIQqqo/4a/sB7CVFG?=
+ =?us-ascii?Q?WXO9OV7wMCIqvT4oYMOBULF8UQvZbtghoK1sa/cBDl3OB2F02D0GYQjzU/BF?=
+ =?us-ascii?Q?YVPGgRmeiQJ03FbwpVtGGxnR+Yq7+Nx9rH0yhevXsWOJ4vcIqrJVABwMfu2M?=
+ =?us-ascii?Q?NHdQpXuJDlSXg38H+mRgiOxipTBGCvQ+AWCPzichTmmccydTkvJgt0ErzWIU?=
+ =?us-ascii?Q?UdNSXSJqqGHSU2JJbnwUQw8lv1k/WbulNv8MH1XUPGPPn1nOX1IfQfBkRcDB?=
+ =?us-ascii?Q?7JfXMLAB4Sqmls0eR5NTRkqjcnrZUawhwCprKbvyUyZXernCRdWsomZh2gNI?=
+ =?us-ascii?Q?y7YvTtpY7iCxyo2XyEY0kOUBa4MjMah0HcVhnsReJ/tSlBphick5SaNWj6SA?=
+ =?us-ascii?Q?iza2xowoaA8G03FIzOH7dyimxUo3PTFSRwgNQOTlUGooiilaeA2aBAXj3l9x?=
+ =?us-ascii?Q?pE0MF1JAMfHEPZSveccHzw/snwm9e4RTpAcuUrZyV6cICjgQqy1i2oH7esRu?=
+ =?us-ascii?Q?7XS03u2nFOwadPHGs2RKtwp3azrik2cmarsw6xqfpUrtfzLMu12HU+D18u+6?=
+ =?us-ascii?Q?8x00euNmzrX7iG4OXD1CtGrXJcT2aU2tw6i8NG0CH1yoHnmVzPp3RdZBSZNo?=
+ =?us-ascii?Q?qoIOeizzpt0oUdkY9YbSg/scO87S1XZ7PGcLGEmko5mNdKkC7sOn/Gue88C4?=
+ =?us-ascii?Q?+wW0lUkHTrM3u0VtuvYRYAcJsK97rT01S9+uatuooEtTyoNwY1zxEJf2XHBy?=
+ =?us-ascii?Q?TPo0hOvB2xVH0mtzPYvcIEBYeIcNEDYgYA2KkcMsiCuc1KgcCGUc5vSpnS5n?=
+ =?us-ascii?Q?pDk7vlz7CWxXQiaeuN+M6DeF0GfkbqlK1x5SX1aKXGtV0Cv9Bs+oMnjg/3lu?=
+ =?us-ascii?Q?eVifAE4zXMZuhzrPXzl1zh3zE8z8TO37kCLi0GWV384BK13yHipqvgwJuyST?=
+ =?us-ascii?Q?Xlr+Gibp3xON/hLpo4jFYNEKvNBmafb39d30R6TO0U/8yLbY04Js6SIz+9eB?=
+ =?us-ascii?Q?YqQSgMqY7UGTbfNWWNfjBY88sicOzyOMwdxLscQUZuzvoyxfQSMDnSPVyLfq?=
+ =?us-ascii?Q?7UMZbTMUFM3TOgwSSGFRLDdu32XU142X5Jm50BYCEdD1Yq15I94pfP2lS0oo?=
+ =?us-ascii?Q?e/jqOLsMHbaJdDfkZyM=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 636436de-9b1a-478e-255b-08db6e641a22
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2023 12:20:41.9008
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: DRp69ELyMAsXwmNbZv0ntcMIS4fVdv4FEmNNwNaMW+0Kz0b9LDKhNfc0ErUyvVWn
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB7576
 
-Hi Baolu,
+On Fri, Jun 16, 2023 at 08:39:46AM +0000, Tian, Kevin wrote:
+> +Alex
+> 
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > Sent: Tuesday, June 13, 2023 11:54 PM
+> > 
+> > On Thu, Jun 08, 2023 at 04:28:24PM +0100, Robin Murphy wrote:
+> > 
+> > > > The iova_reserve_pci_windows() you've seen is for kernel DMA interfaces
+> > > > which is not related to peer-to-peer accesses.
+> > >
+> > > Right, in general the IOMMU driver cannot be held responsible for
+> > whatever
+> > > might happen upstream of the IOMMU input.
+> > 
+> > The driver yes, but..
+> > 
+> > > The DMA layer carves PCI windows out of its IOVA space
+> > > unconditionally because we know that they *might* be problematic,
+> > > and we don't have any specific constraints on our IOVA layout so
+> > > it's no big deal to just sacrifice some space for simplicity.
+> > 
+> > This is a problem for everything using UNMANAGED domains. If the iommu
+> > API user picks an IOVA it should be able to expect it to work. If the
+> > intereconnect fails to allow it to work then this has to be discovered
+> > otherwise UNAMANGED domains are not usable at all.
+> > 
+> > Eg vfio and iommufd are also in trouble on these configurations.
+> > 
+> 
+> If those PCI windows are problematic e.g. due to ACS they belong to
+> a single iommu group. If a vfio user opens all the devices in that group
+> then it can discover and reserve those windows in its IOVA space. 
 
-On Tue, May 30, 2023 at 01:37:07PM +0800, Lu Baolu wrote:
-> - The timeout value for the pending page fault messages. Ideally we
->   should determine the timeout value from the device configuration, but
->   I failed to find any statement in the PCI specification (version 6.x).
->   A default 100 milliseconds is selected in the implementation, but it
->   leave the room for grow the code for per-device setting.
+How? We don't even exclude the single device's BAR if there is no ACS?
 
-If it helps we had some discussions about this timeout [1]. It's useful to
-print out a warning for debugging, but I don't think completing the fault
-on timeout is correct, we should leave the fault pending. Given that the
-PCI spec does not indicate a timeout, the guest can wait as long as it
-wants to complete the fault (and 100ms may even be reasonable on an
-emulator, who knows how many layers and context switches the fault has to
-go through).
+> The problem is that the user may not open all the devices then
+> currently there is no way for it to know the windows on those
+> unopened devices.
+> 
+> Curious why nobody complains about this gap before this thread...
 
+Probably because it only matters if you have a real PCIe switch in the
+system, which is pretty rare.
 
-Another outstanding issue was what to do for PASID stop. When the guest
-device driver stops using a PASID it issues a PASID stop request to the
-device (a device-specific mechanism). If the device is not using PRI stop
-markers it waits for pending PRs to complete and we're fine. Otherwise it
-sends a stop marker which is flushed to the PRI queue, but does not wait
-for pending PRs.
-
-Handling stop markers is annoying. If the device issues one, then the PRI
-queue contains stale faults, a stop marker, followed by valid faults for
-the next address space bound to this PASID. The next address space will
-get all the spurious faults because the fault handler doesn't know that
-there is a stop marker coming. Linux is probably alright with spurious
-faults, though maybe not in all cases, and other guests may not support
-them at all.
-
-We might need to revisit supporting stop markers: request that each device
-driver declares whether their device uses stop markers on unbind() ("This
-mechanism must indicate that a Stop Marker Message will be generated."
-says the spec, but doesn't say if the function always uses one or the
-other mechanism so it's per-unbind). Then we still have to synchronize
-unbind() with the fault handler to deal with the pending stop marker,
-which might have already gone through or be generated later.
-
-Currently we ignore all that and just flush the PRI queue, followed by the
-IOPF queue, to get rid of any stale fault before reassigning the PASID. A
-guest however would also need to first flush the HW PRI queue, but doesn't
-have a direct way to do that. If we want to support guests that don't deal
-with stop markers, the host needs to flush the PRI queue when a PASID is
-detached. I guess on Intel detaching the PASID goes through the host which
-can flush the host queue. On Arm we'll probably need to flush the queue
-when receiving a PASID cache invalidation, which the guest issues after
-clearing a PASID table entry.
-
-Thanks,
-Jean
-
-[1] https://lore.kernel.org/linux-iommu/20180423153622.GC38106@ostrya.localdomain/
-    Also unregistration, not sure if relevant here
-    https://lore.kernel.org/linux-iommu/20190605154553.0d00ad8d@jacob-builder/
+Jason
