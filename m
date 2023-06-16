@@ -1,30 +1,29 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BB6F11879
-	for <iommu@lists.linux.dev>; Fri, 16 Jun 2023 14:39:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B689A1879
+	for <iommu@lists.linux.dev>; Fri, 16 Jun 2023 14:39:16 +0000 (UTC)
 Received: from 8bytes.org (p200300c27725a60086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:7725:a600:86ad:4f9d:2505:dd0d])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 521DD226A72;
-	Fri, 16 Jun 2023 16:39:00 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 345D8224B97;
+	Fri, 16 Jun 2023 16:31:23 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1686926340;
-	bh=KTpj5Fsy2wKYCCe/sKhg7+iN9JCgxD+6LBbN5hC3GyI=;
+	s=default; t=1686925883;
+	bh=NQK9AGxc7OYDL4MJgF9sHOf7CT8apO/4Wj/sqwn3ILA=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=pSvu/L/D2Cd5yZw8rC6gj5SE9cXOUN6Yi65oTkpgU0VQL18Vg+tKX0h795H9e0En0
-	 rgiCStQNI/uPieEClaA0/nCIhpxXPl9UKIzdgsNLdO+GLyY0bZGli9FFpJ0eJOGC2x
-	 793hLUijKrhJuE0v6rLiu78zcxHw1cxvOe1b7BtvDN4UZh68p5piR77MAQFOhnIhDy
-	 xGm4/SiQqf2dVJ5HUPJSu1lm6gm5IcXx/M8xuyTu1zCk5AEcUT3JvREqOY8LcE1qb9
-	 QVksjrPrIPKGdXm5cUqr53+VwlZQvKB5Y1SlALx8fhBxnXGnTcvF6lQnauNPnsIXKt
-	 bKdPnh1xZRKfg==
-Date: Fri, 16 Jun 2023 16:38:59 +0200
+	b=QN1E7eB7S9gZFSSOEnGpemOZpMaBmUVHFPduSLwzvvF6D7B4O3SHJa8q/hsah/Jhc
+	 A92/jlDehZBd2kaYNrb9LAfA7XJ9O4jtr71vSlTi+4Jb+rBrBXE87SL04fZCRaSwLh
+	 jc1r0HwH69iSc+0dn22wTGUFyYOdBGgbjnlQilRHZq1n7jGs/vfcst4mt+YCmQB1uw
+	 BCAe7xHvCg24kbJmxwojZJpqlXuT2N4tDSj2/Vc7VEnoU88Kn6XG93h9i/3d9tyBwq
+	 0emYUtTmaZFBSj09rm9ao2x1V0E6SgeTe8W8a2todAUoFWeyJN8rCZH9I2LenYsSgW
+	 vVYDhZB1MaC7A==
+Date: Fri, 16 Jun 2023 16:31:22 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Yanfei Xu <yanfei.xu@intel.com>, Suhui <suhui@nfschina.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/4] [PULL REQUEST] Intel IOMMU updates for Linux v6.5
-Message-ID: <ZIx0A7oRIJJvrg73@8bytes.org>
-References: <20230614024705.88878-1-baolu.lu@linux.intel.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, suravee.suthikulpanit@amd.com
+Subject: Re: [PATCH] iommu/amd: Fix DTE_IRQ_PHYS_ADDR_MASK macro
+Message-ID: <ZIxyOohwBv6Bkb0w@8bytes.org>
+References: <20230609090327.5923-1-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -33,19 +32,18 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230614024705.88878-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20230609090327.5923-1-vasant.hegde@amd.com>
 
-On Wed, Jun 14, 2023 at 10:47:01AM +0800, Lu Baolu wrote:
-> Hi Joerg,
+On Fri, Jun 09, 2023 at 09:03:27AM +0000, Vasant Hegde wrote:
+> Interrupt Table Root Pointer is 52 bit and table must be aligned to start
+> on a 128-byte boundary. Hence first 6 bits are ignored.
 > 
-> This includes patches queued for v6.5. They are:
+> Current code uses address mask as 45 instead of 46bit. Use GENMASK_ULL
+> macro instead of manually generating address mask.
 > 
->  - Small and misc cleanups
-> 
-> The whole series is based on v6.4-rc6 and also available at:
-> https://github.com/LuBaolu/intel-iommu/commits/vtd-update-for-v6.5
-> 
-> Please pull them for x86/vt-d branch.
+> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+> ---
+>  drivers/iommu/amd/amd_iommu_types.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Pulled, thanks Baolu.
-
+Applied, thanks.
