@@ -1,157 +1,50 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2069.outbound.protection.outlook.com [40.107.243.69])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B21081879
+	for <iommu@lists.linux.dev>; Fri, 16 Jun 2023 14:35:00 +0000 (UTC)
+Received: from 8bytes.org (p200300c27725a60086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:7725:a600:86ad:4f9d:2505:dd0d])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F10E1428F
-	for <iommu@lists.linux.dev>; Fri, 16 Jun 2023 12:20:44 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nTmdETKkI4Qus7n0IAvAYFHaSJ00YJl2mCsGpesABAJs9N838D4keMNc7zwlysZ+ggmRSVydxYIeaRNoQwn+qJGq5rAaqrAESfsOEe56aXpRDPgicoE1v4ZrYOChCYRBpdDErCgXgDpmS3VAwzbobLsrAJg320kZQl6DHUMNQjMHiKC9EwIS9P6KeZT938WnS8Qu1H0RYdfGnDSmQ4vbej0p+Kp1yM9hx4w+qAyuMRoWa7aMDbixwgu5gF/5SkPQGhCuLBnPdC7wxuZxBHJZ5dcqVOUYUq4BEPQYjNC7CnZgwVWmQqRP1Mg11A2ItAaXbOlORcGbyLsra8Rpm+gjfg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gLC6qM/b0govMJqHe+EdbWXwRwTAiqjJKy00sP5djxU=;
- b=VdVPpHcdooHeinWkX7boeDC07quNUTqcmx2l0yAlyBYTaARcKdLGGq/KelKOr3gMk5E82BOJtdK+CgvcId/WlwLgISOqv3Ymdx7C3mkvFr4clGpJFbFoeyLggk6LTXLHjUFDvbC22pWBkaww7e0vGST/EPFpC7ljgAa+nLS/7AxASzkguNy5yoa6619t1kvnuzjssIlEt8mTmWjmpeXVt8ZQiAgdcZucUCBx2z7667NCLj7KZGdiTKOzKLkZ7+OVxYD+9xI3KCZPSDbclxM9aWhrP/PjPFBzjeh5lrfnthbseBRhN5wKLTOFymc4pDDPe9jkTNyYh8lgXSmq7bW7Pw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gLC6qM/b0govMJqHe+EdbWXwRwTAiqjJKy00sP5djxU=;
- b=QoK6+fR93rGEtdr4nC/qaU35iqa/VSvOasXTdq4gQYcYyBMSrlHmvVtUdkdsyAkcHL9wvYLhafoZQzJJ9EYVoKGy0P5w2biLHd2gPjg9/4HWmbSY7zFL/GAO4pG+iiHwlzDG4AGGWWbPyvHs6Xfws3KMGR4cIR/cOYJA3phBA/EkQzxqWhoa+fMc5QFguc2rhTtHjqHFAJMZxjc3rTvPhOeXaw41Sx6AIx0cNexVJhMHqr0X1TOmsstR+MwviSJLGRHIf2nYjoDgm7MEWq8nnA4iwv/d4IJC/hYt2k+IoWpoPdYKa66enFQBat0sSJh/NqFbN069iQBdKyUWRL/nzg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DM4PR12MB7576.namprd12.prod.outlook.com (2603:10b6:8:10c::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.27; Fri, 16 Jun
- 2023 12:20:42 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab%7]) with mapi id 15.20.6477.037; Fri, 16 Jun 2023
- 12:20:42 +0000
-Date: Fri, 16 Jun 2023 09:20:40 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Baolu Lu <baolu.lu@linux.intel.com>,
-	Alexander Duyck <alexander.duyck@gmail.com>,
-	LKML <linux-kernel@vger.kernel.org>,
-	linux-pci <linux-pci@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: Question about reserved_regions w/ Intel IOMMU
-Message-ID: <ZIxTmGU4a5dniEY3@nvidia.com>
-References: <CAKgT0UezciLjHacOx372+v8MZkDf22D5Thn82n-07xxKy_0FTQ@mail.gmail.com>
- <CAKgT0UfMeVOz6AOqSvVvzpsedGDiXCNQrjM+4KDv7qJJ1orpsw@mail.gmail.com>
- <a1cff65b-b390-3872-25b5-dd6bbfb3524c@linux.intel.com>
- <b24a6c7b-27fc-41c0-5c82-15696b4a7dc1@arm.com>
- <ZIiRK2Dzl2/9Jqle@ziepe.ca>
- <BN9PR11MB52765C24405D2475CF3CBEBE8C58A@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB52765C24405D2475CF3CBEBE8C58A@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: BL0PR01CA0001.prod.exchangelabs.com (2603:10b6:208:71::14)
- To LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 58EE6226A72;
+	Fri, 16 Jun 2023 16:34:59 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1686926099;
+	bh=TvGZ4/ABg5ZygwVJmct/CzPrK3yw+aA2H3bHkJLEJ/E=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=h29o7ImEMq7HJuEOuRnyJWZn2MHm2oVSuNC+27oxqZ65LTZRctXeZ9D1apzfHFZsJ
+	 9dnpwO6eBY7UpmoqJnfj1fratWHmp9qIg9VvNO2QOCv3OX9FFLdnim7gxvGEH/vAi7
+	 Sfj5MI9rKmLU+2acd65ImCsDE9qiJhXJbf/11l2Zdry7DcLL1F+Zt9AEbnIyvUb3/e
+	 BZ8psqoDI9VQMXgofA7FfZlOJBbB37WnGih+9eOaRGylgtYVGSopD00Vm9g4AOO3Uw
+	 59WG6vmAynPGN0pLvhP/dnroRHnRxxibGix52ViAw1Pwnd+g1NHGjK6bcCweCLdkKn
+	 ajcMT9iwPAO8w==
+Date: Fri, 16 Jun 2023 16:34:58 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, suravee.suthikulpanit@amd.com,
+	Yazen Ghannam <yazen.ghannam@amd.com>
+Subject: Re: [PATCH 1/2] iommu/amd: Use BIT/BIT_ULL macro to define bit fields
+Message-ID: <ZIxzElwRFr39X_bZ@8bytes.org>
+References: <20230609090631.6052-1-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB7576:EE_
-X-MS-Office365-Filtering-Correlation-Id: 636436de-9b1a-478e-255b-08db6e641a22
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	dZF8Au+PkGv7rL6TE7ktRBFpD9EIxL25NGffHnLHRsHR0J0wBRcKKi/6hNaoA5EqlNN4QLxNLFPiT+0LZEaggqmu6j92sYuz6hbtMPNvR8kat8fjEDVZwYU4FW2/q9306nzwUHinWm+VllBU/uFUvK7pln1i4jTz7vuovyNw2wUpgPS0oUbEtnVf+z0Rb/Kwhtm//yN4zEgqRgOnh3ft51bTDlpZIuf58bwXgV/4GymmxVJlB0ToWrehDoEizkSBVR/Y+Ord8ytvK/NfH2oIrxt+ymbzkBBENVhRXAJFhLqw60L5h+9PTQMQpYgn4Y2CiGWNthXXdkq/u/TE6fEMeRnXf+5bb3uIoS9je9NqH2ZHpVzY6O5zln6mjS/TLxa5MsYAOcV1VK5OIyYO0i2lbddQYkgpJZ4v+oeYaF32MCdGYo9tmBp/F+AmB0izif9Rdnu5Pb7vv5g3moYK5GaJH9C/H0EAoObjAvJxYtOXWRoIz7cg05nlZH1k75y2WTqyg4ImMsJFxZV6tDV5V6AoWPU0MluDT303hS3KqIxRQ1r/7+SMRNLFYJmboxsJXIDm
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(366004)(39860400002)(346002)(136003)(376002)(451199021)(54906003)(41300700001)(8676002)(86362001)(66946007)(66476007)(66556008)(6486002)(6916009)(8936002)(316002)(4326008)(36756003)(66899021)(478600001)(6512007)(26005)(5660300002)(83380400001)(6506007)(2906002)(186003)(38100700002)(2616005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?o6lz8TBOctyI0HzKhcRLFBcnGwDkAeNCrpsjwPswBsFDwsvJljk/jSL8tUOK?=
- =?us-ascii?Q?fI73m3c2b8qS13VTGAOI4iY+cnncOQpPe2m1IYb0Wi9YIn9cfUpmBDVIvcau?=
- =?us-ascii?Q?5qtGliBgiZKBX5HNwaJRuVFfx2/2V5vFjq820JKdcL/L7hJGgVvBhkwRQYf6?=
- =?us-ascii?Q?Rfju9iXNVIw3ERAQ1zNfuWHzPE0R3EMeNyTnPf1Puf1qK46P4x2Ab8UPWROv?=
- =?us-ascii?Q?WIcMtApE5H+hVxGZoq3F5xBMG2WTNv8Q8pkYCMZ+g8rdDiXYD5AMCBFmwOEp?=
- =?us-ascii?Q?wZIzSFhNOjQPnT8fHt8IP2qACRUOozYXtjLo/Fdl+s4cpc2iHc9f09tWwBh6?=
- =?us-ascii?Q?o5XJFrLtYLxvNWdA7ZtrITsydc+P+Bf7ZEqjxnWYqa8vOpN4pKwfHiVoybIV?=
- =?us-ascii?Q?4XRPj6Pj5HQgVqntEfXyeuuEGMyWjnwg2fGw4poUtk5CIQqqo/4a/sB7CVFG?=
- =?us-ascii?Q?WXO9OV7wMCIqvT4oYMOBULF8UQvZbtghoK1sa/cBDl3OB2F02D0GYQjzU/BF?=
- =?us-ascii?Q?YVPGgRmeiQJ03FbwpVtGGxnR+Yq7+Nx9rH0yhevXsWOJ4vcIqrJVABwMfu2M?=
- =?us-ascii?Q?NHdQpXuJDlSXg38H+mRgiOxipTBGCvQ+AWCPzichTmmccydTkvJgt0ErzWIU?=
- =?us-ascii?Q?UdNSXSJqqGHSU2JJbnwUQw8lv1k/WbulNv8MH1XUPGPPn1nOX1IfQfBkRcDB?=
- =?us-ascii?Q?7JfXMLAB4Sqmls0eR5NTRkqjcnrZUawhwCprKbvyUyZXernCRdWsomZh2gNI?=
- =?us-ascii?Q?y7YvTtpY7iCxyo2XyEY0kOUBa4MjMah0HcVhnsReJ/tSlBphick5SaNWj6SA?=
- =?us-ascii?Q?iza2xowoaA8G03FIzOH7dyimxUo3PTFSRwgNQOTlUGooiilaeA2aBAXj3l9x?=
- =?us-ascii?Q?pE0MF1JAMfHEPZSveccHzw/snwm9e4RTpAcuUrZyV6cICjgQqy1i2oH7esRu?=
- =?us-ascii?Q?7XS03u2nFOwadPHGs2RKtwp3azrik2cmarsw6xqfpUrtfzLMu12HU+D18u+6?=
- =?us-ascii?Q?8x00euNmzrX7iG4OXD1CtGrXJcT2aU2tw6i8NG0CH1yoHnmVzPp3RdZBSZNo?=
- =?us-ascii?Q?qoIOeizzpt0oUdkY9YbSg/scO87S1XZ7PGcLGEmko5mNdKkC7sOn/Gue88C4?=
- =?us-ascii?Q?+wW0lUkHTrM3u0VtuvYRYAcJsK97rT01S9+uatuooEtTyoNwY1zxEJf2XHBy?=
- =?us-ascii?Q?TPo0hOvB2xVH0mtzPYvcIEBYeIcNEDYgYA2KkcMsiCuc1KgcCGUc5vSpnS5n?=
- =?us-ascii?Q?pDk7vlz7CWxXQiaeuN+M6DeF0GfkbqlK1x5SX1aKXGtV0Cv9Bs+oMnjg/3lu?=
- =?us-ascii?Q?eVifAE4zXMZuhzrPXzl1zh3zE8z8TO37kCLi0GWV384BK13yHipqvgwJuyST?=
- =?us-ascii?Q?Xlr+Gibp3xON/hLpo4jFYNEKvNBmafb39d30R6TO0U/8yLbY04Js6SIz+9eB?=
- =?us-ascii?Q?YqQSgMqY7UGTbfNWWNfjBY88sicOzyOMwdxLscQUZuzvoyxfQSMDnSPVyLfq?=
- =?us-ascii?Q?7UMZbTMUFM3TOgwSSGFRLDdu32XU142X5Jm50BYCEdD1Yq15I94pfP2lS0oo?=
- =?us-ascii?Q?e/jqOLsMHbaJdDfkZyM=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 636436de-9b1a-478e-255b-08db6e641a22
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2023 12:20:41.9008
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DRp69ELyMAsXwmNbZv0ntcMIS4fVdv4FEmNNwNaMW+0Kz0b9LDKhNfc0ErUyvVWn
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB7576
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230609090631.6052-1-vasant.hegde@amd.com>
 
-On Fri, Jun 16, 2023 at 08:39:46AM +0000, Tian, Kevin wrote:
-> +Alex
+On Fri, Jun 09, 2023 at 09:06:30AM +0000, Vasant Hegde wrote:
+> Make use of BIT macro when defining bitfields which makes it easy to read.
 > 
-> > From: Jason Gunthorpe <jgg@nvidia.com>
-> > Sent: Tuesday, June 13, 2023 11:54 PM
-> > 
-> > On Thu, Jun 08, 2023 at 04:28:24PM +0100, Robin Murphy wrote:
-> > 
-> > > > The iova_reserve_pci_windows() you've seen is for kernel DMA interfaces
-> > > > which is not related to peer-to-peer accesses.
-> > >
-> > > Right, in general the IOMMU driver cannot be held responsible for
-> > whatever
-> > > might happen upstream of the IOMMU input.
-> > 
-> > The driver yes, but..
-> > 
-> > > The DMA layer carves PCI windows out of its IOVA space
-> > > unconditionally because we know that they *might* be problematic,
-> > > and we don't have any specific constraints on our IOVA layout so
-> > > it's no big deal to just sacrifice some space for simplicity.
-> > 
-> > This is a problem for everything using UNMANAGED domains. If the iommu
-> > API user picks an IOVA it should be able to expect it to work. If the
-> > intereconnect fails to allow it to work then this has to be discovered
-> > otherwise UNAMANGED domains are not usable at all.
-> > 
-> > Eg vfio and iommufd are also in trouble on these configurations.
-> > 
+> No functional change intended.
 > 
-> If those PCI windows are problematic e.g. due to ACS they belong to
-> a single iommu group. If a vfio user opens all the devices in that group
-> then it can discover and reserve those windows in its IOVA space. 
+> Suggested-by: Yazen Ghannam <yazen.ghannam@amd.com>
+> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+> ---
+>  drivers/iommu/amd/amd_iommu_types.h | 76 ++++++++++++++---------------
+>  1 file changed, 38 insertions(+), 38 deletions(-)
 
-How? We don't even exclude the single device's BAR if there is no ACS?
+Applied both, thanks.
 
-> The problem is that the user may not open all the devices then
-> currently there is no way for it to know the windows on those
-> unopened devices.
-> 
-> Curious why nobody complains about this gap before this thread...
-
-Probably because it only matters if you have a real PCIe switch in the
-system, which is pretty rare.
-
-Jason
