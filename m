@@ -1,132 +1,131 @@
-Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC1EDA92E
-	for <iommu@lists.linux.dev>; Fri, 16 Jun 2023 15:27:58 +0000 (UTC)
-Received: by mail-pj1-f51.google.com with SMTP id 98e67ed59e1d1-25ec175b86bso273096a91.1
-        for <iommu@lists.linux.dev>; Fri, 16 Jun 2023 08:27:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686929278; x=1689521278;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=63uzoQ1syV2Wjj6k2aLXBVP/jt/qcihxF/TXUIXFfKY=;
-        b=R/vvsw6dO5+cd7ZMkmRQW1awaW1LiARa5ShXvyQZiznK439y0ndjzpS1hW4Q/NPfty
-         GujoNKgYSSFSbBaPbO+4OCa53Jobm17h0ZsAhjYFou+2QS2xVVcToyP066k1A3eKMGN+
-         loUIPuql9zflzJn5TL/6D8fKmyz9y89xShKxHGkCliPDd08iIqtt11jSW0teRSlFgLTR
-         3RWM4WfWaJ4wA6Ik1Zv9YqY1fwsRBTm8Q7+gsfJynbBzx7OL5tCfur7rw8EZdHVe3BKs
-         pL6iHWf+WkcF4LDp3osGs5E+yEmzl+hmV9OxXRuNaUo0sVMIavCb1Dnuk0Ymat0T9gqf
-         4uPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686929278; x=1689521278;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=63uzoQ1syV2Wjj6k2aLXBVP/jt/qcihxF/TXUIXFfKY=;
-        b=PJSs+dCzDQa2U6e5nXbASovtOtiAZT/S3VADqDlDebMQB3X37R5wXJVJjzOoppld09
-         rCLyO/0EqkeplKiWRfuaDeKkFHoxICf4y410+e6Gfh2JEd0dyjy3NPS0cVD7mf7UVCVT
-         VoQ6xLthw+lt8EQZLfaWFOcFOTEds+M0mbl8WKqV0JnMAshfvWqJeEpO51my/xFUegCV
-         uxOs7g5uacupibZP/LLpZ9NThJOdwTo0Nxozmtor7DQin3Nnukxbou/4GQY+Vptc5Qf5
-         hRYH7dtGPbJb1FlygO5NUppNxDEMFBymOMQxLk4D14+vZqi3eEnSwRapWB5T4rPEEq2a
-         vjuA==
-X-Gm-Message-State: AC+VfDzigZMgShSG8DMgXFUJOqYGqNR+0IAOYfbplmGjhP9zsNn/etqo
-	4ddnLiEwxhnh+/dHWnq/NV935CTSx2cz1ZifNGU=
-X-Google-Smtp-Source: ACHHUZ7ggszHILJHBCELxrQm3UBlmG1caxb6nfkSLisF+66VB9JrJhRoC4YcIxZ7claF4N14nncmru4ukHL/5Q8h3T4=
-X-Received: by 2002:a17:90a:6c63:b0:25b:fbdc:dd8 with SMTP id
- x90-20020a17090a6c6300b0025bfbdc0dd8mr1902431pjj.24.1686929277972; Fri, 16
- Jun 2023 08:27:57 -0700 (PDT)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8D31F8F59
+	for <iommu@lists.linux.dev>; Fri, 16 Jun 2023 16:35:03 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1AC941FB;
+	Fri, 16 Jun 2023 09:35:46 -0700 (PDT)
+Received: from [10.57.85.251] (unknown [10.57.85.251])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BC6DD3F663;
+	Fri, 16 Jun 2023 09:35:00 -0700 (PDT)
+Message-ID: <520e2be4-726f-c680-c010-a308cdddbae0@arm.com>
+Date: Fri, 16 Jun 2023 17:34:53 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: Question about reserved_regions w/ Intel IOMMU
+Content-Language: en-GB
+To: Alexander Duyck <alexander.duyck@gmail.com>,
+ Jason Gunthorpe <jgg@nvidia.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Baolu Lu <baolu.lu@linux.intel.com>, LKML <linux-kernel@vger.kernel.org>,
+ linux-pci <linux-pci@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>
 References: <CAKgT0UezciLjHacOx372+v8MZkDf22D5Thn82n-07xxKy_0FTQ@mail.gmail.com>
  <CAKgT0UfMeVOz6AOqSvVvzpsedGDiXCNQrjM+4KDv7qJJ1orpsw@mail.gmail.com>
- <a1cff65b-b390-3872-25b5-dd6bbfb3524c@linux.intel.com> <b24a6c7b-27fc-41c0-5c82-15696b4a7dc1@arm.com>
- <ZIiRK2Dzl2/9Jqle@ziepe.ca> <BN9PR11MB52765C24405D2475CF3CBEBE8C58A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <a1cff65b-b390-3872-25b5-dd6bbfb3524c@linux.intel.com>
+ <b24a6c7b-27fc-41c0-5c82-15696b4a7dc1@arm.com> <ZIiRK2Dzl2/9Jqle@ziepe.ca>
+ <BN9PR11MB52765C24405D2475CF3CBEBE8C58A@BN9PR11MB5276.namprd11.prod.outlook.com>
  <ZIxTmGU4a5dniEY3@nvidia.com>
-In-Reply-To: <ZIxTmGU4a5dniEY3@nvidia.com>
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Fri, 16 Jun 2023 08:27:21 -0700
-Message-ID: <CAKgT0UfmdOOPSD5YvpHnh1A02URn9zxVLbyXJM_67On7xojLcA@mail.gmail.com>
-Subject: Re: Question about reserved_regions w/ Intel IOMMU
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Alex Williamson <alex.williamson@redhat.com>, Baolu Lu <baolu.lu@linux.intel.com>, 
-	LKML <linux-kernel@vger.kernel.org>, linux-pci <linux-pci@vger.kernel.org>, 
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+ <CAKgT0UfmdOOPSD5YvpHnh1A02URn9zxVLbyXJM_67On7xojLcA@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <CAKgT0UfmdOOPSD5YvpHnh1A02URn9zxVLbyXJM_67On7xojLcA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Fri, Jun 16, 2023 at 5:20=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wr=
-ote:
->
-> On Fri, Jun 16, 2023 at 08:39:46AM +0000, Tian, Kevin wrote:
-> > +Alex
-> >
-> > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > Sent: Tuesday, June 13, 2023 11:54 PM
-> > >
-> > > On Thu, Jun 08, 2023 at 04:28:24PM +0100, Robin Murphy wrote:
-> > >
-> > > > > The iova_reserve_pci_windows() you've seen is for kernel DMA inte=
-rfaces
-> > > > > which is not related to peer-to-peer accesses.
-> > > >
-> > > > Right, in general the IOMMU driver cannot be held responsible for
-> > > whatever
-> > > > might happen upstream of the IOMMU input.
-> > >
-> > > The driver yes, but..
-> > >
-> > > > The DMA layer carves PCI windows out of its IOVA space
-> > > > unconditionally because we know that they *might* be problematic,
-> > > > and we don't have any specific constraints on our IOVA layout so
-> > > > it's no big deal to just sacrifice some space for simplicity.
-> > >
-> > > This is a problem for everything using UNMANAGED domains. If the iomm=
-u
-> > > API user picks an IOVA it should be able to expect it to work. If the
-> > > intereconnect fails to allow it to work then this has to be discovere=
-d
-> > > otherwise UNAMANGED domains are not usable at all.
-> > >
-> > > Eg vfio and iommufd are also in trouble on these configurations.
-> > >
-> >
-> > If those PCI windows are problematic e.g. due to ACS they belong to
-> > a single iommu group. If a vfio user opens all the devices in that grou=
-p
-> > then it can discover and reserve those windows in its IOVA space.
->
-> How? We don't even exclude the single device's BAR if there is no ACS?
+On 2023-06-16 16:27, Alexander Duyck wrote:
+> On Fri, Jun 16, 2023 at 5:20 AM Jason Gunthorpe <jgg@nvidia.com> wrote:
+>>
+>> On Fri, Jun 16, 2023 at 08:39:46AM +0000, Tian, Kevin wrote:
+>>> +Alex
+>>>
+>>>> From: Jason Gunthorpe <jgg@nvidia.com>
+>>>> Sent: Tuesday, June 13, 2023 11:54 PM
+>>>>
+>>>> On Thu, Jun 08, 2023 at 04:28:24PM +0100, Robin Murphy wrote:
+>>>>
+>>>>>> The iova_reserve_pci_windows() you've seen is for kernel DMA interfaces
+>>>>>> which is not related to peer-to-peer accesses.
+>>>>>
+>>>>> Right, in general the IOMMU driver cannot be held responsible for
+>>>> whatever
+>>>>> might happen upstream of the IOMMU input.
+>>>>
+>>>> The driver yes, but..
+>>>>
+>>>>> The DMA layer carves PCI windows out of its IOVA space
+>>>>> unconditionally because we know that they *might* be problematic,
+>>>>> and we don't have any specific constraints on our IOVA layout so
+>>>>> it's no big deal to just sacrifice some space for simplicity.
+>>>>
+>>>> This is a problem for everything using UNMANAGED domains. If the iommu
+>>>> API user picks an IOVA it should be able to expect it to work. If the
+>>>> intereconnect fails to allow it to work then this has to be discovered
+>>>> otherwise UNAMANGED domains are not usable at all.
+>>>>
+>>>> Eg vfio and iommufd are also in trouble on these configurations.
+>>>>
+>>>
+>>> If those PCI windows are problematic e.g. due to ACS they belong to
+>>> a single iommu group. If a vfio user opens all the devices in that group
+>>> then it can discover and reserve those windows in its IOVA space.
+>>
+>> How? We don't even exclude the single device's BAR if there is no ACS?
+> 
+> The issue here was a defective ACS on a PCIe switch.
+> 
+>>> The problem is that the user may not open all the devices then
+>>> currently there is no way for it to know the windows on those
+>>> unopened devices.
+>>>
+>>> Curious why nobody complains about this gap before this thread...
+>>
+>> Probably because it only matters if you have a real PCIe switch in the
+>> system, which is pretty rare.
+> 
+> So just FYI I am pretty sure we have a partitioned PCIe switch that
+> has FW issues. Specifically it doesn't seem to be honoring the
+> Redirect Request bit so what is happening is that we are seeing
+> requests that are supposed to be going to the root complex/IOMMU
+> getting redirected to an NVMe device that was on the same physical
+> PCIe switch. We are in the process of getting that sorted out now and
+> are using the forcedac option in the meantime to keep the IOMMU out of
+> the 32b address space that was causing the issue.
+> 
+> The reason for my original request is more about the user experience
+> of trying to figure out what is reserved and what isn't. It seems like
+> the IOVA will have reservations that are not visible to the end user.
+> So when I go looking through the reserved_regions in sysfs it just
+> lists the MSI regions that are reserved, and maybe some regions such
+> as the memory for USB. while in reality we may be reserving IOVA
+> regions in iova_reserve_pci_windows that will not be exposed without
+> having to add probes or adding some printk debugging.
 
-The issue here was a defective ACS on a PCIe switch.
+lspci -vvv seems to have no problem telling me about what PCI memory 
+space is assigned where, even as an unprivileged user, so surely it's 
+available to any VFIO user too?
 
-> > The problem is that the user may not open all the devices then
-> > currently there is no way for it to know the windows on those
-> > unopened devices.
-> >
-> > Curious why nobody complains about this gap before this thread...
->
-> Probably because it only matters if you have a real PCIe switch in the
-> system, which is pretty rare.
+It is not necessarily useful for eeh IOMMU layer to claim to userspace 
+that an entire window is unusable if in fact there's nothing in there 
+that would be treated as a P2P address so it's actually fine. As I say, 
+iommu-dma can make that assumption for itself because iommu-dma doesn't 
+need to maintain any particular address space layout, but it could be 
+overly restrictive for a userspace process or VMM which does.
 
-So just FYI I am pretty sure we have a partitioned PCIe switch that
-has FW issues. Specifically it doesn't seem to be honoring the
-Redirect Request bit so what is happening is that we are seeing
-requests that are supposed to be going to the root complex/IOMMU
-getting redirected to an NVMe device that was on the same physical
-PCIe switch. We are in the process of getting that sorted out now and
-are using the forcedac option in the meantime to keep the IOMMU out of
-the 32b address space that was causing the issue.
+If the system has working ACS configured correctly, then this issue 
+should be moot; if it doesn't, then a VFIO user is going to get a whole 
+group of peer devices if they're getting anything at all, so it doesn't 
+seem entirely unreasonable to leave it up to them to check that all 
+those devices' resources play well with their expected memory map. And 
+the particular case of a system which claims to have working ACS but 
+doesn't, doesn't really seem to be something that can or should be 
+worked around from userspace; if that switch can't be fixed, it probably 
+wants an ACS quirk adding in the kernel.
 
-The reason for my original request is more about the user experience
-of trying to figure out what is reserved and what isn't. It seems like
-the IOVA will have reservations that are not visible to the end user.
-So when I go looking through the reserved_regions in sysfs it just
-lists the MSI regions that are reserved, and maybe some regions such
-as the memory for USB. while in reality we may be reserving IOVA
-regions in iova_reserve_pci_windows that will not be exposed without
-having to add probes or adding some printk debugging.
+Thanks,
+Robin.
