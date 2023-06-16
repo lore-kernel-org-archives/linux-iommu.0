@@ -1,30 +1,30 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B21081879
-	for <iommu@lists.linux.dev>; Fri, 16 Jun 2023 14:35:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BB6F11879
+	for <iommu@lists.linux.dev>; Fri, 16 Jun 2023 14:39:01 +0000 (UTC)
 Received: from 8bytes.org (p200300c27725a60086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:7725:a600:86ad:4f9d:2505:dd0d])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 58EE6226A72;
-	Fri, 16 Jun 2023 16:34:59 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 521DD226A72;
+	Fri, 16 Jun 2023 16:39:00 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1686926099;
-	bh=TvGZ4/ABg5ZygwVJmct/CzPrK3yw+aA2H3bHkJLEJ/E=;
+	s=default; t=1686926340;
+	bh=KTpj5Fsy2wKYCCe/sKhg7+iN9JCgxD+6LBbN5hC3GyI=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=h29o7ImEMq7HJuEOuRnyJWZn2MHm2oVSuNC+27oxqZ65LTZRctXeZ9D1apzfHFZsJ
-	 9dnpwO6eBY7UpmoqJnfj1fratWHmp9qIg9VvNO2QOCv3OX9FFLdnim7gxvGEH/vAi7
-	 Sfj5MI9rKmLU+2acd65ImCsDE9qiJhXJbf/11l2Zdry7DcLL1F+Zt9AEbnIyvUb3/e
-	 BZ8psqoDI9VQMXgofA7FfZlOJBbB37WnGih+9eOaRGylgtYVGSopD00Vm9g4AOO3Uw
-	 59WG6vmAynPGN0pLvhP/dnroRHnRxxibGix52ViAw1Pwnd+g1NHGjK6bcCweCLdkKn
-	 ajcMT9iwPAO8w==
-Date: Fri, 16 Jun 2023 16:34:58 +0200
+	b=pSvu/L/D2Cd5yZw8rC6gj5SE9cXOUN6Yi65oTkpgU0VQL18Vg+tKX0h795H9e0En0
+	 rgiCStQNI/uPieEClaA0/nCIhpxXPl9UKIzdgsNLdO+GLyY0bZGli9FFpJ0eJOGC2x
+	 793hLUijKrhJuE0v6rLiu78zcxHw1cxvOe1b7BtvDN4UZh68p5piR77MAQFOhnIhDy
+	 xGm4/SiQqf2dVJ5HUPJSu1lm6gm5IcXx/M8xuyTu1zCk5AEcUT3JvREqOY8LcE1qb9
+	 QVksjrPrIPKGdXm5cUqr53+VwlZQvKB5Y1SlALx8fhBxnXGnTcvF6lQnauNPnsIXKt
+	 bKdPnh1xZRKfg==
+Date: Fri, 16 Jun 2023 16:38:59 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, suravee.suthikulpanit@amd.com,
-	Yazen Ghannam <yazen.ghannam@amd.com>
-Subject: Re: [PATCH 1/2] iommu/amd: Use BIT/BIT_ULL macro to define bit fields
-Message-ID: <ZIxzElwRFr39X_bZ@8bytes.org>
-References: <20230609090631.6052-1-vasant.hegde@amd.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Yanfei Xu <yanfei.xu@intel.com>, Suhui <suhui@nfschina.com>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/4] [PULL REQUEST] Intel IOMMU updates for Linux v6.5
+Message-ID: <ZIx0A7oRIJJvrg73@8bytes.org>
+References: <20230614024705.88878-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -33,18 +33,19 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230609090631.6052-1-vasant.hegde@amd.com>
+In-Reply-To: <20230614024705.88878-1-baolu.lu@linux.intel.com>
 
-On Fri, Jun 09, 2023 at 09:06:30AM +0000, Vasant Hegde wrote:
-> Make use of BIT macro when defining bitfields which makes it easy to read.
+On Wed, Jun 14, 2023 at 10:47:01AM +0800, Lu Baolu wrote:
+> Hi Joerg,
 > 
-> No functional change intended.
+> This includes patches queued for v6.5. They are:
 > 
-> Suggested-by: Yazen Ghannam <yazen.ghannam@amd.com>
-> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-> ---
->  drivers/iommu/amd/amd_iommu_types.h | 76 ++++++++++++++---------------
->  1 file changed, 38 insertions(+), 38 deletions(-)
+>  - Small and misc cleanups
+> 
+> The whole series is based on v6.4-rc6 and also available at:
+> https://github.com/LuBaolu/intel-iommu/commits/vtd-update-for-v6.5
+> 
+> Please pull them for x86/vt-d branch.
 
-Applied both, thanks.
+Pulled, thanks Baolu.
 
