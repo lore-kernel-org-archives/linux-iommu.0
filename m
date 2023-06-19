@@ -1,33 +1,33 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2070.outbound.protection.outlook.com [40.107.243.70])
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2069.outbound.protection.outlook.com [40.107.96.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CC66AD3C
-	for <iommu@lists.linux.dev>; Mon, 19 Jun 2023 13:24:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 930D2AD3C
+	for <iommu@lists.linux.dev>; Mon, 19 Jun 2023 13:24:33 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KHTqXHwyPk5zfZLom+X8gKVYbcWH1UQM5m4Yrin3SyZ/ZjwX4cPlNb52aZmjRxzb+7BZaITEsajiTtqvcV0r8czhEc8kfCw2YbaW/YbWRZpd4ZfcMsrwpdVUSciPYYB+3VXwFvt0ZHuOImb+aL0Pcxs8HtNApIYniN6clKub1iT4dxJWAvGbLWnfsaJAnSfuaU0Hy8ACwvdy0MZI3qrXJWNMnxbyFVRHPHJlyHI24t37wtAXTme4lxrcGWNMwQznJinjnra2THonUfqVSjdjE5BRhdnilLKHAklLsjzFzVEbrU3uM0EWYiuExUIv4X/9SAsU+a0t1mDnxtzIepbp9A==
+ b=cP6Q/qsXKeQZr66AP1cpNCkmu5RRK4OS1KkhleW3vyQSUBRSSYVE5F8XeZBM7qPh43WDEYslg6qBU0m4cdXlu0+2RJW+aLKmt7dr78SH5pYX/3fmh+sy95XVkkRV4Ut4sGlbP6BrlTl6ccWjUSYmJxWr5fdXadMEFbr6FrK/8PWlajxZF5RqfeEbXhtkQwyzyiEz8UhnNnNxc9cqXVVoL5W+LFuzbWn9ryBPHe1n95zn9nSQXtfVycZ+LsVAui2q4bfK4LT4PFCYmnYNPjad0qKmLH8iNzaZ+dCr6ThqHfKD8fDPprOBiixkEFsiO2ua8Y6acvd2QO0qPvQnF/ryKQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nL0ExKqOZH1l3/N+PbUDH3iXskza4LBA4Bg1RQzr/eU=;
- b=NXgHqJ5i3LC3CjHlIdQUowZs23OhyeoHPA6yiVWZ4dOTDG0kWK4aq2ktmPHhutcHTSeRI8jBg60lVLAB0k23F+976uSWKw0GtR5AMX2tgxEgUpAqyBYzAaLL6U2TwtDX3KQGV2e39rKYw9o45liOcH3jCsoj4D8QflvUkwziOl5FZXsUJv/e546ztgN3Khuh5bpneikqzkG3VwXjPJ2/sORwAAF0ovOLWjQcqT7mMVob/VccpGkJ5Mtb2ozhawqsun9wjM9WhLFNlt1yr9VC3r1I4fMRVjxYqwjXfzSK51Lg8Gv90AMsa/E7Jcuszaoy0eoXd3u5zaWiTTWcEs9OpA==
+ bh=EAyF/6vyEXsDZpCE/0xAYXezLW0B8p7VFpoGWMxwXhw=;
+ b=SnSEw7ZjVI9WwkvfEzjDRCjTXGi0k4FvefkCHfX5rbNF/g8AKGKwfPh4632hStGLeY3O2uNny6xbylUC2k4EqZAX2QVd8tYDg5dloATNkiX0LivkLpaetB3V6zVxht5Mg3JLfXcKvFZoktNDEafU9ZpIiehXuYZPULJ1OWUK41RuprkYYMBewqMSpIAbZxU62GYa/JbqDn+ESla+FnHk0A9IAtz+rzdBBFABrp6InZZe4ecruayocBqQLgvZjw67qBmXUu5IjDQuU4DyFfu9Ch+pGbDHp6PCuJqiBVA1XGK5qNGW2xseEeecicAdp1mJ0xOgJ8fka3rfWr/t5IDi8A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nL0ExKqOZH1l3/N+PbUDH3iXskza4LBA4Bg1RQzr/eU=;
- b=w1G/UCk5zWXnB5tC8zfW/eJx+BOSMYhP3HdDiGqMS8vvLZJZaPtRbYcMjgSL+DPprhmUU+6rQnqdvqcL6hLleF1HDr+52Pyt4oxIwAKpMpfHs5yVpKvJkK4lxe3iF25waRTSfwhA/KjlJFTCE143sJmHZCm7nV0M3+KiyQT3kwc=
-Received: from MW4P222CA0015.NAMP222.PROD.OUTLOOK.COM (2603:10b6:303:114::20)
- by SJ0PR12MB5609.namprd12.prod.outlook.com (2603:10b6:a03:42c::12) with
+ bh=EAyF/6vyEXsDZpCE/0xAYXezLW0B8p7VFpoGWMxwXhw=;
+ b=Qf0ILRxWmhp97cRxsaGdtcsfmNPd1/lQmKJihox68ZCJH+2J4edArbUxPwkPzixKKAJxmMPQZ864nEav4dhZO7sAcJ1P3W37qsNPHPb2bC3W2Mdslv1GJ/keBOlfc0NpF3DL/NS8M3xy89tbuw4Fv897EmzSBAvUaMTxewvjq/Q=
+Received: from MW4PR03CA0277.namprd03.prod.outlook.com (2603:10b6:303:b5::12)
+ by LV3PR12MB9188.namprd12.prod.outlook.com (2603:10b6:408:19b::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.35; Mon, 19 Jun
- 2023 13:24:15 +0000
-Received: from CO1NAM11FT060.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:114:cafe::b9) by MW4P222CA0015.outlook.office365.com
- (2603:10b6:303:114::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6477.44 via Frontend
- Transport; Mon, 19 Jun 2023 13:24:13 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.37; Mon, 19 Jun
+ 2023 13:24:30 +0000
+Received: from CO1NAM11FT103.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b5:cafe::31) by MW4PR03CA0277.outlook.office365.com
+ (2603:10b6:303:b5::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.37 via Frontend
+ Transport; Mon, 19 Jun 2023 13:24:29 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -35,21 +35,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT060.mail.protection.outlook.com (10.13.175.132) with Microsoft SMTP
+ CO1NAM11FT103.mail.protection.outlook.com (10.13.174.252) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6500.35 via Frontend Transport; Mon, 19 Jun 2023 13:24:14 +0000
+ 15.20.6500.37 via Frontend Transport; Mon, 19 Jun 2023 13:24:29 +0000
 Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Mon, 19 Jun
- 2023 08:24:11 -0500
+ 2023 08:24:26 -0500
 From: Vasant Hegde <vasant.hegde@amd.com>
 To: <iommu@lists.linux.dev>, <joro@8bytes.org>
 CC: <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>,
-	Jerry Snitselaar <jsnitsel@redhat.com>, Suravee Suthikulpanit
-	<suravee.suthiuklpanit@amd.com>
-Subject: [PATCH v2 1/2] iommu/amd: Generalize log overflow handling
-Date: Mon, 19 Jun 2023 13:23:45 +0000
-Message-ID: <20230619132346.6021-2-vasant.hegde@amd.com>
+	Jerry Snitselaar <jsnitsel@redhat.com>
+Subject: [PATCH v2 2/2] iommu/amd: Handle PPR log overflow
+Date: Mon, 19 Jun 2023 13:23:46 +0000
+Message-ID: <20230619132346.6021-3-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230619132346.6021-1-vasant.hegde@amd.com>
 References: <20230619132346.6021-1-vasant.hegde@amd.com>
@@ -66,163 +65,132 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT060:EE_|SJ0PR12MB5609:EE_
-X-MS-Office365-Filtering-Correlation-Id: a6750500-4746-4c7f-b3d7-08db70c87a26
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT103:EE_|LV3PR12MB9188:EE_
+X-MS-Office365-Filtering-Correlation-Id: f12e57db-307d-4f11-e2e0-08db70c88307
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	wnqyu+cCMlJo7o1SbvN4SDjL9laQgQpIpSfUIMWbyPMjDubZxhZYaYaEZ3iYe3vvhJYeGwhJWnMwcvE/sCAk/9MBWM1SkWK4IjMT17UW8qfg95Z2yBqhu0J0dOAQCmnacXz7t8umtCQ6q9R86Qhcq4EWRdjrTpJSPTZf892+DkCew2MQXatKoD3JdA9RS7pXYQo1Ahg9OGYaXVP4+A2d2A3iUevpwUS5qqGqKApIx5Cni+9faC6gG9JzW19Ac3u5mC5MgwK/zfxg7rKkJjjW462Exx9fA0+A2oPDixAj5jI1JTQI+DK8L+PCRz+xI4GjXRu7bn7cvlZZLJgxYpF6KDvNg+yiqsf3FG5HrCywTOjX5wBDijXyKYK0vuJI6EM5tc679VTUce8FnD2mwV/KnPMoXR6drfhg0F1ObbyVFWIdgcsvBdKqkDI98xD5VViokHpb/PpScFojqoGBkpf2XqhAfYLEH9zsmxVoaGnL/rdME4KCxVK6xzNTcUvMw+ROA+b5uW2CU2fazaGrcc1uquz7btmO5CGwuBEJShmYWyQPGuCx+24itIXFca86KbZ5yXZlviQdhM139U+OVGqf1KnJSZAxSmas3LRoM7VfwurUDxUEU5cKgHnodcpS9YRq/jemKCg5oF7E8jzUBl6uqB2njFkBSBTByjaas2dY4dFl9uxcBqXHtDkDHjyM4k2Z7ocXYiwudDLM3qzOd4RFjutVjfvFA+nq8iSOAdTRuXMp0qnxqHci/nhvlc6wyFGRBQ7NGHSLGMAcNZQuFJJ3Og==
+	TMS7bUpo1WljGRj9vNAmc2z5lHERQA8jvf9bpfH5zFNiXJLVJrBY4n5tyaMIUvYeLyQYxS38JZ/yr0AvnyU7c2l05N/9uYLAvetjFwkw1oUfGzdiI0PE/jDJMeF9ZdgIK96v63N2GBbMMcPvQw+nrTRLabvpvP06f1+4ueu+/lk9F46VychQoVd0CC9pH++PDaC9+2NpAoWC0idhc14fHRs4NHMXRswKPi4aI35lAVBGGcVosB/jjvYTNt/WlQRHD/OkJe8pkwiJk3BQmrJH9T+f7d/0uHhH+C6zz8LX9uMtlygk6dOo78gTrzCZRSvT9dWUbi0kBIHFUF51IObthjL6nVM/+uMWSqRJ9fpqcMJ1/wmuEcZaZAek0VSHDP420X1KYqmmjJtJdC+/pa0XvDOTf55ZMGmbWwf0BR7uQEPyr8zN7XZ3uikwY2TYZ6E14C02QYKq6nQTh3t5JxcsNDvjKk4maBuK0Tv2d9FjuUZ8Ixltl0fkyB0SowGOVRsXpn11ZX88hienBW/GL9BUEIopvgEKmZZ8o9Rov+c3vpqTaAL3UBs+59+2G1wVEeB96l3QgXPt6KeKsKeP9S9k3HeGivb5TtX8gV1tUr19JomVdHivcVV5/aM16Ojz9wWaFgJ+RDyzz7Cek9m6aYv4CmgnJf7RnJ1DfolSZ1OtAJOsTqfDmVSdujxWkIARIiV3DnY7DQdMf9tYuwcyZWsduJjI38qHuQ189ZeRH1f0bR01WSw4MNsz/imOTJv4I6XvN1Oblb+PO3GOmcubWH9+Vw==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(346002)(136003)(39860400002)(376002)(396003)(451199021)(36840700001)(40470700004)(46966006)(70586007)(82310400005)(186003)(8676002)(70206006)(8936002)(16526019)(82740400003)(5660300002)(110136005)(54906003)(40460700003)(4326008)(6666004)(7696005)(316002)(478600001)(41300700001)(36756003)(26005)(1076003)(40480700001)(336012)(426003)(81166007)(356005)(47076005)(83380400001)(86362001)(2906002)(36860700001)(44832011)(2616005)(36900700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(136003)(376002)(39860400002)(346002)(396003)(451199021)(36840700001)(46966006)(40470700004)(478600001)(40480700001)(2906002)(40460700003)(966005)(54906003)(7696005)(6666004)(81166007)(2616005)(356005)(47076005)(336012)(426003)(110136005)(86362001)(36756003)(26005)(186003)(1076003)(16526019)(70586007)(8936002)(8676002)(70206006)(82310400005)(5660300002)(44832011)(316002)(36860700001)(4326008)(82740400003)(83380400001)(41300700001)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jun 2023 13:24:14.6777
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jun 2023 13:24:29.5440
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a6750500-4746-4c7f-b3d7-08db70c87a26
+X-MS-Exchange-CrossTenant-Network-Message-Id: f12e57db-307d-4f11-e2e0-08db70c88307
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT060.eop-nam11.prod.protection.outlook.com
+	CO1NAM11FT103.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB5609
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR12MB9188
 
-Each IOMMU has three log buffers (Event, GA and PPR log). Once a buffer
-becomes full, IOMMU generates an interrupt with the corresponding overflow
-status bit, and stop processing the log. To handle an overflow, the IOMMU
-driver needs to disable the log, clear the overflow status bit, and
-re-enable the log. This procedure is same among all types of log
-buffer except it uses different overflow status bit and enabling bit.
+Some ATS-capable peripherals can issue requests to the processor to service
+peripheral page requests using PCIe PRI (the Page Request Interface). IOMMU
+supports PRI using PPR log buffer. IOMMU writes PRI request to PPR log
+buffer and sends PPR interrupt to host. When there is no space in the
+PPR log buffer (PPR log overflow) it will set PprOverflow bit in 'MMIO
+Offset 2020h IOMMU Status Register'. When this happens PPR log needs to be
+restarted as specified in IOMMU spec [1] section 2.6.2.
 
-Hence, to consolidate the log buffer restarting logic, introduce a helper
-function amd_iommu_restart_log(), which caller can specify parameters
-specific for each type of log buffer.
+When handling the event it just resumes the PPR log without resizing
+(similar to the way event and GA log overflow is handled).
 
-Also rename MMIO_STATUS_EVT_OVERFLOW_INT_MASK as
-MMIO_STATUS_EVT_OVERFLOW_MASK.
+Failing to handle PPR overflow means device may not work properly as
+IOMMU stops processing new PPR events from device.
+
+[1] https://www.amd.com/system/files/TechDocs/48882_3.07_PUB.pdf
 
 Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
-Reviewed-by: Suravee Suthikulpanit <suravee.suthiuklpanit@amd.com>
+Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 ---
- drivers/iommu/amd/amd_iommu_types.h |  3 +-
- drivers/iommu/amd/init.c            | 51 ++++++++++++++++++-----------
- drivers/iommu/amd/iommu.c           |  4 +--
- 3 files changed, 36 insertions(+), 22 deletions(-)
+ drivers/iommu/amd/amd_iommu.h       |  1 +
+ drivers/iommu/amd/amd_iommu_types.h |  2 ++
+ drivers/iommu/amd/init.c            | 11 +++++++++++
+ drivers/iommu/amd/iommu.c           |  9 ++++++++-
+ 4 files changed, 22 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+index 0c35018239ce..8c61c19dabc4 100644
+--- a/drivers/iommu/amd/amd_iommu.h
++++ b/drivers/iommu/amd/amd_iommu.h
+@@ -16,6 +16,7 @@ irqreturn_t amd_iommu_int_handler(int irq, void *data);
+ void amd_iommu_apply_erratum_63(struct amd_iommu *iommu, u16 devid);
+ void amd_iommu_restart_event_logging(struct amd_iommu *iommu);
+ void amd_iommu_restart_ga_log(struct amd_iommu *iommu);
++void amd_iommu_restart_ppr_log(struct amd_iommu *iommu);
+ int amd_iommu_init_devices(void);
+ void amd_iommu_uninit_devices(void);
+ void amd_iommu_init_notifier(void);
 diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 082c57b8c2d6..1a4fd6188705 100644
+index 1a4fd6188705..2266badc6d0a 100644
 --- a/drivers/iommu/amd/amd_iommu_types.h
 +++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -120,9 +120,10 @@
- #define PASID_MASK		0x0000ffff
- 
- /* MMIO status bits */
--#define MMIO_STATUS_EVT_OVERFLOW_INT_MASK	BIT(0)
-+#define MMIO_STATUS_EVT_OVERFLOW_MASK		BIT(0)
+@@ -124,7 +124,9 @@
  #define MMIO_STATUS_EVT_INT_MASK		BIT(1)
  #define MMIO_STATUS_COM_WAIT_INT_MASK		BIT(2)
-+#define MMIO_STATUS_EVT_RUN_MASK		BIT(3)
+ #define MMIO_STATUS_EVT_RUN_MASK		BIT(3)
++#define MMIO_STATUS_PPR_OVERFLOW_MASK		BIT(5)
  #define MMIO_STATUS_PPR_INT_MASK		BIT(6)
++#define MMIO_STATUS_PPR_RUN_MASK		BIT(7)
  #define MMIO_STATUS_GALOG_RUN_MASK		BIT(8)
  #define MMIO_STATUS_GALOG_OVERFLOW_MASK		BIT(9)
+ #define MMIO_STATUS_GALOG_INT_MASK		BIT(10)
 diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index ea0f1ab94178..7fab6ecb6295 100644
+index 7fab6ecb6295..e78d7c4f41bd 100644
 --- a/drivers/iommu/amd/init.c
 +++ b/drivers/iommu/amd/init.c
-@@ -752,38 +752,51 @@ static int __init alloc_command_buffer(struct amd_iommu *iommu)
- 	return iommu->cmd_buf ? 0 : -ENOMEM;
+@@ -799,6 +799,17 @@ void amd_iommu_restart_ga_log(struct amd_iommu *iommu)
+ 			      MMIO_STATUS_GALOG_OVERFLOW_MASK);
  }
  
 +/*
-+ * Interrupt handler has processed all pending events and adjusted head
-+ * and tail pointer. Reset overflow mask and restart logging again.
++ * This function restarts ppr logging in case the IOMMU experienced
++ * PPR log overflow.
 + */
-+static void amd_iommu_restart_log(struct amd_iommu *iommu, const char *evt_type,
-+				  u8 cntrl_intr, u8 cntrl_log,
-+				  u32 status_run_mask, u32 status_overflow_mask)
++void amd_iommu_restart_ppr_log(struct amd_iommu *iommu)
 +{
-+	u32 status;
-+
-+	status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
-+	if (status & status_run_mask)
-+		return;
-+
-+	pr_info_ratelimited("IOMMU %s log restarting\n", evt_type);
-+
-+	iommu_feature_disable(iommu, cntrl_log);
-+	iommu_feature_disable(iommu, cntrl_intr);
-+
-+	writel(status_overflow_mask, iommu->mmio_base + MMIO_STATUS_OFFSET);
-+
-+	iommu_feature_enable(iommu, cntrl_intr);
-+	iommu_feature_enable(iommu, cntrl_log);
++	amd_iommu_restart_log(iommu, "PPR", CONTROL_PPRINT_EN,
++			      CONTROL_PPRLOG_EN, MMIO_STATUS_PPR_RUN_MASK,
++			      MMIO_STATUS_PPR_OVERFLOW_MASK);
 +}
 +
  /*
-  * This function restarts event logging in case the IOMMU experienced
-  * an event log buffer overflow.
-  */
- void amd_iommu_restart_event_logging(struct amd_iommu *iommu)
- {
--	iommu_feature_disable(iommu, CONTROL_EVT_LOG_EN);
--	iommu_feature_enable(iommu, CONTROL_EVT_LOG_EN);
-+	amd_iommu_restart_log(iommu, "Event", CONTROL_EVT_INT_EN,
-+			      CONTROL_EVT_LOG_EN, MMIO_STATUS_EVT_RUN_MASK,
-+			      MMIO_STATUS_EVT_OVERFLOW_MASK);
- }
- 
- /*
-  * This function restarts event logging in case the IOMMU experienced
-- * an GA log overflow.
-+ * GA log overflow.
-  */
- void amd_iommu_restart_ga_log(struct amd_iommu *iommu)
- {
--	u32 status;
--
--	status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
--	if (status & MMIO_STATUS_GALOG_RUN_MASK)
--		return;
--
--	pr_info_ratelimited("IOMMU GA Log restarting\n");
--
--	iommu_feature_disable(iommu, CONTROL_GALOG_EN);
--	iommu_feature_disable(iommu, CONTROL_GAINT_EN);
--
--	writel(MMIO_STATUS_GALOG_OVERFLOW_MASK,
--	       iommu->mmio_base + MMIO_STATUS_OFFSET);
--
--	iommu_feature_enable(iommu, CONTROL_GAINT_EN);
--	iommu_feature_enable(iommu, CONTROL_GALOG_EN);
-+	amd_iommu_restart_log(iommu, "GA", CONTROL_GAINT_EN,
-+			      CONTROL_GALOG_EN, MMIO_STATUS_GALOG_RUN_MASK,
-+			      MMIO_STATUS_GALOG_OVERFLOW_MASK);
- }
- 
- /*
+  * This function resets the command buffer if the IOMMU stopped fetching
+  * commands from it.
 diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index dc481080f722..102b337c753d 100644
+index 102b337c753d..8f299bb0f3ed 100644
 --- a/drivers/iommu/amd/iommu.c
 +++ b/drivers/iommu/amd/iommu.c
-@@ -842,7 +842,7 @@ amd_iommu_set_pci_msi_domain(struct device *dev, struct amd_iommu *iommu) { }
- #endif /* !CONFIG_IRQ_REMAP */
- 
+@@ -844,6 +844,7 @@ amd_iommu_set_pci_msi_domain(struct device *dev, struct amd_iommu *iommu) { }
  #define AMD_IOMMU_INT_MASK	\
--	(MMIO_STATUS_EVT_OVERFLOW_INT_MASK | \
-+	(MMIO_STATUS_EVT_OVERFLOW_MASK | \
+ 	(MMIO_STATUS_EVT_OVERFLOW_MASK | \
  	 MMIO_STATUS_EVT_INT_MASK | \
++	 MMIO_STATUS_PPR_OVERFLOW_MASK | \
  	 MMIO_STATUS_PPR_INT_MASK | \
  	 MMIO_STATUS_GALOG_OVERFLOW_MASK | \
-@@ -881,7 +881,7 @@ irqreturn_t amd_iommu_int_thread(int irq, void *data)
+ 	 MMIO_STATUS_GALOG_INT_MASK)
+@@ -863,11 +864,17 @@ irqreturn_t amd_iommu_int_thread(int irq, void *data)
+ 			iommu_poll_events(iommu);
  		}
- #endif
  
--		if (status & MMIO_STATUS_EVT_OVERFLOW_INT_MASK) {
-+		if (status & MMIO_STATUS_EVT_OVERFLOW_MASK) {
- 			pr_info_ratelimited("IOMMU event log overflow\n");
- 			amd_iommu_restart_event_logging(iommu);
+-		if (status & MMIO_STATUS_PPR_INT_MASK) {
++		if (status & (MMIO_STATUS_PPR_INT_MASK |
++			      MMIO_STATUS_PPR_OVERFLOW_MASK)) {
+ 			pr_devel("Processing IOMMU PPR Log\n");
+ 			iommu_poll_ppr_log(iommu);
  		}
+ 
++		if (status & MMIO_STATUS_PPR_OVERFLOW_MASK) {
++			pr_info_ratelimited("IOMMU PPR log overflow\n");
++			amd_iommu_restart_ppr_log(iommu);
++		}
++
+ #ifdef CONFIG_IRQ_REMAP
+ 		if (status & (MMIO_STATUS_GALOG_INT_MASK |
+ 			      MMIO_STATUS_GALOG_OVERFLOW_MASK)) {
 -- 
 2.31.1
 
