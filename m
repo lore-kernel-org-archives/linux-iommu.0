@@ -1,31 +1,31 @@
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FF21C2CC
-	for <iommu@lists.linux.dev>; Mon, 19 Jun 2023 23:43:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BD7CDDDF
+	for <iommu@lists.linux.dev>; Mon, 19 Jun 2023 23:43:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1687218214; x=1718754214;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=2IydA7aDSW7WAlkvgWIB7B8MuolrT6i4fpDMP7/KzxQ=;
-  b=C8vfrizEbpGC8E8D4fHyFnYOZfuNyGPWbepR0e7kX7LUgc7burcL2iSL
-   B/eNm0SDz8pd7iNAd3ftkGYf/hLvEGdVf9DTngji5vz2bWbEI4gjFpiSo
-   qRs9eSg7bcLEqkj374CPDIIvvzFs7J/8U6yF7+zyYHt2YE0AeOXGfonyV
-   HZ0z0tNuf/PzwLOCYQu9na1mQHCO4bBU4/zRIhfza7oZPrQuIObZeNJMo
-   RmUQOpSkjRjBjm7v8FY0kxC0hY1aspSX2JD+7v++0GP7sWPlpPyhFBwMG
-   knUGw2442sVuquOdxanC936yICJ0Mr+wlX/ltbzvAvM8xJpZBEhgB05To
+  t=1687218216; x=1718754216;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=bFAmHT8B0DUdACwd5EopvbtZl1G4nAgQL+houxurEK4=;
+  b=IbEZg+BMoxmIkWGUNH5SiLqArj7FsjQlFb/Cf7dYRAunGcmS1WiYlXmP
+   CafDvo8lt8jFbtsJmtyZR558YwI193N1cvlUCLjjBiAO8h3NcXidfLDjq
+   DDkaV4+rbEMwQRCZ6uxXd8xfw7EkDLeHAp4r3T10ORlsxXuNCR8PGZpB2
+   7ed43IAaeRpcgcYcXj8SChVxqSYZLra+9d6hg8B7cDFSV0BxfDBN1mQFg
+   NQ0KIduXZ+Y4tmdaklr6MPoHp+28xq97gAFTAKC/C5eWuqLiiWEqnxQcm
+   lU6ET5+m7nGETNLMj0w4AomN/cXWqDlFRTbaKhz9B2/X2CEuMI2dw3ASV
    Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="340071426"
+X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="340071443"
 X-IronPort-AV: E=Sophos;i="6.00,255,1681196400"; 
-   d="scan'208";a="340071426"
+   d="scan'208";a="340071443"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2023 16:43:33 -0700
-X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="747789680"
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2023 16:43:35 -0700
+X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="747789686"
 X-IronPort-AV: E=Sophos;i="6.00,255,1681196400"; 
-   d="scan'208";a="747789680"
+   d="scan'208";a="747789686"
 Received: from unknown (HELO fred..) ([172.25.112.68])
-  by orsmga001.jf.intel.com with ESMTP; 19 Jun 2023 16:43:31 -0700
+  by orsmga001.jf.intel.com with ESMTP; 19 Jun 2023 16:43:33 -0700
 From: Xin Li <xin3.li@intel.com>
 To: linux-kernel@vger.kernel.org,
 	platform-driver-x86@vger.kernel.org,
@@ -67,10 +67,12 @@ Cc: tglx@linutronix.de,
 	jiangshanlai@gmail.com,
 	jgg@ziepe.ca,
 	yangtiezhu@loongson.cn
-Subject: [PATCH 0/3] Do IRQ move cleanup with a timer instead of an IPI
-Date: Mon, 19 Jun 2023 16:16:08 -0700
-Message-Id: <20230619231611.2230-1-xin3.li@intel.com>
+Subject: [PATCH 1/3] x86/vector: Rename send_cleanup_vector() to vector_schedule_cleanup()
+Date: Mon, 19 Jun 2023 16:16:09 -0700
+Message-Id: <20230619231611.2230-2-xin3.li@intel.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230619231611.2230-1-xin3.li@intel.com>
+References: <20230619231611.2230-1-xin3.li@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -79,33 +81,138 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-No point to waste a vector for cleaning up the leftovers of a moved
-interrupt. Aside of that this must be the lowest priority of all vectors
-which makes FRED systems utilizing vectors 0x10-0x1f more complicated
-than necessary.
+From: Thomas Gleixner <tglx@linutronix.de>
 
-Schedule a timer instead.
+Rename send_cleanup_vector() to vector_schedule_cleanup() for the next
+patch to replace vector cleanup IPI with a timer callback.
 
-Thomas Gleixner (2):
-  x86/vector: Rename send_cleanup_vector() to vector_schedule_cleanup()
-  x86/vector: Replace IRQ_MOVE_CLEANUP_VECTOR with a timer callback
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Xin Li <xin3.li@intel.com>
+---
+ arch/x86/include/asm/hw_irq.h       | 4 ++--
+ arch/x86/kernel/apic/vector.c       | 8 ++++----
+ arch/x86/platform/uv/uv_irq.c       | 2 +-
+ drivers/iommu/amd/iommu.c           | 2 +-
+ drivers/iommu/hyperv-iommu.c        | 4 ++--
+ drivers/iommu/intel/irq_remapping.c | 2 +-
+ 6 files changed, 11 insertions(+), 11 deletions(-)
 
-Xin Li (1):
-  tools: Get rid of IRQ_MOVE_CLEANUP_VECTOR from tools
-
- arch/x86/include/asm/hw_irq.h                 |   4 +-
- arch/x86/include/asm/idtentry.h               |   1 -
- arch/x86/include/asm/irq_vectors.h            |   7 --
- arch/x86/kernel/apic/vector.c                 | 109 ++++++++++++++----
- arch/x86/kernel/idt.c                         |   1 -
- arch/x86/platform/uv/uv_irq.c                 |   2 +-
- drivers/iommu/amd/iommu.c                     |   2 +-
- drivers/iommu/hyperv-iommu.c                  |   4 +-
- drivers/iommu/intel/irq_remapping.c           |   2 +-
- tools/arch/x86/include/asm/irq_vectors.h      |   7 --
- .../beauty/tracepoints/x86_irq_vectors.sh     |   2 +-
- 11 files changed, 92 insertions(+), 49 deletions(-)
-
+diff --git a/arch/x86/include/asm/hw_irq.h b/arch/x86/include/asm/hw_irq.h
+index d465ece58151..551829884734 100644
+--- a/arch/x86/include/asm/hw_irq.h
++++ b/arch/x86/include/asm/hw_irq.h
+@@ -97,10 +97,10 @@ extern struct irq_cfg *irqd_cfg(struct irq_data *irq_data);
+ extern void lock_vector_lock(void);
+ extern void unlock_vector_lock(void);
+ #ifdef CONFIG_SMP
+-extern void send_cleanup_vector(struct irq_cfg *);
++extern void vector_schedule_cleanup(struct irq_cfg *);
+ extern void irq_complete_move(struct irq_cfg *cfg);
+ #else
+-static inline void send_cleanup_vector(struct irq_cfg *c) { }
++static inline void vector_schedule_cleanup(struct irq_cfg *c) { }
+ static inline void irq_complete_move(struct irq_cfg *c) { }
+ #endif
+ 
+diff --git a/arch/x86/kernel/apic/vector.c b/arch/x86/kernel/apic/vector.c
+index c1efebd27e6c..aa370bd0d933 100644
+--- a/arch/x86/kernel/apic/vector.c
++++ b/arch/x86/kernel/apic/vector.c
+@@ -967,7 +967,7 @@ DEFINE_IDTENTRY_SYSVEC(sysvec_irq_move_cleanup)
+ 	raw_spin_unlock(&vector_lock);
+ }
+ 
+-static void __send_cleanup_vector(struct apic_chip_data *apicd)
++static void __vector_schedule_cleanup(struct apic_chip_data *apicd)
+ {
+ 	unsigned int cpu;
+ 
+@@ -983,13 +983,13 @@ static void __send_cleanup_vector(struct apic_chip_data *apicd)
+ 	raw_spin_unlock(&vector_lock);
+ }
+ 
+-void send_cleanup_vector(struct irq_cfg *cfg)
++void vector_schedule_cleanup(struct irq_cfg *cfg)
+ {
+ 	struct apic_chip_data *apicd;
+ 
+ 	apicd = container_of(cfg, struct apic_chip_data, hw_irq_cfg);
+ 	if (apicd->move_in_progress)
+-		__send_cleanup_vector(apicd);
++		__vector_schedule_cleanup(apicd);
+ }
+ 
+ void irq_complete_move(struct irq_cfg *cfg)
+@@ -1007,7 +1007,7 @@ void irq_complete_move(struct irq_cfg *cfg)
+ 	 * on the same CPU.
+ 	 */
+ 	if (apicd->cpu == smp_processor_id())
+-		__send_cleanup_vector(apicd);
++		__vector_schedule_cleanup(apicd);
+ }
+ 
+ /*
+diff --git a/arch/x86/platform/uv/uv_irq.c b/arch/x86/platform/uv/uv_irq.c
+index ee21d6a36a80..4221259a5870 100644
+--- a/arch/x86/platform/uv/uv_irq.c
++++ b/arch/x86/platform/uv/uv_irq.c
+@@ -58,7 +58,7 @@ uv_set_irq_affinity(struct irq_data *data, const struct cpumask *mask,
+ 	ret = parent->chip->irq_set_affinity(parent, mask, force);
+ 	if (ret >= 0) {
+ 		uv_program_mmr(cfg, data->chip_data);
+-		send_cleanup_vector(cfg);
++		vector_schedule_cleanup(cfg);
+ 	}
+ 
+ 	return ret;
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index dc1ec6849775..b5900e70de60 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -3658,7 +3658,7 @@ static int amd_ir_set_affinity(struct irq_data *data,
+ 	 * at the new destination. So, time to cleanup the previous
+ 	 * vector allocation.
+ 	 */
+-	send_cleanup_vector(cfg);
++	vector_schedule_cleanup(cfg);
+ 
+ 	return IRQ_SET_MASK_OK_DONE;
+ }
+diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
+index 8302db7f783e..8a5c17b97310 100644
+--- a/drivers/iommu/hyperv-iommu.c
++++ b/drivers/iommu/hyperv-iommu.c
+@@ -51,7 +51,7 @@ static int hyperv_ir_set_affinity(struct irq_data *data,
+ 	if (ret < 0 || ret == IRQ_SET_MASK_OK_DONE)
+ 		return ret;
+ 
+-	send_cleanup_vector(cfg);
++	vector_schedule_cleanup(cfg);
+ 
+ 	return 0;
+ }
+@@ -257,7 +257,7 @@ static int hyperv_root_ir_set_affinity(struct irq_data *data,
+ 	if (ret < 0 || ret == IRQ_SET_MASK_OK_DONE)
+ 		return ret;
+ 
+-	send_cleanup_vector(cfg);
++	vector_schedule_cleanup(cfg);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
+index a1b987335b31..55d899f5a14b 100644
+--- a/drivers/iommu/intel/irq_remapping.c
++++ b/drivers/iommu/intel/irq_remapping.c
+@@ -1180,7 +1180,7 @@ intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
+ 	 * at the new destination. So, time to cleanup the previous
+ 	 * vector allocation.
+ 	 */
+-	send_cleanup_vector(cfg);
++	vector_schedule_cleanup(cfg);
+ 
+ 	return IRQ_SET_MASK_OK_DONE;
+ }
 -- 
 2.34.1
 
