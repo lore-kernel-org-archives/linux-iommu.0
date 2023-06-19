@@ -1,128 +1,121 @@
-Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com [209.85.215.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2075.outbound.protection.outlook.com [40.107.93.75])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5F57C2C5
-	for <iommu@lists.linux.dev>; Mon, 19 Jun 2023 18:08:48 +0000 (UTC)
-Received: by mail-pg1-f175.google.com with SMTP id 41be03b00d2f7-54fdf8c79a3so1739976a12.3
-        for <iommu@lists.linux.dev>; Mon, 19 Jun 2023 11:08:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1687198128; x=1689790128;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=fs6mVZy+ApJjSA3fKN+GyxgBRC/lFXRt6YaugvJMyeM=;
-        b=L/uLsqh431ZIwySMxeYWyJIkFQNeDBhq/cRQscjtn3NCSntIDDyAxuz52RjYd1kqTM
-         gfQi1pQ7aYTbx772Z5egSsRx3EbkVjFOf5cgc5pormkx4UVeIRTQ7AYp8q+1qjcYATnQ
-         4Na8IW3Zz9OCqZtN79ge+CSyuRX09oCwAKAlFEgfPWkpbt76ct3Pnd5ZyyP6y5nPF4+B
-         uHr72AAtsE0AQJXGBXeLLSOblk8LixW+Z6R7szRAJnf4pGRUd8S24e9imM/aP2Cbk8im
-         Q1PvgbfVJ/ycwKoOXqMK2mBZilzTNYqGAe0qis/dG3ZE6CZRjQYYGlRenc3aZy+XJHcW
-         OYSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687198128; x=1689790128;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=fs6mVZy+ApJjSA3fKN+GyxgBRC/lFXRt6YaugvJMyeM=;
-        b=d+Ic/eqrVm63Y5lhAOC1Tjg3Esc+XDBFUs8lm9QZ1C4GWxopZecOWekxThGOJgp/3W
-         +KZsyP1BWo02rhasd61dqz7cRPVl/eOQNdMhA6Gbqd8CMTQcrT6rcSXgknVbCC44B/a2
-         NiRABMmRMBDeqn4qGGG9LBkQfqQix3xtXIr2dHf9m/GIdy1hpUkmea2Wb3Hz842HDSwC
-         p0TfBtNe3UCumU6DEqm1d7ZA/29v0iikDn9zPI+Yg2srJscB0zYGTBstYWYL1t6H0st3
-         RkFJSx/zu584j4LKQ77p4ffMj4PWEb09+rHbIDleqDZQesuVk0+QyrUnt8EKkwjJ33HV
-         R7Cg==
-X-Gm-Message-State: AC+VfDxXAPcXzYfoIfq9GPiqNvnRRl1OnrXgSIG9pmzlrTTweSBrYiEh
-	TfG5+Z6YVn25KnPJO3lM2yQmkg==
-X-Google-Smtp-Source: ACHHUZ72NbyVVWuIQYWUIxHS6JF+LDQXXit/zA8AKDrLPJ2Vp6UEee5W8mbIQIiYcHZFYRazKu6dkA==
-X-Received: by 2002:a17:903:120b:b0:1ad:b5b4:e424 with SMTP id l11-20020a170903120b00b001adb5b4e424mr1550857plh.38.1687198127821;
-        Mon, 19 Jun 2023 11:08:47 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id u13-20020a170902a60d00b001ac8e0ea157sm145490plq.144.2023.06.19.11.08.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Jun 2023 11:08:47 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qBJIz-007DQH-Jh;
-	Mon, 19 Jun 2023 15:08:45 -0300
-Date: Mon, 19 Jun 2023 15:08:45 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: syzbot <syzbot+6c8d756f238a75fc3eb8@syzkaller.appspotmail.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, kevin.tian@intel.com,
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com,
-	syzkaller-bugs@googlegroups.com, will@kernel.org
-Subject: Re: [syzbot] [iommu?] KASAN: slab-use-after-free Read in
- iommufd_access_unpin_pages
-Message-ID: <ZJCZrSE6QQtp03l1@ziepe.ca>
-References: <000000000000905eba05fe38e9f2@google.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BB5A1427D
+	for <iommu@lists.linux.dev>; Mon, 19 Jun 2023 18:25:03 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mmLWWrv+P+NWWC3RVMhq9EYFZge7qNqDwtJ1hiP77lYo/JnnizC8FhORa7rLVEVjc+Z7rl70y1Yq8JXpZK020dqyzNlUea9VLHbwloudhLv5yEB9C2QiBhDvFW5wiKxKmHa2ug1WVcSIh4SEPGlODeKrJCVpiTK/tx/aa2LlIvUzVYPl18ENTPCacmUttDTy7kvNUVurvuTbUfVDB9awO+3yNCPhg81ehpo7OhcDC2nYvCTQ88D3IEWvI6nuEOfD6S5odgiaYUTxCnxAffvc/pChex5U73SqkEdtpSAd4wOLuIMPIEY790/l2GKAaflYHlOIefY70d1HFaaqw073Zg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=q8GbLIaEvmLfESrfNoiYeHqa/ireevLn6Ae6Nvaw8sc=;
+ b=hW5hHhXPQ8NN37dzS3OFLnKWTjGcCH1NiSSkUa62rt6XK7bonGvFQUUS0dzTTVJTBDKrbhXu3JvoO7TO53c94ubcYQUHX07z177Oh7XKfNMgn0cRrcf7aLt4yZnp4+yC9oCj0jI0uBD31X0bMBWzG12GBugzl8fidG7sV3AhAfRI0zMBRfsFtYD9CeIUBm/+nNy4L9SESaeyt1SDzjov2qfWq/SyEKePnAn/9KAN/Lh9rSNZ6ODSXKtMY8qcENoFCLO7RKhkPdSBPOBHposntH1WaFSGTLyed9Z2HkW4NT0H4ytXvcg1BYtB8hyUF53A69ri6Zg2lVaDHXe7UkEjZQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=q8GbLIaEvmLfESrfNoiYeHqa/ireevLn6Ae6Nvaw8sc=;
+ b=eOWERRKtTsbYmc2QelwUu9SbaULuYXzy4qNVYO65q2eXuxc9zOgQ4O1p6EWzLxYxDEP+WmPbDO54xhsZwUk4WQYTKVPWs12ejE9HOiduqQjccklgoVjW6PH09BbSflRP9useahBPZNiGX0SecRvJkWqXWLS52idGz0TdL2eGn1Xl7zfGTiYk4KpkJOeSwlhcb4uArJ+aCSIg425D6pGDfhyYW4RP9rCZolmNSWELttqb8rD0RPF35Xm0t0C/FMPjMR6oe9hlEWAbTXslNjxm3C/vQKJZOpSCVx05qHfNnhRv3akB2Z9Br+by469TlDwef1PW2ca+bPiqjt7AE07EUA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by SN7PR12MB6863.namprd12.prod.outlook.com (2603:10b6:806:264::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.35; Mon, 19 Jun
+ 2023 18:25:01 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab%7]) with mapi id 15.20.6500.031; Mon, 19 Jun 2023
+ 18:25:01 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: iommu@lists.linux.dev
+Cc: Kevin Tian <kevin.tian@intel.com>,
+	Lixiao Yang <lixiao.yang@intel.com>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	syzbot+1ad12d16afca0e7d2dde@syzkaller.appspotmail.com,
+	syzbot+6c8d756f238a75fc3eb8@syzkaller.appspotmail.com,
+	Yi Liu <yi.l.liu@intel.com>
+Subject: [PATCH rc 0/2] iommufd syzkaller fixes
+Date: Mon, 19 Jun 2023 15:24:57 -0300
+Message-Id: <0-v1-9f7c19e02561+31-iommufd_syz2_jgg@nvidia.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: YTBP288CA0027.CANP288.PROD.OUTLOOK.COM
+ (2603:10b6:b01:14::40) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <000000000000905eba05fe38e9f2@google.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SN7PR12MB6863:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6c26c4e1-934b-4bf2-d986-08db70f27e8a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	Vlo/TrcJ4czlN1QKV7ADXGIlESJz0wY2klGobN8TQxvlaEKqWuB2Koc3CbYVUZsn1h5Z5UFp18KSjjiCRd9dLE+SX3vt21KPv4mfGRY/vcmuDiR4CpqK3qWVVFoPtk9OYTmu4px45cTdtw+j62uvQKp+cnylYgSkI9UIwEqDtyrD4lj6f1amuiQ7OUoWE/FQ0im3/eI0EHhaAEkn6OvzLG9f4JIxYEJDtXgvkvCFOqPUzHEKODq4LsZ7fbWchwSMXeW+SCLHhCMDSxn6wfYKRTeAQ27SW7Cf0k7f2gtpTRRB0MkEylYO24PcHYbCOMb+38kLUJ7WCSF0N/gu4ZylgF8ZDTI1bvM1D/TJKjoyW5gfuu9XcODrTRMtAGFfdAmkgw2p6Tmp0ieqsJZbxnzt6G7Cg+Fz3ZPQAVGIu0709dFVYAWh60UElDoW6Pf59j79dgd/ME4kmSfoKqlrti+EbFJdyXhm37LL4EHczkVYIDPFVb6o82Rua0SxZUXP3TqF5/eU3XqJuWBCj40NRC1W57H5GE7VWYf0YN+m7Pwjwi1ym1bfigkPLHzUHuTXCrehmOXEYK55MB+6AZO7VbzSNzy/bcRYQBlnFj+cJR4ChdY=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(366004)(396003)(39860400002)(346002)(136003)(451199021)(38100700002)(36756003)(86362001)(6666004)(6486002)(6512007)(26005)(6506007)(186003)(8936002)(8676002)(5660300002)(4744005)(478600001)(54906003)(316002)(41300700001)(66946007)(4326008)(6916009)(66556008)(66476007)(2906002)(83380400001)(2616005)(4216001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?GS/o/7HxPMMFvd1+tDm2epgnjNnOfpM/oc5U6N5gEP0KeDd9O9WVDC3ZDUpR?=
+ =?us-ascii?Q?zJzsa1u/Kq4fCBVKk3NyALE3z0/nQk/oqnO/JxcF3whqdJ0PuBtL48ttri92?=
+ =?us-ascii?Q?AzIl/oBffGWsEhj1PUCS95Wu5wm0HJC5ylxWZnFFbJohSEVC6pyjnp7BHaDJ?=
+ =?us-ascii?Q?zBkNihsfzw1f3E3AuxUlCC6vIV1BGph+YcrAjggFGEM+MA+Cre7SlME3pHpb?=
+ =?us-ascii?Q?NwU9LhTgNR5jfKbK2QHif6uE6VRzDYwzbF+4l+r2cGCawGm4nnsUfbCm30LE?=
+ =?us-ascii?Q?LIwkn+ktEpSxL1ivIexRkarVEpJu70rIsqlshafo7kcjo3IgTQOKEq67QPkb?=
+ =?us-ascii?Q?SOZuW+YEzReXTB02MdkEgVo9TGmC0eFSFquSK+rt7dYlXrq4HotpAmoZ92Ij?=
+ =?us-ascii?Q?2CMkmtthc7Ncq8AZLT2Fv2+g2hvz9XUHxVOJCxbNcIz6AGQFNnXaVk4LhI2i?=
+ =?us-ascii?Q?9X3zFGDcagfpSuCZTQZuX2OcShL1OL4tV4gOtSdyjkXQ9ikMVqwN33pDTokm?=
+ =?us-ascii?Q?jbKo3jpVl2C2DFB6KQO4gZ3+83pK0YLBVVb7IaZrU2S/f71gt5l6HqV5ySge?=
+ =?us-ascii?Q?miMP4oSfnpsQPAYwgQ2AXJ5DF5NT3e78LWYCccNOcg5r3KVia4OEAHDGG+HG?=
+ =?us-ascii?Q?tMRia6DLe7V+WyD8r08aIab0IME+oIeUBuXRxdZjIBwos3L6D56kzlKOWeUr?=
+ =?us-ascii?Q?zofZ4oL6tBGm7DsWCL3pjGptc/TnT9hmCCY++Xn66J7wPgDnNAqEgbVrFTTf?=
+ =?us-ascii?Q?SvFRsQylDGygKlpxOitHCnFmNHL7HUL8I3tXsaNTX64f3v5S0R9j5p4cLjH9?=
+ =?us-ascii?Q?JDkVQPVtEL+jGEulyZ9z/++tD/6CJMv6w4MLUYMqKjSlM173YpA6jk1zlpS8?=
+ =?us-ascii?Q?LXXYjHP9/xop/pHwBQ2YmCgcUMt390N0K3nbV3PYrqB45g6IexTsWZ8UGGUv?=
+ =?us-ascii?Q?OtapFOxWQtXGHZElvrX9LzqvVQLwPloOi7Rl6CJ03d+BTNO/sICzlz/a34UY?=
+ =?us-ascii?Q?h6FGYdoF+mxHfeWmmjPqcqYdMvopuKkdMbeGPSYTAc2fiAz28z0azzAs+QXO?=
+ =?us-ascii?Q?DThC6ypKVVJj/L8b68CwNGTkc2x+gf054R86WEGCb1UKyQ80D7yBEjXEG0cW?=
+ =?us-ascii?Q?t9yZXAoh46WAXnhzZIvNuI3biWFIJk0u0QhscCOO7xf4B/nl+kRlE7nsIrJh?=
+ =?us-ascii?Q?guade9gIjDjSTp1xFsDGvJ5Me97PeFyVU8EWH9cAsVMXUjJtHRm7cRX2rySC?=
+ =?us-ascii?Q?tBtPmkqCjdb+FBZDKAiblgvuxRHDdUKqhOoMSH4lXGw8tqbtn9WJvAxa2RkS?=
+ =?us-ascii?Q?aMsK3+GM7S0LUBQ5IkIjqyd9zM9/YZuDWyFzWJlUCfSyLEt9lKGBhHG5ftlF?=
+ =?us-ascii?Q?NeFt7Ap+O6j8mBtyxgUCYAs5B70hMkN4xRlUz1+WCA57NiOCTav6xMp9D62Y?=
+ =?us-ascii?Q?SJ8sG2RA/xVAPcGMgQDZlOK2kwdLNqofySv+cLUU4UwOFM5F9qUYkrEqrY9c?=
+ =?us-ascii?Q?b2VbCA1MgsvQJ2m2OVHf8mAkHp2RTKK+IJF3kMt79XFG6kDP5Z4KOPNxiMo3?=
+ =?us-ascii?Q?ePK/cY26pz0VQQM0uJkTmFRqQm/+SVvs/h+/4URD?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6c26c4e1-934b-4bf2-d986-08db70f27e8a
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jun 2023 18:25:01.1259
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +1ZnhescS/xviAzU2jKYCuHB+3sEAAGXnzZ6hDRh67ffhgMZmFuMizMtmmRMYl6Y
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6863
 
-On Thu, Jun 15, 2023 at 11:01:13PM -0700, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    4c605260bc60 Merge tag 'x86_urgent_for_v6.4_rc6' of git://..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=14d07943280000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=3c980bfe8b399968
-> dashboard link: https://syzkaller.appspot.com/bug?extid=6c8d756f238a75fc3eb8
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=158a29dd280000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=167dd475280000
-> 
-> Downloadable assets:
-> disk image: https://storage.googleapis.com/syzbot-assets/9c4a756cb2ce/disk-4c605260.raw.xz
-> vmlinux: https://storage.googleapis.com/syzbot-assets/321df5350ca6/vmlinux-4c605260.xz
-> kernel image: https://storage.googleapis.com/syzbot-assets/f117647a1dc2/bzImage-4c605260.xz
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+6c8d756f238a75fc3eb8@syzkaller.appspotmail.com
-> 
-> ==================================================================
-> BUG: KASAN: slab-use-after-free in iopt_area_last_iova drivers/iommu/iommufd/io_pagetable.h:88 [inline]
-> BUG: KASAN: slab-use-after-free in iopt_area_contig_done drivers/iommu/iommufd/io_pagetable.h:160 [inline]
-> BUG: KASAN: slab-use-after-free in iommufd_access_unpin_pages+0x363/0x370 drivers/iommu/iommufd/device.c:557
-> Read of size 8 at addr ffff888022286e20 by task syz-executor669/5771
-> 
-> CPU: 0 PID: 5771 Comm: syz-executor669 Not tainted 6.4.0-rc5-syzkaller-00313-g4c605260bc60 #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 05/25/2023
-> Call Trace:
->  <TASK>
->  __dump_stack lib/dump_stack.c:88 [inline]
->  dump_stack_lvl+0xd9/0x150 lib/dump_stack.c:106
->  print_address_description.constprop.0+0x2c/0x3c0 mm/kasan/report.c:351
->  print_report mm/kasan/report.c:462 [inline]
->  kasan_report+0x11c/0x130 mm/kasan/report.c:572
->  iopt_area_last_iova drivers/iommu/iommufd/io_pagetable.h:88 [inline]
->  iopt_area_contig_done drivers/iommu/iommufd/io_pagetable.h:160 [inline]
->  iommufd_access_unpin_pages+0x363/0x370 drivers/iommu/iommufd/device.c:557
->  iommufd_test_access_unmap+0x24b/0x390 drivers/iommu/iommufd/selftest.c:613
->  iommufd_access_notify_unmap+0x24c/0x3a0 drivers/iommu/iommufd/device.c:520
->  iopt_unmap_iova_range+0x4c4/0x5f0 drivers/iommu/iommufd/io_pagetable.c:497
->  iopt_unmap_all+0x27/0x50 drivers/iommu/iommufd/io_pagetable.c:555
->  iommufd_ioas_unmap+0x3d0/0x490 drivers/iommu/iommufd/ioas.c:300
->  iommufd_fops_ioctl+0x317/0x4b0 drivers/iommu/iommufd/main.c:337
->  vfs_ioctl fs/ioctl.c:51 [inline]
->  __do_sys_ioctl fs/ioctl.c:870 [inline]
->  __se_sys_ioctl fs/ioctl.c:856 [inline]
->  __x64_sys_ioctl+0x197/0x210 fs/ioctl.c:856
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> RIP: 0033:0x7fec1dae3b19
-> Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 11 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007fec1da74308 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-> RAX: ffffffffffffffda RBX: 00007fec1db6b438 RCX: 00007fec1dae3b19
-> RDX: 0000000020000100 RSI: 0000000000003b86 RDI: 0000000000000003
-> RBP: 00007fec1db6b430 R08: 00007fec1da74700 R09: 0000000000000000
-> R10: 00007fec1da74700 R11: 0000000000000246 R12: 00007fec1db6b43c
-> R13: 00007fec1db39074 R14: 6d6f692f7665642f R15: 0000000000022000
->  </TASK>
+Two syzkaller fixes, both the same botched locking of the area pointer
+during the unmap of IOVA being used by an access.
 
-#syz dup: KASAN: slab-use-after-free Read in iopt_unmap_iova_range
+Jason Gunthorpe (2):
+  iommufd: Do not access the area pointer after unlocking
+  iommufd: Call iopt_area_contig_done() under the lock
+
+ drivers/iommu/iommufd/device.c       |  2 +-
+ drivers/iommu/iommufd/io_pagetable.c | 11 ++++++++---
+ 2 files changed, 9 insertions(+), 4 deletions(-)
+
+
+base-commit: 45a3e24f65e90a047bef86f927ebdc4c710edaa1
+-- 
+2.40.1
 
