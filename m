@@ -1,33 +1,33 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2088.outbound.protection.outlook.com [40.107.93.88])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2053.outbound.protection.outlook.com [40.107.243.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13A0C8BE5
-	for <iommu@lists.linux.dev>; Mon, 19 Jun 2023 13:19:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4261AD3C
+	for <iommu@lists.linux.dev>; Mon, 19 Jun 2023 13:24:01 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TIwFO6LmipJgNNYjMUqqHyr9DwX22BGHFqzm3ZlCjiklLnZTUBlmf/PxTj4ubdQhJ7QCQR/aKd9dgeEln4raLPnpdhJj4o2dh7zgo7koQaXcooSR+IlUEGW8ij6KS9fznIpIzfG8iJPq4sKzaNEt1+1JrcJaBwRbMmxkRW57CiUBULUWG2PHryT0LiQMDwIyCpRIMBqWCk7SNrxyTU2Pb7UJWtcleOvf9hMRVJTQSrFUL9NDbFFkVn1wH5Wl5KpN5laLaueG+8fsFwSj/TlFx+jIVHnAmttp1ZlBolUL5Nx92YMxinkzBXlRXBUQcMWm4/92gxyqEMcmmThMJv6e/A==
+ b=VF785lInfRiSQd96x4F5FT6hb7YkCHjg9tAfLiRRnt96PIZ161gAqwKpTTzF1VjDfJEYBzw8D6wbJyHVvsUzSfcJ+9T0d4fiYmZPvlssQczbKfJ6mc32WAtqlmuuby1VDKth5s1btxvmBevk/JZqsUdTab4PmycPF3wB6JuIIuxEbEmJApFb7V4xLa+b81dEl03oc77GdSEPddpzUJIGEHgffo9qBiqCTuPsF5bb8bTPScB4syvbc//DkvEIc6BIs8PPsIjVl8Qt9gGXo+7EZY6lebOqI3gdMDbDISzmJz3fsHOVuIeySELGR7NQumNi0O8OjAj9Q4TU22E9ootOiA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/Gc5FvnkAVcXn/LA6VYjYewfzLSJDahHT89Jz+KiXkY=;
- b=ms7TH6+WVm7+lQq78+3CXbXIWlRzoYZRZ3c3xpVbeExTPNvH/01ij1FfmDtrle4sR+sA3N4/YENx0zs9WGg5gajH/FWX5/3ehmWRVBJHHk9tbIu8kAKE/yf7YES+lLcts/6yNYHvYI0HLtI0Mj3pYGI2EKzZHmv+nv+z3TldjjscEM8pVNzJowcayBaI9jZvG5sMRw1wkohyflEijBIJWSYg/34kjVGNbm3pBDv2UjQNI6ltaa0dzV/TkEQl0Mi6R5YrquAOn73g6uO+ghgfK60RXnHhtiKKvUNs/1oxwgUsObdZb6mOR0CWfihnDGk1krvhQVlm0oBIT5R6FdNbPw==
+ bh=o+kfgjboLravQyJHE6qHvJX//3VavtL/vTWWhh7x9kI=;
+ b=jxgo8TNh+bDVctsCSJlcSwd0u98iisSaWupHc/R1ba1D9ngvvowFtMXBKebiR1oJIZdTPB7f6Aqgwz+onBjQqBbDU8uU+2XCxZMaXAicGFmac8yx6uXB77Nv/cXHw2RkpgOvQAD+toQt82uIHGpCJXc+TNKJzel/735d8P5PzbmDIKYJYrdtIUsb/gd9IXxHyI264KC0sgHaHsl7orpovo3zKDiY98R9c/JC/0Tv8Q6T6rHXQAK1g2A7ZeMXSZtdgGbLgx9StlKe2pdNWChADAaAHHZJaWjvnEmNRcQLCCD2qiGCr6L3j6u7H6oWRp3hrZWrjG0J6y4e1AuRU+uo0g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/Gc5FvnkAVcXn/LA6VYjYewfzLSJDahHT89Jz+KiXkY=;
- b=irkMhkvoTRwCg+LqBSQPVJUBgvIcRM6ZX1f1bkWYWz3v/Grw2mNvCtCDXjiAkrapssSFPVCriLEVHHO26Pt0dAKnFOihg+ooywsDxpH5MVOdVCZOJK5gl6XdrqtrMgwDAnZ5G81fvDbuS5pEVtAhS02VevpTt3jYs7WlAPhjoSA=
-Received: from CY8PR12CA0008.namprd12.prod.outlook.com (2603:10b6:930:4e::12)
- by CYYPR12MB9015.namprd12.prod.outlook.com (2603:10b6:930:c8::6) with
+ bh=o+kfgjboLravQyJHE6qHvJX//3VavtL/vTWWhh7x9kI=;
+ b=k8Ba16tMLjT9SJSUPTMN6rBLj3CuliOaSlM2uC4hUbfIMij1C1VpCBAtDJhQWp4Yt50vGSRdSzKQGJAuVcJlwRvToeQZ7xJlLp8t4Y042AzkLrdBWRSvFAlWox5q6TqZCbOr9roy7QCDgP5fKGIOoRkuMoEALPVaVUvmPI7xlcY=
+Received: from CY5PR15CA0059.namprd15.prod.outlook.com (2603:10b6:930:1b::28)
+ by CH3PR12MB7500.namprd12.prod.outlook.com (2603:10b6:610:148::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.36; Mon, 19 Jun
- 2023 13:19:26 +0000
-Received: from CY4PEPF0000EE3E.namprd03.prod.outlook.com
- (2603:10b6:930:4e:cafe::1a) by CY8PR12CA0008.outlook.office365.com
- (2603:10b6:930:4e::12) with Microsoft SMTP Server (version=TLS1_2,
+ 2023 13:23:59 +0000
+Received: from CY4PEPF0000EE3F.namprd03.prod.outlook.com
+ (2603:10b6:930:1b:cafe::35) by CY5PR15CA0059.outlook.office365.com
+ (2603:10b6:930:1b::28) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.37 via Frontend
- Transport; Mon, 19 Jun 2023 13:19:26 +0000
+ Transport; Mon, 19 Jun 2023 13:23:58 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -35,20 +35,19 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CY4PEPF0000EE3E.mail.protection.outlook.com (10.167.242.18) with Microsoft
+ CY4PEPF0000EE3F.mail.protection.outlook.com (10.167.242.19) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6521.19 via Frontend Transport; Mon, 19 Jun 2023 13:19:26 +0000
+ 15.20.6521.19 via Frontend Transport; Mon, 19 Jun 2023 13:23:58 +0000
 Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Mon, 19 Jun
- 2023 08:19:23 -0500
+ 2023 08:23:56 -0500
 From: Vasant Hegde <vasant.hegde@amd.com>
 To: <iommu@lists.linux.dev>, <joro@8bytes.org>
-CC: <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>,
-	Jerry Snitselaar <jsnitsel@redhat.com>
-Subject: [PATCH trivial] iommu/amd: Rearrange DTE bit definations
-Date: Mon, 19 Jun 2023 13:19:08 +0000
-Message-ID: <20230619131908.5887-1-vasant.hegde@amd.com>
+CC: <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>
+Subject: [PATCH v2 0/2] iommu/amd: Add PPR overflow support
+Date: Mon, 19 Jun 2023 13:23:44 +0000
+Message-ID: <20230619132346.6021-1-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,69 +58,52 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000EE3E:EE_|CYYPR12MB9015:EE_
-X-MS-Office365-Filtering-Correlation-Id: 742e222f-6d3d-423a-bac5-08db70c7ce75
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000EE3F:EE_|CH3PR12MB7500:EE_
+X-MS-Office365-Filtering-Correlation-Id: 490edc90-3b53-4f17-245c-08db70c87093
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	OO+UdworPOiF8IlBJqMUaaJDpo73XTq7c2bI8CNsnxTWhsZ1fCDQxmo+1AmY5t+5OWrckXOOyyzrJx4S//Xgb9Rt6T2FtGL/EYqu6Ifl3MuctWFHRRvirVbI86gc8whKNbkci/X5/Of5dw2PEiaAeEcNAhro/zGV5bNT76Frr12gII+CEg1YWQmXnIkvv49pphP4TjBIahFFMm/LhGnhF+OiVE2NIi/8SX071CHQyYZQdQWFPLpK7M19fzYix7pGE13dDdwZGx2Ir57YNgV1o3hZTEtZMV7BAcTgbMxcvYo6R3tzZR+pHD+GPAjy0WAwNX4GWHmywWBKFes3Em4gpZxRuBjSKHet040vY49ZnZjEez2bKnfCWbWDSr41BKjObI7Ug87h+M74BbjpBDeouQfyK5ic3xvhzUOklJSw2AuSD1QMshBIMrn+29nYhLgGgzlp5LKdF58vWomz1QL+oc15W/u5XcAVKp996uEe5yKC8m5L1xqUi36iJpFFBqWIZzCgND1jRtIbiYvlCny+Df+tPaKxFrrwaXBJpOsbK7A80LcNyu1BL69dyeHx0/ReMwEBGSYG5Gydu9rYoFpp56be1jcN6bxuVTjwdr0KOcax4UfZOtvU4NYYVXm8T0e3CqXFfDEa2vfjUXseP/OvbI1EGKD+HRFn5LxxAKecb8VMCGlgK34HMuZpD9X8l7/puakIdhlFoJ8av6UJw68d1rEfbk0zOMOwBcjY/85aOqpdiuTRfVW1ITDhCdf9WgtZ1m6vnbN602AqCr2N4XSoaw==
+	hAcsEp8lt0q2H6YpkWVY0manADgQHATMnfTJ+/gnb5XAly5qpDiQmPrIoJ0h0svJelTD55/b8XK004Xs3YkD/ej5ehtyuugy8JtUlOiLuLeELboCkzVQS+laDeisUG01MAgAkWnqi2bTwO+inoaNXhlFoub7u94Fq23CdUwn9Q55Od8v4+fDL2eDHPwFYpbZhMtxNO/3UHIhmnI9kY0YMQ+N8UnEHEqAxFxB3wAcPaL5A71YZPdfwI8W8mek8PJwbEDddVzu0DHlaxBEev6Vfhqoc2jdLJqXjGdhuSY/CfD8wQyhM3DFuFinjuq1z6y3YCC7HfhcRP20OgA15AzdNHPG0Z8iQEikb1O8V3qCnYuhQtxHw8baGQyWjE0mnF2EsLfxsogxDCEPcbUM8LxCPmMDqkWvJ89oR/ZuoTpB8YQy81jqSBTunkaqnAuAwFGRHiiOkRHywMEgli5avPusfk3ICJHSFfizreJzT7ESteDrHBGMZJau7ch19dkhWons/DUxmtBSd+fDGN6lwPU8N+TWN6pq9OedU0lGFNOrIJSTB1T97+n7iJ+nEV2dED5ZUvqyjz4OVLDT2qulekJL0SV0PWd2+Ivz1qGL4YiiJoxcSVvg8tXkhncBsO9oIWC4nB9gItOGTtyxEFAEiEWFM13MMT3p3aWwmXarD9SnQAi3eVDcOIMEdpkqIOM528Yw0c6JJG4onS/h44Rr5DG+UqG8ojybY8advzMbp7kYGUSeTxXFnjmgQyyZ9a7TFqwakI6v5drA5fds0KfsJwWCWg==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(346002)(136003)(376002)(451199021)(46966006)(40470700004)(36840700001)(82310400005)(8936002)(70206006)(8676002)(70586007)(1076003)(16526019)(26005)(186003)(36756003)(83380400001)(41300700001)(5660300002)(82740400003)(4326008)(44832011)(316002)(36860700001)(54906003)(40460700003)(7696005)(81166007)(2616005)(356005)(6666004)(40480700001)(478600001)(2906002)(86362001)(336012)(110136005)(47076005)(426003)(36900700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(136003)(346002)(39860400002)(396003)(376002)(451199021)(40470700004)(46966006)(36840700001)(4744005)(2906002)(40460700003)(41300700001)(5660300002)(44832011)(8676002)(8936002)(82310400005)(36756003)(40480700001)(86362001)(478600001)(26005)(1076003)(186003)(110136005)(54906003)(16526019)(7696005)(6666004)(966005)(81166007)(70586007)(70206006)(36860700001)(47076005)(356005)(4326008)(316002)(426003)(336012)(2616005)(82740400003)(83380400001)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jun 2023 13:19:26.6744
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jun 2023 13:23:58.6424
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 742e222f-6d3d-423a-bac5-08db70c7ce75
+X-MS-Exchange-CrossTenant-Network-Message-Id: 490edc90-3b53-4f17-245c-08db70c87093
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000EE3E.namprd03.prod.outlook.com
+	CY4PEPF0000EE3F.namprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR12MB9015
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB7500
 
-Rearrage according to 64bit word they are in.
+Current IOMMU driver is lacking PPR log overflow handling. Add logic to
+restart PPR log after an overflow has occurred.
 
-Note that I have not rearranged gcr3 related macros even though
-they belong to different 64bit word as its easy to read it in
-current format.
+Patches applies on top of iommu/next branch (commit a7a334076dd).
 
-No functional changes intended.
+Changes from v1 -> v2:
+  - Updated patch description
+  - Added Review-by
 
-Suggested-by: Jerry Snitselaar <jsnitsel@redhat.com>
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
----
- drivers/iommu/amd/amd_iommu_types.h | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+v1: https://lore.kernel.org/linux-iommu/20230609101746.6412-1-vasant.hegde@amd.com/
 
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 53443d6f7b13..082c57b8c2d6 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -381,15 +381,15 @@
-  */
- #define DTE_FLAG_V	BIT_ULL(0)
- #define DTE_FLAG_TV	BIT_ULL(1)
-+#define DTE_FLAG_GIOV	BIT_ULL(54)
-+#define DTE_FLAG_GV	BIT_ULL(55)
-+#define DTE_GLX_SHIFT	(56)
-+#define DTE_GLX_MASK	(3)
- #define DTE_FLAG_IR	BIT_ULL(61)
- #define DTE_FLAG_IW	BIT_ULL(62)
- 
- #define DTE_FLAG_IOTLB	BIT_ULL(32)
--#define DTE_FLAG_GIOV	BIT_ULL(54)
--#define DTE_FLAG_GV	BIT_ULL(55)
- #define DTE_FLAG_MASK	(0x3ffULL << 32)
--#define DTE_GLX_SHIFT	(56)
--#define DTE_GLX_MASK	(3)
- #define DEV_DOMID_MASK	0xffffULL
- 
- #define DTE_GCR3_VAL_A(x)	(((x) >> 12) & 0x00007ULL)
+Vasant Hegde (2):
+  iommu/amd: Generalize log overflow handling
+  iommu/amd: Handle PPR log overflow
+
+ drivers/iommu/amd/amd_iommu.h       |  1 +
+ drivers/iommu/amd/amd_iommu_types.h |  5 ++-
+ drivers/iommu/amd/init.c            | 60 ++++++++++++++++++++---------
+ drivers/iommu/amd/iommu.c           | 13 +++++--
+ 4 files changed, 57 insertions(+), 22 deletions(-)
+
 -- 
 2.31.1
 
