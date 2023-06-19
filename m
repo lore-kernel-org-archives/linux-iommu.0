@@ -1,155 +1,1081 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF0A4110F
-	for <iommu@lists.linux.dev>; Mon, 19 Jun 2023 03:37:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1687145829; x=1718681829;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Mn9sUNu9bUbT2aZ3NgMLU/44FoDyp8AQtljBXhFRLyg=;
-  b=OJI46TMNb8drVGNSKSKqZqznLy4h8c3MvTV3pWciBUw2EAwFGEJw1UdE
-   ESLlYrUg0RNpuEfF4NUhIsK+kirMjLw1ppM22i1R7r5fWOl5NerGcHj+j
-   RkPBba3ZfDPTh9HctCB4CWPB6ls1CcR4nFNO1xPmWdg+hvyGqLsTuUkB2
-   1sh013TSd7AMO+txfS/1WXlHJsn0iKvhDjeIdZDGkQeH5h/hFLiIeMrjy
-   OIkI7KyoMtP279Nw0IfPnr2rIb5x5ODJuMKprFjsEvkz/dhh22mG5DGH1
-   +eiy82Y35a5UH+U0E/34f6Elpub0MOn4ih4srPrrLCGz/fNlAR8iKfuUH
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10745"; a="445917482"
-X-IronPort-AV: E=Sophos;i="6.00,253,1681196400"; 
-   d="scan'208";a="445917482"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2023 20:37:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10745"; a="858063084"
-X-IronPort-AV: E=Sophos;i="6.00,253,1681196400"; 
-   d="scan'208";a="858063084"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmsmga001.fm.intel.com with ESMTP; 18 Jun 2023 20:37:04 -0700
-Message-ID: <bc963573-f4d3-1467-daaf-2d85f6befe3f@linux.intel.com>
-Date: Mon, 19 Jun 2023 11:35:50 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B96D523C7
+	for <iommu@lists.linux.dev>; Mon, 19 Jun 2023 06:13:56 +0000 (UTC)
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-56ffd7d7fedso36487827b3.2
+        for <iommu@lists.linux.dev>; Sun, 18 Jun 2023 23:13:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google; t=1687155235; x=1689747235;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zHsjoM7l6iRteruMGkaHcaksDwAz1z6WzVA1WS2MOZM=;
+        b=mYce7tXU0PlyqJLQQuUFdgHjF/Hp1bfGB9wuzcrIosaTg4BpXoLDGSV75y/HQM1qzL
+         YYtj1qn6KXaPHX+VjN2MFncV2+rs22Hw3pTBVgi4S5c7+9DSe8O6R/8m2TbOJry4RXmg
+         YbmuOQMTePnGveLQVHNa0XT6kQ/YuLD03pTsFTF/PBwNGuiuK3RUf7SX01hBhE2vJn98
+         ZvMb4ArI4RGRzRuS+f5JohQSWQxDtcZIxXnzmGpBfJxjOIrA3I7D80X9cqM0ICS9biOW
+         rPMmq/9r9OfTEFX8l5NQ0vDfaFGv/wuvs/ebMIMMsX+ru4e9ru+QVbv1SsdTcrfR+FPC
+         Nyww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687155235; x=1689747235;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=zHsjoM7l6iRteruMGkaHcaksDwAz1z6WzVA1WS2MOZM=;
+        b=IvCOOHMvpggFvRytMpllBdT/vx1U3TKcCf441VhA1aNTGp3yY34uQZRiNRdq2+VW1e
+         +Oxte23RXUTvY4/1Tzem1+MxZE9hdUH2WI+OK5L65Eg34xUv1WsljaBui4mqtfz3QwZo
+         evG/Fc4llV91FZiWEKx+wNUb5YjK4ucWTvSxgjfoY7/vjHRTtDm3nXb5ANIE071sxgV+
+         WnD0uvJPotaJ40SuU+bZBqv73JB/AuKvTx2wkMqSNPeWs1ZxxsN4xMS3801sZJVzJ1h2
+         /vrTC6Nljupb7zcL/TQ4g1M1wzRXmx7rVorNWjFXZliaaqITB22fdUnuI9TlhmXLTjf8
+         A6Tw==
+X-Gm-Message-State: AC+VfDwJh/g4vAKNtuhSGo/xBnK7UWMroTF4LjSCMxkSaAXznKLFWrgr
+	+4zP3fVFTE/e1CdA2yi9AH/QlZorpuSh4lmRStDNJw==
+X-Google-Smtp-Source: ACHHUZ5XQ3PS2zo+WmS3Iqim9pv4K3k0WdIgbWB7HQeBm74Ljyqhi9kTtghClCaxlqNxYf06Evas5gse29BDdPRrOAI=
+X-Received: by 2002:a81:a1c5:0:b0:56c:f6cd:7b55 with SMTP id
+ y188-20020a81a1c5000000b0056cf6cd7b55mr9274412ywg.6.1687155235103; Sun, 18
+ Jun 2023 23:13:55 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Cc: baolu.lu@linux.intel.com, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
- linux-kselftest@vger.kernel.org, virtualization@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCHES 00/17] IOMMUFD: Deliver IO page faults to user space
-Content-Language: en-US
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-References: <20230530053724.232765-1-baolu.lu@linux.intel.com>
- <20230616113232.GA84678@myrica>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230616113232.GA84678@myrica>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20230613153415.350528-1-apatel@ventanamicro.com>
+ <20230613153415.350528-9-apatel@ventanamicro.com> <CAGETcx-hoPNanAwe4++6roqBXwSdc7z6Ei=-r9z6qFG1U7xVXg@mail.gmail.com>
+ <CAAhSdy3WH_nrKC-3AC4RHn9=crh6mPzaKO8jmAeo2j8-VJnT5g@mail.gmail.com> <CAGETcx_DkuyZ+c50QmA7eu8vUByfVosABugZpd7R8NgR8Wc-FA@mail.gmail.com>
+In-Reply-To: <CAGETcx_DkuyZ+c50QmA7eu8vUByfVosABugZpd7R8NgR8Wc-FA@mail.gmail.com>
+From: Anup Patel <apatel@ventanamicro.com>
+Date: Mon, 19 Jun 2023 11:43:43 +0530
+Message-ID: <CAK9=C2X4+aTs=+WdE0ba1qPDu67TiAKgE2Rx-qqD5+TJwYCKOQ@mail.gmail.com>
+Subject: Re: [PATCH v4 08/10] irqchip: Add RISC-V advanced PLIC driver
+To: Saravana Kannan <saravanak@google.com>
+Cc: Anup Patel <anup@brainfault.org>, Palmer Dabbelt <palmer@dabbelt.com>, 
+	Paul Walmsley <paul.walmsley@sifive.com>, Thomas Gleixner <tglx@linutronix.de>, 
+	Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Frank Rowand <frowand.list@gmail.com>, 
+	Atish Patra <atishp@atishpatra.org>, Andrew Jones <ajones@ventanamicro.com>, 
+	Conor Dooley <conor@kernel.org>, linux-riscv@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+	iommu@lists.linux.dev, Android Kernel Team <kernel-team@android.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 6/16/23 7:32 PM, Jean-Philippe Brucker wrote:
-> Hi Baolu,
+On Sat, Jun 17, 2023 at 3:36=E2=80=AFAM Saravana Kannan <saravanak@google.c=
+om> wrote:
+>
+> On Thu, Jun 15, 2023 at 7:01=E2=80=AFPM Anup Patel <anup@brainfault.org> =
+wrote:
+> >
+> > On Fri, Jun 16, 2023 at 12:47=E2=80=AFAM Saravana Kannan <saravanak@goo=
+gle.com> wrote:
+> > >
+> > > On Tue, Jun 13, 2023 at 8:35=E2=80=AFAM Anup Patel <apatel@ventanamic=
+ro.com> wrote:
+> > > >
+> > > > The RISC-V advanced interrupt architecture (AIA) specification defi=
+nes
+> > > > a new interrupt controller for managing wired interrupts on a RISC-=
+V
+> > > > platform. This new interrupt controller is referred to as advanced
+> > > > platform-level interrupt controller (APLIC) which can forward wired
+> > > > interrupts to CPUs (or HARTs) as local interrupts OR as message
+> > > > signaled interrupts.
+> > > > (For more details refer https://github.com/riscv/riscv-aia)
+> > > >
+> > > > This patch adds an irqchip driver for RISC-V APLIC found on RISC-V
+> > > > platforms.
+> > > >
+> > > > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> > > > ---
+> > > >  drivers/irqchip/Kconfig             |   6 +
+> > > >  drivers/irqchip/Makefile            |   1 +
+> > > >  drivers/irqchip/irq-riscv-aplic.c   | 765 ++++++++++++++++++++++++=
+++++
+> > > >  include/linux/irqchip/riscv-aplic.h | 119 +++++
+> > > >  4 files changed, 891 insertions(+)
+> > > >  create mode 100644 drivers/irqchip/irq-riscv-aplic.c
+> > > >  create mode 100644 include/linux/irqchip/riscv-aplic.h
+> > > >
+> > > > diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+> > > > index d700980372ef..834c0329f583 100644
+> > > > --- a/drivers/irqchip/Kconfig
+> > > > +++ b/drivers/irqchip/Kconfig
+> > > > @@ -544,6 +544,12 @@ config SIFIVE_PLIC
+> > > >         select IRQ_DOMAIN_HIERARCHY
+> > > >         select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
+> > > >
+> > > > +config RISCV_APLIC
+> > > > +       bool
+> > > > +       depends on RISCV
+> > > > +       select IRQ_DOMAIN_HIERARCHY
+> > > > +       select GENERIC_MSI_IRQ
+> > > > +
+> > > >  config RISCV_IMSIC
+> > > >         bool
+> > > >         depends on RISCV
+> > > > diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
+> > > > index 577bde3e986b..438b8e1a152c 100644
+> > > > --- a/drivers/irqchip/Makefile
+> > > > +++ b/drivers/irqchip/Makefile
+> > > > @@ -95,6 +95,7 @@ obj-$(CONFIG_QCOM_MPM)                        +=
+=3D irq-qcom-mpm.o
+> > > >  obj-$(CONFIG_CSKY_MPINTC)              +=3D irq-csky-mpintc.o
+> > > >  obj-$(CONFIG_CSKY_APB_INTC)            +=3D irq-csky-apb-intc.o
+> > > >  obj-$(CONFIG_RISCV_INTC)               +=3D irq-riscv-intc.o
+> > > > +obj-$(CONFIG_RISCV_APLIC)              +=3D irq-riscv-aplic.o
+> > > >  obj-$(CONFIG_RISCV_IMSIC)              +=3D irq-riscv-imsic.o
+> > > >  obj-$(CONFIG_SIFIVE_PLIC)              +=3D irq-sifive-plic.o
+> > > >  obj-$(CONFIG_IMX_IRQSTEER)             +=3D irq-imx-irqsteer.o
+> > > > diff --git a/drivers/irqchip/irq-riscv-aplic.c b/drivers/irqchip/ir=
+q-riscv-aplic.c
+> > > > new file mode 100644
+> > > > index 000000000000..1e710fdf5608
+> > > > --- /dev/null
+> > > > +++ b/drivers/irqchip/irq-riscv-aplic.c
+> > > > @@ -0,0 +1,765 @@
+> > > > +// SPDX-License-Identifier: GPL-2.0
+> > > > +/*
+> > > > + * Copyright (C) 2021 Western Digital Corporation or its affiliate=
+s.
+> > > > + * Copyright (C) 2022 Ventana Micro Systems Inc.
+> > > > + */
+> > > > +
+> > > > +#define pr_fmt(fmt) "riscv-aplic: " fmt
+> > > > +#include <linux/bitops.h>
+> > > > +#include <linux/cpu.h>
+> > > > +#include <linux/interrupt.h>
+> > > > +#include <linux/io.h>
+> > > > +#include <linux/irq.h>
+> > > > +#include <linux/irqchip.h>
+> > > > +#include <linux/irqchip/chained_irq.h>
+> > > > +#include <linux/irqchip/riscv-aplic.h>
+> > > > +#include <linux/irqchip/riscv-imsic.h>
+> > > > +#include <linux/irqdomain.h>
+> > > > +#include <linux/module.h>
+> > > > +#include <linux/msi.h>
+> > > > +#include <linux/platform_device.h>
+> > > > +#include <linux/smp.h>
+> > > > +
+> > > > +#define APLIC_DEFAULT_PRIORITY         1
+> > > > +#define APLIC_DISABLE_IDELIVERY                0
+> > > > +#define APLIC_ENABLE_IDELIVERY         1
+> > > > +#define APLIC_DISABLE_ITHRESHOLD       1
+> > > > +#define APLIC_ENABLE_ITHRESHOLD                0
+> > > > +
+> > > > +struct aplic_msicfg {
+> > > > +       phys_addr_t             base_ppn;
+> > > > +       u32                     hhxs;
+> > > > +       u32                     hhxw;
+> > > > +       u32                     lhxs;
+> > > > +       u32                     lhxw;
+> > > > +};
+> > > > +
+> > > > +struct aplic_idc {
+> > > > +       unsigned int            hart_index;
+> > > > +       void __iomem            *regs;
+> > > > +       struct aplic_priv       *priv;
+> > > > +};
+> > > > +
+> > > > +struct aplic_priv {
+> > > > +       struct fwnode_handle    *fwnode;
+> > > > +       u32                     gsi_base;
+> > > > +       u32                     nr_irqs;
+> > > > +       u32                     nr_idcs;
+> > > > +       void __iomem            *regs;
+> > > > +       struct irq_domain       *irqdomain;
+> > > > +       struct aplic_msicfg     msicfg;
+> > > > +       struct cpumask          lmask;
+> > > > +};
+> > > > +
+> > > > +static unsigned int aplic_idc_parent_irq;
+> > > > +static DEFINE_PER_CPU(struct aplic_idc, aplic_idcs);
+> > > > +
+> > > > +static void aplic_irq_unmask(struct irq_data *d)
+> > > > +{
+> > > > +       struct aplic_priv *priv =3D irq_data_get_irq_chip_data(d);
+> > > > +
+> > > > +       writel(d->hwirq, priv->regs + APLIC_SETIENUM);
+> > > > +
+> > > > +       if (!priv->nr_idcs)
+> > > > +               irq_chip_unmask_parent(d);
+> > > > +}
+> > > > +
+> > > > +static void aplic_irq_mask(struct irq_data *d)
+> > > > +{
+> > > > +       struct aplic_priv *priv =3D irq_data_get_irq_chip_data(d);
+> > > > +
+> > > > +       writel(d->hwirq, priv->regs + APLIC_CLRIENUM);
+> > > > +
+> > > > +       if (!priv->nr_idcs)
+> > > > +               irq_chip_mask_parent(d);
+> > > > +}
+> > > > +
+> > > > +static int aplic_set_type(struct irq_data *d, unsigned int type)
+> > > > +{
+> > > > +       u32 val =3D 0;
+> > > > +       void __iomem *sourcecfg;
+> > > > +       struct aplic_priv *priv =3D irq_data_get_irq_chip_data(d);
+> > > > +
+> > > > +       switch (type) {
+> > > > +       case IRQ_TYPE_NONE:
+> > > > +               val =3D APLIC_SOURCECFG_SM_INACTIVE;
+> > > > +               break;
+> > > > +       case IRQ_TYPE_LEVEL_LOW:
+> > > > +               val =3D APLIC_SOURCECFG_SM_LEVEL_LOW;
+> > > > +               break;
+> > > > +       case IRQ_TYPE_LEVEL_HIGH:
+> > > > +               val =3D APLIC_SOURCECFG_SM_LEVEL_HIGH;
+> > > > +               break;
+> > > > +       case IRQ_TYPE_EDGE_FALLING:
+> > > > +               val =3D APLIC_SOURCECFG_SM_EDGE_FALL;
+> > > > +               break;
+> > > > +       case IRQ_TYPE_EDGE_RISING:
+> > > > +               val =3D APLIC_SOURCECFG_SM_EDGE_RISE;
+> > > > +               break;
+> > > > +       default:
+> > > > +               return -EINVAL;
+> > > > +       }
+> > > > +
+> > > > +       sourcecfg =3D priv->regs + APLIC_SOURCECFG_BASE;
+> > > > +       sourcecfg +=3D (d->hwirq - 1) * sizeof(u32);
+> > > > +       writel(val, sourcecfg);
+> > > > +
+> > > > +       return 0;
+> > > > +}
+> > > > +
+> > > > +static void aplic_irq_eoi(struct irq_data *d)
+> > > > +{
+> > > > +       struct aplic_priv *priv =3D irq_data_get_irq_chip_data(d);
+> > > > +       u32 reg_off, reg_mask;
+> > > > +
+> > > > +       /*
+> > > > +        * EOI handling only required only for level-triggered
+> > > > +        * interrupts in APLIC MSI mode.
+> > > > +        */
+> > > > +
+> > > > +       if (priv->nr_idcs)
+> > > > +               return;
+> > > > +
+> > > > +       reg_off =3D APLIC_CLRIP_BASE + ((d->hwirq / APLIC_IRQBITS_P=
+ER_REG) * 4);
+> > > > +       reg_mask =3D BIT(d->hwirq % APLIC_IRQBITS_PER_REG);
+> > > > +       switch (irqd_get_trigger_type(d)) {
+> > > > +       case IRQ_TYPE_LEVEL_LOW:
+> > > > +               if (!(readl(priv->regs + reg_off) & reg_mask))
+> > > > +                       writel(d->hwirq, priv->regs + APLIC_SETIPNU=
+M_LE);
+> > > > +               break;
+> > > > +       case IRQ_TYPE_LEVEL_HIGH:
+> > > > +               if (readl(priv->regs + reg_off) & reg_mask)
+> > > > +                       writel(d->hwirq, priv->regs + APLIC_SETIPNU=
+M_LE);
+> > > > +               break;
+> > > > +       }
+> > > > +}
+> > > > +
+> > > > +#ifdef CONFIG_SMP
+> > > > +static int aplic_set_affinity(struct irq_data *d,
+> > > > +                             const struct cpumask *mask_val, bool =
+force)
+> > > > +{
+> > > > +       struct aplic_priv *priv =3D irq_data_get_irq_chip_data(d);
+> > > > +       struct aplic_idc *idc;
+> > > > +       unsigned int cpu, val;
+> > > > +       struct cpumask amask;
+> > > > +       void __iomem *target;
+> > > > +
+> > > > +       if (!priv->nr_idcs)
+> > > > +               return irq_chip_set_affinity_parent(d, mask_val, fo=
+rce);
+> > > > +
+> > > > +       cpumask_and(&amask, &priv->lmask, mask_val);
+> > > > +
+> > > > +       if (force)
+> > > > +               cpu =3D cpumask_first(&amask);
+> > > > +       else
+> > > > +               cpu =3D cpumask_any_and(&amask, cpu_online_mask);
+> > > > +
+> > > > +       if (cpu >=3D nr_cpu_ids)
+> > > > +               return -EINVAL;
+> > > > +
+> > > > +       idc =3D per_cpu_ptr(&aplic_idcs, cpu);
+> > > > +       target =3D priv->regs + APLIC_TARGET_BASE;
+> > > > +       target +=3D (d->hwirq - 1) * sizeof(u32);
+> > > > +       val =3D idc->hart_index & APLIC_TARGET_HART_IDX_MASK;
+> > > > +       val <<=3D APLIC_TARGET_HART_IDX_SHIFT;
+> > > > +       val |=3D APLIC_DEFAULT_PRIORITY;
+> > > > +       writel(val, target);
+> > > > +
+> > > > +       irq_data_update_effective_affinity(d, cpumask_of(cpu));
+> > > > +
+> > > > +       return IRQ_SET_MASK_OK_DONE;
+> > > > +}
+> > > > +#endif
+> > > > +
+> > > > +static struct irq_chip aplic_chip =3D {
+> > > > +       .name           =3D "RISC-V APLIC",
+> > > > +       .irq_mask       =3D aplic_irq_mask,
+> > > > +       .irq_unmask     =3D aplic_irq_unmask,
+> > > > +       .irq_set_type   =3D aplic_set_type,
+> > > > +       .irq_eoi        =3D aplic_irq_eoi,
+> > > > +#ifdef CONFIG_SMP
+> > > > +       .irq_set_affinity =3D aplic_set_affinity,
+> > > > +#endif
+> > > > +       .flags          =3D IRQCHIP_SET_TYPE_MASKED |
+> > > > +                         IRQCHIP_SKIP_SET_WAKE |
+> > > > +                         IRQCHIP_MASK_ON_SUSPEND,
+> > > > +};
+> > > > +
+> > > > +static int aplic_irqdomain_translate(struct irq_fwspec *fwspec,
+> > > > +                                    u32 gsi_base,
+> > > > +                                    unsigned long *hwirq,
+> > > > +                                    unsigned int *type)
+> > > > +{
+> > > > +       if (WARN_ON(fwspec->param_count < 2))
+> > > > +               return -EINVAL;
+> > > > +       if (WARN_ON(!fwspec->param[0]))
+> > > > +               return -EINVAL;
+> > > > +
+> > > > +       /* For DT, gsi_base is always zero. */
+> > > > +       *hwirq =3D fwspec->param[0] - gsi_base;
+> > > > +       *type =3D fwspec->param[1] & IRQ_TYPE_SENSE_MASK;
+> > > > +
+> > > > +       WARN_ON(*type =3D=3D IRQ_TYPE_NONE);
+> > > > +
+> > > > +       return 0;
+> > > > +}
+> > > > +
+> > > > +static int aplic_irqdomain_msi_translate(struct irq_domain *d,
+> > > > +                                        struct irq_fwspec *fwspec,
+> > > > +                                        unsigned long *hwirq,
+> > > > +                                        unsigned int *type)
+> > > > +{
+> > > > +       struct aplic_priv *priv =3D platform_msi_get_host_data(d);
+> > > > +
+> > > > +       return aplic_irqdomain_translate(fwspec, priv->gsi_base, hw=
+irq, type);
+> > > > +}
+> > > > +
+> > > > +static int aplic_irqdomain_msi_alloc(struct irq_domain *domain,
+> > > > +                                    unsigned int virq, unsigned in=
+t nr_irqs,
+> > > > +                                    void *arg)
+> > > > +{
+> > > > +       int i, ret;
+> > > > +       unsigned int type;
+> > > > +       irq_hw_number_t hwirq;
+> > > > +       struct irq_fwspec *fwspec =3D arg;
+> > > > +       struct aplic_priv *priv =3D platform_msi_get_host_data(doma=
+in);
+> > > > +
+> > > > +       ret =3D aplic_irqdomain_translate(fwspec, priv->gsi_base, &=
+hwirq, &type);
+> > > > +       if (ret)
+> > > > +               return ret;
+> > > > +
+> > > > +       ret =3D platform_msi_device_domain_alloc(domain, virq, nr_i=
+rqs);
+> > > > +       if (ret)
+> > > > +               return ret;
+> > > > +
+> > > > +       for (i =3D 0; i < nr_irqs; i++) {
+> > > > +               irq_domain_set_info(domain, virq + i, hwirq + i,
+> > > > +                                   &aplic_chip, priv, handle_faste=
+oi_irq,
+> > > > +                                   NULL, NULL);
+> > > > +               /*
+> > > > +                * APLIC does not implement irq_disable() so Linux =
+interrupt
+> > > > +                * subsystem will take a lazy approach for disablin=
+g an APLIC
+> > > > +                * interrupt. This means APLIC interrupts are left =
+unmasked
+> > > > +                * upon system suspend and interrupts are not proce=
+ssed
+> > > > +                * immediately upon system wake up. To tackle this,=
+ we disable
+> > > > +                * the lazy approach for all APLIC interrupts.
+> > > > +                */
+> > > > +               irq_set_status_flags(virq + i, IRQ_DISABLE_UNLAZY);
+> > > > +       }
+> > > > +
+> > > > +       return 0;
+> > > > +}
+> > > > +
+> > > > +static const struct irq_domain_ops aplic_irqdomain_msi_ops =3D {
+> > > > +       .translate      =3D aplic_irqdomain_msi_translate,
+> > > > +       .alloc          =3D aplic_irqdomain_msi_alloc,
+> > > > +       .free           =3D platform_msi_device_domain_free,
+> > > > +};
+> > > > +
+> > > > +static int aplic_irqdomain_idc_translate(struct irq_domain *d,
+> > > > +                                        struct irq_fwspec *fwspec,
+> > > > +                                        unsigned long *hwirq,
+> > > > +                                        unsigned int *type)
+> > > > +{
+> > > > +       struct aplic_priv *priv =3D d->host_data;
+> > > > +
+> > > > +       return aplic_irqdomain_translate(fwspec, priv->gsi_base, hw=
+irq, type);
+> > > > +}
+> > > > +
+> > > > +static int aplic_irqdomain_idc_alloc(struct irq_domain *domain,
+> > > > +                                    unsigned int virq, unsigned in=
+t nr_irqs,
+> > > > +                                    void *arg)
+> > > > +{
+> > > > +       int i, ret;
+> > > > +       unsigned int type;
+> > > > +       irq_hw_number_t hwirq;
+> > > > +       struct irq_fwspec *fwspec =3D arg;
+> > > > +       struct aplic_priv *priv =3D domain->host_data;
+> > > > +
+> > > > +       ret =3D aplic_irqdomain_translate(fwspec, priv->gsi_base, &=
+hwirq, &type);
+> > > > +       if (ret)
+> > > > +               return ret;
+> > > > +
+> > > > +       for (i =3D 0; i < nr_irqs; i++) {
+> > > > +               irq_domain_set_info(domain, virq + i, hwirq + i,
+> > > > +                                   &aplic_chip, priv, handle_faste=
+oi_irq,
+> > > > +                                   NULL, NULL);
+> > > > +               irq_set_affinity(virq + i, &priv->lmask);
+> > > > +               /* See the reason described in aplic_irqdomain_msi_=
+alloc() */
+> > > > +               irq_set_status_flags(virq + i, IRQ_DISABLE_UNLAZY);
+> > > > +       }
+> > > > +
+> > > > +       return 0;
+> > > > +}
+> > > > +
+> > > > +static const struct irq_domain_ops aplic_irqdomain_idc_ops =3D {
+> > > > +       .translate      =3D aplic_irqdomain_idc_translate,
+> > > > +       .alloc          =3D aplic_irqdomain_idc_alloc,
+> > > > +       .free           =3D irq_domain_free_irqs_top,
+> > > > +};
+> > > > +
+> > > > +static void aplic_init_hw_irqs(struct aplic_priv *priv)
+> > > > +{
+> > > > +       int i;
+> > > > +
+> > > > +       /* Disable all interrupts */
+> > > > +       for (i =3D 0; i <=3D priv->nr_irqs; i +=3D 32)
+> > > > +               writel(-1U, priv->regs + APLIC_CLRIE_BASE +
+> > > > +                           (i / 32) * sizeof(u32));
+> > > > +
+> > > > +       /* Set interrupt type and default priority for all interrup=
+ts */
+> > > > +       for (i =3D 1; i <=3D priv->nr_irqs; i++) {
+> > > > +               writel(0, priv->regs + APLIC_SOURCECFG_BASE +
+> > > > +                         (i - 1) * sizeof(u32));
+> > > > +               writel(APLIC_DEFAULT_PRIORITY,
+> > > > +                      priv->regs + APLIC_TARGET_BASE +
+> > > > +                      (i - 1) * sizeof(u32));
+> > > > +       }
+> > > > +
+> > > > +       /* Clear APLIC domaincfg */
+> > > > +       writel(0, priv->regs + APLIC_DOMAINCFG);
+> > > > +}
+> > > > +
+> > > > +static void aplic_init_hw_global(struct aplic_priv *priv)
+> > > > +{
+> > > > +       u32 val;
+> > > > +#ifdef CONFIG_RISCV_M_MODE
+> > > > +       u32 valH;
+> > > > +
+> > > > +       if (!priv->nr_idcs) {
+> > > > +               val =3D priv->msicfg.base_ppn;
+> > > > +               valH =3D (priv->msicfg.base_ppn >> 32) &
+> > > > +                       APLIC_xMSICFGADDRH_BAPPN_MASK;
+> > > > +               valH |=3D (priv->msicfg.lhxw & APLIC_xMSICFGADDRH_L=
+HXW_MASK)
+> > > > +                       << APLIC_xMSICFGADDRH_LHXW_SHIFT;
+> > > > +               valH |=3D (priv->msicfg.hhxw & APLIC_xMSICFGADDRH_H=
+HXW_MASK)
+> > > > +                       << APLIC_xMSICFGADDRH_HHXW_SHIFT;
+> > > > +               valH |=3D (priv->msicfg.lhxs & APLIC_xMSICFGADDRH_L=
+HXS_MASK)
+> > > > +                       << APLIC_xMSICFGADDRH_LHXS_SHIFT;
+> > > > +               valH |=3D (priv->msicfg.hhxs & APLIC_xMSICFGADDRH_H=
+HXS_MASK)
+> > > > +                       << APLIC_xMSICFGADDRH_HHXS_SHIFT;
+> > > > +               writel(val, priv->regs + APLIC_xMSICFGADDR);
+> > > > +               writel(valH, priv->regs + APLIC_xMSICFGADDRH);
+> > > > +       }
+> > > > +#endif
+> > > > +
+> > > > +       /* Setup APLIC domaincfg register */
+> > > > +       val =3D readl(priv->regs + APLIC_DOMAINCFG);
+> > > > +       val |=3D APLIC_DOMAINCFG_IE;
+> > > > +       if (!priv->nr_idcs)
+> > > > +               val |=3D APLIC_DOMAINCFG_DM;
+> > > > +       writel(val, priv->regs + APLIC_DOMAINCFG);
+> > > > +       if (readl(priv->regs + APLIC_DOMAINCFG) !=3D val)
+> > > > +               pr_warn("%pfwP: unable to write 0x%x in domaincfg\n=
+",
+> > > > +                       priv->fwnode, val);
+> > > > +}
+> > > > +
+> > > > +static void aplic_msi_write_msg(struct msi_desc *desc, struct msi_=
+msg *msg)
+> > > > +{
+> > > > +       unsigned int group_index, hart_index, guest_index, val;
+> > > > +       struct irq_data *d =3D irq_get_irq_data(desc->irq);
+> > > > +       struct aplic_priv *priv =3D irq_data_get_irq_chip_data(d);
+> > > > +       struct aplic_msicfg *mc =3D &priv->msicfg;
+> > > > +       phys_addr_t tppn, tbppn, msg_addr;
+> > > > +       void __iomem *target;
+> > > > +
+> > > > +       /* For zeroed MSI, simply write zero into the target regist=
+er */
+> > > > +       if (!msg->address_hi && !msg->address_lo && !msg->data) {
+> > > > +               target =3D priv->regs + APLIC_TARGET_BASE;
+> > > > +               target +=3D (d->hwirq - 1) * sizeof(u32);
+> > > > +               writel(0, target);
+> > > > +               return;
+> > > > +       }
+> > > > +
+> > > > +       /* Sanity check on message data */
+> > > > +       WARN_ON(msg->data > APLIC_TARGET_EIID_MASK);
+> > > > +
+> > > > +       /* Compute target MSI address */
+> > > > +       msg_addr =3D (((u64)msg->address_hi) << 32) | msg->address_=
+lo;
+> > > > +       tppn =3D msg_addr >> APLIC_xMSICFGADDR_PPN_SHIFT;
+> > > > +
+> > > > +       /* Compute target HART Base PPN */
+> > > > +       tbppn =3D tppn;
+> > > > +       tbppn &=3D ~APLIC_xMSICFGADDR_PPN_HART(mc->lhxs);
+> > > > +       tbppn &=3D ~APLIC_xMSICFGADDR_PPN_LHX(mc->lhxw, mc->lhxs);
+> > > > +       tbppn &=3D ~APLIC_xMSICFGADDR_PPN_HHX(mc->hhxw, mc->hhxs);
+> > > > +       WARN_ON(tbppn !=3D mc->base_ppn);
+> > > > +
+> > > > +       /* Compute target group and hart indexes */
+> > > > +       group_index =3D (tppn >> APLIC_xMSICFGADDR_PPN_HHX_SHIFT(mc=
+->hhxs)) &
+> > > > +                    APLIC_xMSICFGADDR_PPN_HHX_MASK(mc->hhxw);
+> > > > +       hart_index =3D (tppn >> APLIC_xMSICFGADDR_PPN_LHX_SHIFT(mc-=
+>lhxs)) &
+> > > > +                    APLIC_xMSICFGADDR_PPN_LHX_MASK(mc->lhxw);
+> > > > +       hart_index |=3D (group_index << mc->lhxw);
+> > > > +       WARN_ON(hart_index > APLIC_TARGET_HART_IDX_MASK);
+> > > > +
+> > > > +       /* Compute target guest index */
+> > > > +       guest_index =3D tppn & APLIC_xMSICFGADDR_PPN_HART(mc->lhxs)=
+;
+> > > > +       WARN_ON(guest_index > APLIC_TARGET_GUEST_IDX_MASK);
+> > > > +
+> > > > +       /* Update IRQ TARGET register */
+> > > > +       target =3D priv->regs + APLIC_TARGET_BASE;
+> > > > +       target +=3D (d->hwirq - 1) * sizeof(u32);
+> > > > +       val =3D (hart_index & APLIC_TARGET_HART_IDX_MASK)
+> > > > +                               << APLIC_TARGET_HART_IDX_SHIFT;
+> > > > +       val |=3D (guest_index & APLIC_TARGET_GUEST_IDX_MASK)
+> > > > +                               << APLIC_TARGET_GUEST_IDX_SHIFT;
+> > > > +       val |=3D (msg->data & APLIC_TARGET_EIID_MASK);
+> > > > +       writel(val, target);
+> > > > +}
+> > > > +
+> > > > +static int aplic_setup_msi(struct aplic_priv *priv)
+> > > > +{
+> > > > +       struct aplic_msicfg *mc =3D &priv->msicfg;
+> > > > +       const struct imsic_global_config *imsic_global;
+> > > > +
+> > > > +       /*
+> > > > +        * The APLIC outgoing MSI config registers assume target MS=
+I
+> > > > +        * controller to be RISC-V AIA IMSIC controller.
+> > > > +        */
+> > > > +       imsic_global =3D imsic_get_global_config();
+> > > > +       if (!imsic_global) {
+> > > > +               pr_err("%pfwP: IMSIC global config not found\n",
+> > > > +                       priv->fwnode);
+> > > > +               return -ENODEV;
+> > > > +       }
+> > > > +
+> > > > +       /* Find number of guest index bits (LHXS) */
+> > > > +       mc->lhxs =3D imsic_global->guest_index_bits;
+> > > > +       if (APLIC_xMSICFGADDRH_LHXS_MASK < mc->lhxs) {
+> > > > +               pr_err("%pfwP: IMSIC guest index bits big for APLIC=
+ LHXS\n",
+> > > > +                       priv->fwnode);
+> > > > +               return -EINVAL;
+> > > > +       }
+> > > > +
+> > > > +       /* Find number of HART index bits (LHXW) */
+> > > > +       mc->lhxw =3D imsic_global->hart_index_bits;
+> > > > +       if (APLIC_xMSICFGADDRH_LHXW_MASK < mc->lhxw) {
+> > > > +               pr_err("%pfwP: IMSIC hart index bits big for APLIC =
+LHXW\n",
+> > > > +                       priv->fwnode);
+> > > > +               return -EINVAL;
+> > > > +       }
+> > > > +
+> > > > +       /* Find number of group index bits (HHXW) */
+> > > > +       mc->hhxw =3D imsic_global->group_index_bits;
+> > > > +       if (APLIC_xMSICFGADDRH_HHXW_MASK < mc->hhxw) {
+> > > > +               pr_err("%pfwP: IMSIC group index bits big for APLIC=
+ HHXW\n",
+> > > > +                       priv->fwnode);
+> > > > +               return -EINVAL;
+> > > > +       }
+> > > > +
+> > > > +       /* Find first bit position of group index (HHXS) */
+> > > > +       mc->hhxs =3D imsic_global->group_index_shift;
+> > > > +       if (mc->hhxs < (2 * APLIC_xMSICFGADDR_PPN_SHIFT)) {
+> > > > +               pr_err("%pfwP: IMSIC group index shift should be >=
+=3D %d\n",
+> > > > +                       priv->fwnode, (2 * APLIC_xMSICFGADDR_PPN_SH=
+IFT));
+> > > > +               return -EINVAL;
+> > > > +       }
+> > > > +       mc->hhxs -=3D (2 * APLIC_xMSICFGADDR_PPN_SHIFT);
+> > > > +       if (APLIC_xMSICFGADDRH_HHXS_MASK < mc->hhxs) {
+> > > > +               pr_err("%pfwP: IMSIC group index shift big for APLI=
+C HHXS\n",
+> > > > +                       priv->fwnode);
+> > > > +               return -EINVAL;
+> > > > +       }
+> > > > +
+> > > > +       /* Compute PPN base */
+> > > > +       mc->base_ppn =3D imsic_global->base_addr >> APLIC_xMSICFGAD=
+DR_PPN_SHIFT;
+> > > > +       mc->base_ppn &=3D ~APLIC_xMSICFGADDR_PPN_HART(mc->lhxs);
+> > > > +       mc->base_ppn &=3D ~APLIC_xMSICFGADDR_PPN_LHX(mc->lhxw, mc->=
+lhxs);
+> > > > +       mc->base_ppn &=3D ~APLIC_xMSICFGADDR_PPN_HHX(mc->hhxw, mc->=
+hhxs);
+> > > > +
+> > > > +       /* Use all possible CPUs as lmask */
+> > > > +       cpumask_copy(&priv->lmask, cpu_possible_mask);
+> > > > +
+> > > > +       return 0;
+> > > > +}
+> > > > +
+> > > > +/*
+> > > > + * To handle an APLIC IDC interrupts, we just read the CLAIMI regi=
+ster
+> > > > + * which will return highest priority pending interrupt and clear =
+the
+> > > > + * pending bit of the interrupt. This process is repeated until CL=
+AIMI
+> > > > + * register return zero value.
+> > > > + */
+> > > > +static void aplic_idc_handle_irq(struct irq_desc *desc)
+> > > > +{
+> > > > +       struct aplic_idc *idc =3D this_cpu_ptr(&aplic_idcs);
+> > > > +       struct irq_chip *chip =3D irq_desc_get_chip(desc);
+> > > > +       irq_hw_number_t hw_irq;
+> > > > +       int irq;
+> > > > +
+> > > > +       chained_irq_enter(chip, desc);
+> > > > +
+> > > > +       while ((hw_irq =3D readl(idc->regs + APLIC_IDC_CLAIMI))) {
+> > > > +               hw_irq =3D hw_irq >> APLIC_IDC_TOPI_ID_SHIFT;
+> > > > +               irq =3D irq_find_mapping(idc->priv->irqdomain, hw_i=
+rq);
+> > > > +
+> > > > +               if (unlikely(irq <=3D 0))
+> > > > +                       pr_warn_ratelimited("hw_irq %lu mapping not=
+ found\n",
+> > > > +                                           hw_irq);
+> > > > +               else
+> > > > +                       generic_handle_irq(irq);
+> > > > +       }
+> > > > +
+> > > > +       chained_irq_exit(chip, desc);
+> > > > +}
+> > > > +
+> > > > +static void aplic_idc_set_delivery(struct aplic_idc *idc, bool en)
+> > > > +{
+> > > > +       u32 de =3D (en) ? APLIC_ENABLE_IDELIVERY : APLIC_DISABLE_ID=
+ELIVERY;
+> > > > +       u32 th =3D (en) ? APLIC_ENABLE_ITHRESHOLD : APLIC_DISABLE_I=
+THRESHOLD;
+> > > > +
+> > > > +       /* Priority must be less than threshold for interrupt trigg=
+ering */
+> > > > +       writel(th, idc->regs + APLIC_IDC_ITHRESHOLD);
+> > > > +
+> > > > +       /* Delivery must be set to 1 for interrupt triggering */
+> > > > +       writel(de, idc->regs + APLIC_IDC_IDELIVERY);
+> > > > +}
+> > > > +
+> > > > +static int aplic_idc_dying_cpu(unsigned int cpu)
+> > > > +{
+> > > > +       if (aplic_idc_parent_irq)
+> > > > +               disable_percpu_irq(aplic_idc_parent_irq);
+> > > > +
+> > > > +       return 0;
+> > > > +}
+> > > > +
+> > > > +static int aplic_idc_starting_cpu(unsigned int cpu)
+> > > > +{
+> > > > +       if (aplic_idc_parent_irq)
+> > > > +               enable_percpu_irq(aplic_idc_parent_irq,
+> > > > +                                 irq_get_trigger_type(aplic_idc_pa=
+rent_irq));
+> > > > +
+> > > > +       return 0;
+> > > > +}
+> > > > +
+> > > > +static int aplic_setup_idc(struct aplic_priv *priv)
+> > > > +{
+> > > > +       int i, j, rc, cpu, setup_count =3D 0;
+> > > > +       struct fwnode_reference_args parent;
+> > > > +       struct irq_domain *domain;
+> > > > +       unsigned long hartid;
+> > > > +       struct aplic_idc *idc;
+> > > > +       u32 val;
+> > > > +
+> > > > +       /* Setup per-CPU IDC and target CPU mask */
+> > > > +       for (i =3D 0; i < priv->nr_idcs; i++) {
+> > > > +               rc =3D fwnode_property_get_reference_args(priv->fwn=
+ode,
+> > > > +                               "interrupts-extended", "#interrupt-=
+cells",
+> > > > +                               0, i, &parent);
+> > > > +               if (rc) {
+> > > > +                       pr_warn("%pfwP: parent irq for IDC%d not fo=
+und\n",
+> > > > +                               priv->fwnode, i);
+> > > > +                       continue;
+> > > > +               }
+> > > > +
+> > > > +               /*
+> > > > +                * Skip interrupts other than external interrupts f=
+or
+> > > > +                * current privilege level.
+> > > > +                */
+> > > > +               if (parent.args[0] !=3D RV_IRQ_EXT)
+> > > > +                       continue;
+> > > > +
+> > > > +               rc =3D riscv_fw_parent_hartid(parent.fwnode, &harti=
+d);
+> > > > +               if (rc) {
+> > > > +                       pr_warn("%pfwP: invalid hartid for IDC%d\n"=
+,
+> > > > +                               priv->fwnode, i);
+> > > > +                       continue;
+> > > > +               }
+> > > > +
+> > > > +               cpu =3D riscv_hartid_to_cpuid(hartid);
+> > > > +               if (cpu < 0) {
+> > > > +                       pr_warn("%pfwP: invalid cpuid for IDC%d\n",
+> > > > +                               priv->fwnode, i);
+> > > > +                       continue;
+> > > > +               }
+> > > > +
+> > > > +               cpumask_set_cpu(cpu, &priv->lmask);
+> > > > +
+> > > > +               idc =3D per_cpu_ptr(&aplic_idcs, cpu);
+> > > > +               idc->hart_index =3D i;
+> > > > +               idc->regs =3D priv->regs + APLIC_IDC_BASE + i * APL=
+IC_IDC_SIZE;
+> > > > +               idc->priv =3D priv;
+> > > > +
+> > > > +               aplic_idc_set_delivery(idc, true);
+> > > > +
+> > > > +               /*
+> > > > +                * Boot cpu might not have APLIC hart_index =3D 0 s=
+o check
+> > > > +                * and update target registers of all interrupts.
+> > > > +                */
+> > > > +               if (cpu =3D=3D smp_processor_id() && idc->hart_inde=
+x) {
+> > > > +                       val =3D idc->hart_index & APLIC_TARGET_HART=
+_IDX_MASK;
+> > > > +                       val <<=3D APLIC_TARGET_HART_IDX_SHIFT;
+> > > > +                       val |=3D APLIC_DEFAULT_PRIORITY;
+> > > > +                       for (j =3D 1; j <=3D priv->nr_irqs; j++)
+> > > > +                               writel(val, priv->regs + APLIC_TARG=
+ET_BASE +
+> > > > +                                           (j - 1) * sizeof(u32));
+> > > > +               }
+> > > > +
+> > > > +               setup_count++;
+> > > > +       }
+> > > > +
+> > > > +       /* Find parent domain and register chained handler */
+> > > > +       domain =3D irq_find_matching_fwnode(riscv_get_intc_hwnode()=
+,
+> > > > +                                         DOMAIN_BUS_ANY);
+> > > > +       if (!aplic_idc_parent_irq && domain) {
+> > > > +               aplic_idc_parent_irq =3D irq_create_mapping(domain,=
+ RV_IRQ_EXT);
+> > > > +               if (aplic_idc_parent_irq) {
+> > > > +                       irq_set_chained_handler(aplic_idc_parent_ir=
+q,
+> > > > +                                               aplic_idc_handle_ir=
+q);
+> > > > +
+> > > > +                       /*
+> > > > +                        * Setup CPUHP notifier to enable IDC paren=
+t
+> > > > +                        * interrupt on all CPUs
+> > > > +                        */
+> > > > +                       cpuhp_setup_state(CPUHP_AP_ONLINE_DYN,
+> > > > +                                         "irqchip/riscv/aplic:star=
+ting",
+> > > > +                                         aplic_idc_starting_cpu,
+> > > > +                                         aplic_idc_dying_cpu);
+> > > > +               }
+> > > > +       }
+> > > > +
+> > > > +       /* Fail if we were not able to setup IDC for any CPU */
+> > > > +       return (setup_count) ? 0 : -ENODEV;
+> > > > +}
+> > > > +
+> > > > +static int aplic_probe(struct platform_device *pdev)
+> > > > +{
+> > > > +       struct fwnode_handle *fwnode =3D pdev->dev.fwnode;
+> > > > +       struct fwnode_reference_args parent;
+> > > > +       struct aplic_priv *priv;
+> > > > +       struct resource *res;
+> > > > +       phys_addr_t pa;
+> > > > +       int rc;
+> > > > +
+> > > > +       priv =3D devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL=
+);
+> > > > +       if (!priv)
+> > > > +               return -ENOMEM;
+> > > > +       priv->fwnode =3D fwnode;
+> > > > +
+> > > > +       /* Map the MMIO registers */
+> > > > +       res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> > > > +       if (!res) {
+> > > > +               pr_err("%pfwP: failed to get MMIO resource\n", fwno=
+de);
+> > > > +               return -EINVAL;
+> > > > +       }
+> > > > +       priv->regs =3D devm_ioremap(&pdev->dev, res->start, resourc=
+e_size(res));
+> > > > +       if (!priv->regs) {
+> > > > +               pr_err("%pfwP: failed map MMIO registers\n", fwnode=
+);
+> > > > +               return -ENOMEM;
+> > > > +       }
+> > > > +
+> > > > +       /*
+> > > > +        * Find out GSI base number
+> > > > +        *
+> > > > +        * Note: DT does not define "riscv,gsi-base" property so GS=
+I
+> > > > +        * base is always zero for DT.
+> > > > +        */
+> > > > +       rc =3D fwnode_property_read_u32_array(fwnode, "riscv,gsi-ba=
+se",
+> > > > +                                           &priv->gsi_base, 1);
+> > > > +       if (rc)
+> > > > +               priv->gsi_base =3D 0;
+> > > > +
+> > > > +       /* Find out number of interrupt sources */
+> > > > +       rc =3D fwnode_property_read_u32_array(fwnode, "riscv,num-so=
+urces",
+> > > > +                                           &priv->nr_irqs, 1);
+> > > > +       if (rc) {
+> > > > +               pr_err("%pfwP: failed to get number of interrupt so=
+urces\n",
+> > > > +                       fwnode);
+> > > > +               return rc;
+> > > > +       }
+> > > > +
+> > > > +       /* Setup initial state APLIC interrupts */
+> > > > +       aplic_init_hw_irqs(priv);
+> > > > +
+> > > > +       /*
+> > > > +        * Find out number of IDCs based on parent interrupts
+> > > > +        *
+> > > > +        * If "msi-parent" property is present then we ignore the
+> > > > +        * APLIC IDCs which forces the APLIC driver to use MSI mode=
+.
+> > > > +        */
+> > > > +       if (!fwnode_property_present(fwnode, "msi-parent")) {
+> > > > +               while (!fwnode_property_get_reference_args(fwnode,
+> > > > +                               "interrupts-extended", "#interrupt-=
+cells",
+> > > > +                               0, priv->nr_idcs, &parent))
+> > > > +                       priv->nr_idcs++;
+> > > > +       }
+> > > > +
+> > > > +       /* Setup IDCs or MSIs based on number of IDCs */
+> > > > +       if (priv->nr_idcs)
+> > > > +               rc =3D aplic_setup_idc(priv);
+> > > > +       else
+> > > > +               rc =3D aplic_setup_msi(priv);
+> > > > +       if (rc) {
+> > > > +               pr_err("%pfwP: failed setup %s\n",
+> > > > +                       fwnode, priv->nr_idcs ? "IDCs" : "MSIs");
+> > > > +               return rc;
+> > > > +       }
+> > > > +
+> > > > +       /* Setup global config and interrupt delivery */
+> > > > +       aplic_init_hw_global(priv);
+> > > > +
+> > > > +       /* Create irq domain instance for the APLIC */
+> > > > +       if (priv->nr_idcs)
+> > > > +               priv->irqdomain =3D irq_domain_create_linear(
+> > > > +                                               priv->fwnode,
+> > > > +                                               priv->nr_irqs + 1,
+> > > > +                                               &aplic_irqdomain_id=
+c_ops,
+> > > > +                                               priv);
+> > > > +       else
+> > > > +               priv->irqdomain =3D platform_msi_create_device_doma=
+in(
+> > > > +                                               &pdev->dev,
+> > > > +                                               priv->nr_irqs + 1,
+> > > > +                                               aplic_msi_write_msg=
+,
+> > > > +                                               &aplic_irqdomain_ms=
+i_ops,
+> > > > +                                               priv);
+> > > > +       if (!priv->irqdomain) {
+> > > > +               pr_err("%pfwP: failed to add irq domain\n", priv->f=
+wnode);
+> > > > +               return -ENOMEM;
+> > > > +       }
+> > > > +
+> > > > +       /* Advertise the interrupt controller */
+> > > > +       if (priv->nr_idcs) {
+> > > > +               pr_info("%pfwP: %d interrupts directly connected to=
+ %d CPUs\n",
+> > > > +                       priv->fwnode, priv->nr_irqs, priv->nr_idcs)=
+;
+> > > > +       } else {
+> > > > +               pa =3D priv->msicfg.base_ppn << APLIC_xMSICFGADDR_P=
+PN_SHIFT;
+> > > > +               pr_info("%pfwP: %d interrupts forwared to MSI base =
+%pa\n",
+> > > > +                       priv->fwnode, priv->nr_irqs, &pa);
+> > > > +       }
+> > > > +
+> > > > +       return 0;
+> > > > +}
+> > > > +
+> > > > +static const struct of_device_id aplic_match[] =3D {
+> > > > +       { .compatible =3D "riscv,aplic" },
+> > > > +       {}
+> > > > +};
+> > > > +
+> > > > +static struct platform_driver aplic_driver =3D {
+> > > > +       .driver =3D {
+> > > > +               .name           =3D "riscv-aplic",
+> > > > +               .of_match_table =3D aplic_match,
+> > > > +       },
+> > > > +       .probe =3D aplic_probe,
+> > > > +};
+> > > > +builtin_platform_driver(aplic_driver);
+> > > > +
+> > > > +static int __init aplic_dt_init(struct device_node *node,
+> > > > +                               struct device_node *parent)
+> > > > +{
+> > > > +       /*
+> > > > +        * The APLIC platform driver needs to be probed early
+> > > > +        * so for device tree:
+> > > > +        *
+> > > > +        * 1) Set the FWNODE_FLAG_BEST_EFFORT flag in fwnode which
+> > > > +        *    provides a hint to the device driver core to probe th=
+e
+> > > > +        *    platform driver early.
+> > > > +        * 2) Clear the OF_POPULATED flag in device_node because
+> > > > +        *    of_irq_init() sets it which prevents creation of
+> > > > +        *    platform device.
+> > > > +        */
+> > > > +       node->fwnode.flags |=3D FWNODE_FLAG_BEST_EFFORT;
+> > >
+> > > NACK. You are blindly plastering flags without trying to understand
+> > > the real issue and fixing this correctly.
+> > >
+> > > > +       of_node_clear_flag(node, OF_POPULATED);
+> > > > +       return 0;
+> > > > +}
+> > > > +IRQCHIP_DECLARE(riscv_aplic, "riscv,aplic", aplic_dt_init);
+> > >
+> > > This macro pretty much skips the entire driver core framework to prob=
+e
+> > > and calls init and you are supposed to initialize the device when the
+> > > init function is called.
+> > >
+> > > If you want your device/driver to follow the proper platform driver
+> > > path (which is recommended), then you need to use the
+> > > IRQCHIP_PLATFORM_DRIVER_BEGIN() and related macros. Grep for plenty o=
+f examples.
+> > >
+> > > I offered to help you debug this issue and I asked for a dts file tha=
+t
+> > > corresponds to a board you are testing this on and seeing an issue.
+> > > But you haven't answered my question [1] and are pointing to some
+> > > random commit and blaming it. That commit has no impact on any
+> > > existing devices/drivers.
+> > >
+> > > Hi Marc,
+> > >
+> > > Please consider this patch Nacked as long as FWNODE_FLAG_BEST_EFFORT
+> > > is used or until Anup actually works with us to debug the real issue.
+> >
+> > Maybe I misread your previous comment.
+> >
+> > You can easily reproduce the issue on QEMU virt machine for RISC-V:
+> > 1) Build qemu-system-riscv64 from latest QEMU master
+> > 2) Build kernel from riscv_aia_v4 branch at https://github.com/avpatel/=
+linux.git
+> > (Note: make sure you remove the FWNODE_FLAG_BEST_EFFORT flag from
+> >  APLIC driver at the time of building kernel)
+> > 3) Boot a APLIC-only system on QEMU virt machine
+> >     qemu-system-riscv64 -smp 4 -M virt,aia=3Daplic -m 1G -nographic \
+> >     -bios opensbi/build/platform/generic/firmware/fw_dynamic.bin \
+> >     -kernel ./build-riscv64/arch/riscv/boot/Image \
+> >     -append "root=3D/dev/ram rw console=3DttyS0 earlycon" \
+> >     -initrd ./rootfs_riscv64.img
+>
+> Unfortunately, I don't have the time to do all that, but I generally
+> don't need to run something to figure out the issue. It's generally
+> fairly obvious once I look at the DT. I'll also lean on you for some
+> debug logs.
 
-Hi Jean,
+The boot log with FWNODE_BEST_EFFORT flag in APLIC can be
+found at:
+https://drive.google.com/file/d/1C-uuHbh6Zk9xkAsfGLfhb_4WighvmQp1/view?usp=
+=3Dsharing
 
-Thank you for the informational reply.
+The boot log without FWNODE_BEST_EFFORT flag in APLIC can
+be found at:
+https://drive.google.com/file/d/12SRdR-2Frv_5O06kbuI_LUJ88khjf_7O/view?usp=
+=3Dsharing
 
-> 
-> On Tue, May 30, 2023 at 01:37:07PM +0800, Lu Baolu wrote:
->> - The timeout value for the pending page fault messages. Ideally we
->>    should determine the timeout value from the device configuration, but
->>    I failed to find any statement in the PCI specification (version 6.x).
->>    A default 100 milliseconds is selected in the implementation, but it
->>    leave the room for grow the code for per-device setting.
-> 
-> If it helps we had some discussions about this timeout [1]. It's useful to
-> print out a warning for debugging, but I don't think completing the fault
-> on timeout is correct, we should leave the fault pending. Given that the
-> PCI spec does not indicate a timeout, the guest can wait as long as it
-> wants to complete the fault (and 100ms may even be reasonable on an
-> emulator, who knows how many layers and context switches the fault has to
-> go through).
+>
+> Where is the dts file that corresponds to this QEMU run? This is the
+> third time I'm asking for a pointer to a dts file that has this issue,
+> can you point me to it please? I shouldn't have to say this but: put
+> it somewhere and point me to it please. Please don't point me to some
+> git repo and ask me to dig around.
 
-When I was designing this, I was also hesitant about whether to use a
-timer. Even worse, I didn't see any description of timeout in the PCI
-spec.
+For QEMU virt machine, the DTB is generated at runtime as part of
+virt machine creation. The DTS dumped by QEMU using the "dumpdtb"
+command line option can be found at:
+https://drive.google.com/file/d/1EU-exItL1B7EWuoXw4q-Ypocq--5Wvn8/view?usp=
+=3Dsharing
 
-I agree with you that a better approach might be to ensure that devices
-respect the number of in-flight PPRs that are allocated to them. We need
-to design a queue that is large enough to prevent device from flooding
-it with page requests.
+>
+> Can you give me details on what supplier is causing the deferred probe
+> that's a problem for you? Any other details you can provide that'll
+> help debug this issue?
 
-> 
-> Another outstanding issue was what to do for PASID stop. When the guest
-> device driver stops using a PASID it issues a PASID stop request to the
-> device (a device-specific mechanism). If the device is not using PRI stop
-> markers it waits for pending PRs to complete and we're fine. Otherwise it
-> sends a stop marker which is flushed to the PRI queue, but does not wait
-> for pending PRs.
-> 
-> Handling stop markers is annoying. If the device issues one, then the PRI
-> queue contains stale faults, a stop marker, followed by valid faults for
-> the next address space bound to this PASID. The next address space will
-> get all the spurious faults because the fault handler doesn't know that
-> there is a stop marker coming. Linux is probably alright with spurious
-> faults, though maybe not in all cases, and other guests may not support
-> them at all.
-> 
-> We might need to revisit supporting stop markers: request that each device
-> driver declares whether their device uses stop markers on unbind() ("This
-> mechanism must indicate that a Stop Marker Message will be generated."
-> says the spec, but doesn't say if the function always uses one or the
-> other mechanism so it's per-unbind). Then we still have to synchronize
-> unbind() with the fault handler to deal with the pending stop marker,
-> which might have already gone through or be generated later.
+FWNODE supplier for APLIC DT node is the OF framework.
 
-I don't quite follow here. Once a PASID is unbound from the device, the
-device driver should be free to release the PASID. The PASID could then
-be used for any other purpose. The device driver has no idea when the
-pending page requests are flushed after unbind(), so it cannot decide
-how long should the PASID be delayed for reuse. Therefore, I understand
-that a successful return from the unbind() function denotes that all
-pending page requests have been flushed and the PASID is viable for
-other use.
+>
+> > I hope the above steps help you reproduce the issue. I will certainly
+> > test whatever fix you propose.
+>
+> Do you plan to try the fix I suggested already? The one about using
+> the correct macros?
 
-> 
-> Currently we ignore all that and just flush the PRI queue, followed by the
-> IOPF queue, to get rid of any stale fault before reassigning the PASID. A
-> guest however would also need to first flush the HW PRI queue, but doesn't
-> have a direct way to do that. If we want to support guests that don't deal
-> with stop markers, the host needs to flush the PRI queue when a PASID is
-> detached. I guess on Intel detaching the PASID goes through the host which
-> can flush the host queue. On Arm we'll probably need to flush the queue
-> when receiving a PASID cache invalidation, which the guest issues after
-> clearing a PASID table entry.
+You mean use IRQCHIP_DECLARE() in the APLIC driver ?
+or something else ?
 
-The Intel VT-d driver follows below steps to drain pending page requests
-when a PASID is unbound from a device.
-
-- Tear down the device's pasid table entry for the stopped pasid.
-   This ensures that ATS/PRI will stop putting more page requests for the
-   pasid in VT-d PRQ.
-- Sync with the PRQ handling thread until all related page requests in
-   PRQ have been delivered.
-- Flush the iopf queue with iopf_queue_flush_dev().
-- Follow the steps defined in VT-d spec section 7.10 to drain all page
-   requests and responses between VT-d and the endpoint device.
-
-> 
-> Thanks,
-> Jean
-> 
-> [1] https://lore.kernel.org/linux-iommu/20180423153622.GC38106@ostrya.localdomain/
->      Also unregistration, not sure if relevant here
->      https://lore.kernel.org/linux-iommu/20190605154553.0d00ad8d@jacob-builder/
-> 
-
-Best regards,
-baolu
+Regards,
+Anup
