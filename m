@@ -1,116 +1,111 @@
-Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80FE814A8B
-	for <iommu@lists.linux.dev>; Mon, 19 Jun 2023 21:50:16 +0000 (UTC)
-Received: from g550jk.localnet (unknown [62.108.10.64])
-	by mail.z3ntu.xyz (Postfix) with ESMTPSA id 0D633C6A1D;
-	Mon, 19 Jun 2023 21:42:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=z3ntu.xyz; s=z3ntu;
-	t=1687210970; bh=3hu0soY9YtA7km69BMGRI2IE7KVXxSt8iu2LEiYvoTA=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=Gj7U3cG7k9Fcgl3XhebpEAHFAeaw+vYZ66Dee3gcqkpFUXkk/g74PzshA4fdQRSMU
-	 Jk1ttgNaUr373W5d97uOZR/xijnmYXFXOFTu/ICjg3D2yKZv16tYsU/abh+cYDZEoD
-	 g0dv8uA7CrBf5x/l07LEpyxgEm6mKc446uPHUMMU=
-From: Luca Weiss <luca@z3ntu.xyz>
-To: agross@kernel.org,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Cc: andersson@kernel.org, konrad.dybcio@linaro.org, joro@8bytes.org,
- will@kernel.org, robin.murphy@arm.com, robh+dt@kernel.org,
- krzysztof.kozlowski+dt@linaro.org, robdclark@gmail.com,
- linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, marijn.suijten@somainline.org,
- kernel@collabora.com, a39.skl@gmail.com, phone-devel@vger.kernel.org,
- ~postmarketos/upstreaming@lists.sr.ht,
- Matti =?ISO-8859-1?Q?Lehtim=E4ki?= <matti.lehtimaki@gmail.com>
-Subject: Re: [PATCH v3 0/6] Add support for Qualcomm's legacy IOMMU v2
-Date: Mon, 19 Jun 2023 23:42:49 +0200
-Message-ID: <2759637.mvXUDI8C0e@z3ntu.xyz>
-In-Reply-To: <254cfbb5-c8b8-0abc-e6bc-5007fe757004@collabora.com>
-References:
- <20221115101122.155440-1-angelogioacchino.delregno@collabora.com>
- <254cfbb5-c8b8-0abc-e6bc-5007fe757004@collabora.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FF21C2CC
+	for <iommu@lists.linux.dev>; Mon, 19 Jun 2023 23:43:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1687218214; x=1718754214;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=2IydA7aDSW7WAlkvgWIB7B8MuolrT6i4fpDMP7/KzxQ=;
+  b=C8vfrizEbpGC8E8D4fHyFnYOZfuNyGPWbepR0e7kX7LUgc7burcL2iSL
+   B/eNm0SDz8pd7iNAd3ftkGYf/hLvEGdVf9DTngji5vz2bWbEI4gjFpiSo
+   qRs9eSg7bcLEqkj374CPDIIvvzFs7J/8U6yF7+zyYHt2YE0AeOXGfonyV
+   HZ0z0tNuf/PzwLOCYQu9na1mQHCO4bBU4/zRIhfza7oZPrQuIObZeNJMo
+   RmUQOpSkjRjBjm7v8FY0kxC0hY1aspSX2JD+7v++0GP7sWPlpPyhFBwMG
+   knUGw2442sVuquOdxanC936yICJ0Mr+wlX/ltbzvAvM8xJpZBEhgB05To
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="340071426"
+X-IronPort-AV: E=Sophos;i="6.00,255,1681196400"; 
+   d="scan'208";a="340071426"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2023 16:43:33 -0700
+X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="747789680"
+X-IronPort-AV: E=Sophos;i="6.00,255,1681196400"; 
+   d="scan'208";a="747789680"
+Received: from unknown (HELO fred..) ([172.25.112.68])
+  by orsmga001.jf.intel.com with ESMTP; 19 Jun 2023 16:43:31 -0700
+From: Xin Li <xin3.li@intel.com>
+To: linux-kernel@vger.kernel.org,
+	platform-driver-x86@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-hyperv@vger.kernel.org,
+	linux-perf-users@vger.kernel.org,
+	x86@kernel.org
+Cc: tglx@linutronix.de,
+	mingo@redhat.com,
+	bp@alien8.de,
+	dave.hansen@linux.intel.com,
+	hpa@zytor.com,
+	steve.wahl@hpe.com,
+	mike.travis@hpe.com,
+	dimitri.sivanich@hpe.com,
+	russ.anderson@hpe.com,
+	dvhart@infradead.org,
+	andy@infradead.org,
+	joro@8bytes.org,
+	suravee.suthikulpanit@amd.com,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	kys@microsoft.com,
+	haiyangz@microsoft.com,
+	wei.liu@kernel.org,
+	decui@microsoft.com,
+	dwmw2@infradead.org,
+	baolu.lu@linux.intel.com,
+	peterz@infradead.org,
+	acme@kernel.org,
+	mark.rutland@arm.com,
+	alexander.shishkin@linux.intel.com,
+	jolsa@kernel.org,
+	namhyung@kernel.org,
+	irogers@google.com,
+	adrian.hunter@intel.com,
+	xin3.li@intel.com,
+	seanjc@google.com,
+	jiangshanlai@gmail.com,
+	jgg@ziepe.ca,
+	yangtiezhu@loongson.cn
+Subject: [PATCH 0/3] Do IRQ move cleanup with a timer instead of an IPI
+Date: Mon, 19 Jun 2023 16:16:08 -0700
+Message-Id: <20230619231611.2230-1-xin3.li@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 
-On Mittwoch, 22. Februar 2023 10:57:47 CEST AngeloGioacchino Del Regno wrote:
-> Il 15/11/22 11:11, AngeloGioacchino Del Regno ha scritto:
-> > This series adds support for handling "v2" firmware's IOMMU, found
-> > on at least MSM8956 and MSM8976 (some other SoCs also need the same
-> > but I honestly don't remember which ones precisely).
-> > 
-> > This is strictly required to get functional IOMMUs on these SoCs.
-> > 
-> > I'm sorry for not performing a much needed schema conversion on
-> > qcom,iommu.txt, but I really didn't have time to do that :-(
-> > 
-> > This series was tested on Sony Xperia X and X Compact (MSM8956):
-> > ADSP, LPASS, Venus, MSS, MDP and GPU are happy :-)
-> 
-> Hello,
-> this series is really old and got sent and resent many times.
-> The first time I've sent this one was .. I think in 2019, then, at the
-> end of 2022, I had some time to actually respin it and send another
-> three versions. It's been 3 long years :-)
-> The third version got the last comments addressed.
-> 
-> Since this didn't get any more feedback for 3 months, I'm worried that it
-> will be forgotten again, hence:
-> 
-> Is there any more feedback? Anything else to fix?
-> If not, can this be picked, please?
+No point to waste a vector for cleaning up the leftovers of a moved
+interrupt. Aside of that this must be the lowest priority of all vectors
+which makes FRED systems utilizing vectors 0x10-0x1f more complicated
+than necessary.
 
-Hi Angelo,
+Schedule a timer instead.
 
-there's some open review comments since March now on this series. Since some 
-of these patches are also needed for msm8953 and msm8974 IOMMU it would be 
-nice if you could respin :)
+Thomas Gleixner (2):
+  x86/vector: Rename send_cleanup_vector() to vector_schedule_cleanup()
+  x86/vector: Replace IRQ_MOVE_CLEANUP_VECTOR with a timer callback
 
-Regards
-Luca
+Xin Li (1):
+  tools: Get rid of IRQ_MOVE_CLEANUP_VECTOR from tools
 
-> 
-> Thank you.
-> 
-> Best regards,
-> Angelo
-> 
-> > Changes in v3:
-> >   - Removed useless FSRRESTORE reset and definition as pointed
-> >   
-> >     out in Robin Murphy's review
-> >   
-> >   - Fixed qcom,iommu.txt changes: squashed MSM8976 compatible
-> >   
-> >     string addition with msm-iommu-v2 generics addition
-> > 
-> > Changes in v2:
-> >   - Added back Marijn's notes (sorry man!)
-> >   - Added ARM_SMMU_CB_FSRRESTORE definition
-> >   - Changed context bank reset to properly set FSR and FSRRESTORE
-> > 
-> > AngeloGioacchino Del Regno (6):
-> >    dt-bindings: iommu: qcom,iommu: Document qcom,ctx-num property
-> >    iommu/qcom: Use the asid read from device-tree if specified
-> >    iommu/qcom: Properly reset the IOMMU context
-> >    iommu/qcom: Index contexts by asid number to allow asid 0
-> >    dt-bindings: iommu: qcom,iommu: Document QSMMUv2 and MSM8976
-> >    
-> >      compatibles
-> >    
-> >    iommu/qcom: Add support for QSMMUv2 and QSMMU-500 secured contexts
-> >   
-> >   .../devicetree/bindings/iommu/qcom,iommu.txt  |  9 +++
-> >   drivers/iommu/arm/arm-smmu/qcom_iommu.c       | 78 +++++++++++++++----
-> >   2 files changed, 70 insertions(+), 17 deletions(-)
+ arch/x86/include/asm/hw_irq.h                 |   4 +-
+ arch/x86/include/asm/idtentry.h               |   1 -
+ arch/x86/include/asm/irq_vectors.h            |   7 --
+ arch/x86/kernel/apic/vector.c                 | 109 ++++++++++++++----
+ arch/x86/kernel/idt.c                         |   1 -
+ arch/x86/platform/uv/uv_irq.c                 |   2 +-
+ drivers/iommu/amd/iommu.c                     |   2 +-
+ drivers/iommu/hyperv-iommu.c                  |   4 +-
+ drivers/iommu/intel/irq_remapping.c           |   2 +-
+ tools/arch/x86/include/asm/irq_vectors.h      |   7 --
+ .../beauty/tracepoints/x86_irq_vectors.sh     |   2 +-
+ 11 files changed, 92 insertions(+), 49 deletions(-)
 
-
-
+-- 
+2.34.1
 
