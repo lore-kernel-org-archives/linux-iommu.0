@@ -1,242 +1,172 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E18A98BE5
-	for <iommu@lists.linux.dev>; Mon, 19 Jun 2023 13:31:00 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dnmCUSzKrOO/oygx7ihGfxskU5W9YO218WVFKys175UMyaRFPm0Q4x0Su8A8QliwrQqfZEqtjePC9MIv5gE1NJPOqjyUXUp678l0l7KMgieDKM0J08kQLSF9OGNFXIdL5X81BYltaGlFmpY7GOfsHbDMhsoSRSjXaTjQoyEPaUeOxRU0SiCjUGPCQ/qW+oUPKREQn78IPV1xsGBoQ2Y32wUNB1Y0LRVRqi7wjwUiuwe5aYBcgoHsU1AjkhqRXEkkzhosDldh+vsI+cjB1NbqxGg4aL5FRlmMEpU8kjlPsU3w3KmNgNNiIJeoiYBsXxynaBlMXj7osLcsN80Rn3A9xw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cHedAP8wSbIxHtv4NGKfhPphjuZYqKut4WLDVp0CT+M=;
- b=lmyqlGXAHWcmWHY5ws63yY8FXRb3a9TsmRg3VDTPaORi4qUIYYbYJrShI+b8klNVsRfcv/HNyEs1zGqIs3QUd4DKYP1c/ekhHQjAVUWcgbIHYB8AXqTM/I2pgbLzDDWZcDQ6buYouLagKQ+iLjdxcmCXX3E33dtaDMNuU59fbbSMHeNvt/ak8FefzfwEfCoH88iAxyV7IJZXiPDKbHZlDzu3PDLfjclMKy2mgzlp0i66vN6pzEJrkRLZ9VKg6VBVaXNknS8D8M/cnYjMhdr+3YhG+RLJSioJl79AtCpGJ2At3NHHxLEL20O9DO0jsqQ2xobyg1c//+JUCRuTuG2OeQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cHedAP8wSbIxHtv4NGKfhPphjuZYqKut4WLDVp0CT+M=;
- b=NNyxgIJoxPwC9M9X6luNy40vFU224CWJ3G5KhKvCIIo2oO3FaIacupxtWGuxL8d+sa+LGn34VAYNFE1gdBWWKDVrkb6J73JY7MjGe8Xn2L+bY06I9HvPfqvGHMWXdB2OZvnTjrT1oiEJ+xtgM/PpffTr3UVzYKZVUHC0VoDRC8w=
-Received: from CY5P221CA0094.NAMP221.PROD.OUTLOOK.COM (2603:10b6:930:9::19) by
- CY8PR12MB8297.namprd12.prod.outlook.com (2603:10b6:930:79::18) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6500.37; Mon, 19 Jun 2023 13:30:57 +0000
-Received: from CY4PEPF0000EE3C.namprd03.prod.outlook.com
- (2603:10b6:930:9:cafe::19) by CY5P221CA0094.outlook.office365.com
- (2603:10b6:930:9::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6500.37 via Frontend
- Transport; Mon, 19 Jun 2023 13:30:57 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CY4PEPF0000EE3C.mail.protection.outlook.com (10.167.242.16) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6521.17 via Frontend Transport; Mon, 19 Jun 2023 13:30:57 +0000
-Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Mon, 19 Jun
- 2023 08:30:55 -0500
-From: Vasant Hegde <vasant.hegde@amd.com>
-To: <iommu@lists.linux.dev>, <joro@8bytes.org>
-CC: <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>,
-	Alexey Kardashevskiy <aik@amd.com>
-Subject: [PATCH v2 2/2] iommu/amd: Enable separate interrupt for PPR and GA log
-Date: Mon, 19 Jun 2023 13:30:08 +0000
-Message-ID: <20230619133008.6221-3-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230619133008.6221-1-vasant.hegde@amd.com>
-References: <20230619133008.6221-1-vasant.hegde@amd.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5970D8BE5
+	for <iommu@lists.linux.dev>; Mon, 19 Jun 2023 13:33:25 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7A77512FC;
+	Mon, 19 Jun 2023 06:34:08 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5838F3F59C;
+	Mon, 19 Jun 2023 06:33:23 -0700 (PDT)
+Message-ID: <5d0d6665-93e4-f61f-d700-008c0fcb4a2f@arm.com>
+Date: Mon, 19 Jun 2023 14:33:18 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000EE3C:EE_|CY8PR12MB8297:EE_
-X-MS-Office365-Filtering-Correlation-Id: 648112c8-9b7e-409c-bd92-08db70c96a83
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	GTEsFKHW6ZI5qmru42Pu0NR5ki7o93FDp6sxU8NHlpGLCikWSnHvh/Q0YWMmNPyn6jP/7OsBG4wOU3InlT4CC/UpjAqXzoDJpEIPkMHLLHYpl84RMPhhhBol9rMWLvs/nvJfXZPhnqrC2O9jY+sjvUAY+6KQOH7zIrsW7jswzI99dwBRLz5CoFWGqXjmeaJ+Dvi0sVN8gLKeaacKGyCL4Vb4FHf0M0dg/8XWOelsAFhcvNDQMrhmKewKlqRaqHqhDih22EGKbDqDtI6aMLK0xy4pKXqNSK+g9z981R4aqqMNfATEMre4Cevn/ohSyhT2hCXG4NaSma3cxeyxenK4wguTiIPJKA0qt77UEtbERsXBFa520W1nOT4D4UdxJQfp5fn/Q0biGE5UoYhHxBqH3SXSXEMaAGihNRjc7LxIbclPbj5bM7MDo7w8xjcwFj8BaUW6cKCtfDibaQS1kg0nZcCWzZQqHtZ4ZvptAjgLVblYZ8WmxXl+ydS5odCmkDPHaepidC0anSmpbGD/VqtuMxIsaeLS075j1JM8ZuVdP45N9hWxGZ+BDBJ/nKlT19D/rxkY4Hk2xytNhHgKfgqUmhgp5d0QnzBC2cQWlMEv8XANFg3S9zH/W6eCPz9TFe6WmFyl3LFYo4wSp/6zU6Lu531yFuLs8fQnE7223q2G0FB9pxIpgv6mald7HGvDvE56evUPxaegismIqCuSoNmgEROxjkTAXErP3FmfExtz3F39Asv/2qwaMyJ7pqviFgw3u5fG1QbDvhwqE6HNmJ111w==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(346002)(136003)(396003)(376002)(451199021)(46966006)(40470700004)(36840700001)(186003)(70586007)(82310400005)(8936002)(70206006)(8676002)(16526019)(82740400003)(5660300002)(110136005)(54906003)(40460700003)(4326008)(6666004)(7696005)(316002)(478600001)(41300700001)(36756003)(26005)(1076003)(40480700001)(336012)(426003)(356005)(81166007)(47076005)(86362001)(83380400001)(44832011)(2906002)(36860700001)(2616005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jun 2023 13:30:57.9719
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 648112c8-9b7e-409c-bd92-08db70c96a83
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000EE3C.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB8297
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH 1/2] iommu: Prevent RESV_DIRECT devices from blocking
+ domains
+Content-Language: en-GB
+To: Lu Baolu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Alex Williamson <alex.williamson@redhat.com>,
+ Nicolin Chen <nicolinc@nvidia.com>
+Cc: iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Jason Gunthorpe <jgg@nvidia.com>
+References: <20230607035145.343698-1-baolu.lu@linux.intel.com>
+ <20230607035145.343698-2-baolu.lu@linux.intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20230607035145.343698-2-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-AMD IOMMU has three log buffers (i.e. Event, PPR, and GA). These logs can
-be configured to generate different interrupts when an entry is inserted
-into a log buffer.
+On 07/06/2023 4:51 am, Lu Baolu wrote:
+> The IOMMU_RESV_DIRECT flag indicates that a memory region must be mapped
+> 1:1 at all times. This means that the region must always be accessible to
+> the device, even if the device is attached to a blocking domain. This is
+> equal to saying that IOMMU_RESV_DIRECT flag prevents devices from being
+> attached to blocking domains.
+> 
+> This also implies that devices that implement RESV_DIRECT regions will be
+> prevented from being assigned to user space since taking the DMA ownership
+> immediately switches to a blocking domain.
+> 
+> The rule of preventing devices with the IOMMU_RESV_DIRECT regions from
+> being assigned to user space has existed in the Intel IOMMU driver for
+> a long time. Now, this rule is being lifted up to a general core rule,
+> as other architectures like AMD and ARM also have RMRR-like reserved
+> regions. This has been discussed in the community mailing list and refer
+> to below link for more details.
+> 
+> Other places using unmanaged domains for kernel DMA must follow the
+> iommu_get_resv_regions() and setup IOMMU_RESV_DIRECT - we do not restrict
+> them in the core code.
+> 
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Alex Williamson <alex.williamson@redhat.com>
+> Cc: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Link: https://lore.kernel.org/linux-iommu/BN9PR11MB5276E84229B5BD952D78E9598C639@BN9PR11MB5276.namprd11.prod.outlook.com
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>   include/linux/iommu.h |  2 ++
+>   drivers/iommu/iommu.c | 39 +++++++++++++++++++++++++++++----------
+>   2 files changed, 31 insertions(+), 10 deletions(-)
+> 
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index d31642596675..fd18019ac951 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -409,6 +409,7 @@ struct iommu_fault_param {
+>    * @priv:	 IOMMU Driver private data
+>    * @max_pasids:  number of PASIDs this device can consume
+>    * @attach_deferred: the dma domain attachment is deferred
+> + * @requires_direct: The driver requested IOMMU_RESV_DIRECT
+>    *
+>    * TODO: migrate other per device data pointers under iommu_dev_data, e.g.
+>    *	struct iommu_group	*iommu_group;
+> @@ -422,6 +423,7 @@ struct dev_iommu {
+>   	void				*priv;
+>   	u32				max_pasids;
+>   	u32				attach_deferred:1;
+> +	u32				requires_direct:1;
+>   };
+>   
+>   int iommu_device_register(struct iommu_device *iommu,
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 9e0228ef612b..e59de7852067 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -959,12 +959,7 @@ static int iommu_create_device_direct_mappings(struct iommu_domain *domain,
+>   	unsigned long pg_size;
+>   	int ret = 0;
+>   
+> -	if (!iommu_is_dma_domain(domain))
+> -		return 0;
+> -
+> -	BUG_ON(!domain->pgsize_bitmap);
+> -
+> -	pg_size = 1UL << __ffs(domain->pgsize_bitmap);
+> +	pg_size = domain->pgsize_bitmap ? 1UL << __ffs(domain->pgsize_bitmap) : 0;
+>   	INIT_LIST_HEAD(&mappings);
+>   
+>   	iommu_get_resv_regions(dev, &mappings);
+> @@ -974,13 +969,22 @@ static int iommu_create_device_direct_mappings(struct iommu_domain *domain,
+>   		dma_addr_t start, end, addr;
+>   		size_t map_size = 0;
+>   
+> +		if (entry->type == IOMMU_RESV_DIRECT)
+> +			dev->iommu->requires_direct = 1;
+> +
+> +		if ((entry->type != IOMMU_RESV_DIRECT &&
+> +		     entry->type != IOMMU_RESV_DIRECT_RELAXABLE) ||
+> +		    !iommu_is_dma_domain(domain))
+> +			continue;
+> +
+> +		if (WARN_ON_ONCE(!pg_size)) {
+> +			ret = -EINVAL;
+> +			goto out;
+> +		}
+> +
+>   		start = ALIGN(entry->start, pg_size);
+>   		end   = ALIGN(entry->start + entry->length, pg_size);
+>   
+> -		if (entry->type != IOMMU_RESV_DIRECT &&
+> -		    entry->type != IOMMU_RESV_DIRECT_RELAXABLE)
+> -			continue;
+> -
+>   		for (addr = start; addr <= end; addr += pg_size) {
+>   			phys_addr_t phys_addr;
+>   
+> @@ -2121,6 +2125,21 @@ static int __iommu_device_set_domain(struct iommu_group *group,
+>   {
+>   	int ret;
+>   
+> +	/*
+> +	 * If the driver has requested IOMMU_RESV_DIRECT then we cannot allow
+> +	 * the blocking domain to be attached as it does not contain the
+> +	 * required 1:1 mapping. This test effectively exclusive the device from
+> +	 * being used with iommu_group_claim_dma_owner() which will block vfio
+> +	 * and iommufd as well.
+> +	 */
+> +	if (dev->iommu->requires_direct &&
+> +	    (new_domain->type == IOMMU_DOMAIN_BLOCKED ||
 
-However, current implementation share single interrupt to handle all three
-logs. With increasing usages of the GA (for IOMMU AVIC) and PPR logs (for
-IOMMUv2 APIs and SVA), interrupt sharing could potentially become
-performance bottleneck.
+Given the notion elsewhere that we want to use the blocking domain as a 
+last resort to handle an attach failure, at face value it looks suspect 
+that failing to attach to a blocking domain could also be a thing. I 
+guess technically this is failing at a slightly different level so maybe 
+it does work out OK, but it's still smelly.
 
-Hence, separate IOMMU interrupt into use three separate vectors and irq
-threads with corresponding name, which will be displayed in the
-/proc/interrupts as "AMD-Vi<x>-[Evt/PPR/GA]", where "x" is an IOMMU id.
+The main thing, though, is that not everything implements the 
+IOMMU_DOMAIN_BLOCKED optimisation, so a nominal blocking domain could be 
+IOMMU_DOMAIN_UNMANAGED as well. FWIW I'd prefer to make the RESV_DIRECT 
+check explicit in __iommu_take_dma_ownership() rather than hide it in an 
+implementation detail; that's going to be a lot clearer to reason about 
+as time goes on.
 
-Note that this patch changes interrupt handling only in IOMMU x2apic mode
-(MMIO 0x18[IntCapXTEn]=1). In legacy mode it will continue to use single
-MSI interrupt.
+Thanks,
+Robin.
 
-Signed-off-by: Vasant Hegde<vasant.hegde@amd.com>
-Reviewed-by: Alexey Kardashevskiy<aik@amd.com>
----
- drivers/iommu/amd/amd_iommu_types.h |  9 ++++++
- drivers/iommu/amd/init.c            | 50 ++++++++++++++++++++++-------
- 2 files changed, 47 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 2266badc6d0a..7011b746d38e 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -705,12 +705,21 @@ struct amd_iommu {
- 	/* event buffer virtual address */
- 	u8 *evt_buf;
- 
-+	/* Name for event log interrupt */
-+	unsigned char evt_irq_name[16];
-+
- 	/* Base of the PPR log, if present */
- 	u8 *ppr_log;
- 
-+	/* Name for PPR log interrupt */
-+	unsigned char ppr_irq_name[16];
-+
- 	/* Base of the GA log, if present */
- 	u8 *ga_log;
- 
-+	/* Name for GA log interrupt */
-+	unsigned char ga_irq_name[16];
-+
- 	/* Tail of the GA log, if present */
- 	u8 *ga_log_tail;
- 
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index e78d7c4f41bd..30f09e786f7b 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -2335,6 +2335,7 @@ static int intcapxt_irqdomain_alloc(struct irq_domain *domain, unsigned int virq
- 		struct irq_data *irqd = irq_domain_get_irq_data(domain, i);
- 
- 		irqd->chip = &intcapxt_controller;
-+		irqd->hwirq = info->hwirq;
- 		irqd->chip_data = info->data;
- 		__irq_set_handler(i, handle_edge_irq, 0, "edge");
- 	}
-@@ -2361,22 +2362,14 @@ static void intcapxt_unmask_irq(struct irq_data *irqd)
- 	xt.destid_0_23 = cfg->dest_apicid & GENMASK(23, 0);
- 	xt.destid_24_31 = cfg->dest_apicid >> 24;
- 
--	/**
--	 * Current IOMMU implementation uses the same IRQ for all
--	 * 3 IOMMU interrupts.
--	 */
--	writeq(xt.capxt, iommu->mmio_base + MMIO_INTCAPXT_EVT_OFFSET);
--	writeq(xt.capxt, iommu->mmio_base + MMIO_INTCAPXT_PPR_OFFSET);
--	writeq(xt.capxt, iommu->mmio_base + MMIO_INTCAPXT_GALOG_OFFSET);
-+	writeq(xt.capxt, iommu->mmio_base + irqd->hwirq);
- }
- 
- static void intcapxt_mask_irq(struct irq_data *irqd)
- {
- 	struct amd_iommu *iommu = irqd->chip_data;
- 
--	writeq(0, iommu->mmio_base + MMIO_INTCAPXT_EVT_OFFSET);
--	writeq(0, iommu->mmio_base + MMIO_INTCAPXT_PPR_OFFSET);
--	writeq(0, iommu->mmio_base + MMIO_INTCAPXT_GALOG_OFFSET);
-+	writeq(0, iommu->mmio_base + irqd->hwirq);
- }
- 
- 
-@@ -2439,7 +2432,8 @@ static struct irq_domain *iommu_get_irqdomain(void)
- 	return iommu_irqdomain;
- }
- 
--static int iommu_setup_intcapxt(struct amd_iommu *iommu)
-+static int __iommu_setup_intcapxt(struct amd_iommu *iommu, const char *devname,
-+				  int hwirq, irq_handler_t thread_fn)
- {
- 	struct irq_domain *domain;
- 	struct irq_alloc_info info;
-@@ -2453,6 +2447,7 @@ static int iommu_setup_intcapxt(struct amd_iommu *iommu)
- 	init_irq_alloc_info(&info, NULL);
- 	info.type = X86_IRQ_ALLOC_TYPE_AMDVI;
- 	info.data = iommu;
-+	info.hwirq = hwirq;
- 
- 	irq = irq_domain_alloc_irqs(domain, 1, node, &info);
- 	if (irq < 0) {
-@@ -2461,7 +2456,7 @@ static int iommu_setup_intcapxt(struct amd_iommu *iommu)
- 	}
- 
- 	ret = request_threaded_irq(irq, amd_iommu_int_handler,
--				   amd_iommu_int_thread, 0, "AMD-Vi", iommu);
-+				   thread_fn, 0, devname, iommu);
- 	if (ret) {
- 		irq_domain_free_irqs(irq, 1);
- 		irq_domain_remove(domain);
-@@ -2471,6 +2466,37 @@ static int iommu_setup_intcapxt(struct amd_iommu *iommu)
- 	return 0;
- }
- 
-+static int iommu_setup_intcapxt(struct amd_iommu *iommu)
-+{
-+	int ret;
-+
-+	snprintf(iommu->evt_irq_name, sizeof(iommu->evt_irq_name),
-+		 "AMD-Vi%d-Evt", iommu->index);
-+	ret = __iommu_setup_intcapxt(iommu, iommu->evt_irq_name,
-+				     MMIO_INTCAPXT_EVT_OFFSET,
-+				     amd_iommu_int_thread_evtlog);
-+	if (ret)
-+		return ret;
-+
-+	snprintf(iommu->ppr_irq_name, sizeof(iommu->ppr_irq_name),
-+		 "AMD-Vi%d-PPR", iommu->index);
-+	ret = __iommu_setup_intcapxt(iommu, iommu->ppr_irq_name,
-+				     MMIO_INTCAPXT_PPR_OFFSET,
-+				     amd_iommu_int_thread_pprlog);
-+	if (ret)
-+		return ret;
-+
-+#ifdef CONFIG_IRQ_REMAP
-+	snprintf(iommu->ga_irq_name, sizeof(iommu->ga_irq_name),
-+		 "AMD-Vi%d-GA", iommu->index);
-+	ret = __iommu_setup_intcapxt(iommu, iommu->ga_irq_name,
-+				     MMIO_INTCAPXT_GALOG_OFFSET,
-+				     amd_iommu_int_thread_galog);
-+#endif
-+
-+	return ret;
-+}
-+
- static int iommu_init_irq(struct amd_iommu *iommu)
- {
- 	int ret;
--- 
-2.31.1
-
+> +	     new_domain == group->blocking_domain)) {
+> +		dev_warn(dev,
+> +			 "Firmware has requested this device have a 1:1 IOMMU mapping, rejecting configuring the device without a 1:1 mapping. Contact your platform vendor.\n");
+> +		return -EINVAL;
+> +	}
+> +
+>   	if (dev->iommu->attach_deferred) {
+>   		if (new_domain == group->default_domain)
+>   			return 0;
