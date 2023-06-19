@@ -1,73 +1,96 @@
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFCCE33DC
-	for <iommu@lists.linux.dev>; Mon, 19 Jun 2023 12:37:46 +0000 (UTC)
-Received: by mail-io1-f69.google.com with SMTP id ca18e2360f4ac-77d9de8a74aso271132339f.0
-        for <iommu@lists.linux.dev>; Mon, 19 Jun 2023 05:37:46 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5467107A2
+	for <iommu@lists.linux.dev>; Mon, 19 Jun 2023 12:58:19 +0000 (UTC)
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-62ff12ba965so30928246d6.3
+        for <iommu@lists.linux.dev>; Mon, 19 Jun 2023 05:58:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1687179498; x=1689771498;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=2EN8SHZPulgVB2NMCjQeN+NgcQzF+fy6eDxvPwaTnFU=;
+        b=Dl0Yh3odU6Ibx3U0XI9gO01djO1boB8jD1cQR3R0NpzgPt5gPq9kihHCbswEzs3OYd
+         03r5QSYG+lxEISoM2jRdnzGNx9ob6uaG61rTYKda/EyDE5OUeALFKJyKE6aRxEmqtMuT
+         yq9zqGabHHd4TXbED/HDtpcORbbbp3Jla0hLbgo8RA4FwWaZ9I4u+bK3oDmxUf3qw4SE
+         /6tHL/coP/TP6wYqZrSg+2tLJEV0+DPKoZNSpJOXcv047B3EDisC0wKL9JIHNiPJ4PL9
+         fp3Es3PjT7hGqIIjPXQNJdzxvl5kP/uIXH9m3OZQg3WwYAGRQMJnyegfrhfSeGfNrXx4
+         RuoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687178266; x=1689770266;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=jLOse0SWNS/zn8R3mNGzSdc2iflrrS3dHadKgaQ44CE=;
-        b=OsHB1XGBJ2MwF3sLKQ2nAzJurFFfA+n3g8MOSs/sH5EpopeBv9KdgmY6EhPIJwSNlQ
-         XQm7awCzGLbyoHLvJ/iMbWnUO/pV1X043gLFjKesbJlEcLjhAmPFSPXSZJB19VDOPkLK
-         8pdyr0YHXXNJAoehMpWk6ZNRsWJibKxfmFhtcLDAYlJYknE1N+7KNH9NMysU0KPn8+qu
-         BNlidAvamYPb4XXKwDSLjFaDruT+62zqgZy+mQsHz4/FhrtoceH8gmKJnuKyN7bPTKDo
-         o46LHd/V4Uc7vKNNV5rao53CxP/HrALWlHRmB8vd+SQGroGxfAfRCmApQVzAgKnC/jRw
-         5RoA==
-X-Gm-Message-State: AC+VfDzfABs31kgqCYRhBF4e87/2Xt1WfWE+m77EV/4YqGFF8gigiunR
-	NIMEFTw1GsUSz7qIW8nk4MY5BMecwHFV3a1cwKyyGrvkkZ2qNKY=
-X-Google-Smtp-Source: ACHHUZ7rI/Kvna3w95AT1YKFJuDy4fuLWxCIZiHMPFfIEUNkV+XrqtJFB8OyH8VI4E02E5nTiW6WZbs7X0HEDGv35G8p3/UOlNr+
+        d=1e100.net; s=20221208; t=1687179498; x=1689771498;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2EN8SHZPulgVB2NMCjQeN+NgcQzF+fy6eDxvPwaTnFU=;
+        b=AqkpAN+ucB9PgXgg/8hI/CTw5AaNdeZHqwz+3zbfguj5ii9MBqCQIR8tn16t894fP/
+         7GHrjIyXh2h11lZpRslaf4eToj/YfG3n91rXJOpA4h1NCoD+zdMPYq/jcD23NP94uVhP
+         4JE6jITdpvKb2+21uUuHfB5iQKmnuDbTQ3T/xywgMlQbBNTCX/x1TlXGvPsYgIFj2Qiv
+         I0q+BPB2uBU9FHR+hVTkLv5YsZiCtHxMcJd8A4nC4LM9Z+V2ZLF1TYBwicYzGsvPtd9Q
+         kpvGukbB8ZPzMnvD0BYXPsssUQdk+thDbXWTOxSC9rIJ1w21bqsl2KAMEhM3UmX6ijvJ
+         41Yw==
+X-Gm-Message-State: AC+VfDwftnEmVjNBfTob4jT6sh7uQU8ALLs2w9d/5G8lC7oHBp29TFJr
+	e+wKXmBy63YamonhpzMkcdUI7g==
+X-Google-Smtp-Source: ACHHUZ7aEQ33ZOLHiW7qLtXGbpVR5w4OkoPZd7ZxPgLEVetaPWz6ZAVebnx2vcET93MTDfFQnhj3cw==
+X-Received: by 2002:ad4:5cc8:0:b0:62f:fb4b:e28f with SMTP id iu8-20020ad45cc8000000b0062ffb4be28fmr12415239qvb.31.1687179498427;
+        Mon, 19 Jun 2023 05:58:18 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
+        by smtp.gmail.com with ESMTPSA id l5-20020a0ce085000000b0062439f05b87sm10534957qvk.45.2023.06.19.05.58.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Jun 2023 05:58:17 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1qBESX-006pH5-Bv;
+	Mon, 19 Jun 2023 09:58:17 -0300
+Date: Mon, 19 Jun 2023 09:58:17 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
+	linux-kselftest@vger.kernel.org,
+	virtualization@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCHES 00/17] IOMMUFD: Deliver IO page faults to user space
+Message-ID: <ZJBQ6Qeg+C5wkhmw@ziepe.ca>
+References: <20230530053724.232765-1-baolu.lu@linux.intel.com>
+ <20230616113232.GA84678@myrica>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a02:a103:0:b0:423:d1b:9c8c with SMTP id
- f3-20020a02a103000000b004230d1b9c8cmr2632063jag.3.1687178266002; Mon, 19 Jun
- 2023 05:37:46 -0700 (PDT)
-Date: Mon, 19 Jun 2023 05:37:45 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000037ca0d05fe7acde6@google.com>
-Subject: [syzbot] Monthly iommu report (Jun 2023)
-From: syzbot <syzbot+list803959f3ce30f8e4ada8@syzkaller.appspotmail.com>
-To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230616113232.GA84678@myrica>
 
-Hello iommu maintainers/developers,
+On Fri, Jun 16, 2023 at 12:32:32PM +0100, Jean-Philippe Brucker wrote:
 
-This is a 31-day syzbot report for the iommu subsystem.
-All related reports/information can be found at:
-https://syzkaller.appspot.com/upstream/s/iommu
+> We might need to revisit supporting stop markers: request that each device
+> driver declares whether their device uses stop markers on unbind() ("This
+> mechanism must indicate that a Stop Marker Message will be generated."
+> says the spec, but doesn't say if the function always uses one or the
+> other mechanism so it's per-unbind). Then we still have to synchronize
+> unbind() with the fault handler to deal with the pending stop marker,
+> which might have already gone through or be generated later.
 
-During the period, 2 new issues were detected and 0 were fixed.
-In total, 5 issues are still open and 3 have been fixed so far.
+An explicit API to wait for the stop marker makes sense, with the
+expectation that well behaved devices will generate it and well
+behaved drivers will wait for it.
 
-Some of the still happening issues:
+Things like VFIO should have a way to barrier/drain the PRI queue
+after issuing FLR. ie the VMM processing FLR should also barrier the
+real HW queues and flush them to VM visibility.
 
-Ref Crashes Repro Title
-<1> 3       Yes   WARNING in iommufd_test_check_pages
-                  https://syzkaller.appspot.com/bug?extid=353c7be4964c6253f24a
-<2> 2       Yes   WARNING in iommufd_test
-                  https://syzkaller.appspot.com/bug?extid=94646b0ed2dcbb1f9c2f
-<3> 1       Yes   KASAN: slab-use-after-free Read in iommufd_access_unpin_pages
-                  https://syzkaller.appspot.com/bug?extid=6c8d756f238a75fc3eb8
-<4> 1       No    KASAN: slab-use-after-free Read in iopt_unmap_iova_range
-                  https://syzkaller.appspot.com/bug?extid=1ad12d16afca0e7d2dde
+> with stop markers, the host needs to flush the PRI queue when a PASID is
+> detached. I guess on Intel detaching the PASID goes through the host which
+> can flush the host queue. On Arm we'll probably need to flush the queue
+> when receiving a PASID cache invalidation, which the guest issues after
+> clearing a PASID table entry.
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+We are trying to get ARM to a point where invalidations don't need to
+be trapped. It would be good to not rely on that anyplace.
 
-To disable reminders for individual bugs, reply with the following command:
-#syz set <Ref> no-reminders
-
-To change bug's subsystems, reply with:
-#syz set <Ref> subsystems: new-subsystem
-
-You may send multiple commands in a single email message.
+Jason
