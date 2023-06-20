@@ -1,90 +1,109 @@
-Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com [209.85.219.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53AF62AB3A
-	for <iommu@lists.linux.dev>; Tue, 20 Jun 2023 17:47:48 +0000 (UTC)
-Received: by mail-yb1-f172.google.com with SMTP id 3f1490d57ef6-bd61dd9a346so5038793276.2
-        for <iommu@lists.linux.dev>; Tue, 20 Jun 2023 10:47:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1687283267; x=1689875267;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YEQQedTfk3CvXMUEMnX/qgx0uD7Zg1KalwFUtarcHWE=;
-        b=X/h+sRHNzsC5FcGaSJrO3tW4Rxpa34N3Cmd54bilvTz2qbld2ShNygzXL/zF3Wgqle
-         CDVm9DgJt8tLMxVoBvVepefDiFSu1w1y7L5sZ7UfLCLDo1XvLZ6a7dsZdqO7QjzJB5NA
-         5ZdUE/wxeA5cSFZML9vW0f1d3UWGXpjBv1RqsbdfK1kXFusynnjw5nYDl+k2UAdQCLUK
-         VjRGCApYXDho5KvtigNiBCfsv4Nal8NCc4EkKTJfVlFJ2VnxAN4ZiV9RQpPqa6EgFOFT
-         ZNQJtgo5NT/eG67C4qRuPwrIYglj8cobVjHPzMBKhdw/wkm5H83kdSSEq2Ih8Zk3eB1/
-         q58g==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51EB517722
+	for <iommu@lists.linux.dev>; Tue, 20 Jun 2023 18:22:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1687285330;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=qMppbORYsoJ4mNBfjmtAxVeIMKMC7cMCgnMzK9NJ+rI=;
+	b=XZI/HEKkvZYb2XqLobX2nxiZ11LtYucLbuy8pQQTGW6CL1dLtbPYwEys9dgAYJtVkSeLs9
+	YlbHbrtG0TwV10Dv2U4LN1sU/4mw7jjAC12fOHCGrE0Vue90Hf5x+IV/epqQ9/19VLI/zV
+	+4B3lOkmhXktjYKZoMgBer+To4nHtdA=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-296-d5CKK15yPqGEw09TLInsPA-1; Tue, 20 Jun 2023 14:22:03 -0400
+X-MC-Unique: d5CKK15yPqGEw09TLInsPA-1
+Received: by mail-qv1-f69.google.com with SMTP id 6a1803df08f44-62fe611af5bso51117096d6.0
+        for <iommu@lists.linux.dev>; Tue, 20 Jun 2023 11:22:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687283267; x=1689875267;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=YEQQedTfk3CvXMUEMnX/qgx0uD7Zg1KalwFUtarcHWE=;
-        b=MkvhQAx1it9nxApT5f2rYQbshzv306bTYglUKgVCVXoCn9RZScGsvhYqolRTDyiVK4
-         6URXrSAN61e0OIoWUSmbzghBUIM4KfssHqOGpFK/vhkvLH2WK0Vw3BbFBXyV0whiYmie
-         hNB9TFYd+8SKKfwVWZJgUFRNJIuwujuUX9CwME3Oh4CDqwAW5ZR8Wy/D31oO3TBL3Buh
-         gRH8pBbXoQrPz8nN7tb9RHJBqKOoCk4r2KpYdScAX5cKnmxJhLrjLkX3Mc7hRPIySh2d
-         Gw6FNbYmhtylIi7XtvXQLdvJDa99XYSQBF4/DPzv15T8RjkP9Ngg19x69nsxveRhuj9g
-         oOCA==
-X-Gm-Message-State: AC+VfDx36rLGAZnsvNnG6fuR60TBqBnUvoFr/KDFyXRVw9fU3Pz6nsc6
-	GIrhFsWSO/UqdKdtHMSviff6AKnkVkOkUNuGDK0=
-X-Google-Smtp-Source: ACHHUZ7HqkDEoGGZvLpAudJce8uaN/hmAuzPQsH1Ct+zekBEVf+h6LTLWNg25zLA1ducjT2NIXe8PkpbzKGJgjsGEmE=
-X-Received: by 2002:a81:468b:0:b0:573:98a3:f01a with SMTP id
- t133-20020a81468b000000b0057398a3f01amr951191ywa.40.1687283267004; Tue, 20
- Jun 2023 10:47:47 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1687285322; x=1689877322;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=qMppbORYsoJ4mNBfjmtAxVeIMKMC7cMCgnMzK9NJ+rI=;
+        b=Ig9pRoWfk9ezSMnatVKFYKzIPC8PVJtqksLYqV5gQdp4P+UJqrEvb1qFEaAkXDWbje
+         GIgWFawfr9zvMvxWvoOi4GyFmTtXr4pTcFce2/pJ8iWk9tNnZNocPQug+sa94vzpNBP2
+         GPPM1VVtO4iw6mWefcVLUBBwvEBGcnqbBzyHLQgavnt3OpUwiIq6T4iPLJhKrY4/75nQ
+         m8qDelJDgu+wvusozv9ZaKmGZaGjO08vW7fIN98IlZLkiF+jmDSlyjCzZhgg43MtcXFZ
+         Ssx2sZyXQBU5C0y0UlyS+zNccG7zOFuaKCAjVZbgrZge0HyPVIGKZIM1d0YxuObehEDS
+         NXSg==
+X-Gm-Message-State: AC+VfDyjj9cRIiVQQtdvNpf62VNkiq8m2odU1sSFJabxdh3PPLlvZpTF
+	b92ZsZS8NXvV4y0JFZ7YH2tTLe02ga2Xc4wSlP+rRHmq2VNNdFEnX6I8h2du0i9G1F7s8khK+7e
+	mcpBH0DaSEZRq8DomPlhlyYA=
+X-Received: by 2002:a05:6214:2302:b0:626:3375:6fea with SMTP id gc2-20020a056214230200b0062633756feamr14462130qvb.22.1687285322775;
+        Tue, 20 Jun 2023 11:22:02 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ7WXmkFqPLCrxRSMmj/VO7EarYYPgsQ1ofB7UbCv6V7DJlgyvU95pRra7oRroasmPnEyCC32A==
+X-Received: by 2002:a05:6214:2302:b0:626:3375:6fea with SMTP id gc2-20020a056214230200b0062633756feamr14462118qvb.22.1687285322557;
+        Tue, 20 Jun 2023 11:22:02 -0700 (PDT)
+Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
+        by smtp.gmail.com with ESMTPSA id z12-20020a0cf24c000000b006300ff90e71sm1490543qvl.122.2023.06.20.11.22.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Jun 2023 11:22:01 -0700 (PDT)
+Date: Tue, 20 Jun 2023 11:21:59 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com
+Subject: Re: [PATCH trivial] iommu/amd: Rearrange DTE bit definations
+Message-ID: <wb6rm3om3ocge67brjdr33lltvc7xl3iablueho3yewm7bnpje@2rfzfuq5vmw2>
+References: <20230619131908.5887-1-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <b24a6c7b-27fc-41c0-5c82-15696b4a7dc1@arm.com> <ZIiRK2Dzl2/9Jqle@ziepe.ca>
- <BN9PR11MB52765C24405D2475CF3CBEBE8C58A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZIxTmGU4a5dniEY3@nvidia.com> <CAKgT0UfmdOOPSD5YvpHnh1A02URn9zxVLbyXJM_67On7xojLcA@mail.gmail.com>
- <520e2be4-726f-c680-c010-a308cdddbae0@arm.com> <ZIyxFpzh3WG+ifws@nvidia.com>
- <90823b33-1f44-8789-9a38-282407fd9f15@arm.com> <ZJBf5DP60prFH5R2@nvidia.com>
- <CAKgT0UccM=_D-gJdzjqeUmRZWnSHVaUABjgQBEamLYauE8WTCA@mail.gmail.com> <ZJHaE2+XOgQj1q2k@nvidia.com>
-In-Reply-To: <ZJHaE2+XOgQj1q2k@nvidia.com>
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Tue, 20 Jun 2023 10:47:09 -0700
-Message-ID: <CAKgT0UdbjDDkwV_uUGCTONGj2Xw_+Tb6J5enAX_+Wq0eKt=nGA@mail.gmail.com>
-Subject: Re: Question about reserved_regions w/ Intel IOMMU
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, "Tian, Kevin" <kevin.tian@intel.com>, 
-	Alex Williamson <alex.williamson@redhat.com>, Baolu Lu <baolu.lu@linux.intel.com>, 
-	LKML <linux-kernel@vger.kernel.org>, linux-pci <linux-pci@vger.kernel.org>, 
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20230619131908.5887-1-vasant.hegde@amd.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On Tue, Jun 20, 2023 at 9:55=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wr=
-ote:
->
-> On Tue, Jun 20, 2023 at 07:57:57AM -0700, Alexander Duyck wrote:
->
-> > I think this may have gone off down a rathole as my original question
-> > wasn't anything about adding extra reserved regions. It was about
-> > exposing what the IOVA is already reserving so it could be user
-> > visible.
->
-> Your question points out that dma-iommu.c uses a different set of
-> reserved regions than everything else, and its set is closer to
-> functionally correct.
->
-> IMHO the resolution to what you are talking about is not to add more
-> debugging to dma-iommu but to make the set of reserved regions
-> consistently correct for everyone, which will make them viewable in
-> sysfs.
+On Mon, Jun 19, 2023 at 01:19:08PM +0000, Vasant Hegde wrote:
+> Rearrage according to 64bit word they are in.
+> 
+> Note that I have not rearranged gcr3 related macros even though
+> they belong to different 64bit word as its easy to read it in
+> current format.
+> 
+> No functional changes intended.
+> 
+> Suggested-by: Jerry Snitselaar <jsnitsel@redhat.com>
+> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+> ---
+>  drivers/iommu/amd/amd_iommu_types.h | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+> index 53443d6f7b13..082c57b8c2d6 100644
+> --- a/drivers/iommu/amd/amd_iommu_types.h
+> +++ b/drivers/iommu/amd/amd_iommu_types.h
+> @@ -381,15 +381,15 @@
+>   */
+>  #define DTE_FLAG_V	BIT_ULL(0)
+>  #define DTE_FLAG_TV	BIT_ULL(1)
+> +#define DTE_FLAG_GIOV	BIT_ULL(54)
+> +#define DTE_FLAG_GV	BIT_ULL(55)
+> +#define DTE_GLX_SHIFT	(56)
+> +#define DTE_GLX_MASK	(3)
+>  #define DTE_FLAG_IR	BIT_ULL(61)
+>  #define DTE_FLAG_IW	BIT_ULL(62)
+>  
+>  #define DTE_FLAG_IOTLB	BIT_ULL(32)
+> -#define DTE_FLAG_GIOV	BIT_ULL(54)
+> -#define DTE_FLAG_GV	BIT_ULL(55)
+>  #define DTE_FLAG_MASK	(0x3ffULL << 32)
+> -#define DTE_GLX_SHIFT	(56)
+> -#define DTE_GLX_MASK	(3)
+>  #define DEV_DOMID_MASK	0xffffULL
+>  
+>  #define DTE_GCR3_VAL_A(x)	(((x) >> 12) & 0x00007ULL)
+> -- 
+> 2.31.1
+> 
 
-Okay, that makes sense to me, and I agree. If we had a consistent set
-of reserved regions then it would make it easier to understand. If
-nothing else my request would be to expose the iova reserved regions
-and then most likely the other ones could be deprecated since they
-seem to all be consolidated in the IOVA anyway.
+Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
 
-Thanks,
-
-- Alex
