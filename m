@@ -1,74 +1,150 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8577BE7C
-	for <iommu@lists.linux.dev>; Tue, 20 Jun 2023 08:37:13 +0000 (UTC)
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1687250226;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=xnki0r5y4TroSJ8P6p+PySOa093W7Oqe6Ng8UJe+axY=;
-	b=hTZCKfB0Dm0qkGSiW0lNQniI9H/ypBbK7XnHzIc5Wwxs9kiU1bYYKN1DCX73COz8El7lMD
-	8xfUtjV7cwd0WLJNkhTh17eB7bVthya5jhWunDMV78HExnjqeBj0OUeD8Xq9e/1AMhvJw2
-	iseST0n/ECErlpj0huXQ7hSNp+6zbeewlnRpl/wxviFKgHyUIQkllbQVQ4Xznqb37Ywx5f
-	Qqzi+TVZsG+PyNX3p0HAIkRlR0outyujAcjrhaIue/bDvgd+tbQvghO4y3A5FtjcHmLYuS
-	Ek3XJZCQn+zMr6blc5ym9tm5qvEEZZVEh9fY5qX50MDwBP2qFoFsU2SKRzP83g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1687250226;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=xnki0r5y4TroSJ8P6p+PySOa093W7Oqe6Ng8UJe+axY=;
-	b=fom0Ekn1nFU9HjMfw1gEd0/2MwYHr82fLAnc+vgq8OJvpEvu6ubNuyRjR3ADXM7DS+wvFE
-	LljsU4/9A0poFpCw==
-To: Xin Li <xin3.li@intel.com>, linux-kernel@vger.kernel.org,
- platform-driver-x86@vger.kernel.org, iommu@lists.linux.dev,
- linux-hyperv@vger.kernel.org, linux-perf-users@vger.kernel.org,
- x86@kernel.org
-Cc: mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
- hpa@zytor.com, steve.wahl@hpe.com, mike.travis@hpe.com,
- dimitri.sivanich@hpe.com, russ.anderson@hpe.com, dvhart@infradead.org,
- andy@infradead.org, joro@8bytes.org, suravee.suthikulpanit@amd.com,
- will@kernel.org, robin.murphy@arm.com, kys@microsoft.com,
- haiyangz@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
- dwmw2@infradead.org, baolu.lu@linux.intel.com, peterz@infradead.org,
- acme@kernel.org, mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
- jolsa@kernel.org, namhyung@kernel.org, irogers@google.com,
- adrian.hunter@intel.com, xin3.li@intel.com, seanjc@google.com,
- jiangshanlai@gmail.com, jgg@ziepe.ca, yangtiezhu@loongson.cn
-Subject: Re: [PATCH 2/3] x86/vector: Replace IRQ_MOVE_CLEANUP_VECTOR with a
- timer callback
-In-Reply-To: <20230619231611.2230-3-xin3.li@intel.com>
-References: <20230619231611.2230-1-xin3.li@intel.com>
- <20230619231611.2230-3-xin3.li@intel.com>
-Date: Tue, 20 Jun 2023 10:37:05 +0200
-Message-ID: <87h6r2pm1a.ffs@tglx>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 041558488
+	for <iommu@lists.linux.dev>; Tue, 20 Jun 2023 09:43:41 +0000 (UTC)
+Received: from [IPV6:2001:b07:2ed:14ed:c5f8:7372:f042:90a2] (unknown [IPv6:2001:b07:2ed:14ed:c5f8:7372:f042:90a2])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: kholk11)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id EB9966602242;
+	Tue, 20 Jun 2023 10:43:38 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1687254220;
+	bh=tZEQ2BgJPG46bXO/eTD7ZVZWC8BzMZH3DZDhyoOxcXI=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=lyPiK9hpXVlj0uVpnW/lNz3ZGOWW37jFTe8j03qHuWtTse7as8pDD5Rpf2vd+URoW
+	 MVdMC/AkwmISd0h7KivioDsw5Vg9ExZgHGY6iNCzcAqDLVrQEbLONeRR08RdaoFcea
+	 yfOjo7ZAt/RQ1bBQbQNalpDKazrFVqBXxQAwXKoUHwbonlvKd6ahdl0ETeEKD+e9ad
+	 k49A9PpF3imsmNHMQ5CdyDZXAGB3EBJCFrX5XyPHCnrw1P0A9KRMcsCyQVvOWTpCeQ
+	 Uj7RCP/1zMYFStq/e5jmva1C3AomIe2O0RJJrS8tk3FY2ib/N2tf7iFXa14HywkJoM
+	 KzlTh2V4Ios8g==
+Message-ID: <6e3f4ff6-2556-a696-58dc-40e1e4d84189@collabora.com>
+Date: Tue, 20 Jun 2023 11:43:36 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH v3 2/6] iommu/qcom: Use the asid read from device-tree if
+ specified
+Content-Language: en-US
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, agross@kernel.org
+Cc: andersson@kernel.org, konrad.dybcio@linaro.org, joro@8bytes.org,
+ will@kernel.org, robin.murphy@arm.com, robh+dt@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org, robdclark@gmail.com,
+ linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, marijn.suijten@somainline.org,
+ kernel@collabora.com, luca@z3ntu.xyz, a39.skl@gmail.com,
+ phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
+References: <20221115101122.155440-1-angelogioacchino.delregno@collabora.com>
+ <20221115101122.155440-3-angelogioacchino.delregno@collabora.com>
+ <12f0800c-beb3-6fdc-b743-8624f0d5d6ac@linaro.org>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <12f0800c-beb3-6fdc-b743-8624f0d5d6ac@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Mon, Jun 19 2023 at 16:16, Xin Li wrote:
-> +/*
-> + * Called with vector_lock held
-> + */
+Il 07/03/23 17:44, Dmitry Baryshkov ha scritto:
+> On 15/11/2022 12:11, AngeloGioacchino Del Regno wrote:
+>> As specified in this driver, the context banks are 0x1000 apart but
+>> on some SoCs the context number does not necessarily match this
+>> logic, hence we end up using the wrong ASID: keeping in mind that
+>> this IOMMU implementation relies heavily on SCM (TZ) calls, it is
+>> mandatory that we communicate the right context number.
+>>
+>> Since this is all about how context banks are mapped in firmware,
+>> which may be board dependent (as a different firmware version may
+>> eventually change the expected context bank numbers), introduce a
+>> new property "qcom,ctx-num": when found, the ASID will be forced
+>> as read from the devicetree.
+>>
+>> When "qcom,ctx-num" is not found, this driver retains the previous
+>> behavior as to avoid breaking older devicetrees or systems that do
+>> not require forcing ASID numbers.
+>>
+>> Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+>> [Marijn: Rebased over next-20221111]
+>> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+>> ---
+>>   drivers/iommu/arm/arm-smmu/qcom_iommu.c | 18 +++++++++++++++---
+>>   1 file changed, 15 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c 
+>> b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+>> index bfd7b51eb5db..491a8093f3d6 100644
+>> --- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+>> +++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+>> @@ -551,7 +551,8 @@ static int qcom_iommu_of_xlate(struct device *dev, struct 
+>> of_phandle_args *args)
+>>        * index into qcom_iommu->ctxs:
+>>        */
+>>       if (WARN_ON(asid < 1) ||
+>> -        WARN_ON(asid > qcom_iommu->num_ctxs)) {
+>> +        WARN_ON(asid > qcom_iommu->num_ctxs) ||
+>> +        WARN_ON(qcom_iommu->ctxs[asid - 1] == NULL)) {
+> 
+> Separate change in my opinion. Please split it to a separate patch with proper 
+> Fixes: tag.
+> 
 
-Such a comment is patently bad. 
+This is of_xlate: the array entry at [asid - 1] is always initialized before
+the introduction of `qcom,ctx-num`, so this is not a separate change and it
+does not require a Fixes tag, as it is not fixing a previous behavior, but
+accounting for a new one.
 
-> +static void __vector_cleanup(struct vector_cleanup *cl, bool check_irr)
->  {
-        ....
+>>           put_device(&iommu_pdev->dev);
+>>           return -EINVAL;
+>>       }
+>> @@ -638,7 +639,8 @@ static int qcom_iommu_sec_ptbl_init(struct device *dev)
+>>   static int get_asid(const struct device_node *np)
+>>   {
+>> -    u32 reg;
+>> +    u32 reg, val;
+>> +    int asid;
+>>       /* read the "reg" property directly to get the relative address
+>>        * of the context bank, and calculate the asid from that:
+>> @@ -646,7 +648,17 @@ static int get_asid(const struct device_node *np)
+>>       if (of_property_read_u32_index(np, "reg", 0, &reg))
+>>           return -ENODEV;
+>> -    return reg / 0x1000;      /* context banks are 0x1000 apart */
+>> +    /*
+>> +     * Context banks are 0x1000 apart but, in some cases, the ASID
+>> +     * number doesn't match to this logic and needs to be passed
+>> +     * from the DT configuration explicitly.
+>> +     */
+>> +    if (of_property_read_u32(np, "qcom,ctx-num", &val))
+>> +        asid = reg / 0x1000;
+>> +    else
+>> +        asid = val;
+> 
+> As a matter of preference (and logic) I'd have written that as:
+> 
+> if (!of_property_read(np, "qcom,ctx-num", &val))
+>      asid = val;
+> else
+>      asid = reg / 0x1000;
+> 
+> LGTM otherwise
+> 
 
-        lockdep_assert_held(&vector_lock);
-
-Documents the requirement clearly _and_ catches any caller which does not
-hold the lock when lockdep is enabled.
+Will do!
 
 Thanks,
+Angelo
 
-        tglx
+P.S.: Sorry for the very late reply.
+
+>> +
+>> +    return asid;
+>>   }
+>>   static int qcom_iommu_ctx_probe(struct platform_device *pdev)
+> 
+
+
+
