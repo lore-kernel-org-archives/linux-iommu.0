@@ -1,139 +1,97 @@
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F8D78464
-	for <iommu@lists.linux.dev>; Tue, 20 Jun 2023 10:02:22 +0000 (UTC)
-Received: from [IPV6:2001:b07:2ed:14ed:c5f8:7372:f042:90a2] (unknown [IPv6:2001:b07:2ed:14ed:c5f8:7372:f042:90a2])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
-	(No client certificate requested)
-	(Authenticated sender: kholk11)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id 756F06606F23;
-	Tue, 20 Jun 2023 11:02:19 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1687255340;
-	bh=RLHVI/wjjEu7tgaFY7P5mxMUKibf2l0LJy6KXwWfTcA=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=MNBGt+PAu1mufc3pOtgjMZsDRsZVkBktZDjH9Dz7Uj7xuARm3UE1Hp+m1EuAIkv1B
-	 wsq6HxhL47hyFqG48h1AfLyEMdcZsEm0/sSi/U9RmHlRp92TaYQ+I/IBQ1CRI0TpL0
-	 UZH2wsHoxlN5X0vH2NahxbvGryTduWB+/Bu5n9jlo8uFISCOE69AArOmnuKga363U4
-	 ZTLQKgeyWz4WLy76ZsYBMetcLMh9wOugHPNULDaww5W4x8zAMemG0KQnL3cz74M+vs
-	 +LflWzhOmPJXhdCE4lDo68BVQwnIOdTiPxnHCKfh/uElBlSBNNhpyMR/xEPikge/JQ
-	 t4n5olsHSPtmA==
-Message-ID: <491fab1f-e1fe-4388-52a7-05adb17c2c36@collabora.com>
-Date: Tue, 20 Jun 2023 12:02:16 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C1D4FBFE;
+	Tue, 20 Jun 2023 10:22:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1687256534; x=1718792534;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=5ZYsZOvfPxA0b3dXDGRauovDUG8AX9HxRyYI5k76mgY=;
+  b=UN5dNCeIdcyGC+VcoFMRiOHd08othyybIIrXg8LCRQ9+GFOj8reSwUqf
+   bmfEFCyQz6vnOQHtzJTY4iqUXYnjaaZHLS+opkNhP8WoRVLVIjNNTGr0W
+   BbWgJOD8TXSbTpYBfpTJkV53VHU9GHKESXFI+eDq8BYJrpvljTf/trObf
+   Oj0bYkVarH4LDUNuXs2Cyvxyhwhdaf9Y7WDYw2FYlsfO73FhAUYLHbCQC
+   8NAaG3/kSJKxPjJfRVqwhQySbrNNbOa+KF8UvR3P23zqjJWNr47mm9f+Y
+   /rhKSa3Xqx9WbS1d/eYsB3HQIclS6C5h5hCz2sa3/8YdVWy2XSDNHJZ/p
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="339432946"
+X-IronPort-AV: E=Sophos;i="6.00,256,1681196400"; 
+   d="scan'208";a="339432946"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2023 03:22:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="826937107"
+X-IronPort-AV: E=Sophos;i="6.00,256,1681196400"; 
+   d="scan'208";a="826937107"
+Received: from lkp-server01.sh.intel.com (HELO 783282924a45) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 20 Jun 2023 03:22:11 -0700
+Received: from kbuild by 783282924a45 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1qBYV0-0005nu-2o;
+	Tue, 20 Jun 2023 10:22:10 +0000
+Date: Tue, 20 Jun 2023 18:21:20 +0800
+From: kernel test robot <lkp@intel.com>
+To: Michael Shavit <mshavit@google.com>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>
+Cc: oe-kbuild-all@lists.linux.dev, Michael Shavit <mshavit@google.com>,
+	jean-philippe@linaro.org, nicolinc@nvidia.com, jgg@nvidia.com,
+	baolu.lu@linux.intel.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 07/13] iommu/arm-smmu-v3: Keep track of attached ssids
+Message-ID: <202306201817.Cn7Xxzds-lkp@intel.com>
+References: <20230614154304.2860121-8-mshavit@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [PATCH v3 0/6] Add support for Qualcomm's legacy IOMMU v2
-Content-Language: en-US
-To: Luca Weiss <luca@z3ntu.xyz>, agross@kernel.org
-Cc: andersson@kernel.org, konrad.dybcio@linaro.org, joro@8bytes.org,
- will@kernel.org, robin.murphy@arm.com, robh+dt@kernel.org,
- krzysztof.kozlowski+dt@linaro.org, robdclark@gmail.com,
- linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, marijn.suijten@somainline.org,
- kernel@collabora.com, a39.skl@gmail.com, phone-devel@vger.kernel.org,
- ~postmarketos/upstreaming@lists.sr.ht,
- =?UTF-8?Q?Matti_Lehtim=c3=a4ki?= <matti.lehtimaki@gmail.com>
-References: <20221115101122.155440-1-angelogioacchino.delregno@collabora.com>
- <254cfbb5-c8b8-0abc-e6bc-5007fe757004@collabora.com>
- <2759637.mvXUDI8C0e@z3ntu.xyz>
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <2759637.mvXUDI8C0e@z3ntu.xyz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230614154304.2860121-8-mshavit@google.com>
 
-Il 19/06/23 23:42, Luca Weiss ha scritto:
-> On Mittwoch, 22. Februar 2023 10:57:47 CEST AngeloGioacchino Del Regno wrote:
->> Il 15/11/22 11:11, AngeloGioacchino Del Regno ha scritto:
->>> This series adds support for handling "v2" firmware's IOMMU, found
->>> on at least MSM8956 and MSM8976 (some other SoCs also need the same
->>> but I honestly don't remember which ones precisely).
->>>
->>> This is strictly required to get functional IOMMUs on these SoCs.
->>>
->>> I'm sorry for not performing a much needed schema conversion on
->>> qcom,iommu.txt, but I really didn't have time to do that :-(
->>>
->>> This series was tested on Sony Xperia X and X Compact (MSM8956):
->>> ADSP, LPASS, Venus, MSS, MDP and GPU are happy :-)
->>
->> Hello,
->> this series is really old and got sent and resent many times.
->> The first time I've sent this one was .. I think in 2019, then, at the
->> end of 2022, I had some time to actually respin it and send another
->> three versions. It's been 3 long years :-)
->> The third version got the last comments addressed.
->>
->> Since this didn't get any more feedback for 3 months, I'm worried that it
->> will be forgotten again, hence:
->>
->> Is there any more feedback? Anything else to fix?
->> If not, can this be picked, please?
-> 
-> Hi Angelo,
-> 
-> there's some open review comments since March now on this series. Since some
-> of these patches are also needed for msm8953 and msm8974 IOMMU it would be
-> nice if you could respin :)
-> 
+Hi Michael,
 
-Hello Luca,
+kernel test robot noticed the following build warnings:
 
-I've just sent a v4, but I'm sorry I forgot to Cc you. Please find it at [1].
+[auto build test WARNING on b6dad5178ceaf23f369c3711062ce1f2afc33644]
 
-[1]: 
-https://lore.kernel.org/all/20230620095127.96600-1-angelogioacchino.delregno@collabora.com/
+url:    https://github.com/intel-lab-lkp/linux/commits/Michael-Shavit/iommu-arm-smmu-v3-Move-ctx_desc-out-of-s1_cfg/20230614-234725
+base:   b6dad5178ceaf23f369c3711062ce1f2afc33644
+patch link:    https://lore.kernel.org/r/20230614154304.2860121-8-mshavit%40google.com
+patch subject: [PATCH v3 07/13] iommu/arm-smmu-v3: Keep track of attached ssids
+config: arm64-defconfig (https://download.01.org/0day-ci/archive/20230620/202306201817.Cn7Xxzds-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 12.3.0
+reproduce: (https://download.01.org/0day-ci/archive/20230620/202306201817.Cn7Xxzds-lkp@intel.com/reproduce)
 
-Cheers,
-Angelo
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202306201817.Cn7Xxzds-lkp@intel.com/
 
-> Regards
-> Luca
-> 
->>
->> Thank you.
->>
->> Best regards,
->> Angelo
->>
->>> Changes in v3:
->>>    - Removed useless FSRRESTORE reset and definition as pointed
->>>    
->>>      out in Robin Murphy's review
->>>    
->>>    - Fixed qcom,iommu.txt changes: squashed MSM8976 compatible
->>>    
->>>      string addition with msm-iommu-v2 generics addition
->>>
->>> Changes in v2:
->>>    - Added back Marijn's notes (sorry man!)
->>>    - Added ARM_SMMU_CB_FSRRESTORE definition
->>>    - Changed context bank reset to properly set FSR and FSRRESTORE
->>>
->>> AngeloGioacchino Del Regno (6):
->>>     dt-bindings: iommu: qcom,iommu: Document qcom,ctx-num property
->>>     iommu/qcom: Use the asid read from device-tree if specified
->>>     iommu/qcom: Properly reset the IOMMU context
->>>     iommu/qcom: Index contexts by asid number to allow asid 0
->>>     dt-bindings: iommu: qcom,iommu: Document QSMMUv2 and MSM8976
->>>     
->>>       compatibles
->>>     
->>>     iommu/qcom: Add support for QSMMUv2 and QSMMU-500 secured contexts
->>>    
->>>    .../devicetree/bindings/iommu/qcom,iommu.txt  |  9 +++
->>>    drivers/iommu/arm/arm-smmu/qcom_iommu.c       | 78 +++++++++++++++----
->>>    2 files changed, 70 insertions(+), 17 deletions(-)
-> 
-> 
-> 
-> 
-> 
+All warnings (new ones prefixed by >>):
+
+>> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:1863:5: warning: no previous prototype for 'arm_smmu_atc_inv_domain' [-Wmissing-prototypes]
+    1863 | int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain,
+         |     ^~~~~~~~~~~~~~~~~~~~~~~
+   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c: In function 'arm_smmu_attach_dev':
+   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:2456:31: error: 'struct arm_smmu_master' has no member named 'domain'
+    2456 |                         master->domain = NULL;
+         |                               ^~
+
+
+vim +/arm_smmu_atc_inv_domain +1863 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+
+  1862	
+> 1863	int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain,
+  1864				    unsigned long iova, size_t size)
+  1865	{
+  1866		return arm_smmu_atc_inv_domain_ssid(smmu_domain, 0, iova, size);
+  1867	}
+  1868	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
