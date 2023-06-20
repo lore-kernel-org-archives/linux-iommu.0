@@ -1,117 +1,119 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 393311119
-	for <iommu@lists.linux.dev>; Tue, 20 Jun 2023 06:33:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1687242789; x=1718778789;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=x3JpUxoqpTN9wZrfp3qIPYCFhBF2d2LhfqEyYtHZ1p0=;
-  b=HyCOBSSHweG16TJ2aB77XcA7A6OtvtrKUJbtfyIxYiESDxBDzUouuEcD
-   xkVzzXcZUIkzj5qnMIRTlLaL8alWciRSqvAYgQKiT5ufPIwieinJtrTxV
-   R4wI16bQDNzy17TGltxZPy7C/q5MB7GeXpx/jkMS7Z3O+kUJ1X6O9Yq+8
-   D5JL5eF670QtIKp8d2Q5oFmc0YLIaga9Vz1kt+GdS2nYu2ncXq/xs5ZJI
-   pGZFETD132BfRnNxio1tj95t2FoFv++Bl3IDAa9R05z5Qp8CeTt3jjvgf
-   760PawOsXhTxdDEU4k/+LXpc186JdvXf7mpRNnW3lCzPa3qKpK3lGMhC8
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="388961579"
-X-IronPort-AV: E=Sophos;i="6.00,256,1681196400"; 
-   d="scan'208";a="388961579"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2023 23:33:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="717116806"
-X-IronPort-AV: E=Sophos;i="6.00,256,1681196400"; 
-   d="scan'208";a="717116806"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmsmga007.fm.intel.com with ESMTP; 19 Jun 2023 23:32:59 -0700
-Message-ID: <13d072e5-df86-d3c8-6742-e52b66fd96a4@linux.intel.com>
-Date: Tue, 20 Jun 2023 14:31:43 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AE4046B3
+	for <iommu@lists.linux.dev>; Tue, 20 Jun 2023 07:21:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=uYLeKz7CtPLIuBievrQxgmZUSwGBkqjnNayiyMmgK3M=; b=jcPw1aVbWJ4FXuugKXEX0kTRZj
+	RffNTyB0eEcsVpSmqG2B7rIhT84FlDdB3ule03g1AfNUBsjktvGUbFT4736H3oNVkkKcSH7f8uO7Y
+	w1DBjsmNPR3i7AG+nMWNDuDcNokDha6GNQDsG7VkYzlJ10XXIygkXWKGf83NwQ1JMHQdjl3WgUtZg
+	C5NeDJLZbNqrsPwhtay5wpS3zswXL22SgbyZjwu1JHS+rmXDSx4wrZddK9Jk3Q/hw6R+ezpGc+ZFv
+	CtGNfTUPowA7O9w5Gosgrw5k3fWeIvXSi7PA+CeXifr+kVyBf54oE59kOZ1HMQQOYX46Xk/bhJmw7
+	SMGsgLFA==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+	by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+	id 1qBVfV-00Fxtf-2Q;
+	Tue, 20 Jun 2023 07:20:50 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
+	(Client did not present a certificate)
+	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id C789A30020B;
+	Tue, 20 Jun 2023 09:20:47 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+	id 4AF2F21440F48; Tue, 20 Jun 2023 09:20:47 +0200 (CEST)
+Date: Tue, 20 Jun 2023 09:20:47 +0200
+From: Peter Zijlstra <peterz@infradead.org>
+To: Xin Li <xin3.li@intel.com>
+Cc: linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+	iommu@lists.linux.dev, linux-hyperv@vger.kernel.org,
+	linux-perf-users@vger.kernel.org, x86@kernel.org,
+	tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+	dave.hansen@linux.intel.com, hpa@zytor.com, steve.wahl@hpe.com,
+	mike.travis@hpe.com, dimitri.sivanich@hpe.com,
+	russ.anderson@hpe.com, dvhart@infradead.org, andy@infradead.org,
+	joro@8bytes.org, suravee.suthikulpanit@amd.com, will@kernel.org,
+	robin.murphy@arm.com, kys@microsoft.com, haiyangz@microsoft.com,
+	wei.liu@kernel.org, decui@microsoft.com, dwmw2@infradead.org,
+	baolu.lu@linux.intel.com, acme@kernel.org, mark.rutland@arm.com,
+	alexander.shishkin@linux.intel.com, jolsa@kernel.org,
+	namhyung@kernel.org, irogers@google.com, adrian.hunter@intel.com,
+	seanjc@google.com, jiangshanlai@gmail.com, jgg@ziepe.ca,
+	yangtiezhu@loongson.cn
+Subject: Re: [PATCH 2/3] x86/vector: Replace IRQ_MOVE_CLEANUP_VECTOR with a
+ timer callback
+Message-ID: <20230620072047.GS4253@hirez.programming.kicks-ass.net>
+References: <20230619231611.2230-1-xin3.li@intel.com>
+ <20230619231611.2230-3-xin3.li@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Cc: baolu.lu@linux.intel.com, suravee.suthikulpanit@amd.com,
- Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>,
- Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH v2 iommu/next] iommu: Fix default domain setup
-Content-Language: en-US
-To: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
- joro@8bytes.org
-References: <20230619084945.6427-1-vasant.hegde@amd.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230619084945.6427-1-vasant.hegde@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230619231611.2230-3-xin3.li@intel.com>
 
-On 6/19/23 4:49 PM, Vasant Hegde wrote:
-> Commit 1000dccd5d13 ("iommu: Allow IOMMU_RESV_DIRECT to work on ARM")
-> accidently restored "group->domain" to "old_domain" while keeping
-> "group->default_domain" to new domain. Also freed new domain.
-> 
-> This works fine during boot as 'old_domain' is NULL. But if we try
-> change domain via sysfs using below command then kernel crashes with
-> "kernel NULL pointer dereference".
-> 
-> Change domain command :
->    - Go to /sys/kernel/iommu_groups/<group id>/
->    - Unbind device driver for all devices in the group
->    - echo "<dom type>" > /sys/kernel/iommu_groups/<group id>/type
-> 
-> Fix above described issue by handling error path properly.
-> 
-> Reported-by: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
-> Fixes: 1000dccd5d13 ("iommu: Allow IOMMU_RESV_DIRECT to work on ARM")
-> Cc: Jason Gunthorpe <jgg@ziepe.ca>
-> Tested-by: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
-> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-> ---
-> Changes in v2:
->    - Addressed review comments from Baolu
-> 
-> @Joerg,
->    This patch applies on top of iommu/next branch.
-> 
-> -Vasant
->   drivers/iommu/iommu.c | 5 +++++
->   1 file changed, 5 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 9e0228ef612b..e74e45f42c75 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -2915,10 +2915,15 @@ static int iommu_setup_default_domain(struct iommu_group *group,
->   		}
->   	}
->   
-> +	if (old_dom)
-> +		iommu_domain_free(old_dom);
-> +	return ret;
+On Mon, Jun 19, 2023 at 04:16:10PM -0700, Xin Li wrote:
 
-Add out_free tag here and remove the duplicate code at the end of this
-function.
+> +/*
+> + * Called with vector_lock held
+> + */
 
+Instead of comments like that, I tend to add a lockdep_assert*()
+statement to the same effect. Which unlike comment actually validate the
+claim and since it's code it tends to not go stale like comments do.
+
+> +static void __vector_cleanup(struct vector_cleanup *cl, bool check_irr)
+>  {
+>  	struct apic_chip_data *apicd;
+>  	struct hlist_node *tmp;
+> +	bool rearm = false;
+
+	lockdep_assert_held(&vector_lock);
+
+> +	hlist_for_each_entry_safe(apicd, tmp, &cl->head, clist) {
+>  		unsigned int irr, vector = apicd->prev_vector;
+>  
+>  		/*
+>  		 * Paranoia: Check if the vector that needs to be cleaned
+> +		 * up is registered at the APICs IRR. That's clearly a
+> +		 * hardware issue if the vector arrived on the old target
+> +		 * _after_ interrupts were disabled above. Keep @apicd
+> +		 * on the list and schedule the timer again to give the CPU
+> +		 * a chance to handle the pending interrupt.
+> +		 *
+> +		 * Do not check IRR when called from lapic_offline(), because
+> +		 * fixup_irqs() was just called to scan IRR for set bits and
+> +		 * forward them to new destination CPUs via IPIs.
+>  		 */
+> +		irr = check_irr ? apic_read(APIC_IRR + (vector / 32 * 0x10)) : 0;
+>  		if (irr & (1U << (vector % 32))) {
+> +			pr_warn_once("Moved interrupt pending in old target APIC %u\n", apicd->irq);
+> +			rearm = true;
+>  			continue;
+>  		}
+>  		free_moved_vector(apicd);
+>  	}
+>  
+> +	/*
+> +	 * Must happen under vector_lock to make the timer_pending() check
+> +	 * in __vector_schedule_cleanup() race free against the rearm here.
+> +	 */
+> +	if (rearm)
+> +		mod_timer(&cl->timer, jiffies + 1);
+> +}
 > +
->   err_restore:
->   	if (old_dom) {
->   		__iommu_group_set_domain_internal(
->   			group, old_dom, IOMMU_SET_DOMAIN_MUST_SUCCEED);
-> +		group->default_domain = old_dom;
->   		iommu_domain_free(dom);
->   		old_dom = NULL;
->   	}
-
-The err_restore branch doesn't work if old_dom is NULL. We have no means
-to restore a group from a successful first-time attaching to NULL
-attaching.
-
-Or I overlooked anything?
-
-Best regards,
-baolu
+> +static void vector_cleanup_callback(struct timer_list *tmr)
+> +{
+> +	struct vector_cleanup *cl = container_of(tmr, typeof(*cl), timer);
+> +
+> +	/* Prevent vectors vanishing under us */
+> +	raw_spin_lock_irq(&vector_lock);
+> +	__vector_cleanup(cl, true);
+> +	raw_spin_unlock_irq(&vector_lock);
+>  }
