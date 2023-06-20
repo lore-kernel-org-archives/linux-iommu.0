@@ -1,25 +1,25 @@
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C70428488
-	for <iommu@lists.linux.dev>; Tue, 20 Jun 2023 09:51:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCAF2E57B
+	for <iommu@lists.linux.dev>; Tue, 20 Jun 2023 09:51:34 +0000 (UTC)
 Received: from IcarusMOD.eternityproject.eu (unknown [IPv6:2001:b07:2ed:14ed:c5f8:7372:f042:90a2])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
 	(Authenticated sender: kholk11)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id 004026602242;
-	Tue, 20 Jun 2023 10:51:30 +0100 (BST)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id 22A376606F8A;
+	Tue, 20 Jun 2023 10:51:32 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1687254691;
-	bh=uwyXNF91v6sGa/spbsQK7wgAPR7kXwSg3iM/Za/E/Xk=;
-	h=From:To:Cc:Subject:Date:From;
-	b=BPG4e43Bc1WYfvc9ppgzIf3ZLFkS/kDzOrzHj1Bb+188214CDobn964KQShkW99jc
-	 gw+qld4zJq4vDmwoM0ett2hIaLJtNR752pRFX8amyiwdp5vdfcnitygfeHhxguPmkg
-	 sQ/pGm1BZNWMqb/MhkGo82mfhsQutaZE9HzQjTtkd3nVuuesxQWWfNZGF92ibeupnp
-	 hhyT91I6tubjw9X2/113WaghEqrhKaDumwaDgTuShtsAj/9UP9i/C9HdBG0rbmkEdh
-	 Q2LKk+j5VxWWHKQU4+zLIS7TKW079pox5c0Cu+CIk5TZ+hCSQGgG52C2qZeTWgx4oY
-	 f6lHArq+I2p+Q==
+	s=mail; t=1687254693;
+	bh=CKq+lIos5lmp5IXI23bezl/YLNmNphPHjGKRjAumT9I=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=c/7ZNKL9oxQI/8GLUCDiY/9wDR41k5QtZxRu6iP6nySvA2m3e2FnZ/JfVrXPZ57aY
+	 Xr8XmkJgDhIvImA9ZmX5r+bf2H81btv2TRXrflFw+Gw4HlQjuyjEj2QRuM4iqnnpVt
+	 DfDbDWTo7VcuQ7oAReldtF6sSWhmZlniHXUZIEgXsdUcKt0QlugWpalIb9ROBGYnkU
+	 e339L2/Mey2des3PqlUxJYwxgg1S1py+4YZnCvrcbQ5phwPWniaSpHiKde9HMiVmJR
+	 o6SrjokI91gaCEcfGwJ1k2cuy82bD32RsLabwuFPU50LZQBnazPW9HxO4WqFIhTZj7
+	 flNQ7Jn8QEYMw==
 From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 To: agross@kernel.org
 Cc: andersson@kernel.org,
@@ -39,10 +39,12 @@ Cc: andersson@kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
 	kernel@collabora.com
-Subject: [PATCH v4 0/6] Add support for Qualcomm's legacy IOMMU v2
-Date: Tue, 20 Jun 2023 11:51:21 +0200
-Message-Id: <20230620095127.96600-1-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH v4 1/6] dt-bindings: iommu: qcom,iommu: Add qcom,ctx-num property
+Date: Tue, 20 Jun 2023 11:51:22 +0200
+Message-Id: <20230620095127.96600-2-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230620095127.96600-1-angelogioacchino.delregno@collabora.com>
+References: <20230620095127.96600-1-angelogioacchino.delregno@collabora.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,48 +53,30 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series adds support for handling "v2" firmware's IOMMU, found
-on at least MSM8956 and MSM8976 (some other SoCs also need the same
-but I honestly don't remember which ones precisely).
+Add a new "qcom,ctx-num" property to force an ASID number on IOMMU
+contexts where required.
 
-This is strictly required to get functional IOMMUs on these SoCs.
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ Documentation/devicetree/bindings/iommu/qcom,iommu.yaml | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-I'm sorry for not performing a much needed schema conversion on
-qcom,iommu.txt, but I really didn't have time to do that :-(
-
-This series was tested on Sony Xperia X and X Compact (MSM8956):
-ADSP, LPASS, Venus, MSS, MDP and GPU are happy :-)
-
-Changes in v4:
- - Rebase over next-20230619
- - Rewrite qcom,iommu.txt changes to qcom,iommu.yaml
- - Changed reset writes to only disable CB through CB_SCTLR
-   and reset CB_FSR and CB_FAR
- - Addressed misc reviewer's comments
-
-Changes in v3:
- - Removed useless FSRRESTORE reset and definition as pointed
-   out in Robin Murphy's review
- - Fixed qcom,iommu.txt changes: squashed MSM8976 compatible
-   string addition with msm-iommu-v2 generics addition
-
-Changes in v2:
- - Added back Marijn's notes (sorry man!)
- - Added ARM_SMMU_CB_FSRRESTORE definition
- - Changed context bank reset to properly set FSR and FSRRESTORE
-
-AngeloGioacchino Del Regno (6):
-  dt-bindings: iommu: qcom,iommu: Add qcom,ctx-num property
-  iommu/qcom: Use the asid read from device-tree if specified
-  iommu/qcom: Disable and reset context bank before programming
-  iommu/qcom: Index contexts by asid number to allow asid 0
-  dt-bindings: iommu: qcom,iommu: Add QSMMUv2 and MSM8976 compatibles
-  iommu/qcom: Add support for QSMMUv2 and QSMMU-500 secured contexts
-
- .../devicetree/bindings/iommu/qcom,iommu.yaml | 22 +++++--
- drivers/iommu/arm/arm-smmu/qcom_iommu.c       | 62 ++++++++++++++-----
- 2 files changed, 64 insertions(+), 20 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml b/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml
+index d9fabdf930d9..0446ccc4116e 100644
+--- a/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml
++++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml
+@@ -71,6 +71,11 @@ patternProperties:
+       reg:
+         maxItems: 1
+ 
++      qcom,ctx-num:
++        $ref: /schemas/types.yaml#/definitions/uint32
++        description:
++          The ASID number associated to the context bank.
++
+     required:
+       - compatible
+       - interrupts
 -- 
 2.40.1
 
