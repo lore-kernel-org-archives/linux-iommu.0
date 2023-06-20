@@ -1,47 +1,56 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C1D4FBFE;
-	Tue, 20 Jun 2023 10:22:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1687256534; x=1718792534;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=5ZYsZOvfPxA0b3dXDGRauovDUG8AX9HxRyYI5k76mgY=;
-  b=UN5dNCeIdcyGC+VcoFMRiOHd08othyybIIrXg8LCRQ9+GFOj8reSwUqf
-   bmfEFCyQz6vnOQHtzJTY4iqUXYnjaaZHLS+opkNhP8WoRVLVIjNNTGr0W
-   BbWgJOD8TXSbTpYBfpTJkV53VHU9GHKESXFI+eDq8BYJrpvljTf/trObf
-   Oj0bYkVarH4LDUNuXs2Cyvxyhwhdaf9Y7WDYw2FYlsfO73FhAUYLHbCQC
-   8NAaG3/kSJKxPjJfRVqwhQySbrNNbOa+KF8UvR3P23zqjJWNr47mm9f+Y
-   /rhKSa3Xqx9WbS1d/eYsB3HQIclS6C5h5hCz2sa3/8YdVWy2XSDNHJZ/p
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="339432946"
-X-IronPort-AV: E=Sophos;i="6.00,256,1681196400"; 
-   d="scan'208";a="339432946"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2023 03:22:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="826937107"
-X-IronPort-AV: E=Sophos;i="6.00,256,1681196400"; 
-   d="scan'208";a="826937107"
-Received: from lkp-server01.sh.intel.com (HELO 783282924a45) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 20 Jun 2023 03:22:11 -0700
-Received: from kbuild by 783282924a45 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1qBYV0-0005nu-2o;
-	Tue, 20 Jun 2023 10:22:10 +0000
-Date: Tue, 20 Jun 2023 18:21:20 +0800
-From: kernel test robot <lkp@intel.com>
-To: Michael Shavit <mshavit@google.com>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>
-Cc: oe-kbuild-all@lists.linux.dev, Michael Shavit <mshavit@google.com>,
-	jean-philippe@linaro.org, nicolinc@nvidia.com, jgg@nvidia.com,
-	baolu.lu@linux.intel.com, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 07/13] iommu/arm-smmu-v3: Keep track of attached ssids
-Message-ID: <202306201817.Cn7Xxzds-lkp@intel.com>
-References: <20230614154304.2860121-8-mshavit@google.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77EB0101FA
+	for <iommu@lists.linux.dev>; Tue, 20 Jun 2023 11:42:44 +0000 (UTC)
+Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-1b52864b701so35823385ad.3
+        for <iommu@lists.linux.dev>; Tue, 20 Jun 2023 04:42:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1687261363; x=1689853363;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=hDZ7ULI7Gz45/BBzCO4ozBFhMbYvKO7tkQm7FJGGKkA=;
+        b=NK/+iMQsbH6NMURen5XkeFO52klpCiQq0sEPZNhqt7WMh0f188qi9ENpXaKj3kdEiB
+         Uo59OzT5oFnBhXN5/pK4Yj11KEbHTYT+rhujoUEgAV2dtheH0LHyJ3pf5Qo2bx0vr0WU
+         NCHqUrM+zOKJ46WXJR/c+F+yKrEll+q/vvYDC/Xns5UCvMJ7T9jzKl46J81emK33h3IM
+         5CHnNyfkCpCBPCJAE4UjxQPAVgXTwenSodu/qzGdTNUocBLbq+DypPyFrPAcB9nuAmlu
+         EOTElimsIKTSy+PZf4/SuyNtu5y9CWeCv7qavjftqxiOdhjJPNvOQhBqsasn7OvoX4FT
+         eS0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687261363; x=1689853363;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hDZ7ULI7Gz45/BBzCO4ozBFhMbYvKO7tkQm7FJGGKkA=;
+        b=OmSJ5dMZ8xS9Vr3XbEQQMkh/jyfMtdQlGTIIvYllHLgsNKhlsmLTnsdoBLMTwamocb
+         Iri54xED+0sSZzNqmWYEWFfWmUyq3Ee52BV2TYswhO+ZBpRCg2feTz3X156CLZs78h6A
+         3Z+HcNRb/NyAUknr7bbLjJV7OWhbFGevF5H6uWQDsLEzrnyipQHS68ti/1pEmUB9qkwv
+         wRfflYijgHJ3ztvJXSwmRxGWjtYql/KjkOMvVM2yVpJpzV2GlAgsG93Tcbm7t2VnP88f
+         HSqVQcK2kJxx0YjaEYyCvueF4kyPHJRa6dB0v8jEM7R+GmWqAY/6XMAZg7W6uOZ6Hkyg
+         ZiOA==
+X-Gm-Message-State: AC+VfDwxW5b1sJMSlGLUnZIzhJSQRebZoUqX6IingDvN7vNYFr0kClLa
+	HadwamshTJn4baM3HqCfV5d7Kg==
+X-Google-Smtp-Source: ACHHUZ4GN/Mo/BjDw4LcFCD4cJhLnKMmS4apsopQwOPfIokotr/jA5x+wAMAm7rayaNJsD2IvxM5BA==
+X-Received: by 2002:a17:902:e5c6:b0:1b6:8f20:1a2b with SMTP id u6-20020a170902e5c600b001b68f201a2bmr337929plf.26.1687261363561;
+        Tue, 20 Jun 2023 04:42:43 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
+        by smtp.gmail.com with ESMTPSA id u15-20020a170902e80f00b001b024ee5f6esm1474674plg.81.2023.06.20.04.42.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Jun 2023 04:42:42 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1qBZkv-007KQp-2G;
+	Tue, 20 Jun 2023 08:42:41 -0300
+Date: Tue, 20 Jun 2023 08:42:41 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
+	joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
+Subject: Re: [PATCH v2 iommu/next] iommu: Fix default domain setup
+Message-ID: <ZJGQsWXkgTuj7xC1@ziepe.ca>
+References: <20230619084945.6427-1-vasant.hegde@amd.com>
+ <13d072e5-df86-d3c8-6742-e52b66fd96a4@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,48 +59,22 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230614154304.2860121-8-mshavit@google.com>
+In-Reply-To: <13d072e5-df86-d3c8-6742-e52b66fd96a4@linux.intel.com>
 
-Hi Michael,
+On Tue, Jun 20, 2023 at 02:31:43PM +0800, Baolu Lu wrote:
+> >   err_restore:
+> >   	if (old_dom) {
+> >   		__iommu_group_set_domain_internal(
+> >   			group, old_dom, IOMMU_SET_DOMAIN_MUST_SUCCEED);
+> > +		group->default_domain = old_dom;
+> >   		iommu_domain_free(dom);
+> >   		old_dom = NULL;
+> >   	}
+> 
+> The err_restore branch doesn't work if old_dom is NULL. We have no means
+> to restore a group from a successful first-time attaching to NULL
+> attaching.
 
-kernel test robot noticed the following build warnings:
+Yes, this is what I fixed in my alternative version
 
-[auto build test WARNING on b6dad5178ceaf23f369c3711062ce1f2afc33644]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Michael-Shavit/iommu-arm-smmu-v3-Move-ctx_desc-out-of-s1_cfg/20230614-234725
-base:   b6dad5178ceaf23f369c3711062ce1f2afc33644
-patch link:    https://lore.kernel.org/r/20230614154304.2860121-8-mshavit%40google.com
-patch subject: [PATCH v3 07/13] iommu/arm-smmu-v3: Keep track of attached ssids
-config: arm64-defconfig (https://download.01.org/0day-ci/archive/20230620/202306201817.Cn7Xxzds-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 12.3.0
-reproduce: (https://download.01.org/0day-ci/archive/20230620/202306201817.Cn7Xxzds-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202306201817.Cn7Xxzds-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
->> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:1863:5: warning: no previous prototype for 'arm_smmu_atc_inv_domain' [-Wmissing-prototypes]
-    1863 | int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain,
-         |     ^~~~~~~~~~~~~~~~~~~~~~~
-   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c: In function 'arm_smmu_attach_dev':
-   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:2456:31: error: 'struct arm_smmu_master' has no member named 'domain'
-    2456 |                         master->domain = NULL;
-         |                               ^~
-
-
-vim +/arm_smmu_atc_inv_domain +1863 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-
-  1862	
-> 1863	int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain,
-  1864				    unsigned long iova, size_t size)
-  1865	{
-  1866		return arm_smmu_atc_inv_domain_ssid(smmu_domain, 0, iova, size);
-  1867	}
-  1868	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Jason
