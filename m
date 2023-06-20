@@ -1,216 +1,133 @@
-Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2071.outbound.protection.outlook.com [40.107.223.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 738622AB28
-	for <iommu@lists.linux.dev>; Tue, 20 Jun 2023 16:54:04 +0000 (UTC)
-Received: from pps.filterd (m0150245.ppops.net [127.0.0.1])
-	by mx0b-002e3701.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 35KFQaEh017220;
-	Tue, 20 Jun 2023 16:27:49 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pps0720; bh=Wq0tNAZYntMOwujjPXOicpBp9fXP+Uj7oYrHjROJbZA=;
- b=M+xfl8GZ6kqZ1CiDzA9X4UIph7j8Uxk6Zk8O01krfcaIRWFNJug8wkFrqz3VGFySwXya
- 1Xk55oPZl9kiBmZShhESmyFrg0lc+brEJpdfF+dLLRDmCDyq/nx5YTaKjX0OV3r4lYC7
- MIBtmOJSNz4ns3EIlzL3a7oZp4aWDTOMu+knYFslil3rQbLnqc96PMraSGJeJa7VRE1H
- YmjPkI97ewmuBuxLOd1zXrNKZFnIQqF0/Rcgql9LdSnHw9EsHQMEpaoIr2rABytBDo4p
- q7vDTnFAz2SfEK3+Ff7iW5H3E2HEE04CQMsPUXDChNXXMiyufzK11zizYoWdBnsNvC0O IA== 
-Received: from p1lg14879.it.hpe.com (p1lg14879.it.hpe.com [16.230.97.200])
-	by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3rberk8jh6-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 20 Jun 2023 16:27:49 +0000
-Received: from p1lg14885.dc01.its.hpecorp.net (unknown [10.119.18.236])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by p1lg14879.it.hpe.com (Postfix) with ESMTPS id EB7DD12B43;
-	Tue, 20 Jun 2023 16:27:47 +0000 (UTC)
-Received: from swahl-home.5wahls.com (unknown [16.231.227.36])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	by p1lg14885.dc01.its.hpecorp.net (Postfix) with ESMTPS id A16C180871B;
-	Tue, 20 Jun 2023 16:27:43 +0000 (UTC)
-Date: Tue, 20 Jun 2023 11:27:41 -0500
-From: Steve Wahl <steve.wahl@hpe.com>
-To: Xin Li <xin3.li@intel.com>
-Cc: linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        iommu@lists.linux.dev, linux-hyperv@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, x86@kernel.org, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, steve.wahl@hpe.com, dimitri.sivanich@hpe.com,
-        russ.anderson@hpe.com, dvhart@infradead.org, andy@infradead.org,
-        joro@8bytes.org, suravee.suthikulpanit@amd.com, will@kernel.org,
-        robin.murphy@arm.com, kys@microsoft.com, haiyangz@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, dwmw2@infradead.org,
-        baolu.lu@linux.intel.com, peterz@infradead.org, acme@kernel.org,
-        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
-        jolsa@kernel.org, namhyung@kernel.org, irogers@google.com,
-        adrian.hunter@intel.com, seanjc@google.com, jiangshanlai@gmail.com,
-        jgg@ziepe.ca, yangtiezhu@loongson.cn
-Subject: Re: [PATCH 1/3] x86/vector: Rename send_cleanup_vector() to
- vector_schedule_cleanup()
-Message-ID: <ZJHTYUrKA/mclxRZ@swahl-home.5wahls.com>
-References: <20230619231611.2230-1-xin3.li@intel.com>
- <20230619231611.2230-2-xin3.li@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EBE92AB28
+	for <iommu@lists.linux.dev>; Tue, 20 Jun 2023 16:55:51 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZlTR129qmn1LQNMXQ3wxklTbJH43byKHbelp/Z9Ey1gFnsmVtzAMWEdijJH6d6FGJYBC8wIw+KjFFxJtG3er/QeLjIhdY7FA6Bnuw9rOczfNL52u5ISCTL5tFpo8PiTvO6AtHqEgaSMK+XHeZ4QpXe9bY2wF0j4zdYhXm8+sgpwF1ek94CaBa5EIAGpK5XDM6pYfCDnchV9qakFChDpM7gE+HqR7/Ay317+1jmFHOMQCcCSOsy7VUFZUENEgEKdnaE1yfIRfRCFDccqGYKEPI719kQXwt2VS6j25orefbzrbeoXlLUPmHl3POjAAI4lkW7tLz4u/nGXO6pO/GjgSDQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3Fwfg170SNKMwBnMcPZ5kwhpn4TN5a4rHik3TKZaJzw=;
+ b=jM9GhwFj4qchuq6dejXr9rD5IWsdNJ5ic/UIw/f0UaJgBY9PX/llICNoAqjGu/KQvbg0SzcXDYiW56rEf4GQfY/eXvmGsUdZi2dnxSpf8HjhfCkXS/VUu+pfIWEdi+SMNdUBnZXA9HJS/o9FI/sywvBJRDZWf+c5hS2wC8d1hKxbI7BnP5uuduHMydu5/Kdf3ZFyrRlkpoxNY/7p1QmC5UrZxmqkKdR/ijkaD6XGWRYGDPNIGoI0QjBjS4tZPSUthRHfAHQSF0ddikfqZ9sQEKvC+d+H7rL7ozgZ8qUXKNhBkfvQ0YCQv9LbKblJsA8wdJ8iaqiNpAXGN8XA+UZLhA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3Fwfg170SNKMwBnMcPZ5kwhpn4TN5a4rHik3TKZaJzw=;
+ b=E8jlSn1CCKQyY2tqH+rOKZWjogSnIVOyv1rtdVQoOu7mUOpus/D8AtpVusx5DNrfc7pIRWzbBQL6pQDzgs4Pj//iarSunCuuJy3+yiX2ayOy29UmCiG9yhJ9YImWbdBZ6+3zk9b3bat9h8qJjuVY4tnr1aA+Y77ImQAyWuIYMv0p0Ec8g+Fae8mpjSXBtmcGtBr3AjrxwilZbbE4SOn2+ljIvxAlydk1h1cMF7/QiMHXPsFb2t/9do+coN06vM0+tvutVA1lwYwH+GaM32X8yEaonYmQYZ1+lqbQrMKsr+NoVeEnNvXzuJqgCGMZ+3+gJvq5WO3eHiscRRb7PKRdZg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by BY5PR12MB4307.namprd12.prod.outlook.com (2603:10b6:a03:20c::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.21; Tue, 20 Jun
+ 2023 16:55:48 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab%7]) with mapi id 15.20.6500.031; Tue, 20 Jun 2023
+ 16:55:48 +0000
+Date: Tue, 20 Jun 2023 13:55:47 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Alexander Duyck <alexander.duyck@gmail.com>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Baolu Lu <baolu.lu@linux.intel.com>,
+	LKML <linux-kernel@vger.kernel.org>,
+	linux-pci <linux-pci@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: Question about reserved_regions w/ Intel IOMMU
+Message-ID: <ZJHaE2+XOgQj1q2k@nvidia.com>
+References: <b24a6c7b-27fc-41c0-5c82-15696b4a7dc1@arm.com>
+ <ZIiRK2Dzl2/9Jqle@ziepe.ca>
+ <BN9PR11MB52765C24405D2475CF3CBEBE8C58A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZIxTmGU4a5dniEY3@nvidia.com>
+ <CAKgT0UfmdOOPSD5YvpHnh1A02URn9zxVLbyXJM_67On7xojLcA@mail.gmail.com>
+ <520e2be4-726f-c680-c010-a308cdddbae0@arm.com>
+ <ZIyxFpzh3WG+ifws@nvidia.com>
+ <90823b33-1f44-8789-9a38-282407fd9f15@arm.com>
+ <ZJBf5DP60prFH5R2@nvidia.com>
+ <CAKgT0UccM=_D-gJdzjqeUmRZWnSHVaUABjgQBEamLYauE8WTCA@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKgT0UccM=_D-gJdzjqeUmRZWnSHVaUABjgQBEamLYauE8WTCA@mail.gmail.com>
+X-ClientProxiedBy: CH0PR03CA0081.namprd03.prod.outlook.com
+ (2603:10b6:610:cc::26) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230619231611.2230-2-xin3.li@intel.com>
-X-Proofpoint-GUID: sv3OUwB2DgkiAQGU6DCGBG-2zzGjyhJ8
-X-Proofpoint-ORIG-GUID: sv3OUwB2DgkiAQGU6DCGBG-2zzGjyhJ8
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-06-20_12,2023-06-16_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 suspectscore=0
- phishscore=0 mlxlogscore=999 mlxscore=0 spamscore=0 adultscore=0
- impostorscore=0 malwarescore=0 priorityscore=1501 clxscore=1011
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2305260000 definitions=main-2306200148
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BY5PR12MB4307:EE_
+X-MS-Office365-Filtering-Correlation-Id: d1447e5a-0b32-46f1-6f40-08db71af328f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	CsDc7TBZwzm8Wy4EH9T/zgJllxAla5ykRuYjkxczRfEUI9V3aYLtrtD5A2rgqcP2QB2D1lWlX5urr5fdeGWmpAB+N8kzFI+8zPOGihTXhos6hFTRlExa/+Ry5rPnyxjbT1KxVLsA8sHYPpuMT890zNXaAXitRhNuKd654KkPiQEz2aq5lDxyv2peovC6e6V8KXARKkoyXgfbaTemmbSl174lezRXVXK65nkXJfXQqbjmiDmS2h3yBeuaxGZVnkKih5mK/73k/iyFVEywQAr/U2hVnGl2TruVzgWVB9krxTnGSpvbn90qin7uldBRce5gxyYCQPUdBxG5bujMg42hGkoObcDgd/rIA+lLiFY9GugWaekNbtUPz/HCN6fVPc4QQbrwO5UR6lZ4LoPEEIGYvC7q0FBhJYX4411oelDbv1gkCEtvfDqJyMo36IuiCd+aPifdgkmHvSunMzukV22tlI/sE6v871NgMeflViTUbWrbUPDQGXRIVCD+/4mtgJ9rRK8zuWuKHN4PX4GszOP8NTyyidl40htoJRIcL6EIhoZebkHk4QcRMT9rU6vtxI6zwGV5VXDxd7jkmAfqzR7tCX10aijgmGBcSLX6dpiGaNo=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(39860400002)(366004)(346002)(376002)(451199021)(36756003)(5660300002)(66476007)(6916009)(86362001)(8936002)(8676002)(41300700001)(66556008)(4326008)(38100700002)(316002)(66946007)(6486002)(6512007)(26005)(6506007)(186003)(4744005)(2906002)(2616005)(478600001)(83380400001)(54906003)(67856001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?fWu9HNs0cKirJtu13Ak5fE1RNO8x+3+mftJjCV1gUoaodetxIPxFzMYcK3B8?=
+ =?us-ascii?Q?a5YwRQ6ldzzQ4J6xjMSJ8s6D764Eiw7EbOLT21/eXSfB81rLEZkYJHXawMyk?=
+ =?us-ascii?Q?8yVSu/iU+bFgwRHwY3+oTsrpVS9yPchIsWk+76WcmC1A66CeEvXdI/pHiVI/?=
+ =?us-ascii?Q?zj4uEnQYkkwgeWTZEzgwMWHNPuP4gxwJBZDmjmorc/F1vuwQYsVI87xOD99s?=
+ =?us-ascii?Q?UR2kZX/vTMzJ8Glbu6l7og+/JAtS49ixpxuns14KYv33Yg3cgDvcL2EZ9sEO?=
+ =?us-ascii?Q?ZpAo0xD8suWO3V3kFZC67nq3xlCMINz5oxY9V229uv7QOnjGL0++JB8Y3/ZZ?=
+ =?us-ascii?Q?BAd3MPUsxB/MLrlbp5pXa9l/09Dw2fOUP7j6s3YxqkagsdK6NNHWmwa7eegP?=
+ =?us-ascii?Q?HJuXSpYSsxejP1SAebFAKQjfbWQoyviXJcTIIXMl0al1JhPvI+6YU8WP4MNA?=
+ =?us-ascii?Q?YPX5GX6V/NIXU8FV/ZHIz/TDeuUTR/PGt8Gp37N+TnF2/UTGUeU8Eq8nSHJQ?=
+ =?us-ascii?Q?JSlChAor41TXBCJtlTtaSWCb04fLshLUieT54lRMDZVpQpBRKbeLe3Gf1zcX?=
+ =?us-ascii?Q?p4eY79rV0Rcka494bSwOb2+I1jbyQsmgy6JgYjhcIzq7mtwTqMWL0LtL8qsw?=
+ =?us-ascii?Q?CmAFqMLURp599jsK/P9e7MESlroNpsGrnlyRUbFJP0GyumM6v9bJFuZ/esU5?=
+ =?us-ascii?Q?QYHnaJmaFw1RGaIykz0rA7eePTDQfWbE923SbU8VWl0v1aeYae/yUs83ujVU?=
+ =?us-ascii?Q?PGU2cOfUchjHRNLjkONYFN6Jk3neJInjAA9v0EARO+egAmm5UIiQXRDqqtsI?=
+ =?us-ascii?Q?5vwK96MrkoIxDQjdGYMuGDn+tz3Qg8ovXnvmMnREW8Gpd/BZTik1bk70Z98f?=
+ =?us-ascii?Q?VgPl889FPqBwdqhf8uB+SWDqSXQnZg92v5ieqcacxycaYWtx8+7Yz2eMn+Hu?=
+ =?us-ascii?Q?2kq3gCRbPnfPOyHI1f0mXo4K34qxif1GLOnGvHiinjjN/LmwrVLQmHT+AUSj?=
+ =?us-ascii?Q?hR8a8PCbYYCXK5l+YBlLwVO7bZVAbeapsaKS3SEo9QtuTq5+N8PEP/txh3MB?=
+ =?us-ascii?Q?t1zC4+WKMyCimtgCj0bg24rSb9DjQGGgmamuU+H4+z6/dc7+OGz1fuPSZ7KT?=
+ =?us-ascii?Q?VdN1V7Cc405kHBKXsjIAApw9iwgRGenGEChcV5405b1mR8yodOH3BM4PiMKx?=
+ =?us-ascii?Q?H8Gn+VBhHJQtg213Xgf4uao0rAOKe5lQ9cj8sHV8H7VtLy++nGAckgWPfwoA?=
+ =?us-ascii?Q?kqckcGclAq3teTEqLn9YpxN4fKm0YZessMy0wF1SBwEqBV2XEGq2Fcp2mtb9?=
+ =?us-ascii?Q?RYGmTBqBGoUhXXet5bJ4yQFzMbXVIjv4VJTZ5zGGxRoNuwfrsgRxlJ2MmUSW?=
+ =?us-ascii?Q?K0XigGMrLfbDWVhoI0M2xsTyZBJNzVZVhvGmoocD9lxGG3cECVyu4DM5111M?=
+ =?us-ascii?Q?fzzxQQE70PTGjdDLe244gsfN+FnQM7l+a+AeAwbKk1wCxibRODeWOBkP16j2?=
+ =?us-ascii?Q?cdk2bZ+SiOC/kKK3QVKcRgxZSQbqOv5TBJkd7kAUA1P1jU6oo6880DhmyhTH?=
+ =?us-ascii?Q?hUi5fUWov/dFk8Wreu/wsxWHnYYkh98wILUVnkDN?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d1447e5a-0b32-46f1-6f40-08db71af328f
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2023 16:55:48.6129
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sl8nYGIWstL9k2HxrEi03LwQlfrGsGU0Yrg5XpboMTfLXWRtWj2ytoQo5Arp5czi
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4307
 
-Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
+On Tue, Jun 20, 2023 at 07:57:57AM -0700, Alexander Duyck wrote:
 
-On Mon, Jun 19, 2023 at 04:16:09PM -0700, Xin Li wrote:
-> From: Thomas Gleixner <tglx@linutronix.de>
-> 
-> Rename send_cleanup_vector() to vector_schedule_cleanup() for the next
-> patch to replace vector cleanup IPI with a timer callback.
-> 
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Signed-off-by: Xin Li <xin3.li@intel.com>
-> ---
->  arch/x86/include/asm/hw_irq.h       | 4 ++--
->  arch/x86/kernel/apic/vector.c       | 8 ++++----
->  arch/x86/platform/uv/uv_irq.c       | 2 +-
->  drivers/iommu/amd/iommu.c           | 2 +-
->  drivers/iommu/hyperv-iommu.c        | 4 ++--
->  drivers/iommu/intel/irq_remapping.c | 2 +-
->  6 files changed, 11 insertions(+), 11 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/hw_irq.h b/arch/x86/include/asm/hw_irq.h
-> index d465ece58151..551829884734 100644
-> --- a/arch/x86/include/asm/hw_irq.h
-> +++ b/arch/x86/include/asm/hw_irq.h
-> @@ -97,10 +97,10 @@ extern struct irq_cfg *irqd_cfg(struct irq_data *irq_data);
->  extern void lock_vector_lock(void);
->  extern void unlock_vector_lock(void);
->  #ifdef CONFIG_SMP
-> -extern void send_cleanup_vector(struct irq_cfg *);
-> +extern void vector_schedule_cleanup(struct irq_cfg *);
->  extern void irq_complete_move(struct irq_cfg *cfg);
->  #else
-> -static inline void send_cleanup_vector(struct irq_cfg *c) { }
-> +static inline void vector_schedule_cleanup(struct irq_cfg *c) { }
->  static inline void irq_complete_move(struct irq_cfg *c) { }
->  #endif
->  
-> diff --git a/arch/x86/kernel/apic/vector.c b/arch/x86/kernel/apic/vector.c
-> index c1efebd27e6c..aa370bd0d933 100644
-> --- a/arch/x86/kernel/apic/vector.c
-> +++ b/arch/x86/kernel/apic/vector.c
-> @@ -967,7 +967,7 @@ DEFINE_IDTENTRY_SYSVEC(sysvec_irq_move_cleanup)
->  	raw_spin_unlock(&vector_lock);
->  }
->  
-> -static void __send_cleanup_vector(struct apic_chip_data *apicd)
-> +static void __vector_schedule_cleanup(struct apic_chip_data *apicd)
->  {
->  	unsigned int cpu;
->  
-> @@ -983,13 +983,13 @@ static void __send_cleanup_vector(struct apic_chip_data *apicd)
->  	raw_spin_unlock(&vector_lock);
->  }
->  
-> -void send_cleanup_vector(struct irq_cfg *cfg)
-> +void vector_schedule_cleanup(struct irq_cfg *cfg)
->  {
->  	struct apic_chip_data *apicd;
->  
->  	apicd = container_of(cfg, struct apic_chip_data, hw_irq_cfg);
->  	if (apicd->move_in_progress)
-> -		__send_cleanup_vector(apicd);
-> +		__vector_schedule_cleanup(apicd);
->  }
->  
->  void irq_complete_move(struct irq_cfg *cfg)
-> @@ -1007,7 +1007,7 @@ void irq_complete_move(struct irq_cfg *cfg)
->  	 * on the same CPU.
->  	 */
->  	if (apicd->cpu == smp_processor_id())
-> -		__send_cleanup_vector(apicd);
-> +		__vector_schedule_cleanup(apicd);
->  }
->  
->  /*
-> diff --git a/arch/x86/platform/uv/uv_irq.c b/arch/x86/platform/uv/uv_irq.c
-> index ee21d6a36a80..4221259a5870 100644
-> --- a/arch/x86/platform/uv/uv_irq.c
-> +++ b/arch/x86/platform/uv/uv_irq.c
-> @@ -58,7 +58,7 @@ uv_set_irq_affinity(struct irq_data *data, const struct cpumask *mask,
->  	ret = parent->chip->irq_set_affinity(parent, mask, force);
->  	if (ret >= 0) {
->  		uv_program_mmr(cfg, data->chip_data);
-> -		send_cleanup_vector(cfg);
-> +		vector_schedule_cleanup(cfg);
->  	}
->  
->  	return ret;
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index dc1ec6849775..b5900e70de60 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -3658,7 +3658,7 @@ static int amd_ir_set_affinity(struct irq_data *data,
->  	 * at the new destination. So, time to cleanup the previous
->  	 * vector allocation.
->  	 */
-> -	send_cleanup_vector(cfg);
-> +	vector_schedule_cleanup(cfg);
->  
->  	return IRQ_SET_MASK_OK_DONE;
->  }
-> diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
-> index 8302db7f783e..8a5c17b97310 100644
-> --- a/drivers/iommu/hyperv-iommu.c
-> +++ b/drivers/iommu/hyperv-iommu.c
-> @@ -51,7 +51,7 @@ static int hyperv_ir_set_affinity(struct irq_data *data,
->  	if (ret < 0 || ret == IRQ_SET_MASK_OK_DONE)
->  		return ret;
->  
-> -	send_cleanup_vector(cfg);
-> +	vector_schedule_cleanup(cfg);
->  
->  	return 0;
->  }
-> @@ -257,7 +257,7 @@ static int hyperv_root_ir_set_affinity(struct irq_data *data,
->  	if (ret < 0 || ret == IRQ_SET_MASK_OK_DONE)
->  		return ret;
->  
-> -	send_cleanup_vector(cfg);
-> +	vector_schedule_cleanup(cfg);
->  
->  	return 0;
->  }
-> diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
-> index a1b987335b31..55d899f5a14b 100644
-> --- a/drivers/iommu/intel/irq_remapping.c
-> +++ b/drivers/iommu/intel/irq_remapping.c
-> @@ -1180,7 +1180,7 @@ intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
->  	 * at the new destination. So, time to cleanup the previous
->  	 * vector allocation.
->  	 */
-> -	send_cleanup_vector(cfg);
-> +	vector_schedule_cleanup(cfg);
->  
->  	return IRQ_SET_MASK_OK_DONE;
->  }
-> -- 
-> 2.34.1
-> 
+> I think this may have gone off down a rathole as my original question
+> wasn't anything about adding extra reserved regions. It was about
+> exposing what the IOVA is already reserving so it could be user
+> visible.
 
--- 
-Steve Wahl, Hewlett Packard Enterprise
+Your question points out that dma-iommu.c uses a different set of
+reserved regions than everything else, and its set is closer to
+functionally correct.
+
+IMHO the resolution to what you are talking about is not to add more
+debugging to dma-iommu but to make the set of reserved regions
+consistently correct for everyone, which will make them viewable in
+sysfs.
+
+Jason
