@@ -1,32 +1,32 @@
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F5431C750
-	for <iommu@lists.linux.dev>; Wed, 21 Jun 2023 20:55:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4ED2519E6E
+	for <iommu@lists.linux.dev>; Wed, 21 Jun 2023 20:55:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1687380909; x=1718916909;
+  t=1687380910; x=1718916910;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=4ZLNWA9lbj3RPDCkZaIcBniRXsCD3rLw+gS6G1GEZhI=;
-  b=gjyMKL9d9dS7ojv6s8M5BOCPMglbxo2V51KeBKMTVL8+iXqUU8DGvOON
-   lHPjRamvkgXm05lPYJuvo2LTzRqgjSR+3VTXL2vmjO3U2wDsjEeaY3uTJ
-   hXGAGPTB+OowyuJvNIxfe50pUmEoENiFerBambAR41sarAvoRAPlhKEd0
-   +4wRtUaT2z/17mn6u4AGkIQSsAF5eycWTJJo5IRPb10gehRpLUN6i0ja6
-   qXh8s2N1vAcygOiz6n+KkgaYg7fz4iNFQISjamzm/TH/kVLzsICMedba5
-   QVWD1vesk0u4inZXIMMPJbKkG3TSVG8uZIOzwn8LuMIYVasBjwvnDp/Po
+  bh=mm0RBRlxNTWUVWGSjZmJqXmc9M/wdroaapVIA3ESeqk=;
+  b=jsD8/5DM0Cp7F4alo4nLh+MH6l0XIoysES4JgETtBGc5uqZU7pFYpfgR
+   Ym9Ym6L9n3IktJBmB60BWdgWawIGDk9UiPlwe4ftjlMv36AK3u59AlYJg
+   IkhSawkt6XVJAdnQ4+AQuniCGcIByR8GTZifmBPKPmD8WcSUc2KLai926
+   6EjQQhJR8kt11UnBVndqkfK3Y3oRvd0EjnLhDYpK0Dtu/8/WQB3nX9t3A
+   4Dqc5ZGbRqriWMoKFXnzJFQuu3Ptwutl3wIiblPPsJDKo3zRn7jlVtLbv
+   T0zIP4obzdJxdg07K61w7GLGT6sCn4hAGFA7Q2VIXR6UlCTe9LG1GZxUY
    Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10748"; a="359168909"
+X-IronPort-AV: E=McAfee;i="6600,9927,10748"; a="359168937"
 X-IronPort-AV: E=Sophos;i="6.00,261,1681196400"; 
-   d="scan'208";a="359168909"
+   d="scan'208";a="359168937"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2023 13:55:06 -0700
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2023 13:55:08 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10748"; a="827597900"
+X-IronPort-AV: E=McAfee;i="6600,9927,10748"; a="827597919"
 X-IronPort-AV: E=Sophos;i="6.00,261,1681196400"; 
-   d="scan'208";a="827597900"
+   d="scan'208";a="827597919"
 Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.97.184])
-  by fmsmga002.fm.intel.com with ESMTP; 21 Jun 2023 13:55:04 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 21 Jun 2023 13:55:07 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: LKML <linux-kernel@vger.kernel.org>,
 	iommu@lists.linux.dev,
@@ -50,9 +50,9 @@ Cc: "Will Deacon" <will@kernel.org>,
 	xiaochen.shen@intel.com,
 	narayan.ranganathan@intel.com,
 	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v9 2/7] iommu: Move global PASID allocation from SVA to core
-Date: Wed, 21 Jun 2023 13:59:42 -0700
-Message-Id: <20230621205947.1327094-3-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v9 4/7] iommu/vt-d: Remove pasid_mutex
+Date: Wed, 21 Jun 2023 13:59:44 -0700
+Message-Id: <20230621205947.1327094-5-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230621205947.1327094-1-jacob.jun.pan@linux.intel.com>
 References: <20230621205947.1327094-1-jacob.jun.pan@linux.intel.com>
@@ -64,184 +64,125 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Global PASID can be used beyond SVA. For example, drivers that use
-Intel ENQCMD to submit work must use global PASIDs in that PASID
-is stored in a per CPU MSR. When such device need to submit work
-for in-kernel DMA with PASID, it must allocate PASIDs from the same
-global number space to avoid conflict.
+From: Lu Baolu <baolu.lu@linux.intel.com>
 
-This patch moves global PASID allocation APIs from SVA to IOMMU APIs.
-Reserved PASIDs, currently only RID_PASID, are excluded from the global
-PASID allocation.
+The pasid_mutex was used to protect the paths of set/remove_dev_pasid().
+It's duplicate with iommu_sva_lock. Remove it to avoid duplicate code.
 
-It is expected that device drivers will use the allocated PASIDs to
-attach to appropriate IOMMU domains for use.
-
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Reviewed-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
-v8: fix off-by-one in max_pasid check
-v7: simplify range check (Baolu)
-v6: explicitly exclude reserved a range from SVA PASID allocation
-    check mm PASID compatibility with device
-v5: move PASID range check inside API so that device drivers only pass
-    in struct device* (Kevin)
-v4: move dummy functions outside ifdef CONFIG_IOMMU_SVA (Baolu)
----
- drivers/iommu/iommu-sva.c | 28 ++++++++++------------------
- drivers/iommu/iommu.c     | 28 ++++++++++++++++++++++++++++
- include/linux/iommu.h     | 10 ++++++++++
- 3 files changed, 48 insertions(+), 18 deletions(-)
+ drivers/iommu/intel/svm.c | 45 +++++----------------------------------
+ 1 file changed, 5 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-index 9821bc44f5ac..b033cc415a00 100644
---- a/drivers/iommu/iommu-sva.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -10,33 +10,30 @@
- #include "iommu-sva.h"
- 
- static DEFINE_MUTEX(iommu_sva_lock);
--static DEFINE_IDA(iommu_global_pasid_ida);
- 
- /* Allocate a PASID for the mm within range (inclusive) */
--static int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max)
-+static int iommu_sva_alloc_pasid(struct mm_struct *mm, struct device *dev)
- {
-+	ioasid_t pasid;
- 	int ret = 0;
- 
--	if (min == IOMMU_PASID_INVALID ||
--	    max == IOMMU_PASID_INVALID ||
--	    min == 0 || max < min)
--		return -EINVAL;
--
- 	if (!arch_pgtable_dma_compat(mm))
- 		return -EBUSY;
- 
- 	mutex_lock(&iommu_sva_lock);
- 	/* Is a PASID already associated with this mm? */
- 	if (mm_valid_pasid(mm)) {
--		if (mm->pasid < min || mm->pasid > max)
-+		if (mm->pasid >= dev->iommu->max_pasids)
- 			ret = -EOVERFLOW;
- 		goto out;
- 	}
- 
--	ret = ida_alloc_range(&iommu_global_pasid_ida, min, max, GFP_KERNEL);
--	if (ret < min)
-+	pasid = iommu_alloc_global_pasid_dev(dev);
-+	if (pasid == IOMMU_PASID_INVALID) {
-+		ret = -ENOSPC;
- 		goto out;
--	mm->pasid = ret;
-+	}
-+	mm->pasid = pasid;
- 	ret = 0;
- out:
- 	mutex_unlock(&iommu_sva_lock);
-@@ -63,15 +60,10 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
- {
- 	struct iommu_domain *domain;
- 	struct iommu_sva *handle;
--	ioasid_t max_pasids;
- 	int ret;
- 
--	max_pasids = dev->iommu->max_pasids;
--	if (!max_pasids)
--		return ERR_PTR(-EOPNOTSUPP);
--
- 	/* Allocate mm->pasid if necessary. */
--	ret = iommu_sva_alloc_pasid(mm, 1, max_pasids - 1);
-+	ret = iommu_sva_alloc_pasid(mm, dev);
- 	if (ret)
- 		return ERR_PTR(ret);
- 
-@@ -216,5 +208,5 @@ void mm_pasid_drop(struct mm_struct *mm)
- 	if (likely(!mm_valid_pasid(mm)))
- 		return;
- 
--	ida_free(&iommu_global_pasid_ida, mm->pasid);
-+	iommu_free_global_pasid(mm->pasid);
- }
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index f1dcfa3f1a1b..d4f9ab210d6b 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -39,6 +39,7 @@
- 
- static struct kset *iommu_group_kset;
- static DEFINE_IDA(iommu_group_ida);
-+static DEFINE_IDA(iommu_global_pasid_ida);
- 
- static unsigned int iommu_def_domain_type __read_mostly;
- static bool iommu_dma_strict __read_mostly = IS_ENABLED(CONFIG_IOMMU_DEFAULT_DMA_STRICT);
-@@ -3393,3 +3394,30 @@ struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
- 
- 	return domain;
- }
-+
-+ioasid_t iommu_alloc_global_pasid_dev(struct device *dev)
-+{
-+	int ret;
-+	ioasid_t max;
-+
-+	max = dev->iommu->max_pasids;
-+	/*
-+	 * max_pasids is set up by vendor driver based on number of PASID bits
-+	 * supported but the IDA allocation is inclusive.
-+	 */
-+	ret = ida_alloc_range(&iommu_global_pasid_ida, IOMMU_FIRST_GLOBAL_PASID, max - 1, GFP_KERNEL);
-+	if (ret < 0)
-+		return IOMMU_PASID_INVALID;
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_alloc_global_pasid_dev);
-+
-+void iommu_free_global_pasid(ioasid_t pasid)
-+{
-+	if (WARN_ON(pasid == IOMMU_PASID_INVALID))
-+		return;
-+
-+	ida_free(&iommu_global_pasid_ida, pasid);
-+}
-+EXPORT_SYMBOL_GPL(iommu_free_global_pasid);
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index c714d659d114..f7bfe03bda19 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -191,6 +191,7 @@ enum iommu_dev_features {
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index e95b339e9cdc..2a82864e9d57 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -259,8 +259,6 @@ static const struct mmu_notifier_ops intel_mmuops = {
+ 	.invalidate_range = intel_invalidate_range,
  };
  
- #define IOMMU_NO_PASID	(0U) /* Reserved for DMA w/o PASID */
-+#define IOMMU_FIRST_GLOBAL_PASID	(1U) /*starting range for allocation */
- #define IOMMU_PASID_INVALID	(-1U)
- typedef unsigned int ioasid_t;
+-static DEFINE_MUTEX(pasid_mutex);
+-
+ static int pasid_to_svm_sdev(struct device *dev, unsigned int pasid,
+ 			     struct intel_svm **rsvm,
+ 			     struct intel_svm_dev **rsdev)
+@@ -268,10 +266,6 @@ static int pasid_to_svm_sdev(struct device *dev, unsigned int pasid,
+ 	struct intel_svm_dev *sdev = NULL;
+ 	struct intel_svm *svm;
  
-@@ -722,6 +723,8 @@ void iommu_detach_device_pasid(struct iommu_domain *domain,
- struct iommu_domain *
- iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid,
- 			       unsigned int type);
-+ioasid_t iommu_alloc_global_pasid_dev(struct device *dev);
-+void iommu_free_global_pasid(ioasid_t pasid);
- #else /* CONFIG_IOMMU_API */
+-	/* The caller should hold the pasid_mutex lock */
+-	if (WARN_ON(!mutex_is_locked(&pasid_mutex)))
+-		return -EINVAL;
+-
+ 	if (pasid == IOMMU_PASID_INVALID || pasid >= PASID_MAX)
+ 		return -EINVAL;
  
- struct iommu_ops {};
-@@ -1083,6 +1086,13 @@ iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid,
- {
- 	return NULL;
+@@ -371,22 +365,19 @@ static int intel_svm_bind_mm(struct intel_iommu *iommu, struct device *dev,
+ 	return ret;
  }
-+
-+static inline ioasid_t iommu_alloc_global_pasid_dev(struct device *dev)
-+{
-+	return IOMMU_PASID_INVALID;
-+}
-+
-+static inline void iommu_free_global_pasid(ioasid_t pasid) {}
- #endif /* CONFIG_IOMMU_API */
  
- /**
+-/* Caller must hold pasid_mutex */
+-static int intel_svm_unbind_mm(struct device *dev, u32 pasid)
++void intel_svm_remove_dev_pasid(struct device *dev, u32 pasid)
+ {
+ 	struct intel_svm_dev *sdev;
+ 	struct intel_iommu *iommu;
+ 	struct intel_svm *svm;
+ 	struct mm_struct *mm;
+-	int ret = -EINVAL;
+ 
+ 	iommu = device_to_iommu(dev, NULL, NULL);
+ 	if (!iommu)
+-		goto out;
++		return;
+ 
+-	ret = pasid_to_svm_sdev(dev, pasid, &svm, &sdev);
+-	if (ret)
+-		goto out;
++	if (pasid_to_svm_sdev(dev, pasid, &svm, &sdev))
++		return;
+ 	mm = svm->mm;
+ 
+ 	if (sdev) {
+@@ -418,8 +409,6 @@ static int intel_svm_unbind_mm(struct device *dev, u32 pasid)
+ 			kfree(svm);
+ 		}
+ 	}
+-out:
+-	return ret;
+ }
+ 
+ /* Page request queue descriptor */
+@@ -520,19 +509,7 @@ static void intel_svm_drain_prq(struct device *dev, u32 pasid)
+ 		goto prq_retry;
+ 	}
+ 
+-	/*
+-	 * A work in IO page fault workqueue may try to lock pasid_mutex now.
+-	 * Holding pasid_mutex while waiting in iopf_queue_flush_dev() for
+-	 * all works in the workqueue to finish may cause deadlock.
+-	 *
+-	 * It's unnecessary to hold pasid_mutex in iopf_queue_flush_dev().
+-	 * Unlock it to allow the works to be handled while waiting for
+-	 * them to finish.
+-	 */
+-	lockdep_assert_held(&pasid_mutex);
+-	mutex_unlock(&pasid_mutex);
+ 	iopf_queue_flush_dev(dev);
+-	mutex_lock(&pasid_mutex);
+ 
+ 	/*
+ 	 * Perform steps described in VT-d spec CH7.10 to drain page
+@@ -827,26 +804,14 @@ int intel_svm_page_response(struct device *dev,
+ 	return ret;
+ }
+ 
+-void intel_svm_remove_dev_pasid(struct device *dev, ioasid_t pasid)
+-{
+-	mutex_lock(&pasid_mutex);
+-	intel_svm_unbind_mm(dev, pasid);
+-	mutex_unlock(&pasid_mutex);
+-}
+-
+ static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
+ 				   struct device *dev, ioasid_t pasid)
+ {
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 	struct intel_iommu *iommu = info->iommu;
+ 	struct mm_struct *mm = domain->mm;
+-	int ret;
+ 
+-	mutex_lock(&pasid_mutex);
+-	ret = intel_svm_bind_mm(iommu, dev, mm);
+-	mutex_unlock(&pasid_mutex);
+-
+-	return ret;
++	return intel_svm_bind_mm(iommu, dev, mm);
+ }
+ 
+ static void intel_svm_domain_free(struct iommu_domain *domain)
 -- 
 2.25.1
 
