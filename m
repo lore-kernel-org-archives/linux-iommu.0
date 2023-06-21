@@ -1,40 +1,40 @@
-Received: from mail-yb1-f201.google.com (mail-yb1-f201.google.com [209.85.219.201])
+Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D57258482
-	for <iommu@lists.linux.dev>; Wed, 21 Jun 2023 06:44:54 +0000 (UTC)
-Received: by mail-yb1-f201.google.com with SMTP id 3f1490d57ef6-beb64c0d603so4493389276.1
-        for <iommu@lists.linux.dev>; Tue, 20 Jun 2023 23:44:54 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57C838482
+	for <iommu@lists.linux.dev>; Wed, 21 Jun 2023 06:45:02 +0000 (UTC)
+Received: by mail-pj1-f73.google.com with SMTP id 98e67ed59e1d1-25e7fe2fb9bso2569527a91.3
+        for <iommu@lists.linux.dev>; Tue, 20 Jun 2023 23:45:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1687329893; x=1689921893;
+        d=google.com; s=20221208; t=1687329902; x=1689921902;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Iaiq8BTRsoloLG7rldnwk3G52sAWylq1kN+2LzQv5tM=;
-        b=f2p4RRe6xTN7igEKKPHZGsDF92MIFONOcBrriUfaGfiU3ABD3qhOoJJOHan/Szh8sJ
-         Kph4EWS3o0wtAioESPtVkWwEA9xFadSpa4206f5f3djBGbzfWOB1yGO3McRAFLPpCABM
-         fvhSEzmduefkQzfFvvyoq4Ij4xlBU9yXRK8Lkbeizarjd2Ow4YKI2mXssopkMc4dGBkD
-         uAd3/uApx4hTbP0KqhvPL1hTILkWXfRdIqXtfMtN7PIPEbOyvMIFFJeq1AN2pA1kVws8
-         6R0dGFwCrLR2eZbdJbjNe6bcjYYwXVRTcsXyD48CL4OOgvxLnLwqOdLIqmLyHh29irfJ
-         cesA==
+        bh=GFfBSOUvUPqFSx6n4vEtFQq3Hc8Ha+kDvCzi3+3mgos=;
+        b=t4HhyrUZx343POQssx8xWB3bNqEwvVz5axTthBdUwUeHP98YwM0/jOGBkI8RNJ6CfV
+         q813TeRnvgUNnvQ5yy+drxSkGdqSae/ZdfJL2CLBJbfVgemKrHUzyxNImNn9WE4R5pN1
+         QgALlayI2ddPtiW6CPlWgIpz9CmCsE/e1EJarXWy6qGQnc+hIy5agSCGPnJEUO2/Lcx0
+         w31wnEnCEJrXmNRkg29aSfwTjpHDwxP6w/ngMobxEgWSJDGOmFnCq3Hf+OQierGh/m/V
+         vjKc3DIyPkMR9sdzlVpuqyKBLwgRtHl253JAEGraYWPxylZDrHFJArJHYf6fcfRkfMfq
+         s4QQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687329893; x=1689921893;
+        d=1e100.net; s=20221208; t=1687329902; x=1689921902;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Iaiq8BTRsoloLG7rldnwk3G52sAWylq1kN+2LzQv5tM=;
-        b=gYZa9D4WlmcXtyKAitQmz5x8el+xjjcnMQU7coBVutJmkJcC/gP4M0L+umXbvy1Djc
-         hdIMM1MgBXYR8em4c+aKHM21oxvSsGnk7QRe9CeYVonJnSCzhSSEiFyrLBME8U4LG+24
-         095g4cSLmpSA2py9pz8czUhbwQMUM23csUGIv2idDrGkpnOiurfyNnO4JLZUMcu5zA05
-         k1LjUSkUNV4vQ2/L9CDw9LzRRbShfg/4NGwKJPqTvb9qELRi1VzQpVasYu3bINHAofCE
-         7p5lGuwpLC2V4UNrTQVD9K4NISEyvjnQe9yoqqmY088mg/WxN7U57EfzRfFrqFv7gzZB
-         vdkw==
-X-Gm-Message-State: AC+VfDx3a5rTLUj7mV8+XU71/eDotttMr3vAQ4NANvRRzg19vT5CXB4W
-	dbg+OfDdFjpZqDhbEASjXm1XtktMFGrs
-X-Google-Smtp-Source: ACHHUZ6DIszFBg7Jz5/qr1W0AVeQNCApk6Onqbv0M7i291vX3d/TmnbsUBoL2GYXPlET6GLZPqDom3YGK+aI
+        bh=GFfBSOUvUPqFSx6n4vEtFQq3Hc8Ha+kDvCzi3+3mgos=;
+        b=A9M3eI9gkCdStTOmuI1I+jLdo3WmyRxt7ecIAhic9rUl3bNqCggcZ403DPTwFKvP8F
+         p33mCd5VgKpQUUkLPlKt8Vsm3/Iy5rvQt9+PW7INTzVT4Rg3CZ4wVp/+dlzEoh7UQG/3
+         QAI3PacqNyNkLlo4M58Xox2BQegmh0+SJWIOJrpdygnl4IeWLa293h8dguOLf9ZIZD1x
+         c7Lyc3Olhcxh/KSpeIw5Y/KFvabB+9qbyLgMiGd+5xNSZEaeTrNNpiEby7g+p3a+GlJj
+         G0ImdCv6cmIoCPEP3IvJm9sNQ/g3I4FEC8V7hoXAGFGHzAvh8KOs2gYyh4mp4e5RtXPK
+         vB1A==
+X-Gm-Message-State: AC+VfDzFHRgspGFzhPMSx3Rn0fME2M7Zz5WMSvfam6zWpYgnGhJ/8tQD
+	/cosW/M+Hk52iYuyJpDNjYgjBbxqE/Cy
+X-Google-Smtp-Source: ACHHUZ4sre6FKQd6JetGrp6VVOp9i7yh8bqwdCg0x/qqo75bj1C1/wd2ryfmXfIMYXHnMZ1hGUQI3eC1XGFb
 X-Received: from mshavit.ntc.corp.google.com ([2401:fa00:95:20c:384f:f7da:c61d:5a3e])
- (user=mshavit job=sendgmr) by 2002:a25:882:0:b0:bfe:ea69:91b4 with SMTP id
- 124-20020a250882000000b00bfeea6991b4mr167148ybi.4.1687329893822; Tue, 20 Jun
- 2023 23:44:53 -0700 (PDT)
-Date: Wed, 21 Jun 2023 14:37:24 +0800
+ (user=mshavit job=sendgmr) by 2002:a17:90a:fa06:b0:25b:d689:72a4 with SMTP id
+ cm6-20020a17090afa0600b0025bd68972a4mr1992026pjb.4.1687329901714; Tue, 20 Jun
+ 2023 23:45:01 -0700 (PDT)
+Date: Wed, 21 Jun 2023 14:37:25 +0800
 In-Reply-To: <20230621063825.268890-1-mshavit@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -44,8 +44,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20230621063825.268890-1-mshavit@google.com>
 X-Mailer: git-send-email 2.41.0.162.gfafddb0af9-goog
-Message-ID: <20230621063825.268890-13-mshavit@google.com>
-Subject: [PATCH v4 12/13] iommu/arm-smmu-v3-sva: Remove arm_smmu_bond
+Message-ID: <20230621063825.268890-14-mshavit@google.com>
+Subject: [PATCH v4 13/13] iommu/arm-smmu-v3-sva: Add check when enabling sva
 From: Michael Shavit <mshavit@google.com>
 To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
 	Joerg Roedel <joro@8bytes.org>
@@ -55,174 +55,34 @@ Cc: Michael Shavit <mshavit@google.com>, jean-philippe@linaro.org, nicolinc@nvid
 	linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-There's a 1:1 relationship between arm_smmu_bond and the iommu_domain
-used in set_dev_pasid/remove_dev_pasid. arm_smmu_bond has become an
-unnecessary complication. It's more natural to store any needed
-information at the iommu_domain container level.
+SVA domains can only be attached when the master's STEs have a stage 1
+domain.
 
 Signed-off-by: Michael Shavit <mshavit@google.com>
 ---
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 69 +++++++------------
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  1 -
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  2 +-
- 3 files changed, 24 insertions(+), 48 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index 650c9c9ad52f1..b615a85e6a54e 100644
+index b615a85e6a54e..e2a91f20f0906 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -24,14 +24,13 @@ struct arm_smmu_mmu_notifier {
- 
- #define mn_to_smmu(mn) container_of(mn, struct arm_smmu_mmu_notifier, mn)
- 
--struct arm_smmu_bond {
--	struct mm_struct		*mm;
-+struct arm_smmu_sva_domain {
-+	struct iommu_domain		iommu_domain;
- 	struct arm_smmu_mmu_notifier	*smmu_mn;
--	struct list_head		list;
- };
- 
--#define sva_to_bond(handle) \
--	container_of(handle, struct arm_smmu_bond, sva)
-+#define to_sva_domain(domain) \
-+	container_of(domain, struct arm_smmu_sva_domain, iommu_domain)
- 
- static DEFINE_MUTEX(sva_lock);
- 
-@@ -363,10 +362,10 @@ static void arm_smmu_mmu_notifier_put(struct arm_smmu_mmu_notifier *smmu_mn)
- 	arm_smmu_free_shared_cd(cd);
- }
- 
--static int __arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
-+static int __arm_smmu_sva_bind(struct device *dev,
-+			       struct arm_smmu_sva_domain *sva_domain,
-+			       struct mm_struct *mm)
- {
--	int ret;
--	struct arm_smmu_bond *bond;
- 	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
- 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-@@ -374,24 +373,14 @@ static int __arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
- 	if (!master || !master->sva_enabled)
- 		return -ENODEV;
- 
--	bond = kzalloc(sizeof(*bond), GFP_KERNEL);
--	if (!bond)
--		return -ENOMEM;
--
--	bond->mm = mm;
--
--	bond->smmu_mn = arm_smmu_mmu_notifier_get(smmu_domain, mm);
--	if (IS_ERR(bond->smmu_mn)) {
--		ret = PTR_ERR(bond->smmu_mn);
--		goto err_free_bond;
-+	sva_domain->smmu_mn = arm_smmu_mmu_notifier_get(smmu_domain,
-+							mm);
-+	if (IS_ERR(sva_domain->smmu_mn)) {
-+		sva_domain->smmu_mn = NULL;
-+		return PTR_ERR(sva_domain->smmu_mn);
- 	}
--
--	list_add(&bond->list, &master->bonds);
-+	master->nr_attached_sva_domains += 1;
- 	return 0;
--
--err_free_bond:
--	kfree(bond);
--	return ret;
- }
- 
- bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
-@@ -521,7 +510,7 @@ int arm_smmu_master_enable_sva(struct arm_smmu_master *master)
- int arm_smmu_master_disable_sva(struct arm_smmu_master *master)
- {
- 	mutex_lock(&sva_lock);
--	if (!list_empty(&master->bonds)) {
-+	if (master->nr_attached_sva_domains != 0) {
- 		dev_err(master->dev, "cannot disable SVA, device is bound\n");
- 		mutex_unlock(&sva_lock);
- 		return -EBUSY;
-@@ -545,23 +534,12 @@ void arm_smmu_sva_notifier_synchronize(void)
- void arm_smmu_sva_remove_dev_pasid(struct iommu_domain *domain,
- 				   struct device *dev, ioasid_t id)
- {
--	struct mm_struct *mm = domain->mm;
--	struct arm_smmu_bond *bond = NULL, *t;
-+	struct arm_smmu_sva_domain *sva_domain = to_sva_domain(domain);
- 	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
+@@ -499,9 +499,15 @@ int arm_smmu_master_enable_sva(struct arm_smmu_master *master)
+ 	int ret;
  
  	mutex_lock(&sva_lock);
--	list_for_each_entry(t, &master->bonds, list) {
--		if (t->mm == mm) {
--			bond = t;
--			break;
--		}
--	}
--
--	if (!WARN_ON(!bond)) {
--		list_del(&bond->list);
--		arm_smmu_mmu_notifier_put(bond->smmu_mn);
--		kfree(bond);
--	}
-+	master->nr_attached_sva_domains -= 1;
-+	arm_smmu_mmu_notifier_put(sva_domain->smmu_mn);
- 	mutex_unlock(&sva_lock);
- }
- 
-@@ -572,7 +550,7 @@ static int arm_smmu_sva_set_dev_pasid(struct iommu_domain *domain,
- 	struct mm_struct *mm = domain->mm;
- 
- 	mutex_lock(&sva_lock);
--	ret = __arm_smmu_sva_bind(dev, mm);
-+	ret = __arm_smmu_sva_bind(dev, to_sva_domain(domain), mm);
++
++	if (!master->s1_cfg) {
++		ret = -EBUSY;
++		goto unlock;
++	}
+ 	ret = arm_smmu_master_sva_enable_iopf(master);
+ 	if (!ret)
+ 		master->sva_enabled = true;
++unlock:
  	mutex_unlock(&sva_lock);
  
  	return ret;
-@@ -590,12 +568,11 @@ static const struct iommu_domain_ops arm_smmu_sva_domain_ops = {
- 
- struct iommu_domain *arm_smmu_sva_domain_alloc(void)
- {
--	struct iommu_domain *domain;
-+	struct arm_smmu_sva_domain *sva_domain;
- 
--	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
--	if (!domain)
-+	sva_domain = kzalloc(sizeof(*sva_domain), GFP_KERNEL);
-+	if (!sva_domain)
- 		return NULL;
--	domain->ops = &arm_smmu_sva_domain_ops;
--
--	return domain;
-+	sva_domain->iommu_domain.ops = &arm_smmu_sva_domain_ops;
-+	return &sva_domain->iommu_domain;
- }
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index b928997d35ed3..2ed6c9e0df241 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2784,7 +2784,6 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
- 
- 	master->dev = dev;
- 	master->smmu = smmu;
--	INIT_LIST_HEAD(&master->bonds);
- 	dev_iommu_priv_set(dev, master);
- 
- 	ret = arm_smmu_insert_master(smmu, master);
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 48795a7287b69..3525d60668c23 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -705,7 +705,7 @@ struct arm_smmu_master {
- 	bool				stall_enabled;
- 	bool				sva_enabled;
- 	bool				iopf_enabled;
--	struct list_head		bonds;
-+	unsigned int			nr_attached_sva_domains;
- 	unsigned int			ssid_bits;
- 	unsigned int			nr_attached_pasid_domains;
- };
 -- 
 2.41.0.162.gfafddb0af9-goog
 
