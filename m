@@ -1,32 +1,32 @@
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1636919BDA
-	for <iommu@lists.linux.dev>; Wed, 21 Jun 2023 17:40:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 868A319BD4
+	for <iommu@lists.linux.dev>; Wed, 21 Jun 2023 17:40:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1687369250; x=1718905250;
+  t=1687369251; x=1718905251;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=VowItIGkjdAno8lk5sUB38S2bdvxpoTvph2gV3f+BJw=;
-  b=kPTiRkCB7sc0pkRvkxybXA9ECJnilCEWxEmawODjjscE9fNdRtA8NwJu
-   5I0y81+dOv+yxMjTteNJ5Qubb5czdQTqCeUvHc95PtBAEuHJs9lQnORSu
-   I3+ERRZRxuCLbQgRRqmluJDU+7HsivyBw8SPSkm7qHhtI3+5uN89uHH1J
-   Gq1m6PyvSaYC9eT8kv+sGm9eFbzSHXqfdzZiiBElPsUDg8Q30POaooCq+
-   dSmeGx/Vi+XV7s1Br7Nf5+sg1s3Tf1x+81NIu5Me7AsSCPkf6EQluK4vf
-   fRopiCDVTdhAUyXXoMDXHBZc7NuKgTai6I/Vd4cSnZVnHnUlNDKrlr/jI
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10748"; a="359120640"
+  bh=rU0ti6cUkr3K3aTh0URoai3oaY+lfmwNIL/ryVMs/PY=;
+  b=S99VdEHnnSIl9cBA338M+/u711MQIfu28DyyEChUOHIcLQbQd/JoLgow
+   RhRA+HBs/2UM5aRU0+z4kYk7zdb61IfHjzqfkwgquO02eHT9z8V/a6hNU
+   Af0T+37mTehVRMjtD80G9DyoMcPi+iIfud4SJJDdSrzce2hoR9xBB7fhq
+   9eHsyWw1SfP2PsMjW3Xr0ToPj70ik1eS4ADwW6AnKsQLos29JXx0l0H/1
+   n6Nm8NzvN+0NCxNWUeZ2oa/tIU7aIZsnCxkHvKYx5HU7B6sOX8Rr839Ul
+   kf63o130NRu/0VriKMtLBSYvqwnSbsblsrX/W97OJpBUMcUH0HNlACIfT
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10748"; a="359120661"
 X-IronPort-AV: E=Sophos;i="6.00,261,1681196400"; 
-   d="scan'208";a="359120640"
+   d="scan'208";a="359120661"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2023 10:40:34 -0700
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2023 10:40:36 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10748"; a="717746125"
+X-IronPort-AV: E=McAfee;i="6600,9927,10748"; a="717746136"
 X-IronPort-AV: E=Sophos;i="6.00,261,1681196400"; 
-   d="scan'208";a="717746125"
+   d="scan'208";a="717746136"
 Received: from unknown (HELO fred..) ([172.25.112.68])
-  by fmsmga007.fm.intel.com with ESMTP; 21 Jun 2023 10:40:33 -0700
+  by fmsmga007.fm.intel.com with ESMTP; 21 Jun 2023 10:40:34 -0700
 From: Xin Li <xin3.li@intel.com>
 To: linux-kernel@vger.kernel.org,
 	platform-driver-x86@vger.kernel.org,
@@ -68,9 +68,9 @@ Cc: tglx@linutronix.de,
 	jiangshanlai@gmail.com,
 	jgg@ziepe.ca,
 	yangtiezhu@loongson.cn
-Subject: [PATCH v2 1/3] x86/vector: Rename send_cleanup_vector() to vector_schedule_cleanup()
-Date: Wed, 21 Jun 2023 10:12:46 -0700
-Message-Id: <20230621171248.6805-2-xin3.li@intel.com>
+Subject: [PATCH v2 2/3] x86/vector: Replace IRQ_MOVE_CLEANUP_VECTOR with a timer callback
+Date: Wed, 21 Jun 2023 10:12:47 -0700
+Message-Id: <20230621171248.6805-3-xin3.li@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230621171248.6805-1-xin3.li@intel.com>
 References: <20230621171248.6805-1-xin3.li@intel.com>
@@ -84,137 +84,220 @@ Content-Transfer-Encoding: 8bit
 
 From: Thomas Gleixner <tglx@linutronix.de>
 
-Rename send_cleanup_vector() to vector_schedule_cleanup() for the next
-patch to replace vector cleanup IPI with a timer callback.
+Replace IRQ_MOVE_CLEANUP_VECTOR with a timer callback for cleaning
+up the leftovers of a moved interrupt.
+
+The only new job incurred is to do vector cleanup in lapic_offline()
+in case the vector cleanup timer has not expired.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
 Signed-off-by: Xin Li <xin3.li@intel.com>
 ---
- arch/x86/include/asm/hw_irq.h       | 4 ++--
- arch/x86/kernel/apic/vector.c       | 8 ++++----
- arch/x86/platform/uv/uv_irq.c       | 2 +-
- drivers/iommu/amd/iommu.c           | 2 +-
- drivers/iommu/hyperv-iommu.c        | 4 ++--
- drivers/iommu/intel/irq_remapping.c | 2 +-
- 6 files changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/arch/x86/include/asm/hw_irq.h b/arch/x86/include/asm/hw_irq.h
-index d465ece58151..551829884734 100644
---- a/arch/x86/include/asm/hw_irq.h
-+++ b/arch/x86/include/asm/hw_irq.h
-@@ -97,10 +97,10 @@ extern struct irq_cfg *irqd_cfg(struct irq_data *irq_data);
- extern void lock_vector_lock(void);
- extern void unlock_vector_lock(void);
+Changes since v1:
+* Add a lockdep_assert_held() statement to get rid of a bad comment
+  that claims __vector_cleanup() needs to be called with vector_lock
+  held. (Peter Zijlstra).
+---
+ arch/x86/include/asm/idtentry.h    |  1 -
+ arch/x86/include/asm/irq_vectors.h |  7 ---
+ arch/x86/kernel/apic/vector.c      | 98 ++++++++++++++++++++++++------
+ arch/x86/kernel/idt.c              |  1 -
+ 4 files changed, 78 insertions(+), 29 deletions(-)
+
+diff --git a/arch/x86/include/asm/idtentry.h b/arch/x86/include/asm/idtentry.h
+index b241af4ce9b4..cd5c10a74071 100644
+--- a/arch/x86/include/asm/idtentry.h
++++ b/arch/x86/include/asm/idtentry.h
+@@ -648,7 +648,6 @@ DECLARE_IDTENTRY_SYSVEC(X86_PLATFORM_IPI_VECTOR,	sysvec_x86_platform_ipi);
+ 
  #ifdef CONFIG_SMP
--extern void send_cleanup_vector(struct irq_cfg *);
-+extern void vector_schedule_cleanup(struct irq_cfg *);
- extern void irq_complete_move(struct irq_cfg *cfg);
- #else
--static inline void send_cleanup_vector(struct irq_cfg *c) { }
-+static inline void vector_schedule_cleanup(struct irq_cfg *c) { }
- static inline void irq_complete_move(struct irq_cfg *c) { }
- #endif
+ DECLARE_IDTENTRY(RESCHEDULE_VECTOR,			sysvec_reschedule_ipi);
+-DECLARE_IDTENTRY_SYSVEC(IRQ_MOVE_CLEANUP_VECTOR,	sysvec_irq_move_cleanup);
+ DECLARE_IDTENTRY_SYSVEC(REBOOT_VECTOR,			sysvec_reboot);
+ DECLARE_IDTENTRY_SYSVEC(CALL_FUNCTION_SINGLE_VECTOR,	sysvec_call_function_single);
+ DECLARE_IDTENTRY_SYSVEC(CALL_FUNCTION_VECTOR,		sysvec_call_function);
+diff --git a/arch/x86/include/asm/irq_vectors.h b/arch/x86/include/asm/irq_vectors.h
+index 43dcb9284208..3a19904c2db6 100644
+--- a/arch/x86/include/asm/irq_vectors.h
++++ b/arch/x86/include/asm/irq_vectors.h
+@@ -35,13 +35,6 @@
+  */
+ #define FIRST_EXTERNAL_VECTOR		0x20
  
-diff --git a/arch/x86/kernel/apic/vector.c b/arch/x86/kernel/apic/vector.c
-index c1efebd27e6c..aa370bd0d933 100644
---- a/arch/x86/kernel/apic/vector.c
-+++ b/arch/x86/kernel/apic/vector.c
-@@ -967,7 +967,7 @@ DEFINE_IDTENTRY_SYSVEC(sysvec_irq_move_cleanup)
- 	raw_spin_unlock(&vector_lock);
- }
- 
--static void __send_cleanup_vector(struct apic_chip_data *apicd)
-+static void __vector_schedule_cleanup(struct apic_chip_data *apicd)
- {
- 	unsigned int cpu;
- 
-@@ -983,13 +983,13 @@ static void __send_cleanup_vector(struct apic_chip_data *apicd)
- 	raw_spin_unlock(&vector_lock);
- }
- 
--void send_cleanup_vector(struct irq_cfg *cfg)
-+void vector_schedule_cleanup(struct irq_cfg *cfg)
- {
- 	struct apic_chip_data *apicd;
- 
- 	apicd = container_of(cfg, struct apic_chip_data, hw_irq_cfg);
- 	if (apicd->move_in_progress)
--		__send_cleanup_vector(apicd);
-+		__vector_schedule_cleanup(apicd);
- }
- 
- void irq_complete_move(struct irq_cfg *cfg)
-@@ -1007,7 +1007,7 @@ void irq_complete_move(struct irq_cfg *cfg)
- 	 * on the same CPU.
- 	 */
- 	if (apicd->cpu == smp_processor_id())
--		__send_cleanup_vector(apicd);
-+		__vector_schedule_cleanup(apicd);
- }
+-/*
+- * Reserve the lowest usable vector (and hence lowest priority)  0x20 for
+- * triggering cleanup after irq migration. 0x21-0x2f will still be used
+- * for device interrupts.
+- */
+-#define IRQ_MOVE_CLEANUP_VECTOR		FIRST_EXTERNAL_VECTOR
+-
+ #define IA32_SYSCALL_VECTOR		0x80
  
  /*
-diff --git a/arch/x86/platform/uv/uv_irq.c b/arch/x86/platform/uv/uv_irq.c
-index ee21d6a36a80..4221259a5870 100644
---- a/arch/x86/platform/uv/uv_irq.c
-+++ b/arch/x86/platform/uv/uv_irq.c
-@@ -58,7 +58,7 @@ uv_set_irq_affinity(struct irq_data *data, const struct cpumask *mask,
- 	ret = parent->chip->irq_set_affinity(parent, mask, force);
- 	if (ret >= 0) {
- 		uv_program_mmr(cfg, data->chip_data);
--		send_cleanup_vector(cfg);
-+		vector_schedule_cleanup(cfg);
+diff --git a/arch/x86/kernel/apic/vector.c b/arch/x86/kernel/apic/vector.c
+index aa370bd0d933..01c359a66b04 100644
+--- a/arch/x86/kernel/apic/vector.c
++++ b/arch/x86/kernel/apic/vector.c
+@@ -44,7 +44,18 @@ static cpumask_var_t vector_searchmask;
+ static struct irq_chip lapic_controller;
+ static struct irq_matrix *vector_matrix;
+ #ifdef CONFIG_SMP
+-static DEFINE_PER_CPU(struct hlist_head, cleanup_list);
++
++static void vector_cleanup_callback(struct timer_list *tmr);
++
++struct vector_cleanup {
++	struct hlist_head	head;
++	struct timer_list	timer;
++};
++
++static DEFINE_PER_CPU(struct vector_cleanup, vector_cleanup) = {
++	.head	= HLIST_HEAD_INIT,
++	.timer	= __TIMER_INITIALIZER(vector_cleanup_callback, TIMER_PINNED),
++};
+ #endif
+ 
+ void lock_vector_lock(void)
+@@ -841,10 +852,21 @@ void lapic_online(void)
+ 		this_cpu_write(vector_irq[vector], __setup_vector_irq(vector));
+ }
+ 
++static void __vector_cleanup(struct vector_cleanup *cl, bool check_irr);
++
+ void lapic_offline(void)
+ {
++	struct vector_cleanup *cl = this_cpu_ptr(&vector_cleanup);
++
+ 	lock_vector_lock();
++
++	/* In case the vector cleanup timer has not expired */
++	__vector_cleanup(cl, false);
++
+ 	irq_matrix_offline(vector_matrix);
++	WARN_ON_ONCE(try_to_del_timer_sync(&cl->timer) < 0);
++	WARN_ON_ONCE(!hlist_empty(&cl->head));
++
+ 	unlock_vector_lock();
+ }
+ 
+@@ -934,49 +956,85 @@ static void free_moved_vector(struct apic_chip_data *apicd)
+ 	apicd->move_in_progress = 0;
+ }
+ 
+-DEFINE_IDTENTRY_SYSVEC(sysvec_irq_move_cleanup)
++static void __vector_cleanup(struct vector_cleanup *cl, bool check_irr)
+ {
+-	struct hlist_head *clhead = this_cpu_ptr(&cleanup_list);
+ 	struct apic_chip_data *apicd;
+ 	struct hlist_node *tmp;
++	bool rearm = false;
+ 
+-	ack_APIC_irq();
+-	/* Prevent vectors vanishing under us */
+-	raw_spin_lock(&vector_lock);
++	lockdep_assert_held(&vector_lock);
+ 
+-	hlist_for_each_entry_safe(apicd, tmp, clhead, clist) {
++	hlist_for_each_entry_safe(apicd, tmp, &cl->head, clist) {
+ 		unsigned int irr, vector = apicd->prev_vector;
+ 
+ 		/*
+ 		 * Paranoia: Check if the vector that needs to be cleaned
+-		 * up is registered at the APICs IRR. If so, then this is
+-		 * not the best time to clean it up. Clean it up in the
+-		 * next attempt by sending another IRQ_MOVE_CLEANUP_VECTOR
+-		 * to this CPU. IRQ_MOVE_CLEANUP_VECTOR is the lowest
+-		 * priority external vector, so on return from this
+-		 * interrupt the device interrupt will happen first.
++		 * up is registered at the APICs IRR. That's clearly a
++		 * hardware issue if the vector arrived on the old target
++		 * _after_ interrupts were disabled above. Keep @apicd
++		 * on the list and schedule the timer again to give the CPU
++		 * a chance to handle the pending interrupt.
++		 *
++		 * Do not check IRR when called from lapic_offline(), because
++		 * fixup_irqs() was just called to scan IRR for set bits and
++		 * forward them to new destination CPUs via IPIs.
+ 		 */
+-		irr = apic_read(APIC_IRR + (vector / 32 * 0x10));
++		irr = check_irr ? apic_read(APIC_IRR + (vector / 32 * 0x10)) : 0;
+ 		if (irr & (1U << (vector % 32))) {
+-			apic->send_IPI_self(IRQ_MOVE_CLEANUP_VECTOR);
++			pr_warn_once("Moved interrupt pending in old target APIC %u\n", apicd->irq);
++			rearm = true;
+ 			continue;
+ 		}
+ 		free_moved_vector(apicd);
  	}
  
- 	return ret;
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index dc1ec6849775..b5900e70de60 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -3658,7 +3658,7 @@ static int amd_ir_set_affinity(struct irq_data *data,
- 	 * at the new destination. So, time to cleanup the previous
- 	 * vector allocation.
- 	 */
--	send_cleanup_vector(cfg);
-+	vector_schedule_cleanup(cfg);
- 
- 	return IRQ_SET_MASK_OK_DONE;
+-	raw_spin_unlock(&vector_lock);
++	/*
++	 * Must happen under vector_lock to make the timer_pending() check
++	 * in __vector_schedule_cleanup() race free against the rearm here.
++	 */
++	if (rearm)
++		mod_timer(&cl->timer, jiffies + 1);
++}
++
++static void vector_cleanup_callback(struct timer_list *tmr)
++{
++	struct vector_cleanup *cl = container_of(tmr, typeof(*cl), timer);
++
++	/* Prevent vectors vanishing under us */
++	raw_spin_lock_irq(&vector_lock);
++	__vector_cleanup(cl, true);
++	raw_spin_unlock_irq(&vector_lock);
  }
-diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
-index 8302db7f783e..8a5c17b97310 100644
---- a/drivers/iommu/hyperv-iommu.c
-+++ b/drivers/iommu/hyperv-iommu.c
-@@ -51,7 +51,7 @@ static int hyperv_ir_set_affinity(struct irq_data *data,
- 	if (ret < 0 || ret == IRQ_SET_MASK_OK_DONE)
- 		return ret;
  
--	send_cleanup_vector(cfg);
-+	vector_schedule_cleanup(cfg);
+ static void __vector_schedule_cleanup(struct apic_chip_data *apicd)
+ {
+-	unsigned int cpu;
++	unsigned int cpu = apicd->prev_cpu;
  
- 	return 0;
- }
-@@ -257,7 +257,7 @@ static int hyperv_root_ir_set_affinity(struct irq_data *data,
- 	if (ret < 0 || ret == IRQ_SET_MASK_OK_DONE)
- 		return ret;
+ 	raw_spin_lock(&vector_lock);
+ 	apicd->move_in_progress = 0;
+-	cpu = apicd->prev_cpu;
+ 	if (cpu_online(cpu)) {
+-		hlist_add_head(&apicd->clist, per_cpu_ptr(&cleanup_list, cpu));
+-		apic->send_IPI(cpu, IRQ_MOVE_CLEANUP_VECTOR);
++		struct vector_cleanup *cl = per_cpu_ptr(&vector_cleanup, cpu);
++
++		hlist_add_head(&apicd->clist, &cl->head);
++
++		/*
++		 * The lockless timer_pending() check is safe here. If it
++		 * returns true, then the callback will observe this new
++		 * apic data in the hlist as everything is serialized by
++		 * vector lock.
++		 *
++		 * If it returns false then the timer is either not armed
++		 * or the other CPU executes the callback, which again
++		 * would be blocked on vector lock. Rearming it in the
++		 * latter case makes it fire for nothing.
++		 *
++		 * This is also safe against the callback rearming the timer
++		 * because that's serialized via vector lock too.
++		 */
++		if (!timer_pending(&cl->timer)) {
++			cl->timer.expires = jiffies + 1;
++			add_timer_on(&cl->timer, cpu);
++		}
+ 	} else {
+ 		apicd->prev_vector = 0;
+ 	}
+diff --git a/arch/x86/kernel/idt.c b/arch/x86/kernel/idt.c
+index a58c6bc1cd68..f3958262c725 100644
+--- a/arch/x86/kernel/idt.c
++++ b/arch/x86/kernel/idt.c
+@@ -131,7 +131,6 @@ static const __initconst struct idt_data apic_idts[] = {
+ 	INTG(RESCHEDULE_VECTOR,			asm_sysvec_reschedule_ipi),
+ 	INTG(CALL_FUNCTION_VECTOR,		asm_sysvec_call_function),
+ 	INTG(CALL_FUNCTION_SINGLE_VECTOR,	asm_sysvec_call_function_single),
+-	INTG(IRQ_MOVE_CLEANUP_VECTOR,		asm_sysvec_irq_move_cleanup),
+ 	INTG(REBOOT_VECTOR,			asm_sysvec_reboot),
+ #endif
  
--	send_cleanup_vector(cfg);
-+	vector_schedule_cleanup(cfg);
- 
- 	return 0;
- }
-diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
-index a1b987335b31..55d899f5a14b 100644
---- a/drivers/iommu/intel/irq_remapping.c
-+++ b/drivers/iommu/intel/irq_remapping.c
-@@ -1180,7 +1180,7 @@ intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
- 	 * at the new destination. So, time to cleanup the previous
- 	 * vector allocation.
- 	 */
--	send_cleanup_vector(cfg);
-+	vector_schedule_cleanup(cfg);
- 
- 	return IRQ_SET_MASK_OK_DONE;
- }
 -- 
 2.34.1
 
