@@ -1,33 +1,33 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2071.outbound.protection.outlook.com [40.107.237.71])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2054.outbound.protection.outlook.com [40.107.92.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C50AD1C75F
-	for <iommu@lists.linux.dev>; Wed, 21 Jun 2023 23:55:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 474701DCCF
+	for <iommu@lists.linux.dev>; Wed, 21 Jun 2023 23:55:58 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e0O2U0605ZDGGWcIgrfzdEl94LGHf/CmOtu3b9MOLDEtAT/CbyLXXyGClB6ZWAWL6eS3HrYQybSMYRcMMWUXMgD+w2Qe7joFT1SSQiqsY25vSV5zrVzH53O+PcyFfADgCrm3t01FoOJOjpVcxI6OifN7s6PVeMh6ni+dNHpFFBsv1T3D5u2y1LVwK38u2Mr/LiWk16vw8UtbPe6lHpziNsthENRlo//dWeVLN9VEU+aEMROAdX3v4jEJ7d33iNTCvuTHqg1QYCZj6t3ARSUwY+wWEglUkGYuqi/EB/DydEUc27X8AICoUdlvfrj4OZ49fyTOmb3DLYZscKyq2eg16w==
+ b=M5ZkctAjQUQLBUoEH7S3yVVXJD5+hLN1K29MpLbMvAUXJXWidtNtuZhKVTywk84aySrGou0B6OiAvv3MFdbZMPKnsxEDSa8iQQcCWf90+hy+jZCbRxr1HZZ/Eml4DvKxzHqD8deq+IwWJht9/BFbgiWja/0L9GUH5fiUCVJiPigguNQ/pUwulVKkC1sL/wwwP3tO9qL9dUnQSC3aVdXj+VU5/wGXnV9MCDvMXL39U4VHunMBquq9mh8U1bI7CmnFLtj2KyXsIcXc+m9WUlrDRfaefOAW5eVf2sTeXZvMPfR4c8wwWQ6dJa9k+cx8LgsJMIfE28RaxID9SRjC8oaKUw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iNi76l97aG+cBmxW0ckshX+65t8V4Tsn+yZofetA6J0=;
- b=IpgEgjvfBPoP2hisnZS2QG/8pAmcoLS3g1ZlIp0Ky0W6OpRFtP3LpuZ9AiKV/rftoxqng2zFE3jlNO9YV1rh0N1M4OGGDC7tRyxOwmYYisD3GsdJzm2IJ2vn96gLWU+7SO2X6OE2DBfMHZEoQuWjx8fwVaxJUd9lsEDW3FFKLevFwkZ8EvMATpcRCtFpWiewJNcUx0fMZvKSt1+uMVvJN1LVsmHUKGcQ1RK6imxiaCJGGWYiSPhv64nk6aCD2bsUc7snBqFfgpA4DDG1ZwD4bpiMZdJsAE5cP8ZnaKWcTpvrHoPjqIrmE7C35o6jP60w5CGVzizKAN2ltJRIFlmE8Q==
+ bh=Es4QkeoqKK9Q+iYRHWZ9ALKb26xop5VvYjHJNvJR12M=;
+ b=Oxei3InNcG/JkngoYzBQFiXBmpAJ/1IXcZGVq1CMdwRTewNLV1D5zTxM757Uu/8kvNSxzMVH1ndO1qFi1jMXZ0R4PCeeWksu551HcWbCLEhMaqjNkbWEBq0uE53/yd7XNlNnCVS+P6k+C/+8im5w8EfS/K9+vmirHfINzQc+EDgq8/SnKyMq9UR1lSW4UfHSHqHDe0hGZUNd11td/sSUhwSV4SfkWYC92pvdXygWgaBo6N4LFxiYfEAjVW0jYGP99bE62IEF8Ovo4f659xFlGDLbGW78tJMllXLzeZs5YwfXeOGezGg6vrN2PqgHo+GM2XqcNxDMorBaWRmVd1DxGQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iNi76l97aG+cBmxW0ckshX+65t8V4Tsn+yZofetA6J0=;
- b=VvH7gKy7SpWAkHREpxkmwjrX2h3XRTvMSQWWcw+qXy4Oadn9SnAt3M6G1h7jPJ7OvPG1DwgUh9vmM0Xkiz3O34wAwRdKk4e58sxnS44X4XORGsI0RbhBUT8KmD+8eDQ8VVqb21KJR4GytiwT7ZFSvkHEorenqJQ59OZG1wZQQEs=
-Received: from CY5PR15CA0050.namprd15.prod.outlook.com (2603:10b6:930:1b::16)
- by CY8PR12MB7337.namprd12.prod.outlook.com (2603:10b6:930:53::9) with
+ bh=Es4QkeoqKK9Q+iYRHWZ9ALKb26xop5VvYjHJNvJR12M=;
+ b=w30vbHQd0V9vKom3mVkyoegeKyyxSWoJc7JpQKHdthOC2BRKVJ7r/DgGClQNQAVjCUkTGf8LhDHdfg8v9SdGaCSN4h2CgW7V05C0WhKchQGfLeFi+XAP/R197e6pXGsMx6ncghmiCbunrEoOm4/O8DpMc8xutvfuMdn2D5hBZdA=
+Received: from CY5PR15CA0045.namprd15.prod.outlook.com (2603:10b6:930:1b::23)
+ by SA0PR12MB4560.namprd12.prod.outlook.com (2603:10b6:806:97::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.23; Wed, 21 Jun
- 2023 23:55:54 +0000
+ 2023 23:55:56 +0000
 Received: from CY4PEPF0000E9D4.namprd03.prod.outlook.com
- (2603:10b6:930:1b:cafe::68) by CY5PR15CA0050.outlook.office365.com
- (2603:10b6:930:1b::16) with Microsoft SMTP Server (version=TLS1_2,
+ (2603:10b6:930:1b:cafe::5e) by CY5PR15CA0045.outlook.office365.com
+ (2603:10b6:930:1b::23) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.23 via Frontend
- Transport; Wed, 21 Jun 2023 23:55:54 +0000
+ Transport; Wed, 21 Jun 2023 23:55:55 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -37,11 +37,11 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
  CY4PEPF0000E9D4.mail.protection.outlook.com (10.167.241.147) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6521.21 via Frontend Transport; Wed, 21 Jun 2023 23:55:54 +0000
+ 15.20.6521.21 via Frontend Transport; Wed, 21 Jun 2023 23:55:55 +0000
 Received: from ruby-95f9host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Wed, 21 Jun
- 2023 18:55:51 -0500
+ 2023 18:55:53 -0500
 From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
 	<kvm@vger.kernel.org>
@@ -51,9 +51,9 @@ CC: <joro@8bytes.org>, <robin.murphy@arm.com>, <yi.l.liu@intel.com>,
 	<kumaranand@google.com>, <jon.grimm@amd.com>, <santosh.shukla@amd.com>,
 	<vasant.hegde@amd.com>, <jay.chen@amd.com>, <joseph.chung@amd.com>, "Suravee
  Suthikulpanit" <suravee.suthikulpanit@amd.com>
-Subject: [RFC PATCH 10/21] iommu/amd: Introduce vIOMMU-specific events and event info
-Date: Wed, 21 Jun 2023 18:54:57 -0500
-Message-ID: <20230621235508.113949-11-suravee.suthikulpanit@amd.com>
+Subject: [RFC PATCH 12/21] iommu/amd: Introduce AMD vIOMMU-specific UAPI
+Date: Wed, 21 Jun 2023 18:54:59 -0500
+Message-ID: <20230621235508.113949-13-suravee.suthikulpanit@amd.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230621235508.113949-1-suravee.suthikulpanit@amd.com>
 References: <20230621235508.113949-1-suravee.suthikulpanit@amd.com>
@@ -70,161 +70,187 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9D4:EE_|CY8PR12MB7337:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1a412335-fbd6-45bd-5fd5-08db72b30cd5
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9D4:EE_|SA0PR12MB4560:EE_
+X-MS-Office365-Filtering-Correlation-Id: 65208709-462b-44ff-9034-08db72b30dc8
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	Xa18HEMfdNdkm+uq4BS9+eAkt9R6wUNH//HHw4LsXJYrwRnMfP0nABxVHjdDhazqu8Hth09N95IS1pQIH9z2aigxeLFa+F9/yBokBYN5PfgJWUJzCLY8tHuyntZCIR3vUkl5O4UX6y0KqK1dYYIeozoVkWpd3Y5wUNi2mBVYB8DZuh9i6K1Or3CwdC+6ZQogOdZLi7frjpU7vuRV9fByrYo4f1OCExSkKrffdrZNlCSI87s74TwatCPiakzKLdWhy2x8w/+y1qYeH3Jp4YuM3xfY8Z9z0+2lniV/pP5O3RuTo9C5/q9VcG+msLgjmSh7GDSU6w7DHvDZ4BS+7SlMv9wnkMuUhd+4OizGUMmIdDaXw0qtdWwwKhNkV1UwF/UW4E/IbBpSvAbbPyW412aM8aO5DcZTCJQgj/aFh9AL4AxIvnpl3V/jAckLrN84N45gQHkWvPMgkuvcv25Ck8/CiU7nRhIg8uOr8WkkpxCKUeCFlZNMMMZHJjJN+B7VNLIRJHZ/odhVjyuejCPIlXzj8gMc2ad3pJL3mCtqBeMgjnoSDLsM1ZTNuiyjfLdcBYQBWetYBB2jZ/7VinkY8pwGPg1zKnA1OyOEbuLkQe2we9GXJ66m1O+3K0fzQpoTEJdNXYP/OsDCv5IyajFp84Hjana2lJ5VHsvmefPGc/beZwb/eDmyxiSZyh6L4UsWZmd3mM8PUxodsj+zja1GXtWnQYtydbInD5ncVoTKNkZ6FwSR0PsrpcwYt8YFlRmHP0/eduKAFwTuaqHTzSGFrLZQrA==
+	ky6UDFtn0ptih9xO7AaC5pH083ReWvflDIojiTAbYoWtzrFM5V45f/DwauxL2imB+Loy5Qdf3JWo3MqWgajdX65kSLpeP7k20cWfTZXxxQsjcproKInUTerGNZl/UQemiuPP0qI3t21AkV8ZP5JRqjeCnaOEi2HWV2Qq+2guaqYsGyYajTWXCI8eZd/yHIUtZeQ8cv35b6j8d3qtKP29/PD3KWWIZPRmKv6bJDKwpjxPKvRR1FXwAGPxlDam+E4cnOs35fcYoDQVyWSLA6/rAfbcZk9eZsMfMH9MYyWeEatiy5t/6i3rZu6o5GVP0NmqXOtqmOgCzP6Ij5CzkxQmKBouOuq2ekwyP2WQeNbUDzqflds3vFexyn95B1bBdXnWPmJ2/Gj5VQqnB6c8YazsFwJa5l2CnPiRl7g+LQ/SGfer73ZGBtaAvU/YosWUpPtUjhkm9qRMnOojVbGJ/cTe+pT3OlpGc+koN1pRIysH0d74xuxfBbftU8Z6THGn378TefzIiaOHxNQ0pZeINkhk35rh76NUOy/Ye5gBxZQzwkDlzic2WyJF7vZPbJpwRLgq6ohKadoJe3kJ+Zkws/KyXRdQAwdy/Cwm+yn5LtbKq/7TG0J8nsprwykyU0AgMwrnJrku3ELtHPvsp2Jg64yLLmfvdg/ryorQM8WWYmHPrQIE+6quats8juhJ9khk/3eoU7aBER9ERDK5MrZm9XiRl60hfGps9Rtn+dpnGPLMRDzqooCd6s2hpeC5jSwz7H3HdFNvQ0Y9kGPV6nhpcxA7MtZ8kSd41R6pnWlunYz90E+ivpi9Fc/WJbVOMixIr5Bu
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(136003)(376002)(346002)(451199021)(40470700004)(36840700001)(46966006)(54906003)(7696005)(478600001)(110136005)(70206006)(70586007)(16526019)(26005)(186003)(1076003)(2906002)(82310400005)(8676002)(4326008)(41300700001)(5660300002)(44832011)(8936002)(7416002)(316002)(356005)(81166007)(82740400003)(86362001)(36756003)(40460700003)(47076005)(336012)(83380400001)(2616005)(36860700001)(40480700001)(426003)(36900700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(376002)(39860400002)(396003)(346002)(136003)(451199021)(36840700001)(40470700004)(46966006)(54906003)(110136005)(478600001)(4326008)(26005)(16526019)(186003)(1076003)(70586007)(2906002)(82310400005)(7696005)(41300700001)(7416002)(8936002)(70206006)(8676002)(44832011)(5660300002)(316002)(82740400003)(356005)(81166007)(2616005)(86362001)(36756003)(40480700001)(47076005)(426003)(336012)(83380400001)(36860700001)(40460700003)(71600200004)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jun 2023 23:55:54.1986
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jun 2023 23:55:55.7923
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1a412335-fbd6-45bd-5fd5-08db72b30cd5
+X-MS-Exchange-CrossTenant-Network-Message-Id: 65208709-462b-44ff-9034-08db72b30dc8
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
 	CY4PEPF0000E9D4.namprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7337
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4560
 
-Adding support for new vIOMMU events:
-  * Guest Event Fault event
-  * vIOMMU Hardware Error event
-
-Also, adding support for the additional vIOMMU related flags
-in existing events.
+To handle various operations necessary for setting up the vIOMMU hardware.
+These operations are specific to AMD hardware.
 
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 ---
- drivers/iommu/amd/amd_iommu_types.h |  3 ++
- drivers/iommu/amd/iommu.c           | 58 ++++++++++++++++++++++-------
- 2 files changed, 48 insertions(+), 13 deletions(-)
+ include/uapi/linux/amd_viommu.h | 145 ++++++++++++++++++++++++++++++++
+ 1 file changed, 145 insertions(+)
+ create mode 100644 include/uapi/linux/amd_viommu.h
 
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 8830f511bee4..d832e0c36a21 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -145,6 +145,9 @@
- #define EVENT_TYPE_IOTLB_INV_TO	0x7
- #define EVENT_TYPE_INV_DEV_REQ	0x8
- #define EVENT_TYPE_INV_PPR_REQ	0x9
-+#define EVENT_TYPE_GUEST_EVENT_FAULT	0xb
-+#define EVENT_TYPE_VIOMMU_HW_ERR	0xc
+diff --git a/include/uapi/linux/amd_viommu.h b/include/uapi/linux/amd_viommu.h
+new file mode 100644
+index 000000000000..f4a91ecd5dc2
+--- /dev/null
++++ b/include/uapi/linux/amd_viommu.h
+@@ -0,0 +1,145 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++/*
++ * AMD Hardwaer Accelerated Virtualized IOMMU (HW-vIOMMU)
++ *
++ * Copyright (c) 2023, Advanced Micro Devices, Inc.
++ *
++ */
++#ifndef _UAPI_AMD_VIOMMU_H_
++#define _UAPI_AMD_VIOMMU_H_
 +
- #define EVENT_TYPE_RMP_FAULT	0xd
- #define EVENT_TYPE_RMP_HW_ERR	0xe
- #define EVENT_DEVID_MASK	0xffff
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 4a42af85664e..efced59ba8a5 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -541,7 +541,7 @@ static void amd_iommu_report_rmp_fault(struct amd_iommu *iommu, volatile u32 *ev
- 
- static void amd_iommu_report_page_fault(struct amd_iommu *iommu,
- 					u16 devid, u16 domain_id,
--					u64 address, int flags)
-+					u64 address, int flags, u8 vflags)
- {
- 	struct iommu_dev_data *dev_data = NULL;
- 	struct pci_dev *pdev;
-@@ -576,13 +576,13 @@ static void amd_iommu_report_page_fault(struct amd_iommu *iommu,
- 		}
- 
- 		if (__ratelimit(&dev_data->rs)) {
--			pci_err(pdev, "Event logged [IO_PAGE_FAULT domain=0x%04x address=0x%llx flags=0x%04x]\n",
--				domain_id, address, flags);
-+			pci_err(pdev, "Event logged [IO_PAGE_FAULT domain=0x%04x address=0x%llx flags=0x%04x vflags=%#x]\n",
-+				domain_id, address, flags, vflags);
- 		}
- 	} else {
--		pr_err_ratelimited("Event logged [IO_PAGE_FAULT device=%04x:%02x:%02x.%x domain=0x%04x address=0x%llx flags=0x%04x]\n",
-+		pr_err_ratelimited("Event logged [IO_PAGE_FAULT device=%04x:%02x:%02x.%x domain=0x%04x address=0x%llx flags=0x%04x vflags=%#x]\n",
- 			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
--			domain_id, address, flags);
-+			domain_id, address, flags, vflags);
- 	}
- 
- out:
-@@ -618,28 +618,41 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
- 	}
- 
- 	if (type == EVENT_TYPE_IO_FAULT) {
--		amd_iommu_report_page_fault(iommu, devid, pasid, address, flags);
-+		u8 vflags = (event[0] >> 27) & 0x1F;
++#include <linux/types.h>
++#include <linux/ioctl.h>
 +
-+		amd_iommu_report_page_fault(iommu, devid, pasid, address, flags, vflags);
- 		return;
- 	}
- 
- 	switch (type) {
- 	case EVENT_TYPE_ILL_DEV:
--		dev_err(dev, "Event logged [ILLEGAL_DEV_TABLE_ENTRY device=%04x:%02x:%02x.%x pasid=0x%05x address=0x%llx flags=0x%04x]\n",
-+	{
-+		u8 vflags = (event[0] >> 27) & 0x1F;
++/**
++ * The ioctl interfaces in this file are specific for AMD HW-vIOMMU.
++ * They are an extension of extend the IOMMUFD ioctl interfaces.
++ * Please see include/uapi/linux/iommufd.h for more detail.
++ */
++#include <linux/iommufd.h>
 +
-+		dev_err(dev, "Event logged [ILLEGAL_DEV_TABLE_ENTRY deice=%04x:%02x:%02x.%x pasid=0x%05x address=0x%llx flags=0x%04x vflags=%#x]\n",
- 			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
--			pasid, address, flags);
-+			pasid, address, flags, vflags);
- 		dump_dte_entry(iommu, devid);
- 		break;
-+	}
- 	case EVENT_TYPE_DEV_TAB_ERR:
--		dev_err(dev, "Event logged [DEV_TAB_HARDWARE_ERROR device=%04x:%02x:%02x.%x "
--			"address=0x%llx flags=0x%04x]\n",
-+	{
-+		u8 vflags = (event[0] >> 27) & 0x1F;
++enum iommufd_viommu_cmd {
++	IOMMUFD_VIOMMU_CMD_BASE = 0x60,
++	IOMMUFD_CMD_IOMMU_INIT = IOMMUFD_VIOMMU_CMD_BASE,
++	IOMMUFD_CMD_IOMMU_DESTROY,
++	IOMMUFD_CMD_DEVICE_ATTACH,
++	IOMMUFD_CMD_DEVICE_DETACH,
++	IOMMUFD_CMD_DOMAIN_ATTACH,
++	IOMMUFD_CMD_DOMAIN_DETACH,
++	IOMMUFD_CMD_MMIO_ACCESS,
++	IOMMUFD_CMD_CMDBUF_UPDATE,
++};
 +
-+		dev_err(dev, "Event logged [DEV_TAB_HARDWARE_ERROR device=%04x:%02x:%02x.%x address=%#llx flags=%#04x vlfags=%#x]\n",
- 			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
--			address, flags);
-+			address, flags, vflags);
- 		break;
-+	}
- 	case EVENT_TYPE_PAGE_TAB_ERR:
--		dev_err(dev, "Event logged [PAGE_TAB_HARDWARE_ERROR device=%04x:%02x:%02x.%x pasid=0x%04x address=0x%llx flags=0x%04x]\n",
-+	{
-+		u8 vflags = (event[0] >> 27) & 0x1F;
++/**
++ * struct amd_viommu_iommu_info - ioctl(VIOMMU_IOMMU_[INIT|DESTROY])
++ * @size: sizeof(struct amd_viommu_iommu_info)
++ * @iommu_id: PCI device ID of the AMD IOMMU instance
++ * @gid: guest ID
++ *
++ * Initialize and destroy AMD HW-vIOMMU instances for the specified
++ * guest ID.
++ */
++struct amd_viommu_iommu_info {
++	__u32	size;
++	__u32	iommu_id;
++	__u32	gid;
++};
++#define VIOMMU_IOMMU_INIT	_IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOMMU_INIT)
++#define VIOMMU_IOMMU_DESTROY	_IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOMMU_DESTROY)
 +
-+		dev_err(dev, "Event logged [PAGE_TAB_HARDWARE_ERROR device=%04x:%02x:%02x.%x pasid=0x%04x address=0x%llx flags=0x%04x vflags=%#x]\n",
- 			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
--			pasid, address, flags);
-+			pasid, address, flags, vflags);
- 		break;
-+	}
- 	case EVENT_TYPE_ILL_CMD:
- 		dev_err(dev, "Event logged [ILLEGAL_COMMAND_ERROR address=0x%llx]\n", address);
- 		dump_command(address);
-@@ -671,6 +684,25 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
- 			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
- 			pasid, address, flags, tag);
- 		break;
-+	case EVENT_TYPE_GUEST_EVENT_FAULT:
-+	{
-+		u8 gid = event[1] & 0xFFFF;
-+		u8 vflags = (event[0] >> 27) & 0x1F;
++/**
++ * struct amd_viommu_dev_info - ioctl(VIOMMU_DEVICE_[ATTACH|DETACH])
++ * @size: sizeof(struct amd_viommu_dev_info)
++ * @iommu_id: PCI device ID of the AMD IOMMU instance
++ * @gid: guest ID
++ * @hdev_id: host PCI device ID
++ * @gdev_id: guest PCI device ID
++ * @queue_id: guest PCI device queue ID
++ *
++ * Attach / Detach PCI device to a HW-vIOMMU instance, and program
++ * the IOMMU Device ID mapping table for the specified guest.
++ */
++struct amd_viommu_dev_info {
++	__u32	size;
++	__u32	iommu_id;
++	__u32	gid;
++	__u16	hdev_id;
++	__u16	gdev_id;
++	__u16	queue_id;
++};
 +
-+		dev_err(dev, "Event logged [GUEST_EVENT_FAULT gid=#%x flags=0x%04x vflags=%#x]\n",
-+			gid, flags, vflags);
-+		break;
-+	}
-+	case EVENT_TYPE_VIOMMU_HW_ERR:
-+	{
-+		u16 gid = event[0] & 0xFFFF;
-+		u8 src = (event[0] >> 16) & 0x3;
-+		u8 vflags = (event[0] >> 27) & 0x1F;
++#define VIOMMU_DEVICE_ATTACH	_IO(IOMMUFD_TYPE, IOMMUFD_CMD_DEVICE_ATTACH)
++#define VIOMMU_DEVICE_DETACH	_IO(IOMMUFD_TYPE, IOMMUFD_CMD_DEVICE_DETACH)
 +
-+		dev_err(dev, "Event logged [VIOMMU_HW_ERR gid=%#x address=%#llx src=%#x flags=%#x vflags=%#x]\n",
-+			gid, address, src, flags, vflags);
-+		break;
-+	}
- 	default:
- 		dev_err(dev, "Event logged [UNKNOWN event[0]=0x%08x event[1]=0x%08x event[2]=0x%08x event[3]=0x%08x\n",
- 			event[0], event[1], event[2], event[3]);
++/**
++ * struct amd_viommu_dom_info - ioctl(VIOMMU_DOMAIN_[ATTACH|DETACH])
++ * @size: sizeof(struct amd_viommu_dom_info)
++ * @iommu_id: PCI device ID of the AMD IOMMU instance
++ * @gid: guest ID
++ * @hdev_id: host PCI device ID
++ * @gdev_id: guest PCI device ID
++ * @gdom_id: guest domain ID
++ *
++ * Attach / Detach domain of a PCI device to a HW-vIOMMU instance, and program
++ * the IOMMU Domain ID mapping table for the specified guest.
++ */
++struct amd_viommu_dom_info {
++	__u32	size;
++	__u32	iommu_id;
++	__u32	gid;
++	__u16	gdev_id;
++	__u16	gdom_id;
++};
++
++#define VIOMMU_DOMAIN_ATTACH	_IO(IOMMUFD_TYPE, IOMMUFD_CMD_DOMAIN_ATTACH)
++#define VIOMMU_DOMAIN_DETACH	_IO(IOMMUFD_TYPE, IOMMUFD_CMD_DOMAIN_DETACH)
++
++/**
++ * struct amd_viommu_mmio_data- ioctl(VIOMMU_MMIO_ACCESS)
++ * @size: sizeof(struct amd_viommu_mmio_data)
++ * @iommu_id: PCI device ID of the AMD IOMMU instance
++ * @gid: guest ID
++ * @offset: specify MMIO offset
++ * @value: specify MMIO write value or retrieving MMIO read value
++ * @mmio_size: specify MMIO size
++ * @is_write: specify MMIO read (0) / write (1)
++ *
++ * - Trap guest IOMMU MMIO write to program HW-vIOMMU for the specified
++ *   guest.
++ * - Trap guest IOMMU MMIO read to emulate return value for the specified
++ *   guest.
++ */
++struct amd_viommu_mmio_data {
++	__u32	size;
++	__u32	iommu_id;
++	__u32	gid;
++	__u32	offset;
++	__u64	value;
++	__u32	mmio_size;
++	__u8	is_write;
++};
++
++#define VIOMMU_MMIO_ACCESS	_IO(IOMMUFD_TYPE, IOMMUFD_CMD_MMIO_ACCESS)
++
++/**
++ * struct amd_viommu_cmdbuf_data - ioctl(VIOMMU_CMDBUF_UPDATE)
++ * @size: sizeof(struct amd_viommu_cmdbuf_data)
++ * @iommu_id: PCI device ID of the AMD IOMMU instance
++ * @gid: guest ID
++ * @gcmdbuf_size: guest command buffer size
++ * @hva: host virtual address for the guest command buffer
++ *
++ * Trap guest command buffer initialization to setup HW-vIOMMU command buffer
++ * for the specified guest.
++ */
++struct amd_viommu_cmdbuf_data {
++	__u32	size;
++	__u32	iommu_id;
++	__u32	gid;
++	__u32	cmdbuf_size;
++	__u64	hva;
++};
++
++#define VIOMMU_CMDBUF_UPDATE	_IO(IOMMUFD_TYPE, IOMMUFD_CMD_CMDBUF_UPDATE)
++
++#endif
 -- 
 2.34.1
 
