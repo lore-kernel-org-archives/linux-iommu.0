@@ -1,25 +1,25 @@
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A23153AA91
-	for <iommu@lists.linux.dev>; Thu, 22 Jun 2023 09:28:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADA133AAAA
+	for <iommu@lists.linux.dev>; Thu, 22 Jun 2023 09:28:03 +0000 (UTC)
 Received: from IcarusMOD.eternityproject.eu (unknown [IPv6:2001:b07:2ed:14ed:c5f8:7372:f042:90a2])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
 	(Authenticated sender: kholk11)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id 1B33A6607073;
-	Thu, 22 Jun 2023 10:28:00 +0100 (BST)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id 530306607077;
+	Thu, 22 Jun 2023 10:28:01 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1687426081;
-	bh=CngEEwFWw5udIT5tiX3hlaCWhy4SYtKzrubNQdXxupI=;
+	s=mail; t=1687426082;
+	bh=RBuC46hmr6lxKxb743CP1Q/DCSEVEyNhNzronT5Rcf8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=hjpr1ZOfp2SXOJIs7zShgoYvD+7NxZTzrN02RusmiW3IlVvIw1bJjaubw7M3/qvd3
-	 SvFjuo+LlqtOn6ZgEK1QIEg/kuL4TWUJdsy+lOPkofvqK6oywLdSd4BIxLRT4B8dxi
-	 FRT6osdAe1ieG4iUoB1CB+SA7npGuvQyvjsO1Gutu3jqcPmeb5xKhFlNna1m3zk4Kz
-	 6vJrtnwbGNfRnscEO5vugE0QHCSbZtUpttU+VgrMCZbWksuEbYuW+d5KzuwiCQnMCY
-	 hdaIhOI5megPxHNI96aZtaQnlaGLH3jLJsH8iOIl9ebBwKP/H8wZaz5d87kK8SsTPm
-	 vjC8tHyXqqgnA==
+	b=avQ2eD8+QLW/pSP/VeHhlTNyOEll/57wPMy2CbFD8IGdoztlxnwYMdaP9822YNOM6
+	 vYmE0gJl6jkfI5A9KtOeQrfkErg5v2AOGzFujZPAov5o97R1z0iZagIoGsVKOmTVlU
+	 y07POElGMPobsaei9cido+LNo86givZNdWUR2C+sfwWXQhJfmgvVrHzj6si88dgbQl
+	 MyvCdVXV0z+/gHwBsisiK15+8PI5mT2tkgKyFsSSOkj5JWS6en3yvKvPzFTIimV+VJ
+	 vDU1Qru7u0JzusEDWHFWmNNNCQvgt3fqF50+N/C5O1oproOZNT4OH/K107hCIiOj6G
+	 iv6q3gXGjPObg==
 From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 To: agross@kernel.org
 Cc: andersson@kernel.org,
@@ -39,10 +39,11 @@ Cc: andersson@kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	kernel@collabora.com
-Subject: [PATCH v5 4/6] iommu/qcom: Index contexts by asid number to allow asid 0
-Date: Thu, 22 Jun 2023 11:27:40 +0200
-Message-Id: <20230622092742.74819-5-angelogioacchino.delregno@collabora.com>
+	kernel@collabora.com,
+	Rob Herring <robh@kernel.org>
+Subject: [PATCH v5 5/6] dt-bindings: iommu: qcom,iommu: Add QSMMUv2 and MSM8976 compatibles
+Date: Thu, 22 Jun 2023 11:27:41 +0200
+Message-Id: <20230622092742.74819-6-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230622092742.74819-1-angelogioacchino.delregno@collabora.com>
 References: <20230622092742.74819-1-angelogioacchino.delregno@collabora.com>
@@ -54,93 +55,52 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This driver was indexing the contexts by asid-1, which is probably
-done under the assumption that the first ASID is always 1.
-Unfortunately this is not always true: at least for MSM8956 and
-MSM8976's GPU IOMMU, the gpu_user context's ASID number is zero.
-To allow using a zero asid number, index the contexts by `asid`
-instead of by `asid - 1`.
-
-While at it, also enhance human readability by renaming the
-`num_ctxs` member of struct qcom_iommu_dev to `max_asid`.
+Add compatible string "qcom,msm-iommu-v2" for the inner node,
+along with "qcom,msm8976-iommu" as a first user of it and
+"qcom,msm-iommu-v2-ns" and "qcom,msm-iommu-v2-sec" for the context
+bank nodes to support Qualcomm's secure fw "SMMU v2" implementation.
 
 Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- drivers/iommu/arm/arm-smmu/qcom_iommu.c | 22 ++++++++++------------
- 1 file changed, 10 insertions(+), 12 deletions(-)
+ .../devicetree/bindings/iommu/qcom,iommu.yaml   | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index f1bd7c035db8..9786fd094e7d 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -51,8 +51,8 @@ struct qcom_iommu_dev {
- 	struct clk_bulk_data clks[CLK_NUM];
- 	void __iomem		*local_base;
- 	u32			 sec_id;
--	u8			 num_ctxs;
--	struct qcom_iommu_ctx	*ctxs[];   /* indexed by asid-1 */
-+	u8			 max_asid;
-+	struct qcom_iommu_ctx	*ctxs[];   /* indexed by asid */
- };
+diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml b/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml
+index f7a64ad8a005..a74eb899c381 100644
+--- a/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml
++++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml
+@@ -17,11 +17,16 @@ description: |
  
- struct qcom_iommu_ctx {
-@@ -94,7 +94,7 @@ static struct qcom_iommu_ctx * to_ctx(struct qcom_iommu_domain *d, unsigned asid
- 	struct qcom_iommu_dev *qcom_iommu = d->iommu;
- 	if (!qcom_iommu)
- 		return NULL;
--	return qcom_iommu->ctxs[asid - 1];
-+	return qcom_iommu->ctxs[asid];
- }
+ properties:
+   compatible:
+-    items:
+-      - enum:
+-          - qcom,msm8916-iommu
+-          - qcom,msm8953-iommu
+-      - const: qcom,msm-iommu-v1
++    oneOf:
++      - items:
++          - enum:
++              - qcom,msm8916-iommu
++              - qcom,msm8953-iommu
++          - const: qcom,msm-iommu-v1
++      - items:
++          - enum:
++              - qcom,msm8976-iommu
++          - const: qcom,msm-iommu-v2
  
- static inline void
-@@ -534,12 +534,10 @@ static int qcom_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
- 	qcom_iommu = platform_get_drvdata(iommu_pdev);
+   clocks:
+     items:
+@@ -64,6 +69,8 @@ patternProperties:
+         enum:
+           - qcom,msm-iommu-v1-ns
+           - qcom,msm-iommu-v1-sec
++          - qcom,msm-iommu-v2-ns
++          - qcom,msm-iommu-v2-sec
  
- 	/* make sure the asid specified in dt is valid, so we don't have
--	 * to sanity check this elsewhere, since 'asid - 1' is used to
--	 * index into qcom_iommu->ctxs:
-+	 * to sanity check this elsewhere:
- 	 */
--	if (WARN_ON(asid < 1) ||
--	    WARN_ON(asid > qcom_iommu->num_ctxs) ||
--	    WARN_ON(qcom_iommu->ctxs[asid - 1] == NULL)) {
-+	if (WARN_ON(asid > qcom_iommu->max_asid) ||
-+	    WARN_ON(qcom_iommu->ctxs[asid] == NULL)) {
- 		put_device(&iommu_pdev->dev);
- 		return -EINVAL;
- 	}
-@@ -696,7 +694,7 @@ static int qcom_iommu_ctx_probe(struct platform_device *pdev)
- 
- 	dev_dbg(dev, "found asid %u\n", ctx->asid);
- 
--	qcom_iommu->ctxs[ctx->asid - 1] = ctx;
-+	qcom_iommu->ctxs[ctx->asid] = ctx;
- 
- 	return 0;
- }
-@@ -708,7 +706,7 @@ static void qcom_iommu_ctx_remove(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, NULL);
- 
--	qcom_iommu->ctxs[ctx->asid - 1] = NULL;
-+	qcom_iommu->ctxs[ctx->asid] = NULL;
- }
- 
- static const struct of_device_id ctx_of_match[] = {
-@@ -755,11 +753,11 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
- 	for_each_child_of_node(dev->of_node, child)
- 		max_asid = max(max_asid, get_asid(child));
- 
--	qcom_iommu = devm_kzalloc(dev, struct_size(qcom_iommu, ctxs, max_asid),
-+	qcom_iommu = devm_kzalloc(dev, struct_size(qcom_iommu, ctxs, max_asid + 1),
- 				  GFP_KERNEL);
- 	if (!qcom_iommu)
- 		return -ENOMEM;
--	qcom_iommu->num_ctxs = max_asid;
-+	qcom_iommu->max_asid = max_asid;
- 	qcom_iommu->dev = dev;
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+       interrupts:
+         maxItems: 1
 -- 
 2.40.1
 
