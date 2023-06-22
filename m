@@ -1,25 +1,25 @@
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 292A63AA91
-	for <iommu@lists.linux.dev>; Thu, 22 Jun 2023 09:27:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DF933AAA9
+	for <iommu@lists.linux.dev>; Thu, 22 Jun 2023 09:28:00 +0000 (UTC)
 Received: from IcarusMOD.eternityproject.eu (unknown [IPv6:2001:b07:2ed:14ed:c5f8:7372:f042:90a2])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
 	(Authenticated sender: kholk11)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id 569016607074;
-	Thu, 22 Jun 2023 10:27:56 +0100 (BST)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id 8FDE06607075;
+	Thu, 22 Jun 2023 10:27:57 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1687426077;
-	bh=fpJa5/i7ldd76fzTKhs5pEq675tqrNBKbMuRtH+2cEM=;
+	s=mail; t=1687426078;
+	bh=cjwGV4PBGa2G0fyxMUorKbKCregA7+FHFAZQsfL0PRY=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=PDQrVoksQoaveDYzL5XafpXdVJMFaVhnz5DYCBKUIV7azGZHKZn2LmSUSy5uYZNbG
-	 1qdJ7W7nL6/ov5F1B3RCBocVeBcv77FqVLZwT3TnU4QEmVaOhFlbD18pcKAjmqFIKR
-	 9aKdYlx64bo+YZU0XI0LmZ9KHqod1Anx5FEATyyX+GlpvNawYKn4uhSELASGKfZyiQ
-	 DAIN4PTPsm7MvCBfnFKmq5G8clpnGstxQcDM/ipC2IO0sEG5KH7qV5Ko7G8zjGAu86
-	 sSjkE8LE2K50HiPpLldLvNmxDIitqG/qNP0h3nwt5ImX9NkvCvfRHdt28VOiQqpTsp
-	 4XicTV7w097lw==
+	b=m37hezI9O+FIW53mDrj1fpvmgKyTxgIcCC1DpCNs+GjhhVfb9UFw6hqoRzc2LXMPM
+	 Qkbk2d6MFxwk+xySVz2XHuURvTzHhfepVbWdVnG1LKvnOgHxuZa2XVi04qbn3yFSCw
+	 ATIyD6sh7+zFrrdRKjGqRHKWQSZv5PRjFYf4V1r/yizDBMFJiuSwsL6YG8HfUsBrE1
+	 f0QYSj1rl+PSL08dCY3htW3h2Z+LpQQVOzyMyZNUSUz5EZegHDwS7dHgaRr0NfCeGi
+	 T3bVFrUlnA19w8/Z7YyRUod2UZpQG3B5dIA4XyKMt1RD1F8Mc191qdn8UmeYSyKNkG
+	 wsQImsYA5NYmQ==
 From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 To: agross@kernel.org
 Cc: andersson@kernel.org,
@@ -39,10 +39,11 @@ Cc: andersson@kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	kernel@collabora.com
-Subject: [PATCH v5 1/6] dt-bindings: iommu: qcom,iommu: Add qcom,ctx-asid property
-Date: Thu, 22 Jun 2023 11:27:37 +0200
-Message-Id: <20230622092742.74819-2-angelogioacchino.delregno@collabora.com>
+	kernel@collabora.com,
+	Marijn Suijten <marijn.suijten@somainline.org>
+Subject: [PATCH v5 2/6] iommu/qcom: Use the asid read from device-tree if specified
+Date: Thu, 22 Jun 2023 11:27:38 +0200
+Message-Id: <20230622092742.74819-3-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20230622092742.74819-1-angelogioacchino.delregno@collabora.com>
 References: <20230622092742.74819-1-angelogioacchino.delregno@collabora.com>
@@ -54,30 +55,72 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add a new "qcom,ctx-asid" property to force an ASID number on IOMMU
-contexts where required.
+As specified in this driver, the context banks are 0x1000 apart but
+on some SoCs the context number does not necessarily match this
+logic, hence we end up using the wrong ASID: keeping in mind that
+this IOMMU implementation relies heavily on SCM (TZ) calls, it is
+mandatory that we communicate the right context number.
 
+Since this is all about how context banks are mapped in firmware,
+which may be board dependent (as a different firmware version may
+eventually change the expected context bank numbers), introduce a
+new property "qcom,ctx-asid": when found, the ASID will be forced
+as read from the devicetree.
+
+When "qcom,ctx-asid" is not found, this driver retains the previous
+behavior as to avoid breaking older devicetrees or systems that do
+not require forcing ASID numbers.
+
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+[Marijn: Rebased over next-20221111]
 Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- Documentation/devicetree/bindings/iommu/qcom,iommu.yaml | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/iommu/arm/arm-smmu/qcom_iommu.c | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml b/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml
-index d9fabdf930d9..f7a64ad8a005 100644
---- a/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml
-@@ -71,6 +71,11 @@ patternProperties:
-       reg:
-         maxItems: 1
+diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+index a503ed758ec3..8face57c4180 100644
+--- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
++++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+@@ -531,7 +531,8 @@ static int qcom_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
+ 	 * index into qcom_iommu->ctxs:
+ 	 */
+ 	if (WARN_ON(asid < 1) ||
+-	    WARN_ON(asid > qcom_iommu->num_ctxs)) {
++	    WARN_ON(asid > qcom_iommu->num_ctxs) ||
++	    WARN_ON(qcom_iommu->ctxs[asid - 1] == NULL)) {
+ 		put_device(&iommu_pdev->dev);
+ 		return -EINVAL;
+ 	}
+@@ -617,7 +618,8 @@ static int qcom_iommu_sec_ptbl_init(struct device *dev)
  
-+      qcom,ctx-asid:
-+        $ref: /schemas/types.yaml#/definitions/uint32
-+        description:
-+          The ASID number associated to the context bank.
+ static int get_asid(const struct device_node *np)
+ {
+-	u32 reg;
++	u32 reg, val;
++	int asid;
+ 
+ 	/* read the "reg" property directly to get the relative address
+ 	 * of the context bank, and calculate the asid from that:
+@@ -625,7 +627,17 @@ static int get_asid(const struct device_node *np)
+ 	if (of_property_read_u32_index(np, "reg", 0, &reg))
+ 		return -ENODEV;
+ 
+-	return reg / 0x1000;      /* context banks are 0x1000 apart */
++	/*
++	 * Context banks are 0x1000 apart but, in some cases, the ASID
++	 * number doesn't match to this logic and needs to be passed
++	 * from the DT configuration explicitly.
++	 */
++	if (!of_property_read_u32(np, "qcom,ctx-asid", &val))
++		asid = val;
++	else
++		asid = reg / 0x1000;
 +
-     required:
-       - compatible
-       - interrupts
++	return asid;
+ }
+ 
+ static int qcom_iommu_ctx_probe(struct platform_device *pdev)
 -- 
 2.40.1
 
