@@ -1,177 +1,121 @@
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2040.outbound.protection.outlook.com [40.107.237.40])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 388FF8C1B
-	for <iommu@lists.linux.dev>; Fri, 23 Jun 2023 13:52:29 +0000 (UTC)
-Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-51bde6a8c20so706714a12.0
-        for <iommu@lists.linux.dev>; Fri, 23 Jun 2023 06:52:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20221208.gappssmtp.com; s=20221208; t=1687528348; x=1690120348;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9S6OHdItsTA1JwEPFdtVcZWMFJNNUsFlvqd8wRr+OUY=;
-        b=nAce8ga+PROGouUoidmVoa9MzzT4VKceza4OhOuRIrN+5JqaA3WkDPC5LeYqt3YuZl
-         2HDMZKlnXxn1GxbdtDj4lyz50v9F7oC2oDzNaI6940PB7TEop0jMQqAauMiaJIXqaIsi
-         y/bLhiO9HDfI4+5QFBjf6fqhm03lni+3xdGXkzzxj3UrbrdjWks+kde/XVOEiw4kiQSV
-         QhKvRfLnp0ekeVOI4extHqhCHK2JjEhKR6dCf5EvjVCuMe9mhUaWBqhHt+3X2csIE2au
-         oaAovgYAxbXS4YbjQqIKfJUEYQGiMGXYyrzj6FCFF8rURCWTujhqLNueJ4wQjUXI0t+8
-         N/tw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687528348; x=1690120348;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=9S6OHdItsTA1JwEPFdtVcZWMFJNNUsFlvqd8wRr+OUY=;
-        b=FOiub+fr0zbioNnk0DiuQJkOmbf8NJF/BZV27S5pWRErO446MsNQzEN/XzDOYQi7CM
-         y7qWPvgDSZDDqbK8WkLZuspvtdF6scFCfTxd09Hhmb96Wq6M5oPd/gL1GAp7nLeOoNta
-         ivnaVysvLPpUqExM2PLrqulNXvLuqgSnG/Gs5LW9f+T5snN32tSBSnxk/UiRaN59KH1m
-         I1rB5UePHfcxzkv5aGxvrRxGythjgEvTBgPITCNTQwLBNejFBBIsGWNe/OEq8IFy+Rr3
-         Kk01zHmH57SEfJiZIUsDpVD1HBHyDsczWG4q0xVyPJ0eUGS9mkiFtb+CRW9kdZCszWwt
-         HGUw==
-X-Gm-Message-State: AC+VfDx7tJr5K5TOEKzszYM+fRacUvKjkPfUrTur/pPEQEVeEZNUJqIu
-	Ez0M/uQdi8FarjXDp8/lPFW9EKtRTcnq10RPIq7tIA==
-X-Google-Smtp-Source: ACHHUZ5paNz1Cy14U0D10w5MW6F/Bi3rLn0+7A272F60E7dMKSk92KbX4Dy3Ud9Nb1GD+xk5zK+AHrmxfK2LTcZejxw=
-X-Received: by 2002:aa7:d1d4:0:b0:51a:5ae1:b6e5 with SMTP id
- g20-20020aa7d1d4000000b0051a5ae1b6e5mr9949319edp.10.1687528347990; Fri, 23
- Jun 2023 06:52:27 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EF7FA959
+	for <iommu@lists.linux.dev>; Fri, 23 Jun 2023 16:49:40 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KiAQLzzDbaNfIn3u7SjzCkiB3TseBaXAVct7v/hNqsUb3ZjJJIqsTLYGUk4lUXwtdOI/nF4GnpyiicgmFqNxHOAbiHKRk+nE1cWhjWiRo6vx1Z29uiSaSTlwQTI6WtCvxeV6pX5XriKSH4aToKpqJlUi/mBaoHxuiS9Rh5qVDVerM65qMdVGPOJuxqzBtDicXVsHAJ65Reld3yQWX3rqR1hcOq1r4tcu+K/l4XXMByKPLYq7bIH31xcAyywoLrZqM6+bvvZYQnEXupi4g6PGcIBixlQ4rKlraDkqUxIvIeLjlCVuABNKo8LuzRSMjIi/AZpW3oRNVECcVGPc/AbMBQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Ou9d1DBUZqiY4jzQdw/UMbOTDBETljbxIVenyrL3j7s=;
+ b=XZqVBJIttrDVv9owGqscZiEYakWt6BBqLWRsjsTuBlwjb1PI6mhSRd+EYCNmy/P2ELI+S4L9hDAPjHx8Dd60MZzjOqv4iXSyv90i7GSGhMrtHKCFwIrQMrcZ+JUnoHzNuVhKlC9nXkEeQw1alCX0a1tniVIA4UQPRpwspMBvu73gIQ9UZaDwtPqIqPO9VNmZQCdlF8fXCQ/vdc+jZSdF9Dq/PVPwetGPT2g28mmTUmxwN484CPTpadjeUtxc4uqjNqaxQ/PAP5dKoksh5eD8ent+CgAoJT27EAbyjqYE0MIdeFmjrFDf6KMkf9nAP3o5i7pGhrifyWoyOl35Y+duSw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ou9d1DBUZqiY4jzQdw/UMbOTDBETljbxIVenyrL3j7s=;
+ b=gZvErHkqbOjWql4lQ2My1sE6wSKvmzjJL0r3OTe3m4M1IXwXCfFArO1uDm9hcJYdt4lXT/Zagw7ZSo7AzlyR3dftV1hlO6EFnRd1csT1jvN6c7cYbhvANnutHFy7qLLPgjl1RAImlLHUOj6+i8ZmrZXbw7mZL8kXa4ayZl1vIoJzA3S+DLwMDjiV+l5NH/n3Hoyy28+FE7Q2Ki+qIRIGGX6PcX5YGjrjwJuwFIQk5issleVTntC6ocppa0gYlHqL0zebK2L0YpeM6WW8QnpBF5uND3C/SUoUpyVKeTnv7Ud/hBbB2XOc30xzhuGHF+/NYocdmFvwXzXaRhUA2tjbWw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DS0PR12MB7584.namprd12.prod.outlook.com (2603:10b6:8:13b::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.24; Fri, 23 Jun
+ 2023 16:49:38 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab%7]) with mapi id 15.20.6521.024; Fri, 23 Jun 2023
+ 16:49:38 +0000
+Date: Fri, 23 Jun 2023 13:49:37 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
+	kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] iommu/vt-d: Remove rmrr check in domain attaching
+ device path
+Message-ID: <ZJXNIYJnpA5VfoF4@nvidia.com>
+References: <20230607035145.343698-1-baolu.lu@linux.intel.com>
+ <20230607035145.343698-3-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230607035145.343698-3-baolu.lu@linux.intel.com>
+X-ClientProxiedBy: YT1P288CA0003.CANP288.PROD.OUTLOOK.COM (2603:10b6:b01::16)
+ To LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230613153415.350528-1-apatel@ventanamicro.com>
- <20230613153415.350528-9-apatel@ventanamicro.com> <CAGETcx-hoPNanAwe4++6roqBXwSdc7z6Ei=-r9z6qFG1U7xVXg@mail.gmail.com>
- <CAAhSdy3WH_nrKC-3AC4RHn9=crh6mPzaKO8jmAeo2j8-VJnT5g@mail.gmail.com>
- <CAGETcx_DkuyZ+c50QmA7eu8vUByfVosABugZpd7R8NgR8Wc-FA@mail.gmail.com>
- <CAK9=C2X4+aTs=+WdE0ba1qPDu67TiAKgE2Rx-qqD5+TJwYCKOQ@mail.gmail.com>
- <CAGETcx_KJURkxEuZOgPZR=fA4CaHnAwwRfU_JLJ28absFWAtzg@mail.gmail.com>
- <CAK9=C2XNAXaorxeNAB02o3_mYe3fsDSHS7rj=5+=q=d67Od60A@mail.gmail.com> <86mt0qbaxg.wl-maz@kernel.org>
-In-Reply-To: <86mt0qbaxg.wl-maz@kernel.org>
-From: Anup Patel <anup@brainfault.org>
-Date: Fri, 23 Jun 2023 19:22:15 +0530
-Message-ID: <CAAhSdy3eW_urQ_716DdBp8SN2zFN3oMMOt695cW4EQbejraVhw@mail.gmail.com>
-Subject: Re: [PATCH v4 08/10] irqchip: Add RISC-V advanced PLIC driver
-To: Marc Zyngier <maz@kernel.org>
-Cc: Anup Patel <apatel@ventanamicro.com>, Saravana Kannan <saravanak@google.com>, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
-	Thomas Gleixner <tglx@linutronix.de>, Rob Herring <robh+dt@kernel.org>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Frank Rowand <frowand.list@gmail.com>, 
-	Atish Patra <atishp@atishpatra.org>, Andrew Jones <ajones@ventanamicro.com>, 
-	Conor Dooley <conor@kernel.org>, linux-riscv@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
-	iommu@lists.linux.dev, Android Kernel Team <kernel-team@android.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DS0PR12MB7584:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1aa428b6-6ed9-436d-6df4-08db7409d533
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	AdyvQkeyQ1rWOAr0LbP5Si7uWLj06uVo47np4nvRCDPQc5u2OBJBhsyb5AjbbMfO4RAmUJscsRfTLH3LT53RawWLGYYyOOgmgkuDHmozQjoG1h2TUERssWv2U27NduprQKOaAmiKpd5dUQNswTQfy8XRMWEMRNtqoKhljME+6gk4fB0vu4UwzauoQPwKKWJ26K9EC0WlrPg2njSUjjWeeyxlnkdnDa+WWmCazbbFntooM4aIZe0tlMJago1P36RpY8dLHBCpcaWq479By1a6QHpHZLSWC7X7LmPatGHfskFUok0Y0gNQiIea2z9ZigZhWK27HoV3E6OrQyA/6DubK5yh1ByRvOG4G53ix1Qu1mWZ7cAW6B1wHnrbB6GDV0T766Rr9LJtUKaPg7dQ9YGkkC/KaTtOKqxGCTfQvDegXrrCcPOuF6Mm+Bmj1uHxsTzIRRc1hjHh4QWIAjKrgtLaZTShmtijvRqT7uIKmcclQRWqmBWOVSy665a60XHzwyKSLO3keOdJbnCxmNyJaahilhEh+YGYMetmtP3DYhx/EubHoae5iz4CCCwN0s31XvJ2
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(39860400002)(136003)(376002)(366004)(451199021)(5660300002)(2906002)(4744005)(38100700002)(86362001)(36756003)(478600001)(54906003)(6486002)(316002)(8676002)(41300700001)(8936002)(66946007)(66556008)(66476007)(6916009)(4326008)(6512007)(186003)(26005)(6506007)(2616005)(83380400001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?vtXFLfDBckr80T7R3L7l8XPtLx+DPo7rTyv+revp/Pg8xGPgvuU6ofjUrFEi?=
+ =?us-ascii?Q?sRmcuz8NGLLrKFrK1L1bC+Ov6ceyUvydsIq85Lg2N/fG05BmD+ZX9VRAZIO4?=
+ =?us-ascii?Q?YzGPQHn+OQhw3vDNLLXEUFJpRSpsQCihfTVeUyuLcEkZj7SURL7beD2NHGdl?=
+ =?us-ascii?Q?yChTHB8w4VdZojMT0drqVSnJWlJAyVwk63Vo028GcgBIdIiPwtGxDtcDra/R?=
+ =?us-ascii?Q?iFYrWK9s8QWtKAFXem/zKIcEC08P3kHaW6cZNdMiQvwEg/yn4IkRIFceSt/5?=
+ =?us-ascii?Q?Kn6ghylN7ZDF5j8qVd+iW4rgZ+H+GXqB9VeWHsawB/NYyIOIR0Ws05E6jSFh?=
+ =?us-ascii?Q?hlYzNe+bsQpp8L3MDHVsgJW2WgSuYJ404kB4/tNOuY/Qd4BiCSOFIisWop3z?=
+ =?us-ascii?Q?i+Aynrfm8gK9YpP+rubMNo7UnoWOdQ2LhRhcki+uEYLAa3WeKQHlIvM/0f2E?=
+ =?us-ascii?Q?wz0gLzLlJQVX63LNVdLBP0ehxvkjjILWaXO/hdpwZe0yRYX5sbHczqxZRiyR?=
+ =?us-ascii?Q?A4ydYZ7lAlXlO1OWo8Sj6//FE7xPzM513Cac/IetdFytvtgxMC3wovQnHlhf?=
+ =?us-ascii?Q?Vx2GnwrA7FJ/9aHXioL6uMYgGFzdBYzH/OvzAw0jDxuy414qqCMwwAHen/nv?=
+ =?us-ascii?Q?XwkaVS9Xvdgai6WdGdgKAwy2cm60kl27ln9PoJTFUPg3pQIvIPFuS6nJbRWH?=
+ =?us-ascii?Q?cScLa8gPfspIgVdCarDbqTrlxpqPOwwB4tpkmxdabSJVeic4PHHcgk+7G85f?=
+ =?us-ascii?Q?oSbdWQT9k1p0AKHbqU2e7y7sfe+1KYRMMZOYdYZGWwmjZb+jJLxt5GHtBcbg?=
+ =?us-ascii?Q?+u0OUo0iMSpYi/hZ7tNXUUKrUXANNwvbl3OpTGR6RbFUVt1hQFDkrdKkwDMI?=
+ =?us-ascii?Q?B5YgB5r+4lWBF9AKACUUkDwcTEixPx8t2RT6yHse8r9VvehsvgJQmjmPQGhN?=
+ =?us-ascii?Q?fxR+T3KbCu4iLPqXa3Mos0vPICszx+evUn+J+6FuLKIPd8zAyvz8b6IsH51B?=
+ =?us-ascii?Q?r4vrTLzgdtbhh+1i2kHJdK0FanIG6k9CP+oNSbDrO0M9K4NMrmLfOj47F/iv?=
+ =?us-ascii?Q?KYjMBm2wpfZbVckx9psZdvRQZXikey2X2qztQFAtgxPcKqPqU1wL6gQw+xy4?=
+ =?us-ascii?Q?JYZdcr5z8oHbFCS7jRgUnofxBFxpqqNpI1EstHBMSI6lPuGWxFLBi9KZesWt?=
+ =?us-ascii?Q?va8UuAep9VmCQuyDWuG8r1CGfy2niayF+LC8dqGQy6PTc7y/T0Hssrxulnzt?=
+ =?us-ascii?Q?jWM7QKDsQgONtQqBKTgArvjsj0Pu34H5EpY9t+eR5kCSuezcMIxVVQLv4G/1?=
+ =?us-ascii?Q?1cLWyHDfUFtdjD7rfHvueXvrvNp23lyPHLukm0nn5GofKBTYkEAfw4Yc5h4P?=
+ =?us-ascii?Q?jdfmbelBgNoALYw5bjiYHBTjWYdPMxO9ZGUVr8Ej0WWcNl5OqttfirlqPrKM?=
+ =?us-ascii?Q?HWy1NWvLxITWSbeyg1DeZ9e9xlBeKpuv+fLGQUa2qJDfusuSWbXhzu2KrdFY?=
+ =?us-ascii?Q?iAGV3B94plooGxerk/jSEWCt20rarPk41aNWKHKOhbdaQEYvksvhvSyduELG?=
+ =?us-ascii?Q?W5Wo2IECbWyLCfumjsyyM1ED/d6+9MqOFM8LKum6?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1aa428b6-6ed9-436d-6df4-08db7409d533
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2023 16:49:38.5122
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Wf/hgTnYZwtymyBh8pJ8fDgUQ1a1ErzmfpjkrDcHyyXgPOgjY7ZEnM7bAJ3HtA3b
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7584
 
-On Fri, Jun 23, 2023 at 6:19=E2=80=AFPM Marc Zyngier <maz@kernel.org> wrote=
-:
->
-> [here, let me trim all of this nonsense...]
->
-> On Fri, 23 Jun 2023 12:47:00 +0100,
-> Anup Patel <apatel@ventanamicro.com> wrote:
-> > > No. My previous email asking you to NOT use IRQCHIP_DECLARE() and
-> > > instead use IRQCHIP_PLATFORM_DRIVER_BEGIN/END() macros.
-> >
-> > I tried IRQCHIP_PLATFORM_DRIVER_BEGIN/END() macros but these
-> > macros are not suitable for APLIC driver because we need platform devic=
-e
-> > pointer in the APLIC probe() to create platform MSI device domain (refe=
-r,
-> > platform_msi_create_device_domain()).
->
-> Oh come on. How hard have you tried? Have you even looked at the other
-> drivers in the tree to see how they solve this insurmountable problem
-> with a *single* line of code?
->
->         pdev =3D of_find_device_by_node(node);
->
-> That's it.
+On Wed, Jun 07, 2023 at 11:51:45AM +0800, Lu Baolu wrote:
+> The core code now prevents devices with RMRR regions from being assigned
+> to user space. There is no need to check for this condition in individual
+> drivers. Remove it to avoid duplicate code.
+> 
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  drivers/iommu/intel/iommu.c | 58 -------------------------------------
+>  1 file changed, 58 deletions(-)
 
-Please see the below diff. I tried the same thing but still the APLIC does
-not get probed without the FWNODE_FLAG_BEST_EFFORT flag. Please
-note that the current APLIC driver works unmodified for both DT and ACPI
-but using of_find_device_by_node() here breaks ACPI support.
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-diff --git a/drivers/irqchip/irq-riscv-aplic.c
-b/drivers/irqchip/irq-riscv-aplic.c
-index 1e710fdf5608..9ae9e7fb905f 100644
---- a/drivers/irqchip/irq-riscv-aplic.c
-+++ b/drivers/irqchip/irq-riscv-aplic.c
-@@ -17,6 +17,7 @@
- #include <linux/irqdomain.h>
- #include <linux/module.h>
- #include <linux/msi.h>
-+#include <linux/of_platform.h>
- #include <linux/platform_device.h>
- #include <linux/smp.h>
+I'm happy to see this leave drive code!
 
-@@ -730,36 +731,12 @@ static int aplic_probe(struct platform_device *pdev)
-     return 0;
- }
-
--static const struct of_device_id aplic_match[] =3D {
--    { .compatible =3D "riscv,aplic" },
--    {}
--};
--
--static struct platform_driver aplic_driver =3D {
--    .driver =3D {
--        .name        =3D "riscv-aplic",
--        .of_match_table    =3D aplic_match,
--    },
--    .probe =3D aplic_probe,
--};
--builtin_platform_driver(aplic_driver);
--
--static int __init aplic_dt_init(struct device_node *node,
-+static int __init aplic_of_init(struct device_node *dn,
-                 struct device_node *parent)
- {
--    /*
--     * The APLIC platform driver needs to be probed early
--     * so for device tree:
--     *
--     * 1) Set the FWNODE_FLAG_BEST_EFFORT flag in fwnode which
--     *    provides a hint to the device driver core to probe the
--     *    platform driver early.
--     * 2) Clear the OF_POPULATED flag in device_node because
--     *    of_irq_init() sets it which prevents creation of
--     *    platform device.
--     */
--    node->fwnode.flags |=3D FWNODE_FLAG_BEST_EFFORT;
--    of_node_clear_flag(node, OF_POPULATED);
--    return 0;
-+    return aplic_probe(of_find_device_by_node(dn));
- }
--IRQCHIP_DECLARE(riscv_aplic, "riscv,aplic", aplic_dt_init);
-+
-+IRQCHIP_PLATFORM_DRIVER_BEGIN(aplic)
-+IRQCHIP_MATCH("riscv,aplic", aplic_of_init)
-+IRQCHIP_PLATFORM_DRIVER_END(aplic)
-
->
-> > Further, I tried setting the "suppress_bind_attrs" flag in "struct
-> > platform_driver aplic_driver" just like the
-> > IRQCHIP_PLATFORM_DRIVER_END() macro but this did not work.
->
-> I'm not sure how relevant this is to the conversation.
-
-It's relevant because the only difference in the platform_driver
-registered by IRQCHIP_PLATFORM_DRIVER_END() and
-"struct platform_driver aplic_driver" is the "suppress_bind_attrs" flag.
-
-Unfortunately, setting the "suppress_bind_attrs" flag does not
-help as well.
-
->
->         M.
->
-> --
-> Without deviation from the norm, progress is not possible.
-
-Regards,
-Anup
+Jason
