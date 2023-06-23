@@ -1,128 +1,177 @@
-Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50])
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7ED18C1B
-	for <iommu@lists.linux.dev>; Fri, 23 Jun 2023 13:50:10 +0000 (UTC)
-Received: by mail-pj1-f50.google.com with SMTP id 98e67ed59e1d1-262b213eddfso222433a91.0
-        for <iommu@lists.linux.dev>; Fri, 23 Jun 2023 06:50:10 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 388FF8C1B
+	for <iommu@lists.linux.dev>; Fri, 23 Jun 2023 13:52:29 +0000 (UTC)
+Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-51bde6a8c20so706714a12.0
+        for <iommu@lists.linux.dev>; Fri, 23 Jun 2023 06:52:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1687528210; x=1690120210;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=T+1pIFBwxpLNL/VoMpzyTvuzZptHIhilPLYErQwUS8k=;
-        b=hAT1OlnZCSwyNFydf13NvIycgXr5/iIfC6r8/nd0zLufzjnG76xScQ8fkAvjuDR9HA
-         LKstTMkVB1IimZFBU+AILwUx2GaOikMy+PW2Eg7+k6BnlRwGKiPDbsTCp9VVgh0lD6bi
-         8QYBpzPAZyybBHinxa4YFTWPP0+n1bFlI15Wjv6yMRRcN1lRHOpBz63Iootsc/mjPBYf
-         YMeoCsk0bHsnceZKYdKo46Nve3OJdWtoZevSnvjANuI1wSA0s6vRTB0FXzEE4I7M2vF+
-         lGRMvxSZ4U+bjAWHupE09pIQBGQgCvCiABu5+zuXGjJLJXB75Ua+e9EoKOR+y1vzr1qk
-         UKig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687528210; x=1690120210;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=brainfault-org.20221208.gappssmtp.com; s=20221208; t=1687528348; x=1690120348;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=T+1pIFBwxpLNL/VoMpzyTvuzZptHIhilPLYErQwUS8k=;
-        b=bo0DfWTp6F916X2WcfXdQR2iSuTpB3nuh2CrM7u/wt8qYCPvSSBuq/9XJX/Nsz5SHW
-         m7Rd5ZdqdiCr/Qc+kzFRQe5WLQJVYKsRrWWAAIFq8mWmUHfwslJ7vFv4tKFuJm1qazR7
-         Tk4dKVRqQjkInsanvEnId3NcmQq2LWFc6p9WAFo/vPrEqJZXu5wCy1Zxk0Wqhx0syVvd
-         8wMSo2jYxChBwyH0nQ22TSfWYENLCcSd0vIwJZU+6q9ElsuLvChxZWDXnLJV7jjJkfs+
-         Wmr5AxDPWL4uxeI3Hh8NAYFygzDjRXnTrrRyidQdDVdt61qHxSjWLm4cTBLOX0asYTPu
-         iMcA==
-X-Gm-Message-State: AC+VfDwT0XbFpFjvMS5P3ZOuEdvoMTdh25jhtVmcFLRS8BPzdbpoA1n1
-	vb9M5VqbadMuz1u9rbuec8MKGA==
-X-Google-Smtp-Source: ACHHUZ4GZmcSemtE667i1A/XCxE0H28ULkbHrmN2r73R4aAzspqKPCakvWEfvpegChi/MFwoMtwoWw==
-X-Received: by 2002:a17:90b:811:b0:25c:7d4:7cd with SMTP id bk17-20020a17090b081100b0025c07d407cdmr25932024pjb.24.1687528209792;
-        Fri, 23 Jun 2023 06:50:09 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id n59-20020a17090a2cc100b0025bdc3454c6sm1647744pjd.8.2023.06.23.06.50.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Jun 2023 06:50:09 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qChAt-007z7M-Gb;
-	Fri, 23 Jun 2023 10:50:07 -0300
-Date: Fri, 23 Jun 2023 10:50:07 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
-	linux-kselftest@vger.kernel.org,
-	virtualization@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCHES 00/17] IOMMUFD: Deliver IO page faults to user space
-Message-ID: <ZJWjD1ajeem6pK3I@ziepe.ca>
-References: <20230530053724.232765-1-baolu.lu@linux.intel.com>
- <ZHaV3GwYXCvfNUBn@ziepe.ca>
- <a3c15dff-c165-57c7-16f6-072e251a9368@linux.intel.com>
+        bh=9S6OHdItsTA1JwEPFdtVcZWMFJNNUsFlvqd8wRr+OUY=;
+        b=nAce8ga+PROGouUoidmVoa9MzzT4VKceza4OhOuRIrN+5JqaA3WkDPC5LeYqt3YuZl
+         2HDMZKlnXxn1GxbdtDj4lyz50v9F7oC2oDzNaI6940PB7TEop0jMQqAauMiaJIXqaIsi
+         y/bLhiO9HDfI4+5QFBjf6fqhm03lni+3xdGXkzzxj3UrbrdjWks+kde/XVOEiw4kiQSV
+         QhKvRfLnp0ekeVOI4extHqhCHK2JjEhKR6dCf5EvjVCuMe9mhUaWBqhHt+3X2csIE2au
+         oaAovgYAxbXS4YbjQqIKfJUEYQGiMGXYyrzj6FCFF8rURCWTujhqLNueJ4wQjUXI0t+8
+         N/tw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687528348; x=1690120348;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=9S6OHdItsTA1JwEPFdtVcZWMFJNNUsFlvqd8wRr+OUY=;
+        b=FOiub+fr0zbioNnk0DiuQJkOmbf8NJF/BZV27S5pWRErO446MsNQzEN/XzDOYQi7CM
+         y7qWPvgDSZDDqbK8WkLZuspvtdF6scFCfTxd09Hhmb96Wq6M5oPd/gL1GAp7nLeOoNta
+         ivnaVysvLPpUqExM2PLrqulNXvLuqgSnG/Gs5LW9f+T5snN32tSBSnxk/UiRaN59KH1m
+         I1rB5UePHfcxzkv5aGxvrRxGythjgEvTBgPITCNTQwLBNejFBBIsGWNe/OEq8IFy+Rr3
+         Kk01zHmH57SEfJiZIUsDpVD1HBHyDsczWG4q0xVyPJ0eUGS9mkiFtb+CRW9kdZCszWwt
+         HGUw==
+X-Gm-Message-State: AC+VfDx7tJr5K5TOEKzszYM+fRacUvKjkPfUrTur/pPEQEVeEZNUJqIu
+	Ez0M/uQdi8FarjXDp8/lPFW9EKtRTcnq10RPIq7tIA==
+X-Google-Smtp-Source: ACHHUZ5paNz1Cy14U0D10w5MW6F/Bi3rLn0+7A272F60E7dMKSk92KbX4Dy3Ud9Nb1GD+xk5zK+AHrmxfK2LTcZejxw=
+X-Received: by 2002:aa7:d1d4:0:b0:51a:5ae1:b6e5 with SMTP id
+ g20-20020aa7d1d4000000b0051a5ae1b6e5mr9949319edp.10.1687528347990; Fri, 23
+ Jun 2023 06:52:27 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a3c15dff-c165-57c7-16f6-072e251a9368@linux.intel.com>
+References: <20230613153415.350528-1-apatel@ventanamicro.com>
+ <20230613153415.350528-9-apatel@ventanamicro.com> <CAGETcx-hoPNanAwe4++6roqBXwSdc7z6Ei=-r9z6qFG1U7xVXg@mail.gmail.com>
+ <CAAhSdy3WH_nrKC-3AC4RHn9=crh6mPzaKO8jmAeo2j8-VJnT5g@mail.gmail.com>
+ <CAGETcx_DkuyZ+c50QmA7eu8vUByfVosABugZpd7R8NgR8Wc-FA@mail.gmail.com>
+ <CAK9=C2X4+aTs=+WdE0ba1qPDu67TiAKgE2Rx-qqD5+TJwYCKOQ@mail.gmail.com>
+ <CAGETcx_KJURkxEuZOgPZR=fA4CaHnAwwRfU_JLJ28absFWAtzg@mail.gmail.com>
+ <CAK9=C2XNAXaorxeNAB02o3_mYe3fsDSHS7rj=5+=q=d67Od60A@mail.gmail.com> <86mt0qbaxg.wl-maz@kernel.org>
+In-Reply-To: <86mt0qbaxg.wl-maz@kernel.org>
+From: Anup Patel <anup@brainfault.org>
+Date: Fri, 23 Jun 2023 19:22:15 +0530
+Message-ID: <CAAhSdy3eW_urQ_716DdBp8SN2zFN3oMMOt695cW4EQbejraVhw@mail.gmail.com>
+Subject: Re: [PATCH v4 08/10] irqchip: Add RISC-V advanced PLIC driver
+To: Marc Zyngier <maz@kernel.org>
+Cc: Anup Patel <apatel@ventanamicro.com>, Saravana Kannan <saravanak@google.com>, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
+	Thomas Gleixner <tglx@linutronix.de>, Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Frank Rowand <frowand.list@gmail.com>, 
+	Atish Patra <atishp@atishpatra.org>, Andrew Jones <ajones@ventanamicro.com>, 
+	Conor Dooley <conor@kernel.org>, linux-riscv@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+	iommu@lists.linux.dev, Android Kernel Team <kernel-team@android.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jun 23, 2023 at 02:18:38PM +0800, Baolu Lu wrote:
+On Fri, Jun 23, 2023 at 6:19=E2=80=AFPM Marc Zyngier <maz@kernel.org> wrote=
+:
+>
+> [here, let me trim all of this nonsense...]
+>
+> On Fri, 23 Jun 2023 12:47:00 +0100,
+> Anup Patel <apatel@ventanamicro.com> wrote:
+> > > No. My previous email asking you to NOT use IRQCHIP_DECLARE() and
+> > > instead use IRQCHIP_PLATFORM_DRIVER_BEGIN/END() macros.
+> >
+> > I tried IRQCHIP_PLATFORM_DRIVER_BEGIN/END() macros but these
+> > macros are not suitable for APLIC driver because we need platform devic=
+e
+> > pointer in the APLIC probe() to create platform MSI device domain (refe=
+r,
+> > platform_msi_create_device_domain()).
+>
+> Oh come on. How hard have you tried? Have you even looked at the other
+> drivers in the tree to see how they solve this insurmountable problem
+> with a *single* line of code?
+>
+>         pdev =3D of_find_device_by_node(node);
+>
+> That's it.
 
-> 	struct io_uring ring;
-> 
-> 	io_uring_setup(IOPF_ENTRIES, &ring);
-> 
-> 	while (1) {
-> 		struct io_uring_prep_read read;
-> 		struct io_uring_cqe *cqe;
-> 
-> 		read.fd = iopf_fd;
-> 		read.buf = malloc(IOPF_SIZE);
-> 		read.len = IOPF_SIZE;
-> 		read.flags = 0;
-> 
-> 		io_uring_prep_read(&ring, &read);
-> 		io_uring_submit(&ring);
-> 
-> 		// Wait for the read to complete
-> 		while ((cqe = io_uring_get_cqe(&ring)) != NULL) {
-> 			// Check if the read completed
-> 			if (cqe->res < 0)
-> 				break;
-> 
-> 			if (page_fault_read_completion(cqe)) {
-> 				// Get the fault data
-> 				void *data = cqe->buf;
-> 				size_t size = cqe->res;
-> 
-> 				// Handle the page fault
-> 				handle_page_fault(data);
-> 
-> 				// Respond the fault
-> 				struct io_uring_prep_write write;
-> 				write.fd = iopf_fd;
-> 				write.buf = malloc(IOPF_RESPONSE_SIZE);
-> 				write.len = IOPF_RESPONSE_SIZE;
-> 				write.flags = 0;
-> 
-> 				io_uring_prep_write(&ring, &write);
->             			io_uring_submit(&ring);
-> 			}
-> 
-> 			// Reap the cqe
-> 			io_uring_cqe_free(&ring, cqe);
-> 		}
-> 	}
-> 
-> Did I understand you correctly?
+Please see the below diff. I tried the same thing but still the APLIC does
+not get probed without the FWNODE_FLAG_BEST_EFFORT flag. Please
+note that the current APLIC driver works unmodified for both DT and ACPI
+but using of_find_device_by_node() here breaks ACPI support.
 
-Yes, basically this is the right idea. There are more complex ways to
-use the iouring that would be faster still.
+diff --git a/drivers/irqchip/irq-riscv-aplic.c
+b/drivers/irqchip/irq-riscv-aplic.c
+index 1e710fdf5608..9ae9e7fb905f 100644
+--- a/drivers/irqchip/irq-riscv-aplic.c
++++ b/drivers/irqchip/irq-riscv-aplic.c
+@@ -17,6 +17,7 @@
+ #include <linux/irqdomain.h>
+ #include <linux/module.h>
+ #include <linux/msi.h>
++#include <linux/of_platform.h>
+ #include <linux/platform_device.h>
+ #include <linux/smp.h>
 
-And the kernel side can have support to speed it up as well.
+@@ -730,36 +731,12 @@ static int aplic_probe(struct platform_device *pdev)
+     return 0;
+ }
 
-I'm wondering if we should be pushing invalidations on io_uring as
-well?
+-static const struct of_device_id aplic_match[] =3D {
+-    { .compatible =3D "riscv,aplic" },
+-    {}
+-};
+-
+-static struct platform_driver aplic_driver =3D {
+-    .driver =3D {
+-        .name        =3D "riscv-aplic",
+-        .of_match_table    =3D aplic_match,
+-    },
+-    .probe =3D aplic_probe,
+-};
+-builtin_platform_driver(aplic_driver);
+-
+-static int __init aplic_dt_init(struct device_node *node,
++static int __init aplic_of_init(struct device_node *dn,
+                 struct device_node *parent)
+ {
+-    /*
+-     * The APLIC platform driver needs to be probed early
+-     * so for device tree:
+-     *
+-     * 1) Set the FWNODE_FLAG_BEST_EFFORT flag in fwnode which
+-     *    provides a hint to the device driver core to probe the
+-     *    platform driver early.
+-     * 2) Clear the OF_POPULATED flag in device_node because
+-     *    of_irq_init() sets it which prevents creation of
+-     *    platform device.
+-     */
+-    node->fwnode.flags |=3D FWNODE_FLAG_BEST_EFFORT;
+-    of_node_clear_flag(node, OF_POPULATED);
+-    return 0;
++    return aplic_probe(of_find_device_by_node(dn));
+ }
+-IRQCHIP_DECLARE(riscv_aplic, "riscv,aplic", aplic_dt_init);
++
++IRQCHIP_PLATFORM_DRIVER_BEGIN(aplic)
++IRQCHIP_MATCH("riscv,aplic", aplic_of_init)
++IRQCHIP_PLATFORM_DRIVER_END(aplic)
 
-Jason
+>
+> > Further, I tried setting the "suppress_bind_attrs" flag in "struct
+> > platform_driver aplic_driver" just like the
+> > IRQCHIP_PLATFORM_DRIVER_END() macro but this did not work.
+>
+> I'm not sure how relevant this is to the conversation.
+
+It's relevant because the only difference in the platform_driver
+registered by IRQCHIP_PLATFORM_DRIVER_END() and
+"struct platform_driver aplic_driver" is the "suppress_bind_attrs" flag.
+
+Unfortunately, setting the "suppress_bind_attrs" flag does not
+help as well.
+
+>
+>         M.
+>
+> --
+> Without deviation from the norm, progress is not possible.
+
+Regards,
+Anup
