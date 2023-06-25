@@ -1,32 +1,32 @@
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 882EC1FCB
-	for <iommu@lists.linux.dev>; Sun, 25 Jun 2023 15:18:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A947613D
+	for <iommu@lists.linux.dev>; Sun, 25 Jun 2023 15:18:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1687706282; x=1719242282;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=j4LsgGtbcDlEquzSrXQqZtax80fRhe6Atz2zhoKJYhU=;
-  b=A+ZpNcw9gMqjGy5GX+WT+sWPyPUNPVGcjeRWZ/Zz2Z6UF3jn/kcJG7s4
-   /DN7tOIJohUiOhrK3+JLkcPRTvRueZLWDz26fVX9WG1jHX0NTW6It0RfE
-   i8JHON/eiZouKpo06Z12we8gdSRG7P4QCjufKtXgh/ScNz0OAkp82mZ29
-   wRkMDtl8dQfoKT9mjS3p3tmR50vu/b9FEbLZ5ZP/odQ1RXuy6VCASe198
-   m+6ewkrFV3zUcK+fSnB3fcIdKsDI9/KPXN6JR+/Fx6v5IaA+lhLoN6TDJ
-   EJkO3AMDZx905RnvHCpTl8UjioUxgltar7mVHkVBMmgHfg3VUG8yUMfCh
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10752"; a="391255041"
+  t=1687706284; x=1719242284;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=mN/2WK8J7n2rewlZ5IincQ/OigkXaXVK51epQ2blgdQ=;
+  b=D3+CBVL2sN4tbII1OPTpTkCxlNCn3QKJCNfnOvGqP4OIV0dnIhrDbvN5
+   4QIFqD0ngueOufnAJsCviozQPfI4LVb6MkHWNJpd0LaZUH5fCEx7WV8Wm
+   DMCD87/fR8i8kQfAGFYjmpL0siCcUA8i8N0QE7lj8n2Gl+LoEDqrmgsw4
+   yt4UGj511GqhUBkYQwCzh8A5tqwAQWR1G/dKK8Z9o8b1gfkF8G7nPnDDV
+   dtIeqmVfJC+CQsBbGiSq570QZawH3tglRTIswufITLHtTxP2ZVP4LmhAc
+   ygEydAesgTkwbTBEbw61R5hvw8mwjrI+UYUFc3U8Vn88UB10QssS1zcB6
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10752"; a="391255058"
 X-IronPort-AV: E=Sophos;i="6.01,157,1684825200"; 
-   d="scan'208";a="391255041"
+   d="scan'208";a="391255058"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2023 08:18:01 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2023 08:18:03 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10752"; a="840004511"
+X-IronPort-AV: E=McAfee;i="6600,9927,10752"; a="840004517"
 X-IronPort-AV: E=Sophos;i="6.01,157,1684825200"; 
-   d="scan'208";a="840004511"
+   d="scan'208";a="840004517"
 Received: from cascade.sh.intel.com ([10.239.48.162])
-  by orsmga004.jf.intel.com with ESMTP; 25 Jun 2023 08:17:58 -0700
+  by orsmga004.jf.intel.com with ESMTP; 25 Jun 2023 08:18:01 -0700
 From: Jingqi Liu <Jingqi.liu@intel.com>
 To: iommu@lists.linux.dev,
 	Lu Baolu <baolu.lu@linux.intel.com>,
@@ -36,10 +36,12 @@ To: iommu@lists.linux.dev,
 	Robin Murphy <robin.murphy@arm.com>
 Cc: linux-kernel@vger.kernel.org,
 	Jingqi Liu <Jingqi.liu@intel.com>
-Subject: [PATCH 0/5] iommu/vt-d: debugfs: Enhancements to IOMMU debugfs
-Date: Sun, 25 Jun 2023 23:04:37 +0800
-Message-Id: <20230625150442.42197-1-Jingqi.liu@intel.com>
+Subject: [PATCH 1/5] iommu/vt-d: debugfs: Define domain_translation_struct file ops
+Date: Sun, 25 Jun 2023 23:04:38 +0800
+Message-Id: <20230625150442.42197-2-Jingqi.liu@intel.com>
 X-Mailer: git-send-email 2.21.3
+In-Reply-To: <20230625150442.42197-1-Jingqi.liu@intel.com>
+References: <20230625150442.42197-1-Jingqi.liu@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,110 +50,46 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The original debugfs only dumps all IOMMU page tables without pasid
-supported. It traverses all devices on the pci bus, then dumps all page
-tables based on device domains. This traversal is from software
-perspective.
+Define domain_translation_struct file_operations instead of using
+DEFINE_SHOW_ATTRIBUTE() in order to specify source identifier and pasid
+to dump the specified page table.
 
-This series dumps page tables by traversing root tables, context tables,
-pasid directories and pasid tables from hardware perspective. By
-specifying source identifier and PASID, it supports dumping specified
-page table or all page tables in legacy mode or scalable mode.
+Signed-off-by: Jingqi Liu <Jingqi.liu@intel.com>
+---
+ drivers/iommu/intel/debugfs.c | 20 +++++++++++++++++++-
+ 1 file changed, 19 insertions(+), 1 deletion(-)
 
-For a device that only supports legacy mode, specify the source
-identifier, and search the root table and context table to dump its
-page table. It does not support to specify PASID.
-
-For a device that supports scalable mode, specify a
-{source identifier, PASID} pair and search the root table, context table
-and pasid table to dump its page table.  If the pasid is not specified,
-it is set to RID_PASID.
-
-Switch to dump all page tables by specifying "auto".
-
-Examples are as follows:
-1) Dump the page table of device "00:1f.0" that only supports legacy
-mode.
-
-$ sudo echo 00:1f.0 >
-/sys/kernel/debug/iommu/intel/domain_translation_struct
-$ sudo cat /sys/kernel/debug/iommu/intel/domain_translation_struct
-Device 0000:00:1f.0 @0x105407000
-IOVA_PFN                PML5E                   PML4E
-0x0000000000000 |       0x0000000000000000      0x0000000105408003
-0x0000000000001 |       0x0000000000000000      0x0000000105408003
-0x0000000000002 |       0x0000000000000000      0x0000000105408003
-0x0000000000003 |       0x0000000000000000      0x0000000105408003
-
-PDPE                    PDE                     PTE
-0x0000000105409003      0x000000010540a003      0x0000000000000003
-0x0000000105409003      0x000000010540a003      0x0000000000001003
-0x0000000105409003      0x000000010540a003      0x0000000000002003
-0x0000000105409003      0x000000010540a003      0x0000000000003003
-
-[...]
-
-2) Dump the page table of device "00:0a.0" with pasid "2".
-
-$ sudo echo 00:0a.0,2 >
-/sys/kernel/debug/iommu/intel/domain_translation_struct
-$ sudo cat /sys/kernel/debug/iommu/intel/domain_translation_struct
-Device 0000:00:0a.0 with pasid 2 @0x1083d7000
-IOVA_PFN                PML5E                   PML4E
-0x0000000000000 |       0x0000000000000000      0x0000000106aaa003
-0x0000000000001 |       0x0000000000000000      0x0000000106aaa003
-0x0000000000002 |       0x0000000000000000      0x0000000106aaa003
-0x0000000000003 |       0x0000000000000000      0x0000000106aaa003
-
-PDPE                    PDE                     PTE
-0x000000010a819003      0x000000010a7aa003      0x0000000129800003
-0x000000010a819003      0x000000010a7aa003      0x0000000129801003
-0x000000010a819003      0x000000010a7aa003      0x0000000129802003
-0x000000010a819003      0x000000010a7aa003      0x0000000129803003
-
-[...]
-
-3) Dump all page tables:
-$ sudo echo "auto" >
-/sys/kernel/debug/iommu/intel/domain_translation_struct
-$ sudo cat /sys/kernel/debug/iommu/intel/domain_translation_struct
-[...]
-
-Device 0000:00:02.0 @0x103072000
-IOVA_PFN                PML5E                   PML4E
-0x000000008d800 |       0x0000000000000000      0x0000000103073003
-0x000000008d801 |       0x0000000000000000      0x0000000103073003
-
-PDPE                    PDE                     PTE
-0x0000000103074003      0x0000000103075003      0x000000008d800003
-0x0000000103074003      0x0000000103075003      0x000000008d801003
-
-[...]
-
-Device 0000:00:0a.0 with pasid 2 @0x10a0b6000
-IOVA_PFN                PML5E                   PML4E
-0x0000000000000 |       0x0000000000000000      0x00000001072d2003
-0x0000000000001 |       0x0000000000000000      0x00000001072d2003
-
-PDPE                    PDE                     PTE
-0x0000000107d6e003      0x00000001161d4003      0x00000001bdc00003
-0x0000000107d6e003      0x00000001161d4003      0x00000001bdc01003
-
-[...]
-
-Thanks,
-Jingqi
-
-Jingqi Liu (5):
-  iommu/vt-d: debugfs: Define domain_translation_struct file ops
-  iommu/vt-d: debugfs: Support specifying source identifier and PASID
-  iommu/vt-d: debugfs: Dump the corresponding page table of a pasid
-  iommu/vt-d: debugfs: Support dumping a specified page table
-  iommu/vt-d: debugfs: Dump entry pointing to huge page
-
- drivers/iommu/intel/debugfs.c | 361 ++++++++++++++++++++++++++++++----
- 1 file changed, 326 insertions(+), 35 deletions(-)
-
+diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.c
+index 1f925285104e..072cfef19175 100644
+--- a/drivers/iommu/intel/debugfs.c
++++ b/drivers/iommu/intel/debugfs.c
+@@ -391,7 +391,25 @@ static int domain_translation_struct_show(struct seq_file *m, void *unused)
+ 	return bus_for_each_dev(&pci_bus_type, NULL, m,
+ 				show_device_domain_translation);
+ }
+-DEFINE_SHOW_ATTRIBUTE(domain_translation_struct);
++
++static int domain_translation_struct_open(struct inode *inode,
++					  struct file *filp)
++{
++	/*
++	 * Allocate one 1Mbyte buffer to save sequential file output,
++	 * since the default size of input buffer is 1Mbyte when the
++	 * user reads.
++	 */
++	return single_open_size(filp, domain_translation_struct_show,
++				inode->i_private, SZ_1M);
++}
++
++static const struct file_operations domain_translation_struct_fops = {
++	.open		= domain_translation_struct_open,
++	.read		= seq_read,
++	.llseek		= seq_lseek,
++	.release	= single_release,
++};
+ 
+ static void invalidation_queue_entry_show(struct seq_file *m,
+ 					  struct intel_iommu *iommu)
 -- 
 2.21.3
 
