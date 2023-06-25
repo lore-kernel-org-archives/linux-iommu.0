@@ -1,127 +1,64 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+Received: from out-42.mta0.migadu.com (out-42.mta0.migadu.com [91.218.175.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85F257C
-	for <iommu@lists.linux.dev>; Sun, 25 Jun 2023 06:30:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1687674654; x=1719210654;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=R7Yhr42fK7gKhO8erEf7BeGzaAEEpOtaMIIdcwtYeU4=;
-  b=ZQDJuTZGtlvftcSznqEa5dfamtLWgc8aQwMsg5sL+qlzCl8oES7Z+vjT
-   YK0gSfB75r4y3V4+HqzPnq0a0M+sMVkBxLblo3T7WRzXVVhIQRQc9ytPU
-   xMEihkwGPkAdHsb6mhZNhFfHlaFc31KIYmdA7aDriGxRatKcW1k2KXavk
-   IcaIemXCAFDD/MOC1FsPtD7XznHOwBnnq1qBekufND2KqfaRSjw13jQlS
-   vSmSPbYeZpO1zGm6uM46Fr9XTrk0O7kvQgoUWIIIh0LCq0vfqEjPyChDF
-   5c3AsoUGmqw8uY0Xmm3VGRySF4T2dJXum/09IFOaGerGQeT2y98t6JRA9
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10751"; a="424708491"
-X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
-   d="scan'208";a="424708491"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2023 23:30:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10751"; a="889912917"
-X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
-   d="scan'208";a="889912917"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.208.26]) ([10.254.208.26])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2023 23:30:48 -0700
-Message-ID: <a8ccbac8-c456-d116-24a2-7503ccbb720c@linux.intel.com>
-Date: Sun, 25 Jun 2023 14:30:46 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ADA47C
+	for <iommu@lists.linux.dev>; Sun, 25 Jun 2023 07:30:53 +0000 (UTC)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Cc: baolu.lu@linux.intel.com, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>, Yi Liu
- <yi.l.liu@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>,
- iommu@lists.linux.dev, linux-kselftest@vger.kernel.org,
- virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCHES 00/17] IOMMUFD: Deliver IO page faults to user space
-To: Nicolin Chen <nicolinc@nvidia.com>
-References: <20230530053724.232765-1-baolu.lu@linux.intel.com>
- <ZHZFi28jRxeZMKK3@Asurada-Nvidia>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ZHZFi28jRxeZMKK3@Asurada-Nvidia>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1687678250;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=v9nyBrLHmgd9V5+rOcrUy7opZUww68dtnkYzDPpoC2U=;
+	b=bwNUNuUQAa6GS+fhjZjPkwotxrJrDk0CKqqnl8Bj6BjbeB//I352af89HRd5+y8MVjuiXp
+	Xo+8g6DIY0zt7jqQpCxyULteKJ2dAHfoiadazCZsAlOJxyJF0o7R/pjC3JVzgs9A//embD
+	e2cNU8bL8eR1n0YaUTiEdpmZNA/dUSA=
+Date: Sun, 25 Jun 2023 07:30:48 +0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: "Yajun Deng" <yajun.deng@linux.dev>
+Message-ID: <a18b0cf466191b0d692e431fe33c7c80@linux.dev>
+Subject: Re: [PATCH] dma-contiguous: support per-numa CMA for all 
+ architectures
+To: v-songbaohua@oppo.com
+Cc: "Christoph Hellwig" <hch@lst.de>, corbet@lwn.net,
+ catalin.marinas@arm.com, will@kernel.org, m.szyprowski@samsung.com,
+ robin.murphy@arm.com, paulmck@kernel.org, bp@suse.de,
+ peterz@infradead.org, rdunlap@infradead.org, kim.phillips@amd.com,
+ rostedt@goodmis.org, thunder.leizhen@huawei.com, ardb@kernel.org,
+ bhe@redhat.com, anshuman.khandual@arm.com, song.bao.hua@hisilicon.com,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ "=?utf-8?B?UGV0ciBUZXNhxZnDrWs=?=" <petr@tesarici.cz>, "Andrew Morton"
+ <akpm@linux-foundation.org>, "Barry Song" <baohua@kernel.org>,
+ 21cnbao@gmail.com
+In-Reply-To: <20230623174046.66ce934bcf5c1303003a5afc@linux-foundation.org>
+References: <20230623174046.66ce934bcf5c1303003a5afc@linux-foundation.org>
+ <20230515094955.GB23880@lst.de>
+ <20230512094210.141540-1-yajun.deng@linux.dev>
+ <055f964384a2bb4ba51c64a0be6072c9@linux.dev>
+ <20230515133821.769158bb@meshulam.tesarici.cz>
+X-Migadu-Flow: FLOW_OUT
 
-On 2023/5/31 2:50, Nicolin Chen wrote:
-> Hi Baolu,
-> 
-> On Tue, May 30, 2023 at 01:37:07PM +0800, Lu Baolu wrote:
->   
->> This series implements the functionality of delivering IO page faults to
->> user space through the IOMMUFD framework. The use case is nested
->> translation, where modern IOMMU hardware supports two-stage translation
->> tables. The second-stage translation table is managed by the host VMM
->> while the first-stage translation table is owned by the user space.
->> Hence, any IO page fault that occurs on the first-stage page table
->> should be delivered to the user space and handled there. The user space
->> should respond the page fault handling result to the device top-down
->> through the IOMMUFD response uAPI.
->>
->> User space indicates its capablity of handling IO page faults by setting
->> a user HWPT allocation flag IOMMU_HWPT_ALLOC_FLAGS_IOPF_CAPABLE. IOMMUFD
->> will then setup its infrastructure for page fault delivery. Together
->> with the iopf-capable flag, user space should also provide an eventfd
->> where it will listen on any down-top page fault messages.
->>
->> On a successful return of the allocation of iopf-capable HWPT, a fault
->> fd will be returned. User space can open and read fault messages from it
->> once the eventfd is signaled.
-> 
-> I think that, whether the guest has an IOPF capability or not,
-> the host should always forward any stage-1 fault/error back to
-> the guest. Yet, the implementation of this series builds with
-> the IOPF framework that doesn't report IOMMU_FAULT_DMA_UNRECOV.
-> 
-> And I have my doubt at the using the IOPF framework with that
-> IOMMU_PAGE_RESP_ASYNC flag: using the IOPF framework is for
-> its bottom half workqueue, because a page response could take
-> a long cycle. But adding that flag feels like we don't really
-> need the bottom half workqueue, i.e. losing the point of using
-> the IOPF framework, IMHO.
-> 
-> Combining the two facts above, I wonder if we really need to
-> go through the IOPF framework; can't we just register a user
-> fault handler in the iommufd directly upon a valid event_fd?
-
-Agreed. We should avoid workqueue in sva iopf framework. Perhaps we
-could go ahead with below code? It will be registered to device with
-iommu_register_device_fault_handler() in IOMMU_DEV_FEAT_IOPF enabling
-path. Un-registering in the disable path of cause.
-
-static int io_pgfault_handler(struct iommu_fault *fault, void *cookie)
-{
-         ioasid_t pasid = fault->prm.pasid;
-         struct device *dev = cookie;
-         struct iommu_domain *domain;
-
-         if (fault->type != IOMMU_FAULT_PAGE_REQ)
-                 return -EOPNOTSUPP;
-
-         if (fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID)
-                 domain = iommu_get_domain_for_dev_pasid(dev, pasid, 0);
-         else
-                 domain = iommu_get_domain_for_dev(dev);
-
-         if (!domain || !domain->iopf_handler)
-                 return -ENODEV;
-
-         if (domain->type == IOMMU_DOMAIN_SVA)
-                 return iommu_queue_iopf(fault, cookie);
-
-         return domain->iopf_handler(fault, dev, domain->fault_data);
-}
-
-Best regards,
-baolu
+June 24, 2023 8:40 AM, "Andrew Morton" <akpm@linux-foundation.org> wrote:=
+=0A=0A> On Mon, 15 May 2023 13:38:21 +0200 Petr Tesa=C5=99=C3=ADk <petr@t=
+esarici.cz> wrote:=0A> =0A>> On Mon, 15 May 2023 11:23:27 +0000=0A>> "Yaj=
+un Deng" <yajun.deng@linux.dev> wrote:=0A>> =0A>> May 15, 2023 5:49 PM, "=
+Christoph Hellwig" <hch@lst.de> wrote:=0A> =0A> This looks fine to me. Ca=
+n you please work with Barry to make sure=0A> the slight different place =
+of the initcall doesn't break anything=0A> for his setup? I doubt it woul=
+d, but I'd rather have a Tested-by:=0A> tag.=0A>> Barry's email is no lon=
+ger in use. I can't reach him.=0A>> =0A>> Which one? I would hope that hi=
+s Gmail account is still valid:=0A>> =0A>> Barry Song <21cnbao@gmail.com>=
+=0A> =0A> Maybe his kernel.org address works...=0A> =0A> I have this patc=
+h stuck in limbo for 6.4. I guess I'll carry it over=0A> into the next -r=
+c cycle, see what happens.=0A> =0A> fwiw, it has been in -next for six we=
+eks, no known issues.=0A=0AHi, Barry, The slight different place of the i=
+nitcall, does break anything?
