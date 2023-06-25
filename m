@@ -1,64 +1,135 @@
-Received: from out-42.mta0.migadu.com (out-42.mta0.migadu.com [91.218.175.42])
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ADA47C
-	for <iommu@lists.linux.dev>; Sun, 25 Jun 2023 07:30:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E72F17C
+	for <iommu@lists.linux.dev>; Sun, 25 Jun 2023 08:23:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1687681409; x=1719217409;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=x8wOLMsJ+xY5lhzECQoNzvy9TUBhudomKGSjdZb+5Q8=;
+  b=KgACDJf46rm364+1iuN5HWKUDJRCFXoi0hKxVZanTExsIyJ/2La6mW7y
+   pu2kBmICvxVtl9U4CG/dmYZZXS7D9hcXkX6Lve/8K93Twmb2rsXwx2YP/
+   +eJ6E/4qIieWbDM1cgFIGh4EyG6vaayV10qv9QTholkq6VD5rnwHC+S16
+   08vVU2FWshspzP4GObSQz8ZiMITG6HD447BrdVHNltpwYkFmXrVHmm1Sr
+   H8bHCXWEJTvAZNyQepNBLhqKJJO1mO//EL7QXBhVgwyWjM5hXcu2iJmPQ
+   ATMIuJXHmlXrkgES8vevDHh8rV2UYWL4V8thlneh+VnTIz9WGifPJWTij
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10751"; a="345793095"
+X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
+   d="scan'208";a="345793095"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2023 01:23:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10751"; a="805666831"
+X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
+   d="scan'208";a="805666831"
+Received: from tower.bj.intel.com ([10.238.157.62])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2023 01:23:26 -0700
+From: Yanfei Xu <yanfei.xu@intel.com>
+To: dwmw2@infradead.org,
+	baolu.lu@linux.intel.com,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	yanfei.xu@intel.com
+Subject: [PATCH] iommu/vt-d: Fix to convert mm pfn to dma pfn
+Date: Sun, 25 Jun 2023 16:20:46 +0800
+Message-Id: <20230625082046.979742-1-yanfei.xu@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1687678250;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=v9nyBrLHmgd9V5+rOcrUy7opZUww68dtnkYzDPpoC2U=;
-	b=bwNUNuUQAa6GS+fhjZjPkwotxrJrDk0CKqqnl8Bj6BjbeB//I352af89HRd5+y8MVjuiXp
-	Xo+8g6DIY0zt7jqQpCxyULteKJ2dAHfoiadazCZsAlOJxyJF0o7R/pjC3JVzgs9A//embD
-	e2cNU8bL8eR1n0YaUTiEdpmZNA/dUSA=
-Date: Sun, 25 Jun 2023 07:30:48 +0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: "Yajun Deng" <yajun.deng@linux.dev>
-Message-ID: <a18b0cf466191b0d692e431fe33c7c80@linux.dev>
-Subject: Re: [PATCH] dma-contiguous: support per-numa CMA for all 
- architectures
-To: v-songbaohua@oppo.com
-Cc: "Christoph Hellwig" <hch@lst.de>, corbet@lwn.net,
- catalin.marinas@arm.com, will@kernel.org, m.szyprowski@samsung.com,
- robin.murphy@arm.com, paulmck@kernel.org, bp@suse.de,
- peterz@infradead.org, rdunlap@infradead.org, kim.phillips@amd.com,
- rostedt@goodmis.org, thunder.leizhen@huawei.com, ardb@kernel.org,
- bhe@redhat.com, anshuman.khandual@arm.com, song.bao.hua@hisilicon.com,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- "=?utf-8?B?UGV0ciBUZXNhxZnDrWs=?=" <petr@tesarici.cz>, "Andrew Morton"
- <akpm@linux-foundation.org>, "Barry Song" <baohua@kernel.org>,
- 21cnbao@gmail.com
-In-Reply-To: <20230623174046.66ce934bcf5c1303003a5afc@linux-foundation.org>
-References: <20230623174046.66ce934bcf5c1303003a5afc@linux-foundation.org>
- <20230515094955.GB23880@lst.de>
- <20230512094210.141540-1-yajun.deng@linux.dev>
- <055f964384a2bb4ba51c64a0be6072c9@linux.dev>
- <20230515133821.769158bb@meshulam.tesarici.cz>
-X-Migadu-Flow: FLOW_OUT
+Content-Transfer-Encoding: 8bit
 
-June 24, 2023 8:40 AM, "Andrew Morton" <akpm@linux-foundation.org> wrote:=
-=0A=0A> On Mon, 15 May 2023 13:38:21 +0200 Petr Tesa=C5=99=C3=ADk <petr@t=
-esarici.cz> wrote:=0A> =0A>> On Mon, 15 May 2023 11:23:27 +0000=0A>> "Yaj=
-un Deng" <yajun.deng@linux.dev> wrote:=0A>> =0A>> May 15, 2023 5:49 PM, "=
-Christoph Hellwig" <hch@lst.de> wrote:=0A> =0A> This looks fine to me. Ca=
-n you please work with Barry to make sure=0A> the slight different place =
-of the initcall doesn't break anything=0A> for his setup? I doubt it woul=
-d, but I'd rather have a Tested-by:=0A> tag.=0A>> Barry's email is no lon=
-ger in use. I can't reach him.=0A>> =0A>> Which one? I would hope that hi=
-s Gmail account is still valid:=0A>> =0A>> Barry Song <21cnbao@gmail.com>=
-=0A> =0A> Maybe his kernel.org address works...=0A> =0A> I have this patc=
-h stuck in limbo for 6.4. I guess I'll carry it over=0A> into the next -r=
-c cycle, see what happens.=0A> =0A> fwiw, it has been in -next for six we=
-eks, no known issues.=0A=0AHi, Barry, The slight different place of the i=
-nitcall, does break anything?
+For the case that VT-d page is smaller than mm page, converting dma
+pfn should be handled in two cases which are for start pfn and for
+end pfn. Currently the calculation of end dma pfn is incorrect and
+the result is less than real page frame number which is causing the
+mapping of iova always misses some page frames.
+
+Hence rename the mm_to_dma_pfn() to mm_to_dma_pfn_start() and add
+a new helper for converting end dma pfn named mm_to_dma_pfn_end()
+
+Signed-off-by: Yanfei Xu <yanfei.xu@intel.com>
+---
+Found from reading VT-D codes.
+
+ drivers/iommu/intel/iommu.c | 22 +++++++++++++---------
+ 1 file changed, 13 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 8096273b034c..5ceb12b90c1b 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -113,13 +113,17 @@ static inline unsigned long lvl_to_nr_pages(unsigned int lvl)
+ 
+ /* VT-d pages must always be _smaller_ than MM pages. Otherwise things
+    are never going to work. */
+-static inline unsigned long mm_to_dma_pfn(unsigned long mm_pfn)
++static inline unsigned long mm_to_dma_pfn_start(unsigned long mm_pfn)
+ {
+ 	return mm_pfn << (PAGE_SHIFT - VTD_PAGE_SHIFT);
+ }
++static inline unsigned long mm_to_dma_pfn_end(unsigned long mm_pfn)
++{
++	return ((mm_pfn + 1) << (PAGE_SHIFT - VTD_PAGE_SHIFT)) - 1;
++}
+ static inline unsigned long page_to_dma_pfn(struct page *pg)
+ {
+-	return mm_to_dma_pfn(page_to_pfn(pg));
++	return mm_to_dma_pfn_start(page_to_pfn(pg));
+ }
+ static inline unsigned long virt_to_dma_pfn(void *p)
+ {
+@@ -2374,8 +2378,8 @@ static int __init si_domain_init(int hw)
+ 
+ 		for_each_mem_pfn_range(i, nid, &start_pfn, &end_pfn, NULL) {
+ 			ret = iommu_domain_identity_map(si_domain,
+-					mm_to_dma_pfn(start_pfn),
+-					mm_to_dma_pfn(end_pfn));
++					mm_to_dma_pfn_start(start_pfn),
++					mm_to_dma_pfn_end(end_pfn));
+ 			if (ret)
+ 				return ret;
+ 		}
+@@ -2396,8 +2400,8 @@ static int __init si_domain_init(int hw)
+ 				continue;
+ 
+ 			ret = iommu_domain_identity_map(si_domain,
+-					mm_to_dma_pfn(start >> PAGE_SHIFT),
+-					mm_to_dma_pfn(end >> PAGE_SHIFT));
++					mm_to_dma_pfn_start(start >> PAGE_SHIFT),
++					mm_to_dma_pfn_end(end >> PAGE_SHIFT));
+ 			if (ret)
+ 				return ret;
+ 		}
+@@ -3567,8 +3571,8 @@ static int intel_iommu_memory_notifier(struct notifier_block *nb,
+ 				       unsigned long val, void *v)
+ {
+ 	struct memory_notify *mhp = v;
+-	unsigned long start_vpfn = mm_to_dma_pfn(mhp->start_pfn);
+-	unsigned long last_vpfn = mm_to_dma_pfn(mhp->start_pfn +
++	unsigned long start_vpfn = mm_to_dma_pfn_start(mhp->start_pfn);
++	unsigned long last_vpfn = mm_to_dma_pfn_end(mhp->start_pfn +
+ 			mhp->nr_pages - 1);
+ 
+ 	switch (val) {
+@@ -4278,7 +4282,7 @@ static void intel_iommu_tlb_sync(struct iommu_domain *domain,
+ 	unsigned long i;
+ 
+ 	nrpages = aligned_nrpages(gather->start, size);
+-	start_pfn = mm_to_dma_pfn(iova_pfn);
++	start_pfn = mm_to_dma_pfn_start(iova_pfn);
+ 
+ 	xa_for_each(&dmar_domain->iommu_array, i, info)
+ 		iommu_flush_iotlb_psi(info->iommu, dmar_domain,
+-- 
+2.34.1
+
