@@ -1,158 +1,122 @@
-Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2049.outbound.protection.outlook.com [40.107.94.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE9A47464
-	for <iommu@lists.linux.dev>; Mon, 26 Jun 2023 09:51:52 +0000 (UTC)
-Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-2b69e6cce7dso14440791fa.2
-        for <iommu@lists.linux.dev>; Mon, 26 Jun 2023 02:51:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1687773110; x=1690365110;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=5ggM1N3+w7ImiNtAZHXArGd84Z6U6HJ8t/slQ492qkA=;
-        b=FqHsMQ5vsBUDTg8Qu45FvgnX3xqTLM97k8uX6dT/yu2Eb3hdcwpsoETC22q1iX2xjI
-         fdRw4/PINKAYt0ptvLnXp8jq3UXTYTqk2hePWziqEWMDUpQ9ZL94UKNH5uYuleyzC/E0
-         WQ4YJVsU1d9unRENNAHKCjlXBr24hGZ1ZgGFMvJcHD0JDn0611kKx0hHNFhKOXALI+go
-         iEdWMF5DbOsUA476EvEUvA6sEu+NtNHD+XLeq4+UAwclbBkkMCW2fX8wi5gShPXUTayH
-         iShaJjMDyqVrAsSbcbwWrtHlvR3MkGOf7N5/MZguV3gX8fs9AFBigPXxMjNo8xmmIux4
-         pfVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687773110; x=1690365110;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5ggM1N3+w7ImiNtAZHXArGd84Z6U6HJ8t/slQ492qkA=;
-        b=S8xLJqAxbiz0eDMRN8Uu6Bn/23HqxAwv+ZEho2hog1NVn1MzM9DOKOXz9yIUmLTXUc
-         257bc0LB9VCttr9jMBgx2Wko3F1y3rvSn9gJLlfHsT9qdgt8u73mwYtgdhNIooixfQKR
-         qlHr+/y2DnKiU+hEUkt2RnmQyiwZUly4nM0BakqGPnIXgrYz30/bO/nSd6q3K5rQdjnA
-         H5IH0TuVj7abiOTUyptxfpRFzuDZAEyAh1MnW4PREe14G1BsRuqZWxuukzMiTgbperne
-         rLVveY9v7Uvcm7zOV2a0b9XpoCEl/bP9L4d2Dh8ltju5xwObPUcSniT/V0EF44Fsh/6b
-         Ynpg==
-X-Gm-Message-State: AC+VfDzJzRI8ld5d3keOYUWEU3mUMEx+U4J9JJsm0NMlClMN5A9bJYsR
-	kEUkqwSIl+wLgsPhLGaIRByVPg==
-X-Google-Smtp-Source: ACHHUZ6z1CFWIkB585T4AsGvxgWrYm0aA3bqu065Ypw3q/WfLWUkxYhOjK8FkfMVQVPSogtwBbHaIQ==
-X-Received: by 2002:a2e:948b:0:b0:2b4:491d:8d53 with SMTP id c11-20020a2e948b000000b002b4491d8d53mr17150106ljh.45.1687773110465;
-        Mon, 26 Jun 2023 02:51:50 -0700 (PDT)
-Received: from larix ([2a02:8428:1671:f801:5eff:2156:7b9f:50c2])
-        by smtp.gmail.com with ESMTPSA id f4-20020a0560001b0400b00307a86a4bcesm6879642wrz.35.2023.06.26.02.51.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Jun 2023 02:51:50 -0700 (PDT)
-Date: Mon, 26 Jun 2023 11:51:48 +0200
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
-	linux-kselftest@vger.kernel.org,
-	virtualization@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCHES 00/17] IOMMUFD: Deliver IO page faults to user space
-Message-ID: <ZJlftJF9ufnBMjHi@larix>
-References: <20230530053724.232765-1-baolu.lu@linux.intel.com>
- <20230616113232.GA84678@myrica>
- <bc963573-f4d3-1467-daaf-2d85f6befe3f@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9763B8C04
+	for <iommu@lists.linux.dev>; Mon, 26 Jun 2023 12:18:03 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PEOY9gEhZ1pnjJ9vFzdjWEBcGawe+DVGOA8IkOAjToQ+BXev9TOoGmcr3F5IpXaQaSVgeZ/584INDgquPfO0Zolww5kKq6W+l6Uu366VITmdg0t4S7/ENLjIqOlnWE62NvBb1ygDNe9oWthc6TzFPoORMpTddx+l8CIcWSd7/9EcWlwEGG1mhZtvwCcbxcpqPmeaZdSbrdh6j11HBDtzymHbe44RHnaPCAZFQDzIR2aPLrko1moPY7PAiOVV3DSLfsjcXr2EaKKJCX8uad6acEgTxwvx4UtCAu7WSUCVVoYm01LWbm/c0zLvBrdSc63Uf+APiJ1qVcuV68+9DDsCVg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=EDnu6gWXGW+fuhIfrQNbGLZty77wsrEDrj+37oJ4C/o=;
+ b=k5wNzxmFCl5K1tMPhfOEkZEyflOjg88wDIAMYu6kBM7eGs3aKe3ss6y6R3uEiW5tEl/GP7jnyXEANUxTApxYFbkfV6xP/14gQ7Ok4eHUprq24DYlWHUvoYwOlLOW+ClYEcpFm1vNbJInm8DEL26VX/jU2dwHlv7HrGz6TwWdUT4wsyrIDvV/6t8p5OytMIoKnYVy2cBwk9/KUFSog7knTe93w7+zdJzlLv8bHWtgtGnVBcICLaH/Q8ZCqQLxauJiJOmBdhgEx3oSBIu/WwclCQBE4OASwIH5d0PcbCO4T0NQzyAAnJ/Rt4ZM8cMXguZuVsLhIrpUveGeUJtNi7w9YQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EDnu6gWXGW+fuhIfrQNbGLZty77wsrEDrj+37oJ4C/o=;
+ b=E0FZhtKbUL9Xg1xb7atrriuABZVlVTuWJmFYEeTXnJZYJeO+thUloOxrMLG/bJF1AERCKRMUI5lNrp9QOaBSrgW+ruNmSJpAsEKRoHyoNcbVWbH/3Fcn9vfz9/902QMLX2I4sPDgCDzb/4GchAjLGfQHn4NG9uO+kkhyQ5NWIEHbjhJmk3EuNudyiGu4k/urli6GYly1p38mX+QbpptmzO6kBGzj2iEd7OKA/Nt5hVEfXgv6YyNUGTa5AI+lwchoU87yDnPHPgwi2ouN3KgRaR1CdaCVmBxdL2tR/LatVNigourKXvDb337JEBg2mw47NPPpSUF9FdcHR+ihESMP4Q==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by CY8PR12MB9033.namprd12.prod.outlook.com (2603:10b6:930:71::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.26; Mon, 26 Jun
+ 2023 12:18:01 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab%7]) with mapi id 15.20.6521.024; Mon, 26 Jun 2023
+ 12:18:01 +0000
+Date: Mon, 26 Jun 2023 09:18:00 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: iommu@lists.linux.dev
+Cc: Kevin Tian <kevin.tian@intel.com>, Lixiao Yang <lixiao.yang@intel.com>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	syzbot+1ad12d16afca0e7d2dde@syzkaller.appspotmail.com,
+	syzbot+6c8d756f238a75fc3eb8@syzkaller.appspotmail.com,
+	Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH rc v2 0/2] iommufd syzkaller fixes
+Message-ID: <ZJmB+EGHi/iQOfnF@nvidia.com>
+References: <0-v2-9a03761d445d+54-iommufd_syz2_jgg@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0-v2-9a03761d445d+54-iommufd_syz2_jgg@nvidia.com>
+X-ClientProxiedBy: BL1P222CA0008.NAMP222.PROD.OUTLOOK.COM
+ (2603:10b6:208:2c7::13) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bc963573-f4d3-1467-daaf-2d85f6befe3f@linux.intel.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CY8PR12MB9033:EE_
+X-MS-Office365-Filtering-Correlation-Id: c14a22c1-4667-4683-df1a-08db763f628d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	lWr6mBVlDrg12691y4CXoC8zHZaQZViUH9M4qLRFLOgFx5bzQf9e12uYdncvz0rRpktfoWKylY1BfOaf+z+Ovon7s2d1fYrsULGXxWXRMagtZB0g5CXymjfJ21m8V/rd7GxindZ1FerTWvY9bD7sqh1vUCFGChqEoxXQJUfSZC60GGWfu3TsYHcjY755sQkb+y/1g/B3+kcxoLAHOnZfHMJzJSlBuuwwWriTiUuGpUTRGR0XQJK4CE1+TkZUEjiXh/VoF3CY6siFbnlg5MrYnogGkjvyCI1CCI9aq7QOKhTqf6PF2I6YpyrCtNsDeMKUdN6GA8ocURN7w+cHWsRjkQ7LHqz5/RjMz9VA6Bcu3b18n4tWsdynfoVWFfmqp902aUkh0TYgOUyXN1usAcA4lP9xaKMoZ883Mk906ITah4QZ85kZRj/5VzLsw7GsVNNcwUg/3NwAI6JL48C1xmjgFe63K4w8MMzm68op5BIxKqbl/gDceZmvlWl3dADvsniAvRk6YSpmsM2aWT9JH/rWmXlBzHTTVI1aw2R5P9c7Mag=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(136003)(346002)(396003)(376002)(451199021)(2906002)(4744005)(6486002)(38100700002)(83380400001)(2616005)(6512007)(26005)(186003)(966005)(41300700001)(54906003)(86362001)(478600001)(36756003)(66476007)(66556008)(4326008)(66946007)(6916009)(316002)(6506007)(5660300002)(8676002)(8936002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?ZQ16C0Vbsq+q2WuO5bhaPW/gNJy5qubXb9oANSxX8q0rZQ7NiickLuloRUmd?=
+ =?us-ascii?Q?D9JModIcbaoOwhnp1WKkxyOg4ZKEDaU79vEAeJU/zG8Nlt17ERkjNaqEXSta?=
+ =?us-ascii?Q?2AelAN9HYO7On3V2IxVlzQdEutS1Doue2bjaJhh3l74tERoR4Sh5Uq2OMJAb?=
+ =?us-ascii?Q?yd82QsMpAqlFOrSjGi5s2FioIhOxJNOhPtkYh7254GdRDkEQzAmE9nZuSIvz?=
+ =?us-ascii?Q?FTYu4S6ui5o25mZWgWFv1Ey9LQdKtFvX9SfzG8P42eTyQ5lE5mAesYW4ViY+?=
+ =?us-ascii?Q?s0THmRB22ovIiCP4nny9/voWWUfmYvIg2TvIMpwP54kb6rQjhXLaKsXSPh23?=
+ =?us-ascii?Q?wp77AcGVjst7/d8tmbopy4+pSySIS/I3sI5a1ycBnlIVmixqNrp3ZubYkeRk?=
+ =?us-ascii?Q?CPyVbJ8oSvUGRU5OuPpaDQRuuhQ0tQC9MWADtd/zwphv+YTH443zyp2WDCUo?=
+ =?us-ascii?Q?8HEI4WWglNmQ1a7w13oXkvzQudFrYAMyLNIPf4sq/kgZk9+iiPDNBFsuK6jI?=
+ =?us-ascii?Q?klwwr9BtLZpT8ziHcmQjwncm25dLv9etMg93lPwwCTrf+RClHoizmDOvvuA6?=
+ =?us-ascii?Q?jW3MxRJ+x9zNXo2qJ7KNqV0y1BPvkGxLlD79pL1PIBIEGotaGYiwIQ+8sfD1?=
+ =?us-ascii?Q?jFTz8YqSrkJNpRiv5o1njAAwDvzzfTHOuXACeUKpuMbCf59ToqnEFCxVOxvG?=
+ =?us-ascii?Q?S8qNVnINpKXwglA6fC0h2Q/UVdQeuk83vRv4XocgD5h6yV3XvmplGeL07mZS?=
+ =?us-ascii?Q?8Fd3i6b7JMIE9R1RSwWHkuRk+CnF4EUveNiSRuwQllxDnYKYSEUsDVLNPpTL?=
+ =?us-ascii?Q?9voqqaFA/Nz6t23G2v5Rs3C4iE2uK2mM6ujweKZG+AXlRSNRpETzpiTyci3b?=
+ =?us-ascii?Q?RKKqGhbz7IaGss/+9YntgSz/LabbwDRlcDZjUmEud/OG5+yDhG7a72KIoRao?=
+ =?us-ascii?Q?ksmZrwegU8/LwP6YiQrLHB0MxndYb5gz+fkrr/bsgj8egrG1vqqrYnkOUR8C?=
+ =?us-ascii?Q?mlu3imKiMZHus964T5j2fPaZZNuuPZ/8Jjq5WFTLkjQagYkw3NQqXXdfv1tS?=
+ =?us-ascii?Q?eTJMCzNUiWtHg5kVZpDIaF8pJlBHC4tbpB+fTUAsBSQ8s6DAizLvKq5AjfBz?=
+ =?us-ascii?Q?AST5rmfEaAl/bMoJJsQprT/Gge45tLAW7OroLl1j+J9JhxQQeWYqh9a3TkUU?=
+ =?us-ascii?Q?fY0jZpAwQad4Jk39MbGz2sei6PgygquGxzmf3VtNqkSiD5Chz/dj/SM6PZnl?=
+ =?us-ascii?Q?OWa7DidfaaFRhdvlA3zXCvM9vaoKEVwrS7V4ISkoe1bTDeFCm07AiWHIK/Rf?=
+ =?us-ascii?Q?Q6FtCD+Zqmr//VcTb+yvVClZDK5M4WRMK07uPdt9MlJQaY6PL5ZswdDDx9J1?=
+ =?us-ascii?Q?gL/GJBVTQ4Jl77o9ZwoIMEsc0n2YqpB9re2Px8FnVEZgeAaKfh7AaJhYBbMQ?=
+ =?us-ascii?Q?sWifsfPDxCMQRGBarkipsFX6muoQZZwfZdrLRH3U8Y6ZzhVjM2gxX5CUdsq7?=
+ =?us-ascii?Q?hfp9cOCD6qC/f1dYe2V3xAwOLRwxNtB4WNhD+8uEhWQsfEDwSD13I2naPtWZ?=
+ =?us-ascii?Q?sLt2k/BG0GEb0TsTJ4MrRXfBC9QzMKxFfWgF1mYZ?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c14a22c1-4667-4683-df1a-08db763f628d
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jun 2023 12:18:01.3638
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uZVb+z/ZfFjHfYm+mrsJHISl1Vpy7wKAcshMA4wfBUdH/ZRniQw1Kyzns4ekpcGK
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB9033
 
-On Mon, Jun 19, 2023 at 11:35:50AM +0800, Baolu Lu wrote:
-> > Another outstanding issue was what to do for PASID stop. When the guest
-> > device driver stops using a PASID it issues a PASID stop request to the
-> > device (a device-specific mechanism). If the device is not using PRI stop
-> > markers it waits for pending PRs to complete and we're fine. Otherwise it
-> > sends a stop marker which is flushed to the PRI queue, but does not wait
-> > for pending PRs.
-> > 
-> > Handling stop markers is annoying. If the device issues one, then the PRI
-> > queue contains stale faults, a stop marker, followed by valid faults for
-> > the next address space bound to this PASID. The next address space will
-> > get all the spurious faults because the fault handler doesn't know that
-> > there is a stop marker coming. Linux is probably alright with spurious
-> > faults, though maybe not in all cases, and other guests may not support
-> > them at all.
-> > 
-> > We might need to revisit supporting stop markers: request that each device
-> > driver declares whether their device uses stop markers on unbind() ("This
-> > mechanism must indicate that a Stop Marker Message will be generated."
-> > says the spec, but doesn't say if the function always uses one or the
-> > other mechanism so it's per-unbind). Then we still have to synchronize
-> > unbind() with the fault handler to deal with the pending stop marker,
-> > which might have already gone through or be generated later.
+On Tue, Jun 20, 2023 at 11:11:22AM -0300, Jason Gunthorpe wrote:
+> Two syzkaller fixes, both the same botched locking of the area pointer
+> during the unmap of IOVA being used by an access.
 > 
-> I don't quite follow here. Once a PASID is unbound from the device, the
-> device driver should be free to release the PASID. The PASID could then
-> be used for any other purpose. The device driver has no idea when the
-> pending page requests are flushed after unbind(), so it cannot decide
-> how long should the PASID be delayed for reuse. Therefore, I understand
-> that a successful return from the unbind() function denotes that all
-> pending page requests have been flushed and the PASID is viable for
-> other use.
-
-Yes that's the contract for unbind() at the moment
-
+> v2:
+>  - Zero tries if the IOVA progresses
+> v1: https://lore.kernel.org/r/0-v1-9f7c19e02561+31-iommufd_syz2_jgg@nvidia.com
 > 
-> > 
-> > Currently we ignore all that and just flush the PRI queue, followed by the
-> > IOPF queue, to get rid of any stale fault before reassigning the PASID. A
-> > guest however would also need to first flush the HW PRI queue, but doesn't
-> > have a direct way to do that. If we want to support guests that don't deal
-> > with stop markers, the host needs to flush the PRI queue when a PASID is
-> > detached. I guess on Intel detaching the PASID goes through the host which
-> > can flush the host queue. On Arm we'll probably need to flush the queue
-> > when receiving a PASID cache invalidation, which the guest issues after
-> > clearing a PASID table entry.
-> 
-> The Intel VT-d driver follows below steps to drain pending page requests
-> when a PASID is unbound from a device.
-> 
-> - Tear down the device's pasid table entry for the stopped pasid.
->   This ensures that ATS/PRI will stop putting more page requests for the
->   pasid in VT-d PRQ.
+> Jason Gunthorpe (2):
+>   iommufd: Do not access the area pointer after unlocking
+>   iommufd: Call iopt_area_contig_done() under the lock
 
-Oh that's interesting, I didn't know about the implicit TLB invalidations
-on page requests for VT-d.
-
-For Arm SMMU, clearing the PASID table entry does cause ATS Translation
-Requests to return with Completer Abort, but does not affect PRI. The SMMU
-pushes page requests directly into the PRI queue without reading any table
-(unless the queue overflows).
-
-We're counting on the device driver to perform the PASID stop request
-before calling unbind(), described in PCIe 6.20.1 (Managing PASID Usage)
-and 10.4.1.2 (Managing PASID Usage on PRG Requests). This ensures that
-when unbind() is called, no more page request for the PASID is pushed into
-the PRI queue. But some may still be in the queue if the device uses stop
-markers.
-
-> - Sync with the PRQ handling thread until all related page requests in
->   PRQ have been delivered.
-
-This is what I'm concerned about. For VT-d this happens in the host which
-is in charge of modifying the PASID table. For SMMU, the guest writes the
-PASID table. It flushes its virtual PRI queue, but not the physical queue
-that is managed by the host.
-
-One synchronization point where the host could flush the physical PRI
-queue is the PASID config invalidation (CMD_CFGI_CD). As Jason pointed out
-the host may not be able to observe those if a command queue is assigned
-directly to the guest (a theoretical SMMU extension), though in that case
-the guest may also have direct access to a PRI queue (like the AMD vIOMMU
-extension) and be able to flush the queue directly.
-
-But we can just wait for PRI implementations and see what the drivers
-need. Maybe no device will implement stop markers.
+Applied
 
 Thanks,
-Jean
-
-> - Flush the iopf queue with iopf_queue_flush_dev().
-> - Follow the steps defined in VT-d spec section 7.10 to drain all page
->   requests and responses between VT-d and the endpoint device.
+Jason
