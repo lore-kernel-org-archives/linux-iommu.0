@@ -1,157 +1,71 @@
-Received: from frasgout13.his.huawei.com (unknown [14.137.139.46])
+Received: from frasgout12.his.huawei.com (unknown [14.137.139.154])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 634988F70
-	for <iommu@lists.linux.dev>; Mon, 26 Jun 2023 13:21:16 +0000 (UTC)
-Received: from mail02.huawei.com (unknown [172.18.147.227])
-	by frasgout13.his.huawei.com (SkyGuard) with ESMTP id 4QqSQ26bTVz9xyNM
-	for <iommu@lists.linux.dev>; Mon, 26 Jun 2023 20:51:06 +0800 (CST)
-Received: from A2101119013HW2.china.huawei.com (unknown [10.81.202.159])
-	by APP2 (Coremail) with SMTP id GxC2BwDXXWQljJlk1fGzAw--.36557S4;
-	Mon, 26 Jun 2023 14:01:46 +0100 (CET)
-From: Petr Tesarik <petrtesarik@huaweicloud.com>
-To: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
-	linux-kernel@vger.kernel.org (open list)
-Cc: Roberto Sassu <roberto.sassu@huaweicloud.com>,
-	Kefeng Wang <wangkefeng.wang@huawei.com>,
-	petr@tesarici.cz
-Subject: [PATCH v1 2/2] swiotlb: Reduce the number of areas to match actual memory pool size
-Date: Mon, 26 Jun 2023 15:01:04 +0200
-Message-Id: <097dffeb406cef6596499c8dbdafb28d05f7501b.1687784289.git.petr.tesarik.ext@huawei.com>
-X-Mailer: git-send-email 2.25.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44FCEA93A
+	for <iommu@lists.linux.dev>; Mon, 26 Jun 2023 14:08:51 +0000 (UTC)
+Received: from mail02.huawei.com (unknown [172.18.147.229])
+	by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4QqTsN1bTkz9xFrP
+	for <iommu@lists.linux.dev>; Mon, 26 Jun 2023 21:56:24 +0800 (CST)
+Received: from [127.0.0.1] (unknown [10.204.63.22])
+	by APP1 (Coremail) with SMTP id LxC2BwCnC+fjm5lkLhG+Aw--.37910S2;
+	Mon, 26 Jun 2023 15:08:42 +0100 (CET)
+Message-ID: <de78e57f7d7ee163f1efdcd1f470eb5ba5e8a060.camel@huaweicloud.com>
+Subject: Re: [PATCH v1 0/2] swiotlb: Fix a couple of bugs in sizing areas
+From: Roberto Sassu <roberto.sassu@huaweicloud.com>
+To: Petr Tesarik <petrtesarik@huaweicloud.com>, Christoph Hellwig
+ <hch@lst.de>,  Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
+ <robin.murphy@arm.com>, "open list:DMA MAPPING HELPERS"
+ <iommu@lists.linux.dev>, open list <linux-kernel@vger.kernel.org>
+Cc: Kefeng Wang <wangkefeng.wang@huawei.com>, petr@tesarici.cz
+Date: Mon, 26 Jun 2023 16:08:30 +0200
 In-Reply-To: <cover.1687784289.git.petr.tesarik.ext@huawei.com>
 References: <cover.1687784289.git.petr.tesarik.ext@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4-0ubuntu1 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:GxC2BwDXXWQljJlk1fGzAw--.36557S4
-X-Coremail-Antispam: 1UD129KBjvJXoWxZw1xur4UKr1xCF18GFyrCrg_yoWrGFy3pr
-	yfWa4UtFWFqFn7CFW2y3y8CFySka4vyrnFkF9xC3sxXw1UGF1SkrWqkFWUJFWrtF4kuF4f
-	X3yrZF45uanxJ3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUBG14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jryl82xGYIkIc2
-	x26xkF7I0E14v26r4j6ryUM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
-	Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1l84
-	ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UM2AI
-	xVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20x
-	vE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xv
-	r2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkF7I0Ew4C26cxK6c8Ij28Icw
-	CF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j
-	6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64
-	vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_
-	Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0x
-	vEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0pRLqXdUUUUU=
-X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
+X-CM-TRANSID:LxC2BwCnC+fjm5lkLhG+Aw--.37910S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrKr1kKw4DJw4ktFWDZryUGFg_yoWxurb_ua
+	4vyr98ArZ8JFs3ZF93GF47C3y09r4xAF1Yqasrt3y3JryUXF95XF1kWFsYqr1kWr4xuryY
+	yrn8ArWrtr1fKjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUIcSsGvfJTRUUUbwxFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+	6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+	A2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
+	Cr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr1j6F
+	4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+	I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+	4UM4x0Y48IcVAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0EwIxGrwCF
+	x2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14
+	v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY
+	67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2
+	IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AK
+	xVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjfUoOJ5UUUUU
+X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAgAABF1jj4tm5gAAs8
 X-CFilter-Loop: Reflected
 
-From: Petr Tesarik <petr.tesarik.ext@huawei.com>
+On Mon, 2023-06-26 at 15:01 +0200, Petr Tesarik wrote:
+> From: Petr Tesarik <petr.tesarik.ext@huawei.com>
+>=20
+> While reworking the dynamic SWIOTLB implementation, I ran into some
+> locking issues with the current implementation. I believe the bugs
+> are serious enough to be fixed separately.
 
-Although the desired size of the SWIOTLB memory pool is increased in
-swiotlb_adjust_nareas() to match the number of areas, the actual allocation
-may be smaller, which may require reducing the number of areas.
+Thanks, excellent work!
 
-For example, Xen uses swiotlb_init_late(), which in turn uses the page
-allocator. On x86, page size is 4 KiB and MAX_ORDER is 10 (1024 pages),
-resulting in a maximum memory pool size of 4 MiB. This corresponds to 2048
-slots of 2 KiB each. The minimum area size is 128 (IO_TLB_SEGSIZE),
-allowing at most 2048 / 128 = 16 areas.
+Reviewed-by: Roberto Sassu <roberto.sassu@huawei.com>
 
-If num_possible_cpus() is greater than the maximum number of areas, areas
-are smaller than IO_TLB_SEGSIZE and contiguous groups of free slots will
-span multiple areas. When allocating and freeing slots, only one area will
-be properly locked, causing race conditions on the unlocked slots and
-ultimately data corruption, kernel hangs and crashes.
+Roberto
 
-Fixes: 20347fca71a3 ("swiotlb: split up the global swiotlb lock")
-Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
----
- kernel/dma/swiotlb.c | 27 ++++++++++++++++++++++++---
- 1 file changed, 24 insertions(+), 3 deletions(-)
-
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 16f53d8c51bc..079df5ad38d0 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -138,6 +138,23 @@ static void swiotlb_adjust_nareas(unsigned int nareas)
- 			(default_nslabs << IO_TLB_SHIFT) >> 20);
- }
- 
-+/**
-+ * limit_nareas() - get the maximum number of areas for a given memory pool size
-+ * @nareas:	Desired number of areas.
-+ * @nslots:	Total number of slots in the memory pool.
-+ *
-+ * Limit the number of areas to the maximum possible number of areas in
-+ * a memory pool of the given size.
-+ *
-+ * Return: Maximum possible number of areas.
-+ */
-+static unsigned int limit_nareas(unsigned int nareas, unsigned long nslots)
-+{
-+	if (nslots < nareas * IO_TLB_SEGSIZE)
-+		nareas = nslots / IO_TLB_SEGSIZE;
-+	return nareas;
-+}
-+
- static int __init
- setup_io_tlb_npages(char *str)
- {
-@@ -297,6 +314,7 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
- {
- 	struct io_tlb_mem *mem = &io_tlb_default_mem;
- 	unsigned long nslabs;
-+	unsigned int nareas;
- 	size_t alloc_size;
- 	void *tlb;
- 
-@@ -309,10 +327,12 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
- 		swiotlb_adjust_nareas(num_possible_cpus());
- 
- 	nslabs = default_nslabs;
-+	nareas = limit_nareas(default_nareas, nslabs);
- 	while ((tlb = swiotlb_memblock_alloc(nslabs, flags, remap)) == NULL) {
- 		if (nslabs <= IO_TLB_MIN_SLABS)
- 			return;
- 		nslabs = ALIGN(nslabs >> 1, IO_TLB_SEGSIZE);
-+		nareas = limit_nareas(nareas, nslabs);
- 	}
- 
- 	if (default_nslabs != nslabs) {
-@@ -358,6 +378,7 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
- {
- 	struct io_tlb_mem *mem = &io_tlb_default_mem;
- 	unsigned long nslabs = ALIGN(size >> IO_TLB_SHIFT, IO_TLB_SEGSIZE);
-+	unsigned int nareas;
- 	unsigned char *vstart = NULL;
- 	unsigned int order, area_order;
- 	bool retried = false;
-@@ -403,8 +424,8 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
- 			(PAGE_SIZE << order) >> 20);
- 	}
- 
--	area_order = get_order(array_size(sizeof(*mem->areas),
--		default_nareas));
-+	nareas = limit_nareas(default_nareas, nslabs);
-+	area_order = get_order(array_size(sizeof(*mem->areas), nareas));
- 	mem->areas = (struct io_tlb_area *)
- 		__get_free_pages(GFP_KERNEL | __GFP_ZERO, area_order);
- 	if (!mem->areas)
-@@ -418,7 +439,7 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
- 	set_memory_decrypted((unsigned long)vstart,
- 			     (nslabs << IO_TLB_SHIFT) >> PAGE_SHIFT);
- 	swiotlb_init_io_tlb_mem(mem, virt_to_phys(vstart), nslabs, 0, true,
--				default_nareas);
-+				nareas);
- 
- 	swiotlb_print_info();
- 	return 0;
--- 
-2.25.1
+> Petr Tesarik (2):
+>   swiotlb: Always set the number of areas before allocating the pool
+>   swiotlb: Reduce the number of areas to match actual memory pool size
+>=20
+>  kernel/dma/swiotlb.c | 46 +++++++++++++++++++++++++++++++++-----------
+>  1 file changed, 35 insertions(+), 11 deletions(-)
+>=20
 
