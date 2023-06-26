@@ -1,34 +1,34 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2047.outbound.protection.outlook.com [40.107.94.47])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2062.outbound.protection.outlook.com [40.107.243.62])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AC851107
-	for <iommu@lists.linux.dev>; Mon, 26 Jun 2023 17:29:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C99F13AC5
+	for <iommu@lists.linux.dev>; Mon, 26 Jun 2023 18:02:22 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RAxYoRgNRuLBmkWyzzaSo37t2Emtcz2C6evq0DjsjIFL8fECx2HbVLwQW2IssjwndaeYfUfr9DLmxCth0zgo0S+MuHzTvu9mvTzXggHJGmZfYZL2d0n4GsgDO5kq6UZe58V0D7GSOOQYNsE1+OzlTrup3BRAwvHCBrDcQw/Jext5hFnyjAqoOYUunNoSRC3wjnl2iJRqjQ5WIlzhELqBpmklCq4MIFTXjxAXf0DJ4QnZ88BxUjn94YsbOhL+bZT6pZgZa5PfGvW+0SqNv+QYprlTYklnLqSMgMUd6mUbbOzbzCEcnFf8XB27z4vODikRvdl3CkJWV6kEaDn/4JEH/Q==
+ b=jDFIOhBIM8yPc/HgwU/lzqW88WJkMXtaJ8l34n8tDCWhAFhnlF2lWLnTXYIP9wOZ8LbK2qERWCTmfZ+mdm44AHpRBIptmAfHIR01Ol71kAXK8ySVy2cjL8o01n+gRFTCLrNmEiPJsl8q7YrQ/oUa6cgeU7FKwh1Bg095m1gi6SV7Z5XXz30SdwFheLOxZwl5gujGML9Py9yBUt/2Ka2fQALXic6YDlVqhXhcabcQG4aZ/DfDhbFKWht/eBgsmpnDT/YvJXWWelB76XpSVLSsDsUOpksT+gZKiprO6QcFsmRJnaPgUe32uacoPDc4FmvoXNbJ6iQTR+ytqFAd8eqYQg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Mm3W0i+X/san5q5kKfX59TlP13CZe7i5D6FZCBhi/Tk=;
- b=Er9NIym6QEoRX2jGhR5Sk/jV688Ikis/DR0x80/Fd3pgoMKeyS8cXYIXx8C7C76e08i+LpXl8aeFpJsC19yfu4xlYeaZ+Gqy1N75f+P0ZZmT8Kr7YK+sdejKdPi1iWmc8e79MruT3/4h0z1bDOlN43dhs82B+3QYTfRryryF/tUwVacgPgBYWg0MWO8Rx9IQ5RRuEqMddTXEmHBHcwvjdQrDx6t7ObTdm2MqlHHc0JGSLaPprdYl30VEqAH13eSbUdLXd/Rdd/pvJg4dP+uMpGH3vifd3KcY/OU5zibg456v3re5OLwDhZnu5oMHI5zpCOWfnM059wwZWlNrri8fBg==
+ bh=CR2wxA1Y9ehxpAAWVAhcQphkpweUdhK/cRO1HmtEDvw=;
+ b=kYRxc5ew2WADNBoBlLlqjRMuLUlNm7TITl1h6Enac+2MC6JY4lrgEYkp6nX7n/Wy6oieVF41gOf6G00b6RRSGUw9bhe4xKPel6itkw0TONKJz4zDi6bIbKEFaa4okGMfplyFdjf/hgREZatGkzD3MElBIvFtR8bTLFU1jLJZWhEDfUI0eOLdfddW6Mt/Qb/RWC+VQ95N/B5isrzYR4Cz5FbETlGs70lPhy0Rh+Oye51T+FmdCM67/M/veNJGFzav0505amxw1umsmp8c1ZBzt9YETTLPLT8u1kg17FSBljZX+faMUW64QUXyZzlp97VNyBp8OWQewxLYkZJLx/q7Vw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ 216.228.117.160) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Mm3W0i+X/san5q5kKfX59TlP13CZe7i5D6FZCBhi/Tk=;
- b=QjUA0DM5Wzq7a6AgACaj+aqMXCtptoF/wbe8t6Uk+Y7RxeD3/l4hUw0D5NV0Ph6gYodtgkbFhetRSiO4yiUbpabxu+vpmJMu6BHu6aS1pKV+Hwko8pr39PHapdJdKbO2RwZjWlmdme/47OnA0YDusjq++tBFONDorDNP/s4wRtDM7DlrFtt7SHPxJOPzl2RuySzT4NxWDHTC9NEdOWeW5dPD1sEqDsphLiceGyhy14OpagF1HNIXyK8R3AibvB3UX/kx4TKzELQIZtRQSEl0N1jH7/jGJ9Wpbz0jmJwi1i2t60K35n2yN5hdSEGue5xN1/P7jKx9a+H96gk/RktKYQ==
-Received: from MW4PR03CA0292.namprd03.prod.outlook.com (2603:10b6:303:b5::27)
- by PH0PR12MB8797.namprd12.prod.outlook.com (2603:10b6:510:28d::12) with
+ bh=CR2wxA1Y9ehxpAAWVAhcQphkpweUdhK/cRO1HmtEDvw=;
+ b=qOy8LOrGdm6Kwo2Cx9sjwgqYyKZWH5uMYcAk6NFJ3/fOCm8LHRqbqLvLA6nUxSVn/fDRgP2hrf6LJptF/875+ySEQ+gwkk9MPfxC+2gv8Gg1iscLdWtADfKZT60itmO6KmBzMBKQN9YglXTQO0CfOSIqJrFtU6JAAaiB5mtrE/QV+/pwX4Y5asKxMv2rc8zGrRqMyJL2p27Jcve0oHe7RoKlim6Gs6wtfjevjTmabmJTrmjQ2ywTEgVv3C2pqxDLoITf+e0N3aIGym47+ZbpD9Ety8VUydFIrk3usSd/Ue2F+7TVbMbjbIBvM8QVfWBYDvNS30M6RkawEzlofZ4S3g==
+Received: from DS7PR03CA0107.namprd03.prod.outlook.com (2603:10b6:5:3b7::22)
+ by DM4PR12MB6565.namprd12.prod.outlook.com (2603:10b6:8:8c::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.24; Mon, 26 Jun
- 2023 17:29:10 +0000
-Received: from CO1NAM11FT037.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:b5:cafe::6f) by MW4PR03CA0292.outlook.office365.com
- (2603:10b6:303:b5::27) with Microsoft SMTP Server (version=TLS1_2,
+ 2023 18:02:18 +0000
+Received: from DM6NAM11FT010.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3b7:cafe::5b) by DS7PR03CA0107.outlook.office365.com
+ (2603:10b6:5:3b7::22) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.33 via Frontend
- Transport; Mon, 26 Jun 2023 17:29:10 +0000
+ Transport; Mon, 26 Jun 2023 18:02:18 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -36,53 +36,37 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.117.160 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
 Received: from mail.nvidia.com (216.228.117.160) by
- CO1NAM11FT037.mail.protection.outlook.com (10.13.174.91) with Microsoft SMTP
+ DM6NAM11FT010.mail.protection.outlook.com (10.13.172.222) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6500.47 via Frontend Transport; Mon, 26 Jun 2023 17:29:10 +0000
+ 15.20.6500.47 via Frontend Transport; Mon, 26 Jun 2023 18:02:17 +0000
 Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
  (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Mon, 26 Jun 2023
- 10:29:01 -0700
+ 11:02:08 -0700
 Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail202.nvidia.com
  (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Mon, 26 Jun
- 2023 10:29:01 -0700
+ 2023 11:02:08 -0700
 Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.6)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Mon, 26 Jun 2023 10:28:59 -0700
-Date: Mon, 26 Jun 2023 10:28:58 -0700
+ Transport; Mon, 26 Jun 2023 11:02:07 -0700
+Date: Mon, 26 Jun 2023 11:02:06 -0700
 From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-CC: Jason Gunthorpe <jgg@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
-	"joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com"
-	<alex.williamson@redhat.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
-	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
-	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
-	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
-	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
- Zhenzhong" <zhenzhong.duan@intel.com>
-Subject: Re: [PATCH v2 00/11] iommufd: Add nesting infrastructure
-Message-ID: <ZJnK2schtjrrwJ1L@Asurada-Nvidia>
-References: <ZGdiS2m8jcd5OOt5@nvidia.com>
- <BN9PR11MB5276A74B2DA86C79908A420B8C419@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZH9AGWf1yRDu/86q@nvidia.com>
- <BN9PR11MB52763C7B838B04D3200322FD8C58A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZJBL8QLLBiwRsUSI@nvidia.com>
- <BN9PR11MB527663567ECB8AD52D3170818C5CA@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZJGf3sgLKr9HLZuE@nvidia.com>
- <BN9PR11MB5276B852A32F53BE8EAA1A7D8C5DA@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZJMvtMe5QHPM0OEJ@Asurada-Nvidia>
- <BN9PR11MB5276D6040E41595B929843168C26A@BN9PR11MB5276.namprd11.prod.outlook.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+CC: Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, "Joerg
+ Roedel" <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+	<robin.murphy@arm.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>, "Yi
+ Liu" <yi.l.liu@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	<iommu@lists.linux.dev>, <linux-kselftest@vger.kernel.org>,
+	<virtualization@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCHES 00/17] IOMMUFD: Deliver IO page faults to user space
+Message-ID: <ZJnSnuUkkwBVNT80@Asurada-Nvidia>
+References: <20230530053724.232765-1-baolu.lu@linux.intel.com>
+ <ZHZFi28jRxeZMKK3@Asurada-Nvidia>
+ <a8ccbac8-c456-d116-24a2-7503ccbb720c@linux.intel.com>
+ <ZJiTuO/9Bs4hMAiC@Asurada-Nvidia>
+ <e374e0be-3e29-3128-b3df-6183a7a0e98e@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -91,73 +75,89 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276D6040E41595B929843168C26A@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <e374e0be-3e29-3128-b3df-6183a7a0e98e@linux.intel.com>
 X-NV-OnPremToCloud: ExternallySecured
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT037:EE_|PH0PR12MB8797:EE_
-X-MS-Office365-Filtering-Correlation-Id: e9f5b451-5577-4a87-391a-08db766ada5c
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT010:EE_|DM4PR12MB6565:EE_
+X-MS-Office365-Filtering-Correlation-Id: 53b20981-70c7-4eb0-af24-08db766f7afb
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	zCBuMnWT7K4qiyoZf/nAGpRA65O31s8X1osc/zHuCA9OEc9M7i1UeXitrrtcROvkZ0voiRiHNxl6YkMtPsFnwe/gPevFZpc6F9YN+hWx9rUwnryQs3vCLy3AjAEZiCrOZR5smR5wla/kXfpchKslQptMxmLy2r0sRaKyxrgYhmAWzWM5Kf/Jynj7KOhQ0X8oLhW/NnD3E1AIjlllSEgvcjJXtUZAR6i40X778O/PbyLgcGCmdMu/LKNMHEQhlxYqYA3iVX8K6w2A7VN5Fo5UFEQSJQ1LifeCbnSnRhO81y6xoJR4ZaDCVaSsHsdwqLKYSsnxzvkfMyNt3PFHZ580xhsIx6rwwSD+mRfnaVBc720lyf+K1Qpeeou0LneZHkVjNJ4zYTCGKc9KcuCvelRir6bw5TAoVg0GtIW4vbocbtkKWI/DOCUJjBebln4iC4Sx/mUIoPgqCj6dGflbNTXmlWwVDdS69UqmxRTOswAJLUgYfmV++ld9s7oAPJuEpmDKHM30/ai7atvpXBCfu31dbL6LxdiRshWpiLv5hZB6ix6058xcaW7ffV7xplmMeVp6TcjOR/iW/GFkhCSCIPRDA1q01totkYcAb6l5w/lvKt4dgK4Ygl/oiq87ILZ3m5tdqIKq4nBBQZ8B5qfk38LR8nBtcaUMIEF77+rhoPMb1MwitFMRx7HVSpD8PoEsDJtRz63kJPLjnzMPeovOwuigp4d0b/9BhxPPFmWy1O60qaqFtKTAdAGbzbWgcByEit74+QEcuZ/GP4kb5DFK6RaCsQ==
+	e/Fw3U4jRcI+NKSg1aiXMxRF2lkrNp8kvetqY6QFWhavfM5ibDufyhnTJFXt5mnKeUupGumBRIPL1KlT2wQ7xZ5JvF9K4X2aI+YaQ+a0cc/I9qxFfAn0qHjYfwDWESTvSjDcPgrt5xqSqnFOvo84gThe0nu4RAlIWsg91ec3nXhB2B3qebLVEA+ON/6hCzB4tUuLB1bg6+UxAqjoOXVPSNyvnScl/7JbFBQr7iJiCb8p3ynOMl5JaeHzGwc3HCXfH614/8TMsJfPfoJawHZ1+8H2Meq8m4pMsq2rDH4L219SOduuxfOJcbfwEfvE4dAYCHgOd1HWJBIGEEd8y9N0ILPyHMO3Ys1ZN7QBaTO3KkPAODt/q9ZG/RWkm1ABvAIxCMbzuWfvijkX7xEg4Ewl+CVTh6CjxcXGw4Ftnnd5ssYncvjcND0xwGlDAO8F+xGw0Z/ET1IRbFSoOgc5kMeff+tYgsNGJhAozTBy2jtY2FbJN7wfEHir+/AY814PFUhPEw6ZrSWyjOW6jhNLc6sRaZORoKTUYlkJ+S2NUQV3krppMk5vAiY1OXANwxYLyzgm9HnYZZnpkmavBGKjlrDEgdTpVhm7AaKTHvplcx0FXcXC94gMW8wlUyR7tdhoP7KgTkH879eECgfIFS/bCU7+qHaPyHYXNWywYVo2forhQSiVm5fBNE5QDAit2/OIhhRIsTq+Eu9eft51MwSW4A67KMeOod8S2Vg/pOG4Ggc8efeCYfYJ7Wel2LZFjQzz2nDd
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(396003)(136003)(346002)(39860400002)(451199021)(40470700004)(46966006)(36840700001)(7416002)(5660300002)(33716001)(966005)(8676002)(8936002)(9686003)(186003)(2906002)(336012)(426003)(40460700003)(478600001)(36860700001)(54906003)(86362001)(41300700001)(47076005)(83380400001)(316002)(70206006)(70586007)(6916009)(4326008)(26005)(82310400005)(40480700001)(82740400003)(356005)(7636003)(55016003);DIR:OUT;SFP:1101;
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(376002)(39860400002)(346002)(451199021)(40470700004)(36840700001)(46966006)(82310400005)(36860700001)(47076005)(54906003)(478600001)(336012)(83380400001)(426003)(186003)(26005)(2906002)(9686003)(5660300002)(7416002)(33716001)(70206006)(40460700003)(356005)(316002)(70586007)(7636003)(82740400003)(40480700001)(55016003)(8936002)(8676002)(41300700001)(6916009)(86362001)(4326008);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jun 2023 17:29:10.4051
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jun 2023 18:02:17.8256
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e9f5b451-5577-4a87-391a-08db766ada5c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 53b20981-70c7-4eb0-af24-08db766f7afb
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT037.eop-nam11.prod.protection.outlook.com
+	DM6NAM11FT010.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB8797
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6565
 
-On Mon, Jun 26, 2023 at 06:42:58AM +0000, Tian, Kevin wrote:
+On Mon, Jun 26, 2023 at 11:10:22AM +0800, Baolu Lu wrote:
 
-> > > Yi/Nicolin, please update this series to not automatically add reserved
-> > > regions to S2 in the nesting configuration.
-> >
-> > I'm a bit late for the conversation here. Yet, how about the
-> > IOMMU_RESV_SW_MSI on ARM in the nesting configuration? We'd
-> > still call iommufd_group_setup_msi() on the S2 HWPT, despite
-> > attaching the device to a nested S1 HWPT right?
+> > > > I think that, whether the guest has an IOPF capability or not,
+> > > > the host should always forward any stage-1 fault/error back to
+> > > > the guest. Yet, the implementation of this series builds with
+> > > > the IOPF framework that doesn't report IOMMU_FAULT_DMA_UNRECOV.
+> > > > 
+> > > > And I have my doubt at the using the IOPF framework with that
+> > > > IOMMU_PAGE_RESP_ASYNC flag: using the IOPF framework is for
+> > > > its bottom half workqueue, because a page response could take
+> > > > a long cycle. But adding that flag feels like we don't really
+> > > > need the bottom half workqueue, i.e. losing the point of using
+> > > > the IOPF framework, IMHO.
+> > > > 
+> > > > Combining the two facts above, I wonder if we really need to
+> > > > go through the IOPF framework; can't we just register a user
+> > > > fault handler in the iommufd directly upon a valid event_fd?
+> > > Agreed. We should avoid workqueue in sva iopf framework. Perhaps we
+> > > could go ahead with below code? It will be registered to device with
+> > > iommu_register_device_fault_handler() in IOMMU_DEV_FEAT_IOPF enabling
+> > > path. Un-registering in the disable path of cause.
+> > Well, for a virtualization use case, I still think it's should
+> > be registered in iommufd.
 > 
-> Yes, based on current design of ARM nesting.
+> Emm.. you suggest iommufd calls iommu_register_device_fault_handler() to
+> register its own page fault handler, right?
 > 
-> But please special case it instead of pretending that all reserved regions
-> are added to IOAS which is wrong in concept based on the discussion.
-
-Ack. Yi made a version of change dropping it completely along
-with the iommufd_group_setup_msi() call for a nested S1 HWPT.
-So I thought there was a misalignment. I made another version
-preserving the pathway for MSI on ARM, and perhaps we should
-go with this one:
-https://github.com/nicolinc/iommufd/commit/c63829a12d35f2d7a390f42821a079f8a294cff8
-
-> > > It also implies that the user cannot rely on IOAS_IOVA_RANGES to
-> > > learn reserved regions for arranging addresses in S1.
-> > >
-> > > Then we also need a new ioctl to report reserved regions per dev_id.
-> >
-> > So, in a nesting configuration, QEMU would poll a device's S2
-> > MSI region (i.e. IOMMU_RESV_SW_MSI) to prevent conflict?
-> >
+> I have a different opinion, iommu_register_device_fault_handler() is
+> called to register a fault handler for a device. It should be called
+> or initiated by a device driver. The iommufd only needs to install a
+> per-domain io page fault handler.
 > 
-> Qemu needs to know all the reserved regions of the device and skip
-> them when arranging S1 layout.
+> I am considering a use case on Intel platform. Perhaps it's similar
+> on other platforms. An SIOV-capable device can support host SVA and
+> assigning mediated devices to user space at the same time. Both host
+> SVA and mediated devices require IOPF. So there will be multiple places
+> where a page fault handler needs to be registered.
 
-OK.
+Okay, the narrative makes sense to me. I was more thinking of
+the nesting case. The iommu_register_device_fault_handler() is
+registered per device, as its name implies, while the handler
+probably should be slightly different by the attaching domain.
 
-> I'm not sure whether the MSI region needs a special MSI type or
-> just a general RESV_DIRECT type for 1:1 mapping, though.
+It seems that your io_pgfault_handler() in the previous email
+can potentially handle this, i.e. a IOMMU_DOMAIN_NESTED could
+set domain->iopf_handler to forward DMA faults to user space.
+We just need to make sure this pathway would be unconditional
+at the handler registration and fault->type.
 
-I don't quite get this part. Isn't MSI having IOMMU_RESV_MSI
-and IOMMU_RESV_SW_MSI? Or does it juset mean we should report
-the iommu_resv_type along with reserved regions in new ioctl?
+> > Having a device without an IOPF/PRI
+> > capability, a guest OS should receive some faults too, if that
+> > device causes a translation failure.
+> 
+> Yes. DMA faults are also a consideration. But I would like to have it
+> supported in a separated series. As I explained in the previous reply,
+> we also need to consider the software nested translation case.
+
+I see.
 
 Thanks
 Nic
