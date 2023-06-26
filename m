@@ -1,187 +1,157 @@
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+Received: from frasgout13.his.huawei.com (unknown [14.137.139.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CADF58F70
-	for <iommu@lists.linux.dev>; Mon, 26 Jun 2023 13:20:54 +0000 (UTC)
-Received: from kwepemm600007.china.huawei.com (unknown [172.30.72.54])
-	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4QqSfT2nG9zTm1s;
-	Mon, 26 Jun 2023 21:01:53 +0800 (CST)
-Received: from [10.174.185.179] (10.174.185.179) by
- kwepemm600007.china.huawei.com (7.193.23.208) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Mon, 26 Jun 2023 21:02:41 +0800
-Subject: Re: [RESEND PATCH v8 04/11] bus: platform, amba, fsl-mc, PCI: Add
- device DMA ownership management
-To: Lu Baolu <baolu.lu@linux.intel.com>
-CC: Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>, Jason
- Gunthorpe <jgg@nvidia.com>, <linux-kernel@vger.kernel.org>,
-	<iommu@lists.linux.dev>
-References: <20220418005000.897664-1-baolu.lu@linux.intel.com>
- <20220418005000.897664-5-baolu.lu@linux.intel.com>
-From: Zenghui Yu <yuzenghui@huawei.com>
-Message-ID: <6472f254-c3c4-8610-4a37-8d9dfdd54ce8@huawei.com>
-Date: Mon, 26 Jun 2023 21:02:40 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 634988F70
+	for <iommu@lists.linux.dev>; Mon, 26 Jun 2023 13:21:16 +0000 (UTC)
+Received: from mail02.huawei.com (unknown [172.18.147.227])
+	by frasgout13.his.huawei.com (SkyGuard) with ESMTP id 4QqSQ26bTVz9xyNM
+	for <iommu@lists.linux.dev>; Mon, 26 Jun 2023 20:51:06 +0800 (CST)
+Received: from A2101119013HW2.china.huawei.com (unknown [10.81.202.159])
+	by APP2 (Coremail) with SMTP id GxC2BwDXXWQljJlk1fGzAw--.36557S4;
+	Mon, 26 Jun 2023 14:01:46 +0100 (CET)
+From: Petr Tesarik <petrtesarik@huaweicloud.com>
+To: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
+	linux-kernel@vger.kernel.org (open list)
+Cc: Roberto Sassu <roberto.sassu@huaweicloud.com>,
+	Kefeng Wang <wangkefeng.wang@huawei.com>,
+	petr@tesarici.cz
+Subject: [PATCH v1 2/2] swiotlb: Reduce the number of areas to match actual memory pool size
+Date: Mon, 26 Jun 2023 15:01:04 +0200
+Message-Id: <097dffeb406cef6596499c8dbdafb28d05f7501b.1687784289.git.petr.tesarik.ext@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1687784289.git.petr.tesarik.ext@huawei.com>
+References: <cover.1687784289.git.petr.tesarik.ext@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20220418005000.897664-5-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.185.179]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600007.china.huawei.com (7.193.23.208)
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:GxC2BwDXXWQljJlk1fGzAw--.36557S4
+X-Coremail-Antispam: 1UD129KBjvJXoWxZw1xur4UKr1xCF18GFyrCrg_yoWrGFy3pr
+	yfWa4UtFWFqFn7CFW2y3y8CFySka4vyrnFkF9xC3sxXw1UGF1SkrWqkFWUJFWrtF4kuF4f
+	X3yrZF45uanxJ3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUBG14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jryl82xGYIkIc2
+	x26xkF7I0E14v26r4j6ryUM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
+	Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1l84
+	ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UM2AI
+	xVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20x
+	vE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xv
+	r2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkF7I0Ew4C26cxK6c8Ij28Icw
+	CF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j
+	6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64
+	vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_
+	Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0x
+	vEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0pRLqXdUUUUU=
+X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
 X-CFilter-Loop: Reflected
 
-On 2022/4/18 8:49, Lu Baolu wrote:
-> The devices on platform/amba/fsl-mc/PCI buses could be bound to drivers
-> with the device DMA managed by kernel drivers or user-space applications.
-> Unfortunately, multiple devices may be placed in the same IOMMU group
-> because they cannot be isolated from each other. The DMA on these devices
-> must either be entirely under kernel control or userspace control, never
-> a mixture. Otherwise the driver integrity is not guaranteed because they
-> could access each other through the peer-to-peer accesses which by-pass
-> the IOMMU protection.
-> 
-> This checks and sets the default DMA mode during driver binding, and
-> cleanups during driver unbinding. In the default mode, the device DMA is
-> managed by the device driver which handles DMA operations through the
-> kernel DMA APIs (see Documentation/core-api/dma-api.rst).
-> 
-> For cases where the devices are assigned for userspace control through the
-> userspace driver framework(i.e. VFIO), the drivers(for example, vfio_pci/
-> vfio_platfrom etc.) may set a new flag (driver_managed_dma) to skip this
-> default setting in the assumption that the drivers know what they are
-> doing with the device DMA.
-> 
-> Calling iommu_device_use_default_domain() before {of,acpi}_dma_configure
-> is currently a problem. As things stand, the IOMMU driver ignored the
-> initial iommu_probe_device() call when the device was added, since at
-> that point it had no fwspec yet. In this situation,
-> {of,acpi}_iommu_configure() are retriggering iommu_probe_device() after
-> the IOMMU driver has seen the firmware data via .of_xlate to learn that
-> it actually responsible for the given device. As the result, before
-> that gets fixed, iommu_use_default_domain() goes at the end, and calls
-> arch_teardown_dma_ops() if it fails.
-> 
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Bjorn Helgaas <bhelgaas@google.com>
-> Cc: Stuart Yoder <stuyoder@gmail.com>
-> Cc: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-> Tested-by: Eric Auger <eric.auger@redhat.com>
+From: Petr Tesarik <petr.tesarik.ext@huawei.com>
 
-[...]
+Although the desired size of the SWIOTLB memory pool is increased in
+swiotlb_adjust_nareas() to match the number of areas, the actual allocation
+may be smaller, which may require reducing the number of areas.
 
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index 60adf42460ab..b933d2b08d4d 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -895,6 +895,13 @@ struct module;
->   *              created once it is bound to the driver.
->   * @driver:	Driver model structure.
->   * @dynids:	List of dynamically added device IDs.
-> + * @driver_managed_dma: Device driver doesn't use kernel DMA API for DMA.
-> + *		For most device drivers, no need to care about this flag
-> + *		as long as all DMAs are handled through the kernel DMA API.
-> + *		For some special ones, for example VFIO drivers, they know
-> + *		how to manage the DMA themselves and set this flag so that
-> + *		the IOMMU layer will allow them to setup and manage their
-> + *		own I/O address space.
->   */
->  struct pci_driver {
->  	struct list_head	node;
-> @@ -913,6 +920,7 @@ struct pci_driver {
->  	const struct attribute_group **dev_groups;
->  	struct device_driver	driver;
->  	struct pci_dynids	dynids;
-> +	bool driver_managed_dma;
->  };
->  
->  static inline struct pci_driver *to_pci_driver(struct device_driver *drv)
+For example, Xen uses swiotlb_init_late(), which in turn uses the page
+allocator. On x86, page size is 4 KiB and MAX_ORDER is 10 (1024 pages),
+resulting in a maximum memory pool size of 4 MiB. This corresponds to 2048
+slots of 2 KiB each. The minimum area size is 128 (IO_TLB_SEGSIZE),
+allowing at most 2048 / 128 = 16 areas.
 
-[...]
+If num_possible_cpus() is greater than the maximum number of areas, areas
+are smaller than IO_TLB_SEGSIZE and contiguous groups of free slots will
+span multiple areas. When allocating and freeing slots, only one area will
+be properly locked, causing race conditions on the unlocked slots and
+ultimately data corruption, kernel hangs and crashes.
 
-> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-> index 4ceeb75fc899..f83f7fbac68f 100644
-> --- a/drivers/pci/pci-driver.c
-> +++ b/drivers/pci/pci-driver.c
-> @@ -20,6 +20,7 @@
->  #include <linux/of_device.h>
->  #include <linux/acpi.h>
->  #include <linux/dma-map-ops.h>
-> +#include <linux/iommu.h>
->  #include "pci.h"
->  #include "pcie/portdrv.h"
->  
-> @@ -1601,6 +1602,7 @@ static int pci_bus_num_vf(struct device *dev)
->   */
->  static int pci_dma_configure(struct device *dev)
->  {
-> +	struct pci_driver *driver = to_pci_driver(dev->driver);
->  	struct device *bridge;
->  	int ret = 0;
->  
-> @@ -1616,9 +1618,24 @@ static int pci_dma_configure(struct device *dev)
->  	}
->  
->  	pci_put_host_bridge_device(bridge);
-> +
-> +	if (!ret && !driver->driver_managed_dma) {
-> +		ret = iommu_device_use_default_domain(dev);
-> +		if (ret)
-> +			arch_teardown_dma_ops(dev);
-> +	}
-> +
->  	return ret;
->  }
->  
-> +static void pci_dma_cleanup(struct device *dev)
-> +{
-> +	struct pci_driver *driver = to_pci_driver(dev->driver);
-> +
-> +	if (!driver->driver_managed_dma)
-> +		iommu_device_unuse_default_domain(dev);
-> +}
-> +
->  struct bus_type pci_bus_type = {
->  	.name		= "pci",
->  	.match		= pci_bus_match,
-> @@ -1632,6 +1649,7 @@ struct bus_type pci_bus_type = {
->  	.pm		= PCI_PM_OPS_PTR,
->  	.num_vf		= pci_bus_num_vf,
->  	.dma_configure	= pci_dma_configure,
-> +	.dma_cleanup	= pci_dma_cleanup,
->  };
->  EXPORT_SYMBOL(pci_bus_type);
+Fixes: 20347fca71a3 ("swiotlb: split up the global swiotlb lock")
+Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
+---
+ kernel/dma/swiotlb.c | 27 ++++++++++++++++++++++++---
+ 1 file changed, 24 insertions(+), 3 deletions(-)
 
-I (somehow forgot to delete DEBUG_TEST_DRIVER_REMOVE in my .config, and)
-failed to start the guest with an assigned PCI device, with something
-like:
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 16f53d8c51bc..079df5ad38d0 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -138,6 +138,23 @@ static void swiotlb_adjust_nareas(unsigned int nareas)
+ 			(default_nslabs << IO_TLB_SHIFT) >> 20);
+ }
+ 
++/**
++ * limit_nareas() - get the maximum number of areas for a given memory pool size
++ * @nareas:	Desired number of areas.
++ * @nslots:	Total number of slots in the memory pool.
++ *
++ * Limit the number of areas to the maximum possible number of areas in
++ * a memory pool of the given size.
++ *
++ * Return: Maximum possible number of areas.
++ */
++static unsigned int limit_nareas(unsigned int nareas, unsigned long nslots)
++{
++	if (nslots < nareas * IO_TLB_SEGSIZE)
++		nareas = nslots / IO_TLB_SEGSIZE;
++	return nareas;
++}
++
+ static int __init
+ setup_io_tlb_npages(char *str)
+ {
+@@ -297,6 +314,7 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
+ {
+ 	struct io_tlb_mem *mem = &io_tlb_default_mem;
+ 	unsigned long nslabs;
++	unsigned int nareas;
+ 	size_t alloc_size;
+ 	void *tlb;
+ 
+@@ -309,10 +327,12 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
+ 		swiotlb_adjust_nareas(num_possible_cpus());
+ 
+ 	nslabs = default_nslabs;
++	nareas = limit_nareas(default_nareas, nslabs);
+ 	while ((tlb = swiotlb_memblock_alloc(nslabs, flags, remap)) == NULL) {
+ 		if (nslabs <= IO_TLB_MIN_SLABS)
+ 			return;
+ 		nslabs = ALIGN(nslabs >> 1, IO_TLB_SEGSIZE);
++		nareas = limit_nareas(nareas, nslabs);
+ 	}
+ 
+ 	if (default_nslabs != nslabs) {
+@@ -358,6 +378,7 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
+ {
+ 	struct io_tlb_mem *mem = &io_tlb_default_mem;
+ 	unsigned long nslabs = ALIGN(size >> IO_TLB_SHIFT, IO_TLB_SEGSIZE);
++	unsigned int nareas;
+ 	unsigned char *vstart = NULL;
+ 	unsigned int order, area_order;
+ 	bool retried = false;
+@@ -403,8 +424,8 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
+ 			(PAGE_SIZE << order) >> 20);
+ 	}
+ 
+-	area_order = get_order(array_size(sizeof(*mem->areas),
+-		default_nareas));
++	nareas = limit_nareas(default_nareas, nslabs);
++	area_order = get_order(array_size(sizeof(*mem->areas), nareas));
+ 	mem->areas = (struct io_tlb_area *)
+ 		__get_free_pages(GFP_KERNEL | __GFP_ZERO, area_order);
+ 	if (!mem->areas)
+@@ -418,7 +439,7 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
+ 	set_memory_decrypted((unsigned long)vstart,
+ 			     (nslabs << IO_TLB_SHIFT) >> PAGE_SHIFT);
+ 	swiotlb_init_io_tlb_mem(mem, virt_to_phys(vstart), nslabs, 0, true,
+-				default_nareas);
++				nareas);
+ 
+ 	swiotlb_print_info();
+ 	return 0;
+-- 
+2.25.1
 
-| qemu-system-aarch64: -device 
-vfio-pci,host=0000:03:00.1,id=hostdev0,bus=pci.8,addr=0x0: vfio 
-0000:03:00.1: group 45 is not viable
-| Please ensure all devices within the iommu_group are bound to their 
-vfio bus driver.
-
-It looks like on device probe, with DEBUG_TEST_DRIVER_REMOVE,
-.dma_configure() will be executed *twice* via the
-really_probe()/re_probe path, and *no* .dma_cleanup() will be executed.
-The resulting dev::iommu_group::owner_cnt is 2, which will confuse the
-later iommu_group_dma_owner_claimed() call from VFIO on guest startup.
-
-I can locally workaround the problem by deleting the DEBUG option or
-performing a .dma_cleanup() during test_remove'ing, but it'd be great if
-you can take a look.
-
-Thanks,
-Zenghui
