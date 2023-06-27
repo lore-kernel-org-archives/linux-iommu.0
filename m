@@ -1,189 +1,207 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2054.outbound.protection.outlook.com [40.107.93.54])
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79067EA1
-	for <iommu@lists.linux.dev>; Tue, 27 Jun 2023 03:34:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CCB61396
+	for <iommu@lists.linux.dev>; Tue, 27 Jun 2023 05:50:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1687845024; x=1719381024;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=JzDWxQ27cvK+33XHKP6RuBX+jNRemQzvGCz5rUtlq+U=;
+  b=FvV8gcu6NCc0WhJpVa89D50pCYQBh7+inSILaOONtlKkKbQn8E21cFCi
+   34xY08DkyIJbP8UiiVufFLD2wJxasTUSWK2Ltq3JIePUv8AqyxRfKa3iq
+   IvyI44hTwoqHAP7O12bBiVzEh/f+cf2vBVf8T7NfRUJz3eJgHx0bSH+x6
+   xBmYqMJOOo+WmVf8dQJiwmLta3b1yUYGFAFKgIZBRI7fIqiltINk+GPxq
+   HJc2BQ/xySSM/MSuNND3kE9jJAae6jT7RAXyjDTREoljedScQlzgSan7r
+   mZ/pDzl9A08CrZylyaGGNMvsuD6eMDo4M56LRnHCwXA7lbJpS56MxkKO0
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10753"; a="341822537"
+X-IronPort-AV: E=Sophos;i="6.01,161,1684825200"; 
+   d="scan'208";a="341822537"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jun 2023 22:50:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10753"; a="806326740"
+X-IronPort-AV: E=Sophos;i="6.01,161,1684825200"; 
+   d="scan'208";a="806326740"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by FMSMGA003.fm.intel.com with ESMTP; 26 Jun 2023 22:50:18 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Mon, 26 Jun 2023 22:50:18 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Mon, 26 Jun 2023 22:50:18 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27 via Frontend Transport; Mon, 26 Jun 2023 22:50:18 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.109)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Mon, 26 Jun 2023 22:50:17 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BWHK06w4xl+bcdcAl2udWrmNBuS6YeILeef5/zlEH4mNJNVkg8WIJ8+ePxNELeeAPfc7dGGZ5tAxGYbU5kN2E21eM+C6xB0VMhkb6rXIE42tMnvwYuhKGPMFHhB6nQ9h/dyGCTUWpukAnjbcvCBsMYN8Mg0gFa81OvAR6MVIpZKz42cwtqlmSqRyjred7kg+lZwZ6TH+zaJGQHArZBUmeDkP6h2rwbvNjT3bGm1+n2klJh6kYMv9ylH45NBBW8srvT7AwKcx8/z0hXsjSqAjSspwB1QhqeHSOWpNngmSpYV5XBoaPNK2IupswcP/H/ympDQ021FmseEmd6pKXf7ZXg==
+ b=crDjvQ5Tl+2lBDiuTdtF6oDglALyFDCQYtxcHHg4x55VX5M5Tf2DmUjR6DWkEgxaLQ/itI3KcSOZZPtmu913gPXSxDXp/KjdIEQzcQxsvmXfe0fDhC8VIO3BUe0F6SAM7qPcWTRpRZ0aI6No29ZgBtUg2IF8ukhjEnC29ik9/K0nRSzera2aLU5lkWgsXeD1/aFTa7nM7HnGA1H4Y41fNXZ19KAcubY6dCnKTJifVio8zl3SJaC2jUvQk4UO6zkZLzSqDGCd4IA9xr0IjqtJKwz4NGCSLIVt2ZcWkbLWhqMsMFo9n/MOpm75L27p9S4GXJUV8vCbgi7evcMOP4gXuw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rckj7AZTnXzErUM5ZBZD6uslWB5pi2z0eiEjhTCgcaQ=;
- b=iBvZkGVb5DbIClB5qCEG/VtlpeNQfoa3sGbFfENHtnq+hnwz+MZWBx4XNpD8lcbn8KU2xu+UdkrtCQ0ZdFn/OlT948chsrBFC6D8pXY/Eqp28GYNAANqAmEVKcF8NjyRZc/VFZ/FOm46n2HVwMK2TIorVVpcKcbm2XUeuYGCIT1kfuv5YKfiNm+Bkbg5R8ZG3qOrxolqU4cEBkUUwTuqH87Ao0/t4p4oYfSurRAewRq1I+YOFWaVtGZRO2GovLGYb3sVRNRh8QqkGXxre5VgivXo+MBYY2KOcQBi12fMj7M5R3q3LiZA9x3A9R6/6MNIM/NKKHFyUGi/k5kCRYZ8lQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rckj7AZTnXzErUM5ZBZD6uslWB5pi2z0eiEjhTCgcaQ=;
- b=Y/z9jOlpJYav08fnEJFonft9MSUr6pRHb8rDQ5SYez8ykZz4MqSIfToeAipq4abCQbV1u4Ojab/NZN0P/t+UxvWYgvgjSKPRXpyLSWDsCTWJH8YCU0DNQ8P/2BphQB9bM+i9HFs4tsKOEALrL/rXfHlbSsheedxXMcUpUPCMH19gG/8ugYzI2TLZgVWvs1aT8SMsCeGH+0mH+LbbO5kjviMMX+6A/trgCHdgax1q2rj9RVzbVi73BTTaay8WSmb0vBa8LehDGNTOW6OdhL6jurnlDP5DK7WCPY93J7WAWhyky1uU7aueIOsFJ+YXrfzzbx531KO2LOONTHxplf0IiQ==
-Received: from BN0PR04CA0204.namprd04.prod.outlook.com (2603:10b6:408:e9::29)
- by CH0PR12MB5316.namprd12.prod.outlook.com (2603:10b6:610:d7::14) with
+ bh=gz1sHMIf0Aa0k3eCzSkPkAGPxrtq1Qpuy56MnGL2WM0=;
+ b=T67dfhACI/zH0SAVLhBAG2ZddqdU/ii9/P8jfvjhn4eUnYnNdq95pvexXm2HiwyGEAlOJheGwbQ1R0fgpD2v7S9qpWiXLJi8cITb09TOo/YjmSWtFVAxaRnjEbht5W9m60hEE9zdbesNyOsKmfi7EvlPg/rpuFIQZsNaSLuZKH9nnjSecqi1sJZy+RrP0KHbzx9iwsuiVXqeiQ451P/5PgFbtzvKkQPdNYj+AWaS5FRK620T6bl6qXJk/aXUhSV/EB0COV8nQRCKFIQdTy/mjh3tUJqjsD9HUXSsVUcggbaYCjXobZkbOIWYV4UOC80KPZFFyqvCqK/ZVKHbafbl4Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by PH8PR11MB6877.namprd11.prod.outlook.com (2603:10b6:510:22b::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.23; Tue, 27 Jun
- 2023 03:34:02 +0000
-Received: from BN8NAM11FT084.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:e9:cafe::53) by BN0PR04CA0204.outlook.office365.com
- (2603:10b6:408:e9::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.34 via Frontend
- Transport; Tue, 27 Jun 2023 03:34:01 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- BN8NAM11FT084.mail.protection.outlook.com (10.13.176.169) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6500.47 via Frontend Transport; Tue, 27 Jun 2023 03:34:01 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Mon, 26 Jun 2023
- 20:33:52 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.37; Mon, 26 Jun 2023 20:33:52 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.9) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server id 15.2.986.37 via Frontend
- Transport; Mon, 26 Jun 2023 20:33:51 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <robin.murphy@arm.com>, <will@kernel.org>
-CC: <jgg@nvidia.com>, <joro@8bytes.org>,
-	<shameerali.kolothum.thodi@huawei.com>, <yangyicong@hisilicon.com>,
-	<jean-philippe@linaro.org>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v1] iommu/arm-smmu-v3: Allow default substream bypass with a pasid support
-Date: Mon, 26 Jun 2023 20:33:26 -0700
-Message-ID: <20230627033326.5236-1-nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.41.0
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.21; Tue, 27 Jun
+ 2023 05:50:15 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::4f05:6b0b:dbc8:abbb]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::4f05:6b0b:dbc8:abbb%7]) with mapi id 15.20.6521.026; Tue, 27 Jun 2023
+ 05:50:15 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>, Robin Murphy
+	<robin.murphy@arm.com>, Will Deacon <will@kernel.org>
+CC: Lu Baolu <baolu.lu@linux.intel.com>, Dheeraj Kumar Srivastava
+	<dheerajkumar.srivastava@amd.com>, Heiko Stuebner <heiko@sntech.de>, "Rodel,
+ Jorg" <jroedel@suse.de>, Niklas Schnelle <schnelle@linux.ibm.com>, "Vasant
+ Hegde" <vasant.hegde@amd.com>
+Subject: RE: [PATCH rc] iommu: Fix crash during syfs iommu_groups/N/type
+Thread-Topic: [PATCH rc] iommu: Fix crash during syfs iommu_groups/N/type
+Thread-Index: AQHZqEDF+SRB6t6UNESzONxGbjpLA6+eJdoQ
+Date: Tue, 27 Jun 2023 05:50:14 +0000
+Message-ID: <BN9PR11MB527693B1ED4A994E2E8E68808C27A@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <0-v1-5bd8cc969d9e+1f1-iommu_set_def_fix_jgg@nvidia.com>
+In-Reply-To: <0-v1-5bd8cc969d9e+1f1-iommu_set_def_fix_jgg@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|PH8PR11MB6877:EE_
+x-ms-office365-filtering-correlation-id: b627cd76-5cd3-469c-9593-08db76d26117
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Z/Bt296KBT4QXaHRKg9kaggsUDBoAJ3cYwK1XmXzfn8g0S4VnKMOJ3UN9xK2TYO3dJHMaxuytaabaPsJFZWEoj2pWDW7eOEyNObzYo7Bu+aLnVFe1M2Si782MWgeYTWA/NGgXdlqUsW7hbHN1zS9JHbzqOt5UTAvP4nBSOdE3N26YGKwlpKxIiDTT+1z6sGGiLEjGmTzMprC//7BEuaLI5gimvH4UUSCwvmvtiW2AC/9vgQ2i/RmUbtNzmleNy/vbgGLyvp9JGpxR3Zz61JCC5CFhPlgQ8UCaz3iFYS6mAqWaKlW8RYGqzI/t02Afl2IZTIEPPR40g2P/KeE/INHJiEz5uww3l7VJODWtCMd0XnPT06bFwRccgzFv3iKlLirIUrPR6ypUiXv6WIW/1RdrIDwoN7Jiy4Kc6kHZo8wEqjPl70V4oyeG50pS2qCC5UyQ83aubeVgDDTh2Eu91jA7e0/mh5oAjrF6v10ReKXgqobAQoLbtmIg0YDD+bJFbBE0MFXN2SxMgvGS/s+vE/OwoG9JGvAbJ/8rvocadc5N9y+Upk8sP+ozXS4xhMY4qJPrEf74cE+WWMs4Bg5tiCwGHn1AhVxkeyr3MQy/3oDBGUY2LK5PpYL9Mv3/wRRBoYG
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(376002)(366004)(346002)(39860400002)(396003)(451199021)(83380400001)(52536014)(316002)(8936002)(7696005)(71200400001)(110136005)(8676002)(54906003)(4326008)(41300700001)(33656002)(55016003)(122000001)(86362001)(82960400001)(38100700002)(64756008)(9686003)(7416002)(5660300002)(66946007)(66556008)(66476007)(66446008)(2906002)(478600001)(76116006)(186003)(26005)(38070700005)(6506007);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?C+hAfZ8EPx5OWaTf1aNWE76ivPeXCkzYOnfZSo7jRMQ8hha4pxEIQk6NRwWs?=
+ =?us-ascii?Q?Gtif3PjfNmPc8ut/dpDs/6r60JEUT2xf9qqFOl76sLVFBflw6JHfYyA5N3g+?=
+ =?us-ascii?Q?57U8GBwwDLR0ABu2/0eH3Ts1domdBWaAaDSTa5CmtVi9uWGi6e49t3QIQm26?=
+ =?us-ascii?Q?xyBblk6bCyPEcWHsr70A7qObwUKu/tcLk0jSdyq2BVYrSRUbHfVZw9bpIZS3?=
+ =?us-ascii?Q?IMpSyW+lOXr20H0eR1Qlnj9E2z+wrJw4fnWDlnFrWC1EHQguIj6lnmCS2CZn?=
+ =?us-ascii?Q?646rcgvcVi3imfCCJD3zPNZU1+FkH1n2QRg+/AJBcCMej9Y1sSimF9HM3qPb?=
+ =?us-ascii?Q?GNzOcV0KONAVTLIi8h1PZ/wZiBGR77lmiBOa5CZer3+KdNXWp8xpo/a0IM2R?=
+ =?us-ascii?Q?FhBEDKU3RSE3x0tXu4LhQaIuuEwrsCc8kna0Gt5MFoWH2midNH/RI0LGWgKl?=
+ =?us-ascii?Q?ePtVTrTRI2NaaonRqQkVWOhtofvHjNg8fpDIpn7obndbzOHuLBgWFBqZ2l42?=
+ =?us-ascii?Q?6zRYlcfK46wQPDUY3HdMJCoeN8+HIfSSCXCX6DhGVcNSoaoz+o8pxmQNsTO4?=
+ =?us-ascii?Q?nyvnH1TCzwteoRgL2oqxuljxDrYy91w5N06LKWs7G5rVPF+c/U6vkImLXouA?=
+ =?us-ascii?Q?F2yOjCBt/QAkycNQinYZcRQb/Fzet49z+/I+sNQ2pUzDHbzEhiuRqpQhW0+p?=
+ =?us-ascii?Q?w+SppUNJkJtgnwEkZ9soLihHZOZafQka4rsMSCawDz4+PidCR25vrgTsqDSS?=
+ =?us-ascii?Q?ECj0Mg3m7/hxZfdadF5fTOvGy+tUkXHCkkIhM9q3ycY9GkYUM0Anp9M8Jfbt?=
+ =?us-ascii?Q?etnOSwT9Z0ndIXMjyVB2MrH9q4rlrzxl+a6IDbAf3bhCGwYFwGqhNoRKLH8h?=
+ =?us-ascii?Q?QKMB5ZgBIOxZWTwnx//2J8cHiWfJpitk45zZbiq0JtU4lb5tB1y6FfOl/xl7?=
+ =?us-ascii?Q?jZTssDIoUCZlNk+9ocy17HRTxGjnnE8EpnMqFE58X5L7OwqiBV72AKVelJX6?=
+ =?us-ascii?Q?lHOv+a7rsMNesh8FMX1BGMJAcHKJOUpGEqO2E3BGbkMl5aTMKIB26U00tKmk?=
+ =?us-ascii?Q?qS65DhJXkx0B/YxzY9dLCYqxbZg1kDxjrp7qFYljQE0FLPK8VX6M1tcjr32X?=
+ =?us-ascii?Q?SbiR4bym7FhE0AXZMZ3WxevLBFSM21YH4E8ohR26o+WOv8SZvYTd/LoSjMTM?=
+ =?us-ascii?Q?W8A5QZFa2p32aT82av3ltp7kQDf1RYtM+6ILlJiH/3Cos4xUUXtmraiwLPS5?=
+ =?us-ascii?Q?P7VOBlzUq15FSK9ivap1aHc1/jo0o+gVAq5D++rcox0mbtqP3XCM9Zi4T3Ix?=
+ =?us-ascii?Q?G3SxQCvsGMMpmwDBRMCEu9asujth6wAF+KUoV+ImvvekWiwVPpBTuVa5MhRO?=
+ =?us-ascii?Q?U99OQ/h4rgxEc/rjfsmWgHx6UwudsKeQY4I0M8GOe0MN9Vtz0cJNcCAUfatp?=
+ =?us-ascii?Q?cd0az1LvidlIO8dFi1/6GTgcZNk2u2phJIrMfOl4W8RJBBPZ4ksSd8/D4GlS?=
+ =?us-ascii?Q?A++8UOOXrd7OKl/BUwztS7QR5YCypwfjG/svfgJZCa2kMfSUpkoVbFhNgDFM?=
+ =?us-ascii?Q?KH84aU8Wz3ItUNYwxeN20TvM1OofO0amBpEdoF/n?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT084:EE_|CH0PR12MB5316:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1a1f21d2-3a62-4297-b12a-08db76bf598d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	t1iCHhN5/tEHfZoXTUsKj46I2/LGl0TtG3AOgFNA/RTIJ/+B3WzsLy1XIwlKDFvE1ZMwL1uhx632YvomCrgxMnm89BGVd/FJxM9yRrRJURY9U97wPApjsxy8ko14boHwT5rqOMNWWpNp9ssgmhStUeMzul6e1nxtwhayGL86vvhQyke2b0NQEPfcbKj2qdcRc+hbxnaMKoosu+ELXf7AVU5ZJUaz1dtN7G1RFN0Qc/G0SxJXYueP9F6XOl/xaqYLwRvChzug+M2hCg+OThU5WNrkfUZMEZxKG9bTc9ZlTnSjhFt11PWaGP9RdXEIIoA8zQ4wSwvweckWCSahNeKw6UI+R2T+j3kugpjX2pNiqlV23AwnJ5kA1UvCc1Df6kTGjtG6T2NOEaG51Mji8NzjuH0puZjxPQILuNrvWxcIzO+koxTQ3oTUxmbcpzNc3sSaGJKNfJgCr2v7GEDBx9iSgtiWP++BdAIHvjcEEAWgUXNaw2h/hRoCLpBlwUqSrFnHG8Ax7c4P5zwUx6GA4ySyesz5F8GYkzbWfA76MWWenyAMeFCP1XlrWrjSSd/vAfULrqe/RUvCd9CPOmocM6D29hBr0Xqd2J3Rkd1/aa6hZpd3c8D5iSnb/+i2EnmRiagTn0Vv+lWmLph2grlcbyttZVZi9wEu5o9kW0fF0LT5AKrqC2AWCw9+BTJGA8IM0vsVHRuI39o4kkCPk+5ewN9l6BA7asY6GPUhvtKuHJ7Mo9Mol/XDuTLO1lgq3TNgeHUqvD4glDc6fraoW0zoVwqDGZ71t8YSCVzxyLO/8KHvjUs=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(39860400002)(346002)(396003)(136003)(451199021)(40470700004)(36840700001)(46966006)(1076003)(36860700001)(82310400005)(47076005)(7696005)(6666004)(54906003)(110136005)(83380400001)(336012)(426003)(26005)(2616005)(2906002)(478600001)(186003)(5660300002)(356005)(40460700003)(36756003)(70206006)(4326008)(316002)(82740400003)(40480700001)(70586007)(7636003)(86362001)(41300700001)(8936002)(8676002)(473944003)(414714003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jun 2023 03:34:01.4315
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b627cd76-5cd3-469c-9593-08db76d26117
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jun 2023 05:50:14.7155
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1a1f21d2-3a62-4297-b12a-08db76bf598d
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT084.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5316
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: PgnoGp5YfC/chudxjPmNau7gtkhfuk7os4yEjSX0YDhMEXJZCshnvMBRx7H+esILbF/T43ifkqa6fjYfFyoKRw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB6877
+X-OriginatorOrg: intel.com
 
-When an iommu_domain is set to IOMMU_DOMAIN_IDENTITY, the driver would
-skip the allocation of a CD table and set the CONFIG field of the STE
-to STRTAB_STE_0_CFG_BYPASS. This works well for devices that only have
-one substream, i.e. PASID disabled.
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Monday, June 26, 2023 11:13 PM
+>=20
+> The err_restore_domain flow was accidently inserted into the success path
+> in commit 1000dccd5d13 ("iommu: Allow IOMMU_RESV_DIRECT to work on
+> ARM"). It should only happen if iommu_create_device_direct_mappings()
+> fails. This caused the domains the be wrongly changed and freed whenever
+> the sysfs is used, resulting in an oops:
+>=20
+>   BUG: kernel NULL pointer dereference, address: 0000000000000000
+>   #PF: supervisor read access in kernel mode
+>   #PF: error_code(0x0000) - not-present page
+>   PGD 0 P4D 0
+>   Oops: 0000 [#1] PREEMPT SMP NOPTI
+>   CPU: 1 PID: 3417 Comm: avocado Not tainted 6.4.0-rc4-next-20230602 #3
+>   Hardware name: Dell Inc. PowerEdge R6515/07PXPY, BIOS 2.3.6 07/06/2021
+>   RIP: 0010:__iommu_attach_device+0xc/0xa0
+>   Code: c0 c3 cc cc cc cc 48 89 f0 c3 cc cc cc cc 90 90 90 90 90 90 90 90=
+ 90 90 90
+> 90 90 90 90 90 0f 1f 44 00 00 41 54 55 48 8b 47 08 <48> 8b 00 48 85 c0 74=
+ 74
+> 48 89 f5 e8 64 12 49 00 41 89 c4 85 c0 74
+>   RSP: 0018:ffffabae0220bd48 EFLAGS: 00010246
+>   RAX: 0000000000000000 RBX: ffff9ac04f70e410 RCX: 0000000000000001
+>   RDX: ffff9ac044db20c0 RSI: ffff9ac044fa50d0 RDI: ffff9ac04f70e410
+>   RBP: ffff9ac044fa50d0 R08: 1000000100209001 R09: 00000000000002dc
+>   R10: 0000000000000000 R11: 0000000000000000 R12: ffff9ac043d54700
+>   R13: ffff9ac043d54700 R14: 0000000000000001 R15: 0000000000000001
+>   FS:  00007f02e30ae000(0000) GS:ffff9afeb2440000(0000)
+> knlGS:0000000000000000
+>   CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>   CR2: 0000000000000000 CR3: 000000012afca006 CR4: 0000000000770ee0
+>   PKRU: 55555554
+>   Call Trace:
+>    <TASK>
+>    ? __die+0x24/0x70
+>    ? page_fault_oops+0x82/0x150
+>    ? __iommu_queue_command_sync+0x80/0xc0
+>    ? exc_page_fault+0x69/0x150
+>    ? asm_exc_page_fault+0x26/0x30
+>    ? __iommu_attach_device+0xc/0xa0
+>    ? __iommu_attach_device+0x1c/0xa0
+>    __iommu_device_set_domain+0x42/0x80
+>    __iommu_group_set_domain_internal+0x5d/0x160
+>    iommu_setup_default_domain+0x318/0x400
+>    iommu_group_store_type+0xb1/0x200
+>    kernfs_fop_write_iter+0x12f/0x1c0
+>    vfs_write+0x2a2/0x3b0
+>    ksys_write+0x63/0xe0
+>    do_syscall_64+0x3f/0x90
+>    entry_SYSCALL_64_after_hwframe+0x6e/0xd8
+>   RIP: 0033:0x7f02e2f14a6f
+>=20
+> Reorganize the error flow so that the success branch and error branches
+> are clearer.
+>=20
+> Cc: <stable@vger.kernel.org>
+> Fixes: 1000dccd5d13 ("iommu: Allow IOMMU_RESV_DIRECT to work on
+> ARM")
+> Reported-by: Dheeraj Kumar Srivastava
+> <dheerajkumar.srivastava@amd.com>
+> Tested-by: Vasant Hegde <vasant.hegde@amd.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 
-However, there could be a use case, for a pasid capable device, that
-allows bypassing the translation at the default substream while still
-enabling the pasid feature, which means the driver should not skip the
-allocation of a CD table nor simply bypass the CONFIG field. Instead,
-the S1DSS field should be set to STRTAB_STE_1_S1DSS_BYPASS and the
-SHCFG field should be set to STRTAB_STE_1_SHCFG_INCOMING.
-
-Add s1dss and shcfg in struct arm_smmu_s1_cfg, to allow configurations
-in the finalise() to support that use case. Then, set them accordingly
-depending on the iommu_domain->type and the master->ssid_bits.
-
-Also, add STRTAB_STE_1_SHCFG_NONSHAREABLE of the default configuration
-to distinguish from STRTAB_STE_1_SHCFG_INCOMING of the bypass one.
-
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 18 +++++++++++++++---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  3 +++
- 2 files changed, 18 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 9b0dc3505601..8dc7934a0175 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1350,11 +1350,12 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
- 
- 		BUG_ON(ste_live);
- 		dst[1] = cpu_to_le64(
--			 FIELD_PREP(STRTAB_STE_1_S1DSS, STRTAB_STE_1_S1DSS_SSID0) |
-+			 FIELD_PREP(STRTAB_STE_1_S1DSS, s1_cfg->s1dss) |
- 			 FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_WBRA) |
- 			 FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_WBRA) |
- 			 FIELD_PREP(STRTAB_STE_1_S1CSH, ARM_SMMU_SH_ISH) |
--			 FIELD_PREP(STRTAB_STE_1_STRW, strw));
-+			 FIELD_PREP(STRTAB_STE_1_STRW, strw) |
-+			 FIELD_PREP(STRTAB_STE_1_SHCFG, s1_cfg->shcfg));
- 
- 		if (smmu->features & ARM_SMMU_FEAT_STALLS &&
- 		    !master->stall_enabled)
-@@ -2119,6 +2120,13 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
- 		goto out_unlock;
- 
- 	cfg->s1cdmax = master->ssid_bits;
-+	if (smmu_domain->domain.type == IOMMU_DOMAIN_IDENTITY) {
-+		cfg->s1dss = STRTAB_STE_1_S1DSS_BYPASS;
-+		cfg->shcfg = STRTAB_STE_1_SHCFG_INCOMING;
-+	} else {
-+		cfg->s1dss = STRTAB_STE_1_S1DSS_SSID0;
-+		cfg->shcfg = STRTAB_STE_1_SHCFG_NONSHAREABLE;
-+	}
- 
- 	smmu_domain->stall_enabled = master->stall_enabled;
- 
-@@ -2198,7 +2206,11 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain,
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 
--	if (domain->type == IOMMU_DOMAIN_IDENTITY) {
-+	/*
-+	 * A master with a pasid capability might need a CD table, so only set
-+	 * ARM_SMMU_DOMAIN_BYPASS if IOMMU_DOMAIN_IDENTITY and non-pasid master
-+	 */
-+	if (domain->type == IOMMU_DOMAIN_IDENTITY && !master->ssid_bits) {
- 		smmu_domain->stage = ARM_SMMU_DOMAIN_BYPASS;
- 		return 0;
- 	}
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index dcab85698a4e..8052d02770d0 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -244,6 +244,7 @@
- #define STRTAB_STE_1_STRW_EL2		2UL
- 
- #define STRTAB_STE_1_SHCFG		GENMASK_ULL(45, 44)
-+#define STRTAB_STE_1_SHCFG_NONSHAREABLE	0UL
- #define STRTAB_STE_1_SHCFG_INCOMING	1UL
- 
- #define STRTAB_STE_2_S2VMID		GENMASK_ULL(15, 0)
-@@ -601,6 +602,8 @@ struct arm_smmu_s1_cfg {
- 	struct arm_smmu_ctx_desc_cfg	cdcfg;
- 	struct arm_smmu_ctx_desc	cd;
- 	u8				s1fmt;
-+	u8				s1dss;
-+	u8				shcfg;
- 	u8				s1cdmax;
- };
- 
--- 
-2.41.0
-
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
