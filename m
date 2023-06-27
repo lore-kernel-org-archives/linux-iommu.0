@@ -1,105 +1,121 @@
-Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C04061308A
-	for <iommu@lists.linux.dev>; Tue, 27 Jun 2023 17:55:00 +0000 (UTC)
-Received: by mail-oo1-f45.google.com with SMTP id 006d021491bc7-5634fbf0cf4so1642675eaf.3
-        for <iommu@lists.linux.dev>; Tue, 27 Jun 2023 10:55:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=squareup.com; s=google; t=1687888499; x=1690480499;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=KMDH1mlxwV2sLVWQuxFIR054U5xIxrFoM4b9Bswiao0=;
-        b=bhv2tUNU2iTGPX6FqlVo3PZZoWxpv2x8hi1srmfXdLDB+wA77R3xwpagLS02aKWGTu
-         nH44RpBB5uqk9mlUsTdQ3+BgRf0Wpx1uunj1YdPgGmlFkClfdGVqb7Zh0tG4SvCx9lvG
-         pavLbGTcnIF10qIrSKFpRaJU9moYBw1u1/GSc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687888499; x=1690480499;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=KMDH1mlxwV2sLVWQuxFIR054U5xIxrFoM4b9Bswiao0=;
-        b=R8vdlTRGH32T4yFsmRo2PxaKUcBF3T6c91sGHb7SMAfCheQLJGqNEXNDWLkR0KAL4E
-         8RMJo/0t1w65w06J6TMcJ8qUsbXj3IfqYikivQPORVGEfVb6ODNgb1DYkXNTwEgLpA+a
-         uRcavI/HTbzta2Nhcp54pxnyBfXyBnbdY43u64DHSDfSmpNOae2dj74e90bLWNijHqX6
-         KfyIZJAgPCZK0SeuH0MA0HKilLWRqrtzSJifjsyvtBM7N4R7tAApKdu+Pn+2uYvndryu
-         +WCP9w0s+YaxsEzTzh1cq9G4j8oSQ3mE/LlNXQO3TZD900OIvTL/uV/o4L2R3aGLLHAy
-         TYqA==
-X-Gm-Message-State: AC+VfDyeScorgyso+/Dytq8l3A7qQ8IARyq6iW6c3xRXRhWqKa4FY2EM
-	kNewryMb0PpJquxHO/GfwbAS3g==
-X-Google-Smtp-Source: ACHHUZ5128JJUpofvc84U9QEvguT6ylxK0NPBUtGocO3qCpVL4swAAl6Xq4iRqzHQOelQG16lCO4FA==
-X-Received: by 2002:a05:6870:c812:b0:1ad:1ce0:c348 with SMTP id ee18-20020a056870c81200b001ad1ce0c348mr15263035oab.11.1687888499657;
-        Tue, 27 Jun 2023 10:54:59 -0700 (PDT)
-Received: from [10.96.32.61] (137-025-033-021.res.spectrum.com. [137.25.33.21])
-        by smtp.gmail.com with ESMTPSA id d88-20020a17090a6f6100b00253508d9145sm6879840pjk.46.2023.06.27.10.54.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 27 Jun 2023 10:54:59 -0700 (PDT)
-Message-ID: <30944ea8-d4aa-d0fd-7eaa-64b59e32eb6b@squareup.com>
-Date: Tue, 27 Jun 2023 10:54:55 -0700
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 268E6749F
+	for <iommu@lists.linux.dev>; Tue, 27 Jun 2023 23:30:04 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D18672F4;
+	Tue, 27 Jun 2023 16:30:45 -0700 (PDT)
+Received: from [10.57.35.190] (unknown [10.57.35.190])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CD7EE3F64C;
+	Tue, 27 Jun 2023 16:29:59 -0700 (PDT)
+Message-ID: <1b0c9677-4e2a-6767-f8f2-23081e6af3e0@arm.com>
+Date: Wed, 28 Jun 2023 00:29:52 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.8.0
-Subject: Re: [PATCH 02/11] arm64: dts: qcom: msm8939: Drop
- "qcom,idle-state-spc" compatible
-Content-Language: en-US
-To: Konrad Dybcio <konrad.dybcio@linaro.org>,
- cros-qcom-dts-watchers@chromium.org, Andy Gross <agross@kernel.org>,
- Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
- James Willcox <jwillcox@squareup.com>, Joseph Gates <jgates@squareup.com>,
- Stephan Gerhold <stephan@gerhold.net>, Zac Crosby <zac@squareup.com>,
- Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
- Banajit Goswami <bgoswami@quicinc.com>, Liam Girdwood <lgirdwood@gmail.com>,
- Mark Brown <broonie@kernel.org>, Lee Jones <lee@kernel.org>,
- Stephen Boyd <sboyd@kernel.org>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Xu Yang
- <xu.yang_2@nxp.com>, Peng Fan <peng.fan@nxp.com>,
- Christian Marangi <ansuelsmth@gmail.com>,
- Wesley Cheng <quic_wcheng@quicinc.com>, Jun Nie <jun.nie@linaro.org>,
- Max Chen <mchen@squareup.com>, Shawn Guo <shawn.guo@linaro.org>,
- Vivek Gautam <vivek.gautam@codeaurora.org>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>,
- linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, Vincent Knecht <vincent.knecht@mailoo.org>,
- Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
- Konrad Dybcio <konradybcio@kernel.org>, alsa-devel@alsa-project.org,
- iommu@lists.linux.dev, linux-usb@vger.kernel.org,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Leo Yan <leo.yan@linaro.org>, Rob Herring <robh@kernel.org>,
- Andy Gross <andy.gross@linaro.org>
-References: <20230627-topic-more_bindings-v1-0-6b4b6cd081e5@linaro.org>
- <20230627-topic-more_bindings-v1-2-6b4b6cd081e5@linaro.org>
-From: Benjamin Li <benl@squareup.com>
-In-Reply-To: <20230627-topic-more_bindings-v1-2-6b4b6cd081e5@linaro.org>
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH v1] iommu/arm-smmu-v3: Allow default substream bypass with
+ a pasid support
+Content-Language: en-GB
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: will@kernel.org, jgg@nvidia.com, joro@8bytes.org,
+ shameerali.kolothum.thodi@huawei.com, yangyicong@hisilicon.com,
+ jean-philippe@linaro.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20230627033326.5236-1-nicolinc@nvidia.com>
+ <826cbb86-ac7d-c40b-f7e3-51681cda50b8@arm.com>
+ <ZJsXLFtH8WkRK41w@Asurada-Nvidia>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <ZJsXLFtH8WkRK41w@Asurada-Nvidia>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 6/27/23 9:24 AM, Konrad Dybcio wrote:
-> As of today, the only cool and legal way to get ARM64 SMP going is
-> via PSCI (or spin tables). Sadly, not all chip and device vendors were
-> considerate of this in the early days of arm64. Qualcomm, for example
-> reused their tried-and-true spin-up method from MSM8974 and their Krait/
-> arm32 Cortex designs.
+On 2023-06-27 18:06, Nicolin Chen wrote:
+> Hi Robin,
 > 
-> MSM8916 supports SMP with its arm32 dt overlay, as probably could 8939.
-> But the arm64 DT should not define non-PSCI SMP or CPUidle stuff.
+> On Tue, Jun 27, 2023 at 10:00:18AM +0100, Robin Murphy wrote:
+>> On 2023-06-27 04:33, Nicolin Chen wrote:
+>>> When an iommu_domain is set to IOMMU_DOMAIN_IDENTITY, the driver would
+>>> skip the allocation of a CD table and set the CONFIG field of the STE
+>>> to STRTAB_STE_0_CFG_BYPASS. This works well for devices that only have
+>>> one substream, i.e. PASID disabled.
+>>>
+>>> However, there could be a use case, for a pasid capable device, that
+>>> allows bypassing the translation at the default substream while still
+>>> enabling the pasid feature, which means the driver should not skip the
+>>> allocation of a CD table nor simply bypass the CONFIG field. Instead,
+>>> the S1DSS field should be set to STRTAB_STE_1_S1DSS_BYPASS and the
+>>> SHCFG field should be set to STRTAB_STE_1_SHCFG_INCOMING.
+>>>
+>>> Add s1dss and shcfg in struct arm_smmu_s1_cfg, to allow configurations
+>>> in the finalise() to support that use case. Then, set them accordingly
+>>> depending on the iommu_domain->type and the master->ssid_bits.
+>>>
+>>> Also, add STRTAB_STE_1_SHCFG_NONSHAREABLE of the default configuration
+>>> to distinguish from STRTAB_STE_1_SHCFG_INCOMING of the bypass one.
+>>
+>> Why? The "default configuration" is that the S1 shareability attribute
+>> is determined by the S1 translation itself, so the incoming value is
+>> irrelevant.
 > 
-> Drop the qcom,idle-state-spc compatible (associated with Qualcomm-specific
-> CPUIdle) to make the dt checker happy:
+> That was for a consistency since the driver set the SHCFG field
+> to 0x0 (STRTAB_STE_1_SHCFG_NONSHAREABLE). I was not quite sure,
+> in a long run, if leaving an uncleared s1_cfg->shcfg potentially
+> can result in an unexpected behavior if it's passed in the STE.
+> Yet, we could be seemingly sure that the !IOMMU_DOMAIN_IDENTITY
+> means the S1 translation must be enabled and so the SHCFG would
+> be irrelevant?
 > 
-> apq8039-t2.dtb: idle-states: cpu-sleep-0:compatible:
-> ['qcom,idle-state-spc', 'arm,idle-state'] is too long
+> If so, I make make it:
 > 
-> Fixes: 61550c6c156c ("arm64: dts: qcom: Add msm8939 SoC")
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> +	if (smmu_domain->domain.type == IOMMU_DOMAIN_IDENTITY) {
+> +		cfg->s1dss = STRTAB_STE_1_S1DSS_BYPASS;
+> +		cfg->shcfg = STRTAB_STE_1_SHCFG_INCOMING;
+> +	} else {
+> +		cfg->s1dss = STRTAB_STE_1_S1DSS_SSID0;
+> +	}
 
-Reviewed-by: Benjamin Li <benl@squareup.com>
+What I mean is we don't need a cfg->shcfg field at all - without loss of 
+generality it can simply be hard-coded to 1 when S1 is active, same as 
+for stream bypass.
+
+The only case where explicitly setting STE.SHCFG=0 makes some sense is 
+for a stage-2-only domain if a device's incoming attribute is stronger 
+than it needs to be, but even then there are multiple levels of 
+IMP-DEFness around whether SHCFG actually does anything anyway.
+
+>>> @@ -2198,7 +2206,11 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain,
+>>>        struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>>>        struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>>
+>>> -     if (domain->type == IOMMU_DOMAIN_IDENTITY) {
+>>> +     /*
+>>> +      * A master with a pasid capability might need a CD table, so only set
+>>> +      * ARM_SMMU_DOMAIN_BYPASS if IOMMU_DOMAIN_IDENTITY and non-pasid master
+>>> +      */
+>>> +     if (domain->type == IOMMU_DOMAIN_IDENTITY && !master->ssid_bits) {
+>>>                smmu_domain->stage = ARM_SMMU_DOMAIN_BYPASS;
+>>>                return 0;
+>>>        }
+>>
+>> This means we'll now go on to allocate a pagetable for an identity
+>> domain, which doesn't seem ideal :/
+> 
+> Do you suggest to bypass alloc_io_pgtable_ops()? That would zero
+> out the TCR fields in the CD. Not sure if it'd work seamlessly,
+> but I can give it a try.
+
+I think if there's a good reason to support this then it's worth 
+supporting properly, i.e. refactor a bit harder to separate the CD table 
+parts which are common to both S1DSS bypass and S1 translation, from the 
+CD/pagetable parts that are only relevant for translation. S1DSS bypass 
+remains the same as Stream bypass in the sense that there is no 
+structure corresponding to the identity domain itself, so not only does 
+it not make sense to have a pagetable, there's also no valid place to 
+put one anyway - touching the CD belonging to SSID 0 is strictly wrong.
+
+Thanks,
+Robin.
