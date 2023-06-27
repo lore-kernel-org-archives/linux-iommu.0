@@ -1,122 +1,137 @@
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF7F415ACE
-	for <iommu@lists.linux.dev>; Tue, 27 Jun 2023 08:22:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1687854162; x=1719390162;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=dVqZCQ9tRTsVoV0IWARrFflzjFDg8LSURCopWadXZ/g=;
-  b=IWcxqrTLHQY8XZ2kUNNlcSY/noQoJp9sPZnedVEquxnNqr/4RM6vzT2y
-   XfwLlQjhLw9rrS7kmaVE+DJ/nf56nOKw6P9fXo5BsQ/9nYPFdVFtPWq+d
-   MC5I2v1mefBrxrLFNdcZoNwIE2Ztlzc/zYVcKxcDWXPq3Bbl5MU7NbJIi
-   5ICg+9iyNnSnccsFrsTUoDLkv0F0Gaddwp+OvKdkWGiDDbqn9e4cdxsed
-   Il2m/+XhSy1Oyzr1VPYzbIYFnDWCSLn6V22jmMyzCycqhY09GKb8RHVge
-   QyjFz79S6PdHTLgbbGpqmIPH52m0En/uVmleUH1oXAtYTQAKUZpcsfyqu
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10753"; a="361552085"
-X-IronPort-AV: E=Sophos;i="6.01,161,1684825200"; 
-   d="scan'208";a="361552085"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2023 01:22:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10753"; a="781757134"
-X-IronPort-AV: E=Sophos;i="6.01,161,1684825200"; 
-   d="scan'208";a="781757134"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.215.29]) ([10.254.215.29])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2023 01:22:38 -0700
-Message-ID: <1c8f6bf4-f0ad-2888-ada0-056c12647c41@linux.intel.com>
-Date: Tue, 27 Jun 2023 16:21:56 +0800
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CB871EC2
+	for <iommu@lists.linux.dev>; Tue, 27 Jun 2023 09:00:32 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 034F72F4;
+	Tue, 27 Jun 2023 02:01:10 -0700 (PDT)
+Received: from [10.57.37.32] (unknown [10.57.37.32])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 420293F73F;
+	Tue, 27 Jun 2023 02:00:24 -0700 (PDT)
+Message-ID: <826cbb86-ac7d-c40b-f7e3-51681cda50b8@arm.com>
+Date: Tue, 27 Jun 2023 10:00:18 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
  Thunderbird/102.12.0
-Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH 1/2] iommu: Prevent RESV_DIRECT devices from blocking
- domains
-Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Jingqi"
- <jingqi.liu@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Nicolin Chen <nicolinc@nvidia.com>
-References: <20230607035145.343698-1-baolu.lu@linux.intel.com>
- <20230607035145.343698-2-baolu.lu@linux.intel.com>
- <8cc1d69e-f86d-fd04-7737-914d967dc0f5@intel.com>
- <69f50ced-e806-717a-0c74-a4cfa58600fa@linux.intel.com>
- <BN9PR11MB52768ACA721898D5C43CBE9B8C27A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <f1b2e7fa-7be3-9e4b-1eba-5dba01b88c19@linux.intel.com>
- <BN9PR11MB527613D6C657A4AE0DE169758C27A@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB527613D6C657A4AE0DE169758C27A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Subject: Re: [PATCH v1] iommu/arm-smmu-v3: Allow default substream bypass with
+ a pasid support
+Content-Language: en-GB
+To: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org
+Cc: jgg@nvidia.com, joro@8bytes.org, shameerali.kolothum.thodi@huawei.com,
+ yangyicong@hisilicon.com, jean-philippe@linaro.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20230627033326.5236-1-nicolinc@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20230627033326.5236-1-nicolinc@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 2023/6/27 16:15, Tian, Kevin wrote:
->> From: Baolu Lu<baolu.lu@linux.intel.com>
->> Sent: Tuesday, June 27, 2023 4:01 PM
->>
->> On 2023/6/27 15:54, Tian, Kevin wrote:
->>>> From: Baolu Lu<baolu.lu@linux.intel.com>
->>>> Sent: Tuesday, June 13, 2023 11:15 AM
->>>>
->>>> On 6/12/23 4:28 PM, Liu, Jingqi wrote:
->>>>> On 6/7/2023 11:51 AM, Lu Baolu wrote:
->>>>>> -
->>>>>> -    BUG_ON(!domain->pgsize_bitmap);
->>>>>> -
->>>>>> -    pg_size = 1UL << __ffs(domain->pgsize_bitmap);
->>>>>> +    pg_size = domain->pgsize_bitmap ? 1UL <<
->>>>>> __ffs(domain->pgsize_bitmap) : 0;
->>>>> Would it be better to add the following check here?
->>>>>        if (WARN_ON(!pg_size))
->>>>>                return -EINVAL;
->>>>>
->>>>> Instead of checking latter in the loop as follows.
->>>>>        if (WARN_ON_ONCE(!pg_size)) {
->>>>>                ret = -EINVAL;
->>>>>                goto out;
->>>>>        }
->>>> I am afraid no. Only the paging domains need a valid pg_size. That's the
->>>> reason why I put it after the iommu_is_dma_domain() check. The
->> previous
->>>> code has the same behavior too.
->>>>
->>> You could also add the dma domain check here. pg_size is static
->>> then it makes more sense to verify it once instead of in a loop.
->> Agreed. Does below additional change make sense?
->>
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index e59de7852067..3be88b5f36bb 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -962,6 +962,9 @@ static int
->> iommu_create_device_direct_mappings(struct iommu_domain *domain,
->>           pg_size = domain->pgsize_bitmap ? 1UL <<
->> __ffs(domain->pgsize_bitmap) : 0;
->>           INIT_LIST_HEAD(&mappings);
->>
->> +       if (WARN_ON_ONCE((domain->type & __IOMMU_DOMAIN_PAGING)
->> &&
->> !pg_size))
->> +               return -EINVAL;
-> what's the reason of not using iommu_is_dma_domain()? this is called
-> in the probe path only for the default domain. Otherwise if you change
-> like this then you also want to change the check in the loop later to be
-> consistent.
+On 2023-06-27 04:33, Nicolin Chen wrote:
+> When an iommu_domain is set to IOMMU_DOMAIN_IDENTITY, the driver would
+> skip the allocation of a CD table and set the CONFIG field of the STE
+> to STRTAB_STE_0_CFG_BYPASS. This works well for devices that only have
+> one substream, i.e. PASID disabled.
 > 
+> However, there could be a use case, for a pasid capable device, that
+> allows bypassing the translation at the default substream while still
+> enabling the pasid feature, which means the driver should not skip the
+> allocation of a CD table nor simply bypass the CONFIG field. Instead,
+> the S1DSS field should be set to STRTAB_STE_1_S1DSS_BYPASS and the
+> SHCFG field should be set to STRTAB_STE_1_SHCFG_INCOMING.
+> 
+> Add s1dss and shcfg in struct arm_smmu_s1_cfg, to allow configurations
+> in the finalise() to support that use case. Then, set them accordingly
+> depending on the iommu_domain->type and the master->ssid_bits.
+> 
+> Also, add STRTAB_STE_1_SHCFG_NONSHAREABLE of the default configuration
+> to distinguish from STRTAB_STE_1_SHCFG_INCOMING of the bypass one.
 
-Yes. iommu_is_dma_domain() is better.
+Why? The "default configuration" is that the S1 shareability attribute 
+is determined by the S1 translation itself, so the incoming value is 
+irrelevant.
 
-Best regards,
-baolu
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 18 +++++++++++++++---
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  3 +++
+>   2 files changed, 18 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 9b0dc3505601..8dc7934a0175 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -1350,11 +1350,12 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+>   
+>   		BUG_ON(ste_live);
+>   		dst[1] = cpu_to_le64(
+> -			 FIELD_PREP(STRTAB_STE_1_S1DSS, STRTAB_STE_1_S1DSS_SSID0) |
+> +			 FIELD_PREP(STRTAB_STE_1_S1DSS, s1_cfg->s1dss) |
+>   			 FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_WBRA) |
+>   			 FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_WBRA) |
+>   			 FIELD_PREP(STRTAB_STE_1_S1CSH, ARM_SMMU_SH_ISH) |
+> -			 FIELD_PREP(STRTAB_STE_1_STRW, strw));
+> +			 FIELD_PREP(STRTAB_STE_1_STRW, strw) |
+> +			 FIELD_PREP(STRTAB_STE_1_SHCFG, s1_cfg->shcfg));
+>   
+>   		if (smmu->features & ARM_SMMU_FEAT_STALLS &&
+>   		    !master->stall_enabled)
+> @@ -2119,6 +2120,13 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
+>   		goto out_unlock;
+>   
+>   	cfg->s1cdmax = master->ssid_bits;
+> +	if (smmu_domain->domain.type == IOMMU_DOMAIN_IDENTITY) {
+> +		cfg->s1dss = STRTAB_STE_1_S1DSS_BYPASS;
+> +		cfg->shcfg = STRTAB_STE_1_SHCFG_INCOMING;
+> +	} else {
+> +		cfg->s1dss = STRTAB_STE_1_S1DSS_SSID0;
+> +		cfg->shcfg = STRTAB_STE_1_SHCFG_NONSHAREABLE;
+> +	}
+>   
+>   	smmu_domain->stall_enabled = master->stall_enabled;
+>   
+> @@ -2198,7 +2206,11 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain,
+>   	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>   	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>   
+> -	if (domain->type == IOMMU_DOMAIN_IDENTITY) {
+> +	/*
+> +	 * A master with a pasid capability might need a CD table, so only set
+> +	 * ARM_SMMU_DOMAIN_BYPASS if IOMMU_DOMAIN_IDENTITY and non-pasid master
+> +	 */
+> +	if (domain->type == IOMMU_DOMAIN_IDENTITY && !master->ssid_bits) {
+>   		smmu_domain->stage = ARM_SMMU_DOMAIN_BYPASS;
+>   		return 0;
+>   	}
+
+This means we'll now go on to allocate a pagetable for an identity 
+domain, which doesn't seem ideal :/
+
+Thanks,
+Robin.
+
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index dcab85698a4e..8052d02770d0 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -244,6 +244,7 @@
+>   #define STRTAB_STE_1_STRW_EL2		2UL
+>   
+>   #define STRTAB_STE_1_SHCFG		GENMASK_ULL(45, 44)
+> +#define STRTAB_STE_1_SHCFG_NONSHAREABLE	0UL
+>   #define STRTAB_STE_1_SHCFG_INCOMING	1UL
+>   
+>   #define STRTAB_STE_2_S2VMID		GENMASK_ULL(15, 0)
+> @@ -601,6 +602,8 @@ struct arm_smmu_s1_cfg {
+>   	struct arm_smmu_ctx_desc_cfg	cdcfg;
+>   	struct arm_smmu_ctx_desc	cd;
+>   	u8				s1fmt;
+> +	u8				s1dss;
+> +	u8				shcfg;
+>   	u8				s1cdmax;
+>   };
+>   
