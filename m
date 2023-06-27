@@ -1,24 +1,27 @@
-Received: from frasgout11.his.huawei.com (unknown [14.137.139.23])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F017E171A8
-	for <iommu@lists.linux.dev>; Tue, 27 Jun 2023 09:57:21 +0000 (UTC)
-Received: from mail02.huawei.com (unknown [172.18.147.227])
-	by frasgout11.his.huawei.com (SkyGuard) with ESMTP id 4Qr0Gb1Ctqz9v7HD
-	for <iommu@lists.linux.dev>; Tue, 27 Jun 2023 17:46:31 +0800 (CST)
-Received: from A2101119013HW2.china.huawei.com (unknown [10.45.153.185])
-	by APP1 (Coremail) with SMTP id LxC2BwBnwdzesZpknnvHAw--.39096S9;
-	Tue, 27 Jun 2023 10:56:53 +0100 (CET)
-From: Petr Tesarik <petrtesarik@huaweicloud.com>
-To: Stefano Stabellini <sstabellini@kernel.org>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E7ED7490
+	for <iommu@lists.linux.dev>; Tue, 27 Jun 2023 10:24:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D5F7C433C9;
+	Tue, 27 Jun 2023 10:24:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1687861466;
+	bh=F1Hg7UsWABbNZA5AQvDBMQsjEQe6h9OaplyEUWz37bw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=V2NwjqsUMcDX/nRTxfVAJKchvBq0J8/jCjoiPE/BVWSq5g708DSLg16ic9OHGuGIA
+	 yuU5bxvGd6YG+SSKFuayAVa/x5wvWepMKMdGGFdgfHwAvR+pb341M0KuWKavjeak5J
+	 sma7fq1Z3LAEcoV/YQiR7MTXGlucUZab2xSmpk5M=
+Date: Tue, 27 Jun 2023 12:24:24 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Petr Tesarik <petrtesarik@huaweicloud.com>
+Cc: Stefano Stabellini <sstabellini@kernel.org>,
 	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
 	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
 	Dave Hansen <dave.hansen@linux.intel.com>,
-	x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)),
+	"maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
 	"H. Peter Anvin" <hpa@zytor.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	"Rafael J. Wysocki" <rafael@kernel.org>,
 	Juergen Gross <jgross@suse.com>,
 	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
@@ -26,156 +29,48 @@ To: Stefano Stabellini <sstabellini@kernel.org>,
 	Marek Szyprowski <m.szyprowski@samsung.com>,
 	Robin Murphy <robin.murphy@arm.com>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Hans de Goede <hdegoede@redhat.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
+	Hans de Goede <hdegoede@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
 	Kees Cook <keescook@chromium.org>,
 	Saravana Kannan <saravanak@google.com>,
-	xen-devel@lists.xenproject.org (moderated list:XEN HYPERVISOR ARM),
-	linux-arm-kernel@lists.infradead.org (moderated list:ARM PORT),
-	linux-kernel@vger.kernel.org (open list),
-	linux-mips@vger.kernel.org (open list:MIPS),
-	iommu@lists.linux.dev (open list:XEN SWIOTLB SUBSYSTEM)
-Cc: Roberto Sassu <roberto.sassu@huaweicloud.com>,
-	Kefeng Wang <wangkefeng.wang@huawei.com>,
-	petr@tesarici.cz
-Subject: [PATCH v3 7/7] swiotlb: search the software IO TLB only if a device makes use of it
-Date: Tue, 27 Jun 2023 11:54:29 +0200
-Message-Id: <34b9a218e9a152dd53eb0d4b0a819c6de987c8c1.1687859323.git.petr.tesarik.ext@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1687859323.git.petr.tesarik.ext@huawei.com>
+	"moderated list:XEN HYPERVISOR ARM" <xen-devel@lists.xenproject.org>,
+	"moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+	open list <linux-kernel@vger.kernel.org>,
+	"open list:MIPS" <linux-mips@vger.kernel.org>,
+	"open list:XEN SWIOTLB SUBSYSTEM" <iommu@lists.linux.dev>,
+	Roberto Sassu <roberto.sassu@huaweicloud.com>,
+	Kefeng Wang <wangkefeng.wang@huawei.com>, petr@tesarici.cz
+Subject: Re: [PATCH v3 1/7] swiotlb: make io_tlb_default_mem local to
+ swiotlb.c
+Message-ID: <2023062745-routing-palace-d0b4@gregkh>
 References: <cover.1687859323.git.petr.tesarik.ext@huawei.com>
+ <a1ef6eeab8b64fac817b9734da4a056f05a68d01.1687859323.git.petr.tesarik.ext@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:LxC2BwBnwdzesZpknnvHAw--.39096S9
-X-Coremail-Antispam: 1UD129KBjvJXoWxZF15Ww18ZF1fWr1UtFW7XFb_yoWrXF1DpF
-	9xAFZ8KayDXr97Cr97CF4UZ3Wagw4vkw43CryagrnYkr1DJwnYqFyDKrWYv3s5Ar47ZFW7
-	Xryj939Ykw17Xr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUml14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_JF0E3s1l82xGYI
-	kIc2x26xkF7I0E14v26ryj6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2
-	z4x0Y4vE2Ix0cI8IcVAFwI0_JFI_Gr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j6F
-	4UJwA2z4x0Y4vEx4A2jsIE14v26r4j6F4UM28EF7xvwVC2z280aVCY1x0267AKxVW8Jr0_
-	Cr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6x
-	IIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_
-	Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8c
-	xan2IY04v7MxkF7I0Ew4C26cxK6c8Ij28IcwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE
-	7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI
-	8E67AF67kF1VAFwI0_Wrv_Gr1UMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_JFI_
-	Gr1lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1lIxAIcVCF04k26cxKx2IYs7xG6r
-	1j6r1xMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr1j6F4U
-	JbIYCTnIWIevJa73UjIFyTuYvjfU1WlkDUUUU
-X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a1ef6eeab8b64fac817b9734da4a056f05a68d01.1687859323.git.petr.tesarik.ext@huawei.com>
 
-From: Petr Tesarik <petr.tesarik.ext@huawei.com>
+On Tue, Jun 27, 2023 at 11:54:23AM +0200, Petr Tesarik wrote:
+> +/**
+> + * is_swiotlb_active() - check if the software IO TLB is initialized
+> + * @dev:	Device to check, or %NULL for the default IO TLB.
+> + */
+>  bool is_swiotlb_active(struct device *dev)
+>  {
+> -	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
+> +	struct io_tlb_mem *mem = dev
+> +		? dev->dma_io_tlb_mem
+> +		: &io_tlb_default_mem;
 
-Skip searching the software IO TLB if a device has never used it, making
-sure these devices are not affected by the introduction of multiple IO TLB
-memory pools.
+That's impossible to read and maintain over time, sorry.
 
-Additional memory barrier is required to ensure that the new value of the
-flag is visible to other CPUs after mapping a new bounce buffer. For
-efficiency, the flag check should be inlined, and then the memory barrier
-must be moved to is_swiotlb_buffer(). However, it can replace the existing
-barrier in swiotlb_find_pool(), because all callers use is_swiotlb_buffer()
-first to verify that the buffer address belongs to the software IO TLB.
+Please use real "if () else" lines, so that it can be maintained over
+time.
 
-Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
----
- include/linux/device.h  |  2 ++
- include/linux/swiotlb.h |  6 +++++-
- kernel/dma/swiotlb.c    | 14 ++++++--------
- 3 files changed, 13 insertions(+), 9 deletions(-)
+thanks,
 
-diff --git a/include/linux/device.h b/include/linux/device.h
-index a1ee4c5924b8..d4b35925a6d1 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -512,6 +512,7 @@ struct device_physical_location {
-  * @dma_io_tlb_mem: Software IO TLB allocator.  Not for driver use.
-  * @dma_io_tlb_pools:	List of transient swiotlb memory pools.
-  * @dma_io_tlb_lock:	Protects changes to the list of active pools.
-+ * @dma_uses_io_tlb: %true if device has used the software IO TLB.
-  * @archdata:	For arch-specific additions.
-  * @of_node:	Associated device tree node.
-  * @fwnode:	Associated device node supplied by platform firmware.
-@@ -619,6 +620,7 @@ struct device {
- 	struct io_tlb_mem *dma_io_tlb_mem;
- 	struct list_head dma_io_tlb_pools;
- 	spinlock_t dma_io_tlb_lock;
-+	bool dma_uses_io_tlb;
- #endif
- 	/* arch specific additions */
- 	struct dev_archdata	archdata;
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index ae402890ba41..eb30b5c624f1 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -148,7 +148,11 @@ struct io_tlb_pool *swiotlb_find_pool(struct device *dev, phys_addr_t paddr);
-  */
- static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
- {
--	return dev->dma_io_tlb_mem &&
-+	/* Pairs with smp_wmb() in swiotlb_find_slots() and
-+	 * swiotlb_dyn_alloc(), which modify the RCU lists.
-+	 */
-+	smp_rmb();
-+	return dev->dma_uses_io_tlb &&
- 		!!swiotlb_find_pool(dev, paddr);
- }
- 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 7661a6402e80..26ab9ed2921b 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -701,7 +701,7 @@ static void swiotlb_dyn_alloc(struct work_struct *work)
- 
- 	add_mem_pool(mem, pool);
- 
--	/* Pairs with smp_rmb() in swiotlb_find_pool(). */
-+	/* Pairs with smp_rmb() in is_swiotlb_buffer(). */
- 	smp_wmb();
- }
- 
-@@ -729,6 +729,7 @@ void swiotlb_dev_init(struct device *dev)
- 	dev->dma_io_tlb_mem = &io_tlb_default_mem;
- 	INIT_LIST_HEAD(&dev->dma_io_tlb_pools);
- 	spin_lock_init(&dev->dma_io_tlb_lock);
-+	dev->dma_uses_io_tlb = false;
- }
- 
- /**
-@@ -746,11 +747,6 @@ struct io_tlb_pool *swiotlb_find_pool(struct device *dev, phys_addr_t paddr)
- 	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
- 	struct io_tlb_pool *pool;
- 
--	/* Pairs with smp_wmb() in swiotlb_find_slots() and
--	 * swiotlb_dyn_alloc(), which modify the RCU lists.
--	 */
--	smp_rmb();
--
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(pool, &mem->pools, node) {
- 		if (paddr >= pool->start && paddr < pool->end)
-@@ -1125,9 +1121,11 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
- 	list_add_rcu(&pool->node, &dev->dma_io_tlb_pools);
- 	spin_unlock_irqrestore(&dev->dma_io_tlb_lock, flags);
- 
--	/* Pairs with smp_rmb() in swiotlb_find_pool(). */
--	smp_wmb();
- found:
-+	dev->dma_uses_io_tlb = true;
-+	/* Pairs with smp_rmb() in is_swiotlb_buffer() */
-+	smp_wmb();
-+
- 	*retpool = pool;
- 	return index;
- }
--- 
-2.25.1
-
+greg k-h
