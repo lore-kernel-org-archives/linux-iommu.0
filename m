@@ -1,137 +1,189 @@
-Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com [209.85.221.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2054.outbound.protection.outlook.com [40.107.93.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C1B8BA36
-	for <iommu@lists.linux.dev>; Mon, 26 Jun 2023 18:33:20 +0000 (UTC)
-Received: by mail-vk1-f181.google.com with SMTP id 71dfb90a1353d-4718aa39ee6so1000495e0c.0
-        for <iommu@lists.linux.dev>; Mon, 26 Jun 2023 11:33:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1687804399; x=1690396399;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Llh4gIlToO5IIgOre9UJS/YUO0ldCTUXip1sWklWSMQ=;
-        b=JVUAS6Mwd4CGVgbTg2A/4nZBcOTwKzPyRt4TC3yOvNM2+tIbS6xPD0y0D61ppUoIqP
-         kZrkBWOA7Ql4ra0BfHP6nORKavSIwwHUciNKkQa/xmCuLHQQU0FKrjqNuDpFFUV2WhAs
-         bj0vBswCZ/jeImDakg37V6RL9mG+1bVuMZuVcmiIwOAR2fw7RzomjAA6nEM2czoRF5T3
-         UfxPt3ZwyqtBl2AfZC59Q6h21ylliaEpNdI5EVodei9o/wAyUMzWRcPPeO/chWAPw5Vz
-         /ewQOBhvCVgbaU8C2DAN4F+GwhoddBQvjmntOXBFEFx01mMP8Ky6gACQ9gm16ROU2eWf
-         tjRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687804399; x=1690396399;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Llh4gIlToO5IIgOre9UJS/YUO0ldCTUXip1sWklWSMQ=;
-        b=Hn1+VjeAHor8QRJSRDtC1Nqiy1v1s2kdMhgXFT3tDlzWprFH92qTT/jtWimwKxJTjv
-         pOmXn7+eNDs/yYOyKQVaHrMtxMi5Ls5GbUueGDeiDe4136/Lu6LBip8BXS5TExmsBu7D
-         v7LE4W2dJenJYyxCZC7GV6is5euS4eDhmA97ST3QaqcmatzNGLMCJrdJmh5B+JkOyGMp
-         YnVRYHcfLFc6T1l5AyyPABRynoSBC6ZikgKtzUavT2oIXZqK6RZiVwAQhQSSCnYCsEzn
-         Qw3IQ1kggmmvH4u3oMxbjWMhk+zjFhgjMHE7WwrbZYgs7U/jlI8jQA0ByrfdbEHIlDqI
-         7CEQ==
-X-Gm-Message-State: AC+VfDyYqAf6puNXwaeMRIqhskBcGrCo5aPoPOfkhW+hOFd5j8hJpY1P
-	MjL3oSAt3u1jrs5lFLR6oWU6IQ==
-X-Google-Smtp-Source: ACHHUZ71l/DblDrK7Oyn3lB5D1oIYfT7tQ+BssB+t+iwqPFJMSrWpCc/dst5XGo0zmyM+elBVv+q6Q==
-X-Received: by 2002:a1f:3fca:0:b0:471:5939:f4f2 with SMTP id m193-20020a1f3fca000000b004715939f4f2mr9532857vka.8.1687804399118;
-        Mon, 26 Jun 2023 11:33:19 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id z24-20020ac875d8000000b003fddd8e7bbasm3348807qtq.30.2023.06.26.11.33.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Jun 2023 11:33:18 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qDr1Z-008pJc-JP;
-	Mon, 26 Jun 2023 15:33:17 -0300
-Date: Mon, 26 Jun 2023 15:33:17 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
-	linux-kselftest@vger.kernel.org,
-	virtualization@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCHES 00/17] IOMMUFD: Deliver IO page faults to user space
-Message-ID: <ZJnZ7bEIZHsqmyAG@ziepe.ca>
-References: <20230530053724.232765-1-baolu.lu@linux.intel.com>
- <ZHZFi28jRxeZMKK3@Asurada-Nvidia>
- <a8ccbac8-c456-d116-24a2-7503ccbb720c@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79067EA1
+	for <iommu@lists.linux.dev>; Tue, 27 Jun 2023 03:34:04 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BWHK06w4xl+bcdcAl2udWrmNBuS6YeILeef5/zlEH4mNJNVkg8WIJ8+ePxNELeeAPfc7dGGZ5tAxGYbU5kN2E21eM+C6xB0VMhkb6rXIE42tMnvwYuhKGPMFHhB6nQ9h/dyGCTUWpukAnjbcvCBsMYN8Mg0gFa81OvAR6MVIpZKz42cwtqlmSqRyjred7kg+lZwZ6TH+zaJGQHArZBUmeDkP6h2rwbvNjT3bGm1+n2klJh6kYMv9ylH45NBBW8srvT7AwKcx8/z0hXsjSqAjSspwB1QhqeHSOWpNngmSpYV5XBoaPNK2IupswcP/H/ympDQ021FmseEmd6pKXf7ZXg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rckj7AZTnXzErUM5ZBZD6uslWB5pi2z0eiEjhTCgcaQ=;
+ b=iBvZkGVb5DbIClB5qCEG/VtlpeNQfoa3sGbFfENHtnq+hnwz+MZWBx4XNpD8lcbn8KU2xu+UdkrtCQ0ZdFn/OlT948chsrBFC6D8pXY/Eqp28GYNAANqAmEVKcF8NjyRZc/VFZ/FOm46n2HVwMK2TIorVVpcKcbm2XUeuYGCIT1kfuv5YKfiNm+Bkbg5R8ZG3qOrxolqU4cEBkUUwTuqH87Ao0/t4p4oYfSurRAewRq1I+YOFWaVtGZRO2GovLGYb3sVRNRh8QqkGXxre5VgivXo+MBYY2KOcQBi12fMj7M5R3q3LiZA9x3A9R6/6MNIM/NKKHFyUGi/k5kCRYZ8lQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rckj7AZTnXzErUM5ZBZD6uslWB5pi2z0eiEjhTCgcaQ=;
+ b=Y/z9jOlpJYav08fnEJFonft9MSUr6pRHb8rDQ5SYez8ykZz4MqSIfToeAipq4abCQbV1u4Ojab/NZN0P/t+UxvWYgvgjSKPRXpyLSWDsCTWJH8YCU0DNQ8P/2BphQB9bM+i9HFs4tsKOEALrL/rXfHlbSsheedxXMcUpUPCMH19gG/8ugYzI2TLZgVWvs1aT8SMsCeGH+0mH+LbbO5kjviMMX+6A/trgCHdgax1q2rj9RVzbVi73BTTaay8WSmb0vBa8LehDGNTOW6OdhL6jurnlDP5DK7WCPY93J7WAWhyky1uU7aueIOsFJ+YXrfzzbx531KO2LOONTHxplf0IiQ==
+Received: from BN0PR04CA0204.namprd04.prod.outlook.com (2603:10b6:408:e9::29)
+ by CH0PR12MB5316.namprd12.prod.outlook.com (2603:10b6:610:d7::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.23; Tue, 27 Jun
+ 2023 03:34:02 +0000
+Received: from BN8NAM11FT084.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:e9:cafe::53) by BN0PR04CA0204.outlook.office365.com
+ (2603:10b6:408:e9::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.34 via Frontend
+ Transport; Tue, 27 Jun 2023 03:34:01 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ BN8NAM11FT084.mail.protection.outlook.com (10.13.176.169) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6500.47 via Frontend Transport; Tue, 27 Jun 2023 03:34:01 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Mon, 26 Jun 2023
+ 20:33:52 -0700
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.37; Mon, 26 Jun 2023 20:33:52 -0700
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.9) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server id 15.2.986.37 via Frontend
+ Transport; Mon, 26 Jun 2023 20:33:51 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <robin.murphy@arm.com>, <will@kernel.org>
+CC: <jgg@nvidia.com>, <joro@8bytes.org>,
+	<shameerali.kolothum.thodi@huawei.com>, <yangyicong@hisilicon.com>,
+	<jean-philippe@linaro.org>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v1] iommu/arm-smmu-v3: Allow default substream bypass with a pasid support
+Date: Mon, 26 Jun 2023 20:33:26 -0700
+Message-ID: <20230627033326.5236-1-nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.41.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a8ccbac8-c456-d116-24a2-7503ccbb720c@linux.intel.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT084:EE_|CH0PR12MB5316:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1a1f21d2-3a62-4297-b12a-08db76bf598d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	t1iCHhN5/tEHfZoXTUsKj46I2/LGl0TtG3AOgFNA/RTIJ/+B3WzsLy1XIwlKDFvE1ZMwL1uhx632YvomCrgxMnm89BGVd/FJxM9yRrRJURY9U97wPApjsxy8ko14boHwT5rqOMNWWpNp9ssgmhStUeMzul6e1nxtwhayGL86vvhQyke2b0NQEPfcbKj2qdcRc+hbxnaMKoosu+ELXf7AVU5ZJUaz1dtN7G1RFN0Qc/G0SxJXYueP9F6XOl/xaqYLwRvChzug+M2hCg+OThU5WNrkfUZMEZxKG9bTc9ZlTnSjhFt11PWaGP9RdXEIIoA8zQ4wSwvweckWCSahNeKw6UI+R2T+j3kugpjX2pNiqlV23AwnJ5kA1UvCc1Df6kTGjtG6T2NOEaG51Mji8NzjuH0puZjxPQILuNrvWxcIzO+koxTQ3oTUxmbcpzNc3sSaGJKNfJgCr2v7GEDBx9iSgtiWP++BdAIHvjcEEAWgUXNaw2h/hRoCLpBlwUqSrFnHG8Ax7c4P5zwUx6GA4ySyesz5F8GYkzbWfA76MWWenyAMeFCP1XlrWrjSSd/vAfULrqe/RUvCd9CPOmocM6D29hBr0Xqd2J3Rkd1/aa6hZpd3c8D5iSnb/+i2EnmRiagTn0Vv+lWmLph2grlcbyttZVZi9wEu5o9kW0fF0LT5AKrqC2AWCw9+BTJGA8IM0vsVHRuI39o4kkCPk+5ewN9l6BA7asY6GPUhvtKuHJ7Mo9Mol/XDuTLO1lgq3TNgeHUqvD4glDc6fraoW0zoVwqDGZ71t8YSCVzxyLO/8KHvjUs=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(39860400002)(346002)(396003)(136003)(451199021)(40470700004)(36840700001)(46966006)(1076003)(36860700001)(82310400005)(47076005)(7696005)(6666004)(54906003)(110136005)(83380400001)(336012)(426003)(26005)(2616005)(2906002)(478600001)(186003)(5660300002)(356005)(40460700003)(36756003)(70206006)(4326008)(316002)(82740400003)(40480700001)(70586007)(7636003)(86362001)(41300700001)(8936002)(8676002)(473944003)(414714003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jun 2023 03:34:01.4315
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1a1f21d2-3a62-4297-b12a-08db76bf598d
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN8NAM11FT084.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5316
 
-On Sun, Jun 25, 2023 at 02:30:46PM +0800, Baolu Lu wrote:
+When an iommu_domain is set to IOMMU_DOMAIN_IDENTITY, the driver would
+skip the allocation of a CD table and set the CONFIG field of the STE
+to STRTAB_STE_0_CFG_BYPASS. This works well for devices that only have
+one substream, i.e. PASID disabled.
 
-> Agreed. We should avoid workqueue in sva iopf framework. Perhaps we
-> could go ahead with below code? It will be registered to device with
-> iommu_register_device_fault_handler() in IOMMU_DEV_FEAT_IOPF enabling
-> path. Un-registering in the disable path of cause.
+However, there could be a use case, for a pasid capable device, that
+allows bypassing the translation at the default substream while still
+enabling the pasid feature, which means the driver should not skip the
+allocation of a CD table nor simply bypass the CONFIG field. Instead,
+the S1DSS field should be set to STRTAB_STE_1_S1DSS_BYPASS and the
+SHCFG field should be set to STRTAB_STE_1_SHCFG_INCOMING.
 
-This maze needs to be undone as well.
+Add s1dss and shcfg in struct arm_smmu_s1_cfg, to allow configurations
+in the finalise() to support that use case. Then, set them accordingly
+depending on the iommu_domain->type and the master->ssid_bits.
 
-It makes no sense that all the drivers are calling 
+Also, add STRTAB_STE_1_SHCFG_NONSHAREABLE of the default configuration
+to distinguish from STRTAB_STE_1_SHCFG_INCOMING of the bypass one.
 
- iommu_register_device_fault_handler(dev, iommu_queue_iopf, dev);
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 18 +++++++++++++++---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  3 +++
+ 2 files changed, 18 insertions(+), 3 deletions(-)
 
-The driver should RX a PRI fault and deliver it to some core code
-function, this looks like a good start:
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 9b0dc3505601..8dc7934a0175 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1350,11 +1350,12 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+ 
+ 		BUG_ON(ste_live);
+ 		dst[1] = cpu_to_le64(
+-			 FIELD_PREP(STRTAB_STE_1_S1DSS, STRTAB_STE_1_S1DSS_SSID0) |
++			 FIELD_PREP(STRTAB_STE_1_S1DSS, s1_cfg->s1dss) |
+ 			 FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_WBRA) |
+ 			 FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_WBRA) |
+ 			 FIELD_PREP(STRTAB_STE_1_S1CSH, ARM_SMMU_SH_ISH) |
+-			 FIELD_PREP(STRTAB_STE_1_STRW, strw));
++			 FIELD_PREP(STRTAB_STE_1_STRW, strw) |
++			 FIELD_PREP(STRTAB_STE_1_SHCFG, s1_cfg->shcfg));
+ 
+ 		if (smmu->features & ARM_SMMU_FEAT_STALLS &&
+ 		    !master->stall_enabled)
+@@ -2119,6 +2120,13 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
+ 		goto out_unlock;
+ 
+ 	cfg->s1cdmax = master->ssid_bits;
++	if (smmu_domain->domain.type == IOMMU_DOMAIN_IDENTITY) {
++		cfg->s1dss = STRTAB_STE_1_S1DSS_BYPASS;
++		cfg->shcfg = STRTAB_STE_1_SHCFG_INCOMING;
++	} else {
++		cfg->s1dss = STRTAB_STE_1_S1DSS_SSID0;
++		cfg->shcfg = STRTAB_STE_1_SHCFG_NONSHAREABLE;
++	}
+ 
+ 	smmu_domain->stall_enabled = master->stall_enabled;
+ 
+@@ -2198,7 +2206,11 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain,
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
+ 
+-	if (domain->type == IOMMU_DOMAIN_IDENTITY) {
++	/*
++	 * A master with a pasid capability might need a CD table, so only set
++	 * ARM_SMMU_DOMAIN_BYPASS if IOMMU_DOMAIN_IDENTITY and non-pasid master
++	 */
++	if (domain->type == IOMMU_DOMAIN_IDENTITY && !master->ssid_bits) {
+ 		smmu_domain->stage = ARM_SMMU_DOMAIN_BYPASS;
+ 		return 0;
+ 	}
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index dcab85698a4e..8052d02770d0 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -244,6 +244,7 @@
+ #define STRTAB_STE_1_STRW_EL2		2UL
+ 
+ #define STRTAB_STE_1_SHCFG		GENMASK_ULL(45, 44)
++#define STRTAB_STE_1_SHCFG_NONSHAREABLE	0UL
+ #define STRTAB_STE_1_SHCFG_INCOMING	1UL
+ 
+ #define STRTAB_STE_2_S2VMID		GENMASK_ULL(15, 0)
+@@ -601,6 +602,8 @@ struct arm_smmu_s1_cfg {
+ 	struct arm_smmu_ctx_desc_cfg	cdcfg;
+ 	struct arm_smmu_ctx_desc	cd;
+ 	u8				s1fmt;
++	u8				s1dss;
++	u8				shcfg;
+ 	u8				s1cdmax;
+ };
+ 
+-- 
+2.41.0
 
-> static int io_pgfault_handler(struct iommu_fault *fault, void *cookie)
-> {
->         ioasid_t pasid = fault->prm.pasid;
->         struct device *dev = cookie;
->         struct iommu_domain *domain;
-> 
->         if (fault->type != IOMMU_FAULT_PAGE_REQ)
->                 return -EOPNOTSUPP;
-> 
->         if (fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID)
->                 domain = iommu_get_domain_for_dev_pasid(dev, pasid, 0);
->         else
->                 domain = iommu_get_domain_for_dev(dev);
-> 
->         if (!domain || !domain->iopf_handler)
->                 return -ENODEV;
-> 
->         if (domain->type == IOMMU_DOMAIN_SVA)
->                 return iommu_queue_iopf(fault, cookie);
-> 
->         return domain->iopf_handler(fault, dev, domain->fault_data);
-
-Then we find the domain that owns the translation and invoke its
-domain->ops->iopf_handler()
-
-If the driver created a SVA domain then the op should point to some
-generic 'handle sva fault' function. There shouldn't be weird SVA
-stuff in the core code.
-
-The weird SVA stuff is really just a generic per-device workqueue
-dispatcher, so if we think that is valuable then it should be
-integrated into the iommu_domain (domain->ops->use_iopf_workqueue =
-true for instance). Then it could route the fault through the
-workqueue and still invoke domain->ops->iopf_handler.
-
-The word "SVA" should not appear in any of this.
-
-Not sure what iommu_register_device_fault_handler() has to do with all
-of this.. Setting up the dev_iommu stuff to allow for the workqueue
-should happen dynamically during domain attach, ideally in the core
-code before calling to the driver.
-
-Also, I can understand there is a need to turn on PRI support really
-early, and it can make sense to have some IOMMU_DEV_FEAT_IOPF/SVA to
-ask to turn it on.. But that should really only be needed if the HW
-cannot turn it on dynamically during domain attach of a PRI enabled
-domain.
-
-It needs cleaning up..
-
-Jason
