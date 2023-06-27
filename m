@@ -1,165 +1,117 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B55F79F2
-	for <iommu@lists.linux.dev>; Tue, 27 Jun 2023 07:19:55 +0000 (UTC)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id E1BDD211DE;
-	Tue, 27 Jun 2023 07:19:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1687850393; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=RF7xwYhJXKfHTpIm6OPtmWD8/BjyWG9MJjiitg4CML4=;
-	b=Fa1iQLQt0hsyoIBEWMYYF3kOoMoR7MTndsSuvNCn0mk8f+yXU+mSj7x6OJXFbp52ZgquLK
-	v2ZbL8RoUBUTGEzHkcMuzRpjB8JZMjiDCGEjGCI+BfhbC4E6rSYolRSol9jrus3+MBiw9I
-	ez7FkC1BDOBXaYNqtZeru+VU8fZ0ZRM=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8186813462;
-	Tue, 27 Jun 2023 07:19:53 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-	by imap2.suse-dmz.suse.de with ESMTPSA
-	id Ig8UHpmNmmTnFwAAMHmgww
-	(envelope-from <jgross@suse.com>); Tue, 27 Jun 2023 07:19:53 +0000
-Message-ID: <25602998-d4d5-fec9-043e-c8959dd82602@suse.com>
-Date: Tue, 27 Jun 2023 09:19:52 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F18E846A
+	for <iommu@lists.linux.dev>; Tue, 27 Jun 2023 07:46:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1687851967; x=1719387967;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=1NU8lxJjIxrwpz0Gz2CrvoCxNYYRc60/+WVK8Xm+dBU=;
+  b=fXGl7b2bHsM5dX55CeGP0GPmWJP5iqzElg8Go/0I83B1y3idzo8Skq/Y
+   PsI9oIKqBh1A04+Qh21HPEEjOaivy4R4hiwhL707sPoBkraFQP+z+bU5d
+   fOTAZoseCO15b63PXSrxT/5ABNFbf7rg544Jz8db37wLF7k4Mh9kEs+ew
+   CarOF7B+uWklCnjDerybDbYrmpBTpWH0SKdIKezo2CF1qGoD9aGd2rvNn
+   9msdUbm4IbOyNjnmp5esdES5fDY2zdBNkAupgd/zvZ/H76rDdQbJBE3+7
+   bM/PgZV3sY6xvrnpqkfm4Vc0037nnhC3wASPbLi0Wm7ZxNiV+3hlaJ2nZ
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10753"; a="360370758"
+X-IronPort-AV: E=Sophos;i="6.01,161,1684825200"; 
+   d="scan'208";a="360370758"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2023 00:44:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10753"; a="806363818"
+X-IronPort-AV: E=Sophos;i="6.01,161,1684825200"; 
+   d="scan'208";a="806363818"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.215.29]) ([10.254.215.29])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2023 00:44:37 -0700
+Message-ID: <9a1d3012-d35c-d5a0-8aa9-99dcd7bded5e@linux.intel.com>
+Date: Tue, 27 Jun 2023 15:43:35 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.12.0
-Subject: Re: [PATCH 3/3] swiotlb: unexport is_swiotlb_active
+Cc: baolu.lu@linux.intel.com,
+ Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>,
+ Heiko Stuebner <heiko@sntech.de>, Joerg Roedel <jroedel@suse.de>,
+ Kevin Tian <kevin.tian@intel.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
+ Vasant Hegde <vasant.hegde@amd.com>
+Subject: Re: [PATCH rc] iommu: Fix crash during syfs iommu_groups/N/type
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+ Will Deacon <will@kernel.org>
+References: <0-v1-5bd8cc969d9e+1f1-iommu_set_def_fix_jgg@nvidia.com>
 Content-Language: en-US
-To: Christoph Hellwig <hch@lst.de>,
- Stefano Stabellini <sstabellini@kernel.org>,
- Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
- Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
- x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>
-Cc: xen-devel@lists.xenproject.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20230612142542.111581-1-hch@lst.de>
- <20230612142542.111581-4-hch@lst.de>
-From: Juergen Gross <jgross@suse.com>
-In-Reply-To: <20230612142542.111581-4-hch@lst.de>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------ZXX0M06KtxYsXVfyv8cZf6yL"
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------ZXX0M06KtxYsXVfyv8cZf6yL
-Content-Type: multipart/mixed; boundary="------------uPEf70P1cgirWsAdSRzG8gim";
- protected-headers="v1"
-From: Juergen Gross <jgross@suse.com>
-To: Christoph Hellwig <hch@lst.de>,
- Stefano Stabellini <sstabellini@kernel.org>,
- Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
- Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
- x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>
-Cc: xen-devel@lists.xenproject.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Message-ID: <25602998-d4d5-fec9-043e-c8959dd82602@suse.com>
-Subject: Re: [PATCH 3/3] swiotlb: unexport is_swiotlb_active
-References: <20230612142542.111581-1-hch@lst.de>
- <20230612142542.111581-4-hch@lst.de>
-In-Reply-To: <20230612142542.111581-4-hch@lst.de>
-
---------------uPEf70P1cgirWsAdSRzG8gim
-Content-Type: multipart/mixed; boundary="------------qDwZMH5oRYG1ME31VoABVgq9"
-
---------------qDwZMH5oRYG1ME31VoABVgq9
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <0-v1-5bd8cc969d9e+1f1-iommu_set_def_fix_jgg@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 
-T24gMTIuMDYuMjMgMTY6MjUsIENocmlzdG9waCBIZWxsd2lnIHdyb3RlOg0KPiBEcml2ZXJz
-IGhhdmUgbm8gYnVzaW5lc3MgbG9va2luZyBhdCBkbWEtbWFwcGluZyBvciBzd2lvdGxiIGlu
-dGVybmFscy4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IENocmlzdG9waCBIZWxsd2lnIDxoY2hA
-bHN0LmRlPg0KDQpSZXZpZXdlZC1ieTogSnVlcmdlbiBHcm9zcyA8amdyb3NzQHN1c2UuY29t
-Pg0KDQoNCkp1ZXJnZW4NCg0K
---------------qDwZMH5oRYG1ME31VoABVgq9
-Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
-Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
-Content-Description: OpenPGP public key
-Content-Transfer-Encoding: quoted-printable
+On 2023/6/26 23:13, Jason Gunthorpe wrote:
+> The err_restore_domain flow was accidently inserted into the success path
+> in commit 1000dccd5d13 ("iommu: Allow IOMMU_RESV_DIRECT to work on
+> ARM"). It should only happen if iommu_create_device_direct_mappings()
+> fails. This caused the domains the be wrongly changed and freed whenever
 
------BEGIN PGP PUBLIC KEY BLOCK-----
+minor: ...caused the domains to be wrongly changed...
 
-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
-jR/i1DG86lem3iBDXzXsZDn8R38=3D
-=3D2wuH
------END PGP PUBLIC KEY BLOCK-----
+> the sysfs is used, resulting in an oops:
+> 
+>    BUG: kernel NULL pointer dereference, address: 0000000000000000
+>    #PF: supervisor read access in kernel mode
+>    #PF: error_code(0x0000) - not-present page
+>    PGD 0 P4D 0
+>    Oops: 0000 [#1] PREEMPT SMP NOPTI
+>    CPU: 1 PID: 3417 Comm: avocado Not tainted 6.4.0-rc4-next-20230602 #3
+>    Hardware name: Dell Inc. PowerEdge R6515/07PXPY, BIOS 2.3.6 07/06/2021
+>    RIP: 0010:__iommu_attach_device+0xc/0xa0
+>    Code: c0 c3 cc cc cc cc 48 89 f0 c3 cc cc cc cc 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 0f 1f 44 00 00 41 54 55 48 8b 47 08 <48> 8b 00 48 85 c0 74 74 48 89 f5 e8 64 12 49 00 41 89 c4 85 c0 74
+>    RSP: 0018:ffffabae0220bd48 EFLAGS: 00010246
+>    RAX: 0000000000000000 RBX: ffff9ac04f70e410 RCX: 0000000000000001
+>    RDX: ffff9ac044db20c0 RSI: ffff9ac044fa50d0 RDI: ffff9ac04f70e410
+>    RBP: ffff9ac044fa50d0 R08: 1000000100209001 R09: 00000000000002dc
+>    R10: 0000000000000000 R11: 0000000000000000 R12: ffff9ac043d54700
+>    R13: ffff9ac043d54700 R14: 0000000000000001 R15: 0000000000000001
+>    FS:  00007f02e30ae000(0000) GS:ffff9afeb2440000(0000) knlGS:0000000000000000
+>    CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>    CR2: 0000000000000000 CR3: 000000012afca006 CR4: 0000000000770ee0
+>    PKRU: 55555554
+>    Call Trace:
+>     <TASK>
+>     ? __die+0x24/0x70
+>     ? page_fault_oops+0x82/0x150
+>     ? __iommu_queue_command_sync+0x80/0xc0
+>     ? exc_page_fault+0x69/0x150
+>     ? asm_exc_page_fault+0x26/0x30
+>     ? __iommu_attach_device+0xc/0xa0
+>     ? __iommu_attach_device+0x1c/0xa0
+>     __iommu_device_set_domain+0x42/0x80
+>     __iommu_group_set_domain_internal+0x5d/0x160
+>     iommu_setup_default_domain+0x318/0x400
+>     iommu_group_store_type+0xb1/0x200
+>     kernfs_fop_write_iter+0x12f/0x1c0
+>     vfs_write+0x2a2/0x3b0
+>     ksys_write+0x63/0xe0
+>     do_syscall_64+0x3f/0x90
+>     entry_SYSCALL_64_after_hwframe+0x6e/0xd8
+>    RIP: 0033:0x7f02e2f14a6f
+> 
+> Reorganize the error flow so that the success branch and error branches
+> are clearer.
+> 
+> Cc:<stable@vger.kernel.org>
+> Fixes: 1000dccd5d13 ("iommu: Allow IOMMU_RESV_DIRECT to work on ARM")
+> Reported-by: Dheeraj Kumar Srivastava<dheerajkumar.srivastava@amd.com>
+> Tested-by: Vasant Hegde<vasant.hegde@amd.com>
+> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
 
---------------qDwZMH5oRYG1ME31VoABVgq9--
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
---------------uPEf70P1cgirWsAdSRzG8gim--
-
---------------ZXX0M06KtxYsXVfyv8cZf6yL
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmSajZgFAwAAAAAACgkQsN6d1ii/Ey9U
-LAf7B6HozsAptLSzGaI6ZMH0yPcRviKRdiwiXMKQ8E7yy1kDoIlmKAWDJLmmrA5KNRkejILXWMDB
-30+QYNkUOCGb237vlOn73DAmnwLdH6dd7clOusGZMASfSDaJQjofKIiDl8kHuHLMvjEgUbvDnj8f
-rHtzNvHuqFdnCVmZleFm8bjap205m3qhCmLwiU62oW4xossyQZOBgUOXC26r50CICECxaZboU4Cr
-MIHIRQyLS6mdxDlcR15N7yhMQ4mu1Vha/5ldVdVCp+il1ZOftByu/5zVsyZ14FV/HV/JtRJRYoiP
-yaQ84GHwlepd9KngFiXxsY+g1Xrw5hGDHVzii+iLlw==
-=XVnJ
------END PGP SIGNATURE-----
-
---------------ZXX0M06KtxYsXVfyv8cZf6yL--
+Best regards,
+baolu
