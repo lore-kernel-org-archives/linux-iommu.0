@@ -1,87 +1,96 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24ECB13065;
-	Tue, 27 Jun 2023 16:40:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9D8F0C433C9;
-	Tue, 27 Jun 2023 16:40:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1687884023;
-	bh=Mddr9IEnVSSEtvey/EPFRhLi4YnxlTkalZzmHZ6bmJ8=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=XGRGiORnH0FmaQ+kclMjYIsE8aiZt7Gs4g5WBNw+zT0ASSus8daZkKZirfbcgaoBv
-	 HsuO0nskJhLaiZxylU7zlINMijGNLl9q7WEg/ms3Lh/IrCmjj2LVp6pXCXh1uqP4W3
-	 kOcx2VCa4pIOSzcMTF35giAc72J/A42BnFN7K4h/MvLUE7JXaOanngW1cFFib+5J4v
-	 8N2ABirViOcrN32FYcrvP15sAv/TezaSVGJHU9rgp1d1sCUFbyUbMRRUsWjqDMoEYN
-	 HlJlhL0V9YgQDqvmqEWLdtvBli6Q5b70JaJ8QNh8cP8DiB/xBCXlUB+GXHpoI+1ee3
-	 oj4CRUwtvenNQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7B046C64458;
-	Tue, 27 Jun 2023 16:40:23 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54FA113070
+	for <iommu@lists.linux.dev>; Tue, 27 Jun 2023 16:51:24 +0000 (UTC)
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-3fb4146e8fcso608735e9.0
+        for <iommu@lists.linux.dev>; Tue, 27 Jun 2023 09:51:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1687884682; x=1690476682;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=U+ghELfAbO0R2iBEq1LRki0jyaslOJziYlRqk/abt60=;
+        b=YN8xqJyCcfIsFN5ItLxMYi7S50o/mbnKJLTAsU5g1qeod6zCgluQd/7dt6sYI9Iaj3
+         sZHXPNaZM+LiJPVTh/kam3Wutv9Se+HqE688ZfC421r7kBGkJSGQP0kvSZz3pDnY6v53
+         lwS9i6vb112cH/GyHfwIznBUFSj39UXa0racgSbxDqu2TXt1PM5Vfo80I+2VKS9s41Ly
+         WBp9mirzJ5sAXh+bOBxsp3zH2XwrTFg/mO/izcyBqnzuZuebZ72l9ff3on747H4U2SpW
+         1E7Kddd40pzYz248nakUcPwqrOczJ4QrwNTHe8XvcwLTOc0XYYsxF9/DjigUZZbt8wpc
+         /6qA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687884682; x=1690476682;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=U+ghELfAbO0R2iBEq1LRki0jyaslOJziYlRqk/abt60=;
+        b=ctE68O9XvoTl7KgUphT7h0vcRPv5B4hGHLL/rsUveiCD2VLqccdERyYQd+FfdVUPLC
+         4qlPHOVAMHqDFhMsk0nPR3HQlwR8xRW2dEuaD4h3+QF1M1uWtLBL14R+/b6FBn2ONm38
+         OpQCpRkOcuvmPtgTXxQMFO7T8+HY2wNJUR8JfjNZxjURh3JMcRdjXT3NllUxGIRDSa9Q
+         EQGSSXWpA3z31aWNlcmolrPo/6C7nlyVaKccI3XY13gO1ZLp+xnyo9P7YBlsqIt3xfEE
+         IvUIYveDVT5HFLm72KFoCwNdeY2JdCPXMJ0qtRe2wsBiRJVMf4m8JInynKi63F/InsNg
+         Wmsg==
+X-Gm-Message-State: AC+VfDw5BLs4akSPizxRdQgCijiKZWR0XnwC9l7LQsn9SjVKaviUuOyA
+	e+dopah06my7Jr8Ci4Dg/kYU3A==
+X-Google-Smtp-Source: ACHHUZ5TeYUj7/7HDBAlPldZyXIYBI7vmCrqF9hOAg0Jk1yTzlA3HVAZWU6tAaOodr2QXV3fBfGLFQ==
+X-Received: by 2002:a05:600c:511f:b0:3fa:9996:8e03 with SMTP id o31-20020a05600c511f00b003fa99968e03mr5802169wms.10.1687884682415;
+        Tue, 27 Jun 2023 09:51:22 -0700 (PDT)
+Received: from [192.168.0.162] (188-141-3-169.dynamic.upc.ie. [188.141.3.169])
+        by smtp.gmail.com with ESMTPSA id 24-20020a05600c229800b003fa98908014sm5986545wmf.8.2023.06.27.09.51.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 27 Jun 2023 09:51:21 -0700 (PDT)
+Message-ID: <88cdfdec-b498-ad1d-6f87-a5595ffcdc5c@linaro.org>
+Date: Tue, 27 Jun 2023 17:51:19 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 00/24] use vmalloc_array and vcalloc
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <168788402349.21860.17350888958370358926.git-patchwork-notify@kernel.org>
-Date: Tue, 27 Jun 2023 16:40:23 +0000
-References: <20230627144339.144478-1-Julia.Lawall@inria.fr>
-In-Reply-To: <20230627144339.144478-1-Julia.Lawall@inria.fr>
-To: Julia Lawall <julia.lawall@inria.fr>
-Cc: linux-hyperv@vger.kernel.org, kernel-janitors@vger.kernel.org,
- keescook@chromium.org, christophe.jaillet@wanadoo.fr, kuba@kernel.org,
- kasan-dev@googlegroups.com, andreyknvl@gmail.com, dvyukov@google.com,
- iommu@lists.linux.dev, linux-tegra@vger.kernel.org, robin.murphy@arm.com,
- vdumpa@nvidia.com, virtualization@lists.linux-foundation.org,
- xuanzhuo@linux.alibaba.com, linux-scsi@vger.kernel.org,
- linaro-mm-sig@lists.linaro.org, linux-media@vger.kernel.org,
- jstultz@google.com, Brian.Starkey@arm.com, labbott@redhat.com,
- lmark@codeaurora.org, benjamin.gaignard@collabora.com,
- dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
- netdev@vger.kernel.org, shailend@google.com, linux-rdma@vger.kernel.org,
- mhi@lists.linux.dev, linux-arm-msm@vger.kernel.org,
- linux-btrfs@vger.kernel.org, intel-gvt-dev@lists.freedesktop.org,
- intel-gfx@lists.freedesktop.org, dave.hansen@linux.intel.com, hpa@zytor.com,
- linux-sgx@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH 04/11] arm64: dts: qcom: apq8039-t2: Drop inexistent
+ property
+Content-Language: en-US
+To: Konrad Dybcio <konrad.dybcio@linaro.org>,
+ cros-qcom-dts-watchers@chromium.org, Andy Gross <agross@kernel.org>,
+ Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+ Benjamin Li <benl@squareup.com>, James Willcox <jwillcox@squareup.com>,
+ Joseph Gates <jgates@squareup.com>, Stephan Gerhold <stephan@gerhold.net>,
+ Zac Crosby <zac@squareup.com>,
+ Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+ Banajit Goswami <bgoswami@quicinc.com>, Liam Girdwood <lgirdwood@gmail.com>,
+ Mark Brown <broonie@kernel.org>, Lee Jones <lee@kernel.org>,
+ Stephen Boyd <sboyd@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Xu Yang
+ <xu.yang_2@nxp.com>, Peng Fan <peng.fan@nxp.com>,
+ Christian Marangi <ansuelsmth@gmail.com>,
+ Wesley Cheng <quic_wcheng@quicinc.com>, Jun Nie <jun.nie@linaro.org>,
+ Max Chen <mchen@squareup.com>, Shawn Guo <shawn.guo@linaro.org>,
+ Vivek Gautam <vivek.gautam@codeaurora.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+ linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Vincent Knecht <vincent.knecht@mailoo.org>,
+ Konrad Dybcio <konradybcio@kernel.org>, alsa-devel@alsa-project.org,
+ iommu@lists.linux.dev, linux-usb@vger.kernel.org,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ Leo Yan <leo.yan@linaro.org>, Rob Herring <robh@kernel.org>,
+ Andy Gross <andy.gross@linaro.org>
+References: <20230627-topic-more_bindings-v1-0-6b4b6cd081e5@linaro.org>
+ <20230627-topic-more_bindings-v1-4-6b4b6cd081e5@linaro.org>
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+In-Reply-To: <20230627-topic-more_bindings-v1-4-6b4b6cd081e5@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hello:
-
-This series was applied to netdev/net-next.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Tue, 27 Jun 2023 16:43:15 +0200 you wrote:
-> The functions vmalloc_array and vcalloc were introduced in
+On 27/06/2023 17:24, Konrad Dybcio wrote:
+> 'pin-switch-delay-us' is not used anywhere in the mainline kernel.
+> Drop it.
 > 
-> commit a8749a35c399 ("mm: vmalloc: introduce array allocation functions")
-> 
-> but are not used much yet.  This series introduces uses of
-> these functions, to protect against multiplication overflows.
-> 
-> [...]
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> ---
 
-Here is the summary with links:
-  - [v2,02/24] octeon_ep: use vmalloc_array and vcalloc
-    https://git.kernel.org/netdev/net-next/c/32d462a5c3e5
-  - [v2,04/24] gve: use vmalloc_array and vcalloc
-    https://git.kernel.org/netdev/net-next/c/a13de901e8d5
-  - [v2,09/24] pds_core: use vmalloc_array and vcalloc
-    https://git.kernel.org/netdev/net-next/c/906a76cc7645
-  - [v2,11/24] ionic: use vmalloc_array and vcalloc
-    https://git.kernel.org/netdev/net-next/c/f712c8297e0a
-  - [v2,18/24] net: enetc: use vmalloc_array and vcalloc
-    https://git.kernel.org/netdev/net-next/c/fa87c54693ae
-  - [v2,22/24] net: mana: use vmalloc_array and vcalloc
-    https://git.kernel.org/netdev/net-next/c/e9c74f8b8a31
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Reviewed-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
