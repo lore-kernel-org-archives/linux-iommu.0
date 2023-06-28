@@ -1,129 +1,141 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2061.outbound.protection.outlook.com [40.107.223.61])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E4E8290A
-	for <iommu@lists.linux.dev>; Wed, 28 Jun 2023 14:36:26 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KIJ3DZ1K6bjfmG5nVDsCQwFmapiYo27wsObqr/jF7/XRoA/E2YLmWVupT0K8nHpxPmW3n12QI49krUDJm9IIANWZQKWgsWg/lKhtCNF+W4TKKYFQB5+VzvEa5pB8JRRYRtxo12m7+i1SJntKf62K34M0kvGtRi6mh1K8eOXas0BFanwhArdEfASuqmnv8mS7eWw5gkBNxcJ1N5hVtHTxhc3ZvDaIwye0fQ7kvnySYCZKfn7w/xhWK/1yoq+gRCdkmfcj4aV/nBahIMykCVXSKz2wOhlsWOSfcU8nfY9mXF+K5plVakMfGchLN7H/7zxVwL+XXMEfwQyamkm32G+8mg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lFfjemtMirrQRE5ivZ91TRSFNdM287fw150rYEYiYcc=;
- b=guzphXtnqoz+ZgFq3iRgtgTOZw3pKwIpoNt5S9eKvdasMEYRiGmKn3TQbYIf8tXf+DV5mNXMO3wi5jKcPjQrSC5ZZ0Z2Y+nTlj9ugFvh5zSb3eAbLUS6c3wEodeMk5Yq2llkTNhJ2zqC9XE+SOXNpOV71yXaM83/Pvsz5cqc32E+kBWa3ioKQDbCHc0uLVTm2r9NS7dbTYtkrD99UQwlLCYFc8/q6qj5FDqcWaMNdPkJy4GsHxfcaOz+UYwHLlARY+jWIKs8TnP8EH5b6az699zhkIK7S7Ck8kDdqnX8NsYfEjgHOvmcHh38U/4xNlWDGjOk3qgNbpvljSGUeL7Iyg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lFfjemtMirrQRE5ivZ91TRSFNdM287fw150rYEYiYcc=;
- b=oz8hIBpFK+mcIJBbPSjlk/Y2uNsWpv3bLg2Kmqa6teO+cFmasksmz83q1Uwu8hzB2sp9v5O+eY8Pzl7Br53vrJPwvaimg4aDw/HlOAAWqlhF9lSeV1JZjsHjGg9IcRqXXqGO4jSqMWUfZA9mAWyhhD3Cn/KuQCD2lCC6zCfCc0BghURUvK9U9Q4Sm3Or/MXvtgAAnXhYBolyi8SzWkVSZtfu7glpsds4sxy5pt1QfJiY5pgC8d+vaRlklRYesfEP0jdqcNQ85J8slHC2PD042ZQRJ2Fi5OZ0cGatHnalqFOeN9St2EoEyKsSVMttl8QJU8WZrr4lJq/4Fz6R70toPw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DM6PR12MB4483.namprd12.prod.outlook.com (2603:10b6:5:2a2::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.26; Wed, 28 Jun
- 2023 14:36:24 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab%7]) with mapi id 15.20.6521.024; Wed, 28 Jun 2023
- 14:36:24 +0000
-Date: Wed, 28 Jun 2023 11:36:22 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Zenghui Yu <yuzenghui@huawei.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Kevin Tian <kevin.tian@intel.com>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [RESEND PATCH v8 04/11] bus: platform, amba, fsl-mc, PCI: Add
- device DMA ownership management
-Message-ID: <ZJxFZkxvPNj74uQe@nvidia.com>
-References: <20220418005000.897664-1-baolu.lu@linux.intel.com>
- <20220418005000.897664-5-baolu.lu@linux.intel.com>
- <6472f254-c3c4-8610-4a37-8d9dfdd54ce8@huawei.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6472f254-c3c4-8610-4a37-8d9dfdd54ce8@huawei.com>
-X-ClientProxiedBy: MN2PR01CA0002.prod.exchangelabs.com (2603:10b6:208:10c::15)
- To LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4223FC8E3
+	for <iommu@lists.linux.dev>; Wed, 28 Jun 2023 15:39:56 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E92C3C14;
+	Wed, 28 Jun 2023 08:40:39 -0700 (PDT)
+Received: from [10.57.33.98] (unknown [10.57.33.98])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 681673F64C;
+	Wed, 28 Jun 2023 08:39:54 -0700 (PDT)
+Message-ID: <2274ba47-7def-082c-8429-8f2cc18adf9f@arm.com>
+Date: Wed, 28 Jun 2023 16:39:48 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM6PR12MB4483:EE_
-X-MS-Office365-Filtering-Correlation-Id: bd6800b6-633e-44da-1ab7-08db77e50c3a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	ugUl60xV67A0eSszonH8ZbbdZW7OHYeEC60iDXZEzEfz6DDec7NaGKJSqIQm6jr6lQWqBsYhAUMrquqmmBTIJONbPGS05wI4i4TlGItHqn9wISzgkGBUJJwbcQRt018P265fDuIlHKpf69qNonX0zZ8R98s7r757FoS4givMNUZKvC9H8vQuaWZHTuVkM/WNPleDj6v7SuzNxk4ZyxPPD0Wbq/b4rTvRTuR7ngeJKqMOfdm8xC4wPn8GIiPwCcwMP12xPJWKCiP4HXnRCQ95g0/Xv2Rgw2uDfJWROMxNXFw7xftjeF3n3dVaycLt4YrsswwDwSR79KMU92PC+8kZj8eHaAHk36bEjU5khP0Jcmi/WMCBcw0jvi9XVoy38YuU7/e+6waHeCMTdGaxEQ0LqCr/I7o8F+BOcXj3sXPoPsgHZJxwPxTfrSG0K5v/qSOQuFZ1P5Y2AIEsbx81QZZptbwmqc1D6suxcCwAvqm5fyEE9At3Nam9QXZnp/mtF23npWZIT0jsJa3KZ1Lu5DMt6mGMaJuELIaRGlbhe3M1Fv5rJfDubaQZYRsn9Fc3zPIZ
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(396003)(136003)(376002)(346002)(451199021)(36756003)(6506007)(66476007)(5660300002)(86362001)(316002)(6916009)(4326008)(66556008)(41300700001)(8936002)(38100700002)(66946007)(8676002)(6486002)(6512007)(2906002)(4744005)(186003)(26005)(478600001)(54906003)(2616005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?3PQO15JMjgbxpAUDoVPs1Ljg/dpFHJtH/ej1xGTI3MDfHdO0X93viKRh1AIH?=
- =?us-ascii?Q?GOi0ALfV+SnjZpO4xJ0daVrR+J+eu0icMOMoxato6vt7E9qxH4LrNrIqfG+J?=
- =?us-ascii?Q?IPntQlA7rtMoflOU2zA+wdti7ai5ub5LmSFJL/esYhzcCQOUEm7azM+a57xS?=
- =?us-ascii?Q?9pTGwemWeCpPQvkFUZpiR/PieWaG6oNsDo7uZSMn5n/ib4cCHHv1P9enti4z?=
- =?us-ascii?Q?Jzp0C54+k0nnQSCwdijLDgQw2dVszdorPGF4/x7D7O6nsPrMS3+lSnS8eou+?=
- =?us-ascii?Q?v9P8ebzxT6SvD6WmZeYoCGSC+dH7keu5g63bTrcfN3Zt5xy5Y6gcz3xe/oq4?=
- =?us-ascii?Q?lT1AYLjdlqbqQUHpixzoBSy6ZLk07SNK5mpMHMwcwLz2vWl9LvtCN5+Ui5Vt?=
- =?us-ascii?Q?sAe5CTNS5Cw3k5FXz9dIh+n8laZb+KlcKADM5SXcO4VdkLABCajtGH6tmEbD?=
- =?us-ascii?Q?+ecmN8e/DxR6HCwBKKb1b1xL8IUZ0yWGaM4L55Y2oiWgX6X7bwikYXGeTolw?=
- =?us-ascii?Q?WdlTrypBsd8R2ChcuFLLe6Md6tOaZ/XiLs2hBx+qvAe8axYmNHqtD0nGP760?=
- =?us-ascii?Q?Fw/9lEXWdurbv4i7bdQ3QOCP+rEPyLuJiWsEIpjxJLRvPEiMaO2/x8FkpgMr?=
- =?us-ascii?Q?K7iNJG9jpjIpW36oGidnXQVW6FNdKv9AmZxspX7ur1L7oV7brdH2DUIJ7iGF?=
- =?us-ascii?Q?GmBUchyf4qvHZyWrMCJNuN2x2/M/uvm/jIJomJPiJ89332uh+kPizf40IPSu?=
- =?us-ascii?Q?CqKjxdGNKcr6pdYpsQIoXNvE86XbulVNjyyURpKkmA6x9NXj67UG6okNkVgw?=
- =?us-ascii?Q?OimGBMBBVe5h8FQHgXs/xa9YYi/eDEBUERJ8w+pf+siqg8MWnK7cdEQrbHGy?=
- =?us-ascii?Q?btiYZsUvh4czFzEYthhWCgBuGtPrV9g1upPATXsEd7UFXrFeA5Uo3pZUbR+H?=
- =?us-ascii?Q?h2Ji7EDMXpfgh9HB7DuJVaXPF1WBEfnQmmHRai9pUVQ1Sf4FrfbNLl3Acuif?=
- =?us-ascii?Q?ifxb3pYShxm2c0Hhzgm5clBO49au1jeBI7gvJswdQJ1y9paP+iIr95qSKYzS?=
- =?us-ascii?Q?hR4pU88XlX3SR33Vy/meEpyvF+ISZakr81p4n4adeEcrHDD+SqFOnhA4sABy?=
- =?us-ascii?Q?MZf84tBq2tOukmpZi0a34hWwCqlOHjgmqNp/xP9BviL+mHADhDoXraPFp40Q?=
- =?us-ascii?Q?5X0aZMWw/cFxykFOjx1GkoLFzMxAd0EUuPbMe5lRmD2OcbW6BkA5YlvpwTmB?=
- =?us-ascii?Q?voLfxHSHmJqmTyJ2ipnS9S+oi65xPc+IWbb31YRNW89CJAW1jFQR8WfO2OYy?=
- =?us-ascii?Q?vVsP+qm/X7BdUVD74mMhGJ4w5DX+OKI9NxNa6WQPk4qem4peKMKr4oa9LhSQ?=
- =?us-ascii?Q?71SbX1SJQHzia5euNK+0h50xZ2Nocfybh5tlr+AHzU5mn8UfF1+Cagt0npho?=
- =?us-ascii?Q?d6vywSeNyH6pwfZL61NTtafdxILr9hZX1JGU/NZ77YHBxjWGf2wbK1Qr3/Bi?=
- =?us-ascii?Q?aA4r2K5NIzFNamfGwsBqkTFtvAzJx4AeuHSlaDNMtuHX6zENrviunVMO2es4?=
- =?us-ascii?Q?27hWCekp0y5ktZ/rR1Z4psdTKeSVvFhZG9aWftqG?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bd6800b6-633e-44da-1ab7-08db77e50c3a
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jun 2023 14:36:24.0821
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: stNyoPnhbXiVQiH8y3YRI2qctvAA6W5Xw0/wHMgL+rO+L3FVuZrBHrQQfBsrrgIP
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4483
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH v1] iommu/arm-smmu-v3: Allow default substream bypass with
+ a pasid support
+Content-Language: en-GB
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: will@kernel.org, jgg@nvidia.com, joro@8bytes.org,
+ shameerali.kolothum.thodi@huawei.com, yangyicong@hisilicon.com,
+ jean-philippe@linaro.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20230627033326.5236-1-nicolinc@nvidia.com>
+ <826cbb86-ac7d-c40b-f7e3-51681cda50b8@arm.com>
+ <ZJsXLFtH8WkRK41w@Asurada-Nvidia>
+ <1b0c9677-4e2a-6767-f8f2-23081e6af3e0@arm.com>
+ <ZJt7GhV4IOLvRhhr@Asurada-Nvidia>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <ZJt7GhV4IOLvRhhr@Asurada-Nvidia>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Jun 26, 2023 at 09:02:40PM +0800, Zenghui Yu wrote:
+On 2023-06-28 01:13, Nicolin Chen wrote:
+> Thanks for the reply.
+> 
+> On Wed, Jun 28, 2023 at 12:29:52AM +0100, Robin Murphy wrote:
+> 
+>>>>> Also, add STRTAB_STE_1_SHCFG_NONSHAREABLE of the default configuration
+>>>>> to distinguish from STRTAB_STE_1_SHCFG_INCOMING of the bypass one.
+>>>>
+>>>> Why? The "default configuration" is that the S1 shareability attribute
+>>>> is determined by the S1 translation itself, so the incoming value is
+>>>> irrelevant.
+>>>
+>>> That was for a consistency since the driver set the SHCFG field
+>>> to 0x0 (STRTAB_STE_1_SHCFG_NONSHAREABLE). I was not quite sure,
+>>> in a long run, if leaving an uncleared s1_cfg->shcfg potentially
+>>> can result in an unexpected behavior if it's passed in the STE.
+>>> Yet, we could be seemingly sure that the !IOMMU_DOMAIN_IDENTITY
+>>> means the S1 translation must be enabled and so the SHCFG would
+>>> be irrelevant?
+>>>
+>>> If so, I make make it:
+>>>
+>>> +     if (smmu_domain->domain.type == IOMMU_DOMAIN_IDENTITY) {
+>>> +             cfg->s1dss = STRTAB_STE_1_S1DSS_BYPASS;
+>>> +             cfg->shcfg = STRTAB_STE_1_SHCFG_INCOMING;
+>>> +     } else {
+>>> +             cfg->s1dss = STRTAB_STE_1_S1DSS_SSID0;
+>>> +     }
+>>
+>> What I mean is we don't need a cfg->shcfg field at all - without loss of
+>> generality it can simply be hard-coded to 1 when S1 is active, same as
+>> for stream bypass.
+> 
+> OK.
+> --------------------------------------------------------------------------------------------------
+> @@ -1350,7 +1350,8 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+>                  dst[1] = cpu_to_le64(
+> -                        FIELD_PREP(STRTAB_STE_1_S1DSS, STRTAB_STE_1_S1DSS_SSID0) |
+> +                        FIELD_PREP(STRTAB_STE_1_S1DSS, s1_cfg->s1dss) |
+> +                        FIELD_PREP(STRTAB_STE_1_SHCFG, STRTAB_STE_1_SHCFG_INCOMING) |
+>                           FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_WBRA) |
+> --------------------------------------------------------------------------------------------------
+> 
+>> The only case where explicitly setting STE.SHCFG=0 makes some sense is
+>> for a stage-2-only domain if a device's incoming attribute is stronger
+>> than it needs to be, but even then there are multiple levels of
+>> IMP-DEFness around whether SHCFG actually does anything anyway.
+> 
+> I see. Thanks for elaborating.
+> 
+>>>>> @@ -2198,7 +2206,11 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain,
+>>>>>         struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>>>>>         struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>>>>
+>>>>> -     if (domain->type == IOMMU_DOMAIN_IDENTITY) {
+>>>>> +     /*
+>>>>> +      * A master with a pasid capability might need a CD table, so only set
+>>>>> +      * ARM_SMMU_DOMAIN_BYPASS if IOMMU_DOMAIN_IDENTITY and non-pasid master
+>>>>> +      */
+>>>>> +     if (domain->type == IOMMU_DOMAIN_IDENTITY && !master->ssid_bits) {
+>>>>>                 smmu_domain->stage = ARM_SMMU_DOMAIN_BYPASS;
+>>>>>                 return 0;
+>>>>>         }
+>>>>
+>>>> This means we'll now go on to allocate a pagetable for an identity
+>>>> domain, which doesn't seem ideal :/
+>>>
+>>> Do you suggest to bypass alloc_io_pgtable_ops()? That would zero
+>>> out the TCR fields in the CD. Not sure if it'd work seamlessly,
+>>> but I can give it a try.
+>>
+>> I think if there's a good reason to support this then it's worth
+> 
+> There is an unignorable perf difference that we see on a real HW.
+> So the reason or (I should say) the requirement is pretty strong.
+> 
+>> supporting properly, i.e. refactor a bit harder to separate the CD table
+>> parts which are common to both S1DSS bypass and S1 translation, from the
+>> CD/pagetable parts that are only relevant for translation. S1DSS bypass
+>> remains the same as Stream bypass in the sense that there is no
+>> structure corresponding to the identity domain itself, so not only does
+>> it not make sense to have a pagetable, there's also no valid place to
+>> put one anyway - touching the CD belonging to SSID 0 is strictly wrong.
+> 
+> I can try that. Yet, I think the S1DSS bypass case still belongs
+> to ARM_SMMU_DOMAIN_S1/arm_smmu_domain_finalise_s1, right?
 
-> It looks like on device probe, with DEBUG_TEST_DRIVER_REMOVE,
-> .dma_configure() will be executed *twice* via the
-> really_probe()/re_probe path, and *no* .dma_cleanup() will be executed.
-> The resulting dev::iommu_group::owner_cnt is 2, which will confuse the
-> later iommu_group_dma_owner_claimed() call from VFIO on guest startup.
+That's what I'm disagreeing with - although S1DSS behaviour requires S1 
+translation to be nominally enabled for the stream as a whole, the 
+bypass domain is distinctly *not* an S1 translation domain, and there is 
+no S1 context to finalise. I think it's either a generalisation of 
+ARM_SMMU_DOMAIN_BYPASS based on s1cdmax, or it's its own new thing.
 
-Does this work for you?
+> I'd try keeping most of the parts intact while adding a pointer
+> to a structure holding pagetable stuff, to make it cleaner. Then
+> the S1DSS bypass case can be flagged by an empty pointer.
 
-diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-index 9c09ca5c4ab68e..7145d9b940b14b 100644
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -693,6 +693,8 @@ static int really_probe(struct device *dev, struct device_driver *drv)
- 
- 		device_remove(dev);
- 		driver_sysfs_remove(dev);
-+		if (dev->bus && dev->bus->dma_cleanup)
-+			dev->bus->dma_cleanup(dev);
- 		device_unbind_cleanup(dev);
- 
- 		goto re_probe;
- 
+I'd expect that what you need for this is much the same as what Michael 
+has already proposed for the PASID-generalisation series. The current 
+inside-out notion of S1 domains owning CD tables is what's getting in 
+the way of doing the right thing cleanly, in both cases.
+
+Thanks,
+Robin.
