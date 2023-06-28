@@ -1,126 +1,147 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2070.outbound.protection.outlook.com [40.107.95.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE9F9C8E3
-	for <iommu@lists.linux.dev>; Wed, 28 Jun 2023 15:43:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09EFDC8E3
+	for <iommu@lists.linux.dev>; Wed, 28 Jun 2023 16:00:01 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cnfOL+29DGm1JlGV3wAo+LWi9fYdNX3bXW5/jR9DPC+juU3tzp3sqaYZH5mRGjr+iRwa5e/LO3HaRX9ztviNmCZ970NeioXFB7RB+6/8mPfFFoHfezEPDoAF+W8X5SOTdAvO8V2MUKQdOSedcOZRVnNCzm3PMAbtDjgL+D6otboelQV3GI5iwjzssby+0TiEBSrVASXBgYOue+lULJvuw2o37smplzkuOK1ICV9OqxVggBt9V1WnMKoSl1GZYb9q/vJv5R0VXh0Sc0XwVyFYfRweT+MvJIdMQ8jUBVJlKSizkh/sM19GJ41RWq234UelPe6sX8WTnnt/LW71LJ/P+g==
+ b=TfEyP9ZrIMpka7Ud7E8yOvXu7ojDaFDDEQmXN9B1G5fpEGu5OouOuDNl0OySLNK5XxmVarHbeG0EP8qy0xapmxvPaJt/BWY65jecXzB0T7Z1n9EKec9uz/KpnxqAo48n01kdxxm84AOM9SL1UXBoo0bDvC8fHWgRhHTGQu1HQ8TYQc+b56BC30eafqLhFu1i+NIcW3p2eOvzmwr1oA8q5AjLyvrEmLHDsR5H3OKmhV465YdplqAg9ixyAvfRU9PN7Ze367EzXhGW0Tl2J/U72PjBdK2ZTPRXYO8BYamPeDUoUo4RMeurQK1mZmtmDR4ZZN9yGBIMOO4k9nnV6yTb0g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UJ1HTvS6d29EvqK1HRfMhplgqMhbozU2tdo66vHJvG8=;
- b=b3sg/7a4QpgGtTChShPNUOZErG3CWAD+KZ5xhEhn3ASFu8DwlhJfYRGGa9tZAC9vQ+QJdgQOKRgs0umUCaMVqas4EWhYMfA0HnDSOrwc4f4luG1PiHqBueZYmzB7WOTiJeClMrCOuUGlWEb8pi1SE0O2u2llBjo8j55KRG8XJBdgPQ5XWc1F6Nk52Z0xOW2KAAbZYZwBe6fRKFP50eH/dn+qICbnXBk6T/kJ53Q6RzzapiQSYBlgXRr1PY6EUEufssDlJy++WbsSc27t5MVj7h+rJxVM6HeLsakn5Rlwv489+R85Lopswq9cZN0KmZfdlEV7b4NkNNC48dQwGKwzgQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
+ bh=/MqI/cLeOKTmvQqmEVt+L3GJrpO7oa8E6R7VLK2llYo=;
+ b=eLwit1SjbAGNgZVo3S3j2YQZCt5TYPL8zy7PdG3Q3b9XL9sNigw4juWPTLbTOE9okOS9YI6jExYjBLBQjDAt/N8PTbJHJ6NypjkukncwyM3AxVL/xGeM9gkXrvTFk1VD6UNuwRVMePTNMwoeB1vZ26ywBcfUL9vODVmnAtsFeziuhJ1XHLI6uVPDzZ10x2qFbtnN9aetbWTC5xNCYMRnMQ59cqbAN0PA53ukCiNds2Ib6sYhBbeHgZ4xDiKezCxnfzFG8KPJHDlnbSo0rIKPAh8/CwSQMSGX/mCtOLIjxkr3YHEwPnVqXPc/eB/5ADLL0ttPZHz5ZzL+/kl7XeE1NA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UJ1HTvS6d29EvqK1HRfMhplgqMhbozU2tdo66vHJvG8=;
- b=KuuDiJqLUjqPHTR5k+qlIIvP0utNK8yCx0wxT9ltvplPiET1ZRRZXI/ekLTXF/AzKl75ZCMD/iVIvZT+yVPFcomEGzVX9VdSbeRtCwQVjSF4uHAgw6DhPbfp9gGsXKpn+52+tFMGrohWqYJ5rfkBjSUHqgf586wPTQsIQf1vP5kVo47NrwKK/g7MyDViQNeUjKv6EgnF4+10EEIcWj/qy293u+HH9qZB73Ion9EEy+yAQF2GBUy4xEuzxFdacY3Tn/ON9UreV2VPcAdCufx37HuH4wq0nbraKyLGNeFz6W6KDcBYI4jotGlTYZXXo/eJOp3YGc1GQ1Ktj/xAJTzVbg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by MN2PR12MB4334.namprd12.prod.outlook.com (2603:10b6:208:1d1::10) with
+ bh=/MqI/cLeOKTmvQqmEVt+L3GJrpO7oa8E6R7VLK2llYo=;
+ b=fTxmhtvcKHcjCEIelGRBwH7PZVnY9O5FyzV3cdADEAuRSXKnSJfaqK6jR32C+wqmgEss8M91NFwtCACOG1JVEC7S0K+g8Sa40sCH6/i//ehyVrwJF8VEblzbGRhsD3dt0EH4FcfUxEdQ5PivsOUTCMboEJSEy70IaxzgtXVqmX2tynaZivRlMFhH6kSRuyfGWE9VLvKIuB0aW6+xItQvOI9f7yrsozqyicxUXN7+ojW+GEX+NnNFCHBbKT1hYTh09GqpvyK2Q5qDV3nifiawyyNYLV/hD6C6gDEAb5kms/Z4N6rzOQ+WBbumKTDyhsxZ+xedN5YOplJyPydtuSMq6Q==
+Received: from DS0PR17CA0013.namprd17.prod.outlook.com (2603:10b6:8:191::11)
+ by PH7PR12MB7869.namprd12.prod.outlook.com (2603:10b6:510:27e::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.24; Wed, 28 Jun
- 2023 15:43:26 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab%7]) with mapi id 15.20.6521.024; Wed, 28 Jun 2023
- 15:43:26 +0000
-Date: Wed, 28 Jun 2023 12:43:25 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
+ 2023 15:59:59 +0000
+Received: from DM6NAM11FT033.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:8:191:cafe::2e) by DS0PR17CA0013.outlook.office365.com
+ (2603:10b6:8:191::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6544.20 via Frontend
+ Transport; Wed, 28 Jun 2023 15:59:59 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ DM6NAM11FT033.mail.protection.outlook.com (10.13.172.221) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6500.48 via Frontend Transport; Wed, 28 Jun 2023 15:59:59 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 28 Jun 2023
+ 08:59:49 -0700
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.37; Wed, 28 Jun 2023 08:59:49 -0700
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.126.190.181)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Wed, 28 Jun 2023 08:59:48 -0700
+Date: Wed, 28 Jun 2023 08:59:47 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
 To: Robin Murphy <robin.murphy@arm.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org, joro@8bytes.org,
-	shameerali.kolothum.thodi@huawei.com, yangyicong@hisilicon.com,
-	jean-philippe@linaro.org, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+CC: <will@kernel.org>, <jgg@nvidia.com>, <joro@8bytes.org>,
+	<shameerali.kolothum.thodi@huawei.com>, <yangyicong@hisilicon.com>,
+	<jean-philippe@linaro.org>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
 Subject: Re: [PATCH v1] iommu/arm-smmu-v3: Allow default substream bypass
  with a pasid support
-Message-ID: <ZJxVHf2YZ1LxPx23@nvidia.com>
+Message-ID: <ZJxY8wyNZiAI40lm@Asurada-Nvidia>
 References: <20230627033326.5236-1-nicolinc@nvidia.com>
  <826cbb86-ac7d-c40b-f7e3-51681cda50b8@arm.com>
  <ZJsXLFtH8WkRK41w@Asurada-Nvidia>
  <1b0c9677-4e2a-6767-f8f2-23081e6af3e0@arm.com>
  <ZJt7GhV4IOLvRhhr@Asurada-Nvidia>
  <2274ba47-7def-082c-8429-8f2cc18adf9f@arm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2274ba47-7def-082c-8429-8f2cc18adf9f@arm.com>
-X-ClientProxiedBy: BL6PEPF0001641E.NAMP222.PROD.OUTLOOK.COM
- (2603:10b6:22e:400:0:1004:0:e) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <2274ba47-7def-082c-8429-8f2cc18adf9f@arm.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MN2PR12MB4334:EE_
-X-MS-Office365-Filtering-Correlation-Id: 75ecb51e-4c72-4544-8758-08db77ee69b3
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT033:EE_|PH7PR12MB7869:EE_
+X-MS-Office365-Filtering-Correlation-Id: 289c7a32-1031-49ba-da7f-08db77f0b989
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	+FoDUZ/6IutYv2WwYfxiVPheZewMdps1mbEMXtn4DNxsqzRfNNP3ZX/1azl8in+7V/Qa9LntxyWBP+rXZIQUoDpm2IUFp87SUnVhSsjQyVWDm23eOhk4nu/LZQuVgMeHT1rLXnQ647BsJCJHdEfzBlm942y/ZcIO4TdVuVt2Np/Xfhl5qhwhFyHtvshsvq2EXFjz74wu25E8WcS3s4CxOqAUNDpypoXRQKaSDmFTZjb4/YlQBhOD/LywtLVYCWPf3YFgv40WA4Mvvx2N5XUjn4WzofVyZgFOU0HBHSYeGWaTormon4bUJkepUiUtPuPsh8/JopNuuUBpjaw6M4Yl4qbjZhWGvoI03jYL8KAWB2DVacYKtw/Km5/Ybekw8eoJokuzINHTcG8BTGHWKufkDur4iPn8lqsbJy+u2I8W1BWeazJG4TiMYwfr7bTzKqbBFiJwUixDqhQiubTYl/BMecV7sL9jdI2iV//KvyibZxVlIixVXkR49zKe0xg0K57NO299NYV7dJuu18RhdHypOpKaxWea16tZ0EdlhEDgusVKNwvGY4vQMEqYHyBGHIpZ
+	DLIOhUep2thKfcG/buthMq92C9OW2TszQxmV+WZmOUlKnc4/KZTJrlj/p01Bw8MVseWxJjPVCI4hI6ZMZGr/Hi7uORsMGCY94LYdqiJhi6hjk/4NO8MEh0vj3hPYBuKAbdD8iSFlU4NedrRgMwUCv4BsVQBgz1FMxF2/pYsV7rAedmMXt18L4cKUh8WjkUhovSxoyYsek2O8uhzwn+aDvo9j/OE5e48zDSHQt7NYmtV6vt0ThErdljLu5dM3X1f0bRptzwt+lMu9/7zp0FpS2L/j/c0jADcxkHsIm3is2nS58LTB/6I+S9slnCNkRxoSo2t65nwctYXbC5hecg24T27QZiKMkcXFCZnJmm15XMDkcEOIgP4ksZrWJqfzAvV2ALdeboYZYhQKR7VunCvOUPtgiRwG7uEIxpyubc7RuaKVPKXMkM9ufzXixieTlchmmFTtVAgS9HOeKv+r4uHgVDIkL8PZeQDHespWrFd3Lpx9+wxopeF/nL0tjJpLoDBoUy7XmNAuvTysi8S6+kxw60B98WiRQqN15BdV8PTQkPTIHA5ski/hLV07qJx+19Zoj6Ddg9TA3UYSQlz8vACsLWnzt2MNe3si6kOnz4Ck2x2mAwlden/2uqp7mn6wde0MO1f1B+CwfokXCtqzIGFPtXk0tMsNUKr4gIhFFQIvlISlePLh1RMKmPhZR+gG8On0RAm1XdoTtZRjBOVWMgkixM1CJ7MClisguhK3Nshg8C+3/12FnYZKxZ0FoeEJDUb7kMKhMnJ2yOlKK5RCJMbKA788P1up4UUyYv3QWLqSdHc=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(396003)(136003)(376002)(346002)(451199021)(41300700001)(36756003)(5660300002)(38100700002)(316002)(66476007)(6916009)(4326008)(86362001)(8676002)(66556008)(8936002)(66946007)(6486002)(26005)(186003)(6506007)(4744005)(2906002)(6512007)(478600001)(2616005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?aZCllzTobXO0OHxTcw0jJEufyiuTYKxRYbTbLarPwyJwCyTfNz8VCcLeg6AU?=
- =?us-ascii?Q?rCXr57XWSC6lRBbTuYcK/qtYqp3ZIdw4mzIZjFHxLY2RtbX08N7F0yKl/xUb?=
- =?us-ascii?Q?T3XJ2wFT3ejhlOwF7Q4zYIcvk0TOPknpFQa/mUZYOmunC0oWdqt6nFQRm9qF?=
- =?us-ascii?Q?2Fp/kRcNPxbEI98HeUjGLRXWRSbOkdUDODEGW3KL2HYvsc8HiulPecYBQ7yX?=
- =?us-ascii?Q?rdKt9J9qteU1aGJtEf2KW06sGmGDE6Ctur+H9CYi1ZH8rSnui+fOrL4rCv86?=
- =?us-ascii?Q?H3xr7s6Z+PWEQSWCPq1dQCzaQa/hvkq+oPjHm6GrTFJPZJIV4WpZHR9ytjfP?=
- =?us-ascii?Q?SKDIdpGxsNDSXM29orj87zzPkT8yP5b771LBSd2k4GeydPqP2HmCMgQOt1aW?=
- =?us-ascii?Q?hIFiC/MUtiyIQZ1pIkuIdATj6vZnAXC3zwlVeFfejN5pEy3YoDT3PTERnAqJ?=
- =?us-ascii?Q?NiAGw/wnYjr7FvOpLX+csUjh2d1hPDGvr1J2Fjzt2UB2RkU5gfdHlITIAnD/?=
- =?us-ascii?Q?cwkIkXMJ1Lvzo5cSrDlsNdLlKgC41h4Dem4H6EQ6qGDPos9wvOJeDCylh9jD?=
- =?us-ascii?Q?vlIjdEH/nb2JDgavFS2ulSEQLuds4lNOVxXiSc+buf3r6VcygRpOxr2fOwfM?=
- =?us-ascii?Q?KtshA57fPrf7C2PyJ8GyhSdq5S+rdLtcRGwDZ7TSpB9Prk/F9RrF5RtsS6af?=
- =?us-ascii?Q?OpvpZdrPv0NLolmQGH5mX6Yr1iy2mh991VJmJFI3JN8pCOY8YV3Ecu/ovGfc?=
- =?us-ascii?Q?yh5IQtcbdJZycpyRIsU0pCp0niD2kR8xUidjsgXS5Clq15pJ1lbK+LefiWip?=
- =?us-ascii?Q?4S/PCDxNI6BcH5I//N076uXwtm19s+OJaEskYcIHul2KoWk0S2fLUVrb0Lf+?=
- =?us-ascii?Q?eOlGLhz4L2vPvJCY5E8ZWuauGAcjBCswgk2u6oy1nF3AHbCfUjEfh4XCG71+?=
- =?us-ascii?Q?Y4wKod1IVQ4ixEd8ERbVv/a6LG6gK1WtmbUoiybft0724Rie+5tjYclcN9e2?=
- =?us-ascii?Q?CPGM8xa35S9+B8NNfSDyi+DUw1u2os/ViXv001YmKlX786hUhDO2SZMfOKIx?=
- =?us-ascii?Q?0h4Q7PbWia6X4j07pKk1BWME/7BRyDC3i5U1pUuv/GR02Tg1Z2+QDlM6Qn6L?=
- =?us-ascii?Q?9rjr7gI0NVTCp76OO2JE87TQrlMsJi4UTo8vnOhp1OJ4c6Znpq6FoEX3y+R2?=
- =?us-ascii?Q?YvhOVJEjh5bXTwzZEE1K8Oa7MUnk6akQwkGUHPiEomyHCRpSXy/mp0NT9OxC?=
- =?us-ascii?Q?oyD8gy826AaNYPGYnqzRRceTzV2j8/6vDg+VrgXPgbp56JutOZm8RMdN7kqZ?=
- =?us-ascii?Q?uonKBBZ4mIZbtNQZbXqaWAY5nyuIS3HGz/zymru6tncS/XpztQHmzGTQWNDl?=
- =?us-ascii?Q?fI+RUvdg7CjJNfObPuHOL/RZatUhl6SIoxoidXOinaQS4xstYQc4K5rNZiS3?=
- =?us-ascii?Q?swyCUmtF2VxQDSs8xjK+6ND24nswrBeoOw54q7YLsuaoWrbT4jYuryoEbRDP?=
- =?us-ascii?Q?3gUXo7c6mJQbzzV9OLO5MArH6FKVtH8NYRvND63r1XuBg9BRnFb/dEwWNNBP?=
- =?us-ascii?Q?r+QE+TrdfPNz9mQOZooRJ3NF1ghIg+PWFl0PuRpR?=
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(39860400002)(136003)(376002)(346002)(451199021)(40470700004)(36840700001)(46966006)(86362001)(478600001)(54906003)(40480700001)(55016003)(6916009)(4326008)(70586007)(70206006)(2906002)(316002)(40460700003)(41300700001)(33716001)(26005)(9686003)(186003)(47076005)(36860700001)(426003)(336012)(5660300002)(82310400005)(82740400003)(7636003)(356005)(8936002)(8676002)(414714003)(473944003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 75ecb51e-4c72-4544-8758-08db77ee69b3
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jun 2023 15:43:26.3782
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jun 2023 15:59:59.0326
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Network-Message-Id: 289c7a32-1031-49ba-da7f-08db77f0b989
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: aAP54ZsPs3P+VINpYcgEdhgf4RpwotIqNQ/hTB9ssCfx47z48wOmrbrLjdj3BY0m
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4334
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DM6NAM11FT033.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7869
+
+Hi Robin,
 
 On Wed, Jun 28, 2023 at 04:39:48PM +0100, Robin Murphy wrote:
+
+> > > supporting properly, i.e. refactor a bit harder to separate the CD table
+> > > parts which are common to both S1DSS bypass and S1 translation, from the
+> > > CD/pagetable parts that are only relevant for translation. S1DSS bypass
+> > > remains the same as Stream bypass in the sense that there is no
+> > > structure corresponding to the identity domain itself, so not only does
+> > > it not make sense to have a pagetable, there's also no valid place to
+> > > put one anyway - touching the CD belonging to SSID 0 is strictly wrong.
+> > 
+> > I can try that. Yet, I think the S1DSS bypass case still belongs
+> > to ARM_SMMU_DOMAIN_S1/arm_smmu_domain_finalise_s1, right?
+> 
+> That's what I'm disagreeing with - although S1DSS behaviour requires S1
+> translation to be nominally enabled for the stream as a whole, the
+> bypass domain is distinctly *not* an S1 translation domain, and there is
+> no S1 context to finalise. I think it's either a generalisation of
+> ARM_SMMU_DOMAIN_BYPASS based on s1cdmax, or it's its own new thing.
+
+Hmm, the fundamental of my view is that the ARM_SMMU_DOMAIN_*
+list is quite matching with the CONFIG field of an STE, which
+turns the S1DSS bypass into the ARM_SMMU_DOMAIN_S1 category.
+And after all S1DSS is named "S1" :)
+
+Following your view, How about ARM_SMMU_DOMAIN_S1DSS_BYPASS?
 
 > > I'd try keeping most of the parts intact while adding a pointer
 > > to a structure holding pagetable stuff, to make it cleaner. Then
 > > the S1DSS bypass case can be flagged by an empty pointer.
 > 
-> I'd expect that what you need for this is much the same as what Michael has
-> already proposed for the PASID-generalisation series. The current inside-out
-> notion of S1 domains owning CD tables is what's getting in the way of doing
-> the right thing cleanly, in both cases.
+> I'd expect that what you need for this is much the same as what Michael
+> has already proposed for the PASID-generalisation series. The current
+> inside-out notion of S1 domains owning CD tables is what's getting in
+> the way of doing the right thing cleanly, in both cases.
 
-Yeah, that was sort of my guessed feeling as well..
+Yea, Jason had the same remarks when I discussed this matter
+with him. But I took the chance after I saw a shortcut :)
 
-What do you think of Michael's series?
+I have been aligning with Michael already, trying to figure
+out how much ground that our use cases can share.
 
-Jason
+Thanks
+Nic
