@@ -1,143 +1,194 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A017710ED
-	for <iommu@lists.linux.dev>; Thu, 29 Jun 2023 01:07:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1688000836; x=1719536836;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=b9GdT6r2b9r4HGFh4jKr0wne/bp8GHgArZMHuUjrA0Y=;
-  b=c452Wr/pCsAKGOCw1KUDOajDTzrJECUWtzRAgeMErZXXI22768ukv7qN
-   fsUAmHjyQbw0tUsWNVd5odNGsXfdb70MGCSQCG7tVM9XkvTxBW5DNa4CN
-   e5+iNuNX+1bRycxKe99CfGlzPo3ZQLICfLItQysyKGvKNqTl4qvyNL/i5
-   a1A7BgmwAeH0LhWud8BmK4wAMVvh0clvAbbP3WdbKDvIULcssvXIwRCWD
-   PR8RvPTu20bR3igaIXGJzMtvWqz9wOJqLbEp6F6YFZD7sT+ExbKNxnQrb
-   +PgDfHUcFd6XB1uVVNGVQv7mhQA2v0HjoKhUySoHaXlCJWUXBsTTQ6cQ4
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10755"; a="341581966"
-X-IronPort-AV: E=Sophos;i="6.01,167,1684825200"; 
-   d="scan'208";a="341581966"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2023 18:07:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10755"; a="717179669"
-X-IronPort-AV: E=Sophos;i="6.01,167,1684825200"; 
-   d="scan'208";a="717179669"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.186.48]) ([10.252.186.48])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2023 18:07:09 -0700
-Message-ID: <7669371f-c529-78ec-1303-9b3a6e23cdce@linux.intel.com>
-Date: Thu, 29 Jun 2023 09:07:04 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6301215A8
+	for <iommu@lists.linux.dev>; Thu, 29 Jun 2023 02:00:22 +0000 (UTC)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.57])
+	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Qs1PV5cglzqTNR;
+	Thu, 29 Jun 2023 09:41:02 +0800 (CST)
+Received: from [10.67.102.169] (10.67.102.169) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Thu, 29 Jun 2023 09:41:20 +0800
+CC: <v-songbaohua@oppo.com>, Christoph Hellwig <hch@lst.de>, <corbet@lwn.net>,
+	<catalin.marinas@arm.com>, <will@kernel.org>, <m.szyprowski@samsung.com>,
+	<robin.murphy@arm.com>, <paulmck@kernel.org>, <bp@suse.de>,
+	<peterz@infradead.org>, <rdunlap@infradead.org>, <kim.phillips@amd.com>,
+	<rostedt@goodmis.org>, <thunder.leizhen@huawei.com>, <ardb@kernel.org>,
+	<bhe@redhat.com>, <anshuman.khandual@arm.com>, <song.bao.hua@hisilicon.com>,
+	<linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	=?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>, Andrew Morton
+	<akpm@linux-foundation.org>
+Subject: Re: [PATCH] dma-contiguous: support per-numa CMA for all
+ architectures
+To: Barry Song <21cnbao@gmail.com>, Yajun Deng <yajun.deng@linux.dev>, Yicong
+ Yang <yangyicong@hisilicon.com>, Tian Tao <tiantao6@hisilicon.com>
+References: <20230515094955.GB23880@lst.de>
+ <20230512094210.141540-1-yajun.deng@linux.dev>
+ <055f964384a2bb4ba51c64a0be6072c9@linux.dev>
+ <20230515133821.769158bb@meshulam.tesarici.cz>
+ <20230623174046.66ce934bcf5c1303003a5afc@linux-foundation.org>
+ <a18b0cf466191b0d692e431fe33c7c80@linux.dev>
+ <CAGsJ_4xZp_1jLZnsZsUzaxvkkaOv=FDOiGKNgCmPN1gvJugSTg@mail.gmail.com>
+From: Yicong Yang <yangyicong@huawei.com>
+Message-ID: <78c3ebc1-c235-0b2c-b740-76141f886bfd@huawei.com>
+Date: Thu, 29 Jun 2023 09:41:19 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Cc: baolu.lu@linux.intel.com, Nicolin Chen <nicolinc@nvidia.com>,
- Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>, Yi Liu
- <yi.l.liu@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>,
- iommu@lists.linux.dev, linux-kselftest@vger.kernel.org,
- virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCHES 00/17] IOMMUFD: Deliver IO page faults to user space
-To: Jason Gunthorpe <jgg@ziepe.ca>
-References: <20230530053724.232765-1-baolu.lu@linux.intel.com>
- <ZHZFi28jRxeZMKK3@Asurada-Nvidia>
- <a8ccbac8-c456-d116-24a2-7503ccbb720c@linux.intel.com>
- <ZJnZ7bEIZHsqmyAG@ziepe.ca>
- <26b97776-7ce5-51f6-77b7-0ce837aa7cca@linux.intel.com>
- <ZJwsW3eFy0bMhkOt@ziepe.ca>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ZJwsW3eFy0bMhkOt@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <CAGsJ_4xZp_1jLZnsZsUzaxvkkaOv=FDOiGKNgCmPN1gvJugSTg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.102.169]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 
-On 2023/6/28 20:49, Jason Gunthorpe wrote:
-> On Wed, Jun 28, 2023 at 10:00:56AM +0800, Baolu Lu wrote:
->>> If the driver created a SVA domain then the op should point to some
->>> generic 'handle sva fault' function. There shouldn't be weird SVA
->>> stuff in the core code.
+On 2023/6/26 13:32, Barry Song wrote:
+> On Sun, Jun 25, 2023 at 7:30 PM Yajun Deng <yajun.deng@linux.dev> wrote:
+>>
+>> June 24, 2023 8:40 AM, "Andrew Morton" <akpm@linux-foundation.org> wrote:
+>>
+>>> On Mon, 15 May 2023 13:38:21 +0200 Petr Tesařík <petr@tesarici.cz> wrote:
 >>>
->>> The weird SVA stuff is really just a generic per-device workqueue
->>> dispatcher, so if we think that is valuable then it should be
->>> integrated into the iommu_domain (domain->ops->use_iopf_workqueue =
->>> true for instance). Then it could route the fault through the
->>> workqueue and still invoke domain->ops->iopf_handler.
+>>>> On Mon, 15 May 2023 11:23:27 +0000
+>>>> "Yajun Deng" <yajun.deng@linux.dev> wrote:
+>>>>
+>>>> May 15, 2023 5:49 PM, "Christoph Hellwig" <hch@lst.de> wrote:
 >>>
->>> The word "SVA" should not appear in any of this.
+>>> This looks fine to me. Can you please work with Barry to make sure
+>>> the slight different place of the initcall doesn't break anything
+>>> for his setup? I doubt it would, but I'd rather have a Tested-by:
+>>> tag.
+>>>> Barry's email is no longer in use. I can't reach him.
+>>>>
+>>>> Which one? I would hope that his Gmail account is still valid:
+>>>>
+>>>> Barry Song <21cnbao@gmail.com>
+>>>
+>>> Maybe his kernel.org address works...
+>>>
+>>> I have this patch stuck in limbo for 6.4. I guess I'll carry it over
+>>> into the next -rc cycle, see what happens.
+>>>
+>>> fwiw, it has been in -next for six weeks, no known issues.
 >>
->> Yes. We should make it generic. The domain->use_iopf_workqueue flag
->> denotes that the page faults of a fault group should be put together and
->> then be handled and responded in a workqueue. Otherwise, the page fault
->> is dispatched to domain->iopf_handler directly.
+>> Hi, Barry, The slight different place of the initcall, does break anything?
 > 
-> It might be better to have iopf_handler and
-> iopf_handler_work function pointers to distinguish to two cases.
-
-Both are okay. Let's choose one when we have the code.
-
+> i don't see a fundamental difference as anyway it is still after
+> arch_numa_init()
+> which is really what we depend on.
 > 
->>> Not sure what iommu_register_device_fault_handler() has to do with all
->>> of this.. Setting up the dev_iommu stuff to allow for the workqueue
->>> should happen dynamically during domain attach, ideally in the core
->>> code before calling to the driver.
->>
->> There are two pointers under struct dev_iommu for fault handling.
->>
->> /**
->>   * struct dev_iommu - Collection of per-device IOMMU data
->>   *
->>   * @fault_param: IOMMU detected device fault reporting data
->>   * @iopf_param:  I/O Page Fault queue and data
->>
->> [...]
->>
->> struct dev_iommu {
->>          struct mutex lock;
->>          struct iommu_fault_param        *fault_param;
->>          struct iopf_device_param        *iopf_param;
->>
->> My understanding is that @fault_param is a place holder for generic
->> things, while @iopf_param is workqueue specific.
+> and i did a test on qemu with the command line:
+> qemu-system-aarch64 -M virt,gic-version=3 -nographic \
+>  -smp cpus=8 \
+>  -numa node,cpus=0-1,nodeid=0 \
+>  -numa node,cpus=2-3,nodeid=1 \
+>  -numa node,cpus=4-5,nodeid=2 \
+>  -numa node,cpus=6-7,nodeid=3 \
+>  -numa dist,src=0,dst=1,val=12 \
+>  -numa dist,src=0,dst=2,val=20 \
+>  -numa dist,src=0,dst=3,val=22 \
+>  -numa dist,src=1,dst=2,val=22 \
+>  -numa dist,src=2,dst=3,val=12 \
+>  -numa dist,src=1,dst=3,val=24 \
+>  -m 4096M -cpu cortex-a57 -kernel arch/arm64/boot/Image \
+>  -nographic -append "cma_pernuma=32M root=/dev/vda2  rw ip=dhcp
+> sched_debug irqchip.gicv3_pseudo_nmi=1" \
+>  -drive if=none,file=extra/ubuntu16.04-arm64.img,id=hd0 -device
+> virtio-blk-device,drive=hd0 \
+>  -net nic -net user,hostfwd=tcp::2222-:22
 > 
-> Well, lets look
+> and in system, i can see all cma areas are correctly reserved:
+> ~# dmesg | grep cma
+> [    0.000000] cma: cma_declare_contiguous_nid(size
+> 0x0000000002000000, base 0x0000000000000000, limit 0x0000000000000000
+> alignment 0x0000000000000000)
+> [    0.000000] cma: Reserved 32 MiB at 0x000000007ce00000
+> [    0.000000] cma: dma_pernuma_cma_reserve: reserved 32 MiB on node 0
+> [    0.000000] cma: cma_declare_contiguous_nid(size
+> 0x0000000002000000, base 0x0000000000000000, limit 0x0000000000000000
+> alignment 0x0000000000000000)
+> [    0.000000] cma: Reserved 32 MiB at 0x00000000bce00000
+> [    0.000000] cma: dma_pernuma_cma_reserve: reserved 32 MiB on node 1
+> [    0.000000] cma: cma_declare_contiguous_nid(size
+> 0x0000000002000000, base 0x0000000000000000, limit 0x0000000000000000
+> alignment 0x0000000000000000)
+> [    0.000000] cma: Reserved 32 MiB at 0x00000000fce00000
+> [    0.000000] cma: dma_pernuma_cma_reserve: reserved 32 MiB on node 2
+> [    0.000000] cma: cma_declare_contiguous_nid(size
+> 0x0000000002000000, base 0x0000000000000000, limit 0x0000000000000000
+> alignment 0x0000000000000000)
+> [    0.000000] cma: Reserved 32 MiB at 0x0000000100000000
+> [    0.000000] cma: dma_pernuma_cma_reserve: reserved 32 MiB on node 3
+> [    0.000000] cma: dma_contiguous_reserve(limit 100000000)
+> [    0.000000] cma: dma_contiguous_reserve: reserving 32 MiB for global area
+> [    0.000000] cma: cma_declare_contiguous_nid(size
+> 0x0000000002000000, base 0x0000000000000000, limit 0x0000000100000000
+> alignment 0x0000000000000000)
+> [    0.000000] cma: Reserved 32 MiB at 0x00000000fae00000
+> [    0.000000] Kernel command line: cma_pernuma=32M root=/dev/vda2  rw
+> ip=dhcp sched_debug irqchip.gicv3_pseudo_nmi=1
+> [    0.000000] Memory: 3848784K/4194304K available (16128K kernel
+> code, 4152K rwdata, 10244K rodata, 8512K init, 612K bss, 181680K
+> reserved, 163840K cma-reserved)
+> [    0.175309] cma: cma_alloc(cma (____ptrval____), count 128, align 7)
+> [    0.179264] cma: cma_alloc(): returned (____ptrval____)
+> [    0.179869] cma: cma_alloc(cma (____ptrval____), count 128, align 7)
+> [    0.180027] cma: cma_alloc(): returned (____ptrval____)
+> [    0.180187] cma: cma_alloc(cma (____ptrval____), count 128, align 7)
+> [    0.180374] cma: cma_alloc(): returned (____ptrval____)
 > 
-> struct iommu_fault_param {
-> 	iommu_dev_fault_handler_t handler;
-> 	void *data;
+> so my feeling is that this patch is fine. but I would prefer Yicong
+> and Tiantao who have a real numa machine
+> and we can get some real device drivers to call dma APIs to allocate
+> memory from pernuma cma on arm64
+> even though it is 99.9% OK.
 > 
-> These two make no sense now. handler is always iommu_queue_iopf. Given
-> our domain centric design we want the function pointer in the domain,
-> not in the device. So delete it.
 
-Agreed.
+Tested on our 4 NUMA arm64 server based on mainline commit 1ef6663a587b,
+this patch works well, so:
 
-> 
-> 	struct list_head faults;
-> 	struct mutex lock;
-> 
-> Queue of unhandled/unacked faults? Seems sort of reasonable
+Tested-by: Yicong Yang <yangyicong@hisilicon.com>
 
-It's the list of faults pending for response.
+For pernuma cma reservation:
+[    0.000000] cma: cma_declare_contiguous_nid(size 0x0000000040000000, base 0x0000000000000000, limit 0x0000000000000000 alignment 0x0000000000000000)
+[    0.000000] cma: Reserved 1024 MiB at 0x0000002081800000
+[    0.000000] cma: dma_pernuma_cma_reserve: reserved 1024 MiB on node 0
+[    0.000000] cma: cma_declare_contiguous_nid(size 0x0000000040000000, base 0x0000000000000000, limit 0x0000000000000000 alignment 0x0000000000000000)
+[    0.000000] cma: Reserved 1024 MiB at 0x0000004000000000
+[    0.000000] cma: dma_pernuma_cma_reserve: reserved 1024 MiB on node 1
+[    0.000000] cma: cma_declare_contiguous_nid(size 0x0000000040000000, base 0x0000000000000000, limit 0x0000000000000000 alignment 0x0000000000000000)
+[    0.000000] cma: Reserved 1024 MiB at 0x0000202000000000
+[    0.000000] cma: dma_pernuma_cma_reserve: reserved 1024 MiB on node 2
+[    0.000000] cma: cma_declare_contiguous_nid(size 0x0000000040000000, base 0x0000000000000000, limit 0x0000000000000000 alignment 0x0000000000000000)
+[    0.000000] cma: Reserved 1024 MiB at 0x0000204000000000
+[    0.000000] cma: dma_pernuma_cma_reserve: reserved 1024 MiB on node 3
+[    0.000000] cma: dma_contiguous_reserve(limit 100000000)
+[    0.000000] cma: dma_contiguous_reserve: reserving 384 MiB for global area
+[    0.000000] cma: cma_declare_contiguous_nid(size 0x0000000018000000, base 0x0000000000000000, limit 0x0000000100000000 alignment 0x0000000000000000)
+[    0.000000] cma: Reserved 384 MiB at 0x0000000068000000
 
->> @iopf_param could be allocated on demand. (perhaps renaming it to a more
->> meaningful one?) It happens before a domain with use_iopf_workqueue flag
->> set attaches to a device. iopf_param keeps alive until device_release.
-> 
-> Yes
-> 
-> Do this for the iommu_fault_param as well, in fact, probably just put
-> the two things together in one allocation and allocate if we attach a
-> PRI using domain. I don't think we need to micro optimze further..
+For allocation from pernuma cma, no failure recorded:
+[root@localhost cma]# pwd
+/sys/kernel/mm/cma
+[root@localhost cma]# ls
+pernuma0  pernuma1  pernuma2  pernuma3  reserved
+[root@localhost cma]# cat pernuma*/alloc_pages_fail
+0
+0
+0
+0
+[root@localhost cma]# cat pernuma*/alloc_pages_success
+2144
+0
+2132
+0
 
-Yeah, let me try this.
-
-Best regards,
-baolu
-
+Thanks.
