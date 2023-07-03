@@ -1,258 +1,243 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+Received: from xry111.site (xry111.site [89.208.246.23])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB4DB803
-	for <iommu@lists.linux.dev>; Mon,  3 Jul 2023 07:15:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1688368509; x=1719904509;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=IvlQrNnOyHi6Vg94dpZQwWqAR2Q7aPclv+eCXYP145M=;
-  b=hrB3u1ZCB5jRBaqN/0tnICC8wYE2utlquXYWIQTp6Zyjq21UCx42Vvhr
-   DXcqq955vtC5rG5Y90FuqR7db7X5hndhQpb1YulKAmrGPTvIJq7uK5yWT
-   PyypeKm8/jt27QIdZt7hftP1oGYjnW015YrypGCUwrsEkkmttx4MsihyD
-   5BLly++0dPshksDYX9pqFqFVkgTqRa+s+OjJ5I49gTujPvNI3eODtdZOB
-   3epE61EYML4ZrmGywWbYkx9eIrrhu6C19bmXzrEeJXjqra10lUJZsTYaI
-   UMm++I9YuMHEo1UxiVlyWQZR4KeNgQl97IKrMVkWGY8rKxu2BLqRPrUps
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10759"; a="342403476"
-X-IronPort-AV: E=Sophos;i="6.01,177,1684825200"; 
-   d="scan'208";a="342403476"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jul 2023 00:15:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10759"; a="712466090"
-X-IronPort-AV: E=Sophos;i="6.01,177,1684825200"; 
-   d="scan'208";a="712466090"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orsmga007.jf.intel.com with ESMTP; 03 Jul 2023 00:15:08 -0700
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Mon, 3 Jul 2023 00:15:07 -0700
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Mon, 3 Jul 2023 00:15:06 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27 via Frontend Transport; Mon, 3 Jul 2023 00:15:06 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.46) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.27; Mon, 3 Jul 2023 00:15:06 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SwiPb0A9S3SaagkzKEpeXerui8CGaKNfOCBvS8KvuVJ9NViwnVECQID4aSgdNarqhm7eH+ytk4bpFF199gVaiNmuAaBZ8mC6XLQ+ftcJjMsgAn2IGU/8pf/32iEeXRCtZfdn7JSgn2nI4z7mILR/WzrxkzRSCzY3poeI8wEYvdyDSYJN6dSsBA+y0A9FHwv79kKErNB0X5/fJS6L/xtaTS1DT+T4hq62/L6zYOgFLx6N+NgZ/9rkybQddYstTg7e1+q1aOjZsqGzVWulBbLFYkXoe26meLg0f1jp3r5B3AxozKU1q7Dy7V1Di1k5wEX/rVq/w6Y1Vfz/GiEzrN+fsQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=30Z1XKED9IKelF/wjI5jOSI2BJqsukiJUNf1IXGiWLY=;
- b=bFGk1yqjcVYjg1aG4fAXR25id1jxqfw75S8bcsJfk4/jEaoyPYghAGf6RIz/Wzr1fGS3zDPDkt10vTmKXqPEiCoTr1Ug4ir0LsuMftHXkNpU0GDU/1cvtHOzNo7JvalUjnPfaf+TC+VUVtCGWnJiy0RrDh+Wohy6JOfRIMdnt0k86z1qeNIFHu+rrQ8Q+jEXiI+p9QPGpLz2s9AsDZAcPmtlD+Ila2Zt/ywuUXW9g6g/CSZtJgspTGTIygdEq/tN/Xraj4AEHYduGgBc/CL+NeH+Vfpl9O/RZVlscAkRO9/fQhgTSITejFU34fazeoMM+9ahBarohPBdTfPMbCydNg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by SA1PR11MB5873.namprd11.prod.outlook.com (2603:10b6:806:228::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6544.24; Mon, 3 Jul
- 2023 07:15:04 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::4f05:6b0b:dbc8:abbb]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::4f05:6b0b:dbc8:abbb%7]) with mapi id 15.20.6544.019; Mon, 3 Jul 2023
- 07:15:04 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: "Liu, Jingqi" <jingqi.liu@intel.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel
-	<joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 0/5] iommu/vt-d: debugfs: Enhancements to IOMMU debugfs
-Thread-Topic: [PATCH 0/5] iommu/vt-d: debugfs: Enhancements to IOMMU debugfs
-Thread-Index: AQHZp3g/2UxT1hPuDU+fmpvlazmt86+nq2FQ
-Date: Mon, 3 Jul 2023 07:15:04 +0000
-Message-ID: <BN9PR11MB5276885D6A142BC94D80C2618C29A@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20230625150442.42197-1-Jingqi.liu@intel.com>
-In-Reply-To: <20230625150442.42197-1-Jingqi.liu@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|SA1PR11MB5873:EE_
-x-ms-office365-filtering-correlation-id: c3099e00-b67c-44df-5f5a-08db7b953968
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: id1MYflyCxyR2gN9HsFH5G4YZ2IwI808MbrTQ0+vmdbDO8UJd8GVvdN3lxxKB4hN8uXxXtAUHpdhEBOtvaMDumrQx9w39/fAF8+BTN/bITa6+hJKRVYzOZ96LAG9uDrqIYuKk+XlCHwzwIp3A3Uq4VL74jHBryNLOWPEizbft23227MvulVK8/2xXQu1Fr5FGCQQy7ccVXlty+UlIzUbwfe7KrVf6Z7Jax9R6CBHxcTHJ1w4/3eL9lbunIuaYUl3O6znXZ5Sbg61Z9eY25+AeEfIuBoNaY7gj+Ktijc2NwwRKz+2o93sF4v6Aw/QP+m83eA10K5nqhq7qjqmQgY/9djZfTo8FOI3NObslOvX4z+6HGqryvFJq5S3wHaxizeCB7RlUKrDnGafz2w9XEK+4VN58ATyFLzQ/9spLqP7AupEP2IMxFdi8ya9Kmu08FK/CiLcv3CYzQZkGl+zptUtyXC2IiZGJ/5g/LfTxF7axQB069DQVTxIkHFC20UPI33O8jVYwTwWZVjKh59xNkQtEbMoVUYrQUU4YZJA2oCqqxOcsWmA+/6CGVjub65UfqEGHyJFMj3ZNWJy2C21lxreoBGLkRK9uk3yxSovYVdcnCzZXm5LxHXbiF8q8PJrVN25
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(366004)(136003)(39860400002)(396003)(376002)(451199021)(83380400001)(110136005)(86362001)(41300700001)(8676002)(8936002)(52536014)(5660300002)(2906002)(33656002)(316002)(66946007)(76116006)(66556008)(66476007)(64756008)(66446008)(38070700005)(478600001)(7696005)(71200400001)(122000001)(38100700002)(55016003)(82960400001)(4326008)(6506007)(26005)(9686003)(186003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?zOvKg6eSBwNXCefDcsPq3MVhF2KJfaTghlMNBaCznD9IuuhwTZCCkNK+m+Kl?=
- =?us-ascii?Q?YKFfzYbIP1YaluPFlpbG7hDIG1JbwBh46SrNLHR07lIKXplomQoDQZZGHPA4?=
- =?us-ascii?Q?avEZ7IdcPlc7+ppSBwzeKLbK0BEOpjFv1vs114W7OfuK2+vWbwrEDWY1YItc?=
- =?us-ascii?Q?VrlQVtHryf+h1IQYERxQyaJYVAHYq/TLrEVKwtHXewwNi7tnbE9YnZ7ZIWT7?=
- =?us-ascii?Q?bnT76qJCyYrDpQW0dZo8yTNXJtrwqgLnfEPNZrO2meWESTpyBvyx9DlfCr+k?=
- =?us-ascii?Q?JQqjKoGWT+kA2NJacNpUwlohD5EsZW/1qJHPnpG8u/iXntiWkl7tsmMTV/at?=
- =?us-ascii?Q?oeH94K+41ry7I+s/F20At4iimd+cLkJLAopC0JIzH1uXTS1aIVYsuA9AoL2E?=
- =?us-ascii?Q?5ZDhVuKSmxcT0hplrOBZvjKPgYQGDeadmSKR9mtXJveQ3/LMRkxWbgg0/li4?=
- =?us-ascii?Q?GtDHdHlwXPd6X2Oa59GyMqNrjUxnTt2MuszMy/Iek77gJvRNOZKrj9s5k4lJ?=
- =?us-ascii?Q?76O/P3fhYTgv2aHbjH1h8hnZdSqH4FqcZ+i8dDolSgi0XRn5SOJ2CUIDc0tA?=
- =?us-ascii?Q?mPEU4oTBfWvWS3xrL9e0tmlKA6eL5YqW08lNKBFwQNWr2LaCEq6mvv/B88fY?=
- =?us-ascii?Q?I4K8JlVzA498aToHLd5vPWFAuad/GVKJ3Ectx6H1uoiFGLJpwoSyxa7ZLhwQ?=
- =?us-ascii?Q?2x2vZqqStxvHTt0fWbCcxg0QOoOEICfHgC8XEk/NCkhxXV0JnZ7mxl91Wij9?=
- =?us-ascii?Q?aT3ox4t8pWG98u1kjU5pchd9eWqxDidINXu554BRKeUDTrDdkqoizaaeDEHl?=
- =?us-ascii?Q?FkOuz8mHACRhRyp+VIW9QWwBGdxXze1wL3D164FAz92/UOh/dcC+giBi+Fzr?=
- =?us-ascii?Q?BuQ2pEJKsosMdHbCzaL38EsNBxfoKGl3ZNjqmURYIKim1gobpLzjc8kssRfP?=
- =?us-ascii?Q?96YNpk1l2dWVqHKH0bfhrkyH2xknibf5R886leXotSIX8xLcAQwW7y+gJYHX?=
- =?us-ascii?Q?zFa5zrszmyTqhmT5MYukTTGetg4Lcmd8uO/N2gfK2nPHdaJm4KtDOpJ9Ed2G?=
- =?us-ascii?Q?usO+g16G0DZTZbUDIKzlRarqD0msAxfu9d8bFtI659km48m2n4s3GNd3b8ML?=
- =?us-ascii?Q?flpF8sX5zl27Y2S18CLsAZsrg1AGwAVZVy8PpVPE/22RpinjkRjMU9/GXzcK?=
- =?us-ascii?Q?bWwz9X7xH8xGjyt7uz+9vKBhu70V+sRtIzASbJEu+Ogp1CQtfirhGYu4mE63?=
- =?us-ascii?Q?TvhiNENcJFaKxeyQCbgMWlKd4W6AtQrro4m7QIL7WInxEN7B5aFOVKKbFaiF?=
- =?us-ascii?Q?Brz+7a7ReIZuHjkfCVKKJVhz7mZsa9ee+CROzcwZmiiJDMwkIIsVNqz9HVWO?=
- =?us-ascii?Q?xdq2eeG0WQ0PRC1L1A1GIG5Vy4Xs1NpIZ9DT8Bk1cEIc0IVYz0DZDD44oI5A?=
- =?us-ascii?Q?OmM9Yq2iqnKDFd+vl3tpKaqh18XN+OmBGz6M3ODwqIUrv7K1sxyoDv7wwzKf?=
- =?us-ascii?Q?PDpUJcbbofkrDhoHpp6vab9DbceSay3wCexfkv/LEe/wxKqDN7DOzVuXMxZC?=
- =?us-ascii?Q?9q1Ft8aonGp8CC467T9guE60KiokfTnYFP40/tAz?=
-Content-Type: text/plain; charset="us-ascii"
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC427A34
+	for <iommu@lists.linux.dev>; Mon,  3 Jul 2023 07:54:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
+	s=default; t=1688370872;
+	bh=m2Dy62S45LeV/Nzz8GqTl/9j3vHyQ7Q7zgsP/xNoTZ8=;
+	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+	b=UFC+FosVLGklvMtA0GfoORIIuikpOC/oTZPna2OYbPXL6VzRj5qBEb27PgbqNepZc
+	 yNhxfWHdw3quMSaJST9AGBQNrkm7ClBDVsbOMpt4G7p3CUijA90pi1Mdr7bh61u8+f
+	 PgeD71CzJB59WT1rALLg/7pVru6IppnJAtjXsQsA=
+Received: from [IPv6:240e:358:110a:4b00:dc73:854d:832e:4] (unknown [IPv6:240e:358:110a:4b00:dc73:854d:832e:4])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
+	(Client did not present a certificate)
+	(Authenticated sender: xry111@xry111.site)
+	by xry111.site (Postfix) with ESMTPSA id 1CE0C66015;
+	Mon,  3 Jul 2023 03:54:26 -0400 (EDT)
+Message-ID: <9274d9bd3d080a457649ff5addcc1726f08ef5b2.camel@xry111.site>
+Subject: Re: Fwd: iwlwifi causes dma-iommu.c:693 __iommu_dma_unmap since
+ commit 19898ce9cf8a
+From: Xi Ruoyao <xry111@xry111.site>
+To: Bagas Sanjaya <bagasdotme@gmail.com>, Johannes Berg
+ <johannes.berg@intel.com>, Gregory Greenman <gregory.greenman@intel.com>, 
+ =?gb2312?Q?Nikl=A8=A1vs_Ko=810=914es=810=923ikovs?=
+ <pinkflames.linux@gmail.com>, Nate Watterson <nwatters@codeaurora.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Will
+ Deacon <will@kernel.org>, Linux IO Memory Management Unit
+ <iommu@lists.linux.dev>
+Cc: Linux Wireless <linux-wireless@vger.kernel.org>, Linux Networking
+	 <netdev@vger.kernel.org>
+Date: Mon, 03 Jul 2023 15:54:17 +0800
+In-Reply-To: <a5cdc7f8-b340-d372-2971-0d24b01de217@gmail.com>
+References: <a5cdc7f8-b340-d372-2971-0d24b01de217@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.48.4 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c3099e00-b67c-44df-5f5a-08db7b953968
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jul 2023 07:15:04.6323
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: evqFxxRZxhsn4qIAOpmxjYz+hDY5DpAQ7cj5GcayalpaYxgasaDUw61ohkYYTcmiNqYhr9PecF+fZXgMsoHS1Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB5873
-X-OriginatorOrg: intel.com
 
-> From: Liu, Jingqi <jingqi.liu@intel.com>
-> Sent: Sunday, June 25, 2023 11:05 PM
+On Sun, 2023-07-02 at 19:13 +0700, Bagas Sanjaya wrote:
+> Hi,
 >=20
-> The original debugfs only dumps all IOMMU page tables without pasid
-> supported. It traverses all devices on the pci bus, then dumps all page
-> tables based on device domains. This traversal is from software
-> perspective.
+> I notice a regression report on Bugzilla [1]: Quoting from it:
 >=20
-> This series dumps page tables by traversing root tables, context tables,
-> pasid directories and pasid tables from hardware perspective. By
-> specifying source identifier and PASID, it supports dumping specified
-> page table or all page tables in legacy mode or scalable mode.
+> > Since commit 19898ce9cf8a the iwlwifi has generated three possibly
+> > identical kernel stack traces for me. Because I only use the
+> > Bluetooth but not the Wi-Fi functionality, this is not a big deal
+> > for me but I thought such an issue is worth reporting nontheless.
+> >=20
+> > All three traces point at **drivers/iommu/dma-iommu.c:693
+> > __iommu_dma_unmap+0x150/0x160**.
+> >=20
+> > I'm attaching to this bug report the three stack traces along with
+> > other possibly relevant dmesg parts. Sorry in advance for not
+> > cutting at the cut here markers which resulted in considerably
+> > longer text but I suspected that the PCI, ACPI, memory and possibly
+> > iwlwifi related messages may be of importance, too. If I should cut
+> > the stack traces out and attach them as three distinct files (and
+> > diff to see if there's any change between them) let me know. I can
+> > provide a full (but redacted) dmesg output of a git master build, if
+> > required as well.
+> >=20
+> > I did try booting a much more recent git master build with
+> > *iommu.passthrough=3D0 iommu.strict=3D0* on the kernel command line but
+> > that did not seem to make any difference.
+> >=20
+> > ```
+> > 19898ce9cf8a33e0ac35cb4c7f68de297cc93cb2 is the first bad commit
+> > commit 19898ce9cf8a33e0ac35cb4c7f68de297cc93cb2
+> > Author: Johannes Berg <johannes.berg@intel.com>
+> > Date:=C2=A0=C2=A0 Wed Jun 21 13:12:07 2023 +0300
+> >=20
+> > =C2=A0=C2=A0=C2=A0 wifi: iwlwifi: split 22000.c into multiple files
+> > =C2=A0=C2=A0=C2=A0=20
+> > =C2=A0=C2=A0=C2=A0 Split the configuration list in 22000.c into four ne=
+w files,
+> > =C2=A0=C2=A0=C2=A0 per new device family, so we don't have this huge un=
+usable
+> > =C2=A0=C2=A0=C2=A0 file. Yes, this duplicates a few small things, but t=
+hat's
+> > =C2=A0=C2=A0=C2=A0 still much better than what we have now.
+> > =C2=A0=C2=A0=C2=A0=20
+> > =C2=A0=C2=A0=C2=A0 Signed-off-by: Johannes Berg <johannes.berg@intel.co=
+m>
+> > =C2=A0=C2=A0=C2=A0 Signed-off-by: Gregory Greenman <gregory.greenman@in=
+tel.com>
+> > =C2=A0=C2=A0=C2=A0 Link:
+> > https://lore.kernel.org/r/20230621130443.7543603b2ee7.Ia8dd54216d341ef1=
+ddc0531f2c9aa30d30536a5d@changeid
+> > =C2=A0=C2=A0=C2=A0 Signed-off-by: Johannes Berg <johannes.berg@intel.co=
+m>
+> >=20
+> > =C2=A0drivers/net/wireless/intel/iwlwifi/Makefile=C2=A0=C2=A0=C2=A0=C2=
+=A0 |=C2=A0=C2=A0 1 +
+> > =C2=A0drivers/net/wireless/intel/iwlwifi/cfg/22000.c=C2=A0 | 939 +-----=
+-------
+> > -----------
+> > =C2=A0drivers/net/wireless/intel/iwlwifi/cfg/ax210.c=C2=A0 | 452 ++++++=
+++++++
+> > =C2=A0drivers/net/wireless/intel/iwlwifi/cfg/bz.c=C2=A0=C2=A0=C2=A0=C2=
+=A0 | 523 +++++++++++++
+> > =C2=A0drivers/net/wireless/intel/iwlwifi/cfg/sc.c=C2=A0=C2=A0=C2=A0=C2=
+=A0 | 214 ++++++
+> > =C2=A0drivers/net/wireless/intel/iwlwifi/iwl-config.h |=C2=A0=C2=A0 2 +
+> > =C2=A0drivers/net/wireless/intel/iwlwifi/pcie/drv.c=C2=A0=C2=A0 |=C2=A0=
+=C2=A0 3 +
+> > =C2=A07 files changed, 1206 insertions(+), 928 deletions(-)
+> > =C2=A0create mode 100644 drivers/net/wireless/intel/iwlwifi/cfg/ax210.c
+> > =C2=A0create mode 100644 drivers/net/wireless/intel/iwlwifi/cfg/bz.c
+> > =C2=A0create mode 100644 drivers/net/wireless/intel/iwlwifi/cfg/sc.c
+> > ```
+> >=20
 >=20
-> For a device that only supports legacy mode, specify the source
-> identifier, and search the root table and context table to dump its
-> page table. It does not support to specify PASID.
->=20
-> For a device that supports scalable mode, specify a
-> {source identifier, PASID} pair and search the root table, context table
-> and pasid table to dump its page table.  If the pasid is not specified,
-> it is set to RID_PASID.
->=20
-> Switch to dump all page tables by specifying "auto".
->=20
-> Examples are as follows:
-> 1) Dump the page table of device "00:1f.0" that only supports legacy
-> mode.
->=20
-> $ sudo echo 00:1f.0 >
-> /sys/kernel/debug/iommu/intel/domain_translation_struct
-> $ sudo cat /sys/kernel/debug/iommu/intel/domain_translation_struct
-> Device 0000:00:1f.0 @0x105407000
-> IOVA_PFN                PML5E                   PML4E
-> 0x0000000000000 |       0x0000000000000000      0x0000000105408003
-> 0x0000000000001 |       0x0000000000000000      0x0000000105408003
-> 0x0000000000002 |       0x0000000000000000      0x0000000105408003
-> 0x0000000000003 |       0x0000000000000000      0x0000000105408003
->=20
-> PDPE                    PDE                     PTE
-> 0x0000000105409003      0x000000010540a003      0x0000000000000003
-> 0x0000000105409003      0x000000010540a003      0x0000000000001003
-> 0x0000000105409003      0x000000010540a003      0x0000000000002003
-> 0x0000000105409003      0x000000010540a003      0x0000000000003003
->=20
-> [...]
->=20
-> 2) Dump the page table of device "00:0a.0" with pasid "2".
->=20
-> $ sudo echo 00:0a.0,2 >
-> /sys/kernel/debug/iommu/intel/domain_translation_struct
-> $ sudo cat /sys/kernel/debug/iommu/intel/domain_translation_struct
+> See Bugzilla for the full thread and attached dmesg.
 
-What about creating a directory layout per {dev, pasid} so the user can
-easily figure out and dump?
+I can reproduce the issue with an AX210 (the firmware is named iwlwifi-
+ty-a0-gf-a0-81.ucode).  Reverting
+19898ce9cf8a33e0ac35cb4c7f68de297cc93cb2 (and all following commits in
+the same series) fixes the issue.
 
-e.g.
+I guess some error messages might be useful:
 
-/sys/kernel/debug/iommu/intel/00:0a.0/0/domain_translation_struct
-/sys/kernel/debug/iommu/intel/00:0a.0/2/domain_translation_struct
+[    4.058873] iwlwifi 0000:2b:00.0: Error sending NVM_ACCESS_COMPLETE: tim=
+e out after 2000ms.
+[    4.060263] iwlwifi 0000:2b:00.0: Current CMD queue read_ptr 1 write_ptr=
+ 2
+[    4.062814] iwlwifi 0000:2b:00.0: Start IWL Error Log Dump:
+[    4.064440] iwlwifi 0000:2b:00.0: Transport status: 0x0000004A, valid: 6
+[    4.065481] iwlwifi 0000:2b:00.0: Loaded firmware version: 81.31fc9ae6.0=
+ ty-a0-gf-a0-81.ucode
+[    4.066655] iwlwifi 0000:2b:00.0: 0x00000084 | NMI_INTERRUPT_UNKNOWN    =
+  =20
+[    4.067725] iwlwifi 0000:2b:00.0: 0x002002F0 | trm_hw_status0
+[    4.068799] iwlwifi 0000:2b:00.0: 0x00000000 | trm_hw_status1
+[    4.069777] iwlwifi 0000:2b:00.0: 0x004DBEE0 | branchlink2
+[    4.070828] iwlwifi 0000:2b:00.0: 0x004D1DEA | interruptlink1
+[    4.071823] iwlwifi 0000:2b:00.0: 0x004D1DEA | interruptlink2
+[    4.072774] iwlwifi 0000:2b:00.0: 0x00016582 | data1
+[    4.073714] iwlwifi 0000:2b:00.0: 0x01000000 | data2
+[    4.074748] iwlwifi 0000:2b:00.0: 0x00000000 | data3
+[    4.075681] iwlwifi 0000:2b:00.0: 0x00000000 | beacon time
+[    4.076695] iwlwifi 0000:2b:00.0: 0x002097F1 | tsf low
+[    4.077721] iwlwifi 0000:2b:00.0: 0x00000000 | tsf hi
+[    4.078660] iwlwifi 0000:2b:00.0: 0x00000000 | time gp1
+[    4.079680] iwlwifi 0000:2b:00.0: 0x0021B671 | time gp2
+[    4.080678] iwlwifi 0000:2b:00.0: 0x00000001 | uCode revision type
+[    4.081667] iwlwifi 0000:2b:00.0: 0x00000051 | uCode version major
+[    4.082653] iwlwifi 0000:2b:00.0: 0x31FC9AE6 | uCode version minor
+[    4.083655] iwlwifi 0000:2b:00.0: 0x00000420 | hw version
+[    4.084636] iwlwifi 0000:2b:00.0: 0x18C80002 | board version
+[    4.085613] iwlwifi 0000:2b:00.0: 0x8005FF00 | hcmd
+[    4.086578] iwlwifi 0000:2b:00.0: 0x00020000 | isr0
+[    4.087527] iwlwifi 0000:2b:00.0: 0x00000000 | isr1
+[    4.088469] iwlwifi 0000:2b:00.0: 0x48F00002 | isr2
+[    4.089390] iwlwifi 0000:2b:00.0: 0x00C0001C | isr3
+[    4.090307] iwlwifi 0000:2b:00.0: 0x00000000 | isr4
+[    4.091202] iwlwifi 0000:2b:00.0: 0x00000000 | last cmd Id
+[    4.092083] iwlwifi 0000:2b:00.0: 0x00016582 | wait_event
+[    4.092943] iwlwifi 0000:2b:00.0: 0x00000000 | l2p_control
+[    4.093801] iwlwifi 0000:2b:00.0: 0x00000000 | l2p_duration
+[    4.094639] iwlwifi 0000:2b:00.0: 0x00000000 | l2p_mhvalid
+[    4.095525] iwlwifi 0000:2b:00.0: 0x00000000 | l2p_addr_match
+[    4.097449] iwlwifi 0000:2b:00.0: 0x00000009 | lmpm_pmg_sel
+[    4.098323] iwlwifi 0000:2b:00.0: 0x00000000 | timestamp
+[    4.099165] iwlwifi 0000:2b:00.0: 0x00000024 | flow_handler
+[    4.100024] iwlwifi 0000:2b:00.0: Start IWL Error Log Dump:
+[    4.100832] iwlwifi 0000:2b:00.0: Transport status: 0x0000004A, valid: 7
+[    4.101641] iwlwifi 0000:2b:00.0: 0x20000066 | NMI_INTERRUPT_HOST
+[    4.102522] iwlwifi 0000:2b:00.0: 0x00000000 | umac branchlink1
+[    4.103379] iwlwifi 0000:2b:00.0: 0x8046DA88 | umac branchlink2
+[    4.104210] iwlwifi 0000:2b:00.0: 0x8048DB3A | umac interruptlink1
+[    4.105014] iwlwifi 0000:2b:00.0: 0x8048DB3A | umac interruptlink2
+[    4.105790] iwlwifi 0000:2b:00.0: 0x01000000 | umac data1
+[    4.106544] iwlwifi 0000:2b:00.0: 0x8048DB3A | umac data2
+[    4.107338] iwlwifi 0000:2b:00.0: 0x00000000 | umac data3
+[    4.108109] iwlwifi 0000:2b:00.0: 0x00000051 | umac major
+[    4.108855] iwlwifi 0000:2b:00.0: 0x31FC9AE6 | umac minor
+[    4.109581] iwlwifi 0000:2b:00.0: 0x0021B66F | frame pointer
+[    4.110349] iwlwifi 0000:2b:00.0: 0xC0886258 | stack pointer
+[    4.111099] iwlwifi 0000:2b:00.0: 0x00000203 | last host cmd
+[    4.111815] iwlwifi 0000:2b:00.0: 0x00000400 | isr status reg
+[    4.112530] iwlwifi 0000:2b:00.0: IML/ROM dump:
+[    4.113265] iwlwifi 0000:2b:00.0: 0x00000B03 | IML/ROM error/state
+[    4.113982] iwlwifi 0000:2b:00.0: 0x000076E7 | IML/ROM data1
+[    4.114689] iwlwifi 0000:2b:00.0: 0x00000090 | IML/ROM WFPM_AUTH_KEY_0
+[    4.115447] iwlwifi 0000:2b:00.0: Fseq Registers:
+[    4.116168] iwlwifi 0000:2b:00.0: 0x60000100 | FSEQ_ERROR_CODE
+[    4.116867] iwlwifi 0000:2b:00.0: 0x80440007 | FSEQ_TOP_INIT_VERSION
+[    4.117548] iwlwifi 0000:2b:00.0: 0x00080009 | FSEQ_CNVIO_INIT_VERSION
+[    4.118265] iwlwifi 0000:2b:00.0: 0x0000A652 | FSEQ_OTP_VERSION
+[    4.118946] iwlwifi 0000:2b:00.0: 0x00000002 | FSEQ_TOP_CONTENT_VERSION
+[    4.119624] iwlwifi 0000:2b:00.0: 0x4552414E | FSEQ_ALIVE_TOKEN
+[    4.121025] iwlwifi 0000:2b:00.0: 0x00400410 | FSEQ_CNVR_ID
+[    4.121675] iwlwifi 0000:2b:00.0: 0x00400410 | CNVI_AUX_MISC_CHIP
+[    4.122377] iwlwifi 0000:2b:00.0: 0x00400410 | CNVR_AUX_MISC_CHIP
+[    4.123048] iwlwifi 0000:2b:00.0: 0x00009061 | CNVR_SCU_SD_REGS_SD_REG_D=
+IG_DCDC_VTRIM
+[    4.123693] iwlwifi 0000:2b:00.0: 0x00000061 | CNVR_SCU_SD_REGS_SD_REG_A=
+CTIVE_VDIG_MIRROR
+[    4.124383] iwlwifi 0000:2b:00.0: 0x00080009 | FSEQ_PREV_CNVIO_INIT_VERS=
+ION
+[    4.125055] iwlwifi 0000:2b:00.0: 0x00440005 | FSEQ_WIFI_FSEQ_VERSION
+[    4.125703] iwlwifi 0000:2b:00.0: 0x00440005 | FSEQ_BT_FSEQ_VERSION
+[    4.126407] iwlwifi 0000:2b:00.0: 0x000000D2 | FSEQ_CLASS_TP_VERSION
+[    4.127103] iwlwifi 0000:2b:00.0: UMAC CURRENT PC: 0x8048d640
+[    4.127769] iwlwifi 0000:2b:00.0: LMAC1 CURRENT PC: 0xd0
+[    4.128437] iwlwifi 0000:2b:00.0: Failed to run complete NVM access: -11=
+0
+[    4.129134] iwlwifi 0000:2b:00.0: WRT: Collecting data: ini trigger 13 f=
+ired (delay=3D0ms).
 
-> Device 0000:00:0a.0 with pasid 2 @0x1083d7000
-> IOVA_PFN                PML5E                   PML4E
-> 0x0000000000000 |       0x0000000000000000      0x0000000106aaa003
-> 0x0000000000001 |       0x0000000000000000      0x0000000106aaa003
-> 0x0000000000002 |       0x0000000000000000      0x0000000106aaa003
-> 0x0000000000003 |       0x0000000000000000      0x0000000106aaa003
->=20
-> PDPE                    PDE                     PTE
-> 0x000000010a819003      0x000000010a7aa003      0x0000000129800003
-> 0x000000010a819003      0x000000010a7aa003      0x0000000129801003
-> 0x000000010a819003      0x000000010a7aa003      0x0000000129802003
-> 0x000000010a819003      0x000000010a7aa003      0x0000000129803003
->=20
-> [...]
->=20
-> 3) Dump all page tables:
-> $ sudo echo "auto" >
-> /sys/kernel/debug/iommu/intel/domain_translation_struct
-> $ sudo cat /sys/kernel/debug/iommu/intel/domain_translation_struct
-> [...]
->=20
-> Device 0000:00:02.0 @0x103072000
-> IOVA_PFN                PML5E                   PML4E
-> 0x000000008d800 |       0x0000000000000000      0x0000000103073003
-> 0x000000008d801 |       0x0000000000000000      0x0000000103073003
->=20
-> PDPE                    PDE                     PTE
-> 0x0000000103074003      0x0000000103075003      0x000000008d800003
-> 0x0000000103074003      0x0000000103075003      0x000000008d801003
->=20
-> [...]
->=20
-> Device 0000:00:0a.0 with pasid 2 @0x10a0b6000
-> IOVA_PFN                PML5E                   PML4E
-> 0x0000000000000 |       0x0000000000000000      0x00000001072d2003
-> 0x0000000000001 |       0x0000000000000000      0x00000001072d2003
->=20
-> PDPE                    PDE                     PTE
-> 0x0000000107d6e003      0x00000001161d4003      0x00000001bdc00003
-> 0x0000000107d6e003      0x00000001161d4003      0x00000001bdc01003
->=20
-> [...]
->=20
-> Thanks,
-> Jingqi
->=20
-> Jingqi Liu (5):
->   iommu/vt-d: debugfs: Define domain_translation_struct file ops
->   iommu/vt-d: debugfs: Support specifying source identifier and PASID
->   iommu/vt-d: debugfs: Dump the corresponding page table of a pasid
->   iommu/vt-d: debugfs: Support dumping a specified page table
->   iommu/vt-d: debugfs: Dump entry pointing to huge page
->=20
->  drivers/iommu/intel/debugfs.c | 361 ++++++++++++++++++++++++++++++----
->  1 file changed, 326 insertions(+), 35 deletions(-)
->=20
-> --
-> 2.21.3
+And (part of) the stack trace:
 
+[    5.071954]  iommu_dma_free+0x17/0x30
+[    5.073232]  iwl_txq_gen2_free_memory+0x39/0x90 [iwlwifi]
+[    5.074572]  iwl_txq_gen2_free+0x53/0xe0 [iwlwifi]
+[    5.075954]  iwl_txq_gen2_tx_free+0x34/0x50 [iwlwifi]
+[    5.077244]  _iwl_trans_pcie_gen2_stop_device+0x2f6/0x470 [iwlwifi]
+[    5.078589]  iwl_trans_pcie_gen2_stop_device+0x50/0x70 [iwlwifi]
+[    5.079993]  iwl_mvm_stop_device+0x35/0x50 [iwlmvm]
+[    5.081307]  iwl_mvm_start_get_nvm+0x151/0x1d0 [iwlmvm]
+[    5.082664]  iwl_op_mode_mvm_start+0x7b8/0x970 [iwlmvm]
+[    5.084066]  _iwl_op_mode_start.isra.0+0x58/0x70 [iwlwifi]
+[    5.085387]  iwl_opmode_register+0x68/0xd0 [iwlwifi]
+[    5.086746]  ? 0xffffffffc0cf3000
+[    5.088013]  iwl_mvm_init+0x21/0x1000 [iwlmvm]
+
+I compared the iwlax210_2ax_cfg_ty_gf_a0 struct in the preprocessed
+source before and after 19898ce9cf8a33e0ac35cb4c7f68de297cc93cb2 change.
+The only suspicious change is the removal of ".trans.use_tfh =3D true,",
+but adding this line into iwlax210_2ax_cfg_ty_gf_a0 does not fix the
+issue.
+
+
+--=20
+Xi Ruoyao <xry111@xry111.site>
+School of Aerospace Science and Technology, Xidian University
