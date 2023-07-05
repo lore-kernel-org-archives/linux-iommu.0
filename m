@@ -1,168 +1,159 @@
-Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2098.outbound.protection.outlook.com [40.107.215.98])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f47.google.com (mail-qv1-f47.google.com [209.85.219.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A1EF7485
-	for <iommu@lists.linux.dev>; Wed,  5 Jul 2023 13:04:43 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jsWqxWcMtZVe6PHyrijfvJjGhv/9akCtqDmFLuHrRc8zuX2ayJIZ3Rj9ermLztnT8GkGqxq5JbgrEMidkNDJ1L+irP5ftzAUHyllg4LhB/hetsGJbZgEaGffeL4DKb0ACRhJ4DCwBICs5f59EECsS7jFD9WKLitSXvsrItbLtsUEg6+syIeLI1xdNMeJlAkNYmA6A7wPpTOUKV5IOBU5FkV48W1qb/ZujTtKtULxFfKqHzuia0kCpSl81Gw1KBEqtdTNsKwg6VE01nAoMSUKYOXUO1Dt39dU0le4OPm1uBGmB3w8mlX2EMU6l6/LYJXcm7wek5J8vkf6ZIa+ZWHEzw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=f/FKROkns/aT3W5EmDyW7I75f5H4AFux2NcHTMqTyeg=;
- b=Lk3PZUjjTatXwMvInN15dFRo+cxqQE2rzPo7XGbHfu+6gX5IxNGObi2ezUkYKt0t4QlbHFRL1Cvho23boIbGk6x2XvPCveDrvSvyFb2pFoaOkVWpemfd9PSql3s/69CDtuRUdzIYoqRyjWpdt1+aujK7x9Qnlfw+bzyPhIU7khwr2sW5p+sCnN4k/1T3kGnAK/+o7vvf7HDIpOzKQNyAvg0eabhadMNiC217SXyEK2oRKcCRStbRJFlWh3dN9TmFyMQ/tE8+xSaPxxHi/2d5es1SNz75pUGK8DTFxD4uF3Y/FbTfzDIuia64p649JChrQpwUiWOZONrRTYPF/C4fSQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=f/FKROkns/aT3W5EmDyW7I75f5H4AFux2NcHTMqTyeg=;
- b=mw5fp5zbUfOqbRbJrDrr9j7E5QuI70wJxeuO5cNpqoppGXIXQQyMY6+qa3cw1e6bZJDQMpkBmnM16sj+92UndRzhjzygPtB9JicrT8WaaQfdK0ptmn5ZIUlssbikN2xh18NrX/8fUcGI5iO+TFIfvIwNhEsVobQ5tlYI/fWo09aW0RvUwABtIda+ohnRwqP/bpGpFRNmSwpCwFDttM5GCmgbrRqFa3qs6lsaYfYaVj0OnKGSegmuxbvchgSmMRqydtVBkyImz/oWqK6Mw8kX3c4XBIPchkNAosP9oxplBPJi0J20xdZFMDckrIsIlp2gM7MGHT14UoO63yEnthbkdg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from SEZPR06MB5269.apcprd06.prod.outlook.com (2603:1096:101:78::6)
- by SEYPR06MB5891.apcprd06.prod.outlook.com (2603:1096:101:d4::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6565.17; Wed, 5 Jul
- 2023 13:04:38 +0000
-Received: from SEZPR06MB5269.apcprd06.prod.outlook.com
- ([fe80::fa0e:6c06:7474:285c]) by SEZPR06MB5269.apcprd06.prod.outlook.com
- ([fe80::fa0e:6c06:7474:285c%5]) with mapi id 15.20.6565.016; Wed, 5 Jul 2023
- 13:04:38 +0000
-From: Yangtao Li <frank.li@vivo.com>
-To: Yong Wu <yong.wu@mediatek.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Cc: Yangtao Li <frank.li@vivo.com>,
-	iommu@lists.linux.dev,
-	linux-mediatek@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 6/6] iommu/mediatek: Convert to devm_platform_ioremap_resource() and devm_platform_get_and_ioremap_resource()
-Date: Wed,  5 Jul 2023 21:04:16 +0800
-Message-Id: <20230705130416.46710-6-frank.li@vivo.com>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230705130416.46710-1-frank.li@vivo.com>
-References: <20230705130416.46710-1-frank.li@vivo.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SI1PR02CA0057.apcprd02.prod.outlook.com
- (2603:1096:4:1f5::10) To SEZPR06MB5269.apcprd06.prod.outlook.com
- (2603:1096:101:78::6)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB2F5D30B
+	for <iommu@lists.linux.dev>; Wed,  5 Jul 2023 13:40:39 +0000 (UTC)
+Received: by mail-qv1-f47.google.com with SMTP id 6a1803df08f44-635e3ceb152so33522976d6.2
+        for <iommu@lists.linux.dev>; Wed, 05 Jul 2023 06:40:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1688564438; x=1691156438;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=OVl7S6svfqIntE0S0D0sZ/BLm4TgMTlV195W9gSGqjI=;
+        b=S/GzS4Yu/u1Ktj/ZQgqK8bBoepHz0jbR+VqbAnF0Hik8LCCrxyUQEvmBUQdXvHoKyj
+         7wPRdc1Gx/vD9F6EhxsQhdtoiDGmTTa4wI+/oTkU+mMcsW8cpHxtAc2rsXSZgGiH6b4z
+         FClKjjULBujaw8sKVsMYTfQs5HQlzzM+8a71Va/t9WncsybaI8kpOEvfyfwBnpIw11X6
+         fxvHMeqm0LxcdU714hBHIjJMWg8NLPhbGOSKlJ+vpt1hgSD13esnyD/TJqyL/M53oMNK
+         lPe/xfqZQzDLFGSPf3CeUZE4jenYiSzpsk69BJWwinBFQCxS69s6AvEAf6o5AcKc5ptM
+         UKUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1688564438; x=1691156438;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=OVl7S6svfqIntE0S0D0sZ/BLm4TgMTlV195W9gSGqjI=;
+        b=AgD1544E+pObUIm01+SqBCLoFGg1gyZDM+0OlHIDd+8cdI8tWCGqzEG6DOHYAc+9Fb
+         qsU8Y/1m14CcIIRoydah0rShlmcQlTx0nkqg6T6QSSs6xs98Z3oGUOEvyKl9ZNFpJTzu
+         ruqh5jtrKhS8xEuH9ODDA8ZsjeKATcZY3ZCXlmHNg7ddGixO9HZZl48uiJdjSmndXxoS
+         huCxTImKfBEE6ceTJEAEY4TIMJy5WiA1g78Qy0J9rBKAQdeBcqJ4dM8ehNiS2Hxfz3bg
+         UsiEmgTrqefJ+9niehApQWSMtIEHFZJXsDgoK0SGqsvlaprlh8pbqLCJH/utrcqoM+g3
+         fEMg==
+X-Gm-Message-State: ABy/qLbtVJX+t9+/kepdx7NGhIjND+kq3oFDJBQiHcn/68sCGaGlc2bv
+	7+YEtMOx1nNfsqTp3Wmu0VaPdbiVmHZzgoAawrk1Tw==
+X-Google-Smtp-Source: APBJJlFuWrcMdffrgiGAPowe14BbSPjQvY6jEOP1IVPswkR9U1SExJXl45gInbXylx8/bDqkstvmwPgsWSDcq8TTVbw=
+X-Received: by 2002:a05:6214:27cf:b0:634:7c34:6c96 with SMTP id
+ ge15-20020a05621427cf00b006347c346c96mr15049376qvb.7.1688564438448; Wed, 05
+ Jul 2023 06:40:38 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SEZPR06MB5269:EE_|SEYPR06MB5891:EE_
-X-MS-Office365-Filtering-Correlation-Id: 870f86ab-671e-465f-c37b-08db7d58636e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	ZR0e7L239CRxNQElPl+JqckKIX6p097PLgV+vXugnQBuJX1bDQqQjpBCozATTrDzwgbi2wK+kEIlbF16yhOGKCO/K8ZZTdRa+3frQkO91M+8CHAHiEsyQtXGj/WK9skicipwu8kQV1xzIbKOeJJw9CkiPzNA2QX1tRfudx9mF86V5l5Qpxg51DMx622a//pvUsTrN91Fr6IejGEO7ss41JrTt1nToXHADbBNYjvyOPwHYyYLND06Dq21qBOOboMWRuJcEvXZLZbsTB0dTbnEPoL211yvQz2c8OtdUIia7tC1GDXP9Q4qDedMawY0OLmUkI4tteKNJT99UAZuhHBdCV1TwupcB7zdNiUd0msMsNIA9MwCt1K0I/rrzaHjLomyN1ZULYmfliBoy2pCVCiLPlJSUxzJpDpbTwi+JxyDWU6JqVI/KuiXtE0R7pdxFHPWZt6sprwCdf0F+1VcPmDLk5fdw/UEi+LIuB078w1IRht7ZqAOWzKpX1xi7irSE1FpPOxQYmk08ATGHMjIvhOkGIUV8/++lm68mUMB4DI9rqcxR2G8oXkZWwi6yiRdE17gwfDsf1zJTAS6SsiC+UEDyt/cNuWL6Ki3nHs5l9tv/SMZCbYM4u7ETcM5JroVt/Ul
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SEZPR06MB5269.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(366004)(346002)(136003)(39860400002)(376002)(451199021)(478600001)(52116002)(6486002)(6666004)(110136005)(66946007)(186003)(6506007)(1076003)(26005)(6512007)(66556008)(2906002)(41300700001)(4326008)(66476007)(316002)(7416002)(5660300002)(8936002)(8676002)(38100700002)(38350700002)(86362001)(36756003)(83380400001)(2616005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?axo3/Hke4orzFWFk8sRczp4LmujEeFQayPyj2gcZpNgBaE3API4mXWWMdC2K?=
- =?us-ascii?Q?BOhXKrRfwmO1zWf0efCwAc8W/9QBR/6jp2/iCuN3fzsEBKuuPg5RmR0BfOi3?=
- =?us-ascii?Q?MfM4bg5pSeuQgENT/0GTmyfNXFVsbONCVY4s96dev5sGwFmTvnbxv1pBktJU?=
- =?us-ascii?Q?C71uHsqOe8kG0wopAmyvabwKz1pVUZdQwUIqZ3yoZUC4P4Ij5WpM4mc1fM2e?=
- =?us-ascii?Q?RLoO0uGKqKXmJNPvStTeyWhYkdHL0NySldf4UtQt4ryW9huWez/8HtftQhaV?=
- =?us-ascii?Q?FknduCdeKWru7SaRP9Oq1NW55iZj5k0+NlnuMkTioNVIqukNMpuMNy+GH/bz?=
- =?us-ascii?Q?Hu5iZFvhxuMiBy/RvAY5xd5RpYRzCcztKUny6XF+B7+1aj3H97YVcGl+QU0A?=
- =?us-ascii?Q?MZn4oscy8KtosRMzt0WvR5uFIDvubTusHFJa2kHTNpr4w5Iz9W6hnI1hoDoz?=
- =?us-ascii?Q?Xu34BX3L26JJQBUXl53YY8+Ao5KDPkr4jnSgvf0W+aQrtJx20+Yuciealr3g?=
- =?us-ascii?Q?8GHRSM1UvZXpxlcDSfAxMgZQqKsi7Gd1F6NMzwBuVKxQZYFmezgjWnA9GMEg?=
- =?us-ascii?Q?V0uYfKz9Lrt7MHwCXtC2zBxpGJfNesa1JY5cSZ9GJH1QV4eeGof4eGM6qEVT?=
- =?us-ascii?Q?MVjgGlyCEzDRP1FAeM1XowdOr6uHCmv9mI1738trAXnVuCmrKHlNkDpDm1GS?=
- =?us-ascii?Q?7pQroP32ZSSvPGJ1smWJ188sBt+r2GZLIQBTBlUomzrmD2daEvQOk7vkUuFe?=
- =?us-ascii?Q?RLOS2eFV97B9Wd8NhDiphUorx2qiyQujPfhjfTzeDFSyYoz6c2ZBW4l2If1F?=
- =?us-ascii?Q?fc/+IVFvpW6BTZ+2K4v2/t/puAIgIIAJz15ptEFKEpU3aSkoi68SUS87eXmd?=
- =?us-ascii?Q?OPwgEFpNdun/e6F0WAlQ8OuUwNXu8DOHrvlP4VaL2DaUTQ5Ru0g1RDbOCfzD?=
- =?us-ascii?Q?+9amZARMcBDAAkkDIHjCkrEQ0RCf5fNJD2s7uYR6UrrrzfgsZMM/x5e2sWsa?=
- =?us-ascii?Q?MSzQL6khgMst4dl2eMkEKhSp5wPhgGXSnFt2qv0o7SvDFtLeHwuwxfaQuSKz?=
- =?us-ascii?Q?HU0zJL7E49co2OErRxqdw3TQy3X9QYfrfzNvDtfMeksOZecA/OIyHy+4a0KI?=
- =?us-ascii?Q?AmUus40MlTw1WHLr4iT+uURYMzHPweRlTZmq9tDweZhml9vquiSrnAV+qvkn?=
- =?us-ascii?Q?9BUjIKUmWYxN5NXHwMPEq1v4F+NO8lj/08kGF0FbHW27xZ/lfpgoeBRjfTk8?=
- =?us-ascii?Q?gbZjqqk99oj7HcNxtP1/DRkGr+ecfvjGy2g15o1KOPEmKoDxof9kX1YM/5ZQ?=
- =?us-ascii?Q?LduyazuhJVQXnlX+ft07C+tPsRpTOUDQ9UYifVYYBYEtqlSh/+QfJlRMTqMb?=
- =?us-ascii?Q?3jFE10Or+GR5gAqlTnmbZXLRbN2hw/H8AHsFOFkgx3ui/LTw8FcKrsoa47ww?=
- =?us-ascii?Q?MPLiJC6D1Yggkapp3QyOqgUMGoV+UYfGaN9OchFazqKs40GMGmSHzhDoQ0Cx?=
- =?us-ascii?Q?Q3sW9E/Xg/KdrgCGUwRiaNCB68uN5DrbBAOiPqtdCzBz97BJ2RhZSeQnbzv0?=
- =?us-ascii?Q?AMv38ThRnksb7mimnVCJ2jDyVf47FRKR/4N6iq7j?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 870f86ab-671e-465f-c37b-08db7d58636e
-X-MS-Exchange-CrossTenant-AuthSource: SEZPR06MB5269.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jul 2023 13:04:38.3339
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +GYVDiyTZfgiWfx+6/UQY21V/klpdSu56kE/G8SDsjj9JS6f6j+CRYW7xZsmd6SAhhNKfcQPAsQneRMyKQiG4Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEYPR06MB5891
+References: <20230612153201.554742-1-catalin.marinas@arm.com>
+In-Reply-To: <20230612153201.554742-1-catalin.marinas@arm.com>
+From: Amit Pundir <amit.pundir@linaro.org>
+Date: Wed, 5 Jul 2023 19:10:02 +0530
+Message-ID: <CAMi1Hd04mu6JojT3y6wyN2YeVkPR5R3qnkKJ8iR8if_YByCn4w@mail.gmail.com>
+Subject: Re: [PATCH v7 00/17] mm, dma, arm64: Reduce ARCH_KMALLOC_MINALIGN to 8
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, 
+	Linus Torvalds <torvalds@linux-foundation.org>, Christoph Hellwig <hch@lst.de>, 
+	Robin Murphy <robin.murphy@arm.com>, Arnd Bergmann <arnd@arndb.de>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Will Deacon <will@kernel.org>, 
+	Marc Zyngier <maz@kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>, 
+	Ard Biesheuvel <ardb@kernel.org>, Isaac Manjarres <isaacmanjarres@google.com>, 
+	Saravana Kannan <saravanak@google.com>, Alasdair Kergon <agk@redhat.com>, Daniel Vetter <daniel@ffwll.ch>, 
+	Joerg Roedel <joro@8bytes.org>, Mark Brown <broonie@kernel.org>, Mike Snitzer <snitzer@kernel.org>, 
+	"Rafael J. Wysocki" <rafael@kernel.org>, Jonathan Cameron <jic23@kernel.org>, Vlastimil Babka <vbabka@suse.cz>, 
+	linux-mm@kvack.org, iommu@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, 
+	Linux regressions mailing list <regressions@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 
-Use devm_platform_ioremap_resource() and
-devm_platform_get_and_ioremap_resource() to simplify code.
+Hi Catalin,
 
-Signed-off-by: Yangtao Li <frank.li@vivo.com>
----
- drivers/iommu/mtk_iommu.c    | 9 +++------
- drivers/iommu/mtk_iommu_v1.c | 4 +---
- 2 files changed, 4 insertions(+), 9 deletions(-)
+On Wed, 5 Jul 2023 at 18:17, Catalin Marinas <catalin.marinas@arm.com> wrote:
+>
+> Hi,
+>
+> That's v7 of the series reducing the kmalloc() minimum alignment on
+> arm64 to 8 (from 128). There's no new/different functionality, mostly
+> cosmetic changes and acks/tested-bys.
+>
+> Andrew, if there are no further comments or objections to this version,
+> are you ok to take the series through the mm tree? The arm64 changes are
+> fairly small. Alternatively, I can push it into linux-next now to give
+> it some wider exposure and decide whether to upstream it when the
+> merging window opens. Thanks.
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index e93906d6e112..6595a25c103d 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -1264,16 +1264,13 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 	}
- 
- 	banks_num = data->plat_data->banks_num;
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	if (!res)
--		return -EINVAL;
-+	base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
-+	if (IS_ERR(base))
-+		return PTR_ERR(base);
- 	if (resource_size(res) < banks_num * MTK_IOMMU_BANK_SZ) {
- 		dev_err(dev, "banknr %d. res %pR is not enough.\n", banks_num, res);
- 		return -EINVAL;
- 	}
--	base = devm_ioremap_resource(dev, res);
--	if (IS_ERR(base))
--		return PTR_ERR(base);
- 	ioaddr = res->start;
- 
- 	data->bank = devm_kmalloc(dev, banks_num * sizeof(*data->bank), GFP_KERNEL);
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 8a0a5e5d049f..2e116241f80b 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -610,7 +610,6 @@ static int mtk_iommu_v1_probe(struct platform_device *pdev)
- {
- 	struct device			*dev = &pdev->dev;
- 	struct mtk_iommu_v1_data	*data;
--	struct resource			*res;
- 	struct component_match		*match = NULL;
- 	void				*protect;
- 	int				larb_nr, ret, i;
-@@ -628,8 +627,7 @@ static int mtk_iommu_v1_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 	data->protect_base = ALIGN(virt_to_phys(protect), MTK_PROTECT_PA_ALIGN);
- 
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	data->base = devm_ioremap_resource(dev, res);
-+	data->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(data->base))
- 		return PTR_ERR(data->base);
- 
--- 
-2.39.0
+This patch series broke Dragonboard 845c (SDM845) running AOSP.
+With this series I run into random oops at __kmem_cache_alloc_node().
+Here is one such boot log https://bugs.linaro.org/attachment.cgi?id=1146
 
+Reverting "arm64: Enable ARCH_WANT_KMALLOC_DMA_BOUNCE for arm64"
+fixes it for the time being.
+
+Regards,
+Amit Pundir
+
+
+>
+> The updated patches are also available on this branch:
+>
+> git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux devel/kmalloc-minalign
+>
+> Changes since v6
+> (https://lore.kernel.org/r/20230531154836.1366225-1-catalin.marinas@arm.com):
+>
+> - Moved ARCH_DMA_MINALIGN to include/linux/cache.h from slab.h (it
+>   matches the asm/cache.h where most architectures defining this macro
+>   place it).
+>
+> - Single body for __kmalloc_minalign() with an #ifdef.
+>
+> - Renamed the sg_dma_use_swiotlb() to sg_dma_is_swiotlb() (Robin's
+>   suggestion).
+>
+> - Added acks/tested-by.
+>
+> Catalin Marinas (15):
+>   mm/slab: Decouple ARCH_KMALLOC_MINALIGN from ARCH_DMA_MINALIGN
+>   dma: Allow dma_get_cache_alignment() to be overridden by the arch code
+>   mm/slab: Simplify create_kmalloc_cache() args and make it static
+>   mm/slab: Limit kmalloc() minimum alignment to
+>     dma_get_cache_alignment()
+>   drivers/base: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+>   drivers/gpu: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+>   drivers/usb: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+>   drivers/spi: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+>   dm-crypt: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+>   iio: core: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+>   arm64: Allow kmalloc() caches aligned to the smaller cache_line_size()
+>   dma-mapping: Force bouncing if the kmalloc() size is not
+>     cache-line-aligned
+>   iommu/dma: Force bouncing if the size is not cacheline-aligned
+>   mm: slab: Reduce the kmalloc() minimum alignment if DMA bouncing
+>     possible
+>   arm64: Enable ARCH_WANT_KMALLOC_DMA_BOUNCE for arm64
+>
+> Robin Murphy (2):
+>   scatterlist: Add dedicated config for DMA flags
+>   dma-mapping: Name SG DMA flag helpers consistently
+>
+>  arch/arm64/Kconfig             |  1 +
+>  arch/arm64/include/asm/cache.h |  3 ++
+>  arch/arm64/mm/init.c           |  7 +++-
+>  drivers/base/devres.c          |  6 ++--
+>  drivers/gpu/drm/drm_managed.c  |  6 ++--
+>  drivers/iommu/Kconfig          |  1 +
+>  drivers/iommu/dma-iommu.c      | 58 ++++++++++++++++++++++++--------
+>  drivers/iommu/iommu.c          |  2 +-
+>  drivers/md/dm-crypt.c          |  2 +-
+>  drivers/pci/Kconfig            |  1 +
+>  drivers/spi/spidev.c           |  2 +-
+>  drivers/usb/core/buffer.c      |  8 ++---
+>  include/linux/cache.h          |  6 ++++
+>  include/linux/dma-map-ops.h    | 61 ++++++++++++++++++++++++++++++++++
+>  include/linux/dma-mapping.h    |  5 ++-
+>  include/linux/iio/iio.h        |  2 +-
+>  include/linux/scatterlist.h    | 60 ++++++++++++++++++++++++++-------
+>  include/linux/slab.h           | 14 +++++---
+>  kernel/dma/Kconfig             |  7 ++++
+>  kernel/dma/direct.c            |  2 +-
+>  kernel/dma/direct.h            |  3 +-
+>  mm/slab.c                      |  6 +---
+>  mm/slab.h                      |  5 ++-
+>  mm/slab_common.c               | 41 +++++++++++++++++------
+>  24 files changed, 244 insertions(+), 65 deletions(-)
+>
