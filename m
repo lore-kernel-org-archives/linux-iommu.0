@@ -1,152 +1,123 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20AD7BA2F
-	for <iommu@lists.linux.dev>; Fri,  7 Jul 2023 10:29:44 +0000 (UTC)
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 291D6EB4F0;
-	Fri,  7 Jul 2023 12:22:15 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1688725335; bh=R2JAn8dEc5t5IbxpMIYj+ROpC8mKUwi+oGPWhkhnmps=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=hrw3hX5hun3YSXg/bR+StoUqmBtv5Sg4IUiJIG4MBvgSTT8nNjHLDBlwAxI/Bgus2
-	 f++y7N3Z1Wa5LMZrneYAvSsBQ3NkH/xvR6QjWjMIveXWXfbNevXIqCBNV4YCOQjBAj
-	 WECHj7caN3qm6AJ8He9i9tGPkhCGQg0Krp19h20yz99u5X+9BPg0Gdgz3R9hE7N5mn
-	 ozvvrVEjkXoAMyYrINs49hiIRN1hd2XoGedS6hDK0kwmzglSNWF6XGZr8B7FmzvcZ4
-	 80/N8K8H+Sxi8onYywDqbBt4L7jxPlco1/GoFG7/OVNeYT14QIYXOD4psk7JWBhyxJ
-	 JNUUAHieg1MmQ==
-Date: Fri, 7 Jul 2023 12:22:13 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Michael Kelley
- (LINUX)" <mikelley@microsoft.com>
-Cc: Petr Tesarik <petrtesarik@huaweicloud.com>, Stefano Stabellini
- <sstabellini@kernel.org>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
- Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
- "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>, "H.
- Peter Anvin" <hpa@zytor.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
- Juergen Gross <jgross@suse.com>, Oleksandr Tyshchenko
- <oleksandr_tyshchenko@epam.com>, Christoph Hellwig <hch@lst.de>, Marek
- Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Hans de Goede
- <hdegoede@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kees Cook
- <keescook@chromium.org>, Saravana Kannan <saravanak@google.com>, "moderated
- list:XEN HYPERVISOR ARM" <xen-devel@lists.xenproject.org>, "moderated
- list:ARM PORT" <linux-arm-kernel@lists.infradead.org>, open list
- <linux-kernel@vger.kernel.org>, "open list:MIPS"
- <linux-mips@vger.kernel.org>, "open list:XEN SWIOTLB SUBSYSTEM"
- <iommu@lists.linux.dev>, Roberto Sassu <roberto.sassu@huaweicloud.com>,
- Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: Re: [PATCH v3 4/7] swiotlb: if swiotlb is full, fall back to a
- transient memory pool
-Message-ID: <20230707122213.3a7378b5@meshulam.tesarici.cz>
-In-Reply-To: <2023070706-humbling-starfish-c68f@gregkh>
-References: <cover.1687859323.git.petr.tesarik.ext@huawei.com>
-	<34c2a1ba721a7bc496128aac5e20724e4077f1ab.1687859323.git.petr.tesarik.ext@huawei.com>
-	<BYAPR21MB1688AAC65852E75764F53099D72CA@BYAPR21MB1688.namprd21.prod.outlook.com>
-	<2023070626-boxcar-bubbly-471d@gregkh>
-	<BYAPR21MB168802F691D3041C9B2F9F2DD72CA@BYAPR21MB1688.namprd21.prod.outlook.com>
-	<2023070706-humbling-starfish-c68f@gregkh>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CE0723BD
+	for <iommu@lists.linux.dev>; Fri,  7 Jul 2023 10:49:04 +0000 (UTC)
+Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-bd69bb4507eso2000311276.2
+        for <iommu@lists.linux.dev>; Fri, 07 Jul 2023 03:49:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1688726944; x=1691318944;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=c/4umIT6y8SepYggoiaDuEPxpm8rRlzqv1RS6EtUYsc=;
+        b=fkqd8kqsVerPuWMKEachHnZrB/b1jdnkKsK5lYfAeHzs+UaA8MSq/j9664MUXBCUno
+         C27s0BBBPvnEWu/LkVgd/oQprPywcwRaeWyDTlqwmXNlTe6LEjwDCTmLxHZxfZfM7MOt
+         SrGdrNlBtMoEYyXQgHINB9Bbat7H9+Zm8Gk5CFevu/U4Uf1cclksGptS3YbDryRKH74c
+         Kd6NQDVeXKWkkqaZNxSCc2mmJ2AKLA6YCDb6vhXGtLUAwj8DJWSqpDIqINHRyKSoW4RF
+         GcJ0FsZxV8Y8XDx7ZjatrviiMkEZgtPfB3iOweTAvKs9SmtiryjAVYcZIdBoIJbmabHA
+         /ZHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1688726944; x=1691318944;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=c/4umIT6y8SepYggoiaDuEPxpm8rRlzqv1RS6EtUYsc=;
+        b=L38yoO8g1HVJ1d4zATjhhE5v8Nw+jBoQG1e1gFBC4JRWqI6JFgltlWIdPXiBLJEcxN
+         L37bqcPE9E6vPRHldQmCE6aTqITqnjAixBfth40iW6pL/x9K+D0rp29byzytlgsBqji3
+         lO9+QytRRJPhTDZub6pg2NI59lSBV3hpS5Jo8oL0v6kdc4x4UVNt0SaObWB3QDe+DvTm
+         sZA+MON0PLtcOgw3rETGYjIt0Q71nobtYniA2xRX0XBrGFp2R15MSBndpWlL1focOZPO
+         D9sRk2lLWOjEPjUtb1pm+/qPfaqwHAiphQhT7LGGCg0qYzAqYa8X2ZfbHhHQtcWlPyeu
+         v2IA==
+X-Gm-Message-State: ABy/qLaVzl0XCmRkd8aQeqwEloAvIPe7LauTAV+glD87n3qqWBKrPwpH
+	XokegDTdRCdaRigNpo//kWSD1hUM6w==
+X-Google-Smtp-Source: APBJJlFGTUIyKsUt16eI5FZWrckLP6pvNMuw29S+VDV0tG0/OvrJhu5919b6IElfGMAIbYEFd4787yoBpg==
+X-Received: from praan.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:3e89])
+ (user=praan job=sendgmr) by 2002:a25:ae8a:0:b0:c5f:85f5:a0e5 with SMTP id
+ b10-20020a25ae8a000000b00c5f85f5a0e5mr44491ybj.5.1688726943861; Fri, 07 Jul
+ 2023 03:49:03 -0700 (PDT)
+Date: Fri,  7 Jul 2023 10:48:57 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.41.0.255.g8b1d071c50-goog
+Message-ID: <20230707104857.348353-1-praan@google.com>
+Subject: [PATCH] iommu: Expose an API to set identity domain
+From: Pranjal Shrivastava <praan@google.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>
+Cc: nikhilnd@google.com, mshavit@google.com, iommu@lists.linux.dev, 
+	Pranjal Shrivastava <praan@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, 7 Jul 2023 10:29:00 +0100
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+The iommu driver has a function `iommu_change_dev_def_domain` that
+allows the user to change iommu domain of a group through a sysfs entry.
+Currently, the following steps are required to change the iommu domain
+via sysfs:
 
-> On Thu, Jul 06, 2023 at 02:22:50PM +0000, Michael Kelley (LINUX) wrote:
-> > From: Greg Kroah-Hartman <gregkh@linuxfoundation.org> Sent: Thursday, July 6, 2023 1:07 AM  
-> > > 
-> > > On Thu, Jul 06, 2023 at 03:50:55AM +0000, Michael Kelley (LINUX) wrote:  
-> > > > From: Petr Tesarik <petrtesarik@huaweicloud.com> Sent: Tuesday, June 27, 2023  
-> > > 2:54 AM  
-> > > > >
-> > > > > Try to allocate a transient memory pool if no suitable slots can be found,
-> > > > > except when allocating from a restricted pool. The transient pool is just
-> > > > > enough big for this one bounce buffer. It is inserted into a per-device
-> > > > > list of transient memory pools, and it is freed again when the bounce
-> > > > > buffer is unmapped.
-> > > > >
-> > > > > Transient memory pools are kept in an RCU list. A memory barrier is
-> > > > > required after adding a new entry, because any address within a transient
-> > > > > buffer must be immediately recognized as belonging to the SWIOTLB, even if
-> > > > > it is passed to another CPU.
-> > > > >
-> > > > > Deletion does not require any synchronization beyond RCU ordering
-> > > > > guarantees. After a buffer is unmapped, its physical addresses may no
-> > > > > longer be passed to the DMA API, so the memory range of the corresponding
-> > > > > stale entry in the RCU list never matches. If the memory range gets
-> > > > > allocated again, then it happens only after a RCU quiescent state.
-> > > > >
-> > > > > Since bounce buffers can now be allocated from different pools, add a
-> > > > > parameter to swiotlb_alloc_pool() to let the caller know which memory pool
-> > > > > is used. Add swiotlb_find_pool() to find the memory pool corresponding to
-> > > > > an address. This function is now also used by is_swiotlb_buffer(), because
-> > > > > a simple boundary check is no longer sufficient.
-> > > > >
-> > > > > The logic in swiotlb_alloc_tlb() is taken from __dma_direct_alloc_pages(),
-> > > > > simplified and enhanced to use coherent memory pools if needed.
-> > > > >
-> > > > > Note that this is not the most efficient way to provide a bounce buffer,
-> > > > > but when a DMA buffer can't be mapped, something may (and will) actually
-> > > > > break. At that point it is better to make an allocation, even if it may be
-> > > > > an expensive operation.  
-> > > >
-> > > > I continue to think about swiotlb memory management from the standpoint
-> > > > of CoCo VMs that may be quite large with high network and storage loads.
-> > > > These VMs are often running mission-critical workloads that can't tolerate
-> > > > a bounce buffer allocation failure.  To prevent such failures, the swiotlb
-> > > > memory size must be overly large, which wastes memory.  
-> > > 
-> > > If "mission critical workloads" are in a vm that allowes overcommit and
-> > > no control over other vms in that same system, then you have worse
-> > > problems, sorry.
-> > > 
-> > > Just don't do that.
-> > >   
-> > 
-> > No, the cases I'm concerned about don't involve memory overcommit.
-> > 
-> > CoCo VMs must use swiotlb bounce buffers to do DMA I/O.  Current swiotlb
-> > code in the Linux guest allocates a configurable, but fixed, amount of guest
-> > memory at boot time for this purpose.  But it's hard to know how much
-> > swiotlb bounce buffer memory will be needed to handle peak I/O loads.
-> > This patch set does dynamic allocation of swiotlb bounce buffer memory,
-> > which can help avoid needing to configure an overly large fixed size at boot.  
-> 
-> But, as you point out, memory allocation can fail at runtime, so how can
-> you "guarantee" that this will work properly anymore if you are going to
-> make it dynamic?
+1. Unbind the driver
+2. echo `domain_type` > /sys/kernel/iommu_groups/<grp_id>/type
+3. Re-bind the driver
 
-In general, there is no guarantee, of course, because bounce buffers
-may be requested from interrupt context. I believe Michael is looking
-for the SWIOTLB_MAY_SLEEP flag that was introduced in my v2 series, so
-new pools can be allocated with GFP_KERNEL instead of GFP_NOWAIT if
-possible, and then there is no need to dip into the coherent pool.
+This change introduces a wrapper function around it which allows drivers
+to change their iommu domain to identity during the driver probe. This
+faciitates bypassing the iommu for trusted IPs/devices for performance
+without needing to unbind and re-bind the driver from the user space.
+Additionally, it helps in achieving this functionality when the sysfs is
+disabled for a system.
 
-Well, I have deliberately removed all complexities from my v3 series,
-but I have more WIP local topic branches in my local repo:
+Signed-off-by: Pranjal Shrivastava <praan@google.com>
+---
+ drivers/iommu/iommu.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-- allow blocking allocations if possible
-- allocate a new pool before existing pools are full
-- free unused memory pools
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index f1dcfa3f1a1b..36f158621dc5 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -13,6 +13,7 @@
+ #include <linux/bug.h>
+ #include <linux/types.h>
+ #include <linux/init.h>
++#include <linux/dma-map-ops.h>
+ #include <linux/export.h>
+ #include <linux/slab.h>
+ #include <linux/errno.h>
+@@ -2908,6 +2909,10 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
+ 	if (ret)
+ 		goto free_new_domain;
+ 
++	/* Make sure dma_ops are appropriatley set */
++	if (type == IOMMU_DOMAIN_IDENTITY)
++		set_dma_ops(dev, NULL);
++
+ 	iommu_domain_free(prev_dom);
+ 
+ 	return 0;
+@@ -2921,6 +2926,22 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
+ 	return ret;
+ }
+ 
++/*
++ * Sets the default domain to identity of an iommu group
++ *
++ * @group: The group for which the default domain should be changed
++ * @dev: The first device in the group
++ *
++ * Returns 0 on success and error code on failure
++ * Note:Presently, this function shall be called only if the driver requests to
++ * change the group's default domain type to identity during the driver's probe.
++ */
++int iommu_set_def_identity_domain(struct device *dev, struct iommu_group *group)
++{
++	return iommu_change_dev_def_domain(group, dev, IOMMU_DOMAIN_IDENTITY);
++}
++EXPORT_SYMBOL_GPL(iommu_set_def_identity_domain);
++
+ /*
+  * Changing the default domain through sysfs requires the users to unbind the
+  * drivers from the devices in the iommu group, except for a DMA -> DMA-FQ
+-- 
+2.41.0.255.g8b1d071c50-goog
 
-I can make a bigger series, or I can send another series as RFC if this
-is desired. ATM I don't feel confident enough that my v3 series will be
-accepted without major changes, so I haven't invested time into
-finalizing the other topic branches.
-
-@Michael: If you know that my plan is to introduce blocking allocations
-with a follow-up patch series, is the present approach acceptable?
-
-Petr T
