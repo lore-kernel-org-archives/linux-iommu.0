@@ -1,131 +1,128 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A56EBBE6C
-	for <iommu@lists.linux.dev>; Fri,  7 Jul 2023 08:30:50 +0000 (UTC)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id D2B841FE7B;
-	Fri,  7 Jul 2023 08:30:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1688718646; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=aP3OB0ZCFId8Qrc9kn8zyLUQbkD82C5jAHdpRLDYE4E=;
-	b=eUbNpZdKqXG6VLZaOdCXPkOgTLSOChot/P9+AgPmVp0iGnaDSOLmYn266GOAHK6HLcX2tl
-	0KUgkdeTVXJN5oG/F16aPyxSM5u/yBV3di5Ue58eIX6q6XhxCDEd07dBiVgXr27KhFAguS
-	Y0ouJGvIzDWwOFby+GyE9VxIhqmpZhg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1688718646;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=aP3OB0ZCFId8Qrc9kn8zyLUQbkD82C5jAHdpRLDYE4E=;
-	b=6JmRYdTRYj4AnFi+ILaAexU4pnLhuAcffEI03MMZceqlhFQuy3RlAjR9itPm7zVZeiLcWA
-	8C0Oxs27bI9BUaDg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8FF39139E0;
-	Fri,  7 Jul 2023 08:30:46 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-	by imap2.suse-dmz.suse.de with ESMTPSA
-	id NYj+ITbNp2SQPgAAMHmgww
-	(envelope-from <jroedel@suse.de>); Fri, 07 Jul 2023 08:30:46 +0000
-Date: Fri, 7 Jul 2023 10:30:45 +0200
-From: Joerg Roedel <jroedel@suse.de>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>,
-	Heiko Stuebner <heiko@sntech.de>, Kevin Tian <kevin.tian@intel.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Vasant Hegde <vasant.hegde@amd.com>
-Subject: Re: [PATCH rc] iommu: Fix crash during syfs iommu_groups/N/type
-Message-ID: <ZKfNNT1yzDNRj-II@suse.de>
-References: <0-v1-5bd8cc969d9e+1f1-iommu_set_def_fix_jgg@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6F732107
+	for <iommu@lists.linux.dev>; Fri,  7 Jul 2023 09:29:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 469D0C433C7;
+	Fri,  7 Jul 2023 09:29:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1688722151;
+	bh=TiVqgBQxOT3C3TBkmM/c7nKqqaoif0rl2+UYbMz3sqA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=LyuLd0FCJEQhqnrVpquSVLKc/9uI0i7rdMICm0QZElUzRmgl1WAypdZRf644WG5w6
+	 wVwwOe7uTbd6a5um1d6z2qgLJrXKCpq1rXMHNpxh0jP21HzLgs6LU7p19zMbzFotb4
+	 nJtjTSe2HVhiChBbqKoLsix3YSP7/IVd7wy0lWd4=
+Date: Fri, 7 Jul 2023 10:29:00 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Cc: Petr Tesarik <petrtesarik@huaweicloud.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	"maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Juergen Gross <jgross@suse.com>,
+	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Hans de Goede <hdegoede@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Kees Cook <keescook@chromium.org>,
+	Saravana Kannan <saravanak@google.com>,
+	"moderated list:XEN HYPERVISOR ARM" <xen-devel@lists.xenproject.org>,
+	"moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+	open list <linux-kernel@vger.kernel.org>,
+	"open list:MIPS" <linux-mips@vger.kernel.org>,
+	"open list:XEN SWIOTLB SUBSYSTEM" <iommu@lists.linux.dev>,
+	Roberto Sassu <roberto.sassu@huaweicloud.com>,
+	Kefeng Wang <wangkefeng.wang@huawei.com>,
+	"petr@tesarici.cz" <petr@tesarici.cz>
+Subject: Re: [PATCH v3 4/7] swiotlb: if swiotlb is full, fall back to a
+ transient memory pool
+Message-ID: <2023070706-humbling-starfish-c68f@gregkh>
+References: <cover.1687859323.git.petr.tesarik.ext@huawei.com>
+ <34c2a1ba721a7bc496128aac5e20724e4077f1ab.1687859323.git.petr.tesarik.ext@huawei.com>
+ <BYAPR21MB1688AAC65852E75764F53099D72CA@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <2023070626-boxcar-bubbly-471d@gregkh>
+ <BYAPR21MB168802F691D3041C9B2F9F2DD72CA@BYAPR21MB1688.namprd21.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <0-v1-5bd8cc969d9e+1f1-iommu_set_def_fix_jgg@nvidia.com>
+In-Reply-To: <BYAPR21MB168802F691D3041C9B2F9F2DD72CA@BYAPR21MB1688.namprd21.prod.outlook.com>
 
-On Mon, Jun 26, 2023 at 12:13:11PM -0300, Jason Gunthorpe wrote:
-> The err_restore_domain flow was accidently inserted into the success path
-> in commit 1000dccd5d13 ("iommu: Allow IOMMU_RESV_DIRECT to work on
-> ARM"). It should only happen if iommu_create_device_direct_mappings()
-> fails. This caused the domains the be wrongly changed and freed whenever
-> the sysfs is used, resulting in an oops:
+On Thu, Jul 06, 2023 at 02:22:50PM +0000, Michael Kelley (LINUX) wrote:
+> From: Greg Kroah-Hartman <gregkh@linuxfoundation.org> Sent: Thursday, July 6, 2023 1:07 AM
+> > 
+> > On Thu, Jul 06, 2023 at 03:50:55AM +0000, Michael Kelley (LINUX) wrote:
+> > > From: Petr Tesarik <petrtesarik@huaweicloud.com> Sent: Tuesday, June 27, 2023
+> > 2:54 AM
+> > > >
+> > > > Try to allocate a transient memory pool if no suitable slots can be found,
+> > > > except when allocating from a restricted pool. The transient pool is just
+> > > > enough big for this one bounce buffer. It is inserted into a per-device
+> > > > list of transient memory pools, and it is freed again when the bounce
+> > > > buffer is unmapped.
+> > > >
+> > > > Transient memory pools are kept in an RCU list. A memory barrier is
+> > > > required after adding a new entry, because any address within a transient
+> > > > buffer must be immediately recognized as belonging to the SWIOTLB, even if
+> > > > it is passed to another CPU.
+> > > >
+> > > > Deletion does not require any synchronization beyond RCU ordering
+> > > > guarantees. After a buffer is unmapped, its physical addresses may no
+> > > > longer be passed to the DMA API, so the memory range of the corresponding
+> > > > stale entry in the RCU list never matches. If the memory range gets
+> > > > allocated again, then it happens only after a RCU quiescent state.
+> > > >
+> > > > Since bounce buffers can now be allocated from different pools, add a
+> > > > parameter to swiotlb_alloc_pool() to let the caller know which memory pool
+> > > > is used. Add swiotlb_find_pool() to find the memory pool corresponding to
+> > > > an address. This function is now also used by is_swiotlb_buffer(), because
+> > > > a simple boundary check is no longer sufficient.
+> > > >
+> > > > The logic in swiotlb_alloc_tlb() is taken from __dma_direct_alloc_pages(),
+> > > > simplified and enhanced to use coherent memory pools if needed.
+> > > >
+> > > > Note that this is not the most efficient way to provide a bounce buffer,
+> > > > but when a DMA buffer can't be mapped, something may (and will) actually
+> > > > break. At that point it is better to make an allocation, even if it may be
+> > > > an expensive operation.
+> > >
+> > > I continue to think about swiotlb memory management from the standpoint
+> > > of CoCo VMs that may be quite large with high network and storage loads.
+> > > These VMs are often running mission-critical workloads that can't tolerate
+> > > a bounce buffer allocation failure.  To prevent such failures, the swiotlb
+> > > memory size must be overly large, which wastes memory.
+> > 
+> > If "mission critical workloads" are in a vm that allowes overcommit and
+> > no control over other vms in that same system, then you have worse
+> > problems, sorry.
+> > 
+> > Just don't do that.
+> > 
 > 
->   BUG: kernel NULL pointer dereference, address: 0000000000000000
->   #PF: supervisor read access in kernel mode
->   #PF: error_code(0x0000) - not-present page
->   PGD 0 P4D 0
->   Oops: 0000 [#1] PREEMPT SMP NOPTI
->   CPU: 1 PID: 3417 Comm: avocado Not tainted 6.4.0-rc4-next-20230602 #3
->   Hardware name: Dell Inc. PowerEdge R6515/07PXPY, BIOS 2.3.6 07/06/2021
->   RIP: 0010:__iommu_attach_device+0xc/0xa0
->   Code: c0 c3 cc cc cc cc 48 89 f0 c3 cc cc cc cc 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 0f 1f 44 00 00 41 54 55 48 8b 47 08 <48> 8b 00 48 85 c0 74 74 48 89 f5 e8 64 12 49 00 41 89 c4 85 c0 74
->   RSP: 0018:ffffabae0220bd48 EFLAGS: 00010246
->   RAX: 0000000000000000 RBX: ffff9ac04f70e410 RCX: 0000000000000001
->   RDX: ffff9ac044db20c0 RSI: ffff9ac044fa50d0 RDI: ffff9ac04f70e410
->   RBP: ffff9ac044fa50d0 R08: 1000000100209001 R09: 00000000000002dc
->   R10: 0000000000000000 R11: 0000000000000000 R12: ffff9ac043d54700
->   R13: ffff9ac043d54700 R14: 0000000000000001 R15: 0000000000000001
->   FS:  00007f02e30ae000(0000) GS:ffff9afeb2440000(0000) knlGS:0000000000000000
->   CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->   CR2: 0000000000000000 CR3: 000000012afca006 CR4: 0000000000770ee0
->   PKRU: 55555554
->   Call Trace:
->    <TASK>
->    ? __die+0x24/0x70
->    ? page_fault_oops+0x82/0x150
->    ? __iommu_queue_command_sync+0x80/0xc0
->    ? exc_page_fault+0x69/0x150
->    ? asm_exc_page_fault+0x26/0x30
->    ? __iommu_attach_device+0xc/0xa0
->    ? __iommu_attach_device+0x1c/0xa0
->    __iommu_device_set_domain+0x42/0x80
->    __iommu_group_set_domain_internal+0x5d/0x160
->    iommu_setup_default_domain+0x318/0x400
->    iommu_group_store_type+0xb1/0x200
->    kernfs_fop_write_iter+0x12f/0x1c0
->    vfs_write+0x2a2/0x3b0
->    ksys_write+0x63/0xe0
->    do_syscall_64+0x3f/0x90
->    entry_SYSCALL_64_after_hwframe+0x6e/0xd8
->   RIP: 0033:0x7f02e2f14a6f
+> No, the cases I'm concerned about don't involve memory overcommit.
 > 
-> Reorganize the error flow so that the success branch and error branches
-> are clearer.
-> 
-> Cc: <stable@vger.kernel.org>
-> Fixes: 1000dccd5d13 ("iommu: Allow IOMMU_RESV_DIRECT to work on ARM")
+> CoCo VMs must use swiotlb bounce buffers to do DMA I/O.  Current swiotlb
+> code in the Linux guest allocates a configurable, but fixed, amount of guest
+> memory at boot time for this purpose.  But it's hard to know how much
+> swiotlb bounce buffer memory will be needed to handle peak I/O loads.
+> This patch set does dynamic allocation of swiotlb bounce buffer memory,
+> which can help avoid needing to configure an overly large fixed size at boot.
 
+But, as you point out, memory allocation can fail at runtime, so how can
+you "guarantee" that this will work properly anymore if you are going to
+make it dynamic?
 
-Why is this Cc stable? The causing patch is not in any released kernel.
+confused,
 
-Regards,
-
--- 
-Jörg Rödel
-jroedel@suse.de
-
-SUSE Software Solutions Germany GmbH
-Frankenstraße 146
-90461 Nürnberg
-Germany
-
-(HRB 36809, AG Nürnberg)
-Geschäftsführer: Ivo Totev, Andrew Myers, Andrew McDonald, Boudien Moerman
+greg k-h
