@@ -1,113 +1,114 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DBF72C13D
-	for <iommu@lists.linux.dev>; Fri,  7 Jul 2023 11:54:47 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0FE69D75;
-	Fri,  7 Jul 2023 04:55:23 -0700 (PDT)
-Received: from [10.57.28.254] (unknown [10.57.28.254])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 04CF13F740;
-	Fri,  7 Jul 2023 04:54:39 -0700 (PDT)
-Message-ID: <af4166f9-7b86-6c12-a8f8-ee0398743dd6@arm.com>
-Date: Fri, 7 Jul 2023 12:54:35 +0100
+Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DC02524E
+	for <iommu@lists.linux.dev>; Sat,  8 Jul 2023 13:03:21 +0000 (UTC)
+Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-635decc135eso19898306d6.0
+        for <iommu@lists.linux.dev>; Sat, 08 Jul 2023 06:03:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1688821401; x=1691413401;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=hAhrhxNPcUoTNAjzT4vVa1FtzZBglh2uR41QGwm87tg=;
+        b=zV3QLcZA314Ebr9jsapymgyaSo6MIoPHj6pgoVPKdhZNcuHTn0Ad3JQ3TlWqgaknbE
+         lFjThsNG/UbBBSayDWwS5zXk0hkGN+btggGlXSJVrDpTeg+kDdwbb6YJEc+A3wToFYXi
+         Wp15yTcS8JXUfwIESQo/7sIjonA+i0xYIUTNP7pliC3Xzl7Yk9gWBZmCMzbi5EjdcK9C
+         UilQclo0LvNJxrG+NJL4FB8Sagji8s/OdeyK4y27f/Fcmh0ZwYLia4St2G7LNk2ezNi1
+         CjO1kj/xHr3GEwgZNYBPVr1SKz5t1Tf4k0g847p7t3LNymcMAGseENrjrTo+dvIEAQ57
+         axBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1688821401; x=1691413401;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=hAhrhxNPcUoTNAjzT4vVa1FtzZBglh2uR41QGwm87tg=;
+        b=cFE2Q0BGRRkeqP7S/EuAJpf7eI9/1ykE1/+2y75TDKD80C7FukllYwArr61y5QhRKF
+         chu1RwGPv615tlyYceTVQ+ytvx9j3PqZSuNdwLCN9jqHulu/CYOzi4qTzskbmdUVw859
+         3Qc3Jjm1pZ1tsClNg46lA14VWKTI9+jGuilkO3L0HKJc4905StpZ//SeLnxhVbQ7xsSM
+         S05zqIzxPZYGn8hUphwn7Mu0Uty924KGHebKUftI01OSWfQhRbjxa7KKG7Pdgx1MTXTQ
+         fVCdswnYxcUGMhPVp5X64hEOqKeT5SNaZML6cuNsPw7FlrsklCCzkjP6GWlQxbmSYoC7
+         YoKA==
+X-Gm-Message-State: ABy/qLaB9kxsey6Z1KRc8CAtmPWoD9qMsOpw3pAvwHt6AO0D6kje7+UT
+	e6VAJbXNBUo9JbiGllNqaepSF+xFd64O8Y3IPzaODg==
+X-Google-Smtp-Source: APBJJlGXHGy+tSy8IYH5JlnurOryMlyk/mDY1IbM86eZzhVZnwNBgrK2ln+/ENVOLnmMs4hNs+NhAui7pYv9xZwjorY=
+X-Received: by 2002:a0c:a9ca:0:b0:621:6804:b8c0 with SMTP id
+ c10-20020a0ca9ca000000b006216804b8c0mr9462474qvb.8.1688821400717; Sat, 08 Jul
+ 2023 06:03:20 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [PATCH] iommu: Expose an API to set identity domain
-Content-Language: en-GB
-To: Pranjal Shrivastava <praan@google.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>
-Cc: nikhilnd@google.com, mshavit@google.com, iommu@lists.linux.dev
-References: <20230707104857.348353-1-praan@google.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230707104857.348353-1-praan@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20230612153201.554742-1-catalin.marinas@arm.com>
+ <CAMi1Hd04mu6JojT3y6wyN2YeVkPR5R3qnkKJ8iR8if_YByCn4w@mail.gmail.com> <ZKdfVSzbgOonR17A@google.com>
+In-Reply-To: <ZKdfVSzbgOonR17A@google.com>
+From: Amit Pundir <amit.pundir@linaro.org>
+Date: Sat, 8 Jul 2023 18:32:44 +0530
+Message-ID: <CAMi1Hd2f5GUnu_JGot=CqA9Vy4OD_V7FWYLOhNbJL1Pyd_EGMA@mail.gmail.com>
+Subject: Re: [PATCH v7 00/17] mm, dma, arm64: Reduce ARCH_KMALLOC_MINALIGN to 8
+To: Isaac Manjarres <isaacmanjarres@google.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	Linus Torvalds <torvalds@linux-foundation.org>, Christoph Hellwig <hch@lst.de>, 
+	Robin Murphy <robin.murphy@arm.com>, Arnd Bergmann <arnd@arndb.de>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Will Deacon <will@kernel.org>, 
+	Marc Zyngier <maz@kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>, 
+	Ard Biesheuvel <ardb@kernel.org>, Saravana Kannan <saravanak@google.com>, Alasdair Kergon <agk@redhat.com>, 
+	Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>, Mark Brown <broonie@kernel.org>, 
+	Mike Snitzer <snitzer@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+	Jonathan Cameron <jic23@kernel.org>, Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org, 
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	Linux regressions mailing list <regressions@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 
-On 2023-07-07 11:48, Pranjal Shrivastava wrote:
-> The iommu driver has a function `iommu_change_dev_def_domain` that
-> allows the user to change iommu domain of a group through a sysfs entry.
-> Currently, the following steps are required to change the iommu domain
-> via sysfs:
-> 
-> 1. Unbind the driver
-> 2. echo `domain_type` > /sys/kernel/iommu_groups/<grp_id>/type
-> 3. Re-bind the driver
-> 
-> This change introduces a wrapper function around it which allows drivers
-> to change their iommu domain to identity during the driver probe. This
-> faciitates bypassing the iommu for trusted IPs/devices for performance
-> without needing to unbind and re-bind the driver from the user space.
+On Fri, 7 Jul 2023 at 06:12, Isaac Manjarres <isaacmanjarres@google.com> wrote:
+>
+> On Wed, Jul 05, 2023 at 07:10:02PM +0530, Amit Pundir wrote:
+> > Hi Catalin,
+> >
+> > On Wed, 5 Jul 2023 at 18:17, Catalin Marinas <catalin.marinas@arm.com> wrote:
+> > >
+> > > Hi,
+> > >
+> > > That's v7 of the series reducing the kmalloc() minimum alignment on
+> > > arm64 to 8 (from 128). There's no new/different functionality, mostly
+> > > cosmetic changes and acks/tested-bys.
+> > >
+> > > Andrew, if there are no further comments or objections to this version,
+> > > are you ok to take the series through the mm tree? The arm64 changes are
+> > > fairly small. Alternatively, I can push it into linux-next now to give
+> > > it some wider exposure and decide whether to upstream it when the
+> > > merging window opens. Thanks.
+> >
+> > This patch series broke Dragonboard 845c (SDM845) running AOSP.
+> > With this series I run into random oops at __kmem_cache_alloc_node().
+> > Here is one such boot log https://bugs.linaro.org/attachment.cgi?id=1146
+>
+> Hey Amit,
+>
+> From the log that you linked, this looks like there's corruption within
+> the kmalloc slab caches. Can you please try enabling slub debug? That
+> might give us more information about who is causing the corruption
+> you're seeing here.
+>
+> To enable slub debug, you can add the following to your kernel config:
+>
+> CONFIG_SLUB_DEBUG=y
+>
+> and CONFIG_SLUB_DEBUG_ON=y or add slub_debug to the kernel command line.
 
-So a malicious endpoint now gets to bypass user policy and pwn the 
-system by simply spoofing any endpoint ID whose driver has decided on 
-the user's behalf that the user trusts it? Brilliant!
+Hi Issac, I can't reproduce this crash if I have slub_debug enabled
+https://bugs.linaro.org/attachment.cgi?id=1149.
 
-Sure, this is probably possible to an extent already with the 
-IOMMU-driver-level quirks for integrated devices, since we're currently 
-not considering the topology of exactly *where* we find those and 
-whether it looks right or not, but c'mon, let's at least not 
-*intentionally* smash a big hole in the trust model and leave an open 
-invitation next to it.
+But I can still reproduce the crash, with the same build, if I just
+remove the slub_debug bootarg
+https://bugs.linaro.org/attachment.cgi?id=1150
 
-Thanks,
-Robin.
+Is there any specific (slub_debug=) option(s) you want me to try?
+May be I can reproduce this bug just with those options.
 
-> Additionally, it helps in achieving this functionality when the sysfs is
-> disabled for a system.
-> 
-> Signed-off-by: Pranjal Shrivastava <praan@google.com>
-> ---
->   drivers/iommu/iommu.c | 21 +++++++++++++++++++++
->   1 file changed, 21 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index f1dcfa3f1a1b..36f158621dc5 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -13,6 +13,7 @@
->   #include <linux/bug.h>
->   #include <linux/types.h>
->   #include <linux/init.h>
-> +#include <linux/dma-map-ops.h>
->   #include <linux/export.h>
->   #include <linux/slab.h>
->   #include <linux/errno.h>
-> @@ -2908,6 +2909,10 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
->   	if (ret)
->   		goto free_new_domain;
->   
-> +	/* Make sure dma_ops are appropriatley set */
-> +	if (type == IOMMU_DOMAIN_IDENTITY)
-> +		set_dma_ops(dev, NULL);
-> +
->   	iommu_domain_free(prev_dom);
->   
->   	return 0;
-> @@ -2921,6 +2926,22 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
->   	return ret;
->   }
->   
-> +/*
-> + * Sets the default domain to identity of an iommu group
-> + *
-> + * @group: The group for which the default domain should be changed
-> + * @dev: The first device in the group
-> + *
-> + * Returns 0 on success and error code on failure
-> + * Note:Presently, this function shall be called only if the driver requests to
-> + * change the group's default domain type to identity during the driver's probe.
-> + */
-> +int iommu_set_def_identity_domain(struct device *dev, struct iommu_group *group)
-> +{
-> +	return iommu_change_dev_def_domain(group, dev, IOMMU_DOMAIN_IDENTITY);
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_set_def_identity_domain);
-> +
->   /*
->    * Changing the default domain through sysfs requires the users to unbind the
->    * drivers from the devices in the iommu group, except for a DMA -> DMA-FQ
+Regards,
+Amit Pundir
+
+>
+> --Isaac
