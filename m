@@ -1,36 +1,28 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90DA7ECA;
-	Sun,  9 Jul 2023 03:27:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 836CCC433C7;
-	Sun,  9 Jul 2023 03:27:17 +0000 (UTC)
-Date: Sun, 9 Jul 2023 04:27:16 +0100
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: Amit Pundir <amit.pundir@linaro.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	Ard Biesheuvel <ardb@kernel.org>,
-	Isaac Manjarres <isaacmanjarres@google.com>,
-	Saravana Kannan <saravanak@google.com>,
-	Alasdair Kergon <agk@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
-	Joerg Roedel <joro@8bytes.org>, Mark Brown <broonie@kernel.org>,
-	Mike Snitzer <snitzer@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	Linux regressions mailing list <regressions@lists.linux.dev>
-Subject: Re: [PATCH v7 00/17] mm, dma, arm64: Reduce ARCH_KMALLOC_MINALIGN to
- 8
-Message-ID: <ZKopFDtT6g4n+Kma@arm.com>
-References: <20230612153201.554742-1-catalin.marinas@arm.com>
- <CAMi1Hd04mu6JojT3y6wyN2YeVkPR5R3qnkKJ8iR8if_YByCn4w@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDE3479E6
+	for <iommu@lists.linux.dev>; Sun,  9 Jul 2023 17:02:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Type:MIME-Version:Message-ID:
+	Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+	Content-Description:In-Reply-To:References;
+	bh=MYL8Dzx8oc+g3T8tMzOM72r7kEsw5MHr2MLIzYudHnE=; b=AtwdZ49v2FkuNE7VHd1FBKFuUl
+	OZOrKcsFHzMjFhVfZVcjYYcGq5GcDMHSyjlcpEY3Axk6LLrTYtncMwr+2NcXgc7eskb2/B3aupPfV
+	wUpbc89g2LamyJRvTLk+Bc8CxRWre6ftDap+IcChXEIsIIp0nY0pG72aHMytjChtL8H2HBMGnGwDu
+	1QN9rkK/nHgvgSfXxBpvC+pFn9Rk67EfTdBxh9mj946vw+VEUU26+UOCT4vL+TNNFfsdOQj+M6ewd
+	W5DOuf2xvm1BRb+esndsSxsdDlvwmGoxGC1YBpQpmhS4mBynjZX+Jhib8f7NVi0fP1zHJHKimnj8+
+	qg+4Mvww==;
+Received: from 2a02-8389-2341-5b80-39d3-4735-9a3c-88d8.cable.dynamic.v6.surfer.at ([2a02:8389:2341:5b80:39d3:4735:9a3c:88d8] helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+	id 1qIXnZ-009T7k-1p;
+	Sun, 09 Jul 2023 17:02:14 +0000
+Date: Sun, 9 Jul 2023 19:02:08 +0200
+From: Christoph Hellwig <hch@infradead.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Subject: [GIT PULL] dma-mapping fixes for Linux 6.5
+Message-ID: <ZKroEFssSwC0Lnn8@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -39,44 +31,29 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAMi1Hd04mu6JojT3y6wyN2YeVkPR5R3qnkKJ8iR8if_YByCn4w@mail.gmail.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-Hi Amit,
+The following changes since commit 0a2f6372a43ff5e948b8b10be34d4473f6c2ef6c:
 
-On Wed, Jul 05, 2023 at 07:10:02PM +0530, Amit Pundir wrote:
-> On Wed, 5 Jul 2023 at 18:17, Catalin Marinas <catalin.marinas@arm.com> wrote:
-> > That's v7 of the series reducing the kmalloc() minimum alignment on
-> > arm64 to 8 (from 128). There's no new/different functionality, mostly
-> > cosmetic changes and acks/tested-bys.
-> >
-> > Andrew, if there are no further comments or objections to this version,
-> > are you ok to take the series through the mm tree? The arm64 changes are
-> > fairly small. Alternatively, I can push it into linux-next now to give
-> > it some wider exposure and decide whether to upstream it when the
-> > merging window opens. Thanks.
-> 
-> This patch series broke Dragonboard 845c (SDM845) running AOSP.
-> With this series I run into random oops at __kmem_cache_alloc_node().
-> Here is one such boot log https://bugs.linaro.org/attachment.cgi?id=1146
-> 
-> Reverting "arm64: Enable ARCH_WANT_KMALLOC_DMA_BOUNCE for arm64"
-> fixes it for the time being.
+  drm/nouveau: stop using is_swiotlb_active (2023-06-07 15:11:26 +0200)
 
-I'm on holiday until the 24th, away from my computer and I don't have
-much time to dig into this. Are the DMA-capable devices on this platform
-non-coherent? We'd need to check whether the bouncing logic somehow
-overflows and corrupts adjacent memory. If the devices are coherent,
-maybe the DMA spills over the kmalloc() boundaries, now that we
-allocate buffers smaller than a cacheline even for DMA (no bouncing if
-the DMA is coherent). Also, are these devices behind an IOMMU?
+are available in the Git repository at:
 
-Yet another possibility is a not fully transparent system level cache
-with a line size larger than what's reported by the CTR_EL0.CWG. If you
-boot the platform with "swiotlb=noforce", do you still see issues? Or
-there's no swiotlb buffer allocated anyway.
+  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.5-2023-07-09
 
-In addition to what Isaac suggests on slab debugging, it may be worth
-enabling DMA debugging as well (I don't remember the config name).
+for you to fetch changes up to 8ac04063354a01a484d2e55d20ed1958aa0d3392:
 
--- 
-Catalin
+  swiotlb: reduce the number of areas to match actual memory pool size (2023-06-29 07:10:28 +0200)
+
+----------------------------------------------------------------
+dma-mapping fixes for Linux 6.5
+
+ - swiotlb area sizing fixes (Petr Tesarik)
+
+----------------------------------------------------------------
+Petr Tesarik (2):
+      swiotlb: always set the number of areas before allocating the pool
+      swiotlb: reduce the number of areas to match actual memory pool size
+
+ kernel/dma/swiotlb.c | 46 +++++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 35 insertions(+), 11 deletions(-)
