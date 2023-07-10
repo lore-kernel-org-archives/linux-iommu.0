@@ -1,38 +1,53 @@
-Received: from out-32.mta0.migadu.com (out-32.mta0.migadu.com [91.218.175.32])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C03C233EE
-	for <iommu@lists.linux.dev>; Mon, 10 Jul 2023 07:50:08 +0000 (UTC)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1688975406;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=Q0vhRlBTeULR80skrZFYKvSx31/Ubeonn4r0lIgH5eg=;
-	b=FDrKxT7kix7z4dmE02nN3Z9PdkA1Xp+Z/rtKMFvrMD4R7SPHM3mgNbPjgCeKuPtSaG9CAt
-	XrT0fxeKeCiUmiU1eP1Po3BqEGLYaDhYSVhUWjGWd8Ic0Nkl5aWTMYx0dL7x7KTJ/A+oEM
-	2w2IgqPPM3OpVXR8M+7ONLY0LKSE+24=
-From: Yajun Deng <yajun.deng@linux.dev>
-To: corbet@lwn.net,
-	hch@lst.de,
-	m.szyprowski@samsung.com,
-	robin.murphy@arm.com,
-	akpm@linux-foundation.org,
-	paulmck@kernel.org,
-	catalin.marinas@arm.com,
-	rdunlap@infradead.org,
-	peterz@infradead.org,
-	rostedt@goodmis.org,
-	kim.phillips@amd.com
-Cc: linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BD2FA933
+	for <iommu@lists.linux.dev>; Mon, 10 Jul 2023 08:23:30 +0000 (UTC)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 2FBA51F38D;
+	Mon, 10 Jul 2023 08:23:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1688977409; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+	bh=dirNkRoYAPOKgnokI62rBUKnm7Cm3Bq2fLafnXLX2rM=;
+	b=2WvQvESn1/36HSzhMXVcSdjik+t5nYMXFKF1KG0UIusg8sySF8R7ITMWNIFtYhJeqKxy2O
+	2KPFJpEbMJJaKLPNuVQjBi00LhQBwiIaRrPmGrF4blFthGkD+N2RyyqB/WriWGWOjCFh2N
+	cdQ+D4xx8pVLj0yAENQAG3kCj9N2/Ww=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1688977409;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+	bh=dirNkRoYAPOKgnokI62rBUKnm7Cm3Bq2fLafnXLX2rM=;
+	b=SOrq1aFHj7y8/rOc5/XQp3i66j+CCZYnz5Q8FmAeO+0g1n+bwvV7x4RLNNfRR9K8JGsuoH
+	/EGw8tcK+oLYHoBw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B91FA13A05;
+	Mon, 10 Jul 2023 08:23:28 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+	by imap2.suse-dmz.suse.de with ESMTPSA
+	id pNAqKwDAq2QcDAAAMHmgww
+	(envelope-from <svarbanov@suse.de>); Mon, 10 Jul 2023 08:23:28 +0000
+From: Stanimir Varbanov <svarbanov@suse.de>
+To: linux-tegra@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev,
-	linux-mm@kvack.org,
-	Yajun Deng <yajun.deng@linux.dev>
-Subject: [PATCH] dma-contiguous: support numa CMA for specified node
-Date: Mon, 10 Jul 2023 15:49:44 +0800
-Message-Id: <20230710074944.3501810-1-yajun.deng@linux.dev>
+	linux-kernel@vger.kernel.org
+Cc: Thierry Reding <thierry.reding@gmail.com>,
+	Krishna Reddy <vdumpa@nvidia.com>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Stanimir Varbanov <svarbanov@suse.de>
+Subject: [RFC PATCH] iommu: arm-smmu-nvidia: Add default domain type implementation op
+Date: Mon, 10 Jul 2023 11:22:52 +0300
+Message-ID: <20230710082252.9702-1-svarbanov@suse.de>
+X-Mailer: git-send-email 2.41.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,287 +55,86 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
 
-The kernel parameter 'cma_pernuma=' only supports reserving the same
-size of CMA area for each node. We need to reserve different sizes of
-CMA area for specified nodes if these devices belong to different nodes.
+Add def_domain_type implementation op and override default IOMMU
+domain Kconfig option (CONFIG_IOMMU_DEFAULT_PASSTHROUGH=y), which
+could be enabled on some distros. The current quirk has been done
+for Tegra234 machine, because I found the issue on it. The issue
+itself appears on USB host controller which cannot be initialized
+without IOMMU translation. Something more, we proved that IOMMU
+translation is needed for display and GPU drivers as well.
 
-Change kernel parameter from 'cma_pernuma=' to 'numa_cma='. If node
-isn't specified, it will reserve CMA area for per-numa node. if the node
-is specified, it will reserve CMA area for the specified node.
+I evaluated few possible options to solve that:
 
-At the same time, print the node id in cma_declare_contiguous_nid() if
-enabled CONFIG_NUMA.
+ a) select default IOMMU domain from .def_domain_type op
+ b) Unset CONFIG_IOMMU_DEFAULT_PASSTHROUGH=n
+ c) add iommu.passthrough=0 on the kernel cmdline
+ d) firmware - ACPI / DT
 
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+a) This option is implemented in the proposed patch.
+
+b) Since that the community has agreed that pass-through is preferred
+as a default IOMMU domain option because this will avoid performance
+impacts on some of the platforms [1]. On the other side we have examples
+where you cannot even install Linux distribution on a machine where the
+storage media cannot be detected and the system just hangs.
+
+c) - This option involves installer's knowledge of platforms/devices
+which needs IOMMU translations.
+
+d) - IORT ACPI table / DT - I'm not sure is that option even possible
+but firmware looks like a good place for such.
+
+Please, treat this as an RFC and a call for proper solution.
+
+[1] https://marc.info/?l=linux-arm-kernel&m=148864682514762
+
+Signed-off-by: Stanimir Varbanov <svarbanov@suse.de>
 ---
- .../admin-guide/kernel-parameters.txt         | 17 ++--
- kernel/dma/Kconfig                            | 11 +--
- kernel/dma/contiguous.c                       | 90 +++++++++++++------
- mm/cma.c                                      | 12 ++-
- 4 files changed, 89 insertions(+), 41 deletions(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index bdf0ab6716c8..b287647f0873 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -695,14 +695,19 @@
- 			altogether. For more information, see
- 			kernel/dma/contiguous.c
- 
--	cma_pernuma=nn[MG]
-+	numa_cma=nn[MG] or (node format)
-+			    <node>:nn[MG][,<node>:nn[MG]]
- 			[KNL,CMA]
--			Sets the size of kernel per-numa memory area for
-+			Sets the size of kernel numa memory area for
- 			contiguous memory allocations. A value of 0 disables
--			per-numa CMA altogether. And If this option is not
--			specified, the default value is 0.
--			With per-numa CMA enabled, DMA users on node nid will
--			first try to allocate buffer from the pernuma area
-+			numa CMA altogether. If this option is not specified,
-+			the default value is 0. If node isn't specified, it
-+			will reserve CMA area for per-numa node, if the node
-+			is specified, it will reserve CMA area for the
-+			specified node.
-+
-+			With numa CMA enabled, DMA users on node nid will
-+			first try to allocate buffer from the numa area
- 			which is located in node nid, if the allocation fails,
- 			they will fallback to the global default memory area.
- 
-diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-index 7afde9bc529f..f07fb97ef3e8 100644
---- a/kernel/dma/Kconfig
-+++ b/kernel/dma/Kconfig
-@@ -145,15 +145,16 @@ config DMA_CMA
- 
- if  DMA_CMA
- 
--config DMA_PERNUMA_CMA
--	bool "Enable separate DMA Contiguous Memory Area for each NUMA Node"
-+config DMA_NUMA_CMA
-+	bool "Enable separate DMA Contiguous Memory Area for NUMA Node"
- 	default NUMA
- 	help
--	  Enable this option to get pernuma CMA areas so that NUMA devices
-+	  Enable this option to get numa CMA areas so that NUMA devices
- 	  can get local memory by DMA coherent APIs.
- 
--	  You can set the size of pernuma CMA by specifying "cma_pernuma=size"
--	  on the kernel's command line.
-+	  You can set the size of pernuma CMA by specifying "numa_cma=size"
-+	  or set the node id and its size of CMA by specifying "numa_cma=
-+	  <node>:size[,<node>:size]" on the kernel's command line.
- 
- comment "Default contiguous memory area size:"
- 
-diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index 26a8e5365fcd..bf62d78abff7 100644
---- a/kernel/dma/contiguous.c
-+++ b/kernel/dma/contiguous.c
-@@ -50,6 +50,7 @@
- #include <linux/sizes.h>
- #include <linux/dma-map-ops.h>
- #include <linux/cma.h>
-+#include <linux/nospec.h>
- 
- #ifdef CONFIG_CMA_SIZE_MBYTES
- #define CMA_SIZE_MBYTES CONFIG_CMA_SIZE_MBYTES
-@@ -96,17 +97,44 @@ static int __init early_cma(char *p)
- }
- early_param("cma", early_cma);
- 
--#ifdef CONFIG_DMA_PERNUMA_CMA
-+#ifdef CONFIG_DMA_NUMA_CMA
- 
--static struct cma *dma_contiguous_pernuma_area[MAX_NUMNODES];
-+static struct cma *dma_contiguous_numa_area[MAX_NUMNODES];
- static phys_addr_t pernuma_size_bytes __initdata;
-+static phys_addr_t numa_cma_size_in_node[MAX_NUMNODES] __initdata;
- 
--static int __init early_cma_pernuma(char *p)
-+static int __init early_numa_cma(char *p)
- {
--	pernuma_size_bytes = memparse(p, &p);
-+	int nid, count = 0;
-+	unsigned long tmp;
-+	char *s = p;
-+
-+	while (*s) {
-+		if (sscanf(s, "%lu%n", &tmp, &count) != 1)
-+			break;
-+
-+		if (s[count] == ':') {
-+			if (tmp >= MAX_NUMNODES)
-+				break;
-+			nid = array_index_nospec(tmp, MAX_NUMNODES);
-+
-+			s += count + 1;
-+			tmp = memparse(s, &s);
-+			numa_cma_size_in_node[nid] = tmp;
-+
-+			if (*s == ',')
-+				s++;
-+			else
-+				break;
-+		} else {
-+			pernuma_size_bytes = memparse(p, &p);
-+			break;
-+		}
-+	}
-+
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c b/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
+index 87bf522b9d2e..691b57d1e699 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
+@@ -286,6 +286,22 @@ static int nvidia_smmu_init_context(struct arm_smmu_domain *smmu_domain,
  	return 0;
  }
--early_param("cma_pernuma", early_cma_pernuma);
-+early_param("numa_cma", early_numa_cma);
- #endif
  
- #ifdef CONFIG_CMA_SIZE_PERCENTAGE
-@@ -127,34 +155,42 @@ static inline __maybe_unused phys_addr_t cma_early_percent_memory(void)
- 
- #endif
- 
--#ifdef CONFIG_DMA_PERNUMA_CMA
--static void __init dma_pernuma_cma_reserve(void)
-+#ifdef CONFIG_DMA_NUMA_CMA
-+static void __init dma_numa_cma_reserve(void)
- {
-+	phys_addr_t size;
- 	int nid;
- 
--	if (!pernuma_size_bytes)
--		return;
--
--	for_each_online_node(nid) {
-+	for_each_node(nid) {
- 		int ret;
- 		char name[CMA_MAX_NAME];
--		struct cma **cma = &dma_contiguous_pernuma_area[nid];
-+		struct cma **numa_cma;
- 
--		snprintf(name, sizeof(name), "pernuma%d", nid);
--		ret = cma_declare_contiguous_nid(0, pernuma_size_bytes, 0, 0,
--						 0, false, name, cma, nid);
--		if (ret) {
--			pr_warn("%s: reservation failed: err %d, node %d", __func__,
--				ret, nid);
-+		if (!node_online(nid)) {
-+			if (pernuma_size_bytes || numa_cma_size_in_node[nid])
-+				pr_warn("invalid node %d specified\n", nid);
- 			continue;
- 		}
- 
--		pr_debug("%s: reserved %llu MiB on node %d\n", __func__,
--			(unsigned long long)pernuma_size_bytes / SZ_1M, nid);
-+		if (pernuma_size_bytes)
-+			size = pernuma_size_bytes;
-+		else
-+			size = numa_cma_size_in_node[nid];
++static int nvidia_smmu_def_domain_type(struct device *dev)
++{
++	if (of_machine_is_compatible("nvidia,tegra234"))
++		return IOMMU_DOMAIN_DMA;
 +
-+		if (!size)
-+			continue;
++	return 0;
++}
 +
-+		numa_cma = &dma_contiguous_numa_area[nid];
-+		snprintf(name, sizeof(name), "numa%d", nid);
-+		ret = cma_declare_contiguous_nid(0, size, 0, 0, 0, false,
-+						 name, numa_cma, nid);
-+		if (ret)
-+			pr_warn("%s: reservation failed: err %d, node %d", __func__,
-+				ret, nid);
- 	}
- }
- #else
--static inline void __init dma_pernuma_cma_reserve(void)
-+static inline void __init dma_numa_cma_reserve(void)
- {
- }
- #endif
-@@ -175,7 +211,7 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
- 	phys_addr_t selected_limit = limit;
- 	bool fixed = false;
++static int nvidia_smmu_single_def_domain_type(struct device *dev)
++{
++	if (of_machine_is_compatible("nvidia,tegra234"))
++		return IOMMU_DOMAIN_DMA;
++
++	return 0;
++}
++
+ static const struct arm_smmu_impl nvidia_smmu_impl = {
+ 	.read_reg = nvidia_smmu_read_reg,
+ 	.write_reg = nvidia_smmu_write_reg,
+@@ -297,11 +313,13 @@ static const struct arm_smmu_impl nvidia_smmu_impl = {
+ 	.context_fault = nvidia_smmu_context_fault,
+ 	.probe_finalize = nvidia_smmu_probe_finalize,
+ 	.init_context = nvidia_smmu_init_context,
++	.def_domain_type = nvidia_smmu_def_domain_type,
+ };
  
--	dma_pernuma_cma_reserve();
-+	dma_numa_cma_reserve();
+ static const struct arm_smmu_impl nvidia_smmu_single_impl = {
+ 	.probe_finalize = nvidia_smmu_probe_finalize,
+ 	.init_context = nvidia_smmu_init_context,
++	.def_domain_type = nvidia_smmu_single_def_domain_type,
+ };
  
- 	pr_debug("%s(limit %08lx)\n", __func__, (unsigned long)limit);
- 
-@@ -309,7 +345,7 @@ static struct page *cma_alloc_aligned(struct cma *cma, size_t size, gfp_t gfp)
-  */
- struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
- {
--#ifdef CONFIG_DMA_PERNUMA_CMA
-+#ifdef CONFIG_DMA_NUMA_CMA
- 	int nid = dev_to_node(dev);
- #endif
- 
-@@ -321,9 +357,9 @@ struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
- 	if (size <= PAGE_SIZE)
- 		return NULL;
- 
--#ifdef CONFIG_DMA_PERNUMA_CMA
-+#ifdef CONFIG_DMA_NUMA_CMA
- 	if (nid != NUMA_NO_NODE && !(gfp & (GFP_DMA | GFP_DMA32))) {
--		struct cma *cma = dma_contiguous_pernuma_area[nid];
-+		struct cma *cma = dma_contiguous_numa_area[nid];
- 		struct page *page;
- 
- 		if (cma) {
-@@ -362,8 +398,8 @@ void dma_free_contiguous(struct device *dev, struct page *page, size_t size)
- 		/*
- 		 * otherwise, page is from either per-numa cma or default cma
- 		 */
--#ifdef CONFIG_DMA_PERNUMA_CMA
--		if (cma_release(dma_contiguous_pernuma_area[page_to_nid(page)],
-+#ifdef CONFIG_DMA_NUMA_CMA
-+		if (cma_release(dma_contiguous_numa_area[page_to_nid(page)],
- 					page, count))
- 			return;
- #endif
-diff --git a/mm/cma.c b/mm/cma.c
-index 4880f72102fa..af5945932e9e 100644
---- a/mm/cma.c
-+++ b/mm/cma.c
-@@ -244,6 +244,7 @@ int __init cma_declare_contiguous_nid(phys_addr_t base,
- {
- 	phys_addr_t memblock_end = memblock_end_of_DRAM();
- 	phys_addr_t highmem_start;
-+	char nid_buf[32] = "";
- 	int ret = 0;
- 
- 	/*
-@@ -267,6 +268,10 @@ int __init cma_declare_contiguous_nid(phys_addr_t base,
- 	if (alignment && !is_power_of_2(alignment))
- 		return -EINVAL;
- 
-+#ifdef CONFIG_NUMA
-+	if (nid != NUMA_NO_NODE)
-+		snprintf(nid_buf, sizeof(nid_buf), " on node %d", nid);
-+#endif
- 	/* Sanitise input arguments. */
- 	alignment = max_t(phys_addr_t, alignment, CMA_MIN_ALIGNMENT_BYTES);
- 	if (fixed && base & (alignment - 1)) {
-@@ -372,14 +377,15 @@ int __init cma_declare_contiguous_nid(phys_addr_t base,
- 	if (ret)
- 		goto free_mem;
- 
--	pr_info("Reserved %ld MiB at %pa\n", (unsigned long)size / SZ_1M,
--		&base);
-+	pr_info("Reserved %ld MiB at %pa%s\n", (unsigned long)size / SZ_1M,
-+		&base, nid_buf);
- 	return 0;
- 
- free_mem:
- 	memblock_phys_free(base, size);
- err:
--	pr_err("Failed to reserve %ld MiB\n", (unsigned long)size / SZ_1M);
-+	pr_err("Failed to reserve %ld MiB%s\n", (unsigned long)size / SZ_1M,
-+	       nid_buf);
- 	return ret;
- }
- 
+ struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu)
 -- 
-2.25.1
+2.41.0
 
