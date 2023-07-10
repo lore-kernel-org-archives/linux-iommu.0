@@ -1,53 +1,104 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD4DFC8F9
-	for <iommu@lists.linux.dev>; Sun,  9 Jul 2023 17:46:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2CC6FC433CA;
-	Sun,  9 Jul 2023 17:46:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 832F423AD
+	for <iommu@lists.linux.dev>; Mon, 10 Jul 2023 05:04:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E560EC433CA;
+	Mon, 10 Jul 2023 05:04:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1688924795;
-	bh=oA9ahBY1MQJgkvVoHm5KboW3jKAdO3eM5t2kJMSM/lo=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=a96PdzVqwyDfvm4OET0WzFAj1sOh7z8C1xfPyw3sX536aZRtdca3umBBt7Ep9eGsF
-	 PRSIO6XBBWJ4lkYNW7I/bd2WNM9GQvH0p9ceIJ2pqlWR7d5af8d6obaPjs7n6RpcY2
-	 iHWe2O2peVZGMhOiVLHhHx8BL64001AY9jvKYgCDz7jKauNDM5GaOsy0Nrw02dWyCt
-	 EwRfJ3AFTAdMPSlPaiqiu8kJuisrABtPsvktOkpVcISiTY31ViH88sGBGw1qW6jlqi
-	 SmfQkOKfu4LNPIy0+1p7Z08z/GCtVY2iu6SfZ0oegyEp9yhEsaLeEZ13K/RvbxVxbu
-	 tLL1D+RkS+2iQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1ABB5E537FC;
-	Sun,  9 Jul 2023 17:46:35 +0000 (UTC)
-Subject: Re: [GIT PULL] dma-mapping fixes for Linux 6.5
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <ZKroEFssSwC0Lnn8@infradead.org>
-References: <ZKroEFssSwC0Lnn8@infradead.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <ZKroEFssSwC0Lnn8@infradead.org>
-X-PR-Tracked-Remote: git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.5-2023-07-09
-X-PR-Tracked-Commit-Id: 8ac04063354a01a484d2e55d20ed1958aa0d3392
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: f71f64210d698f603ab119740d1656f7bdfd3171
-Message-Id: <168892479510.9789.6171708898049821666.pr-tracker-bot@kernel.org>
-Date: Sun, 09 Jul 2023 17:46:35 +0000
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+	s=k20201202; t=1688965469;
+	bh=Pn51inwL0+VVRq9VNt7wQuq0UyK+Y8GDVGVvxdrJGiA=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=XX6v8aPxzpMoqCl9HMyBP50yVhvMwDKz11kZmcjLutRgatJnLREb4GGpH8l3rygB5
+	 azm16jn3XVfOwqZHBuk7t7NeKW+JNUHdaxm7teLwMGKNMNQb7rjJAntX03wfXbcg4X
+	 e38Kxtoh7rKi140So9jviJSLik2NhGLXj+Hq0ujQrsegEBVuzaeNxvXBnNIDDytsMz
+	 BZH5zzFZevrCykC9rElK7cAJ31aHvjLSH4YBctz3KMqYt8bIeu5bJBErpejjNfANJe
+	 sb28fuMJGqT/cLWfSmr5TxmiczzsTZIfgvcz7V9huTxLSLmOvc8tbiUvLKSPXx5Mcm
+	 Sd+/ycIZUBkzA==
+From: Bjorn Andersson <andersson@kernel.org>
+To: cros-qcom-dts-watchers@chromium.org,
+	Andy Gross <agross@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+	Benjamin Li <benl@squareup.com>,
+	James Willcox <jwillcox@squareup.com>,
+	Joseph Gates <jgates@squareup.com>,
+	Stephan Gerhold <stephan@gerhold.net>,
+	Zac Crosby <zac@squareup.com>,
+	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+	Banajit Goswami <bgoswami@quicinc.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Lee Jones <lee@kernel.org>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Xu Yang <xu.yang_2@nxp.com>,
+	Peng Fan <peng.fan@nxp.com>,
+	Christian Marangi <ansuelsmth@gmail.com>,
+	Wesley Cheng <quic_wcheng@quicinc.com>,
+	Jun Nie <jun.nie@linaro.org>,
+	Max Chen <mchen@squareup.com>,
+	Shawn Guo <shawn.guo@linaro.org>,
+	Vivek Gautam <vivek.gautam@codeaurora.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+	linux-arm-msm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Vincent Knecht <vincent.knecht@mailoo.org>,
+	Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	alsa-devel@alsa-project.org,
+	iommu@lists.linux.dev,
+	linux-usb@vger.kernel.org,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Leo Yan <leo.yan@linaro.org>,
+	Rob Herring <robh@kernel.org>,
+	Andy Gross <andy.gross@linaro.org>
+Subject: Re: (subset) [PATCH 00/11] Even more msm bindings fixes
+Date: Sun,  9 Jul 2023 22:07:10 -0700
+Message-ID: <168896565982.1376307.13166434967387866925.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.41.0
+In-Reply-To: <20230627-topic-more_bindings-v1-0-6b4b6cd081e5@linaro.org>
+References: <20230627-topic-more_bindings-v1-0-6b4b6cd081e5@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-The pull request you sent on Sun, 9 Jul 2023 19:02:08 +0200:
 
-> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.5-2023-07-09
+On Tue, 27 Jun 2023 18:24:16 +0200, Konrad Dybcio wrote:
+> This series contains couple more random dt schema warning fixes, centered
+> around linux-msm.
+> 
+> All of the patches (except) the last two are pretty much independent.
+> Patch 1 is not only a bindings fix, but also a functional one.
+> 
+> 
+> [...]
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/f71f64210d698f603ab119740d1656f7bdfd3171
+Applied, thanks!
 
-Thank you!
+[01/11] arm64: dts: qcom: sc7180: Fix DSI0_PHY reg-names
+        commit: afc19e3716c3bc32c31baac54e3a9057661979ad
+[02/11] arm64: dts: qcom: msm8939: Drop "qcom,idle-state-spc" compatible
+        commit: 982f810fc196002808b6d4230ba8f431c993d264
+[03/11] arm64: dts: qcom: msm8939: Add missing 'cache-unified' to L2
+        commit: 68a59251f1c590ad567ff7fd799f6634fbab6e16
+[04/11] arm64: dts: qcom: apq8039-t2: Drop inexistent property
+        commit: 9cc6dee9b3a8aea0af836d365793ffce47bc7a11
+[11/11] arm64: dts: qcom: msm8996: Add missing interrupt to the USB2 controller
+        commit: 36541089c4733355ed844c67eebd0c3936953454
 
+Best regards,
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Bjorn Andersson <andersson@kernel.org>
