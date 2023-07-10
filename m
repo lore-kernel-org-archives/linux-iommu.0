@@ -1,128 +1,149 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9D64C2EF
-	for <iommu@lists.linux.dev>; Mon, 10 Jul 2023 11:19:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE30BC433C7;
-	Mon, 10 Jul 2023 11:19:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1688987977;
-	bh=JuEeqtW3z3Pmyp7TD8m2cCMBwnc/h1lBBNCIEk2UHwY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=uWgIAcGIk03DoP4L/WH5y3Vsk3VkJscAyMyEtS6k8rJ/fq+6XIHtquntbrR0VSn9F
-	 o4VdFghroQ0tR84kDB+LAcCAFUTXJczCazu0qsdFO6G5yPs30fwe+6gl4AFaPXYHTz
-	 MEHq5Z0Uw0Dahyy5v6Y3NErThY7pZU7ZQl4DMdFgE2FJJkBHm0CLxG7Oiay0D4Gs8m
-	 9tM47WyGYhSkrYoAGv/tXSjsr57vK9YtLkYbZaCFCFCqgPMGlWlaFUUEDh+JdLeEdA
-	 4472Bjsc6SISAgvQh4TTpQaEJNrZfHnPWKUoPYIxzwJar6L8VJ5xhdqhgDpVvfjEvu
-	 q0ISmQ6oFvJ/g==
-Date: Mon, 10 Jul 2023 12:19:32 +0100
-From: Will Deacon <will@kernel.org>
-To: Pranjal Shrivastava <praan@google.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	nikhilnd@google.com, mshavit@google.com, iommu@lists.linux.dev,
-	svarbanov@suse.de
-Subject: Re: [PATCH] iommu: Expose an API to set identity domain
-Message-ID: <20230710111931.GA717@willie-the-truck>
-References: <20230707104857.348353-1-praan@google.com>
- <af4166f9-7b86-6c12-a8f8-ee0398743dd6@arm.com>
- <CAN6iL-Qu97hFbpOEPPtcVcWo_+=zjFy5fjJU-UnAqnY=ebFptw@mail.gmail.com>
- <CAN6iL-QWa=DNmfGDJHeOncZMktFyQ3LpNGiRu1Aa4cyQofdTnw@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E40303D76
+	for <iommu@lists.linux.dev>; Mon, 10 Jul 2023 14:49:56 +0000 (UTC)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20230710144113euoutp0264f8edc464878013bf0a2cde77e568b9~wiJ5TK5930173001730euoutp02H
+	for <iommu@lists.linux.dev>; Mon, 10 Jul 2023 14:41:13 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20230710144113euoutp0264f8edc464878013bf0a2cde77e568b9~wiJ5TK5930173001730euoutp02H
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1689000073;
+	bh=MwQOmwymU1eBeIeukQqIHQbMFNBNnL7OZIhhKksmZkw=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=WwD2LmTvxHTryyoGCqnpkraQLhfTjY5KKRQYSPT6eghVVaAiuBaXEWQyjnO5J1+ME
+	 yPNMSOFzUccm/Hp7YAj1BorD04ztfJrBOewS+W7DF1eKq2IAWQlBDpUbbnaz6mrCY7
+	 D6C8pbOQHhsCMQdkZAJEsumADbLTsP/YvXenn0cA=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+	20230710144113eucas1p1de160100648b36a1d8ef365a0430cd0c~wiJ5EBnFu0505705057eucas1p1Q;
+	Mon, 10 Jul 2023 14:41:13 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+	eusmges3new.samsung.com (EUCPMTA) with SMTP id 14.8B.37758.9881CA46; Mon, 10
+	Jul 2023 15:41:13 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20230710144113eucas1p1f4063f2e41b1d23a83dc7be40bc0e2ba~wiJ4psC9U0729307293eucas1p18;
+	Mon, 10 Jul 2023 14:41:13 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+	20230710144113eusmtrp1b1f06ceea2215d2cea410f25c4e13517~wiJ4pHzW62680526805eusmtrp1v;
+	Mon, 10 Jul 2023 14:41:13 +0000 (GMT)
+X-AuditID: cbfec7f5-7ffff7000002937e-ad-64ac18897559
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+	eusmgms1.samsung.com (EUCPMTA) with SMTP id FB.86.10549.9881CA46; Mon, 10
+	Jul 2023 15:41:13 +0100 (BST)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20230710144112eusmtip149150385311f28ed1122bcda27d13b3d~wiJ37eZjX2841128411eusmtip1J;
+	Mon, 10 Jul 2023 14:41:12 +0000 (GMT)
+Message-ID: <33712296-5887-d810-096b-c95cd718626d@samsung.com>
+Date: Mon, 10 Jul 2023 16:41:12 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAN6iL-QWa=DNmfGDJHeOncZMktFyQ3LpNGiRu1Aa4cyQofdTnw@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0)
+	Gecko/20100101 Thunderbird/102.13.0
+Subject: Re: [PATCH 4/6] iommu/exynos: Convert to
+ devm_platform_ioremap_resource()
+Content-Language: en-US
+To: Yangtao Li <frank.li@vivo.com>, Joerg Roedel <joro@8bytes.org>, Will
+	Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Krzysztof
+	Kozlowski <krzysztof.kozlowski@linaro.org>, Alim Akhtar
+	<alim.akhtar@samsung.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20230705130416.46710-4-frank.li@vivo.com>
+Content-Transfer-Encoding: 7bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrLKsWRmVeSWpSXmKPExsWy7djP87qdEmtSDL6/lLF4MG8bm8XEIzOY
+	LH59sbDonL2B3WLv663sFpseX2O1uLxrDpvFjPP7mCwOfnjCatFyx9SBy+PJwXlMHmvmrWH0
+	2LSqk83jzrU9bB6bl9R7vNg8k9Gjb8sqRo/Pm+Q8NnzqYA7gjOKySUnNySxLLdK3S+DKWPmH
+	p2AVV8XLZ1fYGhiXcHQxcnJICJhIdPU0MXUxcnEICaxglPj2YhIbhPOFUaL70Vwo5zOjRFfT
+	LmaYlvVN99hAbCGB5YwSD05zQNgfGSVu9pt2MXJw8ArYSZxarw4SZhFQlVjzezUTiM0rIChx
+	cuYTFhBbVCBVYsftCawgtrBAiMTUzg6wGmYBcYlbT+aDXSQi8BJo5KF+sCOYBZoYJXq/9oMt
+	ZhMwlOh62wVmcwqYS2xcepYZolteYvvbOcwgDRICkzklLhy+zwJxtYtEb9MuVghbWOLV8S3s
+	ELaMxOnJPSwQDe2MEgt+32eCcCYwSjQ8v8UIUWUtcefcLzaQ35gFNCXW79KHCDtKzPs9lwUk
+	LCHAJ3HjrSDEEXwSk7ZNZ4YI80p0tAlBVKtJzDq+Dm7twQuXmCcwKs1CCphZSAEwC8k7sxD2
+	LmBkWcUonlpanJueWmycl1quV5yYW1yal66XnJ+7iRGYwk7/O/51B+OKVx/1DjEycTAeYpTg
+	YFYS4S04uCpFiDclsbIqtSg/vqg0J7X4EKM0B4uSOK+27clkIYH0xJLU7NTUgtQimCwTB6dU
+	A9OKkGffpzRGnH2YUzNBVe1r4TROZsdnzO/2nv6aImr6+Of3/16e6qmVXU+cBJmYGQ3vz/te
+	bq49S6/GKsPYukahyPl64GOx7Uv1FDWUVgjwp074Hfb93J3PT0q/qa1Ycep6Lv9DSb9DMfWu
+	lrl32+5OChIPnryTNWTbm6MaN6csDtwuEhVQLn/O/MUR62v/GpZqGi1YKMlr+uPIT+1teRtY
+	dnaw7iuO+ST5hv3Q7QvbuJI2OX/PvXMq+SqL/OL8utnpiwRvaYSzB7h36i8I+BEZtEB8QvWM
+	aX78j/piIqOLjNPWCW+seS+uHVIju2LJtfuM/Yp6fac5Dl57czT27noVOS6x5QemPs0Kc4mO
+	+KbEUpyRaKjFXFScCACqNcXS0AMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrIIsWRmVeSWpSXmKPExsVy+t/xu7qdEmtSDH7vZLV4MG8bm8XEIzOY
+	LH59sbDonL2B3WLv663sFpseX2O1uLxrDpvFjPP7mCwOfnjCatFyx9SBy+PJwXlMHmvmrWH0
+	2LSqk83jzrU9bB6bl9R7vNg8k9Gjb8sqRo/Pm+Q8NnzqYA7gjNKzKcovLUlVyMgvLrFVija0
+	MNIztLTQMzKx1DM0No+1MjJV0rezSUnNySxLLdK3S9DLWPmHp2AVV8XLZ1fYGhiXcHQxcnJI
+	CJhIrG+6x9bFyMUhJLCUUeLZ/R4miISMxMlpDawQtrDEn2tdUEXvGSVmrznB3sXIwcErYCdx
+	ar06SA2LgKrEmt+rwXp5BQQlTs58wgJiiwqkSvxq2AU2R1ggRGJqZwdYDbOAuMStJ/OZQGaK
+	CLxklLje2wnmMAs0MUp8/rGNFWLbdkaJWce7GEFa2AQMJbregpzBycEpYC6xcelZZohRZhJd
+	WyFqmAXkJba/ncM8gVFoFpJLZiHZOAtJyywkLQsYWVYxiqSWFuem5xYb6hUn5haX5qXrJefn
+	bmIExu22Yz8372Cc9+qj3iFGJg7GQ4wSHMxKIrwFB1elCPGmJFZWpRblxxeV5qQWH2I0BQbH
+	RGYp0eR8YOLIK4k3NDMwNTQxszQwtTQzVhLn9SzoSBQSSE8sSc1OTS1ILYLpY+LglGpgWprn
+	cFpnauP5C582uL5t49z/XEvobvobT+XjUv5RP1/f/+axj2nl2ymnHotGrn0cmLVlunbHc9bH
+	HLechIXj3hVNklhx1zvZ790pz6kqSudUCmf7Xv+uUHSOaanWtrlVJ43y7x8IffD8eTmD+4Nt
+	B2OaV8uJ8WeuKBeOXXvqaKkSS908/tVeqzQ+Fv5yCTrfIrXtaQ6b+HrZI7dZlloKTb28U665
+	WWxP2dpJsVwTGd0vyBR8XPr+v42+lfI2sanaR96LNLZkOr1+kNI9scryWbHUv4Cs2s5jdq5C
+	+9NEmS3dHgrzeAgHaxx517/ykKmy+BWJ7n1VDzc77n41+xbj+5gj6tMMXQVtK9JNe2XclViK
+	MxINtZiLihMBFeEYvmQDAAA=
+X-CMS-MailID: 20230710144113eucas1p1f4063f2e41b1d23a83dc7be40bc0e2ba
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20230705130438eucas1p231e5c29315bc0c2e15e947079ed4e39a
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20230705130438eucas1p231e5c29315bc0c2e15e947079ed4e39a
+References: <20230705130416.46710-1-frank.li@vivo.com>
+	<CGME20230705130438eucas1p231e5c29315bc0c2e15e947079ed4e39a@eucas1p2.samsung.com>
+	<20230705130416.46710-4-frank.li@vivo.com>
 
-Hi Pranjal,
+On 05.07.2023 15:04, Yangtao Li wrote:
+> Use devm_platform_ioremap_resource() to simplify code.
+>
+> Signed-off-by: Yangtao Li <frank.li@vivo.com>
 
-Please try to avoid top-posting when you reply to the mailing list, as
-it breaks the flow of conversation. See:
+Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
 
-	Documentation/process/submitting-patches.rst
 
-On Mon, Jul 10, 2023 at 02:33:10PM +0530, Pranjal Shrivastava wrote:
-> Agreed. It's a security v/s performance trade off. The main issue
-> seems to be when a PCIe endpoint maliciously spoofs its ID. However, I
-> guess we can avoid that by making the API platform device specific, in
-> that case only the device which is a platform device can use the API
-> to say "Hey, I know what I am doing, bypass the SMMU for me". Will
-> that be acceptable?
+> ---
+>   drivers/iommu/exynos-iommu.c | 6 ++----
+>   1 file changed, 2 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index c275fe71c4db..ab6208015997 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -725,19 +725,17 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
+>   	int irq, ret;
+>   	struct device *dev = &pdev->dev;
+>   	struct sysmmu_drvdata *data;
+> -	struct resource *res;
+>   
+>   	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+>   	if (!data)
+>   		return -ENOMEM;
+>   
+> -	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> -	data->sfrbase = devm_ioremap_resource(dev, res);
+> +	data->sfrbase = devm_platform_ioremap_resource(pdev, 0);
+>   	if (IS_ERR(data->sfrbase))
+>   		return PTR_ERR(data->sfrbase);
+>   
+>   	irq = platform_get_irq(pdev, 0);
+> -	if (irq <= 0)
+> +	if (irq < 0)
+>   		return irq;
+>   
+>   	ret = devm_request_irq(dev, irq, exynos_sysmmu_irq, 0,
 
-I think that's effectively already the case for the sysfs interface, no?
-Untrusted PCI devices are forced into a default domain of IOMMU_DOMAIN_DMA
-and you can't change that.
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
-> Please let us know if there are any other ways/suggestions that allow
-> us to install bypass for a single iommu group sitting in front of a
-> platform device (This device is not removable/hot-pluggable and always
-> sits on the system).
-
-I think there are a few issues here:
-
-> >> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> >> > index f1dcfa3f1a1b..36f158621dc5 100644
-> >> > --- a/drivers/iommu/iommu.c
-> >> > +++ b/drivers/iommu/iommu.c
-> >> > @@ -13,6 +13,7 @@
-> >> >   #include <linux/bug.h>
-> >> >   #include <linux/types.h>
-> >> >   #include <linux/init.h>
-> >> > +#include <linux/dma-map-ops.h>
-> >> >   #include <linux/export.h>
-> >> >   #include <linux/slab.h>
-> >> >   #include <linux/errno.h>
-> >> > @@ -2908,6 +2909,10 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
-> >> >       if (ret)
-> >> >               goto free_new_domain;
-> >> >
-
-This code (iommu_change_dev_def_domain()) has changed significantly in
-the recent merge window, so this doesn't apply.
-
-> >> > +     /* Make sure dma_ops are appropriatley set */
-> >> > +     if (type == IOMMU_DOMAIN_IDENTITY)
-> >> > +             set_dma_ops(dev, NULL);
-> >> > +
-
-This is usually handled on arm64 by the unbind operation, which will
-tear down the old domain and clear the function pointer.
-
-> >> >       iommu_domain_free(prev_dom);
-> >> >
-> >> >       return 0;
-> >> > @@ -2921,6 +2926,22 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
-> >> >       return ret;
-> >> >   }
-> >> >
-> >> > +/*
-> >> > + * Sets the default domain to identity of an iommu group
-> >> > + *
-> >> > + * @group: The group for which the default domain should be changed
-> >> > + * @dev: The first device in the group
-> >> > + *
-> >> > + * Returns 0 on success and error code on failure
-> >> > + * Note:Presently, this function shall be called only if the driver requests to
-> >> > + * change the group's default domain type to identity during the driver's probe.
-> >> > + */
-> >> > +int iommu_set_def_identity_domain(struct device *dev, struct iommu_group *group)
-> >> > +{
-> >> > +     return iommu_change_dev_def_domain(group, dev, IOMMU_DOMAIN_IDENTITY);
-> >> > +}
-> >> > +EXPORT_SYMBOL_GPL(iommu_set_def_identity_domain);
-
-An exported symbol with no user in the tree is very unlikely to be
-accepted...
-
-Why can't you do what you need from userspace using the existing interface?
-
-If a new in-kernel interface is required, then I think it (a) needs opt-in
-from userspace and (b) needs an in-tree user.
-
-Thanks,
-
-Will
