@@ -1,57 +1,58 @@
-Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
+Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com [209.85.222.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAB8C107B4
-	for <iommu@lists.linux.dev>; Mon, 10 Jul 2023 17:29:14 +0000 (UTC)
-Received: by mail-qv1-f54.google.com with SMTP id 6a1803df08f44-6355e774d0aso26682446d6.1
-        for <iommu@lists.linux.dev>; Mon, 10 Jul 2023 10:29:14 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 613FD17C8
+	for <iommu@lists.linux.dev>; Mon, 10 Jul 2023 18:34:37 +0000 (UTC)
+Received: by mail-ua1-f51.google.com with SMTP id a1e0cc1a2514c-79492b8f4bbso1492651241.2
+        for <iommu@lists.linux.dev>; Mon, 10 Jul 2023 11:34:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1689010153; x=1691602153;
+        d=ziepe.ca; s=google; t=1689014076; x=1691606076;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=NijMvu4hDPVcn1xdPqxC+coZ9Y8AUqtC5nBuqj5T3eI=;
-        b=HmtbopGCZEIoAGeA5xKlxgRxdSMmaMPuZJWEYjL6F+XIVF0kfNo4CmzxEH1m/e0WND
-         BhKOOFPKkYxasJc4m2T36ZUAZi00BY25GduLfqKHLtYS++CuX7+7XyZlzEDYkQxBU7qV
-         BA0b+CXNhHQX4UMb92RWjyFn8xejGejJwbsgmreeYsPVULuHm0DiHfIpJuT5k3QV418f
-         9lbpUjDIYxRtqzlku2I6LGbzKWcejoFilD2TU3jeRYLdSMEmoZcy1RIxQgozCmcZ19dD
-         XWYnpDcg53JFw1PCji7ANmzN+g3fAH4fgSBMY55TwdlC9UKKAMBWJJqztH3bum6ArnOw
-         9bSw==
+        bh=xUAAl/JRibyURI8yLiQyKNMl3UrxYtFAVgDBPiZZxSg=;
+        b=UYdx7lhZzY8M1QbkhaKAOzyy8/B9Esjii23aMR4RmX0L3BZZ35NxnWQvPbHAl5GKyW
+         0JPM/5O8Ui+hGZ7DLZJ6XPdwxsRMYaViqPraVHspJS7jeQ7F0f3Z3/EYITTao2HIzXmM
+         YPpfVG+rcbc9K90TJVmZ/NUWmkWoCKbyrx7NvT7Tx+rxer433xHStiar6RT3E33PVTQ6
+         nLKbytlDU0qapWfpeLJ9eTiRE4HYNCKza2lHVQheEdlqIihC0K++99RhhJ9RqcrpTUxm
+         VEPmka+R94Bg1d/+t3DzcEyF5qRv+leI2QOVaIKnGbDffVAGEE7a9UT9QFOhfnEyqPul
+         KXBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689010153; x=1691602153;
+        d=1e100.net; s=20221208; t=1689014076; x=1691606076;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=NijMvu4hDPVcn1xdPqxC+coZ9Y8AUqtC5nBuqj5T3eI=;
-        b=g/B1nHpdoNKk9vdZuM9pfJLL278Q8MI8tTXNqrj9iZU2/R01KaMEUVGSgibA3rPnpi
-         +TnMLeVfY5cOUcacucugkDs4PRQ+rHzBQOvIcV76IyOyl3mKsiqJmydHypmnstZ/cLQK
-         i/W43d3ECpreJGnMyNiQNJNkm4uxoTnM9sNncax+xKfI8XdhR/SJ/yNjIPpqlyzygQK4
-         4bc7l0WrHMa4zitnIc0nUGcc9aCV6DK4err3b2SPlNV3hH8PMxYwhNfwS0URIcqlOQNH
-         +IdP5ztSvdnNQFchswDx9p1akFegtWTgbVk4IyUGvq+cPf8ZAlMSnsCURRW3AjB+WmWy
-         LQdA==
-X-Gm-Message-State: ABy/qLbC9hlSWBAZqmDEphfy25sP0awBSQIdOVzMs6hsG+aE9uVknx/9
-	eqkmsEzUeTjJGRmCOfZlLVS+uQ==
-X-Google-Smtp-Source: APBJJlEt/sUmDLXrLxo45lionjYNQmEHJgq3ERqjFIlGob/IwNHCoqaKp2l5acb5H1OG3gitrRV6Fg==
-X-Received: by 2002:a0c:cb8f:0:b0:62d:feee:2520 with SMTP id p15-20020a0ccb8f000000b0062dfeee2520mr6258429qvk.51.1689010153723;
-        Mon, 10 Jul 2023 10:29:13 -0700 (PDT)
+        bh=xUAAl/JRibyURI8yLiQyKNMl3UrxYtFAVgDBPiZZxSg=;
+        b=bulqYhEC94a2odZqNy9UKv1r8Jorg09EvScj2uFwpELS1fgtRMxhOv369N4pQJ9DTC
+         /qB0amPlOUXp6tOjLhUF+fa3nAG/Ilss0LcnpukKQrrpOW5t3/cvbxmWZ3kiI7CUbqMQ
+         X9SHfydDrglJLdczY74VAsZTIudwqQ16v8euJ+AacVHFiaZ6VklYMoqJbW7jooj4Fp5x
+         cza0mdjAwofzWvZeC9YedZBx0kNImeH91DjVijT+XYj27t6N9IcVxRdEeVl8ew2CQAmV
+         sQ+G1CECSfgn2QxXMmcBsrpNV95qgIfRt2ARVSYn5Z6mpkt4fanE9O5OJGXR0CU1x+Wb
+         XNhQ==
+X-Gm-Message-State: ABy/qLZ/KkqE/iCvnntu9NysnVWU6r3lb9TVWLnT7nLSenVk0uhDDoVv
+	9DofOhKqHtFUNwauQ/PNQT6S0w==
+X-Google-Smtp-Source: APBJJlFRwyBO0JL6E5OOIG3LFBD1+eXnRL673S95ZH2Rvx1xHhBMK1oXyQB+TH++8kznHjbeRAqo4A==
+X-Received: by 2002:a67:fb43:0:b0:443:5bec:a2fd with SMTP id e3-20020a67fb43000000b004435beca2fdmr5929407vsr.18.1689014076125;
+        Mon, 10 Jul 2023 11:34:36 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id h16-20020a0cf210000000b00636bde318bcsm47891qvk.61.2023.07.10.10.29.13
+        by smtp.gmail.com with ESMTPSA id s9-20020a0ca609000000b0063596878aaasm120384qva.18.2023.07.10.11.34.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jul 2023 10:29:13 -0700 (PDT)
+        Mon, 10 Jul 2023 11:34:35 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qIuhE-0004Gy-QG;
-	Mon, 10 Jul 2023 14:29:12 -0300
-Date: Mon, 10 Jul 2023 14:29:12 -0300
+	id 1qIviV-0004hG-0K;
+	Mon, 10 Jul 2023 15:34:35 -0300
+Date: Mon, 10 Jul 2023 15:34:35 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Tina Zhang <tina.zhang@intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>,
-	Michael Shavit <mshavit@google.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 6/6] mm: Deprecate pasid field
-Message-ID: <ZKw/6O4QmJMIRRP9@ziepe.ca>
-References: <20230707013441.365583-1-tina.zhang@intel.com>
- <20230707013441.365583-7-tina.zhang@intel.com>
+To: Pranjal Shrivastava <praan@google.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, nikhilnd@google.com,
+	mshavit@google.com, iommu@lists.linux.dev, svarbanov@suse.de
+Subject: Re: [PATCH] iommu: Expose an API to set identity domain
+Message-ID: <ZKxPO/yrozheHqWz@ziepe.ca>
+References: <20230707104857.348353-1-praan@google.com>
+ <af4166f9-7b86-6c12-a8f8-ee0398743dd6@arm.com>
+ <CAN6iL-Qu97hFbpOEPPtcVcWo_+=zjFy5fjJU-UnAqnY=ebFptw@mail.gmail.com>
+ <CAN6iL-QWa=DNmfGDJHeOncZMktFyQ3LpNGiRu1Aa4cyQofdTnw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -60,17 +61,16 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230707013441.365583-7-tina.zhang@intel.com>
+In-Reply-To: <CAN6iL-QWa=DNmfGDJHeOncZMktFyQ3LpNGiRu1Aa4cyQofdTnw@mail.gmail.com>
 
-On Fri, Jul 07, 2023 at 09:34:41AM +0800, Tina Zhang wrote:
-> Drop the pasid field, as all the information needed for sva domain
-> management has been moved to the newly added iommu_mm field.
-> 
-> Signed-off-by: Tina Zhang <tina.zhang@intel.com>
-> ---
->  mm/init-mm.c | 1 -
->  1 file changed, 1 deletion(-)
+On Mon, Jul 10, 2023 at 02:33:10PM +0530, Pranjal Shrivastava wrote:
 
-Shouldn't this remove the field from the mmu_struct as well??
+> Please let us know if there are any other ways/suggestions that allow
+> us to install bypass for a single iommu group sitting in front of a
+> platform device (This device is not removable/hot-pluggable and always
+> sits on the system).
+
+Maybe the FW should pass in this request that the device is trusted
+and should get some performance DMA?
 
 Jason
