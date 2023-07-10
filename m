@@ -1,260 +1,207 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 419F1D2E1
-	for <iommu@lists.linux.dev>; Mon, 10 Jul 2023 09:36:29 +0000 (UTC)
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id E30F414808A;
-	Mon, 10 Jul 2023 11:36:19 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1688981780; bh=cEGhRoXPGRpwdgEcYnOlQCfMzy6z9NfW6eHFlWupbSY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=XABk4b2xj/95NSII8KdLFD9UXbqReOD/JSMT78/awbRfpUBqfGBkx8UaOP7uLhMBC
-	 3ilozKe2ETT4f5Fu81wNHDCN07rfMRv27v/9Xz75qERHzeG33+YIPLfvMTvoepShXB
-	 bp2X4b8fPNU/Y7K2HLpKLrrq+yf2U2JAokof6WBFlaoG05B6pU1H78/xgPW15MdaqE
-	 BfIGVqnvqysxdQ4LOZdewoT61n6Z6aso0jS/C+m9Ibd4l2WgvIliFFmHeTIN46rnAB
-	 VG7cMrMlXNhKuXURvWmxWocykbHhVETgX2QSYY2w6dFYQnLEHCYsWEc7f2hvRbUR7/
-	 o2NH4pbmYxXYQ==
-Date: Mon, 10 Jul 2023 11:36:18 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Petr Tesarik
- <petrtesarik@huaweicloud.com>, Stefano Stabellini <sstabellini@kernel.org>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Thomas Gleixner
- <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov
- <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, "maintainer:X86
- ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>, "H. Peter Anvin"
- <hpa@zytor.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Juergen Gross
- <jgross@suse.com>, Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
- Christoph Hellwig <hch@lst.de>, Marek Szyprowski
- <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Andy
- Shevchenko <andriy.shevchenko@linux.intel.com>, Hans de Goede
- <hdegoede@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kees Cook
- <keescook@chromium.org>, Saravana Kannan <saravanak@google.com>, "moderated
- list:XEN HYPERVISOR ARM" <xen-devel@lists.xenproject.org>, "moderated
- list:ARM PORT" <linux-arm-kernel@lists.infradead.org>, open list
- <linux-kernel@vger.kernel.org>, "open list:MIPS"
- <linux-mips@vger.kernel.org>, "open list:XEN SWIOTLB SUBSYSTEM"
- <iommu@lists.linux.dev>, Roberto Sassu <roberto.sassu@huaweicloud.com>,
- Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: Re: [PATCH v3 4/7] swiotlb: if swiotlb is full, fall back to a
- transient memory pool
-Message-ID: <20230710113618.2038e033@meshulam.tesarici.cz>
-In-Reply-To: <BYAPR21MB1688D3AC0C094420733717C4D732A@BYAPR21MB1688.namprd21.prod.outlook.com>
-References: <cover.1687859323.git.petr.tesarik.ext@huawei.com>
-	<34c2a1ba721a7bc496128aac5e20724e4077f1ab.1687859323.git.petr.tesarik.ext@huawei.com>
-	<BYAPR21MB1688AAC65852E75764F53099D72CA@BYAPR21MB1688.namprd21.prod.outlook.com>
-	<2023070626-boxcar-bubbly-471d@gregkh>
-	<BYAPR21MB168802F691D3041C9B2F9F2DD72CA@BYAPR21MB1688.namprd21.prod.outlook.com>
-	<2023070706-humbling-starfish-c68f@gregkh>
-	<20230707122213.3a7378b5@meshulam.tesarici.cz>
-	<BYAPR21MB1688D3AC0C094420733717C4D732A@BYAPR21MB1688.namprd21.prod.outlook.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03C7CD2E0
+	for <iommu@lists.linux.dev>; Mon, 10 Jul 2023 10:40:31 +0000 (UTC)
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-992e22c09edso495437066b.2
+        for <iommu@lists.linux.dev>; Mon, 10 Jul 2023 03:40:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1688985630; x=1691577630;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=67xmh9LVZnEPITxD2YUcmJFqrGxMBcWoYDKnu4sd8OU=;
+        b=MkvayJ0Jv4m9lUG9hPeO2Sk9U7JdJTItupZQZNN0hK0qhYLlxr7Yypva2rkiiuOwYG
+         Z6L9Rzl6YMpdkaIRcvx/+M2KapmF7H62wQjv8FunJu9xTRVF+/FOcewCj6YDRWUtxZ5E
+         170gBHvl/dBUHNhnxFV8YbiCLUVUXEwe7B1klfxyq0T0eMoKQg/mr63Bh+WeSBPx7Vin
+         FW+LEFgQm9jL+62O80oF/2LdMbFUdBBfQ6eW3wy4Cj0QbjzsTkJ94hsZazBJDvVlcqdT
+         1ao91Ri6huYsg3U8qL5rADNu5c4rnPLyXDwJIk6/8sHcbvQulBVEogjEipkLD6xAygEf
+         eR2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1688985630; x=1691577630;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=67xmh9LVZnEPITxD2YUcmJFqrGxMBcWoYDKnu4sd8OU=;
+        b=d8wniKhA2F/0Lgfk19MPfdhPywsIKHzdVJDbDnWVVRV1Vw1kZJF6q1HE6RSvWyD8og
+         R1fVv2Ulxr7eOOXBhm0J4rPkk6ddisFHuX7GZRt0N9Y/toXTez3W0VMi3wrMr59Rbf0I
+         DXIk5jZ75I1McUOyGB48kl9GuuQOs9pP00mXx/7PKI14x2t//hc9/nOLSJt87rcbRrbq
+         ASOG2sd/OKy+t9uFqK+fBQg+qYm+uyzaGnBNfZintCeHiGvWIbIFc7wAO5eEcM9dBsg2
+         4SZcOzdBBcBdxVmcgWuFY+rmdEDVFI8gKdl8LqtOd5fnuxV2iFKIqgffmHtnlIt1XQby
+         ukwQ==
+X-Gm-Message-State: ABy/qLasaHudv+gKXI7RYgzMNrLTITUQg7zCsI+Hyq7vlONiFNzFa070
+	hSjeiduxJZmbDk+6Q68pv0g=
+X-Google-Smtp-Source: APBJJlHEl/N+Os9L08/l1QjO2uw8ozmQRNKcElRRC0XE2Nyi2fEqOHcZd5I3eMYuRCGyGmGHOvypUg==
+X-Received: by 2002:a17:906:1de:b0:993:fdb4:327f with SMTP id 30-20020a17090601de00b00993fdb4327fmr5526132ejj.4.1688985629738;
+        Mon, 10 Jul 2023 03:40:29 -0700 (PDT)
+Received: from orome (p200300e41f4b7100f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f4b:7100:f22f:74ff:fe1f:3a53])
+        by smtp.gmail.com with ESMTPSA id gg11-20020a170906e28b00b0098921e1b064sm5893786ejb.181.2023.07.10.03.40.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Jul 2023 03:40:29 -0700 (PDT)
+Date: Mon, 10 Jul 2023 12:40:27 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Stanimir Varbanov <svarbanov@suse.de>
+Cc: linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	Krishna Reddy <vdumpa@nvidia.com>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>
+Subject: Re: [RFC PATCH] iommu: arm-smmu-nvidia: Add default domain type
+ implementation op
+Message-ID: <ZKvgG4-IzqiYPSUT@orome>
+References: <20230710082252.9702-1-svarbanov@suse.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="pT5OYcSxwNIoLEou"
+Content-Disposition: inline
+In-Reply-To: <20230710082252.9702-1-svarbanov@suse.de>
+User-Agent: Mutt/2.2.10 (2023-03-25)
+
+
+--pT5OYcSxwNIoLEou
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, 8 Jul 2023 15:18:32 +0000
-"Michael Kelley (LINUX)" <mikelley@microsoft.com> wrote:
-
-> From: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> Sent: Friday, July 7, 202=
-3 3:22 AM
-> >=20
-> > On Fri, 7 Jul 2023 10:29:00 +0100
-> > Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> >  =20
-> > > On Thu, Jul 06, 2023 at 02:22:50PM +0000, Michael Kelley (LINUX) wrot=
-e: =20
-> > > > From: Greg Kroah-Hartman <gregkh@linuxfoundation.org> Sent: Thursda=
-y, July 6, =20
-> > 2023 1:07 AM =20
-> > > > >
-> > > > > On Thu, Jul 06, 2023 at 03:50:55AM +0000, Michael Kelley (LINUX) =
-wrote: =20
-> > > > > > From: Petr Tesarik <petrtesarik@huaweicloud.com> Sent: Tuesday,=
- June 27, 2023 =20
-> > > > > 2:54 AM =20
-> > > > > > >
-> > > > > > > Try to allocate a transient memory pool if no suitable slots =
-can be found,
-> > > > > > > except when allocating from a restricted pool. The transient =
-pool is just
-> > > > > > > enough big for this one bounce buffer. It is inserted into a =
-per-device
-> > > > > > > list of transient memory pools, and it is freed again when th=
-e bounce
-> > > > > > > buffer is unmapped.
-> > > > > > >
-> > > > > > > Transient memory pools are kept in an RCU list. A memory barr=
-ier is
-> > > > > > > required after adding a new entry, because any address within=
- a transient
-> > > > > > > buffer must be immediately recognized as belonging to the SWI=
-OTLB, even if
-> > > > > > > it is passed to another CPU.
-> > > > > > >
-> > > > > > > Deletion does not require any synchronization beyond RCU orde=
-ring
-> > > > > > > guarantees. After a buffer is unmapped, its physical addresse=
-s may no
-> > > > > > > longer be passed to the DMA API, so the memory range of the c=
-orresponding
-> > > > > > > stale entry in the RCU list never matches. If the memory rang=
-e gets
-> > > > > > > allocated again, then it happens only after a RCU quiescent s=
-tate.
-> > > > > > >
-> > > > > > > Since bounce buffers can now be allocated from different pool=
-s, add a
-> > > > > > > parameter to swiotlb_alloc_pool() to let the caller know whic=
-h memory pool
-> > > > > > > is used. Add swiotlb_find_pool() to find the memory pool corr=
-esponding to
-> > > > > > > an address. This function is now also used by is_swiotlb_buff=
-er(), because
-> > > > > > > a simple boundary check is no longer sufficient.
-> > > > > > >
-> > > > > > > The logic in swiotlb_alloc_tlb() is taken from __dma_direct_a=
-lloc_pages(),
-> > > > > > > simplified and enhanced to use coherent memory pools if neede=
-d.
-> > > > > > >
-> > > > > > > Note that this is not the most efficient way to provide a bou=
-nce buffer,
-> > > > > > > but when a DMA buffer can't be mapped, something may (and wil=
-l) actually
-> > > > > > > break. At that point it is better to make an allocation, even=
- if it may be
-> > > > > > > an expensive operation. =20
-> > > > > >
-> > > > > > I continue to think about swiotlb memory management from the st=
-andpoint
-> > > > > > of CoCo VMs that may be quite large with high network and stora=
-ge loads.
-> > > > > > These VMs are often running mission-critical workloads that can=
-'t tolerate
-> > > > > > a bounce buffer allocation failure.  To prevent such failures, =
-the swiotlb
-> > > > > > memory size must be overly large, which wastes memory. =20
-> > > > >
-> > > > > If "mission critical workloads" are in a vm that allowes overcomm=
-it and
-> > > > > no control over other vms in that same system, then you have worse
-> > > > > problems, sorry.
-> > > > >
-> > > > > Just don't do that.
-> > > > > =20
-> > > >
-> > > > No, the cases I'm concerned about don't involve memory overcommit.
-> > > >
-> > > > CoCo VMs must use swiotlb bounce buffers to do DMA I/O.  Current sw=
-iotlb
-> > > > code in the Linux guest allocates a configurable, but fixed, amount=
- of guest
-> > > > memory at boot time for this purpose.  But it's hard to know how mu=
-ch
-> > > > swiotlb bounce buffer memory will be needed to handle peak I/O load=
-s.
-> > > > This patch set does dynamic allocation of swiotlb bounce buffer mem=
-ory,
-> > > > which can help avoid needing to configure an overly large fixed siz=
-e at boot. =20
-> > >
-> > > But, as you point out, memory allocation can fail at runtime, so how =
-can
-> > > you "guarantee" that this will work properly anymore if you are going=
- to
-> > > make it dynamic? =20
-> >=20
-> > In general, there is no guarantee, of course, because bounce buffers
-> > may be requested from interrupt context. I believe Michael is looking
-> > for the SWIOTLB_MAY_SLEEP flag that was introduced in my v2 series, so
-> > new pools can be allocated with GFP_KERNEL instead of GFP_NOWAIT if
-> > possible, and then there is no need to dip into the coherent pool.
-> >=20
-> > Well, I have deliberately removed all complexities from my v3 series,
-> > but I have more WIP local topic branches in my local repo:
-> >=20
-> > - allow blocking allocations if possible
-> > - allocate a new pool before existing pools are full
-> > - free unused memory pools
-> >=20
-> > I can make a bigger series, or I can send another series as RFC if this
-> > is desired. ATM I don't feel confident enough that my v3 series will be
-> > accepted without major changes, so I haven't invested time into
-> > finalizing the other topic branches.
-> >=20
-> > @Michael: If you know that my plan is to introduce blocking allocations
-> > with a follow-up patch series, is the present approach acceptable?
-> >  =20
+On Mon, Jul 10, 2023 at 11:22:52AM +0300, Stanimir Varbanov wrote:
+> Add def_domain_type implementation op and override default IOMMU
+> domain Kconfig option (CONFIG_IOMMU_DEFAULT_PASSTHROUGH=3Dy), which
+> could be enabled on some distros. The current quirk has been done
+> for Tegra234 machine, because I found the issue on it. The issue
+> itself appears on USB host controller which cannot be initialized
+> without IOMMU translation. Something more, we proved that IOMMU
+> translation is needed for display and GPU drivers as well.
 >=20
-> Yes, I think the present approach is acceptable as a first step.  But
-> let me elaborate a bit on my thinking.
+> I evaluated few possible options to solve that:
 >=20
-> I was originally wondering if it is possible for swiotlb_map() to detect
-> whether it is called from a context that allows sleeping, without the use
-> of SWIOTLB_MAY_SLEEP.   This would get the benefits without having to
-> explicitly update drivers to add the flag.  But maybe that's too risky.
+>  a) select default IOMMU domain from .def_domain_type op
+>  b) Unset CONFIG_IOMMU_DEFAULT_PASSTHROUGH=3Dn
+>  c) add iommu.passthrough=3D0 on the kernel cmdline
+>  d) firmware - ACPI / DT
+>=20
+> a) This option is implemented in the proposed patch.
+>=20
+> b) Since that the community has agreed that pass-through is preferred
+> as a default IOMMU domain option because this will avoid performance
+> impacts on some of the platforms [1]. On the other side we have examples
+> where you cannot even install Linux distribution on a machine where the
+> storage media cannot be detected and the system just hangs.
 
-This is a recurring topic and it has been discussed several times in
-the mailing lists. If you ask me, the best answer is this one by Andrew
-Morton, albeit a bit dated:
+That's not how I read that thread. It sounds more to me like Will and
+Robin had ideas on how to improve the performance and were planning to
+address these issues. It doesn't exactly sound to me like there was
+concensus to make passthrough the default.
 
-https://lore.kernel.org/lkml/20080320201723.b87b3732.akpm@linux-foundation.=
-org/
+Having said that, given that it's possible for distributions and users
+to set CONFIG_IOMMU_DEFAULT_PASSTHROUGH=3Dy, I think it would be useful in
+general to have a way of enforcing IOMMU translations if it's needed by
+the hardware.
 
-> For
-> the CoCo VM scenario that I'm most interested in, being a VM implicitly
-> reduces the set of drivers that are being used, and so it's not that hard
-> to add the flag in the key drivers that generate most of the bounce
-> buffer traffic.
+I'm not sure I fully understand the particular problems that you're
+seeing on Tegra234, though. I'm not aware of anything in the USB host
+controller driver (or hardware, for that matter) that would require the
+IOMMU to be enabled. The only peculiarity that I can think of is the
+firmware, which is typically loaded by an early bootloader and therefore
+might perhaps need the IOMMU to properly map this in the kernel.
+However, my understanding is that this firmware is loaded into special
+carveout regions which don't require remapping.
 
-Yes, that's my thinking as well.
+However, passthrough is admittedly not something that we've thoroughly
+tested, so it's possible you're running into a use-case that I'm not
+aware of. In that case, could you provide a few more specifics (such as
+the DTB and .config) of your build configuration so that I can try and
+reproduce?
 
-> Then I was thinking about a slightly different usage for the flag than wh=
-at
-> you implemented in v2 of the series.   In the case where swiotlb_map()
-> can't allocate slots because of the swiotlb pool being full (or mostly fu=
-ll),
-> kick the background thread (if it is not already awake) to allocate a
-> dynamic pool and grow the total size of the swiotlb.  Then if
-> SWIOTLB_MAY_SLEEP is *not* set, allocate a transient pool just as you
-> have implemented in this v3 of the series.  But if SWIOTLB_MAY_SLEEP
-> *is* set, swiotlb_map() should sleep until the background thread has
-> completed the memory allocation and grown the size of the swiotlb.
-> After the sleep, retry the slot allocation.  Maybe what I'm describing
-> is what you mean by "allow blocking allocations".  :-)
+Thanks,
+Thierry
 
-Not really, but I like the idea. After all, the only reason to have
-transient pools is when something is needed immediately while the
-background allocation is running.
+>=20
+> c) - This option involves installer's knowledge of platforms/devices
+> which needs IOMMU translations.
+>=20
+> d) - IORT ACPI table / DT - I'm not sure is that option even possible
+> but firmware looks like a good place for such.
+>=20
+> Please, treat this as an RFC and a call for proper solution.
+>=20
+> [1] https://marc.info/?l=3Dlinux-arm-kernel&m=3D148864682514762
+>=20
+> Signed-off-by: Stanimir Varbanov <svarbanov@suse.de>
+> ---
+>  drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c | 18 ++++++++++++++++++
+>  1 file changed, 18 insertions(+)
+>=20
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c b/drivers/iommu=
+/arm/arm-smmu/arm-smmu-nvidia.c
+> index 87bf522b9d2e..691b57d1e699 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
+> @@ -286,6 +286,22 @@ static int nvidia_smmu_init_context(struct arm_smmu_=
+domain *smmu_domain,
+>  	return 0;
+>  }
+> =20
+> +static int nvidia_smmu_def_domain_type(struct device *dev)
+> +{
+> +	if (of_machine_is_compatible("nvidia,tegra234"))
+> +		return IOMMU_DOMAIN_DMA;
+> +
+> +	return 0;
+> +}
+> +
+> +static int nvidia_smmu_single_def_domain_type(struct device *dev)
+> +{
+> +	if (of_machine_is_compatible("nvidia,tegra234"))
+> +		return IOMMU_DOMAIN_DMA;
+> +
+> +	return 0;
+> +}
+> +
+>  static const struct arm_smmu_impl nvidia_smmu_impl =3D {
+>  	.read_reg =3D nvidia_smmu_read_reg,
+>  	.write_reg =3D nvidia_smmu_write_reg,
+> @@ -297,11 +313,13 @@ static const struct arm_smmu_impl nvidia_smmu_impl =
+=3D {
+>  	.context_fault =3D nvidia_smmu_context_fault,
+>  	.probe_finalize =3D nvidia_smmu_probe_finalize,
+>  	.init_context =3D nvidia_smmu_init_context,
+> +	.def_domain_type =3D nvidia_smmu_def_domain_type,
+>  };
+> =20
+>  static const struct arm_smmu_impl nvidia_smmu_single_impl =3D {
+>  	.probe_finalize =3D nvidia_smmu_probe_finalize,
+>  	.init_context =3D nvidia_smmu_init_context,
+> +	.def_domain_type =3D nvidia_smmu_single_def_domain_type,
+>  };
+> =20
+>  struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *sm=
+mu)
+> --=20
+> 2.41.0
+>=20
 
-> This approach effectively throttles incoming swiotlb requests when space
-> is exhausted, and gives the dynamic sizing mechanism a chance to catch
-> up in an efficient fashion.  Limiting transient pools to requests that ca=
-n't
-> sleep will reduce the likelihood of exhausting the coherent memory
-> pools.  And as you mentioned above, kicking the background thread at the
-> 90% full mark (or some such heuristic) also helps the dynamic sizing
-> mechanism keep up with demand.
+--pT5OYcSxwNIoLEou
+Content-Type: application/pgp-signature; name="signature.asc"
 
-FWIW I did some testing, and my systems were not able to survive a
-sudden I/O peak without transient pools, no matter how low I set the
-threshold for kicking a background. OTOH I always tested with the
-smallest possible SWIOTLB (256 KiB * rounded up number of CPUs, e.g. 16
-MiB on my VM with 48 CPUs). Other sizes may lead to different results.
+-----BEGIN PGP SIGNATURE-----
 
-As a matter of fact, the size of the initial SWIOTLB memory pool and the
-size(s) of additional pool(s) sound like interesting tunable parameters
-that I haven't explored in depth yet.
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmSr4BgACgkQ3SOs138+
+s6F74g//VwtSTp6dhR5zDoIqJA8hR6PncaF9faNfSTqWj83cNF/5VG2zJxdS2JIm
+f2EHElN8YUvlQympiraEQP+DnE1SdLNbsG2j+DSQQS3h0HYmYhh2V8sLVNnY5AJ2
+pacvdCD7GZfZX3E19MBcMXsqRv+IFZNFg99bMZBJeYjWm2QKtFn16piOYdzuqmLG
+HuxG5u0un0WKnAM/Q35uGVdSBMueOF24pq8WrHc5FNVmzE7Z3sJ30V1g9IqJoIcU
+NhqHbAfsQHt20n2r9KRnn742fj7GD0IrOI185n8B/NxoedyfhkGIJDocTiYMxgcv
+x7lNmrWwzqRHE8QM96YPfqiTnokkTtZmcgH82E8mCvbHiHD3ekp83xZBfN8eY1qD
+Zx3iJgs08FfFjnYFuV0Ijv+pVLNyxPZkTSv7Dy0jz7l4yYjdn9LYmw2FuX1HRZkA
+NFJNVDZk2YXSEbaUgbD4qwhvRBn6veucBP3DcSfmoXB9ljF7t5LuuA1eDBEj/2j2
+YknEMjnmjmScpxsNKHY55sraVWaS9Am3mQ3oXAKh6qPVxTkpMYE0EkjsBqOSlVmy
+LrFXeh28dZ9oxmB/bMC3B45TDoVbljsAwV7Azm1zOSC14bccrHQlwTRMWBj57w4i
+ZgAZUW1TAACUaDinTehCvBfuZisRqt/GWwm8/G0nFl7R8C6jE5w=
+=9RJq
+-----END PGP SIGNATURE-----
 
-Petr T
+--pT5OYcSxwNIoLEou--
