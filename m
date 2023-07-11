@@ -1,142 +1,93 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2542F17FE0
-	for <iommu@lists.linux.dev>; Tue, 11 Jul 2023 17:21:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689096104; x=1720632104;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=CpW8kvvc/ZnO1puaWFpehGXVctv82waY7wFcuPwcuzU=;
-  b=Jcqlddegd/p/lCXIDea1ZoArPadE3N0+q2r47hD9NfAxsObErFkIno2p
-   PfluXk8ZCnWcM6L4N2nayUt7oX+uDxBQRPQjUuIk5uJB0+8Kw+FPAFi46
-   L18Ri9Ct1/RVYfnesuBrmkTb2v0/69dHBcSx0/oCOFG8vOJKGogobZzGH
-   zv7jtNIhn60xTjkJX6f9zw3hbZ6gloYVp9IuKxEqatBg6rQcnOjVg8Ovg
-   c6/TsXzR88pduTXRrK4027EAnlcOwD5ndNHB9lDYuwhZGs8BmKuOEo5Yq
-   Le6a95gwEzIKeIt2+sOMGX1yQrsy0Y2ij2W2JdXYJEU/gcIwG2xd7ewOe
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10768"; a="451046127"
-X-IronPort-AV: E=Sophos;i="6.01,197,1684825200"; 
-   d="scan'208";a="451046127"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2023 10:21:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10768"; a="895249329"
-X-IronPort-AV: E=Sophos;i="6.01,197,1684825200"; 
-   d="scan'208";a="895249329"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2023 10:21:23 -0700
-Date: Tue, 11 Jul 2023 10:26:20 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin
- Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian
- <kevin.tian@intel.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
- iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
- jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH 2/9] iommu: Add device parameter to iopf handler
-Message-ID: <20230711102620.37b06884@jacob-builder>
-In-Reply-To: <20230711010642.19707-3-baolu.lu@linux.intel.com>
-References: <20230711010642.19707-1-baolu.lu@linux.intel.com>
-	<20230711010642.19707-3-baolu.lu@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4356017FE0
+	for <iommu@lists.linux.dev>; Tue, 11 Jul 2023 19:44:16 +0000 (UTC)
+Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-4036bd4fff1so4261cf.0
+        for <iommu@lists.linux.dev>; Tue, 11 Jul 2023 12:44:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1689104655; x=1691696655;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=RSEbbHdSy2/6yMNHt5Jl2Q8DKG5onoGGlP2gwab29zg=;
+        b=SeyA6AXpzijMHYXA7cjzccjTbzwZWoJYGstW61Xg9auwvLtgCrdRrgY1+rb4mj71zP
+         kAS2JOoSuGreMHzZKF2SAOd8m8inSHMQZgSh0jbn1xWhgbEas4OlDao6V2S+bsSTFY2z
+         uU6/VkjyeAF+R9FkqY3cTYdzrYNRhtU//Y/fgFb2hnacZ2I/Z5+XqSPPfv61v8zsEbwi
+         8XX2N0+8VH/AfGGcFQLJslO5U0WDrchRnXwftY3cdzAWsPVuXSca9UUDTROL7eyfo70L
+         tgvclsm/4/QPawY1PY0reLmxJ7efSbL/jmnI3m9zBBeGaMI/OXPA4hkzZTy8dDamPq9s
+         uxLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1689104655; x=1691696655;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=RSEbbHdSy2/6yMNHt5Jl2Q8DKG5onoGGlP2gwab29zg=;
+        b=MhusjIXQm/IUKgbppremr6fN0Olkb0m/UeNrR7HSmRBGTrfGK5vX4NVAc/lU3nhvUb
+         ngIuMK9EZ1UWhhGr7Jc81rZPCKShqO9dT94T8Dn5nzO4svPzq0/50fhS2PaxywueqIaj
+         xwWMOuZxyqOlaQ5eIHkmfknOvxCWy0uPARn7VCbK0fDCswik2IHuPPMNFxYLFOszILS2
+         qXnHvFcN/g3egNeHQuzmWG5EbatxeM12YqNtq3l6aScj46Nq6dWFGw0RVybq0vKQQRJY
+         Vy74xeGj4kfE0MC4ZPqTgAXMJa8vnUCs0KIdngPBdbmYLw9yKBArt0T+R2c7r3thFpMS
+         dSIw==
+X-Gm-Message-State: ABy/qLYihXL/usg8ow7cc8zP/1FwMZmiAZWbnWoJ3/a+hV6MGbsJ95v3
+	FdB15QBOYAdChDgkJqMgWVB/cWtvUM3I1qE3gjdKqw==
+X-Google-Smtp-Source: APBJJlEMGrJhIDMpPTyu7e5avzS4Ytu2jD6E5EuDUDLHHML24qva5gPcogEF3c06DP35r+OQbQLaaRAwWhkADKINe28=
+X-Received: by 2002:ac8:570d:0:b0:3f9:a770:7279 with SMTP id
+ 13-20020ac8570d000000b003f9a7707279mr28180qtw.9.1689104654972; Tue, 11 Jul
+ 2023 12:44:14 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20230612153201.554742-1-catalin.marinas@arm.com>
+ <CAMi1Hd04mu6JojT3y6wyN2YeVkPR5R3qnkKJ8iR8if_YByCn4w@mail.gmail.com>
+ <ZKdfVSzbgOonR17A@google.com> <CAMi1Hd2f5GUnu_JGot=CqA9Vy4OD_V7FWYLOhNbJL1Pyd_EGMA@mail.gmail.com>
+In-Reply-To: <CAMi1Hd2f5GUnu_JGot=CqA9Vy4OD_V7FWYLOhNbJL1Pyd_EGMA@mail.gmail.com>
+From: Isaac Manjarres <isaacmanjarres@google.com>
+Date: Tue, 11 Jul 2023 12:44:03 -0700
+Message-ID: <CABfwK138ZbE5=J66esO-VG64tO+e9n1cRRBAE3wOKygJxd_xbw@mail.gmail.com>
+Subject: Re: [PATCH v7 00/17] mm, dma, arm64: Reduce ARCH_KMALLOC_MINALIGN to 8
+To: Amit Pundir <amit.pundir@linaro.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	Linus Torvalds <torvalds@linux-foundation.org>, Christoph Hellwig <hch@lst.de>, 
+	Robin Murphy <robin.murphy@arm.com>, Arnd Bergmann <arnd@arndb.de>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Will Deacon <will@kernel.org>, 
+	Marc Zyngier <maz@kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>, 
+	Ard Biesheuvel <ardb@kernel.org>, Saravana Kannan <saravanak@google.com>, Alasdair Kergon <agk@redhat.com>, 
+	Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>, Mark Brown <broonie@kernel.org>, 
+	Mike Snitzer <snitzer@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+	Jonathan Cameron <jic23@kernel.org>, Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org, 
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	Linux regressions mailing list <regressions@lists.linux.dev>, John Stultz <jstultz@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi BaoLu,
+On Sat, Jul 8, 2023 at 6:03=E2=80=AFAM Amit Pundir <amit.pundir@linaro.org>=
+ wrote:
+> Hi Issac, I can't reproduce this crash if I have slub_debug enabled
+> https://bugs.linaro.org/attachment.cgi?id=3D1149.
+>
+> But I can still reproduce the crash, with the same build, if I just
+> remove the slub_debug bootarg
+> https://bugs.linaro.org/attachment.cgi?id=3D1150
+>
 
-On Tue, 11 Jul 2023 09:06:35 +0800, Lu Baolu <baolu.lu@linux.intel.com>
-wrote:
+Hey Amit,
 
-> Add the device parameter to the iopf handler so that it can know which
-> device this fault was generated.
-> 
-> This is necessary for use cases such as delivering IO page faults to user
-> space. The IOMMUFD layer needs to be able to lookup the device id of a
-> fault and route it together with the fault message to the user space.
-> 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  include/linux/iommu.h      | 1 +
->  drivers/iommu/iommu-sva.h  | 4 ++--
->  drivers/iommu/io-pgfault.c | 2 +-
->  drivers/iommu/iommu-sva.c  | 2 +-
->  4 files changed, 5 insertions(+), 4 deletions(-)
-> 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 0eb0fb852020..a00fb43b5e73 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -249,6 +249,7 @@ struct iommu_domain {
->  	struct iommu_domain_geometry geometry;
->  	struct iommu_dma_cookie *iova_cookie;
->  	enum iommu_page_response_code (*iopf_handler)(struct iommu_fault
-> *fault,
-> +						      struct device *dev,
->  						      void *data);
->  	void *fault_data;
->  	union {
-> diff --git a/drivers/iommu/iommu-sva.h b/drivers/iommu/iommu-sva.h
-> index 54946b5a7caf..c848661c4e20 100644
-> --- a/drivers/iommu/iommu-sva.h
-> +++ b/drivers/iommu/iommu-sva.h
-> @@ -23,7 +23,7 @@ struct iopf_queue *iopf_queue_alloc(const char *name);
->  void iopf_queue_free(struct iopf_queue *queue);
->  int iopf_queue_discard_partial(struct iopf_queue *queue);
->  enum iommu_page_response_code
-> -iommu_sva_handle_iopf(struct iommu_fault *fault, void *data);
-> +iommu_sva_handle_iopf(struct iommu_fault *fault, struct device *dev,
-> void *data); 
->  #else /* CONFIG_IOMMU_SVA */
->  static inline int iommu_queue_iopf(struct iommu_fault *fault, void
-> *cookie) @@ -63,7 +63,7 @@ static inline int
-> iopf_queue_discard_partial(struct iopf_queue *queue) }
->  
->  static inline enum iommu_page_response_code
-> -iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
-> +iommu_sva_handle_iopf(struct iommu_fault *fault, struct device *dev,
-> void *data) {
->  	return IOMMU_PAGE_RESP_INVALID;
->  }
-> diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-> index e5b8b9110c13..fa604e1b5c5c 100644
-> --- a/drivers/iommu/io-pgfault.c
-> +++ b/drivers/iommu/io-pgfault.c
-> @@ -88,7 +88,7 @@ static void iopf_handler(struct work_struct *work)
->  		 * faults in the group if there is an error.
->  		 */
->  		if (status == IOMMU_PAGE_RESP_SUCCESS)
-> -			status = domain->iopf_handler(&iopf->fault,
-> +			status = domain->iopf_handler(&iopf->fault,
-> group->dev, domain->fault_data);
->  
->  		if (!(iopf->fault.prm.flags &
-> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-> index 3ebd4b6586b3..14766a2b61af 100644
-> --- a/drivers/iommu/iommu-sva.c
-> +++ b/drivers/iommu/iommu-sva.c
-> @@ -157,7 +157,7 @@ EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
->   * I/O page fault handler for SVA
->   */
->  enum iommu_page_response_code
-> -iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
-> +iommu_sva_handle_iopf(struct iommu_fault *fault, struct device *dev,
-dev has no use for sva handler, right? mark them __always_unused?
+Thanks for trying this out. John Stultz and I tried this out as well, and w=
+e
+couldn't reproduce the issue with slub_debug enabled either.
 
-> void *data) {
->  	vm_fault_t ret;
->  	struct vm_area_struct *vma;
+However, we were able to reproduce the issue you reported along with
+KASAN enabled, which also helped us catch an out-of-bounds access
+in the regmap-irq code. Once we fixed it, the memory corruption you
+reported was also fixed. I've sent the patch [1] for review. Can you please
+test it out and see if it works for you too?
 
+[1]: https://lore.kernel.org/all/20230711193059.2480971-1-isaacmanjarres@go=
+ogle.com/
 
 Thanks,
-
-Jacob
+Isaac
