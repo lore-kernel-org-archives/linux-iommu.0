@@ -1,101 +1,142 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1424219BA6;
-	Tue, 11 Jul 2023 16:32:50 +0000 (UTC)
-Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 36BG3O1f022902;
-	Tue, 11 Jul 2023 16:32:04 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2023-03-30;
- bh=+4V1nFRqwTelDtAcI310e7e7t3xc9C8kzlyU277DNxs=;
- b=ymbOEdbzGq63lkQ0RO+iBGkUQEcS4UO/lxjF5K2PqFLto+ysV4TEsKigi8pkSD+0XbV3
- XL1VOnexhj0u4/lo6XBn/xKbWSCP26vhMmRAizm8IRK0RiyBmzMxWVgii4+mt2saQDoe
- WQkfBM6MOBixvv4+SnNsom8ajpTprr/jzywgI6bM0UJ9nti/578BpsbF+a3T3kS3400U
- qjrAwqeuyDNTIGrKLmM9yjvATi3gM7M2TcV35rsN6hK23qmhlVJ+Q2GA+3HbmZr/Ok6j
- 74UXMpMsv5v2yolmJdhg0gscYbkGqAGt8XqOJSHUbr49tqGPzkT/fCW47BE+ftkelpr9 sA== 
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3rpyud5e6f-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 11 Jul 2023 16:32:04 +0000
-Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 36BGUtBm007087;
-	Tue, 11 Jul 2023 16:32:03 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3rpx854cdv-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 11 Jul 2023 16:32:03 +0000
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 36BGQBXP019529;
-	Tue, 11 Jul 2023 16:32:02 GMT
-Received: from ca-mkp2.ca.oracle.com.com (mpeterse-ol9.allregionaliads.osdevelopmeniad.oraclevcn.com [100.100.251.135])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3rpx854c4h-4;
-	Tue, 11 Jul 2023 16:32:02 +0000
-From: "Martin K. Petersen" <martin.petersen@oracle.com>
-To: linux-hyperv@vger.kernel.org, Julia Lawall <Julia.Lawall@inria.fr>
-Cc: "Martin K . Petersen" <martin.petersen@oracle.com>,
-        kernel-janitors@vger.kernel.org, keescook@chromium.org,
-        christophe.jaillet@wanadoo.fr, kuba@kernel.org,
-        kasan-dev@googlegroups.com, Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>, iommu@lists.linux.dev,
-        linux-tegra@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-        Krishna Reddy <vdumpa@nvidia.com>,
-        virtualization@lists.linux-foundation.org,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>, linux-scsi@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org, linux-media@vger.kernel.org,
-        John Stultz <jstultz@google.com>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        Laura Abbott <labbott@redhat.com>, Liam Mark <lmark@codeaurora.org>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Shailend Chand <shailend@google.com>,
-        linux-rdma@vger.kernel.org, mhi@lists.linux.dev,
-        linux-arm-msm@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        intel-gvt-dev@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-sgx@vger.kernel.org
-Subject: Re: (subset) [PATCH v2 00/24] use vmalloc_array and vcalloc
-Date: Tue, 11 Jul 2023 12:31:45 -0400
-Message-Id: <168909306205.1197987.4062725942946508296.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20230627144339.144478-1-Julia.Lawall@inria.fr>
-References: <20230627144339.144478-1-Julia.Lawall@inria.fr>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2542F17FE0
+	for <iommu@lists.linux.dev>; Tue, 11 Jul 2023 17:21:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1689096104; x=1720632104;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=CpW8kvvc/ZnO1puaWFpehGXVctv82waY7wFcuPwcuzU=;
+  b=Jcqlddegd/p/lCXIDea1ZoArPadE3N0+q2r47hD9NfAxsObErFkIno2p
+   PfluXk8ZCnWcM6L4N2nayUt7oX+uDxBQRPQjUuIk5uJB0+8Kw+FPAFi46
+   L18Ri9Ct1/RVYfnesuBrmkTb2v0/69dHBcSx0/oCOFG8vOJKGogobZzGH
+   zv7jtNIhn60xTjkJX6f9zw3hbZ6gloYVp9IuKxEqatBg6rQcnOjVg8Ovg
+   c6/TsXzR88pduTXRrK4027EAnlcOwD5ndNHB9lDYuwhZGs8BmKuOEo5Yq
+   Le6a95gwEzIKeIt2+sOMGX1yQrsy0Y2ij2W2JdXYJEU/gcIwG2xd7ewOe
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10768"; a="451046127"
+X-IronPort-AV: E=Sophos;i="6.01,197,1684825200"; 
+   d="scan'208";a="451046127"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2023 10:21:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10768"; a="895249329"
+X-IronPort-AV: E=Sophos;i="6.01,197,1684825200"; 
+   d="scan'208";a="895249329"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2023 10:21:23 -0700
+Date: Tue, 11 Jul 2023 10:26:20 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin
+ Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian
+ <kevin.tian@intel.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
+ iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+ jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH 2/9] iommu: Add device parameter to iopf handler
+Message-ID: <20230711102620.37b06884@jacob-builder>
+In-Reply-To: <20230711010642.19707-3-baolu.lu@linux.intel.com>
+References: <20230711010642.19707-1-baolu.lu@linux.intel.com>
+	<20230711010642.19707-3-baolu.lu@linux.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-07-11_08,2023-07-11_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxlogscore=801
- adultscore=0 mlxscore=0 spamscore=0 phishscore=0 malwarescore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2305260000 definitions=main-2307110148
-X-Proofpoint-ORIG-GUID: VdiqWRAD5JOoA45uglvHtoSxe29wDWJY
-X-Proofpoint-GUID: VdiqWRAD5JOoA45uglvHtoSxe29wDWJY
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, 27 Jun 2023 16:43:15 +0200, Julia Lawall wrote:
+Hi BaoLu,
 
-> The functions vmalloc_array and vcalloc were introduced in
+On Tue, 11 Jul 2023 09:06:35 +0800, Lu Baolu <baolu.lu@linux.intel.com>
+wrote:
+
+> Add the device parameter to the iopf handler so that it can know which
+> device this fault was generated.
 > 
-> commit a8749a35c399 ("mm: vmalloc: introduce array allocation functions")
+> This is necessary for use cases such as delivering IO page faults to user
+> space. The IOMMUFD layer needs to be able to lookup the device id of a
+> fault and route it together with the fault message to the user space.
 > 
-> but are not used much yet.  This series introduces uses of
-> these functions, to protect against multiplication overflows.
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  include/linux/iommu.h      | 1 +
+>  drivers/iommu/iommu-sva.h  | 4 ++--
+>  drivers/iommu/io-pgfault.c | 2 +-
+>  drivers/iommu/iommu-sva.c  | 2 +-
+>  4 files changed, 5 insertions(+), 4 deletions(-)
 > 
-> [...]
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 0eb0fb852020..a00fb43b5e73 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -249,6 +249,7 @@ struct iommu_domain {
+>  	struct iommu_domain_geometry geometry;
+>  	struct iommu_dma_cookie *iova_cookie;
+>  	enum iommu_page_response_code (*iopf_handler)(struct iommu_fault
+> *fault,
+> +						      struct device *dev,
+>  						      void *data);
+>  	void *fault_data;
+>  	union {
+> diff --git a/drivers/iommu/iommu-sva.h b/drivers/iommu/iommu-sva.h
+> index 54946b5a7caf..c848661c4e20 100644
+> --- a/drivers/iommu/iommu-sva.h
+> +++ b/drivers/iommu/iommu-sva.h
+> @@ -23,7 +23,7 @@ struct iopf_queue *iopf_queue_alloc(const char *name);
+>  void iopf_queue_free(struct iopf_queue *queue);
+>  int iopf_queue_discard_partial(struct iopf_queue *queue);
+>  enum iommu_page_response_code
+> -iommu_sva_handle_iopf(struct iommu_fault *fault, void *data);
+> +iommu_sva_handle_iopf(struct iommu_fault *fault, struct device *dev,
+> void *data); 
+>  #else /* CONFIG_IOMMU_SVA */
+>  static inline int iommu_queue_iopf(struct iommu_fault *fault, void
+> *cookie) @@ -63,7 +63,7 @@ static inline int
+> iopf_queue_discard_partial(struct iopf_queue *queue) }
+>  
+>  static inline enum iommu_page_response_code
+> -iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
+> +iommu_sva_handle_iopf(struct iommu_fault *fault, struct device *dev,
+> void *data) {
+>  	return IOMMU_PAGE_RESP_INVALID;
+>  }
+> diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
+> index e5b8b9110c13..fa604e1b5c5c 100644
+> --- a/drivers/iommu/io-pgfault.c
+> +++ b/drivers/iommu/io-pgfault.c
+> @@ -88,7 +88,7 @@ static void iopf_handler(struct work_struct *work)
+>  		 * faults in the group if there is an error.
+>  		 */
+>  		if (status == IOMMU_PAGE_RESP_SUCCESS)
+> -			status = domain->iopf_handler(&iopf->fault,
+> +			status = domain->iopf_handler(&iopf->fault,
+> group->dev, domain->fault_data);
+>  
+>  		if (!(iopf->fault.prm.flags &
+> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+> index 3ebd4b6586b3..14766a2b61af 100644
+> --- a/drivers/iommu/iommu-sva.c
+> +++ b/drivers/iommu/iommu-sva.c
+> @@ -157,7 +157,7 @@ EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
+>   * I/O page fault handler for SVA
+>   */
+>  enum iommu_page_response_code
+> -iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
+> +iommu_sva_handle_iopf(struct iommu_fault *fault, struct device *dev,
+dev has no use for sva handler, right? mark them __always_unused?
 
-Applied to 6.5/scsi-fixes, thanks!
+> void *data) {
+>  	vm_fault_t ret;
+>  	struct vm_area_struct *vma;
 
-[07/24] scsi: fnic: use vmalloc_array and vcalloc
-        https://git.kernel.org/mkp/scsi/c/b34c7dcaf311
-[24/24] scsi: qla2xxx: use vmalloc_array and vcalloc
-        https://git.kernel.org/mkp/scsi/c/04d91b783acf
 
--- 
-Martin K. Petersen	Oracle Linux Engineering
+Thanks,
+
+Jacob
