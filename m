@@ -1,166 +1,160 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC15316432
-	for <iommu@lists.linux.dev>; Tue, 11 Jul 2023 06:26:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689056809; x=1720592809;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Zt56k/ylATpiWcmI7Gmuu8RUv+NfirBJziZ1r67mpaI=;
-  b=cVYK4rIy0euTP0n1W85Fo/IoztsQpM6Gl3Jwtfp3vuRH0AjO+1/TlaAJ
-   eHTFZtztZE9BpIxxz5GKBqWPv73RTIbOH1lSvtxVDLf06urZgzI0S8nBP
-   Cxq2ixhvyv2lAzJYuYGfpXzO3mUNg/6OXqDmF5GunzVuI/oaGadbWiDGW
-   Sxvfoq4kLp/ictq3Di9mjLxq9aOiifRUR6gDUCmS6B7XbF701NNU1cbGn
-   EFCoS47IHNX3zoZTxTZFoxl6zP8i0x0CgcgP4Q3SqxgNaQo4xP5O3EKP4
-   fXxlR/ENAxmer52T9u77jYcsteQSx5JiVqiV5/UQXzQmNP7MPOikmmQ4j
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10767"; a="349342411"
-X-IronPort-AV: E=Sophos;i="6.01,196,1684825200"; 
-   d="scan'208";a="349342411"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2023 23:26:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10767"; a="671255776"
-X-IronPort-AV: E=Sophos;i="6.01,196,1684825200"; 
-   d="scan'208";a="671255776"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orsmga003.jf.intel.com with ESMTP; 10 Jul 2023 23:26:45 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Mon, 10 Jul 2023 23:26:45 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27 via Frontend Transport; Mon, 10 Jul 2023 23:26:45 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.168)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.27; Mon, 10 Jul 2023 23:26:45 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GxnQSeOtPu79OAwkG8VaGuaPPVYrQJChaXyan3a0VfXiKBYpwdnC9eEibYHCRLf8p7IpbECAQFrkg50sqZlxPHYUqXhQmOaVTOtAMVmbKeTzVwnRe/hotHPh6Y+EZ/Rdav+nCylexwAD2h/sn4XaIykymVG6k7Izqo3p87nmiMsRArDoH1yVeBzmUPq93sS4JmHZT+qWI7czYfpgML/g4I+gHRL5GvmPPtz2MzHFB4CtXK1eZE4hE1Sxg5y6MkFkVO+pDUPljjVF2HXB6XoJw/XthtLCVjRP1muamronwMPy6zmoGALjZY9yiMK0DwWGlvyRrAlA7ioTCPBn/z3Wdg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nFF3lhjHzp7Vuj75/BSvCX25dPw9/sm89tgEb8BIVso=;
- b=Sv31iB6w9qURWUmuGoTRZo8zNTMU18Uw0f2Qugs2gLLBDGQ4QxoRsm0yNECK66S6bX4/UvJ4zMlNRBa5bFjN+hQMZU9r2DaPlZQU/HURFu8kclC7sdVQz7Ap9142eswWnKXBG5DMC4wgsWN0RITRq3ahEBZKOhOq3XlXIjcvL0nFp81I9zLmrkA5mg5RHfU2hyDCVQs0JuuOd1L4DX/vvFlBBgHY5vRQTDt+JiRrTHObhuq7iI7T8QYuoP56l1qx9gf0oqWj9JNAuuB+Sb2+9XlYG8LayzSGanyZzOJIJxI8X7iZogOVDqLNLOfjRTLJXOPR36hYxJaOCa6xdgK6qw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by DS7PR11MB6200.namprd11.prod.outlook.com (2603:10b6:8:98::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6565.31; Tue, 11 Jul
- 2023 06:26:43 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::4f05:6b0b:dbc8:abbb]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::4f05:6b0b:dbc8:abbb%7]) with mapi id 15.20.6565.028; Tue, 11 Jul 2023
- 06:26:43 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Will
- Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Jason
- Gunthorpe" <jgg@ziepe.ca>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>
-CC: "Liu, Yi L" <yi.l.liu@intel.com>, Jacob Pan
-	<jacob.jun.pan@linux.intel.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 9/9] iommu: Use fault cookie to store iopf_param
-Thread-Topic: [PATCH 9/9] iommu: Use fault cookie to store iopf_param
-Thread-Index: AQHZs5ROZ0DTU24O6Ue9hKGIoQNDRq+0GN5A
-Date: Tue, 11 Jul 2023 06:26:43 +0000
-Message-ID: <BN9PR11MB5276454AD26C2BDC12CAEDE78C31A@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20230711010642.19707-1-baolu.lu@linux.intel.com>
- <20230711010642.19707-10-baolu.lu@linux.intel.com>
-In-Reply-To: <20230711010642.19707-10-baolu.lu@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|DS7PR11MB6200:EE_
-x-ms-office365-filtering-correlation-id: 49c137f8-374e-42c0-cfc4-08db81d7cb41
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: G2a2fXoRABPtuBBKBBlzRUtceziQPi7l9J39k8kexeZRt9tF+8U1r2K2Gp2aNXHPcIiOYQaEc0v1P488HyQrvDXEvUk3dj85/rrQfnBw/j23IMg7B+ACtBgGAi/yyt0EB5k5vOsx5cu9FFEEPO27dc7411dxd6vn6eJMZjBV8tnlNTlCRzf9R9xZeWZu+PRKicfS4E6SoN1TeBUiITtM+LEfnNlKOdZ3YccLxePrLU05oIA5dVDudCCYve2+aL3NeSXyEhtvQs9yjrvhM/ocvFcu+2X4OxqDfwcfUzBTtjjWuxgMyF9mrlZJ40QFMP5TbjeA3ek/HFlboKpMLF7wk9vPHQeZzW4O3ith92h/Ac5MbGrtmCnwasc35YBUOAZN9zJiYxjvSQqK/kJfYhNMP+2lk1Nyq9t9QLput5V+GY70n3jxIJ9nfUoYalJtHThNiWVRAbsNA3TR7KxuuK7yi+fB7JTSuLoy9u9on0hVpTluvYGBZ9MSVJCPbSPTRnvuoJeiw9NMyQ2fU6X0jUodrQXB8hnbP9GU1P1XEomu4OlvAGuyUJ25aaMRThQ3np1xloQ9ckZkeG4Q+RCG7JXC6fuLPu6J6A3u6N0Ax7v5mMxGfZp+v6ATHyPSbDx7EE1P
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(396003)(376002)(39860400002)(346002)(366004)(451199021)(38070700005)(33656002)(86362001)(55016003)(38100700002)(82960400001)(122000001)(478600001)(110136005)(71200400001)(41300700001)(54906003)(7696005)(8676002)(8936002)(5660300002)(52536014)(7416002)(2906002)(316002)(4326008)(66556008)(64756008)(66446008)(66946007)(76116006)(66476007)(4744005)(26005)(6506007)(9686003)(186003)(83380400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?3GRyLW8ybsIeeOPXZFSsyCZdO+hsEs7gOTCEed+V11EOtaK83dlw1OEWPqtd?=
- =?us-ascii?Q?0kwRVDIazLWfPeR3Q7PNxPXy3JxPEB3Cb38dj59uMf/YWt4vdRwc2EBBmCl7?=
- =?us-ascii?Q?UFyPjnb9REBpaTJtG0BHdZo3oDIMXI/7iZhwfMX1l1Xn+OEXkbo3FtQsYBiq?=
- =?us-ascii?Q?gErf8VawHR9qBzSa8+CQoGAgfEz5ngq5KfHG94j3e/ysJ1TpLp31BWt0490G?=
- =?us-ascii?Q?Y2WWkROLsAhU8H7oK3JJkUifG5PEj+0IkFP6Q8rF/Enkq1k/JHnVC3ZKZVSg?=
- =?us-ascii?Q?XRcHcqmr6DIWathBEm0nU7NYid6btQSknmRx+x+ypVI/clpW/myiTkCTv39c?=
- =?us-ascii?Q?V0dvMH58Y4aaxx+ZOZFrM3V+on2jzRS0Af5iEibmDHVnRlek5Qq6xIplMEMw?=
- =?us-ascii?Q?GkPuC52JI+AEdM55NJMLfWnvEX0nqD6xjL7lTL6iarEAEJj1vmJTKlj1r/4s?=
- =?us-ascii?Q?3LI5vg24F5Ly7Mi6O0wXsNG0tS1CmSyn61+mvUZxC0yRpcFXkZI2vSxNp2rT?=
- =?us-ascii?Q?DPYfk7jqJU4j2UxwnYA4cYDIDso/VBN1n98eUkZjNy5kCNayCryCkeHzo6ic?=
- =?us-ascii?Q?NmyxRQaCsa0P570xV6L8bGN5U3Z2p5J29JsIP3SHvQPbxzyiKGNzqOLKr5wr?=
- =?us-ascii?Q?qH0PddTn3+HZw862xdTfwYcBOdKbFHW7TgdEBcmqWaiq+yZLdZPtf+s3svmA?=
- =?us-ascii?Q?JSQK0m7db3j2VfQXs1ZzwPAufNQwITYzpLJibR0JfqhSG+OCk4ccoqDxWfUy?=
- =?us-ascii?Q?Gg77bdmMRo+x/F8EOVgS0ThksVK6Z1JU3/CMVbezwlO2pkBaCwqN7X++DbuZ?=
- =?us-ascii?Q?2v2kF/KyXxD0zrCAgyyIGDOhxMtoTZA7cYETij2t2QkF/e6IViWgvKAfoxMG?=
- =?us-ascii?Q?YtJN+4tly0PZJlevVd4+WWidd6/k6aW3D1ygcgFDONiEWUpREs4RsDIdtfUE?=
- =?us-ascii?Q?/CS6J9ceO0uBnnarKG166awMOszmd1u5WR9Q8QAxVPYRV1XygQ9I3qHA7PAx?=
- =?us-ascii?Q?f2LFTPk3gGik4TLCgHJIVYL8Jmz8nNFb7dNgROmn6JEbH6y6LnhWOYEPD2dO?=
- =?us-ascii?Q?N8XkmxHJnolnK+3HGYefhVQj1iSLR1FCCwIp8jRf7VBzlUVpMm+vswHz8ts6?=
- =?us-ascii?Q?W62BHEUZ8vOl/CB/2vh7ZaLIJVJJ+uKrsXIRi0KJdBUvb/jiJ9QMA1lH5Lmq?=
- =?us-ascii?Q?4qUqBCKJiffAVMiZGrnwae58cW/LUzcBVt0P84NPIJesqwLM6T1nRHcSvT5T?=
- =?us-ascii?Q?7TpMRdZ339K4B95RTN/4zokBZY4RnLfJjq6k4luvcHjYVovIEq6QRWnVlH2I?=
- =?us-ascii?Q?OclFRyM9a6rxWJ5gVttNLlSS0cWNQ0WAI8+J06rZsP1TC52yywpyWVDxbj/V?=
- =?us-ascii?Q?nXAuAeh5fcDIHEfP9T6qevPrng9T3nFbBircnpvc+6hgd2T3ced34WTEaD/6?=
- =?us-ascii?Q?VrebD2leKXTfc3xgHCmRixTr6PFYkrRMPp2QZ4JYcJApb/dExlW7covIrbBX?=
- =?us-ascii?Q?eXHwqVPNCSHvXJ77qnV+GwuVSwhlfMqJYX7Q+3NNxOtUBfnBemAT2KanfliT?=
- =?us-ascii?Q?byX2gZCJHLKPMPUi3JV1R7ybM9xI7lBSrqG1MHcm?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5F7B17738
+	for <iommu@lists.linux.dev>; Tue, 11 Jul 2023 09:03:32 +0000 (UTC)
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 898F7148CBE;
+	Tue, 11 Jul 2023 11:03:28 +0200 (CEST)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
+	t=1689066208; bh=gsA9dp5k5kL6wVwYiuNLHaFWo2zidgNfMjsDqoPRfvA=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=lTBkHMaRlvYY4xPel/M5UCaSWW2SpSEVRze8dKTgfvPMmQjjKLQWBbnq/UQmT/PLp
+	 soZ+v+Dw+CTEepA07g799v8ScO+hduASLM0Yjiu3042TsoZyXTY5QAKlvZlOuFztnw
+	 18Zo87nEx5fPnDo9NL6xeVMqf9WgPD4fE43YjpSfOVyNAS7dp6Qfa1V35r7nY8Tfc7
+	 N38JwA/go6jlLM8Cre6j+8YtiQLsv+LbXML9iDs0vDTsx+R/J/ltuUGPmJ9E0MNdZN
+	 YTmb0OsxoWAFfBth1siEGkEJMU6UuUaTpcMFuxc+W5gqSoxM7jg3dQWoymWJyFkfX9
+	 Zy4tguasNPMiA==
+Date: Tue, 11 Jul 2023 11:03:25 +0200
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Mike Lothian <mike@fireburn.co.uk>
+Cc: Roberto Sassu <roberto.sassu@huawei.com>, Kefeng Wang
+ <wangkefeng.wang@huawei.com>, "open list:DMA MAPPING HELPERS"
+ <iommu@lists.linux.dev>, Petr Tesarik <petrtesarik@huaweicloud.com>,
+ Roberto Sassu <roberto.sassu@huawei.com>, open list
+ <linux-kernel@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v2 0/7] Allow dynamic allocation of software IO TLB
+ bounce buffers
+Message-ID: <20230711110325.2521472c@meshulam.tesarici.cz>
+In-Reply-To: <CAHbf0-HY0-u4MwgU39b53hjOM+bWfGmOEYQuvHARjV+6j+O7Kg@mail.gmail.com>
+References: <cover.1681898595.git.petr.tesarik.ext@huawei.com>
+	<20230426141520.0caf4386@meshulam.tesarici.cz>
+	<2023042617-wobble-enlighten-9361@gregkh>
+	<20230426144439.5674f8bc@meshulam.tesarici.cz>
+	<20230509091635.27450bd9@meshulam.tesarici.cz>
+	<2023050949-grueling-verify-a43b@gregkh>
+	<CAHbf0-HY0-u4MwgU39b53hjOM+bWfGmOEYQuvHARjV+6j+O7Kg@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 49c137f8-374e-42c0-cfc4-08db81d7cb41
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jul 2023 06:26:43.0603
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: pci49cI5oAHEGAqKAtQ8+dGrRniEfygCPgAvSAdCLLF0w/EULGnzqwZTVPDJhiMbuOh4iiodFeDbU1JnFEcPwQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR11MB6200
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-> From: Lu Baolu <baolu.lu@linux.intel.com>
-> Sent: Tuesday, July 11, 2023 9:07 AM
+On Mon, 10 Jul 2023 23:23:45 +0100
+Mike Lothian <mike@fireburn.co.uk> wrote:
+
+> Hi
 >=20
-> Remove the static iopf_param pointer from struct iommu_fault_param to
-> save memory.
+> I was hoping this might land for 6.5-rc1, is there a new version that
+> might apply against 6.5?
 
-why is there memory saving? you replace a single pointer with a xarray now.=
-..
+Yes, there is a v3, which is a complete rewrite based on feedback from
+various people on this mailing list:
 
-> @@ -303,16 +303,27 @@ int iopf_queue_add_device(struct iopf_queue
-> *queue, struct device *dev)
+https://lore.kernel.org/linux-iommu/cover.1687859323.git.petr.tesarik.ext@h=
+uawei.com/T/
+
+Petr T
+
+> Cheers
 >=20
->  	mutex_lock(&queue->lock);
->  	mutex_lock(&param->lock);
-> -	if (!param->iopf_param) {
-> -		list_add(&iopf_param->queue_list, &queue->devices);
-> -		param->iopf_param =3D iopf_param;
-> -		ret =3D 0;
-> +	curr =3D iommu_set_device_fault_cookie(dev, 0, iopf_param);
-> +	if (IS_ERR(curr)) {
-> +		ret =3D PTR_ERR(curr);
-> +		goto err_free;
->  	}
+> Mike
+>=20
+> On Tue, 9 May 2023 at 08:32, Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> >
+> > On Tue, May 09, 2023 at 09:16:35AM +0200, Petr Tesa=C5=99=C3=ADk wrote:=
+ =20
+> > > On Wed, 26 Apr 2023 14:44:39 +0200
+> > > Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> wrote:
+> > > =20
+> > > > Hi Greg,
+> > > >
+> > > > On Wed, 26 Apr 2023 14:26:36 +0200
+> > > > Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+> > > > =20
+> > > > > On Wed, Apr 26, 2023 at 02:15:20PM +0200, Petr Tesa=C5=99=C3=ADk =
+wrote: =20
+> > > > > > Hi,
+> > > > > >
+> > > > > > On Wed, 19 Apr 2023 12:03:52 +0200
+> > > > > > Petr Tesarik <petrtesarik@huaweicloud.com> wrote:
+> > > > > > =20
+> > > > > > > From: Petr Tesarik <petr.tesarik.ext@huawei.com>
+> > > > > > >
+> > > > > > > The goal of my work is to provide more flexibility in the siz=
+ing of
+> > > > > > > SWIOTLB.
+> > > > > > >
+> > > > > > > The software IO TLB was designed with these assumptions:
+> > > > > > >
+> > > > > > > 1. It would not be used much, especially on 64-bit systems.
+> > > > > > > 2. A small fixed memory area (64 MiB by default) is sufficien=
+t to
+> > > > > > >    handle the few cases which require a bounce buffer.
+> > > > > > > 3. 64 MiB is little enough that it has no impact on the rest =
+of the
+> > > > > > >    system.
+> > > > > > >
+> > > > > > > First, if SEV is active, all DMA must be done through shared
+> > > > > > > unencrypted pages, and SWIOTLB is used to make this happen wi=
+thout
+> > > > > > > changing device drivers. The software IO TLB size is increase=
+d to
+> > > > > > > 6% of total memory in sev_setup_arch(), but that is more of an
+> > > > > > > approximation. The actual requirements may vary depending on =
+the
+> > > > > > > amount of I/O and which drivers are used. These factors may n=
+ot be
+> > > > > > > know at boot time, i.e. when SWIOTLB is allocated.
+> > > > > > >
+> > > > > > > Second, other colleagues have noticed that they can reliably =
+get
+> > > > > > > rid of occasional OOM kills on an Arm embedded device by redu=
+cing
+> > > > > > > the SWIOTLB size. This can be achieved with a kernel paramete=
+r, but
+> > > > > > > determining the right value puts additional burden on pre-rel=
+ease
+> > > > > > > testing, which could be avoided if SWIOTLB is allocated small=
+ and
+> > > > > > > grows only when necessary. =20
+> > > > > >
+> > > > > > Now that merging into 6.4 has begun, what about this patch seri=
+es? I'm
+> > > > > > eager to get some feedback (positive or negative) and respin th=
+e next
+> > > > > > version. =20
+> > > > >
+> > > > > It's the merge window, we can't add new things that haven't been =
+in
+> > > > > linux-next already. =20
+> > > >
+> > > > This is understood. I'm not asking for immediate inclusion.
+> > > > =20
+> > > > >   Please resubmit it after -rc1 is out. =20
+> > > >
+> > > > If you can believe that rebasing to -rc1 will be enough, then I will
+> > > > also try to believe I'm lucky. ;-)
+> > > >
+> > > > The kind of feedback I really want to get is e.g. about the extra
+> > > > per-device DMA-specific fields. If they cannot be added to struct
+> > > > device, then I'd rather start discussing an interim solution, becau=
+se
+> > > > getting all existing DMA fields out of that struct will take a lot =
+of
+> > > > time... =20
+> > >
+> > > All right, 6.4-rc1 is out now. The patch series still applies cleanly.
+> > >
+> > > Any comments what must be changed (if anything) to get it in? =20
+>  [...] =20
 
-So although the new xarray is called a per-pasid storage, here only
-slot#0 is used for sva which includes a list containing partial req's
-for many pasid's. It doesn't sound clean...
