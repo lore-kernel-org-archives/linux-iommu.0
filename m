@@ -1,82 +1,341 @@
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16D28182CE
-	for <iommu@lists.linux.dev>; Tue, 11 Jul 2023 11:29:57 +0000 (UTC)
-Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-314417861b9so5628830f8f.0
-        for <iommu@lists.linux.dev>; Tue, 11 Jul 2023 04:29:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fireburn-co-uk.20221208.gappssmtp.com; s=20221208; t=1689074996; x=1691666996;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=e/uH1e+klm+zs24dqIEDW59pXBhAgUeRKnnXFqc/9+A=;
-        b=lYWgFyrTqV7V50Rqrv0wKkxXfRDoiDGtZkuRMugcuCf67af9LOxtgfH0nWOFtigNMc
-         DrfaT8Mvj7sGkb4jSwTK4MJgbxqwS7ZY56dhzHbB1c5eGZehDdX9Hhbv+UdYVja6K9LX
-         t4uvMaHMJA7d8cihItub2AMOB6vdcD+DDcPAxfz2rhwbspP6Iyp6hKI6QN5pGFlMkQfd
-         5nsKsyZ5P5NQ3k6+Z0u2MTneJib8PsdQmapy0cu5JiZTQs/aaKjdKpgIdl7zN+MezXOF
-         56hqC7tQucuGfM5sYqTs+8tb9HU63zizqdW+gncLCZrdRNQzT1xPuuCny9rxTK9/1OtW
-         7+RA==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFDF818B10
+	for <iommu@lists.linux.dev>; Tue, 11 Jul 2023 11:54:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1689076495;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=7ltfs96G2qWIBv3AataMyvfNvs/ZxeZQ5SXPMZ0jduU=;
+	b=a3hkxEp38Unz0qXRcF22uPPIs0usBxi9xaJak7u8LM06GTsGRGO6SXNy3uAPJhOUNxKf/L
+	nWyRfplgXtVfDemPSHYFdiK4dySoTRBivCKSGXo6lWB+48j3J+3QTNbcY2eorBf1SpoQYn
+	QPoC2GR9Ya1yTFbIyrduhvwGUH/l+Bg=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-358-PDXQDflFPDuo_OtAFONdRw-1; Tue, 11 Jul 2023 07:54:53 -0400
+X-MC-Unique: PDXQDflFPDuo_OtAFONdRw-1
+Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-3fbe4cecd66so32346105e9.1
+        for <iommu@lists.linux.dev>; Tue, 11 Jul 2023 04:54:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689074996; x=1691666996;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=e/uH1e+klm+zs24dqIEDW59pXBhAgUeRKnnXFqc/9+A=;
-        b=ffw2yafV+vzMMHNkgYB43Rm6YfCz4R0pxRfgkf4Srr5ORcb5dRvDX3yRd0Mr6dM5pf
-         PPEWsYBJrJ7293YBTx7zYSDbp0nrcmaWsRfIX65WYQwyZSsYmvEcAwdDf/V2w6W8l3y5
-         GsYBxBNz6E8ZcdVN3tcJDeWbZDsFw4ttvrXj8odWD6o3Y1vXAbwiwkXI65kOBRT/b0+F
-         vvWN+UDhTsbSop36baHf0H+G/UBk04yKdo0G0M+/eCjadUSV7dnY15WdFCeLQAhBbymA
-         23ZUcD57kFVbWnRxfEqVI2xVMX1khJ/ojP4DMLKvDaRMXrCl13JIRl7o86zJAdlREKHs
-         yqSQ==
-X-Gm-Message-State: ABy/qLb+0d3doFyXVl40l1sF40hBMkUqhKlyQOOjAIS3oe7UO48So7Hz
-	McVoiNVGaYPA6hF1TrB5vAeMe5H9gJHgkJtU9zNm+A==
-X-Google-Smtp-Source: APBJJlG2PB2BAfr3M6geuBK8xXTGts8Ybwpe5accke8vRMt2XdyjsumKhw0BHM58Mw1yeP9s30wXJa84TA80uJ22jPc=
-X-Received: by 2002:a5d:490b:0:b0:314:4db:e0b2 with SMTP id
- x11-20020a5d490b000000b0031404dbe0b2mr14911973wrq.15.1689074995947; Tue, 11
- Jul 2023 04:29:55 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1689076492; x=1691668492;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=7ltfs96G2qWIBv3AataMyvfNvs/ZxeZQ5SXPMZ0jduU=;
+        b=Q9SxuEbUkSyBW2/h76MJSAwUgLf9JhYMpBBXvlM5RLm1raLsUUKzD8SZHWr+e+Anp7
+         cJo4xGK5oGK77C0P8Mx8pgSFzSNyMkT0V/dojNKgIBS8OOuzkxlcl9Gybpu/Ech1O6rJ
+         i/I2VPreupITe7Rl2IwZArjCBIgscx4IIFBw1qKAx74ZeTFy/G+yo832AgQjBgbeC4FU
+         zlqi/rpbyy37MdNTJVp6nZLA+u6TEzhYH5//D2Z4gmWSm4GW00cN0fSozAV0NOit5hjC
+         9BTdjDvfFCaX4C/BCzzETwhFm1oatec/wOCFA9jGpgc0NUjeKckqT6PbbGvQywQN/yIN
+         SL4A==
+X-Gm-Message-State: ABy/qLbHVAI06wtX+oxYrjKU5ixHJHwFT8IeeK8q+8VG0wUSOoLsgdq+
+	aVJiXkjU7VLmutqMYfFi8WbAQCaxBCFJCX9Wxt3YUHaQzLDTpHKzdiJO3NXsk/P1Y7Mz2I8PFZX
+	7uSjCIdwsbcBtqmA=
+X-Received: by 2002:a05:600c:294c:b0:3fb:ffef:d058 with SMTP id n12-20020a05600c294c00b003fbffefd058mr10788105wmd.0.1689076492104;
+        Tue, 11 Jul 2023 04:54:52 -0700 (PDT)
+X-Google-Smtp-Source: APBJJlE7yk4/9a7qsVmPysU0XyK+niweGp79jZE0baAAQRDb45p7c5tsWj9aND6mntHhLvGNKiIlKw==
+X-Received: by 2002:a05:600c:294c:b0:3fb:ffef:d058 with SMTP id n12-20020a05600c294c00b003fbffefd058mr10788078wmd.0.1689076491720;
+        Tue, 11 Jul 2023 04:54:51 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c745:4000:13ad:ed64:37e6:115d? (p200300cbc745400013aded6437e6115d.dip0.t-ipconnect.de. [2003:cb:c745:4000:13ad:ed64:37e6:115d])
+        by smtp.gmail.com with ESMTPSA id 24-20020a05600c22d800b003fbaade072dsm2360201wmg.23.2023.07.11.04.54.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Jul 2023 04:54:51 -0700 (PDT)
+Message-ID: <c7d4364c-a067-567e-3248-6a0589d85472@redhat.com>
+Date: Tue, 11 Jul 2023 13:54:49 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1681898595.git.petr.tesarik.ext@huawei.com>
- <20230426141520.0caf4386@meshulam.tesarici.cz> <2023042617-wobble-enlighten-9361@gregkh>
- <20230426144439.5674f8bc@meshulam.tesarici.cz> <20230509091635.27450bd9@meshulam.tesarici.cz>
- <2023050949-grueling-verify-a43b@gregkh> <CAHbf0-HY0-u4MwgU39b53hjOM+bWfGmOEYQuvHARjV+6j+O7Kg@mail.gmail.com>
- <20230711110325.2521472c@meshulam.tesarici.cz>
-In-Reply-To: <20230711110325.2521472c@meshulam.tesarici.cz>
-From: Mike Lothian <mike@fireburn.co.uk>
-Date: Tue, 11 Jul 2023 12:29:44 +0100
-Message-ID: <CAHbf0-FjiOAMHjh-7D_6gvS+oHr2tGKJArnYu=0AKYHbD8Ntrw@mail.gmail.com>
-Subject: Re: [PATCH v2 0/7] Allow dynamic allocation of software IO TLB bounce buffers
-To: =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>
-Cc: Roberto Sassu <roberto.sassu@huawei.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, 
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>, Petr Tesarik <petrtesarik@huaweicloud.com>, 
-	open list <linux-kernel@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH] dma-contiguous: support numa CMA for specified node
+To: Yajun Deng <yajun.deng@linux.dev>, corbet@lwn.net, hch@lst.de,
+ m.szyprowski@samsung.com, robin.murphy@arm.com, akpm@linux-foundation.org,
+ paulmck@kernel.org, catalin.marinas@arm.com, rdunlap@infradead.org,
+ peterz@infradead.org, rostedt@goodmis.org, kim.phillips@amd.com
+Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-mm@kvack.org
+References: <20230710074944.3501810-1-yajun.deng@linux.dev>
+From: David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20230710074944.3501810-1-yajun.deng@linux.dev>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, 11 Jul 2023 at 10:03, Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> wro=
-te:
->
-> On Mon, 10 Jul 2023 23:23:45 +0100
-> Mike Lothian <mike@fireburn.co.uk> wrote:
->
-> > Hi
-> >
-> > I was hoping this might land for 6.5-rc1, is there a new version that
-> > might apply against 6.5?
->
-> Yes, there is a v3, which is a complete rewrite based on feedback from
-> various people on this mailing list:
->
-> https://lore.kernel.org/linux-iommu/cover.1687859323.git.petr.tesarik.ext=
-@huawei.com/T/
->
-> Petr T
->
+On 10.07.23 09:49, Yajun Deng wrote:
+> The kernel parameter 'cma_pernuma=' only supports reserving the same
+> size of CMA area for each node. We need to reserve different sizes of
+> CMA area for specified nodes if these devices belong to different nodes.
+> 
+> Change kernel parameter from 'cma_pernuma=' to 'numa_cma='. If node
+> isn't specified, it will reserve CMA area for per-numa node. if the node
+> is specified, it will reserve CMA area for the specified node.
+> 
+> At the same time, print the node id in cma_declare_contiguous_nid() if
+> enabled CONFIG_NUMA.
+> 
+> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+> ---
+>   .../admin-guide/kernel-parameters.txt         | 17 ++--
+>   kernel/dma/Kconfig                            | 11 +--
+>   kernel/dma/contiguous.c                       | 90 +++++++++++++------
+>   mm/cma.c                                      | 12 ++-
+>   4 files changed, 89 insertions(+), 41 deletions(-)
+> 
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index bdf0ab6716c8..b287647f0873 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -695,14 +695,19 @@
+>   			altogether. For more information, see
+>   			kernel/dma/contiguous.c
+>   
+> -	cma_pernuma=nn[MG]
+> +	numa_cma=nn[MG] or (node format)
+> +			    <node>:nn[MG][,<node>:nn[MG]]
+>   			[KNL,CMA]
+> -			Sets the size of kernel per-numa memory area for
+> +			Sets the size of kernel numa memory area for
+>   			contiguous memory allocations. A value of 0 disables
+> -			per-numa CMA altogether. And If this option is not
+> -			specified, the default value is 0.
+> -			With per-numa CMA enabled, DMA users on node nid will
+> -			first try to allocate buffer from the pernuma area
+> +			numa CMA altogether. If this option is not specified,
+> +			the default value is 0. If node isn't specified, it
+> +			will reserve CMA area for per-numa node, if the node
+> +			is specified, it will reserve CMA area for the
+> +			specified node.
+> +
+> +			With numa CMA enabled, DMA users on node nid will
+> +			first try to allocate buffer from the numa area
+>   			which is located in node nid, if the allocation fails,
+>   			they will fallback to the global default memory area.
+>   
+> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+> index 7afde9bc529f..f07fb97ef3e8 100644
+> --- a/kernel/dma/Kconfig
+> +++ b/kernel/dma/Kconfig
+> @@ -145,15 +145,16 @@ config DMA_CMA
+>   
+>   if  DMA_CMA
+>   
+> -config DMA_PERNUMA_CMA
+> -	bool "Enable separate DMA Contiguous Memory Area for each NUMA Node"
+> +config DMA_NUMA_CMA
+> +	bool "Enable separate DMA Contiguous Memory Area for NUMA Node"
+>   	default NUMA
+>   	help
+> -	  Enable this option to get pernuma CMA areas so that NUMA devices
+> +	  Enable this option to get numa CMA areas so that NUMA devices
+>   	  can get local memory by DMA coherent APIs.
+>   
+> -	  You can set the size of pernuma CMA by specifying "cma_pernuma=size"
+> -	  on the kernel's command line.
+> +	  You can set the size of pernuma CMA by specifying "numa_cma=size"
+> +	  or set the node id and its size of CMA by specifying "numa_cma=
+> +	  <node>:size[,<node>:size]" on the kernel's command line.
+>   
+>   comment "Default contiguous memory area size:"
+>   
+> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+> index 26a8e5365fcd..bf62d78abff7 100644
+> --- a/kernel/dma/contiguous.c
+> +++ b/kernel/dma/contiguous.c
+> @@ -50,6 +50,7 @@
+>   #include <linux/sizes.h>
+>   #include <linux/dma-map-ops.h>
+>   #include <linux/cma.h>
+> +#include <linux/nospec.h>
+>   
+>   #ifdef CONFIG_CMA_SIZE_MBYTES
+>   #define CMA_SIZE_MBYTES CONFIG_CMA_SIZE_MBYTES
+> @@ -96,17 +97,44 @@ static int __init early_cma(char *p)
+>   }
+>   early_param("cma", early_cma);
+>   
+> -#ifdef CONFIG_DMA_PERNUMA_CMA
+> +#ifdef CONFIG_DMA_NUMA_CMA
+>   
+> -static struct cma *dma_contiguous_pernuma_area[MAX_NUMNODES];
+> +static struct cma *dma_contiguous_numa_area[MAX_NUMNODES];
+>   static phys_addr_t pernuma_size_bytes __initdata;
+> +static phys_addr_t numa_cma_size_in_node[MAX_NUMNODES] __initdata;
+>   
+> -static int __init early_cma_pernuma(char *p)
+> +static int __init early_numa_cma(char *p)
+>   {
+> -	pernuma_size_bytes = memparse(p, &p);
+> +	int nid, count = 0;
+> +	unsigned long tmp;
+> +	char *s = p;
+> +
+> +	while (*s) {
+> +		if (sscanf(s, "%lu%n", &tmp, &count) != 1)
+> +			break;
+> +
+> +		if (s[count] == ':') {
+> +			if (tmp >= MAX_NUMNODES)
+> +				break;
+> +			nid = array_index_nospec(tmp, MAX_NUMNODES);
+> +
+> +			s += count + 1;
+> +			tmp = memparse(s, &s);
+> +			numa_cma_size_in_node[nid] = tmp;
+> +
+> +			if (*s == ',')
+> +				s++;
+> +			else
+> +				break;
+> +		} else {
+> +			pernuma_size_bytes = memparse(p, &p);
+> +			break;
+> +		}
+> +	}
+> +
+>   	return 0;
+>   }
+> -early_param("cma_pernuma", early_cma_pernuma);
+> +early_param("numa_cma", early_numa_cma);
+>   #endif
+>   
+>   #ifdef CONFIG_CMA_SIZE_PERCENTAGE
+> @@ -127,34 +155,42 @@ static inline __maybe_unused phys_addr_t cma_early_percent_memory(void)
+>   
+>   #endif
+>   
+> -#ifdef CONFIG_DMA_PERNUMA_CMA
+> -static void __init dma_pernuma_cma_reserve(void)
+> +#ifdef CONFIG_DMA_NUMA_CMA
+> +static void __init dma_numa_cma_reserve(void)
+>   {
+> +	phys_addr_t size;
+>   	int nid;
+>   
+> -	if (!pernuma_size_bytes)
+> -		return;
+> -
+> -	for_each_online_node(nid) {
+> +	for_each_node(nid) {
+>   		int ret;
+>   		char name[CMA_MAX_NAME];
+> -		struct cma **cma = &dma_contiguous_pernuma_area[nid];
+> +		struct cma **numa_cma;
+>   
+> -		snprintf(name, sizeof(name), "pernuma%d", nid);
+> -		ret = cma_declare_contiguous_nid(0, pernuma_size_bytes, 0, 0,
+> -						 0, false, name, cma, nid);
+> -		if (ret) {
+> -			pr_warn("%s: reservation failed: err %d, node %d", __func__,
+> -				ret, nid);
+> +		if (!node_online(nid)) {
+> +			if (pernuma_size_bytes || numa_cma_size_in_node[nid])
+> +				pr_warn("invalid node %d specified\n", nid);
+>   			continue;
+>   		}
+>   
+> -		pr_debug("%s: reserved %llu MiB on node %d\n", __func__,
+> -			(unsigned long long)pernuma_size_bytes / SZ_1M, nid);
+> +		if (pernuma_size_bytes)
+> +			size = pernuma_size_bytes;
+> +		else
+> +			size = numa_cma_size_in_node[nid];
+> +
+> +		if (!size)
+> +			continue;
+> +
+> +		numa_cma = &dma_contiguous_numa_area[nid];
+> +		snprintf(name, sizeof(name), "numa%d", nid);
+> +		ret = cma_declare_contiguous_nid(0, size, 0, 0, 0, false,
+> +						 name, numa_cma, nid);
+> +		if (ret)
+> +			pr_warn("%s: reservation failed: err %d, node %d", __func__,
+> +				ret, nid);
+>   	}
+>   }
+>   #else
+> -static inline void __init dma_pernuma_cma_reserve(void)
+> +static inline void __init dma_numa_cma_reserve(void)
+>   {
+>   }
+>   #endif
+> @@ -175,7 +211,7 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
+>   	phys_addr_t selected_limit = limit;
+>   	bool fixed = false;
+>   
+> -	dma_pernuma_cma_reserve();
+> +	dma_numa_cma_reserve();
+>   
+>   	pr_debug("%s(limit %08lx)\n", __func__, (unsigned long)limit);
+>   
+> @@ -309,7 +345,7 @@ static struct page *cma_alloc_aligned(struct cma *cma, size_t size, gfp_t gfp)
+>    */
+>   struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
+>   {
+> -#ifdef CONFIG_DMA_PERNUMA_CMA
+> +#ifdef CONFIG_DMA_NUMA_CMA
+>   	int nid = dev_to_node(dev);
+>   #endif
+>   
+> @@ -321,9 +357,9 @@ struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
+>   	if (size <= PAGE_SIZE)
+>   		return NULL;
+>   
+> -#ifdef CONFIG_DMA_PERNUMA_CMA
+> +#ifdef CONFIG_DMA_NUMA_CMA
+>   	if (nid != NUMA_NO_NODE && !(gfp & (GFP_DMA | GFP_DMA32))) {
+> -		struct cma *cma = dma_contiguous_pernuma_area[nid];
+> +		struct cma *cma = dma_contiguous_numa_area[nid];
+>   		struct page *page;
+>   
+>   		if (cma) {
+> @@ -362,8 +398,8 @@ void dma_free_contiguous(struct device *dev, struct page *page, size_t size)
+>   		/*
+>   		 * otherwise, page is from either per-numa cma or default cma
+>   		 */
+> -#ifdef CONFIG_DMA_PERNUMA_CMA
+> -		if (cma_release(dma_contiguous_pernuma_area[page_to_nid(page)],
+> +#ifdef CONFIG_DMA_NUMA_CMA
+> +		if (cma_release(dma_contiguous_numa_area[page_to_nid(page)],
+>   					page, count))
+>   			return;
+>   #endif
+> diff --git a/mm/cma.c b/mm/cma.c
+> index 4880f72102fa..af5945932e9e 100644
+> --- a/mm/cma.c
+> +++ b/mm/cma.c
+> @@ -244,6 +244,7 @@ int __init cma_declare_contiguous_nid(phys_addr_t base,
+>   {
+>   	phys_addr_t memblock_end = memblock_end_of_DRAM();
+>   	phys_addr_t highmem_start;
+> +	char nid_buf[32] = "";
+
+That's a but ugly just for the sake of printing an info/error.
 
 
-Patch 2 doesn't apply cleanly for me on 6.5-rc1
+if (!IS_ENABLED(CONFIG_NUMA))
+	nid = NUMA_NO_NODE;
+
+...
+
+pr_info("Reserved %ld MiB at %pa on node %d\n", (unsigned long)size /
+         SZ_1M, &base, nid);
+
+
+"on node -1" would certainly be good enough for my taste.
+
+-- 
+Cheers,
+
+David / dhildenb
+
