@@ -1,30 +1,30 @@
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 595AB214F9
-	for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 16:29:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8D3214F75
+	for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 16:29:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689179344; x=1720715344;
+  t=1689179345; x=1720715345;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=jIdl4nwk/bl5DCIlD8ga9fxZjK7V9Y4xrVQlxsm0KRQ=;
-  b=AliyNxZFRmgH0nFuwKsplYFTotJTqcug4EVBrVe4SDZEpUydAjCDupLI
-   0/tad7fDTQGIUxIYEDQt2qLtoov249CWMgXorzAK1cZJNPiFfJYZyQMX+
-   0rFnx7Fn23XPiVkll+CGXMM9WuSkTfiU6chUe5loRsloAjaiLo3TsxqHG
-   Yq617FSIXe+8fQF0FGqP4vQk76adrPmDSMKBsmlEDwuAcalNf+feF2lA4
-   NhWVjjM7Uyh4uevL9kjzedwGReeMj5UVgym3CU5klZjdCntEFdBZM2gEV
-   dGCQxDFwbsPYoqB3TA0BL2PrPTY50KvKGk5KIeDFEE8Csjh7HC/p4vM2X
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10769"; a="431072737"
+  bh=mm0RBRlxNTWUVWGSjZmJqXmc9M/wdroaapVIA3ESeqk=;
+  b=UuMQYJhsTLDhi0x15LpjbCYWvq1o5bHQ2mBFS9xHCgJ/UGDmVwBNO0w7
+   xBbgXdOe6sHxPFq3A2AEdgtuOkxFF/CZ1E1naUKC28JP4N2f1kZW4wV3Z
+   mGhf6qxY+MHGCKNE99I2mPAxZOA8O0zdtGaP+Ywfl2u3GG+aZlA3qcBSr
+   pn0qxIe/hC45i3aG1CH6mG1936L/i/qGRW4WVeH5wHR+/7mUsdy6N+VDa
+   nVwDSpPfIFB4LHEDeGc7f+/+xf6yAZxUxLxVfT7+gJNG1c5bx/o1w5ETG
+   22Oe+XBIRFBDXg8WPvAc8UVcOQKYFbHnbXQe77ZI8Q637onMgJhNYKRkB
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10769"; a="431072744"
 X-IronPort-AV: E=Sophos;i="6.01,200,1684825200"; 
-   d="scan'208";a="431072737"
+   d="scan'208";a="431072744"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
   by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2023 09:29:02 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10769"; a="715639031"
+X-IronPort-AV: E=McAfee;i="6600,9927,10769"; a="715639035"
 X-IronPort-AV: E=Sophos;i="6.01,200,1684825200"; 
-   d="scan'208";a="715639031"
+   d="scan'208";a="715639035"
 Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.97.184])
   by orsmga007.jf.intel.com with ESMTP; 12 Jul 2023 09:29:01 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -41,9 +41,9 @@ Cc: Jason Gunthorpe <jgg@nvidia.com>,
 	"Yu, Fenghua" <fenghua.yu@intel.com>,
 	Tony Luck <tony.luck@intel.com>,
 	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v10 3/7] iommu/vt-d: Add domain_flush_pasid_iotlb()
-Date: Wed, 12 Jul 2023 09:33:51 -0700
-Message-Id: <20230712163355.3177511-4-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v10 4/7] iommu/vt-d: Remove pasid_mutex
+Date: Wed, 12 Jul 2023 09:33:52 -0700
+Message-Id: <20230712163355.3177511-5-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230712163355.3177511-1-jacob.jun.pan@linux.intel.com>
 References: <20230712163355.3177511-1-jacob.jun.pan@linux.intel.com>
@@ -57,66 +57,123 @@ Content-Transfer-Encoding: 8bit
 
 From: Lu Baolu <baolu.lu@linux.intel.com>
 
-The VT-d spec requires to use PASID-based-IOTLB invalidation descriptor
-to invalidate IOTLB and the paging-structure caches for a first-stage
-page table. Add a generic helper to do this.
+The pasid_mutex was used to protect the paths of set/remove_dev_pasid().
+It's duplicate with iommu_sva_lock. Remove it to avoid duplicate code.
 
-RID2PASID is used if the domain has been attached to a physical device,
-otherwise real PASIDs that the domain has been attached to will be used.
-
+Reviewed-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
- drivers/iommu/intel/iommu.c | 22 ++++++++++++++++++++--
- 1 file changed, 20 insertions(+), 2 deletions(-)
+ drivers/iommu/intel/svm.c | 45 +++++----------------------------------
+ 1 file changed, 5 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index ddff43def3ab..40685cbfaf0e 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -1467,6 +1467,24 @@ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
- 	spin_unlock_irqrestore(&domain->lock, flags);
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index e95b339e9cdc..2a82864e9d57 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -259,8 +259,6 @@ static const struct mmu_notifier_ops intel_mmuops = {
+ 	.invalidate_range = intel_invalidate_range,
+ };
+ 
+-static DEFINE_MUTEX(pasid_mutex);
+-
+ static int pasid_to_svm_sdev(struct device *dev, unsigned int pasid,
+ 			     struct intel_svm **rsvm,
+ 			     struct intel_svm_dev **rsdev)
+@@ -268,10 +266,6 @@ static int pasid_to_svm_sdev(struct device *dev, unsigned int pasid,
+ 	struct intel_svm_dev *sdev = NULL;
+ 	struct intel_svm *svm;
+ 
+-	/* The caller should hold the pasid_mutex lock */
+-	if (WARN_ON(!mutex_is_locked(&pasid_mutex)))
+-		return -EINVAL;
+-
+ 	if (pasid == IOMMU_PASID_INVALID || pasid >= PASID_MAX)
+ 		return -EINVAL;
+ 
+@@ -371,22 +365,19 @@ static int intel_svm_bind_mm(struct intel_iommu *iommu, struct device *dev,
+ 	return ret;
  }
  
-+/*
-+ * The VT-d spec requires to use PASID-based-IOTLB Invalidation to
-+ * invalidate IOTLB and the paging-structure-caches for a first-stage
-+ * page table.
-+ */
-+static void domain_flush_pasid_iotlb(struct intel_iommu *iommu,
-+				     struct dmar_domain *domain, u64 addr,
-+				     unsigned long npages, bool ih)
-+{
-+	u16 did = domain_id_iommu(domain, iommu);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&domain->lock, flags);
-+	if (!list_empty(&domain->devices))
-+		qi_flush_piotlb(iommu, did, IOMMU_NO_PASID, addr, npages, ih);
-+	spin_unlock_irqrestore(&domain->lock, flags);
-+}
-+
- static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
- 				  struct dmar_domain *domain,
- 				  unsigned long pfn, unsigned int pages,
-@@ -1484,7 +1502,7 @@ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
- 		ih = 1 << 6;
+-/* Caller must hold pasid_mutex */
+-static int intel_svm_unbind_mm(struct device *dev, u32 pasid)
++void intel_svm_remove_dev_pasid(struct device *dev, u32 pasid)
+ {
+ 	struct intel_svm_dev *sdev;
+ 	struct intel_iommu *iommu;
+ 	struct intel_svm *svm;
+ 	struct mm_struct *mm;
+-	int ret = -EINVAL;
  
- 	if (domain->use_first_level) {
--		qi_flush_piotlb(iommu, did, IOMMU_NO_PASID, addr, pages, ih);
-+		domain_flush_pasid_iotlb(iommu, domain, addr, pages, ih);
- 	} else {
- 		unsigned long bitmask = aligned_pages - 1;
+ 	iommu = device_to_iommu(dev, NULL, NULL);
+ 	if (!iommu)
+-		goto out;
++		return;
  
-@@ -1554,7 +1572,7 @@ static void intel_flush_iotlb_all(struct iommu_domain *domain)
- 		u16 did = domain_id_iommu(dmar_domain, iommu);
+-	ret = pasid_to_svm_sdev(dev, pasid, &svm, &sdev);
+-	if (ret)
+-		goto out;
++	if (pasid_to_svm_sdev(dev, pasid, &svm, &sdev))
++		return;
+ 	mm = svm->mm;
  
- 		if (dmar_domain->use_first_level)
--			qi_flush_piotlb(iommu, did, IOMMU_NO_PASID, 0, -1, 0);
-+			domain_flush_pasid_iotlb(iommu, dmar_domain, 0, -1, 0);
- 		else
- 			iommu->flush.flush_iotlb(iommu, did, 0, 0,
- 						 DMA_TLB_DSI_FLUSH);
+ 	if (sdev) {
+@@ -418,8 +409,6 @@ static int intel_svm_unbind_mm(struct device *dev, u32 pasid)
+ 			kfree(svm);
+ 		}
+ 	}
+-out:
+-	return ret;
+ }
+ 
+ /* Page request queue descriptor */
+@@ -520,19 +509,7 @@ static void intel_svm_drain_prq(struct device *dev, u32 pasid)
+ 		goto prq_retry;
+ 	}
+ 
+-	/*
+-	 * A work in IO page fault workqueue may try to lock pasid_mutex now.
+-	 * Holding pasid_mutex while waiting in iopf_queue_flush_dev() for
+-	 * all works in the workqueue to finish may cause deadlock.
+-	 *
+-	 * It's unnecessary to hold pasid_mutex in iopf_queue_flush_dev().
+-	 * Unlock it to allow the works to be handled while waiting for
+-	 * them to finish.
+-	 */
+-	lockdep_assert_held(&pasid_mutex);
+-	mutex_unlock(&pasid_mutex);
+ 	iopf_queue_flush_dev(dev);
+-	mutex_lock(&pasid_mutex);
+ 
+ 	/*
+ 	 * Perform steps described in VT-d spec CH7.10 to drain page
+@@ -827,26 +804,14 @@ int intel_svm_page_response(struct device *dev,
+ 	return ret;
+ }
+ 
+-void intel_svm_remove_dev_pasid(struct device *dev, ioasid_t pasid)
+-{
+-	mutex_lock(&pasid_mutex);
+-	intel_svm_unbind_mm(dev, pasid);
+-	mutex_unlock(&pasid_mutex);
+-}
+-
+ static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
+ 				   struct device *dev, ioasid_t pasid)
+ {
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 	struct intel_iommu *iommu = info->iommu;
+ 	struct mm_struct *mm = domain->mm;
+-	int ret;
+ 
+-	mutex_lock(&pasid_mutex);
+-	ret = intel_svm_bind_mm(iommu, dev, mm);
+-	mutex_unlock(&pasid_mutex);
+-
+-	return ret;
++	return intel_svm_bind_mm(iommu, dev, mm);
+ }
+ 
+ static void intel_svm_domain_free(struct iommu_domain *domain)
 -- 
 2.25.1
 
