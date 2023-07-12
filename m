@@ -1,81 +1,328 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+Received: from out-22.mta1.migadu.com (out-22.mta1.migadu.com [95.215.58.22])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93E063D84
-	for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 05:46:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689140775; x=1720676775;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=XDmxtgjF22hjZt3RXCpO8XNp3Xx7XXlQUG+MBO2cAg4=;
-  b=D7O7HgOP8jT6AYl6Ji0BVVJII6xkgTMGo4BohVHWm8YXlCWacbNCAoZ2
-   jl0kQ13b0TzKdlhICVpJYzpFpQwdN82mJDPkv4ohoEpkYGZJJuqvPum+x
-   BhYhmZOIP0I3HkgvZDTdaNtK3CnQJ4sMACEqfixk3SimpN9VpRukm5h0y
-   E/8ZeAtrAKPiSILjomeMLUzKNWZolqYYBq+XeN2ha8kJUBphd8mAtgRfQ
-   gOF1Fgxr58RscDRTZQV18KksYG26zzxoShjYG8IQszZXH0XTmISNypj0M
-   JmB5l0WIDSqZDopxc8N6jYvy+UZuhoYQgKj8PEkJWqStIdcLcc4zrmhvi
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10768"; a="354712562"
-X-IronPort-AV: E=Sophos;i="6.01,198,1684825200"; 
-   d="scan'208";a="354712562"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2023 22:46:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10768"; a="756637896"
-X-IronPort-AV: E=Sophos;i="6.01,198,1684825200"; 
-   d="scan'208";a="756637896"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2023 22:46:14 -0700
-Date: Tue, 11 Jul 2023 22:51:11 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, Jason
- Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Robin Murphy
- <robin.murphy@arm.com>, Jean-Philippe Brucker <jean-philippe@linaro.com>,
- dmaengine@vger.kernel.org, vkoul@kernel.org, Will Deacon <will@kernel.org>,
- David Woodhouse <dwmw2@infradead.org>, Raj Ashok <ashok.raj@intel.com>,
- "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>, "Yu,
- Fenghua" <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>, Tony
- Luck <tony.luck@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
- rex.zhang@intel.com, xiaochen.shen@intel.com,
- narayan.ranganathan@intel.com, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v9 0/7] Re-enable IDXD kernel workqueue under DMA API
-Message-ID: <20230711225111.567894c8@jacob-builder>
-In-Reply-To: <d6399f56-0528-d923-910c-822611137e2d@linux.intel.com>
-References: <20230621205947.1327094-1-jacob.jun.pan@linux.intel.com>
-	<20230710101810.40098ce3@jacob-builder>
-	<d6399f56-0528-d923-910c-822611137e2d@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA19420F2
+	for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 07:48:23 +0000 (UTC)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1689148101;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=1JfPRCcZ10ZseppL9s+5yhkq0u8W8eJakvC9+qaKs70=;
+	b=Xf9dmNCtpcC3HcBJuYAaCviYyQmjbfosYOC/ouHWHuaeyPua4phSSVdsLmBn6chumJwqDL
+	VZOJB8CsC8NmDh0NbNOmkLadGCQ0i93sEX8Hqrw/HaFlAh/L9uHtshL/0XszDQDDAQ1Twp
+	XjHkKjqGeRV+AIMwzLy/B22u9r9vLLk=
+From: Yajun Deng <yajun.deng@linux.dev>
+To: corbet@lwn.net,
+	hch@lst.de,
+	m.szyprowski@samsung.com,
+	robin.murphy@arm.com,
+	akpm@linux-foundation.org,
+	paulmck@kernel.org,
+	catalin.marinas@arm.com,
+	rdunlap@infradead.org,
+	peterz@infradead.org,
+	rostedt@goodmis.org,
+	kim.phillips@amd.com
+Cc: linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-mm@kvack.org,
+	Yajun Deng <yajun.deng@linux.dev>
+Subject: [PATCH v3] dma-contiguous: support numa CMA for specified node
+Date: Wed, 12 Jul 2023 15:47:58 +0800
+Message-Id: <20230712074758.1133272-1-yajun.deng@linux.dev>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 
-Hi Baolu,
+The kernel parameter 'cma_pernuma=' only supports reserving the same
+size of CMA area for each node. We need to reserve different sizes of
+CMA area for specified nodes if these devices belong to different nodes.
 
-On Tue, 11 Jul 2023 10:29:10 +0800, Baolu Lu <baolu.lu@linux.intel.com>
-wrote:
+Adding another kernel parameter 'numa_cma=' to reserve CMA area for
+the specified node. If we want to use one of these parameters, we need to
+enable DMA_NUMA_CMA.
 
-> >> Changelog:
-> >> v9:
-> >> 	- Fix an IDXD driver issue where user interrupt enable bit got
-> >> cleared during device enable/disable cycle. Reported and tested by
-> >> 	  Tony Zhu<tony.zhu@intel.com>
-> >> 	- Rebased to v6.4-rc7  
-> 
-> Thanks for fixing this.
-> 
-> It seems that you missed some review comments for v8. I can help to test
-> and merge when all comments are addressed.
-Right, I missed the max_pasid = 0 case as you pointed out. Let me respin
-the set and do some testing on my side as well.
+At the same time, print the node id in cma_declare_contiguous_nid() if
+CONFIG_NUMA is enabled.
 
-Thanks,
+Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+---
+ V2 -> V3: Use nid but not nid_buf in cma_declare_contiguous_nid().
+ V1 -> V2: Add 'numa_cma=' and keep 'cma_pernuma=' kernel parameter.
+---
+ .../admin-guide/kernel-parameters.txt         |  11 ++
+ kernel/dma/Kconfig                            |   9 +-
+ kernel/dma/contiguous.c                       | 101 ++++++++++++++----
+ mm/cma.c                                      |  10 +-
+ 4 files changed, 102 insertions(+), 29 deletions(-)
 
-Jacob
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index bdf0ab6716c8..87ad8154b730 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -706,6 +706,17 @@
+ 			which is located in node nid, if the allocation fails,
+ 			they will fallback to the global default memory area.
+ 
++	numa_cma=<node>:nn[MG][,<node>:nn[MG]]
++			[KNL,CMA]
++			Sets the size of kernel numa memory area for
++			contiguous memory allocations. It will reserve CMA
++			area for the specified node.
++
++			With numa CMA enabled, DMA users on node nid will
++			first try to allocate buffer from the numa area
++			which is located in node nid, if the allocation fails,
++			they will fallback to the global default memory area.
++
+ 	cmo_free_hint=	[PPC] Format: { yes | no }
+ 			Specify whether pages are marked as being inactive
+ 			when they are freed.  This is used in CMO environments
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index 7afde9bc529f..562463fe30ea 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -145,15 +145,16 @@ config DMA_CMA
+ 
+ if  DMA_CMA
+ 
+-config DMA_PERNUMA_CMA
+-	bool "Enable separate DMA Contiguous Memory Area for each NUMA Node"
++config DMA_NUMA_CMA
++	bool "Enable separate DMA Contiguous Memory Area for NUMA Node"
+ 	default NUMA
+ 	help
+-	  Enable this option to get pernuma CMA areas so that NUMA devices
++	  Enable this option to get numa CMA areas so that NUMA devices
+ 	  can get local memory by DMA coherent APIs.
+ 
+ 	  You can set the size of pernuma CMA by specifying "cma_pernuma=size"
+-	  on the kernel's command line.
++	  or set the node id and its size of CMA by specifying "numa_cma=
++	  <node>:size[,<node>:size]" on the kernel's command line.
+ 
+ comment "Default contiguous memory area size:"
+ 
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index 26a8e5365fcd..f005c66f378c 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -50,6 +50,7 @@
+ #include <linux/sizes.h>
+ #include <linux/dma-map-ops.h>
+ #include <linux/cma.h>
++#include <linux/nospec.h>
+ 
+ #ifdef CONFIG_CMA_SIZE_MBYTES
+ #define CMA_SIZE_MBYTES CONFIG_CMA_SIZE_MBYTES
+@@ -96,11 +97,44 @@ static int __init early_cma(char *p)
+ }
+ early_param("cma", early_cma);
+ 
+-#ifdef CONFIG_DMA_PERNUMA_CMA
++#ifdef CONFIG_DMA_NUMA_CMA
+ 
++static struct cma *dma_contiguous_numa_area[MAX_NUMNODES];
++static phys_addr_t numa_cma_size[MAX_NUMNODES] __initdata;
+ static struct cma *dma_contiguous_pernuma_area[MAX_NUMNODES];
+ static phys_addr_t pernuma_size_bytes __initdata;
+ 
++static int __init early_numa_cma(char *p)
++{
++	int nid, count = 0;
++	unsigned long tmp;
++	char *s = p;
++
++	while (*s) {
++		if (sscanf(s, "%lu%n", &tmp, &count) != 1)
++			break;
++
++		if (s[count] == ':') {
++			if (tmp >= MAX_NUMNODES)
++				break;
++			nid = array_index_nospec(tmp, MAX_NUMNODES);
++
++			s += count + 1;
++			tmp = memparse(s, &s);
++			numa_cma_size[nid] = tmp;
++
++			if (*s == ',')
++				s++;
++			else
++				break;
++		} else
++			break;
++	}
++
++	return 0;
++}
++early_param("numa_cma", early_numa_cma);
++
+ static int __init early_cma_pernuma(char *p)
+ {
+ 	pernuma_size_bytes = memparse(p, &p);
+@@ -127,34 +161,47 @@ static inline __maybe_unused phys_addr_t cma_early_percent_memory(void)
+ 
+ #endif
+ 
+-#ifdef CONFIG_DMA_PERNUMA_CMA
+-static void __init dma_pernuma_cma_reserve(void)
++#ifdef CONFIG_DMA_NUMA_CMA
++static void __init dma_numa_cma_reserve(void)
+ {
+ 	int nid;
+ 
+-	if (!pernuma_size_bytes)
+-		return;
+-
+-	for_each_online_node(nid) {
++	for_each_node(nid) {
+ 		int ret;
+ 		char name[CMA_MAX_NAME];
+-		struct cma **cma = &dma_contiguous_pernuma_area[nid];
+-
+-		snprintf(name, sizeof(name), "pernuma%d", nid);
+-		ret = cma_declare_contiguous_nid(0, pernuma_size_bytes, 0, 0,
+-						 0, false, name, cma, nid);
+-		if (ret) {
+-			pr_warn("%s: reservation failed: err %d, node %d", __func__,
+-				ret, nid);
++		struct cma **cma;
++
++		if (!node_online(nid)) {
++			if (pernuma_size_bytes || numa_cma_size[nid])
++				pr_warn("invalid node %d specified\n", nid);
+ 			continue;
+ 		}
+ 
+-		pr_debug("%s: reserved %llu MiB on node %d\n", __func__,
+-			(unsigned long long)pernuma_size_bytes / SZ_1M, nid);
++		if (pernuma_size_bytes) {
++
++			cma = &dma_contiguous_pernuma_area[nid];
++			snprintf(name, sizeof(name), "pernuma%d", nid);
++			ret = cma_declare_contiguous_nid(0, pernuma_size_bytes, 0, 0,
++							 0, false, name, cma, nid);
++			if (ret)
++				pr_warn("%s: reservation failed: err %d, node %d", __func__,
++					ret, nid);
++		}
++
++		if (numa_cma_size[nid]) {
++
++			cma = &dma_contiguous_numa_area[nid];
++			snprintf(name, sizeof(name), "numa%d", nid);
++			ret = cma_declare_contiguous_nid(0, numa_cma_size[nid], 0, 0, 0, false,
++							 name, cma, nid);
++			if (ret)
++				pr_warn("%s: reservation failed: err %d, node %d", __func__,
++					ret, nid);
++		}
+ 	}
+ }
+ #else
+-static inline void __init dma_pernuma_cma_reserve(void)
++static inline void __init dma_numa_cma_reserve(void)
+ {
+ }
+ #endif
+@@ -175,7 +222,7 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
+ 	phys_addr_t selected_limit = limit;
+ 	bool fixed = false;
+ 
+-	dma_pernuma_cma_reserve();
++	dma_numa_cma_reserve();
+ 
+ 	pr_debug("%s(limit %08lx)\n", __func__, (unsigned long)limit);
+ 
+@@ -309,7 +356,7 @@ static struct page *cma_alloc_aligned(struct cma *cma, size_t size, gfp_t gfp)
+  */
+ struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
+ {
+-#ifdef CONFIG_DMA_PERNUMA_CMA
++#ifdef CONFIG_DMA_NUMA_CMA
+ 	int nid = dev_to_node(dev);
+ #endif
+ 
+@@ -321,7 +368,7 @@ struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
+ 	if (size <= PAGE_SIZE)
+ 		return NULL;
+ 
+-#ifdef CONFIG_DMA_PERNUMA_CMA
++#ifdef CONFIG_DMA_NUMA_CMA
+ 	if (nid != NUMA_NO_NODE && !(gfp & (GFP_DMA | GFP_DMA32))) {
+ 		struct cma *cma = dma_contiguous_pernuma_area[nid];
+ 		struct page *page;
+@@ -331,6 +378,13 @@ struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
+ 			if (page)
+ 				return page;
+ 		}
++
++		cma = dma_contiguous_numa_area[nid];
++		if (cma) {
++			page = cma_alloc_aligned(cma, size, gfp);
++			if (page)
++				return page;
++		}
+ 	}
+ #endif
+ 	if (!dma_contiguous_default_area)
+@@ -362,10 +416,13 @@ void dma_free_contiguous(struct device *dev, struct page *page, size_t size)
+ 		/*
+ 		 * otherwise, page is from either per-numa cma or default cma
+ 		 */
+-#ifdef CONFIG_DMA_PERNUMA_CMA
++#ifdef CONFIG_DMA_NUMA_CMA
+ 		if (cma_release(dma_contiguous_pernuma_area[page_to_nid(page)],
+ 					page, count))
+ 			return;
++		if (cma_release(dma_contiguous_numa_area[page_to_nid(page)],
++					page, count))
++			return;
+ #endif
+ 		if (cma_release(dma_contiguous_default_area, page, count))
+ 			return;
+diff --git a/mm/cma.c b/mm/cma.c
+index 4880f72102fa..da2967c6a223 100644
+--- a/mm/cma.c
++++ b/mm/cma.c
+@@ -267,6 +267,9 @@ int __init cma_declare_contiguous_nid(phys_addr_t base,
+ 	if (alignment && !is_power_of_2(alignment))
+ 		return -EINVAL;
+ 
++	if (!IS_ENABLED(CONFIG_NUMA))
++		nid = NUMA_NO_NODE;
++
+ 	/* Sanitise input arguments. */
+ 	alignment = max_t(phys_addr_t, alignment, CMA_MIN_ALIGNMENT_BYTES);
+ 	if (fixed && base & (alignment - 1)) {
+@@ -372,14 +375,15 @@ int __init cma_declare_contiguous_nid(phys_addr_t base,
+ 	if (ret)
+ 		goto free_mem;
+ 
+-	pr_info("Reserved %ld MiB at %pa\n", (unsigned long)size / SZ_1M,
+-		&base);
++	pr_info("Reserved %ld MiB at %pa on node %d\n", (unsigned long)size / SZ_1M,
++		&base, nid);
+ 	return 0;
+ 
+ free_mem:
+ 	memblock_phys_free(base, size);
+ err:
+-	pr_err("Failed to reserve %ld MiB\n", (unsigned long)size / SZ_1M);
++	pr_err("Failed to reserve %ld MiB on node %d\n", (unsigned long)size / SZ_1M,
++	       nid);
+ 	return ret;
+ }
+ 
+-- 
+2.25.1
+
