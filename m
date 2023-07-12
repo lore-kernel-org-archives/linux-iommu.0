@@ -1,87 +1,131 @@
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2120.outbound.protection.outlook.com [40.107.255.120])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E8994433
-	for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 09:45:24 +0000 (UTC)
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-31441dfbf97so7560024f8f.1
-        for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 02:45:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1689155123; x=1691747123;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=BeHjmBMqae1zfZ9d1o7CDW2GBVL1eDyXHOBTuOaNFYg=;
-        b=AH7cKSqAEvP2fqllKNUyTI6gGKtCoyOQcYze+d458Wne9rqOzCSA2nbNX0VOORk2ey
-         jm7uZ2EG4i5+/RqwbtiPmiCHkqW7dNCfzEO2d0C6p++7CSaBagms4S+DBb0SWWvWfR52
-         1fJNHgSiLTnlE+FwxtySO/TCT3WcfE1ztbhyFusZQiljr8ILDyysnD94riJoZrQv7RUw
-         WoVPS4vXtlpt8mLHgAaDbGh21i1VHozDdmS3E9wTRYRM3Z2s5mjMequ4pgQV272XdcYj
-         WYtXphFKBsU+NLbyj8H5Dysp2/YaIY/8mteiWJN7toASik1RaH7KY1LdrxZTXkZWKg29
-         wXrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689155123; x=1691747123;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=BeHjmBMqae1zfZ9d1o7CDW2GBVL1eDyXHOBTuOaNFYg=;
-        b=NIZyJ5FBjWyJKR8EFZjB4DPCVcekYK5dFVEHmUOgN09khEHr3c2CEkBMuh6xmR2rbR
-         vcoAzNvWPzCv80uAxKq9z4PR69VGh7Fr2IE4MRU6LLTOMYsSfdbTkFowS/BM9/UJIbZ5
-         kATXdLSE1W9HolFwdpw9ZTuevgNleWeyvwYcY9JBhyi7KKAgDkTyudnJDlx5Z7SDrNML
-         +9HBF2DAUS1WBelpWg6G1Md64RUswO5G3Z9J3r/L24C1Me0oV+yzgTip5tY588YniRG8
-         MIRLvlm+iGFrOWbueRStKy5/wPSufS4nlidLtil80zlYpgH+6DMDWmSMzzmXFPv7qAi6
-         NXZA==
-X-Gm-Message-State: ABy/qLYJ/ypi0OIu5DBySghVSRSOSh2wuM+kl0ilTHieA0Ya0TEN1/E+
-	XXeJN60+Chc9XovFZQekw6rU7g==
-X-Google-Smtp-Source: APBJJlHrEeMT+kJGs1oHD4HOzLI6iswJjrdlJA8OCycHTa0XqhhKKvXc0gGBPcdwUB5hP77AXSiBZQ==
-X-Received: by 2002:a5d:56cd:0:b0:314:3983:1465 with SMTP id m13-20020a5d56cd000000b0031439831465mr18892557wrw.31.1689155123166;
-        Wed, 12 Jul 2023 02:45:23 -0700 (PDT)
-Received: from myrica ([2.219.138.198])
-        by smtp.gmail.com with ESMTPSA id t12-20020a5d6a4c000000b00314329f7d8asm4577438wrw.29.2023.07.12.02.45.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jul 2023 02:45:22 -0700 (PDT)
-Date: Wed, 12 Jul 2023 10:45:22 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 3/9] iommu: Add common code to handle IO page faults
-Message-ID: <20230712094522.GB507884@myrica>
-References: <20230711010642.19707-1-baolu.lu@linux.intel.com>
- <20230711010642.19707-4-baolu.lu@linux.intel.com>
- <BN9PR11MB52761F71BA509501C1766E9A8C31A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <cbbe1175-40f3-805e-02c2-f887b3289f04@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7140327701
+	for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 11:32:04 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EsXH+T92anmjtpnv9jRWFS1dOwaKBXYC5GIdOAi10Tq+ERSEM/Eil6yFM9Hd5jTP2DOMm6Ahc3D1AtkBaUQG9VLVKQkXlwmujDxjnTKdedfyCrxVgfDgyAdXCHXDqAULP82+AAZfCRxXw88kw4rptFPMZVeURtohlVX3o0hRzxKT3c7DqVjbwQ/EOrDnOZfWdCKMmuO1REJkWDStoqUmfSZelqGoWwfsPABiG2+jjEkU/4C/xKqgR2UIA/mlm8qTI1/jfMomcUrQF8h/bhNSAtwdxFIVN7SamGAgM9nCP/3fdtx3vauskKomFXdMRy+RRyIiEcHcJkaXXSqQE8i29w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Jc8j56sUGkfPswGy/Gm5aR0K32tGNTq3bRxZXF+Mvek=;
+ b=dL1p7SHXKQTcMkmmDLfJTgqtsyxrt2KeUpmNoJFz43StJeNsoYefCSjEV0N0SfJ9DFcqtsdA6lgaQROj6ojyS5cFFlsJioKBPxKa1FHmqtSW2KyC7YLNUrxIe6UbPoxi/vp8xB8OEBnizqiwKYtZy/ssTsKMiPTFC2fvJDaE4w7VuQ2sBHCY8MfsI0F8dH+HVDSCMuUURjSV8kVpvR56KkPfm0TT3FtnH+qp1mmeDwZQRyqOpudTDSOGedtGMzD+iv9w71zpXFu2E9DK8A2FSAvQhkFnJgBngoW4w/sG97uXHdiR7lv7FXgzxs1kGL/P0RB72+VC0wDbBejtmzfi6g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Jc8j56sUGkfPswGy/Gm5aR0K32tGNTq3bRxZXF+Mvek=;
+ b=Kg0DAj/8A9Nkxj4Qez1gassI5mMAx+b0UBoHnOOU4/66czXeuaiXgeJWadsYXC464VFAEz6hO1nAL2duuvSVhqLP3dh6weY7dI+RzaMv1dlLOSJBqelzPtY4Qr0Phf4gH0CD7A4ikvJ4Jrk3ddS6BPYmrDypCbu1Bt4vv71U5SvhGDyilfr2UsY9E52pvRe5+fTepUvayJNC3EncKYAhMcvOiEL19rxeQ6yu9lCFE1JFLqirHdC+Cm8Ce4BWPMM/o2fiZgKmHGCl3rDBiUhlReUc/yb3r0H3eLomeYA4RNZR7PhiS0RnMD6oI3kqE9Tzwzsh9KqpXWb66e5H+vboDg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from SG2PR06MB5288.apcprd06.prod.outlook.com (2603:1096:4:1dc::9) by
+ TYSPR06MB6713.apcprd06.prod.outlook.com (2603:1096:400:479::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6565.32; Wed, 12 Jul 2023 11:32:01 +0000
+Received: from SG2PR06MB5288.apcprd06.prod.outlook.com
+ ([fe80::f9b8:80b5:844e:f49a]) by SG2PR06MB5288.apcprd06.prod.outlook.com
+ ([fe80::f9b8:80b5:844e:f49a%6]) with mapi id 15.20.6565.028; Wed, 12 Jul 2023
+ 11:32:01 +0000
+From: Minjie Du <duminjie@vivo.com>
+To: Thierry Reding <thierry.reding@gmail.com>,
+	Krishna Reddy <vdumpa@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	linux-tegra@vger.kernel.org (open list:TEGRA IOMMU DRIVERS),
+	iommu@lists.linux.dev (open list:IOMMU SUBSYSTEM),
+	linux-kernel@vger.kernel.org (open list)
+Cc: opensource.kernel@vivo.com,
+	Minjie Du <duminjie@vivo.com>
+Subject: [PATCH v1] iommu: fix parameter check in tegra_smmu_debugfs_init()
+Date: Wed, 12 Jul 2023 19:31:45 +0800
+Message-Id: <20230712113145.12888-1-duminjie@vivo.com>
+X-Mailer: git-send-email 2.39.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR02CA0124.apcprd02.prod.outlook.com
+ (2603:1096:4:188::9) To SG2PR06MB5288.apcprd06.prod.outlook.com
+ (2603:1096:4:1dc::9)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cbbe1175-40f3-805e-02c2-f887b3289f04@linux.intel.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SG2PR06MB5288:EE_|TYSPR06MB6713:EE_
+X-MS-Office365-Filtering-Correlation-Id: dab15e1e-12c8-4f7a-11bd-08db82cb9c0a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	IkGzr3nF4trhn7saiBfBlU+RlpjomYZzPzo66aCnqkirJdONDim6M9fhHm/EJ6ac0tFPQEz+FZswBBGTbdSgqa0m+L4bUyl5lnk56l+Ims0zI1tVoxhMrivRffpGTrkX7Spk8BQV8eM9qm9yx1ewnjoH0JRkpQZkaPYQKFgvp42u0dz5+l/BMPUWbZg5+531KSW5fMN9zCXirHbw9/M3I5XpDgVkuInxL177OXZcHAkbA4yyNB2PopWjszJUANJwAz7s82vCQiNn4J7VQkHJaIpvVCAzR3imyt80f/nw71oTj7PUdDF97J1YA4VEEW0hNaTbYzHyR//MMYObjkiULOXg2mXeQrny1uhG8ts0DOG6Ow7HmHNNAn/td/sQx2tNtuzzHzMCyOatyCOA+SIvkLbs5ZuSa00bAs0vKCpC5dwU2+BKM6+5HPqHVDUGS1OAJR6tozfg0XPh5X0JtlVoemoxo3TV6SfCc+ZYF5jLtDVTYSNYDFJi9fEDUzGIChRv8HcLOLkX/rAgFfvOWtCUzd3QYFzAZUdW/YYVGEM7dOyarh75wcdYYI1UMXAUcnSZO3KBxb7wxEvY9C2xxgJjJTcxghVeL0XSNWzgF5T96LUzI6x6b7frKw3MU2zMxbGi
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB5288.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(346002)(376002)(136003)(366004)(451199021)(6666004)(186003)(6512007)(478600001)(52116002)(316002)(110136005)(66946007)(66476007)(66556008)(6486002)(4326008)(41300700001)(107886003)(8676002)(8936002)(6506007)(86362001)(1076003)(26005)(5660300002)(83380400001)(36756003)(2906002)(4744005)(2616005)(38100700002)(38350700002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?ncvss9A4qvmX/xUDRmEVNQ4w0v5eL0q/PlxAjgxFk0RVBw6E28HDc1+HqGyb?=
+ =?us-ascii?Q?vtt084FiR43KyhDO9zartL2wyh81DMLNewOClYrskQSHAjB7gs1smvwvhI3f?=
+ =?us-ascii?Q?TaTuGOEvd8QLNfdNnAZ/uArXJaQszw9QXgeD/q7/+ui7u8ikJ6QWfMxe5Pee?=
+ =?us-ascii?Q?hh3hoeZBwmCzM1SSE7qkAq+y2Ga7x7y0sO0rfqCOCERSNwEZnPeJ2JFccqdV?=
+ =?us-ascii?Q?dE7/TMBOPdOQ7/ZyoTMYO1BJsRc9GVVelWHTqWDY5nL/T4O9vZEntaFSA2TV?=
+ =?us-ascii?Q?GDJXjeHmUcTK+dBWDfTYnyaGTtLh9yPd5PYxWQtUvQBNuKI5AKrNoZsiNuXs?=
+ =?us-ascii?Q?1bS17BmbP7kvtyfGdBK+KyumbMMcM6+6jKwBwEzdWaGe9sBKXFoDoXkp3beE?=
+ =?us-ascii?Q?dzwDZ601N+Bdkw672o0VsymgDvXWZBOOgQM6/wctIr2o5mG7IFn/p71QtM5h?=
+ =?us-ascii?Q?uulyBxfNzD5nQPRsfmU34o3ooJAkQy9T/1pPM7sNO2r8Li9xFlpEOM/ah0rk?=
+ =?us-ascii?Q?Bj6hWOvi8DEBBWYyjCacKRhAPkjdKgb/JvF++i4bVF5UYTdYU5/vdhI9SmOQ?=
+ =?us-ascii?Q?AA3hter0uc0rSTc/XWzSQV0IAdPDWTdWI6D9VphaN2rrJ+v2Dx0acBFGyM3n?=
+ =?us-ascii?Q?2IY1a3hg2L3qVbKY+NtSZmrwYRzyjcBnnSt21bnufUxBCvnH9v4LZXIWJnH6?=
+ =?us-ascii?Q?i6uMQSx/f3dGClIoJqh868dtYp50rG/6yokhWvNDZ5sUxAGFKxbzXuoNGgMA?=
+ =?us-ascii?Q?JdJ3ZOkoNcSiKloVzBlvDBxvyqzxDyJF9DAfjhvEAxPFqZdBRwatl8ARyy0h?=
+ =?us-ascii?Q?s0dAj4AOJmeA6ptr8X6K207ZaEmqac0A9ZnRECZarjos13X8QQrsCTt+8Xef?=
+ =?us-ascii?Q?dwSZt74syWx4Zdboi0pVPR/LHAZ1fN6pngpD0jRBsWM1rCRfTxg7ghKaep1a?=
+ =?us-ascii?Q?OPTnXafKoaXpwgbxfrxGr9Nou6QZIe3/ZSVcSDe68X+WGTCOICAcaKkZyPNH?=
+ =?us-ascii?Q?07oGPsf0F5GWEN08lJJekE1Y8rOujXz0KOfX45MFjF7ZeibrrMzpOyB4RDeB?=
+ =?us-ascii?Q?wdYTfi0jiMTsAN5SjbKUayjHevKMCB6z7O+t82wtMtiGGkX8wUuqsCS5yeoZ?=
+ =?us-ascii?Q?bpuSwvLBA2dByCE3/6yLkROMa9BX5xgXi4NaKH7OO/blztyrwP+f15GL1Fcu?=
+ =?us-ascii?Q?ipQ2TrBLVLmdJe02siyFDc1eh3sTx8qDP6xUs8n1MviZipVoYIiDYP3cwMw0?=
+ =?us-ascii?Q?t+Er3CbjX8WdjrW+VP41W5LMMgMpEbu785UjZ2wVY+wS4RatwbeKAxd6iw9s?=
+ =?us-ascii?Q?YN7R0NnIjsR/sm5uL5Qe4Kr/eWiDjwyHhsrgXhe6oInO4v4FIJbYPM17g9TK?=
+ =?us-ascii?Q?nO1BSRzapqsfNlKlgiDjI2NuyRkJRYYJdm/r4D7daF1rGb6QPeh2UcY8BIk3?=
+ =?us-ascii?Q?0MtdfiXqCwN3a+sHceVlrQ1+NEBzFIEPlyCimBmm8Pd1YuPCjyWI4Tx/u04P?=
+ =?us-ascii?Q?pkzTJ//W1jsdT7nQYOtQmqOXU270Hgv/vmaSan0Yb8feXJYY6NcUaTTOKQ9u?=
+ =?us-ascii?Q?580FAFgSNphBgTdbu3atRDHj7I1Jh/qQkAm9fjaE?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dab15e1e-12c8-4f7a-11bd-08db82cb9c0a
+X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB5288.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2023 11:32:01.3528
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kYLAf17oVOlCRXfT+oiXVD/FBAGS3mIUHBlE7cnJ2ag9u+QLF0RiQDeDTaV2jrA2S8y3IMqH3cd6fNMw8j6hbg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYSPR06MB6713
 
-On Wed, Jul 12, 2023 at 10:32:13AM +0800, Baolu Lu wrote:
-> > btw is there value of moving the group handling logic from
-> > iommu_queue_iopf() to this common function?
-> > 
-> > I wonder whether there is any correctness issue if not forwarding
-> > partial request to iommufd. If not this can also help reduce
-> > notifications to the user until the group is ready.
-> 
-> I don't think there's any correctness issue. But it should be better if
-> we can inject the page faults to vm guests as soon as possible. There's
-> no requirement to put page requests to vIOMMU's hardware page request
-> queue at the granularity of a fault group. Thoughts?
+Make IS_ERR() judge the debugfs_create_dir() function return
+in tegra_smmu_debugfs_init()
 
-Not sure I understand you correctly, but we can't inject partial fault
-groups: if the HW PRI queue overflows, the last fault in a group may be
-lost, so the non-last faults in that group already injected won't be
-completed (until PRGI reuse), leaking PRI request credits and guest
-resources.
+Signed-off-by: Minjie Du <duminjie@vivo.com>
+---
+ drivers/iommu/tegra-smmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-Jean
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index 1cbf063cc..841e14cce 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -1056,7 +1056,7 @@ DEFINE_SHOW_ATTRIBUTE(tegra_smmu_clients);
+ static void tegra_smmu_debugfs_init(struct tegra_smmu *smmu)
+ {
+ 	smmu->debugfs = debugfs_create_dir("smmu", NULL);
+-	if (!smmu->debugfs)
++	if (IS_ERR(smmu->debugfs))
+ 		return;
+ 
+ 	debugfs_create_file("swgroups", S_IRUGO, smmu->debugfs, smmu,
+-- 
+2.39.0
+
