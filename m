@@ -1,43 +1,43 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3685B33F9
-	for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 09:33:46 +0000 (UTC)
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-3fbc0609cd6so68061735e9.1
-        for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 02:33:46 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E8994433
+	for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 09:45:24 +0000 (UTC)
+Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-31441dfbf97so7560024f8f.1
+        for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 02:45:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1689154425; x=1691746425;
+        d=linaro.org; s=google; t=1689155123; x=1691747123;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=LEbT69ORmiT4B7gB/4ua+o5DtuaLJ+rxLl7qFmnLAlc=;
-        b=uUYdMxWdSfz63WBoFynzEmeS9rS/FmdUm1PR1CTcVchr5vV9aSbJWd1f16LtBcw7D/
-         vwrRKbTeOCk6Xgj1qlCYrFWGxfd6Q6M7BIpPMRvTC0vKu2gB/AObNFSDCfjpr6fswCZi
-         zm5eOKoRVKdrs47wRs5mlddxIRgxP12fP6ARY5RkzPcenGIu6t21n+BMgd+30Un/5X1q
-         Cr+Lfc5PY+A9O50OTlotNKdZDiqjHy+KnR1MqB/TBWF9sXc3nGtPQWZ/2TOfkil7/Wcy
-         woOrdB/x7mySbodSMvYf2G1Bqz3jtOWAfz/N6IfutZF8b619b4hyZp1Nc37TLtUuKdpu
-         Em2w==
+        bh=BeHjmBMqae1zfZ9d1o7CDW2GBVL1eDyXHOBTuOaNFYg=;
+        b=AH7cKSqAEvP2fqllKNUyTI6gGKtCoyOQcYze+d458Wne9rqOzCSA2nbNX0VOORk2ey
+         jm7uZ2EG4i5+/RqwbtiPmiCHkqW7dNCfzEO2d0C6p++7CSaBagms4S+DBb0SWWvWfR52
+         1fJNHgSiLTnlE+FwxtySO/TCT3WcfE1ztbhyFusZQiljr8ILDyysnD94riJoZrQv7RUw
+         WoVPS4vXtlpt8mLHgAaDbGh21i1VHozDdmS3E9wTRYRM3Z2s5mjMequ4pgQV272XdcYj
+         WYtXphFKBsU+NLbyj8H5Dysp2/YaIY/8mteiWJN7toASik1RaH7KY1LdrxZTXkZWKg29
+         wXrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689154425; x=1691746425;
+        d=1e100.net; s=20221208; t=1689155123; x=1691747123;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=LEbT69ORmiT4B7gB/4ua+o5DtuaLJ+rxLl7qFmnLAlc=;
-        b=gLUdSkuG9leeakWXlhAak36wxsm3PjbFsDQ3yLKuRlAhM3C2jsPYOQtwxOeolbdy2P
-         UxQ7L5fv/hzOv34hguuxJtZumq23oa7Bz77IuLxIMHdzzamPHhaVWBUwu4Gaf39s2G5o
-         OIMjg9rl2bMor+UJ2deKh+6C2NyV0LrHPVv8bauMdhWEU9C/8RZvdwELUKUjUPag4PS4
-         66f9uZf4pKGB3QkBAFzkEwNuhvcnrwysv3ynJFCdE7KY6Eqg5u6xJthug9hkHPVTCnfA
-         K9dV7Cuu6VFRvgN9royjiCj64RUR8scRIy2qniSfqPMrICqhsMIqtQdzdAm0E3PTCVsg
-         Qivw==
-X-Gm-Message-State: ABy/qLb0l/jLvyuTm6AHf0qn8QkWyCFJvcfgsLlRdacg3YVCDC5ufAKn
-	MG2qTImwbg7KpEr71vYns0epOQ==
-X-Google-Smtp-Source: APBJJlGLvpS5QqDKmKL+tApWyDTyJ91oFqLDv89odT6Zvd+rWYAJsxdNNWKNCT+b+anOZwPz5lJpiA==
-X-Received: by 2002:a05:600c:2283:b0:3fb:e4ce:cc65 with SMTP id 3-20020a05600c228300b003fbe4cecc65mr16251688wmf.25.1689154425088;
-        Wed, 12 Jul 2023 02:33:45 -0700 (PDT)
+        bh=BeHjmBMqae1zfZ9d1o7CDW2GBVL1eDyXHOBTuOaNFYg=;
+        b=NIZyJ5FBjWyJKR8EFZjB4DPCVcekYK5dFVEHmUOgN09khEHr3c2CEkBMuh6xmR2rbR
+         vcoAzNvWPzCv80uAxKq9z4PR69VGh7Fr2IE4MRU6LLTOMYsSfdbTkFowS/BM9/UJIbZ5
+         kATXdLSE1W9HolFwdpw9ZTuevgNleWeyvwYcY9JBhyi7KKAgDkTyudnJDlx5Z7SDrNML
+         +9HBF2DAUS1WBelpWg6G1Md64RUswO5G3Z9J3r/L24C1Me0oV+yzgTip5tY588YniRG8
+         MIRLvlm+iGFrOWbueRStKy5/wPSufS4nlidLtil80zlYpgH+6DMDWmSMzzmXFPv7qAi6
+         NXZA==
+X-Gm-Message-State: ABy/qLYJ/ypi0OIu5DBySghVSRSOSh2wuM+kl0ilTHieA0Ya0TEN1/E+
+	XXeJN60+Chc9XovFZQekw6rU7g==
+X-Google-Smtp-Source: APBJJlHrEeMT+kJGs1oHD4HOzLI6iswJjrdlJA8OCycHTa0XqhhKKvXc0gGBPcdwUB5hP77AXSiBZQ==
+X-Received: by 2002:a5d:56cd:0:b0:314:3983:1465 with SMTP id m13-20020a5d56cd000000b0031439831465mr18892557wrw.31.1689155123166;
+        Wed, 12 Jul 2023 02:45:23 -0700 (PDT)
 Received: from myrica ([2.219.138.198])
-        by smtp.gmail.com with ESMTPSA id c18-20020a7bc012000000b003fb40f5f553sm15191235wmb.31.2023.07.12.02.33.44
+        by smtp.gmail.com with ESMTPSA id t12-20020a5d6a4c000000b00314329f7d8asm4577438wrw.29.2023.07.12.02.45.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jul 2023 02:33:44 -0700 (PDT)
-Date: Wed, 12 Jul 2023 10:33:44 +0100
+        Wed, 12 Jul 2023 02:45:22 -0700 (PDT)
+Date: Wed, 12 Jul 2023 10:45:22 +0100
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: Baolu Lu <baolu.lu@linux.intel.com>
 Cc: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
@@ -48,12 +48,12 @@ Cc: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
 	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/9] iommu: Move iommu fault data to linux/iommu.h
-Message-ID: <20230712093344.GA507884@myrica>
+Subject: Re: [PATCH 3/9] iommu: Add common code to handle IO page faults
+Message-ID: <20230712094522.GB507884@myrica>
 References: <20230711010642.19707-1-baolu.lu@linux.intel.com>
- <20230711010642.19707-2-baolu.lu@linux.intel.com>
- <BN9PR11MB5276859ED6825C0A496C9C5E8C31A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <38c31fb0-1068-4855-c896-27d6a2bca747@linux.intel.com>
+ <20230711010642.19707-4-baolu.lu@linux.intel.com>
+ <BN9PR11MB52761F71BA509501C1766E9A8C31A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <cbbe1175-40f3-805e-02c2-f887b3289f04@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -62,84 +62,26 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <38c31fb0-1068-4855-c896-27d6a2bca747@linux.intel.com>
+In-Reply-To: <cbbe1175-40f3-805e-02c2-f887b3289f04@linux.intel.com>
 
-On Wed, Jul 12, 2023 at 10:07:22AM +0800, Baolu Lu wrote:
-> > > +/**
-> > > + * struct iommu_fault_unrecoverable - Unrecoverable fault data
-> > > + * @reason: reason of the fault, from &enum iommu_fault_reason
-> > > + * @flags: parameters of this fault (IOMMU_FAULT_UNRECOV_* values)
-> > > + * @pasid: Process Address Space ID
-> > > + * @perm: requested permission access using by the incoming transaction
-> > > + *        (IOMMU_FAULT_PERM_* values)
-> > > + * @addr: offending page address
-> > > + * @fetch_addr: address that caused a fetch abort, if any
-> > > + */
-> > > +struct iommu_fault_unrecoverable {
-> > > +	__u32	reason;
-> > > +#define IOMMU_FAULT_UNRECOV_PASID_VALID		(1 << 0)
-> > > +#define IOMMU_FAULT_UNRECOV_ADDR_VALID		(1 << 1)
-> > > +#define IOMMU_FAULT_UNRECOV_FETCH_ADDR_VALID	(1 << 2)
-> > > +	__u32	flags;
-> > > +	__u32	pasid;
-> > > +	__u32	perm;
-> > > +	__u64	addr;
-> > > +	__u64	fetch_addr;
-> > > +};
+On Wed, Jul 12, 2023 at 10:32:13AM +0800, Baolu Lu wrote:
+> > btw is there value of moving the group handling logic from
+> > iommu_queue_iopf() to this common function?
 > > 
-> > Currently there is no handler for unrecoverable faults.
-
-Yes those were meant for guest injection. Another goal was to replace
-report_iommu_fault(), which also passes unrecoverable faults to host
-drivers. Three drivers use that API:
-* usnic just prints the error, which could be done by the IOMMU driver,
-* remoteproc attempts to recover from the crash,
-* msm attempts to handle the fault, or at least recover from the crash.
-
-So the first one can be removed, and the others could move over to IOPF
-(which may need to indicate that the fault is not actually recoverable by
-the IOMMU) and return IOMMU_PAGE_RESP_INVALID.
-
-> > 
-> > Both Intel/ARM register iommu_queue_iopf() as the device fault handler.
-> > It returns -EOPNOTSUPP for unrecoverable faults.
-> > 
-> > In your series the common iommu_handle_io_pgfault() also only works
-> > for PRQ.
-> > 
-> > It kinds of suggest above definitions are dead code, though arm-smmu-v3
-> > does attempt to set them.
-> > 
-> > Probably it's right time to remove them.
-> > 
-> > In the future even if there might be a need of forwarding unrecoverable
-> > faults to the user via iommufd, fault reasons reported by the physical
-> > IOMMU doesn't make any sense to the guest.
-
-I guess it depends on the architecture?  The SMMU driver can report only
-stage-1 faults through iommu_report_device_fault(), which are faults due
-to a guest misconfiguring the tables assigned to it. At the moment
-arm_smmu_handle_evt() only passes down stage-1 page table errors, the rest
-is printed by the host.
-
-> > Presumably the vIOMMU
-> > should walk guest configurations to set a fault reason which makes sense
-> > from guest p.o.v.
+> > I wonder whether there is any correctness issue if not forwarding
+> > partial request to iommufd. If not this can also help reduce
+> > notifications to the user until the group is ready.
 > 
-> I am fine to remove unrecoverable faults data. But it was added by Jean,
-> so I'd like to know his opinion on this.
+> I don't think there's any correctness issue. But it should be better if
+> we can inject the page faults to vm guests as soon as possible. There's
+> no requirement to put page requests to vIOMMU's hardware page request
+> queue at the granularity of a fault group. Thoughts?
 
-Passing errors to the guest could be a useful diagnostics tool for
-debugging, once the guest gets more controls over the IOMMU hardware, but
-it doesn't have a purpose beyond that. It could be the only tool
-available, though: to avoid a guest voluntarily flooding the host logs by
-misconfiguring its tables, we may have to disable printing in the host
-errors that come from guest misconfiguration, in which case there won't be
-any diagnostics available for guest bugs.
-
-For now I don't mind if they're removed, if there is an easy way to
-reintroduce them later.
+Not sure I understand you correctly, but we can't inject partial fault
+groups: if the HW PRI queue overflows, the last fault in a group may be
+lost, so the non-last faults in that group already injected won't be
+completed (until PRGI reuse), leaking PRI request credits and guest
+resources.
 
 Thanks,
 Jean
-
