@@ -1,177 +1,109 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2084.outbound.protection.outlook.com [40.107.102.84])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D80B4200B1
-	for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 14:21:18 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CACR7p72egyQdz47NTFR7pmBnzDtkvtHYN1iYljUEoZ3oHrHJvJKQyn5G6gZmMZkLs14/ES8fWBmGaUTRtPN/xPWKHTJmwZNRNvCDWeUEQpzOtghMVrMl0bBCaqPqun9H2iMU6B6HP0/kHdrVQMWiwVnS84y4ZtuGvMA5OxcrKwLyKoihOrzmX0X0kiz1sLzyIDR+61QRtqsn1p6szdQkOgX6QJpa9lgYzKW/6d7wf4I8ixFXn9hiEZWjiQYWrwQTLkoxSclOrCoe54aJEkGoubay21moLglXNrViTRGFn0Rkz3vfi7JQLcwsbsZbHQn3/lga8xpp2AH3VUZRVutxg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rowxiY7QY4wS83y+wFfL27twGf6JSbiQHOjcz7kq2s4=;
- b=NoyO4TPCnQvTTu7OC9jZE4izoFqsvP1aoGAOetpz9uiS324MYmj6Thc9r6BbYlKznJKvLq2v2qiT8e1F6V9XrgyVUkQ0/qGUOnRDPHlu8w8QhBcC7n7NNhEvkcK/4SsGOMNjv/1SxL2magchz+6x8DceDHSYEW7dfWgAwQ9F0tbe14TOaaGtcVn3VTI5ea/szGOTtOIpz8aEppRFq0PqxqqXXWQcAmh8zWdSGMyjHg8YhaWUfEuiu3vD5rtPec8Hwb64MyFXIsk6DFAHVWdr/sIq/VHXpbkdvOVUXPVKyS80Um5W2hx6/V4tLLJbMjh3ADgNof9AgWxm4uSvIEudLg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rowxiY7QY4wS83y+wFfL27twGf6JSbiQHOjcz7kq2s4=;
- b=WoU6P45G7qjAIB1ynzVn4GW0icGGnrFVoaKyVMUPSAnV2BK7jDOeeeWPzfYvqb1xQrT4q69MrQjKvp/HMCLcUtRiJrhtSMRBHOEYVLNoX0hVDZvd+pYQN43h8hN3RHvOTk/nH0RI1H4223xVKm1pISuOJIuvasOOZjJfq/LTOJM=
-Received: from MW4PR04CA0197.namprd04.prod.outlook.com (2603:10b6:303:86::22)
- by MW4PR12MB7120.namprd12.prod.outlook.com (2603:10b6:303:222::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6588.20; Wed, 12 Jul
- 2023 14:21:11 +0000
-Received: from CO1NAM11FT097.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:86:cafe::8) by MW4PR04CA0197.outlook.office365.com
- (2603:10b6:303:86::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6588.20 via Frontend
- Transport; Wed, 12 Jul 2023 14:21:11 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT097.mail.protection.outlook.com (10.13.175.185) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6588.20 via Frontend Transport; Wed, 12 Jul 2023 14:21:10 +0000
-Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Wed, 12 Jul
- 2023 09:21:08 -0500
-From: Vasant Hegde <vasant.hegde@amd.com>
-To: <iommu@lists.linux.dev>, <joro@8bytes.org>
-CC: <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH 21/21] iommu/amd: Simplify amd_iommu_device_info()
-Date: Wed, 12 Jul 2023 14:15:16 +0000
-Message-ID: <20230712141516.154144-22-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230712141516.154144-1-vasant.hegde@amd.com>
-References: <20230712141516.154144-1-vasant.hegde@amd.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2E5727726
+	for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 15:06:28 +0000 (UTC)
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-51e57870becso4601901a12.2
+        for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 08:06:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1689174387; x=1691766387;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QAqFn71nQK08Pou4CkH2NPss/L+GdIam9CN05EpYNIc=;
+        b=nbPWlgxXJOL4dI/TWjZZjGA881ecooijeYaa7A59TAFTu/7ta/1ak2mJE9y30ofkmD
+         BF0htwPneL0XL668CZnRYbjrnohya/FgUg56ZWDNHSrhQ3U6+33z2rk8dDUwytaUo45v
+         X6LDtKebsMYqIAkb3r1UtkzXvOmUr8TNpdbGDBnbWmvx7KUW+lz08RMp6fvXqsXvwdQ5
+         P4XUslTE0drDqqHRszRMq0nobpy8CZKt7VhHdhXJyO4TGGjzZ5GfJXi8bm6tcxS23OFd
+         0JmHdJ7OeEPnhcY6RnP4dLC69iXK7LyrHq3l/7MBqpK4E+hQs0mii/Rcf5PnYxfCDjN4
+         1Bwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1689174387; x=1691766387;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=QAqFn71nQK08Pou4CkH2NPss/L+GdIam9CN05EpYNIc=;
+        b=Y/j+lNT/cbGB3L+70ZBE0DzwOg38EDMuW2tS3Jz7cwTN35E4Q+Vk49WZOUWrKWNtuW
+         GHqch6M3Iq12GuDuLeqPshmtq6HeLR4M/3uC3mGtx8B/V7ZDh44AWeo3krB0eff/ovuP
+         xhCIRgWBkgqHZuAuhnFj59jMDEwVoOKuDDULWe6eE1qz/6HftWtJ/dhXurY6S3LY7yFX
+         hEgGd8unlhXW6bFmO5Ug5i3BER+9hxlG5IUbSuwBp5HHXSKSBCRwI32GQORZAgPBSpHw
+         o3rqRr0PO7LkokZF5CnvY6rs29kr5hISSGv86/Bp2SFUv05DGfm9fYwQtbBE3tuHxaX8
+         zKAQ==
+X-Gm-Message-State: ABy/qLaakOLBZEQ18B6Ql1mNYThYP/QytRgsrM6bvMtjGiPVUyUmEHrz
+	SEJ48EPMMRaj1HfqFronmP8=
+X-Google-Smtp-Source: APBJJlHzve3iZeeHXb7AehNG/sB9CJPZqJqrxjdvooUQ5HMbOUXlUSt1k7mAHBZEmhTvmDOtPcDrew==
+X-Received: by 2002:aa7:d90c:0:b0:51e:57ba:cb8e with SMTP id a12-20020aa7d90c000000b0051e57bacb8emr5468311edr.5.1689174386710;
+        Wed, 12 Jul 2023 08:06:26 -0700 (PDT)
+Received: from orome (p200300e41f4b7100f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f4b:7100:f22f:74ff:fe1f:3a53])
+        by smtp.gmail.com with ESMTPSA id c24-20020aa7d618000000b0051df1797222sm2905904edr.11.2023.07.12.08.06.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Jul 2023 08:06:26 -0700 (PDT)
+Date: Wed, 12 Jul 2023 17:06:24 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+To: =?utf-8?B?5p2c5pWP5p2w?= <duminjie@vivo.com>
+Cc: Krishna Reddy <vdumpa@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	"open list:TEGRA IOMMU DRIVERS" <linux-tegra@vger.kernel.org>,
+	"open list:IOMMU SUBSYSTEM" <iommu@lists.linux.dev>,
+	open list <linux-kernel@vger.kernel.org>,
+	"opensource.kernel" <opensource.kernel@vivo.com>
+Subject: Re: =?utf-8?B?5Zue5aSNOiBbUEFUQw==?= =?utf-8?Q?H?= v1] iommu: fix
+ parameter check in tegra_smmu_debugfs_init()
+Message-ID: <ZK7BcFc-sdm15Sv9@orome>
+References: <20230712113145.12888-1-duminjie@vivo.com>
+ <ZK6a-f2Se3HWjU7D@orome>
+ <SG2PR06MB52889E70309210CD49400A64AE36A@SG2PR06MB5288.apcprd06.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT097:EE_|MW4PR12MB7120:EE_
-X-MS-Office365-Filtering-Correlation-Id: f26c4be6-e7d7-4c23-ddfa-08db82e33ddb
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	PxMrH8urHLKLZfF74xHIqtzAbpiloLz5fKsD4s+SPUD4f0yw8aDx/09S1ey67uK8e0SDP/LFFmKNk78xjalWT+6yjgruASOFh+MhKBwddtTWAWwfoxilD4lMVq983u754d18wZVu0udIVaat0QsDhtaf7aSLE68bLg93Gz7845GAlgivoasI8XjmWhJOo70HDWimZDZDPCCU+OPlCgip0oNvZREwvbKimuuvkwDsvb5Uqtp9sp7cuO6FCYWZNlMwroDk2REy1NLKsDMno8igObJMcBrt57PYUaAdGrf7YuPHQ2b86npp80hMXNK8yJfbUwSFKwPxyr8fAoDGs/I5VYD8HitPCcH5sVvkasL8jF7oAt25Y94Omq5O3BSKQttF9X+1stsOqj4c9wkfhJYbyDl99BQVSgD8wMfEDquOjHeqIxhyxY3xBBFep0D2gKH2+JkXG0Dvk46tHHGfz3B3Hi4xYkGbbpaQSlIaZyWlvPASypE5DYOB46V6pebJgLivJqvV/bZ5+HodmkgFW8Idu5UNcu/J2VAhDfeybeCxSKRf65qsvkrA1Nj/UNJlkq4AjnQO4Xv/3KiVsgah7PXW5jmMhDRdLuylfVkf1SkgZqEesFpI7hoCGja18GD4fRTrNnB/umfTagRS5fZdbNxjQLszY0A93fFY5H4BW5ut2iKSDP+Fsmom+AcCkOZB8ylOQSgd40QafjZk/nCTqMFXBx+OciLepm2bok9zs2sdAZx6RJCmGklKZpuQCLdrkqa/YARSu8VE9+BOZzBhNRpCmw==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(396003)(39860400002)(136003)(346002)(376002)(451199021)(36840700001)(46966006)(40470700004)(110136005)(478600001)(16526019)(186003)(44832011)(81166007)(356005)(82740400003)(54906003)(26005)(1076003)(82310400005)(6666004)(86362001)(8936002)(8676002)(7696005)(2616005)(2906002)(426003)(70206006)(336012)(70586007)(83380400001)(4326008)(5660300002)(36756003)(41300700001)(40480700001)(36860700001)(47076005)(40460700003)(316002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2023 14:21:10.8344
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f26c4be6-e7d7-4c23-ddfa-08db82e33ddb
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT097.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7120
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="cuXJAWyeTLyXBBIi"
+Content-Disposition: inline
+In-Reply-To: <SG2PR06MB52889E70309210CD49400A64AE36A@SG2PR06MB5288.apcprd06.prod.outlook.com>
+User-Agent: Mutt/2.2.10 (2023-03-25)
 
-Let 'iommu_dev_data.flags' track device exec and priv support as well.
-So that in amd_iommu_device_info() we don't need to check device
-capabilities again.
 
-Also in probe path __iommu_probe_device() updates dev->iommu->max_pasids.
-Just use that instead of calculating max PASIDs again
+--cuXJAWyeTLyXBBIi
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
----
- drivers/iommu/amd/iommu.c | 41 ++++++++++++++-------------------------
- 1 file changed, 15 insertions(+), 26 deletions(-)
+On Wed, Jul 12, 2023 at 12:37:02PM +0000, =E6=9D=9C=E6=95=8F=E6=9D=B0 wrote:
+> Hi Thierry!
+>=20
+> >I think we can just drop the error check altogether since
+> >debugfs_create_file() will simply return early if smmu->debugfs is an er=
+ror pointer.
+>=20
+> So do you mean maybe delete the smmu->debugfs check is better?
+> Maybe I can resubmit a new patch.
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 62de31cd59ee..6319a2dc4654 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -321,6 +321,7 @@ static inline bool pdev_pasid_supported(struct iommu_dev_data *dev_data)
- 
- static u32 pdev_get_caps(struct pci_dev *pdev)
- {
-+	int features;
- 	u32 flags = 0;
- 
- 	if (pci_ats_supported(pdev))
-@@ -329,9 +330,17 @@ static u32 pdev_get_caps(struct pci_dev *pdev)
- 	if (pci_pri_supported(pdev))
- 		flags |= AMD_IOMMU_DEVICE_FLAG_PRI_SUP;
- 
--	if (pci_pasid_features(pdev) >= 0)
-+	features = pci_pasid_features(pdev);
-+	if (features >= 0) {
- 		flags |= AMD_IOMMU_DEVICE_FLAG_PASID_SUP;
- 
-+		if (features & PCI_PASID_CAP_EXEC)
-+			flags |= AMD_IOMMU_DEVICE_FLAG_EXEC_SUP;
-+
-+		if (features & PCI_PASID_CAP_PRIV)
-+			flags |= AMD_IOMMU_DEVICE_FLAG_PRIV_SUP;
-+	}
-+
- 	return flags;
- }
- 
-@@ -2883,8 +2892,8 @@ EXPORT_SYMBOL(amd_iommu_complete_ppr);
- int amd_iommu_device_info(struct pci_dev *pdev,
-                           struct amd_iommu_device_info *info)
- {
--	int max_pasids;
--	int pos;
-+	struct device *dev = &pdev->dev;
-+	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
- 
- 	if (pdev == NULL || info == NULL)
- 		return -EINVAL;
-@@ -2894,29 +2903,9 @@ int amd_iommu_device_info(struct pci_dev *pdev,
- 
- 	memset(info, 0, sizeof(*info));
- 
--	if (pci_ats_supported(pdev))
--		info->flags |= AMD_IOMMU_DEVICE_FLAG_ATS_SUP;
--
--	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
--	if (pos)
--		info->flags |= AMD_IOMMU_DEVICE_FLAG_PRI_SUP;
--
--	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PASID);
--	if (pos) {
--		int features;
--
--		max_pasids = 1 << (9 * (amd_iommu_max_glx_val + 1));
--		max_pasids = min(max_pasids, (1 << 20));
--
--		info->flags |= AMD_IOMMU_DEVICE_FLAG_PASID_SUP;
--		info->max_pasids = min(pci_max_pasids(pdev), max_pasids);
--
--		features = pci_pasid_features(pdev);
--		if (features & PCI_PASID_CAP_EXEC)
--			info->flags |= AMD_IOMMU_DEVICE_FLAG_EXEC_SUP;
--		if (features & PCI_PASID_CAP_PRIV)
--			info->flags |= AMD_IOMMU_DEVICE_FLAG_PRIV_SUP;
--	}
-+	info->flags = dev_data->flags;
-+	if (dev->iommu)
-+		info->max_pasids = dev->iommu->max_pasids;
- 
- 	return 0;
- }
--- 
-2.31.1
+Yes, I think that would be preferable.
 
+Thierry
+
+--cuXJAWyeTLyXBBIi
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmSuwXAACgkQ3SOs138+
+s6H0PA//VLaQAJjH3N7V9v3NLx9PQULtmoSXBfL5JfIIoc9cexTsdngBqR8wR7ZG
+ZNZWra1q34gXlc+zLW7gEqfku+pAb+WX//IMr9GuiRPjch49lW+xRILJBFuv09mx
+yEakEvaJ9XvewOVUTwbJZnVKCJokTtwK5U1RJ+BiYHLa318AXZmZsKANETHBULeS
+OzMaeHHqWmUKC9ESB/Rj3gNQBbk250UxpMa7GGJfvF/ZQ51qXAHOBIZFbeYVpixK
+itr1RHkQvcAiA3MMMkJFxw/iK07ArPnHffDUoB3KPpICWXAsnOjwcLtxwdj09sMx
+7e3P7kCywGlP9k9T4kvuE+z7Kl0GTN8y51miEwzOI0s3pcROjKciU5EstRXuaM8T
+juKVO/62dYDhDFSwKM8g1xDuhV1+Cr+zbdLKO2EFOHeXXTfVGeC4HuIEoytVKt39
+KFXgi0v530JUuQeZVHGmBxd68HTAcEzH/cVjVkxWnnLv/SBWV4bUK2uEZBWgrBrj
+IlGK5kZTC5ozeOcZ2h9aOvhEL5p1DHsOd9stFLUri9xlrlITYjhklFUkLIk5nTxi
+hiyyZ1YI8De9H3YGSh3N5JDuR12uxvGcyyORg8du8pio/ZPl886VRnv5TAlM/2n8
+7t1KWPrnt9Kq1smEiU9aG3cOXe4Xd7hgunNrvCtD9Xiq73/sNwo=
+=4eXe
+-----END PGP SIGNATURE-----
+
+--cuXJAWyeTLyXBBIi--
