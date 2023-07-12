@@ -1,99 +1,120 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CE5C27701
-	for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 11:47:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14254C433C8;
-	Wed, 12 Jul 2023 11:46:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1689162422;
-	bh=QhVaK0LsU7eehMipwwCOTnQKn7A7QZ/0f5Q1VZIwGuA=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-	b=GUdoi12+nwBnrPTbxYZ2a9geyEqe0U28by0VFwg6tqYv117M3vJeo7W/c3Pf+4e79
-	 r2F0W5C/3UO3uWWhtMs/W70+WVAtPg6XXuuAqOhcLxR9qj9zDMgABk3t4NgHH+Dk/B
-	 BxY/P+ZUcLNmE5YBLA+Dtu+huFUqYJwg75B5MHnv4mR/QPOc8U81qsaUeEj81gMPvu
-	 /Bu9qNp5H337C4v2CNQhCHMPKOlb4szHXTtmmNdzjicIAk24uoczmt7db7QUR/dBbG
-	 p9wmn7CIh20RMyzN0MbM2MyCNcUQhjq/s5IV+/jEfsnU0L2X0zrAXnrgbGzuiRNMiy
-	 wFPmrWQk+3Plg==
-From: Mark Brown <broonie@kernel.org>
-To: cros-qcom-dts-watchers@chromium.org, Andy Gross <agross@kernel.org>, 
- Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh+dt@kernel.org>, 
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
- Benjamin Li <benl@squareup.com>, James Willcox <jwillcox@squareup.com>, 
- Joseph Gates <jgates@squareup.com>, Stephan Gerhold <stephan@gerhold.net>, 
- Zac Crosby <zac@squareup.com>, 
- Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, 
- Banajit Goswami <bgoswami@quicinc.com>, Liam Girdwood <lgirdwood@gmail.com>, 
- Lee Jones <lee@kernel.org>, Stephen Boyd <sboyd@kernel.org>, 
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Xu Yang <xu.yang_2@nxp.com>, Peng Fan <peng.fan@nxp.com>, 
- Christian Marangi <ansuelsmth@gmail.com>, 
- Wesley Cheng <quic_wcheng@quicinc.com>, Jun Nie <jun.nie@linaro.org>, 
- Max Chen <mchen@squareup.com>, Shawn Guo <shawn.guo@linaro.org>, 
- Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>, 
- linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Vincent Knecht <vincent.knecht@mailoo.org>, 
- Bryan O'Donoghue <bryan.odonoghue@linaro.org>, 
- Konrad Dybcio <konradybcio@kernel.org>, alsa-devel@alsa-project.org, 
- iommu@lists.linux.dev, linux-usb@vger.kernel.org, 
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
- Leo Yan <leo.yan@linaro.org>, Rob Herring <robh@kernel.org>, 
- Andy Gross <andy.gross@linaro.org>
-In-Reply-To: <20230627-topic-more_bindings-v1-0-6b4b6cd081e5@linaro.org>
-References: <20230627-topic-more_bindings-v1-0-6b4b6cd081e5@linaro.org>
-Subject: Re: (subset) [PATCH 00/11] Even more msm bindings fixes
-Message-Id: <168916241380.46574.15546639128394124503.b4-ty@kernel.org>
-Date: Wed, 12 Jul 2023 12:46:53 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27E5A1F959
+	for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 12:22:21 +0000 (UTC)
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-313e742a787so431712f8f.1
+        for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 05:22:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1689164540; x=1691756540;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=risaOC2By4RRr2SXI3daNv3cxbGsdWxMPTLhDodknLI=;
+        b=k+WfAkF8VRKEiFemqZ4Tv+BdDzhbDaf+A9ySwe7eOoRNdPqrXbZpCGRXuBELieQiQ9
+         AnOEIeNdgR3iMzpzL9YM13kYo9Upn9kAIHBG2BIebyVBtTQ7VstkT0j1KTr/4blkvGMv
+         uF3wA18+zm7gglNb3T5SOTnZFYn52BDgnFm2v+t9OfjROJF8Wu9Jupw6hgdOeijYj4TW
+         fANTqSOWdFvkINt80/D1I5cSspsUH0lkfuzcPO1DlVA6GTCXcwjGo0B1E3JmTwckdLrD
+         NkXkFAFcgHi9DXfCiH8GafnTQik1hcO0UqSOmfs21z5xv5oRGpCcbzMLmac2+n2GwOmA
+         8Now==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1689164540; x=1691756540;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=risaOC2By4RRr2SXI3daNv3cxbGsdWxMPTLhDodknLI=;
+        b=CfkHhZ7bSYmwVWJWsuBP7VgcwdsfNYufgdePCUUc88bbI0oiglzLu2e0Ce6AjbuJv1
+         88a5UXDqHPHjaDXSEqxDa/ht6NM8vgiukV2w/UN0RK6QAerb7f5Z/K24hqye8B92bRwp
+         CIgvFMH+P9WMadyFrg6lbrumL+OfWVsg3tviWTZGCsPhmgH2uZ5BbzT2oUXabr+bZAR5
+         9RmIOFd7LjPhLmzFCG5HxcWImxwCoCLA99iOmYfmCsjpt+IE0G2T1GplEz5ecG+w+i53
+         ELVeo8b09c5YLPDG7Pe1ISA27i80oLbu1xxcjVr5WHy8Gt111TvLuHlAGZzVQG5CM/hL
+         OmSg==
+X-Gm-Message-State: ABy/qLYNxYOqcbdnp9HVEjNhlML9tIDsoj0QYR7fokf6stBiCXtXA2+h
+	XXIaibqDYHyKIf/227OyvZI=
+X-Google-Smtp-Source: APBJJlEkmSfITgeLnMo/tOjF1lMyUPDdKd7C73TOjb/E3FNO4uz7G9hrS5td6jJmUA23LgJnnAyFmQ==
+X-Received: by 2002:a5d:4d42:0:b0:30a:c681:fd2e with SMTP id a2-20020a5d4d42000000b0030ac681fd2emr1936132wru.22.1689164539857;
+        Wed, 12 Jul 2023 05:22:19 -0700 (PDT)
+Received: from orome (p200300e41f4b7100f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f4b:7100:f22f:74ff:fe1f:3a53])
+        by smtp.gmail.com with ESMTPSA id j11-20020a056000124b00b0031417fd473csm5009874wrx.78.2023.07.12.05.22.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Jul 2023 05:22:19 -0700 (PDT)
+Date: Wed, 12 Jul 2023 14:22:17 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Minjie Du <duminjie@vivo.com>
+Cc: Krishna Reddy <vdumpa@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	"open list:TEGRA IOMMU DRIVERS" <linux-tegra@vger.kernel.org>,
+	"open list:IOMMU SUBSYSTEM" <iommu@lists.linux.dev>,
+	open list <linux-kernel@vger.kernel.org>,
+	opensource.kernel@vivo.com
+Subject: Re: [PATCH v1] iommu: fix parameter check in
+ tegra_smmu_debugfs_init()
+Message-ID: <ZK6a-f2Se3HWjU7D@orome>
+References: <20230712113145.12888-1-duminjie@vivo.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Mailer: b4 0.13-dev-099c9
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="So7QhWFQ1LiNBVmH"
+Content-Disposition: inline
+In-Reply-To: <20230712113145.12888-1-duminjie@vivo.com>
+User-Agent: Mutt/2.2.10 (2023-03-25)
 
-On Tue, 27 Jun 2023 18:24:16 +0200, Konrad Dybcio wrote:
-> This series contains couple more random dt schema warning fixes, centered
-> around linux-msm.
-> 
-> All of the patches (except) the last two are pretty much independent.
-> Patch 1 is not only a bindings fix, but also a functional one.
-> 
-> 
-> [...]
 
-Applied to
+--So7QhWFQ1LiNBVmH
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+On Wed, Jul 12, 2023 at 07:31:45PM +0800, Minjie Du wrote:
+> Make IS_ERR() judge the debugfs_create_dir() function return
+> in tegra_smmu_debugfs_init()
+>=20
+> Signed-off-by: Minjie Du <duminjie@vivo.com>
+> ---
+>  drivers/iommu/tegra-smmu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+> index 1cbf063cc..841e14cce 100644
+> --- a/drivers/iommu/tegra-smmu.c
+> +++ b/drivers/iommu/tegra-smmu.c
+> @@ -1056,7 +1056,7 @@ DEFINE_SHOW_ATTRIBUTE(tegra_smmu_clients);
+>  static void tegra_smmu_debugfs_init(struct tegra_smmu *smmu)
+>  {
+>  	smmu->debugfs =3D debugfs_create_dir("smmu", NULL);
+> -	if (!smmu->debugfs)
+> +	if (IS_ERR(smmu->debugfs))
+>  		return;
 
-Thanks!
+I think we can just drop the error check altogether since
+debugfs_create_file() will simply return early if smmu->debugfs is an
+error pointer.
 
-[05/11] dt-bindings: sound: Convert pm8916-wcd-analog-codec to YAML
-        commit: e125891c2ed6f6d3f59375caf04d76802c86efae
+Thierry
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+--So7QhWFQ1LiNBVmH
+Content-Type: application/pgp-signature; name="signature.asc"
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
+-----BEGIN PGP SIGNATURE-----
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmSumvkACgkQ3SOs138+
+s6FfXhAAjRjwsGjs2rm1PFgf1a1quzdz67t2GTDswhEnV/zLM0eXE9y7LzTzl23O
+wM3y49DWK44J4d77LAZeXw2vCa7QjorWCcLX9uwJhxFOVwYJ5ptjRDOVkCjNTscu
+JYCLoKICX5NmpT4z5zUp/bCTm4hu0fsGQIKilEpH0+0h6JrUObbtappv70dxLCFp
+c4YJ8ZDR0faBjjrIOUQdbMqSB2fOyuOgfdtO9n9Q0PMkek6JXywr+DNUtuidoD1j
+0NtgJnreYfvkgyn+dQ61XoqYHi3Ql0VpIMrQKrey45urtFRgpN75KxrJhlKSHSGo
+MVDNLEEyoLGNAqjOpVErnmmDQvDXUcpDieXzn35LsW9ijpdX2/i1JI/Y7sJwkSTG
+uuWZRDW53E7C6xjlMk3GklMJEn/ChJU4AMgvQrQ85dxokO6XTfP1GbjcmoofPoA6
+Jl5+9BrN31j8aCnOlEarbVXyFQdKSu54Vsu+INoIj9cpsVmOQNeTGfqpQnjOiXkj
+cpJOEfetwB1L/WcjQyaUJjti8nk5AMwfx5bclJPXJ7qT7sHcbB0n0GXmcmOog6o0
+XvO1baO+9lCIS9Nchn8KR+oo7wmCT7E8IWKxWLkDgznInfXXXl1WtIbPgbzNN1qk
+8w55I6NwjRfo80lpkGxlr23Vk6wiJJCbv2BC3IjmGkHP4eZoPP4=
+=kkYV
+-----END PGP SIGNATURE-----
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
-
+--So7QhWFQ1LiNBVmH--
