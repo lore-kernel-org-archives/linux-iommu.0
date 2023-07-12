@@ -1,81 +1,153 @@
-Received: from mout.web.de (mout.web.de [212.227.17.12])
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB289214E0
-	for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 16:02:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=s29768273; t=1689177755; x=1689782555; i=markus.elfring@web.de;
- bh=8+0MnPSuI1T+Jh5E4Y3V47X306E0vN4CD6UVKoA+v+4=;
- h=X-UI-Sender-Class:Date:To:Cc:References:Subject:From:In-Reply-To;
- b=vaJ6GWEC1NKBuzqrAbF+Cj88lJcGFIQetevGBC2DNr1hmX6PkrmRiFavXDnfMPx6bHf1R9Z
- YSDSHfPaS1kG4Om8pjb1y03hqmCtAoqiLZ5smlW4NgPZqOdUw92+F/BZZXuReakTw7UQck7/h
- 5si1GCbG0BAcPnmqSjkNPxJ8riUMXdz+fheBaZ4rOKpnYGbEbcksOpCiHzbLHZOuqXtONiomb
- Jd64Ut5x6k7Dxuze1/yZP0422a2sRyv4mYz0gZMHXTBPTsvDCKxAs2eHv2sT6H7RXjDo+Idzo
- F/7R16PC7b+0GKNsMzaJfIefKUw2FBBgI8Ixfd+6eOs+R5/yeQ/Q==
-X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
-Received: from [192.168.178.21] ([94.31.90.83]) by smtp.web.de (mrweb105
- [213.165.67.124]) with ESMTPSA (Nemesis) id 1MFaui-1qBP651ae6-00HaDl; Wed, 12
- Jul 2023 18:02:35 +0200
-Message-ID: <8aefe246-cdfe-dd39-924f-50d528ccfc9c@web.de>
-Date: Wed, 12 Jul 2023 18:02:34 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B895C214F9
+	for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 16:29:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1689179341; x=1720715341;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=TqYgic5/XwcT7UjinEq2uy5+UtDPhR71DSfkNZEWDmE=;
+  b=U0ML9W9IPCko+4j2g25cXvMkuogjJCuDsyYgViQLWrJr7Ea/tnTkCwUl
+   BFKVOwjXY/AAeSWa6ql+nPr31voFs0jJLhJeT3T+quq0OSdZaTeTMC0Rx
+   TjL9G9ejigRFwlMGE8y6ifLGu+hlCfELQ14zp8l92DYNuxrzeJalfa+DG
+   hGMt7FVV1pTsHYWGk6CRJQLu79fPEwINKjc+DSVEvPoU0Zx63ZuynoGJ7
+   njH45S/15dyL/bzCJhUZz6P9lVb2eIw94axx5RCjAhhUC4bQOVA3dfybd
+   NT7i+j9qA12UTh1qjtPC7Lv6kEPpcqlUa465T2ew0oaF3XYHfO7jXBChh
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10769"; a="431072715"
+X-IronPort-AV: E=Sophos;i="6.01,200,1684825200"; 
+   d="scan'208";a="431072715"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2023 09:29:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10769"; a="715639010"
+X-IronPort-AV: E=Sophos;i="6.01,200,1684825200"; 
+   d="scan'208";a="715639010"
+Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.97.184])
+  by orsmga007.jf.intel.com with ESMTP; 12 Jul 2023 09:29:00 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: LKML <linux-kernel@vger.kernel.org>,
+	iommu@lists.linux.dev,
+	"Lu Baolu" <baolu.lu@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Jean-Philippe Brucker <jean-philippe@linaro.com>,
+	"Robin Murphy" <robin.murphy@arm.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>,
+	"Will Deacon" <will@kernel.org>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	Yi Liu <yi.l.liu@intel.com>,
+	"Yu, Fenghua" <fenghua.yu@intel.com>,
+	Tony Luck <tony.luck@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v10 0/7] Re-enable IDXD kernel workqueue under DMA API
+Date: Wed, 12 Jul 2023 09:33:48 -0700
+Message-Id: <20230712163355.3177511-1-jacob.jun.pan@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-To: Thierry Reding <thierry.reding@gmail.com>, Minjie Du <duminjie@vivo.com>,
- linux-tegra@vger.kernel.org, kernel-janitors@vger.kernel.org,
- iommu@lists.linux.dev, =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>,
- Jonathan Hunter <jonathanh@nvidia.com>, Krishna Reddy <vdumpa@nvidia.com>,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
-Cc: opensource.kernel@vivo.com, LKML <linux-kernel@vger.kernel.org>
-References: <ZK6a-f2Se3HWjU7D@orome>
-Subject: Re: [PATCH] iommu: fix parameter check in tegra_smmu_debugfs_init()
-Content-Language: en-GB
-From: Markus Elfring <Markus.Elfring@web.de>
-In-Reply-To: <ZK6a-f2Se3HWjU7D@orome>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:5YFLuCrCf372MkimPictFqdRBFOguxm5v8OeHfBBRwUXClrNVkC
- bSHi1eqpmWp3NtL4hf9ppTJelUmvWl9iDCOPg0bj3dy8eSC8U3A/x2cuEfTKS8NIDDPr5e2
- tNtAuKQ9vj3vmKZQ1L9AXdX8klVWkO7VbtofiMCN/lLNDbe9mSwMJUpFGWxEKsUTlDaFozo
- 2alHHAF1SjToMc3WjtR5Q==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:wvp+ud0ZOaY=;bKfbLc6ftVJaOC8OtCxoqSk8Ucz
- JTw+bbLLzD5913E+wVp/gJuQCifi8SGxDtLp/dbqtxqELOupldR3gnmEKKg8Kk0nfxMx75396
- 006aiPGMxd+0+Cl1TzIgCKPFvLMwcGE6hjgGUsQP9MPXEZdZs9z+inGzR3RBiQeMQZBtQmCXg
- kXNQM1pzRkAnTgT72omMIOYRQXZgs+8CnP6bEeWErJs5F849ZwG91PUlvGhJBuAjz/WTfCmSn
- APuk2ehd+XkC6VokMpPhCCBmq/dzzn6SdeVk5qUlhjbTrtGEt/jPDCnUf+5zIZPD60H+L9AK2
- Ygdllw1VJNBzDN56xvDNlqwGSUjzKoOTGFEe5hKwo6VSq8q66T85BCk3GAeyPzPkTnIREbYqL
- 0bqL9tXoWeprHkLdquuLnava2V2+9yfiZ6F7kX5/B666BxIXX3zvyBTfoqVMauGVDdIojwqck
- vNgbOFj7sUCKUweYo9qax9WVCcjFhrcmXyPHKhIf+uB6Q7mF09FBG52lojLegR0hI3mzGGM/1
- ahLeyWq3WIfFCTHamEZTDc5OMRybOGVmSeoDmIZ4O11+84qrwnTMUKi0vcnL0i6R5BHW11wiB
- yX5LSrk1N9D0/l3nh/vg8qrXera1otBpE+wZ22DVihXqOSLFecbyo0+jcUmZOkSoARFWkmMi5
- BC97XIvy3MW+8PdSZIK3PHPA1YjkAyT6VLuYx55NAODN0r868XTTMjW/gXXam1QC0zyGowxii
- oHECX1ToV+QW2b52CwPzGo4fbQLTx/8CKAUMfPwti+Z0HKGEjs2d7AyRqmpaQZGcCd9oQ+mT6
- 2s/umURNU6xLebxJqruU3K2UNOh8wJd1Z7o3aGqPCjWX2UIfzQvDl5UMCHuSskxOnq7FX7P/W
- Uj8SM0v9zK7mX4Ux24krOEZ6F9uVuBo2UpaQUCEbdKazVOR+1A3jBEJpjd6qk1uJgmRs7IYpR
- yLRtRA==
+Content-Transfer-Encoding: 8bit
 
-=E2=80=A6
-> > +++ b/drivers/iommu/tegra-smmu.c
-> > @@ -1056,7 +1056,7 @@ DEFINE_SHOW_ATTRIBUTE(tegra_smmu_clients);
-> >  static void tegra_smmu_debugfs_init(struct tegra_smmu *smmu)
-> >  {
-> >  	smmu->debugfs =3D debugfs_create_dir("smmu", NULL);
-> > -	if (!smmu->debugfs)
-> > +	if (IS_ERR(smmu->debugfs))
-> >  		return;
->
-> I think we can just drop the error check altogether since
-> debugfs_create_file() will simply return early if smmu->debugfs is an
-> error pointer.
+Hi Joerg and all,
 
-I find this explanation confusing.
-Can consistent error detection matter also at this source code place?
+IDXD kernel work queues were disabled due to the flawed use of kernel VA
+and SVA API.
+Link: https://lore.kernel.org/linux-iommu/20210511194726.GP1002214@nvidia.com/
 
-Regards,
-Markus
+The solution is to enable it under DMA API where IDXD shared workqueue users
+can use ENQCMDS to submit work on buffers mapped by DMA API.
+
+This patchset adds support for attaching PASID to the device's default
+domain and the ability to allocate global PASIDs from IOMMU APIs. IDXD driver
+can then re-enable the kernel work queues and use them under DMA API.
+
+This depends on the IOASID removal series. (merged)
+https://lore.kernel.org/all/ZCaUBJvUMsJyD7EW@8bytes.org/
+
+
+Thanks,
+
+Jacob
+
+---
+Changelog:
+v10:
+	- Fix global PASID alloc function with device's max_pasid=0
+v9:
+	- Fix an IDXD driver issue where user interrupt enable bit got cleared
+	  during device enable/disable cycle. Reported and tested by
+	  Tony Zhu <tony.zhu@intel.com>
+	- Rebased to v6.4-rc7
+v8:
+	- further vt-d driver refactoring (3-6) around set/remove device PASID
+	  (Baolu)
+	- make consistent use of NO_PASID in SMMU code (Jean)
+	- fix off-by-one error in max PASID check (Kevin)
+v7:
+	- renamed IOMMU_DEF_RID_PASID to be IOMMU_NO_PASID to be more generic
+	  (Jean)
+	- simplify range checking for sva PASID (Baolu) 
+v6:
+	- use a simplified version of vt-d driver change for set_device_pasid
+	  from Baolu.
+	- check and rename global PASID allocation base
+v5:
+	- exclude two patches related to supervisor mode, taken by VT-d
+	maintainer Baolu.
+	- move PASID range check into allocation API so that device drivers
+	  only need to pass in struct device*. (Kevin)
+	- factor out helper functions in device-domain attach (Baolu)
+	- make explicit use of RID_PASID across architectures
+v4:
+	- move dummy functions outside ifdef CONFIG_IOMMU_SVA (Baolu)
+	- dropped domain type check while disabling idxd system PASID (Baolu)
+
+v3:
+	- moved global PASID allocation API from SVA to IOMMU (Kevin)
+	- remove #ifdef around global PASID reservation during boot (Baolu)
+	- remove restriction on PASID 0 allocation (Baolu)
+	- fix a bug in sysfs domain change when attaching devices
+	- clear idxd user interrupt enable bit after disabling device( Fenghua)
+v2:
+	- refactored device PASID attach domain ops based on Baolu's early patch
+	- addressed TLB flush gap
+	- explicitly reserve RID_PASID from SVA PASID number space
+	- get dma domain directly, avoid checking domain types
+
+
+Jacob Pan (3):
+  iommu: Generalize PASID 0 for normal DMA w/o PASID
+  iommu: Move global PASID allocation from SVA to core
+  dmaengine/idxd: Re-enable kernel workqueue under DMA API
+
+Lu Baolu (4):
+  iommu/vt-d: Add domain_flush_pasid_iotlb()
+  iommu/vt-d: Remove pasid_mutex
+  iommu/vt-d: Make prq draining code generic
+  iommu/vt-d: Add set_dev_pasid callback for dma domain
+
+ drivers/dma/idxd/device.c                     |  39 ++---
+ drivers/dma/idxd/dma.c                        |   5 +-
+ drivers/dma/idxd/idxd.h                       |   9 +
+ drivers/dma/idxd/init.c                       |  54 +++++-
+ drivers/dma/idxd/sysfs.c                      |   7 -
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |   2 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  16 +-
+ drivers/iommu/intel/iommu.c                   | 161 +++++++++++++++---
+ drivers/iommu/intel/iommu.h                   |   9 +
+ drivers/iommu/intel/pasid.c                   |   2 +-
+ drivers/iommu/intel/pasid.h                   |   2 -
+ drivers/iommu/intel/svm.c                     |  53 +-----
+ drivers/iommu/iommu-sva.c                     |  28 ++-
+ drivers/iommu/iommu.c                         |  28 +++
+ include/linux/iommu.h                         |  11 ++
+ 15 files changed, 291 insertions(+), 135 deletions(-)
+
+-- 
+2.25.1
+
