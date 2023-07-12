@@ -1,113 +1,105 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D88238F
-	for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 03:13:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689131598; x=1720667598;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=rS7yhv7p+ymForwhUax28XnYNPqA/QaWercDDj/Ioks=;
-  b=gp3fUaqfIpeaNQKsj3/+WfHew3YUlIye200LgxVlYHXUdFyMQ5Rg6dc/
-   ibPqZT7gfgCUcOAAjvhkrr4+K4+gu0ChaWHT+b79YmF0Z87wc47+6eirY
-   CDpRDNY/4RIkkAgLYm4Dw1UDE+jIhJxTqkk1ljXR+Ed7BFEva8qFu1BFy
-   KtVvOffdqP3Pk/OBpzIV0R/G45fijRGKL86apU38rSx8NxWBWVBUTXEEf
-   G621WSN8IFm/Mi5lfurOSCiD5lLaqDS3G06idX+C4rmBMWMABHJQTNlib
-   ArB4oXqR7N22MxS1lKjbTy6ANhvbtOIoG0rxW4KqDjTEseZhGUsVSkK1Y
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10768"; a="395584218"
-X-IronPort-AV: E=Sophos;i="6.01,198,1684825200"; 
-   d="scan'208";a="395584218"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2023 20:13:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10768"; a="724708910"
-X-IronPort-AV: E=Sophos;i="6.01,198,1684825200"; 
-   d="scan'208";a="724708910"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.187.60]) ([10.252.187.60])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2023 20:13:12 -0700
-Message-ID: <e26db44c-ec72-085d-13ee-597237ba2134@linux.intel.com>
-Date: Wed, 12 Jul 2023 11:13:08 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96854190
+	for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 04:57:48 +0000 (UTC)
+Received: by mail-qv1-f49.google.com with SMTP id 6a1803df08f44-635fa79d7c0so1465166d6.1
+        for <iommu@lists.linux.dev>; Tue, 11 Jul 2023 21:57:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1689137867; x=1691729867;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3/72ZD6lhNsHXkYgqxH4KbAvAYqyJgWt7UVI6+Yu3os=;
+        b=SQv+ATSncXbdJ6CvQSuGkwVtXrkdkvN0VsEkwN0f2meVzjcZVDVHotkWnUdRi1+JJ8
+         152n9o/c6wKcedfIOWNhscb9a+NIhJJpjGH28gY1CMfMwCBajew9Ou3XGIwTmJVXO+oU
+         1d8rLzj6cok8WjK5gE3Z7Ob2u/5A/Oiqm0ChvZYbS9BbNZ6rMJCxqKaHSOQQ3JTNMYqX
+         iy3e4ExpJhPEoTW7pKsKCA4zgz7UdaHCKC4ymnJ3mk8l2y3O0B0vazDOCjWVX4GtNDiB
+         62Ucoslh+dMNa7rPfdqhLW4dvXqw0YBCfeLdl0Kbe4bh48EFkt4fmOcLMaAiZkg9r//N
+         twCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1689137867; x=1691729867;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3/72ZD6lhNsHXkYgqxH4KbAvAYqyJgWt7UVI6+Yu3os=;
+        b=fRetFsghj3dWgtLXT7uy5uLqwQpUcTQco/RgBLhEjRU1UeUeiDwNrdDNafXGwxyC8p
+         KlwIHtulcIbcRZggt2UqIIvF4cgBkJ0dHlYOohOa7WTgJ445+uJVNOK4IbgHOadn1+1a
+         GYK+6Q/eLJiYo6EQi1yUOhwsVOi+adgrLScASSA1VPNyoPYbE6rNlapCjgvfbWHcVhJg
+         fmFvps0QbEtKc1ors0YgtCMpnE8b7npyCVPzAk5F08WKEUmsDQ8TDu0bADxAloRukMTH
+         ZyrW2n/EUck8kGRmdxhIEjctVfzz3/fWvModQ6VfCV+18XKJbMIoSGNFHRXtMXKVVOh9
+         8u3A==
+X-Gm-Message-State: ABy/qLYsFSSQ9zpZVphdzp/jpSvdoam2MmokQ6EE+NjAgeSiPP4FJRJh
+	FiuHOXycZPgGTeS23ER6zSZoQ1Es32Iqg4HBNrABjA==
+X-Google-Smtp-Source: APBJJlH5QzNFAkMi3vMlbJrWM0d6J/fLTqgYF+JAXqPrfBkfUF3EumCUn0rNxoOz7ZOPCK+yLnf1MHjzwmvzO+WlP0A=
+X-Received: by 2002:a05:6214:ca2:b0:637:9da3:9193 with SMTP id
+ s2-20020a0562140ca200b006379da39193mr1219123qvs.4.1689137867393; Tue, 11 Jul
+ 2023 21:57:47 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
- iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 9/9] iommu: Use fault cookie to store iopf_param
-Content-Language: en-US
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <20230711010642.19707-1-baolu.lu@linux.intel.com>
- <20230711010642.19707-10-baolu.lu@linux.intel.com>
- <20230711150249.62917dad@jacob-builder>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230711150249.62917dad@jacob-builder>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20230612153201.554742-1-catalin.marinas@arm.com>
+ <CAMi1Hd04mu6JojT3y6wyN2YeVkPR5R3qnkKJ8iR8if_YByCn4w@mail.gmail.com>
+ <ZKdfVSzbgOonR17A@google.com> <CAMi1Hd2f5GUnu_JGot=CqA9Vy4OD_V7FWYLOhNbJL1Pyd_EGMA@mail.gmail.com>
+ <CABfwK138ZbE5=J66esO-VG64tO+e9n1cRRBAE3wOKygJxd_xbw@mail.gmail.com>
+In-Reply-To: <CABfwK138ZbE5=J66esO-VG64tO+e9n1cRRBAE3wOKygJxd_xbw@mail.gmail.com>
+From: Amit Pundir <amit.pundir@linaro.org>
+Date: Wed, 12 Jul 2023 10:27:11 +0530
+Message-ID: <CAMi1Hd3KgZGJTae=fyq4HD3FTuNxNJAnmfyds12JFXenxUtXrw@mail.gmail.com>
+Subject: Re: [PATCH v7 00/17] mm, dma, arm64: Reduce ARCH_KMALLOC_MINALIGN to 8
+To: Isaac Manjarres <isaacmanjarres@google.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	Linus Torvalds <torvalds@linux-foundation.org>, Christoph Hellwig <hch@lst.de>, 
+	Robin Murphy <robin.murphy@arm.com>, Arnd Bergmann <arnd@arndb.de>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Will Deacon <will@kernel.org>, 
+	Marc Zyngier <maz@kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>, 
+	Ard Biesheuvel <ardb@kernel.org>, Saravana Kannan <saravanak@google.com>, Alasdair Kergon <agk@redhat.com>, 
+	Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>, Mark Brown <broonie@kernel.org>, 
+	Mike Snitzer <snitzer@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+	Jonathan Cameron <jic23@kernel.org>, Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org, 
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	Linux regressions mailing list <regressions@lists.linux.dev>, John Stultz <jstultz@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2023/7/12 6:02, Jacob Pan wrote:
-> On Tue, 11 Jul 2023 09:06:42 +0800, Lu Baolu<baolu.lu@linux.intel.com>
-> wrote:
-> 
->> Remove the static iopf_param pointer from struct iommu_fault_param to
->> save memory.
->>
->> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
->> ---
->>   include/linux/iommu.h      |  2 --
->>   drivers/iommu/io-pgfault.c | 47 +++++++++++++++++++++++---------------
->>   2 files changed, 29 insertions(+), 20 deletions(-)
->>
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index ffd6fe1317f4..5fe37a7c5a55 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -551,7 +551,6 @@ struct iommu_fault_param {
->>    * struct dev_iommu - Collection of per-device IOMMU data
->>    *
->>    * @fault_param: IOMMU detected device fault reporting data
->> - * @iopf_param:	 I/O Page Fault queue and data
->>    * @fwspec:	 IOMMU fwspec data
->>    * @iommu_dev:	 IOMMU device this device is linked to
->>    * @priv:	 IOMMU Driver private data
->> @@ -564,7 +563,6 @@ struct iommu_fault_param {
->>   struct dev_iommu {
->>   	struct mutex lock;
->>   	struct iommu_fault_param	*fault_param;
->> -	struct iopf_device_param	*iopf_param;
->>   	struct iommu_fwspec		*fwspec;
->>   	struct iommu_device		*iommu_dev;
->>   	void				*priv;
->> diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
->> index 1749e0869f2e..6a3a4e08e67e 100644
->> --- a/drivers/iommu/io-pgfault.c
->> +++ b/drivers/iommu/io-pgfault.c
->> @@ -158,7 +158,7 @@ int iommu_queue_iopf(struct iommu_fault *fault,
->> struct device *dev)
->>   	 * As long as we're holding param->lock, the queue can't be
->> unlinked
->>   	 * from the device and therefore cannot disappear.
->>   	 */
->> -	iopf_param = param->iopf_param;
->> +	iopf_param = iommu_get_device_fault_cookie(dev, 0);
-> I am not sure I understand how does it know the cookie type is iopf_param
-> for PASID 0?
-> 
-> Between IOPF and IOMMUFD use of the cookie, cookie types are different,
-> right?
-> 
+On Wed, 12 Jul 2023 at 01:14, Isaac Manjarres <isaacmanjarres@google.com> w=
+rote:
+>
+> On Sat, Jul 8, 2023 at 6:03=E2=80=AFAM Amit Pundir <amit.pundir@linaro.or=
+g> wrote:
+> > Hi Issac, I can't reproduce this crash if I have slub_debug enabled
+> > https://bugs.linaro.org/attachment.cgi?id=3D1149.
+> >
+> > But I can still reproduce the crash, with the same build, if I just
+> > remove the slub_debug bootarg
+> > https://bugs.linaro.org/attachment.cgi?id=3D1150
+> >
+>
+> Hey Amit,
+>
+> Thanks for trying this out. John Stultz and I tried this out as well, and=
+ we
+> couldn't reproduce the issue with slub_debug enabled either.
+>
+> However, we were able to reproduce the issue you reported along with
+> KASAN enabled, which also helped us catch an out-of-bounds access
+> in the regmap-irq code. Once we fixed it, the memory corruption you
+> reported was also fixed. I've sent the patch [1] for review. Can you plea=
+se
+> test it out and see if it works for you too?
 
-The fault cookie is managed by the code that delivers or handles the
-faults. The sva and IOMMUFD paths are exclusive.
+It does fix the v6.5-rc1 boot regression I reported above on
+Dragonboard 845c running AOSP. Thank you.
 
-Best regards,
-baolu
+Regards,
+Amit Pundir
+
+>
+> [1]: https://lore.kernel.org/all/20230711193059.2480971-1-isaacmanjarres@=
+google.com/
+>
+> Thanks,
+> Isaac
