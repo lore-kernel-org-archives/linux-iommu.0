@@ -1,161 +1,305 @@
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2064.outbound.protection.outlook.com [40.107.95.64])
+Received: from frasgout12.his.huawei.com (unknown [14.137.139.154])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB02017AB5
-	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 14:29:32 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=c6dctKFrCaCwpZ1IVVAxn9Y38Qih+/axOvf76kU2RXeHfS2V+hiXnER4AXy58Ob9E1NZwBvB8Sq7ovpbN+i5iJgr1eU8n2GIMDDC3qfn8+HiOnRFecO6Fe4vSfsYfONKRZPR0b2dg7WkIvD7vm+DfGEI+axFrTHdvIBp7LuFAhjqoITs1uJ53/Q/emj9YD+xzvE/yvApJR710Chnh8wcVuTePb57yIEKQ4MeZmRyfi/z6ukhT/dYo37gEmaMtXvsqB9/osW8TALG29fwlEtFdNwUxZFZbCcT+MYAHbNl+CL1X3Ud3xE4zU/8MSi7HZDd03LuNUgAZjHGA9XOoEkijA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SItqkXxEjSZn+kgtOEpKL+b2zkCNGjneJPnW7o//9XI=;
- b=Wqam2qrmMtgFQpZdA8j5ijrccXSHdyDPeXwyTzkBqPgJCLocAoGETP15ntHrWahqGJBhVBoq2cMIYwxe1cR+BruZhF1ytq17dZUYv6sA8Gw5Eiqo5G6ocYfu6XjnN7sHAaWlIUYd02Gd4k6FXurMtPdtwg4hI1/oINM3/5MqIfl039mlGQBL2G1XvHGZQUDMMNzxLdWM0P/feEeY3IcF/gAr2Rke5pwmiAlFhXlz5Du+37unrnZTO899tT2rK3+gKfWjuKTsciF5CiY4peTHS5AziKemWCVxztWZ7rhRIP5c/w0c34ensFlKQPVRRRx7DYxS1WPhpcri5dvGsVuxhA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SItqkXxEjSZn+kgtOEpKL+b2zkCNGjneJPnW7o//9XI=;
- b=crkkyI7foVyXKr5ODPUOZKtx4j+/Bi2gJyGhpoHuGCUgFyoVefSgW2PslIFK8X6wCPV/2DVjRnNPWeW0zMiFh2Uhb0sVsnDxDDgO3r2UaHakDMdmO2QOhy6NB4OeB0QZL/cVaObqx4z7aP6klV2Cnyjw+c/tgQUU7y71qTQH9Rv8XJH+kXTD+xwTxIW39hKnq/1CvTbXePKTz+K77XMJrPniqIVGQJFfr+BvTEAeID9mugluWCx6MGAG1F2Brj+immKG9sUUAoicDjcfJilu4LOIyCICI/BhU7Gi2JVi2rW+Xu1b51L5MRNmgmLsXsboh3e3l3NJ5NAthXT05BBYVw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by PH0PR12MB5629.namprd12.prod.outlook.com (2603:10b6:510:141::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6565.32; Thu, 13 Jul
- 2023 14:29:26 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::69c1:5d87:c73c:cc55]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::69c1:5d87:c73c:cc55%4]) with mapi id 15.20.6565.028; Thu, 13 Jul 2023
- 14:29:26 +0000
-Date: Thu, 13 Jul 2023 11:29:23 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Michael Shavit <mshavit@google.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	jean-philippe@linaro.org, baolu.lu@linux.intel.com,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 02/13] iommu/arm-smmu-v3: Add smmu_s1_cfg to
- smmu_master
-Message-ID: <ZLAKQw+DzcpSRSyi@nvidia.com>
-References: <20230621063825.268890-1-mshavit@google.com>
- <20230621063825.268890-3-mshavit@google.com>
- <ZK9RycgNAVrxe343@Asurada-Nvidia>
- <CAKHBV26wi+xKnNjo-R+QOcVLPH2KJTFP+mF4CW1xE61nOdF5GA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAKHBV26wi+xKnNjo-R+QOcVLPH2KJTFP+mF4CW1xE61nOdF5GA@mail.gmail.com>
-X-ClientProxiedBy: BYAPR11CA0088.namprd11.prod.outlook.com
- (2603:10b6:a03:f4::29) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17C941ED23
+	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 15:24:45 +0000 (UTC)
+Received: from mail02.huawei.com (unknown [172.18.147.228])
+	by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4R1ykX6xxFz9xFqm
+	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 23:11:48 +0800 (CST)
+Received: from A2101119013HW2.china.huawei.com (unknown [10.81.218.161])
+	by APP1 (Coremail) with SMTP id LxC2BwA3k94BF7BkxG6BBA--.7207S3;
+	Thu, 13 Jul 2023 16:24:16 +0100 (CET)
+From: Petr Tesarik <petrtesarik@huaweicloud.com>
+To: Stefano Stabellini <sstabellini@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)),
+	"H. Peter Anvin" <hpa@zytor.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Juergen Gross <jgross@suse.com>,
+	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Petr Tesarik <petr.tesarik.ext@huawei.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Hans de Goede <hdegoede@redhat.com>,
+	James Seo <james@equiv.tech>,
+	James Clark <james.clark@arm.com>,
+	Kees Cook <keescook@chromium.org>,
+	xen-devel@lists.xenproject.org (moderated list:XEN HYPERVISOR ARM),
+	linux-arm-kernel@lists.infradead.org (moderated list:ARM PORT),
+	linux-kernel@vger.kernel.org (open list),
+	linux-mips@vger.kernel.org (open list:MIPS),
+	iommu@lists.linux.dev (open list:XEN SWIOTLB SUBSYSTEM)
+Cc: Roberto Sassu <roberto.sassu@huaweicloud.com>,
+	Kefeng Wang <wangkefeng.wang@huawei.com>,
+	petr@tesarici.cz
+Subject: [PATCH v4 1/8] swiotlb: make io_tlb_default_mem local to swiotlb.c
+Date: Thu, 13 Jul 2023 17:23:12 +0200
+Message-Id: <7f64111986f4f361a2deb4a1a1b6f588e63a851b.1689261692.git.petr.tesarik.ext@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1689261692.git.petr.tesarik.ext@huawei.com>
+References: <cover.1689261692.git.petr.tesarik.ext@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|PH0PR12MB5629:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6c95036c-211e-4629-a51f-08db83ad8f6f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	oW1KsiU8koHJuON+qyYKih492MOqF7hr8cIcEEfpOyaY6WHjCo/mzggQ1m/0UgGpk5APCtAYQiLd4UZQvvatt3qPq2QIaKGBKvYkOFLX758JxiS5QANr1Ypy+hoehERDxsz4m8IkrnTHy6d7I8eUGzJMDJtSfMK/mX2Vsw30U+Rnp+UyXcJZXZfalRbwHixXz5ir5sz1yh4R+oX7uxM0/dLY0a3w1/LkcECS7rCiPnq+nuGE3+x6A18B9zOLJZn8jV9ELDsx29cWeu2UYtAO3hDYz5BYD2k/Z+3H1+LgxjTdgf3mWMvkK/oYgeU3GJbsm9FQ4+HMZvGntiH3Mn34t6jK494kXX7I/sgiH4lnc2pW7Wpz6pwhQu90S8RizOh8e/+9lC3dI4+KUrum5/Fuo7ejknLEXik6QQ+0+n9dl8GKfSe0O1yV42Uv/yKOaCUPUgbiFMtLZ9iVS36FzBlv0p63lx1fw6qHvjDKnCWnQyzd513Ti7EgibM53BXsD4f9n0i9EJBlwzDQKhNaRJfAdjn+P2+CpxqDMQTXajXPUdWR6c8RJDWMfD18taLobqITPqkEORZLx+FlepYanJ1LYuFP9fiPrgdHCBobnkw03Kk=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(136003)(39860400002)(396003)(346002)(366004)(451199021)(83380400001)(186003)(26005)(6512007)(6506007)(2616005)(53546011)(478600001)(41300700001)(6916009)(316002)(66556008)(5660300002)(2906002)(4326008)(8676002)(66476007)(8936002)(66946007)(54906003)(6666004)(36756003)(6486002)(38100700002)(86362001)(67856001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?YUhva0UrQ0RaejFQSEFsTEFOcHlzRk84MTA4V1VDREVseGJOekFqKzBOUktY?=
- =?utf-8?B?WWw1WnlrSkdkNVlhL1F4Q3c0bmE3QURNc0k4NjZyeWk2RTUxbFdNd21WYTF5?=
- =?utf-8?B?QXlYeEdyQm5zaHY4NGhsakNsWDBHRkpBMmlqNVV1bFJZNnZnekNaUjdPUW9u?=
- =?utf-8?B?L1pIbkVVaFZvYnF0ZVRMOS9zWTRSblF1VTNlOXVaNXpNaUdYV3JQeUxobEhZ?=
- =?utf-8?B?S21DUUpIcE1oSjhmWllLdjlwSlJVMVgwbmhuTDVqYS9LQ2U3VEdRUGZYTGl4?=
- =?utf-8?B?UzdMSzBzQ0F6VElwMWRYUWJIQ0ZHelY2dGprUXkrU2ZYaGo1QVNHUnBVamJr?=
- =?utf-8?B?cXhiVytDcFFmRG45dUYvNUJvTUh2c1grcGxKbzV4aW4zVzFWREFPUER1TEgw?=
- =?utf-8?B?UW1LaFczZWtQOWZhczdPbmU4MlNRVnhyakk4cW9ETEdYRXhFQUVGcFdjZ0Ey?=
- =?utf-8?B?R1NNL3ZrUVo3VXQxNkVtQWtnSUVWeENtWEZMVTBNcVAyK0ZGZ2FTb2dFYkNR?=
- =?utf-8?B?dmJTaXF1MnJBd29ZZnlhenBiek81Rm0wNytSYnVjSDN0d3pxR2NBTXJtYThI?=
- =?utf-8?B?ZnFHdkhOZHFrcVQ5S3ZDcTJLODZYVnVTVnlVL0F0RUpBK2tLY0ZKaFJiNDFx?=
- =?utf-8?B?ZWo0RkNiUzl3R1ZYSGNSeUhJTVhpVStJVWhKdHB5eFNTeTkzQjNDR0wwWjJE?=
- =?utf-8?B?dHRqdDRLWlFZTUoxOGw4ZW1IcVFBcENTNXVRVUZvTDkybGE4d0RLQWRzVGZU?=
- =?utf-8?B?WUtXanU4ZGM4ZGZxb2tiYnM0TWRuQ1ZtQUlxQnFmYmJac0h4QWRYWmsveTNT?=
- =?utf-8?B?YkVTMUJ3ZlYzNC9pc0I2dTZsOW9RNzBCWWx1dDFjclk2ZlFqQXZVeUNzTjB3?=
- =?utf-8?B?dVFsQ1hoMGlzTG9JN05Dbkxyb3RvK2FvTWlhTUxEZUtmc3N1SFBoMnhCTUhG?=
- =?utf-8?B?azlOVGh3YitYY3NJZDJGSGxXdFRhSmhyZmVFakNZajBBajVVNXZuYm1jbzRa?=
- =?utf-8?B?ZVJpM1Z5dkphaSsrWWE1YTV1SzZ4dis3VjJuWmE3L0tIZHlvYU9UZEF6dm9n?=
- =?utf-8?B?UjBIb0M0ZmIxUHdQTThrc0VGL3FvMmlPVDZnMGFwMlVvZzBBSUVydmxrUG5h?=
- =?utf-8?B?QW9KZlZYNkNoRnlqdVhKYVk2azA0YUx3WWdMcTgzTVZPQUZSNUpDL0wwMEVQ?=
- =?utf-8?B?MzRWRWtQcGh1NnFmTDg3aW9hbG40dmlPMlNjeVpoMjFIWS91d1QzYWFjV1Nz?=
- =?utf-8?B?TjJsYTNLZTB3YTVlSUowQjFzSjVVWG0yT2xjQWhQWDc3T1VWNEJLd1A4RW9h?=
- =?utf-8?B?TC9teU5aQmd2SjB0NGJKRUJIb1Y0a1VYdWF0Z0o5SXllZ1BvWUwvRjVNb1FC?=
- =?utf-8?B?ZTdiUUQ4djlkRTFNWUNkUXpRdnJnVkxUVjN0dGloOTAxSUlEYVhjTXlwTSt4?=
- =?utf-8?B?Qk12V3dzUWxiM1cyV3liY2VLTFc0TUlvSVplZ29TajV2ZTE4R09zdnJrTjUy?=
- =?utf-8?B?QUs2SEk2NS9WQzJtTnR2NFRkT1FqdzFvcDlkV05rbGJ3ZElvMVc3VFkvNlND?=
- =?utf-8?B?NzBSNWV0OXRQVUJzck4yNkl4SWhMYmllUjJ4NnYzaWhvTCtPV2EwVFRaek5Z?=
- =?utf-8?B?aW1zclFhNkZKOWpVVmNIWE02aHlWR2REYUZQeHFmczZTWkYxWFhUZHc1Yi85?=
- =?utf-8?B?QllzYzgvVVhQWUxwV0lnSDQwSHh2NmsyQ203eEY1L1NKeGNvNE9USWtRRHVw?=
- =?utf-8?B?VHMxbTRGNDE1aDZXK0FRMWlJYmw1aXpVeFZQZVFNdTBDekVWZW4ydGI2d0lZ?=
- =?utf-8?B?OWVxN2lsSzZJTk1NTjFFUTdqWEhPeFR0WnJwOGt6bUVOYzVydjQ3blhtL2Vi?=
- =?utf-8?B?MlhsTHRvOEgxWTRuVitiRWVKSHhyM1JZT2U0ZXNQTlFyNGlZUndSeElCQUhE?=
- =?utf-8?B?VVZsWGxQb3pQUUJIVGMyeFZ5eFZpNjlJMDdxZzBpNDFad0NZZG9xOGg0MENj?=
- =?utf-8?B?RXpkeU9Lck5mT0tXS1BhZDJvbTBaeEg4WXlxK0N6S1VDWi9Ubk1ISm5ETktz?=
- =?utf-8?B?MXpkVFFWWXY4UlQycVJOVzJ3MXVoTzVvUjRoZjlqaVphUml0aHJzVGZGN1dS?=
- =?utf-8?Q?W1DwLx+BAr12uciDd9hzEf/R6?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6c95036c-211e-4629-a51f-08db83ad8f6f
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2023 14:29:26.5400
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fEfsXASb3XksW9GVJV1OW2Ypkv85Gq9/n+lk47GuYjghsqN5yY4l16U0wy5RMVFf
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5629
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:LxC2BwA3k94BF7BkxG6BBA--.7207S3
+X-Coremail-Antispam: 1UD129KBjvJXoW3WF1DXF47Xw4UJw4xGF15Arb_yoWxKFyrpr
+	yUAFyrGF42grn7ArW3C3WkAF1Y93Z7K3y7CryS9w15ZFnxGwn8JF4DtrWYyr1rJrW8uF4f
+	AFy0vFyakw47Aw7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUQq14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jr4l82xGYIkIc2
+	x26xkF7I0E14v26ryj6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
+	Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_Gr1UM2
+	8EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r4UJVWxJr1l
+	e2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI
+	8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwAC
+	jcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2ka0x
+	kIwI1lc7CjxVAaw2AFwI0_Jw0_GFylc7CjxVAKzI0EY4vE52x082I5MxAIw28IcxkI7VAK
+	I48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7
+	xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWrXVW8Jr1lIxkGc2Ij64vIr41lIxAIcVC0
+	I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Cr0_Gr1UMIIF0xvE42
+	xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVW8JVWxJwCI42IY6I8E87Iv6xkF
+	7I0E14v26r4UJVWxJrUvcSsGvfC2KfnxnUUI43ZEXa7VUjPCztUUUUU==
+X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
+X-CFilter-Loop: Reflected
 
-On Thu, Jul 13, 2023 at 04:34:56PM +0800, Michael Shavit wrote:
-> On Thu, Jul 13, 2023 at 9:22 AM Nicolin Chen <nicolinc@nvidia.com> wrote:
-> >
-> > > Except for Nested domains, arm_smmu_master will own the STEs that are
-> > > inserted into the arm_smmu_device's STE table.
-> >
-> > I think that the master still owns an STE when attached to a
-> > nested domain. Though an IOMMU_DOMAIN_NESTED iommu_domain is
-> > an opaque object to the STE in the guest, the host still has
-> > a real STE for the nested configuration somewhere -- and it's
-> > likely still to be owned by the master that's attached to the
-> > opaque NESTED iommu_domain in the host kernel.
-> 
-> > I am a bit confused by this naming. If only master would own
-> > an s1_cfg, perhaps we can just make it "s1_cfg" and drop the
-> > s1_cfg pointer in the next patch.
-> 
-> Could be that the naming is causing some confusion. This owned_s1_cfg
-> is very different from the s1_cfg set-up by Nested domains in your
-> patch series. It's better to think of it as the default s1_cfg used
-> for DMA/SVA/UNMANAGED domains. Because stage 1 domains represent a
-> single page table, it doesn't make sense for them to own an entire CD
-> table. In contrast, nested domains map an entire CD table and it
-> therefore makes sense for them to own the s1_cfg representing that
-> table.
-> Would renaming this as default_s1_cfg make more sense?
+From: Petr Tesarik <petr.tesarik.ext@huawei.com>
 
-It would make alot more sense if the STE value used by an unmanaged S1
-domain was located in/near the unmanaged domain or called 'unmanaged
-S1 STE' or something if it really has to be in the master. Why does
-this even need to be stored, can't we compute it?
+SWIOTLB implementation details should not be exposed to the rest of the
+kernel. This will allow to make changes to the implementation without
+modifying non-swiotlb code.
 
-Notice that we have unmanaged domains that use a CD and SVA domains
-typically would be on a CD, so it is a bit weird already.
+To avoid breaking existing users, provide helper functions for the few
+required fields.
 
-I'd think the basic mental model should be to extract the STE from the
-thing you intend to install. Either the default CD table, or from the
-iommu_domain. ie some 'get STE from iommu_domain' function?
+As a bonus, using a helper function to initialize struct device allows to
+get rid of an #ifdef in driver core.
 
-There shouldn't be a concept of a "default" or "owned" STE value..
+Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
+---
+ arch/arm/xen/mm.c          |  2 +-
+ arch/mips/pci/pci-octeon.c |  2 +-
+ arch/x86/kernel/pci-dma.c  |  2 +-
+ drivers/base/core.c        |  4 +---
+ drivers/xen/swiotlb-xen.c  |  2 +-
+ include/linux/swiotlb.h    | 25 +++++++++++++++++++++++-
+ kernel/dma/swiotlb.c       | 39 +++++++++++++++++++++++++++++++++++++-
+ 7 files changed, 67 insertions(+), 9 deletions(-)
 
-Jason
+diff --git a/arch/arm/xen/mm.c b/arch/arm/xen/mm.c
+index 3d826c0b5fee..0f32c14eb786 100644
+--- a/arch/arm/xen/mm.c
++++ b/arch/arm/xen/mm.c
+@@ -125,7 +125,7 @@ static int __init xen_mm_init(void)
+ 		return 0;
+ 
+ 	/* we can work with the default swiotlb */
+-	if (!io_tlb_default_mem.nslabs) {
++	if (!is_swiotlb_allocated()) {
+ 		rc = swiotlb_init_late(swiotlb_size_or_default(),
+ 				       xen_swiotlb_gfp(), NULL);
+ 		if (rc < 0)
+diff --git a/arch/mips/pci/pci-octeon.c b/arch/mips/pci/pci-octeon.c
+index e457a18cbdc5..c5c4c1f7d5e4 100644
+--- a/arch/mips/pci/pci-octeon.c
++++ b/arch/mips/pci/pci-octeon.c
+@@ -664,7 +664,7 @@ static int __init octeon_pci_setup(void)
+ 
+ 		/* BAR1 movable regions contiguous to cover the swiotlb */
+ 		octeon_bar1_pci_phys =
+-			io_tlb_default_mem.start & ~((1ull << 22) - 1);
++			default_swiotlb_start() & ~((1ull << 22) - 1);
+ 
+ 		for (index = 0; index < 32; index++) {
+ 			union cvmx_pci_bar1_indexx bar1_index;
+diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
+index de6be0a3965e..08c6ffc3550f 100644
+--- a/arch/x86/kernel/pci-dma.c
++++ b/arch/x86/kernel/pci-dma.c
+@@ -90,7 +90,7 @@ int pci_xen_swiotlb_init_late(void)
+ 		return 0;
+ 
+ 	/* we can work with the default swiotlb */
+-	if (!io_tlb_default_mem.nslabs) {
++	if (!is_swiotlb_allocated()) {
+ 		int rc = swiotlb_init_late(swiotlb_size_or_default(),
+ 					   GFP_KERNEL, xen_swiotlb_fixup);
+ 		if (rc < 0)
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index 3dff5037943e..46d1d78c5beb 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -3108,9 +3108,7 @@ void device_initialize(struct device *dev)
+     defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
+ 	dev->dma_coherent = dma_default_coherent;
+ #endif
+-#ifdef CONFIG_SWIOTLB
+-	dev->dma_io_tlb_mem = &io_tlb_default_mem;
+-#endif
++	swiotlb_dev_init(dev);
+ }
+ EXPORT_SYMBOL_GPL(device_initialize);
+ 
+diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+index 67aa74d20162..946bd56f0ac5 100644
+--- a/drivers/xen/swiotlb-xen.c
++++ b/drivers/xen/swiotlb-xen.c
+@@ -381,7 +381,7 @@ xen_swiotlb_sync_sg_for_device(struct device *dev, struct scatterlist *sgl,
+ static int
+ xen_swiotlb_dma_supported(struct device *hwdev, u64 mask)
+ {
+-	return xen_phys_to_dma(hwdev, io_tlb_default_mem.end - 1) <= mask;
++	return xen_phys_to_dma(hwdev, default_swiotlb_limit()) <= mask;
+ }
+ 
+ const struct dma_map_ops xen_swiotlb_dma_ops = {
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index 4e52cd5e0bdc..07216af59e93 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -110,7 +110,6 @@ struct io_tlb_mem {
+ 	atomic_long_t used_hiwater;
+ #endif
+ };
+-extern struct io_tlb_mem io_tlb_default_mem;
+ 
+ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
+ {
+@@ -128,13 +127,22 @@ static inline bool is_swiotlb_force_bounce(struct device *dev)
+ 
+ void swiotlb_init(bool addressing_limited, unsigned int flags);
+ void __init swiotlb_exit(void);
++void swiotlb_dev_init(struct device *dev);
+ size_t swiotlb_max_mapping_size(struct device *dev);
++bool is_swiotlb_allocated(void);
+ bool is_swiotlb_active(struct device *dev);
+ void __init swiotlb_adjust_size(unsigned long size);
++phys_addr_t default_swiotlb_start(void);
++phys_addr_t default_swiotlb_limit(void);
+ #else
+ static inline void swiotlb_init(bool addressing_limited, unsigned int flags)
+ {
+ }
++
++static inline void swiotlb_dev_init(struct device *dev)
++{
++}
++
+ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
+ {
+ 	return false;
+@@ -151,6 +159,11 @@ static inline size_t swiotlb_max_mapping_size(struct device *dev)
+ 	return SIZE_MAX;
+ }
+ 
++static inline bool is_swiotlb_allocated(void)
++{
++	return false;
++}
++
+ static inline bool is_swiotlb_active(struct device *dev)
+ {
+ 	return false;
+@@ -159,6 +172,16 @@ static inline bool is_swiotlb_active(struct device *dev)
+ static inline void swiotlb_adjust_size(unsigned long size)
+ {
+ }
++
++static inline phys_addr_t default_swiotlb_start(void)
++{
++	return 0;
++}
++
++static inline phys_addr_t default_swiotlb_limit(void)
++{
++	return 0;
++}
+ #endif /* CONFIG_SWIOTLB */
+ 
+ extern void swiotlb_print_info(void);
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 2b83e3ad9dca..873b077d7e37 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -71,7 +71,7 @@ struct io_tlb_slot {
+ static bool swiotlb_force_bounce;
+ static bool swiotlb_force_disable;
+ 
+-struct io_tlb_mem io_tlb_default_mem;
++static struct io_tlb_mem io_tlb_default_mem;
+ 
+ static unsigned long default_nslabs = IO_TLB_DEFAULT_SIZE >> IO_TLB_SHIFT;
+ static unsigned long default_nareas;
+@@ -486,6 +486,15 @@ void __init swiotlb_exit(void)
+ 	memset(mem, 0, sizeof(*mem));
+ }
+ 
++/**
++ * swiotlb_dev_init() - initialize swiotlb fields in &struct device
++ * @dev:	Device to be initialized.
++ */
++void swiotlb_dev_init(struct device *dev)
++{
++	dev->dma_io_tlb_mem = &io_tlb_default_mem;
++}
++
+ /*
+  * Return the offset into a iotlb slot required to keep the device happy.
+  */
+@@ -950,6 +959,14 @@ size_t swiotlb_max_mapping_size(struct device *dev)
+ 	return ((size_t)IO_TLB_SIZE) * IO_TLB_SEGSIZE - min_align;
+ }
+ 
++/**
++ * is_swiotlb_allocated() - check if the default software IO TLB is initialized
++ */
++bool is_swiotlb_allocated(void)
++{
++	return !!io_tlb_default_mem.nslabs;
++}
++
+ bool is_swiotlb_active(struct device *dev)
+ {
+ 	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
+@@ -958,6 +975,26 @@ bool is_swiotlb_active(struct device *dev)
+ }
+ EXPORT_SYMBOL_GPL(is_swiotlb_active);
+ 
++/**
++ * default_swiotlb_start() - get the start of the default SWIOTLB
++ *
++ * Get the lowest physical address used by the default software IO TLB pool.
++ */
++phys_addr_t default_swiotlb_start(void)
++{
++	return io_tlb_default_mem.start;
++}
++
++/**
++ * default_swiotlb_limit() - get the highest address in the default SWIOTLB
++ *
++ * Get the highest physical address used by the default software IO TLB pool.
++ */
++phys_addr_t default_swiotlb_limit(void)
++{
++	return io_tlb_default_mem.end - 1;
++}
++
+ #ifdef CONFIG_DEBUG_FS
+ 
+ static int io_tlb_used_get(void *data, u64 *val)
+-- 
+2.25.1
+
