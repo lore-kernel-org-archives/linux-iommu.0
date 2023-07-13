@@ -1,136 +1,82 @@
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2070.outbound.protection.outlook.com [40.107.96.70])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 420965258
-	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 04:25:46 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UDI3KCidvZUWtdPhyy1+FTF7cX1MbaKydJ9tWjArggYvCU8S9u3BXMbKznoPF5W4SlLNEdRseiu9osTcC1+WiI6bl/TPv7AjOOX/oiorxygflEoounb6aeKKGhEuiSBNtcuY2H4VfXogm41BXbiPjGBgdnxrnPsuW6XtkNJ3NpDsbcIAmv7+bgKoMIaw+VhZ4FCGPwrkXVYrcjFHhIjH9lotN9DmSi9XbqXB3XRZGDtfjwIdijPM/4SB1WL7ZkQCL4YmDir88HeusEgpRRquiZe+a4xYsP7rmsxbfkpeTUC3GcD0GuZTyS5q4K3d61lVW8CdFNmDtARPuZzaXjgBzw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9+cjXOZ8aZLgIXqgeNhx895vlnsvANa5cYt3B9hw4no=;
- b=IFnK1r3TkvapnOSH95IaAjz7/pJIIxkp1yHsdrWODG6IK26DZZQySQFcig6w8NXUlrgBbvf3PUmm3fJj9/ZllS/X0zxPJ5jOWf8ED2qVSoyahTO2+LKgqgHYQrr8DFrZj2GtOww0Sv9CsVvKwpUp8xVTf7BZRpP/YvvmZpbC71wEnS+ZGDfma4GaLTKnoZOT/S+Z7C8fKnldFQW0vpVgAO+hhC7PFn905A7wM2ow5xNPJhkjiOihnigus0n/dJsTpgXxXRLoi97LkDeZc+uXpPvkAJTla71wrQw3E1JpsHn+QAIKUVxRjXYGKUj2kOVIM/tEPKNylUjog7p5K29Njg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9+cjXOZ8aZLgIXqgeNhx895vlnsvANa5cYt3B9hw4no=;
- b=B6HO3qtLeA9SrIWMIW2OrQmdN095agSw8H8/39kEqWkgFKoZOzvvyMOfXAe09MiFamBXmhsEO0JJA2IkJzQe5hgG2iLjgZ96Ujs5WTL0w1HjDPsfydZ+TuhInRdBmwIVSdASG32aN7ROCjcHEEuHNblOlsEzARQBlP7/q6snAnPsJvf3ESYnJKF+b91g1qJTE4aLlPGODHihThAY031JfEsRnjPS+0y2klngE6qzWYxmwUXHx0K3U+AxT2zS2YJnZa9dEYNIwYuCUXd+ohEDn+xiuUs3iRMEM//FCCN6z5RvYR98Hue8Ell3udASV51LKWcmQVy824GOGSehbIKdGQ==
-Received: from DS7PR03CA0106.namprd03.prod.outlook.com (2603:10b6:5:3b7::21)
- by IA1PR12MB6139.namprd12.prod.outlook.com (2603:10b6:208:3e9::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6565.31; Thu, 13 Jul
- 2023 04:25:44 +0000
-Received: from DM6NAM11FT034.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3b7:cafe::91) by DS7PR03CA0106.outlook.office365.com
- (2603:10b6:5:3b7::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6588.22 via Frontend
- Transport; Thu, 13 Jul 2023 04:25:44 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DM6NAM11FT034.mail.protection.outlook.com (10.13.173.47) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6588.24 via Frontend Transport; Thu, 13 Jul 2023 04:25:44 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 12 Jul 2023
- 21:25:27 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Wed, 12 Jul
- 2023 21:25:27 -0700
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Wed, 12 Jul 2023 21:25:26 -0700
-Date: Wed, 12 Jul 2023 21:25:25 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Michael Shavit <mshavit@google.com>
-CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
- Roedel" <joro@8bytes.org>, <jean-philippe@linaro.org>, <jgg@nvidia.com>,
-	<baolu.lu@linux.intel.com>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 05/13] iommu/arm-smmu-v3: Use the master-owned s1_cfg
-Message-ID: <ZK98tZ2iMcRu4Jlf@Asurada-Nvidia>
-References: <20230621063825.268890-1-mshavit@google.com>
- <20230621063825.268890-6-mshavit@google.com>
- <ZK9aChHZ3E9IcwJ/@Asurada-Nvidia>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0495A629
+	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 04:34:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1689222885; x=1720758885;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=wqmFSfNFiLpHxGf4UqAgLc6Gm83K5eey8IZvYJAOyWs=;
+  b=dx41XFn1fGAEFav7qShhOyMFtFIAn+Cd7Zk4UM8OLzYMwwROKt8awX6J
+   zK5gLJd8hiINfyzl3x22nia8clbq34b8GX2iih4oSUybFES7thVwXDULy
+   mAVaFEqew7McVm2NAbr7/dgesjNZhGsGHSB1nWfVlOCYQGyf3qFxPw7Pp
+   Y3vogaDyn0AtGlxvTw25l/nuSBWlUn+cPj3oe45V8RebC+ee0AFCnPMNf
+   b3pGDcNDXVX9QBaIoOwcAjfKlGkZbNLkfdLtW5UIcKNtzwWVbnYQTJVpq
+   9/b9CiQ4E429DDqVMysQT/0kRzpyuA/FFQ0uzxrFEY1hX4cYtWZAj1TxN
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10769"; a="344677961"
+X-IronPort-AV: E=Sophos;i="6.01,201,1684825200"; 
+   d="scan'208";a="344677961"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2023 21:34:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10769"; a="866400203"
+X-IronPort-AV: E=Sophos;i="6.01,201,1684825200"; 
+   d="scan'208";a="866400203"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by fmsmga001.fm.intel.com with ESMTP; 12 Jul 2023 21:34:40 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Nicolin Chen <nicolinc@nvidia.com>
+Cc: iommu@lists.linux.dev,
+	kvm@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v2 0/2] Prevent RESV_DIRECT devices from user assignment
+Date: Thu, 13 Jul 2023 12:32:46 +0800
+Message-Id: <20230713043248.41315-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ZK9aChHZ3E9IcwJ/@Asurada-Nvidia>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT034:EE_|IA1PR12MB6139:EE_
-X-MS-Office365-Filtering-Correlation-Id: 68ed833d-edce-4c48-8647-08db835939b4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	1gdRFf6Aj9YBdVaHscK5zh6Vb+QvCNQSXqv4P08z9pvmlwPhJkLquRXFb8MZplqBx5OfKYMimRCIHhRbg/rKmv3eOzQPrNVfbCVldzo/MIWCPKFFxXTcCusaLwEfZ8VAH752rM1qIsXjEgTYoSJzU0m9ptKOO41D7zcexhjF7B+0Q+ccbAPMQIuSewK7W6BwWMTi8ZnhuntB4Jdt8VrQZ6D3rKkbT+OQICzZoksWUwPuOjZNU+iWWR2ioXASni+xO2LWAHy55pTO2Zik5TQccDEvur+aJ8KRr9SSLtdgVFAPR9WL/s7w7mu9iZNY0RGyXZz28DQLM/3Uqg5BcKVi+ggq3WUfpnRjn4ijuXoOf0NcW9YTO6DA/u2HQXIVc3KNzGwL+000H0rya0AaGDCDWv4yo9bfpQAXIZl2YAnIY99LNAgyWLnnP6A24m7PdTkQgSGrf68HxdizjGkD3UBd/2+IgzJwIqknYHxMzritwXPnYSkiKx4g4dsQyGG7gLeo4w7DEreQcj3eruYEdH4z91PHPVBfcP/tAimqTcjmAU7f95h8GDXcFPmIliyse7FS85bLlbDKgmNt81haXREz79JTwrEddtalPvAZP/XSnIfx2oMRY8getdavNFzQ1SaQKUijMlGPgngQh8Jo936nQ/z3Las3yVaVlnKoKDguQrR2HjiJ3ZGEN+LmBkj7sNFpBo1lE/JCVsjjoMynFvdq9bzjiHJwluLDZiNGRuy4zu3mBXLZ9jskBYj1PfsvaiTW
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(396003)(346002)(136003)(39860400002)(451199021)(36840700001)(46966006)(40470700004)(336012)(426003)(186003)(40480700001)(55016003)(40460700003)(54906003)(82740400003)(356005)(7636003)(5660300002)(8936002)(8676002)(316002)(478600001)(86362001)(41300700001)(70206006)(6916009)(70586007)(4326008)(2906002)(36860700001)(26005)(33716001)(9686003)(47076005)(82310400005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2023 04:25:44.5111
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 68ed833d-edce-4c48-8647-08db835939b4
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT034.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6139
+Content-Transfer-Encoding: 8bit
 
-On Wed, Jul 12, 2023 at 06:57:33PM -0700, Nicolin Chen wrote:
-> On Wed, Jun 21, 2023 at 02:37:17PM +0800, Michael Shavit wrote:
->  
-> > Insert CDs for STAGE_1 domains into a CD table owned by the
-> > arm_smmu_master. Remove the CD table that was owned by arm_smmu_domain.
-> 
-> > @@ -718,10 +718,7 @@ struct arm_smmu_domain {
-> > 
-> >         enum arm_smmu_domain_stage              stage;
-> >         union {
-> > -               struct {
-> >                 struct arm_smmu_ctx_desc        cd;
-> > -               struct arm_smmu_s1_cfg          s1_cfg;
-> > -               };
-> >                 struct arm_smmu_s2_cfg          s2_cfg;
-> >         };
-> 
-> So the arm_smmu_domain looks like an object representing either:
-> 1) a CD table + (if !IDENTITY) an S1 IOPT for default substream
-> 2) an S2 IOPT
+These are follow-up patches on this discussion:
 
-["]
-> I wonder if we need something like struct arm_smmu_subdomain to
-> represent a substream, because now an IOMMU_DOMAIN_SVA domain is
-> represented by this struct arm_smmu_domain too, which is neither
-> of the two cases in the list above.
-["]
+https://lore.kernel.org/linux-iommu/BN9PR11MB5276E84229B5BD952D78E9598C639@BN9PR11MB5276.namprd11.prod.outlook.com
 
-I got this part incorrect: an SVA domain is actually represented
-by an arm_smmu_sva_domain, so there's no nested arm_smmu_domain
-situation. And we use arm_smmu_domain for other purpose, where I
-got confused.
+I just summarized the ideas and code into a real patch series. Please
+help to review and merge.
 
-Please ignore this part, though I am still wondering if we could
-name it in a way having a clear topology.
+Change log:
+v2:
+ - Move "pg_size == 0" check out of the loop.
+ - Rebase on the top of v6.5-rc1.
 
-Thanks
-Nicolin
+v1: https://lore.kernel.org/linux-iommu/20230607035145.343698-1-baolu.lu@linux.intel.com/
+
+Best regards,
+baolu
+
+Lu Baolu (2):
+  iommu: Prevent RESV_DIRECT devices from blocking domains
+  iommu/vt-d: Remove rmrr check in domain attaching device path
+
+ include/linux/iommu.h       |  2 ++
+ drivers/iommu/intel/iommu.c | 58 -------------------------------------
+ drivers/iommu/iommu.c       | 37 ++++++++++++++++-------
+ 3 files changed, 29 insertions(+), 68 deletions(-)
+
+-- 
+2.34.1
+
