@@ -1,84 +1,95 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7236E1ED55
-	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 15:40:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 533B0C433C8;
-	Thu, 13 Jul 2023 15:40:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1689262858;
-	bh=Opj8JDTNUda9NW7e+toCrb8Tsv2eHY+Uit8zdRt6gVw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=neQ5IiAxZldW/eAExMXgoPyPKHNm6aOB1qcn8qvstiRppXiDkgG0tJWL/zfT5b4Yw
-	 xKYW3Z9FAFdoR89xx/JZOeHx0EgyfAm7NQmKfhpP0YRMunKobkZMnzok1DAaZ4MbGi
-	 7p3X/OcPW4Y07DhfU8dbvMhjCW2mDGC3UAYl6szG2BsX0FvZmlLVAFrEnpS91QlRWU
-	 bPRbf6ILJl4eeYMz8vMAmUL6ehlDrZcc1vPTLQr8/2KMUl367KywIQTiKJJbQnp7lt
-	 ymcLHCB8Ixr8f0Sh25i1UophHoKMXk8nt3QkZes0Q1TqMpOxhHXWdhOcb0LPBAmojD
-	 X+pDWoB7ytTQQ==
-Date: Thu, 13 Jul 2023 16:40:48 +0100
-From: Lee Jones <lee@kernel.org>
-To: Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc: cros-qcom-dts-watchers@chromium.org, Andy Gross <agross@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Benjamin Li <benl@squareup.com>,
-	James Willcox <jwillcox@squareup.com>,
-	Joseph Gates <jgates@squareup.com>,
-	Stephan Gerhold <stephan@gerhold.net>,
-	Zac Crosby <zac@squareup.com>,
-	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-	Banajit Goswami <bgoswami@quicinc.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Xu Yang <xu.yang_2@nxp.com>, Peng Fan <peng.fan@nxp.com>,
-	Christian Marangi <ansuelsmth@gmail.com>,
-	Wesley Cheng <quic_wcheng@quicinc.com>,
-	Jun Nie <jun.nie@linaro.org>, Max Chen <mchen@squareup.com>,
-	Shawn Guo <shawn.guo@linaro.org>,
-	Vivek Gautam <vivek.gautam@codeaurora.org>,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Vincent Knecht <vincent.knecht@mailoo.org>,
-	Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-	Konrad Dybcio <konradybcio@kernel.org>, alsa-devel@alsa-project.org,
-	iommu@lists.linux.dev, linux-usb@vger.kernel.org,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Leo Yan <leo.yan@linaro.org>, Rob Herring <robh@kernel.org>,
-	Andy Gross <andy.gross@linaro.org>
-Subject: Re: [PATCH 06/11] dt-bindings: mfd: qcom,spmi-pmic: Reference pm8916
- wcd analog codec schema
-Message-ID: <20230713154048.GD968624@google.com>
-References: <20230627-topic-more_bindings-v1-0-6b4b6cd081e5@linaro.org>
- <20230627-topic-more_bindings-v1-6-6b4b6cd081e5@linaro.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C55B61F163
+	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 15:55:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1689263710; x=1720799710;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=HzDe1rmkDf9NDLJwnlBTzYnFxwjCcY33RbbgJLyqs1c=;
+  b=ZT5Rcx9bzgM2HbpvI4s3iTZAbMj55EedINvDaWCVqslHMGcNut+WxFwn
+   Cd/vAUDwcS1B872DAI5OJMXw2RpH89PdS7OGPOge+u4ajNYU1hbKir6Yk
+   RyIMn0LXrnBnm/jij6Yrsnjxvahe2ANErTkoHflHnSxH3KMbjLF8C/Bj0
+   rhgrjuq/qzYJ4wyJI3xZYrSCDyZynDVY38xwdVBaHOj604EIuBWMuUR0W
+   rXgGgDj7xdFwkyL7BZnWZ9s441lSyyUjssQqikiGTfiRxY22qd/+Z+2yd
+   AEiHYvR64N1BrCNGOiXg+AAmAimaI6z8uOuHL1JGNV0jLhJWH2mEhzpCA
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="428995542"
+X-IronPort-AV: E=Sophos;i="6.01,203,1684825200"; 
+   d="scan'208";a="428995542"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2023 08:55:10 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="672311580"
+X-IronPort-AV: E=Sophos;i="6.01,203,1684825200"; 
+   d="scan'208";a="672311580"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2023 08:55:09 -0700
+Date: Thu, 13 Jul 2023 09:00:07 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel
+ <joro@8bytes.org>, Jean-Philippe Brucker <jean-philippe@linaro.com>, "Robin
+ Murphy" <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>, Will
+ Deacon <will@kernel.org>, "Liu, Yi L" <yi.l.liu@intel.com>, "Yu, Fenghua"
+ <fenghua.yu@intel.com>, "Luck, Tony" <tony.luck@intel.com>,
+ jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v10 2/7] iommu: Move global PASID allocation from SVA to
+ core
+Message-ID: <20230713090007.40ef2ac3@jacob-builder>
+In-Reply-To: <BN9PR11MB527619C7106BE91167B9EC118C37A@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20230712163355.3177511-1-jacob.jun.pan@linux.intel.com>
+	<20230712163355.3177511-3-jacob.jun.pan@linux.intel.com>
+	<BN9PR11MB527619C7106BE91167B9EC118C37A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230627-topic-more_bindings-v1-6-6b4b6cd081e5@linaro.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, 27 Jun 2023, Konrad Dybcio wrote:
+Hi Kevin,
 
-> Now that it's been converted to YAML, reference the PM8916 wcd codec
-> schema.
+On Thu, 13 Jul 2023 07:42:01 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+wrote:
+
+> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Sent: Thursday, July 13, 2023 12:34 AM
+> > 
+> >  }
+> > +
+> > +ioasid_t iommu_alloc_global_pasid_dev(struct device *dev)
+> > +{
+> > +	int ret;
+> > +
+> > +	/* max_pasids == 0 means that the device does not support
+> > PASID */
+> > +	if (!dev->iommu->max_pasids)
+> > +		return IOMMU_PASID_INVALID;
+> > +
+> > +	/*
+> > +	 * max_pasids is set up by vendor driver based on number of
+> > PASID bits
+> > +	 * supported but the IDA allocation is inclusive.
+> > +	 */
+> > +	ret = ida_alloc_range(&iommu_global_pasid_ida,
+> > IOMMU_FIRST_GLOBAL_PASID,
+> > +			      dev->iommu->max_pasids - 1, GFP_KERNEL);
+> > +	return ret < 0 ? IOMMU_PASID_INVALID : ret;
+> > +}
+> > +EXPORT_SYMBOL_GPL(iommu_alloc_global_pasid_dev);  
 > 
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> ---
->  Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.yaml | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> nit. Just call it iommu_alloc_global_pasid.
 
-Applied, thanks
+will do. it will be symmetric.
 
--- 
-Lee Jones [李琼斯]
+Thanks,
+
+Jacob
