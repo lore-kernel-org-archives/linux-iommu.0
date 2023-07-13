@@ -1,296 +1,140 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2073.outbound.protection.outlook.com [40.107.220.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67E3D14F75
-	for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 16:29:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689179347; x=1720715347;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=4b9r6iusT0GmBWkP+6E3iMiKkYuiBQ9ZI30XH6KeLpY=;
-  b=kjO+VBLQzr31OyY9wMK4lYLUtsQQtquhVgWR5Ztpzksrfk5lF5I8bvWd
-   F6p6Ns9n+xh6sUHjEgr976fPlMaKYQ0dXFfA7zYWCTchMaIwIj8s0gast
-   8tNKXSbYyzq2Y+euEIWCSvh/sUNxu/BVMONQ4D1nARyj/16xgObPjPNwt
-   gexNE7LGklhOd85t6xjnT5bBJFgcfHbZN7UnigJuFHidMof6XX1ksyH/9
-   6z/yJ5lyzENrh+zRkbdoCEMWg/eIhE7r8Gv8NPg7vtJ9kCIKkiuUeqOeB
-   /K8jBIOR6igvf0zFS1tMr/mri3Xlj0Ee81e767rcg/Bzq326yRETLbelP
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10769"; a="431072767"
-X-IronPort-AV: E=Sophos;i="6.01,200,1684825200"; 
-   d="scan'208";a="431072767"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2023 09:29:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10769"; a="715639052"
-X-IronPort-AV: E=Sophos;i="6.01,200,1684825200"; 
-   d="scan'208";a="715639052"
-Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.97.184])
-  by orsmga007.jf.intel.com with ESMTP; 12 Jul 2023 09:29:02 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: LKML <linux-kernel@vger.kernel.org>,
-	iommu@lists.linux.dev,
-	"Lu Baolu" <baolu.lu@linux.intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>,
-	"Robin Murphy" <robin.murphy@arm.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>,
-	"Will Deacon" <will@kernel.org>,
-	"Tian, Kevin" <kevin.tian@intel.com>,
-	Yi Liu <yi.l.liu@intel.com>,
-	"Yu, Fenghua" <fenghua.yu@intel.com>,
-	Tony Luck <tony.luck@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Tony Zhu <tony.zhu@intel.com>,
-	Dave Jiang <dave.jiang@intel.com>,
-	Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH v10 7/7] dmaengine/idxd: Re-enable kernel workqueue under DMA API
-Date: Wed, 12 Jul 2023 09:33:55 -0700
-Message-Id: <20230712163355.3177511-8-jacob.jun.pan@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230712163355.3177511-1-jacob.jun.pan@linux.intel.com>
-References: <20230712163355.3177511-1-jacob.jun.pan@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCE037C
+	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 01:22:34 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FbqYIOgO5HM66qNuRqw4lrxMjrr5PbqJuatLv4PBqH1OnlNwC/xvnbaf+Of/YkcZwHgPwCPxulRTCprsZibxqrlaSpaFS2nPtmM/SyxU3eF8xvklZPMZLJqkwy2htyLqpLCAFoBp0i32j2LVyK0gK+9qUe6+oX8lGziNmxfy++pEZR6A52mhXmQqIEczvfIh4WVRY95y4WZyKTbOnF0Cl8w+eRtWSOlys4nxq6I9M6xAehBfABHuwakcO3ZgXJoI6uYWkVRVpExCRZUah7+/9m0cF4QSrTIYe0cjekIr1SRB1IbGRohF2mIZTFEC57Kb3uJ+aVxyxRGR5RtUWepmHQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=icof62/UXdM64dw5pMxaKgOND+9Dmu92u6L0Eqc/NV8=;
+ b=hSSQv4Hrd9gDnxu9T+qn8Tn/40FKGLNaN6v4sORJWQ7RnZItIeWoIJ3j6u3+gWbizHQIT0+yV3pRhX33Sw2k6ESw06f8ojmRRkCj3M9WzERqajCEOihGsPOqqO2D9wAxBGPxy2twAzjXal/bryvUuERFq6qFEZwQGFWM0HAHdICvaykogKy6wxSARpbPMITxwAUvuEN015C+9BU8Ym1utFCkWWMl0fTwjAIic7iEDnUJjET0rUNeT321FPGPEmEAlH54teRm7gDTqgNgu3tDQCbxXE9Xcn+ylJwcXRKAYEQUbEH+xR224SMihiG4AUZ6XgsBSpRS4ExSmIpc9W61tw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=icof62/UXdM64dw5pMxaKgOND+9Dmu92u6L0Eqc/NV8=;
+ b=jdPytxRRXlnD8QbIrXfFEZqAO9MlhZz3kJeGSkmYuO2SkGYFuAJdQJ2XLOPsaERY/o+3J8FLRkYTHuoAiv8LE2rc88TlAoZTRBB+tYtSajQfV2FBWBPImeiacjyfsopK5sAiQdJasnetMeGfyclVdK+c4yPC8PGv9XLhmeFNbvjSPSAiHyYNlpnzmt4YXG5M+1uGXYQ5HrtWHq/2ZhoAsQX9uT5Wwb60y+Vc9mGXFxfkUOhRbHVGSaPQZmXDalo8SwuUxUGf0x7yQxMGIF0CBerwLSAqPJRxeEwytljCTnC9jlX1/3F4jbwe411QA86LhRLsJCMW92cZ18vfQNOZ3Q==
+Received: from BN9P220CA0019.NAMP220.PROD.OUTLOOK.COM (2603:10b6:408:13e::24)
+ by SJ2PR12MB7989.namprd12.prod.outlook.com (2603:10b6:a03:4c3::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6588.22; Thu, 13 Jul
+ 2023 01:22:32 +0000
+Received: from BN8NAM11FT019.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:13e:cafe::7a) by BN9P220CA0019.outlook.office365.com
+ (2603:10b6:408:13e::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6588.22 via Frontend
+ Transport; Thu, 13 Jul 2023 01:22:32 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BN8NAM11FT019.mail.protection.outlook.com (10.13.176.158) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6588.24 via Frontend Transport; Thu, 13 Jul 2023 01:22:32 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 12 Jul 2023
+ 18:22:20 -0700
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Wed, 12 Jul
+ 2023 18:22:19 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Wed, 12 Jul 2023 18:22:19 -0700
+Date: Wed, 12 Jul 2023 18:22:17 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Michael Shavit <mshavit@google.com>
+CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
+ Roedel" <joro@8bytes.org>, <jean-philippe@linaro.org>, <jgg@nvidia.com>,
+	<baolu.lu@linux.intel.com>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 02/13] iommu/arm-smmu-v3: Add smmu_s1_cfg to
+ smmu_master
+Message-ID: <ZK9RycgNAVrxe343@Asurada-Nvidia>
+References: <20230621063825.268890-1-mshavit@google.com>
+ <20230621063825.268890-3-mshavit@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20230621063825.268890-3-mshavit@google.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT019:EE_|SJ2PR12MB7989:EE_
+X-MS-Office365-Filtering-Correlation-Id: 305874b4-8872-4a0b-9856-08db833fa1d5
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	pgvGn8TZEK3oLLeUU8VC2aVIowUA2R0hrU1wUbAscDb+m+3yedmopxnDHhWBUXqLnwcRaGF7aEFxcwVm7djs9TCO4wgmREk9lrjS0d9TLygmUjgfr8k62gjq+oNI2YUkcDHIJb2M2p/4QTXzuy0+IJYFiMFagFHpiJRHUp8vSYxQQxICLD1JhdNa9fwE4fwXmQUBUlZP+Ya1985aPJwEkCirmU/VTWv8kEzOSGxEtWPolYidFp0NMWBV0srB0oaoOTzmoAkaAE14AIF4TURGdycR2iJHuuQlVg7s4ZFe42ri7+NZwCvTAJT8z7thzvT2mcdygWpC1TW403vxBO6V7tDGC/saR/C9jrwgfWrREppo/apwgWpxpEFpo58Dqx1O2eLHxW2s1de5Ds2zL0SNkEAPdq0k/csigmVz2H1FVDu3Ei+iz2FFUWKZfyQXJpCfDQG6JAJJ6fopDH5M1nOC9xIFs7QNcg5El0iWNmySO7fLH2s/G5KYy+HqwuZem5kmDxgqWhoG1lhaST0WByPgVJ+vMMAHL2wbgwpGYaboUTUO4jP9gKkYWeZL8hj8LT4rYvSzkIO+6k2oYvuxLZilTtxuSmigovd1KjuNKaQP/iNkGUNGe9YoQp0zPov0bNTe0DaGQgmIx12Coqf3wmeGSh/nbVDc4ClZJSWLP7fnLxGUwBpahHeYsTnsTYUyDMF9R4lsrh71mz1lIZgVlyNb+Z2NWxuAzTNmIUlTJV1Fo8eM+kXAdxYVKgLjEpPF2z6o
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(39860400002)(376002)(346002)(136003)(451199021)(46966006)(36840700001)(40470700004)(82310400005)(478600001)(82740400003)(7636003)(356005)(6916009)(4326008)(86362001)(33716001)(54906003)(70586007)(70206006)(316002)(41300700001)(36860700001)(47076005)(55016003)(2906002)(426003)(336012)(8936002)(8676002)(40460700003)(26005)(9686003)(40480700001)(5660300002)(186003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2023 01:22:32.2334
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 305874b4-8872-4a0b-9856-08db833fa1d5
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN8NAM11FT019.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB7989
 
-Kernel workqueues were disabled due to flawed use of kernel VA and SVA
-API. Now that we have the support for attaching PASID to the device's
-default domain and the ability to reserve global PASIDs from SVA APIs,
-we can re-enable the kernel work queues and use them under DMA API.
+Hi Michael,
 
-We also use non-privileged access for in-kernel DMA to be consistent
-with the IOMMU settings. Consequently, interrupt for user privilege is
-enabled for work completion IRQs.
+On Wed, Jun 21, 2023 at 02:37:14PM +0800, Michael Shavit wrote:
+ 
+> Except for Nested domains, arm_smmu_master will own the STEs that are
+> inserted into the arm_smmu_device's STE table.
 
-Link:https://lore.kernel.org/linux-iommu/20210511194726.GP1002214@nvidia.com/
-Tested-by: Tony Zhu <tony.zhu@intel.com>
-Reviewed-by: Dave Jiang <dave.jiang@intel.com>
-Reviewed-by: Fenghua Yu <fenghua.yu@intel.com>
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Acked-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
----
-v9: Set user IRQ enable when device is enabled for system PASID
----
- drivers/dma/idxd/device.c | 39 ++++++++++------------------
- drivers/dma/idxd/dma.c    |  5 ++--
- drivers/dma/idxd/idxd.h   |  9 +++++++
- drivers/dma/idxd/init.c   | 54 ++++++++++++++++++++++++++++++++++++---
- drivers/dma/idxd/sysfs.c  |  7 -----
- 5 files changed, 76 insertions(+), 38 deletions(-)
+I think that the master still owns an STE when attached to a
+nested domain. Though an IOMMU_DOMAIN_NESTED iommu_domain is
+an opaque object to the STE in the guest, the host still has
+a real STE for the nested configuration somewhere -- and it's
+likely still to be owned by the master that's attached to the
+opaque NESTED iommu_domain in the host kernel.
 
-diff --git a/drivers/dma/idxd/device.c b/drivers/dma/idxd/device.c
-index 5abbcc61c528..169b7ade8919 100644
---- a/drivers/dma/idxd/device.c
-+++ b/drivers/dma/idxd/device.c
-@@ -299,21 +299,6 @@ void idxd_wqs_unmap_portal(struct idxd_device *idxd)
- 	}
- }
- 
--static void __idxd_wq_set_priv_locked(struct idxd_wq *wq, int priv)
--{
--	struct idxd_device *idxd = wq->idxd;
--	union wqcfg wqcfg;
--	unsigned int offset;
--
--	offset = WQCFG_OFFSET(idxd, wq->id, WQCFG_PRIVL_IDX);
--	spin_lock(&idxd->dev_lock);
--	wqcfg.bits[WQCFG_PRIVL_IDX] = ioread32(idxd->reg_base + offset);
--	wqcfg.priv = priv;
--	wq->wqcfg->bits[WQCFG_PRIVL_IDX] = wqcfg.bits[WQCFG_PRIVL_IDX];
--	iowrite32(wqcfg.bits[WQCFG_PRIVL_IDX], idxd->reg_base + offset);
--	spin_unlock(&idxd->dev_lock);
--}
--
- static void __idxd_wq_set_pasid_locked(struct idxd_wq *wq, int pasid)
- {
- 	struct idxd_device *idxd = wq->idxd;
-@@ -1423,15 +1408,14 @@ int drv_enable_wq(struct idxd_wq *wq)
- 	}
- 
- 	/*
--	 * In the event that the WQ is configurable for pasid and priv bits.
--	 * For kernel wq, the driver should setup the pasid, pasid_en, and priv bit.
--	 * However, for non-kernel wq, the driver should only set the pasid_en bit for
--	 * shared wq. A dedicated wq that is not 'kernel' type will configure pasid and
-+	 * In the event that the WQ is configurable for pasid, the driver
-+	 * should setup the pasid, pasid_en bit. This is true for both kernel
-+	 * and user shared workqueues. There is no need to setup priv bit in
-+	 * that in-kernel DMA will also do user privileged requests.
-+	 * A dedicated wq that is not 'kernel' type will configure pasid and
- 	 * pasid_en later on so there is no need to setup.
- 	 */
- 	if (test_bit(IDXD_FLAG_CONFIGURABLE, &idxd->flags)) {
--		int priv = 0;
--
- 		if (wq_pasid_enabled(wq)) {
- 			if (is_idxd_wq_kernel(wq) || wq_shared(wq)) {
- 				u32 pasid = wq_dedicated(wq) ? idxd->pasid : 0;
-@@ -1439,10 +1423,6 @@ int drv_enable_wq(struct idxd_wq *wq)
- 				__idxd_wq_set_pasid_locked(wq, pasid);
- 			}
- 		}
--
--		if (is_idxd_wq_kernel(wq))
--			priv = 1;
--		__idxd_wq_set_priv_locked(wq, priv);
- 	}
- 
- 	rc = 0;
-@@ -1550,6 +1530,15 @@ int idxd_device_drv_probe(struct idxd_dev *idxd_dev)
- 	if (rc < 0)
- 		return -ENXIO;
- 
-+	/*
-+	 * System PASID is preserved across device disable/enable cycle, but
-+	 * genconfig register content gets cleared during device reset. We
-+	 * need to re-enable user interrupts for kernel work queue completion
-+	 * IRQ to function.
-+	 */
-+	if (idxd->pasid != IOMMU_PASID_INVALID)
-+		idxd_set_user_intr(idxd, 1);
-+
- 	rc = idxd_device_evl_setup(idxd);
- 	if (rc < 0) {
- 		idxd->cmd_status = IDXD_SCMD_DEV_EVL_ERR;
-diff --git a/drivers/dma/idxd/dma.c b/drivers/dma/idxd/dma.c
-index eb35ca313684..07623fb0f52f 100644
---- a/drivers/dma/idxd/dma.c
-+++ b/drivers/dma/idxd/dma.c
-@@ -75,9 +75,10 @@ static inline void idxd_prep_desc_common(struct idxd_wq *wq,
- 	hw->xfer_size = len;
- 	/*
- 	 * For dedicated WQ, this field is ignored and HW will use the WQCFG.priv
--	 * field instead. This field should be set to 1 for kernel descriptors.
-+	 * field instead. This field should be set to 0 for kernel descriptors
-+	 * since kernel DMA on VT-d supports "user" privilege only.
- 	 */
--	hw->priv = 1;
-+	hw->priv = 0;
- 	hw->completion_addr = compl;
- }
- 
-diff --git a/drivers/dma/idxd/idxd.h b/drivers/dma/idxd/idxd.h
-index 5428a2e1b1ec..502be9db63f4 100644
---- a/drivers/dma/idxd/idxd.h
-+++ b/drivers/dma/idxd/idxd.h
-@@ -473,6 +473,15 @@ static inline struct idxd_device *ie_to_idxd(struct idxd_irq_entry *ie)
- 	return container_of(ie, struct idxd_device, ie);
- }
- 
-+static inline void idxd_set_user_intr(struct idxd_device *idxd, bool enable)
-+{
-+	union gencfg_reg reg;
-+
-+	reg.bits = ioread32(idxd->reg_base + IDXD_GENCFG_OFFSET);
-+	reg.user_int_en = enable;
-+	iowrite32(reg.bits, idxd->reg_base + IDXD_GENCFG_OFFSET);
-+}
-+
- extern struct bus_type dsa_bus_type;
- 
- extern bool support_enqcmd;
-diff --git a/drivers/dma/idxd/init.c b/drivers/dma/idxd/init.c
-index 1aa823974cda..faf9861704af 100644
---- a/drivers/dma/idxd/init.c
-+++ b/drivers/dma/idxd/init.c
-@@ -550,14 +550,59 @@ static struct idxd_device *idxd_alloc(struct pci_dev *pdev, struct idxd_driver_d
- 
- static int idxd_enable_system_pasid(struct idxd_device *idxd)
- {
--	return -EOPNOTSUPP;
-+	struct pci_dev *pdev = idxd->pdev;
-+	struct device *dev = &pdev->dev;
-+	struct iommu_domain *domain;
-+	ioasid_t pasid;
-+	int ret;
-+
-+	/*
-+	 * Attach a global PASID to the DMA domain so that we can use ENQCMDS
-+	 * to submit work on buffers mapped by DMA API.
-+	 */
-+	domain = iommu_get_domain_for_dev(dev);
-+	if (!domain)
-+		return -EPERM;
-+
-+	pasid = iommu_alloc_global_pasid_dev(dev);
-+	if (pasid == IOMMU_PASID_INVALID)
-+		return -ENOSPC;
-+
-+	/*
-+	 * DMA domain is owned by the driver, it should support all valid
-+	 * types such as DMA-FQ, identity, etc.
-+	 */
-+	ret = iommu_attach_device_pasid(domain, dev, pasid);
-+	if (ret) {
-+		dev_err(dev, "failed to attach device pasid %d, domain type %d",
-+			pasid, domain->type);
-+		iommu_free_global_pasid(pasid);
-+		return ret;
-+	}
-+
-+	/* Since we set user privilege for kernel DMA, enable completion IRQ */
-+	idxd_set_user_intr(idxd, 1);
-+	idxd->pasid = pasid;
-+
-+	return ret;
- }
- 
- static void idxd_disable_system_pasid(struct idxd_device *idxd)
- {
-+	struct pci_dev *pdev = idxd->pdev;
-+	struct device *dev = &pdev->dev;
-+	struct iommu_domain *domain;
-+
-+	domain = iommu_get_domain_for_dev(dev);
-+	if (!domain)
-+		return;
-+
-+	iommu_detach_device_pasid(domain, dev, idxd->pasid);
-+	iommu_free_global_pasid(idxd->pasid);
- 
--	iommu_sva_unbind_device(idxd->sva);
-+	idxd_set_user_intr(idxd, 0);
- 	idxd->sva = NULL;
-+	idxd->pasid = IOMMU_PASID_INVALID;
- }
- 
- static int idxd_enable_sva(struct pci_dev *pdev)
-@@ -600,8 +645,9 @@ static int idxd_probe(struct idxd_device *idxd)
- 		} else {
- 			set_bit(IDXD_FLAG_USER_PASID_ENABLED, &idxd->flags);
- 
--			if (idxd_enable_system_pasid(idxd))
--				dev_warn(dev, "No in-kernel DMA with PASID.\n");
-+			rc = idxd_enable_system_pasid(idxd);
-+			if (rc)
-+				dev_warn(dev, "No in-kernel DMA with PASID. %d\n", rc);
- 			else
- 				set_bit(IDXD_FLAG_PASID_ENABLED, &idxd->flags);
- 		}
-diff --git a/drivers/dma/idxd/sysfs.c b/drivers/dma/idxd/sysfs.c
-index 293739ac5596..63f6966c51aa 100644
---- a/drivers/dma/idxd/sysfs.c
-+++ b/drivers/dma/idxd/sysfs.c
-@@ -948,13 +948,6 @@ static ssize_t wq_name_store(struct device *dev,
- 	if (strlen(buf) > WQ_NAME_SIZE || strlen(buf) == 0)
- 		return -EINVAL;
- 
--	/*
--	 * This is temporarily placed here until we have SVM support for
--	 * dmaengine.
--	 */
--	if (wq->type == IDXD_WQT_KERNEL && device_pasid_enabled(wq->idxd))
--		return -EOPNOTSUPP;
--
- 	input = kstrndup(buf, count, GFP_KERNEL);
- 	if (!input)
- 		return -ENOMEM;
--- 
-2.25.1
+> -static int arm_smmu_alloc_cd_tables(struct arm_smmu_domain *smmu_domain)
+> +static int arm_smmu_init_s1_cfg(struct arm_smmu_master *master,
+> +                               struct arm_smmu_s1_cfg *cfg)
 
+We here pass in an s1_cfg ptr because we expect someone else
+rather than the master could own the s1_cfg?
+
+But the final codeline by the end of this series seems that
+only master owns an s1_cfg. So perhaps we could re-organize
+the patches to clean this away, as the cfg always comes from
+a master?
+
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index 68d519f21dbd8..053cc14c23969 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -688,6 +688,7 @@ struct arm_smmu_master {
+>         struct arm_smmu_domain          *domain;
+>         struct list_head                domain_head;
+>         struct arm_smmu_stream          *streams;
+> +       struct arm_smmu_s1_cfg          owned_s1_cfg;
+
+I am a bit confused by this naming. If only master would own
+an s1_cfg, perhaps we can just make it "s1_cfg" and drop the
+s1_cfg pointer in the next patch.
+
+Thanks
+Nicolin
