@@ -1,193 +1,137 @@
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2049.outbound.protection.outlook.com [40.107.96.49])
+Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F5C72FB3
-	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 16:41:42 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Gd/o5A2HFvVCNY95uDaWu4vdDwiGDWV8Vfh3DD87BwcJxM7DF9hLkVc6ZcBqdrjv7JVp/ZPE5Cjc+OwkathI8SUKNyAKYzOxK5ogPuC1xfies835NY8gTbI6mZhNbx8C6ndGar7uPiNY6drG/G8AqimKLl6LyOWCmNV3d+fdtUhlj8Eh4EAfZsOa+K9ZO/2lNn25AucIJXSy+OQmR3Td0RxRCoNAR+aKYxmlVUQmuNgH1S0gUH8KdSNsM+TIzDzMl1jlD1wezmdPZHlLdEwHWzzfWO5N/KTtm4ehH0Uv1ec3Ve4OyfAiolPtqEZ9LZxnf+FsUpjPHEvzxJYEL9jA2A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wAX1gAMd6RtSGwZVDkd8gTl8FDOGfMZiT73c0ebwRbA=;
- b=FDLw9g+734FXLJzifyt/URgd8lZYU72D+svjMaZqytH11Ui1lxG4RsWNP3DR4hOfu0aalhxkFqpmR9w3Ymsq2R/5bpeYu44+Bbqx3yrdLMUh/Jwcg6GBuTTfo4mNu4s5Y76J5oqObR/CGK8iZ1fwgLRUiTEjNiRsg/QreWHHEwgZPO+j49t65/WbW3Tt/h07KE3vAO9jvBxbLS4pmtuZD4SUw0FDSeOeKFOTME38k0vtdhhyPrFYwmXU/RHFQtLrz8R5w6LoyjYyAVBgpOr3WmOZdXv0N2+1Eef1ELThVObXknHrj4oR3oJ3zBxTZaHo6XTjrypE1tmGq6u//GI6yQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wAX1gAMd6RtSGwZVDkd8gTl8FDOGfMZiT73c0ebwRbA=;
- b=aSkgw1sCoIuREou++6EUh8cnlhpH9kvzOB9h7kMZr8BIWZqGtxckaYGkq/oGJM04OLGNP2rZsD1BL2Q2JtGBBe+/MhUtwtJ2Rx92tFgO43Aoou/5SUkGd2LcusDgGI1OLt1xIzt3gTDBCUo28HSxnNX8aFumYqZQKpE9Vuoj8D/NJLu3MYbRw3FiBSuxEuFOetSURrv6gLpbEggbuETOXGuyPfkdV2uQub4sVuK1CtMnDunx/s7BMw5OB+GMHJPdRy0LzVcyMlaEF+9iQrt0C5nyl+rXASG8uWSYjdAZMgytqHyBj5QV7+p2AGhiS7O4xdXn6wVua9ke18eljyP7lg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by SJ1PR12MB6290.namprd12.prod.outlook.com (2603:10b6:a03:457::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6588.20; Thu, 13 Jul
- 2023 16:41:40 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::69c1:5d87:c73c:cc55]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::69c1:5d87:c73c:cc55%4]) with mapi id 15.20.6565.028; Thu, 13 Jul 2023
- 16:41:39 +0000
-Date: Thu, 13 Jul 2023 13:41:38 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Michael Shavit <mshavit@google.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	jean-philippe@linaro.org, baolu.lu@linux.intel.com,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 02/13] iommu/arm-smmu-v3: Add smmu_s1_cfg to
- smmu_master
-Message-ID: <ZLApQjaqoOshT2TJ@nvidia.com>
-References: <20230621063825.268890-1-mshavit@google.com>
- <20230621063825.268890-3-mshavit@google.com>
- <ZK9RycgNAVrxe343@Asurada-Nvidia>
- <CAKHBV26wi+xKnNjo-R+QOcVLPH2KJTFP+mF4CW1xE61nOdF5GA@mail.gmail.com>
- <ZLAKQw+DzcpSRSyi@nvidia.com>
- <CAKHBV25YadRVFiag5z5Yc13L093ScWkCjAOCd=VuGm2RUaDyzA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAKHBV25YadRVFiag5z5Yc13L093ScWkCjAOCd=VuGm2RUaDyzA@mail.gmail.com>
-X-ClientProxiedBy: YT4PR01CA0008.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:d1::16) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F4071F173
+	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 17:53:17 +0000 (UTC)
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 5EE5814DBB9;
+	Thu, 13 Jul 2023 19:53:09 +0200 (CEST)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
+	t=1689270789; bh=bPL0dJQsO71F+7x2c6oBcd15kYFwAiWbA6uxbyrkpGE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=EkihYalIeEcrIel7VgAhcpVNo9/pboyyZekjWK0jOnc5F1ahW2sgtlX2s4G3xz2aa
+	 7/pVJP13bkUSQtOnx/qTC561TvfhmkpEWgCjkNF0dnKtNeOHHWOPNueuVhTFgK2ELk
+	 wUOXEGu3hH49hYFoW2UWlnrBscc4Wib4CIVTdHzIxE5HMHeeuN7aydOSwzOTqbpdDv
+	 gD5Bsyr0BRxuvTKvkDlRDW5xFxEeTF4ZsC7VFVRP05INsvS0TzW3gxx20lzeEnkYdG
+	 ce/RvNC6zV5zfoC3oip2w9zTQ1heZ9+LR1nTdovemvPME96D6qgBeJM/SIEWJ77vyR
+	 +exPMHF3hrfBg==
+Date: Thu, 13 Jul 2023 19:53:07 +0200
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Petr Tesarik <petrtesarik@huaweicloud.com>
+Cc: Stefano Stabellini <sstabellini@kernel.org>, Russell King
+ <linux@armlinux.org.uk>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
+ x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)), "H. Peter
+ Anvin" <hpa@zytor.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Juergen Gross <jgross@suse.com>,
+ Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>, Christoph Hellwig
+ <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
+ <robin.murphy@arm.com>, Petr Tesarik <petr.tesarik.ext@huawei.com>,
+ Jonathan Corbet <corbet@lwn.net>, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Hans de Goede <hdegoede@redhat.com>,
+ James Seo <james@equiv.tech>, James Clark <james.clark@arm.com>, Kees Cook
+ <keescook@chromium.org>, xen-devel@lists.xenproject.org (moderated list:XEN
+ HYPERVISOR ARM), linux-arm-kernel@lists.infradead.org (moderated list:ARM
+ PORT), linux-kernel@vger.kernel.org (open list), linux-mips@vger.kernel.org
+ (open list:MIPS), iommu@lists.linux.dev (open list:XEN SWIOTLB SUBSYSTEM),
+ Roberto Sassu <roberto.sassu@huaweicloud.com>, Kefeng Wang
+ <wangkefeng.wang@huawei.com>
+Subject: Re: [PATCH v4 3/8] swiotlb: separate memory pool data from other
+ allocator data
+Message-ID: <20230713195307.08d68b01@meshulam.tesarici.cz>
+In-Reply-To: <e309b4a88ffb306c88a3b3cfe5e57483d73d20bc.1689261692.git.petr.tesarik.ext@huawei.com>
+References: <cover.1689261692.git.petr.tesarik.ext@huawei.com>
+	<e309b4a88ffb306c88a3b3cfe5e57483d73d20bc.1689261692.git.petr.tesarik.ext@huawei.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SJ1PR12MB6290:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1e484b36-0d94-4abe-3457-08db83c00819
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	lPBNLRPTzBAMQ6y8uAEeHbNcuu1v7YOUZs0dvH1IqUMqKLmVorZIpQ2BraZ1lbt6IFsqMZ9k+9FpjsTGf+3ikc3dh7YDirYg9gh3Xx9jXeDrh3fML96PfAsRR9BUGTG3Q+fxhKHkpzrDRTOVL8NRJ8Txs1dEw71/8Nxxcv8KSQPOu9DsH935KUJWawEB2lkbivBwNTrJimEhLSyCmtMP7GC2FCcTXPFe2WAoVUfUSkCTStVpZjtBLdwjRwzcuXQ3LBoM/Qo1CS/kF4FpiSZajXxuaDAW0aFwYcTlPsu8LFJezTdIi5MJpE6IDCnH0jhPi1acx6+A1jqAQQxZJPbaLW665FKl/Q7KDcp2ugmfLnTbdAzsbZhXLKXYMOImAa2kVwwrtaCI2o+X1v3nCjeUOKT2WSeY3//ZI8+3rvRJRkbqySfGGXpi6UbsbvRJCkGgng65NqThEPXYB3Aui0zH1jfSKSmZC9DYXXt3ivc/FgJhEzun9LZwYskIKHKwa7lwFdlIjM6ZexH1WM5HCCEFBs7QzHxOXqfKLADtm0OJYALY1xiBcEKy2vh3S+LIQLnU
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(376002)(346002)(366004)(136003)(451199021)(4326008)(6916009)(66476007)(66946007)(66556008)(316002)(2906002)(41300700001)(478600001)(8676002)(8936002)(5660300002)(54906003)(6486002)(6512007)(6506007)(53546011)(36756003)(186003)(38100700002)(26005)(86362001)(2616005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?bHlvOXdORk41VTMwQmIwNDhPaUZIRUlVUVJQczVjWHpVVk5IMWc0WVZlRS8v?=
- =?utf-8?B?S0NGR3FlcFY3elVzZ2xibURxSEJmU2gxWFhSKzBpYzUrQjRNT0I1NHVQQXNj?=
- =?utf-8?B?d2dBbVE5RUVNVlJsc1lxeXRFeHdlWHlIeUZnV3Y2UDdFVmNvVG1NRHlIaFBC?=
- =?utf-8?B?MEltWFMzb2MybHVmRmkxMysrTXdIaDVDd0s3MTM2S1g5RTRjYzlYZ1hFMmRq?=
- =?utf-8?B?cEFJNC85YVk4a0tYVUt6TzRNcDh5NlgveHpILzlYQmd0ejU1TGR4RlUyaENH?=
- =?utf-8?B?R0xoRXl0dkh6c1dId0d5cFVRYm1GZkFhRDE5T3Z2S0JSWlk1bTBBRmxBOVZ4?=
- =?utf-8?B?M1VsSUxOdWNBL01ud0NQU1Fhb1NjTG5OUXNib1ovYjNRL3FRcy9BbCtraUtv?=
- =?utf-8?B?UXZFc2gzaXlpb0pkVFRoaDY3SlBLN0owU0RPemM2ZXpnY3JHMWF4S3IyWTN3?=
- =?utf-8?B?VUdwWEcrTTVmM1JrTlpLcFBpb1BoazJBbk16eWJhcGFsUVpBV0t2dys5dEYx?=
- =?utf-8?B?Nzg5aW1iR2FUeXdMYk03SjVuL2F5SHk3RVJoeWQ2bTlSZDFQa2E3eTFLbGV3?=
- =?utf-8?B?ckRNRmExMUZIMDU1L3NITmZKcjRscDV6VlVlNjBGMmNHRURYNExXdG81SzR5?=
- =?utf-8?B?b3pXYm44YlVtTDByeWJZK25rcThDenlmaEhER3puekF2eWVZRXp3RnN3MVRP?=
- =?utf-8?B?bEd6VUZ1RnpqSWwzWisraGhvVDZHL2tPRUY4Zm5sdVY0M0t0ZTFJeHp5d2lw?=
- =?utf-8?B?czk4R2RCM3hkaDk1eTN0a0NxNkxjNjh5L0lyTjdVZHI0Rkt6bW8wVThqdjdL?=
- =?utf-8?B?bFFPZ2lKNGJYUEEwQXFGbTN0TEFsZDZxTXc5VFZZMjYxdHFJK2U2Z1lhZWJF?=
- =?utf-8?B?OW9NeGI5N0cyU1phTlBuT1gxVVUxbEx3aGljWURiNkplSGxlMGZIVE9zZ2xn?=
- =?utf-8?B?M092c2hlWnpoN3JVNEJtS0ZoaWVHcnZYc2dhNTM4Yk9YN3dQaS9ickhVdG5B?=
- =?utf-8?B?cUppc1VKQUhUMjVyN1pkY1N6c2xIU0lIQk5tZVJQQ2ZpcEFTbEs4RDNkSHJ6?=
- =?utf-8?B?aTkwK09LYWVNbEtHNWxrcGMxTGpXcVk4QVpOMlpwdEZwSlZJdkRCQlB1Zzlp?=
- =?utf-8?B?bG5qOUlzS0J2bFhCUThydXNoTzduZEErdThvcy9rckxLbWlKL0lYcDM4T1Rz?=
- =?utf-8?B?d2lDNDNVeFlCRGd2dnZ1Q3NLenJQLzhQTHY1VWdoVXBBMTBGQXpBL0xBNi83?=
- =?utf-8?B?NkVuSVZCSHlmbVo5WGZUTTNhQ0FpM2VqRjhXVFc3VGZ4QjhRZ3htRy9BTDhF?=
- =?utf-8?B?WExOczYyYnRZK3JzMGl1dkhqVlRNL1Zvdm9Id0FjWFN5SGszVEZHdkJZelNC?=
- =?utf-8?B?YTZ0OWtsT3BZNUlhV1ZTVnBvY2UzeGRVc2VQRDBndC9IcnJwNVgvS3hZVDU3?=
- =?utf-8?B?YWxiejNJd2EzQ1RmQTF0NXUrSnVESTF1NWJvZFJuY25FMTMzTWUzV2JDQm9G?=
- =?utf-8?B?OUdpKzFoYy8yNGt4Y3VxRkl4OTJ6d2dRSFB1NHFBelJPVWtpUWlGZzlrUGVB?=
- =?utf-8?B?TUdGRWVZZ3k1S1pJdExnK3YzZWpQUnZ1dmN4SGYvUFBDM0dGTzhDcVRiSHJw?=
- =?utf-8?B?eTRRRnJXcW5jVzVreWNzSGhIT3BpVTlFT2s2Mkk4ZGIwQ0g3UHNYZzJ6d0g1?=
- =?utf-8?B?WS8yZ2sxUmJQU2t0eTNqa2dMcXUxVEYrb3VNc0ZQMng4aUpmME5LTEJWNlRH?=
- =?utf-8?B?bWdZRXUvN2g1QlBmck5LY1RRNzdWQVZHekV6ajJTYXdLazVvRDdTQkR3OG9K?=
- =?utf-8?B?eDNRdmNNRElJd0RiaUFoMmdVZ2Evc3dZM1krVlNZeVdpTDkwd2NPTUsxdndx?=
- =?utf-8?B?UnU5MVdUdGV4Sk00TnZ4SklDUnh1ZWo2K0xtOC9OeWFtNWV1dzRVRHI5MnRI?=
- =?utf-8?B?Q2NoUFJBNE1kS3luNHVydEpxQVI3VEpMbkJHNzJkcFJiSGFHTWNmUGVNNWZ0?=
- =?utf-8?B?bTgyakM0MXBtblBVODRQZjBuVW5SNGlLTitzM1RKOFRCL0k5ZTRhTUljRFp2?=
- =?utf-8?B?QUpnVjdTRklOb3hBdnpiV05XUjJDcjVpZEkyOFl3QytKcTEvTGMwZXhrbWo0?=
- =?utf-8?Q?i0aKty0utyfmzbqgIfeE6HHKy?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1e484b36-0d94-4abe-3457-08db83c00819
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2023 16:41:39.7851
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pUPDa1J+zO2vbCsebidCUcH1psHBqq9XXpWaQ1zRz56tAYucQv96hfzj0i1cwZ78
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6290
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, Jul 14, 2023 at 12:16:16AM +0800, Michael Shavit wrote:
-> On Thu, Jul 13, 2023 at 10:29 PM Jason Gunthorpe <jgg@nvidia.com> wrote:
-> > It would make alot more sense if the STE value used by an unmanaged S1
-> > domain was located in/near the unmanaged domain or called 'unmanaged
-> > S1 STE' or something if it really has to be in the master. Why does
-> > this even need to be stored, can't we compute it?
+On Thu, 13 Jul 2023 17:23:14 +0200
+Petr Tesarik <petrtesarik@huaweicloud.com> wrote:
+
+> From: Petr Tesarik <petr.tesarik.ext@huawei.com>
 > 
-> struct s1_cfg* and struct s2_cfg* are precisely what is used to
-> compute an STE. For example, when s1_cfg is set, arm_smmu_write_strtab
-> will write the s1_cfg's CD table dma_pointer into the STE's
-> STRTAB_STE_0_CFG field. When neither are set, the STE fields are
-> written to enable bypass (or abort depending on the config).
-
-I guess I never really understood why these were precomputed and
-stored at all. Even more confusing is why we need to keep pointers to
-them anywhere? Compute the STE and CDE directly from the source data
-when you need it?
-
-eg If I want to install an IDENITY domain into a STE then I compute
-the STE for identity and go ahead and do it.
-
-> > I'd think the basic mental model should be to extract the STE from the
-> > thing you intend to install. Either the default CD table, or from the
-> > iommu_domain. ie some 'get STE from iommu_domain' function?
+> Carve out memory pool specific fields from struct io_tlb_mem. The original
+> struct now contains shared data for the whole allocator, while the new
+> struct io_tlb_pool contains data that is specific to one memory pool of
+> (potentially) many.
 > 
-> I don't follow this. When we attach a domain with pasid (whether
-> through SVA or the set_dev_pasid API) , we don't want to install an
-> entirely new CD table. 
+> Allocate both structures together for restricted DMA pools to keep the
+> error cleanup path simple.
+> 
+> Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
+> ---
+>  include/linux/device.h  |   2 +-
+>  include/linux/swiotlb.h |  47 +++++++----
+>  kernel/dma/swiotlb.c    | 181 +++++++++++++++++++++++++---------------
+>  3 files changed, 147 insertions(+), 83 deletions(-)
+> 
+> diff --git a/include/linux/device.h b/include/linux/device.h
+> index bbaeabd04b0d..d9754a68ba95 100644
+> --- a/include/linux/device.h
+> +++ b/include/linux/device.h
+> @@ -625,7 +625,7 @@ struct device_physical_location {
+>   * @dma_pools:	Dma pools (if dma'ble device).
+>   * @dma_mem:	Internal for coherent mem override.
+>   * @cma_area:	Contiguous memory area for dma allocations
+> - * @dma_io_tlb_mem: Pointer to the swiotlb pool used.  Not for driver use.
+> + * @dma_io_tlb_mem: Software IO TLB allocator.  Not for driver use.
+>   * @archdata:	For arch-specific additions.
+>   * @of_node:	Associated device tree node.
+>   * @fwnode:	Associated device node supplied by platform firmware.
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index 39313c3a791a..d669e11e2827 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -62,8 +62,7 @@ dma_addr_t swiotlb_map(struct device *dev, phys_addr_t phys,
+>  #ifdef CONFIG_SWIOTLB
+>  
+>  /**
+> - * struct io_tlb_mem - IO TLB Memory Pool Descriptor
+> - *
+> + * struct io_tlb_pool - IO TLB memory pool descriptor
+>   * @start:	The start address of the swiotlb memory pool. Used to do a quick
+>   *		range check to see if the memory was in fact allocated by this
+>   *		API.
+> @@ -73,15 +72,36 @@ dma_addr_t swiotlb_map(struct device *dev, phys_addr_t phys,
+>   * @vaddr:	The vaddr of the swiotlb memory pool. The swiotlb memory pool
+>   *		may be remapped in the memory encrypted case and store virtual
+>   *		address for bounce buffer operation.
+> - * @nslabs:	The number of IO TLB blocks (in groups of 64) between @start and
+> - *		@end. For default swiotlb, this is command line adjustable via
+> - *		setup_io_tlb_npages.
+> + * @nslabs:	The number of IO TLB slots between @start and @end. For the
+> + *		default swiotlb, this can be adjusted with a boot parameter,
+> + *		see setup_io_tlb_npages().
+> + * @used:	The number of used IO TLB slots.
+> + * @late_alloc:	%true if allocated using the page allocator.
+> + * @nareas:	Number of areas in the pool.
+> + * @area_nslabs: Number of slots in each area.
+> + * @areas:	Array of memory area descriptors.
+> + * @slots:	Array of slot descriptors.
+> + */
+> +struct io_tlb_pool {
+> +	phys_addr_t start;
+> +	phys_addr_t end;
+> +	void *vaddr;
+> +	unsigned long nslabs;
+> +	unsigned long used;
 
-The master object owns an optional CD table. If it is exsists it is
-used by every domain that is attached to that master.
+Oops. This member should not be re-introduced here after I removed it
+with commit efa76afdde16...
 
-In the code flow there are two entry points to attach a domain, attach
-to a PASID or attach to a RID.
+I'm going to fix this in a v5, but I don't think it's critical enough
+to make an immediate resend.
 
-For attach to PASID the code should always force the master to have a
-CD table and then attach the domain to the CD table.
-
-For attach to RID the code should do a bunch of checks and decide if
-it should force the master to have a CD table and attach the domain to
-that, or directly attach the domain to the STE.
-
-When the master gains a CD table then the CD table object becomes
-attached to the STE. In all cases we should be able to point to the
-object the STE points at and don't need a cfg or pointer to cfg since
-the object itself can provide the cfg.
-
-In all cases when you go to compute a STE you figure out what object
-is attached to it (CD or domain), compute the correct STE for that
-object, the set it. Same for he CDE, query the correct CDE from the
-iommu_domain when you attach it to the table.
-
-There should be no such thing as a "default" STE, and I question if it
-makes sense to even precompute the s1/s2_cfg values during finalize at
-all..
-
-> We want to write something (page-table pointer) to a common CD
-> table. Where should the s1_cfg which owns that common table live? 
-
-I would suggest a 'cd table struct' that as all the stuff related to
-the CD table, including an API to cacluate the STE this CD table
-requires. If not in actual code with a real struct, then in a logical
-sense in that a chunk of the master struct is the "CD table".
-
-> I thought we concluded that it should be owned by the
-> arm_smmu_master rather than any domain (to avoid dependencies
-> between domains a-la aux-domain). 
-
-Yes, I'm not saying anything against that, just how and where the STE
-and CDE values flow around.
-
-Jason
+Petr T
