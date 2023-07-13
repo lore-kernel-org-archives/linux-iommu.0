@@ -1,34 +1,34 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEF537C
-	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 03:44:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBF427C
+	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 03:49:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689219849; x=1720755849;
+  t=1689220143; x=1720756143;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=dSMjRg8ZP7ic8vMjHznYMQB4EEK/y11162LRsTfQBE4=;
-  b=J95AV6JfeOdDSiL0yJLeT/Z6N61DkacaR4TttemrO90mrQ7jsfvit+Uu
-   cwP7i1j1/ggLl1VaWrFDUT6TgWC280KJpjCT0Vl8v0yJr1Yg8P9Ze47Xl
-   IrCroOgRAUXz73EJbm4g0i4jCk70PRCghi1MW2d71GV217x9pUOrxHW5Z
-   5FWZwLGh5tMT3njpIlksM7HlWRS0WfZjlGRUww4KDMDaleH8YdDwtJT+f
-   zU/jQxNFWOgE9PQRmDn5Ab7wxr6OrzssTbXwdIFJzq9IMLoxbwAZJOBNz
-   DJKJ4huaT6H3BQYopE9rLHvtDFzwsGEtSv8voxhHhNJS34T1xXyDqOItF
+  bh=hSv0ZhAHohd3J6QHRMr2vmInOR8hk9yANyQFAYJSxIQ=;
+  b=JlMRnvQoTvyQwQEBGXb5C13voYstinoO6O7zGC6q2CDzeAAMybVtVCWG
+   d7yAq9HpWPDq6uBKJNcp/LGhb/UwaC5wLpNv7Yw9arW8tv+6Qnfn2HnkP
+   fF4dKqXH3rf4hPyw/WZzpSm8PD94Ywp1ohz9fUWv7AhBzEgNpmLVbnBC3
+   jF4B9REpU8EPvZg5Q2BUGbWxobxzC4ZGJHopfi2EkhVjBcLf08G5jiFjG
+   OZL7yA3kRMJVtS5viEqAN1mY99ya6dSK7GR5LdO5f6V9Hlvnb54/47oYm
+   i4uQXQtSwYZfkIzwy/BNL9XUJbNJjc7kG5sBbG2XC66Aw8hgPmQX9FOSr
    w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10769"; a="363945255"
+X-IronPort-AV: E=McAfee;i="6600,9927,10769"; a="367705082"
 X-IronPort-AV: E=Sophos;i="6.01,201,1684825200"; 
-   d="scan'208";a="363945255"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2023 20:44:03 -0700
+   d="scan'208";a="367705082"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2023 20:49:03 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10769"; a="715788445"
+X-IronPort-AV: E=McAfee;i="6600,9927,10769"; a="791867064"
 X-IronPort-AV: E=Sophos;i="6.01,201,1684825200"; 
-   d="scan'208";a="715788445"
+   d="scan'208";a="791867064"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.187.96]) ([10.252.187.96])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2023 20:43:58 -0700
-Message-ID: <cf793119-591f-19b5-b708-45c6f3eadc79@linux.intel.com>
-Date: Thu, 13 Jul 2023 11:43:55 +0800
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2023 20:48:58 -0700
+Message-ID: <cde137d4-df2e-7974-3092-970e63482768@linux.intel.com>
+Date: Thu, 13 Jul 2023 11:48:54 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -39,58 +39,133 @@ User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.13.0
 Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>,
+ "Liu, Yi L" <yi.l.liu@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>,
  "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
  "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 9/9] iommu: Use fault cookie to store iopf_param
-To: "Tian, Kevin" <kevin.tian@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <20230711010642.19707-1-baolu.lu@linux.intel.com>
- <20230711010642.19707-10-baolu.lu@linux.intel.com>
- <20230711150249.62917dad@jacob-builder>
- <e26db44c-ec72-085d-13ee-597237ba2134@linux.intel.com>
- <BN9PR11MB527640E6FBD5271E8AF9D59B8C37A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Subject: Re: [PATCH 1/9] iommu: Move iommu fault data to linux/iommu.h
 Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
+References: <20230711010642.19707-1-baolu.lu@linux.intel.com>
+ <20230711010642.19707-2-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276859ED6825C0A496C9C5E8C31A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <38c31fb0-1068-4855-c896-27d6a2bca747@linux.intel.com>
+ <20230712093344.GA507884@myrica>
+ <BN9PR11MB5276C09E743E99D92BB5C1B28C37A@BN9PR11MB5276.namprd11.prod.outlook.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB527640E6FBD5271E8AF9D59B8C37A@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <BN9PR11MB5276C09E743E99D92BB5C1B28C37A@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/7/13 11:24, Tian, Kevin wrote:
->> From: Baolu Lu <baolu.lu@linux.intel.com>
->> Sent: Wednesday, July 12, 2023 11:13 AM
+On 2023/7/13 11:22, Tian, Kevin wrote:
+>> From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+>> Sent: Wednesday, July 12, 2023 5:34 PM
 >>
->> On 2023/7/12 6:02, Jacob Pan wrote:
->>> On Tue, 11 Jul 2023 09:06:42 +0800, Lu Baolu<baolu.lu@linux.intel.com>
->>> wrote:
->>>
->>>> @@ -158,7 +158,7 @@ int iommu_queue_iopf(struct iommu_fault *fault,
->>>> struct device *dev)
->>>>    	 * As long as we're holding param->lock, the queue can't be
->>>> unlinked
->>>>    	 * from the device and therefore cannot disappear.
->>>>    	 */
->>>> -	iopf_param = param->iopf_param;
->>>> +	iopf_param = iommu_get_device_fault_cookie(dev, 0);
->>> I am not sure I understand how does it know the cookie type is iopf_param
->>> for PASID 0?
->>>
->>> Between IOPF and IOMMUFD use of the cookie, cookie types are different,
->>> right?
->>>
+>> On Wed, Jul 12, 2023 at 10:07:22AM +0800, Baolu Lu wrote:
+>>>>> +/**
+>>>>> + * struct iommu_fault_unrecoverable - Unrecoverable fault data
+>>>>> + * @reason: reason of the fault, from &enum iommu_fault_reason
+>>>>> + * @flags: parameters of this fault (IOMMU_FAULT_UNRECOV_*
+>> values)
+>>>>> + * @pasid: Process Address Space ID
+>>>>> + * @perm: requested permission access using by the incoming
+>> transaction
+>>>>> + *        (IOMMU_FAULT_PERM_* values)
+>>>>> + * @addr: offending page address
+>>>>> + * @fetch_addr: address that caused a fetch abort, if any
+>>>>> + */
+>>>>> +struct iommu_fault_unrecoverable {
+>>>>> +	__u32	reason;
+>>>>> +#define IOMMU_FAULT_UNRECOV_PASID_VALID		(1 <<
+>> 0)
+>>>>> +#define IOMMU_FAULT_UNRECOV_ADDR_VALID		(1 <<
+>> 1)
+>>>>> +#define IOMMU_FAULT_UNRECOV_FETCH_ADDR_VALID	(1 <<
+>> 2)
+>>>>> +	__u32	flags;
+>>>>> +	__u32	pasid;
+>>>>> +	__u32	perm;
+>>>>> +	__u64	addr;
+>>>>> +	__u64	fetch_addr;
+>>>>> +};
+>>>>
+>>>> Currently there is no handler for unrecoverable faults.
 >>
->> The fault cookie is managed by the code that delivers or handles the
->> faults. The sva and IOMMUFD paths are exclusive.
+>> Yes those were meant for guest injection. Another goal was to replace
+>> report_iommu_fault(), which also passes unrecoverable faults to host
+>> drivers. Three drivers use that API:
+>> * usnic just prints the error, which could be done by the IOMMU driver,
+>> * remoteproc attempts to recover from the crash,
+>> * msm attempts to handle the fault, or at least recover from the crash.
+> 
+> I was not aware of them. Thanks for pointing out.
+> 
+>>
+>> So the first one can be removed, and the others could move over to IOPF
+>> (which may need to indicate that the fault is not actually recoverable by
+>> the IOMMU) and return IOMMU_PAGE_RESP_INVALID.
+> 
+> Yep, presumably we should have just one interface to handle fault.
+> 
+>>
+>>>>
+>>>> Both Intel/ARM register iommu_queue_iopf() as the device fault handler.
+>>>> It returns -EOPNOTSUPP for unrecoverable faults.
+>>>>
+>>>> In your series the common iommu_handle_io_pgfault() also only works
+>>>> for PRQ.
+>>>>
+>>>> It kinds of suggest above definitions are dead code, though arm-smmu-v3
+>>>> does attempt to set them.
+>>>>
+>>>> Probably it's right time to remove them.
+>>>>
+>>>> In the future even if there might be a need of forwarding unrecoverable
+>>>> faults to the user via iommufd, fault reasons reported by the physical
+>>>> IOMMU doesn't make any sense to the guest.
+>>
+>> I guess it depends on the architecture?  The SMMU driver can report only
+>> stage-1 faults through iommu_report_device_fault(), which are faults due
+>> to a guest misconfiguring the tables assigned to it. At the moment
+>> arm_smmu_handle_evt() only passes down stage-1 page table errors, the
+>> rest
+>> is printed by the host.
+> 
+> In that case the kernel just needs to notify the vIOMMU an error happened
+> along with access permissions (r/w/e/p). vIOMMU can figure out the reason
+> itself by walking the stage-1 page table. Likely it will find the same reason
+> as host reports, but that sounds a clearer path in concept.
+> 
+>>
+>>>> Presumably the vIOMMU
+>>>> should walk guest configurations to set a fault reason which makes sense
+>>>> from guest p.o.v.
+>>>
+>>> I am fine to remove unrecoverable faults data. But it was added by Jean,
+>>> so I'd like to know his opinion on this.
+>>
+>> Passing errors to the guest could be a useful diagnostics tool for
+>> debugging, once the guest gets more controls over the IOMMU hardware,
+>> but
+>> it doesn't have a purpose beyond that. It could be the only tool
+>> available, though: to avoid a guest voluntarily flooding the host logs by
+>> misconfiguring its tables, we may have to disable printing in the host
+>> errors that come from guest misconfiguration, in which case there won't be
+>> any diagnostics available for guest bugs.
+>>
+>> For now I don't mind if they're removed, if there is an easy way to
+>> reintroduce them later.
 >>
 > 
-> what about siov? A siov-capable device can support sva and iommufd
-> simultaneously.
+> We can keep whatever is required to satisfy the kernel drivers which
+> want to know the fault.
+> 
+> But for anything invented for old uAPI (e.g. fault_reason) let's remove
+> them and redefine later when introducing the support to the user.
 
-For siov case, the pasid should be global. RID and each pasid are still
-exclusive, so I don't see any problem. Did I overlook anything?
+Okay, I will do this in the next version.
 
 Best regards,
 baolu
