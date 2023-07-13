@@ -1,95 +1,85 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C55B61F163
-	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 15:55:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689263710; x=1720799710;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=HzDe1rmkDf9NDLJwnlBTzYnFxwjCcY33RbbgJLyqs1c=;
-  b=ZT5Rcx9bzgM2HbpvI4s3iTZAbMj55EedINvDaWCVqslHMGcNut+WxFwn
-   Cd/vAUDwcS1B872DAI5OJMXw2RpH89PdS7OGPOge+u4ajNYU1hbKir6Yk
-   RyIMn0LXrnBnm/jij6Yrsnjxvahe2ANErTkoHflHnSxH3KMbjLF8C/Bj0
-   rhgrjuq/qzYJ4wyJI3xZYrSCDyZynDVY38xwdVBaHOj604EIuBWMuUR0W
-   rXgGgDj7xdFwkyL7BZnWZ9s441lSyyUjssQqikiGTfiRxY22qd/+Z+2yd
-   AEiHYvR64N1BrCNGOiXg+AAmAimaI6z8uOuHL1JGNV0jLhJWH2mEhzpCA
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="428995542"
-X-IronPort-AV: E=Sophos;i="6.01,203,1684825200"; 
-   d="scan'208";a="428995542"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2023 08:55:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="672311580"
-X-IronPort-AV: E=Sophos;i="6.01,203,1684825200"; 
-   d="scan'208";a="672311580"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2023 08:55:09 -0700
-Date: Thu, 13 Jul 2023 09:00:07 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel
- <joro@8bytes.org>, Jean-Philippe Brucker <jean-philippe@linaro.com>, "Robin
- Murphy" <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>, Will
- Deacon <will@kernel.org>, "Liu, Yi L" <yi.l.liu@intel.com>, "Yu, Fenghua"
- <fenghua.yu@intel.com>, "Luck, Tony" <tony.luck@intel.com>,
- jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v10 2/7] iommu: Move global PASID allocation from SVA to
- core
-Message-ID: <20230713090007.40ef2ac3@jacob-builder>
-In-Reply-To: <BN9PR11MB527619C7106BE91167B9EC118C37A@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20230712163355.3177511-1-jacob.jun.pan@linux.intel.com>
-	<20230712163355.3177511-3-jacob.jun.pan@linux.intel.com>
-	<BN9PR11MB527619C7106BE91167B9EC118C37A@BN9PR11MB5276.namprd11.prod.outlook.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E142B1F176
+	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 16:16:54 +0000 (UTC)
+Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-401d1d967beso333651cf.0
+        for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 09:16:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1689265013; x=1691857013;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KIGK1YyVHYZJI7AzNx8908/vhc/B3w7S4pe5DEK+mb0=;
+        b=uBZ7B6Zp7EpOVHlAWk+Xb4+1TnfJlI2oH/iQ+Xztosvc4TV7SX1M/zrx6B4Rdhmt9Q
+         Sht7ScVZahLgJXbdq7YTR3rylVnso4JJTzYc67XLXMpJ3IWApKIrD/T3d4vKgSKKNf8x
+         ymhPMEcB6aXYoU6bHLTW/u3CNE9UhpVdBoKMpl0rt63TxHl+a6Yk/7fJDQYXGrjQWTqC
+         wUT5gO/GFlxcD9sqHhzpjIU3oNj5NG4JkhL47DLx5bw+BRfg3DngcmIAX9USdcQgEbLs
+         yUZ3WadqYOt3uNCw3II/023hqnWLIYkQrvNQZMx1PrXLPn9bNiS1heYxcUdw1gjK7xDp
+         PYdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1689265013; x=1691857013;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=KIGK1YyVHYZJI7AzNx8908/vhc/B3w7S4pe5DEK+mb0=;
+        b=HWwgeYTbceq2BTOUdvY2QJWpMWi6PA9tbNYII+Mk1WbJzQ/bRAfur/b+eYJ6QHGwIh
+         MrzAJ5VZm8jJDR7xY12uXqGTGolW4dVKfX73GYGWgpx24JSWp++qLDw16QL3bEbPpyMo
+         38y34wHdflCxuPARiiQUj8E9kUTcdrpHoXql5f9vTN42PD5XxbNzB6lCuCqmTTc6Sq7m
+         f4GkhxVP6LSF2f3ZG2ROEHKp9Wd8TFNV8wPKvdgM/F4NeUVIJ4aN7odvLXCwmE5/RKQM
+         FyTmy3rksr00yA18YBLKNIBxO4v8G7Dzrt3dpqdkmOC7M3TYiTy3SzjU5ciQd1lPzW+z
+         rDPQ==
+X-Gm-Message-State: ABy/qLbXd4Trom6h2zv3aqjHeFI+GddPsYQVaHNF6oaw/94MB9H3v/dA
+	XoF/LFI8Z2p9AfOlTwyqCItmNBw76swYPaocBK4Jpg==
+X-Google-Smtp-Source: APBJJlFkh0J4qQCApfksef5WD+OIFNG9dkqTt8Lz2fZbUrMErakuqKo9MIIywxsc27dtNAaDAMMboaoPGHuyWPp4zAQ=
+X-Received: by 2002:ac8:5a8b:0:b0:3f8:5b2:aef2 with SMTP id
+ c11-20020ac85a8b000000b003f805b2aef2mr522383qtc.26.1689265013503; Thu, 13 Jul
+ 2023 09:16:53 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20230621063825.268890-1-mshavit@google.com> <20230621063825.268890-3-mshavit@google.com>
+ <ZK9RycgNAVrxe343@Asurada-Nvidia> <CAKHBV26wi+xKnNjo-R+QOcVLPH2KJTFP+mF4CW1xE61nOdF5GA@mail.gmail.com>
+ <ZLAKQw+DzcpSRSyi@nvidia.com>
+In-Reply-To: <ZLAKQw+DzcpSRSyi@nvidia.com>
+From: Michael Shavit <mshavit@google.com>
+Date: Fri, 14 Jul 2023 00:16:16 +0800
+Message-ID: <CAKHBV25YadRVFiag5z5Yc13L093ScWkCjAOCd=VuGm2RUaDyzA@mail.gmail.com>
+Subject: Re: [PATCH v4 02/13] iommu/arm-smmu-v3: Add smmu_s1_cfg to smmu_master
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, jean-philippe@linaro.org, 
+	baolu.lu@linux.intel.com, linux-arm-kernel@lists.infradead.org, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Kevin,
+On Thu, Jul 13, 2023 at 10:29=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> w=
+rote:
+> It would make alot more sense if the STE value used by an unmanaged S1
+> domain was located in/near the unmanaged domain or called 'unmanaged
+> S1 STE' or something if it really has to be in the master. Why does
+> this even need to be stored, can't we compute it?
 
-On Thu, 13 Jul 2023 07:42:01 +0000, "Tian, Kevin" <kevin.tian@intel.com>
-wrote:
+struct s1_cfg* and struct s2_cfg* are precisely what is used to
+compute an STE. For example, when s1_cfg is set, arm_smmu_write_strtab
+will write the s1_cfg's CD table dma_pointer into the STE's
+STRTAB_STE_0_CFG field. When neither are set, the STE fields are
+written to enable bypass (or abort depending on the config).
 
-> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Sent: Thursday, July 13, 2023 12:34 AM
-> > 
-> >  }
-> > +
-> > +ioasid_t iommu_alloc_global_pasid_dev(struct device *dev)
-> > +{
-> > +	int ret;
-> > +
-> > +	/* max_pasids == 0 means that the device does not support
-> > PASID */
-> > +	if (!dev->iommu->max_pasids)
-> > +		return IOMMU_PASID_INVALID;
-> > +
-> > +	/*
-> > +	 * max_pasids is set up by vendor driver based on number of
-> > PASID bits
-> > +	 * supported but the IDA allocation is inclusive.
-> > +	 */
-> > +	ret = ida_alloc_range(&iommu_global_pasid_ida,
-> > IOMMU_FIRST_GLOBAL_PASID,
-> > +			      dev->iommu->max_pasids - 1, GFP_KERNEL);
-> > +	return ret < 0 ? IOMMU_PASID_INVALID : ret;
-> > +}
-> > +EXPORT_SYMBOL_GPL(iommu_alloc_global_pasid_dev);  
-> 
-> nit. Just call it iommu_alloc_global_pasid.
+> I'd think the basic mental model should be to extract the STE from the
+> thing you intend to install. Either the default CD table, or from the
+> iommu_domain. ie some 'get STE from iommu_domain' function?
 
-will do. it will be symmetric.
-
-Thanks,
-
-Jacob
+I don't follow this. When we attach a domain with pasid (whether
+through SVA or the set_dev_pasid API) , we don't want to install an
+entirely new CD table. We want to write something (page-table pointer)
+to a common CD table. Where should the s1_cfg which owns that common
+table live? I thought we concluded that it should be owned by the
+arm_smmu_master rather than any domain (to avoid dependencies between
+domains a-la aux-domain). With this change, even attach_dev with a DMA
+or UNMANAGED domain is now just preparing a single entry into this
+common CD table.
