@@ -1,145 +1,113 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2087.outbound.protection.outlook.com [40.107.93.87])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DB40469F
-	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 04:45:48 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fg+oyJatApsBWRk+PFkdKKrhtgsiygR+gMLDtdThbJXsa3Ag9wn4GG7ORJy0jtnhsJzH8YWtkTcKryZ6Luj22AjzuoDqrZWL/1YGpZeJ8uLuBnlTyfmu9OAPLWnA6sWmWclJtgDaiAqZMs9N5tk3FsuNJa01todQJ+UPFXq2qYK5mxJt/DXmgUTQDv3w+cnnGbaCpIEwZXHib3Wse49Rs4tERyA8ueAJIrJvO3vJjUUI2MasZFljMXPCKIuWvCHa/E563K28uXD4SDZe0Qd8MZ97sc8256oSMOMVKAEa/JUAr02nxwkhx7xhvJtneJxd2goCxnrFE9sYR303HCgtBA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kBna/mP+DBbTKTY09KfvSsXmz2PzLsEWPPoHWesl0ug=;
- b=e64BY4tkataOTa2myYaFO4B6+A6IirUqXTy+Gq7yDqovCRKBN+vAAftACUmL4OL+PXjRFicFxHRXT+ly2pCSCc1HR03BXCC4UhV/Es39Fc5ac5SyDaadXC/tpYvoi0Nqu64cnS51UJJWoWfexiWYrzRV9QQJ28L1qoaJ8B0c0Zan7MhlCtP0NMCE0IsQfGsz9DvT4IqKUyWC72uRSUKmXx2ArjNqTg+80WSFm06eFc/lB8l0tr8MTOR9YhOQCVGNPHqeX+xJk5LwkPphJCGre4tuD478bDfdwv4TYDVZb7IW8SCQsfg7SNLzNmMJKZhe2/BmCKB/eiTRh7XMm35nyA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kBna/mP+DBbTKTY09KfvSsXmz2PzLsEWPPoHWesl0ug=;
- b=qX2B3isClRbrRrNZMR/FjhURLqI0Zhz3237fUUI7Dnj9+dcFW/FUVAcbCMZWcg5JXqNLjwTgFu2hYf973WjpO9aYxny1yZZmUWkpcwDcLWNb+5h4LtpsnottClx8WZPohe6n6K1lA8kxfs1Q1X4HW9mJII5pSGNFg5frU/tlfLuU+mbsiVZawJ9/fJ7o0j3E9fB2KJlXmjUNFcnIdNQKRFPqzLTltnWqBnqYx9n5IVW9gs+SYA2pqsMXnXLmLMl0uHshvgzJEssdsn/s9RUZX2G6c4fSqAAhaw0IqRktJF4xhYAcYwFeyVZvyDp2GCf6mQ6jRNBxVdQT6RV0oSF5lw==
-Received: from SJ0PR13CA0240.namprd13.prod.outlook.com (2603:10b6:a03:2c1::35)
- by DS7PR12MB5838.namprd12.prod.outlook.com (2603:10b6:8:79::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6588.20; Thu, 13 Jul
- 2023 04:45:47 +0000
-Received: from DM6NAM11FT008.eop-nam11.prod.protection.outlook.com
- (2603:10b6:a03:2c1:cafe::9d) by SJ0PR13CA0240.outlook.office365.com
- (2603:10b6:a03:2c1::35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6565.18 via Frontend
- Transport; Thu, 13 Jul 2023 04:45:46 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- DM6NAM11FT008.mail.protection.outlook.com (10.13.172.85) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6588.20 via Frontend Transport; Thu, 13 Jul 2023 04:45:46 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 12 Jul 2023
- 21:45:29 -0700
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.37; Wed, 12 Jul 2023 21:45:28 -0700
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Wed, 12 Jul 2023 21:45:28 -0700
-Date: Wed, 12 Jul 2023 21:45:26 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Michael Shavit <mshavit@google.com>
-CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
- Roedel" <joro@8bytes.org>, <jean-philippe@linaro.org>, <jgg@nvidia.com>,
-	<baolu.lu@linux.intel.com>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 07/13] iommu/arm-smmu-v3: Keep track of attached ssids
-Message-ID: <ZK+BZhwbo8JLMPI2@Asurada-Nvidia>
-References: <20230621063825.268890-1-mshavit@google.com>
- <20230621063825.268890-8-mshavit@google.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFA13469F
+	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 06:52:03 +0000 (UTC)
+Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-4f4b2bc1565so636771e87.2
+        for <iommu@lists.linux.dev>; Wed, 12 Jul 2023 23:52:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1689231122; x=1691823122;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=rjioKYAE1CabhlLXtOYpTpcQpvMCu8spfeCxR4rurZ0=;
+        b=Ub0AcfBwr4qZaN1b5EuddxfYLDiavFGhJgnnzehpRCG54rbfHFjK0NRWs22HqazOg/
+         7+USN0vVUzA7Rm5rIFKqNJ00fuQo3us8YG17i668XQBAPDKxp8jI3yUhWyA7xdFQ8OSc
+         031+iKbTtvrhYCHXbDq1PL/u4w3CR8ri3mGDIID9OORzmvt+r9vbWCNOBZc/VFmYBzej
+         aVozqoCEafC5HdbU13p9oBV+8R4ngGCwVC834Y5BnHYxUxuCyjM1CzwqqQenRlzjahxl
+         x+NKv4nuPGCkbApOe4bFvORgRT+ER8BiRgXxwyKWSw9ugFEfXU3zayaK81GOU0eM/a69
+         hj5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1689231122; x=1691823122;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=rjioKYAE1CabhlLXtOYpTpcQpvMCu8spfeCxR4rurZ0=;
+        b=ajav0NRNtsSJXx8LqgrF+TgY6htsi2ifUX0X4HdgXw681uOyz1zuz7grczSDZyTyCF
+         SPFKlXnfjlvChkqaKP/8mo1ZRNyqBdYfA6y7VdNqN2g/kIA0F6ViNBuTtgcWaBOiquzJ
+         S5ADJHJjlpQLEs3iWU40ctVzQF9AVLWiddA22ZoXXAhkOZiGvcUotCgSqadicPMmjfhW
+         5XkKpTQAaaVdP3pJF7NSSD6R89ivx+IBiWZ3CGMm1TO5v2DBOp7BQw79TCKtMYSQPtcg
+         nP6hntiAc9n5kXRrpzwHsVH/3mxc25XlitscctuxyUVMeGhGquZfbMYxCwiWNElFmMWj
+         niUg==
+X-Gm-Message-State: ABy/qLatuGSFhlOW5AL1XQZj43LVYJ0UKhJdPIroCv3nL2OLS/zV/oVa
+	HLPVadufceaDGre81BeAVko=
+X-Google-Smtp-Source: APBJJlF9RwSK0SfzuOclhMfYGva33E1IsP+9+wjEV6a2OCouK3ZdXv2iGFDIuCWeHAJ2t3hZiTg4/g==
+X-Received: by 2002:a05:6512:3f5:b0:4fb:758c:74ed with SMTP id n21-20020a05651203f500b004fb758c74edmr406388lfq.35.1689231121362;
+        Wed, 12 Jul 2023 23:52:01 -0700 (PDT)
+Received: from orome (p200300e41f4b7100f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f4b:7100:f22f:74ff:fe1f:3a53])
+        by smtp.gmail.com with ESMTPSA id u8-20020a056402064800b0051e2549c4f9sm3899928edx.47.2023.07.12.23.52.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Jul 2023 23:52:00 -0700 (PDT)
+Date: Thu, 13 Jul 2023 08:51:59 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Minjie Du <duminjie@vivo.com>
+Cc: Krishna Reddy <vdumpa@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	"open list:TEGRA IOMMU DRIVERS" <linux-tegra@vger.kernel.org>,
+	"open list:IOMMU SUBSYSTEM" <iommu@lists.linux.dev>,
+	open list <linux-kernel@vger.kernel.org>,
+	opensource.kernel@vivo.com
+Subject: Re: [PATCH v2] iommu: remove redundant parameter check in
+ tegra_smmu_debugfs_init()
+Message-ID: <ZK-fD7inmxjwPyL5@orome>
+References: <20230713025653.1540-1-duminjie@vivo.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="xgyxSMOb3u6QlwA/"
 Content-Disposition: inline
-In-Reply-To: <20230621063825.268890-8-mshavit@google.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT008:EE_|DS7PR12MB5838:EE_
-X-MS-Office365-Filtering-Correlation-Id: 036e7633-d91a-4794-8a0e-08db835c05fc
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	YHydVRYULKjk1CM4toGJXc3zR321pUf/a5D//bc725DNY9zmauhViU712XWf7VGDIlVZYMigf9O2xhU9+//L9AYX/VESONo0sATrLGIMOt0BaXKxd94b3UxP2Lv6Lzglr61sPp/tBGHAiB5SOHZRjgByTJ3IAxyxeVzxLupEMHE0IH8wL6RhhsWw0+5EJbapPu7HjDors9C3NslvQAVz6Mw1OU8f0In3C35S6eMvlcAMdd6DeRACHRqUGlio/qObmqbJ3sVYW2mGKZ7+YNPwKIvSelfq4m2E0c2AR7NPlE+oUDEjV/zwuNbLzppLLyYQpk92CpCUgzP6VRl6RS+eBhn125PBnMxXMYqPbNhNqQS5JOlE3Va3D22OibnoUbzi6r025mXGVR46O2QlKA+l86oJNMIQVxLAUsH11KC43r+xAbtM2z61ntjKkqwWEwW0hxKO9jzwNob9t3DZe6qBM7rzpZWQpJJ//toFzIcj9sJg2fmVVdGXICvnowExPAAImJql2MIG/cMuMI9bEcQi2hYifu2XYxKDDq51nOcLppQhDoL98clSRwU9dcQ+/T0VYpmjD1SvgyW0UTsILPOM1mjYbYIPnovE5RelB+Z1qJsRtl00oZLmptv8SBfxLjOe1hUxaYjfh45+L1phOAQ0s7ewi5dTREx8NwzQNVdIjTVk9IDhf9IsZQhs/Gr1JEBoVARku0I1nWM3aLWwWNAmzSQYmWsWnG54IOHvQqz3d0MkdZgv8XPLBba+jjFOaVoKUwzff7ybkVQcfR3kT9AI6A==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(346002)(136003)(396003)(376002)(39860400002)(451199021)(40470700004)(46966006)(36840700001)(5660300002)(2906002)(83380400001)(426003)(36860700001)(47076005)(8676002)(70586007)(33716001)(82740400003)(356005)(7636003)(8936002)(40460700003)(70206006)(6916009)(40480700001)(186003)(41300700001)(336012)(55016003)(4326008)(9686003)(316002)(86362001)(26005)(82310400005)(54906003)(478600001)(67856001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2023 04:45:46.2473
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 036e7633-d91a-4794-8a0e-08db835c05fc
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT008.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5838
+In-Reply-To: <20230713025653.1540-1-duminjie@vivo.com>
+User-Agent: Mutt/2.2.10 (2023-03-25)
 
-On Wed, Jun 21, 2023 at 02:37:19PM +0800, Michael Shavit wrote:
 
-> -int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
-> -                           unsigned long iova, size_t size)
-> +/*
-> + * If ssid is non-zero, issue atc invalidations with the given ssid instead of
-> + * the one the domain is attached to. This is used by SVA since it's pasid
-> + * attachments aren't recorded in smmu_domain yet.
-> + */
-> +int arm_smmu_atc_inv_domain_ssid(struct arm_smmu_domain *smmu_domain, int ssid,
-> +                                unsigned long iova, size_t size)
-[..]
-> @@ -1823,25 +1835,37 @@ int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
->         if (!atomic_read(&smmu_domain->nr_ats_masters))
->                 return 0;
-> 
-> -       arm_smmu_atc_inv_to_cmd(ssid, iova, size, &cmd);
-> +       arm_smmu_atc_inv_to_cmd(iova, size, &cmd);
-> 
->         cmds.num = 0;
-> 
-> -       spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-> -       list_for_each_entry(master, &smmu_domain->devices, domain_head) {
-> +       spin_lock_irqsave(&smmu_domain->attached_domains_lock, flags);
-> +       list_for_each_entry(attached_domain, &smmu_domain->attached_domains,
-> +                           domain_head) {
-> +               master = attached_domain->master;
->                 if (!master->ats_enabled)
->                         continue;
-> +               if (ssid != 0)
-> +                       arm_smmu_atc_inv_cmd_set_ssid(ssid, &cmd);
-> +               else
-> +                       arm_smmu_atc_inv_cmd_set_ssid(attached_domain->ssid, &cmd);
-> 
->                 for (i = 0; i < master->num_streams; i++) {
->                         cmd.atc.sid = master->streams[i].id;
->                         arm_smmu_cmdq_batch_add(smmu_domain->smmu, &cmds, &cmd);
->                 }
->         }
+--xgyxSMOb3u6QlwA/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-And I don't quite get this part. Prior to this change, it issues
-one ATC_INV command covering all ATC entries per comments inside
-arm_smmu_atc_inv_to_cmd(). But now we replace that single command
-with all attached subdomains in the list? Any reason for such a
-change here?
+On Thu, Jul 13, 2023 at 10:56:53AM +0800, Minjie Du wrote:
+> debugfs_create_file() will simply return early if
+>  smmu->debugfs is an error pointer.
 
-Thanks
-Nicolin
+The formatting is a little weird here.
+
+> Make smmu->debugfs check delete in tegra_smmu_debugfs_init().
+
+I think something like this is better:
+
+  Delete smmu->debugfs check in ...
+
+Or perhaps combine both sentences:
+
+  debugfs_create_file() will return early if smmu->debugfs is an error
+  pointer, so an extra error check is not needed.
+
+With that fixed:
+
+Acked-by: Thierry Reding <treding@nvidia.com>
+
+--xgyxSMOb3u6QlwA/
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmSvnwwACgkQ3SOs138+
+s6FbVA/9FLgDdG1LKZ0l03k73D7pZ4qnDFuB6IVJdEl+WnEIIbuytEtjgVi3Qu3A
++5DGHteJ8CZAiBVtZit97kUvHSlWFvBV4Nk0wi2JMNtCZ4zhAoysEWwhlDuHqVGP
+S6cDWlLP9mJqKV+K6TwONKbO1SeqcKiWPiFVuO+aqORu4KAQ2Yf71YmvaxfsTawk
+UN6Fd/uLsTwnVv5/LJqJ1IUr6UbfRXbKTvlJAgcwncRE73bvI8zxt6dgFwl1WpIV
+mmR9e5TPCo78r5qogRaUZPE8t8DkbRBJ4BSE/KMRyq4qxwrfAHwmJCCI3aPMHscw
+Vp6QRO92vta0c/UxEIbyCvyMEG+2usGxlsYzjJNXWKXwi2MTZL/+GEhqO+FASnBL
+xzRpd+3kKsoKDyTwBtN6HRrJfqtwjvYCAtq1EuZZMMXpNEZgnt5/Skt1Wo0QwYyo
+UDotUuoUGECDlA/GP98R2htx7c+hIytmKV88WLK3NOL1QpnPiXHeR4h6obH7h9oc
+MfgaSBN39KwsdKACFqSANMjhgJcO65apgelD0/OZDm1MHSkOsT5cPz9S4qpwtsUg
+1T//VsYjA+lLfZNvoE+trCeIHqatZpAkouzJEqacc5vVGE0WqpAuDa9gvYa/MKcZ
+s20oZW/FydwDx0IGCWyr3296bglGsmSicACaCVugDj5/OtuMHxs=
+=oFY6
+-----END PGP SIGNATURE-----
+
+--xgyxSMOb3u6QlwA/--
