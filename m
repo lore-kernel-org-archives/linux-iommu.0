@@ -1,67 +1,67 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2053.outbound.protection.outlook.com [40.107.220.53])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2067.outbound.protection.outlook.com [40.107.92.67])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DA397C
-	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 01:57:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E1B37C
+	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 02:09:29 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iY36NOSlS4tPRAR44dZQrzIgZQ2hlQNXa+IgcxkNcktcFRtTT3i+OZX1d8SE3ByGlubi4bXsXstuy7PJPnVG9GP7L6Khka6dtlNlRFiM+fHa98USRRf/ZKdTQbXeMSarbFdXyCNVMg//Dctc8HmRng+y1hhDPCmKBwusWdUFzlkhgLOJ3cZAnK1wQck9ZQNPlc00eopYq9g/d7nMwU44F4WiXWCgJQELXyh+++l1AadZbfmuL6tu2LdOvqwqGVLiQLuip9IkG4FqPs3RiWeVoJNjlO6Bj2qxxzQsAwB4f/PPJzSvY0aZWnAt1hZtJfDqkuz42ugLrceCkBnwpyj2mQ==
+ b=kfn79/bmgLjteglkgcR5sTfwi4uiXztTQ9TatqATexBc52DFiQn86auHz0FOo7SkPowffOtD0QT2qs6OX59s1w7yqmHTPmX07xRn/LGVuNYVjaWkT0+kNhx1Tn3A4IOjL3heDuYYEoRWXUAjWQWLyVgn3rW87L90zrGzFEZnMFwBJOZR6T+KY8QxAY8C84agjjDnJSliaKPQvrGUusup6cxwt1jeP6FQZb0DxQIkHxLlW5YTKm8sC4LT8YPjX9/ZoKJiOtIY8NQfeEykff0RoD+Z7UmWSnbIcKcesqL4U1Zl6AavlCAdmmSV98B0VF+UA/T0RpWiBS/GVhF8/O0kMg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2vwPEIAMqTQG+dXnEmLO2vtlT4NdclUoQhXqYAhQV8I=;
- b=BB1Pxn+4NZ0Exv89W6bMJgFXbM6KFKL8k0b7g1gtg0TPy7MN0ddZcyu8BvJaiDdJrNXuyhPOZkJ2zMpuopV9OQYnX7y+b9lb34/2VmHKpfP2lzTYnkgvyVItlkF5HQSA38gPRt9kHu8ORe3PFR49VWMLFTmDzAs+49kHrUDpF/WLaPySyT2zzdhIO/CmYcAmxVYPbsSw6xZNG8plkPn7knPJUFRZ3lKowPN9WWuUYx5ZQYvm+1VVWOUZN7eDKHlbx3+AYRQzH9N8jU0vOVnX+fv+2V+4BbcsD5kaqxguQOmmj7psL/WIeTrCNuYH7mCYZyK+vWwhifsCt/v1hLr8ow==
+ bh=WG+M00cuYTYhWZkt41iBENQAnpdQaCmoSywoD1j5/oI=;
+ b=bjOfsRdQ1KWoUScYTJ2bwIHV4adMlmwMlgQgHLqNeRM7ycnKzD4JoTqaWjRiLBmO7R6sYx3km312X334cRdUHg+2vB0sUK0rHxwrXJz21QAi4mGkOmX578UspTQa7FPVP+aTOjEUJqg7YUzGC8InEH/RkB9Ack2B/6cNyi3YXa73hp6SBZariGI89WQVXgqhR4/9kscujJlY1zQWzjPaSMRZMXQFLHYfhylKFAz84eSexg2Gkll/M9O5c2QEPymD5T0XoWSO1JrM9Unym6SHIta9Pq/wtl1OSjdOvworFhAHS/Jf/7p72lUEv0mclBxKsN18cvEusgoxNW91qZzasw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ 216.228.118.232) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2vwPEIAMqTQG+dXnEmLO2vtlT4NdclUoQhXqYAhQV8I=;
- b=a69h8v+5AJ92th6dBEsyUBpk/Lr2uMtj9c0ZXW1GZTRPzGxUtHBpvGT8tOTkgpUc2VgroF9TcExNjDv4HpcytPgSpoAUgedZmDoKbAsugd1QuXCzyX0yjyjwZCk9IycWKlAvu6Mg8tMFNZNHEpqcew4wvaGv1plMWulV4ja5lasxGA+KYenbbRub24wnVqNmSh1lkWRYp08MDtGlj82T8C+IROChRXEAErOH3lh0rbEzN6T7s2sE7OFbveFS5Q3H1kKjnxXBZ6AAgK0yLbd+FRkK4xEZSC8iIV3Ole6PQaMsbcKqRKtZ+vUrARF3ozu7IFPguJin9mHaguxipY3u1w==
-Received: from DS7PR05CA0018.namprd05.prod.outlook.com (2603:10b6:5:3b9::23)
- by PH7PR12MB7114.namprd12.prod.outlook.com (2603:10b6:510:1ed::11) with
+ bh=WG+M00cuYTYhWZkt41iBENQAnpdQaCmoSywoD1j5/oI=;
+ b=icck2EeKhKqm39yeODWhDOKg7bV3C0TpwK1uPYLFoI3RbjdPylyDmQlUttW5X1/RZHpgxLNLfGcyKeg5nlcUawwgXLyGkwZ2MrgEm0hT925O9jDxBJ7IL14y7BZWobc/38dZeLt3eRj2kZkfroSqj98T+9FlfOagYTccoGAnShdk7SudZyAavbn2ABmWDQnfIXtwQij2z7j/jm7E5Rro3Q+/5hhh+Y8SXcvmtWtiaUAEQ4tlTgd0S5AOKnBzqtEsCdmTlNRNg4V1JsEw9pEERZrsHBcXpiOkyzM3qijCHGh6KP+MA5eYBDmxEmxJNqXEHgDUO8hOJqQ/Y1DarJdthA==
+Received: from MW4PR03CA0148.namprd03.prod.outlook.com (2603:10b6:303:8c::33)
+ by SA1PR12MB6679.namprd12.prod.outlook.com (2603:10b6:806:252::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6588.22; Thu, 13 Jul
- 2023 01:57:46 +0000
-Received: from DM6NAM11FT040.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3b9:cafe::b5) by DS7PR05CA0018.outlook.office365.com
- (2603:10b6:5:3b9::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6609.9 via Frontend
- Transport; Thu, 13 Jul 2023 01:57:45 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6565.32; Thu, 13 Jul
+ 2023 02:09:26 +0000
+Received: from CO1NAM11FT006.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:8c:cafe::e4) by MW4PR03CA0148.outlook.office365.com
+ (2603:10b6:303:8c::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6588.22 via Frontend
+ Transport; Thu, 13 Jul 2023 02:09:26 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- DM6NAM11FT040.mail.protection.outlook.com (10.13.173.133) with Microsoft SMTP
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ CO1NAM11FT006.mail.protection.outlook.com (10.13.174.246) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6521.44 via Frontend Transport; Thu, 13 Jul 2023 01:57:45 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ 15.20.6588.24 via Frontend Transport; Thu, 13 Jul 2023 02:09:26 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 12 Jul 2023
- 18:57:33 -0700
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Wed, 12 Jul
- 2023 18:57:33 -0700
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.9)
- with Microsoft SMTP Server (version=TLS1_2,
+ 19:09:15 -0700
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.37; Wed, 12 Jul 2023 19:09:14 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Wed, 12 Jul 2023 18:57:32 -0700
-Date: Wed, 12 Jul 2023 18:57:30 -0700
+ Transport; Wed, 12 Jul 2023 19:09:14 -0700
+Date: Wed, 12 Jul 2023 19:09:12 -0700
 From: Nicolin Chen <nicolinc@nvidia.com>
 To: Michael Shavit <mshavit@google.com>
 CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
  Roedel" <joro@8bytes.org>, <jean-philippe@linaro.org>, <jgg@nvidia.com>,
 	<baolu.lu@linux.intel.com>, <linux-arm-kernel@lists.infradead.org>,
 	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 05/13] iommu/arm-smmu-v3: Use the master-owned s1_cfg
-Message-ID: <ZK9aChHZ3E9IcwJ/@Asurada-Nvidia>
+Subject: Re: [PATCH v4 07/13] iommu/arm-smmu-v3: Keep track of attached ssids
+Message-ID: <ZK9cyDaFkAKc1SvJ@Asurada-Nvidia>
 References: <20230621063825.268890-1-mshavit@google.com>
- <20230621063825.268890-6-mshavit@google.com>
+ <20230621063825.268890-8-mshavit@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -70,55 +70,69 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20230621063825.268890-6-mshavit@google.com>
+In-Reply-To: <20230621063825.268890-8-mshavit@google.com>
 X-NV-OnPremToCloud: ExternallySecured
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT040:EE_|PH7PR12MB7114:EE_
-X-MS-Office365-Filtering-Correlation-Id: ca0d5150-9eb5-4779-e20c-08db83448d89
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT006:EE_|SA1PR12MB6679:EE_
+X-MS-Office365-Filtering-Correlation-Id: ee681e05-32e3-4550-97c0-08db83462f27
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	dwt+Rz9S4SD8uJDCf1GdCjboR7UGeYvnEfH9ZV+fbylgMHhE6dbROqd2+9YIHwLyQYtWpsvSf7/0wfr5UnIRQu1NSS+APKC3LPnYFozA2s+Qxa58tAK5hJWHv06VJki8B3s5zTntMhiVUNoAaiJSjBRZgbIYFPsMI3JdcynF4hPH3MPbXsN0LGyj3wAfkfw0dy0wrTzYPPt8VlHGgE9wA+NUajbgMXc2ZjMKv0qPricIqQ46tGUrHUHB5ZKVLlM9bNhbfqmQ2laFTAzbaK7DVeVEitUaHZlM3NY6B8QmA2OkPtl7QWNRWh+9p0qlHfHdk4Yr3qxoTmTW674z+plJCbqCgMiCZIkuUaKxQogNa+GjW/JOIT7i7ArZK31fZOqpgahF3AWnQBbzJZ8M0PCkCNy/R0onglgRCi9lk+2Rsod2gYB4LbD4zHO2MWn9j6gsA+b9SNNqo7Y5fMuWXXBgEeVnSmkMJgsLwG43empDeCbkWUfW/RdpMgYbPxrsJSfItl185NUA6pBafwWLLvn7cnoCRRGlfnJdFmJBJBVdrFczpnd/2WkQ9ciHlqGsnuwiQGDHU2tui6eo9ZYxOJEO/K7+mjiaS3qQg6LivG6Z3JT0RBKvUbnIC+2bVJI/zkFQjMu1jKUtlZtdMW/m4yXoO1minHdoQmsJPFcpNqoMz5sqvO0DiaBxMTNHOjCuw3c195IKau80ESWbceGeQi6gWK6wmzAqZfw8QGHjh8XJMEwR3L8yDdwXtgWlXinjYS92
+	OWz0nr5qg5hf+edUDo5JKfX0kMCj7i/CnAl9R7lZX1AO0D3dGg8d7VRq9WtmuypVDOcDETsEEJNvf2ahccR8Axi3pQvryG99WsMwiMzeXK+BnBqO4vMExknVdm0H9m/T5TVK7yUuyr9jFBHQhQIVguTQv8lb4symUD2kicTkwDGtoOc2vXzzkLAkKYMuGgCa9HGua3bk9JtWbkBkcA7+e0UUhZMDy+fE///iuEizGrZsctMzFVv9UP0vOYW/MGuFX8iRqgVe7TmM6pk7aBkZi9Wsj6LxHcAaGnHjJzJvdDPsPxsJy4flWNIFVqu8PJSTQ0ValZeNJEFKzYUICmoE6as1ZoQhpvjorK6boHsSk1PZXBHMOMxJXH9DczjUAJWWvB62XkiJ5IVIbn9PDFZaWKv7hm/JpKL0eWRdhVWtx485CrDBCFlkpMZxiKd0qJjljkk4GhJi94+T1GfpNjIcatnKZBt8FsdXHtYIK2zJ90bM4Pcn6BTcvataJjIK47LpjAfr5X35fCgUKwCJSGebyjbgVhAXXQuhjvhz9Al3I78EVXv2T29dLqLgx1lvZUaSC+0V82Oia+/RMqZaA+9glvBVg/UKLwQiP30n49rVb/S4idgaXT0KkdmE+sO9XYEFfr9OMgltxRFC2zrlEF1JtdvxXsfUedf15/DKURTLAJgF/W00+3LIk39V26pAlLgIyBAMIwCFv2QKFQwyEwG+ZzQ6XJceMBMuJCeBbemzn4Vd26gpaJChoPj8w4ApqLNR
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(39860400002)(136003)(396003)(346002)(451199021)(46966006)(36840700001)(40470700004)(8936002)(8676002)(41300700001)(54906003)(55016003)(40480700001)(5660300002)(2906002)(316002)(4744005)(6916009)(4326008)(70586007)(70206006)(40460700003)(426003)(9686003)(33716001)(478600001)(186003)(86362001)(336012)(82310400005)(356005)(7636003)(47076005)(82740400003)(26005)(36860700001);DIR:OUT;SFP:1101;
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(39860400002)(136003)(346002)(396003)(451199021)(46966006)(40470700004)(36840700001)(83380400001)(86362001)(40460700003)(82310400005)(8676002)(8936002)(5660300002)(186003)(36860700001)(426003)(336012)(47076005)(2906002)(9686003)(26005)(40480700001)(356005)(7636003)(55016003)(33716001)(82740400003)(54906003)(70586007)(70206006)(6916009)(4326008)(478600001)(41300700001)(316002);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2023 01:57:45.7133
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2023 02:09:26.4193
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ca0d5150-9eb5-4779-e20c-08db83448d89
+X-MS-Exchange-CrossTenant-Network-Message-Id: ee681e05-32e3-4550-97c0-08db83462f27
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT040.eop-nam11.prod.protection.outlook.com
+	CO1NAM11FT006.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7114
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB6679
 
-On Wed, Jun 21, 2023 at 02:37:17PM +0800, Michael Shavit wrote:
+On Wed, Jun 21, 2023 at 02:37:19PM +0800, Michael Shavit wrote:
  
-> Insert CDs for STAGE_1 domains into a CD table owned by the
-> arm_smmu_master. Remove the CD table that was owned by arm_smmu_domain.
-
-> @@ -718,10 +718,7 @@ struct arm_smmu_domain {
+> +/* List of {masters, ssid} that a domain is attached to */
+> +struct arm_smmu_attached_domain {
+> +       struct list_head        domain_head;
+> +       struct arm_smmu_domain  *domain;
+> +       struct arm_smmu_master  *master;
+> +       int                     ssid;
+> +};
+> +
+>  /* SMMU private data for each master */
+>  struct arm_smmu_master {
+>         struct arm_smmu_device          *smmu;
+>         struct device                   *dev;
+> -       struct arm_smmu_domain          *domain;
+> +       struct arm_smmu_attached_domain non_pasid_domain;
+>         struct list_head                domain_head;
+>         struct arm_smmu_stream          *streams;
+>         struct arm_smmu_s1_cfg          owned_s1_cfg;
+> @@ -724,8 +732,8 @@ struct arm_smmu_domain {
 > 
->         enum arm_smmu_domain_stage              stage;
->         union {
-> -               struct {
->                 struct arm_smmu_ctx_desc        cd;
-> -               struct arm_smmu_s1_cfg          s1_cfg;
-> -               };
->                 struct arm_smmu_s2_cfg          s2_cfg;
->         };
+>         struct iommu_domain                     domain;
+> 
+> -       struct list_head                        devices;
+> -       spinlock_t                              devices_lock;
+> +       struct list_head                        attached_domains;
+> +       spinlock_t                              attached_domains_lock;
 
-So the arm_smmu_domain looks like an object representing either:
-1) a CD table + (if !IDENTITY) an S1 IOPT for default substream
-2) an S2 IOPT
+Yea, I think that this arm_smmu_attached_domain is similar to
+the "subdomain" that I was talking about in the previous reply,
+though having a list of attached domains under a domain doesn't
+feel very clear.
 
-I wonder if we need something like struct arm_smmu_subdomain to
-represent a substream, because now an IOMMU_DOMAIN_SVA domain is
-represented by this struct arm_smmu_domain too, which is neither
-of the two cases in the list above.
+Perhaps it would be good to have some renaming and kdoc too.
+
+And since we have a group of subdomains that are simply indexed
+by ssids, perhaps we can add an xarray to store a subdomain ptr
+along with an ssid, replacing the list?
 
 Thanks
 Nicolin
