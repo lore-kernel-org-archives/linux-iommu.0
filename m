@@ -1,137 +1,185 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2063.outbound.protection.outlook.com [40.107.244.63])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F4071F173
-	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 17:53:17 +0000 (UTC)
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 5EE5814DBB9;
-	Thu, 13 Jul 2023 19:53:09 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1689270789; bh=bPL0dJQsO71F+7x2c6oBcd15kYFwAiWbA6uxbyrkpGE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=EkihYalIeEcrIel7VgAhcpVNo9/pboyyZekjWK0jOnc5F1ahW2sgtlX2s4G3xz2aa
-	 7/pVJP13bkUSQtOnx/qTC561TvfhmkpEWgCjkNF0dnKtNeOHHWOPNueuVhTFgK2ELk
-	 wUOXEGu3hH49hYFoW2UWlnrBscc4Wib4CIVTdHzIxE5HMHeeuN7aydOSwzOTqbpdDv
-	 gD5Bsyr0BRxuvTKvkDlRDW5xFxEeTF4ZsC7VFVRP05INsvS0TzW3gxx20lzeEnkYdG
-	 ce/RvNC6zV5zfoC3oip2w9zTQ1heZ9+LR1nTdovemvPME96D6qgBeJM/SIEWJ77vyR
-	 +exPMHF3hrfBg==
-Date: Thu, 13 Jul 2023 19:53:07 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Petr Tesarik <petrtesarik@huaweicloud.com>
-Cc: Stefano Stabellini <sstabellini@kernel.org>, Russell King
- <linux@armlinux.org.uk>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
- Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
- x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)), "H. Peter
- Anvin" <hpa@zytor.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Juergen Gross <jgross@suse.com>,
- Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>, Christoph Hellwig
- <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
- <robin.murphy@arm.com>, Petr Tesarik <petr.tesarik.ext@huawei.com>,
- Jonathan Corbet <corbet@lwn.net>, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Hans de Goede <hdegoede@redhat.com>,
- James Seo <james@equiv.tech>, James Clark <james.clark@arm.com>, Kees Cook
- <keescook@chromium.org>, xen-devel@lists.xenproject.org (moderated list:XEN
- HYPERVISOR ARM), linux-arm-kernel@lists.infradead.org (moderated list:ARM
- PORT), linux-kernel@vger.kernel.org (open list), linux-mips@vger.kernel.org
- (open list:MIPS), iommu@lists.linux.dev (open list:XEN SWIOTLB SUBSYSTEM),
- Roberto Sassu <roberto.sassu@huaweicloud.com>, Kefeng Wang
- <wangkefeng.wang@huawei.com>
-Subject: Re: [PATCH v4 3/8] swiotlb: separate memory pool data from other
- allocator data
-Message-ID: <20230713195307.08d68b01@meshulam.tesarici.cz>
-In-Reply-To: <e309b4a88ffb306c88a3b3cfe5e57483d73d20bc.1689261692.git.petr.tesarik.ext@huawei.com>
-References: <cover.1689261692.git.petr.tesarik.ext@huawei.com>
-	<e309b4a88ffb306c88a3b3cfe5e57483d73d20bc.1689261692.git.petr.tesarik.ext@huawei.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D7061ED53
+	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 19:55:07 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SE/lZeLZSyOuw/OEeS9iw72FEclX94RwAs6fFASKXYKJBqDQUVGACuRsuXgfr36fnwmATmQGPMK2oqW48qXHnB23/LV4q4/0vPz6e9Vq2EDPGTRzgf0kqtwk8i9uZfwl6x8PX9j01lV8CMMAGYqvCXHuU3o98/ZYmuP9jsKVvxM2kfiAuj3jRCRn8in1+gkdecnGwDav1RpIY4bAYgH1bRLqQjVIsfySdJcIFVv9ndivP3Y1sfWLPlCZJXVaE8/qNTaHescJt8nuD1BJKq8E9/TBZ8SqlXB/iItKTEAv/ZHner26dfuLGm4GmXitMd3ahqBNqwQDbdgavfSkqwUZug==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=YtCpFx1PrUROG4F2IG89coStMlut9aSPJED3sV0CTDA=;
+ b=KL0nr+aQATwClgzZA8tCZSoxxWvk5iu6A+74T57dw04C2xWTIP+WxzxubgBLkI6Le7c8bwkP+fcMnPNkgg9Uo+uc7m68gwgWrL/8shpMS+oNI49jOVwy4BFXcXbaIL7/1Z5akPp3tLs7x/hxjeBg2T0LfUKrbNBGlmO1UMRFSzOHn9vpyT81Zfy+uBEwhzE2Ya8ftAl554BXdJTvlwUlEkPP7jyT134hxkMPZ6Z+e/GUY+AG2TT3WWct5359JrOdnvYDUWXhXU3UbgqAnfwoLBEz4tYg419intrK49DtaznZXxoelIeWkDLadYIygpuMwLDngdu1q7t35OzVM4i0Lg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YtCpFx1PrUROG4F2IG89coStMlut9aSPJED3sV0CTDA=;
+ b=YTFQ1owesE7O/GEYOwdIAbEXVDYNb/TrDbQ5ZktbEzMgJAeXYmxLMM4wgwKSdqHp8WkeXX6lPfzPWzQKeDmFnxkz490biJSQ1u1XW+nKLTSCNfQVaeHOoSY4ETNkQ619ZVRXKoIkI7k0KSZXkPEQeb35XkPNmhgEqhMdbkBLbGTbwQGLKihltSg55g5z2O/Z7ivavsQ13RYxR6w5JAoDYHLbBJyIAKu0URoIEI78bw/28YPRLa6Mr+/oZjHB3P5FavzPE8fwziKRJ0G0Z3b09RHyU5rOw8jm+HWsq+poopwslv5DHPg0tSFmZdYAMsbs4ubja5L+ZmHD1lutEsNcrw==
+Received: from BN9PR03CA0353.namprd03.prod.outlook.com (2603:10b6:408:f6::28)
+ by CH3PR12MB7497.namprd12.prod.outlook.com (2603:10b6:610:153::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6588.24; Thu, 13 Jul
+ 2023 19:55:04 +0000
+Received: from BN8NAM11FT017.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:f6:cafe::32) by BN9PR03CA0353.outlook.office365.com
+ (2603:10b6:408:f6::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6588.24 via Frontend
+ Transport; Thu, 13 Jul 2023 19:55:04 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BN8NAM11FT017.mail.protection.outlook.com (10.13.177.93) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6588.24 via Frontend Transport; Thu, 13 Jul 2023 19:55:04 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 13 Jul 2023
+ 12:54:50 -0700
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Thu, 13 Jul
+ 2023 12:54:49 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.9)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Thu, 13 Jul 2023 12:54:48 -0700
+Date: Thu, 13 Jul 2023 12:54:47 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Michael Shavit <mshavit@google.com>, Will Deacon <will@kernel.org>, "Robin
+ Murphy" <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	<jean-philippe@linaro.org>, <baolu.lu@linux.intel.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 02/13] iommu/arm-smmu-v3: Add smmu_s1_cfg to
+ smmu_master
+Message-ID: <ZLBWh370pPjx2B+z@Asurada-Nvidia>
+References: <20230621063825.268890-1-mshavit@google.com>
+ <20230621063825.268890-3-mshavit@google.com>
+ <ZK9RycgNAVrxe343@Asurada-Nvidia>
+ <CAKHBV26wi+xKnNjo-R+QOcVLPH2KJTFP+mF4CW1xE61nOdF5GA@mail.gmail.com>
+ <ZLAKQw+DzcpSRSyi@nvidia.com>
+ <CAKHBV25YadRVFiag5z5Yc13L093ScWkCjAOCd=VuGm2RUaDyzA@mail.gmail.com>
+ <ZLApQjaqoOshT2TJ@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ZLApQjaqoOshT2TJ@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT017:EE_|CH3PR12MB7497:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2ccb5c79-ce57-4d36-d6fd-08db83db0d37
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	YDQnHVr3hRjyuAkXbR8Uceo8ZtKwzAKEWcyzrcequ7bmASKWRyl3qQBf3fPPpaSG/UNSSaUckxJ0oY9WRD5wODyY/rhWWoPjc5bnoq63xW9cLq+FjtyeTXo2vF7k4ab+tNjw9qoPA6MsOza+ap5wxvELQGqciXD8BvGGs4ERW2feKNSI4bUBDU47cyTj5kmr88DOG/rql27SX6r7qESCmy3YlBSlK9Kl7LeoHgjO1YxnPMK8bQelTtknesZVJuhXMCKVQ1tH132L7R0dCfuQkOR708asCNZ+aAjDJswKRSWzREJ2bdxopdo4H6DIO+7nI6ejyrj+PTmW9KLyp2+NNk/yHUdVevhOUvV0EAwbr0tNDi1JhqAgO9Uc5QGTqQ4qsr5MK7AJQTbJQ78GSgN0x7a1EtGNQAydGRqjQ3yXYU3yaIpATaKUIlu5mvrDQE7hQcZUmEK2b7sUV5hL7WH1jqgp4T+1DZDDiZQIdmGrofLzlksDpM7PD7dEKMD3TtH2M6YQ+vz1xBx/E4Jy5/bRLLi5kvyk6jyM9gNlGonrqIBNwu13ks7q46vuc37mta2oCKZTEShRXqmqfrktGGmSdclgxxpsaQVcxCh/KxHD/u9lQPaaEde49my3dZSIVIgE6Qm0kWXHFSwVzGUR7QKHHvAlrkYuaJV+lf6MFk79jELsDvaNFRMRcLi4P6NA0Gogkevdy1KEKdOJXktLuUXa62YdenVKOIzzI1cwMa0zg+ZtXAzoOcPL+KupIslrKr+ReAcHbwxvXtvLT5YSTf3XGdouqdv6WmfI6nfwX6bqKOg=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(136003)(346002)(376002)(396003)(451199021)(46966006)(36840700001)(40470700004)(40460700003)(47076005)(36860700001)(186003)(336012)(426003)(33716001)(82310400005)(7636003)(86362001)(356005)(82740400003)(26005)(53546011)(9686003)(40480700001)(55016003)(70586007)(70206006)(6636002)(4326008)(54906003)(41300700001)(5660300002)(6862004)(316002)(8676002)(8936002)(2906002)(478600001)(67856001)(414714003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2023 19:55:04.4022
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2ccb5c79-ce57-4d36-d6fd-08db83db0d37
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN8NAM11FT017.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB7497
 
-On Thu, 13 Jul 2023 17:23:14 +0200
-Petr Tesarik <petrtesarik@huaweicloud.com> wrote:
-
-> From: Petr Tesarik <petr.tesarik.ext@huawei.com>
+On Thu, Jul 13, 2023 at 01:41:38PM -0300, Jason Gunthorpe wrote:
+> On Fri, Jul 14, 2023 at 12:16:16AM +0800, Michael Shavit wrote:
+> > On Thu, Jul 13, 2023 at 10:29 PM Jason Gunthorpe <jgg@nvidia.com> wrote:
+> > > It would make alot more sense if the STE value used by an unmanaged S1
+> > > domain was located in/near the unmanaged domain or called 'unmanaged
+> > > S1 STE' or something if it really has to be in the master. Why does
+> > > this even need to be stored, can't we compute it?
+> > 
+> > struct s1_cfg* and struct s2_cfg* are precisely what is used to
+> > compute an STE. For example, when s1_cfg is set, arm_smmu_write_strtab
+> > will write the s1_cfg's CD table dma_pointer into the STE's
+> > STRTAB_STE_0_CFG field. When neither are set, the STE fields are
+> > written to enable bypass (or abort depending on the config).
 > 
-> Carve out memory pool specific fields from struct io_tlb_mem. The original
-> struct now contains shared data for the whole allocator, while the new
-> struct io_tlb_pool contains data that is specific to one memory pool of
-> (potentially) many.
+> I guess I never really understood why these were precomputed and
+> stored at all. Even more confusing is why we need to keep pointers to
+> them anywhere? Compute the STE and CDE directly from the source data
+> when you need it?
 > 
-> Allocate both structures together for restricted DMA pools to keep the
-> error cleanup path simple.
+> eg If I want to install an IDENITY domain into a STE then I compute
+> the STE for identity and go ahead and do it.
+
+I think it'd be clear if the master stores STE value directly to
+get rid of s1_cfg/s2_cfg in the master struct. We fill in those
+domain-related STE fields when the domain attaches to the master
+and then call arm_smmu_write_strtab().
+
+For struct arm_smmu_domain, it still has a union of a CD (for an
+S1 domain) or an s2_cfg (for an S2 domain). Or we could select
+a better naming for s2_cfg too, since s1_cfg is gone.
+
+Does this match with your expectation?
+
+> > > I'd think the basic mental model should be to extract the STE from the
+> > > thing you intend to install. Either the default CD table, or from the
+> > > iommu_domain. ie some 'get STE from iommu_domain' function?
+> > 
+> > I don't follow this. When we attach a domain with pasid (whether
+> > through SVA or the set_dev_pasid API) , we don't want to install an
+> > entirely new CD table. 
 > 
-> Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
-> ---
->  include/linux/device.h  |   2 +-
->  include/linux/swiotlb.h |  47 +++++++----
->  kernel/dma/swiotlb.c    | 181 +++++++++++++++++++++++++---------------
->  3 files changed, 147 insertions(+), 83 deletions(-)
+> The master object owns an optional CD table. If it is exsists it is
+> used by every domain that is attached to that master.
+>
+> In the code flow there are two entry points to attach a domain, attach
+> to a PASID or attach to a RID.
 > 
-> diff --git a/include/linux/device.h b/include/linux/device.h
-> index bbaeabd04b0d..d9754a68ba95 100644
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -625,7 +625,7 @@ struct device_physical_location {
->   * @dma_pools:	Dma pools (if dma'ble device).
->   * @dma_mem:	Internal for coherent mem override.
->   * @cma_area:	Contiguous memory area for dma allocations
-> - * @dma_io_tlb_mem: Pointer to the swiotlb pool used.  Not for driver use.
-> + * @dma_io_tlb_mem: Software IO TLB allocator.  Not for driver use.
->   * @archdata:	For arch-specific additions.
->   * @of_node:	Associated device tree node.
->   * @fwnode:	Associated device node supplied by platform firmware.
-> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-> index 39313c3a791a..d669e11e2827 100644
-> --- a/include/linux/swiotlb.h
-> +++ b/include/linux/swiotlb.h
-> @@ -62,8 +62,7 @@ dma_addr_t swiotlb_map(struct device *dev, phys_addr_t phys,
->  #ifdef CONFIG_SWIOTLB
->  
->  /**
-> - * struct io_tlb_mem - IO TLB Memory Pool Descriptor
-> - *
-> + * struct io_tlb_pool - IO TLB memory pool descriptor
->   * @start:	The start address of the swiotlb memory pool. Used to do a quick
->   *		range check to see if the memory was in fact allocated by this
->   *		API.
-> @@ -73,15 +72,36 @@ dma_addr_t swiotlb_map(struct device *dev, phys_addr_t phys,
->   * @vaddr:	The vaddr of the swiotlb memory pool. The swiotlb memory pool
->   *		may be remapped in the memory encrypted case and store virtual
->   *		address for bounce buffer operation.
-> - * @nslabs:	The number of IO TLB blocks (in groups of 64) between @start and
-> - *		@end. For default swiotlb, this is command line adjustable via
-> - *		setup_io_tlb_npages.
-> + * @nslabs:	The number of IO TLB slots between @start and @end. For the
-> + *		default swiotlb, this can be adjusted with a boot parameter,
-> + *		see setup_io_tlb_npages().
-> + * @used:	The number of used IO TLB slots.
-> + * @late_alloc:	%true if allocated using the page allocator.
-> + * @nareas:	Number of areas in the pool.
-> + * @area_nslabs: Number of slots in each area.
-> + * @areas:	Array of memory area descriptors.
-> + * @slots:	Array of slot descriptors.
-> + */
-> +struct io_tlb_pool {
-> +	phys_addr_t start;
-> +	phys_addr_t end;
-> +	void *vaddr;
-> +	unsigned long nslabs;
-> +	unsigned long used;
+> For attach to PASID the code should always force the master to have a
+> CD table and then attach the domain to the CD table.
+> 
+> For attach to RID the code should do a bunch of checks and decide if
+> it should force the master to have a CD table and attach the domain to
+> that, or directly attach the domain to the STE.
 
-Oops. This member should not be re-introduced here after I removed it
-with commit efa76afdde16...
+I think a master own a CD table in both cases, though the table
+could have a single entry or multiple entries, depending on its
+ssid_bits/cdmax value. And since a master own the CD table, we
+could preallocate the CD table in arm_smmu_probe_device(), like
+Michael does in this series. And at the same time, the s1ctxptr
+field of the STE could be setup too. Then we insert the CD from
+a domain into the CD table during the domain attaching.
 
-I'm going to fix this in a v5, but I don't think it's critical enough
-to make an immediate resend.
+Yet two cases that would waste the preallocated CD table:
+1) If a master with ssid_bits=0 gets attached to an IDENITY S1
+   domain, it sets CONFIG=BYPASS in the STE, which wastes the
+   single-entry CD table, unlike currently the driver bypassing
+   the allocation of a CD table at all.
+2) When enabling nested translation, we should replace all the
+   S1 fields in the STE with guest/user values. So, the kernel-
+   level CD table (either single-entry or multi-entry) in the
+   master struct will not be used. Although this seems to be
+   unchanged since currently the driver wastes this too in the
+   default domain?
 
-Petr T
+With that, I still feel it clear and flexible. And I can simply
+add my use case of attaching an IDENITY domain to the default
+substream when having a multi-entry CD table.
+
+Thanks
+Nicolin
