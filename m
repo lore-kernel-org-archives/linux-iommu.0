@@ -1,302 +1,84 @@
-Received: from frasgout12.his.huawei.com (unknown [14.137.139.154])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 947091ED55
-	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 15:40:37 +0000 (UTC)
-Received: from mail02.huawei.com (unknown [172.18.147.229])
-	by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4R1ykG4Kpqz9xFZs
-	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 23:11:34 +0800 (CST)
-Received: from A2101119013HW2.china.huawei.com (unknown [10.81.218.161])
-	by APP1 (Coremail) with SMTP id LxC2BwA3k94BF7BkxG6BBA--.7207S2;
-	Thu, 13 Jul 2023 16:24:02 +0100 (CET)
-From: Petr Tesarik <petrtesarik@huaweicloud.com>
-To: Stefano Stabellini <sstabellini@kernel.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)),
-	"H. Peter Anvin" <hpa@zytor.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Juergen Gross <jgross@suse.com>,
-	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7236E1ED55
+	for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 15:40:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 533B0C433C8;
+	Thu, 13 Jul 2023 15:40:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1689262858;
+	bh=Opj8JDTNUda9NW7e+toCrb8Tsv2eHY+Uit8zdRt6gVw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=neQ5IiAxZldW/eAExMXgoPyPKHNm6aOB1qcn8qvstiRppXiDkgG0tJWL/zfT5b4Yw
+	 xKYW3Z9FAFdoR89xx/JZOeHx0EgyfAm7NQmKfhpP0YRMunKobkZMnzok1DAaZ4MbGi
+	 7p3X/OcPW4Y07DhfU8dbvMhjCW2mDGC3UAYl6szG2BsX0FvZmlLVAFrEnpS91QlRWU
+	 bPRbf6ILJl4eeYMz8vMAmUL6ehlDrZcc1vPTLQr8/2KMUl367KywIQTiKJJbQnp7lt
+	 ymcLHCB8Ixr8f0Sh25i1UophHoKMXk8nt3QkZes0Q1TqMpOxhHXWdhOcb0LPBAmojD
+	 X+pDWoB7ytTQQ==
+Date: Thu, 13 Jul 2023 16:40:48 +0100
+From: Lee Jones <lee@kernel.org>
+To: Konrad Dybcio <konrad.dybcio@linaro.org>
+Cc: cros-qcom-dts-watchers@chromium.org, Andy Gross <agross@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+	Benjamin Li <benl@squareup.com>,
+	James Willcox <jwillcox@squareup.com>,
+	Joseph Gates <jgates@squareup.com>,
+	Stephan Gerhold <stephan@gerhold.net>,
+	Zac Crosby <zac@squareup.com>,
+	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+	Banajit Goswami <bgoswami@quicinc.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Petr Tesarik <petr.tesarik.ext@huawei.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Hans de Goede <hdegoede@redhat.com>,
-	James Seo <james@equiv.tech>,
-	James Clark <james.clark@arm.com>,
-	Kees Cook <keescook@chromium.org>,
-	xen-devel@lists.xenproject.org (moderated list:XEN HYPERVISOR ARM),
-	linux-arm-kernel@lists.infradead.org (moderated list:ARM PORT),
-	linux-kernel@vger.kernel.org (open list),
-	linux-mips@vger.kernel.org (open list:MIPS),
-	iommu@lists.linux.dev (open list:XEN SWIOTLB SUBSYSTEM)
-Cc: Roberto Sassu <roberto.sassu@huaweicloud.com>,
-	Kefeng Wang <wangkefeng.wang@huawei.com>,
-	petr@tesarici.cz
-Subject: [PATCH v4 0/8] Allow dynamic allocation of software IO TLB bounce buffers
-Date: Thu, 13 Jul 2023 17:23:11 +0200
-Message-Id: <cover.1689261692.git.petr.tesarik.ext@huawei.com>
-X-Mailer: git-send-email 2.25.1
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Xu Yang <xu.yang_2@nxp.com>, Peng Fan <peng.fan@nxp.com>,
+	Christian Marangi <ansuelsmth@gmail.com>,
+	Wesley Cheng <quic_wcheng@quicinc.com>,
+	Jun Nie <jun.nie@linaro.org>, Max Chen <mchen@squareup.com>,
+	Shawn Guo <shawn.guo@linaro.org>,
+	Vivek Gautam <vivek.gautam@codeaurora.org>,
+	Marijn Suijten <marijn.suijten@somainline.org>,
+	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Vincent Knecht <vincent.knecht@mailoo.org>,
+	Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+	Konrad Dybcio <konradybcio@kernel.org>, alsa-devel@alsa-project.org,
+	iommu@lists.linux.dev, linux-usb@vger.kernel.org,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Leo Yan <leo.yan@linaro.org>, Rob Herring <robh@kernel.org>,
+	Andy Gross <andy.gross@linaro.org>
+Subject: Re: [PATCH 06/11] dt-bindings: mfd: qcom,spmi-pmic: Reference pm8916
+ wcd analog codec schema
+Message-ID: <20230713154048.GD968624@google.com>
+References: <20230627-topic-more_bindings-v1-0-6b4b6cd081e5@linaro.org>
+ <20230627-topic-more_bindings-v1-6-6b4b6cd081e5@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:LxC2BwA3k94BF7BkxG6BBA--.7207S2
-X-Coremail-Antispam: 1UD129KBjvJXoW3Wr1Dtw1rJr47Aw4kKrykZrb_yoWfCrW8pF
-	WrKryxtF4qqryfAwn7Ca18GFyrKa1kGry5GrWFvryrur13Cr1j93WktayFqFyUGrWIvF1j
-	qFyYvw13uw1DZ3DanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUBl14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-	1l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
-	6r4UJwA2z4x0Y4vEx4A2jsIE14v26r4j6F4UM28EF7xvwVC2z280aVCY1x0267AKxVW8Jr
-	0_Cr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
-	6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr
-	0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E
-	8cxan2IY04v7MxkF7I0En4kS14v26r1q6r43MxkF7I0Ew4C26cxK6c8Ij28IcwCF04k20x
-	vY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I
-	3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Wrv_Gr1UMIIYrxkI7VAKI48JMI
-	IF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF
-	0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVW8JVWxJwCI42IY6I
-	8E87Iv6xkF7I0E14v26r4UJVWxJrUvcSsGvfC2KfnxnUUI43ZEXa7VUjmFAJUUUUU==
-X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
-X-CFilter-Loop: Reflected
+In-Reply-To: <20230627-topic-more_bindings-v1-6-6b4b6cd081e5@linaro.org>
 
-From: Petr Tesarik <petr.tesarik.ext@huawei.com>
+On Tue, 27 Jun 2023, Konrad Dybcio wrote:
 
-Motivation
-==========
+> Now that it's been converted to YAML, reference the PM8916 wcd codec
+> schema.
+> 
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> ---
+>  Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-The software IO TLB was designed with these assumptions:
-
-1) It would not be used much. Small systems (little RAM) don't need it, and
-   big systems (lots of RAM) would have modern DMA controllers and an IOMMU
-   chip to handle legacy devices.
-2) A small fixed memory area (64 MiB by default) is sufficient to
-   handle the few cases which require a bounce buffer.
-3) 64 MiB is little enough that it has no impact on the rest of the
-   system.
-4) Bounce buffers require large contiguous chunks of low memory. Such
-   memory is precious and can be allocated only early at boot.
-
-It turns out they are not always true:
-
-1) Embedded systems may have more than 4GiB RAM but no IOMMU and legacy
-   32-bit peripheral busses and/or DMA controllers.
-2) CoCo VMs use bounce buffers for all I/O but may need substantially more
-   than 64 MiB.
-3) Embedded developers put as many features as possible into the available
-   memory. A few dozen "missing" megabytes may limit what features can be
-   implemented.
-4) If CMA is available, it can allocate large continuous chunks even after
-   the system has run for some time.
-
-Goals
-=====
-
-The goal of this work is to start with a small software IO TLB at boot and
-expand it later when/if needed.
-
-Design
-======
-
-This version of the patch series retains the current slot allocation
-algorithm with multiple areas to reduce lock contention, but additional
-slots can be added when necessary.
-
-These alternatives have been considered:
-
-- Allocate and free buffers as needed using direct DMA API. This works
-  quite well, except in CoCo VMs where each allocation/free requires
-  decrypting/encrypting memory, which is a very expensive operation.
-
-- Allocate a very large software IO TLB at boot, but allow to migrate pages
-  to/from it (like CMA does). For systems with CMA, this would mean two big
-  allocations at boot. Finding the balance between CMA, SWIOTLB and rest of
-  available RAM can be challenging. More importantly, there is no clear
-  benefit compared to allocating SWIOTLB memory pools from the CMA.
-
-Implementation Constraints
-==========================
-
-These constraints have been taken into account:
-
-1) Minimize impact on devices which do not benefit from the change.
-2) Minimize the number of memory decryption/encryption operations.
-3) Avoid contention on a lock or atomic variable to preserve parallel
-   scalability.
-
-Additionally, the software IO TLB code is also used to implement restricted
-DMA pools. These pools are restricted to a pre-defined physical memory
-region and must not use any other memory. In other words, dynamic
-allocation of memory pools must be disabled for restricted DMA pools.
-
-Data Structures
-===============
-
-The existing struct io_tlb_mem is the central type for a SWIOTLB allocator,
-but it now contains multiple memory pools::
-
-  io_tlb_mem
-  +---------+   io_tlb_pool
-  | SWIOTLB | 	+-------+   +-------+   +-------+
-  |allocator|-->|default|-->|dynamic|-->|dynamic|-->...
-  |    	    |  	|memory |   |memory |   |memory |
-  +---------+ 	| pool  |   | pool  |   | pool  |
-	      	+-------+   +-------+   +-------+
-
-The allocator structure contains global state (such as flags and counters)
-and structures needed to schedule new allocations. Each memory pool
-contains the actual buffer slots and metadata. The first memory pool in the
-list is the default memory pool allocated statically at early boot.
-
-New memory pools are allocated from a kernel worker thread. That's because
-bounce buffers are allocated when mapping a DMA buffer, which may happen in
-interrupt context where large atomic allocations would probably fail.
-Allocation from process context is much more likely to succeed, especially
-if it can use CMA.
-
-Nonetheless, the onset of a load spike may fill up the SWIOTLB before the
-worker has a chance to run. In that case, try to allocate a small transient
-memory pool to accommodate the request. If memory is encrypted and the
-device cannot do DMA to encrypted memory, this buffer is allocated from the
-coherent atomic DMA memory pool. Reducing the size of SWIOTLB may therefore
-require increasing the size of the coherent pool with the "coherent_pool"
-command-line parameter.
-
-Performance
-===========
-
-All testing compared a vanilla v6.4-rc6 kernel with a fully patched
-kernel. The kernel was booted with "swiotlb=force" to allow stress-testing
-the software IO TLB on a high-performance device that would otherwise not
-need it. CONFIG_DEBUG_FS was set to 'y' to match the configuration of
-popular distribution kernels; it is understood that parallel workloads
-suffer from contention on the recently added debugfs atomic counters.
-
-These benchmarks were run:
-
-- small: single-threaded I/O of 4 KiB blocks,
-- big: single-threaded I/O of 64 KiB blocks,
-- 4way: 4-way parallel I/O of 4 KiB blocks.
-
-In all tested cases, the default 64 MiB SWIOTLB would be sufficient (but
-wasteful). The "default" pair of columns shows performance impact when
-booted with 64 MiB SWIOTLB (i.e. current state). The "growing" pair of
-columns shows the impact when booted with a 1 MiB initial SWIOTLB, which
-grew to 5 MiB at run time. The "var" column in the tables below is the
-coefficient of variance over 5 runs of the test, the "diff" column is the
-difference in read-write I/O bandwidth (MiB/s). The very first column is
-the coefficient of variance in the results of the base unpatched kernel.
-
-First, on an x86 VM against a QEMU virtio SATA driver backed by a RAM-based
-block device on the host:
-
-	base	   default	   growing
-	var	var	diff	var	diff
-small	1.96%	0.47%	-1.5%	0.52%	-2.2%
-big	2.03%	1.35%	+0.9%	2.22%	+2.9%
-4way	0.80%	0.45%	-0.7%	1.22%	<0.1%
-
-Second, on a Raspberry Pi4 with 8G RAM and a class 10 A1 microSD card:
-
-	base	   default	   growing
-	var	var	diff	var	diff
-small	1.09%	1.69%	+0.5%	2.14%	-0.2%
-big	0.03%	0.28%	-0.5%	0.03%	-0.1%
-4way	5.15%	2.39%	+0.2%	0.66%	<0.1%
-
-Third, on a CoCo VM. This was a bigger system, so I also added a 24-thread
-parallel I/O test:
-
-	base	   default	   growing
-	var	var	diff	var	diff
-small	2.41%	6.02%	+1.1%	10.33%	+6.7%
-big	9.20%	2.81%	-0.6%	16.84%	-0.2%
-4way	0.86%	2.66%	-0.1%	 2.22%	-4.9%
-24way	3.19%	6.19%	+4.4%	 4.08%	-5.9%
-
-Note the increased variance of the CoCo VM, although the host was not
-otherwise loaded. These are caused by the first run, which includes the
-overhead of allocating additional bounce buffers and sharing them with the
-hypervisor. The system was not rebooted between successive runs.
-
-Parallel tests suffer from a reduced number of areas in the dynamically
-allocated memory pools. This can be improved by allocating a larger pool
-from CMA (not implemented in this series yet).
-
-I have no good explanation for the increase in performance of the
-24-thread I/O test with the default (non-growing) memory pool. Although the
-difference is within variance, it seems to be real. The average bandwidth
-is consistently above that of the unpatched kernel.
-
-To sum it up:
-
-- All workloads benefit from reduced memory footprint.
-- No performance regressions have been observed with the default size of
-  the software IO TLB.
-- Most workloads retain their former performance even if the software IO
-  TLB grows at run time.
-
-Changelog
-=========
-
-Changes from v3:
-- Provide swiotlb_is_allocated() instead of extending swiotlb_is_active().
-- Do not grow SWIOTLB if its address has been queried (affects Octeon).
-- Do not grow SWIOTLB if a remap function is used (affects Xen PV).
-- Use dma_mask instead of coherent_dma_mask.
-- Replace complex ternary operators with if-else blocks.
-
-Changes from v2:
-- Complete rewrite using dynamically allocated memory pools rather
-  than a list of individual buffers
-- Depend on other SWIOTLB fixes (already sent)
-- Fix Xen and MIPS Octeon builds
-
-Changes from RFC:
-- Track dynamic buffers per device instead of per swiotlb
-- Use a linked list instead of a maple tree
-- Move initialization of swiotlb fields of struct device to a
-  helper function
-- Rename __lookup_dyn_slot() to lookup_dyn_slot_locked()
-- Introduce per-device flag if dynamic buffers are in use
-- Add one more user of DMA_ATTR_MAY_SLEEP
-- Add kernel-doc comments for new (and some old) code
-- Properly escape '*' in dma-attributes.rst
-
-Petr Tesarik (8):
-  swiotlb: make io_tlb_default_mem local to swiotlb.c
-  swiotlb: add documentation and rename swiotlb_do_find_slots()
-  swiotlb: separate memory pool data from other allocator data
-  swiotlb: add a flag whether a SWIOTLB is allowed to grow
-  swiotlb: if swiotlb is full, fall back to a transient memory pool
-  swiotlb: determine potential physical address limit
-  swiotlb: allocate a new memory pool when existing pools are full
-  swiotlb: search the software IO TLB only if a device makes use of it
-
- arch/arm/xen/mm.c           |   2 +-
- arch/mips/pci/pci-octeon.c  |   2 +-
- arch/x86/kernel/pci-dma.c   |   2 +-
- drivers/base/core.c         |   4 +-
- drivers/xen/swiotlb-xen.c   |   2 +-
- include/linux/device.h      |   8 +-
- include/linux/dma-mapping.h |   2 +
- include/linux/swiotlb.h     | 111 +++++--
- kernel/dma/direct.c         |   2 +-
- kernel/dma/swiotlb.c        | 605 ++++++++++++++++++++++++++++++++----
- 10 files changed, 643 insertions(+), 97 deletions(-)
+Applied, thanks
 
 -- 
-2.25.1
-
+Lee Jones [李琼斯]
