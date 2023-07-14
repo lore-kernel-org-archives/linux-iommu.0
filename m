@@ -1,142 +1,85 @@
-Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2118.outbound.protection.outlook.com [40.107.215.118])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D80616AB3
-	for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 09:06:58 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=A70iNVhLaS/P3T80DoGeOsb22QJBS7rk53UVaxTZ/QKLrVUDZem97o2auuVWYFgktXdc/UAhQspGX5nJLtMNsqjPmwRrRZO1Zw6q0pG6nPoB/VLtz4uBH4yaYlC6O/aSu09WfuAmcH3fRC9BZp9fq6YqqoiNI3Aq5g57wHwWSWtqCaZT14VIg0HYPOMCXkxb7TIBHHxVtHUj6xeSErX76haGgUrjzP/eWJSUOqnE10Xpi59ssDG3ropd+OZQPBdZvITN8SuOfhYdd2bPNYdIuS6k2ncgq9Eh3FVkvslvkqpHEixJ2cmTeJ4EcY07CKOOrupSwOsl1qzZQGBTqieudw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CftbofGv/HGd+6USRkNfX5115oDEgvPSwWUq757MPJU=;
- b=FV5HsqeyJ/O+hIU4DWxbfH+TKxl/58nZpR70jsOQIPz8IKzvdGEropgXlZ76CtyV7PG2sVR07hm48bjvY139H8aX46wnxJt1RVO53OtJS7NArJyoLhyWUpAcFIjdM7Y1VDJTI49OE3Xu7AdxGJDuE3juG4q+bksjEzG96+s0eh7qVzCINfYg/3zqLmLlC9jcNV+c73Cwn8vEg08TFLtfHUpvIn9LWnrJKtNRYRoJGYsVorb+/nA8mW6XGntaNCcTB9d2/tHdVtPDp96Muw6cASdpWV5sBXveDivFppM2uLYUPoxq3qsoX4FkKzLSqpv5rJSK2CwwRtoeMSSsDAwyEg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CftbofGv/HGd+6USRkNfX5115oDEgvPSwWUq757MPJU=;
- b=pKaVy2oWHL3J4Ek/eiRSuK7wrXDa5PnZw/PsjxXdKAZaw/bGDNk7RqOudOpBnhaXYJkWM9vDM95RRB+905FVE5bAecaIGsV39/l+GqZJaXzeLctt0h86b8mQ9Odrj65IItiIJBl+kvdq1xoWuqy7eu4ExMNyE9oR+MVioW7rEstbeWO/DlRY04/p2YIPJqPnaxmDJqcWZzcAkBYL9vML+F/bZKLrQ4pIViUUkUL+8/yas4Mxkam1WPeyf2xu40241+eEhH2VPogz6GbecbKNzz+WmX79Bq7qaBTG9RE0Hz/cUufhbTOl4LGYU0CTkaICKdDPoJnH23ndexhP37eVLg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from SG2PR06MB5288.apcprd06.prod.outlook.com (2603:1096:4:1dc::9) by
- SEZPR06MB5521.apcprd06.prod.outlook.com (2603:1096:101:a5::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6588.27; Fri, 14 Jul 2023 09:06:51 +0000
-Received: from SG2PR06MB5288.apcprd06.prod.outlook.com
- ([fe80::f9b8:80b5:844e:f49a]) by SG2PR06MB5288.apcprd06.prod.outlook.com
- ([fe80::f9b8:80b5:844e:f49a%6]) with mapi id 15.20.6565.037; Fri, 14 Jul 2023
- 09:06:51 +0000
-From: Minjie Du <duminjie@vivo.com>
-To: baolu.lu@linux.intel.com,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Krishna Reddy <vdumpa@nvidia.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	linux-tegra@vger.kernel.org (open list:TEGRA IOMMU DRIVERS),
-	iommu@lists.linux.dev (open list:IOMMU SUBSYSTEM),
-	linux-kernel@vger.kernel.org (open list)
-Cc: opensource.kernel@vivo.com,
-	Minjie Du <duminjie@vivo.com>,
-	Thierry Reding <treding@nvidia.com>
-Subject: [PATCH v6] iommu: remove redundant parameter check in tegra_smmu_debugfs_init()
-Date: Fri, 14 Jul 2023 17:06:38 +0800
-Message-Id: <20230714090639.2708-1-duminjie@vivo.com>
-X-Mailer: git-send-email 2.39.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: TY2PR06CA0007.apcprd06.prod.outlook.com
- (2603:1096:404:42::19) To SG2PR06MB5288.apcprd06.prod.outlook.com
- (2603:1096:4:1dc::9)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B3A1D51F
+	for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 09:13:14 +0000 (UTC)
+Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-403b622101bso209681cf.1
+        for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 02:13:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1689325993; x=1691917993;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=CXXFs1U0EQirANF72vGzE97gcx0mGEeOxn7yBPDJD4A=;
+        b=B2Qy7FEqZ7cpvpNr/7I7YyMWCRE03jyN3Wx391rY6FsqZwmNbHkQyghsyfh0t/C9Ge
+         bNH5jHKznr5cb3VD1TAhKhrL4671zDAJLKeC+OPeWd/F6i+htAtjtQUYfDqbvrdDYLqo
+         7vsPeYv+0QwctoFSm6VMY49JcvLwU1JLAgN/b/kA4AJhd1YIpApVBScBnozL5Bo4+WY8
+         v1QXeO4C/lsCfryAivvaIQfQY1/ASdrsLClpld1HKvJ5tOWHPoG1IjECl+8aadEHVcKH
+         AOgRaI2pdsc3Kqu9KJUpKkO22y5lIvgEgQOrrQmZD6tY5SXDT1qHxQofIVTIO6FPPVux
+         T0zA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1689325993; x=1691917993;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=CXXFs1U0EQirANF72vGzE97gcx0mGEeOxn7yBPDJD4A=;
+        b=MlaQmB3F70mVHaIIg13EwC41RHZzyPM+OEz0r7fei4c9ph7q18jpbqjTLIuHDyedko
+         HZaxx9y0++/5oMUDOF1riL24TVMaGV9bdNUNot6/CzJ5lFSdBbE5x1Tc6IyD4UCC8A3i
+         KUPySRye52es7Qx2vbV73R4+6uDjyqitBZkgLUfuWo1eNSRlcYhrgCvdLFI5csKQC102
+         ugYbcmG3RZvrroYol2SAg9a6dKVRGqf8p9aCKO038gp27fXbV7j5GGy8q2MY6WWMIzTU
+         OYKj31O3of2pq9Z13i9cHmLLKhPfVY6L80zw5UdPxbdB8EbsUAPBo3YiLdgYN430qyBS
+         A/eg==
+X-Gm-Message-State: ABy/qLbsn0eLKxssHpuPjUo7Sq/hf5Byv+DBBa8FYnGccsKUrypjkiPb
+	+auAUnSNZ2AHz81npzPx/Ty4tcGUw4Peyn7bvaa2pg==
+X-Google-Smtp-Source: APBJJlHMkDrXr7BvzQxv+DKt/d+UTDl7PF7376N1v7BM/R1n9czmCwE+wgwvAnTdTWWotOkhYFRfKkgvySA+/jhFiks=
+X-Received: by 2002:ac8:7f8a:0:b0:403:aee3:64f7 with SMTP id
+ z10-20020ac87f8a000000b00403aee364f7mr794692qtj.6.1689325993037; Fri, 14 Jul
+ 2023 02:13:13 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SG2PR06MB5288:EE_|SEZPR06MB5521:EE_
-X-MS-Office365-Filtering-Correlation-Id: 35ce5508-0129-4732-37ec-08db8449a92c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	jj/1kk1s/oCoIeAPlnQL2dBaJyszFVFgkykux0WK8TkimifLB01wjBGLTZjUq1NDUezsIvThxisRO8qaITrL04suDKBT6Z+1KSJJT/ZcC+WnTfsDh8MOwSoMbNxKd7GOhDRfYpUhaqIugF5BAfJHzqFNf3xqCkAIwDCqxGfYf5GNjFHsZMgN7D9i6linFmZSpMMIaX7MmuQwJKov3iYGvjDJzURKrswTocsqqlKOGSkThs31yNByp6GsNdVRWGuvlOL87YoOcrwlR/BufpPey1Q65D5gDjT4BLVYNocgwBqdpL0oaKXJFhPbWkBRicQ5GaC9Y4FdzuB3Rkh94aAeHYquokM3gV03X/I7nKzV/k2eyoFpAfQtVsG3+Rtgicm12cJdKZYMix3dEd2csaIY+j5zce1xKZYoVBPmHWbc4WsmappjWfZLNNOjhyhsoFh4YvE+sBZrk9IamKJ7SeCiCr0fjwA1fnNSScKs0Z96ko114n+BPKoi1QAsJRAlgW3Tk0b7ViR2L9MJDe3QwmyR6IV7i6IrvtJuuc2WDcZKkTalJQhT4IEBWm9MLTdATJ+gFwq3YkIEgt2VEAc3LX0n9meu/64ByqpeXp4yHD/GKyY880ph9spG8ZfiwPMibiyB+WbcxO6W3z5ptbgFTaPthQ==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB5288.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(396003)(346002)(376002)(136003)(39860400002)(451199021)(7416002)(66946007)(4326008)(66556008)(66476007)(41300700001)(2906002)(316002)(478600001)(5660300002)(8936002)(8676002)(54906003)(110136005)(6666004)(6486002)(52116002)(6512007)(26005)(186003)(36756003)(6506007)(83380400001)(38100700002)(1076003)(921005)(2616005)(86362001)(38350700002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?j+GqMvC0yl4XpT6gt5FJzffbRqrRgh7OjXI3YWPThlFvyutFiAsthYmPWME7?=
- =?us-ascii?Q?UkNqyj1xxiA1zgIKzaSQV+bl6vamqmJ4YxXfZMMcN3wzc8Zq0oG8vBjGN3im?=
- =?us-ascii?Q?k7AjzVMBh7hTCjqv64FwHD461UVcjA2zRmGJn76nnm9h/FygUjC1hUokCaAO?=
- =?us-ascii?Q?OSnGmC+Ok0QexiTIy3+zTYL7MRSlEJipLTqJo8gggPuHSaiPACFCST+pe1sf?=
- =?us-ascii?Q?4ehySL8SG356KEJnBJSGTGtgK+UXbrBFdcLQSGahjwBg02ANX+JaocmY/WSD?=
- =?us-ascii?Q?R5S66Fq+OJGFB/C8zWC7qfldtGvMNQGgOIjrPGQ4+HK/qCrJMvCB43W9Ub/x?=
- =?us-ascii?Q?Wv6/HsOlPa6x/3c2foTdKAVar518zwJoLYq7Cmc5tuip+1ohv4O4t1+Z2OeY?=
- =?us-ascii?Q?gwY8D11sKckYeIcsUso4gjvVpSpOylBybz4rPQxWtOyGtr4C8Z0ZwRlKA2WP?=
- =?us-ascii?Q?JEPDvl/9PrR9U6OlyUHmsNyTN33F/4+l8ljU3z/1B/n85EUZ4nDmELa5VaAh?=
- =?us-ascii?Q?s0kBG44MVNY/vF1OhzZZhjVbpsxJOBpisI79OZNB9q/8Jfm8mlxSjT7uIczy?=
- =?us-ascii?Q?QIhax53T1cO2C8mlIWdOVa5YA0Sic5tdq2dWAYqWdI5Eh3WKd5kkO7tX1Ypu?=
- =?us-ascii?Q?EVmDbD03yju3AuVYXUVx5JFECoB5kwd4HrxDpeDAPw8JlmxMV9IKXCaDzAyR?=
- =?us-ascii?Q?mKLxI3JZzkij4fVEhx2pst+IQHCvpyPs9JmpRZ90puLAyDhEnBQ8Na7NMFja?=
- =?us-ascii?Q?PoOxQqgKFjsaMVXvGYX8FkLkYLoa9blpT8JX1fCI3KOHPAPlcDi0u1R1siWW?=
- =?us-ascii?Q?SwS3EMawxf60NvxCX213VSmG7XDIzLywP6A/BWl3UZvfkLKyXFFnxs/ucVKb?=
- =?us-ascii?Q?rzaSUlICUzrkJlH2hpToJq7P+zrzYB+1CnzGdySTAxSq/McUpk9UQ+gsr21t?=
- =?us-ascii?Q?aCoPDDYl50iWXJSSk9s/5xrU1DEe+4SbaDhuEosWZY1Q5vEKjTNTLeDPkMPA?=
- =?us-ascii?Q?5gfNNmY/RLX8NkreaZ1MuEPom8KX0Azrmemf+GYwYAl07p5h2kcIQnCUj8dH?=
- =?us-ascii?Q?xygrsxT8Nqb5xRqXrbp1tYGpn4BEgY9TxPYuJAKHTQJoJaVb77SFmXZGT66/?=
- =?us-ascii?Q?8Dl9P3DpwRggMHrEO/0dNxMy9B9IoqYCfa3RXBCJINTLLjwZDd1i5lAEp73l?=
- =?us-ascii?Q?wgzSUpfZSQCWSrVPaqzAeJOmLuoMkwk15mEYQbUIh77Sr1BMBnMrl9LQ2E1d?=
- =?us-ascii?Q?OY9owsOw1K04QFA0gFq3JkfXW6oVNyiS+83Lczez0vLppwQNukFE0rpn/Xey?=
- =?us-ascii?Q?E3MHWEfQ9VIODUiyOZwho8TTZmTeCf86+UKnYe7BqPTUS/jqFnxW983h5S/9?=
- =?us-ascii?Q?0DOxBujL5ZzqUjZCFyYYBl6908uGn8S8WmVWF4Qxks6GXBqj0ciOpMr79Y5l?=
- =?us-ascii?Q?9Kb+4AsRzYJ/wIe1LFUfAoQ7NKdxVwSCfYgywqXznFnV62sNxe7hQVeClwBE?=
- =?us-ascii?Q?sdCY+P5RkWLIAK37TT4wdnte8gtuPxKbjlZi+FTSgCa/pRzecNdV1gIs3pVY?=
- =?us-ascii?Q?/7t7byHQApqw6W7JBRLKnNpKDWVANsHVQZTgT/GQ?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 35ce5508-0129-4732-37ec-08db8449a92c
-X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB5288.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2023 09:06:51.0677
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MnpPiWAWjh7/MRy2nXYBS7N/YwizHatruJj+xyieIQSol+lL0LdFR5YPQ3nepdo+ho/A+vAbCJqxJBf1dasITg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEZPR06MB5521
+References: <20230621063825.268890-1-mshavit@google.com> <20230621063825.268890-3-mshavit@google.com>
+ <ZK9RycgNAVrxe343@Asurada-Nvidia> <CAKHBV26wi+xKnNjo-R+QOcVLPH2KJTFP+mF4CW1xE61nOdF5GA@mail.gmail.com>
+ <ZLAKQw+DzcpSRSyi@nvidia.com> <CAKHBV25YadRVFiag5z5Yc13L093ScWkCjAOCd=VuGm2RUaDyzA@mail.gmail.com>
+ <ZLApQjaqoOshT2TJ@nvidia.com> <ZLBWh370pPjx2B+z@Asurada-Nvidia>
+ <ZLCNUNRsWy/YuHhQ@nvidia.com> <ZLChc4A58PkU2Fe5@Asurada-Nvidia>
+In-Reply-To: <ZLChc4A58PkU2Fe5@Asurada-Nvidia>
+From: Michael Shavit <mshavit@google.com>
+Date: Fri, 14 Jul 2023 17:12:35 +0800
+Message-ID: <CAKHBV240_0bUE-25sND3oSG57jT0yJiZzAt+fPTXehjm=zmRBw@mail.gmail.com>
+Subject: Re: [PATCH v4 02/13] iommu/arm-smmu-v3: Add smmu_s1_cfg to smmu_master
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, jean-philippe@linaro.org, baolu.lu@linux.intel.com, 
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-debugfs_create_file() will return early if smmu->debugfs is an error
-pointer, so an extra error check is not needed.
+On Fri, Jul 14, 2023 at 9:14=E2=80=AFAM Nicolin Chen <nicolinc@nvidia.com> =
+wrote:
+> @Michael,
+> Would it be possible for you to update a v5, following Jason's
+> suggestion overall? And I think we can have a smaller refactor
+> series first without set_dev_pasid, to have a common codeline
+> sooner for us to add new features, such as set_dev_pasid, the
+> use case of IDENTITY default substream, and the nesting series.
+> I will help testing with some pasid/non-pasid use cases too.
 
-Signed-off-by: Minjie Du <duminjie@vivo.com>
-Acked-by: Thierry Reding <treding@nvidia.com>
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
----
-V4 -> V6: Add 'Reviewed-by' tag on the basis of V4.
-V5: error patch, should be discarded.
-V3 -> V4: fix expression about patch.
-V2 -> V3: fix expression about patch.
-V1 -> V2: remove the error check.
-V1: use IS_ERR() to error check.
----
- drivers/iommu/tegra-smmu.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 1cbf063cc..2137040b7 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -1056,8 +1056,6 @@ DEFINE_SHOW_ATTRIBUTE(tegra_smmu_clients);
- static void tegra_smmu_debugfs_init(struct tegra_smmu *smmu)
- {
- 	smmu->debugfs = debugfs_create_dir("smmu", NULL);
--	if (!smmu->debugfs)
--		return;
- 
- 	debugfs_create_file("swgroups", S_IRUGO, smmu->debugfs, smmu,
- 			    &tegra_smmu_swgroups_fops);
--- 
-2.39.0
-
+Want to make sure I fully understand these last few messages first. At
+a high level, we want:
+1. arm_smmu_master is allowed to own a CD table, but not an
+STE-precursor (s1_cfg/s2_cfg). The s1_cfg is practically already that,
+and we can probably get there with minimal changes.
+2. arm_smmu_master shouldn't point to the currently active CD table
+(which may or may not be the one it owns) or STE-precursor as a
+shortcut. All code should figure it out by looking at the master's
+currently attached domain (functionality could be provided by helper).
+3. arm_smmu_domain shouldn't pre-generate any STE-precursors. The
+STE/CD for a domain should either be computed right when it is
+written, or computed ahead of time and stored as a copy in the
+smmu-domain.
+Is that right?
