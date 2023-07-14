@@ -1,89 +1,104 @@
-Received: from mail-ot1-f47.google.com (mail-ot1-f47.google.com [209.85.210.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DC7712C80
+	for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 20:31:36 +0000 (UTC)
+Received: from 8bytes.org (pd9fe94eb.dip0.t-ipconnect.de [217.254.148.235])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDDCD15AC0
-	for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 17:53:58 +0000 (UTC)
-Received: by mail-ot1-f47.google.com with SMTP id 46e09a7af769-6b9b4a1211fso1348411a34.0
-        for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 10:53:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1689357238; x=1691949238;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7qM4OQlhVRt1WjAaK0dOAYfxc9ydCayeNS8uqIx0WY8=;
-        b=hofPtE7gxdhMCkPF2c0S9ZJpQ3qChRlTMkcrh34AaywXf3bA7gmBP2NlNIq8ujOZR2
-         f9UIgr4ssZCRyB969V26dYrKV+cpwTvDKvqG8F0ywKSTGIE6IH4tPro4P6hKzfQR9DFL
-         EWCs50XO4MBcIYNxuRXluxuy7Q9jaYmnS/u3MFW1GyrdLcVlwskcD8Qzu5qQBfShqZOM
-         aGfF/66Jt0pUJ1qCzkk3V/3mbaIIQe78XdxmeeQglFhhjy/49oYriEqqxZSuIZdu250a
-         d4J42e/e0GzjksnNF48UZ2Av95Cs3hw5TIH3MLC4brkqKycBIQ26U9N3XLho0igr9Uu4
-         vRiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689357238; x=1691949238;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7qM4OQlhVRt1WjAaK0dOAYfxc9ydCayeNS8uqIx0WY8=;
-        b=MZnr2b6mHCpEEVUMxLQRWGOrKxgDSHPqjUrG88B8Z5pE7PFJi4nUEUtAlZSIzI++k/
-         HC43zvK38Acmm2UcE2v5OqrGROby3R3pX13wBVH3QOpWT5VlRqC2Wbb4hXAfLjDH6t05
-         kHErRgdS99YLLM57e48tkbxams/F9MjcWhZ1nEGdAx1R8htGkdS3JPk7QCdo9H9MxJTK
-         WQswyrFvGtXN+SxCyOUS831Byj+L/WW37yOWAotkYCIfyZkZek1As687fgWtUcbR2n2S
-         Hc9HAmokEFQ1DS3MOmY1b3zCrVMxkHXCuNtwZ2yfdH7op1mXLK+eWhuJ6YLa6F0Lr0nr
-         W4dg==
-X-Gm-Message-State: ABy/qLaxnbqPW1NyEVwemz3F8Y8WfeVL4Oh/n0PA+GAvrpDk1nu1+9UX
-	Wbo39Msw9M99TYtrPtrojFpTVA==
-X-Google-Smtp-Source: APBJJlHqSHmPIv9HuEvRSWZF6x8BxlxfDeSFwxhu5ab27MnTuEI5jnYuoxkTzgSCdLTatEv5YW58Ww==
-X-Received: by 2002:a9d:6847:0:b0:6b9:70c9:e1c8 with SMTP id c7-20020a9d6847000000b006b970c9e1c8mr5560602oto.5.1689357237824;
-        Fri, 14 Jul 2023 10:53:57 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id w10-20020a63a74a000000b0055b61cd99a1sm7841793pgo.81.2023.07.14.10.53.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jul 2023 10:53:57 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qKMzL-0018e1-K0;
-	Fri, 14 Jul 2023 14:53:55 -0300
-Date: Fri, 14 Jul 2023 14:53:55 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com
-Subject: Re: [PATCH 00/21] iommu/amd: Preparation for SVA Support (Part 1 of
- 2)
-Message-ID: <ZLGLs8B+07fU0Scc@ziepe.ca>
-References: <20230712141516.154144-1-vasant.hegde@amd.com>
+	by mail.8bytes.org (Postfix) with ESMTPSA id AE682280007;
+	Fri, 14 Jul 2023 22:31:29 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1689366689;
+	bh=UstBmk5rKvMol5Pxu8bwFwKMgx6VP0tpjTBggG4Y89w=;
+	h=Date:From:To:Cc:Subject:From;
+	b=Pvnm1X8wstiDPxLbj8KBnqc8DL3eT36JsRUVOT9O1R4uO7AkXQ9Tx1+1+M/ECmOXf
+	 ppts2TUTp0ZX/VaF994sAphzgogX8jnBiZ5MfciNQfkYucVCbs6zvm3Zh1y3F0bZgs
+	 J0RqO4uEo5pQWU4wUWQJWTZnr0fxGooerRl1yATIJls7PC7EW16vQFyv0dSoND6/WJ
+	 0ILO60d0RvMi1Ck67cWe4MTWbJrUynfV0NVjQLqwerrqvmKK616AQWx9TXfH/Rc6DX
+	 NmiY/2EZmb2mdgoRW2Dh8hcZfsc1dQbw93m3Da+mOYWP6gi/zbGz8qKIkjzekbOe9e
+	 8UStkJbpkhT8w==
+Date: Fri, 14 Jul 2023 22:31:28 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: [git pull] IOMMU Fixes for Linux v6.5-rc1
+Message-ID: <ZLGwoGoJNAG6Db4v@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="KrWtInSE6k/GcJsT"
+Content-Disposition: inline
+
+
+--KrWtInSE6k/GcJsT
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230712141516.154144-1-vasant.hegde@amd.com>
 
-On Wed, Jul 12, 2023 at 02:14:55PM +0000, Vasant Hegde wrote:
-> This is part 1 of the 2-part series to introduce Share Virtual Address
-> (SVA) support, which focuses on cleaning up and refactoring the existing
-> code in preparation for subsequent series.
-> 
-> It contains the following enhancements:
-> 
-> * Patch 1 - 7:
->   Clean up and refactoring. No functional changes.
-> 
-> * Patch 8 - 11:
->   Miscellaneous improvements.
-> 
-> * Patch 12 - 15:
->   Introduce new set of AMD IOMMU protection domain flags, which simplifies
->   domain manangements.
-> 
-> * Patch 16 - 21:
->   Modify logic to independently enable PCI capabilities (ATS/PASID/PRI)
->   for devices. This allows more flexibility in preparation for SVA and
->   IOPF supports.
+Hi Linus,
 
-I don't know alot about the AMD driver, but these all seemed like a
-pretty good movement in the right direction.
+The following changes since commit 06c2afb862f9da8dc5efa4b6076a0e48c3fbaaa5:
 
-I hope part 2 removes all EXPORT_SYMBOL's from the AMD driver :)
+  Linux 6.5-rc1 (2023-07-09 13:53:13 -0700)
 
-Jason
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git iommu-fixes-v6.5-rc1
+
+for you to fetch changes up to c20ecf7bb6153149b81a9277eda23398957656f2:
+
+  iommu/sva: Fix signedness bug in iommu_sva_alloc_pasid() (2023-07-14 14:53:19 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v6.5-rc1
+
+Including:
+
+	- Fix a regression causing a crash on sysfs access of iommu-group
+	  specific files
+
+	- Fix signedness bug in SVA code
+
+----------------------------------------------------------------
+Dan Carpenter (1):
+      iommu/sva: Fix signedness bug in iommu_sva_alloc_pasid()
+
+Jason Gunthorpe (1):
+      iommu: Fix crash during syfs iommu_groups/N/type
+
+ drivers/iommu/iommu-sva.c |  3 ++-
+ drivers/iommu/iommu.c     | 27 ++++++++++++++-------------
+ 2 files changed, 16 insertions(+), 14 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--KrWtInSE6k/GcJsT
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmSxsKAACgkQK/BELZcB
+GuO3MQ//fIVGc+krTT5CVG13NcVKRZ2btwJn/EZTCga5WE7C2UPFonNaiw2IyH59
+9WjSAGRgIqtLNFSFoucyuf8G3VblVukl73H3KXWKwwong4IeHgAWawubBYIakG2U
+I35edS/OdMIMW/jBolSIBKG0Sn6pr41UScPwuWJWSkN7FXHd/pGK4Pfurm2/lbN1
+koWK1qJAqcq+JLKn/ZBoQlP4wVqvGVx7QrA2p5wSZZ3Mp8JBGUq966a3FPWIm/6h
+D29M6EdjdbOz24lRHg5t+d2rpC7qk2bETBE121bvuIt6IieBij5kbHuc0ajuIsAA
+K6NsYdPznFw6+Xmo05XkbGuvNMsF1U6Rcsfb+9wpBapPQXdrMSRt2hfGPaxF9Ybw
+MqfZJV4q0Qk5oQzn4SoSCJpHilO26YMx1oqi/xyco+ASWa9O9REb2g0rb1GUgQsy
+ahZ8jQ3xm8MaruHZTDuIrTZYxFMPv6Up2QGIEyzuoqvwZPqw5ITq0/WZ7ZzMvM/1
+9IUfRCgUvQ9cbA+js+KRn5SkI+ZD25fuBSawVqi3bhA/xieOmSgKaqeuvpu14qZZ
+L4u9DfRRNro1xHCivhukFmn9hJz19m6wGf+rawlKEOgreFcC1qWaH1J2kE2GBuGZ
+uGo9G+zVJLLcFcbfeY1Hs8QpdibQ9uQ6J7qJJNM9dlp29s3/YjE=
+=PKrL
+-----END PGP SIGNATURE-----
+
+--KrWtInSE6k/GcJsT--
