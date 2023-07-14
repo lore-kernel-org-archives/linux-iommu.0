@@ -1,177 +1,89 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2084.outbound.protection.outlook.com [40.107.237.84])
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 583137EF
-	for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 01:14:33 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Wq1L2EPNRbWHjMNw7xuoPs3KR1Syen48ITpmdGrMU5KhCFtwK3yS92vm3EQhUkAtk/LCgTCpPw4yai0pib4SOqfLJvgjzTF+SznLN53dOGy6tXd6PZlxNslqjHz7dY8TjLMRWcT4ty3duld1s98o/DmTlsA3VfX3hyheG74otDnbn+3p1MEXUK2NO3oa5P/AqV8ljT+eG2FjMWjtgWT0FDyJStOTPxl8xHKWDv5KB5X3+isEGTthlKDfUhhmQyYD+QrsNyHFk7MSnGtVgpc1FN3uwcliiKDKfPkF0oLJ7/KbU7ZqeGclE63Tjc+wkYvnvIuM9xi/HdFUvRKNiWfPxw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3srNnLNk0dXD8RZ9+KBUjJqTFaUUeDM55+yUk604/+s=;
- b=SVJIs7EUeSt1NGgRKxV4oxcPe8yxvFAvzLxPx2NEF4uw5Q4EECgfxo8G+yLHCRKcbe7IrnPIqN76A8o8OSR6FUswvQGPiInGkTsolOXr3OHLuRwgiKdjZR+8GrD+W2NZv83yQqyc1SXEma7l/EmLrnOgGmCa0R0pqu93+AcZBwTymyDo+6+nxOat9JQlSLIJzNroMmO4lWaAEk61riFrU6qG7QpqwbyH0WHeHktvyi4t2PicZF5W/W8CHx74ExYUMHEM7OC7IldiqHqK0Wt/XXcqRn8k/DpZ8GtcipNebfwJyt/hwkoOGopzpO1uZowFaGVXuWwpHNJEKd+zF6KElg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3srNnLNk0dXD8RZ9+KBUjJqTFaUUeDM55+yUk604/+s=;
- b=D32vdqjlRTlQY1YWKEFz9cHKclQH3JwQLGpkDDeep+gBdPEIOgZp7yAgjKvV6APqCpVN+wECKekFULpEKXVDeZr0Gqy6njZZ0YzRbYhKh4zM7gfBEVoLL2Lj/vcDaPD0UFcgugDrTVxiqJy0RLMGHHhDgVRCuvA4V9yIcSt0nqqm9p6dVw7S5QznNog+Znc0NcAIonVzbFq48b83Nvgvt44NAbgrv1Ynhsj4IBcglewrnTVJMkUIZG2/NvM1EH8R42I8OosIxA+f4CjZEninHZxfukYP4C9Sc1ntCM2R93ajb9TeSqXpIu2XcDrCy358MKE4/fF3WTTpavFCIapR9w==
-Received: from DS7PR03CA0029.namprd03.prod.outlook.com (2603:10b6:5:3b8::34)
- by SA3PR12MB7859.namprd12.prod.outlook.com (2603:10b6:806:305::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6588.27; Fri, 14 Jul
- 2023 01:14:31 +0000
-Received: from DM6NAM11FT099.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3b8:cafe::62) by DS7PR03CA0029.outlook.office365.com
- (2603:10b6:5:3b8::34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6588.24 via Frontend
- Transport; Fri, 14 Jul 2023 01:14:31 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- DM6NAM11FT099.mail.protection.outlook.com (10.13.172.241) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6588.27 via Frontend Transport; Fri, 14 Jul 2023 01:14:31 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 13 Jul 2023
- 18:14:29 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.37; Thu, 13 Jul 2023 18:14:28 -0700
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Thu, 13 Jul 2023 18:14:28 -0700
-Date: Thu, 13 Jul 2023 18:14:27 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Michael Shavit <mshavit@google.com>, Jason Gunthorpe <jgg@nvidia.com>
-CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
- Roedel" <joro@8bytes.org>, <jean-philippe@linaro.org>,
-	<baolu.lu@linux.intel.com>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 02/13] iommu/arm-smmu-v3: Add smmu_s1_cfg to
- smmu_master
-Message-ID: <ZLChc4A58PkU2Fe5@Asurada-Nvidia>
-References: <20230621063825.268890-1-mshavit@google.com>
- <20230621063825.268890-3-mshavit@google.com>
- <ZK9RycgNAVrxe343@Asurada-Nvidia>
- <CAKHBV26wi+xKnNjo-R+QOcVLPH2KJTFP+mF4CW1xE61nOdF5GA@mail.gmail.com>
- <ZLAKQw+DzcpSRSyi@nvidia.com>
- <CAKHBV25YadRVFiag5z5Yc13L093ScWkCjAOCd=VuGm2RUaDyzA@mail.gmail.com>
- <ZLApQjaqoOshT2TJ@nvidia.com>
- <ZLBWh370pPjx2B+z@Asurada-Nvidia>
- <ZLCNUNRsWy/YuHhQ@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D8AC373
+	for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 02:31:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1689301895; x=1720837895;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=LTlIrAiXfWEDV4oSn2gI8/laRP8AGaQoE0T52JoYWNI=;
+  b=Y8KphvsHChNDiOuqtrrtcl8ILMkdbymkX+4WWC6ypFtGWmT3NrZ3d9Ym
+   y2EPmLhFBKINjgzv0Lq0kWrtfKJ+2YxGGWc/kE/jusbsuL2KCaDZhwNd5
+   mteQ3jAoJ4gkZEt46AacKND64ZAWli+rbonzivgd+SG8wCdk68X+GlsrS
+   UQriPhg8Lu0fvg/7B6nGCHMghfgv//xsqkqJQOd/FpbJRYqFJIBqw8UG1
+   KILHq1B4wrjy9DSv1xLiGYbaut1cq/p5fsYZZDmMMkpByjMgwRT0EKBW7
+   KZMqSDjYOw+F9GcYeh/Tn0C84W6Ybyj0cLgAmZji/HDa3iNkstOytbYdX
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="451732565"
+X-IronPort-AV: E=Sophos;i="6.01,204,1684825200"; 
+   d="scan'208";a="451732565"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2023 19:31:34 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="812262745"
+X-IronPort-AV: E=Sophos;i="6.01,204,1684825200"; 
+   d="scan'208";a="812262745"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.191.49]) ([10.252.191.49])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2023 19:31:29 -0700
+Message-ID: <61f31b3e-b618-88db-a07c-f6761c1c7d06@linux.intel.com>
+Date: Fri, 14 Jul 2023 10:31:26 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ZLCNUNRsWy/YuHhQ@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT099:EE_|SA3PR12MB7859:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5c28f3a1-98fa-4e9a-0462-08db8407ad87
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	/2/3VnkTt+KuVkV70lCxCjOKLcCqG1NjHghjOcX37I45P0i7EcRiRlr8r+nTy/s8CH1JxG9fQ5YqUcVTvBdE37TIk9JIMlj32Zu8vu7PNGzb98S/xqMW8DOF6nGb8Gi1WpZ4+CQ8O54CpPL97DEoIzH7uiQG3hsnqJVRZ+QJfEID/nl8Zkl5HRDhEIySpLODWIEUb7ZmUejJkwWq249xRm9qpJidWBDabSTF7bSXefoOHFvPjYvMZIzlW/SHYnSoW6NZtswNOeTSUz7Uj0rjEtvIUfr6H1jzms4v8+yI4RX+pfIV4LuJnNEeiTVb223Ro32LYAa2F4tSjgYgPbSfP3viKyYKkUFalmnunA+93XPmVCscut6k43JEqa40bMC+1Okd4jNovgvwPaAFho3XzScPT7Z21Xf0EVs05typzVytQ0gyHl4FX+I8rNDr5+9VfBm1+W1ZZ/9iTkV+vBD3nmI87hyelwXf4WQCgm/8wSUWUm1ohzvtYalNS63OFSQFUHzF2y8ADtJwFBuNzmAsNpeCz7b5O1CKpPohDDXmWu4HTk+KH7aVrY3Nw9LeIhZXQT8XRys8ceQ2zKRWpB8bAzduCvILe7hgNgK1o/4X0bEoN3KH4JSvkHCO5Blrl/poDLKjXko9oXu24Eh9csZYniusraxj/O3/aByB5Gm4xnuI3DsJuJKyBQHKnJWVxFnqDThvOynWWrUew5w7/gCorfaoOfd2j4pyW64py3gdkksy98lPx4PO4x9J5ipvuodR
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(376002)(136003)(346002)(451199021)(40470700004)(46966006)(36840700001)(40460700003)(36860700001)(83380400001)(47076005)(186003)(336012)(426003)(33716001)(82310400005)(7636003)(86362001)(356005)(82740400003)(26005)(9686003)(40480700001)(55016003)(70586007)(70206006)(6636002)(4326008)(54906003)(110136005)(41300700001)(5660300002)(316002)(8676002)(8936002)(2906002)(478600001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2023 01:14:31.2595
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5c28f3a1-98fa-4e9a-0462-08db8407ad87
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT099.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB7859
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Cc: baolu.lu@linux.intel.com, opensource.kernel@vivo.com,
+ Thierry Reding <treding@nvidia.com>
+Subject: Re: [PATCH v4] iommu: remove redundant parameter check in
+ tegra_smmu_debugfs_init()
+Content-Language: en-US
+To: Minjie Du <duminjie@vivo.com>, Thierry Reding <thierry.reding@gmail.com>,
+ Krishna Reddy <vdumpa@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>,
+ "open list:TEGRA IOMMU DRIVERS" <linux-tegra@vger.kernel.org>,
+ "open list:IOMMU SUBSYSTEM" <iommu@lists.linux.dev>,
+ open list <linux-kernel@vger.kernel.org>
+References: <20230713072825.10348-1-duminjie@vivo.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20230713072825.10348-1-duminjie@vivo.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Jul 13, 2023 at 08:48:32PM -0300, Jason Gunthorpe wrote:
- 
-> > For struct arm_smmu_domain, it still has a union of a CD (for an
-> > S1 domain) or an s2_cfg (for an S2 domain). Or we could select
-> > a better naming for s2_cfg too, since s1_cfg is gone.
+On 2023/7/13 15:28, Minjie Du wrote:
+> debugfs_create_file() will return early if smmu->debugfs is an error
+> pointer, so an extra error check is not needed.
 > 
-> By spec it should be called CD and STE value, but frankly I like CDTE
-> and STE a little better (context descriptor table entry) as it evokes
-> a sense of similarity. I don't care for the words 's1_cfg' and
-> 's2_cfg' to represent the CD and STE, that is pretty confusing now
-> that we have more uses for the CD and STE's than simple s1/s2 IO page
-> tables.
+> Signed-off-by: Minjie Du <duminjie@vivo.com>
+> Acked-by: Thierry Reding <treding@nvidia.com>
+> ---
+>   drivers/iommu/tegra-smmu.c | 2 --
+>   1 file changed, 2 deletions(-)
 
-We have STE and PTE, so CDTE sounds legit to me, though probably
-it'd be safer by just following the spec? We can always add kdoc
-and comments to make things clear.
+Next time when you send a new version of a patch, please don't forget to
+add the change log after the tear line. This way, people can know how
+the patch evolved into this way.
 
-@Michael,
-Would it be possible for you to update a v5, following Jason's
-suggestion overall? And I think we can have a smaller refactor
-series first without set_dev_pasid, to have a common codeline
-sooner for us to add new features, such as set_dev_pasid, the
-use case of IDENTITY default substream, and the nesting series.
-I will help testing with some pasid/non-pasid use cases too.
+Best regards,
+baolu
 
-> > Yet two cases that would waste the preallocated CD table:
-> > 1) If a master with ssid_bits=0 gets attached to an IDENITY S1
-> >    domain, it sets CONFIG=BYPASS in the STE, which wastes the
-> >    single-entry CD table, unlike currently the driver bypassing
-> >    the allocation of a CD table at all.
-> > 2) When enabling nested translation, we should replace all the
-> >    S1 fields in the STE with guest/user values. So, the kernel-
-> >    level CD table (either single-entry or multi-entry) in the
-> >    master struct will not be used. Although this seems to be
-> >    unchanged since currently the driver wastes this too in the
-> >    default domain?
 > 
-> As we discussed in another thread dynamic resizing of the CD table
-> makes some sense. Eg keep it at one entry until PASID mode is enabled
-> then resize it to the max PASID bits.
+> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+> index 1cbf063cc..2137040b7 100644
+> --- a/drivers/iommu/tegra-smmu.c
+> +++ b/drivers/iommu/tegra-smmu.c
+> @@ -1056,8 +1056,6 @@ DEFINE_SHOW_ATTRIBUTE(tegra_smmu_clients);
+>   static void tegra_smmu_debugfs_init(struct tegra_smmu *smmu)
+>   {
+>   	smmu->debugfs = debugfs_create_dir("smmu", NULL);
+> -	if (!smmu->debugfs)
+> -		return;
+>   
+>   	debugfs_create_file("swgroups", S_IRUGO, smmu->debugfs, smmu,
+>   			    &tegra_smmu_swgroups_fops);
 
-I see.
-
-> But I view that as an improvement beyond here. It seems fine for now
-> to pre allocate the full CD table and waste the memory. PASID capable
-> devices are rare.
-
-Yea, that'd be easier for us to move forward other features :)
-
-> > With that, I still feel it clear and flexible. And I can simply
-> > add my use case of attaching an IDENITY domain to the default
-> > substream when having a multi-entry CD table.
-> 
-> Yes, with the above note about dynamically resizing the CD table, I
-> think we generally have the idea that programming the CD, eg by
-> installing an entry, can cause the CD tables's STE to (atomically)
-> change.
-> 
-> Eg to toggle the S1DSS bit if the PASID 0 is IDENTITY, or to resize
-> the table if we exceed the PASID space.
-
-Yea, we have enable_pasid() so probably can resize over there.
-
-> Longer term we'd also need a way to setup IDENTITY domains for !0
-> substreams as well too (eg for SIOV). It is too bad the CDTE doesn't
-> have a bit for bypass. I suppose it will need dummy 1:1 IO page tables
-> or something.
-
-Oh. I haven't thought about that far. Noted it down.
-
-Thanks
-Nicolin
