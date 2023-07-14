@@ -1,34 +1,34 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F96A7462
-	for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 06:00:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73E6F6AD9
+	for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 06:02:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689314420; x=1720850420;
+  t=1689314548; x=1720850548;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=UXRTaxPUMTttyEK6k/XZG4rdkxjidqSuECmGEg2DEto=;
-  b=Vu5srnwNBqeM8Y2+4V+nP3CZ2EhJclJMMrg3U9Lgw/Q6UxAAfqPDd5/T
-   xISFY44VsYh3yGXgbqZ/ph7LhbZy/e5EWa2goNUul5+71pSvy59O2IdVt
-   vkCvcv14yZkGvspTih8NugPQI45KdpmAjUN7vV8emsuxFPUb3adzBqHpE
-   pBkZvzPj9QcoDe8umz17gWBxOvwZKGV6VikO85eMVhBG394EZi7dnca4M
-   OIyKwxehOADEyxRr1o84xNRuXruIY6F4JTNqOUBHc2JnzHeyY3zDLCd0t
-   Yw4BLisIJzk+Dw4xafViyVFOEvENKfcOsDcVFZIcuSxgc2ZTSSfQZGjI9
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="368949767"
+  bh=1id4JB2ckUipK8/ncHOfr/CgvJHLeGE2BCfOa/y4afM=;
+  b=AazNPU6xmu0+gIuBnYgMGGfNdkJy4guBst7NerOFS1ojmD1DNtscVm8G
+   Ju7/OTncHNOFDi5TANPiwRIksmLQ41bhnkUGF2q5zI/PZNuPYIVGS43V9
+   NY+f/XjsOBAkavZ+ipSeKx6ULpkGOP5EUzwv7yd533V5Qxhqln/InM0Ko
+   N0Wzp/Q2lOb7uw/cFl9gNOGjMgWO4ZC3XZdIIuWBJXKoDGw0SVh8UrFjd
+   EFvzFUk9wrP4UF41Zu0TWYpcNR2TAQYDdj4OUsMEatB3oLFKUXBW78YHF
+   0Ulp/KLYBnF3qvVvrWXe5nzvYl/c2WSFBT1MD66/6BbQHs4Q4uZXLjO39
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="431570385"
 X-IronPort-AV: E=Sophos;i="6.01,204,1684825200"; 
-   d="scan'208";a="368949767"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2023 23:00:19 -0700
+   d="scan'208";a="431570385"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2023 23:02:27 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="835910869"
+X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="751920849"
 X-IronPort-AV: E=Sophos;i="6.01,204,1684825200"; 
-   d="scan'208";a="835910869"
+   d="scan'208";a="751920849"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.187.116]) ([10.252.187.116])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2023 23:00:14 -0700
-Message-ID: <2a103a6d-af9f-456d-eda4-f1e15f8367b6@linux.intel.com>
-Date: Fri, 14 Jul 2023 14:00:07 +0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2023 23:02:23 -0700
+Message-ID: <2753b770-564a-b141-1505-94f08016abc5@linux.intel.com>
+Date: Fri, 14 Jul 2023 14:02:19 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,8 +40,7 @@ User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
 Cc: baolu.lu@linux.intel.com, Jason Gunthorpe <jgg@nvidia.com>,
  Will Deacon <will@kernel.org>, "Liu, Yi L" <yi.l.liu@intel.com>,
  "Yu, Fenghua" <fenghua.yu@intel.com>, "Luck, Tony" <tony.luck@intel.com>
-Subject: Re: [PATCH v10 6/7] iommu/vt-d: Add set_dev_pasid callback for dma
- domain
+Subject: Re: [PATCH v10 3/7] iommu/vt-d: Add domain_flush_pasid_iotlb()
 Content-Language: en-US
 To: "Tian, Kevin" <kevin.tian@intel.com>,
  Jacob Pan <jacob.jun.pan@linux.intel.com>,
@@ -51,54 +50,48 @@ To: "Tian, Kevin" <kevin.tian@intel.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.com>,
  Robin Murphy <robin.murphy@arm.com>
 References: <20230712163355.3177511-1-jacob.jun.pan@linux.intel.com>
- <20230712163355.3177511-7-jacob.jun.pan@linux.intel.com>
- <BN9PR11MB5276C14341AC7CE6D352948F8C37A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <87e78302-9f69-8db1-8a0a-b40e1f29d9c6@linux.intel.com>
- <BN9PR11MB5276E0C6F1063E581F29BB978C34A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20230712163355.3177511-4-jacob.jun.pan@linux.intel.com>
+ <BN9PR11MB5276EC6A22D3A3C9DE1C46678C37A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <d89755de-bb7a-ee23-f308-2500aad81120@linux.intel.com>
+ <BN9PR11MB5276DBFD837A82AF61DF00D28C34A@BN9PR11MB5276.namprd11.prod.outlook.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276E0C6F1063E581F29BB978C34A@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <BN9PR11MB5276DBFD837A82AF61DF00D28C34A@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/7/14 11:50, Tian, Kevin wrote:
+On 2023/7/14 11:51, Tian, Kevin wrote:
 >> From: Baolu Lu <baolu.lu@linux.intel.com>
->> Sent: Friday, July 14, 2023 11:34 AM
+>> Sent: Friday, July 14, 2023 11:37 AM
 >>
->> On 2023/7/13 15:56, Tian, Kevin wrote:
+>> On 2023/7/13 15:52, Tian, Kevin wrote:
 >>>> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 >>>> Sent: Thursday, July 13, 2023 12:34 AM
->>>>
->>>>
->>>> -	/*
->>>> -	 * Should never reach here until we add support for attaching
->>>> -	 * non-SVA domain to a pasid.
->>>> -	 */
->>>> -	WARN_ON(1);
->>>> +	dmar_domain = to_dmar_domain(domain);
->>>> +	spin_lock_irqsave(&dmar_domain->lock, flags);
->>>> +	list_for_each_entry(curr, &dmar_domain->dev_pasids, link_domain)
->>>> {
->>>> +		if (curr->dev == dev && curr->pasid == pasid) {
->>>> +			list_del(&curr->link_domain);
->>>> +			dev_pasid = curr;
->>>> +			break;
->>>> +		}
->>>> +	}
->>>> +	spin_unlock_irqrestore(&dmar_domain->lock, flags);
->>>>
+>>>> +static void domain_flush_pasid_iotlb(struct intel_iommu *iommu,
+>>>> +				     struct dmar_domain *domain, u64 addr,
+>>>> +				     unsigned long npages, bool ih)
+>>>> +{
+>>>> +	u16 did = domain_id_iommu(domain, iommu);
+>>>> +	unsigned long flags;
+>>>> +
+>>>> +	spin_lock_irqsave(&domain->lock, flags);
+>>>> +	if (!list_empty(&domain->devices))
+>>>> +		qi_flush_piotlb(iommu, did, IOMMU_NO_PASID, addr,
+>>>> npages, ih);
+>>>> +	spin_unlock_irqrestore(&domain->lock, flags);
 >>>
->>> what about no matching dev_pasid is find?
+>>> btw I gave a comment before that the check of list_empty() changes
+>>> the semantics instead of just creating a helper.
+>>>
+>>> If it's the right thing to do please split it into a separate fix patch.
 >>
->> kfree() can handle this gracefully.
+>> Perhaps move it into patch 6?
+>>
 > 
-> but what about domain_detach_iommu()? Is it correct to adjust
-> the refcnting when there is no matching dev_pasid?
+> I still prefer to putting it in a separate patch since it changes the
+> behavior in existing path. It's not really about dev_pasid which
+> patch6 is trying to support.
 
-You are right.
-
-Logically, if we get a valid domain for a pasid, we should have a
-dev_pasid allocated for it. Perhaps, adding a check in the code will
-make the code more readable?
+Okay, that will also be fine to me.
 
 Best regards,
 baolu
