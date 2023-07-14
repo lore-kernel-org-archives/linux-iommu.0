@@ -1,175 +1,111 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CBCD187A
-	for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 03:51:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17EF16AA4
+	for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 05:47:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689306698; x=1720842698;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=DlGyhd6xC93azFkqH03jmGrCk0fm6IZm7ok8hTdRH4s=;
-  b=ETgF1JUzW/11LfmdXQBlRTPkEJeew+0v5QSyq0TIa6HaFkOuU5r+xRuL
-   5rcyZOtVbzSFUIq2tHrSFZ/yp6Q/dDIuWZqGCEP0k1jscmSR7aUrQ8Fk2
-   p+Cv6Ln/QHO9DDCqn2ruaPL2wNaQAAz6uKihOofAP85mQ8tFR3BzfGQel
-   100GWloDvHoqDPCUjayw+SYJbJgeZIZUnpRdUEYiy5cdVQ6qy+gOPUICV
-   F38uqoQjuIMi0MqY/j8UGw30sbIfo91IqhTv/BF+RgKr8Yr3gPmEiEx5Z
-   wk5GNM9iv/3UUvk0k6+j5I+KiyEwAmXxexg07EAouHbir5cnIzCyW3TkK
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="451746701"
+  t=1689313648; x=1720849648;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=M2Op5B60rK/IAOYu+Mr1yoo/u96NcZpWns/Z2ATpcG8=;
+  b=mJTEwyMqa5Fj1+on2U0CGcwip6sAtUyM3C1JO+pXiQmNREQuEW+bVrJd
+   atejlXqE176JUc7ZDxktKYfslYojU5iHNvJ4PWNoURcsBL9NOxRP1L+oR
+   L1pxPfMIiovDJH+mjD2noEUG2i3ShFs1V79eG2FdSduGIh06yoh2u0zSy
+   V6LMl+TExos0uGkjtntCEdOmcWXUfZTA06/s5ykIm+qk/Ck+WMPLGVJhW
+   lWztG4RHo3AhI5/w9pnpu35eFELqCkPf9xzC55ohaHM2qc2xh4iUT3eT/
+   H9C9MPA0kK4l1QuG9fdBToDudWIpBPTKImZ4g28gLONdKSvpJC9QY+i0z
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="429162340"
 X-IronPort-AV: E=Sophos;i="6.01,204,1684825200"; 
-   d="scan'208";a="451746701"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2023 20:51:25 -0700
+   d="scan'208";a="429162340"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2023 22:47:27 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="757427601"
+X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="787720793"
 X-IronPort-AV: E=Sophos;i="6.01,204,1684825200"; 
-   d="scan'208";a="757427601"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga001.jf.intel.com with ESMTP; 13 Jul 2023 20:51:25 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Thu, 13 Jul 2023 20:51:24 -0700
-Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Thu, 13 Jul 2023 20:51:24 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27 via Frontend Transport; Thu, 13 Jul 2023 20:51:24 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.171)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.27; Thu, 13 Jul 2023 20:51:24 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Vo/Wfi80L2weBK8xE8xwa68UEpMsC/w5ARGoBQVHk8JgNZnTkNR9QAwL/doUjhchqIAblt3I4Kcwgls8gvwtIiM2xTdJZYB/P0FwnEh7hbY9h83dPj/lgLrb8YamUYSgoTWkLvXEyK/my/BWZlxCCSXbsn9avMPefOyTe2loW1t0ktzmghONZUkJP/Pyh5AMszhz9QnxF/3LPLQORiTQY2JqJI/+Tu/VuoOVKmBXMasYeo7C4sDrpVXsvm2Brscb9bvYcgBgiyhUZMI4DO5mi+NpFmLQA0B1mXf4FJZGkCI9mbN0s9evvKYbToNEc/m7BflIDCSL7a0/Uz+HarF/Mg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DlGyhd6xC93azFkqH03jmGrCk0fm6IZm7ok8hTdRH4s=;
- b=cUVbVqd5M43MwSltthb57UIiDAvyXDEabjxacu8veWD1co8xkT6IuhSa/H9dzhmEbQEJ5WtBwvI6PM/BqzPTvla/4MOqlRPQKV7JQjtxZQuCI6F/EFPMRyOZsiPveu1ssUIaRnU/3gk0GxC09zGFU/jBUhwznlfDaEZDG9VuNe7NIYWZKMHYZQ2GaBL8mJbGYatLQVDa3r230kDyEfZZOUE9ROegBNKCVPpkxU9by1UvC5yS++tdPvVovj+Riiz8zjpx+vTdorUvTIrSV1BTNJzHO5jINJmCdux+DarHI60zcbPPdOxBQ899gfJcyMp37/w5hLRhs6VQp/ttAPduvQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by PH0PR11MB5829.namprd11.prod.outlook.com (2603:10b6:510:140::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6588.27; Fri, 14 Jul
- 2023 03:51:17 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::4f05:6b0b:dbc8:abbb]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::4f05:6b0b:dbc8:abbb%7]) with mapi id 15.20.6588.027; Fri, 14 Jul 2023
- 03:51:16 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>, Jacob Pan
-	<jacob.jun.pan@linux.intel.com>, LKML <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, Joerg Roedel
-	<joro@8bytes.org>, Jean-Philippe Brucker <jean-philippe@linaro.com>, "Robin
- Murphy" <robin.murphy@arm.com>
-CC: Jason Gunthorpe <jgg@nvidia.com>, Will Deacon <will@kernel.org>, "Liu, Yi
- L" <yi.l.liu@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>, "Luck, Tony"
-	<tony.luck@intel.com>
-Subject: RE: [PATCH v10 3/7] iommu/vt-d: Add domain_flush_pasid_iotlb()
-Thread-Topic: [PATCH v10 3/7] iommu/vt-d: Add domain_flush_pasid_iotlb()
-Thread-Index: AQHZtN38FvvxAju+I0Wmp9YhFMGVA6+3U8rAgAFLTYCAAAPAYA==
-Date: Fri, 14 Jul 2023 03:51:16 +0000
-Message-ID: <BN9PR11MB5276DBFD837A82AF61DF00D28C34A@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20230712163355.3177511-1-jacob.jun.pan@linux.intel.com>
- <20230712163355.3177511-4-jacob.jun.pan@linux.intel.com>
- <BN9PR11MB5276EC6A22D3A3C9DE1C46678C37A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <d89755de-bb7a-ee23-f308-2500aad81120@linux.intel.com>
-In-Reply-To: <d89755de-bb7a-ee23-f308-2500aad81120@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|PH0PR11MB5829:EE_
-x-ms-office365-filtering-correlation-id: fb8ea56f-bc86-4ebb-b95f-08db841d9354
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: hwfECcfBk+cXJcvD/JdffBieAywyToFjhHc1q+oFwq0N1Ur/Ts+Od6C6MqSzYTGBvnN5caA8mhlHn6pkbABBAxup5teGjYQKjYUFDxTEk653brW3PjcF9uGTv2WPgJfW09ZSVl7U4Gd/++t4ijHqZTy0G+th7Oup1dgsbaK9GAisoK2Ao8BDIROvsYXAd6LvbztTOKhq7Ts5o6OeR49MMDU0MQGyiDdMER3PTBHALDCDyAC9hQmZ85QUr36ZNDdMx7xZ+yKxHMIgyPGA55ARLqFTbrSPNC5j4X3vMBWgNOLisX4U9dOsi/z3dpz1ZquuLniLWNgSxoz1aMWYlhbOFVSI4W4bBOIM/BOPdJd+lGJDaoa4cxLypNwOSmTk6+rxuPRqL97ioL6aKtxH5Hi63JNIbGpvjB3VRfXVJgxOphhhuEZuNWpI3/tkqJ3s3h3yiPazbhXtU2y2sfY14aI/dkzhuRKrd8lSj9EkQ7+AINaF8S9a8jY2Fh/1IyboCka5GwMf5jPTNKZHjUNea04LX3IE/3hHcjO2v8cYu2+0AjdyecdbRelD4IBnGD9uzgEaMmcYDWKMR4jruNr/oTDmBKmgXAG+rO5W8Mi34KOmJVISNv2a/n5caDk5jnrUmziF
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(396003)(136003)(376002)(39860400002)(366004)(346002)(451199021)(2906002)(55016003)(38100700002)(122000001)(9686003)(82960400001)(83380400001)(186003)(26005)(86362001)(53546011)(6506007)(33656002)(52536014)(5660300002)(38070700005)(8676002)(8936002)(478600001)(41300700001)(110136005)(54906003)(7696005)(71200400001)(66556008)(66946007)(76116006)(4326008)(66446008)(66476007)(64756008)(316002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?bmNHWCsrS1Y2WHpvbG5xaWhMZG5UdWtiVDE4NXg5ejVEcnVpVHFxTGlJa2FE?=
- =?utf-8?B?b0orMkhtVzFEMlQ3cXhjYnplZldKWWdYZllIaUVOc05ZQnpQZy9vVXhVTkh2?=
- =?utf-8?B?QnhlU1JvNmJWeEJaYU83UFBoc2gzRGppbVBVL2xZak5uRzFCY1U5T1pPYTVn?=
- =?utf-8?B?L1JPakRKSTdTRlJlVjQxbUp1em9lVHVlbHVaM3VrVmw4Zng0OWlZTituc2FL?=
- =?utf-8?B?Vk96QzhOUE1Xb01SamhqTmg3UzBJOUYwZE9rVGNtNHFQUEJaMmEvZFh4cGNN?=
- =?utf-8?B?WW5Xb1J3T3FRR21iY09vT202aERtbXhneXVCYU1xd0s2NklPNlVGQkl1c1NR?=
- =?utf-8?B?SkZVN2ltdVFGZFJyVFZvMnVSOTZOSTI2MnBDdmxwWkpwM3lzT2hSVXJVM1VS?=
- =?utf-8?B?NkpRYTI4Y2k2MjdsWldrcjdtT2lIY1k2WjdNZWtCRkxySlJHZWR4aVN0WEVO?=
- =?utf-8?B?V1V2azFLMlBjY0czcTU0NzVodzdobHZTcTJRZ2pYejNKOExnTzNMZERWZXJ0?=
- =?utf-8?B?ZktPMXZ2ZDI5VWNyVXhCOFpnZDZnUUZXNlA3eHFRRGFiQ2tkTWFad3EwTmRC?=
- =?utf-8?B?ZnJkOXJQb0VPcFlmdDRZNis1a1FXblkzMVBGUXhXRlQyK3hOV21oa1I0Sytm?=
- =?utf-8?B?dFVHcVFxY1l4MFhHSE4ra0FRd3hMdnhQUGk1WVRaYXpWY3d6NElRd2xld2Vj?=
- =?utf-8?B?aUlhNmhCbEJjV25FRU5PNEkrcGJGcDUxdzZ1VWNuSUQ2V1B6dUpYV3hyYnM2?=
- =?utf-8?B?MzMyVW95b2V5OE8rdUVQWUQzVDJiUjZKWVVDYndLMzJNeTlwdm50cHRPZ3RB?=
- =?utf-8?B?TTNwQWcxd2E4QlRkN05DRExPYnd3MGUrbXFhc3VQdnFXUXljT09CaU01WG8x?=
- =?utf-8?B?WFdWeDh4enNEZTluMFBJOWhGbDJ3Z00wSlZPWXBXbzJNOXQxSHZUd1FmNklX?=
- =?utf-8?B?cTVVUk12VGloTjdobG5hb3o4b2o1aGwxM09sYTZjejBVZXJPYVZyQVVEbDV6?=
- =?utf-8?B?MjE2dnV4OVROLzR0bnFwT3dEbHFEQ0FDUlpyVW51cFZNVjIrTDh3VXJ0dDV6?=
- =?utf-8?B?aHlDblRwRVJZajF3UzhLQ3lhOXJHeFVBcmJ1T015Z3MwdHhOQUIrTmN1MW5y?=
- =?utf-8?B?cFNGK0ZYNWMrcGJiUjh6SWJIUktMd0g0ODloUUdmeEhLN2lrWEN5b1A4eUl5?=
- =?utf-8?B?aEFYSmJQL01uZDZXemY3MzcyU2NzQUdXRzJUNUpaM29FcDh0Zzk2Yjl2ZmVL?=
- =?utf-8?B?QjdKVUVNVUNFVTNhWTVDaW8vU2ZETGcyczhtc0p0M1JVRTFMcjlZWkltZ0l3?=
- =?utf-8?B?a1A1dGFQU1lUTkMvRk5HQUtCVm9pd2U2elUrUmVXdTFkMGtCWUlqVWd4cUF1?=
- =?utf-8?B?dGtTQmNHSzZia1dEdE56Ylh1MEM4N3B6ck8xUFV0dW1SQ3hDdVJxcW1RZ0w4?=
- =?utf-8?B?RGFWY2VMRFptbE9iSUVRcFNnZC9WNWFNWG5iM21NeDBQZDlLUDlUSTl0UjN6?=
- =?utf-8?B?OXFJakhZbFlxMFVCaTgxeG5HNVR0eTJ3MlQwN3d1MHZJQ1ZsSlgwL2VhOGlj?=
- =?utf-8?B?TThpS0Z5TXIrMDJwM3Z6UHo1S3JCWmI3YnJjOG5zMUc5MjVGYzBCTGRNRi9x?=
- =?utf-8?B?cStPT3ZKYmx4Smk4WFQ0d0swOStoWE5xdzljS3AycFhzbjVidm8vTEhLYUlS?=
- =?utf-8?B?WkZUUkdVY1JZVUNuRVdlOVFnU1VqUzZPRVRkOGcxZlZmNnhrL1BXaHFkdEdk?=
- =?utf-8?B?WG9jT0VYNUhBMXNGM0txL2JVNzd6eko4UmNVb0Qrc3c3VHdjdTZyU0RXWjRX?=
- =?utf-8?B?aG5UdVkyT1JjaTV1emY5MmJUdzE1Z09KbzJHV1RWTDIrT2lkZkJBa1EySmVH?=
- =?utf-8?B?UTh0ejNEdkJVUWVYTUtsNlplTlh1ajNNNjB1bklHODY2WHpIZExoVUN0eHh1?=
- =?utf-8?B?K3ovS0kvMC9YTHlndzRscW9idXU5QTFybkYvaU1FRkxJd0VOem0ybE9PWlph?=
- =?utf-8?B?R0R2d1FVcS9BQkdHMjB4VE44RDM5RkQ4ZlBWV2dsNzhJUUtQTzdabEMzSTQw?=
- =?utf-8?B?Wms1QzF0MTIwZU1KVmI4SnFjbjFzdUY5Z0xibmlYL1pXRkM2aW9hZVFGdU9M?=
- =?utf-8?Q?yTuCKZQG3LjGAx+hmtlnmySCK?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+   d="scan'208";a="787720793"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.187.116]) ([10.252.187.116])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2023 22:47:21 -0700
+Message-ID: <29fa2860-cbf2-04c8-4d16-138668ffea25@linux.intel.com>
+Date: Fri, 14 Jul 2023 13:47:18 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fb8ea56f-bc86-4ebb-b95f-08db841d9354
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jul 2023 03:51:16.3580
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 3Iq5fG66InkL57vwVnb9aR1BVmKl0ZtCpa4XnvtaQtVOhncHhpJLR4vZWbplCPaU0cvExBNO5GsCHsKbNkVJAw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5829
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Cc: baolu.lu@linux.intel.com, Jason Gunthorpe <jgg@nvidia.com>,
+ Will Deacon <will@kernel.org>, "Liu, Yi L" <yi.l.liu@intel.com>,
+ "Yu, Fenghua" <fenghua.yu@intel.com>, "Luck, Tony" <tony.luck@intel.com>
+Subject: Re: [PATCH v10 5/7] iommu/vt-d: Make prq draining code generic
+To: "Tian, Kevin" <kevin.tian@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ LKML <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ Joerg Roedel <joro@8bytes.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Robin Murphy <robin.murphy@arm.com>
+References: <20230712163355.3177511-1-jacob.jun.pan@linux.intel.com>
+ <20230712163355.3177511-6-jacob.jun.pan@linux.intel.com>
+ <BN9PR11MB52761F5CDE22E5C3C10E7E728C37A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <9875863a-eba5-c8fa-a39b-7d3300e3b5ca@linux.intel.com>
+ <BN9PR11MB52763423F2A18E927065C8EA8C34A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB52763423F2A18E927065C8EA8C34A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-PiBGcm9tOiBCYW9sdSBMdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiBTZW50OiBGcmlk
-YXksIEp1bHkgMTQsIDIwMjMgMTE6MzcgQU0NCj4gDQo+IE9uIDIwMjMvNy8xMyAxNTo1MiwgVGlh
-biwgS2V2aW4gd3JvdGU6DQo+ID4+IEZyb206IEphY29iIFBhbiA8amFjb2IuanVuLnBhbkBsaW51
-eC5pbnRlbC5jb20+DQo+ID4+IFNlbnQ6IFRodXJzZGF5LCBKdWx5IDEzLCAyMDIzIDEyOjM0IEFN
-DQo+ID4+ICtzdGF0aWMgdm9pZCBkb21haW5fZmx1c2hfcGFzaWRfaW90bGIoc3RydWN0IGludGVs
-X2lvbW11ICppb21tdSwNCj4gPj4gKwkJCQkgICAgIHN0cnVjdCBkbWFyX2RvbWFpbiAqZG9tYWlu
-LCB1NjQgYWRkciwNCj4gPj4gKwkJCQkgICAgIHVuc2lnbmVkIGxvbmcgbnBhZ2VzLCBib29sIGlo
-KQ0KPiA+PiArew0KPiA+PiArCXUxNiBkaWQgPSBkb21haW5faWRfaW9tbXUoZG9tYWluLCBpb21t
-dSk7DQo+ID4+ICsJdW5zaWduZWQgbG9uZyBmbGFnczsNCj4gPj4gKw0KPiA+PiArCXNwaW5fbG9j
-a19pcnFzYXZlKCZkb21haW4tPmxvY2ssIGZsYWdzKTsNCj4gPj4gKwlpZiAoIWxpc3RfZW1wdHko
-JmRvbWFpbi0+ZGV2aWNlcykpDQo+ID4+ICsJCXFpX2ZsdXNoX3Bpb3RsYihpb21tdSwgZGlkLCBJ
-T01NVV9OT19QQVNJRCwgYWRkciwNCj4gPj4gbnBhZ2VzLCBpaCk7DQo+ID4+ICsJc3Bpbl91bmxv
-Y2tfaXJxcmVzdG9yZSgmZG9tYWluLT5sb2NrLCBmbGFncyk7DQo+ID4NCj4gPiBidHcgSSBnYXZl
-IGEgY29tbWVudCBiZWZvcmUgdGhhdCB0aGUgY2hlY2sgb2YgbGlzdF9lbXB0eSgpIGNoYW5nZXMN
-Cj4gPiB0aGUgc2VtYW50aWNzIGluc3RlYWQgb2YganVzdCBjcmVhdGluZyBhIGhlbHBlci4NCj4g
-Pg0KPiA+IElmIGl0J3MgdGhlIHJpZ2h0IHRoaW5nIHRvIGRvIHBsZWFzZSBzcGxpdCBpdCBpbnRv
-IGEgc2VwYXJhdGUgZml4IHBhdGNoLg0KPiANCj4gUGVyaGFwcyBtb3ZlIGl0IGludG8gcGF0Y2gg
-Nj8NCj4gDQoNCkkgc3RpbGwgcHJlZmVyIHRvIHB1dHRpbmcgaXQgaW4gYSBzZXBhcmF0ZSBwYXRj
-aCBzaW5jZSBpdCBjaGFuZ2VzIHRoZQ0KYmVoYXZpb3IgaW4gZXhpc3RpbmcgcGF0aC4gSXQncyBu
-b3QgcmVhbGx5IGFib3V0IGRldl9wYXNpZCB3aGljaA0KcGF0Y2g2IGlzIHRyeWluZyB0byBzdXBw
-b3J0Lg0K
+On 2023/7/14 11:49, Tian, Kevin wrote:
+>> From: Baolu Lu <baolu.lu@linux.intel.com>
+>> Sent: Friday, July 14, 2023 11:28 AM
+>>
+>> On 2023/7/13 15:49, Tian, Kevin wrote:
+>>>> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+>>>> Sent: Thursday, July 13, 2023 12:34 AM
+>>>>
+>>>> -	/* Domain type specific cleanup: */
+>>>>    	domain = iommu_get_domain_for_dev_pasid(dev, pasid, 0);
+>>>> -	if (domain) {
+>>>> -		switch (domain->type) {
+>>>> -		case IOMMU_DOMAIN_SVA:
+>>>> -			intel_svm_remove_dev_pasid(dev, pasid);
+>>>> -			break;
+>>>> -		default:
+>>>> -			/* should never reach here */
+>>>> -			WARN_ON(1);
+>>>> -			break;
+>>>> -		}
+>>>> +	if (!domain)
+>>>> +		goto out_tear_down;
+>>>
+>>> WARN_ON()
+>>
+>> Why?
+>>
+>> My understanding is that remve_device_pasid could be call in any context
+>> including no domain attached.
+>>
+> 
+> oh I'm not aware of that. Can you elaborate the usage which uses a pasid
+> w/o domain? pasid needs to point to a page table. Presumably every
+> page table should be wrapped by a iommu domain...
+
+A case I can think of is error rewinding. A domain is being attached to
+multiple pasids. When one of them is failed, remove_device_pasid should
+be called on all pasids so that they are parked at a determinant state.
+
+On the other hand, I don't want the remove_device_pasid to be the
+counterpart of attach_dev_pasid. remove_device_pasid simply denotes:
+
+- The pasid will be parked in blocking state;
+- If any domain that has been attached to this pasid, stop reference to
+   it any more. Otherwise, there might be use-after-free issues.
+
+Hence, remove_device_pasid should never fail.
+
+Best regards,
+baolu
