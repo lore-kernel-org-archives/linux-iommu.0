@@ -1,345 +1,109 @@
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
+Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C80063CE
-	for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 06:56:49 +0000 (UTC)
-Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-51ff0e3d8c1so1741851a12.0
-        for <iommu@lists.linux.dev>; Thu, 13 Jul 2023 23:56:49 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7BE17499
+	for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 08:03:27 +0000 (UTC)
+Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-403b622101bso189591cf.1
+        for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 01:03:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1689317807; x=1691909807;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+        d=google.com; s=20221208; t=1689321806; x=1691913806;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=wPb0IpHExepFSS8AXjqT5uPHoWnDc8tyYxdhzyJGpP4=;
-        b=Tn/tFtotoj3kKWGu/JeFCWLAdynH7BSSFEU2fT6alKvccsV98nUG36uaNDdrSJH7uX
-         sug4xoJ4Joim8NEL2ut/TLKgwOG1Ukr6nd4GnOeuCpP55/m2d7bH1PdG1ntxsI1/9udE
-         ZTDPrjBWC9xn2L2bukiBiuS+UqWiEO3QXjPhby85+ZJZdP0Zs0cHDYSj/Ru0z+ubKF1v
-         tE6WLqQZa72GPLZ2NtWtkVKTc65j+m+5xwRx96KSjRA7M5LTUjtgePQLs7gthHUEhvh8
-         NnnPAi/5UnluiHCywIFJ+1xMvNYWmBn+8qKu0AOMuZJw6S+k9reoVEuBiYh7BWKjYxdt
-         klGA==
+        bh=12v+SPtROiuj28H9N1MOzT6JNCiTmCYWUdjB7HIYh9U=;
+        b=iDmMZDSqf3iIVvRyT48YiFdmq+VtvdVcdpZrTUHa8AuNtkQDzhSgtzn80pyJOeSdSn
+         WthTd0bac9iDmnhxto3e/SJh08OOfhdyqS4S4LAinwn0JhKL8ANCv2EAo7c3y8auT+w1
+         Ba28IpqEcKlincwLS/D9tL4sYCR474IumKQBGexhNlQHOw9B8ruCDvFkk7LxP4oUJ0MY
+         /DEWJVUg4hRVGRhgbKVRQAXRG+LsQ3EZatz7NR44xbydr0RwXY6D2p/NBirMlaugADB7
+         +0eGokxsKNQcA2MxyZdUIdnM+RBST+ojJqHhP4a6loAhuN2oVY7wZGsQJcJDKE8kiYrl
+         F5JQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689317807; x=1691909807;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20221208; t=1689321806; x=1691913806;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=wPb0IpHExepFSS8AXjqT5uPHoWnDc8tyYxdhzyJGpP4=;
-        b=knvwFfguFi9keF0gA0h+a7DPgIHXftJCUWTtqDbv4i110VcwRPM8KZGmxg5SdIv8Y2
-         LKRH2MzcN9iHy8p50W1xl8xXoexFrgWJn2ZxTk62Mpuh6ub+2PvcW6prrDJ8DnlZA20d
-         XleLJv/PAvhBoxiCVOeARBCVWkJnRKA+33UeP3eDai/5xYvpf76Uh13XytLdUqwdy31Z
-         p02hfq3LagK8LWMZ7R0lHhwuulmFoVqSDOl0mlAjkKhlw5excgnfxUTTeFm0Y9BHJUUo
-         3uE1s0kIs5An+Os01Q1ZQBpDWNG7XjWqEdLSDkiooWh6jwoBOgpqgu2I8u3qXXboNlO3
-         /iKA==
-X-Gm-Message-State: ABy/qLYNLNqXWPGT9ludkXanRmKHqTCb0e62hSjBHxPvSTUsq+v95fxw
-	Eea1RMzyWwkXPjJaZ1v5xw2HRFYRi+w=
-X-Google-Smtp-Source: APBJJlHP8ZGSCoWsVEJI8fyskK0DGjUW9zRUPX9p4poeYfNF02mfyM0n6gDfoS1lWJSkrsQTKOFDGg==
-X-Received: by 2002:a05:6402:b26:b0:51d:92bf:e6ae with SMTP id bo6-20020a0564020b2600b0051d92bfe6aemr3724889edb.18.1689317807282;
-        Thu, 13 Jul 2023 23:56:47 -0700 (PDT)
-Received: from orome (p200300e41f4b7100f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f4b:7100:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id d3-20020aa7c1c3000000b0051de52f8adesm5288703edp.32.2023.07.13.23.56.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Jul 2023 23:56:46 -0700 (PDT)
-Date: Fri, 14 Jul 2023 08:56:44 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Stanimir Varbanov <stanimir.varbanov@suse.com>,
-	Stanimir Varbanov <svarbanov@suse.de>, linux-tegra@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, Krishna Reddy <vdumpa@nvidia.com>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org
-Subject: Re: [RFC PATCH] iommu: arm-smmu-nvidia: Add default domain type
- implementation op
-Message-ID: <ZLDxrDMoLsniQx4x@orome>
-References: <20230710082252.9702-1-svarbanov@suse.de>
- <ZKvgG4-IzqiYPSUT@orome>
- <93026b47-3b72-8439-486e-e0cda21dd0fe@suse.com>
- <ZK17X4ueSI5rWKVL@orome>
- <ZK_8uU2XJAWMk23M@orome>
- <2a6fe812-3881-8dc9-1e7e-237ce7490155@linux.intel.com>
+        bh=12v+SPtROiuj28H9N1MOzT6JNCiTmCYWUdjB7HIYh9U=;
+        b=W4khsfN3hdjIum/aAa9hzkQKgeqR9Kjp9os4nihEAkjmxzAZau60VPOkxSXzon1W3J
+         nMd/FlXqE3Q/yYLdxmXcv04THZWAlxa+dHw4xy0WXDaa0oa/f14HluMy74Hho8MdNKsO
+         Asw3gITADXc/AEi7zr+ttRI1f0CEMBfIdXDR+ySmMZmRgoSOsJDMuUdQw5u3e0qB+ZZJ
+         1UZJM8FwcnUvykD4Wce+Q7y3BL713NaQswZew+3YR80p9oi2YGvGOTbB1AtV/qtToRA0
+         6MJbEg56VghtWCalVlcYIqybyjHT2eGH3+kw9eqPaNAe8a2hM8RcLvL7bKpZlwRCILxX
+         3uVQ==
+X-Gm-Message-State: ABy/qLbjT+SbQIsWcnPJcTgxHj4jz+wGfqSGs0hYtAJn7j3MT4I+gqF8
+	NQg+wbIHgtAlpEBbDGD3w1A1ajn+oYw9kskxQ0rL8A==
+X-Google-Smtp-Source: APBJJlGKNpfvbfdCqxqjT1YvdZfgE5A04mkwsR12CMTw8mOVWHG7g74SOPl9dWaNq9JuLTwk3VVOv7ZuNeEPP+nMHEE=
+X-Received: by 2002:ac8:5905:0:b0:3ef:302c:319e with SMTP id
+ 5-20020ac85905000000b003ef302c319emr754044qty.8.1689321806537; Fri, 14 Jul
+ 2023 01:03:26 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="I3VsAWuDrtgMS3gi"
-Content-Disposition: inline
-In-Reply-To: <2a6fe812-3881-8dc9-1e7e-237ce7490155@linux.intel.com>
-User-Agent: Mutt/2.2.10 (2023-03-25)
-
-
---I3VsAWuDrtgMS3gi
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20230621063825.268890-1-mshavit@google.com> <20230621063825.268890-3-mshavit@google.com>
+ <ZK9RycgNAVrxe343@Asurada-Nvidia> <CAKHBV26wi+xKnNjo-R+QOcVLPH2KJTFP+mF4CW1xE61nOdF5GA@mail.gmail.com>
+ <ZLAKQw+DzcpSRSyi@nvidia.com> <CAKHBV25YadRVFiag5z5Yc13L093ScWkCjAOCd=VuGm2RUaDyzA@mail.gmail.com>
+ <ZLApQjaqoOshT2TJ@nvidia.com>
+In-Reply-To: <ZLApQjaqoOshT2TJ@nvidia.com>
+From: Michael Shavit <mshavit@google.com>
+Date: Fri, 14 Jul 2023 16:02:50 +0800
+Message-ID: <CAKHBV25BRWTxXO0YTGq3q1OdMQHAzop8BqJJaa9CHxdQzxnNbg@mail.gmail.com>
+Subject: Re: [PATCH v4 02/13] iommu/arm-smmu-v3: Add smmu_s1_cfg to smmu_master
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, jean-philippe@linaro.org, 
+	baolu.lu@linux.intel.com, linux-arm-kernel@lists.infradead.org, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jul 14, 2023 at 11:14:08AM +0800, Baolu Lu wrote:
-> On 2023/7/13 21:31, Thierry Reding wrote:
-> > On Tue, Jul 11, 2023 at 05:55:11PM +0200, Thierry Reding wrote:
-> > > On Tue, Jul 11, 2023 at 01:58:34PM +0300, Stanimir Varbanov wrote:
-> > > > Hi Thierry,
-> > > >=20
-> > > > Thank you for the comments!
-> > > >=20
-> > > > On 7/10/23 13:40, Thierry Reding wrote:
-> > > > > On Mon, Jul 10, 2023 at 11:22:52AM +0300, Stanimir Varbanov wrote:
-> > > > > > Add def_domain_type implementation op and override default IOMMU
-> > > > > > domain Kconfig option (CONFIG_IOMMU_DEFAULT_PASSTHROUGH=3Dy), w=
-hich
-> > > > > > could be enabled on some distros. The current quirk has been do=
-ne
-> > > > > > for Tegra234 machine, because I found the issue on it. The issue
-> > > > > > itself appears on USB host controller which cannot be initializ=
-ed
-> > > > > > without IOMMU translation. Something more, we proved that IOMMU
-> > > > > > translation is needed for display and GPU drivers as well.
-> > > > > >=20
-> > > > > > I evaluated few possible options to solve that:
-> > > > > >=20
-> > > > > >   a) select default IOMMU domain from .def_domain_type op
-> > > > > >   b) Unset CONFIG_IOMMU_DEFAULT_PASSTHROUGH=3Dn
-> > > > > >   c) add iommu.passthrough=3D0 on the kernel cmdline
-> > > > > >   d) firmware - ACPI / DT
-> > > > > >=20
-> > > > > > a) This option is implemented in the proposed patch.
-> > > > > >=20
-> > > > > > b) Since that the community has agreed that pass-through is pre=
-ferred
-> > > > > > as a default IOMMU domain option because this will avoid perfor=
-mance
-> > > > > > impacts on some of the platforms [1]. On the other side we have=
- examples
-> > > > > > where you cannot even install Linux distribution on a machine w=
-here the
-> > > > > > storage media cannot be detected and the system just hangs.
-> > > > >=20
-> > > > > That's not how I read that thread. It sounds more to me like Will=
- and
-> > > > > Robin had ideas on how to improve the performance and were planni=
-ng to
-> > > > > address these issues. It doesn't exactly sound to me like there w=
-as
-> > > > > concensus to make passthrough the default.
-> > > > >=20
-> > > > > Having said that, given that it's possible for distributions and =
-users
-> > > > > to set CONFIG_IOMMU_DEFAULT_PASSTHROUGH=3Dy, I think it would be =
-useful in
-> > > > > general to have a way of enforcing IOMMU translations if it's nee=
-ded by
-> > > > > the hardware.
-> > > >=20
-> > > > Exactly, the problem is that some platforms prefer passthrough to a=
-void
-> > > > performance impacts but others cannot even boot the kernel (and thus
-> > > > installation failure). Passing iommu.passthrough=3D0 should be an
-> > > > administrator decision, balancing between security and performance.
-> > > >=20
-> > > > On the other hand the aforementioned mail thread gave some performa=
-nce
-> > > > numbers which might be are outdated having the improvements made in=
- smmu
-> > > > driver in mind. Unfortunately, I cannot confirm that the performanc=
-e has
-> > > > been improved during that time.
-> > > >=20
-> > > > >=20
-> > > > > I'm not sure I fully understand the particular problems that you'=
-re
-> > > > > seeing on Tegra234, though. I'm not aware of anything in the USB =
-host
-> > > > > controller driver (or hardware, for that matter) that would requi=
-re the
-> > > > > IOMMU to be enabled. The only peculiarity that I can think of is =
-the
-> > > > > firmware, which is typically loaded by an early bootloader and th=
-erefore
-> > > > > might perhaps need the IOMMU to properly map this in the kernel.
-> > > > > However, my understanding is that this firmware is loaded into sp=
-ecial
-> > > > > carveout regions which don't require remapping.
-> > > >=20
-> > > > On Jetson Orin AGX (R35.2.1) I see these errors:
-> > > >=20
-> > > > tegra-mc 2c00000.memory-controller: unknown: write @0x0000000000000=
-080:
-> > > > EMEM address decode error (EMEM decode error)
-> > > >=20
-> > > > tegra-xusb 3610000.usb: Error while assigning device slot ID
-> > > > tegra-xusb 3610000.usb: Max number of devices this xHCI host suppor=
-ts is 36.
-> > > > usb usb2-port3: couldn't allocate usb_device
-> > > > tegra-mc 2c00000.memory-controller: unknown: write @0x0000000000000=
-090:
-> > > > EMEM address decode error (EMEM decode error)
-> > > > tegra-xusb 3610000.usb: Error while assigning device slot ID
-> > > > tegra-xusb 3610000.usb: Max number of devices this xHCI host suppor=
-ts is 36.
-> > > > usb usb1-port3: couldn't allocate usb_device
-> > > >=20
-> > > > tegra-mc 2c00000.memory-controller: unknown: write @0x0000000000000=
-0a0:
-> > > > EMEM address decode error (EMEM decode error)
-> > > > tegra-xusb 3610000.usb: Error while assigning device slot ID
-> > > > tegra-xusb 3610000.usb: Max number of devices this xHCI host suppor=
-ts is 36.
-> > > > usb usb1-port4: couldn't allocate usb_device
-> > > >=20
-> > > > >=20
-> > > > > However, passthrough is admittedly not something that we've thoro=
-ughly
-> > > > > tested, so it's possible you're running into a use-case that I'm =
-not
-> > > > > aware of. In that case, could you provide a few more specifics (s=
-uch as
-> > > > > the DTB and .config) of your build configuration so that I can tr=
-y and
-> > > > > reproduce?
-> > > >=20
-> > > > To reproduce you have to add iommu.passthrough=3D1 on kernel cmdlin=
-e. The
-> > > > dtb is from Jetpack.
-> > >=20
-> > > I was able to reproduce this on Jetson Orin NX (the differences to AGX
-> > > Orin should be negligible in this context), though I ended up patching
-> > > the DTB to disable all SMMUs. What fixed it for me was to drop the
-> > > dma-coherent property from the usb@3610000 node. Can you try that on
-> > > your end to see if that works for you as well?
-> > >=20
-> > > Not that that's a proper solution, of course, but just trying to find
-> > > out if there's perhaps something else going on.
-> > >=20
-> > >  From the looks of it, it seems like these devices aren't actually DMA
-> > > coherent inherently, but rather the SMMU translations make the access=
-es
-> > > to memory coherent. I'm trying to find out the exact details, but if =
-it
-> > > turns out to be the case, then what we really want is a way for an IO=
-MMU
-> > > to mark any devices that get attached to it as DMA coherent. It's not
-> > > sufficient to hard-code this in DT because there are various ways in
-> > > which device can end up not attached to an IOMMU despite what the DT
-> > > says.
-> > >=20
-> > > Jason, or anyone of the IOMMU folks, any thoughts on how this could be
-> > > achieved? DT already has a way of walking up the "DMA hierarchy" look=
-ing
-> > > for a DMA coherent parent, but again, making this rely entirely on DT
-> > > seems insufficient.
-> >=20
-> > I've got a bit more information on what's happening here. There are
-> > three different ways that a device's memory accesses can coherent on
-> > Tegra: 1) when translated through the ARM SMMU, 2) some devices can
-> > force coherency through configuration registers and 3) each device can
-> > be forced to be coherent via the memory controller.
-> >=20
-> > Option 3) is not something we have much control over because this is
-> > configured during early boot and the corresponding registers locked
-> > down, so the OS can at maximum read out the configuration.
-> >=20
-> > Option 1) is what is typically used, so a common pattern is that if we
-> > enable IOMMU translations via DT, we also set dma-coherent. Conversely,
-> > if IOMMU translations are disabled via DT, the dma-coherent property
-> > should also be removed because by default most devices will not be
-> > hardcoded to be DMA coherent via option 3). Most device drivers will
-> > also not program the device's configuration registers.
-> >=20
-> > As a result the desired configuration is to always enable SMMU and rely
-> > on the SMMU translations to provide DMA coherency. As we've seen this
-> > can be problematic, because the device tree doesn't always tell the true
-> > story. For example even if the iommus property exists, the device may
-> > not end up attached to the IOMMU for a number of reasons (the IOMMU
-> > could itself be disabled, a kernel command-line option could prevent the
-> > attachment, or a device could even be detached explicitly).
-> >=20
-> > So I think what we want to avoid is to mark all device tree nodes as
-> > dma-coherent because it can lead to inconsistencies. A better option
-> > would be to have this property inherited via the IOMMU if the IOMMU
-> > translations themselves cause the coherency to be established. Now it
-> > seems like DT already contains a way of doing that via the "DMA parent".
-> > This works by looking up a special interconnects path called "dma-mem".
-> > We already use this on Tegra to make the memory controller the DMA
-> > parent of all memory clients (i.e. all DMA capable hardware blocks) in
-> > order to enforce a bus-level DMA mask.
-> >=20
-> > However, in order for the DMA parent mechanism to work for IOMMU, we'd
-> > need to redirect the DMA parent to be the IOMMU, but in that case we
-> > loose the link to the memory controller. Unless, perhaps, if there's a
-> > way to construct an ICC path from device to IOMMU and then to memory
-> > controller and external memory controller (EMC).
-> >=20
-> > For reference, here's roughly what the data path looks like on Tegra:
-> >=20
-> > 	device --> MC --> SMMU enabled --> SMMU --> EMC --> DRAM
-> > 	              |                          ^
-> > 	              --> SMMU bypass -----------|
-> >=20
-> > SMMU can be enabled/disabled per device via a stream ID override
-> > register in the memory controller.
-> >=20
-> > The biggest downside of that mechanism is still that it's a static
-> > configuration and doesn't respect the actual runtime attachment of a
-> > device to an IOMMU.
-> >=20
-> > Adding the DT folks to see if they have any good ideas on how best to
-> > represent this from a DT point of view. Would it perhaps be an option
-> > to consider the iommus property when walking up the DMA ancestry?
->=20
-> Is it possible to handle this dynamically in the code? Say, set device
-> to be DMA coherent in probe_finalize callback of Tegra iommu driver if
-> the IOMMU translation for this device is on. And clear it in the iommu
-> release device path.
->=20
-> Normally we switch the DMA ops in the probe_finalize callback and iommu
-> device release.
+On Fri, Jul 14, 2023 at 12:41=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> w=
+rote:
+> The master object owns an optional CD table. If it is exsists it is
+> used by every domain that is attached to that master.
+>
+> In the code flow there are two entry points to attach a domain, attach
+> to a PASID or attach to a RID.
+>
+> For attach to PASID the code should always force the master to have a
+> CD table and then attach the domain to the CD table.
+>
+> For attach to RID the code should do a bunch of checks and decide if
+> it should force the master to have a CD table and attach the domain to
+> that, or directly attach the domain to the STE.
 
-Yeah, I had looked into this as well. Intel, AMD and VirtIO all seem to
-do this during .probe_finalize(), whereas on ARM64 this happens as part
-of the bus' .dma_configure() callback.
+ Yes. This is the current flow (except that we fail instead of forcing
+when a CD table isn't already attached in the PASID flow).
+owned_s1_cfg is simply a pre-allocated version of your optional CD
+table.
 
-One thing that we could potentially do is fiddle with the struct device
-=2Edma_coherent member in .probe_finalize() and .release_device(), but I'm
-not sure about the potential ramifications. That is, do we have places
-in the code that assume dev->dma_coherent to be statically set during
-device instantiation?
+> When the master gains a CD table then the CD table object becomes
+> attached to the STE. In all cases we should be able to point to the
+> object the STE points at and don't need a cfg or pointer to cfg since
+> the object itself can provide the cfg.
 
-We would have to default to not marking devices as dma-coherent in DT
-for that to work, though, because otherwise if someone were to disable
-the IOMMU altogether, .probe_finalize() and .release_device() would
-never get called and we'd never get a chance to override.
+Ok, practically speaking, are we just talking about reverting patch 3
+and keeping a handle to the primary domain in arm_smmu_master? Instead
+of directly accessing the currently active CD table using
+arm_smmu_master->s1_cfg, you'd like set_dev_pasid() to look for it by
+investigating what kind of domain is attached, and reaching to the
+pre-alllocated/optional CD table otherwise if necessary?
 
-I wonder if we could also use this to dynamically switch a device into
-coherent mode. For example, if it is marked as dma-coherent in device
-tree but doesn't end up as dev->dma_coherent when the driver probes, we
-could try and force coherency via the device's configuration registers.
+> > We want to write something (page-table pointer) to a common CD
+> > table. Where should the s1_cfg which owns that common table live?
+>
+> I would suggest a 'cd table struct' that as all the stuff related to
+> the CD table, including an API to cacluate the STE this CD table
+> requires. If not in actual code with a real struct, then in a logical
+> sense in that a chunk of the master struct is the "CD table".
 
-I don't know yet if that's really a good idea, though. For correctness
-it would be enough if we can detect at runtime whether a device is DMA
-coherent or not via the IOMMU.
-
-Thierry
-
---I3VsAWuDrtgMS3gi
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmSw8aoACgkQ3SOs138+
-s6EWbhAAwo/8z3JSQ1oOm2xnLriiNX/bJG4zIyVFglxa+6W27VnYdvEhuGSLQ2+H
-6PXcTKE10qxYAGgC/Rdldl6NGAmmE4UXcmP2c+lJ8MRg5e2s5DkHNKu8VfbduX7i
-qznQAJp5DrQ6HAZGCVLUph2pYJhF46edMXWfoueyFJO31XudIp/Ycq7wbFA6F83y
-sASHvixoAPA6BJQG0C1KTN1b0PJuBxw58BTGcaNQdoNMBEQoABbm0L0r7VCsC6P6
-2krh9j3HnCvNdOgLLV+5DHsIFjDeqqiHD/HqQHQHpi2RxjuGAmEoJkQ68invySfa
-4rBzLo8C+UOFrROvhG1TW7QkcyFGMFj2RSZpvxrH04z4d6IbYSCBHPMz7/J3VWzO
-PtlJ1A6/QGDbdngYvWAyhbE2Wa8n++G4SB5/QJXDGZydHJTErQHBTroVJJNpm3cl
-yjZ49iBAs94R2NevNp9d3D9q0zXlCElNeVw8YuMuSZHo+WNnBeQArQJnzKIHnwWe
-L+liXsMMO+/HjVcYbtMIHPuPuqmV7aKVKWpB0jWpZ1yYQ5iPlcojkt7Sy/ff655m
-SSOEoJq8702zf20Nkld8yymiTnu4VB+MHwp3Hm8rS6y57OFUvYSeStZ6crk6NuIw
-WK8Hd6/fpdz316dUSronCZJZtSWVSzDHKflwPpKeEeZX4sMhof8=
-=8DJA
------END PGP SIGNATURE-----
-
---I3VsAWuDrtgMS3gi--
+Sure, that's almost exactly what s1_cfg is today (with these patches)....
+  * s1_cfg.arm_smmu_ctx_desc_cfg describes the CD table
+  * s1_cfg.s1fmt and s1_cfg.s1cdmax describes attributes of that CD
+table. These could technically be deduced-back from
+arm_smmu_ctx_desc_cfg's l1_desc and num_l1_ents
+  * s1_cfg.stall_enabled was introduced by patch 4 and in retrospect
+does not belong there at all. It should have gone in arm_smmu_ctx_desc
+instead (ignoring the whole should arm_smmu_ctx_desc even be
+precomputed in the first place topic for a second).
