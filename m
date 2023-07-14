@@ -1,34 +1,34 @@
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74A487EB
-	for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 02:49:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A1A7373
+	for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 02:51:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689302962; x=1720838962;
+  t=1689303068; x=1720839068;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=XQ9ZNDLXRYxR2/glWQTMI+edqAw/ek5JcdoktMjwEi0=;
-  b=ntDzfNcrvYUXDnStFEgbiwbQZSZC5k+mh25c5H9x/WlJzsrtz4RglrZ4
-   S3p/9znXugVsP3VuVFnhoWUzkUYQKXceB08le89JFatAvHnW5/ut2e4Tn
-   7uyYBiZrX7EZjmh28UGckWXo1CG1I6y1Tut+yQ++qLqMveCTXbyBG1kj1
-   xWvk905E7v7C+9aLBICDNnEV95cCb231crgt/434DgmKk2vbarM2QjXIB
-   akXhrgCQta1CcbnqxpwgPYKKnIoS0fXNCFEX6F3eANJsyIii9tFRDgSEF
-   kDyogFc/Zw3Er4zS8uk5W8vou/CCge4in8ERFhNsXxOyZN5xm+b+vOgpb
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="365412026"
+  bh=3ItH7GDLekgA6ZJq1QFTHSD2GE2/QqQMe4ZG5EQNPz4=;
+  b=B7kxvUpNqCnMPYZh0/Felaj0nkOCgQPIEu1sbsg9nrXPosYx0ZCt+FDb
+   mRNiIudVbXUCB+1PPFKdRG4oPGxzOyNJlgS8ZTmd4x3O7CMFnyBSg/OUY
+   AivItdZIGPpDp9pspzZ11+XQNS7ohGaCsV2ou7K9p4ufygbSdTaYZBe2g
+   ZA+Yogs+8xJtJIsPbnOnTwurrSfnp4psFxnUpMp/g5F6hkXIwvF+Dw0lZ
+   fOJnCn9CCh+2b1Z2DkL/NXzez6f0KU/0mNuqZXkE8AhATcooYHlf4uMWw
+   /1Y1K79DaLb8xxfbL/OnnNrXAMSAvPvaPOdlSvB7W4n+eltpE0tprS0YW
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="362837725"
 X-IronPort-AV: E=Sophos;i="6.01,204,1684825200"; 
-   d="scan'208";a="365412026"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2023 19:49:21 -0700
+   d="scan'208";a="362837725"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2023 19:51:07 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="968853209"
+X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="716174394"
 X-IronPort-AV: E=Sophos;i="6.01,204,1684825200"; 
-   d="scan'208";a="968853209"
+   d="scan'208";a="716174394"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.191.49]) ([10.252.191.49])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2023 19:49:16 -0700
-Message-ID: <cd2db502-90a7-7adb-4948-eafc013c687e@linux.intel.com>
-Date: Fri, 14 Jul 2023 10:49:12 +0800
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2023 19:51:01 -0700
+Message-ID: <ed4200bb-d7e8-b8b5-bfb6-510bebbb8808@linux.intel.com>
+Date: Fri, 14 Jul 2023 10:50:57 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,80 +37,37 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.13.0
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 9/9] iommu: Use fault cookie to store iopf_param
+Cc: baolu.lu@linux.intel.com, "opensource.kernel"
+ <opensource.kernel@vivo.com>, Thierry Reding <treding@nvidia.com>
+Subject: =?UTF-8?B?UmU6IOWbnuWkjTogW1BBVENIIHY0XSBpb21tdTogcmVtb3ZlIHJlZHVu?=
+ =?UTF-8?Q?dant_parameter_check_in_tegra=5fsmmu=5fdebugfs=5finit=28=29?=
 Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <20230711010642.19707-1-baolu.lu@linux.intel.com>
- <20230711010642.19707-10-baolu.lu@linux.intel.com>
- <20230711150249.62917dad@jacob-builder>
- <e26db44c-ec72-085d-13ee-597237ba2134@linux.intel.com>
- <BN9PR11MB527640E6FBD5271E8AF9D59B8C37A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <cf793119-591f-19b5-b708-45c6f3eadc79@linux.intel.com>
- <BN9PR11MB527682E9AD97033D694A564B8C37A@BN9PR11MB5276.namprd11.prod.outlook.com>
+To: =?UTF-8?B?5p2c5pWP5p2w?= <duminjie@vivo.com>,
+ Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy
+ <vdumpa@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>,
+ "open list:TEGRA IOMMU DRIVERS" <linux-tegra@vger.kernel.org>,
+ "open list:IOMMU SUBSYSTEM" <iommu@lists.linux.dev>,
+ open list <linux-kernel@vger.kernel.org>
+References: <20230713072825.10348-1-duminjie@vivo.com>
+ <61f31b3e-b618-88db-a07c-f6761c1c7d06@linux.intel.com>
+ <SG2PR06MB5288E9FC9B6EA21E20BB011EAE34A@SG2PR06MB5288.apcprd06.prod.outlook.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB527682E9AD97033D694A564B8C37A@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <SG2PR06MB5288E9FC9B6EA21E20BB011EAE34A@SG2PR06MB5288.apcprd06.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2023/7/13 16:01, Tian, Kevin wrote:
->> From: Baolu Lu <baolu.lu@linux.intel.com>
->> Sent: Thursday, July 13, 2023 11:44 AM
->>
->> On 2023/7/13 11:24, Tian, Kevin wrote:
->>>> From: Baolu Lu <baolu.lu@linux.intel.com>
->>>> Sent: Wednesday, July 12, 2023 11:13 AM
->>>>
->>>> On 2023/7/12 6:02, Jacob Pan wrote:
->>>>> On Tue, 11 Jul 2023 09:06:42 +0800, Lu Baolu<baolu.lu@linux.intel.com>
->>>>> wrote:
->>>>>
->>>>>> @@ -158,7 +158,7 @@ int iommu_queue_iopf(struct iommu_fault
->> *fault,
->>>>>> struct device *dev)
->>>>>>     	 * As long as we're holding param->lock, the queue can't be
->>>>>> unlinked
->>>>>>     	 * from the device and therefore cannot disappear.
->>>>>>     	 */
->>>>>> -	iopf_param = param->iopf_param;
->>>>>> +	iopf_param = iommu_get_device_fault_cookie(dev, 0);
->>>>> I am not sure I understand how does it know the cookie type is
->> iopf_param
->>>>> for PASID 0?
->>>>>
->>>>> Between IOPF and IOMMUFD use of the cookie, cookie types are
->> different,
->>>>> right?
->>>>>
->>>>
->>>> The fault cookie is managed by the code that delivers or handles the
->>>> faults. The sva and IOMMUFD paths are exclusive.
->>>>
->>>
->>> what about siov? A siov-capable device can support sva and iommufd
->>> simultaneously.
->>
->> For siov case, the pasid should be global. RID and each pasid are still
->> exclusive, so I don't see any problem. Did I overlook anything?
->>
+On 2023/7/14 10:38, 杜敏杰 wrote:
+> Hi baolu!
 > 
-> they are exclusive but it's weird to see some pasids (for sva) on this
-> device are tracked by slot#0 while other pasids (for iommufd) occupies
-> per-pasid slot.
+> Thanks for your suggestion!
 > 
-> why not generalizing them given you name it as "per-pasid fault cookie"?
+> You say:
+>> Next time when you send a new version of a patch, please don't forget to add the change log after the tear line. This way, people can know how the patch evolved into this way.
+> Do I need to submit a new patch?
 
-Yeah! Get your point now. At least the partial list should be per-pasid.
-
-Let me invest more time on this.
+Oh no. Just a kind remind. :-)
 
 Best regards,
 baolu
