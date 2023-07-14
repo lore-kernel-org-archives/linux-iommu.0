@@ -1,34 +1,34 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17EF16AA4
-	for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 05:47:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F96A7462
+	for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 06:00:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689313648; x=1720849648;
+  t=1689314420; x=1720850420;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=M2Op5B60rK/IAOYu+Mr1yoo/u96NcZpWns/Z2ATpcG8=;
-  b=mJTEwyMqa5Fj1+on2U0CGcwip6sAtUyM3C1JO+pXiQmNREQuEW+bVrJd
-   atejlXqE176JUc7ZDxktKYfslYojU5iHNvJ4PWNoURcsBL9NOxRP1L+oR
-   L1pxPfMIiovDJH+mjD2noEUG2i3ShFs1V79eG2FdSduGIh06yoh2u0zSy
-   V6LMl+TExos0uGkjtntCEdOmcWXUfZTA06/s5ykIm+qk/Ck+WMPLGVJhW
-   lWztG4RHo3AhI5/w9pnpu35eFELqCkPf9xzC55ohaHM2qc2xh4iUT3eT/
-   H9C9MPA0kK4l1QuG9fdBToDudWIpBPTKImZ4g28gLONdKSvpJC9QY+i0z
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="429162340"
+  bh=UXRTaxPUMTttyEK6k/XZG4rdkxjidqSuECmGEg2DEto=;
+  b=Vu5srnwNBqeM8Y2+4V+nP3CZ2EhJclJMMrg3U9Lgw/Q6UxAAfqPDd5/T
+   xISFY44VsYh3yGXgbqZ/ph7LhbZy/e5EWa2goNUul5+71pSvy59O2IdVt
+   vkCvcv14yZkGvspTih8NugPQI45KdpmAjUN7vV8emsuxFPUb3adzBqHpE
+   pBkZvzPj9QcoDe8umz17gWBxOvwZKGV6VikO85eMVhBG394EZi7dnca4M
+   OIyKwxehOADEyxRr1o84xNRuXruIY6F4JTNqOUBHc2JnzHeyY3zDLCd0t
+   Yw4BLisIJzk+Dw4xafViyVFOEvENKfcOsDcVFZIcuSxgc2ZTSSfQZGjI9
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="368949767"
 X-IronPort-AV: E=Sophos;i="6.01,204,1684825200"; 
-   d="scan'208";a="429162340"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2023 22:47:27 -0700
+   d="scan'208";a="368949767"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2023 23:00:19 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="787720793"
+X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="835910869"
 X-IronPort-AV: E=Sophos;i="6.01,204,1684825200"; 
-   d="scan'208";a="787720793"
+   d="scan'208";a="835910869"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.187.116]) ([10.252.187.116])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2023 22:47:21 -0700
-Message-ID: <29fa2860-cbf2-04c8-4d16-138668ffea25@linux.intel.com>
-Date: Fri, 14 Jul 2023 13:47:18 +0800
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2023 23:00:14 -0700
+Message-ID: <2a103a6d-af9f-456d-eda4-f1e15f8367b6@linux.intel.com>
+Date: Fri, 14 Jul 2023 14:00:07 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,7 +40,9 @@ User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
 Cc: baolu.lu@linux.intel.com, Jason Gunthorpe <jgg@nvidia.com>,
  Will Deacon <will@kernel.org>, "Liu, Yi L" <yi.l.liu@intel.com>,
  "Yu, Fenghua" <fenghua.yu@intel.com>, "Luck, Tony" <tony.luck@intel.com>
-Subject: Re: [PATCH v10 5/7] iommu/vt-d: Make prq draining code generic
+Subject: Re: [PATCH v10 6/7] iommu/vt-d: Add set_dev_pasid callback for dma
+ domain
+Content-Language: en-US
 To: "Tian, Kevin" <kevin.tian@intel.com>,
  Jacob Pan <jacob.jun.pan@linux.intel.com>,
  LKML <linux-kernel@vger.kernel.org>,
@@ -49,63 +51,54 @@ To: "Tian, Kevin" <kevin.tian@intel.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.com>,
  Robin Murphy <robin.murphy@arm.com>
 References: <20230712163355.3177511-1-jacob.jun.pan@linux.intel.com>
- <20230712163355.3177511-6-jacob.jun.pan@linux.intel.com>
- <BN9PR11MB52761F5CDE22E5C3C10E7E728C37A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <9875863a-eba5-c8fa-a39b-7d3300e3b5ca@linux.intel.com>
- <BN9PR11MB52763423F2A18E927065C8EA8C34A@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Language: en-US
+ <20230712163355.3177511-7-jacob.jun.pan@linux.intel.com>
+ <BN9PR11MB5276C14341AC7CE6D352948F8C37A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <87e78302-9f69-8db1-8a0a-b40e1f29d9c6@linux.intel.com>
+ <BN9PR11MB5276E0C6F1063E581F29BB978C34A@BN9PR11MB5276.namprd11.prod.outlook.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB52763423F2A18E927065C8EA8C34A@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <BN9PR11MB5276E0C6F1063E581F29BB978C34A@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/7/14 11:49, Tian, Kevin wrote:
+On 2023/7/14 11:50, Tian, Kevin wrote:
 >> From: Baolu Lu <baolu.lu@linux.intel.com>
->> Sent: Friday, July 14, 2023 11:28 AM
+>> Sent: Friday, July 14, 2023 11:34 AM
 >>
->> On 2023/7/13 15:49, Tian, Kevin wrote:
+>> On 2023/7/13 15:56, Tian, Kevin wrote:
 >>>> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 >>>> Sent: Thursday, July 13, 2023 12:34 AM
 >>>>
->>>> -	/* Domain type specific cleanup: */
->>>>    	domain = iommu_get_domain_for_dev_pasid(dev, pasid, 0);
->>>> -	if (domain) {
->>>> -		switch (domain->type) {
->>>> -		case IOMMU_DOMAIN_SVA:
->>>> -			intel_svm_remove_dev_pasid(dev, pasid);
->>>> -			break;
->>>> -		default:
->>>> -			/* should never reach here */
->>>> -			WARN_ON(1);
->>>> -			break;
->>>> -		}
->>>> +	if (!domain)
->>>> +		goto out_tear_down;
+>>>>
+>>>> -	/*
+>>>> -	 * Should never reach here until we add support for attaching
+>>>> -	 * non-SVA domain to a pasid.
+>>>> -	 */
+>>>> -	WARN_ON(1);
+>>>> +	dmar_domain = to_dmar_domain(domain);
+>>>> +	spin_lock_irqsave(&dmar_domain->lock, flags);
+>>>> +	list_for_each_entry(curr, &dmar_domain->dev_pasids, link_domain)
+>>>> {
+>>>> +		if (curr->dev == dev && curr->pasid == pasid) {
+>>>> +			list_del(&curr->link_domain);
+>>>> +			dev_pasid = curr;
+>>>> +			break;
+>>>> +		}
+>>>> +	}
+>>>> +	spin_unlock_irqrestore(&dmar_domain->lock, flags);
+>>>>
 >>>
->>> WARN_ON()
+>>> what about no matching dev_pasid is find?
 >>
->> Why?
->>
->> My understanding is that remve_device_pasid could be call in any context
->> including no domain attached.
->>
+>> kfree() can handle this gracefully.
 > 
-> oh I'm not aware of that. Can you elaborate the usage which uses a pasid
-> w/o domain? pasid needs to point to a page table. Presumably every
-> page table should be wrapped by a iommu domain...
+> but what about domain_detach_iommu()? Is it correct to adjust
+> the refcnting when there is no matching dev_pasid?
 
-A case I can think of is error rewinding. A domain is being attached to
-multiple pasids. When one of them is failed, remove_device_pasid should
-be called on all pasids so that they are parked at a determinant state.
+You are right.
 
-On the other hand, I don't want the remove_device_pasid to be the
-counterpart of attach_dev_pasid. remove_device_pasid simply denotes:
-
-- The pasid will be parked in blocking state;
-- If any domain that has been attached to this pasid, stop reference to
-   it any more. Otherwise, there might be use-after-free issues.
-
-Hence, remove_device_pasid should never fail.
+Logically, if we get a valid domain for a pasid, we should have a
+dev_pasid allocated for it. Perhaps, adding a check in the code will
+make the code more readable?
 
 Best regards,
 baolu
