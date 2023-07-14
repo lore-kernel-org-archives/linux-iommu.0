@@ -1,127 +1,139 @@
-Received: from mail-ot1-f80.google.com (mail-ot1-f80.google.com [209.85.210.80])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2109.outbound.protection.outlook.com [40.107.255.109])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCCE279E1
-	for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 08:09:55 +0000 (UTC)
-Received: by mail-ot1-f80.google.com with SMTP id 46e09a7af769-6b754fa9c34so2664551a34.1
-        for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 01:09:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689322194; x=1691914194;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=eG10Q/hmBG2OUVGxO4TY4oCGJnod3I5xRT0tU+zLy4E=;
-        b=FZ8yr5X01P1M0dBw5xaXXsk7Dd8A8uBw2M+OFKY+YdKH2VSeW/EMULFv6SMY3pzuYu
-         KFTKm07syK7jEgF7OypJth4QhFBPIaZimuINqLnQlAyoK6mqHMPjM6Fs+kyDQ0cSDt6Q
-         hSO8GbNfCS6+Odv/35gJ1TxKqgLiED0YniG8lkP37Y9eztW4EA2+5MffKIUDakOOYlFT
-         xVp1IPWSTo3IR3ND09mTUvWlrfoq+k2hyQTyHNrBRVcv58zgUNjIWbuinYmYQCqu2xxu
-         G6oZrypK+F2IBQk8lep+aTfQhK6CknYcSW5EQDp+43v2jgAid1XmG7uCWDbIPUxPeC2Q
-         PEPQ==
-X-Gm-Message-State: ABy/qLYxZefcPNtSt6reGuY34DCU9SefgxU9ccd1OmyfFNG4cUVNTJHm
-	Sej2S8gVKj64tXg4ogXoIG9+C63FGCWFnrY1zYH9krDXAuGOtKt3dA==
-X-Google-Smtp-Source: APBJJlGNxOUzULuvHMO3Tp38852/tyzyT6O1qJ9RVY4aBISRyK+5w8nPOrUvKG27qLXKOVjSC8WIxguz5nypy8eGzNVry5bVBYB5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F3A9747B
+	for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 08:13:33 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=j7NK8zzxi4AtaEVCv2clvdg/HrsURVwXhUZ+c4qUUJqlvJ4VESHgKod3fFf9ejj4+zh37v3zx5d4UY2iW5/uS5dELyEED1vWwYNyJQfLeaEch8Hawkc4DA+UrQcZ93d5+VrRMCM+WZc+QUyz9i/rU85qTx676VhRvPJhXslNvjD28ikKTvi2+P7VEamYo5qu/TamAjDqDqG6ywAN8Q4vFGfFSTRsc0o2dj86b4V4KjWVd9XKretYDbUF+gkbtcHOPt7uPtJWhjH97cL4qIDS1R/kI5I48L3xlL2qbtBMTMWtWQFVBxoQHWOgkKhwPb3qYSdDkBZOfe5C0m0tYKeAKg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1aPWwm7W63u/xmLNS0Bynp5E5CrurXP8yLUNMEDIS0M=;
+ b=COW2gDFBqCsQFIiJ3aWwziIGWjCfsg0oKWGmFK7CtSMula/8lCHmr6vxFL6ADyaHPOGWCrseh7oH5WS8vIfKdaVCSmhYx8BIE5UtlNlHdd6FJLx5IeuM8Rjo061R58kDtNp+InlPvilygA0P6YQDhXpMfa4nxWTa5rMLI80gSPfPCXoiXTcDk5zB3DfdmqCQReaAoJGBGubrSmEQaRZqjsAUj2/xxSS4KcbiX6vlOTJIgqhUk+mgqP80aibetHOAxAAZ9m66kwlmBDAyk9emQNNMHEM9zAXNc30uu75qjNCIAECQfpSMzfd9o1K7t1Jo/mFl9u7NWLLMQMy+pD1ioA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1aPWwm7W63u/xmLNS0Bynp5E5CrurXP8yLUNMEDIS0M=;
+ b=AgVL9JxAgwX/JPEi0IckYCvf6wrcFGsWnBEx3Sg6hLfPolKa5cPz4JbYuY76/w5N768wKbCnrCV5992r9+I+2a4OWJGSkekJB5+mb8285PMv13SWow3qkHqvBbTPRuPaH/GreAiObGycWDyF2J2MOMWsIwsODURcarO91Tq6cqrQGjlDUW9d/jv3Zrpm9fx/kS6ShLBvR0n8Z+mSJh53c83F+ImzfZaaXcXP2t7mNoTA0TCu5bk++3tsyUce/P5vEDtR7ifTlbTiNFKH1rMVrc7tnVMc/RVKnhhs8fs2I1ZzEshW4/HOzmtUcrjPTR7brB9uMM3BJXPd15FE0MV2wg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from SG2PR06MB5288.apcprd06.prod.outlook.com (2603:1096:4:1dc::9) by
+ TYZPR06MB4064.apcprd06.prod.outlook.com (2603:1096:400:2c::9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6588.27; Fri, 14 Jul 2023 08:13:29 +0000
+Received: from SG2PR06MB5288.apcprd06.prod.outlook.com
+ ([fe80::f9b8:80b5:844e:f49a]) by SG2PR06MB5288.apcprd06.prod.outlook.com
+ ([fe80::f9b8:80b5:844e:f49a%6]) with mapi id 15.20.6565.037; Fri, 14 Jul 2023
+ 08:13:29 +0000
+From: Minjie Du <duminjie@vivo.com>
+To: Thierry Reding <thierry.reding@gmail.com>,
+	Krishna Reddy <vdumpa@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	linux-tegra@vger.kernel.org (open list:TEGRA IOMMU DRIVERS),
+	iommu@lists.linux.dev (open list:IOMMU SUBSYSTEM),
+	linux-kernel@vger.kernel.org (open list)
+Cc: opensource.kernel@vivo.com,
+	Minjie Du <duminjie@vivo.com>
+Subject: [PATCH v5] iommu: Fix an error check in tegra_smmu_debugfs_init()
+Date: Fri, 14 Jul 2023 16:13:20 +0800
+Message-Id: <20230714081320.1998-1-duminjie@vivo.com>
+X-Mailer: git-send-email 2.39.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR01CA0197.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:189::8) To SG2PR06MB5288.apcprd06.prod.outlook.com
+ (2603:1096:4:1dc::9)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6830:1e58:b0:6b7:4d84:ce4d with SMTP id
- e24-20020a0568301e5800b006b74d84ce4dmr3690014otj.1.1689322194777; Fri, 14 Jul
- 2023 01:09:54 -0700 (PDT)
-Date: Fri, 14 Jul 2023 01:09:54 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000054bd5b06006df9c8@google.com>
-Subject: [syzbot] [iommu?] WARNING in iommufd_access_destroy
-From: syzbot <syzbot+7574ebfe589049630608@syzkaller.appspotmail.com>
-To: iommu@lists.linux.dev, jgg@ziepe.ca, joro@8bytes.org, kevin.tian@intel.com, 
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com, 
-	syzkaller-bugs@googlegroups.com, will@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SG2PR06MB5288:EE_|TYZPR06MB4064:EE_
+X-MS-Office365-Filtering-Correlation-Id: cc07eda8-5eaa-463a-eda0-08db844234e3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	iJXh+NM9jasmVBcL/u0jk4KanzXd6SqHjYx6RMcZGjGvW2OUD8123iuuGrQL7qqNIFk9BP4WGs+ZmanpAJ40cYRCdB90fwc1ZWfQTPR8nP7crdbwE1sIxVOC3Ubqs8tZQTzedPlNowoxu0opguz7JtllDf6WC4EKwvDn0qrOn6MEsqXG/5fchvZdAa7WfXw0PO3C/P8TONVX1aLCSXUcz+7LdXbO5opxMduoW8xKcMSMArGIzi4ErN4RlPESrYawkuLS0JSnhzeNpDDzCLMWmh06IC3lFl5Le1iNDTQfLtj0RILdQ5nJmV4RSuiAcg6oQKyQglfXyK6VDWhba4h4n/2gI8GA70pIwXEe7j5ruJ517lEiNrpfx5hDpju7is0zGiuhBUEFczVJr+7LUFiabjAblMgDyl2LsB4/IK0mhss5+SZeMEa7W4Hy1tUf3HqludR1uWbm8GCMPqhjyLXD6+z3mN3lmpNryq02ynjXc5egLEaxoR18BToGUamdOzUolwncDKBj5f53EQOVQXfsPD4c6cC9vsoEUSg38wESCpX70pHz7yMM9hKOwcMp6Z3kSCwI8cU5iyETzCub1KgM1zlGeaIQjwvhH80XTNXfRWuJzI9wRNDKPAW7Z2Zl02FX
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB5288.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(39860400002)(366004)(346002)(376002)(451199021)(2906002)(38100700002)(38350700002)(6512007)(83380400001)(2616005)(186003)(107886003)(26005)(1076003)(6506007)(5660300002)(86362001)(8676002)(8936002)(36756003)(110136005)(478600001)(41300700001)(6486002)(52116002)(6666004)(316002)(4326008)(66476007)(66556008)(66946007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?LJ2IFS9I7M8PUDQOJzOmYgDMYbi2YvSncG00p4pKd36ZoT/qZZprHRXqm5hc?=
+ =?us-ascii?Q?DjsB5Hgfa3ratRSV7gBNpdpkxi8bop21vl6f1TYiRd9LxGA0RkABEEEYFWdi?=
+ =?us-ascii?Q?dAg2uuWMLMAcRmXKBVBsqZ5ze3ulQl/xPvIVs+XSLb8YoYFFUKjkY5lsuT+S?=
+ =?us-ascii?Q?WjZ2tWsCsInZX4MQWnSpbPaZrSfb+jctMPxCcf7faEDmGEA8zW4olWdlYFXm?=
+ =?us-ascii?Q?D704IEzAfKZkcIUtIhoIT82rSubRe5gO/WpQEDcFYYMtDcVJQNBRjpOulJfy?=
+ =?us-ascii?Q?jl/DJWWuy4+SpSq5TuYeRdiRQNDTgOIR9AXv5FnkKUinj3PR3rvT2dGCyaK2?=
+ =?us-ascii?Q?aRfGC5cpwUoFZH6AiQ7whhVut6XhR2wXPFD3xzWrhzSklsBl8Ks3qPSC0qp5?=
+ =?us-ascii?Q?aVmS73c0WeNk1v/ENfGpSYAfiL81atnv1cV/cPa8BU9YmU0Kf6WtbYsHNQyv?=
+ =?us-ascii?Q?8UNt225CpolEZjQEIHcqEllgulKwGdq+/y1xFoRXn7wA94VbCFYi62m++8YV?=
+ =?us-ascii?Q?SzsN2dDdLGqnWqkc+f2BP2pL7CIJztcHXndPztGco6dF9Z6h4hKi5vj3y4Ek?=
+ =?us-ascii?Q?pgtokBLscdw8MSIYw2lQjoZk3aq9Pg0oKv63Q4b03nxOF+jfahhBVOSXYTQG?=
+ =?us-ascii?Q?i2bsCQVP+iTA5FBfOhJoIMd2kSuM5MB5HN47qDbM3ojLJNl8RoiRxWZU4om9?=
+ =?us-ascii?Q?4mM+EUUENWml5NVLvqvHZCKMZmBWD78k8tOCXLD0QhB9x8RSQABGtlfTlsXV?=
+ =?us-ascii?Q?FPbbs5sNwZgLgse9xFnkvBkOnx4vj4cHG+AK+Y1LVCylkWMnZoCcG06puWfi?=
+ =?us-ascii?Q?qh7UcxoASDpCfyVQAx1E/ugk94xVFx1YTxiV0OiNX2nznOQi3yaEdG2XXy9i?=
+ =?us-ascii?Q?EIEs32xPrCifdHM09LUVOXUR7hZgDVM9qpAn18RqNKdHwGlKCgKkecUKd8IA?=
+ =?us-ascii?Q?8bctxxWxw5T6Rh84sG0txwwFZh5CHs53zZts/E0H/tvTs6y688nY/1+ty2bO?=
+ =?us-ascii?Q?Czt4o4O31Gh7qg7nRJDB/jp2xUaMW5+7beiH3dRAyFQR1mppJR2mRfMOP9Ht?=
+ =?us-ascii?Q?PcjMVW077X53zr7wheTa2nl7Ngsc6e2ysoGcccaI74EzfvPHRfzrWyv9itVO?=
+ =?us-ascii?Q?HwwDOlM9PHegNg/vM+brMYRtJ/h/XEX6LMQkKNs3OcZVZ3WugBFAcoruYcrH?=
+ =?us-ascii?Q?dhg66ObkEPLmBXqF5dWmkmiuaYYg3Xceod7hvUnYIRlQWWPhv9AErkYI9VwY?=
+ =?us-ascii?Q?Ihlf9bWrZwq1dqii37cHZqZEzzIAuqlNAbjy92BJmMnII9b9nqO4nACeCyKz?=
+ =?us-ascii?Q?/+k+1Xpfap6qc2wnmyubsGX4dll2NxPmMhxv0oSSXnvRCVoYOcMkTcu5dbNx?=
+ =?us-ascii?Q?2i+CaX6M+UlVaCrBiAj4g66LSnAf2rW1+mgycRHveS5oGsx1DBrXIxj2CfZj?=
+ =?us-ascii?Q?EG2SDLdFLL/3olqb0vGL0CuEek/CfyQs5e2MxnFNN+89af0j2ndNXrODtMiu?=
+ =?us-ascii?Q?l7pFZ5pNaE2oRXYwt8NlWFIryI2IV8ShzBzFO6f8VlE3/8Ak5NLQkC8kUYxP?=
+ =?us-ascii?Q?hubFYT6Ka5SSsjwjrw3QGXNHE5Kg5DVvq8JTdBWM?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cc07eda8-5eaa-463a-eda0-08db844234e3
+X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB5288.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2023 08:13:29.5017
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: YMA8/QeqEoargOyv4MeXru16ieq1EARflFv8159mLEbQMJGi5dxfRThwYi4CL2bSBJBPWd7nqUDsuDWF9EgVbw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR06MB4064
 
-Hello,
+debugfs_create_dir() function returns an error value(PTR_ERR).
+We need to evaluate the return value using IS_ERR,
+rather than checking for NULL.
 
-syzbot found the following issue on:
-
-HEAD commit:    06c2afb862f9 Linux 6.5-rc1
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1310ded8a80000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e75667d82b529c4f
-dashboard link: https://syzkaller.appspot.com/bug?extid=7574ebfe589049630608
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12150d5aa80000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13164474a80000
-
-Downloadable assets:
-disk image (non-bootable): https://storage.googleapis.com/syzbot-assets/7bc7510fe41f/non_bootable_disk-06c2afb8.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/e5107fc9d7e9/vmlinux-06c2afb8.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/1c34d4df7975/bzImage-06c2afb8.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+7574ebfe589049630608@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-WARNING: CPU: 2 PID: 5730 at drivers/iommu/iommufd/device.c:462 iommufd_access_destroy+0x55/0x70 drivers/iommu/iommufd/device.c:462
-Modules linked in:
-CPU: 2 PID: 5730 Comm: syz-executor207 Not tainted 6.5.0-rc1-syzkaller #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-RIP: 0010:iommufd_access_destroy+0x55/0x70 drivers/iommu/iommufd/device.c:462
-Code: 48 8b bd a8 00 00 00 48 89 ee e8 26 f1 00 00 31 ff 89 c5 89 c6 e8 1b 37 ec fc 40 84 ed 74 06 5d e9 30 3b ec fc e8 2b 3b ec fc <0f> 0b 5d e9 23 3b ec fc e8 3e 7b 3e fd eb c7 66 66 2e 0f 1f 84 00
-RSP: 0018:ffffc90003bd7cc8 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: ffffc90003bd7e50 RCX: 0000000000000000
-RDX: ffff888023385840 RSI: ffffffff8497c765 RDI: 0000000000000001
-RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000004
-R13: ffff88802a1a8000 R14: ffffc90003bd7e10 R15: 00000000fffffffe
-FS:  00007f57a46fc700(0000) GS:ffff88806b800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f57a47c0ba8 CR3: 000000001d1bd000 CR4: 0000000000350ee0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- iommufd_test_create_access drivers/iommu/iommufd/selftest.c:743 [inline]
- iommufd_test+0x1506/0x2c30 drivers/iommu/iommufd/selftest.c:961
- iommufd_fops_ioctl+0x317/0x4b0 drivers/iommu/iommufd/main.c:337
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:870 [inline]
- __se_sys_ioctl fs/ioctl.c:856 [inline]
- __x64_sys_ioctl+0x19d/0x210 fs/ioctl.c:856
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f57a476b989
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 11 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f57a46fc308 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f57a476b989
-RDX: 0000000020000080 RSI: 0000000000003ba0 RDI: 0000000000000003
-RBP: 00007f57a47f3418 R08: 00007f57a46fc700 R09: 0000000000000000
-R10: 00007f57a46fc700 R11: 0000000000000246 R12: 00007ffd6af68f3e
-R13: 00007f57a47f3410 R14: 6d6f692f7665642f R15: 0000000000022000
- </TASK>
-
-
+Fixes: d1313e7896e9 ("iommu/tegra-smmu: Add debugfs support")
+Signed-off-by: Minjie Du <duminjie@vivo.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+V4 -> V5: debugfs needs to have error checking, so use IS_ERR() to error check.
+V3 -> V4: fix expression about patch.
+V2 -> V3: fix expression about patch.
+V1 -> V2: remove the error check.
+V1: use IS_ERR() to error check.
+---
+ drivers/iommu/tegra-smmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index 1cbf063cc..841e14cce 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -1056,7 +1056,7 @@ DEFINE_SHOW_ATTRIBUTE(tegra_smmu_clients);
+ static void tegra_smmu_debugfs_init(struct tegra_smmu *smmu)
+ {
+ 	smmu->debugfs = debugfs_create_dir("smmu", NULL);
+-	if (!smmu->debugfs)
++	if (IS_ERR(smmu->debugfs))
+ 		return;
+ 
+ 	debugfs_create_file("swgroups", S_IRUGO, smmu->debugfs, smmu,
+-- 
+2.39.0
 
-If the bug is already fixed, let syzbot know by replying with:
-#syz fix: exact-commit-title
-
-If you want syzbot to run the reproducer, reply with:
-#syz test: git://repo/address.git branch-or-commit-hash
-If you attach or paste a git patch, syzbot will apply it before testing.
-
-If you want to change bug's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
-
-If the bug is a duplicate of another bug, reply with:
-#syz dup: exact-subject-of-another-report
-
-If you want to undo deduplication, reply with:
-#syz undup
