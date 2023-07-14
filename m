@@ -1,109 +1,127 @@
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
+Received: from mail-ot1-f80.google.com (mail-ot1-f80.google.com [209.85.210.80])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7BE17499
-	for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 08:03:27 +0000 (UTC)
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-403b622101bso189591cf.1
-        for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 01:03:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1689321806; x=1691913806;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=12v+SPtROiuj28H9N1MOzT6JNCiTmCYWUdjB7HIYh9U=;
-        b=iDmMZDSqf3iIVvRyT48YiFdmq+VtvdVcdpZrTUHa8AuNtkQDzhSgtzn80pyJOeSdSn
-         WthTd0bac9iDmnhxto3e/SJh08OOfhdyqS4S4LAinwn0JhKL8ANCv2EAo7c3y8auT+w1
-         Ba28IpqEcKlincwLS/D9tL4sYCR474IumKQBGexhNlQHOw9B8ruCDvFkk7LxP4oUJ0MY
-         /DEWJVUg4hRVGRhgbKVRQAXRG+LsQ3EZatz7NR44xbydr0RwXY6D2p/NBirMlaugADB7
-         +0eGokxsKNQcA2MxyZdUIdnM+RBST+ojJqHhP4a6loAhuN2oVY7wZGsQJcJDKE8kiYrl
-         F5JQ==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCCE279E1
+	for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 08:09:55 +0000 (UTC)
+Received: by mail-ot1-f80.google.com with SMTP id 46e09a7af769-6b754fa9c34so2664551a34.1
+        for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 01:09:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689321806; x=1691913806;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=12v+SPtROiuj28H9N1MOzT6JNCiTmCYWUdjB7HIYh9U=;
-        b=W4khsfN3hdjIum/aAa9hzkQKgeqR9Kjp9os4nihEAkjmxzAZau60VPOkxSXzon1W3J
-         nMd/FlXqE3Q/yYLdxmXcv04THZWAlxa+dHw4xy0WXDaa0oa/f14HluMy74Hho8MdNKsO
-         Asw3gITADXc/AEi7zr+ttRI1f0CEMBfIdXDR+ySmMZmRgoSOsJDMuUdQw5u3e0qB+ZZJ
-         1UZJM8FwcnUvykD4Wce+Q7y3BL713NaQswZew+3YR80p9oi2YGvGOTbB1AtV/qtToRA0
-         6MJbEg56VghtWCalVlcYIqybyjHT2eGH3+kw9eqPaNAe8a2hM8RcLvL7bKpZlwRCILxX
-         3uVQ==
-X-Gm-Message-State: ABy/qLbjT+SbQIsWcnPJcTgxHj4jz+wGfqSGs0hYtAJn7j3MT4I+gqF8
-	NQg+wbIHgtAlpEBbDGD3w1A1ajn+oYw9kskxQ0rL8A==
-X-Google-Smtp-Source: APBJJlGKNpfvbfdCqxqjT1YvdZfgE5A04mkwsR12CMTw8mOVWHG7g74SOPl9dWaNq9JuLTwk3VVOv7ZuNeEPP+nMHEE=
-X-Received: by 2002:ac8:5905:0:b0:3ef:302c:319e with SMTP id
- 5-20020ac85905000000b003ef302c319emr754044qty.8.1689321806537; Fri, 14 Jul
- 2023 01:03:26 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1689322194; x=1691914194;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=eG10Q/hmBG2OUVGxO4TY4oCGJnod3I5xRT0tU+zLy4E=;
+        b=FZ8yr5X01P1M0dBw5xaXXsk7Dd8A8uBw2M+OFKY+YdKH2VSeW/EMULFv6SMY3pzuYu
+         KFTKm07syK7jEgF7OypJth4QhFBPIaZimuINqLnQlAyoK6mqHMPjM6Fs+kyDQ0cSDt6Q
+         hSO8GbNfCS6+Odv/35gJ1TxKqgLiED0YniG8lkP37Y9eztW4EA2+5MffKIUDakOOYlFT
+         xVp1IPWSTo3IR3ND09mTUvWlrfoq+k2hyQTyHNrBRVcv58zgUNjIWbuinYmYQCqu2xxu
+         G6oZrypK+F2IBQk8lep+aTfQhK6CknYcSW5EQDp+43v2jgAid1XmG7uCWDbIPUxPeC2Q
+         PEPQ==
+X-Gm-Message-State: ABy/qLYxZefcPNtSt6reGuY34DCU9SefgxU9ccd1OmyfFNG4cUVNTJHm
+	Sej2S8gVKj64tXg4ogXoIG9+C63FGCWFnrY1zYH9krDXAuGOtKt3dA==
+X-Google-Smtp-Source: APBJJlGNxOUzULuvHMO3Tp38852/tyzyT6O1qJ9RVY4aBISRyK+5w8nPOrUvKG27qLXKOVjSC8WIxguz5nypy8eGzNVry5bVBYB5
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230621063825.268890-1-mshavit@google.com> <20230621063825.268890-3-mshavit@google.com>
- <ZK9RycgNAVrxe343@Asurada-Nvidia> <CAKHBV26wi+xKnNjo-R+QOcVLPH2KJTFP+mF4CW1xE61nOdF5GA@mail.gmail.com>
- <ZLAKQw+DzcpSRSyi@nvidia.com> <CAKHBV25YadRVFiag5z5Yc13L093ScWkCjAOCd=VuGm2RUaDyzA@mail.gmail.com>
- <ZLApQjaqoOshT2TJ@nvidia.com>
-In-Reply-To: <ZLApQjaqoOshT2TJ@nvidia.com>
-From: Michael Shavit <mshavit@google.com>
-Date: Fri, 14 Jul 2023 16:02:50 +0800
-Message-ID: <CAKHBV25BRWTxXO0YTGq3q1OdMQHAzop8BqJJaa9CHxdQzxnNbg@mail.gmail.com>
-Subject: Re: [PATCH v4 02/13] iommu/arm-smmu-v3: Add smmu_s1_cfg to smmu_master
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, jean-philippe@linaro.org, 
-	baolu.lu@linux.intel.com, linux-arm-kernel@lists.infradead.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+X-Received: by 2002:a05:6830:1e58:b0:6b7:4d84:ce4d with SMTP id
+ e24-20020a0568301e5800b006b74d84ce4dmr3690014otj.1.1689322194777; Fri, 14 Jul
+ 2023 01:09:54 -0700 (PDT)
+Date: Fri, 14 Jul 2023 01:09:54 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000054bd5b06006df9c8@google.com>
+Subject: [syzbot] [iommu?] WARNING in iommufd_access_destroy
+From: syzbot <syzbot+7574ebfe589049630608@syzkaller.appspotmail.com>
+To: iommu@lists.linux.dev, jgg@ziepe.ca, joro@8bytes.org, kevin.tian@intel.com, 
+	linux-kernel@vger.kernel.org, robin.murphy@arm.com, 
+	syzkaller-bugs@googlegroups.com, will@kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jul 14, 2023 at 12:41=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> w=
-rote:
-> The master object owns an optional CD table. If it is exsists it is
-> used by every domain that is attached to that master.
->
-> In the code flow there are two entry points to attach a domain, attach
-> to a PASID or attach to a RID.
->
-> For attach to PASID the code should always force the master to have a
-> CD table and then attach the domain to the CD table.
->
-> For attach to RID the code should do a bunch of checks and decide if
-> it should force the master to have a CD table and attach the domain to
-> that, or directly attach the domain to the STE.
+Hello,
 
- Yes. This is the current flow (except that we fail instead of forcing
-when a CD table isn't already attached in the PASID flow).
-owned_s1_cfg is simply a pre-allocated version of your optional CD
-table.
+syzbot found the following issue on:
 
-> When the master gains a CD table then the CD table object becomes
-> attached to the STE. In all cases we should be able to point to the
-> object the STE points at and don't need a cfg or pointer to cfg since
-> the object itself can provide the cfg.
+HEAD commit:    06c2afb862f9 Linux 6.5-rc1
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1310ded8a80000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e75667d82b529c4f
+dashboard link: https://syzkaller.appspot.com/bug?extid=7574ebfe589049630608
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12150d5aa80000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13164474a80000
 
-Ok, practically speaking, are we just talking about reverting patch 3
-and keeping a handle to the primary domain in arm_smmu_master? Instead
-of directly accessing the currently active CD table using
-arm_smmu_master->s1_cfg, you'd like set_dev_pasid() to look for it by
-investigating what kind of domain is attached, and reaching to the
-pre-alllocated/optional CD table otherwise if necessary?
+Downloadable assets:
+disk image (non-bootable): https://storage.googleapis.com/syzbot-assets/7bc7510fe41f/non_bootable_disk-06c2afb8.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/e5107fc9d7e9/vmlinux-06c2afb8.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/1c34d4df7975/bzImage-06c2afb8.xz
 
-> > We want to write something (page-table pointer) to a common CD
-> > table. Where should the s1_cfg which owns that common table live?
->
-> I would suggest a 'cd table struct' that as all the stuff related to
-> the CD table, including an API to cacluate the STE this CD table
-> requires. If not in actual code with a real struct, then in a logical
-> sense in that a chunk of the master struct is the "CD table".
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+7574ebfe589049630608@syzkaller.appspotmail.com
 
-Sure, that's almost exactly what s1_cfg is today (with these patches)....
-  * s1_cfg.arm_smmu_ctx_desc_cfg describes the CD table
-  * s1_cfg.s1fmt and s1_cfg.s1cdmax describes attributes of that CD
-table. These could technically be deduced-back from
-arm_smmu_ctx_desc_cfg's l1_desc and num_l1_ents
-  * s1_cfg.stall_enabled was introduced by patch 4 and in retrospect
-does not belong there at all. It should have gone in arm_smmu_ctx_desc
-instead (ignoring the whole should arm_smmu_ctx_desc even be
-precomputed in the first place topic for a second).
+------------[ cut here ]------------
+WARNING: CPU: 2 PID: 5730 at drivers/iommu/iommufd/device.c:462 iommufd_access_destroy+0x55/0x70 drivers/iommu/iommufd/device.c:462
+Modules linked in:
+CPU: 2 PID: 5730 Comm: syz-executor207 Not tainted 6.5.0-rc1-syzkaller #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+RIP: 0010:iommufd_access_destroy+0x55/0x70 drivers/iommu/iommufd/device.c:462
+Code: 48 8b bd a8 00 00 00 48 89 ee e8 26 f1 00 00 31 ff 89 c5 89 c6 e8 1b 37 ec fc 40 84 ed 74 06 5d e9 30 3b ec fc e8 2b 3b ec fc <0f> 0b 5d e9 23 3b ec fc e8 3e 7b 3e fd eb c7 66 66 2e 0f 1f 84 00
+RSP: 0018:ffffc90003bd7cc8 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffffc90003bd7e50 RCX: 0000000000000000
+RDX: ffff888023385840 RSI: ffffffff8497c765 RDI: 0000000000000001
+RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000004
+R13: ffff88802a1a8000 R14: ffffc90003bd7e10 R15: 00000000fffffffe
+FS:  00007f57a46fc700(0000) GS:ffff88806b800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f57a47c0ba8 CR3: 000000001d1bd000 CR4: 0000000000350ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ iommufd_test_create_access drivers/iommu/iommufd/selftest.c:743 [inline]
+ iommufd_test+0x1506/0x2c30 drivers/iommu/iommufd/selftest.c:961
+ iommufd_fops_ioctl+0x317/0x4b0 drivers/iommu/iommufd/main.c:337
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:870 [inline]
+ __se_sys_ioctl fs/ioctl.c:856 [inline]
+ __x64_sys_ioctl+0x19d/0x210 fs/ioctl.c:856
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f57a476b989
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 11 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f57a46fc308 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f57a476b989
+RDX: 0000000020000080 RSI: 0000000000003ba0 RDI: 0000000000000003
+RBP: 00007f57a47f3418 R08: 00007f57a46fc700 R09: 0000000000000000
+R10: 00007f57a46fc700 R11: 0000000000000246 R12: 00007ffd6af68f3e
+R13: 00007f57a47f3410 R14: 6d6f692f7665642f R15: 0000000000022000
+ </TASK>
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+
+If the bug is already fixed, let syzbot know by replying with:
+#syz fix: exact-commit-title
+
+If you want syzbot to run the reproducer, reply with:
+#syz test: git://repo/address.git branch-or-commit-hash
+If you attach or paste a git patch, syzbot will apply it before testing.
+
+If you want to change bug's subsystems, reply with:
+#syz set subsystems: new-subsystem
+(See the list of subsystem names on the web dashboard)
+
+If the bug is a duplicate of another bug, reply with:
+#syz dup: exact-subject-of-another-report
+
+If you want to undo deduplication, reply with:
+#syz undup
