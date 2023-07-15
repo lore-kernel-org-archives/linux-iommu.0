@@ -1,139 +1,77 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2062.outbound.protection.outlook.com [40.107.93.62])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3BE4628
-	for <iommu@lists.linux.dev>; Sat, 15 Jul 2023 00:35:52 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aGDz6Fjt1p9FsTJk179bzMVLgN9dlvwllIdYtwierWJeCOY7SX80Zc8L2e4A87mfX13XEYaqVenTwK0/25DkJZ4zLskz0/hmxrHFYerYKFb4Nzrrmzi7P8yniqaRnnxek0C2ICRBkdJjS4HNdklpdbghhOUodxGTzjkk87zc4nTRhcEb+2dzzLlMGPRqsYzqaK8TPUDcm95srHFH7YERqCiCgYJ2bkL62oSvCZ0tUXHbj+ueM9wrM7peYypw0s5s3r0zqnWkHR7pISRYTvYnDb71wMvrSYfNeH371PRUQs3WVpw1O0t8r+c9n2uNiDpJ+UsIMO+vrjGKGSNxt1x6hw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rzoGl0N6KVOxGFauCUz/zRB+q6KFSHGa1YU6/prPehk=;
- b=IMfkHgzKeG9ZRTj3HmbS+x2d0UPMLADyXmCw9/OkkOS1xMHr3CPzelyhquzIIc9M/PxhJhUT4vi3lFJ3H5rPR5Y5WMwmQSVaJ0LxiWBnz/2GpUd0+VnS87n1Tgqizlh0/gi3gL/QvumHXYdsbcSOF8CsklzXJ+Dpsm7ESZJf7ZrdhKzvG0L0ps+qQ3y6XHNP+HiLjqB5etRW8Nlu7eIYkxSnOTam8mDWfCxSqqBskMTCGc8kusizf4EpjQEtD3oR4PPJWKaNr+J3MEt1hw+8icvvLlZJa/FFGcF8g0dAipFoPCOahTInJb/AiCLyz8Frw+KEw2Ix129eYNfX+1wT4Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rzoGl0N6KVOxGFauCUz/zRB+q6KFSHGa1YU6/prPehk=;
- b=TozAtZa5ZLwGk7VlF9oRvUXQpNSSVSdvUQs1gXS7AjgXIsrLIE82Ln9JmYmnhKU4OnGu7faTWgMK1aVtG+ixeUmKAEHFy0QOXFG1jsVxtOWFXVlsB4TXcTFG0WrGUyRjbykqeFfTROgvXgAhvJyoRZ8xDzS3MshBuGjZhflTjckgzNq8xGu70nlSCSeOczfg++eMEX5/9uKq35+EEwIlX826/N/fw4WnhgIary5Yc+Oa9nHiEwBT+SGAW8UbVUnU0WxTsPZkOSK26V0Tk20auyFpTbzFPmC+VvhUZNs/vqUZEBtudsPcZXogARucUTCZB/8SNpDnRBrC9BnQeg0m9g==
-Received: from MW4PR04CA0286.namprd04.prod.outlook.com (2603:10b6:303:89::21)
- by PH7PR12MB6393.namprd12.prod.outlook.com (2603:10b6:510:1ff::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6565.31; Sat, 15 Jul
- 2023 00:35:50 +0000
-Received: from CO1NAM11FT110.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:89:cafe::44) by MW4PR04CA0286.outlook.office365.com
- (2603:10b6:303:89::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6588.27 via Frontend
- Transport; Sat, 15 Jul 2023 00:35:50 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CO1NAM11FT110.mail.protection.outlook.com (10.13.175.125) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6588.27 via Frontend Transport; Sat, 15 Jul 2023 00:35:49 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Fri, 14 Jul 2023
- 17:35:32 -0700
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Fri, 14 Jul
- 2023 17:35:32 -0700
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.7)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Fri, 14 Jul 2023 17:35:31 -0700
-Date: Fri, 14 Jul 2023 17:35:30 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Michael Shavit <mshavit@google.com>
-CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
- Roedel" <joro@8bytes.org>, <jean-philippe@linaro.org>, <jgg@nvidia.com>,
-	<baolu.lu@linux.intel.com>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 07/13] iommu/arm-smmu-v3: Keep track of attached ssids
-Message-ID: <ZLHp0r1g1lroGYlN@Asurada-Nvidia>
-References: <20230621063825.268890-1-mshavit@google.com>
- <20230621063825.268890-8-mshavit@google.com>
- <ZK+BZhwbo8JLMPI2@Asurada-Nvidia>
- <CAKHBV27idVJ-8YgpekezaQP2n+Oz6OpKnDmYiu_cSOFh6z1S+Q@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58E3D39D
+	for <iommu@lists.linux.dev>; Sat, 15 Jul 2023 03:19:21 +0000 (UTC)
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-9936b3d0286so351269766b.0
+        for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 20:19:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google; t=1689391159; x=1691983159;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=bH4YNFQ85GLtLQVvtYry9jNegNVh6BuHBSS+rjBmUNk=;
+        b=OJq8ZudGCI5Xr+dsQCSNVCTOjLcYwJ82eRtCM6/LTQ0lFWpf3l3ac0GF3SwEdSvlqG
+         v4vsx9ZAtZkDQc4GzCpZ3y4k/L8c8Gq6FSumVGRxFjpU/ef5AbWM0pC9xpH3wPtIwCbj
+         w3P3HhMHbgug0PR99rdirxzz3bEWzU4wdiAS0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1689391159; x=1691983159;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=bH4YNFQ85GLtLQVvtYry9jNegNVh6BuHBSS+rjBmUNk=;
+        b=OesuXkR8HjTqycEPQnWCWvXQfPRQpHX4CuDpaw+U32T6OiZMRmcFLz9OpavtvNYYPG
+         t/DNMlvxjsL5fTSDIDB2CsHWAOAXLmbmQgYkxxZDkQfAitEeoJZYQWDLJJ8Jlije3G6P
+         HZ+zu9rD73YkEBquH2/znVO1MNBuo2O2SwMywo02LF6xIV2QXgo1upn6ZfhfghAD27ma
+         2YYYP6LHaAJltcDTijB4+DfZNV80mT5d253XFbWNyuDPfKvQFnH11FV/PxvQ7DaXbiZD
+         i4sT+/9M2HngYRDLjSlI37XLlTmN/9l2kgeeifGyDJMAR1no1ttKhEt2jVUZ29eK8Z8h
+         bAyA==
+X-Gm-Message-State: ABy/qLbdYrKMo831DxNqMwWk6J9Emr52obkM413zh4/BLFckt+M82Gtg
+	MknzZ8DD6U/17bI70EsC0TU+7axiHnnv/MTMu6qrtw==
+X-Google-Smtp-Source: APBJJlGoMJeagsE/5+Qik+s/nSEabf5A6y+PsOnr2NF9cUVp0s0T6Wc04vaR1Ml1fXxYg76eR0qbCw==
+X-Received: by 2002:a17:906:3f1c:b0:991:fef4:bb9 with SMTP id c28-20020a1709063f1c00b00991fef40bb9mr5735337ejj.58.1689391158697;
+        Fri, 14 Jul 2023 20:19:18 -0700 (PDT)
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com. [209.85.218.49])
+        by smtp.gmail.com with ESMTPSA id bt23-20020a170906b15700b0098d93142ce1sm6181330ejb.109.2023.07.14.20.19.17
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Jul 2023 20:19:17 -0700 (PDT)
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-9936b3d0286so351266466b.0
+        for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 20:19:17 -0700 (PDT)
+X-Received: by 2002:a17:906:2201:b0:98d:fc51:b3dd with SMTP id
+ s1-20020a170906220100b0098dfc51b3ddmr5283965ejs.41.1689391157559; Fri, 14 Jul
+ 2023 20:19:17 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CAKHBV27idVJ-8YgpekezaQP2n+Oz6OpKnDmYiu_cSOFh6z1S+Q@mail.gmail.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT110:EE_|PH7PR12MB6393:EE_
-X-MS-Office365-Filtering-Correlation-Id: 027fecd2-93d6-4e9a-9901-08db84cb705b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	CgUK8ksEeoUzyGmhKhqC5WQDvPML7KZYZvdBYu/BUwUiFCG8/oAhbdbkqoYLJfDZlsysPuK3vgL2WJJk9kLdOlyBaxYGZp+8eI8vlWuyERXetn2Brd05xYtnWo8AmRMzfEUA/gmgQuFB3/ZUHeNVcEX+9CzZsT6veZf526GTo/V3qFSXQBSrRfwZidkdbP+vWPTuJrF52EP7+92DPaaa6ZUZFQxPeJECtFeskLQYUnjtBQVvmph5mFVieynzwPF08hzihy+979CIL1RsFlAVtWaQO9OpbkjwXiAYZ4x537sduYCMSJcjscp+Ez7CDQAiVwjSRYs+8/hyNmrOVtFe79nbFzc1ceze/1LcoMCxlVKSF5A3f9jw5yekfl4U3uRdktm9CPdrN4HXm2E6Fe/ohoSZJaYHSaV8m2+iw0Pseb6LWffecFgXCt4hHBMRoHdHGayVUdxsZC8rNw3JJaGhb1YqG5CH5aDUbXhZ7uIy1qKdJGYXzqf3gkXx0YmGqjy+CQ2qmc2aOxcbwwycA+QHzs1qzpQ2cO4VrZv95NA9wsibZGUtta23rYDTyzd07/Yu66NTgzxlHGwq8BztQKEHepaQXOxVGYPmoXUeJEVtSKGfc5E564xQ/hxLr1KjxCZSPgq56d949+iondP5ZhMsKw8LnSdIlAC9jc6H5mVuzN8KhdYJssZczbY2LgbHbJyLq9h3SisVwPNbExipdN5qOPj14Xua7d/0CMyfmO3VAFaxW1YhUqUkjPXvBkglOYYN
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(346002)(39860400002)(136003)(396003)(376002)(451199021)(82310400007)(46966006)(36840700001)(40470700004)(86362001)(8936002)(5660300002)(8676002)(41300700001)(4326008)(7636003)(316002)(2906002)(356005)(6916009)(70206006)(70586007)(82740400003)(54906003)(83380400001)(478600001)(47076005)(9686003)(33716001)(36860700001)(186003)(26005)(40460700003)(336012)(40480700001)(426003)(55016003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2023 00:35:49.9617
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 027fecd2-93d6-4e9a-9901-08db84cb705b
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT110.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6393
+References: <ZLGwoGoJNAG6Db4v@8bytes.org>
+In-Reply-To: <ZLGwoGoJNAG6Db4v@8bytes.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Fri, 14 Jul 2023 20:19:00 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgppEZ9SswgkQEMVA5UW8Epnc4PgKjKSo=6MEK=X70MEg@mail.gmail.com>
+Message-ID: <CAHk-=wgppEZ9SswgkQEMVA5UW8Epnc4PgKjKSo=6MEK=X70MEg@mail.gmail.com>
+Subject: Re: [git pull] IOMMU Fixes for Linux v6.5-rc1
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, Jul 14, 2023 at 05:30:42PM +0800, Michael Shavit wrote:
- 
-> > And I don't quite get this part. Prior to this change, it issues
-> > one ATC_INV command covering all ATC entries per comments inside
-> > arm_smmu_atc_inv_to_cmd(). But now we replace that single command
-> > with all attached subdomains in the list? Any reason for such a
-> > change here?
-> 
-> Because we don't necessarily want to invalidate all PASID-domains
-> attached to a master. If arm_smmu_atc_inv_domain() is called on a
-> domain that is only attached with Pasid, we can restrict the
-> invalidations to those specific PASID by looping over them.
+On Fri, 14 Jul 2023 at 13:31, Joerg Roedel <joro@8bytes.org> wrote:
 >
-> But yeah,
-> you're right that we could potentially optimize this?
-> * Skip the per-pasid invalidations if the domain is also attached to
-> this master without PASID as we have to invalidate all its pasids in
-> that case anyways. It's hard to imagine clients attaching a domain
-> both with pasid and without pasid to the same device but could be
-> possible.
-> * Always invalidate all pasids by issuing atc invalidations on SSID 0.
-> This sounds like the wrong trade-off??
+> The following changes since commit 06c2afb862f9da8dc5efa4b6076a0e48c3fbaaa5:
+>
+>   Linux 6.5-rc1 (2023-07-09 13:53:13 -0700)
+>
+> are available in the Git repository at:
+>
+>   git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git iommu-fixes-v6.5-rc1
 
-Well, firstly it's kinda odd to have this optimization hidden in
-a big rework patch. And I am not sure if it alone would work for
-all use cases, as it impacts the arm_smmu_atc_inv_domain() that
-passes in a zero ssid, in which case the affected function is not
-used by a pasid case all the time:
-	/*
-	 * ATS and PASID:
-...
-	 * When using STRTAB_STE_1_S1DSS_SSID0 (reserving CD 0 for non-PASID
-	 * traffic), translation requests without PASID create ATC entries
-	 * without PASID, which must be invalidated with substream_valid clear.
-	 * This has the unpleasant side-effect of invalidating all PASID-tagged
-	 * ATC entries within the address range.
-	 */
+Nope. Nothing there.
 
-Thanks
-Nicolin
+Guys, 'git request-pull' should be *warning* you if what you claim is
+there isn't actually there.
+
+Why don't people look at what they do?
+
+                 Linus
