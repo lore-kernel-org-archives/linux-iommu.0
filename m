@@ -1,77 +1,87 @@
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58E3D39D
-	for <iommu@lists.linux.dev>; Sat, 15 Jul 2023 03:19:21 +0000 (UTC)
-Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-9936b3d0286so351269766b.0
-        for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 20:19:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1689391159; x=1691983159;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=bH4YNFQ85GLtLQVvtYry9jNegNVh6BuHBSS+rjBmUNk=;
-        b=OJq8ZudGCI5Xr+dsQCSNVCTOjLcYwJ82eRtCM6/LTQ0lFWpf3l3ac0GF3SwEdSvlqG
-         v4vsx9ZAtZkDQc4GzCpZ3y4k/L8c8Gq6FSumVGRxFjpU/ef5AbWM0pC9xpH3wPtIwCbj
-         w3P3HhMHbgug0PR99rdirxzz3bEWzU4wdiAS0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689391159; x=1691983159;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=bH4YNFQ85GLtLQVvtYry9jNegNVh6BuHBSS+rjBmUNk=;
-        b=OesuXkR8HjTqycEPQnWCWvXQfPRQpHX4CuDpaw+U32T6OiZMRmcFLz9OpavtvNYYPG
-         t/DNMlvxjsL5fTSDIDB2CsHWAOAXLmbmQgYkxxZDkQfAitEeoJZYQWDLJJ8Jlije3G6P
-         HZ+zu9rD73YkEBquH2/znVO1MNBuo2O2SwMywo02LF6xIV2QXgo1upn6ZfhfghAD27ma
-         2YYYP6LHaAJltcDTijB4+DfZNV80mT5d253XFbWNyuDPfKvQFnH11FV/PxvQ7DaXbiZD
-         i4sT+/9M2HngYRDLjSlI37XLlTmN/9l2kgeeifGyDJMAR1no1ttKhEt2jVUZ29eK8Z8h
-         bAyA==
-X-Gm-Message-State: ABy/qLbdYrKMo831DxNqMwWk6J9Emr52obkM413zh4/BLFckt+M82Gtg
-	MknzZ8DD6U/17bI70EsC0TU+7axiHnnv/MTMu6qrtw==
-X-Google-Smtp-Source: APBJJlGoMJeagsE/5+Qik+s/nSEabf5A6y+PsOnr2NF9cUVp0s0T6Wc04vaR1Ml1fXxYg76eR0qbCw==
-X-Received: by 2002:a17:906:3f1c:b0:991:fef4:bb9 with SMTP id c28-20020a1709063f1c00b00991fef40bb9mr5735337ejj.58.1689391158697;
-        Fri, 14 Jul 2023 20:19:18 -0700 (PDT)
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com. [209.85.218.49])
-        by smtp.gmail.com with ESMTPSA id bt23-20020a170906b15700b0098d93142ce1sm6181330ejb.109.2023.07.14.20.19.17
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Jul 2023 20:19:17 -0700 (PDT)
-Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-9936b3d0286so351266466b.0
-        for <iommu@lists.linux.dev>; Fri, 14 Jul 2023 20:19:17 -0700 (PDT)
-X-Received: by 2002:a17:906:2201:b0:98d:fc51:b3dd with SMTP id
- s1-20020a170906220100b0098dfc51b3ddmr5283965ejs.41.1689391157559; Fri, 14 Jul
- 2023 20:19:17 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64FD2163
+	for <iommu@lists.linux.dev>; Sat, 15 Jul 2023 06:28:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1689402482; x=1720938482;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=E4dw5jTyrhJfmTFYFax04Yvl6K/d06zT/oytzRcJ5aA=;
+  b=dBzLYQSYpocxIOfPM0COfDrt3GLpTipuXyCCnQmJ1L9dJyjj5XWxrz8K
+   4FvxZSRjluCZnRRm4x/1oFyG+/m1etDNdgTk7h/cakkOLgsHaYCw6JvHn
+   ls4CtVTpCoop3DjdvVZzAAJg8Y4F1Pzlxgwq7rEI6DOsMjkrXqB0aJIPn
+   MnJ9g8QUg0MpOu2CVkwvMklxNVQjJ82n342u2nkl8w3mJgUAezcc8Lzs0
+   Nro1NWUi80abYJh+kwMuhkWZK4gxmvL0phiynnpai9ulgt5it22eGmk8G
+   8x2RF4tl0YgcfcHrr1WNaY17R0ggmtCiMZpkNYQkV/ib8B+Xz81QAqoOp
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10771"; a="345949301"
+X-IronPort-AV: E=Sophos;i="6.01,207,1684825200"; 
+   d="scan'208";a="345949301"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2023 23:28:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10771"; a="812680999"
+X-IronPort-AV: E=Sophos;i="6.01,207,1684825200"; 
+   d="scan'208";a="812680999"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by FMSMGA003.fm.intel.com with ESMTP; 14 Jul 2023 23:27:58 -0700
+Message-ID: <db554c27-f663-0146-5e5f-b319547757c3@linux.intel.com>
+Date: Sat, 15 Jul 2023 14:26:10 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <ZLGwoGoJNAG6Db4v@8bytes.org>
-In-Reply-To: <ZLGwoGoJNAG6Db4v@8bytes.org>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Fri, 14 Jul 2023 20:19:00 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgppEZ9SswgkQEMVA5UW8Epnc4PgKjKSo=6MEK=X70MEg@mail.gmail.com>
-Message-ID: <CAHk-=wgppEZ9SswgkQEMVA5UW8Epnc4PgKjKSo=6MEK=X70MEg@mail.gmail.com>
-Subject: Re: [git pull] IOMMU Fixes for Linux v6.5-rc1
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Cc: baolu.lu@linux.intel.com, opensource.kernel@vivo.com
+Subject: Re: [PATCH v5] iommu: Fix an error check in tegra_smmu_debugfs_init()
+Content-Language: en-US
+To: Minjie Du <duminjie@vivo.com>, Thierry Reding <thierry.reding@gmail.com>,
+ Krishna Reddy <vdumpa@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>,
+ "open list:TEGRA IOMMU DRIVERS" <linux-tegra@vger.kernel.org>,
+ "open list:IOMMU SUBSYSTEM" <iommu@lists.linux.dev>,
+ open list <linux-kernel@vger.kernel.org>
+References: <20230714081320.1998-1-duminjie@vivo.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20230714081320.1998-1-duminjie@vivo.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, 14 Jul 2023 at 13:31, Joerg Roedel <joro@8bytes.org> wrote:
->
-> The following changes since commit 06c2afb862f9da8dc5efa4b6076a0e48c3fbaaa5:
->
->   Linux 6.5-rc1 (2023-07-09 13:53:13 -0700)
->
-> are available in the Git repository at:
->
->   git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git iommu-fixes-v6.5-rc1
+On 7/14/23 4:13 PM, Minjie Du wrote:
+> debugfs_create_dir() function returns an error value(PTR_ERR).
+> We need to evaluate the return value using IS_ERR,
+> rather than checking for NULL.
+> 
+> Fixes: d1313e7896e9 ("iommu/tegra-smmu: Add debugfs support")
+> Signed-off-by: Minjie Du<duminjie@vivo.com>
+> ---
+> V4 -> V5: debugfs needs to have error checking, so use IS_ERR() to error check.
 
-Nope. Nothing there.
+Why?
 
-Guys, 'git request-pull' should be *warning* you if what you claim is
-there isn't actually there.
+[...]
+  * NOTE: it's expected that most callers should _ignore_ the errors 
+returned
+  * by this function. Other debugfs functions handle the fact that the 
+"dentry"
+  * passed to them could be an error and they don't crash in that case.
+  * Drivers should generally work fine even if debugfs fails to init anyway.
+  */
+struct dentry *debugfs_create_dir(const char *name, struct dentry *parent)
+{
+         struct dentry *dentry = start_creating(name, parent);
+         struct inode *inode;
 
-Why don't people look at what they do?
+         if (IS_ERR(dentry))
+                 return dentry;
 
-                 Linus
+[...]
+
+Best regards,
+baolu
