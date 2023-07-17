@@ -1,159 +1,177 @@
-Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2099.outbound.protection.outlook.com [40.107.215.99])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB04EA49
-	for <iommu@lists.linux.dev>; Mon, 17 Jul 2023 02:14:17 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CCT9iBaMV2joS+BeoOpRaIKX1BQoeLt25B0zYsQfBqQtc4sdoG1mGGb/5saHsblZjRc0VUC7ztE8KHQZmYC3/QZW42Uj/1N+5UymSquymoPLaoUpD7vNE46KII8c/SA36y2Mqgd0ESxf3FCv09LcY3WvcInfGfVXbvXuw280BYQ94hR5YwWLAlpzQWLIvQjG5bq6PRpVmFtRFwqvq7a56WBJDB52vjbemEffdFRzr4BVS6TrNWrVTd7Xdn1HMDTEhmvy6QOItEvceKC9EGEMZ4BcYfLI3fG4rXPnOF+n4FDJUZqSdMKcxnfI9r95f2Si9WECe0nDtNF8TBhQpz+qtw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MKt0KikQ6ESjHluV6DdsqoHs76rOmVMz/DEFbPknzFk=;
- b=ZsGjxKyl6mSvWTIFO9mZjc2sPL9AUKjq+03YwapPykzTCp03PBp5JtMy5Lx3L2s6HPMDRWRR+qelXygt05LTBPW8CHaHs8xI6ofN9nICieoloatdBpCrgQBpefCHgRSs6PLgbk7IvREEQcq1eRb3qFBx6GaaIdUU0Zy2H7qLv+YsTWlzorc7F1AObXALB8wdSXl7GYdDVuTqC6bnMAdsBdYjK4Ip48rsnMXmAH+95KCXbgYocgGRjrrpN1Ae5iEM3TBXszD+6+cyUWE1Lx6eUTJAMXPvf7moEPhh4kZD0QfB7kGvmOdo+7zddID3alKCAE5ElyoFHGfdD1gICD59RQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MKt0KikQ6ESjHluV6DdsqoHs76rOmVMz/DEFbPknzFk=;
- b=YkUS5bFF7TnuxOkkEkffLjPQVR3mt0rzaA4syfz1u68UN7N+32gNX95XwOMoRi6qvwv14MSIhoczUIv7WPCVukGwBwWu4a+XZOz9v9KfikI6zwsYTfz6SFzky32HoWZ3AeJcD6CWBHYenqJZuHcUJn/u8QbqqDMrdBds0kTB14Q/WasK0iNJerknTgc9cq0rhQ7txWWq14HPGVe4+bL59BSCWtZwSn8JrqnEHgZlH7E+XXpf1vEhEp159WaQvA2u++Uj19xhltk/+O8QiP/LUNbZq++fGAvHL+/8vbAJpQwNQOOjNoGoLLsgL+8aFt9hjl8qYYZoQrJNoveCmY5FFg==
-Received: from SG2PR06MB5288.apcprd06.prod.outlook.com (2603:1096:4:1dc::9) by
- TYZPR06MB4240.apcprd06.prod.outlook.com (2603:1096:400:65::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6588.31; Mon, 17 Jul 2023 02:14:14 +0000
-Received: from SG2PR06MB5288.apcprd06.prod.outlook.com
- ([fe80::f9b8:80b5:844e:f49a]) by SG2PR06MB5288.apcprd06.prod.outlook.com
- ([fe80::f9b8:80b5:844e:f49a%6]) with mapi id 15.20.6565.037; Mon, 17 Jul 2023
- 02:14:14 +0000
-From: =?utf-8?B?5p2c5pWP5p2w?= <duminjie@vivo.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>, Thierry Reding
-	<thierry.reding@gmail.com>, Krishna Reddy <vdumpa@nvidia.com>, Joerg Roedel
-	<joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, Jonathan Hunter <jonathanh@nvidia.com>, "open
- list:TEGRA IOMMU DRIVERS" <linux-tegra@vger.kernel.org>, "open list:IOMMU
- SUBSYSTEM" <iommu@lists.linux.dev>, open list <linux-kernel@vger.kernel.org>
-CC: opensource.kernel <opensource.kernel@vivo.com>
-Subject:
- =?utf-8?B?5Zue5aSNOiBbUEFUQ0ggdjVdIGlvbW11OiBGaXggYW4gZXJyb3IgY2hlY2sg?=
- =?utf-8?B?aW4gdGVncmFfc21tdV9kZWJ1Z2ZzX2luaXQoKQ==?=
-Thread-Topic: [PATCH v5] iommu: Fix an error check in
- tegra_smmu_debugfs_init()
-Thread-Index: AQHZtisSu01BzDxsvEWu1GvQfmCRS6+6XicAgALcaXA=
-Date: Mon, 17 Jul 2023 02:14:14 +0000
-Message-ID:
- <SG2PR06MB5288FE67D20491B9B5F714ACAE3BA@SG2PR06MB5288.apcprd06.prod.outlook.com>
-References: <20230714081320.1998-1-duminjie@vivo.com>
- <db554c27-f663-0146-5e5f-b319547757c3@linux.intel.com>
-In-Reply-To: <db554c27-f663-0146-5e5f-b319547757c3@linux.intel.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SG2PR06MB5288:EE_|TYZPR06MB4240:EE_
-x-ms-office365-filtering-correlation-id: a78eac1c-bef5-46ea-ae39-08db866b842e
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- nNfxnxvkYR/EOoFVVCIhDWhidAEF/Qn7z/P20ppgjjQ824L9TY+M0JUiN1Gwtwht1/BDxcgp7V+fvBvLS0o15+ZvJFIQxwhxE9JkxXCkPpmGujwdGE537GPsBl9K2MYPsVW75j4Fi0PWeqUG/o+KTo01H6wocNXFik40usL1hAv8hEvTl9rMOc+2/ky6gKuab6ToTijl16B8fNcs5AHd1DDnwp6Ki/6hZctC6QPhbzBMmJbCqilyUmOMrmkJYB3oWH7nLTY4Sdglb3Tdk0tGFLgD5PfH6CSweDt31LBq7sz5Ns9dJPB6TaoIhD3R0feUNC/XWHk4I25AGXrnXjnJv2+HBGFiOAfFAZVE989DVI2oAUtdgV8VFBqnmMLf7VXIUvsBUZV3hJM7//OOTIreBNnOmiZM0LiZEF1ZfZRe8Sb/Qj7t6W4l136jY1JOLh6k/pICEwpuR+CbEzUo1Prz05HChJK1C4dATbgCywMMIjC7GVtt+aM2M7zIRLk5GvJSgBgQJ2AsWEd0rjdAcnRUDo1eTCrQfOQletGE0XBKm6lojZ5RjNuqLS2DgvCVS/ky1+JDF+OuUo6VP+SKci2KMktK8caciBy4aynjSkzLRBk+ajI4wjmmCbUZkNiuzo/tNB5+drBvgnvwZnvN0GcGMQ==
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB5288.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(366004)(39850400004)(136003)(376002)(346002)(451199021)(478600001)(66946007)(66556008)(66446008)(64756008)(66476007)(4326008)(5660300002)(52536014)(7416002)(316002)(76116006)(8936002)(55016003)(2906002)(41300700001)(71200400001)(110136005)(966005)(26005)(9686003)(6506007)(53546011)(7696005)(107886003)(921005)(38100700002)(33656002)(186003)(224303003)(83380400001)(85182001)(122000001)(38070700005)(86362001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?bmcwMGFNQ1RoTkpjVDBNSERTNDJoWUtacG9CaGVzYTlGVVRKSVFoQmRSVFF0?=
- =?utf-8?B?QlJZbUpmWllod1E0QS9GT2dLOGI2NStMZ1ZENVJ3TFM4QmVOQzN2VFFQZHdJ?=
- =?utf-8?B?bHl4WTVaV1hlVHVlWjBMYm4zRERQWWdUcW53bnYwci9tR2Q5eWs3aVIvUTFR?=
- =?utf-8?B?SEJnNk5kWVNTOW9VMjFnVlpvSGNGcVZGd25qdW5nZU92aWFYSldSSnF6Q09m?=
- =?utf-8?B?cEkrdUkrZTZTQ3cyTFVvVWQ1R1RjNHpqbDZCcUFXekNNZEV3WVZrLzhrK3g2?=
- =?utf-8?B?WjhpcVprVURLNmRNRkxKL1ZYY1VKRnV4bWczemY0ZExJV1d6VlJwZmlRdENX?=
- =?utf-8?B?ZTVyUFYwYWRTL2cxRUtCYWNJd1lqODdSWnBQSW5IRjRKSEx6LzZURHlRMkVH?=
- =?utf-8?B?aHFxbm5ZckRLZmUxYkZmeG9GcDJiOHl5Y0xkdlZuNzRJN3JmdnpBMEFZRkQw?=
- =?utf-8?B?WkNvcDlkd3I0ZVZ0Y1dNNzRjajltcDFsWUpwbFdUTXN4YnZDc3o1cFdpeEJk?=
- =?utf-8?B?R1pRZWZHK2djWE0rZ2FxeDRRRzdqNk5BUjNoZ0VPWlcrai93YTNGK281cWE5?=
- =?utf-8?B?dENlTm9HTVNOajlkZlNla0xxemw2UDRpalovS2VabkovMWhBaUhsVE40SGZ1?=
- =?utf-8?B?Z0JsMThUbmlmQ0FUTEJkNzhHY3BuLzlodUxCVXBmMkZBcHh3K2dMYmtrTk9n?=
- =?utf-8?B?MmZDMWYwU2FkSVF0Nk0wbGZHZk9rN0taUHVzYW9mUWFyZUZiQm1YbnFQVllM?=
- =?utf-8?B?YWk5cHJhR1llSmo4eUpqcis3WXNrNGh6clNaRTc0VDJLM0xLb1FieTA0OHFm?=
- =?utf-8?B?c0V2NFlXTGxuQnh3MVNnbWIxVmhHRGFxVzhFMW9DOEdKUGo3UnFFbUNocGdl?=
- =?utf-8?B?Ny9MSVNuK2xQb1JRQ3F5S1NVR0JlRDA3Z2JYQUI5Q0E1dXBGekg4cGVoTWxm?=
- =?utf-8?B?TlMvVkVwM25nT0pwWXJZQmtDT3BiQ2FmaHYwVzkwdWlGTEhVcHpWemhianVP?=
- =?utf-8?B?OHZVVVZhei9PMDZ3WnpQWEhOQkRzQkwrUldjMFU0MEpuUjFRcFRSRVNmSTRs?=
- =?utf-8?B?UVdDT1N0ZndmMjVhTW5FM1hReVY2VDlsb1FwQSsxSnZVb2tKRGZGQ0JoM0Ni?=
- =?utf-8?B?ako5aWd2RW81L0pCMHZ1Nzg5MGJGYjZWYTJxeW5ORldzM1pybUNBNS9ZTnhX?=
- =?utf-8?B?c3ZlLzdYVWFoVVI0MnB3RytxYnNPeUlEdFdjNERzOWI4Znhta1NMZC9MRmhQ?=
- =?utf-8?B?eVM0bElwQUZjL2hLZW0xWDZHUkVXUDIrVmNZczdYZkU0ckdGNlRCQUFTQmpn?=
- =?utf-8?B?ZFFqVE1iZTVlUUlmcnZROHZXbjkzZzQ5b1JOQWVaTWtmWGkzV0JiYkFabWF3?=
- =?utf-8?B?bTIzU010TGt6ZjBQM3FuWi9YZVdWOVByMEtoQnRxMjNYQVFNczlMSzg5SGlF?=
- =?utf-8?B?RGpBM0VQTmkzNWtoNm1OMWdodmY0dEw0NGQwZ0g3Y2phNTE0UjQ4ODFkRXBl?=
- =?utf-8?B?Y3k3K3hJdEFFdGZ5WVZYcGFoUDdEbEV6b2V0WUVFNlRqWjRjclI4cTNiY1d5?=
- =?utf-8?B?OXFWRDBjWXFoUzB1aFNucmdaNC9ETjd2SUNzUXkwWTg4T2dlY0ZxYWNONndX?=
- =?utf-8?B?QllnUTdlWEh4a3llQUFuK1BYYkIrd1d6M0FrcDUxYVkxMlVkVDd0RVpDeW9S?=
- =?utf-8?B?RG1pKzNUZ1ZYN25kTVJOZlNNaW1pVlVrcHJyQ1ZlTFBrZklPNlFHMlJEdXNJ?=
- =?utf-8?B?aWNuVWI2SkwrRkZqQVhiRXpCdk5uWHgzaGFDRnNiNXNSVjVJQnNKeTE5VEtG?=
- =?utf-8?B?eWhPSkc5ZXEyakNwVFhVY1ZpS0pRYmY3S09QQklVUTY4UU1qSG95KzVFcm5I?=
- =?utf-8?B?WVlmK2dOVVJ2TldvSTZwQXptbzJHRTRzTXUwYnM3bnlDTVF1VWZDUktQYXc0?=
- =?utf-8?B?dG0xOEJ3YU5DWFZ1REZlVmFCQW5lNHB1NkRGRDB3L3EzRFNjc2VzYjY5K1Y0?=
- =?utf-8?B?UXRlNkhaQkNDVVFsUldwb2tBbWkvejY1Ly9ldGEyeGZHUHBlUUllbW1hL0Jw?=
- =?utf-8?B?Vmt0SllvaUZVU2l1SFlaV0VzSS8ramU5Qi9hT29paHpET3R1Z1VRVEU4WWRQ?=
- =?utf-8?Q?mn00=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F57515CF
+	for <iommu@lists.linux.dev>; Mon, 17 Jul 2023 06:06:14 +0000 (UTC)
+Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-2b9352ff1aeso18039181fa.1
+        for <iommu@lists.linux.dev>; Sun, 16 Jul 2023 23:06:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1689573972; x=1692165972;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=V9PPbgd68wocT4TvRhmcO/nETjGOz62AhMV/Wt93B7Q=;
+        b=ms+Ay07n0lyPm2SMUObQ9GjdsaldYs4VUWpkhI9RsYlip9CudCjC8ofTEhWMxc+gbc
+         K0YtVClyOIFxttDZLliNzf3gbsIu835cEAVjrm05LoLwmD+xEpYYmElER6/tTcPAFvd/
+         p2lztdzYDwdRIgKoaXXCaQGNTdGxMByqHznLfQzrSXnEnAliyuQIuPJ2DHdt8U8hDVUj
+         pIIVhdinE7fn9LMpO4v4GDRrX6wVNxGYi92lYsJ/m30w58uxf/A8pv9pmFF9oslSdX7C
+         f8TXdN/IpdnuJOIClc5E5kJaWu5AzB+RIbuDksQjbE4lIlj/YHAncSTpNp/lY1qETdK/
+         eyqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1689573972; x=1692165972;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=V9PPbgd68wocT4TvRhmcO/nETjGOz62AhMV/Wt93B7Q=;
+        b=eK4om1G7VxLu5OvJ1VAl7/VLlhoud/WKqR12jnkdhNFVrBxbmHBdSntPxFimuKNoNK
+         KXFKJI3sFfRwjCb2rC/arWvfdb0eNFe4Vw/GbqpOLJ0CwaPN7hxJ4G3eTAlKXSmUQkVB
+         0VcE8oqyGnduDFkCo49hO13nRvlhQcjLm8UF5r6ajTyOJyrcilwOgW/PuknDP5eGTg8D
+         SFoGNZN9CSODp+3RK1FIJSbBB690GDnnONxf643dxDv/CFIqrrBsTT8Gf8vTCz0U/vHe
+         ItXEhKQu4Zw5kr/X9C6WR+XT380ofCKYYJg5dwiNxnGOw0VbFFQcAkR3V2XZRvp+YAUg
+         cUBw==
+X-Gm-Message-State: ABy/qLZaporw8pUzqLFqUlhM6t/ok53Mt/37N0RBtswGmn3N8K1TPLiL
+	NoB/uEOZxxcoXb40QrQ174HeMA==
+X-Google-Smtp-Source: APBJJlHW/NFDKdvFhoq+y8xrvjg5fcDRitDcC29a/QX354QST/fiAOhwToFZQukWGxzIAoA8z/fnRA==
+X-Received: by 2002:a05:6512:1181:b0:4fb:7d73:d097 with SMTP id g1-20020a056512118100b004fb7d73d097mr6674575lfr.39.1689573972086;
+        Sun, 16 Jul 2023 23:06:12 -0700 (PDT)
+Received: from [192.168.69.115] ([176.176.144.39])
+        by smtp.gmail.com with ESMTPSA id p5-20020a5d4e05000000b003143d80d11dsm18078305wrt.112.2023.07.16.23.06.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 16 Jul 2023 23:06:11 -0700 (PDT)
+Message-ID: <45f89fee-6825-3f5d-9dfb-aad5d47c8c36@linaro.org>
+Date: Mon, 17 Jul 2023 08:06:07 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB5288.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a78eac1c-bef5-46ea-ae39-08db866b842e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jul 2023 02:14:14.0200
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 8+YSaAFBUXy6oRd0ihJY278qJ//StG+kKuKpqJVzgLMoIklO2kZPA2CMntu16QAonQgDs2RI5etNGZxrs5Nb2w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR06MB4240
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.13.0
+Subject: Re: [PATCH v4 1/8] swiotlb: make io_tlb_default_mem local to
+ swiotlb.c
+Content-Language: en-US
+To: Petr Tesarik <petrtesarik@huaweicloud.com>,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ Russell King <linux@armlinux.org.uk>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
+ "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+ "H. Peter Anvin" <hpa@zytor.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Juergen Gross <jgross@suse.com>,
+ Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+ Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Petr Tesarik <petr.tesarik.ext@huawei.com>, Jonathan Corbet
+ <corbet@lwn.net>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Hans de Goede <hdegoede@redhat.com>, James Seo <james@equiv.tech>,
+ James Clark <james.clark@arm.com>, Kees Cook <keescook@chromium.org>,
+ "moderated list:XEN HYPERVISOR ARM" <xen-devel@lists.xenproject.org>,
+ "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+ open list <linux-kernel@vger.kernel.org>,
+ "open list:MIPS" <linux-mips@vger.kernel.org>,
+ "open list:XEN SWIOTLB SUBSYSTEM" <iommu@lists.linux.dev>
+Cc: Roberto Sassu <roberto.sassu@huaweicloud.com>,
+ Kefeng Wang <wangkefeng.wang@huawei.com>, petr@tesarici.cz
+References: <cover.1689261692.git.petr.tesarik.ext@huawei.com>
+ <7f64111986f4f361a2deb4a1a1b6f588e63a851b.1689261692.git.petr.tesarik.ext@huawei.com>
+From: =?UTF-8?Q?Philippe_Mathieu-Daud=c3=a9?= <philmd@linaro.org>
+In-Reply-To: <7f64111986f4f361a2deb4a1a1b6f588e63a851b.1689261692.git.petr.tesarik.ext@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-SGkgQmFvbHUhDQoNCkknbSBzbyBzb3JyeSwgSSBtYWRlIGEgbWlzdGFrZS4NClRoZSBwYXRjaCA6
-DQonW1BBVENIIHY1XSBpb21tdTogRml4IGFuIGVycm9yIGNoZWNrIGluIHRlZ3JhX3NtbXVfZGVi
-dWdmc19pbml0KCknDQpUaGlzIGlzIGEgd3JvbmcgcGF0Y2gsIHNob3VsZSBiZSBzaG91bGQgYmUg
-ZGlzY2FyZGVkLg0KDQpJIHN1Ym1pdHRlZCBbcGF0Y2ggdjZdLCBUaGlzIGlzIHRoZSBjb3JyZWN0
-IHBhdGNoLg0KU29ycnkgYWdhaW4gZm9yIG15IG1pc3Rha2UuDQpUaGFua3MhDQoNCnJlZ2FyZHMs
-DQpNaW5qaWUNCg0KLS0tLS3pgq7ku7bljp/ku7YtLS0tLQ0K5Y+R5Lu25Lq6OiBCYW9sdSBMdSA8
-YmFvbHUubHVAbGludXguaW50ZWwuY29tPiANCuWPkemAgeaXtumXtDogMjAyM+W5tDfmnIgxNeaX
-pSAxNDoyNg0K5pS25Lu25Lq6OiDmnZzmlY/mnbAgPGR1bWluamllQHZpdm8uY29tPjsgVGhpZXJy
-eSBSZWRpbmcgPHRoaWVycnkucmVkaW5nQGdtYWlsLmNvbT47IEtyaXNobmEgUmVkZHkgPHZkdW1w
-YUBudmlkaWEuY29tPjsgSm9lcmcgUm9lZGVsIDxqb3JvQDhieXRlcy5vcmc+OyBXaWxsIERlYWNv
-biA8d2lsbEBrZXJuZWwub3JnPjsgUm9iaW4gTXVycGh5IDxyb2Jpbi5tdXJwaHlAYXJtLmNvbT47
-IEpvbmF0aGFuIEh1bnRlciA8am9uYXRoYW5oQG52aWRpYS5jb20+OyBvcGVuIGxpc3Q6VEVHUkEg
-SU9NTVUgRFJJVkVSUyA8bGludXgtdGVncmFAdmdlci5rZXJuZWwub3JnPjsgb3BlbiBsaXN0OklP
-TU1VIFNVQlNZU1RFTSA8aW9tbXVAbGlzdHMubGludXguZGV2Pjsgb3BlbiBsaXN0IDxsaW51eC1r
-ZXJuZWxAdmdlci5rZXJuZWwub3JnPg0K5oqE6YCBOiBiYW9sdS5sdUBsaW51eC5pbnRlbC5jb207
-IG9wZW5zb3VyY2Uua2VybmVsIDxvcGVuc291cmNlLmtlcm5lbEB2aXZvLmNvbT4NCuS4u+mimDog
-UmU6IFtQQVRDSCB2NV0gaW9tbXU6IEZpeCBhbiBlcnJvciBjaGVjayBpbiB0ZWdyYV9zbW11X2Rl
-YnVnZnNfaW5pdCgpDQoNCltTb21lIHBlb3BsZSB3aG8gcmVjZWl2ZWQgdGhpcyBtZXNzYWdlIGRv
-bid0IG9mdGVuIGdldCBlbWFpbCBmcm9tIGJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbS4gTGVhcm4g
-d2h5IHRoaXMgaXMgaW1wb3J0YW50IGF0IGh0dHBzOi8vYWthLm1zL0xlYXJuQWJvdXRTZW5kZXJJ
-ZGVudGlmaWNhdGlvbiBdDQoNCk9uIDcvMTQvMjMgNDoxMyBQTSwgTWluamllIER1IHdyb3RlOg0K
-PiBkZWJ1Z2ZzX2NyZWF0ZV9kaXIoKSBmdW5jdGlvbiByZXR1cm5zIGFuIGVycm9yIHZhbHVlKFBU
-Ul9FUlIpLg0KPiBXZSBuZWVkIHRvIGV2YWx1YXRlIHRoZSByZXR1cm4gdmFsdWUgdXNpbmcgSVNf
-RVJSLCByYXRoZXIgdGhhbiANCj4gY2hlY2tpbmcgZm9yIE5VTEwuDQo+DQo+IEZpeGVzOiBkMTMx
-M2U3ODk2ZTkgKCJpb21tdS90ZWdyYS1zbW11OiBBZGQgZGVidWdmcyBzdXBwb3J0IikNCj4gU2ln
-bmVkLW9mZi1ieTogTWluamllIER1PGR1bWluamllQHZpdm8uY29tPg0KPiAtLS0NCj4gVjQgLT4g
-VjU6IGRlYnVnZnMgbmVlZHMgdG8gaGF2ZSBlcnJvciBjaGVja2luZywgc28gdXNlIElTX0VSUigp
-IHRvIGVycm9yIGNoZWNrLg0KDQpXaHk/DQoNClsuLi5dDQogICogTk9URTogaXQncyBleHBlY3Rl
-ZCB0aGF0IG1vc3QgY2FsbGVycyBzaG91bGQgX2lnbm9yZV8gdGhlIGVycm9ycyByZXR1cm5lZA0K
-ICAqIGJ5IHRoaXMgZnVuY3Rpb24uIE90aGVyIGRlYnVnZnMgZnVuY3Rpb25zIGhhbmRsZSB0aGUg
-ZmFjdCB0aGF0IHRoZSAiZGVudHJ5Ig0KICAqIHBhc3NlZCB0byB0aGVtIGNvdWxkIGJlIGFuIGVy
-cm9yIGFuZCB0aGV5IGRvbid0IGNyYXNoIGluIHRoYXQgY2FzZS4NCiAgKiBEcml2ZXJzIHNob3Vs
-ZCBnZW5lcmFsbHkgd29yayBmaW5lIGV2ZW4gaWYgZGVidWdmcyBmYWlscyB0byBpbml0IGFueXdh
-eS4NCiAgKi8NCnN0cnVjdCBkZW50cnkgKmRlYnVnZnNfY3JlYXRlX2Rpcihjb25zdCBjaGFyICpu
-YW1lLCBzdHJ1Y3QgZGVudHJ5ICpwYXJlbnQpIHsNCiAgICAgICAgIHN0cnVjdCBkZW50cnkgKmRl
-bnRyeSA9IHN0YXJ0X2NyZWF0aW5nKG5hbWUsIHBhcmVudCk7DQogICAgICAgICBzdHJ1Y3QgaW5v
-ZGUgKmlub2RlOw0KDQogICAgICAgICBpZiAoSVNfRVJSKGRlbnRyeSkpDQogICAgICAgICAgICAg
-ICAgIHJldHVybiBkZW50cnk7DQoNClsuLi5dDQoNCkJlc3QgcmVnYXJkcywNCmJhb2x1DQo=
+Hi Petr,
+
+On 13/7/23 17:23, Petr Tesarik wrote:
+> From: Petr Tesarik <petr.tesarik.ext@huawei.com>
+> 
+> SWIOTLB implementation details should not be exposed to the rest of the
+> kernel. This will allow to make changes to the implementation without
+> modifying non-swiotlb code.
+> 
+> To avoid breaking existing users, provide helper functions for the few
+> required fields.
+> 
+> As a bonus, using a helper function to initialize struct device allows to
+> get rid of an #ifdef in driver core.
+> 
+> Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
+> ---
+>   arch/arm/xen/mm.c          |  2 +-
+>   arch/mips/pci/pci-octeon.c |  2 +-
+>   arch/x86/kernel/pci-dma.c  |  2 +-
+>   drivers/base/core.c        |  4 +---
+>   drivers/xen/swiotlb-xen.c  |  2 +-
+>   include/linux/swiotlb.h    | 25 +++++++++++++++++++++++-
+>   kernel/dma/swiotlb.c       | 39 +++++++++++++++++++++++++++++++++++++-
+>   7 files changed, 67 insertions(+), 9 deletions(-)
+
+
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index 4e52cd5e0bdc..07216af59e93 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -110,7 +110,6 @@ struct io_tlb_mem {
+>   	atomic_long_t used_hiwater;
+>   #endif
+>   };
+> -extern struct io_tlb_mem io_tlb_default_mem;
+>   
+>   static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
+>   {
+> @@ -128,13 +127,22 @@ static inline bool is_swiotlb_force_bounce(struct device *dev)
+>   
+>   void swiotlb_init(bool addressing_limited, unsigned int flags);
+>   void __init swiotlb_exit(void);
+> +void swiotlb_dev_init(struct device *dev);
+>   size_t swiotlb_max_mapping_size(struct device *dev);
+> +bool is_swiotlb_allocated(void);
+>   bool is_swiotlb_active(struct device *dev);
+>   void __init swiotlb_adjust_size(unsigned long size);
+> +phys_addr_t default_swiotlb_start(void);
+> +phys_addr_t default_swiotlb_limit(void);
+
+Usually we use start/end, base/limit, low[est]/high[est] tuples.
+
+Possibly clearer to rename, regardless:
+Reviewed-by: Philippe Mathieu-Daudé <philmd@linaro.org>
+
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 2b83e3ad9dca..873b077d7e37 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+
+
+> @@ -958,6 +975,26 @@ bool is_swiotlb_active(struct device *dev)
+>   }
+>   EXPORT_SYMBOL_GPL(is_swiotlb_active);
+>   
+> +/**
+> + * default_swiotlb_start() - get the start of the default SWIOTLB
+> + *
+> + * Get the lowest physical address used by the default software IO TLB pool.
+> + */
+> +phys_addr_t default_swiotlb_start(void)
+> +{
+> +	return io_tlb_default_mem.start;
+> +}
+> +
+> +/**
+> + * default_swiotlb_limit() - get the highest address in the default SWIOTLB
+> + *
+> + * Get the highest physical address used by the default software IO TLB pool.
+
+(note you describe lowest/highest).
+
+> + */
+> +phys_addr_t default_swiotlb_limit(void)
+> +{
+> +	return io_tlb_default_mem.end - 1;
+> +}
+> +
+>   #ifdef CONFIG_DEBUG_FS
+>   
+>   static int io_tlb_used_get(void *data, u64 *val)
+
