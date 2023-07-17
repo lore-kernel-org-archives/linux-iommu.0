@@ -1,174 +1,315 @@
-Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF869AD46
-	for <iommu@lists.linux.dev>; Mon, 17 Jul 2023 12:23:45 +0000 (UTC)
-Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-666ecf9a0ceso2894539b3a.2
-        for <iommu@lists.linux.dev>; Mon, 17 Jul 2023 05:23:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1689596625; x=1692188625;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=yoQfk5mLbjS2qrgvVaEMuSsDkviwjZL3AdX+fjITims=;
-        b=EfbshxCRB1hM4WCcqCzRPPKc4zfyIwjYERZs09xwwI1TIYe6+NnmNL8USV2EZksioo
-         EM9yJ37OyGZtPxIp7hSCjbx9wtWZaWtrOTzmRqAOE7U2g55LKMTq6WbNPDkYQIxOTUt5
-         Hyviy6Pc3cdLhneqLtNK3hTDRIszCFkHUQfmESaNWiMC5ZlyBjzKhILY6lp3eVlolhBj
-         ablqVWYoSk460Gf2XpyjS1acT1ixGOnobtfodQGh9IOFPreXiWc18cpnGuz4GXfTA65l
-         vneiitSh8DtXQ2WI0niVrN2VoV65E7b+Nz74QQhSPFZ3JPvBlFgeeBYwXc3RktpEp/hM
-         FVJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689596625; x=1692188625;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=yoQfk5mLbjS2qrgvVaEMuSsDkviwjZL3AdX+fjITims=;
-        b=MrYWkzlnak5tVki6O+hSRzr/J46zh3uMPV88MELQZr7e/yd1iZf+rYjK+/V1agYqta
-         7PlqC3NRBumpr1A+DA7Ss3kukpuTLYPxQps1CnxrRuPEoyt3mtdf7D78BoXfhJ5RHHdP
-         RHT5qkVyTdzZLTFV3AB3gauEUCcqBwtCbQD6Ei6jJKG84I7NVAxLOfeMuARLdcSPzdXW
-         frVIABSm02pAGV/ju6L/tEW9p9bchk91V+M10Z/aKmsCcoIvw0pr90jT/Sw5UxoQKrps
-         6qvP4tVeWLLdwtECWfsljprt5zDOKrk3CK0giBaIsL5Wr/g5+KN4gw5zpiVY9/4YQSbU
-         7edQ==
-X-Gm-Message-State: ABy/qLZ4fr2sANv2Kc0BKpl4wdUueQJwlCteMHKohfN0mQnHeBH6iC1W
-	mNJttfRKu6K5Y1bXaM4QLNk88g==
-X-Google-Smtp-Source: APBJJlHjuJJUxUf9kzNEFy7QRnZTf+EOCsAS+eRglkMdtl8LHRz4cgbK/aFw3qUeYTR4piPvmxdvDg==
-X-Received: by 2002:a05:6a20:510:b0:133:d15c:b661 with SMTP id 16-20020a056a20051000b00133d15cb661mr7811361pzp.60.1689596624894;
-        Mon, 17 Jul 2023 05:23:44 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id w1-20020a1709029a8100b001b06c106844sm12597845plp.151.2023.07.17.05.23.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jul 2023 05:23:43 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qLNGQ-001srZ-Af;
-	Mon, 17 Jul 2023 09:23:42 -0300
-Date: Mon, 17 Jul 2023 09:23:42 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
-Cc: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
-	joro@8bytes.org
-Subject: Re: [PATCH 11/21] iommu/amd: Clean up and enhance protection domain
- flags
-Message-ID: <ZLUyzrmRKhz4wwQ0@ziepe.ca>
-References: <20230712141516.154144-1-vasant.hegde@amd.com>
- <20230712141516.154144-12-vasant.hegde@amd.com>
- <ZLGFH6qERiRbD6cd@ziepe.ca>
- <db7fe0f7-77d9-f898-0503-d6da58cf25c6@amd.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15BACAD46;
+	Mon, 17 Jul 2023 12:23:57 +0000 (UTC)
+Received: from pps.filterd (m0353725.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 36HAmqLh011829;
+	Mon, 17 Jul 2023 11:02:06 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : date : subject :
+ mime-version : content-type : content-transfer-encoding : message-id :
+ references : in-reply-to : to : cc; s=pp1;
+ bh=QfC7DpEZwICZV9UBYgnbi/++ZFK6DVmVl7p0Ucfk0Fk=;
+ b=Q0EIlGhfYHPud9WRJbdDOHrFiTE/i/2HekziaS/w3DCVB2ylt5A8D+8mFWPsK1pASbCW
+ t2Te6ecmWjuCE/5Ad1LBupwn1bfdURtXsNFn/79RCXsIBa4hW8pnKB0Fqd15eLyr+t52
+ j6Joa6JG/DKsgPOCAx/ZKKNhOBfxj/5kz64fENsROlhQBaxog9xxIAlqEe9RDbZ5FCut
+ sBXObbf2qkvC+Rey1WKnhHQUtxyDu7nEv4plKHgDDEgE5oK7qRaX+fp5JpHeXpiGsQGl
+ MI97hnB+HB1b4KfZAtjngOZWU6ec6iWUlOe1KOzizI1QE3/qPThvhdypj1oQOmjodE2U FQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3rw47cra4x-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 17 Jul 2023 11:02:06 +0000
+Received: from m0353725.ppops.net (m0353725.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 36HAnqxO014230;
+	Mon, 17 Jul 2023 11:02:05 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3rw47cra42-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 17 Jul 2023 11:02:05 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+	by ppma06ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 36H8s7bS005651;
+	Mon, 17 Jul 2023 11:02:02 GMT
+Received: from smtprelay05.fra02v.mail.ibm.com ([9.218.2.225])
+	by ppma06ams.nl.ibm.com (PPS) with ESMTPS id 3rujqe148f-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 17 Jul 2023 11:02:02 +0000
+Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
+	by smtprelay05.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 36HB1w3516450168
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 17 Jul 2023 11:01:59 GMT
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id D277E20040;
+	Mon, 17 Jul 2023 11:01:58 +0000 (GMT)
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 502762004B;
+	Mon, 17 Jul 2023 11:01:57 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Mon, 17 Jul 2023 11:01:57 +0000 (GMT)
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+Date: Mon, 17 Jul 2023 13:00:06 +0200
+Subject: [PATCH v11 6/6] iommu/dma: Use a large flush queue and timeout for
+ shadow_on_flush
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <db7fe0f7-77d9-f898-0503-d6da58cf25c6@amd.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20230717-dma_iommu-v11-6-a7a0b83c355c@linux.ibm.com>
+References: <20230717-dma_iommu-v11-0-a7a0b83c355c@linux.ibm.com>
+In-Reply-To: <20230717-dma_iommu-v11-0-a7a0b83c355c@linux.ibm.com>
+To: Joerg Roedel <joro@8bytes.org>, Matthew Rosato <mjrosato@linux.ibm.com>,
+        Will Deacon <will@kernel.org>, Wenjia Zhang <wenjia@linux.ibm.com>,
+        Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Gerd Bayer <gbayer@linux.ibm.com>, Julian Ruess <julianr@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Yong Wu <yong.wu@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Krishna Reddy <vdumpa@nvidia.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Niklas Schnelle <schnelle@linux.ibm.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, asahi@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
+X-Mailer: b4 0.12.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6725;
+ i=schnelle@linux.ibm.com; h=from:subject:message-id;
+ bh=hMEGQADFlKz/+dWnWnhcMKyntVQEqF5IqIj7yvUb6Nc=;
+ b=owGbwMvMwCH2Wz534YHOJ2GMp9WSGFK2yk/Z7u21YMrlG4zLk9JnvZ7/T1z4aNL51Fn1e88LL
+ 1kxJ/7V5o5SFgYxDgZZMUWWRV3OfusKppjuCervgJnDygQyhIGLUwAm4hPMyLBNbKIOl6rflsCP
+ J74a83TuuBtmJz81wCfRLi0ks13r5x1Ghu9um92VxXmdeDh93abutD73atPHbOcZVTfv13eVfPp
+ wgh8A
+X-Developer-Key: i=schnelle@linux.ibm.com; a=openpgp;
+ fpr=9DB000B2D2752030A5F72DDCAFE43F15E8C26090
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: ECeJRw806_zvpwQSyh4hcjMvvBtQhpYk
+X-Proofpoint-ORIG-GUID: 3vwgh8YSMhNi-_G1hUFZ_rpvWw3yEpI7
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
+ definitions=2023-07-17_08,2023-07-13_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 phishscore=0
+ adultscore=0 clxscore=1015 bulkscore=0 suspectscore=0 priorityscore=1501
+ impostorscore=0 lowpriorityscore=0 mlxscore=0 spamscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2306200000
+ definitions=main-2307170096
 
-On Sun, Jul 16, 2023 at 08:22:37PM -0500, Suthikulpanit, Suravee wrote:
-> Jason,
-> 
-> On 7/14/2023 12:25 PM, Jason Gunthorpe wrote:
-> > On Wed, Jul 12, 2023 at 02:15:06PM +0000, Vasant Hegde wrote:
-> > > From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> > > 
-> > > With IOMMU v1 and v2 page tables per domain, and the v2 table can
-> > > be used in various modes, keeping track of how a particular domain
-> > > is configured becoming cumbersome.
-> > > 
-> > > Enhance protection_domain.flags to keep track of how a domain is
-> > > configured. Also Remove unused flags, and rename them accordingly.
-> > > 
-> > > Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> > > Co-developed-by: Vasant Hegde <vasant.hegde@amd.com>
-> > > Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-> > > ---
-> > >   drivers/iommu/amd/amd_iommu_types.h | 14 +++++---------
-> > >   drivers/iommu/amd/io_pgtable_v2.c   |  2 +-
-> > >   drivers/iommu/amd/iommu.c           | 21 ++++++++++++---------
-> > >   3 files changed, 18 insertions(+), 19 deletions(-)
-> > > 
-> > > diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-> > > index 346c32343417..907af6e41ae9 100644
-> > > --- a/drivers/iommu/amd/amd_iommu_types.h
-> > > +++ b/drivers/iommu/amd/amd_iommu_types.h
-> > > @@ -443,13 +443,11 @@
-> > >   #define MAX_DOMAIN_ID 65536
-> > >   /* Protection domain flags */
-> > > -#define PD_DMA_OPS_MASK		BIT(0) /* domain used for dma_ops */
-> > > -#define PD_DEFAULT_MASK		BIT(1) /* domain is a default dma_ops
-> > > -					      domain for an IOMMU */
-> > > -#define PD_PASSTHROUGH_MASK	BIT(2) /* domain has no page
-> > > -					      translation */
-> > > -#define PD_IOMMUV2_MASK		BIT(3) /* domain has gcr3 table */
-> > > -#define PD_GIOV_MASK		BIT(4) /* domain enable GIOV support */
-> > 
-> > > +#define PD_FLAG_V1DMA		BIT(1) /* DMA-API mode w/ v1 page table */
-> > > +#define PD_FLAG_V2DMA		BIT(2) /* DMA-API mode w/ v2 page table */
-> > 
-> > "DMA-API" should not be part of the driver vocabulary. Does this have
-> > anything to do with DMA-API?
-> > 
-> > Only "paging" domains should have IO page tables and an IO page table
-> > type.
-> > 
-> > Maybe this is just misnamed?
-> 
-> These flags are for struct protection_domain in AMD IOMMU driver, and not
-> for the struct iommu_domain.
+Flush queues currently use a fixed compile time size of 256 entries.
+This being a power of 2 allows the compiler to use shift and mask
+instead of more expensive modulo operations. With per-CPU flush queues
+larger queue sizes would hit per-CPU allocation limits, with a single
+flush queue these limits do not apply however. Also with single queues
+being particularly suitable for virtualized environments with expensive
+IOTLB flushes these benefit especially from larger queues and thus fewer
+flushes.
 
-I understand that
+To this end re-order struct iova_fq so we can use a dynamic array and
+introduce the flush queue size and timeouts as new options in the
+dma_iommu_options struct. So as not to lose the shift and mask
+optimization, use a power of 2 for the length and use explicit shift and
+mask instead of letting the compiler optimize this.
 
-> PD_FLAG_V[1|2]DMA flags are used to signify that the domain is using v1 or
-> v2 page table to implement IOMMU_DOMAIN_DMA (which has __IOMMU_DOMAIN_PAGING
-> | __IOMMU_DOMAIN_DMA_API).
+A large queue size and 1 second timeout is then set for the shadow on
+flush case set by s390 paged memory guests. This then brings performance
+on par with the previous s390 specific DMA API implementation.
 
-Again, no, drivers should have no sensitivity to
-__IOMMU_DOMAIN_DMA_API, we are trying to get rid of this. Please don't
-add more to the driver.
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com> #s390
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+---
+ drivers/iommu/dma-iommu.c | 50 +++++++++++++++++++++++++++++++----------------
+ 1 file changed, 33 insertions(+), 17 deletions(-)
 
-> > Also, shouldn't it be an enum not flags?
-> 
-> We use flags instead of enum because we exepect to have combination of the
-> flags. For example
-> * IOMMU_DOMAIN_DMA + amd_iommu=pgtbl_v1 = (PD_FLAG_V1DMA)
-> * IOMMU_DOMAIN_DMA + amd_iommu=pgtbl_v2 = (PD_FLAG_V2DMA | PD_FLAG_GIOV)
-> * IOMMU_DOMAIN_SVA = (PD_FLAG_SVA | PD_FLAG_GCR3)
-> * Domain for v2API = (PD_FLAG_V2API | PD_FLAG_GCR3)
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 4ada8b9749c9..bebc0804ff53 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -46,7 +46,9 @@ enum iommu_dma_cookie_type {
+ struct dma_iommu_options {
+ #define IOMMU_DMA_OPTS_PER_CPU_QUEUE	0L
+ #define IOMMU_DMA_OPTS_SINGLE_QUEUE	BIT(0)
+-	u64	flags;
++	u64		flags;
++	size_t		fq_size;
++	unsigned int	fq_timeout;
+ };
+ 
+ struct iommu_dma_cookie {
+@@ -95,10 +97,12 @@ static int __init iommu_dma_forcedac_setup(char *str)
+ early_param("iommu.forcedac", iommu_dma_forcedac_setup);
+ 
+ /* Number of entries per flush queue */
+-#define IOVA_FQ_SIZE	256
++#define IOVA_DEFAULT_FQ_SIZE	256
++#define IOVA_SINGLE_FQ_SIZE	32768
+ 
+ /* Timeout (in ms) after which entries are flushed from the queue */
+-#define IOVA_FQ_TIMEOUT	10
++#define IOVA_DEFAULT_FQ_TIMEOUT	10
++#define IOVA_SINGLE_FQ_TIMEOUT	1000
+ 
+ /* Flush queue entry for deferred flushing */
+ struct iova_fq_entry {
+@@ -110,18 +114,19 @@ struct iova_fq_entry {
+ 
+ /* Per-CPU flush queue structure */
+ struct iova_fq {
+-	struct iova_fq_entry entries[IOVA_FQ_SIZE];
+-	unsigned int head, tail;
+ 	spinlock_t lock;
++	unsigned int head, tail;
++	unsigned int mod_mask;
++	struct iova_fq_entry entries[];
+ };
+ 
+ #define fq_ring_for_each(i, fq) \
+-	for ((i) = (fq)->head; (i) != (fq)->tail; (i) = ((i) + 1) % IOVA_FQ_SIZE)
++	for ((i) = (fq)->head; (i) != (fq)->tail; (i) = ((i) + 1) & (fq)->mod_mask)
+ 
+ static inline bool fq_full(struct iova_fq *fq)
+ {
+ 	assert_spin_locked(&fq->lock);
+-	return (((fq->tail + 1) % IOVA_FQ_SIZE) == fq->head);
++	return (((fq->tail + 1) & fq->mod_mask) == fq->head);
+ }
+ 
+ static inline unsigned int fq_ring_add(struct iova_fq *fq)
+@@ -130,7 +135,7 @@ static inline unsigned int fq_ring_add(struct iova_fq *fq)
+ 
+ 	assert_spin_locked(&fq->lock);
+ 
+-	fq->tail = (idx + 1) % IOVA_FQ_SIZE;
++	fq->tail = (idx + 1) & fq->mod_mask;
+ 
+ 	return idx;
+ }
+@@ -152,7 +157,7 @@ static void fq_ring_free_locked(struct iommu_dma_cookie *cookie, struct iova_fq
+ 			       fq->entries[idx].iova_pfn,
+ 			       fq->entries[idx].pages);
+ 
+-		fq->head = (fq->head + 1) % IOVA_FQ_SIZE;
++		fq->head = (fq->head + 1) & fq->mod_mask;
+ 	}
+ }
+ 
+@@ -246,7 +251,7 @@ static void queue_iova(struct iommu_dma_cookie *cookie,
+ 	if (!atomic_read(&cookie->fq_timer_on) &&
+ 	    !atomic_xchg(&cookie->fq_timer_on, 1))
+ 		mod_timer(&cookie->fq_timer,
+-			  jiffies + msecs_to_jiffies(IOVA_FQ_TIMEOUT));
++			  jiffies + msecs_to_jiffies(cookie->options.fq_timeout));
+ }
+ 
+ static void iommu_dma_free_fq_single(struct iova_fq *fq)
+@@ -287,27 +292,29 @@ static void iommu_dma_free_fq(struct iommu_dma_cookie *cookie)
+ 		iommu_dma_free_fq_percpu(cookie->percpu_fq);
+ }
+ 
+-static void iommu_dma_init_one_fq(struct iova_fq *fq)
++static void iommu_dma_init_one_fq(struct iova_fq *fq, size_t fq_size)
+ {
+ 	int i;
+ 
+ 	fq->head = 0;
+ 	fq->tail = 0;
++	fq->mod_mask = fq_size - 1;
+ 
+ 	spin_lock_init(&fq->lock);
+ 
+-	for (i = 0; i < IOVA_FQ_SIZE; i++)
++	for (i = 0; i < fq_size; i++)
+ 		INIT_LIST_HEAD(&fq->entries[i].freelist);
+ }
+ 
+ static int iommu_dma_init_fq_single(struct iommu_dma_cookie *cookie)
+ {
++	size_t fq_size = cookie->options.fq_size;
+ 	struct iova_fq *queue;
+ 
+-	queue = vzalloc(sizeof(*queue));
++	queue = vzalloc(struct_size(queue, entries, fq_size));
+ 	if (!queue)
+ 		return -ENOMEM;
+-	iommu_dma_init_one_fq(queue);
++	iommu_dma_init_one_fq(queue, fq_size);
+ 	cookie->single_fq = queue;
+ 
+ 	return 0;
+@@ -315,15 +322,17 @@ static int iommu_dma_init_fq_single(struct iommu_dma_cookie *cookie)
+ 
+ static int iommu_dma_init_fq_percpu(struct iommu_dma_cookie *cookie)
+ {
++	size_t fq_size = cookie->options.fq_size;
+ 	struct iova_fq __percpu *queue;
+ 	int cpu;
+ 
+-	queue = alloc_percpu(struct iova_fq);
++	queue = __alloc_percpu(struct_size(queue, entries, fq_size),
++			       __alignof__(*queue));
+ 	if (!queue)
+ 		return -ENOMEM;
+ 
+ 	for_each_possible_cpu(cpu)
+-		iommu_dma_init_one_fq(per_cpu_ptr(queue, cpu));
++		iommu_dma_init_one_fq(per_cpu_ptr(queue, cpu), fq_size);
+ 	cookie->percpu_fq = queue;
+ 	return 0;
+ }
+@@ -377,6 +386,8 @@ static struct iommu_dma_cookie *cookie_alloc(enum iommu_dma_cookie_type type)
+ 		INIT_LIST_HEAD(&cookie->msi_page_list);
+ 		cookie->type = type;
+ 		cookie->options.flags = IOMMU_DMA_OPTS_PER_CPU_QUEUE;
++		cookie->options.fq_size = IOVA_DEFAULT_FQ_SIZE;
++		cookie->options.fq_timeout = IOVA_DEFAULT_FQ_TIMEOUT;
+ 	}
+ 	return cookie;
+ }
+@@ -696,14 +707,19 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+ 
+ 	if (domain->type == IOMMU_DOMAIN_DMA_FQ) {
+ 		/* Expensive shadowing IOTLB flushes require some tuning */
+-		if (dev->iommu->shadow_on_flush)
++		if (dev->iommu->shadow_on_flush) {
+ 			cookie->options.flags |= IOMMU_DMA_OPTS_SINGLE_QUEUE;
++			cookie->options.fq_timeout = IOVA_SINGLE_FQ_TIMEOUT;
++			cookie->options.fq_size = IOVA_SINGLE_FQ_SIZE;
++		}
+ 
+ 		/* If the FQ fails we can simply fall back to strict mode */
+ 		if (!device_iommu_capable(dev, IOMMU_CAP_DEFERRED_FLUSH) ||
+ 		    iommu_dma_init_fq(domain)) {
+ 			domain->type = IOMMU_DOMAIN_DMA;
+ 			cookie->options.flags &= ~IOMMU_DMA_OPTS_SINGLE_QUEUE;
++			cookie->options.fq_timeout = IOVA_DEFAULT_FQ_TIMEOUT;
++			cookie->options.fq_size = IOVA_DEFAULT_FQ_SIZE;
+ 		}
+ 	}
+ 
 
-You shouldn't have these distinctions. There should only be one enum
-that specifies that format the IOPTEs are, and the rest is implied.
+-- 
+2.39.2
 
-GCR3 is the "PASID table" right? it should not be part of the
-iommu_domain struct either, SMMUv3 is busy undoing this mistake in
-their design right now.
-
-> It helps keeping track of how the IOMMU driver needs to setup DTEs for
-> device in a particular domain.
-
-Yes, I understand what it is for. It is important that the right data
-be stored in the right places or you will have to redo it all. If it
-does not directly related to describing the format of the IOPTEs then
-it has no buisness being in the iommu_domain struct or it's driver
-varients like protection_domain. It belongs someplace else.
-
-> > > +#define PD_FLAG_GIOV		BIT(4) /* domain enable GIOV support */
-> > 
-> > This really shouldn't be a iommu_domain flag, this should be computed
-> > based on what domains are attached where
-> > 
-> > Eg this seems like it should be triggered by attaching identity to the
-> > RID with PASID enabled or something like that.
-> > 
-> > Why do you need to set it for the legacy GPU path?
-> 
-> The PD_FLAG_GIOV is necessary for when we setup the v2 page table for
-> devices, which cannot support PASID. With the DTE[GIOV] bit set, IOMMU
-> hardware would treat the request from these devices as if it use PASID 0.
-
-I understand that, but you are supposed to deduce this from having a
-RID bound page table installed into a PASID 0 slot but other logic, it
-is very much not part of the domain itself.
-
-(as we all the other variations of this flag when you set an IDENTITY
-domain on the RID while having PASID operating)
-
-Jason
