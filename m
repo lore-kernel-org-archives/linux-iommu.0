@@ -1,102 +1,175 @@
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30EC6A927
-	for <iommu@lists.linux.dev>; Mon, 17 Jul 2023 10:06:56 +0000 (UTC)
-Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-4036bd4fff1so470501cf.0
-        for <iommu@lists.linux.dev>; Mon, 17 Jul 2023 03:06:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1689588416; x=1692180416;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=U5jr9e8QR2CE+jx7hoK3GYY7WZVYLsVZnNa64/yh+4I=;
-        b=uCnJPisDxbxoSg9iZIjEFb2x+X9zbUG6vyd41nBHxaEmhrNt2YBpuSx3cYUyKHPq74
-         utL0TXKl1roD8amFlbIe3Pc7S9swevZuGTWT2bYRijFOMoWuvNDmeSgPJqChYojFidJZ
-         uAfVmbfZptzUJBTW8Wr4WbInuVICD1E7GjpWmnMgSFcJwm8EfE3fiUkVd79WDAuviW+E
-         9m63548nzRPE2iPsimlvy9WhMaDOawHTUBVdJfCAERtM3zFzDSw5jQB6LdRudG5lMo5I
-         wkRPiYjX9ddjcmHtrAEfzWhDGfj/2wq6OU2NLl7bwH2/x6JBEZio2Aw8p838LokZGgJH
-         DTUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689588416; x=1692180416;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=U5jr9e8QR2CE+jx7hoK3GYY7WZVYLsVZnNa64/yh+4I=;
-        b=H6G0JLtcYjhSjZhFh/udxAuuqhflpL3h5qa7sEZgkKaiCV78/k3DfdMBkra+Wt7SLO
-         unK67XBUADqlNj6OflECxMrg7M2fMC3kW1KVXvW+9InjZQTJtjqAj8JjGGgusRw2+6fS
-         S1zgFWw1dQSNGG90OhYOgR8EQbeL40Qul489fnenwCIUd/4TPHFJwKxjuoq57ap4ebJJ
-         XWPBVnJKzvmlNFGUrqwescXu/+6KHuuZtx+UYevMKI+ZGg2HYc0GBAAVVnvyfEnx33Zt
-         1Q8jK+AlrXDBTjED7Fk3w0dPduPMpZOf0kK/BXS21rjUThWNTUPU38+CgR/3WC8MRmp2
-         Pw+g==
-X-Gm-Message-State: ABy/qLbKlEa7yCyPU02x/Tg+/zOdG1Th3F/vXmXrglNvtNd0G113ldfK
-	aQpF99zW24zqVNOKHSkCDVL7ODenstsgtk8K24s65w==
-X-Google-Smtp-Source: APBJJlHk3I92nOg/KDAqxcg+hjcLwfd3/yj6Vd5EH/l1EKkLJt7jrWGYw4/lnPg102I8xgYoY8Lxr3GVek0aOdLOlIM=
-X-Received: by 2002:a05:622a:1355:b0:403:eeb9:a76 with SMTP id
- w21-20020a05622a135500b00403eeb90a76mr122576qtk.17.1689588415600; Mon, 17 Jul
- 2023 03:06:55 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3337A927
+	for <iommu@lists.linux.dev>; Mon, 17 Jul 2023 10:17:32 +0000 (UTC)
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 1B5DF163314;
+	Mon, 17 Jul 2023 12:17:22 +0200 (CEST)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
+	t=1689589042; bh=Bm0Hy13+JRi9NMlimeswrt8XBhWxLQOI9N21AQMkbyk=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=GQN14zd3XNWnsUCpxj8CAfDRLfHO3yKbIYH4Z1tY2NuUyB/tEAWXePMgXHClGElXV
+	 iclkVMk4nMw7f2dCGMBhAdc3436jIvQ3z8yKAco9Yv+innFM08daK23nD+0JAcJW+d
+	 SeEwDCP0ntZA0tOgBwjdzE+yAGotID6XvGHHT1DZyU/IAvL5pRZTbpVCELUjsw0pmk
+	 Fjduj/nTRd+WS55sOgt6m/O0blal5FJ8IM4Ma27TYBebyldrBxV45Rul1vue8rpAcD
+	 H03pbEhB1HqGfsRaZngbNzSDrUmBPA32acEzxYcaaIy38C9WCKNmg+OPDUsAVC/MnK
+	 KgQwEGVvlDo6Q==
+Date: Mon, 17 Jul 2023 12:17:20 +0200
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Philippe =?UTF-8?B?TWF0aGlldS1EYXVkw6k=?= <philmd@linaro.org>
+Cc: Petr Tesarik <petrtesarik@huaweicloud.com>, Stefano Stabellini
+ <sstabellini@kernel.org>, Russell King <linux@armlinux.org.uk>, Thomas
+ Bogendoerfer <tsbogend@alpha.franken.de>, Thomas Gleixner
+ <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov
+ <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, "maintainer:X86
+ ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>, "H. Peter Anvin"
+ <hpa@zytor.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael
+ J. Wysocki" <rafael@kernel.org>, Juergen Gross <jgross@suse.com>, Oleksandr
+ Tyshchenko <oleksandr_tyshchenko@epam.com>, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
+ <robin.murphy@arm.com>, Petr Tesarik <petr.tesarik.ext@huawei.com>,
+ Jonathan Corbet <corbet@lwn.net>, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Hans de Goede <hdegoede@redhat.com>,
+ James Seo <james@equiv.tech>, James Clark <james.clark@arm.com>, Kees Cook
+ <keescook@chromium.org>, "moderated list:XEN HYPERVISOR ARM"
+ <xen-devel@lists.xenproject.org>, "moderated list:ARM PORT"
+ <linux-arm-kernel@lists.infradead.org>, open list
+ <linux-kernel@vger.kernel.org>, "open list:MIPS"
+ <linux-mips@vger.kernel.org>, "open list:XEN SWIOTLB SUBSYSTEM"
+ <iommu@lists.linux.dev>, Roberto Sassu <roberto.sassu@huaweicloud.com>,
+ Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: Re: [PATCH v4 1/8] swiotlb: make io_tlb_default_mem local to
+ swiotlb.c
+Message-ID: <20230717121720.093cb1cc@meshulam.tesarici.cz>
+In-Reply-To: <45f89fee-6825-3f5d-9dfb-aad5d47c8c36@linaro.org>
+References: <cover.1689261692.git.petr.tesarik.ext@huawei.com>
+	<7f64111986f4f361a2deb4a1a1b6f588e63a851b.1689261692.git.petr.tesarik.ext@huawei.com>
+	<45f89fee-6825-3f5d-9dfb-aad5d47c8c36@linaro.org>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230621063825.268890-1-mshavit@google.com> <20230621063825.268890-3-mshavit@google.com>
- <ZK9RycgNAVrxe343@Asurada-Nvidia> <CAKHBV26wi+xKnNjo-R+QOcVLPH2KJTFP+mF4CW1xE61nOdF5GA@mail.gmail.com>
- <ZLAKQw+DzcpSRSyi@nvidia.com> <CAKHBV25YadRVFiag5z5Yc13L093ScWkCjAOCd=VuGm2RUaDyzA@mail.gmail.com>
- <ZLApQjaqoOshT2TJ@nvidia.com> <CAKHBV25BRWTxXO0YTGq3q1OdMQHAzop8BqJJaa9CHxdQzxnNbg@mail.gmail.com>
- <ZLFLyh1b+wiqb7Ql@nvidia.com>
-In-Reply-To: <ZLFLyh1b+wiqb7Ql@nvidia.com>
-From: Michael Shavit <mshavit@google.com>
-Date: Mon, 17 Jul 2023 18:06:19 +0800
-Message-ID: <CAKHBV24zQ+4waZgsYV08LzeMkjze1gTcwvEv5uL8RM1GcBgrzg@mail.gmail.com>
-Subject: Re: [PATCH v4 02/13] iommu/arm-smmu-v3: Add smmu_s1_cfg to smmu_master
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, jean-philippe@linaro.org, 
-	baolu.lu@linux.intel.com, linux-arm-kernel@lists.infradead.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jul 14, 2023 at 9:21=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> wr=
-ote:
-> patch 2 should delete arm_smmu_s1_cfg and just put
-> arm_smmu_ctx_desc_cfg directly in the master. arm_smmu_ctx_desc_cfg is
-> a weird name for the contex descriptor table, but it is much less
-> weird than s1_cfg. As you say s1fmt/s1cdmax are redundant.
+On Mon, 17 Jul 2023 08:06:07 +0200
+Philippe Mathieu-Daud=C3=A9 <philmd@linaro.org> wrote:
 
-s1fmt is fairly trivial to replace but s1cdmax requires inversing
-previous computations. I don't really buy that getting rid of it
-simplifies anything, even if it's technically redundant.
+> Hi Petr,
+>=20
+> On 13/7/23 17:23, Petr Tesarik wrote:
+> > From: Petr Tesarik <petr.tesarik.ext@huawei.com>
+> >=20
+> > SWIOTLB implementation details should not be exposed to the rest of the
+> > kernel. This will allow to make changes to the implementation without
+> > modifying non-swiotlb code.
+> >=20
+> > To avoid breaking existing users, provide helper functions for the few
+> > required fields.
+> >=20
+> > As a bonus, using a helper function to initialize struct device allows =
+to
+> > get rid of an #ifdef in driver core.
+> >=20
+> > Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
+> > ---
+> >   arch/arm/xen/mm.c          |  2 +-
+> >   arch/mips/pci/pci-octeon.c |  2 +-
+> >   arch/x86/kernel/pci-dma.c  |  2 +-
+> >   drivers/base/core.c        |  4 +---
+> >   drivers/xen/swiotlb-xen.c  |  2 +-
+> >   include/linux/swiotlb.h    | 25 +++++++++++++++++++++++-
+> >   kernel/dma/swiotlb.c       | 39 +++++++++++++++++++++++++++++++++++++-
+> >   7 files changed, 67 insertions(+), 9 deletions(-) =20
+>=20
+>=20
+> > diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> > index 4e52cd5e0bdc..07216af59e93 100644
+> > --- a/include/linux/swiotlb.h
+> > +++ b/include/linux/swiotlb.h
+> > @@ -110,7 +110,6 @@ struct io_tlb_mem {
+> >   	atomic_long_t used_hiwater;
+> >   #endif
+> >   };
+> > -extern struct io_tlb_mem io_tlb_default_mem;
+> >  =20
+> >   static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t =
+paddr)
+> >   {
+> > @@ -128,13 +127,22 @@ static inline bool is_swiotlb_force_bounce(struct=
+ device *dev)
+> >  =20
+> >   void swiotlb_init(bool addressing_limited, unsigned int flags);
+> >   void __init swiotlb_exit(void);
+> > +void swiotlb_dev_init(struct device *dev);
+> >   size_t swiotlb_max_mapping_size(struct device *dev);
+> > +bool is_swiotlb_allocated(void);
+> >   bool is_swiotlb_active(struct device *dev);
+> >   void __init swiotlb_adjust_size(unsigned long size);
+> > +phys_addr_t default_swiotlb_start(void);
+> > +phys_addr_t default_swiotlb_limit(void); =20
+>=20
+> Usually we use start/end, base/limit, low[est]/high[est] tuples.
 
-> patch 3 I don't understand, we should not add something called
-> s1_cfg/s2_cfg to the master. The master should have
-> 'arm_smmu_ctx_desc_cfg cd_table' and 'arm_smmu_domain ste_domain'
+I'm no big fan of start/end, because the "end" sometimes means "highest
+within range" and sometimes "one past range", being responsible for an
+impressive amount of off-by-one errors.
 
-This was simply meant to be a more convenient way of finding the
-currently active cdtable from the
-arm_smmu_write_ctx_desc/write_strtab_ent functions without having to
-inspect the currently attached domain. But sure, that's easy enough to
-revert.
+But I agree. When I decided against "end", I should have also replaced
+"start" with "base". Well, this patch series will certainly see a v5,
+so I'll change it there. Thanks for the suggestion!
 
-> patch 5 makes sense, but something seems odd about the order as we
-> somehow half moved it in patch 2?
-Ack; patch 2 can be reordered to come after patch 4, or even squashed
-with 5 if you prefer.
+Petr T
 
-> My suggestion for patch structure is to start by cleaning up the CD
-> table object. Make arm_smmu_ctx_desc_cfg the CD table, remove the
-> redudencies, remove arm_s1_cfg, clean the CD table APIs to only use
-> 'struct arm_smmu_ctx_desc_cfg *', add the 'ste_domain' to the master,
-> and then as the last step just move the arm_smmu_ctx_desc_cfg from the
-> iommu_domain to the master.
->
-> And that is a nice little series on its own - you end up with a shared
-> CD table in the master, and no CD table in any domains.
+> Possibly clearer to rename, regardless:
+> Reviewed-by: Philippe Mathieu-Daud=C3=A9 <philmd@linaro.org>
+>=20
+> > diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> > index 2b83e3ad9dca..873b077d7e37 100644
+> > --- a/kernel/dma/swiotlb.c
+> > +++ b/kernel/dma/swiotlb.c =20
+>=20
+>=20
+> > @@ -958,6 +975,26 @@ bool is_swiotlb_active(struct device *dev)
+> >   }
+> >   EXPORT_SYMBOL_GPL(is_swiotlb_active);
+> >  =20
+> > +/**
+> > + * default_swiotlb_start() - get the start of the default SWIOTLB
+> > + *
+> > + * Get the lowest physical address used by the default software IO TLB=
+ pool.
+> > + */
+> > +phys_addr_t default_swiotlb_start(void)
+> > +{
+> > +	return io_tlb_default_mem.start;
+> > +}
+> > +
+> > +/**
+> > + * default_swiotlb_limit() - get the highest address in the default SW=
+IOTLB
+> > + *
+> > + * Get the highest physical address used by the default software IO TL=
+B pool. =20
+>=20
+> (note you describe lowest/highest).
+>=20
+> > + */
+> > +phys_addr_t default_swiotlb_limit(void)
+> > +{
+> > +	return io_tlb_default_mem.end - 1;
+> > +}
+> > +
+> >   #ifdef CONFIG_DEBUG_FS
+> >  =20
+> >   static int io_tlb_used_get(void *data, u64 *val) =20
+>=20
 
-I don't entirely buy that refactoring s1_cfg is worth the extra
-effort, nor that it should be tied to this patch series. This series
-already makes s1_cfg behave as the CD table; whether we want to
-entirely get rid of pre-computed data useful for writing an STE sounds
-like a separate cleanup.
