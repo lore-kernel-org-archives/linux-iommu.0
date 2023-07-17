@@ -1,315 +1,177 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2064.outbound.protection.outlook.com [40.107.92.64])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15BACAD46;
-	Mon, 17 Jul 2023 12:23:57 +0000 (UTC)
-Received: from pps.filterd (m0353725.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 36HAmqLh011829;
-	Mon, 17 Jul 2023 11:02:06 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : date : subject :
- mime-version : content-type : content-transfer-encoding : message-id :
- references : in-reply-to : to : cc; s=pp1;
- bh=QfC7DpEZwICZV9UBYgnbi/++ZFK6DVmVl7p0Ucfk0Fk=;
- b=Q0EIlGhfYHPud9WRJbdDOHrFiTE/i/2HekziaS/w3DCVB2ylt5A8D+8mFWPsK1pASbCW
- t2Te6ecmWjuCE/5Ad1LBupwn1bfdURtXsNFn/79RCXsIBa4hW8pnKB0Fqd15eLyr+t52
- j6Joa6JG/DKsgPOCAx/ZKKNhOBfxj/5kz64fENsROlhQBaxog9xxIAlqEe9RDbZ5FCut
- sBXObbf2qkvC+Rey1WKnhHQUtxyDu7nEv4plKHgDDEgE5oK7qRaX+fp5JpHeXpiGsQGl
- MI97hnB+HB1b4KfZAtjngOZWU6ec6iWUlOe1KOzizI1QE3/qPThvhdypj1oQOmjodE2U FQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3rw47cra4x-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 17 Jul 2023 11:02:06 +0000
-Received: from m0353725.ppops.net (m0353725.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 36HAnqxO014230;
-	Mon, 17 Jul 2023 11:02:05 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3rw47cra42-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 17 Jul 2023 11:02:05 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-	by ppma06ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 36H8s7bS005651;
-	Mon, 17 Jul 2023 11:02:02 GMT
-Received: from smtprelay05.fra02v.mail.ibm.com ([9.218.2.225])
-	by ppma06ams.nl.ibm.com (PPS) with ESMTPS id 3rujqe148f-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 17 Jul 2023 11:02:02 +0000
-Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
-	by smtprelay05.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 36HB1w3516450168
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 17 Jul 2023 11:01:59 GMT
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id D277E20040;
-	Mon, 17 Jul 2023 11:01:58 +0000 (GMT)
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 502762004B;
-	Mon, 17 Jul 2023 11:01:57 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Mon, 17 Jul 2023 11:01:57 +0000 (GMT)
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-Date: Mon, 17 Jul 2023 13:00:06 +0200
-Subject: [PATCH v11 6/6] iommu/dma: Use a large flush queue and timeout for
- shadow_on_flush
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80062AD46
+	for <iommu@lists.linux.dev>; Mon, 17 Jul 2023 12:29:27 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EyqsASYSPSJvlQdGXc2Z7f8VLtjns4Za8YRnbvvUZOFWLC4d69ZVSXAyn67AaY5V2uGftaXwhRi338NT6N8YEprccAz0MIkLXBBvEcn9U4Gjm5Crhi8tm1y3OqVz8KoiDNvj2B1ZgdzczwC2AZVLXNIi4HpRACorpNcy/iFkyjUQBV69rpxS0ldVC3zCY0S/Em/68PAQCOl9S62KMh0LLd75b+Zag2dubf8/Ai+x8yyq5UnlhmcvL117vn+TJJ00JLcky26TGui1N2yRdLh4PxYBWE9MS21nW/w/A59UmE7HNImOWoJN5hzon5RZLNL/u7D/KrpR7GXn7p2y5W8Cig==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=esIpGah8yMx3HJl8dTbgIHHV3UpoD9bop3bNtdBpgms=;
+ b=jOqSKmZtk/kmTdIoFYetGnQg7x3MkI1ZDvDTIgZRS8CVMzY0RExtB1+NFgvzmwdK0xA92FqZYU6lG93ae4y3Qf4nsrYL+OGbLmryIkd4R75Dfsf4dt2cx+TB2OyhIBq6H0bAaKh91qjwJ2sEaVUOLJjHQfNw50blCDEcJDk/IRBAC2YWmOgiI1uyKbFYRpcy81JRrK1SsNYjvoSxLQYSkwn0/9YSMiQbhev9DsDMkx6vRQNvdeOkMF/fFuNu9gKgWDeGA9hpjt1Y/TykQHD4m4s/jqXbSrDVx2JWJUy+6aEz+hNC2cWvz1EWvxK3Jvfrrik/dlvrmjCi7dLGbmqjAQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=esIpGah8yMx3HJl8dTbgIHHV3UpoD9bop3bNtdBpgms=;
+ b=XrSeyKqPPgVOhcM8XT2z7FAOiHrEVhawHaAaLOXfDyYiFMYf2rOzRBa1XTwjCz9N+4vWh+6YPMUaQdvy0NrQgeLARKimIERstmwoe9gSNo6V5sEhIC3BfR34c23thJ+gTmZACJVMqt56e6o1KdrvtqtCNo/giG1dsJb31rbVOuAklYiRSdw2DHsd7Hu6I6zkMUP1yNJ8+GRHnEcfPjauLo8kmKMEKGB2biSjC4G7gCQaQsKWss7QwbKZQnlF69JyG0cpZ8FYeUdbrWLNEVur5H8Y2mKfq9OBQUEHjH0ivuDFEdyDcshki/fXmE1pxnjd4tlePv4nNP9q7fp7Evbn2w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by SA1PR12MB6846.namprd12.prod.outlook.com (2603:10b6:806:25d::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6588.28; Mon, 17 Jul
+ 2023 12:29:24 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6588.031; Mon, 17 Jul 2023
+ 12:29:24 +0000
+Date: Mon, 17 Jul 2023 09:29:21 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Michael Shavit <mshavit@google.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	jean-philippe@linaro.org, baolu.lu@linux.intel.com,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 02/13] iommu/arm-smmu-v3: Add smmu_s1_cfg to
+ smmu_master
+Message-ID: <ZLU0IZJr6WSjknHf@nvidia.com>
+References: <20230621063825.268890-1-mshavit@google.com>
+ <20230621063825.268890-3-mshavit@google.com>
+ <ZK9RycgNAVrxe343@Asurada-Nvidia>
+ <CAKHBV26wi+xKnNjo-R+QOcVLPH2KJTFP+mF4CW1xE61nOdF5GA@mail.gmail.com>
+ <ZLAKQw+DzcpSRSyi@nvidia.com>
+ <CAKHBV25YadRVFiag5z5Yc13L093ScWkCjAOCd=VuGm2RUaDyzA@mail.gmail.com>
+ <ZLApQjaqoOshT2TJ@nvidia.com>
+ <CAKHBV25BRWTxXO0YTGq3q1OdMQHAzop8BqJJaa9CHxdQzxnNbg@mail.gmail.com>
+ <ZLFLyh1b+wiqb7Ql@nvidia.com>
+ <CAKHBV24zQ+4waZgsYV08LzeMkjze1gTcwvEv5uL8RM1GcBgrzg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAKHBV24zQ+4waZgsYV08LzeMkjze1gTcwvEv5uL8RM1GcBgrzg@mail.gmail.com>
+X-ClientProxiedBy: SJ0PR03CA0108.namprd03.prod.outlook.com
+ (2603:10b6:a03:333::23) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20230717-dma_iommu-v11-6-a7a0b83c355c@linux.ibm.com>
-References: <20230717-dma_iommu-v11-0-a7a0b83c355c@linux.ibm.com>
-In-Reply-To: <20230717-dma_iommu-v11-0-a7a0b83c355c@linux.ibm.com>
-To: Joerg Roedel <joro@8bytes.org>, Matthew Rosato <mjrosato@linux.ibm.com>,
-        Will Deacon <will@kernel.org>, Wenjia Zhang <wenjia@linux.ibm.com>,
-        Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Gerd Bayer <gbayer@linux.ibm.com>, Julian Ruess <julianr@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Yong Wu <yong.wu@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Krishna Reddy <vdumpa@nvidia.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Niklas Schnelle <schnelle@linux.ibm.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev, asahi@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
-X-Mailer: b4 0.12.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=6725;
- i=schnelle@linux.ibm.com; h=from:subject:message-id;
- bh=hMEGQADFlKz/+dWnWnhcMKyntVQEqF5IqIj7yvUb6Nc=;
- b=owGbwMvMwCH2Wz534YHOJ2GMp9WSGFK2yk/Z7u21YMrlG4zLk9JnvZ7/T1z4aNL51Fn1e88LL
- 1kxJ/7V5o5SFgYxDgZZMUWWRV3OfusKppjuCervgJnDygQyhIGLUwAm4hPMyLBNbKIOl6rflsCP
- J74a83TuuBtmJz81wCfRLi0ks13r5x1Ghu9um92VxXmdeDh93abutD73atPHbOcZVTfv13eVfPp
- wgh8A
-X-Developer-Key: i=schnelle@linux.ibm.com; a=openpgp;
- fpr=9DB000B2D2752030A5F72DDCAFE43F15E8C26090
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: ECeJRw806_zvpwQSyh4hcjMvvBtQhpYk
-X-Proofpoint-ORIG-GUID: 3vwgh8YSMhNi-_G1hUFZ_rpvWw3yEpI7
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-07-17_08,2023-07-13_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 phishscore=0
- adultscore=0 clxscore=1015 bulkscore=0 suspectscore=0 priorityscore=1501
- impostorscore=0 lowpriorityscore=0 mlxscore=0 spamscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2306200000
- definitions=main-2307170096
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SA1PR12MB6846:EE_
+X-MS-Office365-Filtering-Correlation-Id: 61d671bb-1a94-41b9-146d-08db86c17427
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	wMikb3p10b9G41ulKLgHLQIf7TcvlmhE7tHE7anp4Koe4gz6P234PKGH0GlrcovM8xJ9v5pAKeoTrQY8nU9kO8lf1zum0Iwy5Ai+lUMHJ+dZ5xu5gIYNyE9AUKWYCJCN9CvCLqA9V5tDxoTOa9evRlsi4AWQVUTMIpBXYlgDLFguwfRZeaCTz3H0K4U2pOoUO9mVC+HZ+G16kJzGlZJdEDkr3Uk1cVxX+/B5okwqcDtOYQYk98THeweKwGuaeos5E+Jj2LXn/wlpD435ZxblPbF3Gl59yWEiegOkRsfclB1STEMAPDB0PZcG2oDI++jjg9KwxML8/Mj2kGHhgS4dkDG9Ps4GOY6fTa4vfhrCH17vct7eK0Q+7CasoL0KF76/ZyE5Xqs1g7sFDKyqcL8v0aKPqrttZkziuTHLhLeVewjL/07ybmjaqWGMNLbA2XUMSD4x5OR0M2fpFHLYmPtppnHZckE87h1JCy9jMRm5oeu/ZqQNwlvud7wbhq1MCrGHX/rXGAS5Tm5nAvN4mRvtnHer01mc3mVsS5o28j6W9fYEiO74fJomi5gERxmKUuXcUBugEKkJ1EVac81los0naf5sdLB3KkTMwHvMOxF36eKnUvrPL9fRqpungYvAkUhvL+2DktvSyLvFdL9f1BvdhA==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(136003)(376002)(346002)(396003)(451199021)(6486002)(6512007)(6666004)(186003)(83380400001)(36756003)(86362001)(2616005)(53546011)(6506007)(26005)(38100700002)(41300700001)(4326008)(66476007)(66946007)(8936002)(8676002)(6916009)(66556008)(5660300002)(316002)(2906002)(478600001)(54906003)(473944003)(414714003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?K3JFQXdtWFp6L29LVEdGR0x0WUdDNGxJRzhnU3M2UUlYRm1BQ3k2WEhtTlRQ?=
+ =?utf-8?B?OUZhTlF5ZTU5d2ZkR2NHUUV5OWlGVE02RGFpaWNObWVFaVkrV0c0b2h1QVFB?=
+ =?utf-8?B?b3FvMVJVbFlDcDRQeWo2SnROVEIvNnhhcXhKaEFnaU1GK1V2dWV6azBWV0Jh?=
+ =?utf-8?B?NE5UQ2p2WDIzWS9xYllRclZwODhpTXZoTnNnQUhVK0ZpSTZqeWxNYlIwWW9z?=
+ =?utf-8?B?WVE3N3dBVUZieHRnQTRjazBHcmlrRE53V2g2SGc3Yi9rMmZKK0hIaXNVZFVa?=
+ =?utf-8?B?Mk5Dc3dLL09QUkUzdGYrZTU3dDNTOUtzenk0bFJqdGZYcy9MNHpZblZld05S?=
+ =?utf-8?B?c0JGOFpNaG1jczVoT0pZdEQxYUQ0ZnZpSVRpMzR3eHlmNW5YUDNxZ2drN3pN?=
+ =?utf-8?B?b2J1NFBNUHZCMXFtQVRQK3pBcklwODI2T0hmUTR3YTNwOGJJOFd0MnhrMmFK?=
+ =?utf-8?B?T3dJbHMzUDh0aGVHWFF3L0xQc3J1anZvU0dsbHpaRFF1K3FjOHk2Y0tQLzZQ?=
+ =?utf-8?B?dFR2L3RRSGhzalZ6QmlZdWx6N3Z1Znc2Tk1rcjVDUnBmWGRGK0s2T3pDc25t?=
+ =?utf-8?B?enJZVW42L2tpTi9rVG5PNkFlbUlUT0srQ2VIOFFybXdmbVhJSHdPL2RSOXdp?=
+ =?utf-8?B?YjVhWitwSWNBU3k5ZXB3amZTdG9VL0llaUJWUUpnclFoaXJZcEFmdjlSS0FL?=
+ =?utf-8?B?RnNnWThFYWZoa2lkc3IwRXZJZjVZNGlWRWF1enErdGNQT1U4VUxWYjk2NlFV?=
+ =?utf-8?B?dnI5Wlc4ZXpOUDIyaUhYam45UjU1eUozVW9aMzFWVU9MYUIxQUlVMk15OHpk?=
+ =?utf-8?B?NlZGUEh1WEJhanFTakJJUHlxaHdqaGpjYjRrY01ZMmNQVUYrdSsxYS8wSWRU?=
+ =?utf-8?B?WXVRNElSK05VNElFSU1mdG9LVDZkcmM2enQ0KzNGUVVHZHhhZE01dkhPUGMz?=
+ =?utf-8?B?bjJ6RW84aURrZldEK0RUTHhROExDUGkvUzR3c1dwTFdPN2JCWTFnQnBGQzla?=
+ =?utf-8?B?OTk2aG9hWDI2eVk2Z3pvSGVSV2RJV0NMd2J6WWRyMnZsYlFiZ2MxWWxheGFw?=
+ =?utf-8?B?QU95eDBUWWRhcExlU1BmL0JVSCthdHI2OGxyZXRhR0lrT2VIbkVqek9rWjNr?=
+ =?utf-8?B?UGRJLzFtWW9XRjhZWTdNTFhsb1BBQ244VENacjNQakNnU1BOcXk4SDd3WjdW?=
+ =?utf-8?B?WTZ2UlMwUVl5Z3Z2aXVvM0ZGV2lQTE9TTVlxYkNkT2JTWFBwWTJjREk1VzdP?=
+ =?utf-8?B?T0VXbHRDSXZNYTlEUTVEVnRnbFdtRmd1VHN3eGdmTVhtZGJjQ090RTRtMXA1?=
+ =?utf-8?B?TFZ5VXJhaXFlU1VZaDFuS0N2OStnWVIxZDczTVFyWkRxaVZrYW1UWlE0NHY5?=
+ =?utf-8?B?bVVCelVWN3psVDJaRHhNZTVuUWN3ZUJ2OEJ2TzRHcStMcEFiVGdtSFlLaW5K?=
+ =?utf-8?B?Q2k4WVJldnR4WmVjWkQrMjFBQjVHWDVqcXk0Z1Bkd20rWXJiODlKbW16bUl4?=
+ =?utf-8?B?dGg4MFdLSWY1cHRQWjk4OU5PZzNpQVM4b282WG85R2dCVU0yU0NjaHgvZGE1?=
+ =?utf-8?B?YjRPNHl4MjNBZGliSkQ0bEpVZFJ2WFVQQ0JqaGhCT2lQc1MrbDlWYzJZcXRl?=
+ =?utf-8?B?Q1FnblRaUVJ4Nm01RVFHTTZWZ0RPZjBHRlNtdDlNQlEwcllUTG1GVEVWN1E2?=
+ =?utf-8?B?MUVIWSsvYldEKzdkVU9odkFxRG9UcnVsVFBKanBiUXdDYXJuTlVkS0VUM0lr?=
+ =?utf-8?B?WnVMZllJUXRmK1dteWswdTdib1o0SDR0YVF6elViZEF1c3JnUVcxSWlhRkRZ?=
+ =?utf-8?B?V0JWZi84cllHY0M1TUUraWNuQ21YZVpFa1hkckdiOThGb0VWb3lXbzNJMzF3?=
+ =?utf-8?B?NnlzZUNUZjlHSEFDZzhXckMrYkhnUHpoWDhWQjFtNFdVakhCdWg1TE9tNG5T?=
+ =?utf-8?B?dkFoTzlyUmpCWXo1VnBTMDNXUWY0Lzg4VnNzVVBEMGdrTzM2WitEQlArYlpj?=
+ =?utf-8?B?ZVZYbmpKN1AvSi8yREJPb3J2NUEyUDNDMkYxT3VmaVZjZnVQcXF5L3U1UDFZ?=
+ =?utf-8?B?Z04wRUxFZndEWjNab3Boa1UrRkU3a3c4VUpsdzI4Z2R3S0g5bHlMMm05U2t5?=
+ =?utf-8?Q?hEBsWbfFakrhpusn/SaV92lRH?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 61d671bb-1a94-41b9-146d-08db86c17427
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jul 2023 12:29:24.0026
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: b1K69I/pJOG8XUieCW9v6L3Qo9xP7hFjlPHrJLQTgjUdUEmZh8qu51fo23z8QP10
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB6846
 
-Flush queues currently use a fixed compile time size of 256 entries.
-This being a power of 2 allows the compiler to use shift and mask
-instead of more expensive modulo operations. With per-CPU flush queues
-larger queue sizes would hit per-CPU allocation limits, with a single
-flush queue these limits do not apply however. Also with single queues
-being particularly suitable for virtualized environments with expensive
-IOTLB flushes these benefit especially from larger queues and thus fewer
-flushes.
+On Mon, Jul 17, 2023 at 06:06:19PM +0800, Michael Shavit wrote:
+> On Fri, Jul 14, 2023 at 9:21 PM Jason Gunthorpe <jgg@nvidia.com> wrote:
+> > patch 2 should delete arm_smmu_s1_cfg and just put
+> > arm_smmu_ctx_desc_cfg directly in the master. arm_smmu_ctx_desc_cfg is
+> > a weird name for the contex descriptor table, but it is much less
+> > weird than s1_cfg. As you say s1fmt/s1cdmax are redundant.
+> 
+> s1fmt is fairly trivial to replace but s1cdmax requires inversing
+> previous computations. I don't really buy that getting rid of it
+> simplifies anything, even if it's technically redundant.
 
-To this end re-order struct iova_fq so we can use a dynamic array and
-introduce the flush queue size and timeouts as new options in the
-dma_iommu_options struct. So as not to lose the shift and mask
-optimization, use a power of 2 for the length and use explicit shift and
-mask instead of letting the compiler optimize this.
+Then store s1cdmax in the arm_smmu_ctx_desc_cfg and still get rid of
+arm_smmu_s1_cfg
 
-A large queue size and 1 second timeout is then set for the shadow on
-flush case set by s390 paged memory guests. This then brings performance
-on par with the previous s390 specific DMA API implementation.
+The point is to get rid of "s1_cfg" entirely as language in the driver
+*because it makes zero sense now*. Prior to your restructuring it was
+sort of the STE to use for the S1 page table which had an embedded
+CD. After all this change it isn't realated to a S1 page table anymore
+at all.
 
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com> #s390
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
----
- drivers/iommu/dma-iommu.c | 50 +++++++++++++++++++++++++++++++----------------
- 1 file changed, 33 insertions(+), 17 deletions(-)
+> > patch 3 I don't understand, we should not add something called
+> > s1_cfg/s2_cfg to the master. The master should have
+> > 'arm_smmu_ctx_desc_cfg cd_table' and 'arm_smmu_domain ste_domain'
+> 
+> This was simply meant to be a more convenient way of finding the
+> currently active cdtable from the
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 4ada8b9749c9..bebc0804ff53 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -46,7 +46,9 @@ enum iommu_dma_cookie_type {
- struct dma_iommu_options {
- #define IOMMU_DMA_OPTS_PER_CPU_QUEUE	0L
- #define IOMMU_DMA_OPTS_SINGLE_QUEUE	BIT(0)
--	u64	flags;
-+	u64		flags;
-+	size_t		fq_size;
-+	unsigned int	fq_timeout;
- };
- 
- struct iommu_dma_cookie {
-@@ -95,10 +97,12 @@ static int __init iommu_dma_forcedac_setup(char *str)
- early_param("iommu.forcedac", iommu_dma_forcedac_setup);
- 
- /* Number of entries per flush queue */
--#define IOVA_FQ_SIZE	256
-+#define IOVA_DEFAULT_FQ_SIZE	256
-+#define IOVA_SINGLE_FQ_SIZE	32768
- 
- /* Timeout (in ms) after which entries are flushed from the queue */
--#define IOVA_FQ_TIMEOUT	10
-+#define IOVA_DEFAULT_FQ_TIMEOUT	10
-+#define IOVA_SINGLE_FQ_TIMEOUT	1000
- 
- /* Flush queue entry for deferred flushing */
- struct iova_fq_entry {
-@@ -110,18 +114,19 @@ struct iova_fq_entry {
- 
- /* Per-CPU flush queue structure */
- struct iova_fq {
--	struct iova_fq_entry entries[IOVA_FQ_SIZE];
--	unsigned int head, tail;
- 	spinlock_t lock;
-+	unsigned int head, tail;
-+	unsigned int mod_mask;
-+	struct iova_fq_entry entries[];
- };
- 
- #define fq_ring_for_each(i, fq) \
--	for ((i) = (fq)->head; (i) != (fq)->tail; (i) = ((i) + 1) % IOVA_FQ_SIZE)
-+	for ((i) = (fq)->head; (i) != (fq)->tail; (i) = ((i) + 1) & (fq)->mod_mask)
- 
- static inline bool fq_full(struct iova_fq *fq)
- {
- 	assert_spin_locked(&fq->lock);
--	return (((fq->tail + 1) % IOVA_FQ_SIZE) == fq->head);
-+	return (((fq->tail + 1) & fq->mod_mask) == fq->head);
- }
- 
- static inline unsigned int fq_ring_add(struct iova_fq *fq)
-@@ -130,7 +135,7 @@ static inline unsigned int fq_ring_add(struct iova_fq *fq)
- 
- 	assert_spin_locked(&fq->lock);
- 
--	fq->tail = (idx + 1) % IOVA_FQ_SIZE;
-+	fq->tail = (idx + 1) & fq->mod_mask;
- 
- 	return idx;
- }
-@@ -152,7 +157,7 @@ static void fq_ring_free_locked(struct iommu_dma_cookie *cookie, struct iova_fq
- 			       fq->entries[idx].iova_pfn,
- 			       fq->entries[idx].pages);
- 
--		fq->head = (fq->head + 1) % IOVA_FQ_SIZE;
-+		fq->head = (fq->head + 1) & fq->mod_mask;
- 	}
- }
- 
-@@ -246,7 +251,7 @@ static void queue_iova(struct iommu_dma_cookie *cookie,
- 	if (!atomic_read(&cookie->fq_timer_on) &&
- 	    !atomic_xchg(&cookie->fq_timer_on, 1))
- 		mod_timer(&cookie->fq_timer,
--			  jiffies + msecs_to_jiffies(IOVA_FQ_TIMEOUT));
-+			  jiffies + msecs_to_jiffies(cookie->options.fq_timeout));
- }
- 
- static void iommu_dma_free_fq_single(struct iova_fq *fq)
-@@ -287,27 +292,29 @@ static void iommu_dma_free_fq(struct iommu_dma_cookie *cookie)
- 		iommu_dma_free_fq_percpu(cookie->percpu_fq);
- }
- 
--static void iommu_dma_init_one_fq(struct iova_fq *fq)
-+static void iommu_dma_init_one_fq(struct iova_fq *fq, size_t fq_size)
- {
- 	int i;
- 
- 	fq->head = 0;
- 	fq->tail = 0;
-+	fq->mod_mask = fq_size - 1;
- 
- 	spin_lock_init(&fq->lock);
- 
--	for (i = 0; i < IOVA_FQ_SIZE; i++)
-+	for (i = 0; i < fq_size; i++)
- 		INIT_LIST_HEAD(&fq->entries[i].freelist);
- }
- 
- static int iommu_dma_init_fq_single(struct iommu_dma_cookie *cookie)
- {
-+	size_t fq_size = cookie->options.fq_size;
- 	struct iova_fq *queue;
- 
--	queue = vzalloc(sizeof(*queue));
-+	queue = vzalloc(struct_size(queue, entries, fq_size));
- 	if (!queue)
- 		return -ENOMEM;
--	iommu_dma_init_one_fq(queue);
-+	iommu_dma_init_one_fq(queue, fq_size);
- 	cookie->single_fq = queue;
- 
- 	return 0;
-@@ -315,15 +322,17 @@ static int iommu_dma_init_fq_single(struct iommu_dma_cookie *cookie)
- 
- static int iommu_dma_init_fq_percpu(struct iommu_dma_cookie *cookie)
- {
-+	size_t fq_size = cookie->options.fq_size;
- 	struct iova_fq __percpu *queue;
- 	int cpu;
- 
--	queue = alloc_percpu(struct iova_fq);
-+	queue = __alloc_percpu(struct_size(queue, entries, fq_size),
-+			       __alignof__(*queue));
- 	if (!queue)
- 		return -ENOMEM;
- 
- 	for_each_possible_cpu(cpu)
--		iommu_dma_init_one_fq(per_cpu_ptr(queue, cpu));
-+		iommu_dma_init_one_fq(per_cpu_ptr(queue, cpu), fq_size);
- 	cookie->percpu_fq = queue;
- 	return 0;
- }
-@@ -377,6 +386,8 @@ static struct iommu_dma_cookie *cookie_alloc(enum iommu_dma_cookie_type type)
- 		INIT_LIST_HEAD(&cookie->msi_page_list);
- 		cookie->type = type;
- 		cookie->options.flags = IOMMU_DMA_OPTS_PER_CPU_QUEUE;
-+		cookie->options.fq_size = IOVA_DEFAULT_FQ_SIZE;
-+		cookie->options.fq_timeout = IOVA_DEFAULT_FQ_TIMEOUT;
- 	}
- 	return cookie;
- }
-@@ -696,14 +707,19 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
- 
- 	if (domain->type == IOMMU_DOMAIN_DMA_FQ) {
- 		/* Expensive shadowing IOTLB flushes require some tuning */
--		if (dev->iommu->shadow_on_flush)
-+		if (dev->iommu->shadow_on_flush) {
- 			cookie->options.flags |= IOMMU_DMA_OPTS_SINGLE_QUEUE;
-+			cookie->options.fq_timeout = IOVA_SINGLE_FQ_TIMEOUT;
-+			cookie->options.fq_size = IOVA_SINGLE_FQ_SIZE;
-+		}
- 
- 		/* If the FQ fails we can simply fall back to strict mode */
- 		if (!device_iommu_capable(dev, IOMMU_CAP_DEFERRED_FLUSH) ||
- 		    iommu_dma_init_fq(domain)) {
- 			domain->type = IOMMU_DOMAIN_DMA;
- 			cookie->options.flags &= ~IOMMU_DMA_OPTS_SINGLE_QUEUE;
-+			cookie->options.fq_timeout = IOVA_DEFAULT_FQ_TIMEOUT;
-+			cookie->options.fq_size = IOVA_DEFAULT_FQ_SIZE;
- 		}
- 	}
- 
+There is only one (meaningful) choice though, the cdtable is either
+the master's default CD table or it isn't. You detect that by checking
+for NULL ste_domain
 
--- 
-2.39.2
+> > My suggestion for patch structure is to start by cleaning up the CD
+> > table object. Make arm_smmu_ctx_desc_cfg the CD table, remove the
+> > redudencies, remove arm_s1_cfg, clean the CD table APIs to only use
+> > 'struct arm_smmu_ctx_desc_cfg *', add the 'ste_domain' to the master,
+> > and then as the last step just move the arm_smmu_ctx_desc_cfg from the
+> > iommu_domain to the master.
+> >
+> > And that is a nice little series on its own - you end up with a shared
+> > CD table in the master, and no CD table in any domains.
+> 
+> I don't entirely buy that refactoring s1_cfg is worth the extra
+> effort, nor that it should be tied to this patch series. This series
+> already makes s1_cfg behave as the CD table; whether we want to
+> entirely get rid of pre-computed data useful for writing an STE sounds
+> like a separate cleanup.
+
+s1_cfg is a terrible name to describe the cd table. Please do the
+tiny bit extra to get rid of it for clarity. 
+
+Jason
 
