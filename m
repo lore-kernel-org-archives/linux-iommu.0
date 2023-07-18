@@ -1,74 +1,82 @@
-Received: from mail.208.org (unknown [183.242.55.162])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E073D187E
-	for <iommu@lists.linux.dev>; Tue, 18 Jul 2023 08:28:35 +0000 (UTC)
-Received: from mail.208.org (email.208.org [127.0.0.1])
-	by mail.208.org (Postfix) with ESMTP id 4R4sXp3ygjzBR9sk
-	for <iommu@lists.linux.dev>; Tue, 18 Jul 2023 16:28:26 +0800 (CST)
-Authentication-Results: mail.208.org (amavisd-new); dkim=pass
-	reason="pass (just generated, assumed good)" header.d=208.org
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=208.org; h=
-	content-transfer-encoding:content-type:message-id:user-agent
-	:references:in-reply-to:subject:to:from:date:mime-version; s=
-	dkim; t=1689668906; x=1692260907; bh=D8d+MsQpIDEMC9w+5s1SwmR6S+n
-	0xq3gry16gHMpo4A=; b=1DepZRv0v9ufvyClbtE831S94x/8NSMzuCe7SENuKIP
-	EfTVng/v331BtBWiBJey1AhLXI9rvwvP+HrGJ6r4+71Lv2V0lvFVKh7mRNVFfbqL
-	mw1FwDiTyFJbSoul/PRtusSOkx9ODuJKWIXRB8lIaDqdM1MmRY4UzL2OWPaReKwy
-	AE6ygcLmUE7jRTl3NZ+bmTVEYAjWyhKhNNIIGXbhUnBc536TnD4ZbCsOQ3PhMMRW
-	qos7U9zPI2lLjSHXOHCveV+V/LJJPUkmEy2KvVjQ8Ee1AYhYG3TusDma11gIFsGE
-	z8OFcgJ6w9gjbZO73fAeqpPxmepmm18wiFmfZaKF1bQ==
-X-Virus-Scanned: amavisd-new at mail.208.org
-Received: from mail.208.org ([127.0.0.1])
-	by mail.208.org (mail.208.org [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id fkqXZjE0NQLv for <iommu@lists.linux.dev>;
-	Tue, 18 Jul 2023 16:28:26 +0800 (CST)
-Received: from localhost (email.208.org [127.0.0.1])
-	by mail.208.org (Postfix) with ESMTPSA id 4R4sXp1ShhzBR7bp;
-	Tue, 18 Jul 2023 16:28:26 +0800 (CST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58AA9C8C4
+	for <iommu@lists.linux.dev>; Tue, 18 Jul 2023 08:52:37 +0000 (UTC)
+Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-4036bd4fff1so241691cf.0
+        for <iommu@lists.linux.dev>; Tue, 18 Jul 2023 01:52:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1689670356; x=1692262356;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pYiyuxt/N5ReOBp+6DLzcnLSJb59cmexqlxBPjdaU+I=;
+        b=CgDv/w4umtpcqM4lU+wjtzqvMOW5k5wCdeUDfhXa/lCNH0hulr4DpFxCOrol2sLw0Y
+         wK7ZwWhs/92u9acenAT3PRZOkN2anHV2YA9+EhNwWAu8GTe+piNIWX/ZOmVDjpxg/XoS
+         gNaUn5/uisOslv5SOisanOuajIHCT2XAqit2hR5Xdii+IvbI2wodDL+GFJwEK1M+xvQ8
+         mve8s6mp6CNpw3m+qTOtxDnGXTJWgeZvU+VRQh78/NablesAbjmgR6fgayTn3m14U5T6
+         eNiZtAqZKnE8xly41lvmYJlcdmVDwLM+8oxVyJU384hZ8WUVSpszi+gF4xNqRxrC3FIY
+         aDnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1689670356; x=1692262356;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=pYiyuxt/N5ReOBp+6DLzcnLSJb59cmexqlxBPjdaU+I=;
+        b=IE6QD6mQIvNUMqVFV6EXRRosoAI1+dv5MRgSZIt8rweEYUS3mMH7r4mHi7S6lxY7h1
+         V0LrYkpwYQUSE+xLUn66AJGYxyQt2oFWXsFZDiMhpFDsPzhkq4as/ZZXgFjdO70ktdUU
+         5ydf1gwEmz6qIWBAmD9o3TfLDwuytLCZt/qwbhCJDuGgnRacEtw/voRR98Cq/oaYbDU3
+         C1FUO9DLWTwbFKRxCXEIOIV6sxLXIsNQ7g0rxrXfuJuIom+p8L6nrRWzpH++vjkHqrWE
+         Bywx3cWOcKgzODPyrhVjjutbKKCd5NfkjND2SbmuIPSSiS1FFLdFOhsfmD6+Ie0X2QCD
+         yq/A==
+X-Gm-Message-State: ABy/qLZBiYNWTn3zZiiiVjbX5VOQRy7+/fVqy8+3Q6HryPYhHfIqS4o+
+	zQvRNgQxR1pIiNAzm2x5yb9CDhYGbp+AABfnikta5A==
+X-Google-Smtp-Source: APBJJlFCj+g3+yVxx0XuWKRe0hkfwk4QruUfGKVc61L++n23uTaYOm9vYpWIeIZwwyFWo8ewaQZirqcfdmjyHbLVtks=
+X-Received: by 2002:ac8:5b02:0:b0:403:e1d1:8b63 with SMTP id
+ m2-20020ac85b02000000b00403e1d18b63mr207657qtw.24.1689670355892; Tue, 18 Jul
+ 2023 01:52:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Date: Tue, 18 Jul 2023 16:28:26 +0800
-From: sunran001@208suo.com
-To: joro@8bytes.org, will@kernel.org, matthias.bgg@gmail.com
-Cc: iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH] iommu/mtk_iommu_v1: add missing put_device()
-In-Reply-To: <20230718082500.17066-1-xujianghui@cdjrlc.com>
-References: <20230718082500.17066-1-xujianghui@cdjrlc.com>
-User-Agent: Roundcube Webmail
-Message-ID: <36b3ef1e2a73f84216d9fa656f6146a6@208suo.com>
-X-Sender: sunran001@208suo.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20230621063825.268890-1-mshavit@google.com> <20230621063825.268890-8-mshavit@google.com>
+ <ZK+BZhwbo8JLMPI2@Asurada-Nvidia> <CAKHBV27idVJ-8YgpekezaQP2n+Oz6OpKnDmYiu_cSOFh6z1S+Q@mail.gmail.com>
+ <ZLHp0r1g1lroGYlN@Asurada-Nvidia>
+In-Reply-To: <ZLHp0r1g1lroGYlN@Asurada-Nvidia>
+From: Michael Shavit <mshavit@google.com>
+Date: Tue, 18 Jul 2023 16:51:59 +0800
+Message-ID: <CAKHBV25ButEYJLxqRHo1V+KrwoDAGqfJGSh1G1Pe3f3_djE_TA@mail.gmail.com>
+Subject: Re: [PATCH v4 07/13] iommu/arm-smmu-v3: Keep track of attached ssids
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, jean-philippe@linaro.org, jgg@nvidia.com, 
+	baolu.lu@linux.intel.com, linux-arm-kernel@lists.infradead.org, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The of_find_device_by_node() takes a reference to the underlying device
-structure, we should release that reference.
+On Sat, Jul 15, 2023 at 8:35=E2=80=AFAM Nicolin Chen <nicolinc@nvidia.com> =
+wrote:
+> Well, firstly it's kinda odd to have this optimization hidden in
+> a big rework patch. And I am not sure if it alone would work for
+> all use cases, as it impacts the arm_smmu_atc_inv_domain() that
+> passes in a zero ssid, in which case the affected function is not
+> used by a pasid case all the time:
 
-./drivers/iommu/mtk_iommu_v1.c:669:3-9: ERROR: missing put_device; call
-of_find_device_by_node on line 662, but without a corresponding object
-release within this function.
+To clarify, we haven't changed anything for the existing flow. Before
+the latter set_dev_pasid patch is introduced, there's only ever a
+single {master,domain} pair in the attached_domain list. When
+arm_smmu_atc_inv_domain() is called on a non-pasid domain, it issues a
+single atc inv command with substream_valid=3Dfalse, same as before.
+When SVA wants to invalidate a domain, it calls
+arm_smmu_atc_inv_domain_ssid to issue a single atc inv command with
+that specific PASID, same as before. At no point does the driver ever
+rely on the fact that invalidating with substream_valid=3Dfalse would
+invalidate all PASIDs.
 
-Signed-off-by: Ran Sun <sunran001@208suo.com>
----
-  drivers/iommu/mtk_iommu_v1.c | 1 +
-  1 file changed, 1 insertion(+)
-
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 8a0a5e5d049f..1833d0ce7afe 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -666,6 +666,7 @@ static int mtk_iommu_v1_probe(struct platform_device 
-*pdev)
-          }
-          if (!plarbdev->dev.driver) {
-              of_node_put(larbnode);
-+            put_device(&plarbdev->dev);
-              return -EPROBE_DEFER;
-          }
-          data->larb_imu[i].dev = &plarbdev->dev;
+This patch series simply follows the precedent set by SVA: when a
+domain is attached with a pasid, invalidates those specific pasids.
+It'd feel kinda hacky to rely on the fact that invalidating with
+substream_valid=3Dfalse would invalidate all PASIDs.
