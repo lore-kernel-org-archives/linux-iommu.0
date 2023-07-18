@@ -1,52 +1,66 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2049.outbound.protection.outlook.com [40.107.94.49])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2065.outbound.protection.outlook.com [40.107.244.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A37DC10EA
-	for <iommu@lists.linux.dev>; Tue, 18 Jul 2023 06:38:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9EA38467
+	for <iommu@lists.linux.dev>; Tue, 18 Jul 2023 07:56:39 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DhBXAF9tRJDY3sBySvKKMzBfZWG3YyxK4hwFIeBq589YL4iubI8TO7t8t6Iz2x5ntgHuIxfE+80zNliaxFLGDXw+pklZXVX6DV6e8Td0es25nlqRdRhJwuYo0gaA0H/WtS1tjIiAZjE/ADnsXcpgroc9VW+VtVBwlPlgzmQgW9gPeaPQ2w8WA8etwaTo39TRN/i3pH8++DqWSwS+BLpoNvVEPCHSxV96D8ewJ4s/0qhaBbJLyOHlnPf6ywmWdBUQrKrQJIMhVc242yMUKbTXMQK+nui0slrdmThWFyAsCJn+RgBLoFkviL0QwfqkCiupCMRKg8mgtd4k/VBWcRabUw==
+ b=ByP+qqYh/7S6PlXQbNlUnF/Z+KpERLnq7yr5Ab94TGYPVefiKkMCd+EVlsCzZVoL9Ed8LlmRAV84ZFa6yyBnCVdG44r2nkPA6JxYTRKfnVu8lqLG5Ls2RHXHaxKAZGXSjeWT9tE/QAQzu0we3vagjhARp0/PYL8PydYbaiK6hdJjdilsKiuRUy4LqvsNuyuky2ZDedt9lEt1i3qPzTlotsHcReHkfhTHRatBk6bGR2xKJopiKbSE/d//QD/v3bB+r4E4XJ3WLqe0HYjqnpfAoc+jBWTI77I5aqEU7LhlA1hV4+Ztkgxf9Ey7Qtw17Yc0KaJz8JwSplqenFhxTxQI0A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YlsuOFGdd26IR6/C9RFGSl0hfSeNIqobHxeEWfQl9ds=;
- b=XlySv6SFoGQYtWY+CPyBU62S3tdAMeEoYnjyqeDDKlBs84u/ehjTA6YLBA81ShYgCjXy09s6KchHf6+XYYjM64RNRsd/ErZKRtvIFpFil1ur15UUhkJ9ZcsayzPzPT3iCFnJhpmr7qiKHYYAlBoAMQdNtb0ek/ap7xjnjRl/7l2HCLwDQOiTdJmj/CXKuOhQF8EHu+zJSNMGW3y2OO7dYk4jG3mPKwDTYaNifIjqInzgyolYV14g2zUuIz2OqQRKDkYdzOUwqDYjCMOJgiYDu7QhXIzxp2Y9N1YKEDlCQHraqz2P5ln8znJojNcbfBKS/WoVve9OuA9dhN2wT8tYmQ==
+ bh=XTfyLNkCP9i0UGNIpXxEg8A/BFVi8sDjCvnx6knX+ZA=;
+ b=UPVMFlpR4oCBvnf7JatujujE7+6Qo2myb3MaOK9mvd9Zazrte18d2RL0xT5cmQJkFc9hYjkOB5un0EUQmdhwHRQfIWtKW4WPm1ZkeWK1efGfvXcpkulgFX+ZB1aR8oUHo7KlVXL7qqvzhA/2ckl7pW1R/j/MK6KbJvzbKBvwbxAf7U/tF44qc1LUtkkvnwkdCLjFu3JUfzzojJfc8P3IJwsVHRWGYV8XsosVnDICGsJjRAgCYjXsisdx5eJ7I+Za+OGySK98CPDpbrZl2Ql1BH7fcsf7+KtN9psqI1GV/QK4zK5Y5ZtyafIsnODDCGpiRjPq2wpcVD7QjTxWZOv2lw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YlsuOFGdd26IR6/C9RFGSl0hfSeNIqobHxeEWfQl9ds=;
- b=MCYjTgPrcKbKsLMLAJ+jZp30VhkoIMMkYEg4IKW+5XuRyk9sYXSUJKhVLpvUczGoKJRMa/O/HGQpf36v8zGIuFyMW3q1JDvs81vwwYRr7j5+CxEV7jz8U5FJuSjcHEyrfEN8F+CINbJXllWLLGrSOM7NeN7lrLtxDTLApb/TtFs=
+ bh=XTfyLNkCP9i0UGNIpXxEg8A/BFVi8sDjCvnx6knX+ZA=;
+ b=of2EN7Nuc0wNDYDp73talkyv67RSOPxK/y6Q+us6dzaGhf17hfwt92nwluH2kIjpvYOIaNiM8XEyBN59bnH+M7cKY8qMF/SoIH34mklf86UeX1uC2SnTwZWzx0u3UTJz9bnDiOz6KFU9u/JPjwjWk9kQ7focfDNCZ4MnQe0S/vTZNTrSJrNTPBCVmGo3IN18t9JOn/e/8nMPPvqHXu+xL7/UpmZj+qBKEJcYRKZCHHZHx1m7WkTcBlIK4xIrY/C3aaRB/7hMia+3oEHGAwttlCD1bULInDbILQbH6dPqknWH6FbZnyZmAswqBqSiLLH+lN9FX857IcyGuM/srduwJw==
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
- CH0PR12MB5331.namprd12.prod.outlook.com (2603:10b6:610:d6::20) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6588.32; Tue, 18 Jul 2023 06:38:47 +0000
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::12ec:a62b:b286:d309]) by DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::12ec:a62b:b286:d309%7]) with mapi id 15.20.6588.031; Tue, 18 Jul 2023
- 06:38:47 +0000
-Message-ID: <1b5b9a47-0e4c-927c-c19a-9ee05ef66918@amd.com>
-Date: Mon, 17 Jul 2023 23:38:44 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.1
-Subject: Re: [PATCH 11/21] iommu/amd: Clean up and enhance protection domain
- flags
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
- joro@8bytes.org
-References: <20230712141516.154144-1-vasant.hegde@amd.com>
- <20230712141516.154144-12-vasant.hegde@amd.com> <ZLGFH6qERiRbD6cd@ziepe.ca>
- <db7fe0f7-77d9-f898-0503-d6da58cf25c6@amd.com> <ZLUyzrmRKhz4wwQ0@ziepe.ca>
-From: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
-In-Reply-To: <ZLUyzrmRKhz4wwQ0@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR07CA0029.namprd07.prod.outlook.com
- (2603:10b6:a02:bc::42) To DM8PR12MB5445.namprd12.prod.outlook.com
- (2603:10b6:8:24::7)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BYAPR12MB3176.namprd12.prod.outlook.com (2603:10b6:a03:134::26)
+ by PH7PR12MB8180.namprd12.prod.outlook.com (2603:10b6:510:2b6::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6565.32; Tue, 18 Jul
+ 2023 07:56:37 +0000
+Received: from BYAPR12MB3176.namprd12.prod.outlook.com
+ ([fe80::cd5e:7e33:c2c9:fb74]) by BYAPR12MB3176.namprd12.prod.outlook.com
+ ([fe80::cd5e:7e33:c2c9:fb74%7]) with mapi id 15.20.6588.031; Tue, 18 Jul 2023
+ 07:56:36 +0000
+From: Alistair Popple <apopple@nvidia.com>
+To: akpm@linux-foundation.org
+Cc: ajd@linux.ibm.com,
+	catalin.marinas@arm.com,
+	fbarrat@linux.ibm.com,
+	iommu@lists.linux.dev,
+	jgg@ziepe.ca,
+	jhubbard@nvidia.com,
+	kevin.tian@intel.com,
+	kvm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org,
+	linuxppc-dev@lists.ozlabs.org,
+	mpe@ellerman.id.au,
+	nicolinc@nvidia.com,
+	npiggin@gmail.com,
+	robin.murphy@arm.com,
+	seanjc@google.com,
+	will@kernel.org,
+	x86@kernel.org,
+	zhi.wang.linux@gmail.com,
+	Alistair Popple <apopple@nvidia.com>
+Subject: [PATCH 0/4] Invalidate secondary IOMMU TLB on permission upgrade
+Date: Tue, 18 Jul 2023 17:56:14 +1000
+Message-Id: <cover.b4454f7f3d0afbfe1965e8026823cd50a42954b4.1689666760.git-series.apopple@nvidia.com>
+X-Mailer: git-send-email 2.39.2
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SY6PR01CA0069.ausprd01.prod.outlook.com
+ (2603:10c6:10:ea::20) To BYAPR12MB3176.namprd12.prod.outlook.com
+ (2603:10b6:a03:134::26)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,270 +68,142 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM8PR12MB5445:EE_|CH0PR12MB5331:EE_
-X-MS-Office365-Filtering-Correlation-Id: c634741c-afaf-4707-b207-08db8759a398
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3176:EE_|PH7PR12MB8180:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7ef8032e-8ec2-4372-77c7-08db8764825d
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	mikuvOO57IDWm9COgByvL+o2Mk/4wlMG+GiM9WUNbtg1/HvrWls76sQTGIACjCftbJoqyP3nlvbdQMXIedQSD9sxaBgpaJO9lwdyaAlY/34lrgpMyBcyjjWKyFYtFibLTRkmwtABVG36W4Emq9TUVbvifkIvTjSrbBBNdtanpP/EdHDTvHCmk6LugLmSClAh7zW03svF+OjpXa+Sn7SZVAuj62/dEHoWDJMA/SOUJUsfda263KFYf+UGevdeA0e1Ps/gE4jbVq3jjOK6r+/9IWaE/tcmnqeLVwOmKkXaJmyc0rwqeqUsSeQfuumUHy/WhJBz9ruD5XyHrhouv4Gt8812gQ10ybUDRxp1EYVnFlBMkBm/XNfOgHHPn9RbqSX0VSjQW/So/UubRkTc0SwWlPRSe117qTCRD2gDCzFjhqn/VhaSHSXbYx9b/f2eTZj1lg3EsHlbSuX/tcSUi+c1DHhSc1Bvy/wORIWkHY1VSwQ/o2CV6flRpM8iuPPwuiHHcyEnRZRY99Bw2c0+wW8C0WNV55TkGk5GsZ2TELgIoe1zbwtmCoablyldOnMoZNsOMbmxGtF9IN3hZn0/qal0NGQnlFtTIKGzW9uOq5jJfuTb1wFEqzyGb1qPcpGshSYn0pJz+oR8Q5j0lMGjW3gS2g==
+	nyuYXX+bIb3FZJpedkfce8cIgfi5MW1t9dxcfFj609mbN2ga0GZt5cszMrKIWqIXp1kTYLYVtaSuowGAgi9S/c+e68dvkXqZNEpeY/Y41xaWkAEf8+Yc0thKwhQkKk93KgoleAwPmIuyuJeXWesqQC/+7Qu6zoRieavDyB+kY2XHCUuolFnfC7iHxUk1AZg7uAxdieMpwn77GZwch99NFd3qiJ5DHQqdBtVkcHBoqk7i5POQQQW4Pa4ztUj5QRsOgwkVZDIqAltLSqAeD0cnvmYeMs+Hg6t1m2YKY+ySLLct59BA40fvjmzZfufHLK7bD7wbDA8H5LEQuVulMu20Ra0yvMB2bT1ErhX4LxyJmaA2+2ViRkZewFrSlgVHQrf5t5e7Ug5FQpLydi5/Q4Jx+ggedDnl3T9iHq77ZnrjkQdLSIHfUDWsh/LskyNknKxEu2vmNMr5hO2IbVL876igrml0u9B19x6VpjAC3F8cobYAW/d7ou+OQ5Ygv7lzsO3mjK23iXVyPcYBo7m2Yhrf2XQ+wqsVs9VsiAAKY4zGl7e31aWPvnZOXFe+DWKsyMd1AX0yCngxjBrV9zQbMPHXpZvkug1YzKMMJA3LdCotNkpiyfP7PEgRuZmA2ca+nJlQZzHDwJywZIdERV+TIPh+Ng==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5445.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(376002)(39860400002)(366004)(396003)(136003)(451199021)(31686004)(6486002)(6666004)(478600001)(83380400001)(2616005)(31696002)(86362001)(2906002)(186003)(6506007)(53546011)(6512007)(26005)(38100700002)(6916009)(66476007)(41300700001)(66946007)(66556008)(4326008)(316002)(36756003)(8676002)(5660300002)(8936002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3176.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(366004)(136003)(346002)(376002)(396003)(451199021)(86362001)(38100700002)(36756003)(66899021)(66946007)(478600001)(5660300002)(26005)(41300700001)(107886003)(8676002)(186003)(6506007)(6512007)(8936002)(966005)(7416002)(2906002)(66556008)(2616005)(6916009)(83380400001)(6666004)(316002)(4326008)(6486002)(66476007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?dm9qZVgzWFo4ckIwcm1mMk9oNlRPazg0TnRSOFp4T2dEOFZkTjZldDFZZ0Rj?=
- =?utf-8?B?MWpHVkxTeHRBcTNMdGM3WmxPS1NqNVVFc1ZocUVFNDNIcTE1b2JjVm5RcW1u?=
- =?utf-8?B?UE8vUHhHYjk4MFU4NHIxUHJDVkltbzFFVTRQNk9UdDU5cGhKRlJ1K0JYNzZK?=
- =?utf-8?B?WVR3Ti9MLzN3d3dLVGh4b2Q1T2oxWGZIR2dCZXpqMnZXREZWYmZLUlhOSXZu?=
- =?utf-8?B?bStPL1Fhc0RuY1cxQ1hRdUpiUXRVUHdDd0ZRTGxpdlhhSkdBdmVjTVV3dnFn?=
- =?utf-8?B?N0ZpVkQ0TGlPdXV3cnp0MkVjSWxUQ1hIQmZVRkpSK21qUEVUTG9meGFnR3R1?=
- =?utf-8?B?MXJmRHFLQlZMUk1zQXdNZVh4UGZEbzl5VXhFUUNyV0l4c0t5YksxZGNWN2ph?=
- =?utf-8?B?dXNnTWV6VmZYelhHcE55RVpCaUdYdWNHai9hMkFodVVmK1RHdTlvamdvczJx?=
- =?utf-8?B?VkJpNVk0Q2NOd2ZydmtUNksweThwSWVIajdiWm9LZVIwd2lDZU1vVzU0aG5p?=
- =?utf-8?B?VzdZYW1oOVhXZUt1dkJEbWt1dTlrT2Z5RWt3NEd5SUxQNWNhVVRRNzZJRk5w?=
- =?utf-8?B?em5hMUpsNzcyWkJjRFIyaU1sTkRoT3BISS9vYlNaUjRkUnFTVHhwaTUxUXJG?=
- =?utf-8?B?Q0NNS3FGaGh5REFpNS9jc3p1cFJGY3ZSRjlMRHY4azErUmJneE8zMzNNSFF2?=
- =?utf-8?B?dTQ1QkpqZGFCVndKQkpmZ2p0MlZJTnV1dHgwY3FZMnA3U3ROaTAyMERTVk9h?=
- =?utf-8?B?aHA3V3J4ZksyOUpTdm9YVWdZSW9NUG16bUR5VlJiVDVibTRDd1h4SzlWdU5z?=
- =?utf-8?B?RWxwdTViYlFlcFpJd2dYbXpNcWZ4R2IxVDJIZWowOXV4dEsxejV5VVVsUXN1?=
- =?utf-8?B?MUhEeDNjdHR6NGIzbXRDOUxrdG44QjEwRno1RkdjY1pnVEs4ZHpzdkkyT1Jr?=
- =?utf-8?B?c1pYWlh3MVdBOHV1ZkVkcWRKd0tyUkJVT0I0c0R1UnhaM2hHMVM1bWdKY2lK?=
- =?utf-8?B?SXA5VW9xRjB3aHJ3SWp4K0JLZ2JJbGZTRmpwNUh0T2tMRGhPK0VCR3Bnd2o0?=
- =?utf-8?B?NU16cHJZMTVaVGgyc2o0YXovRkQ4ZCtyaFl3YzlIOUVwc1lQaVYxNml5OE9D?=
- =?utf-8?B?RlFWTURpU2VZS0trbFcwa25IVXE0UDVhbTF4UzVaMGh4QitpUi9Jbk1nSWdj?=
- =?utf-8?B?aE9pSzBsM3RiOTVSMHdpVWNJTDFMNm5ST2RhTW9BaGtqc09ucEFJV1M0QVAz?=
- =?utf-8?B?aVZQRlc5bWxLUFNhYU1EQUNtQjZFQTdpQWdXbkN3cEVxQnAxLzViaTJaSGZL?=
- =?utf-8?B?UFduT2xPbnJFcktOa2ZwVDlLQzZ0NnBNSmE3emN4eXRlOEZhYzI4QzNOTnBw?=
- =?utf-8?B?cDFtWkFOc1NUUjN2MFlydHJLbkpOc3NLV2hWSzdkdytMQzlkcHZmQlhnYXdw?=
- =?utf-8?B?RW1Yc0N5WVc5d1VWZHhFZkFOeW9ST2htMHQ2b3RBTnNCSzI1Y08reENDczk0?=
- =?utf-8?B?bWJWaWpYV0tzcnNXU1dVWVdnR1RFbGRXbG4yTDNndUg3WkE1WU80OE1kRXpm?=
- =?utf-8?B?dWNnTVkrKy9WS2RLaVg3ZWFaNW1BSS90U3d4c25wemJYK3ZhemdPYWlwZUZT?=
- =?utf-8?B?aEVvQ2lyN2EvYm9UZGdKa2xjT1p1cWt2QSs2bW5FeDlUTmpmb2lnbFE0NkZR?=
- =?utf-8?B?aGtuNXJyTForNWRGMEc0SWJBdE9VTmYreCtsZ3BONVRUWXRYbmdqUG9sUkNU?=
- =?utf-8?B?TjJXTkJ5K0k1U2FhQnhxOTNWWWtBTjB0eU1wNTlmTFhvTmw5R0xHMFl5RDNK?=
- =?utf-8?B?TFpCZDAwbUZvQStxdlVDa0phcGFKdFAyekNHeXVBTzNTOG9pcGx5enZ6dm53?=
- =?utf-8?B?cllTRFpYWnFpOWdMdDI4R21PclBpTzhCeHd2QlYzazFGdmJRUWtjWXhHY3ha?=
- =?utf-8?B?VEN6VUFWWjZtcEVwemlvc0pvOVRUV3VrZXR0d2grb2VKTjQ3N2dzK3pZVkFH?=
- =?utf-8?B?N1pDTG43QTBaNU9kTCs0QjA2UE8rdkxWOVBxUWFzcUpzV2R1Y0U4ckx4STIw?=
- =?utf-8?B?cXlTenNtODZYZTdJOVBYcDdpbjB2ZUpMMHpyRTJ6eEo1ckRnbGgyRkhFZnVI?=
- =?utf-8?Q?cCK+iJyUmlPW4scaEZf+ydQxX?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c634741c-afaf-4707-b207-08db8759a398
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
+	=?us-ascii?Q?4IGkTle+hYeCXqjWhTc6z9wzsg7a8rNpHOtBPHIFqoGOk8lUtDVDghVijce3?=
+ =?us-ascii?Q?77UcQcB0WHbIskZWiVWqI1c8kiNPldZZdxphHP7hpysjHZ48LChwfRjSPjyM?=
+ =?us-ascii?Q?7oTLulPSbFSIFkxksIof/IwRS1tef8CEa/0POgF2EIL/rR3E/C9KC5y1ld9q?=
+ =?us-ascii?Q?n3UHy294I5NQy4Q9eiozG4YqKdAL9cFZYTjBEX4HgqDB1Pck/Bft8LHzAZeV?=
+ =?us-ascii?Q?bFYxAp/AhLGi2ae2XJIJij83VEPoZg71v9arhA1RaVamUIcgplDXZqvyMTyL?=
+ =?us-ascii?Q?UMfmK9CbEhLy4D0DPGUIkLVrfGCfzQwQnaJ7ZvXP5Ja8BhDQ547ZAYHgCrCh?=
+ =?us-ascii?Q?3hvS9Sq28c4AbbbDb5ojPRrgNnlVSozmLHLh5ZSoJddoImFqPJDd/mqiGzV4?=
+ =?us-ascii?Q?5nkIbR/FzMm0zNpPng0ul9mwlxXFQcPHZHnqDdyF5WHm484P81rS7/NtASka?=
+ =?us-ascii?Q?T7J7a63MVJOfqGHiLzgDn3PsF88VLyjxcA9ReYqTJvXKBNPJoV8s6X8sCGvA?=
+ =?us-ascii?Q?dISSfaYL8QMM/6e2WWer8KznXJAbUtbFB5dhZoNeJCqOv9lsq6sRUIQHF82T?=
+ =?us-ascii?Q?71xLmP+d2eUTdJTRSlZf0NboJfYkEmJ2k2oM1TVQH5jsCP5G9ptqJCetpjL+?=
+ =?us-ascii?Q?PVwaveB+N3CDg/YapqWPdk0tvcpt7/6hGB0OSQdPnbFeijG6SJm1MY6BfxRH?=
+ =?us-ascii?Q?fIEwpKhYd/9BEIiv/B8U+k2QCYT6aX1mHYv4VQfOJtz7NgodXXBofbpma5Oo?=
+ =?us-ascii?Q?6ZqYXWN3OdNsKW9jzYAf8q/qzA1qiztAwwmjQjva5st+sf135k3rn09OXQuE?=
+ =?us-ascii?Q?/qxIEBVGbaD0na1dzDohN3mokk1mll7+5LMwjbOqW4aT4HQy9pLicJdNo/TH?=
+ =?us-ascii?Q?WZSPeDucdBTq+gPn/uL+gtdnPCarIDc0SwKCEyLHvIBHq7qO8eV5s9iOgR34?=
+ =?us-ascii?Q?WuzjkqJ5RwN1wYL/1OnvHYcFDm7PxL9CZmQ2S7D/NQ4tRkA296hBEacoUSaX?=
+ =?us-ascii?Q?sW4eoyHiGVZcd625PhKF0WFwacDimkS2zap3EXxZQYCbhGTz/eu2KcHvhHhO?=
+ =?us-ascii?Q?J7F97npLDRNi0t9Xdy7FETBfAlPxeKP+xVjA9oId4yVUCBWSZ5arjDlmG6uJ?=
+ =?us-ascii?Q?QyMOFdYKztpFJknPWKmc5FAaCv7T5erfeahB1hltU74Bwl2eRefhKHngWJkb?=
+ =?us-ascii?Q?VIAZlVQNirB7W1qQqh0V82Z/t1PRc9zCqOTCD0i35fNqq07tJwlPrSVa3hKf?=
+ =?us-ascii?Q?B3hYJ9Olmd3ByOm5NfTlTmNb8hacmxcsDPLc1JPKeNPV7OBsGYJ3/6rUO/n6?=
+ =?us-ascii?Q?GME5L64/T1W+1fk27BjEbbQUMXi9I8N1Cn1SmDNUwuPgs1+nOai0XARIRfp0?=
+ =?us-ascii?Q?HMcxjbicpH1wegzsBY7WSuLghrStTNOfL8Wm2wTKJ43evA6ea8iyjoUCUfKD?=
+ =?us-ascii?Q?FPTrez0NILnPlj04YtupZWNQmW9AH7UqFmDfmLTpQI7Ai2h3Ea+2WVm+3MQl?=
+ =?us-ascii?Q?Cqbb5ykun7hB9SQjRELgYVtd9PTdHoeM+GQXsL1B33x7/KLbW72KKRjJN9l7?=
+ =?us-ascii?Q?YILHN4/K8VBpr+hleIHPX6pACcGxc8epne3mHVfA?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7ef8032e-8ec2-4372-77c7-08db8764825d
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3176.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jul 2023 06:38:47.1321
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jul 2023 07:56:35.8383
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TbBFUkQdSwd46cY5KMxUw4XsxKVBIml/y0Uus53IfH2FfYsbfU24Hv9Ao20RrHbd9LLAdegik9pc2TiXSAhzYA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5331
+X-MS-Exchange-CrossTenant-UserPrincipalName: LYGl4G1NVFpyj/khwDs0GtCWesz2NH4u9CROibzMq+ZX0NiURtxp06MSmwv6mYgRvw4acQ+5OmHoX4AfXOf0FQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB8180
 
-Jason,
+The main change is to move secondary TLB invalidation mmu notifier
+callbacks into the architecture specific TLB flushing functions. This
+makes secondary TLB invalidation mostly match CPU invalidation while
+still allowing efficient range based invalidations based on the
+existing TLB batching code.
 
-On 7/17/2023 7:23 AM, Jason Gunthorpe wrote:
-> On Sun, Jul 16, 2023 at 08:22:37PM -0500, Suthikulpanit, Suravee wrote:
->>>>
->>>> ....
->>>>
->>>> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
->>>> index 346c32343417..907af6e41ae9 100644
->>>> --- a/drivers/iommu/amd/amd_iommu_types.h
->>>> +++ b/drivers/iommu/amd/amd_iommu_types.h
->>>> @@ -443,13 +443,11 @@
->>>>    #define MAX_DOMAIN_ID 65536
->>>>    /* Protection domain flags */
->>>> -#define PD_DMA_OPS_MASK		BIT(0) /* domain used for dma_ops */
->>>> -#define PD_DEFAULT_MASK		BIT(1) /* domain is a default dma_ops
->>>> -					      domain for an IOMMU */
->>>> -#define PD_PASSTHROUGH_MASK	BIT(2) /* domain has no page
->>>> -					      translation */
->>>> -#define PD_IOMMUV2_MASK		BIT(3) /* domain has gcr3 table */
->>>> -#define PD_GIOV_MASK		BIT(4) /* domain enable GIOV support */
->>>
->>>> +#define PD_FLAG_V1DMA		BIT(1) /* DMA-API mode w/ v1 page table */
->>>> +#define PD_FLAG_V2DMA		BIT(2) /* DMA-API mode w/ v2 page table */
->>>
->>> "DMA-API" should not be part of the driver vocabulary. Does this have
->>> anything to do with DMA-API?
->>>
->>> Only "paging" domains should have IO page tables and an IO page table
->>> type.
->>>
->>> Maybe this is just misnamed?
->>
->> These flags are for struct protection_domain in AMD IOMMU driver, and not
->> for the struct iommu_domain.
-> 
-> I understand that
-> 
->> PD_FLAG_V[1|2]DMA flags are used to signify that the domain is using v1 or
->> v2 page table to implement IOMMU_DOMAIN_DMA (which has __IOMMU_DOMAIN_PAGING
->> | __IOMMU_DOMAIN_DMA_API).
-> 
-> Again, no, drivers should have no sensitivity to
-> __IOMMU_DOMAIN_DMA_API, we are trying to get rid of this. Please don't
-> add more to the driver.
+==========
+Background
+==========
 
-Ok, no mention of "DMA" in the naming.
+The arm64 architecture specifies TLB permission bits may be cached and
+therefore the TLB must be invalidated during permission upgrades. For
+the CPU this currently occurs in the architecture specific
+ptep_set_access_flags() routine.
 
->>> Also, shouldn't it be an enum not flags?
->>
->> We use flags instead of enum because we exepect to have combination of the
->> flags. For example
->> * IOMMU_DOMAIN_DMA + amd_iommu=pgtbl_v1 = (PD_FLAG_V1DMA)
->> * IOMMU_DOMAIN_DMA + amd_iommu=pgtbl_v2 = (PD_FLAG_V2DMA | PD_FLAG_GIOV)
->> * IOMMU_DOMAIN_SVA = (PD_FLAG_SVA | PD_FLAG_GCR3)
->> * Domain for v2API = (PD_FLAG_V2API | PD_FLAG_GCR3)
-> 
-> You shouldn't have these distinctions. There should only be one enum
-> that specifies that format the IOPTEs are, and the rest is implied.
+Secondary TLBs such as implemented by the SMMU IOMMU match the CPU
+architecture specification and may also cache permission bits and
+require the same TLB invalidations. This may be achieved in one of two
+ways.
 
-Still not quite sure what you meant by "the rest is implied".
+Some SMMU implementations implement broadcast TLB maintenance
+(BTM). This snoops CPU TLB invalidates and will invalidate any
+secondary TLB at the same time as the CPU. However implementations are
+not required to implement BTM.
 
-Anyhow, instead, we could introduce struct protection_domain.pd_mode as 
-enum where:
+Implementations without BTM rely on mmu notifier callbacks to send
+explicit TLB invalidation commands to invalidate SMMU TLB. Therefore
+either generic kernel code or architecture specific code needs to call
+the mmu notifier on permission upgrade.
 
-enum amd_iommu_domain_pt_mode {
-     AMD_IOMMU_PD_MODE_PT = 0, /* No page table setup */
-     AMD_IOMMU_PD_MODE_V1,     /* IOMMU v1 page table */
-     AMD_IOMMU_PD_MODE_V2,     /* IOMMU v2 page table */
-};
+Currently that doesn't happen so devices will fault indefinitely when
+writing to a PTE that was previously read-only as nothing invalidates
+the SMMU TLB.
 
-Then we need a way to distinguish whether the v2 table is:
-  * Managed by IOMMU driver for DMA-API, which supports only PASID=0.
-  * Bound using the SVA interface
-  * Bound using the AMD IOMMUv2 API
+========
+Solution
+========
 
-What if we introduce a struct protection_domain.gcr3_flags, and use it 
-to track information for setting up DTE and GCR3 table for the following 
-scenarios.
+To fix this the series first renames the .invalidate_range() callback
+to .arch_invalidate_secondary_tlbs() as suggested by Jason and Sean to
+make it clear this callback is only used for secondary TLBs. That was
+made possible thanks to Sean's series [1] to remove KVM's incorrect
+usage.
 
-Considering an IOMMU group containing a PASID capable device.
+Based on feedback from Jason [2] the proposed solution to the bug is
+to move the calls to mmu_notifier_arch_invalidate_secondary_tlbs()
+closer to the architecture specific TLB invalidation code. This
+ensures the secondary TLB won't miss invalidations, including the
+existing invalidation in the ARM64 code to deal with permission
+upgrade.
 
-CASE 1:
--------
-When boot w/ "iommu=nopt amd_iommu=pgtable_v2", the device would be 
-setup to support DMA-API with AMD IOMMU v2 page table with PASID=0 in 
-the GCR3 table for this domain (i.e. DTE[GIOV]=1).
+Currently only ARM64, PowerPC and x86 have IOMMU with secondary TLBs
+requiring SW invalidation so the notifier is only called for those
+architectures. It is also not called for invalidation of kernel
+mappings as no secondary IOMMU implementations can access those and
+hence it is not required.
 
-Here, we can set:
-   pd_mode    = AMD_IOMMU_PD_MODE_V2;
-   gcr3_flags = AMD_IOMMU_GCR3_FLAG_GIOV;   /* bit 0 */,
+[1] - https://lore.kernel.org/all/20230602011518.787006-1-seanjc@google.com/
+[2] - https://lore.kernel.org/linux-mm/ZJMR5bw8l+BbzdJ7@ziepe.ca/
 
-CASE 2:
--------
-Following case 1, the device driver calls 
-iommu_dev_enable_feature(IOMMU_DEV_FEAT_SVA) and iommu_sva_bind_device().
+Alistair Popple (4):
+  mm_notifiers: Rename invalidate_range notifier
+  arm64/smmu: Use TLBI ASID when invalidating entire range
+  mmu_notifiers: Call arch_invalidate_secondary_tlbs() when invalidating TLBs
+  mmu_notifiers: Don't invalidate secondary TLBs as part of mmu_notifier_invalidate_range_end()
 
-Here, we need to maintain DMA-API mapping from case 1. We would keep the 
-GCR3 table from case 1, and bind IOMMU v2 page table from mm_struct to a 
-non-zero PASID in the same GCR3 table for SVA support. This is possible 
-because the kernel manages PASID-space starting from PASID=1.
+ arch/arm64/include/asm/tlbflush.h               |   5 +-
+ arch/powerpc/include/asm/book3s/64/tlbflush.h   |   1 +-
+ arch/powerpc/mm/book3s64/radix_hugetlbpage.c    |   1 +-
+ arch/powerpc/mm/book3s64/radix_tlb.c            |   6 +-
+ arch/x86/mm/tlb.c                               |   3 +-
+ drivers/iommu/amd/iommu_v2.c                    |  10 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c |  29 +++--
+ drivers/iommu/intel/svm.c                       |   8 +-
+ drivers/misc/ocxl/link.c                        |   8 +-
+ include/asm-generic/tlb.h                       |   1 +-
+ include/linux/mmu_notifier.h                    | 104 ++++-------------
+ kernel/events/uprobes.c                         |   2 +-
+ mm/huge_memory.c                                |  29 +----
+ mm/hugetlb.c                                    |   8 +-
+ mm/memory.c                                     |   8 +-
+ mm/migrate_device.c                             |   9 +-
+ mm/mmu_notifier.c                               |  47 +++-----
+ mm/rmap.c                                       |  40 +-------
+ 18 files changed, 109 insertions(+), 210 deletions(-)
 
-Here, we can set:
-   pd_mode    = AMD_IOMMU_PD_MODE_V2;
-   gcr3_flags = (AMD_IOMMU_GCR3_FLAS_GIOV |		/* bit 0 */
-                 AMD_IOMMU_GCR3_FLAG_MANAGED_PASID)	/* bit 1 */
-
-Notes:
-  - This would also allow non-PASID and PASID capable devices in the 
-same IOMMU group to co-exist with full isolation support.
-
-  - The AMD_IOMMU_GCR3_FLAGS_MANAGED_PASID is cleared when the domain no 
-longer contain SVA-enabled devices.
-
-CASE 3:
--------
-Current default behavior for IOMMU group with PASID/PRI capable device 
-is to setup the device in pass-through mode.
-
-Here, we can set
-   pd_mode = AMD_IOMMU_PD_MODE_PT;
-
-Subsequently, when calling amd_iommu_bind_pasid(), the IOMMU driver 
-would set
-   pd_mode    = AMD_IOMMU_PD_MODE_V2;
-   gcr3_flags = AMD_IOMMU_GCR3_FLAG_UNMANAGED_PASID;	/* bit 2 */
-
-Notes:
-  - Since kernel does not manage PASIDs for v2API, and the device driver 
-is responsible for providing a PASID when calling 
-amd_iommu_bind_pasid(), we cannot reserve PASID 0 for non-PASID device. 
-Therefore, device in this group would set DTE[GIOV]=0.
-
-  - We cannot have case 1 or 2 with case 3 in the same IOMMU group since 
-GCR3 table is currently per-group/domain (i.e. one default domain 
-per-group).
-
-  - TBD: Despite the upcoming SVA support, we still need to maintain 
-support for the existing AMD v2 API (which we might consider deprecating 
-in the future and put on bug-fix mode only), and we cannot break 
-existing device drivers.
-
-> GCR3 is the "PASID table" right? it should not be part of the
-> iommu_domain struct either, SMMUv3 is busy undoing this mistake in
-> their design right now.
-
-GCR3 table is the same as PASID table,
-
-Could you please elaborate on this part if it should not be as part of 
-the domain? What's the new design for SMMUv3?
-
->> It helps keeping track of how the IOMMU driver needs to setup DTEs for
->> device in a particular domain.
-> 
-> Yes, I understand what it is for. It is important that the right data
-> be stored in the right places or you will have to redo it all. If it
-> does not directly related to describing the format of the IOPTEs then
-> it has no business being in the iommu_domain struct or it's driver
-> variants like protection_domain. It belongs someplace else.
-
-For AMD IOMMU, GCR3 table is setup in DTE for each device. So, 
-technically, it can be setup per device. However, devices in the same 
-domain can share the same mapping (e.g. a domain w/ multiple non-PASID 
-capable devices would share the same IOMMU v2 page table w/ PASID=0 for 
-DMA-API support). This is why we have struct protection_domain.gcr3_tbl 
-to avoid duplicate GCR3 table for these devices.
-
-Alternatively, If we don't care about the additional memory to setup 
-per-device GCR3 table, we could move gcr3_tbl, gcr3_flags, and any 
-related variables to the per-device struct iommu_dev_data, which 
-contains device-specific data for AMD IOMMU driver.
-
->>>> +#define PD_FLAG_GIOV		BIT(4) /* domain enable GIOV support */
->>>
->>> This really shouldn't be a iommu_domain flag, this should be computed
->>> based on what domains are attached where
->>>
->>> Eg this seems like it should be triggered by attaching identity to the
->>> RID with PASID enabled or something like that.
-
-Actually, I am not sure that I understand this point.
-
->>> Why do you need to set it for the legacy GPU path?
-
-This should not have anything to do with the legacy GPU.
-
->> The PD_FLAG_GIOV is necessary for when we setup the v2 page table for
->> devices, which cannot support PASID. With the DTE[GIOV] bit set, IOMMU
->> hardware would treat the request from these devices as if it use PASID 0.
-> 
-> I understand that, but you are supposed to deduce this from having a
-> RID bound page table installed into a PASID 0 slot but other logic, it
-> is very much not part of the domain itself.
-
-IIUC, the scenarios above should clearly describe when the DTE[GIOV] 
-would is determined, and tracked by gcr3_tbl. This information is used 
-when setting up DTE for each device.
-
-> (as we all the other variations of this flag when you set an IDENTITY
-> domain on the RID while having PASID operating)
-
-I am not sure that I understand this point.
-
-Please let me know if I am missing something, or if you have different 
-ideas to share.
-
-Thanks,
-Suravee
+base-commit: fdf0eaf11452d72945af31804e2a1048ee1b574c
+-- 
+git-series 0.9.1
