@@ -1,60 +1,61 @@
-Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F9D1AD4B
-	for <iommu@lists.linux.dev>; Tue, 18 Jul 2023 12:36:29 +0000 (UTC)
-Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-7659db6339eso246078185a.1
-        for <iommu@lists.linux.dev>; Tue, 18 Jul 2023 05:36:29 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B78A3134BD
+	for <iommu@lists.linux.dev>; Tue, 18 Jul 2023 17:57:15 +0000 (UTC)
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-1b8b2b60731so33532875ad.2
+        for <iommu@lists.linux.dev>; Tue, 18 Jul 2023 10:57:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1689683788; x=1692275788;
+        d=ziepe.ca; s=google; t=1689703035; x=1692295035;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=tkLDZ1Mr27s0sPeIuDfD7KYm9+yHWcDi6GnlbhqN7uk=;
-        b=n69pRQs6r7Vw0LXAJNk5h4dKhD4a/JEkC1/ZDTsP5Mds+6djZz8oqlg3rzISbEf7m7
-         kMQTNc92LCdLkKLPV6qEUApKa4OZB0SHTPJoFfhD7z4rGopFXsP5K4KIOqDSAB1Xvz5q
-         2paWbqe8A3CFVJS8C2srFhqcvl6oGjDFkFtdMQ6WI5xvSfF+R02ue0DsKIEV3xKtrGiW
-         DGPxQjr0c5TszyXEs6Pu4y7YhcK9DySeRjEm1JoKN/R1/1+HS/8Cdu9aoel9+7iFFK6Y
-         2QI/DOas67A9T4TTCmG9LnWJxW/OtPz3LjCkr55kM/Q1UdukimID8kHyOhVY+/LiLvzZ
-         8a/w==
+        bh=cRD9blNIxHluSUPOIYULRJbi8uFOds7uOEZDc3kDErE=;
+        b=mMpImavfY2ADOOfTsM0dULPAztPWwAkAxaN5EBRdgTONlUbuDv0bc/jnql1JEnUeOO
+         bda5Tj4uvdDQ4B+NJ/gmvkMeUhOrHdA5CxK42FliEYPeTWhjOiI8i0+G+nUodHSTQx/g
+         HanMLQr/dHe8w7iHPBOx35pnzrQWodjmfukbs1BbseIHXHWTRnEizqCumzGYhUaGm+dQ
+         jRxPO5RqjGL1hwX87TamgliuO3lsmronneNDvHaIucdFlccgiBcVHg4FAmdI6hkUO0Ji
+         3UXm13B3+3pT+2iToWzn8Ie1OvrVbaXYWR6AEsbzg//AwTK48dHUa2cpqzFIrDJGPtWZ
+         5PWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689683788; x=1692275788;
+        d=1e100.net; s=20221208; t=1689703035; x=1692295035;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=tkLDZ1Mr27s0sPeIuDfD7KYm9+yHWcDi6GnlbhqN7uk=;
-        b=SskaSm+zHJuVWPcdBGEk/r8Txp3N8ll1GrVDbmxaUfXyb+3n7MWYZXDEG7mU38V8zo
-         f6XsQVUCaNA/MMKmHZQI7pGpJxcP+X9frBfw7YK+wg3V5f+1o0jLWraJJ8az8EqyI85N
-         PL2IZ43I4pCAvhJkFOpZ3/yhB5pjOCHXzQJwaLaO8LOYzAaNk+7AP3JRMuRwsnkBo5Jw
-         CrWJV0sgaIz4jCDidsB0ZFUiOP1pWXk3ifzuYNigf+jcSc4fOz47dP+ax2EQ684TAPTz
-         BdpWW9rSXhewTNWauZvC5gsH7aL9xg+R68duptLZthacHUjvu4M98mLgAH4wRaqW7gFP
-         thCA==
-X-Gm-Message-State: ABy/qLbbiGwCIkYpYG9fWyXDdkrrXIDfO652d+WQMrzdLMpNSF+0WaKO
-	MkWFLyxDww8OAjnlh7ws7NNwTA==
-X-Google-Smtp-Source: APBJJlH2m/KJZixFoXN0eypDQBDA960wXJ9P1Yj3a2iOLQCTOBRpy6Xxgm3pt9mPK++/l8YAhr2bWw==
-X-Received: by 2002:a05:620a:178e:b0:765:3c4a:6237 with SMTP id ay14-20020a05620a178e00b007653c4a6237mr14397303qkb.16.1689683788558;
-        Tue, 18 Jul 2023 05:36:28 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id p25-20020a05620a113900b00767cee76155sm547842qkk.55.2023.07.18.05.36.27
+        bh=cRD9blNIxHluSUPOIYULRJbi8uFOds7uOEZDc3kDErE=;
+        b=i2QMPp+Uhn+kP0v/kdovqKIPMf+w3NwP/VTftEyS8OOSyt+ARo/TQt6LIxNZ1lrDyK
+         eFTaDFrZxgPggWBsem39Ij8meRHa0QT2kZ8OrBjQho8pzVpqqL3RH7YEOIRehjIDPS0s
+         ZIbzxOcyOUzfxngDIejXJ93R6nQMC3FyTwOEF0+qqu+WdvqDt90ivAtTqFDrFci2FaEJ
+         sbjNh7auGKr8laufb8ZWxr+0J2A5WZw4cCO4uNIc7UfaCt+Fw1lRaSpTrOuf6zW0mPVu
+         yy8mXdsb9E9pXVda24j/cjOzGHpUkDGbTiYtOKoZ6/JCg21YQrQ5wB+Y1g6yx8bGWzLP
+         Jxzw==
+X-Gm-Message-State: ABy/qLZRqjAb2g/d3cjG3D7v6tbE1wv1TpFod8IdcJU2XXL4F/MNisTy
+	mtT21TqZoqAy6BEZ/AyLIWw/pg==
+X-Google-Smtp-Source: APBJJlH/DFdDcamBY608z6if+lXRDqfUJnrs4w53GX7UPxfbPo+Y0+UeHJe6ZmJVTzN0SvAK3Kq8RA==
+X-Received: by 2002:a17:902:e549:b0:1b8:aef2:773e with SMTP id n9-20020a170902e54900b001b8aef2773emr17009609plf.46.1689703034916;
+        Tue, 18 Jul 2023 10:57:14 -0700 (PDT)
+Received: from ziepe.ca ([206.223.160.26])
+        by smtp.gmail.com with ESMTPSA id iw10-20020a170903044a00b001b89612dc7dsm2167740plb.142.2023.07.18.10.57.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jul 2023 05:36:27 -0700 (PDT)
+        Tue, 18 Jul 2023 10:57:13 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qLjwJ-002V8k-3w;
-	Tue, 18 Jul 2023 09:36:27 -0300
-Date: Tue, 18 Jul 2023 09:36:27 -0300
+	id 1qLowi-002aex-Bi;
+	Tue, 18 Jul 2023 14:57:12 -0300
+Date: Tue, 18 Jul 2023 14:57:12 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
-Cc: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
-	joro@8bytes.org
-Subject: Re: [PATCH 11/21] iommu/amd: Clean up and enhance protection domain
- flags
-Message-ID: <ZLaHS5bWAu1yjqoW@ziepe.ca>
-References: <20230712141516.154144-1-vasant.hegde@amd.com>
- <20230712141516.154144-12-vasant.hegde@amd.com>
- <ZLGFH6qERiRbD6cd@ziepe.ca>
- <db7fe0f7-77d9-f898-0503-d6da58cf25c6@amd.com>
- <ZLUyzrmRKhz4wwQ0@ziepe.ca>
- <1b5b9a47-0e4c-927c-c19a-9ee05ef66918@amd.com>
+To: Alistair Popple <apopple@nvidia.com>
+Cc: akpm@linux-foundation.org, ajd@linux.ibm.com, catalin.marinas@arm.com,
+	fbarrat@linux.ibm.com, iommu@lists.linux.dev, jhubbard@nvidia.com,
+	kevin.tian@intel.com, kvm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, linuxppc-dev@lists.ozlabs.org,
+	mpe@ellerman.id.au, nicolinc@nvidia.com, npiggin@gmail.com,
+	robin.murphy@arm.com, seanjc@google.com, will@kernel.org,
+	x86@kernel.org, zhi.wang.linux@gmail.com
+Subject: Re: [PATCH 1/4] mm_notifiers: Rename invalidate_range notifier
+Message-ID: <ZLbSeO+XjSx1W795@ziepe.ca>
+References: <cover.b4454f7f3d0afbfe1965e8026823cd50a42954b4.1689666760.git-series.apopple@nvidia.com>
+ <c0daf0870f7220bbf815713463aff86970a5d0fa.1689666760.git-series.apopple@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -63,206 +64,78 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1b5b9a47-0e4c-927c-c19a-9ee05ef66918@amd.com>
+In-Reply-To: <c0daf0870f7220bbf815713463aff86970a5d0fa.1689666760.git-series.apopple@nvidia.com>
 
-On Mon, Jul 17, 2023 at 11:38:44PM -0700, Suthikulpanit, Suravee wrote:
+On Tue, Jul 18, 2023 at 05:56:15PM +1000, Alistair Popple wrote:
+> diff --git a/include/asm-generic/tlb.h b/include/asm-generic/tlb.h
+> index b466172..48c81b9 100644
+> --- a/include/asm-generic/tlb.h
+> +++ b/include/asm-generic/tlb.h
+> @@ -456,7 +456,7 @@ static inline void tlb_flush_mmu_tlbonly(struct mmu_gather *tlb)
+>  		return;
+>  
+>  	tlb_flush(tlb);
+> -	mmu_notifier_invalidate_range(tlb->mm, tlb->start, tlb->end);
+> +	mmu_notifier_invalidate_secondary_tlbs(tlb->mm, tlb->start, tlb->end);
+>  	__tlb_reset_range(tlb);
 
-> Then we need a way to distinguish whether the v2 table is:
->  * Managed by IOMMU driver for DMA-API, which supports only PASID=0.
+Does this compile? I don't see
+"mmu_notifier_invalidate_secondary_tlbs" ?
 
-There is not even such a thing.
+Maybe we don't need to rename this function since you pretty much
+remove it in the next patches?
 
-The driver should have an iommu domain. It should have and indication
-if it is PAGING or BLOCKING/IDENTITY. For PAGING domains you have an
-indication of the IOPTE format.
+> diff --git a/mm/mmu_notifier.c b/mm/mmu_notifier.c
+> index 50c0dde..34c5a84 100644
+> --- a/mm/mmu_notifier.c
+> +++ b/mm/mmu_notifier.c
+> @@ -207,7 +207,7 @@ mmu_interval_read_begin(struct mmu_interval_notifier *interval_sub)
+>  	 *    spin_lock
+>  	 *     seq = ++subscriptions->invalidate_seq
+>  	 *    spin_unlock
+> -	 *     op->invalidate_range():
+> +	 *     op->invalidate_secondary_tlbs():
 
-"DMA-API" is a PAGING domain with v1 or v2 IOPTEs
-UNMANAGED is the same, a PAGING domain with v1 or v2 IOPTEs
-SVA is a "PAGING" domain with v2 IOPTEs
-"AMD IOMMUv2 API" is PAGING domain with v2 IOPTEs
+The later patch should delete this stuff from the comment too, we
+no longer guarantee this relationship?
 
-The core code provides two actions for the driver, attach domain to
-RID, attach domain to PASID.
+> @@ -560,23 +560,23 @@ mn_hlist_invalidate_end(struct mmu_notifier_subscriptions *subscriptions,
+>  	hlist_for_each_entry_rcu(subscription, &subscriptions->list, hlist,
+>  				 srcu_read_lock_held(&srcu)) {
+>  		/*
+> -		 * Call invalidate_range here too to avoid the need for the
+> -		 * subsystem of having to register an invalidate_range_end
+> -		 * call-back when there is invalidate_range already. Usually a
+> -		 * subsystem registers either invalidate_range_start()/end() or
+> -		 * invalidate_range(), so this will be no additional overhead
+> -		 * (besides the pointer check).
+> +		 * Subsystems should register either invalidate_secondary_tlbs()
+> +		 * or invalidate_range_start()/end() callbacks.
+>  		 *
+> -		 * We skip call to invalidate_range() if we know it is safe ie
+> -		 * call site use mmu_notifier_invalidate_range_only_end() which
+> -		 * is safe to do when we know that a call to invalidate_range()
+> -		 * already happen under page table lock.
+> +		 * We call invalidate_secondary_tlbs() here so that subsystems
+> +		 * can use larger range based invalidations. In some cases
+> +		 * though invalidate_secondary_tlbs() needs to be called while
+> +		 * holding the page table lock. In that case call sites use
+> +		 * mmu_notifier_invalidate_range_only_end() and we know it is
+> +		 * safe to skip secondary TLB invalidation as it will have
+> +		 * already been done.
+>  		 */
+> -		if (!only_end && subscription->ops->invalidate_range)
+> -			subscription->ops->invalidate_range(subscription,
+> -							    range->mm,
+> -							    range->start,
+> -							    range->end);
+> +		if (!only_end && subscription->ops->invalidate_secondary_tlbs)
+> +			subscription->ops->invalidate_secondary_tlbs(
 
-If you attach a V1 PAGING domain to a RID then you have to put it in
-the DTE
+More doesn't compile, and the comment has the same issue..
 
-If you attach a V2 PAGING domain to a RID then you have to put it in
-PASID 0 within a shared GCR3 table. The GCR3 table is NOT part of the
-struct protection_domain.
-
-The descision how to configure the DTE/GCR3 is based only on *how and
-what domains are attached*.
-
-Doing this wrong is why the driver that that weird mess with trying to
-have two different versions of the identity domain.
-
-> What if we introduce a struct protection_domain.gcr3_flags, and use it to
-> track information for setting up DTE and GCR3 table for the following
-> scenarios.
-
-It is still logically wrong, the GCR3 table has nothing to do with
-the driver's iommu_domain. The iommu domain is only about the IOPTEs
-contained within it, not the GCR3 table.
-
-> CASE 1:
-> -------
-> When boot w/ "iommu=nopt amd_iommu=pgtable_v2", the device would be setup to
-> support DMA-API with AMD IOMMU v2 page table with PASID=0 in the GCR3 table
-> for this domain (i.e. DTE[GIOV]=1).
-> 
-> Here, we can set:
->   pd_mode    = AMD_IOMMU_PD_MODE_V2;
->   gcr3_flags = AMD_IOMMU_GCR3_FLAG_GIOV;   /* bit 0 */,
-
-As above, the alloc_domain will return a PAGING domain with v2 IOPTEs.
-
-The core will request to install it in the RID
-
-The driver will allocate a shared GCR3 "PASID table" for the RID and
-install that in the DTE. Then it will install the PAGING domain in the
-PASID0 slot.
-
-> CASE 2:
-> -------
-> Following case 1, the device driver calls
-> iommu_dev_enable_feature(IOMMU_DEV_FEAT_SVA) and iommu_sva_bind_device().
->
-> Here, we need to maintain DMA-API mapping from case 1. We would keep the
-> GCR3 table from case 1, and bind IOMMU v2 page table from mm_struct to a
-> non-zero PASID in the same GCR3 table for SVA support. This is possible
-> because the kernel manages PASID-space starting from PASID=1.
-
-Again no issue, the core code does alloc_sva, it returns a "PAGING"
-domain with v2 IOPTE format. It does a PASID attach. The driver
-ensures the shared GCR3 table is loaded to the DTE and then assigns
-the SVA domain to the correct PASID slot.
-
->  - The AMD_IOMMU_GCR3_FLAGS_MANAGED_PASID is cleared when the domain no
-> longer contain SVA-enabled devices.
-
-There is no such thing as "a domain contains devices"
- 
-> CASE 3:
-> -------
-> Current default behavior for IOMMU group with PASID/PRI capable device is to
-> setup the device in pass-through mode.
-> 
-> Here, we can set
->   pd_mode = AMD_IOMMU_PD_MODE_PT;
-> 
-> Subsequently, when calling amd_iommu_bind_pasid(), the IOMMU driver would
-> set
->   pd_mode    = AMD_IOMMU_PD_MODE_V2;
->   gcr3_flags = AMD_IOMMU_GCR3_FLAG_UNMANAGED_PASID;	/* bit 2 */
-
-The core code will call alloc_domain with IDENTITY and attach it to
-the RID.
-
-This should be a DTE setup for IDENTITY.
-
-Later something will alloc_domain an UNMANGED domain for the PASID !=0 
-with v2 IOPTEs.
-
-When the UNMANAGED domain is assigned to the PASID the driver asserts
-the shared GCR3 table is loaded. Since the RID is attached to IDENTITY
-it computes a DTE that keeps IDENTITY working (GIOV=0, right?). It
-then loads the V2 UNAMANGED domain to the correct PASID in the shared
-GCR3.
-
->  - Since kernel does not manage PASIDs for v2API, and the device driver is
-> responsible for providing a PASID when calling amd_iommu_bind_pasid(), we
-> cannot reserve PASID 0 for non-PASID device. Therefore, device in this group
-> would set DTE[GIOV]=0.
-
-The core code works this way too. PASID0 should be kept reserved in
-both APIs to make RID devices easier. Driver should refuse to attach a
-domain to PASID 0.
-
->  - We cannot have case 1 or 2 with case 3 in the same IOMMU group since GCR3
-> table is currently per-group/domain (i.e. one default domain per-group).
-
-This is the same design mistake smmuv3 made. The GCR3 table must not
-be part of the iommu_domain otherwise you end up being stuck and
-unable to replace the RID domain, which is breaking the API contract
-from the core code.
-
-The GCR3 table must be shared, and must not be part of the
-iommu_domain related memory.
-
-Once done like this you can freely mix cases 1/2/3 dynamically
-because the GCR3 table is not stored in the wrong place.
-
->  - TBD: Despite the upcoming SVA support, we still need to maintain support
-> for the existing AMD v2 API (which we might consider deprecating in the
-> future and put on bug-fix mode only), and we cannot break existing device
-> drivers.
-
-Er, no, you need to eliminate the AMD v2 API as part of this work. We
-cannot have a private API that duplicates the normal core API that is
-only used by AMD GPU. This is the kernel, so we don't maintain
-"APIs". You update the in-tree AMDGPU driver to use the core API and
-then you purge the old API.
-
-> > GCR3 is the "PASID table" right? it should not be part of the
-> > iommu_domain struct either, SMMUv3 is busy undoing this mistake in
-> > their design right now.
-> 
-> GCR3 table is the same as PASID table,
->
-> Could you please elaborate on this part if it should not be as part of the
-> domain? What's the new design for SMMUv3?
-
-There is a long thread, all the same concepts apply here, the
-underlying HW flow is basically the same, just with different names
-(STE=DTE, CD=GCR3, S2=V1, S1=V2)
-
-https://lore.kernel.org/linux-iommu/20230621063825.268890-1-mshavit@google.com
-
-And prior postings.
-
-> However, devices in the same domain can share the same mapping
-> (e.g. a domain w/ multiple non-PASID capable devices would share the
-> same IOMMU v2 page table w/ PASID=0 for DMA-API support). This is
-> why we have struct protection_domain.gcr3_tbl to avoid duplicate
-> GCR3 table for these devices.
-
-The domain is the wrong place to put this. If you want to share the
-GCR3 table between DTEs in the same group then use
-iommu_group_get_iommudata() to associate the shared table with the
-group.
-
-> Alternatively, If we don't care about the additional memory to setup
-> per-device GCR3 table, we could move gcr3_tbl, gcr3_flags, and any related
-> variables to the per-device struct iommu_dev_data, which contains
-> device-specific data for AMD IOMMU driver.
-
-This is what Michael is proposing for SMMUv3.
-
-Keep in mind that the core code now basically blocks use of PASID for
-typical multi-device group scenarios. So you should think carefully if
-AMD actually has a use case for multiple DTE's sharing the same GCR3
-table that is worth optimizing for.
-
-> > > > > +#define PD_FLAG_GIOV		BIT(4) /* domain enable GIOV support */
-> > > > 
-> > > > This really shouldn't be a iommu_domain flag, this should be computed
-> > > > based on what domains are attached where
-> > > > 
-> > > > Eg this seems like it should be triggered by attaching identity to the
-> > > > RID with PASID enabled or something like that.
-> 
-> Actually, I am not sure that I understand this point.
-
-GIOV controls what happens to PASID-less TLPs.
-
-One option is to translate through the DTE, which for the 
-kernel owned configuration is IDENTITY.
-
-Another option is to translate through the GCR3 PASID 0 v2 PAGING
-domain.
-
-The driver selects the correct GIOV value based on what is attached to
-the RID. IDENTITY or PAGING will decide what GIOV should be.
+But I think the approach in this series looks fine, it is so much
+cleaner after we remove all the cruft in patch 4, just look at the
+diffstat..
 
 Jason
