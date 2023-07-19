@@ -1,43 +1,43 @@
-Received: from mail-io1-f51.google.com (mail-io1-f51.google.com [209.85.166.51])
+Received: from mail-pg1-f178.google.com (mail-pg1-f178.google.com [209.85.215.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 911511BB3E
-	for <iommu@lists.linux.dev>; Wed, 19 Jul 2023 19:34:28 +0000 (UTC)
-Received: by mail-io1-f51.google.com with SMTP id ca18e2360f4ac-7836164a08aso390526239f.1
-        for <iommu@lists.linux.dev>; Wed, 19 Jul 2023 12:34:28 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6EEF1BB44
+	for <iommu@lists.linux.dev>; Wed, 19 Jul 2023 19:34:30 +0000 (UTC)
+Received: by mail-pg1-f178.google.com with SMTP id 41be03b00d2f7-55adfa72d3fso4209222a12.3
+        for <iommu@lists.linux.dev>; Wed, 19 Jul 2023 12:34:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20221208.gappssmtp.com; s=20221208; t=1689795267; x=1690400067;
+        d=rivosinc-com.20221208.gappssmtp.com; s=20221208; t=1689795270; x=1690400070;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=FdGmPDy4n8Vb9yckrY3NHJ0yplI6UyLJ02ulp/zmXZw=;
-        b=HecAfKZg9Xu/PFX1+zVYZYlqqow6E/dqLCp2s59n3O/xfMNhZ1IcSBmsZ+yJK5yNZL
-         N5QknaUrOuOpLSTFmj+MWb/R4/rP7abzfMWRnDK/dpQ/I6huV/G8S6SoVAYQf3jyjBYc
-         ITXB1yxmxSgIKH+s1sMPFwsyhlwsCD3w0so/PM12hwEOfcikG3bfcZdbu0ypKBEuN/gu
-         VP71K10oPMLxWNldnN5H5JKrGbSGgWpQLr4SMMleYtLvyes4e4RlNw7G1q4GorTf0DJt
-         gAqzhs9DEql29OqfU1pSrU/R0JUUn/T1cffMhVSuj+e5CHeakg/+oKqiTz3fVOG0oVX+
-         1rXQ==
+        bh=kazktXpEq6ieqwYBLKPipn4wLh0FPr3HRxxmkK9WPZw=;
+        b=UveCNGN/BmDS/dpiK9E9WFCdSGeEIQLJPq+TntSzb0OVJUKw8457QVlJpeuQBkGvPA
+         RRHvJ5DPD+YjGNmWNyhCdSuuVl3VMSI9ofTQbKQwSNcK0e0Vg9o0L2GIs2aMxrWtZOox
+         kU5On+QttGg8berHD3o13+eKyaPVp79IJuAcTNbIymf/uJKx8aPzDCZvoII2/6G6/+ck
+         D1BftMOLEl51OKc99Xxz5oRFJQFX2KzO62i0MeapKueO7YOgnefuGlVIlaTcZHcaIQfM
+         gmdcVwEUQKTJx3z1JyyRfqHKURuY6kO2Aj2t4Tqhfy7BXNJZtPpPHZ3GxSNpwxmRozHd
+         nqxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689795267; x=1690400067;
+        d=1e100.net; s=20221208; t=1689795270; x=1690400070;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=FdGmPDy4n8Vb9yckrY3NHJ0yplI6UyLJ02ulp/zmXZw=;
-        b=NTjbNzlBvVHNQFfODdQ10jJtrp0ArylyOP0B749adgzP7y/6U4U2bhxzwhkjdCQv6D
-         0bVBuIDh4qA6ZE5jw2438zSFg5wTmySfef4Lljkv4CoW5dKoz0S0nf9dIAq3I2QskXtY
-         +G+tAoaNCBgpJ83OoiUoD3rfa3BNpYJlg2oJa6c3HZQPV2hcTKceVxvcQx2czoH67oDe
-         SvufHwkDb7TJkrNfLwAGXCOWxDOrdlzSwIh5186MotuXIQp20axff4bJVPrHU4EOnf/m
-         3GGowW1z16iqZKI2Oq3omoiykyWqTkkJWJRHd+ktimzEnjX06mGze+ORJXyu/YAZTJQn
-         iVGQ==
-X-Gm-Message-State: ABy/qLabWBBxPorfgEDe97ISwZzUezpSlsWiYtAyMKenUACVp0pxEuUx
-	e3PbMwYHTGXWCaGbwIIi7HKtqA==
-X-Google-Smtp-Source: APBJJlGN7srrpW1Dfo4Ygw07TXS+Dfssh8mV+rp8AEjMaeoQuXFsWsSaJe/QFh3kOeDRzzfvovNgSA==
-X-Received: by 2002:a05:6e02:12ed:b0:348:936b:ae12 with SMTP id l13-20020a056e0212ed00b00348936bae12mr3737637iln.11.1689795267467;
-        Wed, 19 Jul 2023 12:34:27 -0700 (PDT)
+        bh=kazktXpEq6ieqwYBLKPipn4wLh0FPr3HRxxmkK9WPZw=;
+        b=LxidX97cAMalh4PIvN/TUg1lKpEYx9uVrN9WbevR1lizSjt/l52UxxB/WZ6zCWPIqY
+         JPwsGxKmnQ7YJB851PBhbp+DGbISMd9inUCPWoINsu7zO6NCotzuY8oOmLFi5Kn46mvQ
+         CEEyiWttbKu+Hpru2DHW32PWlBJWJzLA46hanLGKxyo/c4v1Oxs5MrKlCdYtCir+lus8
+         tcka3AplC0CpYxkXYZotpPNuXOHDh57VNGY8iyja6n5AvulSI9xUTmfwBo7BV+oqvibT
+         m1SS0H+0NDQDyc/4s81LBPjmxv3oF9HoC4GsalVUGSnWX498yCKQ/qLYr8ph2ddc4b/u
+         8bLw==
+X-Gm-Message-State: ABy/qLarau0+hq3fPzeCvvPZIgN/tK0eKzek/mpDF/eFNW9hTx5HhfYB
+	hQovYiHNSyR4ZiADBJHSm7VI4A==
+X-Google-Smtp-Source: APBJJlE778Ah24ZWQjDXEFU6ITYD0j+QG6da7Iiv5Pd0d2PSojZrjWDn9oS4U2WcdSjIz8eWHa04MA==
+X-Received: by 2002:a17:90a:901:b0:263:fc43:5f39 with SMTP id n1-20020a17090a090100b00263fc435f39mr169347pjn.13.1689795269929;
+        Wed, 19 Jul 2023 12:34:29 -0700 (PDT)
 Received: from tjeznach.ba.rivosinc.com ([66.220.2.162])
-        by smtp.gmail.com with ESMTPSA id 23-20020a17090a031700b00264040322desm1591053pje.40.2023.07.19.12.34.26
+        by smtp.gmail.com with ESMTPSA id 23-20020a17090a031700b00264040322desm1591053pje.40.2023.07.19.12.34.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Jul 2023 12:34:27 -0700 (PDT)
+        Wed, 19 Jul 2023 12:34:29 -0700 (PDT)
 From: Tomasz Jeznach <tjeznach@rivosinc.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -52,10 +52,11 @@ Cc: Palmer Dabbelt <palmer@dabbelt.com>,
 	iommu@lists.linux.dev,
 	linux-riscv@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
-	linux@rivosinc.com
-Subject: [PATCH 03/11] dt-bindings: Add RISC-V IOMMU bindings
-Date: Wed, 19 Jul 2023 12:33:47 -0700
-Message-Id: <d62ceb33620cab766d809e6bbf30eaf5b46bc955.1689792825.git.tjeznach@rivosinc.com>
+	linux@rivosinc.com,
+	Tomasz Jeznach <tjeznach@rivosinc.com>
+Subject: [PATCH 05/11] RISC-V: drivers/iommu/riscv: Add sysfs interface
+Date: Wed, 19 Jul 2023 12:33:49 -0700
+Message-Id: <610abe685f90870be52bc7c2ca45ab5235bd8eb4.1689792825.git.tjeznach@rivosinc.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1689792825.git.tjeznach@rivosinc.com>
 References: <cover.1689792825.git.tjeznach@rivosinc.com>
@@ -65,171 +66,255 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF8
 Content-Transfer-Encoding: 8bit
 
-From: Anup Patel <apatel@ventanamicro.com>
+Enable sysfs debug / visibility interface providing restricted
+access to hardware registers.
 
-We add DT bindings document for RISC-V IOMMU platform and PCI devices
-defined by the RISC-V IOMMU specification.
-
-Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
 ---
- .../bindings/iommu/riscv,iommu.yaml           | 146 ++++++++++++++++++
- 1 file changed, 146 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+ drivers/iommu/riscv/Makefile      |   2 +-
+ drivers/iommu/riscv/iommu-sysfs.c | 183 ++++++++++++++++++++++++++++++
+ drivers/iommu/riscv/iommu.c       |   7 ++
+ drivers/iommu/riscv/iommu.h       |   2 +
+ 4 files changed, 193 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/iommu/riscv/iommu-sysfs.c
 
-diff --git a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+diff --git a/drivers/iommu/riscv/Makefile b/drivers/iommu/riscv/Makefile
+index 38730c11e4a8..9523eb053cfc 100644
+--- a/drivers/iommu/riscv/Makefile
++++ b/drivers/iommu/riscv/Makefile
+@@ -1 +1 @@
+-obj-$(CONFIG_RISCV_IOMMU) += iommu.o iommu-pci.o iommu-platform.o
+\ No newline at end of file
++obj-$(CONFIG_RISCV_IOMMU) += iommu.o iommu-pci.o iommu-platform.o iommu-sysfs.o
+\ No newline at end of file
+diff --git a/drivers/iommu/riscv/iommu-sysfs.c b/drivers/iommu/riscv/iommu-sysfs.c
 new file mode 100644
-index 000000000000..8a9aedb61768
+index 000000000000..f038ea8445c5
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
-@@ -0,0 +1,146 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iommu/riscv,iommu.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/drivers/iommu/riscv/iommu-sysfs.c
+@@ -0,0 +1,183 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * IOMMU API for RISC-V architected Ziommu implementations.
++ *
++ * Copyright © 2022-2023 Rivos Inc.
++ *
++ * Author: Tomasz Jeznach <tjeznach@rivosinc.com>
++ */
 +
-+title: RISC-V IOMMU Implementation
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/compiler.h>
++#include <linux/iommu.h>
++#include <linux/platform_device.h>
++#include <asm/page.h>
 +
-+maintainers:
-+  - Tomasz Jeznach <tjeznach@rivosinc.com>
++#include "iommu.h"
 +
-+description:
-+  The RISC-V IOMMU specificaiton defines an IOMMU for RISC-V platforms
-+  which can be a regular platform device or a PCI device connected to
-+  the host root port.
++#define sysfs_dev_to_iommu(dev) \
++	container_of(dev_get_drvdata(dev), struct riscv_iommu_device, iommu)
 +
-+  The RISC-V IOMMU provides two stage translation, device directory table,
-+  command queue and fault reporting as wired interrupt or MSIx event for
-+  both PCI and platform devices.
++static ssize_t address_show(struct device *dev,
++			    struct device_attribute *attr, char *buf)
++{
++	struct riscv_iommu_device *iommu = sysfs_dev_to_iommu(dev);
++	return sprintf(buf, "%llx\n", iommu->reg_phys);
++}
 +
-+  Visit https://github.com/riscv-non-isa/riscv-iommu for more details.
++static DEVICE_ATTR_RO(address);
 +
-+properties:
-+  compatible:
-+    oneOf:
-+      - description: RISC-V IOMMU as a platform device
-+        items:
-+          - enum:
-+              - vendor,chip-iommu
-+          - const: riscv,iommu
++#define ATTR_RD_REG32(name, offset)					\
++	ssize_t reg_ ## name ## _show(struct device *dev,		\
++			struct device_attribute *attr, char *buf)	\
++{									\
++	struct riscv_iommu_device *iommu = sysfs_dev_to_iommu(dev);	\
++	return sprintf(buf, "0x%x\n",					\
++			riscv_iommu_readl(iommu, offset));		\
++}
 +
-+      - description: RISC-V IOMMU as a PCI device connected to root port
-+        items:
-+          - enum:
-+              - vendor,chip-pci-iommu
-+          - const: riscv,pci-iommu
++#define ATTR_RD_REG64(name, offset)					\
++	ssize_t reg_ ## name ## _show(struct device *dev,		\
++			struct device_attribute *attr, char *buf)	\
++{									\
++	struct riscv_iommu_device *iommu = sysfs_dev_to_iommu(dev);	\
++	return sprintf(buf, "0x%llx\n",					\
++			riscv_iommu_readq(iommu, offset));		\
++}
 +
-+  reg:
-+    maxItems: 1
-+    description:
-+      For RISC-V IOMMU as a platform device, this represents the MMIO base
-+      address of registers.
++#define ATTR_WR_REG32(name, offset)					\
++	ssize_t reg_ ## name ## _store(struct device *dev,		\
++			struct device_attribute *attr,			\
++			const char *buf, size_t len)			\
++{									\
++	struct riscv_iommu_device *iommu = sysfs_dev_to_iommu(dev);	\
++	unsigned long val;						\
++	int ret;							\
++	ret = kstrtoul(buf, 0, &val);					\
++	if (ret)							\
++		return ret;						\
++	riscv_iommu_writel(iommu, offset, val);				\
++	return len;							\
++}
 +
-+      For RISC-V IOMMU as a PCI device, this represents the PCI-PCI bridge
-+      details as described in Documentation/devicetree/bindings/pci/pci.txt
++#define ATTR_WR_REG64(name, offset)					\
++	ssize_t reg_ ## name ## _store(struct device *dev,		\
++			struct device_attribute *attr,			\
++			const char *buf, size_t len)			\
++{									\
++	struct riscv_iommu_device *iommu = sysfs_dev_to_iommu(dev);	\
++	unsigned long long val;						\
++	int ret;							\
++	ret = kstrtoull(buf, 0, &val);					\
++	if (ret)							\
++		return ret;						\
++	riscv_iommu_writeq(iommu, offset, val);				\
++	return len;							\
++}
 +
-+  '#iommu-cells':
-+    const: 2
-+    description: |
-+      Each IOMMU specifier represents the base device ID and number of
-+      device IDs.
++#define ATTR_RO_REG32(name, offset)					\
++static ATTR_RD_REG32(name, offset);					\
++static DEVICE_ATTR_RO(reg_ ## name)
 +
-+  interrupts:
-+    minItems: 1
-+    maxItems: 16
-+    description:
-+      The presence of this property implies that given RISC-V IOMMU uses
-+      wired interrupts to notify the RISC-V HARTS (or CPUs).
++#define ATTR_RW_REG32(name, offset)					\
++static ATTR_RD_REG32(name, offset);					\
++static ATTR_WR_REG32(name, offset);					\
++static DEVICE_ATTR_RW(reg_ ## name)
 +
-+  msi-parent:
-+    description:
-+      The presence of this property implies that given RISC-V IOMMU uses
-+      MSIx to notify the RISC-V HARTs (or CPUs). This property should be
-+      considered only when the interrupts property is absent.
++#define ATTR_RO_REG64(name, offset)					\
++static ATTR_RD_REG64(name, offset);					\
++static DEVICE_ATTR_RO(reg_ ## name)
 +
-+  dma-coherent:
-+    description:
-+      Present if page table walks and DMA accessed made by the RISC-V IOMMU
-+      are cache coherent with the CPU.
++#define ATTR_RW_REG64(name, offset)					\
++static ATTR_RD_REG64(name, offset);					\
++static ATTR_WR_REG64(name, offset);					\
++static DEVICE_ATTR_RW(reg_ ## name)
 +
-+  power-domains:
-+    maxItems: 1
++ATTR_RO_REG64(cap, RISCV_IOMMU_REG_CAP);
++ATTR_RO_REG64(fctl, RISCV_IOMMU_REG_FCTL);
++ATTR_RO_REG32(cqh, RISCV_IOMMU_REG_CQH);
++ATTR_RO_REG32(cqt, RISCV_IOMMU_REG_CQT);
++ATTR_RO_REG32(cqcsr, RISCV_IOMMU_REG_CQCSR);
++ATTR_RO_REG32(fqh, RISCV_IOMMU_REG_FQH);
++ATTR_RO_REG32(fqt, RISCV_IOMMU_REG_FQT);
++ATTR_RO_REG32(fqcsr, RISCV_IOMMU_REG_FQCSR);
++ATTR_RO_REG32(pqh, RISCV_IOMMU_REG_PQH);
++ATTR_RO_REG32(pqt, RISCV_IOMMU_REG_PQT);
++ATTR_RO_REG32(pqcsr, RISCV_IOMMU_REG_PQCSR);
++ATTR_RO_REG32(ipsr, RISCV_IOMMU_REG_IPSR);
++ATTR_RO_REG32(ivec, RISCV_IOMMU_REG_IVEC);
++ATTR_RW_REG64(tr_iova, RISCV_IOMMU_REG_TR_REQ_IOVA);
++ATTR_RW_REG64(tr_ctrl, RISCV_IOMMU_REG_TR_REQ_CTL);
++ATTR_RW_REG64(tr_response, RISCV_IOMMU_REG_TR_RESPONSE);
++ATTR_RW_REG32(iocntovf, RISCV_IOMMU_REG_IOCOUNTOVF);
++ATTR_RW_REG32(iocntinh, RISCV_IOMMU_REG_IOCOUNTINH);
++ATTR_RW_REG64(iohpmcycles, RISCV_IOMMU_REG_IOHPMCYCLES);
++ATTR_RW_REG64(iohpmevt_1, RISCV_IOMMU_REG_IOHPMEVT(0));
++ATTR_RW_REG64(iohpmevt_2, RISCV_IOMMU_REG_IOHPMEVT(1));
++ATTR_RW_REG64(iohpmevt_3, RISCV_IOMMU_REG_IOHPMEVT(2));
++ATTR_RW_REG64(iohpmevt_4, RISCV_IOMMU_REG_IOHPMEVT(3));
++ATTR_RW_REG64(iohpmevt_5, RISCV_IOMMU_REG_IOHPMEVT(4));
++ATTR_RW_REG64(iohpmevt_6, RISCV_IOMMU_REG_IOHPMEVT(5));
++ATTR_RW_REG64(iohpmevt_7, RISCV_IOMMU_REG_IOHPMEVT(6));
++ATTR_RW_REG64(iohpmctr_1, RISCV_IOMMU_REG_IOHPMCTR(0));
++ATTR_RW_REG64(iohpmctr_2, RISCV_IOMMU_REG_IOHPMCTR(1));
++ATTR_RW_REG64(iohpmctr_3, RISCV_IOMMU_REG_IOHPMCTR(2));
++ATTR_RW_REG64(iohpmctr_4, RISCV_IOMMU_REG_IOHPMCTR(3));
++ATTR_RW_REG64(iohpmctr_5, RISCV_IOMMU_REG_IOHPMCTR(4));
++ATTR_RW_REG64(iohpmctr_6, RISCV_IOMMU_REG_IOHPMCTR(5));
++ATTR_RW_REG64(iohpmctr_7, RISCV_IOMMU_REG_IOHPMCTR(6));
 +
-+required:
-+  - compatible
-+  - reg
-+  - '#iommu-cells'
++static struct attribute *riscv_iommu_attrs[] = {
++	&dev_attr_address.attr,
++	&dev_attr_reg_cap.attr,
++	&dev_attr_reg_fctl.attr,
++	&dev_attr_reg_cqh.attr,
++	&dev_attr_reg_cqt.attr,
++	&dev_attr_reg_cqcsr.attr,
++	&dev_attr_reg_fqh.attr,
++	&dev_attr_reg_fqt.attr,
++	&dev_attr_reg_fqcsr.attr,
++	&dev_attr_reg_pqh.attr,
++	&dev_attr_reg_pqt.attr,
++	&dev_attr_reg_pqcsr.attr,
++	&dev_attr_reg_ipsr.attr,
++	&dev_attr_reg_ivec.attr,
++	&dev_attr_reg_tr_iova.attr,
++	&dev_attr_reg_tr_ctrl.attr,
++	&dev_attr_reg_tr_response.attr,
++	&dev_attr_reg_iocntovf.attr,
++	&dev_attr_reg_iocntinh.attr,
++	&dev_attr_reg_iohpmcycles.attr,
++	&dev_attr_reg_iohpmctr_1.attr,
++	&dev_attr_reg_iohpmevt_1.attr,
++	&dev_attr_reg_iohpmctr_2.attr,
++	&dev_attr_reg_iohpmevt_2.attr,
++	&dev_attr_reg_iohpmctr_3.attr,
++	&dev_attr_reg_iohpmevt_3.attr,
++	&dev_attr_reg_iohpmctr_4.attr,
++	&dev_attr_reg_iohpmevt_4.attr,
++	&dev_attr_reg_iohpmctr_5.attr,
++	&dev_attr_reg_iohpmevt_5.attr,
++	&dev_attr_reg_iohpmctr_6.attr,
++	&dev_attr_reg_iohpmevt_6.attr,
++	&dev_attr_reg_iohpmctr_7.attr,
++	&dev_attr_reg_iohpmevt_7.attr,
++	NULL,
++};
 +
-+additionalProperties: false
++static struct attribute_group riscv_iommu_group = {
++	.name = "riscv-iommu",
++	.attrs = riscv_iommu_attrs,
++};
 +
-+examples:
-+  - |
-+    /* Example 1 (IOMMU platform device with wired interrupts) */
-+    immu1: iommu@1bccd000 {
-+        compatible = "vendor,chip-iommu", "riscv,iommu";
-+        reg = <0x1bccd000 0x1000>;
-+        interrupt-parent = <&aplic_smode>;
-+        interrupts = <32 4>, <33 4>, <34 4>, <35 4>;
-+        #iommu-cells = <2>;
-+    };
++const struct attribute_group *riscv_iommu_groups[] = {
++	&riscv_iommu_group,
++	NULL,
++};
 +
-+    /* Device with two IOMMU device IDs, 0 and 7 */
-+    master1 {
-+        iommus = <&immu1 0 1>, <&immu1 7 1>;
-+    };
++int riscv_iommu_sysfs_add(struct riscv_iommu_device *iommu) {
++	return iommu_device_sysfs_add(&iommu->iommu, NULL,
++		riscv_iommu_groups, "riscv-iommu@%llx", iommu->reg_phys);
++}
 +
-+  - |
-+    /* Example 2 (IOMMU platform device with MSIs) */
-+    immu2: iommu@1bcdd000 {
-+        compatible = "vendor,chip-iommu", "riscv,iommu";
-+        reg = <0x1bccd000 0x1000>;
-+        msi-parent = <&imsics_smode>;
-+        #iommu-cells = <2>;
-+    };
+diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+index 8c236242e2cc..31dc3c458e13 100644
+--- a/drivers/iommu/riscv/iommu.c
++++ b/drivers/iommu/riscv/iommu.c
+@@ -608,6 +608,7 @@ static const struct iommu_ops riscv_iommu_ops = {
+ void riscv_iommu_remove(struct riscv_iommu_device *iommu)
+ {
+ 	iommu_device_unregister(&iommu->iommu);
++	iommu_device_sysfs_remove(&iommu->iommu);
+ 	riscv_iommu_enable(iommu, RISCV_IOMMU_DDTP_MODE_OFF);
+ }
+ 
+@@ -646,6 +647,12 @@ int riscv_iommu_init(struct riscv_iommu_device *iommu)
+ 		goto fail;
+ 	}
+ 
++	ret = riscv_iommu_sysfs_add(iommu);
++	if (ret) {
++		dev_err(dev, "cannot register sysfs interface (%d)\n", ret);
++		goto fail;
++	}
 +
-+    bus {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
+ 	ret = iommu_device_register(&iommu->iommu, &riscv_iommu_ops, dev);
+ 	if (ret) {
+ 		dev_err(dev, "cannot register iommu interface (%d)\n", ret);
+diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
+index 7baefd3630b3..7dc9baa59a50 100644
+--- a/drivers/iommu/riscv/iommu.h
++++ b/drivers/iommu/riscv/iommu.h
+@@ -112,4 +112,6 @@ static inline void riscv_iommu_writeq(struct riscv_iommu_device *iommu,
+ int riscv_iommu_init(struct riscv_iommu_device *iommu);
+ void riscv_iommu_remove(struct riscv_iommu_device *iommu);
+ 
++int riscv_iommu_sysfs_add(struct riscv_iommu_device *iommu);
 +
-+        /* Device with IOMMU device IDs ranging from 32 to 64 */
-+        master1 {
-+                iommus = <&immu2 32 32>;
-+        };
-+
-+        pcie@40000000 {
-+            compatible = "pci-host-cam-generic";
-+            device_type = "pci";
-+            #address-cells = <3>;
-+            #size-cells = <2>;
-+            bus-range = <0x0 0x1>;
-+
-+            /* CPU_PHYSICAL(2)  SIZE(2) */
-+            reg = <0x0 0x40000000 0x0 0x1000000>;
-+
-+            /* BUS_ADDRESS(3)  CPU_PHYSICAL(2)  SIZE(2) */
-+            ranges = <0x01000000 0x0 0x01000000  0x0 0x01000000  0x0 0x00010000>,
-+                     <0x02000000 0x0 0x41000000  0x0 0x41000000  0x0 0x3f000000>;
-+
-+            #interrupt-cells = <0x1>;
-+
-+            /* PCI_DEVICE(3)  INT#(1)  CONTROLLER(PHANDLE)  CONTROLLER_DATA(2) */
-+            interrupt-map = <   0x0 0x0 0x0  0x1  &aplic_smode  0x4 0x1>,
-+                            < 0x800 0x0 0x0  0x1  &aplic_smode  0x5 0x1>,
-+                            <0x1000 0x0 0x0  0x1  &aplic_smode  0x6 0x1>,
-+                            <0x1800 0x0 0x0  0x1  &aplic_smode  0x7 0x1>;
-+
-+            /* PCI_DEVICE(3)  INT#(1) */
-+            interrupt-map-mask = <0xf800 0x0 0x0  0x7>;
-+
-+            msi-parent = <&imsics_smode>;
-+
-+            /* Devices with bus number 0-127 are mastered via immu2 */
-+            iommu-map = <0x0000 &immu2 0x0000 0x8000>;
-+        };
-+    };
-+...
+ #endif
 -- 
 2.34.1
 
