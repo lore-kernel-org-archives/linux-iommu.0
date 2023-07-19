@@ -1,136 +1,130 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4339FC8C9
-	for <iommu@lists.linux.dev>; Wed, 19 Jul 2023 07:41:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689752465; x=1721288465;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=UtXyCIm4pTz3ZLP1P6fBlXlZ9JdyLf5QvHgLzuLlQ/s=;
-  b=AcxVNZOKlEddQbe4638jaxcqKaHAw21eIbg7Oa7V9sF9t2kgO4gvX7wt
-   1RVJZiiXPcdjXtQYITyoQf04yr8Wujpn0GmMFqhSSEOjXH1Cidod8NVG+
-   lZOBS+WsYZpaZE2XML1pv8nndP+x4gnHgPJVfeVPAmCooiVkHudp6ognR
-   ta5Brl4TC0Lg67VzYkdreRDZRejP5oQo05J1BnoEAeheOYIKcHbMcvF/r
-   GAV7y6+/ThgVoGf55x9uqnf8KoldSON1tSS8u33jWbVmx9Jd7TcDD9zjU
-   7OWLVqjf15Sl3OXXrv9QgG9KZJsJO1nTSXvnju7Qc/wtxOgFluEZVIiYH
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10775"; a="397248064"
-X-IronPort-AV: E=Sophos;i="6.01,216,1684825200"; 
-   d="scan'208";a="397248064"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2023 00:41:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10775"; a="814042327"
-X-IronPort-AV: E=Sophos;i="6.01,216,1684825200"; 
-   d="scan'208";a="814042327"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.187.151]) ([10.252.187.151])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2023 00:40:57 -0700
-Message-ID: <de4d5fcc-d402-68db-d712-8561ec6e745f@linux.intel.com>
-Date: Wed, 19 Jul 2023 15:40:52 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B9AD11CB4
+	for <iommu@lists.linux.dev>; Wed, 19 Jul 2023 10:16:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1689761770;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+	bh=BuruPS9lhc1t9yWa6oN21bRI3YjjBxzYMDFcnENMa/E=;
+	b=Ca/EFrbtFzI/kgWVd9GENAEyA23qqdayyBNy2Fz06RGp6ep6axR8qAaqRcfku3AGJJF944
+	TCgl350Xl7PmI7ft6sHlQH15oz3AAwCi6wQpyCRLfYTVhEtXF/NtUWvPQpt10hHJOZoCNJ
+	AUpYFJ1dwkdQe4xQK6pUnWKeA8kX4BA=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-361-wWoeMq_8OsmB3oWAOXOx4A-1; Wed, 19 Jul 2023 06:16:09 -0400
+X-MC-Unique: wWoeMq_8OsmB3oWAOXOx4A-1
+Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-31400956ce8so3670343f8f.3
+        for <iommu@lists.linux.dev>; Wed, 19 Jul 2023 03:16:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1689761768; x=1692353768;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=BuruPS9lhc1t9yWa6oN21bRI3YjjBxzYMDFcnENMa/E=;
+        b=hObDa9G9xejnlrznRe6diDYKsW/x27LcmAdufKkF77J59w8rtur9YJ3FX6e1PaWK4m
+         1KxlzkIMzNDE/G+RP0MQbbfSeys7uX17Gyncw7Xuxqpe3F+0iVBDFrmo8Oxuiybms0ZZ
+         ZJ7A8nW7ex/WiTXu8RePgv+14CrRvwfN4MZI4t2rxH03oue0h/ocEU/azhlo6xZ3286B
+         BW0idwAQ4IpEuCBpFQs2h+RuaV+brCb/9S/GkDazvYZI6QR/Ptpf+K7eh8h+jsz0lRBo
+         OewtsJLaGANuh4MyfIQwRqKW3lKSsUZrX3/+J6RqH+L5wPlBb3cRiwDaaRkAx1kLsXwG
+         LZTg==
+X-Gm-Message-State: ABy/qLbVK0kONfnrfKmhTIWUY53h3mrWVtOX2PAJTj5rERaAaHTefZyu
+	kHo5AGcTynRG4vYvjMG3E5A8gJf1gqO4h5ScszSx241sK3Z94dD8DgSJhq4j92KlUCZNu/XpyOt
+	F1iZlWcQwLFW/7ns=
+X-Received: by 2002:a5d:49c7:0:b0:315:94e7:e100 with SMTP id t7-20020a5d49c7000000b0031594e7e100mr1612366wrs.55.1689761768262;
+        Wed, 19 Jul 2023 03:16:08 -0700 (PDT)
+X-Google-Smtp-Source: APBJJlHvaNhr1gOmNY9eMZGDEyKAg8Zpg7qwsGNYJJBZQv3f1kiSVh1vC5Kv3hERFy3/FF+fPukITA==
+X-Received: by 2002:a5d:49c7:0:b0:315:94e7:e100 with SMTP id t7-20020a5d49c7000000b0031594e7e100mr1612350wrs.55.1689761767914;
+        Wed, 19 Jul 2023 03:16:07 -0700 (PDT)
+Received: from redhat.com ([2.52.16.41])
+        by smtp.gmail.com with ESMTPSA id m18-20020a056000181200b0031434936f0dsm4895611wrh.68.2023.07.19.03.16.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Jul 2023 03:16:06 -0700 (PDT)
+Date: Wed, 19 Jul 2023 06:15:59 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: linux-kernel@vger.kernel.org
+Cc: Jonathan Corbet <corbet@lwn.net>, Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, linux-doc@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: [PATCH] dma: DMA_ATTR_SKIP_CPU_SYNC documentation tweaks
+Message-ID: <98ef4f76d7a5f90b0878e649a70b101402b8889d.1689761699.git.mst@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Cc: baolu.lu@linux.intel.com, Jason Gunthorpe <jgg@nvidia.com>,
- Will Deacon <will@kernel.org>, "Liu, Yi L" <yi.l.liu@intel.com>,
- "Yu, Fenghua" <fenghua.yu@intel.com>, "Luck, Tony" <tony.luck@intel.com>
-Subject: Re: [PATCH v10 5/7] iommu/vt-d: Make prq draining code generic
-To: "Tian, Kevin" <kevin.tian@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- LKML <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- Joerg Roedel <joro@8bytes.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Robin Murphy <robin.murphy@arm.com>
-References: <20230712163355.3177511-1-jacob.jun.pan@linux.intel.com>
- <20230712163355.3177511-6-jacob.jun.pan@linux.intel.com>
- <BN9PR11MB52761F5CDE22E5C3C10E7E728C37A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <9875863a-eba5-c8fa-a39b-7d3300e3b5ca@linux.intel.com>
- <BN9PR11MB52763423F2A18E927065C8EA8C34A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <29fa2860-cbf2-04c8-4d16-138668ffea25@linux.intel.com>
- <BN9PR11MB5276CE65DBB24EF838825B628C39A@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276CE65DBB24EF838825B628C39A@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
+X-Mutt-Fcc: =sent
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 2023/7/19 13:39, Tian, Kevin wrote:
->> From: Baolu Lu <baolu.lu@linux.intel.com>
->> Sent: Friday, July 14, 2023 1:47 PM
->>
->> On 2023/7/14 11:49, Tian, Kevin wrote:
->>>> From: Baolu Lu <baolu.lu@linux.intel.com>
->>>> Sent: Friday, July 14, 2023 11:28 AM
->>>>
->>>> On 2023/7/13 15:49, Tian, Kevin wrote:
->>>>>> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
->>>>>> Sent: Thursday, July 13, 2023 12:34 AM
->>>>>>
->>>>>> -	/* Domain type specific cleanup: */
->>>>>>     	domain = iommu_get_domain_for_dev_pasid(dev, pasid, 0);
->>>>>> -	if (domain) {
->>>>>> -		switch (domain->type) {
->>>>>> -		case IOMMU_DOMAIN_SVA:
->>>>>> -			intel_svm_remove_dev_pasid(dev, pasid);
->>>>>> -			break;
->>>>>> -		default:
->>>>>> -			/* should never reach here */
->>>>>> -			WARN_ON(1);
->>>>>> -			break;
->>>>>> -		}
->>>>>> +	if (!domain)
->>>>>> +		goto out_tear_down;
->>>>>
->>>>> WARN_ON()
->>>>
->>>> Why?
->>>>
->>>> My understanding is that remve_device_pasid could be call in any context
->>>> including no domain attached.
->>>>
->>>
->>> oh I'm not aware of that. Can you elaborate the usage which uses a pasid
->>> w/o domain? pasid needs to point to a page table. Presumably every
->>> page table should be wrapped by a iommu domain...
->>
->> A case I can think of is error rewinding. A domain is being attached to
->> multiple pasids. When one of them is failed, remove_device_pasid should
->> be called on all pasids so that they are parked at a determinant state.
-> 
-> Can you elaborate what is the association among those pasid's so failing
-> one would lead to failing all?
-> 
-> Just like a domain can be attached to multiple devices. I don't think there
-> is an unwinding policy forcing to detach all devices just because there is
-> a failure attaching the domain to a new one.
+A recent patchset highlighted to me that DMA_ATTR_SKIP_CPU_SYNC
+might be easily misunderstood.
 
-It's fine to add a check here if there's no real case. I was just
-thinking that remove_device_pasid could also be invoked when there's no
-domain attached.
+This attempts to improve documentation in several ways:
 
->>
->> On the other hand, I don't want the remove_device_pasid to be the
->> counterpart of attach_dev_pasid. remove_device_pasid simply denotes:
->>
->> - The pasid will be parked in blocking state;
->> - If any domain that has been attached to this pasid, stop reference to
->>     it any more. Otherwise, there might be use-after-free issues.
->>
->> Hence, remove_device_pasid should never fail.
->>
-> 
-> It should never fail. But could warn if there is a condition which shouldn't
-> be hit. 😊
+when used with dma_map_*, DMA_ATTR_SKIP_CPU_SYNC does not
+really assume buffer has been transferred previously -
+the buffer would often not even exist in device domain
+before it's mapped, instead it normally has to be transferred later.
 
-Okay, let's add a check here. And we can loose it later if any real use
-case comes.
+Add a hint on how buffer can be transferred.
 
-Best regards,
-baolu
+Code comments near DMA_ATTR_SKIP_CPU_SYNC focus on
+the use-case of CPU cache synchronization while in
+practice this flag isn't limited to that.
+Make it more generic.
+
+A couple of things I'm thinking about left for a follow-up patch:
+- rename DMA_ATTR_SKIP_CPU_SYNC to DMA_ATTR_SKIP_SYNC
+  there's nothing I can see making it especially related to the CPU.
+- drop mentions of CPU cache from documentation completely
+  and talk about CPU domain exclusively, or maybe mention
+  CPU cache as an example: CPU domain (e.g. CPU cache).
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ Documentation/core-api/dma-attributes.rst | 5 +++--
+ include/linux/dma-mapping.h               | 5 ++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/Documentation/core-api/dma-attributes.rst b/Documentation/core-api/dma-attributes.rst
+index 1887d92e8e92..782734666790 100644
+--- a/Documentation/core-api/dma-attributes.rst
++++ b/Documentation/core-api/dma-attributes.rst
+@@ -61,8 +61,9 @@ same synchronization operation on the CPU cache. CPU cache synchronization
+ might be a time consuming operation, especially if the buffers are
+ large, so it is highly recommended to avoid it if possible.
+ DMA_ATTR_SKIP_CPU_SYNC allows platform code to skip synchronization of
+-the CPU cache for the given buffer assuming that it has been already
+-transferred to 'device' domain. This attribute can be also used for
++the CPU cache for the given buffer assuming that it is
++transferred to 'device' domain separately, e.g. using
++dma_sync_{single,sg}_for_{cpu,device}. This attribute can be also used for
+ dma_unmap_{single,page,sg} functions family to force buffer to stay in
+ device domain after releasing a mapping for it. Use this attribute with
+ care!
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 0ee20b764000..13295ae4385a 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -32,9 +32,8 @@
+  */
+ #define DMA_ATTR_NO_KERNEL_MAPPING	(1UL << 4)
+ /*
+- * DMA_ATTR_SKIP_CPU_SYNC: Allows platform code to skip synchronization of
+- * the CPU cache for the given buffer assuming that it has been already
+- * transferred to 'device' domain.
++ * DMA_ATTR_SKIP_CPU_SYNC: Allows platform code to skip synchronization of the
++ * CPU and device domains for the given buffer.
+  */
+ #define DMA_ATTR_SKIP_CPU_SYNC		(1UL << 5)
+ /*
+-- 
+MST
+
