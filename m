@@ -1,228 +1,346 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03D251BB27
-	for <iommu@lists.linux.dev>; Wed, 19 Jul 2023 22:51:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6007C433C8;
-	Wed, 19 Jul 2023 22:51:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1689807068;
-	bh=d5+z1ZEyAaAcKeXUkztdUKRNArMaOIqIm8Y7klWaUoM=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Kw87m58vIVCFwitWVjfmUAUmlDPnSKOm3YyLm0fF//4cY0ejJvhclPAe4BTet4sg7
-	 PZWH4+CT+o6QEdbY79P+Pk+jqO91k95UWJCOQ16AqMSlgIdKvRe/ysJGMPhyyUltoo
-	 jF/zr4EPYCO8rXFrFhwXe5xValGJGHuL9lrS5rQEsdtvwikgsd8/FGoJeFja6d2gDW
-	 CkczsyZbmaVBbFWrKVOoqlr8xyJ6g0p5bwjSFX3j6K3jaz3s26ustuKdaP5QpFeVp/
-	 3PHzhzWa2eUmsdArIm1IO6Fftp4271kbJUXp+8cC2kxDvLrkqUstD5wd8b/8GGYjhJ
-	 IvjVGisMM8wJw==
-From: SeongJae Park <sj@kernel.org>
-To: Alistair Popple <apopple@nvidia.com>
-Cc: akpm@linux-foundation.org,
-	ajd@linux.ibm.com,
-	catalin.marinas@arm.com,
-	fbarrat@linux.ibm.com,
-	iommu@lists.linux.dev,
-	jgg@ziepe.ca,
-	jhubbard@nvidia.com,
-	kevin.tian@intel.com,
-	kvm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org,
-	linuxppc-dev@lists.ozlabs.org,
-	mpe@ellerman.id.au,
-	nicolinc@nvidia.com,
-	npiggin@gmail.com,
-	robin.murphy@arm.com,
-	seanjc@google.com,
-	will@kernel.org,
-	x86@kernel.org,
-	zhi.wang.linux@gmail.com
-Subject: Re: [PATCH v2 3/5] mmu_notifiers: Call invalidate_range() when invalidating TLBs
-Date: Wed, 19 Jul 2023 22:51:05 +0000
-Message-Id: <20230719225105.1934-1-sj@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <8f293bb51a423afa71ddc3ba46e9f323ee9ffbc7.1689768831.git-series.apopple@nvidia.com>
-References: 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 234BA22F03
+	for <iommu@lists.linux.dev>; Wed, 19 Jul 2023 23:04:52 +0000 (UTC)
+Received: by mail-pj1-f42.google.com with SMTP id 98e67ed59e1d1-26598fc0825so956494a91.0
+        for <iommu@lists.linux.dev>; Wed, 19 Jul 2023 16:04:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20221208.gappssmtp.com; s=20221208; t=1689807892; x=1690412692;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5wFr2A7e5EWp+82eThYDiZpPT27i18/NTWE7QU00Iwo=;
+        b=slUMxadFiLxH+NNFI2NDyiI0rQr8f9NpvfLLOhGsjG3O87r0bcZpvKpTPwrunBBgix
+         s/cmHJkDCRHbplL0GzIVCbuqXlBFs039EcAQnx/flZ5Gi3JAt3TD2pmwnkRjudretQiH
+         rf8DuUSwKLwPAf7m42dHVlr5ByBa/4G2j8KhQXtOVRYJi4VOuqhwjMJmXrdnuY/vUCg6
+         IJvX1PACNIQsf2fy+lpfsr/+zhR0OBdjb7pFzsHns2AkYah12SDiIGpNSUaoZRF/ZfF7
+         y7f7lA8GAqyp8kfSzHTLXKliOVE+L8A6yKVC/BCLClsl7shxYfGKJKgP1iCRG5ps0bPw
+         qp0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1689807892; x=1690412692;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=5wFr2A7e5EWp+82eThYDiZpPT27i18/NTWE7QU00Iwo=;
+        b=Tb/tEb4hShvV6xZvAapZZiX8Lb0tKdCPWD431XmNu6TeTpmroaSrUXSBSzablxtGHH
+         jhB9YTqM3HQ6HXys32T/TczYefYzUKTVYplp6v/oUGzaUU4gSUOol15F6wxqZEQYCR/z
+         yHFO9ZUS4Wfc/J7v8E8hdgYRQwaF30I6kJHOMOjmsoBNsMrdjnrIOlKJApHF/OHT2UiM
+         Aw/kmthDzwRysai74daautkHN7zPJC5eVr1tz0jr1LCuFlSULp+LuVDg9WBc+TG8TD2J
+         Rf1/03hNHNhUslmmSzAeTD+FARW9Jw/bKGl6Y+UHTjRflEC9X3epXvUDzx/NCANYv4Ye
+         PF/A==
+X-Gm-Message-State: ABy/qLbJQLNZ6udabcWy//E7QKLz44PUJay7NQsIKDo6gAe7oHA1BUSg
+	55VTGSA7r96MJXSE/LDu9D1TfArID2h4VhaETzth+g==
+X-Google-Smtp-Source: APBJJlGO9EDGVzmVIbzDbaW4q/7xWmaTWhlijEvEV5ktsCXxLMGAAqX7MC+JIcF9coSbnKNUULA6G0T3b0h/46L1VCU=
+X-Received: by 2002:a17:90a:72c8:b0:261:326d:99e8 with SMTP id
+ l8-20020a17090a72c800b00261326d99e8mr4688870pjk.2.1689807892181; Wed, 19 Jul
+ 2023 16:04:52 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1689792825.git.tjeznach@rivosinc.com> <d62ceb33620cab766d809e6bbf30eaf5b46bc955.1689792825.git.tjeznach@rivosinc.com>
+ <20230719-unnoticed-scion-744fdf509151@spud> <CAL_JsqLsb801Z4H7+ViboBSGwd+XidcpYcJMHgw+6fofsXB=9Q@mail.gmail.com>
+In-Reply-To: <CAL_JsqLsb801Z4H7+ViboBSGwd+XidcpYcJMHgw+6fofsXB=9Q@mail.gmail.com>
+From: Tomasz Jeznach <tjeznach@rivosinc.com>
+Date: Wed, 19 Jul 2023 16:04:41 -0700
+Message-ID: <CAH2o1u5VdOx+MgQFyjEr1__DZmsxLGGqf8v1pDvTHoPJ4OGfGA@mail.gmail.com>
+Subject: Re: [PATCH 03/11] dt-bindings: Add RISC-V IOMMU bindings
+To: Rob Herring <robh+dt@kernel.org>
+Cc: Conor Dooley <conor@kernel.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
+	Anup Patel <apatel@ventanamicro.com>, Albert Ou <aou@eecs.berkeley.edu>, linux@rivosinc.com, 
+	linux-kernel@vger.kernel.org, Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Nick Kossifidis <mick@ics.forth.gr>, linux-riscv@lists.infradead.org, 
+	krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Alistair,
+On Wed, Jul 19, 2023 at 2:37=E2=80=AFPM Rob Herring <robh+dt@kernel.org> wr=
+ote:
+>
+> On Wed, Jul 19, 2023 at 2:19=E2=80=AFPM Conor Dooley <conor@kernel.org> w=
+rote:
+> >
+> > Hey Tomasz,
+> >
+> > On Wed, Jul 19, 2023 at 12:33:47PM -0700, Tomasz Jeznach wrote:
+> > > From: Anup Patel <apatel@ventanamicro.com>
+> > >
+> > > We add DT bindings document for RISC-V IOMMU platform and PCI devices
+> > > defined by the RISC-V IOMMU specification.
+> > >
+> > > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> >
+> > Your signoff is missing from here.
+> >
+> > Secondly, as get_maintainer.pl would have told you, dt-bindings patches
+> > need to be sent to the dt-binding maintainers and list.
+> > +CC maintainers & list.
+> >
+> > Thirdly, dt-binding patches should come before their users.
+> >
+> > > ---
+> > >  .../bindings/iommu/riscv,iommu.yaml           | 146 ++++++++++++++++=
+++
+> > >  1 file changed, 146 insertions(+)
+> > >  create mode 100644 Documentation/devicetree/bindings/iommu/riscv,iom=
+mu.yaml
+> > >
+> > > diff --git a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml=
+ b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+> > > new file mode 100644
+> > > index 000000000000..8a9aedb61768
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+> > > @@ -0,0 +1,146 @@
+> > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > > +%YAML 1.2
+> > > +---
+> > > +$id: http://devicetree.org/schemas/iommu/riscv,iommu.yaml#
+> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > +
+> > > +title: RISC-V IOMMU Implementation
+> > > +
+> > > +maintainers:
+> > > +  - Tomasz Jeznach <tjeznach@rivosinc.com>
+> >
+> > What about Anup, who seems to have written this?
+> > Or your co-authors of the drivers?
+> >
+> > > +
+> > > +description:
+> > > +  The RISC-V IOMMU specificaiton defines an IOMMU for RISC-V platfor=
+ms
+>
+> typo
+>
 
-On Wed, 19 Jul 2023 22:18:44 +1000 Alistair Popple <apopple@nvidia.com> wrote:
+ack
 
-> The invalidate_range() is going to become an architecture specific mmu
-> notifier used to keep the TLB of secondary MMUs such as an IOMMU in
-> sync with the CPU page tables. Currently it is called from separate
-> code paths to the main CPU TLB invalidations. This can lead to a
-> secondary TLB not getting invalidated when required and makes it hard
-> to reason about when exactly the secondary TLB is invalidated.
-> 
-> To fix this move the notifier call to the architecture specific TLB
-> maintenance functions for architectures that have secondary MMUs
-> requiring explicit software invalidations.
-> 
-> This fixes a SMMU bug on ARM64. On ARM64 PTE permission upgrades
-> require a TLB invalidation. This invalidation is done by the
-> architecutre specific ptep_set_access_flags() which calls
-> flush_tlb_page() if required. However this doesn't call the notifier
-> resulting in infinite faults being generated by devices using the SMMU
-> if it has previously cached a read-only PTE in it's TLB.
-> 
-> Moving the invalidations into the TLB invalidation functions ensures
-> all invalidations happen at the same time as the CPU invalidation. The
-> architecture specific flush_tlb_all() routines do not call the
-> notifier as none of the IOMMUs require this.
-> 
-> Signed-off-by: Alistair Popple <apopple@nvidia.com>
-> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
+> > > +  which can be a regular platform device or a PCI device connected t=
+o
+> > > +  the host root port.
+> > > +
+> > > +  The RISC-V IOMMU provides two stage translation, device directory =
+table,
+> > > +  command queue and fault reporting as wired interrupt or MSIx event=
+ for
+> > > +  both PCI and platform devices.
+>
+> TBC, you want a PCI device that's an IOMMU and the IOMMU serves
+> (provides translation for) PCI devices?
+>
 
-I found below kernel NULL-dereference issue on latest mm-unstable tree, and
-bisect points me to the commit of this patch, namely
-75c400f82d347af1307010a3e06f3aa5d831d995.
+Yes, IOMMU as a PCIe device providing address translation services for
+connect PCIe root complex.
 
-To reproduce, I use 'stress-ng --bigheap $(nproc)'.  The issue happens as soon
-as it starts reclaiming memory.  I didn't dive deep into this yet, but
-reporting this issue first, since you might have an idea already.
+> > > +
+> > > +  Visit https://github.com/riscv-non-isa/riscv-iommu for more detail=
+s.
+> > > +
+> > > +properties:
+> > > +  compatible:
+> > > +    oneOf:
+> > > +      - description: RISC-V IOMMU as a platform device
+>
+> "platform device" is a Linux term. Don't use Linux terms in bindings.
+>
 
-
-[   69.824805] BUG: kernel NULL pointer dereference, address: 0000000000000498
-[   69.826983] #PF: supervisor read access in kernel mode
-[   69.828716] #PF: error_code(0x0000) - not-present page
-[   69.830249] PGD 0 P4D 0
-[   69.830784] Oops: 0000 [#4] PREEMPT SMP PTI
-[   69.831881] CPU: 2 PID: 201 Comm: kworker/u72:2 Tainted: G      D W          6.5.0-rc1+ #311
-[   69.834221] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.0-0-gd239552ce722-pr4
-[   69.837459] Workqueue: writeback wb_workfn (flush-251:0)
-[   69.839422] RIP: 0010:arch_tlbbatch_flush (include/linux/mmu_notifier.h:497 (discriminator 3) arch/x86/mm/tlb.c:1268 (discriminator 3))
-[ 69.841140] Code: e8 c5 dd d2 00 bf 01 00 00 00 e8 0b df 05 00 65 8b 05 cc 90 f9 63 85 c0 74 4b 65 48c
-
-Code starting with the faulting instruction
-===========================================
-   0:   e8 c5 dd d2 00          callq  0xd2ddca
-   5:   bf 01 00 00 00          mov    $0x1,%edi
-   a:   e8 0b df 05 00          callq  0x5df1a
-   f:   65 8b 05 cc 90 f9 63    mov    %gs:0x63f990cc(%rip),%eax        # 0x63f990e2
-  16:   85 c0                   test   %eax,%eax
-  18:   74 4b                   je     0x65
-  1a:   65                      gs
-  1b:   8c                      .byte 0x8c
-[   69.846840] RSP: 0000:ffffbf77007fb048 EFLAGS: 00010286
-[   69.848464] RAX: ffff9bfd81970000 RBX: 0000000000000002 RCX: 0000000000000000
-[   69.851016] RDX: 0000000000000001 RSI: 0000000000000000 RDI: 0000000000000000
-[   69.853070] RBP: ffffbf77007fb068 R08: 0000000000000001 R09: 0000000000000000
-[   69.855213] R10: ffff9bfd81970f10 R11: 0000000000000000 R12: ffff9bfd81970f10
-[   69.857456] R13: ffff9c1bbd4b28c0 R14: 0000000000000003 R15: ffffe75b88f4a808
-[   69.860213] FS:  0000000000000000(0000) GS:ffff9c1bbd480000(0000) knlGS:0000000000000000
-[   69.862211] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   69.863624] CR2: 0000000000000498 CR3: 00000001112ca000 CR4: 00000000000006e0
-[   69.865907] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[   69.868146] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[   69.870414] Call Trace:
-[   69.871222]  <TASK>
-[   69.871823] ? show_regs (arch/x86/kernel/dumpstack.c:479)
-[   69.872855] ? __die_body (arch/x86/kernel/dumpstack.c:421)
-[   69.873733] ? __die (arch/x86/kernel/dumpstack.c:435)
-[   69.874576] ? page_fault_oops (arch/x86/mm/fault.c:707)
-[   69.875657] ? search_bpf_extables (kernel/bpf/core.c:751)
-[   69.876854] ? arch_tlbbatch_flush (include/linux/mmu_notifier.h:497 (discriminator 3) arch/x86/mm/tlb.c:1268 (discriminator 3))
-[   69.878146] ? search_exception_tables (kernel/extable.c:64)
-[   69.879931] ? kernelmode_fixup_or_oops (arch/x86/mm/fault.c:762)
-[   69.881284] ? __bad_area_nosemaphore (arch/x86/mm/fault.c:860)
-[   69.882722] ? bad_area_nosemaphore (arch/x86/mm/fault.c:867)
-[   69.884276] ? do_user_addr_fault (arch/x86/mm/fault.c:1458)
-[   69.885800] ? check_preemption_disabled (lib/smp_processor_id.c:42)
-[   69.887428] ? exc_page_fault (arch/x86/include/asm/paravirt.h:695 arch/x86/mm/fault.c:1495 arch/x86/mm/fault.c:1543)
-[   69.888435] ? asm_exc_page_fault (arch/x86/include/asm/idtentry.h:570)
-[   69.889955] ? arch_tlbbatch_flush (include/linux/mmu_notifier.h:497 (discriminator 3) arch/x86/mm/tlb.c:1268 (discriminator 3))
-[   69.891564] ? arch_tlbbatch_flush (arch/x86/include/asm/preempt.h:104 (discriminator 1) arch/x86/mm/tlb.c:1267 (discriminator 1))
-[   69.892779] try_to_unmap_flush_dirty (mm/rmap.c:622 mm/rmap.c:632)
-[   69.893970] shrink_folio_list (mm/vmscan.c:2015)
-[   69.895243] shrink_inactive_list (include/linux/spinlock.h:376 mm/vmscan.c:2616)
-[   69.896816] shrink_lruvec (mm/vmscan.c:2855 mm/vmscan.c:6303)
-[   69.897952] ? rmqueue_bulk (mm/page_alloc.c:2228)
-[   69.899385] shrink_node (mm/vmscan.c:6491 mm/vmscan.c:6524)
-[   69.900447] do_try_to_free_pages (mm/vmscan.c:6705 mm/vmscan.c:6825)
-[   69.901548] try_to_free_pages (mm/vmscan.c:7060)
-[   69.902540] __alloc_pages_slowpath.constprop.0 (include/linux/sched/mm.h:380 mm/page_alloc.c:3716 mm/page_alloc.c:3735 mm/page_alloc.c:4140)
-[   69.904307] ? sched_cpu_deactivate (kernel/sched/core.c:9728)
-[   69.905427] __alloc_pages (mm/page_alloc.c:4525)
-[   69.906735] alloc_pages (mm/mempolicy.c:2284)
-[   69.907604] new_slab (mm/slub.c:1866 mm/slub.c:2009 mm/slub.c:2062)
-[   69.908414] ? chksum_update (crypto/crc32c_generic.c:88)
-[   69.909348] ___slab_alloc (mm/slub.c:3216 (discriminator 3))
-[   69.910093] ? ext4_mb_new_blocks (fs/ext4/mballoc.c:5538 fs/ext4/mballoc.c:6129)
-[   69.911885] ? __enqueue_entity (kernel/sched/fair.c:646)
-[   69.913085] ? x2apic_send_IPI (arch/x86/include/asm/paravirt.h:196 arch/x86/include/asm/paravirt.h:229 arch/x86/include/asm/apic.h:240 arch/x86/kernel/apic/x2apic_phys.c:126 arch/x86/kernel/apic/x2apic_phys.c:48)
-[   69.914143] ? native_smp_send_reschedule (arch/x86/kernel/apic/ipi.c:72)
-[   69.915777] ? sbitmap_find_bit (lib/sbitmap.c:146 lib/sbitmap.c:178 lib/sbitmap.c:199)
-[   69.917011] ? ext4_mb_new_blocks (fs/ext4/mballoc.c:5538 fs/ext4/mballoc.c:6129)
-[   69.917996] __slab_alloc.isra.0 (mm/slub.c:3314)
-[   69.919309] kmem_cache_alloc (mm/slub.c:3367 mm/slub.c:3460 mm/slub.c:3478 mm/slub.c:3485 mm/slub.c:3494)
-[   69.920239] ? ext4_mb_new_blocks (fs/ext4/mballoc.c:5538 fs/ext4/mballoc.c:6129)
-[   69.921291] ext4_mb_new_blocks (fs/ext4/mballoc.c:5538 fs/ext4/mballoc.c:6129)
-[   69.922496] ? ext4_cache_extents (fs/ext4/extents.c:543 (discriminator 2))
-[   69.923591] ext4_ext_map_blocks (fs/ext4/extents.c:4286)
-[   69.925039] ext4_map_blocks (fs/ext4/inode.c:621)
-[   69.926478] ? kmem_cache_alloc (arch/x86/include/asm/jump_label.h:55 include/linux/memcontrol.h:1777 mm/slab.h:522 mm/slab.h:770 mm/slub.c:3470 mm/slub.c:3478 mm/slub.c:3485 mm/slub.c:3494)
-[   69.927813] ? ext4_alloc_io_end_vec (fs/ext4/page-io.c:61)
-[   69.928851] ext4_do_writepages (fs/ext4/inode.c:2159 fs/ext4/inode.c:2212 fs/ext4/inode.c:2677)
-[   69.930008] ? update_sd_lb_stats.constprop.0 (kernel/sched/fair.c:9501 kernel/sched/fair.c:10163)
-[   69.931662] ext4_writepages (fs/ext4/inode.c:2766)
-[   69.932728] do_writepages (mm/page-writeback.c:2553)
-[   69.933403] ? __wb_calc_thresh (mm/page-writeback.c:875)
-[   69.934168] __writeback_single_inode (fs/fs-writeback.c:1603)
-[   69.935101] ? _raw_spin_unlock (arch/x86/include/asm/preempt.h:104 include/linux/spinlock_api_smp.h:143 kernel/locking/spinlock.c:186)
-[   69.936219] writeback_sb_inodes (fs/fs-writeback.c:1896)
-[   69.937408] __writeback_inodes_wb (fs/fs-writeback.c:1966)
-[   69.938612] wb_writeback (fs/fs-writeback.c:2072)
-[   69.939548] wb_workfn (fs/fs-writeback.c:2142 fs/fs-writeback.c:2230 fs/fs-writeback.c:2257)
-[   69.940439] ? __switch_to (arch/x86/include/asm/paravirt.h:300 arch/x86/kernel/process_64.c:583)
-[   69.941694] process_one_work (arch/x86/include/asm/jump_label.h:27 include/linux/jump_label.h:207 include/trace/events/workqueue.h:108 kernel/workqueue.c:2602)
-[   69.943189] worker_thread (include/linux/list.h:292 kernel/workqueue.c:2749)
-[   69.944403] ? __pfx_worker_thread (kernel/workqueue.c:2691)
-[   69.945491] kthread (kernel/kthread.c:389)
-[   69.946333] ? __pfx_kthread (kernel/kthread.c:342)
-[   69.947109] ret_from_fork (arch/x86/entry/entry_64.S:314)
-[   69.948097]  </TASK>
-[   69.948944] Modules linked in: ppdev input_leds joydev parport_pc parport serio_raw qemu_fw_cfg mac_hi
-[   69.958916] Dumping ftrace buffer:
-[   69.961197]    (ftrace buffer empty)
-[   69.962797] CR2: 0000000000000498
-[   69.964431] ---[ end trace 0000000000000000 ]---
-[   69.966440] RIP: 0010:arch_tlbbatch_flush (include/linux/mmu_notifier.h:497 (discriminator 3) arch/x86/mm/tlb.c:1268 (discriminator 3))
-[ 69.969546] Code: e8 c5 dd d2 00 bf 01 00 00 00 e8 0b df 05 00 65 8b 05 cc 90 f9 63 85 c0 74 4b 65 48c
-
-Code starting with the faulting instruction
-===========================================
-   0:   e8 c5 dd d2 00          callq  0xd2ddca
-   5:   bf 01 00 00 00          mov    $0x1,%edi
-   a:   e8 0b df 05 00          callq  0x5df1a
-   f:   65 8b 05 cc 90 f9 63    mov    %gs:0x63f990cc(%rip),%eax        # 0x63f990e2
-  16:   85 c0                   test   %eax,%eax
-  18:   74 4b                   je     0x65
-  1a:   65                      gs
-  1b:   8c                      .byte 0x8c
-[   69.979017] RSP: 0000:ffffbf770005f6d8 EFLAGS: 00010286
-[   69.981894] RAX: ffff9bfd8090af80 RBX: 0000000000000003 RCX: 0000000000000000
-[   69.985344] RDX: 0000000000000001 RSI: 0000000000000000 RDI: 0000000000000000
-[   69.988499] RBP: ffffbf770005f6f8 R08: 0000000000000001 R09: 0000000000000000
-[   69.991677] R10: ffff9bfd8090be90 R11: 0000000000000000 R12: ffff9bfd8090be90
-[   69.994926] R13: ffff9c1bbd4f28c0 R14: 0000000000000004 R15: ffffe75b84499d08
-[   69.998152] FS:  0000000000000000(0000) GS:ffff9c1bbd480000(0000) knlGS:0000000000000000
-[   70.001874] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   70.004419] CR2: 0000000000000498 CR3: 00000001112ca000 CR4: 00000000000006e0
-[   70.007517] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[   70.010951] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ack.
 
 
+> > > +        items:
+> > > +          - enum:
+> > > +              - vendor,chip-iommu
+> >
+> > These dummy compatibles are not valid, as was pointed out to Anup on
+> > the AIA series. Please go look at what was done there instead:
+> > https://lore.kernel.org/all/20230719113542.2293295-7-apatel@ventanamicr=
+o.com/
+> >
+> > > +          - const: riscv,iommu
+> > > +
+> > > +      - description: RISC-V IOMMU as a PCI device connected to root =
+port
+> > > +        items:
+> > > +          - enum:
+> > > +              - vendor,chip-pci-iommu
+> > > +          - const: riscv,pci-iommu
+> >
+> > I'm not really au fait with the arm smmu stuff, but do any of its
+> > versions support being connected to a root port?
+>
+> PCI devices have a defined format for the compatible string based on
+> VID/PID. For PCI, also usually don't need to be described in DT
+> because they are discoverable. The exception is when there's parts
+> which aren't. Which parts aren't?
+>
 
-Thanks,
-SJ
+We've put 'riscv,pci-iommu' node here to describe relationship between PCIe
+devices and IOMMU(s), needed for the pcie root complex description (iommu-m=
+ap).
+If there is a better way to reference PCI-IOMMU without adding
+pci-iommu definition
+that would solve the problem. Every other property of pci-iommu should
+be discoverable.
 
-[...]
+> > > +  reg:
+> > > +    maxItems: 1
+> > > +    description:
+> > > +      For RISC-V IOMMU as a platform device, this represents the MMI=
+O base
+> > > +      address of registers.
+> > > +
+> > > +      For RISC-V IOMMU as a PCI device, this represents the PCI-PCI =
+bridge
+>
+> Your IOMMU is also a PCI-PCI bridge? Is that a normal PCI thing?
+>
+
+It's allowed to be integrated with root complex / IO bridge, but it is
+as a separate PCIe device.
+I'll clarify the description.
+
+>
+> > > +      details as described in Documentation/devicetree/bindings/pci/=
+pci.txt
+>
+> Don't refer to pci.txt. It is going to be removed.
+>
+
+ack.
+
+> > > +
+> > > +  '#iommu-cells':
+> > > +    const: 2
+> > > +    description: |
+> >
+> > |s are only needed where formatting needs to be preserved.
+> >
+> > > +      Each IOMMU specifier represents the base device ID and number =
+of
+> > > +      device IDs.
+>
+> Doesn't that assume device IDs are contiguous? Generally not a safe assum=
+ption.
+>
+
+ack.
+
+> > > +
+> > > +  interrupts:
+> > > +    minItems: 1
+> > > +    maxItems: 16
+> >
+> > What are any of these interrupts?
+> >
+> > > +    description:
+> > > +      The presence of this property implies that given RISC-V IOMMU =
+uses
+> > > +      wired interrupts to notify the RISC-V HARTS (or CPUs).
+> > > +
+> > > +  msi-parent:
+> > > +    description:
+> > > +      The presence of this property implies that given RISC-V IOMMU =
+uses
+> > > +      MSIx to notify the RISC-V HARTs (or CPUs). This property shoul=
+d be
+> > > +      considered only when the interrupts property is absent.
+>
+> This doesn't make sense for a PCI device. PCI defines its own way to
+> describe MSI support.
+>
+
+Agree, this is for IOMMU as a non-PCI device, capable of sending MSI.
+Follows 'MSI clients' notes from
+devicetree/bindings/interrupt-controller/msi.txt
+Is this a proper way to describe this relationship?
+
+> > > +
+> > > +  dma-coherent:
+> >
+> > RISC-V is dma-coherent by default, should this not be dma-noncoherent
+> > instead?
+> >
+> > > +    description:
+> > > +      Present if page table walks and DMA accessed made by the RISC-=
+V IOMMU
+> > > +      are cache coherent with the CPU.
+> > > +
+> > > +  power-domains:
+> > > +    maxItems: 1
+> > > +
+> > > +required:
+> > > +  - compatible
+> > > +  - reg
+> > > +  - '#iommu-cells'
+> > > +
+> > > +additionalProperties: false
+> > > +
+> > > +examples:
+> > > +  - |
+> > > +    /* Example 1 (IOMMU platform device with wired interrupts) */
+> > > +    immu1: iommu@1bccd000 {
+> >
+> > Why is this "immu"? typo or intentional?
+> >
+> > > +        compatible =3D "vendor,chip-iommu", "riscv,iommu";
+> > > +        reg =3D <0x1bccd000 0x1000>;
+> > > +        interrupt-parent =3D <&aplic_smode>;
+> > > +        interrupts =3D <32 4>, <33 4>, <34 4>, <35 4>;
+> > > +        #iommu-cells =3D <2>;
+> > > +    };
+> > > +
+> > > +    /* Device with two IOMMU device IDs, 0 and 7 */
+> > > +    master1 {
+> > > +        iommus =3D <&immu1 0 1>, <&immu1 7 1>;
+> > > +    };
+> > > +
+> > > +  - |
+> > > +    /* Example 2 (IOMMU platform device with MSIs) */
+> > > +    immu2: iommu@1bcdd000 {
+> > > +        compatible =3D "vendor,chip-iommu", "riscv,iommu";
+> > > +        reg =3D <0x1bccd000 0x1000>;
+> > > +        msi-parent =3D <&imsics_smode>;
+> > > +        #iommu-cells =3D <2>;
+> > > +    };
+> > > +
+> > > +    bus {
+> > > +        #address-cells =3D <2>;
+> > > +        #size-cells =3D <2>;
+> > > +
+> > > +        /* Device with IOMMU device IDs ranging from 32 to 64 */
+> > > +        master1 {
+> > > +                iommus =3D <&immu2 32 32>;
+> > > +        };
+> > > +
+> > > +        pcie@40000000 {
+> > > +            compatible =3D "pci-host-cam-generic";
+> > > +            device_type =3D "pci";
+> > > +            #address-cells =3D <3>;
+> > > +            #size-cells =3D <2>;
+> > > +            bus-range =3D <0x0 0x1>;
+> > > +
+> > > +            /* CPU_PHYSICAL(2)  SIZE(2) */
+>
+> I'm guessing there was more after this, but I don't have it...
+
+Complete patch 3 is at:
+https://lore.kernel.org/linux-iommu/cover.1689792825.git.tjeznach@rivosinc.=
+com/T/#mbf8dc4098fb09b87b2618c5c545ae882f11b114b
+
+>
+> Guessing, immu2 is a PCI device, but it translates for master1 which
+> is not a PCI device? Weird. Why would anyone build such a thing?
+>
+
+In this example immu2 is a non-PCI device. Agree, otherwise would be weird.
+
+>
+> Rob
+
+Thank you,
+- Tomasz
