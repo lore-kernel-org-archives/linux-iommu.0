@@ -1,21 +1,21 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 107BC1BB20
-	for <iommu@lists.linux.dev>; Wed, 19 Jul 2023 20:50:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB975C433C8;
-	Wed, 19 Jul 2023 20:49:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30AA61FB25
+	for <iommu@lists.linux.dev>; Wed, 19 Jul 2023 20:58:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F6B7C433C8;
+	Wed, 19 Jul 2023 20:58:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1689799800;
-	bh=Y8XiusgINQG98IO04NdyvglLi4HqlEdF2bPF6Yofwfo=;
+	s=k20201202; t=1689800284;
+	bh=B4S0a9k7f+50hsxYrnWMb30xJE8CzR/by+bafs38zfc=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=P9h5hXCJgQFf0j2oLtEq7ifgxpDpBRU4+S+GE6zru1iDxEVD+bpJOCzueY1fguqxX
-	 TKcjhRnSDBt9yrLt/fD3mc+stzDsI9eJn+yFGkYciYNpviQeBWWUn4rT0XLtLFjn6d
-	 ux3lC0WjMBlYsuXfjeWTBeygRhzcQIeo2KRRcvPRyMZSnEFOmOFY8VJBlBNWzDofhr
-	 o/1H46qxwmeq3GvjaTMRGb74RzjzIWvgB/+bmmNZqpnJOcoqbVaGwlqHZ126Zsjmrg
-	 +Ji3MKgb4wDSSMM0TLPgt8BFt3zL/ybNzMxNXF0/PUUqmio2C4fdatKRKOu6Zdk8LQ
-	 SlDY1dk5oCj8A==
-Date: Wed, 19 Jul 2023 21:49:55 +0100
+	b=daGmg3u7/lDEpY/rRKsv4n7gSC9uqEyG8vtXPTfmvmoQiMTl+EWsQoJrrUeVkBxrE
+	 UXjZbWGe0yf+fBzgDqDVaZTV09rimTM4pFnAw/8mFh/7Nu7F5sVKXX9RxzyuiTWFxD
+	 9c3oR76JRTJXn2vpbP7ZvoknTnRl5ybqTl7taYEGIi+UKWEDNUW+TrqJUBdrbVS9yQ
+	 mZ6qj689Jp25dqDYcmmefP04hmcYksP15Or6eMtVHsbNroiZRd+NoK1F8W1mifXWps
+	 HOZo7zgrIwIzrpO52Camc9DUw5pgGHHGXEK+SFggPXA1Jqi2shrMcpknxGK+FqO4vx
+	 RuKqEmCoBEi6A==
+Date: Wed, 19 Jul 2023 21:57:59 +0100
 From: Conor Dooley <conor@kernel.org>
 To: Tomasz Jeznach <tjeznach@rivosinc.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
@@ -26,12 +26,14 @@ Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	linux-kernel@vger.kernel.org, Sebastien Boeuf <seb@rivosinc.com>,
 	iommu@lists.linux.dev, Palmer Dabbelt <palmer@dabbelt.com>,
 	Nick Kossifidis <mick@ics.forth.gr>,
-	linux-riscv@lists.infradead.org
-Subject: Re: [PATCH 01/11] RISC-V: drivers/iommu: Add RISC-V IOMMU - Ziommu
- support.
-Message-ID: <20230719-confront-grass-6d0eb304b94f@spud>
+	linux-riscv@lists.infradead.org, robh+dt@kernel.org,
+	krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH 03/11] dt-bindings: Add RISC-V IOMMU bindings
+Message-ID: <20230719-efficient-anew-8a67ab21a3aa@spud>
 References: <cover.1689792825.git.tjeznach@rivosinc.com>
- <c33c24036c06c023947ecb47177da273569b3ac7.1689792825.git.tjeznach@rivosinc.com>
+ <d62ceb33620cab766d809e6bbf30eaf5b46bc955.1689792825.git.tjeznach@rivosinc.com>
+ <20230719-unnoticed-scion-744fdf509151@spud>
+ <CAH2o1u6CZSb7pXcaXmh7dJQmNZYh3uORk4x7vJPrb+uCwFdU5g@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -39,96 +41,293 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="84pc7Ec13y+mZhcJ"
+	protocol="application/pgp-signature"; boundary="ukD8vF3BBA10OUiB"
 Content-Disposition: inline
-In-Reply-To: <c33c24036c06c023947ecb47177da273569b3ac7.1689792825.git.tjeznach@rivosinc.com>
+In-Reply-To: <CAH2o1u6CZSb7pXcaXmh7dJQmNZYh3uORk4x7vJPrb+uCwFdU5g@mail.gmail.com>
 
 
---84pc7Ec13y+mZhcJ
-Content-Type: text/plain; charset=us-ascii
+--ukD8vF3BBA10OUiB
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hey Tomasz,
-
-On Wed, Jul 19, 2023 at 12:33:45PM -0700, Tomasz Jeznach wrote:
-> The patch introduces skeleton IOMMU device driver implementation as defin=
-ed
-> by RISC-V IOMMU Architecture Specification, Version 1.0 [1], with minimal=
- support
-> for pass-through mapping, basic initialization and bindings for platform =
-and PCIe
-> hardware implementations.
+On Wed, Jul 19, 2023 at 01:52:28PM -0700, Tomasz Jeznach wrote:
+> On Wed, Jul 19, 2023 at 1:19=E2=80=AFPM Conor Dooley <conor@kernel.org> w=
+rote:
 >=20
-> Series of patches following specification evolution has been reorganized =
-to provide
-> functional separation of implemented blocks, compliant with ratified spec=
-ification.
+> > Hey Tomasz,
+> >
+> > On Wed, Jul 19, 2023 at 12:33:47PM -0700, Tomasz Jeznach wrote:
+> > > From: Anup Patel <apatel@ventanamicro.com>
+> > >
+> > > We add DT bindings document for RISC-V IOMMU platform and PCI devices
+> > > defined by the RISC-V IOMMU specification.
+> > >
+> > > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> >
+> > Your signoff is missing from here.
+> >
+> > Secondly, as get_maintainer.pl would have told you, dt-bindings patches
+> > need to be sent to the dt-binding maintainers and list.
+> > +CC maintainers & list.
+> >
+> > Thirdly, dt-binding patches should come before their users.
+> >
 >=20
-> This and following patch series includes code contributed by: Nick Kossif=
-idis
-> <mick@ics.forth.gr> (iommu-platform device, number of specification clari=
-fication
-> and bugfixes and readability improvements), Sebastien Boeuf <seb@rivosinc=
-=2Ecom> (page
-> table creation, ATS/PGR flow).
 >=20
-> Complete history can be found at the maintainer's repository branch [2].
+> Thank you for pointing out and adding DT maintainers.
+> The signoff is definitely missing, and I'll will amend with other fixes /
+> reordering.
+
+Yeah, please wait until you get actual feedback on the drivers etc
+though before you do that.
+
+Also, don't send html emails to the mailing lists. They will be rejected
+and those outside of direct-cc will not see the emails.
+
+> > > ---
+> > >  .../bindings/iommu/riscv,iommu.yaml           | 146 ++++++++++++++++=
+++
+> > >  1 file changed, 146 insertions(+)
+> > >  create mode 100644
+> > Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+> > >
+> > > diff --git a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+> > b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+> > > new file mode 100644
+> > > index 000000000000..8a9aedb61768
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+> > > @@ -0,0 +1,146 @@
+> > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > > +%YAML 1.2
+> > > +---
+> > > +$id: http://devicetree.org/schemas/iommu/riscv,iommu.yaml#
+> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > +
+> > > +title: RISC-V IOMMU Implementation
+> > > +
+> > > +maintainers:
+> > > +  - Tomasz Jeznach <tjeznach@rivosinc.com>
+> >
+> > What about Anup, who seems to have written this?
+> > Or your co-authors of the drivers?
+> >
+> >
+> Anup provided only device tree riscv,iommu bindings proposal, but handed
+> over its maintenance.
 >=20
-> Device driver enables RISC-V 32/64 support for memory translation for DMA=
- capable
-> PCI and platform devices, multilevel device directory table, process dire=
-ctory,
-> shared virtual address support, wired and message signaled interrupt for =
-translation
-> I/O fault, page request interface and command processing.
+> > +
+> > > +description:
+> > > +  The RISC-V IOMMU specificaiton defines an IOMMU for RISC-V platfor=
+ms
+> > > +  which can be a regular platform device or a PCI device connected to
+> > > +  the host root port.
+> > > +
+> > > +  The RISC-V IOMMU provides two stage translation, device directory
+> > table,
+> > > +  command queue and fault reporting as wired interrupt or MSIx event=
+ for
+> > > +  both PCI and platform devices.
+> > > +
+> > > +  Visit https://github.com/riscv-non-isa/riscv-iommu for more detail=
+s.
+> > > +
+> > > +properties:
+> > > +  compatible:
+> > > +    oneOf:
+> > > +      - description: RISC-V IOMMU as a platform device
+> > > +        items:
+> > > +          - enum:
+> > > +              - vendor,chip-iommu
+> >
+> > These dummy compatibles are not valid, as was pointed out to Anup on
+> > the AIA series. Please go look at what was done there instead:
+> >
+> > https://lore.kernel.org/all/20230719113542.2293295-7-apatel@ventanamicr=
+o.com/
+> >
+> >
+> Thank you, good pointer, seams like the same comments apply here. Will go
+> through the discussion and update.
 >=20
-> Matching RISCV-V IOMMU device emulation implementation is available for Q=
-EMU project,
-> along with educational device extensions for PASID ATS/PRI support [3].
+>=20
+> > > +          - const: riscv,iommu
+> > > +
+> > > +      - description: RISC-V IOMMU as a PCI device connected to root =
+port
+> > > +        items:
+> > > +          - enum:
+> > > +              - vendor,chip-pci-iommu
+> > > +          - const: riscv,pci-iommu
+> >
+> > I'm not really au fait with the arm smmu stuff, but do any of its
+> > versions support being connected to a root port?
+> >
+> >
+> RISC-V IOMMU allows them to be connected to the root port, or presented as
+> a platform device.
 
-This commit message reads like a cover letter IMO. At whatever point
-you send a v2, could you re-write this focusing on what is done in the
-patch itself?
+That is not quite what I asked... What I want to know is why we are
+doing something different to Arm's SMMU stuff & whether it is because
+RISC-V has extra capabilities, or the binding itself is flawed.
 
-Also, since I am not going to reply to any of these iommu driver patches
-in a meaningful capacity, please run checkpatch.pl on your work. There
-are well over 100 style etc complaints that it has highlighted. Sparse
-has also gone a bit nuts, with many warnings along the lines of:
-drivers/iommu/riscv/iommu.c:1568:29: warning: incorrect type in assignment =
-(different base types)
-drivers/iommu/riscv/iommu.c:1568:29:    expected unsigned long long [userty=
-pe] iohgatp
-drivers/iommu/riscv/iommu.c:1568:29:    got restricted __le64 [usertype]
+(There's no more comments from me below, just making sure the mail's
+contents reaches lore)
 
-I can provide you the full list when the patchwork automation has run
-through the series.
-
-Anyway, what I wanted to ask was whether it was valid to use the IOMMU
-in a system if Ziommu is not present in whatever the ISA extension
-communication mechanism is? Eg, riscv,isa or the ISA string property in
-the ACPI tables.
-
-Thanks,
+Cheers,
 Conor.
 
-> References:
->  - [1] https://github.com/riscv-non-isa/riscv-iommu
->  - [2] https://github.com/tjeznach/linux/tree/tjeznach/riscv-iommu
->  - [3] https://github.com/tjeznach/qemu/tree/tjeznach/riscv-iommu
+> > > +  reg:
+> > > +    maxItems: 1
+> > > +    description:
+> > > +      For RISC-V IOMMU as a platform device, this represents the MMIO
+> > base
+> > > +      address of registers.
+> > > +
+> > > +      For RISC-V IOMMU as a PCI device, this represents the PCI-PCI
+> > bridge
+> > > +      details as described in
+> > Documentation/devicetree/bindings/pci/pci.txt
+> > > +
+> > > +  '#iommu-cells':
+> > > +    const: 2
+> > > +    description: |
+> >
+> > |s are only needed where formatting needs to be preserved.
+> >
+> > > +      Each IOMMU specifier represents the base device ID and number =
+of
+> > > +      device IDs.
+> > > +
+> > > +  interrupts:
+> > > +    minItems: 1
+> > > +    maxItems: 16
+> >
+> > What are any of these interrupts?
+> >
+> >
+> I'll add a description to the file. In short queue interfaces signalling =
+to
+> the driver.
+>=20
+>=20
+> > +    description:
+> > > +      The presence of this property implies that given RISC-V IOMMU =
+uses
+> > > +      wired interrupts to notify the RISC-V HARTS (or CPUs).
+> > > +
+> > > +  msi-parent:
+> > > +    description:
+> > > +      The presence of this property implies that given RISC-V IOMMU =
+uses
+> > > +      MSIx to notify the RISC-V HARTs (or CPUs). This property shoul=
+d be
+> > > +      considered only when the interrupts property is absent.
+> > > +
+> > > +  dma-coherent:
+> >
+> > RISC-V is dma-coherent by default, should this not be dma-noncoherent
+> > instead?
+> >
+> >
+> Very valid comment. I'm ok to reverse the flag unless anyone objects.
+>=20
+>=20
+> > > +    description:
+> > > +      Present if page table walks and DMA accessed made by the RISC-V
+> > IOMMU
+> > > +      are cache coherent with the CPU.
+> > > +
+> > > +  power-domains:
+> > > +    maxItems: 1
+> > > +
+> > > +required:
+> > > +  - compatible
+> > > +  - reg
+> > > +  - '#iommu-cells'
+> > > +
+> > > +additionalProperties: false
+> > > +
+> > > +examples:
+> > > +  - |
+> > > +    /* Example 1 (IOMMU platform device with wired interrupts) */
+> > > +    immu1: iommu@1bccd000 {
+> >
+> > Why is this "immu"? typo or intentional?
+> >
+>=20
+> I guess there was no particular naming schema here, but I might defer this
+> question to the author.
+>=20
+>=20
+> >
+> > > +        compatible =3D "vendor,chip-iommu", "riscv,iommu";
+> > > +        reg =3D <0x1bccd000 0x1000>;
+> > > +        interrupt-parent =3D <&aplic_smode>;
+> > > +        interrupts =3D <32 4>, <33 4>, <34 4>, <35 4>;
+> > > +        #iommu-cells =3D <2>;
+> > > +    };
+> > > +
+> > > +    /* Device with two IOMMU device IDs, 0 and 7 */
+> > > +    master1 {
+> > > +        iommus =3D <&immu1 0 1>, <&immu1 7 1>;
+> > > +    };
+> > > +
+> > > +  - |
+> > > +    /* Example 2 (IOMMU platform device with MSIs) */
+> > > +    immu2: iommu@1bcdd000 {
+> > > +        compatible =3D "vendor,chip-iommu", "riscv,iommu";
+> > > +        reg =3D <0x1bccd000 0x1000>;
+> > > +        msi-parent =3D <&imsics_smode>;
+> > > +        #iommu-cells =3D <2>;
+> > > +    };
+> > > +
+> > > +    bus {
+> > > +        #address-cells =3D <2>;
+> > > +        #size-cells =3D <2>;
+> > > +
+> > > +        /* Device with IOMMU device IDs ranging from 32 to 64 */
+> > > +        master1 {
+> > > +                iommus =3D <&immu2 32 32>;
+> > > +        };
+> > > +
+> > > +        pcie@40000000 {
+> > > +            compatible =3D "pci-host-cam-generic";
+> > > +            device_type =3D "pci";
+> > > +            #address-cells =3D <3>;
+> > > +            #size-cells =3D <2>;
+> > > +            bus-range =3D <0x0 0x1>;
+> > > +
+> > > +            /* CPU_PHYSICAL(2)  SIZE(2) */
+> >
+> > These sort of comments seem to just repeat what address-cells &
+> > size-cells has already said, no?
+> >
+> >
+> Correct.
+>=20
+>=20
+>=20
+> > Thanks,
+> > Conor.
+> >
+>=20
+>=20
+> Thank you Conor for prompt response and comments.
+> I'll address them in the next version.
+>=20
+> - Tomasz
 
-FYI, we have the Link: tag/trailer for this.
-
-
---84pc7Ec13y+mZhcJ
+--ukD8vF3BBA10OUiB
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZLhMcwAKCRB4tDGHoIJi
-0lIfAP9uPwBu+e/C+/ZsygvppSSP9x3v8vUZ8yHHUidL/6sOCwD/f6sSZh1Cj6wv
-5tIrbH5HWVcSsflIwaoP6uRCLLneIAw=
-=c5fj
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZLhOVgAKCRB4tDGHoIJi
+0gLqAP41V6w/ZHqx8UdUIKZ7RAciLKALxGmjKUql4InYzufZawEAt5m3zY5ZN4Qc
+FWrfrohwIBUpTtMQ7nppC/NVf2f6Zww=
+=JvC9
 -----END PGP SIGNATURE-----
 
---84pc7Ec13y+mZhcJ--
+--ukD8vF3BBA10OUiB--
