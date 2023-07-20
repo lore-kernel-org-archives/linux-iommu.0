@@ -1,101 +1,96 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 227741DDCD
-	for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 22:08:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BAAEC433C7;
-	Thu, 20 Jul 2023 22:08:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1689890932;
-	bh=Z5s9oLlOTT+MLoGJ5I83fWvkRr0YoIV/xJy4YEJUgtw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=t0XsLlQQATT/gwcGZUW2DUbvGbOilzbNnHvR4yU3t7nXjnpzgwle8lagwXaOH993P
-	 dNC+u9nKfZkC+Az6XPGRksZ+hDSHDJwq6WIo7s97j4A/sUN6tbV5ELf8ZVi+ADwyvQ
-	 /fTDctNQdflbUcnQnd5kSQtVbi/XiLHtI1V17PKCM0Farsaf2bfL2RbmZLtgY2249c
-	 SD3HCak7x86hAoe1XUjsQDTq/4jKmHG7Sh7GI7WhxgGZzWAZotqbWA9srxhGrH6/O+
-	 jWOau6Tnvi/WTonz6i0fF5kj1inLN1NcgJZn1X6++sBDF1RZD8aDYQt5FkIXit4J6K
-	 H8+mBM70ijQIA==
-Date: Thu, 20 Jul 2023 23:08:47 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Anup Patel <apatel@ventanamicro.com>,
-	Sunil V L <sunilvl@ventanamicro.com>,
-	Nick Kossifidis <mick@ics.forth.gr>,
-	Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev,
-	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux@rivosinc.com
-Subject: Re: [PATCH 05/11] RISC-V: drivers/iommu/riscv: Add sysfs interface
-Message-ID: <20230720-bully-famine-dfc9a5e688ef@spud>
-References: <cover.1689792825.git.tjeznach@rivosinc.com>
- <610abe685f90870be52bc7c2ca45ab5235bd8eb4.1689792825.git.tjeznach@rivosinc.com>
- <c26d029e-dabc-9ad2-ed42-bb6ee276e3fb@kernel.org>
- <CAH2o1u6pMF3MN=oFBcs9kOf-nwnEYfD2Vv=89+DzUanV59R5dw@mail.gmail.com>
- <69800c58-2df8-25e5-09e0-c9929bae2193@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EE9314011;
+	Thu, 20 Jul 2023 23:19:03 +0000 (UTC)
+Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-6682909acadso912404b3a.3;
+        Thu, 20 Jul 2023 16:19:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1689895143; x=1690499943;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ibwR2n2ofWT45eqyn7NdkOyxsAPd/bEJkQ0/gWWZPag=;
+        b=lXzYCfCVbZ0XFYr4h1U2cA+eanuunlakdjkGeq0zjbSuUw92kuJhjFPvqvehuVM/MR
+         d6dOtACrgZmq8zypv+uqPq27NBSop8KuKAXQi67hPm6KDQofw6Yw0FXh6k9v2DvsE86X
+         +nczzNvFdpB+JoZriycHeOUDYK3ot62KqY8Vl2sKo6vyYx+5c7vKJ3uH2W5qhIrVkqbC
+         FZTbUZVOgEAoGKoluTWSJ2gVKi4phOzNoClt0OAILWaUHGMYWP4KBtxtGvbNjSQ9RwnI
+         LkM4RtiLcmFhEMj+9v5MKT+ezh7OeqI+otg//ZyvMXzGEBxQ4MIUm67RjBehPHBgORLM
+         avow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1689895143; x=1690499943;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ibwR2n2ofWT45eqyn7NdkOyxsAPd/bEJkQ0/gWWZPag=;
+        b=Zf2xXrP0/wwK95ZYF0Eg34KFId+wni3t3Or2uo2KJLygamYHFasu8wtSXXxC3I8fvA
+         Dg61wpeGpYbiOQVpaDg7JJm/601a/zHsvTt62ft1+MHneUj3qet8//ozlqBs9YAuzEeI
+         tIyej+cofdoCyCYtN6JeGJvTM1OtVwclVgF0CbJE4DdloiRimppnj+b6PjDLpiGMAiom
+         +mS9h82GSEUZ8TJMzD94Zpa/+jkVjK9Hry/5UEerRTjTD1Qi1IBjNWtZutwUAd5X3ydn
+         /6pjxNlXOFLGDaE24uFMyIqnCZDs5UmCxMiHg9E1/HErTWPJZJfoZqnTeT8RHIvR1ETi
+         zEjQ==
+X-Gm-Message-State: ABy/qLbjJ0qvLjDw/B8Rhw+4t4Y67uzr2kyugbQWW5kCb3gdEWboS+mC
+	sAf76CY3uYWheZL8Jbohq/E=
+X-Google-Smtp-Source: APBJJlFUvtKV9g3xN8yZiX1eceYAxHrBp30rIaSA9fDoBvJ552sVhZUdbrWXiZ8RM+whGFBzTee4pQ==
+X-Received: by 2002:a05:6a00:814:b0:668:7292:b2c2 with SMTP id m20-20020a056a00081400b006687292b2c2mr321769pfk.2.1689895143276;
+        Thu, 20 Jul 2023 16:19:03 -0700 (PDT)
+Received: from ubuntu777.domain.name (36-228-98-231.dynamic-ip.hinet.net. [36.228.98.231])
+        by smtp.gmail.com with ESMTPSA id k17-20020aa78211000000b00682562bf477sm1708783pfi.82.2023.07.20.16.19.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Jul 2023 16:19:02 -0700 (PDT)
+From: Min-Hua Chen <minhuadotchen@gmail.com>
+To: sven@svenpeter.dev
+Cc: alyssa@rosenzweig.io,
+	asahi@lists.linux.dev,
+	iommu@lists.linux.dev,
+	joro@8bytes.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	marcan@marcan.st,
+	minhuadotchen@gmail.com,
+	robin.murphy@arm.com,
+	will@kernel.org
+Subject: Re: [PATCH] iommu/apple-dart: mark apple_dart_pm_ops static
+Date: Fri, 21 Jul 2023 07:18:59 +0800
+Message-Id: <20230720231859.3699-1-minhuadotchen@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <f176c331-f8cf-4a44-8ada-7d9c958b17ca@app.fastmail.com>
+References: <f176c331-f8cf-4a44-8ada-7d9c958b17ca@app.fastmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="bcun5Y1HEGvpIqWO"
-Content-Disposition: inline
-In-Reply-To: <69800c58-2df8-25e5-09e0-c9929bae2193@kernel.org>
+Content-Transfer-Encoding: 8bit
 
+Hi Sven,
 
---bcun5Y1HEGvpIqWO
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+>On Thu, Jul 20, 2023, at 00:20, Min-Hua Chen wrote:
+>> This patch fixes the following sprse warning:
+>
+>typo: sparse
 
-On Thu, Jul 20, 2023 at 11:37:50PM +0200, Krzysztof Kozlowski wrote:
-> On 20/07/2023 20:30, Tomasz Jeznach wrote:
+thanks for catching this.
 
-> >>> +#define sysfs_dev_to_iommu(dev) \
-> >>> +     container_of(dev_get_drvdata(dev), struct riscv_iommu_device, i=
-ommu)
-> >>> +
-> >>> +static ssize_t address_show(struct device *dev,
-> >>> +                         struct device_attribute *attr, char *buf)
-> >>
-> >>
-> >> Where is the sysfs ABI documented?
-> >>
-> >=20
-> > Sysfs for now is used only to expose selected IOMMU memory mapped
-> > registers, with complete documentation in the RISC-V IOMMU Arch Spec
-> > [1], and some comments in iommu-bits.h file.
-> > LMK If it would be better to put a dedicated file documenting those
-> > with the patch itself.
->=20
-> I meant, you created new sysfs interface. Maybe I missed something in
-> the patchset, but each new sysfs interface required documenting in
-> Documentation/ABI/.
+>>
+>> drivers/iommu/apple-dart.c:1279:1: sparse: warning: symbol 
+>> 'apple_dart_pm_ops' was not declared. Should it be static?
+>>
+>> No functional change intended.
+>>
+>> Signed-off-by: Min-Hua Chen <minhuadotchen@gmail.com>
+>> ---
+>
+>Acked-by: Sven Peter <sven@svenpeter.dev>
 
-| expose selected IOMMU memory mapped registers
+I'll submit v2 with your Acked-by tag.
 
-| Enable sysfs debug / visibility interface providing restricted
-| access to hardware registers.
+thanks,
+Min-Hua
 
-Documentation requirements of sysfs stuff aside, I'm not sure that we
-even want a sysfs interface for this in the first place? Seems like, if
-at all, this should be debugfs instead? Seems like the only use case for
-it is debugging/development...
+>Thanks,
+>
+>
+>Sven
 
---bcun5Y1HEGvpIqWO
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZLmwbwAKCRB4tDGHoIJi
-0j3GAP4sKlFBg9b3mVUW8DI1uEli6p+U8QzmKoSPgvciU6lUXwEA/kTBkmBeUY/1
-NthONKHle/tjSb9Hf+te2bjd72ZZGgM=
-=lL8V
------END PGP SIGNATURE-----
-
---bcun5Y1HEGvpIqWO--
