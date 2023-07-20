@@ -1,157 +1,135 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mailgate.ics.forth.gr (mailgate.ics.forth.gr [139.91.1.2])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21256631
-	for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 01:31:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B390C433C8;
-	Thu, 20 Jul 2023 01:31:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1689816694;
-	bh=UDoAwOoTRFMVXMbtpTIjACSb6DxR18kojrUncbeOA18=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Va7hgLXLrKKOJjpAv2HcDzaAhxIkO+JYdw5MfU+6lVXsogaHmRH/WW+YxtrWObKj+
-	 2Be8/jJ+YOy9V34SJzjspVfn/yMS6pxozyYmqvt6jWy+Bb0EUnTkXU50EN3h8wA5zl
-	 Eh3284/BNRh/C3Pf8LDg3YFy1pX0OfrShi4W8xDCqX99AENT7rzbXFF6vzzKDoiaIR
-	 iIHc7E/kJonG4MfyYmTmi0I204S2MwjazVkPt5i5W+ibP5MRCwgSmX7Oj2+QQoncN2
-	 mQnhGuWUzFV0Y+/Mu/kw6NsWbVNjpSprEjfV46jHsnPJx+/f8duJVJsoqzj6y6R5Fz
-	 FvbxJ2OhkGJUg==
-From: SeongJae Park <sj@kernel.org>
-To: Alistair Popple <apopple@nvidia.com>
-Cc: SeongJae Park <sj@kernel.org>,
-	akpm@linux-foundation.org,
-	ajd@linux.ibm.com,
-	catalin.marinas@arm.com,
-	fbarrat@linux.ibm.com,
-	iommu@lists.linux.dev,
-	jgg@ziepe.ca,
-	jhubbard@nvidia.com,
-	kevin.tian@intel.com,
-	kvm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org,
-	linuxppc-dev@lists.ozlabs.org,
-	mpe@ellerman.id.au,
-	nicolinc@nvidia.com,
-	npiggin@gmail.com,
-	robin.murphy@arm.com,
-	seanjc@google.com,
-	will@kernel.org,
-	x86@kernel.org,
-	zhi.wang.linux@gmail.com
-Subject: Re: [PATCH v2 3/5] mmu_notifiers: Call invalidate_range() when invalidating TLBs
-Date: Thu, 20 Jul 2023 01:31:31 +0000
-Message-Id: <20230720013131.1880-1-sj@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <877cqvl7vr.fsf@nvdebian.thelocal>
-References: 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B77C137D
+	for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 03:36:14 +0000 (UTC)
+Received: from av3.ics.forth.gr (av3in.ics.forth.gr [139.91.1.77])
+	by mailgate.ics.forth.gr (8.15.2/ICS-FORTH/V10-1.8-GATE) with ESMTP id 36K3CBPo026280
+	for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 06:12:11 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; d=ics.forth.gr; s=av; c=relaxed/simple;
+	q=dns/txt; i=@ics.forth.gr; t=1689822726; x=1692414726;
+	h=From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=zPjihqajCHYso2SYLygY80dfwyyJAXwUJ5bsc+egrmg=;
+	b=HoBvEI/eMiSilZXfZB6lzV1KKu9/yBE2zEk+Ou5yUNXOgugqprpDcNW58LLObfa+
+	MHGbasKVuf29H6iCCVipyi801yXAQZnIfrlAgsXigc5tRpJ6S72kYLXjoLieM9Qu
+	JRkIu1Omb6MXt4Gu0qRmztcu37kYgrodXfoWkUzn4ospda75K9BvgYHrU3nWjcfO
+	AYQlSx9O45PC89q+Kwyppg9LBHH2hlHfhsRGalBrqPIOELsbfkIXEMKIb/aNWCOY
+	+dCiKBPajwdgjIOl8pD7qSu7LInMJx/e6kxxUuQRHE/BaPmOBhXtEtdbWKa9vJlQ
+	Ba1bMQz9dYRzjsftr8dO6Q==;
+X-AuditID: 8b5b014d-a17eb70000002178-ba-64b8a606a7bd
+Received: from enigma.ics.forth.gr (enigma.ics.forth.gr [139.91.151.35])
+	by av3.ics.forth.gr (Symantec Messaging Gateway) with SMTP id 6C.42.08568.606A8B46; Thu, 20 Jul 2023 06:12:06 +0300 (EEST)
+X-ICS-AUTH-INFO: Authenticated user: mick at ics.forth.gr
+Message-ID: <5b8fd18e-8dfa-96bf-cdd4-4498b1d15ab9@ics.forth.gr>
+Date: Thu, 20 Jul 2023 06:11:58 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH 06/11] RISC-V: drivers/iommu/riscv: Add command, fault,
+ page-req queues
+Content-Language: el-GR
+To: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
+        Anup Patel <apatel@ventanamicro.com>,
+        Sunil V L <sunilvl@ventanamicro.com>,
+        Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux@rivosinc.com
+References: <cover.1689792825.git.tjeznach@rivosinc.com>
+ <1fd79e5c53d9d6ed2264f60dd4261f293cc00472.1689792825.git.tjeznach@rivosinc.com>
+From: Nick Kossifidis <mick@ics.forth.gr>
+In-Reply-To: <1fd79e5c53d9d6ed2264f60dd4261f293cc00472.1689792825.git.tjeznach@rivosinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprEIsWRmVeSWpSXmKPExsXSHT1dWZdt2Y4Ug8V9ChZbf89it5h16Tij
+	xa8vFhadszewW1zeNYfNYtvnFjaLDZdmMVq8vNzDbNE2i9/i4IcnrBaf51dYTF/1gtniy7J2
+	RouWO6YOfB5PDs5j8lgzbw2jx5uXL1k8Dnd8YffYtKqTzWPzknqPF5tnMnrcmBXhcan5OrvH
+	359bWTw+b5IL4I7isklJzcksSy3St0vgyrh1rYulYLtAxa31n1gaGGfydjFyckgImEhM+nyE
+	uYuRi0NI4CijxKM1c5khEpYSmz+9ZAGxeQXsJQ49mAwWZxFQlVj0YwMrRFxQ4uTMJ2A1ogLR
+	EtPuXQOzhQViJT50vGIDsZkFxCWOnP8NtkBE4BSjxK+JP8EcZoGLTBJrDq9jAqkSEuhilNh4
+	sRjEZhPQlJh/6SDYJE6BGInDf0+yQ0wyk+ja2sUIYctLbH87h3kCo8AsJIfMQrJwFpKWWUha
+	FjCyrGIUSCwz1stMLtZLyy8qydBLL9rECI42Rt8djLc3v9U7xMjEwXiIUYKDWUmE99HlbSlC
+	vCmJlVWpRfnxRaU5qcWHGKU5WJTEeU/YLkgWEkhPLEnNTk0tSC2CyTJxcEo1MDnVGJcJZHJu
+	i9zY3pqz90Kr9EPmXX32D3bG/j+itPvqnpCjSvnmn7+s5xa78tDoR+RjzUsn7n/IYnKpzkmu
+	Le99vuXwXMdVkTHyUv9ezd/BVXUhJETOeH/p6oeX7FxPVvi8aW0KUyv33XqO50C46AOhTzef
+	qe25ValRtHN9y1tta3WRft/HgV9sW57s69uw4PxH+YjJHl80ulzUipwiP+kcdN+/RdarJeZX
+	/p3ZNl+ncH3bfGzKajfDh/MyZaaw/nCP1gyzntWTbtn1foel8SeBplu//p1r04spFLniorDZ
+	zK/7htyMHDXRj1P3HMitspd/PZ1BdLLrh7drvA1cp54RMBTXVLzzYr26xofCY0osxRmJhlrM
+	RcWJAHKI+wclAwAA
 
-On Thu, 20 Jul 2023 10:52:59 +1000 Alistair Popple <apopple@nvidia.com> wrote:
+Hello Tomasz,
 
-> 
-> SeongJae Park <sj@kernel.org> writes:
-> 
-> > Hi Alistair,
-> >
-> > On Wed, 19 Jul 2023 22:18:44 +1000 Alistair Popple <apopple@nvidia.com> wrote:
-> >
-> >> The invalidate_range() is going to become an architecture specific mmu
-> >> notifier used to keep the TLB of secondary MMUs such as an IOMMU in
-> >> sync with the CPU page tables. Currently it is called from separate
-> >> code paths to the main CPU TLB invalidations. This can lead to a
-> >> secondary TLB not getting invalidated when required and makes it hard
-> >> to reason about when exactly the secondary TLB is invalidated.
-> >> 
-> >> To fix this move the notifier call to the architecture specific TLB
-> >> maintenance functions for architectures that have secondary MMUs
-> >> requiring explicit software invalidations.
-> >> 
-> >> This fixes a SMMU bug on ARM64. On ARM64 PTE permission upgrades
-> >> require a TLB invalidation. This invalidation is done by the
-> >> architecutre specific ptep_set_access_flags() which calls
-> >> flush_tlb_page() if required. However this doesn't call the notifier
-> >> resulting in infinite faults being generated by devices using the SMMU
-> >> if it has previously cached a read-only PTE in it's TLB.
-> >> 
-> >> Moving the invalidations into the TLB invalidation functions ensures
-> >> all invalidations happen at the same time as the CPU invalidation. The
-> >> architecture specific flush_tlb_all() routines do not call the
-> >> notifier as none of the IOMMUs require this.
-> >> 
-> >> Signed-off-by: Alistair Popple <apopple@nvidia.com>
-> >> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
-> >
-> > I found below kernel NULL-dereference issue on latest mm-unstable tree, and
-> > bisect points me to the commit of this patch, namely
-> > 75c400f82d347af1307010a3e06f3aa5d831d995.
-> >
-> > To reproduce, I use 'stress-ng --bigheap $(nproc)'.  The issue happens as soon
-> > as it starts reclaiming memory.  I didn't dive deep into this yet, but
-> > reporting this issue first, since you might have an idea already.
-> 
-> Thanks for the report SJ!
-> 
-> I see the problem - current->mm can (obviously!) be NULL which is what's
-> leading to the NULL dereference. Instead I think on x86 I need to call
-> the notifier when adding the invalidate to the tlbbatch in
-> arch_tlbbatch_add_pending() which is equivalent to what ARM64 does.
-> 
-> The below should fix it. Will do a respin with this.
-
-Thank you for this quick reply!  I confirm this fixes my issue.
-
-
-Tested-by: SeongJae Park <sj@kernel.org>
-
-> 
-> ---
-> 
-> diff --git a/arch/x86/include/asm/tlbflush.h b/arch/x86/include/asm/tlbflush.h
-> index 837e4a50281a..79c46da919b9 100644
-> --- a/arch/x86/include/asm/tlbflush.h
-> +++ b/arch/x86/include/asm/tlbflush.h
-> @@ -4,6 +4,7 @@
->  
->  #include <linux/mm_types.h>
->  #include <linux/sched.h>
-> +#include <linux/mmu_notifier.h>
-
-Nit.  How about putting it between mm_types.h and sched.h, so that it looks
-alphabetically sorted?
-
->  
->  #include <asm/processor.h>
->  #include <asm/cpufeature.h>
-> @@ -282,6 +283,7 @@ static inline void arch_tlbbatch_add_pending(struct arch_tlbflush_unmap_batch *b
->  {
->  	inc_mm_tlb_gen(mm);
->  	cpumask_or(&batch->cpumask, &batch->cpumask, mm_cpumask(mm));
-> +	mmu_notifier_arch_invalidate_secondary_tlbs(mm, 0, -1UL);
->  }
->  
->  static inline void arch_flush_tlb_batched_pending(struct mm_struct *mm)
-> diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
-> index 0b990fb56b66..2d253919b3e8 100644
-> --- a/arch/x86/mm/tlb.c
-> +++ b/arch/x86/mm/tlb.c
-> @@ -1265,7 +1265,6 @@ void arch_tlbbatch_flush(struct arch_tlbflush_unmap_batch *batch)
->  
->  	put_flush_tlb_info();
->  	put_cpu();
-> -	mmu_notifier_arch_invalidate_secondary_tlbs(current->mm, 0, -1UL);
->  }
->  
->  /*
-> 
+On 7/19/23 22:33, Tomasz Jeznach wrote:
+> Enables message or wire signal interrupts for PCIe and platforms devices.
 > 
 
+The description doesn't match the subject nor the patch content (we 
+don't jus enable interrupts, we also init the queues).
 
-Thanks,
-SJ
+> +	/* Parse Queue lengts */
+> +	ret = of_property_read_u32(pdev->dev.of_node, "cmdq_len", &iommu->cmdq_len);
+> +	if (!ret)
+> +		dev_info(dev, "command queue length set to %i\n", iommu->cmdq_len);
+> +
+> +	ret = of_property_read_u32(pdev->dev.of_node, "fltq_len", &iommu->fltq_len);
+> +	if (!ret)
+> +		dev_info(dev, "fault/event queue length set to %i\n", iommu->fltq_len);
+> +
+> +	ret = of_property_read_u32(pdev->dev.of_node, "priq_len", &iommu->priq_len);
+> +	if (!ret)
+> +		dev_info(dev, "page request queue length set to %i\n", iommu->priq_len);
+> +
+>   	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+>   
+
+We need to add those to the device tree binding doc (or throw them away, 
+I thought it would be better to have them as part of the device 
+desciption than a module parameter).
+
+
+> +static irqreturn_t riscv_iommu_priq_irq_check(int irq, void *data);
+> +static irqreturn_t riscv_iommu_priq_process(int irq, void *data);
+> +
+
+> +	case RISCV_IOMMU_PAGE_REQUEST_QUEUE:
+> +		q = &iommu->priq;
+> +		q->len = sizeof(struct riscv_iommu_pq_record);
+> +		count = iommu->priq_len;
+> +		irq = iommu->irq_priq;
+> +		irq_check = riscv_iommu_priq_irq_check;
+> +		irq_process = riscv_iommu_priq_process;
+> +		q->qbr = RISCV_IOMMU_REG_PQB;
+> +		q->qcr = RISCV_IOMMU_REG_PQCSR;
+> +		name = "priq";
+> +		break;
+
+
+It makes more sense to add the code for the page request queue in the 
+patch that adds ATS/PRI support IMHO. This comment also applies to its 
+interrupt handlers below.
+
+
+> +static inline void riscv_iommu_cmd_inval_set_addr(struct riscv_iommu_command *cmd,
+> +						  u64 addr)
+> +{
+> +	cmd->dword0 |= RISCV_IOMMU_CMD_IOTINVAL_AV;
+> +	cmd->dword1 = addr;
+> +}
+> +
+
+This needs to be (addr >> 2) to match the spec, same as in the iofence 
+command.
+
+Regards,
+Nick
+
