@@ -1,47 +1,81 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24EE03D99
-	for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 06:07:53 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id C188067373; Thu, 20 Jul 2023 08:07:42 +0200 (CEST)
-Date: Thu, 20 Jul 2023 08:07:42 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, linux-doc@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH] dma: DMA_ATTR_SKIP_CPU_SYNC documentation tweaks
-Message-ID: <20230720060742.GA2987@lst.de>
-References: <98ef4f76d7a5f90b0878e649a70b101402b8889d.1689761699.git.mst@redhat.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79AA73D99;
+	Thu, 20 Jul 2023 06:11:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1689833504; x=1721369504;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Sp/D0IoRlThT3xMqxSlsQoLksVxUt7yQUAZqjq0Puqs=;
+  b=I6gwLudb1yPwqi40CZWkHIGyIfoknP8AQQPHTkKFMY+IscHw1C+PR1Wa
+   w3YLzqaGVWrdePfuvrZ86EzqwIa6rxITimrTvDz9vQe3giX9bicFrgw5e
+   PLD1JxYlpynCKOeaobPqjQOpYtM8kjt4IlM8EEaP+8iC7n6+v9Af9pVjw
+   erHp5tLk7Q8DUSG7ZqNFrFx0+HmEPSGcTNb/TzurYyPmgrplNX4f9rMQO
+   v1oyt4TK45He8Tr15fK+WHLd7+as+T+mkD0JEVS4eH1yBUYJCFcf1lHLx
+   CuD54I7kELmZFa1LyVJh0PrinrT1JlwQtNzfCZvLiPCIj5tSVSWeSsoGj
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10776"; a="397516202"
+X-IronPort-AV: E=Sophos;i="6.01,218,1684825200"; 
+   d="scan'208";a="397516202"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2023 23:11:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10776"; a="898170973"
+X-IronPort-AV: E=Sophos;i="6.01,218,1684825200"; 
+   d="scan'208";a="898170973"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.191.114]) ([10.252.191.114])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2023 23:11:36 -0700
+Message-ID: <c7dd16ba-e4ab-b531-4a31-d310d1f943cc@linux.intel.com>
+Date: Thu, 20 Jul 2023 14:11:32 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <98ef4f76d7a5f90b0878e649a70b101402b8889d.1689761699.git.mst@redhat.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Cc: baolu.lu@linux.intel.com, Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH 01/10] iommu: Remove useless group refcounting
+To: Jason Gunthorpe <jgg@nvidia.com>,
+ Baolin Wang <baolin.wang@linux.alibaba.com>,
+ David Woodhouse <dwmw2@infradead.org>, Heiko Stuebner <heiko@sntech.de>,
+ iommu@lists.linux.dev, Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org,
+ linux-rockchip@lists.infradead.org, linux-sunxi@lists.linux.dev,
+ Orson Zhai <orsonzhai@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
+ Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
+ Will Deacon <will@kernel.org>, Chunyan Zhang <zhang.lyra@gmail.com>
+References: <1-v1-3c8177327a47+256-iommu_group_locking_jgg@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <1-v1-3c8177327a47+256-iommu_group_locking_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Jul 19, 2023 at 06:15:59AM -0400, Michael S. Tsirkin wrote:
-> A recent patchset highlighted to me that DMA_ATTR_SKIP_CPU_SYNC
-> might be easily misunderstood.
+On 2023/7/19 3:05, Jason Gunthorpe wrote:
+> Several functions obtain the group reference and then release it before
+> returning. This gives the impression that the refcount is protecting
+> something for the duration of the function.
+> 
+> In truth all of these functions are called in places that know a device
+> driver is probed to the device and our locking rules already require
+> that dev->iommu_group cannot change while a driver is attached to the
+> struct device.
+> 
+> If this was not the case then this code is already at risk of triggering
+> UAF as it is racy if the dev->iommu_group is concurrently going to
+> NULL/free. refcount debugging will throw a WARN if kobject_get() is
+> called on a 0 refcount object to highlight the bug.
+> 
+> Remove the confusing refcounting and leave behind a comment about the
+> restriction.
+> 
+> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
 
-.. just curious: what patchset is that?  DMA_ATTR_SKIP_CPU_SYNC is
-often a bad idea and all users probably could use a really good
-audit..
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
->  #define DMA_ATTR_NO_KERNEL_MAPPING	(1UL << 4)
->  /*
-> - * DMA_ATTR_SKIP_CPU_SYNC: Allows platform code to skip synchronization of
-> - * the CPU cache for the given buffer assuming that it has been already
-> - * transferred to 'device' domain.
-> + * DMA_ATTR_SKIP_CPU_SYNC: Allows platform code to skip synchronization of the
-> + * CPU and device domains for the given buffer.
-
-While we're at it, I think "allows" is the wrong word here, we really
-must skip the synchronization or else we're in trouble.
+Best regards,
+baolu
