@@ -1,141 +1,116 @@
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f176.google.com (mail-pf1-f176.google.com [209.85.210.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6582B182C0;
-	Thu, 20 Jul 2023 14:18:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689862707; x=1721398707;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=BFG+lxSO1zBFfL9o8M5wrEKd1L4tJiPtfHsH/2e/ZoQ=;
-  b=JD+ehAlQeJ29Bt2jarrwXtza5zR1z3wTsRBQAqpHlEnUu+/NKKWbtiMP
-   jW+NrCHJ1ve0gnAAi+UarpVcp6ZhTzBI92GyDNixWXKrCmbGwwnyQgSEb
-   BPv2NcuekpOc4X2+jb1YiuDH71xCSCavd/u0X64VTht79ZEjpx8Jtm1ek
-   dt0VFBklwf5lYpgLoWOgMvn3b1xbbF01bRZkpx0IMp2oK44meA66jRw7d
-   9mpNVi+D6f2m3MiysfCBPXfzHjB7lTLZaHMEU+pepf17+r6jmPexK55Cg
-   qmdi11tnwSqN7VjnhnhvYAq9RUCen/6l2r05KBZUNHmm1Y/vIyYhKDBp2
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10777"; a="369414757"
-X-IronPort-AV: E=Sophos;i="6.01,219,1684825200"; 
-   d="scan'208";a="369414757"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2023 07:02:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10777"; a="674703327"
-X-IronPort-AV: E=Sophos;i="6.01,219,1684825200"; 
-   d="scan'208";a="674703327"
-Received: from hli37-mobl.amr.corp.intel.com (HELO [10.252.191.120]) ([10.252.191.120])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2023 07:01:58 -0700
-Message-ID: <c98c37bb-57c5-faec-1d17-730f3ceb2b21@linux.intel.com>
-Date: Thu, 20 Jul 2023 22:01:54 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4ECC419BA1
+	for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 16:07:43 +0000 (UTC)
+Received: by mail-pf1-f176.google.com with SMTP id d2e1a72fcca58-666ecf9a081so821958b3a.2
+        for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 09:07:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1689869262; x=1690474062;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=FDlR75jCTWnutj2GqCkt5kjAmLZ3uaWEFiEojxMDrOA=;
+        b=GXaEZu3t4pzn71mFp69Of/QYBFraIdZR0yIlR4e3y+CSg61eWb/C+JUWIXDIW/WQQi
+         w1YGEi/ir6nGvTDCNLj7//wk2OXaUurXP3D8Ysiu55KxtOWlj3L4J6WN9S3GjBjCfzua
+         IXBLb7Q1ekV7FrKpMtRwxFQosIaReUr+x9bjvv1s5EJGi5Hy6QxqUlupVdk/qhnxh4L9
+         D2Y7HH/JdF7yX5GYscgv9IpSoGszQe7i5O2tD5wleYgLJzXgxukdDbTotFB1CCxoh9lD
+         TfjJjfEPuuDlcCjasdJBmtcMNgVbl7WlS8vxM3MfT0vuJ5F4w+ILpNlwDEj72ab/y47g
+         ulPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1689869262; x=1690474062;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=FDlR75jCTWnutj2GqCkt5kjAmLZ3uaWEFiEojxMDrOA=;
+        b=XeeAeErXDk1aXHkgJNFnw1zyGcEzwvw5qog4M/0RqPWAMs/vZD3PJepAx6lLP7gQWq
+         iHcWIRIdsBEd4mTWFplPO2COEtfwkwH1OeBsZbREqwgQlVyiKsF/Gj9N1PLwXIHdZ5i+
+         C63ZGaqhHceKJTBGyC8Mn43Pw9dc7e8YaC8pIzJkJ/vXj+OLN4SngtjtXkphlLJVamb7
+         9IB3jIF7SeeH4R7Vm3hUnfanglkw1Lrc9YzVodC9gLKCGZ9KI/InDLhNgYbOh+fx4qjJ
+         hXS9qRc6H3SHhkBSCdBoEFKNcpeM8zhJWhf3EPYpVgP+geEqsDxrXcXsWzHkZqTM3F97
+         JqGQ==
+X-Gm-Message-State: ABy/qLZSotpiz0Zh1hYYDCqon8epSDsqPySpntgbES7MADbdxzG+BkW7
+	3xxagiS0/mfl+mnHCLnZ2SQ=
+X-Google-Smtp-Source: APBJJlGsiSzauWOSKd4n1ByDIDYS8P/EIAsQheqzHj4aeeJVZn12STbjIByZE7ft/dmtqsa6x71MsA==
+X-Received: by 2002:a05:6a20:9383:b0:134:76f6:e9e2 with SMTP id x3-20020a056a20938300b0013476f6e9e2mr17240293pzh.58.1689869262478;
+        Thu, 20 Jul 2023 09:07:42 -0700 (PDT)
+Received: from linux.. (static.111.40.78.5.clients.your-server.de. [5.78.40.111])
+        by smtp.gmail.com with ESMTPSA id c21-20020aa781d5000000b006687b4f2044sm1348010pfn.164.2023.07.20.09.07.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Jul 2023 09:07:42 -0700 (PDT)
+From: Binglei Wang <l3b2w1@gmail.com>
+X-Google-Original-From: Binglei Wang
+To: robh+dt@kernel.org
+Cc: frowand.list@gmail.com,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev,
+	l3b2w1@gmail.com
+Subject: [PATCH] cma: check for memory region overlapping
+Date: Fri, 21 Jul 2023 00:07:29 +0800
+Message-Id: <20230720160729.39324-1-l3b2w1@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Cc: baolu.lu@linux.intel.com, Baolin Wang <baolin.wang@linux.alibaba.com>,
- David Woodhouse <dwmw2@infradead.org>, Heiko Stuebner <heiko@sntech.de>,
- iommu@lists.linux.dev, Jernej Skrabec <jernej.skrabec@gmail.com>,
- Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org,
- linux-rockchip@lists.infradead.org, linux-sunxi@lists.linux.dev,
- Orson Zhai <orsonzhai@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
- Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
- Will Deacon <will@kernel.org>, Chunyan Zhang <zhang.lyra@gmail.com>,
- Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH 03/10] iommu: Add generic_single_device_group()
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <3-v1-3c8177327a47+256-iommu_group_locking_jgg@nvidia.com>
- <32eadc5b-bb39-5bb1-f124-44feead97ce9@linux.intel.com>
- <ZLkiu7IyimCckiFs@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ZLkiu7IyimCckiFs@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2023/7/20 20:04, Jason Gunthorpe wrote:
-> On Thu, Jul 20, 2023 at 03:39:27PM +0800, Baolu Lu wrote:
->> On 2023/7/19 3:05, Jason Gunthorpe wrote:
->>> This implements the common pattern seen in drivers of a single
->>> iommu_group for the entire iommu driver. Implement this in core code
->>> so the drivers that want this can select it from their ops.
->>>
->>> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
->>> ---
->>>    drivers/iommu/iommu.c | 25 +++++++++++++++++++++++++
->>>    include/linux/iommu.h |  3 +++
->>>    2 files changed, 28 insertions(+)
->>>
->>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>> index 9e41ad4e3219b6..1e0c5d9a0370fb 100644
->>> --- a/drivers/iommu/iommu.c
->>> +++ b/drivers/iommu/iommu.c
->>> @@ -289,6 +289,9 @@ void iommu_device_unregister(struct iommu_device *iommu)
->>>    	spin_lock(&iommu_device_lock);
->>>    	list_del(&iommu->list);
->>>    	spin_unlock(&iommu_device_lock);
->>> +
->>> +	/* Pairs with the alloc in generic_single_device_group() */
->>> +	iommu_group_put(iommu->singleton_group);
->>>    }
->>>    EXPORT_SYMBOL_GPL(iommu_device_unregister);
->>> @@ -1595,6 +1598,28 @@ struct iommu_group *generic_device_group(struct device *dev)
->>>    }
->>>    EXPORT_SYMBOL_GPL(generic_device_group);
->>> +/*
->>> + * Generic device_group call-back function. It just allocates one
->>> + * iommu-group per iommu driver.
->>> + */
->>> +struct iommu_group *generic_single_device_group(struct device *dev)
->>> +{
->>> +	struct iommu_device *iommu = dev->iommu->iommu_dev;
->>> +
->>> +	lockdep_assert_held(&dev_iommu_group_lock);
->>> +
->>> +	if (!iommu->singleton_group) {
->>> +		struct iommu_group *group;
->>> +
->>> +		group = iommu_group_alloc();
->>> +		if (IS_ERR(group))
->>> +			return group;
->>> +		iommu->singleton_group = group;
->>> +	}
->>> +	return iommu_group_ref_get(iommu->singleton_group);
->>> +}
->>> +EXPORT_SYMBOL_GPL(generic_single_device_group);
->> When allocating the singleton group for the first time, the group's
->> refcount is taken twice.
-> Yes, that is correct.
-> 
-> The refcount from alloc belongs to iommu->singleton_group and the
-> pair'd put is here:
-> 
-> @@ -289,6 +289,9 @@ void iommu_device_unregister(struct iommu_device *iommu)
->   	spin_lock(&iommu_device_lock);
->   	list_del(&iommu->list);
->   	spin_unlock(&iommu_device_lock);
-> +
-> +	/* Pairs with the alloc in generic_single_device_group() */
-> +	iommu_group_put(iommu->singleton_group);
->   }
-> 
-> The refcount from iommu_group_ref_get() belongs to the caller and the
-> caller must have a paired put.
+From: Binglei Wang <l3b2w1@gmail.com>
 
-Oh, yes! The extra reference counter is paired with above put.
+Cma memory region editted carelessly in dts may overlap
+with kernel code/data memory region which is reserved by memblock
+during the early phase of system memory initialization.
 
-Thanks for the explanation.
+Without checking overlap and cma area setup done,
+this region will be released to buddy system later.
 
-Then, another small comment:
+When memory usage under pressure, memory allocated from
+this region will collide with kernel code which is read-only.
+And the following writing to this region will trigger the panic
+of writing to read-only memory.
 
-iommu->singleton_group will be freed with above put, right? Do you need
-to set iommu->singleton_group to NULL? Given that iommu_device is not
-freed here.
+So when rmem_cma_setup returns EBUSY, do not phys-free this region
+to memblock or else we end up with free the kernel code memory
+to buddy system.
 
-Best regards,
-baolu
+Signed-off-by: Binglei Wang <l3b2w1@gmail.com>
+---
+ drivers/of/of_reserved_mem.c | 3 ---
+ kernel/dma/contiguous.c      | 5 +++++
+ 2 files changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
+index 7ec94cfcb..d62cc76ef 100644
+--- a/drivers/of/of_reserved_mem.c
++++ b/drivers/of/of_reserved_mem.c
+@@ -338,9 +338,6 @@ void __init fdt_init_reserved_mem(void)
+ 					rmem->name);
+ 				if (nomap)
+ 					memblock_clear_nomap(rmem->base, rmem->size);
+-				else
+-					memblock_phys_free(rmem->base,
+-							   rmem->size);
+ 			} else {
+ 				phys_addr_t end = rmem->base + rmem->size - 1;
+ 				bool reusable =
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index 6ea80ae42..a349f3e97 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -410,6 +410,11 @@ static int __init rmem_cma_setup(struct reserved_mem *rmem)
+ 		return -EBUSY;
+ 	}
+ 
++	if (memblock_is_region_reserved(rmem->base, rmem->size)) {
++		pr_info("Reserved memory: overlap with exsiting one\n");
++		return -EBUSY;
++	}
++
+ 	if (!of_get_flat_dt_prop(node, "reusable", NULL) ||
+ 	    of_get_flat_dt_prop(node, "no-map", NULL))
+ 		return -EINVAL;
+-- 
+2.34.1
 
