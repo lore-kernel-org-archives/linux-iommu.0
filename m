@@ -1,113 +1,115 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41A682FA5B
-	for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 18:43:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42364C433C8;
-	Thu, 20 Jul 2023 18:43:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1689878587;
-	bh=CftVQWk9Ijln5SVTcZMMv33xaJ0bY8lCQxLn3uWe+u4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=RWOLF1qZRL5dRGzrRnnBDYpuKqqusqAOMnAksX3CZSt2fOKP7D6z6RPQcXQhIaTqo
-	 cjnztL8x8ghDIZ12l5IMpd4qMC9edIXDhe2ZbOYtm+tXiObFWfhl/cVJh9YykknmGg
-	 QFyX18cwCd4dB+WugtRgoIUi0E2/ycIPjg3ek0uITg0g+QStf1QhWXRI4swhpoaqzC
-	 AZsEuGk5Fbu3AQbRMtatg9znWxftPqKTLsxWzzFYL28euQ87Wg5okOonIW1vDVv/iT
-	 JlhnVfu7nIlrqm11+P3Tx3pMz9RD/jgsSnuB1rGXcIVqDVyBjwIkavAlifczeMt0Om
-	 c7UnWdHQheo/Q==
-Date: Thu, 20 Jul 2023 19:43:01 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Tomasz Jeznach <tjeznach@rivosinc.com>
-Cc: Nick Kossifidis <mick@ics.forth.gr>,
-	Anup Patel <apatel@ventanamicro.com>,
-	Albert Ou <aou@eecs.berkeley.edu>, linux@rivosinc.com,
-	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	linux-kernel@vger.kernel.org, Sebastien Boeuf <seb@rivosinc.com>,
-	iommu@lists.linux.dev, Palmer Dabbelt <palmer@dabbelt.com>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	linux-riscv@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 06/11] RISC-V: drivers/iommu/riscv: Add command, fault,
- page-req queues
-Message-ID: <20230720-heftiness-refill-465b3d122049@spud>
-References: <cover.1689792825.git.tjeznach@rivosinc.com>
- <1fd79e5c53d9d6ed2264f60dd4261f293cc00472.1689792825.git.tjeznach@rivosinc.com>
- <5b8fd18e-8dfa-96bf-cdd4-4498b1d15ab9@ics.forth.gr>
- <CAH2o1u7uAuXsD6+6Dvam4kzQuUj8s98G0sR26_-q31wvSUYZNA@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CB0F2FA47;
+	Thu, 20 Jul 2023 18:53:49 +0000 (UTC)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	by mailout.west.internal (Postfix) with ESMTP id E721A3202ADA;
+	Thu, 20 Jul 2023 14:53:47 -0400 (EDT)
+Received: from imap47 ([10.202.2.97])
+  by compute5.internal (MEProxy); Thu, 20 Jul 2023 14:53:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+	 h=cc:cc:content-type:content-type:date:date:from:from
+	:in-reply-to:in-reply-to:message-id:mime-version:references
+	:reply-to:sender:subject:subject:to:to; s=fm3; t=1689879227; x=
+	1689965627; bh=UsCIH3GnKiEckT+NRUJpbKBJyrIYS4v+Hkal0eCfojk=; b=D
+	hxeJRYr/bgQagplL/v//yrho2U0iMTVVTYTfDxkLDfCFOXYWPVpP1doHILYwdFHR
+	P0rg3a+FUY4xED0exa+KcC9tCvsA3u8OV8grScAbWuFiEgdT46EVbmhI64E8aHR2
+	2Lx+z9UD1JRvLbJFh/5IvNyu7cKoTb9/jV4uaS9QJGOPm+AAt2lR/Ymd2O4fPLeG
+	ri1cWAXHldntSeRiMlsN6Ffz3ncXJ19+ktZmSRevxUtzbPBzzvzwo31bS8eMTWtM
+	Kj8PEFISc7bPPoAbvk8hqtPyGpHRehfH1xGwyym8F+Wky/WdGtbM3jdneipcmcva
+	y3FOdqOfTGKmgupZbvhNQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:sender:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=fm3; t=1689879227; x=1689965627; bh=UsCIH3GnKiEck
+	T+NRUJpbKBJyrIYS4v+Hkal0eCfojk=; b=nj81Hxud2v8K5nBoY8G1EP0ihpFMZ
+	panHSt5GnbkotKZGVaTt/ph3eauYR2Jn9H43kDNEZpOn4yU/3VBeU7Djk0bt1/2k
+	Bn6Mlcwo2OfTcZVr4+a2ZniJxunf3BnGAksl4d/wZPryNU9YbXiOUZ2WBAO27KjK
+	1ZTAFEG6e3wLmWMlDEykzg7uhB1t7W1hlommUlU/bysAsAoxMCIxMsk0EXK+X1RA
+	L484WxmpGwlplr0nwJ/IYqjkSHSTkFhoRmITkHt9OkkZMSy000iX9p9/vRrkIcWg
+	ttmerg7/PUxbVoTfADo/oETqnoUFTzQ1+kJtt90gETNseWKXzAyg8f+nQ==
+X-ME-Sender: <xms:uoK5ZFf3U6rlFFy0Gtxrw6KQ65ICGPkkzYEuOA3kc4fqVvuio_F77w>
+    <xme:uoK5ZDOWIrQ3qYshq6bs4m6k811w-8WjsmMpqOb1F0gUxz6quX1YuQ7icrl7tBacz
+    ZYDlMQZo5DbaeCvInA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedviedrhedtgdduvdelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedfufhv
+    vghnucfrvghtvghrfdcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrf
+    grthhtvghrnhepleevgfegffehvedtieevhfekheeftedtjeetudevieehveevieelgffh
+    ieevieeunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+    epshhvvghnsehsvhgvnhhpvghtvghrrdguvghv
+X-ME-Proxy: <xmx:uoK5ZOgdEG4IMtWMAmABzHlOeqhnubPZGc0g7_6wS2D3PQjLzdO5HA>
+    <xmx:uoK5ZO-Xfl7XRmNp0RSrlftPL21smEC4xXiOINnUleZdtZyi80_23Q>
+    <xmx:uoK5ZBsv_4YevPpkEBB0kmwZvmHnK6_rPDbh9--uRLoh6kmvWXIixw>
+    <xmx:u4K5ZC8TeiOzwSuuwiKUj4VAakfICD5UbH7zo5KFpSuIUiIJGrEz3w>
+Feedback-ID: i51094778:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id 979D8A60077; Thu, 20 Jul 2023 14:53:46 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-531-gfdfa13a06d-fm-20230703.001-gfdfa13a0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="41cqKGBWt2/BBb8/"
-Content-Disposition: inline
-In-Reply-To: <CAH2o1u7uAuXsD6+6Dvam4kzQuUj8s98G0sR26_-q31wvSUYZNA@mail.gmail.com>
+Mime-Version: 1.0
+Message-Id: <f176c331-f8cf-4a44-8ada-7d9c958b17ca@app.fastmail.com>
+In-Reply-To: <20230719222033.117513-1-minhuadotchen@gmail.com>
+References: <20230719222033.117513-1-minhuadotchen@gmail.com>
+Date: Thu, 20 Jul 2023 20:53:26 +0200
+From: "Sven Peter" <sven@svenpeter.dev>
+To: "Min-Hua Chen" <minhuadotchen@gmail.com>,
+ "Hector Martin" <marcan@marcan.st>,
+ "Alyssa Rosenzweig" <alyssa@rosenzweig.io>, "Joerg Roedel" <joro@8bytes.org>,
+ "Will Deacon" <will@kernel.org>, "Robin Murphy" <robin.murphy@arm.com>
+Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/apple-dart: mark apple_dart_pm_ops static
+Content-Type: text/plain
+
+On Thu, Jul 20, 2023, at 00:20, Min-Hua Chen wrote:
+> This patch fixes the following sprse warning:
+
+typo: sparse
+
+>
+> drivers/iommu/apple-dart.c:1279:1: sparse: warning: symbol 
+> 'apple_dart_pm_ops' was not declared. Should it be static?
+>
+> No functional change intended.
+>
+> Signed-off-by: Min-Hua Chen <minhuadotchen@gmail.com>
+> ---
+
+Acked-by: Sven Peter <sven@svenpeter.dev>
+
+Thanks,
 
 
---41cqKGBWt2/BBb8/
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Sven
 
-On Thu, Jul 20, 2023 at 11:00:10AM -0700, Tomasz Jeznach wrote:
-> On Wed, Jul 19, 2023 at 8:12=E2=80=AFPM Nick Kossifidis <mick@ics.forth.g=
-r> wrote:
-> > On 7/19/23 22:33, Tomasz Jeznach wrote:
-> > The description doesn't match the subject nor the patch content (we
-> > don't jus enable interrupts, we also init the queues).
-> >
-> > > +     /* Parse Queue lengts */
-> > > +     ret =3D of_property_read_u32(pdev->dev.of_node, "cmdq_len", &io=
-mmu->cmdq_len);
-> > > +     if (!ret)
-> > > +             dev_info(dev, "command queue length set to %i\n", iommu=
-->cmdq_len);
-> > > +
-> > > +     ret =3D of_property_read_u32(pdev->dev.of_node, "fltq_len", &io=
-mmu->fltq_len);
-> > > +     if (!ret)
-> > > +             dev_info(dev, "fault/event queue length set to %i\n", i=
-ommu->fltq_len);
-> > > +
-> > > +     ret =3D of_property_read_u32(pdev->dev.of_node, "priq_len", &io=
-mmu->priq_len);
-> > > +     if (!ret)
-> > > +             dev_info(dev, "page request queue length set to %i\n", =
-iommu->priq_len);
-> > > +
-> > >       dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
-> > >
-> >
-> > We need to add those to the device tree binding doc (or throw them away,
-> > I thought it would be better to have them as part of the device
-> > desciption than a module parameter).
-
-Aye, I didn't notice these. Any DT properties /must/ be documented.
-To avoid having to make the comments on v2, properties should also not
-contain underscores.
-
-> We can add them as an optional fields to DT.
-> Alternatively, I've been looking into an option to auto-scale CQ/PQ
-> based on number of attached devices, but this gets trickier for
-> hot-pluggable systems. I've added module parameters as a bare-minimum,
-> but still looking for better solutions.
-
-If they're properties of the hardware, they should come from DT/ACPI,
-unless they're auto-detectable, in which case that is preferred.
-To quote GregKH "please do not add new module parameters for drivers,
-this is not the 1990s" :)
-
---41cqKGBWt2/BBb8/
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZLmANQAKCRB4tDGHoIJi
-0h1LAP4qwV/U4fkdeNz/O5eIUZiTgJRLrGctJ7hxwjCOtnYH2QD/UrUGAZU83zSg
-IC1ocFNxT4sq0rSSzdqwA6y4crpD3g0=
-=fI39
------END PGP SIGNATURE-----
-
---41cqKGBWt2/BBb8/--
+>  drivers/iommu/apple-dart.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+> index 8af64b57f048..2082081402d3 100644
+> --- a/drivers/iommu/apple-dart.c
+> +++ b/drivers/iommu/apple-dart.c
+> @@ -1276,7 +1276,7 @@ static __maybe_unused int 
+> apple_dart_resume(struct device *dev)
+>  	return 0;
+>  }
+> 
+> -DEFINE_SIMPLE_DEV_PM_OPS(apple_dart_pm_ops, apple_dart_suspend, 
+> apple_dart_resume);
+> +static DEFINE_SIMPLE_DEV_PM_OPS(apple_dart_pm_ops, apple_dart_suspend, 
+> apple_dart_resume);
+> 
+>  static const struct of_device_id apple_dart_of_match[] = {
+>  	{ .compatible = "apple,t8103-dart", .data = &apple_dart_hw_t8103 },
+> -- 
+> 2.34.1
