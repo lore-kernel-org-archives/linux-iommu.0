@@ -1,34 +1,34 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 214A4174DA;
-	Thu, 20 Jul 2023 09:56:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9762619A0B
+	for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 10:38:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689846990; x=1721382990;
+  t=1689849527; x=1721385527;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=04cRS58otusgNog6qUGU0l9UCsLobYH5YmKv9H67S/4=;
-  b=Tuye7rhePvcE5l4bj85Vr6NOk8KPuc2syjPTMlesnhZNfG3LfhaTP3cu
-   x9pDFh2W/0DKrC+tKt3ear7bQfS6e3s5Tk7AZ/9MN2YIH+Ct5dftMEw7f
-   l1kthFYrwq8Ocfint+18yN7rPorgs9w9kSSDCupDc0tmwDIEvT20sZM92
-   5IrzaA/GvPsm8Jo512SrZyg+cr4Et3KB+f0Mwbqi3Cvcny61q8ue1MRRI
-   5eDAsnwwSsnkIe2sDh7XmiglpxVOOH+ZmGhvyAQaDVLOEq4QOnN9Nd/Ng
-   vbWy9CM84alpOBy2cG2aUK5mPvWVxyPbyok7fTz0j00GammRdloFQxkb9
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10776"; a="430457023"
+  bh=MUQDGWmX3jQPF4kFi+U/N/uImNqXd8LSFOduoqtvDBc=;
+  b=lh9Rsv7MDnNfdg0Kz6gC/1d9+2ZPd/W/RUYZ7iDVkiHtwFcl3h4k4jvC
+   iEPxDBqSUE4Ap2Q6yXp/cW2K1qM/oR5vEvgzuyN0GUgvf953q6QJQILBi
+   ZLHuU2yc4+8k5+BVoBPeumE+nz4N14j2WKFc16nkt6074RH0XDVIcPXu9
+   OiRT3PuMrC8dok75AT5rAIWk0HeVIYnykwF3oCNelPAtxajAXXzaXh9t1
+   Hrt0r0ng57H4Bv8hdxBIBO4DRyfOReTovt+aCWKjOZIQ6h1sguCwADM0z
+   ITj/DkmydiK/RzZXQL09dU8VQ6R5i1IqgcMtDsYzElKvSdvcGPamsfoVa
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10776"; a="370263493"
 X-IronPort-AV: E=Sophos;i="6.01,218,1684825200"; 
-   d="scan'208";a="430457023"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2023 02:56:29 -0700
+   d="scan'208";a="370263493"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2023 03:38:46 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10776"; a="724329685"
+X-IronPort-AV: E=McAfee;i="6600,9927,10776"; a="789754715"
 X-IronPort-AV: E=Sophos;i="6.01,218,1684825200"; 
-   d="scan'208";a="724329685"
-Received: from kechengh-mobl.gar.corp.intel.com (HELO [10.252.191.109]) ([10.252.191.109])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2023 02:56:21 -0700
-Message-ID: <d7e38f1f-00ba-5d86-3295-fd74f1a461a5@linux.intel.com>
-Date: Thu, 20 Jul 2023 17:56:18 +0800
+   d="scan'208";a="789754715"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.191.109]) ([10.252.191.109])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2023 03:38:41 -0700
+Message-ID: <68e3a7ab-0387-3e58-8c30-3ace807acee5@linux.intel.com>
+Date: Thu, 20 Jul 2023 18:38:37 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,32 +37,57 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.13.0
-Cc: baolu.lu@linux.intel.com, Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH 10/10] iommu/intel: Fix missing locking for
- show_device_domain_translation()
+Cc: baolu.lu@linux.intel.com, Palmer Dabbelt <palmer@dabbelt.com>,
+ Albert Ou <aou@eecs.berkeley.edu>, Anup Patel <apatel@ventanamicro.com>,
+ Sunil V L <sunilvl@ventanamicro.com>, Nick Kossifidis <mick@ics.forth.gr>,
+ Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev,
+ linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux@rivosinc.com
+Subject: Re: [PATCH 01/11] RISC-V: drivers/iommu: Add RISC-V IOMMU - Ziommu
+ support.
 Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>,
- David Woodhouse <dwmw2@infradead.org>, Heiko Stuebner <heiko@sntech.de>,
- iommu@lists.linux.dev, Jernej Skrabec <jernej.skrabec@gmail.com>,
- Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org,
- linux-rockchip@lists.infradead.org, linux-sunxi@lists.linux.dev,
- Orson Zhai <orsonzhai@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
- Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
- Will Deacon <will@kernel.org>, Chunyan Zhang <zhang.lyra@gmail.com>
-References: <10-v1-3c8177327a47+256-iommu_group_locking_jgg@nvidia.com>
+To: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Paul Walmsley <paul.walmsley@sifive.com>
+References: <cover.1689792825.git.tjeznach@rivosinc.com>
+ <c33c24036c06c023947ecb47177da273569b3ac7.1689792825.git.tjeznach@rivosinc.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <10-v1-3c8177327a47+256-iommu_group_locking_jgg@nvidia.com>
+In-Reply-To: <c33c24036c06c023947ecb47177da273569b3ac7.1689792825.git.tjeznach@rivosinc.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/7/19 3:05, Jason Gunthorpe wrote:
-> This is called from bus_for_each_dev() and must lock the device before
-> calling iommu_group_get().
-> 
-> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+On 2023/7/20 3:33, Tomasz Jeznach wrote:
+> +struct riscv_iommu_domain {
+> +	struct iommu_domain domain;
+> +
+> +	struct list_head endpoints;
+> +	struct mutex lock;
+> +	struct riscv_iommu_device *iommu;
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+How are domains and iommu devices connected? A domain can be attached to
+multiple devices, which are possibly behind different iommu devices. So
+a domain is possibly connected to multiple iommu devices.
+
+Is it possible?
+
+> +
+> +	unsigned mode;		/* RIO_ATP_MODE_* enum */
+> +	unsigned pscid;		/* RISC-V IOMMU PSCID */
+> +
+> +	pgd_t *pgd_root;	/* page table root pointer */
+> +};
+> +
+> +/* Private dev_iommu_priv object, device-domain relationship. */
+> +struct riscv_iommu_endpoint {
+> +	struct device *dev;			/* platform or PCI endpoint device */
+> +	unsigned devid;      			/* PCI bus:device:function number */
+> +	unsigned domid;    			/* PCI domain number, segment */
+> +	struct rb_node node;    		/* device tracking node (lookup by devid) */
+> +	struct riscv_iommu_device *iommu;	/* parent iommu device */
+> +
+> +	struct mutex lock;
+> +	struct list_head domain;		/* endpoint attached managed domain */
+> +};
 
 Best regards,
 baolu
