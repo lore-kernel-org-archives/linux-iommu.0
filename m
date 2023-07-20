@@ -1,53 +1,54 @@
-Received: from mail-pg1-f173.google.com (mail-pg1-f173.google.com [209.85.215.173])
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00D822FA35
-	for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 17:47:52 +0000 (UTC)
-Received: by mail-pg1-f173.google.com with SMTP id 41be03b00d2f7-5440e98616cso1566869a12.0
-        for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 10:47:52 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0A792FA35
+	for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 17:49:35 +0000 (UTC)
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-1b8b4749013so7884295ad.2
+        for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 10:49:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20221208.gappssmtp.com; s=20221208; t=1689875272; x=1690480072;
+        d=rivosinc-com.20221208.gappssmtp.com; s=20221208; t=1689875375; x=1690480175;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=JeRtmaYTAPyRY4aCeM38ToCVz+RzHutrGkJCqmGIdOc=;
-        b=VN4kSEn7Ij6Jb7Boit8qxzz8hu77UOlfTYQHpith3ypcF9dbr8xWuknkAmP8IvhxBt
-         LSx9B51i2TsdB+RUriiJWHvSRCwVRBNb/OI0bv4fZ/ddJi9e7EqZDdUFRo7TczeEC+of
-         URUI2buBPQWpMuUbL5yFNjv3VfjFHoK6KfHtE3V0FBlLSVS1/fJkaVvbpoFsooaHkONk
-         IiFE6+Rr2ppLX1fM4YPj6b3txnVsbIyOeLireIiBSPXqxXZkVMydnEz+QuohTe2sTnjg
-         S5IjI4CkxDg5Hq6JKbejvTXX4S9QbaToU/WxyTcuWJ+ESMkC7DDIWj4BZafziobkSX7k
-         soOQ==
+        bh=r8yROjrlp1PPFH0to9KuHuG8CxyzdAeh3ld6lplKCpw=;
+        b=fyS7XMJPOaTP42oTe22seQohWF8aMbOeiPkaE4J2rWqXd1fUC0RtFqF+vTZPIJmLNL
+         ri3EdeoE1FnRx13n5l+ni8jjeBnGqlLcaqfa1g4UteZwo7zVvXz2VCqdEf4edxKk0Lmp
+         W24+7P6VC8EKDRSLRTzjFybQKN16HrMn+ukzGKtFc5+Q9gZIrIKaewXZXAFyEKYdK5F5
+         gcp+xF0dnH6zhzNovfCSS4QhbIUL1na8WmipAbtF3FF/YRpO6YXrF1YjoeZtuG4Z7mNA
+         fxflv1CyeRy/DmOw1Hm9chGK0mBPDP7svtXQYfW1EWYsP8X4JECAT43UnDtGkdcO4TgN
+         L/bg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689875272; x=1690480072;
+        d=1e100.net; s=20221208; t=1689875375; x=1690480175;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=JeRtmaYTAPyRY4aCeM38ToCVz+RzHutrGkJCqmGIdOc=;
-        b=WxOwMp7A+SO3Nljmdbon+tGyYptod+WRlOUNUSI2extrT6hNNy3zjRWrryLwSPEZjU
-         Nz7mhZufETq8/LtF1JP59SZVVBNDP8MlnVg4zHVnIg9Z5FkWLCzrt52RqlFzH6AemBA9
-         J2zDxz/J819g+fUv/4fHWlYJRWyVvjQ68ygARLVouMuZXgyzCCCJXJ1Vw6umqphXLTVr
-         iphjhtdlSveDgzM8o2BO1ZFeyY+ab0FHcvsZ1+45aB6FgwJvLMVwd04CyNJP5d43PoNt
-         SIdkfS7BM/zwY1X11eGN9tSXvZRIeec/qi6s2Cc/xkomJvDajiI6Rse1aD54VxHXib92
-         HMYA==
-X-Gm-Message-State: ABy/qLb5Zifc9jefeLP5rJyetbEP0H+RFld5oZRJ3GtClQScJHKRq1zA
-	DRstnhMBK0KPqKSbax29GD4DFXwzaG6ne3cA9cmQmQ==
-X-Google-Smtp-Source: APBJJlHy5UEy2yIQNNS3I4ewj2XdSdHRI6Php31TNjCHwslBISu4YslmtmapMSbRvm/h863Rb7ly70c0/Q+NZJYe7/k=
-X-Received: by 2002:a17:90a:8b81:b0:256:675f:1d49 with SMTP id
- z1-20020a17090a8b8100b00256675f1d49mr120295pjn.0.1689875271671; Thu, 20 Jul
- 2023 10:47:51 -0700 (PDT)
+        bh=r8yROjrlp1PPFH0to9KuHuG8CxyzdAeh3ld6lplKCpw=;
+        b=cencPsgoev16N0uqKshQXYQRHXToAgA0Z+3tIjOEWGJMkmNJB8S0X0z5wovDNuL43w
+         cmCTMMv5b2Wrq5BHXdMJbpPH1YuCG9SxJpUNcR6TXzeFpUrrHElGfkGTiZVcyf1SI9UW
+         OSBvoG1KGm1gaYmw5+i6VASC2CdmI0iWB9kzANbkssMGuefl+poct9h/Tam/peOD52eH
+         9jIh2t9b9+oulfsvC/C3YB17kwwxwTLN4PCjDL+h+XZJuV5PWoHmgyzCqmI5CQ0RkDn8
+         xnM2RyyWwhko0KTJ9MVC+xttj6EeVX/n7N48xef1UqqvcINcY7Ob9jUaNRaJO5gamEH6
+         hF9Q==
+X-Gm-Message-State: ABy/qLZkNyy1BD82r9vpZ36kdF0y9o58gpqdre2FR77i3BJ1jz7D+NNa
+	f7rj7kUXAZLS8La/1Rz5CtkeC28M8e0Nre0U4P1Gfg==
+X-Google-Smtp-Source: APBJJlEznZxAu+zz9Hq/h2JamBEIRqdk1o93ouW8Qs8XupLnxLYmEqfyZR8bRDDrnYiuby2sGUoNd8RNY4w9bloJSpg=
+X-Received: by 2002:a17:902:a415:b0:1b3:f8db:6f0c with SMTP id
+ p21-20020a170902a41500b001b3f8db6f0cmr94423plq.58.1689875375330; Thu, 20 Jul
+ 2023 10:49:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1689792825.git.tjeznach@rivosinc.com> <610abe685f90870be52bc7c2ca45ab5235bd8eb4.1689792825.git.tjeznach@rivosinc.com>
- <2556751a-c439-bb69-a102-583dd985fc5e@linux.intel.com>
-In-Reply-To: <2556751a-c439-bb69-a102-583dd985fc5e@linux.intel.com>
+References: <cover.1689792825.git.tjeznach@rivosinc.com> <1fd79e5c53d9d6ed2264f60dd4261f293cc00472.1689792825.git.tjeznach@rivosinc.com>
+ <d766f11f-45a6-9d47-3bfb-b3632a0b0f0b@linux.intel.com>
+In-Reply-To: <d766f11f-45a6-9d47-3bfb-b3632a0b0f0b@linux.intel.com>
 From: Tomasz Jeznach <tjeznach@rivosinc.com>
-Date: Thu, 20 Jul 2023 10:47:40 -0700
-Message-ID: <CAH2o1u7WO=Kpki1qMGoq3uJ2vVqhCvffvX0hLGc7o9op2vTCbw@mail.gmail.com>
-Subject: Re: [PATCH 05/11] RISC-V: drivers/iommu/riscv: Add sysfs interface
+Date: Thu, 20 Jul 2023 10:49:24 -0700
+Message-ID: <CAH2o1u4Y5R16QQsed4TuKKiv6ir+uWB98A3Z5adBaF8pPLQ5Eg@mail.gmail.com>
+Subject: Re: [PATCH 06/11] RISC-V: drivers/iommu/riscv: Add command, fault,
+ page-req queues
 To: Baolu Lu <baolu.lu@linux.intel.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
 	Robin Murphy <robin.murphy@arm.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
@@ -59,104 +60,26 @@ Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jul 20, 2023 at 5:51=E2=80=AFAM Baolu Lu <baolu.lu@linux.intel.com>=
+On Thu, Jul 20, 2023 at 6:18=E2=80=AFAM Baolu Lu <baolu.lu@linux.intel.com>=
  wrote:
 >
 > On 2023/7/20 3:33, Tomasz Jeznach wrote:
-> > +#define sysfs_dev_to_iommu(dev) \
-> > +     container_of(dev_get_drvdata(dev), struct riscv_iommu_device, iom=
-mu)
-> > +
-> > +static ssize_t address_show(struct device *dev,
-> > +                         struct device_attribute *attr, char *buf)
-> > +{
-> > +     struct riscv_iommu_device *iommu =3D sysfs_dev_to_iommu(dev);
-> > +     return sprintf(buf, "%llx\n", iommu->reg_phys);
+> > Enables message or wire signal interrupts for PCIe and platforms device=
+s.
 >
-> Use sysfs_emit() please.
+> If this patch could be divided into multiple small patches, each
+> logically doing one specific thing, it will help people better review
+> the code.
 >
 
-ack. Thanks, will update.
+ack. I've got a similar comment regarding this patch already.
+I will split and add more notes to the commit message. Thanks.
 
-> > +}
-> > +
-> > +static DEVICE_ATTR_RO(address);
-> > +
-> > +#define ATTR_RD_REG32(name, offset)                                  \
-> > +     ssize_t reg_ ## name ## _show(struct device *dev,               \
-> > +                     struct device_attribute *attr, char *buf)       \
-> > +{                                                                    \
-> > +     struct riscv_iommu_device *iommu =3D sysfs_dev_to_iommu(dev);    =
- \
-> > +     return sprintf(buf, "0x%x\n",                                   \
-> > +                     riscv_iommu_readl(iommu, offset));              \
-> > +}
-> > +
-> > +#define ATTR_RD_REG64(name, offset)                                  \
-> > +     ssize_t reg_ ## name ## _show(struct device *dev,               \
-> > +                     struct device_attribute *attr, char *buf)       \
-> > +{                                                                    \
-> > +     struct riscv_iommu_device *iommu =3D sysfs_dev_to_iommu(dev);    =
- \
-> > +     return sprintf(buf, "0x%llx\n",                                 \
-> > +                     riscv_iommu_readq(iommu, offset));              \
-> > +}
-> > +
-> > +#define ATTR_WR_REG32(name, offset)                                  \
-> > +     ssize_t reg_ ## name ## _store(struct device *dev,              \
-> > +                     struct device_attribute *attr,                  \
-> > +                     const char *buf, size_t len)                    \
-> > +{                                                                    \
-> > +     struct riscv_iommu_device *iommu =3D sysfs_dev_to_iommu(dev);    =
- \
-> > +     unsigned long val;                                              \
-> > +     int ret;                                                        \
-> > +     ret =3D kstrtoul(buf, 0, &val);                                  =
- \
-> > +     if (ret)                                                        \
-> > +             return ret;                                             \
-> > +     riscv_iommu_writel(iommu, offset, val);                         \
-> > +     return len;                                                     \
-> > +}
-> > +
-> > +#define ATTR_WR_REG64(name, offset)                                  \
-> > +     ssize_t reg_ ## name ## _store(struct device *dev,              \
-> > +                     struct device_attribute *attr,                  \
-> > +                     const char *buf, size_t len)                    \
-> > +{                                                                    \
-> > +     struct riscv_iommu_device *iommu =3D sysfs_dev_to_iommu(dev);    =
- \
-> > +     unsigned long long val;                                         \
-> > +     int ret;                                                        \
-> > +     ret =3D kstrtoull(buf, 0, &val);                                 =
- \
-> > +     if (ret)                                                        \
-> > +             return ret;                                             \
-> > +     riscv_iommu_writeq(iommu, offset, val);                         \
-> > +     return len;                                                     \
-> > +}
->
-> So this allows users to change the registers through sysfs? How does
-> it synchronize with the iommu driver?
->
-
-The only writable registers are for debug interface and performance
-monitoring counters, without any synchronization requirements between
-user / driver.  In follow up patch series performance counters will be
-also removed from sysfs, replaced by integration with perfmon
-subsystem. The only remaining will be a debug access, providing user
-access to address translation, in short it provides an interface to
-query SPA based on provided IOVA/RID/PASID. There was a discussion in
-RVI IOMMU TG forum if it's acceptable to expose such an interface to
-the privileged user, and the conclusion was that it's very likely not
-exposing more info than privileged users already are able to acquire
-by looking at in-memory data structures.
-
-Read-only registers are to provide debug access to track queue
-head/tail pointers and interrupt states.
 
 > Best regards,
 > baolu
+>
+
 
 regards,
 - Tomasz
