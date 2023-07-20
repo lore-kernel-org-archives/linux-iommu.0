@@ -1,34 +1,34 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D37517FE6
-	for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 13:18:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6582B182C0;
+	Thu, 20 Jul 2023 14:18:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689859111; x=1721395111;
+  t=1689862707; x=1721398707;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=StnBaGaOlRqqTLgANOZt5SAXy2wagVOHiKTaAVKHt2Y=;
-  b=NESimaLjYzpdcbjHU3VdRjEJS5kh0K5WoiaiWm9yqxP48ui06Ej0rGOn
-   D6VAguqUew3vkoeT6D9z9/Rg2dypjx/tQDblLMYYNq792C5eOkABOBvDq
-   f0sbfwbFFa/m8Ju2MvsZjjVYj4fICK3QyZGW38IKkUN+XZefeUCowM1lG
-   qYytyDzJgKF3/uRaAQMR4BucZtZGMTIgjnkX9S2cAbtkAqticGK3ZHQhF
-   T4X17xX0vesZXA1evnfvgDbKrb2IqibmNd2S0xpXnlhQCE8lO2B6W/dlh
-   bWKRPNWdGZZZNjbRqN7Hm/nNLjXIOHxJQ2fEqB/+p8EQrXQbfkW4dUkq7
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10777"; a="370297811"
-X-IronPort-AV: E=Sophos;i="6.01,218,1684825200"; 
-   d="scan'208";a="370297811"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2023 06:08:34 -0700
+  bh=BFG+lxSO1zBFfL9o8M5wrEKd1L4tJiPtfHsH/2e/ZoQ=;
+  b=JD+ehAlQeJ29Bt2jarrwXtza5zR1z3wTsRBQAqpHlEnUu+/NKKWbtiMP
+   jW+NrCHJ1ve0gnAAi+UarpVcp6ZhTzBI92GyDNixWXKrCmbGwwnyQgSEb
+   BPv2NcuekpOc4X2+jb1YiuDH71xCSCavd/u0X64VTht79ZEjpx8Jtm1ek
+   dt0VFBklwf5lYpgLoWOgMvn3b1xbbF01bRZkpx0IMp2oK44meA66jRw7d
+   9mpNVi+D6f2m3MiysfCBPXfzHjB7lTLZaHMEU+pepf17+r6jmPexK55Cg
+   qmdi11tnwSqN7VjnhnhvYAq9RUCen/6l2r05KBZUNHmm1Y/vIyYhKDBp2
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10777"; a="369414757"
+X-IronPort-AV: E=Sophos;i="6.01,219,1684825200"; 
+   d="scan'208";a="369414757"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2023 07:02:03 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10777"; a="727684950"
-X-IronPort-AV: E=Sophos;i="6.01,218,1684825200"; 
-   d="scan'208";a="727684950"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.191.109]) ([10.252.191.109])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2023 06:08:28 -0700
-Message-ID: <d766f11f-45a6-9d47-3bfb-b3632a0b0f0b@linux.intel.com>
-Date: Thu, 20 Jul 2023 21:08:22 +0800
+X-IronPort-AV: E=McAfee;i="6600,9927,10777"; a="674703327"
+X-IronPort-AV: E=Sophos;i="6.01,219,1684825200"; 
+   d="scan'208";a="674703327"
+Received: from hli37-mobl.amr.corp.intel.com (HELO [10.252.191.120]) ([10.252.191.120])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2023 07:01:58 -0700
+Message-ID: <c98c37bb-57c5-faec-1d17-730f3ceb2b21@linux.intel.com>
+Date: Thu, 20 Jul 2023 22:01:54 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,31 +37,105 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.13.0
-Cc: baolu.lu@linux.intel.com, Palmer Dabbelt <palmer@dabbelt.com>,
- Albert Ou <aou@eecs.berkeley.edu>, Anup Patel <apatel@ventanamicro.com>,
- Sunil V L <sunilvl@ventanamicro.com>, Nick Kossifidis <mick@ics.forth.gr>,
- Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev,
- linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux@rivosinc.com
-Subject: Re: [PATCH 06/11] RISC-V: drivers/iommu/riscv: Add command, fault,
- page-req queues
+Cc: baolu.lu@linux.intel.com, Baolin Wang <baolin.wang@linux.alibaba.com>,
+ David Woodhouse <dwmw2@infradead.org>, Heiko Stuebner <heiko@sntech.de>,
+ iommu@lists.linux.dev, Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org,
+ linux-rockchip@lists.infradead.org, linux-sunxi@lists.linux.dev,
+ Orson Zhai <orsonzhai@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
+ Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
+ Will Deacon <will@kernel.org>, Chunyan Zhang <zhang.lyra@gmail.com>,
+ Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH 03/10] iommu: Add generic_single_device_group()
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <3-v1-3c8177327a47+256-iommu_group_locking_jgg@nvidia.com>
+ <32eadc5b-bb39-5bb1-f124-44feead97ce9@linux.intel.com>
+ <ZLkiu7IyimCckiFs@nvidia.com>
 Content-Language: en-US
-To: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Paul Walmsley <paul.walmsley@sifive.com>
-References: <cover.1689792825.git.tjeznach@rivosinc.com>
- <1fd79e5c53d9d6ed2264f60dd4261f293cc00472.1689792825.git.tjeznach@rivosinc.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <1fd79e5c53d9d6ed2264f60dd4261f293cc00472.1689792825.git.tjeznach@rivosinc.com>
+In-Reply-To: <ZLkiu7IyimCckiFs@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/7/20 3:33, Tomasz Jeznach wrote:
-> Enables message or wire signal interrupts for PCIe and platforms devices.
+On 2023/7/20 20:04, Jason Gunthorpe wrote:
+> On Thu, Jul 20, 2023 at 03:39:27PM +0800, Baolu Lu wrote:
+>> On 2023/7/19 3:05, Jason Gunthorpe wrote:
+>>> This implements the common pattern seen in drivers of a single
+>>> iommu_group for the entire iommu driver. Implement this in core code
+>>> so the drivers that want this can select it from their ops.
+>>>
+>>> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+>>> ---
+>>>    drivers/iommu/iommu.c | 25 +++++++++++++++++++++++++
+>>>    include/linux/iommu.h |  3 +++
+>>>    2 files changed, 28 insertions(+)
+>>>
+>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>>> index 9e41ad4e3219b6..1e0c5d9a0370fb 100644
+>>> --- a/drivers/iommu/iommu.c
+>>> +++ b/drivers/iommu/iommu.c
+>>> @@ -289,6 +289,9 @@ void iommu_device_unregister(struct iommu_device *iommu)
+>>>    	spin_lock(&iommu_device_lock);
+>>>    	list_del(&iommu->list);
+>>>    	spin_unlock(&iommu_device_lock);
+>>> +
+>>> +	/* Pairs with the alloc in generic_single_device_group() */
+>>> +	iommu_group_put(iommu->singleton_group);
+>>>    }
+>>>    EXPORT_SYMBOL_GPL(iommu_device_unregister);
+>>> @@ -1595,6 +1598,28 @@ struct iommu_group *generic_device_group(struct device *dev)
+>>>    }
+>>>    EXPORT_SYMBOL_GPL(generic_device_group);
+>>> +/*
+>>> + * Generic device_group call-back function. It just allocates one
+>>> + * iommu-group per iommu driver.
+>>> + */
+>>> +struct iommu_group *generic_single_device_group(struct device *dev)
+>>> +{
+>>> +	struct iommu_device *iommu = dev->iommu->iommu_dev;
+>>> +
+>>> +	lockdep_assert_held(&dev_iommu_group_lock);
+>>> +
+>>> +	if (!iommu->singleton_group) {
+>>> +		struct iommu_group *group;
+>>> +
+>>> +		group = iommu_group_alloc();
+>>> +		if (IS_ERR(group))
+>>> +			return group;
+>>> +		iommu->singleton_group = group;
+>>> +	}
+>>> +	return iommu_group_ref_get(iommu->singleton_group);
+>>> +}
+>>> +EXPORT_SYMBOL_GPL(generic_single_device_group);
+>> When allocating the singleton group for the first time, the group's
+>> refcount is taken twice.
+> Yes, that is correct.
+> 
+> The refcount from alloc belongs to iommu->singleton_group and the
+> pair'd put is here:
+> 
+> @@ -289,6 +289,9 @@ void iommu_device_unregister(struct iommu_device *iommu)
+>   	spin_lock(&iommu_device_lock);
+>   	list_del(&iommu->list);
+>   	spin_unlock(&iommu_device_lock);
+> +
+> +	/* Pairs with the alloc in generic_single_device_group() */
+> +	iommu_group_put(iommu->singleton_group);
+>   }
+> 
+> The refcount from iommu_group_ref_get() belongs to the caller and the
+> caller must have a paired put.
 
-If this patch could be divided into multiple small patches, each
-logically doing one specific thing, it will help people better review
-the code.
+Oh, yes! The extra reference counter is paired with above put.
+
+Thanks for the explanation.
+
+Then, another small comment:
+
+iommu->singleton_group will be freed with above put, right? Do you need
+to set iommu->singleton_group to NULL? Given that iommu_device is not
+freed here.
 
 Best regards,
 baolu
+
