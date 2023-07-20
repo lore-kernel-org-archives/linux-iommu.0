@@ -1,115 +1,84 @@
-Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CB0F2FA47;
-	Thu, 20 Jul 2023 18:53:49 +0000 (UTC)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-	by mailout.west.internal (Postfix) with ESMTP id E721A3202ADA;
-	Thu, 20 Jul 2023 14:53:47 -0400 (EDT)
-Received: from imap47 ([10.202.2.97])
-  by compute5.internal (MEProxy); Thu, 20 Jul 2023 14:53:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
-	 h=cc:cc:content-type:content-type:date:date:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:sender:subject:subject:to:to; s=fm3; t=1689879227; x=
-	1689965627; bh=UsCIH3GnKiEckT+NRUJpbKBJyrIYS4v+Hkal0eCfojk=; b=D
-	hxeJRYr/bgQagplL/v//yrho2U0iMTVVTYTfDxkLDfCFOXYWPVpP1doHILYwdFHR
-	P0rg3a+FUY4xED0exa+KcC9tCvsA3u8OV8grScAbWuFiEgdT46EVbmhI64E8aHR2
-	2Lx+z9UD1JRvLbJFh/5IvNyu7cKoTb9/jV4uaS9QJGOPm+AAt2lR/Ymd2O4fPLeG
-	ri1cWAXHldntSeRiMlsN6Ffz3ncXJ19+ktZmSRevxUtzbPBzzvzwo31bS8eMTWtM
-	Kj8PEFISc7bPPoAbvk8hqtPyGpHRehfH1xGwyym8F+Wky/WdGtbM3jdneipcmcva
-	y3FOdqOfTGKmgupZbvhNQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:sender:subject
-	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-	:x-sasl-enc; s=fm3; t=1689879227; x=1689965627; bh=UsCIH3GnKiEck
-	T+NRUJpbKBJyrIYS4v+Hkal0eCfojk=; b=nj81Hxud2v8K5nBoY8G1EP0ihpFMZ
-	panHSt5GnbkotKZGVaTt/ph3eauYR2Jn9H43kDNEZpOn4yU/3VBeU7Djk0bt1/2k
-	Bn6Mlcwo2OfTcZVr4+a2ZniJxunf3BnGAksl4d/wZPryNU9YbXiOUZ2WBAO27KjK
-	1ZTAFEG6e3wLmWMlDEykzg7uhB1t7W1hlommUlU/bysAsAoxMCIxMsk0EXK+X1RA
-	L484WxmpGwlplr0nwJ/IYqjkSHSTkFhoRmITkHt9OkkZMSy000iX9p9/vRrkIcWg
-	ttmerg7/PUxbVoTfADo/oETqnoUFTzQ1+kJtt90gETNseWKXzAyg8f+nQ==
-X-ME-Sender: <xms:uoK5ZFf3U6rlFFy0Gtxrw6KQ65ICGPkkzYEuOA3kc4fqVvuio_F77w>
-    <xme:uoK5ZDOWIrQ3qYshq6bs4m6k811w-8WjsmMpqOb1F0gUxz6quX1YuQ7icrl7tBacz
-    ZYDlMQZo5DbaeCvInA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedviedrhedtgdduvdelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedfufhv
-    vghnucfrvghtvghrfdcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrf
-    grthhtvghrnhepleevgfegffehvedtieevhfekheeftedtjeetudevieehveevieelgffh
-    ieevieeunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
-    epshhvvghnsehsvhgvnhhpvghtvghrrdguvghv
-X-ME-Proxy: <xmx:uoK5ZOgdEG4IMtWMAmABzHlOeqhnubPZGc0g7_6wS2D3PQjLzdO5HA>
-    <xmx:uoK5ZO-Xfl7XRmNp0RSrlftPL21smEC4xXiOINnUleZdtZyi80_23Q>
-    <xmx:uoK5ZBsv_4YevPpkEBB0kmwZvmHnK6_rPDbh9--uRLoh6kmvWXIixw>
-    <xmx:u4K5ZC8TeiOzwSuuwiKUj4VAakfICD5UbH7zo5KFpSuIUiIJGrEz3w>
-Feedback-ID: i51094778:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-	id 979D8A60077; Thu, 20 Jul 2023 14:53:46 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.9.0-alpha0-531-gfdfa13a06d-fm-20230703.001-gfdfa13a0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D33FF1BE60
+	for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 19:27:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E19AC433C7;
+	Thu, 20 Jul 2023 19:27:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1689881230;
+	bh=CJRKA7PTC+3zbSnVoUQ2xy4P4+PLWvmEQShLI/rDtV4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=N8yO9TLNDF7CNnC7ooBnQhdcZv7jECBIpBkg8dGXL2dbZrB7KLTVSRNP8WKEqPWA/
+	 btuCB0gldrpM6+6synKmKyI5vLbRyF2EMIr0/YGZvqm0DfAQxroX35xShVf0Op1AXA
+	 mP/oe9dgXoobZy4Xsb9glE0/4a8EOOa35Sxqk2mVXXo+v2Q0ZVxSiEBuqCGjk9UaVR
+	 f4Wao2vkABbBWrVlNUQSlcuTDKku1qZPP6VdbJFlzKJyzcU2lvQaSpvPQvnS+xdVm+
+	 i0VydMJCcjjyBrlQ6LV5GU/1l5O4W50NQ/KhD/WpPCAKdoRRQwDmuD6faZ03dXgN1p
+	 TDEF3HyOesZkg==
+Date: Thu, 20 Jul 2023 20:27:05 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Tomasz Jeznach <tjeznach@rivosinc.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Anup Patel <apatel@ventanamicro.com>,
+	Albert Ou <aou@eecs.berkeley.edu>, linux@rivosinc.com,
+	linux-kernel@vger.kernel.org, Sebastien Boeuf <seb@rivosinc.com>,
+	iommu@lists.linux.dev, Palmer Dabbelt <palmer@dabbelt.com>,
+	Nick Kossifidis <mick@ics.forth.gr>,
+	linux-riscv@lists.infradead.org
+Subject: Re: [PATCH 01/11] RISC-V: drivers/iommu: Add RISC-V IOMMU - Ziommu
+ support.
+Message-ID: <20230720-charter-lustrous-061e7550ce7c@spud>
+References: <cover.1689792825.git.tjeznach@rivosinc.com>
+ <c33c24036c06c023947ecb47177da273569b3ac7.1689792825.git.tjeznach@rivosinc.com>
+ <20230719-confront-grass-6d0eb304b94f@spud>
+ <CAH2o1u5pZQ6iKThFLgnn+_BBZ=j8fu91URYYxwWbfVt3OyerAA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Message-Id: <f176c331-f8cf-4a44-8ada-7d9c958b17ca@app.fastmail.com>
-In-Reply-To: <20230719222033.117513-1-minhuadotchen@gmail.com>
-References: <20230719222033.117513-1-minhuadotchen@gmail.com>
-Date: Thu, 20 Jul 2023 20:53:26 +0200
-From: "Sven Peter" <sven@svenpeter.dev>
-To: "Min-Hua Chen" <minhuadotchen@gmail.com>,
- "Hector Martin" <marcan@marcan.st>,
- "Alyssa Rosenzweig" <alyssa@rosenzweig.io>, "Joerg Roedel" <joro@8bytes.org>,
- "Will Deacon" <will@kernel.org>, "Robin Murphy" <robin.murphy@arm.com>
-Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/apple-dart: mark apple_dart_pm_ops static
-Content-Type: text/plain
-
-On Thu, Jul 20, 2023, at 00:20, Min-Hua Chen wrote:
-> This patch fixes the following sprse warning:
-
-typo: sparse
-
->
-> drivers/iommu/apple-dart.c:1279:1: sparse: warning: symbol 
-> 'apple_dart_pm_ops' was not declared. Should it be static?
->
-> No functional change intended.
->
-> Signed-off-by: Min-Hua Chen <minhuadotchen@gmail.com>
-> ---
-
-Acked-by: Sven Peter <sven@svenpeter.dev>
-
-Thanks,
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="uFR2qPiOGZh5u8nm"
+Content-Disposition: inline
+In-Reply-To: <CAH2o1u5pZQ6iKThFLgnn+_BBZ=j8fu91URYYxwWbfVt3OyerAA@mail.gmail.com>
 
 
-Sven
+--uFR2qPiOGZh5u8nm
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->  drivers/iommu/apple-dart.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-> index 8af64b57f048..2082081402d3 100644
-> --- a/drivers/iommu/apple-dart.c
-> +++ b/drivers/iommu/apple-dart.c
-> @@ -1276,7 +1276,7 @@ static __maybe_unused int 
-> apple_dart_resume(struct device *dev)
->  	return 0;
->  }
-> 
-> -DEFINE_SIMPLE_DEV_PM_OPS(apple_dart_pm_ops, apple_dart_suspend, 
-> apple_dart_resume);
-> +static DEFINE_SIMPLE_DEV_PM_OPS(apple_dart_pm_ops, apple_dart_suspend, 
-> apple_dart_resume);
-> 
->  static const struct of_device_id apple_dart_of_match[] = {
->  	{ .compatible = "apple,t8103-dart", .data = &apple_dart_hw_t8103 },
-> -- 
-> 2.34.1
+On Wed, Jul 19, 2023 at 02:43:51PM -0700, Tomasz Jeznach wrote:
+> On Wed, Jul 19, 2023 at 1:50=E2=80=AFPM Conor Dooley <conor@kernel.org> w=
+rote:
+
+> > Anyway, what I wanted to ask was whether it was valid to use the IOMMU
+> > in a system if Ziommu is not present in whatever the ISA extension
+> > communication mechanism is? Eg, riscv,isa or the ISA string property in
+> > the ACPI tables.
+> >
+>=20
+> Yes, this has been pointed out to me already. As far as I can recall,
+> there was a discussion
+> at some point to introduce those as Ziommu extensions, later agreeing
+> not to call IOMMU
+> using ISA string conventions.  Will remove remaining occurrences of
+> Ziommu from the series.
+
+Right, thanks for clearing that up. I got a bit confused :)
+
+--uFR2qPiOGZh5u8nm
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZLmKiQAKCRB4tDGHoIJi
+0nKvAQCY4Qfl5o53tpBHorzaEf49d9BTMt+qWrTdweBVlIvXWwEAxSbe0KPPgv4y
+zC/FdQ3GvKUVGBGv2E80c4D/boCv1gc=
+=X54m
+-----END PGP SIGNATURE-----
+
+--uFR2qPiOGZh5u8nm--
