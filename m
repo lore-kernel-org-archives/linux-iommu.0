@@ -1,167 +1,132 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3A38A5E;
-	Thu, 20 Jul 2023 07:39:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689838779; x=1721374779;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=u/CMXF3lu6xbOAoxteln+cW6/SG/tWj+VRYeOVr9Ja0=;
-  b=ZvW2dvLSHn+dwmg8PjCIvW6aFlYv6rfDj8kZ3MrMNNvI8F25muOKpVKS
-   TvpnlIVMKQCk6F6N3sjHFhVsVjtwU8l+ecJvwNacjKvvEpsPKcSUosOF6
-   BHJzny00xNcNBaTJVLPrNVWIpox1CN3M6GBnxDENDaXjhR9hnqBbnGPhb
-   LYY/AFdMxpq8WzkujD+YPK2jDhJhDhrzT7TvdaAp4Qy8FD1sFr8E3TO8o
-   tN54+CF3+593+gfdoVH1ZLB4l5WRluu2p+vE/UgHyheSPtHUVXwQ+Y/gE
-   ycLvARKJLnNwAdNGzZUT9vvjJOCXHWl5ZUviBl7GghhMWaMexeu+feM15
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10776"; a="365544995"
-X-IronPort-AV: E=Sophos;i="6.01,218,1684825200"; 
-   d="scan'208";a="365544995"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2023 00:39:37 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10776"; a="1055044515"
-X-IronPort-AV: E=Sophos;i="6.01,218,1684825200"; 
-   d="scan'208";a="1055044515"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.191.114]) ([10.252.191.114])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2023 00:39:31 -0700
-Message-ID: <32eadc5b-bb39-5bb1-f124-44feead97ce9@linux.intel.com>
-Date: Thu, 20 Jul 2023 15:39:27 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 558A1A5E
+	for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 07:54:19 +0000 (UTC)
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 39C4416840B;
+	Thu, 20 Jul 2023 09:54:11 +0200 (CEST)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
+	t=1689839651; bh=BJwL8Mo+1mra8+b/CdY/uUP8gohBFG2ZiuHo+xJAYDU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=r9ToG10AhpvW4JM508uc+NskNEr56L4qZdWR6gmLHKXzFc9vG+58URXqJFCt5425C
+	 umoUV7zsftWcrElVcdedthF9VDkO4+3bBrDCQuXmLh1KPmziq8R1WnoVI899D7qecV
+	 AHvnvQlRfomek07wT+ReyEhXZcbpk3iv0kSeFD5aNam+LwfNmXDZW3DiFy3ctXRhE6
+	 nox25YIAihil1b73FwVDreIAAxgcfmQP6vUBpaxgoyLgYXQ89/NFApOls4l6C9YnmN
+	 xSBO+gkN270w/xKtiR/cmS/Jtcbask42UH/KfY9+VRFeZRTjgEGXFGUuG/m2Q8o3WS
+	 P7gy5dMRggh0A==
+Date: Thu, 20 Jul 2023 09:54:10 +0200
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Petr Tesarik <petrtesarik@huaweicloud.com>, Stefano Stabellini
+ <sstabellini@kernel.org>, Russell King <linux@armlinux.org.uk>, Thomas
+ Bogendoerfer <tsbogend@alpha.franken.de>, Thomas Gleixner
+ <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov
+ <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, "maintainer:X86
+ ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>, "H. Peter Anvin"
+ <hpa@zytor.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael
+ J. Wysocki" <rafael@kernel.org>, Juergen Gross <jgross@suse.com>, Oleksandr
+ Tyshchenko <oleksandr_tyshchenko@epam.com>, Marek Szyprowski
+ <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr
+ Tesarik <petr.tesarik.ext@huawei.com>, Jonathan Corbet <corbet@lwn.net>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Hans de Goede
+ <hdegoede@redhat.com>, James Seo <james@equiv.tech>, James Clark
+ <james.clark@arm.com>, Kees Cook <keescook@chromium.org>, "moderated
+ list:XEN HYPERVISOR ARM" <xen-devel@lists.xenproject.org>, "moderated
+ list:ARM PORT" <linux-arm-kernel@lists.infradead.org>, open list
+ <linux-kernel@vger.kernel.org>, "open list:MIPS"
+ <linux-mips@vger.kernel.org>, "open list:XEN SWIOTLB SUBSYSTEM"
+ <iommu@lists.linux.dev>, Roberto Sassu <roberto.sassu@huaweicloud.com>,
+ Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: Re: [PATCH v4 1/8] swiotlb: make io_tlb_default_mem local to
+ swiotlb.c
+Message-ID: <20230720095410.16832a9e@meshulam.tesarici.cz>
+In-Reply-To: <20230720063744.GA3842@lst.de>
+References: <cover.1689261692.git.petr.tesarik.ext@huawei.com>
+	<7f64111986f4f361a2deb4a1a1b6f588e63a851b.1689261692.git.petr.tesarik.ext@huawei.com>
+	<20230720063744.GA3842@lst.de>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Cc: baolu.lu@linux.intel.com, Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH 03/10] iommu: Add generic_single_device_group()
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>,
- David Woodhouse <dwmw2@infradead.org>, Heiko Stuebner <heiko@sntech.de>,
- iommu@lists.linux.dev, Jernej Skrabec <jernej.skrabec@gmail.com>,
- Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org,
- linux-rockchip@lists.infradead.org, linux-sunxi@lists.linux.dev,
- Orson Zhai <orsonzhai@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
- Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
- Will Deacon <will@kernel.org>, Chunyan Zhang <zhang.lyra@gmail.com>
-References: <3-v1-3c8177327a47+256-iommu_group_locking_jgg@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <3-v1-3c8177327a47+256-iommu_group_locking_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 2023/7/19 3:05, Jason Gunthorpe wrote:
-> This implements the common pattern seen in drivers of a single
-> iommu_group for the entire iommu driver. Implement this in core code
-> so the drivers that want this can select it from their ops.
+On Thu, 20 Jul 2023 08:37:44 +0200
+Christoph Hellwig <hch@lst.de> wrote:
+
+> On Thu, Jul 13, 2023 at 05:23:12PM +0200, Petr Tesarik wrote:
+> > From: Petr Tesarik <petr.tesarik.ext@huawei.com>
+> > 
+> > SWIOTLB implementation details should not be exposed to the rest of the
+> > kernel. This will allow to make changes to the implementation without
+> > modifying non-swiotlb code.
+> > 
+> > To avoid breaking existing users, provide helper functions for the few
+> > required fields.
+> > 
+> > As a bonus, using a helper function to initialize struct device allows to
+> > get rid of an #ifdef in driver core.
+> > 
+> > Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
+> > ---
+> >  arch/arm/xen/mm.c          |  2 +-
+> >  arch/mips/pci/pci-octeon.c |  2 +-
+> >  arch/x86/kernel/pci-dma.c  |  2 +-
+> >  drivers/base/core.c        |  4 +---
+> >  drivers/xen/swiotlb-xen.c  |  2 +-
+> >  include/linux/swiotlb.h    | 25 +++++++++++++++++++++++-
+> >  kernel/dma/swiotlb.c       | 39 +++++++++++++++++++++++++++++++++++++-
+> >  7 files changed, 67 insertions(+), 9 deletions(-)
+> > 
+> > diff --git a/arch/arm/xen/mm.c b/arch/arm/xen/mm.c
+> > index 3d826c0b5fee..0f32c14eb786 100644
+> > --- a/arch/arm/xen/mm.c
+> > +++ b/arch/arm/xen/mm.c
+> > @@ -125,7 +125,7 @@ static int __init xen_mm_init(void)
+> >  		return 0;
+> >  
+> >  	/* we can work with the default swiotlb */
+> > -	if (!io_tlb_default_mem.nslabs) {
+> > +	if (!is_swiotlb_allocated()) {
+> >  		rc = swiotlb_init_late(swiotlb_size_or_default(),
+> >  				       xen_swiotlb_gfp(), NULL);
+> >  		if (rc < 0)  
 > 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->   drivers/iommu/iommu.c | 25 +++++++++++++++++++++++++
->   include/linux/iommu.h |  3 +++
->   2 files changed, 28 insertions(+)
+> I'd much rather move the already initialized check into
+> swiotlb_init_late, which is a much cleaer interface.
 > 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 9e41ad4e3219b6..1e0c5d9a0370fb 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -289,6 +289,9 @@ void iommu_device_unregister(struct iommu_device *iommu)
->   	spin_lock(&iommu_device_lock);
->   	list_del(&iommu->list);
->   	spin_unlock(&iommu_device_lock);
-> +
-> +	/* Pairs with the alloc in generic_single_device_group() */
-> +	iommu_group_put(iommu->singleton_group);
->   }
->   EXPORT_SYMBOL_GPL(iommu_device_unregister);
->   
-> @@ -1595,6 +1598,28 @@ struct iommu_group *generic_device_group(struct device *dev)
->   }
->   EXPORT_SYMBOL_GPL(generic_device_group);
->   
-> +/*
-> + * Generic device_group call-back function. It just allocates one
-> + * iommu-group per iommu driver.
-> + */
-> +struct iommu_group *generic_single_device_group(struct device *dev)
-> +{
-> +	struct iommu_device *iommu = dev->iommu->iommu_dev;
-> +
-> +	lockdep_assert_held(&dev_iommu_group_lock);
-> +
-> +	if (!iommu->singleton_group) {
-> +		struct iommu_group *group;
-> +
-> +		group = iommu_group_alloc();
-> +		if (IS_ERR(group))
-> +			return group;
-> +		iommu->singleton_group = group;
-> +	}
-> +	return iommu_group_ref_get(iommu->singleton_group);
-> +}
-> +EXPORT_SYMBOL_GPL(generic_single_device_group);
+> >  	/* we can work with the default swiotlb */
+> > -	if (!io_tlb_default_mem.nslabs) {
+> > +	if (!is_swiotlb_allocated()) {
+> >  		int rc = swiotlb_init_late(swiotlb_size_or_default(),
+> >  					   GFP_KERNEL, xen_swiotlb_fixup);
+> >  		if (rc < 0)  
+> 
+> .. and would take care of this one as well.
 
-When allocating the singleton group for the first time, the group's
-refcount is taken twice. This can cause memory leaks even after calling
-iommu_device_unregister(). Perhaps it can be adjusted as follows?
+Oh, you're right! These are the only two places that look at
+io_tlb_default_mem.nslabs, and all they need is to avoid double
+initialization. Makes perfect sense to move it inside
+swiotlb_init_late().
 
-struct iommu_group *generic_single_device_group(struct device *dev)
-{
-         struct iommu_device *iommu = dev->iommu->iommu_dev;
-         struct iommu_group *group;
+> > +bool is_swiotlb_allocated(void)
+> > +{
+> > +	return !!io_tlb_default_mem.nslabs;  
+> 
+> Nit: no need for the !!, we can rely on the implicit promotion to
+> bool.  But with the suggestion above the need for this helper
+> should go away anyway.
 
-         lockdep_assert_held(&dev_iommu_group_lock);
+Eh, yes. I initially declared the return type as int and then forgot to
+change the return statement. But as you say, the whole function will go
+away entirely.
 
-         if (iommu->singleton_group)
-                 return iommu_group_ref_get(iommu->singleton_group);
-
-         group = iommu_group_alloc();
-         if (!IS_ERR(group))
-                 iommu->singleton_group = group;
-
-         return group;
-}
-
-> +
->   /*
->    * Use standard PCI bus topology, isolation features, and DMA alias quirks
->    * to find or create an IOMMU group for a device.
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index b1dcb1b9b17040..f1e18e81fca78b 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -361,6 +361,7 @@ struct iommu_domain_ops {
->    * @list: Used by the iommu-core to keep a list of registered iommus
->    * @ops: iommu-ops for talking to this iommu
->    * @dev: struct device for sysfs handling
-> + * @singleton_group: Used internally for drivers that have only one group
->    * @max_pasids: number of supported PASIDs
->    */
->   struct iommu_device {
-> @@ -368,6 +369,7 @@ struct iommu_device {
->   	const struct iommu_ops *ops;
->   	struct fwnode_handle *fwnode;
->   	struct device *dev;
-> +	struct iommu_group *singleton_group;
->   	u32 max_pasids;
->   };
->   
-> @@ -640,6 +642,7 @@ extern struct iommu_group *pci_device_group(struct device *dev);
->   extern struct iommu_group *generic_device_group(struct device *dev);
->   /* FSL-MC device grouping function */
->   struct iommu_group *fsl_mc_device_group(struct device *dev);
-> +extern struct iommu_group *generic_single_device_group(struct device *dev);
-
-"extern" is not necessary.
-
->   
->   /**
->    * struct iommu_fwspec - per-device IOMMU instance data
-
-Best regards,
-baolu
+Petr T
