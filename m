@@ -1,346 +1,194 @@
-Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2052.outbound.protection.outlook.com [40.107.237.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 234BA22F03
-	for <iommu@lists.linux.dev>; Wed, 19 Jul 2023 23:04:52 +0000 (UTC)
-Received: by mail-pj1-f42.google.com with SMTP id 98e67ed59e1d1-26598fc0825so956494a91.0
-        for <iommu@lists.linux.dev>; Wed, 19 Jul 2023 16:04:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20221208.gappssmtp.com; s=20221208; t=1689807892; x=1690412692;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5wFr2A7e5EWp+82eThYDiZpPT27i18/NTWE7QU00Iwo=;
-        b=slUMxadFiLxH+NNFI2NDyiI0rQr8f9NpvfLLOhGsjG3O87r0bcZpvKpTPwrunBBgix
-         s/cmHJkDCRHbplL0GzIVCbuqXlBFs039EcAQnx/flZ5Gi3JAt3TD2pmwnkRjudretQiH
-         rf8DuUSwKLwPAf7m42dHVlr5ByBa/4G2j8KhQXtOVRYJi4VOuqhwjMJmXrdnuY/vUCg6
-         IJvX1PACNIQsf2fy+lpfsr/+zhR0OBdjb7pFzsHns2AkYah12SDiIGpNSUaoZRF/ZfF7
-         y7f7lA8GAqyp8kfSzHTLXKliOVE+L8A6yKVC/BCLClsl7shxYfGKJKgP1iCRG5ps0bPw
-         qp0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689807892; x=1690412692;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=5wFr2A7e5EWp+82eThYDiZpPT27i18/NTWE7QU00Iwo=;
-        b=Tb/tEb4hShvV6xZvAapZZiX8Lb0tKdCPWD431XmNu6TeTpmroaSrUXSBSzablxtGHH
-         jhB9YTqM3HQ6HXys32T/TczYefYzUKTVYplp6v/oUGzaUU4gSUOol15F6wxqZEQYCR/z
-         yHFO9ZUS4Wfc/J7v8E8hdgYRQwaF30I6kJHOMOjmsoBNsMrdjnrIOlKJApHF/OHT2UiM
-         Aw/kmthDzwRysai74daautkHN7zPJC5eVr1tz0jr1LCuFlSULp+LuVDg9WBc+TG8TD2J
-         Rf1/03hNHNhUslmmSzAeTD+FARW9Jw/bKGl6Y+UHTjRflEC9X3epXvUDzx/NCANYv4Ye
-         PF/A==
-X-Gm-Message-State: ABy/qLbJQLNZ6udabcWy//E7QKLz44PUJay7NQsIKDo6gAe7oHA1BUSg
-	55VTGSA7r96MJXSE/LDu9D1TfArID2h4VhaETzth+g==
-X-Google-Smtp-Source: APBJJlGO9EDGVzmVIbzDbaW4q/7xWmaTWhlijEvEV5ktsCXxLMGAAqX7MC+JIcF9coSbnKNUULA6G0T3b0h/46L1VCU=
-X-Received: by 2002:a17:90a:72c8:b0:261:326d:99e8 with SMTP id
- l8-20020a17090a72c800b00261326d99e8mr4688870pjk.2.1689807892181; Wed, 19 Jul
- 2023 16:04:52 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 405D9392
+	for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 00:54:57 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oNl0YIT0+Gf7JaXP2FESmRHHmhV9qsALhTkIYxHBpSt0YXfQdt8cnIaq4LcHe0UWR7C3irHBcTWJVVcku/3FR4qOzCooX/8kZjnbS3Mj6jjq2dxLir2unuFTzyc72Y/o+todByVxuJi8XfFGoOddd8vkbRD1iW8Ulfsnqh0ezuyaNs7/h9LXFHspa0vz0iJA9/DJqVbiYJr0Cczo2j/xjya7U3Fisb3kJO/Mihh8UncJKvuSzaZW/6BpSby7uCvSXfuLXGAhuFQYrSoLvVUdEceRMXwszfWVsgo1tsZY7qKINFEPhKkeu9YTnZSCWwhV1T4dsgKorh+I4VKNIAitwg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qmyg7VjjEbeSbEEtKUsr4fCmGkQPM428FaXfiHvAffE=;
+ b=agJSiTYCiUNSd5rmmH8HG5MqszkyLt8Po0XYASycxGC17i8GZtdqztMkPMLZ36ZVQHNwJhBoB+cGA4vWAEpJEUAO9ey7oALS6zvsWtJUbh37BKqtkkZLtkf26mnr/9RDJuUTCC0fAlcneM6osklsqchtvC5DqNazDWrWz0Yj2WRPuGqIQpMApo246IxjRzuPDfj/sjR0Jo0rVJYkAPZyEi+x1aOtHLW2Aq5NsnGWEVB2vvnyKZnV3dXM8ntvqDaITrwEj84+5hjCm3rKM8orKG9SwRiWF9GhaXA0QFW8zDT4z23AlvI4hM1ocg9+OcBRpTucRNxdNalgZUYL+A+Rew==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qmyg7VjjEbeSbEEtKUsr4fCmGkQPM428FaXfiHvAffE=;
+ b=XTKp5P5w7R/PoAY3v3vaOQGUBSRfIw3WkySHTxW2s3VrXZFA1t2kNKYTEZt/jVhZf9lA7c8WPHPg3hHwTz3Uqr45GCEy+tg1eh8j9YzrNFHDWnqRSa99nMDpMPwyO7qtaWovMGwYOBvn7ON4rFJ71ut0dx6DV0Pelda4deCGXyNeM4T+v92Cg1KTC3hues41sqKcrm/xwH0rF07Eu2FVVbs8gQkXGb2FhP+/njJp53sBkagvI9swGMdu1er9v7A6jBn78eE0dJgnKjID9ky+jpIn2hzHNICaGO/rn0gPxFPaQQJvk+dvdT+CAtvWovU2AsEBhdgYBzH6lBtWjqVkTw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3179.namprd12.prod.outlook.com (2603:10b6:5:183::18)
+ by DM4PR12MB6591.namprd12.prod.outlook.com (2603:10b6:8:8e::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6609.24; Thu, 20 Jul
+ 2023 00:54:55 +0000
+Received: from DM6PR12MB3179.namprd12.prod.outlook.com
+ ([fe80::3eb6:cda8:4a56:25fe]) by DM6PR12MB3179.namprd12.prod.outlook.com
+ ([fe80::3eb6:cda8:4a56:25fe%7]) with mapi id 15.20.6609.024; Thu, 20 Jul 2023
+ 00:54:55 +0000
+References: <8f293bb51a423afa71ddc3ba46e9f323ee9ffbc7.1689768831.git-series.apopple@nvidia.com>
+ <20230719225105.1934-1-sj@kernel.org>
+User-agent: mu4e 1.8.13; emacs 28.2
+From: Alistair Popple <apopple@nvidia.com>
+To: SeongJae Park <sj@kernel.org>
+Cc: akpm@linux-foundation.org, ajd@linux.ibm.com, catalin.marinas@arm.com,
+ fbarrat@linux.ibm.com, iommu@lists.linux.dev, jgg@ziepe.ca,
+ jhubbard@nvidia.com, kevin.tian@intel.com, kvm@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-mm@kvack.org, linuxppc-dev@lists.ozlabs.org, mpe@ellerman.id.au,
+ nicolinc@nvidia.com, npiggin@gmail.com, robin.murphy@arm.com,
+ seanjc@google.com, will@kernel.org, x86@kernel.org,
+ zhi.wang.linux@gmail.com
+Subject: Re: [PATCH v2 3/5] mmu_notifiers: Call invalidate_range() when
+ invalidating TLBs
+Date: Thu, 20 Jul 2023 10:52:59 +1000
+In-reply-to: <20230719225105.1934-1-sj@kernel.org>
+Message-ID: <877cqvl7vr.fsf@nvdebian.thelocal>
+Content-Type: text/plain
+X-ClientProxiedBy: SYYP282CA0005.AUSP282.PROD.OUTLOOK.COM
+ (2603:10c6:10:b4::15) To DM6PR12MB3179.namprd12.prod.outlook.com
+ (2603:10b6:5:183::18)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1689792825.git.tjeznach@rivosinc.com> <d62ceb33620cab766d809e6bbf30eaf5b46bc955.1689792825.git.tjeznach@rivosinc.com>
- <20230719-unnoticed-scion-744fdf509151@spud> <CAL_JsqLsb801Z4H7+ViboBSGwd+XidcpYcJMHgw+6fofsXB=9Q@mail.gmail.com>
-In-Reply-To: <CAL_JsqLsb801Z4H7+ViboBSGwd+XidcpYcJMHgw+6fofsXB=9Q@mail.gmail.com>
-From: Tomasz Jeznach <tjeznach@rivosinc.com>
-Date: Wed, 19 Jul 2023 16:04:41 -0700
-Message-ID: <CAH2o1u5VdOx+MgQFyjEr1__DZmsxLGGqf8v1pDvTHoPJ4OGfGA@mail.gmail.com>
-Subject: Re: [PATCH 03/11] dt-bindings: Add RISC-V IOMMU bindings
-To: Rob Herring <robh+dt@kernel.org>
-Cc: Conor Dooley <conor@kernel.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
-	Anup Patel <apatel@ventanamicro.com>, Albert Ou <aou@eecs.berkeley.edu>, linux@rivosinc.com, 
-	linux-kernel@vger.kernel.org, Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Nick Kossifidis <mick@ics.forth.gr>, linux-riscv@lists.infradead.org, 
-	krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3179:EE_|DM4PR12MB6591:EE_
+X-MS-Office365-Filtering-Correlation-Id: eaf73474-776a-4d34-3e32-08db88bbeebd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	3yYUF7XlX1Ops4WUoWw/OZpfLoYypiHnWdebTi8VWm3ESrv/ISdjuoq949NlRSkHhdl/qyNGreIkYXZ+B2pxt8vxTeBI8vZJ4FpoSYEoumXRxSpfvStm3lmOEVqevclbPkoURvwTUjBRQgnewFScKSzb4tr67fCihp5UYUYfaQFrU3tVHfMLYPRo12xLuJOns3QouUtddEZuuoEDZa10rYfZmNMFzQlVBSdRsCHnjn2esKxTqqhKq7LikyGS2PIQjvw/qQey7Aj2sAvcjSthH5FfJqbcX8kBErP8TZfga66JMe4M/kZEphOZktvXXhBEcft5hKw3czAEulipfLKFxtOCsgLogukhUuSaMAjsBKZ7FDmLtt+u/cBDMSM//JBOoqllxOUH6yKyzJMVMJk0o+OhsLYUJAqCvJM+ACHCBdjZOent3/O5xdAHdga4cQFlJ2S2ufUZ5W8ZxHgVLiQHhlEwkjYC0ykugI0JF+MMBWPyJLyUDzH0EoRvVIgDVAKll7+liwOExv/99Qe1YZtWY/GKyi40le/+6HIux9JnYsNO/QVQ9+IVuuT+qgqygbjr
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(136003)(376002)(366004)(39860400002)(451199021)(86362001)(478600001)(83380400001)(186003)(38100700002)(41300700001)(26005)(6916009)(8676002)(8936002)(7416002)(316002)(2906002)(4326008)(6512007)(9686003)(66556008)(66946007)(6486002)(66476007)(6506007)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?lGPBsBwQQ3NsQzVO67L6jU59ZiwgvSa2O05piHAZRhJDKErK1R5Eg1j/Crpb?=
+ =?us-ascii?Q?CBuizy/rH4+c+IBuilXH5AyFfdQFMVGjWAzqLIxgOeHBHHZuFRqQ1dQjRLW6?=
+ =?us-ascii?Q?qU5cu265ytoSDuJJAy/yWshfHgLRkDyuECSibwWeHVA6JeUf/rNM0shvJ5J6?=
+ =?us-ascii?Q?AVHyZmRgvl+9EcHoRicSKq64bXtmr8BZd/yqMwdbthbUlpbCkTG8TWXF9lxH?=
+ =?us-ascii?Q?8dYUozvxMkRILsniDpqITzh6pZ07GoqyIv9HbCxoz2DXzm2HpjxpURzVu4gf?=
+ =?us-ascii?Q?Hb0CbQB5xjUxh/TQkSyJC0PJ3UdPeejpgcTNFCcyzYmuf5TjxyBZMoPgxdyI?=
+ =?us-ascii?Q?Vh1+kdTt+AGsPQHr6YMD6FXDp+mZstKeQzTpu/iT9g9S4ZB/43NjdN6ZDWYz?=
+ =?us-ascii?Q?kRWaUWvkYkljj+3U7PV/sHTiLoMshAyHjmHTQi/BcS1nbcGmMAE0ezCLoKoQ?=
+ =?us-ascii?Q?r+01M9yVOTu3Emss7ZyxTObOqkUvPyM8bW8VadrMxUDvhoccv4QPURfChPND?=
+ =?us-ascii?Q?OudRxtIImV78ZU1E/rppFZTXt+7BYUqikFpXKAYsH+T+GMaUzb4C3tKiNG5v?=
+ =?us-ascii?Q?02Eh5nNeZWKAtpMLqIZJgcErJAauo6bUYcvki9KyWIXFEKx1oNAyDL11ZTE7?=
+ =?us-ascii?Q?zFn8aha/Lw+0GAYqOQihl7KCJV+iZTnKPZ7A3opOIZgls8yJA8hb/NaZRHZs?=
+ =?us-ascii?Q?FznLODKfUy4i6LgwrIaXsvbyzptiuedv7VPjVbM5yzdzsQFC7BibOf9b/19N?=
+ =?us-ascii?Q?8brYcJsvP6AnZtpRXIhXn4TxhAWM0WByTzkRoN6P8/BvAVXvi61bp0p6pShW?=
+ =?us-ascii?Q?hdwufMf+20sRFjHdDoWzTJ1NoFFbUWCnXpKqIHe58cpkqf6ZlHXaTpiwWCoj?=
+ =?us-ascii?Q?NK9AQB+bCUqO6QGL+hSky0tnbKCMoPvnUiIMXRrbGpny53SMaJWqtGih0Ipn?=
+ =?us-ascii?Q?LrJ8uq/Aga+xyqN1w+VKUdvMGex/KvqRSCpYkw/SvTiFR+GGweEmHms9VDOQ?=
+ =?us-ascii?Q?q3Z4zEzj8AY3DpQ4JzmX2Tr5cy3z1hxCYWpKA+JiSB5LmemrbkPpc3erxULy?=
+ =?us-ascii?Q?HDhH0NlrNGyqVp4V9SAuhxmNlHUnie8ENCU6PdnxJbFJkZkhAZeJTi6k1oks?=
+ =?us-ascii?Q?zu6quNw9tjfbPhSx8y5b+wR7SODHQyr6G32TWLpgH/DR9GUychcupKUjbAEn?=
+ =?us-ascii?Q?Zh0pQxRVuMWEWF2HCpUBZJ/XLCFhZntSaQu+9Aadwn/zYuMGSma0f4D5c6Jl?=
+ =?us-ascii?Q?g3DMHEwShbiSV+D9c4mwKlTCbcxU3ZSzJ+ouSr9zYNI0oM1hS2KSPoo7mywG?=
+ =?us-ascii?Q?VIxCkO8mQDMjIexjEIwLjDy5OGK2pXOdhFyXFL+vsqWQl/g1mgVYy/0nBk/Q?=
+ =?us-ascii?Q?7D4+24+X8AmZ/HVlD1CDpU8nGtRg1HNa7/Q+1fKG+CVvIjQcECdTXIyH6pZQ?=
+ =?us-ascii?Q?pBHZ5kfVRgrAskZn8fO8D+6QHfzuNkuYt6gXgZNJE/ihQubOOJyGFMDLJ0kD?=
+ =?us-ascii?Q?11Zwb8+3ObnF8pmq8skPgGsKLbPMB88TwAwrqg00/5xRGb/eSHIXiXoBLXh/?=
+ =?us-ascii?Q?ZE81ITWEK+CkyUUIFka2uOen4s3ID5309ViqhbCq?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: eaf73474-776a-4d34-3e32-08db88bbeebd
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3179.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2023 00:54:55.0488
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: T5IwbuDIsWK3wskAeufn7VBH26V8VcBJ5Erc/t3sr1d4rc3sqTRR/gy4Irk76duA3eT4/aNRvK0u74fk9siDSQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6591
 
-On Wed, Jul 19, 2023 at 2:37=E2=80=AFPM Rob Herring <robh+dt@kernel.org> wr=
-ote:
+
+SeongJae Park <sj@kernel.org> writes:
+
+> Hi Alistair,
 >
-> On Wed, Jul 19, 2023 at 2:19=E2=80=AFPM Conor Dooley <conor@kernel.org> w=
-rote:
-> >
-> > Hey Tomasz,
-> >
-> > On Wed, Jul 19, 2023 at 12:33:47PM -0700, Tomasz Jeznach wrote:
-> > > From: Anup Patel <apatel@ventanamicro.com>
-> > >
-> > > We add DT bindings document for RISC-V IOMMU platform and PCI devices
-> > > defined by the RISC-V IOMMU specification.
-> > >
-> > > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> >
-> > Your signoff is missing from here.
-> >
-> > Secondly, as get_maintainer.pl would have told you, dt-bindings patches
-> > need to be sent to the dt-binding maintainers and list.
-> > +CC maintainers & list.
-> >
-> > Thirdly, dt-binding patches should come before their users.
-> >
-> > > ---
-> > >  .../bindings/iommu/riscv,iommu.yaml           | 146 ++++++++++++++++=
-++
-> > >  1 file changed, 146 insertions(+)
-> > >  create mode 100644 Documentation/devicetree/bindings/iommu/riscv,iom=
-mu.yaml
-> > >
-> > > diff --git a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml=
- b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
-> > > new file mode 100644
-> > > index 000000000000..8a9aedb61768
-> > > --- /dev/null
-> > > +++ b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
-> > > @@ -0,0 +1,146 @@
-> > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > > +%YAML 1.2
-> > > +---
-> > > +$id: http://devicetree.org/schemas/iommu/riscv,iommu.yaml#
-> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > > +
-> > > +title: RISC-V IOMMU Implementation
-> > > +
-> > > +maintainers:
-> > > +  - Tomasz Jeznach <tjeznach@rivosinc.com>
-> >
-> > What about Anup, who seems to have written this?
-> > Or your co-authors of the drivers?
-> >
-> > > +
-> > > +description:
-> > > +  The RISC-V IOMMU specificaiton defines an IOMMU for RISC-V platfor=
-ms
+> On Wed, 19 Jul 2023 22:18:44 +1000 Alistair Popple <apopple@nvidia.com> wrote:
 >
-> typo
+>> The invalidate_range() is going to become an architecture specific mmu
+>> notifier used to keep the TLB of secondary MMUs such as an IOMMU in
+>> sync with the CPU page tables. Currently it is called from separate
+>> code paths to the main CPU TLB invalidations. This can lead to a
+>> secondary TLB not getting invalidated when required and makes it hard
+>> to reason about when exactly the secondary TLB is invalidated.
+>> 
+>> To fix this move the notifier call to the architecture specific TLB
+>> maintenance functions for architectures that have secondary MMUs
+>> requiring explicit software invalidations.
+>> 
+>> This fixes a SMMU bug on ARM64. On ARM64 PTE permission upgrades
+>> require a TLB invalidation. This invalidation is done by the
+>> architecutre specific ptep_set_access_flags() which calls
+>> flush_tlb_page() if required. However this doesn't call the notifier
+>> resulting in infinite faults being generated by devices using the SMMU
+>> if it has previously cached a read-only PTE in it's TLB.
+>> 
+>> Moving the invalidations into the TLB invalidation functions ensures
+>> all invalidations happen at the same time as the CPU invalidation. The
+>> architecture specific flush_tlb_all() routines do not call the
+>> notifier as none of the IOMMUs require this.
+>> 
+>> Signed-off-by: Alistair Popple <apopple@nvidia.com>
+>> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
 >
-
-ack
-
-> > > +  which can be a regular platform device or a PCI device connected t=
-o
-> > > +  the host root port.
-> > > +
-> > > +  The RISC-V IOMMU provides two stage translation, device directory =
-table,
-> > > +  command queue and fault reporting as wired interrupt or MSIx event=
- for
-> > > +  both PCI and platform devices.
+> I found below kernel NULL-dereference issue on latest mm-unstable tree, and
+> bisect points me to the commit of this patch, namely
+> 75c400f82d347af1307010a3e06f3aa5d831d995.
 >
-> TBC, you want a PCI device that's an IOMMU and the IOMMU serves
-> (provides translation for) PCI devices?
->
+> To reproduce, I use 'stress-ng --bigheap $(nproc)'.  The issue happens as soon
+> as it starts reclaiming memory.  I didn't dive deep into this yet, but
+> reporting this issue first, since you might have an idea already.
 
-Yes, IOMMU as a PCIe device providing address translation services for
-connect PCIe root complex.
+Thanks for the report SJ!
 
-> > > +
-> > > +  Visit https://github.com/riscv-non-isa/riscv-iommu for more detail=
-s.
-> > > +
-> > > +properties:
-> > > +  compatible:
-> > > +    oneOf:
-> > > +      - description: RISC-V IOMMU as a platform device
->
-> "platform device" is a Linux term. Don't use Linux terms in bindings.
->
+I see the problem - current->mm can (obviously!) be NULL which is what's
+leading to the NULL dereference. Instead I think on x86 I need to call
+the notifier when adding the invalidate to the tlbbatch in
+arch_tlbbatch_add_pending() which is equivalent to what ARM64 does.
 
-ack.
+The below should fix it. Will do a respin with this.
 
+---
 
-> > > +        items:
-> > > +          - enum:
-> > > +              - vendor,chip-iommu
-> >
-> > These dummy compatibles are not valid, as was pointed out to Anup on
-> > the AIA series. Please go look at what was done there instead:
-> > https://lore.kernel.org/all/20230719113542.2293295-7-apatel@ventanamicr=
-o.com/
-> >
-> > > +          - const: riscv,iommu
-> > > +
-> > > +      - description: RISC-V IOMMU as a PCI device connected to root =
-port
-> > > +        items:
-> > > +          - enum:
-> > > +              - vendor,chip-pci-iommu
-> > > +          - const: riscv,pci-iommu
-> >
-> > I'm not really au fait with the arm smmu stuff, but do any of its
-> > versions support being connected to a root port?
->
-> PCI devices have a defined format for the compatible string based on
-> VID/PID. For PCI, also usually don't need to be described in DT
-> because they are discoverable. The exception is when there's parts
-> which aren't. Which parts aren't?
->
-
-We've put 'riscv,pci-iommu' node here to describe relationship between PCIe
-devices and IOMMU(s), needed for the pcie root complex description (iommu-m=
-ap).
-If there is a better way to reference PCI-IOMMU without adding
-pci-iommu definition
-that would solve the problem. Every other property of pci-iommu should
-be discoverable.
-
-> > > +  reg:
-> > > +    maxItems: 1
-> > > +    description:
-> > > +      For RISC-V IOMMU as a platform device, this represents the MMI=
-O base
-> > > +      address of registers.
-> > > +
-> > > +      For RISC-V IOMMU as a PCI device, this represents the PCI-PCI =
-bridge
->
-> Your IOMMU is also a PCI-PCI bridge? Is that a normal PCI thing?
->
-
-It's allowed to be integrated with root complex / IO bridge, but it is
-as a separate PCIe device.
-I'll clarify the description.
-
->
-> > > +      details as described in Documentation/devicetree/bindings/pci/=
-pci.txt
->
-> Don't refer to pci.txt. It is going to be removed.
->
-
-ack.
-
-> > > +
-> > > +  '#iommu-cells':
-> > > +    const: 2
-> > > +    description: |
-> >
-> > |s are only needed where formatting needs to be preserved.
-> >
-> > > +      Each IOMMU specifier represents the base device ID and number =
-of
-> > > +      device IDs.
->
-> Doesn't that assume device IDs are contiguous? Generally not a safe assum=
-ption.
->
-
-ack.
-
-> > > +
-> > > +  interrupts:
-> > > +    minItems: 1
-> > > +    maxItems: 16
-> >
-> > What are any of these interrupts?
-> >
-> > > +    description:
-> > > +      The presence of this property implies that given RISC-V IOMMU =
-uses
-> > > +      wired interrupts to notify the RISC-V HARTS (or CPUs).
-> > > +
-> > > +  msi-parent:
-> > > +    description:
-> > > +      The presence of this property implies that given RISC-V IOMMU =
-uses
-> > > +      MSIx to notify the RISC-V HARTs (or CPUs). This property shoul=
-d be
-> > > +      considered only when the interrupts property is absent.
->
-> This doesn't make sense for a PCI device. PCI defines its own way to
-> describe MSI support.
->
-
-Agree, this is for IOMMU as a non-PCI device, capable of sending MSI.
-Follows 'MSI clients' notes from
-devicetree/bindings/interrupt-controller/msi.txt
-Is this a proper way to describe this relationship?
-
-> > > +
-> > > +  dma-coherent:
-> >
-> > RISC-V is dma-coherent by default, should this not be dma-noncoherent
-> > instead?
-> >
-> > > +    description:
-> > > +      Present if page table walks and DMA accessed made by the RISC-=
-V IOMMU
-> > > +      are cache coherent with the CPU.
-> > > +
-> > > +  power-domains:
-> > > +    maxItems: 1
-> > > +
-> > > +required:
-> > > +  - compatible
-> > > +  - reg
-> > > +  - '#iommu-cells'
-> > > +
-> > > +additionalProperties: false
-> > > +
-> > > +examples:
-> > > +  - |
-> > > +    /* Example 1 (IOMMU platform device with wired interrupts) */
-> > > +    immu1: iommu@1bccd000 {
-> >
-> > Why is this "immu"? typo or intentional?
-> >
-> > > +        compatible =3D "vendor,chip-iommu", "riscv,iommu";
-> > > +        reg =3D <0x1bccd000 0x1000>;
-> > > +        interrupt-parent =3D <&aplic_smode>;
-> > > +        interrupts =3D <32 4>, <33 4>, <34 4>, <35 4>;
-> > > +        #iommu-cells =3D <2>;
-> > > +    };
-> > > +
-> > > +    /* Device with two IOMMU device IDs, 0 and 7 */
-> > > +    master1 {
-> > > +        iommus =3D <&immu1 0 1>, <&immu1 7 1>;
-> > > +    };
-> > > +
-> > > +  - |
-> > > +    /* Example 2 (IOMMU platform device with MSIs) */
-> > > +    immu2: iommu@1bcdd000 {
-> > > +        compatible =3D "vendor,chip-iommu", "riscv,iommu";
-> > > +        reg =3D <0x1bccd000 0x1000>;
-> > > +        msi-parent =3D <&imsics_smode>;
-> > > +        #iommu-cells =3D <2>;
-> > > +    };
-> > > +
-> > > +    bus {
-> > > +        #address-cells =3D <2>;
-> > > +        #size-cells =3D <2>;
-> > > +
-> > > +        /* Device with IOMMU device IDs ranging from 32 to 64 */
-> > > +        master1 {
-> > > +                iommus =3D <&immu2 32 32>;
-> > > +        };
-> > > +
-> > > +        pcie@40000000 {
-> > > +            compatible =3D "pci-host-cam-generic";
-> > > +            device_type =3D "pci";
-> > > +            #address-cells =3D <3>;
-> > > +            #size-cells =3D <2>;
-> > > +            bus-range =3D <0x0 0x1>;
-> > > +
-> > > +            /* CPU_PHYSICAL(2)  SIZE(2) */
->
-> I'm guessing there was more after this, but I don't have it...
-
-Complete patch 3 is at:
-https://lore.kernel.org/linux-iommu/cover.1689792825.git.tjeznach@rivosinc.=
-com/T/#mbf8dc4098fb09b87b2618c5c545ae882f11b114b
-
->
-> Guessing, immu2 is a PCI device, but it translates for master1 which
-> is not a PCI device? Weird. Why would anyone build such a thing?
->
-
-In this example immu2 is a non-PCI device. Agree, otherwise would be weird.
-
->
-> Rob
-
-Thank you,
-- Tomasz
+diff --git a/arch/x86/include/asm/tlbflush.h b/arch/x86/include/asm/tlbflush.h
+index 837e4a50281a..79c46da919b9 100644
+--- a/arch/x86/include/asm/tlbflush.h
++++ b/arch/x86/include/asm/tlbflush.h
+@@ -4,6 +4,7 @@
+ 
+ #include <linux/mm_types.h>
+ #include <linux/sched.h>
++#include <linux/mmu_notifier.h>
+ 
+ #include <asm/processor.h>
+ #include <asm/cpufeature.h>
+@@ -282,6 +283,7 @@ static inline void arch_tlbbatch_add_pending(struct arch_tlbflush_unmap_batch *b
+ {
+ 	inc_mm_tlb_gen(mm);
+ 	cpumask_or(&batch->cpumask, &batch->cpumask, mm_cpumask(mm));
++	mmu_notifier_arch_invalidate_secondary_tlbs(mm, 0, -1UL);
+ }
+ 
+ static inline void arch_flush_tlb_batched_pending(struct mm_struct *mm)
+diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
+index 0b990fb56b66..2d253919b3e8 100644
+--- a/arch/x86/mm/tlb.c
++++ b/arch/x86/mm/tlb.c
+@@ -1265,7 +1265,6 @@ void arch_tlbbatch_flush(struct arch_tlbflush_unmap_batch *batch)
+ 
+ 	put_flush_tlb_info();
+ 	put_cpu();
+-	mmu_notifier_arch_invalidate_secondary_tlbs(current->mm, 0, -1UL);
+ }
+ 
+ /*
