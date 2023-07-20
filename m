@@ -1,17 +1,17 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 25D741DDF1
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2FCF11DDFC
 	for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 23:30:09 +0000 (UTC)
 Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (linux.microsoft.com [13.77.154.182])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 1B603236EBEE;
-	Thu, 20 Jul 2023 16:23:53 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 1B603236EBEE
+	by linux.microsoft.com (Postfix) with ESMTPSA id DE0F0236EBE9;
+	Thu, 20 Jul 2023 16:23:52 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com DE0F0236EBE9
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1689895433;
-	bh=IGGYFXNUvMQx09Tnw6sJKKjcZi3QrY5MCquaxh4wmqI=;
+	s=default; t=1689895432;
+	bh=ZpoFJV8a3LGSmjkBEN6m+1UxfkfXL7fXho/ORp6glDI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=MRPhxgbgNRdD4NZWGJGJDGHeHVSh5117liIEIAHzo4Vhkk0hnlnwgHEt0Dp2IT5MM
-	 8ClFRZOaFW7Hozi8IBPrV32GTdVgXrmamPWbrjevOv6rfuzn59XMhqMT2qWMG2uiYa
-	 BUcUn7CP6CesQ7hTRX+uQ7J11Pnjeanb5vGoyuog=
+	b=h99ncapq+l5cdMXXwq/jqMP1j3JKqjBTxtKj9FnJ8GkyByUzfGisBMM/Oz65CVfTs
+	 RI0iCRPvI9EkxdzWFHerv1mpY7CP8fmL9zMyXCehZ41zFWQ0gn8HAoIG4NMHKSfMl/
+	 Y0WkcxqOoN34na55vBxs97yqZ9EWkaXkC1xYEkxA=
 From: Easwar Hariharan <eahariha@linux.microsoft.com>
 To: stable@vger.kernel.org
 Cc: easwar.hariharan@microsoft.com,
@@ -24,9 +24,9 @@ Cc: easwar.hariharan@microsoft.com,
 	linux-doc@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	iommu@lists.linux.dev
-Subject: [PATCH 5.15 4/4] iommu/arm-smmu-v3: Document MMU-700 erratum 2812531
-Date: Thu, 20 Jul 2023 16:23:34 -0700
-Message-Id: <1689895414-17425-5-git-send-email-eahariha@linux.microsoft.com>
+Subject: [PATCH 5.15 2/4] arm64: errata: Add workaround for TSB flush failures
+Date: Thu, 20 Jul 2023 16:23:32 -0700
+Message-Id: <1689895414-17425-3-git-send-email-eahariha@linux.microsoft.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1689895414-17425-1-git-send-email-eahariha@linux.microsoft.com>
 References: <1689895414-17425-1-git-send-email-eahariha@linux.microsoft.com>
@@ -36,130 +36,198 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 
-From: Robin Murphy <robin.murphy@arm.com>
+From: Suzuki K Poulose <suzuki.poulose@arm.com>
 
-commit 309a15cb16bb075da1c99d46fb457db6a1a2669e upstream
+commit fa82d0b4b833790ac4572377fb777dcea24a9d69 upstream
 
-To work around MMU-700 erratum 2812531 we need to ensure that certain
-sequences of commands cannot be issued without an intervening sync. In
-practice this falls out of our current command-batching machinery
-anyway - each batch only contains a single type of invalidation command,
-and ends with a sync. The only exception is when a batch is sufficiently
-large to need issuing across multiple command queue slots, wherein the
-earlier slots will not contain a sync and thus may in theory interleave
-with another batch being issued in parallel to create an affected
-sequence across the slot boundary.
+Arm Neoverse-N2 (#2067961) and Cortex-A710 (#2054223) suffers
+from errata, where a TSB (trace synchronization barrier)
+fails to flush the trace data completely, when executed from
+a trace prohibited region. In Linux we always execute it
+after we have moved the PE to trace prohibited region. So,
+we can apply the workaround every time a TSB is executed.
 
-Since MMU-700 supports range invalidate commands and thus we will prefer
-to use them (which also happens to avoid conditions for other errata),
-I'm not entirely sure it's even possible for a single high-level
-invalidate call to generate a batch of more than 63 commands, but for
-the sake of robustness and documentation, wire up an option to enforce
-that a sync is always inserted for every slot issued.
+The work around is to issue two TSB consecutively.
 
-The other aspect is that the relative order of DVM commands cannot be
-controlled, so DVM cannot be used. Again that is already the status quo,
-but since we have at least defined ARM_SMMU_FEAT_BTM, we can explicitly
-disable it for documentation purposes even if it's not wired up anywhere
-yet.
+NOTE: This errata is defined as LOCAL_CPU_ERRATUM, implying
+that a late CPU could be blocked from booting if it is the
+first CPU that requires the workaround. This is because we
+do not allow setting a cpu_hwcaps after the SMP boot. The
+other alternative is to use "this_cpu_has_cap()" instead
+of the faster system wide check, which may be a bit of an
+overhead, given we may have to do this in nvhe KVM host
+before a guest entry.
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-Link: https://lore.kernel.org/r/330221cdfd0003cd51b6c04e7ff3566741ad8374.1683731256.git.robin.murphy@arm.com
+Cc: Will Deacon <will@kernel.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc: Mike Leach <mike.leach@linaro.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+Cc: Marc Zyngier <maz@kernel.org>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
+Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Link: https://lore.kernel.org/r/20211019163153.3692640-4-suzuki.poulose@arm.com
 Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
 ---
- Documentation/arm64/silicon-errata.rst      |  4 ++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 41 +++++++++++++++++++++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 +
- 3 files changed, 46 insertions(+)
+ Documentation/arm64/silicon-errata.rst |  4 ++++
+ arch/arm64/Kconfig                     | 33 ++++++++++++++++++++++++++
+ arch/arm64/include/asm/barrier.h       | 16 ++++++++++++-
+ arch/arm64/kernel/cpu_errata.c         | 19 +++++++++++++++
+ arch/arm64/tools/cpucaps               |  1 +
+ 5 files changed, 72 insertions(+), 1 deletion(-)
 
 diff --git a/Documentation/arm64/silicon-errata.rst b/Documentation/arm64/silicon-errata.rst
-index f64354f8a79f..322df8abbc0e 100644
+index 076861b0f5ac..1de575fc135b 100644
 --- a/Documentation/arm64/silicon-errata.rst
 +++ b/Documentation/arm64/silicon-errata.rst
-@@ -122,6 +122,10 @@ stable kernels.
+@@ -104,6 +104,8 @@ stable kernels.
  +----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | Cortex-A710     | #2119858        | ARM64_ERRATUM_2119858       |
+ +----------------+-----------------+-----------------+-----------------------------+
++| ARM            | Cortex-A710     | #2054223        | ARM64_ERRATUM_2054223       |
+++----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | Neoverse-N1     | #1188873,1418040| ARM64_ERRATUM_1418040       |
+ +----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | Neoverse-N1     | #1349291        | N/A                         |
+@@ -112,6 +114,8 @@ stable kernels.
+ +----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | Neoverse-N2     | #2139208        | ARM64_ERRATUM_2139208       |
+ +----------------+-----------------+-----------------+-----------------------------+
++| ARM            | Neoverse-N2     | #2067961        | ARM64_ERRATUM_2067961       |
+++----------------+-----------------+-----------------+-----------------------------+
  | ARM            | MMU-500         | #841119,826419  | N/A                         |
  +----------------+-----------------+-----------------+-----------------------------+
-+| ARM            | MMU-600         | #1076982        | N/A                         |
-++----------------+-----------------+-----------------+-----------------------------+
-+| ARM            | MMU-700         | #2812531        | N/A                         |
-++----------------+-----------------+-----------------+-----------------------------+
  +----------------+-----------------+-----------------+-----------------------------+
- | Broadcom       | Brahma-B53      | N/A             | ARM64_ERRATUM_845719        |
- +----------------+-----------------+-----------------+-----------------------------+
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index bcdb2cbdda97..ba2e5149604c 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -897,6 +897,14 @@ static void arm_smmu_cmdq_batch_add(struct arm_smmu_device *smmu,
- 				    struct arm_smmu_cmdq_batch *cmds,
- 				    struct arm_smmu_cmdq_ent *cmd)
- {
-+	int index;
-+
-+	if (cmds->num == CMDQ_BATCH_ENTRIES - 1 &&
-+	    (smmu->options & ARM_SMMU_OPT_CMDQ_FORCE_SYNC)) {
-+		arm_smmu_cmdq_issue_cmdlist(smmu, cmds->cmds, cmds->num, true);
-+		cmds->num = 0;
-+	}
-+
- 	if (cmds->num == CMDQ_BATCH_ENTRIES) {
- 		arm_smmu_cmdq_issue_cmdlist(smmu, cmds->cmds, cmds->num, false);
- 		cmds->num = 0;
-@@ -3459,6 +3467,39 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
- 	return 0;
- }
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index e5e35470647b..6dce6e56ee53 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -774,6 +774,39 @@ config ARM64_ERRATUM_2139208
  
-+#define IIDR_IMPLEMENTER_ARM		0x43b
-+#define IIDR_PRODUCTID_ARM_MMU_600	0x483
-+#define IIDR_PRODUCTID_ARM_MMU_700	0x487
-+
-+static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
-+{
-+	u32 reg;
-+	unsigned int implementer, productid, variant, revision;
-+
-+	reg = readl_relaxed(smmu->base + ARM_SMMU_IIDR);
-+	implementer = FIELD_GET(IIDR_IMPLEMENTER, reg);
-+	productid = FIELD_GET(IIDR_PRODUCTID, reg);
-+	variant = FIELD_GET(IIDR_VARIANT, reg);
-+	revision = FIELD_GET(IIDR_REVISION, reg);
-+
-+	switch (implementer) {
-+	case IIDR_IMPLEMENTER_ARM:
-+		switch (productid) {
-+		case IIDR_PRODUCTID_ARM_MMU_600:
-+			/* Arm erratum 1076982 */
-+			if (variant == 0 && revision <= 2)
-+				smmu->features &= ~ARM_SMMU_FEAT_SEV;
-+			break;
-+		case IIDR_PRODUCTID_ARM_MMU_700:
-+			/* Arm erratum 2812531 */
-+			smmu->features &= ~ARM_SMMU_FEAT_BTM;
-+			smmu->options |= ARM_SMMU_OPT_CMDQ_FORCE_SYNC;
-+			break;
-+		}
-+		break;
-+	}
-+}
-+
- static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- {
- 	u32 reg;
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 4cb136f07914..eeb780c5c1e0 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -645,6 +645,7 @@ struct arm_smmu_device {
- #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
- #define ARM_SMMU_OPT_PAGE0_REGS_ONLY	(1 << 1)
- #define ARM_SMMU_OPT_MSIPOLL		(1 << 2)
-+#define ARM_SMMU_OPT_CMDQ_FORCE_SYNC	(1 << 3)
- 	u32				options;
+ 	  If unsure, say Y.
  
- 	struct arm_smmu_cmdq		cmdq;
++config ARM64_WORKAROUND_TSB_FLUSH_FAILURE
++	bool
++
++config ARM64_ERRATUM_2054223
++	bool "Cortex-A710: 2054223: workaround TSB instruction failing to flush trace"
++	default y
++	select ARM64_WORKAROUND_TSB_FLUSH_FAILURE
++	help
++	  Enable workaround for ARM Cortex-A710 erratum 2054223
++
++	  Affected cores may fail to flush the trace data on a TSB instruction, when
++	  the PE is in trace prohibited state. This will cause losing a few bytes
++	  of the trace cached.
++
++	  Workaround is to issue two TSB consecutively on affected cores.
++
++	  If unsure, say Y.
++
++config ARM64_ERRATUM_2067961
++	bool "Neoverse-N2: 2067961: workaround TSB instruction failing to flush trace"
++	default y
++	select ARM64_WORKAROUND_TSB_FLUSH_FAILURE
++	help
++	  Enable workaround for ARM Neoverse-N2 erratum 2067961
++
++	  Affected cores may fail to flush the trace data on a TSB instruction, when
++	  the PE is in trace prohibited state. This will cause losing a few bytes
++	  of the trace cached.
++
++	  Workaround is to issue two TSB consecutively on affected cores.
++
++	  If unsure, say Y.
++
+ config CAVIUM_ERRATUM_22375
+ 	bool "Cavium erratum 22375, 24313"
+ 	default y
+diff --git a/arch/arm64/include/asm/barrier.h b/arch/arm64/include/asm/barrier.h
+index 451e11e5fd23..1c5a00598458 100644
+--- a/arch/arm64/include/asm/barrier.h
++++ b/arch/arm64/include/asm/barrier.h
+@@ -23,7 +23,7 @@
+ #define dsb(opt)	asm volatile("dsb " #opt : : : "memory")
+ 
+ #define psb_csync()	asm volatile("hint #17" : : : "memory")
+-#define tsb_csync()	asm volatile("hint #18" : : : "memory")
++#define __tsb_csync()	asm volatile("hint #18" : : : "memory")
+ #define csdb()		asm volatile("hint #20" : : : "memory")
+ 
+ #ifdef CONFIG_ARM64_PSEUDO_NMI
+@@ -46,6 +46,20 @@
+ #define dma_rmb()	dmb(oshld)
+ #define dma_wmb()	dmb(oshst)
+ 
++
++#define tsb_csync()								\
++	do {									\
++		/*								\
++		 * CPUs affected by Arm Erratum 2054223 or 2067961 needs	\
++		 * another TSB to ensure the trace is flushed. The barriers	\
++		 * don't have to be strictly back to back, as long as the	\
++		 * CPU is in trace prohibited state.				\
++		 */								\
++		if (cpus_have_final_cap(ARM64_WORKAROUND_TSB_FLUSH_FAILURE))	\
++			__tsb_csync();						\
++		__tsb_csync();							\
++	} while (0)
++
+ /*
+  * Generate a mask for array_index__nospec() that is ~0UL when 0 <= idx < sz
+  * and 0 otherwise.
+diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
+index d810d4b7b438..ab412b45732f 100644
+--- a/arch/arm64/kernel/cpu_errata.c
++++ b/arch/arm64/kernel/cpu_errata.c
+@@ -375,6 +375,18 @@ static const struct midr_range trbe_overwrite_fill_mode_cpus[] = {
+ };
+ #endif	/* CONFIG_ARM64_WORKAROUND_TRBE_OVERWRITE_FILL_MODE */
+ 
++#ifdef CONFIG_ARM64_WORKAROUND_TSB_FLUSH_FAILURE
++static const struct midr_range tsb_flush_fail_cpus[] = {
++#ifdef CONFIG_ARM64_ERRATUM_2067961
++	MIDR_ALL_VERSIONS(MIDR_NEOVERSE_N2),
++#endif
++#ifdef CONFIG_ARM64_ERRATUM_2054223
++	MIDR_ALL_VERSIONS(MIDR_CORTEX_A710),
++#endif
++	{},
++};
++#endif	/* CONFIG_ARM64_WORKAROUND_TSB_FLUSH_FAILURE */
++
+ const struct arm64_cpu_capabilities arm64_errata[] = {
+ #ifdef CONFIG_ARM64_WORKAROUND_CLEAN_CACHE
+ 	{
+@@ -606,6 +618,13 @@ const struct arm64_cpu_capabilities arm64_errata[] = {
+ 		.type = ARM64_CPUCAP_WEAK_LOCAL_CPU_FEATURE,
+ 		CAP_MIDR_RANGE_LIST(trbe_overwrite_fill_mode_cpus),
+ 	},
++#endif
++#ifdef CONFIG_ARM64_WORKAROUND_TSB_FLUSH_FAILURE
++	{
++		.desc = "ARM erratum 2067961 or 2054223",
++		.capability = ARM64_WORKAROUND_TSB_FLUSH_FAILURE,
++		ERRATA_MIDR_RANGE_LIST(tsb_flush_fail_cpus),
++	},
+ #endif
+ 	{
+ 	}
+diff --git a/arch/arm64/tools/cpucaps b/arch/arm64/tools/cpucaps
+index 32fe50a3a26c..36ab307c69d4 100644
+--- a/arch/arm64/tools/cpucaps
++++ b/arch/arm64/tools/cpucaps
+@@ -57,6 +57,7 @@ WORKAROUND_1542419
+ WORKAROUND_1742098
+ WORKAROUND_2457168
+ WORKAROUND_TRBE_OVERWRITE_FILL_MODE
++WORKAROUND_TSB_FLUSH_FAILURE
+ WORKAROUND_CAVIUM_23154
+ WORKAROUND_CAVIUM_27456
+ WORKAROUND_CAVIUM_30115
 -- 
 2.25.1
 
