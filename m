@@ -1,69 +1,77 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD59E17FFF
-	for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 12:27:17 +0000 (UTC)
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 5F1E0167B3D;
-	Thu, 20 Jul 2023 14:27:13 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1689856033; bh=Sy15tdSUh75Kyy0EKSX/r/RpOL8nRcOu9kVoTovs9Uo=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=FP+LjtMSc0sf3lDo+Te+5LTKxW+4HtUmYkgN/XmiJ+LTxwyoVKCOVISvr6qA1n54o
-	 AZi5SA1NID+w81Ij7hZxzKW56ukZ7Vdn0ZMcpIv6kGywuXKOOCwd6f3hzOTQ6ZFmPz
-	 Qf9ggxu+sA3uwa4mrapH6fESYG8zPK7NmVb/QMIMD0MFfty0POHqpn+8VyyOMyOZbC
-	 9Gjm4ZQRBYpMZOz1YOkmBH/SJBIF1j5aOG8og2+upta5x7iq7eBFx2KL0xUMO9qqwb
-	 1k48i2ObRWTs3PeK/P1mWnUNg3qCIIBrsvPGmDGy/T7jzMwqiqrIlXMfYvgYOKFRYZ
-	 NOfXCITBF19sg==
-Date: Thu, 20 Jul 2023 14:27:12 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Yajun Deng <yajun.deng@linux.dev>, corbet@lwn.net,
- m.szyprowski@samsung.com, robin.murphy@arm.com, akpm@linux-foundation.org,
- paulmck@kernel.org, catalin.marinas@arm.com, rdunlap@infradead.org,
- peterz@infradead.org, rostedt@goodmis.org, kim.phillips@amd.com,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, linux-mm@kvack.org
-Subject: Re: [PATCH v3] dma-contiguous: support numa CMA for specified node
-Message-ID: <20230720142712.295834d0@meshulam.tesarici.cz>
-In-Reply-To: <20230720115408.GA13114@lst.de>
-References: <20230720082517.GA7057@lst.de>
-	<20230712074758.1133272-1-yajun.deng@linux.dev>
-	<25942dafbc7f52488a30c807b6322109539442cf@linux.dev>
-	<20230720115408.GA13114@lst.de>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1517D182AA
+	for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 12:31:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1689856291; x=1721392291;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=PPjb1efpNVs+0C/3htOuyu3cb1OjDpfvMZWKs6Ysk/Q=;
+  b=BoGlVnAFZFS3iT3YeEFjSeBo1LU6ONv3+L9dMH6ev2mNdwKJXggXtMuh
+   7vRs1yMbgfZOmRHBA0yHbemBBmmzQ0nnqKMXXJyZp+8q1FzJD+6vniyzr
+   RRbVvv5Z3cMOHnAhCHnIyl2YQvtIpMW3AW0H18HAjKUt1rZC3MQiaLPZX
+   LUqt+FK/ku7Hh8nYkY9Zw7frI0q73Hu5KfVMhJzaAQ+CmP96z2h8e0YFF
+   AUH1z7c+g46uXLmCORWqY8nxlfZTVMJjxXGKGZ5Yd3PrzzNdHB3U/Gc1m
+   SlY5t+H5xN9mu/BwvWp1iyaG5iFeUetMX2dPGvYb2ufWt6Ze+cyvg8lri
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10776"; a="430484822"
+X-IronPort-AV: E=Sophos;i="6.01,218,1684825200"; 
+   d="scan'208";a="430484822"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2023 05:31:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10776"; a="848430629"
+X-IronPort-AV: E=Sophos;i="6.01,218,1684825200"; 
+   d="scan'208";a="848430629"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.191.109]) ([10.252.191.109])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2023 05:31:23 -0700
+Message-ID: <45d32e95-9d57-a424-63bd-b894cf0d3a2b@linux.intel.com>
+Date: Thu, 20 Jul 2023 20:31:19 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Cc: baolu.lu@linux.intel.com, Palmer Dabbelt <palmer@dabbelt.com>,
+ Albert Ou <aou@eecs.berkeley.edu>, Anup Patel <apatel@ventanamicro.com>,
+ Sunil V L <sunilvl@ventanamicro.com>, Nick Kossifidis <mick@ics.forth.gr>,
+ Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev,
+ linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux@rivosinc.com
+Subject: Re: [PATCH 01/11] RISC-V: drivers/iommu: Add RISC-V IOMMU - Ziommu
+ support.
+Content-Language: en-US
+To: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Paul Walmsley <paul.walmsley@sifive.com>
+References: <cover.1689792825.git.tjeznach@rivosinc.com>
+ <c33c24036c06c023947ecb47177da273569b3ac7.1689792825.git.tjeznach@rivosinc.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <c33c24036c06c023947ecb47177da273569b3ac7.1689792825.git.tjeznach@rivosinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-V Thu, 20 Jul 2023 13:54:08 +0200
-Christoph Hellwig <hch@lst.de> naps=C3=A1no:
+On 2023/7/20 3:33, Tomasz Jeznach wrote:
+> +static void riscv_iommu_iotlb_sync_map(struct iommu_domain *iommu_domain,
+> +				       unsigned long iova, size_t size)
+> +{
+> +	unsigned long end = iova + size - 1;
+> +	/*
+> +	 * Given we don't know the page size used by this range, we assume the
+> +	 * smallest page size to ensure all possible entries are flushed from
+> +	 * the IOATC.
+> +	 */
+> +	size_t pgsize = PAGE_SIZE;
+> +	riscv_iommu_flush_iotlb_range(iommu_domain, &iova, &end, &pgsize);
+> +}
 
-> On Thu, Jul 20, 2023 at 08:47:37AM +0000, Yajun Deng wrote:
-> > It's based on linux-next tree.
-> >=20
-> > This patch should be after my other patch in linux-next tree.
-> > a960925a6b23("dma-contiguous: support per-numa CMA for all architecture=
-s"). =20
->=20
-> Where did this land?
+Does RISC-V IOMMU require to invalidate the TLB cache after new mappings
+are created?
 
-Well... in the linux-next tree:
-
-https://www.kernel.org/doc/man-pages/linux-next.html
-
->  dma patches really should be going through the DMA tree..
-
-Indeed. The other patch was also sent to the iommu ML back in May. It's
-the thread where we were looking for Barry Song's current email address.
-
-Petr T
+Best regards,
+baolu
