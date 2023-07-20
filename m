@@ -1,119 +1,167 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA01514011
-	for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 07:06:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1689836816;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=VKZfYzuy4E/p4i4FmKgAIZ9a9JybiBKol5y+hz08Ow8=;
-	b=DfkEdrQi3U8PbHmAX139YPkvg0KVAMsoD+URZPAmvEnC2KevRosTlw1skwQAfrY80ze50K
-	amk50uLfNbzGvZ1Uyl12X3F7FO7rpAk3BeY9b4A2iOceHwzwIN5SfaKXyEzxTVvdVHLcqk
-	N/tesY/mHLFnjznyIH136zWslSrfa0A=
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
- [209.85.208.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-434-BAIFFihjMZ6C03MI2G52bg-1; Thu, 20 Jul 2023 03:06:55 -0400
-X-MC-Unique: BAIFFihjMZ6C03MI2G52bg-1
-Received: by mail-lj1-f198.google.com with SMTP id 38308e7fff4ca-2b701e0bb10so3491051fa.3
-        for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 00:06:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689836814; x=1690441614;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VKZfYzuy4E/p4i4FmKgAIZ9a9JybiBKol5y+hz08Ow8=;
-        b=cHL+Z0CYlScXurFasMsz+95tlSTaSCLg+CB/+gqHDG9d/0Snlb4oywsDIaxFkttI/l
-         37A+lINWp7K+fkWi1AJAsOZZq1hv9mdMZqWvOCGfnSUsweyoFhWXgmUp25zzz2CnfAdH
-         yUeJDQsdi+hZtz0SouIlNDIyXPGUOUKzrsxysmTANeRMD/XmslckfP1o7U0nXABuwR4H
-         ohpPUEGxiYH7S+KVpQ5V7DC2YoIch0PVEL2Ksffzv1R8JybDHSluVlLaSB6yVPAJ8aAe
-         R8lqBGmDCVDVg/cY6S4Q5DufLPPBEAtlE30Jypns4zeWlMJMYhMWHu8dNp7hsyXVGC2e
-         qYRQ==
-X-Gm-Message-State: ABy/qLajd1ly/xFr5QGeqZqm4lb0yDMAyKTvsnoBf6sq9n+fL20TrM0z
-	HAypookXBsNxV1g+fJlMsISg/7c6hSHOO/KK8T9n4GaZ52qBCpAUX1XJ6H7FdN9JT2ARwla/dnW
-	0bfzBw7+W3VdvdB2xm7c1L8Q=
-X-Received: by 2002:a2e:86d1:0:b0:2b7:3633:2035 with SMTP id n17-20020a2e86d1000000b002b736332035mr1708631ljj.32.1689836813847;
-        Thu, 20 Jul 2023 00:06:53 -0700 (PDT)
-X-Google-Smtp-Source: APBJJlFb3DdJpOxK9cF5ht1/AH7KtkJnsdZ3w8mElpI2B0W+viUyDR+t1spT9RkiGQgxxAwTq2UA1Q==
-X-Received: by 2002:a2e:86d1:0:b0:2b7:3633:2035 with SMTP id n17-20020a2e86d1000000b002b736332035mr1708608ljj.32.1689836813428;
-        Thu, 20 Jul 2023 00:06:53 -0700 (PDT)
-Received: from redhat.com ([2a02:14f:172:65c:3b05:aa8f:9ec2:7e3e])
-        by smtp.gmail.com with ESMTPSA id p26-20020a7bcc9a000000b003fbc0a49b57sm461752wma.6.2023.07.20.00.06.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jul 2023 00:06:52 -0700 (PDT)
-Date: Thu, 20 Jul 2023 03:06:48 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Christoph Hellwig <hch@lst.de>
-Cc: linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, linux-doc@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH] dma: DMA_ATTR_SKIP_CPU_SYNC documentation tweaks
-Message-ID: <20230720030233-mutt-send-email-mst@kernel.org>
-References: <98ef4f76d7a5f90b0878e649a70b101402b8889d.1689761699.git.mst@redhat.com>
- <20230720060742.GA2987@lst.de>
- <20230720021914-mutt-send-email-mst@kernel.org>
- <20230720062525.GA3723@lst.de>
- <20230720022702-mutt-send-email-mst@kernel.org>
- <20230720064318.GA4349@lst.de>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3A38A5E;
+	Thu, 20 Jul 2023 07:39:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1689838779; x=1721374779;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=u/CMXF3lu6xbOAoxteln+cW6/SG/tWj+VRYeOVr9Ja0=;
+  b=ZvW2dvLSHn+dwmg8PjCIvW6aFlYv6rfDj8kZ3MrMNNvI8F25muOKpVKS
+   TvpnlIVMKQCk6F6N3sjHFhVsVjtwU8l+ecJvwNacjKvvEpsPKcSUosOF6
+   BHJzny00xNcNBaTJVLPrNVWIpox1CN3M6GBnxDENDaXjhR9hnqBbnGPhb
+   LYY/AFdMxpq8WzkujD+YPK2jDhJhDhrzT7TvdaAp4Qy8FD1sFr8E3TO8o
+   tN54+CF3+593+gfdoVH1ZLB4l5WRluu2p+vE/UgHyheSPtHUVXwQ+Y/gE
+   ycLvARKJLnNwAdNGzZUT9vvjJOCXHWl5ZUviBl7GghhMWaMexeu+feM15
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10776"; a="365544995"
+X-IronPort-AV: E=Sophos;i="6.01,218,1684825200"; 
+   d="scan'208";a="365544995"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2023 00:39:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10776"; a="1055044515"
+X-IronPort-AV: E=Sophos;i="6.01,218,1684825200"; 
+   d="scan'208";a="1055044515"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.191.114]) ([10.252.191.114])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2023 00:39:31 -0700
+Message-ID: <32eadc5b-bb39-5bb1-f124-44feead97ce9@linux.intel.com>
+Date: Thu, 20 Jul 2023 15:39:27 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20230720064318.GA4349@lst.de>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Cc: baolu.lu@linux.intel.com, Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH 03/10] iommu: Add generic_single_device_group()
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>,
+ Baolin Wang <baolin.wang@linux.alibaba.com>,
+ David Woodhouse <dwmw2@infradead.org>, Heiko Stuebner <heiko@sntech.de>,
+ iommu@lists.linux.dev, Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org,
+ linux-rockchip@lists.infradead.org, linux-sunxi@lists.linux.dev,
+ Orson Zhai <orsonzhai@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
+ Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
+ Will Deacon <will@kernel.org>, Chunyan Zhang <zhang.lyra@gmail.com>
+References: <3-v1-3c8177327a47+256-iommu_group_locking_jgg@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <3-v1-3c8177327a47+256-iommu_group_locking_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Jul 20, 2023 at 08:43:18AM +0200, Christoph Hellwig wrote:
-> On Thu, Jul 20, 2023 at 02:30:04AM -0400, Michael S. Tsirkin wrote:
-> > sure, they are not hard to generate ;)
-> > 
-> > https://lore.kernel.org/all/20230710034237.12391-11-xuanzhuo%40linux.alibaba.com
+On 2023/7/19 3:05, Jason Gunthorpe wrote:
+> This implements the common pattern seen in drivers of a single
+> iommu_group for the entire iommu driver. Implement this in core code
+> so the drivers that want this can select it from their ops.
 > 
-> Thanks, I'll chime in there.
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>   drivers/iommu/iommu.c | 25 +++++++++++++++++++++++++
+>   include/linux/iommu.h |  3 +++
+>   2 files changed, 28 insertions(+)
 > 
-> > > > Looks like there's really little else can be done: there's a
-> > > > shared page we allow DMA into, so we sync periodically.
-> > > > Then when we unmap we really do not need that data
-> > > > synced again.
-> > > > 
-> > > > What exactly is wrong with this?
-> > > 
-> > > A "shared" page without ownership can't work with the streaming
-> > > DMA API (dma_map_*) at all.  You need to use dma_alloc_coherent
-> > > so that it is mapped uncached.
-> > 
-> > Hmm confused.  Based on both documentation and code I think this works:
-> > 
-> > 	dma_map
-> > 	dma_sync
-> > 	dma_sync
-> > 	dma_sync
-> > 	dma_sync
-> > 	dma_unmap(DMA_ATTR_SKIP_CPU_SYNC)
-> > 
-> > right?
-> 
-> Depends on your definition of "shared".  If there is always a clear
-> owner at a given time you can games with lots of syncs that transfer
-> ownership.  If there is no clear ownership, and the "device" just
-> DMAs into the buffer at random times and the host checks bits in
-> there we need to map the buffer uncached.
-> 
-> I'll chime in in the thread.
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 9e41ad4e3219b6..1e0c5d9a0370fb 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -289,6 +289,9 @@ void iommu_device_unregister(struct iommu_device *iommu)
+>   	spin_lock(&iommu_device_lock);
+>   	list_del(&iommu->list);
+>   	spin_unlock(&iommu_device_lock);
+> +
+> +	/* Pairs with the alloc in generic_single_device_group() */
+> +	iommu_group_put(iommu->singleton_group);
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_device_unregister);
+>   
+> @@ -1595,6 +1598,28 @@ struct iommu_group *generic_device_group(struct device *dev)
+>   }
+>   EXPORT_SYMBOL_GPL(generic_device_group);
+>   
+> +/*
+> + * Generic device_group call-back function. It just allocates one
+> + * iommu-group per iommu driver.
+> + */
+> +struct iommu_group *generic_single_device_group(struct device *dev)
+> +{
+> +	struct iommu_device *iommu = dev->iommu->iommu_dev;
+> +
+> +	lockdep_assert_held(&dev_iommu_group_lock);
+> +
+> +	if (!iommu->singleton_group) {
+> +		struct iommu_group *group;
+> +
+> +		group = iommu_group_alloc();
+> +		if (IS_ERR(group))
+> +			return group;
+> +		iommu->singleton_group = group;
+> +	}
+> +	return iommu_group_ref_get(iommu->singleton_group);
+> +}
+> +EXPORT_SYMBOL_GPL(generic_single_device_group);
 
-Each chunk of that buffer is DMA'd into separately and then sync'd
-afterwards.
+When allocating the singleton group for the first time, the group's
+refcount is taken twice. This can cause memory leaks even after calling
+iommu_device_unregister(). Perhaps it can be adjusted as follows?
 
+struct iommu_group *generic_single_device_group(struct device *dev)
+{
+         struct iommu_device *iommu = dev->iommu->iommu_dev;
+         struct iommu_group *group;
 
-> > 
-> > -- 
-> > MST
-> ---end quoted text---
+         lockdep_assert_held(&dev_iommu_group_lock);
 
+         if (iommu->singleton_group)
+                 return iommu_group_ref_get(iommu->singleton_group);
+
+         group = iommu_group_alloc();
+         if (!IS_ERR(group))
+                 iommu->singleton_group = group;
+
+         return group;
+}
+
+> +
+>   /*
+>    * Use standard PCI bus topology, isolation features, and DMA alias quirks
+>    * to find or create an IOMMU group for a device.
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index b1dcb1b9b17040..f1e18e81fca78b 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -361,6 +361,7 @@ struct iommu_domain_ops {
+>    * @list: Used by the iommu-core to keep a list of registered iommus
+>    * @ops: iommu-ops for talking to this iommu
+>    * @dev: struct device for sysfs handling
+> + * @singleton_group: Used internally for drivers that have only one group
+>    * @max_pasids: number of supported PASIDs
+>    */
+>   struct iommu_device {
+> @@ -368,6 +369,7 @@ struct iommu_device {
+>   	const struct iommu_ops *ops;
+>   	struct fwnode_handle *fwnode;
+>   	struct device *dev;
+> +	struct iommu_group *singleton_group;
+>   	u32 max_pasids;
+>   };
+>   
+> @@ -640,6 +642,7 @@ extern struct iommu_group *pci_device_group(struct device *dev);
+>   extern struct iommu_group *generic_device_group(struct device *dev);
+>   /* FSL-MC device grouping function */
+>   struct iommu_group *fsl_mc_device_group(struct device *dev);
+> +extern struct iommu_group *generic_single_device_group(struct device *dev);
+
+"extern" is not necessary.
+
+>   
+>   /**
+>    * struct iommu_fwspec - per-device IOMMU instance data
+
+Best regards,
+baolu
