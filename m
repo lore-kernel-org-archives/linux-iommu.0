@@ -1,63 +1,81 @@
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+Received: from out-34.mta0.migadu.com (out-34.mta0.migadu.com [91.218.175.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E28DB363
-	for <iommu@lists.linux.dev>; Fri, 21 Jul 2023 01:52:25 +0000 (UTC)
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.54])
-	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4R6XXn69fHztR6X;
-	Fri, 21 Jul 2023 09:49:13 +0800 (CST)
-Received: from [10.174.176.82] (10.174.176.82) by
- dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Fri, 21 Jul 2023 09:52:21 +0800
-Message-ID: <2c2428e9-230a-91f2-84bb-01804ce10c04@huawei.com>
-Date: Fri, 21 Jul 2023 09:52:21 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59C36363
+	for <iommu@lists.linux.dev>; Fri, 21 Jul 2023 01:56:31 +0000 (UTC)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.1
-Subject: Re: [PATCH -next 0/2] iommu/iova: optimize the iova rcache
-To: <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-CC: <guohanjun@huawei.com>, <xuqiang36@huawei.com>, <chenweilong@huawei.com>,
-	<thunder.leizhen@huawei.com>
-References: <20230711025452.35475-1-zhangzekun11@huawei.com>
-From: "zhangzekun (A)" <zhangzekun11@huawei.com>
-In-Reply-To: <20230711025452.35475-1-zhangzekun11@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.176.82]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500022.china.huawei.com (7.185.36.66)
-X-CFilter-Loop: Reflected
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1689904589;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=V9xzmr/d2IKBxXzSTTNBuI1FHVZ5ZZJ/JXVFqjqdjOE=;
+	b=OYjShRuZxV8Y0Z7cVXsAqeuM94VqiBwWsu1rSmvrg76erAxQHqby2QDGa+eVAQqh+BMK+D
+	UkH3oUHWzYlGmPqFrGFXgeNjDrECYNiK4Q6Paxpp/X1IymcrkjpTMNsmcuXNdJd3ymFt2K
+	I8eURhKyVsefGlj0SUNO9ZibjPQDgps=
+Date: Fri, 21 Jul 2023 01:56:28 +0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: "Yajun Deng" <yajun.deng@linux.dev>
+Message-ID: <e2c15ec828daf2c1d4277e78859698929efe86b0@linux.dev>
+TLS-Required: No
+Subject: Re: [PATCH v3] dma-contiguous: support numa CMA for specified node
+To: "=?utf-8?B?UGV0ciBUZXNhxZnDrWs=?=" <petr@tesarici.cz>, "Christoph Hellwig"
+ <hch@lst.de>
+Cc: corbet@lwn.net, m.szyprowski@samsung.com, robin.murphy@arm.com,
+ akpm@linux-foundation.org, paulmck@kernel.org, catalin.marinas@arm.com,
+ rdunlap@infradead.org, peterz@infradead.org, rostedt@goodmis.org,
+ kim.phillips@amd.com, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-mm@kvack.org
+In-Reply-To: <20230720142712.295834d0@meshulam.tesarici.cz>
+References: <20230720142712.295834d0@meshulam.tesarici.cz>
+ <20230720082517.GA7057@lst.de> <20230712074758.1133272-1-yajun.deng@linux.dev>
+ <25942dafbc7f52488a30c807b6322109539442cf@linux.dev>
+ <20230720115408.GA13114@lst.de>
+X-Migadu-Flow: FLOW_OUT
 
-Hi all, does anyone has suggestions for these two patches?
+July 20, 2023 at 8:27 PM, "Petr Tesa=C5=99=C3=ADk" <petr@tesarici.cz> wro=
+te:
 
-在 2023/7/11 10:54, Zhang Zekun 写道:
-> The struct of iova rcache has diffcult in dealing with machine with
-> lots of cpus, because every cpu has a cpu_rcache and they need to
-> exchange iova in a fixed length buffer rcache->depot, this buffer
-> can sometimes become a bottle neck of allocating iova from iova_rcache.
-> The number of iova_cpu_rcache can grow with the number of cpus in
-> iova_rcache, but the size of rcache->depot will not. The deeper of
-> rcache->depot can help iova_rcache cache more iovas, and can help
-> iova_rcache better dealing with senarios in which drivers allocating
-> and free iovas on different cpu cores. We only let the size of rcache->depot
-> to grow with the number of cpus which is larger than 32 to avoid potential
-> performance decrease on machines which don't have much cpus.
->
-> Also, it is unsafe to directly free cpu rcache magazines in free_iova_rcaches,
-> add check before freeing it.
->
-> Zhang Zekun (2):
->    iommu/iova: Add check for cpu_rcache in free_iova_rcaches
->    iommu/iova: allocate iova_rcache->depot dynamicly
->
->   drivers/iommu/iova.c | 36 +++++++++++++++++++++++++++++++-----
->   1 file changed, 31 insertions(+), 5 deletions(-)
+
+>=20
+>=20V Thu, 20 Jul 2023 13:54:08 +0200
+> Christoph Hellwig <hch@lst.de> naps=C3=A1no:
+>=20
+>=20>=20
+>=20> On Thu, Jul 20, 2023 at 08:47:37AM +0000, Yajun Deng wrote:
+> >  It's based on linux-next tree.
+> >=20=20
+>=20>  This patch should be after my other patch in linux-next tree.
+> >  a960925a6b23("dma-contiguous: support per-numa CMA for all architect=
+ures").=20
+>=20>=20=20
+>=20>  Where did this land?
+> >=20
+>=20
+> Well... in the linux-next tree:
+>=20
+>=20https://www.kernel.org/doc/man-pages/linux-next.html
+>=20
+>=20>=20
+>=20> dma patches really should be going through the DMA tree..
+> >=20
+>=20
+> Indeed. The other patch was also sent to the iommu ML back in May. It's
+> the thread where we were looking for Barry Song's current email address=
+.
 >
 
+Thanks. This link shows what happened at that time:
+https://lore.kernel.org/all/20230512094210.141540-1-yajun.deng@linux.dev/=
+T/#u
+=20
+>=20Petr T
+>
