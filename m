@@ -1,207 +1,66 @@
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBD2C374
-	for <iommu@lists.linux.dev>; Fri, 21 Jul 2023 06:36:38 +0000 (UTC)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-	by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 36L2LDL7013218;
-	Thu, 20 Jul 2023 23:36:17 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=y5rYVMqlqcgaO0n1TOniSNX7UmtSDrRMaWOfswavg+g=;
- b=J8HOFnULcDdLqKzHn+S/zOaKGSrzpVlyzjwPbG7cTvqf3DFsPGsCAgtxRn0Fg/d8Hy7O
- k1kkamkZID4kA5/cPM4g4BumrBRsAwYNnnoP1T97HhtjTM6S6bnw48bj/k6Eg+cvt4U/
- 0GQKcr3nngjt3R94MiBuoTqXwpbaRSCS/j64JMZw7XDQPGYIQ77g0//qa3ElzIs5CUs5
- YLt26xywfIQL0Vf0b0eZ8mIeav6+YNl9Rpr5iRSqPtZyb+tfpG0Pc3ZmcR4Ued0vgzBn
- ISdabiSj+ZT24LucxwcH/RPrBSWe7f3Wv4HbGCuhKiXi4DWElTkEkfXyb2JK3Bj53C51 6Q== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-	by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3ryh5egm67-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-	Thu, 20 Jul 2023 23:36:17 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Thu, 20 Jul
- 2023 23:36:15 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
- Transport; Thu, 20 Jul 2023 23:36:15 -0700
-Received: from odyssey-031.marvell.com (unknown [10.75.48.92])
-	by maili.marvell.com (Postfix) with ESMTP id A35BE3F706D;
-	Thu, 20 Jul 2023 23:36:14 -0700 (PDT)
-From: Tanmay Jagdale <tanmay@marvell.com>
-To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-        <baolu.lu@linux.intel.com>, <thunder.leizhen@huawei.com>
-CC: <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>, <gcherian@marvell.com>,
-        <sgoutham@marvell.com>, <lcherian@marvell.com>,
-        <bbhushan2@marvell.com>
-Subject: [RESEND PATCH 4/4] iommu/arm-smmu-v3: Add support for less than one ECMDQ per core
-Date: Fri, 21 Jul 2023 02:35:13 -0400
-Message-ID: <20230721063513.33431-5-tanmay@marvell.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230721063513.33431-1-tanmay@marvell.com>
-References: <20230721063513.33431-1-tanmay@marvell.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05B3764B
+	for <iommu@lists.linux.dev>; Fri, 21 Jul 2023 06:49:00 +0000 (UTC)
+Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-4036bd4fff1so234271cf.0
+        for <iommu@lists.linux.dev>; Thu, 20 Jul 2023 23:49:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1689922139; x=1690526939;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=hQfAD+gRLI1T8q/mSuX9jGerjy3VlrCpnWiJnxkvDK4=;
+        b=PBzSzI5mVQ/5a0fwR+VlN0WqFzdvb24sVzYk0n0+bTqCQzQa9csh0dy4gS5kXQHp67
+         MKkKSATVkGuzPY8qn5m2u/mvcGKjB4Zb9JlMp5FnzaHu4U4cZWIzwxZE3KBC5rwVRw1h
+         NFTU4/E23Ju1Ci29D+suAsxxBZ4CJjUwd8JeyIvkj2ygeqjLKbZItldXD4pimtOnoixo
+         y/FQhaHi6M2Hx0EG8StuDOSL+U/do7x+li8NJL5T/gTt8cy4HrxEbuw1cgMQAQxB9Fmr
+         Az8pr28i8zXNh3NpIkNyfTJyunXmH8cvN/hRRSE+b0NiDvK19xOaxRzqZQnC7gCIlE9m
+         nAjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1689922139; x=1690526939;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=hQfAD+gRLI1T8q/mSuX9jGerjy3VlrCpnWiJnxkvDK4=;
+        b=altidQPyOfYXwDFhZXUDE950XD9bXI+WNUHM4IStqqCSYCqS2L6lJA+QJgJCAX/+AK
+         ChaFR17yq0s391yEam4XvzeSutlwPFOXgHmwONnIet+hYk0OBZRU/vERLVn5YmYmcUQ3
+         VSajsHHn5J0QtulXZ48rMQyeL5fJzmPX2xEP0r/K7lnyMBOFnbUXrxdAV5u5SN8vS2uG
+         hlVaSbs8MWpXoW9nvM87JqcyFie0UOhUipKgND92k1RukE+mprsYlj6gFC11Nyedme/V
+         BQDezRcTo9VZKv7A2CryVDGJIbVt10OKmu1IyrezzM0VmeWpG/C6jGQECCCaLeV100dq
+         1wrw==
+X-Gm-Message-State: ABy/qLYcOfJPa9VDymIGeayxgnLDqHOcCve9evYd3prkzs3d/jwvCreQ
+	PRK8LMX/498P7TXNBXbkUDBJN+oh4u6mR3PW+EmjQg==
+X-Google-Smtp-Source: APBJJlEld3XqjQTnMeJZ2GV04gPcS+P8zcQ/fL27WUjm6UoEiTkHArYFvXo8lTGeifb9JjvEN7kHAFibO6MUi3PDPZI=
+X-Received: by 2002:ac8:5716:0:b0:3ef:302c:319e with SMTP id
+ 22-20020ac85716000000b003ef302c319emr186241qtw.8.1689922139427; Thu, 20 Jul
+ 2023 23:48:59 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: 67Cu0u_IHwnyHfEkMTTzbXYj73N31Vpa
-X-Proofpoint-ORIG-GUID: 67Cu0u_IHwnyHfEkMTTzbXYj73N31Vpa
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-07-21_03,2023-07-20_01,2023-05-22_02
+References: <20230621063825.268890-1-mshavit@google.com> <20230621063825.268890-8-mshavit@google.com>
+ <ZK9cyDaFkAKc1SvJ@Asurada-Nvidia>
+In-Reply-To: <ZK9cyDaFkAKc1SvJ@Asurada-Nvidia>
+From: Michael Shavit <mshavit@google.com>
+Date: Fri, 21 Jul 2023 14:48:23 +0800
+Message-ID: <CAKHBV27FbpJHoPC5_8mCYHmhEbCaCE7st_-qzPv0uQYSH3RC9g@mail.gmail.com>
+Subject: Re: [PATCH v4 07/13] iommu/arm-smmu-v3: Keep track of attached ssids
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, jean-philippe@linaro.org, jgg@nvidia.com, 
+	baolu.lu@linux.intel.com, linux-arm-kernel@lists.infradead.org, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-From: Zhen Lei <thunder.leizhen@huawei.com>
+> And since we have a group of subdomains that are simply indexed
+> by ssids, perhaps we can add an xarray to store a subdomain ptr
+> along with an ssid, replacing the list?
 
-Due to limited hardware resources, the number of ECMDQs may be less than
-the number of cores. If the number of ECMDQs is greater than the number of
-numa nodes, ensure that each node has at least one ECMDQ. This is because
-ECMDQ queue memory is requested from the NUMA node where it resides, which
-may result in better command filling and insertion performance.
-
-The current ECMDQ implementation reuses the command insertion function
-arm_smmu_cmdq_issue_cmdlist() of the normal CMDQ. This function already
-supports multiple cores concurrent insertion commands.
-
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 101 ++++++++++++++++++--
- 1 file changed, 92 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index dc3ff4796aaf..7a4f3d871635 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -3678,14 +3678,15 @@ static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
- 
- static int arm_smmu_ecmdq_layout(struct arm_smmu_device *smmu)
- {
--	int cpu;
--	struct arm_smmu_ecmdq *ecmdq;
-+	int cpu, node, nr_remain, nr_nodes = 0;
-+	int *nr_ecmdqs;
-+	struct arm_smmu_ecmdq *ecmdq, **ecmdqs;
- 
--	if (num_possible_cpus() <= smmu->nr_ecmdq) {
--		ecmdq = devm_alloc_percpu(smmu->dev, *ecmdq);
--		if (!ecmdq)
--			return -ENOMEM;
-+	ecmdq = devm_alloc_percpu(smmu->dev, *ecmdq);
-+	if (!ecmdq)
-+		return -ENOMEM;
- 
-+	if (num_possible_cpus() <= smmu->nr_ecmdq) {
- 		for_each_possible_cpu(cpu)
- 			*per_cpu_ptr(smmu->ecmdq, cpu) = per_cpu_ptr(ecmdq, cpu);
- 
-@@ -3695,7 +3696,79 @@ static int arm_smmu_ecmdq_layout(struct arm_smmu_device *smmu)
- 		return 0;
- 	}
- 
--	return -ENOSPC;
-+	for_each_node(node)
-+		if (nr_cpus_node(node))
-+			nr_nodes++;
-+
-+	if (nr_nodes >= smmu->nr_ecmdq) {
-+		dev_err(smmu->dev, "%d ECMDQs is less than %d nodes\n", smmu->nr_ecmdq, nr_nodes);
-+		return -ENOSPC;
-+	}
-+
-+	nr_ecmdqs = kcalloc(MAX_NUMNODES, sizeof(int), GFP_KERNEL);
-+	if (!nr_ecmdqs)
-+		return -ENOMEM;
-+
-+	ecmdqs = kcalloc(smmu->nr_ecmdq, sizeof(*ecmdqs), GFP_KERNEL);
-+	if (!ecmdqs) {
-+		kfree(nr_ecmdqs);
-+		return -ENOMEM;
-+	}
-+
-+	/* [1] Ensure that each node has at least one ECMDQ */
-+	nr_remain = smmu->nr_ecmdq - nr_nodes;
-+	for_each_node(node) {
-+		/*
-+		 * Calculate the number of ECMDQs to be allocated to this node.
-+		 * NR_ECMDQS_PER_CPU = nr_remain / num_possible_cpus();
-+		 * When nr_cpus_node(node) is not zero, less than one ECMDQ
-+		 * may be left due to truncation rounding.
-+		 */
-+		nr_ecmdqs[node] = nr_cpus_node(node) * nr_remain / num_possible_cpus();
-+		nr_remain -= nr_ecmdqs[node];
-+	}
-+
-+	/* Divide the remaining ECMDQs */
-+	while (nr_remain) {
-+		for_each_node(node) {
-+			if (!nr_remain)
-+				break;
-+
-+			if (nr_ecmdqs[node] >= nr_cpus_node(node))
-+				continue;
-+
-+			nr_ecmdqs[node]++;
-+			nr_remain--;
-+		}
-+	}
-+
-+	for_each_node(node) {
-+		int i, round, shared = 0;
-+
-+		if (!nr_cpus_node(node))
-+			continue;
-+
-+		/* An ECMDQ has been reserved for each node at above [1] */
-+		nr_ecmdqs[node]++;
-+
-+		if (nr_ecmdqs[node] < nr_cpus_node(node))
-+			shared = 1;
-+
-+		i = 0;
-+		for_each_cpu(cpu, cpumask_of_node(node)) {
-+			round = i % nr_ecmdqs[node];
-+			if (i++ < nr_ecmdqs[node]) {
-+				ecmdqs[round] = per_cpu_ptr(ecmdq, cpu);
-+				ecmdqs[round]->cmdq.shared = shared;
-+			}
-+			*per_cpu_ptr(smmu->ecmdq, cpu) = ecmdqs[round];
-+		}
-+	}
-+
-+	kfree(nr_ecmdqs);
-+	kfree(ecmdqs);
-+
-+	return 0;
- }
- 
- static int arm_smmu_ecmdq_probe(struct arm_smmu_device *smmu)
-@@ -3760,10 +3833,20 @@ static int arm_smmu_ecmdq_probe(struct arm_smmu_device *smmu)
- 		struct arm_smmu_queue *q;
- 
- 		ecmdq = *per_cpu_ptr(smmu->ecmdq, cpu);
--		ecmdq->base = cp_base + addr;
--
- 		q = &ecmdq->cmdq.q;
- 
-+		/*
-+		 * The boot option "maxcpus=" can limit the number of online
-+		 * CPUs. The CPUs that are not selected are not showed in
-+		 * cpumask_of_node(node), their 'ecmdq' may be NULL.
-+		 *
-+		 * (q->ecmdq_prod & ECMDQ_PROD_EN) indicates that the ECMDQ is
-+		 * shared by multiple cores and has been initialized.
-+		 */
-+		if (!ecmdq || (q->ecmdq_prod & ECMDQ_PROD_EN))
-+			continue;
-+		ecmdq->base = cp_base + addr;
-+
- 		q->llq.max_n_shift = ECMDQ_MAX_SZ_SHIFT + shift_increment;
- 		ret = arm_smmu_init_one_queue(smmu, q, ecmdq->base, ARM_SMMU_ECMDQ_PROD,
- 				ARM_SMMU_ECMDQ_CONS, CMDQ_ENT_DWORDS, "ecmdq");
--- 
-2.34.1
-
+Hmmmm, I think the only place where we search through the list for a
+specific SSID is during remove_dev_pasid. We mostly use the list to
+iterate over  all the masters/ssids that this domain is attached to.
+I'm not sure if moving to an xarray to optimize the remove_dev_pasid
+call is worth it (at the cost of iterations which IIUC would become N
+log(N))
