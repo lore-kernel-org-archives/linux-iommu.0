@@ -1,239 +1,203 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0BD280E
-	for <iommu@lists.linux.dev>; Fri, 21 Jul 2023 05:41:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2BF4C433C7;
-	Fri, 21 Jul 2023 05:41:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1689918074;
-	bh=0sR/hh3ymgnytwcEpN7e3Bxvyj2317uJ22SBojwoHrg=;
-	h=Subject:To:Cc:From:Date:In-Reply-To:From;
-	b=XJDPOYQuBXaHkGuVBfzdpzhsD33Xk2F50SXMfBBoRdh7H3B4d1xP63rafQuE85o64
-	 GzGVzyClLQN0eOZOiT2ZOv8JH/gflmNYGO16h710rOQwN9oXIM70iRP7TAoLad1bFo
-	 VnityvhDx9ebyX8rp6eNFmOeuwNALolF68Skge2w=
-Subject: Patch "arm64: errata: Add detection for TRBE overwrite in FILL mode" has been added to the 5.15-stable tree
-To: anshuman.khandual@arm.com,catalin.marinas@arm.com,corbet@lwn.net,eahariha@linux.microsoft.com,easwar.hariharan@microsoft.com,gregkh@linuxfoundation.org,iommu@lists.linux.dev,joro@8bytes.org,leo.yan@linaro.org,linux-arm-kernel@lists.infradead.org,mark.rutland@arm.com,mathieu.poirier@linaro.org,mike.leach@linaro.org,robin.murphy@arm.com,suzuki.poulose@arm.com,will@kernel.org
-Cc: <stable-commits@vger.kernel.org>
-From: <gregkh@linuxfoundation.org>
-Date: Fri, 21 Jul 2023 07:40:50 +0200
-In-Reply-To: <1689895414-17425-2-git-send-email-eahariha@linux.microsoft.com>
-Message-ID: <2023072150-synapse-whisking-923f@gregkh>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 454467FB
+	for <iommu@lists.linux.dev>; Fri, 21 Jul 2023 06:36:17 +0000 (UTC)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+	by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 36L5WnJp017249;
+	Thu, 20 Jul 2023 23:35:58 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=pfpt0220;
+ bh=7mnorin6NXNKK95IWr6irgZNfgOv849RtHW6/z7AsoI=;
+ b=iX2BPUySrpWWHzWnrPmp/ry8Zf5oCA3FSoTjZSxOhB1mdtLCNGHwjIBAKaxjXFktYd2E
+ 42lLWRF73ucQNeZ6RX/2o0fdmN8usAqh7Z7HeZCkExIVDlM3UiqC6aLOFeTzII7RYmlp
+ qcqjHJCYLzlknO17s1SB2bV9tA2Rb1nDu5HHL8sD8yC1/YDFCHrZiHFshGXPQqViM0Mx
+ rN7pvVlOVnZaKGhPXGLlydDDhQ88C59IXiJvCrcDJDbR9InF3VX1cqK5AhEVlWySxaqh
+ oL3RxrOS8Fs3095M6X8LnzGlzFsU7cFpJmeYgmvTSfm4jhQ/9yg9m7PXwjFkWb+Az/Vj 3w== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+	by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3ryh5egm4t-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+	Thu, 20 Jul 2023 23:35:58 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Thu, 20 Jul
+ 2023 23:35:56 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
+ Transport; Thu, 20 Jul 2023 23:35:56 -0700
+Received: from odyssey-031.marvell.com (unknown [10.75.48.92])
+	by maili.marvell.com (Postfix) with ESMTP id B52713F7068;
+	Thu, 20 Jul 2023 23:35:55 -0700 (PDT)
+From: Tanmay Jagdale <tanmay@marvell.com>
+To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <baolu.lu@linux.intel.com>, <thunder.leizhen@huawei.com>
+CC: <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>, <gcherian@marvell.com>,
+        <sgoutham@marvell.com>, <lcherian@marvell.com>,
+        <bbhushan2@marvell.com>
+Subject: [RESEND PATCH 2/4] iommu/arm-smmu-v3: Ensure that a set of associated commands are inserted in the same ECMDQ
+Date: Fri, 21 Jul 2023 02:35:11 -0400
+Message-ID: <20230721063513.33431-3-tanmay@marvell.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230721063513.33431-1-tanmay@marvell.com>
+References: <20230721063513.33431-1-tanmay@marvell.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ANSI_X3.4-1968
 Content-Transfer-Encoding: 8bit
-X-stable: commit
-X-Patchwork-Hint: ignore 
+Content-Type: text/plain
+X-Proofpoint-GUID: 4ftrmbQv65nvJOi9WF3WLoc_DhG0wT1a
+X-Proofpoint-ORIG-GUID: 4ftrmbQv65nvJOi9WF3WLoc_DhG0wT1a
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
+ definitions=2023-07-21_03,2023-07-20_01,2023-05-22_02
 
+From: Zhen Lei <thunder.leizhen@huawei.com>
 
-This is a note to let you know that I've just added the patch titled
+The SYNC command only ensures that the command that precedes it in the
+same ECMDQ must be executed, but cannot synchronize the commands in other
+ECMDQs. If an unmap involves multiple commands, some commands are executed
+on one core, and the other commands are executed on another core. In this
+case, after the SYNC execution is complete, the execution of all preceded
+commands can not be ensured.
 
-    arm64: errata: Add detection for TRBE overwrite in FILL mode
+Prevent the process that performs a set of associated commands insertion
+from being migrated to other cores ensures that all commands are inserted
+into the same ECMDQ.
 
-to the 5.15-stable tree which can be found at:
-    http://www.kernel.org/git/?p=linux/kernel/git/stable/stable-queue.git;a=summary
-
-The filename of the patch is:
-     arm64-errata-add-detection-for-trbe-overwrite-in-fill-mode.patch
-and it can be found in the queue-5.15 subdirectory.
-
-If you, or anyone else, feels it should not be added to the stable tree,
-please let <stable@vger.kernel.org> know about it.
-
-
-From stable-owner@vger.kernel.org Fri Jul 21 01:24:02 2023
-From: Easwar Hariharan <eahariha@linux.microsoft.com>
-Date: Thu, 20 Jul 2023 16:23:31 -0700
-Subject: arm64: errata: Add detection for TRBE overwrite in FILL mode
-To: stable@vger.kernel.org
-Cc: easwar.hariharan@microsoft.com, catalin.marinas@arm.com, will@kernel.org, corbet@lwn.net, robin.murphy@arm.com, joro@8bytes.org, linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Message-ID: <1689895414-17425-2-git-send-email-eahariha@linux.microsoft.com>
-
-From: Suzuki K Poulose <suzuki.poulose@arm.com>
-
-commit b9d216fcef4298de76519e2baeed69ba482467bd upstream
-
-Arm Neoverse-N2 and the Cortex-A710 cores are affected
-by a CPU erratum where the TRBE will overwrite the trace buffer
-in FILL mode. The TRBE doesn't stop (as expected in FILL mode)
-when it reaches the limit and wraps to the base to continue
-writing upto 3 cache lines. This will overwrite any trace that
-was written previously.
-
-Add the Neoverse-N2 erratum(#2139208) and Cortex-A710 erratum
-(#2119858) to the detection logic.
-
-This will be used by the TRBE driver in later patches to work
-around the issue. The detection has been kept with the core
-arm64 errata framework list to make sure :
-  - We don't duplicate the framework in TRBE driver
-  - The errata detection is advertised like the rest
-    of the CPU errata.
-
-Note that the Kconfig entries are not fully active until the
-TRBE driver implements the work around.
-
-Cc: Will Deacon <will@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Anshuman Khandual <anshuman.khandual@arm.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc: Mike Leach <mike.leach@linaro.org>
-cc: Leo Yan <leo.yan@linaro.org>
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
-Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
-Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Link: https://lore.kernel.org/r/20211019163153.3692640-3-suzuki.poulose@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- Documentation/arm64/silicon-errata.rst |    4 +++
- arch/arm64/Kconfig                     |   41 +++++++++++++++++++++++++++++++++
- arch/arm64/kernel/cpu_errata.c         |   26 ++++++++++++++++++++
- arch/arm64/tools/cpucaps               |    1 
- 4 files changed, 72 insertions(+)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 41 +++++++++++++++++----
+ 1 file changed, 34 insertions(+), 7 deletions(-)
 
---- a/Documentation/arm64/silicon-errata.rst
-+++ b/Documentation/arm64/silicon-errata.rst
-@@ -102,12 +102,16 @@ stable kernels.
- +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Cortex-A510     | #2457168        | ARM64_ERRATUM_2457168       |
- +----------------+-----------------+-----------------+-----------------------------+
-+| ARM            | Cortex-A710     | #2119858        | ARM64_ERRATUM_2119858       |
-++----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Neoverse-N1     | #1188873,1418040| ARM64_ERRATUM_1418040       |
- +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Neoverse-N1     | #1349291        | N/A                         |
- +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Neoverse-N1     | #1542419        | ARM64_ERRATUM_1542419       |
- +----------------+-----------------+-----------------+-----------------------------+
-+| ARM            | Neoverse-N2     | #2139208        | ARM64_ERRATUM_2139208       |
-++----------------+-----------------+-----------------+-----------------------------+
- | ARM            | MMU-500         | #841119,826419  | N/A                         |
- +----------------+-----------------+-----------------+-----------------------------+
- +----------------+-----------------+-----------------+-----------------------------+
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -733,6 +733,47 @@ config ARM64_ERRATUM_2457168
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index dfb5bf8cbcf9..1b3b37a1972e 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -243,6 +243,18 @@ static int queue_remove_raw(struct arm_smmu_queue *q, u64 *ent)
+ 	return 0;
+ }
  
- 	  If unsure, say Y.
++static void arm_smmu_preempt_disable(struct arm_smmu_device *smmu)
++{
++	if (smmu->ecmdq_enabled)
++		preempt_disable();
++}
++
++static void arm_smmu_preempt_enable(struct arm_smmu_device *smmu)
++{
++	if (smmu->ecmdq_enabled)
++		preempt_enable();
++}
++
+ /* High-level queue accessors */
+ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+ {
+@@ -1035,6 +1047,7 @@ static void arm_smmu_sync_cd(struct arm_smmu_domain *smmu_domain,
  
-+config ARM64_WORKAROUND_TRBE_OVERWRITE_FILL_MODE
-+	bool
-+
-+config ARM64_ERRATUM_2119858
-+	bool "Cortex-A710: 2119858: workaround TRBE overwriting trace data in FILL mode"
-+	default y
-+	depends on COMPILE_TEST # Until the CoreSight TRBE driver changes are in
-+	depends on CORESIGHT_TRBE
-+	select ARM64_WORKAROUND_TRBE_OVERWRITE_FILL_MODE
-+	help
-+	  This option adds the workaround for ARM Cortex-A710 erratum 2119858.
-+
-+	  Affected Cortex-A710 cores could overwrite up to 3 cache lines of trace
-+	  data at the base of the buffer (pointed to by TRBASER_EL1) in FILL mode in
-+	  the event of a WRAP event.
-+
-+	  Work around the issue by always making sure we move the TRBPTR_EL1 by
-+	  256 bytes before enabling the buffer and filling the first 256 bytes of
-+	  the buffer with ETM ignore packets upon disabling.
-+
-+	  If unsure, say Y.
-+
-+config ARM64_ERRATUM_2139208
-+	bool "Neoverse-N2: 2139208: workaround TRBE overwriting trace data in FILL mode"
-+	default y
-+	depends on COMPILE_TEST # Until the CoreSight TRBE driver changes are in
-+	depends on CORESIGHT_TRBE
-+	select ARM64_WORKAROUND_TRBE_OVERWRITE_FILL_MODE
-+	help
-+	  This option adds the workaround for ARM Neoverse-N2 erratum 2139208.
-+
-+	  Affected Neoverse-N2 cores could overwrite up to 3 cache lines of trace
-+	  data at the base of the buffer (pointed to by TRBASER_EL1) in FILL mode in
-+	  the event of a WRAP event.
-+
-+	  Work around the issue by always making sure we move the TRBPTR_EL1 by
-+	  256 bytes before enabling the buffer and filling the first 256 bytes of
-+	  the buffer with ETM ignore packets upon disabling.
-+
-+	  If unsure, say Y.
-+
- config CAVIUM_ERRATUM_22375
- 	bool "Cavium erratum 22375, 24313"
- 	default y
---- a/arch/arm64/kernel/cpu_errata.c
-+++ b/arch/arm64/kernel/cpu_errata.c
-@@ -363,6 +363,18 @@ static struct midr_range broken_aarch32_
- };
- #endif
+ 	cmds.num = 0;
  
-+#ifdef CONFIG_ARM64_WORKAROUND_TRBE_OVERWRITE_FILL_MODE
-+static const struct midr_range trbe_overwrite_fill_mode_cpus[] = {
-+#ifdef CONFIG_ARM64_ERRATUM_2139208
-+	MIDR_ALL_VERSIONS(MIDR_NEOVERSE_N2),
-+#endif
-+#ifdef CONFIG_ARM64_ERRATUM_2119858
-+	MIDR_ALL_VERSIONS(MIDR_CORTEX_A710),
-+#endif
-+	{},
-+};
-+#endif	/* CONFIG_ARM64_WORKAROUND_TRBE_OVERWRITE_FILL_MODE */
++	arm_smmu_preempt_disable(smmu);
+ 	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+ 	list_for_each_entry(master, &smmu_domain->devices, domain_head) {
+ 		for (i = 0; i < master->num_streams; i++) {
+@@ -1045,6 +1058,7 @@ static void arm_smmu_sync_cd(struct arm_smmu_domain *smmu_domain,
+ 	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+ 
+ 	arm_smmu_cmdq_batch_submit(smmu, &cmds);
++	arm_smmu_preempt_enable(smmu);
+ }
+ 
+ static int arm_smmu_alloc_cd_leaf_table(struct arm_smmu_device *smmu,
+@@ -1840,31 +1854,38 @@ arm_smmu_atc_inv_to_cmd(int ssid, unsigned long iova, size_t size,
+ 
+ static int arm_smmu_atc_inv_master(struct arm_smmu_master *master)
+ {
+-	int i;
++	int i, ret;
+ 	struct arm_smmu_cmdq_ent cmd;
+ 	struct arm_smmu_cmdq_batch cmds;
++	struct arm_smmu_device *smmu = master->smmu;
+ 
+ 	arm_smmu_atc_inv_to_cmd(0, 0, 0, &cmd);
+ 
+ 	cmds.num = 0;
 +
- const struct arm64_cpu_capabilities arm64_errata[] = {
- #ifdef CONFIG_ARM64_WORKAROUND_CLEAN_CACHE
- 	{
-@@ -564,6 +576,7 @@ const struct arm64_cpu_capabilities arm6
- 		ERRATA_MIDR_ALL_VERSIONS(MIDR_NVIDIA_CARMEL),
- 	},
- #endif
-+
- #ifdef CONFIG_ARM64_ERRATUM_2457168
- 	{
- 		.desc = "ARM erratum 2457168",
-@@ -581,6 +594,19 @@ const struct arm64_cpu_capabilities arm6
- 		.type = ARM64_CPUCAP_LOCAL_CPU_ERRATUM,
- 	},
- #endif
-+#ifdef CONFIG_ARM64_WORKAROUND_TRBE_OVERWRITE_FILL_MODE
-+	{
-+		/*
-+		 * The erratum work around is handled within the TRBE
-+		 * driver and can be applied per-cpu. So, we can allow
-+		 * a late CPU to come online with this erratum.
-+		 */
-+		.desc = "ARM erratum 2119858 or 2139208",
-+		.capability = ARM64_WORKAROUND_TRBE_OVERWRITE_FILL_MODE,
-+		.type = ARM64_CPUCAP_WEAK_LOCAL_CPU_FEATURE,
-+		CAP_MIDR_RANGE_LIST(trbe_overwrite_fill_mode_cpus),
-+	},
-+#endif
- 	{
++	arm_smmu_preempt_disable(smmu);
+ 	for (i = 0; i < master->num_streams; i++) {
+ 		cmd.atc.sid = master->streams[i].id;
+-		arm_smmu_cmdq_batch_add(master->smmu, &cmds, &cmd);
++		arm_smmu_cmdq_batch_add(smmu, &cmds, &cmd);
  	}
- };
---- a/arch/arm64/tools/cpucaps
-+++ b/arch/arm64/tools/cpucaps
-@@ -56,6 +56,7 @@ WORKAROUND_1508412
- WORKAROUND_1542419
- WORKAROUND_1742098
- WORKAROUND_2457168
-+WORKAROUND_TRBE_OVERWRITE_FILL_MODE
- WORKAROUND_CAVIUM_23154
- WORKAROUND_CAVIUM_27456
- WORKAROUND_CAVIUM_30115
+ 
+-	return arm_smmu_cmdq_batch_submit(master->smmu, &cmds);
++	ret = arm_smmu_cmdq_batch_submit(smmu, &cmds);
++	arm_smmu_preempt_enable(smmu);
++
++	return ret;
+ }
+ 
+ int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
+ 			    unsigned long iova, size_t size)
+ {
+-	int i;
++	int i, ret;
+ 	unsigned long flags;
+ 	struct arm_smmu_cmdq_ent cmd;
+ 	struct arm_smmu_master *master;
+ 	struct arm_smmu_cmdq_batch cmds;
++	struct arm_smmu_device *smmu = smmu_domain->smmu;
+ 
+-	if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_ATS))
++	if (!(smmu->features & ARM_SMMU_FEAT_ATS))
+ 		return 0;
+ 
+ 	/*
+@@ -1888,6 +1909,7 @@ int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
+ 
+ 	cmds.num = 0;
+ 
++	arm_smmu_preempt_disable(smmu);
+ 	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+ 	list_for_each_entry(master, &smmu_domain->devices, domain_head) {
+ 		if (!master->ats_enabled)
+@@ -1895,12 +1917,15 @@ int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
+ 
+ 		for (i = 0; i < master->num_streams; i++) {
+ 			cmd.atc.sid = master->streams[i].id;
+-			arm_smmu_cmdq_batch_add(smmu_domain->smmu, &cmds, &cmd);
++			arm_smmu_cmdq_batch_add(smmu, &cmds, &cmd);
+ 		}
+ 	}
+ 	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+ 
+-	return arm_smmu_cmdq_batch_submit(smmu_domain->smmu, &cmds);
++	ret = arm_smmu_cmdq_batch_submit(smmu, &cmds);
++	arm_smmu_preempt_enable(smmu);
++
++	return ret;
+ }
+ 
+ /* IO_PGTABLE API */
+@@ -1960,6 +1985,7 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
+ 
+ 	cmds.num = 0;
+ 
++	arm_smmu_preempt_disable(smmu);
+ 	while (iova < end) {
+ 		if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
+ 			/*
+@@ -1991,6 +2017,7 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
+ 		iova += inv_range;
+ 	}
+ 	arm_smmu_cmdq_batch_submit(smmu, &cmds);
++	arm_smmu_preempt_enable(smmu);
+ }
+ 
+ static void arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
+-- 
+2.34.1
 
-
-Patches currently in stable-queue which might be from stable-owner@vger.kernel.org are
-
-queue-5.15/arm64-errata-add-detection-for-trbe-overwrite-in-fill-mode.patch
-queue-5.15/ksmbd-validate-session-id-and-tree-id-in-the-compound-request.patch
-queue-5.15/ksmbd-fix-out-of-bound-read-in-smb2_write.patch
-queue-5.15/ksmbd-use-ksmbd_req_buf_next-in-ksmbd_smb2_check_message.patch
-queue-5.15/ksmbd-validate-command-payload-size.patch
