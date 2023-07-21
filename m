@@ -1,41 +1,98 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 252ED2102
-	for <iommu@lists.linux.dev>; Fri, 21 Jul 2023 07:42:12 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id B2F0F67373; Fri, 21 Jul 2023 09:42:09 +0200 (CEST)
-Date: Fri, 21 Jul 2023 09:42:09 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Christoph Hellwig <hch@lst.de>, Yajun Deng <yajun.deng@linux.dev>,
-	corbet@lwn.net, m.szyprowski@samsung.com, robin.murphy@arm.com,
-	paulmck@kernel.org, catalin.marinas@arm.com, rdunlap@infradead.org,
-	peterz@infradead.org, rostedt@goodmis.org, kim.phillips@amd.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-mm@kvack.org
-Subject: Re: [PATCH v3] dma-contiguous: support numa CMA for specified node
-Message-ID: <20230721074209.GA22859@lst.de>
-References: <20230720082517.GA7057@lst.de> <20230712074758.1133272-1-yajun.deng@linux.dev> <25942dafbc7f52488a30c807b6322109539442cf@linux.dev> <20230720115408.GA13114@lst.de> <20230720095941.76803bbda5ad0c5103713d0c@linux-foundation.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A987A14F9C
+	for <iommu@lists.linux.dev>; Fri, 21 Jul 2023 09:44:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75F9EC433C8;
+	Fri, 21 Jul 2023 09:44:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1689932646;
+	bh=vg1iS6TqPnxcsCXPtgC9VmWtpHR/B3JeLo+VLSKPK+M=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=k0RxbaTdEsTplNhbhV08j63QtGMQ47JHzKg1tDYO7xQFdL9/I05jKzr/G48yQduOS
+	 g29jvId3iFQfWQdtLonrRE72g+T5nIvjjGdmE+vef0412/x9oX2sru9Y2Uji7wfMDu
+	 Vo2jtdxlpgtLtgKU13Y5Gz5yqsX8rgttZQE7h95dZCa9OUERka8xZHwOmhrRi4+3iu
+	 PMO00nDPB7AKMXpzWi0uTNSRqIeeNOQssbHUfNLa7qp/kZ81NEY05GUh+lwBMuA0GH
+	 lfwqUGX7Q37BQg4cfu9DNEIegKM80Im0fjUQryr3MBYV1AcBvV8S+qqHnyKfvtJprI
+	 7GEXkiQHTkJrg==
+Date: Fri, 21 Jul 2023 10:44:01 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Tomasz Jeznach <tjeznach@rivosinc.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Anup Patel <apatel@ventanamicro.com>,
+	Albert Ou <aou@eecs.berkeley.edu>, linux@rivosinc.com,
+	linux-kernel@vger.kernel.org, Sebastien Boeuf <seb@rivosinc.com>,
+	iommu@lists.linux.dev, Palmer Dabbelt <palmer@dabbelt.com>,
+	Nick Kossifidis <mick@ics.forth.gr>,
+	linux-riscv@lists.infradead.org
+Subject: Re: [PATCH 01/11] RISC-V: drivers/iommu: Add RISC-V IOMMU - Ziommu
+ support.
+Message-ID: <20230721-obedience-prenatal-77f3c02632be@spud>
+References: <cover.1689792825.git.tjeznach@rivosinc.com>
+ <c33c24036c06c023947ecb47177da273569b3ac7.1689792825.git.tjeznach@rivosinc.com>
+ <20230719-confront-grass-6d0eb304b94f@spud>
+ <CAH2o1u5pZQ6iKThFLgnn+_BBZ=j8fu91URYYxwWbfVt3OyerAA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="Bb74xYmNkzitL0eS"
 Content-Disposition: inline
-In-Reply-To: <20230720095941.76803bbda5ad0c5103713d0c@linux-foundation.org>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <CAH2o1u5pZQ6iKThFLgnn+_BBZ=j8fu91URYYxwWbfVt3OyerAA@mail.gmail.com>
 
-On Thu, Jul 20, 2023 at 09:59:41AM -0700, Andrew Morton wrote:
-> > Where did this land?  dma patches really should be going through
-> > the DMA tree..
-> 
-> It's in mm-unstable with a note "hch" :)
-> 
-> I'll drop it.
 
-Ah.  And looking at the patch is isn't even pure dma but also has
-a significant mm side.  If you're fine with it I'll pick it up in
-the dma-mapping tree in addition to the follow up.
+--Bb74xYmNkzitL0eS
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, Jul 19, 2023 at 02:43:51PM -0700, Tomasz Jeznach wrote:
+> On Wed, Jul 19, 2023 at 1:50=E2=80=AFPM Conor Dooley <conor@kernel.org> w=
+rote:
+
+> > Also, since I am not going to reply to any of these iommu driver patches
+> > in a meaningful capacity, please run checkpatch.pl on your work. There
+> > are well over 100 style etc complaints that it has highlighted. Sparse
+> > has also gone a bit nuts, with many warnings along the lines of:
+> > drivers/iommu/riscv/iommu.c:1568:29: warning: incorrect type in assignm=
+ent (different base types)
+> > drivers/iommu/riscv/iommu.c:1568:29:    expected unsigned long long [us=
+ertype] iohgatp
+> > drivers/iommu/riscv/iommu.c:1568:29:    got restricted __le64 [usertype]
+> >
+> > I can provide you the full list when the patchwork automation has run
+> > through the series.
+> >
+>=20
+> Thank you, a list of used lint checkers definitely would help.
+
+checkpatch is mentioned in the patch submission documentation ;)
+
+Anyway, here's the series on patchwork:
+https://patchwork.kernel.org/project/linux-riscv/list/?series=3D767543
+You can see there's quite a few failure for each patch, so you'll need
+to resolve those.
+
+Also, I noticed the 32-bit build is broken in some patches, so please
+build this driver for 32-bit before sending a v2.
+
+Thanks,
+Conor.
+
+--Bb74xYmNkzitL0eS
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZLpTYQAKCRB4tDGHoIJi
+0gp3AP9Uu+N+UWJpTrOtyTMHJZALMqgzVXOLJnRbY6L5gf62VgEA/3W2q8TO3Y/X
+leRuhecE+t9nh2XAuTKFTKQn/I0vgwQ=
+=YnhF
+-----END PGP SIGNATURE-----
+
+--Bb74xYmNkzitL0eS--
