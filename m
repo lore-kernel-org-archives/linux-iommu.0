@@ -1,61 +1,59 @@
-Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3613C20F8E
-	for <iommu@lists.linux.dev>; Fri, 21 Jul 2023 19:31:08 +0000 (UTC)
-Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-1b8baa836a5so17070195ad.1
-        for <iommu@lists.linux.dev>; Fri, 21 Jul 2023 12:31:08 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A76B1EA8F
+	for <iommu@lists.linux.dev>; Fri, 21 Jul 2023 19:35:39 +0000 (UTC)
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-1b8b4749013so17045335ad.2
+        for <iommu@lists.linux.dev>; Fri, 21 Jul 2023 12:35:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1689967868; x=1690572668;
+        d=ziepe.ca; s=google; t=1689968139; x=1690572939;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=f3fNBXK6DdLEjSA1dgCCAp4qYAepk3u3d3m0rz5z1fE=;
-        b=kDmWxsg8ZqlraY3EitIJv4Evr2CcqLMRY3qJJ8AcjlKJ3bFOzgBkDnjKefyYbdeSfz
-         k86T0qkxGRO51XZTaYeEKipExFEf8j1Hv1UVrlMbeSWAAge69sWytNfaMcA7RqeT6zuL
-         3L23q9S/iI50qzztXd/HyH2HoeCpvu0Z2gNnWlaIpHe3ERs66DUZ8IU1MTauRcMdzksf
-         ILJCbJ6VdIAYJt/7FJu58WJgwsSS2VgS9zoptDQ2XjWHdUPjgabRgHusalzm4+RsCynb
-         dnms2eGvIrcLiBFxG5n4oVrQg7cm8ONAc3J+1xhZDfp15hiSb0l0fBegQfffD1CHZhNd
-         TBLA==
+        bh=zzRV4jT/UtNnsNIK2YvG3L4X5UH72+69TP4OaQhmPt4=;
+        b=JfMGnrE+g4/SdXqp/ILAdh8OXvsFjfzKETJHY+EhlewfKhrwUZ7RoTSzKYzg/yardc
+         q8Kxwh36Uh0alOQRzLpTJiv+muY/pM/0QMO13VqRNd6mSkBAuzE8Y6Vf1Vo8IF8VaYFm
+         ZM5I8a2BhNFvQNAEAJURcgSp2m2m3PC2Yx+Rwz8AdVzrHJ2A+N9Y24PPf8Vh2DLA9J7a
+         ys5PbTXsComhwHn7A1jDs56BwRrB4QZzXdF2e88pkpT0JViBziznq2TDlyxDGepnE2RY
+         LEfZFIh6ZBKtXl8gzi+XeNAIQCBJA3i3bAy6V+Bidl2HemJcbdaJ9FaBpp3xBvsdlW4l
+         zL3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689967868; x=1690572668;
+        d=1e100.net; s=20221208; t=1689968139; x=1690572939;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=f3fNBXK6DdLEjSA1dgCCAp4qYAepk3u3d3m0rz5z1fE=;
-        b=X2RviLlGqPXcWT2Ze1zbGR5zrNrGc174MTYcAOs2gaLaHFEBrp1NNiBk02tBOY1O8C
-         MCvql7uQTS4BQS+Wy2H6Fb8cyGCYGSctVS/PjaBUKD/m6/Uhvkz6iySBqUS1CEDlfc9o
-         r2kNI2AFgeX8mkUjhdnEWMc36ubQVI+FBH0Foe3/CYJtuIWKUH4616TC0Axzr/AtXDoJ
-         U5BoT9e979InoshCmqUIl9wRWZMGDOiROlb4jxhEOeHEjuyjrTx7JwIUhedsiswkock9
-         vhy6kboTs7gH5N/G0Cvr4Z5QWN+sKMpXgM84tfxi2VLchcI0g8P2kd6sjecs355em0tr
-         uHhQ==
-X-Gm-Message-State: ABy/qLZ6iP+wjDL1SuLwGcq3Q+LDmEB5jctdCjq7lmXGecghm4bA/uPP
-	IcLJhhRc7DbGiGZAqsIf9XjbVg==
-X-Google-Smtp-Source: APBJJlHihJyY9wXFkjydx/6tfCAtPCW82R9C1y8RYnU52rOS6+M8sM4/6qnSkSyFxd3dSuGWl4EDkw==
-X-Received: by 2002:a17:902:b418:b0:1b8:b2c6:7e8d with SMTP id x24-20020a170902b41800b001b8b2c67e8dmr2649069plr.66.1689967868340;
-        Fri, 21 Jul 2023 12:31:08 -0700 (PDT)
+        bh=zzRV4jT/UtNnsNIK2YvG3L4X5UH72+69TP4OaQhmPt4=;
+        b=FbdUabMeYs/Nzc/Bl6BkF6C8LgO4u/11ckZJV9hgutHe27N2mawhG9vL7ByAyjMWQ5
+         Y2pFZdEEGHXXaQK8147j4LyYluQShXiRx3+wtIxQUsPVLLVG5prd35FbTNY/8gdq/V8g
+         LYf3ih/Hj6OUibYFz4sWJMuFVModA9Ga5i6uI7UOVo45RZKiQHQ/TcWcVge5UGTUOMzr
+         iDIM5DK+Bv6Xdk2KovN3qgE5824oJC9pgoY2WLb8keyZ4AQMakfL39bS00p+yEZIbUKu
+         1zLwF9aaogPlXmb+d88mK6ApXfN8xq91x8g/L2wa75qjfOEJKDyFxVXW2305trtZVJGM
+         M+rw==
+X-Gm-Message-State: ABy/qLZ88lkvMLgsKySv1pUpIW7ItbiY9++Py8uDS3Cn8nv1evq/654L
+	WU7tx6v/Tko30aEy/5+Yf8WkmQ==
+X-Google-Smtp-Source: APBJJlErhC+VIXfffdNPDZMSDd2lEyokEWsGZ4siE0VrJXPYSeMfFCGzQlYHv6H7Qp1LgMkojZxgOQ==
+X-Received: by 2002:a17:903:120f:b0:1b8:4b87:20dc with SMTP id l15-20020a170903120f00b001b84b8720dcmr2955939plh.37.1689968139289;
+        Fri, 21 Jul 2023 12:35:39 -0700 (PDT)
 Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id r16-20020a170902be1000b001b8422f1000sm3860137pls.201.2023.07.21.12.31.07
+        by smtp.gmail.com with ESMTPSA id p15-20020a170902e74f00b0019ee045a2b3sm3836250plf.308.2023.07.21.12.35.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jul 2023 12:31:07 -0700 (PDT)
+        Fri, 21 Jul 2023 12:35:38 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qMvqE-003IGg-98;
-	Fri, 21 Jul 2023 16:31:06 -0300
-Date: Fri, 21 Jul 2023 16:31:06 -0300
+	id 1qMvub-003IJe-Bf;
+	Fri, 21 Jul 2023 16:35:37 -0300
+Date: Fri, 21 Jul 2023 16:35:37 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Alistair Popple <apopple@nvidia.com>
-Cc: akpm@linux-foundation.org, ajd@linux.ibm.com, catalin.marinas@arm.com,
-	fbarrat@linux.ibm.com, iommu@lists.linux.dev, jhubbard@nvidia.com,
-	kevin.tian@intel.com, kvm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org, linuxppc-dev@lists.ozlabs.org,
-	mpe@ellerman.id.au, nicolinc@nvidia.com, npiggin@gmail.com,
-	robin.murphy@arm.com, seanjc@google.com, will@kernel.org,
-	x86@kernel.org, zhi.wang.linux@gmail.com, sj@kernel.org
-Subject: Re: [PATCH v3 5/5] mmu_notifiers: Rename invalidate_range notifier
-Message-ID: <ZLrc+vEQcCEpI0wd@ziepe.ca>
-References: <cover.b24362332ec6099bc8db4e8e06a67545c653291d.1689842332.git-series.apopple@nvidia.com>
- <3cbd2a644d56d503b47cfc35868d547f924f880e.1689842332.git-series.apopple@nvidia.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
+	kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] iommu: Prevent RESV_DIRECT devices from blocking
+ domains
+Message-ID: <ZLreCUIJoo1TfmVz@ziepe.ca>
+References: <20230713043248.41315-1-baolu.lu@linux.intel.com>
+ <20230713043248.41315-2-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,40 +62,40 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3cbd2a644d56d503b47cfc35868d547f924f880e.1689842332.git-series.apopple@nvidia.com>
+In-Reply-To: <20230713043248.41315-2-baolu.lu@linux.intel.com>
 
-On Thu, Jul 20, 2023 at 06:39:27PM +1000, Alistair Popple wrote:
-> There are two main use cases for mmu notifiers. One is by KVM which
-> uses mmu_notifier_invalidate_range_start()/end() to manage a software
-> TLB.
+On Thu, Jul 13, 2023 at 12:32:47PM +0800, Lu Baolu wrote:
+> The IOMMU_RESV_DIRECT flag indicates that a memory region must be mapped
+> 1:1 at all times. This means that the region must always be accessible to
+> the device, even if the device is attached to a blocking domain. This is
+> equal to saying that IOMMU_RESV_DIRECT flag prevents devices from being
+> attached to blocking domains.
 > 
-> The other is to manage hardware TLBs which need to use the
-> invalidate_range() callback because HW can establish new TLB entries
-> at any time. Hence using start/end() can lead to memory corruption as
-> these callbacks happen too soon/late during page unmap.
+> This also implies that devices that implement RESV_DIRECT regions will be
+> prevented from being assigned to user space since taking the DMA ownership
+> immediately switches to a blocking domain.
 > 
-> mmu notifier users should therefore either use the start()/end()
-> callbacks or the invalidate_range() callbacks. To make this usage
-> clearer rename the invalidate_range() callback to
-> arch_invalidate_secondary_tlbs() and update documention.
+> The rule of preventing devices with the IOMMU_RESV_DIRECT regions from
+> being assigned to user space has existed in the Intel IOMMU driver for
+> a long time. Now, this rule is being lifted up to a general core rule,
+> as other architectures like AMD and ARM also have RMRR-like reserved
+> regions. This has been discussed in the community mailing list and refer
+> to below link for more details.
 > 
-> Signed-off-by: Alistair Popple <apopple@nvidia.com>
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Other places using unmanaged domains for kernel DMA must follow the
+> iommu_get_resv_regions() and setup IOMMU_RESV_DIRECT - we do not restrict
+> them in the core code.
+> 
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Alex Williamson <alex.williamson@redhat.com>
+> Cc: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Link: https://lore.kernel.org/linux-iommu/BN9PR11MB5276E84229B5BD952D78E9598C639@BN9PR11MB5276.namprd11.prod.outlook.com
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > ---
->  arch/arm64/include/asm/tlbflush.h               |  6 +-
->  arch/powerpc/mm/book3s64/radix_hugetlbpage.c    |  2 +-
->  arch/powerpc/mm/book3s64/radix_tlb.c            | 10 ++--
->  arch/x86/include/asm/tlbflush.h                 |  2 +-
->  arch/x86/mm/tlb.c                               |  2 +-
->  drivers/iommu/amd/iommu_v2.c                    | 10 ++--
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 13 ++---
->  drivers/iommu/intel/svm.c                       |  8 +--
->  drivers/misc/ocxl/link.c                        |  8 +--
->  include/linux/mmu_notifier.h                    | 48 +++++++++---------
->  mm/huge_memory.c                                |  4 +-
->  mm/hugetlb.c                                    |  7 +--
->  mm/mmu_notifier.c                               | 20 ++++++--
->  13 files changed, 76 insertions(+), 64 deletions(-)
+>  include/linux/iommu.h |  2 ++
+>  drivers/iommu/iommu.c | 37 +++++++++++++++++++++++++++----------
+>  2 files changed, 29 insertions(+), 10 deletions(-)
 
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
