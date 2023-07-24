@@ -1,14 +1,14 @@
-Received: from frasgout13.his.huawei.com (unknown [14.137.139.46])
+Received: from frasgout11.his.huawei.com (unknown [14.137.139.23])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1829D524
-	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 12:31:45 +0000 (UTC)
-Received: from mail02.huawei.com (unknown [172.18.147.228])
-	by frasgout13.his.huawei.com (SkyGuard) with ESMTP id 4R8f1570xJz9yXKF
-	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 20:02:33 +0800 (CST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA15253BA
+	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 12:33:38 +0000 (UTC)
+Received: from mail02.huawei.com (unknown [172.18.147.227])
+	by frasgout11.his.huawei.com (SkyGuard) with ESMTP id 4R8f1c6Gj9z9ynSf
+	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 20:03:00 +0800 (CST)
 Received: from A2101119013HW2.china.huawei.com (unknown [10.81.222.124])
-	by APP2 (Coremail) with SMTP id GxC2BwA3_lTGar5ky0byBA--.27936S3;
-	Mon, 24 Jul 2023 13:13:24 +0100 (CET)
+	by APP2 (Coremail) with SMTP id GxC2BwA3_lTGar5ky0byBA--.27936S5;
+	Mon, 24 Jul 2023 13:13:53 +0100 (CET)
 From: Petr Tesarik <petrtesarik@huaweicloud.com>
 To: Stefano Stabellini <sstabellini@kernel.org>,
 	Russell King <linux@armlinux.org.uk>,
@@ -40,9 +40,9 @@ To: Stefano Stabellini <sstabellini@kernel.org>,
 	iommu@lists.linux.dev (open list:XEN SWIOTLB SUBSYSTEM)
 Cc: Roberto Sassu <roberto.sassu@huaweicloud.com>,
 	petr@tesarici.cz
-Subject: [PATCH v5 1/9] swiotlb: bail out of swiotlb_init_late() if swiotlb is already allocated
-Date: Mon, 24 Jul 2023 14:12:37 +0200
-Message-Id: <437209bd783fa3febc3a207acb7799a0ff5cf1f3.1690200598.git.petr.tesarik.ext@huawei.com>
+Subject: [PATCH v5 3/9] swiotlb: add documentation and rename swiotlb_do_find_slots()
+Date: Mon, 24 Jul 2023 14:12:39 +0200
+Message-Id: <d6e3a7f1a99724bd925ca11e890a17f3272aa7b5.1690200598.git.petr.tesarik.ext@huawei.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1690200598.git.petr.tesarik.ext@huawei.com>
 References: <cover.1690200598.git.petr.tesarik.ext@huawei.com>
@@ -53,101 +53,183 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:GxC2BwA3_lTGar5ky0byBA--.27936S3
-X-Coremail-Antispam: 1UD129KBjvJXoW7WFWxCFyrZr4rWFyUXry5urg_yoW8uFykp3
-	43AFyvgF4jgas7ArW5C3WDZF1Yka1kK347urW5Wr13Jr15Jw45Kr1DKrWakrWrWFW8WF4S
-	yFy8ZF1Fv3W2qw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUma14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jr4l82xGYIkIc2
+X-CM-TRANSID:GxC2BwA3_lTGar5ky0byBA--.27936S5
+X-Coremail-Antispam: 1UD129KBjvJXoW3GrWfGF4UuFy8tF1xZF1kKrg_yoW7ur4rpF
+	4rtFn8tFs8Jr1xC39Fkw48uF1S9w4kK347uFWavryF9rnrJr9agFyktrWYqFWrXF4xCF4U
+	Ja4avr48Gr13Xr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUmq14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_JrWl82xGYIkIc2
 	x26xkF7I0E14v26ryj6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
-	Y4vE2Ix0cI8IcVAFwI0_JFI_Gr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_Gr1UM2
-	8EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r4UJVWxJr1l
-	e2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI
-	8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwAC
-	jcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2ka0x
-	kIwI1lc7CjxVAKzI0EY4vE52x082I5MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY
-	6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17
-	CEb7AF67AKxVWrXVW8Jr1lIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI
-	42IY6xIIjxv20xvEc7CjxVAFwI0_Cr0_Gr1UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCw
-	CI42IY6I8E87Iv67AKxVW8JVWxJwCI42IY6I8E87Iv6xkF7I0E14v26r4UJVWxJrUvcSsG
-	vfC2KfnxnUUI43ZEXa7VUjmZX5UUUUU==
+	Y4vE2Ix0cI8IcVAFwI0_JFI_Gr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j6F4UJw
+	A2z4x0Y4vEx4A2jsIE14v26r4j6F4UM28EF7xvwVC2z280aVCY1x0267AKxVW8Jr0_Cr1U
+	M2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjx
+	v20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1l
+	F7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2
+	IY04v7MxkF7I0Ew4C26cxK6c8Ij28IcwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkE
+	bVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67
+	AF67kF1VAFwI0_Wrv_Gr1UMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4l
+	IxAIcVC0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r
+	1xMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr1j6F4UJbIY
+	CTnIWIevJa73UjIFyTuYvjfUnPEfUUUUU
 X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
 X-CFilter-Loop: Reflected
 
 From: Petr Tesarik <petr.tesarik.ext@huawei.com>
 
-If swiotlb is allocated, immediately return 0, so callers do not have to
-check io_tlb_default_mem.nslabs explicitly.
+Add some kernel-doc comments and move the existing documentation of struct
+io_tlb_slot to its correct location. The latter was forgotten in commit
+942a8186eb445 ("swiotlb: move struct io_tlb_slot to swiotlb.c").
+
+Use the opportunity to give swiotlb_do_find_slots() a more descriptive name
+and make it clear how it differs from swiotlb_find_slots().
 
 Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
 ---
- arch/arm/xen/mm.c         | 10 ++++------
- arch/x86/kernel/pci-dma.c | 12 ++++++------
- kernel/dma/swiotlb.c      |  3 +++
- 3 files changed, 13 insertions(+), 12 deletions(-)
+ include/linux/swiotlb.h | 15 +++++++---
+ kernel/dma/swiotlb.c    | 61 +++++++++++++++++++++++++++++++++++++----
+ 2 files changed, 66 insertions(+), 10 deletions(-)
 
-diff --git a/arch/arm/xen/mm.c b/arch/arm/xen/mm.c
-index 3d826c0b5fee..882cd70c7a2f 100644
---- a/arch/arm/xen/mm.c
-+++ b/arch/arm/xen/mm.c
-@@ -125,12 +125,10 @@ static int __init xen_mm_init(void)
- 		return 0;
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index 3b372364a144..b122ad90660d 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -76,10 +76,6 @@ dma_addr_t swiotlb_map(struct device *dev, phys_addr_t phys,
+  * @nslabs:	The number of IO TLB blocks (in groups of 64) between @start and
+  *		@end. For default swiotlb, this is command line adjustable via
+  *		setup_io_tlb_npages.
+- * @list:	The free list describing the number of free entries available
+- *		from each index.
+- * @orig_addr:	The original address corresponding to a mapped entry.
+- * @alloc_size:	Size of the allocated buffer.
+  * @debugfs:	The dentry to debugfs.
+  * @late_alloc:	%true if allocated using the page allocator
+  * @force_bounce: %true if swiotlb bouncing is forced
+@@ -111,6 +107,17 @@ struct io_tlb_mem {
+ #endif
+ };
  
- 	/* we can work with the default swiotlb */
--	if (!io_tlb_default_mem.nslabs) {
--		rc = swiotlb_init_late(swiotlb_size_or_default(),
--				       xen_swiotlb_gfp(), NULL);
--		if (rc < 0)
--			return rc;
--	}
-+	rc = swiotlb_init_late(swiotlb_size_or_default(),
-+			       xen_swiotlb_gfp(), NULL);
-+	if (rc < 0)
-+		return rc;
- 
- 	cflush.op = 0;
- 	cflush.a.dev_bus_addr = 0;
-diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
-index de6be0a3965e..08988b0a1c91 100644
---- a/arch/x86/kernel/pci-dma.c
-+++ b/arch/x86/kernel/pci-dma.c
-@@ -86,16 +86,16 @@ static void __init pci_xen_swiotlb_init(void)
- 
- int pci_xen_swiotlb_init_late(void)
++/**
++ * is_swiotlb_buffer() - check if a physical address belongs to a swiotlb
++ * @dev:        Device which has mapped the buffer.
++ * @paddr:      Physical address within the DMA buffer.
++ *
++ * Check if @paddr points into a bounce buffer.
++ *
++ * Return:
++ * * %true if @paddr points into a bounce buffer
++ * * %false otherwise
++ */
+ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
  {
-+	int rc;
-+
- 	if (dma_ops == &xen_swiotlb_dma_ops)
- 		return 0;
- 
- 	/* we can work with the default swiotlb */
--	if (!io_tlb_default_mem.nslabs) {
--		int rc = swiotlb_init_late(swiotlb_size_or_default(),
--					   GFP_KERNEL, xen_swiotlb_fixup);
--		if (rc < 0)
--			return rc;
--	}
-+	rc = swiotlb_init_late(swiotlb_size_or_default(),
-+			       GFP_KERNEL, xen_swiotlb_fixup);
-+	if (rc < 0)
-+		return rc;
- 
- 	/* XXX: this switches the dma ops under live devices! */
- 	dma_ops = &xen_swiotlb_dma_ops;
+ 	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
 diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 2b83e3ad9dca..66fc8ec9ae45 100644
+index 6734ef7b9d8d..7eafb8ceb577 100644
 --- a/kernel/dma/swiotlb.c
 +++ b/kernel/dma/swiotlb.c
-@@ -384,6 +384,9 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
- 	bool retried = false;
- 	int rc = 0;
+@@ -62,6 +62,13 @@
  
-+	if (io_tlb_default_mem.nslabs)
-+		return 0;
-+
- 	if (swiotlb_force_disable)
- 		return 0;
+ #define INVALID_PHYS_ADDR (~(phys_addr_t)0)
  
++/**
++ * struct io_tlb_slot - IO TLB slot descriptor
++ * @orig_addr:	The original address corresponding to a mapped entry.
++ * @alloc_size:	Size of the allocated buffer.
++ * @list:	The free list describing the number of free entries available
++ *		from each index.
++ */
+ struct io_tlb_slot {
+ 	phys_addr_t orig_addr;
+ 	size_t alloc_size;
+@@ -635,11 +642,22 @@ static void dec_used(struct io_tlb_mem *mem, unsigned int nslots)
+ }
+ #endif /* CONFIG_DEBUG_FS */
+ 
+-/*
+- * Find a suitable number of IO TLB entries size that will fit this request and
+- * allocate a buffer from that IO TLB pool.
++/**
++ * swiotlb_area_find_slots() - search for slots in one IO TLB memory area
++ * @dev:	Device which maps the buffer.
++ * @area_index:	Index of the IO TLB memory area to be searched.
++ * @orig_addr:	Original (non-bounced) IO buffer address.
++ * @alloc_size: Total requested size of the bounce buffer,
++ *		including initial alignment padding.
++ * @alloc_align_mask:	Required alignment of the allocated buffer.
++ *
++ * Find a suitable sequence of IO TLB entries for the request and allocate
++ * a buffer from the given IO TLB memory area.
++ * This function takes care of locking.
++ *
++ * Return: Index of the first allocated slot, or -1 on error.
+  */
+-static int swiotlb_do_find_slots(struct device *dev, int area_index,
++static int swiotlb_area_find_slots(struct device *dev, int area_index,
+ 		phys_addr_t orig_addr, size_t alloc_size,
+ 		unsigned int alloc_align_mask)
+ {
+@@ -734,6 +752,19 @@ static int swiotlb_do_find_slots(struct device *dev, int area_index,
+ 	return slot_index;
+ }
+ 
++/**
++ * swiotlb_find_slots() - search for slots in the whole swiotlb
++ * @dev:	Device which maps the buffer.
++ * @orig_addr:	Original (non-bounced) IO buffer address.
++ * @alloc_size: Total requested size of the bounce buffer,
++ *		including initial alignment padding.
++ * @alloc_align_mask:	Required alignment of the allocated buffer.
++ *
++ * Search through the whole software IO TLB to find a sequence of slots that
++ * match the allocation constraints.
++ *
++ * Return: Index of the first allocated slot, or -1 on error.
++ */
+ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+ 		size_t alloc_size, unsigned int alloc_align_mask)
+ {
+@@ -742,8 +773,8 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+ 	int i = start, index;
+ 
+ 	do {
+-		index = swiotlb_do_find_slots(dev, i, orig_addr, alloc_size,
+-					      alloc_align_mask);
++		index = swiotlb_area_find_slots(dev, i, orig_addr, alloc_size,
++						alloc_align_mask);
+ 		if (index >= 0)
+ 			return index;
+ 		if (++i >= mem->nareas)
+@@ -755,6 +786,15 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+ 
+ #ifdef CONFIG_DEBUG_FS
+ 
++/**
++ * mem_used() - get number of used slots in an allocator
++ * @mem:	Software IO TLB allocator.
++ *
++ * The result is accurate in this version of the function, because an atomic
++ * counter is available if CONFIG_DEBUG_FS is set.
++ *
++ * Return: Number of used slots.
++ */
+ static unsigned long mem_used(struct io_tlb_mem *mem)
+ {
+ 	return atomic_long_read(&mem->total_used);
+@@ -762,6 +802,15 @@ static unsigned long mem_used(struct io_tlb_mem *mem)
+ 
+ #else /* !CONFIG_DEBUG_FS */
+ 
++/**
++ * mem_used() - get number of used slots in an allocator
++ * @mem:	Software IO TLB allocator.
++ *
++ * The result is not accurate, because there is no locking of individual
++ * areas.
++ *
++ * Return: Approximate number of used slots.
++ */
+ static unsigned long mem_used(struct io_tlb_mem *mem)
+ {
+ 	int i;
 -- 
 2.25.1
 
