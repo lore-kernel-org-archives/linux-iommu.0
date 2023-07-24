@@ -1,235 +1,181 @@
-Received: from frasgout11.his.huawei.com (unknown [14.137.139.23])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2054.outbound.protection.outlook.com [40.107.92.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA15253BA
-	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 12:33:38 +0000 (UTC)
-Received: from mail02.huawei.com (unknown [172.18.147.227])
-	by frasgout11.his.huawei.com (SkyGuard) with ESMTP id 4R8f1c6Gj9z9ynSf
-	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 20:03:00 +0800 (CST)
-Received: from A2101119013HW2.china.huawei.com (unknown [10.81.222.124])
-	by APP2 (Coremail) with SMTP id GxC2BwA3_lTGar5ky0byBA--.27936S5;
-	Mon, 24 Jul 2023 13:13:53 +0100 (CET)
-From: Petr Tesarik <petrtesarik@huaweicloud.com>
-To: Stefano Stabellini <sstabellini@kernel.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)),
-	"H. Peter Anvin" <hpa@zytor.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Juergen Gross <jgross@suse.com>,
-	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5783D6D38;
+	Mon, 24 Jul 2023 13:15:31 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YoUs+o6clIKH8/nrLJyQrugIZbbvBu+FR6EB9xkTGN3Vh/QNbzvA0QkjUpz2MVymBqECbogz9qN8avVrSoXWEmfpLyfsA46PJ5wSeBKdz42C/AV2r6hUXjDW2h2ml240V+axV2vrNepGE+aIItTyG8eu+kyZPu01zhQH2T8xHMnv9PI/FvWVAzL5xkioXxa4qpfSR7/VuLV3gpjT5EM6eM2eHFRIE2wobijhxZXz0PfzRxjnWsxevnWtmnFewI23rVRcu06bzpXwWD/9/kjpOq/q+4PG9QYW1ygsuUvB0A+6eHnE9PqCUQDxoJUyvwJjGctm16bMJMCVv46Ojd4J8w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7C7D/ccKIBmksIGtzI3fvBIjQVktSNwzEBWgoEwrMYM=;
+ b=R07zNzmfq6OFMRC3u16mCxso8MxvTelJTuJLaAUIThtuf8kmWF7hMIqh3kxemEdFDpWjhxAWINQeUqDYvtMbN+FUzljKUFi1Mqe4i0ip63bYmAeGhGkBB0whZnu0igiju4EwbWmxGrOnTLdaqZIew+VnVC0+40opI+CsKbIfbvXFwDKVbKiGKhyCY9e43l/6lD5a8xHG4f4r/GenSo3Skc2sRfaUKTIlkl8swPn/Gskczuximl2tkjcdQd0NwiYTW5sJNzHAfhea7YrkgpvLm8rZOL6V/seBa0IVLxGIVtrJomXbTk+/eSOeMFpFg3AaTvxjWfULPkn8onKcJ+QH2g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7C7D/ccKIBmksIGtzI3fvBIjQVktSNwzEBWgoEwrMYM=;
+ b=lNvolwMJgKB0ZbufWgssZ4/XGVTR7sdL+7QRcXuct+RqX2dQ6OcUWcYbN/VVG0DUd9VsesdvfH+jJt/rlyDB9R8naFcHtR544SrDa2js0pa+txUXl8W8xuUzGnGMVDfI+6GWJRRtkVZd5YSJHg0WTCtCMX1q6ANnV4B1P20O37wyWLQch1J9ObkNJScCvJv/kizhIbU74ZYlYB2YB+KzNrBT7eiZVswYrgl9Tsp/xF/W39ZY5hfIuGdtwJsQUx1fQnyz0Dsy1OJYA1PBY1RV6o/EEqHtpKkf2RUalkYqBtZG4u20EULmzAafZ2GWdGOIWiTDvgNpcJySTeXIFGF3Pg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by CY8PR12MB7681.namprd12.prod.outlook.com (2603:10b6:930:84::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6609.32; Mon, 24 Jul
+ 2023 13:15:27 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6609.032; Mon, 24 Jul 2023
+ 13:15:27 +0000
+Date: Mon, 24 Jul 2023 10:15:26 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Heiko Stuebner <heiko@sntech.de>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"linux-rockchip@lists.infradead.org" <linux-rockchip@lists.infradead.org>,
+	"linux-sunxi@lists.linux.dev" <linux-sunxi@lists.linux.dev>,
+	Orson Zhai <orsonzhai@gmail.com>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Hans de Goede <hdegoede@redhat.com>,
-	Sakari Ailus <sakari.ailus@linux.intel.com>,
-	James Seo <james@equiv.tech>,
-	James Clark <james.clark@arm.com>,
-	Kees Cook <keescook@chromium.org>,
-	xen-devel@lists.xenproject.org (moderated list:XEN HYPERVISOR ARM),
-	linux-arm-kernel@lists.infradead.org (moderated list:ARM PORT),
-	linux-kernel@vger.kernel.org (open list),
-	linux-mips@vger.kernel.org (open list:MIPS),
-	iommu@lists.linux.dev (open list:XEN SWIOTLB SUBSYSTEM)
-Cc: Roberto Sassu <roberto.sassu@huaweicloud.com>,
-	petr@tesarici.cz
-Subject: [PATCH v5 3/9] swiotlb: add documentation and rename swiotlb_do_find_slots()
-Date: Mon, 24 Jul 2023 14:12:39 +0200
-Message-Id: <d6e3a7f1a99724bd925ca11e890a17f3272aa7b5.1690200598.git.petr.tesarik.ext@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1690200598.git.petr.tesarik.ext@huawei.com>
-References: <cover.1690200598.git.petr.tesarik.ext@huawei.com>
+	Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
+	Will Deacon <will@kernel.org>, Chunyan Zhang <zhang.lyra@gmail.com>,
+	Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH 03/10] iommu: Add generic_single_device_group()
+Message-ID: <ZL55bnAgCpgM1plx@nvidia.com>
+References: <0-v1-3c8177327a47+256-iommu_group_locking_jgg@nvidia.com>
+ <3-v1-3c8177327a47+256-iommu_group_locking_jgg@nvidia.com>
+ <BN9PR11MB527636B9607D852373836ED68C3FA@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <BN9PR11MB527636B9607D852373836ED68C3FA@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-ClientProxiedBy: BL1PR13CA0021.namprd13.prod.outlook.com
+ (2603:10b6:208:256::26) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:GxC2BwA3_lTGar5ky0byBA--.27936S5
-X-Coremail-Antispam: 1UD129KBjvJXoW3GrWfGF4UuFy8tF1xZF1kKrg_yoW7ur4rpF
-	4rtFn8tFs8Jr1xC39Fkw48uF1S9w4kK347uFWavryF9rnrJr9agFyktrWYqFWrXF4xCF4U
-	Ja4avr48Gr13Xr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUmq14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_JrWl82xGYIkIc2
-	x26xkF7I0E14v26ryj6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
-	Y4vE2Ix0cI8IcVAFwI0_JFI_Gr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j6F4UJw
-	A2z4x0Y4vEx4A2jsIE14v26r4j6F4UM28EF7xvwVC2z280aVCY1x0267AKxVW8Jr0_Cr1U
-	M2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjx
-	v20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1l
-	F7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2
-	IY04v7MxkF7I0Ew4C26cxK6c8Ij28IcwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkE
-	bVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67
-	AF67kF1VAFwI0_Wrv_Gr1UMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4l
-	IxAIcVC0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r
-	1xMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr1j6F4UJbIY
-	CTnIWIevJa73UjIFyTuYvjfUnPEfUUUUU
-X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
-X-CFilter-Loop: Reflected
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CY8PR12MB7681:EE_
+X-MS-Office365-Filtering-Correlation-Id: 521f57f7-8b73-4650-c47d-08db8c480c3c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	c3fXOgZJuHax0pG5KCg9UVSfnXybTKRcQ3z17PRck2Vo3AFrSkYR8Pp6FBn06iAbLVS2ZHSN0sHxYpTYkmQ0owioSCOcO+vmceOfmgf+4mwIKyfLvasN1yoaLvkf3mf06XO3UgyH5pBwPCc7PYMTSjb5BoN8+KcLcYbfKd0V9fZVg3IGm1cIRBRFAhfG2V3hiFTvseT7LrssYhh6TfOsjCQzprd3jxY2RbGaxkcwXqLcMrxcgsFkTkXv4BFiWDLZGoWOeTOFatbXaztGrtu5FqZRffnB3vgRK22W9EXJBrQchDte1g6iQPuyHLGSN8Xub/+EMdKfgT27SeJBjebyyhxSVGHK8xEd6qKPsuOgGsfB30v4I/EevaJ7FhfM4WGVDkUIj83rxcg5ssog26AQtRAgxRf/ZIo35jKKdOBv4/lGc5hnXHz60DavZgyPCIYAjhbmRVEa/ppsF5yivJDq7jhN8xXTwy20c3Mz37OWpEqztWc7GIsjEX6lYNL+NWiYjARFqBAbNKO69uuNMXk5nr9WUhbk4IbD5NkMV1C9YxEvTRrJmwjtYYleL49S39YdOmfFgAjRCxwTvVr3+if/MKiLwik2Czs59eXNSxxBJLE=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(366004)(396003)(136003)(39860400002)(451199021)(2906002)(2616005)(83380400001)(6916009)(4326008)(316002)(6512007)(6486002)(66476007)(66946007)(66556008)(41300700001)(36756003)(478600001)(86362001)(54906003)(38100700002)(186003)(7416002)(8676002)(8936002)(6506007)(5660300002)(26005)(41533002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?THNsSXV1dEFKejg1SUttK01uUy9BclJwZ1BZTDAwL21QUzMxaU1mT1M1ODVH?=
+ =?utf-8?B?eGYrZ0k3Q1hiZ3BDdDduL3NuSnVqV0kyQXJkc1FvZUk5elZuQnkzRWJXSEJO?=
+ =?utf-8?B?YTBnRy8vcnJhMGEzcjdxYk5jVUVZYkFkN3ovZy9XaHZFRE1kbUpNTnh4Zmk0?=
+ =?utf-8?B?YVNwVzRncU8raHQzT0NBNXB6S2ZyMGppS2NJR1J3R1ZNcTR5aFVncFFBS0JW?=
+ =?utf-8?B?OVRRQjNRQ25FWWtTbjd4M1NnTGNsLzI3N3YrYyszVVBrT0FBcFBCbndTeG9h?=
+ =?utf-8?B?UktiRFdWRDhyS0Vqa3EzOHVMZkhxM0hhdW9wR2d1Vm9jQWdKS2JYd0xhWFY5?=
+ =?utf-8?B?WEpwdVZidzVCcVRIZTNLNEpJTEIrU0Q5NmhBU0pDdnRqa1l2cGcwQUFVakt5?=
+ =?utf-8?B?bCtNdmFtTHlJYW9pSVI4VHg1Rnp1clJQbFVsemh6ZVZ1SFA5OVFzS2ExVlAv?=
+ =?utf-8?B?cTkzWGFBZ3Z3STBIVDBrVTNwMVFxaXY2MVFkS1dyTnlZTFpLL1pYeGxreFZB?=
+ =?utf-8?B?STk3Vi9lTU8zZmxBSE9FVG50anZnTjN2MGRJNnRnSUFPd0duRFFCUmUzQzdO?=
+ =?utf-8?B?di9yYjlzZlVtenJQNEdwN1pONEdLck5sUE5DaE8rakMxenM0UUhhMElDZ2Z6?=
+ =?utf-8?B?ZzlDUnUwclZBVXVpTklGQ0ZPRkt3OG1TZzFLdndydkV6a2lNUXZQYWcyU0RE?=
+ =?utf-8?B?cC8reXYvYTBoSGJUUzF0RGtTRW5WQkFTZFNlSjdCS0lXamdXbDNyQmRURkFM?=
+ =?utf-8?B?RnhZM3lXUU9sb1pCcFk1eTJ5TG9zNVhSR01HaGh4dExYYmxtU0tmd1VuZ0JJ?=
+ =?utf-8?B?bFE2RGFaT0JOellmZ1RnMnd1azlMZEVzY1NpWTVBSTR1T1lxVS9FcHM0aWVR?=
+ =?utf-8?B?aUtBaXE5TGZIR25aOFFIbEtrZTBTL2FIQ0VNSE9USmpyN0dvWEsxZXBnN1Fl?=
+ =?utf-8?B?SytSNHRxYk5mdWFxUlczeVE3WDZWQW5vM3ZFMDN0NHMvMnhDOGlaRTl0Zmkx?=
+ =?utf-8?B?ZzhqK1dPY2N4dDR2dGI0aGRFWFVTZVdKMW1VUVpKSHRocTBNU2E2dy9MdWww?=
+ =?utf-8?B?cGw2TS9jOXFHNFh3SEN6QkRVWXBzdGI0Q3c1Y3NjbzRjaHE3VTd6eFErdnF2?=
+ =?utf-8?B?RExqR09aM1JWdFpWYVZCeFp1dk40blBjUVBQL0E4MWNSUEhKVlNBTW9zSUVt?=
+ =?utf-8?B?WEpxMzc2ZmwxbHRCYlFhSlhja0lIT2dMT2IwTWhjQkhiaW4rd0YyUC9YdU9T?=
+ =?utf-8?B?bWhDS204WklSajV0eXIyRFpTNU9EZ3BEdUh0Y2lFN2RYbXFXd04rSlZ4SDkw?=
+ =?utf-8?B?Y2ZSYXFFMGFacS8xQXRVU1NaV0IwVVl2SU1TTVlITUZlZFU3VXozR25JZDBq?=
+ =?utf-8?B?ZGplT0tNbkc4VFVJZDJrclFGbXJja25xRDZDZVA1NUF0bjROZDlKdGhqbHdq?=
+ =?utf-8?B?ckh5bEtZMkNmdDltYUp2cUNGMlNRWlp5SE1SWGZvWjhJN205UStndWk2L09u?=
+ =?utf-8?B?bkFmQVk0SHNBWjIwemEwY0hHTUlIc1d0SENjYmlWUlQvcmNKS1o5a1F1QXlU?=
+ =?utf-8?B?K0FoWTQxYzdoNVZOMEduNHF4a0dtTkZZUHU5OG1laFFGQVlXcFlwN0FhZkJH?=
+ =?utf-8?B?a0Jnd25iWVoxQkJycGp6NE9wd3hJc0MwblhDMWRva2pjNWhuM2xSdG5MKzM4?=
+ =?utf-8?B?UGpQTndJR2ZFT09LbVc3cXNtQTVrSnZsOHJmVWRqdERtbzVSVytZVUZSbDBm?=
+ =?utf-8?B?b2w5OXhNa2NnWU9xVlRscTFCeTlrVWZpTEhENmMwR09ISU9VRSsxdThXTG94?=
+ =?utf-8?B?bm9yMlczTVFDTklZTUZJVzV2ZFNCUUQxNEZFMjRSNThlNm1udEd6YSt5S2lU?=
+ =?utf-8?B?VFc0YUJIY0NrVDlJYUVRVDdBVURaY2xyVnZmbEowU29aY3ZvdVJPUnZxeTFB?=
+ =?utf-8?B?OVJOWnB0U0RQYXlpNUo1aU5sYnJ4L2tvN2tmLzlXTlUyL0liZ1hGTUEwOVdR?=
+ =?utf-8?B?N0I2dDhKcm12NCtnY0xJMG14akxuOGoxUU9TV1JlZlptaHZkd3VoSFFNVXNI?=
+ =?utf-8?B?R0dCWEFFMXdURFEwbldsME1UNFpMRWVrWVhUSUhjaVJKa1haa1pLN3Y1VG56?=
+ =?utf-8?Q?Fs7w=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 521f57f7-8b73-4650-c47d-08db8c480c3c
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jul 2023 13:15:27.5258
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Sapdbpn/aXQusxbJ+Y52rdRrkBgXxmuR3vHn6Ct8JoI07Om3zCa1zkbFi2i3qXtJ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7681
 
-From: Petr Tesarik <petr.tesarik.ext@huawei.com>
+On Fri, Jul 21, 2023 at 07:17:39AM +0000, Tian, Kevin wrote:
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > Sent: Wednesday, July 19, 2023 3:06 AM
+> > 
+> > This implements the common pattern seen in drivers of a single
+> > iommu_group for the entire iommu driver. Implement this in core code
+> > so the drivers that want this can select it from their ops.
+> 
+> strictly speaking it's per-iommu-instance group. 😊
 
-Add some kernel-doc comments and move the existing documentation of struct
-io_tlb_slot to its correct location. The latter was forgotten in commit
-942a8186eb445 ("swiotlb: move struct io_tlb_slot to swiotlb.c").
+Sure
 
-Use the opportunity to give swiotlb_do_find_slots() a more descriptive name
-and make it clear how it differs from swiotlb_find_slots().
+This implements the common pattern seen in drivers of a single iommu_group
+for the entire iommu driver instance. Implement this in core code so the
+drivers that want this can select it from their ops.
 
-Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
----
- include/linux/swiotlb.h | 15 +++++++---
- kernel/dma/swiotlb.c    | 61 +++++++++++++++++++++++++++++++++++++----
- 2 files changed, 66 insertions(+), 10 deletions(-)
 
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 3b372364a144..b122ad90660d 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -76,10 +76,6 @@ dma_addr_t swiotlb_map(struct device *dev, phys_addr_t phys,
-  * @nslabs:	The number of IO TLB blocks (in groups of 64) between @start and
-  *		@end. For default swiotlb, this is command line adjustable via
-  *		setup_io_tlb_npages.
-- * @list:	The free list describing the number of free entries available
-- *		from each index.
-- * @orig_addr:	The original address corresponding to a mapped entry.
-- * @alloc_size:	Size of the allocated buffer.
-  * @debugfs:	The dentry to debugfs.
-  * @late_alloc:	%true if allocated using the page allocator
-  * @force_bounce: %true if swiotlb bouncing is forced
-@@ -111,6 +107,17 @@ struct io_tlb_mem {
- #endif
- };
- 
-+/**
-+ * is_swiotlb_buffer() - check if a physical address belongs to a swiotlb
-+ * @dev:        Device which has mapped the buffer.
-+ * @paddr:      Physical address within the DMA buffer.
-+ *
-+ * Check if @paddr points into a bounce buffer.
-+ *
-+ * Return:
-+ * * %true if @paddr points into a bounce buffer
-+ * * %false otherwise
-+ */
- static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
- {
- 	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 6734ef7b9d8d..7eafb8ceb577 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -62,6 +62,13 @@
- 
- #define INVALID_PHYS_ADDR (~(phys_addr_t)0)
- 
-+/**
-+ * struct io_tlb_slot - IO TLB slot descriptor
-+ * @orig_addr:	The original address corresponding to a mapped entry.
-+ * @alloc_size:	Size of the allocated buffer.
-+ * @list:	The free list describing the number of free entries available
-+ *		from each index.
-+ */
- struct io_tlb_slot {
- 	phys_addr_t orig_addr;
- 	size_t alloc_size;
-@@ -635,11 +642,22 @@ static void dec_used(struct io_tlb_mem *mem, unsigned int nslots)
- }
- #endif /* CONFIG_DEBUG_FS */
- 
--/*
-- * Find a suitable number of IO TLB entries size that will fit this request and
-- * allocate a buffer from that IO TLB pool.
-+/**
-+ * swiotlb_area_find_slots() - search for slots in one IO TLB memory area
-+ * @dev:	Device which maps the buffer.
-+ * @area_index:	Index of the IO TLB memory area to be searched.
-+ * @orig_addr:	Original (non-bounced) IO buffer address.
-+ * @alloc_size: Total requested size of the bounce buffer,
-+ *		including initial alignment padding.
-+ * @alloc_align_mask:	Required alignment of the allocated buffer.
-+ *
-+ * Find a suitable sequence of IO TLB entries for the request and allocate
-+ * a buffer from the given IO TLB memory area.
-+ * This function takes care of locking.
-+ *
-+ * Return: Index of the first allocated slot, or -1 on error.
-  */
--static int swiotlb_do_find_slots(struct device *dev, int area_index,
-+static int swiotlb_area_find_slots(struct device *dev, int area_index,
- 		phys_addr_t orig_addr, size_t alloc_size,
- 		unsigned int alloc_align_mask)
- {
-@@ -734,6 +752,19 @@ static int swiotlb_do_find_slots(struct device *dev, int area_index,
- 	return slot_index;
- }
- 
-+/**
-+ * swiotlb_find_slots() - search for slots in the whole swiotlb
-+ * @dev:	Device which maps the buffer.
-+ * @orig_addr:	Original (non-bounced) IO buffer address.
-+ * @alloc_size: Total requested size of the bounce buffer,
-+ *		including initial alignment padding.
-+ * @alloc_align_mask:	Required alignment of the allocated buffer.
-+ *
-+ * Search through the whole software IO TLB to find a sequence of slots that
-+ * match the allocation constraints.
-+ *
-+ * Return: Index of the first allocated slot, or -1 on error.
-+ */
- static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
- 		size_t alloc_size, unsigned int alloc_align_mask)
- {
-@@ -742,8 +773,8 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
- 	int i = start, index;
- 
- 	do {
--		index = swiotlb_do_find_slots(dev, i, orig_addr, alloc_size,
--					      alloc_align_mask);
-+		index = swiotlb_area_find_slots(dev, i, orig_addr, alloc_size,
-+						alloc_align_mask);
- 		if (index >= 0)
- 			return index;
- 		if (++i >= mem->nareas)
-@@ -755,6 +786,15 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
- 
- #ifdef CONFIG_DEBUG_FS
- 
-+/**
-+ * mem_used() - get number of used slots in an allocator
-+ * @mem:	Software IO TLB allocator.
-+ *
-+ * The result is accurate in this version of the function, because an atomic
-+ * counter is available if CONFIG_DEBUG_FS is set.
-+ *
-+ * Return: Number of used slots.
-+ */
- static unsigned long mem_used(struct io_tlb_mem *mem)
- {
- 	return atomic_long_read(&mem->total_used);
-@@ -762,6 +802,15 @@ static unsigned long mem_used(struct io_tlb_mem *mem)
- 
- #else /* !CONFIG_DEBUG_FS */
- 
-+/**
-+ * mem_used() - get number of used slots in an allocator
-+ * @mem:	Software IO TLB allocator.
-+ *
-+ * The result is not accurate, because there is no locking of individual
-+ * areas.
-+ *
-+ * Return: Approximate number of used slots.
-+ */
- static unsigned long mem_used(struct io_tlb_mem *mem)
- {
- 	int i;
--- 
-2.25.1
+> > +struct iommu_group *generic_single_device_group(struct device *dev)
+> > +{
+> > +	struct iommu_device *iommu = dev->iommu->iommu_dev;
+> > +
+> > +	lockdep_assert_held(&dev_iommu_group_lock);
+> > +
+> > +	if (!iommu->singleton_group) {
+> > +		struct iommu_group *group;
+> > +
+> > +		group = iommu_group_alloc();
+> > +		if (IS_ERR(group))
+> > +			return group;
+> > +		iommu->singleton_group = group;
+> > +	}
+> > +	return iommu_group_ref_get(iommu->singleton_group);
+> 
+> 'singleton' is a bit confusing whether it means a single
+> group per instance or a group having only a single device.
+> 
+> I don't know a better name, but probably just using
+> iommu->group is not worse than the 'singleton_' prefix...
 
+I definately want it to have a special name otherwise it can be pretty
+confusing.
+
+The fact it is in a function called "single device group" seems clear
+enough
+
+I revised the comment like this:
+
+/*
+ * Generic device_group call-back function. It just allocates one
+ * iommu-group per iommu driver instance shared by every device
+ * probed by that iommu driver.
+ */
+
+Jason
