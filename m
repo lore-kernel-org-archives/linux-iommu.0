@@ -1,45 +1,45 @@
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7B2220FB
-	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 09:05:50 +0000 (UTC)
-Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-992ca792065so705072566b.2
-        for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 02:05:50 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C98446BD
+	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 09:12:36 +0000 (UTC)
+Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-9926623e367so731933566b.0
+        for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 02:12:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1690189549; x=1690794349;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=0qBTrjnoLMPhI5YTQA6DVRtgSqXnXbNpJNoKVH85RHE=;
-        b=UfKiaBvDzfuRZfFZTzzjwQ3j8D4qXCeEqovTw+BFdwYYQsQ/bSd8SpMCg5KI3NtoHS
-         no3tx7bqUwjQ+k4qHHUw/417iFuUB/B+xWSWNVjmbSf86DtlLGazVtPiJMawJFgcp5jV
-         +C57nto4QTHFYrfpsHWa3EU5oM9qVMJEl887lRC9fHKW810esRi8c2Yq3CLHVR2Qxd+f
-         gScmx6pcJgmHIUw36TFMu3kBRfJ6y6vACqhqeBTi/EHVKce25sACNqBTr7ZEOp/EYn4d
-         Ou1Hh2LAzkpZw/Q3pY//h0NzynXaX6ni7zSeX76J7XlRi/r3aIqucul4f4Wufhp9P01N
-         obwA==
+        d=linaro.org; s=google; t=1690189954; x=1690794754;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=Fh4EDpkUKXX0i2jSGB1PBtJy0KS6P9QG8sx5m74zofM=;
+        b=k7sd9ry9f7KEkVokM1xv+AAbCPIUgxP9XVqzO2oMvoiFvG/KjABl32DheQa3U+CUC4
+         FiNKfOU4mjEp9GJcI0Im9xwYFtPAIZbXJzoxBZ/rr6RF5MlQJ0kJAVrUTUTeDxI9XkQy
+         qWGaACOxgXzHWqRKbhJnXkE+kOdZMIe41i0vCaZUNjm760cbJH+6w5Ty3z/OHyDLnvEN
+         0EPDsV6gNixv/DBpu2SVDzffU4PrMSt6DhSna0c1zR0eAOASjDQZI/BWq7g2AcuTy7jr
+         2bgX4+HoikeVPH6/aaWveSXFCU0WTMON9pJ61shYVBFC1X5Oxw9lu+khduMMptAw9RbC
+         lGkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690189549; x=1690794349;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20221208; t=1690189954; x=1690794754;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0qBTrjnoLMPhI5YTQA6DVRtgSqXnXbNpJNoKVH85RHE=;
-        b=BhhtgR8LaktQnhYdbVhDyXTLOMh3yieOkbwTRGgtN1gkykKZCb6iMlVBIO5+dvpd55
-         17H/OQiAHv7DfLINK0oaxR1ieY5JZaoos38fqVaTfHeUqpePMUbv84E+xcXFCjz9TW+/
-         9rW8UlHpiB1yQiUlvl7Ls+DgnXtz5yMRCeIt/5MGXcB98do8rODokwgqB1z8bF93EeRa
-         L0XCz2Y0DLaQPYfkctB8jEEnwm/vobSqVyzH/l4EEI0XwmpInlpFA3UJnOH6+E2M0x7C
-         uG2SJBuQ1SGyRRqvLy01ro+iEKMyQwSRvE9m00kHiSUA+JwZD8DzdWiAkW83fTeAjuDl
-         S5+w==
-X-Gm-Message-State: ABy/qLZ84Gp6jILqcvRtsbAGp93kLlbkM+qi58KhMLrVEDdrr9xDDynS
-	OkPBQS7aPLYDzFMe+TaJWI5QIg==
-X-Google-Smtp-Source: APBJJlGEaeQNWfy5PFWso8e07aTFyy4J/IEQjoHP1CCmOgc32EJRFyrwx6VuXaTiMbcq/GqEflFuPQ==
-X-Received: by 2002:a17:906:5a4e:b0:99b:4f06:492e with SMTP id my14-20020a1709065a4e00b0099b4f06492emr10205331ejc.64.1690189548870;
-        Mon, 24 Jul 2023 02:05:48 -0700 (PDT)
+        bh=Fh4EDpkUKXX0i2jSGB1PBtJy0KS6P9QG8sx5m74zofM=;
+        b=IKxbwK5jCs6J2jVinA0dUU+IDXm9unZ3rqauIviKEQ0snwAPXs8whhLFuXbhL6msWG
+         tFhAlxYQgcbESbk5GQIz9T7+1SgsBaLXj2GNPenEkR0uD7yRAHfWgQraYZRXwfpQ8nZi
+         pCJLz+HnZ7nocnWv0agE9XqL+pIR7tQYv4FLxMZhf+CnWKYz2VAexuGBAFKCjB+WNcjs
+         LVcR9eeaUjDx6TEln/clwHNGL3HMdHqMX6onDF32fyhlm7/uaAlGlkxIWMxjuEqMpaVK
+         4yH5PKNW/bcyCttWfyxvJX6JNrOdqOPOu7Ai8uIa9UzrcR62t2gyuP9DGR6md0OYd7Z9
+         5Cnw==
+X-Gm-Message-State: ABy/qLbFxQWiGC9qVQN8w20ySJvCmMsGRJvYk1LSmgnVyMqbbN6P3Wzo
+	SvklMKBG1JQMT3AHLl0WrjxtgA==
+X-Google-Smtp-Source: APBJJlFyiqbyrtae4oPoU8c9essn66hxwhB/tZ54efWazcZSBJL34UATeiWbByL1xXKVtIQgz5XF7Q==
+X-Received: by 2002:a17:906:64d2:b0:993:d6a7:13b with SMTP id p18-20020a17090664d200b00993d6a7013bmr10019595ejn.22.1690189954456;
+        Mon, 24 Jul 2023 02:12:34 -0700 (PDT)
 Received: from [192.168.1.20] ([178.197.223.104])
-        by smtp.gmail.com with ESMTPSA id b10-20020a170906038a00b009929ab17bdfsm6406085eja.168.2023.07.24.02.05.45
+        by smtp.gmail.com with ESMTPSA id j15-20020a170906254f00b00992d122af63sm6445656ejb.89.2023.07.24.02.12.31
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Jul 2023 02:05:48 -0700 (PDT)
-Message-ID: <c52ee94f-f60b-f8f0-f93c-221beec0224a@linaro.org>
-Date: Mon, 24 Jul 2023 11:05:44 +0200
+        Mon, 24 Jul 2023 02:12:33 -0700 (PDT)
+Message-ID: <4d8143bc-03db-4f6b-9833-44cbaf95ecac@linaro.org>
+Date: Mon, 24 Jul 2023 11:12:30 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,7 +50,7 @@ User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.13.0
 Subject: Re: [PATCH 09/11] dt-bindings: arm: msm: kpss-acc: Make the optional
  reg truly optional
-Content-Language: en-US
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To: Konrad Dybcio <konrad.dybcio@linaro.org>,
  cros-qcom-dts-watchers@chromium.org, Andy Gross <agross@kernel.org>,
  Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh+dt@kernel.org>,
@@ -81,21 +81,30 @@ Cc: Marijn Suijten <marijn.suijten@somainline.org>,
  Andy Gross <andy.gross@linaro.org>
 References: <20230627-topic-more_bindings-v1-0-6b4b6cd081e5@linaro.org>
  <20230627-topic-more_bindings-v1-9-6b4b6cd081e5@linaro.org>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230627-topic-more_bindings-v1-9-6b4b6cd081e5@linaro.org>
+ <c52ee94f-f60b-f8f0-f93c-221beec0224a@linaro.org>
+Content-Language: en-US
+In-Reply-To: <c52ee94f-f60b-f8f0-f93c-221beec0224a@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 27/06/2023 18:24, Konrad Dybcio wrote:
-> The description of reg[1] says that register is optional. Adjust
-> minItems to make it truly optional.
+On 24/07/2023 11:05, Krzysztof Kozlowski wrote:
+> On 27/06/2023 18:24, Konrad Dybcio wrote:
+>> The description of reg[1] says that register is optional. Adjust
+>> minItems to make it truly optional.
+>>
+>> Fixes: 12f40018b6a9 ("dt-bindings: arm: msm: Convert kpss-acc driver Documentation to yaml")
+>> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+>> ---
 > 
-> Fixes: 12f40018b6a9 ("dt-bindings: arm: msm: Convert kpss-acc driver Documentation to yaml")
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> ---
+> This patch does not make sense. It wasn't also tested. The code
+> (minItems) is already there.
 
-This patch does not make sense. It wasn't also tested. The code
-(minItems) is already there.
+
+What's more - there is no such commit as 12f40018b6a9!
+
+Bjorn,
+You might find this useful (fake Fixes tag should be detected):
+https://github.com/krzk/tools/blob/master/linux/git-hooks-post-commit
 
 Best regards,
 Krzysztof
