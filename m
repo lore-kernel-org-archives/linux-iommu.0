@@ -1,32 +1,32 @@
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC0C2125A2
-	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 22:20:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56F8D11CB7
+	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 22:20:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690237242; x=1721773242;
+  t=1690237243; x=1721773243;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=OatyZryBNY4xB7kd4cbR7STKN6zuyaLdEWJY1lw4WY0=;
-  b=O6ySXO9Bq0pDP5aMruCabQGo1MRDhihkIrdjZ4VERiw8YbvWnVvwbfvK
-   ikkytp/6hwNUlTIJCAJmSU8CFAvWhVaje6K8+9tyXRsbcvZ2gunNpAyeu
-   Ly4ps1rX6vraR5sYUmip+dJ6zFRME7tBjiDHvEC6ilrUR5Xe2t4IqU+Pm
-   2sIeXKOs8rImDUdVbBd5b6lWXbcdKNj+FT95TgM1ouSb8uQLNRTb6WFoE
-   rN00dL5G02sQdsHqV2ACzw6KxFue41QBSomhlwCwNcadwv1VnkSrWZENI
-   nVyvBH2XGWc/zAlLw/xgShv519WXl8xCArpppdcBCohOUK+mKcLR8AVO4
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10781"; a="398476706"
+  bh=YWNx51GZXk/II7pUFcY1rw2XpwNt3MI3cM7LUSoUmpg=;
+  b=Ase5Ezr6MGas4a7SFhN27IcjLov1pYfWxj1OnWfeQmliNTeXFuhQgLC6
+   hrHACpMw7/VBGUU5ud3sDnjppJItDkfnFUXXDqc9s8/i/6rw1HJ1MgUCu
+   DAJYOsbD/1gB3BkM0TcUIQqKf+UqbLAa1mndapSbwYQ6qX+drbcdu5e9X
+   60N5FclXUD7QuHdsNshHSA+g2fQW+1v2opt+Ept0RUT+rxd+6P52OQESt
+   g3Ozqw9oSEHLfldE3Ycdnx28+VNOGBHGYD/CiGa5WRvgE+yECuA7zwaom
+   3/FvyAX5XSPCdmv2y9N0ytbFwD9pAwLVFLBkP0qYWzFpCjXR/X8qUMnoE
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10781"; a="398476723"
 X-IronPort-AV: E=Sophos;i="6.01,229,1684825200"; 
-   d="scan'208";a="398476706"
+   d="scan'208";a="398476723"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 15:20:40 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 15:20:41 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10781"; a="899675501"
+X-IronPort-AV: E=McAfee;i="6600,9927,10781"; a="899675508"
 X-IronPort-AV: E=Sophos;i="6.01,229,1684825200"; 
-   d="scan'208";a="899675501"
+   d="scan'208";a="899675508"
 Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.97.184])
-  by orsmga005.jf.intel.com with ESMTP; 24 Jul 2023 15:20:40 -0700
+  by orsmga005.jf.intel.com with ESMTP; 24 Jul 2023 15:20:41 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: LKML <linux-kernel@vger.kernel.org>,
 	iommu@lists.linux.dev,
@@ -41,9 +41,9 @@ Cc: Jason Gunthorpe <jgg@nvidia.com>,
 	"Yu, Fenghua" <fenghua.yu@intel.com>,
 	Tony Luck <tony.luck@intel.com>,
 	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v11 3/8] iommu/vt-d: Add domain_flush_pasid_iotlb()
-Date: Mon, 24 Jul 2023 15:25:33 -0700
-Message-Id: <20230724222538.3902553-4-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v11 5/8] iommu/vt-d: Make prq draining code generic
+Date: Mon, 24 Jul 2023 15:25:35 -0700
+Message-Id: <20230724222538.3902553-6-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230724222538.3902553-1-jacob.jun.pan@linux.intel.com>
 References: <20230724222538.3902553-1-jacob.jun.pan@linux.intel.com>
@@ -57,62 +57,133 @@ Content-Transfer-Encoding: 8bit
 
 From: Lu Baolu <baolu.lu@linux.intel.com>
 
-The VT-d spec requires to use PASID-based-IOTLB invalidation descriptor
-to invalidate IOTLB and the paging-structure caches for a first-stage
-page table. Add a generic helper to do this.
+Currently draining page requests and responses for a pasid is part of SVA
+implementation. This is because the driver only supports attaching an SVA
+domain to a device pasid. As we are about to support attaching other types
+of domains to a device pasid, the prq draining code becomes generic.
 
-RID2PASID is used if the domain has been attached to a physical device,
-otherwise real PASIDs that the domain has been attached to will be used.
-The 'real' PASID attachment is handled in the subsequent change.
-
+Reviewed-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 ---
- drivers/iommu/intel/iommu.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ drivers/iommu/intel/iommu.c | 30 +++++++++++++++++++-----------
+ drivers/iommu/intel/iommu.h |  2 ++
+ drivers/iommu/intel/svm.c   | 17 ++---------------
+ 3 files changed, 23 insertions(+), 26 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 89013a2913af..bb8316fec1aa 100644
+index bb8316fec1aa..bdde38a5e43a 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -1467,6 +1467,18 @@ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
- 	spin_unlock_irqrestore(&domain->lock, flags);
+@@ -4720,21 +4720,29 @@ static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
+ 	struct intel_iommu *iommu = device_to_iommu(dev, NULL, NULL);
+ 	struct iommu_domain *domain;
+ 
+-	/* Domain type specific cleanup: */
+ 	domain = iommu_get_domain_for_dev_pasid(dev, pasid, 0);
+-	if (domain) {
+-		switch (domain->type) {
+-		case IOMMU_DOMAIN_SVA:
+-			intel_svm_remove_dev_pasid(dev, pasid);
+-			break;
+-		default:
+-			/* should never reach here */
+-			WARN_ON(1);
+-			break;
+-		}
++	if (WARN_ON_ONCE(!domain))
++		goto out_tear_down;
++
++	/*
++	 * The SVA implementation needs to handle its own stuffs like the mm
++	 * notification. Before consolidating that code into iommu core, let
++	 * the intel sva code handle it.
++	 */
++	if (domain->type == IOMMU_DOMAIN_SVA) {
++		intel_svm_remove_dev_pasid(dev, pasid);
++		goto out_tear_down;
+ 	}
+ 
++	/*
++	 * Should never reach here until we add support for attaching
++	 * non-SVA domain to a pasid.
++	 */
++	WARN_ON(1);
++
++out_tear_down:
+ 	intel_pasid_tear_down_entry(iommu, dev, pasid, false);
++	intel_drain_pasid_prq(dev, pasid);
  }
  
-+static void domain_flush_pasid_iotlb(struct intel_iommu *iommu,
-+				     struct dmar_domain *domain, u64 addr,
-+				     unsigned long npages, bool ih)
-+{
-+	u16 did = domain_id_iommu(domain, iommu);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&domain->lock, flags);
-+	qi_flush_piotlb(iommu, did, IOMMU_NO_PASID, addr, npages, ih);
-+	spin_unlock_irqrestore(&domain->lock, flags);
-+}
-+
- static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
- 				  struct dmar_domain *domain,
- 				  unsigned long pfn, unsigned int pages,
-@@ -1484,7 +1496,7 @@ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
- 		ih = 1 << 6;
+ const struct iommu_ops intel_iommu_ops = {
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 1c5e1d88862b..6d94a29f5d52 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -844,6 +844,7 @@ int intel_svm_page_response(struct device *dev, struct iommu_fault_event *evt,
+ 			    struct iommu_page_response *msg);
+ struct iommu_domain *intel_svm_domain_alloc(void);
+ void intel_svm_remove_dev_pasid(struct device *dev, ioasid_t pasid);
++void intel_drain_pasid_prq(struct device *dev, u32 pasid);
  
- 	if (domain->use_first_level) {
--		qi_flush_piotlb(iommu, did, IOMMU_NO_PASID, addr, pages, ih);
-+		domain_flush_pasid_iotlb(iommu, domain, addr, pages, ih);
- 	} else {
- 		unsigned long bitmask = aligned_pages - 1;
+ struct intel_svm_dev {
+ 	struct list_head list;
+@@ -862,6 +863,7 @@ struct intel_svm {
+ };
+ #else
+ static inline void intel_svm_check(struct intel_iommu *iommu) {}
++static inline void intel_drain_pasid_prq(struct device *dev, u32 pasid) {}
+ static inline struct iommu_domain *intel_svm_domain_alloc(void)
+ {
+ 	return NULL;
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index 2a82864e9d57..9fbae9af6615 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -26,8 +26,6 @@
+ #include "trace.h"
  
-@@ -1554,7 +1566,7 @@ static void intel_flush_iotlb_all(struct iommu_domain *domain)
- 		u16 did = domain_id_iommu(dmar_domain, iommu);
+ static irqreturn_t prq_event_thread(int irq, void *d);
+-static void intel_svm_drain_prq(struct device *dev, u32 pasid);
+-#define to_intel_svm_dev(handle) container_of(handle, struct intel_svm_dev, sva)
  
- 		if (dmar_domain->use_first_level)
--			qi_flush_piotlb(iommu, did, IOMMU_NO_PASID, 0, -1, 0);
-+			domain_flush_pasid_iotlb(iommu, dmar_domain, 0, -1, 0);
- 		else
- 			iommu->flush.flush_iotlb(iommu, did, 0, 0,
- 						 DMA_TLB_DSI_FLUSH);
+ static DEFINE_XARRAY_ALLOC(pasid_private_array);
+ static int pasid_private_add(ioasid_t pasid, void *priv)
+@@ -382,17 +380,6 @@ void intel_svm_remove_dev_pasid(struct device *dev, u32 pasid)
+ 
+ 	if (sdev) {
+ 		list_del_rcu(&sdev->list);
+-		/*
+-		 * Flush the PASID cache and IOTLB for this device.
+-		 * Note that we do depend on the hardware *not* using
+-		 * the PASID any more. Just as we depend on other
+-		 * devices never using PASIDs that they have no right
+-		 * to use. We have a *shared* PASID table, because it's
+-		 * large and has to be physically contiguous. So it's
+-		 * hard to be as defensive as we might like.
+-		 */
+-		intel_pasid_tear_down_entry(iommu, dev, svm->pasid, false);
+-		intel_svm_drain_prq(dev, svm->pasid);
+ 		kfree_rcu(sdev, rcu);
+ 
+ 		if (list_empty(&svm->devs)) {
+@@ -449,7 +436,7 @@ static bool is_canonical_address(u64 addr)
+ }
+ 
+ /**
+- * intel_svm_drain_prq - Drain page requests and responses for a pasid
++ * intel_drain_pasid_prq - Drain page requests and responses for a pasid
+  * @dev: target device
+  * @pasid: pasid for draining
+  *
+@@ -463,7 +450,7 @@ static bool is_canonical_address(u64 addr)
+  * described in VT-d spec CH7.10 to drain all page requests and page
+  * responses pending in the hardware.
+  */
+-static void intel_svm_drain_prq(struct device *dev, u32 pasid)
++void intel_drain_pasid_prq(struct device *dev, u32 pasid)
+ {
+ 	struct device_domain_info *info;
+ 	struct dmar_domain *domain;
 -- 
 2.25.1
 
