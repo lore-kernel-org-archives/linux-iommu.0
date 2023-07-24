@@ -1,219 +1,297 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f179.google.com (mail-il1-f179.google.com [209.85.166.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1A6A568E
-	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 11:13:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690197232; x=1721733232;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=YTaq/gvDINGEMieq70WcQfgAkgR6JHSIqAWu7f0pkko=;
-  b=LnPV6NJK0BEGVH2iG8FsRv+gG9q0k4aSz18sdb6nkpvk3HEUI0ArL4Tr
-   rjeE9XgG5zvXFpVxlkXItMQ8OXoMmuJ9j8JyEQAnsXF542hPubB7E30uq
-   3n4397gjtw2sbFm8b4gwoaOlRlqxY3HLIDJk14ns73pBSGWTJIaSlR9ET
-   vYaLqwKH9FzyX2wpNAPVKBGDajv25/tE0PgoyGNVnwGYbTPM/ADEGEwQw
-   Ee+uQ0ElmOWY9LHGi7dj7vKgEEq0TPPjhTUBa7W2tBSadgYchgHkq/yxX
-   vtx2r0UNMhE+8deOppBKlH0WNalhyl/vValMPZQeze68b3VZMeuRbmrgt
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="347015082"
-X-IronPort-AV: E=Sophos;i="6.01,228,1684825200"; 
-   d="scan'208";a="347015082"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 04:13:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="839415617"
-X-IronPort-AV: E=Sophos;i="6.01,228,1684825200"; 
-   d="scan'208";a="839415617"
-Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga002.fm.intel.com with ESMTP; 24 Jul 2023 04:13:51 -0700
-From: Yi Liu <yi.l.liu@intel.com>
-To: joro@8bytes.org,
-	alex.williamson@redhat.com,
-	jgg@nvidia.com,
-	kevin.tian@intel.com,
-	robin.murphy@arm.com,
-	baolu.lu@linux.intel.com
-Cc: cohuck@redhat.com,
-	eric.auger@redhat.com,
-	nicolinc@nvidia.com,
-	kvm@vger.kernel.org,
-	mjrosato@linux.ibm.com,
-	chao.p.peng@linux.intel.com,
-	yi.l.liu@intel.com,
-	yi.y.sun@linux.intel.com,
-	peterx@redhat.com,
-	jasowang@redhat.com,
-	shameerali.kolothum.thodi@huawei.com,
-	lulu@redhat.com,
-	suravee.suthikulpanit@amd.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-kselftest@vger.kernel.org,
-	zhenzhong.duan@intel.com
-Subject: [PATCH v4 12/12] iommu/vt-d: Disallow nesting on domains with read-only mappings
-Date: Mon, 24 Jul 2023 04:13:34 -0700
-Message-Id: <20230724111335.107427-13-yi.l.liu@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230724111335.107427-1-yi.l.liu@intel.com>
-References: <20230724111335.107427-1-yi.l.liu@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A65AD519
+	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 11:31:54 +0000 (UTC)
+Received: by mail-il1-f179.google.com with SMTP id e9e14a558f8ab-348d333e441so3207805ab.2
+        for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 04:31:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google; t=1690198314; x=1690803114;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MSZt7mHez9tNJy/98/Qfr0OOVK6jV7kKAFtTUhVHj+4=;
+        b=Zu3QSNlWTHcd8OApwq0U+bD1SZkTRkdgFVizZQ0Kx7en8kEJKrVeVocSG+Chv6CbDP
+         8nJtj3qZsoyDChCMF0DmJt+9YtpDu01OVSusMX7q1fmFDHxXKGJHDUXT48KQnY/TCtTY
+         Ca4tZz8IH40wQVfKABxCYjCdDP7vUQYkYJOd7Yf3WR6gZXyp2TUWTTa0LsG27VSBw3R2
+         r7jG9Qg1XyuTpO0sUi1Wh1+fPVhFZ3yF82QJ+Ou5dSdQIMJA1iqQvaZXvmw88x3vkHvl
+         UyLDohMJw2aqsCJU6kE0hyYX+REUCLzbiWUui1gaA2l+B1Cl80IYVjKJFyIGGaPsc+ep
+         oupw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1690198314; x=1690803114;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=MSZt7mHez9tNJy/98/Qfr0OOVK6jV7kKAFtTUhVHj+4=;
+        b=GrHeRGBtjveePpLFSkwSvGGBcstQc0ZWoDpiPMr5aw+6rblfp4pUCyng7uG4+BV+Mc
+         J5PEWCXH+tvlBla7bPbEp6yfs4TJSuoboeHTJrJw7CMFOFxnxvhJVlixYsHbzVp/qzwe
+         0SZrbI/wNVWPkXMV49PAkDlZvJOwcBweGCKAp3iLj6zFyGTo4E8Jo0bxA2SYEzIz+uml
+         a2kpcqPbWNoIC+XnFQbg3WAJkhbXHszUTz3YE2adQBhfGwk6dlylvYeCM69tX5Yx8wlQ
+         ODkB0rMOCeQcUXB1QuU9HcsiJb8VCRFEBjSnyTV8tVdA47sm1GO03P4AH7VRo4+JOcPm
+         iXoA==
+X-Gm-Message-State: ABy/qLYIoh09mZgs7yLf6uVhB+GmyLg07Lu5tAF1zT50lKNoN6kmskmO
+	tQFf1TCeeakDxohp9K+A3SdoGYNaORgua5YJvPsoqA==
+X-Google-Smtp-Source: APBJJlGHxOZ/paRjIch74XqvwUxQz0xz3MZH+VtCE2KMsEa3zvL3fC42DqgKEx4uhzMK7nJeCic/WBnYFQ/RxL330dA=
+X-Received: by 2002:a6b:7f0a:0:b0:76c:8877:861d with SMTP id
+ l10-20020a6b7f0a000000b0076c8877861dmr7363380ioq.1.1690198313863; Mon, 24 Jul
+ 2023 04:31:53 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1689792825.git.tjeznach@rivosinc.com> <d62ceb33620cab766d809e6bbf30eaf5b46bc955.1689792825.git.tjeznach@rivosinc.com>
+ <CANXhq0r=2eqpy9wLjVt1U0J7=LpnJLcKV7N9d90jvCss=7+Fzg@mail.gmail.com> <CAK9=C2Vg9eR5LJPeqDDQ0pHZcrT5DOUzA8_wYEVEjfnhb6s8pw@mail.gmail.com>
+In-Reply-To: <CAK9=C2Vg9eR5LJPeqDDQ0pHZcrT5DOUzA8_wYEVEjfnhb6s8pw@mail.gmail.com>
+From: Zong Li <zong.li@sifive.com>
+Date: Mon, 24 Jul 2023 19:31:42 +0800
+Message-ID: <CANXhq0oTrU_-OQroW7H+hvxcU7YROhkgdCF9g_WtPTzVFQL7gA@mail.gmail.com>
+Subject: Re: [PATCH 03/11] dt-bindings: Add RISC-V IOMMU bindings
+To: Anup Patel <apatel@ventanamicro.com>
+Cc: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Paul Walmsley <paul.walmsley@sifive.com>, Albert Ou <aou@eecs.berkeley.edu>, linux@rivosinc.com, 
+	linux-kernel@vger.kernel.org, Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Nick Kossifidis <mick@ics.forth.gr>, linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Lu Baolu <baolu.lu@linux.intel.com>
+On Mon, Jul 24, 2023 at 6:02=E2=80=AFPM Anup Patel <apatel@ventanamicro.com=
+> wrote:
+>
+> On Mon, Jul 24, 2023 at 1:33=E2=80=AFPM Zong Li <zong.li@sifive.com> wrot=
+e:
+> >
+> > On Thu, Jul 20, 2023 at 3:35=E2=80=AFAM Tomasz Jeznach <tjeznach@rivosi=
+nc.com> wrote:
+> > >
+> > > From: Anup Patel <apatel@ventanamicro.com>
+> > >
+> > > We add DT bindings document for RISC-V IOMMU platform and PCI devices
+> > > defined by the RISC-V IOMMU specification.
+> > >
+> > > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> > > ---
+> > >  .../bindings/iommu/riscv,iommu.yaml           | 146 ++++++++++++++++=
+++
+> > >  1 file changed, 146 insertions(+)
+> > >  create mode 100644 Documentation/devicetree/bindings/iommu/riscv,iom=
+mu.yaml
+> > >
+> > > diff --git a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml=
+ b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+> > > new file mode 100644
+> > > index 000000000000..8a9aedb61768
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+> > > @@ -0,0 +1,146 @@
+> > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > > +%YAML 1.2
+> > > +---
+> > > +$id: http://devicetree.org/schemas/iommu/riscv,iommu.yaml#
+> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > +
+> > > +title: RISC-V IOMMU Implementation
+> > > +
+> > > +maintainers:
+> > > +  - Tomasz Jeznach <tjeznach@rivosinc.com>
+> > > +
+> > > +description:
+> > > +  The RISC-V IOMMU specificaiton defines an IOMMU for RISC-V platfor=
+ms
+> > > +  which can be a regular platform device or a PCI device connected t=
+o
+> > > +  the host root port.
+> > > +
+> > > +  The RISC-V IOMMU provides two stage translation, device directory =
+table,
+> > > +  command queue and fault reporting as wired interrupt or MSIx event=
+ for
+> > > +  both PCI and platform devices.
+> > > +
+> > > +  Visit https://github.com/riscv-non-isa/riscv-iommu for more detail=
+s.
+> > > +
+> > > +properties:
+> > > +  compatible:
+> > > +    oneOf:
+> > > +      - description: RISC-V IOMMU as a platform device
+> > > +        items:
+> > > +          - enum:
+> > > +              - vendor,chip-iommu
+> > > +          - const: riscv,iommu
+> > > +
+> > > +      - description: RISC-V IOMMU as a PCI device connected to root =
+port
+> > > +        items:
+> > > +          - enum:
+> > > +              - vendor,chip-pci-iommu
+> > > +          - const: riscv,pci-iommu
+> > > +
+> > > +  reg:
+> > > +    maxItems: 1
+> > > +    description:
+> > > +      For RISC-V IOMMU as a platform device, this represents the MMI=
+O base
+> > > +      address of registers.
+> > > +
+> > > +      For RISC-V IOMMU as a PCI device, this represents the PCI-PCI =
+bridge
+> > > +      details as described in Documentation/devicetree/bindings/pci/=
+pci.txt
+> > > +
+> > > +  '#iommu-cells':
+> > > +    const: 2
+> > > +    description: |
+> > > +      Each IOMMU specifier represents the base device ID and number =
+of
+> > > +      device IDs.
+> > > +
+> > > +  interrupts:
+> > > +    minItems: 1
+> > > +    maxItems: 16
+> > > +    description:
+> > > +      The presence of this property implies that given RISC-V IOMMU =
+uses
+> > > +      wired interrupts to notify the RISC-V HARTS (or CPUs).
+> > > +
+> > > +  msi-parent:
+> > > +    description:
+> > > +      The presence of this property implies that given RISC-V IOMMU =
+uses
+> > > +      MSIx to notify the RISC-V HARTs (or CPUs). This property shoul=
+d be
+> > > +      considered only when the interrupts property is absent.
+> > > +
+> > > +  dma-coherent:
+> > > +    description:
+> > > +      Present if page table walks and DMA accessed made by the RISC-=
+V IOMMU
+> > > +      are cache coherent with the CPU.
+> > > +
+> > > +  power-domains:
+> > > +    maxItems: 1
+> > > +
+> >
+> > In RISC-V IOMMU, certain devices can be set to bypass mode when the
+> > IOMMU is in translation mode. To identify the devices that require
+> > bypass mode by default, does it be sensible to add a property to
+> > indicate this behavior?
+>
+> Bypass mode for a device is a property of that device (similar to dma-coh=
+erent)
+> and not of the IOMMU. Other architectures (ARM and x86) never added such
+> a device property for bypass mode so I guess it is NOT ADVISABLE to do it=
+.
+>
+> If this is REALLY required then we can do something similar to the QCOM
+> SMMU driver where they have a whitelist of devices which are allowed to
+> be in bypass mode (i.e. IOMMU_DOMAIN_IDENTITY) based their device
+> compatible string and any device outside this whitelist is blocked by def=
+ault.
+>
 
-When remapping hardware is configured by system software in scalable mode
-as Nested (PGTT=011b) and with PWSNP field Set in the PASID-table-entry,
-it may Set Accessed bit and Dirty bit (and Extended Access bit if enabled)
-in first-stage page-table entries even when second-stage mappings indicate
-that corresponding first-stage page-table is Read-Only.
+I have considered that adding the property of bypass mode to that
+device would be more appropriate. However, if we want to define this
+property for the device, it might need to go through the generic IOMMU
+dt-bindings, but I'm not sure if other IOMMU devices need this. I am
+bringing up this topic here because I would like to explore if there
+are any solutions on the IOMMU side, such as a property that indicates
+the phandle of devices wishing to set bypass mode, somewhat similar to
+the whitelist you mentioned earlier. Do you think we should address
+this? After all, this is a case of RISC-V IOMMU supported.
 
-As the result, contents of pages designated by VMM as Read-Only can be
-modified by IOMMU via PML5E (PML4E for 4-level tables) access as part of
-address translation process due to DMAs issued by Guest.
-
-Disallow the nested translation when there are read-only pages in the
-corresponding second-stage mappings. And, no read-only pages are allowed
-to be configured in the second-stage table of a nested translation.
-
-For simplicity the 2nd restriction is not relaxed even when the nesting
-is turned off later due to vIOMMU config change. In concept if the user
-understands this errata and does expect to enable nested translation
-it should never install any RO mapping in stage-2 in the entire VM life
-cycle. Accordingly introduce a single sticky bit to mark the parent role
-on a domain instead of tracking the role with a counter.
-
-Reference from Sapphire Rapids Specification Update [1], errata details,
-SPR17.
-
-[1] https://www.intel.com/content/www/us/en/content-details/772415/content-details.html
-
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
----
- drivers/iommu/intel/iommu.c  | 14 ++++++++++++++
- drivers/iommu/intel/iommu.h  |  4 ++++
- drivers/iommu/intel/nested.c | 14 +++++++++++++-
- include/uapi/linux/iommufd.h | 12 +++++++++++-
- 4 files changed, 42 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index ba34827045e6..caaa3a58dc94 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -2138,6 +2138,7 @@ __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
- 	struct dma_pte *first_pte = NULL, *pte = NULL;
- 	unsigned int largepage_lvl = 0;
- 	unsigned long lvl_pages = 0;
-+	unsigned long flags;
- 	phys_addr_t pteval;
- 	u64 attr;
- 
-@@ -2147,6 +2148,18 @@ __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
- 	if ((prot & (DMA_PTE_READ|DMA_PTE_WRITE)) == 0)
- 		return -EINVAL;
- 
-+	if (!(prot & DMA_PTE_WRITE) && !domain->read_only_mapped) {
-+		spin_lock_irqsave(&domain->lock, flags);
-+		if (domain->set_nested) {
-+			pr_err_ratelimited("No read-only mapping permitted\n");
-+			spin_unlock_irqrestore(&domain->lock, flags);
-+			return -EINVAL;
-+		}
-+
-+		domain->read_only_mapped = true;
-+		spin_unlock_irqrestore(&domain->lock, flags);
-+	}
-+
- 	attr = prot & (DMA_PTE_READ | DMA_PTE_WRITE | DMA_PTE_SNP);
- 	attr |= DMA_FL_PTE_PRESENT;
- 	if (domain->use_first_level) {
-@@ -4758,6 +4771,7 @@ static void *intel_iommu_hw_info(struct device *dev, u32 *length)
- 	if (!vtd)
- 		return ERR_PTR(-ENOMEM);
- 
-+	vtd->flags = IOMMU_HW_INFO_VTD_ERRATA_772415_SPR17;
- 	vtd->cap_reg = iommu->cap;
- 	vtd->ecap_reg = iommu->ecap;
- 	*length = sizeof(*vtd);
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 5b292213bcb8..2a14fab6ac4f 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -592,6 +592,10 @@ struct dmar_domain {
- 					 * otherwise, goes through the second
- 					 * level.
- 					 */
-+	u8 read_only_mapped:1;		/* domain has mappings with read-only
-+					 * permission.
-+					 */
-+	u8 set_nested:1;		/* has other domains nested on it */
- 
- 	spinlock_t lock;		/* Protect device tracking lists */
- 	struct list_head devices;	/* all devices' list */
-diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
-index 2739c0d7880d..50934da613fa 100644
---- a/drivers/iommu/intel/nested.c
-+++ b/drivers/iommu/intel/nested.c
-@@ -142,14 +142,26 @@ struct iommu_domain *intel_nested_domain_alloc(struct iommu_domain *s2_domain,
- 					       const union iommu_domain_user_data *user_data)
- {
- 	const struct iommu_hwpt_vtd_s1 *vtd = (struct iommu_hwpt_vtd_s1 *)user_data;
-+	struct dmar_domain *s2_dmar_domain = to_dmar_domain(s2_domain);
- 	struct dmar_domain *domain;
-+	unsigned long flags;
- 
- 	domain = kzalloc(sizeof(*domain), GFP_KERNEL_ACCOUNT);
- 	if (!domain)
- 		return NULL;
- 
-+	spin_lock_irqsave(&s2_dmar_domain->lock, flags);
-+	if (s2_dmar_domain->read_only_mapped) {
-+		spin_unlock_irqrestore(&s2_dmar_domain->lock, flags);
-+		pr_err_ratelimited("S2 domain has read-only mappings\n");
-+		kfree(domain);
-+		return NULL;
-+	}
-+	s2_dmar_domain->set_nested = true;
-+	spin_unlock_irqrestore(&s2_dmar_domain->lock, flags);
-+
- 	domain->use_first_level = true;
--	domain->s2_domain = to_dmar_domain(s2_domain);
-+	domain->s2_domain = s2_dmar_domain;
- 	domain->s1_pgtbl = vtd->pgtbl_addr;
- 	domain->s1_cfg = *vtd;
- 	domain->domain.ops = &intel_nested_domain_ops;
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index 0dfb6f3d8dda..2f8f2dab95a7 100644
---- a/include/uapi/linux/iommufd.h
-+++ b/include/uapi/linux/iommufd.h
-@@ -435,10 +435,20 @@ struct iommu_hwpt_alloc {
- };
- #define IOMMU_HWPT_ALLOC _IO(IOMMUFD_TYPE, IOMMUFD_CMD_HWPT_ALLOC)
- 
-+/**
-+ * enum iommu_hw_info_vtd_flags - Flags for VT-d hw_info
-+ * @IOMMU_HW_INFO_VTD_ERRATA_772415_SPR17: If set, disallow nesting on domains
-+ *                                   with read-only mapping.
-+ *                                   https://www.intel.com/content/www/us/en/content-details/772415/content-details.html
-+ */
-+enum iommu_hw_info_vtd_flags {
-+	IOMMU_HW_INFO_VTD_ERRATA_772415_SPR17 = 1 << 0,
-+};
-+
- /**
-  * struct iommu_hw_info_vtd - Intel VT-d hardware information
-  *
-- * @flags: Must be 0
-+ * @flags: Combination of enum iommu_hw_info_vtd_flags
-  * @__reserved: Must be 0
-  *
-  * @cap_reg: Value of Intel VT-d capability register defined in VT-d spec
--- 
-2.34.1
-
+> Regards,
+> Anup
+>
+> >
+> > > +required:
+> > > +  - compatible
+> > > +  - reg
+> > > +  - '#iommu-cells'
+> > > +
+> > > +additionalProperties: false
+> > > +
+> > > +examples:
+> > > +  - |
+> > > +    /* Example 1 (IOMMU platform device with wired interrupts) */
+> > > +    immu1: iommu@1bccd000 {
+> > > +        compatible =3D "vendor,chip-iommu", "riscv,iommu";
+> > > +        reg =3D <0x1bccd000 0x1000>;
+> > > +        interrupt-parent =3D <&aplic_smode>;
+> > > +        interrupts =3D <32 4>, <33 4>, <34 4>, <35 4>;
+> > > +        #iommu-cells =3D <2>;
+> > > +    };
+> > > +
+> > > +    /* Device with two IOMMU device IDs, 0 and 7 */
+> > > +    master1 {
+> > > +        iommus =3D <&immu1 0 1>, <&immu1 7 1>;
+> > > +    };
+> > > +
+> > > +  - |
+> > > +    /* Example 2 (IOMMU platform device with MSIs) */
+> > > +    immu2: iommu@1bcdd000 {
+> > > +        compatible =3D "vendor,chip-iommu", "riscv,iommu";
+> > > +        reg =3D <0x1bccd000 0x1000>;
+> > > +        msi-parent =3D <&imsics_smode>;
+> > > +        #iommu-cells =3D <2>;
+> > > +    };
+> > > +
+> > > +    bus {
+> > > +        #address-cells =3D <2>;
+> > > +        #size-cells =3D <2>;
+> > > +
+> > > +        /* Device with IOMMU device IDs ranging from 32 to 64 */
+> > > +        master1 {
+> > > +                iommus =3D <&immu2 32 32>;
+> > > +        };
+> > > +
+> > > +        pcie@40000000 {
+> > > +            compatible =3D "pci-host-cam-generic";
+> > > +            device_type =3D "pci";
+> > > +            #address-cells =3D <3>;
+> > > +            #size-cells =3D <2>;
+> > > +            bus-range =3D <0x0 0x1>;
+> > > +
+> > > +            /* CPU_PHYSICAL(2)  SIZE(2) */
+> > > +            reg =3D <0x0 0x40000000 0x0 0x1000000>;
+> > > +
+> > > +            /* BUS_ADDRESS(3)  CPU_PHYSICAL(2)  SIZE(2) */
+> > > +            ranges =3D <0x01000000 0x0 0x01000000  0x0 0x01000000  0=
+x0 0x00010000>,
+> > > +                     <0x02000000 0x0 0x41000000  0x0 0x41000000  0x0=
+ 0x3f000000>;
+> > > +
+> > > +            #interrupt-cells =3D <0x1>;
+> > > +
+> > > +            /* PCI_DEVICE(3)  INT#(1)  CONTROLLER(PHANDLE)  CONTROLL=
+ER_DATA(2) */
+> > > +            interrupt-map =3D <   0x0 0x0 0x0  0x1  &aplic_smode  0x=
+4 0x1>,
+> > > +                            < 0x800 0x0 0x0  0x1  &aplic_smode  0x5 =
+0x1>,
+> > > +                            <0x1000 0x0 0x0  0x1  &aplic_smode  0x6 =
+0x1>,
+> > > +                            <0x1800 0x0 0x0  0x1  &aplic_smode  0x7 =
+0x1>;
+> > > +
+> > > +            /* PCI_DEVICE(3)  INT#(1) */
+> > > +            interrupt-map-mask =3D <0xf800 0x0 0x0  0x7>;
+> > > +
+> > > +            msi-parent =3D <&imsics_smode>;
+> > > +
+> > > +            /* Devices with bus number 0-127 are mastered via immu2 =
+*/
+> > > +            iommu-map =3D <0x0000 &immu2 0x0000 0x8000>;
+> > > +        };
+> > > +    };
+> > > +...
+> > > --
+> > > 2.34.1
+> > >
+> > >
+> > > _______________________________________________
+> > > linux-riscv mailing list
+> > > linux-riscv@lists.infradead.org
+> > > http://lists.infradead.org/mailman/listinfo/linux-riscv
