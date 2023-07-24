@@ -1,56 +1,306 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7A6E7E9
-	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 00:42:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 980D9C433C8;
-	Mon, 24 Jul 2023 00:42:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-	s=korg; t=1690159329;
-	bh=sxdEGclz4Xf0qnA1MozhK1hB0aUV6i9zLLImahVNvcc=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=K5t7aujHVfp7cwlHnTEAaMpERZb2wyfgUQXBQXAMGRWwGajG1+sUuB0LfGoJtAQ0B
-	 UPBIfPOe9mkBTMzAG898v/NOfQzoevvEiZN6bk/vJoDIJzfrMdddHbCtFSdgk5BiF4
-	 I0/Sd/U3ivZwNH/XxWfwjv/2bPXeoBxHWcaI7efE=
-Date: Sun, 23 Jul 2023 17:42:07 -0700
-From: Andrew Morton <akpm@linux-foundation.org>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Yajun Deng <yajun.deng@linux.dev>, corbet@lwn.net,
- m.szyprowski@samsung.com, robin.murphy@arm.com, paulmck@kernel.org,
- catalin.marinas@arm.com, rdunlap@infradead.org, peterz@infradead.org,
- rostedt@goodmis.org, kim.phillips@amd.com, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev, linux-mm@kvack.org
-Subject: Re: [PATCH v3] dma-contiguous: support numa CMA for specified node
-Message-Id: <20230723174207.cfa7ea5e73197399d9521583@linux-foundation.org>
-In-Reply-To: <20230721074209.GA22859@lst.de>
-References: <20230720082517.GA7057@lst.de>
-	<20230712074758.1133272-1-yajun.deng@linux.dev>
-	<25942dafbc7f52488a30c807b6322109539442cf@linux.dev>
-	<20230720115408.GA13114@lst.de>
-	<20230720095941.76803bbda5ad0c5103713d0c@linux-foundation.org>
-	<20230721074209.GA22859@lst.de>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CBE17E8
+	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 01:14:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 328A5C433CB;
+	Mon, 24 Jul 2023 01:14:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1690161284;
+	bh=pFPsulNY8CifDit3IxFHUwPW3LXVhs1/DkBRenKfGQY=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=C1if8TFAurSgwamDa9KgklonzWT4866h5duwmzwmTAh9FyYTFxe70OmahVbcdJ99l
+	 1OVRqd//qswXRrCAENhGDXuzlhrZPLa0a0L4RH8QVfwxQad+M1KwsGg0aqj4J+MPhI
+	 8VqSboOY8iVMUwAjeTjyWbbSpuX6oVdq8Rr1FNrkf8/3crPHq54dalZYbV0Kl6WzJx
+	 iQd2qsnBIRiGpfXWc2Hj61Yv46c0nYnG9VvH0q6zl2lCRxCdTggRyVTZGOwjj/KqbK
+	 8hLx77VIJcCLRBcPBtqpRh/jT3QPA01RlWPF+PUifytfFzn2nj8e+UfHdW3EGTXaye
+	 2PAUHLdm/WFqw==
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Cc: Jason Gunthorpe <jgg@nvidia.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Heiko Stuebner <heiko@sntech.de>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Joerg Roedel <jroedel@suse.de>,
+	Sasha Levin <sashal@kernel.org>,
+	joro@8bytes.org,
+	will@kernel.org,
+	iommu@lists.linux.dev
+Subject: [PATCH AUTOSEL 6.4 14/58] iommu: Make __iommu_group_set_domain() handle error unwind
+Date: Sun, 23 Jul 2023 21:12:42 -0400
+Message-Id: <20230724011338.2298062-14-sashal@kernel.org>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230724011338.2298062-1-sashal@kernel.org>
+References: <20230724011338.2298062-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+X-stable-base: Linux 6.4.5
+Content-Transfer-Encoding: 8bit
 
-On Fri, 21 Jul 2023 09:42:09 +0200 Christoph Hellwig <hch@lst.de> wrote:
+From: Jason Gunthorpe <jgg@nvidia.com>
 
-> On Thu, Jul 20, 2023 at 09:59:41AM -0700, Andrew Morton wrote:
-> > > Where did this land?  dma patches really should be going through
-> > > the DMA tree..
-> > 
-> > It's in mm-unstable with a note "hch" :)
-> > 
-> > I'll drop it.
-> 
-> Ah.  And looking at the patch is isn't even pure dma but also has
-> a significant mm side.  If you're fine with it I'll pick it up in
-> the dma-mapping tree in addition to the follow up.
+[ Upstream commit dcf40ed3a20d727be054c4a20db47b32cb5036d4 ]
 
-Please do.
+Let's try to have a consistent and clear strategy for error handling
+during domain attach failures.
+
+There are two broad categories, the first is callers doing destruction and
+trying to set the domain back to a previously good domain. These cases
+cannot handle failure during destruction flows and must succeed, or at
+least avoid a UAF on the current group->domain which is likely about to be
+freed.
+
+Many of the drivers are well behaved here and will not hit the WARN_ON's
+or a UAF, but some are doing hypercalls/etc that can fail unpredictably
+and don't meet the expectations.
+
+The second case is attaching a domain for the first time in a failable
+context, failure should restore the attachment back to group->domain using
+the above unfailable operation.
+
+Have __iommu_group_set_domain_internal() execute a common algorithm that
+tries to achieve this, and in the worst case, would leave a device
+"detached" or assigned to a global blocking domain. This relies on some
+existing common driver behaviors where attach failure will also do detatch
+and true IOMMU_DOMAIN_BLOCK implementations that are not allowed to ever
+fail.
+
+Name the first case with __iommu_group_set_domain_nofail() to make it
+clear.
+
+Pull all the error handling and WARN_ON generation into
+__iommu_group_set_domain_internal().
+
+Avoid the obfuscating use of __iommu_group_for_each_dev() and be more
+careful about what should happen during failures by only touching devices
+we've already touched.
+
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Tested-by: Heiko Stuebner <heiko@sntech.de>
+Tested-by: Niklas Schnelle <schnelle@linux.ibm.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Link: https://lore.kernel.org/r/3-v5-1b99ae392328+44574-iommu_err_unwind_jgg@nvidia.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iommu/iommu.c | 137 ++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 112 insertions(+), 25 deletions(-)
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index f1dcfa3f1a1b4..873e66ab1e2d7 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -97,8 +97,26 @@ static int __iommu_attach_device(struct iommu_domain *domain,
+ 				 struct device *dev);
+ static int __iommu_attach_group(struct iommu_domain *domain,
+ 				struct iommu_group *group);
++
++enum {
++	IOMMU_SET_DOMAIN_MUST_SUCCEED = 1 << 0,
++};
++
++static int __iommu_group_set_domain_internal(struct iommu_group *group,
++					     struct iommu_domain *new_domain,
++					     unsigned int flags);
+ static int __iommu_group_set_domain(struct iommu_group *group,
+-				    struct iommu_domain *new_domain);
++				    struct iommu_domain *new_domain)
++{
++	return __iommu_group_set_domain_internal(group, new_domain, 0);
++}
++static void __iommu_group_set_domain_nofail(struct iommu_group *group,
++					    struct iommu_domain *new_domain)
++{
++	WARN_ON(__iommu_group_set_domain_internal(
++		group, new_domain, IOMMU_SET_DOMAIN_MUST_SUCCEED));
++}
++
+ static int iommu_create_device_direct_mappings(struct iommu_group *group,
+ 					       struct device *dev);
+ static struct iommu_group *iommu_group_get_for_dev(struct device *dev);
+@@ -2028,15 +2046,13 @@ EXPORT_SYMBOL_GPL(iommu_domain_free);
+ static void __iommu_group_set_core_domain(struct iommu_group *group)
+ {
+ 	struct iommu_domain *new_domain;
+-	int ret;
+ 
+ 	if (group->owner)
+ 		new_domain = group->blocking_domain;
+ 	else
+ 		new_domain = group->default_domain;
+ 
+-	ret = __iommu_group_set_domain(group, new_domain);
+-	WARN(ret, "iommu driver failed to attach the default/blocking domain");
++	__iommu_group_set_domain_nofail(group, new_domain);
+ }
+ 
+ static int __iommu_attach_device(struct iommu_domain *domain,
+@@ -2221,21 +2237,55 @@ int iommu_attach_group(struct iommu_domain *domain, struct iommu_group *group)
+ }
+ EXPORT_SYMBOL_GPL(iommu_attach_group);
+ 
+-static int iommu_group_do_set_platform_dma(struct device *dev, void *data)
++static int __iommu_device_set_domain(struct iommu_group *group,
++				     struct device *dev,
++				     struct iommu_domain *new_domain,
++				     unsigned int flags)
+ {
+-	const struct iommu_ops *ops = dev_iommu_ops(dev);
+-
+-	if (!WARN_ON(!ops->set_platform_dma_ops))
+-		ops->set_platform_dma_ops(dev);
++	int ret;
+ 
++	ret = __iommu_attach_device(new_domain, dev);
++	if (ret) {
++		/*
++		 * If we have a blocking domain then try to attach that in hopes
++		 * of avoiding a UAF. Modern drivers should implement blocking
++		 * domains as global statics that cannot fail.
++		 */
++		if ((flags & IOMMU_SET_DOMAIN_MUST_SUCCEED) &&
++		    group->blocking_domain &&
++		    group->blocking_domain != new_domain)
++			__iommu_attach_device(group->blocking_domain, dev);
++		return ret;
++	}
+ 	return 0;
+ }
+ 
+-static int __iommu_group_set_domain(struct iommu_group *group,
+-				    struct iommu_domain *new_domain)
++/*
++ * If 0 is returned the group's domain is new_domain. If an error is returned
++ * then the group's domain will be set back to the existing domain unless
++ * IOMMU_SET_DOMAIN_MUST_SUCCEED, otherwise an error is returned and the group's
++ * domains is left inconsistent. This is a driver bug to fail attach with a
++ * previously good domain. We try to avoid a kernel UAF because of this.
++ *
++ * IOMMU groups are really the natural working unit of the IOMMU, but the IOMMU
++ * API works on domains and devices.  Bridge that gap by iterating over the
++ * devices in a group.  Ideally we'd have a single device which represents the
++ * requestor ID of the group, but we also allow IOMMU drivers to create policy
++ * defined minimum sets, where the physical hardware may be able to distiguish
++ * members, but we wish to group them at a higher level (ex. untrusted
++ * multi-function PCI devices).  Thus we attach each device.
++ */
++static int __iommu_group_set_domain_internal(struct iommu_group *group,
++					     struct iommu_domain *new_domain,
++					     unsigned int flags)
+ {
++	struct group_device *last_gdev;
++	struct group_device *gdev;
++	int result;
+ 	int ret;
+ 
++	lockdep_assert_held(&group->mutex);
++
+ 	if (group->domain == new_domain)
+ 		return 0;
+ 
+@@ -2245,8 +2295,12 @@ static int __iommu_group_set_domain(struct iommu_group *group,
+ 	 * platform specific behavior.
+ 	 */
+ 	if (!new_domain) {
+-		__iommu_group_for_each_dev(group, NULL,
+-					   iommu_group_do_set_platform_dma);
++		for_each_group_device(group, gdev) {
++			const struct iommu_ops *ops = dev_iommu_ops(gdev->dev);
++
++			if (!WARN_ON(!ops->set_platform_dma_ops))
++				ops->set_platform_dma_ops(gdev->dev);
++		}
+ 		group->domain = NULL;
+ 		return 0;
+ 	}
+@@ -2256,16 +2310,52 @@ static int __iommu_group_set_domain(struct iommu_group *group,
+ 	 * domain. This switch does not have to be atomic and DMA can be
+ 	 * discarded during the transition. DMA must only be able to access
+ 	 * either new_domain or group->domain, never something else.
+-	 *
+-	 * Note that this is called in error unwind paths, attaching to a
+-	 * domain that has already been attached cannot fail.
+ 	 */
+-	ret = __iommu_group_for_each_dev(group, new_domain,
+-					 iommu_group_do_attach_device);
+-	if (ret)
+-		return ret;
++	result = 0;
++	for_each_group_device(group, gdev) {
++		ret = __iommu_device_set_domain(group, gdev->dev, new_domain,
++						flags);
++		if (ret) {
++			result = ret;
++			/*
++			 * Keep trying the other devices in the group. If a
++			 * driver fails attach to an otherwise good domain, and
++			 * does not support blocking domains, it should at least
++			 * drop its reference on the current domain so we don't
++			 * UAF.
++			 */
++			if (flags & IOMMU_SET_DOMAIN_MUST_SUCCEED)
++				continue;
++			goto err_revert;
++		}
++	}
+ 	group->domain = new_domain;
+-	return 0;
++	return result;
++
++err_revert:
++	/*
++	 * This is called in error unwind paths. A well behaved driver should
++	 * always allow us to attach to a domain that was already attached.
++	 */
++	last_gdev = gdev;
++	for_each_group_device(group, gdev) {
++		const struct iommu_ops *ops = dev_iommu_ops(gdev->dev);
++
++		/*
++		 * If set_platform_dma_ops is not present a NULL domain can
++		 * happen only for first probe, in which case we leave
++		 * group->domain as NULL and let release clean everything up.
++		 */
++		if (group->domain)
++			WARN_ON(__iommu_device_set_domain(
++				group, gdev->dev, group->domain,
++				IOMMU_SET_DOMAIN_MUST_SUCCEED));
++		else if (ops->set_platform_dma_ops)
++			ops->set_platform_dma_ops(gdev->dev);
++		if (gdev == last_gdev)
++			break;
++	}
++	return ret;
+ }
+ 
+ void iommu_detach_group(struct iommu_domain *domain, struct iommu_group *group)
+@@ -3182,16 +3272,13 @@ EXPORT_SYMBOL_GPL(iommu_device_claim_dma_owner);
+ 
+ static void __iommu_release_dma_ownership(struct iommu_group *group)
+ {
+-	int ret;
+-
+ 	if (WARN_ON(!group->owner_cnt || !group->owner ||
+ 		    !xa_empty(&group->pasid_array)))
+ 		return;
+ 
+ 	group->owner_cnt = 0;
+ 	group->owner = NULL;
+-	ret = __iommu_group_set_domain(group, group->default_domain);
+-	WARN(ret, "iommu driver failed to attach the default domain");
++	__iommu_group_set_domain_nofail(group, group->default_domain);
+ }
+ 
+ /**
+-- 
+2.39.2
+
