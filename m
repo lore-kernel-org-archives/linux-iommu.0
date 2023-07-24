@@ -1,33 +1,41 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5C1CD652
-	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 18:50:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 791B0652
+	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 18:50:45 +0000 (UTC)
 Received: from rrs24-12-35.corp.microsoft.com (unknown [131.107.1.149])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 8657320A1078;
-	Mon, 24 Jul 2023 11:50:36 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 8657320A1078
+	by linux.microsoft.com (Postfix) with ESMTPSA id 19BD620A1078;
+	Mon, 24 Jul 2023 11:50:45 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 19BD620A1078
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1690224636;
-	bh=mCB5gTwt3lxsMopysrW8PZ55OSbFNCUKGKtbfVk4ITk=;
-	h=From:To:Cc:Subject:Date:From;
-	b=YmEPZOKVfJuTtd5pHFFfSQos3hhVVUmZRIe5dRk57lILYgUig+MM6/B6lbnrLQlDz
-	 XY65jRBeq5N1DAaa1hBku/nJ7AD4DoXUVRPu3lrspNaCmDnkhtBNC3JOjQzIzZpMj0
-	 U3uNEJwSRLfslNmXWmX4oJuhBGmx21SUXAQmVf0w=
+	s=default; t=1690224645;
+	bh=IGGYFXNUvMQx09Tnw6sJKKjcZi3QrY5MCquaxh4wmqI=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=FBIxwNZTHktnp2qkPtSRMEdejWCZAxFZAuJ0n/1vpS5HLuRTSAyHJSSveVXEGPIo1
+	 7rwxXZ3URibY3H80FJg6Y5DNZNbZ//Zhzy8rc0A+yxag6g1rYwlPKpu13G7+sE8RfK
+	 t+n7TtpnfXEZpvy2o7roxxlNMYAfARp0uksFDqjU=
 From: Easwar Hariharan <eahariha@linux.microsoft.com>
 To: stable@vger.kernel.org
 Cc: easwar.hariharan@microsoft.com,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
 	Robin Murphy <robin.murphy@arm.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Will Deacon <will@kernel.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jonathan Corbet <corbet@lwn.net>,
 	Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: [PATCH v2 5.15 0/3] ARM64 errata for stable kernel 5.15
-Date: Mon, 24 Jul 2023 18:50:14 +0000
-Message-Id: <20230724185017.1675459-1-eahariha@linux.microsoft.com>
+	Sasha Levin <sashal@kernel.org>,
+	Mathieu Poirier <mathieu.poirier@linaro.org>,
+	Yicong Yang <yangyicong@hisilicon.com>,
+	Tomas Krcka <krckatom@amazon.de>,
+	linux-arm-kernel@lists.infradead.org (moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)),
+	linux-doc@vger.kernel.org (open list:DOCUMENTATION),
+	linux-kernel@vger.kernel.org (open list),
+	iommu@lists.linux-foundation.org (open list:IOMMU DRIVERS),
+	iommu@lists.linux.dev (open list:IOMMU DRIVERS)
+Subject: [PATCH v2 5.15 3/3] iommu/arm-smmu-v3: Document MMU-700 erratum 2812531
+Date: Mon, 24 Jul 2023 18:50:17 +0000
+Message-Id: <20230724185017.1675459-4-eahariha@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230724185017.1675459-1-eahariha@linux.microsoft.com>
+References: <20230724185017.1675459-1-eahariha@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,42 +44,130 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series works around a few ARM64 errata.
+From: Robin Murphy <robin.murphy@arm.com>
 
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-doc@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: iommu@lists.linux.dev
+commit 309a15cb16bb075da1c99d46fb457db6a1a2669e upstream
 
-Changelog:
-==========
-v1 -> v2:
- - Drop patch accepted as commit
-   e4e7f67cc14e9638798f80513e84b8fb62cdb7e3 in v5.15.121
- - Appropriate sign-offs
- - v1 link:https://lore.kernel.org/stable/1689895414-17425-1-git-send-email-eahariha@linux.microsoft.com/
+To work around MMU-700 erratum 2812531 we need to ensure that certain
+sequences of commands cannot be issued without an intervening sync. In
+practice this falls out of our current command-batching machinery
+anyway - each batch only contains a single type of invalidation command,
+and ends with a sync. The only exception is when a batch is sufficiently
+large to need issuing across multiple command queue slots, wherein the
+earlier slots will not contain a sync and thus may in theory interleave
+with another batch being issued in parallel to create an affected
+sequence across the slot boundary.
 
-Robin Murphy (1):
-  iommu/arm-smmu-v3: Document MMU-700 erratum 2812531
+Since MMU-700 supports range invalidate commands and thus we will prefer
+to use them (which also happens to avoid conditions for other errata),
+I'm not entirely sure it's even possible for a single high-level
+invalidate call to generate a batch of more than 63 commands, but for
+the sake of robustness and documentation, wire up an option to enforce
+that a sync is always inserted for every slot issued.
 
-Suzuki K Poulose (2):
-  arm64: errata: Add workaround for TSB flush failures
-  arm64: errata: Add detection for TRBE write to out-of-range
+The other aspect is that the relative order of DVM commands cannot be
+controlled, so DVM cannot be used. Again that is already the status quo,
+but since we have at least defined ARM_SMMU_FEAT_BTM, we can explicitly
+disable it for documentation purposes even if it's not wired up anywhere
+yet.
 
- Documentation/arm64/silicon-errata.rst      | 12 ++++
- arch/arm64/Kconfig                          | 74 +++++++++++++++++++++
- arch/arm64/include/asm/barrier.h            | 16 ++++-
- arch/arm64/kernel/cpu_errata.c              | 39 +++++++++++
- arch/arm64/tools/cpucaps                    |  2 +
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 41 ++++++++++++
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+Link: https://lore.kernel.org/r/330221cdfd0003cd51b6c04e7ff3566741ad8374.1683731256.git.robin.murphy@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
+---
+ Documentation/arm64/silicon-errata.rst      |  4 ++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 41 +++++++++++++++++++++
  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 +
- 7 files changed, 184 insertions(+), 1 deletion(-)
+ 3 files changed, 46 insertions(+)
 
+diff --git a/Documentation/arm64/silicon-errata.rst b/Documentation/arm64/silicon-errata.rst
+index f64354f8a79f..322df8abbc0e 100644
+--- a/Documentation/arm64/silicon-errata.rst
++++ b/Documentation/arm64/silicon-errata.rst
+@@ -122,6 +122,10 @@ stable kernels.
+ +----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | MMU-500         | #841119,826419  | N/A                         |
+ +----------------+-----------------+-----------------+-----------------------------+
++| ARM            | MMU-600         | #1076982        | N/A                         |
+++----------------+-----------------+-----------------+-----------------------------+
++| ARM            | MMU-700         | #2812531        | N/A                         |
+++----------------+-----------------+-----------------+-----------------------------+
+ +----------------+-----------------+-----------------+-----------------------------+
+ | Broadcom       | Brahma-B53      | N/A             | ARM64_ERRATUM_845719        |
+ +----------------+-----------------+-----------------+-----------------------------+
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index bcdb2cbdda97..ba2e5149604c 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -897,6 +897,14 @@ static void arm_smmu_cmdq_batch_add(struct arm_smmu_device *smmu,
+ 				    struct arm_smmu_cmdq_batch *cmds,
+ 				    struct arm_smmu_cmdq_ent *cmd)
+ {
++	int index;
++
++	if (cmds->num == CMDQ_BATCH_ENTRIES - 1 &&
++	    (smmu->options & ARM_SMMU_OPT_CMDQ_FORCE_SYNC)) {
++		arm_smmu_cmdq_issue_cmdlist(smmu, cmds->cmds, cmds->num, true);
++		cmds->num = 0;
++	}
++
+ 	if (cmds->num == CMDQ_BATCH_ENTRIES) {
+ 		arm_smmu_cmdq_issue_cmdlist(smmu, cmds->cmds, cmds->num, false);
+ 		cmds->num = 0;
+@@ -3459,6 +3467,39 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+ 	return 0;
+ }
+ 
++#define IIDR_IMPLEMENTER_ARM		0x43b
++#define IIDR_PRODUCTID_ARM_MMU_600	0x483
++#define IIDR_PRODUCTID_ARM_MMU_700	0x487
++
++static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
++{
++	u32 reg;
++	unsigned int implementer, productid, variant, revision;
++
++	reg = readl_relaxed(smmu->base + ARM_SMMU_IIDR);
++	implementer = FIELD_GET(IIDR_IMPLEMENTER, reg);
++	productid = FIELD_GET(IIDR_PRODUCTID, reg);
++	variant = FIELD_GET(IIDR_VARIANT, reg);
++	revision = FIELD_GET(IIDR_REVISION, reg);
++
++	switch (implementer) {
++	case IIDR_IMPLEMENTER_ARM:
++		switch (productid) {
++		case IIDR_PRODUCTID_ARM_MMU_600:
++			/* Arm erratum 1076982 */
++			if (variant == 0 && revision <= 2)
++				smmu->features &= ~ARM_SMMU_FEAT_SEV;
++			break;
++		case IIDR_PRODUCTID_ARM_MMU_700:
++			/* Arm erratum 2812531 */
++			smmu->features &= ~ARM_SMMU_FEAT_BTM;
++			smmu->options |= ARM_SMMU_OPT_CMDQ_FORCE_SYNC;
++			break;
++		}
++		break;
++	}
++}
++
+ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ {
+ 	u32 reg;
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index 4cb136f07914..eeb780c5c1e0 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -645,6 +645,7 @@ struct arm_smmu_device {
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+ #define ARM_SMMU_OPT_PAGE0_REGS_ONLY	(1 << 1)
+ #define ARM_SMMU_OPT_MSIPOLL		(1 << 2)
++#define ARM_SMMU_OPT_CMDQ_FORCE_SYNC	(1 << 3)
+ 	u32				options;
+ 
+ 	struct arm_smmu_cmdq		cmdq;
 -- 
 2.25.1
 
