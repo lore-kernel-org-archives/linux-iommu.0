@@ -1,148 +1,77 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A8BAF9F2
-	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 18:18:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=FftEnjrfbBAd3Ww9EqN8sppXbEA0boEKYQQaC3XYChY=; b=ALkl62CiRE28E2LSizMN3y7fEY
-	kJycbVRJZEvZWmguJTa9cV8saw4voW845Dk7ZUIQ/EpBqHehcYEObAuEhAbV5cICUXMxpEHgWD1xY
-	0G6eQD7tzvNPI+5LLNz+rczyJT/b6KyVcZ+bYO3jrw6raTDm6jxMaJpIvIG1XxtiGTStkaoeXQ5ux
-	i2K6PllfRHRUSgqlIGCCkFHMYoEy4mFvIGC8wSVGTqOtUaudgrq/YQeHfsLxDw4QBvQ2/XP3rLron
-	/nYKqQX7yUCVJiO+cQev86wNP91/7Iz+oGCh9AS1aLKpPK5iq4sDhzycio7fP17V8xO0Lv6e1RKak
-	XdsSA3Lg==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.96 #2 (Red Hat Linux))
-	id 1qO08S-005BNK-31;
-	Mon, 24 Jul 2023 18:18:20 +0000
-Date: Mon, 24 Jul 2023 11:18:20 -0700
-From: Luis Chamberlain <mcgrof@kernel.org>
-To: Alistair Popple <apopple@nvidia.com>, linux-fsdevel@vger.kernel.org,
-	linux-xfs@vger.kernel.org, Pankaj Raghav <p.raghav@samsung.com>
-Cc: SeongJae Park <sj@kernel.org>, kevin.tian@intel.com, x86@kernel.org,
-	ajd@linux.ibm.com, kvm@vger.kernel.org, linux-mm@kvack.org,
-	catalin.marinas@arm.com, seanjc@google.com, will@kernel.org,
-	linux-kernel@vger.kernel.org, npiggin@gmail.com,
-	zhi.wang.linux@gmail.com, jgg@ziepe.ca, iommu@lists.linux.dev,
-	nicolinc@nvidia.com, jhubbard@nvidia.com, fbarrat@linux.ibm.com,
-	akpm@linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
-	linux-arm-kernel@lists.infradead.org, robin.murphy@arm.com,
-	mcgrof@kernel.org
-Subject: Re: [PATCH v2 3/5] mmu_notifiers: Call invalidate_range() when
- invalidating TLBs
-Message-ID: <ZL7AbLJ+RUUgzt8O@bombadil.infradead.org>
-References: <8f293bb51a423afa71ddc3ba46e9f323ee9ffbc7.1689768831.git-series.apopple@nvidia.com>
- <20230719225105.1934-1-sj@kernel.org>
- <877cqvl7vr.fsf@nvdebian.thelocal>
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5C1CD652
+	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 18:50:42 +0000 (UTC)
+Received: from rrs24-12-35.corp.microsoft.com (unknown [131.107.1.149])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 8657320A1078;
+	Mon, 24 Jul 2023 11:50:36 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 8657320A1078
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1690224636;
+	bh=mCB5gTwt3lxsMopysrW8PZ55OSbFNCUKGKtbfVk4ITk=;
+	h=From:To:Cc:Subject:Date:From;
+	b=YmEPZOKVfJuTtd5pHFFfSQos3hhVVUmZRIe5dRk57lILYgUig+MM6/B6lbnrLQlDz
+	 XY65jRBeq5N1DAaa1hBku/nJ7AD4DoXUVRPu3lrspNaCmDnkhtBNC3JOjQzIzZpMj0
+	 U3uNEJwSRLfslNmXWmX4oJuhBGmx21SUXAQmVf0w=
+From: Easwar Hariharan <eahariha@linux.microsoft.com>
+To: stable@vger.kernel.org
+Cc: easwar.hariharan@microsoft.com,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: [PATCH v2 5.15 0/3] ARM64 errata for stable kernel 5.15
+Date: Mon, 24 Jul 2023 18:50:14 +0000
+Message-Id: <20230724185017.1675459-1-eahariha@linux.microsoft.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <877cqvl7vr.fsf@nvdebian.thelocal>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+Content-Transfer-Encoding: 8bit
 
-Cc'ing fsdevel + xfs folks as this fixes a regression tests with
-XFS with generic/176.
+This series works around a few ARM64 errata.
 
-On Thu, Jul 20, 2023 at 10:52:59AM +1000, Alistair Popple wrote:
-> 
-> SeongJae Park <sj@kernel.org> writes:
-> 
-> > Hi Alistair,
-> >
-> > On Wed, 19 Jul 2023 22:18:44 +1000 Alistair Popple <apopple@nvidia.com> wrote:
-> >
-> >> The invalidate_range() is going to become an architecture specific mmu
-> >> notifier used to keep the TLB of secondary MMUs such as an IOMMU in
-> >> sync with the CPU page tables. Currently it is called from separate
-> >> code paths to the main CPU TLB invalidations. This can lead to a
-> >> secondary TLB not getting invalidated when required and makes it hard
-> >> to reason about when exactly the secondary TLB is invalidated.
-> >> 
-> >> To fix this move the notifier call to the architecture specific TLB
-> >> maintenance functions for architectures that have secondary MMUs
-> >> requiring explicit software invalidations.
-> >> 
-> >> This fixes a SMMU bug on ARM64. On ARM64 PTE permission upgrades
-> >> require a TLB invalidation. This invalidation is done by the
-> >> architecutre specific ptep_set_access_flags() which calls
-> >> flush_tlb_page() if required. However this doesn't call the notifier
-> >> resulting in infinite faults being generated by devices using the SMMU
-> >> if it has previously cached a read-only PTE in it's TLB.
-> >> 
-> >> Moving the invalidations into the TLB invalidation functions ensures
-> >> all invalidations happen at the same time as the CPU invalidation. The
-> >> architecture specific flush_tlb_all() routines do not call the
-> >> notifier as none of the IOMMUs require this.
-> >> 
-> >> Signed-off-by: Alistair Popple <apopple@nvidia.com>
-> >> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
-> >
-> > I found below kernel NULL-dereference issue on latest mm-unstable tree, and
-> > bisect points me to the commit of this patch, namely
-> > 75c400f82d347af1307010a3e06f3aa5d831d995.
-> >
-> > To reproduce, I use 'stress-ng --bigheap $(nproc)'.  The issue happens as soon
-> > as it starts reclaiming memory.  I didn't dive deep into this yet, but
-> > reporting this issue first, since you might have an idea already.
-> 
-> Thanks for the report SJ!
-> 
-> I see the problem - current->mm can (obviously!) be NULL which is what's
-> leading to the NULL dereference. Instead I think on x86 I need to call
-> the notifier when adding the invalidate to the tlbbatch in
-> arch_tlbbatch_add_pending() which is equivalent to what ARM64 does.
-> 
-> The below should fix it. Will do a respin with this.
-> 
-> ---
-> 
-> diff --git a/arch/x86/include/asm/tlbflush.h b/arch/x86/include/asm/tlbflush.h
-> index 837e4a50281a..79c46da919b9 100644
-> --- a/arch/x86/include/asm/tlbflush.h
-> +++ b/arch/x86/include/asm/tlbflush.h
-> @@ -4,6 +4,7 @@
->  
->  #include <linux/mm_types.h>
->  #include <linux/sched.h>
-> +#include <linux/mmu_notifier.h>
->  
->  #include <asm/processor.h>
->  #include <asm/cpufeature.h>
-> @@ -282,6 +283,7 @@ static inline void arch_tlbbatch_add_pending(struct arch_tlbflush_unmap_batch *b
->  {
->  	inc_mm_tlb_gen(mm);
->  	cpumask_or(&batch->cpumask, &batch->cpumask, mm_cpumask(mm));
-> +	mmu_notifier_arch_invalidate_secondary_tlbs(mm, 0, -1UL);
->  }
->  
->  static inline void arch_flush_tlb_batched_pending(struct mm_struct *mm)
-> diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
-> index 0b990fb56b66..2d253919b3e8 100644
-> --- a/arch/x86/mm/tlb.c
-> +++ b/arch/x86/mm/tlb.c
-> @@ -1265,7 +1265,6 @@ void arch_tlbbatch_flush(struct arch_tlbflush_unmap_batch *batch)
->  
->  	put_flush_tlb_info();
->  	put_cpu();
-> -	mmu_notifier_arch_invalidate_secondary_tlbs(current->mm, 0, -1UL);
->  }
->  
->  /*
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-doc@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: iommu@lists.linux.dev
 
-This patch also fixes a regression introduced on linux-next, the same
-crash on arch_tlbbatch_flush() is reproducible with fstests generic/176
-on XFS. This patch fixes that regression [0]. This should also close out
-the syzbot crash too [1]
+Changelog:
+==========
+v1 -> v2:
+ - Drop patch accepted as commit
+   e4e7f67cc14e9638798f80513e84b8fb62cdb7e3 in v5.15.121
+ - Appropriate sign-offs
+ - v1 link:https://lore.kernel.org/stable/1689895414-17425-1-git-send-email-eahariha@linux.microsoft.com/
 
-[0] https://gist.github.com/mcgrof/b37fc8cf7e6e1b3935242681de1a83e2
-[1] https://lore.kernel.org/all/0000000000003afcb4060135a664@google.com/
+Robin Murphy (1):
+  iommu/arm-smmu-v3: Document MMU-700 erratum 2812531
 
-Tested-by: Luis Chamberlain <mcgrof@kernel.org>
+Suzuki K Poulose (2):
+  arm64: errata: Add workaround for TSB flush failures
+  arm64: errata: Add detection for TRBE write to out-of-range
 
-  Luis
+ Documentation/arm64/silicon-errata.rst      | 12 ++++
+ arch/arm64/Kconfig                          | 74 +++++++++++++++++++++
+ arch/arm64/include/asm/barrier.h            | 16 ++++-
+ arch/arm64/kernel/cpu_errata.c              | 39 +++++++++++
+ arch/arm64/tools/cpucaps                    |  2 +
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 41 ++++++++++++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 +
+ 7 files changed, 184 insertions(+), 1 deletion(-)
+
+-- 
+2.25.1
+
