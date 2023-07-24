@@ -1,32 +1,32 @@
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21C255680
-	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 11:13:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E215F5679
+	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 11:13:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1690197229; x=1721733229;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=kFFC2bK/nCwVQZLA9Z70O9G3InA/Pl+u4zLi4egWg38=;
-  b=bEjECx26VUys4GPQmFusB6mHJtNyAIWQLD6QbsFgyNY6kvmFhHki0dfh
-   9BsCY+xCUVfvJX4Qhk60TCtIL8K7im++9ZTi3wZwbUsI+Zml++z4voVhH
-   pLdcDt2NErWujWzioJj5dEV8nR/BM3TcSkeM5ZCxxAB6ktE/r/s0WvcbK
-   9YS+KFmsJ2SEKWU2OWGhj2DKPUe9LQqYKU55ursdpm9rkzaszm0l6MMpH
-   rgL8bkNN1W9rUmY8cf1nXJlot7QqZlqPsvh32HyjD+6QQPBzo3L4b9SZA
-   f527U4RcZMo5hVNqQ0Curq/6R4jnxd/SAfMuQLRNBkADtkctUFCZc8o3t
+  bh=tXRlj9btBIeoEUnM5jIM9VZ+Pcrfyh8ZFvgKt8H4Rkw=;
+  b=dwgs8gvqRoLXQui0hjZMfZ9+Pq8PqytBXu4gTul2DkQIhuEAKcFWOO2U
+   hP7qKDb/4Vxx3VNmykaj0iNMqIGNa0bZJBNgdB51iJQs7L148/ajDQLOf
+   XxttK5prmRxg9Zvyec29Y+ZlBA90woU4iRYr5Z7j8OnlCnfDYn+ecauW6
+   FvxfIuVaTQ0zRUF4lnCaXiKBcMgqdpvFsVfTB8JPbj0v6Tq+KyvGFyyy7
+   g/TnIlRQAoZ3QRqsl/mFiVWM2EMPe7R8OK+pLYK3L9arLZBc1odkLriSw
+   PwYS5GEKcvKPW962EvNVeOzBs/UmcrV70+OTMcR8Vv/QpX6V7BnqYeubQ
    Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="347015040"
+X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="347015054"
 X-IronPort-AV: E=Sophos;i="6.01,228,1684825200"; 
-   d="scan'208";a="347015040"
+   d="scan'208";a="347015054"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 04:13:48 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 04:13:49 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="839415576"
+X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="839415586"
 X-IronPort-AV: E=Sophos;i="6.01,228,1684825200"; 
-   d="scan'208";a="839415576"
+   d="scan'208";a="839415586"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga002.fm.intel.com with ESMTP; 24 Jul 2023 04:13:47 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 24 Jul 2023 04:13:48 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -51,9 +51,9 @@ Cc: cohuck@redhat.com,
 	linux-kernel@vger.kernel.org,
 	linux-kselftest@vger.kernel.org,
 	zhenzhong.duan@intel.com
-Subject: [PATCH v4 09/12] iommu/vt-d: Add iotlb flush for nested domain
-Date: Mon, 24 Jul 2023 04:13:31 -0700
-Message-Id: <20230724111335.107427-10-yi.l.liu@intel.com>
+Subject: [PATCH v4 10/12] iommu/vt-d: Add nested domain allocation
+Date: Mon, 24 Jul 2023 04:13:32 -0700
+Message-Id: <20230724111335.107427-11-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230724111335.107427-1-yi.l.liu@intel.com>
 References: <20230724111335.107427-1-yi.l.liu@intel.com>
@@ -65,91 +65,67 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This implements the .cache_invalidate_user() callback and sets the
-.cache_invalidate_user_data_len to support iotlb flush for nested domain.
+From: Lu Baolu <baolu.lu@linux.intel.com>
+
+This adds the support for IOMMU_HWPT_TYPE_VTD_S1 type.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/intel/nested.c | 63 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 63 insertions(+)
+ drivers/iommu/intel/iommu.c | 20 ++++++++++++++++++++
+ include/linux/iommu.h       |  1 +
+ 2 files changed, 21 insertions(+)
 
-diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
-index 98164894f22f..2739c0d7880d 100644
---- a/drivers/iommu/intel/nested.c
-+++ b/drivers/iommu/intel/nested.c
-@@ -69,8 +69,71 @@ static void intel_nested_domain_free(struct iommu_domain *domain)
- 	kfree(to_dmar_domain(domain));
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 3119a79ebc83..6977d320c440 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4084,6 +4084,25 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
+ 	return NULL;
  }
  
-+static void intel_nested_invalidate(struct device *dev,
-+				    struct dmar_domain *domain,
-+				    u64 addr, unsigned long npages)
++static struct iommu_domain *
++intel_iommu_domain_alloc_user(struct device *dev,
++			      enum iommu_hwpt_type hwpt_type,
++			      struct iommu_domain *parent,
++			      const union iommu_domain_user_data *user_data)
 +{
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+	struct intel_iommu *iommu = info->iommu;
++	if (hwpt_type != IOMMU_HWPT_TYPE_DEFAULT &&
++	    hwpt_type != IOMMU_HWPT_TYPE_VTD_S1)
++		return ERR_PTR(-EINVAL);
 +
-+	if (addr == 0 && npages == -1)
-+		intel_flush_iotlb_all(&domain->domain);
++	if ((hwpt_type == IOMMU_HWPT_TYPE_DEFAULT) == !!parent)
++		return ERR_PTR(-EINVAL);
++
++	if (parent)
++		return intel_nested_domain_alloc(parent, user_data);
 +	else
-+		iommu_flush_iotlb_psi(iommu, domain,
-+				      addr >> VTD_PAGE_SHIFT,
-+				      npages, 1, 0);
++		return iommu_domain_alloc(dev->bus);
 +}
 +
-+static int intel_nested_cache_invalidate_user(struct iommu_domain *domain,
-+					      void *user_data)
-+{
-+	struct iommu_hwpt_vtd_s1_invalidate_desc *req = user_data;
-+	struct iommu_hwpt_vtd_s1_invalidate *inv_info = user_data;
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+	unsigned int entry_size = inv_info->entry_size;
-+	u64 uptr = inv_info->inv_data_uptr;
-+	u64 nr_uptr = inv_info->entry_nr_uptr;
-+	struct device_domain_info *info;
-+	u32 entry_nr, index;
-+	unsigned long flags;
-+	int ret = 0;
-+
-+	if (get_user(entry_nr, (uint32_t __user *)u64_to_user_ptr(nr_uptr)))
-+		return -EFAULT;
-+
-+	for (index = 0; index < entry_nr; index++) {
-+		ret = copy_struct_from_user(req, sizeof(*req),
-+					    u64_to_user_ptr(uptr + index * entry_size),
-+					    entry_size);
-+		if (ret) {
-+			pr_err_ratelimited("Failed to fetch invalidation request\n");
-+			break;
-+		}
-+
-+		if (req->__reserved || (req->flags & ~IOMMU_VTD_QI_FLAGS_LEAF) ||
-+		    !IS_ALIGNED(req->addr, VTD_PAGE_SIZE)) {
-+			ret = -EINVAL;
-+			break;
-+		}
-+
-+		spin_lock_irqsave(&dmar_domain->lock, flags);
-+		list_for_each_entry(info, &dmar_domain->devices, link)
-+			intel_nested_invalidate(info->dev, dmar_domain,
-+						req->addr, req->npages);
-+		spin_unlock_irqrestore(&dmar_domain->lock, flags);
-+	}
-+
-+	if (put_user(index, (uint32_t __user *)u64_to_user_ptr(nr_uptr)))
-+		return -EFAULT;
-+
-+	return ret;
-+}
-+
- static const struct iommu_domain_ops intel_nested_domain_ops = {
- 	.attach_dev		= intel_nested_attach_dev,
-+	.cache_invalidate_user	= intel_nested_cache_invalidate_user,
-+	.cache_invalidate_user_data_len =
-+		sizeof(struct iommu_hwpt_vtd_s1_invalidate),
- 	.free			= intel_nested_domain_free,
- 	.enforce_cache_coherency = intel_iommu_enforce_cache_coherency,
+ static void intel_iommu_domain_free(struct iommu_domain *domain)
+ {
+ 	if (domain != &si_domain->domain && domain != &blocking_domain)
+@@ -4732,6 +4751,7 @@ static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
+ const struct iommu_ops intel_iommu_ops = {
+ 	.capable		= intel_iommu_capable,
+ 	.domain_alloc		= intel_iommu_domain_alloc,
++	.domain_alloc_user	= intel_iommu_domain_alloc_user,
+ 	.probe_device		= intel_iommu_probe_device,
+ 	.probe_finalize		= intel_iommu_probe_finalize,
+ 	.release_device		= intel_iommu_release_device,
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 231920efab84..09b8e800b55e 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -240,6 +240,7 @@ union iommu_domain_user_data {
+ #ifdef CONFIG_IOMMUFD_TEST
+ 	__u64 test[2];
+ #endif
++	struct iommu_hwpt_vtd_s1 vtd;
  };
+ 
+ /**
 -- 
 2.34.1
 
