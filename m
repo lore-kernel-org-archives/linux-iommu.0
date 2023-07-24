@@ -1,32 +1,32 @@
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A92271FB3
-	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 11:04:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2298053A6
+	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 11:04:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690196665; x=1721732665;
+  t=1690196666; x=1721732666;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=mg550ofGRCkx0TRyX/k25V5Hgrta9fIM/SqDWuOS38s=;
-  b=TUCyv2yZzyKDDakyM4PrMvGqCc9783EfhcSeANLya3ik0tSPRsdjX3Q+
-   Y/EotkfRI1rOg25iQzX+u3R/fiIYjZVJPYruEtKhaW882AgES2oLRrxPL
-   tSd7r1ysQYF1wEhzqavjd0KNHqMhuxHZE/CqqWvKlkQ1sRxD5HiJPn4Sz
-   qMWOfFvQ+LXtjFnfmDhk5mVw+YxeA3b4m+YA5TUOab5RY+vYSsAPq7L2t
-   NvbQlSvujfRIu42goYicDo4G0auLwdCgtsWr9Y/dIjC3QXIeQIDEIzTPC
-   /feVciUvFI8P//m15kw8/QvsyTxm/kns71ixvH84aLLIWwaTGPwTGg4wf
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="347013288"
+  bh=9g6bhAIb+d+E1XevtMPLGEYTgSwXzpUWm9YZpFWGFC0=;
+  b=ljU6luiudRpQ0piCeoc1ahYaXmg/bcq2u7rQPKxIdnYS94HSqCdp2Dnv
+   Ree4s1eIe0gDConHzV2YHvtcvwX1O3dbM6pjXPAvjTlADQe1HAojPNbW/
+   dHBTZN+sTeui/8LJXcydrXGBvOrei1eOZPUylI5r1VgS59QO1DXn1bzlv
+   THwHH224v7SlKAd6NFDJzsmLNItZ8fGOBVw+T0G0cswalTcoYv8KH7bUs
+   2EDS4jtd70ScWjz+EvEIUD0jGbgGnL+gNAdD6y+U6yBcMrOTb4Bsmp7GU
+   3nn5MIsh38WcNMOWPMCHbVivQ5aIUnvU8ubrJOnBktanFnNPiEQkrKFv/
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="347013298"
 X-IronPort-AV: E=Sophos;i="6.01,228,1684825200"; 
-   d="scan'208";a="347013288"
+   d="scan'208";a="347013298"
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 04:04:17 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 04:04:25 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="815775802"
+X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="815775811"
 X-IronPort-AV: E=Sophos;i="6.01,228,1684825200"; 
-   d="scan'208";a="815775802"
+   d="scan'208";a="815775811"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by FMSMGA003.fm.intel.com with ESMTP; 24 Jul 2023 04:04:16 -0700
+  by FMSMGA003.fm.intel.com with ESMTP; 24 Jul 2023 04:04:17 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -51,9 +51,9 @@ Cc: cohuck@redhat.com,
 	linux-kernel@vger.kernel.org,
 	linux-kselftest@vger.kernel.org,
 	zhenzhong.duan@intel.com
-Subject: [PATCH v3 06/17] iommufd: Only enforce IOMMU_RESV_SW_MSI when attaching user-managed HWPT
-Date: Mon, 24 Jul 2023 04:03:55 -0700
-Message-Id: <20230724110406.107212-7-yi.l.liu@intel.com>
+Subject: [PATCH v3 07/17] iommufd: Add IOMMU_RESV_IOVA_RANGES
+Date: Mon, 24 Jul 2023 04:03:56 -0700
+Message-Id: <20230724110406.107212-8-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230724110406.107212-1-yi.l.liu@intel.com>
 References: <20230724110406.107212-1-yi.l.liu@intel.com>
@@ -65,97 +65,160 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Nicolin Chen <nicolinc@nvidia.com>
+This reports device's reserved IOVA regions to userspace. This is needed
+in the nested translation as userspace owns stage-1 HWPT, and userspace
+needs to exclude the reserved IOVA regions in the stage-1 HWPT hence exclude
+them in the device's DMA address space.
 
-Reserved IOVA regions except for the IOMMU_RESV_DIRECT_RELAXABLE type
-should be excluded from the device's DMA address space. For single stage
-translation configuration, such reserved regions are excluded in the
-attaching HWPT that is managed by kernel. While for nested translation
-configuration, there are two stage HWPTs, the reserved regions should be
-excluded in stage-1 HWPT which is managed by userspace. The current code
-always excludes the reserved regions in the stage-2 HWPT which is kernel
-managed. This is incorrect. Instead, the reserved regions should be
-reported to userspace and excluded in stage-1 HWPT.
+This can also be used to figure out allowed IOVAs of an IOAS.
 
-Besides above, the IOMMU_RESV_SW_MSI type region needs to be excluded in
-the stage-2 HWPT even in the nested translation configuration on ARM. So
-the IOMMU_RESV_SW_MSI type region should always be excluded in the kernel
-managed HWPT.
-
-This adds a boolean argument to enforce IOMMU_RESV_SW_MSI only, if attaching
-HWPT is a user-managed one, i.e. hwpt->parent must be valid, resulting
-"!!hwpt->parent" to be true, hence only add the IOMMU_RESV_SW_MSI region to
-the stage-2 HWPT reserved iovas.
-
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/iommufd/device.c          | 6 ++++--
- drivers/iommu/iommufd/io_pagetable.c    | 5 ++++-
- drivers/iommu/iommufd/iommufd_private.h | 3 ++-
- 3 files changed, 10 insertions(+), 4 deletions(-)
+ drivers/iommu/iommufd/main.c | 54 ++++++++++++++++++++++++++++++++++++
+ include/uapi/linux/iommufd.h | 46 ++++++++++++++++++++++++++++++
+ 2 files changed, 100 insertions(+)
 
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 97e4e5f5aca0..c0917683097f 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -347,7 +347,8 @@ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
- 	}
+diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
+index bd3efc1d8509..510db114fc61 100644
+--- a/drivers/iommu/iommufd/main.c
++++ b/drivers/iommu/iommufd/main.c
+@@ -250,6 +250,57 @@ static int iommufd_get_hw_info(struct iommufd_ucmd *ucmd)
+ 	return rc;
+ }
  
- 	rc = iopt_table_enforce_dev_resv_regions(&hwpt->ioas->iopt, idev->dev,
--						 &idev->igroup->sw_msi_start);
-+						 &idev->igroup->sw_msi_start,
-+						 !!hwpt->parent);
- 	if (rc)
- 		goto err_unlock;
- 
-@@ -445,7 +446,8 @@ iommufd_device_do_replace(struct iommufd_device *idev,
- 	if (hwpt->ioas != old_hwpt->ioas) {
- 		list_for_each_entry(cur, &igroup->device_list, group_item) {
- 			rc = iopt_table_enforce_dev_resv_regions(
--				&hwpt->ioas->iopt, cur->dev, NULL);
-+				&hwpt->ioas->iopt, cur->dev, NULL,
-+				!!hwpt->parent);
- 			if (rc)
- 				goto err_unresv;
- 		}
-diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
-index 4d095115c2d0..e658261f44ed 100644
---- a/drivers/iommu/iommufd/io_pagetable.c
-+++ b/drivers/iommu/iommufd/io_pagetable.c
-@@ -1172,7 +1172,8 @@ void iopt_remove_access(struct io_pagetable *iopt,
- /* Narrow the valid_iova_itree to include reserved ranges from a device. */
- int iopt_table_enforce_dev_resv_regions(struct io_pagetable *iopt,
- 					struct device *dev,
--					phys_addr_t *sw_msi_start)
-+					phys_addr_t *sw_msi_start,
-+					bool sw_msi_only)
- {
- 	struct iommu_resv_region *resv;
- 	LIST_HEAD(resv_regions);
-@@ -1198,6 +1199,8 @@ int iopt_table_enforce_dev_resv_regions(struct io_pagetable *iopt,
- 			num_sw_msi++;
- 		}
- 
-+		if (sw_msi_only && resv->type != IOMMU_RESV_SW_MSI)
++static int iommufd_resv_iova_ranges(struct iommufd_ucmd *ucmd)
++{
++	struct iommu_resv_iova_ranges *cmd = ucmd->cmd;
++	struct iommu_resv_iova_range __user *ranges;
++	struct iommu_resv_region *resv;
++	struct iommufd_device *idev;
++	LIST_HEAD(resv_regions);
++	u32 max_iovas;
++	int rc;
++
++	if (cmd->__reserved)
++		return -EOPNOTSUPP;
++
++	idev = iommufd_get_device(ucmd, cmd->dev_id);
++	if (IS_ERR(idev))
++		return PTR_ERR(idev);
++
++	max_iovas = cmd->num_iovas;
++	ranges = u64_to_user_ptr(cmd->resv_iovas);
++	cmd->num_iovas = 0;
++
++	iommu_get_resv_regions(idev->dev, &resv_regions);
++
++	list_for_each_entry(resv, &resv_regions, list) {
++		if (resv->type == IOMMU_RESV_DIRECT_RELAXABLE)
 +			continue;
- 		rc = iopt_reserve_iova(iopt, resv->start,
- 				       resv->length - 1 + resv->start, dev);
- 		if (rc)
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 90dcf4041530..268ae0d5ae12 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -79,7 +79,8 @@ void iopt_table_remove_domain(struct io_pagetable *iopt,
- 			      struct iommu_domain *domain);
- int iopt_table_enforce_dev_resv_regions(struct io_pagetable *iopt,
- 					struct device *dev,
--					phys_addr_t *sw_msi_start);
-+					phys_addr_t *sw_msi_start,
-+					bool sw_msi_only);
- int iopt_set_allow_iova(struct io_pagetable *iopt,
- 			struct rb_root_cached *allowed_iova);
- int iopt_reserve_iova(struct io_pagetable *iopt, unsigned long start,
++		if (cmd->num_iovas < max_iovas) {
++			struct iommu_resv_iova_range elm = {
++				.start = resv->start,
++				.last = resv->length - 1 + resv->start,
++			};
++
++			if (copy_to_user(&ranges[cmd->num_iovas], &elm,
++					 sizeof(elm))) {
++				rc = -EFAULT;
++				goto out_put;
++			}
++		}
++		cmd->num_iovas++;
++	}
++	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
++	if (rc)
++		goto out_put;
++	if (cmd->num_iovas > max_iovas)
++		rc = -EMSGSIZE;
++out_put:
++	iommu_put_resv_regions(idev->dev, &resv_regions);
++	iommufd_put_object(&idev->obj);
++	return rc;
++}
++
+ static int iommufd_fops_open(struct inode *inode, struct file *filp)
+ {
+ 	struct iommufd_ctx *ictx;
+@@ -347,6 +398,7 @@ union ucmd_buffer {
+ 	struct iommu_ioas_map map;
+ 	struct iommu_ioas_unmap unmap;
+ 	struct iommu_option option;
++	struct iommu_resv_iova_ranges resv_ranges;
+ 	struct iommu_vfio_ioas vfio_ioas;
+ #ifdef CONFIG_IOMMUFD_TEST
+ 	struct iommu_test_cmd test;
+@@ -389,6 +441,8 @@ static const struct iommufd_ioctl_op iommufd_ioctl_ops[] = {
+ 		 length),
+ 	IOCTL_OP(IOMMU_OPTION, iommufd_option, struct iommu_option,
+ 		 val64),
++	IOCTL_OP(IOMMU_RESV_IOVA_RANGES, iommufd_resv_iova_ranges,
++		 struct iommu_resv_iova_ranges, resv_iovas),
+ 	IOCTL_OP(IOMMU_VFIO_IOAS, iommufd_vfio_ioas, struct iommu_vfio_ioas,
+ 		 __reserved),
+ #ifdef CONFIG_IOMMUFD_TEST
+diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+index d38bc54fd5f2..f2026cde2d64 100644
+--- a/include/uapi/linux/iommufd.h
++++ b/include/uapi/linux/iommufd.h
+@@ -47,6 +47,7 @@ enum {
+ 	IOMMUFD_CMD_VFIO_IOAS,
+ 	IOMMUFD_CMD_HWPT_ALLOC,
+ 	IOMMUFD_CMD_GET_HW_INFO,
++	IOMMUFD_CMD_RESV_IOVA_RANGES,
+ };
+ 
+ /**
+@@ -422,4 +423,49 @@ struct iommu_hw_info {
+ 	__u32 __reserved;
+ };
+ #define IOMMU_GET_HW_INFO _IO(IOMMUFD_TYPE, IOMMUFD_CMD_GET_HW_INFO)
++
++/**
++ * struct iommu_resv_iova_range - ioctl(IOMMU_RESV_IOVA_RANGE)
++ * @start: First IOVA
++ * @last: Inclusive last IOVA
++ *
++ * An interval in IOVA space.
++ */
++struct iommu_resv_iova_range {
++	__aligned_u64 start;
++	__aligned_u64 last;
++};
++
++/**
++ * struct iommu_resv_iova_ranges - ioctl(IOMMU_RESV_IOVA_RANGES)
++ * @size: sizeof(struct iommu_resv_iova_ranges)
++ * @dev_id: device to read resv iova ranges for
++ * @num_iovas: Input/Output total number of resv ranges for the device
++ * @__reserved: Must be 0
++ * @resv_iovas: Pointer to the output array of struct iommu_resv_iova_range
++ *
++ * Query a device for ranges of reserved IOVAs. num_iovas will be set to the
++ * total number of iovas and the resv_iovas[] will be filled in as space
++ * permits.
++ *
++ * On input num_iovas is the length of the resv_iovas array. On output it is
++ * the total number of iovas filled in. The ioctl will return -EMSGSIZE and
++ * set num_iovas to the required value if num_iovas is too small. In this
++ * case the caller should allocate a larger output array and re-issue the
++ * ioctl.
++ *
++ * Under nested translation, userspace should query the reserved IOVAs for a
++ * given device, and report it to the stage-1 I/O page table owner to exclude
++ * the reserved IOVAs. The reserved IOVAs can also be used to figure out the
++ * allowed IOVA ranges for the IOAS that the device is attached to. For detail
++ * see ioctl IOMMU_IOAS_IOVA_RANGES.
++ */
++struct iommu_resv_iova_ranges {
++	__u32 size;
++	__u32 dev_id;
++	__u32 num_iovas;
++	__u32 __reserved;
++	__aligned_u64 resv_iovas;
++};
++#define IOMMU_RESV_IOVA_RANGES _IO(IOMMUFD_TYPE, IOMMUFD_CMD_RESV_IOVA_RANGES)
+ #endif
 -- 
 2.34.1
 
