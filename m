@@ -1,324 +1,248 @@
-Received: from mail-io1-f42.google.com (mail-io1-f42.google.com [209.85.166.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from frasgout12.his.huawei.com (unknown [14.137.139.154])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0B7D569E
-	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 12:10:27 +0000 (UTC)
-Received: by mail-io1-f42.google.com with SMTP id ca18e2360f4ac-786f25bcb40so252377639f.3
-        for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 05:10:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1690200627; x=1690805427;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Fjh0h6en9trTPq3UL6xtT9eD9xJ+RZwfXGu7HnVOnQM=;
-        b=fYpwhXgpj4aiqH/g8yiXHfVqiyT8cx/IiuHsRtC8KDhdP49xFR6I8sIPSLmkdbyjYW
-         9Aga0bhsoBnNsDFcyMveR1f1GqvPZLfEVk8x8hn3k/c2eJJ4e5+G3QYLRRs51tPDO75w
-         C38sUSOCVVvBdqUbk7lvQagQdXrXqKVt2rR2bHPU57UWAJFyWt9yY2TEQIgEltibT5Lt
-         irKnxL2l6WdudyetcGF6vrnHZYW8fp1yBnx+DweHUsV1/CuKB2CoCxndOyM988esSk8+
-         H/4wkbx0xbb/yMOKzeZQKLrOBd3lfZqNuW9W0pdWCXxfDNmn+4e0PDdmeUO59XSxt+Tp
-         DbHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690200627; x=1690805427;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Fjh0h6en9trTPq3UL6xtT9eD9xJ+RZwfXGu7HnVOnQM=;
-        b=CoSs+G4TveH0M3sxEHpxO8xJ0mjFAVTzXefAS3AXrcGPIUTqH2srJa2Z0KDSxmEp5C
-         NwnKlRoCTL9pTggcycRI8yCNvg+fWqkhE50khIFf5/o71QTQ6RTPEqAVsRVvFXh6qVcF
-         7WJYPWuIbxOgZ62fLxsu/3lpovD1Lj/1VdeV05v9KMaWFuuS/1hl/D96v4R23lJNpft9
-         w1wjPqqgOFzzdXrMMHHRFoMNP5C7EFii7fzbl2ZKJgLh11uWl8N/G84GQytyCOXcyvv7
-         oT5Z/OUnXDEMBYgz3hf09NJxoDufjZTtdqBi0a1dgeoRFbnG4wp+iMs+0o5y7wl7X1iy
-         IrYA==
-X-Gm-Message-State: ABy/qLZEKPb/CWIl8EPmMqqvmsq51rt1VSP8ozn6NNG2aijtk6AQisOT
-	ZO8vJBz/shod9/Xm38Mvi1/bW65NqRrV5bhSh7RDghBM7QGpfRhuZ8sY+w==
-X-Google-Smtp-Source: APBJJlF8o/rjh4ZW0dGde/YzvOexkeJwSIOSwjwUwtG37ZHxfebzgyn5UwgFaoPaCG6u6O0ZqG5btw4EDIhAVhccHw8=
-X-Received: by 2002:a05:6e02:1090:b0:348:8b32:7ca3 with SMTP id
- r16-20020a056e02109000b003488b327ca3mr8136105ilj.5.1690200626675; Mon, 24 Jul
- 2023 05:10:26 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B29D6130
+	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 12:14:07 +0000 (UTC)
+Received: from mail02.huawei.com (unknown [172.18.147.229])
+	by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4R8dz85g28z9yMym
+	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 20:00:52 +0800 (CST)
+Received: from A2101119013HW2.china.huawei.com (unknown [10.81.222.124])
+	by APP2 (Coremail) with SMTP id GxC2BwA3_lTGar5ky0byBA--.27936S4;
+	Mon, 24 Jul 2023 13:13:39 +0100 (CET)
+From: Petr Tesarik <petrtesarik@huaweicloud.com>
+To: Stefano Stabellini <sstabellini@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)),
+	"H. Peter Anvin" <hpa@zytor.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Juergen Gross <jgross@suse.com>,
+	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Hans de Goede <hdegoede@redhat.com>,
+	Sakari Ailus <sakari.ailus@linux.intel.com>,
+	James Seo <james@equiv.tech>,
+	James Clark <james.clark@arm.com>,
+	Kees Cook <keescook@chromium.org>,
+	xen-devel@lists.xenproject.org (moderated list:XEN HYPERVISOR ARM),
+	linux-arm-kernel@lists.infradead.org (moderated list:ARM PORT),
+	linux-kernel@vger.kernel.org (open list),
+	linux-mips@vger.kernel.org (open list:MIPS),
+	iommu@lists.linux.dev (open list:XEN SWIOTLB SUBSYSTEM)
+Cc: Roberto Sassu <roberto.sassu@huaweicloud.com>,
+	petr@tesarici.cz
+Subject: [PATCH v5 2/9] swiotlb: make io_tlb_default_mem local to swiotlb.c
+Date: Mon, 24 Jul 2023 14:12:38 +0200
+Message-Id: <dd548fcaf2e1d413e37081d6becefb6bbe43bae6.1690200598.git.petr.tesarik.ext@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1690200598.git.petr.tesarik.ext@huawei.com>
+References: <cover.1690200598.git.petr.tesarik.ext@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1689792825.git.tjeznach@rivosinc.com> <d62ceb33620cab766d809e6bbf30eaf5b46bc955.1689792825.git.tjeznach@rivosinc.com>
- <CANXhq0r=2eqpy9wLjVt1U0J7=LpnJLcKV7N9d90jvCss=7+Fzg@mail.gmail.com>
- <CAK9=C2Vg9eR5LJPeqDDQ0pHZcrT5DOUzA8_wYEVEjfnhb6s8pw@mail.gmail.com> <CANXhq0oTrU_-OQroW7H+hvxcU7YROhkgdCF9g_WtPTzVFQL7gA@mail.gmail.com>
-In-Reply-To: <CANXhq0oTrU_-OQroW7H+hvxcU7YROhkgdCF9g_WtPTzVFQL7gA@mail.gmail.com>
-From: Anup Patel <apatel@ventanamicro.com>
-Date: Mon, 24 Jul 2023 17:40:14 +0530
-Message-ID: <CAK9=C2XoQjPzZ5yB5jfTbee4-Pb8GgFAZRbfcMwMk9pyo39WxQ@mail.gmail.com>
-Subject: Re: [PATCH 03/11] dt-bindings: Add RISC-V IOMMU bindings
-To: Zong Li <zong.li@sifive.com>
-Cc: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Paul Walmsley <paul.walmsley@sifive.com>, Albert Ou <aou@eecs.berkeley.edu>, linux@rivosinc.com, 
-	linux-kernel@vger.kernel.org, Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Nick Kossifidis <mick@ics.forth.gr>, linux-riscv@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:GxC2BwA3_lTGar5ky0byBA--.27936S4
+X-Coremail-Antispam: 1UD129KBjvJXoW3GF1xCw43Xr43XFW5XrW5KFg_yoW7CF1fpr
+	yUAFWrKF42qr1xCrW3Cw1kAF15K3Z2kay7CFyS9w1Y9F15Jwn8JFWDtrWYyr1rJrW09F4f
+	JFy0vryakFsrZw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUmq14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jryl82xGYIkIc2
+	x26xkF7I0E14v26ryj6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
+	Y4vE2Ix0cI8IcVAFwI0_JFI_Gr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j6F4UJw
+	A2z4x0Y4vEx4A2jsIE14v26r4j6F4UM28EF7xvwVC2z280aVCY1x0267AKxVW8Jr0_Cr1U
+	M2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjx
+	v20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1l
+	F7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2
+	IY04v7MxkF7I0Ew4C26cxK6c8Ij28IcwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkE
+	bVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67
+	AF67kF1VAFwI0_Wrv_Gr1UMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4l
+	IxAIcVC0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r
+	1xMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr1j6F4UJbIY
+	CTnIWIevJa73UjIFyTuYvjfUn3kuUUUUU
+X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
+X-CFilter-Loop: Reflected
 
-On Mon, Jul 24, 2023 at 5:01=E2=80=AFPM Zong Li <zong.li@sifive.com> wrote:
->
-> On Mon, Jul 24, 2023 at 6:02=E2=80=AFPM Anup Patel <apatel@ventanamicro.c=
-om> wrote:
-> >
-> > On Mon, Jul 24, 2023 at 1:33=E2=80=AFPM Zong Li <zong.li@sifive.com> wr=
-ote:
-> > >
-> > > On Thu, Jul 20, 2023 at 3:35=E2=80=AFAM Tomasz Jeznach <tjeznach@rivo=
-sinc.com> wrote:
-> > > >
-> > > > From: Anup Patel <apatel@ventanamicro.com>
-> > > >
-> > > > We add DT bindings document for RISC-V IOMMU platform and PCI devic=
-es
-> > > > defined by the RISC-V IOMMU specification.
-> > > >
-> > > > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> > > > ---
-> > > >  .../bindings/iommu/riscv,iommu.yaml           | 146 ++++++++++++++=
-++++
-> > > >  1 file changed, 146 insertions(+)
-> > > >  create mode 100644 Documentation/devicetree/bindings/iommu/riscv,i=
-ommu.yaml
-> > > >
-> > > > diff --git a/Documentation/devicetree/bindings/iommu/riscv,iommu.ya=
-ml b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
-> > > > new file mode 100644
-> > > > index 000000000000..8a9aedb61768
-> > > > --- /dev/null
-> > > > +++ b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
-> > > > @@ -0,0 +1,146 @@
-> > > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > > > +%YAML 1.2
-> > > > +---
-> > > > +$id: http://devicetree.org/schemas/iommu/riscv,iommu.yaml#
-> > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > > > +
-> > > > +title: RISC-V IOMMU Implementation
-> > > > +
-> > > > +maintainers:
-> > > > +  - Tomasz Jeznach <tjeznach@rivosinc.com>
-> > > > +
-> > > > +description:
-> > > > +  The RISC-V IOMMU specificaiton defines an IOMMU for RISC-V platf=
-orms
-> > > > +  which can be a regular platform device or a PCI device connected=
- to
-> > > > +  the host root port.
-> > > > +
-> > > > +  The RISC-V IOMMU provides two stage translation, device director=
-y table,
-> > > > +  command queue and fault reporting as wired interrupt or MSIx eve=
-nt for
-> > > > +  both PCI and platform devices.
-> > > > +
-> > > > +  Visit https://github.com/riscv-non-isa/riscv-iommu for more deta=
-ils.
-> > > > +
-> > > > +properties:
-> > > > +  compatible:
-> > > > +    oneOf:
-> > > > +      - description: RISC-V IOMMU as a platform device
-> > > > +        items:
-> > > > +          - enum:
-> > > > +              - vendor,chip-iommu
-> > > > +          - const: riscv,iommu
-> > > > +
-> > > > +      - description: RISC-V IOMMU as a PCI device connected to roo=
-t port
-> > > > +        items:
-> > > > +          - enum:
-> > > > +              - vendor,chip-pci-iommu
-> > > > +          - const: riscv,pci-iommu
-> > > > +
-> > > > +  reg:
-> > > > +    maxItems: 1
-> > > > +    description:
-> > > > +      For RISC-V IOMMU as a platform device, this represents the M=
-MIO base
-> > > > +      address of registers.
-> > > > +
-> > > > +      For RISC-V IOMMU as a PCI device, this represents the PCI-PC=
-I bridge
-> > > > +      details as described in Documentation/devicetree/bindings/pc=
-i/pci.txt
-> > > > +
-> > > > +  '#iommu-cells':
-> > > > +    const: 2
-> > > > +    description: |
-> > > > +      Each IOMMU specifier represents the base device ID and numbe=
-r of
-> > > > +      device IDs.
-> > > > +
-> > > > +  interrupts:
-> > > > +    minItems: 1
-> > > > +    maxItems: 16
-> > > > +    description:
-> > > > +      The presence of this property implies that given RISC-V IOMM=
-U uses
-> > > > +      wired interrupts to notify the RISC-V HARTS (or CPUs).
-> > > > +
-> > > > +  msi-parent:
-> > > > +    description:
-> > > > +      The presence of this property implies that given RISC-V IOMM=
-U uses
-> > > > +      MSIx to notify the RISC-V HARTs (or CPUs). This property sho=
-uld be
-> > > > +      considered only when the interrupts property is absent.
-> > > > +
-> > > > +  dma-coherent:
-> > > > +    description:
-> > > > +      Present if page table walks and DMA accessed made by the RIS=
-C-V IOMMU
-> > > > +      are cache coherent with the CPU.
-> > > > +
-> > > > +  power-domains:
-> > > > +    maxItems: 1
-> > > > +
-> > >
-> > > In RISC-V IOMMU, certain devices can be set to bypass mode when the
-> > > IOMMU is in translation mode. To identify the devices that require
-> > > bypass mode by default, does it be sensible to add a property to
-> > > indicate this behavior?
-> >
-> > Bypass mode for a device is a property of that device (similar to dma-c=
-oherent)
-> > and not of the IOMMU. Other architectures (ARM and x86) never added suc=
-h
-> > a device property for bypass mode so I guess it is NOT ADVISABLE to do =
-it.
-> >
-> > If this is REALLY required then we can do something similar to the QCOM
-> > SMMU driver where they have a whitelist of devices which are allowed to
-> > be in bypass mode (i.e. IOMMU_DOMAIN_IDENTITY) based their device
-> > compatible string and any device outside this whitelist is blocked by d=
-efault.
-> >
->
-> I have considered that adding the property of bypass mode to that
-> device would be more appropriate. However, if we want to define this
-> property for the device, it might need to go through the generic IOMMU
-> dt-bindings, but I'm not sure if other IOMMU devices need this. I am
-> bringing up this topic here because I would like to explore if there
-> are any solutions on the IOMMU side, such as a property that indicates
-> the phandle of devices wishing to set bypass mode, somewhat similar to
-> the whitelist you mentioned earlier. Do you think we should address
-> this? After all, this is a case of RISC-V IOMMU supported.
+From: Petr Tesarik <petr.tesarik.ext@huawei.com>
 
-Bypass mode is a common feature across IOMMUs. Other IOMMUs don't
-have a special property for bypass mode at device-level or at IOMMU level,
-which clearly indicates that defining a RISC-V specific property is not the
-right way to go.
+SWIOTLB implementation details should not be exposed to the rest of the
+kernel. This will allow to make changes to the implementation without
+modifying non-swiotlb code.
 
-The real question is how do we set IOMMU_DOMAIN_IDENTITY (i.e.
-bypass/identity domain) as the default domain for certain devices ?
+To avoid breaking existing users, provide helper functions for the few
+required fields.
 
-One possible option is to implement def_domain_type() IOMMU operation
-for RISC-V IOMMU which will return IOMMU_DOMAIN_IDENTITY for
-certain devices based on compatible string matching (i.e. whitelist of
-devices). As an example, refer qcom_smmu_def_domain_type()
-of drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+As a bonus, using a helper function to initialize struct device allows to
+get rid of an #ifdef in driver core.
 
-Regards,
-Anup
+Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
+---
+ arch/mips/pci/pci-octeon.c |  2 +-
+ drivers/base/core.c        |  4 +---
+ drivers/xen/swiotlb-xen.c  |  2 +-
+ include/linux/swiotlb.h    | 19 ++++++++++++++++++-
+ kernel/dma/swiotlb.c       | 31 ++++++++++++++++++++++++++++++-
+ 5 files changed, 51 insertions(+), 7 deletions(-)
 
+diff --git a/arch/mips/pci/pci-octeon.c b/arch/mips/pci/pci-octeon.c
+index e457a18cbdc5..d19d9d456309 100644
+--- a/arch/mips/pci/pci-octeon.c
++++ b/arch/mips/pci/pci-octeon.c
+@@ -664,7 +664,7 @@ static int __init octeon_pci_setup(void)
+ 
+ 		/* BAR1 movable regions contiguous to cover the swiotlb */
+ 		octeon_bar1_pci_phys =
+-			io_tlb_default_mem.start & ~((1ull << 22) - 1);
++			default_swiotlb_base() & ~((1ull << 22) - 1);
+ 
+ 		for (index = 0; index < 32; index++) {
+ 			union cvmx_pci_bar1_indexx bar1_index;
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index 3dff5037943e..46d1d78c5beb 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -3108,9 +3108,7 @@ void device_initialize(struct device *dev)
+     defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
+ 	dev->dma_coherent = dma_default_coherent;
+ #endif
+-#ifdef CONFIG_SWIOTLB
+-	dev->dma_io_tlb_mem = &io_tlb_default_mem;
+-#endif
++	swiotlb_dev_init(dev);
+ }
+ EXPORT_SYMBOL_GPL(device_initialize);
+ 
+diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+index 67aa74d20162..946bd56f0ac5 100644
+--- a/drivers/xen/swiotlb-xen.c
++++ b/drivers/xen/swiotlb-xen.c
+@@ -381,7 +381,7 @@ xen_swiotlb_sync_sg_for_device(struct device *dev, struct scatterlist *sgl,
+ static int
+ xen_swiotlb_dma_supported(struct device *hwdev, u64 mask)
+ {
+-	return xen_phys_to_dma(hwdev, io_tlb_default_mem.end - 1) <= mask;
++	return xen_phys_to_dma(hwdev, default_swiotlb_limit()) <= mask;
+ }
+ 
+ const struct dma_map_ops xen_swiotlb_dma_ops = {
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index 4e52cd5e0bdc..3b372364a144 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -110,7 +110,6 @@ struct io_tlb_mem {
+ 	atomic_long_t used_hiwater;
+ #endif
+ };
+-extern struct io_tlb_mem io_tlb_default_mem;
+ 
+ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
+ {
+@@ -128,13 +127,21 @@ static inline bool is_swiotlb_force_bounce(struct device *dev)
+ 
+ void swiotlb_init(bool addressing_limited, unsigned int flags);
+ void __init swiotlb_exit(void);
++void swiotlb_dev_init(struct device *dev);
+ size_t swiotlb_max_mapping_size(struct device *dev);
+ bool is_swiotlb_active(struct device *dev);
+ void __init swiotlb_adjust_size(unsigned long size);
++phys_addr_t default_swiotlb_base(void);
++phys_addr_t default_swiotlb_limit(void);
+ #else
+ static inline void swiotlb_init(bool addressing_limited, unsigned int flags)
+ {
+ }
++
++static inline void swiotlb_dev_init(struct device *dev)
++{
++}
++
+ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
+ {
+ 	return false;
+@@ -159,6 +166,16 @@ static inline bool is_swiotlb_active(struct device *dev)
+ static inline void swiotlb_adjust_size(unsigned long size)
+ {
+ }
++
++static inline phys_addr_t default_swiotlb_base(void)
++{
++	return 0;
++}
++
++static inline phys_addr_t default_swiotlb_limit(void)
++{
++	return 0;
++}
+ #endif /* CONFIG_SWIOTLB */
+ 
+ extern void swiotlb_print_info(void);
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 66fc8ec9ae45..6734ef7b9d8d 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -71,7 +71,7 @@ struct io_tlb_slot {
+ static bool swiotlb_force_bounce;
+ static bool swiotlb_force_disable;
+ 
+-struct io_tlb_mem io_tlb_default_mem;
++static struct io_tlb_mem io_tlb_default_mem;
+ 
+ static unsigned long default_nslabs = IO_TLB_DEFAULT_SIZE >> IO_TLB_SHIFT;
+ static unsigned long default_nareas;
+@@ -489,6 +489,15 @@ void __init swiotlb_exit(void)
+ 	memset(mem, 0, sizeof(*mem));
+ }
+ 
++/**
++ * swiotlb_dev_init() - initialize swiotlb fields in &struct device
++ * @dev:	Device to be initialized.
++ */
++void swiotlb_dev_init(struct device *dev)
++{
++	dev->dma_io_tlb_mem = &io_tlb_default_mem;
++}
++
+ /*
+  * Return the offset into a iotlb slot required to keep the device happy.
+  */
+@@ -961,6 +970,26 @@ bool is_swiotlb_active(struct device *dev)
+ }
+ EXPORT_SYMBOL_GPL(is_swiotlb_active);
+ 
++/**
++ * default_swiotlb_base() - get the base address of the default SWIOTLB
++ *
++ * Get the lowest physical address used by the default software IO TLB pool.
++ */
++phys_addr_t default_swiotlb_base(void)
++{
++	return io_tlb_default_mem.start;
++}
++
++/**
++ * default_swiotlb_limit() - get the address limit of the default SWIOTLB
++ *
++ * Get the highest physical address used by the default software IO TLB pool.
++ */
++phys_addr_t default_swiotlb_limit(void)
++{
++	return io_tlb_default_mem.end - 1;
++}
++
+ #ifdef CONFIG_DEBUG_FS
+ 
+ static int io_tlb_used_get(void *data, u64 *val)
+-- 
+2.25.1
 
-
-
-
->
-> > Regards,
-> > Anup
-> >
-> > >
-> > > > +required:
-> > > > +  - compatible
-> > > > +  - reg
-> > > > +  - '#iommu-cells'
-> > > > +
-> > > > +additionalProperties: false
-> > > > +
-> > > > +examples:
-> > > > +  - |
-> > > > +    /* Example 1 (IOMMU platform device with wired interrupts) */
-> > > > +    immu1: iommu@1bccd000 {
-> > > > +        compatible =3D "vendor,chip-iommu", "riscv,iommu";
-> > > > +        reg =3D <0x1bccd000 0x1000>;
-> > > > +        interrupt-parent =3D <&aplic_smode>;
-> > > > +        interrupts =3D <32 4>, <33 4>, <34 4>, <35 4>;
-> > > > +        #iommu-cells =3D <2>;
-> > > > +    };
-> > > > +
-> > > > +    /* Device with two IOMMU device IDs, 0 and 7 */
-> > > > +    master1 {
-> > > > +        iommus =3D <&immu1 0 1>, <&immu1 7 1>;
-> > > > +    };
-> > > > +
-> > > > +  - |
-> > > > +    /* Example 2 (IOMMU platform device with MSIs) */
-> > > > +    immu2: iommu@1bcdd000 {
-> > > > +        compatible =3D "vendor,chip-iommu", "riscv,iommu";
-> > > > +        reg =3D <0x1bccd000 0x1000>;
-> > > > +        msi-parent =3D <&imsics_smode>;
-> > > > +        #iommu-cells =3D <2>;
-> > > > +    };
-> > > > +
-> > > > +    bus {
-> > > > +        #address-cells =3D <2>;
-> > > > +        #size-cells =3D <2>;
-> > > > +
-> > > > +        /* Device with IOMMU device IDs ranging from 32 to 64 */
-> > > > +        master1 {
-> > > > +                iommus =3D <&immu2 32 32>;
-> > > > +        };
-> > > > +
-> > > > +        pcie@40000000 {
-> > > > +            compatible =3D "pci-host-cam-generic";
-> > > > +            device_type =3D "pci";
-> > > > +            #address-cells =3D <3>;
-> > > > +            #size-cells =3D <2>;
-> > > > +            bus-range =3D <0x0 0x1>;
-> > > > +
-> > > > +            /* CPU_PHYSICAL(2)  SIZE(2) */
-> > > > +            reg =3D <0x0 0x40000000 0x0 0x1000000>;
-> > > > +
-> > > > +            /* BUS_ADDRESS(3)  CPU_PHYSICAL(2)  SIZE(2) */
-> > > > +            ranges =3D <0x01000000 0x0 0x01000000  0x0 0x01000000 =
- 0x0 0x00010000>,
-> > > > +                     <0x02000000 0x0 0x41000000  0x0 0x41000000  0=
-x0 0x3f000000>;
-> > > > +
-> > > > +            #interrupt-cells =3D <0x1>;
-> > > > +
-> > > > +            /* PCI_DEVICE(3)  INT#(1)  CONTROLLER(PHANDLE)  CONTRO=
-LLER_DATA(2) */
-> > > > +            interrupt-map =3D <   0x0 0x0 0x0  0x1  &aplic_smode  =
-0x4 0x1>,
-> > > > +                            < 0x800 0x0 0x0  0x1  &aplic_smode  0x=
-5 0x1>,
-> > > > +                            <0x1000 0x0 0x0  0x1  &aplic_smode  0x=
-6 0x1>,
-> > > > +                            <0x1800 0x0 0x0  0x1  &aplic_smode  0x=
-7 0x1>;
-> > > > +
-> > > > +            /* PCI_DEVICE(3)  INT#(1) */
-> > > > +            interrupt-map-mask =3D <0xf800 0x0 0x0  0x7>;
-> > > > +
-> > > > +            msi-parent =3D <&imsics_smode>;
-> > > > +
-> > > > +            /* Devices with bus number 0-127 are mastered via immu=
-2 */
-> > > > +            iommu-map =3D <0x0000 &immu2 0x0000 0x8000>;
-> > > > +        };
-> > > > +    };
-> > > > +...
-> > > > --
-> > > > 2.34.1
-> > > >
-> > > >
-> > > > _______________________________________________
-> > > > linux-riscv mailing list
-> > > > linux-riscv@lists.infradead.org
-> > > > http://lists.infradead.org/mailman/listinfo/linux-riscv
