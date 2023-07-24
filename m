@@ -1,32 +1,32 @@
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D32765679
-	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 10:59:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AB28525D
+	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 10:59:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690196379; x=1721732379;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=xO88BGppNsOOGrLE9oWJosFPDbrRTt2P1G2mxcE66FY=;
-  b=P7g+vBSv6NRDAnnZFvVcGhAq+sEMmlGxLovTKI1/25BB+dt6pqQt8WK/
-   Lcl7OZzAotvm1Keu9jsLxEQiZGE+smtsQzXx0SSBOzwHthNcD+smOx/4m
-   PdYD66jBxSXzvw/e0GIxUL2gkHtGnjGXlcOeNHkCJcyfT7SyPgTYTsKie
-   FZ9nrellnFngAzQy3l6+kJ4bqmXLIj8AhmlJ9C82VojrzKy2+XGDXtQzr
-   jDTyVXny1F9d8u/6lUCQszdRUZL0IsQPBqP8yJPRcjZRuPDYFeOoqMKCy
-   vI575aYA3TF21iEjc+ZV0FoWMsk8i4omHEIyEZDlJW/vw3ZMj8RroUJJn
+  t=1690196382; x=1721732382;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=FmV1cSHGwjqcdyH4/YjGjjiaeF0uPb8tHeku/Oi1wN8=;
+  b=RSnZ9vO6jCHULn6f/ldAJw944cmAE5LIbjlkckUgB1CTyAVyllDntcCn
+   9b50gTse05yhmYqNZLlcDXgn8ehesQtZPX/QWdZJ900O1RaLKGRhI6pbA
+   WFhhrs3OpnZFZb0qzz+HqOKmLlwRMGltJR3td/ygSJND/100t78aeLUQs
+   WtffWka+vkIH3rO9/e3XC5xwqOhriNa83zP9bIwTAsMk9QlTEZUnfgP28
+   6GiuuC66za6+NpSaO2lEhNRMcvEw1CZeyM+8jvxTjHb6DJcj1fJd2g/Hh
+   MtsciH94ReVQAK50s+ssPAAognRGIUFz6a21iDLNpUviawAxl5nBsqQmu
    A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="347012206"
+X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="347012216"
 X-IronPort-AV: E=Sophos;i="6.01,228,1684825200"; 
-   d="scan'208";a="347012206"
+   d="scan'208";a="347012216"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 03:59:38 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 03:59:39 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="839409009"
+X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="839409012"
 X-IronPort-AV: E=Sophos;i="6.01,228,1684825200"; 
-   d="scan'208";a="839409009"
+   d="scan'208";a="839409012"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga002.fm.intel.com with ESMTP; 24 Jul 2023 03:59:37 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 24 Jul 2023 03:59:38 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -51,10 +51,12 @@ Cc: cohuck@redhat.com,
 	linux-kernel@vger.kernel.org,
 	linux-kselftest@vger.kernel.org,
 	zhenzhong.duan@intel.com
-Subject: [PATCH v4 0/4] iommufd: Add iommu hardware info reporting
-Date: Mon, 24 Jul 2023 03:59:32 -0700
-Message-Id: <20230724105936.107042-1-yi.l.liu@intel.com>
+Subject: [PATCH v4 1/4] iommu: Move dev_iommu_ops() to private header
+Date: Mon, 24 Jul 2023 03:59:33 -0700
+Message-Id: <20230724105936.107042-2-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230724105936.107042-1-yi.l.liu@intel.com>
+References: <20230724105936.107042-1-yi.l.liu@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -63,76 +65,62 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-iommufd gives userspace the capability to manipulate iommu subsytem.
-e.g. DMA map/unmap etc. In the near future, it will support iommu nested
-translation. Different platform vendors have different implementation for
-the nested translation. For example, Intel VT-d supports using guest I/O
-page table as the stage-1 translation table. This requires guest I/O page
-table be compatible with hardware IOMMU. So before set up nested translation,
-userspace needs to know the hardware iommu information to understand the
-nested translation requirements.
+dev_iommu_ops() is essentially only used in iommu subsystem, so
+move to a private header to avoid being abused by other drivers.
 
-This series reports the iommu hardware information for a given device
-which has been bound to iommufd. It is preparation work for userspace to
-allocate hwpt for given device. Like the nested translation support[1].
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+---
+ drivers/iommu/iommu-priv.h | 11 +++++++++++
+ include/linux/iommu.h      | 11 -----------
+ 2 files changed, 11 insertions(+), 11 deletions(-)
 
-This series introduces an iommu op to report the iommu hardware info,
-and an ioctl IOMMU_GET_HW_INFO is added to report such hardware info to
-user. enum iommu_hw_info_type is defined to differentiate the iommu hardware
-info reported to user hence user can decode them. This series only adds the
-framework for iommu hw info reporting, the complete reporting path needs vendor
-specific definition and driver support. The full code is available in [1]
-as well.
-
-[1] https://github.com/yiliu1765/iommufd/tree/iommufd_nesting
-
-Change log:
-
-v4:
- - Rename ioctl to IOMMU_GET_HW_INFO and structure to iommu_hw_info
- - Move the iommufd_get_hw_info handler to main.c
- - Place iommu_hw_info prior to iommu_hwpt_alloc
- - Update the function namings accordingly
- - Update uapi kdocs
-
-v3: https://lore.kernel.org/linux-iommu/20230511143024.19542-1-yi.l.liu@intel.com/#t
- - Add r-b from Baolu
- - Rename IOMMU_HW_INFO_TYPE_DEFAULT to be IOMMU_HW_INFO_TYPE_NONE to
-   better suit what it means
- - Let IOMMU_DEVICE_GET_HW_INFO succeed even the underlying iommu driver
-   does not have driver-specific data to report per below remark.
-   https://lore.kernel.org/kvm/ZAcwJSK%2F9UVI9LXu@nvidia.com/
-
-v2: https://lore.kernel.org/linux-iommu/20230309075358.571567-1-yi.l.liu@intel.com/
- - Drop patch 05 of v1 as it is already covered by other series
- - Rename the capability info to be iommu hardware info
-
-v1: https://lore.kernel.org/linux-iommu/20230209041642.9346-1-yi.l.liu@intel.com/
-
-Regards,
-	Yi Liu
-
-Lu Baolu (1):
-  iommu: Add new iommu op to get iommu hardware information
-
-Nicolin Chen (1):
-  iommufd/selftest: Add coverage for IOMMU_GET_HW_INFO ioctl
-
-Yi Liu (2):
-  iommu: Move dev_iommu_ops() to private header
-  iommufd: Add IOMMU_GET_HW_INFO
-
- drivers/iommu/iommu-priv.h                    | 11 +++
- drivers/iommu/iommufd/device.c                |  1 +
- drivers/iommu/iommufd/iommufd_test.h          |  9 +++
- drivers/iommu/iommufd/main.c                  | 76 +++++++++++++++++++
- drivers/iommu/iommufd/selftest.c              | 16 ++++
- include/linux/iommu.h                         | 27 ++++---
- include/uapi/linux/iommufd.h                  | 44 +++++++++++
- tools/testing/selftests/iommu/iommufd.c       | 17 ++++-
- tools/testing/selftests/iommu/iommufd_utils.h | 26 +++++++
- 9 files changed, 215 insertions(+), 12 deletions(-)
-
+diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
+index 7c8011bfd153..a6e694f59f64 100644
+--- a/drivers/iommu/iommu-priv.h
++++ b/drivers/iommu/iommu-priv.h
+@@ -4,6 +4,17 @@
+ 
+ #include <linux/iommu.h>
+ 
++static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
++{
++	/*
++	 * Assume that valid ops must be installed if iommu_probe_device()
++	 * has succeeded. The device ops are essentially for internal use
++	 * within the IOMMU subsystem itself, so we should be able to trust
++	 * ourselves not to misuse the helper.
++	 */
++	return dev->iommu->iommu_dev->ops;
++}
++
+ int iommu_group_replace_domain(struct iommu_group *group,
+ 			       struct iommu_domain *new_domain);
+ 
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index d31642596675..e0245aa82b75 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -450,17 +450,6 @@ static inline void iommu_iotlb_gather_init(struct iommu_iotlb_gather *gather)
+ 	};
+ }
+ 
+-static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
+-{
+-	/*
+-	 * Assume that valid ops must be installed if iommu_probe_device()
+-	 * has succeeded. The device ops are essentially for internal use
+-	 * within the IOMMU subsystem itself, so we should be able to trust
+-	 * ourselves not to misuse the helper.
+-	 */
+-	return dev->iommu->iommu_dev->ops;
+-}
+-
+ extern int bus_iommu_probe(const struct bus_type *bus);
+ extern bool iommu_present(const struct bus_type *bus);
+ extern bool device_iommu_capable(struct device *dev, enum iommu_cap cap);
 -- 
 2.34.1
 
