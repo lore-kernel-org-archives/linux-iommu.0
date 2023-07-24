@@ -1,72 +1,56 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25A2C17ABB;
-	Sat, 22 Jul 2023 14:02:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690034528; x=1721570528;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=SqJ+O+atMOXabuGL4Lbq05LADBIKGyitXrMQM1qr5Ho=;
-  b=cRNHyiH3vRI+45lSfgTlfrWJNr2ztH+DrP7L5fvqrN2HievMyNBY7AQ+
-   iR/UPJOJnwh8JEipEeJYURydyroSHWXEgsmNI61xvAwnOS5wrK3D1VB3w
-   kArDLbY6ceyQLp8U1QxwgA7/rG8ceV7cgmBTpBNZcVtxGObgyQbRS+fta
-   dXKs5gjuqjmPqST0ezrfOFQZc8yDt0aMUlR4N/aCfufxqBfiiDE1cm5A+
-   yX76HwNVH+OHeWWn2WDVNkWhFBwjihV4bmkHw37zpc1Mzy5elzZ1K/I2A
-   jGH0ZElIkXfre7s5/AWKghBPaR6nlIpEHYOEd70c9CVQEc/XErmIgCKJB
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10779"; a="398090058"
-X-IronPort-AV: E=Sophos;i="6.01,224,1684825200"; 
-   d="scan'208";a="398090058"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2023 07:02:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10779"; a="760278822"
-X-IronPort-AV: E=Sophos;i="6.01,224,1684825200"; 
-   d="scan'208";a="760278822"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.173.108]) ([10.249.173.108])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2023 07:02:02 -0700
-Message-ID: <218edab7-ea1f-8629-4270-046e8b7c7fcc@linux.intel.com>
-Date: Sat, 22 Jul 2023 22:02:00 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7A6E7E9
+	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 00:42:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 980D9C433C8;
+	Mon, 24 Jul 2023 00:42:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+	s=korg; t=1690159329;
+	bh=sxdEGclz4Xf0qnA1MozhK1hB0aUV6i9zLLImahVNvcc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=K5t7aujHVfp7cwlHnTEAaMpERZb2wyfgUQXBQXAMGRWwGajG1+sUuB0LfGoJtAQ0B
+	 UPBIfPOe9mkBTMzAG898v/NOfQzoevvEiZN6bk/vJoDIJzfrMdddHbCtFSdgk5BiF4
+	 I0/Sd/U3ivZwNH/XxWfwjv/2bPXeoBxHWcaI7efE=
+Date: Sun, 23 Jul 2023 17:42:07 -0700
+From: Andrew Morton <akpm@linux-foundation.org>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Yajun Deng <yajun.deng@linux.dev>, corbet@lwn.net,
+ m.szyprowski@samsung.com, robin.murphy@arm.com, paulmck@kernel.org,
+ catalin.marinas@arm.com, rdunlap@infradead.org, peterz@infradead.org,
+ rostedt@goodmis.org, kim.phillips@amd.com, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev, linux-mm@kvack.org
+Subject: Re: [PATCH v3] dma-contiguous: support numa CMA for specified node
+Message-Id: <20230723174207.cfa7ea5e73197399d9521583@linux-foundation.org>
+In-Reply-To: <20230721074209.GA22859@lst.de>
+References: <20230720082517.GA7057@lst.de>
+	<20230712074758.1133272-1-yajun.deng@linux.dev>
+	<25942dafbc7f52488a30c807b6322109539442cf@linux.dev>
+	<20230720115408.GA13114@lst.de>
+	<20230720095941.76803bbda5ad0c5103713d0c@linux-foundation.org>
+	<20230721074209.GA22859@lst.de>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Cc: baolu.lu@linux.intel.com, Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH 03/10] iommu: Add generic_single_device_group()
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>,
- David Woodhouse <dwmw2@infradead.org>, Heiko Stuebner <heiko@sntech.de>,
- iommu@lists.linux.dev, Jernej Skrabec <jernej.skrabec@gmail.com>,
- Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org,
- linux-rockchip@lists.infradead.org, linux-sunxi@lists.linux.dev,
- Orson Zhai <orsonzhai@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
- Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
- Will Deacon <will@kernel.org>, Chunyan Zhang <zhang.lyra@gmail.com>
-References: <3-v1-3c8177327a47+256-iommu_group_locking_jgg@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <3-v1-3c8177327a47+256-iommu_group_locking_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 2023/7/19 3:05, Jason Gunthorpe wrote:
-> This implements the common pattern seen in drivers of a single
-> iommu_group for the entire iommu driver. Implement this in core code
-> so the drivers that want this can select it from their ops.
+On Fri, 21 Jul 2023 09:42:09 +0200 Christoph Hellwig <hch@lst.de> wrote:
+
+> On Thu, Jul 20, 2023 at 09:59:41AM -0700, Andrew Morton wrote:
+> > > Where did this land?  dma patches really should be going through
+> > > the DMA tree..
+> > 
+> > It's in mm-unstable with a note "hch" :)
+> > 
+> > I'll drop it.
 > 
-> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
-> ---
->   drivers/iommu/iommu.c | 25 +++++++++++++++++++++++++
->   include/linux/iommu.h |  3 +++
->   2 files changed, 28 insertions(+)
+> Ah.  And looking at the patch is isn't even pure dma but also has
+> a significant mm side.  If you're fine with it I'll pick it up in
+> the dma-mapping tree in addition to the follow up.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-
-Best regards,
-baolu
+Please do.
