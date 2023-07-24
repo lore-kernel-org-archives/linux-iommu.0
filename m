@@ -1,33 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 773047FA
-	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 01:22:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31357C433CC;
-	Mon, 24 Jul 2023 01:22:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E96777FA
+	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 01:22:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C892AC433C9;
+	Mon, 24 Jul 2023 01:22:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1690161754;
-	bh=qUp5vqA1iYuMeiYgHI22R7egZ7L63vuv2kVGE69DbDs=;
+	s=k20201202; t=1690161769;
+	bh=SryEwRecL/h/LuGScixb9fHQTh1zrXN+ikgoNGQ2X3w=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=CgDgw2/YO/jqdRUtyZWuQyxd/7rksHVrfKHl7N99f5VJUbXYeAWAgmvV6nxdAXXq3
-	 o0fdi4Fhtjyy130xkqjlmpYclgLiOSOGX9bFjQVHpigk7jj9r2sIU/OKIZ/LpFSckJ
-	 1/+zyvv3nS/esdu2JPziRFRTHdBrPwegdRnmwVYatarRSV+HQq8FZAzyA6W++jRjSj
-	 TjEaAoMs0rNmaxukRLxWA0tbxl7RAAT4NnlMAU1GNFKRQJ6CpxYGDBpx4ZWBN6u+xU
-	 cbz3rfFM6WFYlFa9dWU1ykS/8nQaU5JU+g0960BNDcEyr2iNv8i13FifKQeKl1E7Pr
-	 xvPBKiHqRRQZQ==
+	b=TU92PNTQ2Fy3dN5oeAelgI7702RtgATfUf4B0Mz44imHpl/HP2R4jlhm0aNx8Dvei
+	 VlXvahrcHVypd3pg5gvtOptrrATLP72JoXefxv8zndqz5AjS+6DDabDec23QjGHWAr
+	 wYC0Kvs972pP1XcGuchVhxtlxDGlmnVG2LNsKdWplZ1E/oaqXfTqOVxba6z3N9B41w
+	 ODJqzaneZNliy711NVVSDQqJSWH/XFSL0gtNbvHdA1lT54kUMfc9Wj5PRU1kEMpVzi
+	 /rAvuqX7O0E3RnUB1R3N2KLeTLbyaqrFhQpDWQaWBtSP5LJOpjEPf73WDfyXHXMqaO
+	 pKZsoFUAlCdXQ==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: gaoxu <gaoxu2@hihonor.com>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Christoph Hellwig <hch@lst.de>,
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Jerry Snitselaar <jsnitsel@redhat.com>,
+	Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
+	Joerg Roedel <jroedel@suse.de>,
 	Sasha Levin <sashal@kernel.org>,
-	m.szyprowski@samsung.com,
+	corbet@lwn.net,
+	joro@8bytes.org,
+	will@kernel.org,
+	gregkh@linuxfoundation.org,
+	kim.phillips@amd.com,
+	bp@suse.de,
+	eiichi.tsukata@nutanix.com,
+	stephen@networkplumber.org,
+	linux-doc@vger.kernel.org,
 	iommu@lists.linux-foundation.org,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.1 22/41] dma-remap: use kvmalloc_array/kvfree for larger dma memory remap
-Date: Sun, 23 Jul 2023 21:20:55 -0400
-Message-Id: <20230724012118.2316073-22-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.1 25/41] iommu/amd: Introduce Disable IRTE Caching Support
+Date: Sun, 23 Jul 2023 21:20:58 -0400
+Message-Id: <20230724012118.2316073-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230724012118.2316073-1-sashal@kernel.org>
 References: <20230724012118.2316073-1-sashal@kernel.org>
@@ -42,61 +51,163 @@ X-Patchwork-Hint: Ignore
 X-stable-base: Linux 6.1.40
 Content-Transfer-Encoding: 8bit
 
-From: gaoxu <gaoxu2@hihonor.com>
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 
-[ Upstream commit 51ff97d54f02b4444dfc42e380ac4c058e12d5dd ]
+[ Upstream commit 66419036f68a838c00cbccacd6cb2e99da6e5710 ]
 
-If dma_direct_alloc() alloc memory in size of 64MB, the inner function
-dma_common_contiguous_remap() will allocate 128KB memory by invoking
-the function kmalloc_array(). and the kmalloc_array seems to fail to try to
-allocate 128KB mem.
+An Interrupt Remapping Table (IRT) stores interrupt remapping configuration
+for each device. In a normal operation, the AMD IOMMU caches the table
+to optimize subsequent data accesses. This requires the IOMMU driver to
+invalidate IRT whenever it updates the table. The invalidation process
+includes issuing an INVALIDATE_INTERRUPT_TABLE command following by
+a COMPLETION_WAIT command.
 
-Call trace:
-[14977.928623] qcrosvm: page allocation failure: order:5, mode:0x40cc0
-[14977.928638] dump_backtrace.cfi_jt+0x0/0x8
-[14977.928647] dump_stack_lvl+0x80/0xb8
-[14977.928652] warn_alloc+0x164/0x200
-[14977.928657] __alloc_pages_slowpath+0x9f0/0xb4c
-[14977.928660] __alloc_pages+0x21c/0x39c
-[14977.928662] kmalloc_order+0x48/0x108
-[14977.928666] kmalloc_order_trace+0x34/0x154
-[14977.928668] __kmalloc+0x548/0x7e4
-[14977.928673] dma_direct_alloc+0x11c/0x4f8
-[14977.928678] dma_alloc_attrs+0xf4/0x138
-[14977.928680] gh_vm_ioctl_set_fw_name+0x3c4/0x610 [gunyah]
-[14977.928698] gh_vm_ioctl+0x90/0x14c [gunyah]
-[14977.928705] __arm64_sys_ioctl+0x184/0x210
+However, there are cases in which the IRT is updated at a high rate.
+For example, for IOMMU AVIC, the IRTE[IsRun] bit is updated on every
+vcpu scheduling (i.e. amd_iommu_update_ga()). On system with large
+amount of vcpus and VFIO PCI pass-through devices, the invalidation
+process could potentially become a performance bottleneck.
 
-work around by doing kvmalloc_array instead.
+Introducing a new kernel boot option:
 
-Signed-off-by: Gao Xu <gaoxu2@hihonor.com>
-Reviewed-by: Suren Baghdasaryan <surenb@google.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+    amd_iommu=irtcachedis
+
+which disables IRTE caching by setting the IRTCachedis bit in each IOMMU
+Control register, and bypass the IRT invalidation process.
+
+Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
+Co-developed-by: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
+Signed-off-by: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Link: https://lore.kernel.org/r/20230530141137.14376-4-suravee.suthikulpanit@amd.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/dma/remap.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ .../admin-guide/kernel-parameters.txt         |  1 +
+ drivers/iommu/amd/amd_iommu_types.h           |  4 +++
+ drivers/iommu/amd/init.c                      | 36 +++++++++++++++++++
+ 3 files changed, 41 insertions(+)
 
-diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c
-index b4526668072e7..27596f3b4aef3 100644
---- a/kernel/dma/remap.c
-+++ b/kernel/dma/remap.c
-@@ -43,13 +43,13 @@ void *dma_common_contiguous_remap(struct page *page, size_t size,
- 	void *vaddr;
- 	int i;
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 6b838869554b1..71e93d8e2c130 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -323,6 +323,7 @@
+ 				       option with care.
+ 			pgtbl_v1     - Use v1 page table for DMA-API (Default).
+ 			pgtbl_v2     - Use v2 page table for DMA-API.
++			irtcachedis  - Disable Interrupt Remapping Table (IRT) caching.
  
--	pages = kmalloc_array(count, sizeof(struct page *), GFP_KERNEL);
-+	pages = kvmalloc_array(count, sizeof(struct page *), GFP_KERNEL);
- 	if (!pages)
- 		return NULL;
- 	for (i = 0; i < count; i++)
- 		pages[i] = nth_page(page, i);
- 	vaddr = vmap(pages, count, VM_DMA_COHERENT, prot);
--	kfree(pages);
-+	kvfree(pages);
+ 	amd_iommu_dump=	[HW,X86-64]
+ 			Enable AMD IOMMU driver option to dump the ACPI table
+diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+index 5ecc17240eff5..f5e9377b55212 100644
+--- a/drivers/iommu/amd/amd_iommu_types.h
++++ b/drivers/iommu/amd/amd_iommu_types.h
+@@ -172,6 +172,7 @@
+ #define CONTROL_GAINT_EN	29
+ #define CONTROL_XT_EN		50
+ #define CONTROL_INTCAPXT_EN	51
++#define CONTROL_IRTCACHEDIS	59
+ #define CONTROL_SNPAVIC_EN	61
  
- 	return vaddr;
+ #define CTRL_INV_TO_MASK	(7 << CONTROL_INV_TIMEOUT)
+@@ -708,6 +709,9 @@ struct amd_iommu {
+ 	/* if one, we need to send a completion wait command */
+ 	bool need_sync;
+ 
++	/* true if disable irte caching */
++	bool irtcachedis_enabled;
++
+ 	/* Handle for IOMMU core code */
+ 	struct iommu_device iommu;
+ 
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index b0af8b5967e0d..f6e64c9858021 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -160,6 +160,7 @@ static int amd_iommu_xt_mode = IRQ_REMAP_XAPIC_MODE;
+ static bool amd_iommu_detected;
+ static bool amd_iommu_disabled __initdata;
+ static bool amd_iommu_force_enable __initdata;
++static bool amd_iommu_irtcachedis;
+ static int amd_iommu_target_ivhd_type;
+ 
+ /* Global EFR and EFR2 registers */
+@@ -477,6 +478,9 @@ static void iommu_disable(struct amd_iommu *iommu)
+ 
+ 	/* Disable IOMMU hardware itself */
+ 	iommu_feature_disable(iommu, CONTROL_IOMMU_EN);
++
++	/* Clear IRTE cache disabling bit */
++	iommu_feature_disable(iommu, CONTROL_IRTCACHEDIS);
  }
+ 
+ /*
+@@ -2700,6 +2704,33 @@ static void iommu_enable_ga(struct amd_iommu *iommu)
+ #endif
+ }
+ 
++static void iommu_disable_irtcachedis(struct amd_iommu *iommu)
++{
++	iommu_feature_disable(iommu, CONTROL_IRTCACHEDIS);
++}
++
++static void iommu_enable_irtcachedis(struct amd_iommu *iommu)
++{
++	u64 ctrl;
++
++	if (!amd_iommu_irtcachedis)
++		return;
++
++	/*
++	 * Note:
++	 * The support for IRTCacheDis feature is dertermined by
++	 * checking if the bit is writable.
++	 */
++	iommu_feature_enable(iommu, CONTROL_IRTCACHEDIS);
++	ctrl = readq(iommu->mmio_base +  MMIO_CONTROL_OFFSET);
++	ctrl &= (1ULL << CONTROL_IRTCACHEDIS);
++	if (ctrl)
++		iommu->irtcachedis_enabled = true;
++	pr_info("iommu%d (%#06x) : IRT cache is %s\n",
++		iommu->index, iommu->devid,
++		iommu->irtcachedis_enabled ? "disabled" : "enabled");
++}
++
+ static void early_enable_iommu(struct amd_iommu *iommu)
+ {
+ 	iommu_disable(iommu);
+@@ -2710,6 +2741,7 @@ static void early_enable_iommu(struct amd_iommu *iommu)
+ 	iommu_set_exclusion_range(iommu);
+ 	iommu_enable_ga(iommu);
+ 	iommu_enable_xt(iommu);
++	iommu_enable_irtcachedis(iommu);
+ 	iommu_enable(iommu);
+ 	iommu_flush_all_caches(iommu);
+ }
+@@ -2760,10 +2792,12 @@ static void early_enable_iommus(void)
+ 		for_each_iommu(iommu) {
+ 			iommu_disable_command_buffer(iommu);
+ 			iommu_disable_event_buffer(iommu);
++			iommu_disable_irtcachedis(iommu);
+ 			iommu_enable_command_buffer(iommu);
+ 			iommu_enable_event_buffer(iommu);
+ 			iommu_enable_ga(iommu);
+ 			iommu_enable_xt(iommu);
++			iommu_enable_irtcachedis(iommu);
+ 			iommu_set_device_table(iommu);
+ 			iommu_flush_all_caches(iommu);
+ 		}
+@@ -3411,6 +3445,8 @@ static int __init parse_amd_iommu_options(char *str)
+ 			amd_iommu_pgtable = AMD_IOMMU_V1;
+ 		} else if (strncmp(str, "pgtbl_v2", 8) == 0) {
+ 			amd_iommu_pgtable = AMD_IOMMU_V2;
++		} else if (strncmp(str, "irtcachedis", 11) == 0) {
++			amd_iommu_irtcachedis = true;
+ 		} else {
+ 			pr_notice("Unknown option - '%s'\n", str);
+ 		}
 -- 
 2.39.2
 
