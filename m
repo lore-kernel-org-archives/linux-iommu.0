@@ -1,181 +1,350 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2054.outbound.protection.outlook.com [40.107.92.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-io1-f48.google.com (mail-io1-f48.google.com [209.85.166.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5783D6D38;
-	Mon, 24 Jul 2023 13:15:31 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YoUs+o6clIKH8/nrLJyQrugIZbbvBu+FR6EB9xkTGN3Vh/QNbzvA0QkjUpz2MVymBqECbogz9qN8avVrSoXWEmfpLyfsA46PJ5wSeBKdz42C/AV2r6hUXjDW2h2ml240V+axV2vrNepGE+aIItTyG8eu+kyZPu01zhQH2T8xHMnv9PI/FvWVAzL5xkioXxa4qpfSR7/VuLV3gpjT5EM6eM2eHFRIE2wobijhxZXz0PfzRxjnWsxevnWtmnFewI23rVRcu06bzpXwWD/9/kjpOq/q+4PG9QYW1ygsuUvB0A+6eHnE9PqCUQDxoJUyvwJjGctm16bMJMCVv46Ojd4J8w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7C7D/ccKIBmksIGtzI3fvBIjQVktSNwzEBWgoEwrMYM=;
- b=R07zNzmfq6OFMRC3u16mCxso8MxvTelJTuJLaAUIThtuf8kmWF7hMIqh3kxemEdFDpWjhxAWINQeUqDYvtMbN+FUzljKUFi1Mqe4i0ip63bYmAeGhGkBB0whZnu0igiju4EwbWmxGrOnTLdaqZIew+VnVC0+40opI+CsKbIfbvXFwDKVbKiGKhyCY9e43l/6lD5a8xHG4f4r/GenSo3Skc2sRfaUKTIlkl8swPn/Gskczuximl2tkjcdQd0NwiYTW5sJNzHAfhea7YrkgpvLm8rZOL6V/seBa0IVLxGIVtrJomXbTk+/eSOeMFpFg3AaTvxjWfULPkn8onKcJ+QH2g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7C7D/ccKIBmksIGtzI3fvBIjQVktSNwzEBWgoEwrMYM=;
- b=lNvolwMJgKB0ZbufWgssZ4/XGVTR7sdL+7QRcXuct+RqX2dQ6OcUWcYbN/VVG0DUd9VsesdvfH+jJt/rlyDB9R8naFcHtR544SrDa2js0pa+txUXl8W8xuUzGnGMVDfI+6GWJRRtkVZd5YSJHg0WTCtCMX1q6ANnV4B1P20O37wyWLQch1J9ObkNJScCvJv/kizhIbU74ZYlYB2YB+KzNrBT7eiZVswYrgl9Tsp/xF/W39ZY5hfIuGdtwJsQUx1fQnyz0Dsy1OJYA1PBY1RV6o/EEqHtpKkf2RUalkYqBtZG4u20EULmzAafZ2GWdGOIWiTDvgNpcJySTeXIFGF3Pg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by CY8PR12MB7681.namprd12.prod.outlook.com (2603:10b6:930:84::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6609.32; Mon, 24 Jul
- 2023 13:15:27 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6609.032; Mon, 24 Jul 2023
- 13:15:27 +0000
-Date: Mon, 24 Jul 2023 10:15:26 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Heiko Stuebner <heiko@sntech.de>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"linux-rockchip@lists.infradead.org" <linux-rockchip@lists.infradead.org>,
-	"linux-sunxi@lists.linux.dev" <linux-sunxi@lists.linux.dev>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
-	Will Deacon <will@kernel.org>, Chunyan Zhang <zhang.lyra@gmail.com>,
-	Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH 03/10] iommu: Add generic_single_device_group()
-Message-ID: <ZL55bnAgCpgM1plx@nvidia.com>
-References: <0-v1-3c8177327a47+256-iommu_group_locking_jgg@nvidia.com>
- <3-v1-3c8177327a47+256-iommu_group_locking_jgg@nvidia.com>
- <BN9PR11MB527636B9607D852373836ED68C3FA@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <BN9PR11MB527636B9607D852373836ED68C3FA@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: BL1PR13CA0021.namprd13.prod.outlook.com
- (2603:10b6:208:256::26) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 168518BF2
+	for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 13:23:58 +0000 (UTC)
+Received: by mail-io1-f48.google.com with SMTP id ca18e2360f4ac-78360f61ba0so230420039f.1
+        for <iommu@lists.linux.dev>; Mon, 24 Jul 2023 06:23:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google; t=1690205038; x=1690809838;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=L2Ld8btTAGjqSvaVVGzkgPa6ahGfsdmbyS3Z1wPXSjI=;
+        b=SbNzEoZiYLMLLMoE0dqviYJgHZ7OLelPBkfVWB9IGoUpaILC3GR5XEioFGZeYy1ELY
+         gdLcnYbLYgx98YhKfVo1mXQArAbe8kXIufL0D8oqIhccbNvW4uFiF/QU5mb8JdsC3hr/
+         0oWDiIqEGMbHoKnH3Ei8Jg7g9TBiK+m9DmKzgkXOf/Ois5bt8E/9K9kAENEBMCzU4v3m
+         GDnJ9eErY7MsVRo3AuaD/mpGjcOSMI+T5nFNnJ0BoNVqoV26XC9ky6XFr/3P/+6uz+pY
+         6K8Abc4ZRokkhklBZpNaNZa6YxJIeuo17INfR/3zuvQgwIduwZsq1Td5uMc+7zYnwGhS
+         A/2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1690205038; x=1690809838;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=L2Ld8btTAGjqSvaVVGzkgPa6ahGfsdmbyS3Z1wPXSjI=;
+        b=Bv7iiNCjzwIryf3Udvv0KDCiUJn0lTm/xgIq59f6JJAtt4QXR4IYgNPO2eEUd/QLg3
+         7iy+FHYfdj/LwkYDPJy7nFJYLOoMkrilNW6qDsLWh46HwzgkTCU5KZdVqbRy2Apq69JU
+         0G0of7QkfkfgX5sTh3k4/fksSXUnyMo/r8uSTshN/4o1XSYBtD1PHCepSVN3ABrIWbE8
+         FGBd00+Yd6UksZV19Mpmqauw+8pI0ck6VZxeWeogOVwDvnw7VzvPEGH6lWQyDy19nEAb
+         ubSp2zWKYK0w6hAA2uM2XpHFYi3DELBksbPywbX5cq+CvBx1Qx3lohOGo5yW3PVzsxF8
+         dmPQ==
+X-Gm-Message-State: ABy/qLZ1/f7he5LWalX1bi8ExgMbLPKBmHh0ToyFtACHHYSrPBZBthvi
+	MmzG5sw3SOVAVdczdcSCR9e9XYsAGxKVA3Wv6RFxGQ==
+X-Google-Smtp-Source: APBJJlFc90JVKoy2UXuCfrGFA6GS4ztX/MGOXy0f+1gx/XNEgPv1ZpB3jBa/qI3zIRyOXlh1dETNq88aLH8L7qa2QGM=
+X-Received: by 2002:a5e:8e06:0:b0:780:c787:637d with SMTP id
+ a6-20020a5e8e06000000b00780c787637dmr6824489ion.17.1690205037787; Mon, 24 Jul
+ 2023 06:23:57 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CY8PR12MB7681:EE_
-X-MS-Office365-Filtering-Correlation-Id: 521f57f7-8b73-4650-c47d-08db8c480c3c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	c3fXOgZJuHax0pG5KCg9UVSfnXybTKRcQ3z17PRck2Vo3AFrSkYR8Pp6FBn06iAbLVS2ZHSN0sHxYpTYkmQ0owioSCOcO+vmceOfmgf+4mwIKyfLvasN1yoaLvkf3mf06XO3UgyH5pBwPCc7PYMTSjb5BoN8+KcLcYbfKd0V9fZVg3IGm1cIRBRFAhfG2V3hiFTvseT7LrssYhh6TfOsjCQzprd3jxY2RbGaxkcwXqLcMrxcgsFkTkXv4BFiWDLZGoWOeTOFatbXaztGrtu5FqZRffnB3vgRK22W9EXJBrQchDte1g6iQPuyHLGSN8Xub/+EMdKfgT27SeJBjebyyhxSVGHK8xEd6qKPsuOgGsfB30v4I/EevaJ7FhfM4WGVDkUIj83rxcg5ssog26AQtRAgxRf/ZIo35jKKdOBv4/lGc5hnXHz60DavZgyPCIYAjhbmRVEa/ppsF5yivJDq7jhN8xXTwy20c3Mz37OWpEqztWc7GIsjEX6lYNL+NWiYjARFqBAbNKO69uuNMXk5nr9WUhbk4IbD5NkMV1C9YxEvTRrJmwjtYYleL49S39YdOmfFgAjRCxwTvVr3+if/MKiLwik2Czs59eXNSxxBJLE=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(366004)(396003)(136003)(39860400002)(451199021)(2906002)(2616005)(83380400001)(6916009)(4326008)(316002)(6512007)(6486002)(66476007)(66946007)(66556008)(41300700001)(36756003)(478600001)(86362001)(54906003)(38100700002)(186003)(7416002)(8676002)(8936002)(6506007)(5660300002)(26005)(41533002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?THNsSXV1dEFKejg1SUttK01uUy9BclJwZ1BZTDAwL21QUzMxaU1mT1M1ODVH?=
- =?utf-8?B?eGYrZ0k3Q1hiZ3BDdDduL3NuSnVqV0kyQXJkc1FvZUk5elZuQnkzRWJXSEJO?=
- =?utf-8?B?YTBnRy8vcnJhMGEzcjdxYk5jVUVZYkFkN3ovZy9XaHZFRE1kbUpNTnh4Zmk0?=
- =?utf-8?B?YVNwVzRncU8raHQzT0NBNXB6S2ZyMGppS2NJR1J3R1ZNcTR5aFVncFFBS0JW?=
- =?utf-8?B?OVRRQjNRQ25FWWtTbjd4M1NnTGNsLzI3N3YrYyszVVBrT0FBcFBCbndTeG9h?=
- =?utf-8?B?UktiRFdWRDhyS0Vqa3EzOHVMZkhxM0hhdW9wR2d1Vm9jQWdKS2JYd0xhWFY5?=
- =?utf-8?B?WEpwdVZidzVCcVRIZTNLNEpJTEIrU0Q5NmhBU0pDdnRqa1l2cGcwQUFVakt5?=
- =?utf-8?B?bCtNdmFtTHlJYW9pSVI4VHg1Rnp1clJQbFVsemh6ZVZ1SFA5OVFzS2ExVlAv?=
- =?utf-8?B?cTkzWGFBZ3Z3STBIVDBrVTNwMVFxaXY2MVFkS1dyTnlZTFpLL1pYeGxreFZB?=
- =?utf-8?B?STk3Vi9lTU8zZmxBSE9FVG50anZnTjN2MGRJNnRnSUFPd0duRFFCUmUzQzdO?=
- =?utf-8?B?di9yYjlzZlVtenJQNEdwN1pONEdLck5sUE5DaE8rakMxenM0UUhhMElDZ2Z6?=
- =?utf-8?B?ZzlDUnUwclZBVXVpTklGQ0ZPRkt3OG1TZzFLdndydkV6a2lNUXZQYWcyU0RE?=
- =?utf-8?B?cC8reXYvYTBoSGJUUzF0RGtTRW5WQkFTZFNlSjdCS0lXamdXbDNyQmRURkFM?=
- =?utf-8?B?RnhZM3lXUU9sb1pCcFk1eTJ5TG9zNVhSR01HaGh4dExYYmxtU0tmd1VuZ0JJ?=
- =?utf-8?B?bFE2RGFaT0JOellmZ1RnMnd1azlMZEVzY1NpWTVBSTR1T1lxVS9FcHM0aWVR?=
- =?utf-8?B?aUtBaXE5TGZIR25aOFFIbEtrZTBTL2FIQ0VNSE9USmpyN0dvWEsxZXBnN1Fl?=
- =?utf-8?B?SytSNHRxYk5mdWFxUlczeVE3WDZWQW5vM3ZFMDN0NHMvMnhDOGlaRTl0Zmkx?=
- =?utf-8?B?ZzhqK1dPY2N4dDR2dGI0aGRFWFVTZVdKMW1VUVpKSHRocTBNU2E2dy9MdWww?=
- =?utf-8?B?cGw2TS9jOXFHNFh3SEN6QkRVWXBzdGI0Q3c1Y3NjbzRjaHE3VTd6eFErdnF2?=
- =?utf-8?B?RExqR09aM1JWdFpWYVZCeFp1dk40blBjUVBQL0E4MWNSUEhKVlNBTW9zSUVt?=
- =?utf-8?B?WEpxMzc2ZmwxbHRCYlFhSlhja0lIT2dMT2IwTWhjQkhiaW4rd0YyUC9YdU9T?=
- =?utf-8?B?bWhDS204WklSajV0eXIyRFpTNU9EZ3BEdUh0Y2lFN2RYbXFXd04rSlZ4SDkw?=
- =?utf-8?B?Y2ZSYXFFMGFacS8xQXRVU1NaV0IwVVl2SU1TTVlITUZlZFU3VXozR25JZDBq?=
- =?utf-8?B?ZGplT0tNbkc4VFVJZDJrclFGbXJja25xRDZDZVA1NUF0bjROZDlKdGhqbHdq?=
- =?utf-8?B?ckh5bEtZMkNmdDltYUp2cUNGMlNRWlp5SE1SWGZvWjhJN205UStndWk2L09u?=
- =?utf-8?B?bkFmQVk0SHNBWjIwemEwY0hHTUlIc1d0SENjYmlWUlQvcmNKS1o5a1F1QXlU?=
- =?utf-8?B?K0FoWTQxYzdoNVZOMEduNHF4a0dtTkZZUHU5OG1laFFGQVlXcFlwN0FhZkJH?=
- =?utf-8?B?a0Jnd25iWVoxQkJycGp6NE9wd3hJc0MwblhDMWRva2pjNWhuM2xSdG5MKzM4?=
- =?utf-8?B?UGpQTndJR2ZFT09LbVc3cXNtQTVrSnZsOHJmVWRqdERtbzVSVytZVUZSbDBm?=
- =?utf-8?B?b2w5OXhNa2NnWU9xVlRscTFCeTlrVWZpTEhENmMwR09ISU9VRSsxdThXTG94?=
- =?utf-8?B?bm9yMlczTVFDTklZTUZJVzV2ZFNCUUQxNEZFMjRSNThlNm1udEd6YSt5S2lU?=
- =?utf-8?B?VFc0YUJIY0NrVDlJYUVRVDdBVURaY2xyVnZmbEowU29aY3ZvdVJPUnZxeTFB?=
- =?utf-8?B?OVJOWnB0U0RQYXlpNUo1aU5sYnJ4L2tvN2tmLzlXTlUyL0liZ1hGTUEwOVdR?=
- =?utf-8?B?N0I2dDhKcm12NCtnY0xJMG14akxuOGoxUU9TV1JlZlptaHZkd3VoSFFNVXNI?=
- =?utf-8?B?R0dCWEFFMXdURFEwbldsME1UNFpMRWVrWVhUSUhjaVJKa1haa1pLN3Y1VG56?=
- =?utf-8?Q?Fs7w=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 521f57f7-8b73-4650-c47d-08db8c480c3c
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jul 2023 13:15:27.5258
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Sapdbpn/aXQusxbJ+Y52rdRrkBgXxmuR3vHn6Ct8JoI07Om3zCa1zkbFi2i3qXtJ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7681
+References: <cover.1689792825.git.tjeznach@rivosinc.com> <d62ceb33620cab766d809e6bbf30eaf5b46bc955.1689792825.git.tjeznach@rivosinc.com>
+ <CANXhq0r=2eqpy9wLjVt1U0J7=LpnJLcKV7N9d90jvCss=7+Fzg@mail.gmail.com>
+ <CAK9=C2Vg9eR5LJPeqDDQ0pHZcrT5DOUzA8_wYEVEjfnhb6s8pw@mail.gmail.com>
+ <CANXhq0oTrU_-OQroW7H+hvxcU7YROhkgdCF9g_WtPTzVFQL7gA@mail.gmail.com> <CAK9=C2XoQjPzZ5yB5jfTbee4-Pb8GgFAZRbfcMwMk9pyo39WxQ@mail.gmail.com>
+In-Reply-To: <CAK9=C2XoQjPzZ5yB5jfTbee4-Pb8GgFAZRbfcMwMk9pyo39WxQ@mail.gmail.com>
+From: Zong Li <zong.li@sifive.com>
+Date: Mon, 24 Jul 2023 21:23:46 +0800
+Message-ID: <CANXhq0q7R9Srx6U=fReq7LDLFgW6rMmjKH=o6MzDT5AWNRXP6w@mail.gmail.com>
+Subject: Re: [PATCH 03/11] dt-bindings: Add RISC-V IOMMU bindings
+To: Anup Patel <apatel@ventanamicro.com>
+Cc: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Paul Walmsley <paul.walmsley@sifive.com>, Albert Ou <aou@eecs.berkeley.edu>, linux@rivosinc.com, 
+	linux-kernel@vger.kernel.org, Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Nick Kossifidis <mick@ics.forth.gr>, linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jul 21, 2023 at 07:17:39AM +0000, Tian, Kevin wrote:
-> > From: Jason Gunthorpe <jgg@nvidia.com>
-> > Sent: Wednesday, July 19, 2023 3:06 AM
-> > 
-> > This implements the common pattern seen in drivers of a single
-> > iommu_group for the entire iommu driver. Implement this in core code
-> > so the drivers that want this can select it from their ops.
-> 
-> strictly speaking it's per-iommu-instance group. 😊
+On Mon, Jul 24, 2023 at 8:10=E2=80=AFPM Anup Patel <apatel@ventanamicro.com=
+> wrote:
+>
+> On Mon, Jul 24, 2023 at 5:01=E2=80=AFPM Zong Li <zong.li@sifive.com> wrot=
+e:
+> >
+> > On Mon, Jul 24, 2023 at 6:02=E2=80=AFPM Anup Patel <apatel@ventanamicro=
+.com> wrote:
+> > >
+> > > On Mon, Jul 24, 2023 at 1:33=E2=80=AFPM Zong Li <zong.li@sifive.com> =
+wrote:
+> > > >
+> > > > On Thu, Jul 20, 2023 at 3:35=E2=80=AFAM Tomasz Jeznach <tjeznach@ri=
+vosinc.com> wrote:
+> > > > >
+> > > > > From: Anup Patel <apatel@ventanamicro.com>
+> > > > >
+> > > > > We add DT bindings document for RISC-V IOMMU platform and PCI dev=
+ices
+> > > > > defined by the RISC-V IOMMU specification.
+> > > > >
+> > > > > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> > > > > ---
+> > > > >  .../bindings/iommu/riscv,iommu.yaml           | 146 ++++++++++++=
+++++++
+> > > > >  1 file changed, 146 insertions(+)
+> > > > >  create mode 100644 Documentation/devicetree/bindings/iommu/riscv=
+,iommu.yaml
+> > > > >
+> > > > > diff --git a/Documentation/devicetree/bindings/iommu/riscv,iommu.=
+yaml b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+> > > > > new file mode 100644
+> > > > > index 000000000000..8a9aedb61768
+> > > > > --- /dev/null
+> > > > > +++ b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+> > > > > @@ -0,0 +1,146 @@
+> > > > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > > > > +%YAML 1.2
+> > > > > +---
+> > > > > +$id: http://devicetree.org/schemas/iommu/riscv,iommu.yaml#
+> > > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > > > +
+> > > > > +title: RISC-V IOMMU Implementation
+> > > > > +
+> > > > > +maintainers:
+> > > > > +  - Tomasz Jeznach <tjeznach@rivosinc.com>
+> > > > > +
+> > > > > +description:
+> > > > > +  The RISC-V IOMMU specificaiton defines an IOMMU for RISC-V pla=
+tforms
+> > > > > +  which can be a regular platform device or a PCI device connect=
+ed to
+> > > > > +  the host root port.
+> > > > > +
+> > > > > +  The RISC-V IOMMU provides two stage translation, device direct=
+ory table,
+> > > > > +  command queue and fault reporting as wired interrupt or MSIx e=
+vent for
+> > > > > +  both PCI and platform devices.
+> > > > > +
+> > > > > +  Visit https://github.com/riscv-non-isa/riscv-iommu for more de=
+tails.
+> > > > > +
+> > > > > +properties:
+> > > > > +  compatible:
+> > > > > +    oneOf:
+> > > > > +      - description: RISC-V IOMMU as a platform device
+> > > > > +        items:
+> > > > > +          - enum:
+> > > > > +              - vendor,chip-iommu
+> > > > > +          - const: riscv,iommu
+> > > > > +
+> > > > > +      - description: RISC-V IOMMU as a PCI device connected to r=
+oot port
+> > > > > +        items:
+> > > > > +          - enum:
+> > > > > +              - vendor,chip-pci-iommu
+> > > > > +          - const: riscv,pci-iommu
+> > > > > +
+> > > > > +  reg:
+> > > > > +    maxItems: 1
+> > > > > +    description:
+> > > > > +      For RISC-V IOMMU as a platform device, this represents the=
+ MMIO base
+> > > > > +      address of registers.
+> > > > > +
+> > > > > +      For RISC-V IOMMU as a PCI device, this represents the PCI-=
+PCI bridge
+> > > > > +      details as described in Documentation/devicetree/bindings/=
+pci/pci.txt
+> > > > > +
+> > > > > +  '#iommu-cells':
+> > > > > +    const: 2
+> > > > > +    description: |
+> > > > > +      Each IOMMU specifier represents the base device ID and num=
+ber of
+> > > > > +      device IDs.
+> > > > > +
+> > > > > +  interrupts:
+> > > > > +    minItems: 1
+> > > > > +    maxItems: 16
+> > > > > +    description:
+> > > > > +      The presence of this property implies that given RISC-V IO=
+MMU uses
+> > > > > +      wired interrupts to notify the RISC-V HARTS (or CPUs).
+> > > > > +
+> > > > > +  msi-parent:
+> > > > > +    description:
+> > > > > +      The presence of this property implies that given RISC-V IO=
+MMU uses
+> > > > > +      MSIx to notify the RISC-V HARTs (or CPUs). This property s=
+hould be
+> > > > > +      considered only when the interrupts property is absent.
+> > > > > +
+> > > > > +  dma-coherent:
+> > > > > +    description:
+> > > > > +      Present if page table walks and DMA accessed made by the R=
+ISC-V IOMMU
+> > > > > +      are cache coherent with the CPU.
+> > > > > +
+> > > > > +  power-domains:
+> > > > > +    maxItems: 1
+> > > > > +
+> > > >
+> > > > In RISC-V IOMMU, certain devices can be set to bypass mode when the
+> > > > IOMMU is in translation mode. To identify the devices that require
+> > > > bypass mode by default, does it be sensible to add a property to
+> > > > indicate this behavior?
+> > >
+> > > Bypass mode for a device is a property of that device (similar to dma=
+-coherent)
+> > > and not of the IOMMU. Other architectures (ARM and x86) never added s=
+uch
+> > > a device property for bypass mode so I guess it is NOT ADVISABLE to d=
+o it.
+> > >
+> > > If this is REALLY required then we can do something similar to the QC=
+OM
+> > > SMMU driver where they have a whitelist of devices which are allowed =
+to
+> > > be in bypass mode (i.e. IOMMU_DOMAIN_IDENTITY) based their device
+> > > compatible string and any device outside this whitelist is blocked by=
+ default.
+> > >
+> >
+> > I have considered that adding the property of bypass mode to that
+> > device would be more appropriate. However, if we want to define this
+> > property for the device, it might need to go through the generic IOMMU
+> > dt-bindings, but I'm not sure if other IOMMU devices need this. I am
+> > bringing up this topic here because I would like to explore if there
+> > are any solutions on the IOMMU side, such as a property that indicates
+> > the phandle of devices wishing to set bypass mode, somewhat similar to
+> > the whitelist you mentioned earlier. Do you think we should address
+> > this? After all, this is a case of RISC-V IOMMU supported.
+>
+> Bypass mode is a common feature across IOMMUs. Other IOMMUs don't
+> have a special property for bypass mode at device-level or at IOMMU level=
+,
+> which clearly indicates that defining a RISC-V specific property is not t=
+he
+> right way to go.
+>
+> The real question is how do we set IOMMU_DOMAIN_IDENTITY (i.e.
+> bypass/identity domain) as the default domain for certain devices ?
+>
+> One possible option is to implement def_domain_type() IOMMU operation
+> for RISC-V IOMMU which will return IOMMU_DOMAIN_IDENTITY for
+> certain devices based on compatible string matching (i.e. whitelist of
+> devices). As an example, refer qcom_smmu_def_domain_type()
+> of drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>
 
-Sure
+That is indeed one way to approach it, and we can modify the
+compatible string when we want to change the mode. However, it would
+be preferable to explore a more flexible approach to achieve this
+goal. By doing so, we can avoid hard coding anything in the driver or
+having to rebuild the kernel  whenever we want to change the mode for
+certain devices. While I have considered extending a cell in the
+'iommus' property to indicate a device's desire to set bypass mode, it
+doesn't comply with the iommu documentation and could lead to
+ambiguous definitions.
 
-This implements the common pattern seen in drivers of a single iommu_group
-for the entire iommu driver instance. Implement this in core code so the
-drivers that want this can select it from their ops.
+If, at present, we are unable to find a suitable solution, perhaps
+let's keep this topic in mind until we discover a more appropriate
+approach. In the meantime, we can continue to explore other
+possibilities to implement it. Thanks.
 
-
-> > +struct iommu_group *generic_single_device_group(struct device *dev)
-> > +{
-> > +	struct iommu_device *iommu = dev->iommu->iommu_dev;
-> > +
-> > +	lockdep_assert_held(&dev_iommu_group_lock);
-> > +
-> > +	if (!iommu->singleton_group) {
-> > +		struct iommu_group *group;
-> > +
-> > +		group = iommu_group_alloc();
-> > +		if (IS_ERR(group))
-> > +			return group;
-> > +		iommu->singleton_group = group;
-> > +	}
-> > +	return iommu_group_ref_get(iommu->singleton_group);
-> 
-> 'singleton' is a bit confusing whether it means a single
-> group per instance or a group having only a single device.
-> 
-> I don't know a better name, but probably just using
-> iommu->group is not worse than the 'singleton_' prefix...
-
-I definately want it to have a special name otherwise it can be pretty
-confusing.
-
-The fact it is in a function called "single device group" seems clear
-enough
-
-I revised the comment like this:
-
-/*
- * Generic device_group call-back function. It just allocates one
- * iommu-group per iommu driver instance shared by every device
- * probed by that iommu driver.
- */
-
-Jason
+> Regards,
+> Anup
+>
+>
+>
+>
+>
+> >
+> > > Regards,
+> > > Anup
+> > >
+> > > >
+> > > > > +required:
+> > > > > +  - compatible
+> > > > > +  - reg
+> > > > > +  - '#iommu-cells'
+> > > > > +
+> > > > > +additionalProperties: false
+> > > > > +
+> > > > > +examples:
+> > > > > +  - |
+> > > > > +    /* Example 1 (IOMMU platform device with wired interrupts) *=
+/
+> > > > > +    immu1: iommu@1bccd000 {
+> > > > > +        compatible =3D "vendor,chip-iommu", "riscv,iommu";
+> > > > > +        reg =3D <0x1bccd000 0x1000>;
+> > > > > +        interrupt-parent =3D <&aplic_smode>;
+> > > > > +        interrupts =3D <32 4>, <33 4>, <34 4>, <35 4>;
+> > > > > +        #iommu-cells =3D <2>;
+> > > > > +    };
+> > > > > +
+> > > > > +    /* Device with two IOMMU device IDs, 0 and 7 */
+> > > > > +    master1 {
+> > > > > +        iommus =3D <&immu1 0 1>, <&immu1 7 1>;
+> > > > > +    };
+> > > > > +
+> > > > > +  - |
+> > > > > +    /* Example 2 (IOMMU platform device with MSIs) */
+> > > > > +    immu2: iommu@1bcdd000 {
+> > > > > +        compatible =3D "vendor,chip-iommu", "riscv,iommu";
+> > > > > +        reg =3D <0x1bccd000 0x1000>;
+> > > > > +        msi-parent =3D <&imsics_smode>;
+> > > > > +        #iommu-cells =3D <2>;
+> > > > > +    };
+> > > > > +
+> > > > > +    bus {
+> > > > > +        #address-cells =3D <2>;
+> > > > > +        #size-cells =3D <2>;
+> > > > > +
+> > > > > +        /* Device with IOMMU device IDs ranging from 32 to 64 */
+> > > > > +        master1 {
+> > > > > +                iommus =3D <&immu2 32 32>;
+> > > > > +        };
+> > > > > +
+> > > > > +        pcie@40000000 {
+> > > > > +            compatible =3D "pci-host-cam-generic";
+> > > > > +            device_type =3D "pci";
+> > > > > +            #address-cells =3D <3>;
+> > > > > +            #size-cells =3D <2>;
+> > > > > +            bus-range =3D <0x0 0x1>;
+> > > > > +
+> > > > > +            /* CPU_PHYSICAL(2)  SIZE(2) */
+> > > > > +            reg =3D <0x0 0x40000000 0x0 0x1000000>;
+> > > > > +
+> > > > > +            /* BUS_ADDRESS(3)  CPU_PHYSICAL(2)  SIZE(2) */
+> > > > > +            ranges =3D <0x01000000 0x0 0x01000000  0x0 0x0100000=
+0  0x0 0x00010000>,
+> > > > > +                     <0x02000000 0x0 0x41000000  0x0 0x41000000 =
+ 0x0 0x3f000000>;
+> > > > > +
+> > > > > +            #interrupt-cells =3D <0x1>;
+> > > > > +
+> > > > > +            /* PCI_DEVICE(3)  INT#(1)  CONTROLLER(PHANDLE)  CONT=
+ROLLER_DATA(2) */
+> > > > > +            interrupt-map =3D <   0x0 0x0 0x0  0x1  &aplic_smode=
+  0x4 0x1>,
+> > > > > +                            < 0x800 0x0 0x0  0x1  &aplic_smode  =
+0x5 0x1>,
+> > > > > +                            <0x1000 0x0 0x0  0x1  &aplic_smode  =
+0x6 0x1>,
+> > > > > +                            <0x1800 0x0 0x0  0x1  &aplic_smode  =
+0x7 0x1>;
+> > > > > +
+> > > > > +            /* PCI_DEVICE(3)  INT#(1) */
+> > > > > +            interrupt-map-mask =3D <0xf800 0x0 0x0  0x7>;
+> > > > > +
+> > > > > +            msi-parent =3D <&imsics_smode>;
+> > > > > +
+> > > > > +            /* Devices with bus number 0-127 are mastered via im=
+mu2 */
+> > > > > +            iommu-map =3D <0x0000 &immu2 0x0000 0x8000>;
+> > > > > +        };
+> > > > > +    };
+> > > > > +...
+> > > > > --
+> > > > > 2.34.1
+> > > > >
+> > > > >
+> > > > > _______________________________________________
+> > > > > linux-riscv mailing list
+> > > > > linux-riscv@lists.infradead.org
+> > > > > http://lists.infradead.org/mailman/listinfo/linux-riscv
