@@ -1,171 +1,109 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2058.outbound.protection.outlook.com [40.107.244.58])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E008848C
-	for <iommu@lists.linux.dev>; Tue, 25 Jul 2023 05:52:34 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VkRMeMSwdKYd/hAQC/UJuI7b5/rI6R00VJvlJf77mOO5mHLp1comOhl+uYp9RrWCijEW/gFtsqiyQWe0ZIapCNGUJ3eXRWnlmpzLc8/63IqT8ajd1SmuSTyRo3wNRTUDYEMzTP0etXu8A4KKOrpMfxDfJ42vicr2/g1+QTtXW1+UNo6mHm3BMZKv1LvXT73p+ABy/0togJPK8iqD2O53gLJamXYha1qZyBMwaL5fYV9g79y1/qqnkUlK6rB6+t6hLCaoTVzDEK3hGZ0Z9P4RtSG3WncoqWTuQXAFnRhPHxPwOzkZQ5cPC2znwIJlQw+JGLtHe3c5ZrY2BHDlyPvtiw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KVRsRx/qCl66tZQns7a9SAjqWphTcuxR3mogN0pmwqM=;
- b=dV90rJ0ZFFEJArMaF10RzNbk0hpKq4qN7O953DIIxLhIS1aT76/bC8iFi4/W8DpyfG0mr7kF2diNmBf1tLyRAjRomxWEu65uPMROZMvFvN0TcnXhZcq8FAN5tF2IUcP/logtdVVV5tf34HIIS8r43BgO3iWaWd3Skam7ob5toTNH0Lc3807rnda/BeNWRg8PVaxHA3MQxMfzvHcZF8bso/vPZEmxUk5Nf4+N/MJ/6m7tQzBz9oZAhiYpW7daYLoWPVd1KvisOaR2jdXLqe93Hl2538toYw+ffCytRTZCaYeaTmnGz3RPKIwq+ApurZLNac0tDTYcN2DLCsTF/eKkbw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KVRsRx/qCl66tZQns7a9SAjqWphTcuxR3mogN0pmwqM=;
- b=Fr99toB5RJkgnIC2ok1gqM/d00m0nJA4iKY0pt8djAVt3R+hEKEItQUZK+4P2yiBdoXdzqP2gWCUtrITw23ak2RWklLFilTn9N/GlipiEtjdUKUVXgWHHcpfaoICoOpr0pUBOdFGlRWsr0aHNXsx0M+j74MtdiaOe2ErN1OgMqeaqvsWHh3EpeC0Xcmn3pqh/X9pCumWqPRJQbtJowzh9//s4cNVhQLofQgFiGqAZmH64Sg04qg3RaoagtVM5rRYuli/CHFut8Zg/ZsU842X+ilsqYR/wI6cZBM/PP6Sevq0kS6ErmlbkQ0u2nbjlJQyC/OKW4FOJNnOreEN8J7Aqg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BYAPR12MB3176.namprd12.prod.outlook.com (2603:10b6:a03:134::26)
- by IA1PR12MB8553.namprd12.prod.outlook.com (2603:10b6:208:44e::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6609.33; Tue, 25 Jul
- 2023 05:52:32 +0000
-Received: from BYAPR12MB3176.namprd12.prod.outlook.com
- ([fe80::c833:9a5c:258e:3351]) by BYAPR12MB3176.namprd12.prod.outlook.com
- ([fe80::c833:9a5c:258e:3351%4]) with mapi id 15.20.6609.032; Tue, 25 Jul 2023
- 05:52:32 +0000
-References: <cover.de78568883814904b78add6317c263bf5bc20234.1689768831.git-series.apopple@nvidia.com>
- <8f293bb51a423afa71ddc3ba46e9f323ee9ffbc7.1689768831.git-series.apopple@nvidia.com>
- <87y1j4y7w8.fsf@mail.lhotse>
-User-agent: mu4e 1.8.13; emacs 28.2
-From: Alistair Popple <apopple@nvidia.com>
-To: Michael Ellerman <mpe@ellerman.id.au>
-Cc: akpm@linux-foundation.org, ajd@linux.ibm.com, catalin.marinas@arm.com,
- fbarrat@linux.ibm.com, iommu@lists.linux.dev, jgg@ziepe.ca,
- jhubbard@nvidia.com, kevin.tian@intel.com, kvm@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, linuxppc-dev@lists.ozlabs.org, nicolinc@nvidia.com,
- npiggin@gmail.com, robin.murphy@arm.com, seanjc@google.com,
- will@kernel.org, x86@kernel.org, zhi.wang.linux@gmail.com
-Subject: Re: [PATCH v2 3/5] mmu_notifiers: Call invalidate_range() when
- invalidating TLBs
-Date: Tue, 25 Jul 2023 15:51:45 +1000
-In-reply-to: <87y1j4y7w8.fsf@mail.lhotse>
-Message-ID: <871qgwzgfa.fsf@nvdebian.thelocal>
-Content-Type: text/plain
-X-ClientProxiedBy: SYBPR01CA0078.ausprd01.prod.outlook.com
- (2603:10c6:10:3::18) To BYAPR12MB3176.namprd12.prod.outlook.com
- (2603:10b6:a03:134::26)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 581B8134CC
+	for <iommu@lists.linux.dev>; Tue, 25 Jul 2023 08:06:58 +0000 (UTC)
+Received: by mail-oo1-f45.google.com with SMTP id 006d021491bc7-55e1a9ff9d4so3783698eaf.1
+        for <iommu@lists.linux.dev>; Tue, 25 Jul 2023 01:06:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1690272417; x=1690877217;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=JQlid0H2jkWZz9fgcu7Ae/8sWUNA4lIusDDxBLqkgag=;
+        b=N/RwH41ntlp8cr8ydFYUpFpoqiW4MZC9W726ahHb9rNeZN/BQhgjRUvW43TbQVMkww
+         1hCXeYujuKghA2smFO10Eh5xisYmN+xqOiTFdmPXOlm6hy3SklxNH+j2c1J98sHXJzuZ
+         BNTho6g2LvDsx1alHYU1iVCYl+J2TFEdw9Yjk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1690272417; x=1690877217;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=JQlid0H2jkWZz9fgcu7Ae/8sWUNA4lIusDDxBLqkgag=;
+        b=h5w9z0EK98A5wIzD85A+19tF0BpVr37hLD5QbQduvXGwXUKAlot2brVvZkJA6EWwj1
+         WYrCtvn5XhLvjxw2skzO3OJb4BmTKYI5kakc8Q7gtHH+dKi2Qf1Ei8eQCAHb6NCw5gDr
+         ZsWaUuB7bT40JuUX5PDlA4RCZNyf+M6rNViX8ySZsnITnXMw078HMEPiEqdYPW4J00op
+         HNgtu/p7EQ6L0o6yUmXCL3fvGL+H/GKjhad0m6/9Jjv+VeFJIaFYMs6QkyH+LirfMAT2
+         n0yB3Sp2ysOkRe0Jti2Kb+55G8vxmem8r97IKB9b2mqlMB8muIZHGlxoMa3IzVWIxoad
+         3lXw==
+X-Gm-Message-State: ABy/qLZjJiTFbweS0nDhi9XqD8A4Oowcq7qG19X3vV5/KIOZs7gsh47R
+	lTytklGw3x7yneGcbbLIp+vIX4cV5K57TRGhIEw=
+X-Google-Smtp-Source: APBJJlHhpvDnd6aTbUwCR0z+VI+fvqZszoXe3tRaG5l6nV72ftVSjU+aAOcL0T3wdEmI3GAw34WKAA==
+X-Received: by 2002:a4a:344a:0:b0:567:4e58:6aae with SMTP id n10-20020a4a344a000000b005674e586aaemr1493299oof.0.1690272416974;
+        Tue, 25 Jul 2023 01:06:56 -0700 (PDT)
+Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com. [209.85.210.46])
+        by smtp.gmail.com with ESMTPSA id q130-20020a4a3388000000b00541fbbbcd31sm5252400ooq.5.2023.07.25.01.06.56
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Jul 2023 01:06:56 -0700 (PDT)
+Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-6b9cf17f69cso3322159a34.0
+        for <iommu@lists.linux.dev>; Tue, 25 Jul 2023 01:06:56 -0700 (PDT)
+X-Received: by 2002:a6b:8d82:0:b0:789:dcd1:8eb9 with SMTP id
+ p124-20020a6b8d82000000b00789dcd18eb9mr1029181iod.6.1690272036013; Tue, 25
+ Jul 2023 01:00:36 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BYAPR12MB3176:EE_|IA1PR12MB8553:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6872f7de-13c4-45dc-8cf4-08db8cd35683
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	eSCyyHILk5M/wZ25f+GZ5hyEyHJ7f6Dlw65NSaY3DsD86E6sXB2QFFU+PG8SpJFi4/BHF7JJrk/9gi24gsfjJglO3dcIC9KZAf2hFtkJvcTkLSt2jziZP588p4KHA5iGqJrZzwZQ8y7EDklP5Dq5bpLy3Q2Nxhbkb6oIqnLIbIK3hbsoXzLhFtXYQWLIetMwMgQASc9bXakPzQmF4dygXjLpHlEsfxE76Rm5JkhcCl6r0H+j7q0djsjQUHGAFbUnPIIAt3HUPq+hJi7E1u3EysmfFobR+/JTPeupNc0gU4PPb9QDAyjjYG9UUl1nYOaDlj+aRRDDi4mDV8M/sMRuv3P9zWnqriZRmMsEqsNsb7Izz/AgUW87wM8F+Bt+DeAFL1/AprFubduhWlVHSjjffl/syvgYsQ05AfjD25iiJG6cqMs6cTTaYpHt9mo4p/kJKKm9K4a9ZtAeWBpd0uMLIGL893coedtYD08osHAJ68I632ZsbcTKCKEKGFzWjky9yLgEcJ/EpxX0u9tRtweUjdfeuiSjosoyzIJI84zgQQTALxPa1vBaDWoSVGS35N9k
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3176.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(136003)(366004)(39860400002)(396003)(451199021)(186003)(6506007)(26005)(83380400001)(478600001)(6666004)(86362001)(6486002)(316002)(41300700001)(4326008)(66946007)(66556008)(66476007)(6916009)(38100700002)(2906002)(8676002)(8936002)(5660300002)(7416002)(6512007)(9686003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?umweCAJ7PqN6IM+z9GCVFDt2lQL1rTjIWH3TFF18HB9hlyw13wmZLuySyzP2?=
- =?us-ascii?Q?WD3vot6u5vg/tbdw+wmhMPNG/zvv5UlJbYRPFPagLE+OA8m8ncL1pn9MCvBw?=
- =?us-ascii?Q?zkN6iFOJUHDXESsiRo79cVpWkKVKSv9mB9UuP1bQgfFl0/H9hAjISdZS4cdG?=
- =?us-ascii?Q?cgrc6hAtqGaEGoHzsCGFzf0LyPqWbi3DBHLx7DDdyhQA/7cNJxIPBnec7+N/?=
- =?us-ascii?Q?KmD5MdaW839YsBVDUbcS4hgYWlQd6opFjby1vrMqXhYg/22qcA6fZzxcH5QN?=
- =?us-ascii?Q?Ze6pQ1ajErAlrnSNwZ1bxNt7jRYbx5SDQynxLTPa/MSAuxJQhoaribfGbgly?=
- =?us-ascii?Q?ugpmN+5e16W0AFfYaeNh5v1TuPuH33tvq9H/7yfh+4ABMQNGRrD7HYgXTB4L?=
- =?us-ascii?Q?iLmeplwLZTOPgx3713arCQ6w4MIMoJ5YqATklXgzGcMevrMQgL0liYBIXd72?=
- =?us-ascii?Q?VvVevTVC+uMJ+DqTB2Zk2qYLLFO2eRdBmLVPeQGBFoEvkKdBdNgNJtX2dUNK?=
- =?us-ascii?Q?W2QmEyQutNG4z0rbNf56Buip6rbP0y68V4jecjkR9ENjtjgR7LLJTOLzggBf?=
- =?us-ascii?Q?LsWKk8v5xGsSXGXCqWvvinKGot+ipXBheifVZV47uK94N4WIHld6RsriII+1?=
- =?us-ascii?Q?aDQ3sJfT9X317dkcjQ/ovEU3+gJoJkulKIp/MfMy7QRhChBdV9glfG8YxTS0?=
- =?us-ascii?Q?ICGoGtOSeoi2X8Yydf/8RY7wQfY+fec6I5IgD4yzv2XkCoDrrt7EtuKI81FE?=
- =?us-ascii?Q?nQGTnVThtXNmYGskIzBDP7k7W38nJMcseznOaDBMyuISakUNilEN0rSmVkIS?=
- =?us-ascii?Q?QMxoFvUsa223Zu63f9aDemtDA+WIWfvDbkeCmK0Jh9MFQl5D/YBYNO5gPzhI?=
- =?us-ascii?Q?xqi0pBqVwmO02y+uFLGZPYAip0g6mGy70MtQRBc9JWxQpg++ZDGv90ph5CJy?=
- =?us-ascii?Q?KT1PWeAxglNnUf4WW3KlhVrJ5nBt4b6so0rkJmDiJiUQWS/N3hGgadsuedeq?=
- =?us-ascii?Q?XG0dcOcczDIpGCrriiPdtGITmiPTkINNHoyMA0/DqAZZe1uSmxIzpVvhohgp?=
- =?us-ascii?Q?ajlyfb4vpHDX+mlsbAGylfSlO9pDXFv+VUPeVDmrq6rTXWHVavNjc5EE4F6l?=
- =?us-ascii?Q?jtfgCC0FRMIjw5ZwrP1GiU6XWEmr49GSqF60ChOPcxLMLRmvuUoBtfyizlsy?=
- =?us-ascii?Q?NTAArwjq+2ytgafh/T3PudMmrMoisdB9+/0vWLNT7Ui8FIqLA31MEdPfE7MO?=
- =?us-ascii?Q?OyCCl3kviAJ5iiJ+fa5puoFJO7wwUPaBXacvup++71x2EHRfXXKVaFCsHokr?=
- =?us-ascii?Q?f3NEflSTjIybw8baBxqn5Gtneg1wS6WwinizZYDOExcyCHxV3qOwExlu9WBY?=
- =?us-ascii?Q?pxykdscqwbxGPcv7ilkcJqPv28VSEM/yTakJhAAAo7rRYOaVcZieZHsO/qn7?=
- =?us-ascii?Q?8yK/kNOqIbI16fKARD9rI97Klv7bn1H/6+i6UtbyZDJcDkwg24LAdtCIupIa?=
- =?us-ascii?Q?8W6Y1Jq80vdqKj+WNsJVuP2Hne5Cja4Od/LVH487AQkORTqZIjUPcSCjivCS?=
- =?us-ascii?Q?WpqdL21itfhKd5pl58/LRaFb+lkGTTm+nhXFce8p?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6872f7de-13c4-45dc-8cf4-08db8cd35683
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3176.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2023 05:52:32.2949
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: B56+fTPImOKdKhpcWTtAhSNZX5zycA+alLFiSTYno1+gVWV5tDK6TSqLkYuH0XPZYLNzAphcpk93en6+ETFpDw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8553
+References: <20230602090227.7264-1-yong.wu@mediatek.com>
+In-Reply-To: <20230602090227.7264-1-yong.wu@mediatek.com>
+From: Fei Shao <fshao@chromium.org>
+Date: Tue, 25 Jul 2023 15:59:59 +0800
+X-Gmail-Original-Message-ID: <CAC=S1nhgkj5zh-Oa+OJjZKmkNMfG63+WjSefB2swybm29KxDXA@mail.gmail.com>
+Message-ID: <CAC=S1nhgkj5zh-Oa+OJjZKmkNMfG63+WjSefB2swybm29KxDXA@mail.gmail.com>
+Subject: Re: [PATCH v12 0/7] MT8188 IOMMU SUPPORT
+To: Yong Wu <yong.wu@mediatek.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Rob Herring <robh+dt@kernel.org>, 
+	Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, iommu@lists.linux.dev, 
+	linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	mingyuan.ma@mediatek.com, yf.wang@mediatek.com, jianjiao.zeng@mediatek.com, 
+	chengci.xu@mediatek.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-
-Michael Ellerman <mpe@ellerman.id.au> writes:
-
-> Alistair Popple <apopple@nvidia.com> writes:
->> The invalidate_range() is going to become an architecture specific mmu
->> notifier used to keep the TLB of secondary MMUs such as an IOMMU in
->> sync with the CPU page tables. Currently it is called from separate
->> code paths to the main CPU TLB invalidations. This can lead to a
->> secondary TLB not getting invalidated when required and makes it hard
->> to reason about when exactly the secondary TLB is invalidated.
->>
->> To fix this move the notifier call to the architecture specific TLB
->> maintenance functions for architectures that have secondary MMUs
->> requiring explicit software invalidations.
->>
->> This fixes a SMMU bug on ARM64. On ARM64 PTE permission upgrades
->> require a TLB invalidation. This invalidation is done by the
->> arahitecutre specific ptep_set_access_flags() which calls
->   ^
->   architecture
-
-Oh. I'd forgotten to apt install codespell ;-)
-  
->> flush_tlb_page() if required. However this doesn't call the notifier
->> resulting in infinite faults being generated by devices using the SMMU
->> if it has previously cached a read-only PTE in it's TLB.
->>
->> Moving the invalidations into the TLB invalidation functions ensures
->> all invalidations happen at the same time as the CPU invalidation. The
->> architecture specific flush_tlb_all() routines do not call the
->> notifier as none of the IOMMUs require this.
->>
->> Signed-off-by: Alistair Popple <apopple@nvidia.com>
->> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
->> 
-> ...
+On Fri, Jun 2, 2023 at 5:03=E2=80=AFPM Yong Wu <yong.wu@mediatek.com> wrote=
+:
 >
->> diff --git a/arch/powerpc/mm/book3s64/radix_tlb.c b/arch/powerpc/mm/book3s64/radix_tlb.c
->> index 0bd4866..9724b26 100644
->> --- a/arch/powerpc/mm/book3s64/radix_tlb.c
->> +++ b/arch/powerpc/mm/book3s64/radix_tlb.c
->> @@ -752,6 +752,8 @@ void radix__local_flush_tlb_page(struct vm_area_struct *vma, unsigned long vmadd
->>  		return radix__local_flush_hugetlb_page(vma, vmaddr);
->>  #endif
->>  	radix__local_flush_tlb_page_psize(vma->vm_mm, vmaddr, mmu_virtual_psize);
->> +	mmu_notifier_invalidate_range(vma->vm_mm, vmaddr,
->> +						vmaddr + mmu_virtual_psize);
->>  }
->>  EXPORT_SYMBOL(radix__local_flush_tlb_page);
+> MT8188 have 3 IOMMU HWs. 2 IOMMU HW is for multimedia, and 1 IOMMU HW
+> is for infra-master, like PCIe.
 >
-> I think we can skip calling the notifier there? It's explicitly a local flush.
+> About the 2 MM IOMMU HW, the connection could be something like this:
+>
+>         IOMMU(VDO)          IOMMU(VPP)
+>            |                   |
+>       SMI_COMMON(VDO)      SMI_COMMON(VPP)
+>       ---------------     ----------------
+>       |      |   ...      |      |     ...
+>     larb0 larb2  ...    larb1 larb3    ...
+>
+> INFRA IOMMU does not have SMI, the master connects to IOMMU directly.
+>
+> Although multiple banks supported in MT8188, we only use one of them,
+> which means PCIe is put in bank0 of INFRA IOMMU.
+>
+> So we have two pgtable for MT8188, specifically, these two MM IOMMU HW
+> share a pgtable while INFRA IOMMU HW use a independent pgtable.
+>
+> Another change is that we add some SMC command for INFRA master to
+> enable INFRA IOMMU in ATF considering security concerns.
+>
+> We also adjust the flow of mtk_iommu_config to reduce indention.
 
-I suspect you're correct. It's been a while since I last worked on PPC
-TLB invalidation code though and it's changed a fair bit since then so
-was being conservative and appreciate any comments there. Was worried I
-may have missed some clever optimisation that detects a local flush is
-all that's needed, but I see OCXL calls mm_context_add_copro() though so
-that should be ok. Will respin and drop it.
+A friendly ping - this series was reviewed, but I'm not sure if it's
+still on the radar today.
+This can be cleanly applied on top of next-20230725.
 
-> cheers
+To give more confidence, I also tested the basic multimedia and infra
+functionalities on my MT8188 with this series, so
 
+Tested-by: Fei Shao <fshao@chromium.org>
+
+to the entire v12 series.
+
+Regards,
+Fei
