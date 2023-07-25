@@ -1,160 +1,154 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2061.outbound.protection.outlook.com [40.107.243.61])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF6EB1F932;
-	Tue, 25 Jul 2023 17:22:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690305764; x=1721841764;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/rX+vmioYB+wb5NVQah9zVFB+dNFJlgx36fdBqT1BBg=;
-  b=hvdYI8ZiAO0Gmb84RfLDWRem1WthNljKW+nHBPiqwjfvDFOSNAqd8XND
-   aZcd7giPkX78FYa5c5q0VVVnpMiho4AqOpgngWQXh7sNlaLWH+ucSMaFz
-   MFioqdXZ9Jx30zCDRlvCp2NVM+i/mCtr3KeJJEPGbQTVapqhaLGrGlhK0
-   ShfRhVA4xLkLlEjO8Y1bc8YNh1wgk87USRaDQlL0POmClZV7/CxKbWY88
-   Ph6/tFCAP2yyqXXPiF9ovLMFDtpb7AdWqLzHWxm8CBsG/NZRPWmJCOWNd
-   is5oPjg/ThTqfdUst5rqUxG+Nwxa6Q9MT70+7i/kvDv1akRfQCoQX81at
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10782"; a="366677702"
-X-IronPort-AV: E=Sophos;i="6.01,230,1684825200"; 
-   d="scan'208";a="366677702"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2023 10:22:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10782"; a="755849068"
-X-IronPort-AV: E=Sophos;i="6.01,230,1684825200"; 
-   d="scan'208";a="755849068"
-Received: from lkp-server02.sh.intel.com (HELO 953e8cd98f7d) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 25 Jul 2023 10:22:41 -0700
-Received: from kbuild by 953e8cd98f7d with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1qOLk8-0000B9-1h;
-	Tue, 25 Jul 2023 17:22:40 +0000
-Date: Wed, 26 Jul 2023 01:21:36 +0800
-From: kernel test robot <lkp@intel.com>
-To: Binglei Wang <l3b2w1@gmail.com>, hch@lst.de
-Cc: oe-kbuild-all@lists.linux.dev, m.szyprowski@samsung.com,
-	robin.murphy@arm.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, l3b2w1@gmail.com
-Subject: Re: [PATCH v2] cma: check for memory region overlapping
-Message-ID: <202307260113.tCZQvjkf-lkp@intel.com>
-References: <20230725141602.7759-1-l3b2w1@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F01A425931
+	for <iommu@lists.linux.dev>; Tue, 25 Jul 2023 19:05:53 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E65mVNPkKH8l4yldMBn9H3AqOTe7j4GaFDIDYHLBDQ6RuT1BlzZz0iFbgA2p16Eub2LdMFANp5E6ZFcHORhSpKh/W8E3FrPSeZfQJzY98dFh2LXo2QSjP9nxNSMTcxVSmfr4NDlTuk2q2FbmsSFsYNd7eTzezuSrDyJRoN6HSbQiHCZfJp6qp9visvmqdu4qhtZxnEVlApV65e0wHJbvlbTf1kwEJ4swt2TN/15HBtdyM4BowY/oilL8reroFbU+Ia067Cd/zUJFPo4WGX79tB1JcS4sH1OxSdNsxe206dzEatSWqqol9GIXrc653lLkvBP5alzuLuvvwl79+V6onA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mVhBxlWiu4dDV/jBiDKYIzeOYCb1Nw14MZ76S4A3UMU=;
+ b=a+FV7SiGs181PnW2phwL3+Bj9QxABl6m/2Ajw8YssgJiN0Em6BdgG3E7dobNcB2dabKsNzxRWJzXftF3z8dIRk5lyXU3ysLepreekw6ZIkKo+oq7tmlDEls/qGK1+EevopdHdhziDlU6DwPewKaRLZsYsfG/fH2+LjYdhD++SYjTqugf1qvpMYxeSbsQX7dcC1+k1z0hZ+6qSncga3DmX6/Bbn/SupVPPAAzPM6pk8ck8wWtVrk4Yv2mSqtuXOssCnEEpzW2Z2JHItesPHTgnaiwqHdNSN57E+kt64Wi3cmUjpPq8AI63uHl0aLv0X6eJZqgun1v3AD3kLqIYjLe2A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mVhBxlWiu4dDV/jBiDKYIzeOYCb1Nw14MZ76S4A3UMU=;
+ b=Tp/WMVyhcsgeyrnvOjsEJRVqcLanknrdxikzc7Zz7KzyFoIrSmP+y7eVeAeOykw4VrERPPx6GxD5Ej8bXkJ7ASnbnEbEx3pzLYYCKiJuQpoFcVxjjMHhCJViuCqSwvm78bqYKBczUEIZrxCtGpGAjEHTJokdVlr9uYGA+Nuj2fBOLohflk8vkcP+3NAzeGnSwHCf95XW9TbSe27LNb2uVskI8JTdJl9l4eLUEewBgPINZEU4t26K923fM87S3czy9aR8ShT190wt1INxgKrbSjiQChMJ7DDYa5FiIpypF9f5dv/7CdYR3xFiQaLXliHWVUdXlwOwT6/aRQcd4BgD/A==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by PH7PR12MB6764.namprd12.prod.outlook.com (2603:10b6:510:1ae::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6609.32; Tue, 25 Jul
+ 2023 19:05:51 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6609.032; Tue, 25 Jul 2023
+ 19:05:51 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: iommu@lists.linux.dev
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Eric Auger <eric.auger@redhat.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Lixiao Yang <lixiao.yang@intel.com>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	stable@vger.kernel.org,
+	syzbot+7574ebfe589049630608@syzkaller.appspotmail.com,
+	Terrence Xu <terrence.xu@intel.com>,
+	Yi Liu <yi.l.liu@intel.com>
+Subject: [PATCH rc 1/3] iommufd/selftest: Do not try to destroy an access once it is attached
+Date: Tue, 25 Jul 2023 16:05:48 -0300
+Message-ID: <1-v1-85aacb2af554+bc-iommufd_syz3_jgg@nvidia.com>
+In-Reply-To: <0-v1-85aacb2af554+bc-iommufd_syz3_jgg@nvidia.com>
+References:
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MN2PR19CA0031.namprd19.prod.outlook.com
+ (2603:10b6:208:178::44) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230725141602.7759-1-l3b2w1@gmail.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|PH7PR12MB6764:EE_
+X-MS-Office365-Filtering-Correlation-Id: 288b5d80-461d-400d-5738-08db8d4229ad
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	Q8fZXCT3Xgt2AXzJ/qcJ7b00GTR7zPKcC0LAzIRZ+GrVMHYZsZYqxVYmJXX0GXSPtvrGVHK+ezlIygC1m6lMFl25lC4VMosAiKDg/2AxKnLnpIo6h0oxzKZmILjKRkgJwq+z3m23Y1pvs0Xs+MIQeYUw2bpFFDPLx+k+V9hChpSNz+EKzL8timvqCCkwYxKqpDbFuDTOWikrOeA1HpHWJYy+VBaCYMx4o2aHsSIgdZZfWngwzDb7r73wi01TjhtboUSkF/jzXQUvcTd7PVas6szdTNtRw7ebxRSVPet1DJ1q75mGJCQKhWE7VdF5GGJMeIcsk7q+MRenXJP2hAw+iRg3ErGUB+KoYKurvd1RhytY2f8zhYKJjXy9MN11OD5//1SB6G4W/iNDAtX4o960ptY2e5rLUcJdW9O5o35XGBqOyTyzln4Uz5RTxaW6X/kZlAXczkFYkHPXoB7ARd3lOwysVFU93Cs2ixhEM6ovMPcKuv50v5Yk3jE4SiFyDCHo8ad4pX1hP+ihOVEszGZUhnsGzLBBkq+y6GoFwg1viae8XgHfytwEiNnZWJyJrgZabV3hTDS++7YrDUSc0BsMVE0Jrjg8ze7mX0S22vlmHY0=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(376002)(396003)(366004)(346002)(136003)(451199021)(8676002)(478600001)(8936002)(2906002)(6916009)(66556008)(4326008)(66476007)(66946007)(316002)(41300700001)(5660300002)(54906003)(36756003)(7416002)(38100700002)(6506007)(86362001)(26005)(186003)(6666004)(6486002)(6512007)(83380400001)(2616005)(4216001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?uQocUg8/kipUzw9E/3LLkXAs/mh3tKgzWoEc/4gHaqLiAMLdTUD0TVIm4ELs?=
+ =?us-ascii?Q?8jqpZzPGTlb4qrmR3Rx4RiohX7IlljjWwZy3NchSI8YAIW9uro70lpqvxeFE?=
+ =?us-ascii?Q?5ACFPaFB0gsh4pva+6zCCm9TMsFwZ5nWtqPPVnzQXCN1mtWZwyp1wx/aOdER?=
+ =?us-ascii?Q?XgiUcGtLTUOwFK7gvwygVM1mUu8BXF0iaawJl0v7U90a3z9/8cwYXQ4I6PuK?=
+ =?us-ascii?Q?qqXlnWq6keQf9Q7hHrEuErc/OiKgdd5jUPjvRoYywIZST54Cy7UBvIY5IgPt?=
+ =?us-ascii?Q?CkhukwC/Df0bkZfW64J+GtdLeApECKg+HBTLNASzu4G+lCr+su2NNmE0EPNI?=
+ =?us-ascii?Q?BJ+y7kSYDrglRt57UJR9q4Tv7WnhoONzxmCklUINglErbfN1kxU4/2z/jhqO?=
+ =?us-ascii?Q?B17IC6MriIF/Kw7jGGS9ntBpC4/VWX/RHqtFaxBIuNFtvX+FrPEBimBkHqpK?=
+ =?us-ascii?Q?Gz37UBlZ7tUj+WGeBWcPveysbnEVXlYV6qehH+zwYJQFX9nrcC4V12HzOozT?=
+ =?us-ascii?Q?w1v99ldpsQ6Pu0YTkM6aVZDZYjU9he+Y6kOKlf6biYUQ7OSP4vEUIdoawrc5?=
+ =?us-ascii?Q?hR/7hLj40kWRzgsYAMy09U1XwRA5Xlcq92flSDUMJ7d4Li2nlspemBF0vqTv?=
+ =?us-ascii?Q?arJKjxmit3mJo1N7mE9T9O6BALgrK+FEi22NoCfHMV4nmwEnLDO3CccsUJcB?=
+ =?us-ascii?Q?hsCeNOwJekfCT0PSb6cOHVrR6E8PINsX/OXPwFy7sPRjfQlBqc17R4/iPi33?=
+ =?us-ascii?Q?+PTSsFL+5ju1ewUZFyoVS81YAmnC1MMvRPZn+k6mGK94KCUogKVVQIWPlNTA?=
+ =?us-ascii?Q?tjb6ELv01Pe5CAVNnWfK8C84iwUVzpTS6E9hpecsgcwOVcUM3+6vOw9QSoW/?=
+ =?us-ascii?Q?Ch5NrMOjVhPbUYi+r0/7u/sJjXbUDwQZswRjvhIwMIhx+sOO/sUwECrMBoZL?=
+ =?us-ascii?Q?aB13arDv9Q5wpyjAsnVXZ48G8dJj0kHO56N38iJDz4L8nmdD3+Chkg9Pk/eE?=
+ =?us-ascii?Q?w27CagJYAAydkZE865XIBfylR3uqdy/H5VKg78x8am+8mWeZv+Tam6XQn+1H?=
+ =?us-ascii?Q?laBQhTJJmCGK83VlRMkYnLncg63lpDdsU3IkVkE2SZ67NvQdAl/KMOZJhHI6?=
+ =?us-ascii?Q?H3GYUIfI69GePtagOc/vGGhQCNahHDe0UB7k4NDirqhkxOtYuVBSymik5+hc?=
+ =?us-ascii?Q?pY7sBWov+4bZSmOQ8cliH3wiLKo8VkOXWOYswCQCqON6NlKAsloHBr+oFIP2?=
+ =?us-ascii?Q?+bRQKHoHUtkS/Qgi/jGD14NsgaNUkMhI7mYTQRTn0YUuqSUaLDs022HUGYBs?=
+ =?us-ascii?Q?yUma7jSgtMH8iTs6JENqgChcDp0P4YtnAnFwWov7DXzC5W0RSo872eSZExnv?=
+ =?us-ascii?Q?76ZqUuxLxZXeR8OUh33sAx6uCHX3hLSlFa791+G1dKHcAf9JPepiWGNDPp7q?=
+ =?us-ascii?Q?gIehzfhazqiFkVFXCXXqgVHehZPGSlZ3ZaKXvY7PpUH1LNTFhDQJVy5xZRko?=
+ =?us-ascii?Q?VpsCJeyU1PVLZBZLrRTTWywYBz+aJ3jEC6n3nL8UqN7BHIxdg7imosmnMaPl?=
+ =?us-ascii?Q?27iCi9No/a86LElf5Y8c/2gAEcM7b8UekyG8KGkS?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 288b5d80-461d-400d-5738-08db8d4229ad
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2023 19:05:51.0991
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SqhBgQg2/f9Wwb/YXeiJeoPc7P/DNuE7nZJMUycu6WlwVRzrzvgL3bvnoXgrUdfL
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6764
 
-Hi Binglei,
+The access must be detached first.
 
-kernel test robot noticed the following build errors:
+To make the cleanup simpler copy the fdno to userspace before creating the
+access in the first place. Then there is no need to unwind after
+iommufd_access_attach.
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on v6.5-rc3 next-20230725]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Fixes: 54b47585db66 ("iommufd: Create access in vfio_iommufd_emulated_bind()")
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/iommu/iommufd/selftest.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Binglei-Wang/cma-check-for-memory-region-overlapping/20230725-222426
-base:   linus/master
-patch link:    https://lore.kernel.org/r/20230725141602.7759-1-l3b2w1%40gmail.com
-patch subject: [PATCH v2] cma: check for memory region overlapping
-config: riscv-randconfig-r042-20230725 (https://download.01.org/0day-ci/archive/20230726/202307260113.tCZQvjkf-lkp@intel.com/config)
-compiler: riscv32-linux-gcc (GCC) 12.3.0
-reproduce: (https://download.01.org/0day-ci/archive/20230726/202307260113.tCZQvjkf-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202307260113.tCZQvjkf-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
-   In file included from arch/riscv/include/asm/elf.h:12,
-                    from include/linux/elf.h:6,
-                    from include/linux/module.h:19,
-                    from include/linux/device/driver.h:21,
-                    from include/linux/device.h:32,
-                    from include/linux/dma-mapping.h:8,
-                    from include/linux/dma-map-ops.h:9,
-                    from kernel/dma/contiguous.c:51:
-   include/linux/compat.h: In function 'rmem_cma_setup':
->> include/linux/compat.h:510:32: error: unterminated argument list invoking macro "pr_info"
-     510 |                 unsafe_get_user(hi, &__c->sig[2], label);               \
-         |                                ^
-   kernel/dma/contiguous.c:414:17: error: 'pr_info' undeclared (first use in this function); did you mean 'qc_info'?
-     414 |                 pr_info("Reserved memory: overlap with other memblock reserved region\n",
-         |                 ^~~~~~~
-         |                 qc_info
-   kernel/dma/contiguous.c:414:17: note: each undeclared identifier is reported only once for each function it appears in
-   kernel/dma/contiguous.c:414:24: error: expected ';' at end of input
-     414 |                 pr_info("Reserved memory: overlap with other memblock reserved region\n",
-         |                        ^
-         |                        ;
-   ......
-   kernel/dma/contiguous.c:414:17: error: expected declaration or statement at end of input
-     414 |                 pr_info("Reserved memory: overlap with other memblock reserved region\n",
-         |                 ^~~~~~~
-   kernel/dma/contiguous.c:414:17: error: expected declaration or statement at end of input
-   kernel/dma/contiguous.c:405:13: warning: unused variable 'err' [-Wunused-variable]
-     405 |         int err;
-         |             ^~~
-   kernel/dma/contiguous.c:404:21: warning: unused variable 'cma' [-Wunused-variable]
-     404 |         struct cma *cma;
-         |                     ^~~
-   kernel/dma/contiguous.c: At top level:
-   kernel/dma/contiguous.c:400:19: warning: 'rmem_cma_setup' defined but not used [-Wunused-function]
-     400 | static int __init rmem_cma_setup(struct reserved_mem *rmem)
-         |                   ^~~~~~~~~~~~~~
-   kernel/dma/contiguous.c:395:38: warning: 'rmem_cma_ops' defined but not used [-Wunused-const-variable=]
-     395 | static const struct reserved_mem_ops rmem_cma_ops = {
-         |                                      ^~~~~~~~~~~~
-
-
-vim +/pr_info +510 include/linux/compat.h
-
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  491  
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  492  #define unsafe_get_compat_sigset(set, compat, label) do {		\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  493  	const compat_sigset_t __user *__c = compat;			\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  494  	compat_sigset_word hi, lo;					\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  495  	sigset_t *__s = set;						\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  496  									\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  497  	switch (_NSIG_WORDS) {						\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  498  	case 4:								\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  499  		unsafe_get_user(lo, &__c->sig[7], label);		\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  500  		unsafe_get_user(hi, &__c->sig[6], label);		\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  501  		__s->sig[3] = hi | (((long)lo) << 32);			\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  502  		fallthrough;						\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  503  	case 3:								\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  504  		unsafe_get_user(lo, &__c->sig[5], label);		\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  505  		unsafe_get_user(hi, &__c->sig[4], label);		\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  506  		__s->sig[2] = hi | (((long)lo) << 32);			\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  507  		fallthrough;						\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  508  	case 2:								\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  509  		unsafe_get_user(lo, &__c->sig[3], label);		\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19 @510  		unsafe_get_user(hi, &__c->sig[2], label);		\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  511  		__s->sig[1] = hi | (((long)lo) << 32);			\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  512  		fallthrough;						\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  513  	case 1:								\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  514  		unsafe_get_user(lo, &__c->sig[1], label);		\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  515  		unsafe_get_user(hi, &__c->sig[0], label);		\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  516  		__s->sig[0] = hi | (((long)lo) << 32);			\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  517  	}								\
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  518  } while (0)
-14026b94ccfe626 Christophe Leroy 2020-08-18  519  #else
-14026b94ccfe626 Christophe Leroy 2020-08-18  520  #define unsafe_put_compat_sigset(compat, set, label) do {		\
-14026b94ccfe626 Christophe Leroy 2020-08-18  521  	compat_sigset_t __user *__c = compat;				\
-14026b94ccfe626 Christophe Leroy 2020-08-18  522  	const sigset_t *__s = set;					\
-14026b94ccfe626 Christophe Leroy 2020-08-18  523  									\
-14026b94ccfe626 Christophe Leroy 2020-08-18  524  	unsafe_copy_to_user(__c, __s, sizeof(*__c), label);		\
-14026b94ccfe626 Christophe Leroy 2020-08-18  525  } while (0)
-fb05121fd6a20f0 Christophe Leroy 2021-03-19  526  
-
+diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
+index 74c2076105d486..65c8b6ad2504f0 100644
+--- a/drivers/iommu/iommufd/selftest.c
++++ b/drivers/iommu/iommufd/selftest.c
+@@ -716,6 +716,10 @@ static int iommufd_test_create_access(struct iommufd_ucmd *ucmd,
+ 		rc = -ENOMEM;
+ 		goto out_free_staccess;
+ 	}
++	cmd->create_access.out_access_fd = fdno;
++	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
++	if (rc)
++		goto out_put_fdno;
+ 
+ 	access = iommufd_access_create(
+ 		ucmd->ictx,
+@@ -727,11 +731,8 @@ static int iommufd_test_create_access(struct iommufd_ucmd *ucmd,
+ 		rc = PTR_ERR(access);
+ 		goto out_put_fdno;
+ 	}
++
+ 	rc = iommufd_access_attach(access, ioas_id);
+-	if (rc)
+-		goto out_destroy;
+-	cmd->create_access.out_access_fd = fdno;
+-	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
+ 	if (rc)
+ 		goto out_destroy;
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.41.0
+
